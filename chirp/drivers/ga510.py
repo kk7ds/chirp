@@ -1,6 +1,7 @@
 import logging
 import struct
 
+from chirp import bandplan_na
 from chirp import bitwise
 from chirp import chirp_common
 from chirp import directory
@@ -208,14 +209,6 @@ struct {
 PTTID = ['Off', 'BOT', 'EOT', 'Both']
 SIGNAL = [str(i) for i in range(1, 16)]
 
-GMRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
-               462687500, 462712500]
-GMRS_FREQS2 = [467562500, 467587500, 467612500, 467637500, 467662500,
-               467687500, 467712500]
-GMRS_FREQS3 = [462550000, 462575000, 462600000, 462625000, 462650000,
-               462675000, 462700000, 462725000]
-GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3
-
 
 @directory.register
 class RadioddityGA510Radio(chirp_common.CloneModeRadio):
@@ -284,6 +277,30 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         rf.valid_bands = [(136000000, 174000000),
                           (400000000, 480000000)]
         return rf
+
+    def validate_memory(self, mem):
+        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
+
+        # _mem = self._memobj.memory[mem.number]
+        _msg_duplex = 'Duplex must be "off" for this frequency'
+        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+
+        if self.MODEL == "RA85":
+            if mem.freq not in bandplan_na.ALL_GMRS_FREQS:
+                if mem.duplex != "off":
+                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+            if mem.freq in bandplan_na.GMRS_HIRPT:
+                if mem.duplex and mem.offset != 5000000:
+                    msgs.append(chirp_common.ValidationWarning(_msg_offset))
+                if mem.duplex and mem.duplex != "+":
+                    msgs.append(chirp_common.ValidationWarning(_msg_offset))
+        if self.MODEL == "RA685":
+            if not ((mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) or
+                    (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1])):
+                if mem.duplex != "off":
+                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+
+        return msgs
 
     def get_raw_memory(self, num):
         return repr(self._memobj.memories[num]) + repr(self._memobj.names[num])
@@ -402,6 +419,40 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             mem.extra = self._get_extra(_mem)
         except:
             LOG.exception('Failed to get extra for %i' % num)
+
+        immutable = []
+
+        if self._gmrs:
+            if mem.freq in bandplan_na.ALL_GMRS_FREQS:
+                if mem.freq in bandplan_na.GMRS_LOW:
+                    mem.duplex = ''
+                    mem.offset = 0
+                    immutable = ["duplex", "offset"]
+                if mem.freq in bandplan_na.GMRS_FRSONLY:
+                    mem.duplex = 'off'
+                    mem.offset = 0
+                    immutable = ["duplex", "offset"]
+                if mem.freq in bandplan_na.GMRS_HIRPT:
+                    immutable = ["freq"]
+                    if mem.duplex == '+':
+                        mem.offset = 5000000
+                    else:
+                        mem.duplex = ''
+                        mem.offset = 0
+            else:
+                mem.duplex = 'off'
+                mem.offset = 0
+                immutable = ["duplex", "offset"]
+
+        if self.MODEL == "RA685":
+            if not ((mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) or
+                    (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1])):
+                mem.duplex = 'off'
+                mem.offset = 0
+                immutable = ["duplex", "offset"]
+
+        mem.immutable = immutable
+
         return mem
 
     def _set_mem(self, number):
@@ -422,26 +473,6 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         if int(_mem.rxfreq) == 166666665:
             LOG.debug('Initializing new memory %i' % mem.number)
             _mem.set_raw(b'\x00' * 16)
-
-        if self._gmrs:
-            if mem.freq in GMRS_FREQS:
-                if mem.freq in GMRS_FREQS1:
-                    mem.duplex = ''
-                    mem.offset = 0
-                if mem.freq in GMRS_FREQS2:
-                    mem.duplex = ''
-                    mem.offset = 0
-                    mem.mode = "NFM"
-                    mem.power = self.POWER_LEVELS[1]
-                if mem.freq in GMRS_FREQS3:
-                    if mem.duplex == '+':
-                        mem.offset = 5000000
-                    else:
-                        mem.duplex = ''
-                        mem.offset = 0
-            else:
-                mem.duplex = 'off'
-                mem.offset = 0
 
         _nam.name = mem.name.ljust(10)
 
@@ -777,6 +808,10 @@ class RetevisRA685Radio(RadioddityGA510Radio):
 
     _magic = b'PROGROMWLTU'
 
+    def check_set_memory_immutable_policy(self, existing, new):
+        existing.immutable = []
+        super().check_set_memory_immutable_policy(existing, new)
+
     def get_features(self):
         rf = RadioddityGA510Radio.get_features(self)
         rf.memory_bounds = (1, 128)
@@ -799,18 +834,6 @@ class RetevisRA685Radio(RadioddityGA510Radio):
     vhftx = [144000000, 146000000]
     uhftx = [430000000, 440000000]
 
-    def set_memory(self, mem):
-        # If memory is outside the TX limits, the radio will refuse
-        # transmit. Retevis asked for us to enforce this behavior
-        # in CHIRP for consistency.
-        if not (mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) and \
-           not (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1]):
-            LOG.info('Memory frequency outside TX limits of radio; '
-                     'forcing duplex=off')
-            mem.duplex = 'off'
-            mem.offset = 0
-        RadioddityGA510Radio.set_memory(self, mem)
-
 
 @directory.register
 class RetevisRA85Radio(RadioddityGA510Radio):
@@ -823,6 +846,10 @@ class RetevisRA85Radio(RadioddityGA510Radio):
 
     _magic = b'PROGROMWLTU'
     _gmrs = True
+
+    def check_set_memory_immutable_policy(self, existing, new):
+        existing.immutable = []
+        super().check_set_memory_immutable_policy(existing, new)
 
     def get_features(self):
         rf = RadioddityGA510Radio.get_features(self)
