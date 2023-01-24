@@ -320,25 +320,31 @@ class ChirpToneColumn(ChirpChoiceColumn):
         else:
             return _('Tone Squelch').replace(' ', '\n')
 
-    def hidden_for(self, memory):
-        cross_rx_tone = (memory.tmode == 'Cross' and
-                         '->Tone' in memory.cross_mode)
-        cross_tx_tone = (memory.tmode == 'Cross' and
-                         'Tone->' in memory.cross_mode)
-
-        # If we are a yaesu-style radio with only one tone field,
-        # we show that for either Tone or TSQL mode.
-        if not self.rf.has_ctone and self._name == 'rtone':
-            tmodes = ('Tone', 'TSQL')
+    def rtone_visible(self, memory):
+        if not self._features.has_ctone:
+            tmodes = ['Tone', 'TSQL', 'TSQL-R']
+            cross_modes = [x for x in chirp_common.CROSS_MODES
+                           if 'Tone' in x]
         else:
-            tmodes = self._name == 'rtone' and ('Tone',) or ('TSQL',)
+            tmodes = ['Tone']
+            cross_modes = [x for x in chirp_common.CROSS_MODES
+                           if 'Tone->' in x]
+        if memory.number < 3:
+            print('tmodes %s cross modes %s' % (tmodes, cross_modes))
+        if memory.tmode == 'Cross':
+            return memory.cross_mode in cross_modes
+        else:
+            return memory.tmode in tmodes
 
-        return not (
-            (self._name == 'rtone' and (
-                memory.tmode in tmodes or cross_tx_tone))
-            or
-            (self._name == 'ctone' and (
-                memory.tmode in tmodes or cross_rx_tone)))
+    def ctone_visible(self, memory):
+        return memory.tmode == 'TSQL' or (memory.tmode == 'Cross' and
+                                          '->Tone' in memory.cross_mode)
+
+    def hidden_for(self, memory):
+        if self._name == 'rtone':
+            return not self.rtone_visible(memory)
+        else:
+            return not self.ctone_visible(memory)
 
     def _digest_value(self, memory, input_value):
         return float(input_value)
@@ -394,7 +400,7 @@ class ChirpDTCSColumn(ChirpChoiceColumn):
         return '%03i' % value
 
     def _dtcs_visible(self, memory):
-        if memory.tmode == 'DTCS':
+        if memory.tmode in ['DTCS', 'DTCS-R']:
             return True
         if memory.tmode == 'Cross':
             if self._features.has_rx_dtcs:
