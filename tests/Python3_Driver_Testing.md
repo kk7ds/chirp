@@ -306,6 +306,8 @@
 | <a name="Vertex_Standard_VXA-700"></a> Vertex_Standard_VXA-700 |  |  |  | 0.02% |
 | <a name="WACCOM_MINI-8900"></a> WACCOM_MINI-8900 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.12% |
 | <a name="WLN_KD-C1"></a> WLN_KD-C1 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | **1.73%** |
+| <a name="Wouxun_KG-1000G"></a> Wouxun_KG-1000G | [@mrtjr1](https://github.com/mrtjr1) | 23-jan-2023 | Yes |  |
+| <a name="Wouxun_KG-1000G_Plus"></a> Wouxun_KG-1000G_Plus | [@mrtjr1](https://github.com/mrtjr1) | 23-jan-2023 | Yes | 0.00% |
 | <a name="Wouxun_KG-816"></a> Wouxun_KG-816 | [Implied by Wouxun_KG-UV6](#user-content-Wouxun_KG-UV6) | 11-Dec-2022 | Yes | 0.07% |
 | <a name="Wouxun_KG-818"></a> Wouxun_KG-818 | [Implied by Wouxun_KG-UV6](#user-content-Wouxun_KG-UV6) | 11-Dec-2022 | Yes | 0.04% |
 | <a name="Wouxun_KG-935G"></a> Wouxun_KG-935G | [@mrtjr1](https://github.com/mrtjr1) | 4-Jan-2022 | Yes | 0.05% |
@@ -314,6 +316,7 @@
 | <a name="Wouxun_KG-UV8D_Plus"></a> Wouxun_KG-UV8D_Plus | Unit tested; needs confirm | 2-Jan-2022 | Yes | 0.08% |
 | <a name="Wouxun_KG-UV8E"></a> Wouxun_KG-UV8E | W5EGL | 2-Jan-2022 | Yes | 0.05% |
 | <a name="Wouxun_KG-UV920P-A"></a> Wouxun_KG-UV920P-A | [@KC9HI](https://github.com/KC9HI) | 22-Dec-2022 | Yes | 0.04% |
+| <a name="Wouxun_KG-UV980P"></a> Wouxun_KG-UV980P | [@mrtjr1](https://github.com/mrtjr1) | 23-jan-2023 | Yes | 0.01% |
 | <a name="Wouxun_KG-UV9D_Plus"></a> Wouxun_KG-UV9D_Plus | [@samwich](https://github.com/samwich) | 10-Jan-2023 | Yes | 0.39% |
 | <a name="Wouxun_KG-UV9PX"></a> Wouxun_KG-UV9PX | [@mrtjr1](https://github.com/mrtjr1) | 20-Jan-2022 | Yes |  |
 | <a name="Wouxun_KG-UVD1P"></a> Wouxun_KG-UVD1P | [Implied by Wouxun_KG-UV6](#user-content-Wouxun_KG-UV6) | 11-Dec-2022 | Yes | 0.35% |
@@ -365,11 +368,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 362
+**Drivers:** 365
 
-**Tested:** 81% (295/67) (92% of usage stats)
+**Tested:** 81% (298/67) (92% of usage stats)
 
-**Byte clean:** 87% (318/44)
+**Byte clean:** 87% (321/44)
 
 ## Meaning of this testing
 
