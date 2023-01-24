@@ -76,6 +76,7 @@
 ./chirp/drivers/kg935g.py
 ./chirp/drivers/kguv8d.py
 ./chirp/drivers/kguv920pa.py
+./chirp/drivers/kguv980p.py
 ./chirp/drivers/kguv9dplus.py
 ./chirp/drivers/kyd.py
 ./chirp/drivers/leixen.py
