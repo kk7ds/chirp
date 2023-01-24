@@ -279,7 +279,8 @@ u8 checksum;
 """
 
 DUPLEX = ["", "", "-", "+", "split", "off"]
-TMODES = ["", "Tone", "TSQL", "TSQL-R", "DTCS"]
+TMODES = ["", "Tone", "TSQL", "TSQL-R", "DTCS",
+          "DTCS->", "Tone->DTCS", "DTCS->Tone"]
 POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.0),
                 chirp_common.PowerLevel("Mid", watts=2.0),
                 chirp_common.PowerLevel("Low", watts=0.5)]
@@ -375,7 +376,8 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (1, 1000)
         rf.valid_duplexes = DUPLEX[1:]
-        rf.valid_tmodes = TMODES
+        rf.valid_tmodes = [x for x in TMODES if '->' not in x] + ['Cross']
+        rf.valid_cross_modes = ['Tone->DTCS', 'DTCS->Tone', 'DTCS->']
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_tuning_steps = STEPS
         rf.valid_skips = SKIPS
@@ -761,7 +763,12 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
                 mem.duplex = "off"
             else:
                 mem.offset = _decode_freq(_mem.tx_freq)
-        mem.tmode = TMODES[_mem.tmode]
+        tmode = TMODES[_mem.tmode]
+        if '->' in tmode:
+            mem.tmode = 'Cross'
+            mem.cross_mode = tmode
+        else:
+            mem.tmode = tmode
         mem.rtone = chirp_common.TONES[_mem.tone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
         mem.power = POWER_LEVELS[_mem.power]
@@ -811,7 +818,10 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.tx_freq = 0
             _mem.offset = mem.offset / 50000
         _mem.duplex = DUPLEX.index(mem.duplex)
-        _mem.tmode = TMODES.index(mem.tmode)
+        if mem.tmode == 'Cross':
+            _mem.tmode = TMODES.index(mem.cross_mode)
+        else:
+            _mem.tmode = TMODES.index(mem.tmode)
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.power = mem.power and POWER_LEVELS.index(mem.power) or 0
