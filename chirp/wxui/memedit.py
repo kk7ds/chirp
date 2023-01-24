@@ -329,8 +329,6 @@ class ChirpToneColumn(ChirpChoiceColumn):
             tmodes = ['Tone']
             cross_modes = [x for x in chirp_common.CROSS_MODES
                            if 'Tone->' in x]
-        if memory.number < 3:
-            print('tmodes %s cross modes %s' % (tmodes, cross_modes))
         if memory.tmode == 'Cross':
             return memory.cross_mode in cross_modes
         else:
