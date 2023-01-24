@@ -21,6 +21,7 @@ import logging
 
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
+from chirp import bandplan_na
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
@@ -105,14 +106,6 @@ TOT_VALUES = [0x00, 0x0F, 0x1E, 0x2D, 0x3C, 0x4B, 0x5A, 0x69, 0x78,
               0x177, 0x186, 0x195, 0x1A4, 0x1B3, 0x1C2, 0x1D1, 0x1E0,
               0x1EF, 0x1FE, 0x20D, 0x21C, 0x22B, 0x23A, 0x249, 0x258
               ]
-
-FRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
-              462687500, 462712500]
-FRS_FREQS2 = [467562500, 467587500, 467612500, 467637500, 467662500,
-              467687500, 467712500]
-FRS_FREQS3 = [462550000, 462575000, 462600000, 462625000, 462650000,
-              462675000, 462700000, 462725000]
-FRS_FREQS = FRS_FREQS1 + FRS_FREQS2 + FRS_FREQS3
 
 PMR_FREQS1 = [446006250, 446018750, 446031250, 446043750, 446056250,
               446068750, 446081250, 446093750]
@@ -542,6 +535,34 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(_mem.encode))
         mem.extra.append(rs)
 
+        immutable = []
+
+        if self._frs:
+            if mem.number >= 1 and mem.number <= 22:
+                FRS_FREQ = bandplan_na.ALL_GMRS_FREQS[mem.number - 1]
+                mem.freq = FRS_FREQ
+                mem.duplex = ''
+                mem.offset = 0
+                mem.mode = "NFM"
+                if mem.number >= 8 and mem.number <= 14:
+                    mem.power = self.POWER_LEVELS[1]
+                    immutable = ["empty", "freq", "duplex", "offset", "mode",
+                                 "power"]
+                else:
+                    immutable = ["empty", "freq", "duplex", "offset", "mode"]
+        elif self._pmr:
+            if mem.number >= 1 and mem.number <= 16:
+                PMR_FREQ = PMR_FREQS[mem.number - 1]
+                mem.freq = PMR_FREQ
+                mem.duplex = ''
+                mem.offset = 0
+                mem.mode = "NFM"
+                mem.power = self.POWER_LEVELS[1]
+                immutable = ["empty", "freq", "duplex", "offset", "mode",
+                             "power"]
+
+        mem.immutable = immutable
+
         return mem
 
     def set_memory(self, mem):
@@ -552,24 +573,6 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
         if mem.empty:
             _mem.set_raw("\xFF" * 8 + "\x00" * 5 + "\xFF" * 3)
             return
-
-        if self._frs:
-            if mem.number >= 1 and mem.number <= 22:
-                FRS_FREQ = FRS_FREQS[mem.number - 1]
-                mem.freq = FRS_FREQ
-                if mem.number <= 22:
-                    mem.duplex = ''
-                    mem.offset = 0
-                    mem.mode = "NFM"
-                    if mem.number >= 8 and mem.number <= 14:
-                        mem.power = self.POWER_LEVELS[1]
-        elif self._pmr:
-            if mem.number >= 1 and mem.number <= 16:
-                PMR_FREQ = PMR_FREQS[mem.number - 1]
-                mem.freq = PMR_FREQ
-                mem.duplex = ''
-                mem.offset = 0
-                mem.mode = "NFM"
 
         _mem.rxfreq = mem.freq / 10
 
