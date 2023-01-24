@@ -152,6 +152,8 @@
 | <a name="Kenwood_TK-388G"></a> Kenwood_TK-388G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes | 0.00% |
 | <a name="Kenwood_TK-7102"></a> Kenwood_TK-7102 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes | 0.02% |
 | <a name="Kenwood_TK-7108"></a> Kenwood_TK-7108 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes | 0.01% |
+| <a name="Kenwood_TK-7160K"></a> Kenwood_TK-7160K | [@kk7ds](https://github.com/kk7ds) | 27-Jan-2023 | Yes |  |
+| <a name="Kenwood_TK-7160M"></a> Kenwood_TK-7160M | [Implied by Kenwood_TK-7160K](#user-content-Kenwood_TK-7160K) | 27-Jan-2023 | Yes |  |
 | <a name="Kenwood_TK-7180"></a> Kenwood_TK-7180 | [@kk7ds](https://github.com/kk7ds) | 18-Oct-2022 | Yes | 0.01% |
 | <a name="Kenwood_TK-7180E"></a> Kenwood_TK-7180E | [Implied by Kenwood_TK-7180](#user-content-Kenwood_TK-7180) | 18-Oct-2022 | Yes | 0.00% |
 | <a name="Kenwood_TK-760"></a> Kenwood_TK-760 | [@kk7ds](https://github.com/kk7ds) | 5-Dec-2022 | Yes | 0.02% |
@@ -162,6 +164,8 @@
 | <a name="Kenwood_TK-768G"></a> Kenwood_TK-768G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes | 0.01% |
 | <a name="Kenwood_TK-8102"></a> Kenwood_TK-8102 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes | 0.02% |
 | <a name="Kenwood_TK-8108"></a> Kenwood_TK-8108 | [@kk7ds](https://github.com/kk7ds) | 15-Feb-2019 | Yes | 0.01% |
+| <a name="Kenwood_TK-8160K"></a> Kenwood_TK-8160K | [Implied by Kenwood_TK-7160K](#user-content-Kenwood_TK-7160K) | 27-Jan-2023 | Yes |  |
+| <a name="Kenwood_TK-8160M"></a> Kenwood_TK-8160M | [Implied by Kenwood_TK-7160K](#user-content-Kenwood_TK-7160K) | 27-Jan-2023 | Yes |  |
 | <a name="Kenwood_TK-8180"></a> Kenwood_TK-8180 | [@kk7ds](https://github.com/kk7ds) | 18-Oct-2022 | Yes | 0.02% |
 | <a name="Kenwood_TK-8180E"></a> Kenwood_TK-8180E | [Implied by Kenwood_TK-8180](#user-content-Kenwood_TK-8180) | 18-Dec-2022 | Yes | 0.00% |
 | <a name="Kenwood_TK-860"></a> Kenwood_TK-860 | [Implied by Kenwood_TK-760](#user-content-Kenwood_TK-760) | 5-Dec-2022 | Yes | 0.01% |
@@ -368,11 +372,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 365
+**Drivers:** 369
 
-**Tested:** 81% (298/67) (92% of usage stats)
+**Tested:** 81% (302/67) (92% of usage stats)
 
-**Byte clean:** 87% (321/44)
+**Byte clean:** 88% (325/44)
 
 ## Meaning of this testing
 

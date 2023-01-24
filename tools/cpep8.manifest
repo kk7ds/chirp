@@ -114,6 +114,7 @@
 ./chirp/drivers/tk760.py
 ./chirp/drivers/tk760g.py
 ./chirp/drivers/tk8102.py
+./chirp/drivers/tk8160.py
 ./chirp/drivers/tk8180.py
 ./chirp/drivers/tmd710.py
 ./chirp/drivers/tmv71.py
