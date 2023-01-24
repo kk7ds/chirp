@@ -11,6 +11,8 @@ from tests import base
 class TestCaseDetect(base.DriverTest):
     def test_detect(self):
         radio = directory.get_radio_by_image(self.TEST_IMAGE)
+        if hasattr(radio, '_orig_rclass'):
+            radio = radio._orig_rclass(self.TEST_IMAGE)
         if isinstance(self.radio, radio.__class__):
             # If we are a sub-device of the detected class then that's fine.
             # There's no good way for us to know that other than checking, so
@@ -20,7 +22,7 @@ class TestCaseDetect(base.DriverTest):
             self.assertIsInstance(radio, self.RADIO_CLASS,
                                   "Image %s detected as %s but expected %s" % (
                                       self.TEST_IMAGE,
-                                      radio._orig_rclass, self.RADIO_CLASS))
+                                      radio.__class__, self.RADIO_CLASS))
 
     @pytest.mark.skipif(sys.version_info < (3, 10),
                         reason="requires python3.10 or higher")
