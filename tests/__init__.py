@@ -3,6 +3,8 @@ import logging
 import os
 import unittest
 
+import pytest
+
 from chirp import directory
 
 from tests import test_banks
@@ -71,6 +73,9 @@ def _load_tests(loader, tests, pattern, suite=None):
 
     for image, test in tests.items():
         rclass = directory.get_radio(test)
+        if hasattr(rclass, '_orig_rclass'):
+            rclass = rclass._orig_rclass
+        module = rclass.__module__.split('.')[-1]
         for device in _get_sub_devices(rclass, image):
             if isinstance(device, type):
                 dst = None
@@ -84,6 +89,8 @@ def _load_tests(loader, tests, pattern, suite=None):
                     (case,),
                     {'RADIO_CLASS': device,
                      'TEST_IMAGE': image})
+
+                tc = getattr(pytest.mark, module)(tc)
                 suite.addTests(loader.loadTestsFromTestCase(tc))
 
     return suite
