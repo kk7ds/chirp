@@ -1396,7 +1396,8 @@ class Puxing_PX888K_Radio(chirp_common.CloneModeRadio):
             if not bool(_present):
                 self._set_sane_defaults(_data)
             _name.set_value(
-                    encode_ffstring(self.filter_name(mem.name), len(_name)))
+                    encode_ffstring(self.filter_name(mem.name.rstrip()),
+                                    len(_name)))
             _present.set_value(True)
             _priority.set_value(1-SKIP_MODES.index(mem.skip))
 

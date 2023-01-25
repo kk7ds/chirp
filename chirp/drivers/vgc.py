@@ -842,7 +842,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         self.encode_tone(_mem.rxtone, rxmode, rxtone, rxpol)
 
         # name TAG of the channel
-        _names.name = mem.name.ljust(6, "\xFF")
+        _names.name = mem.name.rstrip().ljust(6, "\xFF")
 
         # power level, # default power level is low
         _mem.txp = 0 if mem.power is None else POWER_LEVELS.index(mem.power)

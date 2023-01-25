@@ -292,6 +292,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
                 chirp_common.dBm_to_watts(float(newmem.power)))
         self._grow(newmem.number)
         self.memories[newmem.number] = newmem.dupe()
+        self.memories[newmem.number].name = newmem.name.rstrip()
 
     def erase_memory(self, number):
         mem = chirp_common.Memory()
