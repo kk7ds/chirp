@@ -28,6 +28,9 @@ setup(name='chirp',
       },
       data_files=[
           ('share/applications', ['chirp/share/com.danplanet.chirp.desktop']),
-          ('share/icons/hicolor/256x256/apps', ['chirp/share/com.danplanet.chirp.png']),
+          (
+              'share/icons/hicolor/256x256/apps',
+              ['chirp/share/com.danplanet.chirp.png'],
+          ),
       ],
       )
