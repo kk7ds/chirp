@@ -715,10 +715,12 @@ class TestOverrideRules(base.BaseTest):
     # please ask permission first.
     IMMUTABLE_WHITELIST = [
         # Uncomment me when the time comes
+        'Baofeng_GT-5R',
         'BTECH_GMRS-20V2',
         'BTECH_GMRS-50X1',
         'BTECH_GMRS-V2',
         'Radioddity_DB25-G',
+        'Radioddity_UV-5G',
         'Retevis_RA85',
         'Retevis_RA685',
         'Retevis_RB17P',
