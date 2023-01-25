@@ -1102,7 +1102,9 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                                            "band.")
 
         _mem.set_raw("\x00" * 32)
-        _flg.unused = 0
+        if _flg:
+            # Only non-special memories track this
+            _flg.unused = 0
 
         _mem.freq = mem.freq
 
@@ -1112,7 +1114,9 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                 _mem.band = band_idx
                 break
 
-        _flg.left_only = 0
+        if _flg:
+            # Only non-special memories have this
+            _flg.left_only = 0
         if (not is_hyper_chan):
             if mem.mode == "AM":
                 _flg.left_only = 1

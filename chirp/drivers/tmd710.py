@@ -329,6 +329,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
                 _map = self._memobj.chmap[mem.number]
             else:                        # Call chans
                 _mem = self._memobj.call[mem.number - 1030]
+            _nam = None
         else:
             _mem = self._memobj.ch_mem[mem.number]
             _nam = self._memobj.ch_nam[mem.number]
@@ -351,8 +352,9 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             _mem.dtcs = 0x0ff
             _map.skip = 0x0ff
             _map.band = 0x0ff
-            for ix in range(8):
-                _nam.name[ix] = chr(0x0ff)
+            if _nam:
+                for ix in range(8):
+                    _nam.name[ix] = chr(0x0ff)
             return
         if _mem.rxfreq == 0x0ffffffff:    # New Channel needs defaults
             _mem.rxfreq = 144000000

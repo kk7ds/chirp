@@ -244,12 +244,13 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         return mem
 
     def set_memory(self, mem):
-        if mem.number == "C":
+        number = mem.extd_number or mem.number
+        if number == "C":
             _mem = self._memobj.call[0]
-        elif isinstance(mem.number, str):
-            _mem = self._memobj.special[_get_special[mem.number] - 500]
+        elif isinstance(number, str):
+            _mem = self._memobj.special[_get_special()[number] - 500]
         else:
-            number = mem.number - 1
+            number = number - 1
             _mem = self._memobj.memory[number]
             _emt = self._memobj.usedflags[number / 8].flagbits
             mask = 1 << (number % 8)

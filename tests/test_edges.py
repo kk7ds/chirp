@@ -1,4 +1,5 @@
 from chirp import chirp_common
+from chirp import errors
 from tests import base
 
 
@@ -100,3 +101,23 @@ class TestCaseEdges(base.DriverTest):
                                 'Radio returned non-empty memory when asked '
                                 'to delete location %i' % loc)
                 break
+
+    def test_get_set_specials(self):
+        if not self.rf.valid_special_chans:
+            self.skipTest('Radio has no specials')
+        for name in self.rf.valid_special_chans:
+            m1 = self.radio.get_memory(name)
+            try:
+                del m1.extra
+            except AttributeError:
+                pass
+            if m1.freq > 130000000 and m1.freq < 500000000:
+                m1.freq += 5000
+            try:
+                self.radio.set_memory(m1)
+            except errors.RadioError:
+                # If the radio raises RadioError, assume we're editing a
+                # special channel that is not editable
+                continue
+            m2 = self.radio.get_memory(name)
+            self.assertEqualMem(m1, m2, ignore=['name'])

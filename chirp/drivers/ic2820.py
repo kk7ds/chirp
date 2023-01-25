@@ -268,7 +268,8 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         if mem.empty:
             _used |= bitpos
             _wipe_memory(_mem, "\xFF")
-            self._set_bank(mem.number, None)
+            if mem.number < 500:
+                self._set_bank(mem.number, None)
             return
 
         _used &= ~bitpos

@@ -388,7 +388,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         if isinstance(number, str):
             return (getattr(self._memobj, number.lower()), None)
         elif number < 0:
-            for k, v in list(SPECIALS.items()):
+            for k, v in list(self.SPECIALS.items()):
                 if number == v:
                     return (getattr(self._memobj, k.lower()), None)
         else:

@@ -83,7 +83,11 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             rf.valid_bands = [(118000000, 176000000)]
         rf.valid_skips = ["", "S"]
         rf.valid_name_length = 5
-        rf.valid_special_chans = sorted(icx8x_ll.ICx8x_SPECIAL.keys())
+        # This driver, as it is, is basically unmaintainable. The sepecials
+        # test shows that our handling of special channels here is broken,
+        # so disable this until the driver can be rewritten into bitwise
+        # form.
+        # rf.valid_special_chans = sorted(icx8x_ll.ICx8x_SPECIAL.keys())
 
         return rf
 
