@@ -133,3 +133,14 @@ class TestCaseEdges(base.DriverTest):
             self.assertEqual(m.name.rstrip(), m.name,
                              'Radio returned a memory with trailing '
                              'whitespace in the name')
+
+    def test_memory_name_stripped(self):
+        if ' ' not in self.rf.valid_characters:
+            self.skipTest('Radio does not support space characters')
+        m1 = self.get_mem()
+        m1.name = 'FOO '
+        self.radio.set_memory(m1)
+        m2 = self.radio.get_memory(m1.number)
+        self.assertEqual(m2.name.rstrip(), m2.name,
+                         'Radio set and returned a memory with trailing '
+                         'whitespace in the name')

@@ -754,7 +754,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         else:
             _mem.txfreq = mem.freq / 10
 
-        _mem.namelen = len(mem.name)
+        _mem.namelen = len(mem.name.rstrip())
         _namelength = self.get_features().valid_name_length
         for i in range(_namelength):
             try:

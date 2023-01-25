@@ -841,7 +841,7 @@ class AlincoDJG7(AlincoStyleRadio):
                         "This radio does not support tone %.1fHz" % mem.ctone)
             _mem.dcs = DCS_CODES[self.VENDOR].index(mem.dtcs)
             _mem.skip = (mem.skip == "S")
-            _mem.name = "\x00".join(mem.name).ljust(32, "\x00")
+            _mem.name = "\x00".join(mem.name.rstrip()).ljust(32, "\x00")
             _mem.unknown1 = 0x3e001c
             _mem.unknown2 = 0x0000000a
             _mem.unknown3 = 0x00000000
