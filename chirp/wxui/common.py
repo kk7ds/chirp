@@ -335,6 +335,10 @@ class ChirpSettingGrid(wx.Panel):
                         _('Value must be at most %.4f' % value.get_max()))
                     return False
                 return True
+
+            def ValueToString(self, _value, flags=0):
+                return value.format(_value)
+
         return ChirpFloatProperty(setting.get_shortname(),
                                   setting.get_name(),
                                   value=float(value))
