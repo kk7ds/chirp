@@ -270,7 +270,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             for char in _nam.name:
                 if int(char) < 127:
                     mnx += chr(int(char))
-            mem.name = mnx
+            mem.name = mnx.rstrip()
         if _mem.rxfreq == 0x0ffffffff or _mem.rxfreq == 0:
             mem.empty = True
             return mem
