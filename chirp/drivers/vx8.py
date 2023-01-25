@@ -669,7 +669,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.skip = flag.pskip and "P" or flag.skip and "S" or ""
 
         charset = ''.join(CHARSET).ljust(256, '.')
-        mem.name = str(_mem.label).rstrip("\xFF").translate(charset)
+        mem.name = str(_mem.label).rstrip("\xFF").translate(charset).rstrip()
 
         return mem
 
