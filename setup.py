@@ -26,4 +26,8 @@ setup(name='chirp',
           'console_scripts': ["chirp=chirp.wxui:chirpmain",
                               "chirpc=chirp.cli.main:main"],
       },
+      data_files=[
+          ('share/applications', ['chirp/share/com.danplanet.chirp.desktop']),
+          ('share/icons/hicolor/256x256/apps', ['chirp/share/com.danplanet.chirp.png']),
+      ],
       )
