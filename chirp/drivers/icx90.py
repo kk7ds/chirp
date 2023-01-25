@@ -705,7 +705,8 @@ class ICx90Radio(icf.IcomCloneModeRadio):
         return mem
 
     def set_memory(self, memory):
-        (mem_item, special, unique_idx) = self.get_mem_item(memory.number)
+        (mem_item, special, unique_idx) = self.get_mem_item(
+            memory.extd_number or memory.number)
         if memory.empty:
             mem_item.set_raw("\x00" * MEM_ITEM_SIZE)
             self.clear_bank(memory.number)
