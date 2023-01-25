@@ -474,11 +474,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         self._radio = radio
         self._features = self._radio.get_features()
-        # This is set based on the radio behavior during refresh()
-        self._negative_specials = False
 
+        # Cache of memories by *row*
         self._memory_cache = {}
+        # Maps special memory *names* to rows
         self._special_rows = {}
+        # Maps special memory *numbers* to rows
+        self._special_numbers = {}
 
         self._col_defs = self._setup_columns()
 
@@ -592,6 +594,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     def mem2row(self, number):
         if isinstance(number, str):
             return self._special_rows[number]
+        if number in self._special_numbers:
+            return self._special_rows[self._special_numbers[number]]
         return number - self._features.memory_bounds[0]
 
     def row2mem(self, row):
@@ -676,6 +680,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 self._refresh_memory(job.args[0], job.result)
                 return
 
+            # If this memory is a special, record the mapping of its driver-
+            # determined virtual number to is special name for use later
+            if job.result.extd_number:
+                self._special_numbers[job.result.number] = (
+                    job.result.extd_number)
             # Otherwise augment with extra fields and call refresh with that,
             # if appropriate
             if isinstance(self._radio,
