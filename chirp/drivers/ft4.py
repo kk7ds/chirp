@@ -1128,7 +1128,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         Raise an exception to cause UI to pop up an error message
         """
         first_vfo_num = self.MAX_MEM_SLOT + len(PMSNAMES) + 1
-        band = BAND_ASSIGNMENTS[mem_num - first_vfo_num]
+        band = self.BAND_ASSIGNMENTS[mem_num - first_vfo_num]
         frange = self.valid_bands[band]
         if freq >= frange[0] and freq <= frange[1]:
             memloc.freq = freq / 10

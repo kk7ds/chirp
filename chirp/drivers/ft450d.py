@@ -620,7 +620,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
     def _set_special(self, mem):
         if mem.empty and mem.number not in self.SPECIAL_PMS.values():
             # can't delete special memories!
-            raise Exception("Sorry, special memory can't be deleted")
+            raise errors.RadioError("Sorry, special memory can't be deleted")
 
         cur_mem = self._get_special(self.SPECIAL_MEMORIES_REV[mem.number])
 
@@ -656,8 +656,8 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             self._memobj.pmsfilled = self._memobj.pmsfilled | 1 << bitindex
             _mem = self._memobj.pms[-self.LAST_PMS_INDEX + mem.number]
         else:
-            raise Exception("Sorry, you can't edit"
-                            " that special memory.")
+            raise errors.RadioError("Sorry, you can't edit"
+                                    " that special memory.")
 
         for key in cur_mem.immutable:
             if key != "extd_number":

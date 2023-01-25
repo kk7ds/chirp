@@ -597,7 +597,7 @@ class FT7100Radio(YaesuCloneModeRadio):
         mem = chirp_common.Memory()
 
         # Get a low-level memory object mapped to the image
-        if number < 0:
+        if isinstance(number, int) and number < 0:
             number = SPECIAL_CHANS[number + 10]
         if isinstance(number, str):
             mem.number = -10 + SPECIAL_CHANS.index(number)
@@ -1171,16 +1171,15 @@ class FT7100RadioVHF(FT7100Radio):
 
     def set_memory(self, mem):
         LOG.debug("set_memory VHF Number: {}".format(mem.number))
-        # mem is used further in test by tox. So save the modified members.
-        _number = mem.number
+        # We modify memory, so dupe() it to avoid changing our caller's
+        # version
+        mem = mem.dupe()
         if isinstance(mem.number, int):
             if mem.number >= 0:
                 mem.number += -1
         else:
             mem.number += '-VHF'
         super(FT7100RadioVHF, self).set_memory(mem)
-        # Restore modified members
-        mem.number = _number
         return
 
 
@@ -1217,8 +1216,9 @@ class FT7100RadioUHF(FT7100Radio):
 
     def set_memory(self, mem):
         LOG.debug("set_memory UHF Number: {}".format(mem.number))
-        # mem is used further in test by tox. So save the modified members.
-        _number = mem.number
+        # We modify memory, so dupe() it to avoid changing our caller's
+        # version
+        mem = mem.dupe()
         upper_vhf_limit = self._get_upper_vhf_limit()
         if isinstance(mem.number, int):
             if mem.number >= 0:
@@ -1226,6 +1226,4 @@ class FT7100RadioUHF(FT7100Radio):
         else:
             mem.number += '-UHF'
         super(FT7100RadioUHF, self).set_memory(mem)
-        # Restore modified members
-        mem.number = _number
         return

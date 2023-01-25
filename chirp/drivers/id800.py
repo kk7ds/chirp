@@ -50,7 +50,7 @@ struct {
   u8 unknown7:1,
      mode:3,
      unknown8:4;
-} memory[500];
+} memory[512];
 
 #seekto 0x2BF4;
 struct {
@@ -59,7 +59,7 @@ struct {
      pskip:1,
      skip:1,
      bank:4;
-} flags[500];
+} flags[512];
 
 #seekto 0x3220;
 struct {
@@ -77,7 +77,7 @@ struct {
 } rptcalls[59];
 """
 
-MODES = ["FM", "NFM", "AM", "NAM", "DV"]
+MODES = ["FM", "NFM", "AM", "NAM", "DV", "FM", "FM", "FM"]
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "", "-", "+"]
 DTCS_POL = ["NN", "NR", "RN", "RR"]
@@ -220,7 +220,7 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.has_implicit_calls = True
         rf.has_settings = True
         rf.has_bank = True
-        rf.valid_modes = list(MODES)
+        rf.valid_modes = [x for x in MODES if x]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_duplexes = ["", "-", "+"]
         rf.valid_tuning_steps = list(STEPS)
