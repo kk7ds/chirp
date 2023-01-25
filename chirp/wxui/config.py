@@ -77,12 +77,28 @@ class ChirpConfigProxy:
                                 raw=raw)
 
     def get_password(self, key, section):
-        encoded = self.get(key, section)
+        # So, we used to store the password in plaintext in $key. Then some
+        # dumb guy stored the base64-encoded password in $key also. However,
+        # if the plaintext password happens to be valid base64, we'll decode it
+        # to some random binary, and then fail to decode UTF-8 from it. So,
+        # for people already in this situation, first try the "new" location
+        # of $key_encoded, if it exists. If it doesn't honor the old place
+        # and return the exact string if base64 or UTF-8 decoding fails,
+        # otherwise return the fully decoded thing. Conversion will happen
+        # when people update passwords and set_passwoord() is called, which
+        # always stores the new format.
+        encoded = self.get('%s_encoded' % key, section)
+        if encoded is None:
+            encoded = self.get(key, section)
         if encoded:
             try:
                 return base64.b64decode(encoded.encode()).decode()
             except binascii.Error:
                 # Likely not stored encoded, return as-is
+                return encoded
+            except UnicodeDecodeError:
+                # This means it must be stored in plaintext but we did
+                # actually decode it with base64, but not to a valid string
                 return encoded
         else:
             return encoded
@@ -98,7 +114,10 @@ class ChirpConfigProxy:
         format.
         """
         value = base64.b64encode(value.encode()).decode()
-        self.set(key, value, section)
+        # Clean up old cleartext passwords
+        if self.is_defined(key, section):
+            self.remove_option(key, section)
+        self.set('%s_encoded' % key, value, section)
 
     def get_int(self, key, section=None):
         try:
