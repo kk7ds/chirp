@@ -176,7 +176,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.has_bank_names = True
         rf.requires_call_lists = False
         rf.memory_bounds = (0, 499)
-        rf.valid_modes = list(MODES)
+        rf.valid_modes = [x for x in MODES if '?' not in x]
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(set(DUPLEX))
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)

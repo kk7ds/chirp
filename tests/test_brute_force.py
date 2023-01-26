@@ -9,7 +9,7 @@ LOG = logging.getLogger(__name__)
 
 
 class TestCaseBruteForce(base.DriverTest):
-    def set_and_compare(self, m):
+    def set_and_compare(self, m, **kwargs):
         msgs = self.radio.validate_memory(m)
         if msgs:
             # If the radio correctly refuses memories it can't
@@ -26,7 +26,7 @@ class TestCaseBruteForce(base.DriverTest):
                 (ret_m.offset * int(ret_m.duplex + "1"))
             ret_m.duplex = "split"
 
-        self.assertEqualMem(m, ret_m)
+        self.assertEqualMem(m, ret_m, **kwargs)
 
     def test_tone(self):
         m = self.get_mem()
@@ -113,8 +113,10 @@ class TestCaseBruteForce(base.DriverTest):
             self.set_and_compare(m)
 
     @base.requires_feature('valid_modes')
-    def do_mode(self):
+    def test_mode(self):
         m = self.get_mem()
+        if 'mode' in m.immutable:
+            self.skipTest('Test memory has immutable duplex')
         def ensure_urcall(call):
             l = self.radio.get_urcall_list()
             l[0] = call
@@ -165,5 +167,7 @@ class TestCaseBruteForce(base.DriverTest):
                     tmp, self.rf.validate_memory(tmp)))
                 continue
 
-            self.set_and_compare(tmp)
+            # Ignore tuning_step because changing modes may cause step changes
+            # in some radios
+            self.set_and_compare(tmp, ignore=['tuning_step'])
             successes += 1
