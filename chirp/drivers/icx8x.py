@@ -92,6 +92,8 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     _model = "\x28\x26\x00\x01"
     _memsize = 6464
     _endframe = "Icom Inc\x2eCD"
+    _can_hispeed = False
+    _double_ident = True
 
     _memories = []
 

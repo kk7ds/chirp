@@ -462,6 +462,8 @@ def _clone_to_radio(radio):
 
     stream = RadioStream(radio.pipe)
     md = get_model_data(radio, stream=stream)
+    if radio._double_ident:
+        md = get_model_data(radio, stream=stream)
 
     if md[0:4] != radio.get_model():
         raise errors.RadioError("I can't talk to this model")
@@ -828,6 +830,7 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     _bank_index_bounds = (0, 99)
     _bank_class = IcomBank
     _can_hispeed = False
+    _double_ident = False  # A couple radios require double ident before upload
 
     # Newer radios (ID51Plus2, ID5100, IC2730) use a slightly
     # different CLONE_DAT format
