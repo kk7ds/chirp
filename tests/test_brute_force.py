@@ -87,8 +87,10 @@ class TestCaseBruteForce(base.DriverTest):
             self.set_and_compare(m)
 
     @base.requires_feature('valid_duplexes')
-    def do_duplex(self):
+    def test_duplex(self):
         m = self.get_mem()
+        if 'duplex' in m.immutable:
+            self.skipTest('Test memory has immutable duplex')
         for duplex in self.rf.valid_duplexes:
             if duplex not in ["", "-", "+", "split"]:
                 continue
@@ -97,8 +99,13 @@ class TestCaseBruteForce(base.DriverTest):
                                 'Radio supports split but does not set '
                                 'can_odd_split=True in features')
                 m.offset = self.rf.valid_bands[0][1] - 100000
+            else:
+                m.offset = chirp_common.to_kHz(int(m.tuning_step) * 2)
             m.duplex = duplex
-            self.set_and_compare(m)
+            # Ignore the offset because we do some fudging on this and we
+            # don't necessarily know the best step to use. What we care about
+            # is duplex here.
+            self.set_and_compare(m, ignore=['offset'])
 
         if self.rf.can_odd_split:
             self.assertIn('split', self.rf.valid_duplexes,
