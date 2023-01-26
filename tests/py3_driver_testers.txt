@@ -94,8 +94,8 @@ Icom_IC-T70,*icf,12-Dec-2022
 Icom_IC-T7H,*icf,12-Dec-2022
 Icom_IC-T8A,*icf,12-Dec-2022
 Icom_IC-Q7A,@KC9HI,20-Nov-2022
-Icom_IC-U82,*icf,12-Dec-2022
-Icom_IC-V82,*icf,12-Dec-2022
+Icom_IC-U82,+Icom_IC-V82,25-Jan-2023
+Icom_IC-V82,@kk7ds,25-Jan-2023
 Icom_IC-V86,*icf,12-Dec-2022
 Icom_IC-W32A,#10238,12-Dec-2022
 Icom_IC-W32E,*icf,12-Dec-2022
