@@ -882,6 +882,7 @@ class THF6ARadio(KenwoodLiveRadio):
     """Kenwood TH-F6"""
     MODEL = "TH-F6"
 
+    _charset = chirp_common.CHARSET_ASCII
     _upper = 399
     _kenwood_split = True
     _kenwood_valid_tones = list(KENWOOD_TONES)
@@ -897,7 +898,7 @@ class THF6ARadio(KenwoodLiveRadio):
         rf.valid_bands = [(1000, 1300000000)]
         rf.valid_skips = ["", "S"]
         rf.valid_duplexes = list(THF6A_DUPLEX.values())
-        rf.valid_characters = chirp_common.CHARSET_ASCII
+        rf.valid_characters = self._charset
         rf.valid_name_length = 8
         rf.memory_bounds = (0, self._upper)
         rf.has_settings = True
@@ -1070,6 +1071,7 @@ class THF6ARadio(KenwoodLiveRadio):
 class THF7ERadio(THF6ARadio):
     """Kenwood TH-F7"""
     MODEL = "TH-F7"
+    _charset = chirp_common.CHARSET_1252
 
 
 D710_DUPLEX = ["", "+", "-", "split"]
