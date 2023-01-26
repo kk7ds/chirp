@@ -1149,14 +1149,14 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                                     shift_up='all'),
                   del_shift_item)
 
+        menu.Append(del_item)
+        menu.Append(del_block_item)
+        menu.Append(del_shift_item)
+
         # Don't allow bulk operations on live radios with pending jobs
         del_block_item.Enable(not self.busy)
         del_shift_item.Enable(not self.busy)
         insert_item.Enable(not self.busy)
-
-        menu.Append(del_item)
-        menu.Append(del_block_item)
-        menu.Append(del_shift_item)
 
         if CONF.get_bool('developer', 'state'):
             menu.Append(wx.MenuItem(menu, wx.ID_SEPARATOR))
