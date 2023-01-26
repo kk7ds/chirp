@@ -513,6 +513,31 @@ class RadioddityR2(chirp_common.CloneModeRadio):
         compand.set_doc("Compress Audio for TX")
         mem.extra.append(compand)
 
+        immutable = []
+
+        if self._frs16:
+            if mem.freq in FRS16_FREQS:
+                if mem.number >= 1 and mem.number <= 16:
+                    FRS_FREQ = FRS16_FREQS[mem.number - 1]
+                    mem.freq = FRS_FREQ
+                mem.duplex == ''
+                mem.offset = 0
+                mem.mode = "NFM"
+                immutable = ["empty", "freq", "duplex", "offset"]
+        elif self._pmr:
+            if mem.freq in PMR_FREQS:
+                if mem.number >= 1 and mem.number <= 16:
+                    PMR_FREQ = PMR_FREQS[mem.number - 1]
+                    mem.freq = PMR_FREQ
+                mem.duplex = ''
+                mem.offset = 0
+                mem.mode = "NFM"
+                mem.power = POWER_LEVELS[0]
+                immutable = ["empty", "freq", "duplex", "offset", "mode",
+                             "power"]
+
+        mem.immutable = immutable
+
         return mem
 
     def set_memory(self, mem):
@@ -529,26 +554,6 @@ class RadioddityR2(chirp_common.CloneModeRadio):
         if mem.empty:
             _mem.set_raw("\xFF" * 13 + _rsvd)
             return
-
-        if self._frs16:
-            if _mem.rx_freq.get_raw() == "\xFF\xFF\xFF\xFF":
-                FRS_FREQ = FRS16_FREQS[mem.number - 1]
-                mem.freq = FRS_FREQ
-                mem.power = POWER_LEVELS[1]
-            if mem.freq in FRS16_FREQS:
-                mem.mode = "NFM"
-                mem.duplex == ''
-                mem.offset = 0
-
-        if self._pmr:
-            if _mem.rx_freq.get_raw() == "\xFF\xFF\xFF\xFF":
-                PMR_FREQ = PMR_FREQS[mem.number - 1]
-                mem.freq = PMR_FREQ
-            if mem.freq in PMR_FREQS:
-                mem.mode = "NFM"
-                mem.duplex == ''
-                mem.offset = 0
-                mem.power = POWER_LEVELS[0]
 
         _mem.rx_freq = mem.freq / 10
 
