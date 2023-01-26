@@ -124,7 +124,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
         rf.valid_tuning_steps = list(chirp_common.TUNING_STEPS)
         rf.valid_bands = [(1, 10000000000)]
         rf.valid_skips = ["", "S"]
-        rf.valid_characters = chirp_common.CHARSET_ASCII
+        rf.valid_characters = chirp_common.CHARSET_1252
         rf.valid_name_length = 999
         rf.valid_power_levels = [chirp_common.AutoNamedPowerLevel(0.1),
                                  DEFAULT_POWER_LEVEL,
