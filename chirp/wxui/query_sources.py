@@ -526,6 +526,15 @@ class RRQueryDialog(QuerySourceDialog):
 
         return vbox
 
+    def _call_validations(self, parent):
+        if parent == self:
+            # If we're calling valiations at the top-level, redirect that to
+            # the start of our country-specific widgets, based on whatever tab
+            # is selected. This avoids trying to validate US things when
+            # Canada is selected and so on.
+            parent = self.tabs.GetPage(self.tabs.GetSelection())
+        return super()._call_validations(parent)
+
     def build_ca(self, parent):
         panel = wx.Panel(parent)
         grid = wx.FlexGridSizer(3, 5, 0)
