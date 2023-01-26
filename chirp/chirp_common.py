@@ -1067,6 +1067,12 @@ class ValidationError(ValidationMessage):
     pass
 
 
+def split_validation_msgs(msgs):
+    """Split a list of msgs into warnings,errors"""
+    return ([x for x in msgs if isinstance(x, ValidationWarning)],
+            [x for x in msgs if isinstance(x, ValidationError)])
+
+
 class Alias(object):
     VENDOR = "Unknown"
     MODEL = "Unknown"

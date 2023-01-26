@@ -997,13 +997,18 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         # Try to validate these changes with the radio before we go to store
         # them, as now is the best time to present an error to the user.
-        msgs = self._radio.validate_memory(mem)
-        if msgs:
+        warnings, errors = chirp_common.split_validation_msgs(
+            self._radio.validate_memory(mem))
+        if errors:
             LOG.warning('Memory failed validation: %s' % mem)
-            wx.MessageBox(_('Invalid edit: %s') % '; '.join(msgs),
+            wx.MessageBox(_('Invalid edit: %s') % '; '.join(errors),
                           'Invalid Entry')
             event.Skip()
             return
+        if warnings:
+            LOG.warning('Memory validation had warnings: %s' % mem)
+            wx.MessageBox(_('Warning: %s') % '; '.join(warnings),
+                          _('Warning'))
 
         self.set_row_pending(row)
         self.set_memory(mem)
@@ -1329,7 +1334,15 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                                                                   mem)
                 else:
                     mem = import_logic.import_mem(self._radio, srcrf, mem)
-                    self.set_memory(mem)
+                    warns, errs = chirp_common.split_validation_msgs(
+                        self._radio.validate_memory(mem))
+                    errormsgs.extend([(mem, e) for e in errs])
+                    errormsgs.extend([(mem, w) for w in warns])
+                    if not errs:
+                        # If we got error messages from validate, don't even
+                        # try to set the memory, just like if import_logic
+                        # was unable to make it compatible.
+                        self.set_memory(mem)
                 modified = True
             except (import_logic.DestNotCompatible,
                     chirp_common.ImmutableValueError,
