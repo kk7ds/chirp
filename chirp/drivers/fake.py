@@ -113,6 +113,31 @@ class FakeCloneFail(chirp_common.CloneModeRadio):
         raise errors.RadioError('This always fails')
 
 
+class FakeKenwoodSerial:
+    def __init__(self, *a, **k):
+        self._rbuf = b''
+
+    def write(self, buffer):
+        LOG.debug('Write: %r' % buffer)
+        if buffer.startswith(b'ID'):
+            self._rbuf += b'ID TH-F7\r'
+        elif buffer.startswith(b'MR 0,001'):
+            self._rbuf += b'MR 0,001,00146520000,0,0,0,0,0,0,00,00,000,000000000,0,0\r'
+        elif buffer.startswith(b'MNA 001\r'):
+            self._rbuf += b'MNA 001,Foo\r'
+        elif buffer.startswith(b'MNA 0'):
+            self._rbuf += buffer
+        elif buffer.startswith(b'MW 0'):
+            self._rbuf += b'MW\r'
+        else:
+            self._rbuf += b'N\r'
+
+    def read(self, n):
+        ret = self._rbuf[:n]
+        self._rbuf = self._rbuf[n:]
+        return ret
+
+
 def register_fakes():
     directory.register(FakeLiveRadio)
     directory.register(FakeLiveSlowRadio)

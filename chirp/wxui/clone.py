@@ -25,12 +25,18 @@ import wx.lib.sized_controls
 
 from chirp import chirp_common
 from chirp import directory
+from chirp.drivers import fake
 from chirp.wxui import config
 from chirp.wxui import common
 from chirp.wxui import developer
 
 LOG = logging.getLogger(__name__)
 CONF = config.get()
+
+FAKES = {
+    'Fake NOP': developer.FakeSerial(),
+    'Fake F7E': fake.FakeKenwoodSerial(),
+}
 
 
 class CloneThread(threading.Thread):
@@ -112,8 +118,8 @@ class SettingsThread(threading.Thread):
 
 
 def open_serial(port, rclass):
-    if port == 'Fake':
-        return developer.FakeSerial()
+    if port.startswith('Fake'):
+        return FAKES[port]
     if '://' in port:
         pipe = serial.serial_for_url(port, do_not_open=True)
         pipe.timeout = 0.25
@@ -203,8 +209,9 @@ class ChirpCloneDialog(wx.Dialog):
         grid.AddGrowableCol(1)
 
         if CONF.get_bool('developer', 'state'):
-            if 'Fake' not in CUSTOM_PORTS:
-                CUSTOM_PORTS.append('Fake')
+            for fakeserial in FAKES.keys():
+                if fakeserial not in CUSTOM_PORTS:
+                    CUSTOM_PORTS.append(fakeserial)
 
         def _add_grid(label, control):
             grid.Add(wx.StaticText(self, label=label),
