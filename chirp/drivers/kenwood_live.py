@@ -78,11 +78,11 @@ def _command(ser, cmd, *args):
     cmd += LAST_DELIMITER[0]
 
     LOG.debug("PC->RADIO: %s" % cmd.strip())
-    ser.write(cmd.encode())
+    ser.write(cmd.encode('cp1252'))
 
     result = ""
     while not result.endswith(LAST_DELIMITER[0]):
-        result += ser.read(COMMAND_RESP_BUFSIZE).decode()
+        result += ser.read(COMMAND_RESP_BUFSIZE).decode('cp1252')
         if (time.time() - start) > 0.5:
             LOG.error("Timeout waiting for data")
             break
