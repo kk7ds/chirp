@@ -80,7 +80,7 @@ u8 name_flags[132];
 
 """
 
-TMODES = ["", "Tone", "?2", "TSQL", "DTCS", "TSQL-R", "DTCS-R", ""]
+TMODES = ["", "Tone", "?2", "TSQL", "DTCS", "TSQL-R", "DTCS-R", "?7"]
 DUPLEX = ["", "-", "+", "?3"]
 DTCSP = ["NN", "NR", "RN", "RR"]
 MODES = ["FM", "NFM", "?2", "AM", "NAM", "DV"]
@@ -219,7 +219,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.has_bank = True
         rf.has_bank_index = True
         rf.has_bank_names = True
-        rf.valid_modes = [x for x in MODES if x is not None]
+        rf.valid_modes = [x for x in MODES if '?' not in x]
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = STEPS
