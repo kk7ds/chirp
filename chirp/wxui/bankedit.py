@@ -110,6 +110,7 @@ class ChirpBankEdit(common.ChirpEditor):
 
         self._memory_cache = {}
 
+        self._grid.Bind(wx.grid.EVT_GRID_CELL_CHANGING, self._index_changed)
         self._grid.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self._memory_changed)
         self._grid.Bind(wx.grid.EVT_GRID_LABEL_LEFT_DCLICK, self._label_click)
         self._grid.GetGridColLabelWindow().Bind(wx.EVT_MOTION,
@@ -213,17 +214,12 @@ class ChirpBankEdit(common.ChirpEditor):
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=True)
 
     @common.error_proof()
-    def _memory_changed(self, event):
+    def _index_changed(self, event):
         row = event.GetRow()
         col = event.GetCol()
-        value = self._grid.GetCellValue(row, col)
-
+        value = event.GetString()
         if isinstance(self._col_defs[col], ChirpBankIndexColumn):
             self._change_memory_index(self.row2mem(row), int(value))
-        else:
-            self._change_memory_mapping(self.row2mem(row),
-                                        self.col2bank(col),
-                                        value != BANK_SET_VALUE)
 
     def _change_memory_index(self, number, index):
         for i, bank_index in enumerate(self._bank_index_order):
@@ -239,6 +235,19 @@ class ChirpBankEdit(common.ChirpEditor):
                                          index)
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
+    @common.error_proof()
+    def _memory_changed(self, event):
+        row = event.GetRow()
+        col = event.GetCol()
+        value = self._grid.GetCellValue(row, col)
+
+        if isinstance(self._col_defs[col], ChirpBankIndexColumn):
+            event.Skip()
+        else:
+            self._change_memory_mapping(self.row2mem(row),
+                                        self.col2bank(col),
+                                        value != BANK_SET_VALUE)
 
     def _change_memory_mapping(self, number, bank, present):
         mem = self._memory_cache[number]
