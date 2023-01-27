@@ -95,15 +95,7 @@ class ChirpEditorSet(wx.Panel):
         self._filename = filename
         self._modified = not os.path.exists(filename)
 
-        self._editors = wx.Notebook(self, style=wx.NB_TOP)
         self._editor_index = {}
-
-        self._editors.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED,
-                           self._editor_selected)
-
-        sizer = wx.BoxSizer()
-        sizer.Add(self._editors, 1, wx.EXPAND)
-        self.SetSizer(sizer)
 
         features = radio.get_features()
 
@@ -116,6 +108,21 @@ class ChirpEditorSet(wx.Panel):
         else:
             radios = [radio]
             format = '%(type)s'
+
+        if len(radios) > 2:
+            LOG.info('Using TreeBook because radio has %i devices',
+                     len(radios))
+            self._editors = wx.Treebook(self, style=wx.NB_RIGHT)
+            self._editors.Bind(wx.EVT_TREEBOOK_PAGE_CHANGED,
+                               self._editor_selected)
+        else:
+            self._editors = wx.Notebook(self, style=wx.NB_TOP)
+            self._editors.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED,
+                               self._editor_selected)
+
+        sizer = wx.BoxSizer()
+        sizer.Add(self._editors, 1, wx.EXPAND)
+        self.SetSizer(sizer)
 
         for radio in radios:
             edit = self.MEMEDIT_CLS(radio, self._editors)
