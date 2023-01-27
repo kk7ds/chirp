@@ -26,10 +26,6 @@ class TestAdapterMeta(type):
 def _get_sub_devices(rclass, testimage):
     try:
         radio = rclass(None)
-    except Exception as e:
-        radio = rclass(testimage)
-
-    try:
         rf = radio.get_features()
     except Exception as e:
         print('Failed to get features for %s: %s' % (rclass, e))
@@ -39,6 +35,9 @@ def _get_sub_devices(rclass, testimage):
         # out, but until then, assume crash means "no sub devices".
         return [rclass]
     if rf.has_sub_devices:
+        # Radios with sub-devices may need to look at the image to determine
+        # what those are. That's slow, so only do it for these.
+        radio = rclass(testimage)
         return radio.get_sub_devices()
     else:
         return [rclass]
@@ -76,7 +75,9 @@ def _load_tests(loader, tests, pattern, suite=None):
         if hasattr(rclass, '_orig_rclass'):
             rclass = rclass._orig_rclass
         module = rclass.__module__.split('.')[-1]
-        for device in _get_sub_devices(rclass, image):
+        subdevs = _get_sub_devices(rclass, image)
+        has_subdevs = subdevs != [rclass]
+        for index, device in enumerate(subdevs):
             if isinstance(device, type):
                 dst = None
             else:
@@ -87,7 +88,8 @@ def _load_tests(loader, tests, pattern, suite=None):
                     "%s_%s" % (case.__name__,
                                directory.radio_class_id(device)),
                     (case,),
-                    {'RADIO_CLASS': device,
+                    {'RADIO_CLASS': rclass,
+                     'SUB_DEVICE': index if has_subdevs else None,
                      'TEST_IMAGE': image})
 
                 tc = getattr(pytest.mark, module)(tc)

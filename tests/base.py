@@ -11,12 +11,23 @@ LOG = logging.getLogger(__name__)
 
 class DriverTest(unittest.TestCase):
     RADIO_CLASS = None
+    SUB_DEVICE = None
     TEST_IMAGE = None
 
     def setUp(self):
         super().setUp()
-        self.radio = self.RADIO_CLASS(self.TEST_IMAGE)
-        self.rf = self.radio.get_features()
+
+        self.parent = self.RADIO_CLASS(self.TEST_IMAGE)
+        self.parent_rf = self.parent.get_features()
+        # If SUB_DEVICE is set to an index, then the actual radio we are
+        # to test is get_sub_devices()[SUB_DEVICE]. Otherwise, it's the
+        # actual class we were handed.
+        if self.SUB_DEVICE is not None:
+            self.radio = self.parent.get_sub_devices()[self.SUB_DEVICE]
+            self.rf = self.radio.get_features()
+        else:
+            self.radio = self.parent
+            self.rf = self.parent_rf
         self.patches = []
 
     def use_patch(self, patch):
