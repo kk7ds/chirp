@@ -243,6 +243,7 @@
 | <a name="Retevis_RB27"></a> Retevis_RB27 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.09% |
 | <a name="Retevis_RB27B"></a> Retevis_RB27B | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.02% |
 | <a name="Retevis_RB27V"></a> Retevis_RB27V | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.01% |
+| <a name="Retevis_RB28B"></a> Retevis_RB28B | [@KC9HI](https://github.com/KC9HI) | 27-Jan-2023 | Yes |  |
 | <a name="Retevis_RB29"></a> Retevis_RB29 | [@KC9HI](https://github.com/KC9HI) | 24-Dec-2022 | Yes | 0.00% |
 | <a name="Retevis_RB615"></a> Retevis_RB615 | [@KC9HI](https://github.com/KC9HI) | 18-Dec-2022 | Yes | 0.01% |
 | <a name="Retevis_RB617"></a> Retevis_RB617 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.02% |
@@ -372,11 +373,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 369
+**Drivers:** 370
 
-**Tested:** 81% (302/67) (92% of usage stats)
+**Tested:** 81% (303/67) (92% of usage stats)
 
-**Byte clean:** 88% (325/44)
+**Byte clean:** 88% (326/44)
 
 ## Meaning of this testing
 
