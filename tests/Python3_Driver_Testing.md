@@ -333,7 +333,7 @@
 | <a name="Yaesu_FT-4XR"></a> Yaesu_FT-4XR | [Implied by Yaesu_FT-4XE](#user-content-Yaesu_FT-4XE) | 24-Dec-2022 | Yes | 0.11% |
 | <a name="Yaesu_FT-50"></a> Yaesu_FT-50 |  |  | Yes | 0.04% |
 | <a name="Yaesu_FT-60"></a> Yaesu_FT-60 | N0EYE | 9-Jan-2023 | Yes | 0.49% |
-| <a name="Yaesu_FT-65E"></a> Yaesu_FT-65E | [Implied by Yaesu_FT-4XE](#user-content-Yaesu_FT-4XE) | 24-Dec-2022 | Yes | 0.08% |
+| <a name="Yaesu_FT-65E"></a> Yaesu_FT-65E | [@kwirk](https://github.com/kwirk) | 27-Jan-2023 | Yes | 0.08% |
 | <a name="Yaesu_FT-65R"></a> Yaesu_FT-65R | [Reported working](https://chirp.danplanet.com/issues/10266) | 13-Jan-2022 | Yes | 0.18% |
 | <a name="Yaesu_FT-70D"></a> Yaesu_FT-70D | [@n8sqt](https://github.com/n8sqt) | 05-Dec-2022 | Yes | 0.27% |
 | <a name="Yaesu_FT-7100M"></a> Yaesu_FT-7100M |  |  | Yes | 0.03% |
