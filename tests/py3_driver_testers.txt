@@ -281,7 +281,7 @@ Yaesu_FT-4XE,Unit tested; needs confirm,24-Dec-2022
 Yaesu_FT-4XR,+Yaesu_FT-4XE,24-Dec-2022
 Yaesu_FT-4VR,+Yaesu_FT-4XE,24-Dec-2022
 Yaesu_FT-65R,#10266,13-Jan-2022
-Yaesu_FT-65E,+Yaesu_FT-4XE,24-Dec-2022
+Yaesu_FT-65E,@kwirk,27-Jan-2023
 Yaesu_FT-25R,+Yaesu_FT-4XE,24-Dec-2022
 Yaesu_FT-60,N0EYE,9-Jan-2023
 Yaesu_FT-70D,@n8sqt,05-Dec-2022
