@@ -770,16 +770,25 @@ class WP970I(baofeng_common.BaofengCommonHT):
         work.append(rs)
 
         # broadcast FM settings
-        _fm_presets = self._memobj.fm_presets
-        if _fm_presets <= 108.0 * 10 - 650:
-            preset = _fm_presets / 10.0 + 65
-        elif _fm_presets >= 65.0 * 10 and _fm_presets <= 108.0 * 10:
-            preset = _fm_presets / 10.0
+        value = self._memobj.fm_presets
+        value_shifted = ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
+        if value_shifted >= 65.0 * 10 and value_shifted <= 108.0 * 10:
+            # storage method 3 (discovered 2022)
+            self._bw_shift = True
+            preset = value_shifted / 10.0
+        elif value >= 65.0 * 10 and value <= 108.0 * 10:
+            # storage method 2
+            preset = value / 10.0
+        elif value <= 108.0 * 10 - 650:
+            # original storage method (2012)
+            preset = value / 10.0 + 65
         else:
-            preset = 76.0
-        rs = RadioSetting("fm_presets", "FM Preset(MHz)",
-                          RadioSettingValueFloat(65, 108.0, preset, 0.1, 1))
-        fm_preset.append(rs)
+            # unknown (undiscovered method or no FM chip?)
+            preset = nul
+        if preset:
+            rs = RadioSettingValueFloat(65, 108.0, preset, 0.1, 1)
+            rset = RadioSetting("fm_presets", "FM Preset(MHz)", rs)
+            fm_preset.append(rset)
 
         # DTMF settings
         def apply_code(setting, obj, length):
