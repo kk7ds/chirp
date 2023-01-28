@@ -2,6 +2,7 @@
 # Implementing Kenwood TS-480 as Clone Mode
 # March 2021: Implementing true Split mode support per issue #8297
 # March 6, 2021: PL tone download fix for issue #8877
+# January 2023: Py3 compliant.
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -137,14 +138,15 @@ def command(ser, cmd, rsplen, w8t=0.01, exts=""):
     start = time.time()
     stx = cmd       # preserve cmd for response check
     stx = stx + exts + ";"    # append arguments
-    ser.write(stx)
+    ser.write(bytes(stx, encoding='latin_1'))
     LOG.debug("PC->RADIO [%s]" % stx)
     ts = time.time()        # implement the wait after command
     while (time.time() - ts) < w8t:
         ix = 0      # NOP
     result = ""
     if rsplen > 0:  # read response
-        result = ser.read(rsplen)
+        result = str(ser.read(rsplen))
+        result = result[2:-1]      # strip b'
         LOG.debug("RADIO->PC [%s]" % result)
         result = result[:-1]        # remove terminator
     return result.strip()
@@ -164,12 +166,12 @@ def _connect_radio(radio):
     for bd in bauds:
         radio.pipe.baudrate = bd
         BAUD = bd
-        radio.pipe.write(";")
-        radio.pipe.write(";")
+        radio.pipe.write(bytes(";", encoding='latin_1'))
+        radio.pipe.write(bytes(";", encoding='latin_1'))
         resp = radio.pipe.read(16)
-        radio.pipe.write("ID;")
+        radio.pipe.write(bytes("ID;", encoding='latin_1'))
         resp = radio.pipe.read(16)
-        if resp.find(radio.ID) >= 0:           # Good comms
+        if resp == bytes(radio.ID, encoding='latin_1'):           # Good comms
             resp = command(radio.pipe, "AI0", 0, W8L)
             return
         elif resp in RADIO_IDS.keys():
@@ -185,7 +187,7 @@ def read_str(radio, trm=";"):
     stq = ""
     ctq = ""
     while ctq != trm:
-        ctq = radio.pipe.read(1)
+        ctq = chr(ord(radio.pipe.read(1)))
         stq += ctq
     LOG.debug("   + [%s]" % stq)
     return stq[:-1]     # Return without trm
@@ -553,7 +555,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
 
-        self._mmap = memmap.MemoryMap(data)
+        self._mmap = memmap.MemoryMapBytes(bytes(data, encoding='latin_1'))
         self.process_mmap()
         return
 
@@ -637,7 +639,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
             _mem.rtone = 0
             _mem.ctone = 0
             _mem.skip = 0
-            _mem.name = "        "
+            _mem.name = bytes("        ", encoding='latin_1')
             return
 
         if mem.number > self._upper:    # Specials: No Name changes
@@ -647,9 +649,9 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
             nx = len(mem.name)
             for ix in range(8):
                 if ix < nx:
-                    _mem.name[ix] = mem.name[ix].upper()
+                    _mem.name[ix] = ord(mem.name[ix].upper())
                 else:
-                    _mem.name[ix] = " "    # assignment needs 8 chrs
+                    _mem.name[ix] = ord(" ")    # assignment needs 8 chrs
         _mem.rxfreq = mem.freq
         _mem.txfreq = 0
         _mem.split = 0
@@ -718,12 +720,11 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
                 datm += " "
         return datm
 
-    def _make_base_spec(self, mem, freq):
+    def _make_base_spec(self, mem, freq):     # Clone Mode
         """ Generate memory channel parameter string """
         spec = "%011i%1i%1i%1i%02i%02i00000000000000%02i0%s" \
             % (freq, mem.xmode, mem.skip, mem.tmode, mem.rtone,
                 mem.ctone, mem.step, mem.name)
-
         return spec.strip()
 
     def get_settings(self):
