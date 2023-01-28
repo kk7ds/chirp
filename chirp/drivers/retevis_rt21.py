@@ -745,7 +745,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
         rf.has_name = False
         if self.MODEL == "RT76" or \
                 self.MODEL == "RT19" or self.MODEL == "RT619" or \
-                self.MODEL == "RB28B":
+                self.MODEL == "RB28B" or self.MODEL == "RB628B":
             rf.valid_skips = []
         else:
             rf.valid_skips = ["", "S"]
@@ -975,7 +975,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("compander", "Compander", rs)
             mem.extra.append(rset)
 
-        if self.MODEL == "RB28B":
+        if self.MODEL == "RB28B" or self.MODEL == "RB628B":
             rs = RadioSettingValueBoolean(_mem.compander)
             rset = RadioSetting("compander", "Compander", rs)
             mem.extra.append(rset)
@@ -1574,7 +1574,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 rset = RadioSetting("voxd", "Vox Delay", rs)
                 basic.append(rset)
 
-        if self.MODEL == "RB28B":
+        if self.MODEL == "RB28B" or self.MODEL == "RB628B":
             rs = RadioSettingValueInteger(0, 9, _settings.squelch)
             rset = RadioSetting("squelch", "Squelch Level", rs)
             basic.append(rset)
@@ -2029,3 +2029,19 @@ class RB28BRadio(RT21Radio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_RB28B, self._mmap)
+
+
+@directory.register
+class RB628BRadio(RB28BRadio):
+    """RETEVIS RB628B"""
+    VENDOR = "Retevis"
+    MODEL = "RB628B"
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.50),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    _magic = b"PHOGR\x09\xB2"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
+    _upper = 16
+    _frs = False
+    _pmr = True
