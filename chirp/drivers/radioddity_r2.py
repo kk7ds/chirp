@@ -523,7 +523,7 @@ class RadioddityR2(chirp_common.CloneModeRadio):
                 mem.duplex == ''
                 mem.offset = 0
                 mem.mode = "NFM"
-                immutable = ["empty", "freq", "duplex", "offset"]
+                immutable = ["empty", "freq", "duplex", "offset", "mode"]
         elif self._pmr:
             if mem.freq in PMR_FREQS:
                 if mem.number >= 1 and mem.number <= 16:
