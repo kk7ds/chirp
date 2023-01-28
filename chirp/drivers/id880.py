@@ -80,7 +80,7 @@ u8 name_flags[132];
 
 """
 
-TMODES = ["", "Tone", "?2", "TSQL", "DTCS", "TSQL-R", "DTCS-R", "?7"]
+TMODES = ["", "Tone", "TSQL", "TSQL", "DTCS", "DTCS", "TSQL-R", "DTCS-R"]
 DUPLEX = ["", "-", "+", "?3"]
 DTCSP = ["NN", "NR", "RN", "RR"]
 MODES = ["FM", "NFM", "?2", "AM", "NAM", "DV"]
@@ -220,7 +220,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.has_bank_index = True
         rf.has_bank_names = True
         rf.valid_modes = [x for x in MODES if '?' not in x]
-        rf.valid_tmodes = list(TMODES)
+        rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'TSQL-R', 'DTCS-R']
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = STEPS
         rf.valid_bands = [(118000000, 173995000), (230000000, 549995000),
@@ -312,6 +312,9 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.tmode = TMODES.index(mem.tmode)
+        if mem.tmode == 'DTCS':
+            # The first index of DTCS is "bell" mode
+            _mem.tmode += 1
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.mode = MODES.index(mem.mode)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
