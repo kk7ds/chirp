@@ -323,6 +323,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
                    462675000, 462700000, 462725000]
     GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
     _gmrs = False
+    _bw_shift = False
 
     def sync_in(self):
         """Download from radio"""
@@ -673,6 +674,8 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
                 else:
                     value = int(val.get_value() * 10)
                 LOG.debug("Setting fm_presets = %s" % (value))
+                if self._bw_shift:
+                    value = ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
                 self._memobj.fm_presets = value
             except Exception as e:
                 LOG.debug(element.get_name())
