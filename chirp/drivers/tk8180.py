@@ -685,8 +685,12 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         mem.power = POWER_LEVELS[_mem.highpower]
 
         offset = (int(_mem.tx_freq) - int(_mem.rx_freq)) * 10
-        if offset == 0:
+        if _mem.tx_freq.get_raw(asbytes=True) == b'\xFF\xFF\xFF\xFF':
+            mem.offset = 0
+            mem.duplex = 'off'
+        elif offset == 0:
             mem.duplex = ''
+            mem.offset = 0
         elif abs(offset) < 10000000:
             mem.duplex = offset < 0 and '-' or '+'
             mem.offset = abs(offset)
