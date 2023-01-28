@@ -17,4 +17,5 @@ runs:
     - name: Run tox
       shell: bash
       run: |
+        git fetch origin $GITHUB_BASE_REF || true
         tox -e ${{ inputs.tox_target }}

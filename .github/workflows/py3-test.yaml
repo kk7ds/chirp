@@ -38,7 +38,7 @@ jobs:
       - name: Run tox
         uses: ./.github/actions/py3-tox
         with:
-          tox_target: driver
+          tox_target: fast-driver
       - name: Archive results
         uses: actions/upload-artifact@v3
         with:
@@ -54,7 +54,7 @@ jobs:
       - name: Run tox
         uses: ./.github/actions/py3-tox
         with:
-          tox_target: driver
+          tox_target: fast-driver
 
   matrix:
     name: Create support matrix
