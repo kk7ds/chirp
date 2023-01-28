@@ -40,4 +40,8 @@ for file in $(git diff ${BASE}.. | grep '^+++' | sed 's#^+++ b/##'); do
     fi
 done
 
+if git log ${BASE}.. --merges | grep Merge; then
+    fail Please do not include merge commits in your PR
+fi
+
 exit $RETCODE
