@@ -154,6 +154,9 @@ Kenwood_TK-768,+Kenwood_TK-760,5-Dec-2022
 Kenwood_TK-860,+Kenwood_TK-760,5-Dec-2022
 Kenwood_TK-862,+Kenwood_TK-760,5-Dec-2022
 Kenwood_TK-868,+Kenwood_TK-760,5-Dec-2022
+Kenwood_TS-480,@Old-Phart,28-Jan-2023
+Kenwood_TS-480_CloneMode,+Kenwood_TS-480,28-Jan-2023
+Kenwood_TS-480_LiveMode,*kenwood_live,28-Jan-2023
 Kenwood_TS-590SG_CloneMode,@Old-Phart,29-Dec-2022
 Kenwood_TS-590S_CloneMode,+Kenwood_TS-590SG_CloneMode,29-Dec-2022
 Kenwood_TS-590S_SG_LiveMode,+Kenwood_TS-590SG_CloneMode,29-Dec-2022
