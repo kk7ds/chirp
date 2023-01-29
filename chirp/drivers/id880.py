@@ -83,7 +83,7 @@ u8 name_flags[132];
 TMODES = ["", "Tone", "TSQL", "TSQL", "DTCS", "DTCS", "TSQL-R", "DTCS-R"]
 DUPLEX = ["", "-", "+", "?3"]
 DTCSP = ["NN", "NR", "RN", "RR"]
-MODES = ["FM", "NFM", "?2", "AM", "NAM", "DV"]
+MODES = ["FM", "NFM", "WFM", "AM", "NAM", "DV"]
 STEPS = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
          100.0, 125.0, 200.0]
 FREQ_MULTIPLIER = [5000, 6250, 6250, 8333, 9000]
@@ -219,7 +219,7 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.has_bank = True
         rf.has_bank_index = True
         rf.has_bank_names = True
-        rf.valid_modes = [x for x in MODES if '?' not in x]
+        rf.valid_modes = ["FM", "NFM", "AM", "NAM", "DV"]
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'TSQL-R', 'DTCS-R']
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = STEPS
@@ -374,6 +374,9 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
     @classmethod
     def match_model(cls, filedata, filename):
+        if (super().match_model(filedata, filename) and
+                filename.lower().endswith('.icf')):
+            return True
         # This is a horrid hack, given that people can change the GPS-A
         # destination, but it should suffice in most cases until we get
         # a rich container file format
@@ -391,7 +394,16 @@ class ID80Radio(ID880Radio):
 
     @classmethod
     def match_model(cls, filedata, filename):
+        if (super().match_model(filedata, filename) and
+                filename.lower().endswith('.icf')):
+            return True
         # This is a horrid hack, given that people can change the GPS-A
         # destination, but it should suffice in most cases until we get
         # a rich container file format
         return len(filedata) == cls._memsize and b"API80," in filedata
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_modes = ["FM", "NFM", "WFM", "AM", "NAM", "DV"]
+        rf.valid_bands = [(495000, 1000000000)]
+        return rf
