@@ -47,4 +47,4 @@ if driver_exp:
     args += ['-k', driver_exp]
 args += sys.argv[1:]
 print(args)
-subprocess.call(args)
+sys.exit(subprocess.call(args))
