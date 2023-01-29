@@ -538,7 +538,7 @@ class TKx160Radio(chirp_common.CloneModeRadio):
         if mem.duplex == '':
             _mem.tx_freq = mem.freq // 10
         elif mem.duplex == 'split':
-            _mem.rx_freq = mem.offset // 10
+            _mem.tx_freq = mem.offset // 10
         elif mem.duplex == 'off':
             _mem.tx_freq.set_raw(b'\xFF' * 4)
         elif mem.duplex == '-':
