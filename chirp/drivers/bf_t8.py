@@ -898,6 +898,7 @@ class RetevisRB27(RetevisRB27B):
                     chirp_common.PowerLevel("Low", watts=0.50)]
     VALID_BANDS = [(136000000, 174000000),
                    (400000000, 520000000)]
+    ODD_SPLIT = False
 
     _upper = 99
     _gmrs = True
@@ -937,6 +938,7 @@ class FRSA1Radio(BFT8Radio):
     NAME_LENGTH = 6
     SKIP_VALUES = ["", "S"]
     DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
+    DUPLEXES = ['', '-', '+', 'off']
 
     _fingerprint = b"BF-T8A" + b"\x2E"
     _upper = 22
