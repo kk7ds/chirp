@@ -758,9 +758,26 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
     def validate_memory(self, mem):
         msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
 
-        _msg_duplex1 = 'Memory location only supports "Low"'
-        _msg_duplex2 = 'Memory location only supports "off"'
-        _msg_duplex3 = 'Memory location only supports "(None)", "+" or "off"'
+        _mem = self._memobj.memory[mem.number]
+        _msg_duplex = 'Duplex must be "off" for this frequency'
+        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+
+        if self.MODEL == "GMRS-20V2":
+            if mem.freq not in GMRS_FREQS:
+                if mem.duplex != "off":
+                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+            elif mem.duplex and mem.offset != 5000000:
+                msgs.append(chirp_common.ValidationWarning(_msg_offset))
+        if self.MODEL == "GMRS-50X1":
+            if not (mem.number >= 1 and mem.number <= 30):
+                if mem.duplex != "off":
+                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+        if self.MODEL == "DB25-G":
+            if mem.freq in GMRS_FREQS3:
+                if mem.duplex and mem.offset != 5000000:
+                    msgs.append(chirp_common.ValidationWarning(_msg_offset))
+                if mem.duplex and mem.duplex != "+":
+                    msgs.append(chirp_common.ValidationWarning(_msg_offset))
 
         return msgs
 
@@ -923,6 +940,89 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                   SPMUTE_LIST[_mem.spmute]))
         mem.extra.append(spmute)
 
+        immutable = []
+
+        if self._gmrs:
+            if self.MODEL == "GMRS-50X1":
+                if mem.number >= 1 and mem.number <= 30:
+                    if mem.freq in GMRS_FREQS:
+                        GMRS_FREQ = GMRS_FREQS[mem.number - 1]
+                        mem.freq = GMRS_FREQ
+                        immutable = ["empty", "freq"]
+                    if mem.number >= 1 and mem.number <= 7:
+                        mem.duplex = ''
+                        mem.offset = 0
+                        mem.power = POWER_LEVELS[2]
+                        immutable += ["duplex", "offset", "power"]
+                    elif mem.number >= 8 and mem.number <= 14:
+                        mem.duplex = 'off'
+                        mem.offset = 0
+                        immutable += ["duplex", "offset"]
+                    elif mem.number >= 15 and mem.number <= 22:
+                        mem.duplex = ''
+                        mem.offset = 0
+                        immutable += ["duplex", "offset"]
+                    elif mem.number >= 23 and mem.number <= 30:
+                        mem.duplex = '+'
+                        mem.offset = 5000000
+                        immutable += ["duplex", "offset"]
+                else:
+                    # Not a GMRS channel, so restrict duplex since it will be
+                    # forced to off.
+                    mem.duplex = 'off'
+                    mem.offset = 0
+                    immutable = ["duplex", "offset"]
+            elif self.MODEL == "GMRS-20V2":
+                if mem.freq in GMRS_FREQS:
+                    if mem.freq in GMRS_FREQS1:
+                        # Non-repeater GMRS channels (limit duplex)
+                        mem.duplex = ''
+                        mem.offset = 0
+                        mem.power = POWER_LEVELS[2]
+                        immutable = ["duplex", "offset", "power"]
+                    elif mem.freq in GMRS_FREQS2:
+                        # Non-repeater FRS channels (receive only)
+                        mem.duplex = 'off'
+                        mem.offset = 0
+                        immutable = ["duplex", "offset"]
+                    elif mem.freq in GMRS_FREQS3:
+                        # GMRS repeater channels, always either simplex or
+                        # +5MHz
+                        if mem.duplex == '':
+                            mem.offset = 0
+                        if mem.duplex == '+':
+                            mem.offset = 5000000
+                else:
+                    # Not a GMRS channel, so restrict duplex since it will be
+                    # forced to off.
+                    mem.duplex = 'off'
+                    mem.offset = 0
+                    immutable = ["duplex", "offset"]
+            elif self.MODEL == "DB25-G":
+                if mem.freq in GMRS_FREQS:
+                    if mem.freq in GMRS_FREQS1:
+                        # Non-repeater GMRS channels (limit duplex)
+                        mem.duplex = ''
+                        mem.offset = 0
+                        immutable = ["duplex", "offset"]
+                    elif mem.freq in GMRS_FREQS2:
+                        # Non-repeater FRS channels (receive only)
+                        mem.duplex = 'off'
+                        mem.offset = 0
+                        immutable = ["duplex", "offset"]
+                    elif mem.freq in GMRS_FREQS3:
+                        # GMRS repeater channels, always either simplex or
+                        # +5MHz
+                        if mem.duplex == '':
+                            mem.offset = 0
+                        elif mem.duplex == '+':
+                            mem.offset = 5000000
+                        else:
+                            mem.duplex = ''
+                            mem.offset = 0
+
+        mem.immutable = immutable
+
         return mem
 
     def set_memory(self, mem):
@@ -951,49 +1051,6 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             # the first time
             LOG.debug('Zeroing new memory')
             _mem.set_raw('\x00' * 16)
-
-        if self._gmrs:
-            if self.MODEL == "GMRS-50X1":
-                if mem.number >= 1 and mem.number <= 30:
-                    GMRS_FREQ = GMRS_FREQS[mem.number - 1]
-                    mem.freq = GMRS_FREQ
-                    if mem.number <= 22:
-                        mem.duplex = ''
-                        mem.offset = 0
-                        if mem.number <= 7:
-                            mem.power = POWER_LEVELS[2]
-                        if mem.number >= 8 and mem.number <= 14:
-                            mem.duplex = 'off'
-                            mem.offset = 0
-                            mem.mode = 'NFM'
-                            mem.power = POWER_LEVELS[2]
-                    if mem.number > 22:
-                        mem.duplex = '+'
-                        mem.offset = 5000000
-                else:
-                    mem.duplex = 'off'
-                    mem.offset = 0
-            if self.MODEL == "GMRS-20V2":
-                if mem.freq in GMRS_FREQS1:
-                    mem.duplex = ''
-                    mem.offset = 0
-                    mem.power = POWER_LEVELS[2]
-                elif mem.freq in GMRS_FREQS2:
-                    mem.duplex = 'off'
-                    mem.offset = 0
-                    mem.mode = "NFM"
-                    mem.power = POWER_LEVELS[2]
-                elif mem.freq in GMRS_FREQS3:
-                    if mem.power == POWER_LEVELS[1]:
-                        mem.power = POWER_LEVELS[0]
-                    if mem.duplex == '+':
-                        mem.offset = 5000000
-                    else:
-                        mem.duplex == ''
-                        mem.offset = 0
-                else:
-                    mem.duplex = 'off'
-                    mem.offset = 0
 
         # frequency
         _mem.rxfreq = mem.freq / 10
@@ -4222,6 +4279,10 @@ class DB25G(BTechColor):
                      chirp_common.PowerLevel("Mid", watts=15),
                      chirp_common.PowerLevel("Low", watts=5)]
 
+    def check_set_memory_immutable_policy(self, existing, new):
+        existing.immutable = []
+        super().check_set_memory_immutable_policy(existing, new)
+
     @classmethod
     def match_model(cls, filedata, filename):
         # This model is only ever matched via metadata
@@ -4584,6 +4645,11 @@ class GMRS50X1(BTechGMRS):
     _magic = MSTRING_GMRS50X1
     _fileid = [GMRS50X1_fp1, GMRS50X1_fp, ]
     _gmrs = True
+
+    def check_set_memory_immutable_policy(self, existing, new):
+        if not (new.number >= 1 and new.number <= 30):
+            existing.immutable = []
+        super().check_set_memory_immutable_policy(existing, new)
 
 
 COLORHT_MEM_FORMAT = """
@@ -5650,6 +5716,10 @@ class GMRS20V2(BTechColorWP):
     _magic = MSTRING_GMRS20V2
     _fileid = [GMRS20V2_fp2, GMRS20V2_fp1, GMRS20V2_fp, ]
     _gmrs = True
+
+    def check_set_memory_immutable_policy(self, existing, new):
+        existing.immutable = []
+        super().check_set_memory_immutable_policy(existing, new)
 
     def process_mmap(self):
         """Process the mem map into the mem object"""

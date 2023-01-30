@@ -715,7 +715,10 @@ class TestOverrideRules(base.BaseTest):
     # please ask permission first.
     IMMUTABLE_WHITELIST = [
         # Uncomment me when the time comes
+        'BTECH_GMRS-20V2',
+        'BTECH_GMRS-50X1',
         'BTECH_GMRS-V2',
+        'Radioddity_DB25-G',
         'Retevis_RB17P',
     ]
 
@@ -723,7 +726,9 @@ class TestOverrideRules(base.BaseTest):
         self.assertEqual(
             chirp_common.Radio.check_set_memory_immutable_policy,
             rclass.check_set_memory_immutable_policy,
-            'Radio should not override check_set_memory_immutable_policy')
+            'Radio %s should not override '
+            'check_set_memory_immutable_policy' % (
+                directory.radio_class_id(rclass)))
 
     def _test_radio_override_calls_super(self, rclass):
         r = rclass(None)
@@ -733,8 +738,9 @@ class TestOverrideRules(base.BaseTest):
         self.assertNotEqual(
             chirp_common.Radio.check_set_memory_immutable_policy,
             method,
-            ('Radio in whitelist does not override '
-             'check_set_memory_immutable_policy'))
+            ('Radio %s in whitelist does not override '
+             'check_set_memory_immutable_policy') % (
+                 directory.radio_class_id(rclass)))
 
         # Make sure super() is called in the child class
         self.assertIn('__class__', method.__code__.co_freevars,
