@@ -92,20 +92,20 @@ class TestCaseBanks(base.DriverTest):
                 model.remove_memory_from_mapping, mem, banks[0])
 
     @base.requires_feature('has_bank_index')
-    def do_bank_index(self):
+    def test_bank_index(self):
         loc = self.rf.memory_bounds[0]
         mem = chirp_common.Memory()
         mem.number = loc
         mem.freq = self.rf.valid_bands[0][0] + 100000
 
-        self.set_memory(mem)
+        self.radio.set_memory(mem)
 
-        model = self.get_bank_model()
+        model = self.radio.get_bank_model()
         banks = model.get_mappings()
         index_bounds = model.get_index_bounds()
 
         model.add_memory_to_mapping(mem, banks[0])
-        for i in range(0, *index_bounds):
+        for i in range(*index_bounds):
             model.set_memory_index(mem, banks[0], i)
             self.assertEqual(i, model.get_memory_index(mem, banks[0]),
                              'Bank index not persisted')
