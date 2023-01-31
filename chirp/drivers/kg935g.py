@@ -430,10 +430,10 @@ def str2callid(val):
         if c not in ascii2bin:
             raise InvalidValueError(
                 "Caller ID must be all digits 0x%x" % c)
-        b = (0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9)[int(c)]
+        b = ascii2bin.index(c)
         blk.append(b)
     if len(blk) < 6:
-        blk.append(0xf)  # EOL a short ID
+        blk.append(0x0F)  # EOL a short ID
     if len(blk) < 6:
         for i in range(0, (6 - len(blk))):
             blk.append(0xf0)
@@ -955,7 +955,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                               "Call Name "+callnum, val)
             call_grp.append(rs)
 
-            x = i-1
+            x = i - 1
             callid = self._memobj.call_ids[x]
             c_id = RadioSettingValueString(0, 6,
                                            self.callid2str(callid.cid),
