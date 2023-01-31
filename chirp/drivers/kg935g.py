@@ -31,7 +31,8 @@ from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueInteger, RadioSettingValueString, \
-    RadioSettingValueFloat, RadioSettingValueMap, RadioSettings
+    RadioSettingValueFloat, RadioSettingValueMap, RadioSettings, \
+    InvalidValueError
 
 
 LOG = logging.getLogger(__name__)
@@ -174,27 +175,8 @@ _MEM_FORMAT = """
 
     #seekto 0x0500;
     struct {
-        u8    call_code_1[6];
-        u8    call_code_2[6];
-        u8    call_code_3[6];
-        u8    call_code_4[6];
-        u8    call_code_5[6];
-        u8    call_code_6[6];
-        u8    call_code_7[6];
-        u8    call_code_8[6];
-        u8    call_code_9[6];
-        u8    call_code_10[6];
-        u8    call_code_11[6];
-        u8    call_code_12[6];
-        u8    call_code_13[6];
-        u8    call_code_14[6];
-        u8    call_code_15[6];
-        u8    call_code_16[6];
-        u8    call_code_17[6];
-        u8    call_code_18[6];
-        u8    call_code_19[6];
-        u8    call_code_20[6];
-    } call_groups;
+        u8 cid[6];
+    } call_ids[20];
 
     #seekto 0x0580;
     struct {
@@ -428,6 +410,35 @@ _MEM_FORMAT = """
 #  (2 bytes location + 64 bytes data).
 
 # MRT 1.2 correct spelling of Wouxon
+
+
+def str2callid(val):
+    """ Convert caller id strings from callid2str.
+    """
+    ascii2bin = "0123456789"
+    s = str(val).strip()
+    LOG.debug("val = %s" % val)
+    LOG.debug("s = %s" % s)
+    if len(s) < 3 or len(s) > 6:
+        raise InvalidValueError(
+            "Caller ID must be at least 3 and no more than 6 digits")
+    if s[0] == '0':
+        raise InvalidValueError(
+            "First digit of a Caller ID cannot be a zero '0'")
+    blk = bytearray()
+    for c in s:
+        if c not in ascii2bin:
+            raise InvalidValueError(
+                "Caller ID must be all digits 0x%x" % c)
+        b = ascii2bin.index(c)
+        blk.append(b)
+    if len(blk) < 6:
+        blk.append(0x0F)  # EOL a short ID
+    if len(blk) < 6:
+        for i in range(0, (6 - len(blk))):
+            blk.append(0xf0)
+    LOG.debug("blk = %s" % blk)
+    return blk
 
 
 @directory.register
@@ -892,7 +903,6 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         _vfoa = self._memobj.vfoa
         _vfob = self._memobj.vfob
         _scan = self._memobj.scan_groups
-        _call = self._memobj.call_groups
         _callname = self._memobj.call_names
 
         cfg_grp = RadioSettingGroup("cfg_grp", "Config Settings")
@@ -922,6 +932,10 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                                                                cur_call_grp]))
         call_grp.append(rs)
 
+        def apply_callid(setting, obj):
+            c = str2callid(setting.value)
+            obj.cid = c
+
         callchars = "0123456789"
         for i in range(1, 21):
             callnum = str(i)
@@ -941,23 +955,14 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                               "Call Name "+callnum, val)
             call_grp.append(rs)
 
-            _codeobj = eval("_call.call_code_"+callnum)
-            _code = "".join([callchars[x] for x in _codeobj if int(x) < 0x0A])
-            val = RadioSettingValueString(3, 6, _code, False)
-            val.set_charset(callchars)
-            rs = RadioSetting("call_code_"+callnum,
-                              "Call Code " + callnum, val)
-
-            def apply_call_code(setting, obj):
-                value = []
-                for j in range(0, 6):
-                    try:
-                        value.append(callchars.index(str(setting.value)[j]))
-                    except IndexError:
-                        value.append(0xFF)
-                obj.call_code = value
-            rs.set_apply_callback(apply_call_code,
-                                  eval("_call.call_code_"+callnum))
+            x = i - 1
+            callid = self._memobj.call_ids[x]
+            c_id = RadioSettingValueString(0, 6,
+                                           self.callid2str(callid.cid),
+                                           False)
+            rs = RadioSetting("call_ids[%i].cid" % x,
+                              "Call Code %s" % str(i), c_id)
+            rs.set_apply_callback(apply_callid, callid)
             call_grp.append(rs)
 
         # Configuration Settings
@@ -1115,22 +1120,16 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                           "Display Message - Interface Display Edit", val)
         key_grp.append(rs)
 
-        dtmfchars = "0123456789"
-        _codeobj = _settings.ani_code
-        _code = "".join([dtmfchars[x] for x in _codeobj if int(x) < 0x0A])
-        val = RadioSettingValueString(3, 6, _code, False)
-        val.set_charset(dtmfchars)
-        rs = RadioSetting("ani_code", "ANI Code", val)
-
         def apply_ani_id(setting, obj):
-            value = []
-            for j in range(0, 6):
-                try:
-                    value.append(dtmfchars.index(str(setting.value)[j]))
-                except IndexError:
-                    value.append(0xFF)
-            obj.ani_code = value
-        rs.set_apply_callback(apply_ani_id, _settings)
+            c = str2callid(setting.value)
+            obj.ani_code = c
+
+        cid = self._memobj.settings
+        my_callid = RadioSettingValueString(3, 6,
+                                            self.callid2str(cid.ani_code),
+                                            False)
+        rs = RadioSetting("ani_code", "ANI Edit", my_callid)
+        rs.set_apply_callback(apply_ani_id, cid)
         key_grp.append(rs)
 
         rs = RadioSetting("pf1_shrt", "PF1 SHORT Key function",
@@ -1423,7 +1422,6 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         #                       self._memobj.uhf_limits.tx_stop * 10, 5000))
         # uhf_lmt_grp.append(rs)
 
-
 # OEM info
         #
         def _decode(lst):
@@ -1451,12 +1449,6 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("oem_info.oem2", "Firmware Version ??", val)
         rs.set_apply_callback(do_nothing, _settings)
         oem_grp.append(rs)
-        # _str = _decode(self._memobj.oem_info.version)
-        # val = RadioSettingValueString(0, 15, _str)
-        # val.set_mutable(False)
-        # rs = RadioSetting("oem_info.version", "Software Version", val)
-        # rs.set_apply_callback(do_nothing, _settings)
-        # oem_grp.append(rs)
         _str = _decode(self._memobj.oem_info.date)
         val = RadioSettingValueString(0, 15, _str)
         val.set_mutable(False)
@@ -1485,7 +1477,13 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                         bits = element.get_name().split(".")
                         obj = self._memobj
                         for bit in bits[:-1]:
-                            obj = getattr(obj, bit)
+                            if "[" in bit and "]" in bit:
+                                bit, index = bit.split("[", 1)
+                                index, junk = index.split("]", 1)
+                                index = int(index)
+                                obj = getattr(obj, bit)[index]
+                            else:
+                                obj = getattr(obj, bit)
                         setting = bits[-1]
                     else:
                         obj = self._memobj.settings
@@ -1515,12 +1513,32 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                     raise
 
     def _is_freq(self, element):
-        return "rxfreq" in element.get_name() or \
-         "txoffset" in element.get_name() or \
-         "rx_start" in element.get_name() or \
-         "rx_stop" in element.get_name() or \
-         "tx_start" in element.get_name() or \
-         "tx_stop" in element.get_name()
+        return ("rxfreq" in element.get_name() or
+                "txoffset" in element.get_name() or
+                "rx_start" in element.get_name() or
+                "rx_stop" in element.get_name() or
+                "tx_start" in element.get_name() or
+                "tx_stop" in element.get_name())
 
     def _is_fmradio(self, element):
         return "FM_radio" in element.get_name()
+
+    def callid2str(self, cid):
+        """Caller ID per MDC-1200 spec? Must be 3-6 digits (100 - 999999).
+        One digit (binary) per byte, terminated with '0xc'
+        """
+
+        bin2ascii = "0123456789"
+        cidstr = ""
+        for i in range(0, 6):
+            b = cid[i].get_value()
+            # Handle fluky firmware 0x0a is sometimes used instead of 0x00
+            if b == 0x0a:
+                b = 0x00
+            if b == 0xc or b == 0xf:  # the cid EOL
+                break
+            if b > 0xa:
+                raise InvalidValueError(
+                    "Caller ID code has illegal byte 0x%x" % b)
+            cidstr += bin2ascii[b]
+        return cidstr
