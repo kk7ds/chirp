@@ -89,8 +89,6 @@ def register_format(name, pattern, readonly=False):
     if (name, pattern) not in [(n, p) for n, p, r in AUX_FORMATS]:
         if name in [x[0] for x in AUX_FORMATS]:
             raise Exception('Duplicate format name %r' % name)
-        if pattern in [x[1] for x in AUX_FORMATS]:
-            raise Exception('Duplicate format pattern %r' % pattern)
     AUX_FORMATS.add((name, pattern, readonly))
     return name
 
