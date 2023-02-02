@@ -130,6 +130,7 @@
 | <a name="Kenwood_TH-F7"></a> Kenwood_TH-F7 | [@sv1](https://github.com/sv1) | 19-Oct-2022 | Yes | 0.03% |
 | <a name="Kenwood_TH-G71"></a> Kenwood_TH-G71 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Kenwood_TH-K2"></a> Kenwood_TH-K2 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.00% |
+| <a name="Kenwood_TK-2140K"></a> Kenwood_TK-2140K | [Implied by Kenwood_TK-3140K](#user-content-Kenwood_TK-3140K) | 2-Feb-2022 | Yes |  |
 | <a name="Kenwood_TK-2180"></a> Kenwood_TK-2180 | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 | Yes | 0.04% |
 | <a name="Kenwood_TK-260"></a> Kenwood_TK-260 |  |  |  | 0.02% |
 | <a name="Kenwood_TK-260G"></a> Kenwood_TK-260G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes | 0.02% |
@@ -139,6 +140,9 @@
 | <a name="Kenwood_TK-272G"></a> Kenwood_TK-272G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes | 0.02% |
 | <a name="Kenwood_TK-278"></a> Kenwood_TK-278 |  |  |  | 0.02% |
 | <a name="Kenwood_TK-278G"></a> Kenwood_TK-278G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes | 0.01% |
+| <a name="Kenwood_TK-3140K"></a> Kenwood_TK-3140K | [@kk7ds](https://github.com/kk7ds) | 2-Feb-2022 | Yes |  |
+| <a name="Kenwood_TK-3140K2"></a> Kenwood_TK-3140K2 | [Implied by Kenwood_TK-3140K](#user-content-Kenwood_TK-3140K) | 2-Feb-2022 | Yes |  |
+| <a name="Kenwood_TK-3140K3"></a> Kenwood_TK-3140K3 | [Implied by Kenwood_TK-3140K](#user-content-Kenwood_TK-3140K) | 2-Feb-2022 | Yes |  |
 | <a name="Kenwood_TK-3180K"></a> Kenwood_TK-3180K | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 | Yes | 0.03% |
 | <a name="Kenwood_TK-3180K2"></a> Kenwood_TK-3180K2 | [Implied by Kenwood_TK-3180K](#user-content-Kenwood_TK-3180K) | 4-Dec-2022 | Yes | 0.01% |
 | <a name="Kenwood_TK-360"></a> Kenwood_TK-360 |  |  |  | 0.02% |
@@ -374,11 +378,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 371
+**Drivers:** 375
 
-**Tested:** 81% (304/67) (92% of usage stats)
+**Tested:** 82% (308/67) (92% of usage stats)
 
-**Byte clean:** 88% (327/44)
+**Byte clean:** 88% (331/44)
 
 ## Meaning of this testing
 
