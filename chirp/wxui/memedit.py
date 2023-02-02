@@ -157,7 +157,8 @@ class ChirpMemoryColumn(object):
                         _('Invalid value: %r') % value)
                     return False
 
-        editor = ChirpStringProperty(self.label, self._name)
+        editor = ChirpStringProperty(self.label.replace('\n', ' '),
+                                     self._name)
         editor.SetValue(self.render_value(memory))
         return editor
 
@@ -293,7 +294,8 @@ class ChirpChoiceColumn(ChirpMemoryColumn):
             # just doesn't have that value set, so take the first choice
             # in this case.
             cur_index = 0
-        return wx.propgrid.EnumProperty(self.label, self._name,
+        return wx.propgrid.EnumProperty(self.label.replace('\n', ' '),
+                                        self._name,
                                         self._str_choices,
                                         range(len(self._str_choices)),
                                         cur_index)
