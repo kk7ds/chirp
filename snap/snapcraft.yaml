@@ -64,11 +64,12 @@ parts:
     python-version: python2
     #python-packages: [pycairo, pygobject, pygtk, libxml2, pyserial, python-future, python-suds]
     source: https://github.com/kk7ds/chirp.git
+    source-branch: legacy
     override-pull: |
       snapcraftctl pull
       # Set timezone to America/Los_Angeles
       sudo sudo ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
-      sed -i "s/CHIRP_VERSION = \".*\"/CHIRP_VERSION = \"daily-$(date +%Y%m%d)\"/" chirp/__init__.py
+      sed -i "s/CHIRP_VERSION = \".*\"/CHIRP_VERSION = \"legacy-$(date +%Y%m%d)\"/" chirp/__init__.py
       sed -i "s,^Icon=.*$,Icon=\$\{SNAP\}/share/chirp-snap.svg," share/chirp.desktop
       # snap version cannot be longer than 32 characters
       LATEST_COMMIT_SHORT=$(git rev-parse --short HEAD)
