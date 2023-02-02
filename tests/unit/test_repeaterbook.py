@@ -49,6 +49,22 @@ class TestRepeaterbook(unittest.TestCase):
         self.assertGreater(sum(f.memory_bounds), 20)
 
     @pytest.mark.network
+    def test_get_wyoming(self):
+        rb = repeaterbook.RepeaterBook()
+        self.assertRaises(IndexError, rb.get_memory, 0)
+        rb.do_fetch(mock.MagicMock(), {
+            'country': 'United States',
+            'state': 'Wyoming',
+            'lat': 45,
+            'lon': -122,
+            'dist': 0,
+        })
+        m = rb.get_memory(0)
+        self.assertIsInstance(m, chirp_common.Memory)
+        f = rb.get_features()
+        self.assertGreater(sum(f.memory_bounds), 20)
+
+    @pytest.mark.network
     def test_get_oregon_gmrs(self):
         rb = repeaterbook.RepeaterBook()
         self.assertRaises(IndexError, rb.get_memory, 0)

@@ -1,3 +1,4 @@
+import builtins
 import sys
 import unittest
 
@@ -10,6 +11,8 @@ except ImportError:
 
 import warnings
 warnings.simplefilter('ignore', Warning)
+
+builtins._ = lambda x: x
 
 
 class BaseTest(unittest.TestCase):
