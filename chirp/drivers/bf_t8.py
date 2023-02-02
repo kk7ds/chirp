@@ -358,6 +358,24 @@ class BFT8Radio(chirp_common.CloneModeRadio):
 
         return rf
 
+    def validate_memory(self, mem):
+        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
+
+        _msg_duplex = 'Duplex must be "off" for this frequency'
+        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+
+        if self.MODEL == "RB27":
+            if mem.freq not in GMRS_FREQS:
+                if mem.duplex != "off":
+                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+            if mem.freq in FRS_FREQS3:
+                if mem.duplex and mem.offset != 5000000:
+                    msgs.append(chirp_common.ValidationWarning(_msg_offset))
+                if mem.duplex and mem.duplex != "+":
+                    msgs.append(chirp_common.ValidationWarning(_msg_offset))
+
+        return msgs
+
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
 
@@ -529,29 +547,29 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                     mem.freq = GMRS_FREQ
                     immutable = ["empty", "freq"]
                 if mem.number >= 1 and mem.number <= 7:
-                    mem.duplex == ''
+                    mem.duplex = ''
                     mem.offset = 0
                     immutable += ["duplex", "offset"]
                 elif mem.number >= 8 and mem.number <= 14:
-                    mem.duplex == ''
+                    mem.duplex = ''
                     mem.offset = 0
                     mem.mode = "NFM"
                     mem.power = self.POWER_LEVELS[1]
                     immutable += ["duplex", "offset", "mode", "power"]
                 elif mem.number >= 15 and mem.number <= 22:
-                    mem.duplex == ''
+                    mem.duplex = ''
                     mem.offset = 0
                     immutable += ["duplex", "offset"]
                 elif mem.number >= 23 and mem.number <= 30:
-                    mem.duplex == '+'
+                    mem.duplex = '+'
                     mem.offset = 5000000
                     immutable += ["duplex", "offset"]
                 elif mem.freq in FRS_FREQS1:
-                    mem.duplex == ''
+                    mem.duplex = ''
                     mem.offset = 0
                     immutable += ["duplex", "offset"]
                 elif mem.freq in FRS_FREQS2:
-                    mem.duplex == ''
+                    mem.duplex = ''
                     mem.offset = 0
                     mem.mode = "NFM"
                     mem.power = self.POWER_LEVELS[1]
@@ -563,6 +581,8 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                         mem.offset = 5000000
             else:
                 if mem.freq not in GMRS_FREQS:
+                    mem.duplex = 'off'
+                    mem.offset = 0
                     immutable = ["duplex", "offset"]
 
         mem.immutable = immutable
@@ -608,11 +628,6 @@ class BFT8Radio(chirp_common.CloneModeRadio):
             return mem
 
         _mem.set_raw("\x00" * 13 + "\xFF" * 3)
-
-        if self._gmrs:
-            if mem.freq not in GMRS_FREQS:
-                mem.duplex = 'off'
-                mem.offset = 0
 
         # frequency
         _mem.rxfreq = mem.freq / 10
@@ -903,6 +918,10 @@ class RetevisRB27(RetevisRB27B):
     _upper = 99
     _gmrs = True
     _frs = _murs = _pmr = False
+
+    def check_set_memory_immutable_policy(self, existing, new):
+        existing.immutable = []
+        super().check_set_memory_immutable_policy(existing, new)
 
 
 @directory.register
