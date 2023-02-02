@@ -724,6 +724,7 @@ class TestOverrideRules(base.BaseTest):
         'Retevis_RA85',
         'Retevis_RA685',
         'Retevis_RB17P',
+        'Retevis_RB27',
     ]
 
     def _test_radio_override_immutable_policy(self, rclass):
