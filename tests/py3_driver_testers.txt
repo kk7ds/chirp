@@ -76,6 +76,7 @@ Icom_IC-2730A,#10261,17-Dec-2022
 Icom_IC-2820H,@kk7ds,22-Oct-2022
 Icom_IC-7200,@kk7ds,22-Oct-2022
 Icom_IC-7300,@kk7ds,22-Oct-2022
+Icom_IC-746,#10346,3-Feb-2023
 Icom_IC-7610,@kk7ds,24-Oct-2022
 Icom_IC-91_92AD,@kk7ds,23-Nov-2022
 Icom_IC-910,@mfncooper,1-Oct-2021
@@ -125,11 +126,11 @@ Kenwood_TM-D710G_CloneMode,@kk7ds,22-Oct-2022
 Kenwood_TM-G707,*kenwood_live,12-Dec-2022
 Kenwood_TM-V7,*kenwood_live,12-Dec-2022
 Kenwood_TM-V71,@kk7ds,21-Oct-2022
-Kenwood_TK-2140K,+Kenwood_TK-3140K,2-Feb-2022
+Kenwood_TK-2140K,+Kenwood_TK-3140K,2-Feb-2023
 Kenwood_TK-2180,@kk7ds,4-Dec-2022
-Kenwood_TK-3140K,@kk7ds,2-Feb-2022
-Kenwood_TK-3140K2,+Kenwood_TK-3140K,2-Feb-2022
-Kenwood_TK-3140K3,+Kenwood_TK-3140K,2-Feb-2022
+Kenwood_TK-3140K,@kk7ds,2-Feb-2023
+Kenwood_TK-3140K2,+Kenwood_TK-3140K,2-Feb-2023
+Kenwood_TK-3140K3,+Kenwood_TK-3140K,2-Feb-2023
 Kenwood_TK-3180K,@kk7ds,4-Dec-2022
 Kenwood_TK-3180K2,+Kenwood_TK-3180K,4-Dec-2022
 Kenwood_TK-7102,@kk7ds,15-Feb-2019
@@ -258,7 +259,7 @@ TDXone_TD-Q8A,@KC9HI,18-Dec-2022
 TIDRADIO_TD-H6,@kk7ds,21-Oct-2022
 TID_TD-M8,+Retevis_RT22,9-Dec-2022
 TYT_TH-UVF1,@kk7ds,13-Dec-2022
-TYT_TH-UVF8D,@MELERIX,2-Feb-2022
+TYT_TH-UVF8D,@MELERIX,2-Feb-2023
 TYT_TH-UV8000,@KC9HI,6-Jan-2023
 TYT_TH-UV88,@KC9HI,5-Dec-2022
 TYT_TH9000_144,+Retevis_RT9000D_136-174,8-Dec-2022

@@ -87,7 +87,7 @@
 | <a name="Icom_IC-7100"></a> Icom_IC-7100 |  |  | Yes | 0.06% |
 | <a name="Icom_IC-7200"></a> Icom_IC-7200 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |  |
 | <a name="Icom_IC-7300"></a> Icom_IC-7300 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.03% |
-| <a name="Icom_IC-746"></a> Icom_IC-746 |  |  | Yes |  |
+| <a name="Icom_IC-746"></a> Icom_IC-746 | [Reported working](https://chirp.danplanet.com/issues/10346) | 3-Feb-2023 | Yes |  |
 | <a name="Icom_IC-7610"></a> Icom_IC-7610 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.00% |
 | <a name="Icom_IC-910"></a> Icom_IC-910 | [@mfncooper](https://github.com/mfncooper) | 1-Oct-2021 | Yes | 0.00% |
 | <a name="Icom_IC-91_92AD"></a> Icom_IC-91_92AD | [@kk7ds](https://github.com/kk7ds) | 23-Nov-2022 | Yes | 0.03% |
@@ -130,7 +130,7 @@
 | <a name="Kenwood_TH-F7"></a> Kenwood_TH-F7 | [@sv1](https://github.com/sv1) | 19-Oct-2022 | Yes | 0.03% |
 | <a name="Kenwood_TH-G71"></a> Kenwood_TH-G71 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Kenwood_TH-K2"></a> Kenwood_TH-K2 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.00% |
-| <a name="Kenwood_TK-2140K"></a> Kenwood_TK-2140K | [Implied by Kenwood_TK-3140K](#user-content-Kenwood_TK-3140K) | 2-Feb-2022 | Yes |  |
+| <a name="Kenwood_TK-2140K"></a> Kenwood_TK-2140K | [Implied by Kenwood_TK-3140K](#user-content-Kenwood_TK-3140K) | 2-Feb-2023 | Yes |  |
 | <a name="Kenwood_TK-2180"></a> Kenwood_TK-2180 | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 | Yes | 0.04% |
 | <a name="Kenwood_TK-260"></a> Kenwood_TK-260 |  |  |  | 0.02% |
 | <a name="Kenwood_TK-260G"></a> Kenwood_TK-260G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes | 0.02% |
@@ -140,9 +140,9 @@
 | <a name="Kenwood_TK-272G"></a> Kenwood_TK-272G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes | 0.02% |
 | <a name="Kenwood_TK-278"></a> Kenwood_TK-278 |  |  |  | 0.02% |
 | <a name="Kenwood_TK-278G"></a> Kenwood_TK-278G | [Implied by Kenwood_TK-762G](#user-content-Kenwood_TK-762G) | 5-Dec-2022 | Yes | 0.01% |
-| <a name="Kenwood_TK-3140K"></a> Kenwood_TK-3140K | [@kk7ds](https://github.com/kk7ds) | 2-Feb-2022 | Yes |  |
-| <a name="Kenwood_TK-3140K2"></a> Kenwood_TK-3140K2 | [Implied by Kenwood_TK-3140K](#user-content-Kenwood_TK-3140K) | 2-Feb-2022 | Yes |  |
-| <a name="Kenwood_TK-3140K3"></a> Kenwood_TK-3140K3 | [Implied by Kenwood_TK-3140K](#user-content-Kenwood_TK-3140K) | 2-Feb-2022 | Yes |  |
+| <a name="Kenwood_TK-3140K"></a> Kenwood_TK-3140K | [@kk7ds](https://github.com/kk7ds) | 2-Feb-2023 | Yes |  |
+| <a name="Kenwood_TK-3140K2"></a> Kenwood_TK-3140K2 | [Implied by Kenwood_TK-3140K](#user-content-Kenwood_TK-3140K) | 2-Feb-2023 | Yes |  |
+| <a name="Kenwood_TK-3140K3"></a> Kenwood_TK-3140K3 | [Implied by Kenwood_TK-3140K](#user-content-Kenwood_TK-3140K) | 2-Feb-2023 | Yes |  |
 | <a name="Kenwood_TK-3180K"></a> Kenwood_TK-3180K | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 | Yes | 0.03% |
 | <a name="Kenwood_TK-3180K2"></a> Kenwood_TK-3180K2 | [Implied by Kenwood_TK-3180K](#user-content-Kenwood_TK-3180K) | 4-Dec-2022 | Yes | 0.01% |
 | <a name="Kenwood_TK-360"></a> Kenwood_TK-360 |  |  |  | 0.02% |
@@ -305,7 +305,7 @@
 | <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 | [@KC9HI](https://github.com/KC9HI) | 6-Jan-2023 | Yes | 0.31% |
 | <a name="TYT_TH-UV88"></a> TYT_TH-UV88 | [@KC9HI](https://github.com/KC9HI) | 5-Dec-2022 | Yes | 0.51% |
 | <a name="TYT_TH-UVF1"></a> TYT_TH-UVF1 | [@kk7ds](https://github.com/kk7ds) | 13-Dec-2022 | Yes | 0.06% |
-| <a name="TYT_TH-UVF8D"></a> TYT_TH-UVF8D | [@MELERIX](https://github.com/MELERIX) | 2-Feb-2022 | Yes | 0.05% |
+| <a name="TYT_TH-UVF8D"></a> TYT_TH-UVF8D | [@MELERIX](https://github.com/MELERIX) | 2-Feb-2023 | Yes | 0.05% |
 | <a name="TYT_TH9000_144"></a> TYT_TH9000_144 | [Implied by Retevis_RT9000D_136-174](#user-content-Retevis_RT9000D_136-174) | 8-Dec-2022 | Yes | 0.06% |
 | <a name="TYT_TH9000_220"></a> TYT_TH9000_220 | [Implied by Retevis_RT9000D_220-260](#user-content-Retevis_RT9000D_220-260) | 8-Dec-2022 | Yes | 0.04% |
 | <a name="TYT_TH9000_440"></a> TYT_TH9000_440 | [Implied by Retevis_RT9000D_400-490](#user-content-Retevis_RT9000D_400-490) | 8-Dec-2022 | Yes | 0.04% |
@@ -380,7 +380,7 @@
 
 **Drivers:** 375
 
-**Tested:** 82% (309/66) (92% of usage stats)
+**Tested:** 82% (310/65) (92% of usage stats)
 
 **Byte clean:** 88% (332/43)
 
