@@ -110,8 +110,9 @@ CHARSET_ALPHANUMERIC = \
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz 1234567890"
 CHARSET_ASCII = "".join([chr(x) for x in range(ord(" "), ord("~") + 1)])
 CHARSET_1252 = bytes(
-    [x for x in range(0x21, 0x100)
-     if x not in [0x81, 0x8D, 0x8F, 0x90, 0x9D]]).decode('cp1252')
+    [x for x in range(0x20, 0x100)
+     if x not in [0x7F, 0x81, 0x8D, 0x8F, 0x90, 0x9D, 0xA0, 0xAD]]
+    ).decode('cp1252')
 
 # http://aprs.org/aprs11/SSIDs.txt
 APRS_SSID = (
