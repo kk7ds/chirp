@@ -37,19 +37,19 @@ LOG = logging.getLogger(__name__)
 def uvf8d_identify(radio):
     """Do identify handshake with TYT TH-UVF8D"""
     try:
-        radio.pipe.write("\x02PROGRAM")
+        radio.pipe.write(b"\x02PROGRAM")
         ack = radio.pipe.read(2)
-        if ack != "PG":
+        if ack != b"PG":
             raise errors.RadioError("Radio did not ACK first command: %x" %
                                     ord(ack))
     except:
         raise errors.RadioError("Unable to communicate with the radio")
 
-    radio.pipe.write("\x02")
+    radio.pipe.write(b"\x02")
     ident = radio.pipe.read(32)
-    radio.pipe.write("A")
+    radio.pipe.write(b"A")
     r = radio.pipe.read(1)
-    if r != "A":
+    if r != b"A":
         raise errors.RadioError("Ack failed")
     return ident
 
@@ -57,14 +57,14 @@ def uvf8d_identify(radio):
 def tyt_uvf8d_download(radio):
     data = uvf8d_identify(radio)
     for i in range(0, 0x4000, 0x20):
-        msg = struct.pack(">cHb", "R", i, 0x20)
+        msg = struct.pack(">cHb", b"R", i, 0x20)
         radio.pipe.write(msg)
         block = radio.pipe.read(0x20 + 4)
         if len(block) != (0x20 + 4):
             raise errors.RadioError("Radio sent a short block")
-        radio.pipe.write("A")
+        radio.pipe.write(b"A")
         ack = radio.pipe.read(1)
-        if ack != "A":
+        if ack != b"A":
             raise errors.RadioError("Radio NAKed block")
         data += block[4:]
 
@@ -75,9 +75,9 @@ def tyt_uvf8d_download(radio):
             status.msg = "Cloning from radio"
             radio.status_fn(status)
 
-    radio.pipe.write("ENDR")
+    radio.pipe.write(b"ENDR")
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def tyt_uvf8d_upload(radio):
@@ -86,19 +86,19 @@ def tyt_uvf8d_upload(radio):
 
     radio.pipe.timeout = 1
 
-    if data != radio._mmap[:32]:
+    if data != radio._mmap[0:32]:
         raise errors.RadioError("Model mismatch: \n%s\n%s" %
                                 (util.hexprint(data),
-                                 util.hexprint(radio._mmap[:32])))
+                                 util.hexprint(radio._mmap[0:32])))
 
     for i in range(0, 0x4000, 0x20):
         addr = i + 0x20
-        msg = struct.pack(">cHb", "W", i, 0x20)
+        msg = struct.pack(">cHb", b"W", i, 0x20)
         msg += radio._mmap[addr:(addr + 0x20)]
 
         radio.pipe.write(msg)
         ack = radio.pipe.read(1)
-        if ack != "A":
+        if ack != b"A":
             raise errors.RadioError("Radio did not ack block %i" % i)
 
         if radio.status_fn:
@@ -109,7 +109,7 @@ def tyt_uvf8d_upload(radio):
             radio.status_fn(status)
 
     # End of clone?
-    radio.pipe.write("ENDW")
+    radio.pipe.write(b"ENDW")
 
     # Checksum?
     final_data = radio.pipe.read(3)
@@ -268,6 +268,7 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
     VENDOR = "TYT"
     MODEL = "TH-UVF8D"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -495,11 +496,13 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
 
         group.append(RadioSetting(
                 "a_channel", "A Selected Memory",
-                RadioSettingValueInteger(1, 128, _settings.a_channel + 1)))
+                RadioSettingValueInteger(1, 128,
+                                         min(_settings.a_channel + 1, 128))))
 
         group.append(RadioSetting(
                 "b_channel", "B Selected Memory",
-                RadioSettingValueInteger(1, 128, _settings.b_channel + 1)))
+                RadioSettingValueInteger(1, 128,
+                                         min(_settings.b_channel + 1, 128))))
 
         group.append(RadioSetting(
                 "a_display", "A Channel Display",
