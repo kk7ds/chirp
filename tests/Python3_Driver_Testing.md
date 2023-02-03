@@ -305,7 +305,7 @@
 | <a name="TYT_TH-UV8000"></a> TYT_TH-UV8000 | [@KC9HI](https://github.com/KC9HI) | 6-Jan-2023 | Yes | 0.31% |
 | <a name="TYT_TH-UV88"></a> TYT_TH-UV88 | [@KC9HI](https://github.com/KC9HI) | 5-Dec-2022 | Yes | 0.51% |
 | <a name="TYT_TH-UVF1"></a> TYT_TH-UVF1 | [@kk7ds](https://github.com/kk7ds) | 13-Dec-2022 | Yes | 0.06% |
-| <a name="TYT_TH-UVF8D"></a> TYT_TH-UVF8D |  |  |  | 0.05% |
+| <a name="TYT_TH-UVF8D"></a> TYT_TH-UVF8D | [@MELERIX](https://github.com/MELERIX) | 2-Feb-2022 | Yes | 0.05% |
 | <a name="TYT_TH9000_144"></a> TYT_TH9000_144 | [Implied by Retevis_RT9000D_136-174](#user-content-Retevis_RT9000D_136-174) | 8-Dec-2022 | Yes | 0.06% |
 | <a name="TYT_TH9000_220"></a> TYT_TH9000_220 | [Implied by Retevis_RT9000D_220-260](#user-content-Retevis_RT9000D_220-260) | 8-Dec-2022 | Yes | 0.04% |
 | <a name="TYT_TH9000_440"></a> TYT_TH9000_440 | [Implied by Retevis_RT9000D_400-490](#user-content-Retevis_RT9000D_400-490) | 8-Dec-2022 | Yes | 0.04% |
@@ -380,9 +380,9 @@
 
 **Drivers:** 375
 
-**Tested:** 82% (308/67) (92% of usage stats)
+**Tested:** 82% (309/66) (92% of usage stats)
 
-**Byte clean:** 88% (331/44)
+**Byte clean:** 88% (332/43)
 
 ## Meaning of this testing
 
