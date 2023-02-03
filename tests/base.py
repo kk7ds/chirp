@@ -40,11 +40,15 @@ class DriverTest(unittest.TestCase):
 
     def get_mem(self):
         """Attempt to build a suitable memory for testing"""
-        # If we have a memory in spot 1, use that
+        # Check to see if memory #1 has immutable fields, and if so,
+        # use that as our template instead of constructing a memory ourselves
         try:
             m = self.radio.get_memory(1)
             # Don't return extra because it will never match properly
-            del m.extra
+            try:
+                del m.extra
+            except AttributeError:
+                pass
             # Pre-filter the name so it will match what we expect back
             if 'name' not in m.immutable:
                 m.name = self.radio.filter_name(m.name)
@@ -52,7 +56,8 @@ class DriverTest(unittest.TestCase):
             # weirdness if we much with other values, like offset.
             if 'duplex' not in m.immutable:
                 m.duplex = ''
-            return m
+            if m.immutable:
+                return m
         except Exception:
             pass
 
@@ -68,10 +73,13 @@ class DriverTest(unittest.TestCase):
 
         for i in range(*self.rf.memory_bounds):
             m.number = i
-            if not self.radio.validate_memory(m):
+            msgs = self.radio.validate_memory(m)
+            warnings, errors = chirp_common.split_validation_msgs(msgs)
+            if not errors:
                 return m
 
-        self.fail("No mutable memory locations found")
+        self.fail("No mutable memory locations found - unable to run this "
+                  "test because I don't have a memory to test with")
 
     def assertEqualMem(self, a, b, ignore=None):
         if a.tmode == "Cross":
