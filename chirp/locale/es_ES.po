@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-30 00:10-0400\n"
-"PO-Revision-Date: 2022-06-30 00:12-0400\n"
+"POT-Creation-Date: 2023-02-03 01:45-0300\n"
+"PO-Revision-Date: 2023-02-03 03:43-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -15,12 +15,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.1\n"
+"X-Generator: Poedit 3.2.2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: chirp/drivers/bj9900.py:112
+#: drivers/bj9900.py:112
 msgid ""
 "This is experimental support for BJ-9900 which is still under development.\n"
 "Please ensure you have a good backup with OEM software.\n"
@@ -32,23 +32,20 @@ msgstr ""
 "¡También por favor envía en solicitudes de errores y mejoras!\n"
 "Has sido advertido. ¡Procede bajo tu propio riesgo!"
 
-#: chirp/drivers/bj9900.py:137 chirp/drivers/ft450d.py:444
-#: chirp/drivers/ft817.py:339
+#: drivers/bj9900.py:137 drivers/ft450d.py:441 drivers/ft817.py:342
 msgid "Cloning from radio"
 msgstr "Clonando desde radio"
 
-#: chirp/drivers/bj9900.py:164 chirp/drivers/ft450d.py:473
-#: chirp/drivers/ft817.py:377
+#: drivers/bj9900.py:164 drivers/ft450d.py:470 drivers/ft817.py:380
 msgid "Cloning to radio"
 msgstr "Clonando a radio"
 
-#: chirp/drivers/ft450d.py:491 chirp/drivers/ft60.py:88
-#: chirp/drivers/ft817.py:403
+#: drivers/ft450d.py:488 drivers/ft60.py:88 drivers/ft817.py:407
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "La radio no reconoció el bloque %i"
 
-#: chirp/drivers/ft817.py:318
+#: drivers/ft817.py:321
 msgid ""
 "Unable to read last block. This often happens when the selected model is US "
 "but the radio is a non-US one (or widebanded). Please choose the correct "
@@ -58,1265 +55,29 @@ msgstr ""
 "seleccionado es de EE.UU pero la radio no es una de EE.UU (o de banda "
 "ancha). Por favor elije el modelo correcto e intenta de nuevo."
 
-#: chirp/drivers/ft817.py:356
+#: drivers/ft817.py:359
 msgid "Clone completed, checking for spurious bytes"
 msgstr "Clonado completado, comprobando por bytes espurios"
 
-#: chirp/drivers/ft817.py:361
+#: drivers/ft817.py:364
 msgid ""
 "Radio sent data after the last awaited block, this happens when the selected "
 "model is a non-US but the radio is a US one. Please choose the correct model "
 "and try again."
 msgstr ""
 "La radio envió datos después del último bloque esperado, esto sucede cuando "
-"el modelo seleccionado no es de EE.UU. pero la radio es una de EE.UU. Por "
+"el modelo seleccionado no es de EE.UU pero la radio es una de EE.UU. Por "
 "favor elije el modelo correcto e intenta de nuevo."
 
-#: chirp/drivers/vx5.py:117
+#: drivers/vx5.py:117
 #, python-brace-format
 msgid "{bank} is full"
 msgstr "{bank} está lleno"
 
-#: chirp/drivers/vx5.py:134
+#: drivers/vx5.py:134
 #, python-brace-format
 msgid "Memory {num} not in bank {bank}"
 msgstr "Memoria {num} no en banco {bank}"
-
-#: chirp/ui/bandplans.py:96
-msgid ""
-"Band plans define default channel settings for frequencies in a region.  "
-"Choose a band plan or None for completely manual channel settings."
-msgstr ""
-"Los planes de banda definen los ajustes predeterminados de canal para las "
-"frecuencias en una región. Elije una plan de banda o Ninguno para ajustes de "
-"canal completamente manuales."
-
-#: chirp/ui/bankedit.py:58
-#, python-format
-msgid "Retrieving %s information"
-msgstr "Recuperando %s información"
-
-#: chirp/ui/bankedit.py:81
-#, python-format
-msgid "Setting name on %s"
-msgstr "Estableciendo nombre en %s"
-
-#: chirp/ui/bankedit.py:93 chirp/ui/bankedit.py:283
-#: chirp/ui/importdialog.py:601 chirp/ui/memdetail.py:334
-#: chirp/ui/memedit.py:67 chirp/ui/memedit.py:88 chirp/ui/memedit.py:343
-#: chirp/ui/memedit.py:1093 chirp/ui/memedit.py:1150 chirp/ui/memedit.py:1301
-#: chirp/ui/memedit.py:1303
-msgid "Name"
-msgstr "Nombre"
-
-#: chirp/ui/bankedit.py:222
-#, python-brace-format
-msgid "Updating {type} index for memory {num}"
-msgstr "Actualizando {type} índice para memoria {num}"
-
-#: chirp/ui/bankedit.py:232
-#, python-brace-format
-msgid "Updating mapping information for memory {num}"
-msgstr "Actualizando información de mapeado para memoria {num}"
-
-#: chirp/ui/bankedit.py:238 chirp/ui/bankedit.py:269
-#, python-brace-format
-msgid "Getting memory {num}"
-msgstr "Obteniendo memoria {num}"
-
-#: chirp/ui/bankedit.py:253
-#, python-brace-format
-msgid "Setting index for memory {num}"
-msgstr "Estableciendo índice para memoria {num}"
-
-#: chirp/ui/bankedit.py:262
-#, python-brace-format
-msgid "Getting {type} for memory {num}"
-msgstr "Obteniendo {type} para memoria {num}"
-
-#: chirp/ui/bankedit.py:281 chirp/ui/memedit.py:65 chirp/ui/memedit.py:195
-#: chirp/ui/memedit.py:342 chirp/ui/memedit.py:426 chirp/ui/memedit.py:445
-#: chirp/ui/memedit.py:459 chirp/ui/memedit.py:482 chirp/ui/memedit.py:504
-#: chirp/ui/memedit.py:530 chirp/ui/memedit.py:542 chirp/ui/memedit.py:566
-#: chirp/ui/memedit.py:568 chirp/ui/memedit.py:641 chirp/ui/memedit.py:655
-#: chirp/ui/memedit.py:657 chirp/ui/memedit.py:699 chirp/ui/memedit.py:701
-#: chirp/ui/memedit.py:775 chirp/ui/memedit.py:909 chirp/ui/memedit.py:983
-#: chirp/ui/memedit.py:1036 chirp/ui/memedit.py:1091 chirp/ui/memedit.py:1117
-#: chirp/ui/memedit.py:1130 chirp/ui/memedit.py:1148 chirp/ui/memedit.py:1477
-msgid "Loc"
-msgstr "Lugar"
-
-#: chirp/ui/bankedit.py:282 chirp/ui/importdialog.py:602
-#: chirp/ui/memdetail.py:332 chirp/ui/memedit.py:66 chirp/ui/memedit.py:89
-#: chirp/ui/memedit.py:210 chirp/ui/memedit.py:334 chirp/ui/memedit.py:344
-#: chirp/ui/memedit.py:407 chirp/ui/memedit.py:415 chirp/ui/memedit.py:1094
-#: chirp/ui/memedit.py:1147
-msgid "Frequency"
-msgstr "Frecuencia"
-
-#: chirp/ui/bankedit.py:284
-msgid "Index"
-msgstr "Índice"
-
-#: chirp/ui/bankedit.py:375
-#, python-brace-format
-msgid "Getting {type} information for memory {num}"
-msgstr "Obteniendo {type} información para memoria {num}"
-
-#: chirp/ui/bankedit.py:401
-#, python-format
-msgid "Getting %s information"
-msgstr "Obteniendo %s información"
-
-#: chirp/ui/clone.py:40
-#, python-brace-format
-msgid "{vendor} {model} on {port}"
-msgstr "{vendor} {model} en {port}"
-
-#: chirp/ui/clone.py:111 chirp/ui/clone.py:112 chirp/ui/clone.py:172
-msgid "Detect"
-msgstr "Detectar"
-
-#: chirp/ui/clone.py:135
-msgid "Port"
-msgstr "Puerto"
-
-#: chirp/ui/clone.py:136
-msgid "Vendor"
-msgstr "Vendedor"
-
-#: chirp/ui/clone.py:137
-msgid "Model"
-msgstr "Modelo"
-
-#: chirp/ui/clone.py:150
-msgid "Radio"
-msgstr "Radio"
-
-#: chirp/ui/clone.py:177
-#, python-brace-format
-msgid "Unable to detect radio on {port}"
-msgstr "No se puede detectar radio en {port}"
-
-#: chirp/ui/clone.py:209
-#, python-brace-format
-msgid "Internal error: Unable to upload to {model}"
-msgstr "Error interno: No se puede subir a {model}"
-
-#: chirp/ui/cloneprog.py:44
-msgid "Clone Progress"
-msgstr "Progreso de clonado"
-
-#: chirp/ui/cloneprog.py:47
-msgid "Cloning"
-msgstr "Clonando"
-
-#: chirp/ui/cloneprog.py:56
-msgid "Cancel"
-msgstr "Cancelar"
-
-#: chirp/ui/common.py:246
-msgid "Completed"
-msgstr "Completado"
-
-#: chirp/ui/common.py:247
-msgid "idle"
-msgstr "inactivo"
-
-#: chirp/ui/common.py:354
-msgid "Details"
-msgstr "Detalles"
-
-#: chirp/ui/common.py:357
-msgid "Proceed?"
-msgstr "¿Proceder?"
-
-#: chirp/ui/common.py:366
-msgid "Do not show this next time"
-msgstr "No mostrar esto la próxima vez"
-
-#: chirp/ui/dstaredit.py:44
-msgid "Callsign"
-msgstr "Señal de llamada"
-
-#: chirp/ui/dstaredit.py:129
-msgid "Your callsign"
-msgstr "Tu señal de llamada"
-
-#: chirp/ui/dstaredit.py:137
-msgid "Repeater callsign"
-msgstr "Señal de llamada del repetidor"
-
-#: chirp/ui/dstaredit.py:145
-msgid "My callsign"
-msgstr "Mi señal de llamada"
-
-#: chirp/ui/dstaredit.py:175 chirp/ui/memedit.py:1640
-msgid "Downloading URCALL list"
-msgstr "Descargando lista URCALL"
-
-#: chirp/ui/dstaredit.py:179 chirp/ui/memedit.py:1652
-msgid "Downloading RPTCALL list"
-msgstr "Descargando lista RPTCALL"
-
-#: chirp/ui/dstaredit.py:183
-msgid "Downloading MYCALL list"
-msgstr "Descargando lista MYCALL"
-
-#: chirp/ui/editorset.py:85
-#, python-format
-msgid "Memories (%(variant)s)"
-msgstr "Memorias (%(variant)s)"
-
-#: chirp/ui/editorset.py:89
-msgid "Memories"
-msgstr "Memorias"
-
-#: chirp/ui/editorset.py:100
-msgid "D-STAR"
-msgstr "D-STAR"
-
-#: chirp/ui/editorset.py:149
-msgid "Settings"
-msgstr "Ajustes"
-
-#: chirp/ui/editorset.py:158
-msgid "Browser"
-msgstr "Navegador"
-
-#: chirp/ui/editorset.py:279
-#, python-brace-format
-msgid "The {vendor} {model} has multiple independent sub-devices"
-msgstr "El {vendor} {model} tiene múltiples sub dispositivos independientes"
-
-#: chirp/ui/editorset.py:281
-msgid "Choose one to import from:"
-msgstr "Elige uno para importar desde:"
-
-#: chirp/ui/editorset.py:286
-msgid "Cancelled"
-msgstr "Cancelado"
-
-#: chirp/ui/editorset.py:291
-msgid "Internal Error"
-msgstr "Error interno"
-
-#: chirp/ui/editorset.py:332
-#, python-brace-format
-msgid ""
-"There were errors while opening {file}. The affected memories will not be "
-"importable!"
-msgstr ""
-"Hubo errores mientras se abría {file}. ¡Las memorias afectadas no serán "
-"importables!"
-
-#: chirp/ui/editorset.py:344
-#, python-brace-format
-msgid "There was an error during import: {error}"
-msgstr "Hubo un error durante la importación: {error}"
-
-#: chirp/ui/editorset.py:352
-msgid "Unsupported file type"
-msgstr "Tipo de archivo no soportado"
-
-#: chirp/ui/editorset.py:368 chirp/ui/editorset.py:383
-#, python-brace-format
-msgid "There was an error during export: {error}"
-msgstr "Hubo un error durante la exportación: {error}"
-
-#: chirp/ui/importdialog.py:96
-#, python-brace-format
-msgid ""
-"Location {number} is already being imported. Choose another value for 'New "
-"Location' before selection 'Import'"
-msgstr ""
-"Localización {number} ya está siendo importada. Elije algún otro valor para "
-"'Nueva Localización' antes de seleccionar 'Importar'"
-
-#: chirp/ui/importdialog.py:128
-msgid "Invalid value. Must be an integer."
-msgstr "Valor invalido. Debe ser un entero."
-
-#: chirp/ui/importdialog.py:137
-#, python-brace-format
-msgid "Location {number} is already being imported"
-msgstr "Localización {number} ya está siendo importada"
-
-#: chirp/ui/importdialog.py:194
-msgid "Updating URCALL list"
-msgstr "Actualizando lista URCALL"
-
-#: chirp/ui/importdialog.py:199
-msgid "Updating RPTCALL list"
-msgstr "Actualizando lista RPTCALL"
-
-#: chirp/ui/importdialog.py:272
-#, python-brace-format
-msgid "Setting memory {number}"
-msgstr "Estableciendo memoria {number}"
-
-#: chirp/ui/importdialog.py:277
-msgid "Importing bank information"
-msgstr "Importando información de banco"
-
-#: chirp/ui/importdialog.py:281
-msgid "Error importing memories:"
-msgstr "Error importando memorias:"
-
-#: chirp/ui/importdialog.py:393
-msgid "All"
-msgstr "Todo"
-
-#: chirp/ui/importdialog.py:399
-msgid "None"
-msgstr "Ninguno"
-
-#: chirp/ui/importdialog.py:405
-msgid "Inverse"
-msgstr "Inverso"
-
-#: chirp/ui/importdialog.py:411
-msgid "Select"
-msgstr "Seleccionar"
-
-#: chirp/ui/importdialog.py:457
-msgid "Auto"
-msgstr "Auto"
-
-#: chirp/ui/importdialog.py:463
-msgid "Reverse"
-msgstr "Reverso"
-
-#: chirp/ui/importdialog.py:469
-msgid "Adjust New Location"
-msgstr "Ajustar nueva localización"
-
-#: chirp/ui/importdialog.py:479
-msgid "Confirm overwrites"
-msgstr "Confirmar sobreescritura"
-
-#: chirp/ui/importdialog.py:485
-msgid "Options"
-msgstr "Opciones"
-
-#: chirp/ui/importdialog.py:558
-msgid "Cannot be imported because"
-msgstr "No puede ser importado porque"
-
-#: chirp/ui/importdialog.py:575
-msgid "Import From File"
-msgstr "Importar desde archivo"
-
-#: chirp/ui/importdialog.py:576 chirp/ui/mainapp.py:2023
-msgid "Import"
-msgstr "Importar"
-
-#: chirp/ui/importdialog.py:599
-msgid "To"
-msgstr "A"
-
-#: chirp/ui/importdialog.py:600
-msgid "From"
-msgstr "Desde"
-
-#: chirp/ui/importdialog.py:603 chirp/ui/memdetail.py:362
-#: chirp/ui/memedit.py:81 chirp/ui/memedit.py:103 chirp/ui/memedit.py:1108
-#: chirp/ui/memedit.py:1165 chirp/ui/memedit.py:1306
-msgid "Comment"
-msgstr "Comentario"
-
-#: chirp/ui/importdialog.py:607
-msgid "Location memory will be imported into"
-msgstr "Localización de memoria será importada en"
-
-#: chirp/ui/importdialog.py:608
-msgid "Location of memory in the file being imported"
-msgstr "Localización de la memoria en el archivo siendo importado"
-
-#: chirp/ui/importdialog.py:631
-msgid "Preparing memory list..."
-msgstr "Preparando lista de memoria..."
-
-#: chirp/ui/importdialog.py:641
-msgid "Export To File"
-msgstr "Exportar a archivo"
-
-#: chirp/ui/importdialog.py:642 chirp/ui/mainapp.py:2024
-msgid "Export"
-msgstr "Exportar"
-
-#: chirp/ui/inputdialog.py:94
-msgid "An error has occurred"
-msgstr "Ha ocurrido un error"
-
-#: chirp/ui/inputdialog.py:154
-msgid "File Exists"
-msgstr "Archivo existe"
-
-#: chirp/ui/inputdialog.py:157
-#, python-brace-format
-msgid "The file {name} already exists. Do you want to overwrite it?"
-msgstr "El archivo {name} ya existe. ¿Quieres sobrescribirlo?"
-
-#: chirp/ui/mainapp.py:272 chirp/ui/mainapp.py:513
-msgid "Untitled"
-msgstr "Sin título"
-
-#: chirp/ui/mainapp.py:326 chirp/ui/mainapp.py:875
-msgid "All files"
-msgstr "Todos los archivos"
-
-#: chirp/ui/mainapp.py:327 chirp/ui/mainapp.py:876
-msgid "CHIRP Radio Images"
-msgstr "Imagenes de radio CHIRP"
-
-#: chirp/ui/mainapp.py:328 chirp/ui/mainapp.py:877 chirp/ui/mainapp.py:1557
-msgid "CSV Files"
-msgstr "Archivos CSV"
-
-#: chirp/ui/mainapp.py:329 chirp/ui/mainapp.py:878
-msgid "DAT Files"
-msgstr "Archivos DAT"
-
-#: chirp/ui/mainapp.py:330 chirp/ui/mainapp.py:879
-msgid "EVE Files (VX5)"
-msgstr "Archivos EVE (VX5)"
-
-#: chirp/ui/mainapp.py:331 chirp/ui/mainapp.py:880
-msgid "ICF Files"
-msgstr "Archivos ICF"
-
-#: chirp/ui/mainapp.py:332 chirp/ui/mainapp.py:884
-msgid "VX5 Commander Files"
-msgstr "Archivos de VX5 Commander"
-
-#: chirp/ui/mainapp.py:333 chirp/ui/mainapp.py:885
-msgid "VX6 Commander Files"
-msgstr "Archivos de VX6 Commander"
-
-#: chirp/ui/mainapp.py:334 chirp/ui/mainapp.py:886
-msgid "VX7 Commander Files"
-msgstr "Archivos de VX7 Commander"
-
-#: chirp/ui/mainapp.py:348
-msgid ""
-"ICF files cannot be edited, only displayed or imported into another file. "
-"Open in read-only mode?"
-msgstr ""
-"Archivos ICF no se pueden editar, solo mostrarse o importarse en algún otro "
-"archivo. ¿Abrir en modo solo lectura?"
-
-#: chirp/ui/mainapp.py:371
-msgid ""
-"Unable to open this image. It was generated with a newer version of CHIRP "
-"and thus may be for a radio model that is not supported by this version. "
-"Please update to the latest version of CHIRP and try again."
-msgstr ""
-"No se puede abrir esta imagen. Esta fue generada con una versión más nueva "
-"de CHIRP y por lo tanto puede ser para un modelo de radio que no es "
-"soportada por esta versión. Por favor actualiza a la última versión de CHIRP "
-"e intenta de nuevo."
-
-#: chirp/ui/mainapp.py:380
-msgid "Unable to open this image: unsupported model"
-msgstr "No se puede abrir esta imagen: modelo no soportado"
-
-#: chirp/ui/mainapp.py:400
-#, python-brace-format
-msgid "There was an error opening {fname}: {error}"
-msgstr "Hubo un error abriendo {fname}: {error}"
-
-#: chirp/ui/mainapp.py:412
-#, python-brace-format
-msgid "{num} errors during open:"
-msgstr "{num} errores mientras se abría:"
-
-#: chirp/ui/mainapp.py:420
-msgid "Note:"
-msgstr "Nota:"
-
-#: chirp/ui/mainapp.py:421
-#, python-brace-format
-msgid ""
-"The {vendor} {model} operates in <b>live mode</b>. This means that any "
-"changes you make are immediately sent to the radio. Because of this, you "
-"cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to "
-"edit the contents offline, please <u>Export</u> to a CSV file, using the "
-"<b>File menu</b>."
-msgstr ""
-"El {vendor} {model} opera en <b>modo en vivo</b>. Esto significa que "
-"cualquier cambio que hagas es enviado inmediatamente a la radio. Debido a "
-"esto , no puedes usar las operaciones <u>Guardar</u> o <u>Subir</u>. Si "
-"quieres editar el contenido sin conexón, por favor <u>Exporta</u> a un "
-"archivo CSV, usando el <b>menú Archivo</b>."
-
-#: chirp/ui/mainapp.py:430
-msgid "Don't show this again"
-msgstr "No mostrar esto de neuvo"
-
-#: chirp/ui/mainapp.py:464
-#, python-brace-format
-msgid "{vendor} {model} image file"
-msgstr "archivo de imagen {vendor} {model}"
-
-#: chirp/ui/mainapp.py:480
-msgid "VX7 Commander"
-msgstr "VX7 Commander"
-
-#: chirp/ui/mainapp.py:482
-msgid "VX6 Commander"
-msgstr "VX6 Commander"
-
-#: chirp/ui/mainapp.py:484
-msgid "EVE"
-msgstr "EVE"
-
-#: chirp/ui/mainapp.py:485
-msgid "VX5 Commander"
-msgstr "VX5 Commander"
-
-#: chirp/ui/mainapp.py:562
-msgid "Open recent file"
-msgstr "Abrir archivo reciente"
-
-#: chirp/ui/mainapp.py:631
-#, python-brace-format
-msgid "Import stock configuration {name}"
-msgstr "Importar configuración original {name}"
-
-#: chirp/ui/mainapp.py:647
-#, python-brace-format
-msgid "Open stock configuration {name}"
-msgstr "Abrir configuración original {name}"
-
-#: chirp/ui/mainapp.py:668
-msgid "Proceed with experimental driver?"
-msgstr "¿Proceder con controlador experimental?"
-
-#: chirp/ui/mainapp.py:670
-msgid "This radio's driver is experimental. Do you want to proceed?"
-msgstr "El controlador de esta radio es experimental. ¿Quieres proceder?"
-
-#: chirp/ui/mainapp.py:689
-#, python-brace-format
-msgid "{name} Information"
-msgstr "{name} Información"
-
-#: chirp/ui/mainapp.py:691
-#, python-brace-format
-msgid "{information}"
-msgstr "{information}"
-
-#: chirp/ui/mainapp.py:695
-msgid "Don't show information for any radio again"
-msgstr "No mostrar información para alguna radio de nuevo"
-
-#: chirp/ui/mainapp.py:719
-#, python-brace-format
-msgid "{name} Instructions"
-msgstr "{name} Instrucciones"
-
-#: chirp/ui/mainapp.py:721
-#, python-brace-format
-msgid "{instructions}"
-msgstr "{instructions}"
-
-#: chirp/ui/mainapp.py:725
-msgid "Don't show instructions for any radio again"
-msgstr "No mostrar instrucciones para alguna radio de nuevo"
-
-#: chirp/ui/mainapp.py:840
-msgid "Save Changes?"
-msgstr "¿Guardar cambios?"
-
-#: chirp/ui/mainapp.py:846
-msgid "File is modified, save changes before closing?"
-msgstr "El archivo está modificado, ¿guardar los cambios antes de cerrar?"
-
-#: chirp/ui/mainapp.py:881
-msgid "Kenwood HMK Files"
-msgstr "Archivos Kenwood HMK"
-
-#: chirp/ui/mainapp.py:882
-msgid "Kenwood ITM Files"
-msgstr "Archivos Kenwood ITM"
-
-#: chirp/ui/mainapp.py:883
-msgid "Travel Plus Files"
-msgstr "Archivos Travel Plus"
-
-#: chirp/ui/mainapp.py:904
-msgid "DMR-MARC Repeater Database Dump"
-msgstr "Volcado de la base de datos de repetidor DMR-MARC"
-
-#: chirp/ui/mainapp.py:1014 chirp/ui/mainapp.py:1121
-msgid "RepeaterBook Query"
-msgstr "Consultar RepeaterBook"
-
-#: chirp/ui/mainapp.py:1075 chirp/ui/mainapp.py:1181
-msgid "RepeaterBook query failed"
-msgstr "Consulta RepeaterBook fallida"
-
-#: chirp/ui/mainapp.py:1248
-#, python-format
-msgid "Invalid value for %s"
-msgstr "Valor inválido para %s"
-
-#: chirp/ui/mainapp.py:1271
-msgid "Query failed"
-msgstr "Consulta fallida"
-
-#: chirp/ui/mainapp.py:1366 chirp/ui/mainapp.py:1431
-msgid "RadioReference.com Query"
-msgstr "Consultar RadioReference.com"
-
-#: chirp/ui/mainapp.py:1502
-msgid "RadioReference.com Province Query"
-msgstr "Consulta provincia RadioReference.com"
-
-#: chirp/ui/mainapp.py:1603
-msgid "With significant contributions from:"
-msgstr "Con contribuciones significativas de:"
-
-#: chirp/ui/mainapp.py:1639
-msgid "Select Columns"
-msgstr "Seleccionar columnas"
-
-#: chirp/ui/mainapp.py:1656
-#, python-brace-format
-msgid "Visible columns for {radio}"
-msgstr "Columnas visibles para {radio}"
-
-#: chirp/ui/mainapp.py:1719
-msgid "Reporting is disabled"
-msgstr "Reportar está deshabilitado"
-
-#: chirp/ui/mainapp.py:1721
-msgid ""
-"The reporting feature of CHIRP is designed to help <u>improve quality</u> by "
-"allowing the authors to focus on the radio drivers used most often and "
-"errors experienced by the users. The reports contain no identifying "
-"information and are used only for statistical purposes by the authors. Your "
-"privacy is extremely important, but <u>please consider leaving this feature "
-"enabled to help make CHIRP better!</u>\n"
-"\n"
-"<b>Are you sure you want to disable this feature?</b>"
-msgstr ""
-"La función de reportar de CHIRP está diseñada para ayudar a <u>mejorar la "
-"calidad</u> al permitir a los autores enfocarse en los controladores de las "
-"radios usadas mas frecuentemente y errores experimentados por los usuarios. "
-"Los reportes no contienen información de identificación y solo son usados "
-"para propósitos estadísticos por los autores. Tu privacidad es "
-"extremadamente importante, pero <u>¡por favor considera dejar esta función "
-"habilitada para ayudar a hacer a CHIRP mejor!</u>\n"
-"\n"
-"<b>¿Seguro que quieres deshabilitar esta función?</b>"
-
-#: chirp/ui/mainapp.py:1764
-msgid ""
-"Choose a language or Auto to use the operating system default. You will need "
-"to restart the application before the change will take effect"
-msgstr ""
-"Elige un lenguaje o Auto para usar el por defecto del sistema operativo. "
-"Tendrás que reiniciar la aplicación antes para que el cambio surta efecto"
-
-#: chirp/ui/mainapp.py:1777
-msgid "Python Modules"
-msgstr "Módulos Python"
-
-#: chirp/ui/mainapp.py:1778
-msgid "Modules"
-msgstr "Modulos"
-
-#: chirp/ui/mainapp.py:1982
-msgid "_File"
-msgstr "_Archivo"
-
-#: chirp/ui/mainapp.py:1985
-msgid "Open Stock Config"
-msgstr "Abrir configuración original"
-
-#: chirp/ui/mainapp.py:1986
-msgid "Open _Recent"
-msgstr "Abrir _reciente"
-
-#: chirp/ui/mainapp.py:1987
-msgid "Clear Recently Opened"
-msgstr "Limpiar abierto recientemente"
-
-#: chirp/ui/mainapp.py:1991
-msgid "Load Module"
-msgstr "Cargar modulo"
-
-#: chirp/ui/mainapp.py:1994
-msgid "_Edit"
-msgstr "_Editar"
-
-#: chirp/ui/mainapp.py:1995
-msgid "_Cut"
-msgstr "_Cortar"
-
-#: chirp/ui/mainapp.py:1996
-msgid "_Copy"
-msgstr "_Copiar"
-
-#: chirp/ui/mainapp.py:1997
-msgid "_Paste"
-msgstr "_Pegar"
-
-#: chirp/ui/mainapp.py:1999
-msgid "_Delete"
-msgstr "_Borrar"
-
-#: chirp/ui/mainapp.py:2000
-msgid "Select _All"
-msgstr "Seleccionar _todo"
-
-#: chirp/ui/mainapp.py:2001
-msgid "Move _Up"
-msgstr "Mover _arriba"
-
-#: chirp/ui/mainapp.py:2003
-msgid "Move Dow_n"
-msgstr "Mover abaj_o"
-
-#: chirp/ui/mainapp.py:2005
-msgid "E_xchange"
-msgstr "I_ntercambiar"
-
-#: chirp/ui/mainapp.py:2007 chirp/ui/memedit.py:888
-msgid "P_roperties"
-msgstr "P_ropiedades"
-
-#: chirp/ui/mainapp.py:2008
-msgid "_View"
-msgstr "_Ver"
-
-#: chirp/ui/mainapp.py:2009
-msgid "Columns"
-msgstr "Columnas"
-
-#: chirp/ui/mainapp.py:2010
-msgid "Developer"
-msgstr "Desarrollador"
-
-#: chirp/ui/mainapp.py:2011 chirp/ui/memedit.py:889
-msgid "Show Raw Memory"
-msgstr "Mostrar memoria en bruto"
-
-#: chirp/ui/mainapp.py:2013 chirp/ui/memedit.py:890
-msgid "Diff Raw Memories"
-msgstr "Diferenciar memorias en bruto"
-
-#: chirp/ui/mainapp.py:2015
-msgid "Diff Tabs"
-msgstr "Diferenciar pestañas"
-
-#: chirp/ui/mainapp.py:2017
-msgid "Change Language"
-msgstr "Cambiar lenguaje"
-
-#: chirp/ui/mainapp.py:2018
-msgid "_Radio"
-msgstr "_Radio"
-
-#: chirp/ui/mainapp.py:2019
-msgid "Download From Radio"
-msgstr "Descargar desde radio"
-
-#: chirp/ui/mainapp.py:2021
-msgid "Upload To Radio"
-msgstr "Subir a radio"
-
-#: chirp/ui/mainapp.py:2025
-msgid "Import From Data Source"
-msgstr "Importar desde fuente de datos"
-
-#: chirp/ui/mainapp.py:2027 chirp/ui/mainapp.py:2041
-msgid "DMR-MARC Repeaters"
-msgstr "Repetidores DMR-MARC"
-
-#: chirp/ui/mainapp.py:2028 chirp/ui/mainapp.py:2042
-msgid "RadioReference"
-msgstr "RadioReference"
-
-#: chirp/ui/mainapp.py:2029 chirp/ui/mainapp.py:2043
-msgid "RadioReference.com US"
-msgstr "RadioReference.com EE.UU"
-
-#: chirp/ui/mainapp.py:2031 chirp/ui/mainapp.py:2045
-msgid "RadioReference.com Canada"
-msgstr "RadioReference.com Canadá"
-
-#: chirp/ui/mainapp.py:2033 chirp/ui/mainapp.py:2047
-msgid "RFinder"
-msgstr "RFinder"
-
-#: chirp/ui/mainapp.py:2034 chirp/ui/mainapp.py:2049
-msgid "RepeaterBook"
-msgstr "RepeaterBook"
-
-#: chirp/ui/mainapp.py:2035 chirp/ui/mainapp.py:2050
-msgid "RepeaterBook Political Query"
-msgstr "Consulta política de RepeaterBook"
-
-#: chirp/ui/mainapp.py:2037 chirp/ui/mainapp.py:2052
-msgid "RepeaterBook Proximity Query"
-msgstr "Consulta de proximidad de RepeaterBook"
-
-#: chirp/ui/mainapp.py:2039 chirp/ui/mainapp.py:2048
-msgid "przemienniki.net"
-msgstr "przemienniki.net"
-
-#: chirp/ui/mainapp.py:2040
-msgid "Query Data Source"
-msgstr "Consultar fuente de datos"
-
-#: chirp/ui/mainapp.py:2054
-msgid "CHIRP Native File"
-msgstr "Archivo nativo de CHIRP"
-
-#: chirp/ui/mainapp.py:2056
-msgid "CSV File"
-msgstr "Archivo CSV"
-
-#: chirp/ui/mainapp.py:2057
-msgid "Import From Stock Config"
-msgstr "Importar desde configuración original"
-
-#: chirp/ui/mainapp.py:2059
-msgid "Channel Defaults"
-msgstr "Predeterminados del canal"
-
-#: chirp/ui/mainapp.py:2062
-msgid "Help"
-msgstr "Ayuda"
-
-#: chirp/ui/mainapp.py:2064
-msgid "Get Help Online..."
-msgstr "Obtener ayuda en línea..."
-
-#: chirp/ui/mainapp.py:2075
-msgid "Report Statistics"
-msgstr "Reportar estadísticas"
-
-#: chirp/ui/mainapp.py:2077
-msgid "Hide Unused Fields"
-msgstr "Ocultar campos no usados"
-
-#: chirp/ui/mainapp.py:2079
-msgid "Smart Tone Modes"
-msgstr "Modos de tono inteligente"
-
-#: chirp/ui/mainapp.py:2081
-msgid "Show Information"
-msgstr "Mostrar información"
-
-#: chirp/ui/mainapp.py:2083
-msgid "Show Instructions"
-msgstr "Mostrar instrucciones"
-
-#: chirp/ui/mainapp.py:2085
-msgid "Enable Developer Functions"
-msgstr "Habilitar funciones de desarrollador"
-
-#: chirp/ui/mainapp.py:2206
-#, python-brace-format
-msgid "A new version of CHIRP is available: {ver}. "
-msgstr "Una nueva versión de CHIRP está disponible: {ver}. "
-
-#: chirp/ui/mainapp.py:2328
-msgid "Error reporting is enabled"
-msgstr "Reporte de errores está habilitado"
-
-#: chirp/ui/mainapp.py:2331
-msgid ""
-"If you wish to disable this feature you may do so in the <u>Help</u> menu"
-msgstr ""
-"Si deseas deshabilitar esta función puedes hacerlo en el menú <u>Ayuda</u>"
-
-#: chirp/ui/memdetail.py:237
-msgid "General"
-msgstr "General"
-
-#: chirp/ui/memdetail.py:279
-msgid "Other"
-msgstr "Otro"
-
-#: chirp/ui/memdetail.py:336 chirp/ui/memedit.py:68 chirp/ui/memedit.py:101
-#: chirp/ui/memedit.py:116 chirp/ui/memedit.py:231 chirp/ui/memedit.py:237
-#: chirp/ui/memedit.py:271 chirp/ui/memedit.py:423 chirp/ui/memedit.py:1095
-#: chirp/ui/memedit.py:1156 chirp/ui/memedit.py:1307 chirp/ui/memedit.py:1367
-msgid "Tone Mode"
-msgstr "Modo de tono"
-
-#: chirp/ui/memdetail.py:338 chirp/ui/memedit.py:69 chirp/ui/memedit.py:90
-#: chirp/ui/memedit.py:107 chirp/ui/memedit.py:166 chirp/ui/memedit.py:167
-#: chirp/ui/memedit.py:256 chirp/ui/memedit.py:286 chirp/ui/memedit.py:293
-#: chirp/ui/memedit.py:298 chirp/ui/memedit.py:306 chirp/ui/memedit.py:347
-#: chirp/ui/memedit.py:421 chirp/ui/memedit.py:1096 chirp/ui/memedit.py:1152
-#: chirp/ui/memedit.py:1308
-msgid "Tone"
-msgstr "Tono"
-
-#: chirp/ui/memdetail.py:340 chirp/ui/memedit.py:70 chirp/ui/memedit.py:91
-#: chirp/ui/memedit.py:108 chirp/ui/memedit.py:260 chirp/ui/memedit.py:279
-#: chirp/ui/memedit.py:294 chirp/ui/memedit.py:299 chirp/ui/memedit.py:310
-#: chirp/ui/memedit.py:348 chirp/ui/memedit.py:421 chirp/ui/memedit.py:1097
-#: chirp/ui/memedit.py:1153 chirp/ui/memedit.py:1304
-msgid "ToneSql"
-msgstr "ToneSql"
-
-#: chirp/ui/memdetail.py:342 chirp/ui/memedit.py:71 chirp/ui/memedit.py:92
-#: chirp/ui/memedit.py:109 chirp/ui/memedit.py:244 chirp/ui/memedit.py:280
-#: chirp/ui/memedit.py:288 chirp/ui/memedit.py:300 chirp/ui/memedit.py:308
-#: chirp/ui/memedit.py:349 chirp/ui/memedit.py:417 chirp/ui/memedit.py:1098
-#: chirp/ui/memedit.py:1154 chirp/ui/memedit.py:1296 chirp/ui/memedit.py:1373
-msgid "DTCS Code"
-msgstr "Código DTCS"
-
-#: chirp/ui/memdetail.py:344
-msgid "RX DTCS Code"
-msgstr "Código RX DTCS"
-
-#: chirp/ui/memdetail.py:346 chirp/ui/memedit.py:73 chirp/ui/memedit.py:94
-#: chirp/ui/memedit.py:111 chirp/ui/memedit.py:252 chirp/ui/memedit.py:282
-#: chirp/ui/memedit.py:290 chirp/ui/memedit.py:302 chirp/ui/memedit.py:314
-#: chirp/ui/memedit.py:351 chirp/ui/memedit.py:1100 chirp/ui/memedit.py:1158
-#: chirp/ui/memedit.py:1298 chirp/ui/memedit.py:1372
-msgid "DTCS Pol"
-msgstr "Polaridad DTCS"
-
-#: chirp/ui/memdetail.py:348
-msgid "Cross mode"
-msgstr "Modo cruzado"
-
-#: chirp/ui/memdetail.py:350 chirp/ui/memedit.py:75 chirp/ui/memedit.py:96
-#: chirp/ui/memedit.py:114 chirp/ui/memedit.py:140 chirp/ui/memedit.py:147
-#: chirp/ui/memedit.py:272 chirp/ui/memedit.py:345 chirp/ui/memedit.py:423
-#: chirp/ui/memedit.py:1102 chirp/ui/memedit.py:1159 chirp/ui/memedit.py:1309
-#: chirp/ui/memedit.py:1381
-msgid "Duplex"
-msgstr "Dúplex"
-
-#: chirp/ui/memdetail.py:352 chirp/ui/memedit.py:76 chirp/ui/memedit.py:97
-#: chirp/ui/memedit.py:145 chirp/ui/memedit.py:218 chirp/ui/memedit.py:317
-#: chirp/ui/memedit.py:346 chirp/ui/memedit.py:419 chirp/ui/memedit.py:1103
-#: chirp/ui/memedit.py:1160 chirp/ui/memedit.py:1300
-msgid "Offset"
-msgstr "Desplazamiento"
-
-#: chirp/ui/memdetail.py:354 chirp/ui/memedit.py:77 chirp/ui/memedit.py:98
-#: chirp/ui/memedit.py:112 chirp/ui/memedit.py:159 chirp/ui/memedit.py:160
-#: chirp/ui/memedit.py:163 chirp/ui/memedit.py:407 chirp/ui/memedit.py:1104
-#: chirp/ui/memedit.py:1161 chirp/ui/memedit.py:1299 chirp/ui/memedit.py:1366
-#: chirp/ui/memedit.py:1383 chirp/ui/memedit.py:1384 chirp/ui/memedit.py:1564
-#: chirp/ui/memedit.py:1582 chirp/ui/memedit.py:1592
-msgid "Mode"
-msgstr "Modo"
-
-#: chirp/ui/memdetail.py:356 chirp/ui/memedit.py:79 chirp/ui/memedit.py:100
-#: chirp/ui/memedit.py:115 chirp/ui/memedit.py:150 chirp/ui/memedit.py:151
-#: chirp/ui/memedit.py:156 chirp/ui/memedit.py:1106 chirp/ui/memedit.py:1163
-#: chirp/ui/memedit.py:1302 chirp/ui/memedit.py:1379
-msgid "Tune Step"
-msgstr "Paso de sintonización"
-
-#: chirp/ui/memdetail.py:358 chirp/ui/memedit.py:80 chirp/ui/memedit.py:102
-#: chirp/ui/memedit.py:1107 chirp/ui/memedit.py:1164 chirp/ui/memedit.py:1310
-#: chirp/ui/memedit.py:1369
-msgid "Skip"
-msgstr "Omitir"
-
-#: chirp/ui/memdetail.py:360 chirp/ui/memedit.py:78 chirp/ui/memedit.py:99
-#: chirp/ui/memedit.py:113 chirp/ui/memedit.py:407 chirp/ui/memedit.py:1105
-#: chirp/ui/memedit.py:1162 chirp/ui/memedit.py:1311 chirp/ui/memedit.py:1370
-#: chirp/ui/memedit.py:1377
-msgid "Power"
-msgstr "Poder"
-
-#: chirp/ui/memdetail.py:408
-msgid "Memory validation failed:"
-msgstr "Validación de memoria fallida:"
-
-#: chirp/ui/memedit.py:52
-msgid "Invalid value for this field"
-msgstr "Valor invalido para este campo"
-
-#: chirp/ui/memedit.py:72 chirp/ui/memedit.py:93 chirp/ui/memedit.py:110
-#: chirp/ui/memedit.py:248 chirp/ui/memedit.py:281 chirp/ui/memedit.py:289
-#: chirp/ui/memedit.py:296 chirp/ui/memedit.py:301 chirp/ui/memedit.py:312
-#: chirp/ui/memedit.py:350 chirp/ui/memedit.py:417 chirp/ui/memedit.py:1099
-#: chirp/ui/memedit.py:1155 chirp/ui/memedit.py:1297 chirp/ui/memedit.py:1374
-msgid "DTCS Rx Code"
-msgstr "Código DTCS Rx"
-
-#: chirp/ui/memedit.py:74 chirp/ui/memedit.py:95 chirp/ui/memedit.py:117
-#: chirp/ui/memedit.py:232 chirp/ui/memedit.py:242 chirp/ui/memedit.py:264
-#: chirp/ui/memedit.py:273 chirp/ui/memedit.py:283 chirp/ui/memedit.py:291
-#: chirp/ui/memedit.py:295 chirp/ui/memedit.py:303 chirp/ui/memedit.py:352
-#: chirp/ui/memedit.py:1101 chirp/ui/memedit.py:1157 chirp/ui/memedit.py:1305
-#: chirp/ui/memedit.py:1368
-msgid "Cross Mode"
-msgstr "Modo cruzado"
-
-#: chirp/ui/memedit.py:198
-#, python-brace-format
-msgid "Erasing memory {loc}"
-msgstr "Borrando memoria {loc}"
-
-#: chirp/ui/memedit.py:327
-msgid "Unable to make changes to this model"
-msgstr "No se pueden hacer cambios a este modelo"
-
-#: chirp/ui/memedit.py:390
-msgid "Error setting memory"
-msgstr "Error estableciendo memoria"
-
-#: chirp/ui/memedit.py:400 chirp/ui/memedit.py:466 chirp/ui/memedit.py:742
-#: chirp/ui/memedit.py:765 chirp/ui/memedit.py:1541
-#, python-brace-format
-msgid "Writing memory {number}"
-msgstr "Escribiendo memoria {number}"
-
-#: chirp/ui/memedit.py:471
-msgid ""
-"This operation requires moving all subsequent channels by one spot until an "
-"empty location is reached.  This can take a LONG time.  Are you sure you "
-"want to do this?"
-msgstr ""
-"Esta operación requiere mover los canales subsecuentes un lugar hasta "
-"encontrar una localización vacía.  Esto puede tomar MUCHO tiempo. ¿Estás "
-"seguro de querer hacerlo?"
-
-#: chirp/ui/memedit.py:495
-#, python-brace-format
-msgid "Adding memory {number}"
-msgstr "Agregando memoria {number}"
-
-#: chirp/ui/memedit.py:508 chirp/ui/memedit.py:1137
-#, python-brace-format
-msgid "Erasing memory {number}"
-msgstr "Borrando memoria {number}"
-
-#: chirp/ui/memedit.py:517 chirp/ui/memedit.py:625 chirp/ui/memedit.py:672
-#: chirp/ui/memedit.py:677 chirp/ui/memedit.py:1066 chirp/ui/memedit.py:1399
-#, python-brace-format
-msgid "Getting memory {number}"
-msgstr "Obteniendo memoria {number}"
-
-#: chirp/ui/memedit.py:604 chirp/ui/memedit.py:615 chirp/ui/memedit.py:664
-#, python-brace-format
-msgid "Moving memory from {old} to {new}"
-msgstr "Moviendo memoria desde {old} a {new}"
-
-#: chirp/ui/memedit.py:686
-#, python-brace-format
-msgid "Raw memory {number}"
-msgstr "Memoria en bruto {number}"
-
-#: chirp/ui/memedit.py:690 chirp/ui/memedit.py:718 chirp/ui/memedit.py:723
-#, python-brace-format
-msgid "Getting raw memory {number}"
-msgstr "Obteniendo memoria en bruto {number}"
-
-#: chirp/ui/memedit.py:695
-msgid "You can only diff two memories!"
-msgstr "¡Solo puedes diferenciar dos memorias!"
-
-#: chirp/ui/memedit.py:706
-#, python-brace-format
-msgid "Memory {number}"
-msgstr "Memoria {number}"
-
-#: chirp/ui/memedit.py:712
-#, python-brace-format
-msgid "Diff of {a} and {b}"
-msgstr "Diferencia de {a} y {b}"
-
-#: chirp/ui/memedit.py:746
-#, python-brace-format
-msgid "Getting original memory {number}"
-msgstr "Obteniendo memoria original {number}"
-
-#: chirp/ui/memedit.py:784
-msgid "Memories must be contiguous"
-msgstr "Memorias deben ser contiguas"
-
-#: chirp/ui/memedit.py:875
-msgid "Cut"
-msgstr "Cortar"
-
-#: chirp/ui/memedit.py:876
-msgid "Copy"
-msgstr "Copiar"
-
-#: chirp/ui/memedit.py:877
-msgid "Paste"
-msgstr "Pegar"
-
-#: chirp/ui/memedit.py:878
-msgid "Select All"
-msgstr "Seleccionar todo"
-
-#: chirp/ui/memedit.py:879
-msgid "Insert row above"
-msgstr "Insertar fila encima"
-
-#: chirp/ui/memedit.py:880
-msgid "Insert row below"
-msgstr "Insertar fila debajo"
-
-#: chirp/ui/memedit.py:881
-msgid "Delete"
-msgstr "Borrar"
-
-#: chirp/ui/memedit.py:882
-msgid "this memory"
-msgstr "esta memoria"
-
-#: chirp/ui/memedit.py:882
-msgid "these memories"
-msgstr "estas memorias"
-
-#: chirp/ui/memedit.py:883
-msgid "...and shift block up"
-msgstr "...y desplazar bloque hacia arriba"
-
-#: chirp/ui/memedit.py:884
-msgid "...and shift all memories up"
-msgstr "...y desplazar todas las memorias hacia arriba"
-
-#: chirp/ui/memedit.py:885
-msgid "Move up"
-msgstr "Mover arriba"
-
-#: chirp/ui/memedit.py:886
-msgid "Move down"
-msgstr "Mover abajo"
-
-#: chirp/ui/memedit.py:887
-msgid "Exchange memories"
-msgstr "Intercambiar memorias"
-
-#: chirp/ui/memedit.py:1053
-#, python-brace-format
-msgid "Internal Error: Column {name} not found"
-msgstr "Error interno: Columna {name} no encontrada"
-
-#: chirp/ui/memedit.py:1177
-#, python-brace-format
-msgid "Internal Error: Invalid limit {number}"
-msgstr "Error interno: límite {number} invalido"
-
-#: chirp/ui/memedit.py:1188
-msgid "Memory Range:"
-msgstr "Rango de memoria:"
-
-#: chirp/ui/memedit.py:1215
-msgid "Refresh"
-msgstr "Actualizar"
-
-#: chirp/ui/memedit.py:1238
-msgid "Special Channels"
-msgstr "Canales especiales"
-
-#: chirp/ui/memedit.py:1246
-msgid "Show Empty"
-msgstr "Mostrar vacío"
-
-#: chirp/ui/memedit.py:1258
-msgid "Properties"
-msgstr "Propiedades"
-
-#: chirp/ui/memedit.py:1433
-#, python-brace-format
-msgid "Cutting memory {number}"
-msgstr "Cortando memoria {number}"
-
-#: chirp/ui/memedit.py:1465
-#, python-brace-format
-msgid ""
-"Unable to paste {src} memories into {dst} rows. Increase the memory bounds "
-"or show empty memories."
-msgstr ""
-"No se pueden pegar {src} memorias en {dst} filas. Incrementa los límites de "
-"la memoria o muestra memorias vacías."
-
-#: chirp/ui/memedit.py:1481
-msgid "Yes to All"
-msgstr "Sí a todo"
-
-#: chirp/ui/memedit.py:1483
-msgid "Overwrite?"
-msgstr "¿Sobrescribir?"
-
-#: chirp/ui/memedit.py:1492
-#, python-brace-format
-msgid "Overwrite location {number}?"
-msgstr "¿Sobrescribir localización {number}?"
-
-#: chirp/ui/memedit.py:1519
-msgid "Incompatible Memory"
-msgstr "Memoria incompatible"
-
-#: chirp/ui/memedit.py:1525
-#, python-brace-format
-msgid "Pasted memory {number} is not compatible with this radio because:"
-msgstr "Memoria pegada {number} no es compatible con esta radio porque:"
-
-#: chirp/ui/memedit.py:1584 chirp/ui/memedit.py:1599
-msgid "URCALL"
-msgstr "URCALL"
-
-#: chirp/ui/memedit.py:1584 chirp/ui/memedit.py:1600
-msgid "RPT1CALL"
-msgstr "RPT1CALL"
-
-#: chirp/ui/memedit.py:1584 chirp/ui/memedit.py:1601
-msgid "RPT2CALL"
-msgstr "RPT2CALL"
-
-#: chirp/ui/memedit.py:1585 chirp/ui/memedit.py:1602
-msgid "Digital Code"
-msgstr "Código digital"
-
-#: chirp/ui/settingsedit.py:82
-#, python-format
-msgid "Error in setting value: %s"
-msgstr "Error en valor de ajuste: %s"
-
-#: chirp/ui/settingsedit.py:114
-#, python-format
-msgid "Invalid setting value: %s"
-msgstr "Valor de ajuste inválido: %s"
-
-#: chirp/ui/settingsedit.py:175
-msgid "Enabled"
-msgstr "Habilitado"
-
-#: chirp/ui/shiftdialog.py:31
-msgid "Shift"
-msgstr "Desplazamiento"
-
-#: chirp/ui/shiftdialog.py:65
-#, python-brace-format
-msgid "Moving {src} to {dst}"
-msgstr "Moviendo {src} a {dst}"
-
-#: chirp/ui/shiftdialog.py:85
-#, python-brace-format
-msgid "Looking for a free spot ({number})"
-msgstr "Buscando un lugar libre ({number})"
-
-#: chirp/ui/shiftdialog.py:98
-msgid "No space to insert a row"
-msgstr "No hay espacio para insertar una fila"
-
-#: chirp/ui/shiftdialog.py:146
-#, python-brace-format
-msgid "Moved {count} memories"
-msgstr "Movidas {count} memorias"
 
 #: share/chirp.desktop:5
 msgid "CHIRP"
@@ -1333,3 +94,1588 @@ msgstr "Programa radioaficionados"
 #: share/chirp.desktop:13
 msgid "Hamradio;Programming;Handheld;Radio;Amateur;Programmer"
 msgstr "Radioafición;Programación;Portátil;Radio;Aficionado;Programador"
+
+#: sources/repeaterbook.py:270
+msgid "No results!"
+msgstr "¡No hay resultados!"
+
+#: wxui/bankedit.py:62
+msgid "Index"
+msgstr "Índice"
+
+#: wxui/bankedit.py:188
+msgid "Double-click to change bank name"
+msgstr "Doble clic para cambiar nombre de banco"
+
+#: wxui/bankedit.py:201
+#, python-format
+msgid "Enter a new name for bank %s:"
+msgstr "Ingresa un nuevo nombre para el banco %s:"
+
+#: wxui/bankedit.py:203
+msgid "Rename bank"
+msgstr "Renombrar banco"
+
+#: wxui/bankedit.py:231
+msgid "Memory must be in a bank to be edited"
+msgstr "Memoria debe estar en un banco para ser editada"
+
+#: wxui/clone.py:109
+msgid "Applying settings"
+msgstr "Aplicando ajustes"
+
+#: wxui/clone.py:111
+msgid "Loading settings"
+msgstr "Cargando ajustes"
+
+#: wxui/clone.py:117
+msgid "Complete"
+msgstr "Completado"
+
+#: wxui/clone.py:156
+#, python-format
+msgid "Do not prompt again for %s"
+msgstr "No preguntar de nuevo para %s"
+
+#: wxui/clone.py:206
+msgid "Communicate with radio"
+msgstr "Comunicarse con la radio"
+
+#: wxui/clone.py:227
+msgid "Port"
+msgstr "Puerto"
+
+#: wxui/clone.py:230
+msgid "Vendor"
+msgstr "Vendedor"
+
+#: wxui/clone.py:234
+msgid "Model"
+msgstr "Modelo"
+
+#: wxui/clone.py:310 wxui/clone.py:385
+msgid "Custom..."
+msgstr "Personalizado..."
+
+#: wxui/clone.py:310 wxui/clone.py:392
+msgid "Help Me..."
+msgstr "Ayúdame..."
+
+#: wxui/clone.py:328
+msgid "Unplug your cable (if needed) and then click OK"
+msgstr "Desconecta tu cable (si es necesario) y entonces haz clic en ACEPTAR"
+
+#: wxui/clone.py:329 wxui/clone.py:336 wxui/clone.py:347 wxui/clone.py:354
+#: wxui/clone.py:358
+msgid "USB Port Finder"
+msgstr "Buscador de puertos USB"
+
+#: wxui/clone.py:335
+msgid "Plug in your cable and then click OK"
+msgstr "Conecta tu cable y luego haz clic en ACEPTAR"
+
+#: wxui/clone.py:345
+msgid ""
+"Unable to determine port for your cable. Check your drivers and connections."
+msgstr ""
+"No se puede determinar puerto para tu cable. Comprueba tus controladores y "
+"conexiones."
+
+#: wxui/clone.py:352
+msgid "Your cable appears to be on port:"
+msgstr "Tu cable parece estar en puerto:"
+
+#: wxui/clone.py:357
+#, python-format
+msgid "More than one port found: %s"
+msgstr "Más de un puerto encontrado: %s"
+
+#: wxui/clone.py:386
+msgid "Enter custom port:"
+msgstr "Ingresar puerto personalizado:"
+
+#: wxui/clone.py:430
+msgid "Error communicating with radio"
+msgstr "Error comunicándose con la radio"
+
+#: wxui/clone.py:461
+msgid "Experimental driver"
+msgstr "Controlador experimental"
+
+#: wxui/clone.py:485 wxui/clone.py:548
+msgid "Radio information"
+msgstr "Información de radio"
+
+#: wxui/clone.py:493
+msgid "Download instructions"
+msgstr "Descargar instrucciones"
+
+#: wxui/clone.py:556
+msgid "Upload instructions"
+msgstr "Subir instrucciones"
+
+#: wxui/common.py:94
+msgid "Cloning"
+msgstr "Clonando"
+
+#: wxui/common.py:115
+msgid "Please wait"
+msgstr "Por favor espera"
+
+#: wxui/common.py:219
+#, python-format
+msgid "Refreshed memory %s"
+msgstr "Memoria actualizada %s"
+
+#: wxui/common.py:221
+#, python-format
+msgid "Uploaded memory %s"
+msgstr "Memoria subida %s"
+
+#: wxui/common.py:223
+msgid "Retrieved settings"
+msgstr "Ajustes recuperados"
+
+#: wxui/common.py:225
+msgid "Saved settings"
+msgstr "Ajustes guardados"
+
+#: wxui/common.py:227
+#, python-format
+msgid "Erased memory %s"
+msgstr "Memoria borrada %s"
+
+#: wxui/common.py:229
+#, python-format
+msgid "Finished radio job %s"
+msgstr "Trabajos de radio terminados %s"
+
+#: wxui/common.py:331
+#, python-format
+msgid "Value must be at least %.4f"
+msgstr "Valor debe ser al menos %.4f"
+
+#: wxui/common.py:335
+#, python-format
+msgid "Value must be at most %.4f"
+msgstr "Valor debe ser como máximo %.4f"
+
+#: wxui/common.py:408 wxui/common.py:446
+msgid "An error has occurred"
+msgstr "Ha ocurrido un error"
+
+#: wxui/developer.py:130
+msgid "Press enter to set this in memory"
+msgstr "Presiona enter para configurar esto en memoria"
+
+#: wxui/developer.py:157
+msgid "bytes each"
+msgstr "bytes cada"
+
+#: wxui/developer.py:162
+msgid "bytes"
+msgstr "bytes"
+
+#: wxui/developer.py:166
+msgid "bits"
+msgstr "bits"
+
+#: wxui/developer.py:192
+#, python-format
+msgid "Length must be %i"
+msgstr "Largo debe ser %i"
+
+#: wxui/developer.py:211
+msgid "Hex"
+msgstr "Hexadecimal"
+
+#: wxui/developer.py:212
+msgid "Dec"
+msgstr "Decimal"
+
+#: wxui/developer.py:213
+msgid "Bin"
+msgstr "Binario"
+
+#: wxui/developer.py:242 wxui/developer.py:285
+msgid "Value must be zero or greater"
+msgstr "Valor debe ser cero o superior"
+
+#: wxui/developer.py:244
+#, python-format
+msgid "Value does not fit in %i bits"
+msgstr "Valor no cabe en %i bits"
+
+#: wxui/developer.py:287
+#, python-format
+msgid "Value must be exactly %i decimal digits"
+msgstr "Valor debe ser exactamente %i dígitos decimales"
+
+#: wxui/developer.py:399
+msgid "Building Radio Browser"
+msgstr "Construyendo navegador de radio"
+
+#: wxui/developer.py:407
+msgid "Failed to load radio browser"
+msgstr "Fallo al cargar navegador de radio"
+
+#: wxui/main.py:129
+msgid "Memories"
+msgstr "Memorias"
+
+#: wxui/main.py:137
+msgid "Banks"
+msgstr "Bancos"
+
+#: wxui/main.py:142
+msgid "Settings"
+msgstr "Ajustes"
+
+#: wxui/main.py:148
+msgid "Browser"
+msgstr "Navegador"
+
+#: wxui/main.py:150
+msgid "Info"
+msgstr "Información"
+
+#: wxui/main.py:253
+msgid "Only memory tabs may be exported"
+msgstr "Solo pestañas de memorias pueden ser exportadas"
+
+#: wxui/main.py:271
+msgid "LIVE"
+msgstr "EN VIVO"
+
+#: wxui/main.py:351
+msgid "Welcome"
+msgstr "Bienvenido"
+
+#: wxui/main.py:387
+#, python-format
+msgid "File does not exist: %s"
+msgstr "Archivo no existe: %s"
+
+#: wxui/main.py:463
+msgid "Open Stock Config"
+msgstr "Abrir configuración original"
+
+#: wxui/main.py:473
+#, python-format
+msgid "Restore %i tabs"
+msgstr "Restaurar %i pestañas"
+
+#: wxui/main.py:492
+msgid "Open Recent"
+msgstr "Abrir reciente"
+
+#: wxui/main.py:505 wxui/main.py:1043
+msgid "Export to CSV"
+msgstr "Exportar a CSV"
+
+#: wxui/main.py:511
+msgid "Load Module"
+msgstr "Cargar modulo"
+
+#: wxui/main.py:522
+msgid "Print Preview"
+msgstr "Previsualización de impresión"
+
+#: wxui/main.py:563
+msgid "Find Next"
+msgstr "Buscar siguiente"
+
+#: wxui/main.py:571
+msgid "Goto"
+msgstr "Ir a"
+
+#: wxui/main.py:579
+msgid "Use fixed-width font"
+msgstr "Usar fuente de ancho fijo"
+
+#: wxui/main.py:587
+msgid "Use larger font"
+msgstr "Usar fuente más grande"
+
+#: wxui/main.py:602 wxui/main.py:750
+msgid "Download"
+msgstr "Descargar"
+
+#: wxui/main.py:609
+msgid "Upload"
+msgstr "Subir"
+
+#: wxui/main.py:615
+msgid "Query Source"
+msgstr "Consultar fuente"
+
+#: wxui/main.py:633
+msgid "Enable Automatic Edits"
+msgstr "Habilitar ediciones automáticas"
+
+#: wxui/main.py:640
+msgid "Select Bandplan"
+msgstr "Seleccionar plan de banda"
+
+#: wxui/main.py:650
+msgid "Reload Driver"
+msgstr "Recargar controlador"
+
+#: wxui/main.py:659
+msgid "Reload Driver and File"
+msgstr "Recargar controlador y archivo"
+
+#: wxui/main.py:673
+msgid "Interact with driver"
+msgstr "Interactuar con controlador"
+
+#: wxui/main.py:680
+msgid "About"
+msgstr "Acerca de"
+
+#: wxui/main.py:685
+msgid "Developer Mode"
+msgstr "Modo desarrollador"
+
+#: wxui/main.py:694
+msgid "Reporting enabled"
+msgstr "Reportes habilitados"
+
+#: wxui/main.py:706
+msgid "Open debug log"
+msgstr "Abrir registro de depuración"
+
+#: wxui/main.py:712
+msgid "Show debug log location"
+msgstr "Mostrar ubicación del registro de depuración"
+
+#: wxui/main.py:744
+msgid "Open"
+msgstr "Abrir"
+
+#: wxui/main.py:745 wxui/main.py:939
+msgid "Open a file"
+msgstr "Abrir un archivo"
+
+#: wxui/main.py:746
+msgid "Save"
+msgstr "Guardar"
+
+#: wxui/main.py:747 wxui/main.py:1014
+msgid "Save file"
+msgstr "Guardar archivo"
+
+#: wxui/main.py:748
+msgid "Close"
+msgstr "Cerrar"
+
+#: wxui/main.py:749
+msgid "Close file"
+msgstr "Cerrar archivo"
+
+#: wxui/main.py:751
+msgid "Download from radio"
+msgstr "Descargar desde radio"
+
+#: wxui/main.py:753
+msgid "Upload to radio"
+msgstr "Subir a radio"
+
+#: wxui/main.py:924
+msgid "Chirp Image Files"
+msgstr "Archivos de imagen Chirp"
+
+#: wxui/main.py:925
+msgid "All Files"
+msgstr "Todos los archivos"
+
+#: wxui/main.py:928 wxui/main.py:1000 wxui/main.py:1010 wxui/main.py:1039
+#: wxui/main.py:1253 wxui/main.py:1254
+msgid "Files"
+msgstr "Archivos"
+
+#: wxui/main.py:936
+msgid "All supported formats|"
+msgstr "Todos los formatos soportados|"
+
+#: wxui/main.py:972
+#, python-format
+msgid "Unable to find stock config %r"
+msgstr "No se puede buscar la configuración original %r"
+
+#: wxui/main.py:1055
+#, python-format
+msgid "%s has not been saved. Save before closing?"
+msgstr "%s no ha sido guardado. ¿Guardar antes de cerrar?"
+
+#: wxui/main.py:1057
+msgid "Save before closing?"
+msgstr "¿Guardar antes de cerrar?"
+
+#: wxui/main.py:1089
+msgid "Unable to open the clipboard"
+msgstr "No se puede abrir el portapapeles"
+
+#: wxui/main.py:1113
+msgid "Find"
+msgstr "Buscar"
+
+#: wxui/main.py:1142
+msgid "Goto Memory:"
+msgstr "Ir a memoria:"
+
+#: wxui/main.py:1142
+msgid "Number"
+msgstr "Numero"
+
+#: wxui/main.py:1143
+msgid "Goto Memory"
+msgstr "Ir a memoria"
+
+#: wxui/main.py:1254
+msgid "Module"
+msgstr "Modulo"
+
+#: wxui/main.py:1257
+msgid "Open a module"
+msgstr "Abrir un modulo"
+
+#: wxui/main.py:1272
+msgid "About CHIRP"
+msgstr "Acerca de CHIRP"
+
+#: wxui/main.py:1278
+#, python-format
+msgid "Developer state is now %s. CHIRP must be restarted to take effect"
+msgstr ""
+"Estado de desarrollador ahora es %s. CHIRP debe ser reiniciado para que tome "
+"efecto"
+
+#: wxui/main.py:1280
+msgid "Restart Required"
+msgstr "Reinicio requerido"
+
+#: wxui/main.py:1285
+msgid ""
+"Reporting helps the CHIRP project know which radio models and OS platforms "
+"to spend our limited efforts on. We would really appreciate if you left it "
+"enabled. Really disable reporting?"
+msgstr ""
+"Reportes ayudan al proyecto CHIRP a saber en cuales modelos de radio y "
+"plataformas de SO gastar nuestros limitados esfuerzos. Apreciamos mucho si "
+"lo dejas habilitado. ¿Realmente deshabilitar reportes?"
+
+#: wxui/main.py:1289
+msgid "Disable reporting"
+msgstr "Deshabilitar reportes"
+
+#: wxui/main.py:1321
+#, python-format
+msgid "Unable to reveal %s on this system"
+msgstr "No se puede revelar %s en este sistema"
+
+#: wxui/main.py:1332
+msgid "Select a bandplan"
+msgstr "Seleccionar plan de banda"
+
+#: wxui/main.py:1333
+msgid "Bandplan"
+msgstr "Plan de banda"
+
+#: wxui/main.py:1347
+#, python-format
+msgid "Query %s"
+msgstr "Consulta %s"
+
+#: wxui/main.py:1387
+msgid ""
+"A new CHIRP version is available. Please visit the website as soon as "
+"possible to download it!"
+msgstr ""
+"Una nueva versión de CHIRP está disponible, ¡Por favor visita el sitio web "
+"tan pronto como sea posible para descargarla!"
+
+#: wxui/main.py:1389
+msgid "New version available"
+msgstr "Nueva versión disponible"
+
+#: wxui/main.py:1393
+msgid "Please be sure to quit CHIRP before installing the new version!"
+msgstr ""
+"¡Por favor asegúrate de salir de CHIRP antes de instalar la nueva versión!"
+
+#: wxui/memedit.py:116
+#, python-format
+msgid "Found empty list value for %(name)s: %(value)r"
+msgstr "Encontrado valor de lista vacía para %(name)s: %(value)r"
+
+#: wxui/memedit.py:151 wxui/memedit.py:157
+#, python-format
+msgid "Invalid value: %r"
+msgstr "Valor inválido: %r"
+
+#: wxui/memedit.py:180
+msgid "Offset"
+msgstr "Desplazamiento"
+
+#: wxui/memedit.py:182
+msgid "Frequency"
+msgstr "Frecuencia"
+
+#: wxui/memedit.py:221
+msgid "Enter Frequency"
+msgstr "Ingresar frecuencia"
+
+#: wxui/memedit.py:245
+msgid "Power"
+msgstr "Poder"
+
+#: wxui/memedit.py:304
+msgid "Choice Required"
+msgstr "Elección requerida"
+
+#: wxui/memedit.py:321
+msgid "Tone"
+msgstr "Tono"
+
+#: wxui/memedit.py:323
+msgid "Tone Squelch"
+msgstr "Silenciador de tono"
+
+#: wxui/memedit.py:390
+msgid "DTCS"
+msgstr "DTCS"
+
+#: wxui/memedit.py:392
+msgid "RX DTCS"
+msgstr "RX DTCS"
+
+#: wxui/memedit.py:436
+msgid ""
+"DTCS\n"
+"Polarity"
+msgstr ""
+"Polaridad\n"
+"DTCS"
+
+#: wxui/memedit.py:456
+msgid "Cross mode"
+msgstr "Modo cruzado"
+
+#: wxui/memedit.py:568
+msgid "Tone Mode"
+msgstr "Modo de tono"
+
+#: wxui/memedit.py:838
+#, python-format
+msgid "Choose %s Tone"
+msgstr "Elegir %s tono"
+
+#: wxui/memedit.py:841
+#, python-format
+msgid "Choose %s DTCS Code"
+msgstr "Elegir %s código DTCS"
+
+#: wxui/memedit.py:862
+#, python-format
+msgid ""
+"Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
+msgstr ""
+"Canales con TX y RX equivalentes %s son representados por modo de tono de "
+"\"%s\""
+
+#: wxui/memedit.py:864
+msgid "Information"
+msgstr "Información"
+
+#: wxui/memedit.py:872
+msgid "Choose Cross Mode"
+msgstr "Elegir modo cruzado"
+
+#: wxui/memedit.py:881
+msgid "Enter TX Frequency (MHz)"
+msgstr "Ingresar frecuencia TX (MHz)"
+
+#: wxui/memedit.py:889
+msgid "Enter Offset (MHz)"
+msgstr "Ingresar desplazamiento (MHz)"
+
+#: wxui/memedit.py:902
+msgid "Choose duplex"
+msgstr "Elegir Dúplex"
+
+#: wxui/memedit.py:929
+msgid "Unable to edit memory before radio is loaded"
+msgstr "No se puede editar memoria antes de que la radio este cargada"
+
+#: wxui/memedit.py:1006 wxui/memedit.py:1630
+#, python-format
+msgid "Invalid edit: %s"
+msgstr "Edición inválida: %s"
+
+#: wxui/memedit.py:1012
+#, python-format
+msgid "Warning: %s"
+msgstr "Advertencia: %s"
+
+#: wxui/memedit.py:1013
+msgid "Warning"
+msgstr "Advertencia"
+
+#: wxui/memedit.py:1045
+#, python-format
+msgid "Memory %i is not deletable"
+msgstr "Memoria %i no es borrable"
+
+#: wxui/memedit.py:1111
+msgid "Properties"
+msgstr "Propiedades"
+
+#: wxui/memedit.py:1117
+msgid "Insert Row Above"
+msgstr "Insertar fila arriba"
+
+#: wxui/memedit.py:1126
+#, python-format
+msgid "Delete %i Memories"
+msgstr "Borrar %i memorias"
+
+#: wxui/memedit.py:1129
+#, python-format
+msgid "Delete %i Memories and shift block up"
+msgstr "Eliminar %i memorias y desplazar bloque hacia arriba"
+
+#: wxui/memedit.py:1133
+#, python-format
+msgid "Delete %i Memories and shift all up"
+msgstr "Borrar %i memorias y desplazar todo hacia arriba"
+
+#: wxui/memedit.py:1136
+msgid "Delete"
+msgstr "Borrar"
+
+#: wxui/memedit.py:1138
+msgid "Delete and shift block up"
+msgstr "Borrar y desplazar bloque hacia arriba"
+
+#: wxui/memedit.py:1140
+msgid "Delete and shift all up"
+msgstr "Borrar y desplazar todo hacia arriba"
+
+#: wxui/memedit.py:1166
+msgid "Show Raw Memory"
+msgstr "Mostrar memoria en bruto"
+
+#: wxui/memedit.py:1174
+msgid "Diff Raw Memories"
+msgstr "Diferenciar memorias en bruto"
+
+#: wxui/memedit.py:1210
+msgid "No empty rows below!"
+msgstr "¡No hay filas vacías debajo!"
+
+#: wxui/memedit.py:1282
+msgid "Some memories are not deletable"
+msgstr "Algunas memorias no son borrables"
+
+#: wxui/memedit.py:1308
+#, python-format
+msgid "Pasted memory will overwrite memory %i"
+msgstr "Memoria pegada sobrescribirá memoria %i"
+
+#: wxui/memedit.py:1311
+#, python-format
+msgid "Pasted memories will overwrite memory %i"
+msgstr "Memorias pegadas sobrescribirán memoria %i"
+
+#: wxui/memedit.py:1314
+#, python-format
+msgid "Pasted memories will overwrite %i existing memories"
+msgstr "Memorias pegadas sobrescribirán %i memorias existentes"
+
+#: wxui/memedit.py:1317
+#, python-format
+msgid "Pasted memories will overwrite memories %s"
+msgstr "Memorias pegadas sobrescribirán memorias %s"
+
+#: wxui/memedit.py:1320
+msgid "Overwrite memories?"
+msgstr "¿Sobrescribir memorias?"
+
+#: wxui/memedit.py:1365
+msgid "Some memories are incompatible with this radio"
+msgstr "Algunas memorias son incompatibles con esta radio"
+
+#: wxui/memedit.py:1440
+msgid "Export can only write CSV files"
+msgstr "Exportar solo puede escribir archivos CSV"
+
+#: wxui/memedit.py:1477
+msgid "Digital Code"
+msgstr "Código digital"
+
+#: wxui/memedit.py:1505
+#, python-format
+msgid "Edit details for memory %i"
+msgstr "Editar detalles para memoria %i"
+
+#: wxui/memedit.py:1507
+#, python-format
+msgid "Edit details for %i memories"
+msgstr "Editar detalles para %i memorias"
+
+#: wxui/memedit.py:1541
+msgid "Extra"
+msgstr "Extra"
+
+#: wxui/memedit.py:1552
+msgid "DV Memory"
+msgstr "Memoria DV"
+
+#: wxui/printing.py:29
+msgid "Printing"
+msgstr "Imprimiendo"
+
+#: wxui/query_sources.py:56
+#, python-format
+msgid "Invalid %(value)s (use decimal degrees)"
+msgstr "%(value)s inválido (usa grados decimales)"
+
+#: wxui/query_sources.py:58
+#, python-format
+msgid "%(value)s must be between %(min)i and %(max)i"
+msgstr "%(value)s debe estar entre %(min)i y %(max)i"
+
+#: wxui/query_sources.py:109
+msgid "Invalid ZIP code"
+msgstr "Código postal inválido"
+
+#: wxui/query_sources.py:279 wxui/query_sources.py:457
+msgid "Country"
+msgstr "País"
+
+#: wxui/query_sources.py:281 wxui/query_sources.py:345
+msgid "Amateur"
+msgstr "Aficionado"
+
+#: wxui/query_sources.py:282 wxui/query_sources.py:336
+#: wxui/query_sources.py:427
+msgid "GMRS"
+msgstr "GMRS"
+
+#: wxui/query_sources.py:284
+msgid "Service"
+msgstr "Servicio"
+
+#: wxui/query_sources.py:287
+msgid "State/Province"
+msgstr "Estado/Provincia"
+
+#: wxui/query_sources.py:292
+msgid "Optional: 45.0000"
+msgstr "Opcional: 45.0000"
+
+#: wxui/query_sources.py:293 wxui/query_sources.py:299
+msgid "If set, sort results by distance from these coordinates"
+msgstr ""
+"Si se establece, ordenar los resultados por distancia desde estas coordenadas"
+
+#: wxui/query_sources.py:298
+msgid "Optional: -122.0000"
+msgstr "Opcional: -122.0000"
+
+#: wxui/query_sources.py:301
+msgid "Latitude"
+msgstr "Latitud"
+
+#: wxui/query_sources.py:302
+msgid "Longitude"
+msgstr "Longitud"
+
+#: wxui/query_sources.py:307
+msgid "Optional: 100"
+msgstr "Opcional: 100"
+
+#: wxui/query_sources.py:308
+msgid "Limit results to this distance (km) from coordinates"
+msgstr "Limitar resultados a esta distancia (km) desde coordenadas"
+
+#: wxui/query_sources.py:310
+msgid "Distance"
+msgstr "Distancia"
+
+#: wxui/query_sources.py:313
+msgid "Optional: County, Hospital, etc"
+msgstr "Opcional: País, Hospital, etc"
+
+#: wxui/query_sources.py:314
+msgid "Filter results with location matching this string"
+msgstr "Filtrar resultados con ubicación coincidiendo esta cadena"
+
+#: wxui/query_sources.py:316
+msgid "Filter"
+msgstr "Filtrar"
+
+#: wxui/query_sources.py:320
+msgid "Only certain bands"
+msgstr "Solo ciertas bandas"
+
+#: wxui/query_sources.py:322
+msgid "Limit Bands"
+msgstr "Bandas límite"
+
+#: wxui/query_sources.py:325
+msgid "Only certain modes"
+msgstr "Solo ciertos modos"
+
+#: wxui/query_sources.py:327
+msgid "Limit Modes"
+msgstr "Modos límite"
+
+#: wxui/query_sources.py:353
+msgid "All"
+msgstr "Todo"
+
+#: wxui/query_sources.py:375
+msgid "Select Bands"
+msgstr "Seleccionar bandas"
+
+#: wxui/query_sources.py:375
+msgid "Bands"
+msgstr "Bandas"
+
+#: wxui/query_sources.py:396
+msgid "Select Modes"
+msgstr "Seleccionar modos"
+
+#: wxui/query_sources.py:396
+msgid "Modes"
+msgstr "Modos"
+
+#: wxui/query_sources.py:451
+msgid "City"
+msgstr "Ciudad"
+
+#: wxui/query_sources.py:454
+msgid "State"
+msgstr "Estado"
+
+#: wxui/query_sources.py:524
+msgid "United States"
+msgstr "Estados Unidos"
+
+#: wxui/query_sources.py:525
+msgid "Canada"
+msgstr "Canada"
+
+#: wxui/query_sources.py:665
+msgid "RadioReference Canada requires a login before you can query"
+msgstr ""
+"RadioReference Canadá requiere un inicio de sesión antes de que puedas "
+"consultar"
+
+#: wxui/radioinfo.py:43
+msgid "Features"
+msgstr "Caracteristicas"
+
+#: wxui/radioinfo.py:48
+msgid "(none)"
+msgstr "(nada)"
+
+#: wxui/settingsedit.py:54
+msgid "Getting settings"
+msgstr "Obteniendo ajustes"
+
+#: wxui/settingsedit.py:114
+msgid "Error applying settings"
+msgstr "Error aplicando ajustes"
+
+#~ msgid ""
+#~ "Band plans define default channel settings for frequencies in a region.  "
+#~ "Choose a band plan or None for completely manual channel settings."
+#~ msgstr ""
+#~ "Los planes de banda definen los ajustes predeterminados de canal para las "
+#~ "frecuencias en una región. Elije una plan de banda o Ninguno para ajustes "
+#~ "de canal completamente manuales."
+
+#, python-format
+#~ msgid "Retrieving %s information"
+#~ msgstr "Recuperando %s información"
+
+#, python-format
+#~ msgid "Setting name on %s"
+#~ msgstr "Estableciendo nombre en %s"
+
+#~ msgid "Name"
+#~ msgstr "Nombre"
+
+#, python-brace-format
+#~ msgid "Updating {type} index for memory {num}"
+#~ msgstr "Actualizando {type} índice para memoria {num}"
+
+#, python-brace-format
+#~ msgid "Updating mapping information for memory {num}"
+#~ msgstr "Actualizando información de mapeado para memoria {num}"
+
+#, python-brace-format
+#~ msgid "Getting memory {num}"
+#~ msgstr "Obteniendo memoria {num}"
+
+#, python-brace-format
+#~ msgid "Setting index for memory {num}"
+#~ msgstr "Estableciendo índice para memoria {num}"
+
+#, python-brace-format
+#~ msgid "Getting {type} for memory {num}"
+#~ msgstr "Obteniendo {type} para memoria {num}"
+
+#~ msgid "Loc"
+#~ msgstr "Lugar"
+
+#, python-brace-format
+#~ msgid "Getting {type} information for memory {num}"
+#~ msgstr "Obteniendo {type} información para memoria {num}"
+
+#, python-brace-format
+#~ msgid "{vendor} {model} on {port}"
+#~ msgstr "{vendor} {model} en {port}"
+
+#~ msgid "Radio"
+#~ msgstr "Radio"
+
+#, python-brace-format
+#~ msgid "Unable to detect radio on {port}"
+#~ msgstr "No se puede detectar radio en {port}"
+
+#, python-brace-format
+#~ msgid "Internal error: Unable to upload to {model}"
+#~ msgstr "Error interno: No se puede subir a {model}"
+
+#~ msgid "Clone Progress"
+#~ msgstr "Progreso de clonado"
+
+#~ msgid "Cancel"
+#~ msgstr "Cancelar"
+
+#~ msgid "idle"
+#~ msgstr "inactivo"
+
+#~ msgid "Details"
+#~ msgstr "Detalles"
+
+#~ msgid "Proceed?"
+#~ msgstr "¿Proceder?"
+
+#~ msgid "Do not show this next time"
+#~ msgstr "No mostrar esto la próxima vez"
+
+#~ msgid "Callsign"
+#~ msgstr "Señal de llamada"
+
+#~ msgid "Your callsign"
+#~ msgstr "Tu señal de llamada"
+
+#~ msgid "Repeater callsign"
+#~ msgstr "Señal de llamada del repetidor"
+
+#~ msgid "My callsign"
+#~ msgstr "Mi señal de llamada"
+
+#~ msgid "Downloading URCALL list"
+#~ msgstr "Descargando lista URCALL"
+
+#~ msgid "Downloading RPTCALL list"
+#~ msgstr "Descargando lista RPTCALL"
+
+#~ msgid "Downloading MYCALL list"
+#~ msgstr "Descargando lista MYCALL"
+
+#, python-format
+#~ msgid "Memories (%(variant)s)"
+#~ msgstr "Memorias (%(variant)s)"
+
+#~ msgid "D-STAR"
+#~ msgstr "D-STAR"
+
+#, python-brace-format
+#~ msgid "The {vendor} {model} has multiple independent sub-devices"
+#~ msgstr "El {vendor} {model} tiene múltiples sub dispositivos independientes"
+
+#~ msgid "Choose one to import from:"
+#~ msgstr "Elige uno para importar desde:"
+
+#~ msgid "Cancelled"
+#~ msgstr "Cancelado"
+
+#~ msgid "Internal Error"
+#~ msgstr "Error interno"
+
+#, python-brace-format
+#~ msgid ""
+#~ "There were errors while opening {file}. The affected memories will not be "
+#~ "importable!"
+#~ msgstr ""
+#~ "Hubo errores mientras se abría {file}. ¡Las memorias afectadas no serán "
+#~ "importables!"
+
+#, python-brace-format
+#~ msgid "There was an error during import: {error}"
+#~ msgstr "Hubo un error durante la importación: {error}"
+
+#~ msgid "Unsupported file type"
+#~ msgstr "Tipo de archivo no soportado"
+
+#, python-brace-format
+#~ msgid "There was an error during export: {error}"
+#~ msgstr "Hubo un error durante la exportación: {error}"
+
+#, python-brace-format
+#~ msgid ""
+#~ "Location {number} is already being imported. Choose another value for "
+#~ "'New Location' before selection 'Import'"
+#~ msgstr ""
+#~ "Localización {number} ya está siendo importada. Elije algún otro valor "
+#~ "para 'Nueva Localización' antes de seleccionar 'Importar'"
+
+#, python-brace-format
+#~ msgid "Location {number} is already being imported"
+#~ msgstr "Localización {number} ya está siendo importada"
+
+#~ msgid "Updating URCALL list"
+#~ msgstr "Actualizando lista URCALL"
+
+#~ msgid "Updating RPTCALL list"
+#~ msgstr "Actualizando lista RPTCALL"
+
+#, python-brace-format
+#~ msgid "Setting memory {number}"
+#~ msgstr "Estableciendo memoria {number}"
+
+#~ msgid "Importing bank information"
+#~ msgstr "Importando información de banco"
+
+#~ msgid "Error importing memories:"
+#~ msgstr "Error importando memorias:"
+
+#~ msgid "None"
+#~ msgstr "Ninguno"
+
+#~ msgid "Inverse"
+#~ msgstr "Inverso"
+
+#~ msgid "Select"
+#~ msgstr "Seleccionar"
+
+#~ msgid "Auto"
+#~ msgstr "Auto"
+
+#~ msgid "Reverse"
+#~ msgstr "Reverso"
+
+#~ msgid "Adjust New Location"
+#~ msgstr "Ajustar nueva localización"
+
+#~ msgid "Confirm overwrites"
+#~ msgstr "Confirmar sobreescritura"
+
+#~ msgid "Cannot be imported because"
+#~ msgstr "No puede ser importado porque"
+
+#~ msgid "Import From File"
+#~ msgstr "Importar desde archivo"
+
+#~ msgid "Import"
+#~ msgstr "Importar"
+
+#~ msgid "To"
+#~ msgstr "A"
+
+#~ msgid "From"
+#~ msgstr "Desde"
+
+#~ msgid "Comment"
+#~ msgstr "Comentario"
+
+#~ msgid "Location memory will be imported into"
+#~ msgstr "Localización de memoria será importada en"
+
+#~ msgid "Location of memory in the file being imported"
+#~ msgstr "Localización de la memoria en el archivo siendo importado"
+
+#~ msgid "Preparing memory list..."
+#~ msgstr "Preparando lista de memoria..."
+
+#~ msgid "Export"
+#~ msgstr "Exportar"
+
+#~ msgid "File Exists"
+#~ msgstr "Archivo existe"
+
+#, python-brace-format
+#~ msgid "The file {name} already exists. Do you want to overwrite it?"
+#~ msgstr "El archivo {name} ya existe. ¿Quieres sobrescribirlo?"
+
+#~ msgid "Untitled"
+#~ msgstr "Sin título"
+
+#~ msgid "CHIRP Radio Images"
+#~ msgstr "Imagenes de radio CHIRP"
+
+#~ msgid "CSV Files"
+#~ msgstr "Archivos CSV"
+
+#~ msgid "DAT Files"
+#~ msgstr "Archivos DAT"
+
+#~ msgid "EVE Files (VX5)"
+#~ msgstr "Archivos EVE (VX5)"
+
+#~ msgid "ICF Files"
+#~ msgstr "Archivos ICF"
+
+#~ msgid "VX5 Commander Files"
+#~ msgstr "Archivos de VX5 Commander"
+
+#~ msgid "VX6 Commander Files"
+#~ msgstr "Archivos de VX6 Commander"
+
+#~ msgid "VX7 Commander Files"
+#~ msgstr "Archivos de VX7 Commander"
+
+#~ msgid ""
+#~ "ICF files cannot be edited, only displayed or imported into another file. "
+#~ "Open in read-only mode?"
+#~ msgstr ""
+#~ "Archivos ICF no se pueden editar, solo mostrarse o importarse en algún "
+#~ "otro archivo. ¿Abrir en modo solo lectura?"
+
+#~ msgid ""
+#~ "Unable to open this image. It was generated with a newer version of CHIRP "
+#~ "and thus may be for a radio model that is not supported by this version. "
+#~ "Please update to the latest version of CHIRP and try again."
+#~ msgstr ""
+#~ "No se puede abrir esta imagen. Esta fue generada con una versión más "
+#~ "nueva de CHIRP y por lo tanto puede ser para un modelo de radio que no es "
+#~ "soportada por esta versión. Por favor actualiza a la última versión de "
+#~ "CHIRP e intenta de nuevo."
+
+#, python-brace-format
+#~ msgid "There was an error opening {fname}: {error}"
+#~ msgstr "Hubo un error abriendo {fname}: {error}"
+
+#, python-brace-format
+#~ msgid "{num} errors during open:"
+#~ msgstr "{num} errores mientras se abría:"
+
+#~ msgid "Note:"
+#~ msgstr "Nota:"
+
+#, python-brace-format
+#~ msgid ""
+#~ "The {vendor} {model} operates in <b>live mode</b>. This means that any "
+#~ "changes you make are immediately sent to the radio. Because of this, you "
+#~ "cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish "
+#~ "to edit the contents offline, please <u>Export</u> to a CSV file, using "
+#~ "the <b>File menu</b>."
+#~ msgstr ""
+#~ "El {vendor} {model} opera en <b>modo en vivo</b>. Esto significa que "
+#~ "cualquier cambio que hagas es enviado inmediatamente a la radio. Debido a "
+#~ "esto , no puedes usar las operaciones <u>Guardar</u> o <u>Subir</u>. Si "
+#~ "quieres editar el contenido sin conexón, por favor <u>Exporta</u> a un "
+#~ "archivo CSV, usando el <b>menú Archivo</b>."
+
+#~ msgid "Don't show this again"
+#~ msgstr "No mostrar esto de neuvo"
+
+#, python-brace-format
+#~ msgid "{vendor} {model} image file"
+#~ msgstr "archivo de imagen {vendor} {model}"
+
+#~ msgid "VX7 Commander"
+#~ msgstr "VX7 Commander"
+
+#~ msgid "VX6 Commander"
+#~ msgstr "VX6 Commander"
+
+#~ msgid "EVE"
+#~ msgstr "EVE"
+
+#~ msgid "VX5 Commander"
+#~ msgstr "VX5 Commander"
+
+#, python-brace-format
+#~ msgid "Import stock configuration {name}"
+#~ msgstr "Importar configuración original {name}"
+
+#, python-brace-format
+#~ msgid "Open stock configuration {name}"
+#~ msgstr "Abrir configuración original {name}"
+
+#~ msgid "This radio's driver is experimental. Do you want to proceed?"
+#~ msgstr "El controlador de esta radio es experimental. ¿Quieres proceder?"
+
+#, python-brace-format
+#~ msgid "{name} Information"
+#~ msgstr "{name} Información"
+
+#~ msgid "Don't show information for any radio again"
+#~ msgstr "No mostrar información para alguna radio de nuevo"
+
+#, python-brace-format
+#~ msgid "{name} Instructions"
+#~ msgstr "{name} Instrucciones"
+
+#~ msgid "Don't show instructions for any radio again"
+#~ msgstr "No mostrar instrucciones para alguna radio de nuevo"
+
+#~ msgid "Save Changes?"
+#~ msgstr "¿Guardar cambios?"
+
+#~ msgid "Kenwood HMK Files"
+#~ msgstr "Archivos Kenwood HMK"
+
+#~ msgid "Kenwood ITM Files"
+#~ msgstr "Archivos Kenwood ITM"
+
+#~ msgid "Travel Plus Files"
+#~ msgstr "Archivos Travel Plus"
+
+#~ msgid "DMR-MARC Repeater Database Dump"
+#~ msgstr "Volcado de la base de datos de repetidor DMR-MARC"
+
+#~ msgid "RepeaterBook Query"
+#~ msgstr "Consultar RepeaterBook"
+
+#~ msgid "RepeaterBook query failed"
+#~ msgstr "Consulta RepeaterBook fallida"
+
+#~ msgid "RadioReference.com Query"
+#~ msgstr "Consultar RadioReference.com"
+
+#~ msgid "RadioReference.com Province Query"
+#~ msgstr "Consulta provincia RadioReference.com"
+
+#~ msgid "With significant contributions from:"
+#~ msgstr "Con contribuciones significativas de:"
+
+#, python-brace-format
+#~ msgid "Visible columns for {radio}"
+#~ msgstr "Columnas visibles para {radio}"
+
+#~ msgid ""
+#~ "The reporting feature of CHIRP is designed to help <u>improve quality</u> "
+#~ "by allowing the authors to focus on the radio drivers used most often and "
+#~ "errors experienced by the users. The reports contain no identifying "
+#~ "information and are used only for statistical purposes by the authors. "
+#~ "Your privacy is extremely important, but <u>please consider leaving this "
+#~ "feature enabled to help make CHIRP better!</u>\n"
+#~ "\n"
+#~ "<b>Are you sure you want to disable this feature?</b>"
+#~ msgstr ""
+#~ "La función de reportar de CHIRP está diseñada para ayudar a <u>mejorar la "
+#~ "calidad</u> al permitir a los autores enfocarse en los controladores de "
+#~ "las radios usadas mas frecuentemente y errores experimentados por los "
+#~ "usuarios. Los reportes no contienen información de identificación y solo "
+#~ "son usados para propósitos estadísticos por los autores. Tu privacidad es "
+#~ "extremadamente importante, pero <u>¡por favor considera dejar esta "
+#~ "función habilitada para ayudar a hacer a CHIRP mejor!</u>\n"
+#~ "\n"
+#~ "<b>¿Seguro que quieres deshabilitar esta función?</b>"
+
+#~ msgid ""
+#~ "Choose a language or Auto to use the operating system default. You will "
+#~ "need to restart the application before the change will take effect"
+#~ msgstr ""
+#~ "Elige un lenguaje o Auto para usar el por defecto del sistema operativo. "
+#~ "Tendrás que reiniciar la aplicación antes para que el cambio surta efecto"
+
+#~ msgid "Python Modules"
+#~ msgstr "Módulos Python"
+
+#~ msgid "Clear Recently Opened"
+#~ msgstr "Limpiar abierto recientemente"
+
+#~ msgid "_Edit"
+#~ msgstr "_Editar"
+
+#~ msgid "_Cut"
+#~ msgstr "_Cortar"
+
+#~ msgid "_Copy"
+#~ msgstr "_Copiar"
+
+#~ msgid "_Paste"
+#~ msgstr "_Pegar"
+
+#~ msgid "_Delete"
+#~ msgstr "_Borrar"
+
+#~ msgid "Select _All"
+#~ msgstr "Seleccionar _todo"
+
+#~ msgid "Move _Up"
+#~ msgstr "Mover _arriba"
+
+#~ msgid "Move Dow_n"
+#~ msgstr "Mover abaj_o"
+
+#~ msgid "E_xchange"
+#~ msgstr "I_ntercambiar"
+
+#~ msgid "P_roperties"
+#~ msgstr "P_ropiedades"
+
+#~ msgid "_View"
+#~ msgstr "_Ver"
+
+#~ msgid "Columns"
+#~ msgstr "Columnas"
+
+#~ msgid "Diff Tabs"
+#~ msgstr "Diferenciar pestañas"
+
+#~ msgid "Change Language"
+#~ msgstr "Cambiar lenguaje"
+
+#~ msgid "_Radio"
+#~ msgstr "_Radio"
+
+#~ msgid "Import From Data Source"
+#~ msgstr "Importar desde fuente de datos"
+
+#~ msgid "DMR-MARC Repeaters"
+#~ msgstr "Repetidores DMR-MARC"
+
+#~ msgid "RadioReference"
+#~ msgstr "RadioReference"
+
+#~ msgid "RadioReference.com US"
+#~ msgstr "RadioReference.com EE.UU"
+
+#~ msgid "RadioReference.com Canada"
+#~ msgstr "RadioReference.com Canadá"
+
+#~ msgid "RepeaterBook"
+#~ msgstr "RepeaterBook"
+
+#~ msgid "RepeaterBook Political Query"
+#~ msgstr "Consulta política de RepeaterBook"
+
+#~ msgid "RepeaterBook Proximity Query"
+#~ msgstr "Consulta de proximidad de RepeaterBook"
+
+#~ msgid "przemienniki.net"
+#~ msgstr "przemienniki.net"
+
+#~ msgid "CHIRP Native File"
+#~ msgstr "Archivo nativo de CHIRP"
+
+#~ msgid "CSV File"
+#~ msgstr "Archivo CSV"
+
+#~ msgid "Import From Stock Config"
+#~ msgstr "Importar desde configuración original"
+
+#~ msgid "Channel Defaults"
+#~ msgstr "Predeterminados del canal"
+
+#~ msgid "Help"
+#~ msgstr "Ayuda"
+
+#~ msgid "Report Statistics"
+#~ msgstr "Reportar estadísticas"
+
+#~ msgid "Hide Unused Fields"
+#~ msgstr "Ocultar campos no usados"
+
+#~ msgid "Smart Tone Modes"
+#~ msgstr "Modos de tono inteligente"
+
+#~ msgid "Show Information"
+#~ msgstr "Mostrar información"
+
+#~ msgid "Enable Developer Functions"
+#~ msgstr "Habilitar funciones de desarrollador"
+
+#~ msgid "Error reporting is enabled"
+#~ msgstr "Reporte de errores está habilitado"
+
+#~ msgid ""
+#~ "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+#~ msgstr ""
+#~ "Si deseas deshabilitar esta función puedes hacerlo en el menú <u>Ayuda</u>"
+
+#~ msgid "General"
+#~ msgstr "General"
+
+#~ msgid "Other"
+#~ msgstr "Otro"
+
+#~ msgid "DTCS Code"
+#~ msgstr "Código DTCS"
+
+#~ msgid "Duplex"
+#~ msgstr "Dúplex"
+
+#~ msgid "Tune Step"
+#~ msgstr "Paso de sintonización"
+
+#~ msgid "Skip"
+#~ msgstr "Omitir"
+
+#~ msgid "Memory validation failed:"
+#~ msgstr "Validación de memoria fallida:"
+
+#~ msgid "Invalid value for this field"
+#~ msgstr "Valor invalido para este campo"
+
+#~ msgid "DTCS Rx Code"
+#~ msgstr "Código DTCS Rx"
+
+#, python-brace-format
+#~ msgid "Writing memory {number}"
+#~ msgstr "Escribiendo memoria {number}"
+
+#~ msgid ""
+#~ "This operation requires moving all subsequent channels by one spot until "
+#~ "an empty location is reached.  This can take a LONG time.  Are you sure "
+#~ "you want to do this?"
+#~ msgstr ""
+#~ "Esta operación requiere mover los canales subsecuentes un lugar hasta "
+#~ "encontrar una localización vacía.  Esto puede tomar MUCHO tiempo. ¿Estás "
+#~ "seguro de querer hacerlo?"
+
+#, python-brace-format
+#~ msgid "Adding memory {number}"
+#~ msgstr "Agregando memoria {number}"
+
+#, python-brace-format
+#~ msgid "Erasing memory {number}"
+#~ msgstr "Borrando memoria {number}"
+
+#, python-brace-format
+#~ msgid "Getting memory {number}"
+#~ msgstr "Obteniendo memoria {number}"
+
+#, python-brace-format
+#~ msgid "Moving memory from {old} to {new}"
+#~ msgstr "Moviendo memoria desde {old} a {new}"
+
+#, python-brace-format
+#~ msgid "Raw memory {number}"
+#~ msgstr "Memoria en bruto {number}"
+
+#, python-brace-format
+#~ msgid "Getting raw memory {number}"
+#~ msgstr "Obteniendo memoria en bruto {number}"
+
+#~ msgid "You can only diff two memories!"
+#~ msgstr "¡Solo puedes diferenciar dos memorias!"
+
+#, python-brace-format
+#~ msgid "Memory {number}"
+#~ msgstr "Memoria {number}"
+
+#, python-brace-format
+#~ msgid "Diff of {a} and {b}"
+#~ msgstr "Diferencia de {a} y {b}"
+
+#, python-brace-format
+#~ msgid "Getting original memory {number}"
+#~ msgstr "Obteniendo memoria original {number}"
+
+#~ msgid "Memories must be contiguous"
+#~ msgstr "Memorias deben ser contiguas"
+
+#~ msgid "Cut"
+#~ msgstr "Cortar"
+
+#~ msgid "Copy"
+#~ msgstr "Copiar"
+
+#~ msgid "Paste"
+#~ msgstr "Pegar"
+
+#~ msgid "...and shift all memories up"
+#~ msgstr "...y desplazar todas las memorias hacia arriba"
+
+#~ msgid "Move up"
+#~ msgstr "Mover arriba"
+
+#~ msgid "Move down"
+#~ msgstr "Mover abajo"
+
+#~ msgid "Exchange memories"
+#~ msgstr "Intercambiar memorias"
+
+#, python-brace-format
+#~ msgid "Internal Error: Column {name} not found"
+#~ msgstr "Error interno: Columna {name} no encontrada"
+
+#, python-brace-format
+#~ msgid "Internal Error: Invalid limit {number}"
+#~ msgstr "Error interno: límite {number} invalido"
+
+#~ msgid "Memory Range:"
+#~ msgstr "Rango de memoria:"
+
+#~ msgid "Refresh"
+#~ msgstr "Actualizar"
+
+#~ msgid "Special Channels"
+#~ msgstr "Canales especiales"
+
+#~ msgid "Show Empty"
+#~ msgstr "Mostrar vacío"
+
+#, python-brace-format
+#~ msgid "Cutting memory {number}"
+#~ msgstr "Cortando memoria {number}"
+
+#, python-brace-format
+#~ msgid ""
+#~ "Unable to paste {src} memories into {dst} rows. Increase the memory "
+#~ "bounds or show empty memories."
+#~ msgstr ""
+#~ "No se pueden pegar {src} memorias en {dst} filas. Incrementa los límites "
+#~ "de la memoria o muestra memorias vacías."
+
+#~ msgid "Yes to All"
+#~ msgstr "Sí a todo"
+
+#, python-brace-format
+#~ msgid "Overwrite location {number}?"
+#~ msgstr "¿Sobrescribir localización {number}?"
+
+#~ msgid "Incompatible Memory"
+#~ msgstr "Memoria incompatible"
+
+#~ msgid "URCALL"
+#~ msgstr "URCALL"
+
+#~ msgid "RPT1CALL"
+#~ msgstr "RPT1CALL"
+
+#~ msgid "RPT2CALL"
+#~ msgstr "RPT2CALL"
+
+#~ msgid "Enabled"
+#~ msgstr "Habilitado"
+
+#~ msgid "Shift"
+#~ msgstr "Desplazamiento"
+
+#, python-brace-format
+#~ msgid "Moving {src} to {dst}"
+#~ msgstr "Moviendo {src} a {dst}"
+
+#, python-brace-format
+#~ msgid "Looking for a free spot ({number})"
+#~ msgstr "Buscando un lugar libre ({number})"
+
+#~ msgid "No space to insert a row"
+#~ msgstr "No hay espacio para insertar una fila"
+
+#, python-brace-format
+#~ msgid "Moved {count} memories"
+#~ msgstr "Movidas {count} memorias"
