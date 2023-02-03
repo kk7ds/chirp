@@ -20,6 +20,7 @@ import struct
 from chirp import chirp_common
 from chirp import bitwise
 from chirp import directory
+from chirp.drivers import tk8160
 from chirp.drivers import tk8180
 from chirp import errors
 from chirp import memmap
@@ -183,10 +184,71 @@ def exit_program(radio):
         pass
 
 
+KEYS = {
+    0x31: 'DTMF ID (BOT)',
+    0x32: 'DTMF ID (EOT)',
+    0x33: 'Channel Up',
+    0x35: 'Home Channel',
+    0x37: 'Channel Down',
+    0x38: 'Display Character',
+    0x39: 'Key Lock',
+    0x3A: 'Lamp',
+    0x3C: 'Memory RCL/STO',
+    0x3E: 'Memory RCL',
+    0x3F: 'Memory STO',
+    0x40: 'Squelch Off Momentary',
+    0x41: 'Squelch Off Toggle',
+    0x42: 'Monitor Momentary',
+    0x43: 'Monitor Toggle',
+    0x45: 'Redial',
+    0x46: 'Low RF Power',
+    0x47: 'Scan',
+    0x48: 'Scan Add/Del',
+    0x4A: 'Group Down',
+    0x4B: 'Group Up',
+    0x4E: 'OST',
+    0x4F: 'None',
+    0x52: 'Talk Around',
+    0x60: 'Squelch Level',
+    }
+
+KEY_NAMES = {
+    'A': 'akey',
+    'B': 'bkey',
+    'C': 'ckey',
+    'S': 'skey',
+    'Side 1': 'side1',
+    'Side 2': 'side2',
+    'Aux': 'aux',
+    'Mic PF1': 'pf1',
+    'Mic PF2': 'pf2',
+}
+
 mem_format = """
 #seekto 0x00E;
 u8 zone_count;
 u8 memory_count;
+
+#seekto 0x110;
+// 4F=none 31=dtmfidbot 32=dmtfideot 33=chup 35=home 37=chandn 38=dispchr
+// 39=keylock 3A=lamp 3C=memrclsto 3E=memrcl 3F=memsto 40=sqlmon 41=sqltog
+// 42=monmom 43=montog 45=redial 46=lowpower 47=scan 48=scanadd 60=sqllev 52=ta
+// 4A=grpdn 4B=grpup 4E=OST
+struct {
+    u8 akey;
+    u8 bkey;
+    u8 ckey;
+    u8 side2;
+    u8 skey;
+    u8 side1;
+    u8 aux;
+    u8 pf1;
+    u8 pf2;
+} keys;
+#seekto 0x124;
+// A1=cha A2=group 4F=none
+u8 unknown1:6,
+   knob:2;
 
 #seekto 0x300;
 struct {
@@ -234,6 +296,7 @@ struct {
 #seekto 0x8000;
 u8 scanbits[32];
 """
+
 
 POWER_LEVELS = [chirp_common.PowerLevel('Low', watts=1),
                 chirp_common.PowerLevel('High', watts=5)]
@@ -538,7 +601,11 @@ class KenwoodTKx140Radio(chirp_common.CloneModeRadio):
                            'effect. Reducing this number will DELETE '
                            'memories in the affected zones!')
         zones.append(zone_count)
-        return settings.RadioSettings(zones)
+
+        keys = tk8160.TKx160Radio.make_key_group(self._memobj.keys,
+                                                 KEY_NAMES,
+                                                 KEYS)
+        return settings.RadioSettings(zones, keys)
 
     def set_settings(self, _settings):
         for element in _settings:
@@ -546,6 +613,8 @@ class KenwoodTKx140Radio(chirp_common.CloneModeRadio):
                 self.set_settings(element)
             elif element.get_name() == 'zonecount':
                 self._set_num_zones(int(element.value))
+            elif element.has_apply_callback():
+                element.run_apply_callback()
 
 
 @directory.register

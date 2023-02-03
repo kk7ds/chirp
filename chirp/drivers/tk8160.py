@@ -120,7 +120,7 @@ struct {
 } keys;
 """
 
-KEYS = [
+_KEYS = [
     'Zone Up',
     'Zone Down',
     'Monitor',
@@ -162,9 +162,24 @@ KEYS = [
     'Squelch Off Momentary',
     'Send the GPS',
     'Volume Up',
-    'Volume Down'
+    'Volume Down',
     'None',
     ]
+
+KEYS = {i: key for i, key in enumerate(_KEYS)
+        if not key.startswith('?')}
+
+KEY_NAMES = {
+    'A': 'akey',
+    'B': 'bkey',
+    'C': 'ckey',
+    'S': 'skey',
+    'Triangle': 'triangle',
+    'Right Up': 'rightup',
+    'Right Down': 'rightdn',
+    'Left Up': 'leftup',
+    'Left Down': 'leftdn',
+}
 
 POWER_LEVELS = [chirp_common.PowerLevel('Low', watts=25),
                 chirp_common.PowerLevel('High', watts=50)]
@@ -563,6 +578,25 @@ class TKx160Radio(chirp_common.CloneModeRadio):
         _mem.unknown5[0] = 0xFF
         _mem.unknown5[1] = 0xFF
 
+    @staticmethod
+    def make_key_group(keysobj, keynames, keyvals):
+        keyvals_by_label = {v: k for k, v in keyvals.items()}
+
+        def applycb(setting):
+            element = setting.get_name()
+            value = keyvals_by_label[str(setting.value)]
+            LOG.debug('Setting %s=%s (0x%02x)', element, setting.value, value)
+            setattr(keysobj, element, value)
+
+        group = settings.RadioSettingGroup('keys', 'Keys')
+        for name, element in keynames.items():
+            current = keyvals[int(getattr(keysobj, element))]
+            val = settings.RadioSettingValueList(keyvals.values(), current)
+            keysetting = settings.RadioSetting(element, name, val)
+            keysetting.set_apply_callback(applycb)
+            group.append(keysetting)
+        return group
+
     def get_settings(self):
         num_zones = len(self._get_zone_info())
         zones = settings.RadioSettingGroup('zones', 'Zones')
@@ -574,7 +608,10 @@ class TKx160Radio(chirp_common.CloneModeRadio):
                            'effect. Reducing this number will DELETE '
                            'memories in the affected zones!')
         zones.append(zone_count)
-        return settings.RadioSettings(zones)
+        keys = self.make_key_group(self._memobj.keys,
+                                   KEY_NAMES,
+                                   KEYS)
+        return settings.RadioSettings(zones, keys)
 
     def set_settings(self, _settings):
         for element in _settings:
