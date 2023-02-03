@@ -219,7 +219,7 @@ def do_download(radio):
         addr, length = struct.unpack('>HB', hdr)
         LOG.debug('Radio: %r %04x %02x' % (cmd, addr, length))
         if cmd == b'Z':
-            data += b'\x00' * length
+            data += b'\xFF' * length
         elif cmd == b'W':
             block = radio.pipe.read(length)
             data += block
@@ -369,55 +369,37 @@ class TKx160Radio(chirp_common.CloneModeRadio):
 
     def check_index(self, number):
         """Return the index entry and slot for a channel in our zone"""
-        for bytenum in range(128 // 8):
-            byte = int(self._memobj.flag1[bytenum])
-            if byte == 0:
-                continue
-            for bit in range(8):
-                mask = 1 << (bit % 8)
-                if not byte & mask:
-                    continue
-                i = bytenum * 8 + bit
-                index_obj = self._memobj.index[i]
-                if (index_obj.zone == self._zone and
-                        index_obj.memory == number):
-                    LOG.debug('Found %i:%i in slot %i',
-                              self._zone, number,
-                              index_obj.slot)
-                    return i, index_obj.slot
+        for i in range(128):
+            index_obj = self._memobj.index[i]
+            if index_obj.zone == self._zone and index_obj.memory == number:
+                LOG.debug('Found %i:%i in slot %i',
+                          self._zone, number,
+                          index_obj.slot)
+                return i, index_obj.slot
         return None, None
 
     def next_slot(self, number):
         """Claim the next available slot entry for channel."""
-        next_index = None
-        for bytenum in range(128 // 8):
-            byte = int(self._memobj.flag1[bytenum])
-            if byte == 0xFF:
-                continue
-            for bit in range(8):
-                mask = 1 << (bit % 8)
-                if not byte & mask:
-                    next_index = bytenum * 8 + bit
-                    break
-            if next_index is not None:
-                break
-
-        next_slot = None
-        for i in range(128):
-            if self._memobj.memories[i].number == 0xFF:
-                next_slot = i
-                break
-
-        if next_index is not None and next_slot is not None:
-            LOG.debug('Putting channel %i in index spot %i',
-                      number, next_index)
+        for next_index in range(128):
             index_obj = self._memobj.index[next_index]
-            index_obj.zone = self._zone
-            index_obj.memory = number
-            index_obj.zero = 0
-            index_obj.slot = next_slot
+            if index_obj.zone == 0xFF:
+                break
         else:
-            raise errors.RadioError('Radio is out of memory')
+            raise errors.RadioError('Radio is out if index memory')
+
+        for next_slot in range(128):
+            if self._memobj.memories[next_slot].number == 0xFF:
+                break
+        else:
+            raise errors.RadioError('Radio is out of memory slots')
+
+        LOG.debug('Putting channel %i in index spot %i',
+                  number, next_index)
+        index_obj = self._memobj.index[next_index]
+        index_obj.zone = self._zone
+        index_obj.memory = number
+        index_obj.zero = 0
+        index_obj.slot = next_slot
 
         self.recalculate_index_entry_bitmask()
 
@@ -459,28 +441,30 @@ class TKx160Radio(chirp_common.CloneModeRadio):
         # Recalculate the pins. This is more laborious than needed, but should
         # also clean up residue.
         zone_counts = [0] * 128
+        mem_flags = [0] * 16
         for i in range(128):
             index_obj = self._memobj.index[i]
             byte = i // 8
             mask = 1 << (i % 8)
-            if index_obj.memory == 0xFF:
-                self._memobj.flag1[byte] &= ~mask
-                self._memobj.flag2[byte] &= ~mask
-            else:
-                self._memobj.flag1[byte] |= mask
-                self._memobj.flag2[byte] |= mask
+            if index_obj.memory != 0xFF:
+                mem_flags[byte] |= mask
                 zone_counts[index_obj.zone - 1] += 1
 
+        for i, byte in enumerate(mem_flags):
+            self._memobj.flag1[i] = byte
+            self._memobj.flag2[i] = byte
+
+        zone_flags = [0] * 16
         # Update zoneinfo
         for i, count in enumerate(zone_counts):
             self._memobj.zoneinfo[i].used = bool(count)
             self._memobj.zoneinfo[i].count = count
-            used_mask = 1 << (i % 8)
             if count:
+                zone_flags[i // 8] |= (1 << (i % 8))
                 LOG.debug('Zone %i count is %i', i + 1, count)
-                self._memobj.zoneflag[i // 8] |= used_mask
-            else:
-                self._memobj.zoneflag[i // 8] &= ~used_mask
+
+        for i, byte in enumerate(zone_flags):
+            self._memobj.zoneflag[i] = byte
 
     def get_memory(self, number):
         m = chirp_common.Memory(number)
