@@ -303,7 +303,7 @@ Yaesu_FT-8900,+Yaesu_FT-8800,24-Oct-2022
 Yaesu_FT-817,@kk7ds,14-Feb-2019
 Yaesu_FT-817ND,+Yaesu_FT-817,14-Feb-2019
 Yaesu_FT-817ND_US,+Yaesu_FT-817,14-Feb-2019
-Yaesu_FT-818,+Yaesu_FT-817,14-Feb-2019
+Yaesu_FT-818,@thomasrussellmurphy,4-Feb-2023
 Yaesu_FT-818ND_US,+Yaesu_FT-817,14-Feb-2019
 Yaesu_FT-857_897,+Yaesu_FT-817,14-Feb-2019
 Yaesu_FT-857_897_US,+Yaesu_FT-817,14-Feb-2019

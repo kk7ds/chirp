@@ -352,7 +352,7 @@
 | <a name="Yaesu_FT-817"></a> Yaesu_FT-817 | [@kk7ds](https://github.com/kk7ds) | 14-Feb-2019 | Yes | 0.04% |
 | <a name="Yaesu_FT-817ND"></a> Yaesu_FT-817ND | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.07% |
 | <a name="Yaesu_FT-817ND_US"></a> Yaesu_FT-817ND_US | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.02% |
-| <a name="Yaesu_FT-818"></a> Yaesu_FT-818 | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.05% |
+| <a name="Yaesu_FT-818"></a> Yaesu_FT-818 | [@thomasrussellmurphy](https://github.com/thomasrussellmurphy) | 4-Feb-2023 | Yes | 0.05% |
 | <a name="Yaesu_FT-818ND_US"></a> Yaesu_FT-818ND_US | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.02% |
 | <a name="Yaesu_FT-857_897"></a> Yaesu_FT-857_897 | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.25% |
 | <a name="Yaesu_FT-857_897_US"></a> Yaesu_FT-857_897_US | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.08% |
