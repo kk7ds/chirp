@@ -962,6 +962,10 @@ class UV9G(WP970I):
     _magic = [MSTRING_UV9G, ]
     _gmrs = True
 
+    def check_set_memory_immutable_policy(self, existing, new):
+        existing.immutable = []
+        super().check_set_memory_immutable_policy(existing, new)
+
     @classmethod
     def match_model(cls, filedata, filename):
         # This radio has always been post-metadata, so never do

@@ -21,6 +21,7 @@ import struct
 import logging
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
+from chirp import bandplan_na
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList
 
@@ -315,13 +316,6 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
     MODEL = ""
     IDENT = ""
 
-    GMRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
-                   462687500, 462712500]
-    GMRS_FREQS2 = [467562500, 467587500, 467612500, 467637500, 467662500,
-                   467687500, 467712500]
-    GMRS_FREQS3 = [462550000, 462575000, 462600000, 462625000, 462650000,
-                   462675000, 462700000, 462725000]
-    GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
     _gmrs = False
     _bw_shift = False
 
@@ -391,6 +385,24 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
         rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
 
         return rf
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+
+        _msg_duplex = 'Duplex must be "off" for this frequency'
+        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+
+        if self.MODEL == "UV-9G":
+            if mem.freq not in bandplan_na.ALL_GMRS_FREQS:
+                if mem.duplex != "off":
+                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+            if mem.freq in bandplan_na.GMRS_HIRPT:
+                if mem.duplex and mem.offset != 5000000:
+                    msgs.append(chirp_common.ValidationWarning(_msg_offset))
+                if mem.duplex and mem.duplex != "+":
+                    msgs.append(chirp_common.ValidationWarning(_msg_offset))
+
+        return msgs
 
     def _is_txinh(self, _mem):
         raw_tx = ""
@@ -513,6 +525,64 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
                                                 self.SCODE_LIST[_mem.scode]))
         mem.extra.append(rs)
 
+        immutable = []
+
+        if self._gmrs:
+            if self.MODEL == "UV-9G":
+                if mem.number >= 1 and mem.number <= 30:
+                    # 30 GMRS fixed channels
+                    GMRS_30_FIXED_FREQS = \
+                        bandplan_na.ALL_GMRS_FREQS + \
+                        bandplan_na.GMRS_HIRPT
+                    GMRS_FREQ = GMRS_30_FIXED_FREQS[mem.number - 1]
+                    mem.freq = GMRS_FREQ
+                    immutable = ["empty", "freq"]
+                    if mem.number <= 22:
+                        # GMRS simplex only channels
+                        mem.duplex = ''
+                        mem.offset = 0
+                        immutable += ["duplex", "offset"]
+                        if mem.number >= 8 and mem.number <= 14:
+                            # GMRS 467 MHz interstitial channels
+                            # must be narrow FM and low power
+                            mem.mode = "NFM"
+                            mem.power = self.POWER_LEVELS[2]
+                            immutable += ["mode", "power"]
+                    if mem.number > 22:
+                        # GMRS repeater only channels
+                        mem.duplex = '+'
+                        mem.offset = 5000000
+                        immutable += ["duplex", "offset"]
+                elif mem.freq in bandplan_na.ALL_GMRS_FREQS:
+                    # 98 GMRS customizable channels
+                    if mem.freq in bandplan_na.GMRS_LOW:
+                        # GMRS 462 MHz interstitial frequencies
+                        mem.duplex = ''
+                        mem.offset = 0
+                        immutable = ["duplex", "offset"]
+                    if mem.freq in bandplan_na.GMRS_FRSONLY:
+                        # GMRS 467 MHz interstitial frequencies
+                        mem.duplex = ''
+                        mem.offset = 0
+                        mem.mode = "NFM"
+                        mem.power = self.POWER_LEVELS[2]
+                        immutable = ["duplex", "offset", "mode", "power"]
+                    if mem.freq in bandplan_na.GMRS_HIRPT:
+                        # GMRS 462 MHz main frequencies
+                        # GMRS 467 MHz main frequencies (repeater input)
+                        if mem.duplex == '+':
+                            mem.offset = 5000000
+                        else:
+                            mem.duplex = ''
+                            mem.offset = 0
+                else:
+                    # Not a GMRS frequency - disable TX
+                    mem.duplex = 'off'
+                    mem.offset = 0
+                    immutable = ["duplex", "offset"]
+
+        mem.immutable = immutable
+
         return mem
 
     def set_memory(self, mem):
@@ -525,33 +595,6 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
             return
 
         _mem.set_raw("\x00" * 16)
-
-        if self._gmrs:
-            if mem.number >= 1 and mem.number <= 30:
-                GMRS_FREQ = self.GMRS_FREQS[mem.number - 1]
-                mem.freq = GMRS_FREQ
-                if mem.number <= 22:
-                    mem.duplex = ''
-                    mem.offset = 0
-                    if mem.number >= 8 and mem.number <= 14:
-                        mem.mode = "NFM"
-                        mem.power = self.POWER_LEVELS[2]
-                if mem.number > 22:
-                    mem.duplex = '+'
-                    mem.offset = 5000000
-            elif mem.freq in self.GMRS_FREQS:
-                if mem.freq in self.GMRS_FREQS2:
-                    mem.offset = 0
-                    mem.mode = "NFM"
-                    mem.power = self.POWER_LEVELS[2]
-                if mem.freq in self.GMRS_FREQS3:
-                    if mem.duplex == '+':
-                        mem.offset = 5000000
-                    else:
-                        mem.offset = 0
-            else:
-                mem.duplex = 'off'
-                mem.offset = 0
 
         _mem.rxfreq = mem.freq / 10
 
