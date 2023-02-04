@@ -560,7 +560,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
                         mem.duplex = ''
                         mem.offset = 0
                         immutable = ["duplex", "offset"]
-                    if mem.freq in bandplan_na.GMRS_FRSONLY:
+                    if mem.freq in bandplan_na.GMRS_HHONLY:
                         # GMRS 467 MHz interstitial frequencies
                         mem.duplex = ''
                         mem.offset = 0
