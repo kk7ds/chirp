@@ -428,7 +428,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                     mem.duplex = ''
                     mem.offset = 0
                     immutable = ["duplex", "offset"]
-                if mem.freq in bandplan_na.GMRS_FRSONLY:
+                if mem.freq in bandplan_na.GMRS_HHONLY:
                     mem.duplex = 'off'
                     mem.offset = 0
                     immutable = ["duplex", "offset"]
