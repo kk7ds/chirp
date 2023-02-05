@@ -22,6 +22,7 @@ import re
 from chirp.drivers import baofeng_common
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
+from chirp import bandplan_na
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
@@ -68,14 +69,6 @@ LIST_TIMEOUT = ["%s sec" % x for x in range(15, 615, 15)]
 LIST_TXPOWER = ["High", "Low"]
 LIST_VOICE = ["Off", "English", "Chinese"]
 LIST_WORKMODE = ["Frequency", "Channel"]
-
-GMRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
-               462687500, 462712500]
-GMRS_FREQS2 = [467562500, 467587500, 467612500, 467637500, 467662500,
-               467687500, 467712500]
-GMRS_FREQS3 = [462550000, 462575000, 462600000, 462625000, 462650000,
-               462675000, 462700000, 462725000]
-GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
 
 
 @directory.register
@@ -392,22 +385,6 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
         """Process the mem map into the mem object"""
         self._memobj = bitwise.parse(self.MEM_FORMAT, self._mmap)
 
-    def validate_memory(self, mem):
-        msgs = baofeng_common.BaofengCommonHT.validate_memory(self, mem)
-
-        _mem = self._memobj.memory[mem.number]
-        _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
-
-        if self.MODEL == "GMRS-V2":
-            if mem.freq not in GMRS_FREQS:
-                if mem.duplex != "off":
-                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
-            elif mem.duplex and mem.offset != 5000000:
-                msgs.append(chirp_common.ValidationWarning(_msg_offset))
-
-        return msgs
-
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _nam = self._memobj.names[number]
@@ -520,20 +497,21 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
         immutable = []
 
         if self.MODEL == "GMRS-V2":
-            if mem.freq in GMRS_FREQS:
-                if mem.freq in GMRS_FREQS1:
+            if mem.freq in bandplan_na.ALL_GMRS_FREQS:
+                if mem.freq in bandplan_na.GMRS_LOW:
                     # Non-repeater GMRS channels (limit duplex)
-                    mem.duplex == ''
+                    mem.duplex = ''
                     mem.offset = 0
                     immutable = ["duplex", "offset"]
-                elif mem.freq in GMRS_FREQS2:
-                    # Non-repeater FRS channels (limit duplex, power)
-                    mem.duplex == ''
+                elif mem.freq in bandplan_na.GMRS_HHONLY:
+                    # Non-repeater GMRS hand-held only channels
+                    # (limit duplex, power)
+                    mem.duplex = ''
                     mem.offset = 0
                     mem.mode = "NFM"
                     mem.power = self.POWER_LEVELS[1]
                     immutable = ["duplex", "offset", "mode", "power"]
-                elif mem.freq in GMRS_FREQS3:
+                elif mem.freq in bandplan_na.GMRS_HIRPT:
                     # GMRS repeater channels, always either simplex or +5MHz
                     if mem.duplex == '':
                         mem.offset = 0
@@ -542,7 +520,9 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
             else:
                 # Not a GMRS channel, so restrict duplex since it will be
                 # forced to off.
-                if mem.freq not in GMRS_FREQS:
+                if mem.freq not in bandplan_na.ALL_GMRS_FREQS:
+                    mem.duplex = 'off'
+                    mem.offset = 0
                     immutable = ["duplex", "offset"]
 
         mem.immutable = immutable
@@ -562,26 +542,14 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
             _nam.set_raw("\xff" * 16)
             return
 
-        # The mem may have immutable duplex and offset, so we shouldn't try
-        # to change them here to enforce the radio's rules, so make copies for
-        # our work below.
-        offset = mem.offset
-        duplex = mem.duplex
-        if self.MODEL == "GMRS-V2":
-            if mem.freq not in GMRS_FREQS:
-                # This radio does not allow transmitting on non-GMRS channels,
-                # so we force them to duplex=off to reflect that.
-                duplex = 'off'
-                offset = 0
-
         _mem.set_raw("\x00" * 16)
 
         _mem.rxfreq = mem.freq / 10
 
-        if duplex == "off":
+        if mem.duplex == "off":
             for i in range(0, 4):
                 _mem.txfreq[i].set_raw("\xFF")
-        elif duplex == "+":
+        elif mem.duplex == "+":
             offset = 5000000
             _mem.txfreq = (mem.freq + offset) / 10
         else:
