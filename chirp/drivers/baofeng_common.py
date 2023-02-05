@@ -367,7 +367,10 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
         rf.valid_modes = self.MODES
         rf.valid_characters = self.VALID_CHARS
         rf.valid_name_length = self.LENGTH_NAME
-        rf.valid_duplexes = ["", "-", "+", "split", "off"]
+        if self._gmrs:
+            rf.valid_duplexes = ["", "+", "off"]
+        else:
+            rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_cross_modes = [
             "Tone->Tone",
@@ -392,14 +395,12 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
         _msg_duplex = 'Duplex must be "off" for this frequency'
         _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
 
-        if self.MODEL == "UV-9G":
+        if self.MODEL in ["UV-9G", "GMRS-V2"]:
             if mem.freq not in bandplan_na.ALL_GMRS_FREQS:
                 if mem.duplex != "off":
                     msgs.append(chirp_common.ValidationWarning(_msg_duplex))
             if mem.freq in bandplan_na.GMRS_HIRPT:
                 if mem.duplex and mem.offset != 5000000:
-                    msgs.append(chirp_common.ValidationWarning(_msg_offset))
-                if mem.duplex and mem.duplex != "+":
                     msgs.append(chirp_common.ValidationWarning(_msg_offset))
 
         return msgs
@@ -570,11 +571,10 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
                     if mem.freq in bandplan_na.GMRS_HIRPT:
                         # GMRS 462 MHz main frequencies
                         # GMRS 467 MHz main frequencies (repeater input)
+                        if mem.duplex == '':
+                            mem.offset = 0
                         if mem.duplex == '+':
                             mem.offset = 5000000
-                        else:
-                            mem.duplex = ''
-                            mem.offset = 0
                 else:
                     # Not a GMRS frequency - disable TX
                     mem.duplex = 'off'
