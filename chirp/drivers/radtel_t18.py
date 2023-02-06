@@ -631,7 +631,10 @@ class T18Radio(chirp_common.CloneModeRadio):
 
             return
 
-        _mem.set_raw("\x00" * 12 + "\xF9\xFF\xFF\xFF")
+        if self.MODEL == "BF-V8A":
+            _mem.set_raw("\x00" * 12 + "\x09\xFF\xFF\xFF")
+        else:
+            _mem.set_raw("\x00" * 12 + "\xF9\xFF\xFF\xFF")
 
         _mem.rxfreq = mem.freq / 10
 
