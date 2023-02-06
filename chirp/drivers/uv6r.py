@@ -117,7 +117,7 @@ class UV6R(baofeng_common.BaofengCommonHT):
     MODES = ["FM", "NFM"]
     VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
         "!@#$%^&*()+-=[]:\";'<>?,./"
-    LENGTH_NAME = 6
+    LENGTH_NAME = 7  # older radios may only support 6 character names
     SKIP_VALUES = ["", "S"]
     DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
@@ -283,8 +283,8 @@ class UV6R(baofeng_common.BaofengCommonHT):
 
     #seekto 0x1000;
     struct {
-      char name[6];
-      u8 unknown[10];
+      char name[7];
+      u8 unknown[9];
     } names[128];
 
     #seekto 0x1F40;
