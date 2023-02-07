@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-16 12:06-0800\n"
+"POT-Creation-Date: 2023-02-07 13:35-0800\n"
 "PO-Revision-Date: 2015-11-30 10:36+0200\n"
 "Last-Translator: laser <student.laser@gmail.com>\n"
 "Language-Team: laser <student.laser@gmail.com>\n"
@@ -17,901 +17,1497 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../chirpui/common.py:204
-msgid "Completed"
-msgstr "Завершено"
+#: ../drivers/ft60.py:88 ../drivers/ft450d.py:488 ../drivers/ft817.py:407
+#, python-format
+msgid "Radio did not ack block %i"
+msgstr ""
 
-#: ../chirpui/common.py:205
-msgid "idle"
-msgstr "простоювання"
+#: ../drivers/bj9900.py:112
+msgid ""
+"This is experimental support for BJ-9900 which is still under development.\n"
+"Please ensure you have a good backup with OEM software.\n"
+"Also please send in bug and enhancement requests!\n"
+"You have been warned. Proceed at your own risk!"
+msgstr ""
 
-#: ../chirpui/bankedit.py:52
-msgid "Retrieving bank information"
-msgstr "Отримання інформації банку"
+#: ../drivers/bj9900.py:137 ../drivers/ft450d.py:441 ../drivers/ft817.py:342
+#, fuzzy
+msgid "Cloning from radio"
+msgstr "Скопіювати з радіостанції"
 
-#: ../chirpui/bankedit.py:75
-msgid "Setting name on bank"
-msgstr "Настройка назви бана"
+#: ../drivers/bj9900.py:164 ../drivers/ft450d.py:470 ../drivers/ft817.py:380
+#, fuzzy
+msgid "Cloning to radio"
+msgstr "Записати в радіостанцію"
 
-#: ../chirpui/bankedit.py:85
-msgid "Bank"
-msgstr "Банк"
+#: ../drivers/ft817.py:321
+msgid ""
+"Unable to read last block. This often happens when the selected model is US "
+"but the radio is a non-US one (or widebanded). Please choose the correct "
+"model and try again."
+msgstr ""
 
-#: ../chirpui/bankedit.py:86 ../chirpui/bankedit.py:240
-#: ../chirpui/importdialog.py:536 ../chirpui/memedit.py:65
-#: ../chirpui/memedit.py:85 ../chirpui/memedit.py:247
-#: ../chirpui/memedit.py:872 ../chirpui/memedit.py:926
-#: ../chirpui/memedit.py:1063 ../chirpui/memedit.py:1065
-msgid "Name"
-msgstr "Ім'я"
+#: ../drivers/ft817.py:359
+msgid "Clone completed, checking for spurious bytes"
+msgstr ""
 
-#: ../chirpui/bankedit.py:185
-msgid "Updating bank index for memory {num}"
-msgstr "Оновлення індексу банку пам'яті {num}"
+#: ../drivers/ft817.py:364
+msgid ""
+"Radio sent data after the last awaited block, this happens when the selected "
+"model is a non-US but the radio is a US one. Please choose the correct model "
+"and try again."
+msgstr ""
 
-#: ../chirpui/bankedit.py:194
-msgid "Updating bank information for memory {num}"
-msgstr "Оновлення інформації банку пам'яті {num}"
+#: ../drivers/vx5.py:117
+#, python-brace-format
+msgid "{bank} is full"
+msgstr ""
 
-#: ../chirpui/bankedit.py:200 ../chirpui/bankedit.py:229
-msgid "Getting memory {num}"
-msgstr "Отримання пам'яті {num}"
+#: ../drivers/vx5.py:134
+#, python-brace-format
+msgid "Memory {num} not in bank {bank}"
+msgstr ""
 
-#: ../chirpui/bankedit.py:214
-msgid "Setting index for memory {num}"
-msgstr "Установка індексу для пам'яті {num}"
+#: ../wxui/settingsedit.py:54
+msgid "Getting settings"
+msgstr ""
 
-#: ../chirpui/bankedit.py:223
-msgid "Getting bank for memory {num}"
-msgstr "Отримання банку пам'яті {num}"
+#: ../wxui/settingsedit.py:114
+#, fuzzy
+msgid "Error applying settings"
+msgstr "Помилка настройки пам'яті"
 
-#: ../chirpui/bankedit.py:238 ../chirpui/memedit.py:63
-#: ../chirpui/memedit.py:172 ../chirpui/memedit.py:246
-#: ../chirpui/memedit.py:315 ../chirpui/memedit.py:335
-#: ../chirpui/memedit.py:349 ../chirpui/memedit.py:423
-#: ../chirpui/memedit.py:435 ../chirpui/memedit.py:459
-#: ../chirpui/memedit.py:461 ../chirpui/memedit.py:534
-#: ../chirpui/memedit.py:548 ../chirpui/memedit.py:550
-#: ../chirpui/memedit.py:591 ../chirpui/memedit.py:593
-#: ../chirpui/memedit.py:621 ../chirpui/memedit.py:822
-#: ../chirpui/memedit.py:870 ../chirpui/memedit.py:895
-#: ../chirpui/memedit.py:907 ../chirpui/memedit.py:924
-#: ../chirpui/memedit.py:1230
-msgid "Loc"
-msgstr "Loc"
-
-#: ../chirpui/bankedit.py:239 ../chirpui/importdialog.py:537
-#: ../chirpui/memedit.py:64 ../chirpui/memedit.py:86 ../chirpui/memedit.py:187
-#: ../chirpui/memedit.py:248 ../chirpui/memedit.py:271
-#: ../chirpui/memedit.py:296 ../chirpui/memedit.py:304
-#: ../chirpui/memedit.py:873 ../chirpui/memedit.py:923
-msgid "Frequency"
-msgstr "Частота"
-
-#: ../chirpui/bankedit.py:241
+#: ../wxui/bankedit.py:62
 msgid "Index"
 msgstr "Зміст"
 
-#: ../chirpui/bankedit.py:302
-msgid "Getting bank information for memory {num}"
-msgstr "Отримання інформації банку для пам'яті {num}"
+#: ../wxui/bankedit.py:188
+msgid "Double-click to change bank name"
+msgstr ""
 
-#: ../chirpui/bankedit.py:323
-msgid "Getting bank information"
-msgstr "Отримання інформації банку"
+#: ../wxui/bankedit.py:201
+#, python-format
+msgid "Enter a new name for bank %s:"
+msgstr ""
 
-#: ../chirpui/inputdialog.py:81
-msgid "An error has occurred"
-msgstr "Сталася помилка"
+#: ../wxui/bankedit.py:203
+#, fuzzy
+msgid "Rename bank"
+msgstr "Настройка назви бана"
 
-#: ../chirpui/inputdialog.py:130
-msgid "Overwrite"
-msgstr "Перезаписати"
+#: ../wxui/bankedit.py:231
+msgid "Memory must be in a bank to be edited"
+msgstr ""
 
-#: ../chirpui/inputdialog.py:133
-msgid "File Exists"
-msgstr "Файл існує"
+#: ../wxui/radioinfo.py:43
+msgid "Features"
+msgstr ""
 
-#: ../chirpui/inputdialog.py:136
-msgid "The file {name} already exists. Do you want to overwrite it?"
-msgstr "Файл {name} вже існує. Ви дійсно хочете перезаписати його?"
+#: ../wxui/radioinfo.py:48
+msgid "(none)"
+msgstr ""
 
-#: ../chirpui/importdialog.py:90
-msgid "Location {number} is already being imported. Choose another value for 'New Location' before selection 'Import'"
-msgstr "Розташування {number} вже імпортуються. Виберіть інше значення для 'Нове розташування' перед вибором 'Імпорт'"
-
-#: ../chirpui/importdialog.py:121
-msgid "Invalid value. Must be an integer."
+#: ../wxui/query_sources.py:56
+#, fuzzy, python-format
+msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Неприпустиме значення. Повинно бути цілим числом."
 
-#: ../chirpui/importdialog.py:130
-msgid "Location {number} is already being imported"
-msgstr "Розташування {number} вже імпортованого"
+#: ../wxui/query_sources.py:58
+#, python-format
+msgid "%(value)s must be between %(min)i and %(max)i"
+msgstr ""
 
-#: ../chirpui/importdialog.py:182
-msgid "Updating URCALL list"
-msgstr "Оновлення списку URCALL"
+#: ../wxui/query_sources.py:109
+msgid "Invalid ZIP code"
+msgstr ""
 
-#: ../chirpui/importdialog.py:187
-msgid "Updating RPTCALL list"
-msgstr "Оновлення списку RPTCALL"
+#: ../wxui/query_sources.py:279 ../wxui/query_sources.py:457
+msgid "Country"
+msgstr ""
 
-#: ../chirpui/importdialog.py:256
-msgid "Setting memory {number}"
-msgstr "Установка пам'яті {number}"
+#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:345
+msgid "Amateur"
+msgstr ""
 
-#: ../chirpui/importdialog.py:260
-msgid "Importing bank information"
-msgstr "Імпортування інформації банку"
+#: ../wxui/query_sources.py:282 ../wxui/query_sources.py:336
+#: ../wxui/query_sources.py:427
+msgid "GMRS"
+msgstr ""
 
-#: ../chirpui/importdialog.py:264
+#: ../wxui/query_sources.py:284
+msgid "Service"
+msgstr ""
+
+#: ../wxui/query_sources.py:287
+msgid "State/Province"
+msgstr ""
+
+#: ../wxui/query_sources.py:292
+msgid "Optional: 45.0000"
+msgstr ""
+
+#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:299
+msgid "If set, sort results by distance from these coordinates"
+msgstr ""
+
+#: ../wxui/query_sources.py:298
+msgid "Optional: -122.0000"
+msgstr ""
+
+#: ../wxui/query_sources.py:301
+msgid "Latitude"
+msgstr ""
+
+#: ../wxui/query_sources.py:302
+msgid "Longitude"
+msgstr ""
+
+#: ../wxui/query_sources.py:307
 #, fuzzy
-msgid "Error importing memories:"
-msgstr "Помилка імпорту пам'яті:"
+msgid "Optional: 100"
+msgstr "Опції"
 
-#: ../chirpui/importdialog.py:376
+#: ../wxui/query_sources.py:308
+msgid "Limit results to this distance (km) from coordinates"
+msgstr ""
+
+#: ../wxui/query_sources.py:310
+msgid "Distance"
+msgstr ""
+
+#: ../wxui/query_sources.py:313
+msgid "Optional: County, Hospital, etc"
+msgstr ""
+
+#: ../wxui/query_sources.py:314
+msgid "Filter results with location matching this string"
+msgstr ""
+
+#: ../wxui/query_sources.py:316
+msgid "Filter"
+msgstr ""
+
+#: ../wxui/query_sources.py:320
+msgid "Only certain bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:322
+msgid "Limit Bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:325
+msgid "Only certain modes"
+msgstr ""
+
+#: ../wxui/query_sources.py:327
+msgid "Limit Modes"
+msgstr ""
+
+#: ../wxui/query_sources.py:353
 msgid "All"
 msgstr "Все"
 
-#: ../chirpui/importdialog.py:382
-msgid "None"
-msgstr "Не вказано"
-
-#: ../chirpui/importdialog.py:388
-msgid "Inverse"
-msgstr "Інверсія"
-
-#: ../chirpui/importdialog.py:394
+#: ../wxui/query_sources.py:375
 #, fuzzy
-msgid "Select"
-msgstr "Обрати"
-
-#: ../chirpui/importdialog.py:416
-msgid "Auto"
-msgstr "Авто"
-
-#: ../chirpui/importdialog.py:422
-msgid "Reverse"
-msgstr "Реверс"
-
-#: ../chirpui/importdialog.py:428
-msgid "Adjust New Location"
-msgstr "Настроїти нове розташування"
-
-#: ../chirpui/importdialog.py:438
-msgid "Confirm overwrites"
-msgstr "Підтвердіть заміну"
-
-#: ../chirpui/importdialog.py:444
-msgid "Options"
-msgstr "Опції"
-
-#: ../chirpui/importdialog.py:495
-msgid "Cannot be imported because"
-msgstr "Не можна імпортувати, оскільки"
-
-#: ../chirpui/importdialog.py:513
-#, fuzzy
-msgid "Import From File"
-msgstr "Імпортувати з файлу"
-
-#: ../chirpui/importdialog.py:514 ../chirpui/mainapp.py:1196
-msgid "Import"
-msgstr "Імпорт"
-
-#: ../chirpui/importdialog.py:534
-msgid "To"
-msgstr "До"
-
-#: ../chirpui/importdialog.py:535
-msgid "From"
-msgstr "З"
-
-#: ../chirpui/importdialog.py:538 ../chirpui/memedit.py:78
-#: ../chirpui/memedit.py:99 ../chirpui/memedit.py:886
-#: ../chirpui/memedit.py:940 ../chirpui/memedit.py:1068
-msgid "Comment"
-msgstr "Коментар"
-
-#: ../chirpui/importdialog.py:542
-msgid "Location memory will be imported into"
-msgstr "Розташування пам'яті буде імпортовано до"
-
-#: ../chirpui/importdialog.py:543
-msgid "Location of memory in the file being imported"
-msgstr "Розташування пам'яті у файлі, що імпортуються"
-
-#: ../chirpui/importdialog.py:566
-msgid "Preparing memory list..."
-msgstr "Підготовка списку пам'яті..."
-
-#: ../chirpui/importdialog.py:575
-#, fuzzy
-msgid "Export To File"
-msgstr "Експорт до файлу"
-
-#: ../chirpui/importdialog.py:576 ../chirpui/mainapp.py:1197
-msgid "Export"
-msgstr "Експорт"
-
-#: ../chirpui/mainapp.py:269 ../chirpui/mainapp.py:483
-msgid "Untitled"
-msgstr "Без назви"
-
-#: ../chirpui/mainapp.py:316 ../chirpui/mainapp.py:715
-msgid "CHIRP Radio Images"
-msgstr "Образи радіостанцій CHIRP"
-
-#: ../chirpui/mainapp.py:317 ../chirpui/mainapp.py:714
-#: ../chirpui/mainapp.py:880
-msgid "CHIRP Files"
-msgstr "CHIRP файли"
-
-#: ../chirpui/mainapp.py:318 ../chirpui/mainapp.py:716
-#: ../chirpui/mainapp.py:879
-msgid "CSV Files"
-msgstr "CSV-файли"
-
-#: ../chirpui/mainapp.py:319 ../chirpui/mainapp.py:717
-msgid "ICF Files"
-msgstr "ICF файли"
-
-#: ../chirpui/mainapp.py:320 ../chirpui/mainapp.py:718
-msgid "VX7 Commander Files"
-msgstr "Файли VX7 командира"
-
-#: ../chirpui/mainapp.py:330
-msgid "ICF files cannot be edited, only displayed or imported into another file. Open in read-only mode?"
-msgstr "ICF файли не можна редагувати, тільки відобразити або імпортувати. Відкрити в режимі тільки для читання?"
-
-#: ../chirpui/mainapp.py:373
-msgid "There was an error opening {fname}: {error}"
-msgstr "Сталася помилка при відкритті {fname}: {error}"
-
-#: ../chirpui/mainapp.py:388
-msgid "{num} errors during open:"
-msgstr "{num} помилки під час відкриття:"
-
-#: ../chirpui/mainapp.py:394
-msgid "Note:"
-msgstr "Примітка:"
-
-#: ../chirpui/mainapp.py:395
-msgid "The {vendor} {model} operates in <b>live mode</b>. This means that any changes you make are immediately sent to the radio. Because of this, you cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to edit the contents offline, please <u>Export</u> to a CSV file, using the <b>File menu</b>."
-msgstr "{vendor} {model} працює в <b>режимі реального часу</b>. Це означає, що будь-які зміни негайно відправляються на радіостанцію. Через це не вдалося виконати <u>Збереження</u> або <u>Запис</u> операцій. Якщо ви хочете редагувати вміст в автономному режимі, будь ласка, <u>Експортуйте</u> файл CSV, за допомогою <b>Меню Файл</b>."
-
-#: ../chirpui/mainapp.py:404
-msgid "Don't show this again"
-msgstr "Не показувати наступного разу"
-
-#: ../chirpui/mainapp.py:448
-msgid "{vendor} {model} image file"
-msgstr "файлу образу {vendor} {model}"
-
-#: ../chirpui/mainapp.py:456
-msgid "VX7 Commander"
-msgstr "Командир VX7"
-
-#: ../chirpui/mainapp.py:518
-msgid "Open recent file {name}"
-msgstr "Відкриті останній файл {name}"
-
-#: ../chirpui/mainapp.py:579
-msgid "Import stock configuration {name}"
-msgstr "Імпорт заводської конфігурації {name}"
-
-#: ../chirpui/mainapp.py:595
-msgid "Open stock configuration {name}"
-msgstr "Відкрите заводські конфігурації {name}"
-
-#: ../chirpui/mainapp.py:681
-msgid "Discard Changes?"
-msgstr "Скасувати зміни?"
-
-#: ../chirpui/mainapp.py:686
-msgid "File is modified, save changes before closing?"
-msgstr "Файл змінено, зберегти зміни перед закриттям?"
-
-#: ../chirpui/mainapp.py:923
-msgid "With significant contributions by:"
-msgstr "Значні внески зробили:"
-
-#: ../chirpui/mainapp.py:940
-msgid "Select Columns"
+msgid "Select Bands"
 msgstr "Виберіть Стовпці"
 
-#: ../chirpui/mainapp.py:955
-msgid "Visible columns for {radio}"
-msgstr "Видимі стовпці для {radio}"
+#: ../wxui/query_sources.py:375
+msgid "Bands"
+msgstr ""
 
-#: ../chirpui/mainapp.py:1012
-msgid "Reporting is disabled"
-msgstr "Звіти вимкнуто"
-
-#: ../chirpui/mainapp.py:1013
-msgid "The reporting feature of CHIRP is designed to help <u>improve quality</u> by allowing the authors to focus on the radio drivers used most often and errors experienced by the users. The reports contain no identifying information and are used only for statistical purposes by the authors. Your privacy is extremely important, but <u>please consider leaving this feature enabled to help make CHIRP better!</u>\n"
-"\n"
-"<b>Are you sure you want to disable this feature?</b>"
-msgstr "Функцію звітування CHIRP розроблено, щоб допомогти <u>поліпшити якість</u>, дозволяючи авторам зосередитися на драйверах радіостанцій, що найчастіше використовується і помилках досвідчених користувачів. Звіти не містять ідентифікаційну інформацію і використовуються тільки для статистичних цілей авторів. Ваша конфіденційність є надзвичайно важлива, але <u>будь ласка, залиште цю функцію включеною, щоб допомогти зробити CHIRP краще!</u>\n"
-"\n"
-"<b>ви впевнені, що хочете відключити цю функцію?</b>"
-
-#: ../chirpui/mainapp.py:1045
-msgid "Choose a language or Auto to use the operating system default. You will need to restart the application before the change will take effect"
-msgstr "Виберіть мову або авто для використання в операційній системі. Вам потрібно буде перезапустити додаток до того, як зміни вступлять в силу"
-
-#: ../chirpui/mainapp.py:1169
-msgid "_File"
-msgstr "_Файл"
-
-#: ../chirpui/mainapp.py:1172
-msgid "Open stock config"
-msgstr "Відкрити заводські конфігурації"
-
-#: ../chirpui/mainapp.py:1173
-msgid "_Recent"
-msgstr "Ос_танні"
-
-#: ../chirpui/mainapp.py:1178
-msgid "_Edit"
-msgstr "_Редагувати"
-
-#: ../chirpui/mainapp.py:1179
-msgid "_Cut"
-msgstr "_Вирізати"
-
-#: ../chirpui/mainapp.py:1180
-msgid "_Copy"
-msgstr "_Копіювати"
-
-#: ../chirpui/mainapp.py:1181
-msgid "_Paste"
-msgstr "_Вставити"
-
-#: ../chirpui/mainapp.py:1182
-msgid "_Delete"
-msgstr "_Видалити"
-
-#: ../chirpui/mainapp.py:1183
-msgid "Move _Up"
-msgstr "Перемістити В_гору"
-
-#: ../chirpui/mainapp.py:1184
+#: ../wxui/query_sources.py:396
 #, fuzzy
-msgid "Move Dow_n"
-msgstr "Перемістити В_низ"
+msgid "Select Modes"
+msgstr "Виберіть Стовпці"
 
-#: ../chirpui/mainapp.py:1185
-msgid "E_xchange"
-msgstr "_Обмін"
-
-#: ../chirpui/mainapp.py:1186
-msgid "_View"
-msgstr "В_игляд"
-
-#: ../chirpui/mainapp.py:1187
-msgid "Columns"
-msgstr "Стовпці"
-
-#: ../chirpui/mainapp.py:1188
-msgid "Developer"
-msgstr "Розробник"
-
-#: ../chirpui/mainapp.py:1189
-msgid "Show raw memory"
-msgstr "Показати raw пам'ять"
-
-#: ../chirpui/mainapp.py:1190
-msgid "Diff raw memories"
-msgstr "Порівняти raw пам'ять"
-
-#: ../chirpui/mainapp.py:1191
-msgid "Diff tabs"
-msgstr "Вкладки порівняння"
-
-#: ../chirpui/mainapp.py:1192
-msgid "Change language"
-msgstr "Змінити мову"
-
-#: ../chirpui/mainapp.py:1193
-msgid "_Radio"
-msgstr "_Радіостанція"
-
-#: ../chirpui/mainapp.py:1194
-msgid "Download From Radio"
-msgstr "Скопіювати з радіостанції"
-
-#: ../chirpui/mainapp.py:1195
-msgid "Upload To Radio"
-msgstr "Записати в радіостанцію"
-
-#: ../chirpui/mainapp.py:1198
-msgid "Import from RFinder"
-msgstr "Імпорт з RFinder"
-
-#: ../chirpui/mainapp.py:1199
-msgid "CHIRP Native File"
-msgstr "Файл CHIRP"
-
-#: ../chirpui/mainapp.py:1200
-msgid "CSV File"
-msgstr "Файл CSV"
-
-#: ../chirpui/mainapp.py:1201
-msgid "Import from RepeaterBook"
-msgstr "Імпорт з RepeaterBook"
-
-#: ../chirpui/mainapp.py:1202
+#: ../wxui/query_sources.py:396
 #, fuzzy
-msgid "Import from stock config"
-msgstr "Імпорт з сховища конфігурацій"
+msgid "Modes"
+msgstr "Режим"
 
-#: ../chirpui/mainapp.py:1204
-msgid "Help"
-msgstr "Довідка"
+#: ../wxui/query_sources.py:451
+msgid "City"
+msgstr ""
 
-#: ../chirpui/mainapp.py:1215
-msgid "Report statistics"
-msgstr "Звіт статистики"
+#: ../wxui/query_sources.py:454
+msgid "State"
+msgstr ""
 
-#: ../chirpui/mainapp.py:1216
-msgid "Hide Unused Fields"
-msgstr "Приховувати невикористовувані поля"
+#: ../wxui/query_sources.py:524
+msgid "United States"
+msgstr ""
 
-#: ../chirpui/mainapp.py:1217
-msgid "Automatic Repeater Offset"
-msgstr "Автоматичний рознос репітера"
+#: ../wxui/query_sources.py:525
+msgid "Canada"
+msgstr ""
 
-#: ../chirpui/mainapp.py:1218
-msgid "Enable Developer Functions"
-msgstr "Увімкнення функції розробника"
+#: ../wxui/query_sources.py:665
+msgid "RadioReference Canada requires a login before you can query"
+msgstr ""
 
-#: ../chirpui/mainapp.py:1352
-msgid "Error reporting is enabled"
-msgstr "Звітування про критичні помилки ввімкнуто"
+#: ../wxui/memedit.py:116
+#, python-format
+msgid "Found empty list value for %(name)s: %(value)r"
+msgstr ""
 
-#: ../chirpui/mainapp.py:1355
-msgid "If you wish to disable this feature you may do so in the <u>Help</u> menu"
-msgstr "Якщо ви хочете вимкнути цю функцію, ви можете зробити це в меню <u>Довідка</u>"
-
-#: ../chirpui/cloneprog.py:43
-msgid "Clone Progress"
-msgstr "Поступ клонування"
-
-#: ../chirpui/cloneprog.py:46
-msgid "Cloning"
-msgstr "Клонування"
-
-#: ../chirpui/cloneprog.py:55
-msgid "Cancel"
-msgstr "Скасувати"
-
-#: ../chirpui/shiftdialog.py:27
-msgid "Shift"
-msgstr "Зміщення"
-
-#: ../chirpui/shiftdialog.py:63
-msgid "Moving {src} to {dst}"
-msgstr "Переміщення {src} до {dst}"
-
-#: ../chirpui/shiftdialog.py:80
-msgid "Looking for a free spot ({number})"
-msgstr "Пошук вільної точки ({number})"
-
-#: ../chirpui/shiftdialog.py:135
-msgid "Moved {count} memories"
-msgstr "Перемещенно {count} записів пам'яті"
-
-#: ../chirpui/clone.py:35
-#, fuzzy
-msgid "{vendor} {model} on {port}"
-msgstr "{vendor} {model} на {port}"
-
-#: ../chirpui/clone.py:100 ../chirpui/clone.py:162
-msgid "Detect"
-msgstr "Визначити"
-
-#: ../chirpui/clone.py:123
-msgid "Port"
-msgstr "Порт"
-
-#: ../chirpui/clone.py:124
-msgid "Vendor"
-msgstr "Виробник"
-
-#: ../chirpui/clone.py:125
-msgid "Model"
-msgstr "Модель"
-
-#: ../chirpui/clone.py:138
-#, fuzzy
-msgid "Radio"
-msgstr "Радіостанція"
-
-#: ../chirpui/clone.py:166
-msgid "Unable to detect radio on {port}"
-msgstr "Не вдалося виявити радіо на {port}"
-
-#: ../chirpui/clone.py:178
-msgid "Internal error: Unable to upload to {model}"
-msgstr "Внутрішня помилка: не вдалося записати на {model}"
-
-#: ../chirpui/clone.py:226
-msgid "Clone failed: {error}"
-msgstr "Помилка клонування: {error}"
-
-#: ../chirpui/dstaredit.py:40
-msgid "Callsign"
-msgstr "Позивний"
-
-#: ../chirpui/dstaredit.py:124
-msgid "Your callsign"
-msgstr "Ваш позивний"
-
-#: ../chirpui/dstaredit.py:132
-msgid "Repeater callsign"
-msgstr "Позивний репітера"
-
-#: ../chirpui/dstaredit.py:140
-msgid "My callsign"
-msgstr "Мій позивний"
-
-#: ../chirpui/dstaredit.py:170 ../chirpui/memedit.py:1365
-msgid "Downloading URCALL list"
-msgstr "Завантаження списку URCALL"
-
-#: ../chirpui/dstaredit.py:174 ../chirpui/memedit.py:1377
-msgid "Downloading RPTCALL list"
-msgstr "Завантаження списку RPTCALL"
-
-#: ../chirpui/dstaredit.py:178
-msgid "Downloading MYCALL list"
-msgstr "Завантаження списку MYCALL"
-
-#: ../chirpui/editorset.py:87
-#, fuzzy
-msgid "Memories"
-msgstr "Пам'ять"
-
-#: ../chirpui/editorset.py:92
-msgid "D-STAR"
-msgstr "D-STAR"
-
-#: ../chirpui/editorset.py:98
-msgid "Bank Names"
-msgstr "Імена банків"
-
-#: ../chirpui/editorset.py:104
-msgid "Banks"
-msgstr "Банки"
-
-#: ../chirpui/editorset.py:222
-msgid "The {vendor} {model} has multiple independent sub-devices"
-msgstr "{vendor} {model} має кілька незалежних суб пристроїв"
-
-#: ../chirpui/editorset.py:225
-msgid "Choose one to import from:"
-msgstr "Виберіть один для Імпорту з:"
-
-#: ../chirpui/editorset.py:230
-msgid "Cancelled"
-msgstr "Скасовано"
-
-#: ../chirpui/editorset.py:235
-msgid "Internal Error"
-msgstr "Внутрішня помилка"
-
-#: ../chirpui/editorset.py:248
-msgid "There were errors while opening {file}. The affected memories will not be importable!"
-msgstr "Там були помилки при відкритті {file}. Порушена пам'ять не буде імпортована!"
-
-#: ../chirpui/editorset.py:260
-msgid "There was an error during import: {error}"
-msgstr "Виникла помилка під час імпортування: {error}"
-
-#: ../chirpui/editorset.py:270
-msgid "Unsupported file type"
-msgstr "Файл непідтримуваного типу"
-
-#: ../chirpui/editorset.py:286 ../chirpui/editorset.py:301
-#, fuzzy
-msgid "There was an error during export: {error}"
-msgstr "Виникла помилка під час експортування: {error}"
-
-#: ../chirpui/editorset.py:313
-msgid "Priming memory"
-msgstr "Первинна пам'ять"
-
-#: ../chirpui/memedit.py:52
-msgid "Invalid value for this field"
+#: ../wxui/memedit.py:151 ../wxui/memedit.py:157
+#, fuzzy, python-format
+msgid "Invalid value: %r"
 msgstr "Неприпустиме значення для цього поля"
 
-#: ../chirpui/memedit.py:66 ../chirpui/memedit.py:97 ../chirpui/memedit.py:111
-#: ../chirpui/memedit.py:204 ../chirpui/memedit.py:312
-#: ../chirpui/memedit.py:874 ../chirpui/memedit.py:931
-#: ../chirpui/memedit.py:1069 ../chirpui/memedit.py:1133
-msgid "Tone Mode"
-msgstr "Тоновий режим"
-
-#: ../chirpui/memedit.py:67 ../chirpui/memedit.py:87 ../chirpui/memedit.py:103
-#: ../chirpui/memedit.py:214 ../chirpui/memedit.py:218
-#: ../chirpui/memedit.py:220 ../chirpui/memedit.py:310
-#: ../chirpui/memedit.py:875 ../chirpui/memedit.py:928
-#: ../chirpui/memedit.py:1070
-msgid "Tone"
-msgstr "Тон"
-
-#: ../chirpui/memedit.py:68 ../chirpui/memedit.py:88 ../chirpui/memedit.py:104
-#: ../chirpui/memedit.py:210 ../chirpui/memedit.py:218
-#: ../chirpui/memedit.py:221 ../chirpui/memedit.py:310
-#: ../chirpui/memedit.py:876 ../chirpui/memedit.py:929
-#: ../chirpui/memedit.py:1066
-msgid "ToneSql"
-msgstr "ToneSql"
-
-#: ../chirpui/memedit.py:69 ../chirpui/memedit.py:89 ../chirpui/memedit.py:105
-#: ../chirpui/memedit.py:211 ../chirpui/memedit.py:215
-#: ../chirpui/memedit.py:222 ../chirpui/memedit.py:306
-#: ../chirpui/memedit.py:877 ../chirpui/memedit.py:930
-#: ../chirpui/memedit.py:1059
-msgid "DTCS Code"
-msgstr "DTCS код"
-
-#: ../chirpui/memedit.py:70 ../chirpui/memedit.py:90 ../chirpui/memedit.py:106
-#: ../chirpui/memedit.py:212 ../chirpui/memedit.py:216
-#: ../chirpui/memedit.py:223 ../chirpui/memedit.py:878
-#: ../chirpui/memedit.py:933 ../chirpui/memedit.py:1060
-msgid "DTCS Pol"
-msgstr "DTCS Pol"
-
-#: ../chirpui/memedit.py:71 ../chirpui/memedit.py:91 ../chirpui/memedit.py:112
-#: ../chirpui/memedit.py:879 ../chirpui/memedit.py:932
-#: ../chirpui/memedit.py:1067 ../chirpui/memedit.py:1134
-msgid "Cross Mode"
-msgstr "Кросрежим"
-
-#: ../chirpui/memedit.py:72 ../chirpui/memedit.py:92 ../chirpui/memedit.py:109
-#: ../chirpui/memedit.py:137 ../chirpui/memedit.py:205
-#: ../chirpui/memedit.py:249 ../chirpui/memedit.py:312
-#: ../chirpui/memedit.py:880 ../chirpui/memedit.py:934
-#: ../chirpui/memedit.py:1071 ../chirpui/memedit.py:1144
-msgid "Duplex"
-msgstr "Дуплекс"
-
-#: ../chirpui/memedit.py:73 ../chirpui/memedit.py:93 ../chirpui/memedit.py:135
-#: ../chirpui/memedit.py:198 ../chirpui/memedit.py:226
-#: ../chirpui/memedit.py:250 ../chirpui/memedit.py:308
-#: ../chirpui/memedit.py:881 ../chirpui/memedit.py:935
-#: ../chirpui/memedit.py:1062
+#: ../wxui/memedit.py:180
 msgid "Offset"
 msgstr "Зсув"
 
-#: ../chirpui/memedit.py:74 ../chirpui/memedit.py:94 ../chirpui/memedit.py:107
-#: ../chirpui/memedit.py:882 ../chirpui/memedit.py:936
-#: ../chirpui/memedit.py:1061 ../chirpui/memedit.py:1132
-#: ../chirpui/memedit.py:1289 ../chirpui/memedit.py:1307
-#: ../chirpui/memedit.py:1317
-msgid "Mode"
-msgstr "Режим"
+#: ../wxui/memedit.py:182
+msgid "Frequency"
+msgstr "Частота"
 
-#: ../chirpui/memedit.py:75 ../chirpui/memedit.py:95 ../chirpui/memedit.py:108
-#: ../chirpui/memedit.py:296 ../chirpui/memedit.py:883
-#: ../chirpui/memedit.py:937 ../chirpui/memedit.py:1073
-#: ../chirpui/memedit.py:1136 ../chirpui/memedit.py:1140
+#: ../wxui/memedit.py:221
+#, fuzzy
+msgid "Enter Frequency"
+msgstr "Частота"
+
+#: ../wxui/memedit.py:245
 msgid "Power"
 msgstr "Потужність"
 
-#: ../chirpui/memedit.py:76 ../chirpui/memedit.py:96 ../chirpui/memedit.py:110
-#: ../chirpui/memedit.py:140 ../chirpui/memedit.py:143
-#: ../chirpui/memedit.py:884 ../chirpui/memedit.py:938
-#: ../chirpui/memedit.py:1064
-msgid "Tune Step"
-msgstr "Крок настройки"
+#: ../wxui/memedit.py:304
+msgid "Choice Required"
+msgstr ""
 
-#: ../chirpui/memedit.py:77 ../chirpui/memedit.py:98 ../chirpui/memedit.py:885
-#: ../chirpui/memedit.py:939 ../chirpui/memedit.py:1072
-#: ../chirpui/memedit.py:1135
-msgid "Skip"
-msgstr "Пропустити"
+#: ../wxui/memedit.py:321
+msgid "Tone"
+msgstr "Тон"
 
-#: ../chirpui/memedit.py:175
-msgid "Erasing memory {loc}"
-msgstr "Стирання пам'яті {loc}"
+#: ../wxui/memedit.py:323
+#, fuzzy
+msgid "Tone Squelch"
+msgstr "ToneSql"
 
-#: ../chirpui/memedit.py:236
-msgid "Unable to make changes to this model"
-msgstr "Не вдається внести зміни до цієї моделі"
+#: ../wxui/memedit.py:390
+#, fuzzy
+msgid "DTCS"
+msgstr "DTCS Pol"
 
-#: ../chirpui/memedit.py:241
-msgid "Editing new item, taking defaults"
-msgstr "Редагування нового елемента, беручи за замовчуванням"
+#: ../wxui/memedit.py:392
+msgid "RX DTCS"
+msgstr ""
 
-#: ../chirpui/memedit.py:257
-msgid "Bad value for {col}: {val}"
-msgstr "Погане значення для {col}: {val}"
+#: ../wxui/memedit.py:436
+#, fuzzy
+msgid ""
+"DTCS\n"
+"Polarity"
+msgstr "DTCS Pol"
 
-#: ../chirpui/memedit.py:281
-msgid "Error setting memory"
-msgstr "Помилка настройки пам'яті"
+#: ../wxui/memedit.py:456
+#, fuzzy
+msgid "Cross mode"
+msgstr "Кросрежим"
 
-#: ../chirpui/memedit.py:289 ../chirpui/memedit.py:356
-#: ../chirpui/memedit.py:1272
-msgid "Writing memory {number}"
-msgstr "Запис пам'яті {number}"
+#: ../wxui/memedit.py:568
+msgid "Tone Mode"
+msgstr "Тоновий режим"
 
-#: ../chirpui/memedit.py:361
-msgid "This operation requires moving all subsequent channels by one spot until an empty location is reached.  This can take a LONG time.  Are you sure you want to do this?"
-msgstr "Ця операція вимагає переміщення всіх наступних каналів на одне місце до тих пір, поки пусте місце не буде досягнуто. Це може зайняти багато часу. Ви впевнені, що хочете це зробити?"
+#: ../wxui/memedit.py:838
+#, python-format
+msgid "Choose %s Tone"
+msgstr ""
 
-#: ../chirpui/memedit.py:387
-msgid "Adding memory {number}"
-msgstr "Додавання пам'яті {number}"
+#: ../wxui/memedit.py:841
+#, fuzzy, python-format
+msgid "Choose %s DTCS Code"
+msgstr "DTCS код"
 
-#: ../chirpui/memedit.py:400 ../chirpui/memedit.py:913
-msgid "Erasing memory {number}"
-msgstr "Стирання пам'яті {number}"
+#: ../wxui/memedit.py:862
+#, python-format
+msgid ""
+"Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
+msgstr ""
 
-#: ../chirpui/memedit.py:409 ../chirpui/memedit.py:518
-#: ../chirpui/memedit.py:564 ../chirpui/memedit.py:569
-#: ../chirpui/memedit.py:856 ../chirpui/memedit.py:1166
-msgid "Getting memory {number}"
-msgstr "Отримання пам'яті {number}"
+#: ../wxui/memedit.py:864
+msgid "Information"
+msgstr ""
 
-#: ../chirpui/memedit.py:497 ../chirpui/memedit.py:508
-#: ../chirpui/memedit.py:556
-msgid "Moving memory from {old} to {new}"
-msgstr "Переміщення пам'яті з {old} до {new}"
+#: ../wxui/memedit.py:872
+#, fuzzy
+msgid "Choose Cross Mode"
+msgstr "Кросрежим"
 
-#: ../chirpui/memedit.py:578
-msgid "Raw memory {number}"
-msgstr "RAW пам'ять {number}"
+#: ../wxui/memedit.py:881
+msgid "Enter TX Frequency (MHz)"
+msgstr ""
 
-#: ../chirpui/memedit.py:582 ../chirpui/memedit.py:610
-#: ../chirpui/memedit.py:615
-msgid "Getting raw memory {number}"
-msgstr "Отримання RAW пам'яті {number}"
+#: ../wxui/memedit.py:889
+msgid "Enter Offset (MHz)"
+msgstr ""
 
-#: ../chirpui/memedit.py:587
-msgid "You can only diff two memories!"
-msgstr "Ви можете порівняти тільки дві пам'яті!"
+#: ../wxui/memedit.py:902
+msgid "Choose duplex"
+msgstr ""
 
-#: ../chirpui/memedit.py:598
-msgid "Memory {number}"
-msgstr "Пам'ять {number}"
+#: ../wxui/memedit.py:929
+msgid "Unable to edit memory before radio is loaded"
+msgstr ""
 
-#: ../chirpui/memedit.py:604
-msgid "Diff of {a} and {b}"
-msgstr "Порівняння {a} та {b}"
+#: ../wxui/memedit.py:1006 ../wxui/memedit.py:1630
+#, python-format
+msgid "Invalid edit: %s"
+msgstr ""
 
-#: ../chirpui/memedit.py:628
-msgid "Memories must be contiguous"
-msgstr "Пам'ять має бути безперервна"
+#: ../wxui/memedit.py:1012
+#, python-format
+msgid "Warning: %s"
+msgstr ""
 
-#: ../chirpui/memedit.py:700
-msgid "Insert row above"
+#: ../wxui/memedit.py:1013
+msgid "Warning"
+msgstr ""
+
+#: ../wxui/memedit.py:1045
+#, python-format
+msgid "Memory %i is not deletable"
+msgstr ""
+
+#: ../wxui/memedit.py:1111
+msgid "Properties"
+msgstr ""
+
+#: ../wxui/memedit.py:1117
+#, fuzzy
+msgid "Insert Row Above"
 msgstr "Додати рядок зверху"
 
-#: ../chirpui/memedit.py:701
-msgid "Insert row below"
-msgstr "Додати рядок знизу"
+#: ../wxui/memedit.py:1126
+#, fuzzy, python-format
+msgid "Delete %i Memories"
+msgstr "Порівняти Raw пам'ять"
 
-#: ../chirpui/memedit.py:702
+#: ../wxui/memedit.py:1129
+#, fuzzy, python-format
+msgid "Delete %i Memories and shift block up"
+msgstr "Видалити (та зсунути вгору)"
+
+#: ../wxui/memedit.py:1133
+#, fuzzy, python-format
+msgid "Delete %i Memories and shift all up"
+msgstr "Видалити (та зсунути вгору)"
+
+#: ../wxui/memedit.py:1136
 #, fuzzy
 msgid "Delete"
 msgstr "Видалити"
 
-#: ../chirpui/memedit.py:702
+#: ../wxui/memedit.py:1138
 #, fuzzy
-msgid "Delete all"
-msgstr "Видалити все"
-
-#: ../chirpui/memedit.py:703
-msgid "Delete (and shift up)"
+msgid "Delete and shift block up"
 msgstr "Видалити (та зсунути вгору)"
 
-#: ../chirpui/memedit.py:704
+#: ../wxui/memedit.py:1140
 #, fuzzy
-msgid "Move up"
-msgstr "Перемістити вгору"
+msgid "Delete and shift all up"
+msgstr "Видалити (та зсунути вгору)"
 
-#: ../chirpui/memedit.py:705
-#, fuzzy
-msgid "Move down"
-msgstr "Перемістити вниз"
-
-#: ../chirpui/memedit.py:706
-#, fuzzy
-msgid "Exchange memories"
-msgstr "Обмін пам'яттю"
-
-#: ../chirpui/memedit.py:707
-#, fuzzy
-msgid "Cut"
-msgstr "Вирізати"
-
-#: ../chirpui/memedit.py:708
-#, fuzzy
-msgid "Copy"
-msgstr "Копіювати"
-
-#: ../chirpui/memedit.py:709
-#, fuzzy
-msgid "Paste"
-msgstr "Вставити"
-
-#: ../chirpui/memedit.py:710
+#: ../wxui/memedit.py:1166
 #, fuzzy
 msgid "Show Raw Memory"
 msgstr "Показати Raw пам'ять"
 
-#: ../chirpui/memedit.py:711
+#: ../wxui/memedit.py:1174
 #, fuzzy
 msgid "Diff Raw Memories"
 msgstr "Порівняти Raw пам'ять"
 
-#: ../chirpui/memedit.py:835
-msgid "Internal Error: Column {name} not found"
-msgstr "Внутрішня помилка: не знайдено стовпець {name}"
+#: ../wxui/memedit.py:1210
+#, fuzzy
+msgid "No empty rows below!"
+msgstr "Додати рядок знизу"
 
-#: ../chirpui/memedit.py:863
-msgid "Getting channel {chan}"
-msgstr "Отримання каналу {chan}"
+#: ../wxui/memedit.py:1282
+msgid "Some memories are not deletable"
+msgstr ""
 
-#: ../chirpui/memedit.py:952
-msgid "Internal Error: Invalid limit {number}"
-msgstr "Внутрішня помилка: Неприпустиме обмеження {number}"
+#: ../wxui/memedit.py:1308
+#, python-format
+msgid "Pasted memory will overwrite memory %i"
+msgstr ""
 
-#: ../chirpui/memedit.py:962
-msgid "Memory range:"
-msgstr "Діапазон пам'яті:"
+#: ../wxui/memedit.py:1311
+#, python-format
+msgid "Pasted memories will overwrite memory %i"
+msgstr ""
 
-#: ../chirpui/memedit.py:989
-msgid "Go"
-msgstr "Іти"
+#: ../wxui/memedit.py:1314
+#, python-format
+msgid "Pasted memories will overwrite %i existing memories"
+msgstr ""
 
-#: ../chirpui/memedit.py:1012
-msgid "Special Channels"
-msgstr "Спеціальні канали"
+#: ../wxui/memedit.py:1317
+#, python-format
+msgid "Pasted memories will overwrite memories %s"
+msgstr ""
 
-#: ../chirpui/memedit.py:1019
-msgid "Show Empty"
-msgstr "Показувати порожні"
-
-#: ../chirpui/memedit.py:1198
-msgid "Cutting memory {number}"
-msgstr "Отримання пам'яті {number}"
-
-#: ../chirpui/memedit.py:1232
-msgid "Overwrite?"
+#: ../wxui/memedit.py:1320
+#, fuzzy
+msgid "Overwrite memories?"
 msgstr "Перезаписати?"
 
-#: ../chirpui/memedit.py:1237
-msgid "Overwrite location {number}?"
-msgstr "Перезаписати місце {number}?"
-
-#: ../chirpui/memedit.py:1254
-msgid "Incompatible Memory"
-msgstr "Несумісна пам'ять"
-
-#: ../chirpui/memedit.py:1257
-msgid "Pasted memory {number} is not compatible with this radio because:"
+#: ../wxui/memedit.py:1365
+#, fuzzy
+msgid "Some memories are incompatible with this radio"
 msgstr "Вставлена пам'ять {number} несумісна із цією радіостанцією тому що:"
 
-#: ../chirpui/memedit.py:1309 ../chirpui/memedit.py:1324
-msgid "URCALL"
-msgstr "URCALL"
+#: ../wxui/memedit.py:1440
+msgid "Export can only write CSV files"
+msgstr ""
 
-#: ../chirpui/memedit.py:1309 ../chirpui/memedit.py:1325
-msgid "RPT1CALL"
-msgstr "RPT1CALL"
-
-#: ../chirpui/memedit.py:1309 ../chirpui/memedit.py:1326
-msgid "RPT2CALL"
-msgstr "RPT2CALL"
-
-#: ../chirpui/memedit.py:1310 ../chirpui/memedit.py:1327
+#: ../wxui/memedit.py:1477
 msgid "Digital Code"
 msgstr "Цифровий код"
+
+#: ../wxui/memedit.py:1505
+#, python-format
+msgid "Edit details for memory %i"
+msgstr ""
+
+#: ../wxui/memedit.py:1507
+#, python-format
+msgid "Edit details for %i memories"
+msgstr ""
+
+#: ../wxui/memedit.py:1541
+msgid "Extra"
+msgstr ""
+
+#: ../wxui/memedit.py:1552
+msgid "DV Memory"
+msgstr ""
+
+#: ../wxui/common.py:94
+msgid "Cloning"
+msgstr "Клонування"
+
+#: ../wxui/common.py:115
+msgid "Please wait"
+msgstr ""
+
+#: ../wxui/common.py:219
+#, python-format
+msgid "Refreshed memory %s"
+msgstr ""
+
+#: ../wxui/common.py:221
+#, python-format
+msgid "Uploaded memory %s"
+msgstr ""
+
+#: ../wxui/common.py:223
+msgid "Retrieved settings"
+msgstr ""
+
+#: ../wxui/common.py:225
+msgid "Saved settings"
+msgstr ""
+
+#: ../wxui/common.py:227
+#, fuzzy, python-format
+msgid "Erased memory %s"
+msgstr "Стирання пам'яті {loc}"
+
+#: ../wxui/common.py:229
+#, python-format
+msgid "Finished radio job %s"
+msgstr ""
+
+#: ../wxui/common.py:331
+#, python-format
+msgid "Value must be at least %.4f"
+msgstr ""
+
+#: ../wxui/common.py:335
+#, python-format
+msgid "Value must be at most %.4f"
+msgstr ""
+
+#: ../wxui/common.py:408 ../wxui/common.py:446
+msgid "An error has occurred"
+msgstr "Сталася помилка"
+
+#: ../wxui/main.py:129
+#, fuzzy
+msgid "Memories"
+msgstr "Пам'ять"
+
+#: ../wxui/main.py:137
+msgid "Banks"
+msgstr "Банки"
+
+#: ../wxui/main.py:142
+msgid "Settings"
+msgstr ""
+
+#: ../wxui/main.py:148
+msgid "Browser"
+msgstr ""
+
+#: ../wxui/main.py:150
+msgid "Info"
+msgstr ""
+
+#: ../wxui/main.py:253
+msgid "Only memory tabs may be exported"
+msgstr ""
+
+#: ../wxui/main.py:271
+msgid "LIVE"
+msgstr ""
+
+#: ../wxui/main.py:351
+msgid "Welcome"
+msgstr ""
+
+#: ../wxui/main.py:387
+#, python-format
+msgid "File does not exist: %s"
+msgstr ""
+
+#: ../wxui/main.py:463
+#, fuzzy
+msgid "Open Stock Config"
+msgstr "Відкрити заводські конфігурації"
+
+#: ../wxui/main.py:473
+#, python-format
+msgid "Restore %i tabs"
+msgstr ""
+
+#: ../wxui/main.py:492
+#, fuzzy
+msgid "Open Recent"
+msgstr "Ос_танні"
+
+#: ../wxui/main.py:505 ../wxui/main.py:1043
+#, fuzzy
+msgid "Export to CSV"
+msgstr "Експорт до файлу"
+
+#: ../wxui/main.py:511
+#, fuzzy
+msgid "Load Module"
+msgstr "Тоновий режим"
+
+#: ../wxui/main.py:522
+msgid "Print Preview"
+msgstr ""
+
+#: ../wxui/main.py:563
+msgid "Find Next"
+msgstr ""
+
+#: ../wxui/main.py:571
+msgid "Goto"
+msgstr ""
+
+#: ../wxui/main.py:579
+msgid "Use fixed-width font"
+msgstr ""
+
+#: ../wxui/main.py:587
+msgid "Use larger font"
+msgstr ""
+
+#: ../wxui/main.py:602 ../wxui/main.py:750
+msgid "Download"
+msgstr ""
+
+#: ../wxui/main.py:609
+msgid "Upload"
+msgstr ""
+
+#: ../wxui/main.py:615
+msgid "Query Source"
+msgstr ""
+
+#: ../wxui/main.py:633
+msgid "Enable Automatic Edits"
+msgstr ""
+
+#: ../wxui/main.py:640
+#, fuzzy
+msgid "Select Bandplan"
+msgstr "Виберіть Стовпці"
+
+#: ../wxui/main.py:650
+msgid "Reload Driver"
+msgstr ""
+
+#: ../wxui/main.py:659
+msgid "Reload Driver and File"
+msgstr ""
+
+#: ../wxui/main.py:673
+msgid "Interact with driver"
+msgstr ""
+
+#: ../wxui/main.py:680
+msgid "About"
+msgstr ""
+
+#: ../wxui/main.py:685
+#, fuzzy
+msgid "Developer Mode"
+msgstr "Розробник"
+
+#: ../wxui/main.py:694
+#, fuzzy
+msgid "Reporting enabled"
+msgstr "Звіти вимкнуто"
+
+#: ../wxui/main.py:706
+msgid "Open debug log"
+msgstr ""
+
+#: ../wxui/main.py:712
+msgid "Show debug log location"
+msgstr ""
+
+#: ../wxui/main.py:719
+#, fuzzy
+msgid "View"
+msgstr "В_игляд"
+
+#: ../wxui/main.py:720
+#, fuzzy
+msgid "Radio"
+msgstr "Радіостанція"
+
+#: ../wxui/main.py:744
+msgid "Open"
+msgstr ""
+
+#: ../wxui/main.py:745 ../wxui/main.py:939
+msgid "Open a file"
+msgstr ""
+
+#: ../wxui/main.py:746
+msgid "Save"
+msgstr ""
+
+#: ../wxui/main.py:747 ../wxui/main.py:1014
+msgid "Save file"
+msgstr ""
+
+#: ../wxui/main.py:748
+msgid "Close"
+msgstr ""
+
+#: ../wxui/main.py:749
+msgid "Close file"
+msgstr ""
+
+#: ../wxui/main.py:751
+#, fuzzy
+msgid "Download from radio"
+msgstr "Скопіювати з радіостанції"
+
+#: ../wxui/main.py:753
+#, fuzzy
+msgid "Upload to radio"
+msgstr "Записати в радіостанцію"
+
+#: ../wxui/main.py:924
+msgid "Chirp Image Files"
+msgstr ""
+
+#: ../wxui/main.py:925
+#, fuzzy
+msgid "All Files"
+msgstr "CSV-файли"
+
+#: ../wxui/main.py:928 ../wxui/main.py:1000 ../wxui/main.py:1010
+#: ../wxui/main.py:1039 ../wxui/main.py:1253 ../wxui/main.py:1254
+#, fuzzy
+msgid "Files"
+msgstr "_Файл"
+
+#: ../wxui/main.py:936
+msgid "All supported formats|"
+msgstr ""
+
+#: ../wxui/main.py:972
+#, fuzzy, python-format
+msgid "Unable to find stock config %r"
+msgstr "Відкрити заводські конфігурації"
+
+#: ../wxui/main.py:1055
+#, fuzzy, python-format
+msgid "%s has not been saved. Save before closing?"
+msgstr "Файл змінено, зберегти зміни перед закриттям?"
+
+#: ../wxui/main.py:1057
+msgid "Save before closing?"
+msgstr ""
+
+#: ../wxui/main.py:1089
+#, fuzzy
+msgid "Unable to open the clipboard"
+msgstr "Не вдалося виявити радіо на {port}"
+
+#: ../wxui/main.py:1113
+msgid "Find"
+msgstr ""
+
+#: ../wxui/main.py:1142
+msgid "Goto Memory:"
+msgstr ""
+
+#: ../wxui/main.py:1142
+msgid "Number"
+msgstr ""
+
+#: ../wxui/main.py:1143
+#, fuzzy
+msgid "Goto Memory"
+msgstr "Показати Raw пам'ять"
+
+#: ../wxui/main.py:1254
+msgid "Module"
+msgstr ""
+
+#: ../wxui/main.py:1257
+msgid "Open a module"
+msgstr ""
+
+#: ../wxui/main.py:1272
+msgid "About CHIRP"
+msgstr ""
+
+#: ../wxui/main.py:1278
+#, python-format
+msgid "Developer state is now %s. CHIRP must be restarted to take effect"
+msgstr ""
+
+#: ../wxui/main.py:1280
+msgid "Restart Required"
+msgstr ""
+
+#: ../wxui/main.py:1285
+msgid ""
+"Reporting helps the CHIRP project know which radio models and OS platforms "
+"to spend our limited efforts on. We would really appreciate if you left it "
+"enabled. Really disable reporting?"
+msgstr ""
+
+#: ../wxui/main.py:1289
+msgid "Disable reporting"
+msgstr ""
+
+#: ../wxui/main.py:1321
+#, fuzzy, python-format
+msgid "Unable to reveal %s on this system"
+msgstr "Не вдається внести зміни до цієї моделі"
+
+#: ../wxui/main.py:1332
+msgid "Select a bandplan"
+msgstr ""
+
+#: ../wxui/main.py:1333
+msgid "Bandplan"
+msgstr ""
+
+#: ../wxui/main.py:1347
+#, python-format
+msgid "Query %s"
+msgstr ""
+
+#: ../wxui/main.py:1387
+msgid ""
+"A new CHIRP version is available. Please visit the website as soon as "
+"possible to download it!"
+msgstr ""
+
+#: ../wxui/main.py:1389
+msgid "New version available"
+msgstr ""
+
+#: ../wxui/main.py:1393
+msgid "Please be sure to quit CHIRP before installing the new version!"
+msgstr ""
+
+#: ../wxui/developer.py:130
+#, fuzzy
+msgid "Press enter to set this in memory"
+msgstr "Помилка настройки пам'яті"
+
+#: ../wxui/developer.py:157
+msgid "bytes each"
+msgstr ""
+
+#: ../wxui/developer.py:162
+msgid "bytes"
+msgstr ""
+
+#: ../wxui/developer.py:166
+msgid "bits"
+msgstr ""
+
+#: ../wxui/developer.py:192
+#, python-format
+msgid "Length must be %i"
+msgstr ""
+
+#: ../wxui/developer.py:211
+msgid "Hex"
+msgstr ""
+
+#: ../wxui/developer.py:212
+#, fuzzy
+msgid "Dec"
+msgstr "Визначити"
+
+#: ../wxui/developer.py:213
+msgid "Bin"
+msgstr ""
+
+#: ../wxui/developer.py:242 ../wxui/developer.py:285
+msgid "Value must be zero or greater"
+msgstr ""
+
+#: ../wxui/developer.py:244
+#, python-format
+msgid "Value does not fit in %i bits"
+msgstr ""
+
+#: ../wxui/developer.py:287
+#, python-format
+msgid "Value must be exactly %i decimal digits"
+msgstr ""
+
+#: ../wxui/developer.py:399
+msgid "Building Radio Browser"
+msgstr ""
+
+#: ../wxui/developer.py:407
+msgid "Failed to load radio browser"
+msgstr ""
+
+#: ../wxui/clone.py:109
+msgid "Applying settings"
+msgstr ""
+
+#: ../wxui/clone.py:111
+msgid "Loading settings"
+msgstr ""
+
+#: ../wxui/clone.py:117
+#, fuzzy
+msgid "Complete"
+msgstr "Завершено"
+
+#: ../wxui/clone.py:156
+#, python-format
+msgid "Do not prompt again for %s"
+msgstr ""
+
+#: ../wxui/clone.py:206
+msgid "Communicate with radio"
+msgstr ""
+
+#: ../wxui/clone.py:227
+msgid "Port"
+msgstr "Порт"
+
+#: ../wxui/clone.py:230
+msgid "Vendor"
+msgstr "Виробник"
+
+#: ../wxui/clone.py:234
+msgid "Model"
+msgstr "Модель"
+
+#: ../wxui/clone.py:310 ../wxui/clone.py:385
+msgid "Custom..."
+msgstr ""
+
+#: ../wxui/clone.py:310 ../wxui/clone.py:392
+msgid "Help Me..."
+msgstr ""
+
+#: ../wxui/clone.py:328
+msgid "Unplug your cable (if needed) and then click OK"
+msgstr ""
+
+#: ../wxui/clone.py:329 ../wxui/clone.py:336 ../wxui/clone.py:347
+#: ../wxui/clone.py:354 ../wxui/clone.py:358
+msgid "USB Port Finder"
+msgstr ""
+
+#: ../wxui/clone.py:335
+msgid "Plug in your cable and then click OK"
+msgstr ""
+
+#: ../wxui/clone.py:345
+msgid ""
+"Unable to determine port for your cable. Check your drivers and connections."
+msgstr ""
+
+#: ../wxui/clone.py:352
+msgid "Your cable appears to be on port:"
+msgstr ""
+
+#: ../wxui/clone.py:357
+#, python-format
+msgid "More than one port found: %s"
+msgstr ""
+
+#: ../wxui/clone.py:386
+msgid "Enter custom port:"
+msgstr ""
+
+#: ../wxui/clone.py:430
+msgid "Error communicating with radio"
+msgstr ""
+
+#: ../wxui/clone.py:461
+msgid "Experimental driver"
+msgstr ""
+
+#: ../wxui/clone.py:485 ../wxui/clone.py:548
+#, fuzzy
+msgid "Radio information"
+msgstr "Отримання інформації банку"
+
+#: ../wxui/clone.py:493
+#, fuzzy
+msgid "Download instructions"
+msgstr "Скопіювати з радіостанції"
+
+#: ../wxui/clone.py:556
+msgid "Upload instructions"
+msgstr ""
+
+#: ../wxui/printing.py:29
+msgid "Printing"
+msgstr ""
+
+#: ../sources/repeaterbook.py:270
+msgid "No results!"
+msgstr ""
+
+#~ msgid "idle"
+#~ msgstr "простоювання"
+
+#~ msgid "Bank"
+#~ msgstr "Банк"
+
+#~ msgid "Name"
+#~ msgstr "Ім'я"
+
+#~ msgid "Updating bank index for memory {num}"
+#~ msgstr "Оновлення індексу банку пам'яті {num}"
+
+#~ msgid "Updating bank information for memory {num}"
+#~ msgstr "Оновлення інформації банку пам'яті {num}"
+
+#~ msgid "Getting memory {num}"
+#~ msgstr "Отримання пам'яті {num}"
+
+#~ msgid "Setting index for memory {num}"
+#~ msgstr "Установка індексу для пам'яті {num}"
+
+#~ msgid "Getting bank for memory {num}"
+#~ msgstr "Отримання банку пам'яті {num}"
+
+#~ msgid "Loc"
+#~ msgstr "Loc"
+
+#~ msgid "Getting bank information for memory {num}"
+#~ msgstr "Отримання інформації банку для пам'яті {num}"
+
+#~ msgid "Getting bank information"
+#~ msgstr "Отримання інформації банку"
+
+#~ msgid "Overwrite"
+#~ msgstr "Перезаписати"
+
+#~ msgid "File Exists"
+#~ msgstr "Файл існує"
+
+#~ msgid "The file {name} already exists. Do you want to overwrite it?"
+#~ msgstr "Файл {name} вже існує. Ви дійсно хочете перезаписати його?"
+
+#~ msgid ""
+#~ "Location {number} is already being imported. Choose another value for "
+#~ "'New Location' before selection 'Import'"
+#~ msgstr ""
+#~ "Розташування {number} вже імпортуються. Виберіть інше значення для 'Нове "
+#~ "розташування' перед вибором 'Імпорт'"
+
+#~ msgid "Location {number} is already being imported"
+#~ msgstr "Розташування {number} вже імпортованого"
+
+#~ msgid "Updating URCALL list"
+#~ msgstr "Оновлення списку URCALL"
+
+#~ msgid "Updating RPTCALL list"
+#~ msgstr "Оновлення списку RPTCALL"
+
+#~ msgid "Setting memory {number}"
+#~ msgstr "Установка пам'яті {number}"
+
+#~ msgid "Importing bank information"
+#~ msgstr "Імпортування інформації банку"
+
+#, fuzzy
+#~ msgid "Error importing memories:"
+#~ msgstr "Помилка імпорту пам'яті:"
+
+#~ msgid "None"
+#~ msgstr "Не вказано"
+
+#~ msgid "Inverse"
+#~ msgstr "Інверсія"
+
+#, fuzzy
+#~ msgid "Select"
+#~ msgstr "Обрати"
+
+#~ msgid "Auto"
+#~ msgstr "Авто"
+
+#~ msgid "Reverse"
+#~ msgstr "Реверс"
+
+#~ msgid "Adjust New Location"
+#~ msgstr "Настроїти нове розташування"
+
+#~ msgid "Confirm overwrites"
+#~ msgstr "Підтвердіть заміну"
+
+#~ msgid "Cannot be imported because"
+#~ msgstr "Не можна імпортувати, оскільки"
+
+#, fuzzy
+#~ msgid "Import From File"
+#~ msgstr "Імпортувати з файлу"
+
+#~ msgid "Import"
+#~ msgstr "Імпорт"
+
+#~ msgid "To"
+#~ msgstr "До"
+
+#~ msgid "From"
+#~ msgstr "З"
+
+#~ msgid "Comment"
+#~ msgstr "Коментар"
+
+#~ msgid "Location memory will be imported into"
+#~ msgstr "Розташування пам'яті буде імпортовано до"
+
+#~ msgid "Location of memory in the file being imported"
+#~ msgstr "Розташування пам'яті у файлі, що імпортуються"
+
+#~ msgid "Preparing memory list..."
+#~ msgstr "Підготовка списку пам'яті..."
+
+#~ msgid "Export"
+#~ msgstr "Експорт"
+
+#~ msgid "Untitled"
+#~ msgstr "Без назви"
+
+#~ msgid "CHIRP Radio Images"
+#~ msgstr "Образи радіостанцій CHIRP"
+
+#~ msgid "CHIRP Files"
+#~ msgstr "CHIRP файли"
+
+#~ msgid "ICF Files"
+#~ msgstr "ICF файли"
+
+#~ msgid "VX7 Commander Files"
+#~ msgstr "Файли VX7 командира"
+
+#~ msgid ""
+#~ "ICF files cannot be edited, only displayed or imported into another file. "
+#~ "Open in read-only mode?"
+#~ msgstr ""
+#~ "ICF файли не можна редагувати, тільки відобразити або імпортувати. "
+#~ "Відкрити в режимі тільки для читання?"
+
+#~ msgid "There was an error opening {fname}: {error}"
+#~ msgstr "Сталася помилка при відкритті {fname}: {error}"
+
+#~ msgid "{num} errors during open:"
+#~ msgstr "{num} помилки під час відкриття:"
+
+#~ msgid "Note:"
+#~ msgstr "Примітка:"
+
+#~ msgid ""
+#~ "The {vendor} {model} operates in <b>live mode</b>. This means that any "
+#~ "changes you make are immediately sent to the radio. Because of this, you "
+#~ "cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish "
+#~ "to edit the contents offline, please <u>Export</u> to a CSV file, using "
+#~ "the <b>File menu</b>."
+#~ msgstr ""
+#~ "{vendor} {model} працює в <b>режимі реального часу</b>. Це означає, що "
+#~ "будь-які зміни негайно відправляються на радіостанцію. Через це не "
+#~ "вдалося виконати <u>Збереження</u> або <u>Запис</u> операцій. Якщо ви "
+#~ "хочете редагувати вміст в автономному режимі, будь ласка, <u>Експортуйте</"
+#~ "u> файл CSV, за допомогою <b>Меню Файл</b>."
+
+#~ msgid "Don't show this again"
+#~ msgstr "Не показувати наступного разу"
+
+#~ msgid "{vendor} {model} image file"
+#~ msgstr "файлу образу {vendor} {model}"
+
+#~ msgid "VX7 Commander"
+#~ msgstr "Командир VX7"
+
+#~ msgid "Open recent file {name}"
+#~ msgstr "Відкриті останній файл {name}"
+
+#~ msgid "Import stock configuration {name}"
+#~ msgstr "Імпорт заводської конфігурації {name}"
+
+#~ msgid "Open stock configuration {name}"
+#~ msgstr "Відкрите заводські конфігурації {name}"
+
+#~ msgid "Discard Changes?"
+#~ msgstr "Скасувати зміни?"
+
+#~ msgid "With significant contributions by:"
+#~ msgstr "Значні внески зробили:"
+
+#~ msgid "Visible columns for {radio}"
+#~ msgstr "Видимі стовпці для {radio}"
+
+#~ msgid ""
+#~ "The reporting feature of CHIRP is designed to help <u>improve quality</u> "
+#~ "by allowing the authors to focus on the radio drivers used most often and "
+#~ "errors experienced by the users. The reports contain no identifying "
+#~ "information and are used only for statistical purposes by the authors. "
+#~ "Your privacy is extremely important, but <u>please consider leaving this "
+#~ "feature enabled to help make CHIRP better!</u>\n"
+#~ "\n"
+#~ "<b>Are you sure you want to disable this feature?</b>"
+#~ msgstr ""
+#~ "Функцію звітування CHIRP розроблено, щоб допомогти <u>поліпшити якість</"
+#~ "u>, дозволяючи авторам зосередитися на драйверах радіостанцій, що "
+#~ "найчастіше використовується і помилках досвідчених користувачів. Звіти не "
+#~ "містять ідентифікаційну інформацію і використовуються тільки для "
+#~ "статистичних цілей авторів. Ваша конфіденційність є надзвичайно важлива, "
+#~ "але <u>будь ласка, залиште цю функцію включеною, щоб допомогти зробити "
+#~ "CHIRP краще!</u>\n"
+#~ "\n"
+#~ "<b>ви впевнені, що хочете відключити цю функцію?</b>"
+
+#~ msgid ""
+#~ "Choose a language or Auto to use the operating system default. You will "
+#~ "need to restart the application before the change will take effect"
+#~ msgstr ""
+#~ "Виберіть мову або авто для використання в операційній системі. Вам "
+#~ "потрібно буде перезапустити додаток до того, як зміни вступлять в силу"
+
+#~ msgid "_Edit"
+#~ msgstr "_Редагувати"
+
+#~ msgid "_Cut"
+#~ msgstr "_Вирізати"
+
+#~ msgid "_Copy"
+#~ msgstr "_Копіювати"
+
+#~ msgid "_Paste"
+#~ msgstr "_Вставити"
+
+#~ msgid "_Delete"
+#~ msgstr "_Видалити"
+
+#~ msgid "Move _Up"
+#~ msgstr "Перемістити В_гору"
+
+#, fuzzy
+#~ msgid "Move Dow_n"
+#~ msgstr "Перемістити В_низ"
+
+#~ msgid "E_xchange"
+#~ msgstr "_Обмін"
+
+#~ msgid "Columns"
+#~ msgstr "Стовпці"
+
+#~ msgid "Show raw memory"
+#~ msgstr "Показати raw пам'ять"
+
+#~ msgid "Diff raw memories"
+#~ msgstr "Порівняти raw пам'ять"
+
+#~ msgid "Diff tabs"
+#~ msgstr "Вкладки порівняння"
+
+#~ msgid "Change language"
+#~ msgstr "Змінити мову"
+
+#~ msgid "_Radio"
+#~ msgstr "_Радіостанція"
+
+#~ msgid "Import from RFinder"
+#~ msgstr "Імпорт з RFinder"
+
+#~ msgid "CHIRP Native File"
+#~ msgstr "Файл CHIRP"
+
+#~ msgid "CSV File"
+#~ msgstr "Файл CSV"
+
+#~ msgid "Import from RepeaterBook"
+#~ msgstr "Імпорт з RepeaterBook"
+
+#, fuzzy
+#~ msgid "Import from stock config"
+#~ msgstr "Імпорт з сховища конфігурацій"
+
+#~ msgid "Help"
+#~ msgstr "Довідка"
+
+#~ msgid "Report statistics"
+#~ msgstr "Звіт статистики"
+
+#~ msgid "Hide Unused Fields"
+#~ msgstr "Приховувати невикористовувані поля"
+
+#~ msgid "Automatic Repeater Offset"
+#~ msgstr "Автоматичний рознос репітера"
+
+#~ msgid "Enable Developer Functions"
+#~ msgstr "Увімкнення функції розробника"
+
+#~ msgid "Error reporting is enabled"
+#~ msgstr "Звітування про критичні помилки ввімкнуто"
+
+#~ msgid ""
+#~ "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+#~ msgstr ""
+#~ "Якщо ви хочете вимкнути цю функцію, ви можете зробити це в меню "
+#~ "<u>Довідка</u>"
+
+#~ msgid "Clone Progress"
+#~ msgstr "Поступ клонування"
+
+#~ msgid "Cancel"
+#~ msgstr "Скасувати"
+
+#~ msgid "Shift"
+#~ msgstr "Зміщення"
+
+#~ msgid "Moving {src} to {dst}"
+#~ msgstr "Переміщення {src} до {dst}"
+
+#~ msgid "Looking for a free spot ({number})"
+#~ msgstr "Пошук вільної точки ({number})"
+
+#~ msgid "Moved {count} memories"
+#~ msgstr "Перемещенно {count} записів пам'яті"
+
+#, fuzzy
+#~ msgid "{vendor} {model} on {port}"
+#~ msgstr "{vendor} {model} на {port}"
+
+#~ msgid "Internal error: Unable to upload to {model}"
+#~ msgstr "Внутрішня помилка: не вдалося записати на {model}"
+
+#~ msgid "Clone failed: {error}"
+#~ msgstr "Помилка клонування: {error}"
+
+#~ msgid "Callsign"
+#~ msgstr "Позивний"
+
+#~ msgid "Your callsign"
+#~ msgstr "Ваш позивний"
+
+#~ msgid "Repeater callsign"
+#~ msgstr "Позивний репітера"
+
+#~ msgid "My callsign"
+#~ msgstr "Мій позивний"
+
+#~ msgid "Downloading URCALL list"
+#~ msgstr "Завантаження списку URCALL"
+
+#~ msgid "Downloading RPTCALL list"
+#~ msgstr "Завантаження списку RPTCALL"
+
+#~ msgid "Downloading MYCALL list"
+#~ msgstr "Завантаження списку MYCALL"
+
+#~ msgid "D-STAR"
+#~ msgstr "D-STAR"
+
+#~ msgid "Bank Names"
+#~ msgstr "Імена банків"
+
+#~ msgid "The {vendor} {model} has multiple independent sub-devices"
+#~ msgstr "{vendor} {model} має кілька незалежних суб пристроїв"
+
+#~ msgid "Choose one to import from:"
+#~ msgstr "Виберіть один для Імпорту з:"
+
+#~ msgid "Cancelled"
+#~ msgstr "Скасовано"
+
+#~ msgid "Internal Error"
+#~ msgstr "Внутрішня помилка"
+
+#~ msgid ""
+#~ "There were errors while opening {file}. The affected memories will not be "
+#~ "importable!"
+#~ msgstr ""
+#~ "Там були помилки при відкритті {file}. Порушена пам'ять не буде "
+#~ "імпортована!"
+
+#~ msgid "There was an error during import: {error}"
+#~ msgstr "Виникла помилка під час імпортування: {error}"
+
+#~ msgid "Unsupported file type"
+#~ msgstr "Файл непідтримуваного типу"
+
+#, fuzzy
+#~ msgid "There was an error during export: {error}"
+#~ msgstr "Виникла помилка під час експортування: {error}"
+
+#~ msgid "Priming memory"
+#~ msgstr "Первинна пам'ять"
+
+#~ msgid "Duplex"
+#~ msgstr "Дуплекс"
+
+#~ msgid "Tune Step"
+#~ msgstr "Крок настройки"
+
+#~ msgid "Skip"
+#~ msgstr "Пропустити"
+
+#~ msgid "Editing new item, taking defaults"
+#~ msgstr "Редагування нового елемента, беручи за замовчуванням"
+
+#~ msgid "Bad value for {col}: {val}"
+#~ msgstr "Погане значення для {col}: {val}"
+
+#~ msgid "Writing memory {number}"
+#~ msgstr "Запис пам'яті {number}"
+
+#~ msgid ""
+#~ "This operation requires moving all subsequent channels by one spot until "
+#~ "an empty location is reached.  This can take a LONG time.  Are you sure "
+#~ "you want to do this?"
+#~ msgstr ""
+#~ "Ця операція вимагає переміщення всіх наступних каналів на одне місце до "
+#~ "тих пір, поки пусте місце не буде досягнуто. Це може зайняти багато часу. "
+#~ "Ви впевнені, що хочете це зробити?"
+
+#~ msgid "Adding memory {number}"
+#~ msgstr "Додавання пам'яті {number}"
+
+#~ msgid "Erasing memory {number}"
+#~ msgstr "Стирання пам'яті {number}"
+
+#~ msgid "Getting memory {number}"
+#~ msgstr "Отримання пам'яті {number}"
+
+#~ msgid "Moving memory from {old} to {new}"
+#~ msgstr "Переміщення пам'яті з {old} до {new}"
+
+#~ msgid "Raw memory {number}"
+#~ msgstr "RAW пам'ять {number}"
+
+#~ msgid "Getting raw memory {number}"
+#~ msgstr "Отримання RAW пам'яті {number}"
+
+#~ msgid "You can only diff two memories!"
+#~ msgstr "Ви можете порівняти тільки дві пам'яті!"
+
+#~ msgid "Memory {number}"
+#~ msgstr "Пам'ять {number}"
+
+#~ msgid "Diff of {a} and {b}"
+#~ msgstr "Порівняння {a} та {b}"
+
+#~ msgid "Memories must be contiguous"
+#~ msgstr "Пам'ять має бути безперервна"
+
+#, fuzzy
+#~ msgid "Delete all"
+#~ msgstr "Видалити все"
+
+#, fuzzy
+#~ msgid "Move up"
+#~ msgstr "Перемістити вгору"
+
+#, fuzzy
+#~ msgid "Move down"
+#~ msgstr "Перемістити вниз"
+
+#, fuzzy
+#~ msgid "Exchange memories"
+#~ msgstr "Обмін пам'яттю"
+
+#, fuzzy
+#~ msgid "Cut"
+#~ msgstr "Вирізати"
+
+#, fuzzy
+#~ msgid "Copy"
+#~ msgstr "Копіювати"
+
+#, fuzzy
+#~ msgid "Paste"
+#~ msgstr "Вставити"
+
+#~ msgid "Internal Error: Column {name} not found"
+#~ msgstr "Внутрішня помилка: не знайдено стовпець {name}"
+
+#~ msgid "Getting channel {chan}"
+#~ msgstr "Отримання каналу {chan}"
+
+#~ msgid "Internal Error: Invalid limit {number}"
+#~ msgstr "Внутрішня помилка: Неприпустиме обмеження {number}"
+
+#~ msgid "Memory range:"
+#~ msgstr "Діапазон пам'яті:"
+
+#~ msgid "Go"
+#~ msgstr "Іти"
+
+#~ msgid "Special Channels"
+#~ msgstr "Спеціальні канали"
+
+#~ msgid "Show Empty"
+#~ msgstr "Показувати порожні"
+
+#~ msgid "Cutting memory {number}"
+#~ msgstr "Отримання пам'яті {number}"
+
+#~ msgid "Overwrite location {number}?"
+#~ msgstr "Перезаписати місце {number}?"
+
+#~ msgid "Incompatible Memory"
+#~ msgstr "Несумісна пам'ять"
+
+#~ msgid "URCALL"
+#~ msgstr "URCALL"
+
+#~ msgid "RPT1CALL"
+#~ msgstr "RPT1CALL"
+
+#~ msgid "RPT2CALL"
+#~ msgstr "RPT2CALL"
 
 #~ msgid "%i errors during open, check the debug log for details"
 #~ msgstr "%i errors during open, check the debug log for details"

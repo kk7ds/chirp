@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: \n"
+"POT-Creation-Date: 2023-02-07 13:35-0800\n"
 "PO-Revision-Date: 2022-09-25 01:05+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -14,835 +14,12 @@ msgstr ""
 "X-Generator: Poedit 3.1.1\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-msgid "...and shift all memories up"
-msgstr "... ve tüm kayıtları yukarı kaydır"
-
-msgid "...and shift block up"
-msgstr "...ve bloğu yukarı kaydır"
-
-msgid "A new version of CHIRP is available: "
-msgstr "CHIRP'in yeni bir sürümü mevcut: "
-
-msgid "A new version of CHIRP is available: {ver}. "
-msgstr "CHIRP'in yeni bir sürümü mevcut: {ver}. "
-
-msgid "About"
-msgstr "Hakkında"
-
-msgid "Adding memory {number}"
-msgstr "{number} kaydı ekleniyor"
-
-msgid "Adjust New Location"
-msgstr "Yeni Konumu Ayarla"
-
-msgid "All"
-msgstr "Tümü"
-
-msgid "All files"
-msgstr "Tüm dosyalar"
-
-msgid "An error has occurred"
-msgstr "Bir hata oluştu"
-
-msgid "Auto"
-msgstr "Otomatik"
-
-msgid "Automatic Repeater Offset"
-msgstr "Otomatik Tekrarlama Ofseti"
-
-msgid "Bad value for {col}: {val}"
-msgstr "{col} için kötü değer: {val}"
-
-msgid "Band plans define default channel settings for frequencies in a region.  Choose a band plan or None for completely manual channel settings."
-msgstr "Bant planları, bir bölgedeki frekanslar için varsayılan kanal ayarlarını tanımlar. Tamamen manuel kanal ayarları için bir bant planını veya Hiçbirini seçin."
-
-msgid "Bank"
-msgstr "Banka"
-
-msgid "Bank Names"
-msgstr "Banka İsimleri"
-
-msgid "Banks"
-msgstr "Bankalar"
-
-msgid "Browser"
-msgstr "Tarayıcı"
-
-msgid "CHIRP"
-msgstr "CHIRP"
-
-msgid "CHIRP Documentation"
-msgstr "CHIRP Belgeleri"
-
-msgid "CHIRP Files"
-msgstr "CHIRP Dosyaları"
-
-msgid "CHIRP Native File"
-msgstr "CHIRP Yerel Dosyası"
-
-msgid "CHIRP Radio Images"
-msgstr "CHIRP Telsiz İmajları"
-
-msgid "CSV File"
-msgstr "CSV Dosyası"
-
-msgid "CSV Files"
-msgstr "CSV Dosyası"
-
-msgid "Callsign"
-msgstr "Çağrı işareti"
-
-msgid "Cancel"
-msgstr "İptal"
-
-msgid "Cancelled"
-msgstr "İptal edildi"
-
-msgid "Cannot be imported because"
-msgstr "İçe aktarılamıyor çünkü"
-
-msgid "Change Language"
-msgstr "Dili Değiştir (Change Language)"
-
-msgid "Change language"
-msgstr "Dili değiştir (Change language)"
-
-msgid "Channel Defaults"
-msgstr "Kanal Varsayılanları"
-
-msgid "Channel defaults"
-msgstr "Kanal varsayılanları"
-
-msgid "Check this to change the {name} value"
-msgstr "{name} değerini değiştirmek için bunu kontrol edin"
-
-msgid "Choose Language"
-msgstr "Dil Seçin"
-
-msgid "Choose a language or Auto to use the operating system default. You will need to restart the application before the change will take effect"
-msgstr "Bir dil seçin veya işletim sistemi varsayılanını kullanmak için otomatiği seçin. Değişikliğin uygulanması için uygulamayı yeniden başlatmanız gerekir"
-
-msgid "Choose one to import from:"
-msgstr "İçe aktarılacak bir şey seçin:"
-
-msgid "Clear Recently Opened"
-msgstr "Son Açılanları Temizle"
-
-msgid "Clone Progress"
-msgstr "Klon İlerlemesi"
-
-msgid "Clone completed, checking for spurious bytes"
-msgstr "Klon tamamlandı, sahte baytlar kontrol ediliyor"
-
-msgid "Clone failed: {error}"
-msgstr "Klon başarısız oldu: {error}"
-
-msgid "Cloning"
-msgstr "Klonlanıyor"
-
-msgid "Cloning from radio"
-msgstr "Telsizden klonlama"
-
-msgid "Cloning to radio"
-msgstr "Telsize klonlama"
-
-msgid "Close"
-msgstr "Kapat"
-
-msgid "Columns"
-msgstr "Sütunlar"
-
-msgid "Comment"
-msgstr "Yorum"
-
-msgid "Completed"
-msgstr "Tamamlandı"
-
-msgid "Confirm overwrites"
-msgstr "Üzerine yazmayı onayla"
-
-msgid "Copy"
-msgstr "Kopyala"
-
-msgid "Cross Mode"
-msgstr "Çapraz Mod"
-
-msgid "Cross mode"
-msgstr "Çapraz mod"
-
-msgid "Cut"
-msgstr "Kes"
-
-msgid "Cutting memory {number}"
-msgstr "{number} kaydı kesiliyor"
-
-msgid "D-STAR"
-msgstr "Takas"
-
-msgid "DAT Files"
-msgstr "DAT Dosyaları"
-
-msgid "DMR-MARC Repeater Database Dump"
-msgstr "DMR-MARC Tekrarlayıcı Veritabanı Dökümü"
-
-msgid "DMR-MARC Repeaters"
-msgstr "DMR-MARC Tekrarlayıcılar"
-
-msgid "DTCS Code"
-msgstr "DTCS Kodu"
-
-msgid "DTCS Pol"
-msgstr "DTCS Pol"
-
-msgid "DTCS Rx Code"
-msgstr "DTCS Rx Kodu"
-
-msgid "Delete"
-msgstr "Sil"
-
-msgid "Delete (and shift up)"
-msgstr "Sil (ve yukarı kaydır)"
-
-msgid "Delete all"
-msgstr "Hepsini sil"
-
-msgid "Details"
-msgstr "Detaylar"
-
-msgid "Detect"
-msgstr "Tespit etme"
-
-msgid "Developer"
-msgstr "Geliştirici"
-
-msgid "Diff Raw Memories"
-msgstr "Farklı Ham kayıtlar"
-
-msgid "Diff Tabs"
-msgstr "Fark Sekmeleri"
-
-msgid "Diff of {a} and {b}"
-msgstr "{a} ve {b} arasındaki fark"
-
-msgid "Diff raw memories"
-msgstr "Farklı ham kayıtlar"
-
-msgid "Diff tabs"
-msgstr "Fark sekmeleri"
-
-msgid "Digital Code"
-msgstr "Dijital Kod"
-
-msgid "Do not show this next time"
-msgstr "Bunu bir dahaki sefere gösterme"
-
-msgid "Documentation"
-msgstr "Belgeler"
-
-msgid ""
-"Documentation for CHIRP, including FAQs, and help for common problems is available on the CHIRP web site, please go to\n"
-"\n"
-"<a href=\"http://chirp.danplanet.com/projects/chirp/wiki/Documentation\">http://chirp.danplanet.com/projects/chirp/wiki/Documentation</a>\n"
-msgstr ""
-"CHIRP için SSS'leri de içeren dokümantasyon ve yaygın sorunlara yönelik yardım CHIRP web sitesinde mevcuttur, lütfen şu adrese gidin\n"
-"\n"
-"<a href=\"http://chirp.danplanet.com/projects/chirp/wiki/Documentation\">http://chirp.danplanet.com/projects/chirp/wiki/Documentation</a>\n"
-
-msgid "Don't show information for any radio again"
-msgstr "Bir daha hiçbir telsiz için bilgi gösterme"
-
-msgid "Don't show instructions for any radio again"
-msgstr "Bir daha hiçbir telsiz için talimatları gösterme"
-
-msgid "Don't show this again"
-msgstr "Bunu bir daha gösterme"
-
-msgid "Download From Radio"
-msgstr "Telsizden İndir"
-
-msgid "Downloading MYCALL list"
-msgstr "MYCALL (çağrı listem) indiriliyor"
-
-msgid "Downloading RPTCALL list"
-msgstr "RPTCAL (tekrarlanan çağrı) listesini indiriliyor"
-
-msgid "Downloading URCALL list"
-msgstr "URCALL (sizin çağrı) listesi indiriliyor"
-
-msgid "Duplex"
-msgstr "Duplex"
-
-msgid "EVE"
-msgstr "EVE"
-
-msgid "EVE Files (VX5)"
-msgstr "EVE Dosyaları (VX5)"
-
-msgid "E_xchange"
-msgstr "T_akas"
-
-msgid "Edit"
-msgstr "Düzenle"
-
-msgid "Edit Memory #{num}"
-msgstr "Kaydı Düzenle #{num}"
-
-msgid "Edit Memory#{num}"
-msgstr "Kaydı Düzenle#{num}"
-
-msgid "Edit Multiple Memories"
-msgstr "Birden Fazla Kaydı Düzenle"
-
-msgid "Editing new item, taking defaults"
-msgstr "Yeni öğe düzenleniyor, varsayılanlar alınıyor"
-
-msgid "Enable Developer Functions"
-msgstr "Geliştirici İşlevlerini Etkinleştir"
-
-msgid "Enabled"
-msgstr "Etkin"
-
-msgid "Erasing memory {loc}"
-msgstr "Kayıt siliniyor {loc}"
-
-msgid "Erasing memory {number}"
-msgstr "Kayıt siliniyor {number}"
-
-msgid "Error importing memories:"
-msgstr "Kayıt içe aktarılırken hata oluştu:"
-
-msgid "Error in setting value: %s"
-msgstr "Değer ayarında hata: %s"
-
-msgid "Error reporting is enabled"
-msgstr "Hata raporlama etkinleştirildi"
-
-msgid "Error setting memory"
-msgstr "Kayıt ayarında hata"
-
-msgid "Exchange memories"
-msgstr "Kayıtları değiştir"
-
-msgid "Export"
-msgstr "Dışa Aktar"
-
-msgid "Export To File"
-msgstr "Dosyaya Aktar"
-
-msgid "File Exists"
-msgstr "Dosya Mevcut"
-
-msgid "File is modified, save changes before closing?"
-msgstr "Dosya değiştirildi, kapatmadan önce değişiklikler kaydedilsin mi?"
-
-msgid "Frequency"
-msgstr "Frekans"
-
-msgid "From"
-msgstr "Dan"
-
-msgid "General"
-msgstr "Genel"
-
-msgid "Get Help Online..."
-msgstr "Çevrimiçi Yardım Alın..."
-
-msgid "Getting %s information"
-msgstr "%s bilgisi alınıyor"
-
-msgid "Getting bank for memory {num}"
-msgstr "{num} kaydı için banka alınıyor"
-
-msgid "Getting bank information"
-msgstr "Banka bilgileri alınıyor"
-
-msgid "Getting bank information for memory {num}"
-msgstr "{num} kaydı için banka bilgileri alınıyor"
-
-msgid "Getting channel {chan}"
-msgstr "{chan} kanalı alınıyor"
-
-msgid "Getting memory {number}"
-msgstr "{number} kaydı alınıyor"
-
-msgid "Getting memory {num}"
-msgstr "{num} kaydı alınıyor"
-
-msgid "Getting original memory {number}"
-msgstr "Orijinal {number} kaydı alınıyor"
-
-msgid "Getting raw memory {number}"
-msgstr "{number} ham kaydı alınıyor"
-
-msgid "Getting {type} for memory {num}"
-msgstr "{num} kaydı için {type} alınıyor"
-
-msgid "Getting {type} information for memory {num}"
-msgstr "{num} kaydı için {type} bilgisi alınıyor"
-
-msgid "Go"
-msgstr "Git"
-
-msgid "Hamradio;Programming;Handheld;Radio;Amateur;Programmer"
-msgstr "AmatörTelsiz;Programlama;ElTipi;Telsiz;Amatör;Programcı"
-
-msgid "Help"
-msgstr "Yardım"
-
-msgid "Hide Unused Fields"
-msgstr "Kullanılmayan Alanları Gizle"
-
-msgid "ICF Files"
-msgstr "ICF Dosyaları"
-
-msgid "ICF files cannot be edited, only displayed or imported into another file. Open in read-only mode?"
-msgstr "ICF dosyaları düzenlenemez, yalnızca görüntülenebilir veya başka bir dosyaya aktarılamaz. Salt okunur modda açılsın mı?"
-
-msgid "If you wish to disable this feature you may do so in the <u>Help</u> menu"
-msgstr "Bu özelliği devre dışı bırakmak isterseniz, bunu <u>Yardım</u> menüsünden yapabilirsiniz"
-
-msgid "Import"
-msgstr "İçe Aktar"
-
-msgid "Import From Data Source"
-msgstr "Veri Kaynağından İçe Aktar"
-
-msgid "Import From File"
-msgstr "Dosyadan İçe Aktar"
-
-msgid "Import From Stock Config"
-msgstr "Stok Yapılandırmasından İçe Aktar"
-
-msgid "Import from RFinder"
-msgstr "RFinder'dan içe aktar"
-
-msgid "Import from data source"
-msgstr "Veri kaynağından içe aktar"
-
-msgid "Import from stock config"
-msgstr "Stok yapılandırmasından içe aktar"
-
-msgid "Import stock configuration {name}"
-msgstr "{name} stok yapılandırmasını içe aktar"
-
-msgid "Importing bank information"
-msgstr "Banka bilgileri içe aktarılıyor"
-
-msgid "Incompatible Memory"
-msgstr "Uyumsuz Kayıt"
-
-msgid "Index"
-msgstr "Dizin"
-
-msgid "Insert row above"
-msgstr "Yukarıya satır ekle"
-
-msgid "Insert row below"
-msgstr "Aşağıya satır ekle"
-
-msgid "Internal Error"
-msgstr "İç Hata"
-
-msgid "Internal Error: Column {name} not found"
-msgstr "Dahili Hata: Sütun {name} bulunamadı"
-
-msgid "Internal Error: Invalid limit {number}"
-msgstr "Dahili Hata: Geçersiz limit {number}"
-
-msgid "Internal error: Unable to upload to {model}"
-msgstr "Dahili hata: {model}'e yüklenemiyor"
-
-msgid "Invalid setting value: %s"
-msgstr "Geçersiz ayar değeri: %s"
-
-msgid "Invalid value for %s"
-msgstr "%s için geçersiz değer"
-
-msgid "Invalid value for this field"
-msgstr "Bu alan için geçersiz değer"
-
-msgid "Invalid value. Must be an integer."
-msgstr "Geçersiz değer. Tam sayı olmak zorunda."
-
-msgid "Inverse"
-msgstr "Ters"
-
-msgid "Kenwood HMK Files"
-msgstr "Kenwood HMK Dosyaları"
-
-msgid "Kenwood ITM Files"
-msgstr "Kenwood ITM Dosyaları"
-
-msgid "Load Module"
-msgstr "Modülü Yükle"
-
-msgid "Loc"
-msgstr "Konum"
-
-msgid "Location memory will be imported into"
-msgstr "Konum kaydı şuraya aktarılacak"
-
-msgid "Location of memory in the file being imported"
-msgstr "İçe aktarılan dosyadaki kaydın konumu"
-
-msgid "Location {number} is already being imported"
-msgstr "{number} konumu zaten içe aktarılıyor"
-
-msgid "Location {number} is already being imported. Choose another valü for 'New Location' before selection 'Import'"
-msgstr "{number} konumu zaten içe aktarılıyor. 'İçe Aktar' seçiminden önce 'Yeni Konum' için başka bir değer seçin"
-
-msgid "Location {number} is already being imported. Choose another value for 'New Location' before selection 'Import'"
-msgstr "{number} konumu zaten içe aktarılıyor. 'İçe Aktar' seçiminden önce 'Yeni Konum' için başka bir değer seçin"
-
-msgid "Looking for a free spot ({number})"
-msgstr "Boş yer arıyorum ({number})"
-
-msgid "Memories"
-msgstr "Kayıtlar"
-
-msgid "Memories (%(variant)s)"
-msgstr "Kayıtlar (%(variant)s)"
-
-msgid "Memories must be contiguous"
-msgstr "Kayıtlar bitişik olmalı"
-
-msgid "Memory Range:"
-msgstr "Kayıt Aralığı:"
-
-msgid "Memory range:"
-msgstr "Kayıt aralığı:"
-
-msgid "Memory validation failed:"
-msgstr "Kayıt doğrulaması başarısız oldu:"
-
-msgid "Memory {number}"
-msgstr "Kayıt {number}"
-
-msgid "Memory {num} not in bank {bank}"
-msgstr "{num} kaydı {bank} bankasında değil"
-
-msgid "Mode"
-msgstr "Mod"
-
-msgid "Model"
-msgstr "Model"
-
-msgid "Modules"
-msgstr "Modüller"
-
-msgid "Move Dow_n"
-msgstr "Aşağı Taş_ı"
-
-msgid "Move _Up"
-msgstr "Yukarı _Taşı"
-
-msgid "Move down"
-msgstr "Aşağı taşı"
-
-msgid "Move up"
-msgstr "Yukarı taşı"
-
-msgid "Moved {count} memories"
-msgstr "{count} kaydı taşındı"
-
-msgid "Moving memory from {old} to {new}"
-msgstr "Kayıt {old} olandan {new} olana taşınıyor..."
-
-msgid "Moving {src} to {dst}"
-msgstr "{src}, {dst}'e taşınıyor"
-
-msgid "My callsign"
-msgstr "Benim çağrı işaretim"
-
-msgid "Name"
-msgstr "İsim"
-
-msgid "New"
-msgstr "Yeni"
-
-msgid "No space to insert a row"
-msgstr "Satır eklemek için boşluk yok"
-
-msgid "None"
-msgstr "Hiçbiri"
-
-msgid "Note:"
-msgstr "Not:"
-
-msgid "Offset"
-msgstr "Ofset"
-
-msgid "Open"
-msgstr "Aç"
-
-msgid "Open Recent"
-msgstr "Son Kullanılanları Aç"
-
-msgid "Open Stock Config"
-msgstr "Stok Yapılandırmasını Aç"
-
-msgid "Open _Recent"
-msgstr "Son _Kullanılanları Aç"
-
-msgid "Open recent file"
-msgstr "Son dosyayı aç"
-
-msgid "Open recent file {name}"
-msgstr "{name} geçmiş dosyasını aç"
-
-msgid "Open stock config"
-msgstr "Stok yapılandırmasını aç"
-
-msgid "Open stock configuration {name}"
-msgstr "{name} stok yapılandırmasını aç"
-
-msgid "Options"
-msgstr "Seçenekler"
-
-msgid "Other"
-msgstr "Diğer"
-
-msgid "Overwrite"
-msgstr "Üzerine yaz"
-
-msgid "Overwrite location {number}?"
-msgstr "{number} konumunun üzerine yazılsın mı?"
-
-msgid "Overwrite?"
-msgstr "Üzerine yazılsın mı?"
-
-msgid "P_roperties"
-msgstr "Ö_zellikler"
-
-msgid "Paste"
-msgstr "Yapıştır"
-
-msgid "Pasted memory {number} is not compatible with this radio because:"
-msgstr "Yapıştırılan {number} kaydı bu telsizle uyumlu değil çünkü:"
-
-msgid "Port"
-msgstr "Port"
-
-msgid "Power"
-msgstr "Güç"
-
-msgid "Preparing memory list..."
-msgstr "Kayıt listesi hazırlanıyor..."
-
-msgid "Priming memory"
-msgstr "Kayıt hazırlanıyor"
-
-msgid "Proceed with experimental driver?"
-msgstr "Deneysel sürücü ile devam edilsin mi?"
-
-msgid "Proceed?"
-msgstr "Devam et?"
-
-msgid "Program amateur radios"
-msgstr "Amatör telsizleri programla"
-
-msgid "Properties"
-msgstr "Özellikler"
-
-msgid "Python Modules"
-msgstr "Python Modülleri"
-
-msgid "Query Data Source"
-msgstr "Veri Kaynağını Sorgula"
-
-msgid "Query data source"
-msgstr "Veri kaynağını sorgula"
-
-msgid "Query failed"
-msgstr "Sorgu başarısız"
-
-msgid "Quit"
-msgstr "Çıkış"
-
-msgid "RFinder"
-msgstr "RFinder"
-
-msgid "RPT1CALL"
-msgstr "RFinder"
-
-msgid "RPT2CALL"
-msgstr "RPT2CALL"
-
-msgid "RX DTCS Code"
-msgstr "RX DTCS Kodu"
-
-msgid "Radio"
-msgstr "Telsiz"
-
-msgid "Radio Programming Tool"
-msgstr "Telsiz Programlama Aracı"
-
+#: ../drivers/ft60.py:88 ../drivers/ft450d.py:488 ../drivers/ft817.py:407
+#, python-format
 msgid "Radio did not ack block %i"
 msgstr "Telsiz %i bloğunu onaylamadı"
 
-msgid "Radio sent data after the last awaited block, this happens when the selected model is a non-US but the radio is a US one. Please choose the correct model and try again."
-msgstr "Telsiz, beklenen son bloktan sonra veri gönderdi, bu, seçilen model ABD dışındaysa gerçekleşir ama telsiz bir ABD telsizi. Lütfen doğru modeli seçin ve tekrar deneyin."
-
-msgid "RadioReference"
-msgstr "RadioReference"
-
-msgid "RadioReference.com"
-msgstr "RadioReference.com"
-
-msgid "RadioReference.com Canada"
-msgstr "RadioReference.com Kanada"
-
-msgid "RadioReference.com Province Query"
-msgstr "RadioReference.com İl Sorgusu"
-
-msgid "RadioReference.com Query"
-msgstr "RadioReference.com Sorgusu"
-
-msgid "RadioReference.com US"
-msgstr "RadioReference.com ABD"
-
-msgid "Raw memory {number}"
-msgstr "Ham kayıt {number}"
-
-msgid "Refresh"
-msgstr "Yenile"
-
-msgid "Repeater callsign"
-msgstr "Tekrarlayıcı çağrı işareti"
-
-msgid "RepeaterBook"
-msgstr "RepeaterBook"
-
-msgid "RepeaterBook Political Query"
-msgstr "RepeaterBook Siyasi Sorgusu"
-
-msgid "RepeaterBook Proximity Query"
-msgstr "RepeaterBook Yakınlık Sorgusu"
-
-msgid "RepeaterBook Query"
-msgstr "RepeaterBook Sorgusu"
-
-msgid "RepeaterBook query failed"
-msgstr "RepeaterBook sorgusu başarısız oldu"
-
-msgid "Report Statistics"
-msgstr "İstatistikleri Rapor Et"
-
-msgid "Report statistics"
-msgstr "İstatistikleri rapor et"
-
-msgid "Reporting is disabled"
-msgstr "Raporlama devre dışı"
-
-msgid "Retrieving %s information"
-msgstr "%s bilgisi alınıyor"
-
-msgid "Retrieving bank information"
-msgstr "Banka bilgileri alınıyor"
-
-msgid "Reverse"
-msgstr "Tersi"
-
-msgid "Save"
-msgstr "Kaydet"
-
-msgid "Save As"
-msgstr "Farklı Kaydet"
-
-msgid "Save Changes?"
-msgstr "Değişiklikleri Kaydet?"
-
-msgid "Select"
-msgstr "Seç"
-
-msgid "Select All"
-msgstr "Tümünü seç"
-
-msgid "Select Columns"
-msgstr "Sütunları Seç"
-
-msgid "Select _All"
-msgstr "Tümünü _Seç"
-
-msgid "Setting index for memory {num}"
-msgstr "{num} kaydı için ayar dizini"
-
-msgid "Setting memory {number}"
-msgstr "Kaydın ayarlanması {sayı}"
-
-msgid "Setting name on %s"
-msgstr "%s üzerinde ad ayarlanıyor"
-
-msgid "Setting name on bank"
-msgstr "Bankada isim ayarlama"
-
-msgid "Settings"
-msgstr "Ayarlar"
-
-msgid "Shift"
-msgstr "Shift"
-
-msgid "Show Empty"
-msgstr "Boş Kayıtlar"
-
-msgid "Show Information"
-msgstr "Bilgi göster"
-
-msgid "Show Instructions"
-msgstr "Talimatları Göster"
-
-msgid "Show Raw Memory"
-msgstr "Ham Kaydı Göster"
-
-msgid "Show raw memory"
-msgstr "Ham kaydı göster"
-
-msgid "Skip"
-msgstr "Atla"
-
-msgid "Smart Tone Modes"
-msgstr "Akıllı Ton Modları"
-
-msgid "Special Channels"
-msgstr "Özel Kanallar"
-
-msgid "The file {name} already exists. Do you want to overwrite it?"
-msgstr "{name} dosyası zaten var. Üzerine yazmak istiyor musunuz?"
-
-msgid ""
-"The reporting feature of CHIRP is designed to help <u>improve quality</u> by allowing the authors to focus on the radio drivers used most often and errors experienced by the users. The reports contain no "
-"identifying information and are used only for statistical purposes by the authors. Your privacy is extremely important, but <u>please consider leaving this feature enabled to help make CHIRP better!</u>\n"
-"\n"
-"<b>Are you sure you want to disable this feature?</b>"
-msgstr ""
-"CHIRP'in raporlama özelliği, yazarların en sık kullanılan telsiz sürücülerine ve kullanıcıların yaşadığı hatalara odaklanmasını sağlayarak <u>kaliteyi iyileştirmeye</u> yardımcı olmak için tasarlanmıştır. Raporlar "
-"tanımlayıcı bilgi içermez ve yazarlar tarafından yalnızca istatistiksel amaçlarla kullanılır. Gizliliğiniz son derece önemlidir, ancak <u>CHIRP'i daha iyi hale getirmeye yardımcı olmak için lütfen bu özelliği "
-"etkinleştirmeyi düşünün!</u>\n"
-"\n"
-"<b>Bu özelliği devre dışı bırakmak istediğinizden emin misiniz?</b>"
-
-msgid "The {vendor} {model} has multiple independent sub-devices"
-msgstr "{vendor} {model} birden çok bağımsız alt cihaza sahip"
-
-msgid ""
-"The {vendor} {model} operates in <b>live mode</b>. This means that any changes you make are immediately sent to the radio. Because of this, you cannot perform the <u>Save</u> or <u>Upload</u> operations. If you "
-"wish to edit the contents offline, please <u>Export</u> to a CSV file, using the <b>File menu</b>."
-msgstr ""
-"{vendor} {model} <b>canlı modda</b> çalışır. Bu, yaptığınız tüm değişikliklerin anında telsize gönderileceği anlamına gelir. Bu nedenle, <u>Kaydet</u> veya <u>Yükle</u> işlemlerini gerçekleştiremezsiniz. İçeriği "
-"çevrimdışı düzenlemek istiyorsanız, lütfen <b>Dosya menüsünü</b> kullanarak bir CSV dosyasına <u>Dışa aktarın</u>."
-
-msgid "There was an error during export: {error}"
-msgstr "Dışa aktarma sırasında bir hata oluştu: {error}"
-
-msgid "There was an error during import: {error}"
-msgstr "İçe aktarma sırasında bir hata oluştu: {error}"
-
-msgid "There was an error opening {fname}: {error}"
-msgstr "{fname} açılırken bir hata oluştu: {error}"
-
-msgid "There were errors while opening {file}. The affected memories will not be importable!"
-msgstr "{file} açılırken hatalar oluştu. Etkilenen kayıtlar içe aktarılmayacak!"
-
+#: ../drivers/bj9900.py:112
 msgid ""
 "This is experimental support for BJ-9900 which is still under development.\n"
 "Please ensure you have a good backup with OEM software.\n"
@@ -854,1367 +31,2942 @@ msgstr ""
 "Ayrıca lütfen hata raporu ve geliştirme istekleri gönderin!\n"
 "Uyarıldınız. Kendi sorumluluğunuzda ilerleyin!"
 
-msgid "This operation requires moving all subsequent channels by one spot until an empty location is reached.  This can take a LONG time.  Are you sure you want to do this?"
-msgstr "Bu işlem, boş bir konuma ulaşılana kadar sonraki tüm kanalların bir noktada taşınmasını gerektirir. Bu UZUN zaman alabilir. Bunu yapmak istediğinden emin misin?"
+#: ../drivers/bj9900.py:137 ../drivers/ft450d.py:441 ../drivers/ft817.py:342
+msgid "Cloning from radio"
+msgstr "Telsizden klonlama"
 
-msgid "This radio's driver is experimental. Do you want to proceed?"
-msgstr "Bu telsizin sürücüsü deneyseldir. Devam etmek istiyor musunuz?"
+#: ../drivers/bj9900.py:164 ../drivers/ft450d.py:470 ../drivers/ft817.py:380
+#, fuzzy
+msgid "Cloning to radio"
+msgstr "Telsizden klonlama"
 
-msgid "To"
-msgstr "İle"
+#: ../drivers/ft817.py:321
+msgid ""
+"Unable to read last block. This often happens when the selected model is US "
+"but the radio is a non-US one (or widebanded). Please choose the correct "
+"model and try again."
+msgstr ""
+"Son blok okunamıyor. Bu genellikle seçilen model ABD olduğunda olur ama "
+"telsiz ABD dışı bir telsizdir (veya geniş bantlıdır). Lütfen doğru modeli "
+"seçin ve tekrar deneyin."
 
-msgid "Tone"
-msgstr "Ton"
+#: ../drivers/ft817.py:359
+msgid "Clone completed, checking for spurious bytes"
+msgstr "Klon tamamlandı, sahte baytlar kontrol ediliyor"
 
-msgid "Tone Mode"
-msgstr "Ton Modu"
+#: ../drivers/ft817.py:364
+msgid ""
+"Radio sent data after the last awaited block, this happens when the selected "
+"model is a non-US but the radio is a US one. Please choose the correct model "
+"and try again."
+msgstr ""
+"Telsiz, beklenen son bloktan sonra veri gönderdi, bu, seçilen model ABD "
+"dışındaysa gerçekleşir ama telsiz bir ABD telsizi. Lütfen doğru modeli seçin "
+"ve tekrar deneyin."
 
-msgid "ToneSql"
-msgstr "ToneSql"
-
-msgid "Travel Plus Files"
-msgstr "Seyahat Artı Dosyaları"
-
-msgid "Tune Step"
-msgstr "Adımı Ayarla"
-
-msgid "URCALL"
-msgstr "URCALL"
-
-msgid "Unable to detect radio on {port}"
-msgstr "{port} üzerinde telsiz algılanamadı"
-
-msgid "Unable to make changes to this model"
-msgstr "Bu modelde değişiklik yapılamıyor"
-
-msgid "Unable to open this image. It was generated with a newer version of CHIRP and thus may be for a radio model that is not supported by this version. Please update to the latest version of CHIRP and try again."
-msgstr "Bu imaj açılamıyor. CHIRP'in daha yeni bir sürümüyle oluşturulmuş ve bu nedenle bu sürüm tarafından desteklenmeyen bir telsiz modeli için olabilir. Lütfen en son CHIRP sürümüne güncelleyin ve tekrar deneyin."
-
-msgid "Unable to open this image: unsupported model"
-msgstr "Bu imaj açılamıyor: desteklenmeyen model"
-
-msgid "Unable to paste {src} memories into {dst} rows. Increase the memory bounds or show empty memories."
-msgstr "{src} kayıtları {dst} satırlarına yapıştırılamıyor. Kayıt sınırlarını artırın veya boş kayıtları gösterin."
-
-msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
-msgstr "Son blok okunamıyor. Bu genellikle seçilen model ABD olduğunda olur ama telsiz ABD dışı bir telsizdir (veya geniş bantlıdır). Lütfen doğru modeli seçin ve tekrar deneyin."
-
-msgid "Unsupported file type"
-msgstr "Desteklenmeyen dosya türü"
-
-msgid "Untitled"
-msgstr "Başlıksız"
-
-msgid "Updating RPTCALL list"
-msgstr "RPTCALL listesi güncelleniyor"
-
-msgid "Updating URCALL list"
-msgstr "URCALL listesi güncelleniyor"
-
-msgid "Updating bank index for memory {num}"
-msgstr "{num} kaydı için banka dizini güncelleniyor"
-
-msgid "Updating bank information for memory {num}"
-msgstr "{num} kaydı için banka bilgileri güncelleniyor"
-
-msgid "Updating mapping information for memory {num}"
-msgstr "{num} kaydı için eşleme bilgileri güncelleniyor"
-
-msgid "Updating {type} index for memory {num}"
-msgstr "{num} kayıt için {type} dizini güncelleniyor"
-
-msgid "Upload To Radio"
-msgstr "Telsize Yükle"
-
-msgid "VX5 Commander"
-msgstr "VX5 Commander"
-
-msgid "VX5 Commander Files"
-msgstr "VX5 Commander Dosyaları"
-
-msgid "VX6 Commander"
-msgstr "VX6 Commander"
-
-msgid "VX6 Commander Files"
-msgstr "VX6 Commander Dosyaları"
-
-msgid "VX7 Commander"
-msgstr "VX7 Commander"
-
-msgid "VX7 Commander Files"
-msgstr "VX7 Commander Dosyaları"
-
-msgid "Vendor"
-msgstr "Tedarikçi"
-
-msgid "Visible columns for {radio}"
-msgstr "{radio} için görünür sütunlar"
-
-msgid "With significant contributions by:"
-msgstr "Önemli katkılarıyla:"
-
-msgid "With significant contributions from:"
-msgstr "Önemli katkılarla:"
-
-msgid "Writing memory {number}"
-msgstr "{number} kaydı yazılıyor"
-
-msgid "Yes to All"
-msgstr "Hepsine evet"
-
-msgid "You can only diff two memories!"
-msgstr "Sadece iki kaydı birbirinden ayırabilirsin!"
-
-msgid "Your callsign"
-msgstr "Çağrı işaretiniz"
-
-msgid "_Copy"
-msgstr "_Kopyala"
-
-msgid "_Cut"
-msgstr "_Kes"
-
-msgid "_Delete"
-msgstr "_Sil"
-
-msgid "_Edit"
-msgstr "_Düzen"
-
-msgid "_File"
-msgstr "_Dosya"
-
-msgid "_Paste"
-msgstr "_Yapıştır"
-
-msgid "_Radio"
-msgstr "_Telsiz"
-
-msgid "_Recent"
-msgstr "_Geçmiş"
-
-msgid "_View"
-msgstr "_Görünüm"
-
-msgid "idle"
-msgstr "boşta"
-
-msgid "przemienniki.net"
-msgstr "przemienniki.net"
-
-msgid "these memories"
-msgstr "bu kayıtları"
-
-msgid "this memory"
-msgstr "bu kaydı"
-
+#: ../drivers/vx5.py:117
+#, python-brace-format
 msgid "{bank} is full"
 msgstr "{bank} dolu"
 
-msgid "{information}"
-msgstr "{information}"
+#: ../drivers/vx5.py:134
+#, python-brace-format
+msgid "Memory {num} not in bank {bank}"
+msgstr "{num} kaydı {bank} bankasında değil"
 
-msgid "{instructions}"
-msgstr "{instructions}"
+#: ../wxui/settingsedit.py:54
+#, fuzzy
+msgid "Getting settings"
+msgstr "%s bilgisi alınıyor"
 
-msgid "{name} Information"
-msgstr "{name} Bilgi"
+#: ../wxui/settingsedit.py:114
+#, fuzzy
+msgid "Error applying settings"
+msgstr "Değer ayarında hata: %s"
 
-msgid "{name} Instructions"
-msgstr "{name} Talimatlar"
+#: ../wxui/bankedit.py:62
+msgid "Index"
+msgstr "Dizin"
 
-msgid "{num} errors during open:"
-msgstr "açma sırasında {num} hatalar:"
+#: ../wxui/bankedit.py:188
+msgid "Double-click to change bank name"
+msgstr ""
 
-msgid "{vendor} {model} image file"
-msgstr "{vendor} {model} imaj dosyası"
+#: ../wxui/bankedit.py:201
+#, python-format
+msgid "Enter a new name for bank %s:"
+msgstr ""
 
-msgid "{vendor} {model} on {port}"
-msgstr "{vendor} {model} üzerinde {port}"
+#: ../wxui/bankedit.py:203
+#, fuzzy
+msgid "Rename bank"
+msgstr "Bankada isim ayarlama"
 
-msgid "Memory Properties"
-msgstr "Kayıt özellikleri"
+#: ../wxui/bankedit.py:231
+msgid "Memory must be in a bank to be edited"
+msgstr ""
 
-msgid "Yes"
-msgstr "Evet"
+#: ../wxui/radioinfo.py:43
+msgid "Features"
+msgstr ""
 
-msgid "No"
-msgstr "Hayır"
+#: ../wxui/radioinfo.py:48
+msgid "(none)"
+msgstr ""
 
-msgid "Ok"
-msgstr "Tamam"
+#: ../wxui/query_sources.py:56
+#, fuzzy, python-format
+msgid "Invalid %(value)s (use decimal degrees)"
+msgstr "Geçersiz değer. Tam sayı olmak zorunda."
 
-msgid "OK"
-msgstr "TAMAM"
+#: ../wxui/query_sources.py:58
+#, python-format
+msgid "%(value)s must be between %(min)i and %(max)i"
+msgstr ""
 
-msgid "Off"
-msgstr "Kapalı"
+#: ../wxui/query_sources.py:109
+msgid "Invalid ZIP code"
+msgstr ""
 
-msgid "Both"
-msgstr "İkisi de"
+#: ../wxui/query_sources.py:279 ../wxui/query_sources.py:457
+msgid "Country"
+msgstr ""
 
-msgid "High"
-msgstr "Yüksek"
+#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:345
+msgid "Amateur"
+msgstr ""
 
-msgid "Low"
-msgstr "Düşük"
+#: ../wxui/query_sources.py:282 ../wxui/query_sources.py:336
+#: ../wxui/query_sources.py:427
+msgid "GMRS"
+msgstr ""
 
-msgid "Basic Settings"
-msgstr "Temel Ayarlar"
-
-msgid "Advanced Settings"
-msgstr "Gelişmiş Ayarlar"
-
-msgid "Other Settings"
-msgstr "Diğer ayarlar"
-
-msgid "Work Mode Settings"
-msgstr "Çalışma Modu Ayarları"
-
-msgid "FM Radio Preset"
-msgstr "FM Radyo Ön Ayarı"
-
-msgid "DTMF Settings"
-msgstr "DTMF Ayarları"
-
-msgid "Service Settings"
+#: ../wxui/query_sources.py:284
+#, fuzzy
+msgid "Service"
 msgstr "Servis Ayarları"
 
-msgid ""
-"A new version of CHIRP is available: {ver}. It is recommended that you upgrade as soon as possible. Please go to: \r\n"
-"\r\n"
-"<a href=\"http://chirp.danplanet.com\">http://chirp.danplanet.com</a>"
+#: ../wxui/query_sources.py:287
+msgid "State/Province"
 msgstr ""
-"CHIRP'in yeni bir sürümü mevcut: {ver}. En kısa sürede yükseltmeniz önerilir. Lütfen git:\n"
-"\n"
-"<a href=\"http://chirp.danplanet.com\">http://chirp.danplanet.com</a>"
 
-msgid "Escape"
-msgstr "Çıkış"
+#: ../wxui/query_sources.py:292
+msgid "Optional: 45.0000"
+msgstr ""
 
-msgid "Icon %s not found"
-msgstr "%s simgesi bulunamadı"
+#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:299
+msgid "If set, sort results by distance from these coordinates"
+msgstr ""
 
-msgid "Closing %i"
-msgstr "%i kapatılıyor"
+#: ../wxui/query_sources.py:298
+msgid "Optional: -122.0000"
+msgstr ""
 
-msgid "Manually selected %s"
-msgstr "Manuel olarak seçildi %s"
+#: ../wxui/query_sources.py:301
+msgid "Latitude"
+msgstr ""
 
-msgid "Server reports version %s is available"
-msgstr "Sunucu raporları sürümü %s mevcut"
+#: ../wxui/query_sources.py:302
+msgid "Longitude"
+msgstr ""
 
-#: ../chirpdrivers/alinco.py:624 ../chirpdrivers/alinco.py:634
-msgid ""
-"1. Ensure your firmware version is 4_10 or higher\n"
-"2. Turn radio off\n"
-"3. Connect your interface cable\n"
-"4. Turn radio on\n"
-"5. Press and release PTT 3 times while holding MONI key\n"
-"6. Supported baud rates: 57600 (default) and 19200\n"
-"   (rotate dial while holding MONI to change)\n"
-"7. Click OK\n"
-msgstr ""
-"1. Donanım yazılımı sürümünüzün 4_10 veya üzeri olduğundan emin olun\n"
-"2. Telsizi kapatın\n"
-"3. Arayüz kablonuzu bağlayın\n"
-"4. Telsizi açın\n"
-"5. MONI tuşunu basılı tutarken PTT'ye 3 kez basın ve bırakın\n"
-"6. Desteklenen baud hızları: 57600 (varsayılan) ve 19200\n"
-"   (değiştirmek için MONI'ye basılı tutarken kadranı çevirin)\n"
-"7. TAMAM'a tıklayın\n"
-
-#: ../chirpdrivers/baofeng_wp970i.py:324 ../chirpdrivers/gmrsuv1.py:394 ../chirpdrivers/gmrsv2.py:373 ../chirpdrivers/mursv1.py:345 ../chirpdrivers/tdxone_tdq8a.py:457 ../chirpdrivers/uv5x3.py:420
-#: ../chirpdrivers/uv6r.py:344 ../chirpdrivers/vgc.py:592
-msgid ""
-"Follow these instructions to download your info:\n"
-"\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Do the download of your radio data\n"
-msgstr ""
-"Bilgilerinizi indirmek için şu talimatları izleyin:\n"
-"\n"
-"1 - Telsizinizi kapatın\n"
-"2 - Arayüz kablonuzu bağlayın\n"
-"3 - Telsizinizi açın\n"
-"4 - Telsiz verilerinizin indirilmesini gerçekleştirin\n"
-
-#: ../chirpdrivers/baofeng_wp970i.py:332 ../chirpdrivers/gmrsuv1.py:403 ../chirpdrivers/gmrsv2.py:381 ../chirpdrivers/lt725uv.py:519 ../chirpdrivers/mursv1.py:353 ../chirpdrivers/tdxone_tdq8a.py:465
-#: ../chirpdrivers/uv5x3.py:428 ../chirpdrivers/uv6r.py:352
-msgid ""
-"Follow this instructions to upload your info:\n"
-"\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Do the upload of your radio data\n"
-msgstr ""
-"Bilgilerinizi yüklemek için şu talimatları izleyin:\n"
-"\n"
-"1 - Telsizinizi kapatın\n"
-"2 - Arayüz kablonuzu bağlayın\n"
-"3 - Telsizinizi açın\n"
-"4 - Telsiz verilerinizin yüklemesini gerçekleştirin\n"
-
-#: ../chirpdrivers/bf-t1.py:482 ../chirpdrivers/btech.py:679
-msgid ""
-"Follow these instructions to download your info:\n"
-"\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Do the download of your radio data\n"
-"\n"
-msgstr ""
-"Bilgilerinizi indirmek için şu talimatları izleyin:\n"
-"\n"
-"1 - Telsizinizi kapatın\n"
-"2 - Arayüz kablonuzu bağlayın\n"
-"3 - Telsizinizi açın\n"
-"4 - Telsiz verilerinizin indirilmesini gerçekleştirin\n"
-"\n"
-
-#: ../chirpdrivers/bf-t1.py:491 ../chirpdrivers/btech.py:688
-msgid ""
-"Follow these instructions to upload your info:\n"
-"\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Do the upload of your radio data\n"
-"\n"
-msgstr ""
-"Bilgilerinizi yüklemek için şu talimatları izleyin:\n"
-"\n"
-"1 - Telsizinizi kapatın\n"
-"2 - Arayüz kablonuzu bağlayın\n"
-"3 - Telsizinizi açın\n"
-"4 - Telsiz verilerinizin yüklenmesini gerçekleştirin\n"
-"\n"
-
-#: ../chirpdrivers/bj9900.py:105
-msgid ""
-"1. Turn radio off.\n"
-"2. Remove front head.\n"
-"3. Connect data cable to radio, use the same connector where\n"
-"     head was connected to, <b>not the mic connector</b>.\n"
-"4. Click OK."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Ön başlığı çıkarın.\n"
-"3. Veri kablosunu telsize bağlayın, \n"
-"     <b>mikrofon konektörüne değil</b> kafanın bağlı olduğu konektörü kullanın.\n"
-"4. TAMAM'a tıklayın."
-
-#: ../chirpdrivers/fd268.py:309../chirpdrivers/fd268.py:318
-msgid ""
-"This radio has a tricky way of enter into program mode,\n"
-"even the original software has a few tries to get inside.\n"
-"\n"
-"I will try 8 times (most of the time ~3 will doit) and this\n"
-"can take a few seconds, if don't work, try again a few times.\n"
-"\n"
-"If you can get into it, please check the radio and cable."
-msgstr ""
-"Bu telsizin program moduna girmenin zor bir yolu var,\n"
-"orijinal yazılım ile bile girmek için birkaç deneme yapmak gerekir.\n"
-"\n"
-"8 kez deneyeceğim (çoğu zaman ~3 de işe yarar) ve bu\n"
-"birkaç saniye sürebilir, işe yaramazsa birkaç kez tekrar deneyin.\n"
-"\n"
-"İşe yaramazsa, lütfen telsizi ve kabloyu kontrol edin."
-
-#: ../chirpdrivers/ft1d.py:649
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to DATA terminal.\n"
-"3. Press and hold in the [F] key while turning the radio on\n"
-"     (\"CLONE\" will appear on the display).\n"
-"4. <b>After clicking OK</b>, press the [BAND] key to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu DATA terminaline bağlayın.\n"
-"3. Telsizi açarken [F] tuşunu basılı tutun\n"
-"      (\"CLONE\" ekranda görünecektir).\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna basın."
-
-#: ../chirpdrivers/ft1d.py:656
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to DATA terminal.\n"
-"3. Press and hold in the [F] key while turning the radio on\n"
-"     (\"CLONE\" will appear on the display).\n"
-"4. Press the [Dx] key (\"-WAIT-\" will appear on the LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu DATA terminaline bağlayın.\n"
-"3. Telsizi açarken [F] tuşunu basılı tutun\n"
-"     (ekranda \"CLONE\" görünecektir).\n"
-"4. [Dx] tuşuna basın (ekranda \"-WAIT-\" görünecektir)."
-
-#: ../chirpdrivers/ft2d.py:85
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to DATA terminal.\n"
-"3. Press and hold [DISP] key while turning on radio\n"
-"     (\"CLONE\" will appear on the display).\n"
-"4. <b>After clicking OK here in chirp</b>,\n"
-"     press the [Send] screen button."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu DATA terminaline bağlayın.\n"
-"3. Telsizi açarken [DISP] tuşunu basılı tutun\n"
-"      (\"CLONE\" ekranda görünecektir).\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>,\n"
-"     [Gönder] ekran tuşuna basın."
-
-#: ../chirpdrivers/ft2d.py:92
-msgid ""
-" 1. Turn radio off.\n"
-" 2. Connect cable to DATA terminal.\n"
-" 3. Press and hold in [DISP] key while turning on radio\n"
-"      (\"CLONE\" will appear on radio LCD).\n"
-" 4. Press [RECEIVE] screen button\n"
-"      (\"-WAIT-\" will appear on radio LCD).\n"
-"5. Finally, press OK button below."
-msgstr ""
-" 1. Telsizi kapatın.\n"
-"  2. Kabloyu DATA terminaline bağlayın.\n"
-"  3. Telsizi açarken [DISP] tuşunu basılı tutun\n"
-"  (telsiz LCD'sinde \"CLONE\" görünecektir).\n"
-"  4. [RECEIVE] ekran tuşuna basın\n"
-"       (telsiz LCD'sinde \"-WAIT-\" görünecektir).\n"
-"5. Son olarak aşağıdaki OK tuşuna basın."
-
-#: ../chirpdrivers/ft4.py:675
-msgid ""
-"1. Connect programming cable to MIC jack.\n"
-"2. Press OK."
+#: ../wxui/query_sources.py:307
+#, fuzzy
+msgid "Optional: 100"
+msgstr "Seçenekler"
+
+#: ../wxui/query_sources.py:308
+msgid "Limit results to this distance (km) from coordinates"
 msgstr ""
-"1. Programlama kablosunu MIC jakına bağlayın.\n"
-"2. TAMAM'a basın."
 
-#: ../chirpdrivers/ft50.py:195
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to MIC/SP jack.\n"
-"3. Press and hold [PTT] &amp; Knob while turning the\n"
-"     radio on.\n"
-"4. <b>After clicking OK</b>, press the [PTT] switch to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu MIC/SP jakına bağlayın.\n"
-"3. Telsizi açarken [PTT] &amp;  tuşuna basın.\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek\n"
-"     için [PTT] tuşuna basın."
-
-#: ../chirpdrivers/ft50.py:201
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to MIC/SP jack.\n"
-"3. Press and hold [PTT] &amp; Knob while turning the\n"
-"     radio on.\n"
-"4. Press the [MONI] switch (\"WAIT\" will appear on the LCD).\n"
-"5. Press OK."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu MIC/SP jakına bağlayın.\n"
-"3. Telsizi açarken [PTT] &amp;  tuşuna basın.\n"
-"4. [MONI] tuşuna basın (ekranda \"WAIT\" görünecektir).\n"
-"5. TAMAM'a basın."
-
-#: ../chirpdrivers/ft60.py:355
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to MIC/SP jack.\n"
-"3. Press and hold in the [MONI] switch while turning the\n"
-"     radio on.\n"
-"4. Rotate the DIAL job to select \"F8 CLONE\".\n"
-"5. Press the [F/W] key momentarily.\n"
-"6. <b>After clicking OK</b>, hold the [PTT] switch\n"
-"     for one second to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu MIC/SP jakına bağlayın.\n"
-"3. Telsizi açarken [PTT] &amp;  tuşuna basın.\n"
-"3. Telsizi açarken [MONI] tuşunu basılı tutun.\n"
-"4. \"F8 CLONE\" öğesini seçmek için KADRANI çevirin.\n"
-"5. Bir an için [F/W] tuşuna basın.\n"
-"6. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek için [PTT] tuşunu bir saniye basılı tutun."
-
-#: ../chirpdrivers/ft60.py:365
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to MIC/SP jack.\n"
-"3. Press and hold in the [MONI] switch while turning the\n"
-"     radio on.\n"
-"4. Rotate the DIAL job to select \"F8 CLONE\".\n"
-"5. Press the [F/W] key momentarily.\n"
-"6. Press the [MONI] switch (\"--RX--\" will appear on the LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu MIC/SP jakına bağlayın.\n"
-"3. Telsizi açarken [MONI] tuşunu basılı tutun.\n"
-"4. \"F8 CLONE\" öğesini seçmek için KADRANI çevirin.\n"
-"5. Bir an için [F/W] tuşuna basın.\n"
-"6. [MONI] tuşuna basın (ekranda \"--RX--\" görünecektir)."
-
-#: ../chirpdrivers/ft70.py:
-msgid ""
-"1. Turn radio on.\n"
-"2. Connect cable to DATA terminal.\n"
-"3. Unclip battery.\n"
-"4. Press and hold in the [AMS] key and power key while clipping the battery back in\n"
-"(\"ADMS\" will appear on the display).\n"
-"5. <b>After clicking OK</b>, press the [BAND] key."
-msgstr ""
-"1. Telsizi açın.\n"
-"2. Kabloyu DATA terminaline bağlayın.\n"
-"3. Pilin klipsini açın.\n"
-"4. Pili tekrar yerine takarken [AMS] tuşunu ve güç tuşunu basılı tutun.\n"
-"(ekranda \"ADMS\" görünecektir).\n"
-"5. <b>TAMAM'ı tıkladıktan sonra</b> [BAND] tuşuna basın."
-
-#: ../chirpdrivers/ft70.py:545
-msgid ""
-"1. Turn radio on.\n"
-"2. Connect cable to DATA terminal.\n"
-"3. Unclip battery.\n"
-"4. Press and hold in the [AMS] key and power key while clipping the battery back in\n"
-"(\"ADMS\" will appear on the display).\n"
-"5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD). <b>Then click OK</b>"
-msgstr ""
-"1. Telsizi açın.\n"
-"2. Kabloyu DATA terminaline bağlayın.\n"
-"3. Pilin klipsini açın.\n"
-"4. Pili tekrar yerine takarken [AMS] tuşunu ve güç tuşunu basılı tutun.\n"
-"(ekranda \"ADMS\" görünecektir).\n"
-"5. [MODE] tuşuna basın (ekranda \"-WAIT-\" görünecektir). <b>Ardından TAMAM'ı tıklayın</b>"
-
-#: ../chirpdrivers/ft90.py:196
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect mic and hold [ACC] on mic while powering on.\n"
-"    (\"CLONE\" will appear on the display)\n"
-"3. Replace mic with PC programming cable.\n"
-"4. <b>After clicking OK</b>, press the [SET] key to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Mikrofonu bağlayın ve açarken mikrofondaki [ACC] tuşunu basılı tutun.\n"
-"     (\"CLONE\" ekranda görünecektir)\n"
-"3. Mikrofonu PC programlama kablosuyla değiştirin.\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [SET] tuşuna basın."
-
-#: ../chirpdrivers/ft90.py:202
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect mic and hold [ACC] on mic while powering on.\n"
-"    (\"CLONE\" will appear on the display)\n"
-"3. Replace mic with PC programming cable.\n"
-"4. Press the [DISP/SS] key\n"
-"    (\"R\" will appear on the lower left of LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Mikrofonu bağlayın ve açarken mikrofondaki [ACC] tuşunu basılı tutun.\n"
-"     (\"CLONE\" ekranda görünecektir)\n"
-"3. Mikrofonu PC programlama kablosuyla değiştirin.\n"
-"4. [DISP/SS] tuşuna basın\n"
-"     (LCD'nin sol alt köşesinde \"R\" görünecektir)."
-
-#: ../chirpdrivers/ft450d.py:387
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to ACC jack.\n"
-"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
-"     turning the radio on (\"CLONE MODE\" will appear on the\n"
-"     display).\n"
-"4. <b>After clicking OK</b> here, press the [C.S.] key to\n"
-"    send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu ACC jakına bağlayın.\n"
-"3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun \n"
-"     (ekranda \"KLON MODU\" görünecektir).\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için\n"
-"     [C.S.] tuşuna basın."
-
-#: ../chirpdrivers/ft450d.py:395
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to ACC jack.\n"
-"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
-"     turning the radio on (\"CLONE MODE\" will appear on the\n"
-"     display).\n"
-"4. Click OK here.\n"
-"    (\"Receiving\" will appear on the LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu ACC jakına bağlayın.\n"
-"3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun (\"ekranda KLON MODU\" görünecektir).\n"
-"4. Burada TAMAM'ı tıklayın.\n"
-"     (ekranda \"Alınıyor\" görünecektir)."
-
-#: ../chirpdrivers/ft817.py:280
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to ACC jack.\n"
-"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
-"     turning the radio on (\"CLONE MODE\" will appear on the\n"
-"     display).\n"
-"4. <b>After clicking OK</b>, press the [A] key to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu ACC jakına bağlayın.\n"
-"3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını\n"
-"    basılı tutun (\"ekranda KLON MODU\" görünecektir).\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için\n"
-"    [A] tuşuna basın."
-
-#: ../chirpdrivers/ft817.py:287
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to ACC jack.\n"
-"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
-"     turning the radio on (\"CLONE MODE\" will appear on the\n"
-"     display).\n"
-"4. Press the [C] key (\"RX\" will appear on the LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu ACC jakına bağlayın.\n"
-"3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun (\"ekranda KLON MODU\" görünecektir).\n"
-"4. [C] tuşuna basın (ekranda \"RX\" görünecektir)."
-
-#: ../chirpdrivers/ft857.py:441
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to CAT/LINEAR jack.\n"
-"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
-"     turning the radio on (\"CLONE MODE\" will appear on the\n"
-"     display).\n"
-"4. <b>After clicking OK</b>,\n"
-"     press the [C](SEND) key to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu CAT/LINEAR jakına bağlayın.\n"
-"3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun (ekranda \"KLON MODU\" görünecektir).\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [C](GÖNDER) tuşuna basın."
-
-#: ../chirpdrivers/ft857.py:449
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to ACC jack.\n"
-"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
-"     turning the radio on (\"CLONE MODE\" will appear on the\n"
-"     display).\n"
-"4. Press the [A](RCV) key (\"receiving\" will appear on the LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu ACC jakına bağlayın.\n"
-"3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun (ekranda \"KLON MODU\" görünecektir).\n"
-"4. [A](RCV) tuşuna basın (ekranda \"alıyor\" görünecektir)."
-
-#: ../chirpdrivers/ft1500m.py:96
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to mic jack.\n"
-"3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
-"   while turning the radio on.\n"
-"4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu mikrofon jakına bağlayın.\n"
-"3. Telsizi açarken [MHz], [LOW] ve [D/MR] tuşlarına basılı tutun\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [MHz(SET)] tuşuna basın."
-
-#: ../chirpdrivers/ft1500m.py:102
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to mic jack.\n"
-"3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
-"   while turning the radio on.\n"
-"4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu mikrofon jakına bağlayın.\n"
-"3. Telsizi açarken [MHz], [LOW] ve [D/MR] tuşlarını basılı tutun.\n"
-"4. [D/MR(MW)] tuşuna basın (ekranda \"--WAIT--\" görünecektir)."
-
-#: ../chirpdrivers/ft1802.py:96
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to mic jack.\n"
-"3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
-"4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu mikrofon jakına bağlayın.\n"
-"3. Telsizi açarken [LOW(A/N)] tuşunu basılı tutun.\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [MHz(SET)] tuşuna basın."
-
-#: ../chirpdrivers/ft1802.py:101
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to mic jack.\n"
-"3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
-"4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu mikrofon jakına bağlayın.\n"
-"3. Telsizi açarken [LOW(A/N)] tuşunu basılı tutun.\n"
-"4. [D/MR(MW)] tuşuna basın (ekranda \"--WAIT--\" görünecektir)."
-
-#: ../chirpdrivers/ft2900.py:1227
-msgid ""
-"1. Turn Radio off.\n"
-"2. Connect data cable.\n"
-"3. While holding \"A/N LOW\" button, turn radio on.\n"
-"4. <b>After clicking OK</b>, press \"SET MHz\" to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Veri kablosunu bağlayın.\n"
-"3. \"A/N LOW\" tuşunu basılı tutarken telsizi açın.\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için \"SET MHz\"e basın."
-
-#: ../chirpdrivers/ft2900.py:1232
-msgid ""
-"1. Turn Radio off.\n"
-"2. Connect data cable.\n"
-"3. While holding \"A/N LOW\" button, turn radio on.\n"
-"4. Press \"MW D/MR\" to receive image.\n"
-"5. Make sure display says \"-WAIT-\" (see note below if not)\n"
-"6. Click OK to dismiss this dialog and start transfer.\n"
-"\n"
-"Note: if you don't see \"-WAIT-\" at step 5, try cycling\n"
-"      power and pressing and holding red \"*L\" button to unlock\n"
-"      radio, then start back at step 1."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Veri kablosunu bağlayın.\n"
-"3. \"A/N LOW\" tuşunu basılı tutarken telsizi açın.\n"
-"4. İmajı almak için \"MW D/MR\" tuşuna basın.\n"
-"5. Ekranda \"-WAIT-\" yazdığından emin olun (değilse aşağıdaki nota bakın)\n"
-"6. Bu iletişim kutusunu kapatmak ve aktarımı başlatmak için TAMAM'a tıklayın.\n"
-"\n"
-"Not: 5. adımda \"-WAIT-\" öğesini görmüyorsanız, gücü kapatıp açmayı\n"
-"      ve telsizin kilidini açmak için kırmızı \"*L\" tuşunu basılı tutmayı deneyin,\n"
-"      ardından 1. adımdan başlayın."
-
-#: ../chirpdrivers/ft7100.py:1122
-msgid ""
-"1. Turn Radio off.\n"
-"2. Connect data cable.\n"
-"3. While holding \"TONE\" and \"REV\" buttons, turn radio on.\n"
-"4. <b>After clicking OK</b>, press \"TONE\" to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Veri kablosunu bağlayın.\n"
-"3. \"TONE\" ve \"REV\" tuşlarını basılı tutarken telsizi açın.\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için \"TONE\" tuşuna basın."
-
-#: ../chirpdrivers/ft7100.py:1126
-msgid ""
-"1. Turn Radio off.\n"
-"2. Connect data cable.\n"
-"3. While holding \"TON\" and \"REV\" buttons, turn radio on.\n"
-"4. Press \"REV\" to receive image.\n"
-"5. Make sure display says \"CLONE RX\" and green led is blinking\n"
-"6. Click OK to start transfer."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Veri kablosunu bağlayın.\n"
-"3. \"TON\" ve \"REV\" tuşlarını basılı tutarken telsizi açın.\n"
-"4. İmajı almak için \"REV\" tuşuna basın.\n"
-"5. Ekranda \"CLONE RX\" yazdığından ve yeşil ledin yanıp söndüğünden emin olun.\n"
-"6. Aktarımı başlatmak için TAMAM'a tıklayın."
-
-#: ../chirpdrivers/ft7800.py:275
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to DATA jack.\n"
-"3. Press and hold in the [MHz(PRI)] key while turning the\n"
-" radio on.\n"
-"4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
-"5. Press and hold in the [BAND(SET)] key. The display\n"
-" will disappear for a moment, then the \"CLONE\" notation\n"
-" will appear.\n"
-"6. <b>After clicking OK</b>, press the [V/M(MW)] key to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu DATA jakına bağlayın.\n"
-"3. Telsizi açarken [MHz(PRI)] tuşunu basılı tutun.\n"
-"4. \"F-7 CLONE\" öğesini seçmek için KADRANI çevirin.\n"
-"5. [BAND(SET)] tuşunu basılı tutun. Ekran bir an için kaybolacak, ardından \"CLONE\" yazısı belirecektir.\n"
-"6. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek için [V/M(MW)] tuşuna basın."
-
-#: ../chirpdrivers/ft7800.py:285
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to DATA jack.\n"
-"3. Press and hold in the [MHz(PRI)] key while turning the\n"
-"     radio on.\n"
-"4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
-"5. Press and hold in the [BAND(SET)] key. The display\n"
-"     will disappear for a moment, then the \"CLONE\" notation\n"
-"     will appear.\n"
-"6. Press the [LOW(ACC)] key (\"--RX--\" will appear on the display)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu DATA jakına bağlayın.\n"
-"3. Telsizi açarken [MHz(PRI)] tuşunu basılı tutun.\n"
-"4. \"F-7 CLONE\" öğesini seçmek için KADRANI çevirin.\n"
-"5. [BAND(SET)] tuşunu basılı tutun. Ekran bir an için kaybolacak, ardından \"CLONE\" yazısı belirecektir.\n"
-"6. [LOW(ACC)] tuşuna basın (ekranda \"--RX--\" görünecektir)."
-
-#: ../chirpdrivers/ftlx011.py:306
-msgid ""
-"Please follow this steps carefully:\n"
-"\n"
-"1 - Turn on your radio\n"
-"2 - Connect the interface cable to your radio.\n"
-"3 - Click the button on this window to start download\n"
-"    (Radio will beep and led will flash)\n"
-"4 - Then press the \"A\" button in your radio to start cloning.\n"
-"    (At the end radio will beep)\n"
-msgstr ""
-"Lütfen bu adımları dikkatlice izleyin:\n"
-"\n"
-"1 - Telsizinizi açın\n"
-"2 - Arayüz kablosunu telsizinize bağlayın.\n"
-"3 - İndirmeyi başlatmak için bu penceredeki tuşa tıklayın\n"
-"     (Telsiz bip sesi çıkaracak ve led yanıp sönecektir)\n"
-"4 - Ardından klonlamaya başlamak için telsizinizdeki \"A\" tuşuna basın.\n"
-"     (Sonunda telsiz bip sesi çıkaracaktır)\n"
-
-#: ../chirpdrivers/ftlx011.py:316
-msgid ""
-"Please follow this steps carefully:\n"
-"\n"
-"1 - Turn on your radio\n"
-"2 - Connect the interface cable to your radio\n"
-"3 - Click the button on this window to start download\n"
-"    (you may see another dialog, click ok)\n"
-"4 - Radio will beep and led will flash\n"
-"5 - You will get a 10 seconds timeout to press \"MON\" before\n"
-"    data upload start\n"
-"6 - If all goes right radio will beep at end.\n"
-"\n"
-"After cloning remove the cable and power cycle your radio to\n"
-"get into normal mode.\n"
-msgstr ""
-"Lütfen bu adımları dikkatlice izleyin:\n"
-"\n"
-"1 - Telsizinizi açın\n"
-"2 - Arayüz kablosunu telsizinize bağlayın\n"
-"3 - İndirmeyi başlatmak için bu penceredeki tuşa tıklayın (başka bir iletişim kutusu görebilirsiniz, tamam'a tıklayın)\n"
-"4 - Telsiz bip sesi çıkaracak ve led yanıp sönecektir\n"
-"5 - Veri yükleme başlamadan önce \"MON\" tuşuna basmanız için 10 saniyelik bir zaman aşımı süresi alacaksınız.\n"
-"6 - Her şey yolunda giderse sonunda telsiz bip sesi çıkaracaktır.\n"
-"\n"
-"Klonladıktan sonra kabloyu çıkarın ve normal moda geçmek için telsizinizi kapatıp açın.\n"
-
-#: ../chirpdrivers/ftm3200d.py:83
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to DATA terminal.\n"
-"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
-"     on (\"CLONE\" will appear on the display).\n"
-"4. <b>After clicking OK</b>, press the [REV(DW)] key\n"
-"     to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu DATA terminaline bağlayın.\n"
-"3. Telsizi açarken [MHz(SETUP)] tuşunu basılı tutun (\"ekranda CLONE\" görünecektir).\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [GERİ(DW)] tuşuna basın."
-
-#: ../chirpdrivers/ftm3200d.py:90
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to DATA terminal.\n"
-"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
-"     on (\"CLONE\" will appear on the display).\n"
-"4. Press the [MHz(SETUP)] key\n"
-"     (\"-WAIT-\" will appear on the LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu DATA terminaline bağlayın.\n"
-"3. Telsizi açarken [MHz(SETUP)] tuşunu basılı tutun (\"ekranda CLONE\" görünecektir).\n"
-"4. [MHz(SETUP)] tuşuna basın\n"
-"      (ekranda \"-WAIT-\" görünecektir)."
-
-#: ../chirpdrivers/ftm7250d.py:84
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to MIC Jack.\n"
-"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
-"     on (\"CLONE\" will appear on the display).\n"
-"4. <b>After clicking OK</b>, press the [GM(AMS)] key\n"
-"     to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu MIC Jakına bağlayın.\n"
-"3. Telsizi açarken [MHz(SETUP)] tuşunu basılı tutun (\"ekranda CLONE\" görünecektir).\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek için [GM(AMS)] tuşuna basın."
-
-#: ../chirpdrivers/ftm7250d.py:91
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to MIC Jack.\n"
-"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
-"     on (\"CLONE\" will appear on the display).\n"
-"4. Press the [MHz(SETUP)] key\n"
-"     (\"-WAIT-\" will appear on the LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu MIC Jakına bağlayın.\n"
-"3. Telsizi açarken [MHz(SETUP)] tuşunu basılı tutun (\"ekranda CLONE\" görünecektir).\n"
-"4. [MHz(SETUP)] tuşuna basın\n"
-"      (ekranda \"-WAIT-\" görünecektir)."
-
-#: ../chirpdrivers/ic2730.py:305
-msgid ""
-"Follow these instructions to download your config:\n"
-"\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable to the Speaker-2 jack\n"
-"3 - Turn on your radio\n"
-"4 - Radio > Download from radio\n"
-"5 - Disconnect the interface cable! Otherwise there will be\n"
-"    no right-side audio!\n"
-msgstr ""
-"Yapılandırmanızı indirmek için şu talimatları izleyin:\n"
-"\n"
-"1 - Telsizinizi kapatın\n"
-"2 - Arayüz kablonuzu Speaker-2 jakına bağlayın\n"
-"3 - Telsizinizi açın\n"
-"4 - Telsiz > Telsizden İndir\n"
-"5 - Arayüz kablosunu çıkarın! Aksi takdirde, sağ taraf sesi olmayacaktır!\n"
-
-#: ../chirpdrivers/ic2730.py:315
-msgid ""
-"Follow these instructions to upload your config:\n"
-"\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable to the Speaker-2 jack\n"
-"3 - Turn on your radio\n"
-"4 - Radio > Upload to radio\n"
-"5 - Disconnect the interface cable, otherwise there will be\n"
-"    no right-side audio!\n"
-"6 - Cycle power on the radio to exit clone mode\n"
-msgstr ""
-"Yapılandırmanızı yüklemek için şu talimatları izleyin:\n"
-"\n"
-"1 - Telsizinizi kapatın\n"
-"2 - Arayüz kablonuzu Speaker-2 jakına bağlayın\n"
-"3 - Telsizinizi açın\n"
-"4 - Telsiz > Telsize yükle\n"
-"5 - Arayüz kablosunu çıkarın, aksi takdirde sağ tarafta ses olmayacaktır!\n"
-"6 - Klon modundan çıkmak için telsizi kapatıp açın\n"
-
-#: ../chirpdrivers/lt725uv.py:511 ../chirpdrivers/vgc.py:584
-msgid ""
-"Follow this instructions to download your info:\n"
-"\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Do the download of your radio data\n"
-msgstr ""
-"Bilgilerinizi indirmek için şu talimatları izleyin:\n"
-"\n"
-"1 - Telsizinizi kapatın\n"
-"2 - Arayüz kablonuzu bağlayın\n"
-"3 - Telsizinizi açın\n"
-"4 - Telsiz verilerinizin indirilmesini gerçekleştirin\n"
-
-#: ../chirpdrivers/tg_uv2p.py:221 ../chirpdrivers/uvb5.py:284 ../chirpdrivers/wouxun.py:214
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to mic/spkr connector.\n"
-"3. Make sure connector is firmly connected.\n"
-"4. Turn radio on.\n"
-"5. Ensure that the radio is tuned to channel with no activity.\n"
-"6. Click OK to download image from device."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu mik/hprlr konektörüne bağlayın.\n"
-"3. Konektörün sıkıca bağlandığından emin olun.\n"
-"4. Telsizi açın.\n"
-"5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
-"6. İmajı cihazdan indirmek için TAMAM'a tıklayın."
-
-#: ../chirpdrivers/tg_uv2p.py:228 ../chirpdrivers/uvb5.py:291 ../chirpdrivers/wouxun.py:221
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to mic/spkr connector.\n"
-"3. Make sure connector is firmly connected.\n"
-"4. Turn radio on.\n"
-"5. Ensure that the radio is tuned to channel with no activity.\n"
-"6. Click OK to upload image to device."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu mic/spkr konektörüne bağlayın.\n"
-"3. Konektörün sıkıca bağlandığından emin olun.\n"
-"4. Telsizi açın.\n"
-"5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
-"6. İmajı cihaza yüklemek için TAMAM'a tıklayın."
-
-#: ../chirpdrivers/th_uv88.py:478
-msgid "This is an early stage beta driver\n"
-msgstr "Bu erken aşama beta sürücüsüdür\n"
-
-#: ../chirpdrivers/th_uv88.py:481
-msgid "This is an early stage beta driver - upload at your own risk\n"
-msgstr "Bu, erken aşamadaki bir beta sürücüsüdür - yükleme riski size aittir\n"
-
-#: ../chirpdrivers/th_uv8000.py:534
-msgid ""
-"Follow these instructions to download the radio memory:\n"
-"\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio, volume @ 50%\n"
-"4 - Radio > Download from radio\n"
-msgstr ""
-"Telsiz hafızasını indirmek için şu talimatları izleyin:\n"
-"\n"
-"1 - Telsizinizi kapatın\n"
-"2 - Arayüz kablonuzu bağlayın\n"
-"3 - Telsizinizi açın, ses seviyesi @ %50\n"
-"4 - Telsiz > Telsizden İndir\n"
-
-#: ../chirpdrivers/th_uv8000.py:542
-msgid ""
-"Follow these instructions to upload the radio memory:\n"
-"\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio, volume @ 50%\n"
-"4 - Radio > Upload to radio\n"
-msgstr ""
-"Telsiz hafızasını yüklemek için şu talimatları izleyin:\n"
-"\n"
-"1 - Telsizinizi kapatın\n"
-"2 - Arayüz kablonuzu bağlayın\n"
-"3 - Telsizinizi açın, ses seviyesi @ %50\n"
-"4 - Telsiz > Telsize yükle\n"
-
-#: ../chirpdrivers/tk270.py:340 ../chirpdrivers/tk760.py:361
-msgid ""
-"Follow this instructions to read your radio:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Do the download of your radio data\n"
-msgstr ""
-"Telsizinizi okumak için bu talimatları izleyin:\n"
-"1 - Telsizinizi kapatın\n"
-"2 - Arayüz kablonuzu bağlayın\n"
-"3 - Telsizinizi açın\n"
-"4 - Telsiz verilerinizin indirmesini gerçekleştirin\n"
-
-#: ../chirpdrivers/tk270.py:347 ../chirpdrivers/tk760.py:368
-msgid ""
-"Follow this instructions to write your radio:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Do the upload of your radio data\n"
-msgstr ""
-"Telsizinizi yazmak için bu talimatları izleyin:\n"
-"1 - Telsizinizi kapatın\n"
-"2 - Arayüz kablonuzu bağlayın\n"
-"3 - Telsizinizi açın\n"
-"4 - Telsiz verilerinizin yüklemesini gerçekleştirin\n"
-
-#: ../chirpdrivers/tk760g.py:729
-msgid ""
-"Follow this instructions to download your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio (unblock it if password protected)\n"
-"4 - Do the download of your radio data\n"
-msgstr ""
-"Bilgilerinizi indirmek için bu talimatları izleyin:\n"
-"1 - Telsizinizi kapatın\n"
-"2 - Arayüz kablonuzu bağlayın\n"
-"3 - Telsizinizi açın (şifre korumalıysa engelini kaldırın)\n"
-"4 - Telsiz verilerinizin indirmesini gerçekleştirin\n"
-
-#: ../chirpdrivers/tk760g.py:736
+#: ../wxui/query_sources.py:310
+msgid "Distance"
+msgstr ""
+
+#: ../wxui/query_sources.py:313
+msgid "Optional: County, Hospital, etc"
+msgstr ""
+
+#: ../wxui/query_sources.py:314
+msgid "Filter results with location matching this string"
+msgstr ""
+
+#: ../wxui/query_sources.py:316
+msgid "Filter"
+msgstr ""
+
+#: ../wxui/query_sources.py:320
+msgid "Only certain bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:322
+msgid "Limit Bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:325
+msgid "Only certain modes"
+msgstr ""
+
+#: ../wxui/query_sources.py:327
+msgid "Limit Modes"
+msgstr ""
+
+#: ../wxui/query_sources.py:353
+msgid "All"
+msgstr "Tümü"
+
+#: ../wxui/query_sources.py:375
+#, fuzzy
+msgid "Select Bands"
+msgstr "Sütunları Seç"
+
+#: ../wxui/query_sources.py:375
+msgid "Bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:396
+#, fuzzy
+msgid "Select Modes"
+msgstr "Sütunları Seç"
+
+#: ../wxui/query_sources.py:396
+#, fuzzy
+msgid "Modes"
+msgstr "Mod"
+
+#: ../wxui/query_sources.py:451
+msgid "City"
+msgstr ""
+
+#: ../wxui/query_sources.py:454
+msgid "State"
+msgstr ""
+
+#: ../wxui/query_sources.py:524
+msgid "United States"
+msgstr ""
+
+#: ../wxui/query_sources.py:525
+msgid "Canada"
+msgstr ""
+
+#: ../wxui/query_sources.py:665
+msgid "RadioReference Canada requires a login before you can query"
+msgstr ""
+
+#: ../wxui/memedit.py:116
+#, python-format
+msgid "Found empty list value for %(name)s: %(value)r"
+msgstr ""
+
+#: ../wxui/memedit.py:151 ../wxui/memedit.py:157
+#, fuzzy, python-format
+msgid "Invalid value: %r"
+msgstr "%s için geçersiz değer"
+
+#: ../wxui/memedit.py:180
+msgid "Offset"
+msgstr "Ofset"
+
+#: ../wxui/memedit.py:182
+msgid "Frequency"
+msgstr "Frekans"
+
+#: ../wxui/memedit.py:221
+#, fuzzy
+msgid "Enter Frequency"
+msgstr "Frekans"
+
+#: ../wxui/memedit.py:245
+msgid "Power"
+msgstr "Güç"
+
+#: ../wxui/memedit.py:304
+msgid "Choice Required"
+msgstr ""
+
+#: ../wxui/memedit.py:321
+msgid "Tone"
+msgstr "Ton"
+
+#: ../wxui/memedit.py:323
+#, fuzzy
+msgid "Tone Squelch"
+msgstr "ToneSql"
+
+#: ../wxui/memedit.py:390
+#, fuzzy
+msgid "DTCS"
+msgstr "DTCS Pol"
+
+#: ../wxui/memedit.py:392
+#, fuzzy
+msgid "RX DTCS"
+msgstr "RX DTCS Kodu"
+
+#: ../wxui/memedit.py:436
+#, fuzzy
 msgid ""
-"Follow this instructions to upload your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio (unblock it if password protected)\n"
-"4 - Do the upload of your radio data\n"
-msgstr ""
-"Bilgilerinizi yüklemek için bu talimatları izleyin:\n"
-"1 - Telsizinizi kapatın\n"
-"2 - Arayüz kablonuzu bağlayın\n"
-"3 - Telsizinizi açın (şifre korumalıysa engelini kaldırın)\n"
-"4 - Telsiz verilerinizin yüklemesini gerçekleştirin\n"
-
-#: ../chirpdrivers/tmd710.py:203 ../chirpdrivers/tmd710.py:207
+"DTCS\n"
+"Polarity"
+msgstr "DTCS Pol"
+
+#: ../wxui/memedit.py:456
+msgid "Cross mode"
+msgstr "Çapraz mod"
+
+#: ../wxui/memedit.py:568
+msgid "Tone Mode"
+msgstr "Ton Modu"
+
+#: ../wxui/memedit.py:838
+#, fuzzy, python-format
+msgid "Choose %s Tone"
+msgstr "Dil Seçin"
+
+#: ../wxui/memedit.py:841
+#, fuzzy, python-format
+msgid "Choose %s DTCS Code"
+msgstr "RX DTCS Kodu"
+
+#: ../wxui/memedit.py:862
+#, python-format
 msgid ""
-"Connect your interface cable to the PC Port on the\n"
-"back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
+"Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
+msgstr ""
+
+#: ../wxui/memedit.py:864
+#, fuzzy
+msgid "Information"
+msgstr "{information}"
+
+#: ../wxui/memedit.py:872
+#, fuzzy
+msgid "Choose Cross Mode"
+msgstr "Çapraz Mod"
+
+#: ../wxui/memedit.py:881
+msgid "Enter TX Frequency (MHz)"
+msgstr ""
+
+#: ../wxui/memedit.py:889
+msgid "Enter Offset (MHz)"
+msgstr ""
+
+#: ../wxui/memedit.py:902
+#, fuzzy
+msgid "Choose duplex"
+msgstr "Dil Seçin"
+
+#: ../wxui/memedit.py:929
+msgid "Unable to edit memory before radio is loaded"
+msgstr ""
+
+#: ../wxui/memedit.py:1006 ../wxui/memedit.py:1630
+#, fuzzy, python-format
+msgid "Invalid edit: %s"
+msgstr "Geçersiz ayar değeri: %s"
+
+#: ../wxui/memedit.py:1012
+#, python-format
+msgid "Warning: %s"
+msgstr ""
+
+#: ../wxui/memedit.py:1013
+msgid "Warning"
+msgstr ""
+
+#: ../wxui/memedit.py:1045
+#, python-format
+msgid "Memory %i is not deletable"
+msgstr ""
+
+#: ../wxui/memedit.py:1111
+msgid "Properties"
+msgstr "Özellikler"
+
+#: ../wxui/memedit.py:1117
+#, fuzzy
+msgid "Insert Row Above"
+msgstr "Yukarıya satır ekle"
+
+#: ../wxui/memedit.py:1126
+#, fuzzy, python-format
+msgid "Delete %i Memories"
+msgstr "Farklı Ham kayıtlar"
+
+#: ../wxui/memedit.py:1129
+#, fuzzy, python-format
+msgid "Delete %i Memories and shift block up"
+msgstr "Sil (ve yukarı kaydır)"
+
+#: ../wxui/memedit.py:1133
+#, fuzzy, python-format
+msgid "Delete %i Memories and shift all up"
+msgstr "Sil (ve yukarı kaydır)"
+
+#: ../wxui/memedit.py:1136
+msgid "Delete"
+msgstr "Sil"
+
+#: ../wxui/memedit.py:1138
+#, fuzzy
+msgid "Delete and shift block up"
+msgstr "Sil (ve yukarı kaydır)"
+
+#: ../wxui/memedit.py:1140
+#, fuzzy
+msgid "Delete and shift all up"
+msgstr "Sil (ve yukarı kaydır)"
+
+#: ../wxui/memedit.py:1166
+msgid "Show Raw Memory"
+msgstr "Ham Kaydı Göster"
+
+#: ../wxui/memedit.py:1174
+msgid "Diff Raw Memories"
+msgstr "Farklı Ham kayıtlar"
+
+#: ../wxui/memedit.py:1210
+#, fuzzy
+msgid "No empty rows below!"
+msgstr "Aşağıya satır ekle"
+
+#: ../wxui/memedit.py:1282
+msgid "Some memories are not deletable"
+msgstr ""
+
+#: ../wxui/memedit.py:1308
+#, python-format
+msgid "Pasted memory will overwrite memory %i"
+msgstr ""
+
+#: ../wxui/memedit.py:1311
+#, python-format
+msgid "Pasted memories will overwrite memory %i"
+msgstr ""
+
+#: ../wxui/memedit.py:1314
+#, python-format
+msgid "Pasted memories will overwrite %i existing memories"
+msgstr ""
+
+#: ../wxui/memedit.py:1317
+#, python-format
+msgid "Pasted memories will overwrite memories %s"
+msgstr ""
+
+#: ../wxui/memedit.py:1320
+#, fuzzy
+msgid "Overwrite memories?"
+msgstr "Üzerine yazılsın mı?"
+
+#: ../wxui/memedit.py:1365
+#, fuzzy
+msgid "Some memories are incompatible with this radio"
+msgstr "Yapıştırılan {number} kaydı bu telsizle uyumlu değil çünkü:"
+
+#: ../wxui/memedit.py:1440
+msgid "Export can only write CSV files"
+msgstr ""
+
+#: ../wxui/memedit.py:1477
+msgid "Digital Code"
+msgstr "Dijital Kod"
+
+#: ../wxui/memedit.py:1505
+#, python-format
+msgid "Edit details for memory %i"
+msgstr ""
+
+#: ../wxui/memedit.py:1507
+#, fuzzy, python-format
+msgid "Edit details for %i memories"
+msgstr "Birden Fazla Kaydı Düzenle"
+
+#: ../wxui/memedit.py:1541
+msgid "Extra"
+msgstr ""
+
+#: ../wxui/memedit.py:1552
+#, fuzzy
+msgid "DV Memory"
+msgstr "bu kaydı"
+
+#: ../wxui/common.py:94
+msgid "Cloning"
+msgstr "Klonlanıyor"
+
+#: ../wxui/common.py:115
+msgid "Please wait"
+msgstr ""
+
+#: ../wxui/common.py:219
+#, fuzzy, python-format
+msgid "Refreshed memory %s"
+msgstr "bu kayıtları"
+
+#: ../wxui/common.py:221
+#, python-format
+msgid "Uploaded memory %s"
+msgstr ""
+
+#: ../wxui/common.py:223
+#, fuzzy
+msgid "Retrieved settings"
+msgstr "Servis Ayarları"
+
+#: ../wxui/common.py:225
+#, fuzzy
+msgid "Saved settings"
+msgstr "Servis Ayarları"
+
+#: ../wxui/common.py:227
+#, fuzzy, python-format
+msgid "Erased memory %s"
+msgstr "Kayıt siliniyor {loc}"
+
+#: ../wxui/common.py:229
+#, python-format
+msgid "Finished radio job %s"
+msgstr ""
+
+#: ../wxui/common.py:331
+#, python-format
+msgid "Value must be at least %.4f"
+msgstr ""
+
+#: ../wxui/common.py:335
+#, python-format
+msgid "Value must be at most %.4f"
+msgstr ""
+
+#: ../wxui/common.py:408 ../wxui/common.py:446
+msgid "An error has occurred"
+msgstr "Bir hata oluştu"
+
+#: ../wxui/main.py:129
+msgid "Memories"
+msgstr "Kayıtlar"
+
+#: ../wxui/main.py:137
+msgid "Banks"
+msgstr "Bankalar"
+
+#: ../wxui/main.py:142
+msgid "Settings"
+msgstr "Ayarlar"
+
+#: ../wxui/main.py:148
+msgid "Browser"
+msgstr "Tarayıcı"
+
+#: ../wxui/main.py:150
+msgid "Info"
+msgstr ""
+
+#: ../wxui/main.py:253
+msgid "Only memory tabs may be exported"
+msgstr ""
+
+#: ../wxui/main.py:271
+msgid "LIVE"
+msgstr ""
+
+#: ../wxui/main.py:351
+msgid "Welcome"
+msgstr ""
+
+#: ../wxui/main.py:387
+#, python-format
+msgid "File does not exist: %s"
+msgstr ""
+
+#: ../wxui/main.py:463
+msgid "Open Stock Config"
+msgstr "Stok Yapılandırmasını Aç"
+
+#: ../wxui/main.py:473
+#, python-format
+msgid "Restore %i tabs"
+msgstr ""
+
+#: ../wxui/main.py:492
+msgid "Open Recent"
+msgstr "Son Kullanılanları Aç"
+
+#: ../wxui/main.py:505 ../wxui/main.py:1043
+#, fuzzy
+msgid "Export to CSV"
+msgstr "Dosyaya Aktar"
+
+#: ../wxui/main.py:511
+msgid "Load Module"
+msgstr "Modülü Yükle"
+
+#: ../wxui/main.py:522
+msgid "Print Preview"
+msgstr ""
+
+#: ../wxui/main.py:563
+#, fuzzy
+msgid "Find Next"
+msgstr "RFinder"
+
+#: ../wxui/main.py:571
+msgid "Goto"
+msgstr ""
+
+#: ../wxui/main.py:579
+msgid "Use fixed-width font"
+msgstr ""
+
+#: ../wxui/main.py:587
+msgid "Use larger font"
+msgstr ""
+
+#: ../wxui/main.py:602 ../wxui/main.py:750
+msgid "Download"
+msgstr ""
+
+#: ../wxui/main.py:609
+msgid "Upload"
+msgstr ""
+
+#: ../wxui/main.py:615
+#, fuzzy
+msgid "Query Source"
+msgstr "Veri Kaynağını Sorgula"
+
+#: ../wxui/main.py:633
+msgid "Enable Automatic Edits"
+msgstr ""
+
+#: ../wxui/main.py:640
+#, fuzzy
+msgid "Select Bandplan"
+msgstr "Tümünü seç"
+
+#: ../wxui/main.py:650
+msgid "Reload Driver"
+msgstr ""
+
+#: ../wxui/main.py:659
+msgid "Reload Driver and File"
+msgstr ""
+
+#: ../wxui/main.py:673
+msgid "Interact with driver"
+msgstr ""
+
+#: ../wxui/main.py:680
+msgid "About"
+msgstr "Hakkında"
+
+#: ../wxui/main.py:685
+#, fuzzy
+msgid "Developer Mode"
+msgstr "Geliştirici"
+
+#: ../wxui/main.py:694
+#, fuzzy
+msgid "Reporting enabled"
+msgstr "Raporlama devre dışı"
+
+#: ../wxui/main.py:706
+msgid "Open debug log"
+msgstr ""
+
+#: ../wxui/main.py:712
+msgid "Show debug log location"
+msgstr ""
+
+#: ../wxui/main.py:719
+#, fuzzy
+msgid "View"
+msgstr "_Görünüm"
+
+#: ../wxui/main.py:720
+msgid "Radio"
+msgstr "Telsiz"
+
+#: ../wxui/main.py:744
+msgid "Open"
+msgstr "Aç"
+
+#: ../wxui/main.py:745 ../wxui/main.py:939
+#, fuzzy
+msgid "Open a file"
+msgstr "Son dosyayı aç"
+
+#: ../wxui/main.py:746
+msgid "Save"
+msgstr "Kaydet"
+
+#: ../wxui/main.py:747 ../wxui/main.py:1014
+#, fuzzy
+msgid "Save file"
+msgstr "Farklı Kaydet"
+
+#: ../wxui/main.py:748
+msgid "Close"
+msgstr "Kapat"
+
+#: ../wxui/main.py:749
+#, fuzzy
+msgid "Close file"
+msgstr "Kapat"
+
+#: ../wxui/main.py:751
+#, fuzzy
+msgid "Download from radio"
+msgstr "Telsizden İndir"
+
+#: ../wxui/main.py:753
+#, fuzzy
+msgid "Upload to radio"
+msgstr "Telsize Yükle"
+
+#: ../wxui/main.py:924
+msgid "Chirp Image Files"
+msgstr ""
+
+#: ../wxui/main.py:925
+#, fuzzy
+msgid "All Files"
+msgstr "Tüm dosyalar"
+
+#: ../wxui/main.py:928 ../wxui/main.py:1000 ../wxui/main.py:1010
+#: ../wxui/main.py:1039 ../wxui/main.py:1253 ../wxui/main.py:1254
+#, fuzzy
+msgid "Files"
+msgstr "_Dosya"
+
+#: ../wxui/main.py:936
+msgid "All supported formats|"
+msgstr ""
+
+#: ../wxui/main.py:972
+#, fuzzy, python-format
+msgid "Unable to find stock config %r"
+msgstr "Stok yapılandırmasını aç"
+
+#: ../wxui/main.py:1055
+#, fuzzy, python-format
+msgid "%s has not been saved. Save before closing?"
+msgstr "Dosya değiştirildi, kapatmadan önce değişiklikler kaydedilsin mi?"
+
+#: ../wxui/main.py:1057
+msgid "Save before closing?"
+msgstr ""
+
+#: ../wxui/main.py:1089
+#, fuzzy
+msgid "Unable to open the clipboard"
+msgstr "Bu imaj açılamıyor: desteklenmeyen model"
+
+#: ../wxui/main.py:1113
+#, fuzzy
+msgid "Find"
+msgstr "RFinder"
+
+#: ../wxui/main.py:1142
+#, fuzzy
+msgid "Goto Memory:"
+msgstr "bu kaydı"
+
+#: ../wxui/main.py:1142
+msgid "Number"
+msgstr ""
+
+#: ../wxui/main.py:1143
+#, fuzzy
+msgid "Goto Memory"
+msgstr "bu kaydı"
+
+#: ../wxui/main.py:1254
+#, fuzzy
+msgid "Module"
+msgstr "Modüller"
+
+#: ../wxui/main.py:1257
+msgid "Open a module"
+msgstr ""
+
+#: ../wxui/main.py:1272
+#, fuzzy
+msgid "About CHIRP"
+msgstr "Hakkında"
+
+#: ../wxui/main.py:1278
+#, python-format
+msgid "Developer state is now %s. CHIRP must be restarted to take effect"
+msgstr ""
+
+#: ../wxui/main.py:1280
+msgid "Restart Required"
 msgstr ""
-"Arayüz kablonuzu 'TX/RX' ünitesinin arkasındaki\n"
-"PC Bağlantı Noktasına bağlayın. Kafadaki Com Portu DEĞİL.\n"
 
-#: ../chirpdrivers/ts480.py:524
+#: ../wxui/main.py:1285
 msgid ""
-"Follow these instructions to download the radio memory:\n"
-"1 - Connect your interface cable\n"
-"2 - Radio > Download from radio: Don't adjust any settings\n"
-"on the radio head!\n"
-"3 - Disconnect your interface cable\n"
-msgstr ""
-"Telsiz hafızasını indirmek için şu talimatları izleyin:\n"
-"1 - Arayüz kablonuzu bağlayın\n"
-"2 - Telsiz > Telsizden İndir: Telsiz kafasında herhangi bir ayar yapmayın!\n"
-"3 - Arayüz kablonuzu çıkarın\n"
-
-#: ../chirpdrivers/ts480.py:531
-msgid ""
-"Follow these instructions to upload the radio memory:\n"
-"1 - Connect your interface cable\n"
-"2 - Radio > Upload to radio: Don't adjust any settings\n"
-"on the radio head!\n"
-"3 - Disconnect your interface cable\n"
-msgstr ""
-"Telsiz hafızasını yüklemek için şu talimatları izleyin:\n"
-"1 - Arayüz kablonuzu bağlayın\n"
-"2 - Telsiz > Telsize yükle: Telsiz kafasında herhangi bir ayar yapmayın!\n"
-"3 - Arayüz kablonuzu çıkarın\n"
-
-#: ../chirpdrivers/ts590.py:685
-msgid ""
-"Follow these instructions to download the radio memory:\n"
-"1 - Connect your interface cable\n"
-"2 - Radio > Download from radio: DO NOT mess with the radio\n"
-"during download!\n"
-"3 - Disconnect your interface cable\n"
-msgstr ""
-"Telsiz hafızasını indirmek için şu talimatları izleyin:\n"
-"1 - Arayüz kablonuzu bağlayın\n"
-"2 - Telsiz > Telsizden İndir: İndirme sırasında telsiz ile uğraşmayın!\n"
-"3 - Arayüz kablonuzu çıkarın\n"
-
-#: ../chirpdrivers/ts590.py:692
-msgid ""
-"Follow these instructions to upload the radio memory:\n"
-"1 - Connect your interface cable\n"
-"2 - Radio > Upload to radio: DO NOT mess with the radio\n"
-"during upload!\n"
-"3 - Disconnect your interface cable\n"
-msgstr ""
-"Telsiz hafızasını yüklemek için şu talimatları izleyin:\n"
-"1 - Arayüz kablonuzu bağlayın\n"
-"2 - Telsiz > Telsize Yükle: Yükleme sırasında telsiz ile uğraşmayın!\n"
-"3 - Arayüz kablonuzu çıkarın\n"
-
-#: ../chirpdrivers/uv5r.py:764
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to mic/spkr connector.\n"
-"3. Make sure connector is firmly connected.\n"
-"4. Turn radio on (volume may need to be set at 100%).\n"
-"5. Ensure that the radio is tuned to channel with no activity.\n"
-"6. Click OK to download image from device."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu mik/hprlr konektörüne bağlayın.\n"
-"3. Konektörün sıkıca bağlandığından emin olun.\n"
-"4. Telsizi açın (ses düzeyinin %100 olarak ayarlanması gerekebilir).\n"
-"5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
-"6. İmajı cihazdan indirmek için TAMAM'a tıklayın."
-
-#: ../chirpdrivers/uv5r.py:771
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to mic/spkr connector.\n"
-"3. Make sure connector is firmly connected.\n"
-"4. Turn radio on (volume may need to be set at 100%).\n"
-"5. Ensure that the radio is tuned to channel with no activity.\n"
-"6. Click OK to upload image to device."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu mic/spkr konektörüne bağlayın.\n"
-"3. Konektörün sıkıca bağlandığından emin olun.\n"
-"4. Telsizi açın (ses düzeyinin %100 olarak ayarlanması gerekebilir).\n"
-"5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
-"6. İmajı cihaza yüklemek için TAMAM'a tıklayın."
-
-#: ../chirpdrivers/vx3.py:375 ../chirpdrivers/vx6.py:363
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to MIC/SP jack.\n"
-"3. Press and hold in the [F/W] key while turning the radio on\n"
-"     (\"CLONE\" will appear on the display).\n"
-"4. <b>After clicking OK</b>, press the [BAND] key to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu MIC/SP jakına bağlayın.\n"
-"3. Telsizi açarken [F/W] tuşunu basılı tutun\n"
-"      (ekranda \"CLONE\" görünecektir).\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna basın."
-
-#: ../chirpdrivers/vx3.py:381 ../chirpdrivers/vx6.py:369
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to MIC/SP jack.\n"
-"3. Press and hold in the [F/W] key while turning the radio on\n"
-"     (\"CLONE\" will appear on the display).\n"
-"4. Press the [V/M] key (\"-WAIT-\" will appear on the LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu MIC/SP jakına bağlayın.\n"
-"3. Telsizi açarken [F/W] tuşunu basılı tutun\n"
-"      (ekranda \"CLONE\" görünecektir).\n"
-"4. [V/M] tuşuna basın (ekranda \"-WAIT-\" görünecektir)."
-
-#: ../chirpdrivers/vx3.py:317
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to MIC/EAR jack.\n"
-"3. Press and hold in the [F/W] key while turning the radio on\n"
-"    (\"CLONE\" will appear on the display).\n"
-"4. <b>After clicking OK</b>, press the [VFO(DW)SC] key to receive\n"
-"    the image from the radio."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu MIC/EAR jakına bağlayın.\n"
-"3. Telsizi açarken [F/W] tuşunu basılı tutun\n"
-"     (ekranda \"CLONE\" görünecektir).\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı telsizden almak için [VFO(DW)SC] tuşuna basın."
-
-#: ../chirpdrivers/vx3.py:324
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to MIC/EAR jack.\n"
-"3. Press and hold in the [F/W] key while turning the radio on\n"
-"    (\"CLONE\" will appear on the display).\n"
-"4. Press the [MR(SKP)SC] key (\"CLONE WAIT\" will appear\n"
-"    on the LCD).\n"
-"5. Click OK to send image to radio."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu MIC/EAR jakına bağlayın.\n"
-"3. Telsizi açarken [F/W] tuşunu basılı tutun\n"
-"     (ekranda \"CLONE\" görünecektir).\n"
-"4. [MR(SKP)SC] tuşuna basın (ekranda \"CLONE WAIT\" görünecektir).\n"
-"5. İmajı telsize göndermek için TAMAM'a tıklayın."
-
-#: ../chirpdrivers/vx7.py:193
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to MIC/SP jack.\n"
-"3. Press and hold in the [MON-F] key while turning the radio on\n"
-"     (\"CLONE\" will appear on the display).\n"
-"4. <b>After clicking OK</b>, press the [BAND] key to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu MIC/SP jakına bağlayın.\n"
-"3. Telsizi açarken [MON-F] tuşunu basılı tutun\n"
-"      (ekranda \"CLONE\" görünecektir).\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna basın."
-
-#: ../chirpdrivers/vx7.py:199
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to MIC/SP jack.\n"
-"3. Press and hold in the [MON-F] key while turning the radio on\n"
-"     (\"CLONE\" will appear on the display).\n"
-"4. Press the [V/M] key (\"CLONE WAIT\" will appear on the LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu MIC/SP jakına bağlayın.\n"
-"3. Telsizi açarken [MON-F] tuşunu basılı tutun\n"
-"      (ekranda \"CLONE\" görünecektir).\n"
-"4. [V/M] tuşuna basın (ekranda \"CLONE WAIT\" görünecektir)."
-
-#: ../chirpdrivers/vx8.py:590
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to DATA jack.\n"
-"3. Press and hold in the [FW] key while turning the radio on\n"
-"     (\"CLONE\" will appear on the display).\n"
-"4. <b>After clicking OK</b>, press the [BAND] key to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu DATA jakına bağlayın.\n"
-"3. Telsizi açarken [FW] tuşunu basılı tutun\n"
-"      (ekranda \"CLONE\" görünecektir).\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna basın."
-
-#: ../chirpdrivers/vx8.py:596
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to DATA jack.\n"
-"3. Press and hold in the [FW] key while turning the radio on\n"
-"     (\"CLONE\" will appear on the display).\n"
-"4. Press the [MODE] key (\"-WAIT-\" will appear on the LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu DATA jakına bağlayın.\n"
-"3. Telsizi açarken [FW] tuşunu basılı tutun\n"
-"      (ekranda \"CLONE\" görünecektir).\n"
-"4. [MODE] tuşuna basın (ekranda \"CLONE WAIT\" görünecektir)."
-
-#: ../chirpdrivers/vx170.py:103
-msgid ""
-"1. Turn radio off.\n"
-"2. Connect cable to MIC/SP jack.\n"
-"3. Press and hold in the [moni] key while turning the radio on.\n"
-"4. Select CLONE in menu, then press F. Radio restarts in clone mode.\n"
-"     (\"CLONE\" will appear on the display).\n"
-"5. <b>After clicking OK</b>, briefly hold [PTT] key to send image.\n"
-"    (\"-TX-\" will appear on the LCD). "
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Kabloyu MIC/SP jakına bağlayın.\n"
-"3. Telsizi açarken [moni] tuşunu basılı tutun.\n"
-"4. Menüden KLON'u seçin, ardından F'ye basın. Telsiz klon modunda yeniden başlar.\n"
-"      (ekranda \"CLONE\" görünecektir).\n"
-"5. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [PTT] tuşunu kısa bir süre basılı tutun.\n"
-"     (ekranda \"-TX-\" görünecektir). "
-
-#: ../chirpdrivers/vx170.py:111
-msgid ""
-"1. Turn radio off.\n"
-"3. Press and hold in the [moni] key while turning the radio on.\n"
-"4. Select CLONE in menu, then press F. Radio restarts in clone mode.\n"
-"     (\"CLONE\" will appear on the display).\n"
-"5. Press the [moni] key (\"-RX-\" will appear on the LCD)."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"3. Telsizi açarken [moni] tuşunu basılı tutun.\n"
-"4. Menüden KLON'u seçin, ardından F'ye basın. Telsiz klon modunda yeniden başlar.\n"
-"      (ekranda \"CLONE\" görünecektir).\n"
-"5. [moni] tuşuna basın (ekranda \"-RX-\" görünecektir)."
-
-#: ../chirpdrivers/yaesu_clone.py:215
+"Reporting helps the CHIRP project know which radio models and OS platforms "
+"to spend our limited efforts on. We would really appreciate if you left it "
+"enabled. Really disable reporting?"
+msgstr ""
+
+#: ../wxui/main.py:1289
+msgid "Disable reporting"
+msgstr ""
+
+#: ../wxui/main.py:1321
+#, fuzzy, python-format
+msgid "Unable to reveal %s on this system"
+msgstr "Bu modelde değişiklik yapılamıyor"
+
+#: ../wxui/main.py:1332
+msgid "Select a bandplan"
+msgstr ""
+
+#: ../wxui/main.py:1333
+msgid "Bandplan"
+msgstr ""
+
+#: ../wxui/main.py:1347
+#, fuzzy, python-format
+msgid "Query %s"
+msgstr "Sorgu başarısız"
+
+#: ../wxui/main.py:1387
 msgid ""
-"1. Turn radio off.\n"
-"2. Connect data cable.\n"
-"3. Prepare radio for clone.\n"
-"4. <b>After clicking OK</b>, press the key to send image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Veri kablosunu bağlayın.\n"
-"3. Telsizi klon için hazırlayın.\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek için tuşuna basın."
-
-#: ../chirpdrivers/yaesu_clone.py:220
+"A new CHIRP version is available. Please visit the website as soon as "
+"possible to download it!"
+msgstr ""
+
+#: ../wxui/main.py:1389
+#, fuzzy
+msgid "New version available"
+msgstr "CHIRP'in yeni bir sürümü mevcut: "
+
+#: ../wxui/main.py:1393
+msgid "Please be sure to quit CHIRP before installing the new version!"
+msgstr ""
+
+#: ../wxui/developer.py:130
+#, fuzzy
+msgid "Press enter to set this in memory"
+msgstr "Kayıt ayarında hata"
+
+#: ../wxui/developer.py:157
+msgid "bytes each"
+msgstr ""
+
+#: ../wxui/developer.py:162
+msgid "bytes"
+msgstr ""
+
+#: ../wxui/developer.py:166
+msgid "bits"
+msgstr ""
+
+#: ../wxui/developer.py:192
+#, python-format
+msgid "Length must be %i"
+msgstr ""
+
+#: ../wxui/developer.py:211
+msgid "Hex"
+msgstr ""
+
+#: ../wxui/developer.py:212
+#, fuzzy
+msgid "Dec"
+msgstr "Tespit etme"
+
+#: ../wxui/developer.py:213
+msgid "Bin"
+msgstr ""
+
+#: ../wxui/developer.py:242 ../wxui/developer.py:285
+msgid "Value must be zero or greater"
+msgstr ""
+
+#: ../wxui/developer.py:244
+#, python-format
+msgid "Value does not fit in %i bits"
+msgstr ""
+
+#: ../wxui/developer.py:287
+#, python-format
+msgid "Value must be exactly %i decimal digits"
+msgstr ""
+
+#: ../wxui/developer.py:399
+msgid "Building Radio Browser"
+msgstr ""
+
+#: ../wxui/developer.py:407
+msgid "Failed to load radio browser"
+msgstr ""
+
+#: ../wxui/clone.py:109
+msgid "Applying settings"
+msgstr ""
+
+#: ../wxui/clone.py:111
+#, fuzzy
+msgid "Loading settings"
+msgstr "Temel Ayarlar"
+
+#: ../wxui/clone.py:117
+#, fuzzy
+msgid "Complete"
+msgstr "Tamamlandı"
+
+#: ../wxui/clone.py:156
+#, python-format
+msgid "Do not prompt again for %s"
+msgstr ""
+
+#: ../wxui/clone.py:206
+#, fuzzy
+msgid "Communicate with radio"
+msgstr "Telsize klonlama"
+
+#: ../wxui/clone.py:227
+msgid "Port"
+msgstr "Port"
+
+#: ../wxui/clone.py:230
+msgid "Vendor"
+msgstr "Tedarikçi"
+
+#: ../wxui/clone.py:234
+msgid "Model"
+msgstr "Model"
+
+#: ../wxui/clone.py:310 ../wxui/clone.py:385
+msgid "Custom..."
+msgstr ""
+
+#: ../wxui/clone.py:310 ../wxui/clone.py:392
+#, fuzzy
+msgid "Help Me..."
+msgstr "Çevrimiçi Yardım Alın..."
+
+#: ../wxui/clone.py:328
+msgid "Unplug your cable (if needed) and then click OK"
+msgstr ""
+
+#: ../wxui/clone.py:329 ../wxui/clone.py:336 ../wxui/clone.py:347
+#: ../wxui/clone.py:354 ../wxui/clone.py:358
+msgid "USB Port Finder"
+msgstr ""
+
+#: ../wxui/clone.py:335
+msgid "Plug in your cable and then click OK"
+msgstr ""
+
+#: ../wxui/clone.py:345
 msgid ""
-"1. Turn radio off.\n"
-"2. Connect data cable.\n"
-"3. Prepare radio for clone.\n"
-"4. Press the key to receive the image."
-msgstr ""
-"1. Telsizi kapatın.\n"
-"2. Veri kablosunu bağlayın.\n"
-"3. Telsizi klon için hazırlayın.\n"
-"4. İmajı almak için tuşuna basın."
+"Unable to determine port for your cable. Check your drivers and connections."
+msgstr ""
+
+#: ../wxui/clone.py:352
+msgid "Your cable appears to be on port:"
+msgstr ""
+
+#: ../wxui/clone.py:357
+#, python-format
+msgid "More than one port found: %s"
+msgstr ""
+
+#: ../wxui/clone.py:386
+msgid "Enter custom port:"
+msgstr ""
+
+#: ../wxui/clone.py:430
+msgid "Error communicating with radio"
+msgstr ""
+
+#: ../wxui/clone.py:461
+#, fuzzy
+msgid "Experimental driver"
+msgstr "Deneysel sürücü ile devam edilsin mi?"
+
+#: ../wxui/clone.py:485 ../wxui/clone.py:548
+#, fuzzy
+msgid "Radio information"
+msgstr "{information}"
+
+#: ../wxui/clone.py:493
+#, fuzzy
+msgid "Download instructions"
+msgstr "Talimatları Göster"
+
+#: ../wxui/clone.py:556
+#, fuzzy
+msgid "Upload instructions"
+msgstr "{instructions}"
+
+#: ../wxui/printing.py:29
+msgid "Printing"
+msgstr ""
+
+#: ../sources/repeaterbook.py:270
+msgid "No results!"
+msgstr ""
+
+#~ msgid "...and shift all memories up"
+#~ msgstr "... ve tüm kayıtları yukarı kaydır"
+
+#~ msgid "...and shift block up"
+#~ msgstr "...ve bloğu yukarı kaydır"
+
+#~ msgid "A new version of CHIRP is available: {ver}. "
+#~ msgstr "CHIRP'in yeni bir sürümü mevcut: {ver}. "
+
+#~ msgid "Adding memory {number}"
+#~ msgstr "{number} kaydı ekleniyor"
+
+#~ msgid "Adjust New Location"
+#~ msgstr "Yeni Konumu Ayarla"
+
+#~ msgid "Auto"
+#~ msgstr "Otomatik"
+
+#~ msgid "Automatic Repeater Offset"
+#~ msgstr "Otomatik Tekrarlama Ofseti"
+
+#~ msgid "Bad value for {col}: {val}"
+#~ msgstr "{col} için kötü değer: {val}"
+
+#~ msgid ""
+#~ "Band plans define default channel settings for frequencies in a region.  "
+#~ "Choose a band plan or None for completely manual channel settings."
+#~ msgstr ""
+#~ "Bant planları, bir bölgedeki frekanslar için varsayılan kanal ayarlarını "
+#~ "tanımlar. Tamamen manuel kanal ayarları için bir bant planını veya "
+#~ "Hiçbirini seçin."
+
+#~ msgid "Bank"
+#~ msgstr "Banka"
+
+#~ msgid "Bank Names"
+#~ msgstr "Banka İsimleri"
+
+#~ msgid "CHIRP"
+#~ msgstr "CHIRP"
+
+#~ msgid "CHIRP Documentation"
+#~ msgstr "CHIRP Belgeleri"
+
+#~ msgid "CHIRP Files"
+#~ msgstr "CHIRP Dosyaları"
+
+#~ msgid "CHIRP Native File"
+#~ msgstr "CHIRP Yerel Dosyası"
+
+#~ msgid "CHIRP Radio Images"
+#~ msgstr "CHIRP Telsiz İmajları"
+
+#~ msgid "CSV File"
+#~ msgstr "CSV Dosyası"
+
+#~ msgid "CSV Files"
+#~ msgstr "CSV Dosyası"
+
+#~ msgid "Callsign"
+#~ msgstr "Çağrı işareti"
+
+#~ msgid "Cancel"
+#~ msgstr "İptal"
+
+#~ msgid "Cancelled"
+#~ msgstr "İptal edildi"
+
+#~ msgid "Cannot be imported because"
+#~ msgstr "İçe aktarılamıyor çünkü"
+
+#~ msgid "Change Language"
+#~ msgstr "Dili Değiştir (Change Language)"
+
+#~ msgid "Change language"
+#~ msgstr "Dili değiştir (Change language)"
+
+#~ msgid "Channel Defaults"
+#~ msgstr "Kanal Varsayılanları"
+
+#~ msgid "Channel defaults"
+#~ msgstr "Kanal varsayılanları"
+
+#~ msgid "Check this to change the {name} value"
+#~ msgstr "{name} değerini değiştirmek için bunu kontrol edin"
+
+#~ msgid ""
+#~ "Choose a language or Auto to use the operating system default. You will "
+#~ "need to restart the application before the change will take effect"
+#~ msgstr ""
+#~ "Bir dil seçin veya işletim sistemi varsayılanını kullanmak için otomatiği "
+#~ "seçin. Değişikliğin uygulanması için uygulamayı yeniden başlatmanız "
+#~ "gerekir"
+
+#~ msgid "Choose one to import from:"
+#~ msgstr "İçe aktarılacak bir şey seçin:"
+
+#~ msgid "Clear Recently Opened"
+#~ msgstr "Son Açılanları Temizle"
+
+#~ msgid "Clone Progress"
+#~ msgstr "Klon İlerlemesi"
+
+#~ msgid "Clone failed: {error}"
+#~ msgstr "Klon başarısız oldu: {error}"
+
+#~ msgid "Columns"
+#~ msgstr "Sütunlar"
+
+#~ msgid "Comment"
+#~ msgstr "Yorum"
+
+#~ msgid "Confirm overwrites"
+#~ msgstr "Üzerine yazmayı onayla"
+
+#~ msgid "Copy"
+#~ msgstr "Kopyala"
+
+#~ msgid "Cut"
+#~ msgstr "Kes"
+
+#~ msgid "Cutting memory {number}"
+#~ msgstr "{number} kaydı kesiliyor"
+
+#~ msgid "D-STAR"
+#~ msgstr "Takas"
+
+#~ msgid "DAT Files"
+#~ msgstr "DAT Dosyaları"
+
+#~ msgid "DMR-MARC Repeater Database Dump"
+#~ msgstr "DMR-MARC Tekrarlayıcı Veritabanı Dökümü"
+
+#~ msgid "DMR-MARC Repeaters"
+#~ msgstr "DMR-MARC Tekrarlayıcılar"
+
+#~ msgid "DTCS Code"
+#~ msgstr "DTCS Kodu"
+
+#~ msgid "DTCS Rx Code"
+#~ msgstr "DTCS Rx Kodu"
+
+#~ msgid "Delete all"
+#~ msgstr "Hepsini sil"
+
+#~ msgid "Details"
+#~ msgstr "Detaylar"
+
+#~ msgid "Diff Tabs"
+#~ msgstr "Fark Sekmeleri"
+
+#~ msgid "Diff of {a} and {b}"
+#~ msgstr "{a} ve {b} arasındaki fark"
+
+#~ msgid "Diff raw memories"
+#~ msgstr "Farklı ham kayıtlar"
+
+#~ msgid "Diff tabs"
+#~ msgstr "Fark sekmeleri"
+
+#~ msgid "Do not show this next time"
+#~ msgstr "Bunu bir dahaki sefere gösterme"
+
+#~ msgid "Documentation"
+#~ msgstr "Belgeler"
+
+#~ msgid ""
+#~ "Documentation for CHIRP, including FAQs, and help for common problems is "
+#~ "available on the CHIRP web site, please go to\n"
+#~ "\n"
+#~ "<a href=\"http://chirp.danplanet.com/projects/chirp/wiki/"
+#~ "Documentation\">http://chirp.danplanet.com/projects/chirp/wiki/"
+#~ "Documentation</a>\n"
+#~ msgstr ""
+#~ "CHIRP için SSS'leri de içeren dokümantasyon ve yaygın sorunlara yönelik "
+#~ "yardım CHIRP web sitesinde mevcuttur, lütfen şu adrese gidin\n"
+#~ "\n"
+#~ "<a href=\"http://chirp.danplanet.com/projects/chirp/wiki/"
+#~ "Documentation\">http://chirp.danplanet.com/projects/chirp/wiki/"
+#~ "Documentation</a>\n"
+
+#~ msgid "Don't show information for any radio again"
+#~ msgstr "Bir daha hiçbir telsiz için bilgi gösterme"
+
+#~ msgid "Don't show instructions for any radio again"
+#~ msgstr "Bir daha hiçbir telsiz için talimatları gösterme"
+
+#~ msgid "Don't show this again"
+#~ msgstr "Bunu bir daha gösterme"
+
+#~ msgid "Downloading MYCALL list"
+#~ msgstr "MYCALL (çağrı listem) indiriliyor"
+
+#~ msgid "Downloading RPTCALL list"
+#~ msgstr "RPTCAL (tekrarlanan çağrı) listesini indiriliyor"
+
+#~ msgid "Downloading URCALL list"
+#~ msgstr "URCALL (sizin çağrı) listesi indiriliyor"
+
+#~ msgid "Duplex"
+#~ msgstr "Duplex"
+
+#~ msgid "EVE"
+#~ msgstr "EVE"
+
+#~ msgid "EVE Files (VX5)"
+#~ msgstr "EVE Dosyaları (VX5)"
+
+#~ msgid "E_xchange"
+#~ msgstr "T_akas"
+
+#~ msgid "Edit"
+#~ msgstr "Düzenle"
+
+#~ msgid "Edit Memory #{num}"
+#~ msgstr "Kaydı Düzenle #{num}"
+
+#~ msgid "Edit Memory#{num}"
+#~ msgstr "Kaydı Düzenle#{num}"
+
+#~ msgid "Editing new item, taking defaults"
+#~ msgstr "Yeni öğe düzenleniyor, varsayılanlar alınıyor"
+
+#~ msgid "Enable Developer Functions"
+#~ msgstr "Geliştirici İşlevlerini Etkinleştir"
+
+#~ msgid "Enabled"
+#~ msgstr "Etkin"
+
+#~ msgid "Erasing memory {number}"
+#~ msgstr "Kayıt siliniyor {number}"
+
+#~ msgid "Error importing memories:"
+#~ msgstr "Kayıt içe aktarılırken hata oluştu:"
+
+#~ msgid "Error reporting is enabled"
+#~ msgstr "Hata raporlama etkinleştirildi"
+
+#~ msgid "Exchange memories"
+#~ msgstr "Kayıtları değiştir"
+
+#~ msgid "Export"
+#~ msgstr "Dışa Aktar"
+
+#~ msgid "File Exists"
+#~ msgstr "Dosya Mevcut"
+
+#~ msgid "From"
+#~ msgstr "Dan"
+
+#~ msgid "General"
+#~ msgstr "Genel"
+
+#~ msgid "Getting bank for memory {num}"
+#~ msgstr "{num} kaydı için banka alınıyor"
+
+#~ msgid "Getting bank information"
+#~ msgstr "Banka bilgileri alınıyor"
+
+#~ msgid "Getting bank information for memory {num}"
+#~ msgstr "{num} kaydı için banka bilgileri alınıyor"
+
+#~ msgid "Getting channel {chan}"
+#~ msgstr "{chan} kanalı alınıyor"
+
+#~ msgid "Getting memory {number}"
+#~ msgstr "{number} kaydı alınıyor"
+
+#~ msgid "Getting memory {num}"
+#~ msgstr "{num} kaydı alınıyor"
+
+#~ msgid "Getting original memory {number}"
+#~ msgstr "Orijinal {number} kaydı alınıyor"
+
+#~ msgid "Getting raw memory {number}"
+#~ msgstr "{number} ham kaydı alınıyor"
+
+#~ msgid "Getting {type} for memory {num}"
+#~ msgstr "{num} kaydı için {type} alınıyor"
+
+#~ msgid "Getting {type} information for memory {num}"
+#~ msgstr "{num} kaydı için {type} bilgisi alınıyor"
+
+#~ msgid "Go"
+#~ msgstr "Git"
+
+#~ msgid "Hamradio;Programming;Handheld;Radio;Amateur;Programmer"
+#~ msgstr "AmatörTelsiz;Programlama;ElTipi;Telsiz;Amatör;Programcı"
+
+#~ msgid "Help"
+#~ msgstr "Yardım"
+
+#~ msgid "Hide Unused Fields"
+#~ msgstr "Kullanılmayan Alanları Gizle"
+
+#~ msgid "ICF Files"
+#~ msgstr "ICF Dosyaları"
+
+#~ msgid ""
+#~ "ICF files cannot be edited, only displayed or imported into another file. "
+#~ "Open in read-only mode?"
+#~ msgstr ""
+#~ "ICF dosyaları düzenlenemez, yalnızca görüntülenebilir veya başka bir "
+#~ "dosyaya aktarılamaz. Salt okunur modda açılsın mı?"
+
+#~ msgid ""
+#~ "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+#~ msgstr ""
+#~ "Bu özelliği devre dışı bırakmak isterseniz, bunu <u>Yardım</u> menüsünden "
+#~ "yapabilirsiniz"
+
+#~ msgid "Import"
+#~ msgstr "İçe Aktar"
+
+#~ msgid "Import From Data Source"
+#~ msgstr "Veri Kaynağından İçe Aktar"
+
+#~ msgid "Import From File"
+#~ msgstr "Dosyadan İçe Aktar"
+
+#~ msgid "Import From Stock Config"
+#~ msgstr "Stok Yapılandırmasından İçe Aktar"
+
+#~ msgid "Import from RFinder"
+#~ msgstr "RFinder'dan içe aktar"
+
+#~ msgid "Import from data source"
+#~ msgstr "Veri kaynağından içe aktar"
+
+#~ msgid "Import from stock config"
+#~ msgstr "Stok yapılandırmasından içe aktar"
+
+#~ msgid "Import stock configuration {name}"
+#~ msgstr "{name} stok yapılandırmasını içe aktar"
+
+#~ msgid "Importing bank information"
+#~ msgstr "Banka bilgileri içe aktarılıyor"
+
+#~ msgid "Incompatible Memory"
+#~ msgstr "Uyumsuz Kayıt"
+
+#~ msgid "Internal Error"
+#~ msgstr "İç Hata"
+
+#~ msgid "Internal Error: Column {name} not found"
+#~ msgstr "Dahili Hata: Sütun {name} bulunamadı"
+
+#~ msgid "Internal Error: Invalid limit {number}"
+#~ msgstr "Dahili Hata: Geçersiz limit {number}"
+
+#~ msgid "Internal error: Unable to upload to {model}"
+#~ msgstr "Dahili hata: {model}'e yüklenemiyor"
+
+#~ msgid "Invalid value for this field"
+#~ msgstr "Bu alan için geçersiz değer"
+
+#~ msgid "Inverse"
+#~ msgstr "Ters"
+
+#~ msgid "Kenwood HMK Files"
+#~ msgstr "Kenwood HMK Dosyaları"
+
+#~ msgid "Kenwood ITM Files"
+#~ msgstr "Kenwood ITM Dosyaları"
+
+#~ msgid "Loc"
+#~ msgstr "Konum"
+
+#~ msgid "Location memory will be imported into"
+#~ msgstr "Konum kaydı şuraya aktarılacak"
+
+#~ msgid "Location of memory in the file being imported"
+#~ msgstr "İçe aktarılan dosyadaki kaydın konumu"
+
+#~ msgid "Location {number} is already being imported"
+#~ msgstr "{number} konumu zaten içe aktarılıyor"
+
+#~ msgid ""
+#~ "Location {number} is already being imported. Choose another valü for 'New "
+#~ "Location' before selection 'Import'"
+#~ msgstr ""
+#~ "{number} konumu zaten içe aktarılıyor. 'İçe Aktar' seçiminden önce 'Yeni "
+#~ "Konum' için başka bir değer seçin"
+
+#~ msgid ""
+#~ "Location {number} is already being imported. Choose another value for "
+#~ "'New Location' before selection 'Import'"
+#~ msgstr ""
+#~ "{number} konumu zaten içe aktarılıyor. 'İçe Aktar' seçiminden önce 'Yeni "
+#~ "Konum' için başka bir değer seçin"
+
+#~ msgid "Looking for a free spot ({number})"
+#~ msgstr "Boş yer arıyorum ({number})"
+
+#~ msgid "Memories (%(variant)s)"
+#~ msgstr "Kayıtlar (%(variant)s)"
+
+#~ msgid "Memories must be contiguous"
+#~ msgstr "Kayıtlar bitişik olmalı"
+
+#~ msgid "Memory Range:"
+#~ msgstr "Kayıt Aralığı:"
+
+#~ msgid "Memory range:"
+#~ msgstr "Kayıt aralığı:"
+
+#~ msgid "Memory validation failed:"
+#~ msgstr "Kayıt doğrulaması başarısız oldu:"
+
+#~ msgid "Memory {number}"
+#~ msgstr "Kayıt {number}"
+
+#~ msgid "Move Dow_n"
+#~ msgstr "Aşağı Taş_ı"
+
+#~ msgid "Move _Up"
+#~ msgstr "Yukarı _Taşı"
+
+#~ msgid "Move down"
+#~ msgstr "Aşağı taşı"
+
+#~ msgid "Move up"
+#~ msgstr "Yukarı taşı"
+
+#~ msgid "Moved {count} memories"
+#~ msgstr "{count} kaydı taşındı"
+
+#~ msgid "Moving memory from {old} to {new}"
+#~ msgstr "Kayıt {old} olandan {new} olana taşınıyor..."
+
+#~ msgid "Moving {src} to {dst}"
+#~ msgstr "{src}, {dst}'e taşınıyor"
+
+#~ msgid "My callsign"
+#~ msgstr "Benim çağrı işaretim"
+
+#~ msgid "Name"
+#~ msgstr "İsim"
+
+#~ msgid "New"
+#~ msgstr "Yeni"
+
+#~ msgid "No space to insert a row"
+#~ msgstr "Satır eklemek için boşluk yok"
+
+#~ msgid "None"
+#~ msgstr "Hiçbiri"
+
+#~ msgid "Note:"
+#~ msgstr "Not:"
+
+#~ msgid "Open _Recent"
+#~ msgstr "Son _Kullanılanları Aç"
+
+#~ msgid "Open recent file {name}"
+#~ msgstr "{name} geçmiş dosyasını aç"
+
+#~ msgid "Open stock configuration {name}"
+#~ msgstr "{name} stok yapılandırmasını aç"
+
+#~ msgid "Other"
+#~ msgstr "Diğer"
+
+#~ msgid "Overwrite"
+#~ msgstr "Üzerine yaz"
+
+#~ msgid "Overwrite location {number}?"
+#~ msgstr "{number} konumunun üzerine yazılsın mı?"
+
+#~ msgid "P_roperties"
+#~ msgstr "Ö_zellikler"
+
+#~ msgid "Paste"
+#~ msgstr "Yapıştır"
+
+#~ msgid "Preparing memory list..."
+#~ msgstr "Kayıt listesi hazırlanıyor..."
+
+#~ msgid "Priming memory"
+#~ msgstr "Kayıt hazırlanıyor"
+
+#~ msgid "Proceed?"
+#~ msgstr "Devam et?"
+
+#~ msgid "Program amateur radios"
+#~ msgstr "Amatör telsizleri programla"
+
+#~ msgid "Python Modules"
+#~ msgstr "Python Modülleri"
+
+#~ msgid "Query data source"
+#~ msgstr "Veri kaynağını sorgula"
+
+#~ msgid "Quit"
+#~ msgstr "Çıkış"
+
+#~ msgid "RPT1CALL"
+#~ msgstr "RFinder"
+
+#~ msgid "RPT2CALL"
+#~ msgstr "RPT2CALL"
+
+#~ msgid "Radio Programming Tool"
+#~ msgstr "Telsiz Programlama Aracı"
+
+#~ msgid "RadioReference"
+#~ msgstr "RadioReference"
+
+#~ msgid "RadioReference.com"
+#~ msgstr "RadioReference.com"
+
+#~ msgid "RadioReference.com Canada"
+#~ msgstr "RadioReference.com Kanada"
+
+#~ msgid "RadioReference.com Province Query"
+#~ msgstr "RadioReference.com İl Sorgusu"
+
+#~ msgid "RadioReference.com Query"
+#~ msgstr "RadioReference.com Sorgusu"
+
+#~ msgid "RadioReference.com US"
+#~ msgstr "RadioReference.com ABD"
+
+#~ msgid "Raw memory {number}"
+#~ msgstr "Ham kayıt {number}"
+
+#~ msgid "Refresh"
+#~ msgstr "Yenile"
+
+#~ msgid "Repeater callsign"
+#~ msgstr "Tekrarlayıcı çağrı işareti"
+
+#~ msgid "RepeaterBook"
+#~ msgstr "RepeaterBook"
+
+#~ msgid "RepeaterBook Political Query"
+#~ msgstr "RepeaterBook Siyasi Sorgusu"
+
+#~ msgid "RepeaterBook Proximity Query"
+#~ msgstr "RepeaterBook Yakınlık Sorgusu"
+
+#~ msgid "RepeaterBook Query"
+#~ msgstr "RepeaterBook Sorgusu"
+
+#~ msgid "RepeaterBook query failed"
+#~ msgstr "RepeaterBook sorgusu başarısız oldu"
+
+#~ msgid "Report Statistics"
+#~ msgstr "İstatistikleri Rapor Et"
+
+#~ msgid "Report statistics"
+#~ msgstr "İstatistikleri rapor et"
+
+#~ msgid "Retrieving %s information"
+#~ msgstr "%s bilgisi alınıyor"
+
+#~ msgid "Retrieving bank information"
+#~ msgstr "Banka bilgileri alınıyor"
+
+#~ msgid "Reverse"
+#~ msgstr "Tersi"
+
+#~ msgid "Save Changes?"
+#~ msgstr "Değişiklikleri Kaydet?"
+
+#~ msgid "Select"
+#~ msgstr "Seç"
+
+#~ msgid "Select _All"
+#~ msgstr "Tümünü _Seç"
+
+#~ msgid "Setting index for memory {num}"
+#~ msgstr "{num} kaydı için ayar dizini"
+
+#~ msgid "Setting memory {number}"
+#~ msgstr "Kaydın ayarlanması {sayı}"
+
+#~ msgid "Setting name on %s"
+#~ msgstr "%s üzerinde ad ayarlanıyor"
+
+#~ msgid "Shift"
+#~ msgstr "Shift"
+
+#~ msgid "Show Empty"
+#~ msgstr "Boş Kayıtlar"
+
+#~ msgid "Show Information"
+#~ msgstr "Bilgi göster"
+
+#~ msgid "Show raw memory"
+#~ msgstr "Ham kaydı göster"
+
+#~ msgid "Skip"
+#~ msgstr "Atla"
+
+#~ msgid "Smart Tone Modes"
+#~ msgstr "Akıllı Ton Modları"
+
+#~ msgid "Special Channels"
+#~ msgstr "Özel Kanallar"
+
+#~ msgid "The file {name} already exists. Do you want to overwrite it?"
+#~ msgstr "{name} dosyası zaten var. Üzerine yazmak istiyor musunuz?"
+
+#~ msgid ""
+#~ "The reporting feature of CHIRP is designed to help <u>improve quality</u> "
+#~ "by allowing the authors to focus on the radio drivers used most often and "
+#~ "errors experienced by the users. The reports contain no identifying "
+#~ "information and are used only for statistical purposes by the authors. "
+#~ "Your privacy is extremely important, but <u>please consider leaving this "
+#~ "feature enabled to help make CHIRP better!</u>\n"
+#~ "\n"
+#~ "<b>Are you sure you want to disable this feature?</b>"
+#~ msgstr ""
+#~ "CHIRP'in raporlama özelliği, yazarların en sık kullanılan telsiz "
+#~ "sürücülerine ve kullanıcıların yaşadığı hatalara odaklanmasını sağlayarak "
+#~ "<u>kaliteyi iyileştirmeye</u> yardımcı olmak için tasarlanmıştır. "
+#~ "Raporlar tanımlayıcı bilgi içermez ve yazarlar tarafından yalnızca "
+#~ "istatistiksel amaçlarla kullanılır. Gizliliğiniz son derece önemlidir, "
+#~ "ancak <u>CHIRP'i daha iyi hale getirmeye yardımcı olmak için lütfen bu "
+#~ "özelliği etkinleştirmeyi düşünün!</u>\n"
+#~ "\n"
+#~ "<b>Bu özelliği devre dışı bırakmak istediğinizden emin misiniz?</b>"
+
+#~ msgid "The {vendor} {model} has multiple independent sub-devices"
+#~ msgstr "{vendor} {model} birden çok bağımsız alt cihaza sahip"
+
+#~ msgid ""
+#~ "The {vendor} {model} operates in <b>live mode</b>. This means that any "
+#~ "changes you make are immediately sent to the radio. Because of this, you "
+#~ "cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish "
+#~ "to edit the contents offline, please <u>Export</u> to a CSV file, using "
+#~ "the <b>File menu</b>."
+#~ msgstr ""
+#~ "{vendor} {model} <b>canlı modda</b> çalışır. Bu, yaptığınız tüm "
+#~ "değişikliklerin anında telsize gönderileceği anlamına gelir. Bu nedenle, "
+#~ "<u>Kaydet</u> veya <u>Yükle</u> işlemlerini gerçekleştiremezsiniz. "
+#~ "İçeriği çevrimdışı düzenlemek istiyorsanız, lütfen <b>Dosya menüsünü</b> "
+#~ "kullanarak bir CSV dosyasına <u>Dışa aktarın</u>."
+
+#~ msgid "There was an error during export: {error}"
+#~ msgstr "Dışa aktarma sırasında bir hata oluştu: {error}"
+
+#~ msgid "There was an error during import: {error}"
+#~ msgstr "İçe aktarma sırasında bir hata oluştu: {error}"
+
+#~ msgid "There was an error opening {fname}: {error}"
+#~ msgstr "{fname} açılırken bir hata oluştu: {error}"
+
+#~ msgid ""
+#~ "There were errors while opening {file}. The affected memories will not be "
+#~ "importable!"
+#~ msgstr ""
+#~ "{file} açılırken hatalar oluştu. Etkilenen kayıtlar içe aktarılmayacak!"
+
+#~ msgid ""
+#~ "This operation requires moving all subsequent channels by one spot until "
+#~ "an empty location is reached.  This can take a LONG time.  Are you sure "
+#~ "you want to do this?"
+#~ msgstr ""
+#~ "Bu işlem, boş bir konuma ulaşılana kadar sonraki tüm kanalların bir "
+#~ "noktada taşınmasını gerektirir. Bu UZUN zaman alabilir. Bunu yapmak "
+#~ "istediğinden emin misin?"
+
+#~ msgid "This radio's driver is experimental. Do you want to proceed?"
+#~ msgstr "Bu telsizin sürücüsü deneyseldir. Devam etmek istiyor musunuz?"
+
+#~ msgid "To"
+#~ msgstr "İle"
+
+#~ msgid "Travel Plus Files"
+#~ msgstr "Seyahat Artı Dosyaları"
+
+#~ msgid "Tune Step"
+#~ msgstr "Adımı Ayarla"
+
+#~ msgid "URCALL"
+#~ msgstr "URCALL"
+
+#~ msgid "Unable to detect radio on {port}"
+#~ msgstr "{port} üzerinde telsiz algılanamadı"
+
+#~ msgid ""
+#~ "Unable to open this image. It was generated with a newer version of CHIRP "
+#~ "and thus may be for a radio model that is not supported by this version. "
+#~ "Please update to the latest version of CHIRP and try again."
+#~ msgstr ""
+#~ "Bu imaj açılamıyor. CHIRP'in daha yeni bir sürümüyle oluşturulmuş ve bu "
+#~ "nedenle bu sürüm tarafından desteklenmeyen bir telsiz modeli için "
+#~ "olabilir. Lütfen en son CHIRP sürümüne güncelleyin ve tekrar deneyin."
+
+#~ msgid ""
+#~ "Unable to paste {src} memories into {dst} rows. Increase the memory "
+#~ "bounds or show empty memories."
+#~ msgstr ""
+#~ "{src} kayıtları {dst} satırlarına yapıştırılamıyor. Kayıt sınırlarını "
+#~ "artırın veya boş kayıtları gösterin."
+
+#~ msgid "Unsupported file type"
+#~ msgstr "Desteklenmeyen dosya türü"
+
+#~ msgid "Untitled"
+#~ msgstr "Başlıksız"
+
+#~ msgid "Updating RPTCALL list"
+#~ msgstr "RPTCALL listesi güncelleniyor"
+
+#~ msgid "Updating URCALL list"
+#~ msgstr "URCALL listesi güncelleniyor"
+
+#~ msgid "Updating bank index for memory {num}"
+#~ msgstr "{num} kaydı için banka dizini güncelleniyor"
+
+#~ msgid "Updating bank information for memory {num}"
+#~ msgstr "{num} kaydı için banka bilgileri güncelleniyor"
+
+#~ msgid "Updating mapping information for memory {num}"
+#~ msgstr "{num} kaydı için eşleme bilgileri güncelleniyor"
+
+#~ msgid "Updating {type} index for memory {num}"
+#~ msgstr "{num} kayıt için {type} dizini güncelleniyor"
+
+#~ msgid "VX5 Commander"
+#~ msgstr "VX5 Commander"
+
+#~ msgid "VX5 Commander Files"
+#~ msgstr "VX5 Commander Dosyaları"
+
+#~ msgid "VX6 Commander"
+#~ msgstr "VX6 Commander"
+
+#~ msgid "VX6 Commander Files"
+#~ msgstr "VX6 Commander Dosyaları"
+
+#~ msgid "VX7 Commander"
+#~ msgstr "VX7 Commander"
+
+#~ msgid "VX7 Commander Files"
+#~ msgstr "VX7 Commander Dosyaları"
+
+#~ msgid "Visible columns for {radio}"
+#~ msgstr "{radio} için görünür sütunlar"
+
+#~ msgid "With significant contributions by:"
+#~ msgstr "Önemli katkılarıyla:"
+
+#~ msgid "With significant contributions from:"
+#~ msgstr "Önemli katkılarla:"
+
+#~ msgid "Writing memory {number}"
+#~ msgstr "{number} kaydı yazılıyor"
+
+#~ msgid "Yes to All"
+#~ msgstr "Hepsine evet"
+
+#~ msgid "You can only diff two memories!"
+#~ msgstr "Sadece iki kaydı birbirinden ayırabilirsin!"
+
+#~ msgid "Your callsign"
+#~ msgstr "Çağrı işaretiniz"
+
+#~ msgid "_Copy"
+#~ msgstr "_Kopyala"
+
+#~ msgid "_Cut"
+#~ msgstr "_Kes"
+
+#~ msgid "_Delete"
+#~ msgstr "_Sil"
+
+#~ msgid "_Edit"
+#~ msgstr "_Düzen"
+
+#~ msgid "_Paste"
+#~ msgstr "_Yapıştır"
+
+#~ msgid "_Radio"
+#~ msgstr "_Telsiz"
+
+#~ msgid "_Recent"
+#~ msgstr "_Geçmiş"
+
+#~ msgid "idle"
+#~ msgstr "boşta"
+
+#~ msgid "przemienniki.net"
+#~ msgstr "przemienniki.net"
+
+#~ msgid "{name} Information"
+#~ msgstr "{name} Bilgi"
+
+#~ msgid "{name} Instructions"
+#~ msgstr "{name} Talimatlar"
+
+#~ msgid "{num} errors during open:"
+#~ msgstr "açma sırasında {num} hatalar:"
+
+#~ msgid "{vendor} {model} image file"
+#~ msgstr "{vendor} {model} imaj dosyası"
+
+#~ msgid "{vendor} {model} on {port}"
+#~ msgstr "{vendor} {model} üzerinde {port}"
+
+#~ msgid "Memory Properties"
+#~ msgstr "Kayıt özellikleri"
+
+#~ msgid "Yes"
+#~ msgstr "Evet"
+
+#~ msgid "No"
+#~ msgstr "Hayır"
+
+#~ msgid "Ok"
+#~ msgstr "Tamam"
+
+#~ msgid "OK"
+#~ msgstr "TAMAM"
+
+#~ msgid "Off"
+#~ msgstr "Kapalı"
+
+#~ msgid "Both"
+#~ msgstr "İkisi de"
+
+#~ msgid "High"
+#~ msgstr "Yüksek"
+
+#~ msgid "Low"
+#~ msgstr "Düşük"
+
+#~ msgid "Advanced Settings"
+#~ msgstr "Gelişmiş Ayarlar"
+
+#~ msgid "Other Settings"
+#~ msgstr "Diğer ayarlar"
+
+#~ msgid "Work Mode Settings"
+#~ msgstr "Çalışma Modu Ayarları"
+
+#~ msgid "FM Radio Preset"
+#~ msgstr "FM Radyo Ön Ayarı"
+
+#~ msgid "DTMF Settings"
+#~ msgstr "DTMF Ayarları"
+
+#~ msgid ""
+#~ "A new version of CHIRP is available: {ver}. It is recommended that you "
+#~ "upgrade as soon as possible. Please go to: \r\n"
+#~ "\r\n"
+#~ "<a href=\"http://chirp.danplanet.com\">http://chirp.danplanet.com</a>"
+#~ msgstr ""
+#~ "CHIRP'in yeni bir sürümü mevcut: {ver}. En kısa sürede yükseltmeniz "
+#~ "önerilir. Lütfen git:\n"
+#~ "\n"
+#~ "<a href=\"http://chirp.danplanet.com\">http://chirp.danplanet.com</a>"
+
+#~ msgid "Escape"
+#~ msgstr "Çıkış"
+
+#~ msgid "Icon %s not found"
+#~ msgstr "%s simgesi bulunamadı"
+
+#~ msgid "Closing %i"
+#~ msgstr "%i kapatılıyor"
+
+#~ msgid "Manually selected %s"
+#~ msgstr "Manuel olarak seçildi %s"
+
+#~ msgid "Server reports version %s is available"
+#~ msgstr "Sunucu raporları sürümü %s mevcut"
+
+#~ msgid ""
+#~ "1. Ensure your firmware version is 4_10 or higher\n"
+#~ "2. Turn radio off\n"
+#~ "3. Connect your interface cable\n"
+#~ "4. Turn radio on\n"
+#~ "5. Press and release PTT 3 times while holding MONI key\n"
+#~ "6. Supported baud rates: 57600 (default) and 19200\n"
+#~ "   (rotate dial while holding MONI to change)\n"
+#~ "7. Click OK\n"
+#~ msgstr ""
+#~ "1. Donanım yazılımı sürümünüzün 4_10 veya üzeri olduğundan emin olun\n"
+#~ "2. Telsizi kapatın\n"
+#~ "3. Arayüz kablonuzu bağlayın\n"
+#~ "4. Telsizi açın\n"
+#~ "5. MONI tuşunu basılı tutarken PTT'ye 3 kez basın ve bırakın\n"
+#~ "6. Desteklenen baud hızları: 57600 (varsayılan) ve 19200\n"
+#~ "   (değiştirmek için MONI'ye basılı tutarken kadranı çevirin)\n"
+#~ "7. TAMAM'a tıklayın\n"
+
+#~ msgid ""
+#~ "Follow these instructions to download your info:\n"
+#~ "\n"
+#~ "1 - Turn off your radio\n"
+#~ "2 - Connect your interface cable\n"
+#~ "3 - Turn on your radio\n"
+#~ "4 - Do the download of your radio data\n"
+#~ msgstr ""
+#~ "Bilgilerinizi indirmek için şu talimatları izleyin:\n"
+#~ "\n"
+#~ "1 - Telsizinizi kapatın\n"
+#~ "2 - Arayüz kablonuzu bağlayın\n"
+#~ "3 - Telsizinizi açın\n"
+#~ "4 - Telsiz verilerinizin indirilmesini gerçekleştirin\n"
+
+#~ msgid ""
+#~ "Follow this instructions to upload your info:\n"
+#~ "\n"
+#~ "1 - Turn off your radio\n"
+#~ "2 - Connect your interface cable\n"
+#~ "3 - Turn on your radio\n"
+#~ "4 - Do the upload of your radio data\n"
+#~ msgstr ""
+#~ "Bilgilerinizi yüklemek için şu talimatları izleyin:\n"
+#~ "\n"
+#~ "1 - Telsizinizi kapatın\n"
+#~ "2 - Arayüz kablonuzu bağlayın\n"
+#~ "3 - Telsizinizi açın\n"
+#~ "4 - Telsiz verilerinizin yüklemesini gerçekleştirin\n"
+
+#~ msgid ""
+#~ "Follow these instructions to download your info:\n"
+#~ "\n"
+#~ "1 - Turn off your radio\n"
+#~ "2 - Connect your interface cable\n"
+#~ "3 - Turn on your radio\n"
+#~ "4 - Do the download of your radio data\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Bilgilerinizi indirmek için şu talimatları izleyin:\n"
+#~ "\n"
+#~ "1 - Telsizinizi kapatın\n"
+#~ "2 - Arayüz kablonuzu bağlayın\n"
+#~ "3 - Telsizinizi açın\n"
+#~ "4 - Telsiz verilerinizin indirilmesini gerçekleştirin\n"
+#~ "\n"
+
+#~ msgid ""
+#~ "Follow these instructions to upload your info:\n"
+#~ "\n"
+#~ "1 - Turn off your radio\n"
+#~ "2 - Connect your interface cable\n"
+#~ "3 - Turn on your radio\n"
+#~ "4 - Do the upload of your radio data\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Bilgilerinizi yüklemek için şu talimatları izleyin:\n"
+#~ "\n"
+#~ "1 - Telsizinizi kapatın\n"
+#~ "2 - Arayüz kablonuzu bağlayın\n"
+#~ "3 - Telsizinizi açın\n"
+#~ "4 - Telsiz verilerinizin yüklenmesini gerçekleştirin\n"
+#~ "\n"
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Remove front head.\n"
+#~ "3. Connect data cable to radio, use the same connector where\n"
+#~ "     head was connected to, <b>not the mic connector</b>.\n"
+#~ "4. Click OK."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Ön başlığı çıkarın.\n"
+#~ "3. Veri kablosunu telsize bağlayın, \n"
+#~ "     <b>mikrofon konektörüne değil</b> kafanın bağlı olduğu konektörü "
+#~ "kullanın.\n"
+#~ "4. TAMAM'a tıklayın."
+
+#~ msgid ""
+#~ "This radio has a tricky way of enter into program mode,\n"
+#~ "even the original software has a few tries to get inside.\n"
+#~ "\n"
+#~ "I will try 8 times (most of the time ~3 will doit) and this\n"
+#~ "can take a few seconds, if don't work, try again a few times.\n"
+#~ "\n"
+#~ "If you can get into it, please check the radio and cable."
+#~ msgstr ""
+#~ "Bu telsizin program moduna girmenin zor bir yolu var,\n"
+#~ "orijinal yazılım ile bile girmek için birkaç deneme yapmak gerekir.\n"
+#~ "\n"
+#~ "8 kez deneyeceğim (çoğu zaman ~3 de işe yarar) ve bu\n"
+#~ "birkaç saniye sürebilir, işe yaramazsa birkaç kez tekrar deneyin.\n"
+#~ "\n"
+#~ "İşe yaramazsa, lütfen telsizi ve kabloyu kontrol edin."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to DATA terminal.\n"
+#~ "3. Press and hold in the [F] key while turning the radio on\n"
+#~ "     (\"CLONE\" will appear on the display).\n"
+#~ "4. <b>After clicking OK</b>, press the [BAND] key to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu DATA terminaline bağlayın.\n"
+#~ "3. Telsizi açarken [F] tuşunu basılı tutun\n"
+#~ "      (\"CLONE\" ekranda görünecektir).\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna "
+#~ "basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to DATA terminal.\n"
+#~ "3. Press and hold in the [F] key while turning the radio on\n"
+#~ "     (\"CLONE\" will appear on the display).\n"
+#~ "4. Press the [Dx] key (\"-WAIT-\" will appear on the LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu DATA terminaline bağlayın.\n"
+#~ "3. Telsizi açarken [F] tuşunu basılı tutun\n"
+#~ "     (ekranda \"CLONE\" görünecektir).\n"
+#~ "4. [Dx] tuşuna basın (ekranda \"-WAIT-\" görünecektir)."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to DATA terminal.\n"
+#~ "3. Press and hold [DISP] key while turning on radio\n"
+#~ "     (\"CLONE\" will appear on the display).\n"
+#~ "4. <b>After clicking OK here in chirp</b>,\n"
+#~ "     press the [Send] screen button."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu DATA terminaline bağlayın.\n"
+#~ "3. Telsizi açarken [DISP] tuşunu basılı tutun\n"
+#~ "      (\"CLONE\" ekranda görünecektir).\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>,\n"
+#~ "     [Gönder] ekran tuşuna basın."
+
+#~ msgid ""
+#~ " 1. Turn radio off.\n"
+#~ " 2. Connect cable to DATA terminal.\n"
+#~ " 3. Press and hold in [DISP] key while turning on radio\n"
+#~ "      (\"CLONE\" will appear on radio LCD).\n"
+#~ " 4. Press [RECEIVE] screen button\n"
+#~ "      (\"-WAIT-\" will appear on radio LCD).\n"
+#~ "5. Finally, press OK button below."
+#~ msgstr ""
+#~ " 1. Telsizi kapatın.\n"
+#~ "  2. Kabloyu DATA terminaline bağlayın.\n"
+#~ "  3. Telsizi açarken [DISP] tuşunu basılı tutun\n"
+#~ "  (telsiz LCD'sinde \"CLONE\" görünecektir).\n"
+#~ "  4. [RECEIVE] ekran tuşuna basın\n"
+#~ "       (telsiz LCD'sinde \"-WAIT-\" görünecektir).\n"
+#~ "5. Son olarak aşağıdaki OK tuşuna basın."
+
+#~ msgid ""
+#~ "1. Connect programming cable to MIC jack.\n"
+#~ "2. Press OK."
+#~ msgstr ""
+#~ "1. Programlama kablosunu MIC jakına bağlayın.\n"
+#~ "2. TAMAM'a basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to MIC/SP jack.\n"
+#~ "3. Press and hold [PTT] &amp; Knob while turning the\n"
+#~ "     radio on.\n"
+#~ "4. <b>After clicking OK</b>, press the [PTT] switch to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu MIC/SP jakına bağlayın.\n"
+#~ "3. Telsizi açarken [PTT] &amp;  tuşuna basın.\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek\n"
+#~ "     için [PTT] tuşuna basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to MIC/SP jack.\n"
+#~ "3. Press and hold [PTT] &amp; Knob while turning the\n"
+#~ "     radio on.\n"
+#~ "4. Press the [MONI] switch (\"WAIT\" will appear on the LCD).\n"
+#~ "5. Press OK."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu MIC/SP jakına bağlayın.\n"
+#~ "3. Telsizi açarken [PTT] &amp;  tuşuna basın.\n"
+#~ "4. [MONI] tuşuna basın (ekranda \"WAIT\" görünecektir).\n"
+#~ "5. TAMAM'a basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to MIC/SP jack.\n"
+#~ "3. Press and hold in the [MONI] switch while turning the\n"
+#~ "     radio on.\n"
+#~ "4. Rotate the DIAL job to select \"F8 CLONE\".\n"
+#~ "5. Press the [F/W] key momentarily.\n"
+#~ "6. <b>After clicking OK</b>, hold the [PTT] switch\n"
+#~ "     for one second to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu MIC/SP jakına bağlayın.\n"
+#~ "3. Telsizi açarken [PTT] &amp;  tuşuna basın.\n"
+#~ "3. Telsizi açarken [MONI] tuşunu basılı tutun.\n"
+#~ "4. \"F8 CLONE\" öğesini seçmek için KADRANI çevirin.\n"
+#~ "5. Bir an için [F/W] tuşuna basın.\n"
+#~ "6. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek için [PTT] tuşunu bir "
+#~ "saniye basılı tutun."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to MIC/SP jack.\n"
+#~ "3. Press and hold in the [MONI] switch while turning the\n"
+#~ "     radio on.\n"
+#~ "4. Rotate the DIAL job to select \"F8 CLONE\".\n"
+#~ "5. Press the [F/W] key momentarily.\n"
+#~ "6. Press the [MONI] switch (\"--RX--\" will appear on the LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu MIC/SP jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MONI] tuşunu basılı tutun.\n"
+#~ "4. \"F8 CLONE\" öğesini seçmek için KADRANI çevirin.\n"
+#~ "5. Bir an için [F/W] tuşuna basın.\n"
+#~ "6. [MONI] tuşuna basın (ekranda \"--RX--\" görünecektir)."
+
+#~ msgid ""
+#~ "1. Turn radio on.\n"
+#~ "2. Connect cable to DATA terminal.\n"
+#~ "3. Unclip battery.\n"
+#~ "4. Press and hold in the [AMS] key and power key while clipping the "
+#~ "battery back in\n"
+#~ "(\"ADMS\" will appear on the display).\n"
+#~ "5. <b>After clicking OK</b>, press the [BAND] key."
+#~ msgstr ""
+#~ "1. Telsizi açın.\n"
+#~ "2. Kabloyu DATA terminaline bağlayın.\n"
+#~ "3. Pilin klipsini açın.\n"
+#~ "4. Pili tekrar yerine takarken [AMS] tuşunu ve güç tuşunu basılı tutun.\n"
+#~ "(ekranda \"ADMS\" görünecektir).\n"
+#~ "5. <b>TAMAM'ı tıkladıktan sonra</b> [BAND] tuşuna basın."
+
+#~ msgid ""
+#~ "1. Turn radio on.\n"
+#~ "2. Connect cable to DATA terminal.\n"
+#~ "3. Unclip battery.\n"
+#~ "4. Press and hold in the [AMS] key and power key while clipping the "
+#~ "battery back in\n"
+#~ "(\"ADMS\" will appear on the display).\n"
+#~ "5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD). <b>Then "
+#~ "click OK</b>"
+#~ msgstr ""
+#~ "1. Telsizi açın.\n"
+#~ "2. Kabloyu DATA terminaline bağlayın.\n"
+#~ "3. Pilin klipsini açın.\n"
+#~ "4. Pili tekrar yerine takarken [AMS] tuşunu ve güç tuşunu basılı tutun.\n"
+#~ "(ekranda \"ADMS\" görünecektir).\n"
+#~ "5. [MODE] tuşuna basın (ekranda \"-WAIT-\" görünecektir). <b>Ardından "
+#~ "TAMAM'ı tıklayın</b>"
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect mic and hold [ACC] on mic while powering on.\n"
+#~ "    (\"CLONE\" will appear on the display)\n"
+#~ "3. Replace mic with PC programming cable.\n"
+#~ "4. <b>After clicking OK</b>, press the [SET] key to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Mikrofonu bağlayın ve açarken mikrofondaki [ACC] tuşunu basılı tutun.\n"
+#~ "     (\"CLONE\" ekranda görünecektir)\n"
+#~ "3. Mikrofonu PC programlama kablosuyla değiştirin.\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [SET] tuşuna "
+#~ "basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect mic and hold [ACC] on mic while powering on.\n"
+#~ "    (\"CLONE\" will appear on the display)\n"
+#~ "3. Replace mic with PC programming cable.\n"
+#~ "4. Press the [DISP/SS] key\n"
+#~ "    (\"R\" will appear on the lower left of LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Mikrofonu bağlayın ve açarken mikrofondaki [ACC] tuşunu basılı tutun.\n"
+#~ "     (\"CLONE\" ekranda görünecektir)\n"
+#~ "3. Mikrofonu PC programlama kablosuyla değiştirin.\n"
+#~ "4. [DISP/SS] tuşuna basın\n"
+#~ "     (LCD'nin sol alt köşesinde \"R\" görünecektir)."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to ACC jack.\n"
+#~ "3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+#~ "     turning the radio on (\"CLONE MODE\" will appear on the\n"
+#~ "     display).\n"
+#~ "4. <b>After clicking OK</b> here, press the [C.S.] key to\n"
+#~ "    send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu ACC jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun \n"
+#~ "     (ekranda \"KLON MODU\" görünecektir).\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için\n"
+#~ "     [C.S.] tuşuna basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to ACC jack.\n"
+#~ "3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+#~ "     turning the radio on (\"CLONE MODE\" will appear on the\n"
+#~ "     display).\n"
+#~ "4. Click OK here.\n"
+#~ "    (\"Receiving\" will appear on the LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu ACC jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun "
+#~ "(\"ekranda KLON MODU\" görünecektir).\n"
+#~ "4. Burada TAMAM'ı tıklayın.\n"
+#~ "     (ekranda \"Alınıyor\" görünecektir)."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to ACC jack.\n"
+#~ "3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+#~ "     turning the radio on (\"CLONE MODE\" will appear on the\n"
+#~ "     display).\n"
+#~ "4. <b>After clicking OK</b>, press the [A] key to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu ACC jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını\n"
+#~ "    basılı tutun (\"ekranda KLON MODU\" görünecektir).\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için\n"
+#~ "    [A] tuşuna basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to ACC jack.\n"
+#~ "3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+#~ "     turning the radio on (\"CLONE MODE\" will appear on the\n"
+#~ "     display).\n"
+#~ "4. Press the [C] key (\"RX\" will appear on the LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu ACC jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun "
+#~ "(\"ekranda KLON MODU\" görünecektir).\n"
+#~ "4. [C] tuşuna basın (ekranda \"RX\" görünecektir)."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to CAT/LINEAR jack.\n"
+#~ "3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+#~ "     turning the radio on (\"CLONE MODE\" will appear on the\n"
+#~ "     display).\n"
+#~ "4. <b>After clicking OK</b>,\n"
+#~ "     press the [C](SEND) key to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu CAT/LINEAR jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun "
+#~ "(ekranda \"KLON MODU\" görünecektir).\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [C](GÖNDER) "
+#~ "tuşuna basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to ACC jack.\n"
+#~ "3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+#~ "     turning the radio on (\"CLONE MODE\" will appear on the\n"
+#~ "     display).\n"
+#~ "4. Press the [A](RCV) key (\"receiving\" will appear on the LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu ACC jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun "
+#~ "(ekranda \"KLON MODU\" görünecektir).\n"
+#~ "4. [A](RCV) tuşuna basın (ekranda \"alıyor\" görünecektir)."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to mic jack.\n"
+#~ "3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
+#~ "   while turning the radio on.\n"
+#~ "4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu mikrofon jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MHz], [LOW] ve [D/MR] tuşlarına basılı tutun\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [MHz(SET)] "
+#~ "tuşuna basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to mic jack.\n"
+#~ "3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
+#~ "   while turning the radio on.\n"
+#~ "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu mikrofon jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MHz], [LOW] ve [D/MR] tuşlarını basılı tutun.\n"
+#~ "4. [D/MR(MW)] tuşuna basın (ekranda \"--WAIT--\" görünecektir)."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to mic jack.\n"
+#~ "3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
+#~ "4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu mikrofon jakına bağlayın.\n"
+#~ "3. Telsizi açarken [LOW(A/N)] tuşunu basılı tutun.\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [MHz(SET)] "
+#~ "tuşuna basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to mic jack.\n"
+#~ "3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
+#~ "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu mikrofon jakına bağlayın.\n"
+#~ "3. Telsizi açarken [LOW(A/N)] tuşunu basılı tutun.\n"
+#~ "4. [D/MR(MW)] tuşuna basın (ekranda \"--WAIT--\" görünecektir)."
+
+#~ msgid ""
+#~ "1. Turn Radio off.\n"
+#~ "2. Connect data cable.\n"
+#~ "3. While holding \"A/N LOW\" button, turn radio on.\n"
+#~ "4. <b>After clicking OK</b>, press \"SET MHz\" to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Veri kablosunu bağlayın.\n"
+#~ "3. \"A/N LOW\" tuşunu basılı tutarken telsizi açın.\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için \"SET MHz\"e "
+#~ "basın."
+
+#~ msgid ""
+#~ "1. Turn Radio off.\n"
+#~ "2. Connect data cable.\n"
+#~ "3. While holding \"A/N LOW\" button, turn radio on.\n"
+#~ "4. Press \"MW D/MR\" to receive image.\n"
+#~ "5. Make sure display says \"-WAIT-\" (see note below if not)\n"
+#~ "6. Click OK to dismiss this dialog and start transfer.\n"
+#~ "\n"
+#~ "Note: if you don't see \"-WAIT-\" at step 5, try cycling\n"
+#~ "      power and pressing and holding red \"*L\" button to unlock\n"
+#~ "      radio, then start back at step 1."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Veri kablosunu bağlayın.\n"
+#~ "3. \"A/N LOW\" tuşunu basılı tutarken telsizi açın.\n"
+#~ "4. İmajı almak için \"MW D/MR\" tuşuna basın.\n"
+#~ "5. Ekranda \"-WAIT-\" yazdığından emin olun (değilse aşağıdaki nota "
+#~ "bakın)\n"
+#~ "6. Bu iletişim kutusunu kapatmak ve aktarımı başlatmak için TAMAM'a "
+#~ "tıklayın.\n"
+#~ "\n"
+#~ "Not: 5. adımda \"-WAIT-\" öğesini görmüyorsanız, gücü kapatıp açmayı\n"
+#~ "      ve telsizin kilidini açmak için kırmızı \"*L\" tuşunu basılı "
+#~ "tutmayı deneyin,\n"
+#~ "      ardından 1. adımdan başlayın."
+
+#~ msgid ""
+#~ "1. Turn Radio off.\n"
+#~ "2. Connect data cable.\n"
+#~ "3. While holding \"TONE\" and \"REV\" buttons, turn radio on.\n"
+#~ "4. <b>After clicking OK</b>, press \"TONE\" to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Veri kablosunu bağlayın.\n"
+#~ "3. \"TONE\" ve \"REV\" tuşlarını basılı tutarken telsizi açın.\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için \"TONE\" tuşuna "
+#~ "basın."
+
+#~ msgid ""
+#~ "1. Turn Radio off.\n"
+#~ "2. Connect data cable.\n"
+#~ "3. While holding \"TON\" and \"REV\" buttons, turn radio on.\n"
+#~ "4. Press \"REV\" to receive image.\n"
+#~ "5. Make sure display says \"CLONE RX\" and green led is blinking\n"
+#~ "6. Click OK to start transfer."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Veri kablosunu bağlayın.\n"
+#~ "3. \"TON\" ve \"REV\" tuşlarını basılı tutarken telsizi açın.\n"
+#~ "4. İmajı almak için \"REV\" tuşuna basın.\n"
+#~ "5. Ekranda \"CLONE RX\" yazdığından ve yeşil ledin yanıp söndüğünden emin "
+#~ "olun.\n"
+#~ "6. Aktarımı başlatmak için TAMAM'a tıklayın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to DATA jack.\n"
+#~ "3. Press and hold in the [MHz(PRI)] key while turning the\n"
+#~ " radio on.\n"
+#~ "4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
+#~ "5. Press and hold in the [BAND(SET)] key. The display\n"
+#~ " will disappear for a moment, then the \"CLONE\" notation\n"
+#~ " will appear.\n"
+#~ "6. <b>After clicking OK</b>, press the [V/M(MW)] key to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu DATA jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MHz(PRI)] tuşunu basılı tutun.\n"
+#~ "4. \"F-7 CLONE\" öğesini seçmek için KADRANI çevirin.\n"
+#~ "5. [BAND(SET)] tuşunu basılı tutun. Ekran bir an için kaybolacak, "
+#~ "ardından \"CLONE\" yazısı belirecektir.\n"
+#~ "6. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek için [V/M(MW)] tuşuna "
+#~ "basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to DATA jack.\n"
+#~ "3. Press and hold in the [MHz(PRI)] key while turning the\n"
+#~ "     radio on.\n"
+#~ "4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
+#~ "5. Press and hold in the [BAND(SET)] key. The display\n"
+#~ "     will disappear for a moment, then the \"CLONE\" notation\n"
+#~ "     will appear.\n"
+#~ "6. Press the [LOW(ACC)] key (\"--RX--\" will appear on the display)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu DATA jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MHz(PRI)] tuşunu basılı tutun.\n"
+#~ "4. \"F-7 CLONE\" öğesini seçmek için KADRANI çevirin.\n"
+#~ "5. [BAND(SET)] tuşunu basılı tutun. Ekran bir an için kaybolacak, "
+#~ "ardından \"CLONE\" yazısı belirecektir.\n"
+#~ "6. [LOW(ACC)] tuşuna basın (ekranda \"--RX--\" görünecektir)."
+
+#~ msgid ""
+#~ "Please follow this steps carefully:\n"
+#~ "\n"
+#~ "1 - Turn on your radio\n"
+#~ "2 - Connect the interface cable to your radio.\n"
+#~ "3 - Click the button on this window to start download\n"
+#~ "    (Radio will beep and led will flash)\n"
+#~ "4 - Then press the \"A\" button in your radio to start cloning.\n"
+#~ "    (At the end radio will beep)\n"
+#~ msgstr ""
+#~ "Lütfen bu adımları dikkatlice izleyin:\n"
+#~ "\n"
+#~ "1 - Telsizinizi açın\n"
+#~ "2 - Arayüz kablosunu telsizinize bağlayın.\n"
+#~ "3 - İndirmeyi başlatmak için bu penceredeki tuşa tıklayın\n"
+#~ "     (Telsiz bip sesi çıkaracak ve led yanıp sönecektir)\n"
+#~ "4 - Ardından klonlamaya başlamak için telsizinizdeki \"A\" tuşuna basın.\n"
+#~ "     (Sonunda telsiz bip sesi çıkaracaktır)\n"
+
+#~ msgid ""
+#~ "Please follow this steps carefully:\n"
+#~ "\n"
+#~ "1 - Turn on your radio\n"
+#~ "2 - Connect the interface cable to your radio\n"
+#~ "3 - Click the button on this window to start download\n"
+#~ "    (you may see another dialog, click ok)\n"
+#~ "4 - Radio will beep and led will flash\n"
+#~ "5 - You will get a 10 seconds timeout to press \"MON\" before\n"
+#~ "    data upload start\n"
+#~ "6 - If all goes right radio will beep at end.\n"
+#~ "\n"
+#~ "After cloning remove the cable and power cycle your radio to\n"
+#~ "get into normal mode.\n"
+#~ msgstr ""
+#~ "Lütfen bu adımları dikkatlice izleyin:\n"
+#~ "\n"
+#~ "1 - Telsizinizi açın\n"
+#~ "2 - Arayüz kablosunu telsizinize bağlayın\n"
+#~ "3 - İndirmeyi başlatmak için bu penceredeki tuşa tıklayın (başka bir "
+#~ "iletişim kutusu görebilirsiniz, tamam'a tıklayın)\n"
+#~ "4 - Telsiz bip sesi çıkaracak ve led yanıp sönecektir\n"
+#~ "5 - Veri yükleme başlamadan önce \"MON\" tuşuna basmanız için 10 "
+#~ "saniyelik bir zaman aşımı süresi alacaksınız.\n"
+#~ "6 - Her şey yolunda giderse sonunda telsiz bip sesi çıkaracaktır.\n"
+#~ "\n"
+#~ "Klonladıktan sonra kabloyu çıkarın ve normal moda geçmek için telsizinizi "
+#~ "kapatıp açın.\n"
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to DATA terminal.\n"
+#~ "3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+#~ "     on (\"CLONE\" will appear on the display).\n"
+#~ "4. <b>After clicking OK</b>, press the [REV(DW)] key\n"
+#~ "     to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu DATA terminaline bağlayın.\n"
+#~ "3. Telsizi açarken [MHz(SETUP)] tuşunu basılı tutun (\"ekranda CLONE\" "
+#~ "görünecektir).\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [GERİ(DW)] "
+#~ "tuşuna basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to DATA terminal.\n"
+#~ "3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+#~ "     on (\"CLONE\" will appear on the display).\n"
+#~ "4. Press the [MHz(SETUP)] key\n"
+#~ "     (\"-WAIT-\" will appear on the LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu DATA terminaline bağlayın.\n"
+#~ "3. Telsizi açarken [MHz(SETUP)] tuşunu basılı tutun (\"ekranda CLONE\" "
+#~ "görünecektir).\n"
+#~ "4. [MHz(SETUP)] tuşuna basın\n"
+#~ "      (ekranda \"-WAIT-\" görünecektir)."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to MIC Jack.\n"
+#~ "3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+#~ "     on (\"CLONE\" will appear on the display).\n"
+#~ "4. <b>After clicking OK</b>, press the [GM(AMS)] key\n"
+#~ "     to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu MIC Jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MHz(SETUP)] tuşunu basılı tutun (\"ekranda CLONE\" "
+#~ "görünecektir).\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek için [GM(AMS)] tuşuna "
+#~ "basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to MIC Jack.\n"
+#~ "3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+#~ "     on (\"CLONE\" will appear on the display).\n"
+#~ "4. Press the [MHz(SETUP)] key\n"
+#~ "     (\"-WAIT-\" will appear on the LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu MIC Jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MHz(SETUP)] tuşunu basılı tutun (\"ekranda CLONE\" "
+#~ "görünecektir).\n"
+#~ "4. [MHz(SETUP)] tuşuna basın\n"
+#~ "      (ekranda \"-WAIT-\" görünecektir)."
+
+#~ msgid ""
+#~ "Follow these instructions to download your config:\n"
+#~ "\n"
+#~ "1 - Turn off your radio\n"
+#~ "2 - Connect your interface cable to the Speaker-2 jack\n"
+#~ "3 - Turn on your radio\n"
+#~ "4 - Radio > Download from radio\n"
+#~ "5 - Disconnect the interface cable! Otherwise there will be\n"
+#~ "    no right-side audio!\n"
+#~ msgstr ""
+#~ "Yapılandırmanızı indirmek için şu talimatları izleyin:\n"
+#~ "\n"
+#~ "1 - Telsizinizi kapatın\n"
+#~ "2 - Arayüz kablonuzu Speaker-2 jakına bağlayın\n"
+#~ "3 - Telsizinizi açın\n"
+#~ "4 - Telsiz > Telsizden İndir\n"
+#~ "5 - Arayüz kablosunu çıkarın! Aksi takdirde, sağ taraf sesi "
+#~ "olmayacaktır!\n"
+
+#~ msgid ""
+#~ "Follow these instructions to upload your config:\n"
+#~ "\n"
+#~ "1 - Turn off your radio\n"
+#~ "2 - Connect your interface cable to the Speaker-2 jack\n"
+#~ "3 - Turn on your radio\n"
+#~ "4 - Radio > Upload to radio\n"
+#~ "5 - Disconnect the interface cable, otherwise there will be\n"
+#~ "    no right-side audio!\n"
+#~ "6 - Cycle power on the radio to exit clone mode\n"
+#~ msgstr ""
+#~ "Yapılandırmanızı yüklemek için şu talimatları izleyin:\n"
+#~ "\n"
+#~ "1 - Telsizinizi kapatın\n"
+#~ "2 - Arayüz kablonuzu Speaker-2 jakına bağlayın\n"
+#~ "3 - Telsizinizi açın\n"
+#~ "4 - Telsiz > Telsize yükle\n"
+#~ "5 - Arayüz kablosunu çıkarın, aksi takdirde sağ tarafta ses "
+#~ "olmayacaktır!\n"
+#~ "6 - Klon modundan çıkmak için telsizi kapatıp açın\n"
+
+#~ msgid ""
+#~ "Follow this instructions to download your info:\n"
+#~ "\n"
+#~ "1 - Turn off your radio\n"
+#~ "2 - Connect your interface cable\n"
+#~ "3 - Turn on your radio\n"
+#~ "4 - Do the download of your radio data\n"
+#~ msgstr ""
+#~ "Bilgilerinizi indirmek için şu talimatları izleyin:\n"
+#~ "\n"
+#~ "1 - Telsizinizi kapatın\n"
+#~ "2 - Arayüz kablonuzu bağlayın\n"
+#~ "3 - Telsizinizi açın\n"
+#~ "4 - Telsiz verilerinizin indirilmesini gerçekleştirin\n"
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to mic/spkr connector.\n"
+#~ "3. Make sure connector is firmly connected.\n"
+#~ "4. Turn radio on.\n"
+#~ "5. Ensure that the radio is tuned to channel with no activity.\n"
+#~ "6. Click OK to download image from device."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu mik/hprlr konektörüne bağlayın.\n"
+#~ "3. Konektörün sıkıca bağlandığından emin olun.\n"
+#~ "4. Telsizi açın.\n"
+#~ "5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
+#~ "6. İmajı cihazdan indirmek için TAMAM'a tıklayın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to mic/spkr connector.\n"
+#~ "3. Make sure connector is firmly connected.\n"
+#~ "4. Turn radio on.\n"
+#~ "5. Ensure that the radio is tuned to channel with no activity.\n"
+#~ "6. Click OK to upload image to device."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu mic/spkr konektörüne bağlayın.\n"
+#~ "3. Konektörün sıkıca bağlandığından emin olun.\n"
+#~ "4. Telsizi açın.\n"
+#~ "5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
+#~ "6. İmajı cihaza yüklemek için TAMAM'a tıklayın."
+
+#~ msgid "This is an early stage beta driver\n"
+#~ msgstr "Bu erken aşama beta sürücüsüdür\n"
+
+#~ msgid "This is an early stage beta driver - upload at your own risk\n"
+#~ msgstr ""
+#~ "Bu, erken aşamadaki bir beta sürücüsüdür - yükleme riski size aittir\n"
+
+#~ msgid ""
+#~ "Follow these instructions to download the radio memory:\n"
+#~ "\n"
+#~ "1 - Turn off your radio\n"
+#~ "2 - Connect your interface cable\n"
+#~ "3 - Turn on your radio, volume @ 50%\n"
+#~ "4 - Radio > Download from radio\n"
+#~ msgstr ""
+#~ "Telsiz hafızasını indirmek için şu talimatları izleyin:\n"
+#~ "\n"
+#~ "1 - Telsizinizi kapatın\n"
+#~ "2 - Arayüz kablonuzu bağlayın\n"
+#~ "3 - Telsizinizi açın, ses seviyesi @ %50\n"
+#~ "4 - Telsiz > Telsizden İndir\n"
+
+#~ msgid ""
+#~ "Follow these instructions to upload the radio memory:\n"
+#~ "\n"
+#~ "1 - Turn off your radio\n"
+#~ "2 - Connect your interface cable\n"
+#~ "3 - Turn on your radio, volume @ 50%\n"
+#~ "4 - Radio > Upload to radio\n"
+#~ msgstr ""
+#~ "Telsiz hafızasını yüklemek için şu talimatları izleyin:\n"
+#~ "\n"
+#~ "1 - Telsizinizi kapatın\n"
+#~ "2 - Arayüz kablonuzu bağlayın\n"
+#~ "3 - Telsizinizi açın, ses seviyesi @ %50\n"
+#~ "4 - Telsiz > Telsize yükle\n"
+
+#~ msgid ""
+#~ "Follow this instructions to read your radio:\n"
+#~ "1 - Turn off your radio\n"
+#~ "2 - Connect your interface cable\n"
+#~ "3 - Turn on your radio\n"
+#~ "4 - Do the download of your radio data\n"
+#~ msgstr ""
+#~ "Telsizinizi okumak için bu talimatları izleyin:\n"
+#~ "1 - Telsizinizi kapatın\n"
+#~ "2 - Arayüz kablonuzu bağlayın\n"
+#~ "3 - Telsizinizi açın\n"
+#~ "4 - Telsiz verilerinizin indirmesini gerçekleştirin\n"
+
+#~ msgid ""
+#~ "Follow this instructions to write your radio:\n"
+#~ "1 - Turn off your radio\n"
+#~ "2 - Connect your interface cable\n"
+#~ "3 - Turn on your radio\n"
+#~ "4 - Do the upload of your radio data\n"
+#~ msgstr ""
+#~ "Telsizinizi yazmak için bu talimatları izleyin:\n"
+#~ "1 - Telsizinizi kapatın\n"
+#~ "2 - Arayüz kablonuzu bağlayın\n"
+#~ "3 - Telsizinizi açın\n"
+#~ "4 - Telsiz verilerinizin yüklemesini gerçekleştirin\n"
+
+#~ msgid ""
+#~ "Follow this instructions to download your info:\n"
+#~ "1 - Turn off your radio\n"
+#~ "2 - Connect your interface cable\n"
+#~ "3 - Turn on your radio (unblock it if password protected)\n"
+#~ "4 - Do the download of your radio data\n"
+#~ msgstr ""
+#~ "Bilgilerinizi indirmek için bu talimatları izleyin:\n"
+#~ "1 - Telsizinizi kapatın\n"
+#~ "2 - Arayüz kablonuzu bağlayın\n"
+#~ "3 - Telsizinizi açın (şifre korumalıysa engelini kaldırın)\n"
+#~ "4 - Telsiz verilerinizin indirmesini gerçekleştirin\n"
+
+#~ msgid ""
+#~ "Follow this instructions to upload your info:\n"
+#~ "1 - Turn off your radio\n"
+#~ "2 - Connect your interface cable\n"
+#~ "3 - Turn on your radio (unblock it if password protected)\n"
+#~ "4 - Do the upload of your radio data\n"
+#~ msgstr ""
+#~ "Bilgilerinizi yüklemek için bu talimatları izleyin:\n"
+#~ "1 - Telsizinizi kapatın\n"
+#~ "2 - Arayüz kablonuzu bağlayın\n"
+#~ "3 - Telsizinizi açın (şifre korumalıysa engelini kaldırın)\n"
+#~ "4 - Telsiz verilerinizin yüklemesini gerçekleştirin\n"
+
+#~ msgid ""
+#~ "Connect your interface cable to the PC Port on the\n"
+#~ "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
+#~ msgstr ""
+#~ "Arayüz kablonuzu 'TX/RX' ünitesinin arkasındaki\n"
+#~ "PC Bağlantı Noktasına bağlayın. Kafadaki Com Portu DEĞİL.\n"
+
+#~ msgid ""
+#~ "Follow these instructions to download the radio memory:\n"
+#~ "1 - Connect your interface cable\n"
+#~ "2 - Radio > Download from radio: Don't adjust any settings\n"
+#~ "on the radio head!\n"
+#~ "3 - Disconnect your interface cable\n"
+#~ msgstr ""
+#~ "Telsiz hafızasını indirmek için şu talimatları izleyin:\n"
+#~ "1 - Arayüz kablonuzu bağlayın\n"
+#~ "2 - Telsiz > Telsizden İndir: Telsiz kafasında herhangi bir ayar "
+#~ "yapmayın!\n"
+#~ "3 - Arayüz kablonuzu çıkarın\n"
+
+#~ msgid ""
+#~ "Follow these instructions to upload the radio memory:\n"
+#~ "1 - Connect your interface cable\n"
+#~ "2 - Radio > Upload to radio: Don't adjust any settings\n"
+#~ "on the radio head!\n"
+#~ "3 - Disconnect your interface cable\n"
+#~ msgstr ""
+#~ "Telsiz hafızasını yüklemek için şu talimatları izleyin:\n"
+#~ "1 - Arayüz kablonuzu bağlayın\n"
+#~ "2 - Telsiz > Telsize yükle: Telsiz kafasında herhangi bir ayar yapmayın!\n"
+#~ "3 - Arayüz kablonuzu çıkarın\n"
+
+#~ msgid ""
+#~ "Follow these instructions to download the radio memory:\n"
+#~ "1 - Connect your interface cable\n"
+#~ "2 - Radio > Download from radio: DO NOT mess with the radio\n"
+#~ "during download!\n"
+#~ "3 - Disconnect your interface cable\n"
+#~ msgstr ""
+#~ "Telsiz hafızasını indirmek için şu talimatları izleyin:\n"
+#~ "1 - Arayüz kablonuzu bağlayın\n"
+#~ "2 - Telsiz > Telsizden İndir: İndirme sırasında telsiz ile uğraşmayın!\n"
+#~ "3 - Arayüz kablonuzu çıkarın\n"
+
+#~ msgid ""
+#~ "Follow these instructions to upload the radio memory:\n"
+#~ "1 - Connect your interface cable\n"
+#~ "2 - Radio > Upload to radio: DO NOT mess with the radio\n"
+#~ "during upload!\n"
+#~ "3 - Disconnect your interface cable\n"
+#~ msgstr ""
+#~ "Telsiz hafızasını yüklemek için şu talimatları izleyin:\n"
+#~ "1 - Arayüz kablonuzu bağlayın\n"
+#~ "2 - Telsiz > Telsize Yükle: Yükleme sırasında telsiz ile uğraşmayın!\n"
+#~ "3 - Arayüz kablonuzu çıkarın\n"
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to mic/spkr connector.\n"
+#~ "3. Make sure connector is firmly connected.\n"
+#~ "4. Turn radio on (volume may need to be set at 100%).\n"
+#~ "5. Ensure that the radio is tuned to channel with no activity.\n"
+#~ "6. Click OK to download image from device."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu mik/hprlr konektörüne bağlayın.\n"
+#~ "3. Konektörün sıkıca bağlandığından emin olun.\n"
+#~ "4. Telsizi açın (ses düzeyinin %100 olarak ayarlanması gerekebilir).\n"
+#~ "5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
+#~ "6. İmajı cihazdan indirmek için TAMAM'a tıklayın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to mic/spkr connector.\n"
+#~ "3. Make sure connector is firmly connected.\n"
+#~ "4. Turn radio on (volume may need to be set at 100%).\n"
+#~ "5. Ensure that the radio is tuned to channel with no activity.\n"
+#~ "6. Click OK to upload image to device."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu mic/spkr konektörüne bağlayın.\n"
+#~ "3. Konektörün sıkıca bağlandığından emin olun.\n"
+#~ "4. Telsizi açın (ses düzeyinin %100 olarak ayarlanması gerekebilir).\n"
+#~ "5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
+#~ "6. İmajı cihaza yüklemek için TAMAM'a tıklayın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to MIC/SP jack.\n"
+#~ "3. Press and hold in the [F/W] key while turning the radio on\n"
+#~ "     (\"CLONE\" will appear on the display).\n"
+#~ "4. <b>After clicking OK</b>, press the [BAND] key to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu MIC/SP jakına bağlayın.\n"
+#~ "3. Telsizi açarken [F/W] tuşunu basılı tutun\n"
+#~ "      (ekranda \"CLONE\" görünecektir).\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna "
+#~ "basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to MIC/SP jack.\n"
+#~ "3. Press and hold in the [F/W] key while turning the radio on\n"
+#~ "     (\"CLONE\" will appear on the display).\n"
+#~ "4. Press the [V/M] key (\"-WAIT-\" will appear on the LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu MIC/SP jakına bağlayın.\n"
+#~ "3. Telsizi açarken [F/W] tuşunu basılı tutun\n"
+#~ "      (ekranda \"CLONE\" görünecektir).\n"
+#~ "4. [V/M] tuşuna basın (ekranda \"-WAIT-\" görünecektir)."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to MIC/EAR jack.\n"
+#~ "3. Press and hold in the [F/W] key while turning the radio on\n"
+#~ "    (\"CLONE\" will appear on the display).\n"
+#~ "4. <b>After clicking OK</b>, press the [VFO(DW)SC] key to receive\n"
+#~ "    the image from the radio."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu MIC/EAR jakına bağlayın.\n"
+#~ "3. Telsizi açarken [F/W] tuşunu basılı tutun\n"
+#~ "     (ekranda \"CLONE\" görünecektir).\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı telsizden almak için "
+#~ "[VFO(DW)SC] tuşuna basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to MIC/EAR jack.\n"
+#~ "3. Press and hold in the [F/W] key while turning the radio on\n"
+#~ "    (\"CLONE\" will appear on the display).\n"
+#~ "4. Press the [MR(SKP)SC] key (\"CLONE WAIT\" will appear\n"
+#~ "    on the LCD).\n"
+#~ "5. Click OK to send image to radio."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu MIC/EAR jakına bağlayın.\n"
+#~ "3. Telsizi açarken [F/W] tuşunu basılı tutun\n"
+#~ "     (ekranda \"CLONE\" görünecektir).\n"
+#~ "4. [MR(SKP)SC] tuşuna basın (ekranda \"CLONE WAIT\" görünecektir).\n"
+#~ "5. İmajı telsize göndermek için TAMAM'a tıklayın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to MIC/SP jack.\n"
+#~ "3. Press and hold in the [MON-F] key while turning the radio on\n"
+#~ "     (\"CLONE\" will appear on the display).\n"
+#~ "4. <b>After clicking OK</b>, press the [BAND] key to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu MIC/SP jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MON-F] tuşunu basılı tutun\n"
+#~ "      (ekranda \"CLONE\" görünecektir).\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna "
+#~ "basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to MIC/SP jack.\n"
+#~ "3. Press and hold in the [MON-F] key while turning the radio on\n"
+#~ "     (\"CLONE\" will appear on the display).\n"
+#~ "4. Press the [V/M] key (\"CLONE WAIT\" will appear on the LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu MIC/SP jakına bağlayın.\n"
+#~ "3. Telsizi açarken [MON-F] tuşunu basılı tutun\n"
+#~ "      (ekranda \"CLONE\" görünecektir).\n"
+#~ "4. [V/M] tuşuna basın (ekranda \"CLONE WAIT\" görünecektir)."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to DATA jack.\n"
+#~ "3. Press and hold in the [FW] key while turning the radio on\n"
+#~ "     (\"CLONE\" will appear on the display).\n"
+#~ "4. <b>After clicking OK</b>, press the [BAND] key to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu DATA jakına bağlayın.\n"
+#~ "3. Telsizi açarken [FW] tuşunu basılı tutun\n"
+#~ "      (ekranda \"CLONE\" görünecektir).\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna "
+#~ "basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to DATA jack.\n"
+#~ "3. Press and hold in the [FW] key while turning the radio on\n"
+#~ "     (\"CLONE\" will appear on the display).\n"
+#~ "4. Press the [MODE] key (\"-WAIT-\" will appear on the LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu DATA jakına bağlayın.\n"
+#~ "3. Telsizi açarken [FW] tuşunu basılı tutun\n"
+#~ "      (ekranda \"CLONE\" görünecektir).\n"
+#~ "4. [MODE] tuşuna basın (ekranda \"CLONE WAIT\" görünecektir)."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect cable to MIC/SP jack.\n"
+#~ "3. Press and hold in the [moni] key while turning the radio on.\n"
+#~ "4. Select CLONE in menu, then press F. Radio restarts in clone mode.\n"
+#~ "     (\"CLONE\" will appear on the display).\n"
+#~ "5. <b>After clicking OK</b>, briefly hold [PTT] key to send image.\n"
+#~ "    (\"-TX-\" will appear on the LCD). "
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Kabloyu MIC/SP jakına bağlayın.\n"
+#~ "3. Telsizi açarken [moni] tuşunu basılı tutun.\n"
+#~ "4. Menüden KLON'u seçin, ardından F'ye basın. Telsiz klon modunda yeniden "
+#~ "başlar.\n"
+#~ "      (ekranda \"CLONE\" görünecektir).\n"
+#~ "5. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [PTT] tuşunu "
+#~ "kısa bir süre basılı tutun.\n"
+#~ "     (ekranda \"-TX-\" görünecektir). "
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "3. Press and hold in the [moni] key while turning the radio on.\n"
+#~ "4. Select CLONE in menu, then press F. Radio restarts in clone mode.\n"
+#~ "     (\"CLONE\" will appear on the display).\n"
+#~ "5. Press the [moni] key (\"-RX-\" will appear on the LCD)."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "3. Telsizi açarken [moni] tuşunu basılı tutun.\n"
+#~ "4. Menüden KLON'u seçin, ardından F'ye basın. Telsiz klon modunda yeniden "
+#~ "başlar.\n"
+#~ "      (ekranda \"CLONE\" görünecektir).\n"
+#~ "5. [moni] tuşuna basın (ekranda \"-RX-\" görünecektir)."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect data cable.\n"
+#~ "3. Prepare radio for clone.\n"
+#~ "4. <b>After clicking OK</b>, press the key to send image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Veri kablosunu bağlayın.\n"
+#~ "3. Telsizi klon için hazırlayın.\n"
+#~ "4. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek için tuşuna basın."
+
+#~ msgid ""
+#~ "1. Turn radio off.\n"
+#~ "2. Connect data cable.\n"
+#~ "3. Prepare radio for clone.\n"
+#~ "4. Press the key to receive the image."
+#~ msgstr ""
+#~ "1. Telsizi kapatın.\n"
+#~ "2. Veri kablosunu bağlayın.\n"
+#~ "3. Telsizi klon için hazırlayın.\n"
+#~ "4. İmajı almak için tuşuna basın."
