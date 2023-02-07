@@ -1,6 +1,5 @@
 import argparse
-import gettext
-import locale
+import builtins
 import logging
 import os
 import sys
@@ -17,26 +16,22 @@ LOG = logging.getLogger(__name__)
 
 
 def chirpmain():
-    try:
-        # This looks strange, but:
-        # files('chirp') returns a Path which we can use
-        # files('chirp.locale') returns a MultiplexedPath, which we cannot
-        # So, get the path to the module/bundle and then construct the
-        # path to localedir, as gettext needs a path and not to iterate
-        # files or anything.
-        localedir = str(os.path.join(importlib_resources.files('chirp'),
-                                     'locale'))
-        lang = locale.getdefaultlocale()[0]
-        gettext.translation('CHIRP', localedir, languages=[lang]).install()
-        translation_error = None
-    except Exception as e:
-        # Logging is not setup yet, so stash and log later
-        translation_error = e
-        lang = None
-        # Need to do some install to make _() work elsewhere
-        gettext.install('CHIRP', localedir)
-
     import wx
+
+    app = wx.App()
+    localedir = str(os.path.join(importlib_resources.files('chirp'),
+                                 'locale'))
+    syslang = wx.Locale.GetSystemLanguage()
+    app._lc = wx.Locale()
+    if localedir and os.path.isdir(localedir):
+        wx.Locale.AddCatalogLookupPathPrefix(localedir)
+    if syslang != wx.LANGUAGE_UNKNOWN:
+        app._lc.Init(syslang)
+    else:
+        app._lc.Init()
+    app._lc.AddCatalog('CHIRP')
+    builtins._ = wx.GetTranslation
+
     from chirp.wxui import config
     from chirp.wxui import main
     from chirp.wxui import report
@@ -71,12 +66,22 @@ def chirpmain():
     logger.handle_options(args)
     logging.getLogger('main').info(report.get_environment())
 
-    if not os.path.isdir(localedir):
+    if not localedir or not os.path.isdir(localedir):
         LOG.warning('Did not find localedir: %s' % localedir)
-    LOG.debug('Got system locale %s' % lang)
-    if translation_error:
-        LOG.debug('Failed to set up translations: %s',
-                  translation_error)
+    LOG.debug('System locale: %s (%i)',
+              app._lc.GetCanonicalName(),
+              syslang)
+    LOG.debug('Translation loaded=%s for CHIRP: %s (%s) from %s',
+              app._lc.IsLoaded('CHIRP'),
+              wx.Translations.Get().GetBestTranslation('CHIRP'),
+              ','.join(
+                  wx.Translations.Get().GetAvailableTranslations('CHIRP')),
+              localedir)
+    LOG.debug('Translation loaded=%s for wxstd: %s (%s)',
+              app._lc.IsLoaded('wxstd'),
+              wx.Translations.Get().GetBestTranslation('wxstd'),
+              ','.join(
+                  wx.Translations.Get().GetAvailableTranslations('wxstd')))
 
     directory.import_drivers(limit=args.onlydriver)
 
@@ -90,9 +95,7 @@ def chirpmain():
     if sys.platform == 'linux' and not args.no_linux_gdk_backend:
         os.putenv('GDK_BACKEND', 'x11')
 
-    app = wx.App()
     app.SetAppName('CHIRP')
-    app._locale = wx.Locale()
     mainwindow = main.ChirpMain(None, title='CHIRP')
     mainwindow.Show()
 
