@@ -16,8 +16,8 @@ clean:
 	find * -depth -type d -exec rmdir "{}" \;
 
 chirpui.pot:
-	xgettext -L Python -k_ -o chirpui.pot -f <( \
-	  /usr/bin/find ../ui ../wxui -name '*.py') $(XGT_OPTS)
+	xgettext -L Python -k_ -o chirpui.pot --from-code=iso-8859-15 -f <( \
+	  /usr/bin/find .. -name '*.py') $(XGT_OPTS)
 
 %.po: chirpui.pot
 	if [ -f $@ ]; then                                \
