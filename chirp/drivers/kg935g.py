@@ -1,5 +1,5 @@
 # Wouxun KG-935G Driver
-# Updated by:
+# Updated to support the KG-935G Plus
 # melvin.terechenok@gmail.com
 
 # Copyright 2019 Pavel Milanes CO7WT <pavelmc@gmail.com>
@@ -44,6 +44,36 @@ CMD_WR = 131    # \83
 
 MEM_VALID = 158
 
+# set up map of addresses to upload to known memory locations only
+# Add new regions as new settings are discovered
+# 1st entry is start address in hex
+# 2nd entry is write size (number of bytes to transfer in decimal (64-MAX))
+# 3rd entry is write count
+# so 0x00, 64, 512 =  start at 0x00 and write 64*512 bytes = 0 - 32768
+
+# NOTE :   It looks like the radio MUST have write
+#          sizes in values of 1,2,4,8,16,32 or 64 bytes if using
+#          a write count value of > 1.
+#          OTHERWISE - it appears the radio gets out of sync
+#          and the memory write is messed up
+#          for that section
+
+config_map_935G = (     # map address, write size, write count
+    # (0x00,   64, 512),  #- Use for full upload testing
+    (0x44,   32, 1),    # Freq Limits
+    (0x440,  8,  1),     # Area Message
+    (0x480,  8, 5),    # Scan Groups
+    (0x500,  8, 15),    # Call Codes
+    (0x580,  8, 15),    # Call Names
+    (0x600,  8, 5),    # FM Presets
+    (0x800,  64, 2),    # settings
+    (0x880,  16, 1),    # VFO A
+    (0x8C0,  16, 1),    # VFO B
+    (0x900,  64, 250),  # Channel Memory 0-999
+    (0x4780, 32, 375),  # Memory Names 0-999
+    (0x7670, 8, 125),   # Ch Valid bytes 0-999
+    )
+
 AB_LIST = ["A", "B"]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
 STEP_LIST = [str(x) for x in STEPS]
@@ -54,22 +84,28 @@ BANDWIDTH_LIST = ["Narrow", "Wide"]
 VOICE_LIST = ["Off", "On"]
 LANGUAGE_LIST = ["Chinese", "English"]
 SCANMODE_LIST = ["TO", "CO", "SE"]
-# MRT - EDIT FOR 935G
 PFKEYLONG_LIST = ["undef", "FRQ2-PTT", "Selec Call", "Scan", "Flashlight",
                   "Alarm", "SOS", "FM Radio", "Moni", "Strobe", "Weather",
                   "Tlk A", "Reverse", "CTC Scan", "DCS Scan", "BRT"]
 PFKEYSHORT_LIST = ["undef", "Scan", "Flashlight", "Alarm", "SOS", "FM Radio",
                    "Moni", "Strobe", "Weather", "Tlk A", "Reverse",
                    "CTC Scan", "DCS Scan", "BRT"]
-#
+PFKEYLONG_LIST_935GPLUS = ["undef", "FRQ2-PTT", "Selec Call", "Favorite",
+                           "Bright+", "Scan", "Flashlight", "Alarm", "SOS",
+                           "FM Radio", "Moni", "Strobe", "Weather", "Tlk A",
+                           "Reverse", "CTC Scan", "DCS Scan", "Backlight"]
+PFKEYSHORT_LIST_935GPLUS = ["undef", "Favorite", "Bright+", "Scan",
+                            "Flashlight", "Alarm", "SOS", "FM Radio",
+                            "Moni", "Strobe", "Weather", "Tlk A", "Reverse",
+                            "CTC Scan", "DCS Scan", "Backlight"]
 WORKMODE_LIST = ["VFO", "Ch.Number.", "Ch.Freq.", "Ch.Name"]
+WORKMODE_LIST_935GPLUS = ["FREQ", "Ch.Number.", "Ch.Freq.", "Ch.Name"]
 BACKLIGHT_LIST = ["Always On"] + [str(x) + "s" for x in range(1, 21)] + \
     ["Always Off"]
 OFFSET_LIST = ["+", "-"]
 PONMSG_LIST = ["MSG - Bitmap", "Battery Volts"]
 SPMUTE_LIST = ["QT", "QT+DTMF", "QT*DTMF"]
 DTMFST_LIST = ["OFF", "DTMF", "ANI", "DTMF+ANI"]
-# DTMF_TIMES = [str(x) + "ms" for x in range(0, 501, 10)]
 DTMF_TIMES = [('%dms' % dtmf, (dtmf // 10)) for dtmf in range(50, 501, 10)]
 ALERTS = [1750, 2100, 1000, 1450]
 ALERTS_LIST = [str(x) for x in ALERTS]
@@ -81,14 +117,14 @@ SMUTESET_LIST = ["Off", "Tx", "Rx", "Tx+Rx"]
 POWER_LIST = ["Lo", "Mid", "Hi"]
 HOLD_TIMES = ["Off"] + ["%s" % x for x in range(100, 5001, 100)]
 RPTMODE_LIST = ["Radio", "Repeater"]
-# MRT ADDED NEW LISTS
 CALLGROUP_LIST = [str(x) for x in range(1, 21)]
 THEME_LIST = ["White-1", "White-2", "Black-1", "Black-2"]
+THEME_LIST_935GPLUS = ["White-1", "White-2", "Black-1", "Black-2",
+                       "Cool", "Rain", "NotARubi", "Sky", "BTWR", "Candy"]
 DSPBRTSBY_LIST = ["OFF", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 DSPBRTACT_MAP = [("1", 1), ("2", 2), ("3", 3), ("4", 4), ("5", 5),
                  ("6", 6), ("7", 7), ("8", 8), ("9", 9), ("10", 10)]
 TONESCANSAVELIST = ["Rx", "Tx", "Tx/Rx"]
-# PTTDELAY_LIST = [str(x) + "ms" for x in range(0, 3001, 100)]
 PTTDELAY_TIMES = [('%dms' % pttdelay,
                   (pttdelay // 100)) for pttdelay in range(100, 3001, 100)]
 SCRAMBLE_LIST = ["OFF"] + [str(x) for x in range(1, 9)]
@@ -107,18 +143,12 @@ TONE_MAP = [('Off', 0x0000)] + \
                for tone in chirp_common.DTCS_CODES] + \
            [('D%03di' % tone, int(0x6000 + int(str(tone), 8)))
                for tone in chirp_common.DTCS_CODES]
-
-
+BATT_DISP_LIST = ["Icon", "Voltage", "Percent"]
+WX_TYPE = ["Weather", "Icon-Only", "Tone", "Flash", "Tone-Flash"]
 # memory slot 0 is not used, start at 1 (so need 1000 slots, not 999)
 # structure elements whose name starts with x are currently unidentified
 
-# MRT made Power = 4 bits to handle 935G's 3 power levels and
-# to prevent display errors
-# MRT beta 1.3 - updates to structure to match KG935G Custom
-# programming SW configuration settings, FM Radio presets, Key Settings
-# MRT beta 1.4 - modified some value names and merged FM Radio
-# memories with other settings to resolve errors in UI implementation
-_MEM_FORMAT = """
+_MEM_FORMAT_935G = """
     #seekto 0x0044;
     struct {
         u32    rx_start;
@@ -390,6 +420,278 @@ _MEM_FORMAT = """
     u8          valid[1000];
     """
 
+_MEM_FORMAT_935GPLUS = """
+    #seekto 0x0044;
+    struct {
+        u32    rx_start;
+        u32    rx_stop;
+        u32    tx_start;
+        u32    tx_stop;
+    } uhf_limits;
+
+    #seekto 0x0054;
+    struct {
+        u32    rx_start;
+        u32    rx_stop;
+        u32    tx_start;
+        u32    tx_stop;
+    } vhf_limits;
+
+    #seekto 0x0400;
+    struct {
+        char     oem1[8];
+        char     unknown[2];
+        u8     unknown2[10];
+        u8     unknown3[10];
+        u8     unknown4[8];
+        char     oem2[10];
+        u8     version[6];
+        char     date[8];
+        u8     unknown5[2];
+        char     model[8];
+    } oem_info;
+
+    #seekto 0x0480;
+    struct {
+        u16    Group_lower1;
+        u16    Group_upper1;
+        u16    Group_lower2;
+        u16    Group_upper2;
+        u16    Group_lower3;
+        u16    Group_upper3;
+        u16    Group_lower4;
+        u16    Group_upper4;
+        u16    Group_lower5;
+        u16    Group_upper5;
+        u16    Group_lower6;
+        u16    Group_upper6;
+        u16    Group_lower7;
+        u16    Group_upper7;
+        u16    Group_lower8;
+        u16    Group_upper8;
+        u16    Group_lower9;
+        u16    Group_upper9;
+        u16    Group_lower10;
+        u16    Group_upper10;
+    } scan_groups;
+
+    #seekto 0x0500;
+    struct {
+        u8 cid[6];
+    } call_ids[20];
+
+    #seekto 0x0580;
+    struct {
+        char    call_name1[6];
+        char    call_name2[6];
+        char    call_name3[6];
+        char    call_name4[6];
+        char    call_name5[6];
+        char    call_name6[6];
+        char    call_name7[6];
+        char    call_name8[6];
+        char    call_name9[6];
+        char    call_name10[6];
+        char    call_name11[6];
+        char    call_name12[6];
+        char    call_name13[6];
+        char    call_name14[6];
+        char    call_name15[6];
+        char    call_name16[6];
+        char    call_name17[6];
+        char    call_name18[6];
+        char    call_name19[6];
+        char    call_name20[6];
+    } call_names;
+
+
+    #seekto 0x0600;
+    struct {
+        u16    FM_radio1;
+        u16    FM_radio2;
+        u16    FM_radio3;
+        u16    FM_radio4;
+        u16    FM_radio5;
+        u16    FM_radio6;
+        u16    FM_radio7;
+        u16    FM_radio8;
+        u16    FM_radio9;
+        u16    FM_radio10;
+        u16    FM_radio11;
+        u16    FM_radio12;
+        u16    FM_radio13;
+        u16    FM_radio14;
+        u16    FM_radio15;
+        u16    FM_radio16;
+        u16    FM_radio17;
+        u16    FM_radio18;
+        u16    FM_radio19;
+        u16    FM_radio20;
+        u16 unknown_pad_x0640[235];
+        u8 unknown07fe;
+        u8 unknown07ff;
+        u8      ponmsg;
+        char    dispstr[15];
+        u8 unknown0810;
+        u8 unknown0811;
+        u8 unknown0812;
+        u8 unknown0813;
+        u8 unknown0814;
+        u8      voice;
+        u8      timeout;
+        u8      toalarm;
+        u8      channel_menu;
+        u8      power_save;
+        u8      autolock;
+        u8      keylock;
+        u8      beep;
+        u8      stopwatch;
+        u8      vox;
+        u8      scan_rev;
+        u8      backlight;
+        u8      roger_beep;
+        char      mode_sw_pwd[6];
+        char      reset_pwd[6];
+        u16     pri_ch;
+        u8      ani_sw;
+        u8      ptt_delay;
+        u8      ani_code[6];
+        u8      dtmf_st;
+        u8      BCL_A;
+        u8      BCL_B;
+        u8      ptt_id;
+        u8      prich_sw;
+        u8 unknown083d;
+        u8 unknown083e;
+        u8 unknown083f;
+        u8      alert;
+        u8      pf1_shrt;
+        u8      pf1_long;
+        u8      pf2_shrt;
+        u8      pf2_long;
+        u8 unknown0845;
+        u8      work_mode_a;
+        u8      work_mode_b;
+        u8      dtmf_tx_time;
+        u8      dtmf_interval;
+        u8      main_band;
+        u16      work_ch_a;
+        u16      work_ch_b;
+        u8 unknown084f;
+        u8 unknown0850;
+        u8 unknown0851;
+        u8 unknown0852;
+        u8 unknown0853;
+        u8 unknown0854;
+        u8 unknown0855;
+        u8 unknown0856;
+        u8 unknown0857;
+        u8 unknown0858;
+        u8 unknown0859;
+        u8 unknown085a;
+        u8 unknown085b;
+        u8 unknown085c;
+        u8 unknown085d;
+        u8 unknown085e;
+        u8 unknown085f;
+        u8 unknown0860;
+        u8      TDR_single_mode;
+        u8      ring_time;
+        u8      ScnGrpA_Act;
+        u8      ScnGrpB_Act;
+        u8 unknown0865;
+        u8      rpt_tone;
+        u8 unknown0867;
+        u8      scan_det;
+        u8      ToneScnSave;
+        u8 unknown086a;
+        u8      smuteset;
+        u8      cur_call_grp;
+        u8      DspBrtAct;
+        u8      DspBrtSby;
+        u8 unknown086f;
+        u8      theme;
+        u8      batt_ind;
+        u8      wxalert;
+        u8      wxalert_type;
+        u8 VFO_repeater_a;
+        u8 VFO_repeater_b;
+        u8 sim_rec;
+        u8 unknown0877;
+        u8 unknown0878;
+        u8 unknown0879;
+        u8 unknown087a;
+        u8 unknown087b;
+        u8 unknown087c;
+        u8 unknown087d;
+        u8 unknown087e;
+        u8 unknown087f;
+    } settings;
+
+    #seekto 0x0880;
+    struct {
+        u32     rxfreq;
+        u32     unknown0;
+        u16     rxtone;
+        u16     txtone;
+        u8      scrambler:4,
+                power:4;
+        u8      unknown3:1,
+                unknown5:2,
+                unknown4:1,
+                cmpndr:1,
+                mute_mode:2,
+                iswide:1;
+        u8      step;
+        u8      squelch;
+      } vfoa;
+
+    #seekto 0x08c0;
+    struct {
+        u32     rxfreq;
+        u32     unknown0;
+        u16     rxtone;
+        u16     txtone;
+        u8      scrambler:4,
+                power:4;
+        u8      unknown3:1,
+                unknown5:2,
+                unknown4:1,
+                cmpndr:1,
+                mute_mode:2,
+                iswide:1;
+        u8      step;
+        u8      squelch;
+    } vfob;
+
+    #seekto 0x0900;
+    struct {
+        u32     rxfreq;
+        u32     txfreq;
+        u16     rxtone;
+        u16     txtone;
+        u8      scrambler:4,
+                power:4;
+        u8      unknown3:2,
+                scan_add:1,
+                unknown4:1,
+                compander:1,
+                mute_mode:2,
+                iswide:1;
+        u8      unknown5;
+        u8      unknown6;
+    } memory[1000];
+
+    #seekto 0x4780;
+    struct {
+        u8    name[8];
+                u8    unknown[4];
+    } names[1000];
+
+    #seekto 0x7670;
+    u8          valid[1000];
+    """
+
 # Support for the Wouxun KG-935G radio
 # Serial coms are at 19200 baud
 # The data is passed in variable length records
@@ -449,9 +751,8 @@ class KG935GRadio(chirp_common.CloneModeRadio,
     VENDOR = "Wouxun"
     MODEL = "KG-935G"
     _model = b"KG-UV8D-B"
-    _file_ident = b"935G"
     BAUD_RATE = 19200
-# MRT - Added Medium Power level for 935G support
+    # MRT - Added Medium Power level for 935G support
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=0.5),
                     chirp_common.PowerLevel("M", watts=4.5),
                     chirp_common.PowerLevel("H", watts=5.5)]
@@ -517,11 +818,6 @@ class KG935GRadio(chirp_common.CloneModeRadio,
     # Offset
     #  0:10     Model, zero padded (Looks for 'KG-UV8D-B')
 
-    @classmethod
-    def match_model(cls, filedata, filename):
-        id = cls._file_ident
-        return cls._file_ident in filedata[0x426:0x430]
-
     def _identify(self):
         """Do the identification dance"""
         for _i in range(0, 10):
@@ -544,7 +840,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         self._write_record(CMD_END)
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(_MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(_MEM_FORMAT_935G, self._mmap)
 
     def sync_in(self):
         try:
@@ -597,32 +893,42 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         """Talk to a wouxun KG-935G and do a upload"""
         try:
             self._identify()
-            self._do_upload(0, 32768, 64)
+            self._do_upload()
         except errors.RadioError:
             raise
         except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         return
 
-    def _do_upload(self, start, end, blocksize):
-        ptr = start
-        for i in range(start, end, blocksize):
-            req = struct.pack('>H', i)
-            chunk = self.get_mmap()[ptr:ptr + blocksize]
-            self._write_record(CMD_WR, req + chunk)
-            LOG.debug(util.hexprint(req + chunk))
-            cserr, ack = self._read_record()
-            LOG.debug(util.hexprint(ack))
-            j = struct.unpack('>H', ack)[0]
-            if cserr or j != ptr:
-                raise Exception("Radio did not ack block %i" % ptr)
-            ptr += blocksize
-            if self.status_fn:
-                status = chirp_common.Status()
-                status.cur = i
-                status.max = end
-                status.msg = "Cloning to radio"
-                self.status_fn(status)
+    def _do_upload(self):
+        cfgmap = config_map_935G
+
+        for start, blocksize, count in cfgmap:
+            end = start + (blocksize * count)
+            LOG.debug("start = " + str(start))
+            LOG.debug("end = " + str(end))
+            LOG.debug("blksize = " + str(blocksize))
+
+            for addr in range(start, end, blocksize):
+                ptr = addr
+                LOG.debug("ptr = " + str(ptr))
+                req = struct.pack('>H', addr)
+                chunk = self.get_mmap()[ptr:ptr + blocksize]
+                self._write_record(CMD_WR, req + chunk)
+                LOG.debug(util.hexprint(req + chunk))
+                cserr, ack = self._read_record()
+                LOG.debug(util.hexprint(ack))
+                j = struct.unpack('>H', ack)[0]
+                if cserr or j != ptr:
+                    raise Exception("Radio did not ack block %i" % ptr)
+                ptr += blocksize
+                if self.status_fn:
+                    status = chirp_common.Status()
+                    status.cur = ptr
+                    status.max = 0x8000
+                    status.msg = "Cloning to radio"
+                    self.status_fn(status)
+
         self._finish()
 
     def get_features(self):
@@ -649,13 +955,10 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_name_length = 8
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
-#   MRT - Open up channel memory freq range to support RxFreq limit expansion
+        #   MRT - Open up channel memory freq range to support
+        #   RxFreq limit expansion
         rf.valid_bands = [(30000000, 299999990),  # supports 2m
                           (300000000, 999999990)]  # supports 70cm
-        # rf.valid_bands = [(self._memobj.vhf_limits.rx_start
-        #                 , self._memobj.vhf_limits.rx_stop),  # supports 2m
-        #                   (self._memobj.uhf_limits.rx_start
-        #                 , self._memobj.uhf_limits.rx_stop)]  # supports 70cm
 
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.memory_bounds = (1, 999)  # 999 memories
@@ -674,38 +977,28 @@ class KG935GRadio(chirp_common.CloneModeRadio,
              'Please keep a copy of your memories with the original Wouxon'
              'CPS software if you treasure them, this driver is new and'
              'may contain bugs.\n'
-             '\n'
-             ' All of the settings from the Wouxon Custom Programming'
-             ' Software (CSP) have been mapped\n in addition to some bonus'
-             ' settings that were found.\n'
-             ' Changing the VHF/UHF Rx limits does expand receive range -'
-             ' but radio performance\n'
-             ' is not guaranteed-  and may void warranty or cause radio'
-             ' to malfunction.\n'
-             ' You can also customize the bottom banner from the OEMINFO '
-             ' Model setting\n'
              )
         return rp
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
-# MRT - corrected the Polarity decoding to match 935G implementation
-# use 0x2000 bit mask for R
-# MRT - 0x2000 appears to be the bit mask for Inverted DCS tones
-# MRT - n DCS Tone will be 0x4xxx values - i DCS Tones will
-# be 0x6xxx values.
-# MRT - Chirp Uses N for n DCS Tones and R for i DCS Tones
 
     def _get_tone(self, _mem, mem):
+        # MRT - corrected the Polarity decoding to match 935G implementation
+        # use 0x2000 bit mask for R
+        # MRT - 0x2000 appears to be the bit mask for Inverted DCS tones
+        # MRT - n DCS Tone will be 0x4xxx values - i DCS Tones will
+        # be 0x6xxx values.
+        # MRT - Chirp Uses N for n DCS Tones and R for i DCS Tones
         def _get_dcs(val):
             code = int("%03o" % (val & 0x07FF))
             pol = (val & 0x2000) and "R" or "N"
             return code, pol
-# MRT - Modified the function below to bitwise AND with 0x4000
-# to check for 935G DCS Tone decoding
-# MRT 0x4000 appears to be the bit mask for DCS tones
+        # MRT - Modified the function below to bitwise AND with 0x4000
+        # to check for 935G DCS Tone decoding
+        # MRT 0x4000 appears to be the bit mask for DCS tones
         tpol = False
-# MRT Beta 1.1 - Fix the txtone compare to 0x4000 - was rxtone.
+        # MRT Beta 1.1 - Fix the txtone compare to 0x4000 - was rxtone.
         if _mem.txtone != 0xFFFF and (_mem.txtone & 0x4000) == 0x4000:
             tcode, tpol = _get_dcs(_mem.txtone)
             mem.dtcs = tcode
@@ -715,8 +1008,8 @@ class KG935GRadio(chirp_common.CloneModeRadio,
             txmode = "Tone"
         else:
             txmode = ""
-# MRT - Modified the function below to bitwise AND with 0x4000
-# to check for 935G DCS Tone decoding
+        # MRT - Modified the function below to bitwise AND with 0x4000
+        # to check for 935G DCS Tone decoding
         rpol = False
         if _mem.rxtone != 0xFFFF and (_mem.rxtone & 0x4000) == 0x4000:
             rcode, rpol = _get_dcs(_mem.rxtone)
@@ -905,27 +1198,47 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         _scan = self._memobj.scan_groups
         _callname = self._memobj.call_names
 
+        if self.MODEL == "KG-935G":
+            themelist = THEME_LIST
+            vfoa_grp_label = "VFO A Settings"
+            vfob_grp_label = "VFO B Settings"
+            workmodelist = WORKMODE_LIST
+            pfkeyshort = PFKEYSHORT_LIST
+            pfkeylong = PFKEYLONG_LIST
+            dispmesg = "Display Message - Interface Display Edit"
+            areamsglabel = "Model / Bottom Banner"
+            vfo_area = "VFO "
+            ani_msg = "ANI-ID Switch (ANI-SW)"
+            pttdly_msg = "PTT-DLY"
+            idtx_msg = "PTT-ID"
+        else:
+            themelist = THEME_LIST_935GPLUS
+            vfoa_grp_label = "Freq Mode A Settings"
+            vfob_grp_label = "Freq Mode B Settings"
+            workmodelist = WORKMODE_LIST_935GPLUS
+            pfkeyshort = PFKEYSHORT_LIST_935GPLUS
+            pfkeylong = PFKEYLONG_LIST_935GPLUS
+            dispmesg = "Top Message"
+            areamsglabel = "Area Message"
+            vfo_area = "Area "
+            ani_msg = "Send ANI-ID on Tx(ANI-SW)"
+            pttdly_msg = "ID Delay"
+            idtx_msg = "ID Transmit Setting"
+
         cfg_grp = RadioSettingGroup("cfg_grp", "Config Settings")
-        vfoa_grp = RadioSettingGroup("vfoa_grp", "VFO A Settings")
-        vfob_grp = RadioSettingGroup("vfob_grp", "VFO B Settings")
+        vfoa_grp = RadioSettingGroup("vfoa_grp", vfoa_grp_label)
+        vfob_grp = RadioSettingGroup("vfob_grp", vfob_grp_label)
         key_grp = RadioSettingGroup("key_grp", "Key Settings")
         fmradio_grp = RadioSettingGroup("fmradio_grp", "FM Broadcast Memory")
-        lmt_grp = RadioSettingGroup("lmt_grp", "Rx/Tx Frequency Limits")
-        uhf_lmt_grp = RadioSettingGroup("uhf_lmt_grp", "UHF")
-        vhf_lmt_grp = RadioSettingGroup("vhf_lmt_grp", "VHF")
+        lmt_grp = RadioSettingGroup("lmt_grp", "Frequency Limits")
         oem_grp = RadioSettingGroup("oem_grp", "OEM Info")
         scan_grp = RadioSettingGroup("scan_grp", "Scan Group")
         call_grp = RadioSettingGroup("call_grp", "Call Settings")
-        extra_grp = RadioSettingGroup("extra_grp",
-                                      "Extra Settings"
-                                      "\nNOT Changed by RESET or CPS")
-        extra_grp.append(lmt_grp)
-        extra_grp.append(oem_grp)
         group = RadioSettings(cfg_grp, vfoa_grp, vfob_grp,
                               fmradio_grp, key_grp, scan_grp,
-                              call_grp, extra_grp)
+                              call_grp, lmt_grp, oem_grp)
 
-    # Call Settings
+        # Call Settings
         rs = RadioSetting("cur_call_grp", "Current Call Group",
                           RadioSettingValueList(CALLGROUP_LIST,
                                                 CALLGROUP_LIST[_settings.
@@ -941,11 +1254,10 @@ class KG935GRadio(chirp_common.CloneModeRadio,
             callnum = str(i)
             _msg = ""
             _msg1 = str(eval("_callname.call_name"+callnum)).split("\0")[0]
-# MRT - Handle default factory values of 0xFF or
-# non-ascii values in Call Name memory
+            # MRT - Handle default factory values of 0xFF or
+            # non-ascii values in Call Name memory
             for char in _msg1:
                 if char < chr(0x20) or char > chr(0x7E):
-                    # _msg += chr(0x20)
                     _msg += ""
                 else:
                     _msg += str(char)
@@ -979,12 +1291,20 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("wxalert", "Weather Alert",
                           RadioSettingValueBoolean(_settings.wxalert))
         cfg_grp.append(rs)
+
+        if self.MODEL == "KG-935G Plus":
+            rs = RadioSetting("wxalert_type", "Weather Alert Notification",
+                              RadioSettingValueList(WX_TYPE,
+                                                    WX_TYPE[_settings.
+                                                            wxalert_type]))
+            cfg_grp.append(rs)
+
         rs = RadioSetting("power_save", "Battery Saver",
                           RadioSettingValueBoolean(_settings.power_save))
         cfg_grp.append(rs)
         rs = RadioSetting("theme", "Theme",
                           RadioSettingValueList(
-                              THEME_LIST, THEME_LIST[_settings.theme]))
+                              themelist, themelist[_settings.theme]))
         cfg_grp.append(rs)
         rs = RadioSetting("backlight", "Backlight Active Time",
                           RadioSettingValueList(BACKLIGHT_LIST,
@@ -1044,7 +1364,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                                                 SMUTESET_LIST[_settings.
                                                               smuteset]))
         cfg_grp.append(rs)
-        rs = RadioSetting("ani_sw", "ANI-ID Switch (ANI-SW)",
+        rs = RadioSetting("ani_sw", ani_msg,
                           RadioSettingValueBoolean(_settings.ani_sw))
         cfg_grp.append(rs)
         rs = RadioSetting("dtmf_st", "DTMF Sidetone (SIDETONE)",
@@ -1056,11 +1376,11 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueList(ALERTS_LIST,
                                                 ALERTS_LIST[_settings.alert]))
         cfg_grp.append(rs)
-        rs = RadioSetting("ptt_delay", "PTT-DLY",
+        rs = RadioSetting("ptt_delay", pttdly_msg,
                           RadioSettingValueMap(PTTDELAY_TIMES,
                                                _settings.ptt_delay))
         cfg_grp.append(rs)
-        rs = RadioSetting("ptt_id", "PTT-ID",
+        rs = RadioSetting("ptt_id", idtx_msg,
                           RadioSettingValueList(PTTID_LIST,
                                                 PTTID_LIST[_settings.ptt_id]))
         cfg_grp.append(rs)
@@ -1092,6 +1412,18 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueMap(DTMF_TIMES,
                                                _settings.dtmf_interval))
         cfg_grp.append(rs)
+
+        if self.MODEL == "KG-935G Plus":
+            rs = RadioSetting("batt_ind", "Battery Indicator",
+                              RadioSettingValueList(
+                                  BATT_DISP_LIST,
+                                  BATT_DISP_LIST[_settings.batt_ind]))
+            cfg_grp.append(rs)
+
+            rs = RadioSetting("sim_rec", "Simultaneous Receive",
+                              RadioSettingValueBoolean(_settings.sim_rec))
+            cfg_grp.append(rs)
+
         rs = RadioSetting("channel_menu", "Menu available in channel mode",
                           RadioSettingValueBoolean(_settings.channel_menu))
         cfg_grp.append(rs)
@@ -1117,7 +1449,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         val = RadioSettingValueString(0, 15, _msg)
         val.set_mutable(True)
         rs = RadioSetting("dispstr",
-                          "Display Message - Interface Display Edit", val)
+                          dispmesg, val)
         key_grp.append(rs)
 
         def apply_ani_id(setting, obj):
@@ -1134,23 +1466,23 @@ class KG935GRadio(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("pf1_shrt", "PF1 SHORT Key function",
                           RadioSettingValueList(
-                              PFKEYSHORT_LIST,
-                              PFKEYSHORT_LIST[_settings.pf1_shrt]))
+                              pfkeyshort,
+                              pfkeyshort[_settings.pf1_shrt]))
         key_grp.append(rs)
         rs = RadioSetting("pf1_long", "PF1 LONG Key function",
                           RadioSettingValueList(
-                              PFKEYLONG_LIST,
-                              PFKEYLONG_LIST[_settings.pf1_long]))
+                              pfkeylong,
+                              pfkeylong[_settings.pf1_long]))
         key_grp.append(rs)
         rs = RadioSetting("pf2_shrt", "PF2 SHORT Key function",
                           RadioSettingValueList(
-                              PFKEYSHORT_LIST,
-                              PFKEYSHORT_LIST[_settings.pf2_shrt]))
+                              pfkeyshort,
+                              pfkeyshort[_settings.pf2_shrt]))
         key_grp.append(rs)
         rs = RadioSetting("pf2_long", "PF2 LONG Key function",
                           RadioSettingValueList(
-                              PFKEYLONG_LIST,
-                              PFKEYLONG_LIST[_settings.pf2_long]))
+                              pfkeylong,
+                              pfkeylong[_settings.pf2_long]))
         key_grp.append(rs)
 
 #       SCAN GROUP settings
@@ -1188,145 +1520,144 @@ class KG935GRadio(chirp_common.CloneModeRadio,
 
         # VFO A Settings
         #
-        rs = RadioSetting("work_mode_a", "VFO A Workmode",
-                          RadioSettingValueList(WORKMODE_LIST,
-                                                WORKMODE_LIST[_settings.
-                                                              work_mode_a]))
+        rs = RadioSetting("work_mode_a", vfo_area + "A Workmode",
+                          RadioSettingValueList(workmodelist,
+                                                workmodelist[_settings.
+                                                             work_mode_a]))
         vfoa_grp.append(rs)
-        rs = RadioSetting("work_ch_a", "VFO A Work Channel",
+        rs = RadioSetting("work_ch_a", vfo_area + "A Work Channel",
                           RadioSettingValueInteger(1, 999,
                                                    _settings.work_ch_a))
         vfoa_grp.append(rs)
-        rs = RadioSetting("vfoa.rxfreq", "VFO A Rx Frequency (MHz)",
+        rs = RadioSetting("vfoa.rxfreq", vfo_area + "A Rx Frequency (MHz)",
                           RadioSettingValueFloat(
                               30.00000, 999.999999,
                               (_vfoa.rxfreq / 100000.0), 0.000001, 6))
         vfoa_grp.append(rs)
 
-        rs = RadioSetting("vfoa.rxtone", "VFOA Rx tone",
+        rs = RadioSetting("vfoa.rxtone", vfo_area + "A Rx tone",
                           RadioSettingValueMap(
                             TONE_MAP, _vfoa.rxtone))
         vfoa_grp.append(rs)
-        rs = RadioSetting("vfoa.txtone", "VFOA Tx tone",
+        rs = RadioSetting("vfoa.txtone", vfo_area + "A Tx tone",
                           RadioSettingValueMap(
                             TONE_MAP, _vfoa.txtone))
         vfoa_grp.append(rs)
 
-
-# MRT - AND power with 0x03 to display only the lower 2 bits for
-# power level and to clear the upper bits
-# MRT - any bits set in the upper 2 bits will cause radio to show
-# invalid values for power level and a display glitch
-# MRT - when PTT is pushed
+        # MRT - AND power with 0x03 to display only the lower 2 bits for
+        # power level and to clear the upper bits
+        # MRT - any bits set in the upper 2 bits will cause radio to show
+        # invalid values for power level and a display glitch
+        # MRT - when PTT is pushed
         _vfoa.power = _vfoa.power & 0x3
         if _vfoa.power > 2:
             _vfoa.power = 2
-        rs = RadioSetting("vfoa.power", "VFO A Power",
+        rs = RadioSetting("vfoa.power", vfo_area + "A Power",
                           RadioSettingValueList(
                               POWER_LIST, POWER_LIST[_vfoa.power]))
         vfoa_grp.append(rs)
-        rs = RadioSetting("vfoa.iswide", "VFO A Wide/Narrow",
+        rs = RadioSetting("vfoa.iswide", vfo_area + "A Wide/Narrow",
                           RadioSettingValueList(
                               BANDWIDTH_LIST, BANDWIDTH_LIST[_vfoa.iswide]))
         vfoa_grp.append(rs)
-        rs = RadioSetting("vfoa.mute_mode", "VFO A Mute (SP Mute)",
+        rs = RadioSetting("vfoa.mute_mode", vfo_area + "A Mute (SP Mute)",
                           RadioSettingValueList(
                               SPMUTE_LIST, SPMUTE_LIST[_vfoa.mute_mode]))
         vfoa_grp.append(rs)
-        rs = RadioSetting("VFO_repeater_a", "VFO A Repeater",
+        rs = RadioSetting("VFO_repeater_a", vfo_area + "A Repeater",
                           RadioSettingValueBoolean(_settings.VFO_repeater_a))
         vfoa_grp.append(rs)
 
-        rs = RadioSetting("vfoa.scrambler", "VFO A Descramble",
+        rs = RadioSetting("vfoa.scrambler", vfo_area + "A Descramble",
                           RadioSettingValueList(
                               SCRAMBLE_LIST, SCRAMBLE_LIST[_vfoa.scrambler]))
         vfoa_grp.append(rs)
 
-        rs = RadioSetting("vfoa.cmpndr", "VFO A Compander",
+        rs = RadioSetting("vfoa.cmpndr", vfo_area + "A Compander",
                           RadioSettingValueList(
                              ONOFF_LIST, ONOFF_LIST[_vfoa.cmpndr]))
         vfoa_grp.append(rs)
 
-        rs = RadioSetting("vfoa.step", "VFO A Step (kHz)",
+        rs = RadioSetting("vfoa.step", vfo_area + "A Step (kHz)",
                           RadioSettingValueList(
                               STEP_LIST, STEP_LIST[_vfoa.step]))
         vfoa_grp.append(rs)
-        rs = RadioSetting("vfoa.squelch", "VFO A Squelch",
+        rs = RadioSetting("vfoa.squelch", vfo_area + "A Squelch",
                           RadioSettingValueList(
                               LIST_10, LIST_10[_vfoa.squelch]))
         vfoa_grp.append(rs)
 
         # VFO B Settings
-        rs = RadioSetting("work_mode_b", "VFO B Workmode",
-                          RadioSettingValueList(WORKMODE_LIST,
-                                                WORKMODE_LIST[_settings.
-                                                              work_mode_b]))
+        rs = RadioSetting("work_mode_b", vfo_area + "B Workmode",
+                          RadioSettingValueList(workmodelist,
+                                                workmodelist[_settings.
+                                                             work_mode_b]))
         vfob_grp.append(rs)
-        rs = RadioSetting("work_ch_b", "VFO B Work Channel",
+        rs = RadioSetting("work_ch_b", vfo_area + "B Work Channel",
                           RadioSettingValueInteger(1, 999,
                                                    _settings.work_ch_b))
         vfob_grp.append(rs)
-        rs = RadioSetting("vfob.rxfreq", "VFO B Rx Frequency (MHz)",
+        rs = RadioSetting("vfob.rxfreq", vfo_area + "B Rx Frequency (MHz)",
                           RadioSettingValueFloat(
                               30.000000, 999.999999,
                               (_vfob.rxfreq / 100000.0), 0.000001, 6))
         vfob_grp.append(rs)
-        rs = RadioSetting("vfob.rxtone", "VFOB Rx tone",
+        rs = RadioSetting("vfob.rxtone", vfo_area + "B Rx tone",
                           RadioSettingValueMap(
                             TONE_MAP, _vfob.rxtone))
         vfob_grp.append(rs)
-        rs = RadioSetting("vfob.txtone", "VFOB Tx tone",
+        rs = RadioSetting("vfob.txtone", vfo_area + "B Tx tone",
                           RadioSettingValueMap(
                             TONE_MAP, _vfob.txtone))
         vfob_grp.append(rs)
 
-# MRT - AND power with 0x03 to display only the lower 2 bits for
-# power level and to clear the upper bits
-# MRT - any bits set in the upper 2 bits will cause radio to show
-# invalid values for power level and a display glitch
-# MRT - when PTT is pushed
+        # MRT - AND power with 0x03 to display only the lower 2 bits for
+        # power level and to clear the upper bits
+        # MRT - any bits set in the upper 2 bits will cause radio to show
+        # invalid values for power level and a display glitch
+        # MRT - when PTT is pushed
         _vfob.power = _vfob.power & 0x3
         if _vfob.power > 2:
             _vfob.power = 2
-        rs = RadioSetting("vfob.power", "VFO B Power",
+        rs = RadioSetting("vfob.power", vfo_area + "B Power",
                           RadioSettingValueList(
                               POWER_LIST, POWER_LIST[_vfob.power]))
         vfob_grp.append(rs)
-        rs = RadioSetting("vfob.iswide", "VFO B Wide/Narrow",
+        rs = RadioSetting("vfob.iswide", vfo_area + "B Wide/Narrow",
                           RadioSettingValueList(
                               BANDWIDTH_LIST, BANDWIDTH_LIST[_vfob.iswide]))
         vfob_grp.append(rs)
-        rs = RadioSetting("vfob.mute_mode", "VFO B Mute (SP Mute)",
+        rs = RadioSetting("vfob.mute_mode", vfo_area + "B Mute (SP Mute)",
                           RadioSettingValueList(
                               SPMUTE_LIST, SPMUTE_LIST[_vfob.mute_mode]))
         vfob_grp.append(rs)
-        rs = RadioSetting("VFO_repeater_b", "VFO B Repeater",
+        rs = RadioSetting("VFO_repeater_b", vfo_area + "B Repeater",
                           RadioSettingValueBoolean(_settings.VFO_repeater_b))
         vfob_grp.append(rs)
 
-        rs = RadioSetting("vfob.scrambler", "VFO B Descramble",
+        rs = RadioSetting("vfob.scrambler", vfo_area + "B Descramble",
                           RadioSettingValueList(
                               SCRAMBLE_LIST, SCRAMBLE_LIST[_vfob.scrambler]))
         vfob_grp.append(rs)
 
-        rs = RadioSetting("vfob.cmpndr", "VFO B Compander",
+        rs = RadioSetting("vfob.cmpndr", vfo_area + "B Compander",
                           RadioSettingValueList(
                               ONOFF_LIST, ONOFF_LIST[_vfob.cmpndr]))
         vfob_grp.append(rs)
 
-        rs = RadioSetting("vfob.step", "VFO B Step (kHz)",
+        rs = RadioSetting("vfob.step", vfo_area + "B Step (kHz)",
                           RadioSettingValueList(
                               STEP_LIST, STEP_LIST[_vfob.step]))
         vfob_grp.append(rs)
-        rs = RadioSetting("vfob.squelch", "VFO B Squelch",
+        rs = RadioSetting("vfob.squelch", vfo_area + "B Squelch",
                           RadioSettingValueList(
                               LIST_10, LIST_10[_vfob.squelch]))
         vfob_grp.append(rs)
 
-# FM RADIO PRESETS
+        # FM RADIO PRESETS
 
-# memory stores raw integer value like 760
-# radio will divide 760 by 10 and interpret correctly at 76.0Mhz
+        # memory stores raw integer value like 760
+        # radio will divide 760 by 10 and interpret correctly at 76.0Mhz
         for i in range(1, 21):
             chan = str(i)
             rs = RadioSetting("FM_radio" + chan, "FM Preset" + chan,
@@ -1337,8 +1668,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                                                      0.1, 1))
             fmradio_grp.append(rs)
 
-# Freq Limits settings
-        #
+        # Freq Limits settings
         rs = RadioSetting("vhf_limits.rx_start", "VHF RX Lower Limit (MHz)",
                           RadioSettingValueFloat(
                               30.000000, 299.999999,
@@ -1367,23 +1697,10 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                               0.000001, 6))
         lmt_grp.append(rs)
 
-# MRT - TX Limits do not appear to change radio's ability
-#  to transmit on other freqs.
-# MRT - Appears that the radio firmware prevent Tx
-# on anything other than a valid GMRS Freq
-
-        # rs = RadioSetting("vhf_limits.tx_start", "VHF TX Lower Limit",
-        #                   RadioSettingValueInteger(
-        #                       10000000, 299999999,
-        #                       self._memobj.vhf_limits.tx_start * 10, 5000))
-        # val.set_mutable(False)
-        # vhf_lmt_grp.append(rs)
-        # rs = RadioSetting("vhf_limits.tx_stop", "VHF TX Upper Limit",
-        #                   RadioSettingValueInteger(
-        #                       10000000, 299999999,
-        #                       self._memobj.vhf_limits.tx_stop * 10, 5000))
-        # val.set_mutable(False)
-        # vhf_lmt_grp.append(rs)
+        # MRT - TX Limits do not appear to change radio's ability
+        #  to transmit on other freqs.
+        # MRT - Appears that the radio firmware prevent Tx
+        # on anything other than a valid GMRS Freq
 
         rs = RadioSetting("uhf_limits.rx_start", "UHF RX Lower Limit (MHz)",
                           RadioSettingValueFloat(
@@ -1411,19 +1728,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                               0.000001, 6))
         lmt_grp.append(rs)
 
-        # rs = RadioSetting("uhf_limits.tx_start", "UHF TX Lower Limit",
-        #                   RadioSettingValueInteger(
-        #                       300000000, 999999999,
-        #                       self._memobj.uhf_limits.tx_start * 10, 5000))
-        # uhf_lmt_grp.append(rs)
-        # rs = RadioSetting("uhf_limits.tx_stop", "UHF TX Upper Limit",
-        #                   RadioSettingValueInteger(
-        #                       300000000, 999999999,
-        #                       self._memobj.uhf_limits.tx_stop * 10, 5000))
-        # uhf_lmt_grp.append(rs)
-
-# OEM info
-        #
+        # OEM info
         def _decode(lst):
             _str = ''.join([chr(int(c)) for c in lst
                             if chr(int(c)) in chirp_common.CHARSET_ASCII])
@@ -1435,8 +1740,12 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         _str = _decode(self._memobj.oem_info.model)
         val = RadioSettingValueString(0, 8, _str)
         val.set_mutable(True)
-        rs = RadioSetting("oem_info.model", "Model / Bottom Banner", val)
-        oem_grp.append(rs)
+        rs = RadioSetting("oem_info.model", areamsglabel, val)
+        if self.MODEL == "KG-935G":
+            oem_grp.append(rs)
+        else:
+            key_grp.append(rs)
+
         _str = _decode(self._memobj.oem_info.oem1)
         val = RadioSettingValueString(0, 15, _str)
         val.set_mutable(False)
@@ -1449,6 +1758,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("oem_info.oem2", "Firmware Version ??", val)
         rs.set_apply_callback(do_nothing, _settings)
         oem_grp.append(rs)
+
         _str = _decode(self._memobj.oem_info.date)
         val = RadioSettingValueString(0, 15, _str)
         val.set_mutable(False)
@@ -1542,3 +1852,15 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                     "Caller ID code has illegal byte 0x%x" % b)
             cidstr += bin2ascii[b]
         return cidstr
+
+
+@directory.register
+class KG935GPlusRadio(KG935GRadio):
+
+    """Wouxun KG-935G Plus"""
+    VENDOR = "Wouxun"
+    MODEL = "KG-935G Plus"
+    NEEDS_COMPAT_SERIAL = False
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(_MEM_FORMAT_935GPLUS, self._mmap)
