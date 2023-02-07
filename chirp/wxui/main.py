@@ -714,11 +714,11 @@ class ChirpMain(wx.Frame):
                 help_menu.Append(debug_loc_menu)
 
         menu_bar = wx.MenuBar()
-        menu_bar.Append(file_menu, '&File')
-        menu_bar.Append(edit_menu, '&Edit')
-        menu_bar.Append(view_menu, '&View')
-        menu_bar.Append(radio_menu, '&Radio')
-        menu_bar.Append(help_menu, '&Help')
+        menu_bar.Append(file_menu, wx.GetStockLabel(wx.ID_FILE))
+        menu_bar.Append(edit_menu, wx.GetStockLabel(wx.ID_EDIT))
+        menu_bar.Append(view_menu, '&' + _('View'))
+        menu_bar.Append(radio_menu, '&' + _('Radio'))
+        menu_bar.Append(help_menu, wx.GetStockLabel(wx.ID_HELP))
 
         return menu_bar
 
