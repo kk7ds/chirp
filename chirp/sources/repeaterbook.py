@@ -222,7 +222,7 @@ class RepeaterBook(base.NetworkResultRadio):
         def match(item):
             search_fields = ('County', 'State', 'Landmark', 'Nearest City',
                              'Callsign', 'Region', 'Notes')
-            content = ' '.join(item[k] for k in search_fields
+            content = ' '.join(item.get(k) or '' for k in search_fields
                                if k in item)
             return not search_filter or search_filter.lower() in content.lower()
 
