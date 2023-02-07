@@ -282,6 +282,7 @@ Wouxun_KG-UV920P-A,@KC9HI,22-Dec-2022
 Wouxun_KG-UV980P,@mrtjr1,23-jan-2023
 Wouxun_KG-UV9PX,@mrtjr1,20-Jan-2022
 Wouxun_KG-935G,@mrtjr1,4-Jan-2022
+Wouxun_KG-935G_Plus,@mrtjr1,7-Feb-2023
 Yaesu_FT-1500M,@f3sty,05-Dec-2022
 Yaesu_FT-2900R_1900R,#10274,14-Jan-2023
 Yaesu_FT-2900R_1900RTXMod_Opened_Xmit,+Yaesu_FT-2900R_1900R,14-Jan-2023
