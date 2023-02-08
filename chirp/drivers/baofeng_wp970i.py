@@ -898,6 +898,7 @@ class BFA58(WP970I):
     """Baofeng BF-A58"""
     VENDOR = "Baofeng"
     MODEL = "BF-A58"
+    LENGTH_NAME = 7
     ALIASES = [RH5XAlias, UV9RPROAlias]
 
     _fileid = ["BFT515 ", "BFT517 "]
