@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-07 13:35-0800\n"
-"PO-Revision-Date: 2023-02-03 03:43-0300\n"
+"PO-Revision-Date: 2023-02-08 02:11-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -663,9 +663,8 @@ msgid "Show debug log location"
 msgstr "Mostrar ubicación del registro de depuración"
 
 #: ../wxui/main.py:719
-#, fuzzy
 msgid "View"
-msgstr "_Ver"
+msgstr "Ver"
 
 #: ../wxui/main.py:720
 msgid "Radio"
