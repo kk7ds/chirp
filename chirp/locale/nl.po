@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-07 13:35-0800\n"
+"POT-Creation-Date: 2023-02-09 14:53-0800\n"
 "PO-Revision-Date: 2012-03-18 12:01+0100\n"
 "Last-Translator: Michael Tel <m.tel@xs4all.nl>\n"
 "Language-Team: Dutch\n"
@@ -247,32 +247,37 @@ msgstr ""
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 
-#: ../wxui/memedit.py:116
+#: ../wxui/memedit.py:113
 #, python-format
 msgid "Found empty list value for %(name)s: %(value)r"
 msgstr ""
 
-#: ../wxui/memedit.py:151 ../wxui/memedit.py:157
+#: ../wxui/memedit.py:148 ../wxui/memedit.py:154
 #, fuzzy, python-format
 msgid "Invalid value: %r"
 msgstr "Ongeldige waarde voor dit veld"
 
-#: ../wxui/memedit.py:180
+#: ../wxui/memedit.py:177
 msgid "Offset"
 msgstr "Offset"
 
-#: ../wxui/memedit.py:182
+#: ../wxui/memedit.py:179
 msgid "Frequency"
 msgstr "Frequentie"
 
-#: ../wxui/memedit.py:221
+#: ../wxui/memedit.py:218
 #, fuzzy
 msgid "Enter Frequency"
 msgstr "Frequentie"
 
-#: ../wxui/memedit.py:245
+#: ../wxui/memedit.py:242
 msgid "Power"
 msgstr "Vermogen"
+
+#: ../wxui/memedit.py:272
+#, fuzzy
+msgid "Tuning Step"
+msgstr "Kanaal-afstand"
 
 #: ../wxui/memedit.py:304
 msgid "Choice Required"
@@ -287,199 +292,212 @@ msgstr "Toon"
 msgid "Tone Squelch"
 msgstr "Toon squelch"
 
-#: ../wxui/memedit.py:390
+#: ../wxui/memedit.py:355
+msgid "Duplex"
+msgstr "Duplex"
+
+#: ../wxui/memedit.py:393
 #, fuzzy
 msgid "DTCS"
 msgstr "DTCS Pol"
 
-#: ../wxui/memedit.py:392
+#: ../wxui/memedit.py:395
 msgid "RX DTCS"
 msgstr ""
 
-#: ../wxui/memedit.py:436
+#: ../wxui/memedit.py:439
 #, fuzzy
 msgid ""
 "DTCS\n"
 "Polarity"
 msgstr "DTCS Pol"
 
-#: ../wxui/memedit.py:456
+#: ../wxui/memedit.py:448
+#, fuzzy
+msgid "Mode"
+msgstr "Mode"
+
+#: ../wxui/memedit.py:462
 #, fuzzy
 msgid "Cross mode"
 msgstr "Cross-mode"
 
-#: ../wxui/memedit.py:568
+#: ../wxui/memedit.py:471
+msgid "Comment"
+msgstr "Opmerking"
+
+#: ../wxui/memedit.py:577
 msgid "Tone Mode"
 msgstr "Toonmodus"
 
-#: ../wxui/memedit.py:838
+#: ../wxui/memedit.py:847
 #, python-format
 msgid "Choose %s Tone"
 msgstr ""
 
-#: ../wxui/memedit.py:841
+#: ../wxui/memedit.py:850
 #, fuzzy, python-format
 msgid "Choose %s DTCS Code"
 msgstr "DTCS code"
 
-#: ../wxui/memedit.py:862
+#: ../wxui/memedit.py:871
 #, python-format
 msgid ""
 "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr ""
 
-#: ../wxui/memedit.py:864
+#: ../wxui/memedit.py:873
 msgid "Information"
 msgstr ""
 
-#: ../wxui/memedit.py:872
+#: ../wxui/memedit.py:881
 #, fuzzy
 msgid "Choose Cross Mode"
 msgstr "Cross-mode"
 
-#: ../wxui/memedit.py:881
+#: ../wxui/memedit.py:890
 msgid "Enter TX Frequency (MHz)"
 msgstr ""
 
-#: ../wxui/memedit.py:889
+#: ../wxui/memedit.py:898
 msgid "Enter Offset (MHz)"
 msgstr ""
 
-#: ../wxui/memedit.py:902
+#: ../wxui/memedit.py:911
 msgid "Choose duplex"
 msgstr ""
 
-#: ../wxui/memedit.py:929
+#: ../wxui/memedit.py:938
 msgid "Unable to edit memory before radio is loaded"
 msgstr ""
 
-#: ../wxui/memedit.py:1006 ../wxui/memedit.py:1630
+#: ../wxui/memedit.py:1015 ../wxui/memedit.py:1639
 #, python-format
 msgid "Invalid edit: %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1012
+#: ../wxui/memedit.py:1021
 #, python-format
 msgid "Warning: %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1013
+#: ../wxui/memedit.py:1022
 msgid "Warning"
 msgstr ""
 
-#: ../wxui/memedit.py:1045
+#: ../wxui/memedit.py:1054
 #, python-format
 msgid "Memory %i is not deletable"
 msgstr ""
 
-#: ../wxui/memedit.py:1111
+#: ../wxui/memedit.py:1120
 msgid "Properties"
 msgstr ""
 
-#: ../wxui/memedit.py:1117
+#: ../wxui/memedit.py:1126
 #, fuzzy
 msgid "Insert Row Above"
 msgstr "Regel hierboven invoegen"
 
-#: ../wxui/memedit.py:1126
+#: ../wxui/memedit.py:1135
 #, fuzzy, python-format
 msgid "Delete %i Memories"
 msgstr "Verschillen ruwe kanalen"
 
-#: ../wxui/memedit.py:1129
+#: ../wxui/memedit.py:1138
 #, fuzzy, python-format
 msgid "Delete %i Memories and shift block up"
 msgstr "Verwijderen (en naar boven verplaatsen)"
 
-#: ../wxui/memedit.py:1133
+#: ../wxui/memedit.py:1142
 #, fuzzy, python-format
 msgid "Delete %i Memories and shift all up"
 msgstr "Verwijderen (en naar boven verplaatsen)"
 
-#: ../wxui/memedit.py:1136
+#: ../wxui/memedit.py:1145
 msgid "Delete"
 msgstr "Verwijderen"
 
-#: ../wxui/memedit.py:1138
+#: ../wxui/memedit.py:1147
 #, fuzzy
 msgid "Delete and shift block up"
 msgstr "Verwijderen (en naar boven verplaatsen)"
 
-#: ../wxui/memedit.py:1140
+#: ../wxui/memedit.py:1149
 #, fuzzy
 msgid "Delete and shift all up"
 msgstr "Verwijderen (en naar boven verplaatsen)"
 
-#: ../wxui/memedit.py:1166
+#: ../wxui/memedit.py:1175
 msgid "Show Raw Memory"
 msgstr "Toon ruw kanaal"
 
-#: ../wxui/memedit.py:1174
+#: ../wxui/memedit.py:1183
 msgid "Diff Raw Memories"
 msgstr "Verschillen ruwe kanalen"
 
-#: ../wxui/memedit.py:1210
+#: ../wxui/memedit.py:1219
 #, fuzzy
 msgid "No empty rows below!"
 msgstr "Regel hieronder invoegen"
 
-#: ../wxui/memedit.py:1282
+#: ../wxui/memedit.py:1291
 msgid "Some memories are not deletable"
-msgstr ""
-
-#: ../wxui/memedit.py:1308
-#, python-format
-msgid "Pasted memory will overwrite memory %i"
-msgstr ""
-
-#: ../wxui/memedit.py:1311
-#, python-format
-msgid "Pasted memories will overwrite memory %i"
-msgstr ""
-
-#: ../wxui/memedit.py:1314
-#, python-format
-msgid "Pasted memories will overwrite %i existing memories"
 msgstr ""
 
 #: ../wxui/memedit.py:1317
 #, python-format
-msgid "Pasted memories will overwrite memories %s"
+msgid "Pasted memory will overwrite memory %i"
 msgstr ""
 
 #: ../wxui/memedit.py:1320
+#, python-format
+msgid "Pasted memories will overwrite memory %i"
+msgstr ""
+
+#: ../wxui/memedit.py:1323
+#, python-format
+msgid "Pasted memories will overwrite %i existing memories"
+msgstr ""
+
+#: ../wxui/memedit.py:1326
+#, python-format
+msgid "Pasted memories will overwrite memories %s"
+msgstr ""
+
+#: ../wxui/memedit.py:1329
 #, fuzzy
 msgid "Overwrite memories?"
 msgstr "Overschrijven?"
 
-#: ../wxui/memedit.py:1365
+#: ../wxui/memedit.py:1374
 #, fuzzy
 msgid "Some memories are incompatible with this radio"
 msgstr "Geplakt kanaal {number} is niet compatibel met deze radio omdat:"
 
-#: ../wxui/memedit.py:1440
+#: ../wxui/memedit.py:1449
 msgid "Export can only write CSV files"
 msgstr ""
 
-#: ../wxui/memedit.py:1477
+#: ../wxui/memedit.py:1486
 msgid "Digital Code"
 msgstr "Digitale code"
 
-#: ../wxui/memedit.py:1505
+#: ../wxui/memedit.py:1514
 #, python-format
 msgid "Edit details for memory %i"
 msgstr ""
 
-#: ../wxui/memedit.py:1507
+#: ../wxui/memedit.py:1516
 #, python-format
 msgid "Edit details for %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:1541
+#: ../wxui/memedit.py:1550
 msgid "Extra"
 msgstr ""
 
-#: ../wxui/memedit.py:1552
+#: ../wxui/memedit.py:1561
 msgid "DV Memory"
 msgstr ""
 
@@ -1095,9 +1113,6 @@ msgstr ""
 #~ msgid "From"
 #~ msgstr "Van"
 
-#~ msgid "Comment"
-#~ msgstr "Opmerking"
-
 #~ msgid "Location memory will be imported into"
 #~ msgstr "Geheugenplaatsen zullen ook gemporteerd worden naar"
 
@@ -1374,12 +1389,6 @@ msgstr ""
 
 #~ msgid "Priming memory"
 #~ msgstr "Voorbereiden van geheugen"
-
-#~ msgid "Duplex"
-#~ msgstr "Duplex"
-
-#~ msgid "Tune Step"
-#~ msgstr "Kanaal-afstand"
 
 #~ msgid "Skip"
 #~ msgstr "Overslaan"
