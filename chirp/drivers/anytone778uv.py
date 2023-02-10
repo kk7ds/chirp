@@ -691,11 +691,12 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         try:
             rf.valid_bands = get_band_limits_Hz(
                 int(self._memobj.radio_settings.bandlimit))
-        except TypeError as e:
+        except AttributeError as e:
             # If we're asked without memory loaded, assume the most permissive
             rf.valid_bands = get_band_limits_Hz(1)
         except Exception as e:
-            LOG.error('Failed to get band limits for anytone778uv: %s' % e)
+            LOG.exception(
+                'Failed to get band limits for anytone778uv: %s' % e)
             rf.valid_bands = get_band_limits_Hz(1)
         rf.valid_modes = ['FM', 'NFM']
         rf.valid_power_levels = POWER_LEVELS
