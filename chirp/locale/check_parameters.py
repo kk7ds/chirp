@@ -10,7 +10,7 @@ pos = {filename: polib.pofile(filename) for filename in filelist}
 formatter = Formatter()
 
 for name, po in pos.iteritems():
-    print "Testing", name
+    print("Testing", name)
     for entry in po:
         if len(entry.msgstr) > 0:
             try:
@@ -21,11 +21,11 @@ for name, po in pos.iteritems():
                         for literal_text, field_name, format_spec, conversion
                         in formatter.parse(entry.msgstr)]
             except Exception as e:
-                print "Got exception!", e, "for entry", entry.msgid
+                print("Got exception!", e, "for entry", entry.msgid)
             else:
                 if tids is not None:
                     missing = [name for name in tids
                                if name is not None and name not in ids]
                     if len(missing) > 0:
-                        print "Missing parameters", missing, \
-                              "in translation of", entry.msgid
+                        print("Missing parameters", missing, \
+                              "in translation of", entry.msgid)
