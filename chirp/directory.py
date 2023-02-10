@@ -180,8 +180,9 @@ def get_radio_by_image(image_file):
 
 
 def import_drivers(limit=None):
-    if sys.platform == 'win32':
-        # Assume we are in a frozen win32 build, so we can not glob
+    frozen = getattr(sys, 'frozen', False)
+    if sys.platform == 'win32' and frozen:
+        # We are in a frozen win32 build, so we can not glob
         # the driver files, but we do not need to anyway
         import chirp.drivers
         for module in chirp.drivers.__all__:
