@@ -711,7 +711,7 @@ UV5R_POWER_LEVELS3 = [chirp_common.PowerLevel("High", watts=8.00),
                       chirp_common.PowerLevel("Med",  watts=4.00),
                       chirp_common.PowerLevel("Low",  watts=1.00)]
 
-UV5R_DTCS = sorted(chirp_common.DTCS_CODES + [645])
+UV5R_DTCS = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 UV5R_CHARSET = chirp_common.CHARSET_UPPER_NUMERIC + \
     "!@#$%^&*()+-=[]:\";'<>?,./"

@@ -67,7 +67,7 @@ CMD_ACK = "\x06"
 NC630A_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=1.00),
                        chirp_common.PowerLevel("High", watts=5.00)]
 
-NC630A_DTCS = sorted(chirp_common.DTCS_CODES + [645])
+NC630A_DTCS = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 BCL_LIST = ["Off", "Carrier", "QT/DQT"]
 TIMEOUTTIMER_LIST = [""] + ["%s seconds" % x for x in range(15, 615, 15)]

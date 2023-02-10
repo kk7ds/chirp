@@ -90,7 +90,7 @@ CMD_ACK = b"\x06"
 RT1_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=5.00),
                     chirp_common.PowerLevel("High", watts=9.00)]
 
-RT1_DTCS = sorted(chirp_common.DTCS_CODES + [645])
+RT1_DTCS = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 LIST_LPT = ["0.5", "1.0", "1.5", "2.0", "2.5"]
 LIST_SHORT_PRESS = ["Off", "Monitor On/Off", "Power High/Low", "Alarm", "Volt"]

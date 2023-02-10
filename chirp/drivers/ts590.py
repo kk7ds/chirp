@@ -142,9 +142,6 @@ TS590_SKIP = ["", "S"]
 TS590_MODES = ["LSB", "USB", "CW", "FM", "AM", "FSK", "CW-R",
                "FSK-R", "Data+LSB", "Data+USB", "Data+FM"]
 EX_MODES = ["FSK-R", "CW-R", "Data+LSB", "Data+USB", "Data+FM"]
-for ix in EX_MODES:
-    if ix not in chirp_common.MODES:
-        chirp_common.MODES.append(ix)
 
 TS590_TONES = list(chirp_common.TONES)
 TS590_TONES.append(1750.0)

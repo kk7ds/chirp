@@ -143,8 +143,8 @@ RT23_POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
                      chirp_common.PowerLevel("High", watts=2.50)]
 
 
-RT23_DTCS = sorted(chirp_common.DTCS_CODES +
-                   [17, 50, 55, 135, 217, 254, 305, 645, 765])
+RT23_DTCS = tuple(sorted(chirp_common.DTCS_CODES +
+                  (17, 50, 55, 135, 217, 254, 305, 645, 765)))
 
 RT23_CHARSET = chirp_common.CHARSET_UPPER_NUMERIC + \
     ":;<=>?@ !\"#$%&'()*+,-./"

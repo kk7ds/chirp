@@ -883,7 +883,7 @@ class RetevisRT16(BFT8Radio):
 class RetevisRB27B(BFT8Radio):
     VENDOR = "Retevis"
     MODEL = "RB27B"
-    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
+    DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
     HAS_NAMES = True
     NAME_LENGTH = 6
     VALID_CHARS = chirp_common.CHARSET_UPPER_NUMERIC + "-"
@@ -956,7 +956,7 @@ class FRSA1Radio(BFT8Radio):
     HAS_NAMES = True
     NAME_LENGTH = 6
     SKIP_VALUES = ["", "S"]
-    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
+    DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
     DUPLEXES = ['', '-', '+', 'off']
 
     _fingerprint = b"BF-T8A" + b"\x2E"

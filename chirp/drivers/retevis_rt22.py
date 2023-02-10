@@ -80,7 +80,7 @@ CMD_ACK = b"\x06"
 RT22_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=2.00),
                      chirp_common.PowerLevel("High", watts=5.00)]
 
-RT22_DTCS = sorted(chirp_common.DTCS_CODES + [645])
+RT22_DTCS = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 PF2KEY_LIST = ["Scan", "Local Alarm", "Remote Alarm"]
 TIMEOUTTIMER_LIST = ["Off"] + ["%s seconds" % x for x in range(15, 615, 15)]

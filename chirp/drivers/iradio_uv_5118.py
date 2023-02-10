@@ -138,7 +138,7 @@ struct {
 
 CMD_ACK = b"\x06"
 
-RB15_DTCS = sorted(chirp_common.DTCS_CODES + [645])
+RB15_DTCS = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 _STEP_LIST = [0.25, 1.25, 2.5, 5., 6.25, 10., 12.5, 25., 50., 100.]
 

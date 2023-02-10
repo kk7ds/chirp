@@ -534,6 +534,8 @@ PMR_FREQS2 = [446106250, 446118750, 446131250, 446143750, 446156250,
               446168750, 446181250, 446193750]
 PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
 
+DTCS_EXTRA = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
+
 
 def _enter_programming_mode(radio):
     serial = radio.pipe
@@ -713,7 +715,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
     BLOCK_SIZE = 0x10
     BLOCK_SIZE_UP = 0x10
 
-    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [17, 50, 645])
+    DTCS_CODES = sorted(chirp_common.DTCS_CODES + (17, 50, 645))
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.50),
                     chirp_common.PowerLevel("Low", watts=1.00)]
 
@@ -1750,7 +1752,7 @@ class RB26Radio(RT21Radio):
     BLOCK_SIZE = 0x20
     BLOCK_SIZE_UP = 0x10
 
-    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
+    DTCS_CODES = DTCS_EXTRA
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=3.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
@@ -1780,7 +1782,7 @@ class RT76Radio(RT21Radio):
     BLOCK_SIZE = 0x20
     BLOCK_SIZE_UP = 0x10
 
-    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
+    DTCS_CODES = DTCS_EXTRA
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
@@ -1975,7 +1977,7 @@ class RT40BRadio(RT21Radio):
     BLOCK_SIZE = 0x20
     BLOCK_SIZE_UP = 0x10
 
-    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
+    DTCS_CODES = DTCS_EXTRA
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
@@ -2010,7 +2012,7 @@ class RB28BRadio(RT21Radio):
     BLOCK_SIZE = 0x20
     BLOCK_SIZE_UP = 0x10
 
-    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
+    DTCS_CODES = DTCS_EXTRA
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
 

@@ -110,7 +110,7 @@ class MURSV1(baofeng_common.BaofengCommonHT):
         "!@#$%^&*()+-=[]:\";'<>?,./"
     LENGTH_NAME = 7
     SKIP_VALUES = ["", "S"]
-    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
+    DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
                     chirp_common.PowerLevel("Low", watts=.50)]
     VALID_BANDS = [(151820000, 154600250)]

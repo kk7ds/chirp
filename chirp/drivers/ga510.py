@@ -22,7 +22,7 @@ except ImportError:
               '%s requires it' % __name__)
 
 # GA510 also has DTCS code 645
-DTCS_CODES = list(sorted(chirp_common.DTCS_CODES + [645]))
+DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 DTMFCHARS = '0123456789ABCD*#'
 

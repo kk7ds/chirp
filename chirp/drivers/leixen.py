@@ -226,10 +226,9 @@ PFKEYSHORT_LIST = ["OFF",
                    ]
 
 MODES = ["NFM", "FM"]
-WTFTONES = [float(x) for x in range(56, 64)]
+WTFTONES = tuple(float(x) for x in range(56, 64))
 TONES = WTFTONES + chirp_common.TONES
-DTCS_CODES = [17, 50, 645] + chirp_common.DTCS_CODES
-DTCS_CODES.sort()
+DTCS_CODES = tuple(sorted((17, 50, 645) + chirp_common.DTCS_CODES))
 TMODES = ["", "Tone", "DTCS", "DTCS"]
 
 

@@ -203,7 +203,7 @@ TMODES = ["", "Tone", "", "TSQL"] + [""] * 12
 TMODES[12] = "DTCS"
 DCS_CODES = {
     "Alinco": chirp_common.DTCS_CODES,
-    "Jetstream": [17] + chirp_common.DTCS_CODES,
+    "Jetstream": (17,) + chirp_common.DTCS_CODES,
 }
 
 CHARSET = (["\x00"] * 0x30) + \

@@ -171,7 +171,7 @@ struct {
 
 CMD_ACK = b"\x06"
 
-RT76P_DTCS = sorted(chirp_common.DTCS_CODES + [645])
+RT76P_DTCS = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 DTMF_CHARS = "0123456789 *#ABCD"
 

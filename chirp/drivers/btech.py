@@ -47,7 +47,7 @@ ACK_CMD = 0x06
 MODES = ["FM", "NFM"]
 SKIP_VALUES = ["S", ""]
 TONES = chirp_common.TONES
-DTCS = sorted(chirp_common.DTCS_CODES + [645])
+DTCS = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 # lists related to "extra" settings
 PTTID_LIST = ["OFF", "BOT", "EOT", "BOTH"]

@@ -109,7 +109,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
         "!@#$%^&*()+-=[]:\";'<>?,./"
     LENGTH_NAME = 6
     SKIP_VALUES = ["", "S"]
-    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
+    DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Med",  watts=3.00),
                     chirp_common.PowerLevel("Low",  watts=1.00)]
