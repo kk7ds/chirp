@@ -30,25 +30,27 @@ LOG = logging.getLogger(__name__)
 SEPCHAR = ","
 
 # 50 Tones
-TONES = [67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
-         85.4, 88.5, 91.5, 94.8, 97.4, 100.0, 103.5,
-         107.2, 110.9, 114.8, 118.8, 123.0, 127.3,
-         131.8, 136.5, 141.3, 146.2, 151.4, 156.7,
-         159.8, 162.2, 165.5, 167.9, 171.3, 173.8,
-         177.3, 179.9, 183.5, 186.2, 189.9, 192.8,
-         196.6, 199.5, 203.5, 206.5, 210.7, 218.1,
-         225.7, 229.1, 233.6, 241.8, 250.3, 254.1,
-         ]
+TONES = (
+    67.0, 69.3, 71.9, 74.4, 77.0, 79.7, 82.5,
+    85.4, 88.5, 91.5, 94.8, 97.4, 100.0, 103.5,
+    107.2, 110.9, 114.8, 118.8, 123.0, 127.3,
+    131.8, 136.5, 141.3, 146.2, 151.4, 156.7,
+    159.8, 162.2, 165.5, 167.9, 171.3, 173.8,
+    177.3, 179.9, 183.5, 186.2, 189.9, 192.8,
+    196.6, 199.5, 203.5, 206.5, 210.7, 218.1,
+    225.7, 229.1, 233.6, 241.8, 250.3, 254.1,
+)
 
-TONES_EXTRA = [56.0, 57.0, 58.0, 59.0, 60.0, 61.0, 62.0,
-               62.5, 63.0, 64.0]
+TONES_EXTRA = (56.0, 57.0, 58.0, 59.0, 60.0, 61.0, 62.0,
+               62.5, 63.0, 64.0)
 
 OLD_TONES = list(TONES)
 [OLD_TONES.remove(x) for x in [159.8, 165.5, 171.3, 177.3, 183.5, 189.9,
                                196.6, 199.5, 206.5, 229.1, 254.1]]
+OLD_TONES = tuple(OLD_TONES)
 
 # 104 DTCS Codes
-DTCS_CODES = [
+DTCS_CODES = (
     23,  25,  26,  31,  32,  36,  43,  47,  51,  53,  54,
     65,  71,  72,  73,  74,  114, 115, 116, 122, 125, 131,
     132, 134, 143, 145, 152, 155, 156, 162, 165, 172, 174,
@@ -59,7 +61,7 @@ DTCS_CODES = [
     465, 466, 503, 506, 516, 523, 526, 532, 546, 565, 606,
     612, 624, 627, 631, 632, 654, 662, 664, 703, 712, 723,
     731, 732, 734, 743, 754,
-]
+)
 
 # 512 Possible DTCS Codes
 ALL_DTCS_CODES = []
@@ -67,8 +69,9 @@ for a in range(0, 8):
     for b in range(0, 8):
         for c in range(0, 8):
             ALL_DTCS_CODES.append((a * 100) + (b * 10) + c)
+ALL_DTCS_CODES = tuple(ALL_DTCS_CODES)
 
-CROSS_MODES = [
+CROSS_MODES = (
     "Tone->Tone",
     "DTCS->",
     "->DTCS",
@@ -77,13 +80,13 @@ CROSS_MODES = [
     "->Tone",
     "DTCS->DTCS",
     "Tone->"
-]
+)
 
-MODES = ["WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY",
+MODES = ("WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY",
          "DIG", "PKT", "NCW", "NCWR", "CWR", "P25", "Auto", "RTTYR",
-         "FSK", "FSKR", "DMR", "DN"]
+         "FSK", "FSKR", "DMR", "DN")
 
-TONE_MODES = [
+TONE_MODES = (
     "",
     "Tone",
     "TSQL",
@@ -91,19 +94,19 @@ TONE_MODES = [
     "DTCS-R",
     "TSQL-R",
     "Cross",
-]
+)
 
-TUNING_STEPS = [
+TUNING_STEPS = (
     5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0,
     125.0, 200.0,
     # Need to fix drivers using this list as an index!
     9.0, 1.0, 2.5,
-]
+)
+
 # These are the default for RadioFeatures.valid_tuning_steps
-COMMON_TUNING_STEPS = [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
+COMMON_TUNING_STEPS = (5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0)
 
-
-SKIP_VALUES = ["", "S", "P"]
+SKIP_VALUES = ("", "S", "P")
 
 CHARSET_UPPER_NUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890"
 CHARSET_ALPHANUMERIC = \
@@ -731,7 +734,33 @@ class RadioPrompts:
     display_pre_upload_prompt_before_opening_port = True
 
 
-BOOLEAN = [True, False]
+def BOOLEAN(v):
+    assert v in (True, False)
+
+
+def LIST(v):
+    assert hasattr(v, '__iter__')
+
+
+def INT(min=0, max=None):
+    def checkint(v):
+        assert isinstance(v, int)
+        assert v >= min
+        if max is not None:
+            assert v <= max
+
+    return checkint
+
+
+def STRING(v):
+    assert isinstance(v, str)
+
+
+def NTUPLE(size):
+    def checktuple(v):
+        assert len(v) == size
+
+    return checktuple
 
 
 class RadioFeatures:
@@ -757,23 +786,23 @@ class RadioFeatures:
         "has_variable_power":   BOOLEAN,
 
         # Attributes
-        "valid_modes":          [],
-        "valid_tmodes":         [],
-        "valid_duplexes":       [],
-        "valid_tuning_steps":   [],
-        "valid_bands":          [],
-        "valid_skips":          [],
-        "valid_power_levels":   [],
-        "valid_characters":     "",
-        "valid_name_length":    0,
-        "valid_cross_modes":    [],
-        "valid_tones":          [],
-        "valid_dtcs_pols":      [],
-        "valid_dtcs_codes":     [],
-        "valid_special_chans":  [],
+        "valid_modes":          LIST,
+        "valid_tmodes":         LIST,
+        "valid_duplexes":       LIST,
+        "valid_tuning_steps":   LIST,
+        "valid_bands":          LIST,
+        "valid_skips":          LIST,
+        "valid_power_levels":   LIST,
+        "valid_characters":     STRING,
+        "valid_name_length":    INT(),
+        "valid_cross_modes":    LIST,
+        "valid_tones":          LIST,
+        "valid_dtcs_pols":      LIST,
+        "valid_dtcs_codes":     LIST,
+        "valid_special_chans":  LIST,
 
         "has_sub_devices":      BOOLEAN,
-        "memory_bounds":        (0, 0),
+        "memory_bounds":        NTUPLE(2),
         "can_odd_split":        BOOLEAN,
         "can_delete":           BOOLEAN,
 
@@ -789,28 +818,12 @@ class RadioFeatures:
         elif name not in list(self._valid_map.keys()):
             raise ValueError("No such attribute `%s'" % name)
 
-        if type(self._valid_map[name]) == tuple:
-            # Tuple, cardinality must match
-            if type(val) != tuple or len(val) != len(self._valid_map[name]):
-                raise ValueError("Invalid value `%s' for attribute `%s'" %
-                                 (val, name))
-        elif type(self._valid_map[name]) == list and not self._valid_map[name]:
-            # Empty list, must be another list
-            if type(val) != list:
-                raise ValueError("Invalid value `%s' for attribute `%s'" %
-                                 (val, name))
-        elif type(self._valid_map[name]) == str:
-            if type(val) != str:
-                raise ValueError("Invalid value `%s' for attribute `%s'" %
-                                 (val, name))
-        elif type(self._valid_map[name]) == int:
-            if type(val) != int:
-                raise ValueError("Invalid value `%s' for attribute `%s'" %
-                                 (val, name))
-        elif val not in self._valid_map[name]:
-            # Value not in the list of valid values
-            raise ValueError("Invalid value `%s' for attribute `%s'" % (val,
-                                                                        name))
+        try:
+            self._valid_map[name](val)
+        except AssertionError:
+            raise ValueError('Invalid value %r for attribute %r' % (
+                val, name))
+
         self.__dict__[name] = val
 
     def __getattr__(self, name):

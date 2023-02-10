@@ -31,8 +31,6 @@ LOG = logging.getLogger(__name__)
 
 CMD_ACK = 0x06
 EX_MODES = ["USER-L", "USER-U", "LSB+CW", "USB+CW", "RTTY-L", "RTTY-U", "N/A"]
-for i in EX_MODES:
-    chirp_common.MODES.append(i)
 T_STEPS = sorted(list(chirp_common.TUNING_STEPS))
 T_STEPS.remove(30.0)
 T_STEPS.remove(100.0)
@@ -518,7 +516,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
         rf.has_dtcs= False
-        rf.valid_modes = list(set(self.MODES))
+        rf.valid_modes = [x for x in self.MODES if x in chirp_common.MODES]
         rf.valid_tmodes = list(self.TMODES)
         rf.valid_duplexes = list(self.DUPLEX)
         rf.valid_tuning_steps = list(T_STEPS)
@@ -730,7 +728,10 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 vx = 6
             if _mem.mode2 == 2:      # USER-U
                 vx = 7
-        mem.mode = self.MODES[vx]
+        try:
+            mem.mode = self.MODES[vx]
+        except ValueError:
+            LOG.error('The FT-450 driver is broken for unsupported modes')
         if mem.mode == "FM" or mem.mode == "NFM":
             mem.tuning_step = self.STEPSFM[_mem.fm_step]
         elif mem.mode == "AM":

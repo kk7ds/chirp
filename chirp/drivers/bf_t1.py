@@ -55,7 +55,7 @@ ACK_CMD = b"\x06"
 MODES = ["NFM", "FM"]
 SKIP_VALUES = ["S", ""]
 TONES = chirp_common.TONES
-DTCS = sorted(chirp_common.DTCS_CODES + [645])
+DTCS = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 # Special channels
 SPECIALS = {

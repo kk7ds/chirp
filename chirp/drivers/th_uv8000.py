@@ -499,7 +499,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
     NEEDS_COMPAT_SERIAL = False
     MODES = ["NFM", "FM"]
     TONES = chirp_common.TONES
-    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
+    DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
     NAME_LENGTH = 7
     DTMF_CHARS = list("0123456789ABCD*#")
     # NOTE: SE Model supports 220-260 MHz

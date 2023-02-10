@@ -79,7 +79,7 @@ struct {
 
 CMD_ACK = b"\x06"
 
-RB15_DTCS = sorted(chirp_common.DTCS_CODES + [645])
+RB15_DTCS = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 LIST_BACKLIGHT = ["Off", "On", "Auto"]
 LIST_BCL = ["None", "Carrier", "QT/DQT Match"]

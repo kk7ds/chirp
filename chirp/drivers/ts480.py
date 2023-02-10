@@ -106,9 +106,6 @@ TS480_SKIP = ["", "S"]
 # start at 0:LSB
 TS480_MODES = ["LSB", "USB", "CW", "FM", "AM", "FSK", "CW-R", "FSK-R"]
 EX_MODES = ["FSK-R", "CW-R"]
-for ix in EX_MODES:
-    if ix not in chirp_common.MODES:
-        chirp_common.MODES.append(ix)
 
 TS480_TONES = list(chirp_common.TONES)
 TS480_TONES.append(1750.0)
@@ -505,7 +502,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
         rf.valid_bands = TS480_BANDS
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "*+-/"
         rf.valid_duplexes = TS480_DUPLEX
-        rf.valid_modes = TS480_MODES
+        rf.valid_modes = [x for x in TS480_MODES if x in chirp_common.MODES]
         rf.valid_skips = TS480_SKIP
         rf.valid_tuning_steps = TS480_TUNE_STEPS
         rf.valid_tmodes = ["", "Tone", "TSQL"]

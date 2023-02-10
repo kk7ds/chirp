@@ -713,7 +713,7 @@ T_MODES = ['', 'Tone', 'DTCS', '']
 TONE2_SLOTS = ['%d' % x for x in range(0, 24)]
 TONE5_SLOTS = ['%d' % x for x in range(0, 100)]
 # Future: chirp_common should present TONES instead of hard-coded list
-TONES = [62.5] + chirp_common.TONES
+TONES = (62.5,) + chirp_common.TONES
 TOT = ['Off'] + ['%s Minutes' % x for x in range(1, 31)]
 TUNING_STEPS = [2.5, 5, 6.25, 8.33, 10, 12.5, 15, 20, 25, 30]
 PTT_KEY_LOCKS = ["Off", "Right", "Left", "Both"]

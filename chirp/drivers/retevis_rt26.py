@@ -121,7 +121,7 @@ DTMF_CHARSET = NUMERIC_CHARSET + list("ABCD*#")
 RT26_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=5.00),
                      chirp_common.PowerLevel("High", watts=10.00)]
 
-RT26_DTCS = sorted(chirp_common.DTCS_CODES + [645])
+RT26_DTCS = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 LIST_PTTID = ["Off", "BOT", "EOT", "Both"]
 LIST_SHORT_PRESS = ["Off", "Monitor On/Off", "", "Scan", "Alarm",

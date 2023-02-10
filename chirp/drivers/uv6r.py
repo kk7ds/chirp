@@ -119,7 +119,7 @@ class UV6R(baofeng_common.BaofengCommonHT):
         "!@#$%^&*()+-=[]:\";'<>?,./"
     LENGTH_NAME = 7  # older radios may only support 6 character names
     SKIP_VALUES = ["", "S"]
-    DTCS_CODES = sorted(chirp_common.DTCS_CODES + [645])
+    DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=1.00)]
     VALID_BANDS = [(136000000, 174000000),

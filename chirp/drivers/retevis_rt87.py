@@ -204,7 +204,7 @@ POWER_LEVELS = [chirp_common.PowerLevel('Low', watts=1),
 VALID_BANDS = [(136000000, 174000000),
                (400000000, 480000000)]
 
-RT87_DTCS = sorted(chirp_common.DTCS_CODES + [645])
+RT87_DTCS = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 NUMERIC_CHARSET = list("0123456789")
 DTMF_CHARSET = NUMERIC_CHARSET + list("ABCD*#")
