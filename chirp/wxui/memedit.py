@@ -310,8 +310,9 @@ class ChirpChoiceColumn(ChirpMemoryColumn):
 
 class ChirpToneColumn(ChirpChoiceColumn):
     def __init__(self, name, radio):
-        tones = [str(x) for x in chirp_common.TONES]
         self.rf = radio.get_features()
+        tones = self.rf.valid_tones or chirp_common.TONES
+        tones = [str(x) for x in tones]
         super(ChirpToneColumn, self).__init__(name, radio,
                                               tones)
 
@@ -383,7 +384,9 @@ class ChirpDuplexColumn(ChirpChoiceColumn):
 
 class ChirpDTCSColumn(ChirpChoiceColumn):
     def __init__(self, name, radio):
-        dtcs_codes = ['%03i' % code for code in chirp_common.DTCS_CODES]
+        rf = radio.get_features()
+        codes = rf.valid_dtcs_codes or chirp_common.DTCS_CODES
+        dtcs_codes = ['%03i' % code for code in codes]
         super(ChirpDTCSColumn, self).__init__(name, radio,
                                               dtcs_codes)
 
