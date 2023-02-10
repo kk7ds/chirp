@@ -187,10 +187,10 @@ def exit_program(radio):
 KEYS = {
     0x31: 'DTMF ID (BOT)',
     0x32: 'DTMF ID (EOT)',
-    0x33: 'Channel Up',
+    0x33: 'Display Character',
     0x35: 'Home Channel',
     0x37: 'Channel Down',
-    0x38: 'Display Character',
+    0x38: 'Channel Up',
     0x39: 'Key Lock',
     0x3A: 'Lamp',
     0x3C: 'Memory RCL/STO',
