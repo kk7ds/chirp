@@ -19,6 +19,7 @@ import struct
 import logging
 
 from chirp import (
+    bandplan_iaru_r1,
     bandplan_na,
     bitwise,
     chirp_common,
@@ -134,7 +135,8 @@ u8 unused_af_7:1, //                             00AF
 CMD_ACK = b"\x06"
 
 BACKLIGHT_LIST = ["Off", "ON", "5S", "10S", "15S", "30S"]
-PFKEY_LIST = ["None", "Weather", "Warn", "Call", "Monitor"]
+PFKEY_US_LIST = ["None", "Weather", "Warn", "Call", "Monitor"]
+PFKEY_EU_LIST = ["None", "Warn", "Call", "Monitor"]
 SAVE_LIST = ["Normal", "Super"]
 TIMEOUTTIMER_LIST = ["%s seconds" % x for x in range(15, 195, 15)]
 VOICE_LIST = ["Off", "English"]
@@ -143,8 +145,10 @@ VOXL_LIST = ["OFF"] + ["%s" % x for x in range(1, 10)]
 
 SETTING_LISTS = {
     "backlight": BACKLIGHT_LIST,
-    "pfkey_gt": PFKEY_LIST,
-    "pfkey_lt": PFKEY_LIST,
+    "pfkey_gt": PFKEY_EU_LIST,
+    "pfkey_gt": PFKEY_US_LIST,
+    "pfkey_lt": PFKEY_EU_LIST,
+    "pfkey_lt": PFKEY_US_LIST,
     "save": SAVE_LIST,
     "tot": TIMEOUTTIMER_LIST,
     "voice": VOICE_LIST,
@@ -187,15 +191,10 @@ def _enter_programming_mode(radio):
         raise errors.RadioError("Error communicating with radio")
 
     # check if ident is OK
-    itis = False
     for fp in radio._fingerprint:
         if fp in ident:
-            # got it!
-            itis = True
-
             break
-
-    if itis is False:
+    else:
         LOG.debug("Incorrect model ID, got this:\n\n" + util.hexprint(ident))
         raise errors.RadioError("Radio identification failed.")
 
@@ -320,6 +319,7 @@ class RB28Radio(chirp_common.CloneModeRadio):
 
     TONES = PMR_TONES
     DTCS_CODES = PMR_DTCS_CODES
+    PFKEY_LIST = PFKEY_US_LIST
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.50),
                     chirp_common.PowerLevel("Low", watts=0.50)]
     VALID_BANDS = [(400000000, 480000000)]
@@ -494,6 +494,17 @@ class RB28Radio(chirp_common.CloneModeRadio):
                 if mem.number >= 8 and mem.number <= 14:
                     mem.power = self.POWER_LEVELS[1]
                     immutable += ["power"]
+        elif self._pmr:
+            if mem.number >= 1 and mem.number <= 16:
+                # 16 PMR fixed channels
+                PMR_FREQ = bandplan_iaru_r1.PMR446_FREQS[mem.number - 1]
+                mem.freq = PMR_FREQ
+                mem.duplex = ''
+                mem.offset = 0
+                mem.mode = "NFM"
+                mem.power = self.POWER_LEVELS[1]
+                immutable = ["empty", "freq", "duplex", "offset", "mode",
+                             "power"]
 
         mem.immutable = immutable
 
@@ -665,13 +676,13 @@ class RB28Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("voxd", "Vox Delay", rs)
         basic.append(rset)
 
-        rs = RadioSettingValueList(PFKEY_LIST,
-                                   PFKEY_LIST[_settings.pfkey_lt])
+        rs = RadioSettingValueList(self.PFKEY_LIST,
+                                   self.PFKEY_LIST[_settings.pfkey_lt])
         rset = RadioSetting("pfkey_lt", "Key Set < Long", rs)
         basic.append(rset)
 
-        rs = RadioSettingValueList(PFKEY_LIST,
-                                   PFKEY_LIST[_settings.pfkey_gt])
+        rs = RadioSettingValueList(self.PFKEY_LIST,
+                                   self.PFKEY_LIST[_settings.pfkey_gt])
         rset = RadioSetting("pfkey_gt", "Key Set > Long", rs)
         basic.append(rset)
 
@@ -715,3 +726,22 @@ class RB28Radio(chirp_common.CloneModeRadio):
         # Radios that have always been post-metadata, so never do
         # old-school detection
         return False
+
+
+@directory.register
+class RB628Radio(RB28Radio):
+    """RETEVIS RB628"""
+    VENDOR = "Retevis"
+    MODEL = "RB628"
+
+    PFKEY_LIST = PFKEY_EU_LIST
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.50),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    _magic = b"PHOGR\x28\x0B"
+    _fingerprint = [b"P32073" + b"\x00\xFF", ]
+    _upper = 16
+    _mem_params = (_upper,  # number of channels
+                   )
+    _frs = False
+    _pmr = True
