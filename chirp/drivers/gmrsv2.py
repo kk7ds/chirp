@@ -37,10 +37,16 @@ LOG = logging.getLogger(__name__)
 # BTECH GMRS-V2 magic string
 MSTRING_GMRSV2 = b"\x50\x5F\x20\x21\x12\x15\x4D"
 
+# BTECH MURS-V2 magic string
+MSTRING_MURSV2 = b"\x50\x5F\x20\x21\x12\x15\x4D"
+
 # #### ID strings #####################################################
 
 # BTECH GMRS-V2
 GMRSV2_fp1 = b"US32419"  # original
+
+# BTECH MURS-V2
+MURSV2_fp1 = b"USM2403"  # original
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -71,17 +77,12 @@ LIST_VOICE = ["Off", "English", "Chinese"]
 LIST_WORKMODE = ["Frequency", "Channel"]
 
 
-@directory.register
-class GMRSV2(baofeng_common.BaofengCommonHT):
-    """BTech GMRS-V2"""
-    VENDOR = "BTECH"
-    MODEL = "GMRS-V2"
+class GMRSV2base(baofeng_common.BaofengCommonHT):
+    """BTech GMRS-V2base"""
+    VENDOR = ""
+    MODEL = ""
     NEEDS_COMPAT_SERIAL = False
 
-    _fileid = [GMRSV2_fp1, ]
-
-    _magic = [MSTRING_GMRSV2, ]
-    _magic_response_length = 8
     _fw_ver_start = 0x1EF0
     _recv_block_size = 0x40
     _mem_size = 0x2000
@@ -358,7 +359,7 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = \
-            ('The BTech GMRS-V2 driver is a beta version.\n'
+            ('The BTech ' + cls.MODEL + ' driver is a beta version.\n'
              '\n'
              'Please save an unedited copy of your first successful\n'
              'download to a CHIRP Radio Images(*.img) file.'
@@ -384,21 +385,6 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
     def process_mmap(self):
         """Process the mem map into the mem object"""
         self._memobj = bitwise.parse(self.MEM_FORMAT, self._mmap)
-
-    def validate_memory(self, mem):
-        msgs = super().validate_memory(mem)
-
-        _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
-
-        if mem.freq not in bandplan_na.ALL_GMRS_FREQS:
-            if mem.duplex != "off":
-                msgs.append(chirp_common.ValidationWarning(_msg_duplex))
-        if mem.freq in bandplan_na.GMRS_HIRPT:
-            if mem.duplex and mem.offset != 5000000:
-                msgs.append(chirp_common.ValidationWarning(_msg_offset))
-
-        return msgs
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
@@ -536,6 +522,27 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
                 # Not a GMRS channel, so restrict duplex since it will be
                 # forced to off.
                 if mem.freq not in bandplan_na.ALL_GMRS_FREQS:
+                    mem.duplex = 'off'
+                    mem.offset = 0
+                    immutable = ["duplex", "offset"]
+
+        if self.MODEL == "MURS-V2":
+            if mem.freq in bandplan_na.ALL_MURS_FREQS:
+                if mem.freq in bandplan_na.MURS_NFM:
+                    # Narrow only MURS channels (limit mode)
+                    mem.duplex == ''
+                    mem.offset = 0
+                    mem.mode = "NFM"
+                    immutable = ["duplex", "offset", "mode"]
+                if mem.freq in bandplan_na.MURS_FM:
+                    # Narrow or wide MURS channels
+                    mem.duplex == ''
+                    mem.offset = 0
+                    immutable = ["duplex", "offset"]
+            else:
+                # Not a MURS channel, so restrict duplex since it will be
+                # forced to off.
+                if mem.freq not in bandplan_na.ALL_MURS_FREQS:
                     mem.duplex = 'off'
                     mem.offset = 0
                     immutable = ["duplex", "offset"]
@@ -1055,3 +1062,64 @@ class GMRSV2(baofeng_common.BaofengCommonHT):
         # This radio has always been post-metadata, so never do
         # old-school detection
         return False
+
+
+@directory.register
+class GMRSV2(GMRSV2base):
+    """BTech GMRS-V2"""
+    VENDOR = "BTECH"
+    MODEL = "GMRS-V2"
+    NEEDS_COMPAT_SERIAL = False
+
+    _fileid = [GMRSV2_fp1, ]
+
+    _magic = [MSTRING_GMRSV2, ]
+    _magic_response_length = 8
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+
+        _msg_duplex = 'Duplex must be "off" for this frequency'
+        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+
+        if mem.freq not in bandplan_na.ALL_GMRS_FREQS:
+            if mem.duplex != "off":
+                msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+        if mem.freq in bandplan_na.GMRS_HIRPT:
+            if mem.duplex and mem.offset != 5000000:
+                msgs.append(chirp_common.ValidationWarning(_msg_offset))
+
+        return msgs
+
+
+@directory.register
+class MURSV2(GMRSV2base):
+    """BTech MURS-V2"""
+    VENDOR = "BTECH"
+    MODEL = "MURS-V2"
+
+    _fileid = [MURSV2_fp1, ]
+
+    _magic = [MSTRING_MURSV2, ]
+    _magic_response_length = 8
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+
+        _msg_duplex = 'Duplex must be "off" for this frequency'
+        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+
+        print('frequency')
+        print(mem.freq)
+        print(mem.freq in bandplan_na.ALL_MURS_FREQS)
+        if mem.freq not in bandplan_na.ALL_MURS_FREQS:
+            if mem.duplex != "off":
+                msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+
+        return msgs
