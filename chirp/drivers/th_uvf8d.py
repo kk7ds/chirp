@@ -133,7 +133,7 @@ struct memory {
   u8 bclo:2,
      wideband:1,
      ishighpower:1,
-     unknown21:1,
+     scanadd:1,
      vox:1,
      pttid:2;
   u8 unknown3:8;
@@ -472,6 +472,7 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
 
         flag_index = 7 - ((mem.number - 1) % 8)
         s.flags[flag_index] = (mem.skip == "")
+        _mem.scanadd = (mem.skip == "")
         _mem.wideband = mem.mode == "FM"
         _mem.ishighpower = mem.power == POWER_LEVELS[0]
 
