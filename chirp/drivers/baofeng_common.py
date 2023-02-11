@@ -186,7 +186,7 @@ def _download(radio):
 
     if radio_ident == "\xFF" * 16:
         ident += radio.MODEL.ljust(8)
-    elif radio.MODEL in ("GMRS-V1", "MURS-V1"):
+    elif radio.MODEL in ("GMRS-V1", "GMRS-V2", "MURS-V1", "MURS-V2"):
         # check if radio_ident is OK
         if not radio_ident[:7] in radio._fileid:
             msg = "Incorrect model ID, got this:\n\n"
