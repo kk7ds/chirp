@@ -44,7 +44,7 @@ struct {
      mode:1,
      reverse_duplex:1,
      duplex:2,
-     unknown5:2;
+     mult:2;
   u8 unknown6:2,
      dtcs_polarity:2,
      unknown8:2,
@@ -129,7 +129,7 @@ MODES = ["FM", "NFM"]
 SKIPS = ["", "S"]
 DUPLEXES = ["", "-", "+"]
 DTCS_POLARITY = ["NN", "NR", "RN", "RR"]
-TUNING_STEPS = [5., 10., 12.5, 15., 20., 25., 30., 50.]
+TUNING_STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0]
 POWER_LEVELS = [
     chirp_common.PowerLevel("High", watts=5.5),
     chirp_common.PowerLevel("Low", watts=0.5),
@@ -372,7 +372,7 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
 
     def _get_memory(self, number, extd_number=None):
         bit = 1 << (number % 8)
-        byte = int(number / 8)
+        byte = number // 8
 
         _mem = self._memobj.memory[number]
         _unused = self._memobj.unused[byte]
@@ -390,8 +390,12 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
             mem.empty = True
             return mem
 
-        mem.freq = int(_mem.freq) * 5000
-        mem.offset = int(_mem.offset) * 5000
+        if int(_mem.mult):
+            mult = 6250
+        else:
+            mult = 5000
+        mem.freq = int(_mem.freq) * mult
+        mem.offset = int(_mem.offset) * mult
         if mem.extd_number == "":
             mem.name = str(_mem.name).rstrip()
             mem.skip = (_skip & bit) and "S" or ""
@@ -422,9 +426,6 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
         return mem
 
     def get_memory(self, number):
-        if not self._mmap:
-            self.sync_in()
-
         extd_number = None
         if isinstance(number, str):
             try:
@@ -436,13 +437,13 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
 
         return self._get_memory(number, extd_number)
 
-    def _fill_memory(self, number):
+    def _fill_memory(self, mem):
+        number = mem.number
         _mem = self._memobj.memory[number]
-        assert(_mem)
 
         # zero-fill
-        _mem.freq = 146010000 / 5000
-        _mem.offset = 600000 / 5000
+        _mem.freq = 146010000 // 5000
+        _mem.offset = 600000 // 5000
         _mem.name = str("").ljust(5)
         _mem.duplex = 0x0
         _mem.reverse_duplex = 0x0
@@ -459,9 +460,9 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
 
-    def _set_memory(self, mem):
+    def set_memory(self, mem):
         bit = 1 << (mem.number % 8)
-        byte = int(mem.number / 8)
+        byte = mem.number // 8
 
         _mem = self._memobj.memory[mem.number]
         _unused = self._memobj.unused[byte]
@@ -469,17 +470,23 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
         assert(_mem)
 
         if mem.empty:
-            self._fill_memory(mem.number)
+            self._fill_memory(mem)
             _unused |= bit
             if _skip is not None:
                 _skip |= bit
             return
 
-        _mem.freq = mem.freq / 5000
-        _mem.offset = int(mem.offset) / 5000
+        if chirp_common.required_step(mem.freq) == 12.5:
+            mult = 6250
+        else:
+            mult = 5000
+        _mem.mult = 0 if mult == 5000 else 3
+        _mem.freq = mem.freq // mult
+        _mem.offset = int(mem.offset) // mult
         _mem.name = str(mem.name).ljust(5)
         _mem.duplex = DUPLEXES.index(mem.duplex)
-        _mem.power = POWER_LEVELS.index(mem.power)
+        power = mem.power or POWER_LEVELS[0]
+        _mem.power = POWER_LEVELS.index(power)
         _mem.tuning_step = TUNING_STEPS.index(mem.tuning_step)
         _mem.mode = MODES.index(mem.mode)
         _mem.tmode = TMODES.index(mem.tmode)
@@ -497,13 +504,6 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
                 _skip |= bit
             else:
                 _skip &= ~bit
-
-    def set_memory(self, mem):
-        if not self._mmap:
-            self.sync_in()
-        assert(self._mmap)
-
-        return self._set_memory(mem)
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
