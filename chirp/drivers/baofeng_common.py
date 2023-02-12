@@ -389,22 +389,6 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
 
         return rf
 
-    def validate_memory(self, mem):
-        msgs = super().validate_memory(mem)
-
-        _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
-
-        if self.MODEL in ["UV-9G", "GMRS-V2"]:
-            if mem.freq not in bandplan_na.ALL_GMRS_FREQS:
-                if mem.duplex != "off":
-                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
-            if mem.freq in bandplan_na.GMRS_HIRPT:
-                if mem.duplex and mem.offset != 5000000:
-                    msgs.append(chirp_common.ValidationWarning(_msg_offset))
-
-        return msgs
-
     def _is_txinh(self, _mem):
         raw_tx = ""
         for i in range(0, 4):
