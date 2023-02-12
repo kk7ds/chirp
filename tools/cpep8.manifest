@@ -63,6 +63,7 @@
 ./chirp/drivers/ict8.py
 ./chirp/drivers/icw32.py
 ./chirp/drivers/icx8x.py
+./chirp/drivers/icv80.py
 ./chirp/drivers/id31.py
 ./chirp/drivers/id51.py
 ./chirp/drivers/id5100.py

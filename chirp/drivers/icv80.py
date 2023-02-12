@@ -269,14 +269,16 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
                 RadioSettingValueList(opts, opts[_settings.vox_gain])))
 
         # VOX Delay
-        opts = ["0.5 sec", "1.0 sec", "1.5 sec", "2.0 sec", "2.5 sec", "3.0 sec"]
+        opts = ["0.5 sec", "1.0 sec", "1.5 sec", "2.0 sec", "2.5 sec",
+                "3.0 sec"]
         setmode.append(
             RadioSetting(
                 "vox_delay", "VOX Delay",
                 RadioSettingValueList(opts, opts[_settings.vox_delay])))
 
         # VOX Time out Timer
-        opts = ["Off", "1 min", "2 min", "3 min", "4 min", "5 min", "10 min", "15 min"]
+        opts = ["Off", "1 min", "2 min", "3 min", "4 min", "5 min", "10 min",
+                "15 min"]
         setmode.append(
             RadioSetting(
                 "vox_tot", "VOX Time-Out Timer",
@@ -364,22 +366,21 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
                     setting = element.get_name()
                     LOG.debug("Setting %s = %s" % (setting, element.value))
                     setattr(_settings, setting, element.value)
-            except Exception, e:
+            except Exception as e:
                 LOG.debug(element.get_name())
                 raise
 
-    def _get_memory(self, number, extd_number = None):
+    def _get_memory(self, number, extd_number=None):
         bit = 1 << (number % 8)
         byte = int(number / 8)
 
         _mem = self._memobj.memory[number]
         _unused = self._memobj.unused[byte]
         _skip = self._memobj.skip[byte]
-        assert(_mem)
 
         mem = chirp_common.Memory(number)
 
-        if not extd_number is None:
+        if extd_number is not None:
             mem.extd_number = extd_number
             mem.immutable = ["name", "number", "extd_number", "skip"]
             if extd_number == "C":
@@ -413,7 +414,8 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
 
         # Tx inhibit
         tx_inhibit = RadioSetting("tx_inhibit", "TX inhibit",
-                           RadioSettingValueBoolean(bool(not _mem.tx_inhibit)))
+                                  RadioSettingValueBoolean(
+                                      bool(not _mem.tx_inhibit)))
         tx_inhibit.set_doc("TX inhibit")
         mem.extra.append(tx_inhibit)
 
@@ -429,7 +431,8 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
                 extd_number = number
                 number = SPECIAL_CHANNELS[number]
             except KeyError:
-                raise errors.InvalidMemoryLocation("Unknown channel %s" % number)
+                raise errors.InvalidMemoryLocation(
+                    "Unknown channel %s" % number)
 
         return self._get_memory(number, extd_number)
 
@@ -440,7 +443,7 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
         # zero-fill
         _mem.freq = 146010000 / 5000
         _mem.offset = 600000 / 5000
-        _mem.name =  str("").ljust(5)
+        _mem.name = str("").ljust(5)
         _mem.duplex = 0x0
         _mem.reverse_duplex = 0x0
         _mem.tx_inhibit = 0x1
@@ -456,10 +459,9 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
 
-
     def _set_memory(self, mem):
-        bit = 1 << (number % 8)
-        byte = int(number / 8)
+        bit = 1 << (mem.number % 8)
+        byte = int(mem.number / 8)
 
         _mem = self._memobj.memory[mem.number]
         _unused = self._memobj.unused[byte]
@@ -486,13 +488,15 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.dtcs_polarity = DTCS_POLARITY.index(mem.dtcs_polarity)
 
-         # Set used
+        # Set used
         _unused &= ~bit
 
-         # Set skip
+        # Set skip
         if _skip is not None:
-            if mem.skip == "S": _skip |= bit
-            else: _skip &= ~bit
+            if mem.skip == "S":
+                _skip |= bit
+            else:
+                _skip &= ~bit
 
     def set_memory(self, mem):
         if not self._mmap:
