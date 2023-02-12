@@ -60,6 +60,61 @@ u8 skip[32];
 #seekto 0x0d10;
 u8 unused[32];
 
+#seekto 0x0e50;
+struct {
+  u8 unknown1:6,
+     beep:2;
+  u8 unknown2:3,
+     tot:5;
+  u8 unknown3;
+  u8 unknown4:6,
+     auto_pwr_off:2;
+  u8 unknown5:6,
+     lockout:2;
+  u8 unknown6:7,
+     squelch_delay:1;
+  u8 unknown7[2];
+  u8 unknown8:6,
+     mem_display:2;
+  u8 unknown9:7,
+     dial_func:1;
+  u8 unknown10:7,
+     lcd:1;
+  u8 unknown11:5,
+     pwr_save:3;
+  u8 unknown12:7,
+     sel_speed:1;
+  u8 unknown13:6,
+     mic_mode:2;
+  u8 unknown14:6,
+     battery_save:2;
+  u8 unknown15;
+  u8 unknown16:6,
+     resume:2;
+  u8 unknown17:5,
+     func_mode:3;
+  u8 unknown18:6,
+     backlight:2;
+  u8 unknown19;
+  u8 unknown:4,
+     vox_gain:4;
+  u8 unknown20:6,
+     mic_gain:2;
+  u8 unknown21:5
+     vox_delay:3;
+  u8 unknown22:4,
+     vox_tot:4;
+  u8 unknown23[2];
+  u8 unknown24:6,
+     edge:2;
+  u8 unknown25;
+  u8 unknown26:7,
+     auto_low_pwr:1;
+  u8 unknown27[3];
+
+} settings;
+
+
 """
 
 SPECIAL_CHANNELS = {
@@ -118,7 +173,7 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
         rf.has_ctone = True
         rf.has_offset = True
         rf.has_bank = False
-        rf.has_settings = False
+        rf.has_settings = True
 
         return rf
 
@@ -133,6 +188,185 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(ICV80_MEM_FORMAT, self._mmap)
+
+    def get_settings(self):
+        _settings = self._memobj.settings
+
+        setmode = RadioSettingGroup("setmode", "Set Mode")
+        display = RadioSettingGroup("display", "Display")
+        sounds = RadioSettingGroup("display", "Sounds")
+        scan = RadioSettingGroup("scan", "Scan")
+        settings = RadioSettings(setmode, display, sounds, scan)
+
+        # TOT
+        opts = ["Off"] + ["%d min" % t for t in range(1, 31)]
+        setmode.append(
+            RadioSetting(
+                "tot", "Time out Timer",
+                RadioSettingValueList(opts, opts[_settings.tot])))
+
+        # Lockout
+        opts = ["Off", "Rpt", "Busy"]
+        setmode.append(
+            RadioSetting(
+                "lockout", "Lockout",
+                RadioSettingValueList(opts, opts[_settings.lockout])))
+
+        # Auto Power Off
+        opts = ["Off", "30 min", "1 hr", "2 hrs"]
+        setmode.append(
+            RadioSetting(
+                "auto_pwr_off", "Auto Power Off",
+                RadioSettingValueList(opts, opts[_settings.auto_pwr_off])))
+
+        # Power Save
+        opts = ["Off", "1:2", "1:8", "1:16", "Auto"]
+        setmode.append(
+            RadioSetting(
+                "pwr_save", "Power Save",
+                RadioSettingValueList(opts, opts[_settings.pwr_save])))
+
+        # Battery Save
+        opts = ["Off", "Ni-MH", "Li-Ion"]
+        setmode.append(
+            RadioSetting(
+                "battery_save", "Battery Save",
+                RadioSettingValueList(opts, opts[_settings.battery_save])))
+
+        # Auto Low Power
+        opts = ["Off", "On"]
+        setmode.append(
+            RadioSetting(
+                "auto_low_pwr", "Auto Low Power",
+                RadioSettingValueList(opts, opts[_settings.auto_low_pwr])))
+
+        # Squelch Delay
+        opts = ["Short", "Long"]
+        setmode.append(
+            RadioSetting(
+                "squelch_delay", "Squelch Delay",
+                RadioSettingValueList(opts, opts[_settings.squelch_delay])))
+
+        # MIC Simple Mode
+        opts = ["Simple", "Normal 1", "Normal 2"]
+        setmode.append(
+            RadioSetting(
+                "mic_mode", "Mic Simple Mode",
+                RadioSettingValueList(opts, opts[_settings.mic_mode])))
+
+        # MIC Gain
+        opts = ["1", "2", "3", "4"]
+        setmode.append(
+            RadioSetting(
+                "mic_gain", "Mic Gain",
+                RadioSettingValueList(opts, opts[_settings.mic_gain])))
+
+        # VOX Gain
+        opts = ["Off"] + ["%d" % t for t in range(1, 11)]
+        setmode.append(
+            RadioSetting(
+                "vox_gain", "VOX Gain",
+                RadioSettingValueList(opts, opts[_settings.vox_gain])))
+
+        # VOX Delay
+        opts = ["0.5 sec", "1.0 sec", "1.5 sec", "2.0 sec", "2.5 sec", "3.0 sec"]
+        setmode.append(
+            RadioSetting(
+                "vox_delay", "VOX Delay",
+                RadioSettingValueList(opts, opts[_settings.vox_delay])))
+
+        # VOX Time out Timer
+        opts = ["Off", "1 min", "2 min", "3 min", "4 min", "5 min", "10 min", "15 min"]
+        setmode.append(
+            RadioSetting(
+                "vox_tot", "VOX Time-Out Timer",
+                RadioSettingValueList(opts, opts[_settings.vox_tot])))
+
+        # Select Speed
+        opts = ["Manual", "Auto"]
+        setmode.append(
+            RadioSetting(
+                "sel_speed", "Select Speed",
+                RadioSettingValueList(opts, opts[_settings.sel_speed])))
+
+        # Dial Function
+        opts = ["Audio Volume", "Tuning Dial"]
+        setmode.append(
+            RadioSetting(
+                "dial_func", "Dial Function",
+                RadioSettingValueList(opts, opts[_settings.dial_func])))
+
+        # Function Mode
+        opts = ["0 sec", "1 sec", "2 sec", "3 sec", "Manual"]
+        setmode.append(
+            RadioSetting(
+                "func_mode", "Function Mode",
+                RadioSettingValueList(opts, opts[_settings.func_mode])))
+
+        # Backlight
+        opts = ["Off", "On", "Auto"]
+        display.append(
+            RadioSetting(
+                "backlight", "Backlight",
+                RadioSettingValueList(opts, opts[_settings.backlight])))
+
+        # LCD Contrast
+        opts = ["Low", "Auto"]
+        display.append(
+            RadioSetting(
+                "lcd", "LCD Contrast",
+                RadioSettingValueList(opts, opts[_settings.lcd])))
+
+        # Memory Display
+        opts = ["Frequency", "Channel", "Name"]
+        display.append(
+            RadioSetting(
+                "mem_display", "Memory Display",
+                RadioSettingValueList(opts, opts[_settings.mem_display])))
+
+        # Beep
+        opts = ["Off", "1", "2", "3"]
+        sounds.append(
+            RadioSetting(
+                "beep", "Beep",
+                RadioSettingValueList(opts, opts[_settings.beep])))
+
+        # Edge
+        opts = ["All", "P1", "P2", "P3"]
+        scan.append(
+            RadioSetting(
+                "edge", "Edge",
+                RadioSettingValueList(opts, opts[_settings.edge])))
+
+        # Resume
+        opts = ["T-5", "T-10", "T-15", "P-2"]
+        scan.append(
+            RadioSetting(
+                "resume", "Resume",
+                RadioSettingValueList(opts, opts[_settings.resume])))
+
+        return settings
+
+    def set_settings(self, settings):
+        _settings = self._memobj.settings
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            if not element.changed():
+                continue
+
+            try:
+                if element.has_apply_callback():
+                    LOG.debug("Using apply callback")
+                    element.run_apply_callback()
+                else:
+                    setting = element.get_name()
+                    LOG.debug("Setting %s = %s" % (setting, element.value))
+                    setattr(_settings, setting, element.value)
+            except Exception, e:
+                LOG.debug(element.get_name())
+                raise
 
     def _get_memory(self, number, extd_number = None):
         bit = 1 << (number % 8)
@@ -229,7 +463,7 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
 
         _mem = self._memobj.memory[mem.number]
         _unused = self._memobj.unused[byte]
-        _skip = (mem.extd_number == "") and self._memobj.skip[byte] else None
+        _skip = (mem.extd_number == "") and self._memobj.skip[byte] or None
         assert(_mem)
 
         if mem.empty:
