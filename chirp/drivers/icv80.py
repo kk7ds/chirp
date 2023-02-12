@@ -157,7 +157,7 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
 
         mem.freq = int(_mem.freq) * 5000
         mem.offset = int(_mem.offset) * 5000
-        if extd_number is None:
+        if mem.extd_number == "":
             mem.name = str(_mem.name).rstrip()
             mem.skip = (_skip & bit) and "S" or ""
         mem.duplex = DUPLEXES[_mem.duplex]
@@ -229,12 +229,14 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
 
         _mem = self._memobj.memory[mem.number]
         _unused = self._memobj.unused[byte]
+        _skip = (mem.extd_number == "") and self._memobj.skip[byte] else None
         assert(_mem)
 
         if mem.empty:
             self._fill_memory(mem.number)
             _unused |= bit
-            _skip |= bit
+            if _skip is not None:
+                _skip |= bit
             return
 
         _mem.freq = mem.freq / 5000
@@ -251,13 +253,12 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
         _mem.dtcs_polarity = DTCS_POLARITY.index(mem.dtcs_polarity)
 
          # Set used
-        _usd &= ~bit
+        _unused &= ~bit
 
          # Set skip
-        if mem.skip == "S":
-            _skp |= bit
-        else:
-            _skp &= ~bit
+        if _skip is not None:
+            if mem.skip == "S": _skip |= bit
+            else: _skip &= ~bit
 
     def set_memory(self, mem):
         if not self._mmap:
@@ -267,6 +268,4 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
         return self._set_memory(mem)
 
     def get_raw_memory(self, number):
-        return repr(self._memobj.memory[number]) + \
-            repr(self._memobj.flags[(number)])
-
+        return repr(self._memobj.memory[number])
