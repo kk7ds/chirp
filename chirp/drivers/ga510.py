@@ -278,30 +278,6 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                           (400000000, 480000000)]
         return rf
 
-    def validate_memory(self, mem):
-        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
-
-        # _mem = self._memobj.memory[mem.number]
-        _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
-
-        if self.MODEL == "RA85":
-            if mem.freq not in bandplan_na.ALL_GMRS_FREQS:
-                if mem.duplex != "off":
-                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
-            if mem.freq in bandplan_na.GMRS_HIRPT:
-                if mem.duplex and mem.offset != 5000000:
-                    msgs.append(chirp_common.ValidationWarning(_msg_offset))
-                if mem.duplex and mem.duplex != "+":
-                    msgs.append(chirp_common.ValidationWarning(_msg_offset))
-        if self.MODEL == "RA685":
-            if not ((mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) or
-                    (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1])):
-                if mem.duplex != "off":
-                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
-
-        return msgs
-
     def get_raw_memory(self, num):
         return repr(self._memobj.memories[num]) + repr(self._memobj.names[num])
 
@@ -819,6 +795,19 @@ class RetevisRA685Radio(RadioddityGA510Radio):
                           (400000000, 520000000)]
         return rf
 
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+
+        _msg_duplex = 'Duplex must be "off" for this frequency'
+        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+
+        if not ((mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) or
+                (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1])):
+            if mem.duplex != "off":
+                msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+
+        return msgs
+
     def _get_mem(self, num):
         return self._memobj.memories[num - 1]
 
@@ -846,6 +835,21 @@ class RetevisRA85Radio(RadioddityGA510Radio):
 
     _magic = b'PROGROMWLTU'
     _gmrs = True
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+
+        _msg_duplex = 'Duplex must be "off" for this frequency'
+        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+
+        if mem.freq not in bandplan_na.ALL_GMRS_FREQS:
+            if mem.duplex != "off":
+                msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+        if mem.freq in bandplan_na.GMRS_HIRPT:
+            if mem.duplex and mem.offset != 5000000:
+                msgs.append(chirp_common.ValidationWarning(_msg_offset))
+
+        return msgs
 
     def check_set_memory_immutable_policy(self, existing, new):
         existing.immutable = []
