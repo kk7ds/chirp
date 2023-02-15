@@ -398,6 +398,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
     MODEL = 'TK-x180'
     BAUD_RATE = 9600
     NEEDS_COMPAT_SERIAL = False
+    FORMATS = [directory.register_format('Kenwood KPG-89D', '*.dat')]
 
     _system_start = 0x0B00
     _memsize = 0xD100
@@ -405,6 +406,8 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
     def __init__(self, *a, **k):
         self._zones = []
         chirp_common.CloneModeRadio.__init__(self, *a, **k)
+        _dat_header = (b'KPG89D\xFF\xFF\xFF\xFFV1.61' + self._model +
+                       (b'\xFF' * 11) + (b'\xFF' * 32))
 
     def sync_in(self):
         try:
@@ -426,6 +429,31 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             reset(self)
             LOG.exception('General failure')
             raise errors.RadioError('Failed to upload to radio: %s' % e)
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (filename.endswith('.dat') and
+                filedata[15:21] == cls._model)
+
+    def save_mmap(self, filename):
+        if filename.lower().endswith('.dat'):
+            with open(filename, 'wb') as f:
+                f.write(self._dat_header)
+                f.write(self._mmap.get_packed())
+                LOG.info('Wrote DAT file')
+        else:
+            super().save_mmap(filename)
+
+    def load_mmap(self, filename):
+        if filename.lower().endswith('.dat'):
+            with open(filename, 'rb') as f:
+                self._dat_header = f.read(0x40)
+                LOG.debug('DAT header:\n%s' % util.hexprint(self._dat_header))
+                self._mmap = memmap.MemoryMapBytes(f.read())
+                LOG.info('Loaded DAT file')
+            self.process_mmap()
+        else:
+            super().load_mmap(filename)
 
     @property
     def is_portable(self):
