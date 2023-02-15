@@ -1,7 +1,9 @@
 from builtins import bytes
 import os
+import tempfile
 import unittest
 
+from chirp import directory
 from chirp.drivers import ft60
 from chirp.drivers import ft4
 from chirp.drivers import yaesu_clone
@@ -96,6 +98,8 @@ class TestFT60(unittest.TestCase):
 
 
 class FakeFTX4:
+    ID = ft4.YaesuFT4XERadio.id_str
+
     def __init__(self):
         self.readbuf = b''
         self.writebuf = b''
@@ -108,7 +112,7 @@ class FakeFTX4:
             self.readbuf += b'QX'
         elif buf == b'\x02':
             # Ident
-            self.readbuf += ft4.YaesuFT4XERadio.id_str
+            self.readbuf += self.ID
         elif buf.startswith(b'R'):
             resp = b'W' + buf[1:] + b'\x00' * 16
             self.readbuf += resp + bytes([ft4.checkSum8(resp[1:])])
@@ -126,16 +130,53 @@ class FakeFTX4:
         return buf
 
 
+class FakeFT25R(FakeFTX4):
+    ID = ft4.YaesuFT25RRadio.id_str
+
+
+class FakeFT25R_Asian(FakeFTX4):
+    ID = ft4.YaesuFT25RRadio.id_str[:-1] + b'\x03'
+
+
 class TestFTX4(unittest.TestCase):
+    RCLASS = ft4.YaesuFT4XERadio
+    FAKE = FakeFTX4
+
     def test_download(self):
-        f = FakeFTX4()
-        r = ft4.YaesuFT4XERadio(f)
+        f = self.FAKE()
+        r = self.RCLASS(f)
         r.sync_in()
+        self.assertEqual(f.ID[-1], r.subtype)
 
     def test_upload(self):
-        f = FakeFTX4()
+        f = self.FAKE()
+        fn = directory.radio_class_id(self.RCLASS)
         img = os.path.join(os.path.dirname(__file__),
-                           '..', 'images', 'Yaesu_FT-4XE.img')
-        r = ft4.YaesuFT4XERadio(img)
+                           '..', 'images', '%s.img' % fn)
+        r = self.RCLASS(img)
         r.set_pipe(f)
         r.sync_out()
+
+    def test_download_open(self):
+        f = self.FAKE()
+        r = self.RCLASS(f)
+        r.sync_in()
+        # Make sure we got subtype set as expected after download
+        self.assertEqual(f.ID[-1], r.subtype)
+
+        # Save it out to a file
+        fn = tempfile.mktemp('.img', 'ft4')
+        r.save(fn)
+
+        # Make sure if we re-load our image, we keep the same subtype
+        r = self.RCLASS(fn)
+        self.assertEqual(f.ID[-1], r.subtype)
+
+
+class TestFT25(TestFTX4):
+    RCLASS = ft4.YaesuFT25RRadio
+    FAKE = FakeFT25R
+
+
+class TestFT25_Asian(TestFT25):
+    FAKE = FakeFT25R_Asian

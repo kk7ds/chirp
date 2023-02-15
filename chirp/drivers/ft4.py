@@ -2,7 +2,7 @@
 #    Derives loosely from two sources released under GPLv2:
 #      ./template.py, Copyright 2012 Dan Smith <dsmith@danplanet.com>
 #      ./ft60.py, Copyright 2011 Dan Smith <dsmith@danplanet.com>
-#    Edited 2020 Bernhard Hailer AE6YN <ham73tux@gmail.com>
+#    Edited 2020, 2023 Bernhard Hailer AE6YN <ham73tux@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -308,16 +308,26 @@ def startcomms(radio, way):
     progressbar.max = radio.numblocks
     enter_clonemode(radio)
     id_response = sendcmd(radio.pipe, b'\x02', None)
+
+    # The last byte of the ID contains info about regional differences
+    radio.subtype = id_response[-1]
+    # Set last byte of the ID zero so that no ID warning is thrown
+    # Unfortunately, the returned object is an immutable bytes object,
+    # so we need to convert into a bytearray, modify, and convert back.
+    ba_id_response = bytearray(id_response)
+    ba_id_response[len(ba_id_response) - 1] = 0
+    id_response_mod = bytes(ba_id_response)
+
     if id_response != radio.id_str:
         substr0 = radio.id_str[:radio.id_str.find(b'\x00')]
         if id_response[:id_response.find(b'\x00')] != substr0:
             msg = "ID mismatch. Expected" + util.hexprint(radio.id_str)
-            msg += ", Received:" + util.hexprint(id_response)
+            msg += ", Received:" + util.hexprint(id_response_mod)
             LOG.warning(msg)
             raise errors.RadioError("Incorrect ID read from radio.")
         else:
             msg = "ID suspect. Expected" + util.hexprint(radio.id_str)
-            msg += ", Received:" + util.hexprint(id_response)
+            msg += ", Received:" + util.hexprint(id_response_mod)
             LOG.warning(msg)
     return progressbar
 
@@ -666,12 +676,24 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     _memsize = 16 * numblocks   # used by CHIRP file loader to guess radio type
     MAX_MEM_SLOT = 200
 
+    # ID string last byte can contain extra info. It is usually 0;
+    # however, on FT25R/65R sold in Asia we have seen that it can be 3,
+    # which affects the scaler: instead of the default 50000 it's then 25000.
+    @property
+    def subtype(self):
+        return self.metadata.get('ft4_subtype', 0)
+
+    @subtype.setter
+    def subtype(self, value):
+        self.metadata = {'ft4_subtype': int(value)}
+
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = (
-            'Tested only by the developer and only on a single radio.\n'
-            'Proceed at your own risk!'
+            'Tested and mostly works, but may give you issues\n'
+            'when using lesser common radio variants.\n'
+            'Proceed at your own risk, and let us know about issues!'
             )
 
         rp.pre_download = "".join([
@@ -1076,6 +1098,10 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         mem = chirp_common.Memory()
         _mem, ndx, num, regtype, sname = self.slotloc(memref)
         mem.number = num
+        freq_offset_factor = self.freq_offset_factor
+        # FT-25R/65R Asia version (US is 0)?
+        if self.subtype == 3 and freq_offset_factor == 2:
+            freq_offset_factor = 1  # 25000 scaler
 
         # First, we need to know whether a channel is enabled,
         # then we can process any channel parameters.
@@ -1114,7 +1140,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
             if _mem.duplex == 6:  # split: offset is tx frequency
                 mem.offset = txfreq
             else:
-                mem.offset = int(_mem.offset) * self.freq_offset_scale
+                mem.offset = int(_mem.offset) * 25000 * freq_offset_factor
             self.decode_sql(mem, _mem)
             mem.power = POWER_LEVELS[2 - _mem.tx_pwr]
             mem.mode = ["FM", "NFM"][_mem.tx_width]
@@ -1155,7 +1181,11 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         _mem.tx_width = mem.mode == "NFM"
         _mem.step = STEP_CODE.index(mem.tuning_step)
 
-        _mem.offset = mem.offset / self.freq_offset_scale
+        freq_offset_factor = self.freq_offset_factor
+        # FT-25R/65R Asia version (US version is 0)?
+        if self.subtype == 3 and freq_offset_factor == 2:
+            freq_offset_factor = 1  # 25000 scaler
+        _mem.offset = mem.offset / (25000 * freq_offset_factor)
         duplex = mem.duplex
         if regtype in ["memory", "pms"]:
             ndx = num - 1
@@ -1181,7 +1211,7 @@ class YaesuFT4GenericRadio(YaesuSC35GenericRadio):
     class_specials = SPECIALS_FT4
     Pkeys = 2     # number of programmable keys
     namelen = 6   # length of the mem name display on the front-panel
-    freq_offset_scale = 25000
+    freq_offset_factor = 1  # 25000 * 1
     class_group_descs = YaesuSC35GenericRadio.group_descriptions
     # names for the setmode function for the programmable keys. Mode zero means
     # that the key is programmed for a memory not a setmode.
@@ -1207,7 +1237,7 @@ class YaesuFT65GenericRadio(YaesuSC35GenericRadio):
     class_specials = SPECIALS_FT65
     Pkeys = 4     # number of programmable keys
     namelen = 8   # length of the mem name display on the front-panel
-    freq_offset_scale = 50000
+    freq_offset_factor = 2  # 25000 * 2
     # we need a deep copy here because we are adding deeper than the top level.
     class_group_descs = copy.deepcopy(YaesuSC35GenericRadio.group_descriptions)
     add_paramdesc(
@@ -1285,7 +1315,7 @@ class YaesuFT4VRRadio(YaesuFT4GenericRadio):
 @directory.register
 class YaesuFT65RRadio(YaesuFT65GenericRadio):
     """
-    FT-65 dual band, US version
+    FT-65 dual band, US/Asia version
     """
     MODEL = "FT-65R"
     id_str = b'IH-420\x00\x00\x00V100\x00\x00'
@@ -1311,7 +1341,7 @@ class YaesuFT65ERadio(YaesuFT65GenericRadio):
 @directory.register
 class YaesuFT25RRadio(YaesuFT65GenericRadio):
     """
-    FT-25 VHF, US version
+    FT-25 VHF, US/Asia version
     """
     MODEL = "FT-25R"
     id_str = b'IFT-25R\x00\x00V100\x00\x00'
