@@ -1,3 +1,0 @@
-bankType =
-  attribute id { xsd:nonNegativeInteger },
-  attribute label { xsd:string }
