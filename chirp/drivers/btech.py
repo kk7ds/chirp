@@ -946,7 +946,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                     mem.duplex = 'off'
                     mem.offset = 0
                     immutable = ["duplex", "offset"]
-            elif self.MODEL == "GMRS-20V2":
+            elif self.MODEL in ["GMRS-20V2", "GMRS-50V2"]:
                 if mem.freq in GMRS_FREQS:
                     if mem.freq in GMRS_FREQS1:
                         # Non-repeater GMRS channels (limit duplex)
@@ -1293,6 +1293,12 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                        RadioSettingValueList(
                                            LIST_VOX,
                                            LIST_VOX[_mem.settings.langua]))
+                    basic.append(vox)
+                elif self.MODEL == "GMRS-50V2":
+                    vox = RadioSetting("settings.vox", "VOX",
+                                       RadioSettingValueList(
+                                           LIST_VOX,
+                                           LIST_VOX[_mem.settings.vox]))
                     basic.append(vox)
                 else:
                     langua = RadioSetting("settings.langua", "Language",
@@ -1748,14 +1754,14 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         if self.MODEL == "KT-8R" or self.MODEL == "UV-25X2" \
                 or self.MODEL == "UV-25X4" or self.MODEL == "UV-50X2" \
                 or self.MODEL == "GMRS-50X1" or self.MODEL == "GMRS-20V2" \
-                or self.MODEL == "UV-50X2_G2":
+                or self.MODEL == "UV-50X2_G2" or self.MODEL == "GMRS-50V2":
             tmrtx = RadioSetting("settings.tmrtx", "TX in multi-standby",
                                  RadioSettingValueList(
                                      LIST_TMRTX,
                                      LIST_TMRTX[_mem.settings.tmrtx]))
             basic.append(tmrtx)
 
-        if self.MODEL == "UV-50X2_G2":
+        if self.MODEL == "UV-50X2_G2" or self.MODEL == "GMRS-50V2":
             earpho = RadioSetting("settings.earpho", "Earphone",
                                   RadioSettingValueList(
                                       LIST_EARPH,
@@ -4460,7 +4466,7 @@ struct {
   u8 emctp;
   u8 emcch;
   u8 sigbp;
-  u8 unknown8;
+  u8 vox;
   u8 camdf;
   u8 cbmdf;
   u8 ccmdf;
@@ -4495,6 +4501,8 @@ struct {
   u8 skiptx;
   u8 scmode;
   u8 tmrtx;
+  u8 unknown10;
+  u8 earpho;
 } settings;
 
 #seekto 0x3280;
@@ -4649,6 +4657,47 @@ class GMRS50X1(BTechGMRS):
         if not (new.number >= 1 and new.number <= 30):
             existing.immutable = []
         super().check_set_memory_immutable_policy(existing, new)
+
+
+@directory.register
+class GMRS50V2(BTechGMRS):
+    """Baofeng Tech GMRS50V2"""
+    MODEL = "GMRS-50V2"
+    BANDS = 2
+    LIST_TMR = LIST_TMR16
+    _power_levels = [chirp_common.PowerLevel("High", watts=50),
+                     chirp_common.PowerLevel("Mid", watts=10),
+                     chirp_common.PowerLevel("Low", watts=5)]
+    _vhf_range = (136000000, 175000000)
+    _uhf_range = (400000000, 521000000)
+    _upper = 255
+    _magic = MSTRING_GMRS50X1
+    _fileid = [GMRS50X1_fp1, GMRS50X1_fp, ]
+    _gmrs = True
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+
+        _msg_duplex = 'Duplex must be "off" for this frequency'
+        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+
+        if mem.freq not in GMRS_FREQS:
+            if mem.duplex != "off":
+                msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+        elif mem.duplex:
+            if mem.duplex and mem.offset != 5000000:
+                msgs.append(chirp_common.ValidationWarning(_msg_offset))
+
+        return msgs
+
+    def check_set_memory_immutable_policy(self, existing, new):
+        existing.immutable = []
+        super().check_set_memory_immutable_policy(existing, new)
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
 
 
 COLORHT_MEM_FORMAT = """
