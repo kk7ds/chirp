@@ -1274,7 +1274,7 @@ class ChirpMain(wx.Frame):
 
     def _menu_developer(self, menuitem, event):
         CONF.set_bool('developer', menuitem.IsChecked(), 'state')
-        state = menuitem.IsChecked() and 'enabled' or 'disabled'
+        state = menuitem.IsChecked() and _('enabled') or _('disabled')
         wx.MessageBox(_('Developer state is now %s. '
                         'CHIRP must be restarted to take effect') % state,
                       _('Restart Required'), wx.OK)
