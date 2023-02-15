@@ -187,7 +187,7 @@ struct {
      roger:1;
   u8 light:2,
      led:2,
-     unknown206a:1,
+     taileliminate:1,
      autolk:1,
      unknown206ax:2;
   u8 unknown206b:1,
@@ -574,6 +574,10 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
                 "scan_mode", "Scan Mode",
                 RadioSettingValueList(
                     SCAN_MODE_LIST, SCAN_MODE_LIST[_settings.scan_mode])))
+
+        group.append(RadioSetting(
+            'taileliminate', 'Tail Eliminate',
+            RadioSettingValueBoolean(_settings.taileliminate)))
 
         group.append(RadioSetting(
                 "autolk", "Auto Lock",
