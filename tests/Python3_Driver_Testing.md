@@ -85,7 +85,7 @@
 | <a name="Icom_IC-2730A"></a> Icom_IC-2730A | [Reported working](https://chirp.danplanet.com/issues/10261) | 17-Dec-2022 | Yes | 0.21% |
 | <a name="Icom_IC-2820H"></a> Icom_IC-2820H | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.04% |
 | <a name="Icom_IC-7000"></a> Icom_IC-7000 |  |  | Yes | 0.03% |
-| <a name="Icom_IC-7100"></a> Icom_IC-7100 |  |  | Yes | 0.06% |
+| <a name="Icom_IC-7100"></a> Icom_IC-7100 | Mike W | 16-Feb-2023 | Yes | 0.06% |
 | <a name="Icom_IC-7200"></a> Icom_IC-7200 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |  |
 | <a name="Icom_IC-7300"></a> Icom_IC-7300 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.03% |
 | <a name="Icom_IC-746"></a> Icom_IC-746 | [Reported working](https://chirp.danplanet.com/issues/10346) | 3-Feb-2023 | Yes |  |
@@ -385,7 +385,7 @@
 
 **Drivers:** 380
 
-**Tested:** 82% (315/65) (92% of usage stats)
+**Tested:** 83% (316/64) (92% of usage stats)
 
 **Byte clean:** 88% (337/43)
 
