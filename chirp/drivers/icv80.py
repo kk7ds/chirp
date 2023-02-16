@@ -144,10 +144,20 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
     MODEL = "IC-V80"
 
     _model = "\x32\x54\x00\x01"
-    _memsize = 3712
-    _endframe = "Icom Inc\x2e"
-
-    _ranges = [(0x0000, 3712, 16)]
+    _memsize = 0x0E80
+    _endframe = "Icom Inc\x2e7C"
+    _can_hispeed = True
+    _ranges = [(0x0000, 0x0CE0, 32),
+               (0x0CE0, 0x0D40, 16),
+               (0x0D40, 0x0E00, 32),
+               (0x0E00, 0x0E20, 16),
+               (0x0E20, 0x0E60, 32),
+               (0x0E60, 0x0E70, 16),
+               (0x0E70, 0x0E72,  2),
+               (0x0E72, 0x0E77,  5),
+               (0x0E77, 0x0E78,  1),
+               (0x0E78, 0x0E80,  8),
+               ]
 
     @classmethod
     def get_prompts(cls):
@@ -176,15 +186,6 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
         rf.has_settings = True
 
         return rf
-
-    def __init__(self, pipe):
-        icf.IcomCloneModeRadio.__init__(self, pipe)
-
-    def sync_in(self):
-        icf.IcomCloneModeRadio.sync_in(self)
-
-    def sync_out(self):
-        icf.IcomCloneModeRadio.sync_out(self)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(ICV80_MEM_FORMAT, self._mmap)
