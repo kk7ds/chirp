@@ -856,24 +856,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
-    def validate_memory(self, mem):
-        msgs = super().validate_memory(mem)
-
-        _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
-
-        if self._gmrs:
-            if not (mem.number >= 1 and mem.number <= 30):
-                if mem.duplex != "off":
-                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
-        if self.MODEL == "GT-5R":
-            if not ((mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) or
-                    (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1])):
-                if mem.duplex != "off":
-                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
-
-        return msgs
-
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
 
@@ -2092,6 +2074,19 @@ class RadioddityGT5RRadio(BaofengUV5R):
     vhftx = [144000000, 148000000]
     uhftx = [420000000, 450000000]
 
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+
+        _msg_duplex = 'Duplex must be "off" for this frequency'
+        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+
+        if not ((mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) or
+                (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1])):
+            if mem.duplex != "off":
+                msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+
+        return msgs
+
     def check_set_memory_immutable_policy(self, existing, new):
         existing.immutable = []
         super().check_set_memory_immutable_policy(existing, new)
@@ -2109,6 +2104,18 @@ class RadioddityUV5GRadio(BaofengUV5R):
     _basetype = BASETYPE_UV5R
     _idents = [UV5R_MODEL_UV5G]
     _gmrs = True
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+
+        _msg_duplex = 'Duplex must be "off" for this frequency'
+        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+
+        if not (mem.number >= 1 and mem.number <= 30):
+            if mem.duplex != "off":
+                msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+
+        return msgs
 
     def check_set_memory_immutable_policy(self, existing, new):
         existing.immutable = []
