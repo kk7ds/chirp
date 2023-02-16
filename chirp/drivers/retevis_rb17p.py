@@ -291,22 +291,6 @@ class RB17P_Base(chirp_common.CloneModeRadio):
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
-    def validate_memory(self, mem):
-        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
-
-        _mem = self._memobj.memory[mem.number]
-        _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
-
-        if self.MODEL == "RB17P":
-            if mem.freq not in GMRS_FREQS:
-                if mem.duplex != "off":
-                    msgs.append(chirp_common.ValidationWarning(_msg_duplex))
-            elif mem.duplex and mem.offset != 5000000:
-                msgs.append(chirp_common.ValidationWarning(_msg_offset))
-
-        return msgs
-
     def sync_in(self):
         self._mmap = do_download(self)
         self.process_mmap()
@@ -412,9 +396,10 @@ class RB17P_Base(chirp_common.CloneModeRadio):
                     immutable = ["duplex", "offset", "mode", "power"]
                 elif mem.freq in GMRS_FREQS3:
                     # GMRS repeater channels, always either simplex or +5MHz
-                    if mem.duplex == '':
+                    if mem.duplex != '+':
+                        mem.duplex = ''
                         mem.offset = 0
-                    if mem.duplex == '+':
+                    else:
                         mem.offset = 5000000
             else:
                 # Not a GMRS channel, so restrict duplex since it will be
@@ -633,3 +618,17 @@ class RB17PRadio(RB17P_Base):
                (0x0810, 0x0830, 0x30),
                (0x1000, 0x1800, 0x40)
                ]
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+
+        _msg_duplex = 'Duplex must be "off" for this frequency'
+        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+
+        if mem.freq not in GMRS_FREQS:
+            if mem.duplex != "off":
+                msgs.append(chirp_common.ValidationWarning(_msg_duplex))
+        elif mem.duplex and mem.offset != 5000000:
+            msgs.append(chirp_common.ValidationWarning(_msg_offset))
+
+        return msgs
