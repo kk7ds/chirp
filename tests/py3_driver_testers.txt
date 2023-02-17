@@ -62,6 +62,7 @@ Baofeng_UV-82WP,@KC9HI,3-Dec-2022
 Baofeng_UV-9G,@KC9HI,3-Dec-2022
 Baofeng_UV-9R,@KC9HI,3-Dec-2022
 Baofeng_UV-B5,@KC9HI,18-Nov-2022
+Baojie_BJ-218,+LUITON_LT-725UV,16-Feb-2023
 Baojie_BJ-318,@KC9HI,2-Jan-2023
 CRT_Micron_UV,+Retevis_RT95,13-Nov-2022
 CRT_Micron_UV_V2,+Retevis_RT95,13-Nov-2022
