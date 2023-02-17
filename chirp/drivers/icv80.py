@@ -73,9 +73,11 @@ struct {
      lockout:2;
   u8 unknown6:7,
      squelch_delay:1;
-  u8 unknown7[2];
+  u8 unknown7_0;
+  u8 unknown7_1:6,
+     mem_display1:2;
   u8 unknown8:6,
-     mem_display:2;
+     mem_display2:2; // CS stores the display value here as well
   u8 unknown9:7,
      dial_func:1;
   u8 unknown10:7,
@@ -195,7 +197,7 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
 
         setmode = RadioSettingGroup("setmode", "Set Mode")
         display = RadioSettingGroup("display", "Display")
-        sounds = RadioSettingGroup("display", "Sounds")
+        sounds = RadioSettingGroup("sounds", "Sounds")
         scan = RadioSettingGroup("scan", "Scan")
         settings = RadioSettings(setmode, display, sounds, scan)
 
@@ -324,8 +326,8 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
         opts = ["Frequency", "Channel", "Name"]
         display.append(
             RadioSetting(
-                "mem_display", "Memory Display",
-                RadioSettingValueList(opts, opts[_settings.mem_display])))
+                "mem_display1", "Memory Display",
+                RadioSettingValueList(opts, opts[_settings.mem_display1])))
 
         # Beep
         opts = ["Off", "1", "2", "3"]
@@ -367,6 +369,9 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
                     setting = element.get_name()
                     LOG.debug("Setting %s = %s" % (setting, element.value))
                     setattr(_settings, setting, element.value)
+                    # This appears to need to be mirrored?
+                    if element.get_name() == 'mem_display1':
+                        _settings.mem_display2 = _settings.mem_display1
             except Exception as e:
                 LOG.debug(element.get_name())
                 raise

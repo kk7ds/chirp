@@ -598,15 +598,17 @@ class ChirpMain(wx.Frame):
             updownmod = wx.ACCEL_ALT
 
         self._download_menu_item = wx.NewId()
-        download_item = wx.MenuItem(radio_menu, self._download_menu_item,
-                                    _('Download'))
+        download_item = wx.MenuItem(
+            radio_menu, self._download_menu_item,
+            _('Download from radio'))
         download_item.SetAccel(wx.AcceleratorEntry(updownmod, ord('D')))
         self.Bind(wx.EVT_MENU, self._menu_download, download_item)
         radio_menu.Append(download_item)
 
         self._upload_menu_item = wx.NewId()
-        upload_item = wx.MenuItem(radio_menu, self._upload_menu_item,
-                                  _('Upload'))
+        upload_item = wx.MenuItem(
+            radio_menu, self._upload_menu_item,
+            _('Upload to radio'))
         upload_item.SetAccel(wx.AcceleratorEntry(updownmod, ord('U')))
         self.Bind(wx.EVT_MENU, self._menu_upload, upload_item)
         radio_menu.Append(upload_item)
