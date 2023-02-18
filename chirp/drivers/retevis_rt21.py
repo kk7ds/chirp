@@ -450,6 +450,70 @@ struct {
 } settings;
 """
 
+MEM_FORMAT_RT86 = """
+#seekto 0x0000;
+struct {
+  lbcd rxfreq[4];      // RX Frequency           0-3
+  lbcd txfreq[4];      // TX Frequency           4-7
+  ul16 rx_tone;        // PL/DPL Decode          8-9
+  ul16 tx_tone;        // PL/DPL Encode          A-B
+  u8 audio:2,          // Audio                  C
+     highpower:1,      // Power Level
+     wide:1,           // Bandwidth
+     bcl:1,            // Busy Lock  OFF=0 ON=1
+     scramble_type:3;  // Scramble
+  u8 reserved[3];      // Reserved               D-F
+} memory[16];
+
+#seekto 0x002D;
+struct {
+  u8 unknown_1:1,      //                        002D
+     chnumberd:1,      // Channel Number Disable
+     gain:1,           // MIC Gain
+     savem:1,          // Battery Save Mode
+     save:1,           // Battery Save
+     beep:1,           // Beep
+     voice:1,          // Voice Prompts
+     unknown_2:1;      //
+  u8 squelch;          // Squelch                002E
+  u8 tot;              // Time-out Timer         002F
+  u8 channel_4[13];    //                        0030-003C
+  u8 unused_3d:7,      //                        003D
+     vox:1;            // Vox
+  u8 voxl;             // Vox Level              003E
+  u8 voxd;             // Vox Delay              003F
+  u8 channel_5[13];    //                        0040-004C
+  u8 unknown_4;        //                        004D
+  u8 unknown_5[2];     //                        004E-004F
+  u8 channel_6[13];    //                        0050-005C
+  u8 unknown_6;        //                        005D
+  u8 unknown_7[2];     //                        005E-005F
+  u8 channel_7[13];    //                        0060-006C
+  u8 warn;             // Warn Mode              006D
+  u8 pf1;              // Key Set PF1            006E
+  u8 pf2;              // Key Set PF2            006F
+  u8 channel_8[13];    //                        0070-007C
+  u8 unknown_8;        //                        007D
+  u8 tail;             // QT/DQT Tail(inverted)  007E
+  u8 tailmode;         // QT/DQT Tail Mode       007F
+  u8 channel_9[13];    //                        0080-008C
+  u8 unknown_9[3];     //                        008D-008F
+  u8 channel_10[13];   //                        0090-009C
+  u8 unknown_10[3];    //                        009D-009F
+  u8 channel_11[13];   //                        00A0-00AC
+  u8 unknown_11[2];    //                        00AD-00AE
+  u8 chnumber;         // Channel Number         00AF
+} settings;
+
+#seekto 0x004E;
+u8 skipflags[2];       // SCAN_ADD
+
+#seekto 0x0100;
+struct {
+  u8 freqhop;          // Frequency Hop
+} freqhops[16];
+"""
+
 CMD_ACK = b"\x06"
 
 ALARM_LIST = ["Local Alarm", "Remote Alarm"]
@@ -461,13 +525,17 @@ FREQHOP_LIST = ["Off", "Hopping 1", "Hopping 2", "Hopping 3"]
 FUNCTION_LIST = ["Off", "Scramble", "Compand"]
 GAIN_LIST = ["Standard", "Enhanced"]
 HOP_LIST = ["Mode A", "Mode B", "Mode C", "Mode D", "Mode E"]
+HOP86_LIST = ["Off", "Mode 1", "Mode 2", "Mode 3", "Mode 4"]
 PFKEY_LIST = ["None", "Monitor", "Lamp", "Warn", "VOX", "VOX Delay",
               "Key Lock", "Scan"]
 PFKEY28B_LIST = ["None", "Scan", "Warn", "TX Power", "Monitor"]
+PFKEY86_LIST = ["None", "Monitor", "Lamp", "Warn", "VOX", "VOX Delay",
+                "Key Lock", "TX Power", "Scan"]
 POT_LIST = ["Channel Type", "Volume Type"]
 SAVE_LIST = ["Standard", "Super"]
 SAVEM_LIST = ["1-5", "1-8", "1-10", "1-15"]
 SCRAMBLE_LIST = ["OFF"] + ["%s" % x for x in range(1, 9)]
+SPECIAL_LIST = ["Standard", "Special"]
 TAIL_LIST = ["134.4 Hz", "55 Hz"]
 TIMEOUTTIMER_LIST = ["Off"] + ["%s seconds" % x for x in range(15, 615, 15)]
 TOTALERT_LIST = ["Off"] + ["%s seconds" % x for x in range(1, 11)]
@@ -986,6 +1054,27 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("bcl", "Busy Channel Lockout", rs)
             mem.extra.append(rset)
 
+        if self.MODEL == "RT86":
+            _freqhops = self._memobj.freqhops[number - 1]
+
+            rs = RadioSettingValueList(FUNCTION_LIST,
+                                       FUNCTION_LIST[_mem.audio])
+            rset = RadioSetting("audio", "Audio", rs)
+            mem.extra.append(rset)
+
+            rs = RadioSettingValueInteger(1, 8, _mem.scramble_type + 1)
+            rset = RadioSetting("scramble_type", "Scramble", rs)
+            mem.extra.append(rset)
+
+            rs = RadioSettingValueList(HOP86_LIST,
+                                       HOP86_LIST[_freqhops.freqhop])
+            rset = RadioSetting("freqhop", "Frequency Hop", rs)
+            mem.extra.append(rset)
+
+            rs = RadioSettingValueBoolean(_mem.bcl)
+            rset = RadioSetting("bcl", "Busy Lock", rs)
+            mem.extra.append(rset)
+
         immutable = []
 
         if self._frs:
@@ -1117,12 +1206,21 @@ class RT21Radio(chirp_common.CloneModeRadio):
         if self._reserved:
             _rsvd = _mem.reserved.get_raw()
 
+        if self.MODEL == "RT86":
+            _freqhops = self._memobj.freqhops[mem.number - 1]
+
         if mem.empty:
-            if self.MODEL == "RB26" or self.MODEL == "RT76" \
-                    or self.MODEL == "RB23" \
-                    or self.MODEL == "RT40B":
+            if self.MODEL in ["RB23",
+                              "RB26",
+                              "RT40B",
+                              "RT76",
+                              "RT86",
+                              ]:
                 _mem.set_raw("\xFF" * 13 + _rsvd)
-            elif self.MODEL == "RT19" or self.MODEL == "RT619":
+            elif self.MODEL in ["RT19",
+                                "RT86",
+                                "RT619",
+                                ]:
                 _mem.set_raw("\xFF" * 13 + _rsvd)
                 _freqhops.freqhop.set_raw("\x00")
             elif self.MODEL == "AR-63":
@@ -1329,11 +1427,15 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 rset.set_apply_callback(apply_pfkey_listvalue, _keys.pf2)
                 basic.append(rset)
 
-        if self.MODEL == "RB26" or self.MODEL == "RT76" \
-                or self.MODEL == "RB23" \
-                or self.MODEL == "RT19" or self.MODEL == "RT619" \
-                or self.MODEL == "AR-63" \
-                or self.MODEL == "RT40B":
+        if self.MODEL in ["AR-63",
+                          "RB23",
+                          "RB26",
+                          "RT19",
+                          "RT40B",
+                          "RT76",
+                          "RT86",
+                          "RT619",
+                          ]:
             if self.MODEL == "RB26" or self.MODEL == "RB23":
                 _settings2 = self._memobj.settings2
                 _settings3 = self._memobj.settings3
@@ -1382,7 +1484,9 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 rset = RadioSetting("voice", "Voice Prompts", rs)
                 basic.append(rset)
 
-            if self.MODEL == "RT76":
+            if self.MODEL in ["RT76",
+                              "RT86",
+                              ]:
                 rs = RadioSettingValueList(VOICE_LIST3,
                                            VOICE_LIST3[_settings.voice])
                 rset = RadioSetting("voice", "Voice Annumciation", rs)
@@ -1399,6 +1503,12 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 rset = RadioSetting("chnumberd", "Channel Number Enable", rs)
                 basic.append(rset)
 
+            if self.MODEL == "RT86":
+                rs = RadioSettingValueList(SPECIAL_LIST,
+                                           SPECIAL_LIST[_settings.tailmode])
+                rset = RadioSetting("tailmode", "QT/DQT Tail Mode", rs)
+                basic.append(rset)
+
             rs = RadioSettingValueBoolean(_settings.save)
             rset = RadioSetting("save", "Battery Save", rs)
             basic.append(rset)
@@ -1407,7 +1517,10 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("beep", "Beep", rs)
             basic.append(rset)
 
-            if self.MODEL == "RB26" or self.MODEL == "RB23":
+            if self.MODEL in ["RB23",
+                              "RB26",
+                              "RT86",
+                              ]:
                 rs = RadioSettingValueBoolean(not _settings.tail)
                 rset = RadioSetting("tail", "QT/DQT Tail", rs)
                 basic.append(rset)
@@ -1429,6 +1542,25 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 rs = RadioSettingValueList(WARN_LIST,
                                            WARN_LIST[_settings.warn])
                 rset = RadioSetting("warn", "Warn Mode", rs)
+                basic.append(rset)
+
+            if self.MODEL == "RT86":
+                rs = RadioSettingValueInteger(1, 16, _settings.chnumber + 1)
+                rset = RadioSetting("settings.chnumber", "Channel Number", rs)
+                basic.append(rset)
+
+                rs = RadioSettingValueBoolean(_settings.vox)
+                rset = RadioSetting("vox", "Vox Function", rs)
+                basic.append(rset)
+
+                rs = RadioSettingValueList(VOXL_LIST,
+                                           VOXL_LIST[_settings.voxl])
+                rset = RadioSetting("voxl", "Vox Level", rs)
+                basic.append(rset)
+
+                rs = RadioSettingValueList(VOXD_LIST,
+                                           VOXD_LIST[_settings.voxd])
+                rset = RadioSetting("voxd", "Vox Delay", rs)
                 basic.append(rset)
 
             if self.MODEL == "RB26" or self.MODEL == "RB23":
@@ -1575,6 +1707,17 @@ class RT21Radio(chirp_common.CloneModeRadio):
                                            VOXD_LIST[_settings.voxd])
                 rset = RadioSetting("voxd", "Vox Delay", rs)
                 basic.append(rset)
+
+        if self.MODEL == "RT86":
+            rs = RadioSettingValueList(PFKEY86_LIST,
+                                       PFKEY86_LIST[_settings.pf1])
+            rset = RadioSetting("pf1", "PF1 Key Set", rs)
+            basic.append(rset)
+
+            rs = RadioSettingValueList(PFKEY86_LIST,
+                                       PFKEY86_LIST[_settings.pf2])
+            rset = RadioSetting("pf2", "PF2 Key Set", rs)
+            basic.append(rset)
 
         if self.MODEL == "RB28B" or self.MODEL == "RB628B":
             rs = RadioSettingValueInteger(0, 9, _settings.squelch)
@@ -2047,3 +2190,33 @@ class RB628BRadio(RB28BRadio):
     _upper = 16
     _frs = False
     _pmr = True
+
+
+@directory.register
+class RT86Radio(RT21Radio):
+    """RETEVIS RT86"""
+    VENDOR = "Retevis"
+    MODEL = "RT86"
+    BLOCK_SIZE = 0x20
+    BLOCK_SIZE_UP = 0x10
+
+    DTCS_CODES = DTCS_EXTRA
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    VALID_BANDS = [(400000000, 480000000)]
+
+    _magic = b"PHOGR" + b"\xCD\x91"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
+    _upper = 16
+    _ack_1st_block = False
+    _skipflags = True
+    _reserved = True
+
+    _ranges = [
+               (0x0000, 0x01A0),
+              ]
+    _memsize = 0x01A0
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT_RT86, self._mmap)

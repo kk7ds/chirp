@@ -253,6 +253,7 @@ Retevis_RT68,@KC9HI,28-Nov-2022
 Retevis_RT76,@KC9HI,30-Nov-2022
 Retevis_RT76P,@KC9HI,17-Dec-2022
 Retevis_RT85,@KC9HI,5-Dec-2022
+Retevis_RT86,@KC9HI,17-Feb-2023
 Retevis_RT87,@KC9HI,17-Dec-2022
 Retevis_RT95,@KC9HI,13-Nov-2022
 Retevis_RT95_VOX,+Retevis_RT95,13-Nov-2022
