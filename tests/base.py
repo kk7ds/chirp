@@ -62,21 +62,49 @@ class DriverTest(unittest.TestCase):
             pass
 
         m = chirp_common.Memory()
-        m.freq = self.rf.valid_bands[0][0] + 1000000
-        if m.freq < 30000000 and "AM" in self.rf.valid_modes:
-            m.mode = "AM"
-        else:
-            try:
-                m.mode = self.rf.valid_modes[0]
-            except IndexError:
-                pass
 
-        for i in range(*self.rf.memory_bounds):
-            m.number = i
-            msgs = self.radio.validate_memory(m)
-            warnings, errors = chirp_common.split_validation_msgs(msgs)
-            if not errors:
-                return m
+        # Some of the exposed bands may not be transmit-enabled, so
+        # iterate them all
+        for band_lo, band_hi in self.rf.valid_bands:
+            m.freq = band_lo
+            if self.rf.valid_tuning_steps:
+                # If we have valid tuning steps, go one step above the
+                # bottom of the band
+                m.freq += int(self.rf.valid_tuning_steps[0] * 1000)
+            elif m.freq + 1000000 < band_hi:
+                # Otherwise just pick 1MHz above the bottom, which has been
+                # our test basis for a long time, unless that extends past
+                # the end of the band.
+                m.freq += 1000000
+
+            if m.freq < 30000000 and "AM" in self.rf.valid_modes:
+                m.mode = "AM"
+            else:
+                try:
+                    m.mode = self.rf.valid_modes[0]
+                except IndexError:
+                    pass
+
+            for i in range(*self.rf.memory_bounds)[:10]:
+                m.number = i
+                msgs = self.radio.validate_memory(m)
+                warnings, errors = chirp_common.split_validation_msgs(msgs)
+                if warnings and not errors:
+                    # If we got some warnings and no errors, then we know the
+                    # memory is almost good enough. Set it and pull it back
+                    # to let the radio squash whatever was "almost correct"
+                    # and then use that.
+                    self.radio.set_memory(m)
+                    m = self.radio.get_memory(m.number)
+                    try:
+                        del m.extra
+                    except AttributeError:
+                        pass
+                    return m
+                # If we got no warnings, or we have only one band, then
+                # no errors means we found our candidate.
+                elif not errors:
+                    return m
 
         self.fail("No mutable memory locations found - unable to run this "
                   "test because I don't have a memory to test with")
