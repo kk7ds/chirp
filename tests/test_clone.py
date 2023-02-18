@@ -75,18 +75,15 @@ class TestCaseClone(base.DriverTest):
         # The radio must not read (or fail) with unexpected/error serial
         # behavior on init.
         LOG.info('Initializing radio with fake serial; Radio should not fail')
+        orig_mmap = self.parent._mmap
         self.radio = self.RADIO_CLASS(serial)
+        self.radio._mmap = orig_mmap
         self.radio.status_fn = lambda s: True
 
         msg = ('Clone should have failed and raised an exception '
                'that inherits from RadioError')
         with self.assertRaises(errors.RadioError,msg=msg):
             self.radio.sync_in()
-
-        if self.radio.NEEDS_COMPAT_SERIAL:
-            self.radio._mmap = memmap.MemoryMap("\x00" * (1024 * 128))
-        else:
-            self.radio._mmap = memmap.MemoryMapBytes(bytes(b"\x00") * (1024 * 128))
 
         msg = ('Clone should have failed and raised an exception '
                'that inherits from RadioError')
