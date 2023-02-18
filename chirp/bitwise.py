@@ -198,10 +198,10 @@ class DataElement:
         self._count = count
 
     def size(self):
-        return self._size * 8
+        return int(self._size * 8)
 
     def get_offset(self):
-        return self._offset
+        return int(self._offset)
 
     def _get_value(self, data):
         raise Exception("Not implemented")
@@ -354,7 +354,7 @@ class arrayDataElement(DataElement):
         size = 0
         for i in self.__items:
             size += i.size()
-        return size
+        return int(size)
 
 
 class intDataElement(DataElement):
@@ -715,7 +715,7 @@ class bitDataElement(intDataElement):
         self._subgen(self._data, self._offset).set_value(value)
 
     def size(self):
-        return self._nbits
+        return int(self._nbits)
 
 
 class structDataElement(DataElement):
@@ -790,7 +790,7 @@ class structDataElement(DataElement):
             for el in gen:
                 i += 1
                 size += el.size()
-        return size
+        return int(size)
 
     def get_raw(self, asbytes=False):
         size = self.size() // 8
