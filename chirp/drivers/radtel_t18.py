@@ -138,6 +138,7 @@ CMD_ACK = b"\x06"
 
 VOICE_LIST = ["Off", "Chinese", "English"]
 VOICE_LIST2 = ["English", "Chinese"]
+VOICE_LIST3 = ["Off", "English", "Chinese"]
 TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
                      "120 seconds", "150 seconds", "180 seconds",
                      "210 seconds", "240 seconds", "270 seconds",
@@ -253,9 +254,13 @@ def _t18_enter_programming_mode(radio):
     except:
         raise errors.RadioError("Error communicating with radio")
 
-    if not ident.startswith(radio._fingerprint):
-        LOG.debug(util.hexprint(ident))
-        raise errors.RadioError("Radio returned unknown identification string")
+    # check if ident is OK
+    for fp in radio._fingerprint:
+        if ident.startswith(fp):
+            break
+    else:
+        LOG.debug("Incorrect model ID, got this:\n\n" + util.hexprint(ident))
+        raise errors.RadioError("Radio identification failed.")
 
     try:
         serial.write(CMD_ACK)
@@ -404,7 +409,7 @@ class T18Radio(chirp_common.CloneModeRadio):
     VALID_BANDS = [(400000000, 470000000)]
 
     _magic = b"1ROGRAM"
-    _fingerprint = b"SMP558" + b"\x00\x00"
+    _fingerprint = [b"SMP558" + b"\x00\x00", ]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -562,9 +567,9 @@ class T18Radio(chirp_common.CloneModeRadio):
                 else:
                     immutable = ["empty", "freq", "duplex", "offset", "mode"]
         elif self._frs16:
-            if mem.freq in FRS_FREQS:
+            if mem.freq in FRS16_FREQS:
                 if mem.number >= 1 and mem.number <= 16:
-                    FRS_FREQ = FRS_FREQS[mem.number - 1]
+                    FRS_FREQ = FRS16_FREQS[mem.number - 1]
                     mem.freq = FRS_FREQ
                 mem.duplex == ''
                 mem.offset = 0
@@ -710,6 +715,12 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("settings2.voicesw", "Voice prompts",
                               RadioSettingValueBoolean(_settings2.voicesw))
             basic.append(rs)
+        elif self.MODEL == "RT15":
+            rs = RadioSetting("voiceprompt", "Voice prompts",
+                              RadioSettingValueList(
+                                  VOICE_LIST3,
+                                  VOICE_LIST3[_settings.voiceprompt]))
+            basic.append(rs)
         else:
             rs = RadioSetting("voiceprompt", "Voice prompts",
                               RadioSettingValueList(
@@ -721,8 +732,11 @@ class T18Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(_settings.batterysaver))
         basic.append(rs)
 
-        if self.MODEL != "RB75" and self.MODEL != "RB29" \
-                and self.MODEL != "RB629":
+        if self.MODEL not in ["RB29",
+                              "RB75",
+                              "RB629",
+                              "RT15",
+                              ]:
             rs = RadioSetting("beep", "Beep",
                               RadioSettingValueBoolean(_settings.beep))
             basic.append(rs)
@@ -1020,7 +1034,7 @@ class RT22SRadio(T18Radio):
                     chirp_common.PowerLevel("Low",  watts=0.50)]
 
     _magic = b"9COGRAM"
-    _fingerprint = b"SMP558" + b"\x02"
+    _fingerprint = [b"SMP558" + b"\x02", ]
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
@@ -1040,7 +1054,7 @@ class RB18Radio(T18Radio):
                     chirp_common.PowerLevel("Low",  watts=0.50)]
 
     _magic = b"PROGRAL"
-    _fingerprint = b"P3107" + b"\xF7"
+    _fingerprint = [b"P3107" + b"\xF7", ]
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
@@ -1088,7 +1102,7 @@ class RT68Radio(T18Radio):
                     chirp_common.PowerLevel("Low",  watts=0.50)]
 
     _magic = b"83OGRAM"
-    _fingerprint = b"\x06\x00\x00\x00\x00\x00\x00\x00"
+    _fingerprint = [b"\x06\x00\x00\x00\x00\x00\x00\x00", ]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -1119,7 +1133,7 @@ class RB17Radio(RT68Radio):
     MODEL = "RB17"
 
     _magic = b"A5OGRAM"
-    _fingerprint = b"\x53\x00\x00\x00\x00\x00\x00\x00"
+    _fingerprint = [b"\x53\x00\x00\x00\x00\x00\x00\x00", ]
 
     _frs16 = True
     _pmr = False
@@ -1163,7 +1177,7 @@ class RB85Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=5.00)]
 
     _magic = b"H19GRAM"
-    _fingerprint = b"SMP558" + b"\x02"
+    _fingerprint = [b"SMP558" + b"\x02", ]
 
 
 @directory.register
@@ -1177,7 +1191,7 @@ class RB75Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = b"KVOGRAM"
-    _fingerprint = b"SMP558" + b"\x00"
+    _fingerprint = [b"SMP558" + b"\x00", ]
     _upper = 30
     _mem_params = (_upper  # number of channels
                    )
@@ -1195,7 +1209,7 @@ class FRSB1Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = b"PROGRAM"
-    _fingerprint = b"P3107" + b"\xF7\x00"
+    _fingerprint = [b"P3107" + b"\xF7\x00", ]
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
@@ -1213,7 +1227,7 @@ class RB19Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = b"9COGRAM"
-    _fingerprint = b"SMP558" + b"\x02"
+    _fingerprint = [b"SMP558" + b"\x02", ]
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
@@ -1231,7 +1245,7 @@ class RB19PRadio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = b"70OGRAM"
-    _fingerprint = b"SMP558" + b"\x02"
+    _fingerprint = [b"SMP558" + b"\x02", ]
     _upper = 30
     _mem_params = (_upper  # number of channels
                    )
@@ -1249,7 +1263,7 @@ class RB619Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.499)]
 
     _magic = b"9COGRAM"
-    _fingerprint = b"SMP558" + b"\x02"
+    _fingerprint = [b"SMP558" + b"\x02", ]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -1267,7 +1281,7 @@ class RT47Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.500)]
 
     _magic = b"47OGRAM"
-    _fingerprint = b"\x06\x00\x00\x00\x00\x00\x00\x00"
+    _fingerprint = [b"\x06\x00\x00\x00\x00\x00\x00\x00", ]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -1311,7 +1325,7 @@ class BFV8ARadio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.500)]
 
     _magic = b"PROGRAM"
-    _fingerprint = b"P3107" + b"\xF7\x00\x00"
+    _fingerprint = [b"P3107" + b"\xF7\x00\x00", ]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -1329,7 +1343,7 @@ class RB29Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = b"S19GRAM"
-    _fingerprint = b"SMP558" + b"\x02"
+    _fingerprint = [b"SMP558" + b"\x02", ]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -1347,3 +1361,30 @@ class RB629Radio(RB29Radio):
 
     _frs16 = False
     _pmr = True
+
+
+@directory.register
+class RT15Radio(T18Radio):
+    """RETEVIS RT15"""
+    VENDOR = "Retevis"
+    MODEL = "RT15"
+    ACK_BLOCK = False
+    CMD_EXIT = b"b"
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low",  watts=0.50)]
+
+    _magic = b"KAOGRAM"
+    _fingerprint = [b"\x06\x00\x00\x00\x00\x00\x00\x00",
+                    b"\x06\x03\xE8\x08\xFF\xFF\xFF\xFF",
+                    ]
+    _upper = 16
+    _mem_params = (_upper  # number of channels
+                   )
+    _frs16 = True
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This radio has always been post-metadata, so never do
+        # old-school detection
+        return False
