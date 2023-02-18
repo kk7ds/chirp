@@ -215,6 +215,8 @@
 | <a name="Puxing_PX-2R"></a> Puxing_PX-2R |  |  |  | 0.05% |
 | <a name="Puxing_PX-777"></a> Puxing_PX-777 |  |  | Yes | 0.11% |
 | <a name="Puxing_PX-888K"></a> Puxing_PX-888K |  |  |  | 0.07% |
+| <a name="Q-MAC_HF-90_v300_or_earlier"></a> Q-MAC_HF-90_v300_or_earlier |  |  | Yes |  |
+| <a name="Q-MAC_HF-90_v301_or_later"></a> Q-MAC_HF-90_v301_or_later |  |  | Yes |  |
 | <a name="QYT_KT-8R"></a> QYT_KT-8R | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.09% |
 | <a name="QYT_KT-UV980"></a> QYT_KT-UV980 | [Implied by WACCOM_MINI-8900](#user-content-WACCOM_MINI-8900) | 11-Nov-2022 | Yes | 0.04% |
 | <a name="QYT_KT-WP12"></a> QYT_KT-WP12 | [Implied by Anysecu_WP-9900](#user-content-Anysecu_WP-9900) | 11-Nov-2022 | Yes | 0.02% |
@@ -390,11 +392,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 387
+**Drivers:** 389
 
-**Tested:** 83% (322/65) (93% of usage stats)
+**Tested:** 82% (322/67) (93% of usage stats)
 
-**Byte clean:** 89% (345/42)
+**Byte clean:** 89% (347/42)
 
 ## Meaning of this testing
 
