@@ -26,40 +26,6 @@ import six
 LOG = logging.getLogger(__name__)
 
 
-def win32_comports_bruteforce():
-    import win32file
-    import win32con
-
-    ports = []
-    for i in range(1, 257):
-        portname = "\\\\.\\COM%i" % i
-        try:
-            mode = win32con.GENERIC_READ | win32con.GENERIC_WRITE
-            port = \
-                win32file.CreateFile(portname,
-                                     mode,
-                                     win32con.FILE_SHARE_READ,
-                                     None,
-                                     win32con.OPEN_EXISTING,
-                                     0,
-                                     None)
-            if portname.startswith("\\"):
-                portname = portname[4:]
-            ports.append((portname, "Unknown", "Serial"))
-            win32file.CloseHandle(port)
-            port = None
-        except Exception as e:
-            pass
-
-    return ports
-
-
-try:
-    from serial.tools.list_ports import comports
-except:
-    comports = win32_comports_bruteforce
-
-
 def _find_me():
     return sys.modules["chirp.platform"].__file__
 
@@ -124,10 +90,6 @@ class Platform:
     def open_html_file(self, path):
         """Spawn the necessary program to open an HTML file at @path"""
         raise NotImplementedError("The base class can't do that")
-
-    def list_serial_ports(self):
-        """Return a list of valid serial ports"""
-        return []
 
     def default_dir(self):
         """Return the default directory for this platform"""
@@ -320,18 +282,6 @@ class UnixPlatform(Platform):
     def open_html_file(self, path):
         os.system("firefox '%s'" % path)
 
-    def list_serial_ports(self):
-        ports = ["/dev/ttyS*",
-                 "/dev/ttyUSB*",
-                 "/dev/ttyAMA*",
-                 "/dev/ttyACM*",
-                 "/dev/cu.*",
-                 "/dev/cuaU*",
-                 "/dev/cua0*",
-                 "/dev/term/*",
-                 "/dev/tty.KeySerial*"]
-        return natural_sorted(sum([glob.glob(x) for x in ports], []))
-
     def os_version_string(self):
         try:
             issue = file("/etc/issue.net", "r")
@@ -377,15 +327,6 @@ class Win32Platform(Platform):
 
     def open_html_file(self, path):
         os.system("explorer %s" % path)
-
-    def list_serial_ports(self):
-        try:
-            ports = list(comports())
-        except Exception as e:
-            if comports != win32_comports_bruteforce:
-                LOG.error("Failed to detect win32 serial ports: %s" % e)
-                ports = win32_comports_bruteforce()
-        return natural_sorted([port for port, name, url in ports])
 
     def gui_open_file(self, start_dir=None, types=[]):
         import win32gui
@@ -486,7 +427,6 @@ def _do_test():
     print("Config dir: %s" % __pform.config_dir())
     print("Default dir: %s" % __pform.default_dir())
     print("Log file (foo): %s" % __pform.log_file("foo"))
-    print("Serial ports: %s" % __pform.list_serial_ports())
     print("OS Version: %s" % __pform.os_version_string())
     # __pform.open_text_file("d-rats.py")
 
