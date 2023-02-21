@@ -246,18 +246,7 @@ class UnixPlatform(Platform):
                                     ".chirp")
 
         Path(basepath).mkdir(exist_ok=True)
-
-        Platform.__init__(self, str(basepath))
-
-        # This is a hack that needs to be properly fixed by importing the
-        # latest changes to this module from d-rats.  In the interest of
-        # time, however, I'll throw it here
-        if sys.platform == "darwin":
-            if "DISPLAY" not in os.environ:
-                LOG.info("Forcing DISPLAY for MacOS")
-                os.environ["DISPLAY"] = ":0"
-
-            os.environ["PANGO_RC_FILE"] = "../Resources/etc/pango/pangorc"
+        super().__init__(str(basepath))
 
     def default_dir(self):
         return str(Path.home())
