@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from unittest import mock
+
 from tests.unit import base
 from chirp import chirp_common
 from chirp.drivers import icf
@@ -137,11 +139,11 @@ class TestIcomBankModel(base.BaseTest):
 
         self._radio = FakeRadio(None)
         self._model = self.CLS(self._radio)
-        self.mox.StubOutWithMock(self._radio, '_set_bank')
-        self.mox.StubOutWithMock(self._radio, '_get_bank')
-        self.mox.StubOutWithMock(self._radio, '_set_bank_index')
-        self.mox.StubOutWithMock(self._radio, '_get_bank_index')
-        self.mox.StubOutWithMock(self._radio, 'get_memory')
+        for a in ('_set_bank', '_get_bank', '_set_bank_index',
+                  '_get_bank_index', 'get_memory'):
+            m = mock.patch.object(self._radio, a)
+            m.start()
+            self.mocks.append(m)
 
     def test_get_num_mappings(self):
         self.assertEqual(self._model.get_num_mappings(), 10)
@@ -162,24 +164,22 @@ class TestIcomBankModel(base.BaseTest):
         mem.number = 5
         banks = self._model.get_mappings()
         bank = banks[2]
-        self._radio._set_bank(5, 2)
-        self.mox.ReplayAll()
         self._model.add_memory_to_mapping(mem, bank)
+        self._radio._set_bank.assert_called_once_with(5, 2)
 
     def _setup_test_remove_memory_from_mapping(self, curbank):
         mem = chirp_common.Memory()
         mem.number = 5
         banks = self._model.get_mappings()
         bank = banks[2]
-        self._radio._get_bank(5).AndReturn(curbank)
-        if curbank == 2:
-            self._radio._set_bank(5, None)
-        self.mox.ReplayAll()
+        self._radio._get_bank.return_value = curbank
         return mem, bank
 
     def test_remove_memory_from_mapping(self):
         mem, bank = self._setup_test_remove_memory_from_mapping(2)
         self._model.remove_memory_from_mapping(mem, bank)
+        self._radio._get_bank.assert_called_once_with(5)
+        self._radio._set_bank.assert_called_once_with(5, None)
 
     def test_remove_memory_from_mapping_wrong_bank(self):
         mem, bank = self._setup_test_remove_memory_from_mapping(3)
@@ -194,16 +194,21 @@ class TestIcomBankModel(base.BaseTest):
     def test_get_mapping_memories(self):
         banks = self._model.get_mappings()
         expected = []
+        _get_bank = []
         for i in range(1, 10):
             should_include = bool(i % 2)
-            self._radio._get_bank(i).AndReturn(
+            _get_bank.append(
                 should_include and banks[1].index or None)
             if should_include:
-                self._radio.get_memory(i).AndReturn(i)
                 expected.append(i)
-        self.mox.ReplayAll()
+        self._radio._get_bank.side_effect = _get_bank
+        self._radio.get_memory.side_effect = expected
         members = self._model.get_mapping_memories(banks[1])
         self.assertEqual(members, expected)
+        self._radio.get_memory.assert_has_calls([
+            mock.call(i) for i in range(1, 10) if i % 2])
+        self._radio._get_bank.assert_has_calls([
+            mock.call(i) for i in range(1, 10)])
 
     def test_get_memory_mappings(self):
         banks = self._model.get_mappings()
@@ -211,11 +216,11 @@ class TestIcomBankModel(base.BaseTest):
         mem1.number = 5
         mem2 = chirp_common.Memory()
         mem2.number = 6
-        self._radio._get_bank(mem1.number).AndReturn(2)
-        self._radio._get_bank(mem2.number).AndReturn(None)
-        self.mox.ReplayAll()
+        self._radio._get_bank.side_effect = [2, None]
         self.assertEqual(self._model.get_memory_mappings(mem1)[0], banks[2])
         self.assertEqual(self._model.get_memory_mappings(mem2), [])
+        self._radio._get_bank.assert_has_calls([
+            mock.call(mem1.number), mock.call(mem2.number)])
 
 
 class TestIcomIndexedBankModel(TestIcomBankModel):
@@ -232,52 +237,64 @@ class TestIcomIndexedBankModel(TestIcomBankModel):
     def test_get_memory_index(self):
         mem = chirp_common.Memory()
         mem.number = 5
-        self._radio._get_bank_index(mem.number).AndReturn(1)
-        self.mox.ReplayAll()
+        self._radio._get_bank_index.return_value = 1
         self.assertEqual(self._model.get_memory_index(mem, None), 1)
+        self._radio._get_bank_index.assert_called_once_with(mem.number)
 
     def test_set_memory_index(self):
         mem = chirp_common.Memory()
         mem.number = 5
         banks = self._model.get_mappings()
-        self.mox.StubOutWithMock(self._model, 'get_memory_mappings')
-        self._model.get_memory_mappings(mem).AndReturn([banks[3]])
-        self._radio._set_bank_index(mem.number, 1)
-        self.mox.ReplayAll()
-        self._model.set_memory_index(mem, banks[3], 1)
+        with mock.patch.object(self._model, 'get_memory_mappings') as m:
+            m.return_value = [banks[3]]
+            self._model.set_memory_index(mem, banks[3], 1)
+            m.assert_called_once_with(mem)
+        self._radio._set_bank_index.assert_called_once_with(mem.number, 1)
 
     def test_set_memory_index_bad_bank(self):
         mem = chirp_common.Memory()
         mem.number = 5
         banks = self._model.get_mappings()
-        self.mox.StubOutWithMock(self._model, 'get_memory_mappings')
-        self._model.get_memory_mappings(mem).AndReturn([banks[4]])
-        self.mox.ReplayAll()
-        self.assertRaises(Exception,
-                          self._model.set_memory_index, mem, banks[3], 1)
+        with mock.patch.object(self._model, 'get_memory_mappings') as m:
+            m.return_value = [banks[4]]
+            self.assertRaises(Exception,
+                              self._model.set_memory_index, mem, banks[3], 1)
+            m.assert_called_once_with(mem)
 
     def test_set_memory_index_bad_index(self):
         mem = chirp_common.Memory()
         mem.number = 5
         banks = self._model.get_mappings()
-        self.mox.StubOutWithMock(self._model, 'get_memory_mappings')
-        self._model.get_memory_mappings(mem).AndReturn([banks[3]])
-        self.mox.ReplayAll()
-        self.assertRaises(Exception,
-                          self._model.set_memory_index, mem, banks[3], 99)
+        with mock.patch.object(self._model, 'get_memory_mappings') as m:
+            m.return_value = [banks[3]]
+            self.assertRaises(Exception,
+                              self._model.set_memory_index, mem, banks[3], 99)
+            m.assert_called_once_with(mem)
 
     def test_get_next_mapping_index(self):
         banks = self._model.get_mappings()
+        bank_exp_calls = []
+        index_exp_calls = []
+        bank_returns = []
+        index_returns = []
         for i in range(*self._radio.get_features().memory_bounds):
-            self._radio._get_bank(i).AndReturn((i % 2) and banks[1].index)
+            bank_returns.append((i % 2) and banks[1].index)
+            bank_exp_calls.append(mock.call(i))
             if bool(i % 2):
-                self._radio._get_bank_index(i).AndReturn(i)
+                index_returns.append(i)
+                index_exp_calls.append(mock.call(i))
         idx = 0
         for i in range(*self._radio.get_features().memory_bounds):
-            self._radio._get_bank(i).AndReturn((i % 2) and banks[2].index)
+            bank_exp_calls.append(mock.call(i))
+            bank_returns.append((i % 2) and banks[2].index)
             if i % 2:
-                self._radio._get_bank_index(i).AndReturn(idx)
+                index_exp_calls.append(mock.call(i))
+                index_returns.append(idx)
                 idx += 1
-        self.mox.ReplayAll()
+
+        self._radio._get_bank.side_effect = bank_returns
+        self._radio._get_bank_index.side_effect = index_returns
         self.assertEqual(self._model.get_next_mapping_index(banks[1]), 0)
         self.assertEqual(self._model.get_next_mapping_index(banks[2]), 5)
+        self._radio._get_bank.assert_has_calls(bank_exp_calls)
+        self._radio._get_bank_index.assert_has_calls(index_exp_calls)

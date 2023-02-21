@@ -42,14 +42,15 @@ class DstarTests(base.BaseTest):
                                ini_urcalls, ini_rptcalls,
                                exp_urcalls, exp_rptcalls):
         radio = FakeDstarRadio(None)
-        self.mox.StubOutWithMock(radio, 'get_urcall_list')
-        self.mox.StubOutWithMock(radio, 'get_repeater_call_list')
-        radio.get_urcall_list().AndReturn(ini_urcalls)
-        radio.get_repeater_call_list().AndReturn(ini_rptcalls)
-        self.mox.ReplayAll()
-        import_logic.ensure_has_calls(radio, mem)
-        self.assertEqual(sorted(ini_urcalls), sorted(exp_urcalls))
-        self.assertEqual(sorted(ini_rptcalls), sorted(exp_rptcalls))
+        with mock.patch.multiple(
+                radio,
+                get_urcall_list=mock.DEFAULT,
+                get_repeater_call_list=mock.DEFAULT) as mocks:
+            mocks['get_urcall_list'].return_value = ini_urcalls
+            mocks['get_repeater_call_list'].return_value = ini_rptcalls
+            import_logic.ensure_has_calls(radio, mem)
+            self.assertEqual(sorted(ini_urcalls), sorted(exp_urcalls))
+            self.assertEqual(sorted(ini_rptcalls), sorted(exp_rptcalls))
 
     def test_ensure_has_calls_empty(self):
         mem = chirp_common.DVMemory()
@@ -328,32 +329,31 @@ class ImportFieldTests(base.BaseTest):
         self.assertRaises(import_logic.DestNotCompatible,
                           import_logic._import_duplex, radio, None, mem)
 
-    def test_import_mem(self, errors=[]):
+    @mock.patch('chirp.import_logic._import_name')
+    @mock.patch('chirp.import_logic._import_power')
+    @mock.patch('chirp.import_logic._import_tone')
+    @mock.patch('chirp.import_logic._import_dtcs')
+    @mock.patch('chirp.import_logic._import_mode')
+    @mock.patch('chirp.import_logic._import_duplex')
+    def _test_import_mem(self, errors,
+                         mock_duplex, mock_mode, mock_dtcs, mock_tone,
+                         mock_power, mock_name):
         radio = FakeRadio(None)
         src_rf = chirp_common.RadioFeatures()
         mem = chirp_common.Memory()
 
-        self.mox.StubOutWithMock(mem, 'dupe')
-        self.mox.StubOutWithMock(import_logic, '_import_name')
-        self.mox.StubOutWithMock(import_logic, '_import_power')
-        self.mox.StubOutWithMock(import_logic, '_import_tone')
-        self.mox.StubOutWithMock(import_logic, '_import_dtcs')
-        self.mox.StubOutWithMock(import_logic, '_import_mode')
-        self.mox.StubOutWithMock(import_logic, '_import_duplex')
-        self.mox.StubOutWithMock(radio, 'validate_memory')
+        with mock.patch.object(mem, 'dupe') as mock_dupe:
+            mock_dupe.return_value = mem
+            with mock.patch.object(radio, 'validate_memory') as mock_val:
+                mock_val.return_value = errors
+                import_logic.import_mem(radio, src_rf, mem)
+                mock_val.assert_called_once_with(mem)
+            mock_dupe.assert_called_once_with()
 
-        mem.dupe().AndReturn(mem)
-        import_logic._import_name(radio, src_rf, mem)
-        import_logic._import_power(radio, src_rf, mem)
-        import_logic._import_tone(radio, src_rf, mem)
-        import_logic._import_dtcs(radio, src_rf, mem)
-        import_logic._import_mode(radio, src_rf, mem)
-        import_logic._import_duplex(radio, src_rf, mem)
-        radio.validate_memory(mem).AndReturn(errors)
+        mock_duplex.assert_called_once_with(radio, src_rf, mem)
 
-        self.mox.ReplayAll()
-
-        import_logic.import_mem(radio, src_rf, mem)
+    def test_import_mem(self):
+        self._test_import_mem([])
 
     @mock.patch.object(FakeRadio, 'get_memory')
     @mock.patch.object(FakeRadio, 'check_set_memory_immutable_policy')
@@ -368,11 +368,11 @@ class ImportFieldTests(base.BaseTest):
             mock_get.assert_called_once_with(mem.number)
 
     def test_import_mem_with_warnings(self):
-        self.test_import_mem([chirp_common.ValidationWarning('Test')])
+        self._test_import_mem([chirp_common.ValidationWarning('Test')])
 
     def test_import_mem_with_errors(self):
         self.assertRaises(import_logic.DestNotCompatible,
-                          self.test_import_mem,
+                          self._test_import_mem,
                           [chirp_common.ValidationError('Test')])
 
     def test_import_bank(self):
@@ -394,24 +394,23 @@ class ImportFieldTests(base.BaseTest):
                      chirp_common.Bank(src_bm, 3, '3'),
                      ]
 
-        self.mox.StubOutWithMock(dst_radio, 'get_mapping_models')
-        self.mox.StubOutWithMock(src_radio, 'get_mapping_models')
-        self.mox.StubOutWithMock(dst_bm, 'get_mappings')
-        self.mox.StubOutWithMock(src_bm, 'get_mappings')
-        self.mox.StubOutWithMock(dst_bm, 'get_memory_mappings')
-        self.mox.StubOutWithMock(src_bm, 'get_memory_mappings')
-        self.mox.StubOutWithMock(dst_bm, 'remove_memory_from_mapping')
-        self.mox.StubOutWithMock(dst_bm, 'add_memory_to_mapping')
+        @mock.patch.object(dst_radio, 'get_mapping_models',
+                           return_value=[dst_bm])
+        @mock.patch.object(src_radio, 'get_mapping_models',
+                           return_value=[src_bm])
+        @mock.patch.object(dst_bm, 'get_mappings',
+                           return_value=dst_banks)
+        @mock.patch.object(src_bm, 'get_mappings',
+                           return_value=src_banks)
+        @mock.patch.object(src_bm, 'get_memory_mappings',
+                           return_value=[src_banks[0]])
+        @mock.patch.object(dst_bm, 'get_memory_mappings',
+                           return_value=[dst_banks[1]])
+        @mock.patch.object(dst_bm, 'remove_memory_from_mapping')
+        @mock.patch.object(dst_bm, 'add_memory_to_mapping')
+        def _test(mock_add, mock_remove, *rest):
+            import_logic.import_bank(dst_radio, src_radio, dst_mem, src_mem)
+            mock_remove.assert_called_once_with(dst_mem, dst_banks[1])
+            mock_add.assert_called_once_with(dst_mem, dst_banks[0])
 
-        dst_radio.get_mapping_models().AndReturn([dst_bm])
-        dst_bm.get_mappings().AndReturn(dst_banks)
-        src_radio.get_mapping_models().AndReturn([src_bm])
-        src_bm.get_mappings().AndReturn(src_banks)
-        src_bm.get_memory_mappings(src_mem).AndReturn([src_banks[0]])
-        dst_bm.get_memory_mappings(dst_mem).AndReturn([dst_banks[1]])
-        dst_bm.remove_memory_from_mapping(dst_mem, dst_banks[1])
-        dst_bm.add_memory_to_mapping(dst_mem, dst_banks[0])
-
-        self.mox.ReplayAll()
-
-        import_logic.import_bank(dst_radio, src_radio, dst_mem, src_mem)
+        _test()
