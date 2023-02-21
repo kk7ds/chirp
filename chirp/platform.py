@@ -95,103 +95,6 @@ class Platform:
         """Return the default directory for this platform"""
         return "."
 
-    def gui_open_file(self, start_dir=None, types=[]):
-        """Prompt the user to pick a file to open"""
-        import gtk
-
-        if not start_dir:
-            start_dir = self._last_dir
-
-        dlg = gtk.FileChooserDialog("Select a file to open",
-                                    None,
-                                    gtk.FILE_CHOOSER_ACTION_OPEN,
-                                    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                     gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-        if start_dir and os.path.isdir(start_dir):
-            dlg.set_current_folder(start_dir)
-
-        for desc, spec in types:
-            ff = gtk.FileFilter()
-            ff.set_name(desc)
-            ff.add_pattern(spec)
-            dlg.add_filter(ff)
-
-        res = dlg.run()
-        fname = dlg.get_filename()
-        dlg.destroy()
-
-        if res == gtk.RESPONSE_OK:
-            self._last_dir = os.path.dirname(fname)
-            return fname
-        else:
-            return None
-
-    def gui_save_file(self, start_dir=None, default_name=None, types=[]):
-        """Prompt the user to pick a filename to save"""
-        import gtk
-
-        if not start_dir:
-            start_dir = self._last_dir
-
-        dlg = gtk.FileChooserDialog("Save file as",
-                                    None,
-                                    gtk.FILE_CHOOSER_ACTION_SAVE,
-                                    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                     gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-        if start_dir and os.path.isdir(start_dir):
-            dlg.set_current_folder(start_dir)
-
-        if default_name:
-            dlg.set_current_name(default_name)
-
-        extensions = {}
-        for desc, ext in types:
-            ff = gtk.FileFilter()
-            ff.set_name(desc)
-            ff.add_pattern("*.%s" % ext)
-            extensions[desc] = ext
-            dlg.add_filter(ff)
-
-        res = dlg.run()
-
-        fname = dlg.get_filename()
-        ext = extensions[dlg.get_filter().get_name()]
-        if fname and not fname.endswith(".%s" % ext):
-            fname = "%s.%s" % (fname, ext)
-
-        dlg.destroy()
-
-        if res == gtk.RESPONSE_OK:
-            self._last_dir = os.path.dirname(fname)
-            return fname
-        else:
-            return None
-
-    def gui_select_dir(self, start_dir=None):
-        """Prompt the user to pick a directory"""
-        import gtk
-
-        if not start_dir:
-            start_dir = self._last_dir
-
-        dlg = gtk.FileChooserDialog("Choose folder",
-                                    None,
-                                    gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
-                                    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                     gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-        if start_dir and os.path.isdir(start_dir):
-            dlg.set_current_folder(start_dir)
-
-        res = dlg.run()
-        fname = dlg.get_filename()
-        dlg.destroy()
-
-        if res == gtk.RESPONSE_OK and os.path.isdir(fname):
-            self._last_dir = fname
-            return fname
-        else:
-            return None
-
     def os_version_string(self):
         """Return a string that describes the OS/platform version"""
         return "Unknown Operating System"
@@ -317,66 +220,6 @@ class Win32Platform(Platform):
     def open_html_file(self, path):
         os.system("explorer %s" % path)
 
-    def gui_open_file(self, start_dir=None, types=[]):
-        import win32gui
-
-        typestrs = ""
-        for desc, spec in types:
-            typestrs += "%s\0%s\0" % (desc, spec)
-        if not typestrs:
-            typestrs = None
-
-        try:
-            fname, _, _ = win32gui.GetOpenFileNameW(Filter=typestrs)
-        except Exception as e:
-            LOG.error("Failed to get filename: %s" % e)
-            return None
-
-        return str(fname)
-
-    def gui_save_file(self, start_dir=None, default_name=None, types=[]):
-        import win32gui
-        import win32api
-
-        (pform, _, _, _, _) = win32api.GetVersionEx()
-
-        typestrs = ""
-        custom = "%s\0*.%s\0" % (types[0][0], types[0][1])
-        for desc, ext in types[1:]:
-            typestrs += "%s\0%s\0" % (desc, "*.%s" % ext)
-
-        if pform > 5:
-            typestrs = "%s\0%s\0" % (types[0][0], "*.%s" % types[0][1]) + \
-                typestrs
-
-        if not typestrs:
-            typestrs = custom
-            custom = None
-
-        def_ext = "*.%s" % types[0][1]
-        try:
-            fname, _, _ = win32gui.GetSaveFileNameW(File=default_name,
-                                                    CustomFilter=custom,
-                                                    DefExt=def_ext,
-                                                    Filter=typestrs)
-        except Exception as e:
-            LOG.error("Failed to get filename: %s" % e)
-            return None
-
-        return str(fname)
-
-    def gui_select_dir(self, start_dir=None):
-        from win32com.shell import shell
-
-        try:
-            pidl, _, _ = shell.SHBrowseForFolder()
-            fname = shell.SHGetPathFromIDList(pidl)
-        except Exception as e:
-            LOG.error("Failed to get directory: %s" % e)
-            return None
-
-        return str(fname)
-
     def os_version_string(self):
         import win32api
 
@@ -418,10 +261,6 @@ def _do_test():
     print("Log file (foo): %s" % __pform.log_file("foo"))
     print("OS Version: %s" % __pform.os_version_string())
     # __pform.open_text_file("d-rats.py")
-
-    # print "Open file: %s" % __pform.gui_open_file()
-    # print "Save file: %s" % __pform.gui_save_file(default_name="Foo.txt")
-    print("Open folder: %s" % __pform.gui_select_dir("/tmp"))
 
 if __name__ == "__main__":
     _do_test()
