@@ -365,7 +365,7 @@
 | <a name="Yaesu_FT-857_897_US"></a> Yaesu_FT-857_897_US | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.08% |
 | <a name="Yaesu_FT-8800"></a> Yaesu_FT-8800 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.08% |
 | <a name="Yaesu_FT-8900"></a> Yaesu_FT-8900 | [Implied by Yaesu_FT-8800](#user-content-Yaesu_FT-8800) | 24-Oct-2022 | Yes | 0.11% |
-| <a name="Yaesu_FT-90"></a> Yaesu_FT-90 |  |  | Yes | 0.02% |
+| <a name="Yaesu_FT-90"></a> Yaesu_FT-90 | [Reported working](https://chirp.danplanet.com/issues/10386) | 22-Feb-2023 | Yes | 0.02% |
 | <a name="Yaesu_FT2D_R"></a> Yaesu_FT2D_R | [Implied by Yaesu_FT3D_R](#user-content-Yaesu_FT3D_R) | 30-Dec-2022 | Yes | 0.02% |
 | <a name="Yaesu_FT2D_Rv2"></a> Yaesu_FT2D_Rv2 | [Implied by Yaesu_FT3D_R](#user-content-Yaesu_FT3D_R) | 30-Dec-2022 | Yes |  |
 | <a name="Yaesu_FT3D_R"></a> Yaesu_FT3D_R | [@kk7ds](https://github.com/kk7ds) | 30-Dec-2022 | Yes | 0.03% |
@@ -387,7 +387,7 @@
 
 **Drivers:** 382
 
-**Tested:** 83% (319/63) (93% of usage stats)
+**Tested:** 83% (320/62) (93% of usage stats)
 
 **Byte clean:** 88% (339/43)
 
