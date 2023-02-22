@@ -32,7 +32,7 @@ from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
-CMD_ACK = chr(0x06)
+CMD_ACK = b'\x06'
 
 FT90_STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0]
 FT90_MODES = ["AM", "FM", "Auto"]
@@ -63,7 +63,8 @@ FT90_SPECIAL = ["vfo_vhf", "home_vhf", "vfo_uhf", "home_uhf",
 class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
     VENDOR = "Yaesu"
     MODEL = "FT-90"
-    ID = "\x8E\xF6"
+    ID = b"\x8E\xF6"
+    NEEDS_COMPAT_SERIAL = False
 
     _memsize = 4063
     # block 03 (200 Bytes long) repeats 18 times; channel memories
@@ -245,7 +246,7 @@ struct  {
         time.sleep(0.02)
         self.pipe.read(1)  # chew echoed ACK from 1-wire serial
 
-        if len(data) == blocksize + 2 and data[0] == chr(blocknum):
+        if len(data) == blocksize + 2 and data[0] == blocknum:
             checksum = yaesu_clone.YaesuChecksum(1, blocksize)
             if checksum.get_existing(data) != checksum.get_calculated(data):
                 raise Exception("Checksum Failed [%02X<>%02X] block %02X, "
@@ -267,7 +268,7 @@ struct  {
         self.pipe.timeout = 4
         start = time.time()
 
-        data = ""
+        data = b""
         blocknum = 0
         status = chirp_common.Status()
         status.msg = "Cloning..."
@@ -282,12 +283,17 @@ struct  {
         LOG.info("Clone completed in %i seconds, blocks read: %i" %
                  (time.time() - start, blocknum))
 
-        return memmap.MemoryMap(data)
+        return memmap.MemoryMapBytes(data)
 
     def _clone_out(self):
         looppredelay = 0.4
         looppostdelay = 1.9
+        self.pipe.timeout = 4
         start = time.time()
+
+        LOG.debug('Delaying clone out...')
+        time.sleep(5)
+        LOG.debug('Proceeding')
 
         blocknum = 0
         pos = 0
@@ -298,9 +304,9 @@ struct  {
 
         for blocksize in self._block_lengths:
             checksum = yaesu_clone.YaesuChecksum(pos, pos+blocksize-1)
-            blocknumbyte = chr(blocknum)
+            blocknumbyte = bytes([blocknum])
             payloadbytes = self.get_mmap()[pos:pos+blocksize]
-            checksumbyte = chr(checksum.get_calculated(self.get_mmap()))
+            checksumbyte = bytes([checksum.get_calculated(self.get_mmap())])
             LOG.debug("Block %i - will send from %i to %i byte " %
                       (blocknum, pos, pos + blocksize))
             LOG.debug(util.hexprint(blocknumbyte))
