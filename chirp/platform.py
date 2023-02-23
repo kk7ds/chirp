@@ -26,40 +26,6 @@ import six
 LOG = logging.getLogger(__name__)
 
 
-def win32_comports_bruteforce():
-    import win32file
-    import win32con
-
-    ports = []
-    for i in range(1, 257):
-        portname = "\\\\.\\COM%i" % i
-        try:
-            mode = win32con.GENERIC_READ | win32con.GENERIC_WRITE
-            port = \
-                win32file.CreateFile(portname,
-                                     mode,
-                                     win32con.FILE_SHARE_READ,
-                                     None,
-                                     win32con.OPEN_EXISTING,
-                                     0,
-                                     None)
-            if portname.startswith("\\"):
-                portname = portname[4:]
-            ports.append((portname, "Unknown", "Serial"))
-            win32file.CloseHandle(port)
-            port = None
-        except Exception as e:
-            pass
-
-    return ports
-
-
-try:
-    from serial.tools.list_ports import comports
-except:
-    comports = win32_comports_bruteforce
-
-
 def _find_me():
     return sys.modules["chirp.platform"].__file__
 
@@ -125,110 +91,9 @@ class Platform:
         """Spawn the necessary program to open an HTML file at @path"""
         raise NotImplementedError("The base class can't do that")
 
-    def list_serial_ports(self):
-        """Return a list of valid serial ports"""
-        return []
-
     def default_dir(self):
         """Return the default directory for this platform"""
         return "."
-
-    def gui_open_file(self, start_dir=None, types=[]):
-        """Prompt the user to pick a file to open"""
-        import gtk
-
-        if not start_dir:
-            start_dir = self._last_dir
-
-        dlg = gtk.FileChooserDialog("Select a file to open",
-                                    None,
-                                    gtk.FILE_CHOOSER_ACTION_OPEN,
-                                    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                     gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-        if start_dir and os.path.isdir(start_dir):
-            dlg.set_current_folder(start_dir)
-
-        for desc, spec in types:
-            ff = gtk.FileFilter()
-            ff.set_name(desc)
-            ff.add_pattern(spec)
-            dlg.add_filter(ff)
-
-        res = dlg.run()
-        fname = dlg.get_filename()
-        dlg.destroy()
-
-        if res == gtk.RESPONSE_OK:
-            self._last_dir = os.path.dirname(fname)
-            return fname
-        else:
-            return None
-
-    def gui_save_file(self, start_dir=None, default_name=None, types=[]):
-        """Prompt the user to pick a filename to save"""
-        import gtk
-
-        if not start_dir:
-            start_dir = self._last_dir
-
-        dlg = gtk.FileChooserDialog("Save file as",
-                                    None,
-                                    gtk.FILE_CHOOSER_ACTION_SAVE,
-                                    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                     gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-        if start_dir and os.path.isdir(start_dir):
-            dlg.set_current_folder(start_dir)
-
-        if default_name:
-            dlg.set_current_name(default_name)
-
-        extensions = {}
-        for desc, ext in types:
-            ff = gtk.FileFilter()
-            ff.set_name(desc)
-            ff.add_pattern("*.%s" % ext)
-            extensions[desc] = ext
-            dlg.add_filter(ff)
-
-        res = dlg.run()
-
-        fname = dlg.get_filename()
-        ext = extensions[dlg.get_filter().get_name()]
-        if fname and not fname.endswith(".%s" % ext):
-            fname = "%s.%s" % (fname, ext)
-
-        dlg.destroy()
-
-        if res == gtk.RESPONSE_OK:
-            self._last_dir = os.path.dirname(fname)
-            return fname
-        else:
-            return None
-
-    def gui_select_dir(self, start_dir=None):
-        """Prompt the user to pick a directory"""
-        import gtk
-
-        if not start_dir:
-            start_dir = self._last_dir
-
-        dlg = gtk.FileChooserDialog("Choose folder",
-                                    None,
-                                    gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
-                                    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                     gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-        if start_dir and os.path.isdir(start_dir):
-            dlg.set_current_folder(start_dir)
-
-        res = dlg.run()
-        fname = dlg.get_filename()
-        dlg.destroy()
-
-        if res == gtk.RESPONSE_OK and os.path.isdir(fname):
-            self._last_dir = fname
-            return fname
-        else:
-            return None
 
     def os_version_string(self):
         """Return a string that describes the OS/platform version"""
@@ -284,18 +149,7 @@ class UnixPlatform(Platform):
                                     ".chirp")
 
         Path(basepath).mkdir(exist_ok=True)
-
-        Platform.__init__(self, str(basepath))
-
-        # This is a hack that needs to be properly fixed by importing the
-        # latest changes to this module from d-rats.  In the interest of
-        # time, however, I'll throw it here
-        if sys.platform == "darwin":
-            if "DISPLAY" not in os.environ:
-                LOG.info("Forcing DISPLAY for MacOS")
-                os.environ["DISPLAY"] = ":0"
-
-            os.environ["PANGO_RC_FILE"] = "../Resources/etc/pango/pangorc"
+        super().__init__(str(basepath))
 
     def default_dir(self):
         return str(Path.home())
@@ -319,18 +173,6 @@ class UnixPlatform(Platform):
 
     def open_html_file(self, path):
         os.system("firefox '%s'" % path)
-
-    def list_serial_ports(self):
-        ports = ["/dev/ttyS*",
-                 "/dev/ttyUSB*",
-                 "/dev/ttyAMA*",
-                 "/dev/ttyACM*",
-                 "/dev/cu.*",
-                 "/dev/cuaU*",
-                 "/dev/cua0*",
-                 "/dev/term/*",
-                 "/dev/tty.KeySerial*"]
-        return natural_sorted(sum([glob.glob(x) for x in ports], []))
 
     def os_version_string(self):
         try:
@@ -378,75 +220,6 @@ class Win32Platform(Platform):
     def open_html_file(self, path):
         os.system("explorer %s" % path)
 
-    def list_serial_ports(self):
-        try:
-            ports = list(comports())
-        except Exception as e:
-            if comports != win32_comports_bruteforce:
-                LOG.error("Failed to detect win32 serial ports: %s" % e)
-                ports = win32_comports_bruteforce()
-        return natural_sorted([port for port, name, url in ports])
-
-    def gui_open_file(self, start_dir=None, types=[]):
-        import win32gui
-
-        typestrs = ""
-        for desc, spec in types:
-            typestrs += "%s\0%s\0" % (desc, spec)
-        if not typestrs:
-            typestrs = None
-
-        try:
-            fname, _, _ = win32gui.GetOpenFileNameW(Filter=typestrs)
-        except Exception as e:
-            LOG.error("Failed to get filename: %s" % e)
-            return None
-
-        return str(fname)
-
-    def gui_save_file(self, start_dir=None, default_name=None, types=[]):
-        import win32gui
-        import win32api
-
-        (pform, _, _, _, _) = win32api.GetVersionEx()
-
-        typestrs = ""
-        custom = "%s\0*.%s\0" % (types[0][0], types[0][1])
-        for desc, ext in types[1:]:
-            typestrs += "%s\0%s\0" % (desc, "*.%s" % ext)
-
-        if pform > 5:
-            typestrs = "%s\0%s\0" % (types[0][0], "*.%s" % types[0][1]) + \
-                typestrs
-
-        if not typestrs:
-            typestrs = custom
-            custom = None
-
-        def_ext = "*.%s" % types[0][1]
-        try:
-            fname, _, _ = win32gui.GetSaveFileNameW(File=default_name,
-                                                    CustomFilter=custom,
-                                                    DefExt=def_ext,
-                                                    Filter=typestrs)
-        except Exception as e:
-            LOG.error("Failed to get filename: %s" % e)
-            return None
-
-        return str(fname)
-
-    def gui_select_dir(self, start_dir=None):
-        from win32com.shell import shell
-
-        try:
-            pidl, _, _ = shell.SHBrowseForFolder()
-            fname = shell.SHGetPathFromIDList(pidl)
-        except Exception as e:
-            LOG.error("Failed to get directory: %s" % e)
-            return None
-
-        return str(fname)
-
     def os_version_string(self):
         import win32api
 
@@ -486,13 +259,8 @@ def _do_test():
     print("Config dir: %s" % __pform.config_dir())
     print("Default dir: %s" % __pform.default_dir())
     print("Log file (foo): %s" % __pform.log_file("foo"))
-    print("Serial ports: %s" % __pform.list_serial_ports())
     print("OS Version: %s" % __pform.os_version_string())
     # __pform.open_text_file("d-rats.py")
-
-    # print "Open file: %s" % __pform.gui_open_file()
-    # print "Save file: %s" % __pform.gui_save_file(default_name="Foo.txt")
-    print("Open folder: %s" % __pform.gui_select_dir("/tmp"))
 
 if __name__ == "__main__":
     _do_test()

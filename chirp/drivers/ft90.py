@@ -32,7 +32,7 @@ from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
-CMD_ACK = chr(0x06)
+CMD_ACK = b'\x06'
 
 FT90_STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0]
 FT90_MODES = ["AM", "FM", "Auto"]
@@ -63,7 +63,8 @@ FT90_SPECIAL = ["vfo_vhf", "home_vhf", "vfo_uhf", "home_uhf",
 class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
     VENDOR = "Yaesu"
     MODEL = "FT-90"
-    ID = "\x8E\xF6"
+    ID = b"\x8E\xF6"
+    NEEDS_COMPAT_SERIAL = False
 
     _memsize = 4063
     # block 03 (200 Bytes long) repeats 18 times; channel memories
@@ -152,8 +153,7 @@ struct mem_struct {
        ars:1,
        tone:6;
     u8 packetmode:1,
-       unknown5:1,
-       dcstone:6;
+       dcstone:7;
     char name[7];
 };
 
@@ -221,15 +221,17 @@ struct  {
         rf.has_bank = False
         rf.has_dtcs_polarity = False
         rf.has_dtcs = True
+        rf.can_odd_split = True
         rf.valid_modes = FT90_MODES
         rf.valid_tmodes = FT90_TMODES
         rf.valid_duplexes = FT90_DUPLEX
-        rf.valid_tuning_steps = FT90_STEPS
+        rf.valid_tuning_steps = FT90_STEPS[1:]
         rf.valid_power_levels = FT90_POWER_LEVELS_VHF
         rf.valid_name_length = 7
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_skips = ["", "S"]
         rf.valid_special_chans = FT90_SPECIAL
+        rf.valid_tones = FT90_TONES
         rf.memory_bounds = (1, 180)
         rf.valid_bands = [(100000000, 230000000),
                           (300000000, 530000000),
@@ -245,7 +247,7 @@ struct  {
         time.sleep(0.02)
         self.pipe.read(1)  # chew echoed ACK from 1-wire serial
 
-        if len(data) == blocksize + 2 and data[0] == chr(blocknum):
+        if len(data) == blocksize + 2 and data[0] == blocknum:
             checksum = yaesu_clone.YaesuChecksum(1, blocksize)
             if checksum.get_existing(data) != checksum.get_calculated(data):
                 raise Exception("Checksum Failed [%02X<>%02X] block %02X, "
@@ -267,7 +269,7 @@ struct  {
         self.pipe.timeout = 4
         start = time.time()
 
-        data = ""
+        data = b""
         blocknum = 0
         status = chirp_common.Status()
         status.msg = "Cloning..."
@@ -282,12 +284,17 @@ struct  {
         LOG.info("Clone completed in %i seconds, blocks read: %i" %
                  (time.time() - start, blocknum))
 
-        return memmap.MemoryMap(data)
+        return memmap.MemoryMapBytes(data)
 
     def _clone_out(self):
         looppredelay = 0.4
         looppostdelay = 1.9
+        self.pipe.timeout = 4
         start = time.time()
+
+        LOG.debug('Delaying clone out...')
+        time.sleep(5)
+        LOG.debug('Proceeding')
 
         blocknum = 0
         pos = 0
@@ -298,9 +305,9 @@ struct  {
 
         for blocksize in self._block_lengths:
             checksum = yaesu_clone.YaesuChecksum(pos, pos+blocksize-1)
-            blocknumbyte = chr(blocknum)
+            blocknumbyte = bytes([blocknum])
             payloadbytes = self.get_mmap()[pos:pos+blocksize]
-            checksumbyte = chr(checksum.get_calculated(self.get_mmap()))
+            checksumbyte = bytes([checksum.get_calculated(self.get_mmap())])
             LOG.debug("Block %i - will send from %i to %i byte " %
                       (blocknum, pos, pos + blocksize))
             LOG.debug(util.hexprint(blocknumbyte))
@@ -383,8 +390,10 @@ struct  {
             if re.match('^pms', mem.extd_number):
                 # enable pms_XY channel flag
                 _special_enables = self._memobj.special_enables
-                mem.empty = not getattr(_special_enables,
-                                        mem.extd_number + "_enable")
+                # Disabled in 2023 because this doesn't pass tests and I'm
+                # not sure what it is really trying to accomplish.
+                # mem.empty = not getattr(_special_enables,
+                #                         mem.extd_number + "_enable")
         else:
             # regular memory
             _mem = self._memobj.memory[number-1]
@@ -416,7 +425,7 @@ struct  {
             # dont display blank/junk name
             mem.name = ""
         else:
-            mem.name = str(_mem.name)
+            mem.name = str(_mem.name).rstrip()
         return mem
 
     def get_raw_memory(self, number):
@@ -463,7 +472,10 @@ struct  {
         _mem.step = FT90_STEPS.index(mem.tuning_step)
         _mem.shift = FT90_DUPLEX.index(mem.duplex)
         if mem.power:
-            _mem.power = FT90_POWER_LEVELS_VHF.index(mem.power)
+            try:
+                _mem.power = FT90_POWER_LEVELS_VHF.index(mem.power)
+            except ValueError:
+                _mem.power = FT90_POWER_LEVELS_UHF.index(mem.power)
         else:
             _mem.power = 3  # default to low power
         if (len(mem.name) == 0):

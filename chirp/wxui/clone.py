@@ -541,6 +541,7 @@ class ChirpUploadDialog(ChirpCloneDialog):
 
         self._persist_choices()
         self.disable_running()
+        port = self.get_selected_port()
 
         prompts = self._radio.get_prompts()
         if prompts.info:
@@ -551,6 +552,13 @@ class ChirpUploadDialog(ChirpCloneDialog):
             if d.ShowModal() != wx.ID_OK:
                 self.cancel_action()
                 return
+
+        if prompts.display_pre_upload_prompt_before_opening_port:
+            s = None
+        else:
+            LOG.debug('Opening serial %r before upload prompt' % port)
+            s = open_serial(port, self._radio)
+
         if prompts.pre_upload:
             d = ChirpRadioPromptDialog(self,
                                        title=_('Upload instructions'),
@@ -558,16 +566,20 @@ class ChirpUploadDialog(ChirpCloneDialog):
                                        prompt='pre_upload')
             if d.ShowModal() != wx.ID_OK:
                 self.cancel_action()
+                if s:
+                    s.close()
                 return
-
-        port = self.get_selected_port()
 
         baud = self._radio.BAUD_RATE
         if self._radio.pipe:
             baud = self._radio.pipe.baudrate
 
+        if s is None:
+            LOG.debug('Opening serial %r after upload prompt' % port)
+            s = open_serial(port, self._radio)
+
         try:
-            self._radio.set_pipe(open_serial(port, self._radio))
+            self._radio.set_pipe(s)
             # Short-circuit straight to the previous baudrate for variable-
             # rate radios to sync back up faster
             self._radio.pipe.baudrate = baud

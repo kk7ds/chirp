@@ -1,5 +1,3 @@
-mock
-mox3
 # https://github.com/pytest-dev/pytest/issues/10428
 pytest==7.1.3
 pytest-xdist

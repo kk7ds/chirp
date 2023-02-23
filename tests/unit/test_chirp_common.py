@@ -4,7 +4,7 @@ import json
 import os
 import tempfile
 
-import mock
+from unittest import mock
 
 from tests.unit import base
 from chirp import CHIRP_VERSION

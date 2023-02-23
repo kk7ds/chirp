@@ -15,6 +15,7 @@
 
 import datetime
 import functools
+import hashlib
 import logging
 import os
 import platform
@@ -1243,9 +1244,11 @@ class ChirpMain(wx.Frame):
 
         self.SetBackgroundColour((0xEA, 0x62, 0x62, 0xFF))
 
-        LOG.info('Loading module %s' % filename)
         with open(filename) as module:
             code = module.read()
+        sha = hashlib.sha256()
+        sha.update(code.encode())
+        LOG.info('Loading module %s SHA256 %s' % (filename, sha.hexdigest()))
         pyc = compile(code, filename, 'exec')
         # See this for why:
         # http://stackoverflow.com/questions/2904274/globals-and-locals-in-python-exec
