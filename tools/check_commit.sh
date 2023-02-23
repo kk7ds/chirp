@@ -3,10 +3,17 @@
 BASE="$1"
 RETCODE=0
 
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+NC='\033[0m'
+
 function fail() {
-    echo $*
+    echo -e "${RED}$*${NC}"
     RETCODE=1
 }
+
+echo -e "${GREEN}Checking from $(git rev-parse --short ${BASE}):${NC}"
+git log --pretty=oneline --no-merges --abbrev-commit ${BASE}..
 
 git diff ${BASE}.. '*.py' | grep '^+' > added_lines
 
@@ -34,13 +41,13 @@ if grep -E 'MemoryMap\(' added_lines; then
     fail New uses of MemoryMap should be MemoryMapBytes
 fi
 
-for file in $(git diff ${BASE}.. | grep '^+++' | sed 's#^+++ b/##'); do
+for file in $(git diff --name-only ${BASE}..); do
     if file $file | grep -q CRLF; then
         fail "$file : Files should be LF (Unix) format, not CR (Mac) or CRLF (Windows)"
     fi
 done
 
-if git log ${BASE}.. --merges | grep Merge; then
+if git log ${BASE}.. --merges | grep .; then
     fail Please do not include merge commits in your PR
 fi
 
