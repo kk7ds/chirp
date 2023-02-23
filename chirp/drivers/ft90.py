@@ -292,10 +292,6 @@ struct  {
         self.pipe.timeout = 4
         start = time.time()
 
-        LOG.debug('Delaying clone out...')
-        time.sleep(5)
-        LOG.debug('Proceeding')
-
         blocknum = 0
         pos = 0
         status = chirp_common.Status()
