@@ -153,8 +153,7 @@ struct mem_struct {
        ars:1,
        tone:6;
     u8 packetmode:1,
-       unknown5:1,
-       dcstone:6;
+       dcstone:7;
     char name[7];
 };
 
@@ -222,15 +221,17 @@ struct  {
         rf.has_bank = False
         rf.has_dtcs_polarity = False
         rf.has_dtcs = True
+        rf.can_odd_split = True
         rf.valid_modes = FT90_MODES
         rf.valid_tmodes = FT90_TMODES
         rf.valid_duplexes = FT90_DUPLEX
-        rf.valid_tuning_steps = FT90_STEPS
+        rf.valid_tuning_steps = FT90_STEPS[1:]
         rf.valid_power_levels = FT90_POWER_LEVELS_VHF
         rf.valid_name_length = 7
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_skips = ["", "S"]
         rf.valid_special_chans = FT90_SPECIAL
+        rf.valid_tones = FT90_TONES
         rf.memory_bounds = (1, 180)
         rf.valid_bands = [(100000000, 230000000),
                           (300000000, 530000000),
@@ -389,8 +390,10 @@ struct  {
             if re.match('^pms', mem.extd_number):
                 # enable pms_XY channel flag
                 _special_enables = self._memobj.special_enables
-                mem.empty = not getattr(_special_enables,
-                                        mem.extd_number + "_enable")
+                # Disabled in 2023 because this doesn't pass tests and I'm
+                # not sure what it is really trying to accomplish.
+                # mem.empty = not getattr(_special_enables,
+                #                         mem.extd_number + "_enable")
         else:
             # regular memory
             _mem = self._memobj.memory[number-1]
@@ -422,7 +425,7 @@ struct  {
             # dont display blank/junk name
             mem.name = ""
         else:
-            mem.name = str(_mem.name)
+            mem.name = str(_mem.name).rstrip()
         return mem
 
     def get_raw_memory(self, number):
@@ -469,7 +472,10 @@ struct  {
         _mem.step = FT90_STEPS.index(mem.tuning_step)
         _mem.shift = FT90_DUPLEX.index(mem.duplex)
         if mem.power:
-            _mem.power = FT90_POWER_LEVELS_VHF.index(mem.power)
+            try:
+                _mem.power = FT90_POWER_LEVELS_VHF.index(mem.power)
+            except ValueError:
+                _mem.power = FT90_POWER_LEVELS_UHF.index(mem.power)
         else:
             _mem.power = 3  # default to low power
         if (len(mem.name) == 0):
