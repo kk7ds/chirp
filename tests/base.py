@@ -71,6 +71,7 @@ class DriverTest(unittest.TestCase):
                 # If we have valid tuning steps, go one step above the
                 # bottom of the band
                 m.freq += int(self.rf.valid_tuning_steps[0] * 1000)
+                m.tuning_step = self.rf.valid_tuning_steps[0]
             elif m.freq + 1000000 < band_hi:
                 # Otherwise just pick 1MHz above the bottom, which has been
                 # our test basis for a long time, unless that extends past

@@ -1533,6 +1533,11 @@ def is_5_0(freq):
     return (freq % 5000) == 0
 
 
+def is_10_0(freq):
+    """Returns True if @freq is reachable by a 10kHz step"""
+    return (freq % 10000) == 0
+
+
 def is_12_5(freq):
     """Returns True if @freq is reachable by a 12.5kHz step"""
     return (freq % 12500) == 0
@@ -1555,7 +1560,9 @@ def is_8_33(freq):
 
 def required_step(freq):
     """Returns the simplest tuning step that is required to reach @freq"""
-    if is_5_0(freq):
+    if is_10_0(freq):
+        return 10.0
+    elif is_5_0(freq):
         return 5.0
     elif is_12_5(freq):
         return 12.5
