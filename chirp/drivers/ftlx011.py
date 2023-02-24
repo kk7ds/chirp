@@ -539,8 +539,8 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         _mem = self._memobj.memory[mem.number - 1]
 
         # Empty memory
+        _mem.empty = mem.empty
         if mem.empty:
-            _mem.empty = True
             _mem.rx_freq = _mem.tx_freq = 0
             return
 
@@ -717,8 +717,6 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             try:
                 name = element.get_name()
                 value = element.value
-
-                print(("== Setting %s: %s" % (name, value)))
 
                 obj = getattr(_settings, name)
                 if name in ["off_hook", "talk_back", "monitor"]:
