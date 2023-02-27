@@ -222,7 +222,7 @@
 | <a name="QYT_KT8900D"></a> QYT_KT8900D | [Implied by BTECH_UV-25X2](#user-content-BTECH_UV-25X2) | 11-Nov-2022 | Yes | 0.52% |
 | <a name="QYT_KT8900R"></a> QYT_KT8900R | [Implied by BTECH_UV-2501+220](#user-content-BTECH_UV-2501+220) | 11-Nov-2022 | Yes | 0.13% |
 | <a name="QYT_KT980PLUS"></a> QYT_KT980PLUS | [Implied by BTECH_UV-25X2](#user-content-BTECH_UV-25X2) | 11-Nov-2022 | Yes | 0.09% |
-| <a name="Quansheng_TG-UV2+"></a> Quansheng_TG-UV2+ |  |  |  | 0.05% |
+| <a name="Quansheng_TG-UV2+"></a> Quansheng_TG-UV2+ | [Reported working](https://chirp.danplanet.com/issues/10398) | 26-Feb-2023 | Yes | 0.05% |
 | <a name="RT_Systems_CSV"></a> RT_Systems_CSV |  |  |  |  |
 | <a name="Radioddity_DB25-G"></a> Radioddity_DB25-G | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.17% |
 | <a name="Radioddity_GA-2S"></a> Radioddity_GA-2S | [@KC9HI](https://github.com/KC9HI) | 4-Dec-2022 | Yes | 0.19% |
@@ -387,9 +387,9 @@
 
 **Drivers:** 382
 
-**Tested:** 83% (320/62) (93% of usage stats)
+**Tested:** 84% (321/61) (93% of usage stats)
 
-**Byte clean:** 88% (339/43)
+**Byte clean:** 89% (340/42)
 
 ## Meaning of this testing
 
