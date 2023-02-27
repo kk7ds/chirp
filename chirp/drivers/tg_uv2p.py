@@ -118,21 +118,21 @@ struct name names[200];
 def do_ident(radio):
     radio.pipe.timeout = 3
     radio.pipe.stopbits = serial.STOPBITS_TWO
-    radio.pipe.write("\x02PnOGdAM")
+    radio.pipe.write(b"\x02PnOGdAM")
     for x in range(10):
         ack = radio.pipe.read(1)
-        if ack == '\x06':
+        if ack == b'\x06':
             break
     else:
         raise errors.RadioError("Radio did not ack programming mode")
-    radio.pipe.write("\x40\x02")
+    radio.pipe.write(b"\x40\x02")
     ident = radio.pipe.read(8)
     LOG.debug(util.hexprint(ident))
-    if not ident.startswith('P5555'):
+    if not ident.startswith(b'P5555'):
         raise errors.RadioError("Unsupported model")
-    radio.pipe.write("\x06")
+    radio.pipe.write(b"\x06")
     ack = radio.pipe.read(1)
-    if ack != "\x06":
+    if ack != b"\x06":
         raise errors.RadioError("Radio did not ack ident")
 
 
@@ -146,18 +146,18 @@ def do_status(radio, direction, addr):
 
 def do_download(radio):
     do_ident(radio)
-    data = "TG-UV2+ Radio Program Data v1.0\x00"
-    data += ("\x00" * 16)
+    data = b"TG-UV2+ Radio Program Data v1.0\x00"
+    data += (b"\x00" * 16)
 
     firstack = None
     for i in range(0, 0x2000, 8):
-        frame = struct.pack(">cHB", "R", i, 8)
+        frame = struct.pack(">cHB", b"R", i, 8)
         radio.pipe.write(frame)
         result = radio.pipe.read(12)
-        if not (result[0] == "W" and frame[1:4] == result[1:4]):
+        if not (result[0:1] == b"W" and frame[1:4] == result[1:4]):
             LOG.debug(util.hexprint(result))
             raise errors.RadioError("Invalid response for address 0x%04x" % i)
-        radio.pipe.write("\x06")
+        radio.pipe.write(b"\x06")
         ack = radio.pipe.read(1)
         if not firstack:
             firstack = ack
@@ -169,7 +169,7 @@ def do_download(radio):
         data += result[4:]
         do_status(radio, "from", i)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -177,11 +177,11 @@ def do_upload(radio):
     data = radio._mmap[0x0030:]
 
     for i in range(0, 0x2000, 8):
-        frame = struct.pack(">cHB", "W", i, 8)
+        frame = struct.pack(">cHB", b"W", i, 8)
         frame += data[i:i + 8]
         radio.pipe.write(frame)
         ack = radio.pipe.read(1)
-        if ack != "\x06":
+        if ack != b"\x06":
             LOG.debug("Radio NAK'd block at address 0x%04x" % i)
             raise errors.RadioError(
                     "Radio NAK'd block at address 0x%04x" % i)
@@ -209,6 +209,7 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
     VENDOR = "Quansheng"
     MODEL = "TG-UV2+"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     _memsize = 0x2000
 
