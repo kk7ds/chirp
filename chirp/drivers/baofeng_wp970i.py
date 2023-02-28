@@ -725,16 +725,24 @@ class WP970I(baofeng_common.BaofengCommonHT):
         rs.set_apply_callback(apply_offset, _mem.vfo.b)
         work.append(rs)
 
+        if _mem.vfo.a.txpower3 > 0x02:
+            val = 0x00
+        else:
+            val = _mem.vfo.a.txpower3
         rs = RadioSetting("vfo.a.txpower3", "VFO A Power",
                           RadioSettingValueList(
                               LIST_TXPOWER,
-                              LIST_TXPOWER[_mem.vfo.a.txpower3]))
+                              LIST_TXPOWER[val]))
         work.append(rs)
 
+        if _mem.vfo.b.txpower3 > 0x02:
+            val = 0x00
+        else:
+            val = _mem.vfo.b.txpower3
         rs = RadioSetting("vfo.b.txpower3", "VFO B Power",
                           RadioSettingValueList(
                               LIST_TXPOWER,
-                              LIST_TXPOWER[_mem.vfo.b.txpower3]))
+                              LIST_TXPOWER[val]))
         work.append(rs)
 
         rs = RadioSetting("vfo.a.widenarr", "VFO A Bandwidth",
