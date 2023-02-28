@@ -793,7 +793,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
             preset = value / 10.0 + 65
         else:
             # unknown (undiscovered method or no FM chip?)
-            preset = nul
+            preset = False
         if preset:
             rs = RadioSettingValueFloat(65, 108.0, preset, 0.1, 1)
             rset = RadioSetting("fm_presets", "FM Preset(MHz)", rs)
