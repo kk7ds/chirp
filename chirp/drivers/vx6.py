@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 from chirp.drivers import yaesu_clone
 from chirp import chirp_common, directory, bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings
@@ -20,6 +22,8 @@ from chirp.settings import RadioSettingValueString, RadioSettingValueList
 from chirp.settings import RadioSettingValueBoolean
 from textwrap import dedent
 import re
+
+LOG = logging.getLogger(__name__)
 
 # flags.{even|odd}_pskip: These are actually "preferential *scan* channels".
 # Is that what they mean on other radios as well?
@@ -500,7 +504,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
         if mem.power:
-            _mem.power = 3 - POWER_LEVELS.index(mem.power)
+            _mem.power = 3 - self._resolve_power(mem)
         else:
             _mem.power = 0
 
@@ -513,6 +517,24 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
 
         if mem.name.strip():
             _mem.name[0] |= 0x80
+
+    def _resolve_power(self, mem):
+        # Since we have two sets of power levels, we may need to match the
+        # one in mem.power by name instead of absolute power to handle things
+        # like editing a 2m channel to a 220MHz frequency, etc.
+        by_name = [str(x) for x in POWER_LEVELS]
+        index = by_name.index(str(mem.power))
+        LOG.debug('Resolving power %r by name to index %i' % (
+            mem.power, index))
+        return index
+
+    def validate_memory(self, mem):
+        # Override memory validation with by-name power level matching,
+        # since we do not expose those power levels in our RadioFeatures.
+        if mem.power and mem.power not in POWER_LEVELS:
+            mem = mem.dupe()
+            mem.power = POWER_LEVELS[self._resolve_power(mem)]
+        return super().validate_memory(mem)
 
     def get_bank_model(self):
         return VX6BankModel(self)
