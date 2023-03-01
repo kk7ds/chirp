@@ -677,6 +677,10 @@ class ChirpMain(wx.Frame):
             self.Bind(wx.EVT_MENU, self._menu_interact_driver,
                       interact_drv_item)
             radio_menu.Append(interact_drv_item)
+        else:
+            self._reload_both_item = None
+            self._reload_driver_item = None
+            self._interact_driver_item = None
 
         help_menu = wx.Menu()
 
@@ -870,8 +874,13 @@ class ChirpMain(wx.Frame):
             (self._export_menu_item, can_close),
             (self._fixed_item, is_memedit or is_bank),
             (self._large_item, is_memedit or is_bank),
+            (self._reload_driver_item, can_saveas),
+            (self._reload_both_item, can_saveas),
+            (self._interact_driver_item, can_saveas),
         ]
         for ident, enabled in items:
+            if ident is None:
+                continue
             menuitem = self.GetMenuBar().FindItemById(ident)
             if menuitem:
                 # Some items may not be present on all systems (i.e.
