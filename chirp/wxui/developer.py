@@ -365,6 +365,7 @@ class ChirpBrowserPanel(wx.lib.scrolledpanel.ScrolledPanel):
                 editor.refresh()
 
         self._sizer.Layout()
+        self.FitInside()
 
 
 class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
