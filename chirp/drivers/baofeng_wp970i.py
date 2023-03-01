@@ -68,6 +68,9 @@ LIST_TXPOWER = ["High", "Mid", "Low"]
 LIST_VOICE = ["Off", "English", "Chinese"]
 LIST_WORKMODE = ["Frequency", "Channel"]
 
+TXP_CHOICES = ["High", "Low"]
+TXP_VALUES = [0x00, 0x02]
+
 
 def model_match(cls, data):
     """Match the opened/downloaded image to the correct version"""
@@ -725,25 +728,48 @@ class WP970I(baofeng_common.BaofengCommonHT):
         rs.set_apply_callback(apply_offset, _mem.vfo.b)
         work.append(rs)
 
-        if _mem.vfo.a.txpower3 > 0x02:
-            val = 0x00
-        else:
-            val = _mem.vfo.a.txpower3
-        rs = RadioSetting("vfo.a.txpower3", "VFO A Power",
-                          RadioSettingValueList(
-                              LIST_TXPOWER,
-                              LIST_TXPOWER[val]))
-        work.append(rs)
+        def apply_txpower_listvalue(setting, obj):
+            LOG.debug("Setting value: " + str(
+                      setting.value) + " from list")
+            val = str(setting.value)
+            index = TXP_CHOICES.index(val)
+            val = TXP_VALUES[index]
+            obj.set_value(val)
 
-        if _mem.vfo.b.txpower3 > 0x02:
-            val = 0x00
+        if self._tri_band:
+            if _mem.vfo.a.txpower3 in TXP_VALUES:
+                idx = TXP_VALUES.index(_mem.vfo.a.txpower3)
+            else:
+                idx = TXP_VALUES.index(0x00)
+            rs = RadioSettingValueList(TXP_CHOICES, TXP_CHOICES[idx])
+            rset = RadioSetting("vfo.a.txpower3", "VFO A Power", rs)
+            rset.set_apply_callback(apply_txpower_listvalue,
+                                    _mem.vfo.a.txpower3)
+            work.append(rset)
+
+            if _mem.vfo.b.txpower3 in TXP_VALUES:
+                idx = TXP_VALUES.index(_mem.vfo.b.txpower3)
+            else:
+                idx = TXP_VALUES.index(0x00)
+            rs = RadioSettingValueList(TXP_CHOICES, TXP_CHOICES[idx])
+            rset = RadioSetting("vfo.b.txpower3", "VFO B Power", rs)
+            rset.set_apply_callback(apply_txpower_listvalue,
+                                    _mem.vfo.b.txpower3)
+            work.append(rset)
         else:
-            val = _mem.vfo.b.txpower3
-        rs = RadioSetting("vfo.b.txpower3", "VFO B Power",
-                          RadioSettingValueList(
-                              LIST_TXPOWER,
-                              LIST_TXPOWER[val]))
-        work.append(rs)
+            rs = RadioSetting("vfo.a.txpower3", "VFO A Power",
+                              RadioSettingValueList(
+                                  LIST_TXPOWER,
+                                  LIST_TXPOWER[min(_mem.vfo.a.txpower3, 0x02)]
+                                               ))
+            work.append(rs)
+
+            rs = RadioSetting("vfo.b.txpower3", "VFO B Power",
+                              RadioSettingValueList(
+                                  LIST_TXPOWER,
+                                  LIST_TXPOWER[min(_mem.vfo.b.txpower3, 0x02)]
+                                               ))
+            work.append(rs)
 
         rs = RadioSetting("vfo.a.widenarr", "VFO A Bandwidth",
                           RadioSettingValueList(
@@ -940,6 +966,8 @@ class BFA58S(WP970I):
     VENDOR = "Baofeng"
     MODEL = "BF-A58S"
     LENGTH_NAME = 7
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Low", watts=1.00)]
     ALIASES = [UV82IIIAlias]
     _tri_band = True
 
