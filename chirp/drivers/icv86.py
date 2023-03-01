@@ -112,8 +112,6 @@ class ICV86Radio(icf.IcomCloneModeRadio):
     """Icom IC-V86"""
     VENDOR = "Icom"
     MODEL = "IC-V86"
-    # read clone response after each clone frame is sent
-    MUNCH_CLONE_RESP = True
 
     _model = "\x40\x66\x00\x01"
     _memsize = 5504
@@ -343,7 +341,7 @@ class ICV86Radio(icf.IcomCloneModeRadio):
         _mem.duplex = DUPLEXES.index(mem.duplex)
         _mem.dtcs_polarity = DTCS_POLARITY.index(mem.dtcs_polarity)
         _mem.tmode = TMODES.index(mem.tmode)
-        _mem.power = POWER_LEVELS.index(mem.power)
+        _mem.power = 0 if mem.power is None else POWER_LEVELS.index(mem.power)
 
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
