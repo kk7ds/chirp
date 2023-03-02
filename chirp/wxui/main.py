@@ -1254,6 +1254,7 @@ class ChirpMain(wx.Frame):
         # allow a loaded module to override an existing driver, against
         # its normal better judgement
         directory.enable_reregistrations()
+        self.SetTitle('CHIRP **%s**' % _('Module Loaded'))
 
         self.SetBackgroundColour((0xEA, 0x62, 0x62, 0xFF))
 
@@ -1278,6 +1279,21 @@ class ChirpMain(wx.Frame):
         formats = ['Python %s (*.py)|*.py' % _('Files'),
                    '%s %s (*.mod)|*.mod' % (_('Module'), _('Files'))]
 
+        r = wx.MessageDialog(self,
+                             _('Loading modules can be extremely dangerous, '
+                               'leading to damage to your computer, radio, '
+                               'or both. NEVER load a module from a source '
+                               'you do not trust, and especially not from '
+                               'anywhere other than the main CHIRP website '
+                               '(chirp.danplanet.com). Loading a module from '
+                               'another source is akin to giving them direct '
+                               'access to your computer and everything on '
+                               'it! Proceed despite this risk?'),
+                             'Warning',
+                             wx.ICON_WARNING | wx.YES_NO)
+        if r.ShowModal() != wx.ID_YES:
+            return
+
         wildcard = '|'.join(formats)
         with wx.FileDialog(self, _('Open a module'),
                            chirp_platform.get_platform().get_last_dir(),
@@ -1300,6 +1316,20 @@ class ChirpMain(wx.Frame):
     def _menu_developer(self, menuitem, event):
         CONF.set_bool('developer', menuitem.IsChecked(), 'state')
         state = menuitem.IsChecked() and _('enabled') or _('disabled')
+        if menuitem.IsChecked():
+            msg = _(
+                'Please note that developer mode is intended for use '
+                'by developers of the CHIRP project, or under the '
+                'direction of a developer. It enables behaviors and '
+                'functions that can damage your computer and your '
+                'radio if not used with EXTREME care. You have been '
+                'warned! Proceed anyway?')
+            d = wx.MessageDialog(self, msg, _('Danger Ahead'),
+                                 style=wx.ICON_WARNING | wx.YES_NO)
+            if d.ShowModal() != wx.ID_YES:
+                menuitem.Check(False)
+                return
+
         wx.MessageBox(_('Developer state is now %s. '
                         'CHIRP must be restarted to take effect') % state,
                       _('Restart Required'), wx.OK)
