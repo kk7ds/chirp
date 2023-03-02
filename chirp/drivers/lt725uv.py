@@ -9,6 +9,8 @@
 #    1. Removed Experimental Warning
 #    2. Added Brown & Yellow as Color Selections
 #    3. Max VFO Volume Setting to 15 ( vice 10)
+# Modified UHF band limits: February 2023
+#    Jim Unroe, KC9HI <rock.unroe@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -471,7 +473,7 @@ class LT725UV(chirp_common.CloneModeRadio):
                     chirp_common.PowerLevel("High", watts=30.00)]
 
     VALID_BANDS = [(136000000, 176000000),
-                   (400000000, 480000000)]
+                   (400000000, 490000000)]
 
     # Valid chars on the LCD
     VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
@@ -1175,10 +1177,10 @@ class LT725UV(chirp_common.CloneModeRadio):
         b_band.append(rs)
 
         val = _vfob.rxfreq / 100000.0
-        if (val < 400.0 or val > 480.0):
+        if (val < 400.0 or val > 490.0):
             val = 446.0          # UHF calling
         rs = RadioSetting("lower.vfob.rxfreq ", "Default Recv Freq (MHz)",
-                          RadioSettingValueFloat(400.0, 480.0, val, 0.001, 5))
+                          RadioSettingValueFloat(400.0, 490.0, val, 0.001, 5))
         rs.set_apply_callback(my_dbl2raw, _vfob, "rxfreq")
         b_band.append(rs)
 
@@ -1310,7 +1312,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             rs.set_apply_callback(my_str2ary, _lims, "hello2", "hello2_cnt")
             lims.append(rs)
 
-        # VALID_BANDS = [(136000000, 176000000),400000000, 480000000)]
+        # VALID_BANDS = [(136000000, 176000000),400000000, 490000000)]
 
         lval = _lims.vhf_low / 100000.0
         uval = _lims.vhf_high / 100000.0
@@ -1335,12 +1337,12 @@ class LT725UV(chirp_common.CloneModeRadio):
             uval = 470.0
 
         rs = RadioSetting("hello_lims.uhf_low", "Lower UHF Band Limit (MHz)",
-                          RadioSettingValueFloat(400.0, 480.0, lval, 0.001, 3))
+                          RadioSettingValueFloat(400.0, 490.0, lval, 0.001, 3))
         rs.set_apply_callback(my_dbl2raw, _lims, "uhf_low")
         lims.append(rs)
 
         rs = RadioSetting("hello_lims.uhf_high", "Upper UHF Band Limit (MHz)",
-                          RadioSettingValueFloat(400.0, 480.0, uval, 0.001, 3))
+                          RadioSettingValueFloat(400.0, 490.0, uval, 0.001, 3))
         rs.set_apply_callback(my_dbl2raw, _lims, "uhf_high")
         lims.append(rs)
 
