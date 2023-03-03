@@ -720,6 +720,11 @@ class ChirpMain(wx.Frame):
                 self.Bind(wx.EVT_MENU, self._menu_debug_loc, debug_loc_menu)
                 help_menu.Append(debug_loc_menu)
 
+        lmfi_menu = wx.MenuItem(help_menu, wx.NewId(),
+                                _('Load module from issue'))
+        self.Bind(wx.EVT_MENU, self._menu_load_from_issue, lmfi_menu)
+        help_menu.Append(lmfi_menu)
+
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, wx.GetStockLabel(wx.ID_FILE))
         menu_bar.Append(edit_menu, wx.GetStockLabel(wx.ID_EDIT))
@@ -1273,7 +1278,12 @@ class ChirpMain(wx.Frame):
         module = importlib.util.module_from_spec(spec)
         module._was_loaded = True
         sys.modules[modname] = module
-        spec.loader.exec_module(module)
+        try:
+            spec.loader.exec_module(module)
+            return True
+        except Exception as e:
+            LOG.error('Failed to load module: %s' % e)
+            raise Exception(_('Invalid or unsupported module file'))
 
     def _menu_load_module(self, event):
         formats = ['Python %s (*.py)|*.py' % _('Files'),
@@ -1374,6 +1384,15 @@ class ChirpMain(wx.Frame):
             wx.Execute('open -R %s' % dst)
         else:
             raise Exception(_('Unable to reveal %s on this system') % dst)
+
+    @common.error_proof()
+    def _menu_load_from_issue(self, event):
+        module = developer.IssueModuleLoader(self).run()
+        if module:
+            if self.load_module(module):
+                wx.MessageBox(_('Module loaded successfully'),
+                              _('Success'),
+                              wx.ICON_INFORMATION)
 
     def _menu_auto_edits(self, event):
         CONF.set_bool('auto_edits', event.IsChecked(), 'state')
