@@ -66,11 +66,21 @@ class ReportThread(threading.Thread):
             SEM.release()
 
 
+def ensure_session():
+    global SESSION
+    if SESSION is None:
+        SESSION = requests.Session()
+        SESSION.headers = {
+            'User-Agent': 'CHIRP/%s' % CHIRP_VERSION,
+            'X-CHIRP-UUID': CONF.get('seat', 'state'),
+            'X-CHIRP-Environment': get_environment(),
+        }
+
+
 def with_session(fn):
 
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
-        global SESSION
         global DISABLED
 
         if DISABLED:
@@ -82,13 +92,7 @@ def with_session(fn):
         if not CONF.is_defined('seat', 'state'):
             CONF.set('seat', str(uuid.uuid4()), 'state')
 
-        if SESSION is None:
-            SESSION = requests.Session()
-            SESSION.headers = {
-                'User-Agent': 'CHIRP/%s' % CHIRP_VERSION,
-                'X-CHIRP-UUID': CONF.get('seat', 'state'),
-                'X-CHIRP-Environment': get_environment(),
-            }
+        ensure_session()
 
         t = ReportThread(functools.partial(fn, SESSION, *args, **kwargs))
         t.start()

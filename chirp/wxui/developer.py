@@ -17,13 +17,16 @@ import functools
 import logging
 import os
 import serial
+import tempfile
 
+import requests
 import wx
 import wx.richtext
 import wx.lib.scrolledpanel
 
 from chirp import bitwise
 from chirp.wxui import common
+from chirp.wxui import report
 
 LOG = logging.getLogger(__name__)
 BrowserChanged, EVT_BROWSER_CHANGED = wx.lib.newevent.NewCommandEvent()
@@ -434,3 +437,78 @@ class ChirpBrowserTreeBook(wx.Treebook):
 
 class FakeSerial(serial.SerialBase):
     pass
+
+
+class IssueModuleLoader:
+    def __init__(self, parent):
+        self._parent = parent
+        report.ensure_session()
+        self.session = report.SESSION
+
+    def get_attachments_from_issue(self, issue):
+        r = self.session.get(
+            'https://chirp.danplanet.com/issues/%i.json' % issue,
+            params={'include': 'attachments'})
+        LOG.debug('Fetched attachments for issue %i (status %s)' % (
+            issue, r.status_code))
+        r.raise_for_status()
+        data = r.json()['issue']['attachments']
+        return [a for a in data if
+                a['filename'].endswith('.py') and
+                a.get('content_type', '').startswith('text/') and
+                a['filesize'] < (256 * 1024)]
+
+    def get_attachment_from_user(self, issue, attachments):
+        attachment_strings = {
+            '%s from %s (%s)' % (a['filename'],
+                                 a['author']['name'],
+                                 a['created_on']): a
+            for a in sorted(attachments, key=lambda a: a['created_on'])
+            }
+        choices = list(attachment_strings.keys())
+        choice = wx.GetSingleChoice(
+            _('Choose the module to load from issue %i:' % issue),
+            _('Available modules'),
+            choices,
+            len(choices) - 1,
+            parent=self._parent)
+        if choice:
+            return attachment_strings[choice]
+
+    def run(self):
+        msg = _('This will load a module from a website issue')
+        issue = wx.GetNumberFromUser(msg,
+                                     _('Issue number:'),
+                                     _('Load module from issue'),
+                                     0, 0, 999999, parent=self._parent)
+        if issue < 0:
+            return
+
+        try:
+            attachments = self.get_attachments_from_issue(issue)
+        except Exception as e:
+            LOG.exception('Failed to load attachments from %i: %s' % (
+                issue, e))
+            raise Exception('Unable to load modules from that issue')
+        LOG.debug('Found %i valid module attachments from issue %i' % (
+            len(attachments), issue))
+        if not attachments:
+            wx.MessageBox(_('No modules found in issue %i') % issue,
+                          _('No modules found'),
+                          wx.ICON_WARNING)
+            return
+        attachment = self.get_attachment_from_user(issue, attachments)
+        if not attachment:
+            return
+        LOG.debug('User chose attachment %s' % attachment)
+
+        LOG.debug('Fetching attachment URL %s' % attachment['content_url'])
+        r = requests.get(attachment['content_url'])
+        modfile = tempfile.mktemp('.py', 'loaded-%i-' % attachment['id'])
+        header = ('# Loaded from issue %i attachment %i: %s\n' % (
+            issue, attachment['id'], attachment['content_url']))
+        with open(modfile, 'wb') as f:
+            f.write(header.encode())
+            f.write(r.content)
+        LOG.debug('Wrote attachment to %s' % modfile)
+        return modfile
