@@ -303,6 +303,7 @@
 | <a name="Retevis_RT95_VOX"></a> Retevis_RT95_VOX | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.15% |
 | <a name="Retevis_RT98"></a> Retevis_RT98 | [@KC9HI](https://github.com/KC9HI) | 14-Dec-2022 | Yes | 0.05% |
 | <a name="Rugged_RH5R-V2"></a> Rugged_RH5R-V2 |  |  |  | 0.05% |
+| <a name="Ruyage_UV58Plus"></a> Ruyage_UV58Plus | [@KC9HI](https://github.com/KC9HI) | 18-Mar-2023 | Yes |  |
 | <a name="Sainsonic_AP510"></a> Sainsonic_AP510 |  |  |  | 0.00% |
 | <a name="SenhaiX_8800"></a> SenhaiX_8800 | [Implied by Radioddity_GS-5B](#user-content-Radioddity_GS-5B) | 17-Mar-2023 | Yes |  |
 | <a name="Signus_XTR-5"></a> Signus_XTR-5 | [Implied by Radioddity_GS-5B](#user-content-Radioddity_GS-5B) | 17-Mar-2023 | Yes |  |
@@ -397,11 +398,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 394
+**Drivers:** 395
 
-**Tested:** 84% (333/61) (93% of usage stats)
+**Tested:** 84% (334/61) (93% of usage stats)
 
-**Byte clean:** 89% (352/42)
+**Byte clean:** 89% (353/42)
 
 ## Meaning of this testing
 
