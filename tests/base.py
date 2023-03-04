@@ -65,13 +65,17 @@ class DriverTest(unittest.TestCase):
 
         # Some of the exposed bands may not be transmit-enabled, so
         # iterate them all
+        attempt = 0
         for band_lo, band_hi in self.rf.valid_bands:
             m.freq = band_lo
             if self.rf.valid_tuning_steps:
                 # If we have valid tuning steps, go one step above the
-                # bottom of the band
-                m.freq += int(self.rf.valid_tuning_steps[0] * 1000)
-                m.tuning_step = self.rf.valid_tuning_steps[0]
+                # bottom of the band. Select a different tuning_step each
+                # time, as some radios have various requirements for which
+                # steps work in each band, mode, etc.
+                step_index = attempt % len(self.rf.valid_tuning_steps)
+                m.tuning_step = self.rf.valid_tuning_steps[step_index]
+                m.freq += int(m.tuning_step * 1000)
             elif m.freq + 1000000 < band_hi:
                 # Otherwise just pick 1MHz above the bottom, which has been
                 # our test basis for a long time, unless that extends past
@@ -106,6 +110,8 @@ class DriverTest(unittest.TestCase):
                 # no errors means we found our candidate.
                 elif not errors:
                     return m
+
+                attempt += 1
 
         self.fail("No mutable memory locations found - unable to run this "
                   "test because I don't have a memory to test with")

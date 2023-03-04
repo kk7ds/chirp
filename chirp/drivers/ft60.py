@@ -579,7 +579,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
 
         # LOCK
         opts = ["LK KEY", "LKDIAL", "LK K+D", "LK PTT",
-                "LP P+K", "LK P+D", "LK ALL"]
+                "LK P+K", "LK P+D", "LK ALL"]
         rs = RadioSetting("lock", "Control Locking",
                           RadioSettingValueList(
                               opts, opts[_settings.lock - 1]))

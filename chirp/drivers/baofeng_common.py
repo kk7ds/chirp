@@ -28,6 +28,8 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
 LOG = logging.getLogger(__name__)
 
 STIMEOUT = 1.5
+TXPOWER_HIGH = 0x00
+TXPOWER_LOW = 0x02
 
 
 def _clean_buffer(radio):
@@ -186,7 +188,7 @@ def _download(radio):
 
     if radio_ident == "\xFF" * 16:
         ident += radio.MODEL.ljust(8)
-    elif radio.MODEL in ("GMRS-V1", "MURS-V1"):
+    elif radio.MODEL in ("GMRS-V1", "GMRS-V2", "MURS-V1", "MURS-V2"):
         # check if radio_ident is OK
         if not radio_ident[:7] in radio._fileid:
             msg = "Incorrect model ID, got this:\n\n"
@@ -318,6 +320,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
 
     _gmrs = False
     _bw_shift = False
+    _tri_band = False
 
     def sync_in(self):
         """Download from radio"""
@@ -485,12 +488,22 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
             mem.skip = "S"
 
         levels = self.POWER_LEVELS
-        try:
-            mem.power = levels[_mem.lowpower]
-        except IndexError:
-            LOG.error("Radio reported invalid power level %s (in %s)" %
-                      (_mem.power, levels))
-            mem.power = levels[0]
+        if self._tri_band:
+            if _mem.lowpower == TXPOWER_HIGH:
+                mem.power = levels[0]
+            elif _mem.lowpower == TXPOWER_LOW:
+                mem.power = levels[1]
+            else:
+                LOG.error("Radio reported invalid power level %s (in %s)" %
+                          (_mem.power, levels))
+                mem.power = levels[0]
+        else:
+            try:
+                mem.power = levels[_mem.lowpower]
+            except IndexError:
+                LOG.error("Radio reported invalid power level %s (in %s)" %
+                          (_mem.power, levels))
+                mem.power = levels[0]
 
         mem.mode = _mem.wide and "FM" or "NFM"
 
@@ -638,10 +651,21 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
         _mem.scan = mem.skip != "S"
         _mem.wide = mem.mode == "FM"
 
-        if mem.power:
-            _mem.lowpower = self.POWER_LEVELS.index(mem.power)
+        if self._tri_band:
+            levels = self.POWER_LEVELS
+            if mem.power is None:
+                _mem.lowpower = TXPOWER_HIGH
+            elif mem.power == levels[0]:
+                _mem.lowpower = TXPOWER_HIGH
+            elif mem.power == levels[1]:
+                _mem.lowpower = TXPOWER_LOW
+            else:
+                _mem.lowpower = TXPOWER_HIGH
         else:
-            _mem.lowpower = 0
+            if mem.power:
+                _mem.lowpower = self.POWER_LEVELS.index(mem.power)
+            else:
+                _mem.lowpower = 0
 
         # extra settings
         if len(mem.extra) > 0:

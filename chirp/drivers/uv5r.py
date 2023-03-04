@@ -750,6 +750,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
     _aux_block = True
     _tri_power = False
     _gmrs = False
+    _bw_shift = False
     _mem_params = (0x1828  # poweron_msg offset
                    )
     # offset of fw version in image file
@@ -1642,15 +1643,26 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         fm_preset = RadioSettingGroup("fm_preset", "FM Radio Preset")
         group.append(fm_preset)
 
-        if _fm_presets <= 108.0 * 10 - 650:
-            preset = _fm_presets / 10.0 + 65
-        elif _fm_presets >= 65.0 * 10 and _fm_presets <= 108.0 * 10:
-            preset = _fm_presets / 10.0
+        # broadcast FM settings
+        value = self._memobj.fm_presets
+        value_shifted = ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
+        if value_shifted >= 65.0 * 10 and value_shifted <= 108.0 * 10:
+            # storage method 3 (discovered 2022)
+            self._bw_shift = True
+            preset = value_shifted / 10.0
+        elif value >= 65.0 * 10 and value <= 108.0 * 10:
+            # storage method 2
+            preset = value / 10.0
+        elif value <= 108.0 * 10 - 650:
+            # original storage method (2012)
+            preset = value / 10.0 + 65
         else:
-            preset = 76.0
-        rs = RadioSetting("fm_presets", "FM Preset(MHz)",
-                          RadioSettingValueFloat(65, 108.0, preset, 0.1, 1))
-        fm_preset.append(rs)
+            # unknown (undiscovered method or no FM chip?)
+            preset = False
+        if preset:
+            rs = RadioSettingValueFloat(65, 108.0, preset, 0.1, 1)
+            rset = RadioSetting("fm_presets", "FM Preset(MHz)", rs)
+            fm_preset.append(rset)
 
         dtmf = RadioSettingGroup("dtmf", "DTMF Settings")
         group.append(dtmf)
@@ -1821,6 +1833,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                 else:
                     value = int(val.get_value() * 10)
                 LOG.debug("Setting fm_presets = %s" % (value))
+                if self._bw_shift:
+                    value = ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
                 self._memobj.fm_presets = value
             except Exception as e:
                 LOG.debug(element.get_name())

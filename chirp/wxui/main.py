@@ -677,6 +677,10 @@ class ChirpMain(wx.Frame):
             self.Bind(wx.EVT_MENU, self._menu_interact_driver,
                       interact_drv_item)
             radio_menu.Append(interact_drv_item)
+        else:
+            self._reload_both_item = None
+            self._reload_driver_item = None
+            self._interact_driver_item = None
 
         help_menu = wx.Menu()
 
@@ -715,6 +719,11 @@ class ChirpMain(wx.Frame):
                                              _('Show debug log location'))
                 self.Bind(wx.EVT_MENU, self._menu_debug_loc, debug_loc_menu)
                 help_menu.Append(debug_loc_menu)
+
+        lmfi_menu = wx.MenuItem(help_menu, wx.NewId(),
+                                _('Load module from issue'))
+        self.Bind(wx.EVT_MENU, self._menu_load_from_issue, lmfi_menu)
+        help_menu.Append(lmfi_menu)
 
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, wx.GetStockLabel(wx.ID_FILE))
@@ -870,8 +879,13 @@ class ChirpMain(wx.Frame):
             (self._export_menu_item, can_close),
             (self._fixed_item, is_memedit or is_bank),
             (self._large_item, is_memedit or is_bank),
+            (self._reload_driver_item, can_saveas),
+            (self._reload_both_item, can_saveas),
+            (self._interact_driver_item, can_saveas),
         ]
         for ident, enabled in items:
+            if ident is None:
+                continue
             menuitem = self.GetMenuBar().FindItemById(ident)
             if menuitem:
                 # Some items may not be present on all systems (i.e.
@@ -1184,10 +1198,14 @@ class ChirpMain(wx.Frame):
 
         # Reload the actual module
         module = sys.modules[orig_rclass.__module__]
-        LOG.warning('Going to reload %s' % module)
-        directory.enable_reregistrations()
-        import importlib
-        importlib.reload(module)
+        if hasattr(module, '_was_loaded'):
+            LOG.warning('Reloading loaded module %s' % module)
+            self.load_module(module.__file__)
+        else:
+            LOG.warning('Going to reload %s' % module)
+            directory.enable_reregistrations()
+            import importlib
+            importlib.reload(module)
 
         # Grab a new reference to the updated module and pick out the
         # radio class from it.
@@ -1241,6 +1259,7 @@ class ChirpMain(wx.Frame):
         # allow a loaded module to override an existing driver, against
         # its normal better judgement
         directory.enable_reregistrations()
+        self.SetTitle('CHIRP **%s**' % _('Module Loaded'))
 
         self.SetBackgroundColour((0xEA, 0x62, 0x62, 0xFF))
 
@@ -1249,14 +1268,41 @@ class ChirpMain(wx.Frame):
         sha = hashlib.sha256()
         sha.update(code.encode())
         LOG.info('Loading module %s SHA256 %s' % (filename, sha.hexdigest()))
-        pyc = compile(code, filename, 'exec')
-        # See this for why:
-        # http://stackoverflow.com/questions/2904274/globals-and-locals-in-python-exec
-        exec(pyc, globals(), globals())
+
+        import importlib.util
+        import sys
+        modname = 'chirp.loaded.%s' % os.path.splitext(
+            os.path.basename(filename))[0]
+
+        spec = importlib.util.spec_from_file_location(modname, filename)
+        module = importlib.util.module_from_spec(spec)
+        module._was_loaded = True
+        sys.modules[modname] = module
+        try:
+            spec.loader.exec_module(module)
+            return True
+        except Exception as e:
+            LOG.error('Failed to load module: %s' % e)
+            raise Exception(_('Invalid or unsupported module file'))
 
     def _menu_load_module(self, event):
         formats = ['Python %s (*.py)|*.py' % _('Files'),
                    '%s %s (*.mod)|*.mod' % (_('Module'), _('Files'))]
+
+        r = wx.MessageDialog(self,
+                             _('Loading modules can be extremely dangerous, '
+                               'leading to damage to your computer, radio, '
+                               'or both. NEVER load a module from a source '
+                               'you do not trust, and especially not from '
+                               'anywhere other than the main CHIRP website '
+                               '(chirp.danplanet.com). Loading a module from '
+                               'another source is akin to giving them direct '
+                               'access to your computer and everything on '
+                               'it! Proceed despite this risk?'),
+                             'Warning',
+                             wx.ICON_WARNING | wx.YES_NO)
+        if r.ShowModal() != wx.ID_YES:
+            return
 
         wildcard = '|'.join(formats)
         with wx.FileDialog(self, _('Open a module'),
@@ -1280,6 +1326,20 @@ class ChirpMain(wx.Frame):
     def _menu_developer(self, menuitem, event):
         CONF.set_bool('developer', menuitem.IsChecked(), 'state')
         state = menuitem.IsChecked() and _('enabled') or _('disabled')
+        if menuitem.IsChecked():
+            msg = _(
+                'Please note that developer mode is intended for use '
+                'by developers of the CHIRP project, or under the '
+                'direction of a developer. It enables behaviors and '
+                'functions that can damage your computer and your '
+                'radio if not used with EXTREME care. You have been '
+                'warned! Proceed anyway?')
+            d = wx.MessageDialog(self, msg, _('Danger Ahead'),
+                                 style=wx.ICON_WARNING | wx.YES_NO)
+            if d.ShowModal() != wx.ID_YES:
+                menuitem.Check(False)
+                return
+
         wx.MessageBox(_('Developer state is now %s. '
                         'CHIRP must be restarted to take effect') % state,
                       _('Restart Required'), wx.OK)
@@ -1324,6 +1384,15 @@ class ChirpMain(wx.Frame):
             wx.Execute('open -R %s' % dst)
         else:
             raise Exception(_('Unable to reveal %s on this system') % dst)
+
+    @common.error_proof()
+    def _menu_load_from_issue(self, event):
+        module = developer.IssueModuleLoader(self).run()
+        if module:
+            if self.load_module(module):
+                wx.MessageBox(_('Module loaded successfully'),
+                              _('Success'),
+                              wx.ICON_INFORMATION)
 
     def _menu_auto_edits(self, event):
         CONF.set_bool('auto_edits', event.IsChecked(), 'state')
