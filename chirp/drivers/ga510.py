@@ -1079,7 +1079,7 @@ class TDH6Radio(RadioddityGA510Radio):
 @directory.register
 class Senhaix8800Radio(RadioddityGA510Radio):
     """Senhaix 8800"""
-    VENDOR = "Senhaix"
+    VENDOR = "SenhaiX"
     MODEL = "8800"
 
     POWER_LEVELS = [
@@ -1108,3 +1108,4 @@ class AnysecuAC580Radio(Senhaix8800Radio):
     """Anysecu AC-580"""
     VENDOR = "Anysecu"
     MODEL = "AC-580"
+    
