@@ -1108,3 +1108,4 @@ class AnysecuAC580Radio(Senhaix8800Radio):
     """Anysecu AC-580"""
     VENDOR = "Anysecu"
     MODEL = "AC-580"
+    
