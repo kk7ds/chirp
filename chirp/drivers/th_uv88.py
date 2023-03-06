@@ -868,7 +868,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         if self.MODEL == "QRZ-1":
             options = ["Time", "Carrier", "Stop"]
         else:
-            options = ["CO", "TO", "SE"]
+            options = ["TO", "CO", "SE"]
         rx = RadioSettingValueList(options, options[_settings.scanType])
         rset = RadioSetting("basicsettings.scanType", "Scan Type", rx)
         basic.append(rset)
