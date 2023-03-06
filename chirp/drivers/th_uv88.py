@@ -52,7 +52,8 @@ struct chns {
        unk5:2;
   u8   unk6:2
        pttid:2
-       step:4;               // not required
+       unk7:1
+       step:3;               // not required
   u8   name[6];
 };
 
@@ -681,15 +682,15 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         mem.mode = self.MODES[_mem.wide]
         mem.power = POWER_LEVELS[int(_mem.power)]
 
-        b_lock = RadioSetting("b_lock", "B_Lock",
-                              RadioSettingValueList(B_LOCK_LIST,
-                                                    B_LOCK_LIST[_mem.b_lock]))
+        rs = RadioSettingValueList(B_LOCK_LIST,
+                                   B_LOCK_LIST[min(_mem.b_lock, 0x02)])
+        b_lock = RadioSetting("b_lock", "B_Lock", rs)
         mem.extra.append(b_lock)
 
-        b_lock = RadioSetting("step", "Step",
-                              RadioSettingValueList(LIST_STEPS,
-                                                    LIST_STEPS[_mem.step]))
-        mem.extra.append(b_lock)
+        step = RadioSetting("step", "Step",
+                            RadioSettingValueList(LIST_STEPS,
+                                                  LIST_STEPS[_mem.step]))
+        mem.extra.append(step)
 
         scramble_value = _mem.scramble
         if scramble_value >= 8:     # Looks like OFF is 0x0f ** CONFIRM
