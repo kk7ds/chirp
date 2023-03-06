@@ -1,3 +1,20 @@
+# Copyright 2011 Dan Smith <dsmith@danplanet.com>
+# Portions copyright 2023 Dave Liske <dave@micuisine.com>
+# Portions copyright 2020 by Jiauxn Yang <jiaxun.yang@flygoat.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import logging
 import struct
 
@@ -21,7 +38,7 @@ except ImportError:
     LOG.debug('python-future package is not available; '
               '%s requires it' % __name__)
 
-# GA510 also has DTCS code 645
+# GA510 and SHX8800 also have DTCS code 645
 DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 DTMFCHARS = '0123456789ABCD*#'
@@ -107,7 +124,7 @@ def do_upload(radio):
         radio.status_fn(s)
 
 
-MEM_FORMAT = """
+BASE_FORMAT = """
 struct {
   lbcd rxfreq[4];
   lbcd txfreq[4];
@@ -123,7 +140,7 @@ struct {
      unknown3_1:2,
      bcl:1,
      scan:1,
-     unknown3_2:1,
+     allow_tx:1,	// SHX8800 FAMILY ONLY (unknown3_2 for GA-510)
      fhss:1;
 } memories[128];
 
@@ -133,6 +150,9 @@ struct {
   u8 pad[6];
 } names[128];
 
+"""
+
+MODEL_GA510_FORMAT = """
 #seekto 0x1A00;
 struct {
   // 0x1A00
@@ -205,9 +225,127 @@ struct {
 
 """
 
+MODEL_SHX8800_FORMAT = """
+#seekto 0x1A00;
+struct {
+  // 0x1A00
+  u8 squelch;
+  u8 savemode; // [off, mode1, mode2, mode3]
+  u8 vox; // off=0
+  u8 backlight;
+  u8 tdr; // bool
+  u8 timeout; // n*15 = seconds
+  u8 beep; // bool
+  u8 voice;
+
+  // 0x1A08
+  u8 language; // [eng, chin]
+  u8 dtmfst;
+  u8 scanmode; // [TO, CO, SE]
+  u8 pttid; // [off, BOT, EOT, Both]
+  u8 pttdelay; // 0-30
+  u8 cha_disp; // [ch-name, ch-freq]
+               // [ch, ch-name]; retevis
+  u8 chb_disp;
+  u8 bcl; // bool
+
+  // 0x1A10
+  u8 autolock; // bool
+  u8 alarm_mode; // [site, tone, code]
+  u8 alarmsound; // bool
+  u8 txundertdr; // [off, bandA, bandB]
+  u8 tailnoiseclear; // [off, on]
+  u8 rptnoiseclr; // 10*ms, 0-1000
+  u8 rptnoisedet;
+  u8 roger; // bool
+
+  // 0x1A18
+  u8 unknown1a10;
+  u8 fmradio; // boolean, inverted
+  u8 workmodeb:4,
+     workmodea:4;
+  u8 kblock;
+  u8 unknown2[4];
+  u8 voxdelay;
+  u8 menu_timeout;
+  u8 micgain;
+} settings;
+
+#seekto 0x1a40;
+struct {
+  u8 freq[8];
+  ul16 rxtone;
+  ul16 txtone;
+  u8 unknown[2];
+  u8 unused2:2,
+     sftd:2,
+     scode:4;
+  u8 unknown1;
+  u8 txpower;
+  u8 widenarr:1,
+     unknown2:4,
+     fhss:1,
+     unknown3:2;
+  u8 band;
+  u8 unknown4:5,
+     step:3;
+  u8 unknown5;
+  u8 offset[6];
+} vfoa;			// displays in Browser tab
+
+#seekto 0x1a60;
+struct {
+  u8 freq[8];
+  ul16 rxtone;
+  ul16 txtone;
+  u8 unknown[2];
+  u8 unused2:2,
+     sftd:2,
+     scode:4;
+  u8 unknown1;
+  u8 txpower;
+  u8 widenarr:1,
+     unknown2:4,
+     fhss:1,
+     unknown3:2;
+  u8 band;
+  u8 unknown4:5,
+     step:3;
+  u8 unknown5;
+  u8 offset[6];
+} vfob;			// displays in Browser tab
+
+#seekto 0x1a80;
+struct {
+    u8 sidekey;
+    u8 sidekeyl;
+} keymaps;
+
+#seekto 0x1b00;
+struct {
+  u8 code[5];
+  u8 unused[11];
+} dtmfgroup[15];
+
+struct {
+  u8 code[5];
+  u8 groupcode;
+  u8 aniid;
+  u8 dtmfspeedon;
+  u8 dtmfspeedoff;
+} anicode;
+
+"""
 
 PTTID = ['Off', 'BOT', 'EOT', 'Both']
 SIGNAL = [str(i) for i in range(1, 16)]
+WORKMODE_LIST = ["VFO", "CH"]
+SHIFTD_LIST = ["Off", "+", "-"]
+PTTIDCODE_LIST = ["%s" % x for x in range(1, 128)]
+STEPS = [6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
+STEP_LIST = [str(x) for x in STEPS]
+TXPOWER_LIST = ["High (5W)", "Low (1W)"]
+BANDWIDTH_LIST = ["Wide", "Narrow"]
 
 
 @directory.register
@@ -221,6 +359,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         chirp_common.PowerLevel('L', watts=1),
         chirp_common.PowerLevel('M', watts=5)]
 
+    _mem_format = MODEL_GA510_FORMAT
     _magic = (b'PROGROMBFHU')
 
     _gmrs = False
@@ -246,7 +385,8 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             raise errors.RadioError('Failed to upload to radio: %s' % e)
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(BASE_FORMAT + self._mem_format,
+                                     self._mmap)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -452,8 +592,13 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
 
         _nam.name = mem.name.ljust(10)
 
+        if isinstance(self, Senhaix8800Radio):
+            _mem.allow_tx = True
+
         _mem.rxfreq = mem.freq // 10
         if mem.duplex == '':
+            if isinstance(self, Senhaix8800Radio):
+                _mem.allow_tx = False
             _mem.txfreq = mem.freq // 10
         elif mem.duplex == 'split':
             _mem.txfreq = mem.offset // 10
@@ -490,6 +635,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         dtmf = RadioSettingGroup('dtmf', 'DTMF')
 
         radioddity_settings = {
+            'language': ['English', 'Chinese'],
             'savemode': ['Off', 'Mode 1', 'Mode 2', 'Mode 3'],
             'cha_disp': ['CH+Name', 'CH+Freq'],
             'chb_disp': ['CH+Name', 'CH+Freq'],
@@ -499,31 +645,50 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         }
 
         retevis_settings = {
+            'language': ['English', 'Chinese'],
             'savemode': ['Off', 'On'],
             'cha_disp': ['CH', 'CH+Name'],
             'chb_disp': ['CH', 'CH+Name'],
+        }
+
+        ga_workmode = {
+            'language': ['English', 'Chinese'],
+            'workmode': ['VFO', 'Chan'],
+        }
+
+        shx_workmode = {
+            'workmodea': ['VFO', 'Chan'],
+            'workmodeb': ['VFO', 'Chan'],
         }
 
         choice_settings = {
             'vox': ['Off'] + ['%i' % i for i in range(1, 11)],
             'backlight': ['Off'] + ['%i' % i for i in range(1, 11)],
             'timeout': ['Off'] + ['%i' % i for i in range(15, 615, 15)],
-            'language': ['English', 'Chinese'],
             'dtmfst': ['OFF', 'KB Side Tone', 'ANI Side Tone',
                        'KB ST+ANI ST', 'Both'],
             'scanmode': ['TO', 'CO', 'SE'],
             'pttid': ['Off', 'BOT', 'EOT', 'Both'],
             'alarm_mode': ['Site', 'Tone', 'Code'],
-            'workmode': ['VFO', 'Chan'],
         }
+
+        if isinstance(self, Senhaix8800Radio):
+            choice_settings.update(shx_workmode)
+        else:
+            choice_settings.update(ga_workmode)
 
         if self.VENDOR == "Retevis":
             choice_settings.update(retevis_settings)
         else:
             choice_settings.update(radioddity_settings)
 
-        basic_settings = ['timeout', 'vox', 'backlight', 'language',
-                          'cha_disp', 'chb_disp', 'workmode']
+        if isinstance(self, Senhaix8800Radio):
+            basic_settings = ['timeout', 'vox', 'backlight',
+                              'cha_disp', 'chb_disp', 'workmodea',
+                              'workmodeb']
+        else:
+            basic_settings = ['timeout', 'vox', 'backlight', 'language',
+                              'cha_disp', 'chb_disp', 'workmode']
         titles = {
             'savemode': 'Save Mode',
             'vox': 'VOX',
@@ -540,6 +705,8 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             'rptnoiseclr': 'RPT Noise Clear (ms)',
             'rptnoisedet': 'RPT Noise Detect (ms)',
             'workmode': 'Work Mode',
+            'workmodea': 'Work Mode A',
+            'workmodeb': 'Work Mode B',
         }
 
         basic.append(
@@ -681,32 +848,59 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         cur = ''.join(
             '%X' % i
             for i in self._memobj.anicode.code if int(i) < 0xE)
-        dtmf.append(
-            RadioSetting(
-                'anicode.code', 'ANI Code',
-                RadioSettingValueString(0, 5, cur,
-                                        autopad=False,
-                                        charset=DTMFCHARS)))
 
         anicode = self._memobj.anicode
 
-        dtmf.append(
-            RadioSetting(
-                'anicode.groupcode', 'Group Code',
-                RadioSettingValueList(
-                    list(DTMFCHARS),
-                    DTMFCHARS[int(anicode.groupcode)])))
+        if isinstance(self, Senhaix8800Radio):
+            _codeobj = self._memobj.anicode.code
+            _code = "".join([DTMFCHARS[x] for x in _codeobj if int(x) < 0x1F])
+            val = RadioSettingValueString(0, 5, _code, False)
+            val.set_charset(DTMFCHARS)
+            rs = RadioSetting("anicode.code", "ANI Code", val)
 
-        dtmf.append(
-            RadioSetting(
-                'anicode.releasetosend', 'Release To Send',
-                RadioSettingValueBoolean(
-                    int(anicode.releasetosend))))
-        dtmf.append(
-            RadioSetting(
-                'anicode.presstosend', 'Press To Send',
-                RadioSettingValueBoolean(
-                    int(anicode.presstosend))))
+            def apply_code(setting, obj):
+                code = []
+                for j in range(0, 5):
+                    try:
+                        code.append(DTMFCHARS.index(str(setting.value)[j]))
+                    except IndexError:
+                        code.append(0xFF)
+                obj.code = code
+
+            rs.set_apply_callback(apply_code, anicode)
+
+            dtmf.append(rs)
+
+            dtmf.append(
+                RadioSetting(
+                    "anicode.groupcode", "Group Code",
+                    RadioSettingValueList(list(DTMFCHARS),
+                                          DTMFCHARS[int(anicode.groupcode)])))
+
+        else:
+            dtmf.append(
+                RadioSetting(
+                    'anicode.code', 'ANI Code',
+                    RadioSettingValueString(0, 5, cur,
+                                            autopad=False,
+                                            charset=DTMFCHARS)))
+            dtmf.append(
+                RadioSetting(
+                    'anicode.groupcode', 'Group Code',
+                    RadioSettingValueList(
+                        list(DTMFCHARS),
+                        DTMFCHARS[int(anicode.groupcode)])))
+            dtmf.append(
+                RadioSetting(
+                    'anicode.releasetosend', 'Release To Send',
+                    RadioSettingValueBoolean(
+                        int(anicode.releasetosend))))
+            dtmf.append(
+                RadioSetting(
+                    'anicode.presstosend', 'Press To Send',
+                    RadioSettingValueBoolean(
+                        int(anicode.presstosend))))
+
         cur = int(anicode.dtmfspeedon) * 10 + 80
         dtmf.append(
             RadioSetting(
@@ -879,3 +1073,37 @@ class RetevisRA85Radio(RadioddityGA510Radio):
 class TDH6Radio(RadioddityGA510Radio):
     VENDOR = "TIDRADIO"
     MODEL = "TD-H6"
+
+
+@directory.register
+class Senhaix8800Radio(RadioddityGA510Radio):
+    """Senhaix 8800"""
+    VENDOR = "SenhaiX"
+    MODEL = "8800"
+
+    POWER_LEVELS = [
+        chirp_common.PowerLevel('H', watts=5),
+        chirp_common.PowerLevel('L', watts=1)]
+    _mem_format = MODEL_SHX8800_FORMAT
+    _magic = b'PROGROMSHXU'
+
+
+@directory.register
+class RadioddityGS5BRadio(Senhaix8800Radio):
+    """Radioddity GS-5B"""
+    VENDOR = "Radioddity"
+    MODEL = "GS-5B"
+
+
+@directory.register
+class SignusXTR5Radio(Senhaix8800Radio):
+    """Signus XTR-5"""
+    VENDOR = "Signus"
+    MODEL = "XTR-5"
+
+
+@directory.register
+class AnysecuAC580Radio(Senhaix8800Radio):
+    """Anysecu AC-580"""
+    VENDOR = "Anysecu"
+    MODEL = "AC-580"

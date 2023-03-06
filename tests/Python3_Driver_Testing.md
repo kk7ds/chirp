@@ -19,6 +19,7 @@
 | <a name="AnyTone_778UV_VOX"></a> AnyTone_778UV_VOX | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.23% |
 | <a name="AnyTone_OBLTR-8R"></a> AnyTone_OBLTR-8R | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.02% |
 | <a name="AnyTone_TERMN-8R"></a> AnyTone_TERMN-8R | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.02% |
+| <a name="Anysecu_AC-580"></a> Anysecu_AC-580 |  |  | Yes |  |
 | <a name="Anysecu_WP-9900"></a> Anysecu_WP-9900 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.03% |
 | <a name="BTECH_FRS-A1"></a> BTECH_FRS-A1 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.01% |
 | <a name="BTECH_FRS-B1"></a> BTECH_FRS-B1 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.04% |
@@ -228,6 +229,7 @@
 | <a name="Radioddity_DB25-G"></a> Radioddity_DB25-G | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.17% |
 | <a name="Radioddity_GA-2S"></a> Radioddity_GA-2S | [@KC9HI](https://github.com/KC9HI) | 4-Dec-2022 | Yes | 0.19% |
 | <a name="Radioddity_GA-510"></a> Radioddity_GA-510 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes | 0.42% |
+| <a name="Radioddity_GS-5B"></a> Radioddity_GS-5B |  |  | Yes |  |
 | <a name="Radioddity_R2"></a> Radioddity_R2 | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.04% |
 | <a name="Radioddity_UV-5G"></a> Radioddity_UV-5G | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.47% |
 | <a name="Radioddity_UV-5RX3"></a> Radioddity_UV-5RX3 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.90% |
@@ -299,6 +301,8 @@
 | <a name="Retevis_RT98"></a> Retevis_RT98 | [@KC9HI](https://github.com/KC9HI) | 14-Dec-2022 | Yes | 0.05% |
 | <a name="Rugged_RH5R-V2"></a> Rugged_RH5R-V2 |  |  |  | 0.05% |
 | <a name="Sainsonic_AP510"></a> Sainsonic_AP510 |  |  |  | 0.00% |
+| <a name="SenhaiX_8800"></a> SenhaiX_8800 |  |  | Yes |  |
+| <a name="Signus_XTR-5"></a> Signus_XTR-5 |  |  | Yes |  |
 | <a name="TDXone_TD-Q8A"></a> TDXone_TD-Q8A | [@KC9HI](https://github.com/KC9HI) | 18-Dec-2022 |  | 0.02% |
 | <a name="TIDRADIO_TD-H6"></a> TIDRADIO_TD-H6 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes | 0.43% |
 | <a name="TID_TD-M8"></a> TID_TD-M8 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.04% |
@@ -386,11 +390,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 383
+**Drivers:** 387
 
-**Tested:** 84% (322/61) (93% of usage stats)
+**Tested:** 83% (322/65) (93% of usage stats)
 
-**Byte clean:** 89% (341/42)
+**Byte clean:** 89% (345/42)
 
 ## Meaning of this testing
 
