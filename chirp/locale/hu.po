@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-06 15:46-0800\n"
+"POT-Creation-Date: 2023-03-06 17:24-0800\n"
 "PO-Revision-Date: 2015-01-28 13:47+0100\n"
 "Last-Translator: Attila Joubert <joubert.attila@gmail.com>\n"
 "Language-Team: English\n"
@@ -18,18 +18,140 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.7.4\n"
 
-#: ../drivers/ft60.py:88 ../drivers/ft450d.py:486 ../drivers/ft817.py:407
+#: ../wxui/query_sources.py:58
 #, python-format
-msgid "Radio did not ack block %i"
+msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr ""
 
-#: ../drivers/bj9900.py:112
-msgid ""
-"This is experimental support for BJ-9900 which is still under development.\n"
-"Please ensure you have a good backup with OEM software.\n"
-"Also please send in bug and enhancement requests!\n"
-"You have been warned. Proceed at your own risk!"
+#: ../wxui/main.py:1072
+#, fuzzy, python-format
+msgid "%s has not been saved. Save before closing?"
+msgstr "A fájl megváltozott! Menti bezárás előtt?"
+
+#: ../wxui/radioinfo.py:48
+msgid "(none)"
 msgstr ""
+
+#: ../wxui/main.py:1461
+msgid ""
+"A new CHIRP version is available. Please visit the website as soon as "
+"possible to download it!"
+msgstr ""
+
+#: ../wxui/main.py:687
+msgid "About"
+msgstr ""
+
+#: ../wxui/main.py:1323
+msgid "About CHIRP"
+msgstr ""
+
+#: ../wxui/query_sources.py:353
+msgid "All"
+msgstr "Mind"
+
+#: ../wxui/main.py:942
+#, fuzzy
+msgid "All Files"
+msgstr "CSV fájlok"
+
+#: ../wxui/main.py:953
+msgid "All supported formats|"
+msgstr ""
+
+#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:345
+msgid "Amateur"
+msgstr ""
+
+#: ../wxui/common.py:408 ../wxui/common.py:446
+msgid "An error has occurred"
+msgstr "Hiba történt"
+
+#: ../wxui/clone.py:109
+msgid "Applying settings"
+msgstr ""
+
+#: ../wxui/developer.py:471
+msgid "Available modules"
+msgstr ""
+
+#: ../wxui/main.py:1407
+msgid "Bandplan"
+msgstr ""
+
+#: ../wxui/query_sources.py:375
+msgid "Bands"
+msgstr ""
+
+#: ../wxui/main.py:138
+msgid "Banks"
+msgstr ""
+
+#: ../wxui/developer.py:216
+msgid "Bin"
+msgstr ""
+
+#: ../wxui/main.py:149
+msgid "Browser"
+msgstr "Böngésző"
+
+#: ../wxui/developer.py:403
+msgid "Building Radio Browser"
+msgstr ""
+
+#: ../wxui/query_sources.py:525
+msgid "Canada"
+msgstr ""
+
+#: ../wxui/memedit.py:874
+#, python-format
+msgid ""
+"Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
+msgstr ""
+
+#: ../wxui/main.py:941
+msgid "Chirp Image Files"
+msgstr ""
+
+#: ../wxui/memedit.py:304
+msgid "Choice Required"
+msgstr ""
+
+#: ../wxui/memedit.py:853
+#, fuzzy, python-format
+msgid "Choose %s DTCS Code"
+msgstr "RX DTCS kód"
+
+#: ../wxui/memedit.py:850
+#, python-format
+msgid "Choose %s Tone"
+msgstr ""
+
+#: ../wxui/memedit.py:884
+#, fuzzy
+msgid "Choose Cross Mode"
+msgstr "Kereszt-üzem"
+
+#: ../wxui/memedit.py:914
+msgid "Choose duplex"
+msgstr ""
+
+#: ../wxui/developer.py:470
+#, fuzzy, python-format
+msgid "Choose the module to load from issue %i:"
+msgstr "Válasszon egy importálandót:"
+
+#: ../wxui/query_sources.py:451
+msgid "City"
+msgstr ""
+
+#: ../drivers/ft817.py:359
+msgid "Clone completed, checking for spurious bytes"
+msgstr ""
+
+#: ../wxui/common.py:94
+msgid "Cloning"
+msgstr "Klónozás"
 
 #: ../drivers/bj9900.py:137 ../drivers/ft450d.py:439 ../drivers/ft817.py:342
 #, fuzzy
@@ -41,691 +163,6 @@ msgstr "Letöltés a rádióról"
 msgid "Cloning to radio"
 msgstr "Feltöltés a rádióra"
 
-#: ../drivers/ft817.py:321
-msgid ""
-"Unable to read last block. This often happens when the selected model is US "
-"but the radio is a non-US one (or widebanded). Please choose the correct "
-"model and try again."
-msgstr ""
-
-#: ../drivers/ft817.py:359
-msgid "Clone completed, checking for spurious bytes"
-msgstr ""
-
-#: ../drivers/ft817.py:364
-msgid ""
-"Radio sent data after the last awaited block, this happens when the selected "
-"model is a non-US but the radio is a US one. Please choose the correct model "
-"and try again."
-msgstr ""
-
-#: ../drivers/vx5.py:117
-#, python-brace-format
-msgid "{bank} is full"
-msgstr ""
-
-#: ../drivers/vx5.py:134
-#, python-brace-format
-msgid "Memory {num} not in bank {bank}"
-msgstr ""
-
-#: ../wxui/settingsedit.py:54
-#, fuzzy
-msgid "Getting settings"
-msgstr "%s információk beolvasása"
-
-#: ../wxui/settingsedit.py:114
-#, fuzzy
-msgid "Error applying settings"
-msgstr "Hiba a(z) %s érték beállításakor"
-
-#: ../wxui/bankedit.py:62
-msgid "Index"
-msgstr "Sorszám"
-
-#: ../wxui/bankedit.py:188
-msgid "Double-click to change bank name"
-msgstr ""
-
-#: ../wxui/bankedit.py:201
-#, python-format
-msgid "Enter a new name for bank %s:"
-msgstr ""
-
-#: ../wxui/bankedit.py:203
-msgid "Rename bank"
-msgstr ""
-
-#: ../wxui/bankedit.py:231
-msgid "Memory must be in a bank to be edited"
-msgstr ""
-
-#: ../wxui/radioinfo.py:43
-msgid "Features"
-msgstr ""
-
-#: ../wxui/radioinfo.py:48
-msgid "(none)"
-msgstr ""
-
-#: ../wxui/query_sources.py:56
-#, fuzzy, python-format
-msgid "Invalid %(value)s (use decimal degrees)"
-msgstr "Érvénytelen érték! Egész szám kell legyen."
-
-#: ../wxui/query_sources.py:58
-#, python-format
-msgid "%(value)s must be between %(min)i and %(max)i"
-msgstr ""
-
-#: ../wxui/query_sources.py:109
-msgid "Invalid ZIP code"
-msgstr ""
-
-#: ../wxui/query_sources.py:279 ../wxui/query_sources.py:457
-msgid "Country"
-msgstr ""
-
-#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:345
-msgid "Amateur"
-msgstr ""
-
-#: ../wxui/query_sources.py:282 ../wxui/query_sources.py:336
-#: ../wxui/query_sources.py:427
-msgid "GMRS"
-msgstr ""
-
-#: ../wxui/query_sources.py:284
-msgid "Service"
-msgstr ""
-
-#: ../wxui/query_sources.py:287
-msgid "State/Province"
-msgstr ""
-
-#: ../wxui/query_sources.py:292
-msgid "Optional: 45.0000"
-msgstr ""
-
-#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:299
-msgid "If set, sort results by distance from these coordinates"
-msgstr ""
-
-#: ../wxui/query_sources.py:298
-msgid "Optional: -122.0000"
-msgstr ""
-
-#: ../wxui/query_sources.py:301
-msgid "Latitude"
-msgstr ""
-
-#: ../wxui/query_sources.py:302
-msgid "Longitude"
-msgstr ""
-
-#: ../wxui/query_sources.py:307
-#, fuzzy
-msgid "Optional: 100"
-msgstr "Beállítások"
-
-#: ../wxui/query_sources.py:308
-msgid "Limit results to this distance (km) from coordinates"
-msgstr ""
-
-#: ../wxui/query_sources.py:310
-msgid "Distance"
-msgstr ""
-
-#: ../wxui/query_sources.py:313
-msgid "Optional: County, Hospital, etc"
-msgstr ""
-
-#: ../wxui/query_sources.py:314
-msgid "Filter results with location matching this string"
-msgstr ""
-
-#: ../wxui/query_sources.py:316
-msgid "Filter"
-msgstr ""
-
-#: ../wxui/query_sources.py:320
-msgid "Only certain bands"
-msgstr ""
-
-#: ../wxui/query_sources.py:322
-msgid "Limit Bands"
-msgstr ""
-
-#: ../wxui/query_sources.py:325
-msgid "Only certain modes"
-msgstr ""
-
-#: ../wxui/query_sources.py:327
-msgid "Limit Modes"
-msgstr ""
-
-#: ../wxui/query_sources.py:353
-msgid "All"
-msgstr "Mind"
-
-#: ../wxui/query_sources.py:375
-#, fuzzy
-msgid "Select Bands"
-msgstr "Oszlopok kiválasztása"
-
-#: ../wxui/query_sources.py:375
-msgid "Bands"
-msgstr ""
-
-#: ../wxui/query_sources.py:396
-#, fuzzy
-msgid "Select Modes"
-msgstr "Oszlopok kiválasztása"
-
-#: ../wxui/query_sources.py:396
-#, fuzzy
-msgid "Modes"
-msgstr "Mód"
-
-#: ../wxui/query_sources.py:451
-msgid "City"
-msgstr ""
-
-#: ../wxui/query_sources.py:454
-msgid "State"
-msgstr ""
-
-#: ../wxui/query_sources.py:524
-msgid "United States"
-msgstr ""
-
-#: ../wxui/query_sources.py:525
-msgid "Canada"
-msgstr ""
-
-#: ../wxui/query_sources.py:665
-msgid "RadioReference Canada requires a login before you can query"
-msgstr ""
-
-#: ../wxui/memedit.py:113
-#, python-format
-msgid "Found empty list value for %(name)s: %(value)r"
-msgstr ""
-
-#: ../wxui/memedit.py:148 ../wxui/memedit.py:154
-#, fuzzy, python-format
-msgid "Invalid value: %r"
-msgstr "Érvénytelen %s mezőérték"
-
-#: ../wxui/memedit.py:177
-msgid "Offset"
-msgstr "Offszet"
-
-#: ../wxui/memedit.py:179
-msgid "Frequency"
-msgstr "Frekvencia"
-
-#: ../wxui/memedit.py:218
-#, fuzzy
-msgid "Enter Frequency"
-msgstr "Frekvencia"
-
-#: ../wxui/memedit.py:242
-msgid "Power"
-msgstr "Teljesítmény"
-
-#: ../wxui/memedit.py:272
-#, fuzzy
-msgid "Tuning Step"
-msgstr "Lépésköz"
-
-#: ../wxui/memedit.py:304
-msgid "Choice Required"
-msgstr ""
-
-#: ../wxui/memedit.py:322
-msgid "Tone"
-msgstr "CTCSS"
-
-#: ../wxui/memedit.py:324
-#, fuzzy
-msgid "Tone Squelch"
-msgstr "ToneSql"
-
-#: ../wxui/memedit.py:356
-msgid "Duplex"
-msgstr "Duplex"
-
-#: ../wxui/memedit.py:396
-#, fuzzy
-msgid "DTCS"
-msgstr "DTCS pol."
-
-#: ../wxui/memedit.py:398
-#, fuzzy
-msgid "RX DTCS"
-msgstr "RX DTCS kód"
-
-#: ../wxui/memedit.py:442
-#, fuzzy
-msgid ""
-"DTCS\n"
-"Polarity"
-msgstr "DTCS pol."
-
-#: ../wxui/memedit.py:451
-#, fuzzy
-msgid "Mode"
-msgstr "Mód"
-
-#: ../wxui/memedit.py:465
-msgid "Cross mode"
-msgstr "Kereszt-üzem"
-
-#: ../wxui/memedit.py:473
-msgid "Comment"
-msgstr "Megjegyzés"
-
-#: ../wxui/memedit.py:580
-msgid "Tone Mode"
-msgstr "Hang (CTCSS) mód"
-
-#: ../wxui/memedit.py:850
-#, python-format
-msgid "Choose %s Tone"
-msgstr ""
-
-#: ../wxui/memedit.py:853
-#, fuzzy, python-format
-msgid "Choose %s DTCS Code"
-msgstr "RX DTCS kód"
-
-#: ../wxui/memedit.py:874
-#, python-format
-msgid ""
-"Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
-msgstr ""
-
-#: ../wxui/memedit.py:876
-#, fuzzy
-msgid "Information"
-msgstr "%s információk beolvasása"
-
-#: ../wxui/memedit.py:884
-#, fuzzy
-msgid "Choose Cross Mode"
-msgstr "Kereszt-üzem"
-
-#: ../wxui/memedit.py:893
-msgid "Enter TX Frequency (MHz)"
-msgstr ""
-
-#: ../wxui/memedit.py:901
-msgid "Enter Offset (MHz)"
-msgstr ""
-
-#: ../wxui/memedit.py:914
-msgid "Choose duplex"
-msgstr ""
-
-#: ../wxui/memedit.py:941
-msgid "Unable to edit memory before radio is loaded"
-msgstr ""
-
-#: ../wxui/memedit.py:1018 ../wxui/memedit.py:1642
-#, fuzzy, python-format
-msgid "Invalid edit: %s"
-msgstr "Érvénytelen érték %s"
-
-#: ../wxui/memedit.py:1024
-#, python-format
-msgid "Warning: %s"
-msgstr ""
-
-#: ../wxui/memedit.py:1025
-msgid "Warning"
-msgstr ""
-
-#: ../wxui/memedit.py:1057
-#, python-format
-msgid "Memory %i is not deletable"
-msgstr ""
-
-#: ../wxui/memedit.py:1123
-msgid "Properties"
-msgstr ""
-
-#: ../wxui/memedit.py:1129
-#, fuzzy
-msgid "Insert Row Above"
-msgstr "Memória beszúrása fölé"
-
-#: ../wxui/memedit.py:1138
-#, fuzzy, python-format
-msgid "Delete %i Memories"
-msgstr "Memóriasorok összehasonlítása"
-
-#: ../wxui/memedit.py:1141
-#, fuzzy, python-format
-msgid "Delete %i Memories and shift block up"
-msgstr "... és a tömböt felfelé lépteti"
-
-#: ../wxui/memedit.py:1145
-#, python-format
-msgid "Delete %i Memories and shift all up"
-msgstr ""
-
-#: ../wxui/memedit.py:1148
-msgid "Delete"
-msgstr "Törlés"
-
-#: ../wxui/memedit.py:1150
-#, fuzzy
-msgid "Delete and shift block up"
-msgstr "... és a tömböt felfelé lépteti"
-
-#: ../wxui/memedit.py:1152
-#, fuzzy
-msgid "Delete and shift all up"
-msgstr "... és a tömböt felfelé lépteti"
-
-#: ../wxui/memedit.py:1178
-msgid "Show Raw Memory"
-msgstr "Memóriasor mutatása"
-
-#: ../wxui/memedit.py:1186
-msgid "Diff Raw Memories"
-msgstr "Memóriasorok összehasonlítása"
-
-#: ../wxui/memedit.py:1222
-#, fuzzy
-msgid "No empty rows below!"
-msgstr "Memória beszúrása alá"
-
-#: ../wxui/memedit.py:1294
-msgid "Some memories are not deletable"
-msgstr ""
-
-#: ../wxui/memedit.py:1320
-#, python-format
-msgid "Pasted memory will overwrite memory %i"
-msgstr ""
-
-#: ../wxui/memedit.py:1323
-#, python-format
-msgid "Pasted memories will overwrite memory %i"
-msgstr ""
-
-#: ../wxui/memedit.py:1326
-#, python-format
-msgid "Pasted memories will overwrite %i existing memories"
-msgstr ""
-
-#: ../wxui/memedit.py:1329
-#, python-format
-msgid "Pasted memories will overwrite memories %s"
-msgstr ""
-
-#: ../wxui/memedit.py:1332
-#, fuzzy
-msgid "Overwrite memories?"
-msgstr "Felülírja?"
-
-#: ../wxui/memedit.py:1377
-#, fuzzy
-msgid "Some memories are incompatible with this radio"
-msgstr ""
-"A beillesztett {number}. számú memória nem kompatibilis ezzel a rádióval, "
-"mert:"
-
-#: ../wxui/memedit.py:1452
-msgid "Export can only write CSV files"
-msgstr ""
-
-#: ../wxui/memedit.py:1489
-msgid "Digital Code"
-msgstr "Digitális kód"
-
-#: ../wxui/memedit.py:1517
-#, python-format
-msgid "Edit details for memory %i"
-msgstr ""
-
-#: ../wxui/memedit.py:1519
-#, fuzzy, python-format
-msgid "Edit details for %i memories"
-msgstr "Több memória szerkesztése"
-
-#: ../wxui/memedit.py:1553
-msgid "Extra"
-msgstr ""
-
-#: ../wxui/memedit.py:1564
-#, fuzzy
-msgid "DV Memory"
-msgstr "ez a memória"
-
-#: ../wxui/common.py:94
-msgid "Cloning"
-msgstr "Klónozás"
-
-#: ../wxui/common.py:115
-msgid "Please wait"
-msgstr ""
-
-#: ../wxui/common.py:219
-#, fuzzy, python-format
-msgid "Refreshed memory %s"
-msgstr "ezek a memóriák"
-
-#: ../wxui/common.py:221
-#, python-format
-msgid "Uploaded memory %s"
-msgstr ""
-
-#: ../wxui/common.py:223
-msgid "Retrieved settings"
-msgstr ""
-
-#: ../wxui/common.py:225
-#, fuzzy
-msgid "Saved settings"
-msgstr "Beállítás"
-
-#: ../wxui/common.py:227
-#, fuzzy, python-format
-msgid "Erased memory %s"
-msgstr "A(z) {loc}. memóriahely törlése"
-
-#: ../wxui/common.py:229
-#, python-format
-msgid "Finished radio job %s"
-msgstr ""
-
-#: ../wxui/common.py:331
-#, python-format
-msgid "Value must be at least %.4f"
-msgstr ""
-
-#: ../wxui/common.py:335
-#, python-format
-msgid "Value must be at most %.4f"
-msgstr ""
-
-#: ../wxui/common.py:408 ../wxui/common.py:446
-msgid "An error has occurred"
-msgstr "Hiba történt"
-
-#: ../wxui/main.py:130
-msgid "Memories"
-msgstr "Memória"
-
-#: ../wxui/main.py:138
-msgid "Banks"
-msgstr ""
-
-#: ../wxui/main.py:143
-msgid "Settings"
-msgstr "Beállítás"
-
-#: ../wxui/main.py:149
-msgid "Browser"
-msgstr "Böngésző"
-
-#: ../wxui/main.py:151
-msgid "Info"
-msgstr ""
-
-#: ../wxui/main.py:254
-msgid "Only memory tabs may be exported"
-msgstr ""
-
-#: ../wxui/main.py:272
-msgid "LIVE"
-msgstr ""
-
-#: ../wxui/main.py:352
-msgid "Welcome"
-msgstr ""
-
-#: ../wxui/main.py:388
-#, python-format
-msgid "File does not exist: %s"
-msgstr ""
-
-#: ../wxui/main.py:464
-#, fuzzy
-msgid "Open Stock Config"
-msgstr "A csoportos beállítás megnyitása"
-
-#: ../wxui/main.py:474
-#, python-format
-msgid "Restore %i tabs"
-msgstr ""
-
-#: ../wxui/main.py:493
-#, fuzzy
-msgid "Open Recent"
-msgstr "Leg_utóbbi"
-
-#: ../wxui/main.py:506 ../wxui/main.py:1060
-#, fuzzy
-msgid "Export to CSV"
-msgstr "Export fájlba"
-
-#: ../wxui/main.py:512
-msgid "Load Module"
-msgstr "Modul betöltése"
-
-#: ../wxui/main.py:523
-msgid "Print Preview"
-msgstr ""
-
-#: ../wxui/main.py:564
-#, fuzzy
-msgid "Find Next"
-msgstr "RFinder"
-
-#: ../wxui/main.py:572
-msgid "Goto"
-msgstr ""
-
-#: ../wxui/main.py:580
-msgid "Use fixed-width font"
-msgstr ""
-
-#: ../wxui/main.py:588
-msgid "Use larger font"
-msgstr ""
-
-#: ../wxui/main.py:604 ../wxui/main.py:763
-#, fuzzy
-msgid "Download from radio"
-msgstr "Letöltés a rádióról"
-
-#: ../wxui/main.py:612 ../wxui/main.py:765
-#, fuzzy
-msgid "Upload to radio"
-msgstr "Feltöltés a rádióra"
-
-#: ../wxui/main.py:618
-#, fuzzy
-msgid "Query Source"
-msgstr "Lekérd. adatforrása"
-
-#: ../wxui/main.py:636
-msgid "Enable Automatic Edits"
-msgstr ""
-
-#: ../wxui/main.py:643
-#, fuzzy
-msgid "Select Bandplan"
-msgstr "Oszlopok kiválasztása"
-
-#: ../wxui/main.py:653
-msgid "Reload Driver"
-msgstr ""
-
-#: ../wxui/main.py:662
-msgid "Reload Driver and File"
-msgstr ""
-
-#: ../wxui/main.py:676
-msgid "Interact with driver"
-msgstr ""
-
-#: ../wxui/main.py:687
-msgid "About"
-msgstr ""
-
-#: ../wxui/main.py:692
-#, fuzzy
-msgid "Developer Mode"
-msgstr "Fejlesztői"
-
-#: ../wxui/main.py:701
-#, fuzzy
-msgid "Reporting enabled"
-msgstr "Listázás letiltva"
-
-#: ../wxui/main.py:713
-msgid "Open debug log"
-msgstr ""
-
-#: ../wxui/main.py:719
-msgid "Show debug log location"
-msgstr ""
-
-#: ../wxui/main.py:724 ../wxui/developer.py:482
-#, fuzzy
-msgid "Load module from issue"
-msgstr "Modul betöltése"
-
-#: ../wxui/main.py:731
-#, fuzzy
-msgid "View"
-msgstr "Né_zet"
-
-#: ../wxui/main.py:732
-msgid "Radio"
-msgstr "Rádió"
-
-#: ../wxui/main.py:756
-msgid "Open"
-msgstr ""
-
-#: ../wxui/main.py:757 ../wxui/main.py:956
-msgid "Open a file"
-msgstr ""
-
-#: ../wxui/main.py:758
-msgid "Save"
-msgstr ""
-
-#: ../wxui/main.py:759 ../wxui/main.py:1031
-msgid "Save file"
-msgstr ""
-
 #: ../wxui/main.py:760
 msgid "Close"
 msgstr ""
@@ -734,18 +171,219 @@ msgstr ""
 msgid "Close file"
 msgstr ""
 
+#: ../wxui/memedit.py:473
+msgid "Comment"
+msgstr "Megjegyzés"
+
+#: ../wxui/clone.py:206
+msgid "Communicate with radio"
+msgstr ""
+
+#: ../wxui/clone.py:117
+#, fuzzy
+msgid "Complete"
+msgstr "Befejeződött"
+
+#: ../wxui/query_sources.py:279 ../wxui/query_sources.py:457
+msgid "Country"
+msgstr ""
+
+#: ../wxui/memedit.py:465
+msgid "Cross mode"
+msgstr "Kereszt-üzem"
+
+#: ../wxui/clone.py:310 ../wxui/clone.py:385
+msgid "Custom..."
+msgstr ""
+
+#: ../wxui/memedit.py:396
+#, fuzzy
+msgid "DTCS"
+msgstr "DTCS pol."
+
+#: ../wxui/memedit.py:442
+#, fuzzy
+msgid ""
+"DTCS\n"
+"Polarity"
+msgstr "DTCS pol."
+
+#: ../wxui/memedit.py:1564
+#, fuzzy
+msgid "DV Memory"
+msgstr "ez a memória"
+
+#: ../wxui/main.py:1337
+msgid "Danger Ahead"
+msgstr ""
+
+#: ../wxui/developer.py:215
+#, fuzzy
+msgid "Dec"
+msgstr "Érzékelés"
+
+#: ../wxui/memedit.py:1148
+msgid "Delete"
+msgstr "Törlés"
+
+#: ../wxui/memedit.py:1138
+#, fuzzy, python-format
+msgid "Delete %i Memories"
+msgstr "Memóriasorok összehasonlítása"
+
+#: ../wxui/memedit.py:1145
+#, python-format
+msgid "Delete %i Memories and shift all up"
+msgstr ""
+
+#: ../wxui/memedit.py:1141
+#, fuzzy, python-format
+msgid "Delete %i Memories and shift block up"
+msgstr "... és a tömböt felfelé lépteti"
+
+#: ../wxui/memedit.py:1152
+#, fuzzy
+msgid "Delete and shift all up"
+msgstr "... és a tömböt felfelé lépteti"
+
+#: ../wxui/memedit.py:1150
+#, fuzzy
+msgid "Delete and shift block up"
+msgstr "... és a tömböt felfelé lépteti"
+
+#: ../wxui/main.py:692
+#, fuzzy
+msgid "Developer Mode"
+msgstr "Fejlesztői"
+
+#: ../wxui/main.py:1343
+#, python-format
+msgid "Developer state is now %s. CHIRP must be restarted to take effect"
+msgstr ""
+
+#: ../wxui/memedit.py:1186
+msgid "Diff Raw Memories"
+msgstr "Memóriasorok összehasonlítása"
+
+#: ../wxui/memedit.py:1489
+msgid "Digital Code"
+msgstr "Digitális kód"
+
+#: ../wxui/main.py:1354
+msgid "Disable reporting"
+msgstr ""
+
+#: ../wxui/query_sources.py:310
+msgid "Distance"
+msgstr ""
+
+#: ../wxui/clone.py:156
+#, python-format
+msgid "Do not prompt again for %s"
+msgstr ""
+
+#: ../wxui/bankedit.py:188
+msgid "Double-click to change bank name"
+msgstr ""
+
 #: ../wxui/main.py:762
 msgid "Download"
 msgstr ""
 
-#: ../wxui/main.py:941
-msgid "Chirp Image Files"
+#: ../wxui/main.py:604 ../wxui/main.py:763
+#, fuzzy
+msgid "Download from radio"
+msgstr "Letöltés a rádióról"
+
+#: ../wxui/clone.py:493
+#, fuzzy
+msgid "Download instructions"
+msgstr "{name} Utasítások"
+
+#: ../wxui/memedit.py:356
+msgid "Duplex"
+msgstr "Duplex"
+
+#: ../wxui/memedit.py:1519
+#, fuzzy, python-format
+msgid "Edit details for %i memories"
+msgstr "Több memória szerkesztése"
+
+#: ../wxui/memedit.py:1517
+#, python-format
+msgid "Edit details for memory %i"
 msgstr ""
 
-#: ../wxui/main.py:942
+#: ../wxui/main.py:636
+msgid "Enable Automatic Edits"
+msgstr ""
+
+#: ../wxui/memedit.py:218
 #, fuzzy
-msgid "All Files"
-msgstr "CSV fájlok"
+msgid "Enter Frequency"
+msgstr "Frekvencia"
+
+#: ../wxui/memedit.py:901
+msgid "Enter Offset (MHz)"
+msgstr ""
+
+#: ../wxui/memedit.py:893
+msgid "Enter TX Frequency (MHz)"
+msgstr ""
+
+#: ../wxui/bankedit.py:201
+#, python-format
+msgid "Enter a new name for bank %s:"
+msgstr ""
+
+#: ../wxui/clone.py:386
+msgid "Enter custom port:"
+msgstr ""
+
+#: ../wxui/common.py:227
+#, fuzzy, python-format
+msgid "Erased memory %s"
+msgstr "A(z) {loc}. memóriahely törlése"
+
+#: ../wxui/settingsedit.py:114
+#, fuzzy
+msgid "Error applying settings"
+msgstr "Hiba a(z) %s érték beállításakor"
+
+#: ../wxui/clone.py:430
+msgid "Error communicating with radio"
+msgstr ""
+
+#: ../wxui/clone.py:461
+#, fuzzy
+msgid "Experimental driver"
+msgstr "Folytassam kísérleti driver-rel?"
+
+#: ../wxui/memedit.py:1452
+msgid "Export can only write CSV files"
+msgstr ""
+
+#: ../wxui/main.py:506 ../wxui/main.py:1060
+#, fuzzy
+msgid "Export to CSV"
+msgstr "Export fájlba"
+
+#: ../wxui/memedit.py:1553
+msgid "Extra"
+msgstr ""
+
+#: ../wxui/developer.py:411
+msgid "Failed to load radio browser"
+msgstr ""
+
+#: ../wxui/radioinfo.py:43
+msgid "Features"
+msgstr ""
+
+#: ../wxui/main.py:388
+#, python-format
+msgid "File does not exist: %s"
+msgstr ""
 
 #: ../wxui/main.py:945 ../wxui/main.py:1017 ../wxui/main.py:1027
 #: ../wxui/main.py:1056 ../wxui/main.py:1289 ../wxui/main.py:1290
@@ -753,41 +391,50 @@ msgstr "CSV fájlok"
 msgid "Files"
 msgstr "_Fájl"
 
-#: ../wxui/main.py:953
-msgid "All supported formats|"
+#: ../wxui/query_sources.py:316
+msgid "Filter"
 msgstr ""
 
-#: ../wxui/main.py:989
-#, fuzzy, python-format
-msgid "Unable to find stock config %r"
-msgstr "A csoportos beállítás megnyitása"
-
-#: ../wxui/main.py:1072
-#, fuzzy, python-format
-msgid "%s has not been saved. Save before closing?"
-msgstr "A fájl megváltozott! Menti bezárás előtt?"
-
-#: ../wxui/main.py:1074
-msgid "Save before closing?"
+#: ../wxui/query_sources.py:314
+msgid "Filter results with location matching this string"
 msgstr ""
-
-#: ../wxui/main.py:1106
-#, fuzzy
-msgid "Unable to open the clipboard"
-msgstr "Nem érzékelek a {port} porton!"
 
 #: ../wxui/main.py:1130
 #, fuzzy
 msgid "Find"
 msgstr "RFinder"
 
-#: ../wxui/main.py:1159
+#: ../wxui/main.py:564
 #, fuzzy
-msgid "Goto Memory:"
-msgstr "ez a memória"
+msgid "Find Next"
+msgstr "RFinder"
 
-#: ../wxui/main.py:1159
-msgid "Number"
+#: ../wxui/common.py:229
+#, python-format
+msgid "Finished radio job %s"
+msgstr ""
+
+#: ../wxui/memedit.py:113
+#, python-format
+msgid "Found empty list value for %(name)s: %(value)r"
+msgstr ""
+
+#: ../wxui/memedit.py:179
+msgid "Frequency"
+msgstr "Frekvencia"
+
+#: ../wxui/query_sources.py:282 ../wxui/query_sources.py:336
+#: ../wxui/query_sources.py:427
+msgid "GMRS"
+msgstr ""
+
+#: ../wxui/settingsedit.py:54
+#, fuzzy
+msgid "Getting settings"
+msgstr "%s információk beolvasása"
+
+#: ../wxui/main.py:572
+msgid "Goto"
 msgstr ""
 
 #: ../wxui/main.py:1160
@@ -795,18 +442,104 @@ msgstr ""
 msgid "Goto Memory"
 msgstr "ez a memória"
 
-#: ../wxui/main.py:1262
+#: ../wxui/main.py:1159
 #, fuzzy
-msgid "Module Loaded"
-msgstr "Modul betöltése"
+msgid "Goto Memory:"
+msgstr "ez a memória"
+
+#: ../wxui/clone.py:310 ../wxui/clone.py:392
+msgid "Help Me..."
+msgstr ""
+
+#: ../wxui/developer.py:214
+msgid "Hex"
+msgstr ""
+
+#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:299
+msgid "If set, sort results by distance from these coordinates"
+msgstr ""
+
+#: ../wxui/bankedit.py:62
+msgid "Index"
+msgstr "Sorszám"
+
+#: ../wxui/main.py:151
+msgid "Info"
+msgstr ""
+
+#: ../wxui/memedit.py:876
+#, fuzzy
+msgid "Information"
+msgstr "%s információk beolvasása"
+
+#: ../wxui/memedit.py:1129
+#, fuzzy
+msgid "Insert Row Above"
+msgstr "Memória beszúrása fölé"
+
+#: ../wxui/main.py:676
+msgid "Interact with driver"
+msgstr ""
+
+#: ../wxui/query_sources.py:56
+#, fuzzy, python-format
+msgid "Invalid %(value)s (use decimal degrees)"
+msgstr "Érvénytelen érték! Egész szám kell legyen."
+
+#: ../wxui/query_sources.py:109
+msgid "Invalid ZIP code"
+msgstr ""
+
+#: ../wxui/memedit.py:1018 ../wxui/memedit.py:1642
+#, fuzzy, python-format
+msgid "Invalid edit: %s"
+msgstr "Érvénytelen érték %s"
 
 #: ../wxui/main.py:1286
 msgid "Invalid or unsupported module file"
 msgstr ""
 
-#: ../wxui/main.py:1290
+#: ../wxui/memedit.py:148 ../wxui/memedit.py:154
+#, fuzzy, python-format
+msgid "Invalid value: %r"
+msgstr "Érvénytelen %s mezőérték"
+
+#: ../wxui/developer.py:481
+msgid "Issue number:"
+msgstr ""
+
+#: ../wxui/main.py:272
+msgid "LIVE"
+msgstr ""
+
+#: ../wxui/query_sources.py:301
+msgid "Latitude"
+msgstr ""
+
+#: ../wxui/developer.py:195
+#, python-format
+msgid "Length must be %i"
+msgstr ""
+
+#: ../wxui/query_sources.py:322
+msgid "Limit Bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:327
+msgid "Limit Modes"
+msgstr ""
+
+#: ../wxui/query_sources.py:308
+msgid "Limit results to this distance (km) from coordinates"
+msgstr ""
+
+#: ../wxui/main.py:512
+msgid "Load Module"
+msgstr "Modul betöltése"
+
+#: ../wxui/main.py:724 ../wxui/developer.py:482
 #, fuzzy
-msgid "Module"
+msgid "Load module from issue"
 msgstr "Modul betöltése"
 
 #: ../wxui/main.py:1293
@@ -819,23 +552,179 @@ msgid ""
 "despite this risk?"
 msgstr ""
 
+#: ../wxui/clone.py:111
+msgid "Loading settings"
+msgstr ""
+
+#: ../wxui/query_sources.py:302
+msgid "Longitude"
+msgstr ""
+
+#: ../wxui/main.py:130
+msgid "Memories"
+msgstr "Memória"
+
+#: ../wxui/memedit.py:1057
+#, python-format
+msgid "Memory %i is not deletable"
+msgstr ""
+
+#: ../wxui/bankedit.py:231
+msgid "Memory must be in a bank to be edited"
+msgstr ""
+
+#: ../drivers/vx5.py:134
+#, python-brace-format
+msgid "Memory {num} not in bank {bank}"
+msgstr ""
+
+#: ../wxui/memedit.py:451
+#, fuzzy
+msgid "Mode"
+msgstr "Mód"
+
+#: ../wxui/clone.py:234
+msgid "Model"
+msgstr "Modell"
+
+#: ../wxui/query_sources.py:396
+#, fuzzy
+msgid "Modes"
+msgstr "Mód"
+
+#: ../wxui/main.py:1290
+#, fuzzy
+msgid "Module"
+msgstr "Modul betöltése"
+
+#: ../wxui/main.py:1262
+#, fuzzy
+msgid "Module Loaded"
+msgstr "Modul betöltése"
+
+#: ../wxui/main.py:1393
+msgid "Module loaded successfully"
+msgstr ""
+
+#: ../wxui/clone.py:357
+#, python-format
+msgid "More than one port found: %s"
+msgstr ""
+
+#: ../wxui/main.py:1463
+#, fuzzy
+msgid "New version available"
+msgstr "A CHIRP egy új verziója érhető el:"
+
+#: ../wxui/memedit.py:1222
+#, fuzzy
+msgid "No empty rows below!"
+msgstr "Memória beszúrása alá"
+
+#: ../wxui/developer.py:497
+msgid "No modules found"
+msgstr ""
+
+#: ../wxui/developer.py:496
+#, python-format
+msgid "No modules found in issue %i"
+msgstr ""
+
+#: ../sources/repeaterbook.py:270
+msgid "No results!"
+msgstr ""
+
+#: ../wxui/main.py:1159
+msgid "Number"
+msgstr ""
+
+#: ../wxui/memedit.py:177
+msgid "Offset"
+msgstr "Offszet"
+
+#: ../wxui/query_sources.py:320
+msgid "Only certain bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:325
+msgid "Only certain modes"
+msgstr ""
+
+#: ../wxui/main.py:254
+msgid "Only memory tabs may be exported"
+msgstr ""
+
+#: ../wxui/main.py:756
+msgid "Open"
+msgstr ""
+
+#: ../wxui/main.py:493
+#, fuzzy
+msgid "Open Recent"
+msgstr "Leg_utóbbi"
+
+#: ../wxui/main.py:464
+#, fuzzy
+msgid "Open Stock Config"
+msgstr "A csoportos beállítás megnyitása"
+
+#: ../wxui/main.py:757 ../wxui/main.py:956
+msgid "Open a file"
+msgstr ""
+
 #: ../wxui/main.py:1308
 msgid "Open a module"
 msgstr ""
 
-#: ../wxui/main.py:1323
-msgid "About CHIRP"
+#: ../wxui/main.py:713
+msgid "Open debug log"
 msgstr ""
 
-#: ../wxui/main.py:1328
-#, fuzzy
-msgid "enabled"
-msgstr "Engedélyezve"
+#: ../wxui/query_sources.py:298
+msgid "Optional: -122.0000"
+msgstr ""
 
-#: ../wxui/main.py:1328
+#: ../wxui/query_sources.py:307
 #, fuzzy
-msgid "disabled"
-msgstr "Engedélyezve"
+msgid "Optional: 100"
+msgstr "Beállítások"
+
+#: ../wxui/query_sources.py:292
+msgid "Optional: 45.0000"
+msgstr ""
+
+#: ../wxui/query_sources.py:313
+msgid "Optional: County, Hospital, etc"
+msgstr ""
+
+#: ../wxui/memedit.py:1332
+#, fuzzy
+msgid "Overwrite memories?"
+msgstr "Felülírja?"
+
+#: ../wxui/memedit.py:1326
+#, python-format
+msgid "Pasted memories will overwrite %i existing memories"
+msgstr ""
+
+#: ../wxui/memedit.py:1329
+#, python-format
+msgid "Pasted memories will overwrite memories %s"
+msgstr ""
+
+#: ../wxui/memedit.py:1323
+#, python-format
+msgid "Pasted memories will overwrite memory %i"
+msgstr ""
+
+#: ../wxui/memedit.py:1320
+#, python-format
+msgid "Pasted memory will overwrite memory %i"
+msgstr ""
+
+#: ../wxui/main.py:1467
+msgid "Please be sure to quit CHIRP before installing the new version!"
+msgstr ""
 
 #: ../wxui/main.py:1331
 msgid ""
@@ -845,18 +734,100 @@ msgid ""
 "EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
 
-#: ../wxui/main.py:1337
-msgid "Danger Ahead"
+#: ../wxui/common.py:115
+msgid "Please wait"
 msgstr ""
 
-#: ../wxui/main.py:1343
+#: ../wxui/clone.py:335
+msgid "Plug in your cable and then click OK"
+msgstr ""
+
+#: ../wxui/clone.py:227
+msgid "Port"
+msgstr "Port"
+
+#: ../wxui/memedit.py:242
+msgid "Power"
+msgstr "Teljesítmény"
+
+#: ../wxui/developer.py:133
+#, fuzzy
+msgid "Press enter to set this in memory"
+msgstr "Memória beállítási hiba"
+
+#: ../wxui/main.py:523
+msgid "Print Preview"
+msgstr ""
+
+#: ../wxui/printing.py:29
+msgid "Printing"
+msgstr ""
+
+#: ../wxui/memedit.py:1123
+msgid "Properties"
+msgstr ""
+
+#: ../wxui/main.py:1421
+#, fuzzy, python-format
+msgid "Query %s"
+msgstr "Lekérdezés hiba"
+
+#: ../wxui/main.py:618
+#, fuzzy
+msgid "Query Source"
+msgstr "Lekérd. adatforrása"
+
+#: ../wxui/memedit.py:398
+#, fuzzy
+msgid "RX DTCS"
+msgstr "RX DTCS kód"
+
+#: ../wxui/main.py:732
+msgid "Radio"
+msgstr "Rádió"
+
+#: ../drivers/ft60.py:88 ../drivers/ft450d.py:486 ../drivers/ft817.py:407
 #, python-format
-msgid "Developer state is now %s. CHIRP must be restarted to take effect"
+msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/main.py:1345
-msgid "Restart Required"
+#: ../wxui/clone.py:485 ../wxui/clone.py:549
+#, fuzzy
+msgid "Radio information"
+msgstr "%s információk lekérése"
+
+#: ../drivers/ft817.py:364
+msgid ""
+"Radio sent data after the last awaited block, this happens when the selected "
+"model is a non-US but the radio is a US one. Please choose the correct model "
+"and try again."
 msgstr ""
+
+#: ../wxui/query_sources.py:665
+msgid "RadioReference Canada requires a login before you can query"
+msgstr ""
+
+#: ../wxui/common.py:219
+#, fuzzy, python-format
+msgid "Refreshed memory %s"
+msgstr "ezek a memóriák"
+
+#: ../wxui/main.py:653
+msgid "Reload Driver"
+msgstr ""
+
+#: ../wxui/main.py:662
+msgid "Reload Driver and File"
+msgstr ""
+
+#: ../wxui/bankedit.py:203
+msgid "Rename bank"
+msgstr ""
+
+#: ../wxui/main.py:701
+#, fuzzy
+msgid "Reporting enabled"
+msgstr "Listázás letiltva"
 
 #: ../wxui/main.py:1350
 msgid ""
@@ -865,187 +836,127 @@ msgid ""
 "enabled. Really disable reporting?"
 msgstr ""
 
-#: ../wxui/main.py:1354
-msgid "Disable reporting"
+#: ../wxui/main.py:1345
+msgid "Restart Required"
 msgstr ""
 
-#: ../wxui/main.py:1386
-#, fuzzy, python-format
-msgid "Unable to reveal %s on this system"
-msgstr "Ennél a modellnél nem változtatható"
+#: ../wxui/main.py:474
+#, python-format
+msgid "Restore %i tabs"
+msgstr ""
 
-#: ../wxui/main.py:1393
-msgid "Module loaded successfully"
+#: ../wxui/common.py:223
+msgid "Retrieved settings"
+msgstr ""
+
+#: ../wxui/main.py:758
+msgid "Save"
+msgstr ""
+
+#: ../wxui/main.py:1074
+msgid "Save before closing?"
+msgstr ""
+
+#: ../wxui/main.py:759 ../wxui/main.py:1031
+msgid "Save file"
+msgstr ""
+
+#: ../wxui/common.py:225
+#, fuzzy
+msgid "Saved settings"
+msgstr "Beállítás"
+
+#: ../wxui/main.py:643
+#, fuzzy
+msgid "Select Bandplan"
+msgstr "Oszlopok kiválasztása"
+
+#: ../wxui/query_sources.py:375
+#, fuzzy
+msgid "Select Bands"
+msgstr "Oszlopok kiválasztása"
+
+#: ../wxui/query_sources.py:396
+#, fuzzy
+msgid "Select Modes"
+msgstr "Oszlopok kiválasztása"
+
+#: ../wxui/main.py:1406
+msgid "Select a bandplan"
+msgstr ""
+
+#: ../wxui/query_sources.py:284
+msgid "Service"
+msgstr ""
+
+#: ../wxui/main.py:143
+msgid "Settings"
+msgstr "Beállítás"
+
+#: ../wxui/memedit.py:1178
+msgid "Show Raw Memory"
+msgstr "Memóriasor mutatása"
+
+#: ../wxui/main.py:719
+msgid "Show debug log location"
+msgstr ""
+
+#: ../wxui/memedit.py:1377
+#, fuzzy
+msgid "Some memories are incompatible with this radio"
+msgstr ""
+"A beillesztett {number}. számú memória nem kompatibilis ezzel a rádióval, "
+"mert:"
+
+#: ../wxui/memedit.py:1294
+msgid "Some memories are not deletable"
+msgstr ""
+
+#: ../wxui/query_sources.py:454
+msgid "State"
+msgstr ""
+
+#: ../wxui/query_sources.py:287
+msgid "State/Province"
 msgstr ""
 
 #: ../wxui/main.py:1394
 msgid "Success"
 msgstr ""
 
-#: ../wxui/main.py:1406
-msgid "Select a bandplan"
-msgstr ""
-
-#: ../wxui/main.py:1407
-msgid "Bandplan"
-msgstr ""
-
-#: ../wxui/main.py:1421
-#, fuzzy, python-format
-msgid "Query %s"
-msgstr "Lekérdezés hiba"
-
-#: ../wxui/main.py:1461
+#: ../drivers/bj9900.py:112
 msgid ""
-"A new CHIRP version is available. Please visit the website as soon as "
-"possible to download it!"
-msgstr ""
-
-#: ../wxui/main.py:1463
-#, fuzzy
-msgid "New version available"
-msgstr "A CHIRP egy új verziója érhető el:"
-
-#: ../wxui/main.py:1467
-msgid "Please be sure to quit CHIRP before installing the new version!"
-msgstr ""
-
-#: ../wxui/developer.py:133
-#, fuzzy
-msgid "Press enter to set this in memory"
-msgstr "Memória beállítási hiba"
-
-#: ../wxui/developer.py:160
-msgid "bytes each"
-msgstr ""
-
-#: ../wxui/developer.py:165
-msgid "bytes"
-msgstr ""
-
-#: ../wxui/developer.py:169
-msgid "bits"
-msgstr ""
-
-#: ../wxui/developer.py:195
-#, python-format
-msgid "Length must be %i"
-msgstr ""
-
-#: ../wxui/developer.py:214
-msgid "Hex"
-msgstr ""
-
-#: ../wxui/developer.py:215
-#, fuzzy
-msgid "Dec"
-msgstr "Érzékelés"
-
-#: ../wxui/developer.py:216
-msgid "Bin"
-msgstr ""
-
-#: ../wxui/developer.py:245 ../wxui/developer.py:288
-msgid "Value must be zero or greater"
-msgstr ""
-
-#: ../wxui/developer.py:247
-#, python-format
-msgid "Value does not fit in %i bits"
-msgstr ""
-
-#: ../wxui/developer.py:290
-#, python-format
-msgid "Value must be exactly %i decimal digits"
-msgstr ""
-
-#: ../wxui/developer.py:403
-msgid "Building Radio Browser"
-msgstr ""
-
-#: ../wxui/developer.py:411
-msgid "Failed to load radio browser"
-msgstr ""
-
-#: ../wxui/developer.py:470
-#, fuzzy, python-format
-msgid "Choose the module to load from issue %i:"
-msgstr "Válasszon egy importálandót:"
-
-#: ../wxui/developer.py:471
-msgid "Available modules"
+"This is experimental support for BJ-9900 which is still under development.\n"
+"Please ensure you have a good backup with OEM software.\n"
+"Also please send in bug and enhancement requests!\n"
+"You have been warned. Proceed at your own risk!"
 msgstr ""
 
 #: ../wxui/developer.py:479
 msgid "This will load a module from a website issue"
 msgstr ""
 
-#: ../wxui/developer.py:481
-msgid "Issue number:"
-msgstr ""
+#: ../wxui/memedit.py:322
+msgid "Tone"
+msgstr "CTCSS"
 
-#: ../wxui/developer.py:496
-#, python-format
-msgid "No modules found in issue %i"
-msgstr ""
+#: ../wxui/memedit.py:580
+msgid "Tone Mode"
+msgstr "Hang (CTCSS) mód"
 
-#: ../wxui/developer.py:497
-msgid "No modules found"
-msgstr ""
-
-#: ../wxui/clone.py:109
-msgid "Applying settings"
-msgstr ""
-
-#: ../wxui/clone.py:111
-msgid "Loading settings"
-msgstr ""
-
-#: ../wxui/clone.py:117
+#: ../wxui/memedit.py:324
 #, fuzzy
-msgid "Complete"
-msgstr "Befejeződött"
+msgid "Tone Squelch"
+msgstr "ToneSql"
 
-#: ../wxui/clone.py:156
-#, python-format
-msgid "Do not prompt again for %s"
-msgstr ""
-
-#: ../wxui/clone.py:206
-msgid "Communicate with radio"
-msgstr ""
-
-#: ../wxui/clone.py:227
-msgid "Port"
-msgstr "Port"
-
-#: ../wxui/clone.py:230
-msgid "Vendor"
-msgstr "Gyártó"
-
-#: ../wxui/clone.py:234
-msgid "Model"
-msgstr "Modell"
-
-#: ../wxui/clone.py:310 ../wxui/clone.py:385
-msgid "Custom..."
-msgstr ""
-
-#: ../wxui/clone.py:310 ../wxui/clone.py:392
-msgid "Help Me..."
-msgstr ""
-
-#: ../wxui/clone.py:328
-msgid "Unplug your cable (if needed) and then click OK"
-msgstr ""
+#: ../wxui/memedit.py:272
+#, fuzzy
+msgid "Tuning Step"
+msgstr "Lépésköz"
 
 #: ../wxui/clone.py:329 ../wxui/clone.py:336 ../wxui/clone.py:347
 #: ../wxui/clone.py:354 ../wxui/clone.py:358
 msgid "USB Port Finder"
-msgstr ""
-
-#: ../wxui/clone.py:335
-msgid "Plug in your cable and then click OK"
 msgstr ""
 
 #: ../wxui/clone.py:345
@@ -1053,50 +964,160 @@ msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
 
-#: ../wxui/clone.py:352
-msgid "Your cable appears to be on port:"
+#: ../wxui/memedit.py:941
+msgid "Unable to edit memory before radio is loaded"
 msgstr ""
 
-#: ../wxui/clone.py:357
-#, python-format
-msgid "More than one port found: %s"
-msgstr ""
+#: ../wxui/main.py:989
+#, fuzzy, python-format
+msgid "Unable to find stock config %r"
+msgstr "A csoportos beállítás megnyitása"
 
-#: ../wxui/clone.py:386
-msgid "Enter custom port:"
-msgstr ""
-
-#: ../wxui/clone.py:430
-msgid "Error communicating with radio"
-msgstr ""
-
-#: ../wxui/clone.py:461
+#: ../wxui/main.py:1106
 #, fuzzy
-msgid "Experimental driver"
-msgstr "Folytassam kísérleti driver-rel?"
+msgid "Unable to open the clipboard"
+msgstr "Nem érzékelek a {port} porton!"
 
-#: ../wxui/clone.py:485 ../wxui/clone.py:549
-#, fuzzy
-msgid "Radio information"
-msgstr "%s információk lekérése"
+#: ../drivers/ft817.py:321
+msgid ""
+"Unable to read last block. This often happens when the selected model is US "
+"but the radio is a non-US one (or widebanded). Please choose the correct "
+"model and try again."
+msgstr ""
 
-#: ../wxui/clone.py:493
-#, fuzzy
-msgid "Download instructions"
-msgstr "{name} Utasítások"
+#: ../wxui/main.py:1386
+#, fuzzy, python-format
+msgid "Unable to reveal %s on this system"
+msgstr "Ennél a modellnél nem változtatható"
+
+#: ../wxui/query_sources.py:524
+msgid "United States"
+msgstr ""
+
+#: ../wxui/clone.py:328
+msgid "Unplug your cable (if needed) and then click OK"
+msgstr ""
 
 #: ../wxui/clone.py:564
 #, fuzzy
 msgid "Upload instructions"
 msgstr "{instructions}"
 
-#: ../wxui/printing.py:29
-msgid "Printing"
+#: ../wxui/main.py:612 ../wxui/main.py:765
+#, fuzzy
+msgid "Upload to radio"
+msgstr "Feltöltés a rádióra"
+
+#: ../wxui/common.py:221
+#, python-format
+msgid "Uploaded memory %s"
 msgstr ""
 
-#: ../sources/repeaterbook.py:270
-msgid "No results!"
+#: ../wxui/main.py:580
+msgid "Use fixed-width font"
 msgstr ""
+
+#: ../wxui/main.py:588
+msgid "Use larger font"
+msgstr ""
+
+#: ../wxui/developer.py:247
+#, python-format
+msgid "Value does not fit in %i bits"
+msgstr ""
+
+#: ../wxui/common.py:331
+#, python-format
+msgid "Value must be at least %.4f"
+msgstr ""
+
+#: ../wxui/common.py:335
+#, python-format
+msgid "Value must be at most %.4f"
+msgstr ""
+
+#: ../wxui/developer.py:290
+#, python-format
+msgid "Value must be exactly %i decimal digits"
+msgstr ""
+
+#: ../wxui/developer.py:245 ../wxui/developer.py:288
+msgid "Value must be zero or greater"
+msgstr ""
+
+#: ../wxui/clone.py:230
+msgid "Vendor"
+msgstr "Gyártó"
+
+#: ../wxui/main.py:731
+#, fuzzy
+msgid "View"
+msgstr "Né_zet"
+
+#: ../wxui/memedit.py:1025
+msgid "Warning"
+msgstr ""
+
+#: ../wxui/memedit.py:1024
+#, python-format
+msgid "Warning: %s"
+msgstr ""
+
+#: ../wxui/main.py:352
+msgid "Welcome"
+msgstr ""
+
+#: ../wxui/clone.py:352
+msgid "Your cable appears to be on port:"
+msgstr ""
+
+#: ../wxui/developer.py:169
+msgid "bits"
+msgstr ""
+
+#: ../wxui/developer.py:165
+msgid "bytes"
+msgstr ""
+
+#: ../wxui/developer.py:160
+msgid "bytes each"
+msgstr ""
+
+#: ../wxui/main.py:1328
+#, fuzzy
+msgid "disabled"
+msgstr "Engedélyezve"
+
+#: ../wxui/main.py:1328
+#, fuzzy
+msgid "enabled"
+msgstr "Engedélyezve"
+
+#: ../drivers/vx5.py:117
+#, python-brace-format
+msgid "{bank} is full"
+msgstr ""
+
+#~ msgid "%i errors during open, check the debug log for details"
+#~ msgstr "%i errors during open, check the debug log for details"
+
+#~ msgid "...and shift all memories up"
+#~ msgstr "...és minden memória felfelé lép"
+
+#~ msgid "Adding memory {number}"
+#~ msgstr "A(z) {number}. memória hozzáadása"
+
+#~ msgid "Adjust New Location"
+#~ msgstr "Új hely megadása"
+
+#~ msgid "Auto"
+#~ msgstr "Auto"
+
+#~ msgid "Automatic Repeater Offset"
+#~ msgstr "Automatic Repeater Offset"
+
+#~ msgid "Bad value for {col}: {val}"
+#~ msgstr "Hibás érték {col}: {val}"
 
 #~ msgid ""
 #~ "Band plans define default channel settings for frequencies in a region.  "
@@ -1105,311 +1126,100 @@ msgstr ""
 #~ "Egy régió sávtervének alapértelmezett csatorna frekvenciái. Válassz egy "
 #~ "sávtervet, vagy ki is hagyhatod a kézi csatorna beállítás befejezéséhez."
 
-#, python-format
-#~ msgid "Setting name on %s"
-#~ msgstr "A %s név beállítása"
-
-#~ msgid "Name"
-#~ msgstr "Név"
-
-#~ msgid "Updating {type} index for memory {num}"
-#~ msgstr "A {num}. memória {type} index frissítése"
-
-#~ msgid "Updating mapping information for memory {num}"
-#~ msgstr "A {num}. memória információjának frissítése"
-
-#~ msgid "Getting memory {num}"
-#~ msgstr "A {num}. memória beolvasása"
-
-#~ msgid "Setting index for memory {num}"
-#~ msgstr "A {num}. memória sorszámának beállítása"
-
-#~ msgid "Getting {type} for memory {num}"
-#~ msgstr "A {num}. memória {type} beolvasása"
-
-#~ msgid "Loc"
-#~ msgstr "Hely"
-
-#~ msgid "Getting {type} information for memory {num}"
-#~ msgstr "A {num}. memória {type} adatainak beolvasása"
-
-#~ msgid "{vendor} {model} on {port}"
-#~ msgstr "{vendor} {model} a {port} porton"
-
-#~ msgid "Internal error: Unable to upload to {model}"
-#~ msgstr "Belső hiba: nem tölthető fel a {model} rádióra."
-
-#~ msgid "Clone failed: {error}"
-#~ msgstr "A klónozás sikertelen: {error}"
-
-#~ msgid "Clone Progress"
-#~ msgstr "Klónozási folyamat"
-
-#~ msgid "Cancel"
-#~ msgstr "Megszakítás"
-
-#~ msgid "idle"
-#~ msgstr "várakozik"
-
-#~ msgid "Details"
-#~ msgstr "Részletek"
-
-#~ msgid "Proceed?"
-#~ msgstr "Folytatod?"
-
-#~ msgid "Do not show this next time"
-#~ msgstr "Mégegyszer ne mutassa ezt"
-
-#~ msgid "Callsign"
-#~ msgstr "Hívójel"
-
-#~ msgid "Your callsign"
-#~ msgstr "Az Ön hívójele"
-
-#~ msgid "Repeater callsign"
-#~ msgstr "Az átjátszó hívójele"
-
-#~ msgid "My callsign"
-#~ msgstr "Az én hívójelem"
-
-#~ msgid "Downloading URCALL list"
-#~ msgstr "Az URCALL lista letöltése"
-
-#~ msgid "Downloading RPTCALL list"
-#~ msgstr "Az RPTCALL lista letöltése"
-
-#~ msgid "Downloading MYCALL list"
-#~ msgstr "A MYCALL lista letöltése"
-
-#, python-format
-#~ msgid "Memories (%(variant)s)"
-#~ msgstr "Memória (%(variant)s)"
-
-#~ msgid "D-STAR"
-#~ msgstr "D-STAR"
-
-#~ msgid "The {vendor} {model} has multiple independent sub-devices"
-#~ msgstr "A {vendor} {model} több független altípussal rendelkezik"
-
-#~ msgid "Cancelled"
-#~ msgstr "Mekszakítva"
-
-#~ msgid "Internal Error"
-#~ msgstr "Belső hiba"
-
-#~ msgid ""
-#~ "There were errors while opening {file}. The affected memories will not be "
-#~ "importable!"
-#~ msgstr ""
-#~ "Hiba történt a {file} fájl megnyitásakor. Az érintett memóriák nem "
-#~ "lesznek importálhatók."
-
-#~ msgid "There was an error during import: {error}"
-#~ msgstr "Hiba történt az importáláskor: {error}"
-
-#~ msgid "Unsupported file type"
-#~ msgstr "Nem támogatott fájltípus"
-
-#~ msgid "There was an error during export: {error}"
-#~ msgstr "Hiba a(z) {fname} exportálásakor: {error}"
-
-#~ msgid "Priming memory"
-#~ msgstr "Memória feltöltés"
-
-#~ msgid ""
-#~ "Location {number} is already being imported. Choose another value for "
-#~ "'New Location' before selection 'Import'"
-#~ msgstr ""
-#~ "A(z) {number}. hely már importálva van. 'Új hely'-nek válasszon másik "
-#~ "értéket, mielőtt az 'importálást' választja!"
-
-#~ msgid "Location {number} is already being imported"
-#~ msgstr "A {number} sorszámú hely már importálva van."
-
-#~ msgid "Updating URCALL list"
-#~ msgstr "URCALL lista frissítése."
-
-#~ msgid "Updating RPTCALL list"
-#~ msgstr "RPTCALL lista frissítése"
-
-#~ msgid "Setting memory {number}"
-#~ msgstr "A {number} memória beállítása"
-
-#~ msgid "Importing bank information"
-#~ msgstr "Bank információk importálása"
-
-#~ msgid "Error importing memories:"
-#~ msgstr "Hiba a memória importálásakor:"
-
-#~ msgid "None"
-#~ msgstr "Egyik sem"
-
-#~ msgid "Inverse"
-#~ msgstr "Ellenkező"
-
-#~ msgid "Select"
-#~ msgstr "Kiválasztás"
-
-#~ msgid "Auto"
-#~ msgstr "Auto"
-
-#~ msgid "Reverse"
-#~ msgstr "Fordított"
-
-#~ msgid "Adjust New Location"
-#~ msgstr "Új hely megadása"
-
-#~ msgid "Confirm overwrites"
-#~ msgstr "Felülírás jóváhagyása"
-
-#~ msgid "Cannot be imported because"
-#~ msgstr "Nem importálható, mert"
-
-#~ msgid "Import From File"
-#~ msgstr "Importálás fájlból"
-
-#~ msgid "Import"
-#~ msgstr "Importálás"
-
-#~ msgid "To"
-#~ msgstr "-ig"
-
-#~ msgid "From"
-#~ msgstr "Forrás"
-
-#~ msgid "Location memory will be imported into"
-#~ msgstr "Memória helye lesz beimportálva"
-
-#~ msgid "Location of memory in the file being imported"
-#~ msgstr "Memória hely a fájlba importálva"
-
-#~ msgid "Preparing memory list..."
-#~ msgstr "Memória lista előkészítés..."
-
-#~ msgid "Export"
-#~ msgstr "Export"
-
-#~ msgid "Overwrite"
-#~ msgstr "Felülírás"
-
-#~ msgid "File Exists"
-#~ msgstr "A fájl már létezik"
-
-#~ msgid "The file {name} already exists. Do you want to overwrite it?"
-#~ msgstr "A {name} nevű fájl már létezik. Felül akarja írni?"
-
-#~ msgid "Untitled"
-#~ msgstr "Névtelen"
-
-#~ msgid "CHIRP Radio Images"
-#~ msgstr "CHIRP Radio adatképek"
+#~ msgid "CHIRP Documentation"
+#~ msgstr "CHIRP dokumentáció"
 
 #~ msgid "CHIRP Files"
 #~ msgstr "CHIRP fájlok"
 
-#~ msgid "EVE Files (VX5)"
-#~ msgstr "EVE fájl (VX5)"
+#~ msgid "CHIRP Native File"
+#~ msgstr "CHIRP natív fájl"
 
-#~ msgid "ICF Files"
-#~ msgstr "ICF fájlok"
+#~ msgid "CHIRP Radio Images"
+#~ msgstr "CHIRP Radio adatképek"
 
-#~ msgid "VX5 Commander Files"
-#~ msgstr "VX5 Commander fájlok"
+#~ msgid "CSV File"
+#~ msgstr "CSV fájl"
 
-#~ msgid "VX6 Commander Files"
-#~ msgstr "VX6 Commander fájlok"
+#~ msgid "Callsign"
+#~ msgstr "Hívójel"
 
-#~ msgid "VX7 Commander Files"
-#~ msgstr "VX7 Commander fájlok"
+#~ msgid "Cancel"
+#~ msgstr "Megszakítás"
+
+#~ msgid "Cancelled"
+#~ msgstr "Mekszakítva"
+
+#~ msgid "Cannot be imported because"
+#~ msgstr "Nem importálható, mert"
+
+#~ msgid "Change language"
+#~ msgstr "Nyelv választás"
+
+#~ msgid "Channel defaults"
+#~ msgstr "Csatorna alapértékek"
+
+#~ msgid "Check this to change the {name} value"
+#~ msgstr "Ennek változtatásához ellenőrizd a {name} értékét"
 
 #~ msgid ""
-#~ "ICF files cannot be edited, only displayed or imported into another file. "
-#~ "Open in read-only mode?"
+#~ "Choose a language or Auto to use the operating system default. You will "
+#~ "need to restart the application before the change will take effect"
 #~ msgstr ""
-#~ "Az ICF fájlok nem szerkeszthetők, csak megnézhetők, vagy másik fájlba "
-#~ "importálhatók. Megnyissam olvashatóként?"
+#~ "Válasszon egy nyelvet, vagy bízza az automatikus nyelvfelismerést az "
+#~ "Operációs rendszerből. Ahhoz, hogy a beállítás érvényre jusson, indítsa "
+#~ "újra az CHIRP-et! "
 
-#~ msgid "There was an error opening {fname}: {error}"
-#~ msgstr "A(z) {fname} nevű fájl megnyitásakor fellépő hiba: {error}"
+#~ msgid "Clone Progress"
+#~ msgstr "Klónozási folyamat"
 
-#~ msgid "{num} errors during open:"
-#~ msgstr "{num} hiba a megnyitás során:"
+#~ msgid "Clone failed: {error}"
+#~ msgstr "A klónozás sikertelen: {error}"
 
-#~ msgid "Note:"
-#~ msgstr "Megjegyzés:"
+#~ msgid "Columns"
+#~ msgstr "Oszlopok"
 
-#~ msgid ""
-#~ "The {vendor} {model} operates in <b>live mode</b>. This means that any "
-#~ "changes you make are immediately sent to the radio. Because of this, you "
-#~ "cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish "
-#~ "to edit the contents offline, please <u>Export</u> to a CSV file, using "
-#~ "the <b>File menu</b>."
-#~ msgstr ""
-#~ "A {vendor} {model} <b>közvetlen kapcsolatban</b> működik. Ez azt jelenti, "
-#~ "hogy minden elvégzett módosítás azonnal a rádióra töltődik. Emiatt Ön nem "
-#~ "választhatja a <u>Mentés</u> vagy <u>Feltöltés</u> műveleteket. Ha Ön "
-#~ "kapcsolat nélkül akarja a tartalmat szerkeszteni, kérem válassza az CSV-"
-#~ "be <u>exportálást</u> a <b>Fájl menüben</b>!"
+#~ msgid "Confirm overwrites"
+#~ msgstr "Felülírás jóváhagyása"
 
-#~ msgid "Don't show this again"
-#~ msgstr "Mégegyszer ne mutassa"
+#~ msgid "Copy"
+#~ msgstr "Másolás"
 
-#~ msgid "{vendor} {model} image file"
-#~ msgstr "{vendor} {model} képfájl"
+#~ msgid "Cut"
+#~ msgstr "Kivágás"
 
-#~ msgid "VX7 Commander"
-#~ msgstr "VX7 Commander"
+#~ msgid "Cutting memory {number}"
+#~ msgstr "A(z) {number}. memória kivágása"
 
-#~ msgid "VX6 Commander"
-#~ msgstr "VX6 Commander"
+#~ msgid "D-STAR"
+#~ msgstr "D-STAR"
 
-#~ msgid "EVE"
-#~ msgstr "EVE"
+#~ msgid "DTCS Code"
+#~ msgstr "DTCS kód"
 
-#~ msgid "VX5 Commander"
-#~ msgstr "VX5 Commander"
+#~ msgid "DTCS Rx Code"
+#~ msgstr "DTCS RX kód"
 
-#~ msgid "Open recent file {name}"
-#~ msgstr "A legutóbbi {name} fájl megnyitása"
+#~ msgid "Delete all"
+#~ msgstr "_Törlés"
 
-#~ msgid "Import stock configuration {name}"
-#~ msgstr "A(z) {name} konfigurációs készlet beolvasása"
+#~ msgid "Details"
+#~ msgstr "Részletek"
 
-#~ msgid "Open stock configuration {name}"
-#~ msgstr "A(z) {name} konfigurációs készlet megnyitása"
+#~ msgid "Diff of {a} and {b}"
+#~ msgstr "{a} és {b} összehasonlítása"
 
-#~ msgid "This radio's driver is experimental. Do you want to proceed?"
-#~ msgstr "A rádió driver-e kísérleti. Folytatni akarod?"
+#~ msgid "Diff raw memories"
+#~ msgstr "Memóriasorok különbsége"
 
-#~ msgid "Don't show instructions for any radio again"
-#~ msgstr "Mégegyszer ne mutasson utasításokat egy rádióhoz sem"
+#~ msgid "Diff tabs"
+#~ msgstr "Diff tabs"
 
-#~ msgid "Save Changes?"
-#~ msgstr "Menti a változásokat?"
+#~ msgid "Do not show this next time"
+#~ msgstr "Mégegyszer ne mutassa ezt"
 
-#~ msgid "Kenwood HMK Files"
-#~ msgstr "Kenwood HMK fájlok"
-
-#~ msgid "Kenwood ITM Files"
-#~ msgstr "Kenwood ITM fájlok"
-
-#~ msgid "Travel Plus Files"
-#~ msgstr "Travel Plus fájlok"
-
-#~ msgid "RepeaterBook Query"
-#~ msgstr "RepeaterBook lekérdezés"
-
-#~ msgid "RepeaterBook query failed"
-#~ msgstr "RepeaterBook lekérdezés hiba"
-
-#~ msgid "RadioReference.com Query"
-#~ msgstr "RadioReference.com lekérdezés"
-
-#~ msgid "With significant contributions from:"
-#~ msgstr "Jelentősen hozzájárultak:"
-
-#~ msgid "CHIRP Documentation"
-#~ msgstr "CHIRP dokumentáció"
+#~ msgid "Documentation"
+#~ msgstr "Dokumentáció"
 
 #~ msgid ""
 #~ "Documentation for CHIRP, including FAQs, and help for common problems is "
@@ -1426,8 +1236,323 @@ msgstr ""
 #~ "Documentation\">http://chirp.danplanet.com/projects/chirp/wiki/"
 #~ "Documentation</a>\n"
 
-#~ msgid "Visible columns for {radio}"
-#~ msgstr "A(z) {radio} látható oszlopai"
+#~ msgid "Don't show instructions for any radio again"
+#~ msgstr "Mégegyszer ne mutasson utasításokat egy rádióhoz sem"
+
+#~ msgid "Don't show this again"
+#~ msgstr "Mégegyszer ne mutassa"
+
+#~ msgid "Downloading MYCALL list"
+#~ msgstr "A MYCALL lista letöltése"
+
+#~ msgid "Downloading RPTCALL list"
+#~ msgstr "Az RPTCALL lista letöltése"
+
+#~ msgid "Downloading URCALL list"
+#~ msgstr "Az URCALL lista letöltése"
+
+#~ msgid "EVE"
+#~ msgstr "EVE"
+
+#~ msgid "EVE Files (VX5)"
+#~ msgstr "EVE fájl (VX5)"
+
+#~ msgid "E_xchange"
+#~ msgstr "Cse_re"
+
+#~ msgid "Edit"
+#~ msgstr "Sz_erkesztés"
+
+#~ msgid "Edit Memory #{num}"
+#~ msgstr "A(z) #{num} memória"
+
+#~ msgid "Editing new item, taking defaults"
+#~ msgstr "Új elem szerkesztése az alapértelmezettek szerint"
+
+#~ msgid "Enable Developer Functions"
+#~ msgstr "Fejlesztői funkciók engedélyezése"
+
+#~ msgid "Erasing memory {number}"
+#~ msgstr "A(z) {number}. memória törlése"
+
+#~ msgid "Error importing memories:"
+#~ msgstr "Hiba a memória importálásakor:"
+
+#~ msgid "Error reporting is enabled"
+#~ msgstr "A hibajelentés engedélyezett"
+
+#~ msgid "Exchange memories"
+#~ msgstr "Memóriák cseréje"
+
+#~ msgid "Export"
+#~ msgstr "Export"
+
+#~ msgid "File Exists"
+#~ msgstr "A fájl már létezik"
+
+#~ msgid "From"
+#~ msgstr "Forrás"
+
+#~ msgid "Getting channel {chan}"
+#~ msgstr "A(z) {chan}. csatorna kiolvasása"
+
+#~ msgid "Getting memory {number}"
+#~ msgstr "A(z) {number}. memória beolvasása"
+
+#~ msgid "Getting memory {num}"
+#~ msgstr "A {num}. memória beolvasása"
+
+#~ msgid "Getting original memory {number}"
+#~ msgstr "A(z) eredeti {number}. memóriasor"
+
+#~ msgid "Getting raw memory {number}"
+#~ msgstr "A(z) {number}. memóriasor kiolvasása"
+
+#~ msgid "Getting {type} for memory {num}"
+#~ msgstr "A {num}. memória {type} beolvasása"
+
+#~ msgid "Getting {type} information for memory {num}"
+#~ msgstr "A {num}. memória {type} adatainak beolvasása"
+
+#~ msgid "Go"
+#~ msgstr "Ok"
+
+#~ msgid "Help"
+#~ msgstr "Súgó"
+
+#~ msgid "Hide Unused Fields"
+#~ msgstr "A nemhasznált mezők elrejtése"
+
+#~ msgid "ICF Files"
+#~ msgstr "ICF fájlok"
+
+#~ msgid ""
+#~ "ICF files cannot be edited, only displayed or imported into another file. "
+#~ "Open in read-only mode?"
+#~ msgstr ""
+#~ "Az ICF fájlok nem szerkeszthetők, csak megnézhetők, vagy másik fájlba "
+#~ "importálhatók. Megnyissam olvashatóként?"
+
+#~ msgid ""
+#~ "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+#~ msgstr ""
+#~ "Ha Ön ezt a lehetőséget le kívánja tiltani, a <u>Súgóban</> megteheti"
+
+#~ msgid "Import"
+#~ msgstr "Importálás"
+
+#~ msgid "Import From File"
+#~ msgstr "Importálás fájlból"
+
+#~ msgid "Import from data source"
+#~ msgstr "Importálás adatforrásból"
+
+#~ msgid "Import from stock config"
+#~ msgstr "Importálás a csoportos beállításokból"
+
+#~ msgid "Import stock configuration {name}"
+#~ msgstr "A(z) {name} konfigurációs készlet beolvasása"
+
+#~ msgid "Importing bank information"
+#~ msgstr "Bank információk importálása"
+
+#~ msgid "Incompatible Memory"
+#~ msgstr "Nem kompatibilis memória"
+
+#~ msgid "Internal Error"
+#~ msgstr "Belső hiba"
+
+#~ msgid "Internal Error: Column {name} not found"
+#~ msgstr "Belső hiba: nincs {name} nevű oszlop"
+
+#~ msgid "Internal Error: Invalid limit {number}"
+#~ msgstr "Belső hiba: Érvénytelen határ {number}"
+
+#~ msgid "Internal error: Unable to upload to {model}"
+#~ msgstr "Belső hiba: nem tölthető fel a {model} rádióra."
+
+#~ msgid "Invalid value for this field"
+#~ msgstr "Érvénytelen mezőérték"
+
+#~ msgid "Inverse"
+#~ msgstr "Ellenkező"
+
+#~ msgid "Kenwood HMK Files"
+#~ msgstr "Kenwood HMK fájlok"
+
+#~ msgid "Kenwood ITM Files"
+#~ msgstr "Kenwood ITM fájlok"
+
+#~ msgid "Loc"
+#~ msgstr "Hely"
+
+#~ msgid "Location memory will be imported into"
+#~ msgstr "Memória helye lesz beimportálva"
+
+#~ msgid "Location of memory in the file being imported"
+#~ msgstr "Memória hely a fájlba importálva"
+
+#~ msgid "Location {number} is already being imported"
+#~ msgstr "A {number} sorszámú hely már importálva van."
+
+#~ msgid ""
+#~ "Location {number} is already being imported. Choose another value for "
+#~ "'New Location' before selection 'Import'"
+#~ msgstr ""
+#~ "A(z) {number}. hely már importálva van. 'Új hely'-nek válasszon másik "
+#~ "értéket, mielőtt az 'importálást' választja!"
+
+#~ msgid "Looking for a free spot ({number})"
+#~ msgstr "Üres terület keresése ({number})"
+
+#, python-format
+#~ msgid "Memories (%(variant)s)"
+#~ msgstr "Memória (%(variant)s)"
+
+#~ msgid "Memories must be contiguous"
+#~ msgstr "Egybefüggő memóriaterület szükséges"
+
+#~ msgid "Memory range:"
+#~ msgstr "Memória tartomány:"
+
+#~ msgid "Memory validation failed:"
+#~ msgstr "Memória érvényesítési hiba:"
+
+#~ msgid "Memory {number}"
+#~ msgstr "A(z){number} memória"
+
+#~ msgid "Move Dow_n"
+#~ msgstr "Lefel_é"
+
+#~ msgid "Move _Up"
+#~ msgstr "Fe_lfelé"
+
+#~ msgid "Move down"
+#~ msgstr "Mozgatás lefelé"
+
+#~ msgid "Move up"
+#~ msgstr "Mozgatás felfelé"
+
+#~ msgid "Moved {count} memories"
+#~ msgstr "{count} memória átmozgatva"
+
+#~ msgid "Moving memory from {old} to {new}"
+#~ msgstr "Memória átmozgatás {old} -> {new}"
+
+#~ msgid "Moving {src} to {dst}"
+#~ msgstr "Mozgatás {src} -> {dst}"
+
+#~ msgid "My callsign"
+#~ msgstr "Az én hívójelem"
+
+#~ msgid "Name"
+#~ msgstr "Név"
+
+#~ msgid "No space to insert a row"
+#~ msgstr "Nincs hely a sor beszúrásához"
+
+#~ msgid "None"
+#~ msgstr "Egyik sem"
+
+#~ msgid "Note:"
+#~ msgstr "Megjegyzés:"
+
+#~ msgid "Open recent file {name}"
+#~ msgstr "A legutóbbi {name} fájl megnyitása"
+
+#~ msgid "Open stock configuration {name}"
+#~ msgstr "A(z) {name} konfigurációs készlet megnyitása"
+
+#~ msgid "Overwrite"
+#~ msgstr "Felülírás"
+
+#~ msgid "Overwrite location {number}?"
+#~ msgstr "Felülírja a(z) {number}. helyet?"
+
+#~ msgid "Paste"
+#~ msgstr "Beillesztés"
+
+#~ msgid "Preparing memory list..."
+#~ msgstr "Memória lista előkészítés..."
+
+#~ msgid "Priming memory"
+#~ msgstr "Memória feltöltés"
+
+#~ msgid "Proceed?"
+#~ msgstr "Folytatod?"
+
+#~ msgid "Python Modules"
+#~ msgstr "Python modulok"
+
+#~ msgid "RPT1CALL"
+#~ msgstr "RPT1CALL"
+
+#~ msgid "RPT2CALL"
+#~ msgstr "RPT2CALL"
+
+#~ msgid "RadioReference.com"
+#~ msgstr "RadioReference.com"
+
+#~ msgid "RadioReference.com Query"
+#~ msgstr "RadioReference.com lekérdezés"
+
+#~ msgid "Raw memory {number}"
+#~ msgstr "{number}. memóriasor"
+
+#~ msgid "Repeater callsign"
+#~ msgstr "Az átjátszó hívójele"
+
+#~ msgid "RepeaterBook"
+#~ msgstr "RepeaterBook"
+
+#~ msgid "RepeaterBook Query"
+#~ msgstr "RepeaterBook lekérdezés"
+
+#~ msgid "RepeaterBook query failed"
+#~ msgstr "RepeaterBook lekérdezés hiba"
+
+#~ msgid "Report statistics"
+#~ msgstr "Statisztikai lista"
+
+#~ msgid "Reverse"
+#~ msgstr "Fordított"
+
+#~ msgid "Save Changes?"
+#~ msgstr "Menti a változásokat?"
+
+#~ msgid "Select"
+#~ msgstr "Kiválasztás"
+
+#~ msgid "Setting index for memory {num}"
+#~ msgstr "A {num}. memória sorszámának beállítása"
+
+#~ msgid "Setting memory {number}"
+#~ msgstr "A {number} memória beállítása"
+
+#, python-format
+#~ msgid "Setting name on %s"
+#~ msgstr "A %s név beállítása"
+
+#~ msgid "Shift"
+#~ msgstr "Eltolás"
+
+#~ msgid "Show Empty"
+#~ msgstr "Üreset is"
+
+#~ msgid "Show raw memory"
+#~ msgstr "memóriasor mutatása"
+
+#~ msgid "Skip"
+#~ msgstr "Ugrás"
+
+#~ msgid "Smart Tone Modes"
+#~ msgstr "Hang (CTCSS) mód"
+
+#~ msgid "Special Channels"
+#~ msgstr "Spec. csatornák"
+
+#~ msgid "The file {name} already exists. Do you want to overwrite it?"
+#~ msgstr "A {name} nevű fájl már létezik. Felül akarja írni?"
 
 #~ msgid ""
 #~ "The reporting feature of CHIRP is designed to help <u>improve quality</u> "
@@ -1449,138 +1574,37 @@ msgstr ""
 #~ "\n"
 #~ "<b>Biztosan letiltja ezt a lehetőséget?</b>"
 
-#~ msgid ""
-#~ "Choose a language or Auto to use the operating system default. You will "
-#~ "need to restart the application before the change will take effect"
-#~ msgstr ""
-#~ "Válasszon egy nyelvet, vagy bízza az automatikus nyelvfelismerést az "
-#~ "Operációs rendszerből. Ahhoz, hogy a beállítás érvényre jusson, indítsa "
-#~ "újra az CHIRP-et! "
-
-#~ msgid "Python Modules"
-#~ msgstr "Python modulok"
-
-#~ msgid "_Edit"
-#~ msgstr "Sz_erkesztés"
-
-#~ msgid "_Cut"
-#~ msgstr "_Kivágás"
-
-#~ msgid "_Copy"
-#~ msgstr "_Másolás"
-
-#~ msgid "_Paste"
-#~ msgstr "_Beillesztés"
-
-#~ msgid "_Delete"
-#~ msgstr "_Törlés"
-
-#~ msgid "Move _Up"
-#~ msgstr "Fe_lfelé"
-
-#~ msgid "Move Dow_n"
-#~ msgstr "Lefel_é"
-
-#~ msgid "E_xchange"
-#~ msgstr "Cse_re"
-
-#~ msgid "Columns"
-#~ msgstr "Oszlopok"
-
-#~ msgid "Show raw memory"
-#~ msgstr "memóriasor mutatása"
-
-#~ msgid "Diff raw memories"
-#~ msgstr "Memóriasorok különbsége"
-
-#~ msgid "Diff tabs"
-#~ msgstr "Diff tabs"
-
-#~ msgid "Change language"
-#~ msgstr "Nyelv választás"
-
-#~ msgid "_Radio"
-#~ msgstr "Rá_dió"
-
-#~ msgid "Import from data source"
-#~ msgstr "Importálás adatforrásból"
-
-#~ msgid "RadioReference.com"
-#~ msgstr "RadioReference.com"
-
-#~ msgid "RepeaterBook"
-#~ msgstr "RepeaterBook"
-
-#~ msgid "przemienniki.net"
-#~ msgstr "przemienniki.net"
-
-#~ msgid "CHIRP Native File"
-#~ msgstr "CHIRP natív fájl"
-
-#~ msgid "CSV File"
-#~ msgstr "CSV fájl"
-
-#~ msgid "Import from stock config"
-#~ msgstr "Importálás a csoportos beállításokból"
-
-#~ msgid "Channel defaults"
-#~ msgstr "Csatorna alapértékek"
-
-#~ msgid "Help"
-#~ msgstr "Súgó"
-
-#~ msgid "Documentation"
-#~ msgstr "Dokumentáció"
-
-#~ msgid "Report statistics"
-#~ msgstr "Statisztikai lista"
-
-#~ msgid "Hide Unused Fields"
-#~ msgstr "A nemhasznált mezők elrejtése"
-
-#~ msgid "Smart Tone Modes"
-#~ msgstr "Hang (CTCSS) mód"
-
-#~ msgid "Enable Developer Functions"
-#~ msgstr "Fejlesztői funkciók engedélyezése"
-
-#~ msgid "Error reporting is enabled"
-#~ msgstr "A hibajelentés engedélyezett"
+#~ msgid "The {vendor} {model} has multiple independent sub-devices"
+#~ msgstr "A {vendor} {model} több független altípussal rendelkezik"
 
 #~ msgid ""
-#~ "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+#~ "The {vendor} {model} operates in <b>live mode</b>. This means that any "
+#~ "changes you make are immediately sent to the radio. Because of this, you "
+#~ "cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish "
+#~ "to edit the contents offline, please <u>Export</u> to a CSV file, using "
+#~ "the <b>File menu</b>."
 #~ msgstr ""
-#~ "Ha Ön ezt a lehetőséget le kívánja tiltani, a <u>Súgóban</> megteheti"
+#~ "A {vendor} {model} <b>közvetlen kapcsolatban</b> működik. Ez azt jelenti, "
+#~ "hogy minden elvégzett módosítás azonnal a rádióra töltődik. Emiatt Ön nem "
+#~ "választhatja a <u>Mentés</u> vagy <u>Feltöltés</u> műveleteket. Ha Ön "
+#~ "kapcsolat nélkül akarja a tartalmat szerkeszteni, kérem válassza az CSV-"
+#~ "be <u>exportálást</u> a <b>Fájl menüben</b>!"
 
-#~ msgid "Edit Memory #{num}"
-#~ msgstr "A(z) #{num} memória"
+#~ msgid "There was an error during export: {error}"
+#~ msgstr "Hiba a(z) {fname} exportálásakor: {error}"
 
-#~ msgid "DTCS Code"
-#~ msgstr "DTCS kód"
+#~ msgid "There was an error during import: {error}"
+#~ msgstr "Hiba történt az importáláskor: {error}"
 
-#~ msgid "Skip"
-#~ msgstr "Ugrás"
+#~ msgid "There was an error opening {fname}: {error}"
+#~ msgstr "A(z) {fname} nevű fájl megnyitásakor fellépő hiba: {error}"
 
-#~ msgid "Memory validation failed:"
-#~ msgstr "Memória érvényesítési hiba:"
-
-#~ msgid "Check this to change the {name} value"
-#~ msgstr "Ennek változtatásához ellenőrizd a {name} értékét"
-
-#~ msgid "Invalid value for this field"
-#~ msgstr "Érvénytelen mezőérték"
-
-#~ msgid "DTCS Rx Code"
-#~ msgstr "DTCS RX kód"
-
-#~ msgid "Editing new item, taking defaults"
-#~ msgstr "Új elem szerkesztése az alapértelmezettek szerint"
-
-#~ msgid "Bad value for {col}: {val}"
-#~ msgstr "Hibás érték {col}: {val}"
-
-#~ msgid "Writing memory {number}"
-#~ msgstr "A(z) {number}. memória írása"
+#~ msgid ""
+#~ "There were errors while opening {file}. The affected memories will not be "
+#~ "importable!"
+#~ msgstr ""
+#~ "Hiba történt a {file} fájl megnyitásakor. Az érintett memóriák nem "
+#~ "lesznek importálhatók."
 
 #~ msgid ""
 #~ "This operation requires moving all subsequent channels by one spot until "
@@ -1590,86 +1614,17 @@ msgstr ""
 #~ "Ez a művelet megköveteli, hogy minden csatorna egyetlen összefüggő, üres "
 #~ "területre kerüljön. Ez sokáig eltarthat. Biztos, hogy elkezdjem?"
 
-#~ msgid "Adding memory {number}"
-#~ msgstr "A(z) {number}. memória hozzáadása"
+#~ msgid "This radio's driver is experimental. Do you want to proceed?"
+#~ msgstr "A rádió driver-e kísérleti. Folytatni akarod?"
 
-#~ msgid "Erasing memory {number}"
-#~ msgstr "A(z) {number}. memória törlése"
+#~ msgid "To"
+#~ msgstr "-ig"
 
-#~ msgid "Getting memory {number}"
-#~ msgstr "A(z) {number}. memória beolvasása"
+#~ msgid "Travel Plus Files"
+#~ msgstr "Travel Plus fájlok"
 
-#~ msgid "Moving memory from {old} to {new}"
-#~ msgstr "Memória átmozgatás {old} -> {new}"
-
-#~ msgid "Raw memory {number}"
-#~ msgstr "{number}. memóriasor"
-
-#~ msgid "Getting raw memory {number}"
-#~ msgstr "A(z) {number}. memóriasor kiolvasása"
-
-#~ msgid "You can only diff two memories!"
-#~ msgstr "Csak két memória hasonlítható össze!"
-
-#~ msgid "Memory {number}"
-#~ msgstr "A(z){number} memória"
-
-#~ msgid "Diff of {a} and {b}"
-#~ msgstr "{a} és {b} összehasonlítása"
-
-#~ msgid "Getting original memory {number}"
-#~ msgstr "A(z) eredeti {number}. memóriasor"
-
-#~ msgid "Memories must be contiguous"
-#~ msgstr "Egybefüggő memóriaterület szükséges"
-
-#~ msgid "Edit"
-#~ msgstr "Sz_erkesztés"
-
-#~ msgid "...and shift all memories up"
-#~ msgstr "...és minden memória felfelé lép"
-
-#~ msgid "Move up"
-#~ msgstr "Mozgatás felfelé"
-
-#~ msgid "Move down"
-#~ msgstr "Mozgatás lefelé"
-
-#~ msgid "Exchange memories"
-#~ msgstr "Memóriák cseréje"
-
-#~ msgid "Cut"
-#~ msgstr "Kivágás"
-
-#~ msgid "Copy"
-#~ msgstr "Másolás"
-
-#~ msgid "Paste"
-#~ msgstr "Beillesztés"
-
-#~ msgid "Internal Error: Column {name} not found"
-#~ msgstr "Belső hiba: nincs {name} nevű oszlop"
-
-#~ msgid "Getting channel {chan}"
-#~ msgstr "A(z) {chan}. csatorna kiolvasása"
-
-#~ msgid "Internal Error: Invalid limit {number}"
-#~ msgstr "Belső hiba: Érvénytelen határ {number}"
-
-#~ msgid "Memory range:"
-#~ msgstr "Memória tartomány:"
-
-#~ msgid "Go"
-#~ msgstr "Ok"
-
-#~ msgid "Special Channels"
-#~ msgstr "Spec. csatornák"
-
-#~ msgid "Show Empty"
-#~ msgstr "Üreset is"
-
-#~ msgid "Cutting memory {number}"
-#~ msgstr "A(z) {number}. memória kivágása"
+#~ msgid "URCALL"
+#~ msgstr "URCALL"
 
 #~ msgid ""
 #~ "Unable to paste {src} memories into {dst} rows. Increase the memory "
@@ -1678,41 +1633,86 @@ msgstr ""
 #~ "Nem sikerült beilleszteni {src} memóriát {dst} sorokba. Növelje a memória "
 #~ "határokat, vagy mutasson üres memóriára!"
 
-#~ msgid "Overwrite location {number}?"
-#~ msgstr "Felülírja a(z) {number}. helyet?"
+#~ msgid "Unsupported file type"
+#~ msgstr "Nem támogatott fájltípus"
 
-#~ msgid "Incompatible Memory"
-#~ msgstr "Nem kompatibilis memória"
+#~ msgid "Untitled"
+#~ msgstr "Névtelen"
 
-#~ msgid "URCALL"
-#~ msgstr "URCALL"
+#~ msgid "Updating RPTCALL list"
+#~ msgstr "RPTCALL lista frissítése"
 
-#~ msgid "RPT1CALL"
-#~ msgstr "RPT1CALL"
+#~ msgid "Updating URCALL list"
+#~ msgstr "URCALL lista frissítése."
 
-#~ msgid "RPT2CALL"
-#~ msgstr "RPT2CALL"
+#~ msgid "Updating mapping information for memory {num}"
+#~ msgstr "A {num}. memória információjának frissítése"
 
-#~ msgid "Shift"
-#~ msgstr "Eltolás"
+#~ msgid "Updating {type} index for memory {num}"
+#~ msgstr "A {num}. memória {type} index frissítése"
 
-#~ msgid "Moving {src} to {dst}"
-#~ msgstr "Mozgatás {src} -> {dst}"
+#~ msgid "VX5 Commander"
+#~ msgstr "VX5 Commander"
 
-#~ msgid "Looking for a free spot ({number})"
-#~ msgstr "Üres terület keresése ({number})"
+#~ msgid "VX5 Commander Files"
+#~ msgstr "VX5 Commander fájlok"
 
-#~ msgid "No space to insert a row"
-#~ msgstr "Nincs hely a sor beszúrásához"
+#~ msgid "VX6 Commander"
+#~ msgstr "VX6 Commander"
 
-#~ msgid "Moved {count} memories"
-#~ msgstr "{count} memória átmozgatva"
+#~ msgid "VX6 Commander Files"
+#~ msgstr "VX6 Commander fájlok"
 
-#~ msgid "Automatic Repeater Offset"
-#~ msgstr "Automatic Repeater Offset"
+#~ msgid "VX7 Commander"
+#~ msgstr "VX7 Commander"
 
-#~ msgid "Delete all"
+#~ msgid "VX7 Commander Files"
+#~ msgstr "VX7 Commander fájlok"
+
+#~ msgid "Visible columns for {radio}"
+#~ msgstr "A(z) {radio} látható oszlopai"
+
+#~ msgid "With significant contributions from:"
+#~ msgstr "Jelentősen hozzájárultak:"
+
+#~ msgid "Writing memory {number}"
+#~ msgstr "A(z) {number}. memória írása"
+
+#~ msgid "You can only diff two memories!"
+#~ msgstr "Csak két memória hasonlítható össze!"
+
+#~ msgid "Your callsign"
+#~ msgstr "Az Ön hívójele"
+
+#~ msgid "_Copy"
+#~ msgstr "_Másolás"
+
+#~ msgid "_Cut"
+#~ msgstr "_Kivágás"
+
+#~ msgid "_Delete"
 #~ msgstr "_Törlés"
 
-#~ msgid "%i errors during open, check the debug log for details"
-#~ msgstr "%i errors during open, check the debug log for details"
+#~ msgid "_Edit"
+#~ msgstr "Sz_erkesztés"
+
+#~ msgid "_Paste"
+#~ msgstr "_Beillesztés"
+
+#~ msgid "_Radio"
+#~ msgstr "Rá_dió"
+
+#~ msgid "idle"
+#~ msgstr "várakozik"
+
+#~ msgid "przemienniki.net"
+#~ msgstr "przemienniki.net"
+
+#~ msgid "{num} errors during open:"
+#~ msgstr "{num} hiba a megnyitás során:"
+
+#~ msgid "{vendor} {model} image file"
+#~ msgstr "{vendor} {model} képfájl"
+
+#~ msgid "{vendor} {model} on {port}"
+#~ msgstr "{vendor} {model} a {port} porton"

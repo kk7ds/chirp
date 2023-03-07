@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-06 17:03-0800\n"
+"POT-Creation-Date: 2023-03-06 17:24-0800\n"
 "PO-Revision-Date: 2022-06-04 02:01+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language: zh_CN\n"
@@ -16,18 +16,140 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Lokalize 22.04.1\n"
 
-#: ../drivers/ft60.py:88 ../drivers/ft450d.py:486 ../drivers/ft817.py:407
+#: ../wxui/query_sources.py:58
 #, python-format
-msgid "Radio did not ack block %i"
+msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr ""
 
-#: ../drivers/bj9900.py:112
-msgid ""
-"This is experimental support for BJ-9900 which is still under development.\n"
-"Please ensure you have a good backup with OEM software.\n"
-"Also please send in bug and enhancement requests!\n"
-"You have been warned. Proceed at your own risk!"
+#: ../wxui/main.py:1072
+#, fuzzy, python-format
+msgid "%s has not been saved. Save before closing?"
+msgstr "文件已更改，关闭前要保存变更吗？"
+
+#: ../wxui/radioinfo.py:48
+msgid "(none)"
 msgstr ""
+
+#: ../wxui/main.py:1461
+msgid ""
+"A new CHIRP version is available. Please visit the website as soon as "
+"possible to download it!"
+msgstr ""
+
+#: ../wxui/main.py:687
+msgid "About"
+msgstr ""
+
+#: ../wxui/main.py:1323
+msgid "About CHIRP"
+msgstr ""
+
+#: ../wxui/query_sources.py:353
+msgid "All"
+msgstr "全选"
+
+#: ../wxui/main.py:942
+#, fuzzy
+msgid "All Files"
+msgstr "全部文件"
+
+#: ../wxui/main.py:953
+msgid "All supported formats|"
+msgstr ""
+
+#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:345
+msgid "Amateur"
+msgstr ""
+
+#: ../wxui/common.py:408 ../wxui/common.py:446
+msgid "An error has occurred"
+msgstr "发生错误"
+
+#: ../wxui/clone.py:109
+msgid "Applying settings"
+msgstr ""
+
+#: ../wxui/developer.py:471
+msgid "Available modules"
+msgstr ""
+
+#: ../wxui/main.py:1407
+msgid "Bandplan"
+msgstr ""
+
+#: ../wxui/query_sources.py:375
+msgid "Bands"
+msgstr ""
+
+#: ../wxui/main.py:138
+msgid "Banks"
+msgstr ""
+
+#: ../wxui/developer.py:216
+msgid "Bin"
+msgstr ""
+
+#: ../wxui/main.py:149
+msgid "Browser"
+msgstr "浏览器"
+
+#: ../wxui/developer.py:403
+msgid "Building Radio Browser"
+msgstr ""
+
+#: ../wxui/query_sources.py:525
+msgid "Canada"
+msgstr ""
+
+#: ../wxui/memedit.py:874
+#, python-format
+msgid ""
+"Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
+msgstr ""
+
+#: ../wxui/main.py:941
+msgid "Chirp Image Files"
+msgstr ""
+
+#: ../wxui/memedit.py:304
+msgid "Choice Required"
+msgstr ""
+
+#: ../wxui/memedit.py:853
+#, fuzzy, python-format
+msgid "Choose %s DTCS Code"
+msgstr "DTCS 接收代码"
+
+#: ../wxui/memedit.py:850
+#, python-format
+msgid "Choose %s Tone"
+msgstr ""
+
+#: ../wxui/memedit.py:884
+#, fuzzy
+msgid "Choose Cross Mode"
+msgstr "收发使用不同亚音频"
+
+#: ../wxui/memedit.py:914
+msgid "Choose duplex"
+msgstr ""
+
+#: ../wxui/developer.py:470
+#, fuzzy, python-format
+msgid "Choose the module to load from issue %i:"
+msgstr "选择一个来导入："
+
+#: ../wxui/query_sources.py:451
+msgid "City"
+msgstr ""
+
+#: ../drivers/ft817.py:359
+msgid "Clone completed, checking for spurious bytes"
+msgstr ""
+
+#: ../wxui/common.py:94
+msgid "Cloning"
+msgstr "正在复制"
 
 #: ../drivers/bj9900.py:137 ../drivers/ft450d.py:439 ../drivers/ft817.py:342
 #, fuzzy
@@ -39,270 +161,44 @@ msgstr "从电台下载"
 msgid "Cloning to radio"
 msgstr "上传到电台"
 
-#: ../drivers/ft817.py:321
-msgid ""
-"Unable to read last block. This often happens when the selected model is US "
-"but the radio is a non-US one (or widebanded). Please choose the correct "
-"model and try again."
+#: ../wxui/main.py:760
+msgid "Close"
 msgstr ""
 
-#: ../drivers/ft817.py:359
-msgid "Clone completed, checking for spurious bytes"
-msgstr ""
-
-#: ../drivers/ft817.py:364
-msgid ""
-"Radio sent data after the last awaited block, this happens when the selected "
-"model is a non-US but the radio is a US one. Please choose the correct model "
-"and try again."
-msgstr ""
-
-#: ../drivers/vx5.py:117
-#, python-brace-format
-msgid "{bank} is full"
-msgstr ""
-
-#: ../drivers/vx5.py:134
-#, python-brace-format
-msgid "Memory {num} not in bank {bank}"
-msgstr ""
-
-#: ../wxui/settingsedit.py:54
+#: ../wxui/main.py:761
 #, fuzzy
-msgid "Getting settings"
-msgstr "正在获取 %s 信息"
+msgid "Close file"
+msgstr "全部文件"
 
-#: ../wxui/settingsedit.py:114
+#: ../wxui/memedit.py:473
+msgid "Comment"
+msgstr "备注"
+
+#: ../wxui/clone.py:206
+msgid "Communicate with radio"
+msgstr ""
+
+#: ../wxui/clone.py:117
 #, fuzzy
-msgid "Error applying settings"
-msgstr "设置值有误：%s"
-
-#: ../wxui/bankedit.py:62
-msgid "Index"
-msgstr "索引"
-
-#: ../wxui/bankedit.py:188
-msgid "Double-click to change bank name"
-msgstr ""
-
-#: ../wxui/bankedit.py:201
-#, python-format
-msgid "Enter a new name for bank %s:"
-msgstr ""
-
-#: ../wxui/bankedit.py:203
-msgid "Rename bank"
-msgstr ""
-
-#: ../wxui/bankedit.py:231
-msgid "Memory must be in a bank to be edited"
-msgstr ""
-
-#: ../wxui/radioinfo.py:43
-msgid "Features"
-msgstr ""
-
-#: ../wxui/radioinfo.py:48
-msgid "(none)"
-msgstr ""
-
-#: ../wxui/query_sources.py:56
-#, fuzzy, python-format
-msgid "Invalid %(value)s (use decimal degrees)"
-msgstr "无效值。必须为整数。"
-
-#: ../wxui/query_sources.py:58
-#, python-format
-msgid "%(value)s must be between %(min)i and %(max)i"
-msgstr ""
-
-#: ../wxui/query_sources.py:109
-msgid "Invalid ZIP code"
-msgstr ""
+msgid "Complete"
+msgstr "已完成"
 
 #: ../wxui/query_sources.py:279 ../wxui/query_sources.py:457
 msgid "Country"
 msgstr ""
 
-#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:345
-msgid "Amateur"
+#: ../wxui/memedit.py:465
+msgid "Cross mode"
+msgstr "收发使用不同亚音频"
+
+#: ../wxui/clone.py:310 ../wxui/clone.py:385
+msgid "Custom..."
 msgstr ""
-
-#: ../wxui/query_sources.py:282 ../wxui/query_sources.py:336
-#: ../wxui/query_sources.py:427
-msgid "GMRS"
-msgstr ""
-
-#: ../wxui/query_sources.py:284
-msgid "Service"
-msgstr ""
-
-#: ../wxui/query_sources.py:287
-msgid "State/Province"
-msgstr ""
-
-#: ../wxui/query_sources.py:292
-msgid "Optional: 45.0000"
-msgstr ""
-
-#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:299
-msgid "If set, sort results by distance from these coordinates"
-msgstr ""
-
-#: ../wxui/query_sources.py:298
-msgid "Optional: -122.0000"
-msgstr ""
-
-#: ../wxui/query_sources.py:301
-msgid "Latitude"
-msgstr ""
-
-#: ../wxui/query_sources.py:302
-msgid "Longitude"
-msgstr ""
-
-#: ../wxui/query_sources.py:307
-#, fuzzy
-msgid "Optional: 100"
-msgstr "选项"
-
-#: ../wxui/query_sources.py:308
-msgid "Limit results to this distance (km) from coordinates"
-msgstr ""
-
-#: ../wxui/query_sources.py:310
-msgid "Distance"
-msgstr ""
-
-#: ../wxui/query_sources.py:313
-msgid "Optional: County, Hospital, etc"
-msgstr ""
-
-#: ../wxui/query_sources.py:314
-msgid "Filter results with location matching this string"
-msgstr ""
-
-#: ../wxui/query_sources.py:316
-msgid "Filter"
-msgstr ""
-
-#: ../wxui/query_sources.py:320
-msgid "Only certain bands"
-msgstr ""
-
-#: ../wxui/query_sources.py:322
-msgid "Limit Bands"
-msgstr ""
-
-#: ../wxui/query_sources.py:325
-msgid "Only certain modes"
-msgstr ""
-
-#: ../wxui/query_sources.py:327
-msgid "Limit Modes"
-msgstr ""
-
-#: ../wxui/query_sources.py:353
-msgid "All"
-msgstr "全选"
-
-#: ../wxui/query_sources.py:375
-#, fuzzy
-msgid "Select Bands"
-msgstr "选择列"
-
-#: ../wxui/query_sources.py:375
-msgid "Bands"
-msgstr ""
-
-#: ../wxui/query_sources.py:396
-#, fuzzy
-msgid "Select Modes"
-msgstr "选择列"
-
-#: ../wxui/query_sources.py:396
-#, fuzzy
-msgid "Modes"
-msgstr "制式"
-
-#: ../wxui/query_sources.py:451
-msgid "City"
-msgstr ""
-
-#: ../wxui/query_sources.py:454
-msgid "State"
-msgstr ""
-
-#: ../wxui/query_sources.py:524
-msgid "United States"
-msgstr ""
-
-#: ../wxui/query_sources.py:525
-msgid "Canada"
-msgstr ""
-
-#: ../wxui/query_sources.py:665
-msgid "RadioReference Canada requires a login before you can query"
-msgstr ""
-
-#: ../wxui/memedit.py:113
-#, python-format
-msgid "Found empty list value for %(name)s: %(value)r"
-msgstr ""
-
-#: ../wxui/memedit.py:148 ../wxui/memedit.py:154
-#, fuzzy, python-format
-msgid "Invalid value: %r"
-msgstr "%s 值无效"
-
-#: ../wxui/memedit.py:177
-msgid "Offset"
-msgstr "频差"
-
-#: ../wxui/memedit.py:179
-msgid "Frequency"
-msgstr "频率"
-
-#: ../wxui/memedit.py:218
-#, fuzzy
-msgid "Enter Frequency"
-msgstr "频率"
-
-#: ../wxui/memedit.py:242
-msgid "Power"
-msgstr "功率"
-
-#: ../wxui/memedit.py:272
-#, fuzzy
-msgid "Tuning Step"
-msgstr "调谐间隔"
-
-#: ../wxui/memedit.py:304
-msgid "Choice Required"
-msgstr ""
-
-#: ../wxui/memedit.py:322
-msgid "Tone"
-msgstr "亚音频"
-
-#: ../wxui/memedit.py:324
-#, fuzzy
-msgid "Tone Squelch"
-msgstr "接收亚音频"
-
-#: ../wxui/memedit.py:356
-msgid "Duplex"
-msgstr "差频方向"
 
 #: ../wxui/memedit.py:396
 #, fuzzy
 msgid "DTCS"
 msgstr "DTCS 策略"
-
-#: ../wxui/memedit.py:398
-#, fuzzy
-msgid "RX DTCS"
-msgstr "DTCS 接收代码"
 
 #: ../wxui/memedit.py:442
 #, fuzzy
@@ -311,115 +207,37 @@ msgid ""
 "Polarity"
 msgstr "DTCS 策略"
 
-#: ../wxui/memedit.py:451
+#: ../wxui/memedit.py:1564
 #, fuzzy
-msgid "Mode"
-msgstr "制式"
+msgid "DV Memory"
+msgstr "该存储"
 
-#: ../wxui/memedit.py:465
-msgid "Cross mode"
-msgstr "收发使用不同亚音频"
-
-#: ../wxui/memedit.py:473
-msgid "Comment"
-msgstr "备注"
-
-#: ../wxui/memedit.py:580
-msgid "Tone Mode"
-msgstr "亚音频制式"
-
-#: ../wxui/memedit.py:850
-#, python-format
-msgid "Choose %s Tone"
+#: ../wxui/main.py:1337
+msgid "Danger Ahead"
 msgstr ""
 
-#: ../wxui/memedit.py:853
-#, fuzzy, python-format
-msgid "Choose %s DTCS Code"
-msgstr "DTCS 接收代码"
-
-#: ../wxui/memedit.py:874
-#, python-format
-msgid ""
-"Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
-msgstr ""
-
-#: ../wxui/memedit.py:876
+#: ../wxui/developer.py:215
 #, fuzzy
-msgid "Information"
-msgstr "{information}"
+msgid "Dec"
+msgstr "探测"
 
-#: ../wxui/memedit.py:884
-#, fuzzy
-msgid "Choose Cross Mode"
-msgstr "收发使用不同亚音频"
-
-#: ../wxui/memedit.py:893
-msgid "Enter TX Frequency (MHz)"
-msgstr ""
-
-#: ../wxui/memedit.py:901
-msgid "Enter Offset (MHz)"
-msgstr ""
-
-#: ../wxui/memedit.py:914
-msgid "Choose duplex"
-msgstr ""
-
-#: ../wxui/memedit.py:941
-msgid "Unable to edit memory before radio is loaded"
-msgstr ""
-
-#: ../wxui/memedit.py:1018 ../wxui/memedit.py:1642
-#, fuzzy, python-format
-msgid "Invalid edit: %s"
-msgstr "设置值无效：%s"
-
-#: ../wxui/memedit.py:1024
-#, python-format
-msgid "Warning: %s"
-msgstr ""
-
-#: ../wxui/memedit.py:1025
-msgid "Warning"
-msgstr ""
-
-#: ../wxui/memedit.py:1057
-#, python-format
-msgid "Memory %i is not deletable"
-msgstr ""
-
-#: ../wxui/memedit.py:1123
-msgid "Properties"
-msgstr "属性"
-
-#: ../wxui/memedit.py:1129
-#, fuzzy
-msgid "Insert Row Above"
-msgstr "上方插入一行"
+#: ../wxui/memedit.py:1148
+msgid "Delete"
+msgstr "删除"
 
 #: ../wxui/memedit.py:1138
 #, fuzzy, python-format
 msgid "Delete %i Memories"
 msgstr "对比原始存储"
 
-#: ../wxui/memedit.py:1141
-#, fuzzy, python-format
-msgid "Delete %i Memories and shift block up"
-msgstr "...并将区块上移"
-
 #: ../wxui/memedit.py:1145
 #, python-format
 msgid "Delete %i Memories and shift all up"
 msgstr ""
 
-#: ../wxui/memedit.py:1148
-msgid "Delete"
-msgstr "删除"
-
-#: ../wxui/memedit.py:1150
-#, fuzzy
-msgid "Delete and shift block up"
+#: ../wxui/memedit.py:1141
+#, fuzzy, python-format
+msgid "Delete %i Memories and shift block up"
 msgstr "...并将区块上移"
 
 #: ../wxui/memedit.py:1152
@@ -427,32 +245,463 @@ msgstr "...并将区块上移"
 msgid "Delete and shift all up"
 msgstr "...并将区块上移"
 
-#: ../wxui/memedit.py:1178
-msgid "Show Raw Memory"
-msgstr "显示原始存储"
+#: ../wxui/memedit.py:1150
+#, fuzzy
+msgid "Delete and shift block up"
+msgstr "...并将区块上移"
+
+#: ../wxui/main.py:692
+#, fuzzy
+msgid "Developer Mode"
+msgstr "开发者"
+
+#: ../wxui/main.py:1343
+#, python-format
+msgid "Developer state is now %s. CHIRP must be restarted to take effect"
+msgstr ""
 
 #: ../wxui/memedit.py:1186
 msgid "Diff Raw Memories"
 msgstr "对比原始存储"
+
+#: ../wxui/memedit.py:1489
+#, fuzzy
+msgid "Digital Code"
+msgstr "数字代码"
+
+#: ../wxui/main.py:1354
+msgid "Disable reporting"
+msgstr ""
+
+#: ../wxui/query_sources.py:310
+msgid "Distance"
+msgstr ""
+
+#: ../wxui/clone.py:156
+#, python-format
+msgid "Do not prompt again for %s"
+msgstr ""
+
+#: ../wxui/bankedit.py:188
+msgid "Double-click to change bank name"
+msgstr ""
+
+#: ../wxui/main.py:762
+msgid "Download"
+msgstr ""
+
+#: ../wxui/main.py:604 ../wxui/main.py:763
+#, fuzzy
+msgid "Download from radio"
+msgstr "从电台下载"
+
+#: ../wxui/clone.py:493
+#, fuzzy
+msgid "Download instructions"
+msgstr "显示指引"
+
+#: ../wxui/memedit.py:356
+msgid "Duplex"
+msgstr "差频方向"
+
+#: ../wxui/memedit.py:1519
+#, python-format
+msgid "Edit details for %i memories"
+msgstr ""
+
+#: ../wxui/memedit.py:1517
+#, python-format
+msgid "Edit details for memory %i"
+msgstr ""
+
+#: ../wxui/main.py:636
+msgid "Enable Automatic Edits"
+msgstr ""
+
+#: ../wxui/memedit.py:218
+#, fuzzy
+msgid "Enter Frequency"
+msgstr "频率"
+
+#: ../wxui/memedit.py:901
+msgid "Enter Offset (MHz)"
+msgstr ""
+
+#: ../wxui/memedit.py:893
+msgid "Enter TX Frequency (MHz)"
+msgstr ""
+
+#: ../wxui/bankedit.py:201
+#, python-format
+msgid "Enter a new name for bank %s:"
+msgstr ""
+
+#: ../wxui/clone.py:386
+msgid "Enter custom port:"
+msgstr ""
+
+#: ../wxui/common.py:227
+#, fuzzy, python-format
+msgid "Erased memory %s"
+msgstr "正在擦除存储 {loc}"
+
+#: ../wxui/settingsedit.py:114
+#, fuzzy
+msgid "Error applying settings"
+msgstr "设置值有误：%s"
+
+#: ../wxui/clone.py:430
+msgid "Error communicating with radio"
+msgstr ""
+
+#: ../wxui/clone.py:461
+#, fuzzy
+msgid "Experimental driver"
+msgstr "继续使用不稳定的驱动？"
+
+#: ../wxui/memedit.py:1452
+msgid "Export can only write CSV files"
+msgstr ""
+
+#: ../wxui/main.py:506 ../wxui/main.py:1060
+#, fuzzy
+msgid "Export to CSV"
+msgstr "导出到文件"
+
+#: ../wxui/memedit.py:1553
+msgid "Extra"
+msgstr ""
+
+#: ../wxui/developer.py:411
+msgid "Failed to load radio browser"
+msgstr ""
+
+#: ../wxui/radioinfo.py:43
+msgid "Features"
+msgstr ""
+
+#: ../wxui/main.py:388
+#, python-format
+msgid "File does not exist: %s"
+msgstr ""
+
+#: ../wxui/main.py:945 ../wxui/main.py:1017 ../wxui/main.py:1027
+#: ../wxui/main.py:1056 ../wxui/main.py:1289 ../wxui/main.py:1290
+#, fuzzy
+msgid "Files"
+msgstr "文件 (_F)"
+
+#: ../wxui/query_sources.py:316
+msgid "Filter"
+msgstr ""
+
+#: ../wxui/query_sources.py:314
+msgid "Filter results with location matching this string"
+msgstr ""
+
+#: ../wxui/main.py:1130
+#, fuzzy
+msgid "Find"
+msgstr "RFinder"
+
+#: ../wxui/main.py:564
+#, fuzzy
+msgid "Find Next"
+msgstr "RFinder"
+
+#: ../wxui/common.py:229
+#, python-format
+msgid "Finished radio job %s"
+msgstr ""
+
+#: ../wxui/memedit.py:113
+#, python-format
+msgid "Found empty list value for %(name)s: %(value)r"
+msgstr ""
+
+#: ../wxui/memedit.py:179
+msgid "Frequency"
+msgstr "频率"
+
+#: ../wxui/query_sources.py:282 ../wxui/query_sources.py:336
+#: ../wxui/query_sources.py:427
+msgid "GMRS"
+msgstr ""
+
+#: ../wxui/settingsedit.py:54
+#, fuzzy
+msgid "Getting settings"
+msgstr "正在获取 %s 信息"
+
+#: ../wxui/main.py:572
+msgid "Goto"
+msgstr ""
+
+#: ../wxui/main.py:1160
+#, fuzzy
+msgid "Goto Memory"
+msgstr "该存储"
+
+#: ../wxui/main.py:1159
+#, fuzzy
+msgid "Goto Memory:"
+msgstr "该存储"
+
+#: ../wxui/clone.py:310 ../wxui/clone.py:392
+#, fuzzy
+msgid "Help Me..."
+msgstr "在线帮助..."
+
+#: ../wxui/developer.py:214
+msgid "Hex"
+msgstr ""
+
+#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:299
+msgid "If set, sort results by distance from these coordinates"
+msgstr ""
+
+#: ../wxui/bankedit.py:62
+msgid "Index"
+msgstr "索引"
+
+#: ../wxui/main.py:151
+msgid "Info"
+msgstr ""
+
+#: ../wxui/memedit.py:876
+#, fuzzy
+msgid "Information"
+msgstr "{information}"
+
+#: ../wxui/memedit.py:1129
+#, fuzzy
+msgid "Insert Row Above"
+msgstr "上方插入一行"
+
+#: ../wxui/main.py:676
+msgid "Interact with driver"
+msgstr ""
+
+#: ../wxui/query_sources.py:56
+#, fuzzy, python-format
+msgid "Invalid %(value)s (use decimal degrees)"
+msgstr "无效值。必须为整数。"
+
+#: ../wxui/query_sources.py:109
+msgid "Invalid ZIP code"
+msgstr ""
+
+#: ../wxui/memedit.py:1018 ../wxui/memedit.py:1642
+#, fuzzy, python-format
+msgid "Invalid edit: %s"
+msgstr "设置值无效：%s"
+
+#: ../wxui/main.py:1286
+msgid "Invalid or unsupported module file"
+msgstr ""
+
+#: ../wxui/memedit.py:148 ../wxui/memedit.py:154
+#, fuzzy, python-format
+msgid "Invalid value: %r"
+msgstr "%s 值无效"
+
+#: ../wxui/developer.py:481
+msgid "Issue number:"
+msgstr ""
+
+#: ../wxui/main.py:272
+msgid "LIVE"
+msgstr ""
+
+#: ../wxui/query_sources.py:301
+msgid "Latitude"
+msgstr ""
+
+#: ../wxui/developer.py:195
+#, python-format
+msgid "Length must be %i"
+msgstr ""
+
+#: ../wxui/query_sources.py:322
+msgid "Limit Bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:327
+msgid "Limit Modes"
+msgstr ""
+
+#: ../wxui/query_sources.py:308
+msgid "Limit results to this distance (km) from coordinates"
+msgstr ""
+
+#: ../wxui/main.py:512
+msgid "Load Module"
+msgstr "加载模块"
+
+#: ../wxui/main.py:724 ../wxui/developer.py:482
+#, fuzzy
+msgid "Load module from issue"
+msgstr "加载模块"
+
+#: ../wxui/main.py:1293
+msgid ""
+"Loading modules can be extremely dangerous, leading to damage to your "
+"computer, radio, or both. NEVER load a module from a source you do not "
+"trust, and especially not from anywhere other than the main CHIRP website "
+"(chirp.danplanet.com). Loading a module from another source is akin to "
+"giving them direct access to your computer and everything on it! Proceed "
+"despite this risk?"
+msgstr ""
+
+#: ../wxui/clone.py:111
+msgid "Loading settings"
+msgstr ""
+
+#: ../wxui/query_sources.py:302
+msgid "Longitude"
+msgstr ""
+
+#: ../wxui/main.py:130
+msgid "Memories"
+msgstr "存储"
+
+#: ../wxui/memedit.py:1057
+#, python-format
+msgid "Memory %i is not deletable"
+msgstr ""
+
+#: ../wxui/bankedit.py:231
+msgid "Memory must be in a bank to be edited"
+msgstr ""
+
+#: ../drivers/vx5.py:134
+#, python-brace-format
+msgid "Memory {num} not in bank {bank}"
+msgstr ""
+
+#: ../wxui/memedit.py:451
+#, fuzzy
+msgid "Mode"
+msgstr "制式"
+
+#: ../wxui/clone.py:234
+msgid "Model"
+msgstr "型号"
+
+#: ../wxui/query_sources.py:396
+#, fuzzy
+msgid "Modes"
+msgstr "制式"
+
+#: ../wxui/main.py:1290
+#, fuzzy
+msgid "Module"
+msgstr "模块"
+
+#: ../wxui/main.py:1262
+#, fuzzy
+msgid "Module Loaded"
+msgstr "模块"
+
+#: ../wxui/main.py:1393
+msgid "Module loaded successfully"
+msgstr ""
+
+#: ../wxui/clone.py:357
+#, python-format
+msgid "More than one port found: %s"
+msgstr ""
+
+#: ../wxui/main.py:1463
+#, fuzzy
+msgid "New version available"
+msgstr "CHIRP 新版本可用：{ver}。"
 
 #: ../wxui/memedit.py:1222
 #, fuzzy
 msgid "No empty rows below!"
 msgstr "下方插入一行"
 
-#: ../wxui/memedit.py:1294
-msgid "Some memories are not deletable"
+#: ../wxui/developer.py:497
+msgid "No modules found"
 msgstr ""
 
-#: ../wxui/memedit.py:1320
+#: ../wxui/developer.py:496
 #, python-format
-msgid "Pasted memory will overwrite memory %i"
+msgid "No modules found in issue %i"
 msgstr ""
 
-#: ../wxui/memedit.py:1323
-#, python-format
-msgid "Pasted memories will overwrite memory %i"
+#: ../sources/repeaterbook.py:270
+msgid "No results!"
 msgstr ""
+
+#: ../wxui/main.py:1159
+msgid "Number"
+msgstr ""
+
+#: ../wxui/memedit.py:177
+msgid "Offset"
+msgstr "频差"
+
+#: ../wxui/query_sources.py:320
+msgid "Only certain bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:325
+msgid "Only certain modes"
+msgstr ""
+
+#: ../wxui/main.py:254
+msgid "Only memory tabs may be exported"
+msgstr ""
+
+#: ../wxui/main.py:756
+msgid "Open"
+msgstr ""
+
+#: ../wxui/main.py:493
+#, fuzzy
+msgid "Open Recent"
+msgstr "打开最近 (_R)"
+
+#: ../wxui/main.py:464
+msgid "Open Stock Config"
+msgstr "打开库存配置"
+
+#: ../wxui/main.py:757 ../wxui/main.py:956
+#, fuzzy
+msgid "Open a file"
+msgstr "打开最近的文件"
+
+#: ../wxui/main.py:1308
+msgid "Open a module"
+msgstr ""
+
+#: ../wxui/main.py:713
+msgid "Open debug log"
+msgstr ""
+
+#: ../wxui/query_sources.py:298
+msgid "Optional: -122.0000"
+msgstr ""
+
+#: ../wxui/query_sources.py:307
+#, fuzzy
+msgid "Optional: 100"
+msgstr "选项"
+
+#: ../wxui/query_sources.py:292
+msgid "Optional: 45.0000"
+msgstr ""
+
+#: ../wxui/query_sources.py:313
+msgid "Optional: County, Hospital, etc"
+msgstr ""
+
+#: ../wxui/memedit.py:1332
+#, fuzzy
+msgid "Overwrite memories?"
+msgstr "要覆盖吗？"
 
 #: ../wxui/memedit.py:1326
 #, python-format
@@ -464,50 +713,99 @@ msgstr ""
 msgid "Pasted memories will overwrite memories %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1332
-#, fuzzy
-msgid "Overwrite memories?"
-msgstr "要覆盖吗？"
-
-#: ../wxui/memedit.py:1377
-#, fuzzy
-msgid "Some memories are incompatible with this radio"
-msgstr "粘贴的存储 {number} 与此电台不兼容，原因："
-
-#: ../wxui/memedit.py:1452
-msgid "Export can only write CSV files"
-msgstr ""
-
-#: ../wxui/memedit.py:1489
-#, fuzzy
-msgid "Digital Code"
-msgstr "数字代码"
-
-#: ../wxui/memedit.py:1517
+#: ../wxui/memedit.py:1323
 #, python-format
-msgid "Edit details for memory %i"
+msgid "Pasted memories will overwrite memory %i"
 msgstr ""
 
-#: ../wxui/memedit.py:1519
+#: ../wxui/memedit.py:1320
 #, python-format
-msgid "Edit details for %i memories"
+msgid "Pasted memory will overwrite memory %i"
 msgstr ""
 
-#: ../wxui/memedit.py:1553
-msgid "Extra"
+#: ../wxui/main.py:1467
+msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr ""
 
-#: ../wxui/memedit.py:1564
-#, fuzzy
-msgid "DV Memory"
-msgstr "该存储"
-
-#: ../wxui/common.py:94
-msgid "Cloning"
-msgstr "正在复制"
+#: ../wxui/main.py:1331
+msgid ""
+"Please note that developer mode is intended for use by developers of the "
+"CHIRP project, or under the direction of a developer. It enables behaviors "
+"and functions that can damage your computer and your radio if not used with "
+"EXTREME care. You have been warned! Proceed anyway?"
+msgstr ""
 
 #: ../wxui/common.py:115
 msgid "Please wait"
+msgstr ""
+
+#: ../wxui/clone.py:335
+msgid "Plug in your cable and then click OK"
+msgstr ""
+
+#: ../wxui/clone.py:227
+msgid "Port"
+msgstr "端口"
+
+#: ../wxui/memedit.py:242
+msgid "Power"
+msgstr "功率"
+
+#: ../wxui/developer.py:133
+#, fuzzy
+msgid "Press enter to set this in memory"
+msgstr "设置存储时出错"
+
+#: ../wxui/main.py:523
+msgid "Print Preview"
+msgstr ""
+
+#: ../wxui/printing.py:29
+msgid "Printing"
+msgstr ""
+
+#: ../wxui/memedit.py:1123
+msgid "Properties"
+msgstr "属性"
+
+#: ../wxui/main.py:1421
+#, fuzzy, python-format
+msgid "Query %s"
+msgstr "查询失败"
+
+#: ../wxui/main.py:618
+#, fuzzy
+msgid "Query Source"
+msgstr "查询数据源"
+
+#: ../wxui/memedit.py:398
+#, fuzzy
+msgid "RX DTCS"
+msgstr "DTCS 接收代码"
+
+#: ../wxui/main.py:732
+msgid "Radio"
+msgstr "电台"
+
+#: ../drivers/ft60.py:88 ../drivers/ft450d.py:486 ../drivers/ft817.py:407
+#, python-format
+msgid "Radio did not ack block %i"
+msgstr ""
+
+#: ../wxui/clone.py:485 ../wxui/clone.py:549
+#, fuzzy
+msgid "Radio information"
+msgstr "{information}"
+
+#: ../drivers/ft817.py:364
+msgid ""
+"Radio sent data after the last awaited block, this happens when the selected "
+"model is a non-US but the radio is a US one. Please choose the correct model "
+"and try again."
+msgstr ""
+
+#: ../wxui/query_sources.py:665
+msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 
 #: ../wxui/common.py:219
@@ -515,13 +813,53 @@ msgstr ""
 msgid "Refreshed memory %s"
 msgstr "这些存储"
 
-#: ../wxui/common.py:221
+#: ../wxui/main.py:653
+msgid "Reload Driver"
+msgstr ""
+
+#: ../wxui/main.py:662
+msgid "Reload Driver and File"
+msgstr ""
+
+#: ../wxui/bankedit.py:203
+msgid "Rename bank"
+msgstr ""
+
+#: ../wxui/main.py:701
+#, fuzzy
+msgid "Reporting enabled"
+msgstr "报告已禁用"
+
+#: ../wxui/main.py:1350
+msgid ""
+"Reporting helps the CHIRP project know which radio models and OS platforms "
+"to spend our limited efforts on. We would really appreciate if you left it "
+"enabled. Really disable reporting?"
+msgstr ""
+
+#: ../wxui/main.py:1345
+msgid "Restart Required"
+msgstr ""
+
+#: ../wxui/main.py:474
 #, python-format
-msgid "Uploaded memory %s"
+msgid "Restore %i tabs"
 msgstr ""
 
 #: ../wxui/common.py:223
 msgid "Retrieved settings"
+msgstr ""
+
+#: ../wxui/main.py:758
+msgid "Save"
+msgstr ""
+
+#: ../wxui/main.py:1074
+msgid "Save before closing?"
+msgstr ""
+
+#: ../wxui/main.py:759 ../wxui/main.py:1031
+msgid "Save file"
 msgstr ""
 
 #: ../wxui/common.py:225
@@ -529,14 +867,162 @@ msgstr ""
 msgid "Saved settings"
 msgstr "设置"
 
-#: ../wxui/common.py:227
-#, fuzzy, python-format
-msgid "Erased memory %s"
-msgstr "正在擦除存储 {loc}"
+#: ../wxui/main.py:643
+#, fuzzy
+msgid "Select Bandplan"
+msgstr "全选"
 
-#: ../wxui/common.py:229
+#: ../wxui/query_sources.py:375
+#, fuzzy
+msgid "Select Bands"
+msgstr "选择列"
+
+#: ../wxui/query_sources.py:396
+#, fuzzy
+msgid "Select Modes"
+msgstr "选择列"
+
+#: ../wxui/main.py:1406
+msgid "Select a bandplan"
+msgstr ""
+
+#: ../wxui/query_sources.py:284
+msgid "Service"
+msgstr ""
+
+#: ../wxui/main.py:143
+msgid "Settings"
+msgstr "设置"
+
+#: ../wxui/memedit.py:1178
+msgid "Show Raw Memory"
+msgstr "显示原始存储"
+
+#: ../wxui/main.py:719
+msgid "Show debug log location"
+msgstr ""
+
+#: ../wxui/memedit.py:1377
+#, fuzzy
+msgid "Some memories are incompatible with this radio"
+msgstr "粘贴的存储 {number} 与此电台不兼容，原因："
+
+#: ../wxui/memedit.py:1294
+msgid "Some memories are not deletable"
+msgstr ""
+
+#: ../wxui/query_sources.py:454
+msgid "State"
+msgstr ""
+
+#: ../wxui/query_sources.py:287
+msgid "State/Province"
+msgstr ""
+
+#: ../wxui/main.py:1394
+msgid "Success"
+msgstr ""
+
+#: ../drivers/bj9900.py:112
+msgid ""
+"This is experimental support for BJ-9900 which is still under development.\n"
+"Please ensure you have a good backup with OEM software.\n"
+"Also please send in bug and enhancement requests!\n"
+"You have been warned. Proceed at your own risk!"
+msgstr ""
+
+#: ../wxui/developer.py:479
+msgid "This will load a module from a website issue"
+msgstr ""
+
+#: ../wxui/memedit.py:322
+msgid "Tone"
+msgstr "亚音频"
+
+#: ../wxui/memedit.py:580
+msgid "Tone Mode"
+msgstr "亚音频制式"
+
+#: ../wxui/memedit.py:324
+#, fuzzy
+msgid "Tone Squelch"
+msgstr "接收亚音频"
+
+#: ../wxui/memedit.py:272
+#, fuzzy
+msgid "Tuning Step"
+msgstr "调谐间隔"
+
+#: ../wxui/clone.py:329 ../wxui/clone.py:336 ../wxui/clone.py:347
+#: ../wxui/clone.py:354 ../wxui/clone.py:358
+msgid "USB Port Finder"
+msgstr ""
+
+#: ../wxui/clone.py:345
+msgid ""
+"Unable to determine port for your cable. Check your drivers and connections."
+msgstr ""
+
+#: ../wxui/memedit.py:941
+msgid "Unable to edit memory before radio is loaded"
+msgstr ""
+
+#: ../wxui/main.py:989
 #, python-format
-msgid "Finished radio job %s"
+msgid "Unable to find stock config %r"
+msgstr ""
+
+#: ../wxui/main.py:1106
+#, fuzzy
+msgid "Unable to open the clipboard"
+msgstr "无法打开此镜像：型号不支持"
+
+#: ../drivers/ft817.py:321
+msgid ""
+"Unable to read last block. This often happens when the selected model is US "
+"but the radio is a non-US one (or widebanded). Please choose the correct "
+"model and try again."
+msgstr ""
+
+#: ../wxui/main.py:1386
+#, fuzzy, python-format
+msgid "Unable to reveal %s on this system"
+msgstr "无法变更此型号电台"
+
+#: ../wxui/query_sources.py:524
+msgid "United States"
+msgstr ""
+
+#: ../wxui/clone.py:328
+msgid "Unplug your cable (if needed) and then click OK"
+msgstr ""
+
+#: ../wxui/clone.py:564
+#, fuzzy
+msgid "Upload instructions"
+msgstr "{instructions}"
+
+#: ../wxui/main.py:612 ../wxui/main.py:765
+#, fuzzy
+msgid "Upload to radio"
+msgstr "上传到电台"
+
+#: ../wxui/common.py:221
+#, python-format
+msgid "Uploaded memory %s"
+msgstr ""
+
+#: ../wxui/main.py:580
+msgid "Use fixed-width font"
+msgstr ""
+
+#: ../wxui/main.py:588
+msgid "Use larger font"
+msgstr ""
+
+#: ../wxui/developer.py:247
+#, python-format
+msgid "Value does not fit in %i bits"
 msgstr ""
 
 #: ../wxui/common.py:331
@@ -549,593 +1035,80 @@ msgstr ""
 msgid "Value must be at most %.4f"
 msgstr ""
 
-#: ../wxui/common.py:408 ../wxui/common.py:446
-msgid "An error has occurred"
-msgstr "发生错误"
-
-#: ../wxui/main.py:130
-msgid "Memories"
-msgstr "存储"
-
-#: ../wxui/main.py:138
-msgid "Banks"
-msgstr ""
-
-#: ../wxui/main.py:143
-msgid "Settings"
-msgstr "设置"
-
-#: ../wxui/main.py:149
-msgid "Browser"
-msgstr "浏览器"
-
-#: ../wxui/main.py:151
-msgid "Info"
-msgstr ""
-
-#: ../wxui/main.py:254
-msgid "Only memory tabs may be exported"
-msgstr ""
-
-#: ../wxui/main.py:272
-msgid "LIVE"
-msgstr ""
-
-#: ../wxui/main.py:352
-msgid "Welcome"
-msgstr ""
-
-#: ../wxui/main.py:388
+#: ../wxui/developer.py:290
 #, python-format
-msgid "File does not exist: %s"
-msgstr ""
-
-#: ../wxui/main.py:464
-msgid "Open Stock Config"
-msgstr "打开库存配置"
-
-#: ../wxui/main.py:474
-#, python-format
-msgid "Restore %i tabs"
-msgstr ""
-
-#: ../wxui/main.py:493
-#, fuzzy
-msgid "Open Recent"
-msgstr "打开最近 (_R)"
-
-#: ../wxui/main.py:506 ../wxui/main.py:1060
-#, fuzzy
-msgid "Export to CSV"
-msgstr "导出到文件"
-
-#: ../wxui/main.py:512
-msgid "Load Module"
-msgstr "加载模块"
-
-#: ../wxui/main.py:523
-msgid "Print Preview"
-msgstr ""
-
-#: ../wxui/main.py:564
-#, fuzzy
-msgid "Find Next"
-msgstr "RFinder"
-
-#: ../wxui/main.py:572
-msgid "Goto"
-msgstr ""
-
-#: ../wxui/main.py:580
-msgid "Use fixed-width font"
-msgstr ""
-
-#: ../wxui/main.py:588
-msgid "Use larger font"
-msgstr ""
-
-#: ../wxui/main.py:604 ../wxui/main.py:763
-#, fuzzy
-msgid "Download from radio"
-msgstr "从电台下载"
-
-#: ../wxui/main.py:612 ../wxui/main.py:765
-#, fuzzy
-msgid "Upload to radio"
-msgstr "上传到电台"
-
-#: ../wxui/main.py:618
-#, fuzzy
-msgid "Query Source"
-msgstr "查询数据源"
-
-#: ../wxui/main.py:636
-msgid "Enable Automatic Edits"
-msgstr ""
-
-#: ../wxui/main.py:643
-#, fuzzy
-msgid "Select Bandplan"
-msgstr "全选"
-
-#: ../wxui/main.py:653
-msgid "Reload Driver"
-msgstr ""
-
-#: ../wxui/main.py:662
-msgid "Reload Driver and File"
-msgstr ""
-
-#: ../wxui/main.py:676
-msgid "Interact with driver"
-msgstr ""
-
-#: ../wxui/main.py:687
-msgid "About"
-msgstr ""
-
-#: ../wxui/main.py:692
-#, fuzzy
-msgid "Developer Mode"
-msgstr "开发者"
-
-#: ../wxui/main.py:701
-#, fuzzy
-msgid "Reporting enabled"
-msgstr "报告已禁用"
-
-#: ../wxui/main.py:713
-msgid "Open debug log"
-msgstr ""
-
-#: ../wxui/main.py:719
-msgid "Show debug log location"
-msgstr ""
-
-#: ../wxui/main.py:724 ../wxui/developer.py:482
-#, fuzzy
-msgid "Load module from issue"
-msgstr "加载模块"
-
-#: ../wxui/main.py:731
-#, fuzzy
-msgid "View"
-msgstr "查看 (_V)"
-
-#: ../wxui/main.py:732
-msgid "Radio"
-msgstr "电台"
-
-#: ../wxui/main.py:756
-msgid "Open"
-msgstr ""
-
-#: ../wxui/main.py:757 ../wxui/main.py:956
-#, fuzzy
-msgid "Open a file"
-msgstr "打开最近的文件"
-
-#: ../wxui/main.py:758
-msgid "Save"
-msgstr ""
-
-#: ../wxui/main.py:759 ../wxui/main.py:1031
-msgid "Save file"
-msgstr ""
-
-#: ../wxui/main.py:760
-msgid "Close"
-msgstr ""
-
-#: ../wxui/main.py:761
-#, fuzzy
-msgid "Close file"
-msgstr "全部文件"
-
-#: ../wxui/main.py:762
-msgid "Download"
-msgstr ""
-
-#: ../wxui/main.py:941
-msgid "Chirp Image Files"
-msgstr ""
-
-#: ../wxui/main.py:942
-#, fuzzy
-msgid "All Files"
-msgstr "全部文件"
-
-#: ../wxui/main.py:945 ../wxui/main.py:1017 ../wxui/main.py:1027
-#: ../wxui/main.py:1056 ../wxui/main.py:1289 ../wxui/main.py:1290
-#, fuzzy
-msgid "Files"
-msgstr "文件 (_F)"
-
-#: ../wxui/main.py:953
-msgid "All supported formats|"
-msgstr ""
-
-#: ../wxui/main.py:989
-#, python-format
-msgid "Unable to find stock config %r"
-msgstr ""
-
-#: ../wxui/main.py:1072
-#, fuzzy, python-format
-msgid "%s has not been saved. Save before closing?"
-msgstr "文件已更改，关闭前要保存变更吗？"
-
-#: ../wxui/main.py:1074
-msgid "Save before closing?"
-msgstr ""
-
-#: ../wxui/main.py:1106
-#, fuzzy
-msgid "Unable to open the clipboard"
-msgstr "无法打开此镜像：型号不支持"
-
-#: ../wxui/main.py:1130
-#, fuzzy
-msgid "Find"
-msgstr "RFinder"
-
-#: ../wxui/main.py:1159
-#, fuzzy
-msgid "Goto Memory:"
-msgstr "该存储"
-
-#: ../wxui/main.py:1159
-msgid "Number"
-msgstr ""
-
-#: ../wxui/main.py:1160
-#, fuzzy
-msgid "Goto Memory"
-msgstr "该存储"
-
-#: ../wxui/main.py:1262
-#, fuzzy
-msgid "Module Loaded"
-msgstr "模块"
-
-#: ../wxui/main.py:1286
-msgid "Invalid or unsupported module file"
-msgstr ""
-
-#: ../wxui/main.py:1290
-#, fuzzy
-msgid "Module"
-msgstr "模块"
-
-#: ../wxui/main.py:1293
-msgid ""
-"Loading modules can be extremely dangerous, leading to damage to your "
-"computer, radio, or both. NEVER load a module from a source you do not "
-"trust, and especially not from anywhere other than the main CHIRP website "
-"(chirp.danplanet.com). Loading a module from another source is akin to "
-"giving them direct access to your computer and everything on it! Proceed "
-"despite this risk?"
-msgstr ""
-
-#: ../wxui/main.py:1308
-msgid "Open a module"
-msgstr ""
-
-#: ../wxui/main.py:1323
-msgid "About CHIRP"
-msgstr ""
-
-#: ../wxui/main.py:1328
-#, fuzzy
-msgid "enabled"
-msgstr "已启用"
-
-#: ../wxui/main.py:1328
-#, fuzzy
-msgid "disabled"
-msgstr "已启用"
-
-#: ../wxui/main.py:1331
-msgid ""
-"Please note that developer mode is intended for use by developers of the "
-"CHIRP project, or under the direction of a developer. It enables behaviors "
-"and functions that can damage your computer and your radio if not used with "
-"EXTREME care. You have been warned! Proceed anyway?"
-msgstr ""
-
-#: ../wxui/main.py:1337
-msgid "Danger Ahead"
-msgstr ""
-
-#: ../wxui/main.py:1343
-#, python-format
-msgid "Developer state is now %s. CHIRP must be restarted to take effect"
-msgstr ""
-
-#: ../wxui/main.py:1345
-msgid "Restart Required"
-msgstr ""
-
-#: ../wxui/main.py:1350
-msgid ""
-"Reporting helps the CHIRP project know which radio models and OS platforms "
-"to spend our limited efforts on. We would really appreciate if you left it "
-"enabled. Really disable reporting?"
-msgstr ""
-
-#: ../wxui/main.py:1354
-msgid "Disable reporting"
-msgstr ""
-
-#: ../wxui/main.py:1386
-#, fuzzy, python-format
-msgid "Unable to reveal %s on this system"
-msgstr "无法变更此型号电台"
-
-#: ../wxui/main.py:1393
-msgid "Module loaded successfully"
-msgstr ""
-
-#: ../wxui/main.py:1394
-msgid "Success"
-msgstr ""
-
-#: ../wxui/main.py:1406
-msgid "Select a bandplan"
-msgstr ""
-
-#: ../wxui/main.py:1407
-msgid "Bandplan"
-msgstr ""
-
-#: ../wxui/main.py:1421
-#, fuzzy, python-format
-msgid "Query %s"
-msgstr "查询失败"
-
-#: ../wxui/main.py:1461
-msgid ""
-"A new CHIRP version is available. Please visit the website as soon as "
-"possible to download it!"
-msgstr ""
-
-#: ../wxui/main.py:1463
-#, fuzzy
-msgid "New version available"
-msgstr "CHIRP 新版本可用：{ver}。"
-
-#: ../wxui/main.py:1467
-msgid "Please be sure to quit CHIRP before installing the new version!"
-msgstr ""
-
-#: ../wxui/developer.py:133
-#, fuzzy
-msgid "Press enter to set this in memory"
-msgstr "设置存储时出错"
-
-#: ../wxui/developer.py:160
-msgid "bytes each"
-msgstr ""
-
-#: ../wxui/developer.py:165
-msgid "bytes"
-msgstr ""
-
-#: ../wxui/developer.py:169
-msgid "bits"
-msgstr ""
-
-#: ../wxui/developer.py:195
-#, python-format
-msgid "Length must be %i"
-msgstr ""
-
-#: ../wxui/developer.py:214
-msgid "Hex"
-msgstr ""
-
-#: ../wxui/developer.py:215
-#, fuzzy
-msgid "Dec"
-msgstr "探测"
-
-#: ../wxui/developer.py:216
-msgid "Bin"
+msgid "Value must be exactly %i decimal digits"
 msgstr ""
 
 #: ../wxui/developer.py:245 ../wxui/developer.py:288
 msgid "Value must be zero or greater"
 msgstr ""
 
-#: ../wxui/developer.py:247
-#, python-format
-msgid "Value does not fit in %i bits"
-msgstr ""
-
-#: ../wxui/developer.py:290
-#, python-format
-msgid "Value must be exactly %i decimal digits"
-msgstr ""
-
-#: ../wxui/developer.py:403
-msgid "Building Radio Browser"
-msgstr ""
-
-#: ../wxui/developer.py:411
-msgid "Failed to load radio browser"
-msgstr ""
-
-#: ../wxui/developer.py:470
-#, fuzzy, python-format
-msgid "Choose the module to load from issue %i:"
-msgstr "选择一个来导入："
-
-#: ../wxui/developer.py:471
-msgid "Available modules"
-msgstr ""
-
-#: ../wxui/developer.py:479
-msgid "This will load a module from a website issue"
-msgstr ""
-
-#: ../wxui/developer.py:481
-msgid "Issue number:"
-msgstr ""
-
-#: ../wxui/developer.py:496
-#, python-format
-msgid "No modules found in issue %i"
-msgstr ""
-
-#: ../wxui/developer.py:497
-msgid "No modules found"
-msgstr ""
-
-#: ../wxui/clone.py:109
-msgid "Applying settings"
-msgstr ""
-
-#: ../wxui/clone.py:111
-msgid "Loading settings"
-msgstr ""
-
-#: ../wxui/clone.py:117
-#, fuzzy
-msgid "Complete"
-msgstr "已完成"
-
-#: ../wxui/clone.py:156
-#, python-format
-msgid "Do not prompt again for %s"
-msgstr ""
-
-#: ../wxui/clone.py:206
-msgid "Communicate with radio"
-msgstr ""
-
-#: ../wxui/clone.py:227
-msgid "Port"
-msgstr "端口"
-
 #: ../wxui/clone.py:230
 msgid "Vendor"
 msgstr "厂商"
 
-#: ../wxui/clone.py:234
-msgid "Model"
-msgstr "型号"
-
-#: ../wxui/clone.py:310 ../wxui/clone.py:385
-msgid "Custom..."
-msgstr ""
-
-#: ../wxui/clone.py:310 ../wxui/clone.py:392
+#: ../wxui/main.py:731
 #, fuzzy
-msgid "Help Me..."
-msgstr "在线帮助..."
+msgid "View"
+msgstr "查看 (_V)"
 
-#: ../wxui/clone.py:328
-msgid "Unplug your cable (if needed) and then click OK"
+#: ../wxui/memedit.py:1025
+msgid "Warning"
 msgstr ""
 
-#: ../wxui/clone.py:329 ../wxui/clone.py:336 ../wxui/clone.py:347
-#: ../wxui/clone.py:354 ../wxui/clone.py:358
-msgid "USB Port Finder"
+#: ../wxui/memedit.py:1024
+#, python-format
+msgid "Warning: %s"
 msgstr ""
 
-#: ../wxui/clone.py:335
-msgid "Plug in your cable and then click OK"
-msgstr ""
-
-#: ../wxui/clone.py:345
-msgid ""
-"Unable to determine port for your cable. Check your drivers and connections."
+#: ../wxui/main.py:352
+msgid "Welcome"
 msgstr ""
 
 #: ../wxui/clone.py:352
 msgid "Your cable appears to be on port:"
 msgstr ""
 
-#: ../wxui/clone.py:357
-#, python-format
-msgid "More than one port found: %s"
+#: ../wxui/developer.py:169
+msgid "bits"
 msgstr ""
 
-#: ../wxui/clone.py:386
-msgid "Enter custom port:"
+#: ../wxui/developer.py:165
+msgid "bytes"
 msgstr ""
 
-#: ../wxui/clone.py:430
-msgid "Error communicating with radio"
+#: ../wxui/developer.py:160
+msgid "bytes each"
 msgstr ""
 
-#: ../wxui/clone.py:461
+#: ../wxui/main.py:1328
 #, fuzzy
-msgid "Experimental driver"
-msgstr "继续使用不稳定的驱动？"
+msgid "disabled"
+msgstr "已启用"
 
-#: ../wxui/clone.py:485 ../wxui/clone.py:549
+#: ../wxui/main.py:1328
 #, fuzzy
-msgid "Radio information"
-msgstr "{information}"
+msgid "enabled"
+msgstr "已启用"
 
-#: ../wxui/clone.py:493
-#, fuzzy
-msgid "Download instructions"
-msgstr "显示指引"
-
-#: ../wxui/clone.py:564
-#, fuzzy
-msgid "Upload instructions"
-msgstr "{instructions}"
-
-#: ../wxui/printing.py:29
-msgid "Printing"
+#: ../drivers/vx5.py:117
+#, python-brace-format
+msgid "{bank} is full"
 msgstr ""
 
-#: ../sources/repeaterbook.py:270
-msgid "No results!"
-msgstr ""
-
-#~ msgid "Clone Progress"
-#~ msgstr "复制进度"
-
-#~ msgid "Cancel"
-#~ msgstr "取消"
-
-#, python-format
-#~ msgid "Memories (%(variant)s)"
-#~ msgstr "存储（%(variant)s）"
-
-#~ msgid "D-STAR"
-#~ msgstr "D-STAR"
+#~ msgid "...and shift all memories up"
+#~ msgstr "...并将所有存储上移"
 
 #, python-brace-format
-#~ msgid "The {vendor} {model} has multiple independent sub-devices"
-#~ msgstr "电台 {vendor} {model} 有多个独立的子设备"
+#~ msgid "Adding memory {number}"
+#~ msgstr "正在添加存储 {number}"
 
-#~ msgid "Cancelled"
-#~ msgstr "已取消"
+#~ msgid "Adjust New Location"
+#~ msgstr "调整新的位置"
 
-#~ msgid "Internal Error"
-#~ msgstr "内部错误"
-
-#, python-brace-format
-#~ msgid ""
-#~ "There were errors while opening {file}. The affected memories will not be "
-#~ "importable!"
-#~ msgstr "打开 {file} 时出错。受影响的存储将不可导入！"
-
-#, python-brace-format
-#~ msgid "There was an error during import: {error}"
-#~ msgstr "导入时出错：{error}"
-
-#~ msgid "Unsupported file type"
-#~ msgstr "不支持的文件类型"
-
-#, python-brace-format
-#~ msgid "There was an error during export: {error}"
-#~ msgstr "导出时出错：{error}"
+#~ msgid "Auto"
+#~ msgstr "自动"
 
 #~ msgid ""
 #~ "Band plans define default channel settings for frequencies in a region.  "
@@ -1144,44 +1117,183 @@ msgstr ""
 #~ "频段计划定义了一个区域内频率的默认频道设置。请选择一个频段计划，或选"
 #~ "择“无”以完全手动设置频道。"
 
-#~ msgid "idle"
-#~ msgstr "空闲"
-
-#~ msgid "Details"
-#~ msgstr "详情"
-
-#~ msgid "Proceed?"
-#~ msgstr "要继续吗？"
-
-#~ msgid "Do not show this next time"
-#~ msgstr "下次不再出现"
-
-#~ msgid "Untitled"
-#~ msgstr "无标题"
+#~ msgid "CHIRP Native File"
+#~ msgstr "CHIRP 原生文件"
 
 #~ msgid "CHIRP Radio Images"
 #~ msgstr "CHIRP 电台镜像"
 
+#~ msgid "CSV File"
+#~ msgstr "CSV 文件"
+
 #~ msgid "CSV Files"
 #~ msgstr "CSV 文件"
+
+#~ msgid "Callsign"
+#~ msgstr "呼号"
+
+#~ msgid "Cancel"
+#~ msgstr "取消"
+
+#~ msgid "Cancelled"
+#~ msgstr "已取消"
+
+#~ msgid "Cannot be imported because"
+#~ msgstr "无法导入："
+
+#~ msgid "Change Language"
+#~ msgstr "更改语言 (Change Language)"
+
+#~ msgid "Channel Defaults"
+#~ msgstr "频道默认值"
+
+#~ msgid ""
+#~ "Choose a language or Auto to use the operating system default. You will "
+#~ "need to restart the application before the change will take effect"
+#~ msgstr ""
+#~ "选择一种语言或自动使用操作系统的默认语言。你需要重新启动程序才能使改变生"
+#~ "效。"
+
+#~ msgid "Clear Recently Opened"
+#~ msgstr "清空最近项目"
+
+#~ msgid "Clone Progress"
+#~ msgstr "复制进度"
+
+#~ msgid "Columns"
+#~ msgstr "列"
+
+#~ msgid "Confirm overwrites"
+#~ msgstr "确认覆盖"
+
+#~ msgid "Copy"
+#~ msgstr "复制"
+
+#~ msgid "Cut"
+#~ msgstr "剪切"
+
+#, python-brace-format
+#~ msgid "Cutting memory {number}"
+#~ msgstr "正在剪切存储 {number}"
+
+#~ msgid "D-STAR"
+#~ msgstr "D-STAR"
 
 #~ msgid "DAT Files"
 #~ msgstr "DAT 文件"
 
+#~ msgid "DMR-MARC Repeater Database Dump"
+#~ msgstr "DMR-MARC Repeater 数据库转存"
+
+#~ msgid "DMR-MARC Repeaters"
+#~ msgstr "DMR-MARC 中继"
+
+#~ msgid "DTCS Code"
+#~ msgstr "DTCS 代码"
+
+#~ msgid "DTCS Rx Code"
+#~ msgstr "DTCS 接收代码"
+
+#~ msgid "Details"
+#~ msgstr "详情"
+
+#~ msgid "Diff Tabs"
+#~ msgstr "对比面板"
+
+#, python-brace-format
+#~ msgid "Diff of {a} and {b}"
+#~ msgstr "{a} 与 {b} 的对比"
+
+#~ msgid "Do not show this next time"
+#~ msgstr "下次不再出现"
+
+#~ msgid "Don't show information for any radio again"
+#~ msgstr "任何电台都不显示信息"
+
+#~ msgid "Don't show instructions for any radio again"
+#~ msgstr "任何电台都不显示指引"
+
+#~ msgid "Don't show this again"
+#~ msgstr "不再显示"
+
+#~ msgid "Downloading MYCALL list"
+#~ msgstr "正在下载 MYCALL 列表"
+
+#~ msgid "Downloading RPTCALL list"
+#~ msgstr "正在下载 RPTCALL 列表"
+
+#~ msgid "Downloading URCALL list"
+#~ msgstr "正在下载 URCALL 列表"
+
+#~ msgid "EVE"
+#~ msgstr "EVE"
+
 #~ msgid "EVE Files (VX5)"
 #~ msgstr "EVE 文件 (VX5)"
 
+#~ msgid "E_xchange"
+#~ msgstr "交换 (_X)"
+
+#~ msgid "Enable Developer Functions"
+#~ msgstr "启用开发者功能"
+
+#, python-brace-format
+#~ msgid "Erasing memory {number}"
+#~ msgstr "正在擦除存储 {number}"
+
+#~ msgid "Error importing memories:"
+#~ msgstr "导入存储时出错："
+
+#~ msgid "Error reporting is enabled"
+#~ msgstr "错误报告已启用"
+
+#~ msgid "Exchange memories"
+#~ msgstr "交换存储"
+
+#~ msgid "Export"
+#~ msgstr "导出"
+
+#~ msgid "File Exists"
+#~ msgstr "文件已存在"
+
+#~ msgid "From"
+#~ msgstr "从"
+
+#~ msgid "General"
+#~ msgstr "通用"
+
+#, python-brace-format
+#~ msgid "Getting memory {number}"
+#~ msgstr "正在获取存储 {number}"
+
+#, python-brace-format
+#~ msgid "Getting memory {num}"
+#~ msgstr "正在获取存储 {num}"
+
+#, python-brace-format
+#~ msgid "Getting original memory {number}"
+#~ msgstr "正在获取原始存储 {number}"
+
+#, python-brace-format
+#~ msgid "Getting raw memory {number}"
+#~ msgstr "正在获取存储 {number}"
+
+#, python-brace-format
+#~ msgid "Getting {type} for memory {num}"
+#~ msgstr "正在获取存储 {num} 的 {type}"
+
+#, python-brace-format
+#~ msgid "Getting {type} information for memory {num}"
+#~ msgstr "正在获取存储 {num} 的 {type} 信息"
+
+#~ msgid "Help"
+#~ msgstr "帮助"
+
+#~ msgid "Hide Unused Fields"
+#~ msgstr "隐藏未使用的字段"
+
 #~ msgid "ICF Files"
 #~ msgstr "ICF 文件"
-
-#~ msgid "VX5 Commander Files"
-#~ msgstr "VX5 Commander 文件"
-
-#~ msgid "VX6 Commander Files"
-#~ msgstr "VX6 Commander 文件"
-
-#~ msgid "VX7 Commander Files"
-#~ msgstr "VX7 Commander 文件"
 
 #~ msgid ""
 #~ "ICF files cannot be edited, only displayed or imported into another file. "
@@ -1189,82 +1301,51 @@ msgstr ""
 #~ msgstr "不能编辑 ICF 文件，只能展示或导入到其他文件中。以只读模式打开吗？"
 
 #~ msgid ""
-#~ "Unable to open this image. It was generated with a newer version of CHIRP "
-#~ "and thus may be for a radio model that is not supported by this version. "
-#~ "Please update to the latest version of CHIRP and try again."
-#~ msgstr ""
-#~ "无法打开此镜像。此镜像由较新版本的 CHIRP 生成，当前版本可能还不支持对应的"
-#~ "型号。请更新 CHIRP 后再试。"
+#~ "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+#~ msgstr "要禁用此功能，您可在 <u>帮助</u> 菜单中操作"
 
-#, python-brace-format
-#~ msgid "There was an error opening {fname}: {error}"
-#~ msgstr "打开 {fname} 时出错：{error}"
+#~ msgid "Import"
+#~ msgstr "导入"
 
-#, python-brace-format
-#~ msgid "{num} errors during open:"
-#~ msgstr "打开文件时出现 {num} 个错误："
+#~ msgid "Import From Data Source"
+#~ msgstr "从数据源导入"
 
-#~ msgid "Note:"
-#~ msgstr "注意："
+#~ msgid "Import From File"
+#~ msgstr "导入自文件"
 
-#, python-brace-format
-#~ msgid ""
-#~ "The {vendor} {model} operates in <b>live mode</b>. This means that any "
-#~ "changes you make are immediately sent to the radio. Because of this, you "
-#~ "cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish "
-#~ "to edit the contents offline, please <u>Export</u> to a CSV file, using "
-#~ "the <b>File menu</b>."
-#~ msgstr ""
-#~ "此电台 {vendor} {model} 工作在<b>实时模式</b>，也就是说变更会即时发送给电"
-#~ "台。因此，您不能进行<u>保存</u>或者<u>上传</u> 操作。如果您想离线编辑内"
-#~ "容，请使用<b>文件菜单</b>的<u>导出</u>到 CSV 功能。"
-
-#~ msgid "Don't show this again"
-#~ msgstr "不再显示"
-
-#, python-brace-format
-#~ msgid "{vendor} {model} image file"
-#~ msgstr "{vendor} {model} 镜像文件"
-
-#~ msgid "VX7 Commander"
-#~ msgstr "VX7 Commander"
-
-#~ msgid "VX6 Commander"
-#~ msgstr "VX6 Commander"
-
-#~ msgid "EVE"
-#~ msgstr "EVE"
-
-#~ msgid "VX5 Commander"
-#~ msgstr "VX5 Commander"
+#~ msgid "Import From Stock Config"
+#~ msgstr "从库存配置中导入"
 
 #, python-brace-format
 #~ msgid "Import stock configuration {name}"
 #~ msgstr "导入库存配置 {name}"
 
-#, python-brace-format
-#~ msgid "Open stock configuration {name}"
-#~ msgstr "打开库存配置 {name}"
+#~ msgid "Importing bank information"
+#~ msgstr "正在导入记忆库信息"
 
-#~ msgid "This radio's driver is experimental. Do you want to proceed?"
-#~ msgstr "此电台的驱动程序尚不稳定。要继续吗？"
+#~ msgid "Incompatible Memory"
+#~ msgstr "存储不兼容"
 
-#, python-brace-format
-#~ msgid "{name} Information"
-#~ msgstr "{name} 信息"
-
-#~ msgid "Don't show information for any radio again"
-#~ msgstr "任何电台都不显示信息"
+#~ msgid "Internal Error"
+#~ msgstr "内部错误"
 
 #, python-brace-format
-#~ msgid "{name} Instructions"
-#~ msgstr "{name} 指引"
+#~ msgid "Internal Error: Column {name} not found"
+#~ msgstr "内部错误：找不到名为 {name} 的列"
 
-#~ msgid "Don't show instructions for any radio again"
-#~ msgstr "任何电台都不显示指引"
+#, python-brace-format
+#~ msgid "Internal Error: Invalid limit {number}"
+#~ msgstr "内部错误：无效的限制数值 {number}"
 
-#~ msgid "Save Changes?"
-#~ msgstr "保存变更？"
+#, python-brace-format
+#~ msgid "Internal error: Unable to upload to {model}"
+#~ msgstr "内部错误：无法上传至 {model}"
+
+#~ msgid "Invalid value for this field"
+#~ msgstr "此字段的值无效"
+
+#~ msgid "Inverse"
+#~ msgstr "反选"
 
 #~ msgid "Kenwood HMK Files"
 #~ msgstr "建伍（Kenwood）HMK 文件"
@@ -1272,11 +1353,152 @@ msgstr ""
 #~ msgid "Kenwood ITM Files"
 #~ msgstr "建伍（Kenwood）ITM 文件"
 
-#~ msgid "Travel Plus Files"
-#~ msgstr "Travel Plus 文件"
+#~ msgid "Loc"
+#~ msgstr "位置"
 
-#~ msgid "DMR-MARC Repeater Database Dump"
-#~ msgstr "DMR-MARC Repeater 数据库转存"
+#~ msgid "Location memory will be imported into"
+#~ msgstr "位置存储将被导入到"
+
+#, fuzzy
+#~ msgid "Location of memory in the file being imported"
+#~ msgstr "正在导入的文件中的存储的位置"
+
+#, python-brace-format
+#~ msgid "Location {number} is already being imported"
+#~ msgstr "位置 {number} 已被导入"
+
+#, python-brace-format
+#~ msgid ""
+#~ "Location {number} is already being imported. Choose another value for "
+#~ "'New Location' before selection 'Import'"
+#~ msgstr ""
+#~ "位置 {number} 已被导入。请为“新位置”选择一个新的值，然后再选择“导入”。"
+
+#, python-brace-format
+#~ msgid "Looking for a free spot ({number})"
+#~ msgstr "寻找空间中（{number}）"
+
+#, python-format
+#~ msgid "Memories (%(variant)s)"
+#~ msgstr "存储（%(variant)s）"
+
+#~ msgid "Memories must be contiguous"
+#~ msgstr "存储必须是连续的"
+
+#~ msgid "Memory Range:"
+#~ msgstr "存储范围："
+
+#~ msgid "Memory validation failed:"
+#~ msgstr "存储验证失败："
+
+#, python-brace-format
+#~ msgid "Memory {number}"
+#~ msgstr "存储 {number}"
+
+#~ msgid "Move Dow_n"
+#~ msgstr "下移 (_N)"
+
+#~ msgid "Move _Up"
+#~ msgstr "上移 (_U)"
+
+#~ msgid "Move down"
+#~ msgstr "下移"
+
+#~ msgid "Move up"
+#~ msgstr "上移"
+
+#, python-brace-format
+#~ msgid "Moved {count} memories"
+#~ msgstr "已移动 {count} 条存储"
+
+#, python-brace-format
+#~ msgid "Moving memory from {old} to {new}"
+#~ msgstr "正在将存储从 {old} 移动到 {new}"
+
+#, python-brace-format
+#~ msgid "Moving {src} to {dst}"
+#~ msgstr "正在移动 {src} 到 {dst}"
+
+#~ msgid "My callsign"
+#~ msgstr "我的呼号"
+
+#~ msgid "Name"
+#~ msgstr "名称"
+
+#~ msgid "No space to insert a row"
+#~ msgstr "无剩余空间"
+
+#~ msgid "None"
+#~ msgstr "全不选"
+
+#~ msgid "Note:"
+#~ msgstr "注意："
+
+#, python-brace-format
+#~ msgid "Open stock configuration {name}"
+#~ msgstr "打开库存配置 {name}"
+
+#~ msgid "Other"
+#~ msgstr "其他"
+
+#, python-brace-format
+#~ msgid "Overwrite location {number}?"
+#~ msgstr "要覆盖位置 {number} 吗？"
+
+#~ msgid "P_roperties"
+#~ msgstr "属性 (_P)"
+
+#~ msgid "Paste"
+#~ msgstr "粘贴"
+
+#~ msgid "Preparing memory list..."
+#~ msgstr "正在准备存储清单..."
+
+#~ msgid "Proceed?"
+#~ msgstr "要继续吗？"
+
+#~ msgid "Python Modules"
+#~ msgstr "Python 模块"
+
+#~ msgid "RPT1CALL"
+#~ msgstr "RPT1CALL"
+
+#~ msgid "RPT2CALL"
+#~ msgstr "RPT2CALL"
+
+#~ msgid "RadioReference"
+#~ msgstr "RadioReference"
+
+#~ msgid "RadioReference.com Canada"
+#~ msgstr "RadioReference.com 加拿大"
+
+#~ msgid "RadioReference.com Province Query"
+#~ msgstr "RadioReference.com 省份查询"
+
+#~ msgid "RadioReference.com Query"
+#~ msgstr "RadioReference.com 查询"
+
+#~ msgid "RadioReference.com US"
+#~ msgstr "RadioReference.com 美国"
+
+#, python-brace-format
+#~ msgid "Raw memory {number}"
+#~ msgstr "原始存储 {number}"
+
+#~ msgid "Refresh"
+#~ msgstr "刷新"
+
+#~ msgid "Repeater callsign"
+#~ msgstr "中继台的呼号"
+
+#~ msgid "RepeaterBook"
+#~ msgstr "RepeaterBook"
+
+#~ msgid "RepeaterBook Political Query"
+#~ msgstr "RepeaterBook 政策查询"
+
+#~ msgid "RepeaterBook Proximity Query"
+#~ msgstr "RepeaterBook 近距离查询"
 
 #~ msgid "RepeaterBook Query"
 #~ msgstr "RepeaterBook 查询"
@@ -1284,18 +1506,59 @@ msgstr ""
 #~ msgid "RepeaterBook query failed"
 #~ msgstr "RepeaterBook 查询失败"
 
-#~ msgid "RadioReference.com Query"
-#~ msgstr "RadioReference.com 查询"
+#~ msgid "Report Statistics"
+#~ msgstr "上报统计信息"
 
-#~ msgid "RadioReference.com Province Query"
-#~ msgstr "RadioReference.com 省份查询"
+#, python-format
+#~ msgid "Retrieving %s information"
+#~ msgstr "正在获取 %s 信息"
 
-#~ msgid "With significant contributions from:"
-#~ msgstr "鸣谢："
+#, fuzzy
+#~ msgid "Reverse"
+#~ msgstr "倒频"
+
+#~ msgid "Save Changes?"
+#~ msgstr "保存变更？"
+
+#~ msgid "Select"
+#~ msgstr "选择"
+
+#~ msgid "Select _All"
+#~ msgstr "全选 (_A)"
 
 #, python-brace-format
-#~ msgid "Visible columns for {radio}"
-#~ msgstr "{radio} 的可见列"
+#~ msgid "Setting index for memory {num}"
+#~ msgstr "正在设置存储 {num} 的索引"
+
+#, python-brace-format
+#~ msgid "Setting memory {number}"
+#~ msgstr "正在设置存储 {number}"
+
+#, python-format
+#~ msgid "Setting name on %s"
+#~ msgstr "关于 %s 的设置名称"
+
+#~ msgid "Shift"
+#~ msgstr "移动"
+
+#~ msgid "Show Empty"
+#~ msgstr "显示空项"
+
+#~ msgid "Show Information"
+#~ msgstr "显示信息"
+
+#~ msgid "Skip"
+#~ msgstr "跳过"
+
+#~ msgid "Smart Tone Modes"
+#~ msgstr "自动选择亚音频制式"
+
+#~ msgid "Special Channels"
+#~ msgstr "特殊频道"
+
+#, python-brace-format
+#~ msgid "The file {name} already exists. Do you want to overwrite it?"
+#~ msgstr "文件 {name} 已存在。要覆盖吗？"
 
 #~ msgid ""
 #~ "The reporting feature of CHIRP is designed to help <u>improve quality</u> "
@@ -1314,264 +1577,39 @@ msgstr ""
 #~ "\n"
 #~ "<b>确定要禁用此功能吗？</b>"
 
+#, python-brace-format
+#~ msgid "The {vendor} {model} has multiple independent sub-devices"
+#~ msgstr "电台 {vendor} {model} 有多个独立的子设备"
+
+#, python-brace-format
 #~ msgid ""
-#~ "Choose a language or Auto to use the operating system default. You will "
-#~ "need to restart the application before the change will take effect"
+#~ "The {vendor} {model} operates in <b>live mode</b>. This means that any "
+#~ "changes you make are immediately sent to the radio. Because of this, you "
+#~ "cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish "
+#~ "to edit the contents offline, please <u>Export</u> to a CSV file, using "
+#~ "the <b>File menu</b>."
 #~ msgstr ""
-#~ "选择一种语言或自动使用操作系统的默认语言。你需要重新启动程序才能使改变生"
-#~ "效。"
-
-#~ msgid "Python Modules"
-#~ msgstr "Python 模块"
-
-#~ msgid "Clear Recently Opened"
-#~ msgstr "清空最近项目"
-
-#~ msgid "_Edit"
-#~ msgstr "编辑 (_E)"
-
-#~ msgid "_Cut"
-#~ msgstr "剪切 (_C)"
-
-#~ msgid "_Copy"
-#~ msgstr "复制 (_C)"
-
-#~ msgid "_Paste"
-#~ msgstr "粘贴 (_P)"
-
-#~ msgid "_Delete"
-#~ msgstr "删除 (_D)"
-
-#~ msgid "Select _All"
-#~ msgstr "全选 (_A)"
-
-#~ msgid "Move _Up"
-#~ msgstr "上移 (_U)"
-
-#~ msgid "Move Dow_n"
-#~ msgstr "下移 (_N)"
-
-#~ msgid "E_xchange"
-#~ msgstr "交换 (_X)"
-
-#~ msgid "P_roperties"
-#~ msgstr "属性 (_P)"
-
-#~ msgid "Columns"
-#~ msgstr "列"
-
-#~ msgid "Diff Tabs"
-#~ msgstr "对比面板"
-
-#~ msgid "Change Language"
-#~ msgstr "更改语言 (Change Language)"
-
-#~ msgid "_Radio"
-#~ msgstr "电台 (_R)"
-
-#~ msgid "Import"
-#~ msgstr "导入"
-
-#~ msgid "Export"
-#~ msgstr "导出"
-
-#~ msgid "Import From Data Source"
-#~ msgstr "从数据源导入"
-
-#~ msgid "DMR-MARC Repeaters"
-#~ msgstr "DMR-MARC 中继"
-
-#~ msgid "RadioReference"
-#~ msgstr "RadioReference"
-
-#~ msgid "RadioReference.com US"
-#~ msgstr "RadioReference.com 美国"
-
-#~ msgid "RadioReference.com Canada"
-#~ msgstr "RadioReference.com 加拿大"
-
-#~ msgid "RepeaterBook"
-#~ msgstr "RepeaterBook"
-
-#~ msgid "RepeaterBook Political Query"
-#~ msgstr "RepeaterBook 政策查询"
-
-#~ msgid "RepeaterBook Proximity Query"
-#~ msgstr "RepeaterBook 近距离查询"
-
-#~ msgid "przemienniki.net"
-#~ msgstr "przemienniki.net"
-
-#~ msgid "CHIRP Native File"
-#~ msgstr "CHIRP 原生文件"
-
-#~ msgid "CSV File"
-#~ msgstr "CSV 文件"
-
-#~ msgid "Import From Stock Config"
-#~ msgstr "从库存配置中导入"
-
-#~ msgid "Channel Defaults"
-#~ msgstr "频道默认值"
-
-#~ msgid "Help"
-#~ msgstr "帮助"
-
-#~ msgid "Report Statistics"
-#~ msgstr "上报统计信息"
-
-#~ msgid "Hide Unused Fields"
-#~ msgstr "隐藏未使用的字段"
-
-#~ msgid "Smart Tone Modes"
-#~ msgstr "自动选择亚音频制式"
-
-#~ msgid "Show Information"
-#~ msgstr "显示信息"
-
-#~ msgid "Enable Developer Functions"
-#~ msgstr "启用开发者功能"
-
-#~ msgid "Error reporting is enabled"
-#~ msgstr "错误报告已启用"
-
-#~ msgid ""
-#~ "If you wish to disable this feature you may do so in the <u>Help</u> menu"
-#~ msgstr "要禁用此功能，您可在 <u>帮助</u> 菜单中操作"
-
-#, python-format
-#~ msgid "Retrieving %s information"
-#~ msgstr "正在获取 %s 信息"
-
-#, python-format
-#~ msgid "Setting name on %s"
-#~ msgstr "关于 %s 的设置名称"
-
-#~ msgid "Name"
-#~ msgstr "名称"
+#~ "此电台 {vendor} {model} 工作在<b>实时模式</b>，也就是说变更会即时发送给电"
+#~ "台。因此，您不能进行<u>保存</u>或者<u>上传</u> 操作。如果您想离线编辑内"
+#~ "容，请使用<b>文件菜单</b>的<u>导出</u>到 CSV 功能。"
 
 #, python-brace-format
-#~ msgid "Updating {type} index for memory {num}"
-#~ msgstr "正在更新存储 {num} 的 {type} 索引"
+#~ msgid "There was an error during export: {error}"
+#~ msgstr "导出时出错：{error}"
 
 #, python-brace-format
-#~ msgid "Updating mapping information for memory {num}"
-#~ msgstr "正在更新存储 {num} 的映射信息"
+#~ msgid "There was an error during import: {error}"
+#~ msgstr "导入时出错：{error}"
 
 #, python-brace-format
-#~ msgid "Getting memory {num}"
-#~ msgstr "正在获取存储 {num}"
-
-#, python-brace-format
-#~ msgid "Setting index for memory {num}"
-#~ msgstr "正在设置存储 {num} 的索引"
-
-#, python-brace-format
-#~ msgid "Getting {type} for memory {num}"
-#~ msgstr "正在获取存储 {num} 的 {type}"
-
-#~ msgid "Loc"
-#~ msgstr "位置"
-
-#, python-brace-format
-#~ msgid "Getting {type} information for memory {num}"
-#~ msgstr "正在获取存储 {num} 的 {type} 信息"
+#~ msgid "There was an error opening {fname}: {error}"
+#~ msgstr "打开 {fname} 时出错：{error}"
 
 #, python-brace-format
 #~ msgid ""
-#~ "Location {number} is already being imported. Choose another value for "
-#~ "'New Location' before selection 'Import'"
-#~ msgstr ""
-#~ "位置 {number} 已被导入。请为“新位置”选择一个新的值，然后再选择“导入”。"
-
-#, python-brace-format
-#~ msgid "Location {number} is already being imported"
-#~ msgstr "位置 {number} 已被导入"
-
-#~ msgid "Updating URCALL list"
-#~ msgstr "正在更新 URCALL 列表"
-
-#~ msgid "Updating RPTCALL list"
-#~ msgstr "正在更新 RPTCALL 列表"
-
-#, python-brace-format
-#~ msgid "Setting memory {number}"
-#~ msgstr "正在设置存储 {number}"
-
-#~ msgid "Importing bank information"
-#~ msgstr "正在导入记忆库信息"
-
-#~ msgid "Error importing memories:"
-#~ msgstr "导入存储时出错："
-
-#~ msgid "None"
-#~ msgstr "全不选"
-
-#~ msgid "Inverse"
-#~ msgstr "反选"
-
-#~ msgid "Select"
-#~ msgstr "选择"
-
-#~ msgid "Auto"
-#~ msgstr "自动"
-
-#, fuzzy
-#~ msgid "Reverse"
-#~ msgstr "倒频"
-
-#~ msgid "Adjust New Location"
-#~ msgstr "调整新的位置"
-
-#~ msgid "Confirm overwrites"
-#~ msgstr "确认覆盖"
-
-#~ msgid "Cannot be imported because"
-#~ msgstr "无法导入："
-
-#~ msgid "Import From File"
-#~ msgstr "导入自文件"
-
-#~ msgid "To"
-#~ msgstr "到"
-
-#~ msgid "From"
-#~ msgstr "从"
-
-#~ msgid "Location memory will be imported into"
-#~ msgstr "位置存储将被导入到"
-
-#, fuzzy
-#~ msgid "Location of memory in the file being imported"
-#~ msgstr "正在导入的文件中的存储的位置"
-
-#~ msgid "Preparing memory list..."
-#~ msgstr "正在准备存储清单..."
-
-#~ msgid "General"
-#~ msgstr "通用"
-
-#~ msgid "Other"
-#~ msgstr "其他"
-
-#~ msgid "DTCS Code"
-#~ msgstr "DTCS 代码"
-
-#~ msgid "Skip"
-#~ msgstr "跳过"
-
-#~ msgid "Memory validation failed:"
-#~ msgstr "存储验证失败："
-
-#~ msgid "Invalid value for this field"
-#~ msgstr "此字段的值无效"
-
-#~ msgid "DTCS Rx Code"
-#~ msgstr "DTCS 接收代码"
-
-#, python-brace-format
-#~ msgid "Writing memory {number}"
-#~ msgstr "正在写入存储 {number}"
+#~ "There were errors while opening {file}. The affected memories will not be "
+#~ "importable!"
+#~ msgstr "打开 {file} 时出错。受影响的存储将不可导入！"
 
 #~ msgid ""
 #~ "This operation requires moving all subsequent channels by one spot until "
@@ -1581,92 +1619,29 @@ msgstr ""
 #~ "此操作需要移动所有相邻的频道直至出现空位。可能需要非常非常长的时间。确认要"
 #~ "这样做吗？"
 
-#, python-brace-format
-#~ msgid "Adding memory {number}"
-#~ msgstr "正在添加存储 {number}"
+#~ msgid "This radio's driver is experimental. Do you want to proceed?"
+#~ msgstr "此电台的驱动程序尚不稳定。要继续吗？"
+
+#~ msgid "To"
+#~ msgstr "到"
+
+#~ msgid "Travel Plus Files"
+#~ msgstr "Travel Plus 文件"
+
+#~ msgid "URCALL"
+#~ msgstr "URCALL"
 
 #, python-brace-format
-#~ msgid "Erasing memory {number}"
-#~ msgstr "正在擦除存储 {number}"
+#~ msgid "Unable to detect radio on {port}"
+#~ msgstr "无法在 {port} 上检测到电台"
 
-#, python-brace-format
-#~ msgid "Getting memory {number}"
-#~ msgstr "正在获取存储 {number}"
-
-#, python-brace-format
-#~ msgid "Moving memory from {old} to {new}"
-#~ msgstr "正在将存储从 {old} 移动到 {new}"
-
-#, python-brace-format
-#~ msgid "Raw memory {number}"
-#~ msgstr "原始存储 {number}"
-
-#, python-brace-format
-#~ msgid "Getting raw memory {number}"
-#~ msgstr "正在获取存储 {number}"
-
-#~ msgid "You can only diff two memories!"
-#~ msgstr "您只能将两个存储进行对比！"
-
-#, python-brace-format
-#~ msgid "Memory {number}"
-#~ msgstr "存储 {number}"
-
-#, python-brace-format
-#~ msgid "Diff of {a} and {b}"
-#~ msgstr "{a} 与 {b} 的对比"
-
-#, python-brace-format
-#~ msgid "Getting original memory {number}"
-#~ msgstr "正在获取原始存储 {number}"
-
-#~ msgid "Memories must be contiguous"
-#~ msgstr "存储必须是连续的"
-
-#~ msgid "Cut"
-#~ msgstr "剪切"
-
-#~ msgid "Copy"
-#~ msgstr "复制"
-
-#~ msgid "Paste"
-#~ msgstr "粘贴"
-
-#~ msgid "...and shift all memories up"
-#~ msgstr "...并将所有存储上移"
-
-#~ msgid "Move up"
-#~ msgstr "上移"
-
-#~ msgid "Move down"
-#~ msgstr "下移"
-
-#~ msgid "Exchange memories"
-#~ msgstr "交换存储"
-
-#, python-brace-format
-#~ msgid "Internal Error: Column {name} not found"
-#~ msgstr "内部错误：找不到名为 {name} 的列"
-
-#, python-brace-format
-#~ msgid "Internal Error: Invalid limit {number}"
-#~ msgstr "内部错误：无效的限制数值 {number}"
-
-#~ msgid "Memory Range:"
-#~ msgstr "存储范围："
-
-#~ msgid "Refresh"
-#~ msgstr "刷新"
-
-#~ msgid "Special Channels"
-#~ msgstr "特殊频道"
-
-#~ msgid "Show Empty"
-#~ msgstr "显示空项"
-
-#, python-brace-format
-#~ msgid "Cutting memory {number}"
-#~ msgstr "正在剪切存储 {number}"
+#~ msgid ""
+#~ "Unable to open this image. It was generated with a newer version of CHIRP "
+#~ "and thus may be for a radio model that is not supported by this version. "
+#~ "Please update to the latest version of CHIRP and try again."
+#~ msgstr ""
+#~ "无法打开此镜像。此镜像由较新版本的 CHIRP 生成，当前版本可能还不支持对应的"
+#~ "型号。请更新 CHIRP 后再试。"
 
 #, python-brace-format
 #~ msgid ""
@@ -1674,79 +1649,104 @@ msgstr ""
 #~ "bounds or show empty memories."
 #~ msgstr "无法将 {src} 个存储粘贴到 {dst} 行中。请增加存储上线或显示空存储。"
 
+#~ msgid "Unsupported file type"
+#~ msgstr "不支持的文件类型"
+
+#~ msgid "Untitled"
+#~ msgstr "无标题"
+
+#~ msgid "Updating RPTCALL list"
+#~ msgstr "正在更新 RPTCALL 列表"
+
+#~ msgid "Updating URCALL list"
+#~ msgstr "正在更新 URCALL 列表"
+
+#, python-brace-format
+#~ msgid "Updating mapping information for memory {num}"
+#~ msgstr "正在更新存储 {num} 的映射信息"
+
+#, python-brace-format
+#~ msgid "Updating {type} index for memory {num}"
+#~ msgstr "正在更新存储 {num} 的 {type} 索引"
+
+#~ msgid "VX5 Commander"
+#~ msgstr "VX5 Commander"
+
+#~ msgid "VX5 Commander Files"
+#~ msgstr "VX5 Commander 文件"
+
+#~ msgid "VX6 Commander"
+#~ msgstr "VX6 Commander"
+
+#~ msgid "VX6 Commander Files"
+#~ msgstr "VX6 Commander 文件"
+
+#~ msgid "VX7 Commander"
+#~ msgstr "VX7 Commander"
+
+#~ msgid "VX7 Commander Files"
+#~ msgstr "VX7 Commander 文件"
+
+#, python-brace-format
+#~ msgid "Visible columns for {radio}"
+#~ msgstr "{radio} 的可见列"
+
+#~ msgid "With significant contributions from:"
+#~ msgstr "鸣谢："
+
+#, python-brace-format
+#~ msgid "Writing memory {number}"
+#~ msgstr "正在写入存储 {number}"
+
 #~ msgid "Yes to All"
 #~ msgstr "全是"
 
-#, python-brace-format
-#~ msgid "Overwrite location {number}?"
-#~ msgstr "要覆盖位置 {number} 吗？"
-
-#~ msgid "Incompatible Memory"
-#~ msgstr "存储不兼容"
-
-#~ msgid "URCALL"
-#~ msgstr "URCALL"
-
-#~ msgid "RPT1CALL"
-#~ msgstr "RPT1CALL"
-
-#~ msgid "RPT2CALL"
-#~ msgstr "RPT2CALL"
-
-#~ msgid "Downloading URCALL list"
-#~ msgstr "正在下载 URCALL 列表"
-
-#~ msgid "Downloading RPTCALL list"
-#~ msgstr "正在下载 RPTCALL 列表"
-
-#, python-brace-format
-#~ msgid "{vendor} {model} on {port}"
-#~ msgstr "{port} 上的 {vendor} {model}"
-
-#, python-brace-format
-#~ msgid "Unable to detect radio on {port}"
-#~ msgstr "无法在 {port} 上检测到电台"
-
-#, python-brace-format
-#~ msgid "Internal error: Unable to upload to {model}"
-#~ msgstr "内部错误：无法上传至 {model}"
-
-#~ msgid "Callsign"
-#~ msgstr "呼号"
+#~ msgid "You can only diff two memories!"
+#~ msgstr "您只能将两个存储进行对比！"
 
 #~ msgid "Your callsign"
 #~ msgstr "您的呼号"
 
-#~ msgid "Repeater callsign"
-#~ msgstr "中继台的呼号"
+#~ msgid "_Copy"
+#~ msgstr "复制 (_C)"
 
-#~ msgid "My callsign"
-#~ msgstr "我的呼号"
+#~ msgid "_Cut"
+#~ msgstr "剪切 (_C)"
 
-#~ msgid "Downloading MYCALL list"
-#~ msgstr "正在下载 MYCALL 列表"
+#~ msgid "_Delete"
+#~ msgstr "删除 (_D)"
 
-#~ msgid "File Exists"
-#~ msgstr "文件已存在"
+#~ msgid "_Edit"
+#~ msgstr "编辑 (_E)"
 
-#, python-brace-format
-#~ msgid "The file {name} already exists. Do you want to overwrite it?"
-#~ msgstr "文件 {name} 已存在。要覆盖吗？"
+#~ msgid "_Paste"
+#~ msgstr "粘贴 (_P)"
 
-#~ msgid "Shift"
-#~ msgstr "移动"
+#~ msgid "_Radio"
+#~ msgstr "电台 (_R)"
 
-#, python-brace-format
-#~ msgid "Moving {src} to {dst}"
-#~ msgstr "正在移动 {src} 到 {dst}"
+#~ msgid "idle"
+#~ msgstr "空闲"
 
-#, python-brace-format
-#~ msgid "Looking for a free spot ({number})"
-#~ msgstr "寻找空间中（{number}）"
-
-#~ msgid "No space to insert a row"
-#~ msgstr "无剩余空间"
+#~ msgid "przemienniki.net"
+#~ msgstr "przemienniki.net"
 
 #, python-brace-format
-#~ msgid "Moved {count} memories"
-#~ msgstr "已移动 {count} 条存储"
+#~ msgid "{name} Information"
+#~ msgstr "{name} 信息"
+
+#, python-brace-format
+#~ msgid "{name} Instructions"
+#~ msgstr "{name} 指引"
+
+#, python-brace-format
+#~ msgid "{num} errors during open:"
+#~ msgstr "打开文件时出现 {num} 个错误："
+
+#, python-brace-format
+#~ msgid "{vendor} {model} image file"
+#~ msgstr "{vendor} {model} 镜像文件"
+
+#, python-brace-format
+#~ msgid "{vendor} {model} on {port}"
+#~ msgstr "{port} 上的 {vendor} {model}"

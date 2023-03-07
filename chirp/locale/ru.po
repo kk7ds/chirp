@@ -2,25 +2,147 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-06 15:46-0800\n"
+"POT-Creation-Date: 2023-03-06 17:24-0800\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
 
-#: ../drivers/ft60.py:88 ../drivers/ft450d.py:486 ../drivers/ft817.py:407
+#: ../wxui/query_sources.py:58
 #, python-format
-msgid "Radio did not ack block %i"
+msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr ""
 
-#: ../drivers/bj9900.py:112
-msgid ""
-"This is experimental support for BJ-9900 which is still under development.\n"
-"Please ensure you have a good backup with OEM software.\n"
-"Also please send in bug and enhancement requests!\n"
-"You have been warned. Proceed at your own risk!"
+#: ../wxui/main.py:1072
+#, fuzzy, python-format
+msgid "%s has not been saved. Save before closing?"
+msgstr "Файл изменён, сохранить изменения?"
+
+#: ../wxui/radioinfo.py:48
+msgid "(none)"
 msgstr ""
+
+#: ../wxui/main.py:1461
+msgid ""
+"A new CHIRP version is available. Please visit the website as soon as "
+"possible to download it!"
+msgstr ""
+
+#: ../wxui/main.py:687
+msgid "About"
+msgstr ""
+
+#: ../wxui/main.py:1323
+msgid "About CHIRP"
+msgstr ""
+
+#: ../wxui/query_sources.py:353
+msgid "All"
+msgstr "Все"
+
+#: ../wxui/main.py:942
+#, fuzzy
+msgid "All Files"
+msgstr "CSV"
+
+#: ../wxui/main.py:953
+msgid "All supported formats|"
+msgstr ""
+
+#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:345
+msgid "Amateur"
+msgstr ""
+
+#: ../wxui/common.py:408 ../wxui/common.py:446
+msgid "An error has occurred"
+msgstr "Ошибка"
+
+#: ../wxui/clone.py:109
+msgid "Applying settings"
+msgstr ""
+
+#: ../wxui/developer.py:471
+msgid "Available modules"
+msgstr ""
+
+#: ../wxui/main.py:1407
+msgid "Bandplan"
+msgstr ""
+
+#: ../wxui/query_sources.py:375
+msgid "Bands"
+msgstr ""
+
+#: ../wxui/main.py:138
+msgid "Banks"
+msgstr "Банки"
+
+#: ../wxui/developer.py:216
+msgid "Bin"
+msgstr ""
+
+#: ../wxui/main.py:149
+msgid "Browser"
+msgstr ""
+
+#: ../wxui/developer.py:403
+msgid "Building Radio Browser"
+msgstr ""
+
+#: ../wxui/query_sources.py:525
+msgid "Canada"
+msgstr ""
+
+#: ../wxui/memedit.py:874
+#, python-format
+msgid ""
+"Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
+msgstr ""
+
+#: ../wxui/main.py:941
+msgid "Chirp Image Files"
+msgstr ""
+
+#: ../wxui/memedit.py:304
+msgid "Choice Required"
+msgstr ""
+
+#: ../wxui/memedit.py:853
+#, fuzzy, python-format
+msgid "Choose %s DTCS Code"
+msgstr "DTCSПРД"
+
+#: ../wxui/memedit.py:850
+#, python-format
+msgid "Choose %s Tone"
+msgstr ""
+
+#: ../wxui/memedit.py:884
+#, fuzzy
+msgid "Choose Cross Mode"
+msgstr "Кроссрежим"
+
+#: ../wxui/memedit.py:914
+msgid "Choose duplex"
+msgstr ""
+
+#: ../wxui/developer.py:470
+#, fuzzy, python-format
+msgid "Choose the module to load from issue %i:"
+msgstr "Выберите один для импорта из:"
+
+#: ../wxui/query_sources.py:451
+msgid "City"
+msgstr ""
+
+#: ../drivers/ft817.py:359
+msgid "Clone completed, checking for spurious bytes"
+msgstr ""
+
+#: ../wxui/common.py:94
+msgid "Cloning"
+msgstr "Загрузка"
 
 #: ../drivers/bj9900.py:137 ../drivers/ft450d.py:439 ../drivers/ft817.py:342
 #, fuzzy
@@ -32,269 +154,44 @@ msgstr "Чтение из станции"
 msgid "Cloning to radio"
 msgstr "Запись в станцию"
 
-#: ../drivers/ft817.py:321
-msgid ""
-"Unable to read last block. This often happens when the selected model is US "
-"but the radio is a non-US one (or widebanded). Please choose the correct "
-"model and try again."
+#: ../wxui/main.py:760
+msgid "Close"
 msgstr ""
 
-#: ../drivers/ft817.py:359
-msgid "Clone completed, checking for spurious bytes"
+#: ../wxui/main.py:761
+msgid "Close file"
 msgstr ""
 
-#: ../drivers/ft817.py:364
-msgid ""
-"Radio sent data after the last awaited block, this happens when the selected "
-"model is a non-US but the radio is a US one. Please choose the correct model "
-"and try again."
+#: ../wxui/memedit.py:473
+msgid "Comment"
+msgstr "Комментарий"
+
+#: ../wxui/clone.py:206
+msgid "Communicate with radio"
 msgstr ""
 
-#: ../drivers/vx5.py:117
-#, python-brace-format
-msgid "{bank} is full"
-msgstr ""
-
-#: ../drivers/vx5.py:134
-#, python-brace-format
-msgid "Memory {num} not in bank {bank}"
-msgstr ""
-
-#: ../wxui/settingsedit.py:54
-msgid "Getting settings"
-msgstr ""
-
-#: ../wxui/settingsedit.py:114
+#: ../wxui/clone.py:117
 #, fuzzy
-msgid "Error applying settings"
-msgstr "Ошибка установки памяти"
-
-#: ../wxui/bankedit.py:62
-msgid "Index"
-msgstr "Индекс"
-
-#: ../wxui/bankedit.py:188
-msgid "Double-click to change bank name"
-msgstr ""
-
-#: ../wxui/bankedit.py:201
-#, python-format
-msgid "Enter a new name for bank %s:"
-msgstr ""
-
-#: ../wxui/bankedit.py:203
-#, fuzzy
-msgid "Rename bank"
-msgstr "Установка имени банка"
-
-#: ../wxui/bankedit.py:231
-msgid "Memory must be in a bank to be edited"
-msgstr ""
-
-#: ../wxui/radioinfo.py:43
-msgid "Features"
-msgstr ""
-
-#: ../wxui/radioinfo.py:48
-msgid "(none)"
-msgstr ""
-
-#: ../wxui/query_sources.py:56
-#, fuzzy, python-format
-msgid "Invalid %(value)s (use decimal degrees)"
-msgstr "Неверное значение. Должно быть целое число."
-
-#: ../wxui/query_sources.py:58
-#, python-format
-msgid "%(value)s must be between %(min)i and %(max)i"
-msgstr ""
-
-#: ../wxui/query_sources.py:109
-msgid "Invalid ZIP code"
-msgstr ""
+msgid "Complete"
+msgstr "Завершено"
 
 #: ../wxui/query_sources.py:279 ../wxui/query_sources.py:457
 msgid "Country"
 msgstr ""
 
-#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:345
-msgid "Amateur"
-msgstr ""
-
-#: ../wxui/query_sources.py:282 ../wxui/query_sources.py:336
-#: ../wxui/query_sources.py:427
-msgid "GMRS"
-msgstr ""
-
-#: ../wxui/query_sources.py:284
-msgid "Service"
-msgstr ""
-
-#: ../wxui/query_sources.py:287
-msgid "State/Province"
-msgstr ""
-
-#: ../wxui/query_sources.py:292
-msgid "Optional: 45.0000"
-msgstr ""
-
-#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:299
-msgid "If set, sort results by distance from these coordinates"
-msgstr ""
-
-#: ../wxui/query_sources.py:298
-msgid "Optional: -122.0000"
-msgstr ""
-
-#: ../wxui/query_sources.py:301
-msgid "Latitude"
-msgstr ""
-
-#: ../wxui/query_sources.py:302
-msgid "Longitude"
-msgstr ""
-
-#: ../wxui/query_sources.py:307
+#: ../wxui/memedit.py:465
 #, fuzzy
-msgid "Optional: 100"
-msgstr "Опции"
+msgid "Cross mode"
+msgstr "Кроссрежим"
 
-#: ../wxui/query_sources.py:308
-msgid "Limit results to this distance (km) from coordinates"
+#: ../wxui/clone.py:310 ../wxui/clone.py:385
+msgid "Custom..."
 msgstr ""
-
-#: ../wxui/query_sources.py:310
-msgid "Distance"
-msgstr ""
-
-#: ../wxui/query_sources.py:313
-msgid "Optional: County, Hospital, etc"
-msgstr ""
-
-#: ../wxui/query_sources.py:314
-msgid "Filter results with location matching this string"
-msgstr ""
-
-#: ../wxui/query_sources.py:316
-msgid "Filter"
-msgstr ""
-
-#: ../wxui/query_sources.py:320
-msgid "Only certain bands"
-msgstr ""
-
-#: ../wxui/query_sources.py:322
-msgid "Limit Bands"
-msgstr ""
-
-#: ../wxui/query_sources.py:325
-msgid "Only certain modes"
-msgstr ""
-
-#: ../wxui/query_sources.py:327
-msgid "Limit Modes"
-msgstr ""
-
-#: ../wxui/query_sources.py:353
-msgid "All"
-msgstr "Все"
-
-#: ../wxui/query_sources.py:375
-#, fuzzy
-msgid "Select Bands"
-msgstr "Выбрать столбцы"
-
-#: ../wxui/query_sources.py:375
-msgid "Bands"
-msgstr ""
-
-#: ../wxui/query_sources.py:396
-#, fuzzy
-msgid "Select Modes"
-msgstr "Выбрать столбцы"
-
-#: ../wxui/query_sources.py:396
-#, fuzzy
-msgid "Modes"
-msgstr "Режим"
-
-#: ../wxui/query_sources.py:451
-msgid "City"
-msgstr ""
-
-#: ../wxui/query_sources.py:454
-msgid "State"
-msgstr ""
-
-#: ../wxui/query_sources.py:524
-msgid "United States"
-msgstr ""
-
-#: ../wxui/query_sources.py:525
-msgid "Canada"
-msgstr ""
-
-#: ../wxui/query_sources.py:665
-msgid "RadioReference Canada requires a login before you can query"
-msgstr ""
-
-#: ../wxui/memedit.py:113
-#, python-format
-msgid "Found empty list value for %(name)s: %(value)r"
-msgstr ""
-
-#: ../wxui/memedit.py:148 ../wxui/memedit.py:154
-#, fuzzy, python-format
-msgid "Invalid value: %r"
-msgstr "Неверное значение для этого поля"
-
-#: ../wxui/memedit.py:177
-msgid "Offset"
-msgstr "Смещение"
-
-#: ../wxui/memedit.py:179
-msgid "Frequency"
-msgstr "Частота"
-
-#: ../wxui/memedit.py:218
-#, fuzzy
-msgid "Enter Frequency"
-msgstr "Частота"
-
-#: ../wxui/memedit.py:242
-msgid "Power"
-msgstr "Мощность"
-
-#: ../wxui/memedit.py:272
-#, fuzzy
-msgid "Tuning Step"
-msgstr "Шаг"
-
-#: ../wxui/memedit.py:304
-msgid "Choice Required"
-msgstr ""
-
-#: ../wxui/memedit.py:322
-msgid "Tone"
-msgstr "ТонПРД"
-
-#: ../wxui/memedit.py:324
-#, fuzzy
-msgid "Tone Squelch"
-msgstr "ТонШПД"
-
-#: ../wxui/memedit.py:356
-msgid "Duplex"
-msgstr "Дуплекс"
 
 #: ../wxui/memedit.py:396
 #, fuzzy
 msgid "DTCS"
 msgstr "DTCS Pol"
-
-#: ../wxui/memedit.py:398
-msgid "RX DTCS"
-msgstr ""
 
 #: ../wxui/memedit.py:442
 #, fuzzy
@@ -303,116 +200,37 @@ msgid ""
 "Polarity"
 msgstr "DTCS Pol"
 
-#: ../wxui/memedit.py:451
+#: ../wxui/memedit.py:1564
+msgid "DV Memory"
+msgstr ""
+
+#: ../wxui/main.py:1337
+msgid "Danger Ahead"
+msgstr ""
+
+#: ../wxui/developer.py:215
 #, fuzzy
-msgid "Mode"
-msgstr "Режим"
-
-#: ../wxui/memedit.py:465
-#, fuzzy
-msgid "Cross mode"
-msgstr "Кроссрежим"
-
-#: ../wxui/memedit.py:473
-msgid "Comment"
-msgstr "Комментарий"
-
-#: ../wxui/memedit.py:580
-msgid "Tone Mode"
-msgstr "Вид субтона"
-
-#: ../wxui/memedit.py:850
-#, python-format
-msgid "Choose %s Tone"
-msgstr ""
-
-#: ../wxui/memedit.py:853
-#, fuzzy, python-format
-msgid "Choose %s DTCS Code"
-msgstr "DTCSПРД"
-
-#: ../wxui/memedit.py:874
-#, python-format
-msgid ""
-"Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
-msgstr ""
-
-#: ../wxui/memedit.py:876
-msgid "Information"
-msgstr ""
-
-#: ../wxui/memedit.py:884
-#, fuzzy
-msgid "Choose Cross Mode"
-msgstr "Кроссрежим"
-
-#: ../wxui/memedit.py:893
-msgid "Enter TX Frequency (MHz)"
-msgstr ""
-
-#: ../wxui/memedit.py:901
-msgid "Enter Offset (MHz)"
-msgstr ""
-
-#: ../wxui/memedit.py:914
-msgid "Choose duplex"
-msgstr ""
-
-#: ../wxui/memedit.py:941
-msgid "Unable to edit memory before radio is loaded"
-msgstr ""
-
-#: ../wxui/memedit.py:1018 ../wxui/memedit.py:1642
-#, python-format
-msgid "Invalid edit: %s"
-msgstr ""
-
-#: ../wxui/memedit.py:1024
-#, python-format
-msgid "Warning: %s"
-msgstr ""
-
-#: ../wxui/memedit.py:1025
-msgid "Warning"
-msgstr ""
-
-#: ../wxui/memedit.py:1057
-#, python-format
-msgid "Memory %i is not deletable"
-msgstr ""
-
-#: ../wxui/memedit.py:1123
-msgid "Properties"
-msgstr ""
-
-#: ../wxui/memedit.py:1129
-#, fuzzy
-msgid "Insert Row Above"
-msgstr "Вставка строки выше"
-
-#: ../wxui/memedit.py:1138
-#, fuzzy, python-format
-msgid "Delete %i Memories"
-msgstr "Diff raw memories"
-
-#: ../wxui/memedit.py:1141
-#, fuzzy, python-format
-msgid "Delete %i Memories and shift block up"
-msgstr "Удалить (и сдвинуть вверх)"
-
-#: ../wxui/memedit.py:1145
-#, fuzzy, python-format
-msgid "Delete %i Memories and shift all up"
-msgstr "Удалить (и сдвинуть вверх)"
+msgid "Dec"
+msgstr "Проверка"
 
 #: ../wxui/memedit.py:1148
 #, fuzzy
 msgid "Delete"
 msgstr "_Удалить"
 
-#: ../wxui/memedit.py:1150
-#, fuzzy
-msgid "Delete and shift block up"
+#: ../wxui/memedit.py:1138
+#, fuzzy, python-format
+msgid "Delete %i Memories"
+msgstr "Diff raw memories"
+
+#: ../wxui/memedit.py:1145
+#, fuzzy, python-format
+msgid "Delete %i Memories and shift all up"
+msgstr "Удалить (и сдвинуть вверх)"
+
+#: ../wxui/memedit.py:1141
+#, fuzzy, python-format
+msgid "Delete %i Memories and shift block up"
 msgstr "Удалить (и сдвинуть вверх)"
 
 #: ../wxui/memedit.py:1152
@@ -420,34 +238,455 @@ msgstr "Удалить (и сдвинуть вверх)"
 msgid "Delete and shift all up"
 msgstr "Удалить (и сдвинуть вверх)"
 
-#: ../wxui/memedit.py:1178
+#: ../wxui/memedit.py:1150
 #, fuzzy
-msgid "Show Raw Memory"
-msgstr "Show Raw Memory\t"
+msgid "Delete and shift block up"
+msgstr "Удалить (и сдвинуть вверх)"
+
+#: ../wxui/main.py:692
+#, fuzzy
+msgid "Developer Mode"
+msgstr "Разработчик"
+
+#: ../wxui/main.py:1343
+#, python-format
+msgid "Developer state is now %s. CHIRP must be restarted to take effect"
+msgstr ""
 
 #: ../wxui/memedit.py:1186
 #, fuzzy
 msgid "Diff Raw Memories"
 msgstr "Diff raw memories"
 
+#: ../wxui/memedit.py:1489
+msgid "Digital Code"
+msgstr "Цифровой код"
+
+#: ../wxui/main.py:1354
+msgid "Disable reporting"
+msgstr ""
+
+#: ../wxui/query_sources.py:310
+msgid "Distance"
+msgstr ""
+
+#: ../wxui/clone.py:156
+#, python-format
+msgid "Do not prompt again for %s"
+msgstr ""
+
+#: ../wxui/bankedit.py:188
+msgid "Double-click to change bank name"
+msgstr ""
+
+#: ../wxui/main.py:762
+msgid "Download"
+msgstr ""
+
+#: ../wxui/main.py:604 ../wxui/main.py:763
+#, fuzzy
+msgid "Download from radio"
+msgstr "Чтение из станции"
+
+#: ../wxui/clone.py:493
+#, fuzzy
+msgid "Download instructions"
+msgstr "Чтение из станции"
+
+#: ../wxui/memedit.py:356
+msgid "Duplex"
+msgstr "Дуплекс"
+
+#: ../wxui/memedit.py:1519
+#, python-format
+msgid "Edit details for %i memories"
+msgstr ""
+
+#: ../wxui/memedit.py:1517
+#, python-format
+msgid "Edit details for memory %i"
+msgstr ""
+
+#: ../wxui/main.py:636
+msgid "Enable Automatic Edits"
+msgstr ""
+
+#: ../wxui/memedit.py:218
+#, fuzzy
+msgid "Enter Frequency"
+msgstr "Частота"
+
+#: ../wxui/memedit.py:901
+msgid "Enter Offset (MHz)"
+msgstr ""
+
+#: ../wxui/memedit.py:893
+msgid "Enter TX Frequency (MHz)"
+msgstr ""
+
+#: ../wxui/bankedit.py:201
+#, python-format
+msgid "Enter a new name for bank %s:"
+msgstr ""
+
+#: ../wxui/clone.py:386
+msgid "Enter custom port:"
+msgstr ""
+
+#: ../wxui/common.py:227
+#, fuzzy, python-format
+msgid "Erased memory %s"
+msgstr "Стирание памяти {loc}"
+
+#: ../wxui/settingsedit.py:114
+#, fuzzy
+msgid "Error applying settings"
+msgstr "Ошибка установки памяти"
+
+#: ../wxui/clone.py:430
+msgid "Error communicating with radio"
+msgstr ""
+
+#: ../wxui/clone.py:461
+msgid "Experimental driver"
+msgstr ""
+
+#: ../wxui/memedit.py:1452
+msgid "Export can only write CSV files"
+msgstr ""
+
+#: ../wxui/main.py:506 ../wxui/main.py:1060
+#, fuzzy
+msgid "Export to CSV"
+msgstr "Экспорт в файл"
+
+#: ../wxui/memedit.py:1553
+msgid "Extra"
+msgstr ""
+
+#: ../wxui/developer.py:411
+msgid "Failed to load radio browser"
+msgstr ""
+
+#: ../wxui/radioinfo.py:43
+msgid "Features"
+msgstr ""
+
+#: ../wxui/main.py:388
+#, python-format
+msgid "File does not exist: %s"
+msgstr ""
+
+#: ../wxui/main.py:945 ../wxui/main.py:1017 ../wxui/main.py:1027
+#: ../wxui/main.py:1056 ../wxui/main.py:1289 ../wxui/main.py:1290
+#, fuzzy
+msgid "Files"
+msgstr "_Файл"
+
+#: ../wxui/query_sources.py:316
+msgid "Filter"
+msgstr ""
+
+#: ../wxui/query_sources.py:314
+msgid "Filter results with location matching this string"
+msgstr ""
+
+#: ../wxui/main.py:1130
+msgid "Find"
+msgstr ""
+
+#: ../wxui/main.py:564
+msgid "Find Next"
+msgstr ""
+
+#: ../wxui/common.py:229
+#, python-format
+msgid "Finished radio job %s"
+msgstr ""
+
+#: ../wxui/memedit.py:113
+#, python-format
+msgid "Found empty list value for %(name)s: %(value)r"
+msgstr ""
+
+#: ../wxui/memedit.py:179
+msgid "Frequency"
+msgstr "Частота"
+
+#: ../wxui/query_sources.py:282 ../wxui/query_sources.py:336
+#: ../wxui/query_sources.py:427
+msgid "GMRS"
+msgstr ""
+
+#: ../wxui/settingsedit.py:54
+msgid "Getting settings"
+msgstr ""
+
+#: ../wxui/main.py:572
+msgid "Goto"
+msgstr ""
+
+#: ../wxui/main.py:1160
+#, fuzzy
+msgid "Goto Memory"
+msgstr "Show Raw Memory\t"
+
+#: ../wxui/main.py:1159
+msgid "Goto Memory:"
+msgstr ""
+
+#: ../wxui/clone.py:310 ../wxui/clone.py:392
+msgid "Help Me..."
+msgstr ""
+
+#: ../wxui/developer.py:214
+msgid "Hex"
+msgstr ""
+
+#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:299
+msgid "If set, sort results by distance from these coordinates"
+msgstr ""
+
+#: ../wxui/bankedit.py:62
+msgid "Index"
+msgstr "Индекс"
+
+#: ../wxui/main.py:151
+msgid "Info"
+msgstr ""
+
+#: ../wxui/memedit.py:876
+msgid "Information"
+msgstr ""
+
+#: ../wxui/memedit.py:1129
+#, fuzzy
+msgid "Insert Row Above"
+msgstr "Вставка строки выше"
+
+#: ../wxui/main.py:676
+msgid "Interact with driver"
+msgstr ""
+
+#: ../wxui/query_sources.py:56
+#, fuzzy, python-format
+msgid "Invalid %(value)s (use decimal degrees)"
+msgstr "Неверное значение. Должно быть целое число."
+
+#: ../wxui/query_sources.py:109
+msgid "Invalid ZIP code"
+msgstr ""
+
+#: ../wxui/memedit.py:1018 ../wxui/memedit.py:1642
+#, python-format
+msgid "Invalid edit: %s"
+msgstr ""
+
+#: ../wxui/main.py:1286
+msgid "Invalid or unsupported module file"
+msgstr ""
+
+#: ../wxui/memedit.py:148 ../wxui/memedit.py:154
+#, fuzzy, python-format
+msgid "Invalid value: %r"
+msgstr "Неверное значение для этого поля"
+
+#: ../wxui/developer.py:481
+msgid "Issue number:"
+msgstr ""
+
+#: ../wxui/main.py:272
+msgid "LIVE"
+msgstr ""
+
+#: ../wxui/query_sources.py:301
+msgid "Latitude"
+msgstr ""
+
+#: ../wxui/developer.py:195
+#, python-format
+msgid "Length must be %i"
+msgstr ""
+
+#: ../wxui/query_sources.py:322
+msgid "Limit Bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:327
+msgid "Limit Modes"
+msgstr ""
+
+#: ../wxui/query_sources.py:308
+msgid "Limit results to this distance (km) from coordinates"
+msgstr ""
+
+#: ../wxui/main.py:512
+#, fuzzy
+msgid "Load Module"
+msgstr "Вид субтона"
+
+#: ../wxui/main.py:724 ../wxui/developer.py:482
+#, fuzzy
+msgid "Load module from issue"
+msgstr "Вид субтона"
+
+#: ../wxui/main.py:1293
+msgid ""
+"Loading modules can be extremely dangerous, leading to damage to your "
+"computer, radio, or both. NEVER load a module from a source you do not "
+"trust, and especially not from anywhere other than the main CHIRP website "
+"(chirp.danplanet.com). Loading a module from another source is akin to "
+"giving them direct access to your computer and everything on it! Proceed "
+"despite this risk?"
+msgstr ""
+
+#: ../wxui/clone.py:111
+msgid "Loading settings"
+msgstr ""
+
+#: ../wxui/query_sources.py:302
+msgid "Longitude"
+msgstr ""
+
+#: ../wxui/main.py:130
+#, fuzzy
+msgid "Memories"
+msgstr "Память"
+
+#: ../wxui/memedit.py:1057
+#, python-format
+msgid "Memory %i is not deletable"
+msgstr ""
+
+#: ../wxui/bankedit.py:231
+msgid "Memory must be in a bank to be edited"
+msgstr ""
+
+#: ../drivers/vx5.py:134
+#, python-brace-format
+msgid "Memory {num} not in bank {bank}"
+msgstr ""
+
+#: ../wxui/memedit.py:451
+#, fuzzy
+msgid "Mode"
+msgstr "Режим"
+
+#: ../wxui/clone.py:234
+msgid "Model"
+msgstr "Модель"
+
+#: ../wxui/query_sources.py:396
+#, fuzzy
+msgid "Modes"
+msgstr "Режим"
+
+#: ../wxui/main.py:1290
+msgid "Module"
+msgstr ""
+
+#: ../wxui/main.py:1262
+msgid "Module Loaded"
+msgstr ""
+
+#: ../wxui/main.py:1393
+msgid "Module loaded successfully"
+msgstr ""
+
+#: ../wxui/clone.py:357
+#, python-format
+msgid "More than one port found: %s"
+msgstr ""
+
+#: ../wxui/main.py:1463
+msgid "New version available"
+msgstr ""
+
 #: ../wxui/memedit.py:1222
 #, fuzzy
 msgid "No empty rows below!"
 msgstr "Вставка строки ниже"
 
-#: ../wxui/memedit.py:1294
-msgid "Some memories are not deletable"
+#: ../wxui/developer.py:497
+msgid "No modules found"
 msgstr ""
 
-#: ../wxui/memedit.py:1320
+#: ../wxui/developer.py:496
 #, python-format
-msgid "Pasted memory will overwrite memory %i"
+msgid "No modules found in issue %i"
 msgstr ""
 
-#: ../wxui/memedit.py:1323
-#, python-format
-msgid "Pasted memories will overwrite memory %i"
+#: ../sources/repeaterbook.py:270
+msgid "No results!"
 msgstr ""
+
+#: ../wxui/main.py:1159
+msgid "Number"
+msgstr ""
+
+#: ../wxui/memedit.py:177
+msgid "Offset"
+msgstr "Смещение"
+
+#: ../wxui/query_sources.py:320
+msgid "Only certain bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:325
+msgid "Only certain modes"
+msgstr ""
+
+#: ../wxui/main.py:254
+msgid "Only memory tabs may be exported"
+msgstr ""
+
+#: ../wxui/main.py:756
+msgid "Open"
+msgstr ""
+
+#: ../wxui/main.py:493
+#, fuzzy
+msgid "Open Recent"
+msgstr "_Недавние"
+
+#: ../wxui/main.py:464
+#, fuzzy
+msgid "Open Stock Config"
+msgstr "Открыть предустановленные конфигурации"
+
+#: ../wxui/main.py:757 ../wxui/main.py:956
+msgid "Open a file"
+msgstr ""
+
+#: ../wxui/main.py:1308
+msgid "Open a module"
+msgstr ""
+
+#: ../wxui/main.py:713
+msgid "Open debug log"
+msgstr ""
+
+#: ../wxui/query_sources.py:298
+msgid "Optional: -122.0000"
+msgstr ""
+
+#: ../wxui/query_sources.py:307
+#, fuzzy
+msgid "Optional: 100"
+msgstr "Опции"
+
+#: ../wxui/query_sources.py:292
+msgid "Optional: 45.0000"
+msgstr ""
+
+#: ../wxui/query_sources.py:313
+msgid "Optional: County, Hospital, etc"
+msgstr ""
+
+#: ../wxui/memedit.py:1332
+#, fuzzy
+msgid "Overwrite memories?"
+msgstr "Перезаписать?"
 
 #: ../wxui/memedit.py:1326
 #, python-format
@@ -459,48 +698,98 @@ msgstr ""
 msgid "Pasted memories will overwrite memories %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1332
-#, fuzzy
-msgid "Overwrite memories?"
-msgstr "Перезаписать?"
-
-#: ../wxui/memedit.py:1377
-#, fuzzy
-msgid "Some memories are incompatible with this radio"
-msgstr "Вставленная память {number} не совместима с этой станцией, потому что:"
-
-#: ../wxui/memedit.py:1452
-msgid "Export can only write CSV files"
-msgstr ""
-
-#: ../wxui/memedit.py:1489
-msgid "Digital Code"
-msgstr "Цифровой код"
-
-#: ../wxui/memedit.py:1517
+#: ../wxui/memedit.py:1323
 #, python-format
-msgid "Edit details for memory %i"
+msgid "Pasted memories will overwrite memory %i"
 msgstr ""
 
-#: ../wxui/memedit.py:1519
+#: ../wxui/memedit.py:1320
 #, python-format
-msgid "Edit details for %i memories"
+msgid "Pasted memory will overwrite memory %i"
 msgstr ""
 
-#: ../wxui/memedit.py:1553
-msgid "Extra"
+#: ../wxui/main.py:1467
+msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr ""
 
-#: ../wxui/memedit.py:1564
-msgid "DV Memory"
+#: ../wxui/main.py:1331
+msgid ""
+"Please note that developer mode is intended for use by developers of the "
+"CHIRP project, or under the direction of a developer. It enables behaviors "
+"and functions that can damage your computer and your radio if not used with "
+"EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
-
-#: ../wxui/common.py:94
-msgid "Cloning"
-msgstr "Загрузка"
 
 #: ../wxui/common.py:115
 msgid "Please wait"
+msgstr ""
+
+#: ../wxui/clone.py:335
+msgid "Plug in your cable and then click OK"
+msgstr ""
+
+#: ../wxui/clone.py:227
+msgid "Port"
+msgstr "Порт"
+
+#: ../wxui/memedit.py:242
+msgid "Power"
+msgstr "Мощность"
+
+#: ../wxui/developer.py:133
+#, fuzzy
+msgid "Press enter to set this in memory"
+msgstr "Ошибка установки памяти"
+
+#: ../wxui/main.py:523
+msgid "Print Preview"
+msgstr ""
+
+#: ../wxui/printing.py:29
+msgid "Printing"
+msgstr ""
+
+#: ../wxui/memedit.py:1123
+msgid "Properties"
+msgstr ""
+
+#: ../wxui/main.py:1421
+#, python-format
+msgid "Query %s"
+msgstr ""
+
+#: ../wxui/main.py:618
+msgid "Query Source"
+msgstr ""
+
+#: ../wxui/memedit.py:398
+msgid "RX DTCS"
+msgstr ""
+
+#: ../wxui/main.py:732
+#, fuzzy
+msgid "Radio"
+msgstr "Станция"
+
+#: ../drivers/ft60.py:88 ../drivers/ft450d.py:486 ../drivers/ft817.py:407
+#, python-format
+msgid "Radio did not ack block %i"
+msgstr ""
+
+#: ../wxui/clone.py:485 ../wxui/clone.py:549
+#, fuzzy
+msgid "Radio information"
+msgstr "Получение информации"
+
+#: ../drivers/ft817.py:364
+msgid ""
+"Radio sent data after the last awaited block, this happens when the selected "
+"model is a non-US but the radio is a US one. Please choose the correct model "
+"and try again."
+msgstr ""
+
+#: ../wxui/query_sources.py:665
+msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 
 #: ../wxui/common.py:219
@@ -508,27 +797,216 @@ msgstr ""
 msgid "Refreshed memory %s"
 msgstr ""
 
-#: ../wxui/common.py:221
+#: ../wxui/main.py:653
+msgid "Reload Driver"
+msgstr ""
+
+#: ../wxui/main.py:662
+msgid "Reload Driver and File"
+msgstr ""
+
+#: ../wxui/bankedit.py:203
+#, fuzzy
+msgid "Rename bank"
+msgstr "Установка имени банка"
+
+#: ../wxui/main.py:701
+#, fuzzy
+msgid "Reporting enabled"
+msgstr "Отчёты отключены"
+
+#: ../wxui/main.py:1350
+msgid ""
+"Reporting helps the CHIRP project know which radio models and OS platforms "
+"to spend our limited efforts on. We would really appreciate if you left it "
+"enabled. Really disable reporting?"
+msgstr ""
+
+#: ../wxui/main.py:1345
+msgid "Restart Required"
+msgstr ""
+
+#: ../wxui/main.py:474
 #, python-format
-msgid "Uploaded memory %s"
+msgid "Restore %i tabs"
 msgstr ""
 
 #: ../wxui/common.py:223
 msgid "Retrieved settings"
 msgstr ""
 
+#: ../wxui/main.py:758
+msgid "Save"
+msgstr ""
+
+#: ../wxui/main.py:1074
+msgid "Save before closing?"
+msgstr ""
+
+#: ../wxui/main.py:759 ../wxui/main.py:1031
+msgid "Save file"
+msgstr ""
+
 #: ../wxui/common.py:225
 msgid "Saved settings"
 msgstr ""
 
-#: ../wxui/common.py:227
-#, fuzzy, python-format
-msgid "Erased memory %s"
-msgstr "Стирание памяти {loc}"
+#: ../wxui/main.py:643
+#, fuzzy
+msgid "Select Bandplan"
+msgstr "Выбрать столбцы"
 
-#: ../wxui/common.py:229
+#: ../wxui/query_sources.py:375
+#, fuzzy
+msgid "Select Bands"
+msgstr "Выбрать столбцы"
+
+#: ../wxui/query_sources.py:396
+#, fuzzy
+msgid "Select Modes"
+msgstr "Выбрать столбцы"
+
+#: ../wxui/main.py:1406
+msgid "Select a bandplan"
+msgstr ""
+
+#: ../wxui/query_sources.py:284
+msgid "Service"
+msgstr ""
+
+#: ../wxui/main.py:143
+msgid "Settings"
+msgstr ""
+
+#: ../wxui/memedit.py:1178
+#, fuzzy
+msgid "Show Raw Memory"
+msgstr "Show Raw Memory\t"
+
+#: ../wxui/main.py:719
+msgid "Show debug log location"
+msgstr ""
+
+#: ../wxui/memedit.py:1377
+#, fuzzy
+msgid "Some memories are incompatible with this radio"
+msgstr "Вставленная память {number} не совместима с этой станцией, потому что:"
+
+#: ../wxui/memedit.py:1294
+msgid "Some memories are not deletable"
+msgstr ""
+
+#: ../wxui/query_sources.py:454
+msgid "State"
+msgstr ""
+
+#: ../wxui/query_sources.py:287
+msgid "State/Province"
+msgstr ""
+
+#: ../wxui/main.py:1394
+msgid "Success"
+msgstr ""
+
+#: ../drivers/bj9900.py:112
+msgid ""
+"This is experimental support for BJ-9900 which is still under development.\n"
+"Please ensure you have a good backup with OEM software.\n"
+"Also please send in bug and enhancement requests!\n"
+"You have been warned. Proceed at your own risk!"
+msgstr ""
+
+#: ../wxui/developer.py:479
+msgid "This will load a module from a website issue"
+msgstr ""
+
+#: ../wxui/memedit.py:322
+msgid "Tone"
+msgstr "ТонПРД"
+
+#: ../wxui/memedit.py:580
+msgid "Tone Mode"
+msgstr "Вид субтона"
+
+#: ../wxui/memedit.py:324
+#, fuzzy
+msgid "Tone Squelch"
+msgstr "ТонШПД"
+
+#: ../wxui/memedit.py:272
+#, fuzzy
+msgid "Tuning Step"
+msgstr "Шаг"
+
+#: ../wxui/clone.py:329 ../wxui/clone.py:336 ../wxui/clone.py:347
+#: ../wxui/clone.py:354 ../wxui/clone.py:358
+msgid "USB Port Finder"
+msgstr ""
+
+#: ../wxui/clone.py:345
+msgid ""
+"Unable to determine port for your cable. Check your drivers and connections."
+msgstr ""
+
+#: ../wxui/memedit.py:941
+msgid "Unable to edit memory before radio is loaded"
+msgstr ""
+
+#: ../wxui/main.py:989
+#, fuzzy, python-format
+msgid "Unable to find stock config %r"
+msgstr "Открыть предустановленные конфигурации"
+
+#: ../wxui/main.py:1106
+#, fuzzy
+msgid "Unable to open the clipboard"
+msgstr "Станция не обнаружена на {port}"
+
+#: ../drivers/ft817.py:321
+msgid ""
+"Unable to read last block. This often happens when the selected model is US "
+"but the radio is a non-US one (or widebanded). Please choose the correct "
+"model and try again."
+msgstr ""
+
+#: ../wxui/main.py:1386
+#, fuzzy, python-format
+msgid "Unable to reveal %s on this system"
+msgstr "Невозможно внести изменения в эту модель"
+
+#: ../wxui/query_sources.py:524
+msgid "United States"
+msgstr ""
+
+#: ../wxui/clone.py:328
+msgid "Unplug your cable (if needed) and then click OK"
+msgstr ""
+
+#: ../wxui/clone.py:564
+msgid "Upload instructions"
+msgstr ""
+
+#: ../wxui/main.py:612 ../wxui/main.py:765
+#, fuzzy
+msgid "Upload to radio"
+msgstr "Запись в станцию"
+
+#: ../wxui/common.py:221
 #, python-format
-msgid "Finished radio job %s"
+msgid "Uploaded memory %s"
+msgstr ""
+
+#: ../wxui/main.py:580
+msgid "Use fixed-width font"
+msgstr ""
+
+#: ../wxui/main.py:588
+msgid "Use larger font"
+msgstr ""
+
+#: ../wxui/developer.py:247
+#, python-format
+msgid "Value does not fit in %i bits"
 msgstr ""
 
 #: ../wxui/common.py:331
@@ -541,676 +1019,239 @@ msgstr ""
 msgid "Value must be at most %.4f"
 msgstr ""
 
-#: ../wxui/common.py:408 ../wxui/common.py:446
-msgid "An error has occurred"
-msgstr "Ошибка"
-
-#: ../wxui/main.py:130
-#, fuzzy
-msgid "Memories"
-msgstr "Память"
-
-#: ../wxui/main.py:138
-msgid "Banks"
-msgstr "Банки"
-
-#: ../wxui/main.py:143
-msgid "Settings"
-msgstr ""
-
-#: ../wxui/main.py:149
-msgid "Browser"
-msgstr ""
-
-#: ../wxui/main.py:151
-msgid "Info"
-msgstr ""
-
-#: ../wxui/main.py:254
-msgid "Only memory tabs may be exported"
-msgstr ""
-
-#: ../wxui/main.py:272
-msgid "LIVE"
-msgstr ""
-
-#: ../wxui/main.py:352
-msgid "Welcome"
-msgstr ""
-
-#: ../wxui/main.py:388
+#: ../wxui/developer.py:290
 #, python-format
-msgid "File does not exist: %s"
-msgstr ""
-
-#: ../wxui/main.py:464
-#, fuzzy
-msgid "Open Stock Config"
-msgstr "Открыть предустановленные конфигурации"
-
-#: ../wxui/main.py:474
-#, python-format
-msgid "Restore %i tabs"
-msgstr ""
-
-#: ../wxui/main.py:493
-#, fuzzy
-msgid "Open Recent"
-msgstr "_Недавние"
-
-#: ../wxui/main.py:506 ../wxui/main.py:1060
-#, fuzzy
-msgid "Export to CSV"
-msgstr "Экспорт в файл"
-
-#: ../wxui/main.py:512
-#, fuzzy
-msgid "Load Module"
-msgstr "Вид субтона"
-
-#: ../wxui/main.py:523
-msgid "Print Preview"
-msgstr ""
-
-#: ../wxui/main.py:564
-msgid "Find Next"
-msgstr ""
-
-#: ../wxui/main.py:572
-msgid "Goto"
-msgstr ""
-
-#: ../wxui/main.py:580
-msgid "Use fixed-width font"
-msgstr ""
-
-#: ../wxui/main.py:588
-msgid "Use larger font"
-msgstr ""
-
-#: ../wxui/main.py:604 ../wxui/main.py:763
-#, fuzzy
-msgid "Download from radio"
-msgstr "Чтение из станции"
-
-#: ../wxui/main.py:612 ../wxui/main.py:765
-#, fuzzy
-msgid "Upload to radio"
-msgstr "Запись в станцию"
-
-#: ../wxui/main.py:618
-msgid "Query Source"
-msgstr ""
-
-#: ../wxui/main.py:636
-msgid "Enable Automatic Edits"
-msgstr ""
-
-#: ../wxui/main.py:643
-#, fuzzy
-msgid "Select Bandplan"
-msgstr "Выбрать столбцы"
-
-#: ../wxui/main.py:653
-msgid "Reload Driver"
-msgstr ""
-
-#: ../wxui/main.py:662
-msgid "Reload Driver and File"
-msgstr ""
-
-#: ../wxui/main.py:676
-msgid "Interact with driver"
-msgstr ""
-
-#: ../wxui/main.py:687
-msgid "About"
-msgstr ""
-
-#: ../wxui/main.py:692
-#, fuzzy
-msgid "Developer Mode"
-msgstr "Разработчик"
-
-#: ../wxui/main.py:701
-#, fuzzy
-msgid "Reporting enabled"
-msgstr "Отчёты отключены"
-
-#: ../wxui/main.py:713
-msgid "Open debug log"
-msgstr ""
-
-#: ../wxui/main.py:719
-msgid "Show debug log location"
-msgstr ""
-
-#: ../wxui/main.py:724 ../wxui/developer.py:482
-#, fuzzy
-msgid "Load module from issue"
-msgstr "Вид субтона"
-
-#: ../wxui/main.py:731
-#, fuzzy
-msgid "View"
-msgstr "Вид_"
-
-#: ../wxui/main.py:732
-#, fuzzy
-msgid "Radio"
-msgstr "Станция"
-
-#: ../wxui/main.py:756
-msgid "Open"
-msgstr ""
-
-#: ../wxui/main.py:757 ../wxui/main.py:956
-msgid "Open a file"
-msgstr ""
-
-#: ../wxui/main.py:758
-msgid "Save"
-msgstr ""
-
-#: ../wxui/main.py:759 ../wxui/main.py:1031
-msgid "Save file"
-msgstr ""
-
-#: ../wxui/main.py:760
-msgid "Close"
-msgstr ""
-
-#: ../wxui/main.py:761
-msgid "Close file"
-msgstr ""
-
-#: ../wxui/main.py:762
-msgid "Download"
-msgstr ""
-
-#: ../wxui/main.py:941
-msgid "Chirp Image Files"
-msgstr ""
-
-#: ../wxui/main.py:942
-#, fuzzy
-msgid "All Files"
-msgstr "CSV"
-
-#: ../wxui/main.py:945 ../wxui/main.py:1017 ../wxui/main.py:1027
-#: ../wxui/main.py:1056 ../wxui/main.py:1289 ../wxui/main.py:1290
-#, fuzzy
-msgid "Files"
-msgstr "_Файл"
-
-#: ../wxui/main.py:953
-msgid "All supported formats|"
-msgstr ""
-
-#: ../wxui/main.py:989
-#, fuzzy, python-format
-msgid "Unable to find stock config %r"
-msgstr "Открыть предустановленные конфигурации"
-
-#: ../wxui/main.py:1072
-#, fuzzy, python-format
-msgid "%s has not been saved. Save before closing?"
-msgstr "Файл изменён, сохранить изменения?"
-
-#: ../wxui/main.py:1074
-msgid "Save before closing?"
-msgstr ""
-
-#: ../wxui/main.py:1106
-#, fuzzy
-msgid "Unable to open the clipboard"
-msgstr "Станция не обнаружена на {port}"
-
-#: ../wxui/main.py:1130
-msgid "Find"
-msgstr ""
-
-#: ../wxui/main.py:1159
-msgid "Goto Memory:"
-msgstr ""
-
-#: ../wxui/main.py:1159
-msgid "Number"
-msgstr ""
-
-#: ../wxui/main.py:1160
-#, fuzzy
-msgid "Goto Memory"
-msgstr "Show Raw Memory\t"
-
-#: ../wxui/main.py:1262
-msgid "Module Loaded"
-msgstr ""
-
-#: ../wxui/main.py:1286
-msgid "Invalid or unsupported module file"
-msgstr ""
-
-#: ../wxui/main.py:1290
-msgid "Module"
-msgstr ""
-
-#: ../wxui/main.py:1293
-msgid ""
-"Loading modules can be extremely dangerous, leading to damage to your "
-"computer, radio, or both. NEVER load a module from a source you do not "
-"trust, and especially not from anywhere other than the main CHIRP website "
-"(chirp.danplanet.com). Loading a module from another source is akin to "
-"giving them direct access to your computer and everything on it! Proceed "
-"despite this risk?"
-msgstr ""
-
-#: ../wxui/main.py:1308
-msgid "Open a module"
-msgstr ""
-
-#: ../wxui/main.py:1323
-msgid "About CHIRP"
-msgstr ""
-
-#: ../wxui/main.py:1328
-msgid "enabled"
-msgstr ""
-
-#: ../wxui/main.py:1328
-msgid "disabled"
-msgstr ""
-
-#: ../wxui/main.py:1331
-msgid ""
-"Please note that developer mode is intended for use by developers of the "
-"CHIRP project, or under the direction of a developer. It enables behaviors "
-"and functions that can damage your computer and your radio if not used with "
-"EXTREME care. You have been warned! Proceed anyway?"
-msgstr ""
-
-#: ../wxui/main.py:1337
-msgid "Danger Ahead"
-msgstr ""
-
-#: ../wxui/main.py:1343
-#, python-format
-msgid "Developer state is now %s. CHIRP must be restarted to take effect"
-msgstr ""
-
-#: ../wxui/main.py:1345
-msgid "Restart Required"
-msgstr ""
-
-#: ../wxui/main.py:1350
-msgid ""
-"Reporting helps the CHIRP project know which radio models and OS platforms "
-"to spend our limited efforts on. We would really appreciate if you left it "
-"enabled. Really disable reporting?"
-msgstr ""
-
-#: ../wxui/main.py:1354
-msgid "Disable reporting"
-msgstr ""
-
-#: ../wxui/main.py:1386
-#, fuzzy, python-format
-msgid "Unable to reveal %s on this system"
-msgstr "Невозможно внести изменения в эту модель"
-
-#: ../wxui/main.py:1393
-msgid "Module loaded successfully"
-msgstr ""
-
-#: ../wxui/main.py:1394
-msgid "Success"
-msgstr ""
-
-#: ../wxui/main.py:1406
-msgid "Select a bandplan"
-msgstr ""
-
-#: ../wxui/main.py:1407
-msgid "Bandplan"
-msgstr ""
-
-#: ../wxui/main.py:1421
-#, python-format
-msgid "Query %s"
-msgstr ""
-
-#: ../wxui/main.py:1461
-msgid ""
-"A new CHIRP version is available. Please visit the website as soon as "
-"possible to download it!"
-msgstr ""
-
-#: ../wxui/main.py:1463
-msgid "New version available"
-msgstr ""
-
-#: ../wxui/main.py:1467
-msgid "Please be sure to quit CHIRP before installing the new version!"
-msgstr ""
-
-#: ../wxui/developer.py:133
-#, fuzzy
-msgid "Press enter to set this in memory"
-msgstr "Ошибка установки памяти"
-
-#: ../wxui/developer.py:160
-msgid "bytes each"
-msgstr ""
-
-#: ../wxui/developer.py:165
-msgid "bytes"
-msgstr ""
-
-#: ../wxui/developer.py:169
-msgid "bits"
-msgstr ""
-
-#: ../wxui/developer.py:195
-#, python-format
-msgid "Length must be %i"
-msgstr ""
-
-#: ../wxui/developer.py:214
-msgid "Hex"
-msgstr ""
-
-#: ../wxui/developer.py:215
-#, fuzzy
-msgid "Dec"
-msgstr "Проверка"
-
-#: ../wxui/developer.py:216
-msgid "Bin"
+msgid "Value must be exactly %i decimal digits"
 msgstr ""
 
 #: ../wxui/developer.py:245 ../wxui/developer.py:288
 msgid "Value must be zero or greater"
 msgstr ""
 
-#: ../wxui/developer.py:247
-#, python-format
-msgid "Value does not fit in %i bits"
-msgstr ""
-
-#: ../wxui/developer.py:290
-#, python-format
-msgid "Value must be exactly %i decimal digits"
-msgstr ""
-
-#: ../wxui/developer.py:403
-msgid "Building Radio Browser"
-msgstr ""
-
-#: ../wxui/developer.py:411
-msgid "Failed to load radio browser"
-msgstr ""
-
-#: ../wxui/developer.py:470
-#, fuzzy, python-format
-msgid "Choose the module to load from issue %i:"
-msgstr "Выберите один для импорта из:"
-
-#: ../wxui/developer.py:471
-msgid "Available modules"
-msgstr ""
-
-#: ../wxui/developer.py:479
-msgid "This will load a module from a website issue"
-msgstr ""
-
-#: ../wxui/developer.py:481
-msgid "Issue number:"
-msgstr ""
-
-#: ../wxui/developer.py:496
-#, python-format
-msgid "No modules found in issue %i"
-msgstr ""
-
-#: ../wxui/developer.py:497
-msgid "No modules found"
-msgstr ""
-
-#: ../wxui/clone.py:109
-msgid "Applying settings"
-msgstr ""
-
-#: ../wxui/clone.py:111
-msgid "Loading settings"
-msgstr ""
-
-#: ../wxui/clone.py:117
-#, fuzzy
-msgid "Complete"
-msgstr "Завершено"
-
-#: ../wxui/clone.py:156
-#, python-format
-msgid "Do not prompt again for %s"
-msgstr ""
-
-#: ../wxui/clone.py:206
-msgid "Communicate with radio"
-msgstr ""
-
-#: ../wxui/clone.py:227
-msgid "Port"
-msgstr "Порт"
-
 #: ../wxui/clone.py:230
 msgid "Vendor"
 msgstr "Изготовитель"
 
-#: ../wxui/clone.py:234
-msgid "Model"
-msgstr "Модель"
+#: ../wxui/main.py:731
+#, fuzzy
+msgid "View"
+msgstr "Вид_"
 
-#: ../wxui/clone.py:310 ../wxui/clone.py:385
-msgid "Custom..."
+#: ../wxui/memedit.py:1025
+msgid "Warning"
 msgstr ""
 
-#: ../wxui/clone.py:310 ../wxui/clone.py:392
-msgid "Help Me..."
+#: ../wxui/memedit.py:1024
+#, python-format
+msgid "Warning: %s"
 msgstr ""
 
-#: ../wxui/clone.py:328
-msgid "Unplug your cable (if needed) and then click OK"
-msgstr ""
-
-#: ../wxui/clone.py:329 ../wxui/clone.py:336 ../wxui/clone.py:347
-#: ../wxui/clone.py:354 ../wxui/clone.py:358
-msgid "USB Port Finder"
-msgstr ""
-
-#: ../wxui/clone.py:335
-msgid "Plug in your cable and then click OK"
-msgstr ""
-
-#: ../wxui/clone.py:345
-msgid ""
-"Unable to determine port for your cable. Check your drivers and connections."
+#: ../wxui/main.py:352
+msgid "Welcome"
 msgstr ""
 
 #: ../wxui/clone.py:352
 msgid "Your cable appears to be on port:"
 msgstr ""
 
-#: ../wxui/clone.py:357
-#, python-format
-msgid "More than one port found: %s"
+#: ../wxui/developer.py:169
+msgid "bits"
 msgstr ""
 
-#: ../wxui/clone.py:386
-msgid "Enter custom port:"
+#: ../wxui/developer.py:165
+msgid "bytes"
 msgstr ""
 
-#: ../wxui/clone.py:430
-msgid "Error communicating with radio"
+#: ../wxui/developer.py:160
+msgid "bytes each"
 msgstr ""
 
-#: ../wxui/clone.py:461
-msgid "Experimental driver"
+#: ../wxui/main.py:1328
+msgid "disabled"
 msgstr ""
 
-#: ../wxui/clone.py:485 ../wxui/clone.py:549
-#, fuzzy
-msgid "Radio information"
-msgstr "Получение информации"
-
-#: ../wxui/clone.py:493
-#, fuzzy
-msgid "Download instructions"
-msgstr "Чтение из станции"
-
-#: ../wxui/clone.py:564
-msgid "Upload instructions"
+#: ../wxui/main.py:1328
+msgid "enabled"
 msgstr ""
 
-#: ../wxui/printing.py:29
-msgid "Printing"
+#: ../drivers/vx5.py:117
+#, python-brace-format
+msgid "{bank} is full"
 msgstr ""
 
-#: ../sources/repeaterbook.py:270
-msgid "No results!"
-msgstr ""
+#~ msgid "Adding memory {number}"
+#~ msgstr "Добавление памяти {number}"
 
-#~ msgid "idle"
-#~ msgstr "ожидание"
+#~ msgid "Adjust New Location"
+#~ msgstr "Новая позиция"
+
+#~ msgid "Auto"
+#~ msgstr "Авто"
+
+#~ msgid "Automatic Repeater Offset"
+#~ msgstr "Авторазнос для репитера"
+
+#~ msgid "Bad value for {col}: {val}"
+#~ msgstr "Некорректное значение для {col}: {val}"
 
 #~ msgid "Bank"
 #~ msgstr "Банк"
 
-#~ msgid "Name"
-#~ msgstr "Имя"
+#~ msgid "Bank Names"
+#~ msgstr "Имена банков"
 
-#~ msgid "Updating bank index for memory {num}"
-#~ msgstr "Обновление индекса банка в памяти {num}"
+#~ msgid "CHIRP Files"
+#~ msgstr "CHIRP"
 
-#~ msgid "Updating bank information for memory {num}"
-#~ msgstr "Обновление информации банка в памяти {num}"
+#~ msgid "CHIRP Native File"
+#~ msgstr "Файл CHIRP"
 
-#~ msgid "Getting memory {num}"
-#~ msgstr "Получение из памяти {num}"
+#~ msgid "CHIRP Radio Images"
+#~ msgstr "Образы памяти Chirp"
 
-#~ msgid "Setting index for memory {num}"
-#~ msgstr "Установка индекса для памяти {num}"
+#~ msgid "CSV File"
+#~ msgstr "CSV"
 
-#~ msgid "Getting bank for memory {num}"
-#~ msgstr "Получение банка памяти {num}"
+#~ msgid "Callsign"
+#~ msgstr "Позывной"
 
-#~ msgid "Loc"
-#~ msgstr "№"
+#~ msgid "Cancel"
+#~ msgstr "Отмена"
 
-#~ msgid "Getting bank information for memory {num}"
-#~ msgstr "Получение информации банка для памяти {num}"
+#~ msgid "Cancelled"
+#~ msgstr "Отменено"
 
-#~ msgid "Getting bank information"
-#~ msgstr "Получение информации из банка"
+#~ msgid "Cannot be imported because"
+#~ msgstr "Невозможно импортировать, поскольку"
 
-#~ msgid "Overwrite"
-#~ msgstr "Перезаписать"
-
-#~ msgid "File Exists"
-#~ msgstr "Файл существует"
-
-#~ msgid "The file {name} already exists. Do you want to overwrite it?"
-#~ msgstr "Файл {name} уже существует. Перезаписать его?"
+#~ msgid "Change language"
+#~ msgstr "Изменить язык"
 
 #~ msgid ""
-#~ "Location {number} is already being imported. Choose another value for "
-#~ "'New Location' before selection 'Import'"
+#~ "Choose a language or Auto to use the operating system default. You will "
+#~ "need to restart the application before the change will take effect"
 #~ msgstr ""
-#~ "Позиция {number} уже импортирована. Выберите другое значение для \"Новая "
-#~ "позиция\" перед выбором \"Импорт\""
+#~ "Выберите язык или Авто для использования языка операционной системы. Вам "
+#~ "нужно будет перезапустить приложение, прежде чем изменения вступят в силу."
 
-#~ msgid "Location {number} is already being imported"
-#~ msgstr "Позиция {number} уже импортирована"
+#~ msgid "Clone Progress"
+#~ msgstr "Загрузка"
 
-#~ msgid "Updating URCALL list"
-#~ msgstr "Обновление URCALL"
+#~ msgid "Clone failed: {error}"
+#~ msgstr "Ошибка загрузки {error}"
 
-#~ msgid "Updating RPTCALL list"
-#~ msgstr "Обновление RPTCALL"
+#~ msgid "Columns"
+#~ msgstr "Столбцы"
 
-#~ msgid "Setting memory {number}"
-#~ msgstr "Установка памяти {number}"
+#~ msgid "Confirm overwrites"
+#~ msgstr "Подтверждение перезаписи"
 
-#~ msgid "Importing bank information"
-#~ msgstr "Импорт информации банка"
+#, fuzzy
+#~ msgid "Copy"
+#~ msgstr "Копировать"
+
+#, fuzzy
+#~ msgid "Cut"
+#~ msgstr "Вырезать"
+
+#~ msgid "Cutting memory {number}"
+#~ msgstr "Обрезка памяти {number}"
+
+#~ msgid "D-STAR"
+#~ msgstr "D-STAR"
+
+#, fuzzy
+#~ msgid "Delete all"
+#~ msgstr "_Удалить всё"
+
+#~ msgid "Diff of {a} and {b}"
+#~ msgstr "Diff of {a} and {b}"
+
+#~ msgid "Diff raw memories"
+#~ msgstr "Diff raw memories"
+
+#~ msgid "Diff tabs"
+#~ msgstr "Diff tabs"
+
+#~ msgid "Discard Changes?"
+#~ msgstr "Не сохранять изменения?"
+
+#~ msgid "Don't show this again"
+#~ msgstr "Не отображать снова"
+
+#~ msgid "Downloading MYCALL list"
+#~ msgstr "Загрузка MYCALL"
+
+#~ msgid "Downloading RPTCALL list"
+#~ msgstr "Загрузка RPTCALL"
+
+#~ msgid "Downloading URCALL list"
+#~ msgstr "Загрузка URCALL"
+
+#~ msgid "E_xchange"
+#~ msgstr "Обмен_"
+
+#~ msgid "Editing new item, taking defaults"
+#~ msgstr "Для новой позиции настройки по умолчанию"
+
+#~ msgid "Enable Developer Functions"
+#~ msgstr "Режим разработчика"
+
+#~ msgid "Erasing memory {number}"
+#~ msgstr "Стирание памяти {number}"
 
 #, fuzzy
 #~ msgid "Error importing memories:"
 #~ msgstr "Ошибка импорта памяти:"
 
-#~ msgid "None"
-#~ msgstr "Ничего"
-
-#~ msgid "Inverse"
-#~ msgstr "Инверсия"
+#~ msgid "Error reporting is enabled"
+#~ msgstr "Отчёты об ошибках включены"
 
 #, fuzzy
-#~ msgid "Select"
-#~ msgstr "Выбор"
-
-#~ msgid "Auto"
-#~ msgstr "Авто"
-
-#~ msgid "Reverse"
-#~ msgstr "Обратный"
-
-#~ msgid "Adjust New Location"
-#~ msgstr "Новая позиция"
-
-#~ msgid "Confirm overwrites"
-#~ msgstr "Подтверждение перезаписи"
-
-#~ msgid "Cannot be imported because"
-#~ msgstr "Невозможно импортировать, поскольку"
-
-#, fuzzy
-#~ msgid "Import From File"
-#~ msgstr "Импорт из файла"
-
-#~ msgid "Import"
-#~ msgstr "Импорт"
-
-#~ msgid "To"
-#~ msgstr "Для"
-
-#~ msgid "From"
-#~ msgstr "От"
-
-#~ msgid "Location memory will be imported into"
-#~ msgstr "Позиция памяти будет импортирована в"
-
-#~ msgid "Location of memory in the file being imported"
-#~ msgstr "Позиция памяти в файле импортируется"
-
-#~ msgid "Preparing memory list..."
-#~ msgstr "Подготовка списка памяти..."
+#~ msgid "Exchange memories"
+#~ msgstr "Обмен памяти"
 
 #~ msgid "Export"
 #~ msgstr "Экспорт"
 
-#~ msgid "Untitled"
-#~ msgstr "Новый"
+#~ msgid "File Exists"
+#~ msgstr "Файл существует"
 
-#~ msgid "CHIRP Radio Images"
-#~ msgstr "Образы памяти Chirp"
+#~ msgid "From"
+#~ msgstr "От"
 
-#~ msgid "CHIRP Files"
-#~ msgstr "CHIRP"
+#~ msgid "Getting bank for memory {num}"
+#~ msgstr "Получение банка памяти {num}"
+
+#~ msgid "Getting bank information"
+#~ msgstr "Получение информации из банка"
+
+#~ msgid "Getting bank information for memory {num}"
+#~ msgstr "Получение информации банка для памяти {num}"
+
+#~ msgid "Getting channel {chan}"
+#~ msgstr "Получение канала {chan}"
+
+#~ msgid "Getting memory {number}"
+#~ msgstr "Получение памяти {number}"
+
+#~ msgid "Getting memory {num}"
+#~ msgstr "Получение из памяти {num}"
+
+#~ msgid "Getting raw memory {number}"
+#~ msgstr "Получение бинарной памяти {number}"
+
+#~ msgid "Go"
+#~ msgstr "Ок"
+
+#~ msgid "Help"
+#~ msgstr "Справка"
+
+#~ msgid "Hide Unused Fields"
+#~ msgstr "Скрыть неиспользуемые поля"
 
 #~ msgid "ICF Files"
 #~ msgstr "ICF"
-
-#~ msgid "VX7 Commander Files"
-#~ msgstr "VX7 Commander"
 
 #~ msgid ""
 #~ "ICF files cannot be edited, only displayed or imported into another file. "
@@ -1219,54 +1260,185 @@ msgstr ""
 #~ "Файлы ICF не могут быть отредактированы, возможно только показать или "
 #~ "импортировать в другой файл. Открыть только для чтения?"
 
-#~ msgid "There was an error opening {fname}: {error}"
-#~ msgstr "Ошибка открытия {fname}: {error}"
-
-#~ msgid "{num} errors during open:"
-#~ msgstr "{num} ошибки(ок) во время открытия:"
-
-#~ msgid "Note:"
-#~ msgstr "Заметка:"
-
 #~ msgid ""
-#~ "The {vendor} {model} operates in <b>live mode</b>. This means that any "
-#~ "changes you make are immediately sent to the radio. Because of this, you "
-#~ "cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish "
-#~ "to edit the contents offline, please <u>Export</u> to a CSV file, using "
-#~ "the <b>File menu</b>."
-#~ msgstr ""
-#~ "{vendor} {model} программируется в режиме <b>онлайн</b>. Это означает, "
-#~ "что любые изменения немедленно загружаются в станцию. По этой причине "
-#~ "невозможно использовать операции <u>Сохранить</u> или <u>Загрузить</u>. "
-#~ "Если вы хотите редактировать данные офлайн, то используйте <u>Экспорт</u> "
-#~ "в файл CSV из меню <b>Файл</b>."
+#~ "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+#~ msgstr "Отключить эту функцию можно в меню <u>Справка</u>"
 
-#~ msgid "Don't show this again"
-#~ msgstr "Не отображать снова"
+#~ msgid "Import"
+#~ msgstr "Импорт"
 
-#~ msgid "{vendor} {model} image file"
-#~ msgstr "Изображение {vendor} {model}"
+#, fuzzy
+#~ msgid "Import From File"
+#~ msgstr "Импорт из файла"
 
-#~ msgid "VX7 Commander"
-#~ msgstr "VX7 Commander"
+#~ msgid "Import from RFinder"
+#~ msgstr "Импорт из RFinder"
 
-#~ msgid "Open recent file {name}"
-#~ msgstr "Открыть недавний файл {name}"
+#~ msgid "Import from RepeaterBook"
+#~ msgstr "Импорт из RepeaterBook"
+
+#, fuzzy
+#~ msgid "Import from stock config"
+#~ msgstr "Импорт из предустановленных конфигураций"
 
 #~ msgid "Import stock configuration {name}"
 #~ msgstr "Импорт предустановленную конфигурацию {name}"
 
+#~ msgid "Importing bank information"
+#~ msgstr "Импорт информации банка"
+
+#~ msgid "Incompatible Memory"
+#~ msgstr "Несовместимая память"
+
+#~ msgid "Internal Error"
+#~ msgstr "Ошибка"
+
+#~ msgid "Internal Error: Column {name} not found"
+#~ msgstr "Ошибка: Столбец {name} не найден"
+
+#~ msgid "Internal Error: Invalid limit {number}"
+#~ msgstr "Ошибка: недопустимый предел {number}"
+
+#~ msgid "Internal error: Unable to upload to {model}"
+#~ msgstr "Ошибка: Невозможно загрузить в {model}"
+
+#~ msgid "Inverse"
+#~ msgstr "Инверсия"
+
+#~ msgid "Loc"
+#~ msgstr "№"
+
+#~ msgid "Location memory will be imported into"
+#~ msgstr "Позиция памяти будет импортирована в"
+
+#~ msgid "Location of memory in the file being imported"
+#~ msgstr "Позиция памяти в файле импортируется"
+
+#~ msgid "Location {number} is already being imported"
+#~ msgstr "Позиция {number} уже импортирована"
+
+#~ msgid ""
+#~ "Location {number} is already being imported. Choose another value for "
+#~ "'New Location' before selection 'Import'"
+#~ msgstr ""
+#~ "Позиция {number} уже импортирована. Выберите другое значение для \"Новая "
+#~ "позиция\" перед выбором \"Импорт\""
+
+#~ msgid "Looking for a free spot ({number})"
+#~ msgstr "Поиск свободной точки ({number})"
+
+#~ msgid "Memories must be contiguous"
+#~ msgstr "Память должна быть непрерывной"
+
+#~ msgid "Memory range:"
+#~ msgstr "Диапазон каналов"
+
+#~ msgid "Memory {number}"
+#~ msgstr "Память {number}"
+
+#, fuzzy
+#~ msgid "Move Dow_n"
+#~ msgstr "Вниз_"
+
+#~ msgid "Move _Up"
+#~ msgstr "Вверх_"
+
+#, fuzzy
+#~ msgid "Move down"
+#~ msgstr "Вниз"
+
+#, fuzzy
+#~ msgid "Move up"
+#~ msgstr "Вверх"
+
+#~ msgid "Moved {count} memories"
+#~ msgstr "Перемещенно {count} памяти"
+
+#~ msgid "Moving memory from {old} to {new}"
+#~ msgstr "Перемещение памяти из {old} в {new}"
+
+#~ msgid "Moving {src} to {dst}"
+#~ msgstr "Перемещение {src} до {dst}"
+
+#~ msgid "My callsign"
+#~ msgstr "Мой позывной"
+
+#~ msgid "Name"
+#~ msgstr "Имя"
+
+#~ msgid "None"
+#~ msgstr "Ничего"
+
+#~ msgid "Note:"
+#~ msgstr "Заметка:"
+
+#~ msgid "Open recent file {name}"
+#~ msgstr "Открыть недавний файл {name}"
+
 #~ msgid "Open stock configuration {name}"
 #~ msgstr "Открыть предустановленную конфигурацию {name}"
 
-#~ msgid "Discard Changes?"
-#~ msgstr "Не сохранять изменения?"
+#~ msgid "Overwrite"
+#~ msgstr "Перезаписать"
 
-#~ msgid "With significant contributions by:"
-#~ msgstr "При значительном участии:"
+#~ msgid "Overwrite location {number}?"
+#~ msgstr "Перезаписать расположение {number}?"
 
-#~ msgid "Visible columns for {radio}"
-#~ msgstr "Видимые столбцы для  {radio}"
+#, fuzzy
+#~ msgid "Paste"
+#~ msgstr "Вставить"
+
+#~ msgid "Preparing memory list..."
+#~ msgstr "Подготовка списка памяти..."
+
+#~ msgid "Priming memory"
+#~ msgstr "Первичная память"
+
+#~ msgid "RPT1CALL"
+#~ msgstr "RPT1CALL"
+
+#~ msgid "RPT2CALL"
+#~ msgstr "RPT2CALL"
+
+#~ msgid "Raw memory {number}"
+#~ msgstr "Бинарная память {number}"
+
+#~ msgid "Repeater callsign"
+#~ msgstr "Позывной репитера"
+
+#~ msgid "Report statistics"
+#~ msgstr "Отправка статистики"
+
+#~ msgid "Reverse"
+#~ msgstr "Обратный"
+
+#, fuzzy
+#~ msgid "Select"
+#~ msgstr "Выбор"
+
+#~ msgid "Setting index for memory {num}"
+#~ msgstr "Установка индекса для памяти {num}"
+
+#~ msgid "Setting memory {number}"
+#~ msgstr "Установка памяти {number}"
+
+#~ msgid "Shift"
+#~ msgstr "Сдвиг"
+
+#~ msgid "Show Empty"
+#~ msgstr "Показывать пустые"
+
+#~ msgid "Show raw memory"
+#~ msgstr "Show raw memory"
+
+#~ msgid "Skip"
+#~ msgstr "Пропуск"
+
+#~ msgid "Special Channels"
+#~ msgstr "Специальные каналы"
+
+#~ msgid "The file {name} already exists. Do you want to overwrite it?"
+#~ msgstr "Файл {name} уже существует. Перезаписать его?"
 
 #~ msgid ""
 #~ "The reporting feature of CHIRP is designed to help <u>improve quality</u> "
@@ -1287,157 +1459,32 @@ msgstr ""
 #~ "\n"
 #~ "<b>Вы действительно хотите отключить эту функцию?</b>"
 
-#~ msgid ""
-#~ "Choose a language or Auto to use the operating system default. You will "
-#~ "need to restart the application before the change will take effect"
-#~ msgstr ""
-#~ "Выберите язык или Авто для использования языка операционной системы. Вам "
-#~ "нужно будет перезапустить приложение, прежде чем изменения вступят в силу."
-
-#~ msgid "_Edit"
-#~ msgstr "_Правка"
-
-#~ msgid "_Cut"
-#~ msgstr "_Вырезать"
-
-#~ msgid "_Copy"
-#~ msgstr "_Копировать"
-
-#~ msgid "_Paste"
-#~ msgstr "_Вставить"
-
-#~ msgid "_Delete"
-#~ msgstr "_Удалить"
-
-#~ msgid "Move _Up"
-#~ msgstr "Вверх_"
-
-#, fuzzy
-#~ msgid "Move Dow_n"
-#~ msgstr "Вниз_"
-
-#~ msgid "E_xchange"
-#~ msgstr "Обмен_"
-
-#~ msgid "Columns"
-#~ msgstr "Столбцы"
-
-#~ msgid "Show raw memory"
-#~ msgstr "Show raw memory"
-
-#~ msgid "Diff raw memories"
-#~ msgstr "Diff raw memories"
-
-#~ msgid "Diff tabs"
-#~ msgstr "Diff tabs"
-
-#~ msgid "Change language"
-#~ msgstr "Изменить язык"
-
-#~ msgid "_Radio"
-#~ msgstr "_Станция"
-
-#~ msgid "Import from RFinder"
-#~ msgstr "Импорт из RFinder"
-
-#~ msgid "CHIRP Native File"
-#~ msgstr "Файл CHIRP"
-
-#~ msgid "CSV File"
-#~ msgstr "CSV"
-
-#~ msgid "Import from RepeaterBook"
-#~ msgstr "Импорт из RepeaterBook"
-
-#, fuzzy
-#~ msgid "Import from stock config"
-#~ msgstr "Импорт из предустановленных конфигураций"
-
-#~ msgid "Help"
-#~ msgstr "Справка"
-
-#~ msgid "Report statistics"
-#~ msgstr "Отправка статистики"
-
-#~ msgid "Hide Unused Fields"
-#~ msgstr "Скрыть неиспользуемые поля"
-
-#~ msgid "Automatic Repeater Offset"
-#~ msgstr "Авторазнос для репитера"
-
-#~ msgid "Enable Developer Functions"
-#~ msgstr "Режим разработчика"
-
-#~ msgid "Error reporting is enabled"
-#~ msgstr "Отчёты об ошибках включены"
-
-#~ msgid ""
-#~ "If you wish to disable this feature you may do so in the <u>Help</u> menu"
-#~ msgstr "Отключить эту функцию можно в меню <u>Справка</u>"
-
-#~ msgid "Clone Progress"
-#~ msgstr "Загрузка"
-
-#~ msgid "Cancel"
-#~ msgstr "Отмена"
-
-#~ msgid "Shift"
-#~ msgstr "Сдвиг"
-
-#~ msgid "Moving {src} to {dst}"
-#~ msgstr "Перемещение {src} до {dst}"
-
-#~ msgid "Looking for a free spot ({number})"
-#~ msgstr "Поиск свободной точки ({number})"
-
-#~ msgid "Moved {count} memories"
-#~ msgstr "Перемещенно {count} памяти"
-
-#, fuzzy
-#~ msgid "{vendor} {model} on {port}"
-#~ msgstr "{vendor} {model} на {port}"
-
-#~ msgid "Internal error: Unable to upload to {model}"
-#~ msgstr "Ошибка: Невозможно загрузить в {model}"
-
-#~ msgid "Clone failed: {error}"
-#~ msgstr "Ошибка загрузки {error}"
-
-#~ msgid "Callsign"
-#~ msgstr "Позывной"
-
-#~ msgid "Your callsign"
-#~ msgstr "Ваш позывной"
-
-#~ msgid "Repeater callsign"
-#~ msgstr "Позывной репитера"
-
-#~ msgid "My callsign"
-#~ msgstr "Мой позывной"
-
-#~ msgid "Downloading URCALL list"
-#~ msgstr "Загрузка URCALL"
-
-#~ msgid "Downloading RPTCALL list"
-#~ msgstr "Загрузка RPTCALL"
-
-#~ msgid "Downloading MYCALL list"
-#~ msgstr "Загрузка MYCALL"
-
-#~ msgid "D-STAR"
-#~ msgstr "D-STAR"
-
-#~ msgid "Bank Names"
-#~ msgstr "Имена банков"
-
 #~ msgid "The {vendor} {model} has multiple independent sub-devices"
 #~ msgstr "{vendor} {model} имеет несколько различных подустройства"
 
-#~ msgid "Cancelled"
-#~ msgstr "Отменено"
+#~ msgid ""
+#~ "The {vendor} {model} operates in <b>live mode</b>. This means that any "
+#~ "changes you make are immediately sent to the radio. Because of this, you "
+#~ "cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish "
+#~ "to edit the contents offline, please <u>Export</u> to a CSV file, using "
+#~ "the <b>File menu</b>."
+#~ msgstr ""
+#~ "{vendor} {model} программируется в режиме <b>онлайн</b>. Это означает, "
+#~ "что любые изменения немедленно загружаются в станцию. По этой причине "
+#~ "невозможно использовать операции <u>Сохранить</u> или <u>Загрузить</u>. "
+#~ "Если вы хотите редактировать данные офлайн, то используйте <u>Экспорт</u> "
+#~ "в файл CSV из меню <b>Файл</b>."
 
-#~ msgid "Internal Error"
-#~ msgstr "Ошибка"
+#, fuzzy
+#~ msgid "There was an error during export: {error}"
+#~ msgstr "Ошибка открытия {fname}: {error}"
+
+#, fuzzy
+#~ msgid "There was an error during import: {error}"
+#~ msgstr "Ошибка открытия{fname}: {error}"
+
+#~ msgid "There was an error opening {fname}: {error}"
+#~ msgstr "Ошибка открытия {fname}: {error}"
 
 #~ msgid ""
 #~ "There were errors while opening {file}. The affected memories will not be "
@@ -1445,32 +1492,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Были обнаружены ошибки при открытии. Затронутая память не сможет быть "
 #~ "импортирована."
-
-#, fuzzy
-#~ msgid "There was an error during import: {error}"
-#~ msgstr "Ошибка открытия{fname}: {error}"
-
-#~ msgid "Unsupported file type"
-#~ msgstr "Неподдерживаемый тип файла"
-
-#, fuzzy
-#~ msgid "There was an error during export: {error}"
-#~ msgstr "Ошибка открытия {fname}: {error}"
-
-#~ msgid "Priming memory"
-#~ msgstr "Первичная память"
-
-#~ msgid "Skip"
-#~ msgstr "Пропуск"
-
-#~ msgid "Editing new item, taking defaults"
-#~ msgstr "Для новой позиции настройки по умолчанию"
-
-#~ msgid "Bad value for {col}: {val}"
-#~ msgstr "Некорректное значение для {col}: {val}"
-
-#~ msgid "Writing memory {number}"
-#~ msgstr "запись памяти {number}"
 
 #~ msgid ""
 #~ "This operation requires moving all subsequent channels by one spot until "
@@ -1481,99 +1502,78 @@ msgstr ""
 #~ "пока свободное место не дудет достигнуто. Это может занять ОЧЕНЬ много "
 #~ "времени. Вы уверены, что хотите это сделать?"
 
-#~ msgid "Adding memory {number}"
-#~ msgstr "Добавление памяти {number}"
-
-#~ msgid "Erasing memory {number}"
-#~ msgstr "Стирание памяти {number}"
-
-#~ msgid "Getting memory {number}"
-#~ msgstr "Получение памяти {number}"
-
-#~ msgid "Moving memory from {old} to {new}"
-#~ msgstr "Перемещение памяти из {old} в {new}"
-
-#~ msgid "Raw memory {number}"
-#~ msgstr "Бинарная память {number}"
-
-#~ msgid "Getting raw memory {number}"
-#~ msgstr "Получение бинарной памяти {number}"
-
-#~ msgid "You can only diff two memories!"
-#~ msgstr "You can only diff two memories!"
-
-#~ msgid "Memory {number}"
-#~ msgstr "Память {number}"
-
-#~ msgid "Diff of {a} and {b}"
-#~ msgstr "Diff of {a} and {b}"
-
-#~ msgid "Memories must be contiguous"
-#~ msgstr "Память должна быть непрерывной"
-
-#, fuzzy
-#~ msgid "Delete all"
-#~ msgstr "_Удалить всё"
-
-#, fuzzy
-#~ msgid "Move up"
-#~ msgstr "Вверх"
-
-#, fuzzy
-#~ msgid "Move down"
-#~ msgstr "Вниз"
-
-#, fuzzy
-#~ msgid "Exchange memories"
-#~ msgstr "Обмен памяти"
-
-#, fuzzy
-#~ msgid "Cut"
-#~ msgstr "Вырезать"
-
-#, fuzzy
-#~ msgid "Copy"
-#~ msgstr "Копировать"
-
-#, fuzzy
-#~ msgid "Paste"
-#~ msgstr "Вставить"
-
-#~ msgid "Internal Error: Column {name} not found"
-#~ msgstr "Ошибка: Столбец {name} не найден"
-
-#~ msgid "Getting channel {chan}"
-#~ msgstr "Получение канала {chan}"
-
-#~ msgid "Internal Error: Invalid limit {number}"
-#~ msgstr "Ошибка: недопустимый предел {number}"
-
-#~ msgid "Memory range:"
-#~ msgstr "Диапазон каналов"
-
-#~ msgid "Go"
-#~ msgstr "Ок"
-
-#~ msgid "Special Channels"
-#~ msgstr "Специальные каналы"
-
-#~ msgid "Show Empty"
-#~ msgstr "Показывать пустые"
-
-#~ msgid "Cutting memory {number}"
-#~ msgstr "Обрезка памяти {number}"
-
-#~ msgid "Overwrite location {number}?"
-#~ msgstr "Перезаписать расположение {number}?"
-
-#~ msgid "Incompatible Memory"
-#~ msgstr "Несовместимая память"
+#~ msgid "To"
+#~ msgstr "Для"
 
 #~ msgid "URCALL"
 #~ msgstr "URCALL"
 
-#~ msgid "RPT1CALL"
-#~ msgstr "RPT1CALL"
+#~ msgid "Unsupported file type"
+#~ msgstr "Неподдерживаемый тип файла"
 
-#~ msgid "RPT2CALL"
-#~ msgstr "RPT2CALL"
+#~ msgid "Untitled"
+#~ msgstr "Новый"
+
+#~ msgid "Updating RPTCALL list"
+#~ msgstr "Обновление RPTCALL"
+
+#~ msgid "Updating URCALL list"
+#~ msgstr "Обновление URCALL"
+
+#~ msgid "Updating bank index for memory {num}"
+#~ msgstr "Обновление индекса банка в памяти {num}"
+
+#~ msgid "Updating bank information for memory {num}"
+#~ msgstr "Обновление информации банка в памяти {num}"
+
+#~ msgid "VX7 Commander"
+#~ msgstr "VX7 Commander"
+
+#~ msgid "VX7 Commander Files"
+#~ msgstr "VX7 Commander"
+
+#~ msgid "Visible columns for {radio}"
+#~ msgstr "Видимые столбцы для  {radio}"
+
+#~ msgid "With significant contributions by:"
+#~ msgstr "При значительном участии:"
+
+#~ msgid "Writing memory {number}"
+#~ msgstr "запись памяти {number}"
+
+#~ msgid "You can only diff two memories!"
+#~ msgstr "You can only diff two memories!"
+
+#~ msgid "Your callsign"
+#~ msgstr "Ваш позывной"
+
+#~ msgid "_Copy"
+#~ msgstr "_Копировать"
+
+#~ msgid "_Cut"
+#~ msgstr "_Вырезать"
+
+#~ msgid "_Delete"
+#~ msgstr "_Удалить"
+
+#~ msgid "_Edit"
+#~ msgstr "_Правка"
+
+#~ msgid "_Paste"
+#~ msgstr "_Вставить"
+
+#~ msgid "_Radio"
+#~ msgstr "_Станция"
+
+#~ msgid "idle"
+#~ msgstr "ожидание"
+
+#~ msgid "{num} errors during open:"
+#~ msgstr "{num} ошибки(ок) во время открытия:"
+
+#~ msgid "{vendor} {model} image file"
+#~ msgstr "Изображение {vendor} {model}"
+
+#, fuzzy
+#~ msgid "{vendor} {model} on {port}"
+#~ msgstr "{vendor} {model} на {port}"
