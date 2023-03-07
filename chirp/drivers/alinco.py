@@ -121,8 +121,8 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
 
         data = b""
         for addr in range(0, limit, 16):
-            data += self._download_chunk(addr)
             time.sleep(0.1)
+            data += self._download_chunk(addr)
 
             if self.status_fn:
                 status = chirp_common.Status()
@@ -161,8 +161,8 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
             raise Exception("I can't talk to this model")
 
         for addr in range(0x100, limit, 16):
-            self._upload_chunk(addr)
             time.sleep(0.1)
+            self._upload_chunk(addr)
 
             if self.status_fn:
                 status = chirp_common.Status()
