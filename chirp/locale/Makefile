@@ -16,12 +16,12 @@ clean:
 	find * -depth -type d -exec rmdir "{}" \;
 
 chirpui.pot:
-	xgettext -L Python -k_ -o chirpui.pot --from-code=iso-8859-15 -f <( \
+	xgettext -s -L Python -k_ -o chirpui.pot --from-code=iso-8859-15 -f <( \
 	  /usr/bin/find .. -name '*.py') $(XGT_OPTS)
 
 %.po: chirpui.pot
 	if [ -f $@ ]; then                                \
-	msgmerge -U $@ chirpui.pot;                       \
+	msgmerge -sU $@ chirpui.pot;                       \
 	else                                              \
 	msginit --input=chirpui.pot --locale=$(@:%.po=%); \
 	fi
