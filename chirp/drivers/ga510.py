@@ -1074,6 +1074,12 @@ class TDH6Radio(RadioddityGA510Radio):
     VENDOR = "TIDRADIO"
     MODEL = "TD-H6"
 
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_bands = [(136000000, 174000000),
+                          (400000000, 520000000)]
+        return rf
+
 
 @directory.register
 class Senhaix8800Radio(RadioddityGA510Radio):
