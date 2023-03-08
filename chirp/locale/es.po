@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-06 17:24-0800\n"
-"PO-Revision-Date: 2023-02-08 02:11-0300\n"
+"PO-Revision-Date: 2023-03-07 23:10-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -76,7 +76,7 @@ msgstr "Aplicando ajustes"
 
 #: ../wxui/developer.py:471
 msgid "Available modules"
-msgstr ""
+msgstr "Módulos disponibles"
 
 #: ../wxui/main.py:1407
 msgid "Bandplan"
@@ -141,9 +141,9 @@ msgid "Choose duplex"
 msgstr "Elegir Dúplex"
 
 #: ../wxui/developer.py:470
-#, fuzzy, python-format
+#, python-format
 msgid "Choose the module to load from issue %i:"
-msgstr "Elige uno para importar desde:"
+msgstr "Elige el módulo para cargar desde problema %i:"
 
 #: ../wxui/query_sources.py:451
 msgid "City"
@@ -215,7 +215,7 @@ msgstr "Memoria DV"
 
 #: ../wxui/main.py:1337
 msgid "Danger Ahead"
-msgstr ""
+msgstr "Peligro adelante"
 
 #: ../wxui/developer.py:215
 msgid "Dec"
@@ -256,8 +256,8 @@ msgstr "Modo desarrollador"
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
-"Estado de desarrollador ahora es %s. CHIRP debe ser reiniciado para que tome "
-"efecto"
+"Estado de desarrollador ahora está %s. CHIRP debe ser reiniciado para que "
+"tome efecto"
 
 #: ../wxui/memedit.py:1186
 msgid "Diff Raw Memories"
@@ -482,7 +482,7 @@ msgstr "Edición inválida: %s"
 
 #: ../wxui/main.py:1286
 msgid "Invalid or unsupported module file"
-msgstr ""
+msgstr "Archivo de módulo inválido o no soportado"
 
 #: ../wxui/memedit.py:148 ../wxui/memedit.py:154
 #, python-format
@@ -491,7 +491,7 @@ msgstr "Valor inválido: %r"
 
 #: ../wxui/developer.py:481
 msgid "Issue number:"
-msgstr ""
+msgstr "Número de problema:"
 
 #: ../wxui/main.py:272
 msgid "LIVE"
@@ -523,9 +523,8 @@ msgid "Load Module"
 msgstr "Cargar modulo"
 
 #: ../wxui/main.py:724 ../wxui/developer.py:482
-#, fuzzy
 msgid "Load module from issue"
-msgstr "Cargar modulo"
+msgstr "Cargar módulo desde problema"
 
 #: ../wxui/main.py:1293
 msgid ""
@@ -536,6 +535,12 @@ msgid ""
 "giving them direct access to your computer and everything on it! Proceed "
 "despite this risk?"
 msgstr ""
+"Cargar módulos puede ser extremadamente peligroso, pudiendo dañar tu "
+"computador, radio o ambos. NUNCA cargues un módulo desde una fuente que no "
+"confíes, y especialmente desde ningún sitio que no sea el sitio web "
+"principal de CHIRP (chirp.danplanet.com). ¡Cargar un módulo desde otra "
+"fuente es como darles acceso directo a tu computador y a todo en este! "
+"¿Proceder a pesar de este riesgo?"
 
 #: ../wxui/clone.py:111
 msgid "Loading settings"
@@ -564,9 +569,8 @@ msgid "Memory {num} not in bank {bank}"
 msgstr "Memoria {num} no en banco {bank}"
 
 #: ../wxui/memedit.py:451
-#, fuzzy
 msgid "Mode"
-msgstr "Modos"
+msgstr "Modo"
 
 #: ../wxui/clone.py:234
 msgid "Model"
@@ -581,13 +585,12 @@ msgid "Module"
 msgstr "Modulo"
 
 #: ../wxui/main.py:1262
-#, fuzzy
 msgid "Module Loaded"
-msgstr "Modulo"
+msgstr "Módulo cargado"
 
 #: ../wxui/main.py:1393
 msgid "Module loaded successfully"
-msgstr ""
+msgstr "Módulo cargado exitosamente"
 
 #: ../wxui/clone.py:357
 #, python-format
@@ -604,12 +607,12 @@ msgstr "¡No hay filas vacías debajo!"
 
 #: ../wxui/developer.py:497
 msgid "No modules found"
-msgstr ""
+msgstr "No se encontraron módulos"
 
 #: ../wxui/developer.py:496
 #, python-format
 msgid "No modules found in issue %i"
-msgstr ""
+msgstr "No se encontraron módulos en problema %i"
 
 #: ../sources/repeaterbook.py:270
 msgid "No results!"
@@ -711,6 +714,11 @@ msgid ""
 "and functions that can damage your computer and your radio if not used with "
 "EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
+"Por favor te en cuenta que el modo desarrollador está pensado para uso por "
+"desarrolladores del proyecto CHIRP, o bajo la dirección de un desarrollador. "
+"Esto habilita comportamientos y funciones que pueden dañar tu computador y "
+"tu radio si no se usan con EXTREMO cuidado. ¡has sido advertido! ¿Proceder "
+"de todos modos?"
 
 #: ../wxui/common.py:115
 msgid "Please wait"
@@ -896,7 +904,7 @@ msgstr "Estado/Provincia"
 
 #: ../wxui/main.py:1394
 msgid "Success"
-msgstr ""
+msgstr "Éxito"
 
 #: ../drivers/bj9900.py:112
 msgid ""
@@ -912,7 +920,7 @@ msgstr ""
 
 #: ../wxui/developer.py:479
 msgid "This will load a module from a website issue"
-msgstr ""
+msgstr "Esto va a cargar un módulo desde un problema del sitio web"
 
 #: ../wxui/memedit.py:322
 msgid "Tone"
@@ -927,7 +935,6 @@ msgid "Tone Squelch"
 msgstr "Silenciador de tono"
 
 #: ../wxui/memedit.py:272
-#, fuzzy
 msgid "Tuning Step"
 msgstr "Paso de sintonización"
 
@@ -1062,14 +1069,12 @@ msgid "bytes each"
 msgstr "bytes cada"
 
 #: ../wxui/main.py:1328
-#, fuzzy
 msgid "disabled"
-msgstr "Habilitado"
+msgstr "deshabilitado"
 
 #: ../wxui/main.py:1328
-#, fuzzy
 msgid "enabled"
-msgstr "Habilitado"
+msgstr "habilitado"
 
 #: ../drivers/vx5.py:117
 #, python-brace-format
