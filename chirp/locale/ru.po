@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-06 17:24-0800\n"
+"POT-Creation-Date: 2023-03-10 10:35-0800\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -13,6 +13,21 @@ msgstr ""
 #, python-format
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr ""
+
+#: ../wxui/memedit.py:1166
+#, fuzzy, python-format
+msgid "%i Memories"
+msgstr "Память"
+
+#: ../wxui/memedit.py:1173
+#, fuzzy, python-format
+msgid "%i Memories and shift all up"
+msgstr "Удалить (и сдвинуть вверх)"
+
+#: ../wxui/memedit.py:1169
+#, fuzzy, python-format
+msgid "%i Memories and shift block up"
+msgstr "Удалить (и сдвинуть вверх)"
 
 #: ../wxui/main.py:1072
 #, fuzzy, python-format
@@ -200,7 +215,7 @@ msgid ""
 "Polarity"
 msgstr "DTCS Pol"
 
-#: ../wxui/memedit.py:1564
+#: ../wxui/memedit.py:1625
 msgid "DV Memory"
 msgstr ""
 
@@ -213,35 +228,10 @@ msgstr ""
 msgid "Dec"
 msgstr "Проверка"
 
-#: ../wxui/memedit.py:1148
+#: ../wxui/memedit.py:1161
 #, fuzzy
 msgid "Delete"
 msgstr "_Удалить"
-
-#: ../wxui/memedit.py:1138
-#, fuzzy, python-format
-msgid "Delete %i Memories"
-msgstr "Diff raw memories"
-
-#: ../wxui/memedit.py:1145
-#, fuzzy, python-format
-msgid "Delete %i Memories and shift all up"
-msgstr "Удалить (и сдвинуть вверх)"
-
-#: ../wxui/memedit.py:1141
-#, fuzzy, python-format
-msgid "Delete %i Memories and shift block up"
-msgstr "Удалить (и сдвинуть вверх)"
-
-#: ../wxui/memedit.py:1152
-#, fuzzy
-msgid "Delete and shift all up"
-msgstr "Удалить (и сдвинуть вверх)"
-
-#: ../wxui/memedit.py:1150
-#, fuzzy
-msgid "Delete and shift block up"
-msgstr "Удалить (и сдвинуть вверх)"
 
 #: ../wxui/main.py:692
 #, fuzzy
@@ -253,12 +243,12 @@ msgstr "Разработчик"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 
-#: ../wxui/memedit.py:1186
+#: ../wxui/memedit.py:1247
 #, fuzzy
 msgid "Diff Raw Memories"
 msgstr "Diff raw memories"
 
-#: ../wxui/memedit.py:1489
+#: ../wxui/memedit.py:1550
 msgid "Digital Code"
 msgstr "Цифровой код"
 
@@ -297,12 +287,12 @@ msgstr "Чтение из станции"
 msgid "Duplex"
 msgstr "Дуплекс"
 
-#: ../wxui/memedit.py:1519
+#: ../wxui/memedit.py:1580
 #, python-format
 msgid "Edit details for %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:1517
+#: ../wxui/memedit.py:1578
 #, python-format
 msgid "Edit details for memory %i"
 msgstr ""
@@ -351,7 +341,7 @@ msgstr ""
 msgid "Experimental driver"
 msgstr ""
 
-#: ../wxui/memedit.py:1452
+#: ../wxui/memedit.py:1513
 msgid "Export can only write CSV files"
 msgstr ""
 
@@ -360,7 +350,7 @@ msgstr ""
 msgid "Export to CSV"
 msgstr "Экспорт в файл"
 
-#: ../wxui/memedit.py:1553
+#: ../wxui/memedit.py:1614
 msgid "Extra"
 msgstr ""
 
@@ -459,7 +449,7 @@ msgstr ""
 msgid "Information"
 msgstr ""
 
-#: ../wxui/memedit.py:1129
+#: ../wxui/memedit.py:1154
 #, fuzzy
 msgid "Insert Row Above"
 msgstr "Вставка строки выше"
@@ -477,7 +467,7 @@ msgstr "Неверное значение. Должно быть целое чи
 msgid "Invalid ZIP code"
 msgstr ""
 
-#: ../wxui/memedit.py:1018 ../wxui/memedit.py:1642
+#: ../wxui/memedit.py:1018 ../wxui/memedit.py:1703
 #, python-format
 msgid "Invalid edit: %s"
 msgstr ""
@@ -602,7 +592,7 @@ msgstr ""
 msgid "New version available"
 msgstr ""
 
-#: ../wxui/memedit.py:1222
+#: ../wxui/memedit.py:1283
 #, fuzzy
 msgid "No empty rows below!"
 msgstr "Вставка строки ниже"
@@ -683,27 +673,27 @@ msgstr ""
 msgid "Optional: County, Hospital, etc"
 msgstr ""
 
-#: ../wxui/memedit.py:1332
+#: ../wxui/memedit.py:1393
 #, fuzzy
 msgid "Overwrite memories?"
 msgstr "Перезаписать?"
 
-#: ../wxui/memedit.py:1326
+#: ../wxui/memedit.py:1387
 #, python-format
 msgid "Pasted memories will overwrite %i existing memories"
 msgstr ""
 
-#: ../wxui/memedit.py:1329
+#: ../wxui/memedit.py:1390
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1323
+#: ../wxui/memedit.py:1384
 #, python-format
 msgid "Pasted memories will overwrite memory %i"
 msgstr ""
 
-#: ../wxui/memedit.py:1320
+#: ../wxui/memedit.py:1381
 #, python-format
 msgid "Pasted memory will overwrite memory %i"
 msgstr ""
@@ -749,7 +739,7 @@ msgstr ""
 msgid "Printing"
 msgstr ""
 
-#: ../wxui/memedit.py:1123
+#: ../wxui/memedit.py:1148
 msgid "Properties"
 msgstr ""
 
@@ -878,7 +868,7 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: ../wxui/memedit.py:1178
+#: ../wxui/memedit.py:1239
 #, fuzzy
 msgid "Show Raw Memory"
 msgstr "Show Raw Memory\t"
@@ -887,14 +877,38 @@ msgstr "Show Raw Memory\t"
 msgid "Show debug log location"
 msgstr ""
 
-#: ../wxui/memedit.py:1377
+#: ../wxui/memedit.py:1438
 #, fuzzy
 msgid "Some memories are incompatible with this radio"
 msgstr "Вставленная память {number} не совместима с этой станцией, потому что:"
 
-#: ../wxui/memedit.py:1294
+#: ../wxui/memedit.py:1355
 msgid "Some memories are not deletable"
 msgstr ""
+
+#: ../wxui/memedit.py:1211
+#, fuzzy, python-format
+msgid "Sort %i memories"
+msgstr "Diff raw memories"
+
+#: ../wxui/memedit.py:1214
+#, python-format
+msgid "Sort %i memories ascending"
+msgstr ""
+
+#: ../wxui/memedit.py:1223
+#, python-format
+msgid "Sort %i memories descending"
+msgstr ""
+
+#: ../wxui/memedit.py:1119
+msgid "Sort by column:"
+msgstr ""
+
+#: ../wxui/memedit.py:1118
+#, fuzzy
+msgid "Sort memories"
+msgstr "Перезаписать?"
 
 #: ../wxui/query_sources.py:454
 msgid "State"
@@ -908,6 +922,11 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
+#: ../wxui/memedit.py:1176
+#, fuzzy
+msgid "This Memory"
+msgstr "Show Raw Memory\t"
+
 #: ../drivers/bj9900.py:112
 msgid ""
 "This is experimental support for BJ-9900 which is still under development.\n"
@@ -915,6 +934,16 @@ msgid ""
 "Also please send in bug and enhancement requests!\n"
 "You have been warned. Proceed at your own risk!"
 msgstr ""
+
+#: ../wxui/memedit.py:1180
+#, fuzzy
+msgid "This memory and shift all up"
+msgstr "Удалить (и сдвинуть вверх)"
+
+#: ../wxui/memedit.py:1178
+#, fuzzy
+msgid "This memory and shift block up"
+msgstr "Удалить (и сдвинуть вверх)"
 
 #: ../wxui/developer.py:479
 msgid "This will load a module from a website issue"
@@ -1163,6 +1192,14 @@ msgstr ""
 #, fuzzy
 #~ msgid "Delete all"
 #~ msgstr "_Удалить всё"
+
+#, fuzzy
+#~ msgid "Delete and shift all up"
+#~ msgstr "Удалить (и сдвинуть вверх)"
+
+#, fuzzy
+#~ msgid "Delete and shift block up"
+#~ msgstr "Удалить (и сдвинуть вверх)"
 
 #~ msgid "Diff of {a} and {b}"
 #~ msgstr "Diff of {a} and {b}"

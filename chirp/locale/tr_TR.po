@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-06 17:24-0800\n"
+"POT-Creation-Date: 2023-03-10 10:35-0800\n"
 "PO-Revision-Date: 2023-03-05 00:39+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -23,6 +23,21 @@ msgstr ""
 #, python-format
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s, %(min)i ile %(max)i arasında olmalıdır"
+
+#: ../wxui/memedit.py:1166
+#, fuzzy, python-format
+msgid "%i Memories"
+msgstr "Bellekler"
+
+#: ../wxui/memedit.py:1173
+#, fuzzy, python-format
+msgid "%i Memories and shift all up"
+msgstr "%i Belleği sil ve hepsini yukarı kaydır"
+
+#: ../wxui/memedit.py:1169
+#, fuzzy, python-format
+msgid "%i Memories and shift block up"
+msgstr "%i Belleği sil ve bloğu yukarı kaydır"
 
 #: ../wxui/main.py:1072
 #, python-format
@@ -207,7 +222,7 @@ msgstr ""
 "DTCS\n"
 "Polarite"
 
-#: ../wxui/memedit.py:1564
+#: ../wxui/memedit.py:1625
 msgid "DV Memory"
 msgstr "DV Bellek"
 
@@ -219,32 +234,9 @@ msgstr ""
 msgid "Dec"
 msgstr "Dec"
 
-#: ../wxui/memedit.py:1148
+#: ../wxui/memedit.py:1161
 msgid "Delete"
 msgstr "Sil"
-
-#: ../wxui/memedit.py:1138
-#, python-format
-msgid "Delete %i Memories"
-msgstr "%i Belleği Sil"
-
-#: ../wxui/memedit.py:1145
-#, python-format
-msgid "Delete %i Memories and shift all up"
-msgstr "%i Belleği sil ve hepsini yukarı kaydır"
-
-#: ../wxui/memedit.py:1141
-#, python-format
-msgid "Delete %i Memories and shift block up"
-msgstr "%i Belleği sil ve bloğu yukarı kaydır"
-
-#: ../wxui/memedit.py:1152
-msgid "Delete and shift all up"
-msgstr "Sil ve hepsini yukarı kaydır"
-
-#: ../wxui/memedit.py:1150
-msgid "Delete and shift block up"
-msgstr "Sil ve bloğu yukarı kaydır"
 
 #: ../wxui/main.py:692
 msgid "Developer Mode"
@@ -256,11 +248,11 @@ msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 "Geliştirici durumu artık %s. Etkili olması için CHIRP yeniden başlatılmalıdır"
 
-#: ../wxui/memedit.py:1186
+#: ../wxui/memedit.py:1247
 msgid "Diff Raw Memories"
 msgstr "Farklı Ham Bellekler"
 
-#: ../wxui/memedit.py:1489
+#: ../wxui/memedit.py:1550
 msgid "Digital Code"
 msgstr "Dijital Kod"
 
@@ -297,12 +289,12 @@ msgstr "Talimatları indir"
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:1519
+#: ../wxui/memedit.py:1580
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "%i bellekleri için ayrıntıları düzenle"
 
-#: ../wxui/memedit.py:1517
+#: ../wxui/memedit.py:1578
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "%i belleği için ayrıntıları düzenle"
@@ -349,7 +341,7 @@ msgstr "Telsizle iletişim hatası"
 msgid "Experimental driver"
 msgstr "Deneysel sürücü"
 
-#: ../wxui/memedit.py:1452
+#: ../wxui/memedit.py:1513
 msgid "Export can only write CSV files"
 msgstr "Dışa aktarma yalnızca CSV dosyalarını yazabilir"
 
@@ -357,7 +349,7 @@ msgstr "Dışa aktarma yalnızca CSV dosyalarını yazabilir"
 msgid "Export to CSV"
 msgstr "CSV'ye aktar"
 
-#: ../wxui/memedit.py:1553
+#: ../wxui/memedit.py:1614
 msgid "Extra"
 msgstr "Ekstra"
 
@@ -454,7 +446,7 @@ msgstr "Bilgi"
 msgid "Information"
 msgstr "Bilgi"
 
-#: ../wxui/memedit.py:1129
+#: ../wxui/memedit.py:1154
 msgid "Insert Row Above"
 msgstr "Yukarıya Satır Ekle"
 
@@ -471,7 +463,7 @@ msgstr "Geçersiz %(value)s (ondalık basamak kullanın)"
 msgid "Invalid ZIP code"
 msgstr "Geçersiz ZIP kodu"
 
-#: ../wxui/memedit.py:1018 ../wxui/memedit.py:1642
+#: ../wxui/memedit.py:1018 ../wxui/memedit.py:1703
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Geçersiz düzenleme: %s"
@@ -593,7 +585,7 @@ msgstr "Birden fazla bağlantı noktası bulundu: %s"
 msgid "New version available"
 msgstr "Yeni sürüm mevcut"
 
-#: ../wxui/memedit.py:1222
+#: ../wxui/memedit.py:1283
 msgid "No empty rows below!"
 msgstr "Aşağıda boş satır yok!"
 
@@ -670,26 +662,26 @@ msgstr "İsteğe bağlı: 45.0000"
 msgid "Optional: County, Hospital, etc"
 msgstr "İsteğe bağlı: İlçe, Hastane vb."
 
-#: ../wxui/memedit.py:1332
+#: ../wxui/memedit.py:1393
 msgid "Overwrite memories?"
 msgstr "Belleklerin üzerine yazılsın mı?"
 
-#: ../wxui/memedit.py:1326
+#: ../wxui/memedit.py:1387
 #, python-format
 msgid "Pasted memories will overwrite %i existing memories"
 msgstr "Yapıştırılan bellekler, mevcut %i belleğinin üzerine yazılacak"
 
-#: ../wxui/memedit.py:1329
+#: ../wxui/memedit.py:1390
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "Yapıştırılan bellekler %s belleklerinin üzerine yazılacak"
 
-#: ../wxui/memedit.py:1323
+#: ../wxui/memedit.py:1384
 #, python-format
 msgid "Pasted memories will overwrite memory %i"
 msgstr "Yapıştırılan bellekler, %i belleğin üzerine yazılacak"
 
-#: ../wxui/memedit.py:1320
+#: ../wxui/memedit.py:1381
 #, python-format
 msgid "Pasted memory will overwrite memory %i"
 msgstr "Yapıştırılan bellek, %i belleğinin üzerine yazacak"
@@ -734,7 +726,7 @@ msgstr "Baskı Önizleme"
 msgid "Printing"
 msgstr "Yazdırılıyor"
 
-#: ../wxui/memedit.py:1123
+#: ../wxui/memedit.py:1148
 msgid "Properties"
 msgstr "Özellikler"
 
@@ -864,7 +856,7 @@ msgstr "Servis"
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: ../wxui/memedit.py:1178
+#: ../wxui/memedit.py:1239
 msgid "Show Raw Memory"
 msgstr "Ham Belleği Göster"
 
@@ -872,13 +864,37 @@ msgstr "Ham Belleği Göster"
 msgid "Show debug log location"
 msgstr "Hata ayıklama günlüğü konumunu göster"
 
-#: ../wxui/memedit.py:1377
+#: ../wxui/memedit.py:1438
 msgid "Some memories are incompatible with this radio"
 msgstr "Bazı bellekler bu telsizle uyumlu değil"
 
-#: ../wxui/memedit.py:1294
+#: ../wxui/memedit.py:1355
 msgid "Some memories are not deletable"
 msgstr "Bazı anılar silinemez"
+
+#: ../wxui/memedit.py:1211
+#, fuzzy, python-format
+msgid "Sort %i memories"
+msgstr "%i Belleği Sil"
+
+#: ../wxui/memedit.py:1214
+#, python-format
+msgid "Sort %i memories ascending"
+msgstr ""
+
+#: ../wxui/memedit.py:1223
+#, python-format
+msgid "Sort %i memories descending"
+msgstr ""
+
+#: ../wxui/memedit.py:1119
+msgid "Sort by column:"
+msgstr ""
+
+#: ../wxui/memedit.py:1118
+#, fuzzy
+msgid "Sort memories"
+msgstr "Belleklerin üzerine yazılsın mı?"
 
 #: ../wxui/query_sources.py:454
 msgid "State"
@@ -892,6 +908,11 @@ msgstr "Eyalet/İl"
 msgid "Success"
 msgstr ""
 
+#: ../wxui/memedit.py:1176
+#, fuzzy
+msgid "This Memory"
+msgstr "DV Bellek"
+
 #: ../drivers/bj9900.py:112
 msgid ""
 "This is experimental support for BJ-9900 which is still under development.\n"
@@ -903,6 +924,16 @@ msgstr ""
 "Lütfen OEM yazılımıyla iyi bir yedeklemeniz olduğundan emin olun.\n"
 "Ayrıca lütfen hata raporu ve geliştirme istekleri gönderin!\n"
 "Uyarıldınız. Kendi sorumluluğunuzda ilerleyin!"
+
+#: ../wxui/memedit.py:1180
+#, fuzzy
+msgid "This memory and shift all up"
+msgstr "%i Belleği sil ve hepsini yukarı kaydır"
+
+#: ../wxui/memedit.py:1178
+#, fuzzy
+msgid "This memory and shift block up"
+msgstr "%i Belleği sil ve bloğu yukarı kaydır"
 
 #: ../wxui/developer.py:479
 msgid "This will load a module from a website issue"
@@ -1097,6 +1128,12 @@ msgstr "{bank} dolu"
 #, fuzzy
 #~ msgid "Cut"
 #~ msgstr "Kes"
+
+#~ msgid "Delete and shift all up"
+#~ msgstr "Sil ve hepsini yukarı kaydır"
+
+#~ msgid "Delete and shift block up"
+#~ msgstr "Sil ve bloğu yukarı kaydır"
 
 #~ msgid "Discard Changes?"
 #~ msgstr "Değişiklikleri gözardı et?"
