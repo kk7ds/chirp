@@ -169,7 +169,7 @@ class TestUtilityFunctions(base.BaseTest):
 
     def test_mem_from_text_chirp1(self):
         text = '[400.625000/136.000000]'
-        mem = chirp_common.mem_from_text(text)
+        chirp_common.mem_from_text(text)
 
     def test_mem_from_text_chirp2(self):
         text = '[462.675000/+5.000/136.5/136.5]'
@@ -251,7 +251,7 @@ class TestUtilityFunctions(base.BaseTest):
         self.assertEqual('[146.900000/446.000000/100.0/D025]', txt)
         chirp_common.mem_from_text(txt)
 
-    def test_mem_to_text2(self):
+    def test_mem_to_text3(self):
         mem = chirp_common.Memory()
         mem.freq = 146520000
         mem.duplex = ''

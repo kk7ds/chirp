@@ -204,7 +204,7 @@ class ImportFieldTests(base.BaseTest):
             chirp_common.PowerLevel('foo', watts=7),
             chirp_common.PowerLevel('bar', watts=51),
             chirp_common.PowerLevel('baz', watts=1),
-            ]
+        ]
         mem = chirp_common.Memory()
         mem.power = src_rf.valid_power_levels[0]
         import_logic._import_power(radio, src_rf, mem)
@@ -217,7 +217,7 @@ class ImportFieldTests(base.BaseTest):
             chirp_common.PowerLevel('foo', watts=20),
             chirp_common.PowerLevel('bar', watts=51),
             chirp_common.PowerLevel('baz', watts=1),
-            ]
+        ]
         mem = chirp_common.Memory()
         mem.power = src_rf.valid_power_levels[0]
         import_logic._import_power(radio, src_rf, mem)

@@ -4,8 +4,10 @@ from unittest import mock
 
 sys.modules['wx'] = wx = mock.MagicMock()
 
-from tests.unit import base
-from chirp.wxui import radiothread
+# These need to be imported after the above mock so that we don't require
+# wx to be present for these tests
+from tests.unit import base  # noqa
+from chirp.wxui import radiothread  # noqa
 
 
 class TestRadioThread(base.BaseTest):
@@ -85,9 +87,9 @@ class TestRadioThread(base.BaseTest):
         editor = mock.MagicMock()
         thread = radiothread.RadioThread(radio)
         mem = mock.MagicMock()
-        job1id = thread.submit(editor, 'get_memory', 12)
-        job2id = thread.submit(editor, 'set_memory', mem)
-        job3id = thread.submit(editor, 'get_features')
+        thread.submit(editor, 'get_memory', 12)
+        thread.submit(editor, 'set_memory', mem)
+        thread.submit(editor, 'get_features')
         thread.end()
         # We have to start the thread after we submit the main jobs so
         # the order is stable for comparison.

@@ -1,13 +1,11 @@
 import base64
 import glob
-import itertools
 import json
 import os
 import shutil
 import tempfile
 
 import yaml
-import pytest
 
 from tests.unit import base
 from chirp import chirp_common
@@ -72,7 +70,7 @@ class TestDirectory(base.BaseTest):
                 {'vendor': FakeAlias.VENDOR,
                  'model': FakeAlias.MODEL,
                  'variant': FakeAlias.VARIANT,
-                }).encode())
+                 }).encode())
             f.write(fake_metadata)
             f.flush()
         radio = self._test_detect_finds_our_class(fn)
@@ -110,7 +108,7 @@ class TestAliasMap(base.BaseTest):
         directory_models = {}
         for rclass in directory.DRV_TO_RADIO.values():
             for cls in [rclass] + rclass.ALIASES:
-               # Make sure there are no duplicates
+                # Make sure there are no duplicates
                 directory_models.setdefault(cls.VENDOR, set())
                 fullmodel = '%s%s' % (cls.MODEL, cls.VARIANT)
                 self.assertNotIn(fullmodel,

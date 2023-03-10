@@ -100,7 +100,7 @@ class TestFileICF(unittest.TestCase):
 
         r = id31.ID31Radio(img_file)
         fn = os.path.join(self.tempdir, 'test.icf')
-        with open(fn, 'w', newline='\r\n') as f:
+        with open(fn, 'w', newline='\r\n'):
             r.save(fn)
 
             icfdata, mmap = icf.read_file(fn)
@@ -122,7 +122,7 @@ class TestFileICF(unittest.TestCase):
 
         r = ic2820.IC2820Radio(img_file)
         fn = os.path.join(self.tempdir, 'test.icf')
-        with open(fn, 'w', newline='\r\n') as f:
+        with open(fn, 'w', newline='\r\n'):
             r.save(fn)
 
             icfdata, mmap = icf.read_file(fn)

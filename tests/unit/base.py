@@ -1,8 +1,5 @@
 import builtins
-import sys
 import unittest
-
-from unittest import mock
 
 import warnings
 warnings.simplefilter('ignore', Warning)
