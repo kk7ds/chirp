@@ -1111,6 +1111,31 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         for number in range(self.row2mem(rows[0]), mems_to_move[-1] + 1):
             self.refresh_memory(number)
 
+    @common.error_proof()
+    def _sort_memories(self, rows, reverse, event):
+        choices = [x.label.replace('\n', ' ') for x in self._col_defs]
+        sortcol = wx.GetSingleChoice(
+            _('Sort memories'),
+            _('Sort by column:'),
+            choices,
+            parent=self)
+        if not sortcol:
+            return
+
+        sortattr = self._col_defs[choices.index(sortcol)].name
+        memories = [self._memory_cache[r] for r in rows]
+        LOG.debug('Sorting %s by %s%s',
+                  memories, reversed and '>' or '<', sortattr)
+        memories.sort(key=lambda m: getattr(m, sortattr), reverse=reverse)
+        for i, mem in enumerate(memories):
+            new_number = self.row2mem(rows[0] + i)
+            LOG.debug('Moving memory %i to %i', mem.number, new_number)
+            mem.number = new_number
+            self.set_memory(mem)
+        LOG.debug('Sorted: %s', memories)
+
+        wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
     def _memory_rclick(self, event):
         if event.GetRow() == -1:
             # This is a right-click on a column header
@@ -1166,6 +1191,34 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         menu.Append(del_item)
         menu.Append(del_block_item)
         menu.Append(del_shift_item)
+
+        # Only offer sort if a contiguous group of non-empty, non-special
+        # memories is selected
+        empty_selected = any([self._memory_cache[r].empty
+                              for r in selected_rows])
+        special_selected = any([self._memory_cache[r].extd_number
+                                for r in selected_rows])
+        can_sort = (
+            selected_rows[-1] - selected_rows[0] == len(selected_rows) - 1 and
+            not empty_selected and not special_selected)
+        sort_item = wx.MenuItem(
+            menu, wx.NewId(),
+            _('Sort %i memories ascending') % len(selected_rows))
+        self.Bind(wx.EVT_MENU,
+                  functools.partial(self._sort_memories, selected_rows,
+                                    False),
+                  sort_item)
+        menu.Append(sort_item)
+        sort_item.Enable(not self.busy and can_sort)
+        sort_item = wx.MenuItem(
+            menu, wx.NewId(),
+            _('Sort %i memories descending') % len(selected_rows))
+        self.Bind(wx.EVT_MENU,
+                  functools.partial(self._sort_memories, selected_rows,
+                                    True),
+                  sort_item)
+        menu.Append(sort_item)
+        sort_item.Enable(not self.busy and can_sort)
 
         # Don't allow bulk operations on live radios with pending jobs
         del_block_item.Enable(not self.busy)
