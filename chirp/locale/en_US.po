@@ -1063,7 +1063,7 @@ msgstr ""
 msgid "{bank} is full"
 msgstr ""
 
-#: ../chirpdrivers/alinco.py:624 ../chirpdrivers/alinco.py:634
+#: ../drivers/alinco.py:605 ../drivers/alinco.py:616
 msgid ""
 "1. Ensure your firmware version is 4_10 or higher\n"
 "2. Turn radio off\n"
@@ -1075,10 +1075,10 @@ msgid ""
 "7. Click OK\n"
 msgstr ""
 
-#: ../chirpdrivers/baofeng_wp970i.py:324 ../chirpdrivers/gmrsuv1.py:394
-#: ../chirpdrivers/gmrsv2.py:373 ../chirpdrivers/mursv1.py:345
-#: ../chirpdrivers/tdxone_tdq8a.py:457 ../chirpdrivers/uv5x3.py:420
-#: ../chirpdrivers/uv6r.py:344 ../chirpdrivers/vgc.py:592
+#: ../drivers/baofeng_wp970i.py:330 ../drivers/gmrsuv1.py:396
+#: ../drivers/gmrsv2.py:368 ../drivers/mursv1.py:347
+#: ../drivers/tdxone_tdq8a.py:458 ../drivers/uv5x3.py:422
+#: ../drivers/uv6r.py:346 ../drivers/vgc.py:592
 msgid ""
 "Follow these instructions to download your info:\n"
 "\n"
@@ -1088,10 +1088,10 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../chirpdrivers/baofeng_wp970i.py:332 ../chirpdrivers/gmrsuv1.py:403
-#: ../chirpdrivers/gmrsv2.py:381 ../chirpdrivers/lt725uv.py:519
-#: ../chirpdrivers/mursv1.py:353 ../chirpdrivers/tdxone_tdq8a.py:465
-#: ../chirpdrivers/uv5x3.py:428 ../chirpdrivers/uv6r.py:352
+#: ../drivers/baofeng_wp970i.py:332 ../drivers/gmrsuv1.py:403
+#: ../drivers/gmrsv2.py:381 ../drivers/lt725uv.py:519 ../drivers/mursv1.py:353
+#: ../drivers/tdxone_tdq8a.py:465 ../drivers/uv5x3.py:428
+#: ../drivers/uv6r.py:352
 msgid ""
 "Follow this instructions to upload your info:\n"
 "\n"
@@ -1101,7 +1101,7 @@ msgid ""
 "4 - Do the upload of your radio data\n"
 msgstr ""
 
-#: ../chirpdrivers/bf-t1.py:482 ../chirpdrivers/btech.py:679
+#: ../drivers/bf-t1.py:482 ../drivers/btech.py:679
 msgid ""
 "Follow these instructions to download your info:\n"
 "\n"
@@ -1112,7 +1112,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: ../chirpdrivers/bf-t1.py:491 ../chirpdrivers/btech.py:688
+#: ../drivers/bf-t1.py:491 ../drivers/btech.py:688
 msgid ""
 "Follow these instructions to upload your info:\n"
 "\n"
@@ -1123,7 +1123,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: ../chirpdrivers/bj9900.py:105
+#: ../drivers/bj9900.py:105
 msgid ""
 "1. Turn radio off.\n"
 "2. Remove front head.\n"
@@ -1132,7 +1132,7 @@ msgid ""
 "4. Click OK."
 msgstr ""
 
-#: ../chirpdrivers/fd268.py:309../chirpdrivers/fd268.py:318
+#: ../drivers/fd268.py:309 ../drivers/fd268.py:318
 msgid ""
 "This radio has a tricky way of enter into program mode,\n"
 "even the original software has a few tries to get inside.\n"
@@ -1143,7 +1143,7 @@ msgid ""
 "If you can get into it, please check the radio and cable."
 msgstr ""
 
-#: ../chirpdrivers/ft1d.py:649
+#: ../drivers/ft1d.py:649
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -1152,7 +1152,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image."
 msgstr ""
 
-#: ../chirpdrivers/ft1d.py:656
+#: ../drivers/ft1d.py:656
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -1161,7 +1161,7 @@ msgid ""
 "4. Press the [Dx] key (\"-WAIT-\" will appear on the LCD)."
 msgstr ""
 
-#: ../chirpdrivers/ft2d.py:85
+#: ../drivers/ft2d.py:85
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -1171,7 +1171,7 @@ msgid ""
 "     press the [Send] screen button."
 msgstr ""
 
-#: ../chirpdrivers/ft2d.py:92
+#: ../drivers/ft2d.py:92
 msgid ""
 " 1. Turn radio off.\n"
 " 2. Connect cable to DATA terminal.\n"
@@ -1182,13 +1182,13 @@ msgid ""
 "5. Finally, press OK button below."
 msgstr ""
 
-#: ../chirpdrivers/ft4.py:675
+#: ../drivers/ft4.py:675
 msgid ""
 "1. Connect programming cable to MIC jack.\n"
 "2. Press OK."
 msgstr ""
 
-#: ../chirpdrivers/ft50.py:195
+#: ../drivers/ft50.py:195
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -1197,7 +1197,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [PTT] switch to send image."
 msgstr ""
 
-#: ../chirpdrivers/ft50.py:201
+#: ../drivers/ft50.py:201
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -1207,7 +1207,7 @@ msgid ""
 "5. Press OK."
 msgstr ""
 
-#: ../chirpdrivers/ft60.py:355
+#: ../drivers/ft60.py:355
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -1219,7 +1219,7 @@ msgid ""
 "     for one second to send image."
 msgstr ""
 
-#: ../chirpdrivers/ft60.py:365
+#: ../drivers/ft60.py:365
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -1230,7 +1230,7 @@ msgid ""
 "6. Press the [MONI] switch (\"--RX--\" will appear on the LCD)."
 msgstr ""
 
-#: ../chirpdrivers/ft70.py:
+#: ../drivers/ft70.py:
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -1240,7 +1240,7 @@ msgid ""
 "5. <b>After clicking OK</b>, press the [BAND] key."
 msgstr ""
 
-#: ../chirpdrivers/ft70.py:545
+#: ../drivers/ft70.py:545
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -1250,7 +1250,7 @@ msgid ""
 "5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD). <b>Then click OK</b>"
 msgstr ""
 
-#: ../chirpdrivers/ft90.py:196
+#: ../drivers/ft90.py:196
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect mic and hold [ACC] on mic while powering on.\n"
@@ -1259,7 +1259,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [SET] key to send image."
 msgstr ""
 
-#: ../chirpdrivers/ft90.py:202
+#: ../drivers/ft90.py:202
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect mic and hold [ACC] on mic while powering on.\n"
@@ -1269,7 +1269,7 @@ msgid ""
 "    (\"R\" will appear on the lower left of LCD)."
 msgstr ""
 
-#: ../chirpdrivers/ft450d.py:387
+#: ../drivers/ft450d.py:387
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -1280,7 +1280,7 @@ msgid ""
 "    send image."
 msgstr ""
 
-#: ../chirpdrivers/ft450d.py:395
+#: ../drivers/ft450d.py:395
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -1291,7 +1291,7 @@ msgid ""
 "    (\"Receiving\" will appear on the LCD)."
 msgstr ""
 
-#: ../chirpdrivers/ft817.py:280
+#: ../drivers/ft817.py:280
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -1301,7 +1301,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [A] key to send image."
 msgstr ""
 
-#: ../chirpdrivers/ft817.py:287
+#: ../drivers/ft817.py:287
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -1311,7 +1311,7 @@ msgid ""
 "4. Press the [C] key (\"RX\" will appear on the LCD)."
 msgstr ""
 
-#: ../chirpdrivers/ft857.py:441
+#: ../drivers/ft857.py:441
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to CAT/LINEAR jack.\n"
@@ -1322,7 +1322,7 @@ msgid ""
 "     press the [C](SEND) key to send image."
 msgstr ""
 
-#: ../chirpdrivers/ft857.py:449
+#: ../drivers/ft857.py:449
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -1332,7 +1332,7 @@ msgid ""
 "4. Press the [A](RCV) key (\"receiving\" will appear on the LCD)."
 msgstr ""
 
-#: ../chirpdrivers/ft1500m.py:96
+#: ../drivers/ft1500m.py:96
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic jack.\n"
@@ -1341,7 +1341,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image."
 msgstr ""
 
-#: ../chirpdrivers/ft1500m.py:102
+#: ../drivers/ft1500m.py:102
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic jack.\n"
@@ -1350,7 +1350,7 @@ msgid ""
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD)."
 msgstr ""
 
-#: ../chirpdrivers/ft1802.py:96
+#: ../drivers/ft1802.py:96
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic jack.\n"
@@ -1358,7 +1358,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image."
 msgstr ""
 
-#: ../chirpdrivers/ft1802.py:101
+#: ../drivers/ft1802.py:101
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic jack.\n"
@@ -1366,7 +1366,7 @@ msgid ""
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD)."
 msgstr ""
 
-#: ../chirpdrivers/ft2900.py:1227
+#: ../drivers/ft2900.py:1227
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -1374,7 +1374,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press \"SET MHz\" to send image."
 msgstr ""
 
-#: ../chirpdrivers/ft2900.py:1232
+#: ../drivers/ft2900.py:1232
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -1388,7 +1388,7 @@ msgid ""
 "      radio, then start back at step 1."
 msgstr ""
 
-#: ../chirpdrivers/ft7100.py:1122
+#: ../drivers/ft7100.py:1122
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -1396,7 +1396,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press \"TONE\" to send image."
 msgstr ""
 
-#: ../chirpdrivers/ft7100.py:1126
+#: ../drivers/ft7100.py:1126
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -1406,7 +1406,7 @@ msgid ""
 "6. Click OK to start transfer."
 msgstr ""
 
-#: ../chirpdrivers/ft7800.py:275
+#: ../drivers/ft7800.py:275
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -1419,7 +1419,7 @@ msgid ""
 "6. <b>After clicking OK</b>, press the [V/M(MW)] key to send image."
 msgstr ""
 
-#: ../chirpdrivers/ft7800.py:285
+#: ../drivers/ft7800.py:285
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -1432,7 +1432,7 @@ msgid ""
 "6. Press the [LOW(ACC)] key (\"--RX--\" will appear on the display)."
 msgstr ""
 
-#: ../chirpdrivers/ftlx011.py:306
+#: ../drivers/ftlx011.py:306
 msgid ""
 "Please follow this steps carefully:\n"
 "\n"
@@ -1444,7 +1444,7 @@ msgid ""
 "    (At the end radio will beep)\n"
 msgstr ""
 
-#: ../chirpdrivers/ftlx011.py:316
+#: ../drivers/ftlx011.py:316
 msgid ""
 "Please follow this steps carefully:\n"
 "\n"
@@ -1461,7 +1461,7 @@ msgid ""
 "get into normal mode.\n"
 msgstr ""
 
-#: ../chirpdrivers/ftm3200d.py:83
+#: ../drivers/ftm3200d.py:83
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -1471,7 +1471,7 @@ msgid ""
 "     to send image."
 msgstr ""
 
-#: ../chirpdrivers/ftm3200d.py:90
+#: ../drivers/ftm3200d.py:90
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -1481,7 +1481,7 @@ msgid ""
 "     (\"-WAIT-\" will appear on the LCD)."
 msgstr ""
 
-#: ../chirpdrivers/ftm7250d.py:84
+#: ../drivers/ftm7250d.py:84
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC Jack.\n"
@@ -1491,7 +1491,7 @@ msgid ""
 "     to send image."
 msgstr ""
 
-#: ../chirpdrivers/ftm7250d.py:91
+#: ../drivers/ftm7250d.py:91
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC Jack.\n"
@@ -1501,7 +1501,7 @@ msgid ""
 "     (\"-WAIT-\" will appear on the LCD)."
 msgstr ""
 
-#: ../chirpdrivers/ic2730.py:305
+#: ../drivers/ic2730.py:305
 msgid ""
 "Follow these instructions to download your config:\n"
 "\n"
@@ -1513,7 +1513,7 @@ msgid ""
 "    no right-side audio!\n"
 msgstr ""
 
-#: ../chirpdrivers/ic2730.py:315
+#: ../drivers/ic2730.py:315
 msgid ""
 "Follow these instructions to upload your config:\n"
 "\n"
@@ -1526,7 +1526,7 @@ msgid ""
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
 
-#: ../chirpdrivers/lt725uv.py:511 ../chirpdrivers/vgc.py:584
+#: ../drivers/lt725uv.py:511 ../drivers/vgc.py:586
 msgid ""
 "Follow this instructions to download your info:\n"
 "\n"
@@ -1536,8 +1536,7 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../chirpdrivers/tg_uv2p.py:221 ../chirpdrivers/uvb5.py:284
-#: ../chirpdrivers/wouxun.py:214
+#: ../drivers/tg_uv2p.py:221 ../drivers/uvb5.py:284 ../drivers/wouxun.py:214
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1547,8 +1546,7 @@ msgid ""
 "6. Click OK to download image from device."
 msgstr ""
 
-#: ../chirpdrivers/tg_uv2p.py:228 ../chirpdrivers/uvb5.py:291
-#: ../chirpdrivers/wouxun.py:221
+#: ../drivers/tg_uv2p.py:228 ../drivers/uvb5.py:291 ../drivers/wouxun.py:221
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1558,15 +1556,15 @@ msgid ""
 "6. Click OK to upload image to device."
 msgstr ""
 
-#: ../chirpdrivers/th_uv88.py:478
+#: ../drivers/th_uv88.py:478
 msgid "This is an early stage beta driver\n"
 msgstr ""
 
-#: ../chirpdrivers/th_uv88.py:481
+#: ../drivers/th_uv88.py:481
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr ""
 
-#: ../chirpdrivers/th_uv8000.py:534
+#: ../drivers/th_uv8000.py:534
 msgid ""
 "Follow these instructions to download the radio memory:\n"
 "\n"
@@ -1576,7 +1574,7 @@ msgid ""
 "4 - Radio > Download from radio\n"
 msgstr ""
 
-#: ../chirpdrivers/th_uv8000.py:542
+#: ../drivers/th_uv8000.py:542
 msgid ""
 "Follow these instructions to upload the radio memory:\n"
 "\n"
@@ -1586,7 +1584,7 @@ msgid ""
 "4 - Radio > Upload to radio\n"
 msgstr ""
 
-#: ../chirpdrivers/tk270.py:340 ../chirpdrivers/tk760.py:361
+#: ../drivers/tk270.py:340 ../drivers/tk760.py:361
 msgid ""
 "Follow this instructions to read your radio:\n"
 "1 - Turn off your radio\n"
@@ -1595,7 +1593,7 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../chirpdrivers/tk270.py:347 ../chirpdrivers/tk760.py:368
+#: ../drivers/tk270.py:347 ../drivers/tk760.py:368
 msgid ""
 "Follow this instructions to write your radio:\n"
 "1 - Turn off your radio\n"
@@ -1604,7 +1602,7 @@ msgid ""
 "4 - Do the upload of your radio data\n"
 msgstr ""
 
-#: ../chirpdrivers/tk760g.py:729
+#: ../drivers/tk760g.py:729
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1613,7 +1611,7 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../chirpdrivers/tk760g.py:736
+#: ../drivers/tk760g.py:736
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1622,13 +1620,13 @@ msgid ""
 "4 - Do the upload of your radio data\n"
 msgstr ""
 
-#: ../chirpdrivers/tmd710.py:203 ../chirpdrivers/tmd710.py:207
+#: ../drivers/tmd710.py:203 ../drivers/tmd710.py:207
 msgid ""
 "Connect your interface cable to the PC Port on the\n"
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
 msgstr ""
 
-#: ../chirpdrivers/ts480.py:524
+#: ../drivers/ts480.py:524
 msgid ""
 "Follow these instructions to download the radio memory:\n"
 "1 - Connect your interface cable\n"
@@ -1637,7 +1635,7 @@ msgid ""
 "3 - Disconnect your interface cable\n"
 msgstr ""
 
-#: ../chirpdrivers/ts480.py:531
+#: ../drivers/ts480.py:531
 msgid ""
 "Follow these instructions to upload the radio memory:\n"
 "1 - Connect your interface cable\n"
@@ -1646,7 +1644,7 @@ msgid ""
 "3 - Disconnect your interface cable\n"
 msgstr ""
 
-#: ../chirpdrivers/ts590.py:685
+#: ../drivers/ts590.py:685
 msgid ""
 "Follow these instructions to download the radio memory:\n"
 "1 - Connect your interface cable\n"
@@ -1655,7 +1653,7 @@ msgid ""
 "3 - Disconnect your interface cable\n"
 msgstr ""
 
-#: ../chirpdrivers/ts590.py:692
+#: ../drivers/ts590.py:692
 msgid ""
 "Follow these instructions to upload the radio memory:\n"
 "1 - Connect your interface cable\n"
@@ -1664,7 +1662,7 @@ msgid ""
 "3 - Disconnect your interface cable\n"
 msgstr ""
 
-#: ../chirpdrivers/uv5r.py:764
+#: ../drivers/uv5r.py:764
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1674,7 +1672,7 @@ msgid ""
 "6. Click OK to download image from device."
 msgstr ""
 
-#: ../chirpdrivers/uv5r.py:771
+#: ../drivers/uv5r.py:771
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1684,7 +1682,7 @@ msgid ""
 "6. Click OK to upload image to device."
 msgstr ""
 
-#: ../chirpdrivers/vx3.py:375 ../chirpdrivers/vx6.py:363
+#: ../drivers/vx3.py:375 ../drivers/vx6.py:363
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -1693,7 +1691,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image."
 msgstr ""
 
-#: ../chirpdrivers/vx3.py:381 ../chirpdrivers/vx6.py:369
+#: ../drivers/vx3.py:381 ../drivers/vx6.py:369
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -1702,7 +1700,7 @@ msgid ""
 "4. Press the [V/M] key (\"-WAIT-\" will appear on the LCD)."
 msgstr ""
 
-#: ../chirpdrivers/vx3.py:317
+#: ../drivers/vx3.py:317
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/EAR jack.\n"
@@ -1712,7 +1710,7 @@ msgid ""
 "    the image from the radio."
 msgstr ""
 
-#: ../chirpdrivers/vx3.py:324
+#: ../drivers/vx3.py:324
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/EAR jack.\n"
@@ -1723,7 +1721,7 @@ msgid ""
 "5. Click OK to send image to radio."
 msgstr ""
 
-#: ../chirpdrivers/vx7.py:193
+#: ../drivers/vx7.py:193
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -1732,7 +1730,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image."
 msgstr ""
 
-#: ../chirpdrivers/vx7.py:199
+#: ../drivers/vx7.py:199
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -1741,7 +1739,7 @@ msgid ""
 "4. Press the [V/M] key (\"CLONE WAIT\" will appear on the LCD)."
 msgstr ""
 
-#: ../chirpdrivers/vx8.py:590
+#: ../drivers/vx8.py:590
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -1750,7 +1748,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image."
 msgstr ""
 
-#: ../chirpdrivers/vx8.py:596
+#: ../drivers/vx8.py:596
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -1759,7 +1757,7 @@ msgid ""
 "4. Press the [MODE] key (\"-WAIT-\" will appear on the LCD)."
 msgstr ""
 
-#: ../chirpdrivers/vx170.py:103
+#: ../drivers/vx170.py:103
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -1770,7 +1768,7 @@ msgid ""
 "    (\"-TX-\" will appear on the LCD). "
 msgstr ""
 
-#: ../chirpdrivers/vx170.py:111
+#: ../drivers/vx170.py:111
 msgid ""
 "1. Turn radio off.\n"
 "3. Press and hold in the [moni] key while turning the radio on.\n"
@@ -1779,7 +1777,7 @@ msgid ""
 "5. Press the [moni] key (\"-RX-\" will appear on the LCD)."
 msgstr ""
 
-#: ../chirpdrivers/yaesu_clone.py:215
+#: ../drivers/yaesu_clone.py:215
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect data cable.\n"
@@ -1787,7 +1785,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the key to send image."
 msgstr ""
 
-#: ../chirpdrivers/yaesu_clone.py:220
+#: ../drivers/yaesu_clone.py:220
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect data cable.\n"
