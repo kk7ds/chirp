@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from textwrap import dedent
 
 from chirp import chirp_common
 from chirp import directory
@@ -331,10 +330,10 @@ class ID5100Radio(ID4100Radio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.info = dedent('This driver has been tested with v3 of the ID-5100. '
-                         'If your radio is not fully updated please help by '
-                         'opening a bug report with a debug log so we can add '
-                         'support for the other revisions.')
+        rp.info = _('This driver has been tested with v3 of the ID-5100. '
+                    'If your radio is not fully updated please help by '
+                    'opening a bug report with a debug log so we can add '
+                    'support for the other revisions.')
 
         rp.pre_upload = rp.info
         rp.experimental = rp.info
