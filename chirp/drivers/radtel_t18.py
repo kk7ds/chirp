@@ -409,7 +409,7 @@ class T18Radio(chirp_common.CloneModeRadio):
     VALID_BANDS = [(400000000, 470000000)]
 
     _magic = b"1ROGRAM"
-    _fingerprint = [b"SMP558" + b"\x00\x00", ]
+    _fingerprint = [b"SMP558" + b"\x00\x00"]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -557,7 +557,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                 if mem.number >= 1 and mem.number <= 22:
                     FRS_FREQ = FRS_FREQS[mem.number - 1]
                     mem.freq = FRS_FREQ
-                mem.duplex == ''
+                mem.duplex = ''
                 mem.offset = 0
                 mem.mode = "NFM"
                 if mem.number >= 8 and mem.number <= 14:
@@ -571,7 +571,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                 if mem.number >= 1 and mem.number <= 16:
                     FRS_FREQ = FRS16_FREQS[mem.number - 1]
                     mem.freq = FRS_FREQ
-                mem.duplex == ''
+                mem.duplex = ''
                 mem.offset = 0
                 mem.mode = "NFM"
                 immutable = ["empty", "freq", "duplex", "offset", "mode"]
@@ -605,21 +605,21 @@ class T18Radio(chirp_common.CloneModeRadio):
                     mem.freq = GMRS_FREQ
                     immutable = ["empty", "freq"]
                 if mem.number >= 1 and mem.number <= 7:
-                    mem.duplex == ''
+                    mem.duplex = ''
                     mem.offset = 0
                     immutable += ["duplex", "offset"]
                 elif mem.number >= 8 and mem.number <= 14:
-                    mem.duplex == ''
+                    mem.duplex = ''
                     mem.offset = 0
                     mem.mode = "NFM"
                     mem.power = self.POWER_LEVELS[1]
                     immutable += ["duplex", "offset", "mode", "power"]
                 elif mem.number >= 15 and mem.number <= 22:
-                    mem.duplex == ''
+                    mem.duplex = ''
                     mem.offset = 0
                     immutable += ["duplex", "offset"]
                 elif mem.number >= 23 and mem.number <= 30:
-                    mem.duplex == '+'
+                    mem.duplex = '+'
                     mem.offset = 5000000
                     immutable += ["duplex", "offset"]
 
@@ -735,7 +735,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         if self.MODEL not in ["RB29",
                               "RB75",
                               "RB629",
-                              "RT15",
+                              "RT15"
                               ]:
             rs = RadioSetting("beep", "Beep",
                               RadioSettingValueBoolean(_settings.beep))
@@ -1034,7 +1034,7 @@ class RT22SRadio(T18Radio):
                     chirp_common.PowerLevel("Low",  watts=0.50)]
 
     _magic = b"9COGRAM"
-    _fingerprint = [b"SMP558" + b"\x02", ]
+    _fingerprint = [b"SMP558" + b"\x02"]
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
@@ -1054,7 +1054,7 @@ class RB18Radio(T18Radio):
                     chirp_common.PowerLevel("Low",  watts=0.50)]
 
     _magic = b"PROGRAL"
-    _fingerprint = [b"P3107" + b"\xF7", ]
+    _fingerprint = [b"P3107" + b"\xF7"]
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
@@ -1102,7 +1102,7 @@ class RT68Radio(T18Radio):
                     chirp_common.PowerLevel("Low",  watts=0.50)]
 
     _magic = b"83OGRAM"
-    _fingerprint = [b"\x06\x00\x00\x00\x00\x00\x00\x00", ]
+    _fingerprint = [b"\x06\x00\x00\x00\x00\x00\x00\x00"]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -1133,7 +1133,7 @@ class RB17Radio(RT68Radio):
     MODEL = "RB17"
 
     _magic = b"A5OGRAM"
-    _fingerprint = [b"\x53\x00\x00\x00\x00\x00\x00\x00", ]
+    _fingerprint = [b"\x53\x00\x00\x00\x00\x00\x00\x00"]
 
     _frs16 = True
     _pmr = False
@@ -1177,7 +1177,7 @@ class RB85Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=5.00)]
 
     _magic = b"H19GRAM"
-    _fingerprint = [b"SMP558" + b"\x02", ]
+    _fingerprint = [b"SMP558" + b"\x02"]
 
 
 @directory.register
@@ -1191,7 +1191,7 @@ class RB75Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = b"KVOGRAM"
-    _fingerprint = [b"SMP558" + b"\x00", ]
+    _fingerprint = [b"SMP558" + b"\x00"]
     _upper = 30
     _mem_params = (_upper  # number of channels
                    )
@@ -1209,7 +1209,7 @@ class FRSB1Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = b"PROGRAM"
-    _fingerprint = [b"P3107" + b"\xF7\x00", ]
+    _fingerprint = [b"P3107" + b"\xF7\x00"]
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
@@ -1227,7 +1227,7 @@ class RB19Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = b"9COGRAM"
-    _fingerprint = [b"SMP558" + b"\x02", ]
+    _fingerprint = [b"SMP558" + b"\x02"]
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
@@ -1245,7 +1245,7 @@ class RB19PRadio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = b"70OGRAM"
-    _fingerprint = [b"SMP558" + b"\x02", ]
+    _fingerprint = [b"SMP558" + b"\x02"]
     _upper = 30
     _mem_params = (_upper  # number of channels
                    )
@@ -1263,7 +1263,7 @@ class RB619Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.499)]
 
     _magic = b"9COGRAM"
-    _fingerprint = [b"SMP558" + b"\x02", ]
+    _fingerprint = [b"SMP558" + b"\x02"]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -1281,7 +1281,7 @@ class RT47Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.500)]
 
     _magic = b"47OGRAM"
-    _fingerprint = [b"\x06\x00\x00\x00\x00\x00\x00\x00", ]
+    _fingerprint = [b"\x06\x00\x00\x00\x00\x00\x00\x00"]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -1325,7 +1325,7 @@ class BFV8ARadio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.500)]
 
     _magic = b"PROGRAM"
-    _fingerprint = [b"P3107" + b"\xF7\x00\x00", ]
+    _fingerprint = [b"P3107" + b"\xF7\x00\x00"]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -1343,7 +1343,7 @@ class RB29Radio(T18Radio):
                     chirp_common.PowerLevel("Low", watts=0.50)]
 
     _magic = b"S19GRAM"
-    _fingerprint = [b"SMP558" + b"\x02", ]
+    _fingerprint = [b"SMP558" + b"\x02"]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
@@ -1376,8 +1376,7 @@ class RT15Radio(T18Radio):
 
     _magic = b"KAOGRAM"
     _fingerprint = [b"\x06\x00\x00\x00\x00\x00\x00\x00",
-                    b"\x06\x03\xE8\x08\xFF\xFF\xFF\xFF",
-                    ]
+                    b"\x06\x03\xE8\x08\xFF\xFF\xFF\xFF"]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
