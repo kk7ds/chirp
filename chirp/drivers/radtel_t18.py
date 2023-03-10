@@ -34,7 +34,7 @@ struct {
     lbcd txfreq[4];
     lbcd rxtone[2];
     lbcd txtone[2];
-    u8 speccode:1,
+    u8 speccode:1,       // Retevis RB87 PTT ID
        compander:1,
        scramble:1,
        skip:1,
@@ -52,12 +52,13 @@ struct {
        speccode:1,
        voiceprompt:2,
        batterysaver:1,
-       beep:1;
+       beep:1;           // Retevis RB87 vox
     u8 squelchlevel;
     u8 sidekey2;         // Retevis RT22S setting
                          // Retevis RB85 sidekey 1 short
                          // Retevis RB19 sidekey 2 long
                          // Retevis RT47 sidekey 1 long
+                         // Retevis RB87 sidekey 1 long
     u8 timeouttimer;
     u8 voxlevel;
     u8 sidekey2S;
@@ -185,6 +186,7 @@ SIDEKEYV8A_LIST = ["Off",
                    "Monitor",
                    "High/Low Power",
                    "Alarm"]
+SIDEKEY87_LIST = ["Scan", "Emergency Alarm"]
 
 SETTING_LISTS = {
     "voiceprompt": VOICE_LIST,
@@ -536,7 +538,8 @@ class T18Radio(chirp_common.CloneModeRadio):
         if self.MODEL != "RB18" and self.MODEL != "RB618" and \
                 self.MODEL != "FRS-B1" and self.MODEL != "BF-V8A" and \
                 self.MODEL != "RB29" and self.MODEL != "RB629":
-            if self.MODEL != "RT47V":
+            if self.MODEL not in ["RB87",
+                                  "RT47V"]:
                 rs = RadioSetting("scramble", "Scramble",
                                   RadioSettingValueBoolean(not _mem.scramble))
                 mem.extra.append(rs)
@@ -546,9 +549,14 @@ class T18Radio(chirp_common.CloneModeRadio):
             if self.MODEL != "RT47V" and self.MODEL != "T8" and \
                     self.MODEL != "RB17" and self.MODEL != "RB617" and \
                     self.MODEL != "RB75" and self.MODEL != "RB19P":
-                rs = RadioSetting("speccode", "Spec Code",
-                                  RadioSettingValueBoolean(not _mem.speccode))
-                mem.extra.append(rs)
+                if self.MODEL == "RB87":
+                    rs = RadioSettingValueBoolean(not _mem.speccode)
+                    rset = RadioSetting("speccode", "PTT-ID", rs)
+                    mem.extra.append(rset)
+                else:
+                    rs = RadioSettingValueBoolean(not _mem.speccode)
+                    rset = RadioSetting("speccode", "Spec Code", rs)
+                    mem.extra.append(rset)
 
         immutable = []
 
@@ -603,7 +611,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                 if mem.number >= 1 and mem.number <= 30:
                     GMRS_FREQ = GMRS_FREQS[mem.number - 1]
                     mem.freq = GMRS_FREQ
-                    immutable = ["empty", "freq"]
+                    immutable = ["freq"]
                 if mem.number >= 1 and mem.number <= 7:
                     mem.duplex = ''
                     mem.offset = 0
@@ -722,11 +730,12 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   VOICE_LIST3[_settings.voiceprompt]))
             basic.append(rs)
         else:
-            rs = RadioSetting("voiceprompt", "Voice prompts",
-                              RadioSettingValueList(
-                                  VOICE_LIST,
-                                  VOICE_LIST[_settings.voiceprompt]))
-            basic.append(rs)
+            if self.MODEL != "RB87":
+                rs = RadioSetting("voiceprompt", "Voice prompts",
+                                  RadioSettingValueList(
+                                      VOICE_LIST,
+                                      VOICE_LIST[_settings.voiceprompt]))
+                basic.append(rs)
 
         rs = RadioSetting("batterysaver", "Battery saver",
                           RadioSettingValueBoolean(_settings.batterysaver))
@@ -734,6 +743,7 @@ class T18Radio(chirp_common.CloneModeRadio):
 
         if self.MODEL not in ["RB29",
                               "RB75",
+                              "RB87",
                               "RB629",
                               "RT15"
                               ]:
@@ -745,6 +755,11 @@ class T18Radio(chirp_common.CloneModeRadio):
                 or self.MODEL == "RB619":
             rs = RadioSetting("vox", "VOX",
                               RadioSettingValueBoolean(_settings.vox))
+            basic.append(rs)
+
+        if self.MODEL == "RB87":
+            rs = RadioSetting("beep", "VOX",
+                              RadioSettingValueBoolean(_settings.beep))
             basic.append(rs)
 
         if self.MODEL != "RB18" and self.MODEL != "RB618" \
@@ -866,6 +881,13 @@ class T18Radio(chirp_common.CloneModeRadio):
 
             rs = RadioSetting("power10w", "Low Voltage Stop TX",
                               RadioSettingValueBoolean(_settings.power10w))
+            basic.append(rs)
+
+        if self.MODEL == "RB87":
+            rs = RadioSetting("sidekey2", "Side Key 1(Long)",
+                              RadioSettingValueList(
+                                  SIDEKEY87_LIST,
+                                  SIDEKEY87_LIST[_settings.sidekey2]))
             basic.append(rs)
 
         if self.MODEL == "FRS-B1":
@@ -1387,3 +1409,23 @@ class RT15Radio(T18Radio):
         # This radio has always been post-metadata, so never do
         # old-school detection
         return False
+
+
+@directory.register
+class RB87Radio(T18Radio):
+    """RETEVIS RB87"""
+    VENDOR = "Retevis"
+    MODEL = "RB87"
+    ACK_BLOCK = False
+    CMD_EXIT = b""
+    ACK_BLOCK = False
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    _magic = b"C8OGRAN"
+    _fingerprint = [b"SMP558"]
+    _upper = 30
+    _mem_params = (_upper  # number of channels
+                   )
+    _gmrs = True
