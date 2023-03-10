@@ -2,12 +2,23 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-10 10:35-0800\n"
+"POT-Creation-Date: 2023-03-10 14:47-0800\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
+
+#: ../drivers/ft2d.py:100
+msgid ""
+" 1. Turn radio off.\n"
+" 2. Connect cable to DATA terminal.\n"
+" 3. Press and hold in [DISP] key while turning on radio\n"
+"      (\"CLONE\" will appear on radio LCD).\n"
+" 4. Press [RECEIVE] screen button\n"
+"      (\"-WAIT-\" will appear on radio LCD).\n"
+"5. Finally, press OK button below.\n"
+msgstr ""
 
 #: ../wxui/query_sources.py:58
 #, python-format
@@ -36,6 +47,516 @@ msgstr "Файл изменён, сохранить изменения?"
 
 #: ../wxui/radioinfo.py:48
 msgid "(none)"
+msgstr ""
+
+#: ../drivers/alinco.py:605 ../drivers/alinco.py:614
+msgid ""
+"1. Ensure your firmware version is 4_10 or higher\n"
+"2. Turn radio off\n"
+"3. Connect your interface cable\n"
+"4. Turn radio on\n"
+"5. Press and release PTT 3 times while holding MONI key\n"
+"6. Supported baud rates: 57600 (default) and 19200\n"
+"   (rotate dial while holding MONI to change)\n"
+"7. Click OK\n"
+msgstr ""
+
+#: ../drivers/ft2900.py:1227
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"A/N LOW\" button, turn radio on.\n"
+"4. <b>After clicking OK</b>, press \"SET MHz\" to send image.\n"
+msgstr ""
+
+#: ../drivers/ft2900.py:1232
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"A/N LOW\" button, turn radio on.\n"
+"4. Press \"MW D/MR\" to receive image.\n"
+"5. Make sure display says \"-WAIT-\" (see note below if not)\n"
+"6. Click OK to dismiss this dialog and start transfer.\n"
+"Note: if you don't see \"-WAIT-\" at step 5, try cycling\n"
+"      power and pressing and holding red \"*L\" button to unlock\n"
+"      radio, then start back at step 1.\n"
+msgstr ""
+
+#: ../drivers/ft7100.py:1121
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"TONE\" and \"REV\" buttons, turn radio on.\n"
+"4. <b>After clicking OK</b>, press \"TONE\" to send image.\n"
+msgstr ""
+
+#: ../drivers/ft7100.py:1126
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"TONE\" and \"REV\" buttons, turn radio on.\n"
+"4. Press \"REV\" to receive image.\n"
+"5. Make sure display says \"CLONE RX\" and green led is blinking\n"
+"6. Click OK to start transfer.\n"
+msgstr ""
+
+#: ../drivers/ft450d.py:381
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. <b>After clicking OK</b> here, press the [C.S.] key to\n"
+"    send image.\n"
+msgstr ""
+
+#: ../drivers/ft817.py:283
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. <b>After clicking OK</b>, press the [A] key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft450d.py:390
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Click OK here.\n"
+"    (\"Receiving\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft857.py:451
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Press the [A](RCV) key (\"receiving\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft817.py:291
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Press the [C] key (\"RX\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft857.py:442
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to CAT/LINEAR jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. <b>After clicking OK</b>,\n"
+"     press the [C](SEND) key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft7800.py:840
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the \"left\" [V/M] key while turning the\n"
+"     radio on.\n"
+"4. Rotate the \"right\" DIAL knob to select \"CLONE START\".\n"
+"5. Press the [SET] key. The display will disappear\n"
+"     for a moment, then the \"CLONE\" notation will appear.\n"
+"6. <b>After clicking OK</b>, press the \"left\" [V/M] key to\n"
+"     send image.\n"
+msgstr ""
+
+#: ../drivers/ft7800.py:850
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the \"left\" [V/M] key while turning the\n"
+"     radio on.\n"
+"4. Rotate the \"right\" DIAL knob to select \"CLONE START\".\n"
+"5. Press the [SET] key. The display will disappear\n"
+"     for a moment, then the \"CLONE\" notation will appear.\n"
+"6. Press the \"left\" [LOW] key (\"CLONE -RX-\" will appear on\n"
+"     the display).\n"
+msgstr ""
+
+#: ../drivers/vx8.py:587
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the [FW] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
+msgstr ""
+
+#: ../drivers/vx8.py:594
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the [FW] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft7800.py:288
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the [MHz(PRI)] key while turning the\n"
+"     radio on.\n"
+"4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
+"5. Press and hold in the [BAND(SET)] key. The display\n"
+"     will disappear for a moment, then the \"CLONE\" notation\n"
+"     will appear.\n"
+"6. Press the [LOW(ACC)] key (\"--RX--\" will appear on the display).\n"
+msgstr ""
+
+#: ../drivers/ft7800.py:277
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the [MHz(PRI)] key while turning the\n"
+" radio on.\n"
+"4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
+"5. Press and hold in the [BAND(SET)] key. The display\n"
+" will disappear for a moment, then the \"CLONE\" notation\n"
+" will appear.\n"
+"6. <b>After clicking OK</b>, press the [V/M(MW)] key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft2d.py:93
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold [DISP] key while turning on radio\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK here in chirp</b>,\n"
+"     press the [Send] screen button.\n"
+msgstr ""
+
+#: ../drivers/ft1d.py:666
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold in the [F] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft1d.py:673
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold in the [F] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [Dx] key (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ftm3200d.py:83
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [REV(DW)] key\n"
+"     to send image.\n"
+msgstr ""
+
+#: ../drivers/ftm3200d.py:91
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. Press the [MHz(SETUP)] key\n"
+"     (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ftm7250d.py:84
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC Jack.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [GM(AMS)] key\n"
+"     to send image.\n"
+msgstr ""
+
+#: ../drivers/ftm7250d.py:92
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC Jack.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. Press the [MHz(SETUP)] key\n"
+"     (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/vx5.py:317
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/EAR jack.\n"
+"3. Press and hold in the [F/W] key while turning the radio on\n"
+"    (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [VFO(DW)SC] key to receive\n"
+"    the image from the radio.\n"
+msgstr ""
+
+#: ../drivers/vx5.py:325
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/EAR jack.\n"
+"3. Press and hold in the [F/W] key while turning the radio on\n"
+"    (\"CLONE\" will appear on the display).\n"
+"4. Press the [MR(SKP)SC] key (\"CLONE WAIT\" will appear\n"
+"    on the LCD).\n"
+"5. Click OK to send image to radio.\n"
+msgstr ""
+
+#: ../drivers/ft50.py:195
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold [PTT] &amp; Knob while turning the\n"
+"     radio on.\n"
+"4. <b>After clicking OK</b>, press the [PTT] switch to send image.\n"
+msgstr ""
+
+#: ../drivers/ft50.py:202
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold [PTT] &amp; Knob while turning the\n"
+"     radio on.\n"
+"4. Press the [MONI] switch (\"WAIT\" will appear on the LCD).\n"
+"5. Press OK.\n"
+msgstr ""
+
+#: ../drivers/vx6.py:369 ../drivers/vx3.py:375
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [F/W] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
+msgstr ""
+
+#: ../drivers/vx6.py:376 ../drivers/vx3.py:382
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [F/W] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [V/M] key (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/vx7.py:193
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [MON-F] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
+msgstr ""
+
+#: ../drivers/vx7.py:201
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [MON-F] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [V/M] key (\"CLONE WAIT\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft60.py:356
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [MONI] switch while turning the\n"
+"     radio on.\n"
+"4. Rotate the DIAL job to select \"F8 CLONE\".\n"
+"5. Press the [F/W] key momentarily.\n"
+"6. <b>After clicking OK</b>, hold the [PTT] switch\n"
+"     for one second to send image.\n"
+msgstr ""
+
+#: ../drivers/ft60.py:365
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [MONI] switch while turning the\n"
+"     radio on.\n"
+"4. Rotate the DIAL job to select \"F8 CLONE\".\n"
+"5. Press the [F/W] key momentarily.\n"
+"6. Press the [MONI] switch (\"--RX--\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/vx170.py:103
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [moni] key while turning the radio on.\n"
+"4. Select CLONE in menu, then press F. Radio restarts in clone mode.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"5. <b>After clicking OK</b>, briefly hold [PTT] key to send image.\n"
+"    (\"-TX-\" will appear on the LCD). \n"
+msgstr ""
+
+#: ../drivers/ft1802.py:96
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic jack.\n"
+"3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
+"4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft1802.py:103
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic jack.\n"
+"3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
+"4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft1500m.py:96
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic jack.\n"
+"3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
+"   while turning the radio on.\n"
+"4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft1500m.py:103
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic jack.\n"
+"3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
+"   while turning the radio on.\n"
+"4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/uv5r.py:778
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Turn radio on (volume may need to be set at 100%).\n"
+"5. Ensure that the radio is tuned to channel with no activity.\n"
+"6. Click OK to download image from device.\n"
+msgstr ""
+
+#: ../drivers/uv5r.py:786
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Turn radio on (volume may need to be set at 100%).\n"
+"5. Ensure that the radio is tuned to channel with no activity.\n"
+"6. Click OK to upload image to device.\n"
+msgstr ""
+
+#: ../drivers/uvb5.py:287 ../drivers/wouxun.py:215 ../drivers/tg_uv2p.py:222
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Turn radio on.\n"
+"5. Ensure that the radio is tuned to channel with no activity.\n"
+"6. Click OK to download image from device.\n"
+msgstr ""
+
+#: ../drivers/uvb5.py:295 ../drivers/wouxun.py:223 ../drivers/tg_uv2p.py:230
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Turn radio on.\n"
+"5. Ensure that the radio is tuned to channel with no activity.\n"
+"6. Click OK to upload image to device.\n"
+msgstr ""
+
+#: ../drivers/yaesu_clone.py:240
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect data cable.\n"
+"3. Prepare radio for clone.\n"
+"4. <b>After clicking OK</b>, press the key to send image.\n"
+msgstr ""
+
+#: ../drivers/yaesu_clone.py:245
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect data cable.\n"
+"3. Prepare radio for clone.\n"
+"4. Press the key to receive the image.\n"
+msgstr ""
+
+#: ../drivers/ft90.py:197
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect mic and hold [ACC] on mic while powering on.\n"
+"    (\"CLONE\" will appear on the display)\n"
+"3. Replace mic with PC programming cable.\n"
+"4. <b>After clicking OK</b>, press the [SET] key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft90.py:204
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect mic and hold [ACC] on mic while powering on.\n"
+"    (\"CLONE\" will appear on the display)\n"
+"3. Replace mic with PC programming cable.\n"
+"4. Press the [DISP/SS] key\n"
+"    (\"R\" will appear on the lower left of LCD).\n"
+msgstr ""
+
+#: ../drivers/bj9900.py:105
+msgid ""
+"1. Turn radio off.\n"
+"2. Remove front head.\n"
+"3. Connect data cable to radio, use the same connector where\n"
+"     head was connected to, <b>not the mic connector</b>.\n"
+"4. Click OK.\n"
+msgstr ""
+
+#: ../drivers/vx170.py:114
+msgid ""
+"1. Turn radio off.\n"
+"3. Press and hold in the [moni] key while turning the radio on.\n"
+"4. Select CLONE in menu, then press F. Radio restarts in clone mode.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"5. Press the [moni] key (\"-RX-\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft70.py:552
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Unclip battery.\n"
+"4. Press and hold in the [AMS] key and power key while clipping \n"
+" in back battery the(\"ADMS\" will appear on the display).\n"
+"5. <b>After clicking OK</b>, press the [BAND] key.\n"
+msgstr ""
+
+#: ../drivers/ft70.py:560
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Unclip battery.\n"
+"4. Press and hold in the [AMS] key and power key while clipping \n"
+" in back battery the(\"ADMS\" will appear on the display).\n"
+"5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD). OK</b>\n"
+" click <b>Then"
 msgstr ""
 
 #: ../wxui/main.py:1461
@@ -151,7 +672,17 @@ msgstr "Выберите один для импорта из:"
 msgid "City"
 msgstr ""
 
-#: ../drivers/ft817.py:359
+#: ../drivers/ts590.py:674
+msgid ""
+"Click on the \"Special Channels\" toggle-button of the memory\n"
+"editor to see/set the EXT channels. P-VFO channels 100-109\n"
+"are considered Settings.\n"
+"Only a subset of the over 200 available radio settings\n"
+"are supported in this release.\n"
+"Ignore the beeps from the radio on upload and download.\n"
+msgstr ""
+
+#: ../drivers/ft817.py:360
 msgid "Clone completed, checking for spurious bytes"
 msgstr ""
 
@@ -159,12 +690,12 @@ msgstr ""
 msgid "Cloning"
 msgstr "Загрузка"
 
-#: ../drivers/bj9900.py:137 ../drivers/ft450d.py:439 ../drivers/ft817.py:342
+#: ../drivers/bj9900.py:136 ../drivers/ft450d.py:439 ../drivers/ft817.py:343
 #, fuzzy
 msgid "Cloning from radio"
 msgstr "Чтение из станции"
 
-#: ../drivers/bj9900.py:164 ../drivers/ft450d.py:468 ../drivers/ft817.py:380
+#: ../drivers/bj9900.py:163 ../drivers/ft450d.py:468 ../drivers/ft817.py:381
 #, fuzzy
 msgid "Cloning to radio"
 msgstr "Запись в станцию"
@@ -189,6 +720,12 @@ msgstr ""
 #, fuzzy
 msgid "Complete"
 msgstr "Завершено"
+
+#: ../drivers/tmd710.py:196 ../drivers/tmd710.py:199
+msgid ""
+"Connect your interface cable to the PC Port on the\n"
+"back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
+msgstr ""
 
 #: ../wxui/query_sources.py:279 ../wxui/query_sources.py:457
 msgid "Country"
@@ -394,6 +931,179 @@ msgstr ""
 msgid "Finished radio job %s"
 msgstr ""
 
+#: ../drivers/ts590.py:681
+msgid ""
+"Follow these instructions to download the radio memory:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Download from radio: DO NOT mess with the radio\n"
+"during download!\n"
+"3 - Disconnect your interface cable\n"
+msgstr ""
+
+#: ../drivers/ts480.py:520
+msgid ""
+"Follow these instructions to download the radio memory:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Download from radio: Don't adjust any settings\n"
+"on the radio head!\n"
+"3 - Disconnect your interface cable\n"
+msgstr ""
+
+#: ../drivers/th_uv8000.py:535
+msgid ""
+"Follow these instructions to download the radio memory:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio, volume @ 50%\n"
+"4 - Radio > Download from radio\n"
+msgstr ""
+
+#: ../drivers/ic2730.py:314
+msgid ""
+"Follow these instructions to download your config:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable to the Speaker-2 jack\n"
+"3 - Turn on your radio\n"
+"4 - Radio > Download from radio\n"
+"5 - Disconnect the interface cable! Otherwise there will be\n"
+"    no right-side audio!\n"
+msgstr ""
+
+#: ../drivers/mursv1.py:346 ../drivers/baofeng_wp970i.py:329
+#: ../drivers/btech.py:684 ../drivers/gmrsuv1.py:395
+#: ../drivers/tdxone_tdq8a.py:457 ../drivers/uv6r.py:345
+#: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:367 ../drivers/bf_t1.py:483
+msgid ""
+"Follow these instructions to download your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the download of your radio data\n"
+msgstr ""
+
+#: ../drivers/tk760g.py:685
+msgid ""
+"Follow these instructions to download your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio (unlock it if password protected)\n"
+"4 - Click OK to start\n"
+msgstr ""
+
+#: ../drivers/tk760.py:344
+msgid ""
+"Follow these instructions to read your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Click OK to start\n"
+msgstr ""
+
+#: ../drivers/ts590.py:687
+msgid ""
+"Follow these instructions to upload the radio memory:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Upload to radio: DO NOT mess with the radio\n"
+"during upload!\n"
+"3 - Disconnect your interface cable\n"
+msgstr ""
+
+#: ../drivers/ts480.py:526
+msgid ""
+"Follow these instructions to upload the radio memory:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Upload to radio: Don't adjust any settings\n"
+"on the radio head!\n"
+"3 - Disconnect your interface cable\n"
+msgstr ""
+
+#: ../drivers/th_uv8000.py:541
+msgid ""
+"Follow these instructions to upload the radio memory:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio, volume @ 50%\n"
+"4 - Radio > Upload to radio\n"
+msgstr ""
+
+#: ../drivers/ic2730.py:322
+msgid ""
+"Follow these instructions to upload your config:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable to the Speaker-2 jack\n"
+"3 - Turn on your radio\n"
+"4 - Radio > Upload to radio\n"
+"5 - Disconnect the interface cable, otherwise there will be\n"
+"    no right-side audio!\n"
+"6 - Cycle power on the radio to exit clone mode\n"
+msgstr ""
+
+#: ../drivers/btech.py:690 ../drivers/bf_t1.py:489
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the upload of your radio data\n"
+msgstr ""
+
+#: ../drivers/tk760g.py:691
+msgid ""
+"Follow these instructions to upload your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio (unlock it if password protected)\n"
+"4 - Click OK to start\n"
+msgstr ""
+
+#: ../drivers/tk760.py:350
+msgid ""
+"Follow these instructions to write your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Click OK to start\n"
+msgstr ""
+
+#: ../drivers/vgc.py:585 ../drivers/lt725uv.py:524
+msgid ""
+"Follow this instructions to download your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the download of your radio data\n"
+msgstr ""
+
+#: ../drivers/tk270.py:340
+msgid ""
+"Follow this instructions to read your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the download of your radio data\n"
+msgstr ""
+
+#: ../drivers/vgc.py:591 ../drivers/mursv1.py:352
+#: ../drivers/baofeng_wp970i.py:335 ../drivers/gmrsuv1.py:401
+#: ../drivers/lt725uv.py:530 ../drivers/tdxone_tdq8a.py:463
+#: ../drivers/uv6r.py:351 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:373
+msgid ""
+"Follow this instructions to upload your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the upload of your radio data\n"
+msgstr ""
+
+#: ../drivers/tk270.py:346
+msgid ""
+"Follow this instructions to write your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the upload of your radio data\n"
+msgstr ""
+
 #: ../wxui/memedit.py:113
 #, python-format
 msgid "Found empty list value for %(name)s: %(value)r"
@@ -552,7 +1262,7 @@ msgstr ""
 msgid "Memory must be in a bank to be edited"
 msgstr ""
 
-#: ../drivers/vx5.py:134
+#: ../drivers/vx5.py:133
 #, python-brace-format
 msgid "Memory {num} not in bank {bank}"
 msgstr ""
@@ -678,6 +1388,13 @@ msgstr ""
 msgid "Overwrite memories?"
 msgstr "Перезаписать?"
 
+#: ../drivers/ts480.py:516
+msgid ""
+"P-VFO channels 100-109 are considered Settings.\n"
+"Only a subset of the over 130 available radio settings\n"
+"are supported in this release.\n"
+msgstr ""
+
 #: ../wxui/memedit.py:1387
 #, python-format
 msgid "Pasted memories will overwrite %i existing memories"
@@ -700,6 +1417,32 @@ msgstr ""
 
 #: ../wxui/main.py:1467
 msgid "Please be sure to quit CHIRP before installing the new version!"
+msgstr ""
+
+#: ../drivers/ftlx011.py:307
+msgid ""
+"Please follow this steps carefully:\n"
+"1 - Turn on your radio\n"
+"2 - Connect the interface cable to your radio\n"
+"3 - Click the button on this window to start download\n"
+"    (you may see another dialog, click ok)\n"
+"4 - Radio will beep and led will flash\n"
+"5 - You will get a 10 seconds timeout to press \"MON\" before\n"
+"    data upload start\n"
+"6 - If all goes right radio will beep at end.\n"
+"After cloning remove the cable and power cycle your radio to\n"
+"get into normal mode.\n"
+msgstr ""
+
+#: ../drivers/ftlx011.py:298
+msgid ""
+"Please follow this steps carefully:\n"
+"1 - Turn on your radio\n"
+"2 - Connect the interface cable to your radio.\n"
+"3 - Click the button on this window to start download\n"
+"    (Radio will beep and led will flash)\n"
+"4 - Then press the \"A\" button in your radio to start cloning.\n"
+"    (At the end radio will beep)\n"
 msgstr ""
 
 #: ../wxui/main.py:1331
@@ -761,7 +1504,7 @@ msgstr ""
 msgid "Radio"
 msgstr "Станция"
 
-#: ../drivers/ft60.py:88 ../drivers/ft450d.py:486 ../drivers/ft817.py:407
+#: ../drivers/ft60.py:87 ../drivers/ft450d.py:486 ../drivers/ft817.py:408
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr ""
@@ -771,7 +1514,7 @@ msgstr ""
 msgid "Radio information"
 msgstr "Получение информации"
 
-#: ../drivers/ft817.py:364
+#: ../drivers/ft817.py:365
 msgid ""
 "Radio sent data after the last awaited block, this happens when the selected "
 "model is a non-US but the radio is a US one. Please choose the correct model "
@@ -922,12 +1665,50 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
+#: ../drivers/ft450d.py:369
+msgid ""
+"The FT-450 radio driver loads the 'Special Channels' tab\n"
+"with the PMS scanning range memories (group 11), 60meter\n"
+"channels (group 12), the QMB (STO/RCL) memory, the HF and\n"
+"50m HOME memories and all the A and B VFO memories.\n"
+"There are VFO memories for the last frequency dialed in\n"
+"each band. The last mem-tune config is also stored.\n"
+"These Special Channels allow limited field editing.\n"
+"This driver also populates the 'Other' tab in the channel\n"
+"memory Properties window. This tab contains values for\n"
+"those channel memory settings that don't fall under the\n"
+"standard Chirp display columns.\n"
+msgstr ""
+
+#: ../drivers/boblov_x3plus.py:118
+msgid ""
+"The X3Plus driver is currently experimental.\n"
+"There are no known issues but you should proceed with caution.\n"
+"Please save an unedited copy of your first successful\n"
+"download to a CHIRP Radio Images (*.img) file.\n"
+msgstr ""
+
 #: ../wxui/memedit.py:1176
 #, fuzzy
 msgid "This Memory"
 msgstr "Show Raw Memory\t"
 
-#: ../drivers/bj9900.py:112
+#: ../drivers/id5100.py:333
+msgid ""
+"This driver has been tested with v3 of the ID-5100. If your radio is not "
+"fully updated please help by opening a bug report with a debug log so we can "
+"add support for the other revisions."
+msgstr ""
+
+#: ../drivers/th_uv88.py:497
+msgid "This is an early stage beta driver\n"
+msgstr ""
+
+#: ../drivers/th_uv88.py:499
+msgid "This is an early stage beta driver - upload at your own risk\n"
+msgstr ""
+
+#: ../drivers/bj9900.py:111
 msgid ""
 "This is experimental support for BJ-9900 which is still under development.\n"
 "Please ensure you have a good backup with OEM software.\n"
@@ -944,6 +1725,15 @@ msgstr "Удалить (и сдвинуть вверх)"
 #, fuzzy
 msgid "This memory and shift block up"
 msgstr "Удалить (и сдвинуть вверх)"
+
+#: ../drivers/fd268.py:303 ../drivers/fd268.py:309
+msgid ""
+"This radio has a tricky way of enter into program mode,\n"
+"even the original software has a few tries to get inside.\n"
+"I will try 8 times (most of the time ~3 will doit) and this\n"
+"can take a few seconds, if don't work, try again a few times.\n"
+"If you can get into it, please check the radio and cable.\n"
+msgstr ""
 
 #: ../wxui/developer.py:479
 msgid "This will load a module from a website issue"
@@ -991,7 +1781,7 @@ msgstr "Открыть предустановленные конфигураци
 msgid "Unable to open the clipboard"
 msgstr "Станция не обнаружена на {port}"
 
-#: ../drivers/ft817.py:321
+#: ../drivers/ft817.py:322
 msgid ""
 "Unable to read last block. This often happens when the selected model is US "
 "but the radio is a non-US one (or widebanded). Please choose the correct "
@@ -1103,7 +1893,7 @@ msgstr ""
 msgid "enabled"
 msgstr ""
 
-#: ../drivers/vx5.py:117
+#: ../drivers/vx5.py:116
 #, python-brace-format
 msgid "{bank} is full"
 msgstr ""
