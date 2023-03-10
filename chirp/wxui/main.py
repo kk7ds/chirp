@@ -820,7 +820,7 @@ class ChirpMain(wx.Frame):
         self._editors.GetPage(event.GetSelection())
         self._update_window_for_editor()
         radio = self.current_editorset.radio
-        radio_name = '%s %s%s' % (radio.VENDOR, radio.MODEL, radio.VARIANT)
+        radio_name = '%s %s' % (radio.VENDOR, radio.MODEL)
         self.statusbar.SetStatusText(radio_name, i=1)
 
     def _editor_changed(self, event):
