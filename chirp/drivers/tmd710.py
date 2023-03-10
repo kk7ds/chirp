@@ -186,7 +186,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         rf.valid_name_length = 8
         rf.valid_skips = TMD710_SKIP
         rf.valid_bands = TMD710_BANDS
-        rf.memory_bounds = (0, 1029)        # including special chans 1000-1029
+        rf.memory_bounds = (0, 999)        # including special chans 1000-1029
         rf.valid_special_chans = sorted(self.SPECIAL_MEMORIES.keys())
         return rf
 
