@@ -26,7 +26,6 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettingValueFloat, RadioSettings, InvalidValueError
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -311,27 +310,23 @@ class IC2730Radio(icf.IcomCloneModeRadio):
                    'The Pocket Beep tone/dtcs modes are not supported by '
                    'CHIRP. Set those manually.\n')
 
-        rp.pre_download = _(dedent("""\
-            Follow these instructions to download your config:
-
-            1 - Turn off your radio
-            2 - Connect your interface cable to the Speaker-2 jack
-            3 - Turn on your radio
-            4 - Radio > Download from radio
-            5 - Disconnect the interface cable! Otherwise there will be
-                no right-side audio!
-            """))
-        rp.pre_upload = _(dedent("""\
-            Follow these instructions to upload your config:
-
-            1 - Turn off your radio
-            2 - Connect your interface cable to the Speaker-2 jack
-            3 - Turn on your radio
-            4 - Radio > Upload to radio
-            5 - Disconnect the interface cable, otherwise there will be
-                no right-side audio!
-            6 - Cycle power on the radio to exit clone mode
-            """))
+        rp.pre_download = _(
+            "Follow these instructions to download your config:\n"
+            "1 - Turn off your radio\n"
+            "2 - Connect your interface cable to the Speaker-2 jack\n"
+            "3 - Turn on your radio\n"
+            "4 - Radio > Download from radio\n"
+            "5 - Disconnect the interface cable! Otherwise there will be\n"
+            "    no right-side audio!\n")
+        rp.pre_upload = _(
+            "Follow these instructions to upload your config:\n"
+            "1 - Turn off your radio\n"
+            "2 - Connect your interface cable to the Speaker-2 jack\n"
+            "3 - Turn on your radio\n"
+            "4 - Radio > Upload to radio\n"
+            "5 - Disconnect the interface cable, otherwise there will be\n"
+            "    no right-side audio!\n"
+            "6 - Cycle power on the radio to exit clone mode\n")
         return rp
 
     def _get_bank(self, loc):

@@ -26,7 +26,6 @@ from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
     InvalidValueError
 from chirp import util
 
-from textwrap import dedent
 import string
 LOG = logging.getLogger(__name__)
 
@@ -549,21 +548,23 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
 
-        rp.pre_download = _(dedent("""\
-            1. Turn radio on.
-            2. Connect cable to DATA terminal.
-            3. Unclip battery.
-            4. Press and hold in the [AMS] key and power key while clipping the battery back in 
-            ("ADMS" will appear on the display).
-            5. <b>After clicking OK</b>, press the [BAND] key."""
-                                   ))
-        rp.pre_upload = _(dedent("""\
-            1. Turn radio on.
-            2. Connect cable to DATA terminal.
-            3. Unclip battery.
-            4. Press and hold in the [AMS] key and power key while clipping the battery back in 
-            ("ADMS" will appear on the display).
-            5. Press the [MODE] key ("-WAIT-" will appear on the LCD). <b>Then click OK</b>"""))
+        rp.pre_download = _(
+            "1. Turn radio on.\n"
+            "2. Connect cable to DATA terminal.\n"
+            "3. Unclip battery.\n"
+            "4. Press and hold in the [AMS] key and power key while clipping"
+            " \n in back battery the"
+            "(\"ADMS\" will appear on the display).\n"
+            "5. <b>After clicking OK</b>, press the [BAND] key.\n")
+        rp.pre_upload = _(
+            "1. Turn radio on.\n"
+            "2. Connect cable to DATA terminal.\n"
+            "3. Unclip battery.\n"
+            "4. Press and hold in the [AMS] key and power key while clipping"
+            " \n in back battery the"
+            "(\"ADMS\" will appear on the display).\n"
+            "5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD)."
+            " OK</b>\n click <b>Then")
         return rp
 
     def process_mmap(self):

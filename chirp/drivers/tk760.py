@@ -19,7 +19,6 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettings
-from textwrap import dedent
 
 import time
 import struct
@@ -341,20 +340,18 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
         rp = chirp_common.RadioPrompts()
         rp.experimental = \
             'This driver is experimental: Use at your own risk!'
-        rp.pre_download = _(dedent("""\
-            Follow these instructions to read your radio:
-            1 - Turn off your radio
-            2 - Connect your interface cable
-            3 - Turn on your radio
-            4 - Click OK to start
-            """))
-        rp.pre_upload = _(dedent("""\
-            Follow these instructions to write your radio:
-            1 - Turn off your radio
-            2 - Connect your interface cable
-            3 - Turn on your radio
-            4 - Click OK to start
-            """))
+        rp.pre_download = _(
+            "Follow these instructions to read your radio:\n"
+            "1 - Turn off your radio\n"
+            "2 - Connect your interface cable\n"
+            "3 - Turn on your radio\n"
+            "4 - Click OK to start\n")
+        rp.pre_upload = _(
+            "Follow these instructions to write your radio:\n"
+            "1 - Turn off your radio\n"
+            "2 - Connect your interface cable\n"
+            "3 - Turn on your radio\n"
+            "4 - Click OK to start\n")
         return rp
 
     def get_features(self):

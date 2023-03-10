@@ -27,7 +27,6 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettingValueFloat, RadioSettings, \
     InvalidValueError
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -392,22 +391,18 @@ class GMRSV1(baofeng_common.BaofengCommonHT):
              'Please save an unedited copy of your first successful\n'
              'download to a CHIRP Radio Images(*.img) file.'
              )
-        rp.pre_download = _(dedent("""\
-            Follow these instructions to download your info:
-
-            1 - Turn off your radio
-            2 - Connect your interface cable
-            3 - Turn on your radio
-            4 - Do the download of your radio data
-            """))
-        rp.pre_upload = _(dedent("""\
-            Follow this instructions to upload your info:
-
-            1 - Turn off your radio
-            2 - Connect your interface cable
-            3 - Turn on your radio
-            4 - Do the upload of your radio data
-            """))
+        rp.pre_download = _(
+            "Follow these instructions to download your info:\n"
+            "1 - Turn off your radio\n"
+            "2 - Connect your interface cable\n"
+            "3 - Turn on your radio\n"
+            "4 - Do the download of your radio data\n")
+        rp.pre_upload = _(
+            "Follow this instructions to upload your info:\n"
+            "1 - Turn off your radio\n"
+            "2 - Connect your interface cable\n"
+            "3 - Turn on your radio\n"
+            "4 - Do the upload of your radio data\n")
         return rp
 
     def process_mmap(self):

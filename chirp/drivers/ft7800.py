@@ -20,7 +20,6 @@ import re
 
 from chirp.drivers import yaesu_clone
 from chirp import chirp_common, memmap, directory, bitwise, errors
-from textwrap import dedent
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
@@ -274,26 +273,28 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-1. Turn radio off.
-2. Connect cable to DATA jack.
-3. Press and hold in the [MHz(PRI)] key while turning the
- radio on.
-4. Rotate the DIAL job to select "F-7 CLONE".
-5. Press and hold in the [BAND(SET)] key. The display
- will disappear for a moment, then the "CLONE" notation
- will appear.
-6. <b>After clicking OK</b>, press the [V/M(MW)] key to send image."""))
-        rp.pre_upload = _(dedent("""\
-1. Turn radio off.
-2. Connect cable to DATA jack.
-3. Press and hold in the [MHz(PRI)] key while turning the
-     radio on.
-4. Rotate the DIAL job to select "F-7 CLONE".
-5. Press and hold in the [BAND(SET)] key. The display
-     will disappear for a moment, then the "CLONE" notation
-     will appear.
-6. Press the [LOW(ACC)] key ("--RX--" will appear on the display)."""))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to DATA jack.\n"
+            "3. Press and hold in the [MHz(PRI)] key while turning the\n"
+            " radio on.\n"
+            "4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
+            "5. Press and hold in the [BAND(SET)] key. The display\n"
+            " will disappear for a moment, then the \"CLONE\" notation\n"
+            " will appear.\n"
+            "6. <b>After clicking OK</b>, press the [V/M(MW)] key to send"
+            " image.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to DATA jack.\n"
+            "3. Press and hold in the [MHz(PRI)] key while turning the\n"
+            "     radio on.\n"
+            "4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
+            "5. Press and hold in the [BAND(SET)] key. The display\n"
+            "     will disappear for a moment, then the \"CLONE\" notation\n"
+            "     will appear.\n"
+            "6. Press the [LOW(ACC)] key (\"--RX--\" will appear on the"
+            " display).\n")
         return rp
 
     def get_features(self):
@@ -835,26 +836,27 @@ class FT8800Radio(FTx800Radio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to DATA jack.
-            3. Press and hold in the "left" [V/M] key while turning the
-                 radio on.
-            4. Rotate the "right" DIAL knob to select "CLONE START".
-            5. Press the [SET] key. The display will disappear
-                 for a moment, then the "CLONE" notation will appear.
-            6. <b>After clicking OK</b>, press the "left" [V/M] key to
-                 send image."""))
-        rp.pre_upload = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to DATA jack.
-            3. Press and hold in the "left" [V/M] key while turning the
-                 radio on.
-            4. Rotate the "right" DIAL knob to select "CLONE START".
-            5. Press the [SET] key. The display will disappear
-                 for a moment, then the "CLONE" notation will appear.
-            6. Press the "left" [LOW] key ("CLONE -RX-" will appear on
-                 the display)."""))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to DATA jack.\n"
+            "3. Press and hold in the \"left\" [V/M] key while turning the\n"
+            "     radio on.\n"
+            "4. Rotate the \"right\" DIAL knob to select \"CLONE START\".\n"
+            "5. Press the [SET] key. The display will disappear\n"
+            "     for a moment, then the \"CLONE\" notation will appear.\n"
+            "6. <b>After clicking OK</b>, press the \"left\" [V/M] key to\n"
+            "     send image.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to DATA jack.\n"
+            "3. Press and hold in the \"left\" [V/M] key while turning the\n"
+            "     radio on.\n"
+            "4. Rotate the \"right\" DIAL knob to select \"CLONE START\".\n"
+            "5. Press the [SET] key. The display will disappear\n"
+            "     for a moment, then the \"CLONE\" notation will appear.\n"
+            "6. Press the \"left\" [LOW] key (\"CLONE -RX-\" will appear"
+            " on\n"
+            "     the display).\n")
         return rp
 
     def get_features(self):

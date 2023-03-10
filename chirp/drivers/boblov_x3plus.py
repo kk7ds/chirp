@@ -21,7 +21,6 @@ import struct
 import time
 
 from datetime import datetime
-from textwrap import dedent
 
 from chirp import (
     bitwise,
@@ -115,14 +114,12 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.experimental = _(dedent("""\
-            The X3Plus driver is currently experimental.
-
-            There are no known issues but you should proceed with caution.
-
-            Please save an unedited copy of your first successful
-            download to a CHIRP Radio Images (*.img) file.
-            """))
+        rp.experimental = _(
+            "The X3Plus driver is currently experimental.\n"
+            "There are no known issues but you should proceed with"
+            " caution.\n"
+            "Please save an unedited copy of your first successful\n"
+            "download to a CHIRP Radio Images (*.img) file.\n")
         return rp
 
     @classmethod

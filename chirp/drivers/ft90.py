@@ -28,7 +28,6 @@ import string
 import re
 import logging
 
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -194,19 +193,20 @@ struct  {
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-1. Turn radio off.
-2. Connect mic and hold [ACC] on mic while powering on.
-    ("CLONE" will appear on the display)
-3. Replace mic with PC programming cable.
-4. <b>After clicking OK</b>, press the [SET] key to send image."""))
-        rp.pre_upload = _(dedent("""\
-1. Turn radio off.
-2. Connect mic and hold [ACC] on mic while powering on.
-    ("CLONE" will appear on the display)
-3. Replace mic with PC programming cable.
-4. Press the [DISP/SS] key
-    ("R" will appear on the lower left of LCD)."""))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect mic and hold [ACC] on mic while powering on.\n"
+            "    (\"CLONE\" will appear on the display)\n"
+            "3. Replace mic with PC programming cable.\n"
+            "4. <b>After clicking OK</b>, press the [SET] key to send"
+            " image.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect mic and hold [ACC] on mic while powering on.\n"
+            "    (\"CLONE\" will appear on the display)\n"
+            "3. Replace mic with PC programming cable.\n"
+            "4. Press the [DISP/SS] key\n"
+            "    (\"R\" will appear on the lower left of LCD).\n")
         rp.display_pre_upload_prompt_before_opening_port = False
         return rp
 

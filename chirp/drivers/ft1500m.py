@@ -29,7 +29,6 @@ from chirp.drivers import yaesu_clone
 from chirp import chirp_common, bitwise, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettings
-from textwrap import dedent
 
 MEM_FORMAT = """
 #seekto 0x002a;
@@ -93,18 +92,20 @@ class FT1500Radio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-1. Turn radio off.
-2. Connect cable to mic jack.
-3. Press and hold in the [MHz], [LOW], and [D/MR] keys
-   while turning the radio on.
-4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image."""))
-        rp.pre_upload = _(dedent("""\
-1. Turn radio off.
-2. Connect cable to mic jack.
-3. Press and hold in the [MHz], [LOW], and [D/MR] keys
-   while turning the radio on.
-4. Press the [D/MR(MW)] key ("--WAIT--" will appear on the LCD)."""))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to mic jack.\n"
+            "3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
+            "   while turning the radio on.\n"
+            "4. <b>After clicking OK</b>, press the [MHz(SET)] key to send"
+            " image.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to mic jack.\n"
+            "3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
+            "   while turning the radio on.\n"
+            "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the"
+            " LCD).\n")
         return rp
 
     def get_features(self):

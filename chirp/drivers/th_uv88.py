@@ -27,7 +27,6 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettingValueFloat, RadioSettings, InvalidValueError
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -494,12 +493,10 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rp.info = \
             (cls.VENDOR + ' ' + cls.MODEL + '\n')
 
-        rp.pre_download = _(dedent("""\
-            This is an early stage beta driver
-            """))
-        rp.pre_upload = _(dedent("""\
-            This is an early stage beta driver - upload at your own risk
-            """))
+        rp.pre_download = _(
+            "This is an early stage beta driver\n")
+        rp.pre_upload = _(
+            "This is an early stage beta driver - upload at your own risk\n")
         return rp
 
     def get_features(self):

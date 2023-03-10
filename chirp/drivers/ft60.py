@@ -23,7 +23,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, RadioSettings
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -353,23 +352,24 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-1. Turn radio off.
-2. Connect cable to MIC/SP jack.
-3. Press and hold in the [MONI] switch while turning the
-     radio on.
-4. Rotate the DIAL job to select "F8 CLONE".
-5. Press the [F/W] key momentarily.
-6. <b>After clicking OK</b>, hold the [PTT] switch
-     for one second to send image."""))
-        rp.pre_upload = _(dedent("""\
-1. Turn radio off.
-2. Connect cable to MIC/SP jack.
-3. Press and hold in the [MONI] switch while turning the
-     radio on.
-4. Rotate the DIAL job to select "F8 CLONE".
-5. Press the [F/W] key momentarily.
-6. Press the [MONI] switch ("--RX--" will appear on the LCD)."""))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to MIC/SP jack.\n"
+            "3. Press and hold in the [MONI] switch while turning the\n"
+            "     radio on.\n"
+            "4. Rotate the DIAL job to select \"F8 CLONE\".\n"
+            "5. Press the [F/W] key momentarily.\n"
+            "6. <b>After clicking OK</b>, hold the [PTT] switch\n"
+            "     for one second to send image.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to MIC/SP jack.\n"
+            "3. Press and hold in the [MONI] switch while turning the\n"
+            "     radio on.\n"
+            "4. Rotate the DIAL job to select \"F8 CLONE\".\n"
+            "5. Press the [F/W] key momentarily.\n"
+            "6. Press the [MONI] switch (\"--RX--\" will appear on the"
+            " LCD).\n")
         return rp
 
     def get_features(self):

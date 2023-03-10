@@ -24,7 +24,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 import struct
 import time
 import logging
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -102,12 +101,12 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_upload = rp.pre_download = _(dedent("""\
-            1. Turn radio off.
-            2. Remove front head.
-            3. Connect data cable to radio, use the same connector where
-                 head was connected to, <b>not the mic connector</b>.
-            4. Click OK."""))
+        rp.pre_upload = rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Remove front head.\n"
+            "3. Connect data cable to radio, use the same connector where\n"
+            "     head was connected to, <b>not the mic connector</b>.\n"
+            "4. Click OK.\n")
         rp.experimental = _(
          'This is experimental support for BJ-9900 '
          'which is still under development.\n'

@@ -18,7 +18,6 @@ import os
 import logging
 
 from chirp import chirp_common, directory, memmap, errors, util, bitwise
-from textwrap import dedent
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettings
@@ -300,24 +299,18 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
         rp.experimental = \
             ('The program mode of this radio has his tricks, '
              'so this driver is *completely experimental*.')
-        rp.pre_download = _(dedent("""\
-            This radio has a tricky way of enter into program mode,
-            even the original software has a few tries to get inside.
-
-            I will try 8 times (most of the time ~3 will doit) and this
-            can take a few seconds, if don't work, try again a few times.
-
-            If you can get into it, please check the radio and cable.
-            """))
-        rp.pre_upload = _(dedent("""\
-            This radio has a tricky way of enter into program mode,
-            even the original software has a few tries to get inside.
-
-            I will try 8 times (most of the time ~3 will doit) and this
-            can take a few seconds, if don't work, try again a few times.
-
-            If you can get into it, please check the radio and cable.
-            """))
+        rp.pre_download = _(
+            "This radio has a tricky way of enter into program mode,\n"
+            "even the original software has a few tries to get inside.\n"
+            "I will try 8 times (most of the time ~3 will doit) and this\n"
+            "can take a few seconds, if don't work, try again a few times.\n"
+            "If you can get into it, please check the radio and cable.\n")
+        rp.pre_upload = _(
+            "This radio has a tricky way of enter into program mode,\n"
+            "even the original software has a few tries to get inside.\n"
+            "I will try 8 times (most of the time ~3 will doit) and this\n"
+            "can take a few seconds, if don't work, try again a few times.\n"
+            "If you can get into it, please check the radio and cable.\n")
         return rp
 
     def get_features(self):

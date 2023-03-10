@@ -24,7 +24,6 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettingValueFloat, RadioSettings, InvalidValueError
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -295,31 +294,27 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
              '\n'
              'The 99 channel versions appears to use another mem layout.\n'
              )
-        rp.pre_download = _(dedent("""\
-            Please follow this steps carefully:
-
-            1 - Turn on your radio
-            2 - Connect the interface cable to your radio.
-            3 - Click the button on this window to start download
-                (Radio will beep and led will flash)
-            4 - Then press the "A" button in your radio to start cloning.
-                (At the end radio will beep)
-            """))
-        rp.pre_upload = _(dedent("""\
-            Please follow this steps carefully:
-
-            1 - Turn on your radio
-            2 - Connect the interface cable to your radio
-            3 - Click the button on this window to start download
-                (you may see another dialog, click ok)
-            4 - Radio will beep and led will flash
-            5 - You will get a 10 seconds timeout to press "MON" before
-                data upload start
-            6 - If all goes right radio will beep at end.
-
-            After cloning remove the cable and power cycle your radio to
-            get into normal mode.
-            """))
+        rp.pre_download = _(
+            "Please follow this steps carefully:\n"
+            "1 - Turn on your radio\n"
+            "2 - Connect the interface cable to your radio.\n"
+            "3 - Click the button on this window to start download\n"
+            "    (Radio will beep and led will flash)\n"
+            "4 - Then press the \"A\" button in your radio to start"
+            " cloning.\n"
+            "    (At the end radio will beep)\n")
+        rp.pre_upload = _(
+            "Please follow this steps carefully:\n"
+            "1 - Turn on your radio\n"
+            "2 - Connect the interface cable to your radio\n"
+            "3 - Click the button on this window to start download\n"
+            "    (you may see another dialog, click ok)\n"
+            "4 - Radio will beep and led will flash\n"
+            "5 - You will get a 10 seconds timeout to press \"MON\" before\n"
+            "    data upload start\n"
+            "6 - If all goes right radio will beep at end.\n"
+            "After cloning remove the cable and power cycle your radio to\n"
+            "get into normal mode.\n")
         return rp
 
     def get_features(self):

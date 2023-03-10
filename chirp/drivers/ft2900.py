@@ -25,7 +25,6 @@ from chirp.drivers.yaesu_clone import YaesuCloneModeRadio
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueList, RadioSettingValueString, RadioSettings
 
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -1224,22 +1223,22 @@ class FT2900Radio(YaesuCloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-            1. Turn Radio off.
-            2. Connect data cable.
-            3. While holding "A/N LOW" button, turn radio on.
-            4. <b>After clicking OK</b>, press "SET MHz" to send image."""))
-        rp.pre_upload = _(dedent("""\
-            1. Turn Radio off.
-            2. Connect data cable.
-            3. While holding "A/N LOW" button, turn radio on.
-            4. Press "MW D/MR" to receive image.
-            5. Make sure display says "-WAIT-" (see note below if not)
-            6. Click OK to dismiss this dialog and start transfer.
-
-            Note: if you don't see "-WAIT-" at step 5, try cycling
-                  power and pressing and holding red "*L" button to unlock
-                  radio, then start back at step 1."""))
+        rp.pre_download = _(
+            "1. Turn Radio off.\n"
+            "2. Connect data cable.\n"
+            "3. While holding \"A/N LOW\" button, turn radio on.\n"
+            "4. <b>After clicking OK</b>, press \"SET MHz\" to send image.\n")
+        rp.pre_upload = _(
+            "1. Turn Radio off.\n"
+            "2. Connect data cable.\n"
+            "3. While holding \"A/N LOW\" button, turn radio on.\n"
+            "4. Press \"MW D/MR\" to receive image.\n"
+            "5. Make sure display says \"-WAIT-\" (see note below if not)\n"
+            "6. Click OK to dismiss this dialog and start transfer.\n"
+            "Note: if you don't see \"-WAIT-\" at step 5, try cycling\n"
+            "      power and pressing and holding red \"*L\" button to"
+            " unlock\n"
+            "      radio, then start back at step 1.\n")
         return rp
 
 

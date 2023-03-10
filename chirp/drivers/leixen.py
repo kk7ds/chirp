@@ -23,7 +23,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, InvalidValueError, RadioSettings
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 

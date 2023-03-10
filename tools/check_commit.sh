@@ -41,6 +41,10 @@ if grep -E 'MemoryMap\(' added_lines; then
     fail New uses of MemoryMap should be MemoryMapBytes
 fi
 
+if grep -E "_\([^\"']" added_lines; then
+    fail 'Translated strings must be literals!'
+fi
+
 for file in $(git diff --name-only ${BASE}..); do
     if file $file | grep -q CRLF; then
         fail "$file : Files should be LF (Unix) format, not CR (Mac) or CRLF (Windows)"

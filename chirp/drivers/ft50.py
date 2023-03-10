@@ -22,7 +22,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettings
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -192,19 +191,20 @@ class FT50Radio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-1. Turn radio off.
-2. Connect cable to MIC/SP jack.
-3. Press and hold [PTT] &amp; Knob while turning the
-     radio on.
-4. <b>After clicking OK</b>, press the [PTT] switch to send image."""))
-        rp.pre_upload = _(dedent("""\
-1. Turn radio off.
-2. Connect cable to MIC/SP jack.
-3. Press and hold [PTT] &amp; Knob while turning the
-     radio on.
-4. Press the [MONI] switch ("WAIT" will appear on the LCD).
-5. Press OK."""))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to MIC/SP jack.\n"
+            "3. Press and hold [PTT] &amp; Knob while turning the\n"
+            "     radio on.\n"
+            "4. <b>After clicking OK</b>, press the [PTT] switch to send"
+            " image.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to MIC/SP jack.\n"
+            "3. Press and hold [PTT] &amp; Knob while turning the\n"
+            "     radio on.\n"
+            "4. Press the [MONI] switch (\"WAIT\" will appear on the LCD).\n"
+            "5. Press OK.\n")
         return rp
 
     def get_features(self):

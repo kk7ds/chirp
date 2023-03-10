@@ -17,7 +17,6 @@ from builtins import bytes
 import time
 import os
 import logging
-from textwrap import dedent
 
 from chirp import bitwise
 from chirp import chirp_common, util, memmap, errors
@@ -237,16 +236,16 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-            1. Turn radio off.
-            2. Connect data cable.
-            3. Prepare radio for clone.
-            4. <b>After clicking OK</b>, press the key to send image."""))
-        rp.pre_upload = _(dedent("""\
-            1. Turn radio off.
-            2. Connect data cable.
-            3. Prepare radio for clone.
-            4. Press the key to receive the image."""))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect data cable.\n"
+            "3. Prepare radio for clone.\n"
+            "4. <b>After clicking OK</b>, press the key to send image.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect data cable.\n"
+            "3. Prepare radio for clone.\n"
+            "4. Press the key to receive the image.\n")
         return rp
 
     def _checksums(self):

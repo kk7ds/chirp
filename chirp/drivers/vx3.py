@@ -20,7 +20,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettings
-from textwrap import dedent
 import os
 import re
 import logging
@@ -372,18 +371,19 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-1. Turn radio off.
-2. Connect cable to MIC/SP jack.
-3. Press and hold in the [F/W] key while turning the radio on
-     ("CLONE" will appear on the display).
-4. <b>After clicking OK</b>, press the [BAND] key to send image."""))
-        rp.pre_upload = _(dedent("""\
-1. Turn radio off.
-2. Connect cable to MIC/SP jack.
-3. Press and hold in the [F/W] key while turning the radio on
-     ("CLONE" will appear on the display).
-4. Press the [V/M] key ("-WAIT-" will appear on the LCD)."""))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to MIC/SP jack.\n"
+            "3. Press and hold in the [F/W] key while turning the radio on\n"
+            "     (\"CLONE\" will appear on the display).\n"
+            "4. <b>After clicking OK</b>, press the [BAND] key to send"
+            " image.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to MIC/SP jack.\n"
+            "3. Press and hold in the [F/W] key while turning the radio on\n"
+            "     (\"CLONE\" will appear on the display).\n"
+            "4. Press the [V/M] key (\"-WAIT-\" will appear on the LCD).\n")
         return rp
 
     def _checksums(self):
