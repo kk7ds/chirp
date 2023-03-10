@@ -3,6 +3,7 @@ import unittest
 
 from chirp.drivers import th9800
 
+
 class Fake9800:
     ident = (b'\x54\x48\x39\x38\x30\x30\xff\xff'
              b'\x56\x31\x34\x78\xff\xff\xff\xff')

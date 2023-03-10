@@ -4,23 +4,22 @@ import unittest
 
 from chirp import chirp_common
 from chirp.drivers import generic_csv
-from chirp import errors
 
 CHIRP_CSV_LEGACY = (
-"""Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,Mode,TStep,Skip,Comment,URCALL,RPT1CALL,RPT2CALL
+    """Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,Mode,TStep,Skip,Comment,URCALL,RPT1CALL,RPT2CALL
 1,FRS 1,462.562500,,5.000000,,88.5,88.5,023,NN,NFM,12.50,,,,,
 2,FRS 2,462.587500,,5.000000,,88.5,88.5,023,NN,NFM,12.50,,,,,
 """)
 CHIRP_CSV_MINIMAL = (
-"""Location,Frequency
+    """Location,Frequency
 1,146.520
 2,446.000
 """)
 CHIRP_CSV_MODERN = (
-"""Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,RxDtcsCode,CrossMode,Mode,TStep,Skip,Power,Comment,URCALL,RPT1CALL,RPT2CALL,DVCODE
+    """Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,RxDtcsCode,CrossMode,Mode,TStep,Skip,Power,Comment,URCALL,RPT1CALL,RPT2CALL,DVCODE
 0,Nat Simplex,146.520000,,0.600000,TSQL,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,50W,This is the national calling frequency on 2m,,,,
 1,National Simp,446.000000,-,5.000000,DTCS,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,5.0W,This is NOT the UHF calling frequency,,,,
-""")
+""")  # noqa
 
 
 class TestCSV(unittest.TestCase):

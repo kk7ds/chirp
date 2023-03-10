@@ -15,7 +15,6 @@
 
 from builtins import bytes
 
-import struct
 import unittest
 
 import six
@@ -89,14 +88,6 @@ class TestBitwiseBaseIntTypes(BaseTest):
 
     def test_type_ul32(self):
         self._test_type("ul32", b"\x00\x00\x00\x80", 2**31)
-
-    def test_int_array(self):
-        data = memmap.MemoryMapBytes(bytes(b'\x00\x01\x02\x03'))
-        obj = bitwise.parse('u8 foo[4];', data)
-        for i in range(4):
-            self.assertEqual(i, obj.foo[i])
-            obj.foo[i] = i * 2
-        self.assertEqual(b'\x00\x02\x04\x06', data.get_packed())
 
     def test_int_array(self):
         data = memmap.MemoryMapBytes(bytes(b'\x00\x01\x02\x03'))

@@ -25,6 +25,7 @@ from chirp import memmap
 
 class FakeAlincoSerial:
     """Behaves like a Serial with an Alinco radio connected"""
+
     def __init__(self, image):
         self.image = memmap.MemoryMapBytes(open(image, 'rb').read())
         self.readbuf = []
@@ -121,8 +122,8 @@ class AlincoCloneTest(unittest.TestCase):
     def _test_alinco(self, rclass):
         ident = directory.radio_class_id(rclass)
         image = os.path.join(os.path.dirname(__file__),
-                                             '..', 'images',
-                                             '%s.img' % ident)
+                             '..', 'images',
+                             '%s.img' % ident)
         with mock.patch('time.sleep'):
             self._test_alinco_upload(rclass, image)
             self._test_alinco_download(rclass, image)

@@ -148,6 +148,7 @@ class TestRepeaterbook(unittest.TestCase):
             # Make sure we wrote no files
             self.assertEqual([], os.listdir(os.path.join(self.tempdir,
                                                          'repeaterbook')))
+
     def test_get_data_json_fail(self):
         rb = repeaterbook.RepeaterBook()
         with mock.patch('requests.get') as mock_get:

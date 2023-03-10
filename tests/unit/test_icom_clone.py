@@ -13,18 +13,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+from tests import icom_clone_simulator
+from chirp import memmap
+from chirp.drivers import icw32
 from builtins import bytes
 
 import glob
 import os
-import logging
 import unittest
 
 from chirp import directory
 directory.import_drivers()
-from chirp.drivers import icf, icw32
-from chirp import memmap
-from tests import icom_clone_simulator
 
 
 class BaseIcomCloneTest():
@@ -49,7 +49,6 @@ class BaseIcomCloneTest():
             return 2
         elif data[end-16:end] == b'IcomCloneFormat3':
             return 3
-
 
     def test_sync_in(self):
         test_file = self.IMAGE_FILE
@@ -102,7 +101,6 @@ class TestAdapterMeta(type):
 test_file_glob = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                               '..', 'images',
                               'Icom_*.img')
-import sys
 for image_file in glob.glob(test_file_glob):
     base, _ext = os.path.splitext(os.path.basename(image_file))
 

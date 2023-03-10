@@ -8,6 +8,7 @@ from chirp.sources import dmrmarc
 # are more likely to add spurious failures into the tests, but time
 # will tell if it's worth it.
 
+
 class TestDMRMARC(unittest.TestCase):
     def test_marc_works(self):
         r = dmrmarc.DMRMARCRadio()
