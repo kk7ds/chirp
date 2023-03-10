@@ -25,7 +25,6 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettings
-from textwrap import dedent
 
 MEM_FORMAT = """
 #seekto 0x0010;
@@ -337,20 +336,18 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
              'Nevertheless, each radio has its own hardware limits and '
              'your mileage may vary.\n'
              )
-        rp.pre_download = _(dedent("""\
-            Follow this instructions to read your radio:
-            1 - Turn off your radio
-            2 - Connect your interface cable
-            3 - Turn on your radio
-            4 - Do the download of your radio data
-            """))
-        rp.pre_upload = _(dedent("""\
-            Follow this instructions to write your radio:
-            1 - Turn off your radio
-            2 - Connect your interface cable
-            3 - Turn on your radio
-            4 - Do the upload of your radio data
-            """))
+        rp.pre_download = _(
+            "Follow this instructions to read your radio:\n"
+            "1 - Turn off your radio\n"
+            "2 - Connect your interface cable\n"
+            "3 - Turn on your radio\n"
+            "4 - Do the download of your radio data\n")
+        rp.pre_upload = _(
+            "Follow this instructions to write your radio:\n"
+            "1 - Turn off your radio\n"
+            "2 - Connect your interface cable\n"
+            "3 - Turn on your radio\n"
+            "4 - Do the upload of your radio data\n")
         return rp
 
     def get_features(self):

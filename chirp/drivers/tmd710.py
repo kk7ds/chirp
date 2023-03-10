@@ -26,7 +26,6 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettingValueFloat, RadioSettings, InvalidValueError
-from textwrap import dedent
 from chirp.drivers import kenwood_live
 
 LOG = logging.getLogger(__name__)
@@ -193,14 +192,12 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-            Connect your interface cable to the PC Port on the
-            back of the 'TX/RX' unit. NOT the Com Port on the head.
-            """))
-        rp.pre_upload = _(dedent("""\
-            Connect your interface cable to the PC Port on the
-            back of the 'TX/RX' unit. NOT the Com Port on the head.
-            """))
+        rp.pre_download = _(
+            "Connect your interface cable to the PC Port on the\n"
+            "back of the 'TX/RX' unit. NOT the Com Port on the head.\n")
+        rp.pre_upload = _(
+            "Connect your interface cable to the PC Port on the\n"
+            "back of the 'TX/RX' unit. NOT the Com Port on the head.\n")
         return rp
 
     def sync_in(self):

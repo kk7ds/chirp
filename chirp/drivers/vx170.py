@@ -15,7 +15,6 @@
 
 from chirp.drivers import yaesu_clone, ft7800
 from chirp import chirp_common, directory, memmap, bitwise, errors
-from textwrap import dedent
 import time
 import os
 
@@ -100,20 +99,25 @@ class VX170Radio(ft7800.FTx800Radio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-1. Turn radio off.
-2. Connect cable to MIC/SP jack.
-3. Press and hold in the [moni] key while turning the radio on.
-4. Select CLONE in menu, then press F. Radio restarts in clone mode.
-     ("CLONE" will appear on the display).
-5. <b>After clicking OK</b>, briefly hold [PTT] key to send image.
-    ("-TX-" will appear on the LCD). """))
-        rp.pre_upload = _(dedent("""\
-1. Turn radio off.
-3. Press and hold in the [moni] key while turning the radio on.
-4. Select CLONE in menu, then press F. Radio restarts in clone mode.
-     ("CLONE" will appear on the display).
-5. Press the [moni] key ("-RX-" will appear on the LCD)."""))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to MIC/SP jack.\n"
+            "3. Press and hold in the [moni] key while turning the radio"
+            " on.\n"
+            "4. Select CLONE in menu, then press F. Radio restarts in clone"
+            " mode.\n"
+            "     (\"CLONE\" will appear on the display).\n"
+            "5. <b>After clicking OK</b>, briefly hold [PTT] key to send"
+            " image.\n"
+            "    (\"-TX-\" will appear on the LCD). \n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "3. Press and hold in the [moni] key while turning the radio"
+            " on.\n"
+            "4. Select CLONE in menu, then press F. Radio restarts in clone"
+            " mode.\n"
+            "     (\"CLONE\" will appear on the display).\n"
+            "5. Press the [moni] key (\"-RX-\" will appear on the LCD).\n")
         return rp
 
     def _checksums(self):

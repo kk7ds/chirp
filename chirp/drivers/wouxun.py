@@ -24,7 +24,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueInteger, RadioSettingValueString, \
                 RadioSettingValueFloat, RadioSettings
 from chirp.drivers.wouxun_common import wipe_memory, do_download, do_upload
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -212,20 +211,22 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
              'thing to do. However, modifications to this value may have '
              'unintended consequences, including damage to your device. '
              'You have been warned. Proceed at your own risk!')
-        rp.pre_download = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to mic/spkr connector.
-            3. Make sure connector is firmly connected.
-            4. Turn radio on.
-            5. Ensure that the radio is tuned to channel with no activity.
-            6. Click OK to download image from device."""))
-        rp.pre_upload = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to mic/spkr connector.
-            3. Make sure connector is firmly connected.
-            4. Turn radio on.
-            5. Ensure that the radio is tuned to channel with no activity.
-            6. Click OK to upload image to device."""))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to mic/spkr connector.\n"
+            "3. Make sure connector is firmly connected.\n"
+            "4. Turn radio on.\n"
+            "5. Ensure that the radio is tuned to channel with no"
+            " activity.\n"
+            "6. Click OK to download image from device.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to mic/spkr connector.\n"
+            "3. Make sure connector is firmly connected.\n"
+            "4. Turn radio on.\n"
+            "5. Ensure that the radio is tuned to channel with no"
+            " activity.\n"
+            "6. Click OK to upload image to device.\n")
         return rp
 
     @classmethod

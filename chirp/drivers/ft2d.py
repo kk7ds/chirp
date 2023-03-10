@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from textwrap import dedent
 
 from chirp.drivers import yaesu_clone, ft1d
 from chirp import chirp_common, directory, bitwise
@@ -90,21 +89,21 @@ class FT2D(ft1d.FT1Radio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-         1. Turn radio off.
-         2. Connect cable to DATA terminal.
-         3. Press and hold [DISP] key while turning on radio
-              ("CLONE" will appear on the display).
-         4. <b>After clicking OK here in chirp</b>,
-              press the [Send] screen button."""))
-        rp.pre_upload = _(dedent("""\
-         1. Turn radio off.
-         2. Connect cable to DATA terminal.
-         3. Press and hold in [DISP] key while turning on radio
-              ("CLONE" will appear on radio LCD).
-         4. Press [RECEIVE] screen button
-              ("-WAIT-" will appear on radio LCD).
-        5. Finally, press OK button below."""))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to DATA terminal.\n"
+            "3. Press and hold [DISP] key while turning on radio\n"
+            "     (\"CLONE\" will appear on the display).\n"
+            "4. <b>After clicking OK here in chirp</b>,\n"
+            "     press the [Send] screen button.\n")
+        rp.pre_upload = _(
+            " 1. Turn radio off.\n"
+            " 2. Connect cable to DATA terminal.\n"
+            " 3. Press and hold in [DISP] key while turning on radio\n"
+            "      (\"CLONE\" will appear on radio LCD).\n"
+            " 4. Press [RECEIVE] screen button\n"
+            "      (\"-WAIT-\" will appear on radio LCD).\n"
+            "5. Finally, press OK button below.\n")
         return rp
 
     def get_features(self):  # AFAICT only TMODES & memory bounds are different

@@ -24,7 +24,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettings
 import os
 import logging
-from textwrap import dedent
 from chirp.util import safe_charset_string
 
 LOG = logging.getLogger(__name__)
@@ -439,22 +438,24 @@ class FT857Radio(ft817.FT817Radio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to CAT/LINEAR jack.
-            3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while
-                 turning the radio on ("CLONE MODE" will appear on the
-                 display).
-            4. <b>After clicking OK</b>,
-                 press the [C](SEND) key to send image."""))
-        rp.pre_upload = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to ACC jack.
-            3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while
-                 turning the radio on ("CLONE MODE" will appear on the
-                 display).
-            4. Press the [A](RCV) key ("receiving" will appear on the LCD)."""
-                                 ))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to CAT/LINEAR jack.\n"
+            "3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys"
+            " while\n"
+            "     turning the radio on (\"CLONE MODE\" will appear on the\n"
+            "     display).\n"
+            "4. <b>After clicking OK</b>,\n"
+            "     press the [C](SEND) key to send image.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to ACC jack.\n"
+            "3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys"
+            " while\n"
+            "     turning the radio on (\"CLONE MODE\" will appear on the\n"
+            "     display).\n"
+            "4. Press the [A](RCV) key (\"receiving\" will appear on the"
+            " LCD).\n")
         return rp
 
     def get_features(self):

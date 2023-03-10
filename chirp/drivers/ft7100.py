@@ -26,7 +26,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueList, RadioSettingValueString, RadioSettings, \
     RadioSettingValueInteger, RadioSettingValueBoolean
 
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -1118,18 +1117,19 @@ class FT7100Radio(YaesuCloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-            1. Turn Radio off.
-            2. Connect data cable.
-            3. While holding "TONE" and "REV" buttons, turn radio on.
-            4. <b>After clicking OK</b>, press "TONE" to send image."""))
-        rp.pre_upload = _(dedent("""\
-            1. Turn Radio off.
-            2. Connect data cable.
-            3. While holding "TONE" and "REV" buttons, turn radio on.
-            4. Press "REV" to receive image.
-            5. Make sure display says "CLONE RX" and green led is blinking
-            6. Click OK to start transfer."""))
+        rp.pre_download = _(
+            "1. Turn Radio off.\n"
+            "2. Connect data cable.\n"
+            "3. While holding \"TONE\" and \"REV\" buttons, turn radio on.\n"
+            "4. <b>After clicking OK</b>, press \"TONE\" to send image.\n")
+        rp.pre_upload = _(
+            "1. Turn Radio off.\n"
+            "2. Connect data cable.\n"
+            "3. While holding \"TONE\" and \"REV\" buttons, turn radio on.\n"
+            "4. Press \"REV\" to receive image.\n"
+            "5. Make sure display says \"CLONE RX\" and green led is"
+            " blinking\n"
+            "6. Click OK to start transfer.\n")
         return rp
 
     def get_sub_devices(self):

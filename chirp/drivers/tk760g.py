@@ -19,7 +19,6 @@ import time
 import sys
 
 from chirp import chirp_common, directory, memmap, errors, util, bitwise
-from textwrap import dedent
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
@@ -682,20 +681,18 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
         rp = chirp_common.RadioPrompts()
         rp.experimental = \
             'This driver is experimental: Use at your own risk! '
-        rp.pre_download = _(dedent("""\
-            Follow these instructions to download your radio:
-            1 - Turn off your radio
-            2 - Connect your interface cable
-            3 - Turn on your radio (unlock it if password protected)
-            4 - Click OK to start
-            """))
-        rp.pre_upload = _(dedent("""\
-            Follow these instructions to upload your radio:
-            1 - Turn off your radio
-            2 - Connect your interface cable
-            3 - Turn on your radio (unlock it if password protected)
-            4 - Click OK to start
-            """))
+        rp.pre_download = _(
+            "Follow these instructions to download your radio:\n"
+            "1 - Turn off your radio\n"
+            "2 - Connect your interface cable\n"
+            "3 - Turn on your radio (unlock it if password protected)\n"
+            "4 - Click OK to start\n")
+        rp.pre_upload = _(
+            "Follow these instructions to upload your radio:\n"
+            "1 - Turn off your radio\n"
+            "2 - Connect your interface cable\n"
+            "3 - Turn on your radio (unlock it if password protected)\n"
+            "4 - Click OK to start\n")
         return rp
 
     def get_features(self):

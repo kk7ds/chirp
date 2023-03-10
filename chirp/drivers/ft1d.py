@@ -26,7 +26,6 @@ from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
             RadioSettingValueList, RadioSettingValueBoolean, \
             InvalidValueError
 from chirp import util
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -663,19 +662,19 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to DATA terminal.
-            3. Press and hold in the [F] key while turning the radio on
-                 ("CLONE" will appear on the display).
-            4. <b>After clicking OK</b>, press the [BAND] key to send image."""
-                                   ))
-        rp.pre_upload = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to DATA terminal.
-            3. Press and hold in the [F] key while turning the radio on
-                 ("CLONE" will appear on the display).
-            4. Press the [Dx] key ("-WAIT-" will appear on the LCD)."""))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to DATA terminal.\n"
+            "3. Press and hold in the [F] key while turning the radio on\n"
+            "     (\"CLONE\" will appear on the display).\n"
+            "4. <b>After clicking OK</b>, press the [BAND] key to send"
+            " image.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to DATA terminal.\n"
+            "3. Press and hold in the [F] key while turning the radio on\n"
+            "     (\"CLONE\" will appear on the display).\n"
+            "4. Press the [Dx] key (\"-WAIT-\" will appear on the LCD).\n")
         return rp
 
     def process_mmap(self):

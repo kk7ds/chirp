@@ -25,7 +25,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettings
 import os
 import logging
-from textwrap import dedent
 from chirp.util import safe_charset_string
 
 LOG = logging.getLogger(__name__)

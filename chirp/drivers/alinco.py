@@ -18,7 +18,6 @@ from chirp import chirp_common, bitwise, memmap, errors, directory, util
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettings
 
-from textwrap import dedent
 
 import time
 import logging
@@ -602,26 +601,24 @@ class AlincoDJG7(AlincoStyleRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.pre_download = _(dedent("""\
-            1. Ensure your firmware version is 4_10 or higher
-            2. Turn radio off
-            3. Connect your interface cable
-            4. Turn radio on
-            5. Press and release PTT 3 times while holding MONI key
-            6. Supported baud rates: 57600 (default) and 19200
-               (rotate dial while holding MONI to change)
-            7. Click OK
-            """))
-        rp.pre_upload = _(dedent("""\
-            1. Ensure your firmware version is 4_10 or higher
-            2. Turn radio off
-            3. Connect your interface cable
-            4. Turn radio on
-            5. Press and release PTT 3 times while holding MONI key
-            6. Supported baud rates: 57600 (default) and 19200
-               (rotate dial while holding MONI to change)
-            7. Click OK
-            """))
+        rp.pre_download = _(
+            "1. Ensure your firmware version is 4_10 or higher\n"
+            "2. Turn radio off\n"
+            "3. Connect your interface cable\n"
+            "4. Turn radio on\n"
+            "5. Press and release PTT 3 times while holding MONI key\n"
+            "6. Supported baud rates: 57600 (default) and 19200\n"
+            "   (rotate dial while holding MONI to change)\n"
+            "7. Click OK\n")
+        rp.pre_upload = _(
+            "1. Ensure your firmware version is 4_10 or higher\n"
+            "2. Turn radio off\n"
+            "3. Connect your interface cable\n"
+            "4. Turn radio on\n"
+            "5. Press and release PTT 3 times while holding MONI key\n"
+            "6. Supported baud rates: 57600 (default) and 19200\n"
+            "   (rotate dial while holding MONI to change)\n"
+            "7. Click OK\n")
         return rp
 
     def get_features(self):

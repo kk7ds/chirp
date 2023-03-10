@@ -26,7 +26,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, InvalidValueError, RadioSettings
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -775,20 +774,22 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
              'your device. Thus far and to the best knowledge of the '
              'author, no UV-5R radios have been harmed by using CHIRP. '
              'However, proceed at your own risk!')
-        rp.pre_download = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to mic/spkr connector.
-            3. Make sure connector is firmly connected.
-            4. Turn radio on (volume may need to be set at 100%).
-            5. Ensure that the radio is tuned to channel with no activity.
-            6. Click OK to download image from device."""))
-        rp.pre_upload = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to mic/spkr connector.
-            3. Make sure connector is firmly connected.
-            4. Turn radio on (volume may need to be set at 100%).
-            5. Ensure that the radio is tuned to channel with no activity.
-            6. Click OK to upload image to device."""))
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to mic/spkr connector.\n"
+            "3. Make sure connector is firmly connected.\n"
+            "4. Turn radio on (volume may need to be set at 100%).\n"
+            "5. Ensure that the radio is tuned to channel with no"
+            " activity.\n"
+            "6. Click OK to download image from device.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to mic/spkr connector.\n"
+            "3. Make sure connector is firmly connected.\n"
+            "4. Turn radio on (volume may need to be set at 100%).\n"
+            "5. Ensure that the radio is tuned to channel with no"
+            " activity.\n"
+            "6. Click OK to upload image to device.\n")
         return rp
 
     def get_features(self):

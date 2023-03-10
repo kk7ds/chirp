@@ -26,7 +26,6 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettingValueFloat, RadioSettings, InvalidValueError
-from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
@@ -513,25 +512,22 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.info = _(dedent("""\
-            P-VFO channels 100-109 are considered Settings.\n
-            Only a subset of the over 130 available radio settings
-            are supported in this release.\n
-            """))
-        rp.pre_download = _(dedent("""\
-            Follow these instructions to download the radio memory:
-            1 - Connect your interface cable
-            2 - Radio > Download from radio: Don't adjust any settings
-            on the radio head!
-            3 - Disconnect your interface cable
-            """))
-        rp.pre_upload = _(dedent("""\
-            Follow these instructions to upload the radio memory:
-            1 - Connect your interface cable
-            2 - Radio > Upload to radio: Don't adjust any settings
-            on the radio head!
-            3 - Disconnect your interface cable
-            """))
+        rp.info = _(
+            "P-VFO channels 100-109 are considered Settings.\n"
+            "Only a subset of the over 130 available radio settings\n"
+            "are supported in this release.\n")
+        rp.pre_download = _(
+            "Follow these instructions to download the radio memory:\n"
+            "1 - Connect your interface cable\n"
+            "2 - Radio > Download from radio: Don't adjust any settings\n"
+            "on the radio head!\n"
+            "3 - Disconnect your interface cable\n")
+        rp.pre_upload = _(
+            "Follow these instructions to upload the radio memory:\n"
+            "1 - Connect your interface cable\n"
+            "2 - Radio > Upload to radio: Don't adjust any settings\n"
+            "on the radio head!\n"
+            "3 - Disconnect your interface cable\n")
         return rp
 
     def sync_in(self):
