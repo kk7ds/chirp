@@ -1157,24 +1157,27 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                   insert_item)
         menu.Append(insert_item)
 
+        delete_menu = wx.Menu()
+        menu.AppendSubMenu(delete_menu, _('Delete'))
+
         if len(selected_rows) > 1:
             del_item = wx.MenuItem(
-                menu, wx.NewId(),
-                _('Delete %i Memories') % len(selected_rows))
+                delete_menu, wx.NewId(),
+                _('%i Memories') % len(selected_rows))
             del_block_item = wx.MenuItem(
-                menu, wx.NewId(),
-                _('Delete %i Memories and shift block up') % (
+                delete_menu, wx.NewId(),
+                _('%i Memories and shift block up') % (
                     len(selected_rows)))
             del_shift_item = wx.MenuItem(
-                menu, wx.NewId(),
-                _('Delete %i Memories and shift all up') % len(selected_rows))
+                delete_menu, wx.NewId(),
+                _('%i Memories and shift all up') % len(selected_rows))
             to_delete = selected_rows
         else:
-            del_item = wx.MenuItem(menu, wx.NewId(), _('Delete'))
-            del_block_item = wx.MenuItem(menu, wx.NewId(),
-                                         _('Delete and shift block up'))
-            del_shift_item = wx.MenuItem(menu, wx.NewId(),
-                                         _('Delete and shift all up'))
+            del_item = wx.MenuItem(delete_menu, wx.NewId(), _('This Memory'))
+            del_block_item = wx.MenuItem(delete_menu, wx.NewId(),
+                                         _('This memory and shift block up'))
+            del_shift_item = wx.MenuItem(delete_menu, wx.NewId(),
+                                         _('This memory and shift all up'))
             to_delete = [event.GetRow()]
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._delete_memories_at, to_delete),
@@ -1188,9 +1191,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                                     shift_up='all'),
                   del_shift_item)
 
-        menu.Append(del_item)
-        menu.Append(del_block_item)
-        menu.Append(del_shift_item)
+        delete_menu.Append(del_item)
+        delete_menu.Append(del_block_item)
+        delete_menu.Append(del_shift_item)
 
         # Only offer sort if a contiguous group of non-empty, non-special
         # memories is selected
@@ -1198,32 +1201,37 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                               for r in selected_rows])
         special_selected = any([self._memory_cache[r].extd_number
                                 for r in selected_rows])
-        can_sort = (
-            selected_rows[-1] - selected_rows[0] == len(selected_rows) - 1 and
-            not empty_selected and not special_selected)
-        sort_item = wx.MenuItem(
-            menu, wx.NewId(),
+        contig_selected = (
+            selected_rows[-1] - selected_rows[0] == len(selected_rows) - 1)
+        can_sort = (len(selected_rows) > 1 and contig_selected and
+                    not empty_selected and not special_selected)
+        sort_menu = wx.Menu()
+        sort_menu_item = menu.AppendSubMenu(
+            sort_menu,
+            _('Sort %i memories') % len(selected_rows))
+        sortasc_item = wx.MenuItem(
+            sort_menu, wx.NewId(),
             _('Sort %i memories ascending') % len(selected_rows))
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._sort_memories, selected_rows,
                                     False),
-                  sort_item)
-        menu.Append(sort_item)
-        sort_item.Enable(not self.busy and can_sort)
-        sort_item = wx.MenuItem(
+                  sortasc_item)
+        sort_menu.Append(sortasc_item)
+
+        sortdesc_item = wx.MenuItem(
             menu, wx.NewId(),
             _('Sort %i memories descending') % len(selected_rows))
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._sort_memories, selected_rows,
                                     True),
-                  sort_item)
-        menu.Append(sort_item)
-        sort_item.Enable(not self.busy and can_sort)
+                  sortdesc_item)
+        sort_menu.Append(sortdesc_item)
 
         # Don't allow bulk operations on live radios with pending jobs
         del_block_item.Enable(not self.busy)
         del_shift_item.Enable(not self.busy)
         insert_item.Enable(not self.busy)
+        menu.Enable(sort_menu_item.GetId(), not self.busy and can_sort)
 
         if CONF.get_bool('developer', 'state'):
             menu.Append(wx.MenuItem(menu, wx.ID_SEPARATOR))
