@@ -28,7 +28,7 @@
 from chirp.drivers import yaesu_clone
 from chirp import chirp_common, bitwise, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueBoolean, RadioSettings
+    RadioSettingValueBoolean
 
 MEM_FORMAT = """
 #seekto 0x002a;

@@ -85,7 +85,7 @@ class ITMRadio(generic_csv.CSVRadio):
 
         self._blank()
 
-        f = file(self._filename, "r")
+        f = open(self._filename, "r")
         for line in f:
             if line.strip() == "// Conventional Data":
                 break

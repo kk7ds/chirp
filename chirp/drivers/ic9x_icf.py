@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from chirp.drivers import icf, ic9x_icf_ll
-from chirp import chirp_common, util, directory, errors
+from chirp import chirp_common, util, errors
 
 
 # Don't register as this module is used to load icf file from File-Open menu

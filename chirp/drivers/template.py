@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, directory, memmap
+from chirp import chirp_common, memmap
 from chirp import bitwise
 
 # Here is where we define the memory map for the radio. Since
