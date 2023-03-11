@@ -15,7 +15,6 @@
 
 from builtins import bytes
 import time
-import os
 import logging
 
 from chirp import bitwise

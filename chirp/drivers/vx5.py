@@ -156,7 +156,7 @@ class VX5BankModel(chirp_common.BankModel):
         for bank in self.get_mappings():
             if memory.number in [x.number for x in
                                  self.get_mapping_memories(bank)]:
-                    banks.append(bank)
+                banks.append(bank)
         return banks
 
 

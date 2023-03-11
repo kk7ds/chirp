@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from chirp.drivers import icf
-from chirp import chirp_common, util, directory
+from chirp import chirp_common, directory
 from chirp import bitwise
 
 mem_format = """

@@ -208,7 +208,6 @@ def do_download(radio):
     do_ident(radio)
     data = b"TRI350 Radio Program data v1.08\x00"
     data += (b"\x00" * 16)
-    firstack = None
     for i in range(0, 0x1000, 16):
         frame = struct.pack(">cHB", b"R", i, 16)
         radio.pipe.write(frame)
