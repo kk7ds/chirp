@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from builtins import bytes
-import os
 import logging
 import struct
 
@@ -23,7 +22,6 @@ from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettingValueList
 from chirp.settings import RadioSettingValueString, RadioSettings
-from chirp.settings import RadioSettingValueFloat
 
 LOG = logging.getLogger(__name__)
 

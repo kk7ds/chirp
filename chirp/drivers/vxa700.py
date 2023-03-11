@@ -34,7 +34,7 @@ def _send(radio, data):
 
 def _spoonfeed(radio, data):
     # count = 0
-    _debug("Writing %i:\n%s" % (len(data), util.hexprint(data)))
+    LOG.debug("Writing %i:\n%s" % (len(data), util.hexprint(data)))
     for byte in data:
         radio.pipe.write(byte)
         radio.pipe.flush()
@@ -112,6 +112,7 @@ def _upload(radio):
             status.cur = i
             status.max = radio.get_memsize()
             radio.status_fn(status)
+
 
 MEM_FORMAT = """
 struct memory_struct {

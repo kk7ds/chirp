@@ -42,7 +42,7 @@ def uvf8d_identify(radio):
         if ack != b"PG":
             raise errors.RadioError("Radio did not ACK first command: %x" %
                                     ord(ack))
-    except:
+    except Exception:
         raise errors.RadioError("Unable to communicate with the radio")
 
     radio.pipe.write(b"\x02")
@@ -112,7 +112,7 @@ def tyt_uvf8d_upload(radio):
     radio.pipe.write(b"ENDW")
 
     # Checksum?
-    final_data = radio.pipe.read(3)
+    radio.pipe.read(3)
 
 # these require working desktop software
 # TODO: DTMF features (ID, delay, speed, kill, etc.)

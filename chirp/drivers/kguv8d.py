@@ -16,7 +16,6 @@
 """Wouxun KG-UV8D radio management module"""
 
 import time
-import os
 import logging
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
@@ -1038,7 +1037,7 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
     def get_settings(self):
         try:
             return self._get_settings()
-        except:
+        except Exception:
             import traceback
             LOG.error("Failed to parse settings: %s", traceback.format_exc())
             return None

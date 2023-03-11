@@ -541,7 +541,7 @@ class FT50Radio(yaesu_clone.YaesuCloneModeRadio):
             try:
                 setting = element.get_name()
                 _settings = self._memobj.settings
-                if re.match('autodial\d', setting):
+                if re.match(r'autodial\d', setting):
                     # set autodial fields
                     dtmfstr = str(element.value).strip()
                     newval = []
@@ -559,7 +559,7 @@ class FT50Radio(yaesu_clone.YaesuCloneModeRadio):
                     bitwise.int_to_bcd(_settings.pagingcodep,
                                        int(element.value))
                     continue
-                if re.match('pagingcode\d', setting):
+                if re.match(r'pagingcode\d', setting):
                     idx = int(setting[-1:]) - 1
                     bitwise.int_to_bcd(_settings.pagingcode[idx].digits,
                                        int(element.value))

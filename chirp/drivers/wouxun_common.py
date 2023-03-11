@@ -17,9 +17,8 @@
 """vcommon function for wouxun (or similar) radios"""
 
 import struct
-import os
 import logging
-from chirp import util, chirp_common, memmap, bitwise
+from chirp import util, chirp_common, memmap
 
 LOG = logging.getLogger(__name__)
 

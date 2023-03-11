@@ -13,9 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 from chirp.drivers import icf
 from chirp import directory, bitwise, chirp_common, settings
 
+LOG = logging.getLogger(__name__)
 MEM_FORMAT = """
 struct {
   u24 freq;
@@ -345,6 +348,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                 call = ""
             calls.append(call.rstrip())
         return calls
+
 
 if __name__ == "__main__":
     print(repr(_decode_call(_encode_call("KD7REX B"))))

@@ -17,7 +17,7 @@ class FakeLiveRadio(chirp_common.LiveRadio):
         super().__init__(*a, **k)
         self.settings = {'knob': 5}
         self.memories = []
-        for i in range (1, 11):
+        for i in range(1, 11):
             m = chirp_common.Memory(i, empty=i > 5, name='channel %i' % i)
             m.freq = 146520000
             self.memories.append(m)
@@ -122,7 +122,8 @@ class FakeKenwoodSerial:
         if buffer.startswith(b'ID'):
             self._rbuf += b'ID TH-F7\r'
         elif buffer.startswith(b'MR 0,001'):
-            self._rbuf += b'MR 0,001,00146520000,0,0,0,0,0,0,00,00,000,000000000,0,0\r'
+            self._rbuf += \
+                b'MR 0,001,00146520000,0,0,0,0,0,0,00,00,000,000000000,0,0\r'
         elif buffer.startswith(b'MNA 001\r'):
             self._rbuf += b'MNA 001,Foo\r'
         elif buffer.startswith(b'MNA 0'):
