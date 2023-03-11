@@ -4,7 +4,6 @@
 
 import re
 import sys
-import codecs
 import collections
 
 import six
@@ -54,6 +53,7 @@ class Symbol(list):
     def __repr__(self):
         return str(self)
 
+
 word_regex = re.compile(r"\w+")
 rest_regex = re.compile(r".*")
 
@@ -62,16 +62,6 @@ print_trace = False
 
 def u(text):
     return six.text_type(text)
-    if isinstance(text, exceptions.BaseException):
-        text = text.args[0]
-    if type(text) is str:
-        return text
-    if isinstance(text, str):
-        if sys.stdin.encoding:
-            return codecs.decode(text, sys.stdin.encoding)
-        else:
-            return codecs.decode(text, "utf-8")
-    return str(text)
 
 
 def skip(skipper, text, skipWS, skipComments):
@@ -85,7 +75,7 @@ def skip(skipper, text, skipWS, skipComments):
                 skip, t = skipper.parseLine(t, skipComments, [], skipWS, None)
                 if skipWS:
                     t = t.lstrip()
-        except:
+        except Exception:
             pass
     return t
 
@@ -93,7 +83,7 @@ def skip(skipper, text, skipWS, skipComments):
 class parser(object):
     def __init__(self, another=False, p=False):
         self.restlen = -1
-        if not(another):
+        if not (another):
             self.skipper = parser(True, p)
             self.skipper.packrat = p
         else:
@@ -131,7 +121,7 @@ class parser(object):
                         if _pattern.__name__ != "comment":
                             sys.stderr.write("match: " +
                                              _pattern.__name__ + "\n")
-                    except:
+                    except Exception:
                         pass
 
             if self.restlen == -1:
@@ -166,7 +156,7 @@ class parser(object):
                     return result
                 else:
                     raise SyntaxError()
-            except:
+            except Exception:
                 pass
 
         if isinstance(pattern, collections.abc.Callable):
@@ -177,7 +167,7 @@ class parser(object):
                             sys.stderr.write("testing with " +
                                              pattern.__name__ + ": " +
                                              textline[:40] + "\n")
-                    except:
+                    except Exception:
                         pass
 
             if pattern.__name__[0] != "_":
@@ -215,7 +205,7 @@ class parser(object):
             try:
                 r, t = self.parseLine(text, pattern.obj, [],
                                       skipWS, skipComments)
-            except:
+            except Exception:
                 return resultSoFar, textline
             syntaxError()
 
@@ -267,7 +257,7 @@ class parser(object):
                                 result, text, found = newResult, newText, True
                             except SyntaxError:
                                 break
-                        if n == -2 and not(found):
+                        if n == -2 and not (found):
                             syntaxError()
                     n = 1
             return R(result, text)
@@ -293,7 +283,7 @@ class parser(object):
             raise SyntaxError("illegal type in grammar: " + u(pattern_type))
 
     def lineNo(self):
-        if not(self.lines):
+        if not (self.lines):
             return ""
         if self.restlen == -1:
             return ""
@@ -309,15 +299,15 @@ class parser(object):
                         try:
                             return u(self.lines[mid + 1][1]) + \
                                    ":" + u(self.lines[mid + 1][2])
-                        except:
+                        except Exception:
                             return ""
                     else:
                         left = mid + 1
-                except:
+                except Exception:
                     try:
                         return u(self.lines[mid + 1][1]) + \
                                ":" + u(self.lines[mid + 1][2])
-                    except:
+                    except Exception:
                         return ""
             else:
                 right = mid - 1
@@ -380,7 +370,7 @@ def parse(language, lineSource, skipWS=True, skipComments=None,
         if text:
             raise SyntaxError()
 
-    except SyntaxError as msg:
+    except SyntaxError:
         parsed = textlen - p.restlen
         textlen = 0
         nn, lineNo, file = 0, 0, ""
