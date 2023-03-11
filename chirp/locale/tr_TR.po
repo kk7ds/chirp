@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-10 14:47-0800\n"
+"POT-Creation-Date: 2023-03-11 08:11-0800\n"
 "PO-Revision-Date: 2023-03-05 00:39+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -92,7 +92,7 @@ msgid ""
 "      radio, then start back at step 1.\n"
 msgstr ""
 
-#: ../drivers/ft7100.py:1121
+#: ../drivers/ft7100.py:1122
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -100,7 +100,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press \"TONE\" to send image.\n"
 msgstr ""
 
-#: ../drivers/ft7100.py:1126
+#: ../drivers/ft7100.py:1127
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -495,7 +495,7 @@ msgid ""
 "6. Click OK to upload image to device.\n"
 msgstr ""
 
-#: ../drivers/yaesu_clone.py:240
+#: ../drivers/yaesu_clone.py:239
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect data cable.\n"
@@ -503,7 +503,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the key to send image.\n"
 msgstr ""
 
-#: ../drivers/yaesu_clone.py:245
+#: ../drivers/yaesu_clone.py:244
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect data cable.\n"
