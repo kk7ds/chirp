@@ -45,6 +45,14 @@ if grep -E "_\([^\"']" added_lines; then
     fail 'Translated strings must be literals!'
 fi
 
+if grep '/cpep8.manifest' added_lines; then
+    fail 'Do not add new files to cpep8.manifest; no longer needed'
+fi
+
+if grep '/cpep8.blacklist' added_lines; then
+    fail 'Do not add new files to cpep8.blacklist'
+fi
+
 for file in $(git diff --name-only ${BASE}..); do
     if file $file | grep -q CRLF; then
         fail "$file : Files should be LF (Unix) format, not CR (Mac) or CRLF (Windows)"

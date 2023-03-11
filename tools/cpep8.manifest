@@ -1,3 +1,11 @@
+#
+#
+# NOTE: Do not add files to this manifest anymore. New files will be run
+# under flake8 automatically if they are in the tree. Files in this manifest
+# will continue to run under cpep8's less-strict rules until they can be
+# fixed.
+#
+#
 ./chirp/drivers/alinco.py
 ./chirp/drivers/anytone.py
 ./chirp/drivers/anytone778uv.py
