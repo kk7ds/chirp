@@ -45,17 +45,17 @@ msgstr "%(value)s, %(min)i ile %(max)i arasında olmalıdır"
 #: ../wxui/memedit.py:1166
 #, python-format
 msgid "%i Memories"
-msgstr "%i Kayıtlar"
+msgstr "%i Kaydı"
 
 #: ../wxui/memedit.py:1173
 #, python-format
 msgid "%i Memories and shift all up"
-msgstr "%i Kayıtlarını ve hepsini yukarı kaydır"
+msgstr "%i Kaydı ve hepsini yukarı kaydır"
 
 #: ../wxui/memedit.py:1169
 #, python-format
 msgid "%i Memories and shift block up"
-msgstr "%i Kayıtlarını ve bloğu yukarı kaydır"
+msgstr "%i Kaydı ve bloğu yukarı kaydır"
 
 #: ../wxui/main.py:1072
 #, python-format
@@ -1142,7 +1142,7 @@ msgstr "Telsizden indir"
 
 #: ../wxui/clone.py:493
 msgid "Download instructions"
-msgstr "Talimatları indir"
+msgstr "İndirme talimatları"
 
 #: ../wxui/memedit.py:356
 msgid "Duplex"
@@ -1151,7 +1151,7 @@ msgstr "Duplex"
 #: ../wxui/memedit.py:1580
 #, python-format
 msgid "Edit details for %i memories"
-msgstr "%i kayıtları için ayrıntıları düzenle"
+msgstr "%i kaydı için ayrıntıları düzenle"
 
 #: ../wxui/memedit.py:1578
 #, python-format
@@ -2060,17 +2060,17 @@ msgstr "Bazı anılar silinemez"
 #: ../wxui/memedit.py:1211
 #, python-format
 msgid "Sort %i memories"
-msgstr "%i kayıtlarını sırala"
+msgstr "%i kaydı sırala"
 
 #: ../wxui/memedit.py:1214
 #, python-format
 msgid "Sort %i memories ascending"
-msgstr "%i kayıtlarını artan şekilde sırala"
+msgstr "%i kaydı artan şekilde sırala"
 
 #: ../wxui/memedit.py:1223
 #, python-format
 msgid "Sort %i memories descending"
-msgstr "%i kayıtlarını azalan şekilde sırala"
+msgstr "%i kaydı azalan şekilde sırala"
 
 #: ../wxui/memedit.py:1119
 msgid "Sort by column:"
@@ -2131,7 +2131,7 @@ msgstr ""
 
 #: ../wxui/memedit.py:1176
 msgid "This Memory"
-msgstr "Bu Kayıt"
+msgstr "Bu kaydı"
 
 #: ../drivers/id5100.py:333
 msgid ""
