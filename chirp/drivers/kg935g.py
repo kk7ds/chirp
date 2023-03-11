@@ -1353,10 +1353,10 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("beep", "Keypad Beep",
                           RadioSettingValueBoolean(_settings.beep))
         cfg_grp.append(rs)
-        rs = RadioSetting("BCL_B", "Busy Channel Lock-out A",
+        rs = RadioSetting("BCL_A", "Busy Channel Lock-out A",
                           RadioSettingValueBoolean(_settings.BCL_A))
         cfg_grp.append(rs)
-        rs = RadioSetting("BCL_A", "Busy Channel Lock-out B",
+        rs = RadioSetting("BCL_B", "Busy Channel Lock-out B",
                           RadioSettingValueBoolean(_settings.BCL_B))
         cfg_grp.append(rs)
         rs = RadioSetting("smuteset", "Secondary Area Mute (SMUTESET)",
