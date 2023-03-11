@@ -190,7 +190,8 @@ class IC2300Radio(icf.IcomCloneModeRadio):
 
         # Tx inhibit
         tx_inhibit = RadioSetting("tx_inhibit", "TX inhibit",
-                           RadioSettingValueBoolean(bool(_mem.tx_inhibit)))
+                                  RadioSettingValueBoolean(
+                                      bool(_mem.tx_inhibit)))
         tx_inhibit.set_doc("TX inhibit")
         mem.extra.append(tx_inhibit)
 
