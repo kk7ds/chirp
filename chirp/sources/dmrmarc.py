@@ -13,14 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
 import logging
 import requests
-import tempfile
-from chirp import chirp_common, errors
+from chirp import chirp_common
 from chirp.sources import base
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-     RadioSettingValueList
+    RadioSettingValueList
 
 LOG = logging.getLogger(__name__)
 
@@ -93,14 +91,19 @@ def main():
     import argparse
     from pprint import PrettyPrinter
 
-    parser = argparse.ArgumentParser(description="Fetch DMR-MARC repeater "
-        "database and filter by city, state, and/or country. Multiple items "
-        "combined with a , will be filtered with logical OR.")
-    parser.add_argument("-c", "--city",
+    parser = argparse.ArgumentParser(
+        description=("Fetch DMR-MARC repeater "
+                     "database and filter by city, state, and/or country. "
+                     "Multiple items combined with a , will be filtered with "
+                     "logical OR."))
+    parser.add_argument(
+        "-c", "--city",
         help="Comma-separated list of cities to include in output.")
-    parser.add_argument("-s", "--state",
+    parser.add_argument(
+        "-s", "--state",
         help="Comma-separated list of states to include in output.")
-    parser.add_argument("--country",
+    parser.add_argument(
+        "--country",
         help="Comma-separated list of countries to include in output.")
     args = parser.parse_args()
 
@@ -109,6 +112,7 @@ def main():
     dmrmarc.do_fetch()
     pp = PrettyPrinter(indent=2)
     pp.pprint(dmrmarc._repeaters)
+
 
 if __name__ == "__main__":
     main()

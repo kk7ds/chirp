@@ -253,5 +253,6 @@ def main():
     print(rrr.get_raw_memory(0))
     print(rrr.get_memory(0))
 
+
 if __name__ == "__main__":
     main()
