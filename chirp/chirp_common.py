@@ -115,7 +115,7 @@ CHARSET_ASCII = "".join([chr(x) for x in range(ord(" "), ord("~") + 1)])
 CHARSET_1252 = bytes(
     [x for x in range(0x20, 0x100)
      if x not in [0x7F, 0x81, 0x8D, 0x8F, 0x90, 0x9D, 0xA0, 0xAD]]
-    ).decode('cp1252')
+).decode('cp1252')
 
 # http://aprs.org/aprs11/SSIDs.txt
 APRS_SSID = (
@@ -218,6 +218,7 @@ class PowerLevel:
 
 class AutoNamedPowerLevel(PowerLevel):
     """A power level that is simply named by its value in watts"""
+
     def __init__(self, watts):
         fmt = ('%iW' if watts >= 10 else '%.1fW')
         super().__init__(fmt % watts, watts=watts)
@@ -228,7 +229,7 @@ def parse_power(powerstr):
         # All digits means watts
         watts = int(powerstr)
     else:
-        match = re.match('^\s*([0-9.]+)\s*([Ww]?)\s*$', powerstr)
+        match = re.match(r'^\s*([0-9.]+)\s*([Ww]?)\s*$', powerstr)
         if not match:
             raise ValueError('Invalid power specification: %r' % powerstr)
         if match.group(2).lower() in ('', 'w'):
@@ -478,7 +479,7 @@ class Memory:
         """Careful parsing of split-out @vals"""
         try:
             self.number = int(vals[0])
-        except:
+        except Exception:
             raise errors.InvalidDataError(
                 "Location '%s' is not a valid integer" % vals[0])
 
@@ -486,7 +487,7 @@ class Memory:
 
         try:
             self.freq = float(vals[2])
-        except:
+        except Exception:
             raise errors.InvalidDataError("Frequency is not a valid number")
 
         if vals[3].strip() in ["+", "-", ""]:
@@ -496,7 +497,7 @@ class Memory:
 
         try:
             self.offset = float(vals[4])
-        except:
+        except Exception:
             raise errors.InvalidDataError("Offset is not a valid number")
 
         self.tmode = vals[5]
@@ -506,28 +507,28 @@ class Memory:
 
         try:
             self.rtone = float(vals[6])
-        except:
+        except Exception:
             raise errors.InvalidDataError("rTone is not a valid number")
         if self.rtone not in TONES:
             raise errors.InvalidDataError("rTone is not valid")
 
         try:
             self.ctone = float(vals[7])
-        except:
+        except Exception:
             raise errors.InvalidDataError("cTone is not a valid number")
         if self.ctone not in TONES:
             raise errors.InvalidDataError("cTone is not valid")
 
         try:
             self.dtcs = int(vals[8], 10)
-        except:
+        except Exception:
             raise errors.InvalidDataError("DTCS code is not a valid number")
         if self.dtcs not in DTCS_CODES:
             raise errors.InvalidDataError("DTCS code is not valid")
 
         try:
             self.rx_dtcs = int(vals[8], 10)
-        except:
+        except Exception:
             raise errors.InvalidDataError("DTCS Rx code is not a valid number")
         if self.rx_dtcs not in DTCS_CODES:
             raise errors.InvalidDataError("DTCS Rx code is not valid")
@@ -544,12 +545,12 @@ class Memory:
 
         try:
             self.tuning_step = float(vals[11])
-        except:
+        except Exception:
             raise errors.InvalidDataError("Tuning step is invalid")
 
         try:
             self.skip = vals[12]
-        except:
+        except Exception:
             raise errors.InvalidDataError("Skip value is not valid")
 
         return True

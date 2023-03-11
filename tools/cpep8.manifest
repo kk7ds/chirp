@@ -1,4 +1,3 @@
-./chirp/chirp_common.py
 ./chirp/drivers/alinco.py
 ./chirp/drivers/anytone.py
 ./chirp/drivers/anytone778uv.py
