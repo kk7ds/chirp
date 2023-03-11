@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
+from chirp import directory
+from chirp import chirp_common
 import sys
-import serial
 
 sys.path.insert(0, ".")
 sys.path.insert(0, "..")
 
 tmp = sys.stdout
 sys.stdout = sys.stderr
-from chirp import *
 sys.stdout = tmp
 
 directory.import_drivers()
@@ -25,6 +25,7 @@ RADIO_TYPES = {
 
 
 counter = 0
+
 
 def radio_type(radio):
     for k, v in RADIO_TYPES.items():
@@ -59,7 +60,7 @@ def supported_row(radio):
             try:
                 value = ", ".join([str(x) for x in value
                                    if not str(x).startswith("?")])
-            except Exception as e:
+            except Exception:
                 raise
 
         if key == "memory_bounds":
@@ -167,6 +168,7 @@ for radio in directory.DRV_TO_RADIO.values():
 
 def get_key(rc):
     return '%s %s %s' % (rc.VENDOR, rc.MODEL, rc.VARIANT)
+
 
 for radio in sorted(models, key=get_key):
     if counter % 10 == 0:

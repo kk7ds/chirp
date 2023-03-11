@@ -27,5 +27,5 @@ for name, po in pos.iteritems():
                     missing = [name for name in tids
                                if name is not None and name not in ids]
                     if len(missing) > 0:
-                        print("Missing parameters", missing, \
+                        print("Missing parameters", missing,
                               "in translation of", entry.msgid)
