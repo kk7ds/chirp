@@ -1520,6 +1520,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         r.erase_memory(0)
         for row in selected:
             m = self._memory_cache[row]
+            if m.extd_number:
+                # We don't export specials
+                continue
             if not m.empty:
                 m = import_logic.import_mem(r, self._features, m)
             r.set_memory(m)
