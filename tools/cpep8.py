@@ -56,7 +56,7 @@ def file_to_lines(name):
     lines = fh.read().split("\n")
     lines.pop()
     fh.close()
-    return lines
+    return [x for x in lines if not x.startswith('#')]
 
 
 scriptdir = os.path.dirname(sys.argv[0])
