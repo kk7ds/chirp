@@ -120,6 +120,7 @@ def detect_kenwoodlive_radio(port):
     else:
         raise errors.RadioError("Unsupported model `%s'" % r_id)
 
+
 DETECT_FUNCTIONS = {
     "Icom":    detect_icom_radio,
     "Kenwood": detect_kenwoodlive_radio,

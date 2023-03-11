@@ -14,16 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import binascii
 import glob
 import os
-import tempfile
 import logging
 import sys
 
-import six
-
-from chirp import chirp_common, util, errors
+from chirp import chirp_common, errors
 
 LOG = logging.getLogger(__name__)
 
@@ -131,19 +127,12 @@ def get_radio_by_image(image_file):
 
     data, metadata = chirp_common.CloneModeRadio._strip_metadata(filedata)
 
-    # NOTE: See warning below
-    if six.PY3:
-        filestring = ''.join(chr(c) for c in filedata)
-    else:
-        filestring = filedata
-
     for rclass in list(DRV_TO_RADIO.values()):
         if not issubclass(rclass, chirp_common.FileBackedRadio):
             continue
 
         if not metadata:
             # If no metadata, we do the old thing
-            error = None
             try:
                 if rclass.match_model(filedata, image_file):
                     return rclass(image_file)

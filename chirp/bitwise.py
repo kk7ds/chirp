@@ -989,6 +989,7 @@ def parse(spec, data, offset=0):
     p = Processor(data, offset)
     return p.parse(ast)
 
+
 if __name__ == "__main__":
     defn = """
 struct mytype { u8 foo; };

@@ -1,8 +1,5 @@
 from distutils.core import setup
-from glob import glob
 from setuptools import find_packages
-
-from chirp import CHIRP_VERSION
 
 setup(name='chirp',
       description='A cross-platform cross-radio programming tool',

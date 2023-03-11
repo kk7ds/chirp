@@ -1,8 +1,4 @@
-./chirp/bandplan.py
-./chirp/bitwise.py
 ./chirp/chirp_common.py
-./chirp/detect.py
-./chirp/directory.py
 ./chirp/drivers/alinco.py
 ./chirp/drivers/anytone.py
 ./chirp/drivers/anytone778uv.py
@@ -115,12 +111,4 @@
 ./chirp/drivers/wouxun.py
 ./chirp/drivers/wouxun_common.py
 ./chirp/drivers/yaesu_clone.py
-./chirp/logger.py
-./chirp/memmap.py
-./chirp/platform.py
 ./chirp/pyPEG.py
-./chirp/settings.py
-./setup.py
-./tools/bitdiff.py
-./tools/cpep8.py
-./tools/img2thd72.py

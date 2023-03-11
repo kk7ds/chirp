@@ -21,7 +21,6 @@ import warnings
 
 import os
 import sys
-import logging
 import argparse
 import subprocess
 
@@ -98,6 +97,7 @@ def get_exceptions(f):
     except KeyError:
         ignore = None
     return ignore
+
 
 if args.files:
     cpep8_manifest = []
