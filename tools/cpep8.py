@@ -23,6 +23,7 @@ import os
 import sys
 import logging
 import argparse
+import subprocess
 
 # pep8 has a FutureWarning about nested sets. This isn't our problem, so
 # squelch it here during import.
@@ -34,7 +35,7 @@ with warnings.catch_warnings():
 parser = argparse.ArgumentParser()
 parser.add_argument("-a", "--all", action="store_true",
                     help="Check all files, ignoring blacklist")
-parser.add_argument("-d", "--dir", action="store", default=".",
+parser.add_argument("-d", "--dir", action="append", default=['chirp', 'tests'],
                     help="Root directory of source tree")
 parser.add_argument("-s", "--stats", action="store_true",
                     help="Only show statistics")
@@ -64,20 +65,21 @@ manifest_filename = os.path.join(scriptdir, "cpep8.manifest")
 blacklist_filename = os.path.join(scriptdir, "cpep8.blacklist")
 exceptions_filename = os.path.join(scriptdir, "cpep8.exceptions")
 
-manifest = []
-if args.scan:
-    for root, dirs, files in os.walk(args.dir):
+cpep8_manifest = set(file_to_lines(manifest_filename))
+flake8_manifest = set()
+for src_dir in [os.path.join('.', d) for d in args.dir]:
+    for root, dirs, files in os.walk(src_dir):
         for f in files:
             filename = os.path.join(root, f)
-            if f.endswith('.py'):
-                manifest.append(filename)
+            if filename.replace('\\', '/') in cpep8_manifest:
                 continue
-            with open(filename, "r") as fh:
+            if f.endswith('.py'):
+                flake8_manifest.add(filename)
+                continue
+            with open(filename, "rb") as fh:
                 shebang = fh.readline()
-                if shebang.startswith("#!/usr/bin/env python"):
-                    manifest.append(filename)
-else:
-    manifest += file_to_lines(manifest_filename)
+                if shebang.startswith(b"#!/usr/bin/env python"):
+                    flake8_manifest.add(filename)
 
 
 # unless we are being --strict, load per-file style exceptions
@@ -97,37 +99,16 @@ def get_exceptions(f):
         ignore = None
     return ignore
 
-if args.update:
-    print("Starting update of %d files" % len(manifest))
-    bad = []
-    for f in manifest:
-        checker = pep8.StyleGuide(quiet=True, ignore=get_exceptions(f))
-        results = checker.check_files([f])
-        if results.total_errors:
-            bad.append(f)
-        print("%s: %s" % (results.total_errors and "FAIL" or "PASS", f))
-
-    with open(blacklist_filename, "w") as fh:
-        fh.write("""\
-# cpep8.blacklist: The list of files that do not meet PEP8 standards.
-# DO NOT ADD NEW FILES!!  Instead, fix the code to be compliant.
-# Over time, this list should shrink and (eventually) be eliminated.""")
-        fh.write("\n".join(sorted(bad)))
-
-    if args.scan:
-        with open(manifest_filename, "w") as fh:
-            fh.write("\n".join(sorted(manifest)))
-    sys.exit(0)
-
 if args.files:
-    manifest = args.files
+    cpep8_manifest = []
+    flake8_manifest = args.files
 
 # read the blacklisted source files
 blacklist = file_to_lines(blacklist_filename)
 
 check_list = []
-for f in manifest:
-    if args.all or f not in blacklist:
+for f in cpep8_manifest:
+    if args.all or f.replace('\\', '/') not in blacklist:
         check_list.append(f)
 check_list = sorted(check_list)
 
@@ -141,5 +122,16 @@ for f in check_list:
     if args.stats:
         checker.report.print_statistics()
     total_errors += results
+
+flake8_manifest = [f for f in flake8_manifest
+                   if f.replace('\\', '/') not in blacklist]
+
+for i in range(0, len(flake8_manifest), 10):
+    files = flake8_manifest[i:i + 10]
+    if args.verbose:
+        print('Checking %s' % files)
+    r = subprocess.call(['flake8', '--builtins=_'] + files)
+    if r != 0:
+        total_errors += r
 
 sys.exit(total_errors and 1 or 0)
