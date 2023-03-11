@@ -80,10 +80,7 @@ def _load_tests(loader, tests, pattern, suite=None):
         subdevs = _get_sub_devices(rclass, image)
         has_subdevs = subdevs != [rclass]
         for index, device in enumerate(subdevs):
-            if isinstance(device, type):
-                dst = None
-            else:
-                dst = device
+            if not isinstance(device, type):
                 device = device.__class__
             for case in driver_test_cases:
                 tc = TestAdapterMeta(

@@ -8,7 +8,6 @@ from chirp import bandplan_na
 LOG = logging.getLogger(__name__)
 
 
-
 class DriverTest(unittest.TestCase):
     RADIO_CLASS = None
     SUB_DEVICE = None
@@ -139,12 +138,12 @@ class DriverTest(unittest.TestCase):
             elif k == "tuning_step" and not self.rf.has_tuning_step:
                 continue
             elif k == "rtone" and not (
-                        a.tmode == "Tone" or
-                        (a.tmode == "TSQL" and not self.rf.has_ctone) or
-                        (a.tmode == "Cross" and tx_mode == "Tone") or
-                        (a.tmode == "Cross" and rx_mode == "Tone" and
-                         not self.rf.has_ctone)
-                        ):
+                a.tmode == "Tone" or
+                (a.tmode == "TSQL" and not self.rf.has_ctone) or
+                (a.tmode == "Cross" and tx_mode == "Tone") or
+                (a.tmode == "Cross" and rx_mode == "Tone" and
+                 not self.rf.has_ctone)
+            ):
                 continue
             elif k == "ctone" and (not self.rf.has_ctone or
                                    not (a.tmode == "TSQL" or

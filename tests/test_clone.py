@@ -4,7 +4,6 @@ from unittest import mock
 
 from chirp import chirp_common
 from chirp import errors
-from chirp import memmap
 from tests import base
 
 LOG = logging.getLogger(__name__)
@@ -62,13 +61,14 @@ class TestCaseClone(base.DriverTest):
             self.skipTest('Does not support clone')
 
         real_time = time.time
+
         def fake_time():
             return real_time() * 1000
 
         self.patches = []
         self.use_patch(mock.patch('time.sleep'))
         self.use_patch(mock.patch('time.time',
-                                   side_effect=fake_time))
+                                  side_effect=fake_time))
 
     def _test_with_serial(self, serial):
         # The base case sets us up with a file, so re-init with our serial.
@@ -82,14 +82,14 @@ class TestCaseClone(base.DriverTest):
 
         msg = ('Clone should have failed and raised an exception '
                'that inherits from RadioError')
-        with self.assertRaises(errors.RadioError,msg=msg):
+        with self.assertRaises(errors.RadioError, msg=msg):
             self.radio.sync_in()
 
         msg = ('Clone should have failed and raised an exception '
                'that inherits from RadioError')
         with self.assertRaises(errors.RadioError, msg=msg):
             self.radio.sync_out()
-        
+
     def test_clone_serial_error(self):
         self._test_with_serial(SerialError())
 

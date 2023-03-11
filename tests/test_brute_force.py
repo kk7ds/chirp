@@ -52,7 +52,7 @@ class TestCaseBruteForce(base.DriverTest):
 
                 try:
                     self.set_and_compare(m)
-                except errors.UnsupportedToneError as e:
+                except errors.UnsupportedToneError:
                     # If a radio doesn't support a particular tone value,
                     # don't punish it
                     pass
@@ -137,15 +137,16 @@ class TestCaseBruteForce(base.DriverTest):
         m = self.get_mem()
         if 'mode' in m.immutable:
             self.skipTest('Test memory has immutable duplex')
+
         def ensure_urcall(call):
-            l = self.radio.get_urcall_list()
-            l[0] = call
-            self.radio.set_urcall_list(l)
+            lst = self.radio.get_urcall_list()
+            lst[0] = call
+            self.radio.set_urcall_list(lst)
 
         def ensure_rptcall(call):
-            l = self.radio.get_repeater_call_list()
-            l[0] = call
-            self.radio.set_repeater_call_list(l)
+            lst = self.radio.get_repeater_call_list()
+            lst[0] = call
+            self.radio.set_repeater_call_list(lst)
 
         def freq_is_ok(freq):
             for lo, hi in self.rf.valid_bands:
@@ -159,8 +160,8 @@ class TestCaseBruteForce(base.DriverTest):
                           'Radio exposes non-standard mode')
             tmp = copy.deepcopy(m)
             if mode == "DV" and \
-                   isinstance(self.radio,
-                              chirp_common.IcomDstarSupport):
+                isinstance(self.radio,
+                           chirp_common.IcomDstarSupport):
                 tmp = chirp_common.DVMemory()
                 try:
                     ensure_urcall(tmp.dv_urcall)

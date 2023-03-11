@@ -1,5 +1,3 @@
-import pytest
-
 from chirp import chirp_common
 from chirp import errors
 from tests import base
@@ -50,7 +48,7 @@ class TestCaseEdges(base.DriverTest):
             145000000: [145856250, 145862500],
             445000000: [445856250, 445862500],
             862000000: [862731250, 862737500],
-            }
+        }
 
         m = self.get_mem()
 
@@ -88,8 +86,6 @@ class TestCaseEdges(base.DriverTest):
                 break
 
     def test_delete_memory(self):
-        firstband = self.rf.valid_bands[0]
-        testfreq = firstband[0]
         for loc in range(*self.rf.memory_bounds):
             m = self.radio.get_memory(loc)
             if 'empty' in m.immutable:

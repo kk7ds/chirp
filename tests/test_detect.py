@@ -28,7 +28,7 @@ class TestCaseDetect(base.DriverTest):
                         reason="requires python3.10 or higher")
     @mock.patch('builtins.print')
     def test_match_model_is_quiet_no_match(self, mock_print):
-        with self.assertNoLogs(level=logging.DEBUG) as logs:
+        with self.assertNoLogs(level=logging.DEBUG):
             self.radio.match_model(b'', 'foo.img')
         mock_print.assert_not_called()
 
@@ -36,7 +36,7 @@ class TestCaseDetect(base.DriverTest):
                         reason="requires python3.10 or higher")
     @mock.patch('builtins.print')
     def test_match_model_is_quiet_with_match(self, mock_print):
-        with self.assertNoLogs(level=logging.DEBUG) as logs:
+        with self.assertNoLogs(level=logging.DEBUG):
             with open(self.TEST_IMAGE, 'rb') as f:
                 self.radio.match_model(f.read(), self.TEST_IMAGE)
         mock_print.assert_not_called()
