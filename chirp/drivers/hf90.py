@@ -18,7 +18,6 @@ from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueList, RadioSettingValueBoolean
 from chirp.settings import RadioSettingValueInteger, RadioSettings
 
-import time
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -410,7 +409,7 @@ class HF90StyleRadio(chirp_common.CloneModeRadio,
                     setattr(_settings, name, value)
 
                 LOG.debug("Setting %s: %s" % (name, value))
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

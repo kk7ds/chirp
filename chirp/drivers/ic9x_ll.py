@@ -60,7 +60,7 @@ def _ic9x_parse_frames(buf):
         try:
             start = buf.index(b"\xfe\xfe")
             end = buf[start:].index(b"\xfd") + start + 1
-        except Exception as e:
+        except Exception:
             LOG.error("No trailing bit")
             break
 
@@ -263,6 +263,7 @@ class IC92MyCallsignFrame(IC92CallsignFrame):
     """MYCALL frame"""
     command = 8  # My
     width = 12  # 4 bytes for /STID
+
 
 MEMORY_FRAME_FORMAT = """
 struct {

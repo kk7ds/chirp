@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from chirp.drivers import yaesu_clone
-from chirp import chirp_common, directory, bitwise
+from chirp import chirp_common, bitwise
 
 # This driver is unfinished and therefore does not register itself with Chirp.
 #
@@ -55,7 +55,8 @@ char imgname[10];
 
 STEPS = [5.0, 6.25]
 CHARSET = "".join([chr(x) for x in range(ord("0"), ord("9")+1)] +
-                  [chr(x) for x in range(ord("A"), ord("Z")+1)]) + "<=>*+-\/_ "
+                  [chr(x) for x in range(ord("A"), ord("Z")+1)]) + \
+                      r"<=>*+-\/_ "
 TONES = list(chirp_common.TONES)
 TONES.remove(165.5)
 TONES.remove(171.3)

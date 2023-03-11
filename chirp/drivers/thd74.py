@@ -9,7 +9,6 @@ from chirp import chirp_common
 from chirp import directory
 from chirp import errors
 from chirp import memmap
-from chirp import util
 
 LOG = logging.getLogger(__name__)
 
@@ -311,7 +310,7 @@ class THD74Radio(chirp_common.CloneModeRadio):
             self.pipe.baudrate = baud
             try:
                 self.pipe.write(b"\r\r")
-            except:
+            except Exception:
                 break
             self.pipe.read(32)
             try:

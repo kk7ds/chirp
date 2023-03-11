@@ -151,6 +151,7 @@ def _upload(radio):
             radio.status_fn(status)
         block_nr += 1
 
+
 MEM_FORMAT = """
 struct mem {
   u8   is_used:1,
@@ -1090,7 +1091,7 @@ class FT7100Radio(YaesuCloneModeRadio):
                     setattr(_overlay, name, value)
 
                 LOG.debug("Setting %s: %s", name, value)
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

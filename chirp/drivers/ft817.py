@@ -693,8 +693,8 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         return mem
 
     def _set_memory(self, mem, _mem):
-        if len(mem.name) > 0:   # not supported in chirp
-                                # so I make label visible if have one
+        # not supported in chirp so I make label visible if have one
+        if len(mem.name) > 0:
             _mem.tag_on_off = 1
         else:
             _mem.tag_on_off = 0
@@ -1108,7 +1108,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
                          str(element.value)]
                 else:
                     setattr(obj, setting, element.value)
-            except:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

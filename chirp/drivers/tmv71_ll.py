@@ -68,6 +68,7 @@ def get_id(s):
     else:
         raise errors.RadioError("No response to ID command")
 
+
 EXCH_R = "R\x00\x00\x00"
 EXCH_W = "W\x00\x00\x00"
 
@@ -388,4 +389,4 @@ if __name__ == "__main__":
     # s.write("\r\r")
     # print get_id(s)
     data = download(s)
-    file(sys.argv[2], "wb").write(data)
+    open(sys.argv[2], "wb").write(data)

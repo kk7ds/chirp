@@ -15,11 +15,10 @@
 
 import time
 import struct
-import os
 import logging
 
 from chirp.drivers import yaesu_clone
-from chirp import chirp_common, directory, errors, util, bitwise, memmap
+from chirp import chirp_common, directory, errors, bitwise, memmap
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings
 from chirp.settings import RadioSettingValueInteger, RadioSettingValueString
 
