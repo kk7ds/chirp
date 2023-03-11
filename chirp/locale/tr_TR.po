@@ -220,17 +220,17 @@ msgstr "Sil"
 #: ../wxui/memedit.py:1138
 #, python-format
 msgid "Delete %i Memories"
-msgstr "%i Belleği Sil"
+msgstr "%i Kaydını Sil"
 
 #: ../wxui/memedit.py:1145
 #, python-format
 msgid "Delete %i Memories and shift all up"
-msgstr "%i Belleği sil ve hepsini yukarı kaydır"
+msgstr "%i Kaydını sil ve hepsini yukarı kaydır"
 
 #: ../wxui/memedit.py:1141
 #, python-format
 msgid "Delete %i Memories and shift block up"
-msgstr "%i Belleği sil ve bloğu yukarı kaydır"
+msgstr "%i Kaydını sil ve bloğu yukarı kaydır"
 
 #: ../wxui/memedit.py:1152
 msgid "Delete and shift all up"
@@ -417,11 +417,11 @@ msgstr "Git"
 
 #: ../wxui/main.py:1160
 msgid "Goto Memory"
-msgstr "Belleğe Git"
+msgstr "Kayda Git"
 
 #: ../wxui/main.py:1159
 msgid "Goto Memory:"
-msgstr "Belleğe Git:"
+msgstr "Kayda Git:"
 
 #: ../wxui/clone.py:310 ../wxui/clone.py:392
 msgid "Help Me..."
@@ -613,7 +613,7 @@ msgstr "Yalnızca belirli modlar"
 
 #: ../wxui/main.py:254
 msgid "Only memory tabs may be exported"
-msgstr "Yalnızca bellek sekmeleri dışa aktarılabilir"
+msgstr "Yalnızca kayıt sekmeleri dışa aktarılabilir"
 
 #: ../wxui/main.py:756
 msgid "Open"
@@ -677,7 +677,7 @@ msgstr "Yapıştırılan kayıtlar, %i kaydının üzerine yazılacak"
 #: ../wxui/memedit.py:1320
 #, python-format
 msgid "Pasted memory will overwrite memory %i"
-msgstr "Yapıştırılan bellek, %i kaydının üzerine yazacak"
+msgstr "Yapıştırılan kayıt, %i kaydının üzerine yazacak"
 
 #: ../wxui/main.py:1467
 msgid "Please be sure to quit CHIRP before installing the new version!"
@@ -833,7 +833,7 @@ msgstr "Ayarlar"
 
 #: ../wxui/memedit.py:1178
 msgid "Show Raw Memory"
-msgstr "Ham Belleği Göster"
+msgstr "Ham Kaydı Göster"
 
 #: ../wxui/main.py:719
 msgid "Show debug log location"
@@ -902,7 +902,7 @@ msgstr "Kablonuz için bağlantı noktası belirlenemiyor. Sürücülerinizi ve 
 
 #: ../wxui/memedit.py:941
 msgid "Unable to edit memory before radio is loaded"
-msgstr "Radyo yüklenmeden önce bellek düzenlenemiyor"
+msgstr "Radyo yüklenmeden önce kayıt düzenlenemiyor"
 
 #: ../wxui/main.py:989
 #, python-format
@@ -941,7 +941,7 @@ msgstr "Telsize yükle"
 #: ../wxui/common.py:221
 #, python-format
 msgid "Uploaded memory %s"
-msgstr "Yüklenen bellek %s"
+msgstr "Yüklenen kayıt %s"
 
 #: ../wxui/main.py:580
 msgid "Use fixed-width font"
@@ -2331,7 +2331,7 @@ msgstr ""
 
 #, fuzzy
 #~ msgid "Error importing memories:"
-#~ msgstr "Bellekler içe aktarırken hata oluştu:"
+#~ msgstr "Kayıtlar içe aktarırken hata oluştu:"
 
 #~ msgid "Error reporting is enabled"
 #~ msgstr "Hata raporlama etkinleştirildi"
