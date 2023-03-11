@@ -110,4 +110,3 @@
 ./chirp/drivers/wouxun.py
 ./chirp/drivers/wouxun_common.py
 ./chirp/drivers/yaesu_clone.py
-./chirp/pyPEG.py
