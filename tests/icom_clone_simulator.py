@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
 from builtins import bytes
 
 import struct
@@ -24,10 +25,10 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
-import sys
-l = logging.getLogger()
-l.level = logging.ERROR
-l.addHandler(logging.StreamHandler(sys.stdout))
+log = logging.getLogger()
+log.level = logging.ERROR
+log.addHandler(logging.StreamHandler(sys.stdout))
+
 
 class FakeIcomRadio(object):
     def __init__(self, radio, mapfile=None):
@@ -82,24 +83,18 @@ class FakeIcomRadio(object):
                 break
             header = bytes(struct.pack('>%sB' % self.address_fmt,
                                        addr, size))
-            #LOG.debug('Header for %02x@%04x: %r' % (
-            #    size, addr, header))
             chunk = []
             cs = 0
             for byte in header:
                 chunk.extend(x for x in bytes(b'%02X' % byte))
                 cs += byte
-            #LOG.debug('Chunk so far: %r' % chunk)
             for byte in self._memory[addr:addr + size]:
                 chunk.extend(x for x in bytes(b'%02X' % byte))
                 cs += byte
-            #LOG.debug('Chunk is %r' % chunk)
 
             vx = ((cs ^ 0xFFFF) + 1) & 0xFF
             chunk.extend(x for x in bytes(b'%02X' % vx))
             self.queue(self.make_response(icf.CMD_CLONE_DAT, bytes(chunk)))
-            #LOG.debug('Stopping after first frame')
-            #break
         self.queue(self.make_response(icf.CMD_CLONE_END, bytes([])))
 
     def do_clone_in(self):
@@ -118,23 +113,10 @@ class FakeIcomRadio(object):
         payload_bytes = bytes([hex_to_byte(payload_hex[i:i+2])
                                for i in range(0, len(payload_hex), 2)])
 
-        addr, size = struct.unpack('>%sB' % self.address_fmt, payload_bytes[:header_len])
+        addr, size = struct.unpack(
+            '>%sB' % self.address_fmt, payload_bytes[:header_len])
         data = payload_bytes[header_len:-1]
-        csum = payload_bytes[-1]
-
-        #addr_hex = payload[0:size_offset]
-        #size_hex = payload[size_offset:size_offset + 2]
-        #data_hex = payload[size_offset + 2:-2]
-        #csum_hex = payload[-2:]
-
-
-        #addr = hex_to_byte(addr_hex[0:2]) << 8 | hex_to_byte(addr_hex[2:4])
-        #size = hex_to_byte(size_hex)
-        #csum = hex_to_byte(csum_hex)
-
-        #data = []
-        #for i in range(0, len(data_hex), 2):
-        #    data.append(hex_to_byte(data_hex[i:i+2]))
+        # csum = payload_bytes[-1]
 
         if len(data) != size:
             LOG.debug('Invalid frame size: expected %i, but got %i' % (
@@ -159,16 +141,17 @@ class FakeIcomRadio(object):
     def write(self, data):
         """write() to radio, so here we process requests"""
 
-        assert isinstance(data, bytes), 'Bytes required, %s received' % data.__class__
+        assert isinstance(
+            data, bytes), 'Bytes required, %s received' % data.__class__
 
         while data.startswith(b'\xfe\xfe\xfe'):
             data = data[1:]
 
-        src = data[2]
-        dst = data[3]
+        # src = data[2]
+        # dst = data[3]
         cmd = data[4]
         payload = data[5:-1]
-        end = data[-1]
+        # end = data[-1]
 
         LOG.debug('Received command: %x' % cmd)
         LOG.debug('  Full frame: %r' % data)

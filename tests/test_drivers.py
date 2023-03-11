@@ -1,6 +1,3 @@
-import sys
-import unittest
-
 from chirp import directory
 from tests import load_tests
 

@@ -10,7 +10,7 @@ class TestCaseBanks(base.DriverTest):
 
         for bank in banks:
             self.assertIsInstance(bank.get_name(), str,
-                                 'Bank model returned non-string name')
+                                  'Bank model returned non-string name')
             bank.set_name(testname)
 
         for bank in bm.get_mappings():
@@ -52,7 +52,7 @@ class TestCaseBanks(base.DriverTest):
         # add a variable named channelAlwaysHasBank to it and make it True
         try:
             channelAlwaysHasBank = model.channelAlwaysHasBank
-        except:
+        except Exception:
             channelAlwaysHasBank = False
 
         mem_banks = model.get_memory_mappings(mem)
@@ -63,7 +63,7 @@ class TestCaseBanks(base.DriverTest):
         else:
             self.assertEqual(0, len(mem_banks),
                              'Freshly-created memory has banks '
-                              'and should not')
+                             'and should not')
 
         banks = model.get_mappings()
 
@@ -73,7 +73,6 @@ class TestCaseBanks(base.DriverTest):
         self.assertIn(loc, [x.number
                             for x in model.get_mapping_memories(banks[0])],
                       'Bank does not claim memory after add')
-
 
         model.remove_memory_from_mapping(mem, banks[0])
         if not channelAlwaysHasBank:
@@ -89,7 +88,7 @@ class TestCaseBanks(base.DriverTest):
             # catching Exception here papers over the likely failures from
             # this going unchecked.
             self.assertRaises(Exception,
-                model.remove_memory_from_mapping, mem, banks[0])
+                              model.remove_memory_from_mapping, mem, banks[0])
 
     @base.requires_feature('has_bank_index')
     def test_bank_index(self):
@@ -112,4 +111,4 @@ class TestCaseBanks(base.DriverTest):
 
         suggested_index = model.get_next_mapping_index(banks[0])
         self.assertIn(suggested_index, list(range(*index_bounds)),
-            'Suggested bank index not in valid range')
+                      'Suggested bank index not in valid range')
