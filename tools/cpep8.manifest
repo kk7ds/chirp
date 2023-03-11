@@ -115,7 +115,6 @@
 ./chirp/drivers/wouxun.py
 ./chirp/drivers/wouxun_common.py
 ./chirp/drivers/yaesu_clone.py
-./chirp/elib_intl.py
 ./chirp/logger.py
 ./chirp/memmap.py
 ./chirp/platform.py
