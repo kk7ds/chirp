@@ -126,7 +126,7 @@ class MemoryMap(MemoryMapBytes):
         if six.PY3 and isinstance(data, bytes):
             # Be graceful if py3-enabled code uses this,
             # just don't encode it
-            encode = lambda d: d
+            encode = bytes
         else:
             encode = self._bitwise.string_straight_encode
         super(MemoryMap, self).__init__(encode(data))

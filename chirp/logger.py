@@ -46,6 +46,7 @@ def add_version_argument(parser):
     parser.add_argument("--version", action=VersionAction, nargs=0,
                         help="Print version and exit")
 
+
 #: Map human-readable logging levels to their internal values.
 log_level_names = {"critical": logging.CRITICAL,
                    "error":    logging.ERROR,
@@ -124,7 +125,7 @@ class Logger(object):
         if self.logfile is None:
             self.logname = name
             # always truncate the log file
-            with open(name, "w") as fh:
+            with open(name, "w"):
                 pass
             self.logfile = logging.FileHandler(name)
             format_str = self.log_format
@@ -150,6 +151,7 @@ class Logger(object):
         self.set_log_level(log_level_names[level])
 
     instance = None
+
 
 Logger.instance = Logger()
 

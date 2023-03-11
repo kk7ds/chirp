@@ -16,7 +16,6 @@
 import os
 from pathlib import Path
 import sys
-import glob
 import re
 import logging
 from subprocess import Popen
@@ -30,14 +29,14 @@ def _find_me():
     return sys.modules["chirp.platform"].__file__
 
 
-def natural_sorted(l):
+def natural_sorted(lst):
     def convert(text):
         return int(text) if text.isdigit() else text.lower()
 
     def natural_key(key):
         return [convert(c) for c in re.split('([0-9]+)', key)]
 
-    return sorted(l, key=natural_key)
+    return sorted(lst, key=natural_key)
 
 
 class Platform:
@@ -176,7 +175,7 @@ class UnixPlatform(Platform):
 
     def os_version_string(self):
         try:
-            issue = file("/etc/issue.net", "r")
+            issue = open("/etc/issue.net", "r")
             ver = issue.read().strip().replace("\r", "").replace("\n", "")[:64]
             issue.close()
             ver = "%s - %s" % (os.uname()[0], ver)
@@ -240,6 +239,7 @@ def _get_platform(basepath):
     else:
         return UnixPlatform(basepath)
 
+
 PLATFORM = None
 
 
@@ -261,6 +261,7 @@ def _do_test():
     print("Log file (foo): %s" % __pform.log_file("foo"))
     print("OS Version: %s" % __pform.os_version_string())
     # __pform.open_text_file("d-rats.py")
+
 
 if __name__ == "__main__":
     _do_test()

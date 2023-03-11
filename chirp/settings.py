@@ -95,7 +95,7 @@ class RadioSettingValueInteger(RadioSettingValue):
     def set_value(self, value):
         try:
             value = int(value)
-        except:
+        except Exception:
             raise InvalidValueError("An integer is required")
         if value > self._max or value < self._min:
             raise InvalidValueError("Value %i not in range %i-%i" %
@@ -137,7 +137,7 @@ class RadioSettingValueFloat(RadioSettingValue):
     def set_value(self, value):
         try:
             value = float(value)
-        except:
+        except Exception:
             raise InvalidValueError("A floating point value is required")
         if value > self._max or value < self._min:
             raise InvalidValueError("Value %s not in range %s-%s" % (
