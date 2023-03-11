@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-11 08:11-0800\n"
-"PO-Revision-Date: 2023-03-05 00:39+0300\n"
+"POT-Creation-Date: 2023-03-11 08:12-0800\n"
+"PO-Revision-Date: 2023-03-11 18:37+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
 "Language: tr\n"
@@ -29,6 +29,13 @@ msgid ""
 "      (\"-WAIT-\" will appear on radio LCD).\n"
 "5. Finally, press OK button below.\n"
 msgstr ""
+" 1. Telsizi kapatın.\n"
+"  2. Kabloyu DATA terminaline bağlayın.\n"
+"  3. Telsizi açarken [DISP] tuşunu basılı tutun\n"
+"  (telsiz LCD'sinde \"CLONE\" görünecektir).\n"
+"  4. [RECEIVE] ekran tuşuna basın\n"
+"       (telsiz LCD'sinde \"-WAIT-\" görünecektir).\n"
+"5. Son olarak aşağıdaki OK tuşuna basın.\n"
 
 #: ../wxui/query_sources.py:58
 #, python-format
@@ -36,19 +43,19 @@ msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s, %(min)i ile %(max)i arasında olmalıdır"
 
 #: ../wxui/memedit.py:1166
-#, fuzzy, python-format
+#, python-format
 msgid "%i Memories"
-msgstr "Bellekler"
+msgstr "%i Kayıtlar"
 
 #: ../wxui/memedit.py:1173
-#, fuzzy, python-format
+#, python-format
 msgid "%i Memories and shift all up"
-msgstr "%i Belleği sil ve hepsini yukarı kaydır"
+msgstr "%i Kayıtlarını ve hepsini yukarı kaydır"
 
 #: ../wxui/memedit.py:1169
-#, fuzzy, python-format
+#, python-format
 msgid "%i Memories and shift block up"
-msgstr "%i Belleği sil ve bloğu yukarı kaydır"
+msgstr "%i Kayıtlarını ve bloğu yukarı kaydır"
 
 #: ../wxui/main.py:1072
 #, python-format
@@ -70,6 +77,14 @@ msgid ""
 "   (rotate dial while holding MONI to change)\n"
 "7. Click OK\n"
 msgstr ""
+"1. Donanım yazılımı sürümünüzün 4_10 veya üzeri olduğundan emin olun\n"
+"2. Telsizi kapatın\n"
+"3. Arayüz kablonuzu bağlayın\n"
+"4. Telsizi açın\n"
+"5. MONI tuşunu basılı tutarken PTT'ye 3 kez basın ve bırakın\n"
+"6. Desteklenen baud hızları: 57600 (varsayılan) ve 19200\n"
+"   (değiştirmek için MONI'ye basılı tutarken kadranı çevirin)\n"
+"7. TAMAM'a tıklayın\n"
 
 #: ../drivers/ft2900.py:1227
 msgid ""
@@ -78,6 +93,11 @@ msgid ""
 "3. While holding \"A/N LOW\" button, turn radio on.\n"
 "4. <b>After clicking OK</b>, press \"SET MHz\" to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Veri kablosunu bağlayın.\n"
+"3. \"A/N LOW\" tuşunu basılı tutarken telsizi açın.\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için \"SET MHz\"e "
+"basın.\n"
 
 #: ../drivers/ft2900.py:1232
 msgid ""
@@ -91,6 +111,17 @@ msgid ""
 "      power and pressing and holding red \"*L\" button to unlock\n"
 "      radio, then start back at step 1.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Veri kablosunu bağlayın.\n"
+"3. \"A/N LOW\" tuşunu basılı tutarken telsizi açın.\n"
+"4. İmajı almak için \"MW D/MR\" tuşuna basın.\n"
+"5. Ekranda \"-WAIT-\" yazdığından emin olun (değilse aşağıdaki nota bakın)\n"
+"6. Bu iletişim kutusunu kapatmak ve aktarımı başlatmak için TAMAM'a "
+"tıklayın.\n"
+"Not: 5. adımda \"-WAIT-\" öğesini görmüyorsanız, gücü kapatıp açmayı\n"
+"      ve telsizin kilidini açmak için kırmızı \"*L\" tuşunu basılı tutmayı "
+"deneyin,\n"
+"      ardından 1. adımdan başlayın.\n"
 
 #: ../drivers/ft7100.py:1122
 msgid ""
@@ -99,6 +130,11 @@ msgid ""
 "3. While holding \"TONE\" and \"REV\" buttons, turn radio on.\n"
 "4. <b>After clicking OK</b>, press \"TONE\" to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Veri kablosunu bağlayın.\n"
+"3. \"TONE\" ve \"REV\" tuşlarını basılı tutarken telsizi açın.\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için \"TONE\" tuşuna "
+"basın.\n"
 
 #: ../drivers/ft7100.py:1127
 msgid ""
@@ -109,6 +145,13 @@ msgid ""
 "5. Make sure display says \"CLONE RX\" and green led is blinking\n"
 "6. Click OK to start transfer.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Veri kablosunu bağlayın.\n"
+"3. \"TONE\" ve \"REV\" tuşlarını basılı tutarken telsizi açın.\n"
+"4. İmajı almak için \"REV\" tuşuna basın.\n"
+"5. Ekranda \"CLONE RX\" yazdığından ve yeşil ledin yanıp söndüğünden emin "
+"olun.\n"
+"6. Aktarımı başlatmak için TAMAM'a tıklayın.\n"
 
 #: ../drivers/ft450d.py:381
 msgid ""
@@ -120,6 +163,12 @@ msgid ""
 "4. <b>After clicking OK</b> here, press the [C.S.] key to\n"
 "    send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu ACC jakına bağlayın.\n"
+"3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun \n"
+"     (ekranda \"KLON MODU\" görünecektir).\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için\n"
+"     [C.S.] tuşuna basın.\n"
 
 #: ../drivers/ft817.py:283
 msgid ""
@@ -130,6 +179,12 @@ msgid ""
 "     display).\n"
 "4. <b>After clicking OK</b>, press the [A] key to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu ACC jakına bağlayın.\n"
+"3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını\n"
+"    basılı tutun (\"ekranda KLON MODU\" görünecektir).\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için\n"
+"    [A] tuşuna basın.\n"
 
 #: ../drivers/ft450d.py:390
 msgid ""
@@ -141,6 +196,12 @@ msgid ""
 "4. Click OK here.\n"
 "    (\"Receiving\" will appear on the LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu ACC jakına bağlayın.\n"
+"3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun "
+"(\"ekranda KLON MODU\" görünecektir).\n"
+"4. Burada TAMAM'ı tıklayın.\n"
+"     (ekranda \"Alınıyor\" görünecektir).\n"
 
 #: ../drivers/ft857.py:451
 msgid ""
@@ -151,6 +212,11 @@ msgid ""
 "     display).\n"
 "4. Press the [A](RCV) key (\"receiving\" will appear on the LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu ACC jakına bağlayın.\n"
+"3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun "
+"(ekranda \"KLON MODU\" görünecektir).\n"
+"4. [A](RCV) tuşuna basın (ekranda \"alıyor\" görünecektir).\n"
 
 #: ../drivers/ft817.py:291
 msgid ""
@@ -161,6 +227,11 @@ msgid ""
 "     display).\n"
 "4. Press the [C] key (\"RX\" will appear on the LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu ACC jakına bağlayın.\n"
+"3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun "
+"(\"ekranda KLON MODU\" görünecektir).\n"
+"4. [C] tuşuna basın (ekranda \"RX\" görünecektir).\n"
 
 #: ../drivers/ft857.py:442
 msgid ""
@@ -172,6 +243,12 @@ msgid ""
 "4. <b>After clicking OK</b>,\n"
 "     press the [C](SEND) key to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu CAT/LINEAR jakına bağlayın.\n"
+"3. Telsizi açarken [MODE &lt;] ve [MODE &gt;] tuşlarını basılı tutun "
+"(ekranda \"KLON MODU\" görünecektir).\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [C](GÖNDER) tuşuna "
+"basın.\n"
 
 #: ../drivers/ft7800.py:840
 msgid ""
@@ -185,6 +262,14 @@ msgid ""
 "6. <b>After clicking OK</b>, press the \"left\" [V/M] key to\n"
 "     send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu DATA jakına bağlayın.\n"
+"3. Telsizi açarken \"sol\" [V/M] tuşuna basılı tutun.\n"
+"4. \"KLONLAMA BAŞLAT\"ı seçmek için  DIAL düğmesini \"sağa\" çevirin.\n"
+"5. [SET] tuşuna basın. Ekran bir an kaybolacak, ardından \"CLONE\" notu "
+"görünecektir.\n"
+"6. <b>Tamam'a tıkladıktan sonra</b>, imajı  göndermek için \"sol\" [V/M] "
+"tuşuna basın.\n"
 
 #: ../drivers/ft7800.py:850
 msgid ""
@@ -198,6 +283,14 @@ msgid ""
 "6. Press the \"left\" [LOW] key (\"CLONE -RX-\" will appear on\n"
 "     the display).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu DATA jakına bağlayın.\n"
+"3. Telsizi açarken \"sol\" [V/M] tuşuna basılı tutun.\n"
+"4. \"KLONLAMA BAŞLAT\"ı seçmek için  DIAL düğmesini \n"
+"\"sağa\" çevirin.\n"
+"5. [SET] tuşuna basın. Ekran bir an kaybolacak, ardından \n"
+"\"CLONE\" notu görünecektir.\n"
+"6. \"Sol\" [LOW] tuşuna basın (\"CLONE -RX-\" ekranda görünecektir).\n"
 
 #: ../drivers/vx8.py:587
 msgid ""
@@ -207,6 +300,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu DATA jakına bağlayın.\n"
+"3. Telsizi açarken [FW] tuşunu basılı tutun\n"
+"      (ekranda \"CLONE\" görünecektir).\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna "
+"basın.\n"
 
 #: ../drivers/vx8.py:594
 msgid ""
@@ -216,6 +315,11 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu DATA jakına bağlayın.\n"
+"3. Telsizi açarken [FW] tuşunu basılı tutun\n"
+"      (ekranda \"CLONE\" görünecektir).\n"
+"4. [MODE] tuşuna basın (ekranda \"CLONE WAIT\" görünecektir).\n"
 
 #: ../drivers/ft7800.py:288
 msgid ""
@@ -229,6 +333,13 @@ msgid ""
 "     will appear.\n"
 "6. Press the [LOW(ACC)] key (\"--RX--\" will appear on the display).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu DATA jakına bağlayın.\n"
+"3. Telsizi açarken [MHz(PRI)] tuşunu basılı tutun.\n"
+"4. \"F-7 CLONE\" öğesini seçmek için KADRANI çevirin.\n"
+"5. [BAND(SET)] tuşunu basılı tutun. Ekran bir an için kaybolacak, ardından "
+"\"CLONE\" yazısı belirecektir.\n"
+"6. [LOW(ACC)] tuşuna basın (ekranda \"--RX--\" görünecektir).\n"
 
 #: ../drivers/ft7800.py:277
 msgid ""
@@ -242,6 +353,14 @@ msgid ""
 " will appear.\n"
 "6. <b>After clicking OK</b>, press the [V/M(MW)] key to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu DATA jakına bağlayın.\n"
+"3. Telsizi açarken [MHz(PRI)] tuşunu basılı tutun.\n"
+"4. \"F-7 CLONE\" öğesini seçmek için KADRANI çevirin.\n"
+"5. [BAND(SET)] tuşunu basılı tutun. Ekran bir an için kaybolacak, ardından "
+"\"CLONE\" yazısı belirecektir.\n"
+"6. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek için [V/M(MW)] tuşuna "
+"basın.\n"
 
 #: ../drivers/ft2d.py:93
 msgid ""
@@ -252,6 +371,12 @@ msgid ""
 "4. <b>After clicking OK here in chirp</b>,\n"
 "     press the [Send] screen button.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu DATA terminaline bağlayın.\n"
+"3. Telsizi açarken [DISP] tuşunu basılı tutun\n"
+"      (\"CLONE\" ekranda görünecektir).\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>,\n"
+"     [Gönder] ekran tuşuna basın.\n"
 
 #: ../drivers/ft1d.py:666
 msgid ""
@@ -261,6 +386,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu DATA terminaline bağlayın.\n"
+"3. Telsizi açarken [F] tuşunu basılı tutun\n"
+"      (\"CLONE\" ekranda görünecektir).\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna "
+"basın.\n"
 
 #: ../drivers/ft1d.py:673
 msgid ""
@@ -270,6 +401,11 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. Press the [Dx] key (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu DATA terminaline bağlayın.\n"
+"3. Telsizi açarken [F] tuşunu basılı tutun\n"
+"     (ekranda \"CLONE\" görünecektir).\n"
+"4. [Dx] tuşuna basın (ekranda \"-WAIT-\" görünecektir).\n"
 
 #: ../drivers/ftm3200d.py:83
 msgid ""
@@ -280,6 +416,12 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [REV(DW)] key\n"
 "     to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu DATA terminaline bağlayın.\n"
+"3. Telsizi açarken [MHz(SETUP)] tuşunu basılı tutun (\"ekranda CLONE\" "
+"görünecektir).\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [GERİ(DW)] tuşuna "
+"basın.\n"
 
 #: ../drivers/ftm3200d.py:91
 msgid ""
@@ -290,6 +432,12 @@ msgid ""
 "4. Press the [MHz(SETUP)] key\n"
 "     (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu DATA terminaline bağlayın.\n"
+"3. Telsizi açarken [MHz(SETUP)] tuşunu basılı tutun (\"ekranda CLONE\" "
+"görünecektir).\n"
+"4. [MHz(SETUP)] tuşuna basın\n"
+"      (ekranda \"-WAIT-\" görünecektir).\n"
 
 #: ../drivers/ftm7250d.py:84
 msgid ""
@@ -300,6 +448,12 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [GM(AMS)] key\n"
 "     to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu MIC Jakına bağlayın.\n"
+"3. Telsizi açarken [MHz(SETUP)] tuşunu basılı tutun (\"ekranda CLONE\" "
+"görünecektir).\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek için [GM(AMS)] tuşuna "
+"basın.\n"
 
 #: ../drivers/ftm7250d.py:92
 msgid ""
@@ -310,6 +464,12 @@ msgid ""
 "4. Press the [MHz(SETUP)] key\n"
 "     (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu MIC Jakına bağlayın.\n"
+"3. Telsizi açarken [MHz(SETUP)] tuşunu basılı tutun (\"ekranda CLONE\" "
+"görünecektir).\n"
+"4. [MHz(SETUP)] tuşuna basın\n"
+"      (ekranda \"-WAIT-\" görünecektir).\n"
 
 #: ../drivers/vx5.py:317
 msgid ""
@@ -320,6 +480,12 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [VFO(DW)SC] key to receive\n"
 "    the image from the radio.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu MIC/EAR jakına bağlayın.\n"
+"3. Telsizi açarken [F/W] tuşunu basılı tutun\n"
+"     (ekranda \"CLONE\" görünecektir).\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı telsizden almak için [VFO(DW)SC] "
+"tuşuna basın.\n"
 
 #: ../drivers/vx5.py:325
 msgid ""
@@ -331,6 +497,12 @@ msgid ""
 "    on the LCD).\n"
 "5. Click OK to send image to radio.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu MIC/EAR jakına bağlayın.\n"
+"3. Telsizi açarken [F/W] tuşunu basılı tutun\n"
+"     (ekranda \"CLONE\" görünecektir).\n"
+"4. [MR(SKP)SC] tuşuna basın (ekranda \"CLONE WAIT\" görünecektir).\n"
+"5. İmajı telsize göndermek için TAMAM'a tıklayın.\n"
 
 #: ../drivers/ft50.py:195
 msgid ""
@@ -340,6 +512,11 @@ msgid ""
 "     radio on.\n"
 "4. <b>After clicking OK</b>, press the [PTT] switch to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu MIC/SP jakına bağlayın.\n"
+"3. Telsizi açarken [PTT] &amp;  tuşuna basın.\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek\n"
+"     için [PTT] tuşuna basın.\n"
 
 #: ../drivers/ft50.py:202
 msgid ""
@@ -350,6 +527,11 @@ msgid ""
 "4. Press the [MONI] switch (\"WAIT\" will appear on the LCD).\n"
 "5. Press OK.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu MIC/SP jakına bağlayın.\n"
+"3. Telsizi açarken [PTT] &amp;  tuşuna basın.\n"
+"4. [MONI] tuşuna basın (ekranda \"WAIT\" görünecektir).\n"
+"5. TAMAM'a basın.\n"
 
 #: ../drivers/vx6.py:369 ../drivers/vx3.py:375
 msgid ""
@@ -359,6 +541,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu MIC/SP jakına bağlayın.\n"
+"3. Telsizi açarken [F/W] tuşunu basılı tutun\n"
+"      (ekranda \"CLONE\" görünecektir).\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna "
+"basın.\n"
 
 #: ../drivers/vx6.py:376 ../drivers/vx3.py:382
 msgid ""
@@ -368,6 +556,11 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. Press the [V/M] key (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu MIC/SP jakına bağlayın.\n"
+"3. Telsizi açarken [F/W] tuşunu basılı tutun\n"
+"      (ekranda \"CLONE\" görünecektir).\n"
+"4. [V/M] tuşuna basın (ekranda \"-WAIT-\" görünecektir).\n"
 
 #: ../drivers/vx7.py:193
 msgid ""
@@ -377,6 +570,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu MIC/SP jakına bağlayın.\n"
+"3. Telsizi açarken [MON-F] tuşunu basılı tutun\n"
+"      (ekranda \"CLONE\" görünecektir).\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna "
+"basın.\n"
 
 #: ../drivers/vx7.py:201
 msgid ""
@@ -386,6 +585,11 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. Press the [V/M] key (\"CLONE WAIT\" will appear on the LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu MIC/SP jakına bağlayın.\n"
+"3. Telsizi açarken [MON-F] tuşunu basılı tutun\n"
+"      (ekranda \"CLONE\" görünecektir).\n"
+"4. [V/M] tuşuna basın (ekranda \"CLONE WAIT\" görünecektir).\n"
 
 #: ../drivers/ft60.py:356
 msgid ""
@@ -398,6 +602,14 @@ msgid ""
 "6. <b>After clicking OK</b>, hold the [PTT] switch\n"
 "     for one second to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu MIC/SP jakına bağlayın.\n"
+"3. Telsizi açarken [PTT] &amp;  tuşuna basın.\n"
+"3. Telsizi açarken [MONI] tuşunu basılı tutun.\n"
+"4. \"F8 CLONE\" öğesini seçmek için KADRANI çevirin.\n"
+"5. Bir an için [F/W] tuşuna basın.\n"
+"6. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek için [PTT] tuşunu bir "
+"saniye basılı tutun.\n"
 
 #: ../drivers/ft60.py:365
 msgid ""
@@ -409,6 +621,12 @@ msgid ""
 "5. Press the [F/W] key momentarily.\n"
 "6. Press the [MONI] switch (\"--RX--\" will appear on the LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu MIC/SP jakına bağlayın.\n"
+"3. Telsizi açarken [MONI] tuşunu basılı tutun.\n"
+"4. \"F8 CLONE\" öğesini seçmek için KADRANI çevirin.\n"
+"5. Bir an için [F/W] tuşuna basın.\n"
+"6. [MONI] tuşuna basın (ekranda \"--RX--\" görünecektir).\n"
 
 #: ../drivers/vx170.py:103
 msgid ""
@@ -420,6 +638,15 @@ msgid ""
 "5. <b>After clicking OK</b>, briefly hold [PTT] key to send image.\n"
 "    (\"-TX-\" will appear on the LCD). \n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu MIC/SP jakına bağlayın.\n"
+"3. Telsizi açarken [moni] tuşunu basılı tutun.\n"
+"4. Menüden KLON'u seçin, ardından F'ye basın. Telsiz klon modunda yeniden "
+"başlar.\n"
+"      (ekranda \"CLONE\" görünecektir).\n"
+"5. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [PTT] tuşunu kısa "
+"bir süre basılı tutun.\n"
+"     (ekranda \"-TX-\" görünecektir). \n"
 
 #: ../drivers/ft1802.py:96
 msgid ""
@@ -428,6 +655,11 @@ msgid ""
 "3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
 "4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu mikrofon jakına bağlayın.\n"
+"3. Telsizi açarken [LOW(A/N)] tuşunu basılı tutun.\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [MHz(SET)] tuşuna "
+"basın.\n"
 
 #: ../drivers/ft1802.py:103
 msgid ""
@@ -436,6 +668,10 @@ msgid ""
 "3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu mikrofon jakına bağlayın.\n"
+"3. Telsizi açarken [LOW(A/N)] tuşunu basılı tutun.\n"
+"4. [D/MR(MW)] tuşuna basın (ekranda \"--WAIT--\" görünecektir).\n"
 
 #: ../drivers/ft1500m.py:96
 msgid ""
@@ -445,6 +681,11 @@ msgid ""
 "   while turning the radio on.\n"
 "4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu mikrofon jakına bağlayın.\n"
+"3. Telsizi açarken [MHz], [LOW] ve [D/MR] tuşlarına basılı tutun\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [MHz(SET)] tuşuna "
+"basın.\n"
 
 #: ../drivers/ft1500m.py:103
 msgid ""
@@ -454,6 +695,10 @@ msgid ""
 "   while turning the radio on.\n"
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu mikrofon jakına bağlayın.\n"
+"3. Telsizi açarken [MHz], [LOW] ve [D/MR] tuşlarını basılı tutun.\n"
+"4. [D/MR(MW)] tuşuna basın (ekranda \"--WAIT--\" görünecektir).\n"
 
 #: ../drivers/uv5r.py:778
 msgid ""
@@ -464,6 +709,12 @@ msgid ""
 "5. Ensure that the radio is tuned to channel with no activity.\n"
 "6. Click OK to download image from device.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu mik/hprlr konektörüne bağlayın.\n"
+"3. Konektörün sıkıca bağlandığından emin olun.\n"
+"4. Telsizi açın (ses düzeyinin %100 olarak ayarlanması gerekebilir).\n"
+"5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
+"6. İmajı cihazdan indirmek için TAMAM'a tıklayın.\n"
 
 #: ../drivers/uv5r.py:786
 msgid ""
@@ -474,6 +725,12 @@ msgid ""
 "5. Ensure that the radio is tuned to channel with no activity.\n"
 "6. Click OK to upload image to device.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu mic/spkr konektörüne bağlayın.\n"
+"3. Konektörün sıkıca bağlandığından emin olun.\n"
+"4. Telsizi açın (ses düzeyinin %100 olarak ayarlanması gerekebilir).\n"
+"5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
+"6. İmajı cihaza yüklemek için TAMAM'a tıklayın.\n"
 
 #: ../drivers/uvb5.py:287 ../drivers/wouxun.py:215 ../drivers/tg_uv2p.py:222
 msgid ""
@@ -484,6 +741,12 @@ msgid ""
 "5. Ensure that the radio is tuned to channel with no activity.\n"
 "6. Click OK to download image from device.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu mik/hprlr konektörüne bağlayın.\n"
+"3. Konektörün sıkıca bağlandığından emin olun.\n"
+"4. Telsizi açın.\n"
+"5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
+"6. İmajı cihazdan indirmek için TAMAM'a tıklayın.\n"
 
 #: ../drivers/uvb5.py:295 ../drivers/wouxun.py:223 ../drivers/tg_uv2p.py:230
 msgid ""
@@ -494,6 +757,12 @@ msgid ""
 "5. Ensure that the radio is tuned to channel with no activity.\n"
 "6. Click OK to upload image to device.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu mic/spkr konektörüne bağlayın.\n"
+"3. Konektörün sıkıca bağlandığından emin olun.\n"
+"4. Telsizi açın.\n"
+"5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
+"6. İmajı cihaza yüklemek için TAMAM'a tıklayın.\n"
 
 #: ../drivers/yaesu_clone.py:239
 msgid ""
@@ -502,6 +771,10 @@ msgid ""
 "3. Prepare radio for clone.\n"
 "4. <b>After clicking OK</b>, press the key to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Veri kablosunu bağlayın.\n"
+"3. Telsizi klon için hazırlayın.\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek için tuşuna basın.\n"
 
 #: ../drivers/yaesu_clone.py:244
 msgid ""
@@ -510,6 +783,10 @@ msgid ""
 "3. Prepare radio for clone.\n"
 "4. Press the key to receive the image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Veri kablosunu bağlayın.\n"
+"3. Telsizi klon için hazırlayın.\n"
+"4. İmajı almak için tuşuna basın.\n"
 
 #: ../drivers/ft90.py:197
 msgid ""
@@ -519,6 +796,12 @@ msgid ""
 "3. Replace mic with PC programming cable.\n"
 "4. <b>After clicking OK</b>, press the [SET] key to send image.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Mikrofonu bağlayın ve açarken mikrofondaki [ACC] tuşunu basılı tutun.\n"
+"     (\"CLONE\" ekranda görünecektir)\n"
+"3. Mikrofonu PC programlama kablosuyla değiştirin.\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [SET] tuşuna "
+"basın.\n"
 
 #: ../drivers/ft90.py:204
 msgid ""
@@ -529,6 +812,12 @@ msgid ""
 "4. Press the [DISP/SS] key\n"
 "    (\"R\" will appear on the lower left of LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Mikrofonu bağlayın ve açarken mikrofondaki [ACC] tuşunu basılı tutun.\n"
+"     (\"CLONE\" ekranda görünecektir)\n"
+"3. Mikrofonu PC programlama kablosuyla değiştirin.\n"
+"4. [DISP/SS] tuşuna basın\n"
+"     (LCD'nin sol alt köşesinde \"R\" görünecektir).\n"
 
 #: ../drivers/bj9900.py:105
 msgid ""
@@ -538,6 +827,12 @@ msgid ""
 "     head was connected to, <b>not the mic connector</b>.\n"
 "4. Click OK.\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Ön başlığı çıkarın.\n"
+"3. Veri kablosunu telsize bağlayın, \n"
+"     <b>mikrofon konektörüne değil</b> kafanın bağlı olduğu konektörü "
+"kullanın.\n"
+"4. TAMAM'a tıklayın.\n"
 
 #: ../drivers/vx170.py:114
 msgid ""
@@ -547,6 +842,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "5. Press the [moni] key (\"-RX-\" will appear on the LCD).\n"
 msgstr ""
+"1. Telsizi kapatın.\n"
+"3. Telsizi açarken [moni] tuşunu basılı tutun.\n"
+"4. Menüden KLON'u seçin, ardından F'ye basın. Telsiz klon modunda yeniden "
+"başlar.\n"
+"      (ekranda \"CLONE\" görünecektir).\n"
+"5. [moni] tuşuna basın (ekranda \"-RX-\" görünecektir).\n"
 
 #: ../drivers/ft70.py:552
 msgid ""
@@ -557,6 +858,12 @@ msgid ""
 " in back battery the(\"ADMS\" will appear on the display).\n"
 "5. <b>After clicking OK</b>, press the [BAND] key.\n"
 msgstr ""
+"1. Radyoyu açın.\n"
+"2. Kabloyu DATA terminaline bağlayın.\n"
+"3. Bataryayı çıkartın.\n"
+"4. Bataryayı takarken [AMS] tuşuna ve güç tuşuna basılı tutun (\"ADMS\" "
+"ekranda görünecektir).\n"
+"5. <b>Tamam'a tıkladıktan sonra</b>, [BAND] tuşuna basın.\n"
 
 #: ../drivers/ft70.py:560
 msgid ""
@@ -568,6 +875,13 @@ msgid ""
 "5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD). OK</b>\n"
 " click <b>Then"
 msgstr ""
+"1. Radyoyu açın.\n"
+"2. Kabloyu DATA terminaline bağlayın.\n"
+"3. Bataryayı çıkartın.\n"
+"4. Bataryayı takarken [AMS] tuşuna ve güç tuşuna basılı tutun (\"ADMS\" "
+"ekranda görünecektir).\n"
+"5. [MODE] tuşuna basın (LCD'de \"-WAIT-\" görünecektir). Sonra </b> TAMAM "
+"<b> tıklayın"
 
 #: ../wxui/main.py:1461
 msgid ""
@@ -611,7 +925,7 @@ msgstr "Ayarlar uygulanıyor"
 
 #: ../wxui/developer.py:471
 msgid "Available modules"
-msgstr ""
+msgstr "Mevcut modüller"
 
 #: ../wxui/main.py:1407
 msgid "Bandplan"
@@ -677,7 +991,7 @@ msgstr "Dubleks seç"
 #: ../wxui/developer.py:470
 #, python-format
 msgid "Choose the module to load from issue %i:"
-msgstr ""
+msgstr "Sorun %i'den yüklenecek modülü seçin:"
 
 #: ../wxui/query_sources.py:451
 msgid "City"
@@ -692,6 +1006,12 @@ msgid ""
 "are supported in this release.\n"
 "Ignore the beeps from the radio on upload and download.\n"
 msgstr ""
+"EXT kanallarını görmek/ayarlamak için kayıt düzenleyicisinin\n"
+"\"Özel Kanallar\" geçiş düğmesine tıklayın. P-VFO kanalları\n"
+"100-109 olarak ayarlanabilir. Bu sürümde 200'den fazla\n"
+"kullanılabilir telsiz ayarının yalnızca bir alt kümesi\n"
+"desteklenmektedir. Yükleme ve indirme sırasında\n"
+"telsizden gelen bip seslerini dikkate almayın.\n"
 
 #: ../drivers/ft817.py:360
 msgid "Clone completed, checking for spurious bytes"
@@ -723,7 +1043,7 @@ msgstr "Yorum"
 
 #: ../wxui/clone.py:206
 msgid "Communicate with radio"
-msgstr "Telszi ile iletişim kur"
+msgstr "Telsiz ile iletişim"
 
 #: ../wxui/clone.py:117
 msgid "Complete"
@@ -734,6 +1054,8 @@ msgid ""
 "Connect your interface cable to the PC Port on the\n"
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
 msgstr ""
+"Arayüz kablonuzu 'TX/RX' ünitesinin arkasındaki\n"
+"PC Bağlantı Noktasına bağlayın. Kafadaki Com Portu DEĞİL.\n"
 
 #: ../wxui/query_sources.py:279 ../wxui/query_sources.py:457
 msgid "Country"
@@ -761,11 +1083,11 @@ msgstr ""
 
 #: ../wxui/memedit.py:1625
 msgid "DV Memory"
-msgstr "DV Bellek"
+msgstr "DV Kaydı"
 
 #: ../wxui/main.py:1337
 msgid "Danger Ahead"
-msgstr ""
+msgstr "İleride Tehlike"
 
 #: ../wxui/developer.py:215
 msgid "Dec"
@@ -787,7 +1109,7 @@ msgstr ""
 
 #: ../wxui/memedit.py:1247
 msgid "Diff Raw Memories"
-msgstr "Farklı Ham Bellekler"
+msgstr "Farklı Ham Kayıtlar"
 
 #: ../wxui/memedit.py:1550
 msgid "Digital Code"
@@ -829,12 +1151,12 @@ msgstr "Duplex"
 #: ../wxui/memedit.py:1580
 #, python-format
 msgid "Edit details for %i memories"
-msgstr "%i bellekleri için ayrıntıları düzenle"
+msgstr "%i kayıtları için ayrıntıları düzenle"
 
 #: ../wxui/memedit.py:1578
 #, python-format
 msgid "Edit details for memory %i"
-msgstr "%i belleği için ayrıntıları düzenle"
+msgstr "%i kaydı için ayrıntıları düzenle"
 
 #: ../wxui/main.py:636
 msgid "Enable Automatic Edits"
@@ -864,7 +1186,7 @@ msgstr "Özel bağlantı noktasını girin:"
 #: ../wxui/common.py:227
 #, python-format
 msgid "Erased memory %s"
-msgstr "Bellek %s silindi"
+msgstr "%s kaydı silindi"
 
 #: ../wxui/settingsedit.py:114
 msgid "Error applying settings"
@@ -927,7 +1249,7 @@ msgstr "Sonraki Bul"
 #: ../wxui/common.py:229
 #, python-format
 msgid "Finished radio job %s"
-msgstr "Biten telsiz işleri %s"
+msgstr "%s telsiz işleri tamamlandı"
 
 #: ../drivers/ts590.py:681
 msgid ""
@@ -937,6 +1259,10 @@ msgid ""
 "during download!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
+"Telsiz hafızasını indirmek için şu talimatları izleyin:\n"
+"1 - Arayüz kablonuzu bağlayın\n"
+"2 - Telsiz > Telsizden İndir: İndirme sırasında telsiz ile uğraşmayın!\n"
+"3 - Arayüz kablonuzu çıkarın\n"
 
 #: ../drivers/ts480.py:520
 msgid ""
@@ -946,6 +1272,10 @@ msgid ""
 "on the radio head!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
+"Telsiz hafızasını indirmek için şu talimatları izleyin:\n"
+"1 - Arayüz kablonuzu bağlayın\n"
+"2 - Telsiz > Telsizden İndir: Telsiz kafasında herhangi bir ayar yapmayın!\n"
+"3 - Arayüz kablonuzu çıkarın\n"
 
 #: ../drivers/th_uv8000.py:535
 msgid ""
@@ -955,6 +1285,11 @@ msgid ""
 "3 - Turn on your radio, volume @ 50%\n"
 "4 - Radio > Download from radio\n"
 msgstr ""
+"Telsiz hafızasını indirmek için şu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu bağlayın\n"
+"3 - Telsizinizi açın, ses seviyesi @ %50\n"
+"4 - Telsiz > Telsizden İndir\n"
 
 #: ../drivers/ic2730.py:314
 msgid ""
@@ -966,6 +1301,12 @@ msgid ""
 "5 - Disconnect the interface cable! Otherwise there will be\n"
 "    no right-side audio!\n"
 msgstr ""
+"Yapılandırmanızı indirmek için şu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu Speaker-2 jakına bağlayın\n"
+"3 - Telsizinizi açın\n"
+"4 - Telsiz > Telsizden İndir\n"
+"5 - Arayüz kablosunu çıkarın! Aksi takdirde, sağ taraf sesi olmayacaktır!\n"
 
 #: ../drivers/mursv1.py:346 ../drivers/baofeng_wp970i.py:329
 #: ../drivers/btech.py:684 ../drivers/gmrsuv1.py:395
@@ -978,6 +1319,11 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the download of your radio data\n"
 msgstr ""
+"Bilgilerinizi indirmek için şu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu bağlayın\n"
+"3 - Telsizinizi açın\n"
+"4 - Telsiz verilerinizin indirilmesini gerçekleştirin\n"
 
 #: ../drivers/tk760g.py:685
 msgid ""
@@ -987,6 +1333,11 @@ msgid ""
 "3 - Turn on your radio (unlock it if password protected)\n"
 "4 - Click OK to start\n"
 msgstr ""
+"Bilgilerinizi indirmek için bu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu bağlayın\n"
+"3 - Telsizinizi açın (şifre korumalıysa engelini kaldırın)\n"
+"4 - Başlatmak için TAMAM'a tıklayın.\n"
 
 #: ../drivers/tk760.py:344
 msgid ""
@@ -996,6 +1347,11 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Click OK to start\n"
 msgstr ""
+"Bilgilerinizi indirmek için bu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu bağlayın\n"
+"3 - Telsizinizi açın\n"
+"4 - Başlatmak için TAMAM'a tıklayın.\n"
 
 #: ../drivers/ts590.py:687
 msgid ""
@@ -1005,6 +1361,10 @@ msgid ""
 "during upload!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
+"Telsiz hafızasını yüklemek için şu talimatları izleyin:\n"
+"1 - Arayüz kablonuzu bağlayın\n"
+"2 - Telsiz > Telsize Yükle: Yükleme sırasında telsiz ile uğraşmayın!\n"
+"3 - Arayüz kablonuzu çıkarın\n"
 
 #: ../drivers/ts480.py:526
 msgid ""
@@ -1014,6 +1374,10 @@ msgid ""
 "on the radio head!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
+"Telsiz hafızasını yüklemek için şu talimatları izleyin:\n"
+"1 - Arayüz kablonuzu bağlayın\n"
+"2 - Telsiz > Telsize yükle: Telsiz kafasında herhangi bir ayar yapmayın!\n"
+"3 - Arayüz kablonuzu çıkarın\n"
 
 #: ../drivers/th_uv8000.py:541
 msgid ""
@@ -1023,6 +1387,11 @@ msgid ""
 "3 - Turn on your radio, volume @ 50%\n"
 "4 - Radio > Upload to radio\n"
 msgstr ""
+"Telsiz hafızasını yüklemek için şu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu bağlayın\n"
+"3 - Telsizinizi açın, ses seviyesi @ %50\n"
+"4 - Telsiz > Telsize yükle\n"
 
 #: ../drivers/ic2730.py:322
 msgid ""
@@ -1035,6 +1404,13 @@ msgid ""
 "    no right-side audio!\n"
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
+"Yapılandırmanızı yüklemek için şu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu Speaker-2 jakına bağlayın\n"
+"3 - Telsizinizi açın\n"
+"4 - Telsiz > Telsize yükle\n"
+"5 - Arayüz kablosunu çıkarın, aksi takdirde sağ tarafta ses olmayacaktır!\n"
+"6 - Klon modundan çıkmak için telsizi kapatıp açın\n"
 
 #: ../drivers/btech.py:690 ../drivers/bf_t1.py:489
 msgid ""
@@ -1044,6 +1420,11 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the upload of your radio data\n"
 msgstr ""
+"Bilgilerinizi yüklemek için şu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu bağlayın\n"
+"3 - Telsizinizi açın\n"
+"4 - Telsiz verilerinizin yüklemesini gerçekleştirin\n"
 
 #: ../drivers/tk760g.py:691
 msgid ""
@@ -1053,6 +1434,11 @@ msgid ""
 "3 - Turn on your radio (unlock it if password protected)\n"
 "4 - Click OK to start\n"
 msgstr ""
+"Bilgilerinizi yüklemek için bu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu bağlayın\n"
+"3 - Telsizinizi açın (şifre korumalıysa engelini kaldırın)\n"
+"4 - Başlatmak için TAMAM'a tıklayın.\n"
 
 #: ../drivers/tk760.py:350
 msgid ""
@@ -1062,6 +1448,11 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Click OK to start\n"
 msgstr ""
+"Bilgilerinizi yazmak için bu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu bağlayın\n"
+"3 - Telsizinizi açın (şifre korumalıysa engelini kaldırın)\n"
+"4 - Başlatmak için TAMAM'a tıklayın.\n"
 
 #: ../drivers/vgc.py:585 ../drivers/lt725uv.py:524
 msgid ""
@@ -1071,6 +1462,11 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the download of your radio data\n"
 msgstr ""
+"Bilgilerinizi indirmek için şu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu bağlayın\n"
+"3 - Telsizinizi açın\n"
+"4 - Telsiz verilerinizin indirilmesini gerçekleştirin\n"
 
 #: ../drivers/tk270.py:340
 msgid ""
@@ -1080,6 +1476,11 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the download of your radio data\n"
 msgstr ""
+"Telsizinizi okumak için bu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu bağlayın\n"
+"3 - Telsizinizi açın\n"
+"4 - Telsiz verilerinizin indirmesini gerçekleştirin\n"
 
 #: ../drivers/vgc.py:591 ../drivers/mursv1.py:352
 #: ../drivers/baofeng_wp970i.py:335 ../drivers/gmrsuv1.py:401
@@ -1092,6 +1493,11 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the upload of your radio data\n"
 msgstr ""
+"Bilgilerinizi yüklemek için şu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu bağlayın\n"
+"3 - Telsizinizi açın\n"
+"4 - Telsiz verilerinizin yüklemesini gerçekleştirin\n"
 
 #: ../drivers/tk270.py:346
 msgid ""
@@ -1101,6 +1507,11 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the upload of your radio data\n"
 msgstr ""
+"Telsizinizi yazmak için bu talimatları izleyin:\n"
+"1 - Telsizinizi kapatın\n"
+"2 - Arayüz kablonuzu bağlayın\n"
+"3 - Telsizinizi açın\n"
+"4 - Telsiz verilerinizin yüklemesini gerçekleştirin\n"
 
 #: ../wxui/memedit.py:113
 #, python-format
@@ -1126,11 +1537,11 @@ msgstr "Git"
 
 #: ../wxui/main.py:1160
 msgid "Goto Memory"
-msgstr "Belleğe Git"
+msgstr "Kayda Git"
 
 #: ../wxui/main.py:1159
 msgid "Goto Memory:"
-msgstr "Belleğe Git:"
+msgstr "Kayda Git:"
 
 #: ../wxui/clone.py:310 ../wxui/clone.py:392
 msgid "Help Me..."
@@ -1171,7 +1582,7 @@ msgstr "Geçersiz %(value)s (ondalık basamak kullanın)"
 
 #: ../wxui/query_sources.py:109
 msgid "Invalid ZIP code"
-msgstr "Geçersiz ZIP kodu"
+msgstr "Geçersiz Posta kodu"
 
 #: ../wxui/memedit.py:1018 ../wxui/memedit.py:1703
 #, python-format
@@ -1180,7 +1591,7 @@ msgstr "Geçersiz düzenleme: %s"
 
 #: ../wxui/main.py:1286
 msgid "Invalid or unsupported module file"
-msgstr ""
+msgstr "Geçersiz veya desteklenmeyen modül dosyası"
 
 #: ../wxui/memedit.py:148 ../wxui/memedit.py:154
 #, python-format
@@ -1189,7 +1600,7 @@ msgstr "Geçersiz değer: %r"
 
 #: ../wxui/developer.py:481
 msgid "Issue number:"
-msgstr ""
+msgstr "Kayıt numarası:"
 
 #: ../wxui/main.py:272
 msgid "LIVE"
@@ -1206,11 +1617,11 @@ msgstr "Uzunluk %i olmalıdır"
 
 #: ../wxui/query_sources.py:322
 msgid "Limit Bands"
-msgstr "Limit Bantları"
+msgstr "Bantları Sınırla"
 
 #: ../wxui/query_sources.py:327
 msgid "Limit Modes"
-msgstr "Limit Modları"
+msgstr "Modları Sınırla"
 
 #: ../wxui/query_sources.py:308
 msgid "Limit results to this distance (km) from coordinates"
@@ -1218,12 +1629,11 @@ msgstr "Sonuçları koordinatlardan bu mesafeye (km) sınırla"
 
 #: ../wxui/main.py:512
 msgid "Load Module"
-msgstr "Modülü Yükle"
+msgstr "Modül Yükle"
 
 #: ../wxui/main.py:724 ../wxui/developer.py:482
-#, fuzzy
 msgid "Load module from issue"
-msgstr "Modülü Yükle"
+msgstr "Kayıttan modül yükle"
 
 #: ../wxui/main.py:1293
 msgid ""
@@ -1234,6 +1644,13 @@ msgid ""
 "giving them direct access to your computer and everything on it! Proceed "
 "despite this risk?"
 msgstr ""
+"Modülleri yüklemek son derece tehlikeli olabilir ve bilgisayarınıza, "
+"telsizinize veya her ikisine birden zarar verebilir. ASLA güvenmediğiniz bir "
+"kaynaktan ve özellikle ana CHIRP web sitesi (chirp.danplanet.com) dışında "
+"herhangi bir yerden modül yüklemeyin. Başka bir kaynaktan bir modül "
+"yüklemek, kaynak sahiplerinin bilgisayarınıza ve üzerindeki her şeye "
+"doğrudan erişim sağlamasına olanak sağlayabilir! Bu riske rağmen devam "
+"edilsin mi?"
 
 #: ../wxui/clone.py:111
 msgid "Loading settings"
@@ -1245,12 +1662,12 @@ msgstr "Boylam"
 
 #: ../wxui/main.py:130
 msgid "Memories"
-msgstr "Bellekler"
+msgstr "Kayıtlar"
 
 #: ../wxui/memedit.py:1057
 #, python-format
 msgid "Memory %i is not deletable"
-msgstr "Bellek %i silinemez"
+msgstr "Kayıt %i silinemez"
 
 #: ../wxui/bankedit.py:231
 msgid "Memory must be in a bank to be edited"
@@ -1278,13 +1695,12 @@ msgid "Module"
 msgstr "Modül"
 
 #: ../wxui/main.py:1262
-#, fuzzy
 msgid "Module Loaded"
-msgstr "Modül"
+msgstr "Modül Yüklendi"
 
 #: ../wxui/main.py:1393
 msgid "Module loaded successfully"
-msgstr ""
+msgstr "Modül başarıyla yüklendi"
 
 #: ../wxui/clone.py:357
 #, python-format
@@ -1301,12 +1717,12 @@ msgstr "Aşağıda boş satır yok!"
 
 #: ../wxui/developer.py:497
 msgid "No modules found"
-msgstr ""
+msgstr "Modül bulunamadı"
 
 #: ../wxui/developer.py:496
 #, python-format
 msgid "No modules found in issue %i"
-msgstr ""
+msgstr "%i kadında modül bulunamadı"
 
 #: ../sources/repeaterbook.py:270
 msgid "No results!"
@@ -1330,7 +1746,7 @@ msgstr "Yalnızca belirli modlar"
 
 #: ../wxui/main.py:254
 msgid "Only memory tabs may be exported"
-msgstr "Yalnızca bellek sekmeleri dışa aktarılabilir"
+msgstr "Yalnızca kayıt sekmeleri dışa aktarılabilir"
 
 #: ../wxui/main.py:756
 msgid "Open"
@@ -1342,7 +1758,7 @@ msgstr "Son Kullanılanları Aç"
 
 #: ../wxui/main.py:464
 msgid "Open Stock Config"
-msgstr "Stok Yapılandırmasını Aç"
+msgstr "Hazır Yapılandırma Aç"
 
 #: ../wxui/main.py:757 ../wxui/main.py:956
 msgid "Open a file"
@@ -1374,7 +1790,7 @@ msgstr "İsteğe bağlı: İlçe, Hastane vb."
 
 #: ../wxui/memedit.py:1393
 msgid "Overwrite memories?"
-msgstr "Belleklerin üzerine yazılsın mı?"
+msgstr "Kayıtların üzerine yazılsın mı?"
 
 #: ../drivers/ts480.py:516
 msgid ""
@@ -1382,26 +1798,29 @@ msgid ""
 "Only a subset of the over 130 available radio settings\n"
 "are supported in this release.\n"
 msgstr ""
+"P-VFO kanalları 100-109  olarak ayarlanabilir.\n"
+"Bu sürümde 130'dan fazla kullanılabilir telsiz ayarının yalnızca bir alt "
+"kümesi desteklenmektedir.\n"
 
 #: ../wxui/memedit.py:1387
 #, python-format
 msgid "Pasted memories will overwrite %i existing memories"
-msgstr "Yapıştırılan bellekler, mevcut %i belleğinin üzerine yazılacak"
+msgstr "Yapıştırılan kayıtlar, mevcut %i kaydının üzerine yazılacak"
 
 #: ../wxui/memedit.py:1390
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
-msgstr "Yapıştırılan bellekler %s belleklerinin üzerine yazılacak"
+msgstr "Yapıştırılan kayıtlar %s kayıtlarının üzerine yazılacak"
 
 #: ../wxui/memedit.py:1384
 #, python-format
 msgid "Pasted memories will overwrite memory %i"
-msgstr "Yapıştırılan bellekler, %i belleğin üzerine yazılacak"
+msgstr "Yapıştırılan kayıtlar, %i kaydının üzerine yazılacak"
 
 #: ../wxui/memedit.py:1381
 #, python-format
 msgid "Pasted memory will overwrite memory %i"
-msgstr "Yapıştırılan bellek, %i belleğinin üzerine yazacak"
+msgstr "Yapıştırılan kayıt, %i kaydının üzerine yazacak"
 
 #: ../wxui/main.py:1467
 msgid "Please be sure to quit CHIRP before installing the new version!"
@@ -1421,6 +1840,17 @@ msgid ""
 "After cloning remove the cable and power cycle your radio to\n"
 "get into normal mode.\n"
 msgstr ""
+"Lütfen bu adımları dikkatlice izleyin:\n"
+"1 - Telsizinizi açın\n"
+"2 - Arayüz kablosunu telsizinize bağlayın\n"
+"3 - İndirmeyi başlatmak için bu penceredeki tuşa tıklayın (başka bir "
+"iletişim kutusu görebilirsiniz, tamam'a tıklayın)\n"
+"4 - Telsiz bip sesi çıkaracak ve led yanıp sönecektir\n"
+"5 - Veri yükleme başlamadan önce \"MON\" tuşuna basmanız için 10 saniyelik "
+"bir zaman aşımı süresi alacaksınız.\n"
+"6 - Her şey yolunda giderse sonunda telsiz bip sesi çıkaracaktır.\n"
+"Klonladıktan sonra kabloyu çıkarın ve normal moda geçmek için telsizinizi "
+"kapatıp açın.\n"
 
 #: ../drivers/ftlx011.py:298
 msgid ""
@@ -1432,6 +1862,13 @@ msgid ""
 "4 - Then press the \"A\" button in your radio to start cloning.\n"
 "    (At the end radio will beep)\n"
 msgstr ""
+"Lütfen bu adımları dikkatlice izleyin:\n"
+"1 - Telsizinizi açın\n"
+"2 - Arayüz kablosunu telsizinize bağlayın.\n"
+"3 - İndirmeyi başlatmak için bu penceredeki tuşa tıklayın\n"
+"     (Telsiz bip sesi çıkaracak ve led yanıp sönecektir)\n"
+"4 - Ardından klonlamaya başlamak için telsizinizdeki \"A\" tuşuna basın.\n"
+"     (Sonunda telsiz bip sesi çıkaracaktır)\n"
 
 #: ../wxui/main.py:1331
 msgid ""
@@ -1440,6 +1877,11 @@ msgid ""
 "and functions that can damage your computer and your radio if not used with "
 "EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
+"Lütfen geliştirici modunun CHIRP projesinin geliştiricileri tarafından veya "
+"bir geliştiricinin yönetimi altında kullanılması için tasarlandığını "
+"unutmayın. ÇOK DİKKATLİ kullanılmadığı takdirde bilgisayarınıza ve "
+"telsizinize zarar verebilecek davranış ve işlevleri mümkün kılar. Uyarıldın! "
+"Yine de devam edilsin mi?"
 
 #: ../wxui/common.py:115
 msgid "Please wait"
@@ -1459,7 +1901,7 @@ msgstr "Güç"
 
 #: ../wxui/developer.py:133
 msgid "Press enter to set this in memory"
-msgstr "Bunu belleğe ayarlamak için enter tuşuna basın"
+msgstr "Bu kayda almak için enter tuşuna basın"
 
 #: ../wxui/main.py:523
 msgid "Print Preview"
@@ -1467,7 +1909,7 @@ msgstr "Baskı Önizleme"
 
 #: ../wxui/printing.py:29
 msgid "Printing"
-msgstr "Yazdırılıyor"
+msgstr "Baskı"
 
 #: ../wxui/memedit.py:1148
 msgid "Properties"
@@ -1480,7 +1922,7 @@ msgstr "%s sorgusu"
 
 #: ../wxui/main.py:618
 msgid "Query Source"
-msgstr "Sorgu Kaynağı"
+msgstr "Kaynaktan Sorgula"
 
 #: ../wxui/memedit.py:398
 msgid "RX DTCS"
@@ -1512,12 +1954,12 @@ msgstr ""
 #: ../wxui/query_sources.py:665
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
-"RadioReference Kanada, sorgulayabilmeniz için önce oturum açmayı gerektirir"
+"RadioReference Kanada, sorgulayabilmeniz için önce oturum açmanız gerekir"
 
 #: ../wxui/common.py:219
 #, python-format
 msgid "Refreshed memory %s"
-msgstr "Yenilenmiş %s belleği"
+msgstr "Yenilenmiş %s kaydı"
 
 #: ../wxui/main.py:653
 msgid "Reload Driver"
@@ -1577,7 +2019,7 @@ msgstr "Kaydedilmiş ayarlar"
 
 #: ../wxui/main.py:643
 msgid "Select Bandplan"
-msgstr "Bant Planını Seç"
+msgstr "Bant Planı Seç"
 
 #: ../wxui/query_sources.py:375
 msgid "Select Bands"
@@ -1601,7 +2043,7 @@ msgstr "Ayarlar"
 
 #: ../wxui/memedit.py:1239
 msgid "Show Raw Memory"
-msgstr "Ham Belleği Göster"
+msgstr "Ham Kaydı Göster"
 
 #: ../wxui/main.py:719
 msgid "Show debug log location"
@@ -1609,35 +2051,34 @@ msgstr "Hata ayıklama günlüğü konumunu göster"
 
 #: ../wxui/memedit.py:1438
 msgid "Some memories are incompatible with this radio"
-msgstr "Bazı bellekler bu telsizle uyumlu değil"
+msgstr "Bazı kayıtlar bu telsizle uyumlu değil"
 
 #: ../wxui/memedit.py:1355
 msgid "Some memories are not deletable"
 msgstr "Bazı anılar silinemez"
 
 #: ../wxui/memedit.py:1211
-#, fuzzy, python-format
+#, python-format
 msgid "Sort %i memories"
-msgstr "%i Belleği Sil"
+msgstr "%i kayıtlarını sırala"
 
 #: ../wxui/memedit.py:1214
 #, python-format
 msgid "Sort %i memories ascending"
-msgstr ""
+msgstr "%i kayıtlarını artan şekilde sırala"
 
 #: ../wxui/memedit.py:1223
 #, python-format
 msgid "Sort %i memories descending"
-msgstr ""
+msgstr "%i kayıtlarını azalan şekilde sırala"
 
 #: ../wxui/memedit.py:1119
 msgid "Sort by column:"
-msgstr ""
+msgstr "Sütuna göre sırala:"
 
 #: ../wxui/memedit.py:1118
-#, fuzzy
 msgid "Sort memories"
-msgstr "Belleklerin üzerine yazılsın mı?"
+msgstr "Kayıtları sırala"
 
 #: ../wxui/query_sources.py:454
 msgid "State"
@@ -1649,7 +2090,7 @@ msgstr "Eyalet/İl"
 
 #: ../wxui/main.py:1394
 msgid "Success"
-msgstr ""
+msgstr "Başarılı"
 
 #: ../drivers/ft450d.py:369
 msgid ""
@@ -1665,6 +2106,16 @@ msgid ""
 "those channel memory settings that don't fall under the\n"
 "standard Chirp display columns.\n"
 msgstr ""
+"The FT-450 radio driver loads the 'Special Channels' tab\n"
+"with the PMS scanning range memories (group 11), 60meter\n"
+"channels (group 12), the QMB (STO/RCL) memory, the HF and\n"
+"50m HOME memories and all the A and B VFO memories.\n"
+"There are VFO memories for the last frequency dialed in\n"
+"each band. The last mem-tune config is also stored.\n"
+"These Special Channels allow limited field editing. This driver also "
+"populates the 'Other' tab in the channel memory Properties window. This tab "
+"contains values for those channel memory settings that don't fall under the "
+"standard Chirp display columns.\n"
 
 #: ../drivers/boblov_x3plus.py:118
 msgid ""
@@ -1673,11 +2124,14 @@ msgid ""
 "Please save an unedited copy of your first successful\n"
 "download to a CHIRP Radio Images (*.img) file.\n"
 msgstr ""
+"X3Plus sürücüsü şu anda deneyseldir.\n"
+"Bilinen bir sorun yok, ancak dikkatli bir şekilde ilerlemelisiniz.\n"
+"Lütfen ilk başarılı indirmenizin düzenlenmemiş bir kopyasını\n"
+"bir CHIRP Radio Images (*.img) dosyasına kaydedin.\n"
 
 #: ../wxui/memedit.py:1176
-#, fuzzy
 msgid "This Memory"
-msgstr "DV Bellek"
+msgstr "Bu Kayıt"
 
 #: ../drivers/id5100.py:333
 msgid ""
@@ -1685,14 +2139,17 @@ msgid ""
 "fully updated please help by opening a bug report with a debug log so we can "
 "add support for the other revisions."
 msgstr ""
+"Bu sürücü, ID-5100'ün v3'ü ile test edilmiştir. Telsiziniz tam olarak "
+"güncellenmemişse, lütfen hata ayıklama günlüğü içeren bir hata raporu açarak "
+"bize yardım edin, böylece diğer revizyonlar için destek verebilelim."
 
 #: ../drivers/th_uv88.py:497
 msgid "This is an early stage beta driver\n"
-msgstr ""
+msgstr "Bu erken aşama beta sürücüsüdür\n"
 
 #: ../drivers/th_uv88.py:499
 msgid "This is an early stage beta driver - upload at your own risk\n"
-msgstr ""
+msgstr "Bu, erken aşamadaki bir beta sürücüsüdür - yükleme riski size aittir\n"
 
 #: ../drivers/bj9900.py:111
 msgid ""
@@ -1707,14 +2164,12 @@ msgstr ""
 "Uyarıldınız. Kendi sorumluluğunuzda ilerleyin!"
 
 #: ../wxui/memedit.py:1180
-#, fuzzy
 msgid "This memory and shift all up"
-msgstr "%i Belleği sil ve hepsini yukarı kaydır"
+msgstr "Bu kaydı ve hepsini yukarı kaydır"
 
 #: ../wxui/memedit.py:1178
-#, fuzzy
 msgid "This memory and shift block up"
-msgstr "%i Belleği sil ve bloğu yukarı kaydır"
+msgstr "Bu kaydı ve bloğu yukarı kaydır"
 
 #: ../drivers/fd268.py:303 ../drivers/fd268.py:309
 msgid ""
@@ -1724,10 +2179,15 @@ msgid ""
 "can take a few seconds, if don't work, try again a few times.\n"
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
+"Bu telsizde program moduna girmenin zor bir yolu var,\n"
+"orijinal yazılım ile bile girmek için birkaç deneme yapmak gerekir.\n"
+"8 kez deneyeceğim (çoğu zaman ~3 de işe yarar) ve bu\n"
+"birkaç saniye sürebilir, işe yaramazsa birkaç kez tekrar deneyin.\n"
+"İşe yaramazsa, lütfen telsizi ve kabloyu kontrol edin.\n"
 
 #: ../wxui/developer.py:479
 msgid "This will load a module from a website issue"
-msgstr ""
+msgstr "Bu, bir web sitesi kaydından bir modül yükleyecektir"
 
 #: ../wxui/memedit.py:322
 msgid "Tone"
@@ -1759,7 +2219,7 @@ msgstr ""
 
 #: ../wxui/memedit.py:941
 msgid "Unable to edit memory before radio is loaded"
-msgstr "Radyo yüklenmeden önce bellek düzenlenemiyor"
+msgstr "Radyo yüklenmeden önce kayıt düzenlenemiyor"
 
 #: ../wxui/main.py:989
 #, python-format
@@ -1804,7 +2264,7 @@ msgstr "Telsize yükle"
 #: ../wxui/common.py:221
 #, python-format
 msgid "Uploaded memory %s"
-msgstr "Yüklenen bellek %s"
+msgstr "Yüklenen kayıt %s"
 
 #: ../wxui/main.py:580
 msgid "Use fixed-width font"
@@ -1877,11 +2337,11 @@ msgstr "her biri bayt"
 
 #: ../wxui/main.py:1328
 msgid "disabled"
-msgstr ""
+msgstr "devre dışı bırakıldı"
 
 #: ../wxui/main.py:1328
 msgid "enabled"
-msgstr ""
+msgstr "etkinleştirildi"
 
 #: ../drivers/vx5.py:116
 #, python-brace-format
@@ -1939,7 +2399,7 @@ msgstr "{bank} dolu"
 
 #, fuzzy
 #~ msgid "Error importing memories:"
-#~ msgstr "Bellekler içe aktarırken hata oluştu:"
+#~ msgstr "Kayıtlar içe aktarırken hata oluştu:"
 
 #~ msgid "Error reporting is enabled"
 #~ msgstr "Hata raporlama etkinleştirildi"
