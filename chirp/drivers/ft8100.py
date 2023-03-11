@@ -126,10 +126,10 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.can_odd_split = True
 
         # TODO
-        #rf.valid_special_chans = SPECIALS.keys()
+        # rf.valid_special_chans = SPECIALS.keys()
 
         # TODO
-        #rf.has_tuning_step = False
+        # rf.has_tuning_step = False
         return rf
 
     def sync_in(self):

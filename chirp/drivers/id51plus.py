@@ -69,7 +69,7 @@ struct {
 #seekto 0xA8C0;
 struct {
   u24 freq;
-  u16 offset; 
+  u16 offset;
   u8 unknown1[4];
   u8 call[7];
   char name[16];
@@ -103,6 +103,7 @@ struct {
   char name[16];
 } urcallname[200];
 """
+
 
 @directory.register
 class ID51PLUSRadio(id31.ID31Radio):
@@ -138,7 +139,7 @@ class ID51PLUSRadio(id31.ID31Radio):
         _bank = self._memobj.banks[loc]
         LOG.debug("Bank Value for location %s is %s" % (loc, _bank.bank))
         if _bank.bank == 0x1F:
-            return None         
+            return None
         else:
             return _bank.bank
 

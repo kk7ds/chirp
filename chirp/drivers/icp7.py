@@ -17,11 +17,11 @@ from chirp.drivers import icf
 from chirp import chirp_common, directory, bitwise
 
 # memory number:
-#	 000 -  999	regular memory channels (supported, others not)
-#	1000 - 1049	scan edges
-#	1050 - 1249	auto write channels
-#	1250		call channel (C0)
-#	1251		call channel (C1)
+# 000 -  999	regular memory channels (supported, others not)
+# 1000 - 1049	scan edges
+# 1050 - 1249	auto write channels
+# 1250		call channel (C0)
+# 1251		call channel (C1)
 
 
 MEM_FORMAT = """
@@ -70,7 +70,7 @@ TMODES = ["", "Tone", "TSQL", "", "DTCS"]
 DUPLEX = ["", "-", "+"]
 DTCS_POLARITY = ["NN", "NR", "RN", "RR"]
 TUNING_STEPS = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0,
-                25.0, 30.0, 50.0, 100.0, 200.0, 0.0]	# 0.0 as "Auto"
+                25.0, 30.0, 50.0, 100.0, 200.0, 0.0]  # 0.0 as "Auto"
 
 
 class ICP7Bank(icf.IcomBank):
@@ -218,17 +218,17 @@ class ICP7Radio(icf.IcomCloneModeRadio):
 
             _mem.freq = mem.freq * 3
             _mem.offset = mem.offset * 3
-            _mem.train_sql = 0		# Train SQL mode (0:off 1:Tone 2:MSK)
+            _mem.train_sql = 0  # Train SQL mode (0:off 1:Tone 2:MSK)
             _mem.tmode = TMODES.index(mem.tmode)
             _mem.duplex = DUPLEX.index(mem.duplex)
-            _mem.train_tone = 228	# Train SQL Tone (x10Hz)
+            _mem.train_tone = 228  # Train SQL Tone (x10Hz)
             _mem.tuning_step = TUNING_STEPS.index(mem.tuning_step)
             _mem.rtone = chirp_common.TONES.index(mem.rtone)
             _mem.ctone = chirp_common.TONES.index(mem.ctone)
-            _mem.unknown0 = 0		# unknown (always zero)
+            _mem.unknown0 = 0  # unknown (always zero)
             _mem.mode = MODES.index(mem.mode)
             _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
-            _mem.unknown1 = ~0		# unknown (always one)
+            _mem.unknown1 = ~0  # unknown (always one)
             _mem.dtcs_polarity = DTCS_POLARITY.index(mem.dtcs_polarity)
             _mem.name = mem.name.ljust(6)[:6]
 
