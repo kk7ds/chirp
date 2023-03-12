@@ -818,18 +818,28 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             if 'offset' in only:
                 mem.offset = want_offset
 
-        if defaults.step_khz:
+        if defaults.step_khz in features.valid_tuning_steps:
+            LOG.debug(
+                'Chose default step %s from bandplan' % defaults.step_khz)
             want_tuning_step = defaults.step_khz
         else:
+            want_tuning_step = 5.0
             try:
+                # First calculate the needed step in case it is not supported
+                # by the radio. If we fail to find one the radio supports,
+                # we will use this one and then the error message about it
+                # being unsupported will be accurate.
                 want_tuning_step = chirp_common.required_step(mem.freq)
+
+                # Now try to find a suitable one that the radio supports.
+                want_tuning_step = chirp_common.required_step(
+                    mem.freq, features.valid_tuning_steps)
+                LOG.debug('Chose radio-supported step %s' % want_tuning_step)
             except errors.InvalidDataError as e:
                 LOG.warning(e)
-                want_tuning_step = None
 
-        if want_tuning_step in features.valid_tuning_steps:
-            if 'tuning_step' in only:
-                mem.tuning_step = want_tuning_step
+        if 'tuning_step' in only and want_tuning_step:
+            mem.tuning_step = want_tuning_step
 
         if defaults.mode and defaults.mode in features.valid_modes:
             if 'mode' in only:
