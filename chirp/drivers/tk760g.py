@@ -727,7 +727,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
         rf.valid_bands = [self._range]
         rf.valid_name_length = 8
         rf.memory_bounds = (1, self._upper)
-        rf.valid_tuning_steps = [1., 2.5, 5., 6.25, 12.5]
+        rf.valid_tuning_steps = [1.0, 2.5, 5.0, 6.25, 12.5]
         return rf
 
     def _fill(self, offset, data):
@@ -823,7 +823,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
             # ham bands, even if they are outside the OEM ranges.
             # By experimentation we found that 4% at the edges is in most
             # cases safe and will cover the near ham bands in full
-            self._range = [low * 1000000 * 0.96, high * 1000000 * 1.04]
+            self._range = [int(low * 1000000 * 0.96),
+                           int(high * 1000000 * 1.04)]
 
             # setting the bank data in the features, 8 & 16 CH dont have banks
             if self._upper < 32:
@@ -942,13 +943,9 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
         # Memory number
         mem.number = number
 
-        # this radio has a setting about the amount of real chans of the 128
-        # olso in the channel has xff on the Rx freq it's empty
-        if (number > (self._chs_progs + 1)) or (_mem.get_raw()[0] == "\xFF"):
+        # A "blank" rxfreq is the indication of an empty memory
+        if _mem.rxfreq[0].get_raw() == '\xFF':
             mem.empty = True
-            # but is not enough, you have to crear the memory in the mmap
-            # to get it ready for the sync_out process
-            _mem.set_raw("\xFF" * 48)
             return mem
 
         # Freq and offset
