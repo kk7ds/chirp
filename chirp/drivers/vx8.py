@@ -339,10 +339,8 @@ u8 checksum;
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "-", "+", "split"]
 MODES = ["FM", "AM", "WFM", "NFM"]
-STEPS = list(chirp_common.TUNING_STEPS)
-STEPS.remove(30.0)
-STEPS.append(100.0)
-STEPS.insert(2, 8.33)  # Index 2 is 8.33kHz airband step
+STEPS = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0,
+         100.0, 200.0]
 SKIPS = ["", "S", "P"]
 VX8_DTMF_CHARS = list("0123456789ABCD*#-")
 
