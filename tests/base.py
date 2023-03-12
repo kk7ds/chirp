@@ -72,8 +72,10 @@ class DriverTest(unittest.TestCase):
                 # bottom of the band. Select a different tuning_step each
                 # time, as some radios have various requirements for which
                 # steps work in each band, mode, etc.
-                step_index = attempt % len(self.rf.valid_tuning_steps)
-                m.tuning_step = self.rf.valid_tuning_steps[step_index]
+                steps = [x for x in self.rf.valid_tuning_steps
+                         if x > 1]
+                step_index = attempt % len(steps)
+                m.tuning_step = steps[step_index]
                 m.freq += int(m.tuning_step * 1000)
             elif m.freq + 1000000 < band_hi:
                 # Otherwise just pick 1MHz above the bottom, which has been

@@ -1048,13 +1048,9 @@ class RadioFeatures:
 
         if self.valid_tuning_steps and not self.has_nostep_tuning:
             try:
-                step = required_step(mem.freq)
-                if step not in self.valid_tuning_steps:
-                    msg = ValidationError("Frequency requires %.2fkHz step" %
-                                          required_step(mem.freq))
-                    msgs.append(msg)
+                required_step(mem.freq, self.valid_tuning_steps)
             except errors.InvalidDataError as e:
-                msgs.append(str(e))
+                msgs.append(ValidationError(e))
 
         if self.valid_characters:
             for char in mem.name:
@@ -1559,24 +1555,46 @@ def is_8_33(freq):
     return (freq % 25000) in [0, 8330, 16660]
 
 
-def required_step(freq):
+def is_1_0(freq):
+    """Returns True if @freq is reachable by a 1.0kHz step"""
+    return (freq % 1000) == 0
+
+
+def is_0_5(freq):
+    """Returns True if @freq is reachable by a 0.5kHz step"""
+    return (freq % 500) == 0
+
+
+def make_is(stephz):
+    def validator(freq):
+        return freq % stephz == 0
+    return validator
+
+
+def required_step(freq, allowed=None):
     """Returns the simplest tuning step that is required to reach @freq"""
-    if is_10_0(freq):
-        return 10.0
-    elif is_5_0(freq):
-        return 5.0
-    elif is_12_5(freq):
-        return 12.5
-    elif is_6_25(freq):
-        return 6.25
-    elif is_2_5(freq):
-        return 2.5
-    elif is_8_33(freq):
-        return 8.33
-    else:
-        raise errors.InvalidDataError("Unable to calculate the required " +
-                                      "tuning step for %i.%5i" %
-                                      (freq / 1000000, freq % 1000000))
+    if allowed is None:
+        allowed = [5.0, 10.0, 12.5, 6.25, 2.5, 8.33]
+
+    # These should be in order of most common to least common
+    steps = {
+        5.0: make_is(5000),
+        10.0: make_is(10000),
+        12.5: make_is(12500),
+        6.25: make_is(6250),
+        2.5: make_is(2500),
+        1.0: make_is(1000),
+        0.5: make_is(500),
+        0.25: make_is(250),
+        8.33: is_8_33,
+    }
+
+    for step, validate in steps.items():
+        if step in allowed and validate(freq):
+            return step
+
+    raise errors.InvalidDataError("Unable to find a supported " +
+                                  "tuning step for %s" % format_freq(freq))
 
 
 def fix_rounded_step(freq):

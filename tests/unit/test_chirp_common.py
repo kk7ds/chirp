@@ -474,6 +474,33 @@ class TestStepFunctions(base.BaseTest):
             for freq in freqs:
                 self.assertEqual(step, chirp_common.required_step(freq))
 
+    def test_required_step_with_list(self):
+        steps = {5.0: self._005,
+                 6.25: self._625,
+                 12.5: self._125,
+                 }
+        allowed = [6.25, 12.5]
+        for step, freqs in list(steps.items()):
+            for freq in freqs:
+                # We don't support 5.0, so any of the frequencies in that
+                # list should raise an error
+                if step == 5.0:
+                    self.assertRaises(errors.InvalidDataError,
+                                      chirp_common.required_step,
+                                      freq, allowed)
+                else:
+                    self.assertEqual(step, chirp_common.required_step(
+                        freq, allowed))
+
+    def test_required_step_finds_suitable(self):
+        # If we support 5.0, we should get it as the step for those
+        self.assertEqual(5.0, chirp_common.required_step(self._005[0],
+                                                         allowed=[2.5, 5.0]))
+        # If we support 2.5 and not 5.0, then we should find 2.5 as a suitable
+        # alternative
+        self.assertEqual(2.5, chirp_common.required_step(self._005[0],
+                                                         allowed=[2.5]))
+
     def test_required_step_fail(self):
         self.assertRaises(errors.InvalidDataError,
                           chirp_common.required_step,
