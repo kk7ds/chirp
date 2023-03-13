@@ -1,4 +1,4 @@
-# Copyright 2016-2022:
+# Copyright 2016-2023:
 # * Pavel Milanes CO7WT, <pavelmc@gmail.com>
 # * Jim Unroe KC9HI, <rock.unroe@gmail.com>
 #
@@ -1109,656 +1109,555 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
         # Basic
         if self.COLOR_LCD:
-            tmr = RadioSetting("settings.tmr", "Transceiver multi-receive",
-                               RadioSettingValueList(
-                                   self.LIST_TMR,
-                                   self.LIST_TMR[_mem.settings.tmr]))
+            val = min(_mem.settings.tmr, len(self.LIST_TMR) - 1)
+            rs = RadioSettingValueList(self.LIST_TMR, self.LIST_TMR[val])
+            tmr = RadioSetting("settings.tmr", "Transceiver multi-receive", rs)
             basic.append(tmr)
         else:
             tdr = RadioSetting("settings.tdr", "Transceiver dual receive",
                                RadioSettingValueBoolean(_mem.settings.tdr))
             basic.append(tdr)
 
-        sql = RadioSetting("settings.sql", "Squelch level",
-                           RadioSettingValueInteger(0, 9, _mem.settings.sql))
+        val = min(_mem.settings.sql, 9)
+        rs = RadioSettingValueInteger(0, 9, val)
+        sql = RadioSetting("settings.sql", "Squelch level", rs)
         basic.append(sql)
 
         if self.MODEL == "GMRS-50X1":
-            autolk = RadioSetting("settings.autolk", "Auto keylock",
-                                  RadioSettingValueBoolean(
-                                      _mem.settings.autolk))
+            rs = RadioSettingValueBoolean(_mem.settings.autolk)
+            autolk = RadioSetting("settings.autolk", "Auto keylock", rs)
             basic.append(autolk)
 
         if self.MODEL == "DB25-G":
-            rs = RadioSettingValueInteger(0, 127, _mem.settings.mgain2)
+            val = min(_mem.settings.mgain2, 127)
+            rs = RadioSettingValueInteger(0, 127, val)
             mgain2 = RadioSetting("settings.mgain2", "Mic gain", rs)
             basic.append(mgain2)
 
-        tot = RadioSetting("settings.tot", "Time out timer",
-                           RadioSettingValueList(
-                               LIST_TOT,
-                               LIST_TOT[_mem.settings.tot]))
+        val = min(_mem.settings.tot, len(LIST_TOT) - 1)
+        rs = RadioSettingValueList(LIST_TOT, LIST_TOT[val])
+        tot = RadioSetting("settings.tot", "Time out timer", rs)
         basic.append(tot)
 
         if self.MODEL == "KT-8R":
-                save = RadioSetting("settings.save", "Battery Save",
-                                    RadioSettingValueBoolean(
-                                        _mem.settings.save))
+                rs = RadioSettingValueBoolean(_mem.settings.save)
+                save = RadioSetting("settings.save", "Battery Save", rs)
                 basic.append(save)
 
         model_list = ["KT-8R", "KT-WP12", "WP-9900"]
         if self.MODEL not in model_list:
             if self.VENDOR == "BTECH" or self.COLOR_LCD:
-                apo = RadioSetting("settings.apo", "Auto power off timer",
-                                   RadioSettingValueList(
-                                       LIST_APO,
-                                       LIST_APO[_mem.settings.apo]))
+                val = min(_mem.settings.apo, len(LIST_APO) - 1)
+                rs = RadioSettingValueList(LIST_APO, LIST_APO[val])
+                apo = RadioSetting("settings.apo", "Auto power off timer", rs)
                 basic.append(apo)
             else:
-                toa = RadioSetting("settings.apo", "Time out alert timer",
-                                   RadioSettingValueList(
-                                       LIST_OFF1TO10,
-                                       LIST_OFF1TO10[_mem.settings.apo]))
+                val = min(_mem.settings.apo, len(LIST_OFF1TO10) - 1)
+                rs = RadioSettingValueList(LIST_OFF1TO10, LIST_OFF1TO10[val])
+                toa = RadioSetting("settings.apo", "Time out alert timer", rs)
                 basic.append(toa)
 
-        abr = RadioSetting("settings.abr", "Backlight timer",
-                           RadioSettingValueList(
-                               LIST_OFF1TO50,
-                               LIST_OFF1TO50[_mem.settings.abr]))
+        val = min(_mem.settings.abr, len(LIST_OFF1TO50) - 1)
+        rs = RadioSettingValueList(LIST_OFF1TO50, LIST_OFF1TO50[val])
+        abr = RadioSetting("settings.abr", "Backlight timer", rs)
         basic.append(abr)
 
-        beep = RadioSetting("settings.beep", "Key beep",
-                            RadioSettingValueBoolean(_mem.settings.beep))
+        rs = RadioSettingValueBoolean(_mem.settings.beep)
+        beep = RadioSetting("settings.beep", "Key beep", rs)
         basic.append(beep)
 
         if self.MODEL == "GMRS-20V2":
-            rs = RadioSettingValueInteger(0, 58, _mem.settings.volume)
+            val = min(_mem.settings.volume, 58)
+            rs = RadioSettingValueInteger(0, 58, val)
             volume = RadioSetting("settings.volume", "Volume", rs)
             basic.append(volume)
 
         if self.MODEL == "KT-WP12" or self.MODEL == "WP-9900":
-            rs = RadioSettingValueInteger(1, 51, _mem.settings.volume + 1)
+            val = min(_mem.settings.volume, 50)
+            rs = RadioSettingValueInteger(1, 51, val + 1)
             volume = RadioSetting("settings.volume", "Volume", rs)
             basic.append(volume)
 
         if self.MODEL == "KT-8R":
-            dsub = RadioSetting("settings.dsub", "CTCSS/DCS code display",
-                                RadioSettingValueBoolean(
-                                    _mem.settings.dsub))
+            rs = RadioSettingValueBoolean(_mem.settings.dsub)
+            dsub = RadioSetting("settings.dsub", "CTCSS/DCS code display", rs)
             basic.append(dsub)
 
         if self.MODEL == "KT-8R" or self.COLOR_LCD4:
-            dtmfst = RadioSetting("settings.dtmfst", "DTMF side tone",
-                                  RadioSettingValueBoolean(
-                                      _mem.settings.dtmfst))
+            rs = RadioSettingValueBoolean(_mem.settings.dtmfst)
+            dtmfst = RadioSetting("settings.dtmfst", "DTMF side tone", rs)
             basic.append(dtmfst)
         else:
-            dtmfst = RadioSetting("settings.dtmfst", "DTMF side tone",
-                                  RadioSettingValueList(
-                                      LIST_DTMFST,
-                                      LIST_DTMFST[_mem.settings.dtmfst]))
+            val = min(_mem.settings.dtmfst, len(LIST_DTMFST) - 1)
+            rs = RadioSettingValueList(LIST_DTMFST, LIST_DTMFST[val])
+            dtmfst = RadioSetting("settings.dtmfst", "DTMF side tone", rs)
             basic.append(dtmfst)
 
         if not self.COLOR_LCD:
-            prisc = RadioSetting("settings.prisc", "Priority scan",
-                                 RadioSettingValueBoolean(
-                                     _mem.settings.prisc))
+            rs = RadioSettingValueBoolean(_mem.settings.prisc)
+            prisc = RadioSetting("settings.prisc", "Priority scan", rs)
             basic.append(prisc)
 
-            prich = RadioSetting("settings.prich", "Priority channel",
-                                 RadioSettingValueInteger(0, self._upper,
-                                                          _mem.settings.prich))
+            val = min(_mem.settings.prich, self._upper)
+            rs = RadioSettingValueInteger(0, self._upper, val)
+            prich = RadioSetting("settings.prich", "Priority channel", rs)
             basic.append(prich)
 
-        screv = RadioSetting("settings.screv", "Scan resume method",
-                             RadioSettingValueList(
-                                 LIST_SCREV,
-                                 LIST_SCREV[_mem.settings.screv]))
+        val = min(_mem.settings.screv, len(LIST_SCREV) - 1)
+        rs = RadioSettingValueList(LIST_SCREV, LIST_SCREV[val])
+        screv = RadioSetting("settings.screv", "Scan resume method", rs)
         basic.append(screv)
 
-        pttlt = RadioSetting("settings.pttlt", "PTT transmit delay",
-                             RadioSettingValueInteger(0, 30,
-                                                      _mem.settings.pttlt))
+        val = min(_mem.settings.pttlt, 30)
+        rs = RadioSettingValueInteger(0, 30, val)
+        pttlt = RadioSetting("settings.pttlt", "PTT transmit delay", rs)
         basic.append(pttlt)
 
         if self.VENDOR == "BTECH" and self.COLOR_LCD and not \
                 self.MODEL == "GMRS-20V2":
-            emctp = RadioSetting("settings.emctp", "Alarm mode",
-                                 RadioSettingValueList(
-                                     LIST_EMCTPX,
-                                     LIST_EMCTPX[_mem.settings.emctp]))
+            val = min(_mem.settings.emctp, len(LIST_EMCTPX) - 1)
+            rs = RadioSettingValueList(LIST_EMCTPX, LIST_EMCTPX[val])
+            emctp = RadioSetting("settings.emctp", "Alarm mode", rs)
             basic.append(emctp)
         else:
-            emctp = RadioSetting("settings.emctp", "Alarm mode",
-                                 RadioSettingValueList(
-                                     LIST_EMCTP,
-                                     LIST_EMCTP[_mem.settings.emctp]))
+            val = min(_mem.settings.emctp, len(LIST_EMCTP) - 1)
+            rs = RadioSettingValueList(LIST_EMCTP, LIST_EMCTP[val])
+            emctp = RadioSetting("settings.emctp", "Alarm mode", rs)
             basic.append(emctp)
 
-        emcch = RadioSetting("settings.emcch", "Alarm channel",
-                             RadioSettingValueInteger(0, self._upper,
-                                                      _mem.settings.emcch))
+        val = min(_mem.settings.emcch, self._upper)
+        rs = RadioSettingValueInteger(0, self._upper, val)
+        emcch = RadioSetting("settings.emcch", "Alarm channel", rs)
         basic.append(emcch)
 
         if self.COLOR_LCD:
-            if _mem.settings.sigbp > 0x01:
-                val = 0x00
-            else:
-                val = _mem.settings.sigbp
-            sigbp = RadioSetting("settings.sigbp", "Signal beep",
-                                 RadioSettingValueBoolean(val))
+            rs = RadioSettingValueBoolean(_mem.settings.sigbp)
+            sigbp = RadioSetting("settings.sigbp", "Signal beep", rs)
             basic.append(sigbp)
         else:
-            ringt = RadioSetting("settings.ringt", "Ring time",
-                                 RadioSettingValueList(
-                                     LIST_OFF1TO9,
-                                     LIST_OFF1TO9[_mem.settings.ringt]))
+            val = min(_mem.settings.ringt, len(LIST_OFF1TO9) - 1)
+            rs = RadioSettingValueList(LIST_OFF1TO9, LIST_OFF1TO9[val])
+            ringt = RadioSetting("settings.ringt", "Ring time", rs)
             basic.append(ringt)
 
-        camdf = RadioSetting("settings.camdf", "Display mode A",
-                             RadioSettingValueList(
-                                 LIST_MDF,
-                                 LIST_MDF[_mem.settings.camdf]))
+        val = min(_mem.settings.camdf, len(LIST_MDF) - 1)
+        rs = RadioSettingValueList(LIST_MDF, LIST_MDF[val])
+        camdf = RadioSetting("settings.camdf", "Display mode A", rs)
         basic.append(camdf)
 
-        cbmdf = RadioSetting("settings.cbmdf", "Display mode B",
-                             RadioSettingValueList(
-                                 LIST_MDF,
-                                 LIST_MDF[_mem.settings.cbmdf]))
+        val = min(_mem.settings.cbmdf, len(LIST_MDF) - 1)
+        rs = RadioSettingValueList(LIST_MDF, LIST_MDF[val])
+        cbmdf = RadioSetting("settings.cbmdf", "Display mode B", rs)
         basic.append(cbmdf)
 
         if self.COLOR_LCD:
-            ccmdf = RadioSetting("settings.ccmdf", "Display mode C",
-                                 RadioSettingValueList(
-                                     LIST_MDF,
-                                     LIST_MDF[_mem.settings.ccmdf]))
+            val = min(_mem.settings.ccmdf, len(LIST_MDF) - 1)
+            rs = RadioSettingValueList(LIST_MDF, LIST_MDF[val])
+            ccmdf = RadioSetting("settings.ccmdf", "Display mode C", rs)
             basic.append(ccmdf)
 
             if not self.COLOR_LCD4:
-                cdmdf = RadioSetting("settings.cdmdf", "Display mode D",
-                                     RadioSettingValueList(
-                                         LIST_MDF,
-                                         LIST_MDF[_mem.settings.cdmdf]))
+                val = min(_mem.settings.cdmdf, len(LIST_MDF) - 1)
+                rs = RadioSettingValueList(LIST_MDF, LIST_MDF[val])
+                cdmdf = RadioSetting("settings.cdmdf", "Display mode D", rs)
                 basic.append(cdmdf)
 
                 if self.MODEL == "UV-50X2_G2":
-                    vox = RadioSetting("settings.langua", "VOX",
-                                       RadioSettingValueList(
-                                           LIST_VOX,
-                                           LIST_VOX[_mem.settings.langua]))
+                    val = min(_mem.settings.langua, len(LIST_VOX) - 1)
+                    rs = RadioSettingValueList(LIST_VOX, LIST_VOX[val])
+                    vox = RadioSetting("settings.langua", "VOX", rs)
                     basic.append(vox)
                 elif self.MODEL == "GMRS-50V2":
-                    vox = RadioSetting("settings.vox", "VOX",
-                                       RadioSettingValueList(
-                                           LIST_VOX,
-                                           LIST_VOX[_mem.settings.vox]))
+                    val = min(_mem.settings.vox, len(LIST_VOX) - 1)
+                    rs = RadioSettingValueList(LIST_VOX, LIST_VOX[val])
+                    vox = RadioSetting("settings.vox", "VOX", rs)
                     basic.append(vox)
                 else:
-                    langua = RadioSetting("settings.langua", "Language",
-                                          RadioSettingValueList(
-                                              LIST_LANGUA,
-                                              LIST_LANGUA[
-                                                  _mem.settings.langua]))
+                    val = min(_mem.settings.langua, len(LIST_LANGUA) - 1)
+                    rs = RadioSettingValueList(LIST_LANGUA, LIST_LANGUA[val])
+                    langua = RadioSetting("settings.langua", "Language", rs)
                     basic.append(langua)
         if self.MODEL == "KT-8R":
-            voice = RadioSetting("settings.voice", "Voice prompt",
-                                 RadioSettingValueList(
-                                     LIST_VOICE,
-                                     LIST_VOICE[_mem.settings.voice]))
+            val = min(_mem.settings.voice, len(LIST_VOICE) - 1)
+            rs = RadioSettingValueList(LIST_VOICE, LIST_VOICE[val])
+            voice = RadioSetting("settings.voice", "Voice prompt", rs)
             basic.append(voice)
 
         if self.MODEL == "KT-8R" or self.COLOR_LCD4:
-            vox = RadioSetting("settings.vox", "VOX",
-                               RadioSettingValueList(
-                                   LIST_VOX,
-                                   LIST_VOX[_mem.settings.vox]))
+            val = min(_mem.settings.vox, len(LIST_VOX) - 1)
+            rs = RadioSettingValueList(LIST_VOX, LIST_VOX[val])
+            vox = RadioSetting("settings.vox", "VOX", rs)
             basic.append(vox)
 
-            voxt = RadioSetting("settings.voxt", "VOX delay time",
-                                RadioSettingValueList(
-                                    LIST_VOXT,
-                                    LIST_VOXT[_mem.settings.voxt]))
+            val = min(_mem.settings.voxt, len(LIST_VOX) - 1)
+            rs = RadioSettingValueList(LIST_VOXT, LIST_VOXT[val])
+            voxt = RadioSetting("settings.voxt", "VOX delay time", rs)
             basic.append(voxt)
 
         if self.VENDOR == "BTECH":
             if self.COLOR_LCD:
                 if self.MODEL == "GMRS-20V2":
-                    val = RadioSettingValueList(LIST_SYNCV2,
-                                                LIST_SYNCV2[
-                                                    _mem.settings.sync])
+                    val = min(_mem.settings.sync, len(LIST_SYNCV2) - 1)
+                    rs = RadioSettingValueList(LIST_SYNCV2, LIST_SYNCV2[val])
                     sync = RadioSetting("settings.sync",
-                                        "Channel display sync", val)
+                                        "Channel display sync", rs)
                     basic.append(sync)
                 else:
-                    val = RadioSettingValueList(LIST_SYNC,
-                                                LIST_SYNC[_mem.settings.sync])
+                    val = min(_mem.settings.sync, len(LIST_SYNC) - 1)
+                    rs = RadioSettingValueList(LIST_SYNC, LIST_SYNC[val])
                     sync = RadioSetting("settings.sync",
-                                        "Channel display sync", val)
+                                        "Channel display sync", rs)
                     basic.append(sync)
             else:
-                sync = RadioSetting("settings.sync", "A/B channel sync",
-                                    RadioSettingValueBoolean(
-                                        _mem.settings.sync))
+                rs = RadioSettingValueBoolean(_mem.settings.sync)
+                sync = RadioSetting("settings.sync", "A/B channel sync", rs)
                 basic.append(sync)
 
         if self.COLOR_LCD4:
-            autolk = RadioSetting("settings.autolock", "Auto keylock",
-                                  RadioSettingValueBoolean(
-                                      _mem.settings.autolock))
+            rs = RadioSettingValueBoolean(_mem.settings.autolock)
+            autolk = RadioSetting("settings.autolock", "Auto keylock", rs)
             basic.append(autolk)
 
         if not self.COLOR_LCD:
-            ponmsg = RadioSetting("settings.ponmsg", "Power-on message",
-                                  RadioSettingValueList(
-                                      LIST_PONMSG,
-                                      LIST_PONMSG[_mem.settings.ponmsg]))
+            val = min(_mem.settings.ponmsg, len(LIST_PONMSG) - 1)
+            rs = RadioSettingValueList(LIST_PONMSG, LIST_PONMSG[val])
+            ponmsg = RadioSetting("settings.ponmsg", "Power-on message", rs)
             basic.append(ponmsg)
 
         if self.COLOR_LCD and not (self.COLOR_LCD2 or self.COLOR_LCD3 or
                                    self.COLOR_LCD4):
+            val = min(_mem.settings.mainfc, len(LIST_COLOR9) - 1)
+            rs = RadioSettingValueList(LIST_COLOR9, LIST_COLOR9[val])
             mainfc = RadioSetting("settings.mainfc",
-                                  "Main LCD foreground color",
-                                  RadioSettingValueList(
-                                      LIST_COLOR9,
-                                      LIST_COLOR9[_mem.settings.mainfc]))
+                                  "Main LCD foreground color", rs)
             basic.append(mainfc)
 
             if not self.COLOR_LCD4:
+                val = min(_mem.settings.mainbc, len(LIST_COLOR9) - 1)
+                rs = RadioSettingValueList(LIST_COLOR9, LIST_COLOR9[val])
                 mainbc = RadioSetting("settings.mainbc",
-                                      "Main LCD background color",
-                                      RadioSettingValueList(
-                                          LIST_COLOR9,
-                                          LIST_COLOR9[_mem.settings.mainbc]))
+                                      "Main LCD background color", rs)
                 basic.append(mainbc)
 
-            menufc = RadioSetting("settings.menufc", "Menu foreground color",
-                                  RadioSettingValueList(
-                                      LIST_COLOR9,
-                                      LIST_COLOR9[_mem.settings.menufc]))
+            val = min(_mem.settings.menufc, len(LIST_COLOR9) - 1)
+            rs = RadioSettingValueList(LIST_COLOR9, LIST_COLOR9[val])
+            menufc = RadioSetting("settings.menufc",
+                                  "Menu foreground color", rs)
             basic.append(menufc)
 
             if not self.COLOR_LCD4:
-                val = RadioSettingValueList(LIST_COLOR9,
-                                            LIST_COLOR9[_mem.settings.menubc])
+                val = min(_mem.settings.menubc, len(LIST_COLOR9) - 1)
+                rs = RadioSettingValueList(LIST_COLOR9, LIST_COLOR9[val])
                 menubc = RadioSetting("settings.menubc",
-                                      "Menu background color", val)
+                                      "Menu background color", rs)
                 basic.append(menubc)
 
+            val = min(_mem.settings.stafc, len(LIST_COLOR9) - 1)
+            rs = RadioSettingValueList(LIST_COLOR9, LIST_COLOR9[val])
             stafc = RadioSetting("settings.stafc",
-                                 "Top status foreground color",
-                                 RadioSettingValueList(
-                                     LIST_COLOR9,
-                                     LIST_COLOR9[_mem.settings.stafc]))
+                                 "Top status foreground color", rs)
             basic.append(stafc)
 
             if not self.COLOR_LCD4:
+                val = min(_mem.settings.stabc, len(LIST_COLOR9) - 1)
+                rs = RadioSettingValueList(LIST_COLOR9, LIST_COLOR9[val])
                 stabc = RadioSetting("settings.stabc",
-                                     "Top status background color",
-                                     RadioSettingValueList(
-                                         LIST_COLOR9,
-                                         LIST_COLOR9[_mem.settings.stabc]))
+                                     "Top status background color", rs)
                 basic.append(stabc)
 
+            val = min(_mem.settings.sigfc, len(LIST_COLOR9) - 1)
+            rs = RadioSettingValueList(LIST_COLOR9, LIST_COLOR9[val])
             sigfc = RadioSetting("settings.sigfc",
-                                 "Bottom status foreground color",
-                                 RadioSettingValueList(
-                                     LIST_COLOR9,
-                                     LIST_COLOR9[_mem.settings.sigfc]))
+                                 "Bottom status foreground color", rs)
             basic.append(sigfc)
 
             if not self.COLOR_LCD4:
+                val = min(_mem.settings.sigbc, len(LIST_COLOR9) - 1)
+                rs = RadioSettingValueList(LIST_COLOR9, LIST_COLOR9[val])
                 sigbc = RadioSetting("settings.sigbc",
-                                     "Bottom status background color",
-                                     RadioSettingValueList(
-                                         LIST_COLOR9,
-                                         LIST_COLOR9[_mem.settings.sigbc]))
+                                     "Bottom status background color", rs)
                 basic.append(sigbc)
 
-            rxfc = RadioSetting("settings.rxfc", "Receiving character color",
-                                RadioSettingValueList(
-                                    LIST_COLOR9,
-                                    LIST_COLOR9[_mem.settings.rxfc]))
+            val = min(_mem.settings.rxfc, len(LIST_COLOR9) - 1)
+            rs = RadioSettingValueList(LIST_COLOR9, LIST_COLOR9[val])
+            rxfc = RadioSetting("settings.rxfc",
+                                "Receiving character color", rs)
             basic.append(rxfc)
 
+            val = min(_mem.settings.txfc, len(LIST_COLOR9) - 1)
+            rs = RadioSettingValueList(LIST_COLOR9, LIST_COLOR9[val])
             txfc = RadioSetting("settings.txfc",
-                                "Transmitting character color",
-                                RadioSettingValueList(
-                                    LIST_COLOR9,
-                                    LIST_COLOR9[_mem.settings.txfc]))
+                                "Transmitting character color", rs)
             basic.append(txfc)
 
             if not self.COLOR_LCD4:
+                val = min(_mem.settings.txdisp, len(LIST_TXDISP) - 1)
+                rs = RadioSettingValueList(LIST_TXDISP, LIST_TXDISP[val])
                 txdisp = RadioSetting("settings.txdisp",
-                                      "Transmitting status display",
-                                      RadioSettingValueList(
-                                          LIST_TXDISP,
-                                          LIST_TXDISP[_mem.settings.txdisp]))
+                                      "Transmitting status display", rs)
                 basic.append(txdisp)
 
         elif self.COLOR_LCD2 or self.COLOR_LCD3:
-            stfc = RadioSetting("settings.stfc",
-                                "ST-FC",
-                                RadioSettingValueList(
-                                    LIST_COLOR8,
-                                    LIST_COLOR8[_mem.settings.stfc]))
+            val = min(_mem.settings.stfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            stfc = RadioSetting("settings.stfc", "ST-FC", rs)
             basic.append(stfc)
 
-            mffc = RadioSetting("settings.mffc",
-                                "MF-FC",
-                                RadioSettingValueList(
-                                    LIST_COLOR8,
-                                    LIST_COLOR8[_mem.settings.mffc]))
+            val = min(_mem.settings.mffc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            mffc = RadioSetting("settings.mffc", "MF-FC", rs)
             basic.append(mffc)
 
-            sfafc = RadioSetting("settings.sfafc",
-                                 "SFA-FC",
-                                 RadioSettingValueList(
-                                     LIST_COLOR8,
-                                     LIST_COLOR8[_mem.settings.sfafc]))
+            val = min(_mem.settings.sfafc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            sfafc = RadioSetting("settings.sfafc", "SFA-FC", rs)
             basic.append(sfafc)
 
-            sfbfc = RadioSetting("settings.sfbfc",
-                                 "SFB-FC",
-                                 RadioSettingValueList(
-                                     LIST_COLOR8,
-                                     LIST_COLOR8[_mem.settings.sfbfc]))
+            val = min(_mem.settings.sfbfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            sfbfc = RadioSetting("settings.sfbfc", "SFB-FC", rs)
             basic.append(sfbfc)
 
-            sfcfc = RadioSetting("settings.sfcfc",
-                                 "SFC-FC",
-                                 RadioSettingValueList(
-                                     LIST_COLOR8,
-                                     LIST_COLOR8[_mem.settings.sfcfc]))
+            val = min(_mem.settings.sfcfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            sfcfc = RadioSetting("settings.sfcfc", "SFC-FC", rs)
             basic.append(sfcfc)
 
-            sfdfc = RadioSetting("settings.sfdfc",
-                                 "SFD-FC",
-                                 RadioSettingValueList(
-                                     LIST_COLOR8,
-                                     LIST_COLOR8[_mem.settings.sfdfc]))
+            val = min(_mem.settings.sfdfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            sfdfc = RadioSetting("settings.sfdfc", "SFD-FC", rs)
             basic.append(sfdfc)
 
-            subfc = RadioSetting("settings.subfc",
-                                 "SUB-FC",
-                                 RadioSettingValueList(
-                                     LIST_COLOR8,
-                                     LIST_COLOR8[_mem.settings.subfc]))
+            val = min(_mem.settings.subfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            subfc = RadioSetting("settings.subfc", "SUB-FC", rs)
             basic.append(subfc)
 
-            fmfc = RadioSetting("settings.fmfc",
-                                "FM-FC",
-                                RadioSettingValueList(
-                                    LIST_COLOR8,
-                                    LIST_COLOR8[_mem.settings.fmfc]))
+            val = min(_mem.settings.fmfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            fmfc = RadioSetting("settings.fmfc", "FM-FC", rs)
             basic.append(fmfc)
 
-            sigfc = RadioSetting("settings.sigfc",
-                                 "SIG-FC",
-                                 RadioSettingValueList(
-                                     LIST_COLOR8,
-                                     LIST_COLOR8[_mem.settings.sigfc]))
+            val = min(_mem.settings.sigfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            sigfc = RadioSetting("settings.sigfc", "SIG-FC", rs)
             basic.append(sigfc)
 
             if not self.MODEL == "KT-8R":
-                modfc = RadioSetting("settings.modfc",
-                                     "MOD-FC",
-                                     RadioSettingValueList(
-                                         LIST_COLOR8,
-                                         LIST_COLOR8[_mem.settings.modfc]))
+                val = min(_mem.settings.modfc, len(LIST_COLOR8) - 1)
+                rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+                modfc = RadioSetting("settings.modfc", "MOD-FC", rs)
                 basic.append(modfc)
 
-            menufc = RadioSetting("settings.menufc",
-                                  "MENUFC",
-                                  RadioSettingValueList(
-                                      LIST_COLOR8,
-                                      LIST_COLOR8[_mem.settings.menufc]))
+            val = min(_mem.settings.menufc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            menufc = RadioSetting("settings.menufc", "MENUFC", rs)
             basic.append(menufc)
 
-            txfc = RadioSetting("settings.txfc",
-                                "TX-FC",
-                                RadioSettingValueList(
-                                    LIST_COLOR8,
-                                    LIST_COLOR8[_mem.settings.txfc]))
+            val = min(_mem.settings.txfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            txfc = RadioSetting("settings.txfc", "TX-FC", rs)
             basic.append(txfc)
 
             if self.MODEL == "KT-8R":
-                rxfc = RadioSetting("settings.rxfc",
-                                    "RX-FC",
-                                    RadioSettingValueList(
-                                        LIST_COLOR8,
-                                        LIST_COLOR8[_mem.settings.rxfc]))
+                val = min(_mem.settings.rxfc, len(LIST_COLOR8) - 1)
+                rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+                rxfc = RadioSetting("settings.rxfc", "RX-FC", rs)
                 basic.append(rxfc)
 
             if not self.MODEL == "KT-8R":
+                val = min(_mem.settings.txdisp, len(LIST_TXDISP) - 1)
+                rs = RadioSettingValueList(LIST_TXDISP, LIST_TXDISP[val])
                 txdisp = RadioSetting("settings.txdisp",
-                                      "Transmitting status display",
-                                      RadioSettingValueList(
-                                          LIST_TXDISP,
-                                          LIST_TXDISP[_mem.settings.txdisp]))
+                                      "Transmitting status display", rs)
                 basic.append(txdisp)
         elif self.COLOR_LCD4:
-            asfc = RadioSetting("settings.asfc",
-                                "Above Stat fore color",
-                                RadioSettingValueList(
-                                    LIST_COLOR8,
-                                    LIST_COLOR8[_mem.settings.asfc]))
+            val = min(_mem.settings.asfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            asfc = RadioSetting("settings.asfc", "Above Stat fore color", rs)
             basic.append(asfc)
 
-            mainfc = RadioSetting("settings.mainfc",
-                                  "Main fore color",
-                                  RadioSettingValueList(
-                                     LIST_COLOR8,
-                                     LIST_COLOR8[_mem.settings.mainfc]))
+            val = min(_mem.settings.mainfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            mainfc = RadioSetting("settings.mainfc", "Main fore color", rs)
             basic.append(mainfc)
 
-            a_fc = RadioSetting("settings.a_fc",
-                                "A - fore color",
-                                RadioSettingValueList(
-                                    LIST_COLOR8,
-                                    LIST_COLOR8[_mem.settings.a_fc]))
+            val = min(_mem.settings.a_fc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            a_fc = RadioSetting("settings.a_fc", "A - fore color", rs)
             basic.append(a_fc)
 
-            b_fc = RadioSetting("settings.b_fc",
-                                "B - fore color",
-                                RadioSettingValueList(
-                                    LIST_COLOR8,
-                                    LIST_COLOR8[_mem.settings.b_fc]))
+            val = min(_mem.settings.b_fc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            b_fc = RadioSetting("settings.b_fc", "B - fore color", rs)
             basic.append(b_fc)
 
-            c_fc = RadioSetting("settings.c_fc",
-                                "C - fore color",
-                                RadioSettingValueList(
-                                    LIST_COLOR8,
-                                    LIST_COLOR8[_mem.settings.c_fc]))
+            val = min(_mem.settings.c_fc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            c_fc = RadioSetting("settings.c_fc", "C - fore color", rs)
             basic.append(c_fc)
 
-            subfc = RadioSetting("settings.subfc",
-                                 "Sub fore color",
-                                 RadioSettingValueList(
-                                     LIST_COLOR8,
-                                     LIST_COLOR8[_mem.settings.subfc]))
+            val = min(_mem.settings.subfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            subfc = RadioSetting("settings.subfc", "Sub fore color", rs)
             basic.append(subfc)
 
-            battfc = RadioSetting("settings.battfc",
-                                  "Battery fore color",
-                                  RadioSettingValueList(
-                                      LIST_COLOR8,
-                                      LIST_COLOR8[_mem.settings.battfc]))
+            val = min(_mem.settings.battfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            battfc = RadioSetting("settings.battfc", "Battery fore color", rs)
             basic.append(battfc)
 
-            sigfc = RadioSetting("settings.sigfc",
-                                 "Signal fore color",
-                                 RadioSettingValueList(
-                                     LIST_COLOR8,
-                                     LIST_COLOR8[_mem.settings.sigfc]))
+            val = min(_mem.settings.sigfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            sigfc = RadioSetting("settings.sigfc", "Signal fore color", rs)
             basic.append(sigfc)
 
-            menufc = RadioSetting("settings.menufc",
-                                  "Menu fore color",
-                                  RadioSettingValueList(
-                                      LIST_COLOR8,
-                                      LIST_COLOR8[_mem.settings.menufc]))
+            val = min(_mem.settings.menufc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            menufc = RadioSetting("settings.menufc", "Menu fore color", rs)
             basic.append(menufc)
 
-            txfc = RadioSetting("settings.txfc",
-                                "TX fore color",
-                                RadioSettingValueList(
-                                    LIST_COLOR8,
-                                    LIST_COLOR8[_mem.settings.txfc]))
+            val = min(_mem.settings.txfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            txfc = RadioSetting("settings.txfc", "TX fore color", rs)
             basic.append(txfc)
 
-            rxfc = RadioSetting("settings.rxfc",
-                                "RX fore color",
-                                RadioSettingValueList(
-                                    LIST_COLOR8,
-                                    LIST_COLOR8[_mem.settings.rxfc]))
+            val = min(_mem.settings.rxfc, len(LIST_COLOR8) - 1)
+            rs = RadioSettingValueList(LIST_COLOR8, LIST_COLOR8[val])
+            rxfc = RadioSetting("settings.rxfc", "RX fore color", rs)
             basic.append(rxfc)
         else:
-            wtled = RadioSetting("settings.wtled", "Standby backlight Color",
-                                 RadioSettingValueList(
-                                     LIST_COLOR4,
-                                     LIST_COLOR4[_mem.settings.wtled]))
+            val = min(_mem.settings.wtled, len(LIST_COLOR4) - 1)
+            rs = RadioSettingValueList(LIST_COLOR4, LIST_COLOR4[val])
+            wtled = RadioSetting("settings.wtled",
+                                 "Standby backlight Color", rs)
             basic.append(wtled)
 
-            rxled = RadioSetting("settings.rxled", "RX backlight Color",
-                                 RadioSettingValueList(
-                                     LIST_COLOR4,
-                                     LIST_COLOR4[_mem.settings.rxled]))
+            val = min(_mem.settings.rxled, len(LIST_COLOR4) - 1)
+            rs = RadioSettingValueList(LIST_COLOR4, LIST_COLOR4[val])
+            rxled = RadioSetting("settings.rxled", "RX backlight Color", rs)
             basic.append(rxled)
 
-            txled = RadioSetting("settings.txled", "TX backlight Color",
-                                 RadioSettingValueList(
-                                     LIST_COLOR4,
-                                     LIST_COLOR4[_mem.settings.txled]))
+            val = min(_mem.settings.txled, len(LIST_COLOR4) - 1)
+            rs = RadioSettingValueList(LIST_COLOR4, LIST_COLOR4[val])
+            txled = RadioSetting("settings.txled", "TX backlight Color", rs)
             basic.append(txled)
 
-        anil = RadioSetting("settings.anil", "ANI length",
-                            RadioSettingValueList(
-                                LIST_ANIL,
-                                LIST_ANIL[_mem.settings.anil]))
+        val = min(_mem.settings.anil, len(LIST_ANIL) - 1)
+        rs = RadioSettingValueList(LIST_ANIL, LIST_ANIL[val])
+        anil = RadioSetting("settings.anil", "ANI length", rs)
         basic.append(anil)
 
-        reps = RadioSetting("settings.reps", "Relay signal (tone burst)",
-                            RadioSettingValueList(
-                                LIST_REPS,
-                                LIST_REPS[_mem.settings.reps]))
+        val = min(_mem.settings.reps, len(LIST_REPS) - 1)
+        rs = RadioSettingValueList(LIST_REPS, LIST_REPS[val])
+        reps = RadioSetting("settings.reps", "Relay signal (tone burst)", rs)
         basic.append(reps)
 
         if self.COLOR_LCD4:
-            dsub = RadioSetting("settings.dsub", "Subtone display",
-                                RadioSettingValueBoolean(
-                                    _mem.settings.dsub))
+            rs = RadioSettingValueBoolean(_mem.settings.dsub)
+            dsub = RadioSetting("settings.dsub", "Subtone display", rs)
             basic.append(dsub)
 
         if self.MODEL == "GMRS-20V2":
-            repsw = RadioSetting("settings.repsw", "Repeater SW",
-                                 RadioSettingValueList(
-                                     LIST_REPSW,
-                                     LIST_REPSW[_mem.settings.repsw]))
+            val = min(_mem.settings.repsw, len(LIST_REPSW) - 1)
+            rs = RadioSettingValueList(LIST_REPSW, LIST_REPSW[val])
+            repsw = RadioSetting("settings.repsw", "Repeater SW", rs)
             basic.append(repsw)
 
         model_list = ["GMRS-50X1", "KT-8R", "KT-WP12", "WP-9900"]
         if self.MODEL not in model_list:
-            repm = RadioSetting("settings.repm", "Relay condition",
-                                RadioSettingValueList(
-                                    LIST_REPM,
-                                    LIST_REPM[_mem.settings.repm]))
+            val = min(_mem.settings.repm, len(LIST_REPM) - 1)
+            rs = RadioSettingValueList(LIST_REPM, LIST_REPM[val])
+            repm = RadioSetting("settings.repm", "Relay condition", rs)
             basic.append(repm)
 
         if self.VENDOR == "BTECH" or self.COLOR_LCD:
             if self.COLOR_LCD:
-                tmrmr = RadioSetting("settings.tmrmr", "TMR return time",
-                                     RadioSettingValueList(
-                                         LIST_OFF1TO50,
-                                         LIST_OFF1TO50[_mem.settings.tmrmr]))
+                val = min(_mem.settings.tmrmr, len(LIST_OFF1TO50) - 1)
+                rs = RadioSettingValueList(LIST_OFF1TO50, LIST_OFF1TO50[val])
+                tmrmr = RadioSetting("settings.tmrmr", "TMR return time", rs)
                 basic.append(tmrmr)
             else:
-                tdrab = RadioSetting("settings.tdrab", "TDR return time",
-                                     RadioSettingValueList(
-                                         LIST_OFF1TO50,
-                                         LIST_OFF1TO50[_mem.settings.tdrab]))
+                val = min(_mem.settings.tdrab, len(LIST_OFF1TO50) - 1)
+                rs = RadioSettingValueList(LIST_OFF1TO50, LIST_OFF1TO50[val])
+                tdrab = RadioSetting("settings.tdrab", "TDR return time", rs)
                 basic.append(tdrab)
 
-            ste = RadioSetting("settings.ste", "Squelch tail eliminate",
-                               RadioSettingValueBoolean(_mem.settings.ste))
+            rs = RadioSettingValueBoolean(_mem.settings.ste)
+            ste = RadioSetting("settings.ste", "Squelch tail eliminate", rs)
             basic.append(ste)
 
             if self.COLOR_LCD4:
-                rpste = RadioSetting("settings.rpste", "Repeater STE",
-                                     RadioSettingValueList(
-                                         LIST_OFF1TO10,
-                                         LIST_OFF1TO10[_mem.settings.rpste]))
+                val = min(_mem.settings.rpste, len(LIST_OFF1TO10) - 1)
+                rs = RadioSettingValueList(LIST_OFF1TO10, LIST_OFF1TO10[val])
+                rpste = RadioSetting("settings.rpste", "Repeater STE", rs)
                 basic.append(rpste)
             else:
-                rpste = RadioSetting("settings.rpste", "Repeater STE",
-                                     RadioSettingValueList(
-                                         LIST_OFF1TO9,
-                                         LIST_OFF1TO9[_mem.settings.rpste]))
+                val = min(_mem.settings.rpste, len(LIST_OFF1TO9) - 1)
+                rs = RadioSettingValueList(LIST_OFF1TO9, LIST_OFF1TO9[val])
+                rpste = RadioSetting("settings.rpste", "Repeater STE", rs)
                 basic.append(rpste)
 
             if self.COLOR_LCD4:
-                rptdl = RadioSetting("settings.rptdl", "Repeater STE delay",
-                                     RadioSettingValueList(
-                                         LIST_OFF1TO60,
-                                         LIST_OFF1TO60[_mem.settings.rptdl]))
+                val = min(_mem.settings.rptdl, len(LIST_OFF1TO60) - 1)
+                rs = RadioSettingValueList(LIST_OFF1TO60, LIST_OFF1TO60[val])
+                rptdl = RadioSetting("settings.rptdl",
+                                     "Repeater STE delay", rs)
                 basic.append(rptdl)
             else:
-                rptdl = RadioSetting("settings.rptdl", "Repeater STE delay",
-                                     RadioSettingValueList(
-                                         LIST_RPTDL,
-                                         LIST_RPTDL[_mem.settings.rptdl]))
+                val = min(_mem.settings.rptdl, len(LIST_RPTDL) - 1)
+                rs = RadioSettingValueList(LIST_RPTDL, LIST_RPTDL[val])
+                rptdl = RadioSetting("settings.rptdl",
+                                     "Repeater STE delay", rs)
                 basic.append(rptdl)
 
         if self.MODEL == "DB25-G":
-            mgain = RadioSetting("settings.mgain", "Auto power-on",
-                                 RadioSettingValueBoolean(_mem.settings.mgain))
+            val = min(_mem.settings.mgain, 1)
+            rs = RadioSettingValueBoolean(val)
+            mgain = RadioSetting("settings.mgain", "Auto power-on", rs)
             basic.append(mgain)
 
         if str(_mem.fingerprint.fp) in BTECH3:
-            mgain = RadioSetting("settings.mgain", "Mic gain",
-                                 RadioSettingValueInteger(0, 120,
-                                                          _mem.settings.mgain))
+            val = min(_mem.settings.mgain, 120)
+            rs = RadioSettingValueInteger(0, 120, val)
+            mgain = RadioSetting("settings.mgain", "Mic gain", rs)
             basic.append(mgain)
 
         if str(_mem.fingerprint.fp) in BTECH3 or self.COLOR_LCD:
-            dtmfg = RadioSetting("settings.dtmfg", "DTMF gain",
-                                 RadioSettingValueInteger(0, 60,
-                                                          _mem.settings.dtmfg))
+            val = min(_mem.settings.dtmfg, 60)
+            rs = RadioSettingValueInteger(0, 60, val)
+            dtmfg = RadioSetting("settings.dtmfg", "DTMF gain", rs)
             basic.append(dtmfg)
 
         if self.VENDOR == "BTECH" and self.COLOR_LCD:
-            mgain = RadioSetting("settings.mgain", "Mic gain",
-                                 RadioSettingValueInteger(0, 127,
-                                                          _mem.settings.mgain))
+            val = min(_mem.settings.mgain, 127)
+            rs = RadioSettingValueInteger(0, 127, val)
+            mgain = RadioSetting("settings.mgain", "Mic gain", rs)
             basic.append(mgain)
 
-            skiptx = RadioSetting("settings.skiptx", "Skip TX",
-                                  RadioSettingValueList(
-                                      LIST_SKIPTX,
-                                      LIST_SKIPTX[_mem.settings.skiptx]))
+            val = min(_mem.settings.skiptx, len(LIST_SKIPTX) - 1)
+            rs = RadioSettingValueList(LIST_SKIPTX, LIST_SKIPTX[val])
+            skiptx = RadioSetting("settings.skiptx", "Skip TX", rs)
             basic.append(skiptx)
 
-            scmode = RadioSetting("settings.scmode", "Scan mode",
-                                  RadioSettingValueList(
-                                      LIST_SCMODE,
-                                      LIST_SCMODE[_mem.settings.scmode]))
+            val = min(_mem.settings.scmode, len(LIST_SCMODE) - 1)
+            rs = RadioSettingValueList(LIST_SCMODE, LIST_SCMODE[val])
+            scmode = RadioSetting("settings.scmode", "Scan mode", rs)
             basic.append(scmode)
 
         if self.MODEL == "KT-8R" or self.MODEL == "UV-25X2" \
                 or self.MODEL == "UV-25X4" or self.MODEL == "UV-50X2" \
                 or self.MODEL == "GMRS-50X1" or self.MODEL == "GMRS-20V2" \
                 or self.MODEL == "UV-50X2_G2" or self.MODEL == "GMRS-50V2":
-            tmrtx = RadioSetting("settings.tmrtx", "TX in multi-standby",
-                                 RadioSettingValueList(
-                                     LIST_TMRTX,
-                                     LIST_TMRTX[_mem.settings.tmrtx]))
+            val = min(_mem.settings.tmrtx, len(LIST_TMRTX) - 1)
+            rs = RadioSettingValueList(LIST_TMRTX, LIST_TMRTX[val])
+            tmrtx = RadioSetting("settings.tmrtx", "TX in multi-standby", rs)
             basic.append(tmrtx)
 
         if self.MODEL == "UV-50X2_G2" or self.MODEL == "GMRS-50V2":
-            earpho = RadioSetting("settings.earpho", "Earphone",
-                                  RadioSettingValueList(
-                                      LIST_EARPH,
-                                      LIST_EARPH[_mem.settings.earpho]))
+            val = min(_mem.settings.earpho, len(LIST_EARPH) - 1)
+            rs = RadioSettingValueList(LIST_EARPH, LIST_EARPH[val])
+            earpho = RadioSetting("settings.earpho", "Earphone", rs)
             basic.append(earpho)
 
         # Advanced
@@ -1922,81 +1821,72 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
         # Work
         if self.COLOR_LCD4:
-            dispab = RadioSetting("settings2.dispab", "Display",
-                                  RadioSettingValueList(
-                                      LIST_ABC,
-                                      LIST_ABC[_mem.settings2.dispab]))
+            val = min(_mem.settings2.dispab, len(LIST_ABC) - 1)
+            rs = RadioSettingValueList(LIST_ABC, LIST_ABC[val])
+            dispab = RadioSetting("settings2.dispab", "Display", rs)
             work.append(dispab)
         elif self.COLOR_LCD:
-            dispab = RadioSetting("settings2.dispab", "Display",
-                                  RadioSettingValueList(
-                                      LIST_ABCD,
-                                      LIST_ABCD[_mem.settings2.dispab]))
+            val = min(_mem.settings2.dispab, len(LIST_ABCD) - 1)
+            rs = RadioSettingValueList(LIST_ABCD, LIST_ABCD[val])
+            dispab = RadioSetting("settings2.dispab", "Display", rs)
             work.append(dispab)
         else:
-            dispab = RadioSetting("settings2.dispab", "Display",
-                                  RadioSettingValueList(
-                                      LIST_AB,
-                                      LIST_AB[_mem.settings2.dispab]))
+            val = min(_mem.settings2.dispab, len(LIST_AB) - 1)
+            rs = RadioSettingValueList(LIST_AB, LIST_AB[val])
+            dispab = RadioSetting("settings2.dispab", "Display", rs)
             work.append(dispab)
 
         if self.COLOR_LCD:
-            vfomra = RadioSetting("settings2.vfomra", "VFO/MR A mode",
-                                  RadioSettingValueList(
-                                      LIST_VFOMR,
-                                      LIST_VFOMR[_mem.settings2.vfomra]))
+            val = min(_mem.settings2.vfomra, len(LIST_VFOMR) - 1)
+            rs = RadioSettingValueList(LIST_VFOMR, LIST_VFOMR[val])
+            vfomra = RadioSetting("settings2.vfomra", "VFO/MR A mode", rs)
             work.append(vfomra)
 
-            vfomrb = RadioSetting("settings2.vfomrb", "VFO/MR B mode",
-                                  RadioSettingValueList(
-                                      LIST_VFOMR,
-                                      LIST_VFOMR[_mem.settings2.vfomrb]))
+            val = min(_mem.settings2.vfomrb, len(LIST_VFOMR) - 1)
+            rs = RadioSettingValueList(LIST_VFOMR, LIST_VFOMR[val])
+            vfomrb = RadioSetting("settings2.vfomrb", "VFO/MR B mode", rs)
             work.append(vfomrb)
 
-            vfomrc = RadioSetting("settings2.vfomrc", "VFO/MR C mode",
-                                  RadioSettingValueList(
-                                      LIST_VFOMR,
-                                      LIST_VFOMR[_mem.settings2.vfomrc]))
+            val = min(_mem.settings2.vfomrc, len(LIST_VFOMR) - 1)
+            rs = RadioSettingValueList(LIST_VFOMR, LIST_VFOMR[val])
+            vfomrc = RadioSetting("settings2.vfomrc", "VFO/MR C mode", rs)
             work.append(vfomrc)
 
             if not self.COLOR_LCD4:
-                vfomrd = RadioSetting("settings2.vfomrd", "VFO/MR D mode",
-                                      RadioSettingValueList(
-                                          LIST_VFOMR,
-                                          LIST_VFOMR[_mem.settings2.vfomrd]))
+                val = min(_mem.settings2.vfomrd, len(LIST_VFOMR) - 1)
+                rs = RadioSettingValueList(LIST_VFOMR, LIST_VFOMR[val])
+                vfomrd = RadioSetting("settings2.vfomrd", "VFO/MR D mode", rs)
                 work.append(vfomrd)
         else:
-            vfomr = RadioSetting("settings2.vfomr", "VFO/MR mode",
-                                 RadioSettingValueList(
-                                     LIST_VFOMR,
-                                     LIST_VFOMR[_mem.settings2.vfomr]))
+            val = min(_mem.settings2.vfomr, len(LIST_VFOMR) - 1)
+            rs = RadioSettingValueList(LIST_VFOMR, LIST_VFOMR[val])
+            vfomr = RadioSetting("settings2.vfomr", "VFO/MR mode", rs)
             work.append(vfomr)
 
-        keylock = RadioSetting("settings2.keylock", "Keypad lock",
-                               RadioSettingValueBoolean(
-                                   _mem.settings2.keylock))
+        rs = RadioSettingValueBoolean(_mem.settings2.keylock)
+        keylock = RadioSetting("settings2.keylock", "Keypad lock", rs)
         work.append(keylock)
 
-        mrcha = RadioSetting("settings2.mrcha", "MR A channel",
-                             RadioSettingValueInteger(0, self._upper,
-                                                      _mem.settings2.mrcha))
+        val = min(_mem.settings2.mrcha, self._upper)
+        rs = RadioSettingValueInteger(0, self._upper, val)
+        mrcha = RadioSetting("settings2.mrcha", "MR A channel", rs)
         work.append(mrcha)
 
-        mrchb = RadioSetting("settings2.mrchb", "MR B channel",
-                             RadioSettingValueInteger(0, self._upper,
-                                                      _mem.settings2.mrchb))
+        val = min(_mem.settings2.mrchb, self._upper)
+        rs = RadioSettingValueInteger(0, self._upper, val)
+        mrchb = RadioSetting("settings2.mrchb", "MR B channel", rs)
         work.append(mrchb)
 
         if self.COLOR_LCD:
-            mrchc = RadioSetting("settings2.mrchc", "MR C channel",
-                                 RadioSettingValueInteger(
-                                     0, self._upper, _mem.settings2.mrchc))
+            val = min(_mem.settings2.mrchc, self._upper)
+            rs = RadioSettingValueInteger(0, self._upper, val)
+            mrchc = RadioSetting("settings2.mrchc", "MR C channel", rs)
             work.append(mrchc)
 
             if not self.COLOR_LCD4:
-                mrchd = RadioSetting("settings2.mrchd", "MR D channel",
-                                     RadioSettingValueInteger(
-                                         0, self._upper, _mem.settings2.mrchd))
+                val = min(_mem.settings2.mrchd, self._upper)
+                rs = RadioSettingValueInteger(0, self._upper, val)
+                mrchd = RadioSetting("settings2.mrchd", "MR D channel", rs)
                 work.append(mrchd)
 
         def convert_bytes_to_freq(bytes):
@@ -2094,30 +1984,27 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 work.append(vfodfreq)
 
         if not self.MODEL == "GMRS-50X1":
-            vfoashiftd = RadioSetting("vfo.a.shiftd", "VFO A shift",
-                                      RadioSettingValueList(
-                                          LIST_SHIFT,
-                                          LIST_SHIFT[_mem.vfo.a.shiftd]))
+            val = min(_mem.vfo.a.shiftd, len(LIST_SHIFT) - 1)
+            rs = RadioSettingValueList(LIST_SHIFT, LIST_SHIFT[val])
+            vfoashiftd = RadioSetting("vfo.a.shiftd", "VFO A shift", rs)
             work.append(vfoashiftd)
 
-            vfobshiftd = RadioSetting("vfo.b.shiftd", "VFO B shift",
-                                      RadioSettingValueList(
-                                          LIST_SHIFT,
-                                          LIST_SHIFT[_mem.vfo.b.shiftd]))
+            val = min(_mem.vfo.b.shiftd, len(LIST_SHIFT) - 1)
+            rs = RadioSettingValueList(LIST_SHIFT, LIST_SHIFT[val])
+            vfobshiftd = RadioSetting("vfo.b.shiftd", "VFO B shift", rs)
             work.append(vfobshiftd)
 
             if self.COLOR_LCD:
-                vfocshiftd = RadioSetting("vfo.c.shiftd", "VFO C shift",
-                                          RadioSettingValueList(
-                                              LIST_SHIFT,
-                                              LIST_SHIFT[_mem.vfo.c.shiftd]))
+                val = min(_mem.vfo.c.shiftd, len(LIST_SHIFT) - 1)
+                rs = RadioSettingValueList(LIST_SHIFT, LIST_SHIFT[val])
+                vfocshiftd = RadioSetting("vfo.c.shiftd", "VFO C shift", rs)
                 work.append(vfocshiftd)
 
                 if not self.COLOR_LCD4:
-                    val = RadioSettingValueList(LIST_SHIFT,
-                                                LIST_SHIFT[_mem.vfo.d.shiftd])
-                    vfodshiftd = RadioSetting("vfo.d.shiftd", "VFO D shift",
-                                              val)
+                    val = min(_mem.vfo.d.shiftd, len(LIST_SHIFT) - 1)
+                    rs = RadioSettingValueList(LIST_SHIFT, LIST_SHIFT[val])
+                    vfodshiftd = RadioSetting("vfo.d.shiftd",
+                                              "VFO D shift", rs)
                     work.append(vfodshiftd)
 
         def convert_bytes_to_offset(bytes):
@@ -2183,193 +2070,168 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 work.append(vfoboffset)
 
         if not self.MODEL == "GMRS-50X1":
-            vfoatxp = RadioSetting("vfo.a.power", "VFO A power",
-                                   RadioSettingValueList(
-                                       LIST_TXP,
-                                       LIST_TXP[_mem.vfo.a.power]))
+            val = min(_mem.vfo.a.power, len(LIST_TXP) - 1)
+            rs = RadioSettingValueList(LIST_TXP, LIST_TXP[val])
+            vfoatxp = RadioSetting("vfo.a.power", "VFO A power", rs)
             work.append(vfoatxp)
 
-            vfobtxp = RadioSetting("vfo.b.power", "VFO B power",
-                                   RadioSettingValueList(
-                                       LIST_TXP,
-                                       LIST_TXP[_mem.vfo.b.power]))
+            val = min(_mem.vfo.b.power, len(LIST_TXP) - 1)
+            rs = RadioSettingValueList(LIST_TXP, LIST_TXP[val])
+            vfobtxp = RadioSetting("vfo.b.power", "VFO B power", rs)
             work.append(vfobtxp)
 
             if self.COLOR_LCD:
-                vfoctxp = RadioSetting("vfo.c.power", "VFO C power",
-                                       RadioSettingValueList(
-                                           LIST_TXP,
-                                           LIST_TXP[_mem.vfo.c.power]))
+                val = min(_mem.vfo.c.power, len(LIST_TXP) - 1)
+                rs = RadioSettingValueList(LIST_TXP, LIST_TXP[val])
+                vfoctxp = RadioSetting("vfo.c.power", "VFO C power", rs)
                 work.append(vfoctxp)
 
                 if not self.COLOR_LCD4:
-                    vfodtxp = RadioSetting("vfo.d.power", "VFO D power",
-                                           RadioSettingValueList(
-                                               LIST_TXP,
-                                               LIST_TXP[_mem.vfo.d.power]))
+                    val = min(_mem.vfo.d.power, len(LIST_TXP) - 1)
+                    rs = RadioSettingValueList(LIST_TXP, LIST_TXP[val])
+                    vfodtxp = RadioSetting("vfo.d.power", "VFO D power", rs)
                     work.append(vfodtxp)
 
         if not self.MODEL == "GMRS-50X1":
-            vfoawide = RadioSetting("vfo.a.wide", "VFO A bandwidth",
-                                    RadioSettingValueList(
-                                        LIST_WIDE,
-                                        LIST_WIDE[_mem.vfo.a.wide]))
+            val = min(_mem.vfo.a.wide, len(LIST_WIDE) - 1)
+            rs = RadioSettingValueList(LIST_WIDE, LIST_WIDE[val])
+            vfoawide = RadioSetting("vfo.a.wide", "VFO A bandwidth", rs)
             work.append(vfoawide)
 
-            vfobwide = RadioSetting("vfo.b.wide", "VFO B bandwidth",
-                                    RadioSettingValueList(
-                                        LIST_WIDE,
-                                        LIST_WIDE[_mem.vfo.b.wide]))
+            val = min(_mem.vfo.b.wide, len(LIST_WIDE) - 1)
+            rs = RadioSettingValueList(LIST_WIDE, LIST_WIDE[val])
+            vfobwide = RadioSetting("vfo.b.wide", "VFO B bandwidth", rs)
             work.append(vfobwide)
 
             if self.COLOR_LCD:
-                vfocwide = RadioSetting("vfo.c.wide", "VFO C bandwidth",
-                                        RadioSettingValueList(
-                                            LIST_WIDE,
-                                            LIST_WIDE[_mem.vfo.c.wide]))
+                val = min(_mem.vfo.c.wide, len(LIST_WIDE) - 1)
+                rs = RadioSettingValueList(LIST_WIDE, LIST_WIDE[val])
+                vfocwide = RadioSetting("vfo.c.wide", "VFO C bandwidth", rs)
                 work.append(vfocwide)
 
                 if not self.COLOR_LCD4:
-                    vfodwide = RadioSetting("vfo.d.wide", "VFO D bandwidth",
-                                            RadioSettingValueList(
-                                                LIST_WIDE,
-                                                LIST_WIDE[_mem.vfo.d.wide]))
+                    val = min(_mem.vfo.d.wide, len(LIST_WIDE) - 1)
+                    rs = RadioSettingValueList(LIST_WIDE, LIST_WIDE[val])
+                    vfodwide = RadioSetting("vfo.d.wide",
+                                            "VFO D bandwidth", rs)
                     work.append(vfodwide)
 
-        vfoastep = RadioSetting("vfo.a.step", "VFO A step",
-                                RadioSettingValueList(
-                                    LIST_STEP,
-                                    LIST_STEP[_mem.vfo.a.step]))
+        val = min(_mem.vfo.a.step, len(LIST_STEP) - 1)
+        rs = RadioSettingValueList(LIST_STEP, LIST_STEP[val])
+        vfoastep = RadioSetting("vfo.a.step", "VFO A step", rs)
         work.append(vfoastep)
 
-        vfobstep = RadioSetting("vfo.b.step", "VFO B step",
-                                RadioSettingValueList(
-                                    LIST_STEP,
-                                    LIST_STEP[_mem.vfo.b.step]))
+        val = min(_mem.vfo.b.step, len(LIST_STEP) - 1)
+        rs = RadioSettingValueList(LIST_STEP, LIST_STEP[val])
+        vfobstep = RadioSetting("vfo.b.step", "VFO B step", rs)
         work.append(vfobstep)
 
         if self.COLOR_LCD:
-            vfocstep = RadioSetting("vfo.c.step", "VFO C step",
-                                    RadioSettingValueList(
-                                        LIST_STEP,
-                                        LIST_STEP[_mem.vfo.c.step]))
+            val = min(_mem.vfo.c.step, len(LIST_STEP) - 1)
+            rs = RadioSettingValueList(LIST_STEP, LIST_STEP[val])
+            vfocstep = RadioSetting("vfo.c.step", "VFO C step", rs)
             work.append(vfocstep)
 
             if not self.COLOR_LCD4:
-                vfodstep = RadioSetting("vfo.d.step", "VFO D step",
-                                        RadioSettingValueList(
-                                            LIST_STEP,
-                                            LIST_STEP[_mem.vfo.d.step]))
+                val = min(_mem.vfo.d.step, len(LIST_STEP) - 1)
+                rs = RadioSettingValueList(LIST_STEP, LIST_STEP[val])
+                vfodstep = RadioSetting("vfo.d.step", "VFO D step", rs)
                 work.append(vfodstep)
 
-        vfoaoptsig = RadioSetting("vfo.a.optsig", "VFO A optional signal",
-                                  RadioSettingValueList(
-                                      OPTSIG_LIST,
-                                      OPTSIG_LIST[_mem.vfo.a.optsig]))
+        val = min(_mem.vfo.a.optsig, len(OPTSIG_LIST) - 1)
+        rs = RadioSettingValueList(OPTSIG_LIST, OPTSIG_LIST[val])
+        vfoaoptsig = RadioSetting("vfo.a.optsig", "VFO A optional signal", rs)
         work.append(vfoaoptsig)
 
-        vfoboptsig = RadioSetting("vfo.b.optsig", "VFO B optional signal",
-                                  RadioSettingValueList(
-                                      OPTSIG_LIST,
-                                      OPTSIG_LIST[_mem.vfo.b.optsig]))
+        val = min(_mem.vfo.b.optsig, len(OPTSIG_LIST) - 1)
+        rs = RadioSettingValueList(OPTSIG_LIST, OPTSIG_LIST[val])
+        vfoboptsig = RadioSetting("vfo.b.optsig", "VFO B optional signal", rs)
         work.append(vfoboptsig)
 
         if self.COLOR_LCD:
-            vfocoptsig = RadioSetting("vfo.c.optsig", "VFO C optional signal",
-                                      RadioSettingValueList(
-                                          OPTSIG_LIST,
-                                          OPTSIG_LIST[_mem.vfo.c.optsig]))
+            val = min(_mem.vfo.c.optsig, len(OPTSIG_LIST) - 1)
+            rs = RadioSettingValueList(OPTSIG_LIST, OPTSIG_LIST[val])
+            vfocoptsig = RadioSetting("vfo.c.optsig",
+                                      "VFO C optional signal", rs)
             work.append(vfocoptsig)
 
             if not self.COLOR_LCD4:
-                val = RadioSettingValueList(OPTSIG_LIST,
-                                            OPTSIG_LIST[_mem.vfo.d.optsig])
+                val = min(_mem.vfo.d.optsig, len(OPTSIG_LIST) - 1)
+                rs = RadioSettingValueList(OPTSIG_LIST, OPTSIG_LIST[val])
                 vfodoptsig = RadioSetting("vfo.d.optsig",
-                                          "VFO D optional signal", val)
+                                          "VFO D optional signal", rs)
                 work.append(vfodoptsig)
 
-        vfoaspmute = RadioSetting("vfo.a.spmute", "VFO A speaker mute",
-                                  RadioSettingValueList(
-                                      SPMUTE_LIST,
-                                      SPMUTE_LIST[_mem.vfo.a.spmute]))
+        val = min(_mem.vfo.a.spmute, len(SPMUTE_LIST) - 1)
+        rs = RadioSettingValueList(SPMUTE_LIST, SPMUTE_LIST[val])
+        vfoaspmute = RadioSetting("vfo.a.spmute", "VFO A speaker mute", rs)
         work.append(vfoaspmute)
 
-        vfobspmute = RadioSetting("vfo.b.spmute", "VFO B speaker mute",
-                                  RadioSettingValueList(
-                                      SPMUTE_LIST,
-                                      SPMUTE_LIST[_mem.vfo.b.spmute]))
+        val = min(_mem.vfo.b.spmute, len(SPMUTE_LIST) - 1)
+        rs = RadioSettingValueList(SPMUTE_LIST, SPMUTE_LIST[val])
+        vfobspmute = RadioSetting("vfo.b.spmute", "VFO B speaker mute", rs)
         work.append(vfobspmute)
 
         if self.COLOR_LCD:
-            vfocspmute = RadioSetting("vfo.c.spmute", "VFO C speaker mute",
-                                      RadioSettingValueList(
-                                          SPMUTE_LIST,
-                                          SPMUTE_LIST[_mem.vfo.c.spmute]))
+            val = min(_mem.vfo.c.spmute, len(SPMUTE_LIST) - 1)
+            rs = RadioSettingValueList(SPMUTE_LIST, SPMUTE_LIST[val])
+            vfocspmute = RadioSetting("vfo.c.spmute", "VFO C speaker mute", rs)
             work.append(vfocspmute)
 
             if not self.COLOR_LCD4:
-                vfodspmute = RadioSetting("vfo.d.spmute", "VFO D speaker mute",
-                                          RadioSettingValueList(
-                                              SPMUTE_LIST,
-                                              SPMUTE_LIST[_mem.vfo.d.spmute]))
+                val = min(_mem.vfo.d.spmute, len(SPMUTE_LIST) - 1)
+                rs = RadioSettingValueList(SPMUTE_LIST, SPMUTE_LIST[val])
+                vfodspmute = RadioSetting("vfo.d.spmute",
+                                          "VFO D speaker mute", rs)
                 work.append(vfodspmute)
 
         if not self.COLOR_LCD or \
                 (self.COLOR_LCD and not self.VENDOR == "BTECH"):
-            vfoascr = RadioSetting("vfo.a.scramble", "VFO A scramble",
-                                   RadioSettingValueBoolean(
-                                       _mem.vfo.a.scramble))
+            rs = RadioSettingValueBoolean(_mem.vfo.a.scramble)
+            vfoascr = RadioSetting("vfo.a.scramble", "VFO A scramble", rs)
             work.append(vfoascr)
 
-            vfobscr = RadioSetting("vfo.b.scramble", "VFO B scramble",
-                                   RadioSettingValueBoolean(
-                                       _mem.vfo.b.scramble))
+            rs = RadioSettingValueBoolean(_mem.vfo.b.scramble)
+            vfobscr = RadioSetting("vfo.b.scramble", "VFO B scramble", rs)
             work.append(vfobscr)
 
         if self.COLOR_LCD and not self.VENDOR == "BTECH":
-            vfocscr = RadioSetting("vfo.c.scramble", "VFO C scramble",
-                                   RadioSettingValueBoolean(
-                                       _mem.vfo.c.scramble))
+            rs = RadioSettingValueBoolean(_mem.vfo.c.scramble)
+            vfocscr = RadioSetting("vfo.c.scramble", "VFO C scramble", rs)
             work.append(vfocscr)
 
-            vfodscr = RadioSetting("vfo.d.scramble", "VFO D scramble",
-                                   RadioSettingValueBoolean(
-                                       _mem.vfo.d.scramble))
+            rs = RadioSettingValueBoolean(_mem.vfo.d.scramble)
+            vfodscr = RadioSetting("vfo.d.scramble", "VFO D scramble", rs)
             work.append(vfodscr)
 
         if not self.MODEL == "GMRS-50X1":
-            vfoascode = RadioSetting("vfo.a.scode", "VFO A PTT-ID",
-                                     RadioSettingValueList(
-                                         PTTIDCODE_LIST,
-                                         PTTIDCODE_LIST[_mem.vfo.a.scode]))
+            val = min(_mem.vfo.a.scode, len(PTTIDCODE_LIST) - 1)
+            rs = RadioSettingValueList(PTTIDCODE_LIST, PTTIDCODE_LIST[val])
+            vfoascode = RadioSetting("vfo.a.scode", "VFO A PTT-ID", rs)
             work.append(vfoascode)
 
-            vfobscode = RadioSetting("vfo.b.scode", "VFO B PTT-ID",
-                                     RadioSettingValueList(
-                                         PTTIDCODE_LIST,
-                                         PTTIDCODE_LIST[_mem.vfo.b.scode]))
+            val = min(_mem.vfo.b.scode, len(PTTIDCODE_LIST) - 1)
+            rs = RadioSettingValueList(PTTIDCODE_LIST, PTTIDCODE_LIST[val])
+            vfobscode = RadioSetting("vfo.b.scode", "VFO B PTT-ID", rs)
             work.append(vfobscode)
 
             if self.COLOR_LCD:
-                vfocscode = RadioSetting("vfo.c.scode", "VFO C PTT-ID",
-                                         RadioSettingValueList(
-                                             PTTIDCODE_LIST,
-                                             PTTIDCODE_LIST[_mem.vfo.c.scode]))
+                val = min(_mem.vfo.c.scode, len(PTTIDCODE_LIST) - 1)
+                rs = RadioSettingValueList(PTTIDCODE_LIST, PTTIDCODE_LIST[val])
+                vfocscode = RadioSetting("vfo.c.scode", "VFO C PTT-ID", rs)
                 work.append(vfocscode)
 
                 if not self.COLOR_LCD4:
-                    val = RadioSettingValueList(PTTIDCODE_LIST,
-                                                PTTIDCODE_LIST[
-                                                    _mem.vfo.d.scode])
-                    vfodscode = RadioSetting("vfo.d.scode", "VFO D PTT-ID",
-                                             val)
+                    val = min(_mem.vfo.d.scode, len(PTTIDCODE_LIST) - 1)
+                    rs = RadioSettingValueList(PTTIDCODE_LIST,
+                                               PTTIDCODE_LIST[val])
+                    vfodscode = RadioSetting("vfo.d.scode", "VFO D PTT-ID", rs)
                     work.append(vfodscode)
 
         if not self.MODEL == "GMRS-50X1":
-            pttid = RadioSetting("settings.pttid", "PTT ID",
-                                 RadioSettingValueList(
-                                     PTTID_LIST,
-                                     PTTID_LIST[_mem.settings.pttid]))
+            val = min(_mem.settings.pttid, len(PTTID_LIST) - 1)
+            rs = RadioSettingValueList(PTTID_LIST, PTTID_LIST[val])
+            pttid = RadioSetting("settings.pttid", "PTT ID", rs)
             work.append(pttid)
 
         if not self.COLOR_LCD:
@@ -3305,7 +3167,8 @@ struct {
 
 #seekto 0x0E00;
 struct {
-  u8 tdr;
+  u8 unusedE00:7,
+     tdr:1;
   u8 unknown1;
   u8 sql;
   u8 unknown2[2];
@@ -3314,11 +3177,13 @@ struct {
                     // other radios use this as pre-Time Out Alert
   u8 unknown3;
   u8 abr;
-  u8 beep;
+  u8 unusedE09:7,
+     beep:1;
   u8 unknown4[4];
   u8 dtmfst;
   u8 unknown5[2];
-  u8 prisc;
+  u8 unusedE11:7,
+     prisc:1;
   u8 prich;
   u8 screv;
   u8 unknown6[2];
@@ -3331,7 +3196,8 @@ struct {
   u8 unknown8;
   u8 camdf;
   u8 cbmdf;
-  u8 sync;          // BTech radios use this as the display sync setting
+  u8 unusedE1F:7,
+     sync:1;        // BTech radios use this as the display sync setting
                     // other radios use this as the auto keypad lock setting
   u8 ponmsg;
   u8 wtled;
@@ -3342,7 +3208,8 @@ struct {
   u8 reps;
   u8 repm;
   u8 tdrab;
-  u8 ste;
+  u8 unusedE2D:7,
+     ste:1;
   u8 rpste;
   u8 rptdl;
   u8 mgain;
@@ -3353,7 +3220,8 @@ struct {
 struct {
   u8 unknown1;
   u8 vfomr;
-  u8 keylock;
+  u8 unusedE82:7,
+     keylock:1;
   u8 unknown2;
   u8 unknown3:4,
      vfomren:1,
@@ -3382,7 +3250,8 @@ struct settings_vfo {
   u8 scode;
   u8 spmute;
   u8 optsig;
-  u8 scramble;
+  u8 unused1:7,
+     scramble:1;
   u8 wide;
   u8 power;
   u8 shiftd;
@@ -3794,7 +3663,8 @@ struct {
   u8 apo;
   u8 unknown3;
   u8 abr;
-  u8 beep;
+  u8 unusedE09:7,
+     beep:1;
   u8 unknown4[4];
   u8 dtmfst;
   u8 unknown5[2];
@@ -3805,7 +3675,8 @@ struct {
   u8 unknown7;
   u8 emctp;
   u8 emcch;
-  u8 sigbp;
+  u8 unusedE19:7,
+     sigbp:1;
   u8 unknown8;
   u8 camdf;
   u8 cbmdf;
@@ -3832,7 +3703,8 @@ struct {
   u8 reps;
   u8 repm;
   u8 tmrmr;
-  u8 ste;
+  u8 unusedE35:7,
+     ste:1;
   u8 rpste;
   u8 rptdl;
   u8 dtmfg;
@@ -3847,7 +3719,8 @@ struct {
 struct {
   u8 unknown1;
   u8 vfomr;
-  u8 keylock;
+  u8 unusedE82:7,
+     keylock:1;
   u8 unknown2;
   u8 unknown3:4,
      vfomren:1,
@@ -3878,7 +3751,8 @@ struct settings_vfo {
   u8 scode;
   u8 spmute;
   u8 optsig;
-  u8 scramble;
+  u8 unused1:7,
+     scramble:1;
   u8 wide;
   u8 power;
   u8 shiftd;
@@ -4451,12 +4325,14 @@ struct {
   u8 unknown1;
   u8 sql;
   u8 unknown2;
-  u8 autolk;
+  u8 unused3204:7,
+     autolk:1;
   u8 tot;
   u8 apo;
   u8 unknown3;
   u8 abr;
-  u8 beep;
+  u8 unused3209:7,
+     beep:1;
   u8 unknown4[4];
   u8 dtmfst;
   u8 unknown5[2];
@@ -4467,7 +4343,8 @@ struct {
   u8 unknown7;
   u8 emctp;
   u8 emcch;
-  u8 sigbp;
+  u8 unusedE19:7,
+     sigbp:1;
   u8 vox;
   u8 camdf;
   u8 cbmdf;
@@ -4495,7 +4372,8 @@ struct {
   u8 reps;
   u8 repm;
   u8 tmrmr;
-  u8 ste;
+  u8 unusedE37:7,
+     ste:1;
   u8 rpste;
   u8 rptdl;
   u8 dtmfg;
@@ -4511,7 +4389,8 @@ struct {
 struct {
   u8 unknown1;
   u8 vfomr;
-  u8 keylock;
+  u8 unused3281:7,
+     keylock:1;
   u8 unknown2;
   u8 unknown3:4,
      vfomren:1,
@@ -4542,7 +4421,8 @@ struct settings_vfo {
   u8 scode;
   u8 spmute;
   u8 optsig;
-  u8 scramble;
+  u8 unused1:7,
+     scramble:1;
   u8 wide;
   u8 power;
   u8 shiftd;
@@ -4734,13 +4614,17 @@ struct {
   u8 sql;
   u8 unknownE03[2];
   u8 tot;
-  u8 save;
+  u8 unusedE06:7,
+     save:1;
   u8 unknownE07;
   u8 abr;
-  u8 beep;
+  u8 unusedE09:7,
+     beep:1;
   u8 unknownE0A[4];
-  u8 dsub;
-  u8 dtmfst;
+  u8 unusedE0E:7,
+     dsub:1;
+  u8 unusedE0F:7,
+     dtmfst:1;
   u8 screv;
   u8 unknownE11[3];
   u8 pttid;
@@ -4749,7 +4633,8 @@ struct {
   u8 unknownE17;
   u8 emctp;
   u8 emcch;
-  u8 sigbp;
+  u8 unusedE1A:7,
+     sigbp:1;
   u8 unknownE1B;
   u8 camdf;
   u8 cbmdf;
@@ -4777,7 +4662,8 @@ struct {
   u8 anil;
   u8 reps;
   u8 tmrmr;
-  u8 ste;
+  u8 unusedE39:7,
+     ste:1;
   u8 rpste;
   u8 rptdl;
   u8 dtmfg;
@@ -4788,7 +4674,8 @@ struct {
 struct {
   u8 unknown1;
   u8 vfomr;
-  u8 keylock;
+  u8 unusedE82:7,
+     keylock:1;
   u8 unknown2;
   u8 unknown3:4,
      vfomren:1,
@@ -4819,7 +4706,8 @@ struct settings_vfo {
   u8 scode;
   u8 spmute;
   u8 optsig;
-  u8 scramble;
+  u8 unused1:7,
+     scramble:1;
   u8 wide;
   u8 power;
   u8 shiftd;
@@ -5097,10 +4985,13 @@ struct {
   u8 volume;
   u8 unknown3;
   u8 abr;
-  u8 beep;
+  u8 unusedE09:7,
+     beep:1;
   u8 unknown4[4];
-  u8 dsub;
-  u8 dtmfst;
+  u8 unusedE0E:7,
+     dsub:1;
+  u8 unusedE0F:7,
+     dtmfst:1;
   u8 unknown_e10;
   u8 unknown_e11;
   u8 screv;
@@ -5111,7 +5002,8 @@ struct {
   u8 unknown7;
   u8 emctp;
   u8 emcch;
-  u8 sigbp;
+  u8 unusedE1A:7,
+     sigbp:1;
   u8 unknown8;
   u8 camdf;
   u8 cbmdf;
@@ -5120,7 +5012,8 @@ struct {
   u8 tmrtx;
   u8 vox;
   u8 voxt;
-  u8 autolock;
+  u8 unusedE23:7,
+     autolock:1;
   u8 asfc;
   u8 mainfc;
   u8 a_fc;
@@ -5138,7 +5031,8 @@ struct {
   u8 anil;
   u8 reps;
   u8 tmrmr;
-  u8 ste;
+  u8 unusedE37:7,
+     ste:1;
   u8 rpste;
   u8 rptdl;
   u8 dtmfg;
@@ -5148,7 +5042,8 @@ struct {
 struct {
   u8 unknown1;
   u8 vfomr;
-  u8 keylock;
+  u8 unusedE82:7,
+     keylock:1;
   u8 unknown2;
   u8 unknown3:4,
      vfomren:1,
@@ -5179,7 +5074,8 @@ struct settings_vfo {
   u8 scode;
   u8 spmute;
   u8 optsig;
-  u8 scramble;
+  u8 unused1:7,
+     scramble:1;
   u8 wide;
   u8 power;
   u8 shiftd;
@@ -5398,14 +5294,17 @@ struct {
   u8 unknown1;
   u8 sql;
   u8 unknown2;
-  u8 autolock;
+  u8 unusedE04:7,
+     autolock:1;
   u8 tot;
   u8 apo;
   u8 unknown3;
   u8 abr;
-  u8 beep;
+  u8 unusedE09:7,
+     beep:1;
   u8 unknown4[4];
-  u8 dtmfst;
+  u8 unusedE0E:7,
+     dtmfst:1;
   u8 unknown5[2];
   u8 screv;
   u8 unknown6[2];
@@ -5414,7 +5313,8 @@ struct {
   u8 unknown7;
   u8 emctp;
   u8 emcch;
-  u8 sigbp;
+  u8 unusedE19:7,
+     sigbp:1;
   u8 unknown8;
   u8 camdf;
   u8 cbmdf;
@@ -5434,13 +5334,15 @@ struct {
   u8 txfc;
   u8 rxfc;
   u8 repsw;
-  u8 dsub;
+  u8 unusedE2D:7,
+     dsub:1;
   u8 unknown9[5];
   u8 anil;
   u8 reps;
   u8 repm;
   u8 tmrmr;
-  u8 ste;
+  u8 unusedE37:7,
+     ste:1;
   u8 rpste;
   u8 rptdl;
   u8 dtmfg;
@@ -5450,14 +5352,16 @@ struct {
   u8 tmrtx;
   u8 volume;
   u8 unknown_10;
-  u8 save;
+  u8 unusedE41:7,
+     save:1;
 } settings;
 
 #seekto 0x0E80;
 struct {
   u8 unknown1;
   u8 vfomr;
-  u8 keylock;
+  u8 unusedE82:7,
+     keylock:1;
   u8 unknown2;
   u8 unknown3:4,
      vfomren:1,
@@ -5488,7 +5392,8 @@ struct settings_vfo {
   u8 scode;
   u8 spmute;
   u8 optsig;
-  u8 scramble;
+  u8 unused1:7,
+     scramble:1;
   u8 wide;
   u8 power;
   u8 shiftd;
