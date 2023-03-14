@@ -531,7 +531,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                                        self._decode_tone(_mem.rxtone))
         try:
             mem.extra = self._get_extra(_mem)
-        
+
         except:
             LOG.exception('Failed to get extra for %i' % num)
 
@@ -656,7 +656,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             'cha_disp': ['CH', 'CH+Name'],
             'chb_disp': ['CH', 'CH+Name'],
         }
-        
+
         language_setting = {
             'language': ['English', 'Chinese'],
         }
@@ -704,7 +704,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             'vox': 'VOX',
             'backlight': 'Auto Backlight',
             'timeout': 'Time Out Timer (s)',
-            'language': 'Language', # unused in the SHX8800 family
+            'language': 'Language',  # unused in the SHX8800 family
             'dtmfst': 'DTMF-ST',
             'scanmode': 'Scan Mode',
             'pttid': 'PTT-ID',
