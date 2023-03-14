@@ -239,7 +239,7 @@ struct {
   u8 voice;
 
   // 0x1A08
-  u8 language; // [eng, chin]
+  u8 language; // unused
   u8 dtmfst;
   u8 scanmode; // [TO, CO, SE]
   u8 pttid; // [off, BOT, EOT, Both]
@@ -465,8 +465,6 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                          RadioSettingValueBoolean(_mem.fhss))
         group.append(s)
 
-        # pttid, signal
-
         cur = PTTID[int(_mem.pttid)]
         s = RadioSetting('pttid', 'PTTID',
                          RadioSettingValueList(PTTID, cur))
@@ -533,6 +531,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                                        self._decode_tone(_mem.rxtone))
         try:
             mem.extra = self._get_extra(_mem)
+
         except:
             LOG.exception('Failed to get extra for %i' % num)
 
@@ -635,7 +634,15 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         dtmf = RadioSettingGroup('dtmf', 'DTMF')
 
         radioddity_settings = {
-            'language': ['English', 'Chinese'],
+            'savemode': ['Off', 'Mode 1', 'Mode 2', 'Mode 3'],
+            'cha_disp': ['CH+Name', 'CH+Freq'],
+            'chb_disp': ['CH+Name', 'CH+Freq'],
+            'txundertdr': ['Off', 'Band A', 'Band B'],
+            'rptnoiseclr': ['Off'] + ['%i' % i for i in range(100, 1001, 100)],
+            'rptnoisedet': ['Off'] + ['%i' % i for i in range(100, 1001, 100)],
+        }
+
+        shx_settings = {
             'savemode': ['Off', 'Mode 1', 'Mode 2', 'Mode 3'],
             'cha_disp': ['CH+Name', 'CH+Freq'],
             'chb_disp': ['CH+Name', 'CH+Freq'],
@@ -645,14 +652,16 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         }
 
         retevis_settings = {
-            'language': ['English', 'Chinese'],
             'savemode': ['Off', 'On'],
             'cha_disp': ['CH', 'CH+Name'],
             'chb_disp': ['CH', 'CH+Name'],
         }
 
-        ga_workmode = {
+        language_setting = {
             'language': ['English', 'Chinese'],
+        }
+
+        ga_workmode = {
             'workmode': ['VFO', 'Chan'],
         }
 
@@ -675,6 +684,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         if isinstance(self, Senhaix8800Radio):
             choice_settings.update(shx_workmode)
         else:
+            choice_settings.update(language_setting)
             choice_settings.update(ga_workmode)
 
         if self.VENDOR == "Retevis":
@@ -694,7 +704,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             'vox': 'VOX',
             'backlight': 'Auto Backlight',
             'timeout': 'Time Out Timer (s)',
-            'language': 'Language',
+            'language': 'Language',  # unused in the SHX8800 family
             'dtmfst': 'DTMF-ST',
             'scanmode': 'Scan Mode',
             'pttid': 'PTT-ID',
@@ -1074,12 +1084,6 @@ class TDH6Radio(RadioddityGA510Radio):
     VENDOR = "TIDRADIO"
     MODEL = "TD-H6"
 
-    def get_features(self):
-        rf = super().get_features()
-        rf.valid_bands = [(136000000, 174000000),
-                          (400000000, 520000000)]
-        return rf
-
 
 @directory.register
 class Senhaix8800Radio(RadioddityGA510Radio):
@@ -1102,9 +1106,9 @@ class RadioddityGS5BRadio(Senhaix8800Radio):
 
 
 @directory.register
-class SignusXTR5Radio(Senhaix8800Radio):
-    """Signus XTR-5"""
-    VENDOR = "Signus"
+class CignusXTR5Radio(Senhaix8800Radio):
+    """Cignus XTR-5"""
+    VENDOR = "Cignus"
     MODEL = "XTR-5"
 
 
