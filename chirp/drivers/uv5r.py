@@ -748,7 +748,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
     _uhf_range = (400000000, 520000000)
     _aux_block = True
     _tri_power = False
-    _gmrs = False
     _bw_shift = False
     _mem_params = (0x1828  # poweron_msg offset
                    )
@@ -985,33 +984,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
 
         immutable = []
 
-        if self._gmrs:
-            if mem.number >= 1 and mem.number <= 30:
-                GMRS_FREQ = GMRS_FREQS[mem.number - 1]
-                mem.freq = GMRS_FREQ
-                immutable = ["empty", "freq"]
-            if mem.number >= 1 and mem.number <= 7:
-                mem.duplex == ''
-                mem.offset = 0
-                immutable += ["duplex", "offset"]
-            elif mem.number >= 8 and mem.number <= 14:
-                mem.duplex == ''
-                mem.offset = 0
-                mem.mode = "NFM"
-                mem.power = UV5R_POWER_LEVELS[1]
-                immutable += ["duplex", "offset", "mode", "power"]
-            elif mem.number >= 15 and mem.number <= 22:
-                mem.duplex == ''
-                mem.offset = 0
-                immutable += ["duplex", "offset"]
-            elif mem.number >= 23 and mem.number <= 30:
-                mem.duplex == '+'
-                mem.offset = 5000000
-                immutable += ["duplex", "offset"]
-            else:
-                mem.duplex = 'off'
-                mem.offset = 0
-                immutable = ["duplex", "offset"]
         if self.MODEL == "GT-5R":
             if not ((mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) or
                     (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1])):
@@ -2118,23 +2090,6 @@ class RadioddityUV5GRadio(BaofengUV5R):
 
     _basetype = BASETYPE_UV5R
     _idents = [UV5R_MODEL_UV5G]
-    _gmrs = True
-
-    def validate_memory(self, mem):
-        msgs = super().validate_memory(mem)
-
-        _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
-
-        if not (mem.number >= 1 and mem.number <= 30):
-            if mem.duplex != "off":
-                msgs.append(chirp_common.ValidationWarning(_msg_duplex))
-
-        return msgs
-
-    def check_set_memory_immutable_policy(self, existing, new):
-        existing.immutable = []
-        super().check_set_memory_immutable_policy(existing, new)
 
     @classmethod
     def match_model(cls, filename, filedata):
