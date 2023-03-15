@@ -283,6 +283,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
             self.memories.append(mem)
 
     def set_memory(self, newmem):
+        newmem = newmem.dupe()
         if newmem.power is None:
             newmem.power = DEFAULT_POWER_LEVEL
         else:
@@ -291,7 +292,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
             newmem.power = chirp_common.AutoNamedPowerLevel(
                 chirp_common.dBm_to_watts(float(newmem.power)))
         self._grow(newmem.number)
-        self.memories[newmem.number] = newmem.dupe()
+        self.memories[newmem.number] = newmem
         self.memories[newmem.number].name = newmem.name.rstrip()
 
     def erase_memory(self, number):

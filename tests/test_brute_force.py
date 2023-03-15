@@ -16,7 +16,7 @@ class TestCaseBruteForce(base.DriverTest):
             # store, don't fail
             return
 
-        self.radio.set_memory(m)
+        self.radio.set_memory(chirp_common.FrozenMemory(m))
         ret_m = self.radio.get_memory(m.number)
 
         # Damned Baofeng radios don't seem to properly store
