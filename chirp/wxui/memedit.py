@@ -730,7 +730,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 else:
                     extra_cb(job)
 
-        self.do_radio(set_cb, 'set_memory', mem)
+        # Use a FrozenMemory for the actual set to catch potential attempts
+        # to modify the memory during set_memory().
+        self.do_radio(set_cb, 'set_memory', chirp_common.FrozenMemory(mem))
 
     def erase_memory(self, number, refresh=True):
         """Erase a memory in the radio and refresh our view on success"""
