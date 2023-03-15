@@ -41,7 +41,7 @@ if grep -E 'MemoryMap\(' added_lines; then
     fail New uses of MemoryMap should be MemoryMapBytes
 fi
 
-if grep -E "_\([^\"']" added_lines; then
+if grep -E "[^_]_\([^\"']" added_lines; then
     fail 'Translated strings must be literals!'
 fi
 
