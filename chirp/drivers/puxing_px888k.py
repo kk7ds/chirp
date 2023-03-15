@@ -1227,7 +1227,6 @@ class Puxing_PX888K_Radio(chirp_common.CloneModeRadio):
             isregular, isvfo, iscall) = self._get_memory_structs(number)
 
         mem.number = index
-        mem.extd_number = designator
 
         # handle empty channels
         if isregular:
@@ -1242,6 +1241,7 @@ class Puxing_PX888K_Radio(chirp_common.CloneModeRadio):
         else:
             mem.empty = False
             mem.name = ''
+            mem.extd_number = designator
 
         # get frequency data
         mem.freq = int(_data.rx_freq)*10
@@ -1376,8 +1376,6 @@ class Puxing_PX888K_Radio(chirp_common.CloneModeRadio):
         (index, designator,
          _data, _name, _present, _priority,
          isregular, isvfo, iscall) = self._get_memory_structs(mem.number)
-        mem.number = index
-        mem.extd_number = designator
 
         # handle empty channels
         if mem.empty:
