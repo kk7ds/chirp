@@ -1151,7 +1151,17 @@ class Radio(Alias):
         self.pipe = pipe
 
     def get_memory(self, number):
-        """Return a Memory object for the memory at location @number"""
+        """Return a Memory object for the memory at location @number
+
+        Constructs and returns a generic Memory object for the given location
+        in the radio's memory. The memory should accurately represent what is
+        actually stored in the radio as closely as possible. If the radio
+        does not support changing some attributes of the location in question,
+        the Memory.immutable list should be set approproately.
+
+        NB: No changes to the radio's memory should occur as a result of
+        calling get_memory().
+        """
         pass
 
     def erase_memory(self, number):
@@ -1166,7 +1176,16 @@ class Radio(Alias):
         pass
 
     def set_memory(self, memory):
-        """Set the memory object @memory"""
+        """Set the memory object @memory
+
+        This method should copy generic attributes from @memory to the
+        radio's memory. It should not modify @memory and it should reproduce
+        the generic attributes on @memory in the radio's memory as faithfully
+        as the radio allows. Attributes that can't be copied exactly should
+        be warned in validate_memory() with ValidationWarnings if a
+        substitution will be made, or ValidationError if truly incompatible.
+        In the latter case, set_memory() will not be called.
+        """
         pass
 
     def get_mapping_models(self):
