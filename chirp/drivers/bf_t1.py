@@ -465,6 +465,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     _upper = 20
     _magic = BFT1_magic
     _id = BFT1_ident
+    _bw_shift = False
 
     @classmethod
     def get_prompts(cls):
@@ -822,14 +823,30 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         # callbacks for the FM VFO
         def apply_fm_freq(setting, obj):
-            setattr(obj, setting.get_name(), int(setting.value.
-                get_value() * 10) - 650)
+            value = int(setting.value.get_value() * 10) - 650
+            LOG.debug("Setting fm_vfo = %s" % (value))
+            if self._bw_shift:
+                value = ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
+            setattr(obj, setting.get_name(), value)
 
-        _fm_vfo = int(_settings.fm_vfo) * 0.1 + 65
-        rs = RadioSetting("fm_vfo", "FM Station",
-                          RadioSettingValueFloat(65, 108, _fm_vfo))
-        rs.set_apply_callback(apply_fm_freq, _settings)
-        fm.append(rs)
+        # broadcast FM setting
+        value = _settings.fm_vfo
+        value_shifted = ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
+        if value_shifted <= 108.0 * 10 - 650:
+            # storage method 3 (discovered 2022)
+            self._bw_shift = True
+            _fm_vfo = value_shifted / 10.0 + 65
+        elif value <= 108.0 * 10 - 650:
+            # original storage method (2012)
+            _fm_vfo = value / 10.0 + 65
+        else:
+            # unknown (undiscovered method or no FM chip?)
+            _fm_vfo = False
+        if _fm_vfo:
+            rs = RadioSetting("fm_vfo", "FM Station",
+                              RadioSettingValueFloat(65, 108, _fm_vfo))
+            rs.set_apply_callback(apply_fm_freq, _settings)
+            fm.append(rs)
 
         # ## Advanced
         def apply_limit(setting, obj):
