@@ -22,6 +22,7 @@ import logging
 
 from chirp import chirp_common, errors, util, directory, memmap
 from chirp import bitwise
+from chirp.drivers import baofeng_common
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
@@ -748,7 +749,14 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
     _uhf_range = (400000000, 520000000)
     _aux_block = True
     _tri_power = False
-    _bw_shift = False
+    _fm_shift = False
+    _fm_swap = False
+    _fm_valid_modes = [
+        baofeng_common.METHOD1,
+        baofeng_common.METHOD2,
+        baofeng_common.METHOD3,
+    ]
+
     _mem_params = (0x1828  # poweron_msg offset
                    )
     # offset of fw version in image file
@@ -1617,21 +1625,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         group.append(fm_preset)
 
         # broadcast FM settings
-        value = self._memobj.fm_presets
-        value_shifted = ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
-        if value_shifted >= 65.0 * 10 and value_shifted <= 108.0 * 10:
-            # storage method 3 (discovered 2022)
-            self._bw_shift = True
-            preset = value_shifted / 10.0
-        elif value >= 65.0 * 10 and value <= 108.0 * 10:
-            # storage method 2
-            preset = value / 10.0
-        elif value <= 108.0 * 10 - 650:
-            # original storage method (2012)
-            preset = value / 10.0 + 65
-        else:
-            # unknown (undiscovered method or no FM chip?)
-            preset = False
+        self._fm_swap, self._fm_shift, preset = baofeng_common.decode_fmradio(
+            self._memobj.fm_presets, self._fm_valid_modes)
         if preset:
             rs = RadioSettingValueFloat(65, 108.0, preset, 0.1, 1)
             rset = RadioSetting("fm_presets", "FM Preset(MHz)", rs)
@@ -1798,20 +1793,13 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                     raise
 
     def _set_fm_preset(self, settings):
-        for element in settings:
-            try:
-                val = element.value
-                if self._memobj.fm_presets <= 108.0 * 10 - 650:
-                    value = int(val.get_value() * 10 - 650)
-                else:
-                    value = int(val.get_value() * 10)
-                LOG.debug("Setting fm_presets = %s" % (value))
-                if self._bw_shift:
-                    value = ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
-                self._memobj.fm_presets = value
-            except Exception as e:
-                LOG.debug(element.get_name())
-                raise
+        try:
+            val = settings['fm_presets'].value
+            self._memobj.fm_presets = baofeng_common.encode_fmradio(
+                val.get_value(), self._fm_swap, self._fm_shift)
+        except KeyError:
+            # No fm_preset on this radio
+            pass
 
 
 class UV5XAlias(chirp_common.Alias):

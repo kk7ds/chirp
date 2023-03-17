@@ -28,6 +28,7 @@
 from time import sleep
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
+from chirp.drivers import baofeng_common
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettingValueString, \
@@ -465,7 +466,12 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     _upper = 20
     _magic = BFT1_magic
     _id = BFT1_ident
-    _bw_shift = False
+    _fm_swap = False
+    _fm_shift = False
+    _fm_valid_modes = [
+        baofeng_common.METHOD2,
+        baofeng_common.METHOD4,
+    ]
 
     @classmethod
     def get_prompts(cls):
@@ -823,25 +829,12 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         # callbacks for the FM VFO
         def apply_fm_freq(setting, obj):
-            value = int(setting.value.get_value() * 10) - 650
-            LOG.debug("Setting fm_vfo = %s" % (value))
-            if self._bw_shift:
-                value = ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
-            setattr(obj, setting.get_name(), value)
+            self._memobj.settings.fm_vfo = baofeng_common.encode_fmradio(
+                setting.value.get_value(), self._fm_swap, self._fm_shift)
 
         # broadcast FM setting
-        value = _settings.fm_vfo
-        value_shifted = ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
-        if value_shifted <= 108.0 * 10 - 650:
-            # storage method 3 (discovered 2022)
-            self._bw_shift = True
-            _fm_vfo = value_shifted / 10.0 + 65
-        elif value <= 108.0 * 10 - 650:
-            # original storage method (2012)
-            _fm_vfo = value / 10.0 + 65
-        else:
-            # unknown (undiscovered method or no FM chip?)
-            _fm_vfo = False
+        self._fm_swap, self._fm_shift, _fm_vfo = baofeng_common.decode_fmradio(
+            _settings.fm_vfo, self._fm_valid_modes)
         if _fm_vfo:
             rs = RadioSetting("fm_vfo", "FM Station",
                               RadioSettingValueFloat(65, 108, _fm_vfo))

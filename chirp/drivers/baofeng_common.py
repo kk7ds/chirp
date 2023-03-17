@@ -16,6 +16,7 @@
 
 """common functions for Baofeng (or similar) handheld radios"""
 
+from collections import namedtuple
 import time
 import struct
 import logging
@@ -731,3 +732,71 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
             except Exception as e:
                 LOG.debug(element.get_name())
                 raise
+
+
+def _swap16(value):
+    return ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
+
+
+FMDecodeMode = namedtuple('FMDecodeMode', ['swap', 'shift'])
+
+# Original method, just scaled by 10
+METHOD1 = FMDecodeMode(False, False)
+# 2012 method, scaled by 10, then shifted by 650
+METHOD2 = FMDecodeMode(False, True)
+# 2022 method, scaled by 10, byte-swapped
+METHOD3 = FMDecodeMode(True, False)
+# 2022 method, scaled by 10, shifted by 650, then byte swapped
+METHOD4 = FMDecodeMode(True, True)
+
+
+def decode_fmradio(value, allowed):
+    value_swapped = _swap16(value)
+    preset = None
+
+    # "Swapped" means the 16-bit value is byte-swapped
+    # (i.e. little or big-endian)
+    swapped = False
+
+    # "Shifted" means the value is shifted by 65Mhz (or 650 after scaling)
+    shifted = False
+
+    if 65 * 10 <= value_swapped <= 108 * 10 and METHOD3 in allowed:
+        # storage method 3 (discovered 2022, UV-5R)
+        swapped = True
+        preset = value_swapped / 10
+    elif (65 * 10 - 650 <= value_swapped <= 108 * 10 - 650 and
+          METHOD4 in allowed):
+        # storage method 4 (discovered 2022, BF-T1)
+        swapped = True
+        shifted = True
+        preset = value_swapped / 10 + 65
+    elif 65 * 10 <= value <= 108 * 10 and METHOD1 in allowed:
+        # storage method 2
+        preset = value / 10
+    elif value <= 108 * 10 - 650 and METHOD2 in allowed:
+        # original storage method (2012)
+        shifted = True
+        preset = value / 10 + 65
+    else:
+        # unknown (undiscovered method or no FM chip?)
+        pass
+
+    if preset is None:
+        LOG.debug('Out of range or missing fmradio value 0x%04x', value)
+    else:
+        LOG.debug('Decoded fmradio %f from 0x%04x (swap=%s shift=%s',
+                  preset, value, swapped, shifted)
+    return swapped, shifted, preset
+
+
+def encode_fmradio(value, swapped, shifted):
+    orig = value
+    value = int(value * 10)
+    if shifted:
+        value -= 650
+    if swapped:
+        value = _swap16(value)
+    LOG.debug('Encoded fmradio %f to %04x (swap=%s shift=%s)',
+              orig, value, swapped, shifted)
+    return value
