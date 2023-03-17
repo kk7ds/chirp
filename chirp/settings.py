@@ -309,11 +309,34 @@ def zero_indexed_seq_map(user_options):
 class RadioSettings(list):
 
     def __init__(self, *groups):
+        if (len(groups) == 1 and
+                hasattr(groups[0], '__iter__') and
+                not isinstance(groups[0], RadioSettingGroup)):
+            # Our caller passed a list of groups instead of individuals
+            groups = groups[0]
         list.__init__(self, groups)
 
     def __str__(self):
         items = [str(self[i]) for i in range(0, len(self))]
         return "\n".join(items)
+
+    def __getitem__(self, name):
+        if isinstance(name, int):
+            return super().__getitem__(name)
+        for i in range(len(self)):
+            item = self[i]
+            if item.get_name() == name:
+                return item
+        raise KeyError('No such item `%s\'' % name)
+
+    def __contains__(self, thing):
+        if not isinstance(thing, str):
+            return super().__contains__(thing)
+        try:
+            self[thing]
+            return True
+        except (KeyError, IndexError):
+            return False
 
 
 class RadioSettingGroup(object):

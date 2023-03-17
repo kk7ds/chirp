@@ -171,3 +171,50 @@ class TestSettingContainers(base.BaseTest):
         for c in settings.BANNED_NAME_CHARACTERS:
             self.assertRaises(settings.InvalidNameError,
                               settings.RadioSetting, "foo%sbar" % c, "Foo")
+
+
+class TestRadioSettings(base.BaseTest):
+    def test_dictlike(self):
+        groups = [settings.RadioSettingGroup(name, name)
+                  for name in ['foo', 'bar', 'baz']]
+        s = settings.RadioSettings(groups)
+
+        # Make sure we can treat RadioSettings like a dict (by name) and a
+        # list (by index)
+        self.assertIn('bar', s)
+        self.assertIn(groups[0], s)
+
+        self.assertNotIn('abc', s)
+        self.assertNotIn(1, s)
+        self.assertNotIn(7, s)
+        self.assertNotIn(True, s)
+
+        self.assertIsInstance(s['foo'], settings.RadioSettingGroup)
+        self.assertIsInstance(s[1], settings.RadioSettingGroup)
+
+        self.assertEqual('baz', s['baz'].get_name())
+        self.assertEqual('baz', s[2].get_name())
+
+    def test_list_argument(self):
+        groups = [settings.RadioSettingGroup(name, name)
+                  for name in ['foo', 'bar', 'baz']]
+        # Pass the groups as a list, and make sure we still get a top-level
+        # with those three children (and not a single list of three items)
+        s = settings.RadioSettings(groups)
+        self.assertEqual(len(s), 3)
+
+    def test_individual_arguments(self):
+        groups = [settings.RadioSettingGroup(name, name)
+                  for name in ['foo', 'bar', 'baz']]
+        # Pass the groups as individual arguments, and make sure we still
+        # get a top-level with those three children (and not a single list
+        # of three items)
+        s = settings.RadioSettings(*groups)
+        self.assertEqual(len(s), 3)
+
+    def test_individual_arguments_single(self):
+        group = settings.RadioSettingGroup('foo', 'foo')
+        # Since a single group seems like a list, make sure we don't confuse
+        # ourselves and dive in.
+        s = settings.RadioSettings(group)
+        self.assertEqual(len(s), 1)
