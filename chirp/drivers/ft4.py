@@ -241,7 +241,7 @@ def variable_len_resp(pipe):
             if i > toolong:
                 LOG.debug("Response too long. got" + util.hexprint(response))
                 raise errors.RadioError("Response from radio too long.")
-    return(response)
+    return response
 
 
 def sendcmd(pipe, cmd, response_len):
@@ -288,7 +288,7 @@ def enter_clonemode(radio):
             try:
                 if b"QX" == sendcmd(radio.pipe, b"PROGRAM", 2):
                     return
-            except:
+            except Exception:
                 continue
         sendcmd(radio.pipe, b"END", 0)
     raise errors.RadioError("expected QX from radio.")
@@ -477,6 +477,7 @@ class YaesuSC35GenericBankModel(chirp_common.BankModel):
             if retrieve_bit(self._radio._memobj.bankmask[bank.index], memndx):
                 banks.append(bank)
         return banks
+
 
 # the values in these lists must also be in the canonical UI list
 # we can re-arrange the order, and we don't need to have all
@@ -951,7 +952,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                     setattr(_settings, name, value)
 
                 LOG.debug("Setting %s: %s" % (name, value))
-            except:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 
@@ -1038,7 +1039,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                     ndx = x[1].index(memref)
                     array = x[0]
                     break
-                except:
+                except Exception:
                     num += len(x[1])
             if array is None:
                 LOG.debug("unknown Special %s", memref)
@@ -1165,7 +1166,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     # modify a radio channel in memobj based on info in CHIRP canonical form
     def set_memory(self, mem):
         _mem, ndx, num, regtype, sname = self.slotloc(mem.number)
-        assert(_mem)
+        assert _mem
         if mem.empty:
             if regtype in ["memory", "pms"]:
                 store_bit(self._memobj.enable, ndx, False)
