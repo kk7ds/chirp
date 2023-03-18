@@ -120,6 +120,14 @@ class TestCaseEdges(base.DriverTest):
             m2 = self.radio.get_memory(name)
             self.assertEqualMem(m1, m2, ignore=['name'])
 
+    def test_check_regular_not_special(self):
+        lo, hi = self.rf.memory_bounds
+        for i in range(lo, hi + 1):
+            m = self.radio.get_memory(i)
+            self.assertEqual('', m.extd_number,
+                             'Non-special memory %i should not have '
+                             'extd_number set to %r' % (i, m.extd_number))
+
     def test_get_memory_name_trailing_whitespace(self):
         if self.radio.MODEL == 'KG-UV8E':
             self.skipTest('The UV8E driver is so broken it does not even '
