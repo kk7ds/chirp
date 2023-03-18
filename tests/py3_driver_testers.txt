@@ -19,6 +19,7 @@ Alinco_DR135T,+Alinco_DR235T,12-Dec-2022
 Alinco_DR235T,@kk7ds,12-Dec-2022
 Alinco_DR435T,+Alinco_DR235T,12-Dec-2022
 Anysecu_WP-9900,@KC9HI,11-Nov-2022
+Anysecu_AC-580,+Radioddity_GS-5B,17-Mar-2023
 AnyTone_778UV,+Retevis_RT95,13-Nov-2022
 AnyTone_778UV_VOX,+Retevis_RT95,13-Nov-2022
 AnyTone_5888UV,@kk7ds,9-Dec-2022
@@ -198,6 +199,7 @@ QYT_KT980PLUS,+BTECH_UV-25X2,11-Nov-2022
 Radioddity_DB25-G,@KC9HI,11-Nov-2022
 Radioddity_GA-2S,@KC9HI,4-Dec-2022
 Radioddity_GA-510,@kk7ds,21-Oct-2022
+Radioddity_GS-5B,@lunapiercook,5-Mar-2023
 Radioddity_R2,@KC9HI,17-Dec-2022
 Radioddity_UV-5G,@KC9HI,18-Nov-2022
 Radioddity_UV-5RX3,@KC9HI,18-Nov-2022
@@ -268,6 +270,8 @@ Retevis_RT9000D_136-174,@KC9HI,8-Dec-2022
 Retevis_RT9000D_220-260,@KC9HI,8-Dec-2022
 Retevis_RT9000D_400-490,@KC9HI,8-Dec-2022
 Retevis_RT9000D_66-88,@KC9HI,8-Dec-2022
+SenhaiX_8800,+Radioddity_GS-5B,17-Mar-2023
+Signus_XTR-5,+Radioddity_GS-5B,17-Mar-2023
 TDXone_TD-Q8A,@KC9HI,18-Dec-2022
 TIDRADIO_TD-H6,@kk7ds,21-Oct-2022
 TIDRADIO_TD-H8,@Sandmann34,7-Feb-2023
