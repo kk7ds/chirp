@@ -244,7 +244,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.memory_bounds = (0, 1031)
+        rf.memory_bounds = (0, 999)
         rf.valid_bands = [(118000000, 174000000),
                           (320000000, 524000000)]
         rf.has_cross = True

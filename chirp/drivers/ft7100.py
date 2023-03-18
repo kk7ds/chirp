@@ -535,7 +535,7 @@ class FT7100Radio(YaesuCloneModeRadio):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
 
-        rf.memory_bounds = (0, 259)
+        rf.memory_bounds = (0, 240)
         # This radio supports 120 + 10 + 120 + 10 = 260 memories
         # These are zero based for chirpc
         rf.valid_bands = [
@@ -1098,17 +1098,17 @@ class FT7100Radio(YaesuCloneModeRadio):
     def _get_upper_vhf_limit(self):
         if self._memobj is None:
             # test with tox has no _memobj
-            upper_vhf_limit = 130
+            upper_vhf_limit = 120
         else:
-            upper_vhf_limit = int(self._memobj.nb_mem_used_vhf_and_limits)
+            upper_vhf_limit = int(self._memobj.nb_mem_used_vhf)
         return upper_vhf_limit
 
     def _get_upper_uhf_limit(self):
         if self._memobj is None:
             # test with tox has no _memobj
-            upper_uhf_limit = 130
+            upper_uhf_limit = 120
         else:
-            upper_uhf_limit = int(self._memobj.nb_mem_used_uhf_and_limits)
+            upper_uhf_limit = int(self._memobj.nb_mem_used_uhf)
         return upper_uhf_limit
 
     @classmethod
@@ -1204,7 +1204,7 @@ class FT7100RadioUHF(FT7100Radio):
         upper_vhf_limit = self._get_upper_vhf_limit()
         if isinstance(number, int):
             if number >= 0:
-                mem = FT7100Radio.get_memory(self, number +
+                mem = FT7100Radio.get_memory(self, number + 10 +
                                              upper_vhf_limit - 1)
             else:
                 mem = FT7100Radio.get_memory(self, number)
@@ -1223,7 +1223,7 @@ class FT7100RadioUHF(FT7100Radio):
         upper_vhf_limit = self._get_upper_vhf_limit()
         if isinstance(mem.number, int):
             if mem.number >= 0:
-                mem.number += upper_vhf_limit - 1
+                mem.number += upper_vhf_limit - 1 + 10
         else:
             mem.number += '-UHF'
         super(FT7100RadioUHF, self).set_memory(mem)
