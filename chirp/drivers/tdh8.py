@@ -898,9 +898,9 @@ class TDH8(chirp_common.CloneModeRadio):
                     mem.immutable = ['freq', 'mode', 'power',
                                      'duplex', 'offset']
             elif mem.number >= 31 and mem.number <= 54:
-                    # mem.immutable = ['duplex', 'offset']
-                    mem.duplex = '+'
-                    mem.offset = 5000000
+                # mem.immutable = ['duplex', 'offset']
+                mem.duplex = '+'
+                mem.offset = 5000000
             elif mem.number >= 189 and mem.number <= 199:
                 ham_freqs = NOAA_FREQS[mem.number - 189]
                 mem.freq = ham_freqs
