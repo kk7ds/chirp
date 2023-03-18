@@ -239,7 +239,7 @@ struct {
   u8 voice;
 
   // 0x1A08
-  u8 language; // [eng, chin]
+  u8 language; // [inop in 8800]
   u8 dtmfst;
   u8 scanmode; // [TO, CO, SE]
   u8 pttid; // [off, BOT, EOT, Both]
@@ -635,7 +635,6 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         dtmf = RadioSettingGroup('dtmf', 'DTMF')
 
         radioddity_settings = {
-            'language': ['English', 'Chinese'],
             'savemode': ['Off', 'Mode 1', 'Mode 2', 'Mode 3'],
             'cha_disp': ['CH+Name', 'CH+Freq'],
             'chb_disp': ['CH+Name', 'CH+Freq'],
@@ -645,14 +644,16 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         }
 
         retevis_settings = {
-            'language': ['English', 'Chinese'],
             'savemode': ['Off', 'On'],
             'cha_disp': ['CH', 'CH+Name'],
             'chb_disp': ['CH', 'CH+Name'],
         }
 
-        ga_workmode = {
+        language_setting = {
             'language': ['English', 'Chinese'],
+        }
+
+        ga_workmode = {
             'workmode': ['VFO', 'Chan'],
         }
 
@@ -675,6 +676,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         if isinstance(self, Senhaix8800Radio):
             choice_settings.update(shx_workmode)
         else:
+            choice_settings.update(language_setting)
             choice_settings.update(ga_workmode)
 
         if self.VENDOR == "Retevis":
