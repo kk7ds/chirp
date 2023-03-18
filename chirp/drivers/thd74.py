@@ -379,27 +379,34 @@ class THD74Radio(chirp_common.CloneModeRadio):
         return self._memobj.memgroups[number // 6].memories[number % 6]
 
     def get_memory(self, number):
-        mem = chirp_common.DVMemory()
-
         if isinstance(number, str):
-            mem.extd_number = number
-            number = mem.number = 1000 + EXTD_NUMBERS.index(number)
+            extd_number = number
+            number = 1000 + EXTD_NUMBERS.index(number)
         else:
-            mem.number = number
-
-        if 'Call' in mem.extd_number:
-            name_index_adj = 5
-        else:
-            name_index_adj = 0
+            extd_number = None
 
         _mem = self._get_raw_memory(number)
         _flg = self._memobj.flags[number]
-        _nam = self._memobj.names[number + name_index_adj]
+
+        if MODES[_mem.mode] == 'DV':
+            mem = chirp_common.DVMemory()
+        else:
+            mem = chirp_common.Memory()
+
+        mem.number = number
+        if extd_number:
+            mem.extd_number = extd_number
 
         if _flg.used == 0xFF:
             mem.empty = True
             return mem
+
         mem.freq = int(_mem.freq)
+        if 'Call' in mem.extd_number:
+            name_index_adj = 5
+        else:
+            name_index_adj = 0
+        _nam = self._memobj.names[number + name_index_adj]
         mem.name = str(_nam.name).rstrip().strip('\x00')
         mem.offset = int(_mem.offset)
         if _mem.split:
@@ -426,13 +433,14 @@ class THD74Radio(chirp_common.CloneModeRadio):
 
         mem.skip = _flg.lockout and 'S' or ''
 
-        if mem.extd_number:
-            mem.immutable.append('empty')
-        else:
+        if mem.mode == 'DV':
             mem.dv_urcall = decode_call(_mem.dv_urcall)
             mem.dv_rpt1call = decode_call(_mem.dv_rpt1call)
             mem.dv_rpt2call = decode_call(_mem.dv_rpt2call)
             mem.dv_code = int(_mem.dv_code)
+
+        if mem.extd_number:
+            mem.immutable.append('empty')
 
         if 'WX' in mem.extd_number:
             mem.tmode = ''
