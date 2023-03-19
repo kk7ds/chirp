@@ -1103,10 +1103,11 @@ class RadioddityGS5BRadio(Senhaix8800Radio):
     MODEL = "GS-5B"
 
 
+# NOTE: This was added as Signus originally in 18295675
 @directory.register
-class SignusXTR5Radio(Senhaix8800Radio):
-    """Signus XTR-5"""
-    VENDOR = "Signus"
+class CignusXTR5Radio(Senhaix8800Radio):
+    """Cignus XTR-5"""
+    VENDOR = "Cignus"
     MODEL = "XTR-5"
 
 
