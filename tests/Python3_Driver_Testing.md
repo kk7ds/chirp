@@ -66,6 +66,7 @@
 | <a name="Boblov_X3Plus"></a> Boblov_X3Plus |  |  |  | 0.02% |
 | <a name="CRT_Micron_UV"></a> CRT_Micron_UV | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.08% |
 | <a name="CRT_Micron_UV_V2"></a> CRT_Micron_UV_V2 | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.10% |
+| <a name="Cignus_XTR-5"></a> Cignus_XTR-5 | [Implied by Radioddity_GS-5B](#user-content-Radioddity_GS-5B) | 17-Mar-2023 | Yes |  |
 | <a name="Commander_KG-UV"></a> Commander_KG-UV |  |  |  | 0.00% |
 | <a name="Explorer_QRZ-1"></a> Explorer_QRZ-1 | [Implied by TYT_TH-UV88](#user-content-TYT_TH-UV88) | 5-Dec-2022 | Yes | 0.04% |
 | <a name="Feidaxin_FD-150A"></a> Feidaxin_FD-150A |  |  |  | 0.02% |
@@ -306,7 +307,6 @@
 | <a name="Ruyage_UV58Plus"></a> Ruyage_UV58Plus | [@KC9HI](https://github.com/KC9HI) | 18-Mar-2023 | Yes |  |
 | <a name="Sainsonic_AP510"></a> Sainsonic_AP510 |  |  |  | 0.00% |
 | <a name="SenhaiX_8800"></a> SenhaiX_8800 | [Implied by Radioddity_GS-5B](#user-content-Radioddity_GS-5B) | 17-Mar-2023 | Yes |  |
-| <a name="Signus_XTR-5"></a> Signus_XTR-5 | [Implied by Radioddity_GS-5B](#user-content-Radioddity_GS-5B) | 17-Mar-2023 | Yes |  |
 | <a name="TDXone_TD-Q8A"></a> TDXone_TD-Q8A | [@KC9HI](https://github.com/KC9HI) | 18-Dec-2022 |  | 0.02% |
 | <a name="TIDRADIO_TD-H6"></a> TIDRADIO_TD-H6 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes | 0.43% |
 | <a name="TIDRADIO_TD-H8"></a> TIDRADIO_TD-H8 | [@Sandmann34](https://github.com/Sandmann34) | 7-Feb-2023 | Yes |  |

@@ -114,6 +114,7 @@ def get_driver(rclass):
 MODEL_COMPAT = {
     ('Retevis', 'RT-5R'): ('Retevis', 'RT5R'),
     ('Retevis', 'RT-5RV'): ('Retevis', 'RT5RV'),
+    ('Signus', 'XTR-5'): ('Cignus', 'XTR-5'),
 }
 
 
