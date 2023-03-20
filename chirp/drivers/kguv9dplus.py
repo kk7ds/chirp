@@ -1421,7 +1421,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             _valid = MEM_VALID
 
         if (_valid != MEM_VALID and _valid != 0 and _valid != 2 and
-           _valid != 0x40):
+           _valid != 0x40 and _valid != 0x3D):
             # In Issue #6995 we can find _valid values of 0 and 2 in the IMG
             # so these values should be treated like MEM_VALID.
             # state value of 0x40 found in deleted memory - still shows in CPS
