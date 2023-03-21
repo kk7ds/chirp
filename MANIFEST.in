@@ -4,6 +4,8 @@ include chirp/share/*.svg
 include chirp/share/*.ico
 include chirp/share/*.1
 include chirp/stock_configs/*
+include chirp/locale/*/LC_MESSAGES/*.mo
+exclude chirp/locale/*
 include COPYING
 include *requirements.txt
 graft tests
