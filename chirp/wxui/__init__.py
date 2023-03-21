@@ -13,9 +13,55 @@ from chirp import directory
 from chirp import logger
 
 LOG = logging.getLogger(__name__)
+CONF = None
+
+
+def maybe_install_desktop():
+    local = os.path.join(os.path.expanduser('~'), '.local')
+    desktop_path = os.path.join(local, 'share',
+                                'applications', 'chirp.desktop')
+    with importlib_resources.as_file(
+            importlib_resources.files('chirp.share')
+            .joinpath('chirp.desktop')) as desktop_src:
+        with open(desktop_src) as f:
+            desktop_content = f.readlines()
+    with importlib_resources.as_file(
+            importlib_resources.files('chirp.share')
+            .joinpath('chirp.ico')) as p:
+        icon_path = str(p)
+    if os.path.exists(desktop_path):
+        return
+
+    import wx
+    r = wx.MessageBox(
+        _('Would you like CHIRP to install a desktop icon for you?'),
+        _('Install desktop icon?'), style=wx.YES_NO)
+    if r != wx.YES:
+        CONF.set_bool('offered_desktop', True, 'state')
+        return
+
+    os.makedirs(os.path.dirname(desktop_path), exist_ok=True)
+
+    # Try to run chirp by name from ~/.local/bin
+    exec_path = os.path.join(local, 'bin', 'chirp')
+    if not os.path.exists(exec_path):
+        # If that doesn't work, then just run it with our python via
+        # module, which should always work
+        exec_path = '%s -mchirp.wxui' % sys.executable
+    with open(desktop_path, 'w') as f:
+        for line in desktop_content:
+            if line.startswith('Exec'):
+                f.write('Exec=%s\n' % exec_path)
+            elif line.startswith('Icon'):
+                f.write('Icon=%s\n' % icon_path)
+            else:
+                f.write(line)
+        LOG.debug('Wrote %s with exec=%r icon=%r' % (
+            f.name, exec_path, icon_path))
 
 
 def chirpmain():
+    global CONF
     import wx
 
     app = wx.App()
@@ -35,6 +81,8 @@ def chirpmain():
     from chirp.wxui import config
     from chirp.wxui import main
     from chirp.wxui import report
+
+    CONF = config.get()
 
     actions = ['upload', 'download', 'query_rr', 'query_mg',
                'query_rb', 'query_dm', 'new']
@@ -60,6 +108,10 @@ def chirpmain():
     if sys.platform == 'linux':
         parser.add_argument('--no-linux-gdk-backend', action='store_true',
                             help='Do not force GDK_BACKEND=x11')
+        parser.add_argument('--install-desktop-app', action='store_true',
+                            default=not CONF.get_bool('offered_desktop',
+                                                      'state'),
+                            help='Prompt to install a desktop icon')
     logger.add_arguments(parser)
     args = parser.parse_args()
 
@@ -85,7 +137,6 @@ def chirpmain():
 
     directory.import_drivers(limit=args.onlydriver)
 
-    CONF = config.get()
     if CONF.get('developer', 'state'):
         from chirp.drivers import fake
         fake.register_fakes()
@@ -126,5 +177,11 @@ def chirpmain():
 
     report.check_for_updates(
         lambda ver: wx.CallAfter(main.display_update_notice, ver))
+
+    if sys.platform == 'linux' and args.install_desktop_app:
+        try:
+            maybe_install_desktop()
+        except Exception as e:
+            LOG.exception('Failed to run linux desktop installer: %s', e)
 
     app.MainLoop()
