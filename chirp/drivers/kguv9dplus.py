@@ -1563,7 +1563,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
 
         # Set fields we can't access via the UI table to safe defaults
         _mem.qt = 0   # mute mode to QT
-
+        _mem.bit5 = 0   # clear this bit to ensure accurate CPS power level
         _nam.name = str2name(mem.name, 8, '\0', '\0')
         _mem.state = MEM_VALID
 
