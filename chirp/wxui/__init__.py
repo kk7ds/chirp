@@ -63,6 +63,9 @@ def maybe_install_desktop():
 def chirpmain():
     global CONF
     import wx
+    # This must be imported before wx.App() to squelch warnings on startup
+    # about duplicate "Windows bitmap file" handlers
+    import wx.richtext
 
     app = wx.App()
     localedir = str(os.path.join(importlib_resources.files('chirp'),
