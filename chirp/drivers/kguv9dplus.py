@@ -1354,7 +1354,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         return rp
 
     def get_raw_memory(self, number):
-        return repr(self._memobj.chan_blk[number])
+        return repr(self._memobj.chan_blk[number - 1])
 
     def _get_tone(self, _mem, mem):
         """Decode both the encode and decode CTSS/DCS codes from
