@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-11 08:11-0800\n"
+"POT-Creation-Date: 2023-03-21 15:48-0700\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -37,17 +37,17 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr ""
 
-#: ../wxui/memedit.py:1166
+#: ../wxui/memedit.py:1178
 #, fuzzy, python-format
 msgid "%i Memories"
 msgstr "Μνήμες"
 
-#: ../wxui/memedit.py:1173
+#: ../wxui/memedit.py:1185
 #, fuzzy, python-format
 msgid "%i Memories and shift all up"
 msgstr "Διαγραφή %i μνημών και μετακίνηση όλων προς τα επάνω"
 
-#: ../wxui/memedit.py:1169
+#: ../wxui/memedit.py:1181
 #, fuzzy, python-format
 msgid "%i Memories and shift block up"
 msgstr "Διαγραφή %i μνημών και μετακίνηση ομάδας προς τα επάνω"
@@ -201,7 +201,7 @@ msgid ""
 "     the display).\n"
 msgstr ""
 
-#: ../drivers/vx8.py:587
+#: ../drivers/vx8.py:585
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -210,7 +210,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
 
-#: ../drivers/vx8.py:594
+#: ../drivers/vx8.py:592
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -457,7 +457,7 @@ msgid ""
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:778
+#: ../drivers/uv5r.py:777
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -467,7 +467,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:786
+#: ../drivers/uv5r.py:785
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -643,7 +643,7 @@ msgstr "Δημιουργία Περιηγητή Πομποδεκτών"
 msgid "Canada"
 msgstr "Καναδάς"
 
-#: ../wxui/memedit.py:874
+#: ../wxui/memedit.py:886
 #, python-format
 msgid ""
 "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
@@ -657,21 +657,21 @@ msgstr "Αρχεία ειδώλου CHIRP"
 msgid "Choice Required"
 msgstr "Απαιτείται επιλογή"
 
-#: ../wxui/memedit.py:853
+#: ../wxui/memedit.py:865
 #, python-format
 msgid "Choose %s DTCS Code"
 msgstr "Επιλέξτε κωδικό DTCS %s"
 
-#: ../wxui/memedit.py:850
+#: ../wxui/memedit.py:862
 #, python-format
 msgid "Choose %s Tone"
 msgstr "Επιλέξτε τόνο %s"
 
-#: ../wxui/memedit.py:884
+#: ../wxui/memedit.py:896
 msgid "Choose Cross Mode"
 msgstr ""
 
-#: ../wxui/memedit.py:914
+#: ../wxui/memedit.py:926
 #, fuzzy
 msgid "Choose duplex"
 msgstr "Επιλογή duplex"
@@ -761,7 +761,7 @@ msgstr ""
 "Πολικότητα\n"
 "DTCS"
 
-#: ../wxui/memedit.py:1625
+#: ../wxui/memedit.py:1640
 msgid "DV Memory"
 msgstr "Μνήμη DV"
 
@@ -773,7 +773,7 @@ msgstr ""
 msgid "Dec"
 msgstr "Dec"
 
-#: ../wxui/memedit.py:1161
+#: ../wxui/memedit.py:1173
 msgid "Delete"
 msgstr "Διαγραφή"
 
@@ -786,11 +786,11 @@ msgstr "Λειτουργία προγραμματιστή"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 
-#: ../wxui/memedit.py:1247
+#: ../wxui/memedit.py:1259
 msgid "Diff Raw Memories"
 msgstr ""
 
-#: ../wxui/memedit.py:1550
+#: ../wxui/memedit.py:1565
 #, fuzzy
 msgid "Digital Code"
 msgstr "Ψηφιακός Κωδικός"
@@ -829,12 +829,12 @@ msgstr "Οδηγίες λήψης"
 msgid "Duplex"
 msgstr ""
 
-#: ../wxui/memedit.py:1580
+#: ../wxui/memedit.py:1595
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Επεξεργασία λεπτομερειών για %i μνήμες"
 
-#: ../wxui/memedit.py:1578
+#: ../wxui/memedit.py:1593
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Επεξεργασία λεπτομερειών για τη μνήμη %i"
@@ -848,11 +848,11 @@ msgstr "Ενεργοποίηση αυτόματης επεξεργασίας"
 msgid "Enter Frequency"
 msgstr "Εισάγετε συχνότητα"
 
-#: ../wxui/memedit.py:901
+#: ../wxui/memedit.py:913
 msgid "Enter Offset (MHz)"
 msgstr ""
 
-#: ../wxui/memedit.py:893
+#: ../wxui/memedit.py:905
 msgid "Enter TX Frequency (MHz)"
 msgstr "Εισάγετε συχνότητα εκπομπής (MHz)"
 
@@ -882,7 +882,7 @@ msgstr "Σφάλμα επικοινωνίας με τον πομποδέκτη"
 msgid "Experimental driver"
 msgstr "Πειραματικός οδηγός"
 
-#: ../wxui/memedit.py:1513
+#: ../wxui/memedit.py:1525
 msgid "Export can only write CSV files"
 msgstr "Η εξαγωγή είναι δυνατή μόνο σε αρχεία CSV"
 
@@ -890,7 +890,7 @@ msgstr "Η εξαγωγή είναι δυνατή μόνο σε αρχεία CSV
 msgid "Export to CSV"
 msgstr "Εξαγωγή σε αρχείο μορφής .CSV"
 
-#: ../wxui/memedit.py:1614
+#: ../wxui/memedit.py:1629
 msgid "Extra"
 msgstr "Περισσότερα"
 
@@ -974,7 +974,7 @@ msgstr ""
 #: ../drivers/mursv1.py:346 ../drivers/baofeng_wp970i.py:329
 #: ../drivers/btech.py:684 ../drivers/gmrsuv1.py:395
 #: ../drivers/tdxone_tdq8a.py:457 ../drivers/uv6r.py:345
-#: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:367 ../drivers/bf_t1.py:483
+#: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:367 ../drivers/bf_t1.py:484
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1040,7 +1040,7 @@ msgid ""
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
 
-#: ../drivers/btech.py:690 ../drivers/bf_t1.py:489
+#: ../drivers/btech.py:690 ../drivers/bf_t1.py:490
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1156,13 +1156,17 @@ msgstr ""
 msgid "Info"
 msgstr "Πληροφορίες"
 
-#: ../wxui/memedit.py:876
+#: ../wxui/memedit.py:888
 msgid "Information"
 msgstr "Πληροφορίες"
 
-#: ../wxui/memedit.py:1154
+#: ../wxui/memedit.py:1166
 msgid "Insert Row Above"
 msgstr "Εισαγωγή γραμμής επάνω"
+
+#: ../wxui/__init__.py:38
+msgid "Install desktop icon?"
+msgstr ""
 
 #: ../wxui/main.py:676
 #, fuzzy
@@ -1178,7 +1182,7 @@ msgstr ""
 msgid "Invalid ZIP code"
 msgstr "Μη έγκυρος ΤΚ"
 
-#: ../wxui/memedit.py:1018 ../wxui/memedit.py:1703
+#: ../wxui/memedit.py:1030 ../wxui/memedit.py:1718
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Μη έγκυρη τιμή: %s"
@@ -1253,7 +1257,7 @@ msgstr "Γεωγραφικό μήκος"
 msgid "Memories"
 msgstr "Μνήμες"
 
-#: ../wxui/memedit.py:1057
+#: ../wxui/memedit.py:1069
 #, python-format
 msgid "Memory %i is not deletable"
 msgstr "Η μνήμη %i δεν μπορεί να διαγραφεί"
@@ -1302,7 +1306,7 @@ msgstr "Βρέθηκαν περισσότερες από μία θύρες: %s"
 msgid "New version available"
 msgstr "Διαθέσιμη νέα έκδοση"
 
-#: ../wxui/memedit.py:1283
+#: ../wxui/memedit.py:1295
 msgid "No empty rows below!"
 msgstr "Καμία κενή σειρά από κάτω!"
 
@@ -1379,7 +1383,7 @@ msgstr "Προαιρετικό: 45.0000"
 msgid "Optional: County, Hospital, etc"
 msgstr "Προαιρετικό: Επαρχία, Νοσοκομείο κλπ"
 
-#: ../wxui/memedit.py:1393
+#: ../wxui/memedit.py:1405
 msgid "Overwrite memories?"
 msgstr "Αντικατάσταση μνημών;"
 
@@ -1390,22 +1394,22 @@ msgid ""
 "are supported in this release.\n"
 msgstr ""
 
-#: ../wxui/memedit.py:1387
+#: ../wxui/memedit.py:1399
 #, python-format
 msgid "Pasted memories will overwrite %i existing memories"
 msgstr ""
 
-#: ../wxui/memedit.py:1390
+#: ../wxui/memedit.py:1402
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1384
+#: ../wxui/memedit.py:1396
 #, python-format
 msgid "Pasted memories will overwrite memory %i"
 msgstr ""
 
-#: ../wxui/memedit.py:1381
+#: ../wxui/memedit.py:1393
 #, python-format
 msgid "Pasted memory will overwrite memory %i"
 msgstr ""
@@ -1478,7 +1482,7 @@ msgstr "Προεπισκόπηση εκτύπωσης"
 msgid "Printing"
 msgstr "Εκτύπωση"
 
-#: ../wxui/memedit.py:1148
+#: ../wxui/memedit.py:1160
 msgid "Properties"
 msgstr "Ιδιότητες"
 
@@ -1601,7 +1605,7 @@ msgstr "Υπηρεσία"
 msgid "Settings"
 msgstr "Ρυθμίσεις"
 
-#: ../wxui/memedit.py:1239
+#: ../wxui/memedit.py:1251
 msgid "Show Raw Memory"
 msgstr ""
 
@@ -1609,34 +1613,34 @@ msgstr ""
 msgid "Show debug log location"
 msgstr "Εμφάνιση τοποθεσίας αρχείου καταγραφής αποσφαλμάτωσης"
 
-#: ../wxui/memedit.py:1438
+#: ../wxui/memedit.py:1450
 msgid "Some memories are incompatible with this radio"
 msgstr "Κάποιες μνήμες δεν είναι συμβατές με αυτόν τον πομποδέκτη"
 
-#: ../wxui/memedit.py:1355
+#: ../wxui/memedit.py:1367
 msgid "Some memories are not deletable"
 msgstr "Κάποιες μνήμες δεν είναι δυνατόν να διαγραφούν"
 
-#: ../wxui/memedit.py:1211
+#: ../wxui/memedit.py:1223
 #, fuzzy, python-format
 msgid "Sort %i memories"
 msgstr "Διαγραφή %i Μνημών"
 
-#: ../wxui/memedit.py:1214
+#: ../wxui/memedit.py:1226
 #, python-format
 msgid "Sort %i memories ascending"
 msgstr ""
 
-#: ../wxui/memedit.py:1223
+#: ../wxui/memedit.py:1235
 #, python-format
 msgid "Sort %i memories descending"
 msgstr ""
 
-#: ../wxui/memedit.py:1119
+#: ../wxui/memedit.py:1131
 msgid "Sort by column:"
 msgstr ""
 
-#: ../wxui/memedit.py:1118
+#: ../wxui/memedit.py:1130
 #, fuzzy
 msgid "Sort memories"
 msgstr "Αντικατάσταση μνημών;"
@@ -1676,7 +1680,7 @@ msgid ""
 "download to a CHIRP Radio Images (*.img) file.\n"
 msgstr ""
 
-#: ../wxui/memedit.py:1176
+#: ../wxui/memedit.py:1188
 #, fuzzy
 msgid "This Memory"
 msgstr "Μνήμη DV"
@@ -1711,12 +1715,12 @@ msgstr ""
 "δυνατοτήτων!\n"
 "Σας προειδοποιήσαμε. Προχωράτε με δική σας ευθύνη!"
 
-#: ../wxui/memedit.py:1180
+#: ../wxui/memedit.py:1192
 #, fuzzy
 msgid "This memory and shift all up"
 msgstr "Διαγραφή %i μνημών και μετακίνηση όλων προς τα επάνω"
 
-#: ../wxui/memedit.py:1178
+#: ../wxui/memedit.py:1190
 #, fuzzy
 msgid "This memory and shift block up"
 msgstr "Διαγραφή %i μνημών και μετακίνηση ομάδας προς τα επάνω"
@@ -1760,7 +1764,7 @@ msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
 
-#: ../wxui/memedit.py:941
+#: ../wxui/memedit.py:953
 msgid "Unable to edit memory before radio is loaded"
 msgstr ""
 
@@ -1846,11 +1850,11 @@ msgstr "Προμηθευτής"
 msgid "View"
 msgstr "Εμφάνιση"
 
-#: ../wxui/memedit.py:1025
+#: ../wxui/memedit.py:1037
 msgid "Warning"
 msgstr "Προειδοποίηση"
 
-#: ../wxui/memedit.py:1024
+#: ../wxui/memedit.py:1036
 #, python-format
 msgid "Warning: %s"
 msgstr "Προειδοποίηση: %s"
@@ -1858,6 +1862,10 @@ msgstr "Προειδοποίηση: %s"
 #: ../wxui/main.py:352
 msgid "Welcome"
 msgstr "Καλωσήρθατε"
+
+#: ../wxui/__init__.py:37
+msgid "Would you like CHIRP to install a desktop icon for you?"
+msgstr ""
 
 #: ../wxui/clone.py:352
 msgid "Your cable appears to be on port:"
