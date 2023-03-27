@@ -147,7 +147,12 @@ class RepeaterBook(base.NetworkResultRadio):
             return
 
         if results['count']:
-            os.rename(tmp, data_file)
+            try:
+                os.rename(tmp, data_file)
+            except FileExistsError:
+                # Windows can't do atomic rename
+                os.remove(data_file)
+                os.rename(tmp, data_file)
         else:
             os.remove(tmp)
             status.send_fail('No results!')
