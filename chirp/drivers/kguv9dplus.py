@@ -1013,9 +1013,14 @@ BANDWIDTH_LIST = ["Wide", "Narrow"]
 LANGUAGE_LIST = ["English", "Chinese"]
 LANGUAGE_LIST2 = ["English", "Chinese-DISABLED"]
 PF1KEY_LIST = ["OFF", "call id", "r-alarm", "SOS", "SF-TX"]
+PF1KEY_LIST9GX = ["OFF", "call id", "r-alarm", "SOS", "SF-TX", "Scan",
+                  "Second", "Lamp"]
 PF2KEY_LIST = ["OFF", "Scan", "Second", "Lamp", "SDF-DIR", "K-lamp"]
+PF2KEY_LIST9GX = ["OFF", "Scan", "Second", "Lamp", "K-lamp"]
 PF3KEY_LIST2 = ["OFF", "Call ID", "R-ALARM", "SOS", "SF-TX", "Scan",
                 "Second", "Lamp"]
+PF3KEY_LIST9GX = ["OFF", "call id", "r-alarm", "SOS", "SF-TX", "Scan",
+                  "Second", "Lamp"]
 PF3KEY_LIST = ["OFF", "Call ID", "R-ALARM", "SOS", "SF-TX"]
 WORKMODE_LIST = ["VFO freq", "Channel No.", "Ch. No.+Freq.",
                  "Ch. No.+Name"]
@@ -1271,7 +1276,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         3 channel memory and names slots. As we discover other useful
         goodies in the map, we can add more slots...
         """
-        if self.MODEL == "KG-UV9PX":
+        if (self.MODEL == "KG-UV9PX" or self.MODEL == "KG-UV9GX"):
             cfgmap = config_map2
         else:
             cfgmap = config_map
@@ -1576,7 +1581,8 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         Radio settings common to all modes and areas go here.
         """
         s = self._memobj.settings
-        if self.MODEL == "KG-UV9PX":
+        if (self.MODEL == "KG-UV9PX" or self.MODEL == "KG-UV9GX"):
+
             sm = self._memobj.screen
 
         cf = RadioSettingGroup("cfg_grp", "Configuration")
@@ -1695,14 +1701,14 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                                "Receive LED (Menu 42)",
                                RadioSettingValueBoolean(s.bledsw)))
 
-        if self.MODEL == "KG-UV9PX":
-            cf.append(RadioSetting("screen.screen_mode",
-                                   "Screen Mode (Menu 62)",
-                                   RadioSettingValueList(
-                                    SCREEN_MODE_LIST,
-                                    SCREEN_MODE_LIST[
-                                        sm.screen_mode])))
-        if self.MODEL == "KG-UV9PX":
+        if (self.MODEL == "KG-UV9PX" or self.MODEL == "KG-UV9GX"):
+                cf.append(RadioSetting("screen.screen_mode",
+                                       "Screen Mode (Menu 62)",
+                                       RadioSettingValueList(
+                                             SCREEN_MODE_LIST,
+                                             SCREEN_MODE_LIST[
+                                                 sm.screen_mode])))
+        if (self.MODEL == "KG-UV9PX" or self.MODEL == "KG-UV9GX"):
             langlst = LANGUAGE_LIST2
         else:
             langlst = LANGUAGE_LIST
@@ -1712,7 +1718,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                          RadioSettingValueList(langlst,
                                                langlst[s.lang])))
 
-        if self.MODEL == "KG-UV9PX":
+        if (self.MODEL == "KG-UV9PX" or self.MODEL == "KG-UV9GX"):
             ponmsglst = PONMSG_LIST2
         else:
             ponmsglst = PONMSG_LIST
@@ -1847,7 +1853,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         cf.append(RadioSetting("display.banner",
                                "Display Message", val))
 
-        if self.MODEL == "KG-UV9PX":
+        if (self.MODEL == "KG-UV9PX" or self.MODEL == "KG-UV9GX"):
             _str = str(self._memobj.oemmodel.model).split("\0")[0]
             val = RadioSettingValueString(0, 10, _str)
             val.set_mutable(True)
@@ -2157,22 +2163,31 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         """Build radio key/button menu
         """
         s = self._memobj.settings
+        if self.MODEL == "KG-UV9PX":
+            pfkey1 = PF1KEY_LIST
+            pfkey2 = PF2KEY_LIST
+            pfkey3 = PF3KEY_LIST2
+        elif self.MODEL == "KG-UV9GX":
+            pfkey1 = PF1KEY_LIST9GX
+            pfkey2 = PF2KEY_LIST9GX
+            pfkey3 = PF3KEY_LIST9GX
+        else:
+            pfkey1 = PF1KEY_LIST
+            pfkey2 = PF2KEY_LIST
+            pfkey3 = PF3KEY_LIST
+
         kf = RadioSettingGroup("key_grp", "Key Settings")
 
         kf.append(RadioSetting("settings.pf1",
                                "PF1 Key function (Menu 55)",
                                RadioSettingValueList(
-                                   PF1KEY_LIST,
-                                   PF1KEY_LIST[s.pf1])))
+                                   pfkey1,
+                                   pfkey1[s.pf1])))
         kf.append(RadioSetting("settings.pf2",
                                "PF2 Key function (Menu 56)",
                                RadioSettingValueList(
-                                   PF2KEY_LIST,
-                                   PF2KEY_LIST[s.pf2])))
-        if self.MODEL == "KG-UV9PX":
-            pfkey3 = PF3KEY_LIST2
-        else:
-            pfkey3 = PF3KEY_LIST
+                                   pfkey2,
+                                   pfkey2[s.pf2])))
 
         kf.append(RadioSetting("settings.pf3",
                                "PF3 Key function (Menu 57)",
@@ -2700,37 +2715,34 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
 
         l = self._memobj.limits
 
-        val = RadioSettingValueInteger(136, 180,
-                                       (l.lim_150M_Txlower_limit) / 10.0)
-        rs = RadioSetting("limits.lim_150M_Txlower_limit",
-                          "150M Tx Lower Limit (MHz)",
-                          RadioSettingValueInteger(136, 180,
-                                                   val))
-        limgrp.append(rs)
+        if self.MODEL == "KG-UV9PX":
+            val = RadioSettingValueInteger(136, 180,
+                                           (l.lim_150M_Txlower_limit) / 10.0)
+            rs = RadioSetting("limits.lim_150M_Txlower_limit",
+                              "150M Tx Lower Limit (MHz)",
+                              RadioSettingValueInteger(136, 180, val))
+            limgrp.append(rs)
 
-        val = RadioSettingValueInteger(136, 180,
-                                       (l.lim_150M_Txupper_limit) / 10.0)
-        rs = RadioSetting("limits.lim_150M_Txupper_limit",
-                          "150M Tx Upper Limit (MHz + 0.9975)",
-                          RadioSettingValueInteger(136, 180,
-                                                   val))
-        limgrp.append(rs)
+            val = RadioSettingValueInteger(136, 180,
+                                           (l.lim_150M_Txupper_limit) / 10.0)
+            rs = RadioSetting("limits.lim_150M_Txupper_limit",
+                              "150M Tx Upper Limit (MHz + 0.9975)",
+                              RadioSettingValueInteger(136, 180, val))
+            limgrp.append(rs)
 
-        val = RadioSettingValueInteger(400, 512,
-                                       (l.lim_450M_Txlower_limit) / 10.0)
-        rs = RadioSetting("limits.lim_450M_Txlower_limit",
-                          "450M Tx Lower Limit (MHz)",
-                          RadioSettingValueInteger(400, 512,
-                                                   val))
-        limgrp.append(rs)
+            val = RadioSettingValueInteger(400, 512,
+                                           (l.lim_450M_Txlower_limit) / 10.0)
+            rs = RadioSetting("limits.lim_450M_Txlower_limit",
+                              "450M Tx Lower Limit (MHz)",
+                              RadioSettingValueInteger(400, 512, val))
+            limgrp.append(rs)
 
-        val = RadioSettingValueInteger(400, 512,
-                                       (l.lim_450M_Txupper_limit) / 10.0)
-        rs = RadioSetting("limits.lim_450M_Txupper_limit",
-                          "450M Tx Upper Limit (MHz + 0.9975)",
-                          RadioSettingValueInteger(400, 512,
-                                                   val))
-        limgrp.append(rs)
+            val = RadioSettingValueInteger(400, 512,
+                                           (l.lim_450M_Txupper_limit) / 10.0)
+            rs = RadioSetting("limits.lim_450M_Txupper_limit",
+                              "450M Tx Upper Limit (MHz + 0.9975)",
+                              RadioSettingValueInteger(400, 512, val))
+            limgrp.append(rs)
 
         val = RadioSettingValueInteger(108, 180,
                                        (l.lim_150M_area_a_rxlower_limit) /
@@ -2832,3 +2844,14 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
         limgrp.append(rs)
 
         return limgrp
+
+
+@directory.register
+class KGUV9GXRadio(KGUV9PXRadio):
+
+    """Wouxun KG-UV9GX"""
+    VENDOR = "Wouxun"
+    MODEL = "KG-UV9GX"
+    _model = b"KG-UV9D"
+    _rev = b"02"  # default rev for the radio I know about...
+    NEEDS_COMPAT_SERIAL = False
