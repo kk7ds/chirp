@@ -488,7 +488,7 @@ def _read_block(radio, start, size, first_command=False):
         LOG.debug("CMD: %s  ADDR: %04x  SIZE: %02x" % (cmd, addr, length))
         raise errors.RadioError("Unknown response from radio")
 
-    chunk = radio.pipe.read(0x40)
+    chunk = radio.pipe.read(size)
     if not chunk:
         raise errors.RadioError("Radio did not send block 0x%04x" % start)
     elif len(chunk) != size:
