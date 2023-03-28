@@ -285,8 +285,12 @@ class ChirpChoiceColumn(ChirpMemoryColumn):
 
     def get_propeditor(self, memory):
         current = self._render_value(memory, self.value(memory))
+        # Since self._render_value() returns str(x), we should do the same
+        # for our choices when finding the index, since we could have things
+        # like PowerLevel objects.
+        choice_strs = [str(x) for x in self._choices]
         try:
-            cur_index = self._choices.index(current)
+            cur_index = choice_strs.index(current)
         except ValueError:
             # This means the memory has some value set that the radio
             # does not support, like the default cross_mode not being
@@ -294,6 +298,8 @@ class ChirpChoiceColumn(ChirpMemoryColumn):
             # just doesn't have that value set, so take the first choice
             # in this case.
             cur_index = 0
+            LOG.warning('Failed to find %r in choices %r for %s',
+                        current, choice_strs, self.name)
         return wx.propgrid.EnumProperty(self.label.replace('\n', ' '),
                                         self._name,
                                         self._str_choices,
