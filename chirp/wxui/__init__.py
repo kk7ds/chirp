@@ -67,24 +67,7 @@ def chirpmain():
     # about duplicate "Windows bitmap file" handlers
     import wx.richtext
 
-    app = wx.App()
-    localedir = str(os.path.join(importlib_resources.files('chirp'),
-                                 'locale'))
-    syslang = wx.Locale.GetSystemLanguage()
-    app._lc = wx.Locale()
-    if localedir and os.path.isdir(localedir):
-        wx.Locale.AddCatalogLookupPathPrefix(localedir)
-    if syslang != wx.LANGUAGE_UNKNOWN:
-        app._lc.Init(syslang)
-    else:
-        app._lc.Init()
-    app._lc.AddCatalog('CHIRP')
-    builtins._ = wx.GetTranslation
-
     from chirp.wxui import config
-    from chirp.wxui import main
-    from chirp.wxui import report
-
     CONF = config.get()
 
     actions = ['upload', 'download', 'query_rr', 'query_mg',
@@ -108,6 +91,8 @@ def chirpmain():
                         help='Start UI action immediately')
     parser.add_argument('--restore', default=None, action='store_true',
                         help="Restore previous tabs")
+    parser.add_argument('--force-language', default=None,
+                        help='Force locale to this ISO language code')
     if sys.platform == 'linux':
         parser.add_argument('--no-linux-gdk-backend', action='store_true',
                             help='Do not force GDK_BACKEND=x11')
@@ -117,15 +102,49 @@ def chirpmain():
                             help='Prompt to install a desktop icon')
     logger.add_arguments(parser)
     args = parser.parse_args()
-
     logger.handle_options(args)
-    logging.getLogger('main').info(report.get_environment())
 
-    if not localedir or not os.path.isdir(localedir):
+    app = wx.App()
+    if args.force_language:
+        force_lang = wx.Locale.FindLanguageInfo(args.force_language)
+        if force_lang is None:
+            print('Failed to find language %r' % args.force_language)
+            return 1
+        LOG.info('Forcing locale to %r (%s)' % (
+            args.force_language, force_lang.Description))
+        lang = force_lang.Language
+    elif CONF.is_defined('force_language', 'prefs'):
+        prefs_lang = CONF.get('force_language', 'prefs')
+        force_lang = wx.Locale.FindLanguageInfo(prefs_lang)
+        if force_lang is None:
+            LOG.warning('Config prefs.force_language specifies unknown '
+                        'language %r', prefs_lang)
+            lang = wx.Locale.GetSystemLanguage()
+        else:
+            LOG.info('Forcing locale to %r (%s) via config', prefs_lang,
+                     force_lang.Description)
+            lang = force_lang.Language
+    else:
+        lang = wx.Locale.GetSystemLanguage()
+
+    localedir = str(os.path.join(importlib_resources.files('chirp'),
+                                 'locale'))
+    app._lc = wx.Locale()
+    if localedir and os.path.isdir(localedir):
+        wx.Locale.AddCatalogLookupPathPrefix(localedir)
+    else:
         LOG.warning('Did not find localedir: %s' % localedir)
-    LOG.debug('System locale: %s (%i)',
+
+    if lang != wx.LANGUAGE_UNKNOWN:
+        app._lc.Init(lang)
+    else:
+        LOG.warning('Initializing locale without known language')
+        app._lc.Init()
+    app._lc.AddCatalog('CHIRP')
+    builtins._ = wx.GetTranslation
+    LOG.debug('Using locale: %s (%i)',
               app._lc.GetCanonicalName(),
-              syslang)
+              lang)
     LOG.debug('Translation loaded=%s for CHIRP: %s (%s) from %s',
               app._lc.IsLoaded('CHIRP'),
               wx.Translations.Get().GetBestTranslation('CHIRP'),
@@ -137,6 +156,11 @@ def chirpmain():
               wx.Translations.Get().GetBestTranslation('wxstd'),
               ','.join(
                   wx.Translations.Get().GetAvailableTranslations('wxstd')))
+
+    from chirp.wxui import main
+    from chirp.wxui import report
+
+    logging.getLogger('main').info(report.get_environment())
 
     directory.import_drivers(limit=args.onlydriver)
 

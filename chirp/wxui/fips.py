@@ -73,7 +73,7 @@ FIPS_STATES = {
     "British Columbia":          "CA02",
     "Manitoba":                  "CA03",
     "New Brunswick":             "CA04",
-    "Newfoundland and Labrador": "CA05",
+    "Newfoundland":              "CA05",
     "Northwest Territories":     "CA13",
     "Nova Scotia":               "CA07",
     "Nunavut":                   "CA14",
@@ -81,7 +81,7 @@ FIPS_STATES = {
     "Prince Edward Island":      "CA09",
     "Quebec":                    "CA10",
     "Saskatchewan":              "CA11",
-    "Yukon":                     "CA12",
+    "Yukon Territory":           "CA12",
 }
 
 FIPS_COUNTIES = {
