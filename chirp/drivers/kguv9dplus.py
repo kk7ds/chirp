@@ -128,7 +128,7 @@ config_map2 = (          # map address, write size, write count
 MEM_VALID = 0xfc
 MEM_INVALID = 0xff
 VALID_MEM_VALUES = [MEM_VALID, 0x00, 0x02, 0x40, 0x3D]
-
+INVALID_MEM_VALUES = [MEM_INVALID]
 # Radio memory map. This matches the reads/writes above.
 # structure elements whose name starts with x are currently unidentified
 
@@ -1420,20 +1420,47 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         mem = chirp_common.Memory()
         mem.number = number
         _valid = _mem.state
-        # Override Mem Valid state to handle quirky 9PX CPS New codeplug
-        # issue where there is a channel programmed but the CPS
-        # "state" value is 0xFF indicating an invalid memory
-        if _valid == MEM_INVALID and _mem.rxfreq != 0xFFFFFFFF and _nam != '':
-            _valid = MEM_VALID
 
-        if _valid not in VALID_MEM_VALUES:
-            # In Issue #6995 we can find _valid values of 0 and 2 in the IMG
-            # so these values should be treated like MEM_VALID.
-            # state value of 0x40 found in deleted memory - still shows in CPS
+        # This code attempts to robustly decipher what Wouxun considers valid
+        # memory locations on the 9 series radios and the factory CPS.
+        # It appears they use a combination of State and Rx Freq to determine
+        # validity rather than just the State value.
+        # It is possible the State value is not even used at all.
+        # Rather than continuously adding new Mem Valid values as they are
+        # found, assume any value other than 0xFF is likely valid and use
+        # Rx Freq to further assess validity
+
+        if _mem.rxfreq == 0xFFFFFFFF:
+            # Rx freq indicates empty channel memory
+            # assume empty regardless of _valid and proceed to next channel
+            if _valid not in INVALID_MEM_VALUES:
+                # only log if _valid indicates the channel is not invalid
+                LOG.debug("CH %s Rx Freq = 0xFFFFFFFF - "
+                          "Treating chan as empty", mem.number)
             mem.empty = True
             return mem
-        else:
-            mem.empty = False
+        elif _valid in INVALID_MEM_VALUES:
+            # Check for 9PX case where CPS creates a valid channel with
+            # 0xFF for State -  accept it as valid as long as Rx Freq is
+            # <= max value
+            if _mem.rxfreq > 99999999:  # Max poss Value = 999.99999 MHz
+                LOG.debug("CH %s State invalid - Rx Frq > 999.99999 MHz: "
+                          "Treating chan as empty", mem.number)
+                mem.empty = True
+                return mem
+            else:
+                LOG.debug("CH %s State invalid - Rx Freq valid: "
+                          "Assume chan valid", mem.number)
+                mem.empty = False
+        else:  # State not Invalid and Rx Freq not 0xFFFFFFFF
+            if _mem.rxfreq > 99999999:  # Max poss Value = 999.99999 MHz
+                LOG.debug("CH %s Invalid Rx Frq: %s MHz - "
+                          "Treating chan as empty", mem.number,
+                          int(_mem.rxfreq) / 100000)
+                mem.empty = True
+                return mem
+            else:
+                mem.empty = False
 
         mem.freq = int(_mem.rxfreq) * 10
 
