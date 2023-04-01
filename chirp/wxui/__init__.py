@@ -67,6 +67,9 @@ def chirpmain():
     # about duplicate "Windows bitmap file" handlers
     import wx.richtext
 
+    from chirp.wxui import config
+    CONF = config.get()
+
     actions = ['upload', 'download', 'query_rr', 'query_mg',
                'query_rb', 'query_dm', 'new']
 
@@ -110,6 +113,17 @@ def chirpmain():
         LOG.info('Forcing locale to %r (%s)' % (
             args.force_language, force_lang.Description))
         lang = force_lang.Language
+    elif CONF.is_defined('force_language', 'prefs'):
+        prefs_lang = CONF.get('force_language', 'prefs')
+        force_lang = wx.Locale.FindLanguageInfo(prefs_lang)
+        if force_lang is None:
+            LOG.warning('Config prefs.force_language specifies unknown '
+                        'language %r', prefs_lang)
+            lang = wx.Locale.GetSystemLanguage()
+        else:
+            LOG.info('Forcing locale to %r (%s) via config', prefs_lang,
+                     force_lang.Description)
+            lang = force_lang.Language
     else:
         lang = wx.Locale.GetSystemLanguage()
 
@@ -143,11 +157,9 @@ def chirpmain():
               ','.join(
                   wx.Translations.Get().GetAvailableTranslations('wxstd')))
 
-    from chirp.wxui import config
     from chirp.wxui import main
     from chirp.wxui import report
 
-    CONF = config.get()
     logging.getLogger('main').info(report.get_environment())
 
     directory.import_drivers(limit=args.onlydriver)
