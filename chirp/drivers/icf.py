@@ -844,7 +844,7 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
 
     def get_endframe(self):
         """Returns the magic clone end frame for this radio"""
-        return bytes([ord(x) for x in self._endframe])
+        return bytes([util.byte_to_int(x) for x in self._endframe])
 
     def get_ranges(self):
         """Returns the ranges this radio likes to have in a clone"""
