@@ -92,6 +92,7 @@ def _download(radio):
     # Now the data is hardcoded in _upload(radio)
     data = radio.pipe.read(16)
     _send_ack(radio.pipe)
+    LOG.debug('Magic 16-byte chunk:\n%s' % util.hexprint(data))
 
     # initialize data, the big var that holds all memory
     data = b""
@@ -132,8 +133,8 @@ def _upload(radio):
 
     # write 16 Byte block
     # If there should be a problem, see remarks in _download(radio)
-    _send(radio.pipe, b"\xCC\x77\x01\x00\x0C\x07\x0C\x07"
-                      b"\x00\x00\x00\x00\x00\x00\x00\x00")
+    _send(radio.pipe, b"\xEE\x77\x01\x00\x0E\x07\x0E\x07"
+                      b"\x00\x00\x00\x00\x00\x02\x00\x00")
     _wait_for_ack(radio.pipe)
 
     for block_nr in range(NB_OF_BLOCKS):
