@@ -73,10 +73,12 @@ def _download(radio):
     LOG.debug("in _download\n")
     data = b""
     for _i in range(0, 60):
-        data = radio.pipe.read(BLOCK_LEN)
+        chunk = radio.pipe.read(BLOCK_LEN)
+        data += chunk
         LOG.debug("Header:\n%s", util.hexprint(data))
-        LOG.debug("len(header) = %s\n", len(data))
         if data == radio.IDBLOCK:
+            break
+        if len(data) > len(radio.IDBLOCK):
             break
     if data == b"":
         raise Exception("Got no data from radio.")
