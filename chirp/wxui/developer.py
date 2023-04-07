@@ -505,10 +505,11 @@ class IssueModuleLoader:
         LOG.debug('Fetching attachment URL %s' % attachment['content_url'])
         r = requests.get(attachment['content_url'])
         modfile = tempfile.mktemp('.py', 'loaded-%i-' % attachment['id'])
-        header = ('# Loaded from issue %i attachment %i: %s\n' % (
+        trailer = ('\n\n# Loaded from issue %i attachment %i: %s\n' % (
             issue, attachment['id'], attachment['content_url']))
         with open(modfile, 'wb') as f:
-            f.write(header.encode())
             f.write(r.content)
+            f.write(trailer.encode())
+
         LOG.debug('Wrote attachment to %s' % modfile)
         return modfile
