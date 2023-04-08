@@ -1489,6 +1489,61 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         for row in selected_rows:
             self.delete_memory_at(row, None)
 
+    def get_selected_rows_safe(self):
+        """Return the currently-selected rows
+
+        If no rows are selected, use the row of the cursor
+        """
+        selected = self._grid.GetSelectedRows()
+        if not selected:
+            selected = [self._grid.GetGridCursorRow()]
+        return selected
+
+    def cb_move(self, direction):
+        selected = self.get_selected_rows_safe()
+        last_row = self._grid.GetNumberRows() - 1
+        if direction < 0 and selected[0] == 0:
+            LOG.warning('Unable to move memories above first row')
+            return
+        elif direction > 0 and selected[-1] == last_row:
+            LOG.warning('Unable to move memories below last row')
+            return
+        elif abs(direction) != 1:
+            LOG.error('Move got direction %i; only +/-1 supported', direction)
+            return
+
+        first = selected[0]
+        last = selected[-1]
+        new_indexes = [x + direction for x in selected]
+
+        if direction < 0:
+            transplant = self._memory_cache[first + direction]
+            new_number = self.row2mem(last)
+        elif direction > 0:
+            transplant = self._memory_cache[last + direction]
+            new_number = self.row2mem(first)
+
+        LOG.debug('Transplanting %s to %i for move indexes: %s -> %s',
+                  transplant, new_number, selected, new_indexes)
+        transplant.number = new_number
+
+        to_set = [transplant]
+        self._grid.ClearSelection()
+        for old_row, new_row in zip(selected, new_indexes):
+            mem = self._memory_cache[old_row]
+            new_number = self.row2mem(new_row)
+            LOG.debug('Moving %s to %i', mem, new_number)
+            mem.number = new_number
+            to_set.append(mem)
+            self._grid.SelectRow(new_row, True)
+
+        for mem in to_set:
+            self.set_memory(mem)
+        cursor_r, cursor_c = self._grid.GetGridCursorCoords()
+        self._grid.SetGridCursor(cursor_r + direction, cursor_c)
+
+        wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
     def cb_goto(self, number, column=0):
         self._grid.GoToCell(self.mem2row(number), column)
         self._grid.SelectRow(self.mem2row(number))

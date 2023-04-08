@@ -235,6 +235,9 @@ class ChirpEditorSet(wx.Panel):
     def cb_delete(self):
         return self.current_editor.cb_delete()
 
+    def cb_move(self, direction):
+        return self.current_editor.cb_move(direction)
+
     def cb_goto(self, number):
         return self.current_editor.cb_goto(number)
 
@@ -573,6 +576,33 @@ class ChirpMain(wx.Frame):
         goto_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('G')))
         self.Bind(wx.EVT_MENU, self._menu_goto, goto_item)
 
+        edit_menu.Append(wx.MenuItem(edit_menu, wx.ID_SEPARATOR))
+
+        self._moveup_item = wx.NewId()
+        moveup_item = edit_menu.Append(wx.MenuItem(edit_menu,
+                                                   self._moveup_item,
+                                                   _('Move Up')))
+
+        # Control-Up is used by default on macOS, so require shift as well
+        if sys.platform == 'darwin':
+            extra_move = wx.MOD_SHIFT
+        else:
+            extra_move = 0
+
+        moveup_item.SetAccel(wx.AcceleratorEntry(
+            extra_move | wx.ACCEL_RAW_CTRL, wx.WXK_UP))
+        self.Bind(wx.EVT_MENU, self._menu_move, moveup_item,
+                  self._moveup_item)
+
+        self._movedn_item = wx.NewId()
+        movedn_item = edit_menu.Append(wx.MenuItem(edit_menu,
+                                                   self._movedn_item,
+                                                   _('Move Down')))
+        movedn_item.SetAccel(wx.AcceleratorEntry(
+            extra_move | wx.ACCEL_RAW_CTRL, wx.WXK_DOWN))
+        self.Bind(wx.EVT_MENU, self._menu_move, movedn_item,
+                  self._movedn_item)
+
         view_menu = wx.Menu()
 
         self._fixed_item = wx.NewId()
@@ -874,6 +904,8 @@ class ChirpMain(wx.Frame):
             (wx.ID_CUT, is_memedit),
             (wx.ID_COPY, is_memedit),
             (wx.ID_PASTE, is_memedit),
+            (self._movedn_item, is_memedit),
+            (self._moveup_item, is_memedit),
             (wx.ID_SELECTALL, is_memedit),
             (self._print_preview_item, is_memedit),
             (self._export_menu_item, can_close),
@@ -1136,6 +1168,12 @@ class ChirpMain(wx.Frame):
         if search:
             self._last_search_text = search
             self.current_editorset.cb_find(search)
+
+    def _menu_move(self, event):
+        if event.GetId() == self._movedn_item:
+            self.current_editorset.cb_move(1)
+        else:
+            self.current_editorset.cb_move(-1)
 
     def _update_font(self):
         for i in range(0, self._editors.PageCount):
