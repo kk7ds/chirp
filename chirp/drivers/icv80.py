@@ -482,6 +482,8 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
                 _skip |= bit
             return
 
+        _mem.set_raw(b'\x00' * 15)
+
         if chirp_common.required_step(mem.freq) == 12.5:
             mult = 6250
         else:
