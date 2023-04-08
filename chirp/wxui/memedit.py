@@ -1349,7 +1349,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             wx.CallAfter(self._grid.AutoSizeRows, setAsMin=False)
 
     def cb_copy(self, cut=False):
-        rows = self._grid.GetSelectedRows()
+        rows = self.get_selected_rows_safe()
         offset = self._features.memory_bounds[0]
         mems = []
         for row in rows:
@@ -1382,11 +1382,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     def _cb_paste_memories(self, payload):
         mems = payload['mems']
         srcrf = payload['features']
-        try:
-            row = self._grid.GetSelectedRows()[0]
-        except IndexError:
-            LOG.info('No row selected for paste')
-            return
+        row = self.get_selected_rows_safe()[0]
 
         overwrite = []
         for i in range(len(mems)):
@@ -1485,7 +1481,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 data.GetFormat().Type))
 
     def cb_delete(self):
-        selected_rows = self._grid.GetSelectedRows()
+        selected_rows = self.get_selected_rows_safe()
         for row in selected_rows:
             self.delete_memory_at(row, None)
 
