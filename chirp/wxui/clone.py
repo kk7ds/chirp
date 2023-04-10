@@ -123,12 +123,20 @@ def open_serial(port, rclass):
     if '://' in port:
         pipe = serial.serial_for_url(port, do_not_open=True)
         pipe.timeout = 0.25
+        pipe.rts = rclass.HARDWARE_FLOW
+        pipe.dtr = False
         pipe.open()
         pipe.baudrate = rclass.BAUD_RATE
-        pipe.rtscts = rclass.HARDWARE_FLOW
     else:
-        pipe = serial.Serial(port=port, baudrate=rclass.BAUD_RATE,
+        pipe = serial.Serial(baudrate=rclass.BAUD_RATE,
                              rtscts=rclass.HARDWARE_FLOW, timeout=0.25)
+        pipe.rts = rclass.HARDWARE_FLOW
+        pipe.dtr = False
+        pipe.port = port
+        pipe.open()
+
+    LOG.debug('Serial opened: %s (rts=%s dtr=%s)',
+              pipe, pipe.rts, pipe.dtr)
     return pipe
 
 
@@ -500,6 +508,7 @@ class ChirpDownloadDialog(ChirpCloneDialog):
         try:
             self._radio = rclass(open_serial(port, rclass))
         except Exception as e:
+            LOG.exception('Failed to open serial: %s' % e)
             self.fail(str(e))
             return
 
