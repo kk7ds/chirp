@@ -87,7 +87,7 @@
 | <a name="Icom_IC-2720H"></a> Icom_IC-2720H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.02% |
 | <a name="Icom_IC-2730A"></a> Icom_IC-2730A | [Reported working](https://chirp.danplanet.com/issues/10261) | 17-Dec-2022 | Yes | 0.21% |
 | <a name="Icom_IC-2820H"></a> Icom_IC-2820H | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.04% |
-| <a name="Icom_IC-7000"></a> Icom_IC-7000 |  |  | Yes | 0.03% |
+| <a name="Icom_IC-7000"></a> Icom_IC-7000 | [Reported working](https://chirp.danplanet.com/issues/10510) | 10-Apr-2023 | Yes | 0.03% |
 | <a name="Icom_IC-7100"></a> Icom_IC-7100 | Mike W | 16-Feb-2023 | Yes | 0.06% |
 | <a name="Icom_IC-7200"></a> Icom_IC-7200 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |  |
 | <a name="Icom_IC-7300"></a> Icom_IC-7300 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.03% |
@@ -403,7 +403,7 @@
 
 **Drivers:** 398
 
-**Tested:** 84% (337/61) (93% of usage stats)
+**Tested:** 84% (338/60) (93% of usage stats)
 
 **Byte clean:** 89% (356/42)
 
