@@ -208,7 +208,7 @@ def _enter_programming_mode(radio):
             if ack == CMD_ACK:
                 exito = True
                 break
-        except errors.RadioError:
+        except Exception:
             LOG.debug("Attempt #%s, failed, trying again" % i)
             pass
 
@@ -223,7 +223,7 @@ def _exit_programming_mode(radio):
     serial = radio.pipe
     try:
         serial.write(b"58" + b"\x05\xEE\x60")
-    except errors.RadioError:
+    except Exception:
         raise errors.RadioError("Radio refused to exit programming mode")
 
 
@@ -255,7 +255,7 @@ def _read_block(radio, block_addr, block_size):
             raise Exception("Block failed checksum!")
 
         block_data = chunk[:-1]
-    except errors.RadioError:
+    except Exception:
         raise errors.RadioError("Failed to read block at %04x" % block_addr)
 
     return block_data
@@ -282,7 +282,7 @@ def _write_block(radio, block_addr, block_size):
         serial.write(cmd + data)
         if serial.read(1) != CMD_ACK:
             raise Exception("No ACK")
-    except errors.RadioError:
+    except Exception:
         raise errors.RadioError("Failed to send block "
                                 "to radio at %04x" % block_addr)
 
