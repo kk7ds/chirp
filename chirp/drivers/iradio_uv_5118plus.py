@@ -39,7 +39,7 @@ struct memory {
      lowpower:1,    // Power
      scan:1,        // Scan Add
      bcl:2,         // Busy Lock
-     unknown_2:1,   //
+     is_airband:1,  // Air Band (AM)
      unknown_3:1,   //
      unknown_4:1;   //
   u8 unknown_5;     //                       01
@@ -524,6 +524,11 @@ class IradioUV5118plus(chirp_common.CloneModeRadio):
         mem.name = str(_mem.name).rstrip('\xFF ')
 
         mem.mode = _mem.isnarrow and "NFM" or "FM"
+
+        if mem.freq < 136000000:
+            _mem.is_airband = True
+        else:
+            _mem.is_airband = False
 
         chirp_common.split_tone_decode(mem,
                                        self._decode_tone(_mem.tx_tone),
