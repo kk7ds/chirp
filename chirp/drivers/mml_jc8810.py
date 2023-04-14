@@ -73,8 +73,8 @@ struct {
      abr:4;           //      Auto BackLight
   u8 unused_9004:7,   // 9004
      tdr:1;           //      TDR
-  u8 unused:4,        // 9005
-     tot:4;           //      Time-out Timer
+  u8 unused:5,        // 9005
+     tot:3;           //      Time-out Timer
   u8 unused_9006:7,   // 9006
      beep:1;          //      Beep
   u8 unused_9007:7,   // 9007
@@ -209,7 +209,8 @@ SCREV_LIST = ["Time (TO)", "Carrier (CO)", "Search (SE)"]
 TAILCODE_LIST = ["55 Hz", "62.5 Hz"]
 TONERXEND_LIST = ["Off", "MDC-1200"]
 TONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
-TOT_LIST = ["Off"] + ["%s seconds" % x for x in range(30, 270, 30)]
+TOT_LIST = ["Off", "30 seconds", "60 seconds", "120 seconds", "240 seconds",
+            "480 seconds"]
 VOX_LIST = ["Off"] + ["%s" % x for x in range(1, 10)]
 VOXD_LIST = ["%s seconds" % str(x / 10) for x in range(5, 21)]
 WORKMODE_LIST = ["VFO Mode", "Channel Mode"]
