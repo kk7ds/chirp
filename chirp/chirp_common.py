@@ -1120,7 +1120,7 @@ class Radio(Alias):
     """Base class for all Radio drivers"""
     BAUD_RATE = 9600
     # Whether or not we should assert RTS (and use RTS/CTS flow control)
-    HARDWARE_FLOW = False
+    HARDWARE_FLOW = True
     # Whether or not we should assert DTR when opening the serial port
     WANTS_DTR = True
     ALIASES = []

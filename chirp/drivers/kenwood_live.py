@@ -174,6 +174,9 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
     VENDOR = "Kenwood"
     MODEL = ""
     NEEDS_COMPAT_SERIAL = False
+    # Lots of Kenwood radios actually require RTS, even some of the ones with
+    # USB integrated
+    HARDWARE_FLOW = True
 
     _vfo = 0
     _upper = 200

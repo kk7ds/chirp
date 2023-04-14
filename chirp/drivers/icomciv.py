@@ -338,6 +338,8 @@ class IcomCIVRadio(icf.IcomLiveRadio):
     BAUD_RATE = 19200
     NEEDS_COMPAT_SERIAL = False
     MODEL = "CIV Radio"
+    # RTS is interpreted as "transmit now" on some interface boxes for these
+    HARDWARE_FLOW = False
     _model = "\x00"
     _template = 0
 
