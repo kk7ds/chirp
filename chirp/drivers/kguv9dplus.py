@@ -1004,8 +1004,10 @@ def _hex_print(data, addrfmt=None):
 
 # Useful UI lists
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
+STEPS_9K = [2.5, 5.0, 6.25, 8.33, 10.0, 12.5, 25.0, 50.0, 100.0]
 S_TONES = [str(x) for x in [1000, 1450, 1750, 2100]]
 STEP_LIST = [str(x)+"kHz" for x in STEPS]
+STEP_LIST_9K = [str(x)+"kHz" for x in STEPS_9K]
 ROGER_LIST = ["Off", "Begin", "End", "Both"]
 TIMEOUT_LIST = [str(x) + "s" for x in range(15, 601, 15)]
 TOA_LIST = ["Off"] + ["%ds" % t for t in range(1, 11)]
@@ -1078,6 +1080,8 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("M", watts=2),
                     chirp_common.PowerLevel("H", watts=5)]
+    _step_list = STEP_LIST
+    _valid_steps = STEPS
     _mmap = ""
 
     def _read_record(self):
@@ -1346,7 +1350,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                           (400000000, 520000000),  # supports 70cm
                           (700000000, 985000000)]
         rf.valid_characters = chirp_common.CHARSET_ASCII
-        rf.valid_tuning_steps = STEPS
+        rf.valid_tuning_steps = self._valid_steps
         rf.memory_bounds = (1, 999)  # 999 memories
         return rf
 
@@ -2154,7 +2158,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             RadioSetting(prefix + ".step",
                          "Frequency Step (Menu 3)",
                          RadioSettingValueList(
-                             STEP_LIST, STEP_LIST[c.step])))
+                             self._step_list, self._step_list[c.step])))
         af.append(
             RadioSetting(prefix + ".scan_mode",
                          "Scan Mode (Menu 20)",
@@ -2445,6 +2449,13 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
     _rev = b"02"  # default rev for the radio I know about...
     _file_ident = b"kg-uv9px"
     NEEDS_COMPAT_SERIAL = False
+    _valid_steps = STEPS
+    _step_list = STEP_LIST
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
 
     def process_mmap(self):
         if self._rev != b"02" and self._rev != b"00":
@@ -2600,7 +2611,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
             RadioSetting(prefix + ".step",
                          "Frequency Step (Menu 3)",
                          RadioSettingValueList(
-                             STEP_LIST, STEP_LIST[c.step])))
+                             self._step_list, self._step_list[c.step])))
         af.append(
             RadioSetting(prefix + ".scan_mode",
                          "Scan Mode (Menu 20)",
@@ -2882,3 +2893,29 @@ class KGUV9GXRadio(KGUV9PXRadio):
     _model = b"KG-UV9D"
     _rev = b"02"  # default rev for the radio I know about...
     NEEDS_COMPAT_SERIAL = False
+    _valid_steps = STEPS
+    _step_list = STEP_LIST
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
+
+
+@directory.register
+class KGUV9KRadio(KGUV9DPlusRadio):
+
+    """Wouxun KG-UV9K"""
+    VENDOR = "Wouxun"
+    MODEL = "KG-UV9K"
+    _model = b"KG-UV9D"
+    _file_ident = b"kg-uv9k"
+    _rev = b"02"  # default rev for the radio I know about...
+    NEEDS_COMPAT_SERIAL = False
+    _step_list = STEP_LIST_9K
+    _valid_steps = STEPS_9K
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
