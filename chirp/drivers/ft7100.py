@@ -29,7 +29,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 
 LOG = logging.getLogger(__name__)
 
-ACK = "\x06"
+ACK = b"\x06"
 NB_OF_BLOCKS = 248
 BLOCK_LEN = 32
 
@@ -39,18 +39,18 @@ def _send(pipe, data):
     # pipe.write(data) --> It seems, that the single bytes are sent too fast
     # so send character per character with a delay
     for ch in data:
-        pipe.write(ch)
+        pipe.write(bytes([ch]))
         time.sleep(0.0012)  # 0.0011 is to short. No ACK after a few packets
     echo = pipe.read(len(data))
-    if data == "":
+    if data == b"":
         raise Exception("Failed to read echo."
                         " Maybe serial hardware not connected."
                         " Maybe radio not powered or not in receiving mode.")
     if data != echo:
         LOG.debug("expecting echo\n%s\n", util.hexprint(data))
         LOG.debug("got echo\n%s\n", util.hexprint(echo))
-        raise Exception("Got false echo. Expected: '{}', got: '{}'."
-                        .format(data, echo))
+        raise Exception("Got false echo. Expected: %r, got: %r.",
+                        data, echo)
 
 
 def _send_ack(pipe):
@@ -62,27 +62,29 @@ def _send_ack(pipe):
 
 def _wait_for_ack(pipe):
     echo = pipe.read(1)
-    if echo == "":
+    if echo == b"":
         raise Exception("Failed to read ACK. No response from radio.")
     if echo != ACK:
-        raise Exception("Failed to read ACK.  Expected: '{}', got: '{}'."
-                        .format(util.hexprint(ACK), util.hexprint(echo)))
+        raise Exception("Failed to read ACK.  Expected: %r, got: %r.",
+                        ACK, echo)
 
 
 def _download(radio):
     LOG.debug("in _download\n")
-    data = ""
+    data = b""
     for _i in range(0, 60):
-        data = radio.pipe.read(BLOCK_LEN)
+        chunk = radio.pipe.read(BLOCK_LEN)
+        data += chunk
         LOG.debug("Header:\n%s", util.hexprint(data))
-        LOG.debug("len(header) = %s\n", len(data))
         if data == radio.IDBLOCK:
             break
-    if data == "":
+        if len(data) > len(radio.IDBLOCK):
+            break
+    if data == b"":
         raise Exception("Got no data from radio.")
     if data != radio.IDBLOCK:
-        raise Exception("Got false header. Expected: '{}', got: '{}'."
-                        .format(radio.IDBLOCK, data))
+        raise Exception("Got false header. Expected: %r, got: %r." % (
+                          radio.IDBLOCK, data))
     _send_ack(radio.pipe)
 
     # read 16 Byte block
@@ -92,9 +94,10 @@ def _download(radio):
     # Now the data is hardcoded in _upload(radio)
     data = radio.pipe.read(16)
     _send_ack(radio.pipe)
+    LOG.debug('Magic 16-byte chunk:\n%s' % util.hexprint(data))
 
     # initialize data, the big var that holds all memory
-    data = ""
+    data = b""
     for block_nr in range(NB_OF_BLOCKS):
         chunk = radio.pipe.read(BLOCK_LEN)
         if len(chunk) != BLOCK_LEN:
@@ -117,12 +120,12 @@ def _download(radio):
     _send_ack(radio.pipe)
 
     # for debugging purposes, dump the channels, in hex.
-    for _i in range(0, (NB_OF_BLOCKS * BLOCK_LEN) / 26):
+    for _i in range(0, (NB_OF_BLOCKS * BLOCK_LEN) // 26):
         _start_data = 4 + 26 * _i
         chunk = data[_start_data:_start_data + 26]
         LOG.debug("channel %i:\n%s", _i-21, util.hexprint(chunk))
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def _upload(radio):
@@ -132,8 +135,8 @@ def _upload(radio):
 
     # write 16 Byte block
     # If there should be a problem, see remarks in _download(radio)
-    _send(radio.pipe, "\xCC\x77\x01\x00\x0C\x07\x0C\x07"
-                      "\x00\x00\x00\x00\x00\x00\x00\x00")
+    _send(radio.pipe, b"\xEE\x77\x01\x00\x0E\x07\x0E\x07"
+                      b"\x00\x00\x00\x00\x00\x02\x00\x00")
     _wait_for_ack(radio.pipe)
 
     for block_nr in range(NB_OF_BLOCKS):
@@ -525,8 +528,9 @@ class FT7100Radio(YaesuCloneModeRadio):
     """Yaesu FT-7100M"""
     MODEL = "FT-7100M"
     VARIANT = ""
-    IDBLOCK = "Vartex Standard AH003M M-Map V04"
+    IDBLOCK = b"Vartex Standard AH003M M-Map V04"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     # Return information about this radio's features, including
     # how many memories it has, what bands it supports, etc
@@ -591,7 +595,7 @@ class FT7100Radio(YaesuCloneModeRadio):
         return repr(self._memobj.memory[number])
 
     def get_memory(self, number):
-        LOG.debug("get_memory Number: {}".format(number))
+        LOG.debug("get_memory Number: %r", number)
 
         # Create a high-level memory object to return to the UI
         mem = chirp_common.Memory()
@@ -697,7 +701,7 @@ class FT7100Radio(YaesuCloneModeRadio):
         return mem
 
     def set_memory(self, mem):
-        LOG.debug("set_memory Number: {}".format(mem.number))
+        LOG.debug("set_memory Number: %r", mem.number)
         if mem.number < 0:
             number = SPECIAL_CHANS[mem.number+10]
             if number == 'VFO-VHF':
@@ -709,8 +713,8 @@ class FT7100Radio(YaesuCloneModeRadio):
             elif number == 'Home-UHF':
                 _mem = self._memobj.home_vhf_uhf[1].mem_struct
             else:
-                raise errors.RadioError("Unexpected Memory Number: {}"
-                                        .format(mem.number))
+                raise errors.RadioError("Unexpected Memory Number: %r",
+                                        mem.number)
         else:
             _mem = self._memobj.memory[mem.number]
 
@@ -921,7 +925,7 @@ class FT7100Radio(YaesuCloneModeRadio):
             radio_setting_value_string = RadioSettingValueString(0, 16,
                                                                  dtmf_string)
             radio_setting_value_string.set_charset(DTMF_CHARSET)
-            rs = RadioSetting("dtmf_{0:02d}".format(i),
+            rs = RadioSetting("dtmf_%02i" % i,
                               "DTMF Mem " + str(i+1),
                               radio_setting_value_string)
 
@@ -1113,7 +1117,7 @@ class FT7100Radio(YaesuCloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        return filedata[0x1ec0:0x1ec0+len(cls.IDBLOCK)] == cls.IDBLOCK.encode()
+        return filedata[0x1ec0:0x1ec0+len(cls.IDBLOCK)] == cls.IDBLOCK
 
     @classmethod
     def get_prompts(cls):
@@ -1157,7 +1161,7 @@ class FT7100RadioVHF(FT7100Radio):
         return rf
 
     def get_memory(self, number):
-        LOG.debug("get_memory VHF Number: {}".format(number))
+        LOG.debug("get_memory VHF Number: %s", number)
         if isinstance(number, int):
             if number >= 0:
                 mem = FT7100Radio.get_memory(self, number + 0 - 1)
@@ -1171,7 +1175,7 @@ class FT7100RadioVHF(FT7100Radio):
         return mem
 
     def set_memory(self, mem):
-        LOG.debug("set_memory VHF Number: {}".format(mem.number))
+        LOG.debug("set_memory VHF Number: %s", mem.number)
         # We modify memory, so dupe() it to avoid changing our caller's
         # version
         mem = mem.dupe()
@@ -1200,7 +1204,7 @@ class FT7100RadioUHF(FT7100Radio):
         return rf
 
     def get_memory(self, number):
-        LOG.debug("get_memory UHF Number: {}".format(number))
+        LOG.debug("get_memory UHF Number: %s", number)
         upper_vhf_limit = self._get_upper_vhf_limit()
         if isinstance(number, int):
             if number >= 0:
@@ -1216,7 +1220,7 @@ class FT7100RadioUHF(FT7100Radio):
         return mem
 
     def set_memory(self, mem):
-        LOG.debug("set_memory UHF Number: {}".format(mem.number))
+        LOG.debug("set_memory UHF Number: %s", mem.number)
         # We modify memory, so dupe() it to avoid changing our caller's
         # version
         mem = mem.dupe()

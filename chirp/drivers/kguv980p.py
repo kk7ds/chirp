@@ -2344,7 +2344,7 @@ class KG980PRadio(chirp_common.CloneModeRadio,
                             SCAN_GROUP_LIST,
                             SCAN_GROUP_LIST[_settings.scan_a_act]))
         scan_grp.append(rs)
-        rs = RadioSetting("scan_b_act", "Scan Active Group",
+        rs = RadioSetting("scan_b_act", "Scan B Active Group",
                           RadioSettingValueList(
                              SCAN_GROUP_LIST,
                              SCAN_GROUP_LIST[_settings.scan_b_act]))

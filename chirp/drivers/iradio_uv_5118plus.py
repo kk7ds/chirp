@@ -39,7 +39,7 @@ struct memory {
      lowpower:1,    // Power
      scan:1,        // Scan Add
      bcl:2,         // Busy Lock
-     unknown_2:1,   //
+     is_airband:1,  // Air Band (AM)
      unknown_3:1,   //
      unknown_4:1;   //
   u8 unknown_5;     //                       01
@@ -208,7 +208,7 @@ def _enter_programming_mode(radio):
             if ack == CMD_ACK:
                 exito = True
                 break
-        except errors.RadioError:
+        except Exception:
             LOG.debug("Attempt #%s, failed, trying again" % i)
             pass
 
@@ -223,7 +223,7 @@ def _exit_programming_mode(radio):
     serial = radio.pipe
     try:
         serial.write(b"58" + b"\x05\xEE\x60")
-    except errors.RadioError:
+    except Exception:
         raise errors.RadioError("Radio refused to exit programming mode")
 
 
@@ -255,7 +255,7 @@ def _read_block(radio, block_addr, block_size):
             raise Exception("Block failed checksum!")
 
         block_data = chunk[:-1]
-    except errors.RadioError:
+    except Exception:
         raise errors.RadioError("Failed to read block at %04x" % block_addr)
 
     return block_data
@@ -282,7 +282,7 @@ def _write_block(radio, block_addr, block_size):
         serial.write(cmd + data)
         if serial.read(1) != CMD_ACK:
             raise Exception("No ACK")
-    except errors.RadioError:
+    except Exception:
         raise errors.RadioError("Failed to send block "
                                 "to radio at %04x" % block_addr)
 
@@ -524,6 +524,11 @@ class IradioUV5118plus(chirp_common.CloneModeRadio):
         mem.name = str(_mem.name).rstrip('\xFF ')
 
         mem.mode = _mem.isnarrow and "NFM" or "FM"
+
+        if mem.freq < 136000000:
+            _mem.is_airband = True
+        else:
+            _mem.is_airband = False
 
         chirp_common.split_tone_decode(mem,
                                        self._decode_tone(_mem.tx_tone),
