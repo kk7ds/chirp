@@ -1100,6 +1100,9 @@ class ChirpMain(wx.Frame):
         if not editorset.modified:
             return True
 
+        if isinstance(editorset, ChirpLiveEditorSet):
+            return True
+
         answer = wx.MessageBox(
             _('%s has not been saved. Save before closing?') % (
                 editorset.filename),
