@@ -123,14 +123,15 @@ def open_serial(port, rclass):
     if '://' in port:
         pipe = serial.serial_for_url(port, do_not_open=True)
         pipe.timeout = 0.25
-        pipe.rts = rclass.HARDWARE_FLOW
+        pipe.rtscts = rclass.HARDWARE_FLOW
+        pipe.rts = rclass.WANTS_RTS
         pipe.dtr = rclass.WANTS_DTR
         pipe.open()
         pipe.baudrate = rclass.BAUD_RATE
     else:
         pipe = serial.Serial(baudrate=rclass.BAUD_RATE,
                              rtscts=rclass.HARDWARE_FLOW, timeout=0.25)
-        pipe.rts = rclass.HARDWARE_FLOW
+        pipe.rts = rclass.WANTS_RTS
         pipe.dtr = rclass.WANTS_DTR
         pipe.port = port
         pipe.open()
