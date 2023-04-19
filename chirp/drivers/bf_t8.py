@@ -642,8 +642,10 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         self._set_tone(mem, _mem)
 
         # tx power
-        if mem.power:
-            _mem.lowpower = self.POWER_LEVELS.index(mem.power)
+        if str(mem.power) == "High":
+            _mem.lowpower = 0
+        elif str(mem.power) == "Low":
+            _mem.lowpower = 1
         else:
             _mem.lowpower = 0
 
