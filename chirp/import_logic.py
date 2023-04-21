@@ -203,8 +203,9 @@ def _make_offset_with_split(rxfreq, txfreq):
 def _import_duplex(dst_radio, srcrf, mem):
     dstrf = dst_radio.get_features()
 
-    # If a radio does not support odd split, we can use an equivalent offset
     if mem.duplex == "split" and mem.duplex not in dstrf.valid_duplexes:
+        # If a radio does not support odd split, we can use an equivalent
+        # offset
         mem.duplex, mem.offset = _make_offset_with_split(mem.freq, mem.offset)
 
         # Enforce maximum offset
@@ -215,6 +216,10 @@ def _import_duplex(dst_radio, srcrf, mem):
             if lo < mem.freq <= hi:
                 if abs(mem.offset) > limit:
                     raise DestNotCompatible("offset is abnormally large.")
+    elif mem.duplex == 'off' and mem.duplex not in dstrf.valid_duplexes:
+        # If a radio does not support duplex=off, we should just convert to
+        # simplex
+        mem.duplex = ''
 
 
 def import_mem(dst_radio, src_features, src_mem, overrides={}):
