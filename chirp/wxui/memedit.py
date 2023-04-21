@@ -539,6 +539,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._dc = wx.ScreenDC()
         self.set_cell_attrs()
 
+    @property
+    def editable(self):
+        return not isinstance(self._radio, chirp_common.NetworkSourceRadio)
+
     def set_cell_attrs(self):
         if platform.system() == 'Linux':
             minwidth = 100
@@ -651,7 +655,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             for col, col_def in enumerate(self._col_defs):
                 self._grid.SetCellValue(row, col, col_def.render_value(memory))
                 self._grid.SetReadOnly(row, col,
-                                       col_def.name in memory.immutable)
+                                       col_def.name in memory.immutable or
+                                       not self.editable)
                 if col_def.name in memory.immutable:
                     color = (0xF5, 0xF5, 0xF5, 0xFF)
                 else:
@@ -1167,16 +1172,19 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._mem_properties, selected_rows),
                   props_item)
+        props_item.Enable(self.editable)
         menu.Append(props_item)
 
         insert_item = wx.MenuItem(menu, wx.NewId(), _('Insert Row Above'))
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._mem_insert, selected_rows[0]),
                   insert_item)
+        insert_item.Enable(self.editable)
         menu.Append(insert_item)
 
         delete_menu = wx.Menu()
-        menu.AppendSubMenu(delete_menu, _('Delete'))
+        delete_menu_item = menu.AppendSubMenu(delete_menu, _('Delete'))
+        delete_menu_item.Enable(self.editable)
 
         if len(selected_rows) > 1:
             del_item = wx.MenuItem(
@@ -1222,7 +1230,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         contig_selected = (
             selected_rows[-1] - selected_rows[0] == len(selected_rows) - 1)
         can_sort = (len(selected_rows) > 1 and contig_selected and
-                    not empty_selected and not special_selected)
+                    not empty_selected and not special_selected and
+                    self.editable)
         sort_menu = wx.Menu()
         sort_menu_item = menu.AppendSubMenu(
             sort_menu,
@@ -1248,7 +1257,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # Don't allow bulk operations on live radios with pending jobs
         del_block_item.Enable(not self.busy)
         del_shift_item.Enable(not self.busy)
-        insert_item.Enable(not self.busy)
+        insert_item.Enable(not self.busy and self.editable)
         menu.Enable(sort_menu_item.GetId(), not self.busy and can_sort)
 
         if CONF.get_bool('developer', 'state'):

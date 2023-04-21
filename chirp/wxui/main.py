@@ -875,6 +875,7 @@ class ChirpMain(wx.Frame):
         can_save = False
         can_saveas = False
         can_upload = False
+        can_edit = False
         is_memedit = False
         is_bank = False
         CSVRadio = directory.get_radio('Generic_CSV')
@@ -890,6 +891,7 @@ class ChirpMain(wx.Frame):
                           not is_live and not is_network)
             is_memedit = isinstance(eset.current_editor, memedit.ChirpMemEdit)
             is_bank = isinstance(eset.current_editor, bankedit.ChirpBankEdit)
+            can_edit = not is_network
 
         items = [
             (wx.ID_CLOSE, can_close),
@@ -900,12 +902,12 @@ class ChirpMain(wx.Frame):
             (self._find_next_item, is_memedit),
             (wx.ID_FIND, is_memedit),
             (wx.ID_PRINT, is_memedit),
-            (wx.ID_DELETE, is_memedit),
-            (wx.ID_CUT, is_memedit),
+            (wx.ID_DELETE, is_memedit and can_edit),
+            (wx.ID_CUT, is_memedit and can_edit),
             (wx.ID_COPY, is_memedit),
-            (wx.ID_PASTE, is_memedit),
-            (self._movedn_item, is_memedit),
-            (self._moveup_item, is_memedit),
+            (wx.ID_PASTE, is_memedit and can_edit),
+            (self._movedn_item, is_memedit and can_edit),
+            (self._moveup_item, is_memedit and can_edit),
             (wx.ID_SELECTALL, is_memedit),
             (self._print_preview_item, is_memedit),
             (self._export_menu_item, can_close),
