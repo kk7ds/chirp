@@ -329,6 +329,14 @@ class ImportFieldTests(base.BaseTest):
         self.assertRaises(import_logic.DestNotCompatible,
                           import_logic._import_duplex, radio, None, mem)
 
+    def test_import_duplex_off_not_supported(self):
+        radio = FakeRadio(None)
+        mem = chirp_common.Memory()
+        mem.freq = 146000000
+        mem.duplex = 'off'
+        import_logic._import_duplex(radio, None, mem)
+        self.assertEqual('', mem.duplex)
+
     @mock.patch('chirp.import_logic._import_name')
     @mock.patch('chirp.import_logic._import_power')
     @mock.patch('chirp.import_logic._import_tone')
