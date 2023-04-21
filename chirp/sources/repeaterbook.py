@@ -170,7 +170,10 @@ class RepeaterBook(base.NetworkResultRadio):
         except errors.InvalidDataError as e:
             LOG.debug(e)
         txf = chirp_common.parse_freq(item['Input Freq'])
-        chirp_common.split_to_offset(m, m.freq, txf)
+        if txf == 0:
+            m.duplex = 'off'
+        else:
+            chirp_common.split_to_offset(m, m.freq, txf)
         txm, tx = parse_tone(item['PL'])
         rxm, rx = parse_tone(item['TSQ'])
         chirp_common.split_tone_decode(m, (txm, tx, 'N'), (rxm, rx, 'N'))
