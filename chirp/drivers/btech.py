@@ -200,6 +200,9 @@ UV25X2G2_fp = b"UCB282"
 # B-TECH UV-25X4
 UV25X4_fp = b"UC4014"
 
+# B-TECH UV-25X4 Second Generation (G2)
+UV25X4G2_fp = b"UCB284"
+
 # B-TECH UV-50X2
 UV50X2_fp = b"UC2M12"
 
@@ -1265,7 +1268,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 cdmdf = RadioSetting("settings.cdmdf", "Display mode D", rs)
                 basic.append(cdmdf)
 
-                if self.MODEL in ["UV-50X2_G2", "UV-25X2_G2"]:
+                if self.MODEL in ["UV-50X2_G2", "UV-25X2_G2", "UV-25X4_G2"]:
                     val = min(_mem.settings.langua, len(LIST_VOX) - 1)
                     rs = RadioSettingValueList(LIST_VOX, LIST_VOX[val])
                     vox = RadioSetting("settings.langua", "VOX", rs)
@@ -1650,13 +1653,14 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
         if self.MODEL in ["KT-8R", "UV-25X2", "UV-25X4", "UV-50X2",
                           "GMRS-50X1", "GMRS-20V2", "UV-50X2_G2",
-                          "GMRS-50V2", "UV-25X2_G2"]:
+                          "GMRS-50V2", "UV-25X2_G2", "UV-25X4_G2"]:
             val = min(_mem.settings.tmrtx, len(LIST_TMRTX) - 1)
             rs = RadioSettingValueList(LIST_TMRTX, LIST_TMRTX[val])
             tmrtx = RadioSetting("settings.tmrtx", "TX in multi-standby", rs)
             basic.append(tmrtx)
 
-        if self.MODEL in ["UV-50X2_G2", "GMRS-50V2", "UV-25X2_G2"]:
+        if self.MODEL in ["UV-50X2_G2", "GMRS-50V2", "UV-25X2_G2",
+                          "UV-25X4_G2"]:
             val = min(_mem.settings.earpho, len(LIST_EARPH) - 1)
             rs = RadioSettingValueList(LIST_EARPH, LIST_EARPH[val])
             earpho = RadioSetting("settings.earpho", "Earphone", rs)
@@ -4026,6 +4030,13 @@ class UV25X4(BTechColor):
     _350_range = (350000000, 391000000)
     _magic = MSTRING_UV25X4
     _fileid = [UV25X4_fp]
+
+
+@directory.register
+class UV25X4_G2(UV25X4):
+    """Baofeng Tech UV25X4_G2"""
+    MODEL = "UV-25X4_G2"
+    _fileid = [UV25X4G2_fp]
 
 
 @directory.register
