@@ -35,6 +35,7 @@
 | <a name="BTECH_UV-25X2"></a> BTECH_UV-25X2 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.15% |
 | <a name="BTECH_UV-25X2_G2"></a> BTECH_UV-25X2_G2 | [@KC9HI](https://github.com/KC9HI) | 23-Apr-2023 | Yes |  |
 | <a name="BTECH_UV-25X4"></a> BTECH_UV-25X4 | [@KC9HI](https://github.com/KC9HI) | 10-Nov-2022 | Yes | 0.11% |
+| <a name="BTECH_UV-25X4_G2"></a> BTECH_UV-25X4_G2 | [@KC9HI](https://github.com/KC9HI) | 23-Apr-2023 | Yes |  |
 | <a name="BTECH_UV-5001"></a> BTECH_UV-5001 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.03% |
 | <a name="BTECH_UV-50X2"></a> BTECH_UV-50X2 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.13% |
 | <a name="BTECH_UV-50X2_G2"></a> BTECH_UV-50X2_G2 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.00% |
@@ -403,11 +404,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 400
+**Drivers:** 401
 
-**Tested:** 85% (340/60) (93% of usage stats)
+**Tested:** 85% (341/60) (93% of usage stats)
 
-**Byte clean:** 89% (358/42)
+**Byte clean:** 89% (359/42)
 
 ## Meaning of this testing
 
