@@ -1262,7 +1262,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 cdmdf = RadioSetting("settings.cdmdf", "Display mode D", rs)
                 basic.append(cdmdf)
 
-                if self.MODEL == "UV-50X2_G2":
+                if self.MODEL in ["UV-50X2_G2"]:
                     val = min(_mem.settings.langua, len(LIST_VOX) - 1)
                     rs = RadioSettingValueList(LIST_VOX, LIST_VOX[val])
                     vox = RadioSetting("settings.langua", "VOX", rs)
@@ -1645,16 +1645,15 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             scmode = RadioSetting("settings.scmode", "Scan mode", rs)
             basic.append(scmode)
 
-        if self.MODEL == "KT-8R" or self.MODEL == "UV-25X2" \
-                or self.MODEL == "UV-25X4" or self.MODEL == "UV-50X2" \
-                or self.MODEL == "GMRS-50X1" or self.MODEL == "GMRS-20V2" \
-                or self.MODEL == "UV-50X2_G2" or self.MODEL == "GMRS-50V2":
+        if self.MODEL in ["KT-8R", "UV-25X2", "UV-25X4", "UV-50X2",
+                          "GMRS-50X1", "GMRS-20V2", "UV-50X2_G2",
+                          "GMRS-50V2"]:
             val = min(_mem.settings.tmrtx, len(LIST_TMRTX) - 1)
             rs = RadioSettingValueList(LIST_TMRTX, LIST_TMRTX[val])
             tmrtx = RadioSetting("settings.tmrtx", "TX in multi-standby", rs)
             basic.append(tmrtx)
 
-        if self.MODEL == "UV-50X2_G2" or self.MODEL == "GMRS-50V2":
+        if self.MODEL in ["UV-50X2_G2", "GMRS-50V2"]:
             val = min(_mem.settings.earpho, len(LIST_EARPH) - 1)
             rs = RadioSettingValueList(LIST_EARPH, LIST_EARPH[val])
             earpho = RadioSetting("settings.earpho", "Earphone", rs)
@@ -3549,9 +3548,9 @@ class MINI8900(BTech):
     VENDOR = "WACCOM"
     MODEL = "MINI-8900"
     _magic = MSTRING_MINI8900
-    _fileid = [MINI8900_fp, ]
+    _fileid = [MINI8900_fp]
     # Clones
-    ALIASES = [JT6188Plus, ]
+    ALIASES = [JT6188Plus]
 
 
 @directory.register
@@ -3562,9 +3561,9 @@ class KTUV980(BTech):
     _vhf_range = (136000000, 175000000)
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_MINI8900
-    _fileid = [KTUV980_fp, ]
+    _fileid = [KTUV980_fp]
     # Clones
-    ALIASES = [JT2705M, ]
+    ALIASES = [JT2705M]
 
 # Please note that there is a version of this radios that is a clone of the
 # Waccom Mini8900, maybe an early version?
@@ -4003,7 +4002,7 @@ class UV25X2(BTechColor):
     _vhf_range = (130000000, 180000000)
     _uhf_range = (400000000, 521000000)
     _magic = MSTRING_UV25X2
-    _fileid = [UV25X2_fp, ]
+    _fileid = [UV25X2_fp]
 
 
 @directory.register
@@ -4016,7 +4015,7 @@ class UV25X4(BTechColor):
     _uhf_range = (400000000, 521000000)
     _350_range = (350000000, 391000000)
     _magic = MSTRING_UV25X4
-    _fileid = [UV25X4_fp, ]
+    _fileid = [UV25X4_fp]
 
 
 @directory.register
@@ -4027,7 +4026,7 @@ class UV50X2(BTechColor):
     _vhf_range = (130000000, 180000000)
     _uhf_range = (400000000, 521000000)
     _magic = MSTRING_UV25X2
-    _fileid = [UV50X2_fp, ]
+    _fileid = [UV50X2_fp]
     _power_levels = [chirp_common.PowerLevel("High", watts=50),
                      chirp_common.PowerLevel("Low", watts=10)]
 
@@ -4040,7 +4039,7 @@ class UV50X2_G2(BTechColor):
     _vhf_range = (130000000, 180000000)
     _uhf_range = (400000000, 521000000)
     _magic = MSTRING_UV25X2
-    _fileid = [UV50X2_fp, ]
+    _fileid = [UV50X2_fp]
     _power_levels = [chirp_common.PowerLevel("High", watts=50),
                      chirp_common.PowerLevel("Low", watts=10)]
 
@@ -4064,9 +4063,9 @@ class KT7900D(BTechColor):
     _magic = MSTRING_KT8900D
     _fileid = [KT7900D_fp, KT7900D_fp1, KT7900D_fp2, KT7900D_fp3, KT7900D_fp4,
                KT7900D_fp5, KT7900D_fp6, KT7900D_fp7, KT7900D_fp8, KT7900D_fp9,
-               QB25_fp, ]
+               QB25_fp]
     # Clones
-    ALIASES = [SKT8900D, QB25, ]
+    ALIASES = [SKT8900D, QB25]
 
 
 @directory.register
@@ -4095,7 +4094,7 @@ class KT5800(BTechColor):
     _vhf_range = (136000000, 175000000)
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900D
-    _fileid = [KT5800_fp, ]
+    _fileid = [KT5800_fp]
 
 
 @directory.register
@@ -4520,7 +4519,7 @@ class GMRS50X1(BTechGMRS):
     _uhf_range = (400000000, 521000000)
     _upper = 255
     _magic = MSTRING_GMRS50X1
-    _fileid = [GMRS50X1_fp1, GMRS50X1_fp, ]
+    _fileid = [GMRS50X1_fp1, GMRS50X1_fp]
     _gmrs = True
 
     def validate_memory(self, mem):
@@ -4554,7 +4553,7 @@ class GMRS50V2(BTechGMRS):
     _uhf_range = (400000000, 521000000)
     _upper = 255
     _magic = MSTRING_GMRS50X1
-    _fileid = [GMRS50X1_fp1, GMRS50X1_fp, ]
+    _fileid = [GMRS50X1_fp1, GMRS50X1_fp]
     _gmrs = True
 
     def validate_memory(self, mem):
@@ -4945,7 +4944,7 @@ class KT8R(QYTColorHT):
     _uhf_range = (400000000, 481000000)
     _350_range = (350000000, 391000000)
     _magic = MSTRING_KT8R
-    _fileid = [KT8R_fp2, KT8R_fp1, KT8R_fp, ]
+    _fileid = [KT8R_fp2, KT8R_fp1, KT8R_fp]
     _power_levels = [chirp_common.PowerLevel("High", watts=5),
                      chirp_common.PowerLevel("Low", watts=1)]
 
@@ -5621,7 +5620,7 @@ class KTWP12(BTechColorWP):
                      chirp_common.PowerLevel("Low", watts=5)]
     _upper = 199
     _magic = MSTRING_KTWP12
-    _fileid = [KTWP12_fp, ]
+    _fileid = [KTWP12_fp]
     _gmrs = False
 
     def process_mmap(self):
@@ -5645,7 +5644,7 @@ class WP9900(BTechColorWP):
                      chirp_common.PowerLevel("Low", watts=5)]
     _upper = 199
     _magic = MSTRING_KTWP12
-    _fileid = [WP9900_fp, ]
+    _fileid = [WP9900_fp]
     _gmrs = False
 
     def process_mmap(self):
@@ -5669,7 +5668,7 @@ class GMRS20V2(BTechColorWP):
                      chirp_common.PowerLevel("Low", watts=5)]
     _upper = 199
     _magic = MSTRING_GMRS20V2
-    _fileid = [GMRS20V2_fp2, GMRS20V2_fp1, GMRS20V2_fp, ]
+    _fileid = [GMRS20V2_fp2, GMRS20V2_fp1, GMRS20V2_fp]
     _gmrs = True
 
     def validate_memory(self, mem):
