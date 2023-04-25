@@ -896,7 +896,7 @@ def str2name(val, size=6, fillchar='\0', emptyfill='\0'):
     """ Convert a string to a name. A name is a 6 element bytearray
     with ascii chars.
     """
-    val = str(val).rstrip(' \t\r\n\0\0xff')
+    val = str(val).rstrip(' \t\r\n\0\xff')
     if len(val) == 0:
         name = "".ljust(size, emptyfill)
     else:
