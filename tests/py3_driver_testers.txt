@@ -309,6 +309,7 @@ Wouxun_KG-UV920P-A,@KC9HI,22-Dec-2022
 Wouxun_KG-UV980P,@mrtjr1,23-jan-2023
 Wouxun_KG-UV9PX,@mrtjr1,20-Jan-2022
 Wouxun_KG-UV9GX,@mrtjr1,27-Mar-2023
+Wouxun_KG-UV9G_Pro,@mrtjr1,25-Apr-2023
 Wouxun_KG-UV9K,@mrtjr1,14-Apr-2023
 Wouxun_KG-935G,@mrtjr1,4-Jan-2022
 Wouxun_KG-935G_Plus,@mrtjr1,7-Feb-2023
