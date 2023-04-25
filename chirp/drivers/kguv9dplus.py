@@ -88,6 +88,8 @@ config_map = (          # map address, write size, write count
     (0x4840, 48, 1),    # Memory Channels 997-999
     (0x4900, 32, 249),  # Memory Names    1-996
     (0x6820, 24, 1),    # Memory Names    997-999
+    (0x7000, 8, 124),   # Valid Channel bytes 1-992
+    (0x73E0, 1, 7),     # Valid Channel Bytes 993-999
     (0x7400, 64, 5),    # CALL-ID 1-20, names 1-20
     )
 
@@ -121,6 +123,8 @@ config_map2 = (          # map address, write size, write count
     (0x4840, 48, 1),    # Memory Channels 997-999
     (0x4900, 32, 249),  # Memory Names    1-996
     (0x6820, 24, 1),    # Memory Names    997-999
+    (0x7000, 8, 124),   # Valid Channel bytes 1-992
+    (0x73E0, 1, 7),     # Valid Channel Bytes 993-999
     (0x7400, 64, 5),    # CALL-ID 1-20, names 1-20
     (0x7600,  1, 1)     # Screen Mode
     )
@@ -129,6 +133,10 @@ MEM_VALID = 0xfc
 MEM_INVALID = 0xff
 VALID_MEM_VALUES = [MEM_VALID, 0x00, 0x02, 0x40, 0x3D]
 INVALID_MEM_VALUES = [MEM_INVALID]
+# new CHAN_VALID/INVALID mem values to address some radios not showing
+# new channels
+CHAN_VALID = 0x41
+CHAN_INVALID = 0xFC
 # Radio memory map. This matches the reads/writes above.
 # structure elements whose name starts with x are currently unidentified
 
@@ -367,6 +375,11 @@ struct {
 struct {
     char name[8];
 } chan_name[999];
+
+#seekto 0x7000;
+struct {
+    u8 ch_valid;
+} chan_valid[999];
 
 #seekto 0x7400;
 struct {
@@ -638,6 +651,11 @@ struct {
     char name[6];
     char pad[2];
 } cid_names[20];
+
+#seekto 0x7000;
+struct {
+    u8 ch_valid;
+} chan_valid[999];
 
 #seekto 0x7600;
 struct {
@@ -1420,6 +1438,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         """
         _mem = self._memobj.chan_blk[number - 1]
         _nam = self._memobj.chan_name[number - 1]
+        _val = self._memobj.chan_valid[number - 1]
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -1442,6 +1461,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                 LOG.debug("CH %s Rx Freq = 0xFFFFFFFF - "
                           "Treating chan as empty", mem.number)
             mem.empty = True
+            _val.ch_valid = CHAN_INVALID
             return mem
         elif _valid in INVALID_MEM_VALUES:
             # Check for 9PX case where CPS creates a valid channel with
@@ -1451,19 +1471,23 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                 LOG.debug("CH %s State invalid - Rx Frq > 999.99999 MHz: "
                           "Treating chan as empty", mem.number)
                 mem.empty = True
+                _val.ch_valid = CHAN_INVALID
                 return mem
             else:
                 LOG.debug("CH %s State invalid - Rx Freq valid: "
                           "Assume chan valid", mem.number)
                 mem.empty = False
+                _val.ch_valid = CHAN_VALID
         else:  # State not Invalid and Rx Freq not 0xFFFFFFFF
             if _mem.rxfreq > 99999999:  # Max poss Value = 999.99999 MHz
                 LOG.debug("CH %s Invalid Rx Frq: %s MHz - "
                           "Treating chan as empty", mem.number,
                           int(_mem.rxfreq) / 100000)
                 mem.empty = True
+                _val.ch_valid = CHAN_INVALID
                 return mem
             else:
+                _val.ch_valid = CHAN_VALID
                 mem.empty = False
 
         mem.freq = int(_mem.rxfreq) * 10
@@ -1547,6 +1571,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
 
         _mem = self._memobj.chan_blk[number - 1]
         _nam = self._memobj.chan_name[number - 1]
+        _val = self._memobj.chan_valid[number - 1]
 
         if mem.empty:
             # consider putting in a check for chan # that is empty but
@@ -1563,6 +1588,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             _mem.set_raw("\xFF" * (_mem.size() // 8))
             _nam.name = str2name("", 8, '\0', '\0')
             _mem.state = MEM_INVALID
+            _val.ch_valid = CHAN_INVALID
             return
 
         _mem.rxfreq = int(mem.freq / 10)
@@ -1602,6 +1628,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         _mem.bit5 = 0   # clear this bit to ensure accurate CPS power level
         _nam.name = str2name(mem.name, 8, '\0', '\0')
         _mem.state = MEM_VALID
+        _val.ch_valid = CHAN_VALID
 
 # Build the UI configuration tabs
 # the channel memory tab is built by the core.
