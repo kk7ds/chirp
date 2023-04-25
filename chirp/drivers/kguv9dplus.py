@@ -2225,7 +2225,8 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             pfkey1 = PF1KEY_LIST
             pfkey2 = PF2KEY_LIST
             pfkey3 = PF3KEY_LIST2
-        elif self.MODEL == "KG-UV9GX":
+        elif (self.MODEL == "KG-UV9GX" or
+              self.MODEL == "KG-UV9G Pro"):
             pfkey1 = PF1KEY_LIST9GX
             pfkey2 = PF2KEY_LIST9GX
             pfkey3 = PF3KEY_LIST9GX
@@ -2941,6 +2942,25 @@ class KGUV9KRadio(KGUV9DPlusRadio):
     NEEDS_COMPAT_SERIAL = False
     _step_list = STEP_LIST_9K
     _valid_steps = STEPS_9K
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
+
+
+@directory.register
+class KGUV9GProRadio(KGUV9DPlusRadio):
+
+    """Wouxun KG-UV9G Pro"""
+    VENDOR = "Wouxun"
+    MODEL = "KG-UV9G Pro"
+    _model = b"KG-UV9D"
+    _file_ident = b"kg-uv9gpro"
+    _rev = b"02"  # default rev for the radio I know about...
+    NEEDS_COMPAT_SERIAL = False
+    _step_list = STEP_LIST
+    _valid_steps = STEPS
 
     @classmethod
     def match_model(cls, filedata, filename):
