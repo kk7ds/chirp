@@ -185,7 +185,7 @@ TXPOWER_HIGH = 0x00
 TXPOWER_LOW = 0x01
 TXPOWER_MID = 0x02
 
-ABR_LIST = ["Off", "5 seconds", "10 seconds", "15 seconds", "20 seconds",
+ABR_LIST = ["On", "5 seconds", "10 seconds", "15 seconds", "20 seconds",
             "30 seconds", "1 minute", "2 minutes", "3 minutes"]
 ALMODE_LIST = ["Site", "Tone", "Code"]
 AUTOLK_LIST = ABR_LIST[:4]
@@ -202,7 +202,7 @@ PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 PTTIDCODE_LIST = ["%s" % x for x in range(1, 16)]
 PTTLT_LIST = ["None", "100 seconds"] + \
              ["%s seconds" % x for x in range(200, 1200, 200)]
-QTSAVE_LIST = ["All", "TX", "RX"]
+QTSAVE_LIST = ["All", "RX", "TX"]
 RPSTE_LIST = ["Off"] + ["%s ms" % x for x in range(100, 1100, 100)]
 SAVE_LIST = ["Off", "Normal", "Super", "Deep"]
 SCREV_LIST = ["Time (TO)", "Carrier (CO)", "Search (SE)"]
@@ -211,7 +211,6 @@ TONERXEND_LIST = ["Off", "MDC-1200"]
 TONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
 TOT_LIST = ["Off", "30 seconds", "60 seconds", "120 seconds", "240 seconds",
             "480 seconds"]
-VOX_LIST = ["Off"] + ["%s" % x for x in range(1, 10)]
 VOXD_LIST = ["%s seconds" % str(x / 10) for x in range(5, 21)]
 WORKMODE_LIST = ["VFO Mode", "Channel Mode"]
 
