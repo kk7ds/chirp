@@ -128,7 +128,8 @@ struct {
      voxd:4;          //      VOX Delay
   u8 unused_9021:4,   // 9021
      menuquit:4;      //      Menu Auto Quit
-  u8 unknown_9022;    // 9022
+  u8 unused_9022:7,   // 9022
+     tailcode:1;      //      Tail Code (RT-470L)
   u8 unknown_9023;    // 9023
   u8 unknown_9024;    // 9024
   u8 unknown_9025;    // 9025
@@ -141,9 +142,10 @@ struct {
   u8 skey2_sp;        // 902B Skey2 Short
   u8 skey2_lp;        // 902C Skey2 Long
   u8 skey3_sp;        // 902D Skey3 Short
-  u8 unknown_902e;    // 902E
+  u8 topkey_sp;       // 902E Top Key (RT-470L)
   u8 unused_902f:7,   // 902F
      rxendtail:1;     //      Tone Rx End
+  u8 skey3_lp;        // 9030 Skey3 Long (RT-470L)
 } settings;
 
 #seekto 0xA020;
@@ -194,7 +196,7 @@ DTMFST_LIST = ["Off", "KeyBoard Side Tone", "ANI Side Tone", "KB ST + ANI ST"]
 DUALTX_LIST = ["Off", "A", "B"]
 ENCRYPT_LIST = ["Off", "DCP1", "DCP2", "DCP3"]
 LANGUAGE_LIST = ["English", "Chinese"]
-MDF_LIST = ["Channel + Name", "Channel + Frequency"]
+MDF_LIST = ["Name", "Frequency"]
 MENUQUIT_LIST = ["%s seconds" % x for x in range(5, 55, 5)] + ["60 seconds"]
 OFF1TO9_LIST = ["Off"] + ["%s" % x for x in range(1, 10)]
 PONMSG_LIST = ["Logo", "Voltage"]
@@ -214,12 +216,28 @@ TOT_LIST = ["Off", "30 seconds", "60 seconds", "120 seconds", "240 seconds",
 VOXD_LIST = ["%s seconds" % str(x / 10) for x in range(5, 21)]
 WORKMODE_LIST = ["VFO Mode", "Channel Mode"]
 
-SKEY_CHOICES = ["FM Radio", "Flashlight", "TX Power Level",
-                "NOAA Weather", "Scan", "Search"]
-SKEY_VALUES = [0x07, 0x08, 0x0A, 0x0C, 0x1C, 0x1D]
+ALL_SKEY_CHOICES = ["OFF",
+                    "FM Radio",
+                    "TX Power Level",
+                    "Scan",
+                    "Search",
+                    "Flashlight",
+                    "NOAA Weather",
+                    "Monitor",
+                    "PTT B",
+                    "SOS"]
 
-SKEY2SP_CHOICES = ["PTT B"] + SKEY_CHOICES
-SKEY2SP_VALUES = [0x01] + SKEY_VALUES
+ALL_SKEY_VALUES = [0xFF,
+                   0x07,
+                   0x0A,
+                   0x1C,
+                   0x1D,
+                   0x08,
+                   0x0C,
+                   0x05,
+                   0x01,
+                   0x03]
+
 
 SETTING_LISTS = {
     "abr": ABR_LIST,
@@ -405,6 +423,12 @@ class JC8810base(chirp_common.CloneModeRadio):
                     chirp_common.PowerLevel("M", watts=8.00),
                     chirp_common.PowerLevel("L", watts=4.00)]
 
+    VALID_BANDS = [(108000000, 136000000),
+                   (136000000, 180000000),
+                   (200000000, 260000000),
+                   (330000000, 400000000),
+                   (400000000, 520000000)]
+
     _magic = b"PROGRAMJC81U"
     _fingerprint = [b"\x00\x00\x00\x26\x00\x20\xD8\x04",
                     b"\x00\x00\x00\x42\x00\x20\xF0\x04"]
@@ -442,11 +466,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rf.valid_dtcs_codes = DTCS
         rf.memory_bounds = (1, 256)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 20., 25., 50.]
-        rf.valid_bands = [(108000000, 136000000),
-                          (136000000, 180000000),
-                          (200000000, 260000000),
-                          (330000000, 400000000),
-                          (400000000, 520000000)]
+        rf.valid_bands = self.VALID_BANDS
         return rf
 
     def process_mmap(self):
@@ -786,23 +806,6 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("ani", "ANI", rs)
         basic.append(rset)
 
-        def apply_skey2sp_listvalue(setting, obj):
-            LOG.debug("Setting value: " + str(setting.value) + " from list")
-            val = str(setting.value)
-            index = SKEY2SP_CHOICES.index(val)
-            val = SKEY2SP_VALUES[index]
-            obj.set_value(val)
-
-        # Menu 20: PF2
-        if _settings.skey2_sp in SKEY2SP_VALUES:
-            idx = SKEY2SP_VALUES.index(_settings.skey2_sp)
-        else:
-            idx = SKEY2SP_VALUES.index(0x07)  # default FM
-        rs = RadioSettingValueList(SKEY2SP_CHOICES, SKEY2SP_CHOICES[idx])
-        rset = RadioSetting("skey2_sp", "PF2 Key (Short Press)", rs)
-        rset.set_apply_callback(apply_skey2sp_listvalue, _settings.skey2_sp)
-        basic.append(rset)
-
         def apply_skey_listvalue(setting, obj):
             LOG.debug("Setting value: " + str(setting.value) + " from list")
             val = str(setting.value)
@@ -810,7 +813,41 @@ class JC8810base(chirp_common.CloneModeRadio):
             val = SKEY_VALUES[index]
             obj.set_value(val)
 
+        # Menu 20: PF2
+        if self.MODEL in ["RT-470"]:
+            unwanted = [0, 7, 9]
+        elif self.MODEL in ["RT-470L"]:
+            unwanted = [9]
+        else:
+            unwanted = []
+        SKEY_CHOICES = ALL_SKEY_CHOICES.copy()
+        SKEY_VALUES = ALL_SKEY_VALUES.copy()
+        for ele in sorted(unwanted, reverse=True):
+            del SKEY_CHOICES[ele]
+            del SKEY_VALUES[ele]
+
+        if _settings.skey2_sp in SKEY_VALUES:
+            idx = SKEY_VALUES.index(_settings.skey2_sp)
+        else:
+            idx = SKEY_VALUES.index(0x07)  # default FM
+        rs = RadioSettingValueList(SKEY_CHOICES, SKEY_CHOICES[idx])
+        rset = RadioSetting("skey2_sp", "PF2 Key (Short Press)", rs)
+        rset.set_apply_callback(apply_skey_listvalue, _settings.skey2_sp)
+        basic.append(rset)
+
         # Menu 21: PF2 LONG PRESS
+        if self.MODEL in ["RT-470"]:
+            unwanted = [0, 7, 8, 9]
+        elif self.MODEL in ["RT-470L"]:
+            unwanted = [8, 9]
+        else:
+            unwanted = []
+        SKEY_CHOICES = ALL_SKEY_CHOICES.copy()
+        SKEY_VALUES = ALL_SKEY_VALUES.copy()
+        for ele in sorted(unwanted, reverse=True):
+            del SKEY_CHOICES[ele]
+            del SKEY_VALUES[ele]
+
         if _settings.skey2_lp in SKEY_VALUES:
             idx = SKEY_VALUES.index(_settings.skey2_lp)
         else:
@@ -821,14 +858,70 @@ class JC8810base(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         # Menu 22: PF3
+        if self.MODEL in ["RT-470"]:
+            unwanted = [0, 7, 8, 9]
+        elif self.MODEL in ["RT-470L"]:
+            unwanted = [8, 9]
+        else:
+            unwanted = []
+        SKEY_CHOICES = ALL_SKEY_CHOICES.copy()
+        SKEY_VALUES = ALL_SKEY_VALUES.copy()
+        for ele in sorted(unwanted, reverse=True):
+            del SKEY_CHOICES[ele]
+            del SKEY_VALUES[ele]
+
         if _settings.skey3_sp in SKEY_VALUES:
             idx = SKEY_VALUES.index(_settings.skey3_sp)
         else:
-            idx = SKEY_VALUES.index(0x08)  # default Flashlight
+            idx = SKEY_VALUES.index(0x0C)  # default NOAA
         rs = RadioSettingValueList(SKEY_CHOICES, SKEY_CHOICES[idx])
         rset = RadioSetting("skey3_sp", "PF3 Key (Short Press)", rs)
         rset.set_apply_callback(apply_skey_listvalue, _settings.skey3_sp)
         basic.append(rset)
+
+        if self.MODEL in ["RT-470L"]:
+            # Menu 24: PF3 LONG PRESS (RT-470L)
+            if self.MODEL in ["RT-470L"]:
+                unwanted = [8, 9]
+            else:
+                unwanted = []
+            SKEY_CHOICES = ALL_SKEY_CHOICES.copy()
+            SKEY_VALUES = ALL_SKEY_VALUES.copy()
+            for ele in sorted(unwanted, reverse=True):
+                del SKEY_CHOICES[ele]
+                del SKEY_VALUES[ele]
+
+            if _settings.skey3_lp in SKEY_VALUES:
+                idx = SKEY_VALUES.index(_settings.skey3_lp)
+            else:
+                idx = SKEY_VALUES.index(0x1D)  # default SEARCH
+            rs = RadioSettingValueList(SKEY_CHOICES, SKEY_CHOICES[idx])
+            rset = RadioSetting("skey3_lp", "PF3 Key (Long Press)", rs)
+            rset.set_apply_callback(apply_skey_listvalue,
+                                    _settings.skey3_lp)
+            basic.append(rset)
+
+        if self.MODEL in ["RT-470L"]:
+            # Menu 25: TOP KEY (RT-470L)
+            if self.MODEL in ["RT-470L"]:
+                unwanted = [8, 9]
+            else:
+                unwanted = []
+            SKEY_CHOICES = ALL_SKEY_CHOICES.copy()
+            SKEY_VALUES = ALL_SKEY_VALUES.copy()
+            for ele in sorted(unwanted, reverse=True):
+                del SKEY_CHOICES[ele]
+                del SKEY_VALUES[ele]
+
+            if _settings.topkey_sp in SKEY_VALUES:
+                idx = SKEY_VALUES.index(_settings.topkey_sp)
+            else:
+                idx = SKEY_VALUES.index(0x1D)  # default SEARCH
+            rs = RadioSettingValueList(SKEY_CHOICES, SKEY_CHOICES[idx])
+            rset = RadioSetting("topkey_sp", "Top Key (Short Press)", rs)
+            rset.set_apply_callback(apply_skey_listvalue,
+                                    _settings.topkey_sp)
+            basic.append(rset)
 
         # Mneu 36: TONE
         rs = RadioSettingValueList(TONE_LIST, TONE_LIST[_settings.tone])
@@ -839,6 +932,12 @@ class JC8810base(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(PONMSG_LIST, PONMSG_LIST[_settings.ponmsg])
         rset = RadioSetting("ponmsg", "Power On Message", rs)
         basic.append(rset)
+
+        if self.MODEL == "RT-470L":
+            rs = RadioSettingValueList(TAILCODE_LIST,
+                                       TAILCODE_LIST[_settings.tailcode])
+            rset = RadioSetting("tailcode", "Tail Code", rs)
+            basic.append(rset)
 
         # Menu 46: STE
         rs = RadioSettingValueBoolean(_settings.ste)
@@ -1048,3 +1147,23 @@ class RT470Radio(JC8810base):
     """Radtel RT-470"""
     VENDOR = "Radtel"
     MODEL = "RT-470"
+
+
+@directory.register
+class RT470LRadio(JC8810base):
+    """Radtel RT-470L"""
+    VENDOR = "Radtel"
+    MODEL = "RT-470L"
+
+    _fingerprint = [b"\x00\x00\x00\xfe\x00\x20\xAC\x04",
+                    b"\x00\x00\x00\x20\x00\x20\xCC\x04"]
+
+    POWER_LEVELS = [chirp_common.PowerLevel("H", watts=5.00),
+                    chirp_common.PowerLevel("M", watts=4.00),
+                    chirp_common.PowerLevel("L", watts=2.00)]
+
+    VALID_BANDS = [(108000000, 136000000),
+                   (136000000, 179000000),
+                   (220000000, 260000000),
+                   (330000000, 400000000),
+                   (400000000, 520000000)]
