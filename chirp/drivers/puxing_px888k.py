@@ -670,7 +670,7 @@ def show_progress(radio, blockaddr, upper, msg):
 def do_download(radio):
     """download from the radio to the memory map"""
     initial_handshake(radio.pipe, 10)
-    memory = memmap.MemoryMap(b'\xff'*0x1000)
+    memory = memmap.MemoryMapBytes(b'\xff'*0x1000)
     for blockaddr in range(LOWER_READ_BOUND, UPPER_READ_BOUND, BLOCKSIZE):
         LOG.debug("Reading block "+str(blockaddr))
         block = read_block(radio.pipe, blockaddr)
@@ -1099,6 +1099,7 @@ class Puxing_PX888K_Radio(chirp_common.CloneModeRadio):
     VENDOR = "Puxing"
     MODEL = "PX-888K"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = False
 
     @classmethod
     def match_model(cls, filedata, filename):

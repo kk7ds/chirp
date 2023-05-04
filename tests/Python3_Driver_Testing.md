@@ -218,7 +218,7 @@
 | <a name="Powerwerx_DB-750X"></a> Powerwerx_DB-750X | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.01% |
 | <a name="Puxing_PX-2R"></a> Puxing_PX-2R |  |  |  | 0.05% |
 | <a name="Puxing_PX-777"></a> Puxing_PX-777 |  |  | Yes | 0.11% |
-| <a name="Puxing_PX-888K"></a> Puxing_PX-888K |  |  |  | 0.07% |
+| <a name="Puxing_PX-888K"></a> Puxing_PX-888K | [Reported working](https://chirp.danplanet.com/issues/10544) | 09-May-2023 | Yes | 0.07% |
 | <a name="Q-MAC_HF-90_v300_or_earlier"></a> Q-MAC_HF-90_v300_or_earlier | [@fthain](https://github.com/fthain) | 9-Mar-2023 | Yes |  |
 | <a name="Q-MAC_HF-90_v301_or_later"></a> Q-MAC_HF-90_v301_or_later | [@fthain](https://github.com/fthain) | 9-Mar-2023 | Yes |  |
 | <a name="QYT_KT-8R"></a> QYT_KT-8R | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.09% |
@@ -409,9 +409,9 @@
 
 **Drivers:** 404
 
-**Tested:** 85% (344/60) (93% of usage stats)
+**Tested:** 85% (345/59) (93% of usage stats)
 
-**Byte clean:** 89% (362/42)
+**Byte clean:** 89% (363/41)
 
 ## Meaning of this testing
 

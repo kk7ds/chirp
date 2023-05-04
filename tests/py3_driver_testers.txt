@@ -189,6 +189,7 @@ MTC_UV-5R-3,+BTECH_UV-5X3,9-Dec-2022
 Midland_DBR2500,+Retevis_RT95,13-Nov-2022
 Polmar_DB-50M,+AnyTone_5888UV,9-Dec-2022
 Powerwerx_DB-750X,+AnyTone_5888UV,9-Dec-2022
+Puxing_PX-888K,#10544,09-May-2023
 Q-MAC_HF-90_v300_or_earlier,@fthain,9-Mar-2023
 Q-MAC_HF-90_v301_or_later,@fthain,9-Mar-2023
 Quansheng_TG-UV2+,#10398,26-Feb-2023
