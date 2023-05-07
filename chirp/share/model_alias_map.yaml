@@ -10,6 +10,8 @@ Baiston:
 - alt: Baofeng BF-888
   model: BST-2100
 Baofeng/Pofung:
+- alt: Baofeng BF-888
+  model: Baofeng BF-777S
 - alt: UV-5R
   model: 997-S (Foscam Digital Technologies)
 - alt: UV-5R
@@ -288,5 +290,3 @@ youRUSH:
   model: UV-9RUSH PRO
 - alt: Baofeng UV-82
   model: UV-82RUSH
-- alt: Baofeng BF-888
-  model: Baofeng HF-777S
