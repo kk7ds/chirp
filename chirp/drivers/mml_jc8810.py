@@ -806,120 +806,150 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("ani", "ANI", rs)
         basic.append(rset)
 
-        def apply_skey_listvalue(setting, obj):
+        # Menu 20: PF2
+        def apply_skey2s_listvalue(setting, obj):
             LOG.debug("Setting value: " + str(setting.value) + " from list")
             val = str(setting.value)
-            index = SKEY_CHOICES.index(val)
-            val = SKEY_VALUES[index]
+            index = SKEY2S_CHOICES.index(val)
+            val = SKEY2S_VALUES[index]
             obj.set_value(val)
 
-        # Menu 20: PF2
         if self.MODEL in ["RT-470"]:
             unwanted = [0, 7, 9]
         elif self.MODEL in ["RT-470L"]:
             unwanted = [9]
         else:
             unwanted = []
-        SKEY_CHOICES = ALL_SKEY_CHOICES.copy()
-        SKEY_VALUES = ALL_SKEY_VALUES.copy()
+        SKEY2S_CHOICES = ALL_SKEY_CHOICES.copy()
+        SKEY2S_VALUES = ALL_SKEY_VALUES.copy()
         for ele in sorted(unwanted, reverse=True):
-            del SKEY_CHOICES[ele]
-            del SKEY_VALUES[ele]
+            del SKEY2S_CHOICES[ele]
+            del SKEY2S_VALUES[ele]
 
-        if _settings.skey2_sp in SKEY_VALUES:
-            idx = SKEY_VALUES.index(_settings.skey2_sp)
+        if _settings.skey2_sp in SKEY2S_VALUES:
+            idx = SKEY2S_VALUES.index(_settings.skey2_sp)
         else:
-            idx = SKEY_VALUES.index(0x07)  # default FM
-        rs = RadioSettingValueList(SKEY_CHOICES, SKEY_CHOICES[idx])
+            idx = SKEY2S_VALUES.index(0x07)  # default FM
+        rs = RadioSettingValueList(SKEY2S_CHOICES, SKEY2S_CHOICES[idx])
         rset = RadioSetting("skey2_sp", "PF2 Key (Short Press)", rs)
-        rset.set_apply_callback(apply_skey_listvalue, _settings.skey2_sp)
+        rset.set_apply_callback(apply_skey2s_listvalue, _settings.skey2_sp)
         basic.append(rset)
 
         # Menu 21: PF2 LONG PRESS
+        def apply_skey2l_listvalue(setting, obj):
+            LOG.debug("Setting value: " + str(setting.value) + " from list")
+            val = str(setting.value)
+            index = SKEY2L_CHOICES.index(val)
+            val = SKEY2L_VALUES[index]
+            obj.set_value(val)
+
         if self.MODEL in ["RT-470"]:
             unwanted = [0, 7, 8, 9]
         elif self.MODEL in ["RT-470L"]:
             unwanted = [8, 9]
         else:
             unwanted = []
-        SKEY_CHOICES = ALL_SKEY_CHOICES.copy()
-        SKEY_VALUES = ALL_SKEY_VALUES.copy()
+        SKEY2L_CHOICES = ALL_SKEY_CHOICES.copy()
+        SKEY2L_VALUES = ALL_SKEY_VALUES.copy()
         for ele in sorted(unwanted, reverse=True):
-            del SKEY_CHOICES[ele]
-            del SKEY_VALUES[ele]
+            del SKEY2L_CHOICES[ele]
+            del SKEY2L_VALUES[ele]
 
-        if _settings.skey2_lp in SKEY_VALUES:
-            idx = SKEY_VALUES.index(_settings.skey2_lp)
+        if _settings.skey2_lp in SKEY2L_VALUES:
+            idx = SKEY2L_VALUES.index(_settings.skey2_lp)
         else:
-            idx = SKEY_VALUES.index(0x1D)  # default Search
-        rs = RadioSettingValueList(SKEY_CHOICES, SKEY_CHOICES[idx])
+            idx = SKEY2L_VALUES.index(0x1D)  # default Search
+        rs = RadioSettingValueList(SKEY2L_CHOICES, SKEY2L_CHOICES[idx])
         rset = RadioSetting("skey2_lp", "PF2 Key (Long Press)", rs)
-        rset.set_apply_callback(apply_skey_listvalue, _settings.skey2_lp)
+        rset.set_apply_callback(apply_skey2l_listvalue, _settings.skey2_lp)
         basic.append(rset)
 
         # Menu 22: PF3
+        def apply_skey3s_listvalue(setting, obj):
+            LOG.debug("Setting value: " + str(setting.value) + " from list")
+            val = str(setting.value)
+            index = SKEY3S_CHOICES.index(val)
+            val = SKEY2S_VALUES[index]
+            obj.set_value(val)
+
         if self.MODEL in ["RT-470"]:
             unwanted = [0, 7, 8, 9]
         elif self.MODEL in ["RT-470L"]:
             unwanted = [8, 9]
         else:
             unwanted = []
-        SKEY_CHOICES = ALL_SKEY_CHOICES.copy()
-        SKEY_VALUES = ALL_SKEY_VALUES.copy()
+        SKEY3S_CHOICES = ALL_SKEY_CHOICES.copy()
+        SKEY3S_VALUES = ALL_SKEY_VALUES.copy()
         for ele in sorted(unwanted, reverse=True):
-            del SKEY_CHOICES[ele]
-            del SKEY_VALUES[ele]
+            del SKEY3S_CHOICES[ele]
+            del SKEY3S_VALUES[ele]
 
-        if _settings.skey3_sp in SKEY_VALUES:
-            idx = SKEY_VALUES.index(_settings.skey3_sp)
+        if _settings.skey3_sp in SKEY3S_VALUES:
+            idx = SKEY3S_VALUES.index(_settings.skey3_sp)
         else:
-            idx = SKEY_VALUES.index(0x0C)  # default NOAA
-        rs = RadioSettingValueList(SKEY_CHOICES, SKEY_CHOICES[idx])
+            idx = SKEY3S_VALUES.index(0x0C)  # default NOAA
+        rs = RadioSettingValueList(SKEY3S_CHOICES, SKEY3S_CHOICES[idx])
         rset = RadioSetting("skey3_sp", "PF3 Key (Short Press)", rs)
-        rset.set_apply_callback(apply_skey_listvalue, _settings.skey3_sp)
+        rset.set_apply_callback(apply_skey3s_listvalue, _settings.skey3_sp)
         basic.append(rset)
 
         if self.MODEL in ["RT-470L"]:
             # Menu 24: PF3 LONG PRESS (RT-470L)
+            def apply_skey3l_listvalue(setting, obj):
+                LOG.debug("Setting value: " + str(setting.value) +
+                          " from list")
+                val = str(setting.value)
+                index = SKEY3L_CHOICES.index(val)
+                val = SKEY2L_VALUES[index]
+                obj.set_value(val)
+
             if self.MODEL in ["RT-470L"]:
                 unwanted = [8, 9]
             else:
                 unwanted = []
-            SKEY_CHOICES = ALL_SKEY_CHOICES.copy()
-            SKEY_VALUES = ALL_SKEY_VALUES.copy()
+            SKEY3L_CHOICES = ALL_SKEY_CHOICES.copy()
+            SKEY3L_VALUES = ALL_SKEY_VALUES.copy()
             for ele in sorted(unwanted, reverse=True):
-                del SKEY_CHOICES[ele]
-                del SKEY_VALUES[ele]
+                del SKEY3L_CHOICES[ele]
+                del SKEY3L_VALUES[ele]
 
-            if _settings.skey3_lp in SKEY_VALUES:
-                idx = SKEY_VALUES.index(_settings.skey3_lp)
+            if _settings.skey3_lp in SKEY3L_VALUES:
+                idx = SKEY3L_VALUES.index(_settings.skey3_lp)
             else:
-                idx = SKEY_VALUES.index(0x1D)  # default SEARCH
-            rs = RadioSettingValueList(SKEY_CHOICES, SKEY_CHOICES[idx])
+                idx = SKEY3L_VALUES.index(0x1D)  # default SEARCH
+            rs = RadioSettingValueList(SKEY3L_CHOICES, SKEY3L_CHOICES[idx])
             rset = RadioSetting("skey3_lp", "PF3 Key (Long Press)", rs)
-            rset.set_apply_callback(apply_skey_listvalue,
+            rset.set_apply_callback(apply_skey3l_listvalue,
                                     _settings.skey3_lp)
             basic.append(rset)
 
         if self.MODEL in ["RT-470L"]:
             # Menu 25: TOP KEY (RT-470L)
+            def apply_skeytop_listvalue(setting, obj):
+                LOG.debug("Setting value: " + str(setting.value) +
+                          " from list")
+                val = str(setting.value)
+                index = SKEYTOP_CHOICES.index(val)
+                val = SKEYTOP_VALUES[index]
+                obj.set_value(val)
+
             if self.MODEL in ["RT-470L"]:
                 unwanted = [8, 9]
             else:
                 unwanted = []
-            SKEY_CHOICES = ALL_SKEY_CHOICES.copy()
-            SKEY_VALUES = ALL_SKEY_VALUES.copy()
+            SKEYTOP_CHOICES = ALL_SKEY_CHOICES.copy()
+            SKEYTOP_VALUES = ALL_SKEY_VALUES.copy()
             for ele in sorted(unwanted, reverse=True):
-                del SKEY_CHOICES[ele]
-                del SKEY_VALUES[ele]
+                del SKEYTOP_CHOICES[ele]
+                del SKEYTOP_VALUES[ele]
 
-            if _settings.topkey_sp in SKEY_VALUES:
-                idx = SKEY_VALUES.index(_settings.topkey_sp)
+            if _settings.topkey_sp in SKEYTOP_VALUES:
+                idx = SKEYTOP_VALUES.index(_settings.topkey_sp)
             else:
-                idx = SKEY_VALUES.index(0x1D)  # default SEARCH
-            rs = RadioSettingValueList(SKEY_CHOICES, SKEY_CHOICES[idx])
+                idx = SKEYTOP_VALUES.index(0x1D)  # default SEARCH
+            rs = RadioSettingValueList(SKEYTOP_CHOICES, SKEYTOP_CHOICES[idx])
             rset = RadioSetting("topkey_sp", "Top Key (Short Press)", rs)
-            rset.set_apply_callback(apply_skey_listvalue,
+            rset.set_apply_callback(apply_skeytop_listvalue,
                                     _settings.topkey_sp)
             basic.append(rset)
 
