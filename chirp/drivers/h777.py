@@ -657,3 +657,16 @@ class H777PlusRadio(H777Radio):
     def match_model(cls, filedata, filename):
         # This model is only ever matched via metadata
         return False
+
+
+@directory.register
+class BFM4Radio(H777Radio):
+    VENDOR = "Baofeng"
+    MODEL = "BF-M4"
+    ALIASES = []
+    _has_fm = False
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
