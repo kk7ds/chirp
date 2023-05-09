@@ -13,6 +13,7 @@ Abbree_AR-63,@KC9HI,30-Nov-2022
 Alinco_DJ175,+Alinco_DR235T,12-Dec-2022
 Alinco_DJ596,+Alinco_DR235T,12-Dec-2022
 Alinco_DJ-G7EG,@HB9UF,09-Dec-2022
+Alinco_DJ-G7T,#10567,09-May-2023
 Alinco_DR03T,+Alinco_DR235T,12-Dec-2022
 Alinco_DR06T,+Alinco_DR235T,12-Dec-2022
 Alinco_DR135T,+Alinco_DR235T,12-Dec-2022
