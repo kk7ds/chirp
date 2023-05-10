@@ -29,7 +29,7 @@ from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
-CMD_ACK = 0x06
+CMD_ACK = 6
 EX_MODES = ["USER-L", "USER-U", "LSB+CW", "USB+CW", "RTTY-L", "RTTY-U", "N/A"]
 T_STEPS = sorted(list(chirp_common.TUNING_STEPS))
 T_STEPS.remove(30.0)
