@@ -785,10 +785,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
                 vx = 6
             if _mem.mode2 == 2:      # USER-U
                 vx = 7
-        try:
-            mem.mode = self.MODES[vx]
-        except ValueError:
-            LOG.error('The FT-450 driver is broken for unsupported modes')
+        mem.mode = self.MODES[vx]
         if mem.mode == "FM" or mem.mode == "NFM":
             mem.tuning_step = self.STEPSFM[_mem.fm_step]
         elif mem.mode == "AM":
@@ -801,22 +798,6 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             except IndexError:
                 pass
         self._get_tmode(mem, _mem)
-
-        if _mem.tag_on_off == 2:
-            for i in _mem.name:
-                if i == 0xFF:
-                    break
-                if chr(i) in self.CHARSET:
-                    mem.name += chr(i)
-                else:
-                    # radio has some graphical chars that are not supported
-                    # we replace those with a *
-                    LOG.info("Replacing char %x with *" % i)
-                    mem.name += "*"
-            mem.name = mem.name.rstrip()
-        else:
-            mem.name = ""
-
         mem.extra = RadioSettingGroup("extra", "Extra")
 
         rs = RadioSetting("ipo", "IPO",
