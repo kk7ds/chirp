@@ -800,43 +800,48 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         self._get_tmode(mem, _mem)
         mem.extra = RadioSettingGroup("extra", "Extra")
 
-        rs = RadioSetting("ipo", "IPO",
-                          RadioSettingValueBoolean(bool(_mem.ipo)))
+        rx = RadioSettingValueBoolean(bool(_mem.ipo))
+        sx = "IPO"
+        rs = RadioSetting("ipo", sx, rx)
         rs.set_doc("Bypass preamp")
         mem.extra.append(rs)
 
-        rs = RadioSetting("att", "ATT",
-                          RadioSettingValueBoolean(bool(_mem.att)))
+        rx = RadioSettingValueBoolean(bool(_mem.att))
+        sx = "ATT"
+        rs = RadioSetting("att", sx, rx)
         rs.set_doc("10dB front end attenuator")
         mem.extra.append(rs)
 
-        rs = RadioSetting("cnturon", "Contour Filter",
-                          RadioSettingValueBoolean(_mem.cnturon ))
+        rx = RadioSettingValueBoolean(_mem.cnturon)
+        sx = "Contour Filter"
+        rs = RadioSetting("cnturon", sx, rx))
         rs.set_doc("Contour filter on/off")
         mem.extra.append(rs)
 
         options = ["Peak", "Null"]
-        rs = RadioSetting("cnturpk", "Contour Filter Mode",
-                          RadioSettingValueList(options,
-                                options[_mem.cnturpk]))
+        rx = RadioSettingValueList(options, options[_mem.cnturpk])
+        sx = "Contour Filter Mode"
+        rs = RadioSetting("cnturpk", sx, rx)
+        rs.set_doc("Contour Filter Type")
         mem.extra.append(rs)
 
         options = ["Low", "High"]
-        rs = RadioSetting("cnturgn", "Contour Filter Gain",
-                          RadioSettingValueList(options,
-                                options[_mem.cnturgn]))
+        rx = RadioSettingValueList(options, options[_mem.cnturgn])
+        sx = "Contour Filter Gain"
+        rs = RadioSetting("cnturgn", sx, rx)
         rs.set_doc("Filter gain/attenuation")
         mem.extra.append(rs)
 
         options = ["-2", "-1", "Center", "+1", "+2"]
-        rs = RadioSetting("cnturmd", "Contour Filter Notch",
-                          RadioSettingValueList(options,
-                                options[_mem.cnturmd]))
+        rx = RadioSettingValueList(options, options[_mem.cnturmd])
+        sx = "Contour Filter Notch"
+        rs = RadioSetting("cnturmd", sx, rx)
         rs.set_doc("Filter notch offset")
         mem.extra.append(rs)
 
-        rs = RadioSetting("notch", "Notch Filter",
-                          RadioSettingValueBoolean(_mem.notch ))
+        rx = RadioSettingValueBoolean(_mem.notch)
+        sx = "Notch Filter"
+        rs = RadioSetting("notch", sx, rx)
         rs.set_doc("IF bandpass filter")
         mem.extra.append(rs)
 
@@ -846,8 +851,9 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             vx = 0
         if _mem.notch_pos > 0:
             vx = 2
-        rs = RadioSetting("notch_pos", "Notch Position",
-                          RadioSettingValueList(options, options[vx]))
+        rx = RadioSettingValueList(options, options[vx])
+        sx = "Notch Position"
+        rs = RadioSetting("notch_pos", sx, rx)
         rs.set_doc("IF bandpass filter shift")
         mem.extra.append(rs)
 
@@ -872,21 +878,23 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             options = ["2.5kHz", "5.0kHz"]
             vx = _mem.fm_width
             stx = "fm_width"
-        rs = RadioSetting(stx, "IF Bandpass Filter Width",
-                          RadioSettingValueList(options, options[vx]))
+        rx = RadioSettingValueList(options, options[vx])
+        sx = "IF Bandpass Filter Width"
+        rs = RadioSetting(stx, sx, rx)
         rs.set_doc("DSP IF bandpass Notch width (Hz)")
         mem.extra.append(rs)
 
-        rs = RadioSetting("dnr_on", "DSP Noise Reduction",
-                          RadioSettingValueBoolean(bool(_mem.dnr_on)))
+        rx = RadioSettingValueBoolean(bool(_mem.dnr_on))
+        sx = "DSP Noise Reduction"
+        rs = RadioSetting("dnr_on", sx, rx)
         rs.set_doc("Digital noise processing")
         mem.extra.append(rs)
 
         options = ["Off", "1", "2", "3", "4", "5", "6", "7",
                           "8", "9", "10", "11"]
-        rs = RadioSetting("dnr_val", "DSP Noise Reduction Alg",
-                          RadioSettingValueList(options,
-                                        options[ _mem.dnr_val]))
+        rx = RadioSettingValueList(options, options[_mem.dnr_val])
+        sx = "DSP Noise Reduction Alg"
+        rs = RadioSetting("dnr_val", sx, rx)
         rs.set_doc("Digital noise reduction algorithm number (1-11)")
         mem.extra.append(rs)
 
