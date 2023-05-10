@@ -40,6 +40,8 @@ except ImportError:
 CMD_ACK = 6
 MEM_GRP_LBL = False     # To ignore Comment channel-tags for now
 EX_MODES = ["USER-L", "USER-U", "LSB+CW", "USB+CW", "RTTY-L", "RTTY-U", "N/A"]
+for i in EX_MODES:
+    chirp_common.MODES.append(i)
 T_STEPS = sorted(list(chirp_common.TUNING_STEPS))
 T_STEPS.remove(30.0)
 T_STEPS.remove(100.0)
