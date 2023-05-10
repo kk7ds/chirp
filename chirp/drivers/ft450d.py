@@ -982,7 +982,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         """Match the opened/downloaded image to the correct version"""
         if len(filedata) == cls.MEM_SIZE + 7:    # +7 bytes of model name
             rid = filedata[cls.MEM_SIZE:cls.MEM_SIZE + 7]
-            if rid.startswith(cls.MODEL.encode()):
+            if rid.startswith(cls.MODEL):
                 return True
         else:
             return False
