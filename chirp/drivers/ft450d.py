@@ -72,7 +72,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
                  'RCL', 'VOX', 'STO', 'STEP', 'SPLIT', 'PMS', 'SCAN', 'MENU',
                  'SPOT', 'SQLOFF', 'SWR', 'TXW', 'VCC', 'VOICE2', 'VM1MONI',
                  'DIMMER', 'MTR']
-     CHARSET = list(chirp_common.CHARSET_ASCII)
+    CHARSET = list(chirp_common.CHARSET_ASCII)
     CHARSET.remove("\\")
 
     MEM_SIZE = 15017
@@ -295,7 +295,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
 
         #seekto 0x3C3;
         struct mem_struct memory[500];
-        struct mem_struct pms[4];       // Programmed Scan limits @ x387F
+        struct mem_struct pms[4];       // Programed Scan limits @ x387F
 
         #seekto 0x3906;
         struct {
