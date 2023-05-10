@@ -537,8 +537,10 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
-        rf.has_dtcs= False
-        rf.valid_modes = [x for x in self.MODES if x in chirp_common.MODES]
+        rf.has_dtcs = False
+        if MEM_GRP_LBL:
+            rf.has_comment = True   # Used for Mem-Grp number
+        rf.valid_modes = list(set(self.MODES))
         rf.valid_tmodes = list(self.TMODES)
         rf.valid_duplexes = list(self.DUPLEX)
         rf.valid_tuning_steps = list(T_STEPS)
