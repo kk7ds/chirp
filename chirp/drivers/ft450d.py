@@ -741,9 +741,9 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _set_normal(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
-        wasused = (self._memobj.visible[(mem.number - 1) / 8] >>
-                    (mem.number - 1) % 8) & 0x01
-        wasvalid = (self._memobj.filled[(mem.number - 1) / 8] >>
+        wasused = (self._memobj.visible[(mem.number - 1) // 8] >>
+                   (mem.number - 1) % 8) & 0x01
+        wasvalid = (self._memobj.filled[(mem.number - 1) // 8] >>
                     (mem.number - 1) % 8) & 0x01
 
         if mem.empty:
@@ -760,9 +760,9 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.set_raw("\x00" * (_mem.size() // 8))    # clean up
 
         self._memobj.visible[(mem.number - 1) // 8] |= 1 << (mem.number - 1) \
-                        % 8
+            % 8
         self._memobj.filled[(mem.number - 1) // 8] |= 1 << (mem.number - 1) \
-                        % 8
+            % 8
         self._set_memory(mem, _mem)
 
     def _get_memory(self, mem, _mem):
