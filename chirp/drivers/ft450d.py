@@ -319,56 +319,56 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     # WARNING Indecis are hard wired in get/set_memory code !!!
     # Channels print in + increasing index order (PMS first)
     SPECIAL_MEMORIES = {
-        "VFOa-1.8M": -27,
-        "VFOa-3.5M": -26,
-        "VFOa-7M": -25,
-        "VFOa-10M": -24,
-        "VFOa-14M": -23,
-        "VFOa-18M": -22,
-        "VFOa-21M": -21,
-        "VFOa-24M": -20,
-        "VFOa-28M": -19,
-        "VFOa-50M": -18,
-        "VFOa-HF": -17,
-        "VFOb-1.8M": -16,
-        "VFOb-3.5M": -15,
-        "VFOb-7M": -14,
-        "VFOb-10M": -13,
-        "VFOb-14M": -12,
-        "VFOb-18M": -11,
-        "VFOb-21M": - 10,
-        "VFOb-24M": -9,
-        "VFOb-28M": -8,
-        "VFOb-50M": -7,
-        "VFOb-HF": -6,
-        "HOME-HF": -5,
-        "HOME-50M": -4,
-        "QMB": -3,
-        "QMB-MTune": -2,
-        "Mem-Tune": -1,
+        "VFOa-1.8M": 510,
+        "VFOa-3.5M": 511,
+        "VFOa-7M": 512,
+        "VFOa-10M": 513,
+        "VFOa-14M": 514,
+        "VFOa-18M": 515,
+        "VFOa-21M": 516,
+        "VFOa-24M": 517,
+        "VFOa-28M": 518,
+        "VFOa-50M": 519,
+        "VFOa-HF": 520,
+        "VFOb-1.8M": 521,
+        "VFOb-3.5M": 522,
+        "VFOb-7M": 523,
+        "VFOb-10M": 524,
+        "VFOb-14M": 525,
+        "VFOb-18M": 526,
+        "VFOb-21M": 527,
+        "VFOb-24M": 528,
+        "VFOb-28M": 529,
+        "VFOb-50M": 530,
+        "VFOb-HF": 531,
+        "HOME-HF": 532,
+        "HOME-50M": 533,
+        "QMB": 534,
+        "QMB-MTune": 535,
+        "Mem-Tune": 536,
     }
-    FIRST_VFOB_INDEX = -6
-    LAST_VFOB_INDEX = -16
-    FIRST_VFOA_INDEX = -17
-    LAST_VFOA_INDEX = -27
+    FIRST_VFOB_INDEX = 521
+    LAST_VFOB_INDEX = 531
+    FIRST_VFOA_INDEX = 510
+    LAST_VFOA_INDEX = 520
 
     SPECIAL_PMS = {
-        "PMS1-L": -36,
-        "PMS1-U": -35,
-        "PMS2-L": -34,
-        "PMS2-U": -33,
+        "PMS1-L": 501,
+        "PMS1-U": 502,
+        "PMS2-L": 503,
+        "PMS2-U": 504,
     }
-    LAST_PMS_INDEX = -36
+    FIRST_PMS_INDEX = 501
     SPECIAL_MEMORIES.update(SPECIAL_PMS)
 
     SPECIAL_60M = {
-        "60m-Ch1": -32,
-        "60m-Ch2": -31,
-        "60m-Ch3": -30,
-        "60m-Ch4": -29,
-        "60m-Ch5": -28,
+        "60m-Ch1": 505,
+        "60m-Ch2": 506,
+        "60m-Ch3": 507,
+        "60m-Ch4": 508,
+        "60m-Ch5": 509
     }
-    LAST_60M_INDEX = -32
+    FIRST_60M_INDEX = 505
     SPECIAL_MEMORIES.update(SPECIAL_60M)
 
     SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(),
