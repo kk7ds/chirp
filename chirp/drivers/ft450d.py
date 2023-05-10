@@ -377,36 +377,38 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.info = _(
-            "The FT-450 radio driver loads the 'Special Channels' tab\n"
-            "with the PMS scanning range memories (group 11), 60meter\n"
-            "channels (group 12), the QMB (STO/RCL) memory, the HF and\n"
-            "50m HOME memories and all the A and B VFO memories.\n"
-            "There are VFO memories for the last frequency dialed in\n"
-            "each band. The last mem-tune config is also stored.\n"
-            "These Special Channels allow limited field editing.\n"
-            "This driver also populates the 'Other' tab in the channel\n"
-            "memory Properties window. This tab contains values for\n"
-            "those channel memory settings that don't fall under the\n"
-            "standard Chirp display columns.\n")
-        rp.pre_download = _(
-            "1. Turn radio off.\n"
-            "2. Connect cable to ACC jack.\n"
-            "3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys"
-            " while\n"
-            "     turning the radio on (\"CLONE MODE\" will appear on the\n"
-            "     display).\n"
-            "4. <b>After clicking OK</b> here, press the [C.S.] key to\n"
-            "    send image.\n")
-        rp.pre_upload = _(
-            "1. Turn radio off.\n"
-            "2. Connect cable to ACC jack.\n"
-            "3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys"
-            " while\n"
-            "     turning the radio on (\"CLONE MODE\" will appear on the\n"
-            "     display).\n"
-            "4. Click OK here.\n"
-            "    (\"Receiving\" will appear on the LCD).\n")
+        rp.info = _(dedent("""
+            The FT-450 radio driver loads the 'Special Channels' tab
+            with the PMS scanning range memories (group 11), 60meter
+            channels (group 12), the QMB (STO/RCL) memory, the HF and
+            50m HOME memories and all the A and B VFO memories.
+            There are VFO memories for the last frequency dialed in
+            each band. The last mem-tune config is also stored.
+            These Special Channels allow limited field editting.
+            This driver also populates the 'Other' tab in the channel
+            memory Properties window. This tab contains values for
+            those channel memory settings that don't fall under the
+            standard Chirp display columns.
+            """))
+        rp.pre_download = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to ACC jack.
+            3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while
+                      
+                 turning the radio on ("CLONE MODE" will appear on the
+                 display).
+            4. <b>After clicking OK</b> here, press the [C.S.] key to
+                send the image.
+            5. Cycle power on the radio to exit clone mode."""))
+        rp.pre_upload = _(dedent("""\
+            1. Turn radio off.
+            2. Connect cable to ACC jack.
+            3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while
+                      
+                 turning the radio on ("CLONE MODE" will appear on the
+                 display).
+            4. Click OK here.
+                ("Receiving" will appear on the LCD)."""))
         return rp
 
     def _read(self, block, blocknum):
