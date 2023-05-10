@@ -583,33 +583,39 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         else:
             return self._set_normal(memory)
 
-    def _get_special(self, number):
+    def _get_special(self, number, pflg):   # number is dict key string
         mem = chirp_common.Memory()
-        mem.number = self.SPECIAL_MEMORIES[number]
-        mem.extd_number = number
-
+        if pflg:        # Called by Properties; number is integer
+            mem.number = number
+            mem.name = self.SPECIAL_MEMORIES_REV[number]
+            mem.extd_number = mem.name
+        else:
+            mem.number = self.SPECIAL_MEMORIES[number]
+            mem.extd_number = number
+        immutable = ["number", "extd_number", "name", "power"]
         if mem.number in range(self.FIRST_VFOA_INDEX,
-                               self.LAST_VFOA_INDEX - 1, -1):
-            _mem = self._memobj.vfoa[-self.LAST_VFOA_INDEX + mem.number]
-            immutable = ["number", "extd_number", "name", "power"]
+                               self.LAST_VFOA_INDEX + 1):
+            _mem = self._memobj.vfoa[mem.number - self.FIRST_VFOA_INDEX]
+                                                                  
         elif mem.number in range(self.FIRST_VFOB_INDEX,
-                                 self.LAST_VFOB_INDEX - 1, -1):
-            _mem = self._memobj.vfob[-self.LAST_VFOB_INDEX + mem.number]
-            immutable = ["number", "extd_number", "name", "power"]
-        elif mem.number in range(-4, -6, -1):           # 2 Home Chans
-            _mem = self._memobj.home[5 + mem.number]
-            immutable = ["number", "extd_number", "name", "power"]
-        elif mem.number == -3:
+                                 self.LAST_VFOB_INDEX + 1):
+            _mem = self._memobj.vfob[mem.number - self.FIRST_VFOB_INDEX]
+                                                                  
+        elif mem.number == 532:           # 2 Home Chans
+            _mem = self._memobj.home[0]
+        elif mem.number == 533:
+            _mem = self._memobj.home[1]
+        elif mem.number == 534:
             _mem = self._memobj.qmb
-            immutable = ["number", "extd_number", "name", "power"]
-        elif mem.number == -2:
+                                                                  
+        elif mem.number == 535:
             _mem = self._memobj.mtqmb
-            immutable = ["number", "extd_number", "name", "power"]
-        elif mem.number == -1:
+                                                                  
+        elif mem.number == 536:
             _mem = self._memobj.mtune
-            immutable = ["number", "extd_number", "name", "power"]
+                                                                  
         elif mem.number in self.SPECIAL_PMS.values():
-            bitindex = (-self.LAST_PMS_INDEX) + mem.number
+            bitindex = mem.number - self.FIRST_PMS_INDEX
             used = (self._memobj.pmsvisible >> bitindex) & 0x01
             valid = (self._memobj.pmsfilled >> bitindex) & 0x01
             if not used:
@@ -617,24 +623,29 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             if not valid:
                 mem.empty = True
                 return mem
-            mx = (-self.LAST_PMS_INDEX) + mem.number
+            mx = mem.number - self.FIRST_PMS_INDEX
             _mem = self._memobj.pms[mx]
             mx = mx + 1
+            if MEM_GRP_LBL:
+                mem.comment = "M-11-%02i" % mx
             immutable = ["number", "rtone", "ctone", "extd_number",
                          "tmode", "cross_mode",
                          "power", "duplex", "offset"]
         elif mem.number in self.SPECIAL_60M.values():
-            mx = (-self.LAST_60M_INDEX) + mem.number
+            mx = mem.number - self.FIRST_60M_INDEX
             _mem = self._memobj.m60[mx]
             mx = mx + 1
+            if MEM_GRP_LBL:
+                mem.comment = "M-12-%02i" % mx
             immutable = ["number", "rtone", "ctone", "extd_number",
                          "tmode", "cross_mode",
                          "frequency", "power", "duplex", "offset"]
         else:
             raise Exception("Sorry, you can't edit that special"
-                        " memory channel %i." % mem.number)
+                            " memory channel %i." % mem.number)
 
         mem = self._get_memory(mem, _mem)
+        mem.name = mem.extd_number.strip()
         mem.immutable = immutable
 
         return mem
