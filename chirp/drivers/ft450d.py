@@ -1024,7 +1024,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         mybands = RadioSettingGroup("mybands", "My Bands")
         mymodes = RadioSettingGroup("mymodes", "My Modes")
 
-        top = RadioSettings(gen,  cw, pnlcfg, pnlset, voxdat, mic,
+        top = RadioSettings(gen, cw, pnlcfg, pnlset, voxdat, mic,
                             mymodes, mybands)
 
         self._do_general_settings(gen)
