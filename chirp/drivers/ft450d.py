@@ -944,9 +944,9 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         except ValueError:
             pass
         _mem.freq = mem.freq
-        _mem.uprband  = 0
+        _mem.uprband = 0
         if mem.freq >= 33000000:
-            _mem.uprband  = 1
+            _mem.uprband = 1
         _mem.offset = mem.offset
         _mem.tmode = self.TMODES.index(mem.tmode)
         _mem.tone = chirp_common.TONES.index(mem.rtone)
@@ -958,7 +958,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
 
         for setting in mem.extra:
             if setting.get_name() == "notch_pos":
-                vx = 0          # Override list string with signed value
+                vx = 0          # Overide list string with signed value
                 stx = str(setting.value)
                 if stx == "<-":
                     vx = -13
