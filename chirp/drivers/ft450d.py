@@ -447,7 +447,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
 
         start = time.time()
 
-        data = ""
+        data = bytes(b"")
         blocks = 0
         status = chirp_common.Status()
         status.msg = _("Cloning from radio")
@@ -460,13 +460,14 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             else:
                 repeat = 1
             for _i in range(0, repeat):
-                data += self._read(block, blocks)
-                self.pipe.write(chr(CMD_ACK))
+                chunk = self._read(block, blocks)    # returns bytes()
+                data += chunk
+                self.pipe.write(bytes(chr(CMD_ACK)))
                 blocks += 1
                 status.cur = blocks
                 self.status_fn(status)
-        data += self.MODEL      # Append ID
-        return memmap.MemoryMap(data)
+        data += bytes(self.MODEL)      # Append ID
+        return memmap.MemoryMapBytes(data)
 
     def _clone_out(self):
         self.pipe.baudrate = self.BAUD_RATE
