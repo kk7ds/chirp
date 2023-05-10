@@ -568,12 +568,12 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.duplex = self.DUPLEX.index(mem.duplex)
 
     def get_memory(self, number):
-        if isinstance(number, str):
-            return self._get_special(number)
-        elif number < 0:
-            # I can't stop delete operation from losing extd_number but
-            # I know how to get it back
-            return self._get_special(self.SPECIAL_MEMORIES_REV[number])
+        propflg = False
+        if isinstance(number, int):     # Called by Properties
+            if number > 500:
+                propflg = True
+        if isinstance(number, str) or propflg:                                       
+            return self._get_special(number, propflg)
         else:
             return self._get_normal(number)
 
