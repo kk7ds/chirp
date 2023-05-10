@@ -418,23 +418,23 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         else:
             attempts = 5
         for _i in range(0, attempts):
-            data = self.pipe.read(block + 2)    # Blocknum, data,checksum
-            if data:
+            bdata = bytes(self.pipe.read(block + 2))
+            if bdata:
                 break
             time.sleep(0.5)
-        if len(data) == block + 2 and data[0] == chr(blocknum):
+        if len(bdata) == block + 2 and bdata[0] == blocknum:
             checksum = yaesu_clone.YaesuChecksum(1, block)
-            if checksum.get_existing(data) != \
-                    checksum.get_calculated(data):
+            if checksum.get_existing(bdata) != \
+                    checksum.get_calculated(bdata):
                 raise Exception("Checksum Failed [%02X<>%02X] block %02X" %
-                                (checksum.get_existing(data),
-                                checksum.get_calculated(data), blocknum))
+                                (checksum.get_existing(bdata),
+                                 checksum.get_calculated(bdata), blocknum))
             # Remove the block number and checksum
-            data = data[1:block + 1]
+            bdata = bdata[1:block + 1]
         else:   # Use this info to decode a new Yaesu model
             raise Exception("Unable to read block %i expected %i got %i"
-                            % (blocknum, block + 2, len(data)))
-        return data
+                            % (blocknum, block + 2, len(bdata)))
+        return bdata
 
     def _clone_in(self):
         # Be very patient with the radio
