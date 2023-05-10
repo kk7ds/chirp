@@ -29,7 +29,16 @@ from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
 
+HAS_FUTURE = True
+try:                         # PY3 compliance
+    from builtins import bytes
+except ImportError:
+    HAS_FUTURE = False
+    LOG.warning('python-future package is not '
+                'available; %s requires it' % __name__)
+
 CMD_ACK = 6
+MEM_GRP_LBL = False     # To ignore Comment channel-tags for now
 EX_MODES = ["USER-L", "USER-U", "LSB+CW", "USB+CW", "RTTY-L", "RTTY-U", "N/A"]
 T_STEPS = sorted(list(chirp_common.TUNING_STEPS))
 T_STEPS.remove(30.0)
