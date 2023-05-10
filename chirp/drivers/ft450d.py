@@ -35,7 +35,7 @@ try:                         # PY3 compliance
 except ImportError:
     HAS_FUTURE = False
     LOG.warning('python-future package is not '
-                'available; %s requires it' % __name__)
+                'available; %s requires it'  __name__)
 
 CMD_ACK = 6
 MEM_GRP_LBL = False     # To ignore Comment channel-tags for now
@@ -48,18 +48,17 @@ T_STEPS.remove(100.0)
 T_STEPS.remove(125.0)
 T_STEPS.remove(200.0)
 
-@directory.register
-class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
-    """Yaesu FT-450D"""
+class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
+    """Yaesu FT-450 Base class"""
     BAUD_RATE = 38400
     COM_BITS = 8    # number of data bits
     COM_PRTY = 'N'   # parity checking
     COM_STOP = 1   # stop bits
-    MODEL = "FT-450D"
+    MODEL = "FT-X450"
 
     DUPLEX = ["", "-", "+"]
     MODES = ["LSB", "USB",  "CW",  "AM", "FM", "RTTY-L",
-            "USER-L", "USER-U", "NFM", "CWR"]
+             "USER-L", "USER-U", "NFM", "CWR"]
     TMODES = ["", "Tone", "TSQL"]
     STEPSFM = [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0]
     STEPSAM = [2.5, 5.0, 9.0, 10.0, 12.5, 25.0]
