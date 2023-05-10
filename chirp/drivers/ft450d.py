@@ -65,13 +65,14 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     STEPSSSB = [1.0, 2.5, 5.0]
     VALID_BANDS = [(100000, 33000000), (33000000, 56000000)]
     FUNC_LIST = ['MONI', 'N/A', 'PBAK', 'PLAY1', 'PLAY2', 'PLAY3', 'QSPLIT',
-            'SPOT', 'SQLOFF', 'SWR', 'TXW', 'VCC', 'VOICE2', 'VM1MONI',
-            'VM1REC', 'VM1TX', 'VM2MONI', 'VM2REC', 'VM2TX', 'DOWN', 'FAST',
-            'UP', 'DSP', 'IPO/ATT', 'NB', 'AGC' , 'MODEDN',  'MODEUP',
-            'DSP/SEL', 'KEYER', 'CLAR' , 'BANDDN', 'BANDUP', 'A=B', 'A/B',
-            'LOCK', 'TUNE', 'VOICE', 'MW', 'V/M', 'HOME', 'RCL', 'VOX', 'STO',
-            'STEP', 'SPLIT', 'PMS', 'SCAN', 'MENU', 'DIMMER', 'MTR']
-    CHARSET = list(chirp_common.CHARSET_ASCII)
+                 'VM1REC', 'VM1TX', 'VM2MONI', 'VM2REC', 'VM2TX', 'DOWN',
+                 'FAST', 'UP', 'DSP', 'IPO/ATT', 'NB', 'AGC', 'MODEDN',
+                 'MODEUP', 'DSP/SEL', 'KEYER', 'CLAR', 'BANDDN', 'BANDUP',
+                 'A=B', 'A/B', 'LOCK', 'TUNE', 'VOICE', 'MW', 'V/M', 'HOME',
+                 'RCL', 'VOX', 'STO', 'STEP', 'SPLIT', 'PMS', 'SCAN', 'MENU',
+                 'SPOT', 'SQLOFF', 'SWR', 'TXW', 'VCC', 'VOICE2', 'VM1MONI',
+                 'DIMMER', 'MTR']
+     CHARSET = list(chirp_common.CHARSET_ASCII)
     CHARSET.remove("\\")
 
     MEM_SIZE = 15017
