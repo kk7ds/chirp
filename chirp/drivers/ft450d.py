@@ -653,26 +653,29 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     def _set_special(self, mem):
         if mem.empty and mem.number not in self.SPECIAL_PMS.values():
             # can't delete special memories!
-            raise errors.RadioError("Sorry, special memory can't be deleted")
+           raise Exception("Sorry, special memory can't be deleted")
 
-        cur_mem = self._get_special(self.SPECIAL_MEMORIES_REV[mem.number])
+        cur_mem = self._get_special(self.SPECIAL_MEMORIES_REV[mem.number],
+                                    False)
 
         if mem.number in range(self.FIRST_VFOA_INDEX,
-                            self.LAST_VFOA_INDEX - 1, -1):
-            _mem = self._memobj.vfoa[-self.LAST_VFOA_INDEX + mem.number]
+                               self.LAST_VFOA_INDEX + 1):
+            _mem = self._memobj.vfoa[mem.number - self.FIRST_VFOA_INDEX]
         elif mem.number in range(self.FIRST_VFOB_INDEX,
-                                 self.LAST_VFOB_INDEX - 1, -1):
-            _mem = self._memobj.vfob[-self.LAST_VFOB_INDEX + mem.number]
-        elif mem.number in range(-4, -6, -1):
-            _mem = self._memobj.home[5 + mem.number]
-        elif mem.number == -3:
+                                 self.LAST_VFOB_INDEX + 1):
+            _mem = self._memobj.vfob[mem.number - self.FIRST_VFOB_INDEX]
+        elif mem.number == 532:
+            _mem = self._memobj.home[0]
+        elif mem.number == 533:
+            _mem = self._memobj.home[1]
+        elif mem.number == 534:
             _mem = self._memobj.qmb
-        elif mem.number == -2:
+        elif mem.number == 535:
             _mem = self._memobj.mtqmb
-        elif mem.number == -1:
+        elif mem.number == 536:
             _mem = self._memobj.mtune
         elif mem.number in self.SPECIAL_PMS.values():
-            bitindex = (-self.LAST_PMS_INDEX) + mem.number
+            bitindex = mem.number - self.FIRST_PMS_INDEX
             wasused = (self._memobj.pmsvisible >> bitindex) & 0x01
             wasvalid = (self._memobj.pmsfilled >> bitindex) & 0x01
             if mem.empty:
@@ -682,21 +685,23 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
                         ~ (1 << bitindex)
                 # pylint get confused by &= operator
                 self._memobj.pmsvisible = self._memobj.pmsvisible & \
-                        ~ (1 << bitindex)
+                    ~ (1 << bitindex)
                 return
             # pylint get confused by |= operator
             self._memobj.pmsvisible = self._memobj.pmsvisible | 1 << bitindex
             self._memobj.pmsfilled = self._memobj.pmsfilled | 1 << bitindex
-            _mem = self._memobj.pms[-self.LAST_PMS_INDEX + mem.number]
+            _mem = self._memobj.pms[mem.number - self.FIRST_PMS_INDEX]
         else:
-            raise errors.RadioError("Sorry, you can't edit"
-                                    " that special memory.")
+            raise Exception("Sorry, you can't edit"
+                            " that special memory.")
 
         for key in cur_mem.immutable:
             if key != "extd_number":
                 if cur_mem.__dict__[key] != mem.__dict__[key]:
-                    raise errors.RadioError("Editing field `%s' " % key +
-                                        "is not supported on this channel")
+                                                                         
+                    stx = "Editing field %s is not supported on this channel" \
+                        % key
+                    raise errors.RadioError(stx)
 
         self._set_memory(mem, _mem)
 
