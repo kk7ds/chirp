@@ -707,10 +707,10 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _get_normal(self, number):
         _mem = self._memobj.memory[number - 1]
-        used = (self._memobj.visible[(number - 1) / 8] >> (number - 1) % 8) \
-                & 0x01
-        valid = (self._memobj.filled[(number - 1) / 8] >> (number - 1) % 8) \
-                & 0x01
+        used = (self._memobj.visible[(number - 1) // 8] >>
+                (number - 1) % 8) & 0x01
+        valid = (self._memobj.filled[(number - 1) // 8] >>
+                 (number - 1) % 8) & 0x01
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -718,8 +718,25 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.empty = True
             if not valid or _mem.freq == 0xffffffff:
                 return mem
-        if mem.number == 1:
-            mem.immutable = ['empty']
+        if MEM_GRP_LBL:
+            mgrp = int((number - 1) // 50)
+            mem.comment = "M-%02i-%02i" % (mgrp + 1, number - (mgrp * 50))
+
+        if _mem.tag_on_off == 2:
+            for i in _mem.name:
+                if i == 0xFF:
+                    break
+                if chr(i) in self.CHARSET:
+                    mem.name += chr(i)
+                else:
+                    # radio has some graphical chars that are not supported
+                    # we replace those with a *
+                    LOG.info("Replacing char %x with *" % i)
+                    mem.name += "*"
+            mem.name = mem.name.rstrip()
+        else:
+            mem.name = ""
+
         return self._get_memory(mem, _mem)
 
     def _set_normal(self, mem):
