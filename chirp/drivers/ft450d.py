@@ -1,5 +1,5 @@
-# Copyright 2018 by Rick DeWitt (aa0rd@yahoo.com>
-# Bug fix for issue #8183, invalid APO Off value
+# Copyright 2020 by Rick DeWitt (aa0rd@yahoo.com)   Vers 1.2
+# # This version is Py3 Conpliant and supports FT-450 and 450AT aliases
 # Thanks to Filippi Marco <iz3gme.marco@gmail.com> for Yaesu processes
 #
 # This program is free software: you can redistribute it and/or modify
