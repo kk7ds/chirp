@@ -578,7 +578,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             return self._get_normal(number)
 
     def set_memory(self, memory):
-        if memory.number < 0:
+        if memory.number > 500:
             return self._set_special(memory)
         else:
             return self._set_normal(memory)
