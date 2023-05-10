@@ -996,8 +996,8 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     def _chars2str(self, cary, knt):
         """Convert raw memory char array to a string: NOT a callback."""
         stx = ""
-        for char in cary[0:knt]:
-            stx += chr(int(char))
+        for char in cary[:knt]:
+            stx += chr(char)
         return stx
 
     def _my_str2ary(self, setting, obj, atrba, knt):
