@@ -457,7 +457,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             for _i in range(0, repeat):
                 chunk = self._read(block, blocks)    # returns bytes()
                 data += chunk
-                self.pipe.write(bytes(chr(CMD_ACK)))
+                self.pipe.write(bytes(CMD_ACK))
                 blocks += 1
                 status.cur = blocks
                 self.status_fn(status)
