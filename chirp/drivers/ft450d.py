@@ -1132,85 +1132,101 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         _settings = self._memobj.settings
         _beacon = self._memobj.beacontext
 
-        rs = RadioSetting("cw_dly", "CW break-in delay (ms * 10)",
-                          RadioSettingValueInteger(0, 300, _settings.cw_dly))
+        val = _settings.cw_dly
+        rx = RadioSettingValueInteger(0, 300, val)
+        tmp = "CW break-in delay (ms * 10)"
+        rs = RadioSetting("cw_dly", tmp, rx)
         cw.append(rs)
 
         options = ["%i Hz" % i for i in range(400, 801, 100)]
-        rs = RadioSetting("cwpitch", "CW pitch",
-                          RadioSettingValueList(options,
-                          options[_settings.cwpitch]))
+        optn = options[_settings.cwpitch]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "CW pitch"
+        rs = RadioSetting("cwpitch", tmp, rx)
         cw.append(rs)
 
-        rs = RadioSetting("cwspeed", "CW speed (wpm)",
-                          RadioSettingValueInteger(4, 60, _settings.cwspeed))
+        val = _settings.cwspeed
+        rx = RadioSettingValueInteger(4, 60, val)
+        tmp = "CW speed (wpm)"
+        rs = RadioSetting("cwspeed", tmp, rx)
         rs.set_doc("Cpm is Wpm * 5")
         cw.append(rs)
 
-        options = ["1:%1.1f" % (i / 10) for i in range(25, 46, 1)]
-        rs = RadioSetting("cwweigt", "CW weight",
-                          RadioSettingValueList(options,
-                          options[_settings.cwweigt]))
+        options = ["1:%1.1f" % (float(val)/10.0) for val in range(25, 46, 1)]
+        optn = options[_settings.cwweigt]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "CW weight"
+        rs = RadioSetting("cwweigt", tmp, rx)
         cw.append(rs)
 
         options = ["15ms", "20ms", "25ms", "30ms"]
-        rs = RadioSetting("cw_qsk", "CW delay before TX in QSK mode",
-                          RadioSettingValueList(options,
-                          options[_settings.cw_qsk]))
+        optn = options[_settings.cw_qsk]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "CW delay before TX in QSK mode"
+        rs = RadioSetting("cw_qsk", tmp, rx)
         cw.append(rs)
 
-        rs = RadioSetting("cwstone_sgn", "CW sidetone volume Linked",
-                          RadioSettingValueBoolean(_settings.cwstone_sgn))
-        rs.set_doc("If set; volume is relative to AF Gain knob.")
+        rx = RadioSettingValueBoolean(_settings.cwstone_sgn)
+        tmp = "CW sidetone volume Linked"
+        rs = RadioSetting("cwstone_sgn", tmp, rx)
         cw.append(rs)
 
-        rs = RadioSetting("cwstone_lnk", "CW sidetone linked volume",
-                          RadioSettingValueInteger(-50, 50,
-                                        _settings.cwstone_lnk))
+        val = _settings.cwstone_lnk
+        rx = RadioSettingValueInteger(-50, 50, val)
+        tmp = "CW sidetone linked volume"                                             
+        rs = RadioSetting("cwstone_lnk", tmp, rx)
         cw.append(rs)
 
-        rs = RadioSetting("cwstone_fix", "CW sidetone fixed volume",
-                          RadioSettingValueInteger(0, 100,
-                          _settings.cwstone_fix))
+        val = _settings.cwstone_fix
+        rx = RadioSettingValueInteger(0, 100, val)
+        tmp = "CW sidetone fixed volume"                                  
+        rs = RadioSetting("cwstone_fix", tmp, rx)
         cw.append(rs)
 
-        options = [ "Numeric", "Alpha", "Mixed"]
-        rs = RadioSetting("cwtrain", "CW Training mode",
-                          RadioSettingValueList(options,
-                          options[_settings.cwtrain]))
+        options = ["Numeric", "Alpha", "Mixed"]
+        optn = options[_settings.cwtrain]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "CW Training mode"
+        rs = RadioSetting("cwtrain", tmp, rx)
         cw.append(rs)
 
-        rs = RadioSetting("cw_auto", "CW key jack- auto CW mode",
-                          RadioSettingValueBoolean(_settings.cw_auto))
+        rx = RadioSettingValueBoolean(_settings.cw_auto)
+        tmp = "CW key jack- auto CW mode"
+        rs = RadioSetting("cw_auto", tmp, rx)
         rs.set_doc("Enable for CW mode auto-set when keyer pluuged in.")
         cw.append(rs)
 
         options = ["Normal", "Reverse"]
-        rs = RadioSetting("cw_key", "CW paddle wiring",
-                          RadioSettingValueList(options,
-                          options[_settings.cw_key]))
+        optn = options[_settings.cw_key]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "CW paddle wiring"
+        rs = RadioSetting("cw_key", tmp, rx)
         cw.append(rs)
 
-        rs = RadioSetting("beacon_time", "CW beacon Tx interval (secs)",
-                          RadioSettingValueInteger(0, 255,
-                          _settings.beacon_time))
+        val = _settings.beacon_time
+        rx = RadioSettingValueInteger(0, 255, val)
+        tmp = "CW beacon Tx interval (secs)"                                                          
+        rs = RadioSetting("beacon_time", tmp, rx)
         cw.append(rs)
 
         tmp = self._chars2str(_beacon.t1, 40)
-        rs=RadioSetting("t1", "CW Beacon Line 1",
-                        RadioSettingValueString(0, 40, tmp))
+        rx = RadioSettingValueString(0, 40, tmp)
+        tmp = "CW Beacon Line 1"
+        rs=RadioSetting("t1", tmp, rx)
         rs.set_apply_callback(self._my_str2ary, _beacon, "t1", 40)
         cw.append(rs)
 
         tmp = self._chars2str(_beacon.t2, 40)
-        rs=RadioSetting("t2", "CW Beacon Line 2",
-                        RadioSettingValueString(0, 40, tmp))
+        rx = RadioSettingValueString(0, 40, tmp)
+        tmp = "CW Beacon Line 2"
+        rs=RadioSetting("t2", tmp, rx)
         rs.set_apply_callback(self._my_str2ary, _beacon, "t2", 40)
         cw.append(rs)
 
         tmp = self._chars2str(_beacon.t3, 40)
-        rs=RadioSetting("t3", "CW Beacon Line 3",
-                        RadioSettingValueString(0, 40, tmp))
+        rx = RadioSettingValueString(0, 40, tmp)
+        tmp = "CW Beacon Line 3"
+        rs=RadioSetting("t3", tmp, rx)
         rs.set_apply_callback(self._my_str2ary, _beacon, "t3", 40)
         cw.append(rs)       # END _do_cw_settings
 
