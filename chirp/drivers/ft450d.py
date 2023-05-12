@@ -39,9 +39,7 @@ except ImportError:
 
 CMD_ACK = 6
 MEM_GRP_LBL = False     # To ignore Comment channel-tags for now
-EX_MODES = ["USER-L", "USER-U", "LSB+CW", "USB+CW", "RTTY-L", "RTTY-U", "N/A"]
-for i in EX_MODES:
-    chirp_common.MODES.append(i)
+MODES =chirp_common.MODES + ("USER-L", "USER-U", "LSB+CW", "USB+CW", "RTTY-L", "RTTY-U", "N/A")
 T_STEPS = sorted(list(chirp_common.TUNING_STEPS))
 T_STEPS.remove(30.0)
 T_STEPS.remove(100.0)
@@ -57,8 +55,8 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     MODEL = "FT-X450"
 
     DUPLEX = ["", "-", "+"]
-    MODES = ["LSB", "USB",  "CW",  "AM", "FM", "RTTY-L",
-             "USER-L", "USER-U", "NFM", "CWR"]
+    MODES = ("LSB", "USB",  "CW",  "AM", "FM", "RTTY-L",
+             "USER-L", "USER-U", "NFM", "CWR")
     TMODES = ["", "Tone", "TSQL"]
     STEPSFM = [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0]
     STEPSAM = [2.5, 5.0, 9.0, 10.0, 12.5, 25.0]
@@ -811,7 +809,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
 
         rx = RadioSettingValueBoolean(_mem.cnturon)
         sx = "Contour Filter"
-        rs = RadioSetting("cnturon", sx, rx))
+        rs = RadioSetting("cnturon", sx, rx)
         rs.set_doc("Contour filter on/off")
         mem.extra.append(rs)
 
@@ -1613,4 +1611,3 @@ if HAS_FUTURE:    # Only register driver if environment is PY3 compliant
         VENDOR = "Yaesu"
         MODEL = "FT-450D"
         ALIASES = [FT450Alias, FT450ATAlias, ]
-
