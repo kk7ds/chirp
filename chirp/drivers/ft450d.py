@@ -394,7 +394,6 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             1. Turn radio off.
             2. Connect cable to ACC jack.
             3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while
-                      
                  turning the radio on ("CLONE MODE" will appear on the
                  display).
             4. <b>After clicking OK</b> here, press the [C.S.] key to
@@ -404,7 +403,6 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             1. Turn radio off.
             2. Connect cable to ACC jack.
             3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while
-                      
                  turning the radio on ("CLONE MODE" will appear on the
                  display).
             4. Click OK here.
@@ -444,7 +442,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         self.pipe.parity = self.COM_PRTY
         self.pipe.stopbits = self.COM_STOP
         self.pipe.rtscts = False
-
+        
         start = time.time()
 
         data = bytes(b"")
@@ -510,7 +508,6 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
                 blocks += 1
                 status.cur = blocks
                 self.status_fn(status)
-
 
     def sync_in(self):
         try:
@@ -976,7 +973,6 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             else:
                 setattr(_mem, setting.get_name(), setting.value)
 
-
     @classmethod
     def match_model(cls, filedata, filename):
         """Match the opened/downloaded image to the correct version"""
@@ -991,7 +987,6 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         """Callback: from inverted logic 1-bit booleans"""
         invb = not setting.value
         setattr(obj, atrb, invb)
-        return
 
     def _chars2str(self, cary, knt):
         """Convert raw memory char array to a string: NOT a callback."""
@@ -1005,12 +1000,11 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         ary = ""
         for j in range(0, knt, 1):
             chx = ord(str(setting.value)[j])
-            if chx < 32 or  chx >  125:     # strip non-printing
+            if chx < 32 or chx > 125:     # strip non-printing
                 ary += " "
             else:
                 ary += str(setting.value)[j]
         setattr(obj, atrba, ary)
-        return
 
     def get_settings(self):
         _settings = self._memobj.settings
@@ -1041,66 +1035,82 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     def _do_general_settings(self, tab):
         _settings = self._memobj.settings
 
-        rs = RadioSetting("ext_mnu", "Extended menu",
-                          RadioSettingValueBoolean(_settings.ext_mnu))
+        rx = RadioSettingValueBoolean(_settings.ext_mnu)
+        tmp = "Extended menu"
+        rs = RadioSetting("ext_mnu", tmp, rx)
         rs.set_doc("Enables access to extended settings in the radio")
         tab.append(rs)
+
         # Issue #8183 bugfix
-        rs = RadioSetting("apo", "APO time (Hrs)",
-                          RadioSettingValueInteger(0, 12, _settings.apo))
+        rx = RadioSettingValueInteger(0, 12, _settings.apo)
+        tmp = "Auto Power Off time (Hrs)"
+        rs = RadioSetting("apo", tmp, rx)
         tab.append(rs)
 
         options = ["%i" % i for i in range(0, 21)]
         options[0] = "Off"
-        rs = RadioSetting("tot", "TX 'TOT' time-out (mins)",
-                          RadioSettingValueList(options,
-                          options[_settings.tot]))
+        optn = options[_settings.tot]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "TX 'TOT' time-out (mins)"
+        rs = RadioSetting("tot", tmp, rx)
         tab.append(rs)
 
         bx = not _settings.cat_rts     # Convert from Enable=0
-        rs = RadioSetting("cat_rts", "CAT RTS flow control",
-                          RadioSettingValueBoolean(bx))
+        rx = RadioSettingValueBoolean(bx)
+        tmp = "CAT RTS flow control"
+        rs = RadioSetting("cat_rts", tmp, rx)
         rs.set_apply_callback(self._invert_me, _settings, "cat_rts")
         tab.append(rs)
 
         options = ["0", "100ms", "1000ms", "3000ms"]
-        rs = RadioSetting("cat_tot", "CAT Timeout",
-                          RadioSettingValueList(options,
-                          options[_settings.cat_tot]))
+        optn = options[_settings.cat_tot]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "CAT Timeout"
+        rs = RadioSetting("cat_tot", tmp, rx)
         tab.append(rs)
 
         options = ["4800", "9600", "19200", "38400", "Data"]
-        rs = RadioSetting("catrate", "CAT rate",
-                          RadioSettingValueList(options,
-                          options[_settings.catrate]))
+        optn = options[_settings.catrate]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "CAT rate"
+        rs = RadioSetting("catrate", tmp, rx)
         tab.append(rs)
 
-        rs = RadioSetting("mem_grp", "Mem groups",
-                          RadioSettingValueBoolean(_settings.mem_grp))
+        rx = RadioSettingValueBoolean(_settings.mem_grp)
+        tmp = "Mem groups"
+        rs = RadioSetting("mem_grp", tmp, rx)
         tab.append(rs)
 
-        rs = RadioSetting("scn_res", "Resume scan (secs)",
-                          RadioSettingValueInteger(0, 10, _settings.scn_res))
+        val = _settings.scn_res
+        rx = RadioSettingValueInteger(0, 10, val)
+        tmp = "Resume scan (secs)"
+        rs = RadioSetting("scn_res", tmp, rx)
         tab.append(rs)
 
-        rs = RadioSetting("clk_sft", "CPU clock shift",
-                          RadioSettingValueBoolean(_settings.clk_sft))
+        rx = RadioSettingValueBoolean(_settings.clk_sft)
+        tmp = "CPU clock shift"
+        rs = RadioSetting("clk_sft", tmp, rx)
         tab.append(rs)
 
-        rs = RadioSetting("split", "TX/RX Frequency Split",
-                          RadioSettingValueBoolean(_settings.split))
+        rx = RadioSettingValueBoolean(_settings.split)
+        tmp = "TX/RX Frequency Split"
+        rs = RadioSetting("split", tmp, rx)
         tab.append(rs)
 
-        rs = RadioSetting("qspl_f", "Quick-Split freq offset (KHz)",
-                          RadioSettingValueInteger(-20, 20, _settings.qspl_f))
+        val = _settings.qspl_f
+        rx = RadioSettingValueInteger(-20, 20, val)
+        tmp = "Quick-Split freq offset (KHz)"
+        rs = RadioSetting("qspl_f", tmp, rx)
         tab.append(rs)
 
-        rs = RadioSetting("emergen", "Alaska Emergency Mem 5167.5KHz",
-                          RadioSettingValueBoolean(_settings.emergen))
+        rx = RadioSettingValueBoolean(_settings.emergen)
+        tmp = "Alaska Emergency Mem 5167.5KHz"
+        rs = RadioSetting("emergen", tmp, rx)
         tab.append(rs)
 
-        rs = RadioSetting("stby_beep", "PTT release 'Standby' beep",
-                          RadioSettingValueBoolean(_settings.stby_beep))
+        rx = RadioSettingValueBoolean(_settings.stby_beep)
+        tmp = "PTT release 'Standby' beep"
+        rs = RadioSetting("stby_beep", tmp, rx)
         tab.append(rs)
 
         options = ["ATAS", "EXT ATU", "INT ATU", "INTRATU", "F-TRANS"]
