@@ -1113,14 +1113,18 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("stby_beep", tmp, rx)
         tab.append(rs)
 
-        options = ["ATAS", "EXT ATU", "INT ATU", "INTRATU", "F-TRANS"]
-        rs = RadioSetting("tuner", "Antenna Tuner",
-                          RadioSettingValueList(options,
-                          options[_settings.tuner]))
-        tab.append(rs)
+        if self.MODEL != "FT-450":
+            options = ["ATAS", "EXT ATU", "INT ATU", "INTRATU", "F-TRANS"]
+            optn = options[_settings.tuner]
+            rx = RadioSettingValueList(options, optn)
+            tmp = "Antenna Tuner"
+            rs = RadioSetting("tuner", tmp, rx)
+            tab.append(rs)
 
-        rs = RadioSetting("rfpower", "RF power (watts)",
-                          RadioSettingValueInteger(5, 100, _settings.rfpower))
+        val = _settings.rfpower
+        rx = RadioSettingValueInteger(5, 100, val)
+        tmp = "RF power (watts)"
+        rs = RadioSetting("rfpower", tmp, rx)
         tab.append(rs)      # End of _do_general_settings
 
 
