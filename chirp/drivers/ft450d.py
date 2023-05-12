@@ -1235,89 +1235,103 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         _settings = self._memobj.settings
 
         bx = not _settings.amfmdial     # Convert from Enable=0
-        rs = RadioSetting("amfmdial", "AM&FM Dial",
-                          RadioSettingValueBoolean(bx))
+        rx = RadioSettingValueBoolean(bx)
+        tmp = "AM&FM Dial"
+        rs = RadioSetting("amfmdial", tmp, rx)
         rs.set_apply_callback(self._invert_me, _settings, "amfmdial")
         pnlset.append(rs)
 
         options = ["440Hz", "880Hz", "1760Hz"]
-        rs = RadioSetting("beepton", "Beep frequency",
-                          RadioSettingValueList(options,
-                          options[_settings.beepton]))
+        optn = options[_settings.beepton]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "Beep frequency"
+        rs = RadioSetting("beepton", tmp, rx)
         pnlset.append(rs)
 
-        rs = RadioSetting("beepvol_sgn", "Beep volume Linked",
-                          RadioSettingValueBoolean(_settings.beepvol_sgn))
+        rx = RadioSettingValueBoolean(_settings.beepvol_sgn)
+        tmp = "Beep volume Linked"
+        rs = RadioSetting("beepvol_sgn", tmp, rx)
         rs.set_doc("If set; volume is relative to AF Gain knob.")
         pnlset.append(rs)
 
-        rs = RadioSetting("beepvol_lnk", "Linked beep volume",
-                          RadioSettingValueInteger(-50, 50,
-                          _settings.beepvol_lnk))
+        val = _settings.beepvol_lnk
+        rx = RadioSettingValueInteger(-50, 50, val)
+        tmp = "Linked beep volume"
+        rs = RadioSetting("beepvol_lnk", tmp, rx)
         rs.set_doc("Relative to AF-Gain setting.")
         pnlset.append(rs)
 
-        rs = RadioSetting("beepvol_fix", "Fixed beep volume",
-                          RadioSettingValueInteger(0, 100,
-                          _settings.beepvol_fix))
+        val = _settings.beepvol_fix
+        rx = RadioSettingValueInteger(0, 100, val)
+        tmp = "Fixed beep volume"
+        rs = RadioSetting("beepvol_fix", tmp, rx)
         rs.set_doc("When Linked setting is unchecked.")
         pnlset.append(rs)
 
-        rs = RadioSetting("cont", "LCD Contrast",
-                          RadioSettingValueInteger(1, 24, _settings.cont ))
+        rx = RadioSettingValueInteger(1, 24, _settings.cont)
+        tmp = "LCD Contrast"
+        rs = RadioSetting("cont", tmp, rx)
         rs.set_doc("This setting does not appear to do anything...")
         pnlset.append(rs)
 
-        rs = RadioSetting("dimmer", "LCD Dimmer",
-                          RadioSettingValueInteger(1, 8,  _settings.dimmer ))
+        rx = RadioSettingValueInteger(1, 8, _settings.dimmer)
+        tmp = "LCD Dimmer"
+        rs = RadioSetting("dimmer", tmp, rx)
         pnlset.append(rs)
 
         options = ["RF-Gain", "Squelch"]
-        rs = RadioSetting("sql_rfg", "Squelch/RF-Gain",
-                          RadioSettingValueList(options,
-                          options[_settings.sql_rfg]))
+        optn = options[_settings.sql_rfg]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "Squelch/RF-Gain"
         pnlset.append(rs)
 
         options = ["Frequencies", "Panel", "All"]
-        rs = RadioSetting("lockmod", "Lock Mode",
-                          RadioSettingValueList(options,
-                          options[_settings.lockmod]))
+        optn = options[_settings.lockmod]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "Lock Mode"
+        rs = RadioSetting("lockmod", tmp, rx)
         pnlset.append(rs)
 
         options = ["Dial", "SEL"]
-        rs = RadioSetting("clar_btn", "CLAR button control",
-                          RadioSettingValueList(options,
-                          options[_settings.clar_btn]))
+        optn = options[_settings.clar_btn]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "CLAR button control"
+        rs = RadioSetting("clar_btn", tmp, rx)
         pnlset.append(rs)
 
         if _settings.dialstp_mode == 0:             # AM/FM
             options = ["SSB/CW:1Hz", "SSB/CW:10Hz", "SSB/CW:20Hz"]
         else:
             options = ["AM/FM:100Hz", "AM/FM:200Hz"]
-        rs = RadioSetting("dialstp", "Dial tuning step",
-                          RadioSettingValueList(options,
-                          options[_settings.dialstp]))
+        optn = options[_settings.dialstp]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "Dial tuning step"
+        rs = RadioSetting("dialstp", tmp, rx)
         pnlset.append(rs)
 
         options = ["0.5secs", "1.0secs", "1.5secs", "2.0secs"]
-        rs = RadioSetting("keyhold", "Buttons hold-to-activate time",
-                          RadioSettingValueList(options,
-                          options[_settings.keyhold]))
+        optn = options[_settings.keyhold]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "Buttons hold-to-activate time"
+        rs = RadioSetting("keyhold", tmp, rx)
         pnlset.append(rs)
 
-        rs = RadioSetting("m_tune", "Memory tune",
-                          RadioSettingValueBoolean(_settings.m_tune))
+        rx = RadioSettingValueBoolean(_settings.m_tune)
+        tmp = "Memory tune"
+        rs = RadioSetting("m_tune", tmp, rx)
         pnlset.append(rs)
 
-        rs = RadioSetting("peakhold", "S-Meter display hold (1sec)",
-                          RadioSettingValueBoolean(_settings.peakhold))
+        rx = RadioSettingValueBoolean(_settings.peakhold)
+        tmp = "S-Meter display hold (1sec)"
+        rs = RadioSetting("peakhold", tmp, rx)
         pnlset.append(rs)
 
         options = ["CW Sidetone", "CW Speed", "100KHz step", "1MHz Step",
-                          "Mic Gain", "RF Power"]
-        rs = RadioSetting("seldial", "SEL dial 2nd function (push)",
-                          RadioSettingValueList(options,
-                          options[_settings.seldial]))
+                   "Mic Gain", "RF Power"]
+        optn = options[_settings.seldial]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "SEL dial 2nd function (push)"
+        rs = RadioSetting("seldial", tmp, rx)
         pnlset.append(rs)
     # End _do_panel_settings
 
