@@ -1433,34 +1433,40 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     def _do_mic_settings(self, mic):    # - - MIC Settings
         _settings = self._memobj.settings
 
-        rs = RadioSetting("mic_eq", "Mic Equalizer",
-                          RadioSettingValueInteger(0, 9, _settings.mic_eq))
+        rx = RadioSettingValueInteger(0, 9, _settings.mic_eq)
+        tmp = "Mic Equalizer (0-9)"
+        rs = RadioSetting("mic_eq", tmp, rx)
         mic.append(rs)
 
         options = ["Low", "Normal", "High"]
-        rs = RadioSetting("micgain", "Mic Gain",
-                          RadioSettingValueList(options,
-                          options[_settings.micgain]))
+        optn = options[_settings.micgain]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "Mic Gain"
+        rs = RadioSetting("micgain", tmp, rx)
         mic.append(rs)
 
-        rs = RadioSetting("micscan", "Mic scan enabled",
-                          RadioSettingValueBoolean(_settings.micscan))
+        rx = RadioSettingValueBoolean(_settings.micscan)
+        tmp = "Mic scan enabled"
+        rs = RadioSetting("micscan", tmp, rx)
         rs.set_doc("Enables channel scanning via mic up/down buttons.")
         mic.append(rs)
 
-        rs = RadioSetting("pm_dwn", "Mic Down button function",
-                          RadioSettingValueList(self.FUNC_LIST,
-                          self.FUNC_LIST[_settings.pm_dwn]))
+        optn = self.FUNC_LIST[_settings.pm_dwn]
+        rx = RadioSettingValueList(self.FUNC_LIST, optn)
+        tmp = "Mic Down button function"
+        rs = RadioSetting("pm_dwn", tmp, rx)
         mic.append(rs)
 
-        rs = RadioSetting("pm_fst", "Mic Fast button function",
-                          RadioSettingValueList(self.FUNC_LIST,
-                          self.FUNC_LIST[_settings.pm_fst]))
+        optn = self.FUNC_LIST[_settings.pm_fst]
+        rx = RadioSettingValueList(self.FUNC_LIST, optn)
+        tmp = "Mic Fast button function"
+        rs = RadioSetting("pm_fst", tmp, rx)
         mic.append(rs)
 
-        rs = RadioSetting("pm_up", "Mic Up button function",
-                          RadioSettingValueList(self.FUNC_LIST,
-                          self.FUNC_LIST[_settings.pm_up]))
+        optn = self.FUNC_LIST[_settings.pm_up]
+        rx = RadioSettingValueList(self.FUNC_LIST, optn)
+        tmp = "Mic Up button function"
+        rs = RadioSetting("pm_up", tmp, rx)
         mic.append(rs)
         # End _do_mic_settings
 
