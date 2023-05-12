@@ -1505,7 +1505,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         # End _do_mymodes_settings
 
     def _do_mybands_settings(self, mybands):    # - - MYBANDS Settings
-        _settings = self._memobj.settings # Inverted Logic requires callback
+        _settings = self._memobj.settings  # Inverted Logic requires callback
 
         bx = not _settings.myb_1_8
         rs = RadioSetting("myb_1_8", "1.8 MHz", RadioSettingValueBoolean(bx))
@@ -1592,3 +1592,25 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
                 except Exception as e:
                     LOG.debug(element.get_name())
                     raise
+
+
+class FT450Alias(chirp_common.Alias):
+    """ ALias for Yaesu FT-450 original radio """
+    VENDOR = "Yaesu"
+    MODEL = "FT-450"
+
+
+class FT450ATAlias(chirp_common.Alias):
+    """ ALias for Yaesu FT-450AT radio with tuner """
+    VENDOR = "Yaesu"
+    MODEL = "FT-450AT"
+
+
+if HAS_FUTURE:    # Only register driver if environment is PY3 compliant
+    @directory.register
+    class FT450DRadio(FTX450Radio):
+        """Yaesu FT-450D"""
+        VENDOR = "Yaesu"
+        MODEL = "FT-450D"
+        ALIASES = [FT450Alias, FT450ATAlias, ]
+
