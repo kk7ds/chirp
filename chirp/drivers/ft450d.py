@@ -35,7 +35,7 @@ try:                         # PY3 compliance
 except ImportError:
     HAS_FUTURE = False
     LOG.warning('python-future package is not '
-                'available; %s requires it'  __name__)
+                'available; %s requires it' % __name__)
 
 CMD_ACK = 6
 MEM_GRP_LBL = False     # To ignore Comment channel-tags for now
