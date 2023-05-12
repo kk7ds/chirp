@@ -1335,86 +1335,98 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         pnlset.append(rs)
     # End _do_panel_settings
 
-    def _do_panel_buttons(self, pnlcfg):      #- - - Current Panel Config
+    def _do_panel_buttons(self, pnlcfg):    # Current Panel Config
         _settings = self._memobj.settings
 
-        rs = RadioSetting("pnl_cs", "C.S. Function",
-                          RadioSettingValueList(self.FUNC_LIST,
-                          self.FUNC_LIST[_settings.pnl_cs]))
+        optn = self.FUNC_LIST[_settings.pnl_cs]
+        rx = RadioSettingValueList(self.FUNC_LIST, optn)
+        tmp = "C.S. Function"
+        rs = RadioSetting("pnl_cs", tmp, rx)
         pnlcfg.append(rs)
 
-        rs = RadioSetting("nb", "Noise blanker",
-                          RadioSettingValueBoolean(_settings.nb))
+        rx = RadioSettingValueBoolean(_settings.nb)
+        tmp = "Noise blanker"
+        rs = RadioSetting("nb", tmp, rx)
         pnlcfg.append(rs)
 
         options = ["Auto", "Fast",  "Slow", "Auto/Fast", "Auto/Slow", "?5?"]
-        rs = RadioSetting("agc", "AGC",
-                          RadioSettingValueList(options,
-                          options[_settings.agc]))
+        optn = options[_settings.agc]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "AGC"
+        rs = RadioSetting("agc", tmp, rx)
         pnlcfg.append(rs)
 
-        rs = RadioSetting("keyer", "Keyer",
-                          RadioSettingValueBoolean(_settings.keyer))
+        rx = RadioSettingValueBoolean(_settings.keyer)
+        tmp = "Keyer"
+        rs = RadioSetting("keyer", tmp, rx)
         pnlcfg.append(rs)
 
-        rs = RadioSetting("fast", "Fast step",
-                          RadioSettingValueBoolean(_settings.fast))
+        rx = RadioSettingValueBoolean(_settings.fast)
+        tmp = "Fast step"
         pnlcfg.append(rs)
 
-        rs = RadioSetting("lock", "Lock (per Lock Mode)",
-                          RadioSettingValueBoolean(_settings.lock))
+        rx = RadioSettingValueBoolean(_settings.lock)
+        tmp = "Lock (per Lock Mode)"
+        rs = RadioSetting("lock", tmp, rx)
         pnlcfg.append(rs)
 
         options = ["PO",  "ALC", "SWR"]
-        rs = RadioSetting("mtr_mode", "S-Meter mode",
-                          RadioSettingValueList(options,
-                          options[_settings.mtr_mode]))
+        optn = options[_settings.mtr_mode]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "S-Meter mode"
+        rs = RadioSetting("mtr_mode", tmp, rx)
         pnlcfg.append(rs)
         # End _do_panel_Buttons
 
-    def _do_vox_settings(self, voxdat):     # - - VOX and DATA Settings
+    def _do_vox_settings(self, voxdat):     # VOX and DATA Settings
         _settings = self._memobj.settings
 
-        rs = RadioSetting("vox_dly", "VOX delay (x 100 ms)",
-                          RadioSettingValueInteger(1, 30, _settings.vox_dly))
+        rx = RadioSettingValueInteger(1, 30, _settings.vox_dly)
+        tmp = "VOX delay (x 100 ms)"
+        rs = RadioSetting("vox_dly", tmp, rx)
         voxdat.append(rs)
 
-        rs = RadioSetting("vox_gain", "VOX Gain",
-                          RadioSettingValueInteger(0, 100,
-                          _settings.vox_gain))
+        rx = RadioSettingValueInteger(0, 100, _settings.vox_gain)
+        tmp = "VOX Gain"
+        rs = RadioSetting("vox_gain", tmp, rx)
         voxdat.append(rs)
 
-        rs = RadioSetting("dig_vox", "Digital VOX Gain",
-                          RadioSettingValueInteger(0, 100,
-                          _settings.dig_vox))
+        rx = RadioSettingValueInteger(0, 100, _settings.dig_vox)
+        tmp = "Digital VOX Gain"                                     
+        rs = RadioSetting("dig_vox", tmp, rx)
         voxdat.append(rs)
 
-        rs = RadioSetting("d_disp", "User-L/U freq offset (Hz)",
-                          RadioSettingValueInteger(-3000, 30000,
-                          _settings.d_disp, 10))
+        val = _settings.d_disp
+        rx = RadioSettingValueInteger(-3000, 30000, val, 10)
+        tmp = "User-L/U freq offset (Hz)"
+        rs = RadioSetting("d_disp", tmp, rx)
         voxdat.append(rs)
 
         options = ["170Hz", "200Hz", "425Hz", "850Hz"]
-        rs = RadioSetting("rty_sft", "RTTY FSK Freq Shift",
-                          RadioSettingValueList(options,
-                          options[_settings.rty_sft]))
+        optn = options[_settings.rty_sft]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "RTTY FSK Freq Shift"
+        rs = RadioSetting("rty_sft", tmp, rx)
         voxdat.append(rs)
 
         options = ["1275Hz", "2125Hz"]
-        rs = RadioSetting("rty_ton", "RTTY FSK Mark tone",
-                          RadioSettingValueList(options,
-                          options[_settings.rty_ton]))
+        optn = options[_settings.rty_ton]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "RTTY FSK Mark tone"
+        rs = RadioSetting("rty_ton", tmp, rx)
         voxdat.append(rs)
 
         options = ["Normal", "Reverse"]
-        rs = RadioSetting("rtyrpol", "RTTY Mark/Space RX polarity",
-                          RadioSettingValueList(options,
-                          options[_settings.rtyrpol]))
+        optn = options[_settings.rtyrpol]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "RTTY Mark/Space RX polarity"
+        rs = RadioSetting("rtyrpol", tmp, rx)
         voxdat.append(rs)
 
-        rs = RadioSetting("rtytpol", "RTTY Mark/Space TX polarity",
-                          RadioSettingValueList(options,
-                          options[_settings.rtytpol]))
+        optn = options[_settings.rtytpol]
+        rx = RadioSettingValueList(options, optn)
+        tmp = "RTTY Mark/Space TX polarity"
+        rs = RadioSetting("rtytpol", tmp, rx)
         voxdat.append(rs)
         # End _do_vox_settings
 
