@@ -427,8 +427,9 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             # Remove the block number and checksum
             bdata = bdata[1:block + 1]
         else:   # Use this info to decode a new Yaesu model
-            raise Exception("Unable to read block %i expected %i got %i"
-                            % (blocknum, block + 2, len(bdata)))
+            msg = "Unable to read block %i; expected %i bytes, got %i." \
+                   % (blocknum, block + 2, len(bdata))
+            raise Exception(msg)
         return bdata
 
     def _clone_in(self):
