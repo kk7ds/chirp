@@ -421,8 +421,12 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         else:
             attempts = 5
         for _i in range(0, attempts):
+            LOG.debug("Block %d, asking for %d bytes." 
+                      % (blocknum, block + 2))
             bdata = bytes(self.pipe.read(block + 2))
             if bdata:
+                LOG.debug("Response was %d bytes:\n%s" 
+                          % (len(bdata), util.hexprint(bdata)))
                 break
             time.sleep(0.5)
         if len(bdata) == block + 2 and bdata[0] == blocknum:
