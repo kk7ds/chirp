@@ -470,12 +470,11 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             for _i in range(0, repeat):
                 chunk = self._read(block, blocks)    # returns bytes()
                 data += chunk
-                # self.pipe.write(bytes(CMD_ACK))
-                self.pipe.write(CMD_ACK)
+                self.pipe.write(bytes(chr(CMD_ACK), encoding='utf8'))
                 blocks += 1
                 status.cur = blocks
                 self.status_fn(status)
-        data += bytes(self.MODEL)      # Append ID
+        data += bytes(self.MODEL, encoding='utf8')      # Append ID
         return memmap.MemoryMapBytes(data)
 
     def _clone_out(self):
