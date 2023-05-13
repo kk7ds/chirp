@@ -431,7 +431,8 @@ class JC8810base(chirp_common.CloneModeRadio):
 
     _magic = b"PROGRAMJC81U"
     _fingerprint = [b"\x00\x00\x00\x26\x00\x20\xD8\x04",
-                    b"\x00\x00\x00\x42\x00\x20\xF0\x04"]
+                    b"\x00\x00\x00\x42\x00\x20\xF0\x04",
+                    b"\x00\x00\x00\x4A\x00\x20\xF8\x04"]
 
     _ranges = [
                (0x0000, 0x2000),
