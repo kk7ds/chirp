@@ -499,12 +499,12 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
                 time.sleep(0.01)
                 checksum = yaesu_clone.YaesuChecksum(pos,
                                                      pos + block - 1)
-                self.pipe.write(bytes(chr(blocks)))
+                self.pipe.write(bytes(chr(blocks), encoding = 'utf8'))
                 blkdat = self.get_mmap()[pos:pos + block]
                 self.pipe.write(bytes(blkdat))
                 # get_calculated uses mmap range set in YaesuChecksum
                 xs = checksum.get_calculated(bytes(self.get_mmap()))
-                self.pipe.write(bytes(chr(xs)))
+                self.pipe.write(bytes(chr(xs), encoding = 'utf8'))
                 data = bytes(chr(blocks))       # build same list for debug
                 data += bytes(blkdat)
                 data += bytes(chr(xs))
@@ -1203,7 +1203,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         rx = RadioSettingValueBoolean(_settings.cw_auto)
         tmp = "CW key jack- auto CW mode"
         rs = RadioSetting("cw_auto", tmp, rx)
-        rs.set_doc("Enable for CW mode auto-set when keyer pluuged in.")
+        rs.set_doc("Enable for CW mode auto-set when keyer plugged in.")
         cw.append(rs)
 
         options = ["Normal", "Reverse"]
@@ -1293,6 +1293,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         optn = options[_settings.sql_rfg]
         rx = RadioSettingValueList(options, optn)
         tmp = "Squelch/RF-Gain"
+        rs = RadioSetting("sql_rfg", tmp, rx)
         pnlset.append(rs)
 
         options = ["Frequencies", "Panel", "All"]
@@ -1373,6 +1374,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
 
         rx = RadioSettingValueBoolean(_settings.fast)
         tmp = "Fast step"
+        rs = RadioSetting("fast", tmp, rx)
         pnlcfg.append(rs)
 
         rx = RadioSettingValueBoolean(_settings.lock)
