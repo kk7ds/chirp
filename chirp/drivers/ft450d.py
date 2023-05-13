@@ -13,18 +13,26 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 """FT450D Yaesu Radio Driver"""
 
+import os
+import struct
+import time
+import logging
+
+from chirp import bitwise
+from chirp import chirp_common
+from chirp import directory
+from chirp import errors
+from chirp import memmap
+from chirp import util
 from chirp.drivers import yaesu_clone
-from chirp import chirp_common, util, memmap, errors, directory, bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, RadioSettings
-import time
-import logging
 from textwrap import dedent
 
 LOG = logging.getLogger(__name__)
@@ -458,7 +466,8 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             for _i in range(0, repeat):
                 chunk = self._read(block, blocks)    # returns bytes()
                 data += chunk
-                self.pipe.write(bytes(CMD_ACK))
+                # self.pipe.write(bytes(CMD_ACK))
+                self.pipe.write(CMD_ACK)
                 blocks += 1
                 status.cur = blocks
                 self.status_fn(status)
