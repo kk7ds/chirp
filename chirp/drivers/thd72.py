@@ -16,6 +16,7 @@
 
 from chirp import chirp_common, errors, util, directory
 from chirp import bitwise, memmap
+from chirp.drivers import kenwood_live
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings
 from chirp.settings import RadioSettingValueInteger, RadioSettingValueString
 from chirp.settings import RadioSettingValueList, RadioSettingValueBoolean
@@ -258,6 +259,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
         rf.valid_tmodes = list(TMODES_REV.keys())
         rf.valid_duplexes = list(DUPLEX_REV.keys())
         rf.valid_tuning_steps = list(TUNE_STEPS)
+        rf.valid_tones = list(kenwood_live.KENWOOD_TONES)
         rf.valid_skips = ["", "S"]
         rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC
         rf.valid_name_length = 8
@@ -345,8 +347,8 @@ class THD72Radio(chirp_common.CloneModeRadio):
         mem.name = self.get_channel_name(number)
         mem.freq = int(_mem.freq)
         mem.tmode = TMODES[int(_mem.tone_mode)]
-        mem.rtone = chirp_common.TONES[_mem.rtone]
-        mem.ctone = chirp_common.TONES[_mem.ctone]
+        mem.rtone = kenwood_live.KENWOOD_TONES[_mem.rtone]
+        mem.ctone = kenwood_live.KENWOOD_TONES[_mem.ctone]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
         mem.duplex = DUPLEX[int(_mem.duplex)]
         mem.offset = int(_mem.offset)
@@ -399,8 +401,8 @@ class THD72Radio(chirp_common.CloneModeRadio):
             self.set_channel_name(mem.number, mem.name)
 
         _mem.tone_mode = TMODES_REV[mem.tmode]
-        _mem.rtone = chirp_common.TONES.index(mem.rtone)
-        _mem.ctone = chirp_common.TONES.index(mem.ctone)
+        _mem.rtone = kenwood_live.KENWOOD_TONES.index(mem.rtone)
+        _mem.ctone = kenwood_live.KENWOOD_TONES.index(mem.ctone)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.cross_mode = chirp_common.CROSS_MODES.index(mem.cross_mode)
         _mem.duplex = DUPLEX_REV[mem.duplex]
