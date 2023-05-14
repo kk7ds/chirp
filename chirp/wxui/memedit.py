@@ -1172,14 +1172,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._mem_properties, selected_rows),
                   props_item)
-        props_item.Enable(self.editable)
         menu.Append(props_item)
+        props_item.Enable(self.editable)
 
         insert_item = wx.MenuItem(menu, wx.NewId(), _('Insert Row Above'))
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._mem_insert, selected_rows[0]),
                   insert_item)
-        insert_item.Enable(self.editable)
         menu.Append(insert_item)
 
         delete_menu = wx.Menu()
