@@ -498,16 +498,17 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             for _i in range(0, repeat):
                 time.sleep(0.01)
                 checksum = yaesu_clone.YaesuChecksum(pos,
-                                                     pos + block - 1)
-                self.pipe.write(bytes(chr(blocks), encoding = 'utf8'))
+                                                     pos + block - 1)                
+                LOG.debug("Sending block %s" % hex(blocks))
+                self.pipe.write(bytes(chr(blocks), encoding = 'latin-1'))
                 blkdat = self.get_mmap()[pos:pos + block]
-                self.pipe.write(bytes(blkdat))
+                LOG.debug("Sending %d bytes:\n%s" 
+                          % (len(blkdat), util.hexprint(blkdat)))
+                self.pipe.write(blkdat)
                 # get_calculated uses mmap range set in YaesuChecksum
-                xs = checksum.get_calculated(bytes(self.get_mmap()))
-                self.pipe.write(bytes(chr(xs), encoding = 'utf8'))
-                data = bytes(chr(blocks))       # build same list for debug
-                data += bytes(blkdat)
-                data += bytes(chr(xs))
+                xs = checksum.get_calculated(self.get_mmap())
+                LOG.debug("Sending checksum %s" % hex(xs))
+                self.pipe.write(bytes(chr(xs), encoding = 'latin-1'))
                 buf = bytes(self.pipe.read(1))
                 if not buf or buf[0] != CMD_ACK:
                     time.sleep(delay)
@@ -531,7 +532,9 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def sync_out(self):
         try:
+            LOG.debug("\n---- Starting clone_out -----")
             self._clone_out()
+            LOG.debug("---- clone_out complete -----\n")
         except errors.RadioError:
             raise
         except Exception as e:
