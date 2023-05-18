@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools", "versioningit"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chirp"
+dynamic = ["version"]
+description = "A cross-platform cross-radio programming tool"
+requires-python = ">=3.10,<4"
+dependencies = [
+    "pyserial",
+    "requests",
+    "yattag",
+    "suds"
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["chirp*"]
+
+[project.urls]
+homepage = "https://chirp.danplanet.com"
+repository = "https://github.com/kk7ds/chirp"
+
+[project.optional-dependencies]
+wx = ["wxPython"]
+
+[project.scripts]
+chirp = "chirp.wxui:chirpmain"
+chirpc = "chirp.cli.main:main"
+experttune = "chirp.cli.experttune:main"
+
+[tool.versioningit.tag2version]
+rmprefix = "release_"
+
+[tool.versioningit.format]
+distance = "{committer_date:%Y%m%d}"
+dirty = "{committer_date:%Y%m%d}+d{build_date:%Y%m%d}"
+distance-dirty = "{committer_date:%Y%m%d}+d{build_date:%Y%m%d}"
