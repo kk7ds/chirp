@@ -383,13 +383,10 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.info = _(dedent("""
-            The FT-450 radio driver loads the 'Special Channels' tab
-            with the PMS scanning range memories (group 11), 60meter
-            channels (group 12), the QMB (STO/RCL) memory, the HF and
-            50m HOME memories and all the A and B VFO memories.
-            There are VFO memories for the last frequency dialed in
-            each band. The last mem-tune config is also stored.
-            These Special Channels allow limited field editting.
+            The FT-450 radio driver uses CHIRP standard mode terminology.
+                USER-U = DIG
+                USER-L = PKT
+                RTTY-L = RTTY
             This driver also populates the 'Other' tab in the channel
             memory Properties window. This tab contains values for
             those channel memory settings that don't fall under the
@@ -795,7 +792,6 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
                 vx = 6
             if _mem.mode2 == 2:      # USER-U (DIG)
                 vx = 7
-                mem.comment = "USER-U"  # FT-450 terminology
         mem.mode = self.MODES[vx]
         if mem.mode == "FM" or mem.mode == "NFM":
             mem.tuning_step = self.STEPSFM[_mem.fm_step]
