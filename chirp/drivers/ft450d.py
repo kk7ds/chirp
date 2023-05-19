@@ -545,6 +545,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
         rf.has_dtcs = False
+        rf.has_nostep_tuning = True     # New
         rf.valid_modes = list(self.MODES)
         rf.valid_tmodes = list(self.TMODES)
         rf.valid_duplexes = list(self.DUPLEX)
