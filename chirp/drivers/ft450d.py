@@ -47,12 +47,6 @@ except ImportError:
 
 CMD_ACK = 6
 MEM_GRP_LBL = False     # To ignore Comment channel-tags for now
-MODES =chirp_common.MODES + ("USER-L", "USER-U", "LSB+CW", "USB+CW", "RTTY-L", "RTTY-U", "N/A")
-T_STEPS = sorted(list(chirp_common.TUNING_STEPS))
-T_STEPS.remove(30.0)
-T_STEPS.remove(100.0)
-T_STEPS.remove(125.0)
-T_STEPS.remove(200.0)
 
 class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     """Yaesu FT-450 Base class"""
@@ -61,10 +55,16 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     COM_PRTY = 'N'   # parity checking
     COM_STOP = 1   # stop bits
     MODEL = "FT-X450"
-
+    # MODES = ["LSB", "USB",  "CW",  "AM", "FM", "RTTY-L",
+    #         "USER-L", "USER-U", "NFM", "CWR"]
+    MODES = ["LSB", "USB",  "CW",  "AM", "FM", "RTTY",
+            "PKT", "DIG", "NFM", "CWR"]
+    T_STEPS = sorted(list(chirp_common.TUNING_STEPS))
+    T_STEPS.remove(30.0)
+    T_STEPS.remove(100.0)
+    T_STEPS.remove(125.0)
+    T_STEPS.remove(200.0)
     DUPLEX = ["", "-", "+"]
-    MODES = ("LSB", "USB",  "CW",  "AM", "FM", "RTTY-L",
-             "USER-L", "USER-U", "NFM", "CWR")
     TMODES = ["", "Tone", "TSQL"]
     STEPSFM = [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0]
     STEPSAM = [2.5, 5.0, 9.0, 10.0, 12.5, 25.0]
@@ -548,12 +548,10 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
         rf.has_dtcs = False
-        if MEM_GRP_LBL:
-            rf.has_comment = True   # Used for Mem-Grp number
-        rf.valid_modes = list(set(self.MODES))
+        rf.valid_modes = list(self.MODES)
         rf.valid_tmodes = list(self.TMODES)
         rf.valid_duplexes = list(self.DUPLEX)
-        rf.valid_tuning_steps = list(T_STEPS)
+        rf.valid_tuning_steps = list(self.T_STEPS)
         rf.valid_bands = self.VALID_BANDS
         rf.valid_power_levels = []
         rf.valid_characters = "".join(self.CHARSET)
@@ -564,6 +562,8 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_ctone = True
         rf.has_settings = True
         rf.has_cross = True
+        if MEM_GRP_LBL:
+            rf.has_comment = True   # Used for Mem-Grp number
         return rf
 
     def get_raw_memory(self, number):
@@ -789,12 +789,13 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         if vx == 10:         # CWR
                 vx = 9
         if vx == 5:         # Data/Dual mode
-            if _mem.mode2 == 0:          # RTTY-L
+            if _mem.mode2 == 0:          # RTTY-L (RTTY)
                 vx = 5
-            if _mem.mode2 == 1:     # USER-L
+            if _mem.mode2 == 1:     # USER-L (PKT)
                 vx = 6
-            if _mem.mode2 == 2:      # USER-U
+            if _mem.mode2 == 2:      # USER-U (DIG)
                 vx = 7
+                mem.comment = "USER-U"  # FT-450 terminology
         mem.mode = self.MODES[vx]
         if mem.mode == "FM" or mem.mode == "NFM":
             mem.tuning_step = self.STEPSFM[_mem.fm_step]
