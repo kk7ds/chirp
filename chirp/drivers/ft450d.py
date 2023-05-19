@@ -1,4 +1,5 @@
-# Copyright 2020 by Rick DeWitt (aa0rd@yahoo.com)   Vers 1.3
+# Copyright 2020 by Rick DeWitt (aa0rd@yahoo.com)   Vers 2.0
+# Vers 2.0 removes all Special Channels references. Nobody cares.
 # This version is Py3 Conpliant and supports FT-450 and 450AT aliases
 # Thanks to Filippi Marco <iz3gme.marco@gmail.com> for Yaesu processes
 #
