@@ -322,64 +322,6 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     _CALLSIGN_CHARSET_REV = dict(zip(_CALLSIGN_CHARSET,
                                      range(0, len(_CALLSIGN_CHARSET))))
 
-    # WARNING Indecis are hard wired in get/set_memory code !!!
-    # Channels print in + increasing index order (PMS first)
-    SPECIAL_MEMORIES = {
-        "VFOa-1.8M": 510,
-        "VFOa-3.5M": 511,
-        "VFOa-7M": 512,
-        "VFOa-10M": 513,
-        "VFOa-14M": 514,
-        "VFOa-18M": 515,
-        "VFOa-21M": 516,
-        "VFOa-24M": 517,
-        "VFOa-28M": 518,
-        "VFOa-50M": 519,
-        "VFOa-HF": 520,
-        "VFOb-1.8M": 521,
-        "VFOb-3.5M": 522,
-        "VFOb-7M": 523,
-        "VFOb-10M": 524,
-        "VFOb-14M": 525,
-        "VFOb-18M": 526,
-        "VFOb-21M": 527,
-        "VFOb-24M": 528,
-        "VFOb-28M": 529,
-        "VFOb-50M": 530,
-        "VFOb-HF": 531,
-        "HOME-HF": 532,
-        "HOME-50M": 533,
-        "QMB": 534,
-        "QMB-MTune": 535,
-        "Mem-Tune": 536,
-    }
-    FIRST_VFOB_INDEX = 521
-    LAST_VFOB_INDEX = 531
-    FIRST_VFOA_INDEX = 510
-    LAST_VFOA_INDEX = 520
-
-    SPECIAL_PMS = {
-        "PMS1-L": 501,
-        "PMS1-U": 502,
-        "PMS2-L": 503,
-        "PMS2-U": 504,
-    }
-    FIRST_PMS_INDEX = 501
-    SPECIAL_MEMORIES.update(SPECIAL_PMS)
-
-    SPECIAL_60M = {
-        "60m-Ch1": 505,
-        "60m-Ch2": 506,
-        "60m-Ch3": 507,
-        "60m-Ch4": 508,
-        "60m-Ch5": 509
-    }
-    FIRST_60M_INDEX = 505
-    SPECIAL_MEMORIES.update(SPECIAL_60M)
-
-    SPECIAL_MEMORIES_REV = dict(zip(SPECIAL_MEMORIES.values(),
-                                    SPECIAL_MEMORIES.keys()))
-
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
@@ -556,7 +498,6 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_characters = "".join(self.CHARSET)
         rf.valid_name_length = 7
         rf.valid_skips = []
-        rf.valid_special_chans = sorted(self.SPECIAL_MEMORIES.keys())
         rf.memory_bounds = (1, 500)
         rf.has_ctone = True
         rf.has_settings = True
@@ -581,142 +522,14 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         if isinstance(number, int):     # Called by Properties
             if number > 500:
                 propflg = True
-        if isinstance(number, str) or propflg:                                       
-            return self._get_special(number, propflg)
-        else:
-            return self._get_normal(number)
+        return self._get_normal(number)
 
     def set_memory(self, memory):
-        if memory.number > 500:
-            return self._set_special(memory)
-        else:
-            return self._set_normal(memory)
+        return self._set_normal(memory)
 
     def validate_memory(self, mem):
         msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)
         return msgs
-
-    def _get_special(self, number, pflg):   # number is dict key string
-        mem = chirp_common.Memory()
-        if pflg:        # Called by Properties; number is integer
-            mem.number = number
-            mem.name = self.SPECIAL_MEMORIES_REV[number]
-            mem.extd_number = mem.name
-        else:
-            mem.number = self.SPECIAL_MEMORIES[number]
-            mem.extd_number = number
-        immutable = ["number", "extd_number", "name", "power"]
-        if mem.number in range(self.FIRST_VFOA_INDEX,
-                               self.LAST_VFOA_INDEX + 1):
-            _mem = self._memobj.vfoa[mem.number - self.FIRST_VFOA_INDEX]
-                                                                  
-        elif mem.number in range(self.FIRST_VFOB_INDEX,
-                                 self.LAST_VFOB_INDEX + 1):
-            _mem = self._memobj.vfob[mem.number - self.FIRST_VFOB_INDEX]
-                                                                  
-        elif mem.number == 532:           # 2 Home Chans
-            _mem = self._memobj.home[0]
-        elif mem.number == 533:
-            _mem = self._memobj.home[1]
-        elif mem.number == 534:
-            _mem = self._memobj.qmb
-                                                                  
-        elif mem.number == 535:
-            _mem = self._memobj.mtqmb
-                                                                  
-        elif mem.number == 536:
-            _mem = self._memobj.mtune
-                                                                  
-        elif mem.number in self.SPECIAL_PMS.values():
-            bitindex = mem.number - self.FIRST_PMS_INDEX
-            used = (self._memobj.pmsvisible >> bitindex) & 0x01
-            valid = (self._memobj.pmsfilled >> bitindex) & 0x01
-            if not used:
-                mem.empty = True
-            if not valid:
-                mem.empty = True
-                return mem
-            mx = mem.number - self.FIRST_PMS_INDEX
-            _mem = self._memobj.pms[mx]
-            mx = mx + 1
-            if MEM_GRP_LBL:
-                mem.comment = "M-11-%02i" % mx
-            immutable = ["number", "rtone", "ctone", "extd_number",
-                         "tmode", "cross_mode",
-                         "power", "duplex", "offset"]
-        elif mem.number in self.SPECIAL_60M.values():
-            mx = mem.number - self.FIRST_60M_INDEX
-            _mem = self._memobj.m60[mx]
-            mx = mx + 1
-            if MEM_GRP_LBL:
-                mem.comment = "M-12-%02i" % mx
-            immutable = ["number", "rtone", "ctone", "extd_number",
-                         "tmode", "cross_mode",
-                         "frequency", "power", "duplex", "offset"]
-        else:
-            raise Exception("Sorry, you can't edit that special"
-                            " memory channel %i." % mem.number)
-
-        mem = self._get_memory(mem, _mem)
-        mem.name = mem.extd_number.strip()
-        mem.immutable = immutable
-
-        return mem
-
-    def _set_special(self, mem):
-        if mem.empty and mem.number not in self.SPECIAL_PMS.values():
-            # can't delete special memories!
-           raise Exception("Sorry, special memory can't be deleted")
-
-        cur_mem = self._get_special(self.SPECIAL_MEMORIES_REV[mem.number],
-                                    False)
-
-        if mem.number in range(self.FIRST_VFOA_INDEX,
-                               self.LAST_VFOA_INDEX + 1):
-            _mem = self._memobj.vfoa[mem.number - self.FIRST_VFOA_INDEX]
-        elif mem.number in range(self.FIRST_VFOB_INDEX,
-                                 self.LAST_VFOB_INDEX + 1):
-            _mem = self._memobj.vfob[mem.number - self.FIRST_VFOB_INDEX]
-        elif mem.number == 532:
-            _mem = self._memobj.home[0]
-        elif mem.number == 533:
-            _mem = self._memobj.home[1]
-        elif mem.number == 534:
-            _mem = self._memobj.qmb
-        elif mem.number == 535:
-            _mem = self._memobj.mtqmb
-        elif mem.number == 536:
-            _mem = self._memobj.mtune
-        elif mem.number in self.SPECIAL_PMS.values():
-            bitindex = mem.number - self.FIRST_PMS_INDEX
-            wasused = (self._memobj.pmsvisible >> bitindex) & 0x01
-            wasvalid = (self._memobj.pmsfilled >> bitindex) & 0x01
-            if mem.empty:
-                if wasvalid and not wasused:
-                    # pylint get confused by &= operator
-                    self._memobj.pmsfilled = self._memobj.pmsfilled & \
-                        ~ (1 << bitindex)
-                # pylint get confused by &= operator
-                self._memobj.pmsvisible = self._memobj.pmsvisible & \
-                    ~ (1 << bitindex)
-                return
-            # pylint get confused by |= operator
-            self._memobj.pmsvisible = self._memobj.pmsvisible | 1 << bitindex
-            self._memobj.pmsfilled = self._memobj.pmsfilled | 1 << bitindex
-            _mem = self._memobj.pms[mem.number - self.FIRST_PMS_INDEX]
-        else:
-            raise Exception("Sorry, you can't edit"
-                            " that special memory.")
-
-        for key in cur_mem.immutable:
-            if key != "extd_number":
-                if cur_mem.__dict__[key] != mem.__dict__[key]:
-                                                                         
-                    stx = "Editing field %s is not supported on this channel" \
-                        % key
-                    raise errors.RadioError(stx)
-
-        self._set_memory(mem, _mem)
 
     def _get_normal(self, number):
         _mem = self._memobj.memory[number - 1]
