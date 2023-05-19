@@ -590,6 +590,10 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         else:
             return self._set_normal(memory)
 
+    def validate_memory(self, mem):
+        msgs = yaesu_clone.YaesuCloneModeRadio.validate_memory(self, mem)
+        return msgs
+
     def _get_special(self, number, pflg):   # number is dict key string
         mem = chirp_common.Memory()
         if pflg:        # Called by Properties; number is integer
@@ -914,13 +918,13 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.tag_on_off = 1
         self._set_duplex(mem, _mem)
         _mem.mode2 = 0
-        if mem.mode == "USER-L":
+        if mem.mode == "PKt":       # USER-L
             _mem.mode = 5
             _mem.mode2 = 1
-        elif mem.mode == "USER-U":
+        elif mem.mode == "DIG":     # USER-U
             _mem.mode = 5
             _mem.mode2 = 2
-        elif mem.mode == "RTTY-L":
+        elif mem.mode == "RTTY":    # RTTY-L
             _mem.mode = 5
             _mem.mode2 = 0
         elif mem.mode == "CWR":
