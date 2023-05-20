@@ -3,6 +3,7 @@
 # 7/2020: Vers 1.2 Fixed reversed E:* / F:# DTMF codes Issue #8159
 # 9/2020: Vers 1.3 Expanded tone mode support and added py3 HAS_FUTURE
 #                  bytes() per issue #8233. (icf.py is NOT updated)
+# 12/2022 Vers 2.0 Python3 fully tested
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1350,7 +1351,6 @@ class IC2730Radio(icf.IcomCloneModeRadio):
                         setting = element.get_name()
 
                     if element.has_apply_callback():
-                        LOG.debug("Using apply callback")
                         element.run_apply_callback()
                     elif element.get_name() == "drv_clone_speed":
                         val = element.value.get_value()
