@@ -1819,7 +1819,7 @@ class TS480Radio(KenwoodLiveRadio):
         mem.empty = True
         mem.freq = 0
         mem.offset = 0
-        spx = "MW0%03i00000000000000000000000000000000000" % number
+        spx = str("MW0%03i00000000000000000000000000000000000" % number)
         rx = command(self.pipe, spx)      # Send MW0
         return mem
 
@@ -1852,16 +1852,16 @@ class TS480Radio(KenwoodLiveRadio):
             if xmode == 4 or xmode == 5:
                 options = self._tsteps[3:]
             xstep = options.index(mem.tuning_step)
-        spx = "%011i%1i%1i%1i%02i%02i00000000000000%02i%s" \
+        spx = str("%011i%1i%1i%1i%02i%02i00000000000000%02i0%s" \
             % (xfreq, xmode, xskip, xtmode, xrtone,
-                xctone, xstep, mem.name)
+                xctone, xstep, mem.name))
         rx = command(self.pipe, pfx, spx)      # Send MW0
         if mem.offset != 0:             # Don't send MW1 if empty
             pfx = "MW1%03i" % mem.number
             xfreq = mem.freq - mem.offset
             if mem.duplex == "+":
                 xfreq = mem.freq + mem.offset
-            spx = "%011i%1i%1i%1i%02i%02i00000000000000%02i%s" \
+            spx = str("%011i%1i%1i%1i%02i%02i00000000000000%02i0%s" \
                   % (xfreq, xmode, xskip, xtmode, xrtone,
-                     xctone, xstep, mem.name)
+                     xctone, xstep, mem.name))
             rx = command(self.pipe, pfx, spx)      # Send MW1
