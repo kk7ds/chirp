@@ -573,8 +573,6 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
                     (mem.number - 1) % 8) & 0x01
 
         if mem.empty:
-            if mem.number == 1:
-                raise Exception("Sorry, can't delete first memory")
             if wasvalid and not wasused:
                 self._memobj.filled[(mem.number - 1) // 8] &= \
                     ~(1 << (mem.number - 1) % 8)
@@ -807,7 +805,7 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
         """Match the opened/downloaded image to the correct version"""
         if len(filedata) == cls.MEM_SIZE + 7:    # +7 bytes of model name
             rid = filedata[cls.MEM_SIZE:cls.MEM_SIZE + 7]
-            if rid.startswith(cls.MODEL):
+            if rid.startswith(bytes(cls.MODEL)):
                 return True
         else:
             return False
