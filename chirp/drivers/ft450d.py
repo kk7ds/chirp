@@ -35,7 +35,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, RadioSettings
 from textwrap import dedent
-from builtins import bytes
 
 LOG = logging.getLogger(__name__)
 
@@ -318,33 +317,31 @@ class FTX450Radio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.info = _(dedent("""
-            The FT-450 radio driver uses CHIRP standard mode terminology.
-                USER-U = DIG
-                USER-L = PKT
-                RTTY-L = RTTY
-            This driver also populates the 'Other' tab in the channel
-            memory Properties window. This tab contains values for
-            those channel memory settings that don't fall under the
-            standard Chirp display columns.
-            """))
-        rp.pre_download = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to ACC jack.
-            3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while
-                 turning the radio on ("CLONE MODE" will appear on the
-                 display).
-            4. <b>After clicking OK</b> here, press the [C.S.] key to
-                send the image.
-            5. Cycle power on the radio to exit clone mode."""))
-        rp.pre_upload = _(dedent("""\
-            1. Turn radio off.
-            2. Connect cable to ACC jack.
-            3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while
-                 turning the radio on ("CLONE MODE" will appear on the
-                 display).
-            4. Click OK here.
-                ("Receiving" will appear on the LCD)."""))
+        rp.info = ("The FT-450 radio driver uses CHIRP standard MODE"
+                   "terminology:"
+                   "    USER-U = DIG"
+                   "    USER-L = PKT"
+                   "    RTTY-L = RTTY"
+                   "This driver also populates the 'Other' tab in the"
+                   "channel memory Properties window."
+                   "That tab contains values for those channel memory"
+                   "settings that don't fall under the standard Chirp"
+                   "display columns.")
+        rp.pre_download = ("1. Turn the radio off."
+                           "2. Connect the USB cable to the ACC jack."
+                           "3. Press and hold the 'MODE<' and 'MODE>' buttons"
+                           "   while turning the radio on."
+                           "   'CLONE MODE' will appear on the display."
+                           "4. After clicking 'OK' here, press the 'C.S.'"
+                              "button to send the image."
+                           "5. Cycle power on the radio to exit clone mode.")
+        rp.pre_upload = ("1. Turn the radio off."
+                           "2. Connect the USB cable to the ACC jack."
+                           "3. Press and hold the 'MODE<' and 'MODE>' buttons"
+                           "   while turning the radio on."
+                           "   'CLONE MODE' will appear on the display."
+                           "4. Click 'OK' here."
+                           "   'Receiving' will appear on the LCD.")
         return rp
 
     def _read(self, block, blocknum):
