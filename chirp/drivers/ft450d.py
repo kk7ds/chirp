@@ -35,16 +35,9 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, RadioSettings
 from textwrap import dedent
+from builtins import bytes
 
 LOG = logging.getLogger(__name__)
-
-HAS_FUTURE = True
-try:                         # PY3 compliance
-    from builtins import bytes
-except ImportError:
-    HAS_FUTURE = False
-    LOG.warning('python-future package is not '
-                'available; %s requires it' % __name__)
 
 CMD_ACK = 6
 MEM_GRP_LBL = False     # To ignore Comment channel-tags for now
@@ -1435,10 +1428,9 @@ class FT450ATAlias(chirp_common.Alias):
     MODEL = "FT-450AT"
 
 
-if HAS_FUTURE:    # Only register driver if environment is PY3 compliant
-    @directory.register
-    class FT450DRadio(FTX450Radio):
-        """Yaesu FT-450D"""
-        VENDOR = "Yaesu"
-        MODEL = "FT-450D"
-        ALIASES = [FT450Alias, FT450ATAlias, ]
+@directory.register
+class FT450DRadio(FTX450Radio):
+    """Yaesu FT-450D"""
+    VENDOR = "Yaesu"
+    MODEL = "FT-450D"
+    ALIASES = [FT450Alias, FT450ATAlias, ]
