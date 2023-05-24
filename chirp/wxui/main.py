@@ -621,6 +621,14 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_large_font, large_item)
         large_item.Check(CONF.get_bool('font_large', 'state', False))
 
+        self._expand_item = wx.NewId()
+        expand_item = wx.MenuItem(view_menu, self._expand_item,
+                                  _('Show extra fields'),
+                                  kind=wx.ITEM_CHECK)
+        view_menu.Append(expand_item)
+        self.Bind(wx.EVT_MENU, self._menu_expand_extra, expand_item)
+        expand_item.Check(CONF.get_bool('expand_extra', 'state'))
+
         radio_menu = wx.Menu()
 
         if sys.platform == 'darwin':
@@ -916,6 +924,7 @@ class ChirpMain(wx.Frame):
             (self._reload_driver_item, can_saveas),
             (self._reload_both_item, can_saveas),
             (self._interact_driver_item, can_saveas),
+            (self._expand_item, is_memedit),
         ]
         for ident, enabled in items:
             if ident is None:
@@ -1194,6 +1203,11 @@ class ChirpMain(wx.Frame):
         menuitem = event.GetEventObject().FindItemById(event.GetId())
         CONF.set_bool('font_large', menuitem.IsChecked(), 'state')
         self._update_font()
+
+    def _menu_expand_extra(self, event):
+        menuitem = event.GetEventObject().FindItemById(event.GetId())
+        CONF.set_bool('expand_extra', menuitem.IsChecked(), 'state')
+        self.current_editorset.current_editor.refresh()
 
     def _menu_goto(self, event):
         eset = self.current_editorset

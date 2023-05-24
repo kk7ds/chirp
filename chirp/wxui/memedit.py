@@ -838,7 +838,22 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         self.do_radio(erase_cb, 'erase_memory', number)
 
+    def _purge_extra_cols(self):
+        for col in list(self._extra_cols):
+            self._extra_cols.remove(col)
+            index = self.comment_col - 1
+            # We insert extra columns in front of the comment column, which
+            # should always be last, so delete the one before the comment
+            # column until we're out of extra columns.
+            LOG.debug('Removing extra col %s %s number %s',
+                      col, self._col_defs[-1].__class__.__name__,
+                      index)
+            del self._col_defs[index]
+            self._grid.DeleteCols(index)
+
     def refresh(self):
+        if not CONF.get_bool('expand_extra', 'state'):
+            self._purge_extra_cols()
 
         lower, upper = self._features.memory_bounds
 
