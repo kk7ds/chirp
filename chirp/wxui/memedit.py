@@ -104,6 +104,10 @@ class ChirpMemoryColumn(object):
             except KeyError:
                 pass
 
+        if '.' in self._name:
+            # Assume extra fields are always valid
+            return True
+
         LOG.error('Unsure if %r is valid' % self._name)
         return True
 
@@ -116,7 +120,15 @@ class ChirpMemoryColumn(object):
         return str(value)
 
     def value(self, memory):
-        return getattr(memory, self._name)
+        if '.' in self._name:
+            parent, child = self._name.split('.')
+            try:
+                return getattr(memory, parent)[child].value
+            except (AttributeError, KeyError):
+                LOG.warning('Memory %s does not have field %s',
+                            memory, self._name)
+        else:
+            return getattr(memory, self._name)
 
     def render_value(self, memory):
         if memory.empty:
@@ -129,7 +141,18 @@ class ChirpMemoryColumn(object):
         return str(input_value)
 
     def digest_value(self, memory, input_value):
-        setattr(memory, self._name, self._digest_value(memory, input_value))
+        if '.' in self._name:
+            parent, child = self._name.split('.')
+            try:
+                getattr(memory, parent)[child].value = input_value
+            except (AttributeError, KeyError):
+                LOG.warning('Memory %s does not have field %s',
+                            memory, self._name)
+                raise ValueError(
+                    _('Unable to set %s on this memory') % self._name)
+        else:
+            setattr(memory, self._name, self._digest_value(memory,
+                                                           input_value))
 
     def get_editor(self):
         return wx.grid.GridCellTextEditor()
@@ -488,6 +511,19 @@ class ChirpCommentColumn(ChirpMemoryColumn):
         return str(input_value)[:256]
 
 
+def get_column_for_extra(radio, setting):
+    value = setting.value
+    field = 'extra.%s' % setting.get_name()
+    if isinstance(value, settings.RadioSettingValueString):
+        return ChirpMemoryColumn(field, radio, label=setting.get_shortname())
+    elif isinstance(value, settings.RadioSettingValueList):
+        return ChirpChoiceColumn(field, radio, value.get_options(),
+                                 label=setting.get_shortname())
+    elif isinstance(value, settings.RadioSettingValueBoolean):
+        return ChirpChoiceColumn(field, radio, ['True', 'False'],
+                                 label=setting.get_shortname())
+
+
 class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     def __init__(self, radio, *a, **k):
         super(ChirpMemEdit, self).__init__(*a, **k)
@@ -501,6 +537,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._special_rows = {}
         # Maps special memory *numbers* to rows
         self._special_numbers = {}
+        # Extra memory column names
+        self._extra_cols = set()
 
         self._col_defs = self._setup_columns()
 
@@ -542,6 +580,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     @property
     def editable(self):
         return not isinstance(self._radio, chirp_common.NetworkSourceRadio)
+
+    @property
+    def comment_col(self):
+        return self._col_defs.index(self._col_def_by_name('comment'))
 
     def set_cell_attrs(self):
         if platform.system() == 'Linux':
@@ -629,6 +671,31 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         else:
             return row + self._features.memory_bounds[0]
 
+    def _expand_extra_col(self, setting):
+        # Add this to the list of seen extra columns regardless of if we
+        # support this type so we never try to add it again
+        self._extra_cols.add(setting.get_name())
+        col = get_column_for_extra(self._radio, setting)
+        if col:
+            LOG.debug('Adding mem.extra column %s as %s',
+                      setting.get_name(), col.__class__.__name__)
+            # We insert extra columns in front of the comment column, which
+            # should always be last
+            index = self.comment_col
+            self._col_defs.insert(index, col)
+            self._grid.InsertCols(index)
+            self.set_cell_attrs()
+        else:
+            LOG.warning('Unsupported mem.extra type %s',
+                        setting.value.__class__.__name__)
+
+    def _expand_extra(self, memory):
+        if not CONF.get_bool('expand_extra', 'state'):
+            return
+        for setting in memory.extra:
+            if setting.get_name() not in self._extra_cols:
+                self._expand_extra_col(setting)
+
     def _refresh_memory(self, number, memory):
         row = self.mem2row(number)
 
@@ -646,6 +713,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             duplex_col = self._col_def_by_name('duplex')
             offset_col.wants_split(memory, False)
             duplex_col.wants_split(memory, False)
+
+        if memory.extra:
+            self._expand_extra(memory)
 
         self._memory_cache[row] = memory
 
@@ -1707,7 +1777,9 @@ class ChirpMemPropDialog(wx.Dialog):
                                    self._mem_prop_changed)
 
         for coldef in self._col_defs:
-            if coldef.valid:
+            # Exclude mem.extra fields since they are handled on the extra
+            # page separately.
+            if coldef.valid and '.' not in coldef.name:
                 editor = coldef.get_propeditor(memory)
                 self._pg.Append(editor)
                 if coldef.name in memory.immutable:
