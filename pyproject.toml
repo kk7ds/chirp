@@ -36,6 +36,6 @@ experttune = "chirp.cli.experttune:main"
 rmprefix = "release_"
 
 [tool.versioningit.format]
-distance = "{committer_date:%Y%m%d}"
-dirty = "{committer_date:%Y%m%d}+d{build_date:%Y%m%d}"
-distance-dirty = "{committer_date:%Y%m%d}+d{build_date:%Y%m%d}"
+distance = "{committer_date:%Y%m%d}+{distance}.{vcs}{revision}"
+dirty = "{committer_date:%Y%m%d}+{distance}.{vcs}{revision}.d{build_date:%Y%m%d}"
+distance-dirty = "{committer_date:%Y%m%d}+{distance}.{vcs}{revision}.d{build_date:%Y%m%d}"
