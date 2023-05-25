@@ -88,7 +88,13 @@ class ChirpMemoryColumn(object):
 
     @property
     def label(self):
-        return self._label.replace('_', ' ').replace(' ', '\n', 1)
+        labelwords = self._label.replace('_', ' ').split(' ')
+        middle = len(labelwords) // 2
+        if middle:
+            return '\n'.join([' '.join(labelwords[:middle]),
+                              ' '.join(labelwords[middle:])])
+        else:
+            return ' '.join(labelwords)
 
     def hidden_for(self, memory):
         return False
@@ -511,17 +517,26 @@ class ChirpCommentColumn(ChirpMemoryColumn):
         return str(input_value)[:256]
 
 
+def title_case_special(string):
+    return ' '.join(word.title() if word.upper() != word else word
+                    for word in string.split(' '))
+
+
 def get_column_for_extra(radio, setting):
     value = setting.value
     field = 'extra.%s' % setting.get_name()
+
+    # Lots of these have all-caps acronyms in them, so we need to do a
+    # modified title() operation.
+    label = title_case_special(setting.get_shortname())
     if isinstance(value, settings.RadioSettingValueString):
-        return ChirpMemoryColumn(field, radio, label=setting.get_shortname())
+        return ChirpMemoryColumn(field, radio, label=label)
     elif isinstance(value, settings.RadioSettingValueList):
         return ChirpChoiceColumn(field, radio, value.get_options(),
-                                 label=setting.get_shortname())
+                                 label=label)
     elif isinstance(value, settings.RadioSettingValueBoolean):
         return ChirpChoiceColumn(field, radio, ['True', 'False'],
-                                 label=setting.get_shortname())
+                                 label=label)
 
 
 class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
