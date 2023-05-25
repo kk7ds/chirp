@@ -150,7 +150,8 @@ class ChirpMemoryColumn(object):
         if '.' in self._name:
             parent, child = self._name.split('.')
             try:
-                getattr(memory, parent)[child].value = input_value
+                getattr(memory, parent)[child].value = self._digest_value(
+                    memory, input_value)
             except (AttributeError, KeyError):
                 LOG.warning('Memory %s does not have field %s',
                             memory, self._name)
@@ -417,6 +418,27 @@ class ChirpDuplexColumn(ChirpChoiceColumn):
             self._wants_split.discard(memory.number)
 
 
+class ChirpFlagColumn(ChirpChoiceColumn):
+    """Support boolean values as a sepecial case of Choice
+
+    This allows us to have translated strings for the boolean flags,
+    while retaining choice-like behavior instead of rendering checkboxes,
+    which is very slow on GTK.
+    """
+    def __init__(self, field, radio, label=None):
+        super().__init__(field, radio, [_('Disabled'), _('Enabled')],
+                         label=label)
+
+    def _render_value(self, memory, value):
+        # Convert RadioSettingValueBoolean (or an actual boolean) to one of
+        # our string choices
+        return self._choices[int(bool(value))]
+
+    def _digest_value(self, memory, input_value):
+        # Convert one of our string choices back to boolean
+        return input_value == self._choices[1]
+
+
 class ChirpDTCSColumn(ChirpChoiceColumn):
     def __init__(self, name, radio):
         rf = radio.get_features()
@@ -535,8 +557,7 @@ def get_column_for_extra(radio, setting):
         return ChirpChoiceColumn(field, radio, value.get_options(),
                                  label=label)
     elif isinstance(value, settings.RadioSettingValueBoolean):
-        return ChirpChoiceColumn(field, radio, ['True', 'False'],
-                                 label=label)
+        return ChirpFlagColumn(field, radio, label=label)
 
 
 class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
