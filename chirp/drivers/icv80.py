@@ -513,5 +513,9 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
             else:
                 _skip &= ~bit
 
+        if mem.extra:
+            _mem.tx_inhibit = not mem.extra['tx_inhibit'].value
+            _mem.reverse_duplex = mem.extra['reverse_duplex'].value
+
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
