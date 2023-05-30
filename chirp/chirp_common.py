@@ -606,29 +606,33 @@ class DVMemory(Memory):
             self.dv_code = 0
 
 
-class FrozenMemory(Memory):
-    def __init__(self, source):
-        self.__dict__['_frozen'] = False
-        for k, v in source.__dict__.items():
-            setattr(self, k, v)
+def FrozenMemory(source):
+    class _FrozenMemory(source.__class__):
+        def __init__(self, source):
+            self.__dict__['_frozen'] = False
+            for k, v in source.__dict__.items():
+                setattr(self, k, v)
 
-        self.__dict__['_frozen'] = True
+            self.__dict__['_frozen'] = True
 
-    def __setattr__(self, k, v):
-        if self._frozen:
-            # This should really be an error, but we have a number of drivers
-            # that make modificatons during set_memory(). So this just has to
-            # be a warning for now. Later it could turn into a TypeError.
-            caller = inspect.getframeinfo(inspect.stack()[1][0])
-            LOG.warning(
-                '%s@%i: Illegal set on attribute %s - Fix this driver!' % (
-                    caller.filename, caller.lineno, k))
-        super().__setattr__(k, v)
+        def __setattr__(self, k, v):
+            if self._frozen:
+                # This should really be an error, but we have a number of
+                # drivers that make modificatons during set_memory(). So this
+                # just has to be a warning for now. Later it could turn into
+                # a TypeError.
+                caller = inspect.getframeinfo(inspect.stack()[1][0])
+                LOG.warning(
+                    '%s@%i: Illegal set on attribute %s - Fix this driver!' % (
+                        caller.filename, caller.lineno, k))
+            super().__setattr__(k, v)
 
-    def dupe(self):
-        m = Memory()
-        m.clone(self)
-        return m
+        def dupe(self):
+            m = Memory()
+            m.clone(self)
+            return m
+
+    return _FrozenMemory(source)
 
 
 class MemoryMapping(object):
