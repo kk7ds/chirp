@@ -162,7 +162,13 @@ class RepeaterBook(base.NetworkResultRadio):
         return data_file
 
     def item_to_memory(self, item, number):
-        m = chirp_common.Memory()
+        if item.get('D-Star') == 'Yes':
+            m = chirp_common.DVMemory()
+            m.dv_urcall = 'CQCQCQ'.ljust(8)
+            m.dv_rpt1call = item.get('Callsign')[:8].ljust(8)
+            m.dv_rpt2call = item.get('Callsign')[:8].ljust(8)
+        else:
+            m = chirp_common.Memory()
         m.number = number
         m.freq = chirp_common.parse_freq(item['Frequency'])
         try:

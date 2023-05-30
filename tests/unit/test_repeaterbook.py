@@ -48,6 +48,19 @@ class TestRepeaterbook(unittest.TestCase):
         f = rb.get_features()
         self.assertGreater(sum(f.memory_bounds), 20)
 
+        for i in range(*f.memory_bounds):
+            m = rb.get_memory(i)
+            if m.mode == 'DV':
+                self.assertIsInstance(m, chirp_common.DVMemory)
+                self.assertEqual('CQCQCQ  ', m.dv_urcall)
+                self.assertEqual(8, len(m.dv_rpt1call))
+                self.assertEqual(8, len(m.dv_rpt2call))
+                self.assertEqual(m.dv_rpt1call, m.dv_rpt2call)
+                self.assertNotEqual('', m.dv_rpt1call)
+                break
+        else:
+            raise Exception('Did not find any DV results')
+
     @pytest.mark.network
     def test_get_wyoming(self):
         rb = repeaterbook.RepeaterBook()
