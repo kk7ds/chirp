@@ -203,6 +203,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_skips = ["", "S", "P"]
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_name_length = 16
+        rf.requires_call_lists = False
         return rf
 
     def process_mmap(self):
@@ -307,7 +308,11 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
             _mem.rpt2call = _encode_call(memory.dv_rpt2call.ljust(8))
             _mem.digcode = memory.dv_code
         elif memory.mode == "DV":
-            raise Exception("BUG")
+            LOG.debug('Converting Memory to DVMemory with default values')
+            _mem.urcall = _encode_call('CQCQCQ'.ljust(8))
+            _mem.rpt1call = _encode_call(' ' * 8)
+            _mem.rpt2call = _encode_call(' ' * 8)
+            _mem.digcode = 0
 
         if memory.skip == "S":
             _skp |= bit
