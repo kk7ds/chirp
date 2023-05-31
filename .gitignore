@@ -28,3 +28,4 @@ assets
 # for visual studio and visual studio code editors
 .vs/
 .vscode/
+/CppProperties.json

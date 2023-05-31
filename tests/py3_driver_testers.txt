@@ -324,6 +324,7 @@ Yaesu_FT-1D_R,+Yaesu_FT3D_R,30-Dec-2022
 Yaesu_FT2D_R,+Yaesu_FT3D_R,30-Dec-2022
 Yaesu_FT2D_Rv2,+Yaesu_FT3D_R,30-Dec-2022
 Yaesu_FT3D_R,@kk7ds,30-Dec-2022
+Yaesu_FT-450D,@Old-Phart,01-Jun-2023
 Yaesu_FT-4XE,Unit tested; needs confirm,24-Dec-2022
 Yaesu_FT-4XR,+Yaesu_FT-4XE,24-Dec-2022
 Yaesu_FT-4VR,+Yaesu_FT-4XE,24-Dec-2022
