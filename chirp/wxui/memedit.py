@@ -1255,18 +1255,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         for number in range(self.row2mem(rows[0]), mems_to_move[-1] + 1):
             self.refresh_memory(number)
 
-    @common.error_proof()
-    def _sort_memories(self, rows, reverse, event):
-        choices = [x.label.replace('\n', ' ') for x in self._col_defs]
-        sortcol = wx.GetSingleChoice(
-            _('Sort memories'),
-            _('Sort by column:'),
-            choices,
-            parent=self)
-        if not sortcol:
-            return
-
-        sortattr = self._col_defs[choices.index(sortcol)].name
+    def _do_sort_memories(self, rows, reverse, sortattr):
         memories = [self._memory_cache[r] for r in rows]
         LOG.debug('Sorting %s by %s%s',
                   memories, reversed and '>' or '<', sortattr)
@@ -1279,6 +1268,25 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         LOG.debug('Sorted: %s', memories)
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
+    @common.error_proof()
+    def _sort_memories(self, rows, reverse, event):
+        choices = [x.label.replace('\n', ' ') for x in self._col_defs]
+        sortcol = wx.GetSingleChoice(
+            _('Sort memories'),
+            _('Sort by column:'),
+            choices,
+            parent=self)
+        if not sortcol:
+            return
+
+        sortattr = self._col_defs[choices.index(sortcol)].name
+
+        self._do_sort_memories(rows, reverse, sortattr)
+
+    @common.error_proof()
+    def _arrange_memories(self, rows, event):
+        self._do_sort_memories(rows, False, 'empty')
 
     def _memory_rclick(self, event):
         if event.GetRow() == -1:
@@ -1345,6 +1353,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # memories is selected
         empty_selected = any([self._memory_cache[r].empty
                               for r in selected_rows])
+        used_selected = sum([0 if self._memory_cache[r].empty else 1
+                             for r in selected_rows])
         special_selected = any([self._memory_cache[r].extd_number
                                 for r in selected_rows])
         contig_selected = (
@@ -1364,6 +1374,16 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                                     False),
                   sortasc_item)
         sort_menu.Append(sortasc_item)
+
+        arrange_item = wx.MenuItem(
+            menu, wx.NewId(),
+            _('Cluster %i memories') % used_selected)
+        self.Bind(wx.EVT_MENU,
+                  functools.partial(self._arrange_memories, selected_rows),
+                  arrange_item)
+        menu.Append(arrange_item)
+        arrange_item.Enable(empty_selected and used_selected and
+                            not special_selected)
 
         sortdesc_item = wx.MenuItem(
             menu, wx.NewId(),
