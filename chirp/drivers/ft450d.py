@@ -1,5 +1,5 @@
-# Copyright 2018 by Rick DeWitt (aa0rd@yahoo.com>
-# Bug fix for issue #8183, invalid APO Off value
+# Copyright 2018 by Rick DeWitt (aa0rd@yahoo.com) V2.0
+# PY3 Compliant release.
 # Thanks to Filippi Marco <iz3gme.marco@gmail.com> for Yaesu processes
 #
 # This program is free software: you can redistribute it and/or modify
@@ -404,11 +404,11 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         else:
             attempts = 5
         for _i in range(0, attempts):
-            data = self.pipe.read(block + 2)    # Blocknum, data,checksum
+            data = bytes(self.pipe.read(block + 2))    # Blocknum, data,checksum
             if data:
                 break
             time.sleep(0.5)
-        if len(data) == block + 2 and data[0] == chr(blocknum):
+        if len(data) == block + 2 and data[0] == blocknum:
             checksum = yaesu_clone.YaesuChecksum(1, block)
             if checksum.get_existing(data) != \
                     checksum.get_calculated(data):
@@ -433,7 +433,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
 
         start = time.time()
 
-        data = ""
+        data = b""
         blocks = 0
         status = chirp_common.Status()
         status.msg = _("Cloning from radio")
@@ -447,11 +447,11 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 repeat = 1
             for _i in range(0, repeat):
                 data += self._read(block, blocks)
-                self.pipe.write(chr(CMD_ACK))
+                self.pipe.write(bytes(chr(CMD_ACK), encoding='utf8'))
                 blocks += 1
                 status.cur = blocks
                 self.status_fn(status)
-        data += self.MODEL      # Append ID
+        data += bytes(self.MODEL, encoding='utf8')      # Append ID
         return memmap.MemoryMap(data)
 
     def _clone_out(self):
@@ -475,20 +475,25 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             for _i in range(0, repeat):
                 time.sleep(0.01)
                 checksum = yaesu_clone.YaesuChecksum(pos, pos + block - 1)
-                self.pipe.write(chr(blocks))
-                self.pipe.write(self.get_mmap()[pos:pos + block])
-                self.pipe.write(chr(checksum.get_calculated(self.get_mmap())))
-                buf = self.pipe.read(1)
-                if not buf or buf[0] != chr(CMD_ACK):
+                LOG.debug("Sending block %s" % hex(blocks))
+                self.pipe.write(bytes(chr(blocks), encoding = 'latin-1'))
+                blkdat = self.get_mmap()[pos:pos + block]
+                LOG.debug("Sending %d bytes:\n%s" 
+                          % (len(blkdat), util.hexprint(blkdat)))
+                self.pipe.write(blkdat)
+                xs = checksum.get_calculated(self.get_mmap())
+                LOG.debug("Sending checksum %s" % hex(xs))
+                self.pipe.write(bytes(chr(xs), encoding = 'latin-1'))
+                buf = bytes(self.pipe.read(1))
+                if not buf or buf[0] != CMD_ACK:
                     time.sleep(delay)
-                    buf = self.pipe.read(1)
-                if not buf or buf[0] != chr(CMD_ACK):
+                    buf = bytes(self.pipe.read(1))
+                if not buf or buf[0] != CMD_ACK:
                     raise Exception(_("Radio did not ack block %i") % blocks)
                 pos += block
                 blocks += 1
                 status.cur = blocks
                 self.status_fn(status)
-
 
     def sync_in(self):
         try:
