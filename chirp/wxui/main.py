@@ -806,6 +806,12 @@ class ChirpMain(wx.Frame):
         tb.Realize()
 
     def adj_menu_open_recent(self, filename):
+        # Don't persist template names that have not been saved or do not
+        # exist.
+        if not os.path.exists(filename):
+            LOG.debug('Ignoring recent file %s', filename)
+            return
+
         # Don't add stock config files to the recent files list
         stock_dir = chirp_platform.get_platform().config_file("stock_configs")
         this_dir = os.path.dirname(filename)
