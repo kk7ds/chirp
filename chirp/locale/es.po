@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-31 16:43-0700\n"
-"PO-Revision-Date: 2023-04-08 22:16-0400\n"
+"PO-Revision-Date: 2023-05-31 22:33-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.3.1\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -1071,9 +1071,9 @@ msgid "Close file"
 msgstr "Cerrar archivo"
 
 #: ../wxui/memedit.py:1380
-#, fuzzy, python-format
+#, python-format
 msgid "Cluster %i memories"
-msgstr "Ordenar %i memorias"
+msgstr "Agrupar %i memorias"
 
 #: ../wxui/memedit.py:530
 msgid "Comment"
@@ -1159,9 +1159,8 @@ msgid "Disable reporting"
 msgstr "Deshabilitar reportes"
 
 #: ../wxui/memedit.py:429
-#, fuzzy
 msgid "Disabled"
-msgstr "deshabilitado"
+msgstr "Desahbilitado"
 
 #: ../wxui/query_sources.py:310
 msgid "Distance"
@@ -1207,9 +1206,8 @@ msgid "Enable Automatic Edits"
 msgstr "Habilitar ediciones automáticas"
 
 #: ../wxui/memedit.py:429
-#, fuzzy
 msgid "Enabled"
-msgstr "habilitado"
+msgstr "Habilitado"
 
 #: ../wxui/memedit.py:248
 msgid "Enter Frequency"
@@ -2119,7 +2117,7 @@ msgstr "Mostrar ubicación del registro de depuración"
 
 #: ../wxui/main.py:626
 msgid "Show extra fields"
-msgstr ""
+msgstr "Mostrar campos adicionales"
 
 #: ../wxui/memedit.py:1601
 msgid "Some memories are incompatible with this radio"
@@ -2323,9 +2321,9 @@ msgid "Unable to reveal %s on this system"
 msgstr "No se puede revelar %s en este sistema"
 
 #: ../wxui/memedit.py:159
-#, fuzzy, python-format
+#, python-format
 msgid "Unable to set %s on this memory"
-msgstr "No se puede revelar %s en este sistema"
+msgstr "No se puede establecer %s en esta memoria"
 
 #: ../wxui/query_sources.py:524
 msgid "United States"
