@@ -1379,11 +1379,11 @@ class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties):
         return cls._memsize and len(filedata) == cls._memsize
 
     def sync_in(self):
-        "Initiate a radio-to-PC clone operation"
+        """Initiate a radio-to-PC clone operation"""
         pass
 
     def sync_out(self):
-        "Initiate a PC-to-radio clone operation"
+        """Initiate a PC-to-radio clone operation"""
         pass
 
     def save(self, filename):
