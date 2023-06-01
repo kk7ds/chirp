@@ -138,9 +138,8 @@ class VX7BankModel(chirp_common.BankModel):
                 remaining_members += 1
 
         if not found:
-            raise Exception("Memory {num} not in " +
-                            "bank {bank}".format(num=memory.number,
-                                                 bank=bank))
+            raise Exception("Memory {num} is not in bank {bank}".format(
+                            num=memory.number, bank=bank))
         if not remaining_members:
             _bank_used.in_use = 0xFFFF
 
