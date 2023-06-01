@@ -28,7 +28,7 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-CMD_ACK = 0x06
+CMD_ACK = b'\x06'
 EX_MODES = ["USER-L", "USER-U", "LSB+CW", "USB+CW", "RTTY-L", "RTTY-U", "N/A"]
 T_STEPS = sorted(list(chirp_common.TUNING_STEPS))
 T_STEPS.remove(30.0)
@@ -44,6 +44,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
     COM_PRTY = 'N'   # parity checking
     COM_STOP = 1   # stop bits
     MODEL = "FT-450D"
+    NEEDS_COMPAT_SERIAL = False
 
     DUPLEX = ["", "-", "+"]
     MODES = ["LSB", "USB",  "CW",  "AM", "FM", "RTTY-L",
@@ -404,7 +405,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         else:
             attempts = 5
         for _i in range(0, attempts):
-            data = bytes(self.pipe.read(block + 2))    # Blocknum, data,checksum
+            data = self.pipe.read(block + 2)    # Blocknum, data,checksum
             if data:
                 break
             time.sleep(0.5)
@@ -447,12 +448,12 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 repeat = 1
             for _i in range(0, repeat):
                 data += self._read(block, blocks)
-                self.pipe.write(bytes(chr(CMD_ACK), encoding='utf8'))
+                self.pipe.write(CMD_ACK)
                 blocks += 1
                 status.cur = blocks
                 self.status_fn(status)
-        data += bytes(self.MODEL, encoding='utf8')      # Append ID
-        return memmap.MemoryMap(data)
+        data += self.MODEL.encode()
+        return memmap.MemoryMapBytes(data)
 
     def _clone_out(self):
         self.pipe.baudrate = self.BAUD_RATE
@@ -476,19 +477,19 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 time.sleep(0.01)
                 checksum = yaesu_clone.YaesuChecksum(pos, pos + block - 1)
                 LOG.debug("Sending block %s" % hex(blocks))
-                self.pipe.write(bytes(chr(blocks), encoding = 'latin-1'))
+                self.pipe.write(struct.pack('B', blocks))
                 blkdat = self.get_mmap()[pos:pos + block]
                 LOG.debug("Sending %d bytes:\n%s" 
                           % (len(blkdat), util.hexprint(blkdat)))
                 self.pipe.write(blkdat)
                 xs = checksum.get_calculated(self.get_mmap())
                 LOG.debug("Sending checksum %s" % hex(xs))
-                self.pipe.write(bytes(chr(xs), encoding = 'latin-1'))
-                buf = bytes(self.pipe.read(1))
-                if not buf or buf[0] != CMD_ACK:
+                self.pipe.write(struct.pack('B', xs))
+                buf = self.pipe.read(1)
+                if not buf or buf[:1] != CMD_ACK:
                     time.sleep(delay)
-                    buf = bytes(self.pipe.read(1))
-                if not buf or buf[0] != CMD_ACK:
+                    buf = self.pipe.read(1)
+                if not buf or buf[:1] != CMD_ACK:
                     raise Exception(_("Radio did not ack block %i") % blocks)
                 pos += block
                 blocks += 1
