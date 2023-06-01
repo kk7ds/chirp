@@ -24,8 +24,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueFloat, InvalidValueError, RadioSettings, \
     RadioSettingValueMap, zero_indexed_seq_map
 from chirp.chirp_common import format_freq
-import os
-import time
 import logging
 from datetime import date
 

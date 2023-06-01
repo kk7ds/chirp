@@ -22,7 +22,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettings
 
 import time
-import os
 import traceback
 import string
 import re

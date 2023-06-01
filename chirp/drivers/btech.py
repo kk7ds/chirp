@@ -18,7 +18,6 @@
 from builtins import bytes
 
 import struct
-import time
 import logging
 
 from time import sleep

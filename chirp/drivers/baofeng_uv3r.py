@@ -16,7 +16,6 @@
 """Baofeng UV3r radio management module"""
 
 import time
-import os
 import logging
 
 from chirp.drivers.wouxun_common import do_download, do_upload

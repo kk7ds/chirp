@@ -15,7 +15,6 @@
 
 """TYT uv3r radio management module"""
 
-import os
 import logging
 from chirp import chirp_common, bitwise, errors, directory
 from chirp.drivers.wouxun import do_download, do_upload

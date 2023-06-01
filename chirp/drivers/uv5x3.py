@@ -14,10 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
-import struct
 import logging
-import re
 
 from chirp.drivers import baofeng_common
 from chirp import chirp_common, directory, memmap

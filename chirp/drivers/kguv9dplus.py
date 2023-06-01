@@ -22,10 +22,8 @@
 """Wouxun KG-UV9D Plus radio management module"""
 
 import time
-import os
 import logging
 import struct
-import string
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingValue, \
      RadioSettingGroup, \

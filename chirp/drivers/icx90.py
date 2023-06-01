@@ -18,7 +18,6 @@
 import logging
 
 from chirp.drivers import icf
-import struct
 from chirp import chirp_common, bitwise, errors, directory
 from chirp.memmap import MemoryMap
 from chirp.settings import RadioSetting, RadioSettingGroup, \

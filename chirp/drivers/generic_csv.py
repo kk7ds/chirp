@@ -16,7 +16,6 @@
 import os
 import csv
 import logging
-import re
 
 from chirp import chirp_common, errors, directory
 from chirp import import_logic

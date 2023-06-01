@@ -20,7 +20,6 @@
 #  KG7KMV and Bartłomiej Zieliński
 # Based on the implementation of Kenwood TK-8102
 
-import os
 import logging
 import struct
 
