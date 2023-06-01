@@ -494,9 +494,8 @@ class FT7800BankModel(chirp_common.BankModel):
         _bitmap = self._radio._memobj.bank_channels[bank.index]
         ishft = 31 - (index % 32)
         if not (_bitmap.bitmap[index // 32] & (1 << ishft)):
-            raise Exception("Memory {num} is " +
-                            "not in bank {bank}".format(num=memory.number,
-                                                        bank=bank))
+            raise Exception("Memory {num} is not in bank {bank}".format(
+                            num=memory.number, bank=bank))
         _bitmap.bitmap[index // 32] &= ~(1 << ishft)
         self.__b2m_cache[bank.index].remove(memory.number)
         self.__m2b_cache[memory.number].remove(bank.index)
