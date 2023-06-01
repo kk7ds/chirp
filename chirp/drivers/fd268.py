@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import struct
-import os
 import logging
 
 from chirp import chirp_common, directory, memmap, errors, util, bitwise

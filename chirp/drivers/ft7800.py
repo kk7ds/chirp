@@ -15,7 +15,6 @@
 
 import time
 import logging
-import os
 import re
 
 from chirp.drivers import yaesu_clone

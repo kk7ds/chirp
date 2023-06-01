@@ -14,9 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
-import os
 import struct
-import unittest
 import logging
 
 from chirp import chirp_common, directory, memmap

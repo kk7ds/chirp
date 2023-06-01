@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import struct
-import os
 import time
 import logging
 from collections import OrderedDict

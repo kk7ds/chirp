@@ -16,7 +16,6 @@
 import logging
 import struct
 import time
-import sys
 
 from chirp import chirp_common, directory, memmap, errors, util, bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting, \

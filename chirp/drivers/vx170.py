@@ -15,8 +15,6 @@
 
 from chirp.drivers import yaesu_clone, ft7800
 from chirp import chirp_common, directory, memmap, bitwise, errors
-import time
-import os
 
 MEM_FORMAT = """
 #seekto 0x018A;

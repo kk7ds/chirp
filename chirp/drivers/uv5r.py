@@ -17,7 +17,6 @@ from builtins import bytes
 
 import struct
 import time
-import os
 import logging
 
 from chirp import chirp_common, errors, util, directory, memmap

@@ -16,7 +16,6 @@
 """Wouxun radios management module"""
 
 import time
-import os
 import logging
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \

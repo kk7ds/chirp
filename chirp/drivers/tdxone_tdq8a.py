@@ -17,7 +17,6 @@
 import time
 import struct
 import logging
-import re
 
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util

@@ -16,7 +16,6 @@
 """Wouxun KG-UV920P-A radio management module based"""
 
 import time
-import os
 import logging
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
