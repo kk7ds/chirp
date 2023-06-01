@@ -202,8 +202,8 @@ OFF1TO9_LIST = ["Off"] + ["%s" % x for x in range(1, 10)]
 PONMSG_LIST = ["Logo", "Voltage"]
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 PTTIDCODE_LIST = ["%s" % x for x in range(1, 16)]
-PTTLT_LIST = ["None", "100 seconds"] + \
-             ["%s seconds" % x for x in range(200, 1200, 200)]
+PTTLT_LIST = ["None", "100 ms"] + \
+             ["%s ms" % x for x in range(200, 1200, 200)]
 QTSAVE_LIST = ["All", "RX", "TX"]
 RPSTE_LIST = ["Off"] + ["%s ms" % x for x in range(100, 1100, 100)]
 SAVE_LIST = ["Off", "Normal", "Super", "Deep"]
