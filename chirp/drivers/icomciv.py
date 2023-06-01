@@ -1053,7 +1053,7 @@ class Icom7300Radio(IcomCIVRadio):      # Added March, 2021 by Rick DeWitt
         self._rf.valid_tmodes = ["", "Tone", "TSQL"]
         # self._rf.valid_duplexes = ["", "-", "+", "split"]
         self._rf.valid_duplexes = []     # To prevent using memobj.duplex
-        self._rf.valid_bands = [(1800000, 70500000)]
+        self._rf.valid_bands = [(30000, 74800000)]
         self._rf.valid_skips = []
         self._rf.valid_name_length = 10
         self._rf.valid_characters = chirp_common.CHARSET_ASCII
