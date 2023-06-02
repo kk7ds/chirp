@@ -1494,8 +1494,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._grid.SetDefaultCellFont(font)
         if refresh:
             self.refresh()
-            wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
-            wx.CallAfter(self._grid.AutoSizeRows, setAsMin=False)
+        wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
+        wx.CallAfter(self._grid.AutoSizeRows, setAsMin=False)
 
     def cb_copy(self, cut=False):
         rows = self.get_selected_rows_safe()
