@@ -408,11 +408,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 404
+**Drivers:** 405
 
-**Tested:** 85% (347/57) (93% of usage stats)
+**Tested:** 85% (348/57) (93% of usage stats)
 
-**Byte clean:** 89% (363/41)
+**Byte clean:** 89% (364/41)
 
 ## Meaning of this testing
 
