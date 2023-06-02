@@ -545,7 +545,7 @@ class TemplateRadio(chirp_common.CloneModeRadio):
                                 "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
 
         rf.valid_characters = chirp_common.CHARSET_ASCII
-        rf.valid_modes = ["FM", "NFM", "AM", "NAM" ]
+        rf.valid_modes = ["FM", "NFM", "AM", "NAM"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
 
         rf.valid_skips = [""]
@@ -1265,7 +1265,6 @@ class TemplateRadio(chirp_common.CloneModeRadio):
         elif mem.mode == "AM":
             _mem.flags2 = _mem.flags2 & ~FLAGS2_BANDWIDTH
             _mem.flags1 = _mem.flags1 | FLAGS1_ISAM
-
 
         # frequency/offset
         _mem.freq = mem.freq/10
