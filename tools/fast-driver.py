@@ -39,8 +39,12 @@ base_modules = [mod for parent, mod in files_by_module
 if base_modules:
     print('Base modules touched; running all drivers: %s' % base_modules)
     driver_exp = []
-else:
+elif driver_modules:
     driver_exp = ' or '.join(f for f in driver_modules)
+else:
+    print('No driver tests necessary for changes in %s' % ','.join(
+        files))
+    sys.exit(0)
 
 args = ['pytest']
 if driver_exp:
