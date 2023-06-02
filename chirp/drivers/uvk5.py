@@ -242,6 +242,13 @@ BANDS = {
         }
 BANDMASK = 0b1111
 
+VFO_CHANNEL_NAMES = ["F1(50M-76M)A", "F1(50M-76M)B",
+                     "F2(108M-136M)A", "F2(108M-136M)B",
+                     "F3(136M-174M)A", "F3(136M-174M)B",
+                     "F4(174M-350M)A", "F4(174M-350M)B",
+                     "F5(350M-400M)A", "F5(350M-400M)B",
+                     "F6(400M-470M)A", "F6(400M-470M)B",
+                     "F7(470M-600M)A", "F7(470M-600M)B"]
 
 # the communication is obfuscated using this fine mechanism
 def xorarr(data: bytes):
@@ -704,7 +711,8 @@ class TemplateRadio(chirp_common.CloneModeRadio):
             return mem
 
         if number > 199:
-            mem.name = "VFO_"+str(number-199)
+            #mem.name = "VFO_"+str(number-199)
+            mem.name = VFO_CHANNEL_NAMES[number-200]
             mem.immutable = ["name"]
         else:
             _mem2 = self._memobj.channelname[number]
