@@ -250,6 +250,7 @@ VFO_CHANNEL_NAMES = ["F1(50M-76M)A", "F1(50M-76M)B",
                      "F6(400M-470M)A", "F6(400M-470M)B",
                      "F7(470M-600M)A", "F7(470M-600M)B"]
 
+
 # the communication is obfuscated using this fine mechanism
 def xorarr(data: bytes):
     tbl = [22, 108, 20, 230, 46, 145, 13, 64, 33, 53, 213, 64, 19, 3, 233, 128]
@@ -711,7 +712,6 @@ class TemplateRadio(chirp_common.CloneModeRadio):
             return mem
 
         if number > 199:
-            #mem.name = "VFO_"+str(number-199)
             mem.name = VFO_CHANNEL_NAMES[number-200]
             mem.immutable = ["name"]
         else:
