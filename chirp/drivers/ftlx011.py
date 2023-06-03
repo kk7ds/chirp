@@ -53,7 +53,7 @@ u8 scan_resume:1,           // Scan sesume: 0 = 0.5 seconds, 1 = Carrier
    talk_back:1,             // Talk Back: 0 = enabled, 1 = disabled
    tx_carrier_delay:1;      // TX carrier delay: 1 = enabled, 0 = disabled
 u8 tot:4,                   // Time out timer: 16 values (0.0-7.5 in 0.5s step)
-   tot_resume:2,            // Time out timer resume: 3, 2, 1, 0 => 0s, 6s, 20s, 60s 
+   tot_resume:2,            // Time out timer resume: 3, 2, 1, 0 => 0s, 6s, 20s, 60s
    unknownB:2;
 u8 a_key:2,                 // A key function: resume: 0-3: Talkaround, High/Low, Call, Accessory
    unknownB:6;
