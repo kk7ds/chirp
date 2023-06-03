@@ -692,7 +692,7 @@ class FT857Radio(ft817.FT817Radio):
                                                 options[_settings.cw_speed]))
         cw.append(rs)
         options = ["Numeric", "Alphabet", "AlphaNumeric"]
-        rs = RadioSetting("cw_training", "CW trainig",
+        rs = RadioSetting("cw_training", "CW training",
                           RadioSettingValueList(options,
                                                 options[_settings.cw_training])
                           )

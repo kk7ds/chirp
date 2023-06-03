@@ -105,7 +105,7 @@ class TestFileICF(unittest.TestCase):
 
             icfdata, mmap = icf.read_file(fn)
             # If we sourced from an image, we use our defaults in
-            # generating the ICF metdata
+            # generating the ICF metadata
             self.assertEqual({'MapRev': 1,
                               'EtcData': 5,
                               'Comment': '',

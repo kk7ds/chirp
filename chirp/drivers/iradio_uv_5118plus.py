@@ -563,7 +563,7 @@ class IradioUV5118plus(chirp_common.CloneModeRadio):
         LOG.debug("Setting %i(%s)" % (mem.number, mem.extd_number))
         _mem = self._memobj.channels[mem.number - 1]
 
-        # if empty memmory
+        # if empty memory
         if mem.empty:
             _mem.set_raw("\xFF" * 22 + "\20" * 10)
             return

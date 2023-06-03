@@ -282,7 +282,7 @@ class arrayDataElement(DataElement):
             # NOTE: All the values should be strings coming out of py3.
             # and on py2 they could be a mix of unicode and str, the latter
             # for non-ASCII values. On py2 we can just coerce all of these
-            # types to a string for compatbility.
+            # types to a string for compatibility.
             return "".join([str(x.get_value()) for x in self.__items])
         else:
             return str(self.__items)
