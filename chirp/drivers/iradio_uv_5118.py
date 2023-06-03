@@ -165,7 +165,7 @@ def _checksum(data):
 def _enter_programming_mode(radio):
     serial = radio.pipe
 
-    # lengthen the timeout here as these radios are reseting due to timeout
+    # lengthen the timeout here as these radios are resetting due to timeout
     radio.pipe.timeout = 0.75
 
     exito = False
@@ -506,7 +506,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
         LOG.debug("Setting %i(%s)" % (mem.number, mem.extd_number))
         _mem = self._memobj.channels[mem.number - 1]
 
-        # if empty memmory
+        # if empty memory
         if mem.empty:
             _mem.set_raw("\xFF" * 16)
             return

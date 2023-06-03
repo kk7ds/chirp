@@ -618,7 +618,7 @@ def FrozenMemory(source):
         def __setattr__(self, k, v):
             if self._frozen:
                 # This should really be an error, but we have a number of
-                # drivers that make modificatons during set_memory(). So this
+                # drivers that make modifications during set_memory(). So this
                 # just has to be a warning for now. Later it could turn into
                 # a TypeError.
                 caller = inspect.getframeinfo(inspect.stack()[1][0])
@@ -1266,7 +1266,7 @@ class Radio(Alias):
         rules in order to comply with FCC type acceptance, which requires
         overriding this behavior.
 
-        ** This should almost never be overidden in your driver.
+        ** This should almost never be overridden in your driver.
 
         ** This must not communicate with the radio, if implemented on a live-
            mode driver.

@@ -65,7 +65,7 @@ def _rawsend(radio, data):
 
 
 def _make_frame(cmd, addr, length, data=""):
-    """Pack the info in the headder format"""
+    """Pack the info in the header format"""
     frame = struct.pack(">BHB", ord(cmd), addr, length)
     # add the data if set
     if len(data) != 0:

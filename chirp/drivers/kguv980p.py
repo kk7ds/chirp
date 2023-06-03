@@ -611,7 +611,7 @@ def _oem_str_encode(in_str):
             pass
     while len(out_str) < 8:
         out_str += chr(0x50)
-    LOG.debug("OEM Ouput String = %s", out_str)
+    LOG.debug("OEM Output String = %s", out_str)
     return out_str
 
 
@@ -627,7 +627,7 @@ def _oem_str_decode_1000GPLUS(in_str):
             out_str += chr(c+48)
         else:
             out_str += ''
-    LOG.debug("decode OEM Ouput String = %s", out_str)
+    LOG.debug("decode OEM Output String = %s", out_str)
     return out_str
 
 
@@ -642,7 +642,7 @@ def _oem_str_encode_1000GPLUS(in_str):
             out_str += chr(int(ord(c)) - 48)
     while len(out_str) < 8:
         out_str += chr(0x50)
-    LOG.debug("encode OEM Ouput String = %s", out_str)
+    LOG.debug("encode OEM Output String = %s", out_str)
     return out_str
 
 

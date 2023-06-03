@@ -444,7 +444,7 @@ If you have a model listed in this matrix with either "implied" or
 "probably works" status, an actual confirmation with real hardware is
 welcome and can replace the weaker reference.
 
-## Minimal test prodecure
+## Minimal test procedure
 For the purposes of the Python 3 effort, a "tested" radio means
 at least the following procedure was followed:
 1. Download from the radio

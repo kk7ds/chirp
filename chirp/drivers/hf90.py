@@ -536,7 +536,7 @@ class HF90StyleRadio(chirp_common.CloneModeRadio,
 # LateHF90Radio imitates version 3. It seems both are needed because
 # version 3 warns that it is incompatible with firmware revisions below V301.
 # Unfortunately, the author does not have access to the technical information
-# required to better accomodate the quirks of the various firmware revisions.
+# required to better accommodate the quirks of the various firmware revisions.
 
 @directory.register
 class EarlyHF90Radio(HF90StyleRadio):

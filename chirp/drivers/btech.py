@@ -394,7 +394,7 @@ def _send(radio, data):
 
 
 def _make_frame(cmd, addr, length, data=""):
-    """Pack the info in the headder format"""
+    """Pack the info in the header format"""
     frame = b"\x06" + struct.pack(">BHB", ord(cmd), addr, length)
     # add the data if set
     if len(data) != 0:
@@ -561,7 +561,7 @@ def _upload(radio):
     """Upload procedure"""
 
     # The UPLOAD mem is restricted to lower than 0x3100,
-    # so we will override that here localy
+    # so we will override that here locally
     MEM_SIZE = radio.UPLOAD_MEM_SIZE
 
     # UI progress

@@ -419,7 +419,7 @@ class ChirpDuplexColumn(ChirpChoiceColumn):
 
 
 class ChirpFlagColumn(ChirpChoiceColumn):
-    """Support boolean values as a sepecial case of Choice
+    """Support boolean values as a special case of Choice
 
     This allows us to have translated strings for the boolean flags,
     while retaining choice-like behavior instead of rendering checkboxes,
@@ -772,7 +772,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     def synchronous_get_memory(self, number):
         """SYNCHRONOUSLY Get memory with extra properties
 
-        This shoud ideally not be used except in situations (like copy)
+        This should ideally not be used except in situations (like copy)
         where we really have to do the operation synchronously.
         """
         mem = self._radio.get_memory(number)
