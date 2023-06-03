@@ -24,15 +24,15 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
 
 LOG = logging.getLogger(__name__)
 
-### SAMPLE MEM DUMP as sent from the radios
+# SAMPLE MEM DUMP as sent from the radios
 
 # FTL-1011
-#0x000000  52 f0 16 90 04 08 38 c0  00 00 00 01 00 00 00 ff  |R.....8.........|
-#0x000010  20 f1 00 20 00 00 00 20  04 47 25 04 47 25 00 00  | .. ... .G%.G%..|
+# 0x000000  52 f0 16 90 04 08 38 c0  00 00 00 01 00 00 00 ff  |R.....8.........|
+# 0x000010  20 f1 00 20 00 00 00 20  04 47 25 04 47 25 00 00  | .. ... .G%.G%..|
 
 # FTL-2011
-#0x000000: 50 90 21 40 04 80 fc 40  00 00 00 01 00 00 00 ff  |P.!@...@........|
-#0x000010: 20 f1 00 0b 00 00 00 0b  14 51 70 14 45 70 00 00  |.........Qp.Ep..|
+# 0x000000: 50 90 21 40 04 80 fc 40  00 00 00 01 00 00 00 ff  |P.!@...@........|
+# 0x000010: 20 f1 00 0b 00 00 00 0b  14 51 70 14 45 70 00 00  |.........Qp.Ep..|
 
 
 MEM_FORMAT = """
@@ -338,7 +338,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         rf.valid_skips = SKIP_VALUES
         rf.valid_modes = ["FM"]
         rf.valid_power_levels = POWER_LEVELS
-        #rf.valid_tuning_steps = [5.0]
+        # rf.valid_tuning_steps = [5.0]
         rf.valid_bands = [self._range]
         rf.memory_bounds = (1, self._upper)
         return rf
@@ -444,7 +444,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             tone[1] = int_to_bcd(value % 100)
 
         if mode == "Tone":
-            #CTCS
+            # CTCS
             tone[1] = TONES.index(value) + 128
 
         # set it

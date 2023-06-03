@@ -1250,7 +1250,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         pnlset.append(rs)
     # End _do_panel_settings
 
-    def _do_panel_buttons(self, pnlcfg):      #- - - Current Panel Config
+    def _do_panel_buttons(self, pnlcfg):      # - - - Current Panel Config
         _settings = self._memobj.settings
 
         rs = RadioSetting("pnl_cs", "C.S. Function",

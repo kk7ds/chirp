@@ -413,19 +413,19 @@ class IP620Radio(chirp_common.CloneModeRadio,
                           RadioSettingValueList(NO_YES_LIST,
                                                 NO_YES_LIST[_mem.scan_add]))
         mem.extra.append(rs)
-        #TODO: Show name channel
-##        count = 0
-##        for i in _nam.chan_name:
-##            if i == 0xFF:
-##                break
-##            try:
-##                mem.name += IP620_CHARSET[i]
-##            except Exception:
-##                LOG.error("Unknown name char %i: 0x%02x (mem %i)" %
-##                          (count, i, number - 1))
-##                mem.name += " "
-##            count += 1
-##        mem.name = mem.name.rstrip()
+        # TODO: Show name channel
+#        count = 0
+#        for i in _nam.chan_name:
+#            if i == 0xFF:
+#                break
+#            try:
+#                mem.name += IP620_CHARSET[i]
+#            except Exception:
+#                LOG.error("Unknown name char %i: 0x%02x (mem %i)" %
+#                          (count, i, number - 1))
+#                mem.name += " "
+#            count += 1
+#        mem.name = mem.name.rstrip()
 
         return mem
 
