@@ -49,7 +49,7 @@ DEBUG_SHOW_OBFUSCATED_COMMANDS = False
 # might be useful for someone debugging some obscure memory issue
 DEBUG_SHOW_MEMORY_ACTIONS = False
 
-DRIVER_VERSION = "Quansheng UV-K5 driver v20230529 (c) Jacek Lipkowski SQ5BPF"
+DRIVER_VERSION = "Quansheng UV-K5 driver v20230603 (c) Jacek Lipkowski SQ5BPF"
 PRINT_CONSOLE = False
 
 MEM_FORMAT = """
@@ -683,8 +683,18 @@ class TemplateRadio(chirp_common.CloneModeRadio):
 
         mem.number = number2
 
+        is_empty = False
         # We'll consider any blank (i.e. 0MHz frequency) to be empty
         if (_mem.freq == 0xffffffff) or (_mem.freq == 0):
+            is_empty = True
+
+        # We'll also look at the channel attributes if a memory has them
+        if number < 200:
+            _mem3 = self._memobj.channel_attributes[number]
+            if _mem3 & 0x08 > 0:
+                is_empty = True
+
+        if is_empty:
             mem.empty = True
             # set some sane defaults:
             mem.power = UVK5_POWER_LEVELS[2]
