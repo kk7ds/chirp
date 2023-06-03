@@ -107,8 +107,8 @@ struct {
      rpste:4;         //      RPT Noise Clear
   u8 unused_9016:4,   // 9016
      rptrl:4;         //      RPT Noise Delay
-  u8 unused_9017:7,   // 9017
-     roger:1;         //      Roger
+  u8 unused_9017:6,   // 9017
+     roger:2;         //      Roger
   u8 unknown_9018;    // 9018
   u8 unused_9019:7,   // 9019
      fmradio:1;       //      FM Radio
@@ -205,6 +205,7 @@ PTTIDCODE_LIST = ["%s" % x for x in range(1, 16)]
 PTTLT_LIST = ["None", "100 ms"] + \
              ["%s ms" % x for x in range(200, 1200, 200)]
 QTSAVE_LIST = ["All", "RX", "TX"]
+ROGER_LIST = ["OFF", "BEEP", "TONE1200"]
 RPSTE_LIST = ["Off"] + ["%s ms" % x for x in range(100, 1100, 100)]
 SAVE_LIST = ["Off", "Normal", "Super", "Deep"]
 SCREV_LIST = ["Time (TO)", "Carrier (CO)", "Search (SE)"]
@@ -924,7 +925,7 @@ class JC8810base(chirp_common.CloneModeRadio):
                                     _settings.skey3_lp)
             basic.append(rset)
 
-        if self.MODEL in ["RT-470L"]:
+        if self.MODEL in ["RT-470", "RT-470L"]:
             # Menu 25: TOP KEY (RT-470L)
             def apply_skeytop_listvalue(setting, obj):
                 LOG.debug("Setting value: " + str(setting.value) +
@@ -934,7 +935,16 @@ class JC8810base(chirp_common.CloneModeRadio):
                 val = SKEYTOP_VALUES[index]
                 obj.set_value(val)
 
-            if self.MODEL in ["RT-470L"]:
+            if self.MODEL in ["RT-470"]:
+                # ==========
+                # Notice to developers:
+                # The RT-470 v1.22 firmware added 'hidden' support for the
+                # Top Key (Short Press) feature. RT-470 radios with a firmware
+                # version prior to v1.22 will not honor the Top Key (Short
+                # Press) setting in CHIRP.
+                # ==========
+                unwanted = [0, 7, 8, 9]
+            elif self.MODEL in ["RT-470L"]:
                 unwanted = [8, 9]
             else:
                 unwanted = []
@@ -1012,7 +1022,13 @@ class JC8810base(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         # Menu 11: ROGER
-        rs = RadioSettingValueBoolean(_settings.roger)
+        # ==========
+        # Notice to developers:
+        # The RT-470 v1.22 firmware expanded the ROGER menu with an additional
+        # choice, 'TONE1200'. RT-470 radios with a firmware version prior to
+        #  v1.22 will not honor the ROGER menu's 'TONE1200' choice in CHIRP.
+        # ==========
+        rs = RadioSettingValueList(ROGER_LIST, ROGER_LIST[_settings.roger])
         rset = RadioSetting("roger", "Roger", rs)
         basic.append(rset)
 
@@ -1179,12 +1195,22 @@ class RT470Radio(JC8810base):
     VENDOR = "Radtel"
     MODEL = "RT-470"
 
+    # ==========
+    # Notice to developers:
+    # The RT-470 support in this driver is curretnly based upon v1.22 firmware.
+    # ==========
+
 
 @directory.register
 class RT470LRadio(JC8810base):
     """Radtel RT-470L"""
     VENDOR = "Radtel"
     MODEL = "RT-470L"
+
+    # ==========
+    # Notice to developers:
+    # The RT-470 support in this driver is curretnly based upon v1.17 firmware.
+    # ==========
 
     _fingerprint = [b"\x00\x00\x00\xfe\x00\x20\xAC\x04",
                     b"\x00\x00\x00\x20\x00\x20\xCC\x04"]
