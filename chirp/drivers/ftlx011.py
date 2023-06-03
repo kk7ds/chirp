@@ -170,7 +170,7 @@ def _do_download(radio):
     for i in range(0, MEM_SIZE):
         a = radio.pipe.read(1)
         if len(a) == 0:
-        # error, no received data
+            # error, no received data
             if len(data) != 0:
                 # received some data, not the complete stream
                 msg = "Just %02i bytes of the %02i received, try again." % \
