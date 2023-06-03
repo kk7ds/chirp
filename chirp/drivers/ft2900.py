@@ -35,6 +35,7 @@ def _send(s, data):
         raise Exception("Failed to read echo")
     LOG.debug("got echo\n%s\n" % util.hexprint(echo))
 
+
 ACK = b"\x06"
 INITIAL_CHECKSUM = 0
 
@@ -163,6 +164,7 @@ def _upload(radio):
         block += 1
 
     _send(radio.pipe, bytes([cs & 0xFF]))
+
 
 MEM_FORMAT = """
 #seekto 0x0080;
@@ -378,7 +380,7 @@ def _decode_name(mem):
 
 
 def _encode_name(mem):
-    if(mem.strip() == ""):
+    if (mem.strip() == ""):
         return [0xff] * 6
 
     name = [None] * 6
@@ -579,7 +581,7 @@ class FT2900Radio(YaesuCloneModeRadio):
         mem.freq = int(_mem.freq) * 1000
 
         # compensate for 12.5 kHz tuning steps, add 500 Hz if needed
-        if(mem.tuning_step == 12.5):
+        if (mem.tuning_step == 12.5):
             lastdigit = int(_mem.freq) % 10
             if (lastdigit == 2 or lastdigit == 7):
                 mem.freq += 500

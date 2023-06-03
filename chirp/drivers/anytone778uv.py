@@ -1729,6 +1729,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                     LOG.debug(element.get_name())
                     raise
 
+
 # Original non-VOX models
 if has_future:
     @directory.register
@@ -1776,6 +1777,7 @@ class AnyTone778UVvoxBase(AnyTone778UVBase):
     '''AnyTone 778UV VOX, Retivis RT95 VOX and others'''
     NAME_LENGTH = 6
     HAS_VOX = True
+
 
 # New VOX models
 if has_future:

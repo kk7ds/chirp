@@ -1145,9 +1145,9 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         basic.append(tot)
 
         if self.MODEL == "KT-8R":
-                rs = RadioSettingValueBoolean(_mem.settings.save)
-                save = RadioSetting("settings.save", "Battery Save", rs)
-                basic.append(save)
+            rs = RadioSettingValueBoolean(_mem.settings.save)
+            save = RadioSetting("settings.save", "Battery Save", rs)
+            basic.append(save)
 
         model_list = ["KT-8R", "KT-WP12", "WP-9900"]
         if self.MODEL not in model_list:

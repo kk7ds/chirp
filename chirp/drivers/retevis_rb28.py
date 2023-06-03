@@ -155,13 +155,14 @@ SETTING_LISTS = {
     }
 
 PMR_TONES = list(chirp_common.TONES)
-[PMR_TONES.remove(x) for x in [ 69.3, 159.8, 165.5, 171.3, 177.3, 183.5,
+[PMR_TONES.remove(x) for x in [69.3, 159.8, 165.5, 171.3, 177.3, 183.5,
                                189.9, 196.6, 199.5, 206.5, 229.1, 254.1]]
 
 PMR_DTCS_CODES = list(chirp_common.DTCS_CODES)
-[PMR_DTCS_CODES.remove(x) for x in [ 36,  53, 122, 145, 212, 225, 246,
+[PMR_DTCS_CODES.remove(x) for x in [36,  53, 122, 145, 212, 225, 246,
                                     252, 255, 266, 274, 325, 332, 356,
                                     446, 452, 454, 455, 462, 523, 526]]
+
 
 def _enter_programming_mode(radio):
     serial = radio.pipe

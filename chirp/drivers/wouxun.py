@@ -897,7 +897,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                 filedata[0x0d70:0x0d80] == \
                 b"\xff\xff\xff\xff\xff\xff\xff\xff" \
                 b"\xff\xff\xff\xff\xff\xff\xff\xff":
-                # those areas are (seems to be) unused
+            # those areas are (seems to be) unused
             return True
         # Old-style image (CHIRP 0.1.11)
         if len(filedata) == 8200 and \

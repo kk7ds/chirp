@@ -57,7 +57,7 @@ PONMSG_LIST = ["Bitmap", "Battery Volts"]
 SPMUTE_LIST = ["QT", "QT+DTMF", "QT*DTMF"]
 DTMFST_LIST = ["DT-ST", "ANI-ST", "DT-ANI", "Off"]
 DTMF_TIMES = ["%s" % x for x in range(50, 501, 10)]
-RPTSET_LIST = ["", "X-DIRRPT", "X-TWRPT"] # TODO < what is index 0?
+RPTSET_LIST = ["", "X-DIRRPT", "X-TWRPT"]  # TODO < what is index 0?
 ALERTS = [1750, 2100, 1000, 1450]
 ALERTS_LIST = [str(x) for x in ALERTS]
 PTTID_LIST = ["Begin", "End", "Both"]
@@ -275,24 +275,25 @@ _MEM_FORMAT = """
     u8          valid[1000];
     """
 
-    # Support for the Wouxun KG-UV8E radio
-    # Serial coms are at 19200 baud
-    # The data is passed in variable length records
-    # Record structure:
-    #  Offset   Usage
-    #    0      start of record (\x7a)
-    #    1      Command (\x80 Identify \x81 End/Reboot \x82 Read \x83 Write)
-    #    2      direction (\xff PC-> Radio, \x00 Radio -> PC)
-    #    3      length of payload (excluding header/checksum) (n)
-    #    4      payload (n bytes)
-    #    4+n+1  checksum - byte sum (% 256) of bytes 1 -> 4+n
-    #
-    # Memory Read Records:
-    # the payload is 3 bytes, first 2 are offset (big endian),
-    # 3rd is number of bytes to read
-    # Memory Write Records:
-    # the maximum payload size (from the Wouxun software) seems to be 66 bytes
-    #  (2 bytes location + 64 bytes data).
+# Support for the Wouxun KG-UV8E radio
+# Serial coms are at 19200 baud
+# The data is passed in variable length records
+# Record structure:
+#  Offset   Usage
+#    0      start of record (\x7a)
+#    1      Command (\x80 Identify \x81 End/Reboot \x82 Read \x83 Write)
+#    2      direction (\xff PC-> Radio, \x00 Radio -> PC)
+#    3      length of payload (excluding header/checksum) (n)
+#    4      payload (n bytes)
+#    4+n+1  checksum - byte sum (% 256) of bytes 1 -> 4+n
+#
+# Memory Read Records:
+# the payload is 3 bytes, first 2 are offset (big endian),
+# 3rd is number of bytes to read
+# Memory Write Records:
+# the maximum payload size (from the Wouxun software) seems to be 66 bytes
+#  (2 bytes location + 64 bytes data).
+
 
 @directory.register
 class KGUV8ERadio(chirp_common.CloneModeRadio,
@@ -302,7 +303,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
     VENDOR = "Wouxun"
     MODEL = "KG-UV8E"
     _model = b"KG-UV8D-A"
-    _file_ident = b"kguv8e" # lowercase
+    _file_ident = b"kguv8e"  # lowercase
     BAUD_RATE = 19200
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("H", watts=5)]
@@ -377,7 +378,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
 
     @classmethod
     def match_model(cls, filedata, filename):
-        id = cls._file_ident 
+        id = cls._file_ident
         return cls._file_ident in b'kg' + filedata[0x426:0x430].replace(b'(', b'').replace(b')', b'').lower()
 
     def _identify(self):
@@ -855,7 +856,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
                                                               smuteset]))
         cfg_grp.append(rs)
 
-                #
+        #
         # VFO A Settings
         #
         rs = RadioSetting("workmode_a", "VFO A Workmode",
@@ -899,7 +900,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_settings.bcl_a))
         vfoa_grp.append(rs)
 
-                #
+        #
         # VFO B Settings
         #
         rs = RadioSetting("workmode_b", "VFO B Workmode",
@@ -943,7 +944,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_settings.bcl_b))
         vfob_grp.append(rs)
 
-                #
+        #
         # Key Settings
         #
         _msg = str(_settings.dispstr).split("\0")[0]
@@ -958,6 +959,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
         val = RadioSettingValueString(3, 6, _code, False)
         val.set_charset(dtmfchars)
         rs = RadioSetting("ani_code", "ANI Code", val)
+
         def apply_ani_id(setting, obj):
             value = []
             for j in range(0, 6):

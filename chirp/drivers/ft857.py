@@ -484,7 +484,7 @@ class FT857Radio(ft817.FT817Radio):
         elif mem.tmode == "TSQL":
             mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
         elif mem.tmode == "DTCS Enc":   # UI does not support it yet but
-                                        # this code has already been tested
+            # this code has already been tested
             mem.dtcs = mem.rx_dtcs = chirp_common.DTCS_CODES[_mem.dcs]
         elif mem.tmode == "DTCS":
             mem.dtcs = mem.rx_dtcs = chirp_common.DTCS_CODES[_mem.dcs]
@@ -511,7 +511,7 @@ class FT857Radio(ft817.FT817Radio):
         elif mem.tmode == "TSQL":
             _mem.tone = _mem.rxtone = chirp_common.TONES.index(mem.ctone)
         elif mem.tmode == "DTCS Enc":   # UI does not support it yet but
-                                        # this code has already been tested
+            # this code has already been tested
             _mem.dcs = _mem.rxdcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         elif mem.tmode == "DTCS":
             _mem.dcs = _mem.rxdcs = chirp_common.DTCS_CODES.index(mem.rx_dtcs)

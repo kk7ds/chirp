@@ -535,7 +535,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
     _GM_RING = ("OFF", "IN RING", "AlWAYS")
     _GM_INTERVAL = ("LONG", "NORMAL", "OFF")
 
-    _MYCALL_CHR_SET = list(string.ascii_uppercase) + list(string.digits) + ['-','/' ]
+    _MYCALL_CHR_SET = list(string.ascii_uppercase) + list(string.digits) + ['-', '/']
 
     @classmethod
     def match_model(cls, filedata, filename):
@@ -969,12 +969,12 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         # MYCALL
         mycall = self._memobj.my_call
         mycallstr = str(mycall.callsign).rstrip("\xFF")
-    
+
         mycallentry = RadioSettingValueString(0, 10, mycallstr, False, charset=self._MYCALL_CHR_SET)
         rs = RadioSetting('mycall.callsign', 'MYCALL', mycallentry)
         rs.set_apply_callback(self.apply_mycall, mycall)
         menu.append(rs)
-        
+
         # Short Press AMS button AMS TX Mode
 
         digital_settings = self._memobj.digital_settings
