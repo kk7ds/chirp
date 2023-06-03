@@ -266,7 +266,7 @@ _MEM_FORMAT = """
     #seekto 0x4780;
     struct {
         u8    name[8];
-		u8    unknown[4];
+        u8    unknown[4];
     } names[1000];
 
     #seekto 0x7670;
