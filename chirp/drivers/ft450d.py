@@ -24,6 +24,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, RadioSettings
 import time
+import struct
 import logging
 
 LOG = logging.getLogger(__name__)
