@@ -719,9 +719,9 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
         vhf1_lmt_grp = RadioSettingGroup("vhf1_lmt_grp", "VHF1")
         oem_grp = RadioSettingGroup("oem_grp", "OEM Info")
 
-        lmt_grp.append(vhf_lmt_grp);
-        lmt_grp.append(vhf1_lmt_grp);
-        lmt_grp.append(uhf_lmt_grp);
+        lmt_grp.append(vhf_lmt_grp)
+        lmt_grp.append(vhf1_lmt_grp)
+        lmt_grp.append(uhf_lmt_grp)
         group = RadioSettings(cfg_grp, vfoa_grp, vfob_grp,
                               key_grp, lmt_grp, oem_grp)
 

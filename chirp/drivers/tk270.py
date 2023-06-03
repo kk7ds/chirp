@@ -103,7 +103,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                 chirp_common.PowerLevel("High", watts=5)]
 SKIP_VALUES = ["", "S"]
 TONES = chirp_common.TONES
-#TONES.remove(254.1)
+# TONES.remove(254.1)
 DTCS_CODES = chirp_common.DTCS_CODES
 
 # some vars for the UI
@@ -126,7 +126,7 @@ def rawrecv(radio, amount):
     data = ""
     try:
         data = radio.pipe.read(amount)
-        #print("<= %02i: %s" % (len(data), util.hexprint(data)))
+        # print("<= %02i: %s" % (len(data), util.hexprint(data)))
     except:
         raise errors.RadioError("Error reading data from radio")
 
@@ -137,7 +137,7 @@ def rawsend(radio, data):
     """Raw send to the radio device"""
     try:
         radio.pipe.write(data)
-        #print("=> %02i: %s" % (len(data), util.hexprint(data)))
+        # print("=> %02i: %s" % (len(data), util.hexprint(data)))
     except:
         raise errors.RadioError("Error sending data from radio")
 
@@ -168,7 +168,7 @@ def handshake(radio, msg="", full=False):
     ack = rawrecv(radio, 1)
     # check ACK
     if ack != ACK_CMD:
-        #close_radio(radio)
+        # close_radio(radio)
         mesg = "Handshake failed: " + msg
         raise Exception(mesg)
 
@@ -252,7 +252,7 @@ def do_download(radio):
         data += recv(radio)
         handshake(radio, "Rx error in block %03i" % addr, True)
         # DEBUG
-        #print("Block: %04x, Pos: %06x" % (addr, addr * BLOCK_SIZE))
+        # print("Block: %04x, Pos: %06x" % (addr, addr * BLOCK_SIZE))
 
         # UI Update
         status.cur = addr
@@ -304,7 +304,7 @@ def model_match(cls, data):
     rid = get_radio_id(data)
 
     # DEBUG
-    #print("Full ident string is %s" % util.hexprint(rid))
+    # print("Full ident string is %s" % util.hexprint(rid))
 
     if (rid in cls.VARIANTS):
         # correct model
@@ -424,7 +424,7 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
             self._VARIANT += self._kind + ", %d - %d MHz" % (low, high)
 
             # DEBUG
-            #print self._VARIANT
+            # print self._VARIANT
 
         except KeyError:
             LOG.debug("Wrong Kenwood radio, ID or unknown variant")
@@ -444,8 +444,8 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         # The x0280 area has the settings for the DTMF/2-Tone per channel,
         # as we don't support this feature yet,
         # we disabled by cleaning the data
-        #fldata = "\x00\xf0\xff\xff\xff" * achs + \
-            #"\xff" * (5 * (self._upper - achs))
+        # fldata = "\x00\xf0\xff\xff\xff" * achs + \
+            # "\xff" * (5 * (self._upper - achs))
 
         fldata = "\xFF" * 5 * self._upper
         self._fill(0x0280, fldata)
@@ -479,13 +479,13 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         bit = chan % 8
 
         # DEBUG
-        #print("SET Chan %s, Byte %s, Bit % s" % (chan, byte, bit))
+        # print("SET Chan %s, Byte %s, Bit % s" % (chan, byte, bit))
 
         # get the actual value to see if I need to change anything
         actual = self.get_active(chan)
         if actual != bool(value):
             # DEBUG
-            #print "VALUE %s fliping" % int(not value)
+            # print "VALUE %s fliping" % int(not value)
 
             # I have to flip the value
             rbyte = self._memobj.active[byte]
@@ -827,8 +827,8 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
                 value = element.value
 
                 # integers case + special case
-                if setting in ["tot", "tot_alert", "tot_rekey", \
-                               "tot_reset", "sql", "kMoni", "kScan", \
+                if setting in ["tot", "tot_alert", "tot_rekey",
+                               "tot_reset", "sql", "kMoni", "kScan",
                                "kDial", "kTa", "kLo"]:
                     # catching the "off" values as zero
                     try:
@@ -842,7 +842,7 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
             # Apply al configs done
             # DEBUG
-            #print("%s: %s" % (setting, value))
+            # print("%s: %s" % (setting, value))
             setattr(obj, setting, value)
 
 
