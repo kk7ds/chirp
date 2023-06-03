@@ -771,6 +771,7 @@ class FT7800Radio(FTx800Radio):
                 LOG.debug(element.get_name())
                 raise
 
+
 MEM_FORMAT_8800 = """
 #seekto 0x%X;
 struct {
@@ -932,6 +933,7 @@ class FT8800RadioRight(FT8800Radio):
     VARIANT = "Right"
     _memstart = 0x2948
     _bankstart = 0x4BC8
+
 
 MEM_FORMAT_8900 = """
 #seekto 0x0708;

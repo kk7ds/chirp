@@ -32,6 +32,7 @@ def _send(s, data):
         if chunk != echo:
             raise Exception("Failed to read echo chunk")
 
+
 IDBLOCK = "\x0c\x01\x41\x33\x35\x02\x00\xb8"
 TRAILER = "\x0c\x02\x41\x33\x35\x00\x00\xb7"
 ACK = "\x0C\x06\x00"
@@ -125,6 +126,7 @@ def _upload(radio):
         block += 1
 
     _send(radio.pipe, TRAILER)
+
 
 MEM_FORMAT = """
 struct {

@@ -584,7 +584,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
         # preparing for callback on vrxfreq (handled also in a special )
         vf_freq = RadioSetting("none.vrx_freq", "VFO frequency",
                                RadioSettingValueString(0, 10, chirp_common.
-                               format_freq(vfo)))
+                                                       format_freq(vfo)))
         vf_freq.set_apply_callback(apply_freq, _mem.vfo.vrx_freq)
         work.append(vf_freq)
 
@@ -611,7 +611,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
 
         offset = RadioSetting("none.vfo_shift", "VFO Offset",
                               RadioSettingValueString(0, 9, chirp_common.
-                              format_freq(vfo_shift)))
+                                                      format_freq(vfo_shift)))
         work.append(offset)
 
         step = RadioSetting("settings", "VFO step",
@@ -632,7 +632,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
                 ani_value = "200"
 
             ani_value = "".join(x for x in ani_value if (int(x) >= 2 and
-                        int(x) <= 9))
+                                                         int(x) <= 9))
 
             ani = RadioSetting("ani", "ANI (200-999)",
                                RadioSettingValueString(0, 3, ani_value))

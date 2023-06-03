@@ -184,13 +184,13 @@ def isValidDate(month, day, year):
             max1 = 29
         else:
             max1 = 28
-    if(month < 1 or month > 12):
+    if (month < 1 or month > 12):
         LOG.debug("Invalid 'Last Program Date: Month'")
         return False
-    elif(day < 1 or day > max1):
+    elif (day < 1 or day > max1):
         LOG.debug("Invalid 'Last Program Date: Day'")
         return False
-    elif(year < 2014 or year > today.year):
+    elif (year < 2014 or year > today.year):
         LOG.debug("Invalid 'Last Program Date: Year'")
         return False
     return True

@@ -251,6 +251,7 @@ def do_upload(radio):
         LOG.debug("Radio ACK'd block at address 0x%04x" % i)
         do_status(radio, "to", i)
 
+
 DUPLEX = ["", "-", "+"]
 UVB5_STEPS = [5.00, 6.25, 10.0, 12.5, 20.0, 25.0]
 CHARSET = "0123456789- ABCDEFGHIJKLMNOPQRSTUVWXYZ/_+*"

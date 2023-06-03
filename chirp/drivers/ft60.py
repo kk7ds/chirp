@@ -795,7 +795,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
             _nam = self._memobj.names[mem.number - 1]
             _skp = self._memobj.flags[(mem.number - 1) / 4]
 
-        assert(_mem)
+        assert (_mem)
         if mem.empty:
             _mem.used = False
             return

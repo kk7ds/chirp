@@ -364,7 +364,7 @@ def _checksum(data):
     """the radio block checksum algorithm"""
     cs = 0
     for byte in data:
-            cs += byte
+        cs += byte
     return cs % 256
 
 

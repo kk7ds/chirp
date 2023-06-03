@@ -183,7 +183,7 @@ class HobbyPCBRSUV3Radio(chirp_common.LiveRadio):
 
         tg = RadioSetting('TG%7s', 'CW Timeout Message',
                           RadioSettingValueString(0, 7,
-                                                   _get('TG')))
+                                                  _get('TG')))
         cw.append(tg)
 
         io = RadioSettingGroup('io', 'IO')

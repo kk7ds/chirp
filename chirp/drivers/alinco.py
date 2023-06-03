@@ -233,6 +233,7 @@ def _set_name(mem, _mem):
             pass
     return name
 
+
 ALINCO_TONES = list(chirp_common.TONES)
 ALINCO_TONES.remove(159.8)
 ALINCO_TONES.remove(165.5)

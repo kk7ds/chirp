@@ -287,7 +287,7 @@ class ChirpBCDEditor(ChirpEditor):
             digits = self._obj.size() // 4
             assert val >= 0, _('Value must be zero or greater')
             assert len(entry.GetValue()) == digits, \
-                   _('Value must be exactly %i decimal digits') % digits
+                _('Value must be exactly %i decimal digits') % digits
         except (ValueError, AssertionError) as e:
             self._mark_error(entry, str(e))
         else:

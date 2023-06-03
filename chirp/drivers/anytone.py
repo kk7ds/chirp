@@ -229,6 +229,7 @@ def _read(radio, length):
         raise errors.RadioError("Short read from radio")
     return data
 
+
 valid_model = [b'QX588UV', b'HR-2040', b'DB-50M\x00', b'DB-750X']
 
 

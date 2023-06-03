@@ -272,7 +272,7 @@ class TYTTHUVF8_V2(chirp_common.CloneModeRadio):
         _mem.tx_freq = (mem.freq + (mem.offset * mult)) / 10
 
         (txmode, txval, txpol), (rxmode, rxval, rxpol) = \
-                chirp_common.split_tone_encode(mem)
+            chirp_common.split_tone_encode(mem)
 
         self._encode_tone(_mem.tx_tone, txmode, txval, txpol)
         self._encode_tone(_mem.rx_tone, rxmode, rxval, rxpol)

@@ -372,6 +372,7 @@ def _do_status(radio, block):
     status.max = radio.get_memsize()
     radio.status_fn(status)
 
+
 UV5R_MODEL_ORIG = b"\x50\xBB\xFF\x01\x25\x98\x4D"
 UV5R_MODEL_291 = b"\x50\xBB\xFF\x20\x12\x07\x25"
 UV5R_MODEL_F11 = b"\x50\xBB\xFF\x13\xA1\x11\xDD"
@@ -701,6 +702,7 @@ def _do_upload(radio):
             "This is NOT an error.\n"
             "The upload has finished successfully.\n"
             "Please restart CHIRP.")
+
 
 UV5R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=4.00),
                      chirp_common.PowerLevel("Low",  watts=1.00)]

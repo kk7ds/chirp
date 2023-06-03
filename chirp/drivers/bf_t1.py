@@ -877,7 +877,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         rs = RadioSetting("relaym", "Relay Mode",
                           RadioSettingValueList(RELAY_MODE_LIST,
-                              RELAY_MODE_LIST[_settings.relaym]))
+                                                RELAY_MODE_LIST[_settings.relaym]))
         adv.append(rs)
 
         return group

@@ -711,7 +711,7 @@ def _pkt_encode(op, payload):
         xord = xorbits ^ byte
         data[i + 4] = xord
         xorbits = xord
-    return(data)
+    return (data)
 
 
 def _pkt_decode(data):
@@ -1758,12 +1758,12 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                                RadioSettingValueBoolean(s.bledsw)))
 
         if (self.MODEL == "KG-UV9PX" or self.MODEL == "KG-UV9GX"):
-                cf.append(RadioSetting("screen.screen_mode",
-                                       "Screen Mode (Menu 62)",
-                                       RadioSettingValueList(
-                                             SCREEN_MODE_LIST,
-                                             SCREEN_MODE_LIST[
-                                                 sm.screen_mode])))
+            cf.append(RadioSetting("screen.screen_mode",
+                                   "Screen Mode (Menu 62)",
+                                   RadioSettingValueList(
+                                         SCREEN_MODE_LIST,
+                                         SCREEN_MODE_LIST[
+                                             sm.screen_mode])))
         if (self.MODEL == "KG-UV9PX" or self.MODEL == "KG-UV9GX"):
             langlst = LANGUAGE_LIST2
         else:

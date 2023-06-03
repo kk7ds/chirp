@@ -34,6 +34,7 @@ def tyt_uv3r_upload(radio):
     tyt_uv3r_prep(radio)
     return do_upload(radio, 0x0000, 0x0B30, 0x0010)
 
+
 mem_format = """
 // 20 bytes per memory
 struct memory {

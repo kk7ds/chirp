@@ -250,6 +250,7 @@ def _read(radio, length):
         raise errors.RadioError("Short read from radio")
     return data
 
+
 valid_model = [b'TERMN8R', b'OBLTR8R']
 
 

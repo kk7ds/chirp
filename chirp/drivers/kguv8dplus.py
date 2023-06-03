@@ -292,9 +292,10 @@ _MEM_FORMAT = """
 # the maximum payload size (from the Wouxun software) seems to be 66 bytes
 #  (2 bytes location + 64 bytes data).
 
+
 @directory.register
 class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
-                  chirp_common.ExperimentalRadio):
+                      chirp_common.ExperimentalRadio):
 
     """Wouxun KG-UV8D Plus"""
     VENDOR = "Wouxun"
@@ -740,7 +741,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueInteger(0, 10, _settings.toalarm))
         cfg_grp.append(rs)
         rs = RadioSetting("roger_beep", "Roger Beep",
-                          RadioSettingValueList(ROGER_LIST, 
+                          RadioSettingValueList(ROGER_LIST,
                                                 ROGER_LIST[_settings.roger_beep]))
         cfg_grp.append(rs)
         rs = RadioSetting("power_save", "Power save",
@@ -844,8 +845,8 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
                                                 SMUTESET_LIST[_settings.
                                                               smuteset]))
         cfg_grp.append(rs)
-        
-		#
+
+        #
         # VFO A Settings
         #
         rs = RadioSetting("workmode_a", "VFO A Workmode",
@@ -888,8 +889,8 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("bcl_a", "Busy Channel Lock-out A",
                           RadioSettingValueBoolean(_settings.bcl_a))
         vfoa_grp.append(rs)
-        
-		#
+
+        #
         # VFO B Settings
         #
         rs = RadioSetting("workmode_b", "VFO B Workmode",
@@ -932,8 +933,8 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("bcl_b", "Busy Channel Lock-out B",
                           RadioSettingValueBoolean(_settings.bcl_b))
         vfob_grp.append(rs)
-        
-		#
+
+        #
         # Key Settings
         #
         _msg = str(_settings.dispstr).split("\0")[0]
@@ -948,6 +949,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
         val = RadioSettingValueString(3, 6, _code, False)
         val.set_charset(dtmfchars)
         rs = RadioSetting("ani_code", "ANI Code", val)
+
         def apply_ani_id(setting, obj):
             value = []
             for j in range(0, 6):
@@ -1103,4 +1105,3 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
                 or "rx_stop" in element.get_name() \
                 or "tx_start" in element.get_name() \
                 or "tx_stop" in element.get_name()
-

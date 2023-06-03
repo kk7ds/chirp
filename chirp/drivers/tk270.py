@@ -120,6 +120,7 @@ SCAN = off + ["Carrier operated (COS)", "Time operated (TOS)"]
 YESNO = ["Enabled", "Disabled"]
 TA = off + ["Turn around", "Reverse"]
 
+
 def rawrecv(radio, amount):
     """Raw read from the radio device"""
     data = ""
@@ -238,7 +239,7 @@ def do_download(radio):
     """This is your download function"""
     open_radio(radio)
 
-     # UI progress
+    # UI progress
     status = chirp_common.Status()
     status.cur = 0
     status.max = MEM_SIZE / BLOCK_SIZE
@@ -265,7 +266,7 @@ def do_upload(radio):
     """Upload info to radio"""
     open_radio(radio)
 
-     # UI progress
+    # UI progress
     status = chirp_common.Status()
     status.cur = 0
     status.max = MEM_SIZE / BLOCK_SIZE
@@ -326,7 +327,7 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         rp = chirp_common.RadioPrompts()
         rp.experimental = \
             ('This driver is experimental; not all features have been '
-            'implemented, but it has those features most used by hams.\n'
+             'implemented, but it has those features most used by hams.\n'
              '\n'
              'This radios are able to work slightly outside the OEM '
              'frequency limits. After testing, the limit in Chirp has '
@@ -707,7 +708,7 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         basic.append(mod)
 
         beep = RadioSetting("settings.beep", "Beep tone",
-                             RadioSettingValueBoolean(
+                            RadioSettingValueBoolean(
                                  bool(sett.beep)))
         basic.append(beep)
 
@@ -717,12 +718,12 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         basic.append(bsave)
 
         deal = RadioSetting("settings.dealer", "Dealer & Test",
-                             RadioSettingValueBoolean(
+                            RadioSettingValueBoolean(
                                  bool(sett.dealer)))
         basic.append(deal)
 
         add = RadioSetting("settings.add", "Del / Add feature",
-                             RadioSettingValueBoolean(
+                           RadioSettingValueBoolean(
                                  bool(sett.add)))
         basic.append(add)
 
@@ -749,15 +750,15 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         basic.append(tot)
 
         tota = RadioSetting("settings.tot_alert", "TOT pre-plert",
-                           RadioSettingValueList(TOT_A, TOT_A[int(sett.tot_alert)]))
+                            RadioSettingValueList(TOT_A, TOT_A[int(sett.tot_alert)]))
         basic.append(tota)
 
         totrk = RadioSetting("settings.tot_rekey", "TOT rekey time",
-                           RadioSettingValueList(TOT_RK, TOT_RK[int(sett.tot_rekey)]))
+                             RadioSettingValueList(TOT_RK, TOT_RK[int(sett.tot_rekey)]))
         basic.append(totrk)
 
         totrs = RadioSetting("settings.tot_reset", "TOT reset time",
-                           RadioSettingValueList(TOT_RS, TOT_RS[int(sett.tot_reset)]))
+                             RadioSettingValueList(TOT_RS, TOT_RS[int(sett.tot_reset)]))
         basic.append(totrs)
 
         sql = RadioSetting("settings.sql", "Squelch level",
@@ -783,14 +784,14 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         if d > 1:
             d = 0
         dial = RadioSetting("settings.kDial", "Dial",
-                           RadioSettingValueList(YESNO, YESNO[d]))
+                            RadioSettingValueList(YESNO, YESNO[d]))
         fkeys.append(dial)
 
         t = int(sett.kTa)
         if t > 2:
             t = 2
         ta = RadioSetting("settings.kTa", "Ta",
-                           RadioSettingValueList(TA, TA[t]))
+                          RadioSettingValueList(TA, TA[t]))
         fkeys.append(ta)
 
         l = int(sett.kLo)
