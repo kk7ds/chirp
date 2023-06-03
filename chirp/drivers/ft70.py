@@ -40,16 +40,16 @@ MEM_SETTINGS_FORMAT = """
 
 // FT-70DE New Model #5329
 //
-// Communications Mode ? AMS,FM DN,DW   TX vs RX? 
-// Mode not currently correctly stored in memories ? - ALL show as FM in memories 
+// Communications Mode ? AMS,FM DN,DW   TX vs RX?
+// Mode not currently correctly stored in memories ? - ALL show as FM in memories
 // SKIP test/where stored
 // Check storage of steps
 // Pager settings ?
 // Triple check/ understand _memsize and _block_lengths
-// Bank name label name size display 6 store 16? padded with 0xFF same for MYCALL and message 
+// Bank name label name size display 6 store 16? padded with 0xFF same for MYCALL and message
 // CHIRP mode DIG not supported - is there a CHIRP Fusion mode? Auto?
 // Check character set
-// Supported Modes ?  
+// Supported Modes ?
 // Supported Bands ?
 // rf.has_dtcs_polarity = False - think radio supports DTCS polarity
 // rf.memory_bounds = (1, 900) - should this be 0? as zero displays as blank
@@ -59,13 +59,13 @@ MEM_SETTINGS_FORMAT = """
 // Banks and VFO?
 
 // Features Required
-// Default AMS and Memory name (in mem extras) to enabled. 
+// Default AMS and Memory name (in mem extras) to enabled.
 
 // Bugs
 // MYCALL and Opening Message errors if not 10 characters
 // Values greater than one sometimes stored as whole bytes, these need to be refactored into bit fields
-// to prevent accidental overwriting of adjacent values  
-// Bank Name length not checked on gui input - but first 6 characters are saved correctly. 
+// to prevent accidental overwriting of adjacent values
+// Bank Name length not checked on gui input - but first 6 characters are saved correctly.
 // Extended characters entered as bank names on radio are corrupted in Chirp
 
 // Missing
@@ -74,59 +74,59 @@ MEM_SETTINGS_FORMAT = """
 
 // Radio Questions
 // Temp unit C/F not saved by radio, always goes back to C ?
-// 44 RF SQL Adjusts the RF Squelch threshold level. OFF / S1 - S9? Default is OFF - Based on RF strength - for AM? How 
+// 44 RF SQL Adjusts the RF Squelch threshold level. OFF / S1 - S9? Default is OFF - Based on RF strength - for AM? How
 // is this different from F, Monitor, Dial Squelch?
-// Password setting on radio allows letters (DTMF), but letters cannot be entered at the radio's password prompt?  
-// 49 SCM.WTH Set the memory scan frequency range. ALL / BAND Defaults to ALL Not Band as stated in the manual. 
-    
+// Password setting on radio allows letters (DTMF), but letters cannot be entered at the radio's password prompt?
+// 49 SCM.WTH Set the memory scan frequency range. ALL / BAND Defaults to ALL Not Band as stated in the manual.
+
    #seekto 0x049a;
-    struct { 
+    struct {
     u8 unknown0:4,
     squelch:4;              // Squelch F, Monitor, Dial Adjust the Squelch level
-    } squelch_settings; 
-        
+    } squelch_settings;
+
     #seekto 0x04ba;
-    struct { 
+    struct {
     u8 unknown:3,
     scan_resume:5;          // 52 SCN.RSM   Configure the scan stop mode settings. 2.0 S - 5.0 S - 10.0 S / BUSY / HOLD
-    u8 unknown1:3, 
+    u8 unknown1:3,
     dw_resume_interval:5;   // 22 DW RSM    Configure the scan stop mode settings for Dual Receive. 2.0S-10.0S/BUSY/HOLD
-    u8 unknown2;          
+    u8 unknown2;
     u8 unknown3:3,
     apo:5;                  // 02 APO       Set the length of time until the transceiver turns off automatically.
-    u8 unknown4:6, 
-    gm_ring:2;              // 24 GM RNG    Select the beep option while receiving digital GM info. OFF/IN RNG/ALWAYS 
-    u8 temp_cf;             // Placeholder as not found                        
+    u8 unknown4:6,
+    gm_ring:2;              // 24 GM RNG    Select the beep option while receiving digital GM info. OFF/IN RNG/ALWAYS
+    u8 temp_cf;             // Placeholder as not found
     u8 unknown5;
-    } first_settings;   
-   
+    } first_settings;
+
     #seekto 0x04ed;
-    struct {   
+    struct {
     u8 unknown1:1,
-    unknown2:1,           
+    unknown2:1,
     unknown3:1,
-    unknown4:1,            
-    unknown5:1,          
-    unknown6:1, 
-    unknown7:1,          
-    unknown8:1;          
-    } test_bit_field;    
-    
+    unknown4:1,
+    unknown5:1,
+    unknown6:1,
+    unknown7:1,
+    unknown8:1;
+    } test_bit_field;
+
     #seekto 0x04c0;
     struct {
     u8 unknown1:5,
     beep_level:3;           // 05 BEP.LVL   Beep volume setting LEVEL1 - LEVEL4 - LEVEL7
     u8 unknown2:6,
     beep_select:2;          // 04 BEEP      Sets the beep sound function OFF / KEY+SC / KEY
-    } beep_settings;        
-    
-    #seekto 0x04ce;                     
+    } beep_settings;
+
+    #seekto 0x04ce;
     struct {
     u8 lcd_dimmer;                      // 14 DIMMER    LCD Dimmer
-    u8 dtmf_delay;                      // 18 DT DLY    DTMF delay    
-    u8 unknown0[3];             
+    u8 dtmf_delay;                      // 18 DT DLY    DTMF delay
+    u8 unknown0[3];
     u8 unknown1:4,
-    unknown1:4;      
+    unknown1:4;
     u8 lamp;                            // 28 LAMP      Set the duration time of the backlight and keys to be lit
     u8 lock;                            // 30 LOCK      Configure the lock mode setting. KEY/DIAL/K+D/PTT/K+P/D+P/ALL
     u8 unknown2_1;
@@ -134,46 +134,46 @@ MEM_SETTINGS_FORMAT = """
     u8 unknown2_3;
     u8 dw_interval;                     // 21 DW INT Set the priority memory ch mon int during Dual RX 0.1S-5.0S-10.0S
     u8 ptt_delay;                       // 42 PTT.DLY   Set the PTT delay time. OFF / 20 MS / 50 MS / 100 MS / 200 MS
-    u8 rx_save;                         // 48 RX.SAVE   Set the battery save time. OFF / 0.2 S - 60.0 S    
+    u8 rx_save;                         // 48 RX.SAVE   Set the battery save time. OFF / 0.2 S - 60.0 S
     u8 scan_restart;                    // 53 SCN.STR   Set the scanning restart time.  0.1 S - 2.0 S - 10.0 S
-    u8 unknown2_5;                      
-    u8 unknown2_6;          
+    u8 unknown2_5;
+    u8 unknown2_6;
     u8 unknown4[5];
-    u8 tot;                             // 56 TOT       Set the transmission timeout timer 
-    u8 unknown5[3];          // 26                                                
+    u8 tot;                             // 56 TOT       Set the transmission timeout timer
+    u8 unknown5[3];          // 26
     u8 vfo_mode:1,                      // 60 VFO.MOD   Set freq setting range in the VFO mode by DIAL knob. ALL / BAND
     unknown7:1,
     scan_lamp:1,                        // 51 SCN.LMP   Set the scan lamp ON or OFF when scanning stops On/Off
     unknown8:1,
     ars:1,                              // 45 RPT.ARS   Turn the ARS function on/off.
     dtmf_speed:1,                       // 20 DT SPD    Set DTMF speed
-    unknown8:1,                        
+    unknown8:1,
     dtmf_mode:1;                        // DTMF Mode set from front panel
-    u8 busy_led:1,                      // Not Supported ?  
+    u8 busy_led:1,                      // Not Supported ?
     unknown8_2:1,
     unknown8_3:1,
     bclo:1,                             // 03 BCLO      Turns the busy channel lockout function on/off.
-    beep_edge:1,                        // 06 BEP.Edg   Sets the beep sound ON or OFF when a band edge is encountered.    
-    unknown8_6:1, 
+    beep_edge:1,                        // 06 BEP.Edg   Sets the beep sound ON or OFF when a band edge is encountered.
+    unknown8_6:1,
     unknown8_7:1,
     unknown8_8:1;            // 28
-    u8 unknown9_1:1,                   
+    u8 unknown9_1:1,
     unknown9_2:1,
     unknown9_3:1,
-    unknown9_4:1,         
-    unknown9_5:1,             
+    unknown9_4:1,
+    unknown9_5:1,
     password:1,                         // Placeholder location
     home_rev:1,                         // 26 HOME/REV   Select the function of the [HOME/REV] key.
     moni:1;                             // 32 Mon/T-Call Select the function of the [MONI/T-CALL] switch.
-    u8 gm_interval:4,       // 30       // 25 GM INT Set tx interval of digital GM information. OFF / NORMAL / LONG 
+    u8 gm_interval:4,       // 30       // 25 GM INT Set tx interval of digital GM information. OFF / NORMAL / LONG
     unknown10:4;
-    u8 unknown11;          
+    u8 unknown11;
     u8 unknown12:1,
     unknown12_2:1,
     unknown12_3:1,
-    unknown12_4:1,                
+    unknown12_4:1,
     home_vfo:1,                         // 27 HOME->VFO  Turn transfer VFO to the Home channel ON or OFF.
-    unknown12_6:1, 
+    unknown12_6:1,
     unknown12_7:1,
     dw_rt:1;                // 32       // 23 DW RVT Turn "Priority Channel Revert" feature ON or OFF during Dual Rx.
     u8 unknown33;
@@ -181,7 +181,7 @@ MEM_SETTINGS_FORMAT = """
     u8 unknown35;
     u8 unknown36;
     u8 unknown37;
-    u8 unknown38; 
+    u8 unknown38;
     u8 unknown39;
     u8 unknown40;
     u8 unknown41;
@@ -193,39 +193,39 @@ MEM_SETTINGS_FORMAT = """
     u8 prog_key2;           // P2 Set Mode Items to the Programmable Key
     u8 unknown48;
     u8 unknown49;
-    u8 unknown50;                      
-    } scan_settings;    
-    
-    #seekto 0x064b;  
+    u8 unknown50;
+    } scan_settings;
+
+    #seekto 0x064b;
     struct {
     u8 unknown1:1,
     unknown2:1,
     unknown3:1,
     unknown4:1,
-    vfo_scan_width:1,       // Placeholder as not found - 50 SCV.WTH Set the VFO scan frequency range. BAND / ALL 
-    memory_scan_width:1,    // Placeholder as not found - 49 SCM.WTH Set the memory scan frequency range. ALL / BAND 
+    vfo_scan_width:1,       // Placeholder as not found - 50 SCV.WTH Set the VFO scan frequency range. BAND / ALL
+    memory_scan_width:1,    // Placeholder as not found - 49 SCM.WTH Set the memory scan frequency range. ALL / BAND
     unknown7:1,
     unknown8:1;
     } scan_settings_1;
-    
-    #seekto 0x06B6;  
+
+    #seekto 0x06B6;
     struct {
     u8 unknown1:3,
     volume:5;               // # VOL and Dial  Adjust the volume level
-    } scan_settings_2;       
-        
+    } scan_settings_2;
+
     #seekto 0x0690;         // Memory or VFO Settings Map?
     struct {
     u8 unknown[48];         // Array cannot be 64 elements!
-    u8 unknown1[16];        // Exception: Not implemented for chirp.bitwise.structDataElement       
+    u8 unknown1[16];        // Exception: Not implemented for chirp.bitwise.structDataElement
     } vfo_info_1;
-    
+
     #seekto 0x0710;         // Backup Memory or VFO Settings Map?
     struct {
     u8 unknown[48];
     u8 unknown1[16];
-    } vfo_backup_info_1;      
-   
+    } vfo_backup_info_1;
+
     #seekto 0x047e;
     struct {
     u8 unknown1;
@@ -234,30 +234,30 @@ MEM_SETTINGS_FORMAT = """
     struct {
     char padded_string[6];              // 36 OPN.MSG   Select MSG then key vm to edit it
     } message;
-    } opening_message;                  // 36 OPN.MSG   Select the Opening Message when transceiver is ON. OFF/MSG/DC    
- 
+    } opening_message;                  // 36 OPN.MSG   Select the Opening Message when transceiver is ON. OFF/MSG/DC
+
     #seekto 0x094a;                     // DTMF Memories
     struct {
     u8 memory[16];
-    } dtmf[10];    
-    
-    #seekto 0x154a;                     
+    } dtmf[10];
+
+    #seekto 0x154a;
     struct {
     u16 channel[100];
     } bank_members[24];
-    
+
     #seekto 0x54a;
     struct {
     u16 in_use;
     } bank_used[24];
-    
+
     #seekto 0x0EFE;
     struct {
     u8 unknown[2];
     u8 name[6];
     u8 unknown1[10];
     } bank_info[24];
-        
+
     #seekto 0xCF30;
     struct {
     u8 unknown0;
@@ -267,9 +267,9 @@ MEM_SETTINGS_FORMAT = """
     u8 unknown4;
     u8 unknown5;
     u8 unknown6;
-    u8 digital_popup;                   // 15 DIG.POP   Call sign display pop up time                
+    u8 digital_popup;                   // 15 DIG.POP   Call sign display pop up time
     } digital_settings_more;
-   
+
     #seekto 0xCF7C;
     struct {
     u8 unknown0:6,
@@ -277,26 +277,26 @@ MEM_SETTINGS_FORMAT = """
     u8 unknown1;
     u8 unknown2:7,
     standby_beep:1;                     // 07 BEP.STB   Standby Beep in the digital C4FM mode. On/Off
-    u8 unknown3; 
+    u8 unknown3;
     u8 unknown4:6,
     gm_ring:2;                          // 24 GM RNG Select beep option while rx digital GM info. OFF/IN RNG/ALWAYS
     u8 unknown5;
     u8 rx_dg_id;                        // RX DG-ID     Long Press Mode Key, Mode Key to select, Dial
-    u8 tx_dg_id;                        // TX DG-ID     Long Press Mode Key, Dial                  
+    u8 tx_dg_id;                        // TX DG-ID     Long Press Mode Key, Dial
     u8 unknown6:7,
     vw_mode:1;                          // 16 DIG VW    Turn the VW mode selection ON or OFF
     u8 unknown7;
     } digital_settings;
-    
+
     // ^^^ All above referenced U8's have been refactored to minimum number of bits.
-    
+
     """
 
 MEM_FORMAT = """
     #seekto 0x2D4A;
     struct {                            // 32 Bytes per memory entry
     u8 display_tag:1,                   // 0 Display Freq, 1 Display Name
-    unknown0:1,                         // Mode if AMS not selected???????? 
+    unknown0:1,                         // Mode if AMS not selected????????
     deviation:1,                        // 0 Full deviation (Wide), 1 Half deviation (Narrow)
     clock_shift:1,                      // 0 None, 1 CPU clock shifted
     unknown1:4;                                                                         // 1
@@ -305,19 +305,19 @@ MEM_FORMAT = """
     tune_step:4;                        // Works - check all steps? 7 = Auto            // 1
     bbcd freq[3];                       // Works                                        // 3
     u8 power:2,                         // Works
-    unknown2:1,                         // 0 FM, 1 Digital - If AMS off     
-    ams:1,                              // 0 AMS off, 1 AMS on ?        
+    unknown2:1,                         // 0 FM, 1 Digital - If AMS off
+    ams:1,                              // 0 AMS off, 1 AMS on ?
     tone_mode:4;                        // Works                                        // 1
-    u8 charsetbits[2];                                                                  // 2    
+    u8 charsetbits[2];                                                                  // 2
     char label[6];                      // Works - Can only input 6 on screen           // 6
-    char unknown7[10];                  // Rest of label ???                            // 10    
+    char unknown7[10];                  // Rest of label ???                            // 10
     bbcd offset[3];                     // Works                                        // 3
     u8 unknown5:2,
     tone:6;                             // Works                                       // 1
     u8 unknown6:1,
     dcs:7;                              // Works                                        // 1
     u8 unknown9;
-    u8 ams_on_dn_vw_fm:2,               // AMS DN, AMS VW, AMS FM  
+    u8 ams_on_dn_vw_fm:2,               // AMS DN, AMS VW, AMS FM
     unknown8_3:1,
     unknown8_4:1,
     smeter:4;
@@ -327,16 +327,16 @@ MEM_FORMAT = """
        auto_mode:1,
        unknown11:2,
        bell:1;
-    } memory[%d];                        // DN, VW, FM, AM 
-                                        // AMS DN, AMS VW, AMS FM  
-    
+    } memory[%d];                        // DN, VW, FM, AM
+                                        // AMS DN, AMS VW, AMS FM
+
     #seekto 0x280A;
     struct {
     u8 nosubvfo:1,
     unknown:3,
     pskip:1,                            // PSkip (Select?)
     skip:1,                             // Skip memory during scan
-    used:1,                             // Memory used 
+    used:1,                             // Memory used
     valid:1;                            // Always 1?
     } flag[%d];
     """
