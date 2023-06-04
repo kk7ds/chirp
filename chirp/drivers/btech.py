@@ -808,7 +808,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                     index += 0x6A
                 memval.set_value(index)
             except:
-                msg = "Digital Tone '%d' is not supported" % value
+                msg = "Digital Tone '%d' is not supported" % val
                 LOG.error(msg)
                 raise errors.RadioError(msg)
         else:

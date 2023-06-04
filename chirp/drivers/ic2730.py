@@ -1306,7 +1306,7 @@ class IC2730Radio(icf.IcomCloneModeRadio):
                             stx += "%0d, " % nx
                     elif (nx >= 8) and (nx < 16):
                         if (_pslg[kx].msk[1] & (1 << (nx - 8))):
-                            sstx += "%0d, " % nx
+                            stx += "%0d, " % nx
                     elif (nx >= 16) and (nx < 24):
                         if (_pslg[kx].msk[2] & (1 << (nx - 16))):
                             stx += "%0d, " % nx

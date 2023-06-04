@@ -226,7 +226,7 @@ def open_radio(radio):
     # validate the input
     if len(ident) != 8:
         LOG.debug("Wrong ID, get only %s bytes, we expect 8" % len(ident))
-        LOG.debug(hexprint(ident))
+        LOG.debug(util.hexprint(ident))
         msg = "Bad ID received, just %s bytes, we want 8" % len(ident)
         raise errors.RadioError(msg)
 

@@ -836,8 +836,8 @@ if __name__ == "__main__":
 
     if download:
         data = r.download(True, blocks)
-        file(fname, "wb").write(data)
+        open(fname, "wb").write(data)
     else:
-        r._mmap = file(fname, "rb").read(r._memsize)
+        r._mmap = open(fname, "rb").read(r._memsize)
         r.upload(blocks)
     print("\nDone")
