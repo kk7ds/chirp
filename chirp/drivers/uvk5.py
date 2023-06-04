@@ -1268,7 +1268,21 @@ class TemplateRadio(chirp_common.CloneModeRadio):
         if number < 200:
             _mem4.channel_attributes[number] = 0x0f
 
+        # find tx frequency
+        if mem.duplex == '-':
+            txfreq = mem.freq - mem.offset
+        elif mem.duplex == '+':
+            txfreq = mem.freq + mem.offset
+        else:
+            txfreq = mem.freq
+
         # find band
+        band = _find_band(txfreq)
+        if band is False:
+            raise errors.RadioError(
+                    "Transmit frequency %.4fMHz is not supported by this radio"
+                    % txfreq/1000000.0)
+
         band = _find_band(mem.freq)
         if band is False:
             return mem
