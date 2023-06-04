@@ -342,27 +342,13 @@ def _receive_reply(serport):
     return cmd2
 
 
-# def _getstring(data: bytes, begin, maxlen):
-#     s = ""
-#     c = 0
-#     for i in data:
-#         c += 1
-#         if c < begin:
-#             continue
-#         if i < ord(' ') or i > ord('~'):
-#             break
-#         s += chr(i)
-#     return s
-# 
-
 def _getstring(data: bytes, begin, maxlen):
     tmplen = min(maxlen+1, len(data))
-    s = [data[i] for i in range (begin, tmplen)]
-    for key, val in enumerate (s):
+    s = [data[i] for i in range(begin, tmplen)]
+    for key, val in enumerate(s):
         if val < ord(' ') or val > ord('~'):
             break
     return ''.join(chr(x) for x in s[0:key])
-
 
 
 def _sayhello(serport):
