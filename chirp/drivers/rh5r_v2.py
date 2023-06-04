@@ -129,7 +129,7 @@ class TYTTHUVF8_V2(chirp_common.CloneModeRadio):
     VENDOR = "TYT"
     MODEL = "TH-UVF8F"
     BAUD_RATE = 9600
-    _FILEID = b'OEMOEM \XFF'
+    _FILEID = b'OEMOEM \\XFF'
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()

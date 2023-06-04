@@ -49,7 +49,7 @@ IC9X_SPECIAL = {
 }
 
 CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
-    "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
+    "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
 
 
 class Lock:

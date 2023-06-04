@@ -882,7 +882,7 @@ class RT26Radio(chirp_common.CloneModeRadio):
                         setattr(obj, setting, int(element.value) + 3)
                     elif setting == "dtmfspd":
                         setattr(obj, setting, int(element.value) - 4)
-                    elif re.match('code\d', setting):
+                    elif re.match(r'code\d', setting):
                         # set dtmf length field and then get bcd dtmf
                         if setting == "code3":
                             strlen = 10

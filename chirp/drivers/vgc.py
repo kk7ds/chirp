@@ -1426,7 +1426,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                         setattr(obj, setting, int(element.value) + 5)
                     elif setting in ["tt1stdly", "ttdlyqt"]:
                         setattr(obj, setting, int(element.value) + 2)
-                    elif re.match('code\d', setting):
+                    elif re.match(r'code\d', setting):
                         # set dtmf length field and then get bcd dtmf
                         dtmfstrlen = len(str(element.value).strip())
                         setattr(_mem.dtmfcode, setting + "_len", dtmfstrlen)

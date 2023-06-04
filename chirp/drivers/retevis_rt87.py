@@ -196,7 +196,7 @@ struct name names[128];
 
 # Radio supports UPPER/lower case and symbols
 CHARSET_ASCII_PLUS = chirp_common.CHARSET_ALPHANUMERIC + \
-                     "!\"#$%&'()*+,-./:;<=>?@[\]^_`"
+                     "!\"#$%&'()*+,-./:;<=>?@[\\]^_`"
 
 POWER_LEVELS = [chirp_common.PowerLevel('Low', watts=1),
                 chirp_common.PowerLevel('High', watts=4)]

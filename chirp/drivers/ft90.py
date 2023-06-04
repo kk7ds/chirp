@@ -671,7 +671,7 @@ struct  {
                 newval = element.value
                 if setting == "cwid":
                     newval = self._encode_cwid(newval)
-                if re.match('dtmf\d', setting):
+                if re.match(r'dtmf\d', setting):
                     # set dtmf length field and then get bcd dtmf
                     dtmfstrlen = len(str(newval).strip())
                     setattr(_settings, setting + "_len", dtmfstrlen)

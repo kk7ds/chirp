@@ -743,7 +743,7 @@ class FT7800Radio(FTx800Radio):
             try:
                 _settings = self._memobj.settings
                 setting = element.get_name()
-                if re.match('dtmf\d', setting):
+                if re.match(r'dtmf\d', setting):
                     # set dtmf fields
                     dtmfstr = str(element.value).strip()
                     newval = []
