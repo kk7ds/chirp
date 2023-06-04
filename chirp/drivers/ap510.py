@@ -404,7 +404,7 @@ class AP510Radio(chirp_common.CloneModeRadio):
 
     def load_mmap(self, filename):
         """Load the radio's memory map from @filename"""
-        mapfile = file(filename, "rb")
+        mapfile = open(filename, "rb")
         data = mapfile.read()
         if data.startswith('\r\n00=%s 20141215' % self._model):
             self._mmap = AP510Memory20141215(data)

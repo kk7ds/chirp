@@ -351,7 +351,7 @@ def _clean_buffer(radio):
     junk = radio.pipe.read(256)
     radio.pipe.timeout = STIMEOUT
     if junk:
-        Log.debug("Got %i bytes of junk before starting" % len(junk))
+        LOG.debug("Got %i bytes of junk before starting" % len(junk))
 
 
 def _check_for_double_ack(radio):
