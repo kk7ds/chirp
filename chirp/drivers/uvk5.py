@@ -1038,12 +1038,15 @@ class TemplateRadio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         # Battery save
+        tmpbatsave = _mem.battery_save
+        if tmpbatsave >= len(BATSAVE_LIST):
+            tmpbatsave = BATSAVE_LIST.index("1:4")
         rs = RadioSetting(
                 "battery_save",
                 "Battery Save",
                 RadioSettingValueList(
                     BATSAVE_LIST,
-                    BATSAVE_LIST[_mem.battery_save]))
+                    BATSAVE_LIST[tmpbatsave]))
         basic.append(rs)
 
         # Dual watch
