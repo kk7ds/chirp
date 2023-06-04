@@ -36,7 +36,7 @@ CHARSET_NUMERIC = "0123456789"
 CHARSET = "0123456789" + \
           ":;<=>?@" + \
           "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + \
-          "[\]^_`" + \
+          "[\\]^_`" + \
           "abcdefghijklmnopqrstuvwxyz" + \
           "{|}~\x4E" + \
           " !\"#$%&'()*+,-./"

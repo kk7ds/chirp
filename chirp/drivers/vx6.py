@@ -871,7 +871,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
             try:
                 setting = element.get_name()
                 _settings = self._memobj.settings
-                if re.match('internet_dtmf_\d', setting):
+                if re.match(r'internet_dtmf_\d', setting):
                     # set dtmf fields
                     dtmfstr = str(element.value).strip()
                     newval = []
@@ -884,7 +884,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
                     _settings = self._memobj.internet_dtmf[idx]
                     _settings.memory = newval
                     continue
-                elif re.match('dtmf_\d', setting):
+                elif re.match(r'dtmf_\d', setting):
                     # set dtmf fields
                     dtmfstr = str(element.value).strip()
                     newval = []

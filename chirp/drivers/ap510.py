@@ -327,7 +327,7 @@ PATH = [
     'TEMP1-1,WIDE 2-1',
     'WIDE2-1',
 ]
-TABLE = "/\#&0>AW^_acnsuvz"
+TABLE = r"/\#&0>AW^_acnsuvz"
 SYMBOL = "".join(map(chr, range(ord("!"), ord("~")+1)))
 BEACON = ['manual', 'auto', 'auto + manual', 'smart', 'smart + manual']
 ALIAS = ['WIDE1-N', 'WIDE2-N', 'WIDE1-N + WIDE2-N']

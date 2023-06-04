@@ -85,7 +85,7 @@ struct {
   u8 unknown20[4];          // x8c-x8f
   // --
   u8 unknown21[4];          // x90-x93
-  char poweronmesg[8];      // x94-x9b power on mesg 8 bytes, off is "\FF" * 8
+  char poweronmesg[8];      // x94-x9b power on mesg 8 bytes, off is "\xFF" * 8
   u8 unknown22[4];          // x9c-x9f
   // --
   u8 unknown23[7];          // xa0-xa6
@@ -274,7 +274,7 @@ POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                 chirp_common.PowerLevel("High", watts=5)]
 
 MODES = ["NFM", "FM"]  # 12.5 / 25 KHz
-VALID_CHARS = chirp_common.CHARSET_UPPER_NUMERIC + "_-*()/\-+=)"
+VALID_CHARS = chirp_common.CHARSET_UPPER_NUMERIC + r"_-*()/\-+=)"
 SKIP_VALUES = ["", "S"]
 
 TONES = chirp_common.TONES

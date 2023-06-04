@@ -522,7 +522,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     _has_af_dual = True
 
     _SG_RE = re.compile(r"(?P<sign>[-+NESW]?)(?P<d>[\d]+)[\s\.,]*"
-                        "(?P<m>[\d]*)[\s\']*(?P<s>[\d]*)")
+                        r"(?P<m>[\d]*)[\s\']*(?P<s>[\d]*)")
 
     _RX_BAUD = ("off", "1200 baud", "9600 baud")
     _TX_DELAY = ("100ms", "200ms", "300ms",
