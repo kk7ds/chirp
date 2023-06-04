@@ -33,17 +33,27 @@ def _send(s, data):
             raise Exception("Failed to read echo chunk")
 
 
-IDBLOCK = "\x0c\x01\x41\x33\x35\x02\x00\xb8"
-TRAILER = "\x0c\x02\x41\x33\x35\x00\x00\xb7"
-ACK = "\x0C\x06\x00"
+IDBLOCK = b"\x0c\x01\x41\x33\x35\x02\x00\xb8"
+TRAILER = b"\x0c\x02\x41\x33\x35\x00\x00\xb7"
+ACK = b"\x0C\x06\x00"
 
 
 def _download(radio):
-    data = ""
-    for _i in range(0, 10):
+    data = b""
+    attempts = 30
+    for _i in range(0, attempts):
         data = radio.pipe.read(8)
         if data == IDBLOCK:
             break
+        LOG.debug('Download attempt %i received %i: %s',
+                  _i, len(data), util.hexprint(data))
+        if radio.status_fn:
+            status = chirp_common.Status()
+            status.max = 1
+            status.cur = 0
+            status.msg = "Waiting for radio (%i)" % (
+                attempts - (_i + 1))
+            radio.status_fn(status)
 
     LOG.debug("Header:\n%s" % util.hexprint(data))
 
@@ -52,7 +62,7 @@ def _download(radio):
 
     _send(radio.pipe, ACK)
 
-    data = ""
+    data = b""
 
     while len(data) < radio._block_sizes[1]:
         time.sleep(0.1)
@@ -67,8 +77,8 @@ def _download(radio):
         else:
             cs = 0
             for byte in chunk[:-1]:
-                cs += ord(byte)
-            if ord(chunk[-1]) != (cs & 0xFF):
+                cs += byte
+            if chunk[-1] != (cs & 0xFF):
                 raise Exception("Block failed checksum!")
 
             data += chunk[5:-1]
@@ -83,7 +93,7 @@ def _download(radio):
 
     LOG.debug("Total: %i" % len(data))
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def _upload(radio):
@@ -102,12 +112,12 @@ def _upload(radio):
 
     block = 0
     while block < (radio.get_memsize() // 32):
-        data = "\x0C\x03\x00\x00" + chr(block)
+        data = b"\x0C\x03\x00\x00" + bytes([block])
         data += radio.get_mmap()[block*32:(block+1)*32]
         cs = 0
         for byte in data:
-            cs += ord(byte)
-        data += chr(cs & 0xFF)
+            cs += byte
+        data += bytes([cs & 0xFF])
 
         LOG.debug("Writing block %i:\n%s" % (block, util.hexprint(data)))
 
@@ -172,6 +182,30 @@ class FT2800Radio(YaesuCloneModeRadio):
     _block_sizes = [8, 7680]
     _memsize = 7680
 
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable\n"
+            "3. Press and hold in the MHz, Low, and D/MR keys on the radio "
+            "while turning it on\n"
+            "4. Radio is in clone mode when TX/RX is flashing"
+            "5. <b>After clicking OK</b>, "
+            "press the MHz key on the radio to send"
+            " image.\n"
+            "    (\"TX\" will appear on the LCD). \n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable\n"
+            "3. Press and hold in the MHz, Low, and D/MR keys on the radio "
+            "while turning it on\n"
+            "4. Radio is in clone mode when TX/RX is flashing"
+            "5. Press the Low key on the radio "
+            "(\"RX\" will appear on the LCD).\n"
+            "6. Click OK.")
+        return rp
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
 
@@ -197,12 +231,14 @@ class FT2800Radio(YaesuCloneModeRadio):
 
     def sync_in(self):
         self.pipe.parity = "E"
+        self.pipe.timeout = 1
         start = time.time()
         try:
             self._mmap = _download(self)
         except errors.RadioError:
             raise
         except Exception as e:
+            LOG.exception('Failed download')
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         LOG.info("Downloaded in %.2f sec" % (time.time() - start))
         self.process_mmap()
@@ -216,6 +252,7 @@ class FT2800Radio(YaesuCloneModeRadio):
         except errors.RadioError:
             raise
         except Exception as e:
+            LOG.exception('Failed upload')
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         LOG.info("Uploaded in %.2f sec" % (time.time() - start))
 
