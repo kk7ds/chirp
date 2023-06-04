@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-31 16:43-0700\n"
+"POT-Creation-Date: 2023-06-04 16:34-0700\n"
 "PO-Revision-Date: 2022-06-04 02:01+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language: zh_CN\n"
@@ -56,7 +56,7 @@ msgstr "文件已更改，关闭前要保存变更吗？"
 msgid "(none)"
 msgstr ""
 
-#: ../drivers/alinco.py:605 ../drivers/alinco.py:614
+#: ../drivers/alinco.py:606 ../drivers/alinco.py:615
 msgid ""
 "1. Ensure your firmware version is 4_10 or higher\n"
 "2. Turn radio off\n"
@@ -68,7 +68,7 @@ msgid ""
 "7. Click OK\n"
 msgstr ""
 
-#: ../drivers/ft2900.py:1227
+#: ../drivers/ft2900.py:1228
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -76,7 +76,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press \"SET MHz\" to send image.\n"
 msgstr ""
 
-#: ../drivers/ft2900.py:1232
+#: ../drivers/ft2900.py:1233
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -107,7 +107,29 @@ msgid ""
 "6. Click OK to start transfer.\n"
 msgstr ""
 
-#: ../drivers/ft450d.py:381
+#: ../drivers/ft2800.py:189
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable\n"
+"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning "
+"it on\n"
+"4. Radio is in clone mode when TX/RX is flashing5. <b>After clicking OK</b>, "
+"press the MHz key on the radio to send image.\n"
+"    (\"TX\" will appear on the LCD). \n"
+msgstr ""
+
+#: ../drivers/ft2800.py:199
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable\n"
+"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning "
+"it on\n"
+"4. Radio is in clone mode when TX/RX is flashing5. Press the Low key on the "
+"radio (\"RX\" will appear on the LCD).\n"
+"6. Click OK."
+msgstr ""
+
+#: ../drivers/ft450d.py:384
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -128,7 +150,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [A] key to send image.\n"
 msgstr ""
 
-#: ../drivers/ft450d.py:390
+#: ../drivers/ft450d.py:393
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -139,7 +161,7 @@ msgid ""
 "    (\"Receiving\" will appear on the LCD).\n"
 msgstr ""
 
-#: ../drivers/ft857.py:451
+#: ../drivers/ft857.py:450
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -159,7 +181,7 @@ msgid ""
 "4. Press the [C] key (\"RX\" will appear on the LCD).\n"
 msgstr ""
 
-#: ../drivers/ft857.py:442
+#: ../drivers/ft857.py:441
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to CAT/LINEAR jack.\n"
@@ -170,7 +192,7 @@ msgid ""
 "     press the [C](SEND) key to send image.\n"
 msgstr ""
 
-#: ../drivers/ft7800.py:840
+#: ../drivers/ft7800.py:839
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -183,7 +205,7 @@ msgid ""
 "     send image.\n"
 msgstr ""
 
-#: ../drivers/ft7800.py:850
+#: ../drivers/ft7800.py:849
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -196,7 +218,7 @@ msgid ""
 "     the display).\n"
 msgstr ""
 
-#: ../drivers/vx8.py:585
+#: ../drivers/vx8.py:584
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -205,7 +227,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
 
-#: ../drivers/vx8.py:592
+#: ../drivers/vx8.py:591
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -214,7 +236,7 @@ msgid ""
 "4. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
 
-#: ../drivers/ft7800.py:288
+#: ../drivers/ft7800.py:287
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -227,7 +249,7 @@ msgid ""
 "6. Press the [LOW(ACC)] key (\"--RX--\" will appear on the display).\n"
 msgstr ""
 
-#: ../drivers/ft7800.py:277
+#: ../drivers/ft7800.py:276
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -348,7 +370,7 @@ msgid ""
 "5. Press OK.\n"
 msgstr ""
 
-#: ../drivers/vx6.py:369 ../drivers/vx3.py:375
+#: ../drivers/vx6.py:369 ../drivers/vx3.py:374
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -357,7 +379,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
 
-#: ../drivers/vx6.py:376 ../drivers/vx3.py:382
+#: ../drivers/vx6.py:376 ../drivers/vx3.py:381
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -366,7 +388,7 @@ msgid ""
 "4. Press the [V/M] key (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
 
-#: ../drivers/vx7.py:193
+#: ../drivers/vx7.py:192
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -375,7 +397,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
 
-#: ../drivers/vx7.py:201
+#: ../drivers/vx7.py:200
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -384,7 +406,7 @@ msgid ""
 "4. Press the [V/M] key (\"CLONE WAIT\" will appear on the LCD).\n"
 msgstr ""
 
-#: ../drivers/ft60.py:356
+#: ../drivers/ft60.py:355
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -396,7 +418,7 @@ msgid ""
 "     for one second to send image.\n"
 msgstr ""
 
-#: ../drivers/ft60.py:365
+#: ../drivers/ft60.py:364
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -407,7 +429,7 @@ msgid ""
 "6. Press the [MONI] switch (\"--RX--\" will appear on the LCD).\n"
 msgstr ""
 
-#: ../drivers/vx170.py:103
+#: ../drivers/vx170.py:101
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -452,7 +474,7 @@ msgid ""
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:777
+#: ../drivers/uv5r.py:778
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -462,7 +484,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:785
+#: ../drivers/uv5r.py:786
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -472,7 +494,7 @@ msgid ""
 "6. Click OK to upload image to device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:287 ../drivers/wouxun.py:215 ../drivers/tg_uv2p.py:222
+#: ../drivers/uvb5.py:288 ../drivers/wouxun.py:214 ../drivers/tg_uv2p.py:223
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -482,7 +504,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:295 ../drivers/wouxun.py:223 ../drivers/tg_uv2p.py:230
+#: ../drivers/uvb5.py:296 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:231
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -508,7 +530,7 @@ msgid ""
 "4. Press the key to receive the image.\n"
 msgstr ""
 
-#: ../drivers/ft90.py:197
+#: ../drivers/ft90.py:196
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect mic and hold [ACC] on mic while powering on.\n"
@@ -517,7 +539,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [SET] key to send image.\n"
 msgstr ""
 
-#: ../drivers/ft90.py:204
+#: ../drivers/ft90.py:203
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect mic and hold [ACC] on mic while powering on.\n"
@@ -527,7 +549,7 @@ msgid ""
 "    (\"R\" will appear on the lower left of LCD).\n"
 msgstr ""
 
-#: ../drivers/bj9900.py:105
+#: ../drivers/bj9900.py:106
 msgid ""
 "1. Turn radio off.\n"
 "2. Remove front head.\n"
@@ -536,7 +558,7 @@ msgid ""
 "4. Click OK.\n"
 msgstr ""
 
-#: ../drivers/vx170.py:114
+#: ../drivers/vx170.py:112
 msgid ""
 "1. Turn radio off.\n"
 "3. Press and hold in the [moni] key while turning the radio on.\n"
@@ -679,7 +701,7 @@ msgstr "选择一个来导入："
 msgid "City"
 msgstr ""
 
-#: ../drivers/ts590.py:674
+#: ../drivers/ts590.py:671
 msgid ""
 "Click on the \"Special Channels\" toggle-button of the memory\n"
 "editor to see/set the EXT channels. P-VFO channels 100-109\n"
@@ -697,12 +719,12 @@ msgstr ""
 msgid "Cloning"
 msgstr "正在复制"
 
-#: ../drivers/bj9900.py:136 ../drivers/ft450d.py:439 ../drivers/ft817.py:343
+#: ../drivers/bj9900.py:137 ../drivers/ft450d.py:442 ../drivers/ft817.py:343
 #, fuzzy
 msgid "Cloning from radio"
 msgstr "从电台下载"
 
-#: ../drivers/bj9900.py:163 ../drivers/ft450d.py:468 ../drivers/ft817.py:381
+#: ../drivers/bj9900.py:164 ../drivers/ft450d.py:471 ../drivers/ft817.py:381
 #, fuzzy
 msgid "Cloning to radio"
 msgstr "上传到电台"
@@ -734,7 +756,7 @@ msgstr ""
 msgid "Complete"
 msgstr "已完成"
 
-#: ../drivers/tmd710.py:196 ../drivers/tmd710.py:199
+#: ../drivers/tmd710.py:194 ../drivers/tmd710.py:197
 msgid ""
 "Connect your interface cable to the PC Port on the\n"
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
@@ -956,7 +978,7 @@ msgstr "RFinder"
 msgid "Finished radio job %s"
 msgstr ""
 
-#: ../drivers/ts590.py:681
+#: ../drivers/ts590.py:678
 msgid ""
 "Follow these instructions to download the radio memory:\n"
 "1 - Connect your interface cable\n"
@@ -965,7 +987,7 @@ msgid ""
 "3 - Disconnect your interface cable\n"
 msgstr ""
 
-#: ../drivers/ts480.py:520
+#: ../drivers/ts480.py:517
 msgid ""
 "Follow these instructions to download the radio memory:\n"
 "1 - Connect your interface cable\n"
@@ -974,7 +996,7 @@ msgid ""
 "3 - Disconnect your interface cable\n"
 msgstr ""
 
-#: ../drivers/th_uv8000.py:535
+#: ../drivers/th_uv8000.py:533
 msgid ""
 "Follow these instructions to download the radio memory:\n"
 "1 - Turn off your radio\n"
@@ -983,7 +1005,7 @@ msgid ""
 "4 - Radio > Download from radio\n"
 msgstr ""
 
-#: ../drivers/ic2730.py:314
+#: ../drivers/ic2730.py:313
 msgid ""
 "Follow these instructions to download your config:\n"
 "1 - Turn off your radio\n"
@@ -994,10 +1016,10 @@ msgid ""
 "    no right-side audio!\n"
 msgstr ""
 
-#: ../drivers/mursv1.py:346 ../drivers/baofeng_wp970i.py:329
-#: ../drivers/btech.py:690 ../drivers/gmrsuv1.py:395
-#: ../drivers/tdxone_tdq8a.py:457 ../drivers/uv6r.py:345
-#: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:367 ../drivers/bf_t1.py:484
+#: ../drivers/mursv1.py:343 ../drivers/baofeng_wp970i.py:326
+#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
+#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:342
+#: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1006,7 +1028,7 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/tk760g.py:685
+#: ../drivers/tk760g.py:684
 msgid ""
 "Follow these instructions to download your radio:\n"
 "1 - Turn off your radio\n"
@@ -1024,7 +1046,7 @@ msgid ""
 "4 - Click OK to start\n"
 msgstr ""
 
-#: ../drivers/ts590.py:687
+#: ../drivers/ts590.py:684
 msgid ""
 "Follow these instructions to upload the radio memory:\n"
 "1 - Connect your interface cable\n"
@@ -1033,7 +1055,7 @@ msgid ""
 "3 - Disconnect your interface cable\n"
 msgstr ""
 
-#: ../drivers/ts480.py:526
+#: ../drivers/ts480.py:523
 msgid ""
 "Follow these instructions to upload the radio memory:\n"
 "1 - Connect your interface cable\n"
@@ -1042,7 +1064,7 @@ msgid ""
 "3 - Disconnect your interface cable\n"
 msgstr ""
 
-#: ../drivers/th_uv8000.py:541
+#: ../drivers/th_uv8000.py:539
 msgid ""
 "Follow these instructions to upload the radio memory:\n"
 "1 - Turn off your radio\n"
@@ -1051,7 +1073,7 @@ msgid ""
 "4 - Radio > Upload to radio\n"
 msgstr ""
 
-#: ../drivers/ic2730.py:322
+#: ../drivers/ic2730.py:321
 msgid ""
 "Follow these instructions to upload your config:\n"
 "1 - Turn off your radio\n"
@@ -1063,7 +1085,7 @@ msgid ""
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
 
-#: ../drivers/btech.py:696 ../drivers/bf_t1.py:490
+#: ../drivers/btech.py:695 ../drivers/bf_t1.py:489
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1072,7 +1094,7 @@ msgid ""
 "4 - Do the upload of your radio data\n"
 msgstr ""
 
-#: ../drivers/tk760g.py:691
+#: ../drivers/tk760g.py:690
 msgid ""
 "Follow these instructions to upload your radio:\n"
 "1 - Turn off your radio\n"
@@ -1090,7 +1112,7 @@ msgid ""
 "4 - Click OK to start\n"
 msgstr ""
 
-#: ../drivers/vgc.py:600 ../drivers/lt725uv.py:524
+#: ../drivers/vgc.py:599 ../drivers/lt725uv.py:522
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1099,7 +1121,7 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/tk270.py:340
+#: ../drivers/tk270.py:341
 msgid ""
 "Follow this instructions to read your radio:\n"
 "1 - Turn off your radio\n"
@@ -1108,10 +1130,10 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/vgc.py:606 ../drivers/mursv1.py:352
-#: ../drivers/baofeng_wp970i.py:335 ../drivers/gmrsuv1.py:401
-#: ../drivers/lt725uv.py:530 ../drivers/tdxone_tdq8a.py:463
-#: ../drivers/uv6r.py:351 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:373
+#: ../drivers/vgc.py:605 ../drivers/mursv1.py:349
+#: ../drivers/baofeng_wp970i.py:332 ../drivers/gmrsuv1.py:398
+#: ../drivers/lt725uv.py:528 ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/uv6r.py:348 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1120,7 +1142,7 @@ msgid ""
 "4 - Do the upload of your radio data\n"
 msgstr ""
 
-#: ../drivers/tk270.py:346
+#: ../drivers/tk270.py:347
 msgid ""
 "Follow this instructions to write your radio:\n"
 "1 - Turn off your radio\n"
@@ -1432,7 +1454,7 @@ msgstr ""
 msgid "Overwrite memories?"
 msgstr "要覆盖吗？"
 
-#: ../drivers/ts480.py:516
+#: ../drivers/ts480.py:513
 msgid ""
 "P-VFO channels 100-109 are considered Settings.\n"
 "Only a subset of the over 130 available radio settings\n"
@@ -1463,7 +1485,7 @@ msgstr ""
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr ""
 
-#: ../drivers/ftlx011.py:307
+#: ../drivers/ftlx011.py:303
 msgid ""
 "Please follow this steps carefully:\n"
 "1 - Turn on your radio\n"
@@ -1478,7 +1500,7 @@ msgid ""
 "get into normal mode.\n"
 msgstr ""
 
-#: ../drivers/ftlx011.py:298
+#: ../drivers/ftlx011.py:294
 msgid ""
 "Please follow this steps carefully:\n"
 "1 - Turn on your radio\n"
@@ -1549,7 +1571,7 @@ msgstr "DTCS 接收代码"
 msgid "Radio"
 msgstr "电台"
 
-#: ../drivers/ft60.py:87 ../drivers/ft450d.py:486 ../drivers/ft817.py:408
+#: ../drivers/ft60.py:86 ../drivers/ft450d.py:495 ../drivers/ft817.py:408
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr ""
@@ -1713,7 +1735,7 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
-#: ../drivers/ft450d.py:369
+#: ../drivers/ft450d.py:372
 msgid ""
 "The FT-450 radio driver loads the 'Special Channels' tab\n"
 "with the PMS scanning range memories (group 11), 60meter\n"
@@ -1748,15 +1770,15 @@ msgid ""
 "add support for the other revisions."
 msgstr ""
 
-#: ../drivers/th_uv88.py:497
+#: ../drivers/th_uv88.py:495
 msgid "This is an early stage beta driver\n"
 msgstr ""
 
-#: ../drivers/th_uv88.py:499
+#: ../drivers/th_uv88.py:497
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr ""
 
-#: ../drivers/bj9900.py:111
+#: ../drivers/bj9900.py:112
 msgid ""
 "This is experimental support for BJ-9900 which is still under development.\n"
 "Please ensure you have a good backup with OEM software.\n"
@@ -1774,7 +1796,7 @@ msgstr "...并将区块上移"
 msgid "This memory and shift block up"
 msgstr "...并将区块上移"
 
-#: ../drivers/fd268.py:303 ../drivers/fd268.py:309
+#: ../drivers/fd268.py:302 ../drivers/fd268.py:308
 msgid ""
 "This radio has a tricky way of enter into program mode,\n"
 "even the original software has a few tries to get inside.\n"
