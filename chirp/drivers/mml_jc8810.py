@@ -190,7 +190,7 @@ TXPOWER_MID = 0x02
 ABR_LIST = ["On", "5 seconds", "10 seconds", "15 seconds", "20 seconds",
             "30 seconds", "1 minute", "2 minutes", "3 minutes"]
 ALMODE_LIST = ["Site", "Tone", "Code"]
-AUTOLK_LIST = ABR_LIST[:4]
+AUTOLK_LIST = ["Off"] + ABR_LIST[1:4]
 DTMFSPEED_LIST = ["50 ms", "100 ms", "200 ms", "300 ms", "500 ms"]
 DTMFST_LIST = ["Off", "KeyBoard Side Tone", "ANI Side Tone", "KB ST + ANI ST"]
 DUALTX_LIST = ["Off", "A", "B"]
@@ -257,6 +257,7 @@ SETTING_LISTS = {
     "pttid": PTTID_LIST,
     "pttlt": PTTLT_LIST,
     "qtsave": QTSAVE_LIST,
+    "roger": ROGER_LIST,
     "rpste": RPSTE_LIST,
     "rptrl": RPSTE_LIST,
     "rxendtail": TONERXEND_LIST,
@@ -818,7 +819,7 @@ class JC8810base(chirp_common.CloneModeRadio):
 
         if self.MODEL in ["RT-470"]:
             unwanted = [0, 7, 9]
-        elif self.MODEL in ["RT-470L"]:
+        elif self.MODEL in ["HI-8811", "RT-470L"]:
             unwanted = [9]
         else:
             unwanted = []
@@ -847,7 +848,7 @@ class JC8810base(chirp_common.CloneModeRadio):
 
         if self.MODEL in ["RT-470"]:
             unwanted = [0, 7, 8, 9]
-        elif self.MODEL in ["RT-470L"]:
+        elif self.MODEL in ["HI-8811", "RT-470L"]:
             unwanted = [8, 9]
         else:
             unwanted = []
@@ -876,7 +877,7 @@ class JC8810base(chirp_common.CloneModeRadio):
 
         if self.MODEL in ["RT-470"]:
             unwanted = [0, 7, 8, 9]
-        elif self.MODEL in ["RT-470L"]:
+        elif self.MODEL in ["HI-8811", "RT-470L"]:
             unwanted = [8, 9]
         else:
             unwanted = []
@@ -895,7 +896,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset.set_apply_callback(apply_skey3s_listvalue, _settings.skey3_sp)
         basic.append(rset)
 
-        if self.MODEL in ["RT-470L"]:
+        if self.MODEL in ["HI-8811", "RT-470L"]:
             # Menu 24: PF3 LONG PRESS (RT-470L)
             def apply_skey3l_listvalue(setting, obj):
                 LOG.debug("Setting value: " + str(setting.value) +
@@ -905,7 +906,7 @@ class JC8810base(chirp_common.CloneModeRadio):
                 val = SKEY2L_VALUES[index]
                 obj.set_value(val)
 
-            if self.MODEL in ["RT-470L"]:
+            if self.MODEL in ["HI-8811", "RT-470L"]:
                 unwanted = [8, 9]
             else:
                 unwanted = []
@@ -925,7 +926,7 @@ class JC8810base(chirp_common.CloneModeRadio):
                                     _settings.skey3_lp)
             basic.append(rset)
 
-        if self.MODEL in ["RT-470", "RT-470L"]:
+        if self.MODEL in ["HI-8811", "RT-470", "RT-470L"]:
             # Menu 25: TOP KEY (RT-470L)
             def apply_skeytop_listvalue(setting, obj):
                 LOG.debug("Setting value: " + str(setting.value) +
@@ -944,7 +945,7 @@ class JC8810base(chirp_common.CloneModeRadio):
                 # Press) setting in CHIRP.
                 # ==========
                 unwanted = [0, 7, 8, 9]
-            elif self.MODEL in ["RT-470L"]:
+            elif self.MODEL in ["HI-8811", "RT-470L"]:
                 unwanted = [8, 9]
             else:
                 unwanted = []
@@ -974,7 +975,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("ponmsg", "Power On Message", rs)
         basic.append(rset)
 
-        if self.MODEL == "RT-470L":
+        if self.MODEL in ["HI-8811", "RT-470L"]:
             rs = RadioSettingValueList(TAILCODE_LIST,
                                        TAILCODE_LIST[_settings.tailcode])
             rset = RadioSetting("tailcode", "Tail Code", rs)
@@ -1213,7 +1214,8 @@ class RT470LRadio(JC8810base):
     # ==========
 
     _fingerprint = [b"\x00\x00\x00\xfe\x00\x20\xAC\x04",
-                    b"\x00\x00\x00\x20\x00\x20\xCC\x04"]
+                    b"\x00\x00\x00\x20\x00\x20\xCC\x04",
+                    b"\x00\x00\x00\x20\x00\x20\x07\x00"]
 
     POWER_LEVELS = [chirp_common.PowerLevel("H", watts=5.00),
                     chirp_common.PowerLevel("M", watts=4.00),
@@ -1224,3 +1226,16 @@ class RT470LRadio(JC8810base):
                    (220000000, 260000000),
                    (330000000, 400000000),
                    (400000000, 520000000)]
+
+
+@directory.register
+class HI8811Radio(RT470LRadio):
+    """Hiroyasu HI-8811"""
+    VENDOR = "Hiroyasu"
+    MODEL = "HI-8811"
+
+    # ==========
+    # Notice to developers:
+    # The HI-8811 support in this driver is curretnly based upon v1.17
+    # firmware.
+    # ==========
