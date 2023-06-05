@@ -82,6 +82,7 @@
 | <a name="Feidaxin_FD-460A"></a> Feidaxin_FD-460A |  |  |  | 0.01% |
 | <a name="Feidaxin_FD-460UH"></a> Feidaxin_FD-460UH |  |  |  | 0.01% |
 | <a name="Generic_CSV"></a> Generic_CSV | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 |  |  |
+| <a name="Hiroyasu_HI-8811"></a> Hiroyasu_HI-8811 | [@KC9HI](https://github.com/KC9HI) | 4-Jun-2023 | Yes |  |
 | <a name="HobbyPCB_RS-UV3"></a> HobbyPCB_RS-UV3 | [@kk7ds](https://github.com/kk7ds) | 9-Dec-2022 | Yes | 0.02% |
 | <a name="Icom_IC-208H"></a> Icom_IC-208H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.05% |
 | <a name="Icom_IC-2100H"></a> Icom_IC-2100H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.04% |
@@ -407,11 +408,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 404
+**Drivers:** 405
 
-**Tested:** 85% (347/57) (93% of usage stats)
+**Tested:** 85% (348/57) (93% of usage stats)
 
-**Byte clean:** 89% (363/41)
+**Byte clean:** 89% (364/41)
 
 ## Meaning of this testing
 
