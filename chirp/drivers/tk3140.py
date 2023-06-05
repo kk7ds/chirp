@@ -224,6 +224,12 @@ KEY_NAMES = {
     'Mic PF2': 'pf2',
 }
 
+KNOB = {
+    0x00: 'None',
+    0x01: 'Channel Up/Down',
+    0x02: 'Group Up/Down',
+}
+
 mem_format = """
 #seekto 0x00E;
 u8 zone_count;
@@ -605,6 +611,18 @@ class KenwoodTKx140Radio(chirp_common.CloneModeRadio):
         keys = tk8160.TKx160Radio.make_key_group(self._memobj.keys,
                                                  KEY_NAMES,
                                                  KEYS)
+
+        def apply_knob(setting):
+            rev = {v: k for k, v in KNOB.items()}
+            self._memobj.knob = rev[str(setting.value)]
+
+        knob = settings.RadioSetting(
+            'knob', 'Knob',
+            settings.RadioSettingValueList(
+                KNOB.values(), current_index=self._memobj.knob))
+        knob.set_apply_callback(apply_knob)
+        keys.append(knob)
+
         return settings.RadioSettings(zones, keys)
 
     def set_settings(self, _settings):
