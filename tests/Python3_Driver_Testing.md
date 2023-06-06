@@ -20,6 +20,7 @@
 | <a name="AnyTone_OBLTR-8R"></a> AnyTone_OBLTR-8R | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.02% |
 | <a name="AnyTone_TERMN-8R"></a> AnyTone_TERMN-8R | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.02% |
 | <a name="Anysecu_AC-580"></a> Anysecu_AC-580 | [Implied by Radioddity_GS-5B](#user-content-Radioddity_GS-5B) | 17-Mar-2023 | Yes |  |
+| <a name="Anysecu_UV-A37"></a> Anysecu_UV-A37 | [@KC9HI](https://github.com/KC9HI) | 5-Jun-2023 | Yes |  |
 | <a name="Anysecu_WP-9900"></a> Anysecu_WP-9900 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.03% |
 | <a name="BTECH_FRS-A1"></a> BTECH_FRS-A1 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.01% |
 | <a name="BTECH_FRS-B1"></a> BTECH_FRS-B1 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.04% |
@@ -408,11 +409,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 405
+**Drivers:** 406
 
-**Tested:** 86% (349/56) (93% of usage stats)
+**Tested:** 86% (350/56) (93% of usage stats)
 
-**Byte clean:** 89% (364/41)
+**Byte clean:** 89% (365/41)
 
 ## Meaning of this testing
 
