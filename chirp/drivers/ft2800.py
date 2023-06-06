@@ -190,7 +190,7 @@ class FT2800Radio(YaesuCloneModeRadio):
             "2. Connect cable\n"
             "3. Press and hold in the MHz, Low, and D/MR keys on the radio "
             "while turning it on\n"
-            "4. Radio is in clone mode when TX/RX is flashing"
+            "4. Radio is in clone mode when TX/RX is flashing\n"
             "5. <b>After clicking OK</b>, "
             "press the MHz key on the radio to send"
             " image.\n"
@@ -200,7 +200,7 @@ class FT2800Radio(YaesuCloneModeRadio):
             "2. Connect cable\n"
             "3. Press and hold in the MHz, Low, and D/MR keys on the radio "
             "while turning it on\n"
-            "4. Radio is in clone mode when TX/RX is flashing"
+            "4. Radio is in clone mode when TX/RX is flashing\n"
             "5. Press the Low key on the radio "
             "(\"RX\" will appear on the LCD).\n"
             "6. Click OK.")
