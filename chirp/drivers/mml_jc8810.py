@@ -88,10 +88,10 @@ struct {
   u8 unknown_900b;    // 900B
   u8 unused_900c:5,   // 900C
      pttlt:3;         //      PTT Delay
-  u8 unused_900d:7,   // 900D
-     mdfa:1;          //      Channel_A Display
-  u8 unused_9003:7,   // 900E
-     mdfb:1;          //      Channel_B Display
+  u8 unused_900d:6,   // 900D
+     mdfa:2;          //      Channel_A Display
+  u8 unused_9003:6,   // 900E
+     mdfb:2;          //      Channel_B Display
   u8 unknown_900f;    // 900F
   u8 unused_9010:4,   // 9010
      autolk:4;        //      Key Auto Lock
@@ -196,7 +196,7 @@ DTMFST_LIST = ["Off", "KeyBoard Side Tone", "ANI Side Tone", "KB ST + ANI ST"]
 DUALTX_LIST = ["Off", "A", "B"]
 ENCRYPT_LIST = ["Off", "DCP1", "DCP2", "DCP3"]
 LANGUAGE_LIST = ["English", "Chinese"]
-MDF_LIST = ["Name", "Frequency"]
+MDF_LIST = ["Name", "Frequency", "Channel"]
 MENUQUIT_LIST = ["%s seconds" % x for x in range(5, 55, 5)] + ["60 seconds"]
 OFF1TO9_LIST = ["Off"] + ["%s" % x for x in range(1, 10)]
 PONMSG_LIST = ["Logo", "Voltage"]
@@ -602,15 +602,24 @@ class JC8810base(chirp_common.CloneModeRadio):
             mem.skip = "S"
 
         _levels = self.POWER_LEVELS
-        if _mem.txpower == TXPOWER_HIGH:
-            mem.power = _levels[0]
-        elif _mem.txpower == TXPOWER_MID:
-            mem.power = _levels[1]
-        elif _mem.txpower == TXPOWER_LOW:
-            mem.power = _levels[2]
+        if self.MODEL == "UV-A37":
+            if _mem.txpower == TXPOWER_HIGH:
+                mem.power = _levels[0]
+            elif _mem.txpower == TXPOWER_LOW:
+                mem.power = _levels[1]
+            else:
+                LOG.error('%s: get_mem: unhandled power level: 0x%02x' %
+                          (mem.name, _mem.txpower))
         else:
-            LOG.error('%s: get_mem: unhandled power level: 0x%02x' %
-                      (mem.name, _mem.txpower))
+            if _mem.txpower == TXPOWER_HIGH:
+                mem.power = _levels[0]
+            elif _mem.txpower == TXPOWER_MID:
+                mem.power = _levels[1]
+            elif _mem.txpower == TXPOWER_LOW:
+                mem.power = _levels[2]
+            else:
+                LOG.error('%s: get_mem: unhandled power level: 0x%02x' %
+                          (mem.name, _mem.txpower))
 
         mem.mode = _mem.narrow and "NFM" or "FM"
 
@@ -701,17 +710,28 @@ class JC8810base(chirp_common.CloneModeRadio):
         _mem.narrow = mem.mode == "NFM"
 
         _levels = self.POWER_LEVELS
-        if mem.power is None:
-            _mem.txpower = TXPOWER_HIGH
-        elif mem.power == _levels[0]:
-            _mem.txpower = TXPOWER_HIGH
-        elif mem.power == _levels[1]:
-            _mem.txpower = TXPOWER_MID
-        elif mem.power == _levels[2]:
-            _mem.txpower = TXPOWER_LOW
+        if self.MODEL == "UV-A37":
+            if mem.power is None:
+                _mem.txpower = TXPOWER_HIGH
+            elif mem.power == _levels[0]:
+                _mem.txpower = TXPOWER_HIGH
+            elif mem.power == _levels[1]:
+                _mem.txpower = TXPOWER_LOW
+            else:
+                LOG.error('%s: set_mem: unhandled power level: %s' %
+                          (mem.name, mem.power))
         else:
-            LOG.error('%s: set_mem: unhandled power level: %s' %
-                      (mem.name, mem.power))
+            if mem.power is None:
+                _mem.txpower = TXPOWER_HIGH
+            elif mem.power == _levels[0]:
+                _mem.txpower = TXPOWER_HIGH
+            elif mem.power == _levels[1]:
+                _mem.txpower = TXPOWER_MID
+            elif mem.power == _levels[2]:
+                _mem.txpower = TXPOWER_LOW
+            else:
+                LOG.error('%s: set_mem: unhandled power level: %s' %
+                          (mem.name, mem.power))
 
         for setting in mem.extra:
             if setting.get_name() == "scramble_type":
@@ -751,11 +771,12 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("voice", "Voice Prompts", rs)
         basic.append(rset)
 
-        # Menu 17: LANGUAGE
-        rs = RadioSettingValueList(LANGUAGE_LIST,
-                                   LANGUAGE_LIST[_settings.language])
-        rset = RadioSetting("language", "Voice", rs)
-        basic.append(rset)
+        if self.MODEL != "UV-A37":
+            # Menu 17: LANGUAGE
+            rs = RadioSettingValueList(LANGUAGE_LIST,
+                                       LANGUAGE_LIST[_settings.language])
+            rset = RadioSetting("language", "Voice", rs)
+            basic.append(rset)
 
         # Menu 23: ABR
         rs = RadioSettingValueList(ABR_LIST, ABR_LIST[_settings.abr])
@@ -821,6 +842,8 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [0, 7, 9]
         elif self.MODEL in ["HI-8811", "RT-470L"]:
             unwanted = [9]
+        elif self.MODEL in ["UV-A37"]:
+            unwanted = [0, 5, 7, 9]
         else:
             unwanted = []
         SKEY2S_CHOICES = ALL_SKEY_CHOICES.copy()
@@ -850,6 +873,8 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [0, 7, 8, 9]
         elif self.MODEL in ["HI-8811", "RT-470L"]:
             unwanted = [8, 9]
+        elif self.MODEL in ["UV-A37"]:
+            unwanted = [0, 5, 7, 8]
         else:
             unwanted = []
         SKEY2L_CHOICES = ALL_SKEY_CHOICES.copy()
@@ -879,6 +904,8 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [0, 7, 8, 9]
         elif self.MODEL in ["HI-8811", "RT-470L"]:
             unwanted = [8, 9]
+        elif self.MODEL in ["UV-A37"]:
+            unwanted = [0, 5, 7, 8, 9]
         else:
             unwanted = []
         SKEY3S_CHOICES = ALL_SKEY_CHOICES.copy()
@@ -1055,11 +1082,12 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("beep", "Beep", rs)
         basic.append(rset)
 
-        # Menu 48: RX END TAIL
-        rs = RadioSettingValueList(TONERXEND_LIST,
-                                   TONERXEND_LIST[_settings.rxendtail])
-        rset = RadioSetting("rxendtail", "Tone RX End", rs)
-        basic.append(rset)
+        if self.MODEL not in ["UV-A37"]:
+            # Menu 48: RX END TAIL
+            rs = RadioSettingValueList(TONERXEND_LIST,
+                                       TONERXEND_LIST[_settings.rxendtail])
+            rset = RadioSetting("rxendtail", "Tone RX End", rs)
+            basic.append(rset)
 
         dtmf = RadioSettingGroup("dtmf", "DTMF Settings")
         group.append(dtmf)
@@ -1198,7 +1226,7 @@ class RT470Radio(JC8810base):
 
     # ==========
     # Notice to developers:
-    # The RT-470 support in this driver is curretnly based upon v1.22 firmware.
+    # The RT-470 support in this driver is currently based upon v1.22 firmware.
     # ==========
 
 
@@ -1210,7 +1238,7 @@ class RT470LRadio(JC8810base):
 
     # ==========
     # Notice to developers:
-    # The RT-470 support in this driver is curretnly based upon v1.17 firmware.
+    # The RT-470 support in this driver is currently based upon v1.17 firmware.
     # ==========
 
     _fingerprint = [b"\x00\x00\x00\xfe\x00\x20\xAC\x04",
@@ -1236,6 +1264,41 @@ class HI8811Radio(RT470LRadio):
 
     # ==========
     # Notice to developers:
-    # The HI-8811 support in this driver is curretnly based upon v1.17
+    # The HI-8811 support in this driver is currently based upon v1.17
     # firmware.
     # ==========
+
+
+@directory.register
+class UVA37Radio(JC8810base):
+    """Anysecu UV-A37"""
+    VENDOR = "Anysecu"
+    MODEL = "UV-A37"
+
+    # ==========
+    # Notice to developers:
+    # The UV-A37 support in this driver is currently based upon v1.24
+    # firmware.
+    # ==========
+
+    POWER_LEVELS = [chirp_common.PowerLevel("H", watts=5.00),
+                    chirp_common.PowerLevel("L", watts=1.00)]
+
+    VALID_BANDS = [(108000000, 136000000),
+                   (136000000, 174000000),
+                   (200000000, 260000000),
+                   (350000000, 390000000),
+                   (400000000, 520000000)]
+
+    _magic = b"PROGRAMJC37U"
+    _fingerprint = [b"\x00\x00\x00\xE4\x00\x20\x94\x04",
+                    b"\x00\x00\x00\xE8\x00\x20\x98\x04"]
+
+    _ranges = [
+               (0x0000, 0x2000),
+               (0x8000, 0x8040),
+               (0x9000, 0x9040),
+               (0xA000, 0xA140),
+               (0xB000, 0xB440)
+              ]
+    _memsize = 0xB440
