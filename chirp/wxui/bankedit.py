@@ -166,6 +166,8 @@ class ChirpBankEdit(common.ChirpEditor):
         return defs
 
     def col2bank(self, col):
+        if col < self._meta_cols:
+            raise RuntimeError('Error: column %i is not a bank' % col)
         return col - self._meta_cols
 
     def bank2col(self, bank):
@@ -243,6 +245,8 @@ class ChirpBankEdit(common.ChirpEditor):
         value = self._grid.GetCellValue(row, col)
 
         if isinstance(self._col_defs[col], ChirpBankIndexColumn):
+            event.Skip()
+        elif col < self._meta_cols:
             event.Skip()
         else:
             self._change_memory_mapping(self.row2mem(row),
