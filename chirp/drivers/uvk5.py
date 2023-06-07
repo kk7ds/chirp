@@ -47,7 +47,7 @@ DEBUG_SHOW_OBFUSCATED_COMMANDS = False
 # might be useful for someone debugging some obscure memory issue
 DEBUG_SHOW_MEMORY_ACTIONS = False
 
-DRIVER_VERSION = "Quansheng UV-K5 driver v20230607 (c) Jacek Lipkowski SQ5BPF"
+DRIVER_VERSION = "Quansheng UV-K5 driver v20230608 (c) Jacek Lipkowski SQ5BPF"
 PRINT_CONSOLE = False
 
 MEM_FORMAT = """
@@ -229,10 +229,6 @@ PROG_SIZE = 0x1d00  # size of the memory that we will write
 MEM_BLOCK = 0x80  # largest block of memory that we can reliably write
 
 # bands supported by the UV-K5
-# for modded radios use:
-# 0: [50.0, 76.0],
-# 6: [470.0,600.0]
-
 BANDS = {
         0: [50.0, 76.0],
         1: [108.0, 135.9999],
@@ -241,6 +237,17 @@ BANDS = {
         4: [350.0, 399.9999],
         5: [400.0, 469.9999],
         6: [470.0, 600.0]
+        }
+
+# for radios with modified firmware:
+BANDS_NOLIMITS = {
+        0: [18.0, 76.0],
+        1: [108.0, 135.9999],
+        2: [136.0, 199.9990],
+        3: [200.0, 299.9999],
+        4: [350.0, 399.9999],
+        5: [400.0, 469.9999],
+        6: [470.0, 1300.0]
         }
 BANDMASK = 0b1111
 
@@ -370,7 +377,7 @@ def _sayhello(serport):
             LOG.warning("Failed to initialise radio")
             raise errors.RadioError("Failed to initialize radio")
             return False
-    firmware = _getstring(o, 5, 16)
+    firmware = _getstring(o, 4, 16)
     LOG.info("Found firmware: %s" % firmware)
     return firmware
 
@@ -487,16 +494,20 @@ def do_upload(radio):
     return True
 
 
-def _find_band(hz):
+def _find_band(self, hz):
     mhz = hz/1000000.0
-    for a in BANDS:
-        if mhz >= BANDS[a][0] and mhz <= BANDS[a][1]:
+    if self.FIRMWARE_NOLIMITS:
+        B = BANDS_NOLIMITS
+    else:
+        B = BANDS
+    for a in B:
+        if mhz >= B[a][0] and mhz <= B[a][1]:
             return a
     return False
 
 
 @directory.register
-class TemplateRadio(chirp_common.CloneModeRadio):
+class UVK5Radio(chirp_common.CloneModeRadio):
     """Quansheng UV-K5"""
     VENDOR = "Quansheng"
     MODEL = "UV-K5"
@@ -504,6 +515,7 @@ class TemplateRadio(chirp_common.CloneModeRadio):
 
     NEEDS_COMPAT_SERIAL = False
     FIRMWARE_VERSION = ""
+    FIRMWARE_NOLIMITS = False
 
     def get_prompts(x=None):
         rp = chirp_common.RadioPrompts()
@@ -1229,6 +1241,13 @@ class TemplateRadio(chirp_common.CloneModeRadio):
         rs = RadioSetting("driver_ver", "Driver version", val)
         roinfo.append(rs)
 
+        # No limits version for hacked firmware
+        val = RadioSettingValueBoolean(self.FIRMWARE_NOLIMITS)
+        val.set_mutable(False)
+        rs = RadioSetting("nolimits", "Limits disabled for modified firmware",
+                          val)
+        roinfo.append(rs)
+
         return top
 
     # Store details about a high-level memory to the memory map
@@ -1277,13 +1296,13 @@ class TemplateRadio(chirp_common.CloneModeRadio):
             txfreq = mem.freq
 
         # find band
-        band = _find_band(txfreq)
+        band = _find_band(self, txfreq)
         if band is False:
             raise errors.RadioError(
                     "Transmit frequency %.4fMHz is not supported by this radio"
                     % txfreq/1000000.0)
 
-        band = _find_band(mem.freq)
+        band = _find_band(self, mem.freq)
         if band is False:
             return mem
 
@@ -1374,3 +1393,19 @@ class TemplateRadio(chirp_common.CloneModeRadio):
                     _mem.scrambler & 0xf0) | SCRAMBLER_LIST.index(svalue)
 
         return mem
+
+
+@directory.register
+class UVK5Radio_nolimit(UVK5Radio):
+    VENDOR = "Quansheng"
+    MODEL = "UV-K5 (modified firmware)"
+    VARIANT = "nolimits"
+    FIRMWARE_NOLIMITS = True
+
+    def get_features(self):
+        rf = UVK5Radio.get_features(self)
+        # This is what the BK4819 chip supports
+        rf.valid_bands = [(18000000,  620000000),
+                          (840000000, 1300000000)
+                          ]
+        return rf
