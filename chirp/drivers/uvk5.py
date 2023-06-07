@@ -27,16 +27,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-# import struct
+import struct
 import logging
-# import serial
 
 from chirp import chirp_common, directory, bitwise, memmap, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueInteger, RadioSettingValueString, \
     RadioSettings
-# from chirp.settings import RadioSettingValueFloat, RadioSettingValueMap
 
 LOG = logging.getLogger(__name__)
 
@@ -49,7 +47,7 @@ DEBUG_SHOW_OBFUSCATED_COMMANDS = False
 # might be useful for someone debugging some obscure memory issue
 DEBUG_SHOW_MEMORY_ACTIONS = False
 
-DRIVER_VERSION = "Quansheng UV-K5 driver v20230604 (c) Jacek Lipkowski SQ5BPF"
+DRIVER_VERSION = "Quansheng UV-K5 driver v20230607 (c) Jacek Lipkowski SQ5BPF"
 PRINT_CONSOLE = False
 
 MEM_FORMAT = """
@@ -231,6 +229,10 @@ PROG_SIZE = 0x1d00  # size of the memory that we will write
 MEM_BLOCK = 0x80  # largest block of memory that we can reliably write
 
 # bands supported by the UV-K5
+# for modded radios use:
+# 0: [50.0, 76.0],
+# 6: [470.0,600.0]
+
 BANDS = {
         0: [50.0, 76.0],
         1: [108.0, 135.9999],
@@ -283,9 +285,11 @@ def _send_command(serport, data: bytes):
               (len(data), util.hexprint(data)))
 
     crc = calculate_crc16_xmodem(data)
-    data2 = data+bytes([crc & 0xff, (crc >> 8) & 0xff])
+    data2 = data + struct.pack("<H", crc)
 
-    command = b"\xAB\xCD"+bytes([len(data)])+b"\x00"+xorarr(data2)+b"\xDC\xBA"
+    command = struct.pack(">HBB", 0xabcd, len(data), 0) + \
+        xorarr(data2) + \
+        struct.pack(">H", 0xdcba)
     if DEBUG_SHOW_OBFUSCATED_COMMANDS:
         LOG.debug("Sending command (obfuscated):\n%s" % util.hexprint(command))
     try:
@@ -375,7 +379,7 @@ def _readmem(serport, offset, length):
     LOG.debug("Sending readmem offset=0x%4.4x len=0x%4.4x" % (offset, length))
 
     readmem = b"\x1b\x05\x08\x00" + \
-        bytes([offset & 0xff, (offset >> 8) & 0xff, length, 0]) + \
+        struct.pack("<HBB", offset, length, 0) + \
         b"\x6a\x39\x57\x64"
     _send_command(serport, readmem)
     o = _receive_reply(serport)
@@ -394,8 +398,8 @@ def _writemem(serport, data, offset):
                   (offset, len(data), util.hexprint(data)))
 
     dlen = len(data)
-    writemem = b"\x1d\x05"+bytes([dlen+8])+b"\x00" + \
-        bytes([offset & 0xff, (offset >> 8) & 0xff, dlen, 1]) + \
+    writemem = b"\x1d\x05" + \
+        struct.pack("<BBHBB", dlen+8, 0, offset, dlen, 1) + \
         b"\x6a\x39\x57\x64"+data
 
     _send_command(serport, writemem)
