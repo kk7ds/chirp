@@ -103,6 +103,7 @@ class TestCaseEdges(base.DriverTest):
     def test_get_set_specials(self):
         if not self.rf.valid_special_chans:
             self.skipTest('Radio has no specials')
+        lo, hi = self.rf.memory_bounds
         for name in self.rf.valid_special_chans:
             m1 = self.radio.get_memory(name)
             try:
@@ -119,6 +120,11 @@ class TestCaseEdges(base.DriverTest):
                 continue
             m2 = self.radio.get_memory(name)
             self.assertEqualMem(m1, m2, ignore=['name'])
+
+            self.assertFalse(
+                lo < m1.number < hi,
+                'Special memory %s maps into memory bounds at %i' % (
+                    name, m1.number))
 
     def test_check_regular_not_special(self):
         lo, hi = self.rf.memory_bounds
