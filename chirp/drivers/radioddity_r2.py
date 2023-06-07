@@ -105,15 +105,6 @@ MODE_LIST = ["FM", "NFM"]
 TONES = chirp_common.TONES
 DTCS_CODES = chirp_common.DTCS_CODES
 
-SETTING_LISTS = {
-    "tot": TIMEOUT_LIST,
-    "scanmode": SCANMODE_LIST,
-    "voice": VOICE_LIST,
-    "vox": VOX_LIST,
-    "voxdelay": VOXDELAY_LIST,
-    "mode": MODE_LIST,
-    }
-
 FRS16_FREQS = [462562500, 462587500, 462612500, 462637500,
                462662500, 462625000, 462725000, 462687500,
                462712500, 462550000, 462575000, 462600000,

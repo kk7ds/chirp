@@ -396,40 +396,6 @@ VOICE_LIST = ["Off", "English", "Chinese"]
 VOX_LIST = ["OFF"] + ["%s" % x for x in range(1, 11)]
 WORKMODE_LIST = ["Frequency", "Channel"]
 
-SETTING_LISTS = {
-    "almod": ALMOD_LIST,
-    "aniid": PTTID_LIST,
-    "displayab": AB_LIST,
-    "dtmfst": DTMFST_LIST,
-    "dtmfspeed": DTMFSPEED_LIST,
-    "mdfa": MODE_LIST,
-    "mdfb": MODE_LIST,
-    "ponmsg": PONMSG_LIST,
-    "pttid": PTTID_LIST,
-    "rtone": RTONE_LIST,
-    "rogerrx": ROGERRX_LIST,
-    "rpste": RPSTE_LIST,
-    "rxled": COLOR_LIST,
-    "save": SAVE_LIST,
-    "scode": PTTIDCODE_LIST,
-    "screv": RESUME_LIST,
-    "sftd": SHIFTD_LIST,
-    "stedelay": STEDELAY_LIST,
-    "step": STEP_LIST,
-    "step291": STEP291_LIST,
-    "tdrab": TDRAB_LIST,
-    "tdrch": TDRCH_LIST,
-    "timeout": TIMEOUT_LIST,
-    "txled": COLOR_LIST,
-    "txpower": TXPOWER_LIST,
-    "txpower3": TXPOWER3_LIST,
-    "voice": VOICE_LIST,
-    "vox": VOX_LIST,
-    "widenarr": BANDWIDTH_LIST,
-    "workmode": WORKMODE_LIST,
-    "wtled": COLOR_LIST
-}
-
 GMRS_FREQS = bandplan_na.GMRS_HIRPT
 
 NOAA_FREQS = [162550000, 162400000, 162475000, 162425000, 162450000,

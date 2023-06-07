@@ -93,14 +93,6 @@ VOXDELAY_LIST = ["0.5 | Off",
                  "3.0 | 4",
                  "--- | 5"]
 
-SETTING_LISTS = {
-    "pf2key": PF2KEY_LIST,
-    "tot": TIMEOUTTIMER_LIST,
-    "voice": VOICE_LIST,
-    "vox": VOX_LIST,
-    "voxdelay": VOXDELAY_LIST,
-    }
-
 VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
     "`{|}!\"#$%&'()*+,-./:;<=>?@[]^_"
 

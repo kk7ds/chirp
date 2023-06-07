@@ -255,14 +255,6 @@ LIST_STEPS = [str(x) for x in STEPS]
 LIST_VOXDLY = ["0.5", "1.0", "2.0", "3.0"]      # LISTS must be strings
 LIST_PTT = ["Both", "EoT", "BoT", "Off"]
 
-SETTING_LISTS = {"tot": LIST_TIMEOUT, "wtled": LIST_COLOR,
-                 "rxled": LIST_COLOR, "txled": LIST_COLOR,
-                 "ledsw": LIST_LEDSW, "frq_chn_mode": LIST_VFOMODE,
-                 "rx_tone": LIST_CTCSS, "tx_tone": LIST_CTCSS,
-                 "rx_mode": LIST_RECVMODE, "fm_bw": LIST_BW,
-                 "shift": LIST_SHIFT, "step": LIST_STEPS,
-                 "vox_dly": LIST_VOXDLY, "ptt": LIST_PTT}
-
 
 def _clean_buffer(radio):
     radio.pipe.timeout = 0.005

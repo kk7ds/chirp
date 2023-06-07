@@ -185,24 +185,6 @@ SIDEKEYV8A_LIST = ["Off",
                    "Alarm"]
 SIDEKEY87_LIST = ["Scan", "Emergency Alarm"]
 
-SETTING_LISTS = {
-    "voiceprompt": VOICE_LIST,
-    "language": VOICE_LIST2,
-    "timeouttimer": TIMEOUTTIMER_LIST,
-    "scanmode": SCANMODE_LIST,
-    "voxlevel": VOXLEVEL_LIST,
-    "voxdelay": VOXDELAY_LIST,
-    "sidekey2": SIDEKEY2_LIST,
-    "sidekey2": SIDEKEY19_LIST,
-    "sidekey2": SIDEKEY85SHORT_LIST,
-    "sidekey2": SIDEKEYV8A_LIST,
-    "sidekey1L": SIDEKEY85LONG_LIST,
-    "sidekey2S": SIDEKEY29_LIST,
-    "sidekey2S": SIDEKEY85SHORT_LIST,
-    "sidekey2L": SIDEKEY85LONG_LIST,
-    "speccode": SPECCODE_LIST
-}
-
 FRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
               462687500, 462712500]
 FRS_FREQS2 = [467562500, 467587500, 467612500, 467637500, 467662500,

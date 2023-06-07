@@ -95,18 +95,6 @@ VOXDELAY_LIST = ["0.3", "0.5", "1", "1.5", "2", "2.5"]
 VOXLEVEL_LIST = ["Off", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 WORKMODE_LIST = ["Frequencies", "Channel Numbers", "Names"]
 
-SETTING_LISTS = {
-    "alarmtype": ALARMTYPE_LIST,
-    "backlight": BACKLIGHT_LIST,
-    "batterysave": BATTERYSAVE_LIST,
-    "scanmode": SCANMODE_LIST,
-    "sidekey": SIDEKEY_LIST,
-    "timeouttimer": TIMEOUTTIMER_LIST,
-    "voxdelay": VOXDELAY_LIST,
-    "voxlevel": VOXLEVEL_LIST,
-    "workmode": WORKMODE_LIST
-}
-
 BCL = ["Off", "Carrier", "QT/DCS"]
 
 GMRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,

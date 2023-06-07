@@ -235,31 +235,6 @@ LIST_STATE = ["Normal", "Stun", "Kill"]
 LIST_SSF = ["1000", "1450", "1750", "2100"]
 LIST_DTMFTX = ["50", "100", "150", "200", "300", "500"]
 
-SETTING_LISTS = {
-    "init_bank": LIST_TDR_DEF,
-    "tot": LIST_TIMEOUT,
-    "wtled": LIST_COLOR,   # not used in BJ-318, other radios use
-    "rxled": LIST_COLOR,   # not used in BJ-318, other radios use
-    "txled": LIST_COLOR,   # not used in BJ-318, other radios use
-    "sig_freq": LIST_SSF,
-    "dtmf_txms": LIST_DTMFTX,
-    "ledsw": LIST_LEDSW,
-    "frq_chn_mode": LIST_VFOMODE,
-    "rx_tone": LIST_CTCSS,
-    "tx_tone": LIST_CTCSS,
-    "rx_mode": LIST_RECVMODE,
-    "launch_sig": LIST_SIGNAL,
-    "tx_end_sig": LIST_SIGNAL,
-    "bpower": LIST_BPOWER,
-    "fm_bw": LIST_BW,
-    "shift": LIST_SHIFT,
-    "step": LIST_STEPS,
-    "ring": LIST_RING,
-    "state_now": LIST_STATE,
-    "up_scr_color": LIST_COLOR318,  # unique to BJ-318
-    "dn_scr_color": LIST_COLOR318,  # unique to BJ-318
-}
-
 
 def _clean_buffer(radio):
     radio.pipe.timeout = 0.005
