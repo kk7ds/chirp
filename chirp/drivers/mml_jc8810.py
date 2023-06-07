@@ -249,40 +249,6 @@ ALL_SKEY_VALUES = [0xFF,
                    0x23]
 
 
-SETTING_LISTS = {
-    "abr": ABR_LIST,
-    "almod": ALMODE_LIST,
-    "autolk": AUTOLK_LIST,
-    "dtmfoff": DTMFSPEED_LIST,
-    "dtmfon": DTMFSPEED_LIST,
-    "dtmfst": DTMFST_LIST,
-    "dualtx": DUALTX_LIST,
-    "encrypt": ENCRYPT_LIST,
-    "language": LANGUAGE_LIST,
-    "mdfa": MDF_LIST,
-    "mdfb": MDF_LIST,
-    "menuquit": MENUQUIT_LIST,
-    "ponmsg": PONMSG_LIST,
-    "pttid": PTTID_LIST,
-    "pttlt": PTTLT_LIST,
-    "qtsave": QTSAVE_LIST,
-    "roger": ROGER_LIST,
-    "rpste": RPSTE_LIST,
-    "rptrl": RPSTE_LIST,
-    "rxendtail": TONERXEND_LIST,
-    "save": SAVE_LIST,
-    "scode": PTTIDCODE_LIST,
-    "screv": SCREV_LIST,
-    "skey3_lp": TONERXEND_LIST,
-    "tailcode": TAILCODE_LIST,
-    "tone": TONE_LIST,
-    "tot": TOT_LIST,
-    "vox": OFF1TO9_LIST,
-    "voxd": VOXD_LIST,
-    "workmode": WORKMODE_LIST
-    }
-
-
 def _enter_programming_mode(radio):
     serial = radio.pipe
 

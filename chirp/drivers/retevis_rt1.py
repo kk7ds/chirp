@@ -104,23 +104,6 @@ LIST_SCANSPEED = ["%s" % x for x in range(100, 550, 50)]
 LIST_SCANDELAY = ["%s" % x for x in range(3, 31)]
 LIST_TXTONE = ["Off", "BOT", "EOT", "Both"]
 
-SETTING_LISTS = {
-    "lpt": LIST_LPT,
-    "k1shortp": LIST_SHORT_PRESS,
-    "k1longp": LIST_LONG_PRESS,
-    "k2shortp": LIST_SHORT_PRESS,
-    "k2longp": LIST_LONG_PRESS,
-    "voxd": LIST_VOXDELAY,
-    "voice": LIST_VOICE,
-    "tot": LIST_TIMEOUTTIMER,
-    "save": LIST_SAVE,
-    "ssave": LIST_SSAVE,
-    "prioritych": LIST_PRIORITYCH,
-    "scanspeed": LIST_SCANSPEED,
-    "scandelay": LIST_SCANDELAY,
-    "txtone": LIST_TXTONE,
-    }
-
 # Retevis RT1 fingerprints
 RT1_VHF_fp = b"PXT8K" + b"\xF0\x00\x00"   # RT1 VHF model
 RT1_UHF_fp = b"PXT8K" + b"\xF3\x00\x00"   # RT1 UHF model

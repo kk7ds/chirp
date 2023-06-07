@@ -144,28 +144,6 @@ LIST_DECODETO = ["%s" % x for x in range(500, 1000, 50)] + \
                 ["%s" % x for x in range(1000, 1600, 100)]
 LIST_STUNTYPE = ["TX/RX Inhibit", "TX Inhibit"]
 
-SETTING_LISTS = {
-    "k1shortp": LIST_SHORT_PRESS,
-    "k1longp": LIST_LONG_PRESS,
-    "k2shortp": LIST_SHORT_PRESS,
-    "k2longp": LIST_LONG_PRESS,
-    "voxd": LIST_VOXDELAY,
-    "voice": LIST_VOICE,
-    "tot": LIST_TIMEOUTTIMER,
-    "save": LIST_SAVE,
-    "ssave": LIST_SSAVE,
-    "scanspeed": LIST_SCANSPEED,
-    "scandelay": LIST_SCANDELAY,
-    "digtime": LIST_DIGTIME,
-    "digdelay": LIST_DIGDELAY,
-    "starhash": LIST_STARHASH,
-    "codespace": LIST_CODESPACE,
-    "groupcode": LIST_GROUPCODE,
-    "resettime": LIST_RESETTIME,
-    "decodeto": LIST_DECODETO,
-    "stuntype": LIST_STUNTYPE,
-    }
-
 # Retevis RT26 fingerprints
 RT26_UHF_fp = b"PDK80" + b"\xF3\x00\x00"   # RT26 UHF model
 

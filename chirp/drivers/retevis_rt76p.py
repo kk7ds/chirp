@@ -194,30 +194,6 @@ WORKMODE_LIST = ["VFO Mode", "Channel Mode"]
 SKEY_CHOICES = ["FM", "Tx Power", "Moni", "Scan", "Offline", "Weather"]
 SKEY_VALUES = [0x07, 0x0A, 0x05, 0x1C, 0x0B, 0x0C]
 
-
-SETTING_LISTS = {
-    "abr": OFF1TO10_LIST,
-    "almod": ALMOD_LIST,
-    "dtmfspeed": DTMFSPEED_LIST,
-    "language": LANGUAGE_LIST,
-    "mdfa": MDF_LIST,
-    "mdfb": MDF_LIST,
-    "pttid": PTTID_LIST,
-    "rpste": RPSTE_LIST,
-    "rptrl": RPSTE_LIST,
-    "rxled": BACKLIGHT_LIST,
-    "scode": PTTIDCODE_LIST,
-    "scmode": SCMODE_LIST,
-    "tdrab": TDRAB_LIST,
-    "tot": TIMEOUTTIMER_LIST,
-    "tone": TONE_LIST,
-    "txled": BACKLIGHT_LIST,
-    "voice": VOICE_LIST,
-    "vox": OFF1TO10_LIST,
-    "workmode": WORKMODE_LIST,
-    "wtled": BACKLIGHT_LIST,
-    }
-
 GMRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
                462687500, 462712500]
 GMRS_FREQS2 = [467562500, 467587500, 467612500, 467637500, 467662500,

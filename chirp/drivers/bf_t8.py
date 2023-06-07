@@ -114,20 +114,6 @@ WX_LIST = ["CH01 - 162.550",
            "CH11 - 162.000"
            ]
 
-SETTING_LISTS = {
-    "ab": AB_LIST,
-    "abr": ABR_LIST,
-    "area": AREA_LIST,
-    "mdf": MDF_LIST,
-    "ring": RING_LIST,
-    "tot": TOT_LIST,
-    "tot": TOT2_LIST,
-    "voice": VOICE_LIST,
-    "vox": VOX_LIST,
-    "workmode": WORKMODE_LIST,
-    "wx": WX_LIST,
-    }
-
 FRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
               462687500, 462712500]
 FRS_FREQS2 = [467562500, 467587500, 467612500, 467637500, 467662500,

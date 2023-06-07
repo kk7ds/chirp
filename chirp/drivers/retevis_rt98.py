@@ -116,25 +116,6 @@ LIST_RT98U_FREQS = ["Rx(446 - 446.2 MHz) Tx(446 - 446.2 MHz)",
                     "Rx(400 - 470 MHz) Tx(400 - 470 MHz)",
                     "Rx(450 - 470 MHz) Tx(450 - 470 MHz)"]
 
-SETTING_LISTS = {
-        "tuning_step": LIST_STEP,
-        "timeout_timer": LIST_TIMEOUT,
-        "auto_power_off": LIST_APO,
-        "squelch": LIST_SQUELCH,
-        "display_mode": LIST_DISPLAY_MODE,
-        "auto_power_on": LIST_AOP,
-        "ste_type": LIST_STE_TYPE,
-        "ste_frequency": LIST_STE_FREQ,
-        "priority_ch": LIST_PRIORITY_CH,
-        "revert_ch": LIST_REVERT_CH,
-        "settings2.dropout_delay_time": LIST_TIME50,
-        "settings2.dwell_time": LIST_TIME50,
-        "settings2.look_back_time_a": LIST_TIME46,
-        "settings2.look_back_time_b": LIST_TIME46,
-        "settings3.vfomr": LIST_VFOMR,
-        "settings.scan": LIST_SCAN
-}
-
 #  RT98  memory map
 #  section: 1  Channel Bank
 #         description of channel bank (199 channels , range 1-199)

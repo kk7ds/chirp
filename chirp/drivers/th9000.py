@@ -61,17 +61,6 @@ TXPWR_LIST = ["60W", "25W"]  # maximum power for Hi setting
 TBSTFREQ_LIST = ["1750Hz", "2100Hz", "1000Hz", "1450Hz"]
 BEEP_LIST = ["Off", "On"]
 
-SETTING_LISTS = {
-        "auto_power_off": APO_LIST,
-        "bg_color": BGCOLOR_LIST,
-        "bg_brightness": BGBRIGHT_LIST,
-        "squelch": SQUELCH_LIST,
-        "timeout_timer": TIMEOUT_LIST,
-        "choose_tx_power": TXPWR_LIST,
-        "tbst_freq": TBSTFREQ_LIST,
-        "voice_prompt": BEEP_LIST
-}
-
 MEM_FORMAT = """
 #seekto 0x0000;
 struct {

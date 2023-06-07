@@ -74,15 +74,6 @@ VOICE_LIST = ["Off", "Chinese", "English"]
 VOX_LIST = ["OFF"] + ["%s" % x for x in range(1, 17)]
 VOXDELAY_LIST = ["0.3", "0.5", "1.0", "1.5", "2.0", "3.0"]
 
-SETTING_LISTS = {
-    "bcl": BCL_LIST,
-    "tot": TIMEOUTTIMER_LIST,
-    "totalert": TOTALERT_LIST,
-    "voice": VOICE_LIST,
-    "vox": VOX_LIST,
-    "voxdelay": VOXDELAY_LIST,
-    }
-
 
 def _nc630a_enter_programming_mode(radio):
     serial = radio.pipe

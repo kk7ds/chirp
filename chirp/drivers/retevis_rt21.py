@@ -555,35 +555,6 @@ PFKEY_VALUES = [0x0F, 0x04, 0x06, 0x08, 0x09, 0x0A]
 TOPKEY_CHOICES = ["None", "Alarming"]
 TOPKEY_VALUES = [0xFF, 0x0C]
 
-SETTING_LISTS = {
-    "alarm": ALARM_LIST,
-    "bcl": BCL_LIST,
-    "bootsel": BOOTSEL_LIST,
-    "cdcss": CDCSS_LIST,
-    "cdcss": CDCSS2_LIST,
-    "freqhop": FREQHOP_LIST,
-    "function": FUNCTION_LIST,
-    "gain": GAIN_LIST,
-    "hop": HOP_LIST,
-    "key_gt": PFKEY28B_LIST,
-    "key_lt": PFKEY28B_LIST,
-    "pfkey": PFKEY_LIST,
-    "pwrontype": POT_LIST,
-    "save": SAVE_LIST,
-    "savem": SAVEM_LIST,
-    "scramble": SCRAMBLE_LIST,
-    "tail": TAIL_LIST,
-    "tot": TIMEOUTTIMER_LIST,
-    "totalert": TOTALERT_LIST,
-    "voice": VOICE_LIST,
-    "voice": VOICE_LIST2,
-    "voice": VOICE_LIST3,
-    "vox": VOX_LIST,
-    "voxd": VOXD_LIST,
-    "voxl": VOXL_LIST,
-    "warn": WARN_LIST,
-    }
-
 GMRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
                462687500, 462712500]
 GMRS_FREQS2 = [467562500, 467587500, 467612500, 467637500, 467662500,
