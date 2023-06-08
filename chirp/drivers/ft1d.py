@@ -3,7 +3,7 @@
 # Copyright 2023 Declan Rieb <wd5eqy@arrl.net>
 # WiresX partially copied from ft70.py, thus parts are 
 # Copyright 2017 Nicolas Pike <nick@zbm2.com>
-# Specials section follows ft4.py, thus partsare
+# Specials section follows ft4.py, thus parts are
 # Copyright 2019 Dan Clemmensen <DanClemmensen@Gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -1051,7 +1051,10 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return POWER_LEVELS[3 - mem.power]
 
     def _encode_power_level(self, mem):
-        return 3 - POWER_LEVELS.index(mem.power)
+        if mem.power:
+            return 3 - POWER_LEVELS.index(mem.power)
+        else:
+            return 3
 
     def _decode_mode(self, mem):
         mode = MODES[mem.mode]
@@ -1253,13 +1256,24 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return cls._latlong_sanity(sign, result[0], result[1], result[2],
                                    is_lat)
 
+    def _get_aprs_settings(self):
+        menu = RadioSettingGroup("aprs_top", "APRS")
+        menu.append(self._get_aprs_general_settings())
+        menu.append(self._get_aprs_rx_settings())
+        menu.append(self._get_aprs_tx_settings())
+        menu.append(self._get_aprs_smartbeacon())
+        menu.append(self._get_aprs_msgs())
+        menu.append(self._get_aprs_beacons())
+        return menu
+
     def _get_aprs_general_settings(self):
         menu = RadioSettingGroup("aprs_general", "APRS General")
         aprs = self._memobj.aprs
 
         val = RadioSettingValueString(
             0, 6, str(aprs.my_callsign.callsign).rstrip("\xFF"))
-        rs = RadioSetting("aprs.my_callsign.callsign", "My Callsign", val)
+        rs = RadioSetting("aprs.my_callsign.callsign",
+                          "My Callsign (6 chars):", val)
         rs.set_apply_callback(self.apply_callsign, aprs.my_callsign)
         menu.append(rs)
 
@@ -1631,7 +1645,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         status = self._strip_ff_pads(status)
         for index, msg_text in enumerate(status):
             val = RadioSettingValueString(0, 60, msg_text)
-            desc.append("Beacon Status Text %d" % (index + 1))
+            desc.append("Beacon Status Text %d (60 char)" % (index + 1))
             rs = RadioSetting("aprs_beacon_status_txt_%d" % index, desc[-1],
                               val)
             rs.set_apply_callback(self.apply_ff_padded_string,
@@ -1648,7 +1662,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         for index, msg_text in enumerate(message_macro):
             val = RadioSettingValueString(0, 16, msg_text)
             rs = RadioSetting("aprs.message_macro_%d" % index,
-                              "Message Macro %d" % (index + 1), val)
+                              "Message Macro %d (16 chars)" %
+                              (index + 1), val)
             rs.set_apply_callback(self.apply_ff_padded_string,
                                   aprs.message_macro[index])
             menu.append(rs)
@@ -1784,7 +1799,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         menu.append(rs)
 
         for i in range(10):
-            name = "dtmf_%02d" % i
+            name = "dtmf_%02d (16 phonedial chars)" % i
             dtmfsetting = self._memobj.dtmf[i]
             dtmfstr = ""
             for c in dtmfsetting.memory:
@@ -2297,12 +2312,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         obj.name = str(val)
 
     def _get_settings(self):
-        top = RadioSettings(self._get_aprs_general_settings(),
-                            self._get_aprs_rx_settings(),
-                            self._get_aprs_tx_settings(),
-                            self._get_aprs_smartbeacon(),
-                            self._get_aprs_msgs(),
-                            self._get_aprs_beacons(),
+        top = RadioSettings(self._get_aprs_settings(),
                             self._get_dtmf_settings(),
                             self._get_misc_settings(),
                             self._get_scan_settings(),
