@@ -3,6 +3,8 @@
 # Copyright 2023 Declan Rieb <wd5eqy@arrl.net>
 # WiresX partially copied from ft70.py, thus parts are 
 # Copyright 2017 Nicolas Pike <nick@zbm2.com>
+# Specials section follows ft4.py, thus partsare
+# Copyright 2019 Dan Clemmensen <DanClemmensen@Gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -178,8 +180,7 @@ struct {
 """
 
 MEM_FORMAT = """
-#seekto 0x2D4A;
-struct {
+struct memslot {
   u8 unknown0:2,
      mode_alt:1,  // mode for FTM-3200D
      clock_shift:1,
@@ -204,17 +205,29 @@ struct {
      autostep:1,
      automode:1,
      unknown9:3;
-} memory[%d];
+};
 
-#seekto 0x280A;
-struct {
+#seekto 0x2D4A;
+struct  memslot  memory[%d];
+struct  memslot  Skip[99];
+struct  memslot  PMS[100];
+#seekto 0x10ca;
+struct  memslot  Home[11];
+
+struct flagslot{
   u8 nosubvfo:1,
      unknown:3,
      pskip:1,
      skip:1,
      used:1,
      valid:1;
-} flag[%d];
+};
+
+#seekto 0x280A;
+struct  flagslot    flag[%d];
+struct  flagslot    flagskp[99];
+struct  flagslot    flagPMS[100];
+
 """
 
 MEM_APRS_FORMAT = """
@@ -524,7 +537,17 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L3", watts=2.50),
                 chirp_common.PowerLevel("L2", watts=1.00),
                 chirp_common.PowerLevel("L1", watts=0.05)]
-
+SKIPNAMES = ["Skip%i" % i for i in range(901, 1000)]
+PMSNAMES = ["%s%i" % (c, i) for i in range(1, 51) for c in ['L', 'U']]
+HOMENAMES = ["Home%i" % i for i in range(1, 12)]
+ALLNAMES = SKIPNAMES + PMSNAMES + HOMENAMES
+# list of (array name, (list of memories in that array))
+# array names must match names of memories defined for radio
+SPECIALS = [
+    ("Skip", SKIPNAMES),
+    ("PMS", PMSNAMES),
+    ("Home", HOMENAMES)
+]
 
 class FT1Bank(chirp_common.NamedBank):
     """A FT1D bank"""
@@ -681,14 +704,14 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     MODEL = "FT-1D"
     VARIANT = "R"
     FORMATS = [directory.register_format('FT1D ADMS-6', '*.ft1d')]
-
     _model = b"AH44M"
     _memsize = 130507
     _block_lengths = [10, 130497]
     _block_size = 32
-    _mem_params = (0xe4a,          # location of DTMF storage
-                   900,            # size of memories array
+    MAX_MEM_SLOT = 900
+    _mem_params = (900,            # size of memories array
                    900,            # size of flags array
+                   0xe4a,          # location of DTMF storage
                    0xFECA,         # APRS beacon metadata address.
                    60,             # Number of beacons stored.
                    0x1064A,        # APRS beacon content address.
@@ -831,7 +854,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return rp
 
     def process_mmap(self):
-        mem_format = MEM_SETTINGS_FORMAT + MEM_FORMAT + MEM_APRS_FORMAT + \
+        mem_format = MEM_FORMAT + MEM_SETTINGS_FORMAT + MEM_APRS_FORMAT + \
                 MEM_BACKTRACK_FORMAT + MEM_GM_FORMAT + MEM_CHECKSUM_FORMAT
         self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
 
@@ -847,7 +870,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_power_levels = POWER_LEVELS
         rf.valid_characters = "".join(CHARSET)
         rf.valid_name_length = 16
-        rf.memory_bounds = (1, 900)
+        rf.memory_bounds = (1, self.MAX_MEM_SLOT)
         rf.can_odd_split = True
         rf.has_ctone = False
         rf.has_bank_names = True

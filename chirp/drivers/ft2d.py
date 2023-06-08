@@ -26,7 +26,6 @@ from chirp.settings import RadioSettingValueString
 from chirp import util
 
 # Differences from Yaesu FT1D
-#  999 memories, but 901-999 are only for skipping VFO frequencies
 #  Text in memory and memory bank structures is ASCII encoded
 #  Expanded modes
 #  Slightly different clone-mode instructions
@@ -74,9 +73,9 @@ class FT2D(ft1d.FT1Radio):
 
     _model = b"AH60M"  # Get this from chirp .img file after saving once
     _has_vibrate = True
-    _mem_params = (0x94a,          # Location of DTMF storage
-                   999,            # size of memories array
-                   999,            # size of flags array
+    _mem_params = (900,            # size of memories array
+                   900,            # size of flags array
+                   0xe4a,          # location of DTMF storage
                    0xFECA,         # APRS beacon metadata address.
                    60,             # Number of beacons stored.
                    0x1064A,        # APRS beacon content address.
