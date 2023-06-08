@@ -1147,9 +1147,10 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         for index in range(0, 60):
             # There is probably a more pythonesque way to do this
-            if int(aprs_meta[index].sender_callsign[0]) != 255:
+            scs = int(aprs_meta[index].sender_callsign[0])
+            dcs = int(aprs_beacon[index].dst_callsign[0])
+            if scs != 0xFF and scs != 0:
                 callsign = str(aprs_meta[index].sender_callsign).rstrip("\xFF")
-                # LOG.debug("Callsign %s %s" % (callsign, list(callsign)))
                 val = RadioSettingValueString(0, 9, callsign)
                 val.set_mutable(False)
                 rs = RadioSetting(
@@ -1157,21 +1158,21 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                     "SRC Callsign %d" % index, val)
                 menu.append(rs)
 
-            if int(aprs_beacon[index].dst_callsign[0]) != 255:
-                val = RadioSettingValueString(
-                        0, 9,
-                        str(aprs_beacon[index].dst_callsign).rstrip("\xFF"))
-                val.set_mutable(False)
-                rs = RadioSetting(
-                        "aprs_beacon.dst_callsign%d" % index,
-                        "DST Callsign %d" % index, val)
-                menu.append(rs)
+                if dcs != 0xFF and dcs != 0:
+                    val = RadioSettingValueString(
+                            0, 9,
+                            str(aprs_beacon[index].dst_callsign).rstrip("\xFF"))
+                    val.set_mutable(False)
+                    rs = RadioSetting(
+                            "aprs_beacon.dst_callsign%d" % index,
+                            "DST Callsign %d" % index, val)
+                    menu.append(rs)
 
-            if int(aprs_meta[index].sender_callsign[0]) != 255:
                 date = "%02d/%02d/%02d" % (
                     aprs_meta[index].date[0],
                     aprs_meta[index].date[1],
                     aprs_meta[index].date[2])
+                LOG.warn("\nDate=%s", date)
                 val = RadioSettingValueString(0, 8, date)
                 val.set_mutable(False)
                 rs = RadioSetting("aprs_beacon.date%d" % index, "Date", val)
@@ -1185,12 +1186,11 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 rs = RadioSetting("aprs_beacon.time%d" % index, "Time", val)
                 menu.append(rs)
 
-            if int(aprs_beacon[index].dst_callsign[0]) != 255:
+            if dcs != 0xFF and dcs != 0:
                 path = str(aprs_beacon[index].path).replace("\x00", " ")
                 path = ''.join(c for c in path
                                if c in string.printable).strip()
                 path = str(path).replace("\xE0", "*")
-                # LOG.debug("path %s %s" % (path, list(path)))
                 val = RadioSettingValueString(0, 32, path)
                 val.set_mutable(False)
                 rs = RadioSetting(
