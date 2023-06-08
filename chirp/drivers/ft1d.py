@@ -548,6 +548,21 @@ SPECIALS = [
     ("PMS", PMSNAMES),
     ("Home", HOMENAMES)
 ]
+# Band edges are integer Hz.
+VALID_BANDS = [
+    (510000, 1790000),
+    (1800000, 50490000),
+    (50500000, 75990000),
+    (76000000, 107990000),
+    (108000000, 136990000),
+    (145000000, 169920000),
+    (174000000, 221950000),
+    (222000000, 419990000),
+    (420000000, 469990000),
+    (470000000, 773990000),
+    (810010000, 999000000)
+]
+
 
 class FT1Bank(chirp_common.NamedBank):
     """A FT1D bank"""
@@ -1088,6 +1103,21 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         bm = self.get_bank_model()
         for bank in bm.get_memory_mappings(mem):
             bm.remove_memory_from_mapping(mem, bank)
+
+    def enforce_band(self, mem, freq, num, regtype, flag):
+        """
+        vfo and home channels are each restricted to particular bands
+        If the frequency is not inband, use lower bound, and
+        raise an exception to cause UI to pop up an error message
+        """
+        frange = VALID_BANDS[num]
+        if freq >= frange[0] and freq <= frange[1]:
+            mem.freq = freq
+            return freq
+        mem.freq = frange[0]
+        raise errors.RadioError("Frequency out of range"
+                                " for %s register." % regtype)
+        return frange[0]
 
 # Modify radio memory corresponding to CHIRP form at 'mem'
     def set_memory(self, mem):
