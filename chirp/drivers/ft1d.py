@@ -962,12 +962,6 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_memory(self, number):
         _mem, _flag, ndx, num, array = self.slotloc(number)
         mem = chirp_common.Memory()
-#        global setonce
-#        if (setonce):
-#            LOG.debug("\nEnter get (no modifying number or _mem)"
-#                      "\nnumber='%s', ndx=%d, num=%d\n"
-#                      "array='%s\nMem='%s'\n_mem='%s'",
-#                      number, ndx, num, array, mem, _mem)
         mem = chirp_common.Memory()
         mem.number = number
         if array != "memory":
@@ -1005,8 +999,6 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.power = self._decode_power_level(_mem)
             mem.name = self._decode_label(_mem)
             self._get_mem_extra(mem, _mem)
-#        if setonce:
-#            LOG.debug("\nExit get: mem='%s'\n", mem)
         return mem
 
     def _get_mem_extra(self, mem, _mem):
@@ -1097,52 +1089,55 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         for bank in bm.get_memory_mappings(mem):
             bm.remove_memory_from_mapping(mem, bank)
 
+# Modify radio memory corresponding to CHIRP form at 'mem'
     def set_memory(self, mem):
-        _mem = self._memobj.memory[mem.number - 1]
-        flag = self._memobj.flag[mem.number - 1]
-
-        self._debank(mem)
-
-        if not mem.empty and not flag.valid:
-            self._wipe_memory(_mem)
-
-        if mem.empty and flag.valid and not flag.used:
-            flag.valid = False
-            return
-        flag.used = not mem.empty
-        flag.valid = flag.used
-
+        _mem, flag, ndx, num, regtype = self.slotloc(mem.number,
+                                                     mem.extd_number)
+#        LOG.debug("\nEnter set (no modify mem)"
+#                  "\nnumber='%s', ndx=%d, num=%d\n"
+#                  "array='%s'\nMem='%s'\n_mem='%s'",
+#                  mem.number, ndx, num, regtype, mem, _mem)
         if mem.empty:
+            self._wipe_memory(_mem)
+            if flag is not None:
+                flag.used = False
             return
-
-        if mem.freq < 30000000 or \
-                (mem.freq > 88000000 and mem.freq < 108000000) or \
-                mem.freq > 580000000:
-            flag.nosubvfo = True     # Masked from VFO B
-        else:
-            flag.nosubvfo = False    # Available in both VFOs
-
-        _mem.freq = int(mem.freq / 1000)
-        _mem.offset = int(mem.offset / 1000)
+        _mem.power = self._encode_power_level(mem)
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         self._set_tmode(_mem, mem)
-        _mem.duplex = DUPLEX.index(mem.duplex)
-        self._set_mode(_mem, mem)
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
-        if mem.power:
-            _mem.power = self._encode_power_level(mem)
+# duplex "off" is equivalent to "" and may show up in tox test.
+        if mem.duplex == "off":
+            _mem.duplex = DUPLEX.index("")
         else:
-            _mem.power = 0
-
+            _mem.duplex = DUPLEX.index(mem.duplex)
+        self._set_mode(_mem, mem)
+        if flag is not None:
+            if mem.freq < 30000000 or \
+                    (mem.freq > 88000000 and mem.freq < 108000000) or \
+                    mem.freq > 580000000:
+                flag.nosubvfo = True     # Masked from VFO B
+            else:
+                flag.nosubvfo = False    # Available in both VFOs
+        if regtype != "Home":
+            ndx = num - 1
+            flag.used = not mem.empty
+            flag.valid = True
+            flag.skip = mem.skip == "S"
+            flag.pskip = mem.skip == "P"
+        freq = mem.freq
+        if regtype in ["VFO", "Home"]:
+            freq = self.enforce_band(_mem, mem.freq, ndx, regtype, flag)
+        _mem.freq = int(freq / 1000)
+        _mem.offset = int(mem.offset / 1000)
         _mem.label = self._encode_label(mem)
-        charsetbits = self._encode_charsetbits(mem)
-        _mem.charsetbits[0], _mem.charsetbits[1] = charsetbits
-
-        flag.skip = mem.skip == "S"
-        flag.pskip = mem.skip == "P"
-
+        _mem.charsetbits = self._encode_charsetbits(mem)
         self._set_mem_extra(mem, _mem)
+#        LOG.debug("End set_mem\n%s\n%s\n%s\nndx='%s'"
+#                  ", num='%s', type='%s'\n",
+#                  mem, _mem, flag, ndx, num, regtype)
+        return
 
     @classmethod
     def _wipe_memory(cls, mem):
