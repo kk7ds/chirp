@@ -1,7 +1,7 @@
 # Copyright 2010 Dan Smith <dsmith@danplanet.com>
 # Copyright 2014 Angus Ainslie <angus@akkea.ca>
 # Copyright 2023 Declan Rieb <wd5eqy@arrl.net>
-# WiresX partially copied from ft70.py, thus parts are 
+# WiresX partially copied from ft70.py, thus parts are
 # Copyright 2017 Nicolas Pike <nick@zbm2.com>
 # Specials section follows ft4.py, thus parts are
 # Copyright 2019 Dan Clemmensen <DanClemmensen@Gmail.com>
@@ -822,7 +822,6 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     _MYCALL_CHR_SET = list(string.ascii_uppercase) + \
         list(string.digits) + ['-', '/']
 
-
     _OPENING_MESSAGE = ("Off", "DC", "Message", "Normal")
     _SCAN_RESUME = ["%.1fs" % (0.5 * x) for x in range(4, 21)] + \
                    ["Busy", "Hold"]
@@ -1454,9 +1453,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 menu.append(rs)
 
                 if dcs != 0xFF and dcs != 0:
-                    val = RadioSettingValueString(
-                            0, 9,
-                            str(aprs_beacon[index].dst_callsign).rstrip("\xFF"))
+                    val = str(aprs_beacon[index].dst_callsign)
+                    val = RadioSettingValueString(0, 9, val.rstrip("\xFF"))
                     val.set_mutable(False)
                     rs = RadioSetting(
                             "aprs_beacon.dst_callsign%d" % index,
