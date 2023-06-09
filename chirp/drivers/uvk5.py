@@ -47,7 +47,7 @@ DEBUG_SHOW_OBFUSCATED_COMMANDS = False
 # might be useful for someone debugging some obscure memory issue
 DEBUG_SHOW_MEMORY_ACTIONS = False
 
-DRIVER_VERSION = "Quansheng UV-K5 driver v20230608 (c) Jacek Lipkowski SQ5BPF"
+DRIVER_VERSION = "Quansheng UV-K5 driver v20230610 (c) Jacek Lipkowski SQ5BPF"
 PRINT_CONSOLE = False
 
 MEM_FORMAT = """
@@ -227,6 +227,10 @@ RTE_LIST = ["Off", "100ms", "200ms", "300ms", "400ms",
 MEM_SIZE = 0x2000  # size of all memory
 PROG_SIZE = 0x1d00  # size of the memory that we will write
 MEM_BLOCK = 0x80  # largest block of memory that we can reliably write
+
+# fm radio supported frequencies
+FMMIN = 76.0
+FMMAX = 108.0
 
 # bands supported by the UV-K5
 BANDS = {
@@ -965,11 +969,29 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             if element.get_name() == "350en":
                 _mem.int_350en = element.value and 1 or 0
 
+            # fm radio
+            for i in range(1, 21):
+                freqname = "FM_" + str(i)
+                if element.get_name() == freqname:
+                    val = str(element.value).strip()
+                    try:
+                        val2 = int(float(val)*10)
+                    except Exception:
+                        val2 = 0xffff
+
+                    if val2 < FMMIN*10 or val2 > FMMAX*10:
+                        val2 = 0xffff
+#                        raise errors.InvalidValueError(
+#                                "FM radio frequency should be a value "
+#                                "in the range %.1f - %.1f" % (FMMIN , FMMAX))
+                    _mem.fmfreq[i-1] = val2
+
     def get_settings(self):
         _mem = self._memobj
         basic = RadioSettingGroup("basic", "Basic Settings")
         unlock = RadioSettingGroup("unlock", "Unlock Settings")
-        fmradio = RadioSettingGroup("fmradio", "FM Radio (unimplemented yet)")
+        fmradio = RadioSettingGroup("fmradio", "FM Radio")
+
         roinfo = RadioSettingGroup("roinfo", "Driver information")
 
         top = RadioSettings(basic, unlock, fmradio, roinfo)
@@ -1179,6 +1201,18 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("logo2", "Logo string 2 (12 characters)",
                           RadioSettingValueString(0, 12, logo2))
         basic.append(rs)
+
+        for i in range(1, 21):
+            freqname = "FM_"+str(i)
+            fmfreq = _mem.fmfreq[i-1]/10.0
+            if fmfreq < FMMIN or fmfreq > FMMAX:
+                rs = RadioSetting(freqname, freqname,
+                                  RadioSettingValueString(0, 5, ""))
+            else:
+                rs = RadioSetting(freqname, freqname,
+                                  RadioSettingValueString(0, 5, str(fmfreq)))
+
+            fmradio.append(rs)
 
         # unlock settings
 
