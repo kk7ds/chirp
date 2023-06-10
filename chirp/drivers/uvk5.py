@@ -66,7 +66,14 @@ struct {
 } channel[214];
 
 #seekto 0xd60;
-u8 channel_attributes[200];
+struct {
+u8 is_scanlist1:1,
+is_scanlist2:1,
+unknown1:1,
+unknown2:1,
+is_free:1,
+band:3;
+} channel_attributes[200];
 
 #seekto 0xe40;
 ul16 fmfreq[20];
@@ -707,7 +714,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         # We'll also look at the channel attributes if a memory has them
         if number < 200:
             _mem3 = self._memobj.channel_attributes[number]
-            if _mem3 & 0x08 > 0:
+            if _mem3.is_free > 0:
                 is_empty = True
 
         if is_empty:
@@ -1298,7 +1305,12 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             if number < 200:
                 _mem2 = self._memobj.channelname[number]
                 _mem2.set_raw("\xFF" * 16)
-                _mem4.channel_attributes[number] = 0x0f
+                _mem4.channel_attributes[number].is_scanlist1 = 0
+                _mem4.channel_attributes[number].is_scanlist2 = 0
+                _mem4.channel_attributes[number].unknown1 = 0
+                _mem4.channel_attributes[number].unknown2 = 0
+                _mem4.channel_attributes[number].is_free = 1
+                _mem4.channel_attributes[number].band = 0x7
             return mem
 
         # clean the channel memory, restore some bits if it was used before
@@ -1319,7 +1331,13 @@ class UVK5Radio(chirp_common.CloneModeRadio):
                          chr(prev_0d) + chr(prev_0e) + chr(prev_0f))
 
         if number < 200:
-            _mem4.channel_attributes[number] = 0x0f
+            #_mem4.channel_attributes[number] = 0x0f
+            _mem4.channel_attributes[number].is_scanlist1 = 0
+            _mem4.channel_attributes[number].is_scanlist2 = 0
+            _mem4.channel_attributes[number].unknown1 = 0
+            _mem4.channel_attributes[number].unknown2 = 0
+            _mem4.channel_attributes[number].is_free = 1
+            _mem4.channel_attributes[number].band = 0x7
 
         # find tx frequency
         if mem.duplex == '-':
@@ -1370,8 +1388,8 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 
         # set band
         if number < 200:
-            _mem4.channel_attributes[number] = (
-                    _mem4.channel_attributes[number] & ~BANDMASK) | band
+            _mem4.channel_attributes[number].is_free = 0
+            _mem4.channel_attributes[number].band = band
 
         # channels >200 are the 14 VFO chanells and don't have names
         if number < 200:
