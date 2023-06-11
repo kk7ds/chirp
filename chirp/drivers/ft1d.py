@@ -1,5 +1,6 @@
 # Copyright 2010 Dan Smith <dsmith@danplanet.com>
 # Copyright 2014 Angus Ainslie <angus@akkea.ca>
+# Copyright 2023 Declan Rieb <WD5EQY@arrl.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1147,9 +1148,10 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         for index in range(0, 60):
             # There is probably a more pythonesque way to do this
-            if int(aprs_meta[index].sender_callsign[0]) != 255:
+            scl = int(aprs_meta[index].sender_callsign[0])
+            dcl = int(aprs_beacon[index].dst_callsign[0])
+            if scl != 255 and scl != 0:  # ignore if empty send call
                 callsign = str(aprs_meta[index].sender_callsign).rstrip("\xFF")
-                # LOG.debug("Callsign %s %s" % (callsign, list(callsign)))
                 val = RadioSettingValueString(0, 9, callsign)
                 val.set_mutable(False)
                 rs = RadioSetting(
@@ -1157,17 +1159,15 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                     "SRC Callsign %d" % index, val)
                 menu.append(rs)
 
-            if int(aprs_beacon[index].dst_callsign[0]) != 255:
-                val = RadioSettingValueString(
-                        0, 9,
-                        str(aprs_beacon[index].dst_callsign).rstrip("\xFF"))
-                val.set_mutable(False)
-                rs = RadioSetting(
+                if dcl != 255 and dcl != 0:   # ignore if empty dest call
+                    val = str(aprs_beacon[index].dst_callsign)
+                    val = RadioSettingValueString(0, 9, val.rstrip("\xFF"))
+                    val.set_mutable(False)
+                    rs = RadioSetting(
                         "aprs_beacon.dst_callsign%d" % index,
                         "DST Callsign %d" % index, val)
-                menu.append(rs)
+                    menu.append(rs)
 
-            if int(aprs_meta[index].sender_callsign[0]) != 255:
                 date = "%02d/%02d/%02d" % (
                     aprs_meta[index].date[0],
                     aprs_meta[index].date[1],
@@ -1185,17 +1185,16 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 rs = RadioSetting("aprs_beacon.time%d" % index, "Time", val)
                 menu.append(rs)
 
-            if int(aprs_beacon[index].dst_callsign[0]) != 255:
-                path = str(aprs_beacon[index].path).replace("\x00", " ")
-                path = ''.join(c for c in path
-                               if c in string.printable).strip()
-                path = str(path).replace("\xE0", "*")
-                # LOG.debug("path %s %s" % (path, list(path)))
-                val = RadioSettingValueString(0, 32, path)
-                val.set_mutable(False)
-                rs = RadioSetting(
-                    "aprs_beacon.path%d" % index, "Digipath", val)
-                menu.append(rs)
+                if dcl != 255 and dcl != 0:   # ignore if empty dest call
+                    path = str(aprs_beacon[index].path).replace("\x00", " ")
+                    path = ''.join(c for c in path
+                                   if c in string.printable).strip()
+                    path = str(path).replace("\xE0", "*")
+                    val = RadioSettingValueString(0, 32, path)
+                    val.set_mutable(False)
+                    rs = RadioSetting(
+                     "aprs_beacon.path%d" % index, "Digipath", val)
+                    menu.append(rs)
 
                 body = str(aprs_beacon[index].body).rstrip("\xFF")
                 checksum = body[-2:]
