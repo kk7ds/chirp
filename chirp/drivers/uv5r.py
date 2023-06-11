@@ -401,7 +401,6 @@ def _firmware_version_from_image(radio):
         radio.get_mmap().get_byte_compatible(),
         radio._fw_ver_file_start,
         radio._fw_ver_file_stop)
-    LOG.debug("_firmware_version_from_image: " + util.hexprint(version))
     return version
 
 
@@ -1105,7 +1104,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
 
     def _is_orig(self):
         version_tag = _firmware_version_from_image(self)
-        LOG.debug("@_is_orig, version_tag: %s", util.hexprint(version_tag))
         try:
             if b'BFB' in version_tag:
                 idx = version_tag.index(b"BFB") + 3
