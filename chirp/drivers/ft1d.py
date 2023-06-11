@@ -1,6 +1,8 @@
 # Copyright 2010 Dan Smith <dsmith@danplanet.com>
 # Copyright 2014 Angus Ainslie <angus@akkea.ca>
 # Copyright 2023 Declan Rieb <WD5EQY@arrl.net>
+# Sections of digital settings applied from ft70.py, thus
+# Copyright 2017 Nicolas Pike <nick@zbm2.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,30 +46,50 @@ struct {
 
 #seekto 0x04ce;
 struct {
-  u8 lcd_dimmer;
-  u8 dtmf_delay;
+  u8 lcd_dimmer;        // 14 DIMMER
+  u8 dtmf_delay;        // 18 DT DLY
   u8 unknown0[3];
   u8 unknown1:4
      lcd_contrast:4;
-  u8 lamp;
-  u8 unknown2[7];
-  u8 scan_restart;
+  u8 lamp;              // 28 LAMP
+  u8 lock;              // 30 LOCK
+  u8 unknown2;
+  u8 mic_gain;          // 31 MCGAIN
+  u8 unknown2_3;
+  u8 dw_interval;       // 21 DW INT
+  u8 ptt_delay;         // 42 PTT.DLY
+  u8 rx_save;           // 48 RX.SAVE
+  u8 scan_restart;      // 53 SCN.STR
   u8 unknown3;
   u8 scan_resume;
   u8 unknown4[5];
   u8 tot;
   u8 unknown5[3];
-  u8 unknown6:2,
-     scan_lamp:1,
-     unknown7:2,
-     dtmf_speed:1,
+  u8 vfo_mode:1,        // 60 VFO.MOD
+     unknown6:1,
+     scan_lamp:1,       // 51 SCN.LMP
+     unknown7:1,
+     ars:1,             // 45 RPT.ARS
+     dtmf_speed:1,      // 20 DT SPD
      unknown8:1,
      dtmf_mode:1;
   u8 busy_led:1,
-     unknown9:7;
-  u8 unknown10[2];
+     unknown9:2,
+     bclo:1,            // 03 BCLO
+     beep_edge:1        // 06 BEP.EDG
+     unknown9_1:3;
+  u8 unknown10:5,
+     password:1,
+     home_rev:1,        // 26 HOME/REV
+     moni:1;            // 32 MON/T-Call
+  u8 gm_interval:4,     // 25 GM INT
+     unknown11:4;
   u8 vol_mode:1,
-     unknown11:7;
+     unknown11_1:7;
+  u8 unknown12:4,
+     home_vfo:1,        // 27 HOME->VFO
+     unknown12_1:2,
+     dw_rt:1;           // 23 DW RVT;
 } scan_settings;
 
 #seekto 0x064a;
@@ -384,6 +406,99 @@ struct {
 } backtrack[3];
 
 """
+
+MEM_GM_FORMAT = """
+#seekto 0x04ba;
+struct {
+    u8 unknown:3,
+        scan_resume:5;          // 52 SCN.RSM
+    u8 unknown1:3,
+       dw_resume_interval:5;       // 22 DW RSM
+    u8 unknown2;
+    u8 unknown3:3,
+        apo:5;                  // 02 APO
+    u8 unknown4:6,
+        gm_ring:2;              // 24 GM RNG
+    u8 temp_cf;               // Placeholder as not found
+    u8 unknown5;
+    } first_settings;
+
+#seekto 0x04ed;
+struct {
+    u8 unknown1:1,
+       unknown2:1,
+       unknown3:1,
+       unknown4:1,
+       unknown5:1,
+       unknown6:1,
+       unknown7:1,
+       unknown8:1;
+     } test_bit_field;
+
+#seekto 0x04c0;
+struct {
+    u8 unknown1:5,
+        beep_level:3;           // 05 BEP.LVL
+    u8 unknown2:6,
+        beep_select:2;          // 04 BEEP
+    } beep_settings;
+
+#seekto 0xCF30;
+struct {
+    u8 unknown0;
+    u8 unknown1;
+    u8 unknown2;
+    u8 unknown3;
+    u8 unknown4;
+    u8 unknown5;
+    u8 unknown6;
+    u8 digital_popup;              // 15 DIG.POP
+    } digital_settings_more;
+
+#seekto 0xCF7C;
+struct {
+    u8 unknown0:6,
+       ams_tx_mode:2;              // AMS TX Mode
+    u8 unknown1;
+    u8 unknown2:7,
+       standby_beep:1;             // 07 BEP.STB
+    u8 unknown3;
+    u8 unknown4:6,
+       gm_ring:2;                  // 24 GM RNG
+    u8 unknown5;
+    u8 rx_dg_id;                   // RX DG-ID
+    u8 tx_dg_id;                   // TX DG-ID
+    u8 unknown6:7,
+       vw_mode:1;                  // 16 DIG VW
+    u8 unknown7;
+    } digital_settings;
+
+#seekto 0x1d6d3;
+struct {
+    char message[32];
+    } GM[10];
+
+#seekto 0x0ced0;
+struct {
+    char callsign[10];              // 63 MYCALL
+    u16 charset;                    // character set ID
+    } my_call;
+
+#seekto 0x1ddca;
+struct {
+    struct {
+        char name[16];
+    } Category[5];
+    struct {
+        struct {
+            char ID[5];             // ASCII numerals
+            char name[16];          // blank-fill
+            u8 unknown[3];
+        } Rooms[20];
+    } RoomsPerCategory[5];
+} WiresX_settings;
+"""
+
 MEM_CHECKSUM_FORMAT = """
 #seekto 0x1FDC9;
 u8 checksum;
@@ -652,6 +767,91 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     _NS_HEMI = ("N", "S")
     _WE_HEMI = ("W", "E")
     _APRS_HIGH_SPEED_MAX = 70
+    _MIC_GAIN = ("Level %d" % i for i in range(1, 10))
+    _AMS_TX_MODE = ("TX Auto", "TX DIGITAL", "TX FM")
+    _VW_MODE = ("On", "Off")
+    _DIG_POP_UP = ("Off", "2sec", "4sec", "6sec", "8sec", "10sec",
+                   "20sec", "30sec", "60sec", "Continuous")
+    _STANDBY_BEEP = ("On", "Off")
+    _ON_OFF = ("On", "Off")
+    _TEMP_CF = ("Centigrade", "Fahrenheit")
+    _APO_SELECT = ("Off", "0.5H", "1.0H", "1.5H", "2.0H", "2.5H",
+                   "3.0H", "3.5H", "4.0H", "4.5H", "5.0H",
+                   "5.5H", "6.0H", "6.5H", "7.0H", "7.5H", "8.0H",
+                   "8.5H", "9.0H", "9.5H", "10.0H", "10.5H",
+                   "11.0H", "11.5H", "12.0H")
+    _MONI_TCALL = ("Monitor", "Tone-CALL")
+    _HOME_REV = ("Home", "Reverse")
+    _LOCK = ("KEY", "DIAL", "Key+Dial", "PTT", "Key+PTT", "Dial+PTT", "ALL")
+    _PTT_DELAY = ("Off", "20 MS", "50 MS", "100 MS", "200 MS")
+    _BEEP_LEVEL = ("Level %i" % i for i in range(1, 7))
+    _SET_MODE = ("Level %i" % i for i in range(1, 8))
+    _RX_SAVE = ("OFF", "0.2s", ".3s", ".4s", ".5s", ".6s",
+                ".7s", ".8s", ".9s", "1.0s", "1.5s",
+                "2.0s", "2.5s", "3.0s", "3.5s", "4.0s", "4.5s",
+                "5.0s", "5.5s", "6.0s", "6.5s", "7.0s",
+                "7.5s", "8.0s", "8.5s", "9.0s", "10.0s", "15s",
+                "20s", "25s", "30s", "35s", "40s", "45s", "50s", "55s",
+                "60s")
+    _VFO_MODE = ("ALL", "BAND")
+    _VFO_SCAN_MODE = ("BAND", "ALL")
+    _MEMORY_SCAN_MODE = ("BAND", "ALL")
+
+    _SG_RE = re.compile(r"(?P<sign>[-+NESW]?)(?P<d>[\d]+)[\s\.,]*"
+                        "(?P<m>[\d]*)[\s\']*(?P<s>[\d]*)")
+
+    _RX_BAUD = ("off", "1200 baud", "9600 baud")
+    _TX_DELAY = ("100ms", "150ms", "200ms", "250ms", "300ms",
+                 "400ms", "500ms", "750ms", "1000ms")
+    _WIND_UNITS = ("m/s", "mph")
+    _RAIN_UNITS = ("mm", "inch")
+    _TEMP_UNITS = ("C", "F")
+    _ALT_UNITS = ("m", "ft")
+    _DIST_UNITS = ("km", "mile")
+    _POS_UNITS = ("dd.mmmm'", "dd mm'ss\"")
+    _SPEED_UNITS = ("km/h", "knot", "mph")
+    _TIME_SOURCE = ("manual", "GPS")
+    _TZ = ("-13:00", "-13:30", "-12:00", "-12:30", "-11:00", "-11:30",
+           "-10:00", "-10:30", "-09:00", "-09:30", "-08:00", "-08:30",
+           "-07:00", "-07:30", "-06:00", "-06:30", "-05:00", "-05:30",
+           "-04:00", "-04:30", "-03:00", "-03:30", "-02:00", "-02:30",
+           "-01:00", "-01:30", "-00:00", "-00:30", "+01:00", "+01:30",
+           "+02:00", "+02:30", "+03:00", "+03:30", "+04:00", "+04:30",
+           "+05:00", "+05:30", "+06:00", "+06:30", "+07:00", "+07:30",
+           "+08:00", "+08:30", "+09:00", "+09:30", "+10:00", "+10:30",
+           "+11:00", "+11:30")
+    _BEACON_TYPE = ("Off", "Interval", "SmartBeaconing")
+    _SMARTBEACON_PROFILE = ("Off", "Type 1", "Type 2", "Type 3")
+    _BEACON_INT = ("30s", "1m", "2m", "3m", "5m", "10m", "15m",
+                   "20m", "30m", "60m")
+    _DIGI_PATHS = ("OFF", "WIDE1-1", "WIDE1-1, WIDE2-1", "Digi Path 4",
+                   "Digi Path 5", "Digi Path 6", "Digi Path 7", "Digi Path 8")
+    _MSG_GROUP_NAMES = ("Message Group 1", "Message Group 2",
+                        "Message Group 3", "Message Group 4",
+                        "Message Group 5", "Message Group 6",
+                        "Message Group 7", "Message Group 8")
+    _POSITIONS = ("GPS", "Manual Latitude/Longitude",
+                  "Manual Latitude/Longitude", "P1", "P2", "P3", "P4",
+                  "P5", "P6", "P7", "P8", "P9")
+    _FLASH = ("OFF", "2 seconds", "4 seconds", "6 seconds", "8 seconds",
+              "10 seconds", "20 seconds", "30 seconds", "60 seconds",
+              "CONTINUOUS", "every 2 seconds", "every 3 seconds",
+              "every 4 seconds", "every 5 seconds", "every 6 seconds",
+              "every 7 seconds", "every 8 seconds", "every 9 seconds",
+              "every 10 seconds", "every 20 seconds", "every 30 seconds",
+              "every 40 seconds", "every 50 seconds", "every minute",
+              "every 2 minutes", "every 3 minutes", "every 4 minutes",
+              "every 5 minutes", "every 6 minutes", "every 7 minutes",
+              "every 8 minutes", "every 9 minutes", "every 10 minutes")
+    _BEEP_SELECT = ("Off", "Key+Scan", "Key")
+    _SQUELCH = ["%d" % x for x in range(0, 16)]
+    _VOLUME = ["%d" % x for x in range(0, 33)]
+    _DG_ID = ["%d" % x for x in range(0, 100)]
+    _GM_RING = ("OFF", "IN RING", "AlWAYS")
+    _GM_INTERVAL = ("LONG", "NORMAL", "OFF")
+
+    _MYCALL_CHR_SET = list(string.ascii_uppercase) + \
+        list(string.digits) + ['-', '/']
 
     @classmethod
     def match_model(cls, filedata, filename):
@@ -680,7 +880,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def process_mmap(self):
         mem_format = MEM_SETTINGS_FORMAT + MEM_FORMAT + MEM_APRS_FORMAT + \
-                MEM_BACKTRACK_FORMAT + MEM_CHECKSUM_FORMAT
+                MEM_BACKTRACK_FORMAT + MEM_GM_FORMAT + MEM_CHECKSUM_FORMAT
         self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
 
     def get_features(self):
@@ -972,6 +1172,16 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return cls._latlong_sanity(sign, result[0], result[1], result[2],
                                    is_lat)
+
+    def _get_aprs_settings(self):
+        menu = RadioSettingGroup("aprs_top", "APRS")
+        menu.append(self._get_aprs_general_settings())
+        menu.append(self._get_aprs_rx_settings())
+        menu.append(self._get_aprs_tx_settings())
+        menu.append(self._get_aprs_smartbeacon())
+        menu.append(self._get_aprs_msgs())
+        menu.append(self._get_aprs_beacons())
+        return menu
 
     def _get_aprs_general_settings(self):
         menu = RadioSettingGroup("aprs_general", "APRS General")
@@ -1477,6 +1687,169 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return menu
 
+    def _get_digital_settings(self):
+        topmenu = RadioSettingGroup("digital_settings", "Digital")
+        menu = RadioSettingGroup("settings", "Digital Modes")
+        topmenu.append(menu)
+        GMmenu = RadioSettingGroup("first_settings", "Group Monitor(GM)")
+        topmenu.append(GMmenu)
+        WXmenu = RadioSettingGroup("WiresX_settings", "Wires-X")
+        topmenu.append(WXmenu)
+
+        # MYCALL
+        mycall = self._memobj.my_call
+        mycallstr = str(mycall.callsign).rstrip("\xff").rstrip()
+        mycalle = RadioSettingValueString(0, 10, mycallstr, False,
+                                          charset=self._MYCALL_CHR_SET)
+        rs = RadioSetting('mycall.callsign',
+                          'MYCALL (10 uppercase chars)', mycalle)
+        rs.set_apply_callback(self.apply_mycall, mycall)
+        menu.append(rs)
+
+        # Short Press AMS button AMS TX Mode
+        digital_settings = self._memobj.digital_settings
+        val = RadioSettingValueList(
+            self._AMS_TX_MODE,
+            self._AMS_TX_MODE[digital_settings.ams_tx_mode])
+        rs = RadioSetting("digital_settings.ams_tx_mode",
+                          "AMS TX Mode", val)
+        menu.append(rs)
+
+        # 16 DIG VW  Turn the VW mode selection ON or OFF.
+        val = RadioSettingValueList(
+            self._VW_MODE,
+            self._VW_MODE[digital_settings.vw_mode])
+        rs = RadioSetting("digital_settings.vw_mode", "VW Mode", val)
+        menu.append(rs)
+
+        # TX DG-ID Long Press Mode Key, Dial
+        val = RadioSettingValueList(
+            self._DG_ID,
+            self._DG_ID[digital_settings.tx_dg_id])
+        rs = RadioSetting("digital_settings.tx_dg_id",
+                          "TX DG-ID", val)
+        menu.append(rs)
+
+        # RX DG-ID Long Press Mode Key, Mode Key to select, Dial
+        val = RadioSettingValueList(
+            self._DG_ID,
+            self._DG_ID[digital_settings.rx_dg_id])
+        rs = RadioSetting("digital_settings.rx_dg_id",
+                          "RX DG-ID", val)
+        menu.append(rs)
+
+        # 15 DIG.POP    Call sign display pop up time
+        digital_settings_more = self._memobj.digital_settings_more
+
+        val = RadioSettingValueList(
+            self._DIG_POP_UP,
+            self._DIG_POP_UP[
+                0 if digital_settings_more.digital_popup == 0
+                else digital_settings_more.digital_popup - 9])
+
+        rs = RadioSetting("digital_settings_more.digital_popup",
+                          "Digital Popup", val)
+        rs.set_apply_callback(self.apply_digital_popup,
+                              digital_settings_more)
+        menu.append(rs)
+
+        # 07  BEP.STB    Standby Beep in the digital C4FM mode. On/Off
+        val = RadioSettingValueList(
+            self._STANDBY_BEEP,
+            self._STANDBY_BEEP[digital_settings.standby_beep])
+        rs = RadioSetting("digital_settings.standby_beep",
+                          "Standby Beep", val)
+        menu.append(rs)
+
+        # GM settings
+        # 24 GM RNG Select the beep option
+        first_settings = self._memobj.first_settings
+        val = RadioSettingValueList(
+            self._GM_RING,
+            self._GM_RING[first_settings.gm_ring])
+        rs = RadioSetting("first_settings.gm_ring", "GM Ring", val)
+        GMmenu.append(rs)
+
+        # 25 GM INT transmission interval of digital GM info
+        scan_settings = self._memobj.scan_settings
+        val = RadioSettingValueList(
+            self._GM_INTERVAL,
+            self._GM_INTERVAL[scan_settings.gm_interval])
+        rs = RadioSetting("scan_settings.gm_interval",
+                          "GM Interval", val)
+        GMmenu.append(rs)
+
+        m = self._memobj.GM
+        for i in range(0, 10):
+            cname = "GM[%d].message" % i
+            msg = str(m[i].message).rstrip("\xff)")
+            val = RadioSettingValueString(0, 32, msg)
+            rs = RadioSetting(cname, "GM Message%2d" % (i + 1),
+                              val)
+            GMmenu.append(rs)
+
+        # WiresX settings
+        wxc = self._memobj.WiresX_settings
+        for i in range(0, 5):
+            cname = "WiresX_settings.Category[%d].name" % (i + 1)
+            c = ''
+            for j in range(0, 16):
+                s = wxc.Category[i].name[j]
+                if int(s) != 0xff:
+                    c = c + str(s)
+            val = RadioSettingValueString(0, 16, c)
+            rs = RadioSetting(cname, "Category %d" % (i+1), val)
+            rs.set_apply_callback(self.apply_WiresX_category,
+                                  wxc.Category[i].name)
+            WXmenu.append(rs)
+
+            r = wxc.RoomsPerCategory[i]
+            rn = False
+            for j in range(0, 20):
+                idn = "0"
+                if int(r.Rooms[j].ID[1]) != 0xff:
+                    idn = r.Rooms[j].ID
+                    rn = False
+                elif rn:
+                    break
+                elif j > 0:
+                    rn = True
+                val = RadioSettingValueInteger(0, 99999, int(str(idn)))
+                vname = "WiresX_settings.RoomsperCategory%s" \
+                        "Rooms[%d].ID" % (i, j)
+                rs = RadioSetting(vname, "   Room ID%2s (5 numerals)" %
+                                  (j+1), val)
+                rs.set_apply_callback(self.apply_WiresX_roomid,
+                                      r.Rooms[j])
+                WXmenu.append(rs)
+                cn = ''
+                for l in range(0, 16):
+                    s = r.Rooms[j].name[l]
+                    if int(s) != 0xff:
+                        cn = cn + str(s)
+                val = RadioSettingValueString(0, 16, str(cn))
+                cname = "WiresX_settings.RoomsperCategory%s" \
+                        "Rooms[%d].name" % (i, j)
+                rs = RadioSetting(cname, "   Room Name%2s (16 chars)" %
+                                  (j+1), val)
+                rs.set_apply_callback(self.apply_WiresX_roomname,
+                                      r.Rooms[j])
+                WXmenu.append(rs)
+            pass
+        return topmenu
+
+    def apply_WiresX_category(cls, setting, obj):
+        val = setting.value.get_value()
+        setattr(obj, "name", val)
+
+    def apply_WiresX_roomid(cls, setting, obj):
+        val = setting.value.get_value()
+        obj.ID = str(val)
+
+    def apply_WiresX_roomname(cls, setting, obj):
+        val = setting.value.get_value()
+        obj.name = str(val)
+
     def _get_dtmf_settings(self):
         menu = RadioSettingGroup("dtmf_settings", "DTMF")
         dtmf = self._memobj.scan_settings
@@ -1826,12 +2199,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return menu
 
     def _get_settings(self):
-        top = RadioSettings(self._get_aprs_general_settings(),
-                            self._get_aprs_rx_settings(),
-                            self._get_aprs_tx_settings(),
-                            self._get_aprs_smartbeacon(),
-                            self._get_aprs_msgs(),
-                            self._get_aprs_beacons(),
+        top = RadioSettings(self._get_aprs_settings(),
+                            self._get_digital_settings(),
                             self._get_dtmf_settings(),
                             self._get_misc_settings(),
                             self._get_scan_settings(),
@@ -1883,6 +2252,22 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         else:
             setattr(obj, "tx_interval_beacon", 0)
             setattr(obj, "tx_smartbeacon", 0)
+
+    # digital settings callback routines
+    def apply_digital_popup(cls, setting, obj):
+        rawval = setting.value.get_value()
+        val = 0 if cls._DIG_POP_UP.index(rawval) == 0 \
+            else cls._DIG_POP_UP.index(rawval) + 9
+        obj.digital_popup = val
+
+    def apply_mycall(cls, setting, obj):
+        cs = setting.value.get_value()
+        if cs[0] in ('-', '/'):
+            raise InvalidValueError("First character of"
+                                    " call sign can't be - or /:  {0:s}"
+                                    .format(cs))
+        else:
+            obj.callsign = cls._add_ff_pad(cs.rstrip(), 10)
 
     @classmethod
     def apply_callsign(cls, setting, obj, default_ssid=None):
