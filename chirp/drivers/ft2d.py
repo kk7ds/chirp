@@ -26,7 +26,6 @@ from chirp.settings import RadioSettingValueString
 from chirp import util
 
 # Differences from Yaesu FT1D
-#  999 memories, but 901-999 are only for skipping VFO frequencies
 #  Text in memory and memory bank structures is ASCII encoded
 #  Expanded modes
 #  Slightly different clone-mode instructions
@@ -74,14 +73,12 @@ class FT2D(ft1d.FT1Radio):
 
     _model = b"AH60M"  # Get this from chirp .img file after saving once
     _has_vibrate = True
-    _mem_params = (0x94a,          # Location of DTMF storage
-                   999,            # size of memories array
-                   999,            # size of flags array
-                   0xFECA,         # APRS beacon metadata address.
-                   60,             # Number of beacons stored.
-                   0x1064A,        # APRS beacon content address.
-                   134,            # Length of beacon data stored.
-                   60)             # Number of beacons stored.
+    MAX_MEM_SLOTS = 900
+    _mem_params = {
+         "memnum": 900,            # size of memories array
+         "flgnum": 900,            # size of flags array
+         "dtmadd": 0x94A,          # address of DTMF strings
+         }
     _adms_ext = '.ft2d'
     _APRS_HIGH_SPEED_MAX = 90
     FORMATS = [directory.register_format('FT2D ADMS-8', '*.ft2d')]
@@ -109,7 +106,7 @@ class FT2D(ft1d.FT1Radio):
     def get_features(self):  # AFAICT only TMODES & memory bounds are different
         rf = super(FT2D, self).get_features()
         rf.valid_tmodes = list(TMODES)
-        rf.memory_bounds = (1, 999)
+        rf.memory_bounds = (1, self.MAX_MEM_SLOTS)
         return rf
 
     def get_bank_model(self):   # here only to launch the bank model

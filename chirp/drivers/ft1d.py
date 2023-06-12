@@ -146,7 +146,7 @@ struct {
   } message;
 } opening_message;
 
-#seekto 0x%04X; // FT-1D:0e4a, FT2D:094a
+#seekto 0x%(dtmadd)04X; // FT-1D:0e4a, FT2D:094a
 struct {
   u8 memory[16];
 } dtmf[10];
@@ -178,8 +178,7 @@ struct {
 """
 
 MEM_FORMAT = """
-#seekto 0x2D4A;
-struct {
+struct memslot {
   u8 unknown0:2,
      mode_alt:1,  // mode for FTM-3200D
      clock_shift:1,
@@ -204,17 +203,20 @@ struct {
      autostep:1,
      automode:1,
      unknown9:3;
-} memory[%d];
+};
+#seekto 0x2D4A;
+struct memslot memory[%(memnum)d];
 
-#seekto 0x280A;
-struct {
+struct flagslot {
   u8 nosubvfo:1,
      unknown:3,
      pskip:1,
      skip:1,
      used:1,
      valid:1;
-} flag[%d];
+};
+#seekto 0x280A;
+struct flagslot flag[%(memnum)d];
 """
 
 MEM_APRS_FORMAT = """
@@ -341,7 +343,7 @@ struct {
   char padded_string[60];
 } aprs_beacon_status_txt[5];
 
-#seekto 0x%04X;
+#seekto 0xFECA;
 struct {
   bbcd date[3];
   bbcd time[2];
@@ -361,16 +363,16 @@ struct {
   u16 unknown8;
   u16 unknown9;
   u16 unknown10;
-} aprs_beacon_meta[%d];
+} aprs_beacon_meta[60];
 
-#seekto 0x%04X;
+#seekto 0x1064A;
 struct {
   char dst_callsign[9];
   char path[30];
   u16 flags;
   u8 separator;
-  char body[%d];
-} aprs_beacon_pkt[%d];
+  char body[134];
+} aprs_beacon_pkt[60];
 
 #seekto 0x137c4;
 struct {
@@ -686,14 +688,12 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     _memsize = 130507
     _block_lengths = [10, 130497]
     _block_size = 32
-    _mem_params = (0xe4a,          # location of DTMF storage
-                   900,            # size of memories array
-                   900,            # size of flags array
-                   0xFECA,         # APRS beacon metadata address.
-                   60,             # Number of beacons stored.
-                   0x1064A,        # APRS beacon content address.
-                   134,            # Length of beacon data stored.
-                   60)             # Number of beacons stored.
+    MAX_MEM_SLOT = 900
+    _mem_params = {
+         "memnum": 900,            # size of memories array
+         "flgnum": 900,            # size of flags array
+         "dtmadd": 0xe4a,          # location of DTMF storage
+    }
     _has_vibrate = False
     _has_af_dual = True
     _adms_ext = '.ft1d'
