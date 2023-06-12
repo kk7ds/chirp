@@ -73,8 +73,9 @@ class FTM3200Radio(ft1d.FT1Radio):
     _has_vibrate = False
     _has_af_dual = False
 
-    _mem_params = (199,            # size of memories array
-                   199)            # size of flags array
+    _mem_params = {
+         "memnum": 199,            # size of memories array
+         "flgnum": 199}            # size of flags array
 
     @classmethod
     def get_prompts(cls):
