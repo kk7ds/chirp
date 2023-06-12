@@ -454,6 +454,10 @@ class ChirpMain(wx.Frame):
         return stock
 
     def make_menubar(self):
+        self.editor_menu_items = {}
+        memedit_items = memedit.ChirpMemEdit.get_menu_items()
+        self.editor_menu_items.update(memedit_items)
+
         file_menu = wx.Menu()
 
         new_item = file_menu.Append(wx.ID_NEW)
@@ -605,6 +609,11 @@ class ChirpMain(wx.Frame):
 
         view_menu = wx.Menu()
 
+        for item in memedit_items[common.EditorMenuItem.MENU_VIEW]:
+            view_menu.Append(item)
+            self.Bind(wx.EVT_MENU, self.do_editor_callback, item)
+            item.add_menu_callback()
+
         self._fixed_item = wx.NewId()
         fixed_item = wx.MenuItem(view_menu, self._fixed_item,
                                  _('Use fixed-width font'),
@@ -620,14 +629,6 @@ class ChirpMain(wx.Frame):
         view_menu.Append(large_item)
         self.Bind(wx.EVT_MENU, self._menu_large_font, large_item)
         large_item.Check(CONF.get_bool('font_large', 'state', False))
-
-        self._expand_item = wx.NewId()
-        expand_item = wx.MenuItem(view_menu, self._expand_item,
-                                  _('Show extra fields'),
-                                  kind=wx.ITEM_CHECK)
-        view_menu.Append(expand_item)
-        self.Bind(wx.EVT_MENU, self._menu_expand_extra, expand_item)
-        expand_item.Check(CONF.get_bool('expand_extra', 'state'))
 
         radio_menu = wx.Menu()
 
@@ -771,6 +772,11 @@ class ChirpMain(wx.Frame):
         menu_bar.Append(help_menu, wx.GetStockLabel(wx.ID_HELP))
 
         return menu_bar
+
+    def do_editor_callback(self, event):
+        menu = event.GetEventObject()
+        item = menu.FindItemById(event.GetId())
+        item.editor_callback(self.current_editorset.current_editor, event)
 
     def _menu_print(self, event):
         p = printing.MemoryPrinter(
@@ -930,7 +936,6 @@ class ChirpMain(wx.Frame):
             (self._reload_driver_item, can_saveas),
             (self._reload_both_item, can_saveas),
             (self._interact_driver_item, can_saveas),
-            (self._expand_item, is_memedit),
         ]
         for ident, enabled in items:
             if ident is None:
@@ -940,6 +945,14 @@ class ChirpMain(wx.Frame):
                 # Some items may not be present on all systems (i.e.
                 # print preview on Linux)
                 menuitem.Enable(enabled)
+
+        for menu, items in self.editor_menu_items.items():
+            for item in items:
+                editor_match = (
+                    eset and
+                    isinstance(eset.current_editor, item.editor_class) or
+                    False)
+                item.Enable(editor_match)
 
     def _window_close(self, event):
         for i in range(self._editors.GetPageCount()):
@@ -1209,11 +1222,6 @@ class ChirpMain(wx.Frame):
         menuitem = event.GetEventObject().FindItemById(event.GetId())
         CONF.set_bool('font_large', menuitem.IsChecked(), 'state')
         self._update_font()
-
-    def _menu_expand_extra(self, event):
-        menuitem = event.GetEventObject().FindItemById(event.GetId())
-        CONF.set_bool('expand_extra', menuitem.IsChecked(), 'state')
-        self.current_editorset.current_editor.refresh()
 
     def _menu_goto(self, event):
         eset = self.current_editorset
