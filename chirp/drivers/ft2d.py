@@ -112,27 +112,12 @@ class FT2D(ft1d.FT1Radio):
     def get_bank_model(self):   # here only to launch the bank model
         return FT2BankModel(self)
 
-    def get_memory(self, number):
-        mem = super(FT2D, self).get_memory(number)
-        flag = self._memobj.flag[number - 1]
-        if number >= 901 and number <= 999:  # for FT2D; enforces skip
-            mem.skip = "S"
-            flag.skip = True
-        return mem
-
     def _decode_label(self, mem):
         return str(mem.label).rstrip("\xFF")
 
     def _encode_label(self, mem):
         label = mem.name.rstrip().encode('ascii', 'ignore')
         return self._add_ff_pad(label, 16)
-
-    def set_memory(self, mem):
-        flag = self._memobj.flag[mem.number - 1]
-        if mem.number >= 901 and mem.number <= 999:  # for FT2D; enforces skip
-            flag.skip = True
-            mem.skip = "S"
-        super(FT2D, self).set_memory(mem)
 
     def _decode_opening_message(self, opening_message):
         msg = ""

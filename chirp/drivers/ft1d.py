@@ -206,6 +206,10 @@ struct memslot {
 };
 #seekto 0x2D4A;
 struct memslot memory[%(memnum)d];
+struct memslot Skip[99];
+struct memslot PMS[100];
+#seekto 0x10ca;
+struct memslot Home[11];
 
 struct flagslot {
   u8 nosubvfo:1,
@@ -217,6 +221,8 @@ struct flagslot {
 };
 #seekto 0x280A;
 struct flagslot flag[%(memnum)d];
+struct flagslot flagskp[99];
+struct flagslot flagPMS[100];
 """
 
 MEM_APRS_FORMAT = """
@@ -526,6 +532,31 @@ POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L3", watts=2.50),
                 chirp_common.PowerLevel("L2", watts=1.00),
                 chirp_common.PowerLevel("L1", watts=0.05)]
+SKIPNAMES = ["Skip%i" % i for i in range(901, 1000)]
+PMSNAMES = ["%s%i" % (c, i) for i in range(1, 51) for c in ['L', 'U']]
+HOMENAMES = ["Home%i" % i for i in range(1, 12)]
+ALLNAMES = SKIPNAMES + PMSNAMES + HOMENAMES
+# list of (array name, (list of memories in that array))
+# array names must match names of memories defined for radio
+SPECIALS = [
+    ("Skip", SKIPNAMES),
+    ("PMS", PMSNAMES),
+    ("Home", HOMENAMES)
+]
+# Band edges are integer Hz.
+VALID_BANDS = [
+    (510000, 1790000),
+    (1800000, 50490000),
+    (50500000, 75990000),
+    (76000000, 107990000),
+    (108000000, 136990000),
+    (145000000, 169920000),
+    (174000000, 221950000),
+    (222000000, 419990000),
+    (420000000, 469990000),
+    (470000000, 773990000),
+    (810010000, 999000000)
+]
 
 
 class FT1Bank(chirp_common.NamedBank):
@@ -683,7 +714,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     MODEL = "FT-1D"
     VARIANT = "R"
     FORMATS = [directory.register_format('FT1D ADMS-6', '*.ft1d')]
-
+    class_specials = SPECIALS
     _model = b"AH44M"
     _memsize = 130507
     _block_lengths = [10, 130497]
@@ -900,6 +931,10 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_ctone = False
         rf.has_bank_names = True
         rf.has_settings = True
+        specials = [name for s in SPECIALS for name in s[1]]
+        rf.valid_special_chans = specials
+        return rf
+
         return rf
 
     def get_raw_memory(self, number):
@@ -924,34 +959,105 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             result.append(str(msg_text).rstrip("\xFF"))
         return result
 
-    def get_memory(self, number):
-        flag = self._memobj.flag[number - 1]
-        _mem = self._memobj.memory[number - 1]
+#   Called with a "memref" index to CHIRP memory (int or str)
+#   and optionally with a "extref" extended name.
+#   Find and return the corresponding memobj
+#   Returns:
+#       Corresponding radio memory object
+#       Corresponding flag structure (if any)
+#       index into overall memory (int)
+#       index into the specific memory object structure (int)
+#       an indicator of the object structure (str)
+    def slotloc(self, memref, extref=None):
+        array = None
+        num = memref
+        sname = memref
+        mstr = isinstance(memref, str)
+        specials = ALLNAMES
+        extr = False
+        if extref is not None:
+            extr = extref in specials
+        if mstr or extr:        # named special?
+            num = self.MAX_MEM_SLOT + 1
+            nnn = memref if mstr else extref
+            for x in self.class_specials:
+                try:
+                    ndx = x[1].index(nnn)
+                    array = x[0]
+                    break
+                except Exception:
+                    num += len(x[1])
+            if array is None:
+                LOG.debug("unknown Special %s", memref)
+                raise
+            num += ndx
+        elif memref > self.MAX_MEM_SLOT:         # numbered special
+            ndx = memref - (self.MAX_MEM_SLOT + 1)
+            for x in self.class_specials:
+                if ndx < len(x[1]):
+                    array = x[0]
+                    sname = x[1][ndx]
+                    break
+                ndx -= len(x[1])
+            if array is None:
+                LOG.debug("memref number %d out of range", memref)
+                raise IndexError("Unknown memref %s", memref)
+        else:
+            array = "memory"
+            ndx = memref - 1
+            _flag = self._memobj.flag[ndx]
+        if array == "Skip":
+            _flag = self._memobj.flagskp[ndx]
+        elif array == "PMS":
+            _flag = self._memobj.flagPMS[ndx]
+        elif array == "Home":
+            _flag = None
+        _mem = getattr(self._memobj, array)[ndx]
+        return (_mem, _flag,  ndx, num, array)
 
+    def get_memory(self, number):
+        _mem, _flag, ndx, num, array = self.slotloc(number)
         mem = chirp_common.Memory()
         mem.number = number
-        if not flag.used:
-            mem.empty = True
-        if not flag.valid:
-            mem.empty = True
-            return mem
-        mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
-        mem.offset = int(_mem.offset) * 1000
-        mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
-        self._get_tmode(mem, _mem)
-        mem.duplex = DUPLEX[_mem.duplex]
-        if mem.duplex == "split":
-            mem.offset = chirp_common.fix_rounded_step(mem.offset)
-        mem.mode = self._decode_mode(_mem)
-        mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
-        mem.tuning_step = STEPS[_mem.tune_step]
-        mem.power = self._decode_power_level(_mem)
-        mem.skip = flag.pskip and "P" or flag.skip and "S" or ""
-
-        mem.name = self._decode_label(_mem)
-
-        self._get_mem_extra(mem, _mem)
-
+        if array == "Home":
+            mem.empty = False
+            mem.extd_number = number
+            mem.immutable += ["empty", "number", "extd_number", "skip"]
+        elif array != "memory":
+            mem.number = num
+            mem.extd_number = number
+            mem.immutable += ["name"]
+        if _flag is not None:
+            mem.skip = _flag.pskip and "P" or _flag.skip and "S" or ""
+            mem.empty = False
+            if not _flag.used:
+                mem.empty = True
+            if not _flag.valid:
+                mem.empty = True
+        if mem.empty:
+            mem.freq = 0
+            mem.offset = 0
+            mem.duplex = "off"
+            mem.power = POWER_LEVELS[0]
+            mem.mode = "FM"
+            mem.tuning_step = 0
+        else:
+            mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
+            mem.offset = int(_mem.offset) * 1000
+            mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
+            self._get_tmode(mem, _mem)
+            if _mem.duplex == "off":     # needed to get past tox test
+                mem.duplex = DUPLEX[""]
+            else:
+                mem.duplex == DUPLEX[_mem.duplex]
+            if mem.duplex == "split":
+                mem.offset = chirp_common.fix_rounded_step(mem.offset)
+            mem.mode = self._decode_mode(_mem)
+            mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
+            mem.tuning_step = STEPS[_mem.tune_step]
+            mem.power = self._decode_power_level(_mem)
+            mem.name = self._decode_label(_mem)
+            self._get_mem_extra(mem, _mem)
         return mem
 
     def _get_mem_extra(self, mem, _mem):
