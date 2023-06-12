@@ -105,6 +105,7 @@ class LiveAdapter(generic_csv.CSVRadio):
 
 class EditorMenuItem(wx.MenuItem):
     MENU_VIEW = 'View'
+    MENU_EDIT = 'Edit'
     ITEMS = {}
 
     def __init__(self, cls, callback_name, *a, **k):
@@ -192,9 +193,6 @@ class ChirpEditor(wx.Panel):
         pass
 
     def cb_delete(self):
-        pass
-
-    def cb_goto(self, number):
         pass
 
     def cb_find(self, text):
