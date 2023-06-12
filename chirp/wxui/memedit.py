@@ -649,13 +649,21 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             cls, '_set_expand_extra', ('expand_extra', 'state'),
             _('Show extra fields'))
 
+        hide_empty = common.EditorMenuItemToggle(
+            cls, '_set_hide_empty', ('hide_empty', 'memedit'),
+            _('Hide empty memories'))
+
         return {
             common.EditorMenuItem.MENU_VIEW: [
                 expand_extra,
+                hide_empty,
                 ]
             }
 
     def _set_expand_extra(self, event):
+        self.refresh()
+
+    def _set_hide_empty(self, event):
         self.refresh()
 
     def _setup_columns(self):
@@ -758,12 +766,19 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 self._grid.GetRowLabelValue(row)))
             return
 
+        hide_empty = CONF.get_bool('hide_empty', 'memedit', False)
         if memory.empty:
             # Reset our "wants split" flags if the memory is empty
             offset_col = self._col_def_by_name('offset')
             duplex_col = self._col_def_by_name('duplex')
             offset_col.wants_split(memory, False)
             duplex_col.wants_split(memory, False)
+            if hide_empty:
+                self._grid.HideRow(row)
+            else:
+                self._grid.ShowRow(row)
+        else:
+            self._grid.ShowRow(row)
 
         if memory.extra:
             self._expand_extra(memory)
