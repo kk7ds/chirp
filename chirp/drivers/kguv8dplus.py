@@ -377,7 +377,9 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
 #
     @classmethod
     def match_model(cls, filedata, filename):
-        return cls._file_ident in b'kg' + filedata[0x426:0x430].replace(b'(', b'').replace(b')', b'').lower()
+        return (cls._file_ident in b'kg' +
+                filedata[0x426:0x430].replace(b'(', b'').replace(b')',
+                                                                 b'').lower())
 
     def _identify(self):
         """Do the identification dance"""
@@ -742,7 +744,8 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("roger_beep", "Roger Beep",
                           RadioSettingValueList(ROGER_LIST,
-                                                ROGER_LIST[_settings.roger_beep]))
+                                                ROGER_LIST[
+                                                    _settings.roger_beep]))
         cfg_grp.append(rs)
         rs = RadioSetting("power_save", "Power save",
                           RadioSettingValueBoolean(_settings.power_save))
@@ -846,11 +849,12 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
                                                               smuteset]))
         cfg_grp.append(rs)
 
-        #
         # VFO A Settings
         #
         rs = RadioSetting("workmode_a", "VFO A Workmode",
-                          RadioSettingValueList(WORKMODE_LIST, WORKMODE_LIST[_settings.workmode_a]))
+                          RadioSettingValueList(WORKMODE_LIST,
+                                                WORKMODE_LIST[
+                                                    _settings.workmode_a]))
         vfoa_grp.append(rs)
         rs = RadioSetting("work_cha", "VFO A Channel",
                           RadioSettingValueInteger(1, 999, _settings.work_cha))
@@ -890,11 +894,12 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_settings.bcl_a))
         vfoa_grp.append(rs)
 
-        #
         # VFO B Settings
         #
         rs = RadioSetting("workmode_b", "VFO B Workmode",
-                          RadioSettingValueList(WORKMODE_LIST, WORKMODE_LIST[_settings.workmode_b]))
+                          RadioSettingValueList(WORKMODE_LIST,
+                                                WORKMODE_LIST[
+                                                    _settings.workmode_b]))
         vfob_grp.append(rs)
         rs = RadioSetting("work_chb", "VFO B Channel",
                           RadioSettingValueInteger(1, 999, _settings.work_chb))
@@ -934,7 +939,6 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_settings.bcl_b))
         vfob_grp.append(rs)
 
-        #
         # Key Settings
         #
         _msg = str(_settings.dispstr).split("\0")[0]
@@ -1063,7 +1067,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
     def get_settings(self):
         try:
             return self._get_settings()
-        except:
+        except Exception:
             import traceback
             LOG.error("Failed to parse settings: %s", traceback.format_exc())
             return None
@@ -1094,7 +1098,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
                             setattr(obj, setting, int(element.value)/10)
                         else:
                             setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug(element.get_name())
                     raise
 
