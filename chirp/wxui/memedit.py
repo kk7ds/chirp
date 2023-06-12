@@ -643,6 +643,21 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                     pass
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
 
+    @classmethod
+    def get_menu_items(cls):
+        expand_extra = common.EditorMenuItemToggle(
+            cls, '_set_expand_extra', ('expand_extra', 'state'),
+            _('Show extra fields'))
+
+        return {
+            common.EditorMenuItem.MENU_VIEW: [
+                expand_extra,
+                ]
+            }
+
+    def _set_expand_extra(self, event):
+        self.refresh()
+
     def _setup_columns(self):
         def filter_unknowns(items):
             return [x for x in items if '?' not in x]

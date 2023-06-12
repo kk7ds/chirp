@@ -23,9 +23,11 @@ from chirp import chirp_common
 from chirp.drivers import generic_csv
 from chirp import errors
 from chirp import settings
+from chirp.wxui import config
 from chirp.wxui import radiothread
 
 LOG = logging.getLogger(__name__)
+CONF = config.get()
 
 CHIRP_DATA_MEMORY = wx.DataFormat('x-chirp/memory-channel')
 EditorChanged, EVT_EDITOR_CHANGED = wx.lib.newevent.NewCommandEvent()
@@ -101,6 +103,53 @@ class LiveAdapter(generic_csv.CSVRadio):
         return self._liveradio.set_settings(settings)
 
 
+class EditorMenuItem(wx.MenuItem):
+    MENU_VIEW = 'View'
+    ITEMS = {}
+
+    def __init__(self, cls, callback_name, *a, **k):
+        self._wx_id = wx.NewId()
+        super().__init__(None, self._wx_id, *a, **k)
+        self._cls = cls
+        self._callback_name = callback_name
+        self.ITEMS[self.key] = self._wx_id
+
+    @property
+    def key(self):
+        return '%s:%s' % (self._cls.__name__, self._callback_name)
+
+    @property
+    def editor_class(self):
+        return self._cls
+
+    def editor_callback(self, editor, event):
+        getattr(editor, self._callback_name)(event)
+
+    def add_menu_callback(self):
+        # Some platforms won't actually set the accelerator (macOS) or allow
+        # enable/check (linux) before we are in a menu.
+        accel = self.GetAccel()
+        self.SetAccel(None)
+        self.SetAccel(accel)
+
+
+class EditorMenuItemToggle(EditorMenuItem):
+    """An EditorMenuItem that manages boolean/check state in CONF"""
+    def __init__(self, cls, callback_name, conf_tuple, *a, **k):
+        k['kind'] = wx.ITEM_CHECK
+        super().__init__(cls, callback_name, *a, **k)
+        self._conf_key, self._conf_section = conf_tuple
+
+    def editor_callback(self, editor, event):
+        menuitem = event.GetEventObject().FindItemById(event.GetId())
+        CONF.set_bool(self._conf_key, menuitem.IsChecked(), self._conf_section)
+        super().editor_callback(editor, event)
+
+    def add_menu_callback(self):
+        super().add_menu_callback()
+        self.Check(CONF.get_bool(self._conf_key, self._conf_section, False))
+
+
 class ChirpEditor(wx.Panel):
     def __init__(self, *a, **k):
         super().__init__(*a, **k)
@@ -169,6 +218,14 @@ class ChirpEditor(wx.Panel):
 
     def update_font(self):
         pass
+
+    @classmethod
+    def get_menu_items(self):
+        """Return a dict of menu items specific to this editor class
+
+        Example: {'Edit': [wx.MenuItem], 'View': [wx.MenuItem]}
+        """
+        return {}
 
 
 class ChirpSyncEditor:
