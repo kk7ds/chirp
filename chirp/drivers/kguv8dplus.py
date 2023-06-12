@@ -527,11 +527,11 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
     def _get_tone(self, _mem, mem):
         def _get_dcs(val):
             code = int("%03o" % (val & 0x07FF))
-            pol = (val & 0x8000) and "R" or "N"
+            pol = (val & 0x2000) and "R" or "N"
             return code, pol
 
         tpol = False
-        if _mem.txtone != 0xFFFF and (_mem.txtone & 0x2800) == 0x2800:
+        if _mem.txtone != 0xFFFF and (_mem.txtone & 0x4000) == 0x4000:
             tcode, tpol = _get_dcs(_mem.txtone)
             mem.dtcs = tcode
             txmode = "DTCS"
@@ -542,7 +542,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
             txmode = ""
 
         rpol = False
-        if _mem.rxtone != 0xFFFF and (_mem.rxtone & 0x2800) == 0x2800:
+        if _mem.rxtone != 0xFFFF and (_mem.rxtone & 0x4000) == 0x4000:
             rcode, rpol = _get_dcs(_mem.rxtone)
             mem.rx_dtcs = rcode
             rxmode = "DTCS"
@@ -613,9 +613,9 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
 
     def _set_tone(self, mem, _mem):
         def _set_dcs(code, pol):
-            val = int("%i" % code, 8) + 0x2800
+            val = int("%i" % code, 8) + 0x4000
             if pol == "R":
-                val += 0x8000
+                val += 0x2000
             return val
 
         rx_mode = tx_mode = None
