@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-12 15:03-0700\n"
-"PO-Revision-Date: 2023-06-08 01:15-0400\n"
+"PO-Revision-Date: 2023-06-12 21:31-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1642,9 +1642,8 @@ msgid "Hex"
 msgstr "Hexadecimal"
 
 #: ../wxui/memedit.py:673
-#, fuzzy
 msgid "Hide empty memories"
-msgstr "Ordenar memorias"
+msgstr "Ocultar memorias vacías"
 
 #: ../wxui/query_sources.py:293 ../wxui/query_sources.py:299
 msgid "If set, sort results by distance from these coordinates"
