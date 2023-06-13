@@ -17,6 +17,7 @@ import functools
 import logging
 import pickle
 import platform
+import sys
 
 import wx
 import wx.lib.newevent
@@ -643,6 +644,66 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                     pass
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
 
+    @classmethod
+    def get_menu_items(cls):
+        move_up = common.EditorMenuItem(
+            cls, '_move_up', _('Move Up'))
+        # Control-Up is used by default on macOS, so require shift as well
+        if sys.platform == 'darwin':
+            extra_move = wx.MOD_SHIFT
+        else:
+            extra_move = 0
+        move_up.SetAccel(wx.AcceleratorEntry(
+            extra_move | wx.ACCEL_RAW_CTRL, wx.WXK_UP))
+
+        move_dn = common.EditorMenuItem(
+            cls, '_move_dn', _('Move Down'))
+        move_dn.SetAccel(wx.AcceleratorEntry(
+            extra_move | wx.ACCEL_RAW_CTRL, wx.WXK_DOWN))
+
+        goto = common.EditorMenuItem(cls, '_goto', _('Goto'))
+        goto.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('G')))
+
+        expand_extra = common.EditorMenuItemToggle(
+            cls, '_set_expand_extra', ('expand_extra', 'state'),
+            _('Show extra fields'))
+
+        hide_empty = common.EditorMenuItemToggle(
+            cls, '_set_hide_empty', ('hide_empty', 'memedit'),
+            _('Hide empty memories'))
+
+        return {
+            common.EditorMenuItem.MENU_EDIT: [
+                goto,
+                move_up,
+                move_dn,
+                ],
+            common.EditorMenuItem.MENU_VIEW: [
+                expand_extra,
+                hide_empty,
+                ]
+            }
+
+    def _set_expand_extra(self, event):
+        self.refresh()
+
+    def _set_hide_empty(self, event):
+        self.refresh()
+
+    def _goto(self, event):
+        l, u = self._features.memory_bounds
+        a = wx.GetNumberFromUser(_('Goto Memory:'), _('Number'),
+                                 _('Goto Memory'),
+                                 1, l, u, self)
+        if a >= 0:
+            self.cb_goto(a)
+
+    def _move_dn(self, event):
+        self.cb_move(1)
+
+    def _move_up(self, event):
+        self.cb_move(-1)
+
     def _setup_columns(self):
         def filter_unknowns(items):
             return [x for x in items if '?' not in x]
@@ -743,12 +804,19 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 self._grid.GetRowLabelValue(row)))
             return
 
+        hide_empty = CONF.get_bool('hide_empty', 'memedit', False)
         if memory.empty:
             # Reset our "wants split" flags if the memory is empty
             offset_col = self._col_def_by_name('offset')
             duplex_col = self._col_def_by_name('duplex')
             offset_col.wants_split(memory, False)
             duplex_col.wants_split(memory, False)
+            if hide_empty:
+                self._grid.HideRow(row)
+            else:
+                self._grid.ShowRow(row)
+        else:
+            self._grid.ShowRow(row)
 
         if memory.extra:
             self._expand_extra(memory)

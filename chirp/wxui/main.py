@@ -235,12 +235,6 @@ class ChirpEditorSet(wx.Panel):
     def cb_delete(self):
         return self.current_editor.cb_delete()
 
-    def cb_move(self, direction):
-        return self.current_editor.cb_move(direction)
-
-    def cb_goto(self, number):
-        return self.current_editor.cb_goto(number)
-
     def cb_find(self, text):
         return self.current_editor.cb_find(text)
 
@@ -454,6 +448,10 @@ class ChirpMain(wx.Frame):
         return stock
 
     def make_menubar(self):
+        self.editor_menu_items = {}
+        memedit_items = memedit.ChirpMemEdit.get_menu_items()
+        self.editor_menu_items.update(memedit_items)
+
         file_menu = wx.Menu()
 
         new_item = file_menu.Append(wx.ID_NEW)
@@ -570,40 +568,19 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_find, find_next_item,
                   self._find_next_item)
 
-        self._goto_item = wx.NewId()
-        goto_item = edit_menu.Append(wx.MenuItem(edit_menu, self._goto_item,
-                                                 _('Goto')))
-        goto_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('G')))
-        self.Bind(wx.EVT_MENU, self._menu_goto, goto_item)
-
         edit_menu.Append(wx.MenuItem(edit_menu, wx.ID_SEPARATOR))
 
-        self._moveup_item = wx.NewId()
-        moveup_item = edit_menu.Append(wx.MenuItem(edit_menu,
-                                                   self._moveup_item,
-                                                   _('Move Up')))
-
-        # Control-Up is used by default on macOS, so require shift as well
-        if sys.platform == 'darwin':
-            extra_move = wx.MOD_SHIFT
-        else:
-            extra_move = 0
-
-        moveup_item.SetAccel(wx.AcceleratorEntry(
-            extra_move | wx.ACCEL_RAW_CTRL, wx.WXK_UP))
-        self.Bind(wx.EVT_MENU, self._menu_move, moveup_item,
-                  self._moveup_item)
-
-        self._movedn_item = wx.NewId()
-        movedn_item = edit_menu.Append(wx.MenuItem(edit_menu,
-                                                   self._movedn_item,
-                                                   _('Move Down')))
-        movedn_item.SetAccel(wx.AcceleratorEntry(
-            extra_move | wx.ACCEL_RAW_CTRL, wx.WXK_DOWN))
-        self.Bind(wx.EVT_MENU, self._menu_move, movedn_item,
-                  self._movedn_item)
+        for item in memedit_items[common.EditorMenuItem.MENU_EDIT]:
+            edit_menu.Append(item)
+            self.Bind(wx.EVT_MENU, self.do_editor_callback, item)
+            item.add_menu_callback()
 
         view_menu = wx.Menu()
+
+        for item in memedit_items[common.EditorMenuItem.MENU_VIEW]:
+            view_menu.Append(item)
+            self.Bind(wx.EVT_MENU, self.do_editor_callback, item)
+            item.add_menu_callback()
 
         self._fixed_item = wx.NewId()
         fixed_item = wx.MenuItem(view_menu, self._fixed_item,
@@ -620,14 +597,6 @@ class ChirpMain(wx.Frame):
         view_menu.Append(large_item)
         self.Bind(wx.EVT_MENU, self._menu_large_font, large_item)
         large_item.Check(CONF.get_bool('font_large', 'state', False))
-
-        self._expand_item = wx.NewId()
-        expand_item = wx.MenuItem(view_menu, self._expand_item,
-                                  _('Show extra fields'),
-                                  kind=wx.ITEM_CHECK)
-        view_menu.Append(expand_item)
-        self.Bind(wx.EVT_MENU, self._menu_expand_extra, expand_item)
-        expand_item.Check(CONF.get_bool('expand_extra', 'state'))
 
         radio_menu = wx.Menu()
 
@@ -772,6 +741,11 @@ class ChirpMain(wx.Frame):
 
         return menu_bar
 
+    def do_editor_callback(self, event):
+        menu = event.GetEventObject()
+        item = menu.FindItemById(event.GetId())
+        item.editor_callback(self.current_editorset.current_editor, event)
+
     def _menu_print(self, event):
         p = printing.MemoryPrinter(
             self,
@@ -912,7 +886,6 @@ class ChirpMain(wx.Frame):
             (wx.ID_SAVE, can_save),
             (wx.ID_SAVEAS, can_saveas),
             (self._upload_menu_item, can_upload),
-            (self._goto_item, is_memedit),
             (self._find_next_item, is_memedit),
             (wx.ID_FIND, is_memedit),
             (wx.ID_PRINT, is_memedit),
@@ -920,8 +893,6 @@ class ChirpMain(wx.Frame):
             (wx.ID_CUT, is_memedit and can_edit),
             (wx.ID_COPY, is_memedit),
             (wx.ID_PASTE, is_memedit and can_edit),
-            (self._movedn_item, is_memedit and can_edit),
-            (self._moveup_item, is_memedit and can_edit),
             (wx.ID_SELECTALL, is_memedit),
             (self._print_preview_item, is_memedit),
             (self._export_menu_item, can_close),
@@ -930,7 +901,6 @@ class ChirpMain(wx.Frame):
             (self._reload_driver_item, can_saveas),
             (self._reload_both_item, can_saveas),
             (self._interact_driver_item, can_saveas),
-            (self._expand_item, is_memedit),
         ]
         for ident, enabled in items:
             if ident is None:
@@ -940,6 +910,14 @@ class ChirpMain(wx.Frame):
                 # Some items may not be present on all systems (i.e.
                 # print preview on Linux)
                 menuitem.Enable(enabled)
+
+        for menu, items in self.editor_menu_items.items():
+            for item in items:
+                editor_match = (
+                    eset and
+                    isinstance(eset.current_editor, item.editor_class) or
+                    False)
+                item.Enable(editor_match)
 
     def _window_close(self, event):
         for i in range(self._editors.GetPageCount()):
@@ -1189,12 +1167,6 @@ class ChirpMain(wx.Frame):
             self._last_search_text = search
             self.current_editorset.cb_find(search)
 
-    def _menu_move(self, event):
-        if event.GetId() == self._movedn_item:
-            self.current_editorset.cb_move(1)
-        else:
-            self.current_editorset.cb_move(-1)
-
     def _update_font(self):
         for i in range(0, self._editors.PageCount):
             eset = self._editors.GetPage(i)
@@ -1209,21 +1181,6 @@ class ChirpMain(wx.Frame):
         menuitem = event.GetEventObject().FindItemById(event.GetId())
         CONF.set_bool('font_large', menuitem.IsChecked(), 'state')
         self._update_font()
-
-    def _menu_expand_extra(self, event):
-        menuitem = event.GetEventObject().FindItemById(event.GetId())
-        CONF.set_bool('expand_extra', menuitem.IsChecked(), 'state')
-        self.current_editorset.current_editor.refresh()
-
-    def _menu_goto(self, event):
-        eset = self.current_editorset
-        rf = eset.radio.get_features()
-        l, u = rf.memory_bounds
-        a = wx.GetNumberFromUser(_('Goto Memory:'), _('Number'),
-                                 _('Goto Memory'),
-                                 1, l, u, self)
-        if a >= 0:
-            eset.cb_goto(a)
 
     def _menu_download(self, event):
         with clone.ChirpDownloadDialog(self) as d:
