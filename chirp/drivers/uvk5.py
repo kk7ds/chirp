@@ -1317,15 +1317,15 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         # Logo string 1
-        logo1 = str(_mem.logo_line1).strip("\x20\x00\xff")  # +"\x20"*12
-        logo1 = logo1[0:12]
+        logo1 = str(_mem.logo_line1).strip("\x20\x00\xff") + "\x00"
+        logo1 = _getstring(logo1.encode('ascii', errors='ignore'),0,12)
         rs = RadioSetting("logo1", "Logo string 1 (12 characters)",
                           RadioSettingValueString(0, 12, logo1))
         basic.append(rs)
 
         # Logo string 2
-        logo2 = str(_mem.logo_line2).strip("\x20\x00\xff")  # +"\x20"*12
-        logo2 = logo2[0:12]
+        logo2 = str(_mem.logo_line2).strip("\x20\x00\xff") + "\x00"
+        logo2 = _getstring(logo2.encode('ascii', errors='ignore'),0,12)
         rs = RadioSetting("logo2", "Logo string 2 (12 characters)",
                           RadioSettingValueString(0, 12, logo2))
         basic.append(rs)
