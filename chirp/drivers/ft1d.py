@@ -190,14 +190,14 @@ struct memslot {
   u8 power:2,
      digmode:2,   // 0=Analog, 1=AMS, 2=DN, 3=VW
      tone_mode:4;
-  u8 charsetbits[2];
+  u16 charsetbits;
   char label[16];
   bbcd offset[3];
   u8 unknown5:2,
      tone:6;
   u8 unknown6:1,
      dcs:7;
-  u8 unknown7[2];
+  u16 unknown7;
   u8 unknown8:2,
      att:1,
      autostep:1,
@@ -931,8 +931,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_ctone = False
         rf.has_bank_names = True
         rf.has_settings = True
-        specials = [name for s in SPECIALS for name in s[1]]
-        rf.valid_special_chans = specials
+        rf.valid_special_chans = [name for s in SPECIALS for name in s[1]]
         return rf
 
         return rf
@@ -964,10 +963,10 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 #   Find and return the corresponding memobj
 #   Returns:
 #       Corresponding radio memory object
-#       Corresponding flag structure (if any)
-#       index into overall memory (int)
-#       index into the specific memory object structure (int)
-#       an indicator of the object structure (str)
+#       Corresponding radio alag structure (if any)
+#       index into the specific memory object structure (int) ndx
+#       overall index into memory & specials (int) num
+#       an indicator of the specific radio object structure (str)
     def slotloc(self, memref, extref=None):
         array = None
         num = memref
@@ -978,7 +977,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         if extref is not None:
             extr = extref in specials
         if mstr or extr:        # named special?
-            num = self.MAX_MEM_SLOT + 1
+            # num = self.MAX_MEM_SLOT + 1
+            num = -1
             nnn = memref if mstr else extref
             for x in self.class_specials:
                 try:
@@ -986,13 +986,15 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                     array = x[0]
                     break
                 except Exception:
-                    num += len(x[1])
+                    # num += len(x[1])
+                    num -= len(x[1])
             if array is None:
-                LOG.debug("unknown Special %s", memref)
-                raise
-            num += ndx
+                raise IndexError("Unknown special %s", memref)
+            # num += ndx
+            num -= ndx
         elif memref > self.MAX_MEM_SLOT:         # numbered special
             ndx = memref - (self.MAX_MEM_SLOT + 1)
+            num = memref
             for x in self.class_specials:
                 if ndx < len(x[1]):
                     array = x[0]
@@ -1000,8 +1002,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                     break
                 ndx -= len(x[1])
             if array is None:
-                LOG.debug("memref number %d out of range", memref)
-                raise IndexError("Unknown memref %s", memref)
+                raise IndexError("Unknown memref type %s", memref)
         else:
             array = "memory"
             ndx = memref - 1
@@ -1015,18 +1016,23 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem = getattr(self._memobj, array)[ndx]
         return (_mem, _flag,  ndx, num, array)
 
+    # Build CHIRP version (mem) of radio's memory (_mem)
     def get_memory(self, number):
         _mem, _flag, ndx, num, array = self.slotloc(number)
         mem = chirp_common.Memory()
-        mem.number = number
+        # Assume the global number (num) coming from slotloc is correct
+        mem.number = num
         if array == "Home":
             mem.empty = False
             mem.extd_number = number
+            mem.name = self._decode_label(_mem)
             mem.immutable += ["empty", "number", "extd_number", "skip"]
         elif array != "memory":
-            mem.number = num
             mem.extd_number = number
             mem.immutable += ["name"]
+        else:
+            mem.name = self._decode_label(_mem)
+
         if _flag is not None:
             mem.skip = _flag.pskip and "P" or _flag.skip and "S" or ""
             mem.empty = False
@@ -1046,7 +1052,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.offset = int(_mem.offset) * 1000
             mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
             self._get_tmode(mem, _mem)
-            if _mem.duplex == "off":     # needed to get past tox test
+            if mem.duplex is None or mem.duplex == "off":
                 mem.duplex = DUPLEX[""]
             else:
                 mem.duplex == DUPLEX[_mem.duplex]
@@ -1056,7 +1062,6 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
             mem.tuning_step = STEPS[_mem.tune_step]
             mem.power = self._decode_power_level(_mem)
-            mem.name = self._decode_label(_mem)
             self._get_mem_extra(mem, _mem)
         return mem
 
@@ -1089,13 +1094,16 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def _encode_charsetbits(self, mem):
         # We only speak english here in chirpville
-        return [0x00, 0x00]
+        return 0x0000
 
     def _decode_power_level(self, mem):
         return POWER_LEVELS[3 - mem.power]
 
     def _encode_power_level(self, mem):
-        return 3 - POWER_LEVELS.index(mem.power)
+        if mem.power is None:
+            return 3        # Choose lowest power
+        else:
+            return 3 - POWER_LEVELS.index(mem.power)
 
     def _decode_mode(self, mem):
         mode = MODES[mem.mode]
@@ -1142,58 +1150,69 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             LOG.debug('New mode FM, disabling AMS')
             _mem.digmode = 0
         _mem.mode = self._encode_mode(mem)
+        bm = self.get_bank_model()
+        for bank in bm.get_memory_mappings(mem):
+            bm.remove_memory_from_mapping(mem, bank)
 
     def _debank(self, mem):
         bm = self.get_bank_model()
         for bank in bm.get_memory_mappings(mem):
             bm.remove_memory_from_mapping(mem, bank)
 
+    def enforce_band(self, mem, freq, num, regtype):
+        # TODO check band in Home
+        return freq
+
+# Modify radio's memory (_mem) corresponding to CHIRP version at 'mem'
     def set_memory(self, mem):
-        _mem = self._memobj.memory[mem.number - 1]
-        flag = self._memobj.flag[mem.number - 1]
 
-        self._debank(mem)
-
-        if not mem.empty and not flag.valid:
-            self._wipe_memory(_mem)
-
-        if mem.empty and flag.valid and not flag.used:
-            flag.valid = False
-            return
-        flag.used = not mem.empty
-        flag.valid = flag.used
-
+        _mem, flag, ndx, num, regtype = self.slotloc(mem.number,
+                                                     mem.extd_number)
+        LOG.warn("Enter set (no modify mem): "
+                 "number='%s', extdN='%s', ndx=%d, num=%d,"
+                 "array='%s'\nMem='%s'",
+                 mem.number, mem.extd_number, ndx, num, regtype, mem)
         if mem.empty:
+            self._wipe_memory(_mem)
+            if flag is not None:
+                flag.used = False
             return
-
-        if mem.freq < 30000000 or \
-                (mem.freq > 88000000 and mem.freq < 108000000) or \
-                mem.freq > 580000000:
-            flag.nosubvfo = True     # Masked from VFO B
-        else:
-            flag.nosubvfo = False    # Available in both VFOs
-
-        _mem.freq = int(mem.freq / 1000)
-        _mem.offset = int(mem.offset / 1000)
+        _mem.power = self._encode_power_level(mem)
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         self._set_tmode(_mem, mem)
-        _mem.duplex = DUPLEX.index(mem.duplex)
-        self._set_mode(_mem, mem)
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
-        if mem.power:
-            _mem.power = self._encode_power_level(mem)
+        # duplex "off" is equivalent to "" and may show up in tox test.
+        if mem.duplex is None or mem.duplex == "off":
+            _mem.duplex = DUPLEX.index("")
         else:
-            _mem.power = 0
-
+            _mem.duplex = DUPLEX.index(mem.duplex)
+        self._set_mode(_mem, mem)
+        if flag is not None:
+            if mem.freq < 30000000 or \
+                    (mem.freq > 88000000 and mem.freq < 108000000) or \
+                    mem.freq > 580000000:
+                flag.nosubvfo = True     # Masked from VFO B
+            else:
+                flag.nosubvfo = False    # Available in both VFOs
+        if regtype != "Home":
+            self._debank(mem)
+            ndx = num - 1
+            flag.used = not mem.empty
+            flag.valid = True
+            flag.skip = mem.skip == "S"
+            flag.pskip = mem.skip == "P"
+        freq = mem.freq
+        if regtype in ["VFO", "Home"]:
+            freq = self.enforce_band(_mem, mem.freq, ndx, regtype)
+        _mem.freq = int(freq / 1000)
+        _mem.offset = int(mem.offset / 1000)
         _mem.label = self._encode_label(mem)
-        charsetbits = self._encode_charsetbits(mem)
-        _mem.charsetbits[0], _mem.charsetbits[1] = charsetbits
-
-        flag.skip = mem.skip == "S"
-        flag.pskip = mem.skip == "P"
-
+        _mem.charsetbits = self._encode_charsetbits(mem)
         self._set_mem_extra(mem, _mem)
+        LOG.warn("End set_mem: ndx='%s', Num='%s', type='%s '%s', %s, %s",
+                 ndx, num, regtype, mem, _mem, flag)
+        return
 
     @classmethod
     def _wipe_memory(cls, mem):
