@@ -47,7 +47,7 @@ DEBUG_SHOW_OBFUSCATED_COMMANDS = False
 # might be useful for someone debugging some obscure memory issue
 DEBUG_SHOW_MEMORY_ACTIONS = False
 
-DRIVER_VERSION = "Quansheng UV-K5 driver v20230610 (c) Jacek Lipkowski SQ5BPF"
+DRIVER_VERSION = "Quansheng UV-K5 driver v20230613 (c) Jacek Lipkowski SQ5BPF"
 PRINT_CONSOLE = False
 
 MEM_FORMAT = """
@@ -115,6 +115,17 @@ u8 repeater_tail_elimination;
 #seekto 0xeb0;
 char logo_line1[16];
 char logo_line2[16];
+
+#seekto 0xf18;
+u8 scanlist_default;
+u8 scanlist1_priority_scan;
+u8 scanlist1_priority_ch1;
+u8 scanlist1_priority_ch2;
+u8 scanlist2_priority_scan;
+u8 scanlist2_priority_ch1;
+u8 scanlist2_priority_ch2;
+u8 scanlist_unknown_0xff;
+
 
 #seekto 0xf40;
 u8 int_flock;
@@ -269,6 +280,8 @@ VFO_CHANNEL_NAMES = ["F1(50M-76M)A", "F1(50M-76M)B",
                      "F5(350M-400M)A", "F5(350M-400M)B",
                      "F6(400M-470M)A", "F6(400M-470M)B",
                      "F7(470M-600M)A", "F7(470M-600M)B"]
+
+SCANLIST_LIST = ["None", "1", "2", "1+2"]
 
 
 # the communication is obfuscated using this fine mechanism
@@ -523,7 +536,6 @@ class UVK5Radio(chirp_common.CloneModeRadio):
     VENDOR = "Quansheng"
     MODEL = "UV-K5"
     BAUD_RATE = 38400
-
     NEEDS_COMPAT_SERIAL = False
     FIRMWARE_VERSION = ""
     FIRMWARE_NOLIMITS = False
@@ -537,7 +549,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
              'the memory image from the radio with chirp or k5prog '
              'and keep it. This can be later used to recover the '
              'original settings. \n\n'
-             'FM radio, DTMF settings and scanlists are not yet implemented')
+             'DTMF settings and other details are not yet implemented')
         rp.pre_download = _(
             "1. Turn radio on.\n"
             "2. Connect cable to mic/spkr connector.\n"
@@ -688,7 +700,6 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 
     # Extract a high-level memory object from the low-level memory map
     # This is called to populate a memory in the UI
-
     def get_memory(self, number2):
         number = number2-1  # in the radio memories start with 0
 
@@ -711,11 +722,21 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         if (_mem.freq == 0xffffffff) or (_mem.freq == 0):
             is_empty = True
 
+        tmpscn = SCANLIST_LIST[0]
+
         # We'll also look at the channel attributes if a memory has them
         if number < 200:
             _mem3 = self._memobj.channel_attributes[number]
+            # free memory bit
             if _mem3.is_free > 0:
                 is_empty = True
+            # scanlists
+            if _mem3.is_scanlist1 > 0 and _mem3.is_scanlist2 > 0:
+                tmpscn = SCANLIST_LIST[3]  # "1+2"
+            elif _mem3.is_scanlist1 > 0:
+                tmpscn = SCANLIST_LIST[1]  # "1"
+            elif _mem3.is_scanlist2 > 0:
+                tmpscn = SCANLIST_LIST[2]  # "2"
 
         if is_empty:
             mem.empty = True
@@ -737,6 +758,10 @@ class UVK5Radio(chirp_common.CloneModeRadio):
                 SCRAMBLER_LIST, SCRAMBLER_LIST[0]))
             mem.extra.append(rs)
 
+            rs = RadioSetting("scanlists", "Scanlists", RadioSettingValueList(
+                SCANLIST_LIST, SCANLIST_LIST[0]))
+            mem.extra.append(rs)
+
             # actually the step and duplex are overwritten by chirp based on
             # bandplan. they are here to document sane defaults for IARU r1
             # mem.tuning_step = 25.0
@@ -746,7 +771,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 
         if number > 199:
             mem.name = VFO_CHANNEL_NAMES[number-200]
-            mem.immutable = ["name"]
+            mem.immutable = ["name", "scanlists"]
         else:
             _mem2 = self._memobj.channelname[number]
             for char in _mem2.name:
@@ -843,6 +868,12 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             SCRAMBLER_LIST, SCRAMBLER_LIST[enc]))
         mem.extra.append(rs)
         tmpcomment += "Scrambler:"+SCRAMBLER_LIST[enc]+" "
+
+        # scanlists
+        pttid = (_mem.dtmf_flags & FLAGS_DTMF_PTTID_MASK) >> 1
+        rs = RadioSetting("scanlists", "Scanlists", RadioSettingValueList(
+            SCANLIST_LIST, tmpscn))
+        mem.extra.append(rs)
 
         return mem
 
@@ -993,15 +1024,105 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 #                                "in the range %.1f - %.1f" % (FMMIN , FMMAX))
                     _mem.fmfreq[i-1] = val2
 
+            # scanlist stuff
+            if element.get_name() == "scanlist_default":
+                val = (int(element.value) == 2) and 1 or 0
+                _mem.scanlist_default = val
+
+            if element.get_name() == "scanlist1_priority_scan":
+                _mem.scanlist1_priority_scan = \
+                        element.value and 1 or 0
+
+            if element.get_name() == "scanlist2_priority_scan":
+                _mem.scanlist2_priority_scan = \
+                        element.value and 1 or 0
+
+            if element.get_name() == "scanlist1_priority_ch1" or \
+                    element.get_name() == "scanlist1_priority_ch2" or \
+                    element.get_name() == "scanlist2_priority_ch1" or \
+                    element.get_name() == "scanlist2_priority_ch2":
+
+                val = int(element.value)
+
+                if val > 200 or val < 1:
+                    val = 0xff
+                else:
+                    val -= 1
+
+                if element.get_name() == "scanlist1_priority_ch1":
+                    _mem.scanlist1_priority_ch1 = val
+                if element.get_name() == "scanlist1_priority_ch2":
+                    _mem.scanlist1_priority_ch2 = val
+                if element.get_name() == "scanlist2_priority_ch1":
+                    _mem.scanlist2_priority_ch1 = val
+                if element.get_name() == "scanlist2_priority_ch2":
+                    _mem.scanlist2_priority_ch2 = val
+
     def get_settings(self):
         _mem = self._memobj
         basic = RadioSettingGroup("basic", "Basic Settings")
+        scanl = RadioSettingGroup("scn", "Scan Lists")
         unlock = RadioSettingGroup("unlock", "Unlock Settings")
         fmradio = RadioSettingGroup("fmradio", "FM Radio")
 
         roinfo = RadioSettingGroup("roinfo", "Driver information")
 
-        top = RadioSettings(basic, unlock, fmradio, roinfo)
+        top = RadioSettings(basic, scanl, unlock, fmradio, roinfo)
+
+        if _mem.scanlist_default == 1:
+            tmpsc = 2
+        else:
+            tmpsc = 1
+        rs = RadioSetting("scanlist_default",
+                          "Default scanlist",
+                          RadioSettingValueInteger(1, 2, tmpsc))
+        scanl.append(rs)
+
+        tmppr = bool((_mem.scanlist1_priority_scan & 1) > 0)
+        rs = RadioSetting(
+                "scanlist1_priority_scan",
+                "Scanlist 1 priority channel scan",
+                RadioSettingValueBoolean(tmppr))
+        scanl.append(rs)
+
+        tmpch = _mem.scanlist1_priority_ch1 + 1
+        if tmpch > 200:
+            tmpch = 0
+        rs = RadioSetting("scanlist1_priority_ch1",
+                          "Scanlist 1 priority channel 1 (0 - off)",
+                          RadioSettingValueInteger(0, 200, tmpch))
+        scanl.append(rs)
+
+        tmpch = _mem.scanlist1_priority_ch2 + 1
+        if tmpch > 200:
+            tmpch = 0
+        rs = RadioSetting("scanlist1_priority_ch2",
+                          "Scanlist 1 priority channel 2 (0 - off)",
+                          RadioSettingValueInteger(0, 200, tmpch))
+        scanl.append(rs)
+
+        tmppr = bool((_mem.scanlist2_priority_scan & 1) > 0)
+        rs = RadioSetting(
+                "scanlist2_priority_scan",
+                "Scanlist 2 priority channel scan",
+                RadioSettingValueBoolean(tmppr))
+        scanl.append(rs)
+
+        tmpch = _mem.scanlist2_priority_ch1 + 1
+        if tmpch > 200:
+            tmpch = 0
+        rs = RadioSetting("scanlist2_priority_ch1",
+                          "Scanlist 2 priority channel 1 (0 - off)",
+                          RadioSettingValueInteger(0, 200, tmpch))
+        scanl.append(rs)
+
+        tmpch = _mem.scanlist2_priority_ch2 + 1
+        if tmpch > 200:
+            tmpch = 0
+        rs = RadioSetting("scanlist2_priority_ch2",
+                          "Scanlist 2 priority channel 2 (0 - off)",
+                          RadioSettingValueInteger(0, 200, tmpch))
+        scanl.append(rs)
 
         # basic settings
 
@@ -1331,7 +1452,6 @@ class UVK5Radio(chirp_common.CloneModeRadio):
                          chr(prev_0d) + chr(prev_0e) + chr(prev_0f))
 
         if number < 200:
-            #_mem4.channel_attributes[number] = 0x0f
             _mem4.channel_attributes[number].is_scanlist1 = 0
             _mem4.channel_attributes[number].is_scanlist2 = 0
             _mem4.channel_attributes[number].unknown1 = 0
@@ -1443,6 +1563,20 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             if sname == "scrambler":
                 _mem.scrambler = (
                     _mem.scrambler & 0xf0) | SCRAMBLER_LIST.index(svalue)
+
+            if number < 200 and sname == "scanlists":
+                if svalue == "1":
+                    _mem4.channel_attributes[number].is_scanlist1 = 1
+                    _mem4.channel_attributes[number].is_scanlist2 = 0
+                elif svalue == "2":
+                    _mem4.channel_attributes[number].is_scanlist1 = 0
+                    _mem4.channel_attributes[number].is_scanlist2 = 1
+                elif svalue == "1+2":
+                    _mem4.channel_attributes[number].is_scanlist1 = 1
+                    _mem4.channel_attributes[number].is_scanlist2 = 1
+                else:
+                    _mem4.channel_attributes[number].is_scanlist1 = 0
+                    _mem4.channel_attributes[number].is_scanlist2 = 0
 
         return mem
 
