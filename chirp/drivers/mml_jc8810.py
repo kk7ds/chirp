@@ -143,9 +143,11 @@ struct {
   u8 skey2_lp;        // 902C Skey2 Long
   u8 skey3_sp;        // 902D Skey3 Short
   u8 topkey_sp;       // 902E Top Key (RT-470L)
-  u8 unused_902f:7,   // 902F
-     rxendtail:1;     //      Tone Rx End
+  u8 unused_902f:6,   // 902F
+     rxendtail:2;     //      RX END TAIL (RT-470)
+                      //      TAIL PHASE (A36plus)
   u8 skey3_lp;        // 9030 Skey3 Long (RT-470L)
+                      //      RX END TAIL (A36plus)
 } settings;
 
 #seekto 0xA020;
@@ -210,6 +212,7 @@ RPSTE_LIST = ["Off"] + ["%s ms" % x for x in range(100, 1100, 100)]
 SAVE_LIST = ["Off", "Normal", "Super", "Deep"]
 SCREV_LIST = ["Time (TO)", "Carrier (CO)", "Search (SE)"]
 TAILCODE_LIST = ["55 Hz", "62.5 Hz"]
+TAILPHASE_LIST = ["None", "120 Shift", "180 Shift", "240 Shift"]
 TONERXEND_LIST = ["Off", "MDC-1200"]
 TONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
 TOT_LIST = ["Off", "30 seconds", "60 seconds", "120 seconds", "240 seconds",
@@ -226,7 +229,10 @@ ALL_SKEY_CHOICES = ["OFF",
                     "NOAA Weather",
                     "Monitor",
                     "PTT B",
-                    "SOS"]
+                    "SOS",
+                    "DTMF",
+                    "REVERSE",
+                    "REMOTE Scan"]
 
 ALL_SKEY_VALUES = [0xFF,
                    0x07,
@@ -237,7 +243,10 @@ ALL_SKEY_VALUES = [0xFF,
                    0x0C,
                    0x05,
                    0x01,
-                   0x03]
+                   0x03,
+                   0x2A,
+                   0x2D,
+                   0x23]
 
 
 SETTING_LISTS = {
@@ -264,6 +273,7 @@ SETTING_LISTS = {
     "save": SAVE_LIST,
     "scode": PTTIDCODE_LIST,
     "screv": SCREV_LIST,
+    "skey3_lp": TONERXEND_LIST,
     "tailcode": TAILCODE_LIST,
     "tone": TONE_LIST,
     "tot": TOT_LIST,
@@ -602,7 +612,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             mem.skip = "S"
 
         _levels = self.POWER_LEVELS
-        if self.MODEL == "UV-A37":
+        if self.MODEL in ["A36plus", "UV-A37"]:
             if _mem.txpower == TXPOWER_HIGH:
                 mem.power = _levels[0]
             elif _mem.txpower == TXPOWER_LOW:
@@ -771,7 +781,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("voice", "Voice Prompts", rs)
         basic.append(rset)
 
-        if self.MODEL != "UV-A37":
+        if self.MODEL not in ["A36plus", "UV-A37"]:
             # Menu 17: LANGUAGE
             rs = RadioSettingValueList(LANGUAGE_LIST,
                                        LANGUAGE_LIST[_settings.language])
@@ -839,11 +849,13 @@ class JC8810base(chirp_common.CloneModeRadio):
             obj.set_value(val)
 
         if self.MODEL in ["RT-470"]:
-            unwanted = [0, 7, 9]
+            unwanted = [0, 7, 9, 10, 11, 12]
         elif self.MODEL in ["HI-8811", "RT-470L"]:
-            unwanted = [9]
+            unwanted = [9, 10, 11, 12]
         elif self.MODEL in ["UV-A37"]:
-            unwanted = [0, 5, 7, 9]
+            unwanted = [0, 5, 7, 9, 10, 11, 12]
+        elif self.MODEL in ["A36plus"]:
+            unwanted = [0, 5, 7, 9, 10, 11]
         else:
             unwanted = []
         SKEY2S_CHOICES = ALL_SKEY_CHOICES.copy()
@@ -870,11 +882,13 @@ class JC8810base(chirp_common.CloneModeRadio):
             obj.set_value(val)
 
         if self.MODEL in ["RT-470"]:
-            unwanted = [0, 7, 8, 9]
+            unwanted = [0, 7, 8, 9, 10, 11, 12]
         elif self.MODEL in ["HI-8811", "RT-470L"]:
-            unwanted = [8, 9]
+            unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37"]:
-            unwanted = [0, 5, 7, 8]
+            unwanted = [0, 5, 7, 8, 10, 11, 12]
+        elif self.MODEL in ["A36plus"]:
+            unwanted = [0, 5, 7, 8, 11, 12]
         else:
             unwanted = []
         SKEY2L_CHOICES = ALL_SKEY_CHOICES.copy()
@@ -901,10 +915,12 @@ class JC8810base(chirp_common.CloneModeRadio):
             obj.set_value(val)
 
         if self.MODEL in ["RT-470"]:
-            unwanted = [0, 7, 8, 9]
+            unwanted = [0, 7, 8, 9, 10, 11, 12]
         elif self.MODEL in ["HI-8811", "RT-470L"]:
-            unwanted = [8, 9]
+            unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37"]:
+            unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
+        elif self.MODEL in ["A36plus"]:
             unwanted = [0, 5, 7, 8, 9]
         else:
             unwanted = []
@@ -934,7 +950,7 @@ class JC8810base(chirp_common.CloneModeRadio):
                 obj.set_value(val)
 
             if self.MODEL in ["HI-8811", "RT-470L"]:
-                unwanted = [8, 9]
+                unwanted = [8, 9, 10, 11, 12]
             else:
                 unwanted = []
             SKEY3L_CHOICES = ALL_SKEY_CHOICES.copy()
@@ -953,44 +969,47 @@ class JC8810base(chirp_common.CloneModeRadio):
                                     _settings.skey3_lp)
             basic.append(rset)
 
-        if self.MODEL in ["HI-8811", "RT-470", "RT-470L"]:
-            # Menu 25: TOP KEY (RT-470L)
-            def apply_skeytop_listvalue(setting, obj):
-                LOG.debug("Setting value: " + str(setting.value) +
-                          " from list")
-                val = str(setting.value)
-                index = SKEYTOP_CHOICES.index(val)
-                val = SKEYTOP_VALUES[index]
-                obj.set_value(val)
+        # Menu 25: TOP KEY (RT-470L)
+        def apply_skeytop_listvalue(setting, obj):
+            LOG.debug("Setting value: " + str(setting.value) +
+                      " from list")
+            val = str(setting.value)
+            index = SKEYTOP_CHOICES.index(val)
+            val = SKEYTOP_VALUES[index]
+            obj.set_value(val)
 
-            if self.MODEL in ["RT-470"]:
-                # ==========
-                # Notice to developers:
-                # The RT-470 v1.22 firmware added 'hidden' support for the
-                # Top Key (Short Press) feature. RT-470 radios with a firmware
-                # version prior to v1.22 will not honor the Top Key (Short
-                # Press) setting in CHIRP.
-                # ==========
-                unwanted = [0, 7, 8, 9]
-            elif self.MODEL in ["HI-8811", "RT-470L"]:
-                unwanted = [8, 9]
-            else:
-                unwanted = []
-            SKEYTOP_CHOICES = ALL_SKEY_CHOICES.copy()
-            SKEYTOP_VALUES = ALL_SKEY_VALUES.copy()
-            for ele in sorted(unwanted, reverse=True):
-                del SKEYTOP_CHOICES[ele]
-                del SKEYTOP_VALUES[ele]
+        if self.MODEL in ["RT-470"]:
+            # ==========
+            # Notice to developers:
+            # The RT-470 v1.22 firmware added 'hidden' support for the
+            # Top Key (Short Press) feature. RT-470 radios with a firmware
+            # version prior to v1.22 will not honor the Top Key (Short
+            # Press) setting in CHIRP.
+            # ==========
+            unwanted = [0, 7, 8, 9, 10, 11, 12]
+        elif self.MODEL in ["HI-8811", "RT-470L"]:
+            unwanted = [8, 9, 10, 11, 12]
+        elif self.MODEL in ["UV-A37"]:
+            unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
+        elif self.MODEL in ["A36plus"]:
+            unwanted = [0, 5, 7, 8, 9]
+        else:
+            unwanted = []
+        SKEYTOP_CHOICES = ALL_SKEY_CHOICES.copy()
+        SKEYTOP_VALUES = ALL_SKEY_VALUES.copy()
+        for ele in sorted(unwanted, reverse=True):
+            del SKEYTOP_CHOICES[ele]
+            del SKEYTOP_VALUES[ele]
 
-            if _settings.topkey_sp in SKEYTOP_VALUES:
-                idx = SKEYTOP_VALUES.index(_settings.topkey_sp)
-            else:
-                idx = SKEYTOP_VALUES.index(0x1D)  # default SEARCH
-            rs = RadioSettingValueList(SKEYTOP_CHOICES, SKEYTOP_CHOICES[idx])
-            rset = RadioSetting("topkey_sp", "Top Key (Short Press)", rs)
-            rset.set_apply_callback(apply_skeytop_listvalue,
-                                    _settings.topkey_sp)
-            basic.append(rset)
+        if _settings.topkey_sp in SKEYTOP_VALUES:
+            idx = SKEYTOP_VALUES.index(_settings.topkey_sp)
+        else:
+            idx = SKEYTOP_VALUES.index(0x1D)  # default SEARCH
+        rs = RadioSettingValueList(SKEYTOP_CHOICES, SKEYTOP_CHOICES[idx])
+        rset = RadioSetting("topkey_sp", "Top Key (Short Press)", rs)
+        rset.set_apply_callback(apply_skeytop_listvalue,
+                                _settings.topkey_sp)
+        basic.append(rset)
 
         # Mneu 36: TONE
         rs = RadioSettingValueList(TONE_LIST, TONE_LIST[_settings.tone])
@@ -1082,7 +1101,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("beep", "Beep", rs)
         basic.append(rset)
 
-        if self.MODEL not in ["UV-A37"]:
+        if self.MODEL not in ["A36plus", "UV-A37"]:
             # Menu 48: RX END TAIL
             rs = RadioSettingValueList(TONERXEND_LIST,
                                        TONERXEND_LIST[_settings.rxendtail])
@@ -1170,6 +1189,19 @@ class JC8810base(chirp_common.CloneModeRadio):
             rset = RadioSetting("aninames/%i.name" % i,
                                 "ANI Code %i Name" % (i + 31), rs)
             ani.append(rset)
+
+        if self.MODEL == "A36plus":
+            # Menu 21: RX END TAIL
+            rs = RadioSettingValueList(TONERXEND_LIST,
+                                       TONERXEND_LIST[_settings.skey3_lp])
+            rset = RadioSetting("skey3_lp", "RX End Tail", rs)
+            basic.append(rset)
+
+            # Menu 23: TAIL PHASE
+            rs = RadioSettingValueList(TAILPHASE_LIST,
+                                       TAILPHASE_LIST[_settings.rxendtail])
+            rset = RadioSetting("rxendtail", "Tail Phase", rs)
+            basic.append(rset)
 
         return group
 
@@ -1293,6 +1325,41 @@ class UVA37Radio(JC8810base):
     _magic = b"PROGRAMJC37U"
     _fingerprint = [b"\x00\x00\x00\xE4\x00\x20\x94\x04",
                     b"\x00\x00\x00\xE8\x00\x20\x98\x04"]
+
+    _ranges = [
+               (0x0000, 0x2000),
+               (0x8000, 0x8040),
+               (0x9000, 0x9040),
+               (0xA000, 0xA140),
+               (0xB000, 0xB440)
+              ]
+    _memsize = 0xB440
+
+
+@directory.register
+class A36plusRadio(JC8810base):
+    """Talkpod A36plus"""
+    VENDOR = "Talkpod"
+    MODEL = "A36plus"
+
+    # ==========
+    # Notice to developers:
+    # The A36plus support in this driver is currently based upon v1.18
+    # firmware.
+    # ==========
+
+    POWER_LEVELS = [chirp_common.PowerLevel("H", watts=5.00),
+                    chirp_common.PowerLevel("L", watts=1.00)]
+
+    VALID_BANDS = [(108000000, 136000000),
+                   (136000000, 180000000),
+                   (200000000, 260000000),
+                   (350000000, 390000000),
+                   (400000000, 520000000)]
+
+    _magic = b"PROGRAMJC37U"
+    _fingerprint = [b"\x00\x00\x00\x42\x00\x20\xF0\x04",
+                    b"\x00\x00\x00\x5A\x00\x20\x08\x05"]
 
     _ranges = [
                (0x0000, 0x2000),
