@@ -967,42 +967,43 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 #       index into the specific memory object structure (int) ndx
 #       overall index into memory & specials (int) num
 #       an indicator of the specific radio object structure (str)
-    def slotloc(self, memref, extref=None):
+    def slotloc(self, memref: int | str, extref: str=None) \
+                 -> (any, any, int, int, str):
         array = None
         num = memref
-        sname = memref
         mstr = isinstance(memref, str)
         specials = ALLNAMES
         extr = False
         if extref is not None:
             extr = extref in specials
         if mstr or extr:        # named special?
-            # num = self.MAX_MEM_SLOT + 1
-            num = -1
-            nnn = memref if mstr else extref
+            num = self.MAX_MEM_SLOT + 1
+            # num = -1
+            sname = memref if mstr else extref
+            # Find name of appropriate memory and index into that memory
             for x in self.class_specials:
                 try:
-                    ndx = x[1].index(nnn)
+                    ndx = x[1].index(sname)
                     array = x[0]
                     break
                 except Exception:
-                    # num += len(x[1])
-                    num -= len(x[1])
+                    num += len(x[1])
+                    # num -= len(x[1])
             if array is None:
                 raise IndexError("Unknown special %s", memref)
-            # num += ndx
-            num -= ndx
+            num += ndx
+            # num -= ndx
         elif memref > self.MAX_MEM_SLOT:         # numbered special
             ndx = memref - (self.MAX_MEM_SLOT + 1)
-            num = memref
+            # Find name of appropriate memory and index into that memory
+            # But assumes specials are in reverse-quantity order
             for x in self.class_specials:
                 if ndx < len(x[1]):
                     array = x[0]
-                    sname = x[1][ndx]
                     break
-                ndx -= len(x[1])
+                ndx += len(x[1])
             if array is None:
-                raise IndexError("Unknown memref type %s", memref)
+                raise IndexError("Unknown memref number %s", memref)
         else:
             array = "memory"
             ndx = memref - 1
@@ -1017,10 +1018,9 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return (_mem, _flag,  ndx, num, array)
 
     # Build CHIRP version (mem) of radio's memory (_mem)
-    def get_memory(self, number):
+    def get_memory(self, number: int | str) -> chirp_common.Memory:
         _mem, _flag, ndx, num, array = self.slotloc(number)
         mem = chirp_common.Memory()
-        # Assume the global number (num) coming from slotloc is correct
         mem.number = num
         if array == "Home":
             mem.empty = False
@@ -1029,7 +1029,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.immutable += ["empty", "number", "extd_number", "skip"]
         elif array != "memory":
             mem.extd_number = number
-            mem.immutable += ["name"]
+            mem.immutable += ["name", "extd_number"]
         else:
             mem.name = self._decode_label(_mem)
 
@@ -1043,7 +1043,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.empty:
             mem.freq = 0
             mem.offset = 0
-            mem.duplex = "off"
+            mem.duplex = ""
             mem.power = POWER_LEVELS[0]
             mem.mode = "FM"
             mem.tuning_step = 0
@@ -1052,10 +1052,10 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.offset = int(_mem.offset) * 1000
             mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
             self._get_tmode(mem, _mem)
-            if mem.duplex is None or mem.duplex == "off":
+            if mem.duplex is None:
                 mem.duplex = DUPLEX[""]
             else:
-                mem.duplex == DUPLEX[_mem.duplex]
+                mem.duplex = DUPLEX[_mem.duplex]
             if mem.duplex == "split":
                 mem.offset = chirp_common.fix_rounded_step(mem.offset)
             mem.mode = self._decode_mode(_mem)
@@ -1063,6 +1063,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.tuning_step = STEPS[_mem.tune_step]
             mem.power = self._decode_power_level(_mem)
             self._get_mem_extra(mem, _mem)
+        LOG.warn("Exit get_memory: number='%s', mem.number='%s'"
+                 ", mem.extd='%s'", number, mem.number, mem.extd_number)
         return mem
 
     def _get_mem_extra(self, mem, _mem):
@@ -1164,8 +1166,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return freq
 
 # Modify radio's memory (_mem) corresponding to CHIRP version at 'mem'
-    def set_memory(self, mem):
-
+    def set_memory(self, mem: chirp_common.Memory):
         _mem, flag, ndx, num, regtype = self.slotloc(mem.number,
                                                      mem.extd_number)
         LOG.warn("Enter set (no modify mem): "
@@ -1183,7 +1184,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
         # duplex "off" is equivalent to "" and may show up in tox test.
-        if mem.duplex is None or mem.duplex == "off":
+        if mem.duplex is None:
             _mem.duplex = DUPLEX.index("")
         else:
             _mem.duplex = DUPLEX.index(mem.duplex)
