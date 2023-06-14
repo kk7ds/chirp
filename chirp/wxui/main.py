@@ -120,7 +120,17 @@ class ChirpDropTarget(wx.DropTarget):
         return wx.DragNone
 
     def OnDrop(self, x, y):
+        self._main.add_tab_panel.Hide()
         return True
+
+    def OnEnter(self, x, y, defResult):
+        self._main.add_tab_panel.SetSize(self._main._editors.GetSize())
+        self._main.add_tab_panel.Show()
+        return defResult
+
+    def OnLeave(self):
+        self._main.add_tab_panel.Hide()
+        return super().OnLeave()
 
 
 class ChirpEditorSet(wx.Panel):
@@ -422,6 +432,33 @@ class ChirpMain(wx.Frame):
         self.statusbar.SetStatusWidths([-1, 200])
 
         self._update_window_for_editor()
+
+        vbox = wx.BoxSizer()
+        self.SetSizer(vbox)
+        vbox.Add(self._editors, 1, flag=wx.EXPAND)
+
+        self.add_tab_panel = wx.Panel(self, pos=(0, 0), size=(600, 600))
+        self.add_tab_panel.Hide()
+
+        with importlib_resources.as_file(
+            importlib_resources.files('chirp.share')
+            .joinpath('plus-icon.png')
+        ) as icon:
+            self.add_tab_bm = wx.Bitmap(str(icon), wx.BITMAP_TYPE_ANY)
+
+        self.add_tab_panel.Bind(wx.EVT_PAINT, self._paint_add_tab_panel)
+
+    def _paint_add_tab_panel(self, event):
+        panel = event.GetEventObject()
+        dc = wx.PaintDC(panel)
+        dc.SetBackground(wx.Brush("BLACK"))
+
+        img_size = self.add_tab_bm.GetSize()
+        my_size = panel.GetSize()
+        x = (my_size.width // 2) - (img_size.width // 2)
+        y = (my_size.height // 2) - (img_size.width // 2)
+
+        dc.DrawBitmap(self.add_tab_bm, x, y, True)
 
     def _remove_welcome_page(self):
         def remove():
