@@ -417,8 +417,10 @@ class ChirpMain(wx.Frame):
                    wx.aui.AUI_NB_SCROLL_BUTTONS |
                    wx.aui.AUI_NB_WINDOWLIST_BUTTON))
 
-        self._welcome_page = ChirpWelcomePanel(self._editors)
-        self._editors.AddPage(self._welcome_page, _('Welcome'), select=True)
+        if len(ALL_MAIN_WINDOWS) == 1:
+            # Only add the welcome page to the first window opened
+            welcome_page = ChirpWelcomePanel(self._editors)
+            self._editors.AddPage(welcome_page, _('Welcome'), select=True)
 
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self._editor_close)
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CHANGED,
@@ -465,7 +467,6 @@ class ChirpMain(wx.Frame):
             for i in range(self._editors.GetPageCount()):
                 if isinstance(self._editors.GetPage(i), ChirpWelcomePanel):
                     self._editors.RemovePage(i)
-                    self._welcome_page = None
                     break
         wx.CallAfter(remove)
 
