@@ -69,8 +69,6 @@ ALL_MAIN_WINDOWS = []
 
 
 class ChirpDropTarget(wx.DropTarget):
-    DATA_FORMAT = '>iH'
-
     def __init__(self, chirpmain):
         super().__init__()
         self._main = chirpmain
