@@ -967,8 +967,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 #       index into the specific memory object structure (int) ndx
 #       overall index into memory & specials (int) num
 #       an indicator of the specific radio object structure (str)
-    def slotloc(self, memref: int | str,
-                extref: str=None) -> (any, any, int, int, str, str):
+    def slotloc(self, memref: int | str, extref: str=None) \
+            -> (any, any, int, int, str, str):
         array = None
         num = memref
         ename = ""
