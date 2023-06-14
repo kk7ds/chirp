@@ -3,6 +3,8 @@
 # Copyright 2023 Declan Rieb <WD5EQY@arrl.net>
 # Sections of digital settings applied from ft70.py, thus
 # Copyright 2017 Nicolas Pike <nick@zbm2.com>
+# Portions of special memories adapted from ft4.py, thus possibly
+# Copyright 2019 Dan Clemmensen <DanClemmensen@Gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +24,7 @@ import string
 import logging
 
 from chirp.drivers import yaesu_clone
-from chirp import chirp_common, directory, bitwise
+from chirp import chirp_common, directory, bitwise, errors
 from chirp import memmap
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
             RadioSettingValueInteger, RadioSettingValueString, \
@@ -1162,9 +1164,13 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         for bank in bm.get_memory_mappings(mem):
             bm.remove_memory_from_mapping(mem, bank)
 
-    def enforce_band(self, mem, freq, num, regtype):
-        # TODO check band in Home
-        return freq
+    def enforce_band(self, freq: int, num: int) -> int:
+        frange = VALID_BANDS[num]
+        if frange[0] < freq < frange[1]:
+            return freq
+        else:
+            raise errors.RadioError("Freqency %d out of range %s",
+                                    freq, frange)
 
 # Modify radio's memory (_mem) corresponding to CHIRP version at 'mem'
     def set_memory(self, mem: chirp_common.Memory):
@@ -1201,8 +1207,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             flag.skip = mem.skip == "S"
             flag.pskip = mem.skip == "P"
         freq = mem.freq
-        if regtype in ["VFO", "Home"]:
-            freq = self.enforce_band(_mem, mem.freq, ndx, regtype)
+        if regtype in ["Home"]:
+            freq = self.enforce_band(mem.freq, ndx)
         _mem.freq = int(freq / 1000)
         _mem.offset = int(mem.offset / 1000)
         _mem.label = self._encode_label(mem)
