@@ -967,16 +967,18 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 #       index into the specific memory object structure (int) ndx
 #       overall index into memory & specials (int) num
 #       an indicator of the specific radio object structure (str)
-    def slotloc(self, memref: int | str, extref: str=None) \
-                 -> (any, any, int, int, str):
+    def slotloc(self, memref: int | str,
+                extref: str=None) -> (any, any, int, int, str, str):
         array = None
         num = memref
+        ename = ""
         mstr = isinstance(memref, str)
         specials = ALLNAMES
         extr = False
         if extref is not None:
             extr = extref in specials
         if mstr or extr:        # named special?
+            ename = memref
             num = self.MAX_MEM_SLOT + 1
             # num = -1
             sname = memref if mstr else extref
@@ -994,6 +996,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             num += ndx
             # num -= ndx
         elif memref > self.MAX_MEM_SLOT:         # numbered special
+            ename = extref
             ndx = memref - (self.MAX_MEM_SLOT + 1)
             # Find name of appropriate memory and index into that memory
             # But assumes specials are in reverse-quantity order
@@ -1001,7 +1004,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 if ndx < len(x[1]):
                     array = x[0]
                     break
-                ndx += len(x[1])
+                ndx -= len(x[1])
             if array is None:
                 raise IndexError("Unknown memref number %s", memref)
         else:
@@ -1015,20 +1018,20 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         elif array == "Home":
             _flag = None
         _mem = getattr(self._memobj, array)[ndx]
-        return (_mem, _flag,  ndx, num, array)
+        return (_mem, _flag,  ndx, num, array, ename)
 
     # Build CHIRP version (mem) of radio's memory (_mem)
     def get_memory(self, number: int | str) -> chirp_common.Memory:
-        _mem, _flag, ndx, num, array = self.slotloc(number)
+        _mem, _flag, ndx, num, array, ename = self.slotloc(number)
         mem = chirp_common.Memory()
         mem.number = num
         if array == "Home":
             mem.empty = False
-            mem.extd_number = number
+            mem.extd_number = ename
             mem.name = self._decode_label(_mem)
             mem.immutable += ["empty", "number", "extd_number", "skip"]
         elif array != "memory":
-            mem.extd_number = number
+            mem.extd_number = ename
             mem.immutable += ["name", "extd_number"]
         else:
             mem.name = self._decode_label(_mem)
@@ -1063,8 +1066,6 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.tuning_step = STEPS[_mem.tune_step]
             mem.power = self._decode_power_level(_mem)
             self._get_mem_extra(mem, _mem)
-        LOG.warn("Exit get_memory: number='%s', mem.number='%s'"
-                 ", mem.extd='%s'", number, mem.number, mem.extd_number)
         return mem
 
     def _get_mem_extra(self, mem, _mem):
@@ -1167,12 +1168,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
 # Modify radio's memory (_mem) corresponding to CHIRP version at 'mem'
     def set_memory(self, mem: chirp_common.Memory):
-        _mem, flag, ndx, num, regtype = self.slotloc(mem.number,
-                                                     mem.extd_number)
-        LOG.warn("Enter set (no modify mem): "
-                 "number='%s', extdN='%s', ndx=%d, num=%d,"
-                 "array='%s'\nMem='%s'",
-                 mem.number, mem.extd_number, ndx, num, regtype, mem)
+        _mem, flag, ndx, num, regtype, ename = self.slotloc(mem.number,
+                                                            mem.extd_number)
         if mem.empty:
             self._wipe_memory(_mem)
             if flag is not None:
@@ -1211,8 +1208,6 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.label = self._encode_label(mem)
         _mem.charsetbits = self._encode_charsetbits(mem)
         self._set_mem_extra(mem, _mem)
-        LOG.warn("End set_mem: ndx='%s', Num='%s', type='%s '%s', %s, %s",
-                 ndx, num, regtype, mem, _mem, flag)
         return
 
     @classmethod
