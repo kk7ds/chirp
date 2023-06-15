@@ -901,6 +901,7 @@ THF6A_DUPLEX[3] = "split"
 class THF6ARadio(KenwoodLiveRadio):
     """Kenwood TH-F6"""
     MODEL = "TH-F6"
+    HARDWARE_FLOW = False
 
     _charset = chirp_common.CHARSET_ASCII
     _upper = 399
