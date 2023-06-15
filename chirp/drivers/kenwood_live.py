@@ -83,7 +83,7 @@ def _command(ser, cmd, *args):
     result = ""
     while not result.endswith(LAST_DELIMITER[0]):
         result += ser.read(COMMAND_RESP_BUFSIZE).decode('cp1252')
-        if (time.time() - start) > 0.5:
+        if (time.time() - start) > 1:  # TXH sometimes takes longer on TH-D7G
             LOG.error("Timeout waiting for data")
             break
 
@@ -395,8 +395,10 @@ class KenwoodOldLiveRadio(KenwoodLiveRadio):
 class THD7Radio(KenwoodOldLiveRadio):
     """Kenwood TH-D7"""
     MODEL = "TH-D7"
+    HARDWARE_FLOW = False
 
     _kenwood_split = True
+    _upper = 199
 
     _BEP_OPTIONS = ["Off", "Key", "Key+Data", "All"]
     _POSC_OPTIONS = ["Off Duty", "Enroute", "In Service", "Returning",
@@ -444,7 +446,7 @@ class THD7Radio(KenwoodOldLiveRadio):
             chirp_common.CHARSET_ALPHANUMERIC + "/.-+*)('&%$#! ~}|{"
         rf.valid_name_length = 7
         rf.valid_tuning_steps = STEPS
-        rf.memory_bounds = (1, self._upper)
+        rf.memory_bounds = (0, self._upper)
         return rf
 
     def _make_mem_spec(self, mem):
@@ -484,6 +486,8 @@ class THD7Radio(KenwoodOldLiveRadio):
         mem.ctone = self._kenwood_valid_tones[int(spec[12]) - 1]
         if spec[11] and spec[11].isdigit():
             mem.dtcs = chirp_common.DTCS_CODES[int(spec[11][:-1]) - 1]
+        elif spec[11] == '':
+            pass
         else:
             LOG.warn("Unknown or invalid DCS: %s" % spec[11])
         if spec[13]:
@@ -592,7 +596,7 @@ class THD7Radio(KenwoodOldLiveRadio):
             group.append(rs)
 
         strings = [("MES", display, "Power-on Message", 8),
-                   ("MYC", aprs, "APRS Callsign", 8),
+                   ("MYC", aprs, "APRS Callsign", 9),
                    ("PP", aprs, "APRS Path", 32),
                    ("SCC", sky, "SkyCommand Callsign", 8),
                    ("SCT", sky, "SkyCommand To Callsign", 8),
@@ -601,7 +605,7 @@ class THD7Radio(KenwoodOldLiveRadio):
         for setting, group, name, length in strings:
             _cmd, value = self._kenwood_get(setting)
             rs = RadioSetting(setting, name,
-                              RadioSettingValueString(0, length, value))
+                              RadioSettingValueString(0, length, value, False))
             group.append(rs)
 
         return top
@@ -611,6 +615,19 @@ class THD7Radio(KenwoodOldLiveRadio):
 class THD7GRadio(THD7Radio):
     """Kenwood TH-D7G"""
     MODEL = "TH-D7G"
+
+    _SETTINGS_OPTIONS = {
+        "BEPT": ["Off", "Mine", "All New", "All"],  # Added "All"
+    }
+
+    def _get_setting_options(self, setting):
+        if setting in self._SETTINGS_OPTIONS:
+            opts = self._SETTINGS_OPTIONS[setting]
+        else:
+            opts = super()._SETTINGS_OPTIONS[setting]
+            if opts is None:
+                opts = getattr(self, '_%s_OPTIONS' % setting)
+        return opts
 
     def get_features(self):
         rf = super(THD7GRadio, self).get_features()
