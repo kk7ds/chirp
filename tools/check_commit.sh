@@ -63,9 +63,8 @@ if git log ${BASE}.. --merges | grep .; then
     fail Please do not include merge commits in your PR
 fi
 
-make -C chirp/locale clean all >/dev/null
+make -C chirp/locale clean all >/dev/null 2>&1
 if git diff chirp/locale | grep '^\+[^#+]' | grep -v POT-Creation; then
-    git diff
     fail Locale files need updating
 fi
 
