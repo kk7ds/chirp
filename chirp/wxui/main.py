@@ -69,8 +69,6 @@ ALL_MAIN_WINDOWS = []
 
 
 class ChirpDropTarget(wx.DropTarget):
-    DATA_FORMAT = '>iH'
-
     def __init__(self, chirpmain):
         super().__init__()
         self._main = chirpmain
@@ -120,7 +118,17 @@ class ChirpDropTarget(wx.DropTarget):
         return wx.DragNone
 
     def OnDrop(self, x, y):
+        self._main.add_tab_panel.Hide()
         return True
+
+    def OnEnter(self, x, y, defResult):
+        self._main.add_tab_panel.SetSize(self._main._editors.GetSize())
+        self._main.add_tab_panel.Show()
+        return defResult
+
+    def OnLeave(self):
+        self._main.add_tab_panel.Hide()
+        return super().OnLeave()
 
 
 class ChirpEditorSet(wx.Panel):
@@ -407,8 +415,10 @@ class ChirpMain(wx.Frame):
                    wx.aui.AUI_NB_SCROLL_BUTTONS |
                    wx.aui.AUI_NB_WINDOWLIST_BUTTON))
 
-        self._welcome_page = ChirpWelcomePanel(self._editors)
-        self._editors.AddPage(self._welcome_page, _('Welcome'), select=True)
+        if len(ALL_MAIN_WINDOWS) == 1:
+            # Only add the welcome page to the first window opened
+            welcome_page = ChirpWelcomePanel(self._editors)
+            self._editors.AddPage(welcome_page, _('Welcome'), select=True)
 
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self._editor_close)
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CHANGED,
@@ -423,12 +433,38 @@ class ChirpMain(wx.Frame):
 
         self._update_window_for_editor()
 
+        vbox = wx.BoxSizer()
+        self.SetSizer(vbox)
+        vbox.Add(self._editors, 1, flag=wx.EXPAND)
+
+        self.add_tab_panel = wx.Panel(self, pos=(0, 0), size=(600, 600))
+        self.add_tab_panel.Hide()
+
+        with importlib_resources.as_file(
+            importlib_resources.files('chirp.share')
+            .joinpath('plus-icon.png')
+        ) as icon:
+            self.add_tab_bm = wx.Bitmap(str(icon), wx.BITMAP_TYPE_ANY)
+
+        self.add_tab_panel.Bind(wx.EVT_PAINT, self._paint_add_tab_panel)
+
+    def _paint_add_tab_panel(self, event):
+        panel = event.GetEventObject()
+        dc = wx.PaintDC(panel)
+        dc.SetBackground(wx.Brush("BLACK"))
+
+        img_size = self.add_tab_bm.GetSize()
+        my_size = panel.GetSize()
+        x = (my_size.width // 2) - (img_size.width // 2)
+        y = (my_size.height // 2) - (img_size.width // 2)
+
+        dc.DrawBitmap(self.add_tab_bm, x, y, True)
+
     def _remove_welcome_page(self):
         def remove():
             for i in range(self._editors.GetPageCount()):
                 if isinstance(self._editors.GetPage(i), ChirpWelcomePanel):
                     self._editors.RemovePage(i)
-                    self._welcome_page = None
                     break
         wx.CallAfter(remove)
 
