@@ -126,7 +126,7 @@ class FTM3200Radio(ft1d.FT1Radio):
 
     def _decode_label(self, mem):
         # TODO preserve the unknown \x80-x86 chars?
-        return str(mem.label).rstrip("\xFF")
+        return str(mem.label).rstrip("\xFF").rstrip()
 
     def _encode_label(self, mem):
         label = mem.name.rstrip().encode('ascii', 'ignore')
@@ -137,14 +137,17 @@ class FTM3200Radio(ft1d.FT1Radio):
         # as a name or frequency. Should we expose this setting to the user
         # instead of autoselecting it (and losing their preference)?
         if mem.name.rstrip() == '':
-            return [0x00, 0x00]
-        return [0x00, 0x80]
+            return 0x0000
+        return 0x0080
 
     def _decode_power_level(self, mem):
         return POWER_LEVELS[mem.power - 1]
 
     def _encode_power_level(self, mem):
-        return POWER_LEVELS.index(mem.power) + 1
+        if mem.power is None:
+            return 1
+        else:
+            return POWER_LEVELS.index(mem.power) + 1
 
     def _decode_mode(self, mem):
         return MODES[mem.mode_alt]

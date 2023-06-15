@@ -969,8 +969,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 #       index into the specific memory object structure (int) ndx
 #       overall index into memory & specials (int) num
 #       an indicator of the specific radio object structure (str)
-    def slotloc(self, memref: int | str, extref: str=None) \
-            -> (any, any, int, int, str, str):
+    def slotloc(self, memref, extref=None):
         array = None
         num = memref
         ename = ""
@@ -1023,7 +1022,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return (_mem, _flag,  ndx, num, array, ename)
 
     # Build CHIRP version (mem) of radio's memory (_mem)
-    def get_memory(self, number: int | str) -> chirp_common.Memory:
+    def get_memory(self, number):
         _mem, _flag, ndx, num, array, ename = self.slotloc(number)
         mem = chirp_common.Memory()
         mem.number = num
@@ -1173,7 +1172,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                                     freq, frange)
 
 # Modify radio's memory (_mem) corresponding to CHIRP version at 'mem'
-    def set_memory(self, mem: chirp_common.Memory):
+    def set_memory(self, mem):
         _mem, flag, ndx, num, regtype, ename = self.slotloc(mem.number,
                                                             mem.extd_number)
         if mem.empty:
