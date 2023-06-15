@@ -1039,6 +1039,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         lower, upper = self._features.memory_bounds
 
+        def setlabel(row, number):
+            self._grid.SetRowLabelValue(row, '%s' % number)
+
         # Build our row label renderers so we can set colors to
         # indicate success or failure
         self._row_label_renderers = []
@@ -1050,11 +1053,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         row = 0
         for i in range(lower, upper + 1):
+            setlabel(row, i)
             row += 1
             self.refresh_memory(i, lazy=True)
 
         for i in self._features.valid_special_chans:
             self._special_rows[i] = row
+            setlabel(row, i)
             row += 1
             self.refresh_memory(i, lazy=True)
 
