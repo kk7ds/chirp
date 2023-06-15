@@ -11,7 +11,10 @@ jobs:
                   sudo apt-get update
                   sudo apt-get install gettext
             - name: Checkout
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
+              with:
+                fetch-depth: 0
+                ref: ${{ github.event.pull_request.head.sha }}
             - name: Run check_commit.sh
               run: |
                   git fetch origin $GITHUB_BASE_REF || true
