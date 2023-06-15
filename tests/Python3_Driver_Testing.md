@@ -335,6 +335,7 @@
 | <a name="TYT_TH9000_144"></a> TYT_TH9000_144 | [Implied by Retevis_RT9000D_136-174](#user-content-Retevis_RT9000D_136-174) | 8-Dec-2022 | Yes | 0.06% |
 | <a name="TYT_TH9000_220"></a> TYT_TH9000_220 | [Implied by Retevis_RT9000D_220-260](#user-content-Retevis_RT9000D_220-260) | 8-Dec-2022 | Yes | 0.04% |
 | <a name="TYT_TH9000_440"></a> TYT_TH9000_440 | [Implied by Retevis_RT9000D_400-490](#user-content-Retevis_RT9000D_400-490) | 8-Dec-2022 | Yes | 0.04% |
+| <a name="Talkpod_A36plus"></a> Talkpod_A36plus | [@KC9HI](https://github.com/KC9HI) | 12-Jun-2023 | Yes |  |
 | <a name="Vertex_Standard_FTL-1011"></a> Vertex_Standard_FTL-1011 |  |  |  | 0.02% |
 | <a name="Vertex_Standard_FTL-2011"></a> Vertex_Standard_FTL-2011 |  |  |  | 0.05% |
 | <a name="Vertex_Standard_FTL-7011"></a> Vertex_Standard_FTL-7011 |  |  |  | 0.03% |
@@ -409,11 +410,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 406
+**Drivers:** 407
 
-**Tested:** 86% (350/56) (93% of usage stats)
+**Tested:** 86% (351/56) (93% of usage stats)
 
-**Byte clean:** 89% (365/41)
+**Byte clean:** 89% (366/41)
 
 ## Meaning of this testing
 

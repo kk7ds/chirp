@@ -377,7 +377,9 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
 #
     @classmethod
     def match_model(cls, filedata, filename):
-        return cls._file_ident in b'kg' + filedata[0x426:0x430].replace(b'(', b'').replace(b')', b'').lower()
+        return (cls._file_ident in b'kg' +
+                filedata[0x426:0x430].replace(b'(', b'').replace(b')',
+                                                                 b'').lower())
 
     def _identify(self):
         """Do the identification dance"""
@@ -507,7 +509,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
         rf.valid_name_length = 8
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_bands = [(134000000, 175000000),  # supports 2m
-                          (400000000, 520000000)]  # supports 70cm
+                          (300000000, 520000000)]  # supports 70cm
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_tuning_steps = STEPS
         rf.memory_bounds = (1, 999)  # 999 memories
@@ -527,11 +529,11 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
     def _get_tone(self, _mem, mem):
         def _get_dcs(val):
             code = int("%03o" % (val & 0x07FF))
-            pol = (val & 0x8000) and "R" or "N"
+            pol = (val & 0x2000) and "R" or "N"
             return code, pol
 
         tpol = False
-        if _mem.txtone != 0xFFFF and (_mem.txtone & 0x2800) == 0x2800:
+        if _mem.txtone != 0xFFFF and (_mem.txtone & 0x4000) == 0x4000:
             tcode, tpol = _get_dcs(_mem.txtone)
             mem.dtcs = tcode
             txmode = "DTCS"
@@ -542,7 +544,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
             txmode = ""
 
         rpol = False
-        if _mem.rxtone != 0xFFFF and (_mem.rxtone & 0x2800) == 0x2800:
+        if _mem.rxtone != 0xFFFF and (_mem.rxtone & 0x4000) == 0x4000:
             rcode, rpol = _get_dcs(_mem.rxtone)
             mem.rx_dtcs = rcode
             rxmode = "DTCS"
@@ -613,9 +615,9 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
 
     def _set_tone(self, mem, _mem):
         def _set_dcs(code, pol):
-            val = int("%i" % code, 8) + 0x2800
+            val = int("%i" % code, 8) + 0x4000
             if pol == "R":
-                val += 0x8000
+                val += 0x2000
             return val
 
         rx_mode = tx_mode = None
@@ -742,7 +744,8 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("roger_beep", "Roger Beep",
                           RadioSettingValueList(ROGER_LIST,
-                                                ROGER_LIST[_settings.roger_beep]))
+                                                ROGER_LIST[
+                                                    _settings.roger_beep]))
         cfg_grp.append(rs)
         rs = RadioSetting("power_save", "Power save",
                           RadioSettingValueBoolean(_settings.power_save))
@@ -846,11 +849,12 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
                                                               smuteset]))
         cfg_grp.append(rs)
 
-        #
         # VFO A Settings
         #
         rs = RadioSetting("workmode_a", "VFO A Workmode",
-                          RadioSettingValueList(WORKMODE_LIST, WORKMODE_LIST[_settings.workmode_a]))
+                          RadioSettingValueList(WORKMODE_LIST,
+                                                WORKMODE_LIST[
+                                                    _settings.workmode_a]))
         vfoa_grp.append(rs)
         rs = RadioSetting("work_cha", "VFO A Channel",
                           RadioSettingValueInteger(1, 999, _settings.work_cha))
@@ -890,11 +894,12 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_settings.bcl_a))
         vfoa_grp.append(rs)
 
-        #
         # VFO B Settings
         #
         rs = RadioSetting("workmode_b", "VFO B Workmode",
-                          RadioSettingValueList(WORKMODE_LIST, WORKMODE_LIST[_settings.workmode_b]))
+                          RadioSettingValueList(WORKMODE_LIST,
+                                                WORKMODE_LIST[
+                                                    _settings.workmode_b]))
         vfob_grp.append(rs)
         rs = RadioSetting("work_chb", "VFO B Channel",
                           RadioSettingValueInteger(1, 999, _settings.work_chb))
@@ -934,7 +939,6 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_settings.bcl_b))
         vfob_grp.append(rs)
 
-        #
         # Key Settings
         #
         _msg = str(_settings.dispstr).split("\0")[0]
@@ -977,12 +981,12 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
         #
         rs = RadioSetting("uhf_limits.rx_start", "UHF RX Lower Limit",
                           RadioSettingValueInteger(
-                              400000000, 520000000,
+                              300000000, 520000000,
                               self._memobj.uhf_limits.rx_start * 10, 5000))
         uhf_lmt_grp.append(rs)
         rs = RadioSetting("uhf_limits.rx_stop", "UHF RX Upper Limit",
                           RadioSettingValueInteger(
-                              400000000, 520000000,
+                              300000000, 520000000,
                               self._memobj.uhf_limits.rx_stop * 10, 5000))
         uhf_lmt_grp.append(rs)
         rs = RadioSetting("uhf_limits.tx_start", "UHF TX Lower Limit",
@@ -1063,7 +1067,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
     def get_settings(self):
         try:
             return self._get_settings()
-        except:
+        except Exception:
             import traceback
             LOG.error("Failed to parse settings: %s", traceback.format_exc())
             return None
@@ -1094,7 +1098,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
                             setattr(obj, setting, int(element.value)/10)
                         else:
                             setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug(element.get_name())
                     raise
 
