@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-13 18:59-0700\n"
-"PO-Revision-Date: 2023-06-12 21:31-0400\n"
+"PO-Revision-Date: 2023-06-14 20:29-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1648,7 +1648,7 @@ msgstr "Ocultar memorias vacías"
 #: ../wxui/memedit.py:683
 #, python-format
 msgid "Hold %(key)s to drag multiple memories"
-msgstr ""
+msgstr "Mantén presionada %(key)s para arrastrar múltiples memorias"
 
 #: ../wxui/query_sources.py:293 ../wxui/query_sources.py:299
 msgid "If set, sort results by distance from these coordinates"
@@ -1820,7 +1820,7 @@ msgstr "Mover arriba"
 
 #: ../wxui/main.py:577
 msgid "New Window"
-msgstr ""
+msgstr "Nueva ventana"
 
 #: ../wxui/main.py:1619
 msgid "New version available"
@@ -1889,7 +1889,7 @@ msgstr "Abrir registro de depuración"
 
 #: ../wxui/main.py:468
 msgid "Open in new window"
-msgstr ""
+msgstr "Abrir en nueva ventana"
 
 #: ../wxui/query_sources.py:298
 msgid "Optional: -122.0000"
