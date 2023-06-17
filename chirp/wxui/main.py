@@ -1640,8 +1640,8 @@ def display_update_notice(version):
     if CHIRP_VERSION.endswith('dev'):
         return
 
-    # Report new updates every three days
-    intv = 3600 * 24 * 3
+    # Report new updates occasionally
+    intv = 3600 * 24 * 7
 
     if CONF.is_defined("last_update_check", "state") and \
        (time.time() - CONF.get_int("last_update_check", "state")) < intv:
