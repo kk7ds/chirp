@@ -74,8 +74,8 @@ class FTM7250Radio(ft1d.FT1Radio):
     _has_vibrate = False
     _has_af_dual = False
 
-    _mem_params = (199,            # size of memories array
-                   199)            # size of flags array
+    _mem_params = {'memnum': 199,            # size of memories array
+                   'flgnum': 199}            # size of flags array
 
     @classmethod
     def get_prompts(cls):
@@ -137,14 +137,17 @@ class FTM7250Radio(ft1d.FT1Radio):
         # as a name or frequency. Should we expose this setting to the user
         # instead of autoselecting it (and losing their preference)?
         if mem.name.rstrip() == '':
-            return [0x00, 0x00]
-        return [0x00, 0x80]
+            return 0x00
+        return 0x00
 
     def _decode_power_level(self, mem):
         return POWER_LEVELS[mem.power - 1]
 
     def _encode_power_level(self, mem):
-        return POWER_LEVELS.index(mem.power) + 1
+        if mem.power is None:
+            return 3
+        else:
+            return 3 - POWER_LEVELS.index(mem.power)
 
     def _decode_mode(self, mem):
         return MODES[mem.mode_alt]
