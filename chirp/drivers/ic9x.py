@@ -16,6 +16,7 @@
 import time
 import threading
 import logging
+import uuid
 
 from chirp.drivers import ic9x_ll, icf
 from chirp import chirp_common, errors, util, directory
@@ -50,7 +51,53 @@ IC9X_SPECIAL = {
 CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
     "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
 
-LOCK = threading.Lock()
+
+class Lock:
+    """Maintains the state of an ic9x
+
+    This makes sure that only one RadioThread accesses the radio at one
+    time. It also keeps track of the last successful unlock of the radio
+    so that we know when to re-send the magic wakeup sequence.
+    """
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.id = str(uuid.uuid4())
+        self._last = 0
+
+    def __enter__(self):
+        LOG.debug('%s locking', self.id)
+        self.lock.acquire()
+        LOG.debug('%s locked', self.id)
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        self.lock.release()
+        if exc_type is None:
+            self._last = time.time()
+        LOG.debug('%s unlocked success=%s', self.id, exc_type is None)
+
+    def __repr__(self):
+        return '<IC9x Lock %s>' % self.id
+
+    @property
+    def stale(self):
+        return time.time() - self._last > 4
+
+
+def locked(fn):
+    """Decorator for operations that talk to the radio.
+
+    Runs them with the lock and sends the magic wakeup if the timer is
+    expired.
+    """
+    def _lock(self, *a, **k):
+        with self._lock:
+            LOG.debug('Locked for %s', fn.__name__)
+            if self._lock.stale:
+                LOG.debug('Doing wakeup')
+                self._init()
+            r = fn(self, *a, **k)
+            return r
+    return _lock
 
 
 class IC9xBank(icf.IcomNamedBank):
@@ -73,7 +120,6 @@ class IC9xRadio(icf.IcomLiveRadio):
 
     _model = "ic9x"    # Fake model info for detect.py
     vfo = 0
-    _last = 0
     _upper = 300
 
     _num_banks = 26
@@ -97,24 +143,40 @@ class IC9xRadio(icf.IcomLiveRadio):
         mem._bank_index = index
         self.set_memory(mem)
 
-    def __init__(self, *args, **kwargs):
-        icf.IcomLiveRadio.__init__(self, *args, **kwargs)
+    def _init(self):
+        """Does the magic wakeup dance"""
+        self.pipe.baudrate = 4800
+        self.pipe.timeout = 1
+        for i in range(5):
+            buf = (b'\xfe' * 8) * 20 + (
+                b'\xfe\xfe\x01\x80\x19\xfd')
+            self.pipe.write(buf)
+            time.sleep(0.1)
+            resp = self.pipe.read(5)
+            if b'\x80\x01\x19' in resp:
+                LOG.debug('Radio responded to wakeup attempt %i' % (i + 1))
+                self.pipe.baudrate = 38400
+                while True:
+                    r = ic9x_ll.ic9x_recv(self.pipe)
+                    if not r:
+                        break
+                    LOG.debug('Got post-wakeup response: %r' % r)
+                return
+            time.sleep(1)
+        LOG.warning('Made %i attempts to wake radio', i + 1)
+        raise errors.RadioError('Radio not responding')
 
-        if self.pipe:
-            self.pipe.timeout = 0.1
+    def __init__(self, *args, **kwargs):
+        if 'lock' in kwargs:
+            self._lock = kwargs.pop('lock')
+        else:
+            self._lock = Lock()
+        super().__init__(*args, **kwargs)
 
         self.__memcache = {}
         self.__bankcache = {}
 
-        global LOCK
-        self._lock = LOCK
-
-    def _maybe_send_magic(self):
-        if (time.time() - self._last) > 1:
-            LOG.debug("Sending magic %i %i" % (time.time(), self._last))
-            ic9x_ll.send_magic(self.pipe)
-        self._last = time.time()
-
+    @locked
     def get_memory(self, number):
         if isinstance(number, str):
             try:
@@ -129,20 +191,13 @@ class IC9xRadio(icf.IcomLiveRadio):
         if number in self.__memcache:
             return self.__memcache[number]
 
-        self._lock.acquire()
         try:
-            self._maybe_send_magic()
             mem = ic9x_ll.get_memory(self.pipe, self.vfo, number)
         except errors.InvalidMemoryLocation:
             mem = chirp_common.Memory()
             mem.number = number
             if number < self._upper:
                 mem.empty = True
-        except:
-            self._lock.release()
-            raise
-
-        self._lock.release()
 
         if number > self._upper or number < 0:
             mem.extd_number = util.get_dict_rev(IC9X_SPECIAL,
@@ -154,17 +209,9 @@ class IC9xRadio(icf.IcomLiveRadio):
 
         return mem
 
+    @locked
     def get_raw_memory(self, number):
-        self._lock.acquire()
-        try:
-            ic9x_ll.send_magic(self.pipe)
-            mframe = ic9x_ll.get_memory_frame(self.pipe, self.vfo, number)
-        except:
-            self._lock.release()
-            raise
-
-        self._lock.release()
-
+        mframe = ic9x_ll.get_memory_frame(self.pipe, self.vfo, number)
         return repr(bitwise.parse(ic9x_ll.MEMORY_FRAME_FORMAT, mframe))
 
     def get_memories(self, lo=0, hi=None):
@@ -188,6 +235,7 @@ class IC9xRadio(icf.IcomLiveRadio):
 
         return memories
 
+    @locked
     def set_memory(self, _memory):
         # Make sure we mirror the DV-ness of the new memory we're
         # setting, and that we capture the Bank value of any currently
@@ -200,43 +248,30 @@ class IC9xRadio(icf.IcomLiveRadio):
         else:
             if isinstance(_memory, chirp_common.DVMemory):
                 memory = ic9x_ll.IC9xDVMemory()
-                memory.clone(self.get_memory(_memory.number))
             else:
                 memory = ic9x_ll.IC9xMemory()
-                memory.clone(self.get_memory(_memory.number))
-
+            try:
+                memory.clone(ic9x_ll.get_memory(self.pipe, self.vfo,
+                                                _memory.number))
+            except errors.InvalidMemoryLocation:
+                pass
             memory.clone(_memory)
 
-        self._lock.acquire()
-        self._maybe_send_magic()
-        try:
-            if memory.empty:
-                ic9x_ll.erase_memory(self.pipe, self.vfo, memory.number)
-            else:
-                ic9x_ll.set_memory(self.pipe, self.vfo, memory)
+        if memory.empty:
+            ic9x_ll.erase_memory(self.pipe, self.vfo, memory.number)
+        else:
+            ic9x_ll.set_memory(self.pipe, self.vfo, memory)
             memory = ic9x_ll.get_memory(self.pipe, self.vfo, memory.number)
-        except:
-            self._lock.release()
-            raise
-
-        self._lock.release()
 
         self.__memcache[memory.number] = memory
 
+    @locked
     def _ic9x_get_banks(self):
         if len(list(self.__bankcache.keys())) == 26:
             return [self.__bankcache[k] for k in
                     sorted(self.__bankcache.keys())]
 
-        self._lock.acquire()
-        try:
-            self._maybe_send_magic()
-            banks = ic9x_ll.get_banks(self.pipe, self.vfo)
-        except:
-            self._lock.release()
-            raise
-
-        self._lock.release()
+        banks = ic9x_ll.get_banks(self.pipe, self.vfo)
 
         i = 0
         for bank in banks:
@@ -245,6 +280,7 @@ class IC9xRadio(icf.IcomLiveRadio):
 
         return banks
 
+    @locked
     def _ic9x_set_banks(self, banks):
 
         if len(banks) != len(list(self.__bankcache.keys())):
@@ -264,18 +300,11 @@ class IC9xRadio(icf.IcomLiveRadio):
                           (chr(i + ord("A")), cached_names[i], banks[i]))
 
         if need_update:
-            self._lock.acquire()
-            try:
-                self._maybe_send_magic()
-                ic9x_ll.set_banks(self.pipe, self.vfo, banks)
-            except:
-                self._lock.release()
-                raise
-
-            self._lock.release()
+            ic9x_ll.set_banks(self.pipe, self.vfo, banks)
 
     def get_sub_devices(self):
-        return [IC9xRadioA(self.pipe), IC9xRadioB(self.pipe)]
+        return [IC9xRadioA(self.pipe, lock=self._lock),
+                IC9xRadioB(self.pipe, lock=self._lock)]
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -336,25 +365,26 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
         return rf
 
     def __init__(self, *args, **kwargs):
-        IC9xRadio.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.__rcalls = []
         self.__mcalls = []
         self.__ucalls = []
 
+    @locked
     def __get_call_list(self, cache, cstype, ulimit):
         if cache:
             return cache
 
         calls = []
 
-        self._maybe_send_magic()
         for i in range(ulimit - 1):
             call = ic9x_ll.get_call(self.pipe, cstype, i+1)
             calls.append(call)
 
         return calls
 
+    @locked
     def __set_call_list(self, cache, cstype, ulimit, calls):
         for i in range(ulimit - 1):
             blank = " " * 8
@@ -372,7 +402,6 @@ class IC9xRadioB(IC9xRadio, chirp_common.IcomDstarSupport):
             if acall == bcall:
                 continue    # No change to this one
 
-            self._maybe_send_magic()
             ic9x_ll.set_call(self.pipe, cstype, i + 1, calls[i])
 
         return calls
