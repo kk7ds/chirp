@@ -19,12 +19,8 @@
 
 from chirp.drivers import ft817
 from chirp import chirp_common, errors, directory
-from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettings
+from chirp.settings import RadioSetting, RadioSettingValueBoolean
 import logging
-from chirp.util import safe_charset_string
 
 LOG = logging.getLogger(__name__)
 

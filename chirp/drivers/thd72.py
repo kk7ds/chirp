@@ -14,12 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, errors, util, directory
+from chirp import chirp_common, errors, directory
 from chirp import bitwise, memmap
 from chirp.drivers import kenwood_live
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings
-from chirp.settings import RadioSettingValueInteger, RadioSettingValueString
-from chirp.settings import RadioSettingValueList, RadioSettingValueBoolean
+from chirp.settings import RadioSettingValueString
+from chirp.settings import RadioSettingValueList
 import time
 import struct
 import sys
@@ -774,7 +774,6 @@ class THD72Radio(chirp_common.CloneModeRadio):
 if __name__ == "__main__":
     import sys
     import serial
-    import detect
     import getopt
 
     def fixopts(opts):

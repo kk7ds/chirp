@@ -20,9 +20,8 @@ import re
 from chirp.drivers import yaesu_clone
 from chirp import chirp_common, memmap, directory, bitwise, errors
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettings
+    RadioSettingValueList, RadioSettingValueBoolean, \
+    RadioSettingValueString, RadioSettings
 
 from collections import defaultdict
 

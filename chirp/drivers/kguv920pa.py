@@ -21,8 +21,7 @@ from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueInteger, RadioSettingValueString, \
-    RadioSettingValueMap, RadioSettingValueFloat, RadioSettings, \
-    InvalidValueError
+    RadioSettingValueMap, RadioSettingValueFloat, RadioSettings
 import struct
 
 LOG = logging.getLogger(__name__)

@@ -22,7 +22,7 @@ from chirp import bitwise, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
-    InvalidValueError, RadioSettings
+    RadioSettings
 
 LOG = logging.getLogger(__name__)
 

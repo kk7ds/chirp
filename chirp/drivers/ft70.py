@@ -21,8 +21,7 @@ from chirp import chirp_common, directory, bitwise
 from chirp import errors
 from chirp import memmap
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
-    RadioSettingValueInteger, RadioSettingValueString, \
-    RadioSettingValueList, RadioSettingValueBoolean, \
+    RadioSettingValueString, RadioSettingValueList, \
     InvalidValueError
 from chirp import util
 

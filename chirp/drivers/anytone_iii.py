@@ -26,7 +26,7 @@ from chirp import util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettingValueFloat, InvalidValueError, RadioSettings
+    RadioSettingValueFloat, RadioSettings
 
 
 class ATBankModel(chirp_common.BankModel):

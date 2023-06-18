@@ -19,8 +19,8 @@
 import time
 import struct
 import logging
-from chirp import chirp_common, directory, memmap
-from chirp import bitwise, errors, util
+from chirp import chirp_common, memmap
+from chirp import errors, util
 from chirp import bandplan_na
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList

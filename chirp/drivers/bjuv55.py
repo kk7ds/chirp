@@ -18,7 +18,7 @@
 import logging
 
 from chirp.drivers import uv5r
-from chirp import chirp_common, errors, util, directory, memmap
+from chirp import chirp_common, directory
 from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \

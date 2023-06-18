@@ -31,7 +31,6 @@ from chirp.settings import (
     RadioSettingValueBoolean,
     RadioSettingValueInteger,
     RadioSettingValueList,
-    RadioSettingValueString,
 )
 
 LOG = logging.getLogger(__name__)

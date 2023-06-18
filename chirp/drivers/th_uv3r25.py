@@ -19,8 +19,7 @@ from chirp import chirp_common, bitwise, directory
 from chirp.drivers.wouxun import do_download, do_upload
 
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString
+    RadioSettingValueList, RadioSettingValueBoolean
 
 from chirp.drivers.th_uv3r import TYTUV3RRadio, tyt_uv3r_prep, THUV3R_CHARSET
 

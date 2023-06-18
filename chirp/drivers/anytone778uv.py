@@ -43,8 +43,7 @@ from chirp import chirp_common, directory, memmap, errors, util
 from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
-    RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettingValueFloat, RadioSettings, InvalidValueError
+    RadioSettingValueString, RadioSettings
 
 import struct
 import time

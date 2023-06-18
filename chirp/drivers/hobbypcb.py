@@ -16,8 +16,7 @@
 import logging
 import time
 
-from chirp import chirp_common, directory, memmap, errors
-from chirp import bitwise
+from chirp import chirp_common, directory, errors
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \

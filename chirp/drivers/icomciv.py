@@ -1,5 +1,4 @@
 # Latest update: April, 2021 Add hasattr test at line 564
-import serial
 import struct
 import logging
 from chirp.drivers import icf

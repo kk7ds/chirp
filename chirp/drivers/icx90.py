@@ -19,11 +19,10 @@ import logging
 
 from chirp.drivers import icf
 from chirp import chirp_common, bitwise, errors, directory
-from chirp.memmap import MemoryMap
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettingValueFloat, InvalidValueError, RadioSettings
+    RadioSettings
 import argparse
 
 ICX90_MEM_FORMAT = """
