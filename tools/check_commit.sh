@@ -68,4 +68,9 @@ if git diff chirp/locale | grep '^\+[^#+]' | grep -v POT-Creation; then
     fail Locale files need updating
 fi
 
+added_files=$(git diff --name-only --diff-filter=A ${BASE}.. 2>&1)
+if echo $added_files | grep -q chirp.drivers && ! echo $added_files | grep -q tests.images; then
+    fail All new drivers should include a test image
+fi
+
 exit $RETCODE
