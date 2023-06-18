@@ -18,11 +18,11 @@
 import time
 import logging
 from chirp import chirp_common, directory, memmap
-from chirp import bitwise, errors, util
+from chirp import bitwise, errors
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettingValueFloat, RadioSettings, InvalidValueError
+    RadioSettingValueFloat, RadioSettings
 
 LOG = logging.getLogger(__name__)
 

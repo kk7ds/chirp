@@ -25,9 +25,7 @@ import time
 import logging
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-                RadioSettingValueBoolean, RadioSettingValueList, \
-                RadioSettingValueInteger, RadioSettingValueString, \
-                RadioSettings
+                RadioSettingValueList, RadioSettings
 
 LOG = logging.getLogger(__name__)
 

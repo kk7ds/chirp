@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from chirp.drivers import yaesu_clone, ft7800
-from chirp import chirp_common, directory, memmap, bitwise, errors
+from chirp import chirp_common, directory, bitwise
 
 MEM_FORMAT = """
 #seekto 0x018A;

@@ -16,9 +16,7 @@
 from chirp.drivers import icf
 from chirp import chirp_common, util, directory, bitwise, memmap
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettingValueFloat, InvalidValueError, RadioSettings
+    RadioSettingValueBoolean
 
 MEM_FORMAT = """
 struct {

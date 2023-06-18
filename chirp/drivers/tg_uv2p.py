@@ -23,8 +23,8 @@ import serial
 from chirp import chirp_common, directory, bitwise, memmap, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
-                RadioSettingValueInteger, RadioSettingValueString, \
-                RadioSettingValueFloat, RadioSettingValueMap, RadioSettings
+                RadioSettingValueInteger, RadioSettingValueFloat, \
+                RadioSettingValueMap, RadioSettings
 
 LOG = logging.getLogger(__name__)
 

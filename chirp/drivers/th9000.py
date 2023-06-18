@@ -23,9 +23,8 @@ from chirp import errors
 from chirp import memmap
 from chirp import util
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
-    RadioSettingValueList, RadioSettingValueString, RadioSettingValueBoolean, \
-    RadioSettingValueInteger, RadioSettingValueString, \
-    RadioSettingValueFloat, InvalidValueError
+    RadioSettingValueList, RadioSettingValueString, RadioSettingValueInteger, \
+    RadioSettingValueString
 
 LOG = logging.getLogger(__name__)
 

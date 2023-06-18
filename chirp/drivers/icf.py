@@ -24,11 +24,10 @@ import time
 import logging
 import struct
 
-from chirp import bitwise
 from chirp import chirp_common, errors, util, memmap
 from chirp import directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueBoolean, RadioSettingValueString, RadioSettings
+    RadioSettingValueString, RadioSettings
 from chirp import util
 
 LOG = logging.getLogger(__name__)

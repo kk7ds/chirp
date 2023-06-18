@@ -20,8 +20,7 @@ from chirp import chirp_common, directory, bitwise
 from chirp.chirp_common import to_GHz, from_GHz
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
-                RadioSettingValueInteger, RadioSettingValueString, \
-                RadioSettingValueFloat, RadioSettings
+                RadioSettingValueInteger, RadioSettings
 
 
 LOG = logging.getLogger(__name__)

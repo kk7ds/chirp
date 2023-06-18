@@ -19,12 +19,11 @@
 
 import logging
 from chirp.drivers import icf
-from chirp import chirp_common, util, directory, bitwise, memmap
-from chirp import errors
+from chirp import chirp_common, directory, bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettingValueFloat, RadioSettings, InvalidValueError
+    RadioSettingValueFloat, RadioSettings
 
 LOG = logging.getLogger(__name__)
 

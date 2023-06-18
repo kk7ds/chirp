@@ -17,10 +17,6 @@
 """Baojie BJ-9900 management module"""
 
 from chirp import chirp_common, util, memmap, errors, directory, bitwise
-from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettings
 import struct
 import time
 import logging

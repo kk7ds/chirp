@@ -18,11 +18,7 @@
 import struct
 import logging
 
-from chirp import chirp_common, bitwise, errors, directory, memmap, util
-from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettings
+from chirp import chirp_common, bitwise, errors, directory, memmap
 
 
 LOG = logging.getLogger(__name__)

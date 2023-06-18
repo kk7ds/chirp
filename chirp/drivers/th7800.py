@@ -19,9 +19,8 @@
 from chirp import bitwise, chirp_common, directory, errors, util, memmap
 import struct
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettingValueFloat, InvalidValueError, RadioSettings, \
+    RadioSettingValueInteger, RadioSettingValueBoolean, \
+    RadioSettingValueString, RadioSettings, \
     RadioSettingValueMap, zero_indexed_seq_map
 from chirp.chirp_common import format_freq
 import logging

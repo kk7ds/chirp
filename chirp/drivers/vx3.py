@@ -17,9 +17,8 @@
 from chirp.drivers import yaesu_clone
 from chirp import chirp_common, directory, bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
-    RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettingValueString, \
-    RadioSettings
+    RadioSettingValueList, RadioSettingValueBoolean, \
+    RadioSettingValueString, RadioSettings
 import re
 import logging
 

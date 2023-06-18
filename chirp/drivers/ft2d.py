@@ -17,11 +17,11 @@
 
 import logging
 
-from chirp.drivers import yaesu_clone, ft1d
-from chirp import chirp_common, directory, bitwise
+from chirp.drivers import ft1d
+from chirp import chirp_common, directory
 from chirp import errors
 from chirp import memmap
-from chirp.settings import RadioSetting, RadioSettings
+from chirp.settings import RadioSetting
 from chirp.settings import RadioSettingValueString
 from chirp import util
 

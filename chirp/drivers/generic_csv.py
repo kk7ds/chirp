@@ -18,7 +18,6 @@ import csv
 import logging
 
 from chirp import chirp_common, errors, directory
-from chirp import import_logic
 
 LOG = logging.getLogger(__name__)
 DEFAULT_POWER_LEVEL = chirp_common.AutoNamedPowerLevel(50)

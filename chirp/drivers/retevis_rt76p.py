@@ -29,7 +29,6 @@ from chirp.settings import (
     RadioSettingGroup,
     RadioSettings,
     RadioSettingValueBoolean,
-    RadioSettingValueFloat,
     RadioSettingValueInteger,
     RadioSettingValueList,
     RadioSettingValueString,

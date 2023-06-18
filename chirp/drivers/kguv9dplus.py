@@ -24,12 +24,12 @@
 import time
 import logging
 import struct
-from chirp import util, chirp_common, bitwise, memmap, errors, directory
-from chirp.settings import RadioSetting, RadioSettingValue, \
-     RadioSettingGroup, \
-     RadioSettingValueBoolean, RadioSettingValueList, \
-     RadioSettingValueInteger, RadioSettingValueString, \
-     RadioSettings, InvalidValueError
+from chirp import chirp_common, bitwise, memmap, errors, directory
+from chirp.settings import RadioSetting, RadioSettingGroup, \
+     RadioSettingValueBoolean, \
+     RadioSettingValueList, RadioSettingValueInteger, \
+     RadioSettingValueString, RadioSettings, \
+     InvalidValueError
 
 LOG = logging.getLogger(__name__)
 

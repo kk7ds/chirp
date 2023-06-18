@@ -27,7 +27,7 @@ from chirp import chirp_common, directory, memmap, errors, util
 from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettingValueList
-from chirp.settings import RadioSettingValueString, RadioSettings
+from chirp.settings import RadioSettings
 
 LOG = logging.getLogger(__name__)
 
