@@ -79,6 +79,18 @@ def _ic9x_parse_frames(buf):
     return frames
 
 
+def ic9x_recv(pipe):
+    data = b""
+    while b'\xfd' not in data:
+        buf = pipe.read(1)
+        if not buf:
+            break
+
+        data += buf
+
+    return _ic9x_parse_frames(data)
+
+
 def ic9x_send(pipe, buf):
     """Send @buf to @pipe, wrapped in a header and trailer.  Attempt to read
     any response frames, which are returned as a list"""
@@ -90,16 +102,7 @@ def ic9x_send(pipe, buf):
 
     pipe.write(realbuf)
     pipe.flush()
-
-    data = b""
-    while b'\xfd' not in data:
-        buf = pipe.read(1)
-        if not buf:
-            break
-
-        data += buf
-
-    return _ic9x_parse_frames(data)
+    return ic9x_recv(pipe)
 
 
 class IC92Frame:
@@ -146,8 +149,13 @@ class IC92Frame:
             LOG.debug("Sending:\n%s" % util.hexprint(self.get_raw()))
 
         response = ic9x_send(pipe, self.get_raw())
+        while (response and len(response[0].get_raw()) > 4 and
+               response[0].get_raw()[4] != self.get_raw()[4]):
+            LOG.warning('Skipping unexpected frame:\n%s',
+                        util.hexprint(response[0].get_raw()))
+            response = ic9x_recv(pipe)
 
-        if len(response) == 0:
+        if not response:
             raise errors.InvalidDataError("No response from radio")
 
         return response[0]
@@ -417,56 +425,6 @@ class IC92MemoryFrame(IC92Frame):
         return mem
 
 
-def _send_magic_4800(pipe):
-    cmd = b"\x01\x80\x19"
-    magic = (b"\xFE" * 25) + cmd
-    for _i in [0, 1]:
-        resp = ic9x_send(pipe, magic)
-        if resp:
-            return resp[0].get_raw()[0] == b"\x80"
-    return True
-
-
-def _send_magic_38400(pipe):
-    cmd = b"\x01\x80\x19"
-    # rsp = "\x80\x01\x19"
-    magic = (b"\xFE" * 400) + cmd
-    for _i in [0, 1]:
-        resp = ic9x_send(pipe, magic)
-        if resp:
-            return resp[0].get_raw()[0] == b"\x80"
-    return False
-
-
-def send_magic(pipe):
-    """Send the magic incantation to wake up an ic9x radio"""
-    if pipe.baudrate == 38400:
-        resp = _send_magic_38400(pipe)
-        if resp:
-            return
-        LOG.info("Switching from 38400 to 4800")
-        pipe.baudrate = 4800
-        resp = _send_magic_4800(pipe)
-        pipe.baudrate = 38400
-        if resp:
-            return
-        raise errors.RadioError("Radio not responding")
-    elif pipe.baudrate == 4800:
-        resp = _send_magic_4800(pipe)
-        if resp:
-            return
-        LOG.info("Switching from 4800 to 38400")
-        pipe.baudrate = 38400
-        resp = _send_magic_38400(pipe)
-        if resp:
-            return
-        pipe.baudrate = 4800
-        raise errors.RadioError("Radio not responding")
-    else:
-        raise errors.InvalidDataError("Radio in unknown state (%i)" %
-                                      pipe.baudrate)
-
-
 def get_memory_frame(pipe, vfo, number):
     """Get the memory frame for @vfo and @number via @pipe"""
     if number < 0:
@@ -493,6 +451,9 @@ def get_memory(pipe, vfo, number):
 
     mf = IC92MemoryFrame()
     mf.from_frame(rframe)
+    if mf.get_memory().number != number:
+        raise errors.RadioError('get_memory() wanted %i got %i' % (
+            number, mf.get_memory().number))
 
     return mf.get_memory()
 
@@ -508,7 +469,7 @@ def set_memory(pipe, vfo, memory):
 
     rframe = frame.send(pipe)
 
-    if rframe.get_raw()[2] != b"\xfb":
+    if rframe.get_raw()[2] != 0xfb:
         raise errors.InvalidDataError("Radio reported error:\n%s" %
                                       util.hexprint(rframe.get_payload()))
 
@@ -519,7 +480,7 @@ def erase_memory(pipe, vfo, number):
     frame.set_vfo(vfo)
 
     rframe = frame.send(pipe)
-    if rframe.get_raw()[2] != "\xfb":
+    if rframe.get_raw()[2] != 0xfb:
         raise errors.InvalidDataError("Radio reported error")
 
 
