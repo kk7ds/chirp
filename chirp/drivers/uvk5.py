@@ -141,6 +141,12 @@ struct {
 char name[16];
 } channelname[200];
 
+#seekto 0x1c00;
+struct {
+char name[8];
+char number[3];
+char unused_00[5];
+} dtmfcontact[16];
 """
 # bits that we will save from the channel structure (mostly unknown)
 SAVE_MASK_0A = 0b11001100
@@ -283,6 +289,7 @@ VFO_CHANNEL_NAMES = ["F1(50M-76M)A", "F1(50M-76M)B",
 
 SCANLIST_LIST = ["None", "1", "2", "1+2"]
 
+DTMF_CHARS = "0123456789ABCD*# "
 
 # the communication is obfuscated using this fine mechanism
 def xorarr(data: bytes):
@@ -549,7 +556,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
              'the memory image from the radio with chirp or k5prog '
              'and keep it. This can be later used to recover the '
              'original settings. \n\n'
-             'DTMF settings and other details are not yet implemented')
+             'some details are not yet implemented')
         rp.pre_download = _(
             "1. Turn radio on.\n"
             "2. Connect cable to mic/spkr connector.\n"
@@ -1024,6 +1031,21 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 #                                "in the range %.1f - %.1f" % (FMMIN , FMMAX))
                     _mem.fmfreq[i-1] = val2
 
+
+            # dtmf settings
+            for i in range(1, 17):
+                varname = "DTMF_"+str(i)
+                if element.get_name() == varname:
+                    k=str(element.value).rstrip("\x20\xff\x00")+"\x00"*8
+                    _mem.dtmfcontact[i-1].name=k[0:8]
+
+                varnumname = "DTMFNUM_"+str(i)
+                if element.get_name() == varnumname:
+                    k=str(element.value).rstrip("\x20\xff\x00")+"\xff"*3
+                    _mem.dtmfcontact[i-1].number=k[0:3]
+
+
+
             # scanlist stuff
             if element.get_name() == "scanlist_default":
                 val = (int(element.value) == 2) and 1 or 0
@@ -1061,14 +1083,42 @@ class UVK5Radio(chirp_common.CloneModeRadio):
     def get_settings(self):
         _mem = self._memobj
         basic = RadioSettingGroup("basic", "Basic Settings")
+        dtmf = RadioSettingGroup("dtmf", "DTMF Settings")
         scanl = RadioSettingGroup("scn", "Scan Lists")
         unlock = RadioSettingGroup("unlock", "Unlock Settings")
         fmradio = RadioSettingGroup("fmradio", "FM Radio")
 
         roinfo = RadioSettingGroup("roinfo", "Driver information")
 
-        top = RadioSettings(basic, scanl, unlock, fmradio, roinfo)
+        top = RadioSettings(basic, dtmf, scanl, unlock, fmradio, roinfo)
 
+
+        # DTMF settings
+        val = RadioSettingValueString(0,80,"All DTMF Contacts are 3 codes (valid: 0-9 * # ABCD), or an empty string")
+        val.set_mutable(False)
+        rs = RadioSetting("dtmf_descr1", "DTMF Contacts",val)
+        dtmf.append(rs)
+
+        for i in range(1, 17):
+            varname = "DTMF_"+str(i)
+            varnumname = "DTMFNUM_"+str(i)
+            vardescr = "DTMF Contact "+str(i)+" name"
+            varinumdescr = "DTMF Contact "+str(i)+" number"
+
+            cntn = str(_mem.dtmfcontact[i-1].name).strip("\x20\x00\xff")
+            cntnum = str(_mem.dtmfcontact[i-1].number).strip("\x20\x00\xff")
+ 
+            val = RadioSettingValueString(0, 8, cntn)
+            rs = RadioSetting(varname, vardescr, val)
+            dtmf.append(rs)
+
+            val = RadioSettingValueString(0, 3, cntnum)
+            val.set_charset(DTMF_CHARS)
+            rs = RadioSetting(varnumname, varinumdescr, val)
+            dtmf.append(rs)
+
+
+        # scanlists
         if _mem.scanlist_default == 1:
             tmpsc = 2
         else:
@@ -1330,6 +1380,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueString(0, 12, logo2))
         basic.append(rs)
 
+        # FM radio
         for i in range(1, 21):
             freqname = "FM_"+str(i)
             fmfreq = _mem.fmfreq[i-1]/10.0
