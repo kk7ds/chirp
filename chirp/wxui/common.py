@@ -157,6 +157,10 @@ class ChirpEditor(wx.Panel):
         self.setup_radio_interface()
         self.wait_dialog = None
 
+    @property
+    def radio(self):
+        return self._radio
+
     def start_wait_dialog(self, message):
         if self.wait_dialog:
             LOG.error('Wait dialog already in progress!')

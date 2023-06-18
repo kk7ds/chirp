@@ -1438,10 +1438,12 @@ class ChirpMain(wx.Frame):
 
     def _menu_interact_driver(self, event):
         LOG.warning('Going to interact with radio at the console')
-        radio = self.current_editorset.radio
+        radio = self.current_editorset.current_editor.radio
         import code
         locals = {'main': self,
                   'radio': radio}
+        if self.current_editorset.radio != radio:
+            locals['parent_radio'] = self.current_editorset.radio
         code.interact(banner='Locals are: %s' % (', '.join(locals.keys())),
                       local=locals)
 
