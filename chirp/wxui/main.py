@@ -1066,7 +1066,7 @@ class ChirpMain(wx.Frame):
             (self._large_item, is_memedit or is_bank),
             (self._reload_driver_item, can_saveas),
             (self._reload_both_item, can_saveas),
-            (self._interact_driver_item, can_saveas),
+            (self._interact_driver_item, can_close),
         ]
         for ident, enabled in items:
             if ident is None:
