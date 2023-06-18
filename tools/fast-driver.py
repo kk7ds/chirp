@@ -95,4 +95,10 @@ if driver_exp:
     args += ['-k', driver_exp]
 args += sys.argv[1:]
 print(args)
-sys.exit(subprocess.call(args))
+rc = subprocess.call(args)
+if rc == 5:
+    # This means no tests were found likely because we generated a bad
+    # tag, so just run the full set
+    print('Running full driver set')
+    rc = subprocess.call(['pytest'] + sys.argv[1:])
+sys.exit(rc)
