@@ -24,7 +24,7 @@ from chirp import memmap
 from chirp import util
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
     RadioSettingValueList, RadioSettingValueString, RadioSettingValueBoolean, \
-    RadioSettingValueInteger, RadioSettingValueString
+    RadioSettingValueInteger
 
 LOG = logging.getLogger(__name__)
 
