@@ -2525,13 +2525,6 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             hemi = ' '
         setattr(obj, "WEhemi", hemi)
 
-    def apply_WEhemi(cls, setting, obj):
-        hemi = setting.value.get_value().upper()
-
-        if hemi != 'W' and hemi != 'E':
-            hemi = ' '
-        setattr(obj, "WEhemi", hemi)
-
     def apply_bt_lat(cls, setting, obj):
         val = setting.value.get_value()
         val = cls.backtrack_zero_pad(val, 3)

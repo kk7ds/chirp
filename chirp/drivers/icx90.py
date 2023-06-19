@@ -602,10 +602,6 @@ class ICx90Radio(icf.IcomCloneModeRadio):
     def process_mmap(self):
         self.memobj = bitwise.parse(ICX90_MEM_FORMAT, self._mmap)
 
-    def get_raw_memory(self, number):
-        (mem_item, special, unique_idx) = self.get_mem_item(number)
-        return repr(mem_item)
-
     def sync_in(self):
         icf.IcomCloneModeRadio.sync_in(self)
         self.process_mmap()
