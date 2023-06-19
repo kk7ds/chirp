@@ -50,7 +50,7 @@ def uv3r_prep(radio):
     for _i in range(0, 10):
         try:
             return _uv3r_prep(radio)
-        except errors.RadioError as e:
+        except errors.RadioError:
             time.sleep(1)
 
     raise e
@@ -623,7 +623,7 @@ class UV3RRadio(chirp_common.CloneModeRadio):
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug(element.get_name())
                     raise
 
@@ -639,7 +639,7 @@ class UV3RRadio(chirp_common.CloneModeRadio):
                 LOG.debug("Setting fm_presets[%1i] = %s" % (index, value))
                 setting = self._memobj.fm_presets
                 setting[index] = value
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

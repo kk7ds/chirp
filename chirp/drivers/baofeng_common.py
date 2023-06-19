@@ -366,7 +366,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
             _upload(self)
         except errors.RadioError:
             raise
-        except Exception as e:
+        except Exception:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
             LOG.exception('Unexpected error during upload')
@@ -734,7 +734,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug(element.get_name())
                     raise
 
@@ -750,6 +750,6 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
                 if self._bw_shift:
                     value = ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
                 self._memobj.fm_presets = value
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise

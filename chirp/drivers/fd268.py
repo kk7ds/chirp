@@ -758,7 +758,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
                     try:
                         element.run_apply_callback()
                         continue
-                    except NotImplementedError as e:
+                    except NotImplementedError:
                         raise
 
                 elif sett == "none":
@@ -776,11 +776,11 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
                         obj = getattr(_mem, sett)
                         setattr(obj, name, element.value)
 
-                    except AttributeError as e:
+                    except AttributeError:
                         m = "Setting %s is not in this setting block" % name
                         LOG.debug(m)
 
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

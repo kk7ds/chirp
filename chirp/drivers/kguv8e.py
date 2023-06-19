@@ -1126,7 +1126,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
                             setattr(obj, setting, int(element.value)/10)
                         else:
                             setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug(element.get_name())
                     raise
 

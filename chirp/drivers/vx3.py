@@ -971,6 +971,6 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
                     newval = self._encode_chars(newval, 6)
                 LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise

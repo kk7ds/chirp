@@ -206,7 +206,7 @@ class ICV86Radio(icf.IcomCloneModeRadio):
                     setting = element.get_name()
                     LOG.debug("Setting %s = %s" % (setting, element.value))
                     setattr(_settings, setting, element.value)
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

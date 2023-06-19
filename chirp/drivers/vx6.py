@@ -906,5 +906,5 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
                 elif setting == "password":
                     newval = self._encode_chars(newval, 4)
                 setattr(_settings, setting, newval)
-            except Exception as e:
+            except Exception:
                 raise

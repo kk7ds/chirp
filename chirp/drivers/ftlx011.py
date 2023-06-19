@@ -714,7 +714,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                     setattr(_settings, name, value)
 
                 LOG.debug("Setting %s: %s" % (name, value))
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 
@@ -730,7 +730,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         # testing the firmware fingerprint, this experimental
         try:
             match_model = _model_match(cls, filedata)
-        except Exception as e:
+        except Exception:
             match_model = False
 
         return match_size and match_model

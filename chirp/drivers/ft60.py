@@ -716,7 +716,7 @@ class FT60Radio(yaesu_clone.YaesuCloneModeRadio):
                     setattr(_settings, name, value)
 
                 LOG.debug("Setting %s: %s" % (name, value))
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

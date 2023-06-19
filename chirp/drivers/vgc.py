@@ -1435,7 +1435,7 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug(element.get_name())
                     raise
 

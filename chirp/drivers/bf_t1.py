@@ -904,7 +904,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                     setattr(_settings, name, value)
 
                 LOG.debug("Setting %s: %s" % (name, value))
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

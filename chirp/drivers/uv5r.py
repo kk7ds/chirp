@@ -498,7 +498,7 @@ def _ident_radio(radio):
     for magic, reason in list(IDENT_BLACKLIST.items()):
         try:
             _do_ident(radio, magic, secondack=False)
-        except errors.RadioError as e:
+        except errors.RadioError:
             # No match, try the next one
             continue
 
@@ -1758,7 +1758,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug(element.get_name())
                     raise
 
@@ -1774,7 +1774,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                 if self._bw_shift:
                     value = ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
                 self._memobj.fm_presets = value
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

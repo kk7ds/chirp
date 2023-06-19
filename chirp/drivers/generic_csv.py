@@ -175,7 +175,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
                     val = typ(val)
                 if hasattr(mem, attr):
                     setattr(mem, attr, val)
-            except OmittedHeaderError as e:
+            except OmittedHeaderError:
                 pass
             except Exception as e:
                 raise Exception("[%s] %s" % (attr, e))

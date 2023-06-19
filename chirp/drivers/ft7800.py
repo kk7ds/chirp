@@ -766,7 +766,7 @@ class FT7800Radio(FTx800Radio):
                 oldval = getattr(_settings, setting)
                 LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

@@ -795,7 +795,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
             rf.valid_bands = get_band_limits_Hz(
                 str(_embedded.radio_type),
                 int(_embedded.mode))
-        except TypeError as e:
+        except TypeError:
             # If we're asked without memory loaded, assume the most permissive
             rf.valid_bands = get_band_limits_Hz(str(_embedded.radio_type), 1)
         except Exception as e:
@@ -1364,7 +1364,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug(element.get_name())
                     raise
 

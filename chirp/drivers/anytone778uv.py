@@ -690,7 +690,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         try:
             rf.valid_bands = get_band_limits_Hz(
                 int(self._memobj.radio_settings.bandlimit))
-        except AttributeError as e:
+        except AttributeError:
             # If we're asked without memory loaded, assume the most permissive
             rf.valid_bands = get_band_limits_Hz(1)
         except Exception as e:
@@ -1724,7 +1724,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug(element.get_name())
                     raise
 

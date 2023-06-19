@@ -633,7 +633,7 @@ class TYTTH9800Base(chirp_common.Radio):
 
                 LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
                 setattr(_settings, setting, newval)
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

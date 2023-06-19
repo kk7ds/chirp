@@ -2167,7 +2167,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                                     int(element.values()[0]._current * 10.0))
                         else:
                             setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug(element.get_name())
                     raise
 
