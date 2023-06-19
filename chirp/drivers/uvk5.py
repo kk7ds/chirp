@@ -47,7 +47,7 @@ DEBUG_SHOW_OBFUSCATED_COMMANDS = False
 # might be useful for someone debugging some obscure memory issue
 DEBUG_SHOW_MEMORY_ACTIONS = False
 
-DRIVER_VERSION = "Quansheng UV-K5 driver v20230613 (c) Jacek Lipkowski SQ5BPF"
+DRIVER_VERSION = "Quansheng UV-K5 driver v20230619 (c) Jacek Lipkowski SQ5BPF"
 PRINT_CONSOLE = False
 
 MEM_FORMAT = """
@@ -97,7 +97,10 @@ u8 vfo_open;
 
 #seekto 0xe90;
 u8 beep_control;
-#seekto 0xe95;
+u8 key1_shortpress_action;
+u8 key1_longpress_action;
+u8 key2_shortpress_action;
+u8 key2_longpress_action;
 u8 scan_resume_mode;
 u8 auto_keypad_lock;
 u8 power_on_dispmode;
@@ -115,6 +118,33 @@ u8 repeater_tail_elimination;
 #seekto 0xeb0;
 char logo_line1[16];
 char logo_line2[16];
+
+#seekto 0xed0;
+struct {
+u8 side_tone;
+char separate_code;
+char group_call_code;
+u8 decode_response;
+u8 auto_reset_time;
+u8 preload_time;
+u8 first_code_persist_time;
+u8 hash_persist_time;
+u8 code_persist_time;
+u8 code_interval_time;
+u8 permit_remote_kill;
+} dtmf_settings;
+
+#seekto 0xee0;
+struct {
+char dtmf_local_code[3];
+char unused1[5];
+char kill_code[5];
+char unused2[3];
+char revive_code[5];
+char unused3[3];
+char dtmf_up_code[16];
+char dtmf_down_code[16];
+} dtmf_settings_numbers;
 
 #seekto 0xf18;
 u8 scanlist_default;
@@ -290,6 +320,16 @@ VFO_CHANNEL_NAMES = ["F1(50M-76M)A", "F1(50M-76M)B",
 SCANLIST_LIST = ["None", "1", "2", "1+2"]
 
 DTMF_CHARS = "0123456789ABCD*# "
+DTMF_CHARS_ID = "0123456789ABCDabcd"
+DTMF_CHARS_KILL = "0123456789ABCDabcd"
+DTMF_CHARS_UPDOWN = "0123456789ABCDabcd#* "
+DTMF_CODE_CHARS = "ABCD*# "
+DTMF_DECODE_RESPONSE_LIST = ["None", "Ring", "Reply", "Both"]
+
+KEYACTIONS_LIST = ["None", "Flashlight on/off", "Power select",
+                   "Monitor", "Scan on/off", "VOX on/off",
+                   "Alarm on/off", "FM radio on/off", "Transmit 1750Hz"]
+
 
 # the communication is obfuscated using this fine mechanism
 def xorarr(data: bytes):
@@ -1031,20 +1071,80 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 #                                "in the range %.1f - %.1f" % (FMMIN , FMMAX))
                     _mem.fmfreq[i-1] = val2
 
-
             # dtmf settings
+            if element.get_name() == "dtmf_side_tone":
+                _mem.dtmf_settings.side_tone = \
+                        element.value and 1 or 0
+
+            if element.get_name() == "dtmf_separate_code":
+                _mem.dtmf_settings.separate_code = str(element.value)
+
+            if element.get_name() == "dtmf_group_call_code":
+                _mem.dtmf_settings.group_call_code = element.value
+
+            if element.get_name() == "dtmf_decode_response":
+                _mem.dtmf_settings.decode_response = \
+                        DTMF_DECODE_RESPONSE_LIST.index(str(element.value))
+
+            if element.get_name() == "dtmf_auto_reset_time":
+                _mem.dtmf_settings.auto_reset_time = \
+                        int(int(element.value)/10)
+
+            if element.get_name() == "dtmf_preload_time":
+                _mem.dtmf_settings.preload_time = \
+                        int(int(element.value)/10)
+
+            if element.get_name() == "dtmf_first_code_persist_time":
+                _mem.dtmf_settings.first_code_persist_time = \
+                        int(int(element.value)/10)
+
+            if element.get_name() == "dtmf_hash_persist_time":
+                _mem.dtmf_settings.hash_persist_time = \
+                        int(int(element.value)/10)
+
+            if element.get_name() == "dtmf_code_persist_time":
+                _mem.dtmf_settings.code_persist_time = \
+                        int(int(element.value)/10)
+
+            if element.get_name() == "dtmf_code_interval_time":
+                _mem.dtmf_settings.code_interval_time = \
+                        int(int(element.value)/10)
+
+            if element.get_name() == "dtmf_permit_remote_kill":
+                _mem.dtmf_settings.permit_remote_kill = \
+                        element.value and 1 or 0
+
+            if element.get_name() == "dtmf_dtmf_local_code":
+                k = str(element.value).rstrip("\x20\xff\x00") + "\x00"*3
+                _mem.dtmf_settings_numbers.dtmf_local_code = k[0:3]
+
+            if element.get_name() == "dtmf_dtmf_up_code":
+                k = str(element.value).strip("\x20\xff\x00") + "\x00"*16
+                _mem.dtmf_settings_numbers.dtmf_up_code = k[0:16]
+
+            if element.get_name() == "dtmf_dtmf_down_code":
+                k = str(element.value).rstrip("\x20\xff\x00") + "\x00"*16
+                _mem.dtmf_settings_numbers.dtmf_down_code = k[0:16]
+
+            if element.get_name() == "dtmf_kill_code":
+                k = str(element.value).strip("\x20\xff\x00") + "\x00"*5
+                _mem.dtmf_settings_numbers.kill_code = k[0:5]
+
+            if element.get_name() == "dtmf_revive_code":
+                k = str(element.value).strip("\x20\xff\x00") + "\x00"*5
+                _mem.dtmf_settings_numbers.revive_code = k[0:5]
+
+            # dtmf contacts
             for i in range(1, 17):
-                varname = "DTMF_"+str(i)
+                varname = "DTMF_" + str(i)
                 if element.get_name() == varname:
-                    k=str(element.value).rstrip("\x20\xff\x00")+"\x00"*8
-                    _mem.dtmfcontact[i-1].name=k[0:8]
+                    k = str(element.value).rstrip("\x20\xff\x00") + "\x00"*8
+                    _mem.dtmfcontact[i-1].name = k[0:8]
 
-                varnumname = "DTMFNUM_"+str(i)
+                varnumname = "DTMFNUM_" + str(i)
                 if element.get_name() == varnumname:
-                    k=str(element.value).rstrip("\x20\xff\x00")+"\xff"*3
-                    _mem.dtmfcontact[i-1].number=k[0:3]
-
-
+                    k = str(element.value).rstrip("\x20\xff\x00") + "\xff"*3
+                    _mem.dtmfcontact[i-1].number = k[0:3]
 
             # scanlist stuff
             if element.get_name() == "scanlist_default":
@@ -1080,24 +1180,244 @@ class UVK5Radio(chirp_common.CloneModeRadio):
                 if element.get_name() == "scanlist2_priority_ch2":
                     _mem.scanlist2_priority_ch2 = val
 
+            if element.get_name() == "key1_shortpress_action":
+                _mem.key1_shortpress_action = KEYACTIONS_LIST.index(
+                        str(element.value))
+
+            if element.get_name() == "key1_longpress_action":
+                _mem.key1_longpress_action = KEYACTIONS_LIST.index(
+                        str(element.value))
+
+            if element.get_name() == "key2_shortpress_action":
+                _mem.key2_shortpress_action = KEYACTIONS_LIST.index(
+                        str(element.value))
+
+            if element.get_name() == "key2_longpress_action":
+                _mem.key2_longpress_action = KEYACTIONS_LIST.index(
+                        str(element.value))
+
     def get_settings(self):
         _mem = self._memobj
         basic = RadioSettingGroup("basic", "Basic Settings")
+        keya = RadioSettingGroup("keya", "Programmable keys")
         dtmf = RadioSettingGroup("dtmf", "DTMF Settings")
+        dtmfc = RadioSettingGroup("dtmfc", "DTMF Contacts")
         scanl = RadioSettingGroup("scn", "Scan Lists")
         unlock = RadioSettingGroup("unlock", "Unlock Settings")
         fmradio = RadioSettingGroup("fmradio", "FM Radio")
 
         roinfo = RadioSettingGroup("roinfo", "Driver information")
 
-        top = RadioSettings(basic, dtmf, scanl, unlock, fmradio, roinfo)
+        top = RadioSettings(
+                basic, keya, dtmf, dtmfc, scanl, unlock, fmradio, roinfo)
 
+        # Programmable keys
+        tmpval = int(_mem.key1_shortpress_action)
+        if tmpval >= len(KEYACTIONS_LIST):
+            tmpval = 0
+        rs = RadioSetting("key1_shortpress_action", "Side key 1 short press",
+                          RadioSettingValueList(
+                              KEYACTIONS_LIST, KEYACTIONS_LIST[tmpval]))
+        keya.append(rs)
+
+        tmpval = int(_mem.key1_longpress_action)
+        if tmpval >= len(KEYACTIONS_LIST):
+            tmpval = 0
+        rs = RadioSetting("key1_longpress_action", "Side key 1 long press",
+                          RadioSettingValueList(
+                              KEYACTIONS_LIST, KEYACTIONS_LIST[tmpval]))
+        keya.append(rs)
+
+        tmpval = int(_mem.key2_shortpress_action)
+        if tmpval >= len(KEYACTIONS_LIST):
+            tmpval = 0
+        rs = RadioSetting("key2_shortpress_action", "Side key 2 short press",
+                          RadioSettingValueList(
+                              KEYACTIONS_LIST, KEYACTIONS_LIST[tmpval]))
+        keya.append(rs)
+
+        tmpval = int(_mem.key2_longpress_action)
+        if tmpval >= len(KEYACTIONS_LIST):
+            tmpval = 0
+        rs = RadioSetting("key2_longpress_action", "Side key 2 long press",
+                          RadioSettingValueList(
+                              KEYACTIONS_LIST, KEYACTIONS_LIST[tmpval]))
+        keya.append(rs)
 
         # DTMF settings
-        val = RadioSettingValueString(0,80,"All DTMF Contacts are 3 codes (valid: 0-9 * # ABCD), or an empty string")
-        val.set_mutable(False)
-        rs = RadioSetting("dtmf_descr1", "DTMF Contacts",val)
+        tmppr = bool(_mem.dtmf_settings.side_tone > 0)
+        rs = RadioSetting(
+                "dtmf_side_tone",
+                "DTMF Sidetone",
+                RadioSettingValueBoolean(tmppr))
         dtmf.append(rs)
+
+        tmpval = str(_mem.dtmf_settings.separate_code)
+        if tmpval not in DTMF_CODE_CHARS:
+            tmpval = '*'
+        val = RadioSettingValueString(1, 1, tmpval)
+        val.set_charset(DTMF_CODE_CHARS)
+        rs = RadioSetting("dtmf_separate_code", "Separate Code", val)
+        dtmf.append(rs)
+
+        tmpval = str(_mem.dtmf_settings.group_call_code)
+        if tmpval not in DTMF_CODE_CHARS:
+            tmpval = '#'
+        val = RadioSettingValueString(1, 1, tmpval)
+        val.set_charset(DTMF_CODE_CHARS)
+        rs = RadioSetting("dtmf_group_call_code", "Group Call Code", val)
+        dtmf.append(rs)
+
+        tmpval = _mem.dtmf_settings.decode_response
+        if tmpval >= len(DTMF_DECODE_RESPONSE_LIST):
+            tmpval = 0
+        rs = RadioSetting("dtmf_decode_response", "Decode Response",
+                          RadioSettingValueList(
+                              DTMF_DECODE_RESPONSE_LIST,
+                              DTMF_DECODE_RESPONSE_LIST[tmpval]))
+        dtmf.append(rs)
+
+        tmpval = _mem.dtmf_settings.auto_reset_time
+        if tmpval > 60 or tmpval < 5:
+            tmpval = 5
+        rs = RadioSetting("dtmf_auto_reset_time",
+                          "Auto reset time (s)",
+                          RadioSettingValueInteger(5, 60, tmpval))
+        dtmf.append(rs)
+
+        tmpval = int(_mem.dtmf_settings.preload_time)
+        if tmpval > 100 or tmpval < 3:
+            tmpval = 30
+        tmpval *= 10
+        rs = RadioSetting("dtmf_preload_time",
+                          "Pre-load time (ms)",
+                          RadioSettingValueInteger(30, 1000, tmpval, 10))
+        dtmf.append(rs)
+
+        tmpval = int(_mem.dtmf_settings.first_code_persist_time)
+        if tmpval > 100 or tmpval < 3:
+            tmpval = 30
+        tmpval *= 10
+        rs = RadioSetting("dtmf_first_code_persist_time",
+                          "First code persist time (ms)",
+                          RadioSettingValueInteger(30, 1000, tmpval, 10))
+        dtmf.append(rs)
+
+        tmpval = int(_mem.dtmf_settings.hash_persist_time)
+        if tmpval > 100 or tmpval < 3:
+            tmpval = 30
+        tmpval *= 10
+        rs = RadioSetting("dtmf_hash_persist_time",
+                          "#/* persist time (ms)",
+                          RadioSettingValueInteger(30, 1000, tmpval, 10))
+        dtmf.append(rs)
+
+        tmpval = int(_mem.dtmf_settings.code_persist_time)
+        if tmpval > 100 or tmpval < 3:
+            tmpval = 30
+        tmpval *= 10
+        rs = RadioSetting("dtmf_code_persist_time",
+                          "Code persist time (ms)",
+                          RadioSettingValueInteger(30, 1000, tmpval, 10))
+        dtmf.append(rs)
+
+        tmpval = int(_mem.dtmf_settings.code_interval_time)
+        if tmpval > 100 or tmpval < 3:
+            tmpval = 30
+        tmpval *= 10
+        rs = RadioSetting("dtmf_code_interval_time",
+                          "Code interval time (ms)",
+                          RadioSettingValueInteger(30, 1000, tmpval, 10))
+        dtmf.append(rs)
+
+        tmpval = bool(_mem.dtmf_settings.permit_remote_kill > 0)
+        rs = RadioSetting(
+                "dtmf_permit_remote_kill",
+                "Permit remote kill",
+                RadioSettingValueBoolean(tmpval))
+        dtmf.append(rs)
+
+        tmpval = str(_mem.dtmf_settings_numbers.dtmf_local_code).upper().strip(
+                "\x00\xff\x20")
+        for i in tmpval:
+            if i in DTMF_CHARS_ID:
+                continue
+            else:
+                tmpval = "103"
+                break
+        val = RadioSettingValueString(3, 3, tmpval)
+        val.set_charset(DTMF_CHARS_ID)
+        rs = RadioSetting("dtmf_dtmf_local_code",
+                          "Local code (3 chars 0-9 ABCD)", val)
+        dtmf.append(rs)
+
+        tmpval = str(_mem.dtmf_settings_numbers.dtmf_up_code).upper().strip(
+                "\x00\xff\x20")
+        for i in tmpval:
+            if i in DTMF_CHARS_UPDOWN or i == "":
+                continue
+            else:
+                tmpval = "123"
+                break
+        val = RadioSettingValueString(1, 16, tmpval)
+        val.set_charset(DTMF_CHARS_UPDOWN)
+        rs = RadioSetting("dtmf_dtmf_up_code",
+                          "Up code (1-16 chars 0-9 ABCD*#)", val)
+        dtmf.append(rs)
+
+        tmpval = str(_mem.dtmf_settings_numbers.dtmf_down_code).upper().strip(
+                "\x00\xff\x20")
+        for i in tmpval:
+            if i in DTMF_CHARS_UPDOWN:
+                continue
+            else:
+                tmpval = "456"
+                break
+        val = RadioSettingValueString(1, 16, tmpval)
+        val.set_charset(DTMF_CHARS_UPDOWN)
+        rs = RadioSetting("dtmf_dtmf_down_code",
+                          "Down code (1-16 chars 0-9 ABCD*#)", val)
+        dtmf.append(rs)
+
+        tmpval = str(_mem.dtmf_settings_numbers.kill_code).upper().strip(
+                "\x00\xff\x20")
+        for i in tmpval:
+            if i in DTMF_CHARS_KILL:
+                continue
+            else:
+                tmpval = "77777"
+                break
+        if not len(tmpval) == 5:
+            tmpval = "77777"
+        val = RadioSettingValueString(5, 5, tmpval)
+        val.set_charset(DTMF_CHARS_KILL)
+        rs = RadioSetting("dtmf_kill_code",
+                          "Kill code (5 chars 0-9 ABCD)", val)
+        dtmf.append(rs)
+
+        tmpval = str(_mem.dtmf_settings_numbers.revive_code).upper().strip(
+                "\x00\xff\x20")
+        for i in tmpval:
+            if i in DTMF_CHARS_KILL:
+                continue
+            else:
+                tmpval = "88888"
+                break
+        if not len(tmpval) == 5:
+            tmpval = "88888"
+        val = RadioSettingValueString(5, 5, tmpval)
+        val.set_charset(DTMF_CHARS_KILL)
+        rs = RadioSetting("dtmf_revive_code",
+                          "Revive code (5 chars 0-9 ABCD)", val)
+        dtmf.append(rs)
+
+        val = RadioSettingValueString(0, 80,
+                                      "All DTMF Contacts are 3 codes "
+                                      "(valid: 0-9 * # ABCD), "
+                                      "or an empty string")
+        val.set_mutable(False)
+        rs = RadioSetting("dtmf_descr1", "DTMF Contacts", val)
+        dtmfc.append(rs)
 
         for i in range(1, 17):
             varname = "DTMF_"+str(i)
@@ -1107,16 +1427,15 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 
             cntn = str(_mem.dtmfcontact[i-1].name).strip("\x20\x00\xff")
             cntnum = str(_mem.dtmfcontact[i-1].number).strip("\x20\x00\xff")
- 
+
             val = RadioSettingValueString(0, 8, cntn)
             rs = RadioSetting(varname, vardescr, val)
-            dtmf.append(rs)
+            dtmfc.append(rs)
 
             val = RadioSettingValueString(0, 3, cntnum)
             val.set_charset(DTMF_CHARS)
             rs = RadioSetting(varnumname, varinumdescr, val)
-            dtmf.append(rs)
-
+            dtmfc.append(rs)
 
         # scanlists
         if _mem.scanlist_default == 1:
