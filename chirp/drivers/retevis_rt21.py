@@ -1956,6 +1956,8 @@ class RT29UHFRadio(RT21Radio):
     TXPOWER_HIGH = 0x01
     TXPOWER_LOW = 0x02
 
+    DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (17, 50, 55, 135,
+                              217, 254, 305, 345, 425, 466, 534, 645, 765)))
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
                     chirp_common.PowerLevel("Mid", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=1.00)]
