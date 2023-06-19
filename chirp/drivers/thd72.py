@@ -601,7 +601,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
                 except AttributeError as e:
                     LOG.error("Setting %s is not in the memory map: %s" %
                               (element.get_name(), e))
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

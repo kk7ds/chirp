@@ -337,7 +337,7 @@ def _clone_from_radio(radio):
 
     try:
         radio_rev = decode_model(md)
-    except Exception as e:
+    except Exception:
         LOG.error('Failed to decode model data')
         radio_rev = None
 
@@ -466,7 +466,7 @@ def _clone_to_radio(radio):
 
     try:
         radio_rev = decode_model(md)
-    except Exception as e:
+    except Exception:
         LOG.error('Failed to decode model data')
         radio_rev = None
 

@@ -659,7 +659,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug(element.get_name())
                     raise
 
@@ -681,7 +681,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                 else:
                     setting = self._memobj.fm_presets_1
                 setting[index] = value
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 
@@ -691,7 +691,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                 setattr(self._memobj.freq_ranges,
                         element.get_name(),
                         encode_freq(int(element.value)))
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 
@@ -1399,7 +1399,7 @@ class KGUV6DRadio(KGUVD1PRadio):
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug(element.get_name())
                     raise
 
@@ -1421,7 +1421,7 @@ class KGUV6DRadio(KGUVD1PRadio):
                 else:
                     setting = self._memobj.fm_presets_1
                 setting[index] = value
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

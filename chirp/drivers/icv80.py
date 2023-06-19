@@ -371,7 +371,7 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
                     # This appears to need to be mirrored?
                     if element.get_name() == 'mem_display1':
                         _settings.mem_display2 = _settings.mem_display1
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

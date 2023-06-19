@@ -595,7 +595,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
                 setattr(self._memobj.settings_misc,
                         element.get_name(),
                         element.value)
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 
@@ -622,6 +622,6 @@ class IP620Radio(chirp_common.CloneModeRadio,
                     setattr(_settings_misc, setting, newval)
                 else:
                     setattr(_settings, setting, newval)
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise

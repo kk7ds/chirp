@@ -775,7 +775,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                     else:
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug(element.get_name())
                     raise
 
@@ -791,7 +791,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
                 LOG.debug("Setting fm_presets[%1i] = %s" % (index, value))
                 setting = self._memobj.fm_presets
                 setting[index] = value
-            except Exception as e:
+            except Exception:
                 LOG.debug(element.get_name())
                 raise
 

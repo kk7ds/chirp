@@ -2442,7 +2442,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                             setattr(obj, setting, int(element.value)*10)
                         else:
                             setattr(obj, setting, element.value)
-                except Exception as e:
+                except Exception:
                     LOG.debug("set_settings: Exception with %s" %
                               element.get_name())
                     raise
