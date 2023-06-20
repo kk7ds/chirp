@@ -57,7 +57,10 @@ struct {
   ul32 offset;
   u8 rxcode;
   u8 txcode;
-  u8 code_flag;
+  u8 unknown1:2,
+  txcodeflag:2,
+  unknown2:2,
+  rxcodeflag:2;
   u8 flags1;
   u8 flags2;
   u8 dtmf_flags;
@@ -705,14 +708,14 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             rxmoval = 0
             rxtoval = 0
 
-        _mem.code_flag = (_mem.code_flag & 0b11001100) | (
-            txmoval << 4) | rxmoval
+        _mem.rxcodeflag = rxmoval
+        _mem.txcodeflag = txmoval
         _mem.rxcode = rxtoval
         _mem.txcode = txtoval
 
     def _get_tone(self, mem, _mem):
-        rxtype = _mem.code_flag & 0x03
-        txtype = (_mem.code_flag >> 4) & 0x03
+        rxtype = _mem.rxcodeflag
+        txtype = _mem.txcodeflag
         rx_tmode = TMODES[rxtype]
         tx_tmode = TMODES[txtype]
 
