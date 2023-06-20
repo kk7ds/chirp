@@ -17,6 +17,7 @@ import functools
 import logging
 import os
 import serial
+import sys
 import tempfile
 
 import requests
@@ -30,6 +31,7 @@ from chirp.wxui import report
 
 LOG = logging.getLogger(__name__)
 BrowserChanged, EVT_BROWSER_CHANGED = wx.lib.newevent.NewCommandEvent()
+FROZEN = getattr(sys, 'frozen', False)
 
 
 def simple_diff(a, b, diffsonly=False):
@@ -181,6 +183,7 @@ class ChirpStringEditor(ChirpEditor):
 
         self._entry.Bind(wx.EVT_TEXT, self._edited)
         self._entry.Bind(wx.EVT_TEXT_ENTER, self._changed)
+        self._entry.SetEditable(not FROZEN)
 
     def refresh(self):
         self._entry.SetValue(str(self._obj))
@@ -220,6 +223,7 @@ class ChirpIntegerEditor(ChirpEditor):
             entry = wx.TextCtrl(self, value=fmt.format(int(self._obj)),
                                 style=wx.TE_PROCESS_ENTER)
             entry.SetFont(self._fixed_font)
+            entry.SetEditable(not FROZEN)
             sizer.Add(label, 0, wx.ALIGN_CENTER)
             sizer.Add(entry, 1, flag=wx.EXPAND)
             self._entries[name] = entry
@@ -271,6 +275,7 @@ class ChirpBCDEditor(ChirpEditor):
         self._entry = wx.TextCtrl(self, value=str(int(self._obj)),
                                   style=wx.TE_PROCESS_ENTER)
         self._entry.SetFont(self._fixed_font)
+        self._entry.SetEditable(not FROZEN)
         sizer.Add(self._entry, 1, wx.EXPAND)
         self._entry.Bind(wx.EVT_TEXT, self._edited)
         self._entry.Bind(wx.EVT_TEXT_ENTER, self._changed)
