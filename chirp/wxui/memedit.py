@@ -1692,6 +1692,27 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         self.cb_copy_data(data)
 
+    def memedit_import_all(self, source_radio):
+        source_rf = source_radio.get_features()
+        first = max(source_rf.memory_bounds[0],
+                    self._features.memory_bounds[0])
+        last = min(source_rf.memory_bounds[1],
+                   self._features.memory_bounds[1])
+        memories = [source_radio.get_memory(i)
+                    for i in range(first, last + 1)]
+        used = [m.number for m in memories if not m.empty]
+        # Update the range to be from just the lowest and highest used memory.
+        # The range of memories that are used in the source will be imported,
+        # including any gaps.
+        first = min(used)
+        last = max(used)
+        row = self.mem2row(first)
+        LOG.info('Importing %i-%i starting from %s %s',
+                 first, last, source_radio.VENDOR, source_radio.MODEL)
+        payload = {'mems': [m for m in memories if first <= m.number <= last],
+                   'features': source_rf}
+        self._cb_paste_memories(payload, row=row)
+
     def _cb_paste_memories(self, payload, row=None):
         mems = payload['mems']
         srcrf = payload['features']
