@@ -1761,11 +1761,16 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
         if errormsgs:
+            errorextra = ''
+            if len(errormsgs) > 19:
+                errorextra = '\n' + _('...and %i more' % (len(errormsgs) - 19))
+                errormsgs = errormsgs[:19]
             d = wx.MessageDialog(
                     self,
                     _('Some memories are incompatible with this radio'))
             msg = '\n'.join('#%i: %s' % (mem.number, e)
                             for mem, e in errormsgs)
+            msg += errorextra
             d.SetExtendedMessage(msg)
             d.ShowModal()
 
