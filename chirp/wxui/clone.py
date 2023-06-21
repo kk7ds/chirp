@@ -32,6 +32,8 @@ from chirp.wxui import developer
 
 LOG = logging.getLogger(__name__)
 CONF = config.get()
+HELPME = _('Help Me...')
+CUSTOM = _('Custom...')
 
 FAKES = {
     'Fake NOP': developer.FakeSerial(),
@@ -216,6 +218,7 @@ class ChirpCloneDialog(wx.Dialog):
         self._clone_thread = None
         grid = wx.FlexGridSizer(2, 5, 5)
         grid.AddGrowableCol(1)
+        bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
 
         if CONF.get_bool('developer', 'state'):
             for fakeserial in FAKES.keys():
@@ -245,7 +248,6 @@ class ChirpCloneDialog(wx.Dialog):
 
         self.gauge = wx.Gauge(self)
 
-        bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
         self.Bind(wx.EVT_BUTTON, self._action)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -315,8 +317,13 @@ class ChirpCloneDialog(wx.Dialog):
         if not select:
             select = CONF.get('last_port', 'state')
 
+        if not self.ports:
+            LOG.warning('No ports available; action will be disabled')
+        okay_btn = self.FindWindowById(self.GetAffirmativeId())
+        okay_btn.Enable(bool(self.ports))
+
         self._port.SetItems([x[1] for x in self.ports] +
-                            [_('Custom...'), _('Help Me...')])
+                            [CUSTOM, HELPME])
         for device, name in self.ports:
             if device == select:
                 self._port.SetStringSelection(name)
@@ -354,6 +361,7 @@ class ChirpCloneDialog(wx.Dialog):
                 _('Unable to determine port for your cable. '
                   'Check your drivers and connections.'),
                 _('USB Port Finder'))
+            self.set_ports(after)
             return
         elif len(changed) == 1:
             found = list(changed)[0]
@@ -365,6 +373,8 @@ class ChirpCloneDialog(wx.Dialog):
             wx.MessageBox(
                 _('More than one port found: %s') % ', '.join(changed),
                 _('USB Port Finder'))
+            self.set_ports(after)
+            return
         self.set_ports(after, select=found.device)
 
     def _add_aliases(self, rclass):
@@ -391,14 +401,14 @@ class ChirpCloneDialog(wx.Dialog):
         CONF.set('last_port', self.get_selected_port(), 'state')
 
     def _selected_port(self, event):
-        if self._port.GetStringSelection() == _('Custom...'):
+        if self._port.GetStringSelection() == CUSTOM:
             port = wx.GetTextFromUser(_('Enter custom port:'), 'Custom Port',
                                       parent=self)
             if port:
                 CUSTOM_PORTS.append(port)
             self.set_ports(select=port or None)
             return
-        elif self._port.GetStringSelection() == _('Help Me...'):
+        elif self._port.GetStringSelection() == HELPME:
             self._port_assist(event)
             return
         self._persist_choices()
