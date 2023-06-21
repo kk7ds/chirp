@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-21 15:28-0700\n"
+"POT-Creation-Date: 2023-06-26 18:46-0700\n"
 "PO-Revision-Date: 2023-03-11 18:37+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -288,7 +288,7 @@ msgstr ""
 "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [C](GÖNDER) tuşuna "
 "basın.\n"
 
-#: ../drivers/ft7800.py:839
+#: ../drivers/ft7800.py:838
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -309,7 +309,7 @@ msgstr ""
 "6. <b>Tamam'a tıkladıktan sonra</b>, imajı  göndermek için \"sol\" [V/M] "
 "tuşuna basın.\n"
 
-#: ../drivers/ft7800.py:849
+#: ../drivers/ft7800.py:848
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -359,7 +359,7 @@ msgstr ""
 "      (ekranda \"CLONE\" görünecektir).\n"
 "4. [MODE] tuşuna basın (ekranda \"CLONE WAIT\" görünecektir).\n"
 
-#: ../drivers/ft7800.py:287
+#: ../drivers/ft7800.py:286
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -379,7 +379,7 @@ msgstr ""
 "\"CLONE\" yazısı belirecektir.\n"
 "6. [LOW(ACC)] tuşuna basın (ekranda \"--RX--\" görünecektir).\n"
 
-#: ../drivers/ft7800.py:276
+#: ../drivers/ft7800.py:275
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -571,7 +571,7 @@ msgstr ""
 "4. [MONI] tuşuna basın (ekranda \"WAIT\" görünecektir).\n"
 "5. TAMAM'a basın.\n"
 
-#: ../drivers/vx6.py:369 ../drivers/vx3.py:374
+#: ../drivers/vx6.py:369 ../drivers/vx3.py:373
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -586,7 +586,7 @@ msgstr ""
 "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna "
 "basın.\n"
 
-#: ../drivers/vx6.py:376 ../drivers/vx3.py:381
+#: ../drivers/vx6.py:376 ../drivers/vx3.py:380
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -629,7 +629,7 @@ msgstr ""
 "      (ekranda \"CLONE\" görünecektir).\n"
 "4. [V/M] tuşuna basın (ekranda \"CLONE WAIT\" görünecektir).\n"
 
-#: ../drivers/ft60.py:355
+#: ../drivers/ft60.py:354
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -649,7 +649,7 @@ msgstr ""
 "6. <b>TAMAM'ı tıkladıktan sonra</b>, imaj göndermek için [PTT] tuşunu bir "
 "saniye basılı tutun.\n"
 
-#: ../drivers/ft60.py:364
+#: ../drivers/ft60.py:363
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -738,7 +738,7 @@ msgstr ""
 "3. Telsizi açarken [MHz], [LOW] ve [D/MR] tuşlarını basılı tutun.\n"
 "4. [D/MR(MW)] tuşuna basın (ekranda \"--WAIT--\" görünecektir).\n"
 
-#: ../drivers/uv5r.py:777
+#: ../drivers/uv5r.py:743
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -754,7 +754,7 @@ msgstr ""
 "5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
 "6. İmajı cihazdan indirmek için TAMAM'a tıklayın.\n"
 
-#: ../drivers/uv5r.py:785
+#: ../drivers/uv5r.py:751
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -826,7 +826,7 @@ msgstr ""
 "3. Telsizi klon için hazırlayın.\n"
 "4. İmajı almak için tuşuna basın.\n"
 
-#: ../drivers/ft90.py:196
+#: ../drivers/ft90.py:195
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect mic and hold [ACC] on mic while powering on.\n"
@@ -841,7 +841,7 @@ msgstr ""
 "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [SET] tuşuna "
 "basın.\n"
 
-#: ../drivers/ft90.py:203
+#: ../drivers/ft90.py:202
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect mic and hold [ACC] on mic while powering on.\n"
@@ -857,7 +857,7 @@ msgstr ""
 "4. [DISP/SS] tuşuna basın\n"
 "     (LCD'nin sol alt köşesinde \"R\" görünecektir).\n"
 
-#: ../drivers/bj9900.py:106
+#: ../drivers/bj9900.py:102
 msgid ""
 "1. Turn radio off.\n"
 "2. Remove front head.\n"
@@ -887,7 +887,7 @@ msgstr ""
 "      (ekranda \"CLONE\" görünecektir).\n"
 "5. [moni] tuşuna basın (ekranda \"-RX-\" görünecektir).\n"
 
-#: ../drivers/ft70.py:552
+#: ../drivers/ft70.py:551
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -903,7 +903,7 @@ msgstr ""
 "ekranda görünecektir).\n"
 "5. <b>Tamam'a tıkladıktan sonra</b>, [BAND] tuşuna basın.\n"
 
-#: ../drivers/ft70.py:560
+#: ../drivers/ft70.py:559
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -920,6 +920,41 @@ msgstr ""
 "ekranda görünecektir).\n"
 "5. [MODE] tuşuna basın (LCD'de \"-WAIT-\" görünecektir). Sonra </b> TAMAM "
 "<b> tıklayın"
+
+#: ../drivers/uvk5.py:636
+#, fuzzy
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Click OK to download image from device.\n"
+"\n"
+"It will may not work if you turn on the radio with the cable already "
+"attached\n"
+msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu mic/spkr konektörüne bağlayın.\n"
+"3. Konektörün sıkıca bağlandığından emin olun.\n"
+"4. Telsizi açın.\n"
+"5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
+"6. İmajı cihaza yüklemek için TAMAM'a tıklayın.\n"
+
+#: ../drivers/uvk5.py:643
+#, fuzzy
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Click OK to upload the image to device.\n"
+"\n"
+"It will may not work if you turn on the radio with the cable already attached"
+msgstr ""
+"1. Telsizi kapatın.\n"
+"2. Kabloyu mic/spkr konektörüne bağlayın.\n"
+"3. Konektörün sıkıca bağlandığından emin olun.\n"
+"4. Telsizi açın.\n"
+"5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
+"6. İmajı cihaza yüklemek için TAMAM'a tıklayın.\n"
 
 #: ../wxui/main.py:1685
 msgid ""
@@ -957,7 +992,7 @@ msgstr "Amatör"
 msgid "An error has occurred"
 msgstr "Bir hata oluştu"
 
-#: ../wxui/clone.py:109
+#: ../wxui/clone.py:111
 msgid "Applying settings"
 msgstr "Ayarlar uygulanıyor"
 
@@ -1059,11 +1094,11 @@ msgstr "Klon tamamlandı, sahte baytlar kontrol ediliyor"
 msgid "Cloning"
 msgstr "Klonlanıyor"
 
-#: ../drivers/bj9900.py:137 ../drivers/ft450d.py:442 ../drivers/ft817.py:343
+#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:442 ../drivers/ft817.py:343
 msgid "Cloning from radio"
 msgstr "Telsizden klonlama"
 
-#: ../drivers/bj9900.py:164 ../drivers/ft450d.py:471 ../drivers/ft817.py:381
+#: ../drivers/bj9900.py:160 ../drivers/ft450d.py:471 ../drivers/ft817.py:381
 msgid "Cloning to radio"
 msgstr "Telsize klonlama"
 
@@ -1084,11 +1119,11 @@ msgstr "%i kaydı sırala"
 msgid "Comment"
 msgstr "Yorum"
 
-#: ../wxui/clone.py:215
+#: ../wxui/clone.py:217
 msgid "Communicate with radio"
 msgstr "Telsiz ile iletişim"
 
-#: ../wxui/clone.py:117
+#: ../wxui/clone.py:119
 msgid "Complete"
 msgstr "Tamamla"
 
@@ -1113,7 +1148,7 @@ msgstr "Ülke"
 msgid "Cross mode"
 msgstr "Çapraz mod"
 
-#: ../wxui/clone.py:319 ../wxui/clone.py:394
+#: ../wxui/clone.py:36
 msgid "Custom..."
 msgstr "Özel..."
 
@@ -1181,7 +1216,7 @@ msgstr "devre dışı bırakıldı"
 msgid "Distance"
 msgstr "Mesafe"
 
-#: ../wxui/clone.py:165
+#: ../wxui/clone.py:167
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "%s için tekrar sorma"
@@ -1198,7 +1233,7 @@ msgstr "İndir"
 msgid "Download from radio"
 msgstr "Telsizden indir"
 
-#: ../wxui/clone.py:502
+#: ../wxui/clone.py:512
 msgid "Download instructions"
 msgstr "İndirme talimatları"
 
@@ -1242,7 +1277,7 @@ msgstr "TX Frekansını girin (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Banka %s için yeni bir ad girin:"
 
-#: ../wxui/clone.py:395
+#: ../wxui/clone.py:405
 msgid "Enter custom port:"
 msgstr "Özel bağlantı noktasını girin:"
 
@@ -1255,11 +1290,11 @@ msgstr "%s kaydı silindi"
 msgid "Error applying settings"
 msgstr "Ayarlar uygulanırken hata oluştu"
 
-#: ../wxui/clone.py:439
+#: ../wxui/clone.py:449
 msgid "Error communicating with radio"
 msgstr "Telsizle iletişim hatası"
 
-#: ../wxui/clone.py:470
+#: ../wxui/clone.py:480
 msgid "Experimental driver"
 msgstr "Deneysel sürücü"
 
@@ -1340,7 +1375,7 @@ msgstr ""
 "2 - Telsiz > Telsizden İndir: Telsiz kafasında herhangi bir ayar yapmayın!\n"
 "3 - Arayüz kablonuzu çıkarın\n"
 
-#: ../drivers/th_uv8000.py:533
+#: ../drivers/th_uv8000.py:525
 msgid ""
 "Follow these instructions to download the radio memory:\n"
 "1 - Turn off your radio\n"
@@ -1354,7 +1389,7 @@ msgstr ""
 "3 - Telsizinizi açın, ses seviyesi @ %50\n"
 "4 - Telsiz > Telsizden İndir\n"
 
-#: ../drivers/ic2730.py:313
+#: ../drivers/ic2730.py:312
 msgid ""
 "Follow these instructions to download your config:\n"
 "1 - Turn off your radio\n"
@@ -1371,9 +1406,9 @@ msgstr ""
 "4 - Telsiz > Telsizden İndir\n"
 "5 - Arayüz kablosunu çıkarın! Aksi takdirde, sağ taraf sesi olmayacaktır!\n"
 
-#: ../drivers/mursv1.py:343 ../drivers/baofeng_wp970i.py:326
+#: ../drivers/mursv1.py:342 ../drivers/baofeng_wp970i.py:325
 #: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:342
+#: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
 #: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
@@ -1402,7 +1437,7 @@ msgstr ""
 "3 - Telsizinizi açın (şifre korumalıysa engelini kaldırın)\n"
 "4 - Başlatmak için TAMAM'a tıklayın.\n"
 
-#: ../drivers/tk760.py:344
+#: ../drivers/tk760.py:343
 msgid ""
 "Follow these instructions to read your radio:\n"
 "1 - Turn off your radio\n"
@@ -1442,7 +1477,7 @@ msgstr ""
 "2 - Telsiz > Telsize yükle: Telsiz kafasında herhangi bir ayar yapmayın!\n"
 "3 - Arayüz kablonuzu çıkarın\n"
 
-#: ../drivers/th_uv8000.py:539
+#: ../drivers/th_uv8000.py:531
 msgid ""
 "Follow these instructions to upload the radio memory:\n"
 "1 - Turn off your radio\n"
@@ -1456,7 +1491,7 @@ msgstr ""
 "3 - Telsizinizi açın, ses seviyesi @ %50\n"
 "4 - Telsiz > Telsize yükle\n"
 
-#: ../drivers/ic2730.py:321
+#: ../drivers/ic2730.py:320
 msgid ""
 "Follow these instructions to upload your config:\n"
 "1 - Turn off your radio\n"
@@ -1503,7 +1538,7 @@ msgstr ""
 "3 - Telsizinizi açın (şifre korumalıysa engelini kaldırın)\n"
 "4 - Başlatmak için TAMAM'a tıklayın.\n"
 
-#: ../drivers/tk760.py:350
+#: ../drivers/tk760.py:349
 msgid ""
 "Follow these instructions to write your radio:\n"
 "1 - Turn off your radio\n"
@@ -1517,7 +1552,7 @@ msgstr ""
 "3 - Telsizinizi açın (şifre korumalıysa engelini kaldırın)\n"
 "4 - Başlatmak için TAMAM'a tıklayın.\n"
 
-#: ../drivers/vgc.py:599 ../drivers/lt725uv.py:522
+#: ../drivers/vgc.py:599 ../drivers/lt725uv.py:497
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1531,7 +1566,7 @@ msgstr ""
 "3 - Telsizinizi açın\n"
 "4 - Telsiz verilerinizin indirilmesini gerçekleştirin\n"
 
-#: ../drivers/tk270.py:341
+#: ../drivers/tk270.py:340
 msgid ""
 "Follow this instructions to read your radio:\n"
 "1 - Turn off your radio\n"
@@ -1545,9 +1580,9 @@ msgstr ""
 "3 - Telsizinizi açın\n"
 "4 - Telsiz verilerinizin indirmesini gerçekleştirin\n"
 
-#: ../drivers/vgc.py:605 ../drivers/mursv1.py:349
-#: ../drivers/baofeng_wp970i.py:332 ../drivers/gmrsuv1.py:398
-#: ../drivers/lt725uv.py:528 ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/vgc.py:605 ../drivers/mursv1.py:348
+#: ../drivers/baofeng_wp970i.py:331 ../drivers/gmrsuv1.py:398
+#: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
 #: ../drivers/uv6r.py:348 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
 msgid ""
 "Follow this instructions to upload your info:\n"
@@ -1562,7 +1597,7 @@ msgstr ""
 "3 - Telsizinizi açın\n"
 "4 - Telsiz verilerinizin yüklemesini gerçekleştirin\n"
 
-#: ../drivers/tk270.py:347
+#: ../drivers/tk270.py:346
 msgid ""
 "Follow this instructions to write your radio:\n"
 "1 - Turn off your radio\n"
@@ -1606,7 +1641,7 @@ msgstr "Kayda Git"
 msgid "Goto Memory:"
 msgstr "Kayda Git:"
 
-#: ../wxui/clone.py:319 ../wxui/clone.py:401
+#: ../wxui/clone.py:35
 msgid "Help Me..."
 msgstr "Bana Yardım Et..."
 
@@ -1743,7 +1778,7 @@ msgstr ""
 "doğrudan erişim sağlamasına olanak sağlayabilir! Bu riske rağmen devam "
 "edilsin mi?"
 
-#: ../wxui/clone.py:111
+#: ../wxui/clone.py:113
 msgid "Loading settings"
 msgstr "Ayarlar yükleniyor"
 
@@ -1773,7 +1808,7 @@ msgstr "{num} kaydı {bank} bankasında değil"
 msgid "Mode"
 msgstr "Mod"
 
-#: ../wxui/clone.py:243
+#: ../wxui/clone.py:246
 msgid "Model"
 msgstr "Model"
 
@@ -1793,7 +1828,7 @@ msgstr "Modül Yüklendi"
 msgid "Module loaded successfully"
 msgstr "Modül başarıyla yüklendi"
 
-#: ../wxui/clone.py:366
+#: ../wxui/clone.py:374
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Birden fazla bağlantı noktası bulundu: %s"
@@ -1940,7 +1975,7 @@ msgstr "Yapıştırılan kayıt, %i kaydının üzerine yazacak"
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Lütfen yeni sürümü yüklemeden önce CHIRP'den çıktığınızdan emin olun!"
 
-#: ../drivers/ftlx011.py:303
+#: ../drivers/ftlx011.py:302
 msgid ""
 "Please follow this steps carefully:\n"
 "1 - Turn on your radio\n"
@@ -1966,7 +2001,7 @@ msgstr ""
 "Klonladıktan sonra kabloyu çıkarın ve normal moda geçmek için telsizinizi "
 "kapatıp açın.\n"
 
-#: ../drivers/ftlx011.py:294
+#: ../drivers/ftlx011.py:293
 msgid ""
 "Please follow this steps carefully:\n"
 "1 - Turn on your radio\n"
@@ -2001,11 +2036,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Lütfen bekleyin"
 
-#: ../wxui/clone.py:344
+#: ../wxui/clone.py:351
 msgid "Plug in your cable and then click OK"
 msgstr "Kablonuzu takın ve ardından Tamam'a tıklayın"
 
-#: ../wxui/clone.py:236
+#: ../wxui/clone.py:239
 msgid "Port"
 msgstr "Port"
 
@@ -2046,12 +2081,12 @@ msgstr "RX DTCS"
 msgid "Radio"
 msgstr "Telsiz"
 
-#: ../drivers/ft60.py:86 ../drivers/ft450d.py:495 ../drivers/ft817.py:408
+#: ../drivers/ft60.py:85 ../drivers/ft450d.py:495 ../drivers/ft817.py:408
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "Telsiz %i bloğunu onaylamadı"
 
-#: ../wxui/clone.py:494 ../wxui/clone.py:559
+#: ../wxui/clone.py:504 ../wxui/clone.py:569
 msgid "Radio information"
 msgstr "Telsiz bilgisi"
 
@@ -2279,7 +2314,7 @@ msgstr "Bu erken aşama beta sürücüsüdür\n"
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr "Bu, erken aşamadaki bir beta sürücüsüdür - yükleme riski size aittir\n"
 
-#: ../drivers/bj9900.py:112
+#: ../drivers/bj9900.py:108
 msgid ""
 "This is experimental support for BJ-9900 which is still under development.\n"
 "Please ensure you have a good backup with OEM software.\n"
@@ -2333,12 +2368,12 @@ msgstr "Ton Susturucu"
 msgid "Tuning Step"
 msgstr "Ayarlama Adımı"
 
-#: ../wxui/clone.py:338 ../wxui/clone.py:345 ../wxui/clone.py:356
-#: ../wxui/clone.py:363 ../wxui/clone.py:367
+#: ../wxui/clone.py:345 ../wxui/clone.py:352 ../wxui/clone.py:363
+#: ../wxui/clone.py:371 ../wxui/clone.py:375
 msgid "USB Port Finder"
 msgstr "USB Portu Bulucu"
 
-#: ../wxui/clone.py:354
+#: ../wxui/clone.py:361
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2382,11 +2417,11 @@ msgstr "%s bu sistemde gösterilemiyor"
 msgid "United States"
 msgstr "Amerika Birleşik Devletleri"
 
-#: ../wxui/clone.py:337
+#: ../wxui/clone.py:344
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "(gerekirse) Kablonuzu çıkarın ve ardından Tamam'ı tıklayın"
 
-#: ../wxui/clone.py:574
+#: ../wxui/clone.py:584
 msgid "Upload instructions"
 msgstr "Yükleme talimatları"
 
@@ -2431,7 +2466,7 @@ msgstr "Değer tam olarak %i ondalık basamak olmalıdır"
 msgid "Value must be zero or greater"
 msgstr "Değer sıfır veya daha büyük olmalıdır"
 
-#: ../wxui/clone.py:239
+#: ../wxui/clone.py:242
 msgid "Vendor"
 msgstr "Tedarikçi"
 
@@ -2456,7 +2491,7 @@ msgstr "Hoşgeldiniz"
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr ""
 
-#: ../wxui/clone.py:361
+#: ../wxui/clone.py:369
 msgid "Your cable appears to be on port:"
 msgstr "Kablonuz bağlantı noktasında görünüyor:"
 
