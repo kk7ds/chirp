@@ -43,6 +43,18 @@ INDEX_CHAR = settings.BANNED_NAME_CHARACTERS[0]
 EDIT_LOCK = threading.Lock()
 
 
+def closes_clipboard(fn):
+    @functools.wraps(fn)
+    def wrapper(*a, **k):
+        try:
+            return fn(*a, **k)
+        finally:
+            if wx.TheClipboard.IsOpened():
+                LOG.warning('Closing clipboard left open by %s' % fn)
+                wx.TheClipboard.Close()
+    return wrapper
+
+
 class LiveAdapter(generic_csv.CSVRadio):
     FILE_EXTENSION = 'img'
 
@@ -191,10 +203,28 @@ class ChirpEditor(wx.Panel):
         pass
 
     def cb_copy(self, cut=False):
-        pass
+        raise NotImplementedError()
 
-    def cb_paste(self, data):
-        pass
+    @closes_clipboard
+    def cb_copy_data(self, data):
+        if wx.TheClipboard.Open():
+            wx.TheClipboard.SetData(data)
+            wx.TheClipboard.Close()
+        else:
+            raise RuntimeError(_('Unable to open the clipboard'))
+
+    @closes_clipboard
+    def cb_paste(self):
+        memdata = wx.CustomDataObject(CHIRP_DATA_MEMORY)
+        textdata = wx.TextDataObject()
+        if wx.TheClipboard.Open():
+            gotchirpmem = wx.TheClipboard.GetData(memdata)
+            got = wx.TheClipboard.GetData(textdata)
+            wx.TheClipboard.Close()
+        if gotchirpmem:
+            return memdata
+        elif got:
+            return textdata
 
     def cb_delete(self):
         pass
@@ -482,18 +512,6 @@ def _error_proof(*expected_errors):
 
         return inner
     return wrap
-
-
-def closes_clipboard(fn):
-    @functools.wraps(fn)
-    def wrapper(*a, **k):
-        try:
-            return fn(*a, **k)
-        finally:
-            if wx.TheClipboard.IsOpened():
-                LOG.warning('Closing clipboard left open by %s' % fn)
-                wx.TheClipboard.Close()
-    return wrapper
 
 
 class error_proof(object):

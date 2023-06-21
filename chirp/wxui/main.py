@@ -295,8 +295,8 @@ class ChirpEditorSet(wx.Panel):
     def cb_copy(self, cut=False):
         return self.current_editor.cb_copy(cut=cut)
 
-    def cb_paste(self, data):
-        return self.current_editor.cb_paste(data)
+    def cb_paste(self):
+        return self.current_editor.cb_paste()
 
     def cb_delete(self):
         return self.current_editor.cb_delete()
@@ -1294,28 +1294,20 @@ class ChirpMain(wx.Frame):
             w.Close(True)
 
     @common.error_proof(RuntimeError, errors.InvalidMemoryLocation)
-    @common.closes_clipboard
     def _menu_copy(self, event, cut=False):
-        data = self.current_editorset.cb_copy(cut=cut)
-        if wx.TheClipboard.Open():
-            wx.TheClipboard.SetData(data)
-            wx.TheClipboard.Close()
-        else:
-            raise RuntimeError(_('Unable to open the clipboard'))
+        try:
+            self.current_editorset.cb_copy(cut=cut)
+        except NotImplementedError:
+            LOG.warning('Attempt to cut/copy from %s not supported',
+                        self.current_editorset.current_editor)
 
     @common.error_proof()
-    @common.closes_clipboard
     def _menu_paste(self, event):
-        memdata = wx.CustomDataObject(common.CHIRP_DATA_MEMORY)
-        textdata = wx.TextDataObject()
-        if wx.TheClipboard.Open():
-            gotchirpmem = wx.TheClipboard.GetData(memdata)
-            got = wx.TheClipboard.GetData(textdata)
-            wx.TheClipboard.Close()
-        if gotchirpmem:
-            self.current_editorset.cb_paste(memdata)
-        elif got:
-            self.current_editorset.cb_paste(textdata)
+        try:
+            self.current_editorset.cb_paste()
+        except NotImplementedError:
+            LOG.warning('Attempt to paste to %s not supported',
+                        self.current_editorset.current_editor)
 
     def _menu_selall(self, event):
         self.current_editorset.select_all()

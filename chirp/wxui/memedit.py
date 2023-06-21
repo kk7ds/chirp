@@ -1678,7 +1678,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if cut:
             wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
-        return data
+        self.cb_copy_data(data)
 
     def _cb_paste_memories(self, payload, row=None):
         mems = payload['mems']
@@ -1759,7 +1759,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         return True
 
-    def cb_paste(self, data):
+    def cb_paste(self):
+        data = super().cb_paste()
         if common.CHIRP_DATA_MEMORY in data.GetAllFormats():
             payload = pickle.loads(data.GetData().tobytes())
             LOG.debug('CHIRP-native paste: %r' % payload)
