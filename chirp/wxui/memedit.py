@@ -1461,6 +1461,18 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                   insert_item)
         menu.Append(insert_item)
 
+        cut_item = wx.MenuItem(menu, wx.NewId(), _('Cut'))
+        self.Bind(wx.EVT_MENU, lambda e: self.cb_copy(cut=True), cut_item)
+        menu.Append(cut_item)
+
+        copy_item = wx.MenuItem(menu, wx.NewId(), _('Copy'))
+        self.Bind(wx.EVT_MENU, lambda e: self.cb_copy(cut=False), copy_item)
+        menu.Append(copy_item)
+
+        paste_item = wx.MenuItem(menu, wx.NewId(), _('Paste'))
+        self.Bind(wx.EVT_MENU, lambda e: self.cb_paste(), paste_item)
+        menu.Append(paste_item)
+
         delete_menu = wx.Menu()
         delete_menu_item = menu.AppendSubMenu(delete_menu, _('Delete'))
         delete_menu_item.Enable(self.editable)
