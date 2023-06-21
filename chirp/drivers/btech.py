@@ -1046,10 +1046,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         self._encode_tone(_mem.rxtone, rxmode, rxtone, rxpol)
 
         # name TAG of the channel
-        if len(mem.name) < self.NAME_LENGTH:
-            # we must pad to self.NAME_LENGTH chars, " " = "\xFF"
-            mem.name = str(mem.name).ljust(self.NAME_LENGTH, " ")
-        _names.name = str(mem.name).replace(" ", "\xFF")
+        _names.name = mem.name.rstrip(' ').ljust(self.NAME_LENGTH, "\xFF")
 
         # power, # default power level is high
         _mem.power = 0 if mem.power is None else POWER_LEVELS.index(mem.power)
