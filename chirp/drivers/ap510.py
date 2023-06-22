@@ -753,7 +753,7 @@ class AP510Radio(chirp_common.CloneModeRadio):
                     multiple = self._mmap.multiple
                     multiple['tf_card'] = TF_CARD.index(str(setting.value))
                     self._mmap.multiple = multiple
-            except:
+            except Exception:
                 LOG.debug(setting.get_name())
                 raise
 
