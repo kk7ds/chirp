@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-21 15:28-0700\n"
-"PO-Revision-Date: 2023-06-14 20:29-0400\n"
+"PO-Revision-Date: 2023-06-22 15:48-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -68,9 +68,9 @@ msgid "(none)"
 msgstr "(nada)"
 
 #: ../wxui/memedit.py:1787
-#, fuzzy, python-format
+#, python-format
 msgid "...and %i more"
-msgstr "...y desplazar todas las memorias hacia arriba"
+msgstr "...y %i más"
 
 #: ../drivers/alinco.py:606 ../drivers/alinco.py:615
 msgid ""
@@ -1673,13 +1673,12 @@ msgid "Import"
 msgstr "Importar"
 
 #: ../wxui/main.py:666
-#, fuzzy
 msgid "Import from file"
 msgstr "Importar desde archivo"
 
 #: ../wxui/main.py:1276
 msgid "Import not recommended"
-msgstr ""
+msgstr "Importación no recomendada"
 
 #: ../wxui/bankedit.py:62
 msgid "Index"
@@ -2293,6 +2292,12 @@ msgid ""
 "file with those in %(file)s. Would you like to open this file to copy/paste "
 "memories across, or proceed with the import?"
 msgstr ""
+"El procedimiento recomendado para importar memorias es para abrir el archivo "
+"de origen y copiar/pegar memorias desde este en tu imagen objetivo. Si "
+"continúas con esta función de importación, CHIRP remplazara todas las "
+"memorias de tu archivo actualmente abierto por las de %(file)s. ¿Te gustaría "
+"abrir este archivo para copiar/pegar memorias a través de este, o proceder "
+"con la importación?"
 
 #: ../wxui/memedit.py:1493
 msgid "This Memory"
