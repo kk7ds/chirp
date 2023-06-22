@@ -1101,7 +1101,7 @@ class FT857Radio(ft817.FT817Radio):
                     setattr(self._memobj, setting + "_offset", abs(val))
                 else:
                     setattr(obj, setting, element.value)
-            except:
+            except Except:
                 LOG.debug(element.get_name())
                 raise
 
