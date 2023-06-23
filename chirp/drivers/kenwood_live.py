@@ -289,7 +289,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
                                                                memory.name))
             if not iserr(r2):
                 memory.name = memory.name.rstrip()
-                self._memcache[memory.number] = memory
+                self._memcache[memory.number] = memory.dupe()
             else:
                 raise errors.InvalidDataError("Radio refused name %i: %s" %
                                               (memory.number,
