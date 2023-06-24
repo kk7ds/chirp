@@ -395,7 +395,7 @@ class Memory:
     def parse_freq(self, freqstr):
         """Set the frequency from a string"""
         self.freq = parse_freq(freqstr)
-        return self.freqx
+        return self.freq
 
     def __str__(self):
         if self.tmode == "Tone":
