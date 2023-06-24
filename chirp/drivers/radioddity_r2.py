@@ -678,7 +678,7 @@ class RetevisRT24(RadioddityR2):
     VENDOR = "Retevis"
     MODEL = "RT24"
 
-    _pmr = True
+    _pmr = False  # sold as PMR radio but supports full band TX/RX
 
 
 @directory.register
@@ -687,4 +687,4 @@ class RetevisH777S(RadioddityR2):
     VENDOR = "Retevis"
     MODEL = "H777S"
 
-    _frs16 = True
+    _frs16 = False  # sold as FRS radio but supports full band TX/RX
