@@ -1214,7 +1214,7 @@ class RB75Radio(T18Radio):
     _upper = 30
     _mem_params = (_upper  # number of channels
                    )
-    _gmrs = True
+    _gmrs = False  # sold as GMRS radio but supports full band TX/RX
 
 
 @directory.register
