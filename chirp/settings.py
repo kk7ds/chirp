@@ -355,7 +355,8 @@ class RadioSettingGroup(object):
     def __str__(self):
         string = "group '%s': {\n" % self._name
         for element in sorted(self._elements.values()):
-            string += "\t" + str(element) + "\n"
+            for line in str(element).split("\n"):
+                string += "\t" + line + "\n"
         string += "}"
         return string
 
