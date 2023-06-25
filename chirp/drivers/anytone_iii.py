@@ -30,7 +30,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 
 
 class ATBankModel(chirp_common.BankModel):
-    """Anytone Banks A-J, Each chan in zero or one bank"""
+    """AnyTone Banks A-J, Each chan in zero or one bank"""
 
     def __init__(self, radio, name='Banks'):
         super(ATBankModel, self).__init__(radio, name)

@@ -866,7 +866,7 @@ class IC2730Radio(icf.IcomCloneModeRadio):
         other.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_sets.toneburst))
-        rset = RadioSetting("settings.toneburst", "1750 Htz Tone Burst", rx)
+        rset = RadioSetting("settings.toneburst", "1750 Hz Tone Burst", rx)
         other.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_sets.ifxchg))

@@ -601,11 +601,11 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
     def sync_out(self):
         self._upload()
 
-    # TODO: This is a dumb, brute force method of downlolading the memory.
+    # TODO: This is a dumb, brute force method of downloading the memory.
     # it would be smarter to only load the active areas and none of
     # the padding/unused areas.
     def _download(self):
-        """Talk to a wouxun KG-UV920P-A and do a download"""
+        """Talk to a Wouxun KG-UV920P-A and do a download"""
         try:
             self._identify()
             return self._do_download(0, 0x6640, 0x40)
@@ -637,7 +637,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         return memmap.MemoryMapBytes(image)
 
     def _upload(self):
-        """Talk to a wouxun KG-UV920P-A and do a upload"""
+        """Talk to a Wouxun KG-UV920P-A and do a upload"""
         try:
             self._identify()
             self._do_upload(0x0000, 0x6640, 0x40)

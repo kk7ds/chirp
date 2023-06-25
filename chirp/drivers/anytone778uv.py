@@ -569,7 +569,7 @@ def do_upload(radio):
             bptr += MEMORY_RW_BLOCK_SIZE
 
             if write_response == '\x0a':
-                # NACK from radio, e.g. checksum wrongn
+                # NACK from radio, e.g. checksum wrong
                 LOG.debug('Radio returned 0x0a - NACK:')
                 LOG.debug(' * write cmd:\n%s' % util.hexprint(write_command))
                 LOG.debug(' * write response:\n%s' %
@@ -642,7 +642,7 @@ def dtcs_code_val_to_bits(code):
 
 class AnyTone778UVBase(chirp_common.CloneModeRadio,
                        chirp_common.ExperimentalRadio):
-    '''AnyTone 778UV and probably Retivis RT95 and others'''
+    '''AnyTone 778UV and probably Retevis RT95 and others'''
     BAUD_RATE = 9600
     NEEDS_COMPAT_SERIAL = False
     NAME_LENGTH = 5
@@ -888,7 +888,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                     mem.rx_dtcs = rxcode
                     # #8327 Not sure this is the correct interpretation of
                     # DevelopersToneModes, but it seems to make it work round
-                    # tripping with the anytone software.  DTM implies that we
+                    # tripping with the Anytone software.  DTM implies that we
                     # might not need to set mem.dtcs, but if we do it only DTCS
                     # rx works (as if we were Cross:None->DTCS).
                     mem.dtcs = rxcode
@@ -1320,7 +1320,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         rset = RadioSetting("settings.tbstFrequency", "TBST frequency", rs)
         function.append(rset)
 
-        # Save Channel Perameter
+        # Save Channel Parameter
         rs = RadioSettingValueBoolean(_settings.saveChParameter)
         rset = RadioSetting("settings.saveChParameter",
                             "Save channel parameter", rs)
@@ -1774,7 +1774,7 @@ if has_future:
 
 
 class AnyTone778UVvoxBase(AnyTone778UVBase):
-    '''AnyTone 778UV VOX, Retivis RT95 VOX and others'''
+    '''AnyTone 778UV VOX, Retevis RT95 VOX and others'''
     NAME_LENGTH = 6
     HAS_VOX = True
 

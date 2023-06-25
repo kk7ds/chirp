@@ -520,7 +520,7 @@ US_LEGAL_STEPS.remove(6.25)       # euro radios just use STEP_CODE
 # is 6 (PAGER). Each row is a tuple. Its first member is a list of
 # [tmode,cross] or [tmode, cross, suppress]. "Suppress" is used only when
 # encoding UI-->radio. When decoding radio-->UI, two of the sql_types each
-# result in 5 possibible UI decodings depending on the tx and rx codes, and the
+# result in 5 possible UI decodings depending on the tx and rx codes, and the
 # list in each of these rows has five members. These two row tuples each have
 # two additional members to specify which of the radio fields to examine.
 # The map from CHIRP UI to radio image types is also built from this table.
@@ -837,7 +837,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     # A param is a tuple:
     #  for a simple param: (paramname, paramtitle,[valuename list])
     #  for a handler param: (paramname, paramtitle,( handler,[handler params]))
-    # This is a class variable. subclasses msut create a variable named
+    # This is a class variable. subclasses must create a variable named
     # class_group_descs. The FT-4 classes simply equate this, but the
     # FT-65 classes must copy and modify this.
     group_descriptions = [

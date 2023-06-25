@@ -1027,7 +1027,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         tmp = str(int(_sets.sig_freq))
-        rs = RadioSetting("settings.sig_freq", "Single Signaling Tone (Htz)",
+        rs = RadioSetting("settings.sig_freq", "Single Signaling Tone (Hz)",
                           RadioSettingValueList(LIST_SSF, tmp))
         rs.set_apply_callback(my_val_list, _sets, "sig_freq")
         basic.append(rs)
@@ -1067,7 +1067,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         a_band.append(rs)
 
         tmp = my_tone_strn(_vfoa, "is_rxdigtone", "rxdtcs_pol", "rx_tone")
-        rs = RadioSetting("rx_tone", "Default Recv CTCSS (Htz)",
+        rs = RadioSetting("rx_tone", "Default Recv CTCSS (Hz)",
                           RadioSettingValueList(LIST_CTCSS, tmp))
         rs.set_apply_callback(my_set_tone, _vfoa, "is_rxdigtone",
                               "rxdtcs_pol", "rx_tone")
@@ -1079,7 +1079,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         a_band.append(rs)
 
         tmp = my_tone_strn(_vfoa, "is_txdigtone", "txdtcs_pol", "tx_tone")
-        rs = RadioSetting("tx_tone", "Default Xmit CTCSS (Htz)",
+        rs = RadioSetting("tx_tone", "Default Xmit CTCSS (Hz)",
                           RadioSettingValueList(LIST_CTCSS, tmp))
         rs.set_apply_callback(my_set_tone, _vfoa, "is_txdigtone",
                               "txdtcs_pol", "tx_tone")
@@ -1178,7 +1178,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         b_band.append(rs)
 
         tmp = my_tone_strn(_vfob, "is_rxdigtone", "rxdtcs_pol", "rx_tone")
-        rs = RadioSetting("rx_tone", "Default Recv CTCSS (Htz)",
+        rs = RadioSetting("rx_tone", "Default Recv CTCSS (Hz)",
                           RadioSettingValueList(LIST_CTCSS, tmp))
         rs.set_apply_callback(my_set_tone, _vfob, "is_rxdigtone",
                               "rxdtcs_pol", "rx_tone")
@@ -1189,7 +1189,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         b_band.append(rs)
 
         tmp = my_tone_strn(_vfob, "is_txdigtone", "txdtcs_pol", "tx_tone")
-        rs = RadioSetting("tx_tone", "Default Xmit CTCSS (Htz)",
+        rs = RadioSetting("tx_tone", "Default Xmit CTCSS (Hz)",
                           RadioSettingValueList(LIST_CTCSS, tmp))
         rs.set_apply_callback(my_set_tone, _vfob, "is_txdigtone",
                               "txdtcs_pol", "tx_tone")

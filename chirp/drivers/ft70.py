@@ -644,7 +644,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         return self._add_ff_pad(mem.name.rstrip(), 6)
 
     def _encode_charsetbits(self, mem):
-        # We only speak english here in chirpville
+        # We only speak English here in chirpville
         return [0x00, 0x00]
 
     def _decode_power_level(self, mem):  # 3 High 2 Mid 1 Low

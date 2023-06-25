@@ -816,7 +816,7 @@ def encode_5tone(data, fieldlen):
 
 
 def decode_freq(data):
-    """decode frequency data for the broadcast fm radio memories"""
+    """decode frequency data for the broadcast FM radio memories"""
     data_out = ''
     if data[0] != 0xff:
         data_out = chirp_common.format_freq(
@@ -825,7 +825,7 @@ def decode_freq(data):
 
 
 def encode_freq(data, fieldlen):
-    """encode frequency data for the broadcast fm radio memories"""
+    """encode frequency data for the broadcast FM radio memories"""
     data_out = bytearray(b'\xff')*fieldlen
     if data != '':
         data_out = encode_halfbytes((('%%0%di' % (fieldlen << 1)) %
@@ -1826,7 +1826,7 @@ class Puxing_PX888K_Radio(chirp_common.CloneModeRadio):
                          NO_YES),
             ]
 
-        # broadcast fm radio settings
+        # broadcast FM radio settings
         broadcast_settings = [
             list_setting("band", "Frequency interval",
                          _broadcast.receive_range,

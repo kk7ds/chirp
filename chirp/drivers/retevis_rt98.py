@@ -30,8 +30,8 @@ from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
 LOG = logging.getLogger(__name__)
 
 #
-#  Chirp Driver for Retevis RT98 models: RT98V (136-174 Mhz)
-#                                        RT98U (400-490 Mhz)
+#  Chirp Driver for Retevis RT98 models: RT98V (136-174 MHz)
+#                                        RT98U (400-490 MHz)
 #
 #
 #

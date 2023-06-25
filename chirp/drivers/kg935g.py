@@ -1136,7 +1136,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
     # It would be smarter to only load the active areas and none of
     # the padding/unused areas. Padding still need to be investigated.
     def _download(self):
-        """Talk to a wouxun KG-935G and do a download"""
+        """Talk to a Wouxun KG-935G and do a download"""
         try:
             self._identify()
             return self._do_download(0, 32768, 64)
@@ -1168,7 +1168,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         return memmap.MemoryMapBytes(image)
 
     def _upload(self):
-        """Talk to a wouxun KG-935G and do a upload"""
+        """Talk to a Wouxun KG-935G and do a upload"""
         try:
             self._identify()
             self._do_upload()
@@ -2006,7 +2006,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         # FM RADIO PRESETS
 
         # memory stores raw integer value like 760
-        # radio will divide 760 by 10 and interpret correctly at 76.0Mhz
+        # radio will divide 760 by 10 and interpret correctly at 76.0MHz
         for i in range(1, 21):
             chan = str(i)
             rs = RadioSetting("FM_radio" + chan, "FM Preset" + chan,

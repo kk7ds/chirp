@@ -388,7 +388,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         return repr(self._memobj.memory[number])
 
     def _decode_tone(self, mem, rx=True):
-        """Parse the tone data to decode from mem tones are encodded like this
+        """Parse the tone data to decode from mem tones are encoded like this
         CTCS: mapped [0x80...0xa5] = [67.0...250.3]
         DTCS: mixed  [0x88, 0x23] last is BCD and first is the 100 power - 88
 

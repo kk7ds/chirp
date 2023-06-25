@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""vcommon function for wouxun (or similar) radios"""
+"""vcommon function for Wouxun (or similar) radios"""
 
 import struct
 import logging

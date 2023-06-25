@@ -913,7 +913,7 @@ class RadioFeatures:
                   "Indicates that the radio supports general settings")
         self.init("has_variable_power", False,
                   "Indicates the radio supports any power level between the "
-                  "min and max in valid_powe_levels")
+                  "min and max in valid_power_levels")
 
         self.init("valid_modes", list(MODES),
                   "Supported emission (or receive) modes")
@@ -971,7 +971,7 @@ class RadioFeatures:
         return self.__dict__[name]
 
     def validate_memory(self, mem):
-        """Return a list of warnings and errors that will be encoundered
+        """Return a list of warnings and errors that will be encountered
         if trying to set @mem on the current radio"""
         msgs = []
 
@@ -1166,7 +1166,7 @@ class Radio(Alias):
         in the radio's memory. The memory should accurately represent what is
         actually stored in the radio as closely as possible. If the radio
         does not support changing some attributes of the location in question,
-        the Memory.immutable list should be set approproately.
+        the Memory.immutable list should be set appropriately.
 
         NB: No changes to the radio's memory should occur as a result of
         calling get_memory().
@@ -1225,7 +1225,7 @@ class Radio(Alias):
         return []
 
     def validate_memory(self, mem):
-        """Return a list of warnings and errors that will be encoundered
+        """Return a list of warnings and errors that will be encountered
         if trying to set @mem on the current radio"""
         rf = self.get_features()
         return rf.validate_memory(mem)

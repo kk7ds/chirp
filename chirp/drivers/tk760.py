@@ -418,7 +418,7 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
         to the correct variant of the radio"""
         rid = get_rid(self._mmap)
 
-        # identify the radio variant and set the environment to it's values
+        # identify the radio variant and set the environment to its values
         try:
             self._upper, low, high, self._kind = self.VARIANTS[rid]
 
@@ -560,7 +560,7 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
 
         if _mem.get_raw()[0] == "\xFF" or not self.get_active(number - 1):
             mem.empty = True
-            # but is not enough, you have to crear the memory in the mmap
+            # but is not enough, you have to clear the memory in the mmap
             # to get it ready for the sync_out process
             _mem.set_raw("\xFF" * 8)
             return mem

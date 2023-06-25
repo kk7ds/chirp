@@ -58,7 +58,7 @@ class FT857Radio(ft817.FT817Radio):
                                     list(CROSS_MODES.keys()))))
 
     _memsize = 7341
-    # block 9 (140 Bytes long) is to be repeted 40 times
+    # block 9 (140 Bytes long) is to be repeated 40 times
     # should be 42 times but this way I can use original 817 functions
     _block_lengths = [2, 82, 252, 196, 252, 196, 212, 55, 140, 140, 140,
                       38, 176]
@@ -1116,7 +1116,7 @@ class FT857USRadio(FT857Radio):
     _model = ""
     _US_model = True
     _memsize = 7481
-    # block 9 (140 Bytes long) is to be repeted 40 times
+    # block 9 (140 Bytes long) is to be repeated 40 times
     # should be 42 times but this way I can use original 817 functions
     _block_lengths = [2, 82, 252, 196, 252, 196, 212, 55, 140, 140, 140, 38,
                       176, 140]

@@ -140,7 +140,7 @@ def boolstr(b):
 class AP510Memory(object):
     """Parses and generates AP510 key/value format
 
-    The AP510 sends it's configuration as a set of keys and values. There
+    The AP510 sends its configuration as a set of keys and values. There
     is one key/value pair per line. Line separators are \r\n. Keys are
     deliminated from values with the = symbol.
 

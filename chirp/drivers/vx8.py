@@ -721,7 +721,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
         label = "".join([chr(CHARSET.index(x)) for x in mem.name.rstrip()])
         _mem.label = self._add_ff_pad(label, 16)
-        # We only speak english here in chirpville
+        # We only speak English here in chirpville
         _mem.charsetbits[0] = 0x00
         _mem.charsetbits[1] = 0x00
 

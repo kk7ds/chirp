@@ -30,8 +30,8 @@ from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
 LOG = logging.getLogger(__name__)
 
 #
-#  Chirp Driver for TYT TH-9000D (models: 2M (144 Mhz), 1.25M (220 Mhz)
-#                                 and 70cm (440 Mhz)  radios)
+#  Chirp Driver for TYT TH-9000D (models: 2M (144 MHz), 1.25M (220 MHz)
+#                                 and 70cm (440 MHz)  radios)
 #
 #  Version 1.0
 #
@@ -144,7 +144,7 @@ struct {
 """
 #  TH9000  memory map
 #  section: 5  TX/RX Range
-#     used to set the TX/RX range of the radio (e.g.  222-228Mhz for 220 meter)
+#     used to set the TX/RX range of the radio (e.g.  222-228MHz for 220 meter)
 #     possible to set range for tx/rx
 #
 MEM_FORMAT = MEM_FORMAT + """

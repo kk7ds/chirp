@@ -421,7 +421,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
     # It would be smarter to only load the active areas and none of
     # the padding/unused areas. Padding still need to be investigated.
     def _download(self):
-        """Talk to a wouxun KG-UV8D Plus and do a download"""
+        """Talk to a Wouxun KG-UV8D Plus and do a download"""
         try:
             self._identify()
             return self._do_download(0, 32768, 64)
@@ -453,7 +453,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
         return memmap.MemoryMapBytes(image)
 
     def _upload(self):
-        """Talk to a wouxun KG-UV8D Plus and do a upload"""
+        """Talk to a Wouxun KG-UV8D Plus and do a upload"""
         try:
             self._identify()
             self._do_upload(0, 32768, 64)
