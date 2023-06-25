@@ -417,7 +417,7 @@ struct  {
         mem.skip = _mem.skip and "S" or ""
         if not all(char in chirp_common.CHARSET_ASCII
                    for char in str(_mem.name)):
-            # dont display blank/junk name
+            # don't display blank/junk name
             mem.name = ""
         else:
             mem.name = str(_mem.name).rstrip()

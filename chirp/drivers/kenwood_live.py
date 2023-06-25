@@ -126,10 +126,10 @@ def get_id(ser):
                 resp = command(ser, "ID")
             except UnicodeDecodeError:
                 # If we got binary here, we are using the wrong rate
-                # or not talking to a kenwood live radio.
+                # or not talking to a Kenwood live radio.
                 continue
 
-            # most kenwood radios
+            # most Kenwood radios
             if " " in resp:
                 LAST_BAUD = i
                 return resp.split(" ")[1]
@@ -169,7 +169,7 @@ def iserr(result):
 
 
 class KenwoodLiveRadio(chirp_common.LiveRadio):
-    """Base class for all live-mode kenwood radios"""
+    """Base class for all live-mode Kenwood radios"""
     BAUD_RATE = 9600
     VENDOR = "Kenwood"
     MODEL = ""

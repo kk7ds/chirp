@@ -623,7 +623,7 @@ def model_match(cls, data):
 
 def _decode_ranges(low, high):
     """Unpack the data in the ranges zones in the memmap and return
-    a tuple with the integer corresponding to the Mhz it means"""
+    a tuple with the integer corresponding to the MHz it means"""
     ilow = int(low[0]) * 100 + int(low[1]) * 10 + int(low[2])
     ihigh = int(high[0]) * 100 + int(high[1]) * 10 + int(high[2])
     ilow *= 1000000
@@ -1092,7 +1092,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 LOG.debug("New mem is empty.")
             else:
                 LOG.debug("New mem is NOT empty")
-                # set extra-settings to default ONLY when apreviously empty or
+                # set extra-settings to default ONLY when a previously empty or
                 # deleted memory was edited to prevent errors such as #4121
                 if mem_was_empty:
                     LOG.debug("old mem was empty. Setting default for extras.")
@@ -3463,7 +3463,7 @@ class BTech(BTechMobileCommon):
         LOG.info("Radio ranges: VHF %d to %d" % vhf)
         LOG.info("Radio ranges: UHF %d to %d" % uhf)
 
-        # 220Mhz radios case
+        # 220MHz radios case
         if self.MODEL in ["UV-2501+220", "KT8900R"]:
             vhf2 = _decode_ranges(ranges.vhf2_low, ranges.vhf2_high)
             LOG.info("Radio ranges: VHF(220) %d to %d" % vhf2)
@@ -3970,12 +3970,12 @@ class BTechColor(BTechMobileCommon):
 
         # the additional bands
         if self.MODEL in ["UV-25X4", "KT7900D"]:
-            # 200Mhz band
+            # 200MHz band
             vhf2 = _decode_ranges(ranges.vhf2_low, ranges.vhf2_high)
             LOG.info("Radio ranges: VHF(220) %d to %d" % vhf2)
             self._220_range = vhf2
 
-            # 350Mhz band
+            # 350MHz band
             uhf2 = _decode_ranges(ranges.uhf2_low, ranges.uhf2_high)
             LOG.info("Radio ranges: UHF(350) %d to %d" % uhf2)
             self._350_range = uhf2
@@ -4933,12 +4933,12 @@ class QYTColorHT(BTechMobileCommon):
 
         # the additional bands
         if self.MODEL in ["KT-8R"]:
-            # 200Mhz band
+            # 200MHz band
             vhf2 = _decode_ranges(ranges.vhf2_low, ranges.vhf2_high)
             LOG.info("Radio ranges: VHF(220) %d to %d" % vhf2)
             self._220_range = vhf2
 
-            # 350Mhz band
+            # 350MHz band
             uhf2 = _decode_ranges(ranges.uhf2_low, ranges.uhf2_high)
             LOG.info("Radio ranges: UHF(350) %d to %d" % uhf2)
             self._350_range = uhf2

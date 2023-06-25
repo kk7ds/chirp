@@ -323,7 +323,7 @@ def do_upload(radio):
     status.cur = 0
     status.max = radio._memsize
 
-    # The OEM software reads the 1st block from the radio before comencing
+    # The OEM software reads the 1st block from the radio before commencing
     # with the upload. That behavior will be mirrored here.
     _read_block(radio, radio.START_ADDR, radio.BLOCK_SIZE)
 

@@ -1,5 +1,5 @@
 # Copyright 2022 Mel Terechenok <melvin.terechenok@gmail.com>
-# Updated Driver to support Wouxon KG-UV9PX
+# Updated Driver to support Wouxun KG-UV9PX
 # based on prior driver for KG-UV9D Plus by
 # Jim Lieb <lieb@sea-troll.net>
 #

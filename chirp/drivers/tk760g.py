@@ -273,7 +273,7 @@ ACK_CMD = b"\x06"
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                 chirp_common.PowerLevel("High", watts=5)]
 
-MODES = ["NFM", "FM"]  # 12.5 / 25 Khz
+MODES = ["NFM", "FM"]  # 12.5 / 25 KHz
 VALID_CHARS = chirp_common.CHARSET_UPPER_NUMERIC + "_-*()/\-+=)"
 SKIP_VALUES = ["", "S"]
 
@@ -559,7 +559,7 @@ def do_upload(radio):
         data = radio.get_mmap()[raddr:raddr+BLOCK_SIZE]
 
         # The blocks from x59-x5F are NOT programmable
-        # The blocks from x11-x1F are writed only if not empty
+        # The blocks from x11-x1F are written only if not empty
         if addr in RO_BLOCKS:
             # checking if in the range of optional blocks
             if addr >= 0x10 and addr <= 0x1F:
@@ -611,7 +611,7 @@ def model_match(cls, data):
 
 
 class Kenwood60GBankModel(chirp_common.BankModel):
-    """Testing the bank model on kennwood"""
+    """Testing the bank model on Kenwood"""
     channelAlwaysHasBank = True
 
     def get_num_mappings(self):
@@ -635,7 +635,7 @@ class Kenwood60GBankModel(chirp_common.BankModel):
                             (memory.number, bank))
 
         # We can't "Remove" it for good
-        # the kenwood paradigm don't allow it
+        # the Kenwood paradigm doesn't allow it
         # instead we move it to bank 0
         self._radio._set_bank(memory.number, 0)
 
@@ -652,7 +652,7 @@ class Kenwood60GBankModel(chirp_common.BankModel):
 
 
 class memBank(chirp_common.Bank):
-    """A bank model for kenwood"""
+    """A bank model for Kenwood"""
     # Integral index of the bank (not to be confused with per-memory
     # bank indexes
     index = 0
@@ -814,7 +814,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
         to the correct variant of the radio"""
         rid = self._mmap[0xA7:0xAE]
 
-        # identify the radio variant and set the environment to it's values
+        # identify the radio variant and set the environment to its values
         try:
             self._upper, low, high, self._kind = self.VARIANTS[rid]
 
@@ -825,7 +825,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
             self._range = [int(low * 1000000 * 0.96),
                            int(high * 1000000 * 1.04)]
 
-            # setting the bank data in the features, 8 & 16 CH dont have banks
+            # setting the bank data in the features, 8 & 16 CH don't have banks
             if self._upper < 32:
                 rf = chirp_common.RadioFeatures()
                 rf.has_bank = False

@@ -1390,7 +1390,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         mod_se = True     # UV8000SE has 3rd freq bank
         if mod_se:
             rx = RadioSettingValueBoolean(bool(_sets.frqr3))
-            rset = RadioSetting("setstuf.frqr3", "Freq Range 3 (220Mhz)", rx)
+            rset = RadioSetting("setstuf.frqr3", "Freq Range 3 (220MHz)", rx)
             rset.set_doc("Enable the 220MHz frequency bank.")
             frng.append(rset)
 

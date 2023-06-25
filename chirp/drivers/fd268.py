@@ -177,7 +177,7 @@ def do_magic(radio):
     status.msg = "Linking to radio, please wait."
     radio.status_fn(status)
 
-    # every byte of this magic chain must be send separatedly
+    # every byte of this magic chain must be send separately
     magic = "\x02PROGRA"
 
     # start the fun, finger crossed please...

@@ -40,7 +40,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 #        +------------| GND              |
 #                     `------------------'
 #
-# D1: 1N4148 shottky diode
+# D1: 1N4148 Schottky diode
 # R1: 10K ohm resistor
 
 MEM_FORMAT = """

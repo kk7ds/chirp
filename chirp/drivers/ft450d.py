@@ -236,7 +236,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 mym_cw:1,
                 mym_usb:1,
                 mym_lsb:1;
-            u8  myb_24:1,          // My Band: 24Mhz set = OFF
+            u8  myb_24:1,          // My Band: 24MHz set = OFF
                 myb_21:1,
                 myb_18:1,
                 myb_14:1,

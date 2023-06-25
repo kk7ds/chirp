@@ -767,7 +767,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
             return
 
         def my_mhz_val(setting, obj, atrb, ndx=-1):
-            """ Callback to set freq back to Htz"""
+            """ Callback to set freq back to Hz """
             vx = float(str(setting.value))
             vx = int(vx * mhz1)
             if ndx < 0:

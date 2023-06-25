@@ -826,7 +826,7 @@ class KG980PRadio(chirp_common.CloneModeRadio,
     # It would be smarter to only load the active areas and none of
     # the padding/unused areas. Padding still need to be investigated.
     def _download(self):
-        """Talk to a wouxun KG-UV980P and do a download"""
+        """Talk to a Wouxun KG-UV980P and do a download"""
         try:
             self._identify()
             return self._do_download(0, 32768, 64)
@@ -859,7 +859,7 @@ class KG980PRadio(chirp_common.CloneModeRadio,
         return memmap.MemoryMapBytes(image)
 
     def _upload(self):
-        """Talk to a wouxun KG-UV980P and do a upload"""
+        """Talk to a Wouxun KG-UV980P and do a upload"""
         try:
             self._identify()
             LOG.debug("Done with Upload Identify")
@@ -2472,17 +2472,17 @@ class KG980PRadio(chirp_common.CloneModeRadio,
         # FM RADIO PRESETS
 
         # memory stores raw integer value like 7600
-        # radio will divide 7600 by 100 and interpret correctly at 76.0Mhz
+        # radio will divide 7600 by 100 and interpret correctly at 76.0MHz
 
         for i in range(1, 21):
             # chan = str(i)
             fmname = "FM_radio%i" % i
             fmlabel = "FM Preset %i" % i
             fmvalue = getattr(_settings, fmname)
-            # some CPS versions store values with .01 Mhz in error
-            # eg 99.5 Mhz is stored as 0x26df = 9951 dec = 99.51 Mhz
+            # some CPS versions store values with .01 MHz in error
+            # eg 99.5 MHz is stored as 0x26df = 9951 dec = 99.51 MHz
             # even though the radio properly displays 99.5
-            # this will drop the 0.01 Mhz for Chirp Displayed values
+            # this will drop the 0.01 MHz for Chirp Displayed values
             fmvalue = fmvalue // 10 / 10
             rs = RadioSetting(fmname, fmlabel,
                               RadioSettingValueFloat(76.0, 108.0,

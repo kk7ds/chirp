@@ -114,7 +114,7 @@ def _import_power(dst_radio, _srcrf, mem):
     # If both radios support discrete power levels, we need to decide how to
     # convert the source power level to a valid one for the destination
     # radio.  To do that, find the absolute level of the source value
-    # and calculate the different between it and all the levels of the
+    # and calculate the difference between it and all the levels of the
     # destination, choosing the one that matches most closely. Do this in
     # watts not dBm because we will make the wrong decision otherwise due
     # to the logarithmic scale.

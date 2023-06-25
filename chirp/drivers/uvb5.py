@@ -704,7 +704,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         for power in range(0, 2):
             for index in range(0, 8):
                 key = "test.vhf%s%i" % (powerkeydata[power], index)
-                name = "%s Mhz %s Power" % (vhfdata[index],
+                name = "%s MHz %s Power" % (vhfdata[index],
                                             powernamedata[power])
                 rs = RadioSetting(
                         key, name, RadioSettingValueInteger(
@@ -716,7 +716,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         for power in range(0, 2):
             for index in range(0, 8):
                 key = "test.uhf%s%i" % (powerkeydata[power], index)
-                name = "%s Mhz %s Power" % (uhfdata[index],
+                name = "%s MHz %s Power" % (uhfdata[index],
                                             powernamedata[power])
                 rs = RadioSetting(
                         key, name, RadioSettingValueInteger(

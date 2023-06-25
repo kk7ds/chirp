@@ -455,7 +455,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         group = RadioSettings(basic, disp, aud, aux, txrx, memz, pvfo, pfk,
                               bmsk, rptr, dtmf, skyk, pmm)
 
-        mhz1 = 1000000.   # Raw freq is stored with 0.1 Htz resolution
+        mhz1 = 1000000.   # Raw freq is stored with 0.1 Hz resolution
 
         def _adjraw(setting, obj, atrb, fix=0, ndx=-1):
             """Callback for Integer add or subtract fix from value."""
@@ -470,7 +470,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             return
 
         def _mhz_val(setting, obj, atrb, ndx=-1, ndy=-1):
-            """ Callback to set freq back to Htz """
+            """ Callback to set freq back to Hz """
             vx = float(str(setting.value))
             vx = int(vx * mhz1)
             if ndx < 0:
@@ -765,7 +765,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         aux.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_blk1.m10mz))
-        sx = "10 Mhz mode"
+        sx = "10 MHz mode"
         rset = RadioSetting("block1.m10mz", sx, rx)
         aux.append(rset)
 
@@ -961,7 +961,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
 
         # ===== Prog VFO Group =============
         for mx in range(0, 10):
-            # Raw freq is 0.1 Mhz resolution
+            # Raw freq is 0.1 MHz resolution
             vfx = int(_pmg[0].progvfo[mx].blow) / mhz1
             if vfx == 0:
                 vfx = 118
@@ -1028,52 +1028,52 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
 
         # ===== BMSK GROUP =====
         rx = RadioSettingValueBoolean(bool(_pmg[0].abnd118))
-        sx = "A/Left: 118Mhz Band"
+        sx = "A/Left: 118MHz Band"
         rset = RadioSetting("pmg/0.abnd118", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].abnd144))
-        sx = "A/Left: 144Mhz Band"
+        sx = "A/Left: 144MHz Band"
         rset = RadioSetting("pmg/0.abnd144", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].abnd220))
-        sx = "A/Left: 220Mhz Band"
+        sx = "A/Left: 220MHz Band"
         rset = RadioSetting("pmg/0.abnd220", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].abnd300))
-        sx = "A/Left: 300Mhz Band"
+        sx = "A/Left: 300MHz Band"
         rset = RadioSetting("pmg/0.abnd300", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].abnd430))
-        sx = "A/Left: 430Mhz Band"
+        sx = "A/Left: 430MHz Band"
         rset = RadioSetting("pmg/0.abnd430", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].bbnd144))
-        sx = "B/Right: 144Mhz Band"
+        sx = "B/Right: 144MHz Band"
         rset = RadioSetting("pmg/0.bbnd144", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].bbnd220))
-        sx = "B/Right: 220Mhz Band"
+        sx = "B/Right: 220MHz Band"
         rset = RadioSetting("pmg/0.bbnd220", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].bbnd300))
-        sx = "B/Right: 300Mhz Band"
+        sx = "B/Right: 300MHz Band"
         rset = RadioSetting("pmg/0.bbnd300", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].bbnd430))
-        sx = "B/Right: 430Mhz Band"
+        sx = "B/Right: 430MHz Band"
         rset = RadioSetting("pmg/0.bbnd430", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].bbnd800))
-        sx = "B/Right: 800Mhz Band"
+        sx = "B/Right: 800MHz Band"
         rset = RadioSetting("pmg/0.bbnd800", sx, rx)
         bmsk.append(rset)
 

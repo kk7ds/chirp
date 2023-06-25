@@ -59,7 +59,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     CHARSET.remove("\\")
 
     _memsize = 6509
-    # block 9 (130 Bytes long) is to be repeted 40 times
+    # block 9 (130 Bytes long) is to be repeated 40 times
     _block_lengths = [2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 118]
 
     MEM_FORMAT = """
@@ -623,7 +623,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.empty:
             if mem.number == 1:
                 # as Dan says "yaesus are not good about that :("
-                # if you ulpoad an empty image you can brick your radio
+                # if you upload an empty image you can brick your radio
                 raise Exception("Sorry, can't delete first memory")
             if wasvalid and not wasused:
                 self._memobj.filled[(mem.number - 1) // 8] &= \
@@ -1121,7 +1121,7 @@ class FT817NDRadio(FT817Radio):
 
     _model = ""
     _memsize = 6521
-    # block 9 (130 Bytes long) is to be repeted 40 times
+    # block 9 (130 Bytes long) is to be repeated 40 times
     _block_lengths = [2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 130]
 
 
@@ -1136,7 +1136,7 @@ class FT817NDUSRadio(FT817Radio):
     _model = ""
     _US_model = True
     _memsize = 6651
-    # block 9 (130 Bytes long) is to be repeted 40 times
+    # block 9 (130 Bytes long) is to be repeated 40 times
     _block_lengths = [2, 40, 208, 182, 208, 182, 198, 53, 130, 118, 130, 130]
 
     SPECIAL_60M = {

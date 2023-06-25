@@ -969,7 +969,7 @@ class TS590Radio(chirp_common.CloneModeRadio):
             return
 
         def my_mhz_val(setting, obj, atrb, ndx=-1):
-            """ Callback to set freq back to Htz"""
+            """ Callback to set freq back to Hz """
             vx = float(str(setting.value))
             vx = int(vx * mhz1)
             if ndx < 0:
@@ -1652,7 +1652,7 @@ class TS590SRadio(TS590Radio):
     ID = "ID021;"
     SG = False
     # This is the equivalent Menu A/B list for the TS-590S
-    # The equivalnt S param is stored in the SG Mem_Format slot
+    # The equivalent S param is stored in the SG Mem_Format slot
     EX = ["EX087", "EX000", "EX001", "EX003", "EX004", "EX005",
           "EX006", "EX007", "EX008", "EX009", "EX010", "EX011", "EX014",
           "EX014", "EX015", "EX016", "EX017", "EX018", "EX019", "EX020",
