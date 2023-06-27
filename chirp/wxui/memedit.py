@@ -1659,6 +1659,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             self.refresh()
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
         wx.CallAfter(self._grid.AutoSizeRows, setAsMin=False)
+        wx.CallAfter(self._grid.SetRowLabelSize, wx.grid.GRID_AUTOSIZE)
 
     def cb_copy(self, cut=False):
         rows = self.get_selected_rows_safe()
