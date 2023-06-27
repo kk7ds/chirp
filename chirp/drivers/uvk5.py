@@ -624,7 +624,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         rp.experimental = \
             ('This is an experimental driver for the Quansheng UV-K5. '
              'It may harm your radio, or worse. Use at your own risk.\n\n'
-             'Before attempting to do any changes please download'
+             'Before attempting to do any changes please download '
              'the memory image from the radio with chirp '
              'and keep it. This can be later used to recover the '
              'original settings. \n\n'
