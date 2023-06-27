@@ -869,7 +869,6 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             return mem
 
         if number > 199:
-            mem.name = VFO_CHANNEL_NAMES[number-200]
             mem.immutable = ["name", "scanlists"]
         else:
             _mem2 = self._memobj.channelname[number]
