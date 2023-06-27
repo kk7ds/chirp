@@ -19,7 +19,6 @@ import logging
 from chirp.drivers import baofeng_common
 from chirp import chirp_common, directory
 from chirp import bitwise
-from chirp import bandplan_na
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
