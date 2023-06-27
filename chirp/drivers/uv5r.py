@@ -331,9 +331,9 @@ GMRS_FREQS3 = [462550000, 462575000, 462600000, 462625000, 462650000,
 GMRS_FREQS = GMRS_FREQS1 + GMRS_FREQS2 + GMRS_FREQS3 * 2
 
 
-def _do_status(radio, block):
+def _do_status(radio, direction, block):
     status = chirp_common.Status()
-    status.msg = "Cloning"
+    status.msg = "Cloning %s radio" % direction
     status.cur = block
     status.max = radio.get_memsize()
     radio.status_fn(status)
@@ -556,8 +556,8 @@ def _do_download(radio):
     LOG.debug("downloading main block...")
     for i in range(0, 0x1800, 0x40):
         data += _read_block(radio, i, 0x40, False)
-        _do_status(radio, i)
-    _do_status(radio, radio.get_memsize())
+        _do_status(radio, "from", i)
+    _do_status(radio, "from", radio.get_memsize())
     LOG.debug("done.")
     if radio._aux_block:
         LOG.debug("downloading aux block...")
@@ -640,8 +640,8 @@ def _do_upload(radio):
     for start_addr, end_addr in ranges_main:
         for i in range(start_addr, end_addr, 0x10):
             _send_block(radio, i - 0x08, mmap[i:i + 0x10])
-            _do_status(radio, i)
-        _do_status(radio, radio.get_memsize())
+            _do_status(radio, "to", i)
+        _do_status(radio, "to", radio.get_memsize())
 
     if len(mmap.get_packed()) == 0x1808:
         LOG.info("Old image, not writing aux block")
