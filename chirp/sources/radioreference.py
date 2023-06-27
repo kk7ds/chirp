@@ -164,10 +164,15 @@ class RadioReferenceRadio(base.NetworkResultRadio):
                                                                  self._auth)
                     self._freqs += result
                     status_cur += 1
+                    try:
+                        sc_name = subcat.scName
+                    except AttributeError:
+                        sc_name = 'Unknown Category'
+
                     status.send_status(
                         'Fetching agency %s %s:%s' % (agency.aid,
                                                       cat.cName,
-                                                      subcat.scName),
+                                                      sc_name),
                         status_cur / status_max * 100)
         status.send_end()
 
