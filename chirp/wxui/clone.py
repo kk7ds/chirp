@@ -234,6 +234,7 @@ class ChirpCloneDialog(wx.Dialog):
                      flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
 
         self._port = wx.Choice(self, choices=[])
+        self._port.SetMaxSize((50, -1))
         self.set_ports()
         self.Bind(wx.EVT_CHOICE, self._selected_port, self._port)
         _add_grid(_('Port'), self._port)
