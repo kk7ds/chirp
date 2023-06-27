@@ -45,9 +45,6 @@ DEBUG_SHOW_OBFUSCATED_COMMANDS = False
 # might be useful for someone debugging some obscure memory issue
 DEBUG_SHOW_MEMORY_ACTIONS = False
 
-# TODO: remove the driver version when it's in mainline chirp
-DRIVER_VERSION = "Quansheng UV-K5 driver v20230626 (c) Jacek Lipkowski SQ5BPF"
-
 MEM_FORMAT = """
 #seekto 0x0000;
 struct {
@@ -1860,13 +1857,6 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         val = RadioSettingValueString(0, 128, firmware)
         val.set_mutable(False)
         rs = RadioSetting("fw_ver", "Firmware Version", val)
-        roinfo.append(rs)
-
-        # TODO: remove showing the driver version when it's in mainline chirp
-        # Driver version
-        val = RadioSettingValueString(0, 128, DRIVER_VERSION)
-        val.set_mutable(False)
-        rs = RadioSetting("driver_ver", "Driver version", val)
         roinfo.append(rs)
 
         # No limits version for hacked firmware
