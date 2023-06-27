@@ -234,7 +234,6 @@
 | <a name="QYT_KT980PLUS"></a> QYT_KT980PLUS | [Implied by BTECH_UV-25X2](#user-content-BTECH_UV-25X2) | 11-Nov-2022 | Yes | 0.09% |
 | <a name="Quansheng_TG-UV2+"></a> Quansheng_TG-UV2+ | [Reported working](https://chirp.danplanet.com/issues/10398) | 26-Feb-2023 | Yes | 0.05% |
 | <a name="Quansheng_UV-K5"></a> Quansheng_UV-K5 | [@sq5bpf](https://github.com/sq5bpf) | 29-May-2023 | Yes |  |
-| <a name="Quansheng_UV-K5_modified_firmware_nolimits"></a> Quansheng_UV-K5_modified_firmware_nolimits | [@sq5bpf](https://github.com/sq5bpf) | 29-May-2023 | Yes |  |
 | <a name="RT_Systems_CSV"></a> RT_Systems_CSV |  |  |  |  |
 | <a name="Radioddity_DB25-G"></a> Radioddity_DB25-G | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.17% |
 | <a name="Radioddity_GA-2S"></a> Radioddity_GA-2S | [@KC9HI](https://github.com/KC9HI) | 4-Dec-2022 | Yes | 0.19% |
@@ -412,11 +411,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 409
+**Drivers:** 408
 
-**Tested:** 86% (353/56) (93% of usage stats)
+**Tested:** 86% (352/56) (93% of usage stats)
 
-**Byte clean:** 89% (368/41)
+**Byte clean:** 89% (367/41)
 
 ## Meaning of this testing
 

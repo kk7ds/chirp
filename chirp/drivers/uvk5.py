@@ -595,15 +595,15 @@ def do_upload(radio):
     return True
 
 
-def _find_band(self, hz):
+def _find_band(nolimits, hz):
     mhz = hz/1000000.0
-    if self.FIRMWARE_NOLIMITS:
+    if nolimits:
         B = BANDS_NOLIMITS
     else:
         B = BANDS
 
     # currently the hacked firmware sets band=1 below 50MHz
-    if self.FIRMWARE_NOLIMITS and mhz < 50.0:
+    if nolimits and mhz < 50.0:
         return 1
 
     for a in B:
@@ -620,7 +620,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
     BAUD_RATE = 38400
     NEEDS_COMPAT_SERIAL = False
     FIRMWARE_VERSION = ""
-    FIRMWARE_NOLIMITS = False
+    _expanded_limits = False
 
     def get_prompts(x=None):
         rp = chirp_common.RadioPrompts()
@@ -679,15 +679,11 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         # This radio supports memories 1-200, 201-214 are the VFO memories
         rf.memory_bounds = (1, 200)
 
-        # This is what the BK4819 chip supports
-        # Will leave it in a comment, might be useful someday
-        # rf.valid_bands = [(18000000,  620000000),
-        #                  (840000000, 1300000000)
-        #                  ]
         rf.valid_bands = []
-        for a in BANDS:
+        for a in BANDS_NOLIMITS:
             rf.valid_bands.append(
-                    (int(BANDS[a][0]*1000000), int(BANDS[a][1]*1000000)))
+                    (int(BANDS_NOLIMITS[a][0]*1000000),
+                     int(BANDS_NOLIMITS[a][1]*1000000)))
         return rf
 
     # Do a download of the radio from the serial port
@@ -720,17 +716,17 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             txfreq = mem.freq
 
         # find band
-        band = _find_band(self, txfreq)
+        band = _find_band(self._expanded_limits, txfreq)
         if band is False:
             msg = "Transmit frequency %.4fMHz is not supported by this radio" \
                    % (txfreq/1000000.0)
-            msgs.append(chirp_common.ValidationWarning(msg))
+            msgs.append(chirp_common.ValidationError(msg))
 
-        band = _find_band(self, mem.freq)
+        band = _find_band(self._expanded_limits, mem.freq)
         if band is False:
             msg = "The frequency %.4fMHz is not supported by this radio" \
                    % (mem.freq/1000000.0)
-            msgs.append(chirp_common.ValidationWarning(msg))
+            msgs.append(chirp_common.ValidationError(msg))
 
         return msgs
 
@@ -1266,6 +1262,10 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             if element.get_name() == "key2_longpress_action":
                 _mem.key2_longpress_action = KEYACTIONS_LIST.index(
                         str(element.value))
+
+            if element.get_name() == "nolimits":
+                LOG.warning("User expanded band limits")
+                self._expanded_limits = bool(element.value)
 
     def get_settings(self):
         _mem = self._memobj
@@ -1870,8 +1870,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         roinfo.append(rs)
 
         # No limits version for hacked firmware
-        val = RadioSettingValueBoolean(self.FIRMWARE_NOLIMITS)
-        val.set_mutable(False)
+        val = RadioSettingValueBoolean(self._expanded_limits)
         rs = RadioSetting("nolimits", "Limits disabled for modified firmware",
                           val)
         roinfo.append(rs)
@@ -2014,19 +2013,3 @@ class UVK5Radio(chirp_common.CloneModeRadio):
                     _mem4.channel_attributes[number].is_scanlist2 = 0
 
         return mem
-
-
-@directory.register
-class UVK5Radio_nolimit(UVK5Radio):
-    VENDOR = "Quansheng"
-    MODEL = "UV-K5 (modified firmware)"
-    VARIANT = "nolimits"
-    FIRMWARE_NOLIMITS = True
-
-    def get_features(self):
-        rf = UVK5Radio.get_features(self)
-        # This is what the BK4819 chip supports
-        rf.valid_bands = [(18000000,  620000000),
-                          (840000000, 1300000000)
-                          ]
-        return rf
