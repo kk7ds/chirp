@@ -66,6 +66,7 @@ OPEN_RECENT_MENU = None
 OPEN_STOCK_CONFIG_MENU = None
 CHIRP_TAB_DF = wx.DataFormat('x-chirp/file-tab')
 ALL_MAIN_WINDOWS = []
+REVEAL_STOCK_DIR = wx.NewId()
 
 
 def get_stock_configs():
@@ -577,6 +578,7 @@ class ChirpMain(wx.Frame):
             user_stock_confs = sorted(os.listdir(user_stock_dir))
         except FileNotFoundError:
             user_stock_confs = []
+            os.makedirs(user_stock_dir, exist_ok=True)
         dist_stock_confs = sorted(
             [
                 conf.name for conf
@@ -594,6 +596,13 @@ class ChirpMain(wx.Frame):
         for fn in user_stock_confs:
             add_stock(fn)
             found.append(os.path.basename(fn))
+
+        stock.Append(wx.MenuItem(stock, wx.ID_SEPARATOR))
+
+        if sys.platform in ('darwin', 'win32'):
+            reveal = stock.Append(REVEAL_STOCK_DIR,
+                                  _('Open stock config directory'))
+            self.Bind(wx.EVT_MENU, self._menu_open_stock_config, reveal)
 
         stock.Append(wx.MenuItem(stock, wx.ID_SEPARATOR))
 
@@ -1179,7 +1188,12 @@ class ChirpMain(wx.Frame):
         if filename is not None:
             self.open_file(filename)
 
+    @common.error_proof(FileNotFoundError)
     def _menu_open_stock_config(self, event):
+        if event.GetId() == REVEAL_STOCK_DIR:
+            common.reveal_location(get_stock_configs())
+            return
+
         fn = self.OPEN_STOCK_CONFIG_MENU.FindItemById(
             event.GetId()).GetItemLabelText()
 
@@ -1608,13 +1622,7 @@ class ChirpMain(wx.Frame):
             prefix='chirp_debug-',
             suffix='.txt').name
         shutil.copy(src, dst)
-        system = platform.system()
-        if system == 'Windows':
-            wx.Execute('explorer /select, %s' % dst)
-        elif system == 'Darwin':
-            wx.Execute('open -R %s' % dst)
-        else:
-            raise Exception(_('Unable to reveal %s on this system') % dst)
+        common.reveal_location(dst)
 
     @common.error_proof()
     def _menu_load_from_issue(self, event):
