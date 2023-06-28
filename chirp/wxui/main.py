@@ -581,7 +581,7 @@ class ChirpMain(wx.Frame):
             os.makedirs(user_stock_dir, exist_ok=True)
         dist_stock_confs = sorted(
             [
-                conf.name for conf
+                (conf.name, hashlib.md5(conf.read_bytes())) for conf
                 in importlib_resources.files('chirp.stock_configs').iterdir()
                 if conf.is_file()
             ]
@@ -606,12 +606,31 @@ class ChirpMain(wx.Frame):
 
         stock.Append(wx.MenuItem(stock, wx.ID_SEPARATOR))
 
-        for fn in dist_stock_confs:
-            if os.path.basename(fn) not in found:
-                add_stock(fn)
-            else:
-                LOG.info('Ignoring dist stock conf %s because same name found '
-                         'in user dir', os.path.basename(fn))
+        for fn, hash in dist_stock_confs:
+            if os.path.basename(fn) in found:
+                # Remove old stock configs that were copied to the user's
+                # directory by legacy chirp.
+                try:
+                    user_fn = os.path.join(get_stock_configs(),
+                                           os.path.basename(fn))
+                    with open(user_fn, 'rb') as f:
+                        user_hash = hashlib.md5(f.read())
+                    if hash.digest() == user_hash.digest():
+                        LOG.info('Removing stale legacy stock config %s',
+                                 os.path.basename(fn))
+                        os.remove(user_fn)
+                        # Since we already added it to the user area, just
+                        # don't add it to system this time. At next startup,
+                        # it will move to the system section.
+                        continue
+                    else:
+                        raise FileExistsError('File is changed')
+                except Exception as e:
+                    LOG.info('Ignoring dist stock conf %s because same name '
+                             'found in user dir: %s',
+                             os.path.basename(fn), e)
+                    continue
+            add_stock(fn)
 
         return stock
 
