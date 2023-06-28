@@ -716,6 +716,7 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_selall, selall_item)
 
         delete_item = edit_menu.Append(wx.ID_DELETE)
+        delete_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, wx.WXK_BACK))
         self.Bind(wx.EVT_MENU, self._menu_delete, delete_item)
 
         edit_menu.Append(wx.MenuItem(edit_menu, wx.ID_SEPARATOR))
