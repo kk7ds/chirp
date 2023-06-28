@@ -683,7 +683,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             _('Hold %(key)s to drag multiple memories') % {'key': key})
 
     def _memory_drag(self, event):
-        data = self.cb_copy()
+        data = self.cb_copy_getdata()
         ds = wx.DropSource(self)
         ds.SetData(data)
         result = ds.DoDragDrop(wx.Drag_AllowMove)
@@ -1661,7 +1661,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         wx.CallAfter(self._grid.AutoSizeRows, setAsMin=False)
         wx.CallAfter(self._grid.SetRowLabelSize, wx.grid.GRID_AUTOSIZE)
 
-    def cb_copy(self, cut=False):
+    def cb_copy_getdata(self, cut=False):
         rows = self.get_selected_rows_safe()
         offset = self._features.memory_bounds[0]
         mems = []
@@ -1691,7 +1691,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if cut:
             wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
-        self.cb_copy_data(data)
+        return data
+
+    def cb_copy(self, cut=False):
+        self.cb_copy_data(self.cb_copy_getdata(cut=cut))
 
     def memedit_import_all(self, source_radio):
         source_rf = source_radio.get_features()
