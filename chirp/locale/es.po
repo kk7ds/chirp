@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-28 16:31-0700\n"
-"PO-Revision-Date: 2023-06-27 18:18-0400\n"
+"PO-Revision-Date: 2023-06-28 19:40-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1353,7 +1353,7 @@ msgstr "Caracteristicas"
 #: ../wxui/main.py:542
 #, python-format
 msgid "File does not exist: %s"
-msgstr "Archivo no existe: %s"
+msgstr "El archivo no existe: %s"
 
 #: ../wxui/main.py:1181 ../wxui/main.py:1262 ../wxui/main.py:1272
 #: ../wxui/main.py:1328 ../wxui/main.py:1553 ../wxui/main.py:1554
@@ -1950,9 +1950,8 @@ msgid "Open in new window"
 msgstr "Abrir en nueva ventana"
 
 #: ../wxui/main.py:604
-#, fuzzy
 msgid "Open stock config directory"
-msgstr "Abrir configuración original {name}"
+msgstr "Abrir directorio de configuración original"
 
 #: ../wxui/query_sources.py:298
 msgid "Optional: -122.0000"
@@ -2009,9 +2008,9 @@ msgid "Pasted memory will overwrite memory %i"
 msgstr "Memoria pegada sobrescribirá memoria %i"
 
 #: ../wxui/common.py:564
-#, fuzzy, python-format
+#, python-format
 msgid "Path %s does not exist"
-msgstr "Archivo no existe: %s"
+msgstr "La ruta %s no existe"
 
 #: ../wxui/main.py:1725
 msgid "Please be sure to quit CHIRP before installing the new version!"
