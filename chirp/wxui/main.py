@@ -68,6 +68,13 @@ CHIRP_TAB_DF = wx.DataFormat('x-chirp/file-tab')
 ALL_MAIN_WINDOWS = []
 
 
+def get_stock_configs():
+    default_dir = chirp_platform.get_platform().config_file(
+                      "stock_configs")
+    prefs_dir = CONF.get('stock_configs', 'prefs')
+    return prefs_dir or default_dir
+
+
 class ChirpDropTarget(wx.DropTarget):
     def __init__(self, chirpmain):
         super().__init__()
@@ -566,8 +573,7 @@ class ChirpMain(wx.Frame):
         stock = wx.Menu()
 
         try:
-            user_stock_dir = chirp_platform.get_platform().config_file(
-                "stock_configs")
+            user_stock_dir = get_stock_configs()
             user_stock_confs = sorted(os.listdir(user_stock_dir))
         except FileNotFoundError:
             user_stock_confs = []
@@ -953,7 +959,7 @@ class ChirpMain(wx.Frame):
             return
 
         # Don't add stock config files to the recent files list
-        stock_dir = chirp_platform.get_platform().config_file("stock_configs")
+        stock_dir = get_stock_configs()
         this_dir = os.path.dirname(filename)
         if (stock_dir and os.path.exists(stock_dir) and
                 this_dir and os.path.samefile(stock_dir, this_dir)):
@@ -1177,8 +1183,7 @@ class ChirpMain(wx.Frame):
         fn = self.OPEN_STOCK_CONFIG_MENU.FindItemById(
             event.GetId()).GetItemLabelText()
 
-        user_stock_dir = chirp_platform.get_platform().config_file(
-            "stock_configs")
+        user_stock_dir = get_stock_configs()
         user_stock_conf = os.path.join(user_stock_dir, fn)
         with importlib_resources.as_file(
             importlib_resources.files('chirp.stock_configs')
