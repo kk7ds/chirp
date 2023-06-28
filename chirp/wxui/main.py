@@ -1245,6 +1245,7 @@ class ChirpMain(wx.Frame):
             eset.save(filename)
             self.adj_menu_open_recent(filename)
             self._update_editorset_title(eset)
+            self._update_window_for_editor()
             return True
 
     def _menu_save(self, event):
