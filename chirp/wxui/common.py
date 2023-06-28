@@ -15,6 +15,8 @@
 
 import functools
 import logging
+import os
+import platform
 import threading
 
 import wx
@@ -555,3 +557,15 @@ class error_proof(object):
                 LOG.exception('Context raised unexpected_exception',
                               exc_info=(exc_type, exc_val, traceback))
                 self.show_error(exc_val)
+
+
+def reveal_location(path):
+    if not os.path.isdir(path):
+        raise FileNotFoundError(_('Path %s does not exist') % path)
+    system = platform.system()
+    if system == 'Windows':
+        wx.Execute('explorer /select, %s' % path)
+    elif system == 'Darwin':
+        wx.Execute('open -R %s' % path)
+    else:
+        raise Exception(_('Unable to reveal %s on this system') % path)
