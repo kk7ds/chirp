@@ -220,8 +220,7 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
                 mem.skip = "P"
         else:
             mem.extd_number = util.get_dict_rev(_get_special(), number)
-            mem.immutable = ["number", "skip", "bank", "bank_index",
-                             "extd_number"]
+            mem.immutable = ["number", "skip", "extd_number"]
 
         if not is_used:
             mem.empty = True
