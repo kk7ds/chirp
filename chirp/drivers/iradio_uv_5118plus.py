@@ -521,7 +521,7 @@ class IradioUV5118plus(chirp_common.CloneModeRadio):
         else:
             mem.offset = 0
 
-        mem.name = str(_mem.name).rstrip('\xFF ')
+        mem.name = str(_mem.name).rstrip(" ").replace("\xFF", " ")
 
         mem.mode = _mem.isnarrow and "NFM" or "FM"
 
@@ -565,7 +565,7 @@ class IradioUV5118plus(chirp_common.CloneModeRadio):
 
         # if empty memory
         if mem.empty:
-            _mem.set_raw("\xFF" * 22 + "\20" * 10)
+            _mem.set_raw("\xFF" * 22 + "\x20" * 10)
             return
 
         _mem.set_raw("\xFF" * 4 + "\x00\x30" + "\xFF" * 4 + "\x00\x30" +
@@ -582,7 +582,7 @@ class IradioUV5118plus(chirp_common.CloneModeRadio):
         else:
             _mem.txfreq = mem.freq / 10
 
-        _mem.name = mem.name.rstrip(' ').ljust(10, '\xFF')
+        _mem.name = mem.name.rstrip('\xFF').ljust(10, '\x20')
 
         _mem.scan = mem.skip != "S"
         _mem.isnarrow = mem.mode == "NFM"
