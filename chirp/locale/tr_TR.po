@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-28 16:31-0700\n"
+"POT-Creation-Date: 2023-06-28 17:09-0700\n"
 "PO-Revision-Date: 2023-03-11 18:37+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -42,17 +42,17 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s, %(min)i ile %(max)i arasında olmalıdır"
 
-#: ../wxui/memedit.py:1483
+#: ../wxui/memedit.py:1487
 #, python-format
 msgid "%i Memories"
 msgstr "%i Kaydı"
 
-#: ../wxui/memedit.py:1490
+#: ../wxui/memedit.py:1494
 #, python-format
 msgid "%i Memories and shift all up"
 msgstr "%i Kaydı ve hepsini yukarı kaydır"
 
-#: ../wxui/memedit.py:1486
+#: ../wxui/memedit.py:1490
 #, python-format
 msgid "%i Memories and shift block up"
 msgstr "%i Kaydı ve bloğu yukarı kaydır"
@@ -66,7 +66,7 @@ msgstr "%s kaydedilmedi. Kapanmadan önce kaydedilsin mi?"
 msgid "(none)"
 msgstr "(hiçbiri)"
 
-#: ../wxui/memedit.py:1791
+#: ../wxui/memedit.py:1809
 #, python-format
 msgid "...and %i more"
 msgstr ""
@@ -1028,7 +1028,7 @@ msgstr "Telsiz Tarayıcısı oluşturuluyor"
 msgid "Canada"
 msgstr "Kanada"
 
-#: ../wxui/memedit.py:1169
+#: ../wxui/memedit.py:1173
 #, python-format
 msgid ""
 "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
@@ -1043,21 +1043,21 @@ msgstr "Chirp İmaj Dosyaları"
 msgid "Choice Required"
 msgstr "Seçim Gerekli"
 
-#: ../wxui/memedit.py:1148
+#: ../wxui/memedit.py:1152
 #, python-format
 msgid "Choose %s DTCS Code"
 msgstr "%s DTCS Kodunu Seç"
 
-#: ../wxui/memedit.py:1145
+#: ../wxui/memedit.py:1149
 #, python-format
 msgid "Choose %s Tone"
 msgstr "%s Tonunu Seç"
 
-#: ../wxui/memedit.py:1179
+#: ../wxui/memedit.py:1183
 msgid "Choose Cross Mode"
 msgstr "Çapraz Modu Seç"
 
-#: ../wxui/memedit.py:1209
+#: ../wxui/memedit.py:1213
 msgid "Choose duplex"
 msgstr "Dubleks seç"
 
@@ -1110,7 +1110,7 @@ msgstr "Kapat"
 msgid "Close file"
 msgstr "Dosyayı kapat"
 
-#: ../wxui/memedit.py:1543
+#: ../wxui/memedit.py:1547
 #, fuzzy, python-format
 msgid "Cluster %i memories"
 msgstr "%i kaydı sırala"
@@ -1135,7 +1135,7 @@ msgstr ""
 "Arayüz kablonuzu 'TX/RX' ünitesinin arkasındaki\n"
 "PC Bağlantı Noktasına bağlayın. Kafadaki Com Portu DEĞİL.\n"
 
-#: ../wxui/memedit.py:1468
+#: ../wxui/memedit.py:1472
 #, fuzzy
 msgid "Copy"
 msgstr "Kopyala"
@@ -1152,7 +1152,7 @@ msgstr "Çapraz mod"
 msgid "Custom..."
 msgstr "Özel..."
 
-#: ../wxui/memedit.py:1464
+#: ../wxui/memedit.py:1468
 #, fuzzy
 msgid "Cut"
 msgstr "Kes"
@@ -1169,7 +1169,7 @@ msgstr ""
 "DTCS\n"
 "Polarite"
 
-#: ../wxui/memedit.py:2044
+#: ../wxui/memedit.py:2062
 msgid "DV Memory"
 msgstr "DV Kaydı"
 
@@ -1181,7 +1181,7 @@ msgstr "İleride Tehlike"
 msgid "Dec"
 msgstr "Dec"
 
-#: ../wxui/memedit.py:1477
+#: ../wxui/memedit.py:1481
 msgid "Delete"
 msgstr "Sil"
 
@@ -1195,11 +1195,11 @@ msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 "Geliştirici durumu artık %s. Etkili olması için CHIRP yeniden başlatılmalıdır"
 
-#: ../wxui/memedit.py:1577
+#: ../wxui/memedit.py:1581
 msgid "Diff Raw Memories"
 msgstr "Farklı Ham Kayıtlar"
 
-#: ../wxui/memedit.py:1969
+#: ../wxui/memedit.py:1987
 msgid "Digital Code"
 msgstr "Dijital Kod"
 
@@ -1241,12 +1241,12 @@ msgstr "İndirme talimatları"
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:1999
+#: ../wxui/memedit.py:2017
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "%i kaydı için ayrıntıları düzenle"
 
-#: ../wxui/memedit.py:1997
+#: ../wxui/memedit.py:2015
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "%i kaydı için ayrıntıları düzenle"
@@ -1264,11 +1264,11 @@ msgstr "etkinleştirildi"
 msgid "Enter Frequency"
 msgstr "Frekans Gir"
 
-#: ../wxui/memedit.py:1196
+#: ../wxui/memedit.py:1200
 msgid "Enter Offset (MHz)"
 msgstr "Ofset girin (MHz)"
 
-#: ../wxui/memedit.py:1188
+#: ../wxui/memedit.py:1192
 msgid "Enter TX Frequency (MHz)"
 msgstr "TX Frekansını girin (MHz)"
 
@@ -1298,7 +1298,7 @@ msgstr "Telsizle iletişim hatası"
 msgid "Experimental driver"
 msgstr "Deneysel sürücü"
 
-#: ../wxui/memedit.py:1929
+#: ../wxui/memedit.py:1947
 msgid "Export can only write CSV files"
 msgstr "Dışa aktarma yalnızca CSV dosyalarını yazabilir"
 
@@ -1306,7 +1306,7 @@ msgstr "Dışa aktarma yalnızca CSV dosyalarını yazabilir"
 msgid "Export to CSV"
 msgstr "CSV'ye aktar"
 
-#: ../wxui/memedit.py:2033
+#: ../wxui/memedit.py:2051
 msgid "Extra"
 msgstr "Ekstra"
 
@@ -1685,11 +1685,11 @@ msgstr "Dizin"
 msgid "Info"
 msgstr "Bilgi"
 
-#: ../wxui/memedit.py:1171
+#: ../wxui/memedit.py:1175
 msgid "Information"
 msgstr "Bilgi"
 
-#: ../wxui/memedit.py:1458
+#: ../wxui/memedit.py:1462
 msgid "Insert Row Above"
 msgstr "Yukarıya Satır Ekle"
 
@@ -1710,7 +1710,7 @@ msgstr "Geçersiz %(value)s (ondalık basamak kullanın)"
 msgid "Invalid ZIP code"
 msgstr "Geçersiz Posta kodu"
 
-#: ../wxui/memedit.py:1313 ../wxui/memedit.py:2124
+#: ../wxui/memedit.py:1317 ../wxui/memedit.py:2142
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Geçersiz düzenleme: %s"
@@ -1790,7 +1790,7 @@ msgstr "Boylam"
 msgid "Memories"
 msgstr "Kayıtlar"
 
-#: ../wxui/memedit.py:1352
+#: ../wxui/memedit.py:1356
 #, python-format
 msgid "Memory %i is not deletable"
 msgstr "Kayıt %i silinemez"
@@ -1851,7 +1851,7 @@ msgstr ""
 msgid "New version available"
 msgstr "Yeni sürüm mevcut"
 
-#: ../wxui/memedit.py:1613
+#: ../wxui/memedit.py:1617
 msgid "No empty rows below!"
 msgstr "Aşağıda boş satır yok!"
 
@@ -1937,7 +1937,7 @@ msgstr "İsteğe bağlı: 45.0000"
 msgid "Optional: County, Hospital, etc"
 msgstr "İsteğe bağlı: İlçe, Hastane vb."
 
-#: ../wxui/memedit.py:1746
+#: ../wxui/memedit.py:1750
 msgid "Overwrite memories?"
 msgstr "Kayıtların üzerine yazılsın mı?"
 
@@ -1951,30 +1951,30 @@ msgstr ""
 "Bu sürümde 130'dan fazla kullanılabilir telsiz ayarının yalnızca bir alt "
 "kümesi desteklenmektedir.\n"
 
-#: ../wxui/memedit.py:1472
+#: ../wxui/memedit.py:1476
 #, fuzzy
 msgid "Paste"
 msgstr "Yapıştır"
 
-#: ../wxui/memedit.py:1740
-#, python-format
-msgid "Pasted memories will overwrite %i existing memories"
-msgstr "Yapıştırılan kayıtlar, mevcut %i kaydının üzerine yazılacak"
+#: ../wxui/memedit.py:1744
+#, fuzzy, python-format
+msgid "Pasted memories will overwrite %s existing memories"
+msgstr "Yapıştırılan kayıtlar, mevcut %s kaydının üzerine yazılacak"
 
-#: ../wxui/memedit.py:1743
+#: ../wxui/memedit.py:1747
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "Yapıştırılan kayıtlar %s kayıtlarının üzerine yazılacak"
 
-#: ../wxui/memedit.py:1737
-#, python-format
-msgid "Pasted memories will overwrite memory %i"
-msgstr "Yapıştırılan kayıtlar, %i kaydının üzerine yazılacak"
+#: ../wxui/memedit.py:1741
+#, fuzzy, python-format
+msgid "Pasted memories will overwrite memory %s"
+msgstr "Yapıştırılan kayıtlar, %s kaydının üzerine yazılacak"
 
-#: ../wxui/memedit.py:1734
-#, python-format
-msgid "Pasted memory will overwrite memory %i"
-msgstr "Yapıştırılan kayıt, %i kaydının üzerine yazacak"
+#: ../wxui/memedit.py:1738
+#, fuzzy, python-format
+msgid "Pasted memory will overwrite memory %s"
+msgstr "Yapıştırılan kayıt, %s kaydının üzerine yazacak"
 
 #: ../wxui/common.py:564
 #, fuzzy, python-format
@@ -2070,7 +2070,7 @@ msgstr "Baskı Önizleme"
 msgid "Printing"
 msgstr "Baskı"
 
-#: ../wxui/memedit.py:1451
+#: ../wxui/memedit.py:1455
 msgid "Properties"
 msgstr "Özellikler"
 
@@ -2200,7 +2200,7 @@ msgstr "Servis"
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: ../wxui/memedit.py:1569
+#: ../wxui/memedit.py:1573
 msgid "Show Raw Memory"
 msgstr "Ham Kaydı Göster"
 
@@ -2212,34 +2212,34 @@ msgstr "Hata ayıklama günlüğü konumunu göster"
 msgid "Show extra fields"
 msgstr ""
 
-#: ../wxui/memedit.py:1795
+#: ../wxui/memedit.py:1813
 msgid "Some memories are incompatible with this radio"
 msgstr "Bazı kayıtlar bu telsizle uyumlu değil"
 
-#: ../wxui/memedit.py:1687
+#: ../wxui/memedit.py:1691
 msgid "Some memories are not deletable"
 msgstr "Bazı anılar silinemez"
 
-#: ../wxui/memedit.py:1531
+#: ../wxui/memedit.py:1535
 #, python-format
 msgid "Sort %i memories"
 msgstr "%i kaydı sırala"
 
-#: ../wxui/memedit.py:1534
+#: ../wxui/memedit.py:1538
 #, python-format
 msgid "Sort %i memories ascending"
 msgstr "%i kaydı artan şekilde sırala"
 
-#: ../wxui/memedit.py:1553
+#: ../wxui/memedit.py:1557
 #, python-format
 msgid "Sort %i memories descending"
 msgstr "%i kaydı azalan şekilde sırala"
 
-#: ../wxui/memedit.py:1428
+#: ../wxui/memedit.py:1432
 msgid "Sort by column:"
 msgstr "Sütuna göre sırala:"
 
-#: ../wxui/memedit.py:1427
+#: ../wxui/memedit.py:1431
 msgid "Sort memories"
 msgstr "Kayıtları sırala"
 
@@ -2302,7 +2302,7 @@ msgid ""
 "memories across, or proceed with the import?"
 msgstr ""
 
-#: ../wxui/memedit.py:1493
+#: ../wxui/memedit.py:1497
 msgid "This Memory"
 msgstr "Bu kaydı"
 
@@ -2336,11 +2336,11 @@ msgstr ""
 "Ayrıca lütfen hata raporu ve geliştirme istekleri gönderin!\n"
 "Uyarıldınız. Kendi sorumluluğunuzda ilerleyin!"
 
-#: ../wxui/memedit.py:1497
+#: ../wxui/memedit.py:1501
 msgid "This memory and shift all up"
 msgstr "Bu kaydı ve hepsini yukarı kaydır"
 
-#: ../wxui/memedit.py:1495
+#: ../wxui/memedit.py:1499
 msgid "This memory and shift block up"
 msgstr "Bu kaydı ve bloğu yukarı kaydır"
 
@@ -2390,7 +2390,7 @@ msgstr ""
 "Kablonuz için bağlantı noktası belirlenemiyor. Sürücülerinizi ve "
 "bağlantılarınızı kontrol edin."
 
-#: ../wxui/memedit.py:1236
+#: ../wxui/memedit.py:1240
 msgid "Unable to edit memory before radio is loaded"
 msgstr "Radyo yüklenmeden önce kayıt düzenlenemiyor"
 
@@ -2484,11 +2484,11 @@ msgstr "Tedarikçi"
 msgid "View"
 msgstr "Göster"
 
-#: ../wxui/memedit.py:1320
+#: ../wxui/memedit.py:1324
 msgid "Warning"
 msgstr "Uyarı"
 
-#: ../wxui/memedit.py:1319
+#: ../wxui/memedit.py:1323
 #, python-format
 msgid "Warning: %s"
 msgstr "Uyarı: %s"

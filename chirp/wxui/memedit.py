@@ -846,6 +846,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         else:
             return row + self._features.memory_bounds[0]
 
+    def special2mem(self, name):
+        name2mem = {v: k for k, v in self._special_numbers.items()}
+        return name2mem[name]
+
     def _expand_extra_col(self, setting):
         # Add this to the list of seen extra columns regardless of if we
         # support this type so we never try to add it again
@@ -1727,17 +1731,17 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         for i in range(len(mems)):
             mem = self._memory_cache[row + i]
             if not mem.empty:
-                overwrite.append(mem.number)
+                overwrite.append(mem.extd_number or mem.number)
 
         if overwrite:
             if len(overwrite) == 1 and len(mems) == 1:
-                msg = _('Pasted memory will overwrite memory %i') % (
+                msg = _('Pasted memory will overwrite memory %s') % (
                     overwrite[0])
             elif len(overwrite) == 1 and len(mems) > 0:
-                msg = _('Pasted memories will overwrite memory %i') % (
+                msg = _('Pasted memories will overwrite memory %s') % (
                     overwrite[0])
             elif len(overwrite) > 10:
-                msg = _('Pasted memories will overwrite %i '
+                msg = _('Pasted memories will overwrite %s '
                         'existing memories') % (len(overwrite))
             else:
                 msg = _('Pasted memories will overwrite memories %s') % (
@@ -1753,7 +1757,21 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         modified = False
         for mem in mems:
             existing = self._memory_cache[row]
-            mem.number = self.row2mem(row)
+            number = self.row2mem(row)
+            # We need to disable immutable checking while we reassign these
+            # numbers. This might be a flag that we should be copying things
+            # between memories and not reassigning memories to then set.
+            immutable = list(mem.immutable)
+            mem.immutable = []
+            # Handle potential need to convert between special and regular
+            # memories
+            if isinstance(number, str):
+                mem.extd_number = number
+                mem.number = self.special2mem(number)
+            else:
+                mem.extd_number = ''
+                mem.number = number
+            mem.immutable = immutable
             row += 1
             try:
                 if mem.empty:
@@ -1793,7 +1811,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             d = wx.MessageDialog(
                     self,
                     _('Some memories are incompatible with this radio'))
-            msg = '\n'.join('#%i: %s' % (mem.number, e)
+            msg = '\n'.join('[%s]: %s' % (mem.extd_number or mem.number, e)
                             for mem, e in errormsgs)
             msg += errorextra
             d.SetExtendedMessage(msg)
