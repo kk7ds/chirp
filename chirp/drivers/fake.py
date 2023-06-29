@@ -17,10 +17,11 @@ class FakeLiveRadio(chirp_common.LiveRadio):
         super().__init__(*a, **k)
         self.settings = {'knob': 5}
         self.memories = []
-        for i in range(1, 11):
+        for i in range(1, 12):
             m = chirp_common.Memory(i, empty=i > 5, name='channel %i' % i)
             m.freq = 146520000
             self.memories.append(m)
+        self.memories[-1].extd_number = 'Special'
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -31,14 +32,17 @@ class FakeLiveRadio(chirp_common.LiveRadio):
         rf.has_bank = True
         rf.valid_name_length = 8
         rf.valid_characters = chirp_common.CHARSET_ASCII
+        rf.valid_special_chans = ['Special']
         return rf
 
     def get_memory(self, number):
+        if number == 'Special':
+            number = len(self.memories)
         return self.memories[number - 1]
 
     def set_memory(self, mem):
         LOG.info('Set memory %s' % mem)
-        self.memories[mem.number - 1] = mem
+        self.memories[mem.number - 1] = mem.dupe()
 
     def get_settings(self):
         g = settings.RadioSettingGroup('top', 'Some Settings')
