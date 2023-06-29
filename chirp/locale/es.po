@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-28 17:09-0700\n"
-"PO-Revision-Date: 2023-06-28 19:40-0400\n"
+"PO-Revision-Date: 2023-06-29 01:01-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1988,9 +1988,9 @@ msgid "Paste"
 msgstr "Pegar"
 
 #: ../wxui/memedit.py:1744
-#, fuzzy, python-format
+#, python-format
 msgid "Pasted memories will overwrite %s existing memories"
-msgstr "Memorias pegadas sobrescribirán %s memorias existentes"
+msgstr "Las memorias pegadas sobrescribirán %s memorias existentes"
 
 #: ../wxui/memedit.py:1747
 #, python-format
@@ -1998,14 +1998,14 @@ msgid "Pasted memories will overwrite memories %s"
 msgstr "Memorias pegadas sobrescribirán memorias %s"
 
 #: ../wxui/memedit.py:1741
-#, fuzzy, python-format
+#, python-format
 msgid "Pasted memories will overwrite memory %s"
-msgstr "Memorias pegadas sobrescribirán memoria %s"
+msgstr "Las memorias pegadas sobrescribirán la memoria %s"
 
 #: ../wxui/memedit.py:1738
-#, fuzzy, python-format
+#, python-format
 msgid "Pasted memory will overwrite memory %s"
-msgstr "Memoria pegada sobrescribirá memoria %s"
+msgstr "La memoria pegada sobrescribirá la memoria %s"
 
 #: ../wxui/common.py:564
 #, python-format
