@@ -875,7 +875,7 @@ class RetevisRB27B(BFT8Radio):
 class RetevisRB27(RetevisRB27B):
     VENDOR = "Retevis"
     MODEL = "RB27"
-    DUPLEXES = ["", "+", "off"]
+    DUPLEXES = ['', '-', '+', 'off']
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
     VALID_BANDS = [(136000000, 174000000),
@@ -883,29 +883,8 @@ class RetevisRB27(RetevisRB27B):
     ODD_SPLIT = False
 
     _upper = 99
-    _gmrs = True
+    _gmrs = False  # sold as GMRS radio but supports full band TX/RX
     _frs = _murs = _pmr = False
-
-    def validate_memory(self, mem):
-        msgs = super().validate_memory(mem)
-
-        _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
-
-        if mem.freq not in GMRS_FREQS:
-            if mem.duplex != "off":
-                msgs.append(chirp_common.ValidationWarning(_msg_duplex))
-        if mem.freq in FRS_FREQS3:
-            if mem.duplex and mem.offset != 5000000:
-                msgs.append(chirp_common.ValidationWarning(_msg_offset))
-            if mem.duplex and mem.duplex != "+":
-                msgs.append(chirp_common.ValidationWarning(_msg_offset))
-
-        return msgs
-
-    def check_set_memory_immutable_policy(self, existing, new):
-        existing.immutable = []
-        super().check_set_memory_immutable_policy(existing, new)
 
 
 @directory.register
