@@ -977,28 +977,24 @@ class KenwoodD7Family(chirp_common.LiveRadio):
     def _command(self, cmd, *args):
         """Send @cmd to radio via @ser"""
 
-        # This lock is needed to allow clicking the settings tab while
-        # the memories are still loading.  Most important with the TH-D7A
-        # and TH-D7A(G) with the 9600bps maximum.
-        with self._LOCK:
-            if args:
-                cmd += self._ARG_DELIMITER + self._ARG_DELIMITER.join(args)
-            cmd += self._CMD_DELIMITER
-            self._drain_input()
+        if args:
+            cmd += self._ARG_DELIMITER + self._ARG_DELIMITER.join(args)
+        cmd += self._CMD_DELIMITER
+        self._drain_input()
 
-            LOG.debug("PC->RADIO: %s" % cmd.strip())
-            self.pipe.write(cmd.encode('cp1252'))
-            cd = self._CMD_DELIMITER.encode('cp1252')
-            keep_reading = True
-            while keep_reading:
-                result = self.pipe.read_until(cd).decode('cp1252')
-                if result.endswith(self._CMD_DELIMITER):
-                    keep_reading = self._keep_reading(result)
-                    LOG.debug("RADIO->PC: %r" % result.strip())
-                    result = result[:-1]
-                else:
-                    keep_reading = False
-                    LOG.error("Timeout waiting for data")
+        LOG.debug("PC->RADIO: %s" % cmd.strip())
+        self.pipe.write(cmd.encode('cp1252'))
+        cd = self._CMD_DELIMITER.encode('cp1252')
+        keep_reading = True
+        while keep_reading:
+            result = self.pipe.read_until(cd).decode('cp1252')
+            if result.endswith(self._CMD_DELIMITER):
+                keep_reading = self._keep_reading(result)
+                LOG.debug("RADIO->PC: %r" % result.strip())
+                result = result[:-1]
+            else:
+                keep_reading = False
+                LOG.error("Timeout waiting for data")
 
         return result.strip()
 

@@ -23,6 +23,7 @@ import platform
 import shutil
 import sys
 import tempfile
+import threading
 import time
 import webbrowser
 
@@ -344,11 +345,12 @@ class ChirpLiveEditorSet(ChirpEditorSet):
 
     def __init__(self, radio, *a, **k):
         self._threads = []
+        self._lock = threading.Lock()
         super().__init__(radio, *a, **k)
 
     def add_editor(self, editor, title):
         super(ChirpLiveEditorSet, self).add_editor(editor, title)
-        thread = radiothread.RadioThread(editor._radio)
+        thread = radiothread.RadioThread(editor._radio, self._lock)
         thread.start()
         self._threads.append(thread)
         editor.set_radio_thread(thread)

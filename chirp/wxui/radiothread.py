@@ -86,9 +86,10 @@ class BackgroundRadioJob(RadioJob):
 class RadioThread(threading.Thread):
     SENTINEL = RadioJob(None, 'END', [], {})
 
-    def __init__(self, radio):
+    def __init__(self, radio, lock):
         super().__init__()
         self._radio = radio
+        self._lock = lock
         self._queue = queue.PriorityQueue()
         self._log = logging.getLogger('RadioThread')
         self._waiting = []
@@ -112,7 +113,8 @@ class RadioThread(threading.Thread):
             if job is self.SENTINEL:
                 self._log.info('Exiting on request')
                 return
-            job.dispatch(self._radio)
+            with self._lock:
+                job.dispatch(self._radio)
             self._waiting.append(job)
 
             for job in list(self._waiting):
