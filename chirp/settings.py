@@ -430,6 +430,16 @@ class RadioSetting(RadioSettingGroup):
     def __init__(self, *args):
         super(RadioSetting, self).__init__(*args)
         self._apply_callback = None
+        self._warning_text = None
+        self._safe_value = None
+        self._volatile = False
+
+    @property
+    def volatile(self):
+        return self._volatile
+
+    def set_volatile(self, value):
+        self._volatile = value
 
     def set_apply_callback(self, callback, *args):
         self._apply_callback = lambda: callback(self, *args)
@@ -439,6 +449,22 @@ class RadioSetting(RadioSettingGroup):
 
     def run_apply_callback(self):
         return self._apply_callback()
+
+    def set_warning(self, warning_text, safe_value=None):
+        """Set a warning message to be shown to the user when changed.
+
+        This should not be over-used as it will be annoying (on purpose). This
+        message will be shown to the user with an option to continue to abort.
+        It should be used to warn the user of potential invalid operation or
+        compatibility issues. If safe_value is set, this will only warn the
+        user if the value is changed *to* something other than the safe_value.
+        """
+        self._warning_text = warning_text
+        self._safe_value = safe_value
+
+    def get_warning(self, value):
+        if value != self._safe_value:
+            return self._warning_text
 
     def _validate(self, value):
         # RadioSetting can only contain RadioSettingValue objects

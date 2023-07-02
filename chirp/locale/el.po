@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-28 17:09-0700\n"
+"POT-Creation-Date: 2023-07-02 14:20-0700\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -651,7 +651,7 @@ msgstr "Όλοι οι τύποι αρχείων|"
 msgid "Amateur"
 msgstr "Ραδιοερασιτέχνη"
 
-#: ../wxui/common.py:499 ../wxui/common.py:525
+#: ../wxui/common.py:531 ../wxui/common.py:557
 msgid "An error has occurred"
 msgstr "Παρουσιάστηκε ένα σφάλμα"
 
@@ -690,6 +690,12 @@ msgstr "Δημιουργία Περιηγητή Πομποδεκτών"
 #: ../wxui/query_sources.py:525
 msgid "Canada"
 msgstr "Καναδάς"
+
+#: ../wxui/common.py:420
+msgid ""
+"Changing this setting requires refreshing the settings from the image, which "
+"will happen now."
+msgstr ""
 
 #: ../wxui/memedit.py:1173
 #, python-format
@@ -940,7 +946,7 @@ msgstr "Εισάγετε προσαρμοσμένη θύρα:"
 msgid "Erased memory %s"
 msgstr "Διεγράφη η μνήμη %s"
 
-#: ../wxui/settingsedit.py:114
+#: ../wxui/settingsedit.py:116
 msgid "Error applying settings"
 msgstr "Σφάλμα εφαρμογής ρυθμίσεων"
 
@@ -1190,7 +1196,7 @@ msgstr "Συχνότητα"
 msgid "GMRS"
 msgstr "GMRS"
 
-#: ../wxui/settingsedit.py:54
+#: ../wxui/settingsedit.py:55
 msgid "Getting settings"
 msgstr "Λήψη ρυθμίσεων"
 
@@ -1531,7 +1537,7 @@ msgstr ""
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/common.py:564
+#: ../wxui/common.py:596
 #, fuzzy, python-format
 msgid "Path %s does not exist"
 msgstr "Το αρχείο δεν υπάρχει: %s"
@@ -1644,6 +1650,11 @@ msgstr ""
 #: ../wxui/query_sources.py:665
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
+
+#: ../wxui/common.py:422
+#, fuzzy
+msgid "Refresh required"
+msgstr "Απαιτείται επανεκκίνηση"
 
 #: ../wxui/common.py:310
 #, python-format
@@ -1870,6 +1881,14 @@ msgid ""
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
 
+#: ../drivers/uvk5.py:1866
+msgid ""
+"This should only be enabled if you are using modified firmware that supports "
+"wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
+"restrictions and may lead to undefined or unregulated behavior. Use at your "
+"own risk!"
+msgstr ""
+
 #: ../wxui/developer.py:484
 msgid "This will load a module from a website issue"
 msgstr ""
@@ -1920,7 +1939,7 @@ msgid ""
 "model and try again."
 msgstr ""
 
-#: ../wxui/common.py:571
+#: ../wxui/common.py:603
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr ""
@@ -1964,12 +1983,12 @@ msgstr "Χρήση μεγαλύτερης γραμματοσειράς"
 msgid "Value does not fit in %i bits"
 msgstr "Η τιμή δεν χωράει σε %i bits"
 
-#: ../wxui/common.py:422
+#: ../wxui/common.py:454
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Η τιμή πρέπει να είναι τουλάχιστον %.4f"
 
-#: ../wxui/common.py:426
+#: ../wxui/common.py:458
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Η τιμή πρέπει να είναι το πολύ  %.4f"
@@ -1990,6 +2009,10 @@ msgstr "Προμηθευτής"
 #: ../wxui/main.py:938
 msgid "View"
 msgstr "Εμφάνιση"
+
+#: ../wxui/common.py:406
+msgid "WARNING!"
+msgstr ""
 
 #: ../wxui/memedit.py:1324
 msgid "Warning"

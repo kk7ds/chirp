@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-28 17:09-0700\n"
+"POT-Creation-Date: 2023-07-02 14:20-0700\n"
 "PO-Revision-Date: 2022-06-04 02:01+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language: zh_CN\n"
@@ -645,7 +645,7 @@ msgstr ""
 msgid "Amateur"
 msgstr ""
 
-#: ../wxui/common.py:499 ../wxui/common.py:525
+#: ../wxui/common.py:531 ../wxui/common.py:557
 msgid "An error has occurred"
 msgstr "发生错误"
 
@@ -683,6 +683,12 @@ msgstr ""
 
 #: ../wxui/query_sources.py:525
 msgid "Canada"
+msgstr ""
+
+#: ../wxui/common.py:420
+msgid ""
+"Changing this setting requires refreshing the settings from the image, which "
+"will happen now."
 msgstr ""
 
 #: ../wxui/memedit.py:1173
@@ -943,7 +949,7 @@ msgstr ""
 msgid "Erased memory %s"
 msgstr "正在擦除存储 {loc}"
 
-#: ../wxui/settingsedit.py:114
+#: ../wxui/settingsedit.py:116
 #, fuzzy
 msgid "Error applying settings"
 msgstr "设置值有误：%s"
@@ -1199,7 +1205,7 @@ msgstr "频率"
 msgid "GMRS"
 msgstr ""
 
-#: ../wxui/settingsedit.py:54
+#: ../wxui/settingsedit.py:55
 #, fuzzy
 msgid "Getting settings"
 msgstr "正在获取 %s 信息"
@@ -1555,7 +1561,7 @@ msgstr ""
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/common.py:564
+#: ../wxui/common.py:596
 #, python-format
 msgid "Path %s does not exist"
 msgstr ""
@@ -1670,6 +1676,11 @@ msgstr ""
 #: ../wxui/query_sources.py:665
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
+
+#: ../wxui/common.py:422
+#, fuzzy
+msgid "Refresh required"
+msgstr "刷新"
 
 #: ../wxui/common.py:310
 #, fuzzy, python-format
@@ -1894,6 +1905,14 @@ msgid ""
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
 
+#: ../drivers/uvk5.py:1866
+msgid ""
+"This should only be enabled if you are using modified firmware that supports "
+"wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
+"restrictions and may lead to undefined or unregulated behavior. Use at your "
+"own risk!"
+msgstr ""
+
 #: ../wxui/developer.py:484
 msgid "This will load a module from a website issue"
 msgstr ""
@@ -1947,7 +1966,7 @@ msgid ""
 "model and try again."
 msgstr ""
 
-#: ../wxui/common.py:571
+#: ../wxui/common.py:603
 #, fuzzy, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "无法变更此型号电台"
@@ -1993,12 +2012,12 @@ msgstr ""
 msgid "Value does not fit in %i bits"
 msgstr ""
 
-#: ../wxui/common.py:422
+#: ../wxui/common.py:454
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr ""
 
-#: ../wxui/common.py:426
+#: ../wxui/common.py:458
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr ""
@@ -2020,6 +2039,10 @@ msgstr "厂商"
 #, fuzzy
 msgid "View"
 msgstr "查看 (_V)"
+
+#: ../wxui/common.py:406
+msgid "WARNING!"
+msgstr ""
 
 #: ../wxui/memedit.py:1324
 msgid "Warning"
@@ -2432,9 +2455,6 @@ msgstr ""
 #, python-brace-format
 #~ msgid "Raw memory {number}"
 #~ msgstr "原始存储 {number}"
-
-#~ msgid "Refresh"
-#~ msgstr "刷新"
 
 #~ msgid "Repeater callsign"
 #~ msgstr "中继台的呼号"

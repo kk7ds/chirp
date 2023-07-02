@@ -349,6 +349,7 @@ class ChirpSettingGrid(wx.Panel):
     def __init__(self, settinggroup, *a, **k):
         super(ChirpSettingGrid, self).__init__(*a, **k)
         self._group = settinggroup
+        self._needs_reload = False
 
         self.pg = wx.propgrid.PropertyGrid(
             self,
@@ -386,16 +387,47 @@ class ChirpSettingGrid(wx.Panel):
                 else:
                     LOG.warning('Unsupported setting type %r' % value)
                     editor = None
-                if editor:
-                    editor.SetName('%s%s%i' % (name, INDEX_CHAR, i))
-                    if len(element.keys()) > 1:
-                        editor.SetLabel('')
-                    editor.Enable(value.get_mutable())
-                    self.pg.Append(editor)
+                if not editor:
+                    continue
+
+                editor.SetName('%s%s%i' % (name, INDEX_CHAR, i))
+                if len(element.keys()) > 1:
+                    editor.SetLabel('')
+                editor.Enable(value.get_mutable())
+                self.pg.Append(editor)
+
+                if element.get_warning(None) or element.volatile:
+                    self.pg.Bind(wx.propgrid.EVT_PG_CHANGING,
+                                 lambda evt: self._check_change(evt, element))
+
+    def _check_change(self, event, setting):
+        warning = setting.get_warning(event.GetValue())
+        if warning:
+            r = wx.MessageBox(warning, _('WARNING!'),
+                              wx.OK | wx.CANCEL | wx.CANCEL_DEFAULT)
+            if r == wx.CANCEL:
+                LOG.info('User aborted setting %s=%s with warning message',
+                         event.GetPropertyName(), event.GetValue())
+                event.SetValidationFailureBehavior(0)
+                event.Veto()
+                return
+            else:
+                LOG.info('User made change to %s=%s despite warning',
+                         event.GetPropertyName(), event.GetValue())
+        self._needs_reload = setting.volatile
+        if self.needs_reload:
+            wx.MessageBox(_(
+                'Changing this setting requires refreshing the settings from '
+                'the image, which will happen now.'),
+                          _('Refresh required'), wx.OK)
 
     @property
     def name(self):
         return self._group.get_name()
+
+    @property
+    def needs_reload(self):
+        return self._needs_reload
 
     @property
     def propgrid(self):
