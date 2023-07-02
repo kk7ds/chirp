@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-28 17:09-0700\n"
+"POT-Creation-Date: 2023-07-02 14:20-0700\n"
 "PO-Revision-Date: 2023-06-29 01:01-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
@@ -1021,7 +1021,7 @@ msgstr "Todos los formatos soportados|"
 msgid "Amateur"
 msgstr "Aficionado"
 
-#: ../wxui/common.py:499 ../wxui/common.py:525
+#: ../wxui/common.py:531 ../wxui/common.py:557
 msgid "An error has occurred"
 msgstr "Ha ocurrido un error"
 
@@ -1060,6 +1060,12 @@ msgstr "Construyendo navegador de radio"
 #: ../wxui/query_sources.py:525
 msgid "Canada"
 msgstr "Canada"
+
+#: ../wxui/common.py:420
+msgid ""
+"Changing this setting requires refreshing the settings from the image, which "
+"will happen now."
+msgstr ""
 
 #: ../wxui/memedit.py:1173
 #, python-format
@@ -1318,7 +1324,7 @@ msgstr "Ingresar puerto personalizado:"
 msgid "Erased memory %s"
 msgstr "Memoria borrada %s"
 
-#: ../wxui/settingsedit.py:114
+#: ../wxui/settingsedit.py:116
 msgid "Error applying settings"
 msgstr "Error aplicando ajustes"
 
@@ -1663,7 +1669,7 @@ msgstr "Frecuencia"
 msgid "GMRS"
 msgstr "GMRS"
 
-#: ../wxui/settingsedit.py:54
+#: ../wxui/settingsedit.py:55
 msgid "Getting settings"
 msgstr "Obteniendo ajustes"
 
@@ -2007,7 +2013,7 @@ msgstr "Las memorias pegadas sobrescribirán la memoria %s"
 msgid "Pasted memory will overwrite memory %s"
 msgstr "La memoria pegada sobrescribirá la memoria %s"
 
-#: ../wxui/common.py:564
+#: ../wxui/common.py:596
 #, python-format
 msgid "Path %s does not exist"
 msgstr "La ruta %s no existe"
@@ -2147,6 +2153,11 @@ msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 "RadioReference Canadá requiere un inicio de sesión antes de que puedas "
 "consultar"
+
+#: ../wxui/common.py:422
+#, fuzzy
+msgid "Refresh required"
+msgstr "Reinicio requerido"
 
 #: ../wxui/common.py:310
 #, python-format
@@ -2401,6 +2412,14 @@ msgstr ""
 "veces.\n"
 "Si puede ingresar, por favor comprueba la radio y el cable.\n"
 
+#: ../drivers/uvk5.py:1866
+msgid ""
+"This should only be enabled if you are using modified firmware that supports "
+"wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
+"restrictions and may lead to undefined or unregulated behavior. Use at your "
+"own risk!"
+msgstr ""
+
 #: ../wxui/developer.py:484
 msgid "This will load a module from a website issue"
 msgstr "Esto va a cargar un módulo desde un problema del sitio web"
@@ -2456,7 +2475,7 @@ msgstr ""
 "seleccionado es de EE.UU pero la radio no es una de EE.UU (o de banda "
 "ancha). Por favor elije el modelo correcto e intenta de nuevo."
 
-#: ../wxui/common.py:571
+#: ../wxui/common.py:603
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "No se puede revelar %s en este sistema"
@@ -2500,12 +2519,12 @@ msgstr "Usar fuente más grande"
 msgid "Value does not fit in %i bits"
 msgstr "Valor no cabe en %i bits"
 
-#: ../wxui/common.py:422
+#: ../wxui/common.py:454
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Valor debe ser al menos %.4f"
 
-#: ../wxui/common.py:426
+#: ../wxui/common.py:458
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Valor debe ser como máximo %.4f"
@@ -2526,6 +2545,10 @@ msgstr "Vendedor"
 #: ../wxui/main.py:938
 msgid "View"
 msgstr "Ver"
+
+#: ../wxui/common.py:406
+msgid "WARNING!"
+msgstr ""
 
 #: ../wxui/memedit.py:1324
 msgid "Warning"

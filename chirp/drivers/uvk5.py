@@ -1862,6 +1862,12 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         val = RadioSettingValueBoolean(self._expanded_limits)
         rs = RadioSetting("nolimits", "Limits disabled for modified firmware",
                           val)
+        rs.set_warning(_(
+            'This should only be enabled if you are using modified firmware '
+            'that supports wider frequency coverage. Enabling this will cause '
+            'CHIRP not to enforce OEM restrictions and may lead to undefined '
+            'or unregulated behavior. Use at your own risk!'),
+            safe_value=False)
         roinfo.append(rs)
 
         return top

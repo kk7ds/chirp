@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-28 17:09-0700\n"
+"POT-Creation-Date: 2023-07-02 14:20-0700\n"
 "PO-Revision-Date: 2012-03-18 12:01+0100\n"
 "Last-Translator: Michael Tel <m.tel@xs4all.nl>\n"
 "Language-Team: Dutch\n"
@@ -647,7 +647,7 @@ msgstr ""
 msgid "Amateur"
 msgstr ""
 
-#: ../wxui/common.py:499 ../wxui/common.py:525
+#: ../wxui/common.py:531 ../wxui/common.py:557
 msgid "An error has occurred"
 msgstr "Er is een fout opgetreden"
 
@@ -685,6 +685,12 @@ msgstr ""
 
 #: ../wxui/query_sources.py:525
 msgid "Canada"
+msgstr ""
+
+#: ../wxui/common.py:420
+msgid ""
+"Changing this setting requires refreshing the settings from the image, which "
+"will happen now."
 msgstr ""
 
 #: ../wxui/memedit.py:1173
@@ -941,7 +947,7 @@ msgstr ""
 msgid "Erased memory %s"
 msgstr "Wis kanaal {loc}"
 
-#: ../wxui/settingsedit.py:114
+#: ../wxui/settingsedit.py:116
 #, fuzzy
 msgid "Error applying settings"
 msgstr "Fout bij het instellen van het geheugen"
@@ -1194,7 +1200,7 @@ msgstr "Frequentie"
 msgid "GMRS"
 msgstr ""
 
-#: ../wxui/settingsedit.py:54
+#: ../wxui/settingsedit.py:55
 msgid "Getting settings"
 msgstr ""
 
@@ -1545,7 +1551,7 @@ msgstr ""
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/common.py:564
+#: ../wxui/common.py:596
 #, python-format
 msgid "Path %s does not exist"
 msgstr ""
@@ -1657,6 +1663,10 @@ msgstr ""
 
 #: ../wxui/query_sources.py:665
 msgid "RadioReference Canada requires a login before you can query"
+msgstr ""
+
+#: ../wxui/common.py:422
+msgid "Refresh required"
 msgstr ""
 
 #: ../wxui/common.py:310
@@ -1882,6 +1892,14 @@ msgid ""
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
 
+#: ../drivers/uvk5.py:1866
+msgid ""
+"This should only be enabled if you are using modified firmware that supports "
+"wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
+"restrictions and may lead to undefined or unregulated behavior. Use at your "
+"own risk!"
+msgstr ""
+
 #: ../wxui/developer.py:484
 msgid "This will load a module from a website issue"
 msgstr ""
@@ -1935,7 +1953,7 @@ msgid ""
 "model and try again."
 msgstr ""
 
-#: ../wxui/common.py:571
+#: ../wxui/common.py:603
 #, fuzzy, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Niet in staat om wijzigingen voor dit model te maken"
@@ -1980,12 +1998,12 @@ msgstr ""
 msgid "Value does not fit in %i bits"
 msgstr ""
 
-#: ../wxui/common.py:422
+#: ../wxui/common.py:454
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr ""
 
-#: ../wxui/common.py:426
+#: ../wxui/common.py:458
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr ""
@@ -2007,6 +2025,10 @@ msgstr "Merk"
 #, fuzzy
 msgid "View"
 msgstr "Bee_ld"
+
+#: ../wxui/common.py:406
+msgid "WARNING!"
+msgstr ""
 
 #: ../wxui/memedit.py:1324
 msgid "Warning"
