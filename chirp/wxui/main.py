@@ -1424,11 +1424,54 @@ class ChirpMain(wx.Frame):
         CONF.set_bool('font_large', menuitem.IsChecked(), 'state')
         self._update_font()
 
+    def _make_backup(self, radio):
+        if not isinstance(radio, chirp_common.CloneModeRadio):
+            LOG.debug('Not backing up %s' % radio)
+            return
+        backup_dir = chirp_platform.get_platform().config_file('backups')
+        now = datetime.datetime.now()
+        fn = os.path.join(backup_dir,
+                          '%s_%s' % (directory.radio_class_id(radio.__class__),
+                                     now.strftime('%Y%m%dT%H%M%S.img')))
+        try:
+            os.makedirs(backup_dir, exist_ok=True)
+            radio.save(fn)
+            LOG.info('Saved backup to %s', fn)
+        except Exception as e:
+            LOG.warning('Failed to backup %s: %s', radio, e)
+            return
+
+        try:
+            keep_days = CONF.get_int('keep_backups_days', 'prefs')
+        except TypeError:
+            keep_days = 365
+        if keep_days < 0:
+            # Never prune
+            return
+        try:
+            files = os.listdir(backup_dir)
+            bydate = [(os.stat(os.path.join(backup_dir, f)).st_mtime, f)
+                      for f in files]
+            now = time.time()
+            for mtime, fn in sorted(bydate):
+                age = (now - mtime) // 86400
+                if age > keep_days:
+                    os.remove(os.path.join(backup_dir, fn))
+                    LOG.warning('Pruned backup %s older than %i days',
+                                fn, keep_days)
+                elif age + 30 > keep_days:
+                    LOG.info('Backup %s will be pruned soon', fn)
+                else:
+                    break
+        except Exception as e:
+            LOG.exception('Failed to prune: %s' % e)
+
     def _menu_download(self, event):
         with clone.ChirpDownloadDialog(self) as d:
             d.Centre()
             if d.ShowModal() == wx.ID_OK:
                 radio = d._radio
+                self._make_backup(radio)
                 report.report_model(radio, 'download')
                 if isinstance(radio, chirp_common.LiveRadio):
                     editorset = ChirpLiveEditorSet(radio, None, self._editors)
