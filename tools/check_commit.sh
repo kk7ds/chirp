@@ -55,7 +55,7 @@ if grep '/cpep8.blacklist' added_lines; then
 fi
 
 grep -i 'license' added_lines > license_lines
-if grep -iv '(GNU General Public License|Free Software Foundation)' license_lines; then
+if grep -ivE '(GNU General Public License|Free Software Foundation|gnu.org.licenses)' license_lines; then
     fail 'Files must be GPLv3 licensed (or not contain any license language)'
 fi
 
@@ -78,5 +78,16 @@ added_files=$(git diff --name-only --diff-filter=A ${BASE}.. 2>&1)
 if echo $added_files | grep -q chirp.drivers && ! echo $added_files | grep -q tests.images; then
     fail All new drivers should include a test image
 fi
+
+existing_drivers=$(git ls-tree --name-only $BASE chirp/drivers/)
+limit=20
+for nf in $added_files; do
+    for of in $existing_drivers; do
+        change=$(wdiff -s $of $nf | grep $of | sed -r 's/.* ([0-9]+)% changed/\1/')
+        if [ "$change" -lt "$limit" ]; then
+            fail "New file $nf shares at least $((100 - $change))% with $of!"
+        fi
+    done
+done
 
 exit $RETCODE
