@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE="$1"
+BASE=${1:-origin/master}
 RETCODE=0
 
 RED='\033[1;31m'
@@ -14,6 +14,7 @@ function fail() {
 
 echo -e "${GREEN}Checking from $(git rev-parse --short ${BASE}):${NC}"
 git log --pretty=oneline --no-merges --abbrev-commit ${BASE}..
+echo
 
 git diff ${BASE}.. '*.py' | grep '^+' > added_lines
 
@@ -51,6 +52,11 @@ fi
 
 if grep '/cpep8.blacklist' added_lines; then
     fail 'Do not add new files to cpep8.blacklist'
+fi
+
+grep -i 'license' added_lines > license_lines
+if grep -iv '(GNU General Public License|Free Software Foundation)' license_lines; then
+    fail 'Files must be GPLv3 licensed (or not contain any license language)'
 fi
 
 for file in $(git diff --name-only ${BASE}..); do
