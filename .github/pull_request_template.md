@@ -8,6 +8,7 @@ The following must be true before PRs can be merged:
 * Commits in a single PR should be related.
 * Major new features or bug fixes should reference a [CHIRP issue](https://chirp.danplanet.com/projects/chirp/issues).
 * New drivers should be accompanied by a test image in `tests/images` (except for thin aliases where the driver is sufficiently tested already).
+* All files must be GPLv3 licensed or contain no license verbiage. No additional restrictions can be placed on the usage (i.e. such as noncommercial).
 
 Please also follow these guidelines:
 
