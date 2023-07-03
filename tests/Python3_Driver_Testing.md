@@ -5,6 +5,7 @@
 | <a name="Abbree_AR-518"></a> Abbree_AR-518 | [@KC9HI](https://github.com/KC9HI) | 16-Dec-2022 | Yes | 0.24% |
 | <a name="Abbree_AR-63"></a> Abbree_AR-63 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.03% |
 | <a name="Abbree_AR-730"></a> Abbree_AR-730 | [@KC9HI](https://github.com/KC9HI) | 17-Aug-2023 | Yes |  |
+| <a name="Abbree_AR-869"></a> Abbree_AR-869 | [Implied by Radtel_RT-490](#user-content-Radtel_RT-490) | 11-Nov-2023 | Yes | 0.01% |
 | <a name="Abbree_AR-F5"></a> Abbree_AR-F5 | [@KC9HI](https://github.com/KC9HI) | 09-Aug-2023 | Yes |  |
 | <a name="Alinco_DJ-G7EG"></a> Alinco_DJ-G7EG | [@HB9UF](https://github.com/HB9UF) | 09-Dec-2022 | Yes | 0.44% |
 | <a name="Alinco_DJ-G7T"></a> Alinco_DJ-G7T | [Reported working](https://chirp.danplanet.com/issues/10567) | 09-May-2023 | Yes |  |
@@ -76,6 +77,7 @@
 | <a name="Baojie_BJ-9900"></a> Baojie_BJ-9900 |  |  |  | 0.02% |
 | <a name="Baojie_BJ-UV55"></a> Baojie_BJ-UV55 |  |  | Yes | 0.03% |
 | <a name="Boblov_X3Plus"></a> Boblov_X3Plus |  |  |  | 0.02% |
+| <a name="Boristone_8RS"></a> Boristone_8RS | [Implied by Radtel_RT-490](#user-content-Radtel_RT-490) | 11-Nov-2023 | Yes | 0.00% |
 | <a name="CRT_Micron_UV"></a> CRT_Micron_UV | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.08% |
 | <a name="CRT_Micron_UV_V2"></a> CRT_Micron_UV_V2 | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.10% |
 | <a name="Cignus_XTR-5"></a> Cignus_XTR-5 | [Implied by Radioddity_GS-5B](#user-content-Radioddity_GS-5B) | 17-Mar-2023 | Yes |  |
@@ -91,6 +93,7 @@
 | <a name="Feidaxin_FD-460A"></a> Feidaxin_FD-460A |  |  |  | 0.01% |
 | <a name="Feidaxin_FD-460UH"></a> Feidaxin_FD-460UH |  |  |  | 0.01% |
 | <a name="Generic_CSV"></a> Generic_CSV | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 |  |  |
+| <a name="HamGeek_HG-590"></a> HamGeek_HG-590 | [Implied by Radtel_RT-490](#user-content-Radtel_RT-490) | 11-Nov-2023 | Yes | 0.00% |
 | <a name="Hiroyasu_HI-8811"></a> Hiroyasu_HI-8811 | [@KC9HI](https://github.com/KC9HI) | 4-Jun-2023 | Yes |  |
 | <a name="HobbyPCB_RS-UV3"></a> HobbyPCB_RS-UV3 | [@kk7ds](https://github.com/kk7ds) | 9-Dec-2022 | Yes | 0.02% |
 | <a name="Icom_IC-208H"></a> Icom_IC-208H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.05% |
@@ -131,9 +134,11 @@
 | <a name="Icom_ID-880H"></a> Icom_ID-880H | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.02% |
 | <a name="Intek_HR-2040"></a> Intek_HR-2040 | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.02% |
 | <a name="Intek_KT-980HP"></a> Intek_KT-980HP | [Implied by Baofeng_BF-F8HP](#user-content-Baofeng_BF-F8HP) | 18-Nov-2022 | Yes | 0.04% |
+| <a name="JJCC_JC-8629"></a> JJCC_JC-8629 | [Implied by Radtel_RT-490](#user-content-Radtel_RT-490) | 11-Nov-2023 | Yes |  |
 | <a name="Jetstream_JT220M"></a> Jetstream_JT220M | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Jetstream_JT270M"></a> Jetstream_JT270M | [Implied by Jetstream_JT270M](#user-content-Jetstream_JT270M) | 13-Dec-2022 | Yes | 0.01% |
 | <a name="Jetstream_JT270MH"></a> Jetstream_JT270MH | [@kk7ds](https://github.com/kk7ds) | 13-Dec-2022 | Yes | 0.01% |
+| <a name="Jianpai_8800_Plus"></a> Jianpai_8800_Plus | [Implied by Radtel_RT-490](#user-content-Radtel_RT-490) | 11-Nov-2023 | Yes | 0.01% |
 | <a name="KYD_IP-620"></a> KYD_IP-620 |  |  |  | 0.02% |
 | <a name="KYD_NC-630A"></a> KYD_NC-630A |  |  |  | 0.02% |
 | <a name="Kenwood_HMK"></a> Kenwood_HMK | [Implied by Generic_CSV](#user-content-Generic_CSV) | 4-Dec-2022 |  | 0.00% |
@@ -222,6 +227,7 @@
 | <a name="Lanchonlh_HG-UV98"></a> Lanchonlh_HG-UV98 |  |  | Yes | 0.00% |
 | <a name="Leixen_VV-898"></a> Leixen_VV-898 | [Implied by Jetstream_JT270MH](#user-content-Jetstream_JT270MH) | 13-Dec-2022 | Yes | 0.18% |
 | <a name="Leixen_VV-898S"></a> Leixen_VV-898S | [@READ10](https://github.com/READ10) | 19-Dec-2022 | Yes | 0.10% |
+| <a name="MMLradio_JC-8629"></a> MMLradio_JC-8629 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2023 | Yes | 0.01% |
 | <a name="MTC_UV-5R-3"></a> MTC_UV-5R-3 | [Implied by BTECH_UV-5X3](#user-content-BTECH_UV-5X3) | 9-Dec-2022 | Yes | 0.02% |
 | <a name="Maverick_RA-100"></a> Maverick_RA-100 | [@cetinajero](https://github.com/cetinajero) | 7-Jul-2023 | Yes |  |
 | <a name="Maverick_RA-425"></a> Maverick_RA-425 | [@cetinajero](https://github.com/cetinajero) | 7-Jul-2023 | Yes |  |
@@ -256,6 +262,7 @@
 | <a name="Radtel_RT-470"></a> Radtel_RT-470 | [@KC9HI](https://github.com/KC9HI) | 2-Apr-2023 | Yes | 0.00% |
 | <a name="Radtel_RT-470L"></a> Radtel_RT-470L | [@KC9HI](https://github.com/KC9HI) | 5-May-2023 | Yes |  |
 | <a name="Radtel_RT-470X"></a> Radtel_RT-470X | [@KC9HI](https://github.com/KC9HI) | 10-Aug-2023 | Yes |  |
+| <a name="Radtel_RT-490"></a> Radtel_RT-490 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2023 | Yes | 0.08% |
 | <a name="Radtel_T18"></a> Radtel_T18 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.07% |
 | <a name="Retevis_H777S"></a> Retevis_H777S | [@KC9HI](https://github.com/KC9HI) | 22-Dec-2022 | Yes |  |
 | <a name="Retevis_H777_Plus"></a> Retevis_H777_Plus | [@KC9HI](https://github.com/KC9HI) | 4-Dec-2022 | Yes | 0.06% |
@@ -331,6 +338,8 @@
 | <a name="Ruyage_UV58Plus"></a> Ruyage_UV58Plus | [@KC9HI](https://github.com/KC9HI) | 18-Mar-2023 | Yes |  |
 | <a name="Sainsonic_AP510"></a> Sainsonic_AP510 |  |  |  | 0.00% |
 | <a name="SenhaiX_8800"></a> SenhaiX_8800 | [Implied by Radioddity_GS-5B](#user-content-Radioddity_GS-5B) | 17-Mar-2023 | Yes |  |
+| <a name="Socotran_FB-8629"></a> Socotran_FB-8629 | [Implied by Radtel_RT-490](#user-content-Radtel_RT-490) | 11-Nov-2023 | Yes | 0.00% |
+| <a name="Socotran_JC-8629"></a> Socotran_JC-8629 | [Implied by Radtel_RT-490](#user-content-Radtel_RT-490) | 11-Nov-2023 | Yes |  |
 | <a name="TDXone_TD-Q8A"></a> TDXone_TD-Q8A | [@KC9HI](https://github.com/KC9HI) | 18-Dec-2022 |  | 0.02% |
 | <a name="TIDRADIO_TD-H6"></a> TIDRADIO_TD-H6 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes | 0.43% |
 | <a name="TIDRADIO_TD-H8"></a> TIDRADIO_TD-H8 | [@Sandmann34](https://github.com/Sandmann34) | 7-Feb-2023 | Yes |  |
@@ -428,11 +437,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 425
+**Drivers:** 434
 
-**Tested:** 87% (370/55) (93% of usage stats)
+**Tested:** 87% (379/55) (93% of usage stats)
 
-**Byte clean:** 90% (385/40)
+**Byte clean:** 90% (394/40)
 
 ## Meaning of this testing
 
