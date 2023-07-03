@@ -11,6 +11,7 @@
 Abbree_AR-518,@KC9HI,16-Dec-2022
 Abbree_AR-63,@KC9HI,30-Nov-2022
 Abbree_AR-730,@KC9HI,17-Aug-2023
+Abbree_AR-869,+Radtel_RT-490,11-Nov-2023
 Abbree_AR-F5,@KC9HI,09-Aug-2023
 Alinco_DJ175,+Alinco_DR235T,12-Dec-2022
 Alinco_DJ596,+Alinco_DR235T,12-Dec-2022
@@ -77,11 +78,13 @@ Baofeng_UV-S9X3,@KC9HI,22-Aug-2023
 Baofeng_W31E,@KC9HI,14-Aug-2023
 Baojie_BJ-218,+LUITON_LT-725UV,16-Feb-2023
 Baojie_BJ-318,@KC9HI,2-Jan-2023
+Boristone_8RS,+Radtel_RT-490,11-Nov-2023
 Cignus_XTR-5,+Radioddity_GS-5B,17-Mar-2023
 CRT_Micron_UV,+Retevis_RT95,13-Nov-2022
 CRT_Micron_UV_V2,+Retevis_RT95,13-Nov-2022
 Explorer_QRZ-1,+TYT_TH-UV88,5-Dec-2022
 Generic_CSV,@kk7ds,4-Dec-2022
+HamGeek_HG-590,+Radtel_RT-490,11-Nov-2023
 Hiroyasu_HI-8811,@KC9HI,4-Jun-2023
 HobbyPCB_RS-UV3,@kk7ds,9-Dec-2022
 Icom_IC-208H,*icf,12-Dec-2022
@@ -125,6 +128,8 @@ Intek_HR-2040,+AnyTone_5888UV,9-Dec-2022
 Jetstream_JT220M,+Alinco_DR235T,12-Dec-2022
 Jetstream_JT270M,+Jetstream_JT270M,13-Dec-2022
 Jetstream_JT270MH,@kk7ds,13-Dec-2022
+Jianpai_8800_Plus,+Radtel_RT-490,11-Nov-2023
+JJCC_JC-8629,+Radtel_RT-490,11-Nov-2023
 Kenwood_HMK,+Generic_CSV,4-Dec-2022
 Kenwood_TH-D7,*kenwood_live,12-Dec-2022
 Kenwood_TH-D7G,*kenwood_live,12-Dec-2022
@@ -196,6 +201,7 @@ LUITON_LT-588UV,@KC9HI,11-Nov-2022
 LUITON_LT-725UV,@KC9HI,11-Dec-2022
 Maverick_RA-100,@cetinajero,7-Jul-2023
 Maverick_RA-425,@cetinajero,7-Jul-2023
+MMLradio_JC-8629,@KC9HI,11-Nov-2023
 MTC_UV-5R-3,+BTECH_UV-5X3,9-Dec-2022
 Midland_DBR2500,+Retevis_RT95,13-Nov-2022
 Polmar_DB-50M,+AnyTone_5888UV,9-Dec-2022
@@ -225,6 +231,7 @@ Radioddity_UV-82X3,@KC9HI,18-Nov-2022
 Radtel_RT-470,@KC9HI,2-Apr-2023
 Radtel_RT-470L,@KC9HI,5-May-2023
 Radtel_RT-470X,@KC9HI,10-Aug-2023
+Radtel_RT-490,@KC9HI,11-Nov-2023
 Radtel_T18,@KC9HI,28-Nov-2022
 Retevis_H777S,@KC9HI,22-Dec-2022
 Retevis_H777_Plus,@KC9HI,4-Dec-2022
@@ -298,6 +305,8 @@ Retevis_RT9000D_400-490,@KC9HI,8-Dec-2022
 Retevis_RT9000D_66-88,@KC9HI,8-Dec-2022
 Ruyage_UV58Plus,@KC9HI,18-Mar-2023
 SenhaiX_8800,+Radioddity_GS-5B,17-Mar-2023
+Socotran_FB-8629,+Radtel_RT-490,11-Nov-2023
+Socotran_JC-8629,+Radtel_RT-490,11-Nov-2023
 Talkpod_A36plus,@KC9HI,12-Jun-2023
 TDXone_TD-Q8A,@KC9HI,18-Dec-2022
 TIDRADIO_TD-H6,@kk7ds,21-Oct-2022
