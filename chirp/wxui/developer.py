@@ -463,6 +463,21 @@ class IssueModuleLoader:
                 a.get('content_type', '').startswith('text/') and
                 a['filesize'] < (256 * 1024)]
 
+    def get_user_is_developer(self, uid):
+        r = self.session.get('https://chirp.danplanet.com/users/%i.json' % uid,
+                             params={'include': 'memberships'})
+        LOG.debug('Fetched info for user %i (status %s)',
+                  uid, r.status_code)
+        r.raise_for_status()
+        data = r.json()
+        try:
+            membership = data['user']['memberships'][0]
+        except IndexError:
+            LOG.debug('User %s(%i) has no roles', data['user']['login'], uid)
+            return False
+        roles = [r['name'] for r in membership['roles']]
+        return 'Developer' in roles or 'Manager' in roles
+
     def get_attachment_from_user(self, issue, attachments):
         attachment_strings = {
             '%s from %s (%s)' % (a['filename'],
@@ -478,6 +493,17 @@ class IssueModuleLoader:
             len(choices) - 1,
             parent=self._parent)
         if choice:
+            isdev = self.get_user_is_developer(
+                attachment_strings[choice]['author']['id'])
+            if not isdev:
+                r = wx.MessageBox(
+                    _('The author of this module is not a recognized '
+                      'CHIRP developer. It is recommended that you not '
+                      'load this module as it could pose a security risk. '
+                      'Proceed anyway?'), _('Security Risk'),
+                    wx.YES_NO | wx.NO_DEFAULT)
+                if r != wx.YES:
+                    return
             return attachment_strings[choice]
 
     def run(self):
