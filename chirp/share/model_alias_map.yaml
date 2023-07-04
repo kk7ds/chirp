@@ -10,6 +10,10 @@ Baiston:
 - alt: Baofeng BF-888
   model: BST-2100
 Baofeng/Pofung:
+- alt: BF-1901
+  model: Baofeng BF-1902
+- alt: BF-1901
+  model: Baofeng BF-1903
 - alt: Baofeng BF-888
   model: Baofeng BF-777S
 - alt: UV-5R
