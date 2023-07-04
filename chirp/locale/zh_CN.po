@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-04 11:04-0700\n"
+"POT-Creation-Date: 2023-07-09 17:54-0700\n"
 "PO-Revision-Date: 2022-06-04 02:01+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language: zh_CN\n"
@@ -657,15 +657,11 @@ msgstr ""
 msgid "Available modules"
 msgstr ""
 
-#: ../wxui/query_sources.py:520
-msgid "Band"
-msgstr ""
-
 #: ../wxui/main.py:1713
 msgid "Bandplan"
 msgstr ""
 
-#: ../wxui/query_sources.py:376
+#: ../wxui/query_sources.py:376 ../wxui/query_sources.py:588
 msgid "Bands"
 msgstr ""
 
@@ -685,7 +681,7 @@ msgstr "浏览器"
 msgid "Building Radio Browser"
 msgstr ""
 
-#: ../wxui/query_sources.py:632
+#: ../wxui/query_sources.py:679
 msgid "Canada"
 msgstr ""
 
@@ -803,7 +799,7 @@ msgid "Copy"
 msgstr "复制"
 
 #: ../wxui/query_sources.py:280 ../wxui/query_sources.py:458
-#: ../wxui/query_sources.py:512
+#: ../wxui/query_sources.py:547
 msgid "Country"
 msgstr ""
 
@@ -877,7 +873,7 @@ msgstr ""
 msgid "Disabled"
 msgstr "已启用"
 
-#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:554
+#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:570
 msgid "Distance"
 msgstr ""
 
@@ -981,7 +977,7 @@ msgstr "导出到文件"
 msgid "Extra"
 msgstr ""
 
-#: ../wxui/query_sources.py:559
+#: ../wxui/query_sources.py:602
 msgid ""
 "FREE repeater database, which provide most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
@@ -1255,7 +1251,7 @@ msgid "Hide empty memories"
 msgstr "要覆盖吗？"
 
 #: ../wxui/query_sources.py:294 ../wxui/query_sources.py:300
-#: ../wxui/query_sources.py:538 ../wxui/query_sources.py:544
+#: ../wxui/query_sources.py:554 ../wxui/query_sources.py:560
 msgid "If set, sort results by distance from these coordinates"
 msgstr ""
 
@@ -1329,7 +1325,7 @@ msgstr ""
 msgid "LIVE"
 msgstr ""
 
-#: ../wxui/query_sources.py:302 ../wxui/query_sources.py:546
+#: ../wxui/query_sources.py:302 ../wxui/query_sources.py:562
 msgid "Latitude"
 msgstr ""
 
@@ -1338,7 +1334,7 @@ msgstr ""
 msgid "Length must be %i"
 msgstr ""
 
-#: ../wxui/query_sources.py:323
+#: ../wxui/query_sources.py:323 ../wxui/query_sources.py:523
 msgid "Limit Bands"
 msgstr ""
 
@@ -1346,7 +1342,11 @@ msgstr ""
 msgid "Limit Modes"
 msgstr ""
 
-#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:552
+#: ../wxui/query_sources.py:537
+msgid "Limit Status"
+msgstr ""
+
+#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:568
 msgid "Limit results to this distance (km) from coordinates"
 msgstr ""
 
@@ -1373,7 +1373,7 @@ msgstr ""
 msgid "Loading settings"
 msgstr ""
 
-#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:547
+#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:563
 msgid "Longitude"
 msgstr ""
 
@@ -1395,7 +1395,7 @@ msgstr ""
 msgid "Memory {num} not in bank {bank}"
 msgstr ""
 
-#: ../wxui/memedit.py:509
+#: ../wxui/query_sources.py:515 ../wxui/memedit.py:509
 #, fuzzy
 msgid "Mode"
 msgstr "制式"
@@ -1477,7 +1477,7 @@ msgstr ""
 msgid "Offset"
 msgstr "频差"
 
-#: ../wxui/query_sources.py:321
+#: ../wxui/query_sources.py:321 ../wxui/query_sources.py:521
 msgid "Only certain bands"
 msgstr ""
 
@@ -1524,16 +1524,16 @@ msgstr ""
 msgid "Open stock config directory"
 msgstr "打开库存配置 {name}"
 
-#: ../wxui/query_sources.py:299 ../wxui/query_sources.py:543
+#: ../wxui/query_sources.py:299 ../wxui/query_sources.py:559
 msgid "Optional: -122.0000"
 msgstr ""
 
-#: ../wxui/query_sources.py:308 ../wxui/query_sources.py:551
+#: ../wxui/query_sources.py:308 ../wxui/query_sources.py:567
 #, fuzzy
 msgid "Optional: 100"
 msgstr "选项"
 
-#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:537
+#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:553
 msgid "Optional: 45.0000"
 msgstr ""
 
@@ -1693,7 +1693,7 @@ msgid ""
 "and try again."
 msgstr ""
 
-#: ../wxui/query_sources.py:772
+#: ../wxui/query_sources.py:819
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 
@@ -1766,7 +1766,7 @@ msgstr "设置"
 msgid "Select Bandplan"
 msgstr "全选"
 
-#: ../wxui/query_sources.py:376
+#: ../wxui/query_sources.py:376 ../wxui/query_sources.py:588
 #, fuzzy
 msgid "Select Bands"
 msgstr "选择列"
@@ -2005,7 +2005,7 @@ msgstr "无法变更此型号电台"
 msgid "Unable to set %s on this memory"
 msgstr "无法变更此型号电台"
 
-#: ../wxui/query_sources.py:631
+#: ../wxui/query_sources.py:678
 msgid "United States"
 msgstr ""
 

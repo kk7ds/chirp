@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-04 11:04-0700\n"
+"POT-Creation-Date: 2023-07-09 17:54-0700\n"
 "PO-Revision-Date: 2023-07-05 10:40+0200\n"
 "Last-Translator: szporwolik\n"
 "Language-Team: Polish\n"
@@ -673,15 +673,11 @@ msgstr "Stosowanie ustawień"
 msgid "Available modules"
 msgstr "Dostępne moduły"
 
-#: ../wxui/query_sources.py:520
-msgid "Band"
-msgstr "Pasmo"
-
 #: ../wxui/main.py:1713
 msgid "Bandplan"
 msgstr "Bandplan"
 
-#: ../wxui/query_sources.py:376
+#: ../wxui/query_sources.py:376 ../wxui/query_sources.py:588
 msgid "Bands"
 msgstr "Pasma"
 
@@ -701,7 +697,7 @@ msgstr "Przeglądarka"
 msgid "Building Radio Browser"
 msgstr "Budowanie przeglądarki radiostacji"
 
-#: ../wxui/query_sources.py:632
+#: ../wxui/query_sources.py:679
 msgid "Canada"
 msgstr "Kanada"
 
@@ -817,7 +813,7 @@ msgid "Copy"
 msgstr "Kopiuj"
 
 #: ../wxui/query_sources.py:280 ../wxui/query_sources.py:458
-#: ../wxui/query_sources.py:512
+#: ../wxui/query_sources.py:547
 msgid "Country"
 msgstr "Kraj"
 
@@ -888,7 +884,7 @@ msgstr "Wyłącz raportowanie"
 msgid "Disabled"
 msgstr "Wyłączony"
 
-#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:554
+#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:570
 msgid "Distance"
 msgstr "Dystans"
 
@@ -985,7 +981,7 @@ msgstr "Eksportuj do pliku CSV"
 msgid "Extra"
 msgstr "Dodatkowa"
 
-#: ../wxui/query_sources.py:559
+#: ../wxui/query_sources.py:602
 msgid ""
 "FREE repeater database, which provide most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
@@ -1254,7 +1250,7 @@ msgid "Hide empty memories"
 msgstr "Ukrywaj puste pamięci"
 
 #: ../wxui/query_sources.py:294 ../wxui/query_sources.py:300
-#: ../wxui/query_sources.py:538 ../wxui/query_sources.py:544
+#: ../wxui/query_sources.py:554 ../wxui/query_sources.py:560
 msgid "If set, sort results by distance from these coordinates"
 msgstr "Jeśli ustawiono, sortuje wyniki po odległości od tych współrzędnych"
 
@@ -1325,7 +1321,7 @@ msgstr "Numer zgłoszenia:"
 msgid "LIVE"
 msgstr "Na żywo"
 
-#: ../wxui/query_sources.py:302 ../wxui/query_sources.py:546
+#: ../wxui/query_sources.py:302 ../wxui/query_sources.py:562
 msgid "Latitude"
 msgstr "Szerokość geograficzna"
 
@@ -1334,7 +1330,7 @@ msgstr "Szerokość geograficzna"
 msgid "Length must be %i"
 msgstr "Długość musi wynosić %i"
 
-#: ../wxui/query_sources.py:323
+#: ../wxui/query_sources.py:323 ../wxui/query_sources.py:523
 msgid "Limit Bands"
 msgstr "Ogranicz pasma"
 
@@ -1342,7 +1338,12 @@ msgstr "Ogranicz pasma"
 msgid "Limit Modes"
 msgstr "Ogranicz tryby"
 
-#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:552
+#: ../wxui/query_sources.py:537
+#, fuzzy
+msgid "Limit Status"
+msgstr "Ogranicz pasma"
+
+#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:568
 msgid "Limit results to this distance (km) from coordinates"
 msgstr "Ogranicz wyniki do odległości (km) od współrzędnych"
 
@@ -1374,7 +1375,7 @@ msgstr ""
 msgid "Loading settings"
 msgstr "Ładowanie ustawień"
 
-#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:547
+#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:563
 msgid "Longitude"
 msgstr "Długość geograficzna"
 
@@ -1396,7 +1397,7 @@ msgstr "Pamięć musi być w banku, aby można ją było edytować"
 msgid "Memory {num} not in bank {bank}"
 msgstr "Pamięć {num} nie jest w banku {bank}"
 
-#: ../wxui/memedit.py:509
+#: ../wxui/query_sources.py:515 ../wxui/memedit.py:509
 msgid "Mode"
 msgstr "Tryb"
 
@@ -1470,7 +1471,7 @@ msgstr "Numer"
 msgid "Offset"
 msgstr "Przesunięcie"
 
-#: ../wxui/query_sources.py:321
+#: ../wxui/query_sources.py:321 ../wxui/query_sources.py:521
 msgid "Only certain bands"
 msgstr "Tylko konkretne pasma"
 
@@ -1514,15 +1515,15 @@ msgstr "Otwórz w nowym oknie"
 msgid "Open stock config directory"
 msgstr "Otwórz katalog konfiguracji wstępnych"
 
-#: ../wxui/query_sources.py:299 ../wxui/query_sources.py:543
+#: ../wxui/query_sources.py:299 ../wxui/query_sources.py:559
 msgid "Optional: -122.0000"
 msgstr "Opcjonalnie: -122.0000"
 
-#: ../wxui/query_sources.py:308 ../wxui/query_sources.py:551
+#: ../wxui/query_sources.py:308 ../wxui/query_sources.py:567
 msgid "Optional: 100"
 msgstr "Opcjonalnie: 100"
 
-#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:537
+#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:553
 msgid "Optional: 45.0000"
 msgstr "Opcjonalnie: 45.0000"
 
@@ -1684,7 +1685,7 @@ msgstr ""
 "jest ona przeznaczona na amerykański rynek, a wybrano model na inne regiony. "
 "Należy wybrać właściwy model i spróbować ponownie."
 
-#: ../wxui/query_sources.py:772
+#: ../wxui/query_sources.py:819
 msgid "RadioReference Canada requires a login before you can query"
 msgstr "RadioReference Canada wymaga logowania przed wysłaniem zapytań"
 
@@ -1756,7 +1757,7 @@ msgstr "Zapisano ustawienia"
 msgid "Select Bandplan"
 msgstr "Wybierz bandplan"
 
-#: ../wxui/query_sources.py:376
+#: ../wxui/query_sources.py:376 ../wxui/query_sources.py:588
 msgid "Select Bands"
 msgstr "Wybierz pasma"
 
@@ -1998,7 +1999,7 @@ msgstr "Nie można odkryć %s na tym systemie"
 msgid "Unable to set %s on this memory"
 msgstr "Nie można ustawić %s na tej pamięci"
 
-#: ../wxui/query_sources.py:631
+#: ../wxui/query_sources.py:678
 msgid "United States"
 msgstr "Stany Zjednoczone"
 
@@ -2126,6 +2127,9 @@ msgstr "{bank} jest pełny"
 
 #~ msgid "Bad value for {col}: {val}"
 #~ msgstr "Zła wartość dla {col}: {val}"
+
+#~ msgid "Band"
+#~ msgstr "Pasmo"
 
 #~ msgid "Bank"
 #~ msgstr "Bank"

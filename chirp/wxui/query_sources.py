@@ -483,11 +483,12 @@ class PrzemiennikiQueryDialog(QuerySourceDialog):
     _section = 'przemienniki'
     _countries = sorted(
         ['at', 'bg', 'by', 'ch', 'cz', 'de', 'dk', 'es', 'fi',
-         'fr', 'hu', 'it', 'lt', 'lv', 'no', 'pl', 'ro', 'se',
-         'sk', 'ua', 'uk', 'si', 'nl', 'is', 'ru'])
+         'fr', 'hu', 'is', 'it', 'lt', 'lv', 'no', 'nl', 'pl',
+         'ro', 'ru', 'se', 'si', 'sk', 'ua', 'uk'])
     _bands = ['10m', '4m', '6m', '2m', '70cm',
               '23cm', '13cm', '3cm']
-    _modes = ['FM', 'DV']
+    _modes = ['FM', 'MOTOTRBO', 'DSTAR', 'C4FM', 'ECHOLINK',
+              'FMLINK', 'APCO25', 'ATV']
 
     def _add_grid(self, grid, label, widget):
         grid.Add(wx.StaticText(widget.GetParent(), label=label),
@@ -503,34 +504,49 @@ class PrzemiennikiQueryDialog(QuerySourceDialog):
         grid.AddGrowableCol(1)
         panel.SetSizer(grid)
 
-        self._country = wx.Choice(panel, choices=self._countries)
-        prev = CONF.get('country', self._section)
-        if prev and prev in self._countries:
-            self._country.SetStringSelection(prev)
-        else:
-            self._country.SetStringSelection(self._countries[0])
-        self._add_grid(grid, _('Country'), self._country)
-
-        self._band = wx.Choice(panel, choices=self._bands)
-        prev = CONF.get('band', self._section)
-        if prev and prev in self._bands:
-            self._band.SetStringSelection(prev)
-        else:
-            self._band.SetStringSelection(self._bands[0])
-        self._add_grid(grid, _('Band'), self._band)
-
-        # This may not be working or no longer supported?
+        # Mode
         self._mode = wx.Choice(panel, choices=self._modes)
         prev = CONF.get('mode', self._section)
-        # Force FM for now
-        prev = 'FM'
+
         if prev and prev in self._modes:
             self._mode.SetStringSelection(prev)
         else:
-            self._mode.SetStringSelection(self._bands[0])
-        # self._add_grid(grid, _('Mode'), self._mode)
-        self._mode.Hide()
+            self._mode.SetStringSelection(self._modes[0])
+        self._add_grid(grid, _('Mode'), self._mode)
 
+        # Band selection
+        if CONF.is_defined('band', self._section):
+            CONF.remove_option('band', self._section)
+
+        self._bandfilter = wx.CheckBox(panel, label=_('Only certain bands'))
+        self.Bind(wx.EVT_CHECKBOX, self._select_bands, self._bandfilter)
+        self._add_grid(grid, _('Limit Bands'), self._bandfilter)
+
+        # Only working
+        if CONF.is_defined('workingstatus', self._section):
+            self._limit_onlyworking = CONF.get_bool('workingstatus',
+                                                    self._section)
+        else:
+            self._limit_onlyworking = True
+        self._onlyworkingfilter = wx.CheckBox(panel,
+                                              label=('Only working repeaters'))
+        self._onlyworkingfilter.SetValue(self._limit_onlyworking)
+        CONF.set_bool('workingstatus', self._limit_onlyworking, self._section)
+        self.Bind(wx.EVT_CHECKBOX, self._select_workingstatus,
+                  self._onlyworkingfilter)
+        self._add_grid(grid, _('Limit Status'), self._onlyworkingfilter)
+
+        # Country
+        self._country = wx.Choice(panel, choices=self._countries)
+        prev = CONF.get('country', self._section)
+
+        if prev and prev in self._countries:
+            self._country.SetStringSelection(prev)
+        else:
+            self._country.SetStringSelection('pl')
+        self._add_grid(grid, _('Country'), self._country)
+
+        # Coordinates
         self._lat = wx.TextCtrl(panel,
                                 value=CONF.get('lat', 'repeaterbook') or '',
                                 validator=LatValidator())
@@ -555,6 +571,33 @@ class PrzemiennikiQueryDialog(QuerySourceDialog):
 
         return vbox
 
+    def _select_workingstatus(self, event):
+        if not self._onlyworkingfilter.IsChecked():
+            self._limit_onlyworking = False
+        else:
+            self._limit_onlyworking = True
+        CONF.set_bool('workingstatus', self._limit_onlyworking, self._section)
+        return
+
+    def _select_bands(self, event):
+        if not self._bandfilter.IsChecked():
+            CONF.set('band', '', self._section)
+            return
+
+        band_names = [x for x in self._bands]
+        d = wx.MultiChoiceDialog(self, _('Select Bands'), _('Bands'),
+                                 choices=band_names)
+
+        d.SetSelections([i for i, band in enumerate(self._bands)
+                         if band in ['2m', '70cm']])
+        r = d.ShowModal()
+        if r == wx.ID_CANCEL or not d.GetSelections():
+            self._bandfilter.SetValue(False)
+        else:
+            CONF.set('band', ','.join(self._bands[i]
+                     for i in d.GetSelections()),
+                     self._section)
+
     def get_info(self):
         return _('FREE repeater database, which provide most up-to-date\n'
                  'information about repeaters in Europe. No account is\n'
@@ -565,7 +608,6 @@ class PrzemiennikiQueryDialog(QuerySourceDialog):
 
     def do_query(self):
         CONF.set('country', self._country.GetStringSelection(), self._section)
-        CONF.set('band', self._band.GetStringSelection(), self._section)
         CONF.set('mode', self._mode.GetStringSelection(), self._section)
         CONF.set('lat', self._lat.GetValue(), 'repeaterbook')
         CONF.set('lon', self._lon.GetValue(), 'repeaterbook')
@@ -574,7 +616,7 @@ class PrzemiennikiQueryDialog(QuerySourceDialog):
         super().do_query()
 
     def get_params(self):
-        return {
+        params = {
             'country': CONF.get('country', self._section),
             'band': CONF.get('band', self._section),
             'mode': CONF.get('mode', self._section).lower(),
@@ -582,6 +624,11 @@ class PrzemiennikiQueryDialog(QuerySourceDialog):
             'longitude': CONF.get('lon', 'repeaterbook'),
             'range': CONF.get('dist', 'repeaterbook'),
         }
+
+        if CONF.get_bool('workingstatus', self._section):
+            params['onlyworking'] = 'Yes'
+
+        return params
 
 
 class RRQueryDialog(QuerySourceDialog):

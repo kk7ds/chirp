@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-04 11:04-0700\n"
+"POT-Creation-Date: 2023-07-09 17:54-0700\n"
 "PO-Revision-Date: 2023-03-11 18:37+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -1000,16 +1000,11 @@ msgstr "Ayarlar uygulanıyor"
 msgid "Available modules"
 msgstr "Mevcut modüller"
 
-#: ../wxui/query_sources.py:520
-#, fuzzy
-msgid "Band"
-msgstr "Bantlar"
-
 #: ../wxui/main.py:1713
 msgid "Bandplan"
 msgstr "Bant planı"
 
-#: ../wxui/query_sources.py:376
+#: ../wxui/query_sources.py:376 ../wxui/query_sources.py:588
 msgid "Bands"
 msgstr "Bantlar"
 
@@ -1029,7 +1024,7 @@ msgstr "Tarayıcı"
 msgid "Building Radio Browser"
 msgstr "Telsiz Tarayıcısı oluşturuluyor"
 
-#: ../wxui/query_sources.py:632
+#: ../wxui/query_sources.py:679
 msgid "Canada"
 msgstr "Kanada"
 
@@ -1152,7 +1147,7 @@ msgid "Copy"
 msgstr "Kopyala"
 
 #: ../wxui/query_sources.py:280 ../wxui/query_sources.py:458
-#: ../wxui/query_sources.py:512
+#: ../wxui/query_sources.py:547
 msgid "Country"
 msgstr "Ülke"
 
@@ -1224,7 +1219,7 @@ msgstr "Raporlamayı devre dışı bırak"
 msgid "Disabled"
 msgstr "devre dışı bırakıldı"
 
-#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:554
+#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:570
 msgid "Distance"
 msgstr "Mesafe"
 
@@ -1322,7 +1317,7 @@ msgstr "CSV'ye aktar"
 msgid "Extra"
 msgstr "Ekstra"
 
-#: ../wxui/query_sources.py:559
+#: ../wxui/query_sources.py:602
 msgid ""
 "FREE repeater database, which provide most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
@@ -1679,7 +1674,7 @@ msgid "Hide empty memories"
 msgstr "Kayıtları sırala"
 
 #: ../wxui/query_sources.py:294 ../wxui/query_sources.py:300
-#: ../wxui/query_sources.py:538 ../wxui/query_sources.py:544
+#: ../wxui/query_sources.py:554 ../wxui/query_sources.py:560
 msgid "If set, sort results by distance from these coordinates"
 msgstr "Ayarlanırsa, sonuçları bu koordinatlardan uzaklığa göre sırala"
 
@@ -1752,7 +1747,7 @@ msgstr "Kayıt numarası:"
 msgid "LIVE"
 msgstr "CANLI"
 
-#: ../wxui/query_sources.py:302 ../wxui/query_sources.py:546
+#: ../wxui/query_sources.py:302 ../wxui/query_sources.py:562
 msgid "Latitude"
 msgstr "Enlem"
 
@@ -1761,7 +1756,7 @@ msgstr "Enlem"
 msgid "Length must be %i"
 msgstr "Uzunluk %i olmalıdır"
 
-#: ../wxui/query_sources.py:323
+#: ../wxui/query_sources.py:323 ../wxui/query_sources.py:523
 msgid "Limit Bands"
 msgstr "Bantları Sınırla"
 
@@ -1769,7 +1764,12 @@ msgstr "Bantları Sınırla"
 msgid "Limit Modes"
 msgstr "Modları Sınırla"
 
-#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:552
+#: ../wxui/query_sources.py:537
+#, fuzzy
+msgid "Limit Status"
+msgstr "Bantları Sınırla"
+
+#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:568
 msgid "Limit results to this distance (km) from coordinates"
 msgstr "Sonuçları koordinatlardan bu mesafeye (km) sınırla"
 
@@ -1802,7 +1802,7 @@ msgstr ""
 msgid "Loading settings"
 msgstr "Ayarlar yükleniyor"
 
-#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:547
+#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:563
 msgid "Longitude"
 msgstr "Boylam"
 
@@ -1824,7 +1824,7 @@ msgstr "Hafızanın düzenlenebilmesi için bir bankada olması gerekir"
 msgid "Memory {num} not in bank {bank}"
 msgstr "{num} kaydı {bank} bankasında değil"
 
-#: ../wxui/memedit.py:509
+#: ../wxui/query_sources.py:515 ../wxui/memedit.py:509
 msgid "Mode"
 msgstr "Mod"
 
@@ -1901,7 +1901,7 @@ msgstr "Numara"
 msgid "Offset"
 msgstr "Ofset"
 
-#: ../wxui/query_sources.py:321
+#: ../wxui/query_sources.py:321 ../wxui/query_sources.py:521
 msgid "Only certain bands"
 msgstr "Sadece belirli gruplar"
 
@@ -1946,15 +1946,15 @@ msgstr ""
 msgid "Open stock config directory"
 msgstr "Hazır Yapılandırma Aç"
 
-#: ../wxui/query_sources.py:299 ../wxui/query_sources.py:543
+#: ../wxui/query_sources.py:299 ../wxui/query_sources.py:559
 msgid "Optional: -122.0000"
 msgstr "İsteğe bağlı: -122.0000"
 
-#: ../wxui/query_sources.py:308 ../wxui/query_sources.py:551
+#: ../wxui/query_sources.py:308 ../wxui/query_sources.py:567
 msgid "Optional: 100"
 msgstr "İsteğe bağlı: 100"
 
-#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:537
+#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:553
 msgid "Optional: 45.0000"
 msgstr "İsteğe bağlı: 45.0000"
 
@@ -2139,7 +2139,7 @@ msgstr ""
 "dışındaysa gerçekleşir ama telsiz bir ABD telsizi. Lütfen doğru modeli seçin "
 "ve tekrar deneyin."
 
-#: ../wxui/query_sources.py:772
+#: ../wxui/query_sources.py:819
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 "RadioReference Kanada, sorgulayabilmeniz için önce oturum açmanız gerekir"
@@ -2214,7 +2214,7 @@ msgstr "Kaydedilmiş ayarlar"
 msgid "Select Bandplan"
 msgstr "Bant Planı Seç"
 
-#: ../wxui/query_sources.py:376
+#: ../wxui/query_sources.py:376 ../wxui/query_sources.py:588
 msgid "Select Bands"
 msgstr "Bantları Seç"
 
@@ -2474,7 +2474,7 @@ msgstr "%s bu sistemde gösterilemiyor"
 msgid "Unable to set %s on this memory"
 msgstr "%s bu sistemde gösterilemiyor"
 
-#: ../wxui/query_sources.py:631
+#: ../wxui/query_sources.py:678
 msgid "United States"
 msgstr "Amerika Birleşik Devletleri"
 
@@ -2592,6 +2592,10 @@ msgstr "{bank} dolu"
 
 #~ msgid "Automatic Repeater Offset"
 #~ msgstr "Otomatik Tekrarlama Ofseti"
+
+#, fuzzy
+#~ msgid "Band"
+#~ msgstr "Bantlar"
 
 #~ msgid "CHIRP Files"
 #~ msgstr "CHIRP Dosyaları"
