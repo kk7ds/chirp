@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-02 14:20-0700\n"
-"PO-Revision-Date: 2023-06-29 01:01-0400\n"
+"PO-Revision-Date: 2023-07-04 02:02-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1066,6 +1066,8 @@ msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
 msgstr ""
+"Cambiar este ajuste requiere actualizar los ajustes desde la imagen, lo cual "
+"ocurrirá ahora."
 
 #: ../wxui/memedit.py:1173
 #, python-format
@@ -2155,9 +2157,8 @@ msgstr ""
 "consultar"
 
 #: ../wxui/common.py:422
-#, fuzzy
 msgid "Refresh required"
-msgstr "Reinicio requerido"
+msgstr "Actualización requerida"
 
 #: ../wxui/common.py:310
 #, python-format
@@ -2419,6 +2420,10 @@ msgid ""
 "restrictions and may lead to undefined or unregulated behavior. Use at your "
 "own risk!"
 msgstr ""
+"Esto sólo debe habilitarse si utilizas un firmware modificado que soporte "
+"una cobertura de frecuencias más amplia. Habilitar esto hará que CHIRP no "
+"aplique las restricciones del OEM y puede conducir a un comportamiento "
+"indefinido o no regulado. ¡Úsalo bajo tu propio riesgo!"
 
 #: ../wxui/developer.py:484
 msgid "This will load a module from a website issue"
@@ -2548,7 +2553,7 @@ msgstr "Ver"
 
 #: ../wxui/common.py:406
 msgid "WARNING!"
-msgstr ""
+msgstr "¡ADVERTENCIA!"
 
 #: ../wxui/memedit.py:1324
 msgid "Warning"
