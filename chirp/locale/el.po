@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-04 11:04-0700\n"
+"POT-Creation-Date: 2023-07-09 17:54-0700\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -663,16 +663,11 @@ msgstr "Εφαρμογή ρυθμίσεων"
 msgid "Available modules"
 msgstr ""
 
-#: ../wxui/query_sources.py:520
-#, fuzzy
-msgid "Band"
-msgstr "Μπάντες"
-
 #: ../wxui/main.py:1713
 msgid "Bandplan"
 msgstr "Χάρτης συχνοτήτων"
 
-#: ../wxui/query_sources.py:376
+#: ../wxui/query_sources.py:376 ../wxui/query_sources.py:588
 msgid "Bands"
 msgstr "Μπάντες"
 
@@ -692,7 +687,7 @@ msgstr "Περιηγητής"
 msgid "Building Radio Browser"
 msgstr "Δημιουργία Περιηγητή Πομποδεκτών"
 
-#: ../wxui/query_sources.py:632
+#: ../wxui/query_sources.py:679
 msgid "Canada"
 msgstr "Καναδάς"
 
@@ -806,7 +801,7 @@ msgid "Copy"
 msgstr ""
 
 #: ../wxui/query_sources.py:280 ../wxui/query_sources.py:458
-#: ../wxui/query_sources.py:512
+#: ../wxui/query_sources.py:547
 msgid "Country"
 msgstr "Χώρα"
 
@@ -878,7 +873,7 @@ msgstr "Αναφορές απενεργοποιημένες"
 msgid "Disabled"
 msgstr ""
 
-#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:554
+#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:570
 msgid "Distance"
 msgstr "Απόσταση"
 
@@ -976,7 +971,7 @@ msgstr "Εξαγωγή σε αρχείο μορφής .CSV"
 msgid "Extra"
 msgstr "Περισσότερα"
 
-#: ../wxui/query_sources.py:559
+#: ../wxui/query_sources.py:602
 msgid ""
 "FREE repeater database, which provide most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
@@ -1244,7 +1239,7 @@ msgid "Hide empty memories"
 msgstr "Αντικατάσταση μνημών;"
 
 #: ../wxui/query_sources.py:294 ../wxui/query_sources.py:300
-#: ../wxui/query_sources.py:538 ../wxui/query_sources.py:544
+#: ../wxui/query_sources.py:554 ../wxui/query_sources.py:560
 msgid "If set, sort results by distance from these coordinates"
 msgstr ""
 
@@ -1317,7 +1312,7 @@ msgstr ""
 msgid "LIVE"
 msgstr "LIVE"
 
-#: ../wxui/query_sources.py:302 ../wxui/query_sources.py:546
+#: ../wxui/query_sources.py:302 ../wxui/query_sources.py:562
 msgid "Latitude"
 msgstr "Γεωγραφικό πλάτος"
 
@@ -1326,7 +1321,7 @@ msgstr "Γεωγραφικό πλάτος"
 msgid "Length must be %i"
 msgstr "Το μήκος πρέπει να είναι %i"
 
-#: ../wxui/query_sources.py:323
+#: ../wxui/query_sources.py:323 ../wxui/query_sources.py:523
 msgid "Limit Bands"
 msgstr "Περιορισμός Μπαντών"
 
@@ -1334,7 +1329,12 @@ msgstr "Περιορισμός Μπαντών"
 msgid "Limit Modes"
 msgstr ""
 
-#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:552
+#: ../wxui/query_sources.py:537
+#, fuzzy
+msgid "Limit Status"
+msgstr "Περιορισμός Μπαντών"
+
+#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:568
 msgid "Limit results to this distance (km) from coordinates"
 msgstr ""
 
@@ -1361,7 +1361,7 @@ msgstr ""
 msgid "Loading settings"
 msgstr "Φόρτωση ρυθμίσεων"
 
-#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:547
+#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:563
 msgid "Longitude"
 msgstr "Γεωγραφικό μήκος"
 
@@ -1383,7 +1383,7 @@ msgstr "Η μνήμη πρέπει να βρίσκεται σε ομάδα γι�
 msgid "Memory {num} not in bank {bank}"
 msgstr "Η μνήμη {num} δεν βρίσκεται στην ομάδα μνημών {bank}"
 
-#: ../wxui/memedit.py:509
+#: ../wxui/query_sources.py:515 ../wxui/memedit.py:509
 #, fuzzy
 msgid "Mode"
 msgstr "Λειτουργία"
@@ -1460,7 +1460,7 @@ msgstr "Αριθμός"
 msgid "Offset"
 msgstr ""
 
-#: ../wxui/query_sources.py:321
+#: ../wxui/query_sources.py:321 ../wxui/query_sources.py:521
 msgid "Only certain bands"
 msgstr "Μόνο ορισμένες μπάντες"
 
@@ -1505,15 +1505,15 @@ msgstr ""
 msgid "Open stock config directory"
 msgstr "Άνοιγμα προεπιλεγμένων ρυθμίσεων"
 
-#: ../wxui/query_sources.py:299 ../wxui/query_sources.py:543
+#: ../wxui/query_sources.py:299 ../wxui/query_sources.py:559
 msgid "Optional: -122.0000"
 msgstr "Προαιρετικό: -122.0000"
 
-#: ../wxui/query_sources.py:308 ../wxui/query_sources.py:551
+#: ../wxui/query_sources.py:308 ../wxui/query_sources.py:567
 msgid "Optional: 100"
 msgstr "Προαιρετικό: 100"
 
-#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:537
+#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:553
 msgid "Optional: 45.0000"
 msgstr "Προαιρετικό: 45.0000"
 
@@ -1670,7 +1670,7 @@ msgid ""
 "and try again."
 msgstr ""
 
-#: ../wxui/query_sources.py:772
+#: ../wxui/query_sources.py:819
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 
@@ -1741,7 +1741,7 @@ msgstr "Ρυθμίσεις αποθηκεύθηκαν"
 msgid "Select Bandplan"
 msgstr "Επιλογή χάρτη συχνοτήτων"
 
-#: ../wxui/query_sources.py:376
+#: ../wxui/query_sources.py:376 ../wxui/query_sources.py:588
 msgid "Select Bands"
 msgstr "Επιλογή Μπαντών"
 
@@ -1981,7 +1981,7 @@ msgstr ""
 msgid "Unable to set %s on this memory"
 msgstr "Πατήστε enter για καταχώρηση στη μνήμη"
 
-#: ../wxui/query_sources.py:631
+#: ../wxui/query_sources.py:678
 msgid "United States"
 msgstr "Ηνωμένες Πολιτείες"
 
@@ -2091,6 +2091,10 @@ msgstr ""
 #, python-brace-format
 msgid "{bank} is full"
 msgstr "H {bank} είναι γεμάτη"
+
+#, fuzzy
+#~ msgid "Band"
+#~ msgstr "Μπάντες"
 
 #~ msgid "Delete and shift all up"
 #~ msgstr "Διαγραφή και μετακίνηση όλων προς τα επάνω"
