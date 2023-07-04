@@ -96,7 +96,7 @@ def _h777_enter_programming_mode(radio):
     try:
         serial.write(b"\x02")
         time.sleep(0.1)
-        serial.write(b"PROGRAM")
+        serial.write(radio.PROGRAM_CMD)
         ack = serial.read(1)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -272,9 +272,12 @@ class H777Radio(chirp_common.CloneModeRadio):
     # MODEL = "H-777"
     VENDOR = "Baofeng"
     MODEL = "BF-888"
+    PROGRAM_CMD = b'PROGRAM'
     BAUD_RATE = 9600
     NEEDS_COMPAT_SERIAL = False
 
+    VALID_BANDS = (400000000, 470000000)
+    MAX_VOXLEVEL = 5
     ALIASES = [ArcshellAR5, ArcshellAR6, GV8SAlias, GV9SAlias, A8SAlias,
                TenwayTW325Alias, RetevisH777Alias]
     SIDEKEYFUNCTION_LIST = ["Off", "Monitor", "Transmit Power", "Alarm"]
@@ -298,6 +301,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     _has_fm = True
     _has_sidekey = True
     _has_scanmodes = True
+    _has_scramble = True
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -322,7 +326,7 @@ class H777Radio(chirp_common.CloneModeRadio):
         rf.has_bank = False
         rf.has_name = False
         rf.memory_bounds = (1, 16)
-        rf.valid_bands = [(400000000, 470000000)]
+        rf.valid_bands = [self.VALID_BANDS]
         rf.valid_power_levels = H777_POWER_LEVELS
         rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0,
                                  50.0, 100.0]
@@ -407,9 +411,10 @@ class H777Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("bcl", "Busy Channel Lockout",
                           RadioSettingValueBoolean(not _mem.bcl))
         mem.extra.append(rs)
-        rs = RadioSetting("beatshift", "Beat Shift(scramble)",
-                          RadioSettingValueBoolean(not _mem.beatshift))
-        mem.extra.append(rs)
+        if self._has_scramble:
+            rs = RadioSetting("beatshift", "Beat Shift(scramble)",
+                              RadioSettingValueBoolean(not _mem.beatshift))
+            mem.extra.append(rs)
 
         return mem
 
@@ -490,7 +495,7 @@ class H777Radio(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("voxlevel", "VOX level",
                           RadioSettingValueInteger(
-                              1, 5, _settings.voxlevel + 1))
+                              1, self.MAX_VOXLEVEL, _settings.voxlevel + 1))
         basic.append(rs)
 
         rs = RadioSetting("voxinhibitonrx", "Inhibit VOX on receive",
@@ -660,6 +665,39 @@ class BFM4Radio(H777Radio):
     MODEL = "BF-M4"
     ALIASES = []
     _has_fm = False
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
+
+
+@directory.register
+class BF1901Radio(H777Radio):
+    VENDOR = "Baofeng"
+    MODEL = "BF-1901"
+    PROGRAM_CMD = b'PWPG970'
+    ALIASES = []
+
+    VALID_BANDS = (400000000, 520000000)
+    MAX_VOXLEVEL = 9
+
+    _has_fm = True
+    _has_sidekey = False
+    _has_scanmodes = True
+    _has_scramble = False
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
+
+
+@directory.register
+class BF1904Radio(BF1901Radio):
+    VENDOR = "Baofeng"
+    MODEL = "BF-1904"
+    ALIASES = []
 
     @classmethod
     def match_model(cls, filedata, filename):
