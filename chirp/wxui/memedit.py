@@ -569,6 +569,10 @@ class ChirpMemoryDropTarget(wx.DropTarget):
         self.data.Add(wx.CustomDataObject(common.CHIRP_DATA_MEMORY))
         self.SetDataObject(self.data)
 
+    def parse_data(self):
+        data = self.data.GetObject(common.CHIRP_DATA_MEMORY)
+        return pickle.loads(data.GetData().tobytes())
+
     def OnData(self, x, y, defResult):
         if not self.GetData():
             return wx.DragNone
@@ -578,8 +582,7 @@ class ChirpMemoryDropTarget(wx.DropTarget):
         if row < 0:
             return wx.DragCancel
         LOG.debug('Memory dropped on row %s,%s' % (row, cell))
-        data = self.data.GetObject(common.CHIRP_DATA_MEMORY)
-        payload = pickle.loads(data.GetData().tobytes())
+        payload = self.parse_data()
         original_locs = [m.number for m in payload['mems']]
         source = self._memedit.FindWindowById(payload.pop('source'))
         if not self._memedit._cb_paste_memories(payload, row=row):
@@ -593,11 +596,20 @@ class ChirpMemoryDropTarget(wx.DropTarget):
         return defResult
 
     def OnDragOver(self, x, y, defResult):
+        if self.GetData():
+            payload = self.parse_data()
+            rows = len(payload['mems'])
+        else:
+            rows = 1
+
         x, y = self._memedit._grid.CalcUnscrolledPosition(x, y)
         y -= self._memedit._grid.GetColLabelSize()
         row, cell = self._memedit._grid.XYToCell(x, y)
+        max_row = self._memedit._grid.GetNumberRows()
         if row >= 0:
-            self._memedit._grid.SelectRow(row)
+            self._memedit._grid.ClearSelection()
+            for i in range(row, min(max_row, row + rows)):
+                self._memedit._grid.SelectRow(i, addToSelected=True)
         return defResult
 
     def OnDrop(self, x, y):
@@ -659,28 +671,67 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._grid.Bind(wx.grid.EVT_GRID_CELL_BEGIN_DRAG, self._memory_drag)
         row_labels = self._grid.GetGridRowLabelWindow()
         row_labels.Bind(wx.EVT_LEFT_DOWN, self._row_click)
+        row_labels.Bind(wx.EVT_LEFT_UP, self._row_click)
         row_labels.Bind(wx.EVT_MOTION, self._rowheader_mouseover)
+        self._dragging_rows = None
 
         self._dc = wx.ScreenDC()
         self.set_cell_attrs()
 
     def _row_click(self, event):
-        if event.AltDown():
-            return self._memory_drag(event)
+        # In order to override the drag-to-multi-select behavior of the base
+        # grid, we need to basically reimplement what happens when a user
+        # clicks on a row header. Shift for block select, Ctrl/Cmd for add-
+        # to-selection, and then drag to actually copy/move memories.
+        if sys.platform == 'darwin':
+            multi = event.CmdDown()
         else:
-            event.Skip()
+            multi = event.ControlDown()
+        cur_selected = self._grid.GetSelectedRows()
+        x, y = self._grid.CalcUnscrolledPosition(event.GetX(), event.GetY())
+        row, _cell = self._grid.XYToCell(x, y)
+        if event.LeftDown():
+            # Record where we clicked in case we start to drag, but only if
+            # they started that drag from one of the selected memories.
+            self._dragging_rows = (row, event.GetX(), event.GetY())
+        elif self._dragging_rows is not None:
+            # Never dragged, so skip to get regular behavior
+            self._dragging_rows = None
+            try:
+                first_row = cur_selected[0]
+            except IndexError:
+                first_row = 0
+            if event.ShiftDown():
+                # Find the block the user wants and select all of it
+                start = min(row, first_row)
+                end = max(row, first_row)
+                self._grid.SelectBlock(start, 0, end, 0)
+            elif multi and row in cur_selected:
+                # The row is currently selected and we were clicked with the
+                # multi-select key held, so we need to select everything *but*
+                # the clicked row.
+                cur_selected.remove(row)
+                self._grid.ClearSelection()
+                for row in cur_selected:
+                    self._grid.SelectRow(row, addToSelected=True)
+            else:
+                # They clicked on a row, add to selection if the multi-select
+                # key is held, otherwise select only this row.
+                self._grid.SelectRow(row, addToSelected=multi)
+        else:
+            # Unclick but we started a drag
+            self._dragging_rows = None
 
     def _rowheader_mouseover(self, event):
-        event.Skip()
-        if len(self.get_selected_rows_safe()) <= 1:
-            return
-        self._grid.YToRow(event.GetY())
-        if sys.platform == 'darwin':
-            key = 'option'
-        else:
-            key = 'alt'
-        event.GetEventObject().SetToolTip(
-            _('Hold %(key)s to drag multiple memories') % {'key': key})
+        if self._dragging_rows is not None:
+            row, x, y = self._dragging_rows
+            if row not in self._grid.GetSelectedRows():
+                # Drag started from a non-selected cell, so ignore
+                return
+            if abs(event.GetX() - x) > 10 or abs(event.GetY() - y) > 10:
+                # Enough motion to consider this a drag motion
+                self._dragging_rows = None
+                return self._memory_drag(event)
 
     def _memory_drag(self, event):
         data = self.cb_copy_getdata()
