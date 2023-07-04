@@ -837,6 +837,11 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_query_dm, query_dm_item)
         source_menu.Append(query_dm_item)
 
+        query_prz_item = wx.MenuItem(source_menu, wx.NewId(),
+                                     'przemienniki.net')
+        self.Bind(wx.EVT_MENU, self._menu_query_prz, query_prz_item)
+        source_menu.Append(query_prz_item)
+
         radio_menu.Append(wx.MenuItem(radio_menu, wx.ID_SEPARATOR))
 
         auto_edits = wx.MenuItem(radio_menu, wx.NewId(),
@@ -1735,6 +1740,9 @@ class ChirpMain(wx.Frame):
 
     def _menu_query_dm(self, event):
         self._do_network_query(query_sources.DMRMARCQueryDialog)
+
+    def _menu_query_prz(self, event):
+        self._do_network_query(query_sources.PrzemiennikiQueryDialog)
 
 
 def display_update_notice(version):

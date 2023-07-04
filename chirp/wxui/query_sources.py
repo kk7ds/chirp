@@ -27,6 +27,7 @@ from chirp.sources import base
 from chirp.sources import dmrmarc
 from chirp.sources import radioreference
 from chirp.sources import repeaterbook
+from chirp.sources import przemienniki
 from chirp.wxui import common
 from chirp.wxui import config
 
@@ -475,6 +476,112 @@ class DMRMARCQueryDialog(QuerySourceDialog):
         return {'city': CONF.get('city', 'dmrmarc'),
                 'state': CONF.get('state', 'dmrmarc'),
                 'country': CONF.get('country', 'dmrmarc')}
+
+
+class PrzemiennikiQueryDialog(QuerySourceDialog):
+    NAME = 'przemienniki.net'
+    _section = 'przemienniki'
+    _countries = sorted(
+        ['at', 'bg', 'by', 'ch', 'cz', 'de', 'dk', 'es', 'fi',
+         'fr', 'hu', 'it', 'lt', 'lv', 'no', 'pl', 'ro', 'se',
+         'sk', 'ua', 'uk', 'si', 'nl', 'is', 'ru'])
+    _bands = ['10m', '4m', '6m', '2m', '70cm',
+              '23cm', '13cm', '3cm']
+    _modes = ['FM', 'DV']
+
+    def _add_grid(self, grid, label, widget):
+        grid.Add(wx.StaticText(widget.GetParent(), label=label),
+                 border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
+        grid.Add(widget, 1, border=20, flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
+
+    def build(self):
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(vbox)
+        panel = wx.Panel(self)
+        vbox.Add(panel, 1, flag=wx.EXPAND | wx.ALL, border=20)
+        grid = wx.FlexGridSizer(2, 5, 0)
+        grid.AddGrowableCol(1)
+        panel.SetSizer(grid)
+
+        self._country = wx.Choice(panel, choices=self._countries)
+        prev = CONF.get('country', self._section)
+        if prev and prev in self._countries:
+            self._country.SetStringSelection(prev)
+        else:
+            self._country.SetStringSelection(self._countries[0])
+        self._add_grid(grid, _('Country'), self._country)
+
+        self._band = wx.Choice(panel, choices=self._bands)
+        prev = CONF.get('band', self._section)
+        if prev and prev in self._bands:
+            self._band.SetStringSelection(prev)
+        else:
+            self._band.SetStringSelection(self._bands[0])
+        self._add_grid(grid, _('Band'), self._band)
+
+        # This may not be working or no longer supported?
+        self._mode = wx.Choice(panel, choices=self._modes)
+        prev = CONF.get('mode', self._section)
+        # Force FM for now
+        prev = 'FM'
+        if prev and prev in self._modes:
+            self._mode.SetStringSelection(prev)
+        else:
+            self._mode.SetStringSelection(self._bands[0])
+        # self._add_grid(grid, _('Mode'), self._mode)
+        self._mode.Hide()
+
+        self._lat = wx.TextCtrl(panel,
+                                value=CONF.get('lat', 'repeaterbook') or '',
+                                validator=LatValidator())
+        self._lat.SetHint(_('Optional: 45.0000'))
+        self._lat.SetToolTip(_('If set, sort results by distance from '
+                               'these coordinates'))
+        self._lon = wx.TextCtrl(panel,
+                                value=CONF.get('lon', 'repeaterbook') or '',
+                                validator=LonValidator())
+        self._lon.SetHint(_('Optional: -122.0000'))
+        self._lon.SetToolTip(_('If set, sort results by distance from '
+                               'these coordinates'))
+        self._add_grid(grid, _('Latitude'), self._lat)
+        self._add_grid(grid, _('Longitude'), self._lon)
+        self._dist = wx.TextCtrl(panel,
+                                 value=CONF.get('dist', 'repeaterbook') or '',
+                                 validator=DistValidator())
+        self._dist.SetHint(_('Optional: 100'))
+        self._dist.SetToolTip(_('Limit results to this distance (km) from '
+                                'coordinates'))
+        self._add_grid(grid, _('Distance'), self._dist)
+
+        return vbox
+
+    def get_info(self):
+        return _('FREE repeater database, which provide most up-to-date\n'
+                 'information about repeaters in Europe. No account is\n'
+                 'required.')
+
+    def get_link(self):
+        return 'https://przemienniki.net'
+
+    def do_query(self):
+        CONF.set('country', self._country.GetStringSelection(), self._section)
+        CONF.set('band', self._band.GetStringSelection(), self._section)
+        CONF.set('mode', self._mode.GetStringSelection(), self._section)
+        CONF.set('lat', self._lat.GetValue(), 'repeaterbook')
+        CONF.set('lon', self._lon.GetValue(), 'repeaterbook')
+        CONF.set('dist', self._dist.GetValue(), 'repeaterbook')
+        self.result_radio = przemienniki.Przemienniki()
+        super().do_query()
+
+    def get_params(self):
+        return {
+            'country': CONF.get('country', self._section),
+            'band': CONF.get('band', self._section),
+            'mode': CONF.get('mode', self._section).lower(),
+            'latitude': CONF.get('lat', 'repeaterbook'),
+            'longitude': CONF.get('lon', 'repeaterbook'),
+            'range': CONF.get('dist', 'repeaterbook'),
+        }
 
 
 class RRQueryDialog(QuerySourceDialog):
