@@ -57,6 +57,9 @@ struct {
     u8 alarm;
     u8 fmradio;
 } settings;
+"""
+
+H777_SETTINGS2 = """
 #seekto 0x03C0;
 struct {
     u8 unused:6,
@@ -71,6 +74,19 @@ struct {
 } settings2;
 """
 
+BF1900_SETTINGS2 = """
+#seekto 0x03C0;
+struct {
+    u8 unused:6,
+       batterysaver:1,
+       beep:1;
+    u8 squelchlevel;
+    u8 scanmode;
+    u8 timeouttimer;
+    u8 unused2[4];
+} settings2;
+"""
+
 CMD_ACK = b"\x06"
 BLOCK_SIZE = 0x08
 UPLOAD_BLOCKS = [list(range(0x0000, 0x0110, 8)),
@@ -82,7 +98,6 @@ TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
                      "120 seconds", "150 seconds", "180 seconds",
                      "210 seconds", "240 seconds", "270 seconds",
                      "300 seconds"]
-SCANMODE_LIST = ["Carrier", "Time"]
 
 
 def _h777_enter_programming_mode(radio):
@@ -281,6 +296,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     ALIASES = [ArcshellAR5, ArcshellAR6, GV8SAlias, GV9SAlias, A8SAlias,
                TenwayTW325Alias, RetevisH777Alias]
     SIDEKEYFUNCTION_LIST = ["Off", "Monitor", "Transmit Power", "Alarm"]
+    SCANMODE_LIST = ["Carrier", "Time"]
 
     # This code currently requires that ranges start at 0x0000
     # and are continuous. In the original program 0x0388 and 0x03C8
@@ -334,7 +350,7 @@ class H777Radio(chirp_common.CloneModeRadio):
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT + H777_SETTINGS2, self._mmap)
 
     def sync_in(self):
         self._mmap = do_download(self)
@@ -484,8 +500,8 @@ class H777Radio(chirp_common.CloneModeRadio):
         if self._has_scanmodes:
             rs = RadioSetting("settings2.scanmode", "Scan mode",
                               RadioSettingValueList(
-                                  SCANMODE_LIST,
-                                  SCANMODE_LIST[
+                                  self.SCANMODE_LIST,
+                                  self.SCANMODE_LIST[
                                       self._memobj.settings2.scanmode]))
             basic.append(rs)
 
@@ -687,12 +703,16 @@ class BF1901Radio(H777Radio):
 
     VALID_BANDS = (400000000, 520000000)
     MAX_VOXLEVEL = 9
+    SCANMODE_LIST = ["Time", "Carrier", "Search"]
     ALARM_LIST = ["Local", "Remote"]
 
     _has_fm = True
     _has_sidekey = False
     _has_scanmodes = True
     _has_scramble = False
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT + BF1900_SETTINGS2, self._mmap)
 
     @classmethod
     def match_model(cls, filedata, filename):
