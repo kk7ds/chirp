@@ -77,9 +77,6 @@ UPLOAD_BLOCKS = [list(range(0x0000, 0x0110, 8)),
                  list(range(0x02b0, 0x02c0, 8)),
                  list(range(0x0380, 0x03e0, 8))]
 
-# TODO: Is it 1 watt?
-H777_POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
-                     chirp_common.PowerLevel("High", watts=5.00)]
 VOICE_LIST = ["English", "Chinese"]
 TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
                      "120 seconds", "150 seconds", "180 seconds",
@@ -276,6 +273,9 @@ class H777Radio(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600
     NEEDS_COMPAT_SERIAL = False
 
+    # TODO: Is it 1 watt?
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
+                    chirp_common.PowerLevel("High", watts=5.00)]
     VALID_BANDS = (400000000, 470000000)
     MAX_VOXLEVEL = 5
     ALIASES = [ArcshellAR5, ArcshellAR6, GV8SAlias, GV9SAlias, A8SAlias,
@@ -327,7 +327,7 @@ class H777Radio(chirp_common.CloneModeRadio):
         rf.has_name = False
         rf.memory_bounds = (1, 16)
         rf.valid_bands = [self.VALID_BANDS]
-        rf.valid_power_levels = H777_POWER_LEVELS
+        rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0,
                                  50.0, 100.0]
 
@@ -399,7 +399,7 @@ class H777Radio(chirp_common.CloneModeRadio):
             mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
 
         mem.mode = not _mem.narrow and "FM" or "NFM"
-        mem.power = H777_POWER_LEVELS[_mem.highpower]
+        mem.power = self.POWER_LEVELS[_mem.highpower]
 
         mem.skip = _mem.skip and "S" or ""
 
@@ -445,7 +445,7 @@ class H777Radio(chirp_common.CloneModeRadio):
         self._encode_tone(_mem.rxtone, *rxtone)
 
         _mem.narrow = 'N' in mem.mode
-        _mem.highpower = mem.power == H777_POWER_LEVELS[1]
+        _mem.highpower = mem.power == self.POWER_LEVELS[1]
         _mem.skip = mem.skip == "S"
 
         for setting in mem.extra:
@@ -510,8 +510,14 @@ class H777Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(_settings.highvolinhibittx))
         basic.append(rs)
 
-        rs = RadioSetting("alarm", "Alarm",
-                          RadioSettingValueBoolean(_settings.alarm))
+        if self.PROGRAM_CMD == b'PWPG970':  # Baofeng 1900 series
+            rs = RadioSetting("alarm", "Alarm",
+                              RadioSettingValueList(
+                                    self.ALARM_LIST,
+                                    self.ALARM_LIST[_settings.alarm]))
+        else:
+            rs = RadioSetting("alarm", "Alarm",
+                              RadioSettingValueBoolean(_settings.alarm))
         basic.append(rs)
 
         # TODO: This should probably be called “FM Broadcast Band Radio”
@@ -681,6 +687,7 @@ class BF1901Radio(H777Radio):
 
     VALID_BANDS = (400000000, 520000000)
     MAX_VOXLEVEL = 9
+    ALARM_LIST = ["Local", "Remote"]
 
     _has_fm = True
     _has_sidekey = False
@@ -698,6 +705,10 @@ class BF1904Radio(BF1901Radio):
     VENDOR = "Baofeng"
     MODEL = "BF-1904"
     ALIASES = []
+
+    # TODO: Is it 1 watt?
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
+                    chirp_common.PowerLevel("High", watts=10.00)]
 
     @classmethod
     def match_model(cls, filedata, filename):
