@@ -1,6 +1,0 @@
-Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,RxDtcsCode,CrossMode,Mode,TStep,Skip,Power,Comment,URCALL,RPT1CALL,RPT2CALL,DVCODE
-1,UHF CQ,433.450000,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,6.25,,5.0W,,,,,
-2,UHF CQ M,433.500000,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,6.25,,5.0W,,,,,
-3,VHF CQ,145.375000,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,6.25,,5.0W,,,,,
-4,VHF CQ M,145.500000,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,6.25,,5.0W,,,,,
-5,VHF SOTA,145.550000,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,6.25,,5.0W,,,,,
