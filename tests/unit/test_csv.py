@@ -52,8 +52,8 @@ class TestCSV(unittest.TestCase):
         self.assertEqual('NFM', mem.mode)
         self.assertEqual(12.5, mem.tuning_step)
 
-    def test_parse_modern(self):
-        with open(self.testfn, 'w', encoding='utf-8') as f:
+    def test_parse_modern(self, output_encoding='utf-8'):
+        with open(self.testfn, 'w', encoding=output_encoding) as f:
             f.write(CHIRP_CSV_MODERN)
         csv = generic_csv.CSVRadio(self.testfn)
         mem = csv.get_memory(1)
@@ -71,6 +71,9 @@ class TestCSV(unittest.TestCase):
         self.assertEqual(5.0, mem.tuning_step)
         self.assertEqual('5.0W', str(mem.power))
         self.assertIn('UHF calling', mem.comment)
+
+    def test_parse_modern_bom(self):
+        self.test_parse_modern(output_encoding='utf-8-sig')
 
     def test_parse_minimal(self):
         with open(self.testfn, 'w', encoding='utf-8') as f:

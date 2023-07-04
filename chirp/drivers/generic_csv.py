@@ -195,7 +195,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
 
         self._blank()
 
-        with open(self._filename, newline='', encoding='utf-8') as f:
+        with open(self._filename, newline='', encoding='utf-8-sig') as f:
             return self._load(f)
 
     def _load(self, f):
