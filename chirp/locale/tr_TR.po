@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-02 14:20-0700\n"
+"POT-Creation-Date: 2023-07-04 11:04-0700\n"
 "PO-Revision-Date: 2023-03-11 18:37+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -37,27 +37,27 @@ msgstr ""
 "       (telsiz LCD'sinde \"-WAIT-\" görünecektir).\n"
 "5. Son olarak aşağıdaki OK tuşuna basın.\n"
 
-#: ../wxui/query_sources.py:58
+#: ../wxui/query_sources.py:59
 #, python-format
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s, %(min)i ile %(max)i arasında olmalıdır"
 
-#: ../wxui/memedit.py:1487
+#: ../wxui/memedit.py:1538
 #, python-format
 msgid "%i Memories"
 msgstr "%i Kaydı"
 
-#: ../wxui/memedit.py:1494
+#: ../wxui/memedit.py:1545
 #, python-format
 msgid "%i Memories and shift all up"
 msgstr "%i Kaydı ve hepsini yukarı kaydır"
 
-#: ../wxui/memedit.py:1490
+#: ../wxui/memedit.py:1541
 #, python-format
 msgid "%i Memories and shift block up"
 msgstr "%i Kaydı ve bloğu yukarı kaydır"
 
-#: ../wxui/main.py:1347
+#: ../wxui/main.py:1352
 #, python-format
 msgid "%s has not been saved. Save before closing?"
 msgstr "%s kaydedilmedi. Kapanmadan önce kaydedilsin mi?"
@@ -66,7 +66,7 @@ msgstr "%s kaydedilmedi. Kapanmadan önce kaydedilsin mi?"
 msgid "(none)"
 msgstr "(hiçbiri)"
 
-#: ../wxui/memedit.py:1809
+#: ../wxui/memedit.py:1860
 #, python-format
 msgid "...and %i more"
 msgstr ""
@@ -738,7 +738,7 @@ msgstr ""
 "3. Telsizi açarken [MHz], [LOW] ve [D/MR] tuşlarını basılı tutun.\n"
 "4. [D/MR(MW)] tuşuna basın (ekranda \"--WAIT--\" görünecektir).\n"
 
-#: ../drivers/uv5r.py:743
+#: ../drivers/uv5r.py:753
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -754,7 +754,7 @@ msgstr ""
 "5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
 "6. İmajı cihazdan indirmek için TAMAM'a tıklayın.\n"
 
-#: ../drivers/uv5r.py:751
+#: ../drivers/uv5r.py:761
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -956,7 +956,7 @@ msgstr ""
 "5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
 "6. İmajı cihaza yüklemek için TAMAM'a tıklayın.\n"
 
-#: ../wxui/main.py:1719
+#: ../wxui/main.py:1770
 msgid ""
 "A new CHIRP version is available. Please visit the website as soon as "
 "possible to download it!"
@@ -964,27 +964,27 @@ msgstr ""
 "Yeni bir CHIRP sürümü mevcuttur. İndirmek için lütfen en kısa zamanda web "
 "sitesini ziyaret edin!"
 
-#: ../wxui/main.py:894
+#: ../wxui/main.py:899
 msgid "About"
 msgstr "Hakkında"
 
-#: ../wxui/main.py:1587
+#: ../wxui/main.py:1635
 msgid "About CHIRP"
 msgstr "CHIRP Hakkında"
 
-#: ../wxui/query_sources.py:353
+#: ../wxui/query_sources.py:354
 msgid "All"
 msgstr "Tümü"
 
-#: ../wxui/main.py:1178
+#: ../wxui/main.py:1183
 msgid "All Files"
 msgstr "Tüm Dosyalar"
 
-#: ../wxui/main.py:1189
+#: ../wxui/main.py:1194
 msgid "All supported formats|"
 msgstr "Desteklenen tüm biçimler|"
 
-#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:345
+#: ../wxui/query_sources.py:282 ../wxui/query_sources.py:346
 msgid "Amateur"
 msgstr "Amatör"
 
@@ -1000,11 +1000,16 @@ msgstr "Ayarlar uygulanıyor"
 msgid "Available modules"
 msgstr "Mevcut modüller"
 
-#: ../wxui/main.py:1665
+#: ../wxui/query_sources.py:520
+#, fuzzy
+msgid "Band"
+msgstr "Bantlar"
+
+#: ../wxui/main.py:1713
 msgid "Bandplan"
 msgstr "Bant planı"
 
-#: ../wxui/query_sources.py:375
+#: ../wxui/query_sources.py:376
 msgid "Bands"
 msgstr "Bantlar"
 
@@ -1024,7 +1029,7 @@ msgstr "Tarayıcı"
 msgid "Building Radio Browser"
 msgstr "Telsiz Tarayıcısı oluşturuluyor"
 
-#: ../wxui/query_sources.py:525
+#: ../wxui/query_sources.py:632
 msgid "Canada"
 msgstr "Kanada"
 
@@ -1034,14 +1039,14 @@ msgid ""
 "will happen now."
 msgstr ""
 
-#: ../wxui/memedit.py:1173
+#: ../wxui/memedit.py:1224
 #, python-format
 msgid ""
 "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr ""
 "Eşdeğer TX ve RX %s'ye sahip kanallar, \"%s\" ton modu ile temsil edilir"
 
-#: ../wxui/main.py:1177
+#: ../wxui/main.py:1182
 msgid "Chirp Image Files"
 msgstr "Chirp İmaj Dosyaları"
 
@@ -1049,21 +1054,21 @@ msgstr "Chirp İmaj Dosyaları"
 msgid "Choice Required"
 msgstr "Seçim Gerekli"
 
-#: ../wxui/memedit.py:1152
+#: ../wxui/memedit.py:1203
 #, python-format
 msgid "Choose %s DTCS Code"
 msgstr "%s DTCS Kodunu Seç"
 
-#: ../wxui/memedit.py:1149
+#: ../wxui/memedit.py:1200
 #, python-format
 msgid "Choose %s Tone"
 msgstr "%s Tonunu Seç"
 
-#: ../wxui/memedit.py:1183
+#: ../wxui/memedit.py:1234
 msgid "Choose Cross Mode"
 msgstr "Çapraz Modu Seç"
 
-#: ../wxui/memedit.py:1213
+#: ../wxui/memedit.py:1264
 msgid "Choose duplex"
 msgstr "Dubleks seç"
 
@@ -1072,7 +1077,7 @@ msgstr "Dubleks seç"
 msgid "Choose the module to load from issue %i:"
 msgstr "Sorun %i'den yüklenecek modülü seçin:"
 
-#: ../wxui/query_sources.py:451
+#: ../wxui/query_sources.py:452
 msgid "City"
 msgstr "Şehir"
 
@@ -1108,15 +1113,15 @@ msgstr "Telsizden klonlama"
 msgid "Cloning to radio"
 msgstr "Telsize klonlama"
 
-#: ../wxui/main.py:972
+#: ../wxui/main.py:977
 msgid "Close"
 msgstr "Kapat"
 
-#: ../wxui/main.py:973
+#: ../wxui/main.py:978
 msgid "Close file"
 msgstr "Dosyayı kapat"
 
-#: ../wxui/memedit.py:1547
+#: ../wxui/memedit.py:1598
 #, fuzzy, python-format
 msgid "Cluster %i memories"
 msgstr "%i kaydı sırala"
@@ -1141,12 +1146,13 @@ msgstr ""
 "Arayüz kablonuzu 'TX/RX' ünitesinin arkasındaki\n"
 "PC Bağlantı Noktasına bağlayın. Kafadaki Com Portu DEĞİL.\n"
 
-#: ../wxui/memedit.py:1472
+#: ../wxui/memedit.py:1523
 #, fuzzy
 msgid "Copy"
 msgstr "Kopyala"
 
-#: ../wxui/query_sources.py:279 ../wxui/query_sources.py:457
+#: ../wxui/query_sources.py:280 ../wxui/query_sources.py:458
+#: ../wxui/query_sources.py:512
 msgid "Country"
 msgstr "Ülke"
 
@@ -1158,7 +1164,7 @@ msgstr "Çapraz mod"
 msgid "Custom..."
 msgstr "Özel..."
 
-#: ../wxui/memedit.py:1468
+#: ../wxui/memedit.py:1519
 #, fuzzy
 msgid "Cut"
 msgstr "Kes"
@@ -1175,11 +1181,11 @@ msgstr ""
 "DTCS\n"
 "Polarite"
 
-#: ../wxui/memedit.py:2062
+#: ../wxui/memedit.py:2113
 msgid "DV Memory"
 msgstr "DV Kaydı"
 
-#: ../wxui/main.py:1601
+#: ../wxui/main.py:1649
 msgid "Danger Ahead"
 msgstr "İleride Tehlike"
 
@@ -1187,29 +1193,29 @@ msgstr "İleride Tehlike"
 msgid "Dec"
 msgstr "Dec"
 
-#: ../wxui/memedit.py:1481
+#: ../wxui/memedit.py:1532
 msgid "Delete"
 msgstr "Sil"
 
-#: ../wxui/main.py:899
+#: ../wxui/main.py:904
 msgid "Developer Mode"
 msgstr "Geliştirici Modu"
 
-#: ../wxui/main.py:1607
+#: ../wxui/main.py:1655
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 "Geliştirici durumu artık %s. Etkili olması için CHIRP yeniden başlatılmalıdır"
 
-#: ../wxui/memedit.py:1581
+#: ../wxui/memedit.py:1632
 msgid "Diff Raw Memories"
 msgstr "Farklı Ham Kayıtlar"
 
-#: ../wxui/memedit.py:1987
+#: ../wxui/memedit.py:2038
 msgid "Digital Code"
 msgstr "Dijital Kod"
 
-#: ../wxui/main.py:1618
+#: ../wxui/main.py:1666
 msgid "Disable reporting"
 msgstr "Raporlamayı devre dışı bırak"
 
@@ -1218,7 +1224,7 @@ msgstr "Raporlamayı devre dışı bırak"
 msgid "Disabled"
 msgstr "devre dışı bırakıldı"
 
-#: ../wxui/query_sources.py:310
+#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:554
 msgid "Distance"
 msgstr "Mesafe"
 
@@ -1231,11 +1237,11 @@ msgstr "%s için tekrar sorma"
 msgid "Double-click to change bank name"
 msgstr "Banka adını değiştirmek için çift tıklayın"
 
-#: ../wxui/main.py:974
+#: ../wxui/main.py:979
 msgid "Download"
 msgstr "İndir"
 
-#: ../wxui/main.py:811 ../wxui/main.py:975
+#: ../wxui/main.py:811 ../wxui/main.py:980
 msgid "Download from radio"
 msgstr "Telsizden indir"
 
@@ -1247,17 +1253,17 @@ msgstr "İndirme talimatları"
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2017
+#: ../wxui/memedit.py:2068
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "%i kaydı için ayrıntıları düzenle"
 
-#: ../wxui/memedit.py:2015
+#: ../wxui/memedit.py:2066
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "%i kaydı için ayrıntıları düzenle"
 
-#: ../wxui/main.py:843
+#: ../wxui/main.py:848
 msgid "Enable Automatic Edits"
 msgstr "Otomatik Düzenlemeleri Etkinleştir"
 
@@ -1270,11 +1276,11 @@ msgstr "etkinleştirildi"
 msgid "Enter Frequency"
 msgstr "Frekans Gir"
 
-#: ../wxui/memedit.py:1200
+#: ../wxui/memedit.py:1251
 msgid "Enter Offset (MHz)"
 msgstr "Ofset girin (MHz)"
 
-#: ../wxui/memedit.py:1192
+#: ../wxui/memedit.py:1243
 msgid "Enter TX Frequency (MHz)"
 msgstr "TX Frekansını girin (MHz)"
 
@@ -1292,7 +1298,7 @@ msgstr "Özel bağlantı noktasını girin:"
 msgid "Erased memory %s"
 msgstr "%s kaydı silindi"
 
-#: ../wxui/settingsedit.py:116
+#: ../wxui/settingsedit.py:132
 msgid "Error applying settings"
 msgstr "Ayarlar uygulanırken hata oluştu"
 
@@ -1304,20 +1310,32 @@ msgstr "Telsizle iletişim hatası"
 msgid "Experimental driver"
 msgstr "Deneysel sürücü"
 
-#: ../wxui/memedit.py:1947
+#: ../wxui/memedit.py:1998
 msgid "Export can only write CSV files"
 msgstr "Dışa aktarma yalnızca CSV dosyalarını yazabilir"
 
-#: ../wxui/main.py:706 ../wxui/main.py:1332
+#: ../wxui/main.py:706 ../wxui/main.py:1337
 msgid "Export to CSV"
 msgstr "CSV'ye aktar"
 
-#: ../wxui/memedit.py:2051
+#: ../wxui/memedit.py:2102
 msgid "Extra"
 msgstr "Ekstra"
 
+#: ../wxui/query_sources.py:559
+msgid ""
+"FREE repeater database, which provide most up-to-date\n"
+"information about repeaters in Europe. No account is\n"
+"required."
+msgstr ""
+
 #: ../wxui/developer.py:416
 msgid "Failed to load radio browser"
+msgstr "Telsiz tarayıcısı yüklenemedi"
+
+#: ../sources/przemienniki.py:57
+#, fuzzy
+msgid "Failed to parse result"
 msgstr "Telsiz tarayıcısı yüklenemedi"
 
 #: ../wxui/radioinfo.py:43
@@ -1329,20 +1347,20 @@ msgstr "Özellikler"
 msgid "File does not exist: %s"
 msgstr "Dosya mevcut değil: %s"
 
-#: ../wxui/main.py:1181 ../wxui/main.py:1262 ../wxui/main.py:1272
-#: ../wxui/main.py:1328 ../wxui/main.py:1553 ../wxui/main.py:1554
+#: ../wxui/main.py:1186 ../wxui/main.py:1267 ../wxui/main.py:1277
+#: ../wxui/main.py:1333 ../wxui/main.py:1601 ../wxui/main.py:1602
 msgid "Files"
 msgstr "Dosyalar"
 
-#: ../wxui/query_sources.py:316
+#: ../wxui/query_sources.py:317
 msgid "Filter"
 msgstr "Filtre"
 
-#: ../wxui/query_sources.py:314
+#: ../wxui/query_sources.py:315
 msgid "Filter results with location matching this string"
 msgstr "Bu dizeyle eşleşen konuma sahip sonuçları filtrele"
 
-#: ../wxui/main.py:1402
+#: ../wxui/main.py:1407
 msgid "Find"
 msgstr "Bul"
 
@@ -1626,24 +1644,24 @@ msgstr "%(name)s için boş liste değeri bulundu: %(value)r"
 msgid "Frequency"
 msgstr "Frekans"
 
-#: ../wxui/query_sources.py:282 ../wxui/query_sources.py:336
-#: ../wxui/query_sources.py:427
+#: ../wxui/query_sources.py:283 ../wxui/query_sources.py:337
+#: ../wxui/query_sources.py:428
 msgid "GMRS"
 msgstr "GMRS"
 
-#: ../wxui/settingsedit.py:55
+#: ../wxui/settingsedit.py:59
 msgid "Getting settings"
 msgstr "Ayarlar alınıyor"
 
-#: ../wxui/memedit.py:742
+#: ../wxui/memedit.py:793
 msgid "Goto"
 msgstr "Git"
 
-#: ../wxui/memedit.py:774
+#: ../wxui/memedit.py:825
 msgid "Goto Memory"
 msgstr "Kayda Git"
 
-#: ../wxui/memedit.py:773
+#: ../wxui/memedit.py:824
 msgid "Goto Memory:"
 msgstr "Kayda Git:"
 
@@ -1655,21 +1673,17 @@ msgstr "Bana Yardım Et..."
 msgid "Hex"
 msgstr "Hex"
 
-#: ../wxui/memedit.py:751
+#: ../wxui/memedit.py:802
 #, fuzzy
 msgid "Hide empty memories"
 msgstr "Kayıtları sırala"
 
-#: ../wxui/memedit.py:683
-#, python-format
-msgid "Hold %(key)s to drag multiple memories"
-msgstr ""
-
-#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:299
+#: ../wxui/query_sources.py:294 ../wxui/query_sources.py:300
+#: ../wxui/query_sources.py:538 ../wxui/query_sources.py:544
 msgid "If set, sort results by distance from these coordinates"
 msgstr "Ayarlanırsa, sonuçları bu koordinatlardan uzaklığa göre sırala"
 
-#: ../wxui/main.py:1318
+#: ../wxui/main.py:1323
 msgid "Import"
 msgstr "İçe Aktar"
 
@@ -1678,7 +1692,7 @@ msgstr "İçe Aktar"
 msgid "Import from file"
 msgstr "Dosyadan İçe Aktar"
 
-#: ../wxui/main.py:1316
+#: ../wxui/main.py:1321
 #, fuzzy
 msgid "Import not recommended"
 msgstr "RFinder'dan içe aktar"
@@ -1691,11 +1705,11 @@ msgstr "Dizin"
 msgid "Info"
 msgstr "Bilgi"
 
-#: ../wxui/memedit.py:1175
+#: ../wxui/memedit.py:1226
 msgid "Information"
 msgstr "Bilgi"
 
-#: ../wxui/memedit.py:1462
+#: ../wxui/memedit.py:1513
 msgid "Insert Row Above"
 msgstr "Yukarıya Satır Ekle"
 
@@ -1703,25 +1717,25 @@ msgstr "Yukarıya Satır Ekle"
 msgid "Install desktop icon?"
 msgstr ""
 
-#: ../wxui/main.py:883
+#: ../wxui/main.py:888
 msgid "Interact with driver"
 msgstr "Sürücü ile etkileşim"
 
-#: ../wxui/query_sources.py:56
+#: ../wxui/query_sources.py:57
 #, python-format
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Geçersiz %(value)s (ondalık basamak kullanın)"
 
-#: ../wxui/query_sources.py:109
+#: ../wxui/query_sources.py:110
 msgid "Invalid ZIP code"
 msgstr "Geçersiz Posta kodu"
 
-#: ../wxui/memedit.py:1317 ../wxui/memedit.py:2142
+#: ../wxui/memedit.py:1368 ../wxui/memedit.py:2193
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Geçersiz düzenleme: %s"
 
-#: ../wxui/main.py:1550
+#: ../wxui/main.py:1598
 msgid "Invalid or unsupported module file"
 msgstr "Geçersiz veya desteklenmeyen modül dosyası"
 
@@ -1738,7 +1752,7 @@ msgstr "Kayıt numarası:"
 msgid "LIVE"
 msgstr "CANLI"
 
-#: ../wxui/query_sources.py:301
+#: ../wxui/query_sources.py:302 ../wxui/query_sources.py:546
 msgid "Latitude"
 msgstr "Enlem"
 
@@ -1747,15 +1761,15 @@ msgstr "Enlem"
 msgid "Length must be %i"
 msgstr "Uzunluk %i olmalıdır"
 
-#: ../wxui/query_sources.py:322
+#: ../wxui/query_sources.py:323
 msgid "Limit Bands"
 msgstr "Bantları Sınırla"
 
-#: ../wxui/query_sources.py:327
+#: ../wxui/query_sources.py:328
 msgid "Limit Modes"
 msgstr "Modları Sınırla"
 
-#: ../wxui/query_sources.py:308
+#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:552
 msgid "Limit results to this distance (km) from coordinates"
 msgstr "Sonuçları koordinatlardan bu mesafeye (km) sınırla"
 
@@ -1763,11 +1777,11 @@ msgstr "Sonuçları koordinatlardan bu mesafeye (km) sınırla"
 msgid "Load Module"
 msgstr "Modül Yükle"
 
-#: ../wxui/main.py:931 ../wxui/developer.py:487
+#: ../wxui/main.py:936 ../wxui/developer.py:487
 msgid "Load module from issue"
 msgstr "Kayıttan modül yükle"
 
-#: ../wxui/main.py:1557
+#: ../wxui/main.py:1605
 msgid ""
 "Loading modules can be extremely dangerous, leading to damage to your "
 "computer, radio, or both. NEVER load a module from a source you do not "
@@ -1788,7 +1802,7 @@ msgstr ""
 msgid "Loading settings"
 msgstr "Ayarlar yükleniyor"
 
-#: ../wxui/query_sources.py:302
+#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:547
 msgid "Longitude"
 msgstr "Boylam"
 
@@ -1796,7 +1810,7 @@ msgstr "Boylam"
 msgid "Memories"
 msgstr "Kayıtlar"
 
-#: ../wxui/memedit.py:1356
+#: ../wxui/memedit.py:1407
 #, python-format
 msgid "Memory %i is not deletable"
 msgstr "Kayıt %i silinemez"
@@ -1818,19 +1832,19 @@ msgstr "Mod"
 msgid "Model"
 msgstr "Model"
 
-#: ../wxui/query_sources.py:396
+#: ../wxui/query_sources.py:397
 msgid "Modes"
 msgstr "Modlar"
 
-#: ../wxui/main.py:1554
+#: ../wxui/main.py:1602
 msgid "Module"
 msgstr "Modül"
 
-#: ../wxui/main.py:1526
+#: ../wxui/main.py:1574
 msgid "Module Loaded"
 msgstr "Modül Yüklendi"
 
-#: ../wxui/main.py:1651
+#: ../wxui/main.py:1699
 msgid "Module loaded successfully"
 msgstr "Modül başarıyla yüklendi"
 
@@ -1839,12 +1853,12 @@ msgstr "Modül başarıyla yüklendi"
 msgid "More than one port found: %s"
 msgstr "Birden fazla bağlantı noktası bulundu: %s"
 
-#: ../wxui/memedit.py:738
+#: ../wxui/memedit.py:789
 #, fuzzy
 msgid "Move Down"
 msgstr "Aşağı Taş_ı"
 
-#: ../wxui/memedit.py:728
+#: ../wxui/memedit.py:779
 #, fuzzy
 msgid "Move Up"
 msgstr "Yukarı _Taşı"
@@ -1853,11 +1867,11 @@ msgstr "Yukarı _Taşı"
 msgid "New Window"
 msgstr ""
 
-#: ../wxui/main.py:1721
+#: ../wxui/main.py:1772
 msgid "New version available"
 msgstr "Yeni sürüm mevcut"
 
-#: ../wxui/memedit.py:1617
+#: ../wxui/memedit.py:1668
 msgid "No empty rows below!"
 msgstr "Aşağıda boş satır yok!"
 
@@ -1870,11 +1884,16 @@ msgstr "Modül bulunamadı"
 msgid "No modules found in issue %i"
 msgstr "%i kadında modül bulunamadı"
 
+#: ../sources/przemienniki.py:53
+#, fuzzy
+msgid "No results"
+msgstr "Sonuç yok!"
+
 #: ../sources/repeaterbook.py:284
 msgid "No results!"
 msgstr "Sonuç yok!"
 
-#: ../wxui/memedit.py:773
+#: ../wxui/memedit.py:824
 msgid "Number"
 msgstr "Numara"
 
@@ -1882,11 +1901,11 @@ msgstr "Numara"
 msgid "Offset"
 msgstr "Ofset"
 
-#: ../wxui/query_sources.py:320
+#: ../wxui/query_sources.py:321
 msgid "Only certain bands"
 msgstr "Sadece belirli gruplar"
 
-#: ../wxui/query_sources.py:325
+#: ../wxui/query_sources.py:326
 msgid "Only certain modes"
 msgstr "Yalnızca belirli modlar"
 
@@ -1894,7 +1913,7 @@ msgstr "Yalnızca belirli modlar"
 msgid "Only memory tabs may be exported"
 msgstr "Yalnızca kayıt sekmeleri dışa aktarılabilir"
 
-#: ../wxui/main.py:968 ../wxui/main.py:1318
+#: ../wxui/main.py:973 ../wxui/main.py:1323
 msgid "Open"
 msgstr "Aç"
 
@@ -1906,15 +1925,15 @@ msgstr "Son Kullanılanları Aç"
 msgid "Open Stock Config"
 msgstr "Hazır Yapılandırma Aç"
 
-#: ../wxui/main.py:969 ../wxui/main.py:1192
+#: ../wxui/main.py:974 ../wxui/main.py:1197
 msgid "Open a file"
 msgstr "Bir dosya aç"
 
-#: ../wxui/main.py:1572
+#: ../wxui/main.py:1620
 msgid "Open a module"
 msgstr "Bir modül aç"
 
-#: ../wxui/main.py:920
+#: ../wxui/main.py:925
 msgid "Open debug log"
 msgstr "Hata ayıklama günlüğünü aç"
 
@@ -1927,23 +1946,23 @@ msgstr ""
 msgid "Open stock config directory"
 msgstr "Hazır Yapılandırma Aç"
 
-#: ../wxui/query_sources.py:298
+#: ../wxui/query_sources.py:299 ../wxui/query_sources.py:543
 msgid "Optional: -122.0000"
 msgstr "İsteğe bağlı: -122.0000"
 
-#: ../wxui/query_sources.py:307
+#: ../wxui/query_sources.py:308 ../wxui/query_sources.py:551
 msgid "Optional: 100"
 msgstr "İsteğe bağlı: 100"
 
-#: ../wxui/query_sources.py:292
+#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:537
 msgid "Optional: 45.0000"
 msgstr "İsteğe bağlı: 45.0000"
 
-#: ../wxui/query_sources.py:313
+#: ../wxui/query_sources.py:314
 msgid "Optional: County, Hospital, etc"
 msgstr "İsteğe bağlı: İlçe, Hastane vb."
 
-#: ../wxui/memedit.py:1750
+#: ../wxui/memedit.py:1801
 msgid "Overwrite memories?"
 msgstr "Kayıtların üzerine yazılsın mı?"
 
@@ -1957,27 +1976,31 @@ msgstr ""
 "Bu sürümde 130'dan fazla kullanılabilir telsiz ayarının yalnızca bir alt "
 "kümesi desteklenmektedir.\n"
 
-#: ../wxui/memedit.py:1476
+#: ../sources/przemienniki.py:48
+msgid "Parsing"
+msgstr ""
+
+#: ../wxui/memedit.py:1527
 #, fuzzy
 msgid "Paste"
 msgstr "Yapıştır"
 
-#: ../wxui/memedit.py:1744
+#: ../wxui/memedit.py:1795
 #, fuzzy, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr "Yapıştırılan kayıtlar, mevcut %s kaydının üzerine yazılacak"
 
-#: ../wxui/memedit.py:1747
+#: ../wxui/memedit.py:1798
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "Yapıştırılan kayıtlar %s kayıtlarının üzerine yazılacak"
 
-#: ../wxui/memedit.py:1741
+#: ../wxui/memedit.py:1792
 #, fuzzy, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr "Yapıştırılan kayıtlar, %s kaydının üzerine yazılacak"
 
-#: ../wxui/memedit.py:1738
+#: ../wxui/memedit.py:1789
 #, fuzzy, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr "Yapıştırılan kayıt, %s kaydının üzerine yazacak"
@@ -1987,7 +2010,7 @@ msgstr "Yapıştırılan kayıt, %s kaydının üzerine yazacak"
 msgid "Path %s does not exist"
 msgstr "Dosya mevcut değil: %s"
 
-#: ../wxui/main.py:1725
+#: ../wxui/main.py:1776
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Lütfen yeni sürümü yüklemeden önce CHIRP'den çıktığınızdan emin olun!"
 
@@ -2035,7 +2058,7 @@ msgstr ""
 "4 - Ardından klonlamaya başlamak için telsizinizdeki \"A\" tuşuna basın.\n"
 "     (Sonunda telsiz bip sesi çıkaracaktır)\n"
 
-#: ../wxui/main.py:1595
+#: ../wxui/main.py:1643
 msgid ""
 "Please note that developer mode is intended for use by developers of the "
 "CHIRP project, or under the direction of a developer. It enables behaviors "
@@ -2076,11 +2099,11 @@ msgstr "Baskı Önizleme"
 msgid "Printing"
 msgstr "Baskı"
 
-#: ../wxui/memedit.py:1455
+#: ../wxui/memedit.py:1506
 msgid "Properties"
 msgstr "Özellikler"
 
-#: ../wxui/main.py:1679
+#: ../wxui/main.py:1727
 #, python-format
 msgid "Query %s"
 msgstr "%s sorgusu"
@@ -2093,7 +2116,7 @@ msgstr "Kaynaktan Sorgula"
 msgid "RX DTCS"
 msgstr "RX DTCS"
 
-#: ../wxui/main.py:939
+#: ../wxui/main.py:944
 msgid "Radio"
 msgstr "Telsiz"
 
@@ -2116,7 +2139,7 @@ msgstr ""
 "dışındaysa gerçekleşir ama telsiz bir ABD telsizi. Lütfen doğru modeli seçin "
 "ve tekrar deneyin."
 
-#: ../wxui/query_sources.py:665
+#: ../wxui/query_sources.py:772
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 "RadioReference Kanada, sorgulayabilmeniz için önce oturum açmanız gerekir"
@@ -2131,11 +2154,11 @@ msgstr "Yeniden Başlatma Gerekiyor"
 msgid "Refreshed memory %s"
 msgstr "Yenilenmiş %s kaydı"
 
-#: ../wxui/main.py:860
+#: ../wxui/main.py:865
 msgid "Reload Driver"
 msgstr "Sürücüyü Yeniden Yükle"
 
-#: ../wxui/main.py:869
+#: ../wxui/main.py:874
 msgid "Reload Driver and File"
 msgstr "Sürücüyü ve Dosyayı Yeniden Yükle"
 
@@ -2143,11 +2166,11 @@ msgstr "Sürücüyü ve Dosyayı Yeniden Yükle"
 msgid "Rename bank"
 msgstr "Bankayı yeniden adlandır"
 
-#: ../wxui/main.py:908
+#: ../wxui/main.py:913
 msgid "Reporting enabled"
 msgstr "Raporlama etkinleştirildi"
 
-#: ../wxui/main.py:1614
+#: ../wxui/main.py:1662
 msgid ""
 "Reporting helps the CHIRP project know which radio models and OS platforms "
 "to spend our limited efforts on. We would really appreciate if you left it "
@@ -2158,7 +2181,7 @@ msgstr ""
 "bırakırsanız gerçekten minnettar oluruz. Raporlama gerçekten devre dışı "
 "bırakılsın mı?"
 
-#: ../wxui/main.py:1609
+#: ../wxui/main.py:1657
 msgid "Restart Required"
 msgstr "Yeniden Başlatma Gerekiyor"
 
@@ -2171,15 +2194,15 @@ msgstr "%i sekmesini geri yükle"
 msgid "Retrieved settings"
 msgstr "Alınan ayarlar"
 
-#: ../wxui/main.py:970
+#: ../wxui/main.py:975
 msgid "Save"
 msgstr "Kaydet"
 
-#: ../wxui/main.py:1349
+#: ../wxui/main.py:1354
 msgid "Save before closing?"
 msgstr "Kapanmadan önce kaydedilsin mi?"
 
-#: ../wxui/main.py:971 ../wxui/main.py:1276
+#: ../wxui/main.py:976 ../wxui/main.py:1281
 msgid "Save file"
 msgstr "Dosyayı kaydet"
 
@@ -2187,23 +2210,23 @@ msgstr "Dosyayı kaydet"
 msgid "Saved settings"
 msgstr "Kaydedilmiş ayarlar"
 
-#: ../wxui/main.py:850
+#: ../wxui/main.py:855
 msgid "Select Bandplan"
 msgstr "Bant Planı Seç"
 
-#: ../wxui/query_sources.py:375
+#: ../wxui/query_sources.py:376
 msgid "Select Bands"
 msgstr "Bantları Seç"
 
-#: ../wxui/query_sources.py:396
+#: ../wxui/query_sources.py:397
 msgid "Select Modes"
 msgstr "Modları Seç"
 
-#: ../wxui/main.py:1664
+#: ../wxui/main.py:1712
 msgid "Select a bandplan"
 msgstr "Bir bant planı seçin"
 
-#: ../wxui/query_sources.py:284
+#: ../wxui/query_sources.py:285
 msgid "Service"
 msgstr "Servis"
 
@@ -2211,58 +2234,63 @@ msgstr "Servis"
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: ../wxui/memedit.py:1573
+#: ../wxui/memedit.py:1624
 msgid "Show Raw Memory"
 msgstr "Ham Kaydı Göster"
 
-#: ../wxui/main.py:926
+#: ../wxui/main.py:931
 msgid "Show debug log location"
 msgstr "Hata ayıklama günlüğü konumunu göster"
 
-#: ../wxui/memedit.py:747
+#: ../wxui/memedit.py:798
 msgid "Show extra fields"
 msgstr ""
 
-#: ../wxui/memedit.py:1813
+#: ../wxui/memedit.py:1864
 msgid "Some memories are incompatible with this radio"
 msgstr "Bazı kayıtlar bu telsizle uyumlu değil"
 
-#: ../wxui/memedit.py:1691
+#: ../wxui/memedit.py:1742
 msgid "Some memories are not deletable"
 msgstr "Bazı anılar silinemez"
 
-#: ../wxui/memedit.py:1535
+#: ../wxui/memedit.py:1586
 #, python-format
 msgid "Sort %i memories"
 msgstr "%i kaydı sırala"
 
-#: ../wxui/memedit.py:1538
+#: ../wxui/memedit.py:1589
 #, python-format
 msgid "Sort %i memories ascending"
 msgstr "%i kaydı artan şekilde sırala"
 
-#: ../wxui/memedit.py:1557
+#: ../wxui/memedit.py:1608
 #, python-format
 msgid "Sort %i memories descending"
 msgstr "%i kaydı azalan şekilde sırala"
 
-#: ../wxui/memedit.py:1432
+#: ../wxui/memedit.py:1483
 msgid "Sort by column:"
 msgstr "Sütuna göre sırala:"
 
-#: ../wxui/memedit.py:1431
+#: ../wxui/memedit.py:1482
 msgid "Sort memories"
 msgstr "Kayıtları sırala"
 
-#: ../wxui/query_sources.py:454
+#: ../sources/przemienniki.py:60
+#, fuzzy
+msgid "Sorting"
+msgstr "Baskı"
+
+#: ../wxui/query_sources.py:455
 msgid "State"
 msgstr "Devlet"
 
-#: ../wxui/query_sources.py:287
+#: ../wxui/query_sources.py:288
 msgid "State/Province"
 msgstr "Eyalet/İl"
 
-#: ../wxui/main.py:1652
+#: ../wxui/main.py:1700
 msgid "Success"
 msgstr "Başarılı"
 
@@ -2303,7 +2331,7 @@ msgstr ""
 "Lütfen ilk başarılı indirmenizin düzenlenmemiş bir kopyasını\n"
 "bir CHIRP Radio Images (*.img) dosyasına kaydedin.\n"
 
-#: ../wxui/main.py:1309
+#: ../wxui/main.py:1314
 #, python-format
 msgid ""
 "The recommended procedure for importing memories is to open the source file "
@@ -2313,7 +2341,7 @@ msgid ""
 "memories across, or proceed with the import?"
 msgstr ""
 
-#: ../wxui/memedit.py:1497
+#: ../wxui/memedit.py:1548
 msgid "This Memory"
 msgstr "Bu kaydı"
 
@@ -2347,11 +2375,11 @@ msgstr ""
 "Ayrıca lütfen hata raporu ve geliştirme istekleri gönderin!\n"
 "Uyarıldınız. Kendi sorumluluğunuzda ilerleyin!"
 
-#: ../wxui/memedit.py:1501
+#: ../wxui/memedit.py:1552
 msgid "This memory and shift all up"
 msgstr "Bu kaydı ve hepsini yukarı kaydır"
 
-#: ../wxui/memedit.py:1499
+#: ../wxui/memedit.py:1550
 msgid "This memory and shift block up"
 msgstr "Bu kaydı ve bloğu yukarı kaydır"
 
@@ -2385,7 +2413,7 @@ msgstr "Bu, bir web sitesi kaydından bir modül yükleyecektir"
 msgid "Tone"
 msgstr "Ton"
 
-#: ../wxui/memedit.py:807
+#: ../wxui/memedit.py:858
 msgid "Tone Mode"
 msgstr "Ton Modu"
 
@@ -2409,11 +2437,11 @@ msgstr ""
 "Kablonuz için bağlantı noktası belirlenemiyor. Sürücülerinizi ve "
 "bağlantılarınızı kontrol edin."
 
-#: ../wxui/memedit.py:1240
+#: ../wxui/memedit.py:1291
 msgid "Unable to edit memory before radio is loaded"
 msgstr "Radyo yüklenmeden önce kayıt düzenlenemiyor"
 
-#: ../wxui/main.py:1234
+#: ../wxui/main.py:1239
 #, python-format
 msgid "Unable to find stock config %r"
 msgstr "%r stok yapılandırması bulunamadı"
@@ -2421,6 +2449,10 @@ msgstr "%r stok yapılandırması bulunamadı"
 #: ../wxui/common.py:216
 msgid "Unable to open the clipboard"
 msgstr "Pano açılamıyor"
+
+#: ../sources/przemienniki.py:46
+msgid "Unable to query"
+msgstr ""
 
 #: ../drivers/ft817.py:322
 msgid ""
@@ -2442,7 +2474,7 @@ msgstr "%s bu sistemde gösterilemiyor"
 msgid "Unable to set %s on this memory"
 msgstr "%s bu sistemde gösterilemiyor"
 
-#: ../wxui/query_sources.py:524
+#: ../wxui/query_sources.py:631
 msgid "United States"
 msgstr "Amerika Birleşik Devletleri"
 
@@ -2454,7 +2486,7 @@ msgstr "(gerekirse) Kablonuzu çıkarın ve ardından Tamam'ı tıklayın"
 msgid "Upload instructions"
 msgstr "Yükleme talimatları"
 
-#: ../wxui/main.py:819 ../wxui/main.py:977
+#: ../wxui/main.py:819 ../wxui/main.py:982
 msgid "Upload to radio"
 msgstr "Telsize yükle"
 
@@ -2499,7 +2531,7 @@ msgstr "Değer sıfır veya daha büyük olmalıdır"
 msgid "Vendor"
 msgstr "Tedarikçi"
 
-#: ../wxui/main.py:938
+#: ../wxui/main.py:943
 msgid "View"
 msgstr "Göster"
 
@@ -2507,11 +2539,11 @@ msgstr "Göster"
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/memedit.py:1324
+#: ../wxui/memedit.py:1375
 msgid "Warning"
 msgstr "Uyarı"
 
-#: ../wxui/memedit.py:1323
+#: ../wxui/memedit.py:1374
 #, python-format
 msgid "Warning: %s"
 msgstr "Uyarı: %s"
@@ -2540,11 +2572,11 @@ msgstr "bytes"
 msgid "bytes each"
 msgstr "her biri bayt"
 
-#: ../wxui/main.py:1592
+#: ../wxui/main.py:1640
 msgid "disabled"
 msgstr "devre dışı bırakıldı"
 
-#: ../wxui/main.py:1592
+#: ../wxui/main.py:1640
 msgid "enabled"
 msgstr "etkinleştirildi"
 
