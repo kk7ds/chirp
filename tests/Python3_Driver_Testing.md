@@ -325,7 +325,7 @@
 | <a name="TID_TD-M8"></a> TID_TD-M8 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.04% |
 | <a name="TID_TD-UV68"></a> TID_TD-UV68 | [@Sandmann34](https://github.com/Sandmann34) | 7-Feb-2023 | Yes |  |
 | <a name="TYT_TH-350"></a> TYT_TH-350 |  |  | Yes | 0.07% |
-| <a name="TYT_TH-7800"></a> TYT_TH-7800 |  |  |  | 0.13% |
+| <a name="TYT_TH-7800"></a> TYT_TH-7800 | [Reported working](https://chirp.danplanet.com/issues/10585) | 4-Jul-2023 | Yes | 0.13% |
 | <a name="TYT_TH-7800_File"></a> TYT_TH-7800_File |  |  |  | 0.00% |
 | <a name="TYT_TH-9800"></a> TYT_TH-9800 | Unit tested; needs confirm | 24-Dec-2022 | Yes | 0.65% |
 | <a name="TYT_TH-9800_File"></a> TYT_TH-9800_File |  |  | Yes | 0.00% |
@@ -415,9 +415,9 @@
 
 **Drivers:** 410
 
-**Tested:** 86% (354/56) (93% of usage stats)
+**Tested:** 86% (355/55) (93% of usage stats)
 
-**Byte clean:** 90% (369/41)
+**Byte clean:** 90% (370/40)
 
 ## Meaning of this testing
 
