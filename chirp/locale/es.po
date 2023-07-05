@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-04 11:04-0700\n"
-"PO-Revision-Date: 2023-07-04 02:02-0400\n"
+"PO-Revision-Date: 2023-07-05 01:32-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1034,9 +1034,8 @@ msgid "Available modules"
 msgstr "Módulos disponibles"
 
 #: ../wxui/query_sources.py:520
-#, fuzzy
 msgid "Band"
-msgstr "Bandas"
+msgstr "Banda"
 
 #: ../wxui/main.py:1713
 msgid "Bandplan"
@@ -1362,15 +1361,17 @@ msgid ""
 "information about repeaters in Europe. No account is\n"
 "required."
 msgstr ""
+"Base de datos de repetidores GRATUITA, la cual proporciona la\n"
+"información más actualizada sobre de repetidores en Europa. No requiere\n"
+"cuenta."
 
 #: ../wxui/developer.py:416
 msgid "Failed to load radio browser"
 msgstr "Fallo al cargar navegador de radio"
 
 #: ../sources/przemienniki.py:57
-#, fuzzy
 msgid "Failed to parse result"
-msgstr "Fallo al cargar navegador de radio"
+msgstr "Fallo al analizar el resultado"
 
 #: ../wxui/radioinfo.py:43
 msgid "Features"
@@ -1920,9 +1921,8 @@ msgid "No modules found in issue %i"
 msgstr "No se encontraron módulos en problema %i"
 
 #: ../sources/przemienniki.py:53
-#, fuzzy
 msgid "No results"
-msgstr "¡No hay resultados!"
+msgstr "No hay resultados"
 
 #: ../sources/repeaterbook.py:284
 msgid "No results!"
@@ -2012,7 +2012,7 @@ msgstr ""
 
 #: ../sources/przemienniki.py:48
 msgid "Parsing"
-msgstr ""
+msgstr "Analizando"
 
 #: ../wxui/memedit.py:1527
 msgid "Paste"
@@ -2311,9 +2311,8 @@ msgid "Sort memories"
 msgstr "Ordenar memorias"
 
 #: ../sources/przemienniki.py:60
-#, fuzzy
 msgid "Sorting"
-msgstr "Imprimiendo"
+msgstr "Ordenando"
 
 #: ../wxui/query_sources.py:455
 msgid "State"
@@ -2500,7 +2499,7 @@ msgstr "No se puede abrir el portapapeles"
 
 #: ../sources/przemienniki.py:46
 msgid "Unable to query"
-msgstr ""
+msgstr "No se puede consultar"
 
 #: ../drivers/ft817.py:322
 msgid ""
