@@ -633,6 +633,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._special_numbers = {}
         # Extra memory column names
         self._extra_cols = set()
+        # Memory errors by row
+        self._memory_errors = {}
 
         self._col_defs = self._setup_columns()
 
@@ -723,6 +725,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             self._dragging_rows = None
 
     def _rowheader_mouseover(self, event):
+        x, y = self._grid.CalcUnscrolledPosition(event.GetX(), event.GetY())
+        row, _cell = self._grid.XYToCell(x, y)
+
+        tip = self._memory_errors.get(row)
+        event.GetEventObject().SetToolTip(tip)
+
         if self._dragging_rows is not None:
             row, x, y = self._dragging_rows
             if row not in self._grid.GetSelectedRows():
@@ -933,9 +941,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             LOG.error('Failed to load memory %s as error because: %s' % (
                 number, memory))
             self._row_label_renderers[row].set_error()
+            self._memory_errors[row] = str(memory)
             self._grid.SetRowLabelValue(row, '!%s' % (
                 self._grid.GetRowLabelValue(row)))
             return
+
+        if row in self._memory_errors:
+            del self._memory_errors[row]
 
         hide_empty = CONF.get_bool('hide_empty', 'memedit', False)
         if memory.empty:
