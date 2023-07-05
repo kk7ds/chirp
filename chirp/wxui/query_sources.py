@@ -695,7 +695,7 @@ class RRQueryDialog(QuerySourceDialog):
         grid.AddGrowableCol(1)
 
         # build a new login button
-        self._loginbutton = wx.Button(panel, id=wx.ID_OK, label='Log In')
+        self._loginbutton = wx.Button(panel, label='Log In')
         grid.Add(self._loginbutton)
         self._loginbutton.Bind(wx.EVT_BUTTON, self._populateca)
 
@@ -732,9 +732,16 @@ class RRQueryDialog(QuerySourceDialog):
         return panel
 
     def _populateca(self, event):
+        button = event.GetEventObject()
+        button.Disable()
+        okay = self.FindWindowById(wx.ID_OK)
+        okay.Disable()
+
         def cb(result):
+            wx.CallAfter(okay.Enable)
             if isinstance(result, Exception):
                 self.status('Failed: %s' % result, 0)
+                wx.CallAfter(button.Enable)
             else:
                 self.status('Logged in', 0)
                 wx.CallAfter(self.populateprov)
