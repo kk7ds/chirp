@@ -942,6 +942,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 number, memory))
             self._row_label_renderers[row].set_error()
             self._memory_errors[row] = str(memory)
+            self._memory_cache[row] = chirp_common.Memory(number=number,
+                                                          empty=True)
             self._grid.SetRowLabelValue(row, '!%s' % (
                 self._grid.GetRowLabelValue(row)))
             return

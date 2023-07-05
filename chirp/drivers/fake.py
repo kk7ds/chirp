@@ -38,7 +38,11 @@ class FakeLiveRadio(chirp_common.LiveRadio):
     def get_memory(self, number):
         if number == 'Special':
             number = len(self.memories)
-        return self.memories[number - 1]
+        m = self.memories[number - 1]
+        if isinstance(m, chirp_common.Memory) and m.number != number:
+            LOG.error('fake driver found %i instead of %i',
+                      m.number, number)
+        return m
 
     def set_memory(self, mem):
         LOG.info('Set memory %s' % mem)
@@ -92,12 +96,12 @@ class FakeLiveRadioWithErrors(FakeLiveRadio):
     def get_memory(self, number):
         m = super().get_memory(number)
         if isinstance(m, type):
-            raise m('Error')
+            raise m('Error getting %i' % number)
         else:
             return m
 
     def set_memory(self, mem):
-        if mem.freq < 145000000:
+        if not mem.empty and mem.freq < 145000000:
             raise errors.RadioError('Out of range')
         else:
             return super().set_memory(mem)
