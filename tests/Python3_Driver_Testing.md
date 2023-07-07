@@ -217,6 +217,8 @@
 | <a name="Leixen_VV-898"></a> Leixen_VV-898 | [Implied by Jetstream_JT270MH](#user-content-Jetstream_JT270MH) | 13-Dec-2022 | Yes | 0.18% |
 | <a name="Leixen_VV-898S"></a> Leixen_VV-898S | [@READ10](https://github.com/READ10) | 19-Dec-2022 | Yes | 0.10% |
 | <a name="MTC_UV-5R-3"></a> MTC_UV-5R-3 | [Implied by BTECH_UV-5X3](#user-content-BTECH_UV-5X3) | 9-Dec-2022 | Yes | 0.02% |
+| <a name="Maverick_RA-100"></a> Maverick_RA-100 | [@cetinajero](https://github.com/cetinajero) | 7-Jul-2023 | Yes |  |
+| <a name="Maverick_RA-425"></a> Maverick_RA-425 | [@cetinajero](https://github.com/cetinajero) | 7-Jul-2023 | Yes |  |
 | <a name="Midland_DBR2500"></a> Midland_DBR2500 | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.05% |
 | <a name="Polmar_DB-50M"></a> Polmar_DB-50M | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.03% |
 | <a name="Powerwerx_DB-750X"></a> Powerwerx_DB-750X | [Implied by AnyTone_5888UV](#user-content-AnyTone_5888UV) | 9-Dec-2022 | Yes | 0.01% |
@@ -413,11 +415,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 410
+**Drivers:** 412
 
-**Tested:** 86% (355/55) (93% of usage stats)
+**Tested:** 86% (357/55) (93% of usage stats)
 
-**Byte clean:** 90% (370/40)
+**Byte clean:** 90% (372/40)
 
 ## Meaning of this testing
 
