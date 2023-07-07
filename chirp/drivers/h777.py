@@ -734,3 +734,28 @@ class BF1904Radio(BF1901Radio):
     def match_model(cls, filedata, filename):
         # This model is only ever matched via metadata
         return False
+
+
+@directory.register
+class MAVERICKRA100Radio(BFM4Radio):
+    VENDOR = "Maverick"
+    MODEL = "RA-100"
+    ALIASES = []
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
+
+
+@directory.register
+class MAVERICKRA425Radio(BF1904Radio):
+    VENDOR = "Maverick"
+    MODEL = "RA-425"
+    ALIASES = []
+    _has_fm = False
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
