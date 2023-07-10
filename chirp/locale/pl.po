@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-09 17:54-0700\n"
-"PO-Revision-Date: 2023-07-05 10:40+0200\n"
+"PO-Revision-Date: 2023-07-10 11:48+0200\n"
 "Last-Translator: szporwolik\n"
 "Language-Team: Polish\n"
 "Language: pl\n"
@@ -643,7 +643,7 @@ msgstr "O programie"
 
 #: ../wxui/main.py:1635
 msgid "About CHIRP"
-msgstr "O CHIRP"
+msgstr "O programie CHIRP"
 
 #: ../wxui/query_sources.py:354
 msgid "All"
@@ -651,7 +651,7 @@ msgstr "Wszystkie"
 
 #: ../wxui/main.py:1183
 msgid "All Files"
-msgstr "Wszystkie poliku"
+msgstr "Wszystkie pliki"
 
 #: ../wxui/main.py:1194
 msgid "All supported formats|"
@@ -831,7 +831,7 @@ msgstr "Wytnij"
 
 #: ../wxui/memedit.py:454
 msgid "DTCS"
-msgstr "DTCS"
+msgstr "DTCS TX"
 
 #: ../wxui/memedit.py:500
 msgid ""
@@ -988,8 +988,8 @@ msgid ""
 "required."
 msgstr ""
 "DARMOWA baza przemienników, która dostarcza\n"
-"\vinformacje o przemiennikach w Europie.\n"
-"\vNie jest wymagane konto użytkownika."
+"informacji o przemiennikach w Europie.\n"
+"Nie jest wymagane konto użytkownika."
 
 #: ../wxui/developer.py:416
 msgid "Failed to load radio browser"
@@ -1339,9 +1339,8 @@ msgid "Limit Modes"
 msgstr "Ogranicz tryby"
 
 #: ../wxui/query_sources.py:537
-#, fuzzy
 msgid "Limit Status"
-msgstr "Ogranicz pasma"
+msgstr "Ogranicz status"
 
 #: ../wxui/query_sources.py:309 ../wxui/query_sources.py:568
 msgid "Limit results to this distance (km) from coordinates"
@@ -1365,8 +1364,8 @@ msgid ""
 "despite this risk?"
 msgstr ""
 "Ładowanie modułów może być ekstremalnie niebezpiecznie i prowadzić do "
-"uszkodzenia komputera, radiostacji lub obu. NIGDY nie ładuj modułu ze "
-"źródła, któremu nie ufasz, w szczególności pobranego nie ze strony projektu "
+"uszkodzenia komputera lub/oraz radiostacji. NIGDY nie ładuj modułu ze "
+"źródła, któremu nie ufasz, w szczególności nie pobranego ze strony projektu "
 "CHIRP (chirp.danplanet.com). Ładowanie modułu z innego źródła jest "
 "równoznaczne z udzielaniem dostępu do komputera oraz wszystkiego na nim! "
 "Kontynuować pomimo ryzyka?"
@@ -1614,7 +1613,7 @@ msgid ""
 msgstr ""
 "Proszę zauważyć, że tryb dewelopera jest przeznaczony dla deweloperów "
 "projektu CHIRP lub do użycia pod nadzorem dewelopera. Włącza on zachowania "
-"oraz funkcje, które mogą uszkodzić komputer oraz radiostację jeśli nie będą "
+"oraz funkcje, które mogą uszkodzić komputer oraz radiostację, jeśli nie będą "
 "wykorzystywane z EKSTREMALNĄ uwagą. Zostałeś ostrzeżony! Kontynuować?"
 
 #: ../wxui/common.py:183
@@ -1660,7 +1659,7 @@ msgstr "Źródło zapytań"
 
 #: ../wxui/memedit.py:456
 msgid "RX DTCS"
-msgstr "RX DTCS"
+msgstr "DTCS RX"
 
 #: ../wxui/main.py:944
 msgid "Radio"
@@ -1787,7 +1786,7 @@ msgstr "Pokaż lokalizację pliku debug"
 
 #: ../wxui/memedit.py:798
 msgid "Show extra fields"
-msgstr "Pokaż dodatkowe pola"
+msgstr "Pokazuj dodatkowe pola"
 
 #: ../wxui/memedit.py:1864
 msgid "Some memories are incompatible with this radio"
@@ -1876,7 +1875,7 @@ msgstr ""
 
 #: ../wxui/memedit.py:1548
 msgid "This Memory"
-msgstr "Ta pamięć"
+msgstr "Tą pamięć"
 
 #: ../drivers/id5100.py:333
 msgid ""
@@ -1937,7 +1936,7 @@ msgstr "To załaduje moduł ze strony zgłoszenia"
 
 #: ../wxui/memedit.py:359
 msgid "Tone"
-msgstr "Ton"
+msgstr "Ton TX"
 
 #: ../wxui/memedit.py:858
 msgid "Tone Mode"
@@ -1945,7 +1944,7 @@ msgstr "Tryb tonu"
 
 #: ../wxui/memedit.py:361
 msgid "Tone Squelch"
-msgstr "Blokada tonem"
+msgstr "Ton RX"
 
 #: ../wxui/memedit.py:303
 msgid "Tuning Step"
@@ -2099,11 +2098,11 @@ msgstr "bajtów każdy"
 
 #: ../wxui/main.py:1640
 msgid "disabled"
-msgstr "wyłączone"
+msgstr "wyłączony"
 
 #: ../wxui/main.py:1640
 msgid "enabled"
-msgstr "włączone"
+msgstr "włączony"
 
 #: ../drivers/vx5.py:116
 #, python-brace-format
