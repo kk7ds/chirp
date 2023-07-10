@@ -658,6 +658,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         rf.valid_name_length = 10
         rf.valid_power_levels = UVK5_POWER_LEVELS
         rf.valid_special_chans = list(SPECIALS.keys())
+        rf.valid_duplexes = ["", "-", "+", "off"]
 
         # hack so we can input any frequency,
         # the 0.1 and 0.01 steps don't work unfortunately
@@ -703,6 +704,9 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 
     def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
+
+        if mem.duplex == 'off':
+            return msgs
 
         # find tx frequency
         if mem.duplex == '-':
@@ -864,7 +868,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             # actually the step and duplex are overwritten by chirp based on
             # bandplan. they are here to document sane defaults for IARU r1
             # mem.tuning_step = 25.0
-            # mem.duplex = "off"
+            # mem.duplex = ""
 
             return mem
 
@@ -886,7 +890,12 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             mem.duplex = ''
         else:
             if _mem.shift == FLAGS1_OFFSET_MINUS:
-                mem.duplex = '-'
+                if _mem.freq == _mem.offset:
+                    # fake tx disable by setting tx to 0MHz
+                    mem.duplex = 'off'
+                    mem.offset = 0
+                else:
+                    mem.duplex = '-'
             elif _mem.shift == FLAGS1_OFFSET_PLUS:
                 mem.duplex = '+'
             else:
@@ -1940,13 +1949,17 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         _mem.freq = mem.freq/10
         _mem.offset = mem.offset/10
 
-        if mem.duplex == "off" or mem.duplex == "":
+        if mem.duplex == "":
             _mem.offset = 0
             _mem.shift = 0
         elif mem.duplex == '-':
             _mem.shift = FLAGS1_OFFSET_MINUS
         elif mem.duplex == '+':
             _mem.shift = FLAGS1_OFFSET_PLUS
+        elif mem.duplex == 'off':
+            # we fake tx disable by setting the tx freq to 0MHz
+            _mem.shift = FLAGS1_OFFSET_MINUS
+            _mem.offset = _mem.freq
 
         # set band
         if number < 200:
