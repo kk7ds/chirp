@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-09 17:54-0700\n"
-"PO-Revision-Date: 2023-07-05 01:32-0400\n"
+"PO-Revision-Date: 2023-07-10 17:07-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1805,9 +1805,8 @@ msgid "Limit Modes"
 msgstr "Modos límite"
 
 #: ../wxui/query_sources.py:537
-#, fuzzy
 msgid "Limit Status"
-msgstr "Bandas límite"
+msgstr "Estado límite"
 
 #: ../wxui/query_sources.py:309 ../wxui/query_sources.py:568
 msgid "Limit results to this distance (km) from coordinates"
