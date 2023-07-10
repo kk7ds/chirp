@@ -100,9 +100,10 @@ DUPLEXES = ["", "-", "+"]
 DTCS_POLARITY = ["NN", "NR", "RN", "RR"]
 TUNING_STEPS = [5., 10., 12.5, 15., 20., 25., 30., 50.]
 POWER_LEVELS = [
+    chirp_common.PowerLevel("Extra High", watts=7.0),
     chirp_common.PowerLevel("High", watts=5.5),
+    chirp_common.PowerLevel("Mid", watts=2.5),
     chirp_common.PowerLevel("Low", watts=0.5),
-    chirp_common.PowerLevel("Mid", watts=2.5)
 ]
 
 
@@ -364,4 +365,4 @@ class ICV86Radio(icf.IcomCloneModeRadio):
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number]) + \
-            repr(self._memobj.flags[(number)])
+            repr(self._memobj.used[(number)])
