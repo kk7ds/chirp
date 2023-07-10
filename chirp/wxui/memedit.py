@@ -876,7 +876,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             ChirpChoiceColumn('mode', self._radio,
                               valid_modes),
             ChirpChoiceColumn('tuning_step', self._radio,
-                              valid_tuning_steps),
+                              valid_tuning_steps,
+                              label=_('Tuning Step')),
             ChirpChoiceColumn('skip', self._radio,
                               valid_skips),
             power_col_cls('power', self._radio,
@@ -1380,7 +1381,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if errors:
             LOG.warning('Memory failed validation: %s' % mem)
             wx.MessageBox(_('Invalid edit: %s') % '; '.join(errors),
-                          'Invalid Entry')
+                          _('Invalid Entry'))
             event.Skip()
             return
         if warnings:
@@ -2104,7 +2105,7 @@ class ChirpMemPropDialog(wx.Dialog):
         self._pg = wx.propgrid.PropertyGrid(self._tabs,
                                             style=wx.propgrid.PG_BOLD_MODIFIED)
         self._pg.Bind(wx.propgrid.EVT_PG_CHANGED, self._mem_prop_changed)
-        self._tabs.InsertPage(0, self._pg, 'Values')
+        self._tabs.InsertPage(0, self._pg, _('Values'))
         page_index = 0
         self._extra_page = None
         self._dv_page = None

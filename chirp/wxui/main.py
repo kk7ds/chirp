@@ -757,6 +757,7 @@ class ChirpMain(wx.Frame):
 
         self._last_search_text = ''
         find_item = edit_menu.Append(wx.ID_FIND)
+        edit_menu.SetLabel(wx.ID_FIND, _('Find'))
         self.Bind(wx.EVT_MENU, self._menu_find, find_item)
 
         self._find_next_item = wx.NewId()
@@ -942,7 +943,7 @@ class ChirpMain(wx.Frame):
         menu_bar.Append(edit_menu, wx.GetStockLabel(wx.ID_EDIT))
         menu_bar.Append(view_menu, '&' + _('View'))
         menu_bar.Append(radio_menu, '&' + _('Radio'))
-        menu_bar.Append(help_menu, wx.GetStockLabel(wx.ID_HELP))
+        menu_bar.Append(help_menu, _('Help'))
 
         return menu_bar
 

@@ -529,7 +529,8 @@ class PrzemiennikiQueryDialog(QuerySourceDialog):
         else:
             self._limit_onlyworking = True
         self._onlyworkingfilter = wx.CheckBox(panel,
-                                              label=('Only working repeaters'))
+                                              label=_('Only working repeaters')
+                                              )
         self._onlyworkingfilter.SetValue(self._limit_onlyworking)
         CONF.set_bool('workingstatus', self._limit_onlyworking, self._section)
         self.Bind(wx.EVT_CHECKBOX, self._select_workingstatus,
