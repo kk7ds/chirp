@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-09 17:54-0700\n"
+"POT-Creation-Date: 2023-07-10 15:13-0700\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -37,17 +37,17 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr ""
 
-#: ../wxui/memedit.py:1538
+#: ../wxui/memedit.py:1552
 #, fuzzy, python-format
 msgid "%i Memories"
 msgstr "Μνήμες"
 
-#: ../wxui/memedit.py:1545
+#: ../wxui/memedit.py:1559
 #, fuzzy, python-format
 msgid "%i Memories and shift all up"
 msgstr "Διαγραφή %i μνημών και μετακίνηση όλων προς τα επάνω"
 
-#: ../wxui/memedit.py:1541
+#: ../wxui/memedit.py:1555
 #, fuzzy, python-format
 msgid "%i Memories and shift block up"
 msgstr "Διαγραφή %i μνημών και μετακίνηση ομάδας προς τα επάνω"
@@ -61,7 +61,7 @@ msgstr ""
 msgid "(none)"
 msgstr "(καμία)"
 
-#: ../wxui/memedit.py:1860
+#: ../wxui/memedit.py:1874
 #, python-format
 msgid "...and %i more"
 msgstr ""
@@ -659,7 +659,7 @@ msgstr "Παρουσιάστηκε ένα σφάλμα"
 msgid "Applying settings"
 msgstr "Εφαρμογή ρυθμίσεων"
 
-#: ../wxui/developer.py:476
+#: ../wxui/developer.py:491
 msgid "Available modules"
 msgstr ""
 
@@ -697,7 +697,7 @@ msgid ""
 "will happen now."
 msgstr ""
 
-#: ../wxui/memedit.py:1224
+#: ../wxui/memedit.py:1238
 #, python-format
 msgid ""
 "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
@@ -711,26 +711,26 @@ msgstr "Αρχεία ειδώλου CHIRP"
 msgid "Choice Required"
 msgstr "Απαιτείται επιλογή"
 
-#: ../wxui/memedit.py:1203
+#: ../wxui/memedit.py:1217
 #, python-format
 msgid "Choose %s DTCS Code"
 msgstr "Επιλέξτε κωδικό DTCS %s"
 
-#: ../wxui/memedit.py:1200
+#: ../wxui/memedit.py:1214
 #, python-format
 msgid "Choose %s Tone"
 msgstr "Επιλέξτε τόνο %s"
 
-#: ../wxui/memedit.py:1234
+#: ../wxui/memedit.py:1248
 msgid "Choose Cross Mode"
 msgstr ""
 
-#: ../wxui/memedit.py:1264
+#: ../wxui/memedit.py:1278
 #, fuzzy
 msgid "Choose duplex"
 msgstr "Επιλογή duplex"
 
-#: ../wxui/developer.py:475
+#: ../wxui/developer.py:490
 #, python-format
 msgid "Choose the module to load from issue %i:"
 msgstr ""
@@ -773,7 +773,7 @@ msgstr "Κλείσιμο"
 msgid "Close file"
 msgstr "Κλείσιμο αρχείου"
 
-#: ../wxui/memedit.py:1598
+#: ../wxui/memedit.py:1612
 #, fuzzy, python-format
 msgid "Cluster %i memories"
 msgstr "Διαγραφή %i Μνημών"
@@ -796,7 +796,7 @@ msgid ""
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
 msgstr ""
 
-#: ../wxui/memedit.py:1523
+#: ../wxui/memedit.py:1537
 msgid "Copy"
 msgstr ""
 
@@ -813,7 +813,7 @@ msgstr ""
 msgid "Custom..."
 msgstr "Προσαρμοσμένη..."
 
-#: ../wxui/memedit.py:1519
+#: ../wxui/memedit.py:1533
 #, fuzzy
 msgid "Cut"
 msgstr "Χώρα"
@@ -830,7 +830,7 @@ msgstr ""
 "Πολικότητα\n"
 "DTCS"
 
-#: ../wxui/memedit.py:2113
+#: ../wxui/memedit.py:2127
 msgid "DV Memory"
 msgstr "Μνήμη DV"
 
@@ -842,7 +842,7 @@ msgstr ""
 msgid "Dec"
 msgstr "Dec"
 
-#: ../wxui/memedit.py:1532
+#: ../wxui/memedit.py:1546
 msgid "Delete"
 msgstr "Διαγραφή"
 
@@ -855,11 +855,11 @@ msgstr "Λειτουργία προγραμματιστή"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 
-#: ../wxui/memedit.py:1632
+#: ../wxui/memedit.py:1646
 msgid "Diff Raw Memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2038
+#: ../wxui/memedit.py:2052
 #, fuzzy
 msgid "Digital Code"
 msgstr "Ψηφιακός Κωδικός"
@@ -902,12 +902,12 @@ msgstr "Οδηγίες λήψης"
 msgid "Duplex"
 msgstr ""
 
-#: ../wxui/memedit.py:2068
+#: ../wxui/memedit.py:2082
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Επεξεργασία λεπτομερειών για %i μνήμες"
 
-#: ../wxui/memedit.py:2066
+#: ../wxui/memedit.py:2080
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Επεξεργασία λεπτομερειών για τη μνήμη %i"
@@ -925,11 +925,11 @@ msgstr ""
 msgid "Enter Frequency"
 msgstr "Εισάγετε συχνότητα"
 
-#: ../wxui/memedit.py:1251
+#: ../wxui/memedit.py:1265
 msgid "Enter Offset (MHz)"
 msgstr ""
 
-#: ../wxui/memedit.py:1243
+#: ../wxui/memedit.py:1257
 msgid "Enter TX Frequency (MHz)"
 msgstr "Εισάγετε συχνότητα εκπομπής (MHz)"
 
@@ -959,7 +959,7 @@ msgstr "Σφάλμα επικοινωνίας με τον πομποδέκτη"
 msgid "Experimental driver"
 msgstr "Πειραματικός οδηγός"
 
-#: ../wxui/memedit.py:1998
+#: ../wxui/memedit.py:2012
 msgid "Export can only write CSV files"
 msgstr "Η εξαγωγή είναι δυνατή μόνο σε αρχεία CSV"
 
@@ -967,7 +967,7 @@ msgstr "Η εξαγωγή είναι δυνατή μόνο σε αρχεία CSV
 msgid "Export to CSV"
 msgstr "Εξαγωγή σε αρχείο μορφής .CSV"
 
-#: ../wxui/memedit.py:2102
+#: ../wxui/memedit.py:2116
 msgid "Extra"
 msgstr "Περισσότερα"
 
@@ -1213,15 +1213,15 @@ msgstr "GMRS"
 msgid "Getting settings"
 msgstr "Λήψη ρυθμίσεων"
 
-#: ../wxui/memedit.py:793
+#: ../wxui/memedit.py:801
 msgid "Goto"
 msgstr "Μετάβαση σε"
 
-#: ../wxui/memedit.py:825
+#: ../wxui/memedit.py:833
 msgid "Goto Memory"
 msgstr "Μετάβαση σε Μνήμη"
 
-#: ../wxui/memedit.py:824
+#: ../wxui/memedit.py:832
 msgid "Goto Memory:"
 msgstr "Μετάβαση σε Μνήμη:"
 
@@ -1233,7 +1233,7 @@ msgstr "Βοήθεια..."
 msgid "Hex"
 msgstr "Hex"
 
-#: ../wxui/memedit.py:802
+#: ../wxui/memedit.py:810
 #, fuzzy
 msgid "Hide empty memories"
 msgstr "Αντικατάσταση μνημών;"
@@ -1263,11 +1263,11 @@ msgstr ""
 msgid "Info"
 msgstr "Πληροφορίες"
 
-#: ../wxui/memedit.py:1226
+#: ../wxui/memedit.py:1240
 msgid "Information"
 msgstr "Πληροφορίες"
 
-#: ../wxui/memedit.py:1513
+#: ../wxui/memedit.py:1527
 msgid "Insert Row Above"
 msgstr "Εισαγωγή γραμμής επάνω"
 
@@ -1289,7 +1289,7 @@ msgstr ""
 msgid "Invalid ZIP code"
 msgstr "Μη έγκυρος ΤΚ"
 
-#: ../wxui/memedit.py:1368 ../wxui/memedit.py:2193
+#: ../wxui/memedit.py:1382 ../wxui/memedit.py:2207
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Μη έγκυρη τιμή: %s"
@@ -1303,7 +1303,7 @@ msgstr ""
 msgid "Invalid value: %r"
 msgstr "Μη έγκυρη τιμή: %r"
 
-#: ../wxui/developer.py:486
+#: ../wxui/developer.py:512
 msgid "Issue number:"
 msgstr ""
 
@@ -1342,7 +1342,7 @@ msgstr ""
 msgid "Load Module"
 msgstr "Φόρτωση Module"
 
-#: ../wxui/main.py:936 ../wxui/developer.py:487
+#: ../wxui/main.py:936 ../wxui/developer.py:513
 #, fuzzy
 msgid "Load module from issue"
 msgstr "Φόρτωση Module"
@@ -1369,7 +1369,7 @@ msgstr "Γεωγραφικό μήκος"
 msgid "Memories"
 msgstr "Μνήμες"
 
-#: ../wxui/memedit.py:1407
+#: ../wxui/memedit.py:1421
 #, python-format
 msgid "Memory %i is not deletable"
 msgstr "Η μνήμη %i δεν μπορεί να διαγραφεί"
@@ -1414,11 +1414,11 @@ msgstr ""
 msgid "More than one port found: %s"
 msgstr "Βρέθηκαν περισσότερες από μία θύρες: %s"
 
-#: ../wxui/memedit.py:789
+#: ../wxui/memedit.py:797
 msgid "Move Down"
 msgstr ""
 
-#: ../wxui/memedit.py:779
+#: ../wxui/memedit.py:787
 msgid "Move Up"
 msgstr ""
 
@@ -1430,15 +1430,15 @@ msgstr ""
 msgid "New version available"
 msgstr "Διαθέσιμη νέα έκδοση"
 
-#: ../wxui/memedit.py:1668
+#: ../wxui/memedit.py:1682
 msgid "No empty rows below!"
 msgstr "Καμία κενή σειρά από κάτω!"
 
-#: ../wxui/developer.py:502
+#: ../wxui/developer.py:528
 msgid "No modules found"
 msgstr ""
 
-#: ../wxui/developer.py:501
+#: ../wxui/developer.py:527
 #, python-format
 msgid "No modules found in issue %i"
 msgstr ""
@@ -1452,7 +1452,7 @@ msgstr "Κανένα αποτέλεσμα!"
 msgid "No results!"
 msgstr "Κανένα αποτέλεσμα!"
 
-#: ../wxui/memedit.py:824
+#: ../wxui/memedit.py:832
 msgid "Number"
 msgstr "Αριθμός"
 
@@ -1521,7 +1521,7 @@ msgstr "Προαιρετικό: 45.0000"
 msgid "Optional: County, Hospital, etc"
 msgstr "Προαιρετικό: Επαρχία, Νοσοκομείο κλπ"
 
-#: ../wxui/memedit.py:1801
+#: ../wxui/memedit.py:1815
 msgid "Overwrite memories?"
 msgstr "Αντικατάσταση μνημών;"
 
@@ -1536,26 +1536,26 @@ msgstr ""
 msgid "Parsing"
 msgstr ""
 
-#: ../wxui/memedit.py:1527
+#: ../wxui/memedit.py:1541
 msgid "Paste"
 msgstr ""
 
-#: ../wxui/memedit.py:1795
+#: ../wxui/memedit.py:1809
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr ""
 
-#: ../wxui/memedit.py:1798
+#: ../wxui/memedit.py:1812
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1792
+#: ../wxui/memedit.py:1806
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1789
+#: ../wxui/memedit.py:1803
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
@@ -1633,7 +1633,7 @@ msgstr "Προεπισκόπηση εκτύπωσης"
 msgid "Printing"
 msgstr "Εκτύπωση"
 
-#: ../wxui/memedit.py:1506
+#: ../wxui/memedit.py:1520
 msgid "Properties"
 msgstr "Ιδιότητες"
 
@@ -1670,7 +1670,7 @@ msgid ""
 "and try again."
 msgstr ""
 
-#: ../wxui/query_sources.py:819
+#: ../wxui/query_sources.py:825
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 
@@ -1737,6 +1737,10 @@ msgstr "Αποθήκευση αρχείου"
 msgid "Saved settings"
 msgstr "Ρυθμίσεις αποθηκεύθηκαν"
 
+#: ../wxui/developer.py:503
+msgid "Security Risk"
+msgstr ""
+
 #: ../wxui/main.py:855
 msgid "Select Bandplan"
 msgstr "Επιλογή χάρτη συχνοτήτων"
@@ -1761,7 +1765,7 @@ msgstr "Υπηρεσία"
 msgid "Settings"
 msgstr "Ρυθμίσεις"
 
-#: ../wxui/memedit.py:1624
+#: ../wxui/memedit.py:1638
 msgid "Show Raw Memory"
 msgstr ""
 
@@ -1769,38 +1773,38 @@ msgstr ""
 msgid "Show debug log location"
 msgstr "Εμφάνιση τοποθεσίας αρχείου καταγραφής αποσφαλμάτωσης"
 
-#: ../wxui/memedit.py:798
+#: ../wxui/memedit.py:806
 msgid "Show extra fields"
 msgstr ""
 
-#: ../wxui/memedit.py:1864
+#: ../wxui/memedit.py:1878
 msgid "Some memories are incompatible with this radio"
 msgstr "Κάποιες μνήμες δεν είναι συμβατές με αυτόν τον πομποδέκτη"
 
-#: ../wxui/memedit.py:1742
+#: ../wxui/memedit.py:1756
 msgid "Some memories are not deletable"
 msgstr "Κάποιες μνήμες δεν είναι δυνατόν να διαγραφούν"
 
-#: ../wxui/memedit.py:1586
+#: ../wxui/memedit.py:1600
 #, fuzzy, python-format
 msgid "Sort %i memories"
 msgstr "Διαγραφή %i Μνημών"
 
-#: ../wxui/memedit.py:1589
+#: ../wxui/memedit.py:1603
 #, python-format
 msgid "Sort %i memories ascending"
 msgstr ""
 
-#: ../wxui/memedit.py:1608
+#: ../wxui/memedit.py:1622
 #, python-format
 msgid "Sort %i memories descending"
 msgstr ""
 
-#: ../wxui/memedit.py:1483
+#: ../wxui/memedit.py:1497
 msgid "Sort by column:"
 msgstr ""
 
-#: ../wxui/memedit.py:1482
+#: ../wxui/memedit.py:1496
 #, fuzzy
 msgid "Sort memories"
 msgstr "Αντικατάσταση μνημών;"
@@ -1845,6 +1849,13 @@ msgid ""
 "download to a CHIRP Radio Images (*.img) file.\n"
 msgstr ""
 
+#: ../wxui/developer.py:500
+msgid ""
+"The author of this module is not a recognized CHIRP developer. It is "
+"recommended that you not load this module as it could pose a security risk. "
+"Proceed anyway?"
+msgstr ""
+
 #: ../wxui/main.py:1314
 #, python-format
 msgid ""
@@ -1855,7 +1866,7 @@ msgid ""
 "memories across, or proceed with the import?"
 msgstr ""
 
-#: ../wxui/memedit.py:1548
+#: ../wxui/memedit.py:1562
 #, fuzzy
 msgid "This Memory"
 msgstr "Μνήμη DV"
@@ -1890,12 +1901,12 @@ msgstr ""
 "δυνατοτήτων!\n"
 "Σας προειδοποιήσαμε. Προχωράτε με δική σας ευθύνη!"
 
-#: ../wxui/memedit.py:1552
+#: ../wxui/memedit.py:1566
 #, fuzzy
 msgid "This memory and shift all up"
 msgstr "Διαγραφή %i μνημών και μετακίνηση όλων προς τα επάνω"
 
-#: ../wxui/memedit.py:1550
+#: ../wxui/memedit.py:1564
 #, fuzzy
 msgid "This memory and shift block up"
 msgstr "Διαγραφή %i μνημών και μετακίνηση ομάδας προς τα επάνω"
@@ -1909,7 +1920,7 @@ msgid ""
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
 
-#: ../drivers/uvk5.py:1866
+#: ../drivers/uvk5.py:1875
 msgid ""
 "This should only be enabled if you are using modified firmware that supports "
 "wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
@@ -1917,7 +1928,7 @@ msgid ""
 "own risk!"
 msgstr ""
 
-#: ../wxui/developer.py:484
+#: ../wxui/developer.py:510
 msgid "This will load a module from a website issue"
 msgstr ""
 
@@ -1925,7 +1936,7 @@ msgstr ""
 msgid "Tone"
 msgstr "Τόνος"
 
-#: ../wxui/memedit.py:858
+#: ../wxui/memedit.py:866
 msgid "Tone Mode"
 msgstr "Τύπος τόνου"
 
@@ -1947,7 +1958,7 @@ msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
 
-#: ../wxui/memedit.py:1291
+#: ../wxui/memedit.py:1305
 msgid "Unable to edit memory before radio is loaded"
 msgstr ""
 
@@ -2046,11 +2057,11 @@ msgstr "Εμφάνιση"
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/memedit.py:1375
+#: ../wxui/memedit.py:1389
 msgid "Warning"
 msgstr "Προειδοποίηση"
 
-#: ../wxui/memedit.py:1374
+#: ../wxui/memedit.py:1388
 #, python-format
 msgid "Warning: %s"
 msgstr "Προειδοποίηση: %s"
