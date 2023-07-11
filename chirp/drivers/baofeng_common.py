@@ -111,7 +111,7 @@ def _get_radio_firmware_version(radio):
         # sending the read request
         _rawsend(radio, frame)
 
-        if addr != 0x1E80:
+        if radio._ack_block and addr != 0x1E80:
             ack = _rawrecv(radio, 1)
             if ack != b"\x06":
                 raise errors.RadioError(
