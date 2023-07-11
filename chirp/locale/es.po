@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-10 15:21-0700\n"
-"PO-Revision-Date: 2023-07-10 17:07-0400\n"
+"PO-Revision-Date: 2023-07-10 20:05-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1192,9 +1192,8 @@ msgid "Cross mode"
 msgstr "Modo cruzado"
 
 #: ../wxui/clone.py:407
-#, fuzzy
 msgid "Custom Port"
-msgstr "Ingresar puerto personalizado:"
+msgstr "Puerto personalizado"
 
 #: ../wxui/clone.py:36
 msgid "Custom..."
@@ -1771,9 +1770,8 @@ msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "%(value)s inválido (usa grados decimales)"
 
 #: ../wxui/memedit.py:1384
-#, fuzzy
 msgid "Invalid Entry"
-msgstr "Edición inválida: %s"
+msgstr "Entrada inválida"
 
 #: ../wxui/query_sources.py:110
 msgid "Invalid ZIP code"
@@ -1964,7 +1962,7 @@ msgstr "Solo pestañas de memorias pueden ser exportadas"
 
 #: ../wxui/query_sources.py:532
 msgid "Only working repeaters"
-msgstr ""
+msgstr "Sólo repetidores funcionando"
 
 #: ../wxui/main.py:974 ../wxui/main.py:1324
 msgid "Open"
@@ -2263,7 +2261,7 @@ msgstr "Ajustes guardados"
 
 #: ../wxui/developer.py:503
 msgid "Security Risk"
-msgstr ""
+msgstr "Riesgo de seguridad"
 
 #: ../wxui/main.py:856
 msgid "Select Bandplan"
@@ -2392,6 +2390,9 @@ msgid ""
 "recommended that you not load this module as it could pose a security risk. "
 "Proceed anyway?"
 msgstr ""
+"El autor de este modulo no está reconocido por el desarrollador de CHIRP. Se "
+"recomienda que no cargues este modulo ya que podría poner un riesgo de "
+"seguridad. ¿Proceder de todos modos?"
 
 #: ../wxui/main.py:1315
 #, python-format
@@ -2605,7 +2606,7 @@ msgstr "Valor debe ser cero o superior"
 
 #: ../wxui/memedit.py:2108
 msgid "Values"
-msgstr ""
+msgstr "Valores"
 
 #: ../wxui/clone.py:243
 msgid "Vendor"
