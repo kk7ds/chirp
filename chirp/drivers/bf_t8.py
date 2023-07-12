@@ -902,12 +902,14 @@ class RetevisRB27V(RetevisRB27B):
 class RetevisRB627B(RetevisRB27B):
     VENDOR = "Retevis"
     MODEL = "RB627B"
-    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.50),
+    DUPLEXES = ['', '-', '+', 'off']
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
                     chirp_common.PowerLevel("Low", watts=0.50)]
+    ODD_SPLIT = False
 
     _upper = 16
-    _pmr = True
-    _frs = _gmrs = _murs = False
+    _pmr = True    
+    _frs = _murs = _pmr = False
 
 
 @directory.register
