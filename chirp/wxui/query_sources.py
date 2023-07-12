@@ -311,7 +311,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self._add_grid(grid, _('Distance'), self._dist)
 
         self._search = wx.TextCtrl(panel)
-        self._search.SetHint(_('Optional: County, Hospital, etc'))
+        self._search.SetHint(_('Optional: County, Hospital, etc.'))
         self._search.SetToolTip(_('Filter results with location matching '
                                   'this string'))
         self._add_grid(grid, _('Filter'), self._search)
