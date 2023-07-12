@@ -3,12 +3,12 @@
 # This file is distributed under the same license as the CHIRP package.
 # Dan Smith <dan@theine>, 2011.
 # Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>, 2023
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-10 15:21-0700\n"
+"POT-Creation-Date: 2023-07-12 21:11+0200\n"
 "PO-Revision-Date: 2023-03-11 18:37+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -571,7 +571,7 @@ msgstr ""
 "4. [MONI] tuşuna basın (ekranda \"WAIT\" görünecektir).\n"
 "5. TAMAM'a basın.\n"
 
-#: ../drivers/vx6.py:369 ../drivers/vx3.py:373
+#: ../drivers/vx3.py:373 ../drivers/vx6.py:369
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -586,7 +586,7 @@ msgstr ""
 "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna "
 "basın.\n"
 
-#: ../drivers/vx6.py:376 ../drivers/vx3.py:380
+#: ../drivers/vx3.py:380 ../drivers/vx6.py:376
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -770,7 +770,7 @@ msgstr ""
 "5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
 "6. İmajı cihaza yüklemek için TAMAM'a tıklayın.\n"
 
-#: ../drivers/uvb5.py:288 ../drivers/wouxun.py:214 ../drivers/tg_uv2p.py:223
+#: ../drivers/tg_uv2p.py:223 ../drivers/uvb5.py:288 ../drivers/wouxun.py:214
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -786,7 +786,7 @@ msgstr ""
 "5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
 "6. İmajı cihazdan indirmek için TAMAM'a tıklayın.\n"
 
-#: ../drivers/uvb5.py:296 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:231
+#: ../drivers/tg_uv2p.py:231 ../drivers/uvb5.py:296 ../drivers/wouxun.py:222
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1430,10 +1430,10 @@ msgstr ""
 "4 - Telsiz > Telsizden İndir\n"
 "5 - Arayüz kablosunu çıkarın! Aksi takdirde, sağ taraf sesi olmayacaktır!\n"
 
-#: ../drivers/mursv1.py:342 ../drivers/baofeng_wp970i.py:325
-#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
-#: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
-#: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364 ../drivers/bf_t1.py:483
+#: ../drivers/baofeng_wp970i.py:325 ../drivers/bf_t1.py:483
+#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392 ../drivers/gmrsv2.py:364
+#: ../drivers/mursv1.py:342 ../drivers/tdxone_tdq8a.py:455
+#: ../drivers/uv5x3.py:418 ../drivers/uv6r.py:342
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1534,7 +1534,7 @@ msgstr ""
 "5 - Arayüz kablosunu çıkarın, aksi takdirde sağ tarafta ses olmayacaktır!\n"
 "6 - Klon modundan çıkmak için telsizi kapatıp açın\n"
 
-#: ../drivers/btech.py:695 ../drivers/bf_t1.py:489
+#: ../drivers/bf_t1.py:489 ../drivers/btech.py:695
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1576,7 +1576,7 @@ msgstr ""
 "3 - Telsizinizi açın (şifre korumalıysa engelini kaldırın)\n"
 "4 - Başlatmak için TAMAM'a tıklayın.\n"
 
-#: ../drivers/vgc.py:599 ../drivers/lt725uv.py:497
+#: ../drivers/lt725uv.py:497 ../drivers/vgc.py:599
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1604,10 +1604,10 @@ msgstr ""
 "3 - Telsizinizi açın\n"
 "4 - Telsiz verilerinizin indirmesini gerçekleştirin\n"
 
-#: ../drivers/vgc.py:605 ../drivers/mursv1.py:348
 #: ../drivers/baofeng_wp970i.py:331 ../drivers/gmrsuv1.py:398
-#: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
-#: ../drivers/uv6r.py:348 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
+#: ../drivers/gmrsv2.py:370 ../drivers/lt725uv.py:503 ../drivers/mursv1.py:348
+#: ../drivers/tdxone_tdq8a.py:461 ../drivers/uv5x3.py:424
+#: ../drivers/uv6r.py:348 ../drivers/vgc.py:605
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1791,7 +1791,7 @@ msgstr "Sonuçları koordinatlardan bu mesafeye (km) sınırla"
 msgid "Load Module"
 msgstr "Modül Yükle"
 
-#: ../wxui/main.py:937 ../wxui/developer.py:513
+#: ../wxui/developer.py:513 ../wxui/main.py:937
 msgid "Load module from issue"
 msgstr "Kayıttan modül yükle"
 
@@ -1838,7 +1838,7 @@ msgstr "Hafızanın düzenlenebilmesi için bir bankada olması gerekir"
 msgid "Memory {num} not in bank {bank}"
 msgstr "{num} kaydı {bank} bankasında değil"
 
-#: ../wxui/query_sources.py:515 ../wxui/memedit.py:509
+#: ../wxui/memedit.py:509 ../wxui/query_sources.py:515
 msgid "Mode"
 msgstr "Mod"
 
@@ -1977,7 +1977,8 @@ msgid "Optional: 45.0000"
 msgstr "İsteğe bağlı: 45.0000"
 
 #: ../wxui/query_sources.py:314
-msgid "Optional: County, Hospital, etc"
+#, fuzzy
+msgid "Optional: County, Hospital, etc."
 msgstr "İsteğe bağlı: İlçe, Hastane vb."
 
 #: ../wxui/memedit.py:1816
@@ -2138,7 +2139,7 @@ msgstr "RX DTCS"
 msgid "Radio"
 msgstr "Telsiz"
 
-#: ../drivers/ft60.py:85 ../drivers/ft450d.py:495 ../drivers/ft817.py:408
+#: ../drivers/ft450d.py:495 ../drivers/ft60.py:85 ../drivers/ft817.py:408
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "Telsiz %i bloğunu onaylamadı"

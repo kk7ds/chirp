@@ -1,12 +1,12 @@
 # Spanish translations for CHIRP package.
 # Copyright (C) 2022 Dan Smith <dsmith@danplanet.com>
 # This file is distributed under the same license as the CHIRP package.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-10 15:21-0700\n"
+"POT-Creation-Date: 2023-07-12 21:11+0200\n"
 "PO-Revision-Date: 2023-07-10 20:05-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
@@ -595,7 +595,7 @@ msgstr ""
 "4. Presiona el interruptor [MONI] (\"WAIT\" aparecerá en la LCD).\n"
 "5. Presiona Aceptar.\n"
 
-#: ../drivers/vx6.py:369 ../drivers/vx3.py:373
+#: ../drivers/vx3.py:373 ../drivers/vx6.py:369
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -610,7 +610,7 @@ msgstr ""
 "4. <b>Después de cliquear Aceptar</b>, presiona la tecla [BAND] para enviar "
 "la imagen.\n"
 
-#: ../drivers/vx6.py:376 ../drivers/vx3.py:380
+#: ../drivers/vx3.py:380 ../drivers/vx6.py:376
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -800,7 +800,7 @@ msgstr ""
 "5. Asegúrate de que la radio esté sintonizada a un canal sin actividad.\n"
 "6. Cliquea Aceptar para cargar la imagen al dispositivo.\n"
 
-#: ../drivers/uvb5.py:288 ../drivers/wouxun.py:214 ../drivers/tg_uv2p.py:223
+#: ../drivers/tg_uv2p.py:223 ../drivers/uvb5.py:288 ../drivers/wouxun.py:214
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -816,7 +816,7 @@ msgstr ""
 "5. Asegúrate de que la radio esté sintonizada a un canal sin actividad.\n"
 "6. Cliquea Aceptar para descargar la imagen desde dispositivo.\n"
 
-#: ../drivers/uvb5.py:296 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:231
+#: ../drivers/tg_uv2p.py:231 ../drivers/uvb5.py:296 ../drivers/wouxun.py:222
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1468,10 +1468,10 @@ msgstr ""
 "5 - ¡Desconecta el cable de interfaz! ¡De lo contrario no habrá\n"
 "    audio del lado derecho!\n"
 
-#: ../drivers/mursv1.py:342 ../drivers/baofeng_wp970i.py:325
-#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
-#: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
-#: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364 ../drivers/bf_t1.py:483
+#: ../drivers/baofeng_wp970i.py:325 ../drivers/bf_t1.py:483
+#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392 ../drivers/gmrsv2.py:364
+#: ../drivers/mursv1.py:342 ../drivers/tdxone_tdq8a.py:455
+#: ../drivers/uv5x3.py:418 ../drivers/uv6r.py:342
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1575,7 +1575,7 @@ msgstr ""
 "    audio del lado derecho!\n"
 "6 - Apaga y enciende la radio para salir del modo de clonación\n"
 
-#: ../drivers/btech.py:695 ../drivers/bf_t1.py:489
+#: ../drivers/bf_t1.py:489 ../drivers/btech.py:695
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1617,7 +1617,7 @@ msgstr ""
 "3 - Enciende tu radio\n"
 "4 - Cliquea Aceptar para iniciar\n"
 
-#: ../drivers/vgc.py:599 ../drivers/lt725uv.py:497
+#: ../drivers/lt725uv.py:497 ../drivers/vgc.py:599
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1645,10 +1645,10 @@ msgstr ""
 "3 - Enciende tu radio\n"
 "4 - Haz la descarga de tus datos de radio\n"
 
-#: ../drivers/vgc.py:605 ../drivers/mursv1.py:348
 #: ../drivers/baofeng_wp970i.py:331 ../drivers/gmrsuv1.py:398
-#: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
-#: ../drivers/uv6r.py:348 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
+#: ../drivers/gmrsv2.py:370 ../drivers/lt725uv.py:503 ../drivers/mursv1.py:348
+#: ../drivers/tdxone_tdq8a.py:461 ../drivers/uv5x3.py:424
+#: ../drivers/uv6r.py:348 ../drivers/vgc.py:605
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1828,7 +1828,7 @@ msgstr "Limitar resultados a esta distancia (km) desde coordenadas"
 msgid "Load Module"
 msgstr "Cargar modulo"
 
-#: ../wxui/main.py:937 ../wxui/developer.py:513
+#: ../wxui/developer.py:513 ../wxui/main.py:937
 msgid "Load module from issue"
 msgstr "Cargar módulo desde problema"
 
@@ -1874,7 +1874,7 @@ msgstr "Memoria debe estar en un banco para ser editada"
 msgid "Memory {num} not in bank {bank}"
 msgstr "Memoria {num} no en banco {bank}"
 
-#: ../wxui/query_sources.py:515 ../wxui/memedit.py:509
+#: ../wxui/memedit.py:509 ../wxui/query_sources.py:515
 msgid "Mode"
 msgstr "Modo"
 
@@ -2009,7 +2009,8 @@ msgid "Optional: 45.0000"
 msgstr "Opcional: 45.0000"
 
 #: ../wxui/query_sources.py:314
-msgid "Optional: County, Hospital, etc"
+#, fuzzy
+msgid "Optional: County, Hospital, etc."
 msgstr "Opcional: País, Hospital, etc"
 
 #: ../wxui/memedit.py:1816
@@ -2170,7 +2171,7 @@ msgstr "RX DTCS"
 msgid "Radio"
 msgstr "Radio"
 
-#: ../drivers/ft60.py:85 ../drivers/ft450d.py:495 ../drivers/ft817.py:408
+#: ../drivers/ft450d.py:495 ../drivers/ft60.py:85 ../drivers/ft817.py:408
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "La radio no reconoció el bloque %i"
