@@ -1358,71 +1358,82 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
             rs = RadioSetting("firmware_msg.line2", "Firmware Message 2", val)
             other.append(rs)
 
-            if not HN5RV:
-                _msg = self._memobj.sixpoweron_msg
-                rs = RadioSetting("sixpoweron_msg.line1",
-                                  "6+Power-On Message 1",
-                                  RadioSettingValueString(
-                                      0, 7, _filter(_msg.line1)))
-                other.append(rs)
-                rs = RadioSetting("sixpoweron_msg.line2",
-                                  "6+Power-On Message 2",
-                                  RadioSettingValueString(
-                                      0, 7, _filter(_msg.line2)))
-                other.append(rs)
+            aux_settings = []
 
-                _msg = self._memobj.poweron_msg
-                rs = RadioSetting("poweron_msg.line1", "Power-On Message 1",
-                                  RadioSettingValueString(
-                                      0, 7, _filter(_msg.line1)))
-                other.append(rs)
-                rs = RadioSetting("poweron_msg.line2", "Power-On Message 2",
-                                  RadioSettingValueString(
-                                      0, 7, _filter(_msg.line2)))
-                other.append(rs)
+            _msg = self._memobj.sixpoweron_msg
+            rs = RadioSetting("sixpoweron_msg.line1",
+                              "6+Power-On Message 1",
+                              RadioSettingValueString(
+                                  0, 7, _filter(_msg.line1)))
+            aux_settings.append(rs)
+            rs = RadioSetting("sixpoweron_msg.line2",
+                              "6+Power-On Message 2",
+                              RadioSettingValueString(
+                                  0, 7, _filter(_msg.line2)))
+            aux_settings.append(rs)
 
-                rs = RadioSetting("ponmsg", "Power-On Message",
-                                  RadioSettingValueList(
-                                      PONMSG_LIST,
-                                      PONMSG_LIST[_settings.ponmsg]))
-                other.append(rs)
+            _msg = self._memobj.poweron_msg
+            rs = RadioSetting("poweron_msg.line1", "Power-On Message 1",
+                              RadioSettingValueString(
+                                  0, 7, _filter(_msg.line1)))
+            aux_settings.append(rs)
+            rs = RadioSetting("poweron_msg.line2", "Power-On Message 2",
+                              RadioSettingValueString(
+                                  0, 7, _filter(_msg.line2)))
+            aux_settings.append(rs)
 
-                if self._is_orig():
-                    limit = "limits_old"
-                else:
-                    limit = "limits_new"
+            rs = RadioSetting("ponmsg", "Power-On Message",
+                              RadioSettingValueList(
+                                  PONMSG_LIST,
+                                  PONMSG_LIST[_settings.ponmsg]))
+            aux_settings.append(rs)
 
-                vhf_limit = getattr(self._memobj, limit).vhf
-                rs = RadioSetting("%s.vhf.lower" % limit,
-                                  "VHF Lower Limit (MHz)",
-                                  RadioSettingValueInteger(1, 1000,
-                                                           vhf_limit.lower))
-                other.append(rs)
+            if self._is_orig():
+                limit = "limits_old"
+            else:
+                limit = "limits_new"
 
-                rs = RadioSetting("%s.vhf.upper" % limit,
-                                  "VHF Upper Limit (MHz)",
-                                  RadioSettingValueInteger(1, 1000,
-                                                           vhf_limit.upper))
-                other.append(rs)
+            vhf_limit = getattr(self._memobj, limit).vhf
+            rs = RadioSetting("%s.vhf.lower" % limit,
+                              "VHF Lower Limit (MHz)",
+                              RadioSettingValueInteger(1, 1000,
+                                                       vhf_limit.lower))
+            aux_settings.append(rs)
 
-                rs = RadioSetting("%s.vhf.enable" % limit, "VHF TX Enabled",
-                                  RadioSettingValueBoolean(vhf_limit.enable))
-                other.append(rs)
+            rs = RadioSetting("%s.vhf.upper" % limit,
+                              "VHF Upper Limit (MHz)",
+                              RadioSettingValueInteger(1, 1000,
+                                                       vhf_limit.upper))
+            aux_settings.append(rs)
 
-                uhf_limit = getattr(self._memobj, limit).uhf
-                rs = RadioSetting("%s.uhf.lower" % limit,
-                                  "UHF Lower Limit (MHz)",
-                                  RadioSettingValueInteger(1, 1000,
-                                                           uhf_limit.lower))
-                other.append(rs)
-                rs = RadioSetting("%s.uhf.upper" % limit,
-                                  "UHF Upper Limit (MHz)",
-                                  RadioSettingValueInteger(1, 1000,
-                                                           uhf_limit.upper))
-                other.append(rs)
-                rs = RadioSetting("%s.uhf.enable" % limit, "UHF TX Enabled",
-                                  RadioSettingValueBoolean(uhf_limit.enable))
-                other.append(rs)
+            rs = RadioSetting("%s.vhf.enable" % limit, "VHF TX Enabled",
+                              RadioSettingValueBoolean(vhf_limit.enable))
+            aux_settings.append(rs)
+
+            uhf_limit = getattr(self._memobj, limit).uhf
+            rs = RadioSetting("%s.uhf.lower" % limit,
+                              "UHF Lower Limit (MHz)",
+                              RadioSettingValueInteger(1, 1000,
+                                                       uhf_limit.lower))
+            aux_settings.append(rs)
+            rs = RadioSetting("%s.uhf.upper" % limit,
+                              "UHF Upper Limit (MHz)",
+                              RadioSettingValueInteger(1, 1000,
+                                                       uhf_limit.upper))
+            aux_settings.append(rs)
+            rs = RadioSetting("%s.uhf.enable" % limit, "UHF TX Enabled",
+                              RadioSettingValueBoolean(uhf_limit.enable))
+            aux_settings.append(rs)
+
+            hn5rv_warn = ('This setting will not be uploaded to your radio '
+                          'because some radios with your firmware version are '
+                          'known to be broken when CHIRP sends that data '
+                          'to them. Please see bug #10505 on the CHIRP '
+                          'issue tracker for more details.')
+            for setting in aux_settings:
+                if HN5RV:
+                    setting.set_warning(hn5rv_warn)
+                other.append(setting)
 
         if self.MODEL != "UV-6":
             workmode = RadioSettingGroup("workmode", "Work Mode Settings")
@@ -1716,7 +1727,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                           RadioSettingValueInteger(0, 50, _settings.pttlt))
         dtmf.append(rs)
 
-        if not self._is_orig() and self._aux_block and not HN5RV:
+        if not self._is_orig() and self._aux_block:
             service = RadioSettingGroup("service", "Service Settings")
             group.append(service)
 
@@ -1732,6 +1743,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                                       RadioSettingValueInteger(
                                           0, 123,
                                           getattr(_obj, "sql%i" % (index))))
+                    if HN5RV:
+                        rs.set_warning(hn5rv_warn)
                     service.append(rs)
 
         return group
