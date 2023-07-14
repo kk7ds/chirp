@@ -1,13 +1,13 @@
 # Spanish translations for CHIRP package.
 # Copyright (C) 2022 Dan Smith <dsmith@danplanet.com>
 # This file is distributed under the same license as the CHIRP package.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-12 21:11+0200\n"
-"PO-Revision-Date: 2023-07-10 20:05-0400\n"
+"PO-Revision-Date: 2023-07-13 23:59-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -2009,9 +2009,8 @@ msgid "Optional: 45.0000"
 msgstr "Opcional: 45.0000"
 
 #: ../wxui/query_sources.py:314
-#, fuzzy
 msgid "Optional: County, Hospital, etc."
-msgstr "Opcional: País, Hospital, etc"
+msgstr "Opcional: Condado, Hospital, etc."
 
 #: ../wxui/memedit.py:1816
 msgid "Overwrite memories?"
