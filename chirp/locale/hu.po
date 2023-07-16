@@ -2,12 +2,12 @@
 # Copyright (C) 2011 Dan Smith <dsmith@danplanet.com>
 # This file is distributed under the same license as the CHIRP package.
 # Dan Smith <dan@theine>, 2011.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-12 21:11+0200\n"
+"POT-Creation-Date: 2023-07-16 21:58+0200\n"
 "PO-Revision-Date: 2015-01-28 13:47+0100\n"
 "Last-Translator: Attila Joubert <joubert.attila@gmail.com>\n"
 "Language-Team: English\n"
@@ -377,7 +377,7 @@ msgid ""
 "5. Press OK.\n"
 msgstr ""
 
-#: ../drivers/vx3.py:373 ../drivers/vx6.py:369
+#: ../drivers/vx6.py:369 ../drivers/vx3.py:373
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -386,7 +386,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
 
-#: ../drivers/vx3.py:380 ../drivers/vx6.py:376
+#: ../drivers/vx6.py:376 ../drivers/vx3.py:380
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -481,7 +481,7 @@ msgid ""
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:753
+#: ../drivers/uv5r.py:778
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -491,7 +491,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:761
+#: ../drivers/uv5r.py:786
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -647,7 +647,7 @@ msgstr ""
 msgid "Amateur"
 msgstr ""
 
-#: ../wxui/common.py:531 ../wxui/common.py:557
+#: ../wxui/common.py:534 ../wxui/common.py:560
 msgid "An error has occurred"
 msgstr "Hiba történt"
 
@@ -687,7 +687,7 @@ msgstr ""
 msgid "Canada"
 msgstr ""
 
-#: ../wxui/common.py:420
+#: ../wxui/common.py:423
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -753,12 +753,12 @@ msgstr ""
 msgid "Cloning"
 msgstr "Klónozás"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:442 ../drivers/ft817.py:343
+#: ../drivers/ft450d.py:442 ../drivers/ft817.py:343 ../drivers/bj9900.py:133
 #, fuzzy
 msgid "Cloning from radio"
 msgstr "Letöltés a rádióról"
 
-#: ../drivers/bj9900.py:160 ../drivers/ft450d.py:471 ../drivers/ft817.py:381
+#: ../drivers/ft450d.py:471 ../drivers/ft817.py:381 ../drivers/bj9900.py:160
 #, fuzzy
 msgid "Cloning to radio"
 msgstr "Feltöltés a rádióra"
@@ -894,9 +894,14 @@ msgstr ""
 msgid "Download"
 msgstr ""
 
-#: ../wxui/main.py:812 ../wxui/main.py:981
+#: ../wxui/main.py:981
 #, fuzzy
 msgid "Download from radio"
+msgstr "Letöltés a rádióról"
+
+#: ../wxui/main.py:812
+#, fuzzy
+msgid "Download from radio..."
 msgstr "Letöltés a rádióról"
 
 #: ../wxui/clone.py:514
@@ -972,9 +977,14 @@ msgstr "Folytassam kísérleti driver-rel?"
 msgid "Export can only write CSV files"
 msgstr ""
 
-#: ../wxui/main.py:706 ../wxui/main.py:1338
+#: ../wxui/main.py:1338
 #, fuzzy
 msgid "Export to CSV"
+msgstr "Export fájlba"
+
+#: ../wxui/main.py:706
+#, fuzzy
+msgid "Export to CSV..."
 msgstr "Export fájlba"
 
 #: ../wxui/memedit.py:2117
@@ -1019,7 +1029,7 @@ msgstr ""
 msgid "Filter results with location matching this string"
 msgstr ""
 
-#: ../wxui/main.py:760 ../wxui/main.py:1408
+#: ../wxui/main.py:1408
 #, fuzzy
 msgid "Find"
 msgstr "RFinder"
@@ -1027,6 +1037,11 @@ msgstr "RFinder"
 #: ../wxui/main.py:766
 #, fuzzy
 msgid "Find Next"
+msgstr "RFinder"
+
+#: ../wxui/main.py:760
+#, fuzzy
+msgid "Find..."
 msgstr "RFinder"
 
 #: ../wxui/common.py:320
@@ -1072,10 +1087,10 @@ msgid ""
 "    no right-side audio!\n"
 msgstr ""
 
-#: ../drivers/baofeng_wp970i.py:325 ../drivers/bf_t1.py:483
-#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392 ../drivers/gmrsv2.py:364
-#: ../drivers/mursv1.py:342 ../drivers/tdxone_tdq8a.py:455
-#: ../drivers/uv5x3.py:418 ../drivers/uv6r.py:342
+#: ../drivers/uv6r.py:342 ../drivers/gmrsuv1.py:392
+#: ../drivers/tdxone_tdq8a.py:455 ../drivers/mursv1.py:342
+#: ../drivers/uv5x3.py:418 ../drivers/baofeng_wp970i.py:325
+#: ../drivers/btech.py:689 ../drivers/gmrsv2.py:364 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1141,7 +1156,7 @@ msgid ""
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
 
-#: ../drivers/bf_t1.py:489 ../drivers/btech.py:695
+#: ../drivers/btech.py:695 ../drivers/bf_t1.py:489
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1186,10 +1201,10 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/baofeng_wp970i.py:331 ../drivers/gmrsuv1.py:398
-#: ../drivers/gmrsv2.py:370 ../drivers/lt725uv.py:503 ../drivers/mursv1.py:348
-#: ../drivers/tdxone_tdq8a.py:461 ../drivers/uv5x3.py:424
-#: ../drivers/uv6r.py:348 ../drivers/vgc.py:605
+#: ../drivers/uv6r.py:348 ../drivers/lt725uv.py:503 ../drivers/gmrsuv1.py:398
+#: ../drivers/tdxone_tdq8a.py:461 ../drivers/mursv1.py:348
+#: ../drivers/uv5x3.py:424 ../drivers/baofeng_wp970i.py:331
+#: ../drivers/vgc.py:605 ../drivers/gmrsv2.py:370
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1226,10 +1241,6 @@ msgstr ""
 msgid "Getting settings"
 msgstr "%s információk beolvasása"
 
-#: ../wxui/memedit.py:801
-msgid "Goto"
-msgstr ""
-
 #: ../wxui/memedit.py:833
 #, fuzzy
 msgid "Goto Memory"
@@ -1239,6 +1250,10 @@ msgstr "ez a memória"
 #, fuzzy
 msgid "Goto Memory:"
 msgstr "ez a memória"
+
+#: ../wxui/memedit.py:801
+msgid "Goto..."
+msgstr ""
 
 #: ../wxui/main.py:946
 msgid "Help"
@@ -1268,7 +1283,7 @@ msgstr "Importálás"
 
 #: ../wxui/main.py:700
 #, fuzzy
-msgid "Import from file"
+msgid "Import from file..."
 msgstr "Importálás fájlból"
 
 #: ../wxui/main.py:1322
@@ -1363,12 +1378,18 @@ msgid "Limit results to this distance (km) from coordinates"
 msgstr ""
 
 #: ../wxui/main.py:712
-msgid "Load Module"
+#, fuzzy
+msgid "Load Module..."
 msgstr "Modul betöltése"
 
-#: ../wxui/developer.py:513 ../wxui/main.py:937
+#: ../wxui/developer.py:513
 #, fuzzy
 msgid "Load module from issue"
+msgstr "Modul betöltése"
+
+#: ../wxui/main.py:937
+#, fuzzy
+msgid "Load module from issue..."
 msgstr "Modul betöltése"
 
 #: ../wxui/main.py:1606
@@ -1597,7 +1618,7 @@ msgstr ""
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/common.py:596
+#: ../wxui/common.py:599
 #, python-format
 msgid "Path %s does not exist"
 msgstr ""
@@ -1692,7 +1713,7 @@ msgstr "RX DTCS kód"
 msgid "Radio"
 msgstr "Rádió"
 
-#: ../drivers/ft450d.py:495 ../drivers/ft60.py:85 ../drivers/ft817.py:408
+#: ../drivers/ft60.py:85 ../drivers/ft450d.py:495 ../drivers/ft817.py:408
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr ""
@@ -1713,7 +1734,7 @@ msgstr ""
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 
-#: ../wxui/common.py:422
+#: ../wxui/common.py:425
 msgid "Refresh required"
 msgstr ""
 
@@ -1782,7 +1803,7 @@ msgstr ""
 
 #: ../wxui/main.py:856
 #, fuzzy
-msgid "Select Bandplan"
+msgid "Select Bandplan..."
 msgstr "Oszlopok kiválasztása"
 
 #: ../wxui/query_sources.py:376 ../wxui/query_sources.py:589
@@ -2023,7 +2044,7 @@ msgid ""
 "model and try again."
 msgstr ""
 
-#: ../wxui/common.py:603
+#: ../wxui/common.py:606
 #, fuzzy, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Ennél a modellnél nem változtatható"
@@ -2046,9 +2067,14 @@ msgstr ""
 msgid "Upload instructions"
 msgstr "{instructions}"
 
-#: ../wxui/main.py:820 ../wxui/main.py:983
+#: ../wxui/main.py:983
 #, fuzzy
 msgid "Upload to radio"
+msgstr "Feltöltés a rádióra"
+
+#: ../wxui/main.py:820
+#, fuzzy
+msgid "Upload to radio..."
 msgstr "Feltöltés a rádióra"
 
 #: ../wxui/common.py:312
@@ -2069,12 +2095,12 @@ msgstr ""
 msgid "Value does not fit in %i bits"
 msgstr ""
 
-#: ../wxui/common.py:454
+#: ../wxui/common.py:457
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr ""
 
-#: ../wxui/common.py:458
+#: ../wxui/common.py:461
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr ""
@@ -2101,7 +2127,7 @@ msgstr "Gyártó"
 msgid "View"
 msgstr "Né_zet"
 
-#: ../wxui/common.py:406
+#: ../wxui/common.py:409
 msgid "WARNING!"
 msgstr ""
 

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-12 21:11+0200\n"
+"POT-Creation-Date: 2023-07-16 21:58+0200\n"
 "PO-Revision-Date: 2023-07-13 23:59-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
@@ -595,7 +595,7 @@ msgstr ""
 "4. Presiona el interruptor [MONI] (\"WAIT\" aparecerá en la LCD).\n"
 "5. Presiona Aceptar.\n"
 
-#: ../drivers/vx3.py:373 ../drivers/vx6.py:369
+#: ../drivers/vx6.py:369 ../drivers/vx3.py:373
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -610,7 +610,7 @@ msgstr ""
 "4. <b>Después de cliquear Aceptar</b>, presiona la tecla [BAND] para enviar "
 "la imagen.\n"
 
-#: ../drivers/vx3.py:380 ../drivers/vx6.py:376
+#: ../drivers/vx6.py:376 ../drivers/vx3.py:380
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -766,7 +766,7 @@ msgstr ""
 "   mientras enciendes la radio.\n"
 "4. Presiona la tecla [D/MR(MW)] (\"--WAIT--\" aparecerá en la LCD).\n"
 
-#: ../drivers/uv5r.py:753
+#: ../drivers/uv5r.py:778
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -783,7 +783,7 @@ msgstr ""
 "5. Asegúrate de que la radio esté sintonizada a un canal sin actividad.\n"
 "6. Cliquea Aceptar para descargar la imagen desde el dispositivo.\n"
 
-#: ../drivers/uv5r.py:761
+#: ../drivers/uv5r.py:786
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1021,7 +1021,7 @@ msgstr "Todos los formatos soportados|"
 msgid "Amateur"
 msgstr "Aficionado"
 
-#: ../wxui/common.py:531 ../wxui/common.py:557
+#: ../wxui/common.py:534 ../wxui/common.py:560
 msgid "An error has occurred"
 msgstr "Ha ocurrido un error"
 
@@ -1061,7 +1061,7 @@ msgstr "Construyendo navegador de radio"
 msgid "Canada"
 msgstr "Canada"
 
-#: ../wxui/common.py:420
+#: ../wxui/common.py:423
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -1137,11 +1137,11 @@ msgstr "Clonado completado, comprobando por bytes espurios"
 msgid "Cloning"
 msgstr "Clonando"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:442 ../drivers/ft817.py:343
+#: ../drivers/ft450d.py:442 ../drivers/ft817.py:343 ../drivers/bj9900.py:133
 msgid "Cloning from radio"
 msgstr "Clonando desde radio"
 
-#: ../drivers/bj9900.py:160 ../drivers/ft450d.py:471 ../drivers/ft817.py:381
+#: ../drivers/ft450d.py:471 ../drivers/ft817.py:381 ../drivers/bj9900.py:160
 msgid "Cloning to radio"
 msgstr "Clonando a radio"
 
@@ -1275,8 +1275,13 @@ msgstr "Doble clic para cambiar nombre de banco"
 msgid "Download"
 msgstr "Descargar"
 
-#: ../wxui/main.py:812 ../wxui/main.py:981
+#: ../wxui/main.py:981
 msgid "Download from radio"
+msgstr "Descargar desde radio"
+
+#: ../wxui/main.py:812
+#, fuzzy
+msgid "Download from radio..."
 msgstr "Descargar desde radio"
 
 #: ../wxui/clone.py:514
@@ -1347,8 +1352,13 @@ msgstr "Controlador experimental"
 msgid "Export can only write CSV files"
 msgstr "Exportar solo puede escribir archivos CSV"
 
-#: ../wxui/main.py:706 ../wxui/main.py:1338
+#: ../wxui/main.py:1338
 msgid "Export to CSV"
+msgstr "Exportar a CSV"
+
+#: ../wxui/main.py:706
+#, fuzzy
+msgid "Export to CSV..."
 msgstr "Exportar a CSV"
 
 #: ../wxui/memedit.py:2117
@@ -1395,13 +1405,18 @@ msgstr "Filtrar"
 msgid "Filter results with location matching this string"
 msgstr "Filtrar resultados con ubicación coincidiendo esta cadena"
 
-#: ../wxui/main.py:760 ../wxui/main.py:1408
+#: ../wxui/main.py:1408
 msgid "Find"
 msgstr "Buscar"
 
 #: ../wxui/main.py:766
 msgid "Find Next"
 msgstr "Buscar siguiente"
+
+#: ../wxui/main.py:760
+#, fuzzy
+msgid "Find..."
+msgstr "Buscar"
 
 #: ../wxui/common.py:320
 #, python-format
@@ -1468,10 +1483,10 @@ msgstr ""
 "5 - ¡Desconecta el cable de interfaz! ¡De lo contrario no habrá\n"
 "    audio del lado derecho!\n"
 
-#: ../drivers/baofeng_wp970i.py:325 ../drivers/bf_t1.py:483
-#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392 ../drivers/gmrsv2.py:364
-#: ../drivers/mursv1.py:342 ../drivers/tdxone_tdq8a.py:455
-#: ../drivers/uv5x3.py:418 ../drivers/uv6r.py:342
+#: ../drivers/uv6r.py:342 ../drivers/gmrsuv1.py:392
+#: ../drivers/tdxone_tdq8a.py:455 ../drivers/mursv1.py:342
+#: ../drivers/uv5x3.py:418 ../drivers/baofeng_wp970i.py:325
+#: ../drivers/btech.py:689 ../drivers/gmrsv2.py:364 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1575,7 +1590,7 @@ msgstr ""
 "    audio del lado derecho!\n"
 "6 - Apaga y enciende la radio para salir del modo de clonación\n"
 
-#: ../drivers/bf_t1.py:489 ../drivers/btech.py:695
+#: ../drivers/btech.py:695 ../drivers/bf_t1.py:489
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1645,10 +1660,10 @@ msgstr ""
 "3 - Enciende tu radio\n"
 "4 - Haz la descarga de tus datos de radio\n"
 
-#: ../drivers/baofeng_wp970i.py:331 ../drivers/gmrsuv1.py:398
-#: ../drivers/gmrsv2.py:370 ../drivers/lt725uv.py:503 ../drivers/mursv1.py:348
-#: ../drivers/tdxone_tdq8a.py:461 ../drivers/uv5x3.py:424
-#: ../drivers/uv6r.py:348 ../drivers/vgc.py:605
+#: ../drivers/uv6r.py:348 ../drivers/lt725uv.py:503 ../drivers/gmrsuv1.py:398
+#: ../drivers/tdxone_tdq8a.py:461 ../drivers/mursv1.py:348
+#: ../drivers/uv5x3.py:424 ../drivers/baofeng_wp970i.py:331
+#: ../drivers/vgc.py:605 ../drivers/gmrsv2.py:370
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1694,10 +1709,6 @@ msgstr "GMRS"
 msgid "Getting settings"
 msgstr "Obteniendo ajustes"
 
-#: ../wxui/memedit.py:801
-msgid "Goto"
-msgstr "Ir a"
-
 #: ../wxui/memedit.py:833
 msgid "Goto Memory"
 msgstr "Ir a memoria"
@@ -1705,6 +1716,11 @@ msgstr "Ir a memoria"
 #: ../wxui/memedit.py:832
 msgid "Goto Memory:"
 msgstr "Ir a memoria:"
+
+#: ../wxui/memedit.py:801
+#, fuzzy
+msgid "Goto..."
+msgstr "Ir a"
 
 #: ../wxui/main.py:946
 msgid "Help"
@@ -1733,7 +1749,8 @@ msgid "Import"
 msgstr "Importar"
 
 #: ../wxui/main.py:700
-msgid "Import from file"
+#, fuzzy
+msgid "Import from file..."
 msgstr "Importar desde archivo"
 
 #: ../wxui/main.py:1322
@@ -1825,11 +1842,17 @@ msgid "Limit results to this distance (km) from coordinates"
 msgstr "Limitar resultados a esta distancia (km) desde coordenadas"
 
 #: ../wxui/main.py:712
-msgid "Load Module"
+#, fuzzy
+msgid "Load Module..."
 msgstr "Cargar modulo"
 
-#: ../wxui/developer.py:513 ../wxui/main.py:937
+#: ../wxui/developer.py:513
 msgid "Load module from issue"
+msgstr "Cargar módulo desde problema"
+
+#: ../wxui/main.py:937
+#, fuzzy
+msgid "Load module from issue..."
 msgstr "Cargar módulo desde problema"
 
 #: ../wxui/main.py:1606
@@ -2054,7 +2077,7 @@ msgstr "Las memorias pegadas sobrescribirán la memoria %s"
 msgid "Pasted memory will overwrite memory %s"
 msgstr "La memoria pegada sobrescribirá la memoria %s"
 
-#: ../wxui/common.py:596
+#: ../wxui/common.py:599
 #, python-format
 msgid "Path %s does not exist"
 msgstr "La ruta %s no existe"
@@ -2170,7 +2193,7 @@ msgstr "RX DTCS"
 msgid "Radio"
 msgstr "Radio"
 
-#: ../drivers/ft450d.py:495 ../drivers/ft60.py:85 ../drivers/ft817.py:408
+#: ../drivers/ft60.py:85 ../drivers/ft450d.py:495 ../drivers/ft817.py:408
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "La radio no reconoció el bloque %i"
@@ -2195,7 +2218,7 @@ msgstr ""
 "RadioReference Canadá requiere un inicio de sesión antes de que puedas "
 "consultar"
 
-#: ../wxui/common.py:422
+#: ../wxui/common.py:425
 msgid "Refresh required"
 msgstr "Actualización requerida"
 
@@ -2264,7 +2287,8 @@ msgid "Security Risk"
 msgstr "Riesgo de seguridad"
 
 #: ../wxui/main.py:856
-msgid "Select Bandplan"
+#, fuzzy
+msgid "Select Bandplan..."
 msgstr "Seleccionar plan de banda"
 
 #: ../wxui/query_sources.py:376 ../wxui/query_sources.py:589
@@ -2541,7 +2565,7 @@ msgstr ""
 "seleccionado es de EE.UU pero la radio no es una de EE.UU (o de banda "
 "ancha). Por favor elije el modelo correcto e intenta de nuevo."
 
-#: ../wxui/common.py:603
+#: ../wxui/common.py:606
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "No se puede revelar %s en este sistema"
@@ -2563,8 +2587,13 @@ msgstr "Desconecta tu cable (si es necesario) y entonces haz clic en ACEPTAR"
 msgid "Upload instructions"
 msgstr "Cargar instrucciones"
 
-#: ../wxui/main.py:820 ../wxui/main.py:983
+#: ../wxui/main.py:983
 msgid "Upload to radio"
+msgstr "Cargar a radio"
+
+#: ../wxui/main.py:820
+#, fuzzy
+msgid "Upload to radio..."
 msgstr "Cargar a radio"
 
 #: ../wxui/common.py:312
@@ -2585,12 +2614,12 @@ msgstr "Usar fuente más grande"
 msgid "Value does not fit in %i bits"
 msgstr "Valor no cabe en %i bits"
 
-#: ../wxui/common.py:454
+#: ../wxui/common.py:457
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Valor debe ser al menos %.4f"
 
-#: ../wxui/common.py:458
+#: ../wxui/common.py:461
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Valor debe ser como máximo %.4f"
@@ -2616,7 +2645,7 @@ msgstr "Vendedor"
 msgid "View"
 msgstr "Ver"
 
-#: ../wxui/common.py:406
+#: ../wxui/common.py:409
 msgid "WARNING!"
 msgstr "¡ADVERTENCIA!"
 

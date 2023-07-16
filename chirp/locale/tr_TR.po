@@ -3,12 +3,12 @@
 # This file is distributed under the same license as the CHIRP package.
 # Dan Smith <dan@theine>, 2011.
 # Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>, 2023
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-12 21:11+0200\n"
+"POT-Creation-Date: 2023-07-16 21:58+0200\n"
 "PO-Revision-Date: 2023-03-11 18:37+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -571,7 +571,7 @@ msgstr ""
 "4. [MONI] tuşuna basın (ekranda \"WAIT\" görünecektir).\n"
 "5. TAMAM'a basın.\n"
 
-#: ../drivers/vx3.py:373 ../drivers/vx6.py:369
+#: ../drivers/vx6.py:369 ../drivers/vx3.py:373
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -586,7 +586,7 @@ msgstr ""
 "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için [BAND] tuşuna "
 "basın.\n"
 
-#: ../drivers/vx3.py:380 ../drivers/vx6.py:376
+#: ../drivers/vx6.py:376 ../drivers/vx3.py:380
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -738,7 +738,7 @@ msgstr ""
 "3. Telsizi açarken [MHz], [LOW] ve [D/MR] tuşlarını basılı tutun.\n"
 "4. [D/MR(MW)] tuşuna basın (ekranda \"--WAIT--\" görünecektir).\n"
 
-#: ../drivers/uv5r.py:753
+#: ../drivers/uv5r.py:778
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -754,7 +754,7 @@ msgstr ""
 "5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
 "6. İmajı cihazdan indirmek için TAMAM'a tıklayın.\n"
 
-#: ../drivers/uv5r.py:761
+#: ../drivers/uv5r.py:786
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -988,7 +988,7 @@ msgstr "Desteklenen tüm biçimler|"
 msgid "Amateur"
 msgstr "Amatör"
 
-#: ../wxui/common.py:531 ../wxui/common.py:557
+#: ../wxui/common.py:534 ../wxui/common.py:560
 msgid "An error has occurred"
 msgstr "Bir hata oluştu"
 
@@ -1028,7 +1028,7 @@ msgstr "Telsiz Tarayıcısı oluşturuluyor"
 msgid "Canada"
 msgstr "Kanada"
 
-#: ../wxui/common.py:420
+#: ../wxui/common.py:423
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -1100,11 +1100,11 @@ msgstr "Klon tamamlandı, sahte baytlar kontrol ediliyor"
 msgid "Cloning"
 msgstr "Klonlanıyor"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:442 ../drivers/ft817.py:343
+#: ../drivers/ft450d.py:442 ../drivers/ft817.py:343 ../drivers/bj9900.py:133
 msgid "Cloning from radio"
 msgstr "Telsizden klonlama"
 
-#: ../drivers/bj9900.py:160 ../drivers/ft450d.py:471 ../drivers/ft817.py:381
+#: ../drivers/ft450d.py:471 ../drivers/ft817.py:381 ../drivers/bj9900.py:160
 msgid "Cloning to radio"
 msgstr "Telsize klonlama"
 
@@ -1241,8 +1241,13 @@ msgstr "Banka adını değiştirmek için çift tıklayın"
 msgid "Download"
 msgstr "İndir"
 
-#: ../wxui/main.py:812 ../wxui/main.py:981
+#: ../wxui/main.py:981
 msgid "Download from radio"
+msgstr "Telsizden indir"
+
+#: ../wxui/main.py:812
+#, fuzzy
+msgid "Download from radio..."
 msgstr "Telsizden indir"
 
 #: ../wxui/clone.py:514
@@ -1314,8 +1319,13 @@ msgstr "Deneysel sürücü"
 msgid "Export can only write CSV files"
 msgstr "Dışa aktarma yalnızca CSV dosyalarını yazabilir"
 
-#: ../wxui/main.py:706 ../wxui/main.py:1338
+#: ../wxui/main.py:1338
 msgid "Export to CSV"
+msgstr "CSV'ye aktar"
+
+#: ../wxui/main.py:706
+#, fuzzy
+msgid "Export to CSV..."
 msgstr "CSV'ye aktar"
 
 #: ../wxui/memedit.py:2117
@@ -1360,13 +1370,18 @@ msgstr "Filtre"
 msgid "Filter results with location matching this string"
 msgstr "Bu dizeyle eşleşen konuma sahip sonuçları filtrele"
 
-#: ../wxui/main.py:760 ../wxui/main.py:1408
+#: ../wxui/main.py:1408
 msgid "Find"
 msgstr "Bul"
 
 #: ../wxui/main.py:766
 msgid "Find Next"
 msgstr "Sonraki Bul"
+
+#: ../wxui/main.py:760
+#, fuzzy
+msgid "Find..."
+msgstr "Bul"
 
 #: ../wxui/common.py:320
 #, python-format
@@ -1430,10 +1445,10 @@ msgstr ""
 "4 - Telsiz > Telsizden İndir\n"
 "5 - Arayüz kablosunu çıkarın! Aksi takdirde, sağ taraf sesi olmayacaktır!\n"
 
-#: ../drivers/baofeng_wp970i.py:325 ../drivers/bf_t1.py:483
-#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392 ../drivers/gmrsv2.py:364
-#: ../drivers/mursv1.py:342 ../drivers/tdxone_tdq8a.py:455
-#: ../drivers/uv5x3.py:418 ../drivers/uv6r.py:342
+#: ../drivers/uv6r.py:342 ../drivers/gmrsuv1.py:392
+#: ../drivers/tdxone_tdq8a.py:455 ../drivers/mursv1.py:342
+#: ../drivers/uv5x3.py:418 ../drivers/baofeng_wp970i.py:325
+#: ../drivers/btech.py:689 ../drivers/gmrsv2.py:364 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1534,7 +1549,7 @@ msgstr ""
 "5 - Arayüz kablosunu çıkarın, aksi takdirde sağ tarafta ses olmayacaktır!\n"
 "6 - Klon modundan çıkmak için telsizi kapatıp açın\n"
 
-#: ../drivers/bf_t1.py:489 ../drivers/btech.py:695
+#: ../drivers/btech.py:695 ../drivers/bf_t1.py:489
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1604,10 +1619,10 @@ msgstr ""
 "3 - Telsizinizi açın\n"
 "4 - Telsiz verilerinizin indirmesini gerçekleştirin\n"
 
-#: ../drivers/baofeng_wp970i.py:331 ../drivers/gmrsuv1.py:398
-#: ../drivers/gmrsv2.py:370 ../drivers/lt725uv.py:503 ../drivers/mursv1.py:348
-#: ../drivers/tdxone_tdq8a.py:461 ../drivers/uv5x3.py:424
-#: ../drivers/uv6r.py:348 ../drivers/vgc.py:605
+#: ../drivers/uv6r.py:348 ../drivers/lt725uv.py:503 ../drivers/gmrsuv1.py:398
+#: ../drivers/tdxone_tdq8a.py:461 ../drivers/mursv1.py:348
+#: ../drivers/uv5x3.py:424 ../drivers/baofeng_wp970i.py:331
+#: ../drivers/vgc.py:605 ../drivers/gmrsv2.py:370
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1653,10 +1668,6 @@ msgstr "GMRS"
 msgid "Getting settings"
 msgstr "Ayarlar alınıyor"
 
-#: ../wxui/memedit.py:801
-msgid "Goto"
-msgstr "Git"
-
 #: ../wxui/memedit.py:833
 msgid "Goto Memory"
 msgstr "Kayda Git"
@@ -1664,6 +1675,11 @@ msgstr "Kayda Git"
 #: ../wxui/memedit.py:832
 msgid "Goto Memory:"
 msgstr "Kayda Git:"
+
+#: ../wxui/memedit.py:801
+#, fuzzy
+msgid "Goto..."
+msgstr "Git"
 
 #: ../wxui/main.py:946
 msgid "Help"
@@ -1693,7 +1709,7 @@ msgstr "İçe Aktar"
 
 #: ../wxui/main.py:700
 #, fuzzy
-msgid "Import from file"
+msgid "Import from file..."
 msgstr "Dosyadan İçe Aktar"
 
 #: ../wxui/main.py:1322
@@ -1788,11 +1804,17 @@ msgid "Limit results to this distance (km) from coordinates"
 msgstr "Sonuçları koordinatlardan bu mesafeye (km) sınırla"
 
 #: ../wxui/main.py:712
-msgid "Load Module"
+#, fuzzy
+msgid "Load Module..."
 msgstr "Modül Yükle"
 
-#: ../wxui/developer.py:513 ../wxui/main.py:937
+#: ../wxui/developer.py:513
 msgid "Load module from issue"
+msgstr "Kayıttan modül yükle"
+
+#: ../wxui/main.py:937
+#, fuzzy
+msgid "Load module from issue..."
 msgstr "Kayıttan modül yükle"
 
 #: ../wxui/main.py:1606
@@ -2024,7 +2046,7 @@ msgstr "Yapıştırılan kayıtlar, %s kaydının üzerine yazılacak"
 msgid "Pasted memory will overwrite memory %s"
 msgstr "Yapıştırılan kayıt, %s kaydının üzerine yazacak"
 
-#: ../wxui/common.py:596
+#: ../wxui/common.py:599
 #, fuzzy, python-format
 msgid "Path %s does not exist"
 msgstr "Dosya mevcut değil: %s"
@@ -2139,7 +2161,7 @@ msgstr "RX DTCS"
 msgid "Radio"
 msgstr "Telsiz"
 
-#: ../drivers/ft450d.py:495 ../drivers/ft60.py:85 ../drivers/ft817.py:408
+#: ../drivers/ft60.py:85 ../drivers/ft450d.py:495 ../drivers/ft817.py:408
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "Telsiz %i bloğunu onaylamadı"
@@ -2163,7 +2185,7 @@ msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 "RadioReference Kanada, sorgulayabilmeniz için önce oturum açmanız gerekir"
 
-#: ../wxui/common.py:422
+#: ../wxui/common.py:425
 #, fuzzy
 msgid "Refresh required"
 msgstr "Yeniden Başlatma Gerekiyor"
@@ -2234,7 +2256,8 @@ msgid "Security Risk"
 msgstr ""
 
 #: ../wxui/main.py:856
-msgid "Select Bandplan"
+#, fuzzy
+msgid "Select Bandplan..."
 msgstr "Bant Planı Seç"
 
 #: ../wxui/query_sources.py:376 ../wxui/query_sources.py:589
@@ -2494,7 +2517,7 @@ msgstr ""
 "telsiz ABD dışı bir telsizdir (veya geniş bantlıdır). Lütfen doğru modeli "
 "seçin ve tekrar deneyin."
 
-#: ../wxui/common.py:603
+#: ../wxui/common.py:606
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "%s bu sistemde gösterilemiyor"
@@ -2516,8 +2539,13 @@ msgstr "(gerekirse) Kablonuzu çıkarın ve ardından Tamam'ı tıklayın"
 msgid "Upload instructions"
 msgstr "Yükleme talimatları"
 
-#: ../wxui/main.py:820 ../wxui/main.py:983
+#: ../wxui/main.py:983
 msgid "Upload to radio"
+msgstr "Telsize yükle"
+
+#: ../wxui/main.py:820
+#, fuzzy
+msgid "Upload to radio..."
 msgstr "Telsize yükle"
 
 #: ../wxui/common.py:312
@@ -2538,12 +2566,12 @@ msgstr "Daha büyük yazı tipi kullan"
 msgid "Value does not fit in %i bits"
 msgstr "Değer %i bit'e sığmıyor"
 
-#: ../wxui/common.py:454
+#: ../wxui/common.py:457
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Değer en az %.4f olmalıdır"
 
-#: ../wxui/common.py:458
+#: ../wxui/common.py:461
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Değer en fazla %.4f olmalıdır"
@@ -2569,7 +2597,7 @@ msgstr "Tedarikçi"
 msgid "View"
 msgstr "Göster"
 
-#: ../wxui/common.py:406
+#: ../wxui/common.py:409
 msgid "WARNING!"
 msgstr ""
 
