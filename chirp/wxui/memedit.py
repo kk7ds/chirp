@@ -798,7 +798,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         move_dn.SetAccel(wx.AcceleratorEntry(
             extra_move | wx.ACCEL_RAW_CTRL, wx.WXK_DOWN))
 
-        goto = common.EditorMenuItem(cls, '_goto', _('Goto'))
+        goto = common.EditorMenuItem(cls, '_goto', _('Goto...'))
         goto.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('G')))
 
         expand_extra = common.EditorMenuItemToggle(
