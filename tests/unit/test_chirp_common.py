@@ -749,8 +749,6 @@ class TestOverrideRules(base.BaseTest):
         'BTECH_GMRS-V2',
         'BTECH_MURS-V2',
         'Radioddity_DB25-G',
-        'Retevis_RA85',
-        'Retevis_RA685',
         'Retevis_RB17P'
     ]
 
