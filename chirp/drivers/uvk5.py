@@ -283,7 +283,7 @@ DTCS_CODES = [
 FLOCK_LIST = ["Off", "FCC", "CE", "GB", "430", "438"]
 
 SCANRESUME_LIST = ["TO: Resume after 5 seconds",
-                   "CO: Resume after signal dissapears",
+                   "CO: Resume after signal disappears",
                    "SE: Stop scanning after receiving a signal"]
 
 WELCOME_LIST = ["Full Screen", "Welcome Info", "Voltage"]
@@ -1908,7 +1908,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             # this was an empty memory
             _mem.set_raw("\x00" * 16)
         else:
-            # this memory was't empty, save some bits that we don't know the
+            # this memory wasn't empty, save some bits that we don't know the
             # meaning of, or that we don't support yet
             prev_0a = _mem.get_raw(asbytes=True)[0x0a] & SAVE_MASK_0A
             prev_0b = _mem.get_raw(asbytes=True)[0x0b] & SAVE_MASK_0B

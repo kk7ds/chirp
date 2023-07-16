@@ -638,7 +638,7 @@ def _do_upload(radio):
     ranges_main = _ranges_main_default
     ranges_aux = _ranges_aux_default
 
-    # check destinaton radio for invalid bcst FM data
+    # check destination radio for invalid bcst FM data
     if b"\xFF" in radio_fm:
         # 0x0F48-0x0F65 contains invalid data
         # This radio is likely to 'break' the Aux block if it is changed.
