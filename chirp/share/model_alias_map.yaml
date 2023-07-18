@@ -217,6 +217,12 @@ Retevis:
   model: RT5 with 2 power levels
 - alt: Baofeng UV-B5
   model: RT-B6
+- alt: Retevis RB27
+  model: RB27B (full band support)
+- alt: Retevis RB27
+  model: RB27V (full band support)
+- alt: Retevis RB27
+  model: RB627B (full band support)
 Rugged Radios:
 - alt: Baofeng UV-5R
   model: RH5R, RH5R-V2
