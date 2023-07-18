@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-16 21:58+0200\n"
-"PO-Revision-Date: 2023-07-13 23:59-0400\n"
+"PO-Revision-Date: 2023-07-17 21:32-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1280,9 +1280,8 @@ msgid "Download from radio"
 msgstr "Descargar desde radio"
 
 #: ../wxui/main.py:812
-#, fuzzy
 msgid "Download from radio..."
-msgstr "Descargar desde radio"
+msgstr "Descargar desde radio..."
 
 #: ../wxui/clone.py:514
 msgid "Download instructions"
@@ -1357,9 +1356,8 @@ msgid "Export to CSV"
 msgstr "Exportar a CSV"
 
 #: ../wxui/main.py:706
-#, fuzzy
 msgid "Export to CSV..."
-msgstr "Exportar a CSV"
+msgstr "Exportar a CSV..."
 
 #: ../wxui/memedit.py:2117
 msgid "Extra"
@@ -1414,9 +1412,8 @@ msgid "Find Next"
 msgstr "Buscar siguiente"
 
 #: ../wxui/main.py:760
-#, fuzzy
 msgid "Find..."
-msgstr "Buscar"
+msgstr "Buscar..."
 
 #: ../wxui/common.py:320
 #, python-format
@@ -1718,9 +1715,8 @@ msgid "Goto Memory:"
 msgstr "Ir a memoria:"
 
 #: ../wxui/memedit.py:801
-#, fuzzy
 msgid "Goto..."
-msgstr "Ir a"
+msgstr "Ir a..."
 
 #: ../wxui/main.py:946
 msgid "Help"
@@ -1749,9 +1745,8 @@ msgid "Import"
 msgstr "Importar"
 
 #: ../wxui/main.py:700
-#, fuzzy
 msgid "Import from file..."
-msgstr "Importar desde archivo"
+msgstr "Importar desde archivo..."
 
 #: ../wxui/main.py:1322
 msgid "Import not recommended"
@@ -1842,18 +1837,16 @@ msgid "Limit results to this distance (km) from coordinates"
 msgstr "Limitar resultados a esta distancia (km) desde coordenadas"
 
 #: ../wxui/main.py:712
-#, fuzzy
 msgid "Load Module..."
-msgstr "Cargar modulo"
+msgstr "Cargar modulo..."
 
 #: ../wxui/developer.py:513
 msgid "Load module from issue"
 msgstr "Cargar módulo desde problema"
 
 #: ../wxui/main.py:937
-#, fuzzy
 msgid "Load module from issue..."
-msgstr "Cargar módulo desde problema"
+msgstr "Cargar módulo desde problema..."
 
 #: ../wxui/main.py:1606
 msgid ""
@@ -2287,9 +2280,8 @@ msgid "Security Risk"
 msgstr "Riesgo de seguridad"
 
 #: ../wxui/main.py:856
-#, fuzzy
 msgid "Select Bandplan..."
-msgstr "Seleccionar plan de banda"
+msgstr "Seleccionar plan de banda..."
 
 #: ../wxui/query_sources.py:376 ../wxui/query_sources.py:589
 msgid "Select Bands"
@@ -2592,9 +2584,8 @@ msgid "Upload to radio"
 msgstr "Cargar a radio"
 
 #: ../wxui/main.py:820
-#, fuzzy
 msgid "Upload to radio..."
-msgstr "Cargar a radio"
+msgstr "Cargar a radio..."
 
 #: ../wxui/common.py:312
 #, python-format
