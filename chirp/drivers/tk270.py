@@ -179,7 +179,6 @@ def recv(radio):
     if len(rxdata) != 12:
         raise errors.RadioError(
             "Received a length of data that is not possible")
-        return
 
     cmd, addr, length = struct.unpack(">BHB", rxdata[0:4])
     data = ""

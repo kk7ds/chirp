@@ -170,7 +170,6 @@ def _connect_radio(radio):
                 (RADIO_IDS[resp], radio.MODEL)
             raise errors.RadioError(msg)
     raise errors.RadioError("No response from radio")
-    return
 
 
 def read_str(radio, trm=";"):

@@ -934,8 +934,6 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_special_chans = [name for s in SPECIALS for name in s[1]]
         return rf
 
-        return rf
-
     def get_raw_memory(self, number):
         return "\n".join([repr(self._memobj.memory[number - 1]),
                           repr(self._memobj.flag[number - 1])])
