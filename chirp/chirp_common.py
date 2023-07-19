@@ -632,6 +632,7 @@ def FrozenMemory(source):
         def dupe(self):
             m = Memory()
             m.clone(self)
+            delattr(m, '_frozen')
             return m
 
     return _FrozenMemory(source)
