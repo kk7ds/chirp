@@ -611,6 +611,8 @@ def FrozenMemory(source):
         def __init__(self, source):
             self.__dict__['_frozen'] = False
             for k, v in source.__dict__.items():
+                if k == '_frozen':
+                    continue
                 setattr(self, k, v)
 
             self.__dict__['_frozen'] = True
