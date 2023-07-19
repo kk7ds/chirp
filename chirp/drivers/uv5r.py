@@ -694,7 +694,6 @@ def _do_upload(radio):
             "This is NOT an error.\n"
             "The upload has finished successfully.\n"
             "Please restart CHIRP.")
-        return
 
     if radio._aux_block and not imagev_matched_radiov:
         msg = ("This is NOT an error. The upload finished successfully.\n"
