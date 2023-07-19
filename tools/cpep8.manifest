@@ -18,14 +18,12 @@
 ./chirp/drivers/ft2900.py
 ./chirp/drivers/ft60.py
 ./chirp/drivers/ft7800.py
-./chirp/drivers/ft857.py
 ./chirp/drivers/ft90.py
 ./chirp/drivers/ga510.py
 ./chirp/drivers/generic_csv.py
 ./chirp/drivers/gmrsv2.py
 ./chirp/drivers/h777.py
 ./chirp/drivers/ic2730.py
-./chirp/drivers/ic9x.py
 ./chirp/drivers/icf.py
 ./chirp/drivers/icomciv.py
 ./chirp/drivers/iradio_uv_5118.py
