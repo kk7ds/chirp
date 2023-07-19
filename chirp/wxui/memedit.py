@@ -26,6 +26,7 @@ import wx.propgrid
 import wx.lib.mixins.gridlabelrenderer as glr
 
 from chirp import chirp_common
+from chirp import directory
 from chirp import bandplan
 from chirp.drivers import generic_csv
 from chirp import errors
@@ -1737,12 +1738,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         mems = []
         for row in rows:
             mem = self.synchronous_get_memory(row + offset)
-            # We can't pickle settings, nor would they apply if we
-            # paste across models
-            mem.extra = []
             mems.append(mem)
+        rcid = directory.radio_class_id(self._radio.__class__)
         payload = {'mems': mems,
                    'features': self._radio.get_features(),
+                   'source_radio_id': rcid,
                    'source': self.GetId()}
         data = wx.DataObjectComposite()
         memdata = wx.CustomDataObject(common.CHIRP_DATA_MEMORY)
@@ -1819,6 +1819,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             if resp == wx.ID_NO:
                 return False
 
+        same_class = (payload.get('source_radio_id') ==
+                      directory.radio_class_id(self._radio.__class__))
+        LOG.debug('Paste is from identical radio class: %s', same_class)
+
         errormsgs = []
         modified = False
         for mem in mems:
@@ -1850,6 +1854,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                         self._radio.validate_memory(mem))
                     errormsgs.extend([(mem, e) for e in errs])
                     errormsgs.extend([(mem, w) for w in warns])
+
+                    # If we are not pasting into a radio of the same type,
+                    # then unset the mem.extra bits which won't be compatible.
+                    if not same_class:
+                        mem.extra = []
+
                     if not errs:
                         # If we got error messages from validate, don't even
                         # try to set the memory, just like if import_logic
