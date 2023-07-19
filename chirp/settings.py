@@ -42,8 +42,11 @@ class RadioSettingValue:
     def __init__(self):
         self._current = None
         self._has_changed = False
-        self._validate_callback = lambda x: x
+        self._validate_callback = self.null_callback
         self._mutable = True
+
+    def null_callback(self, x):
+        return x
 
     def set_mutable(self, mutable):
         self._mutable = mutable
@@ -492,6 +495,8 @@ class RadioSetting(RadioSettingGroup):
                 return self._elements[self._element_order[0]]
             else:
                 return list(self._elements.values())
+        elif name in ('__getstate__', '__setstate__'):
+            super().__getattr__(name)
         else:
             return self.__dict__[name]
 
