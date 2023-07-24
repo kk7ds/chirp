@@ -764,14 +764,21 @@ class ChirpMain(wx.Frame):
         self._last_search_text = ''
         find_item = edit_menu.Append(wx.ID_FIND)
         edit_menu.SetLabel(wx.ID_FIND, _('Find...'))
+        find_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('F')))
         self.Bind(wx.EVT_MENU, self._menu_find, find_item)
+
+        if platform.system() == 'Windows':
+            findnextacc = wx.AcceleratorEntry()
+            findnextacc.FromString('F3')
+        else:
+            findnextacc = wx.AcceleratorEntry(wx.MOD_CONTROL | wx.ACCEL_ALT,
+                                              ord('F'))
 
         self._find_next_item = wx.NewId()
         find_next_item = edit_menu.Append(wx.MenuItem(edit_menu,
                                                       self._find_next_item,
                                                       _('Find Next')))
-        find_next_item.SetAccel(wx.AcceleratorEntry
-                                (wx.MOD_CONTROL | wx.ACCEL_ALT, ord('F')))
+        find_next_item.SetAccel(findnextacc)
         self.Bind(wx.EVT_MENU, self._menu_find, find_next_item,
                   self._find_next_item)
 
