@@ -356,6 +356,12 @@ class ChirpLiveEditorSet(ChirpEditorSet):
     def close(self):
         for thread in self._threads:
             thread.end()
+        try:
+            self._radio.pipe.close()
+        except Exception as e:
+            LOG.exception('Failed to close %s: %s', self._radio.pipe, e)
+        else:
+            LOG.debug('Closed %s', self._radio.pipe)
 
     @property
     def modified(self):
