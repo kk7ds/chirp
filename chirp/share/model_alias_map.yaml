@@ -280,6 +280,8 @@ Wurui:
 Yaesu:
 - alt: FTM-3200DR
   model: FTM-3100
+- alt: VX-170
+  model: FT-270
 Zastone:
 - alt: QYT KT8900D
   model: MP-380
