@@ -1,4 +1,4 @@
-# Copyright 2021-2022 Jim Unroe <rock.unroe@gmail.com>
+# Copyright 2021-2023 Jim Unroe <rock.unroe@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ struct {
      unknown5:4;
   u8 unknown6:5,
      scramble_type2:3;  // Scramble Type 2        F
-} memory[16];
+} memory[%d];
 
 #seekto 0x011D;
 struct {
@@ -760,6 +760,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
     _magic = b"PRMZUNE"
     _fingerprint = [b"P3207s\xF8\xFF", ]
     _upper = 16
+    _mem_params = (_upper,  # number of channels
+                   )
     _ack_1st_block = True
     _skipflags = True
     _reserved = False
@@ -801,7 +803,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params,
+                                     self._mmap)
 
     def sync_in(self):
         """Download from radio"""
@@ -944,7 +947,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
         mem.extra = RadioSettingGroup("Extra", "extra")
 
         if self.MODEL == "RT21" or self.MODEL == "RB17A" or \
-                self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF":
+                self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF" or \
+                self.MODEL == "RT21V":
             rs = RadioSettingValueList(BCL_LIST, BCL_LIST[_mem.bcl])
             rset = RadioSetting("bcl", "Busy Channel Lockout", rs)
             mem.extra.append(rset)
@@ -1249,7 +1253,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
         for setting in mem.extra:
             if setting.get_name() == "scramble_type":
                 setattr(_mem, setting.get_name(), int(setting.value) - 1)
-                if self.MODEL == "RT21":
+                if self.MODEL == "RT21" or self.MODEL == "RT21V":
                     setattr(_mem, "scramble_type2", int(setting.value) - 1)
             elif setting.get_name() == "freqhop":
                 setattr(_freqhops, setting.get_name(), setting.value)
@@ -1264,7 +1268,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
         top = RadioSettings(basic)
 
         if self.MODEL == "RT21" or self.MODEL == "RB17A" or \
-                self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF":
+                self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF" or \
+                self.MODEL == "RT21V":
             _keys = self._memobj.keys
 
             rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
@@ -1321,7 +1326,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 val = PF1_VALUES[index]
                 obj.set_value(val)
 
-            if self.MODEL == "RT21":
+            if self.MODEL == "RT21" or self.MODEL == "RT21V":
                 if _keys.pf1 in PF1_VALUES:
                     idx = PF1_VALUES.index(_keys.pf1)
                 else:
@@ -1852,6 +1857,22 @@ class RB17ARadio(RT21Radio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_RB17A, self._mmap)
+
+
+@directory.register
+class RT21VRadio(RT21Radio):
+    """RETEVIS RT21V"""
+    VENDOR = "Retevis"
+    MODEL = "RT21V"
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+    VALID_BANDS = [(137000000, 174000000)]
+
+    _fingerprint = [b"P2207\x01\xF8\xFF", ]
+    _murs = False  # sold as MURS radio but supports full band TX/RX
+    _upper = 5
+    _mem_params = (_upper,  # number of channels
+                   )
 
 
 @directory.register
