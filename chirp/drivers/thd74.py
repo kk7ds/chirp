@@ -176,7 +176,8 @@ def get_used_flag(mem):
 
 
 @directory.register
-class THD74Radio(chirp_common.CloneModeRadio):
+class THD74Radio(chirp_common.CloneModeRadio,
+                 chirp_common.IcomDstarSupport):
     VENDOR = "Kenwood"
     MODEL = "TH-D74 (clone mode)"
     NEEDS_COMPAT_SERIAL = False
