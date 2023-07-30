@@ -988,7 +988,7 @@ msgstr "Περισσότερα"
 
 #: ../wxui/query_sources.py:603
 msgid ""
-"FREE repeater database, which provide most up-to-date\n"
+"FREE repeater database, which provides most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
 "required."
 msgstr ""

@@ -600,7 +600,7 @@ class PrzemiennikiQueryDialog(QuerySourceDialog):
                      self._section)
 
     def get_info(self):
-        return _('FREE repeater database, which provide most up-to-date\n'
+        return _('FREE repeater database, which provides most up-to-date\n'
                  'information about repeaters in Europe. No account is\n'
                  'required.')
 

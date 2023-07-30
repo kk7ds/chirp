@@ -132,9 +132,9 @@ MEM_SETTINGS_FORMAT = """
     u8 mic_gain;                        // 31 MCGAIN    Adjust the microphone gain level
     u8 unknown2_3;
     u8 dw_interval;                     // 21 DW INT Set the priority memory ch mon int during Dual RX 0.1S-5.0S-10.0S
-    u8 ptt_delay;                       // 42 PTT.DLY   Set the PTT delay time. OFF / 20 MS / 50 MS / 100 MS / 200 MS
-    u8 rx_save;                         // 48 RX.SAVE   Set the battery save time. OFF / 0.2 S - 60.0 S
-    u8 scan_restart;                    // 53 SCN.STR   Set the scanning restart time.  0.1 S - 2.0 S - 10.0 S
+    u8 ptt_delay;                       // 42 PTT.DLY   Set the PTT delay time. OFF / 20 ms / 50 ms / 100 ms / 200 ms
+    u8 rx_save;                         // 48 RX.SAVE   Set the battery save time. OFF / 0.2 s - 60.0 s
+    u8 scan_restart;                    // 53 SCN.STR   Set the scanning restart time.  0.1 s - 2.0 s - 10.0 s
     u8 unknown2_5;
     u8 unknown2_6;
     u8 unknown4[5];
@@ -516,7 +516,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
     _MONI_TCALL = ("Monitor", "Tone-CALL")
     _HOME_REV = ("Home", "Reverse")
     _LOCK = ("KEY", "DIAL", "Key+Dial", "PTT", "Key+PTT", "Dial+PTT", "ALL")
-    _PTT_DELAY = ("Off", "20 MS", "50 MS", "100 MS", "200 MS")
+    _PTT_DELAY = ("Off", "20 ms", "50 ms", "100 ms", "200 ms")
     _BEEP_LEVEL = ("Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7")
     _SET_MODE = ("Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7")
     _RX_SAVE = ("OFF", "0.2s", ".3s", ".4s", ".5s", ".6s", ".7s", ".8s", ".9s", "1.0s", "1.5s",
@@ -894,7 +894,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("scan_settings.moni", "MONI/T-CALL", val)
         menu.append(rs)
 
-        # 42 PTT.DLY    Set the PTT delay time. OFF / 20 MS / 50 MS / 100 MS / 200 MS
+        # 42 PTT.DLY    Set the PTT delay time. OFF / 20 ms / 50 ms / 100 ms / 200 ms
 
         val = RadioSettingValueList(
             self._PTT_DELAY,
@@ -910,7 +910,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("scan_settings.ars", "ARS", val)
         menu.append(rs)
 
-        # 48 RX.SAVE    Set the battery save time. OFF / 0.2 S - 60.0 S
+        # 48 RX.SAVE    Set the battery save time. OFF / 0.2 s - 60.0 s
 
         val = RadioSettingValueList(
             self._RX_SAVE,

@@ -94,12 +94,12 @@ DTCS_CODES = chirp_common.DTCS_CODES
 SKIP_VALUES = ["", "S"]
 LIST_BCL = ["OFF", "Carrier", "Tone"]
 LIST_SCAN_RESUME = ["0.5 seconds", "Carrier drop"]
-LIST_SCAN_TIME = ["%smsecs" % x for x in range(5, 85, 5)]
+LIST_SCAN_TIME = ["%s ms" % x for x in range(5, 85, 5)]
 LIST_SCAN_P_SPEED = ["Slow", "Fast"]
 LIST_HOME_CHANNEL = ["Scan Start ch", "Priority 1ch"]
 LIST_TOT = ["Off"] + ["%.1f s" % (x/10.0) for x in range(5, 80, 5)]
-# 3, 2, 1, 0 => 0s, 6s, 20s, 60s
-LIST_TOT_RESUME = ["60s", "20s", "6s", "0s"]
+# 3, 2, 1, 0 => 0 s, 6 s, 20 s, 60 s
+LIST_TOT_RESUME = ["60 s", "20 s", "6 s", "0 s"]
 LIST_A_KEY = ["Talkaround", "High/Low", "Call", "Accessory"]
 LIST_PCH = []  # dynamic, as depends on channel list.
 # make a copy of the tones, is not funny to work with this directly
