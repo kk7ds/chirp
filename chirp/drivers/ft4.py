@@ -870,8 +870,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
          ("bell", "Bell Repetitions", ["OFF", "1T", "3T", "5T", "8T", "CONT"]),
          ("dtmf_mode", "DTMF Mode", ["Manual", "Auto"]),
          ("dtmf_delay", "DTMF Autodialer Delay Time",
-          ["50 MS", "100 MS", "250 MS", "450 MS", "750 MS", "1000 MS"]),
-         ("dtmf_speed", "DTMF Autodialer Sending Speed", ["50 MS", "100 MS"]),
+          ["50 ms", "100 ms", "250 ms", "450 ms", "750 ms", "1000 ms"]),
+         ("dtmf_speed", "DTMF Autodialer Sending Speed", ["50 ms", "100 ms"]),
          ("dtmf", "DTMF Autodialer Memory ",  (get_dtmfs, []))  # handler
          ]),
         ("switch", "Switch/Knob Settings", [  # switch
@@ -889,7 +889,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
          ]),
         ("power", "Power Saver Settings", [  # power
          ("battsave", "Receive Mode Battery Save Interval",
-          ["OFF", "200 MS", "300 MS", "500 MS", "1 S", "2 S"]),
+          ["OFF", "200 ms", "300 ms", "500 ms", "1 s", "2 s"]),
          ("tx_save", "Transmitter Battery Saver", ["OFF", "ON"])
          ]),
         ("eai", "EAI/EPCS Settings", [  # eai

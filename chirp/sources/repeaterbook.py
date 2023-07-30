@@ -387,7 +387,7 @@ ROW_COUNTRIES = [
     "United Arab Emirates",
     "United Kingdom",
     "Uruguay",
-    "Venezuala",
+    "Venezuela",
 ]
 
 COUNTRIES = list(sorted(NA_COUNTRIES + ROW_COUNTRIES))

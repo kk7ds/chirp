@@ -620,7 +620,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
                 "apo", "APO time (hrs)",
                 RadioSettingValueList(opts, opts[_settings.apo])))
 
-        opts = ["+/- 5 MHZ", "+/- 10 MHZ", "+/- 50 MHZ", "+/- 100 MHZ"]
+        opts = ["+/- 5 MHz", "+/- 10 MHz", "+/- 50 MHz", "+/- 100 MHz"]
         basic.append(RadioSetting(
                 "channel_counter", "Channel counter",
                 RadioSettingValueList(opts, opts[_settings.channel_counter])))

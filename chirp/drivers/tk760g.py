@@ -462,7 +462,7 @@ def _open_radio(radio, status):
     ack = _raw_recv(radio, 1)
     if ack != ACK_CMD:
         _close_radio(radio)
-        LOG.debug("Radio did not accepted PROGRAM command")
+        LOG.debug("Radio did not accept PROGRAM command")
         raise errors.RadioError("The radio did not start program mode")
 
     # DEBUG
