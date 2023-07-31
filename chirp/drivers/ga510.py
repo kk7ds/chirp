@@ -54,9 +54,9 @@ def start_program(radio):
     radio.pipe.write(radio._magic)
     ack = radio.pipe.read(256)
     if not ack.endswith(b'\x06'):
+        reset(radio)
         LOG.debug('Ack was %r' % ack)
         raise errors.RadioError('Radio did not respond to clone request')
-        reset(radio)
 
     radio.pipe.write(b'F')
 
@@ -84,13 +84,13 @@ def do_download(radio):
         rcmd, raddr, rlen = struct.unpack('>BHB', header)
         block = block[4:]
         if raddr != addr:
+            reset(radio)
             raise errors.RadioError('Radio send address %04x, expected %04x' %
                                     (raddr, addr))
-            reset(radio)
         if rlen != 0x40 or len(block) != 0x40:
+            reset(radio)
             raise errors.RadioError('Radio sent %02x (%02x) bytes, '
                                     'expected %02x' % (rlen, len(block), 0x40))
-            reset(radio)
 
         data += block
 
@@ -121,8 +121,8 @@ def do_upload(radio):
 
         ack = radio.pipe.read(1)
         if ack != b'\x06':
-            raise errors.RadioError('Radio refused block at addr %04x' % addr)
             reset(radio)
+            raise errors.RadioError('Radio refused block at addr %04x' % addr)
 
         s.cur = addr
         radio.status_fn(s)
