@@ -45,7 +45,10 @@ DTMFCHARS = '0123456789ABCD*#'
 
 
 def reset(radio):
-    radio.pipe.write(b'E')
+    try:
+        radio.pipe.write(b'E')
+    except Exception as e:
+        LOG.error('Failed to reset radio: %s' % e)
 
 
 def start_program(radio):
@@ -54,7 +57,6 @@ def start_program(radio):
     radio.pipe.write(radio._magic)
     ack = radio.pipe.read(256)
     if not ack.endswith(b'\x06'):
-        reset(radio)
         LOG.debug('Ack was %r' % ack)
         raise errors.RadioError('Radio did not respond to clone request')
 
@@ -84,11 +86,9 @@ def do_download(radio):
         rcmd, raddr, rlen = struct.unpack('>BHB', header)
         block = block[4:]
         if raddr != addr:
-            reset(radio)
             raise errors.RadioError('Radio send address %04x, expected %04x' %
                                     (raddr, addr))
         if rlen != 0x40 or len(block) != 0x40:
-            reset(radio)
             raise errors.RadioError('Radio sent %02x (%02x) bytes, '
                                     'expected %02x' % (rlen, len(block), 0x40))
 
@@ -96,8 +96,6 @@ def do_download(radio):
 
         s.cur = addr
         radio.status_fn(s)
-
-    reset(radio)
 
     return data
 
@@ -121,13 +119,10 @@ def do_upload(radio):
 
         ack = radio.pipe.read(1)
         if ack != b'\x06':
-            reset(radio)
             raise errors.RadioError('Radio refused block at addr %04x' % addr)
 
         s.cur = addr
         radio.status_fn(s)
-
-    reset(radio)
 
 
 BASE_FORMAT = """
@@ -379,6 +374,8 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         except Exception as e:
             LOG.exception('General failure')
             raise errors.RadioError('Failed to download from radio: %s' % e)
+        finally:
+            reset(self)
         self.process_mmap()
 
     def sync_out(self):
@@ -389,6 +386,8 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         except Exception as e:
             LOG.exception('General failure')
             raise errors.RadioError('Failed to upload to radio: %s' % e)
+        finally:
+            reset(self)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(BASE_FORMAT + self._mem_format,
