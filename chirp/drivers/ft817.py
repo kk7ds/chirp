@@ -1027,7 +1027,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("spl", "Split",
                           RadioSettingValueBoolean(_settings.spl))
         panelcontr.append(rs)
-        options = ["None", "Up", "Down"]
+        options = ["None", "Up", "Down", "PMS"]
         rs = RadioSetting("scn_mode", "Scan mode",
                           RadioSettingValueList(options,
                                                 options[_settings.scn_mode]))
