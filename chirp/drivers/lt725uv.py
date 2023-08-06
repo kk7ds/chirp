@@ -178,7 +178,7 @@ struct mem {
                           // BJ-318 band power overrides any
                           // individual channel power setting
       wide:1,
-      compandor:1
+      compander:1
       scrambler:1
       unknown:4;
   u8  namelen;
@@ -692,9 +692,9 @@ class LT725UV(chirp_common.CloneModeRadio):
         eotsignal = RadioSetting("eotsignal", "Transmit end signaling", rx)
         mem.extra.append(eotsignal)
 
-        rx = RadioSettingValueBoolean(bool(_mem.compandor))
-        compandor = RadioSetting("compandor", "Compandor", rx)
-        mem.extra.append(compandor)
+        rx = RadioSettingValueBoolean(bool(_mem.compander))
+        compander = RadioSetting("compander", "Compander", rx)
+        mem.extra.append(compander)
 
         rx = RadioSettingValueBoolean(bool(_mem.scrambler))
         scrambler = RadioSetting("scrambler", "Scrambler", rx)
@@ -1074,7 +1074,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         a_band.append(rs)
 
         rx = RadioSettingValueBoolean(bool(_vfoa.cmp_nder))
-        rs = RadioSetting("upper.vfoa.cmp_nder", "Compandor", rx)
+        rs = RadioSetting("upper.vfoa.cmp_nder", "Compander", rx)
         a_band.append(rs)
 
         rs = RadioSetting("upper.vfoa.scrm_blr", "Scrambler",
@@ -1182,7 +1182,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         rs = RadioSetting("lower.vfob.fm_bw", "Wide/Narrow Band", rx)
         b_band.append(rs)
 
-        rs = RadioSetting("lower.vfob.cmp_nder", "Compandor",
+        rs = RadioSetting("lower.vfob.cmp_nder", "Compander",
                           RadioSettingValueBoolean(bool(_vfob.cmp_nder)))
         b_band.append(rs)
 

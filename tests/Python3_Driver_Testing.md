@@ -106,7 +106,7 @@
 | <a name="Icom_IC-P7"></a> Icom_IC-P7 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Icom_IC-Q7A"></a> Icom_IC-Q7A | [@KC9HI](https://github.com/KC9HI) | 20-Nov-2022 | Yes | 0.01% |
 | <a name="Icom_IC-T70"></a> Icom_IC-T70 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.03% |
-| <a name="Icom_IC-T7H"></a> Icom_IC-T7H | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.02% |
+| <a name="Icom_IC-T7H"></a> Icom_IC-T7H | [Reported working](https://chirp.danplanet.com/issues/10752) | 30-Jul-2023 | Yes | 0.02% |
 | <a name="Icom_IC-T8A"></a> Icom_IC-T8A | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Icom_IC-U82"></a> Icom_IC-U82 | [Implied by Icom_IC-V82](#user-content-Icom_IC-V82) | 25-Jan-2023 | Yes |  |
 | <a name="Icom_IC-V80"></a> Icom_IC-V80 | [@kk7ds](https://github.com/kk7ds) | 16-Feb-2023 | Yes | 0.00% |
@@ -286,6 +286,7 @@
 | <a name="Retevis_RT16"></a> Retevis_RT16 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.02% |
 | <a name="Retevis_RT19"></a> Retevis_RT19 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.00% |
 | <a name="Retevis_RT21"></a> Retevis_RT21 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.20% |
+| <a name="Retevis_RT21V"></a> Retevis_RT21V | [@KC9HI](https://github.com/KC9HI) | 24-Jul-2023 | Yes | 0.00% |
 | <a name="Retevis_RT22"></a> Retevis_RT22 | [@KC9HI](https://github.com/KC9HI) | 9-Dec-2022 | Yes | 0.53% |
 | <a name="Retevis_RT22FRS"></a> Retevis_RT22FRS | [@KC9HI](https://github.com/KC9HI) | 9-Dec-2022 | Yes | 0.04% |
 | <a name="Retevis_RT22S"></a> Retevis_RT22S | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.04% |
@@ -329,7 +330,7 @@
 | <a name="TYT_TH-350"></a> TYT_TH-350 |  |  | Yes | 0.07% |
 | <a name="TYT_TH-7800"></a> TYT_TH-7800 | [Reported working](https://chirp.danplanet.com/issues/10585) | 4-Jul-2023 | Yes | 0.13% |
 | <a name="TYT_TH-7800_File"></a> TYT_TH-7800_File |  |  |  | 0.00% |
-| <a name="TYT_TH-9800"></a> TYT_TH-9800 | Unit tested; needs confirm | 24-Dec-2022 | Yes | 0.65% |
+| <a name="TYT_TH-9800"></a> TYT_TH-9800 | [Reported working](https://chirp.danplanet.com/issues/10755) | 30-Jul-2023 | Yes | 0.65% |
 | <a name="TYT_TH-9800_File"></a> TYT_TH-9800_File |  |  | Yes | 0.00% |
 | <a name="TYT_TH-UV3R"></a> TYT_TH-UV3R |  |  | Yes | 0.04% |
 | <a name="TYT_TH-UV3R-25"></a> TYT_TH-UV3R-25 |  |  | Yes | 0.02% |
@@ -394,7 +395,7 @@
 | <a name="Yaesu_FT-857_897"></a> Yaesu_FT-857_897 | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.25% |
 | <a name="Yaesu_FT-857_897_US"></a> Yaesu_FT-857_897_US | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.08% |
 | <a name="Yaesu_FT-8800"></a> Yaesu_FT-8800 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.08% |
-| <a name="Yaesu_FT-8900"></a> Yaesu_FT-8900 | [Implied by Yaesu_FT-8800](#user-content-Yaesu_FT-8800) | 24-Oct-2022 | Yes | 0.11% |
+| <a name="Yaesu_FT-8900"></a> Yaesu_FT-8900 | [Reported working](https://chirp.danplanet.com/issues/10753) | 30-Jul-2023 | Yes | 0.11% |
 | <a name="Yaesu_FT-90"></a> Yaesu_FT-90 | [Reported working](https://chirp.danplanet.com/issues/10386) | 22-Feb-2023 | Yes | 0.02% |
 | <a name="Yaesu_FT2D_R"></a> Yaesu_FT2D_R | [Implied by Yaesu_FT3D_R](#user-content-Yaesu_FT3D_R) | 30-Dec-2022 | Yes | 0.02% |
 | <a name="Yaesu_FT2D_Rv2"></a> Yaesu_FT2D_Rv2 | [Implied by Yaesu_FT3D_R](#user-content-Yaesu_FT3D_R) | 30-Dec-2022 | Yes |  |
@@ -415,11 +416,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 412
+**Drivers:** 413
 
-**Tested:** 86% (357/55) (93% of usage stats)
+**Tested:** 86% (358/55) (93% of usage stats)
 
-**Byte clean:** 90% (372/40)
+**Byte clean:** 90% (373/40)
 
 ## Meaning of this testing
 

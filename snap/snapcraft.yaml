@@ -10,8 +10,10 @@ base: core22
 confinement: strict
 grade: stable
 
-#architectures:
-#  - amd64
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+  - build-on: armhf
 
 environment:
   # WORKAROUND: Add python modules in Snap to search path
@@ -41,9 +43,9 @@ parts:
       - PYTHONPATH: ""
     override-pull: |
       sudo apt install -y curl
-      ver_with_next=$(basename $(curl -Ls -o/dev/null -w '%{url_effective}' https://trac.chirp.danplanet.com/download?stream=next))
+      ver_with_next=$(basename $(curl -H "User-Agent: goldstar611" -Ls -o/dev/null -w '%{url_effective}' https://trac.chirp.danplanet.com/download?stream=next))
       ver_without_next=${ver_with_next//next-/}
-      curl -o ${SNAPCRAFT_PART_SRC}/chirp-src.tar.gz https://trac.chirp.danplanet.com/chirp_next/${ver_with_next}/chirp-${ver_without_next}.tar.gz
+      curl -H "User-Agent: goldstar611" -o ${SNAPCRAFT_PART_SRC}/chirp-src.tar.gz https://trac.chirp.danplanet.com/chirp_next/${ver_with_next}/chirp-${ver_without_next}.tar.gz
       tar -xz -C ${SNAPCRAFT_PART_SRC} -f ${SNAPCRAFT_PART_SRC}/chirp-src.tar.gz --strip-components=1
       # Fix icon
       sed -i 's,Icon=chirp,Icon=${SNAP}/lib/python3.10/site-packages/chirp/share/chirp.svg,g' ${SNAPCRAFT_PART_SRC}/chirp/share/chirp.desktop

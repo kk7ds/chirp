@@ -814,7 +814,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     _MONI_TCALL = ("Monitor", "Tone-CALL")
     _HOME_REV = ("Home", "Reverse")
     _LOCK = ("KEY", "DIAL", "Key+Dial", "PTT", "Key+PTT", "Dial+PTT", "ALL")
-    _PTT_DELAY = ("Off", "20 MS", "50 MS", "100 MS", "200 MS")
+    _PTT_DELAY = ("Off", "20 ms", "50 ms", "100 ms", "200 ms")
     _BEEP_LEVEL = ("Level %i" % i for i in range(1, 7))
     _SET_MODE = ("Level %i" % i for i in range(1, 8))
     _RX_SAVE = ("OFF", "0.2s", ".3s", ".4s", ".5s", ".6s",
@@ -932,8 +932,6 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_bank_names = True
         rf.has_settings = True
         rf.valid_special_chans = [name for s in SPECIALS for name in s[1]]
-        return rf
-
         return rf
 
     def get_raw_memory(self, number):

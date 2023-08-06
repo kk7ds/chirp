@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-09 17:54-0700\n"
-"PO-Revision-Date: 2023-07-05 10:40+0200\n"
+"POT-Creation-Date: 2023-07-16 21:58+0200\n"
+"PO-Revision-Date: 2023-07-12 21:21+0200\n"
 "Last-Translator: szporwolik\n"
 "Language-Team: Polish\n"
 "Language: pl\n"
@@ -35,22 +35,22 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s muszą być pomiędzy %(min)i oraz %(max)i"
 
-#: ../wxui/memedit.py:1538
+#: ../wxui/memedit.py:1553
 #, python-format
 msgid "%i Memories"
 msgstr "%i pamięci"
 
-#: ../wxui/memedit.py:1545
+#: ../wxui/memedit.py:1560
 #, python-format
 msgid "%i Memories and shift all up"
 msgstr "%i pamięci oraz przesuń wszystkie do góry"
 
-#: ../wxui/memedit.py:1541
+#: ../wxui/memedit.py:1556
 #, python-format
 msgid "%i Memories and shift block up"
 msgstr "%i pamięci oraz przesuń blok do góry"
 
-#: ../wxui/main.py:1352
+#: ../wxui/main.py:1353
 #, python-format
 msgid "%s has not been saved. Save before closing?"
 msgstr "%s nie został zapisany. Zapisać przed zamknięciem?"
@@ -59,7 +59,7 @@ msgstr "%s nie został zapisany. Zapisać przed zamknięciem?"
 msgid "(none)"
 msgstr "(brak)"
 
-#: ../wxui/memedit.py:1860
+#: ../wxui/memedit.py:1875
 #, python-format
 msgid "...and %i more"
 msgstr "...oraz %i więcej"
@@ -482,7 +482,7 @@ msgid ""
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:753
+#: ../drivers/uv5r.py:778
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -492,7 +492,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:761
+#: ../drivers/uv5r.py:786
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -502,7 +502,7 @@ msgid ""
 "6. Click OK to upload image to device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:288 ../drivers/wouxun.py:214 ../drivers/tg_uv2p.py:223
+#: ../drivers/tg_uv2p.py:223 ../drivers/uvb5.py:288 ../drivers/wouxun.py:214
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -512,7 +512,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:296 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:231
+#: ../drivers/tg_uv2p.py:231 ../drivers/uvb5.py:296 ../drivers/wouxun.py:222
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -629,7 +629,7 @@ msgstr ""
 "\n"
 "Obraz może nie działać, jeśli radio zostanie włączone z podłączonym kablem"
 
-#: ../wxui/main.py:1770
+#: ../wxui/main.py:1771
 msgid ""
 "A new CHIRP version is available. Please visit the website as soon as "
 "possible to download it!"
@@ -637,23 +637,23 @@ msgstr ""
 "Nowa wersja programu CHIRP jest dostępna. Odwiedź stronę internetową "
 "projektu i pobierz ją!"
 
-#: ../wxui/main.py:899
+#: ../wxui/main.py:900
 msgid "About"
 msgstr "O programie"
 
-#: ../wxui/main.py:1635
+#: ../wxui/main.py:1636
 msgid "About CHIRP"
-msgstr "O CHIRP"
+msgstr "O programie CHIRP"
 
 #: ../wxui/query_sources.py:354
 msgid "All"
 msgstr "Wszystkie"
 
-#: ../wxui/main.py:1183
+#: ../wxui/main.py:1184
 msgid "All Files"
-msgstr "Wszystkie poliku"
+msgstr "Wszystkie pliki"
 
-#: ../wxui/main.py:1194
+#: ../wxui/main.py:1195
 msgid "All supported formats|"
 msgstr "Wszystkie wspierane formaty|"
 
@@ -661,7 +661,7 @@ msgstr "Wszystkie wspierane formaty|"
 msgid "Amateur"
 msgstr "Amatorska"
 
-#: ../wxui/common.py:531 ../wxui/common.py:557
+#: ../wxui/common.py:534 ../wxui/common.py:560
 msgid "An error has occurred"
 msgstr "Wystąpił błąd"
 
@@ -669,15 +669,15 @@ msgstr "Wystąpił błąd"
 msgid "Applying settings"
 msgstr "Stosowanie ustawień"
 
-#: ../wxui/developer.py:476
+#: ../wxui/developer.py:491
 msgid "Available modules"
 msgstr "Dostępne moduły"
 
-#: ../wxui/main.py:1713
+#: ../wxui/main.py:1714
 msgid "Bandplan"
 msgstr "Bandplan"
 
-#: ../wxui/query_sources.py:376 ../wxui/query_sources.py:588
+#: ../wxui/query_sources.py:376 ../wxui/query_sources.py:589
 msgid "Bands"
 msgstr "Pasma"
 
@@ -697,11 +697,11 @@ msgstr "Przeglądarka"
 msgid "Building Radio Browser"
 msgstr "Budowanie przeglądarki radiostacji"
 
-#: ../wxui/query_sources.py:679
+#: ../wxui/query_sources.py:680
 msgid "Canada"
 msgstr "Kanada"
 
-#: ../wxui/common.py:420
+#: ../wxui/common.py:423
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -709,14 +709,14 @@ msgstr ""
 "Zmiana tego ustawienia wymaga odświeżenia z obrazu, co zostanie teraz "
 "wykonane."
 
-#: ../wxui/memedit.py:1224
+#: ../wxui/memedit.py:1239
 #, python-format
 msgid ""
 "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr ""
 "Kanały z takim samym TX oraz RX %s są reprezentowane trybem tonu \"%s\""
 
-#: ../wxui/main.py:1182
+#: ../wxui/main.py:1183
 msgid "Chirp Image Files"
 msgstr "Pliki obrazu CHIRP"
 
@@ -724,25 +724,25 @@ msgstr "Pliki obrazu CHIRP"
 msgid "Choice Required"
 msgstr "Wymagany wybór"
 
-#: ../wxui/memedit.py:1203
+#: ../wxui/memedit.py:1218
 #, python-format
 msgid "Choose %s DTCS Code"
-msgstr " Wybierz %s kod DTCS "
+msgstr "Wybierz %s kod DTCS "
 
-#: ../wxui/memedit.py:1200
+#: ../wxui/memedit.py:1215
 #, python-format
 msgid "Choose %s Tone"
 msgstr "Wybierz %s ton"
 
-#: ../wxui/memedit.py:1234
+#: ../wxui/memedit.py:1249
 msgid "Choose Cross Mode"
 msgstr "Wybierz tryb krzyżowy"
 
-#: ../wxui/memedit.py:1264
+#: ../wxui/memedit.py:1279
 msgid "Choose duplex"
 msgstr "Wybierz duplex"
 
-#: ../wxui/developer.py:475
+#: ../wxui/developer.py:490
 #, python-format
 msgid "Choose the module to load from issue %i:"
 msgstr "Wybierz moduł do zaimportowania ze zgłoszenia %i:"
@@ -769,23 +769,23 @@ msgstr "Klonowane zakończone, sprawdzanie niewłaściwych bajtów"
 msgid "Cloning"
 msgstr "Klonowanie"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:442 ../drivers/ft817.py:343
+#: ../drivers/ft450d.py:442 ../drivers/ft817.py:343 ../drivers/bj9900.py:133
 msgid "Cloning from radio"
 msgstr "Pobieranie z radiostacji"
 
-#: ../drivers/bj9900.py:160 ../drivers/ft450d.py:471 ../drivers/ft817.py:381
+#: ../drivers/ft450d.py:471 ../drivers/ft817.py:381 ../drivers/bj9900.py:160
 msgid "Cloning to radio"
 msgstr "Wysyłanie do radiostacji"
 
-#: ../wxui/main.py:977
+#: ../wxui/main.py:978
 msgid "Close"
 msgstr "Zamknij"
 
-#: ../wxui/main.py:978
+#: ../wxui/main.py:979
 msgid "Close file"
 msgstr "Zamknij plik"
 
-#: ../wxui/memedit.py:1598
+#: ../wxui/memedit.py:1613
 #, python-format
 msgid "Cluster %i memories"
 msgstr "Grupuj %i pamięci"
@@ -808,12 +808,12 @@ msgid ""
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
 msgstr ""
 
-#: ../wxui/memedit.py:1523
+#: ../wxui/memedit.py:1538
 msgid "Copy"
 msgstr "Kopiuj"
 
 #: ../wxui/query_sources.py:280 ../wxui/query_sources.py:458
-#: ../wxui/query_sources.py:547
+#: ../wxui/query_sources.py:548
 msgid "Country"
 msgstr "Kraj"
 
@@ -821,17 +821,22 @@ msgstr "Kraj"
 msgid "Cross mode"
 msgstr "Tryb krzyżowy"
 
+#: ../wxui/clone.py:407
+#, fuzzy
+msgid "Custom Port"
+msgstr "Wprowadź port:"
+
 #: ../wxui/clone.py:36
 msgid "Custom..."
 msgstr "Nietypowy..."
 
-#: ../wxui/memedit.py:1519
+#: ../wxui/memedit.py:1534
 msgid "Cut"
 msgstr "Wytnij"
 
 #: ../wxui/memedit.py:454
 msgid "DTCS"
-msgstr "DTCS"
+msgstr "DTCS TX"
 
 #: ../wxui/memedit.py:500
 msgid ""
@@ -841,11 +846,11 @@ msgstr ""
 "Polaryzacja\n"
 "DTCS"
 
-#: ../wxui/memedit.py:2113
+#: ../wxui/memedit.py:2128
 msgid "DV Memory"
 msgstr "Pamięć DV"
 
-#: ../wxui/main.py:1649
+#: ../wxui/main.py:1650
 msgid "Danger Ahead"
 msgstr "Niebezpieczeństwo"
 
@@ -853,30 +858,30 @@ msgstr "Niebezpieczeństwo"
 msgid "Dec"
 msgstr "Dec"
 
-#: ../wxui/memedit.py:1532
+#: ../wxui/memedit.py:1547
 msgid "Delete"
 msgstr "Usuń"
 
-#: ../wxui/main.py:904
+#: ../wxui/main.py:905
 msgid "Developer Mode"
 msgstr "Tryb dewelopera"
 
-#: ../wxui/main.py:1655
+#: ../wxui/main.py:1656
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 "Tryb developera jest teraz %s. CHIRP musi zostać ponowie uruchomiony, aby "
 "zmiany przyniosły efekt"
 
-#: ../wxui/memedit.py:1632
+#: ../wxui/memedit.py:1647
 msgid "Diff Raw Memories"
 msgstr "Porównaj surowe pamięci"
 
-#: ../wxui/memedit.py:2038
+#: ../wxui/memedit.py:2053
 msgid "Digital Code"
 msgstr "Kod cyfrowy"
 
-#: ../wxui/main.py:1666
+#: ../wxui/main.py:1667
 msgid "Disable reporting"
 msgstr "Wyłącz raportowanie"
 
@@ -884,7 +889,7 @@ msgstr "Wyłącz raportowanie"
 msgid "Disabled"
 msgstr "Wyłączony"
 
-#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:570
+#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:571
 msgid "Distance"
 msgstr "Dystans"
 
@@ -897,15 +902,20 @@ msgstr "Nie pytaj ponownie dla %s"
 msgid "Double-click to change bank name"
 msgstr "Kliknij podwójnie w celu zmiany nazwy banku"
 
-#: ../wxui/main.py:979
+#: ../wxui/main.py:980
 msgid "Download"
 msgstr "Pobierz"
 
-#: ../wxui/main.py:811 ../wxui/main.py:980
+#: ../wxui/main.py:981
 msgid "Download from radio"
 msgstr "Pobierz z radiostacji"
 
-#: ../wxui/clone.py:513
+#: ../wxui/main.py:812
+#, fuzzy
+msgid "Download from radio..."
+msgstr "Pobierz z radiostacji"
+
+#: ../wxui/clone.py:514
 msgid "Download instructions"
 msgstr "Instrukcje pobierania"
 
@@ -913,17 +923,17 @@ msgstr "Instrukcje pobierania"
 msgid "Duplex"
 msgstr "Dupleks"
 
-#: ../wxui/memedit.py:2068
+#: ../wxui/memedit.py:2083
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Zmień szczegóły dla %i pamięci"
 
-#: ../wxui/memedit.py:2066
+#: ../wxui/memedit.py:2081
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Zmień szczególy dla pamięci %i"
 
-#: ../wxui/main.py:848
+#: ../wxui/main.py:849
 msgid "Enable Automatic Edits"
 msgstr "Zezwól na automatyczną edycję"
 
@@ -935,11 +945,11 @@ msgstr "Włączony"
 msgid "Enter Frequency"
 msgstr "Wprowadź częstotliwość"
 
-#: ../wxui/memedit.py:1251
+#: ../wxui/memedit.py:1266
 msgid "Enter Offset (MHz)"
 msgstr "Wprowadź przesunięcie (MHz)"
 
-#: ../wxui/memedit.py:1243
+#: ../wxui/memedit.py:1258
 msgid "Enter TX Frequency (MHz)"
 msgstr "Wprowadź częstotliwość nadawania (MHz)"
 
@@ -961,35 +971,40 @@ msgstr "Skasowano pamięć %s"
 msgid "Error applying settings"
 msgstr "Błąd stosowania ustawień"
 
-#: ../wxui/clone.py:450
+#: ../wxui/clone.py:451
 msgid "Error communicating with radio"
 msgstr "Błąd komunikacji z radiostacją"
 
-#: ../wxui/clone.py:481
+#: ../wxui/clone.py:482
 msgid "Experimental driver"
 msgstr "Sterownik eksperymentalny"
 
-#: ../wxui/memedit.py:1998
+#: ../wxui/memedit.py:2013
 msgid "Export can only write CSV files"
 msgstr "Eksport może tylko zapisywać pliki CSV"
 
-#: ../wxui/main.py:706 ../wxui/main.py:1337
+#: ../wxui/main.py:1338
 msgid "Export to CSV"
 msgstr "Eksportuj do pliku CSV"
 
-#: ../wxui/memedit.py:2102
+#: ../wxui/main.py:706
+#, fuzzy
+msgid "Export to CSV..."
+msgstr "Eksportuj do pliku CSV"
+
+#: ../wxui/memedit.py:2117
 msgid "Extra"
 msgstr "Dodatkowa"
 
-#: ../wxui/query_sources.py:602
+#: ../wxui/query_sources.py:603
 msgid ""
-"FREE repeater database, which provide most up-to-date\n"
+"FREE repeater database, which provides most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
 "required."
 msgstr ""
 "DARMOWA baza przemienników, która dostarcza\n"
-"\vinformacje o przemiennikach w Europie.\n"
-"\vNie jest wymagane konto użytkownika."
+"informacji o przemiennikach w Europie.\n"
+"Nie jest wymagane konto użytkownika."
 
 #: ../wxui/developer.py:416
 msgid "Failed to load radio browser"
@@ -1008,8 +1023,8 @@ msgstr "Funkcje"
 msgid "File does not exist: %s"
 msgstr "Plik nie istnieje: %s"
 
-#: ../wxui/main.py:1186 ../wxui/main.py:1267 ../wxui/main.py:1277
-#: ../wxui/main.py:1333 ../wxui/main.py:1601 ../wxui/main.py:1602
+#: ../wxui/main.py:1187 ../wxui/main.py:1268 ../wxui/main.py:1278
+#: ../wxui/main.py:1334 ../wxui/main.py:1602 ../wxui/main.py:1603
 msgid "Files"
 msgstr "Pliki"
 
@@ -1021,13 +1036,18 @@ msgstr "Filtr"
 msgid "Filter results with location matching this string"
 msgstr "Filtruj wyniki z lokalizacją pasująco do tej wartości tekstowej"
 
-#: ../wxui/main.py:1407
+#: ../wxui/main.py:1408
 msgid "Find"
 msgstr "Wyszukaj"
 
-#: ../wxui/main.py:765
+#: ../wxui/main.py:766
 msgid "Find Next"
 msgstr "Wyszukaj następny"
+
+#: ../wxui/main.py:760
+#, fuzzy
+msgid "Find..."
+msgstr "Wyszukaj"
 
 #: ../wxui/common.py:320
 #, python-format
@@ -1072,10 +1092,10 @@ msgid ""
 "    no right-side audio!\n"
 msgstr ""
 
-#: ../drivers/mursv1.py:342 ../drivers/baofeng_wp970i.py:325
-#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
-#: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
-#: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364 ../drivers/bf_t1.py:483
+#: ../drivers/uv6r.py:342 ../drivers/gmrsuv1.py:392
+#: ../drivers/tdxone_tdq8a.py:455 ../drivers/mursv1.py:342
+#: ../drivers/uv5x3.py:418 ../drivers/baofeng_wp970i.py:325
+#: ../drivers/btech.py:689 ../drivers/gmrsv2.py:364 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1168,7 +1188,7 @@ msgid ""
 "4 - Click OK to start\n"
 msgstr ""
 
-#: ../drivers/vgc.py:599 ../drivers/lt725uv.py:497
+#: ../drivers/lt725uv.py:497 ../drivers/vgc.py:599
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1186,10 +1206,10 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/vgc.py:605 ../drivers/mursv1.py:348
-#: ../drivers/baofeng_wp970i.py:331 ../drivers/gmrsuv1.py:398
-#: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
-#: ../drivers/uv6r.py:348 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
+#: ../drivers/uv6r.py:348 ../drivers/lt725uv.py:503 ../drivers/gmrsuv1.py:398
+#: ../drivers/tdxone_tdq8a.py:461 ../drivers/mursv1.py:348
+#: ../drivers/uv5x3.py:424 ../drivers/baofeng_wp970i.py:331
+#: ../drivers/vgc.py:605 ../drivers/gmrsv2.py:370
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1225,17 +1245,22 @@ msgstr "GMRS"
 msgid "Getting settings"
 msgstr "Pobieranie ustawień"
 
-#: ../wxui/memedit.py:793
-msgid "Goto"
-msgstr "Idź do"
-
-#: ../wxui/memedit.py:825
+#: ../wxui/memedit.py:833
 msgid "Goto Memory"
 msgstr "Idź do pamięci"
 
-#: ../wxui/memedit.py:824
+#: ../wxui/memedit.py:832
 msgid "Goto Memory:"
 msgstr "Idź do pamięci:"
+
+#: ../wxui/memedit.py:801
+#, fuzzy
+msgid "Goto..."
+msgstr "Idź do"
+
+#: ../wxui/main.py:946
+msgid "Help"
+msgstr "Pomoc"
 
 #: ../wxui/clone.py:35
 msgid "Help Me..."
@@ -1245,24 +1270,25 @@ msgstr "Pomocy..."
 msgid "Hex"
 msgstr "Hex"
 
-#: ../wxui/memedit.py:802
+#: ../wxui/memedit.py:810
 msgid "Hide empty memories"
 msgstr "Ukrywaj puste pamięci"
 
 #: ../wxui/query_sources.py:294 ../wxui/query_sources.py:300
-#: ../wxui/query_sources.py:554 ../wxui/query_sources.py:560
+#: ../wxui/query_sources.py:555 ../wxui/query_sources.py:561
 msgid "If set, sort results by distance from these coordinates"
 msgstr "Jeśli ustawiono, sortuje wyniki po odległości od tych współrzędnych"
 
-#: ../wxui/main.py:1323
+#: ../wxui/main.py:1324
 msgid "Import"
 msgstr "Importuj"
 
 #: ../wxui/main.py:700
-msgid "Import from file"
+#, fuzzy
+msgid "Import from file..."
 msgstr "Importuj z pliku"
 
-#: ../wxui/main.py:1321
+#: ../wxui/main.py:1322
 msgid "Import not recommended"
 msgstr "Importuj nie jest zalecany"
 
@@ -1274,11 +1300,11 @@ msgstr "Indeks"
 msgid "Info"
 msgstr "Info"
 
-#: ../wxui/memedit.py:1226
+#: ../wxui/memedit.py:1241
 msgid "Information"
 msgstr "Informacja"
 
-#: ../wxui/memedit.py:1513
+#: ../wxui/memedit.py:1528
 msgid "Insert Row Above"
 msgstr "Umieść wiersz wyżej"
 
@@ -1286,7 +1312,7 @@ msgstr "Umieść wiersz wyżej"
 msgid "Install desktop icon?"
 msgstr "Utworzyć skrót pulpitu?"
 
-#: ../wxui/main.py:888
+#: ../wxui/main.py:889
 msgid "Interact with driver"
 msgstr "Interakcja ze sterownikiem"
 
@@ -1295,16 +1321,20 @@ msgstr "Interakcja ze sterownikiem"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Niewłaściwe %(value)s (używaj stopni dziesiętnych)"
 
+#: ../wxui/memedit.py:1384
+msgid "Invalid Entry"
+msgstr "Niewłaściwy wpis: %s"
+
 #: ../wxui/query_sources.py:110
 msgid "Invalid ZIP code"
 msgstr "Niewłaściwy kod pocztowy"
 
-#: ../wxui/memedit.py:1368 ../wxui/memedit.py:2193
+#: ../wxui/memedit.py:1383 ../wxui/memedit.py:2208
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Niewłaściwa edycja: %s"
 
-#: ../wxui/main.py:1598
+#: ../wxui/main.py:1599
 msgid "Invalid or unsupported module file"
 msgstr "Niewłaściwy lub niespierany plik modułu"
 
@@ -1313,7 +1343,7 @@ msgstr "Niewłaściwy lub niespierany plik modułu"
 msgid "Invalid value: %r"
 msgstr "Niewłaściwa wartość: %r"
 
-#: ../wxui/developer.py:486
+#: ../wxui/developer.py:512
 msgid "Issue number:"
 msgstr "Numer zgłoszenia:"
 
@@ -1321,7 +1351,7 @@ msgstr "Numer zgłoszenia:"
 msgid "LIVE"
 msgstr "Na żywo"
 
-#: ../wxui/query_sources.py:302 ../wxui/query_sources.py:562
+#: ../wxui/query_sources.py:302 ../wxui/query_sources.py:563
 msgid "Latitude"
 msgstr "Szerokość geograficzna"
 
@@ -1338,24 +1368,29 @@ msgstr "Ogranicz pasma"
 msgid "Limit Modes"
 msgstr "Ogranicz tryby"
 
-#: ../wxui/query_sources.py:537
-#, fuzzy
+#: ../wxui/query_sources.py:538
 msgid "Limit Status"
-msgstr "Ogranicz pasma"
+msgstr "Ogranicz status"
 
-#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:568
+#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:569
 msgid "Limit results to this distance (km) from coordinates"
 msgstr "Ogranicz wyniki do odległości (km) od współrzędnych"
 
 #: ../wxui/main.py:712
-msgid "Load Module"
+#, fuzzy
+msgid "Load Module..."
 msgstr "Załaduj moduł"
 
-#: ../wxui/main.py:936 ../wxui/developer.py:487
+#: ../wxui/developer.py:513
 msgid "Load module from issue"
 msgstr "Załaduj moduł ze zgłoszenia"
 
-#: ../wxui/main.py:1605
+#: ../wxui/main.py:937
+#, fuzzy
+msgid "Load module from issue..."
+msgstr "Załaduj moduł ze zgłoszenia"
+
+#: ../wxui/main.py:1606
 msgid ""
 "Loading modules can be extremely dangerous, leading to damage to your "
 "computer, radio, or both. NEVER load a module from a source you do not "
@@ -1365,8 +1400,8 @@ msgid ""
 "despite this risk?"
 msgstr ""
 "Ładowanie modułów może być ekstremalnie niebezpiecznie i prowadzić do "
-"uszkodzenia komputera, radiostacji lub obu. NIGDY nie ładuj modułu ze "
-"źródła, któremu nie ufasz, w szczególności pobranego nie ze strony projektu "
+"uszkodzenia komputera lub/oraz radiostacji. NIGDY nie ładuj modułu ze "
+"źródła, któremu nie ufasz, w szczególności nie pobranego ze strony projektu "
 "CHIRP (chirp.danplanet.com). Ładowanie modułu z innego źródła jest "
 "równoznaczne z udzielaniem dostępu do komputera oraz wszystkiego na nim! "
 "Kontynuować pomimo ryzyka?"
@@ -1375,7 +1410,7 @@ msgstr ""
 msgid "Loading settings"
 msgstr "Ładowanie ustawień"
 
-#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:563
+#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:564
 msgid "Longitude"
 msgstr "Długość geograficzna"
 
@@ -1383,7 +1418,7 @@ msgstr "Długość geograficzna"
 msgid "Memories"
 msgstr "Pamięci"
 
-#: ../wxui/memedit.py:1407
+#: ../wxui/memedit.py:1422
 #, python-format
 msgid "Memory %i is not deletable"
 msgstr "Pamięć %i jest nieusuwalna"
@@ -1397,7 +1432,7 @@ msgstr "Pamięć musi być w banku, aby można ją było edytować"
 msgid "Memory {num} not in bank {bank}"
 msgstr "Pamięć {num} nie jest w banku {bank}"
 
-#: ../wxui/query_sources.py:515 ../wxui/memedit.py:509
+#: ../wxui/memedit.py:509 ../wxui/query_sources.py:515
 msgid "Mode"
 msgstr "Tryb"
 
@@ -1409,15 +1444,15 @@ msgstr "Model"
 msgid "Modes"
 msgstr "Tryby"
 
-#: ../wxui/main.py:1602
+#: ../wxui/main.py:1603
 msgid "Module"
 msgstr "Moduł"
 
-#: ../wxui/main.py:1574
+#: ../wxui/main.py:1575
 msgid "Module Loaded"
 msgstr "Załadowano moduł"
 
-#: ../wxui/main.py:1699
+#: ../wxui/main.py:1700
 msgid "Module loaded successfully"
 msgstr "Pomyślnie załadowano moduł"
 
@@ -1426,11 +1461,11 @@ msgstr "Pomyślnie załadowano moduł"
 msgid "More than one port found: %s"
 msgstr "Znaleziono więcej niż jeden port: %s"
 
-#: ../wxui/memedit.py:789
+#: ../wxui/memedit.py:797
 msgid "Move Down"
 msgstr "Przesuń w dół"
 
-#: ../wxui/memedit.py:779
+#: ../wxui/memedit.py:787
 msgid "Move Up"
 msgstr "Przesuń w górę"
 
@@ -1438,19 +1473,19 @@ msgstr "Przesuń w górę"
 msgid "New Window"
 msgstr "Nowe okno"
 
-#: ../wxui/main.py:1772
+#: ../wxui/main.py:1773
 msgid "New version available"
 msgstr "Nowa wersja jest dostępna"
 
-#: ../wxui/memedit.py:1668
+#: ../wxui/memedit.py:1683
 msgid "No empty rows below!"
 msgstr "Brak pustych wierszy poniżej!"
 
-#: ../wxui/developer.py:502
+#: ../wxui/developer.py:528
 msgid "No modules found"
 msgstr "Nie znaleziono modułów"
 
-#: ../wxui/developer.py:501
+#: ../wxui/developer.py:527
 #, python-format
 msgid "No modules found in issue %i"
 msgstr "Nie znaleziono modułów w zgłoszeniu %i"
@@ -1463,7 +1498,7 @@ msgstr "Brak wyników"
 msgid "No results!"
 msgstr "Brak wyników!"
 
-#: ../wxui/memedit.py:824
+#: ../wxui/memedit.py:832
 msgid "Number"
 msgstr "Numer"
 
@@ -1483,7 +1518,11 @@ msgstr "Tylko konkretne tryby"
 msgid "Only memory tabs may be exported"
 msgstr "Tylko zakładki pamięci mogą być wyeksportowane"
 
-#: ../wxui/main.py:973 ../wxui/main.py:1323
+#: ../wxui/query_sources.py:532
+msgid "Only working repeaters"
+msgstr "Tylko czynne przemienniki"
+
+#: ../wxui/main.py:974 ../wxui/main.py:1324
 msgid "Open"
 msgstr "Otwórz"
 
@@ -1495,15 +1534,15 @@ msgstr "Otwórz ostatnio używany"
 msgid "Open Stock Config"
 msgstr "Otwórz konfigurację wstępną"
 
-#: ../wxui/main.py:974 ../wxui/main.py:1197
+#: ../wxui/main.py:975 ../wxui/main.py:1198
 msgid "Open a file"
 msgstr "Otwórz plik"
 
-#: ../wxui/main.py:1620
+#: ../wxui/main.py:1621
 msgid "Open a module"
 msgstr "Otwórz moduł"
 
-#: ../wxui/main.py:925
+#: ../wxui/main.py:926
 msgid "Open debug log"
 msgstr "Otwórz log debugowy"
 
@@ -1515,23 +1554,23 @@ msgstr "Otwórz w nowym oknie"
 msgid "Open stock config directory"
 msgstr "Otwórz katalog konfiguracji wstępnych"
 
-#: ../wxui/query_sources.py:299 ../wxui/query_sources.py:559
+#: ../wxui/query_sources.py:299 ../wxui/query_sources.py:560
 msgid "Optional: -122.0000"
 msgstr "Opcjonalnie: -122.0000"
 
-#: ../wxui/query_sources.py:308 ../wxui/query_sources.py:567
+#: ../wxui/query_sources.py:308 ../wxui/query_sources.py:568
 msgid "Optional: 100"
 msgstr "Opcjonalnie: 100"
 
-#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:553
+#: ../wxui/query_sources.py:293 ../wxui/query_sources.py:554
 msgid "Optional: 45.0000"
 msgstr "Opcjonalnie: 45.0000"
 
 #: ../wxui/query_sources.py:314
-msgid "Optional: County, Hospital, etc"
+msgid "Optional: County, Hospital, etc."
 msgstr "Opcjonalnie: Szpital, Hrabstwo itp."
 
-#: ../wxui/memedit.py:1801
+#: ../wxui/memedit.py:1816
 msgid "Overwrite memories?"
 msgstr "Nadpisać pamięci?"
 
@@ -1546,36 +1585,36 @@ msgstr ""
 msgid "Parsing"
 msgstr "Parsowanie"
 
-#: ../wxui/memedit.py:1527
+#: ../wxui/memedit.py:1542
 msgid "Paste"
 msgstr "Wklej"
 
-#: ../wxui/memedit.py:1795
+#: ../wxui/memedit.py:1810
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr "Wklejone pamięci nadpisze %s istniejących pamięci"
 
-#: ../wxui/memedit.py:1798
+#: ../wxui/memedit.py:1813
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "Wklejone pamięci nadpisze pamięci %s"
 
-#: ../wxui/memedit.py:1792
+#: ../wxui/memedit.py:1807
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr "Wklejone pamięci nadpiszą pamięć %s"
 
-#: ../wxui/memedit.py:1789
+#: ../wxui/memedit.py:1804
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr "Wklejona pamięć nadpisze pamięć %s"
 
-#: ../wxui/common.py:596
+#: ../wxui/common.py:599
 #, python-format
 msgid "Path %s does not exist"
 msgstr "Ścieżka %s nie istnieje"
 
-#: ../wxui/main.py:1776
+#: ../wxui/main.py:1777
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Proszę wyjdź z programu CHIRP przed instalacją nowej wersji!"
 
@@ -1605,7 +1644,7 @@ msgid ""
 "    (At the end radio will beep)\n"
 msgstr ""
 
-#: ../wxui/main.py:1643
+#: ../wxui/main.py:1644
 msgid ""
 "Please note that developer mode is intended for use by developers of the "
 "CHIRP project, or under the direction of a developer. It enables behaviors "
@@ -1614,7 +1653,7 @@ msgid ""
 msgstr ""
 "Proszę zauważyć, że tryb dewelopera jest przeznaczony dla deweloperów "
 "projektu CHIRP lub do użycia pod nadzorem dewelopera. Włącza on zachowania "
-"oraz funkcje, które mogą uszkodzić komputer oraz radiostację jeśli nie będą "
+"oraz funkcje, które mogą uszkodzić komputer oraz radiostację, jeśli nie będą "
 "wykorzystywane z EKSTREMALNĄ uwagą. Zostałeś ostrzeżony! Kontynuować?"
 
 #: ../wxui/common.py:183
@@ -1645,24 +1684,24 @@ msgstr "Podgląd wydruku"
 msgid "Printing"
 msgstr "Drukowanie"
 
-#: ../wxui/memedit.py:1506
+#: ../wxui/memedit.py:1521
 msgid "Properties"
 msgstr "Właściwości"
 
-#: ../wxui/main.py:1727
+#: ../wxui/main.py:1728
 #, python-format
 msgid "Query %s"
 msgstr "Odpytywanie %s"
 
-#: ../wxui/main.py:825
+#: ../wxui/main.py:826
 msgid "Query Source"
 msgstr "Źródło zapytań"
 
 #: ../wxui/memedit.py:456
 msgid "RX DTCS"
-msgstr "RX DTCS"
+msgstr "DTCS RX"
 
-#: ../wxui/main.py:944
+#: ../wxui/main.py:945
 msgid "Radio"
 msgstr "Radiostacja"
 
@@ -1671,7 +1710,7 @@ msgstr "Radiostacja"
 msgid "Radio did not ack block %i"
 msgstr "Radiostacja nie potwierdziła (ack) bloku %i"
 
-#: ../wxui/clone.py:505 ../wxui/clone.py:570
+#: ../wxui/clone.py:506 ../wxui/clone.py:571
 msgid "Radio information"
 msgstr "Informacje o radiostacji"
 
@@ -1685,11 +1724,11 @@ msgstr ""
 "jest ona przeznaczona na amerykański rynek, a wybrano model na inne regiony. "
 "Należy wybrać właściwy model i spróbować ponownie."
 
-#: ../wxui/query_sources.py:819
+#: ../wxui/query_sources.py:827
 msgid "RadioReference Canada requires a login before you can query"
 msgstr "RadioReference Canada wymaga logowania przed wysłaniem zapytań"
 
-#: ../wxui/common.py:422
+#: ../wxui/common.py:425
 msgid "Refresh required"
 msgstr "Wymagane jest odświeżenie"
 
@@ -1698,11 +1737,11 @@ msgstr "Wymagane jest odświeżenie"
 msgid "Refreshed memory %s"
 msgstr "Odświeżono pamięć %s"
 
-#: ../wxui/main.py:865
+#: ../wxui/main.py:866
 msgid "Reload Driver"
 msgstr "Przeładuj sterownik"
 
-#: ../wxui/main.py:874
+#: ../wxui/main.py:875
 msgid "Reload Driver and File"
 msgstr "Przeładuj sterownik oraz plik"
 
@@ -1710,11 +1749,11 @@ msgstr "Przeładuj sterownik oraz plik"
 msgid "Rename bank"
 msgstr "Zmień nazwę banku"
 
-#: ../wxui/main.py:913
+#: ../wxui/main.py:914
 msgid "Reporting enabled"
 msgstr "Raportowanie jest włączone"
 
-#: ../wxui/main.py:1662
+#: ../wxui/main.py:1663
 msgid ""
 "Reporting helps the CHIRP project know which radio models and OS platforms "
 "to spend our limited efforts on. We would really appreciate if you left it "
@@ -1724,7 +1763,7 @@ msgstr ""
 "oraz systemów operacyjnych należy traktować priorytetowo. Naprawdę doceniamy "
 "zostawienie tej opcji włączonej. Naprawdę wyłączyć raportowanie?"
 
-#: ../wxui/main.py:1657
+#: ../wxui/main.py:1658
 msgid "Restart Required"
 msgstr "Wymagany jest restart"
 
@@ -1737,15 +1776,15 @@ msgstr "Przywrócono %i zakładek"
 msgid "Retrieved settings"
 msgstr "Pobrano ustawienia"
 
-#: ../wxui/main.py:975
+#: ../wxui/main.py:976
 msgid "Save"
 msgstr "Zapisz"
 
-#: ../wxui/main.py:1354
+#: ../wxui/main.py:1355
 msgid "Save before closing?"
 msgstr "Zapisać przed zamknięciem?"
 
-#: ../wxui/main.py:976 ../wxui/main.py:1281
+#: ../wxui/main.py:977 ../wxui/main.py:1282
 msgid "Save file"
 msgstr "Zapisz plik"
 
@@ -1753,11 +1792,16 @@ msgstr "Zapisz plik"
 msgid "Saved settings"
 msgstr "Zapisano ustawienia"
 
-#: ../wxui/main.py:855
-msgid "Select Bandplan"
+#: ../wxui/developer.py:503
+msgid "Security Risk"
+msgstr ""
+
+#: ../wxui/main.py:856
+#, fuzzy
+msgid "Select Bandplan..."
 msgstr "Wybierz bandplan"
 
-#: ../wxui/query_sources.py:376 ../wxui/query_sources.py:588
+#: ../wxui/query_sources.py:376 ../wxui/query_sources.py:589
 msgid "Select Bands"
 msgstr "Wybierz pasma"
 
@@ -1765,7 +1809,7 @@ msgstr "Wybierz pasma"
 msgid "Select Modes"
 msgstr "Wybierz tryby"
 
-#: ../wxui/main.py:1712
+#: ../wxui/main.py:1713
 msgid "Select a bandplan"
 msgstr "Wybierz bandplan"
 
@@ -1777,46 +1821,46 @@ msgstr "Usługa"
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: ../wxui/memedit.py:1624
+#: ../wxui/memedit.py:1639
 msgid "Show Raw Memory"
 msgstr "Pokaż surową pamięć"
 
-#: ../wxui/main.py:931
+#: ../wxui/main.py:932
 msgid "Show debug log location"
 msgstr "Pokaż lokalizację pliku debug"
 
-#: ../wxui/memedit.py:798
+#: ../wxui/memedit.py:806
 msgid "Show extra fields"
-msgstr "Pokaż dodatkowe pola"
+msgstr "Pokazuj dodatkowe pola"
 
-#: ../wxui/memedit.py:1864
+#: ../wxui/memedit.py:1879
 msgid "Some memories are incompatible with this radio"
 msgstr "Niektóre pamięci są niekompatybilne z tą radiostacją"
 
-#: ../wxui/memedit.py:1742
+#: ../wxui/memedit.py:1757
 msgid "Some memories are not deletable"
 msgstr "Niektóre pamięci są nieusuwalne"
 
-#: ../wxui/memedit.py:1586
+#: ../wxui/memedit.py:1601
 #, python-format
 msgid "Sort %i memories"
 msgstr "Sortuj %i pamięci"
 
-#: ../wxui/memedit.py:1589
+#: ../wxui/memedit.py:1604
 #, python-format
 msgid "Sort %i memories ascending"
 msgstr "Sortuj %i pamięci rosnąco"
 
-#: ../wxui/memedit.py:1608
+#: ../wxui/memedit.py:1623
 #, python-format
 msgid "Sort %i memories descending"
 msgstr "Sortuj %i pamięci malejąco"
 
-#: ../wxui/memedit.py:1483
+#: ../wxui/memedit.py:1498
 msgid "Sort by column:"
 msgstr "Sortuj wg kolumny:"
 
-#: ../wxui/memedit.py:1482
+#: ../wxui/memedit.py:1497
 msgid "Sort memories"
 msgstr "Sortuj pamięci"
 
@@ -1832,7 +1876,7 @@ msgstr "Stan"
 msgid "State/Province"
 msgstr "Stan/Prowincja"
 
-#: ../wxui/main.py:1700
+#: ../wxui/main.py:1701
 msgid "Success"
 msgstr "Sukces"
 
@@ -1859,7 +1903,17 @@ msgid ""
 "download to a CHIRP Radio Images (*.img) file.\n"
 msgstr ""
 
-#: ../wxui/main.py:1314
+#: ../wxui/developer.py:500
+msgid ""
+"The author of this module is not a recognized CHIRP developer. It is "
+"recommended that you not load this module as it could pose a security risk. "
+"Proceed anyway?"
+msgstr ""
+"Autor tego modułu nie jest znany programistom projektu CHIRP. Moduł może "
+"stwarzać ryzyko, dlatego rekomendujemy nie ładowanie tego modułu. "
+"Kontynuować pomimo tego?"
+
+#: ../wxui/main.py:1315
 #, python-format
 msgid ""
 "The recommended procedure for importing memories is to open the source file "
@@ -1874,9 +1928,9 @@ msgstr ""
 "aktualnie otwartym pliku tymi z %(file)s. Czy chcesz otworzyć ten plik, aby "
 "kopiować/wklejać pamięci lub kontynuować import?"
 
-#: ../wxui/memedit.py:1548
+#: ../wxui/memedit.py:1563
 msgid "This Memory"
-msgstr "Ta pamięć"
+msgstr "Tą pamięć"
 
 #: ../drivers/id5100.py:333
 msgid ""
@@ -1901,11 +1955,11 @@ msgid ""
 "You have been warned. Proceed at your own risk!"
 msgstr ""
 
-#: ../wxui/memedit.py:1552
+#: ../wxui/memedit.py:1567
 msgid "This memory and shift all up"
 msgstr "Tą pamięć i przeusń wszystkie wyżej"
 
-#: ../wxui/memedit.py:1550
+#: ../wxui/memedit.py:1565
 msgid "This memory and shift block up"
 msgstr "Tą pamięć i przesuń blok wyżej"
 
@@ -1918,7 +1972,7 @@ msgid ""
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
 
-#: ../drivers/uvk5.py:1866
+#: ../drivers/uvk5.py:1875
 msgid ""
 "This should only be enabled if you are using modified firmware that supports "
 "wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
@@ -1931,23 +1985,23 @@ msgstr ""
 "doprowadzić do nieprzewidywalnego lub niezgodnego z przepisami zachowania. "
 "Włączasz na własne ryzyko!"
 
-#: ../wxui/developer.py:484
+#: ../wxui/developer.py:510
 msgid "This will load a module from a website issue"
 msgstr "To załaduje moduł ze strony zgłoszenia"
 
 #: ../wxui/memedit.py:359
 msgid "Tone"
-msgstr "Ton"
+msgstr "Ton TX"
 
-#: ../wxui/memedit.py:858
+#: ../wxui/memedit.py:866
 msgid "Tone Mode"
 msgstr "Tryb tonu"
 
 #: ../wxui/memedit.py:361
 msgid "Tone Squelch"
-msgstr "Blokada tonem"
+msgstr "Ton RX"
 
-#: ../wxui/memedit.py:303
+#: ../wxui/memedit.py:303 ../wxui/memedit.py:880
 msgid "Tuning Step"
 msgstr "Krok strojenia"
 
@@ -1962,11 +2016,11 @@ msgid ""
 msgstr ""
 "Nie można wykryć portu kabla. Należy sprawdzić sterowniki oraz połączenie."
 
-#: ../wxui/memedit.py:1291
+#: ../wxui/memedit.py:1306
 msgid "Unable to edit memory before radio is loaded"
 msgstr "Przed pobraniem pamięci, nie można jej edytować"
 
-#: ../wxui/main.py:1239
+#: ../wxui/main.py:1240
 #, python-format
 msgid "Unable to find stock config %r"
 msgstr "Nie znaleziono konfiguracji wstępnej %r"
@@ -1989,7 +2043,7 @@ msgstr ""
 "model na rynek US, ale radiostacja jest przeznaczona na inne regiony (lub "
 "szerokopasmowa). Należy wybrać właściwy model i spróbować ponownie."
 
-#: ../wxui/common.py:603
+#: ../wxui/common.py:606
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Nie można odkryć %s na tym systemie"
@@ -1999,7 +2053,7 @@ msgstr "Nie można odkryć %s na tym systemie"
 msgid "Unable to set %s on this memory"
 msgstr "Nie można ustawić %s na tej pamięci"
 
-#: ../wxui/query_sources.py:678
+#: ../wxui/query_sources.py:679
 msgid "United States"
 msgstr "Stany Zjednoczone"
 
@@ -2007,12 +2061,17 @@ msgstr "Stany Zjednoczone"
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Należy odpiąć kabel (jeśli to konieczne) i nacisnąć przycisk OK"
 
-#: ../wxui/clone.py:585
+#: ../wxui/clone.py:586
 msgid "Upload instructions"
 msgstr "Instrukcje wysyłania"
 
-#: ../wxui/main.py:819 ../wxui/main.py:982
+#: ../wxui/main.py:983
 msgid "Upload to radio"
+msgstr "Wyślij do radiostacji"
+
+#: ../wxui/main.py:820
+#, fuzzy
+msgid "Upload to radio..."
 msgstr "Wyślij do radiostacji"
 
 #: ../wxui/common.py:312
@@ -2020,11 +2079,11 @@ msgstr "Wyślij do radiostacji"
 msgid "Uploaded memory %s"
 msgstr "Wysłano pamięć %s"
 
-#: ../wxui/main.py:787
+#: ../wxui/main.py:788
 msgid "Use fixed-width font"
 msgstr "Używaj czcionki o stałej szerokości znaków"
 
-#: ../wxui/main.py:795
+#: ../wxui/main.py:796
 msgid "Use larger font"
 msgstr "Używaj większej czcionki"
 
@@ -2033,12 +2092,12 @@ msgstr "Używaj większej czcionki"
 msgid "Value does not fit in %i bits"
 msgstr "Wartość nie pasuje do %i bitów"
 
-#: ../wxui/common.py:454
+#: ../wxui/common.py:457
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Wartość musi wynosić przynajmniej %.4f"
 
-#: ../wxui/common.py:458
+#: ../wxui/common.py:461
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Wartość musi wynosić nie więcej niż %.4f"
@@ -2052,23 +2111,27 @@ msgstr "Wartość musi mieć dokładnie %i cyfr dziesiętnych"
 msgid "Value must be zero or greater"
 msgstr "Wartość musi wynosić zero lub więcej"
 
+#: ../wxui/memedit.py:2108
+msgid "Values"
+msgstr "Wartości"
+
 #: ../wxui/clone.py:243
 msgid "Vendor"
 msgstr "Producent"
 
-#: ../wxui/main.py:943
+#: ../wxui/main.py:944
 msgid "View"
 msgstr "Widok"
 
-#: ../wxui/common.py:406
+#: ../wxui/common.py:409
 msgid "WARNING!"
 msgstr "UWAGA!"
 
-#: ../wxui/memedit.py:1375
+#: ../wxui/memedit.py:1390
 msgid "Warning"
 msgstr "Uwaga"
 
-#: ../wxui/memedit.py:1374
+#: ../wxui/memedit.py:1389
 #, python-format
 msgid "Warning: %s"
 msgstr "Uwaga: %s"
@@ -2097,13 +2160,13 @@ msgstr "bajtów"
 msgid "bytes each"
 msgstr "bajtów każdy"
 
-#: ../wxui/main.py:1640
+#: ../wxui/main.py:1641
 msgid "disabled"
-msgstr "wyłączone"
+msgstr "wyłączony"
 
-#: ../wxui/main.py:1640
+#: ../wxui/main.py:1641
 msgid "enabled"
-msgstr "włączone"
+msgstr "włączony"
 
 #: ../drivers/vx5.py:116
 #, python-brace-format
@@ -2265,9 +2328,6 @@ msgstr "{bank} jest pełny"
 
 #~ msgid "Go"
 #~ msgstr "Ok"
-
-#~ msgid "Help"
-#~ msgstr "Pomoc"
 
 #~ msgid "Hide Unused Fields"
 #~ msgstr "Ukryj nieużywane pola"

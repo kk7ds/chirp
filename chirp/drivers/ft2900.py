@@ -79,7 +79,6 @@ def _download(radio):
         if len(chunk) != 32:
             LOG.debug("len chunk is %i\n" % (len(chunk)))
             raise Exception("Failed to get full data block")
-            break
         else:
             data += chunk
 

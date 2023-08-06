@@ -403,7 +403,8 @@ class ChirpCloneDialog(wx.Dialog):
 
     def _selected_port(self, event):
         if self._port.GetStringSelection() == CUSTOM:
-            port = wx.GetTextFromUser(_('Enter custom port:'), 'Custom Port',
+            port = wx.GetTextFromUser(_('Enter custom port:'),
+                                      _('Custom Port'),
                                       parent=self)
             if port:
                 CUSTOM_PORTS.append(port)

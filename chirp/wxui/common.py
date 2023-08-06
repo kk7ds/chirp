@@ -396,7 +396,10 @@ class ChirpSettingGrid(wx.Panel):
                 editor.Enable(value.get_mutable())
                 self.pg.Append(editor)
 
-                if element.get_warning(None) or element.volatile:
+                # Use object() as a sentinel that will never match the safe
+                # value to determine if we need to catch changes for this to
+                # check for a warning.
+                if element.get_warning(object()) or element.volatile:
                     self.pg.Bind(wx.propgrid.EVT_PG_CHANGING,
                                  lambda evt: self._check_change(evt, element))
 

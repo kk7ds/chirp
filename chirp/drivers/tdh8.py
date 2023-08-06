@@ -106,7 +106,9 @@ struct {
   u8 save;
   u8 ligcon;
   u8 voxdelay;
-  u8 alarm;
+  u8 onlychmode:1,
+     unused:6,
+     alarm:1;
 } settings;
 
 #seekto 0x0CB8;
@@ -1155,8 +1157,8 @@ class TDH8(chirp_common.CloneModeRadio):
                               SYNC_LIST, SYNC_LIST[_settings.sync]))
         basic.append(rs)
 
-        if _settings.lang == 1:
-            langs = 0
+        if _settings.lang in (2, 3):
+            langs = 1
         else:
             langs = 0
         rs = RadioSetting("lang", "Language",
@@ -1210,6 +1212,10 @@ class TDH8(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("rxled", "Disp Lcd(RX)",
                           RadioSettingValueBoolean(_settings.rxled))
+        basic.append(rs)
+
+        rs = RadioSetting("onlychmode", "Only CH Mode",
+                          RadioSettingValueBoolean(_settings.onlychmode))
         basic.append(rs)
 
         rs = RadioSetting("stopkey1", "SHORT_KEY_TOP",
@@ -1995,6 +2001,9 @@ class TDH8(chirp_common.CloneModeRadio):
                                 list_val.append(0xFF)
                                 lenth_val += 1
                         self._memobj.group8.group8 = list_val
+                    elif setting == 'lang':
+                        self._memobj.settings.lang = (
+                                str(element.value) == 'English' and 2 or 1)
                     elif element.value.get_mutable():
                         setattr(obj, setting, element.value)
                 except Exception:

@@ -54,10 +54,12 @@ struct slot {
  u8 rx_ctcss;   //see ctcss table, but radio code = CHIRP code+1. 0==off
  u8 tx_dcs;     //see dcs table, but radio code = CHIRP code+1. 0==off
  u8 rx_dcs;     //see dcs table, but radio code = CHIRP code+1. 0==off
- u8 duplex;     //(auto,offset). (0,2,4,5)= (+,-,0, auto)
+ u8 unknown1:5,
+    duplex:3;   //(auto,offset). (0,2,4,5)= (+,-,0, auto)
  ul16 offset;   //little-endian binary * scaler, +- per duplex
                    //scaler is 25 kHz for FT-4, 50 kHz for FT-65.
- u8 tx_width;   //0=wide, 1=narrow
+ u8 unknown2:7,
+    tx_width:1;  //0=wide, 1=narrow
  u8 step;       //STEPS (0-9)=(auto,5,6.25,10,12.5,15,20,25,50,100) kHz
  u8 sql_type;   //(0-6)==(off,r-tone,t-tone,tsql,rev tn,dcs,pager)
  u8 unused;
@@ -376,7 +378,7 @@ def do_download(radio):
         progressbar.cur = blocknum
         radio.status_fn(progressbar)
     sendcmd(pipe, b"END", 0)
-    return memmap.MemoryMap(bytes(image))
+    return memmap.MemoryMapBytes(bytes(image))
 
 
 def putblock(pipe, addr, data):
@@ -868,8 +870,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
          ("bell", "Bell Repetitions", ["OFF", "1T", "3T", "5T", "8T", "CONT"]),
          ("dtmf_mode", "DTMF Mode", ["Manual", "Auto"]),
          ("dtmf_delay", "DTMF Autodialer Delay Time",
-          ["50 MS", "100 MS", "250 MS", "450 MS", "750 MS", "1000 MS"]),
-         ("dtmf_speed", "DTMF Autodialer Sending Speed", ["50 MS", "100 MS"]),
+          ["50 ms", "100 ms", "250 ms", "450 ms", "750 ms", "1000 ms"]),
+         ("dtmf_speed", "DTMF Autodialer Sending Speed", ["50 ms", "100 ms"]),
          ("dtmf", "DTMF Autodialer Memory ",  (get_dtmfs, []))  # handler
          ]),
         ("switch", "Switch/Knob Settings", [  # switch
@@ -887,7 +889,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
          ]),
         ("power", "Power Saver Settings", [  # power
          ("battsave", "Receive Mode Battery Save Interval",
-          ["OFF", "200 MS", "300 MS", "500 MS", "1 S", "2 S"]),
+          ["OFF", "200 ms", "300 ms", "500 ms", "1 s", "2 s"]),
          ("tx_save", "Transmitter Battery Saver", ["OFF", "ON"])
          ]),
         ("eai", "EAI/EPCS Settings", [  # eai

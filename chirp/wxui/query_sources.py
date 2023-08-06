@@ -311,7 +311,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self._add_grid(grid, _('Distance'), self._dist)
 
         self._search = wx.TextCtrl(panel)
-        self._search.SetHint(_('Optional: County, Hospital, etc'))
+        self._search.SetHint(_('Optional: County, Hospital, etc.'))
         self._search.SetToolTip(_('Filter results with location matching '
                                   'this string'))
         self._add_grid(grid, _('Filter'), self._search)
@@ -529,7 +529,8 @@ class PrzemiennikiQueryDialog(QuerySourceDialog):
         else:
             self._limit_onlyworking = True
         self._onlyworkingfilter = wx.CheckBox(panel,
-                                              label=('Only working repeaters'))
+                                              label=_('Only working repeaters')
+                                              )
         self._onlyworkingfilter.SetValue(self._limit_onlyworking)
         CONF.set_bool('workingstatus', self._limit_onlyworking, self._section)
         self.Bind(wx.EVT_CHECKBOX, self._select_workingstatus,
@@ -599,7 +600,7 @@ class PrzemiennikiQueryDialog(QuerySourceDialog):
                      self._section)
 
     def get_info(self):
-        return _('FREE repeater database, which provide most up-to-date\n'
+        return _('FREE repeater database, which provides most up-to-date\n'
                  'information about repeaters in Europe. No account is\n'
                  'required.')
 
@@ -695,7 +696,7 @@ class RRQueryDialog(QuerySourceDialog):
         grid.AddGrowableCol(1)
 
         # build a new login button
-        self._loginbutton = wx.Button(panel, id=wx.ID_OK, label='Log In')
+        self._loginbutton = wx.Button(panel, label='Log In')
         grid.Add(self._loginbutton)
         self._loginbutton.Bind(wx.EVT_BUTTON, self._populateca)
 
@@ -732,9 +733,16 @@ class RRQueryDialog(QuerySourceDialog):
         return panel
 
     def _populateca(self, event):
+        button = event.GetEventObject()
+        button.Disable()
+        okay = self.FindWindowById(wx.ID_OK)
+        okay.Disable()
+
         def cb(result):
+            wx.CallAfter(okay.Enable)
             if isinstance(result, Exception):
                 self.status('Failed: %s' % result, 0)
+                wx.CallAfter(button.Enable)
             else:
                 self.status('Logged in', 0)
                 wx.CallAfter(self.populateprov)

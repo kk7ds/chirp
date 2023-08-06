@@ -26,6 +26,7 @@ import wx.propgrid
 import wx.lib.mixins.gridlabelrenderer as glr
 
 from chirp import chirp_common
+from chirp import directory
 from chirp import bandplan
 from chirp.drivers import generic_csv
 from chirp import errors
@@ -633,6 +634,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._special_numbers = {}
         # Extra memory column names
         self._extra_cols = set()
+        # Memory errors by row
+        self._memory_errors = {}
 
         self._col_defs = self._setup_columns()
 
@@ -723,6 +726,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             self._dragging_rows = None
 
     def _rowheader_mouseover(self, event):
+        x, y = self._grid.CalcUnscrolledPosition(event.GetX(), event.GetY())
+        row, _cell = self._grid.XYToCell(x, y)
+
+        tip = self._memory_errors.get(row)
+        event.GetEventObject().SetToolTip(tip)
+
         if self._dragging_rows is not None:
             row, x, y = self._dragging_rows
             if row not in self._grid.GetSelectedRows():
@@ -790,7 +799,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         move_dn.SetAccel(wx.AcceleratorEntry(
             extra_move | wx.ACCEL_RAW_CTRL, wx.WXK_DOWN))
 
-        goto = common.EditorMenuItem(cls, '_goto', _('Goto'))
+        goto = common.EditorMenuItem(cls, '_goto', _('Goto...'))
         goto.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('G')))
 
         expand_extra = common.EditorMenuItemToggle(
@@ -868,7 +877,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             ChirpChoiceColumn('mode', self._radio,
                               valid_modes),
             ChirpChoiceColumn('tuning_step', self._radio,
-                              valid_tuning_steps),
+                              valid_tuning_steps,
+                              label=_('Tuning Step')),
             ChirpChoiceColumn('skip', self._radio,
                               valid_skips),
             power_col_cls('power', self._radio,
@@ -933,9 +943,15 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             LOG.error('Failed to load memory %s as error because: %s' % (
                 number, memory))
             self._row_label_renderers[row].set_error()
+            self._memory_errors[row] = str(memory)
+            self._memory_cache[row] = chirp_common.Memory(number=number,
+                                                          empty=True)
             self._grid.SetRowLabelValue(row, '!%s' % (
                 self._grid.GetRowLabelValue(row)))
             return
+
+        if row in self._memory_errors:
+            del self._memory_errors[row]
 
         hide_empty = CONF.get_bool('hide_empty', 'memedit', False)
         if memory.empty:
@@ -1366,7 +1382,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if errors:
             LOG.warning('Memory failed validation: %s' % mem)
             wx.MessageBox(_('Invalid edit: %s') % '; '.join(errors),
-                          'Invalid Entry')
+                          _('Invalid Entry'))
             event.Skip()
             return
         if warnings:
@@ -1722,12 +1738,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         mems = []
         for row in rows:
             mem = self.synchronous_get_memory(row + offset)
-            # We can't pickle settings, nor would they apply if we
-            # paste across models
-            mem.extra = []
             mems.append(mem)
+        rcid = directory.radio_class_id(self._radio.__class__)
         payload = {'mems': mems,
                    'features': self._radio.get_features(),
+                   'source_radio_id': rcid,
                    'source': self.GetId()}
         data = wx.DataObjectComposite()
         memdata = wx.CustomDataObject(common.CHIRP_DATA_MEMORY)
@@ -1804,6 +1819,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             if resp == wx.ID_NO:
                 return False
 
+        same_class = (payload.get('source_radio_id') ==
+                      directory.radio_class_id(self._radio.__class__))
+        LOG.debug('Paste is from identical radio class: %s', same_class)
+
         errormsgs = []
         modified = False
         for mem in mems:
@@ -1835,6 +1854,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                         self._radio.validate_memory(mem))
                     errormsgs.extend([(mem, e) for e in errs])
                     errormsgs.extend([(mem, w) for w in warns])
+
+                    # If we are not pasting into a radio of the same type,
+                    # then unset the mem.extra bits which won't be compatible.
+                    if not same_class:
+                        mem.extra = []
+
                     if not errs:
                         # If we got error messages from validate, don't even
                         # try to set the memory, just like if import_logic
@@ -1999,7 +2024,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         selected = self._grid.GetSelectedRows()
         if len(selected) <= 1:
             selected = range(0, self._grid.GetNumberRows())
-        r = generic_csv.CSVRadio(None)
+        if isinstance(self.radio, chirp_common.IcomDstarSupport):
+            r = generic_csv.DSTARCSVRadio(None)
+        else:
+            r = generic_csv.CSVRadio(None)
         # The CSV driver defaults to a single non-empty memory at location
         # zero, so delete it before we go to export.
         r.erase_memory(0)
@@ -2090,7 +2118,7 @@ class ChirpMemPropDialog(wx.Dialog):
         self._pg = wx.propgrid.PropertyGrid(self._tabs,
                                             style=wx.propgrid.PG_BOLD_MODIFIED)
         self._pg.Bind(wx.propgrid.EVT_PG_CHANGED, self._mem_prop_changed)
-        self._tabs.InsertPage(0, self._pg, 'Values')
+        self._tabs.InsertPage(0, self._pg, _('Values'))
         page_index = 0
         self._extra_page = None
         self._dv_page = None

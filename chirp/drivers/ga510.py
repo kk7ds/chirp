@@ -45,7 +45,10 @@ DTMFCHARS = '0123456789ABCD*#'
 
 
 def reset(radio):
-    radio.pipe.write(b'E')
+    try:
+        radio.pipe.write(b'E')
+    except Exception as e:
+        LOG.error('Failed to reset radio: %s' % e)
 
 
 def start_program(radio):
@@ -93,8 +96,6 @@ def do_download(radio):
 
         s.cur = addr
         radio.status_fn(s)
-
-    reset(radio)
 
     return data
 
@@ -373,6 +374,8 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         except Exception as e:
             LOG.exception('General failure')
             raise errors.RadioError('Failed to download from radio: %s' % e)
+        finally:
+            reset(self)
         self.process_mmap()
 
     def sync_out(self):
@@ -383,6 +386,8 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         except Exception as e:
             LOG.exception('General failure')
             raise errors.RadioError('Failed to upload to radio: %s' % e)
+        finally:
+            reset(self)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(BASE_FORMAT + self._mem_format,
@@ -535,39 +540,6 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
             mem.extra = self._get_extra(_mem)
         except:
             LOG.exception('Failed to get extra for %i' % num)
-
-        immutable = []
-
-        if self._gmrs:
-            if mem.freq in bandplan_na.ALL_GMRS_FREQS:
-                if mem.freq in bandplan_na.GMRS_LOW:
-                    mem.duplex = ''
-                    mem.offset = 0
-                    immutable = ["duplex", "offset"]
-                if mem.freq in bandplan_na.GMRS_HHONLY:
-                    mem.duplex = 'off'
-                    mem.offset = 0
-                    immutable = ["duplex", "offset"]
-                if mem.freq in bandplan_na.GMRS_HIRPT:
-                    immutable = ["freq"]
-                    if mem.duplex == '+':
-                        mem.offset = 5000000
-                    else:
-                        mem.duplex = ''
-                        mem.offset = 0
-            else:
-                mem.duplex = 'off'
-                mem.offset = 0
-                immutable = ["duplex", "offset"]
-
-        if self.MODEL == "RA685":
-            if not ((mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) or
-                    (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1])):
-                mem.duplex = 'off'
-                mem.offset = 0
-                immutable = ["duplex", "offset"]
-
-        mem.immutable = immutable
 
         return mem
 
@@ -980,29 +952,12 @@ class RetevisRA685Radio(RadioddityGA510Radio):
 
     _magic = b'PROGROMWLTU'
 
-    def check_set_memory_immutable_policy(self, existing, new):
-        existing.immutable = []
-        super().check_set_memory_immutable_policy(existing, new)
-
     def get_features(self):
         rf = RadioddityGA510Radio.get_features(self)
         rf.memory_bounds = (1, 128)
         rf.valid_bands = [(136000000, 174000000),
                           (400000000, 520000000)]
         return rf
-
-    def validate_memory(self, mem):
-        msgs = super().validate_memory(mem)
-
-        _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
-
-        if not ((mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) or
-                (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1])):
-            if mem.duplex != "off":
-                msgs.append(chirp_common.ValidationWarning(_msg_duplex))
-
-        return msgs
 
     def _get_mem(self, num):
         return self._memobj.memories[num - 1]
@@ -1030,26 +985,6 @@ class RetevisRA85Radio(RadioddityGA510Radio):
         chirp_common.PowerLevel('M', watts=0.6)]
 
     _magic = b'PROGROMWLTU'
-    _gmrs = True
-
-    def validate_memory(self, mem):
-        msgs = super().validate_memory(mem)
-
-        _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
-
-        if mem.freq not in bandplan_na.ALL_GMRS_FREQS:
-            if mem.duplex != "off":
-                msgs.append(chirp_common.ValidationWarning(_msg_duplex))
-        if mem.freq in bandplan_na.GMRS_HIRPT:
-            if mem.duplex and mem.offset != 5000000:
-                msgs.append(chirp_common.ValidationWarning(_msg_offset))
-
-        return msgs
-
-    def check_set_memory_immutable_policy(self, existing, new):
-        existing.immutable = []
-        super().check_set_memory_immutable_policy(existing, new)
 
     def get_features(self):
         rf = RadioddityGA510Radio.get_features(self)

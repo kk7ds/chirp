@@ -462,7 +462,7 @@ def _open_radio(radio, status):
     ack = _raw_recv(radio, 1)
     if ack != ACK_CMD:
         _close_radio(radio)
-        LOG.debug("Radio did not accepted PROGRAM command")
+        LOG.debug("Radio did not accept PROGRAM command")
         raise errors.RadioError("The radio did not start program mode")
 
     # DEBUG
@@ -841,7 +841,6 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
             LOG.debug(util.hexprint(rid))
             raise errors.RadioError(
                 "Wrong Kenwood radio, ID or unknown variant, see LOG output.")
-            return False
 
     def sync_in(self):
         """Do a download of the radio eeprom"""
