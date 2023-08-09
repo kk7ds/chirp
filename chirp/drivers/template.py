@@ -120,7 +120,7 @@ class TemplateRadio(chirp_common.CloneModeRadio):
         mem.freq = int(_mem.freq)
         mem.name = str(_mem.name).rstrip()  # Set the alpha tag
 
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
+        # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if mem.freq == 0:
             mem.empty = True
 

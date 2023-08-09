@@ -406,7 +406,7 @@ class IradioUV5118plus(chirp_common.CloneModeRadio):
                                 "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_duplexes = ["", "-", "+", "split"]
-        rf.valid_modes = ["FM", "NFM"]  # 25 KHz, 12.5 KHz.
+        rf.valid_modes = ["FM", "NFM"]  # 25 kHz, 12.5 kHz.
         rf.valid_dtcs_codes = DTCS_CODES
         rf.memory_bounds = (1, self._upper)
         rf.valid_tuning_steps = _STEP_LIST
@@ -493,7 +493,7 @@ class IradioUV5118plus(chirp_common.CloneModeRadio):
 
         mem.freq = int(_mem.rxfreq) * 10
 
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
+        # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if mem.freq == 0:
             mem.empty = True
             return mem

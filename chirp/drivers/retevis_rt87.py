@@ -124,9 +124,9 @@ struct {
                         //                      110 6  (default)
                         //                      111 7
   u8 unknown_083B:1,
-     pf1:3,             // PF1 (Off, Reverse, Opt Call, 1750Hz, A/B)       [21]
+     pf1:3,             // PF1 (Off, Reverse, Opt Call, 1750 Hz, A/B)      [21]
      unknown_083B1:1,
-     pf2:3;             // PF2 (Off, Reverse, Opt Call, 1750Hz, A/B)       [22]
+     pf2:3;             // PF2 (Off, Reverse, Opt Call, 1750 Hz, A/B)      [22]
   u8 unknown_083c;      // factory = 05, reset = FF
   u8 unknown_083d;      // factory = 12, reset = FF
   u8 unknown_083e;      // factory = 50, reset = FF

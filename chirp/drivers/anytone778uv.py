@@ -24,7 +24,7 @@
 # * Tx off
 # * Duplex (+ve, -ve, odd, and off splits)
 # * Transmit power
-# * Channel width (25kHz and 12.5kHz)
+# * Channel width (25 kHz and 12.5 kHz)
 # * Retevis RT95, CRT Micron UV, and Midland DBR2500 radios
 # * Full range of frequencies for tx and rx, supported band read from radio
 #   during download, not verified on upload.  Radio will refuse to TX if out of
@@ -778,7 +778,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                 mem.mode = 'FM'
             elif _mem.channel_width == CHANNEL_WIDTH_20kHz:
                 LOG.info(
-                    '%s: get_mem: promoting 20kHz channel width to 25kHz' %
+                    '%s: get_mem: promoting 20 kHz channel width to 25 kHz' %
                     mem.name)
                 mem.mode = 'FM'
             elif _mem.channel_width == CHANNEL_WIDTH_12d5kHz:
@@ -988,7 +988,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
             if mem.duplex == 'off':
                 _mem.tx_off = 1
 
-            # Set the channel width - remember we promote 20kHz channels to FM
+            # Set the channel width - remember we promote 20 kHz channels to FM
             # on import
             # , so don't handle them here
             if mem.mode == 'FM':
@@ -1332,8 +1332,8 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         function.append(rset)
 
         # Frequency Step
-        options = ["2.5 KHz", "5 KHz", "6.25 KHz", "10 KHz", "12.5 KHz",
-                   "20 KHz", "25 KHz", "30 KHz", "50 KHz"]
+        options = ["2.5 kHz", "5 kHz", "6.25 kHz", "10 kHz", "12.5 kHz",
+                   "20 kHz", "25 kHz", "30 kHz", "50 kHz"]
         rs = RadioSettingValueList(options, options[_settings.frequencyStep])
         rset = RadioSetting("settings.frequencyStep", "Frequency step", rs)
         function.append(rset)

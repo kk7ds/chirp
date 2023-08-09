@@ -342,7 +342,7 @@ class RB28Radio(chirp_common.CloneModeRadio):
                                 "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_duplexes = ["", "off"]
-        rf.valid_modes = ["FM", "NFM"]  # 25 KHz, 12.5 kHz.
+        rf.valid_modes = ["FM", "NFM"]  # 25 kHz, 12.5 kHz.
         rf.valid_tones = self.TONES
         rf.valid_dtcs_codes = self.DTCS_CODES
         rf.memory_bounds = (1, self._upper)
@@ -398,7 +398,7 @@ class RB28Radio(chirp_common.CloneModeRadio):
 
         mem.freq = int(_mem.rxfreq) * 10
 
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
+        # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if mem.freq == 0:
             mem.empty = True
             return mem

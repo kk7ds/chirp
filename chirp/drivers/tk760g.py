@@ -273,7 +273,7 @@ ACK_CMD = b"\x06"
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                 chirp_common.PowerLevel("High", watts=5)]
 
-MODES = ["NFM", "FM"]  # 12.5 / 25 KHz
+MODES = ["NFM", "FM"]  # 12.5 / 25 kHz
 VALID_CHARS = chirp_common.CHARSET_UPPER_NUMERIC + r"_-*()/\-+=)"
 SKIP_VALUES = ["", "S"]
 

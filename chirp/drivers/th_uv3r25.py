@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""TYT uv3r (2.5kHz) radio management module"""
+"""TYT uv3r (2.5 kHz) radio management module"""
 
 from chirp import chirp_common, bitwise, directory
 from chirp.drivers.wouxun import do_download, do_upload

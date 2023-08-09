@@ -75,7 +75,7 @@ LIST_OFF1TO50 = ["Off"] + ["%s seconds" % x for x in range(1, 51)]
 LIST_OFF1TO60 = ["Off"] + ["%s seconds" % x for x in range(1, 61)]
 LIST_PONMSG = ["Full", "Message", "Battery voltage"]
 LIST_REPM = ["Off", "Carrier", "CTCSS or DCS", "Tone", "DTMF"]
-LIST_REPS = ["1000 Hz", "1450 Hz", "1750 Hz", "2100Hz"]
+LIST_REPS = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
 LIST_REPSW = ["Off", "RX", "TX"]
 LIST_RPTDL = ["Off"] + ["%s ms" % x for x in range(1, 11)]
 LIST_SCMODE = ["Off", "PTT-SC", "MEM-SC", "PON-SC"]
@@ -959,7 +959,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                         immutable = ["duplex", "offset"]
                     elif mem.freq in GMRS_FREQS3:
                         # GMRS repeater channels, always either simplex or
-                        # +5MHz
+                        # +5 MHz
                         if mem.duplex != '+':
                             mem.duplex = ''
                             mem.offset = 0
@@ -985,7 +985,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                         immutable = ["duplex", "offset"]
                     elif mem.freq in GMRS_FREQS3:
                         # GMRS repeater channels, always either simplex or
-                        # +5MHz
+                        # +5 MHz
                         if mem.duplex != '+':
                             mem.duplex = ''
                             mem.offset = 0
@@ -2244,7 +2244,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             def fm_validate(value):
                 if value == 0:
                     return chirp_common.format_freq(value)
-                if not (87.5 <= value and value <= 108.0):  # 87.5-108MHz
+                if not (87.5 <= value and value <= 108.0):  # 87.5-108 MHz
                     msg = ("FM-Preset-Frequency: " +
                            "Must be between 87.5 and 108 MHz")
                     raise InvalidValueError(msg)
@@ -3463,7 +3463,7 @@ class BTech(BTechMobileCommon):
         LOG.info("Radio ranges: VHF %d to %d" % vhf)
         LOG.info("Radio ranges: UHF %d to %d" % uhf)
 
-        # 220MHz radios case
+        # 220 MHz radios case
         if self.MODEL in ["UV-2501+220", "KT8900R"]:
             vhf2 = _decode_ranges(ranges.vhf2_low, ranges.vhf2_high)
             LOG.info("Radio ranges: VHF(220) %d to %d" % vhf2)
@@ -3970,12 +3970,12 @@ class BTechColor(BTechMobileCommon):
 
         # the additional bands
         if self.MODEL in ["UV-25X4", "KT7900D"]:
-            # 200MHz band
+            # 200 MHz band
             vhf2 = _decode_ranges(ranges.vhf2_low, ranges.vhf2_high)
             LOG.info("Radio ranges: VHF(220) %d to %d" % vhf2)
             self._220_range = vhf2
 
-            # 350MHz band
+            # 350 MHz band
             uhf2 = _decode_ranges(ranges.uhf2_low, ranges.uhf2_high)
             LOG.info("Radio ranges: UHF(350) %d to %d" % uhf2)
             self._350_range = uhf2
@@ -4154,7 +4154,7 @@ class DB25G(BTechColor):
         msgs = super().validate_memory(mem)
 
         _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+        _msg_offset = 'Only simplex or +5 MHz offset allowed on GMRS'
 
         if mem.freq in GMRS_FREQS3:
             if mem.duplex and mem.offset != 5000000:
@@ -4543,7 +4543,7 @@ class GMRS50X1(BTechGMRS):
         msgs = super().validate_memory(mem)
 
         _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+        _msg_offset = 'Only simplex or +5 MHz offset allowed on GMRS'
 
         if not (mem.number >= 1 and mem.number <= 30):
             if mem.duplex != "off":
@@ -4577,7 +4577,7 @@ class GMRS50V2(BTechGMRS):
         msgs = super().validate_memory(mem)
 
         _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+        _msg_offset = 'Only simplex or +5 MHz offset allowed on GMRS'
 
         if mem.freq not in GMRS_FREQS:
             if mem.duplex != "off":
@@ -4933,12 +4933,12 @@ class QYTColorHT(BTechMobileCommon):
 
         # the additional bands
         if self.MODEL in ["KT-8R"]:
-            # 200MHz band
+            # 200 MHz band
             vhf2 = _decode_ranges(ranges.vhf2_low, ranges.vhf2_high)
             LOG.info("Radio ranges: VHF(220) %d to %d" % vhf2)
             self._220_range = vhf2
 
-            # 350MHz band
+            # 350 MHz band
             uhf2 = _decode_ranges(ranges.uhf2_low, ranges.uhf2_high)
             LOG.info("Radio ranges: UHF(350) %d to %d" % uhf2)
             self._350_range = uhf2
@@ -5692,7 +5692,7 @@ class GMRS20V2(BTechColorWP):
         msgs = super().validate_memory(mem)
 
         _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+        _msg_offset = 'Only simplex or +5 MHz offset allowed on GMRS'
 
         if mem.freq not in GMRS_FREQS:
             if mem.duplex != "off":

@@ -18,7 +18,7 @@ from chirp.drivers import icf
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueList, RadioSettingValueBoolean, RadioSettings
 
-# The Icom IC-2300H is a 65W, 144MHz mobile transceiver based on the IC-2200H.
+# The Icom IC-2300H is a 65W, 144 MHz mobile transceiver based on the IC-2200H.
 # Unlike the IC-2200H, this model does not accept Icom's UT-118 D-STAR board.
 #
 # A simple USB interface based on a typical FT232RL breakout board was used
@@ -135,7 +135,7 @@ class IC2300Radio(icf.IcomCloneModeRadio):
         rf.valid_tmodes = list(TONE_MODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(TUNING_STEPS)
-        rf.valid_bands = [(136000000, 174000000)]  # USA tx range: 144-148MHz
+        rf.valid_bands = [(136000000, 174000000)]  # USA tx range: 144-148 MHz
         rf.valid_skips = ["", "S"]
         rf.valid_power_levels = POWER_LEVELS
         rf.has_settings = True

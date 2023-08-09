@@ -236,7 +236,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 mym_cw:1,
                 mym_usb:1,
                 mym_lsb:1;
-            u8  myb_24:1,          // My Band: 24MHz set = OFF
+            u8  myb_24:1,          // My Band: 24 MHz set = OFF
                 myb_21:1,
                 myb_18:1,
                 myb_14:1,
@@ -823,23 +823,23 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
 
         vx = 0
         if mem.mode[1:] == "SB":
-            options = ["1.8kHz", "2.4kHz", "3.0kHz"]
+            options = ["1.8 kHz", "2.4 kHz", "3.0 kHz"]
             vx = _mem.sb_width
             stx = "sb_width"
         elif mem.mode[:1] == "CW":
-            options = ["300Hz", "500 kHz", "2.4kHz"]
+            options = ["300 Hz", "500 kHz", "2.4 kHz"]
             vx = _mem.cw_width
             stx = "cw_width"
         elif mem.mode[:4] == "USER" or mem.mode[:4] == "RTTY":
-            options = ["300Hz", "2.4kHz", "3.0kHz"]
+            options = ["300 Hz", "2.4 kHz", "3.0 kHz"]
             vx = _mem.sb_width
             stx = "sb_width"
         elif mem.mode == "AM":
-            options = ["3.0kHz", "6.0kHz", "9.0 kHz"]
+            options = ["3.0 kHz", "6.0 kHz", "9.0 kHz"]
             vx = _mem.am_width
             stx = "am_width"
         else:
-            options = ["2.5kHz", "5.0kHz"]
+            options = ["2.5 kHz", "5.0 kHz"]
             vx = _mem.fm_width
             stx = "fm_width"
         rs = RadioSetting(stx, "IF Bandpass Filter Width",
@@ -1052,11 +1052,11 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                           RadioSettingValueBoolean(_settings.split))
         tab.append(rs)
 
-        rs = RadioSetting("qspl_f", "Quick-Split freq offset (KHz)",
+        rs = RadioSetting("qspl_f", "Quick-Split freq offset (kHz)",
                           RadioSettingValueInteger(-20, 20, _settings.qspl_f))
         tab.append(rs)
 
-        rs = RadioSetting("emergen", "Alaska Emergency Mem 5167.5KHz",
+        rs = RadioSetting("emergen", "Alaska Emergency Mem 5167.5 kHz",
                           RadioSettingValueBoolean(_settings.emergen))
         tab.append(rs)
 
@@ -1169,7 +1169,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         rs.set_apply_callback(self._invert_me, _settings, "amfmdial")
         pnlset.append(rs)
 
-        options = ["440Hz", "880Hz", "1760Hz"]
+        options = ["440 Hz", "880 Hz", "1760 Hz"]
         rs = RadioSetting("beepton", "Beep frequency",
                           RadioSettingValueList(options,
                                                 options[_settings.beepton]))
@@ -1242,7 +1242,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                           RadioSettingValueBoolean(_settings.peakhold))
         pnlset.append(rs)
 
-        options = ["CW Sidetone", "CW Speed", "100KHz step", "1MHz Step",
+        options = ["CW Sidetone", "CW Speed", "100 kHz step", "1 MHz Step",
                    "Mic Gain", "RF Power"]
         rs = RadioSetting("seldial", "SEL dial 2nd function (push)",
                           RadioSettingValueList(options,
@@ -1309,13 +1309,13 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                                                    _settings.d_disp, 10))
         voxdat.append(rs)
 
-        options = ["170Hz", "200Hz", "425Hz", "850Hz"]
+        options = ["170 Hz", "200 Hz", "425 Hz", "850 Hz"]
         rs = RadioSetting("rty_sft", "RTTY FSK Freq Shift",
                           RadioSettingValueList(options,
                                                 options[_settings.rty_sft]))
         voxdat.append(rs)
 
-        options = ["1275Hz", "2125Hz"]
+        options = ["1275 Hz", "2125 Hz"]
         rs = RadioSetting("rty_ton", "RTTY FSK Mark tone",
                           RadioSettingValueList(options,
                                                 options[_settings.rty_ton]))

@@ -26,7 +26,7 @@ DESC = {
 # Bands are broken up like this so that other plans can import bits.
 
 BANDS_2100M = (
-  bandplan.Band((135700, 137800), "137khz Band", mode="CW"),
+  bandplan.Band((135700, 137800), "137 kHz Band", mode="CW"),
 )
 
 BANDS_160M = (

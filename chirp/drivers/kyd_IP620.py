@@ -77,7 +77,7 @@ struct {           // Settings memory structure ( A-Frequency mode )
 #seekto 0x0E20;
 struct {
   u8 chan_disp_way;  // Channel display way
-  u8 step_freq;      // Step frequency KHz
+  u8 step_freq;      // Step frequency kHz
   u8 rf_sql;         // Squelch level
   u8 bat_save;       // Battery Saver
   u8 chan_pri;       // Channel PRI
@@ -502,7 +502,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
                                                 RFSQL_LIST[_settings.rf_sql]))
         basic.append(rs)
 
-        rs = RadioSetting("step_freq", "Step frequency KHz (STP)",
+        rs = RadioSetting("step_freq", "Step frequency kHz (STP)",
                           RadioSettingValueList(STEP_LIST,
                                                 STEP_LIST[_settings.step_freq]))
         basic.append(rs)

@@ -676,7 +676,7 @@ class THF6ARadio(KenwoodLiveRadio):
         "APO": ["Off", "30min", "60min"],
         "BAL": ["100%:0%", "75%:25%", "50%:50%", "25%:75%", "%0:100%"],
         "BAT": ["Lithium", "Alkaline"],
-        "CKEY": ["Call", "1750Hz"],
+        "CKEY": ["Call", "1750 Hz"],
         "DATP": ["1200bps", "9600bps"],
         "LAN": ["English", "Japanese"],
         "MNF": ["Name", "Frequency"],

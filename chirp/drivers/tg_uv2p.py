@@ -762,7 +762,7 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
                             raise errors.InvalidValueError(
                                 "Please select a valid priority channel:\n"
                                 "A used memory channel which is not "
-                                "in the Broadcast FM band (88-108MHz),\n"
+                                "in the Broadcast FM band (88-108 MHz),\n"
                                 "Or select 'Not Used'")
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))

@@ -560,11 +560,11 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         # validate tone data from here
         if rxmode == "Tone" and rxtone in invalid_tones:
-            msg = "The tone %shz is not valid for this radio" % rxtone
+            msg = "The tone %s Hz is not valid for this radio" % rxtone
             raise errors.UnsupportedToneError(msg)
 
         if txmode == "Tone" and txtone in invalid_tones:
-            msg = "The tone %shz is not valid for this radio" % txtone
+            msg = "The tone %s Hz is not valid for this radio" % txtone
             raise errors.UnsupportedToneError(msg)
 
         if rxmode == "DTCS" and rxtone not in DTCS_CODES:
