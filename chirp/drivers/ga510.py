@@ -1051,3 +1051,36 @@ class AnysecuAC580Radio(Senhaix8800Radio):
     """Anysecu AC-580"""
     VENDOR = "Anysecu"
     MODEL = "AC-580"
+
+
+@directory.register
+class AbbreeARF5Radio(RadioddityGA510Radio):
+    VENDOR = 'Abbree'
+    MODEL = 'AR-F5'
+    POWER_LEVELS = [
+        chirp_common.PowerLevel('H', watts=5),
+        chirp_common.PowerLevel('L', watts=1),
+        chirp_common.PowerLevel('M', watts=2)]
+
+    _magic = b'PROGROMWLTU'
+
+    def get_features(self):
+        rf = RadioddityGA510Radio.get_features(self)
+        rf.memory_bounds = (1, 128)
+        rf.valid_bands = [(136000000, 174000000),
+                          (200000000, 300000000),
+                          (300000000, 400000000),
+                          (400000000, 520000000)]
+        return rf
+
+    def _get_mem(self, num):
+        return self._memobj.memories[num - 1]
+
+    def _get_nam(self, number):
+        return self._memobj.names[number - 1]
+
+    def _set_mem(self, num):
+        return self._memobj.memories[num - 1]
+
+    def _set_nam(self, number):
+        return self._memobj.names[number - 1]
