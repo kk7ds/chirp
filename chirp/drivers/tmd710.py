@@ -310,7 +310,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
 
         if self.SHORT == "G":         # Only the 710G
             rx = RadioSettingValueList(STEPS_STR, STEPS_STR[_mem.splitstep])
-            sx = "Split TX step (KHz)"
+            sx = "Split TX step (kHz)"
             rset = RadioSetting("splitstep", sx, rx)
             mem.extra.append(rset)
 
@@ -1028,52 +1028,52 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
 
         # ===== BMSK GROUP =====
         rx = RadioSettingValueBoolean(bool(_pmg[0].abnd118))
-        sx = "A/Left: 118MHz Band"
+        sx = "A/Left: 118 MHz Band"
         rset = RadioSetting("pmg/0.abnd118", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].abnd144))
-        sx = "A/Left: 144MHz Band"
+        sx = "A/Left: 144 MHz Band"
         rset = RadioSetting("pmg/0.abnd144", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].abnd220))
-        sx = "A/Left: 220MHz Band"
+        sx = "A/Left: 220 MHz Band"
         rset = RadioSetting("pmg/0.abnd220", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].abnd300))
-        sx = "A/Left: 300MHz Band"
+        sx = "A/Left: 300 MHz Band"
         rset = RadioSetting("pmg/0.abnd300", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].abnd430))
-        sx = "A/Left: 430MHz Band"
+        sx = "A/Left: 430 MHz Band"
         rset = RadioSetting("pmg/0.abnd430", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].bbnd144))
-        sx = "B/Right: 144MHz Band"
+        sx = "B/Right: 144 MHz Band"
         rset = RadioSetting("pmg/0.bbnd144", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].bbnd220))
-        sx = "B/Right: 220MHz Band"
+        sx = "B/Right: 220 MHz Band"
         rset = RadioSetting("pmg/0.bbnd220", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].bbnd300))
-        sx = "B/Right: 300MHz Band"
+        sx = "B/Right: 300 MHz Band"
         rset = RadioSetting("pmg/0.bbnd300", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].bbnd430))
-        sx = "B/Right: 430MHz Band"
+        sx = "B/Right: 430 MHz Band"
         rset = RadioSetting("pmg/0.bbnd430", sx, rx)
         bmsk.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_pmg[0].bbnd800))
-        sx = "B/Right: 800MHz Band"
+        sx = "B/Right: 800 MHz Band"
         rset = RadioSetting("pmg/0.bbnd800", sx, rx)
         bmsk.append(rset)
 

@@ -1364,7 +1364,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # offset in some cases. For radios that do not store offset itself,
         # we need to prompt for the offset so it is set in the same operation.
         # For split mode, we should always prompt, because trying to set a
-        # TX frequency of 600kHz is likely to fail on most radios.
+        # TX frequency of 600 kHz is likely to fail on most radios.
         if col_def.name == 'duplex' and val != '':
             if not self._resolve_duplex(mem):
                 event.Veto()

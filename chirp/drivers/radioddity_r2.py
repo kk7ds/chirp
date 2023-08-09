@@ -315,7 +315,7 @@ class RadioddityR2(chirp_common.CloneModeRadio):
     _memsize = 0x03F0
     # never read more than 8 bytes at once
     _block_size = 0x08
-    # frequency range is 400-470MHz
+    # frequency range is 400-470 MHz
     _range = [400000000, 470000000]
     # maximum 16 channels
     _upper = 16
@@ -441,7 +441,7 @@ class RadioddityR2(chirp_common.CloneModeRadio):
 
         mem.freq = int(_mem.rx_freq) * 10
 
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
+        # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if mem.freq == 0:
             mem.empty = True
             return mem

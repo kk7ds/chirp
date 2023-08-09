@@ -131,7 +131,7 @@ struct memory {
        txdcsextra:1,        // use with txcode for index of tx DCS to use
        rxdcsinv:1,          // inverse DCS rx polarity
        txdcsinv:1,          // inverse DCS tx polarity
-       channel_width:2,     // [25kHz, 20kHz, 12.5kHz]
+       channel_width:2,     // [25 kHz, 20 kHz, 12.5 kHz]
        rev:1,               // reverse the tx and rx frequencies & tones
        txoff:1;             // prevent tx
     u8 talkaround:1,        // Use the rx freq & tone when transmitting

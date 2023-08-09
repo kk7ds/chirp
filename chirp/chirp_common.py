@@ -1578,47 +1578,47 @@ class Status:
 
 
 def is_fractional_step(freq):
-    """Returns True if @freq requires a 12.5kHz or 6.25kHz step"""
+    """Returns True if @freq requires a 12.5 kHz or 6.25 kHz step"""
     return not is_5_0(freq) and (is_12_5(freq) or is_6_25(freq))
 
 
 def is_5_0(freq):
-    """Returns True if @freq is reachable by a 5kHz step"""
+    """Returns True if @freq is reachable by a 5 kHz step"""
     return (freq % 5000) == 0
 
 
 def is_10_0(freq):
-    """Returns True if @freq is reachable by a 10kHz step"""
+    """Returns True if @freq is reachable by a 10 kHz step"""
     return (freq % 10000) == 0
 
 
 def is_12_5(freq):
-    """Returns True if @freq is reachable by a 12.5kHz step"""
+    """Returns True if @freq is reachable by a 12.5 kHz step"""
     return (freq % 12500) == 0
 
 
 def is_6_25(freq):
-    """Returns True if @freq is reachable by a 6.25kHz step"""
+    """Returns True if @freq is reachable by a 6.25 kHz step"""
     return (freq % 6250) == 0
 
 
 def is_2_5(freq):
-    """Returns True if @freq is reachable by a 2.5kHz step"""
+    """Returns True if @freq is reachable by a 2.5 kHz step"""
     return (freq % 2500) == 0
 
 
 def is_8_33(freq):
-    """Returns True if @freq is reachable by a 8.33kHz step"""
+    """Returns True if @freq is reachable by a 8.33 kHz step"""
     return (freq % 25000) in [0, 8330, 16660]
 
 
 def is_1_0(freq):
-    """Returns True if @freq is reachable by a 1.0kHz step"""
+    """Returns True if @freq is reachable by a 1.0 kHz step"""
     return (freq % 1000) == 0
 
 
 def is_0_5(freq):
-    """Returns True if @freq is reachable by a 0.5kHz step"""
+    """Returns True if @freq is reachable by a 0.5 kHz step"""
     return (freq % 500) == 0
 
 
@@ -1655,7 +1655,7 @@ def required_step(freq, allowed=None):
 
 
 def fix_rounded_step(freq):
-    """Some radios imply the last bit of 12.5kHz and 6.25kHz step
+    """Some radios imply the last bit of 12.5 kHz and 6.25 kHz step
     frequencies. Take the base @freq and return the corrected one"""
     try:
         required_step(freq)

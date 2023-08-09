@@ -360,7 +360,7 @@ DTMF_DECODE_RESPONSE_LIST = ["None", "Ring", "Reply", "Both"]
 
 KEYACTIONS_LIST = ["None", "Flashlight on/off", "Power select",
                    "Monitor", "Scan on/off", "VOX on/off",
-                   "Alarm on/off", "FM radio on/off", "Transmit 1750Hz"]
+                   "Alarm on/off", "FM radio on/off", "Transmit 1750 Hz"]
 
 
 # the communication is obfuscated using this fine mechanism
@@ -599,7 +599,7 @@ def _find_band(nolimits, hz):
     else:
         B = BANDS
 
-    # currently the hacked firmware sets band=1 below 50MHz
+    # currently the hacked firmware sets band=1 below 50 MHz
     if nolimits and mhz < 50.0:
         return 1
 
@@ -719,13 +719,13 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         # find band
         band = _find_band(self._expanded_limits, txfreq)
         if band is False:
-            msg = "Transmit frequency %.4fMHz is not supported by this radio" \
+            msg = "Transmit frequency %.4f MHz is not supported by this radio" \
                    % (txfreq/1000000.0)
             msgs.append(chirp_common.ValidationError(msg))
 
         band = _find_band(self._expanded_limits, mem.freq)
         if band is False:
-            msg = "The frequency %.4fMHz is not supported by this radio" \
+            msg = "The frequency %.4f MHz is not supported by this radio" \
                    % (mem.freq/1000000.0)
             msgs.append(chirp_common.ValidationError(msg))
 
@@ -821,7 +821,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         tmpcomment = ""
 
         is_empty = False
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
+        # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if (_mem.freq == 0xffffffff) or (_mem.freq == 0):
             is_empty = True
 
@@ -891,7 +891,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         else:
             if _mem.shift == FLAGS1_OFFSET_MINUS:
                 if _mem.freq == _mem.offset:
-                    # fake tx disable by setting tx to 0MHz
+                    # fake tx disable by setting tx to 0 MHz
                     mem.duplex = 'off'
                     mem.offset = 0
                 else:
@@ -931,7 +931,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         else:
             mem.power = UVK5_POWER_LEVELS[0]
 
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
+        # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if (_mem.freq == 0xffffffff) or (_mem.freq == 0):
             mem.empty = True
         else:
@@ -1825,25 +1825,25 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         unlock.append(rs)
 
         # 350TX
-        rs = RadioSetting("350tx", "350TX - unlock 350-400MHz TX",
+        rs = RadioSetting("350tx", "350TX - unlock 350-400 MHz TX",
                           RadioSettingValueBoolean(
                               bool(_mem.int_350tx > 0)))
         unlock.append(rs)
 
         # 200TX
-        rs = RadioSetting("200tx", "200TX - unlock 174-350MHz TX",
+        rs = RadioSetting("200tx", "200TX - unlock 174-350 MHz TX",
                           RadioSettingValueBoolean(
                               bool(_mem.int_200tx > 0)))
         unlock.append(rs)
 
         # 500TX
-        rs = RadioSetting("500tx", "500TX - unlock 500-600MHz TX",
+        rs = RadioSetting("500tx", "500TX - unlock 500-600 MHz TX",
                           RadioSettingValueBoolean(
                               bool(_mem.int_500tx > 0)))
         unlock.append(rs)
 
         # 350EN
-        rs = RadioSetting("350en", "350EN - unlock 350-400MHz RX",
+        rs = RadioSetting("350en", "350EN - unlock 350-400 MHz RX",
                           RadioSettingValueBoolean(
                               bool(_mem.int_350en > 0)))
         unlock.append(rs)
@@ -1957,7 +1957,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         elif mem.duplex == '+':
             _mem.shift = FLAGS1_OFFSET_PLUS
         elif mem.duplex == 'off':
-            # we fake tx disable by setting the tx freq to 0MHz
+            # we fake tx disable by setting the tx freq to 0 MHz
             _mem.shift = FLAGS1_OFFSET_MINUS
             _mem.offset = _mem.freq
 

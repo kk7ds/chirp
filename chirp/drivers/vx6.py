@@ -521,7 +521,7 @@ class VX6Radio(yaesu_clone.YaesuCloneModeRadio):
     def _resolve_power(self, mem):
         # Since we have two sets of power levels, we may need to match the
         # one in mem.power by name instead of absolute power to handle things
-        # like editing a 2m channel to a 220MHz frequency, etc.
+        # like editing a 2m channel to a 220 MHz frequency, etc.
         by_name = [str(x) for x in POWER_LEVELS]
         index = by_name.index(str(mem.power))
         LOG.debug('Resolving power %r by name to index %i' % (

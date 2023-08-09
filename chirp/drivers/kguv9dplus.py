@@ -762,7 +762,7 @@ def freq2int(val, min, max):
 def int2freq(freq):
     """
     Convert a u32 frequency to a string for UI data entry/display
-    This is stored in the radio as units of 10Hz which we compensate to Hz.
+    This is stored in the radio as units of 10 Hz which we compensate to Hz.
     A value of -1 indicates <no frequency>, i.e. unused channel.
     """
     if (int(freq) > 0):
@@ -773,7 +773,7 @@ def int2freq(freq):
 
 
 def freq2short(val, min, max):
-    """Convert a frequency as a string to a u16 which is units of 10KHz
+    """Convert a frequency as a string to a u16 which is units of 10 kHz
     """
     _freq = chirp_common.parse_freq(str(val))
     if _freq > max or _freq < min:
@@ -787,7 +787,7 @@ def freq2short(val, min, max):
 def short2freq(freq):
     """
        Convert a short frequency to a string for UI data entry/display
-       This is stored in the radio as units of 10KHz which we
+       This is stored in the radio as units of 10 kHz which we
        compensate to Hz.
        A value of -1 indicates <no frequency>, i.e. unused channel.
     """
@@ -1162,7 +1162,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         seen differences between my radio and the dump named
         KG-UV9D-Plus-OutOfBox-Read.txt from bug #3509. The first
         five bands match the OEM windows
-        app except the 350-400 band. The OOB trace has the 700MHz
+        app except the 350-400 band. The OOB trace has the 700 MHz
         band different. This is speculation at this point.
 
         TODO: This could be smarter and reject a radio not actually
@@ -2071,7 +2071,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                 hi = 512000000
 
         prefix = "vfo_%s.band_%d" % (area, band)
-        bf = RadioSettingGroup(prefix, "%dMHz Band" % band)
+        bf = RadioSettingGroup(prefix, "%d MHz Band" % band)
         freq = RadioSettingValueString(0, 15, int2freq(c.freq * 10))
         rs = RadioSetting(prefix + ".freq", "Rx Frequency", freq)
         rs.set_apply_callback(apply_freq, lo, hi, c)
@@ -2257,7 +2257,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         """Build the frequency limits tab
         """
 
-        # The stop limits in the factory KG-UV9D Mate memory image are 1MHz
+        # The stop limits in the factory KG-UV9D Mate memory image are 1 MHz
         # higher than the published specs. The settings panel will crash if
         # it encounters a value outside of these ranges.
         hard_limits = {
@@ -2273,12 +2273,12 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             obj.start = f
 
         def apply_freq_stop(setting, low, high, obj):
-            """Sets the stop limit to 1MHz below the input value"""
+            """Sets the stop limit to 1 MHz below the input value"""
 
             # The firmware has an off-by-1MHz error with stop limits.
-            # If you set the stop limit to 1480 (148MHz), you can still tune
-            # up to 148.99MHz. To compensate for this,
-            # we subtract 10 increments of 100MHz before storing the value.
+            # If you set the stop limit to 1480 (148 MHz), you can still tune
+            # up to 148.99 MHz. To compensate for this,
+            # we subtract 10 increments of 100 MHz before storing the value.
             f = freq2short(setting.value, low, high) - 10
             obj.stop = f
 
@@ -2302,7 +2302,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                                         limits)
             fl.append(start_rs)
 
-            # Add 10 increments of 100MHz before displaying to compensate for
+            # Add 10 increments of 100 MHz before displaying to compensate for
             # the firmware off-by-1MHz problem.
             stop_freq = RadioSettingValueString(1,
                                                 20,
@@ -2330,7 +2330,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                                         hard_limits[name][1], limits)
             fl.append(start_rs)
 
-            # Add 10 increments of 100MHz before displaying to compensate for
+            # Add 10 increments of 100 MHz before displaying to compensate for
             # the firmware off-by-1MHz problem.
             stop_freq = RadioSettingValueString(1,
                                                 20,
@@ -2720,7 +2720,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
                 hi = 512997500
 
         prefix = "vfo_%s.band_%d" % (area, band)
-        bf = RadioSettingGroup(prefix, "%dMHz Band" % band)
+        bf = RadioSettingGroup(prefix, "%d MHz Band" % band)
         freq = RadioSettingValueString(0, 15, int2freq(c.freq * 10))
         rs = RadioSetting(prefix + ".freq", "Rx Frequency", freq)
         rs.set_apply_callback(apply_freq, lo, hi, c)

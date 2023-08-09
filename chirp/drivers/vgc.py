@@ -318,7 +318,7 @@ LIST_WBANDA = ["Line-in", "AM", "FM"] + LIST_WBANDB
 LIST_SQL = ["Open"] + ["%s" % x for x in range(1, 10)]
 _STEP_LIST = [2.5, 5., 6.25, 8.33, 9., 10., 12.5, 15., 20., 25., 50., 100.,
               200.]
-LIST_STEP = ["Auto"] + ["{0:.2f} KHz".format(x) for x in _STEP_LIST]
+LIST_STEP = ["Auto"] + ["{0:.2f} kHz".format(x) for x in _STEP_LIST]
 LIST_SMODE = ["F-1", "F-2"]
 
 # DTMF settings lists

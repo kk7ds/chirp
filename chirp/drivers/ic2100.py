@@ -118,7 +118,7 @@ def _get_freq(mem):
         elif mem.freq_1khz == 7:
             freq += 500
         else:
-            raise Exception("Unable to resolve 12.5kHz: %i" % freq)
+            raise Exception("Unable to resolve 12.5 kHz: %i" % freq)
 
     return freq
 

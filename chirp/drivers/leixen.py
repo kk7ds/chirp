@@ -170,7 +170,7 @@ SQL_LIST = ["%s" % x for x in range(0, 10)]
 SCANM_LIST = ["CO", "TO"]
 TOT_LIST = ["OFF"] + ["%s seconds" % x for x in range(10, 130, 10)]
 _STEP_LIST = [2.5, 5., 6.25, 10., 12.5, 25.]
-STEP_LIST = ["{} KHz".format(x) for x in _STEP_LIST]
+STEP_LIST = ["{} kHz".format(x) for x in _STEP_LIST]
 MONITOR_LIST = ["CTC/DCS", "DTMF", "CTC/DCS and DTMF", "CTC/DCS or DTMF"]
 VFOMR_LIST = ["MR", "VFO"]
 MRCHA_LIST = ["MR CHA", "Freq. MR"]
@@ -199,7 +199,7 @@ PFKEYLONG_LIST = ["OFF",
                   "VFO/MR",
                   "DTMF",
                   "CALL",
-                  "Transmit 1750Hz",
+                  "Transmit 1750 Hz",
                   "A/B",
                   "Talk Around",
                   "Reverse"
@@ -217,7 +217,7 @@ PFKEYSHORT_LIST = ["OFF",
                    "VFO/MR",
                    "DTMF",
                    "CALL",
-                   "Transmit 1750Hz",
+                   "Transmit 1750 Hz",
                    "A/B",
                    "Talk Around",
                    "Reverse"

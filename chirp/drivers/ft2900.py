@@ -1166,7 +1166,7 @@ class FT2900Radio(YaesuCloneModeRadio):
                                                              .ts_speed])))
 
         # 56 VFO.SCN
-        opts = ["+/- 1MHz", "+/- 2MHz", "+/-5MHz", "All"]
+        opts = ["+/- 1 MHz", "+/- 2 MHz", "+/-5 MHz", "All"]
         scan.append(RadioSetting("vfo_scan", "VFO Scanner Width",
                                  RadioSettingValueList(opts,
                                                        opts[_settings
