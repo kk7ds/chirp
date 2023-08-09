@@ -719,7 +719,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         # find band
         band = _find_band(self._expanded_limits, txfreq)
         if band is False:
-            msg = "Transmit frequency %.4f MHz is not supported by this radio" \
+            msg = "Transmit frequency %.4f MHz is not supported by this radio"\
                    % (txfreq/1000000.0)
             msgs.append(chirp_common.ValidationError(msg))
 

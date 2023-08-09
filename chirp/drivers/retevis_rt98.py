@@ -136,7 +136,7 @@ LIST_RT98U_FREQS = ["Rx(446 - 446.2 MHz) Tx(446 - 446.2 MHz)",
 #                                  0=low, 1=middle, 2=high
 #   :2        duplex:2             duplex settings, 0=simplex, 1=plus (+)
 #                                  offset, 2=minus(-) offset (see offset field)
-#   :2        channel_width:2      channel spacing, 0=12.5 kHz, 1=20 kHz, 2=25 kHz
+#   :2        channel_width:2      channel spacing, 0=12.5kHz, 1=20kHz, 2=25kHz
 #  1          u8
 #   :2        unknown1:2
 #   :1        talkaround:1         talkaround flag, 0=off, 1=on

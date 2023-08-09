@@ -794,11 +794,12 @@ class FT857Radio(ft817.FT817Radio):
                           RadioSettingValueList(options,
                                                 options[_settings.dsp_hpf]))
         basic.append(rs)
-        options = ["1000 Hz", "1160 Hz", "1320 Hz", "1480 Hz", "1650 Hz", "1800 Hz",
-                   "1970 Hz", "2130 Hz", "2290 Hz", "2450 Hz", "2610 Hz", "2770 Hz",
-                   "2940 Hz", "3100 Hz", "3260 Hz", "3420 Hz", "3580 Hz", "3740 Hz",
-                   "3900 Hz", "4060 Hz", "4230 Hz", "4390 Hz", "4550 Hz", "4710 Hz",
-                   "4870 Hz", "5030 Hz", "5190 Hz", "5390 Hz", "5520 Hz", "5680 Hz",
+        options = ["1000 Hz", "1160 Hz", "1320 Hz", "1480 Hz", "1650 Hz",
+                   "1800 Hz", "1970 Hz", "2130 Hz", "2290 Hz", "2450 Hz",
+                   "2610 Hz", "2770 Hz", "2940 Hz", "3100 Hz", "3260 Hz",
+                   "3420 Hz", "3580 Hz", "3740 Hz", "3900 Hz", "4060 Hz",
+                   "4230 Hz", "4390 Hz", "4550 Hz", "4710 Hz", "4870 Hz",
+                   "5030 Hz", "5190 Hz", "5390 Hz", "5520 Hz", "5680 Hz",
                    "5840 Hz", "6000 Hz"]
         rs = RadioSetting("dsp_lpf", "Dsp low pass filter cut off",
                           RadioSettingValueList(options,
