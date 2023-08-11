@@ -816,7 +816,7 @@ class JC8810base(chirp_common.CloneModeRadio):
 
         if self.MODEL in ["RT-470"]:
             unwanted = [0, 7, 9, 10, 11, 12]
-        elif self.MODEL in ["HI-8811", "RT-470L"]:
+        elif self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
             unwanted = [9, 10, 11, 12]
         elif self.MODEL in ["UV-A37"]:
             unwanted = [0, 5, 7, 9, 10, 11, 12]
@@ -849,7 +849,7 @@ class JC8810base(chirp_common.CloneModeRadio):
 
         if self.MODEL in ["RT-470"]:
             unwanted = [0, 7, 8, 9, 10, 11, 12]
-        elif self.MODEL in ["HI-8811", "RT-470L"]:
+        elif self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
             unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37"]:
             unwanted = [0, 5, 7, 8, 10, 11, 12]
@@ -882,7 +882,7 @@ class JC8810base(chirp_common.CloneModeRadio):
 
         if self.MODEL in ["RT-470"]:
             unwanted = [0, 7, 8, 9, 10, 11, 12]
-        elif self.MODEL in ["HI-8811", "RT-470L"]:
+        elif self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
             unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37"]:
             unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
@@ -905,7 +905,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset.set_apply_callback(apply_skey3s_listvalue, _settings.skey3_sp)
         basic.append(rset)
 
-        if self.MODEL in ["HI-8811", "RT-470L"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
             # Menu 24: PF3 LONG PRESS (RT-470L)
             def apply_skey3l_listvalue(setting, obj):
                 LOG.debug("Setting value: " + str(setting.value) +
@@ -915,7 +915,7 @@ class JC8810base(chirp_common.CloneModeRadio):
                 val = SKEY2L_VALUES[index]
                 obj.set_value(val)
 
-            if self.MODEL in ["HI-8811", "RT-470L"]:
+            if self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
                 unwanted = [8, 9, 10, 11, 12]
             else:
                 unwanted = []
@@ -953,7 +953,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             # Press) setting in CHIRP.
             # ==========
             unwanted = [0, 7, 8, 9, 10, 11, 12]
-        elif self.MODEL in ["HI-8811", "RT-470L"]:
+        elif self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
             unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37"]:
             unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
@@ -1258,6 +1258,24 @@ class RT470LRadio(JC8810base):
                    (220000000, 260000000),
                    (330000000, 400000000),
                    (400000000, 520000000)]
+
+
+@directory.register
+class RT470XRadio(RT470LRadio):
+    """Radtel RT-470X"""
+    VENDOR = "Radtel"
+    MODEL = "RT-470X"
+
+    # ==========
+    # Notice to developers:
+    # The RT-470 support in this driver is currently based upon v1.18 firmware.
+    # ==========
+
+    VALID_BANDS = [(100000000, 136000000),
+                   (136000000, 200000000),
+                   (200000000, 300000000),
+                   (300000000, 400000000),
+                   (400000000, 560000000)]
 
 
 @directory.register
