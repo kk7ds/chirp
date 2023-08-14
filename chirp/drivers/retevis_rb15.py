@@ -779,7 +779,7 @@ class RB15Radio(RB15RadioBase):
               ]
     _memsize = 0x07A0
 
-    _upper = 22
+    _upper = 99
     _frs = True
 
 
@@ -797,5 +797,5 @@ class RB615RadioBase(RB15RadioBase):
               ]
     _memsize = 0x07A0
 
-    _upper = 16
+    _upper = 99
     _pmr = True
