@@ -37,7 +37,7 @@ struct memory {
      bcl:2,       // Busy Channel Lockout
      scan:1,      // Scan Add
      encode:1,    // Encode
-     unknown2:1;
+     isunused:1;  // Is Unused
   u8 unknown3[3];                            // 0d-0f
 };
 
@@ -102,12 +102,6 @@ TOT_VALUES = [0x00, 0x0F, 0x1E, 0x2D, 0x3C, 0x4B, 0x5A, 0x69, 0x78,
               0x177, 0x186, 0x195, 0x1A4, 0x1B3, 0x1C2, 0x1D1, 0x1E0,
               0x1EF, 0x1FE, 0x20D, 0x21C, 0x22B, 0x23A, 0x249, 0x258
               ]
-
-PMR_FREQS1 = [446006250, 446018750, 446031250, 446043750, 446056250,
-              446068750, 446081250, 446093750]
-PMR_FREQS2 = [446106250, 446118750, 446131250, 446143750, 446156250,
-              446168750, 446181250, 446193750]
-PMR_FREQS = PMR_FREQS1 + PMR_FREQS2
 
 
 def _checksum(data):
@@ -311,7 +305,7 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
     BLOCK_SIZE = 0x10
     magic = b"21" + b"\x05\x10" + b"x"
 
-    VALID_BANDS = [(400000000, 520000000)]
+    VALID_BANDS = [(400000000, 480000000)]
 
     _ranges = [
                (0x0150, 0x07A0),
@@ -522,29 +516,18 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
 
         mem.extra = RadioSettingGroup("Extra", "extra")
 
+        if _mem.bcl > 0x02:
+            val = 0
+        else:
+            val = _mem.bcl
         rs = RadioSetting("bcl", "BCL",
                           RadioSettingValueList(
-                              LIST_BCL, LIST_BCL[_mem.bcl]))
+                              LIST_BCL, LIST_BCL[val]))
         mem.extra.append(rs)
 
         rs = RadioSetting("encode", "Encode",
                           RadioSettingValueBoolean(_mem.encode))
         mem.extra.append(rs)
-
-        immutable = []
-
-        if self._pmr:
-            if mem.number >= 1 and mem.number <= 16:
-                PMR_FREQ = PMR_FREQS[mem.number - 1]
-                mem.freq = PMR_FREQ
-                mem.duplex = ''
-                mem.offset = 0
-                mem.mode = "NFM"
-                mem.power = self.POWER_LEVELS[1]
-                immutable = ["empty", "freq", "duplex", "offset", "mode",
-                             "power"]
-
-        mem.immutable = immutable
 
         return mem
 
@@ -554,8 +537,11 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
 
         # if empty memory
         if mem.empty:
-            _mem.set_raw("\xFF" * 8 + "\x00" * 5 + "\xFF" * 3)
+            _mem.set_raw("\xFF" * 16)
             return
+
+        _mem.isunused = False
+        _mem.unknown1 = False
 
         _mem.rxfreq = mem.freq / 10
 
@@ -776,13 +762,13 @@ class RB615RadioBase(RB15RadioBase):
     VENDOR = "Retevis"
     MODEL = "RB615"
 
-    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.50),
-                    chirp_common.PowerLevel("Low", watts=0.49)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
 
     _ranges = [
                (0x0150, 0x07A0),
               ]
     _memsize = 0x07A0
 
-    _upper = 16
-    _pmr = True
+    _upper = 99
+    _pmr = False  # sold as PMR radio but supports full band TX/RX
