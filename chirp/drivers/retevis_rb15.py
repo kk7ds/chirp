@@ -42,7 +42,7 @@ struct memory {
 };
 
 #seekto 0x0170;
-struct memory channels[22];
+struct memory channels[99];
 
 #seekto 0x0162;
 struct {
@@ -533,20 +533,7 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
 
         immutable = []
 
-        if self._frs:
-            if mem.number >= 1 and mem.number <= 22:
-                FRS_FREQ = bandplan_na.ALL_GMRS_FREQS[mem.number - 1]
-                mem.freq = FRS_FREQ
-                mem.duplex = ''
-                mem.offset = 0
-                mem.mode = "NFM"
-                if mem.number >= 8 and mem.number <= 14:
-                    mem.power = self.POWER_LEVELS[1]
-                    immutable = ["empty", "freq", "duplex", "offset", "mode",
-                                 "power"]
-                else:
-                    immutable = ["empty", "freq", "duplex", "offset", "mode"]
-        elif self._pmr:
+        if self._pmr:
             if mem.number >= 1 and mem.number <= 16:
                 PMR_FREQ = PMR_FREQS[mem.number - 1]
                 mem.freq = PMR_FREQ
@@ -779,8 +766,8 @@ class RB15Radio(RB15RadioBase):
               ]
     _memsize = 0x07A0
 
-    _upper = 22
-    _frs = True
+    _upper = 99
+    _frs = False  # sold as FRS radio but supports full band TX/RX
 
 
 @directory.register
