@@ -131,7 +131,7 @@ def tone2short(t):
 def short2tone(tone):
     """ Map a binary CTCSS/DCS to a string name for the tone
     """
-    if tone == 0 or tone == 0xffff:
+    if tone == 0xC000 or tone == 0xffff:
         ret = "----"
     else:
         code = tone & 0x3fff
@@ -431,7 +431,7 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
             return val
 
         rx_mode = tx_mode = None
-        rxtone = txtone = 0x0000
+        rxtone = txtone = 0xC000
 
         if mem.tmode == "Tone":
             tx_mode = "Tone"
