@@ -42,9 +42,6 @@ TONES = (
     225.7, 229.1, 233.6, 241.8, 250.3, 254.1,
 )
 
-TONES_EXTRA = (56.0, 57.0, 58.0, 59.0, 60.0, 61.0, 62.0,
-               62.5, 63.0, 64.0)
-
 OLD_TONES = list(TONES)
 [OLD_TONES.remove(x) for x in [159.8, 165.5, 171.3, 177.3, 183.5, 189.9,
                                196.6, 199.5, 206.5, 229.1, 254.1]]
@@ -954,7 +951,7 @@ class RadioFeatures:
                   "alphanumeric tag")
         self.init("valid_cross_modes", list(CROSS_MODES),
                   "Supported tone cross modes")
-        self.init("valid_tones", list(TONES + TONES_EXTRA),
+        self.init("valid_tones", list(TONES),
                   "Support Tones")
         self.init("valid_dtcs_pols", ["NN", "RN", "NR", "RR"],
                   "Supported DTCS polarities")

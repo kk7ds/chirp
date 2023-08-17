@@ -225,7 +225,7 @@ PFKEYSHORT_LIST = ["OFF",
 
 MODES = ["NFM", "FM"]
 WTFTONES = tuple(float(x) for x in range(56, 64))
-TONES = WTFTONES + chirp_common.TONES
+TONES = tuple(sorted(WTFTONES + chirp_common.TONES))
 DTCS_CODES = tuple(sorted((17, 50, 645) + chirp_common.DTCS_CODES))
 TMODES = ["", "Tone", "DTCS", "DTCS"]
 
@@ -419,6 +419,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         rf.valid_tuning_steps = _STEP_LIST
         rf.valid_bands = [(136000000, 174000000),
                           (400000000, 470000000)]
+        rf.valid_tones = TONES
         rf.valid_dtcs_codes = DTCS_CODES
         rf.memory_bounds = (1, 199)
         return rf
