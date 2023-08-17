@@ -809,3 +809,40 @@ class TestMemory(base.BaseTest):
         m = chirp_common.FrozenMemory(chirp_common.Memory(123)).dupe()
         self.assertNotIsInstance(m, FrozenMemory)
         self.assertFalse(hasattr(m, '_frozen'))
+
+    def test_tone_validator(self):
+        m = chirp_common.Memory()
+        # 100.0 is a valid tone
+        m.rtone = 100.0
+        m.ctone = 100.0
+
+        # 100 is not (must be a float)
+        with self.assertRaises(ValueError):
+            m.rtone = 100
+        with self.assertRaises(ValueError):
+            m.ctone = 100
+
+        # 30.0 and 300.0 are out of range
+        with self.assertRaises(ValueError):
+            m.rtone = 30.0
+        with self.assertRaises(ValueError):
+            m.rtone = 300.0
+        with self.assertRaises(ValueError):
+            m.ctone = 30.0
+        with self.assertRaises(ValueError):
+            m.ctone = 300.0
+
+
+class TestRadioFeatures(base.BaseTest):
+    def test_valid_tones(self):
+        rf = chirp_common.RadioFeatures()
+        # These are valid tones
+        rf.valid_tones = [100.0, 107.2]
+
+        # These contain invalid tones
+        with self.assertRaises(ValueError):
+            rf.valid_tones = [100.0, 30.0]
+        with self.assertRaises(ValueError):
+            rf.valid_tones = [100.0, 300.0]
+        with self.assertRaises(ValueError):
+            rf.valid_tones = [100, 107.2]

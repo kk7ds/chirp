@@ -50,6 +50,11 @@ OLD_TONES = list(TONES)
                                196.6, 199.5, 206.5, 229.1, 254.1]]
 OLD_TONES = tuple(OLD_TONES)
 
+
+def VALIDTONE(v):
+    return isinstance(v, float) and 50 < v < 300
+
+
 # 104 DTCS Codes
 DTCS_CODES = (
     23,  25,  26,  31,  32,  36,  43,  47,  51,  53,  54,
@@ -335,8 +340,8 @@ class Memory:
         self.immutable = []
 
     _valid_map = {
-        "rtone":          TONES + TONES_EXTRA,
-        "ctone":          TONES + TONES_EXTRA,
+        "rtone":          VALIDTONE,
+        "ctone":          VALIDTONE,
         "dtcs":           ALL_DTCS_CODES,
         "rx_dtcs":        ALL_DTCS_CODES,
         "tmode":          TONE_MODES,
@@ -382,9 +387,15 @@ class Memory:
             raise ImmutableValueError("Field %s is not " % name +
                                       "mutable on this memory")
 
-        if name in self._valid_map and val not in self._valid_map[name]:
-            raise ValueError("`%s' is not in valid list: %s" %
-                             (val, self._valid_map[name]))
+        if name in self._valid_map:
+            valid = self._valid_map[name]
+            if callable(valid):
+                if not valid(val):
+                    raise ValueError("`%s' is not a valid value for `%s'" % (
+                                         val, name))
+            elif val not in self._valid_map[name]:
+                raise ValueError("`%s' is not in valid list: %s" %
+                                 (val, self._valid_map[name]))
 
         self.__dict__[name] = val
 
@@ -797,6 +808,10 @@ def NTUPLE(size):
     return checktuple
 
 
+def TONELIST(v):
+    assert all(VALIDTONE(x) for x in v)
+
+
 class RadioFeatures:
     """Radio Feature Flags"""
     _valid_map = {
@@ -830,7 +845,7 @@ class RadioFeatures:
         "valid_characters":     STRING,
         "valid_name_length":    INT(),
         "valid_cross_modes":    LIST,
-        "valid_tones":          LIST,
+        "valid_tones":          TONELIST,
         "valid_dtcs_pols":      LIST,
         "valid_dtcs_codes":     LIST,
         "valid_special_chans":  LIST,
