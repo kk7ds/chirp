@@ -10,6 +10,7 @@
 # the form #BUGNUMBER.
 Abbree_AR-518,@KC9HI,16-Dec-2022
 Abbree_AR-63,@KC9HI,30-Nov-2022
+Abbree_AR-730,@KC9HI,17-Aug-2023
 Abbree_AR-F5,@KC9HI,09-Aug-2023
 Alinco_DJ175,+Alinco_DR235T,12-Dec-2022
 Alinco_DJ596,+Alinco_DR235T,12-Dec-2022
