@@ -4,6 +4,7 @@
 | <a name="ARRL_Travel_Plus"></a> ARRL_Travel_Plus |  |  |  | 0.00% |
 | <a name="Abbree_AR-518"></a> Abbree_AR-518 | [@KC9HI](https://github.com/KC9HI) | 16-Dec-2022 | Yes | 0.24% |
 | <a name="Abbree_AR-63"></a> Abbree_AR-63 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.03% |
+| <a name="Abbree_AR-730"></a> Abbree_AR-730 | [@KC9HI](https://github.com/KC9HI) | 17-Aug-2023 | Yes |  |
 | <a name="Abbree_AR-F5"></a> Abbree_AR-F5 | [@KC9HI](https://github.com/KC9HI) | 09-Aug-2023 | Yes |  |
 | <a name="Alinco_DJ-G7EG"></a> Alinco_DJ-G7EG | [@HB9UF](https://github.com/HB9UF) | 09-Dec-2022 | Yes | 0.44% |
 | <a name="Alinco_DJ-G7T"></a> Alinco_DJ-G7T | [Reported working](https://chirp.danplanet.com/issues/10567) | 09-May-2023 | Yes |  |
@@ -419,11 +420,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 416
+**Drivers:** 417
 
-**Tested:** 86% (361/55) (93% of usage stats)
+**Tested:** 86% (362/55) (93% of usage stats)
 
-**Byte clean:** 90% (376/40)
+**Byte clean:** 90% (377/40)
 
 ## Meaning of this testing
 

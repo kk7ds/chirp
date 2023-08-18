@@ -578,7 +578,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             mem.skip = "S"
 
         _levels = self.POWER_LEVELS
-        if self.MODEL in ["A36plus", "UV-A37"]:
+        if self.MODEL in ["A36plus", "UV-A37", "AR-730"]:
             if _mem.txpower == TXPOWER_HIGH:
                 mem.power = _levels[0]
             elif _mem.txpower == TXPOWER_LOW:
@@ -686,7 +686,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         _mem.narrow = mem.mode == "NFM"
 
         _levels = self.POWER_LEVELS
-        if self.MODEL == "UV-A37":
+        if self.MODEL in ["A36plus", "UV-A37", "AR-730"]:
             if mem.power is None:
                 _mem.txpower = TXPOWER_HIGH
             elif mem.power == _levels[0]:
@@ -747,7 +747,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("voice", "Voice Prompts", rs)
         basic.append(rset)
 
-        if self.MODEL not in ["A36plus", "UV-A37"]:
+        if self.MODEL not in ["A36plus", "UV-A37", "AR-730"]:
             # Menu 17: LANGUAGE
             rs = RadioSettingValueList(LANGUAGE_LIST,
                                        LANGUAGE_LIST[_settings.language])
@@ -818,7 +818,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [0, 7, 9, 10, 11, 12]
         elif self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
             unwanted = [9, 10, 11, 12]
-        elif self.MODEL in ["UV-A37"]:
+        elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 9, 10, 11, 12]
         elif self.MODEL in ["A36plus"]:
             unwanted = [0, 5, 7, 9, 10, 11]
@@ -851,7 +851,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [0, 7, 8, 9, 10, 11, 12]
         elif self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
             unwanted = [8, 9, 10, 11, 12]
-        elif self.MODEL in ["UV-A37"]:
+        elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 10, 11, 12]
         elif self.MODEL in ["A36plus"]:
             unwanted = [0, 5, 7, 8, 11, 12]
@@ -884,7 +884,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [0, 7, 8, 9, 10, 11, 12]
         elif self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
             unwanted = [8, 9, 10, 11, 12]
-        elif self.MODEL in ["UV-A37"]:
+        elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
         elif self.MODEL in ["A36plus"]:
             unwanted = [0, 5, 7, 8, 9]
@@ -955,7 +955,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [0, 7, 8, 9, 10, 11, 12]
         elif self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
             unwanted = [8, 9, 10, 11, 12]
-        elif self.MODEL in ["UV-A37"]:
+        elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
         elif self.MODEL in ["A36plus"]:
             unwanted = [0, 5, 7, 8, 9]
@@ -1067,7 +1067,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("beep", "Beep", rs)
         basic.append(rset)
 
-        if self.MODEL not in ["A36plus", "UV-A37"]:
+        if self.MODEL not in ["A36plus", "UV-A37", "AR-730"]:
             # Menu 48: RX END TAIL
             rs = RadioSettingValueList(TONERXEND_LIST,
                                        TONERXEND_LIST[_settings.rxendtail])
@@ -1359,3 +1359,25 @@ class A36plusRadio(JC8810base):
                (0xB000, 0xB440)
               ]
     _memsize = 0xB440
+
+
+@directory.register
+class AR730Radio(UVA37Radio):
+    """Abbree AR730"""
+    VENDOR = "Abbree"
+    MODEL = "AR-730"
+
+    # ==========
+    # Notice to developers:
+    # The AR-730 support in this driver is currently based upon v1.24
+    # firmware.
+    # ==========
+
+    POWER_LEVELS = [chirp_common.PowerLevel("H", watts=5.00),
+                    chirp_common.PowerLevel("L", watts=1.00)]
+
+    VALID_BANDS = [(108000000, 136000000),
+                   (136000000, 180000000),
+                   (200000000, 260000000),
+                   (350000000, 390000000),
+                   (400000000, 520000000)]
