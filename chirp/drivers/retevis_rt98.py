@@ -789,6 +789,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
                 rf.valid_power_levels = FREENET_POWER_LEVELS
         else:
             rf.valid_power_levels = POWER_LEVELS
+        rf.valid_tones = TONES
         rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES
 
         try:
