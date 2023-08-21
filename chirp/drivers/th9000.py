@@ -547,6 +547,7 @@ class Th9000Radio(chirp_common.CloneModeRadio,
         rf.valid_cross_modes = ['Tone->DTCS', 'DTCS->Tone',
                                 '->Tone', '->DTCS', 'Tone->Tone']
         rf.valid_power_levels = POWER_LEVELS
+        rf.valid_tones = TONES
         rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES
         rf.valid_bands = self.valid_freq
         rf.valid_tuning_steps = TUNING_STEPS
