@@ -696,7 +696,7 @@ class TDH8(chirp_common.CloneModeRadio):
             "->Tone",
             "DTCS->DTCS"]
         rf.valid_power_levels = TX_POWER
-        rf.valid_duplexes = ["", "-", "+", "split", "Off"]
+        rf.valid_duplexes = ["", "-", "+", "split"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_tuning_steps = STEPS
 
