@@ -35,6 +35,9 @@ MSTRING_WP970I = b"\x50\xBB\xFF\x20\x14\x04\x13"
 # Baofeng UV-9G magic string
 MSTRING_UV9G = b"\x50\xBB\xFF\x20\x12\x05\x25"
 
+# Baofeng UV-S9X3 magic string
+MSTRING_UVS9X3 = b"\x50\xBB\xFF\x20\x12\x07\x25"
+
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -968,6 +971,14 @@ class BFA58S(WP970I):
                           self._vhf2_range,
                           self._uhf_range]
         return rf
+
+
+@directory.register
+class UVS9X3(BFA58S):
+    VENDOR = "Baofeng"
+    MODEL = "UV-S9X3"
+    ALIASES = []
+    _magic = [MSTRING_UVS9X3, ]
 
 
 @directory.register
