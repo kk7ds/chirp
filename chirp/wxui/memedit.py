@@ -577,13 +577,17 @@ class ChirpMemoryDropTarget(wx.DropTarget):
     def OnData(self, x, y, defResult):
         if not self.GetData():
             return wx.DragNone
+        payload = self.parse_data()
         x, y = self._memedit._grid.CalcUnscrolledPosition(x, y)
         y -= self._memedit._grid.GetColLabelSize()
         row, cell = self._memedit._grid.XYToCell(x, y)
-        if row < 0:
+        start_row = self._memedit.mem2row(payload['mems'][0].number)
+        if row < 0 or row == start_row:
+            LOG.debug('Ignoring drag from row %i -> %i',
+                      start_row, row)
             return wx.DragCancel
+
         LOG.debug('Memory dropped on row %s,%s' % (row, cell))
-        payload = self.parse_data()
         original_locs = [m.number for m in payload['mems']]
         source = self._memedit.FindWindowById(payload.pop('source'))
         if not self._memedit._cb_paste_memories(payload, row=row):
