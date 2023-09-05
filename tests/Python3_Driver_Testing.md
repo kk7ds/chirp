@@ -385,7 +385,7 @@
 | <a name="Yaesu_FT-4VR"></a> Yaesu_FT-4VR | [Implied by Yaesu_FT-4XE](#user-content-Yaesu_FT-4XE) | 24-Dec-2022 | Yes | 0.01% |
 | <a name="Yaesu_FT-4XE"></a> Yaesu_FT-4XE | Unit tested; needs confirm | 24-Dec-2022 | Yes | 0.14% |
 | <a name="Yaesu_FT-4XR"></a> Yaesu_FT-4XR | [Implied by Yaesu_FT-4XE](#user-content-Yaesu_FT-4XE) | 24-Dec-2022 | Yes | 0.11% |
-| <a name="Yaesu_FT-50"></a> Yaesu_FT-50 |  |  | Yes | 0.04% |
+| <a name="Yaesu_FT-50"></a> Yaesu_FT-50 | [Reported working](https://chirp.danplanet.com/issues/10824) | 5-Sep-2023 | Yes | 0.04% |
 | <a name="Yaesu_FT-60"></a> Yaesu_FT-60 | N0EYE | 9-Jan-2023 | Yes | 0.49% |
 | <a name="Yaesu_FT-65E"></a> Yaesu_FT-65E | [@kwirk](https://github.com/kwirk) | 27-Jan-2023 | Yes | 0.08% |
 | <a name="Yaesu_FT-65R"></a> Yaesu_FT-65R | [Reported working](https://chirp.danplanet.com/issues/10266) | 13-Jan-2022 | Yes | 0.18% |
@@ -424,7 +424,7 @@
 
 **Drivers:** 419
 
-**Tested:** 86% (364/55) (93% of usage stats)
+**Tested:** 87% (365/54) (93% of usage stats)
 
 **Byte clean:** 90% (379/40)
 
