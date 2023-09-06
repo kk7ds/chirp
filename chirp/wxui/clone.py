@@ -37,6 +37,7 @@ CUSTOM = _('Custom...')
 
 FAKES = {
     'Fake NOP': developer.FakeSerial(),
+    'Fake Echo NOP': developer.FakeEchoSerial(),
     'Fake F7E': fake.FakeKenwoodSerial(),
 }
 
