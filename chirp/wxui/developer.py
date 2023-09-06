@@ -26,6 +26,7 @@ import wx.richtext
 import wx.lib.scrolledpanel
 
 from chirp import bitwise
+from chirp import util
 from chirp.wxui import common
 from chirp.wxui import report
 
@@ -441,7 +442,30 @@ class ChirpBrowserTreeBook(wx.Treebook):
 
 
 class FakeSerial(serial.SerialBase):
-    pass
+    def write(self, buf):
+        LOG.debug('Fake serial write:\n%s' % util.hexprint(buf))
+
+    def read(self, count):
+        LOG.debug('Fake serial read %i' % count)
+        return b''
+
+
+class FakeEchoSerial(FakeSerial):
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        self._buf = []
+
+    def write(self, buf):
+        super().write(buf)
+        self._buf.extend(b for b in buf)
+
+    def read(self, count):
+        super().read(count)
+        try:
+            return bytes([self._buf.pop(0)])
+        except IndexError:
+            LOG.warning('Empty echo buffer')
+            return b''
 
 
 class IssueModuleLoader:
