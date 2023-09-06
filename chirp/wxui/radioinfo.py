@@ -36,6 +36,7 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
 
         self._add_features_group()
         self._add_vendor()
+        self._add_metadata()
 
     def _add_features_group(self):
         pg = wx.propgrid.PropertyGrid(
@@ -77,6 +78,26 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
             p = wx.propgrid.StringProperty(
                 key, key,
                 value=str(value))
+            p.Enable(False)
+            pg.Append(p)
+
+        pg.Sort()
+
+    def _add_metadata(self):
+        if not self._radio.metadata:
+            return
+
+        pg = wx.propgrid.PropertyGrid(
+            self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER)
+        self._group_control.AddPage(pg, 'Image Metadata')
+        # Don't show the icom fields which are displayed elsewhere, and
+        # don't dump the whole mem_extra blob in here
+        exclude = ('modelid', 'endframe', 'raw', 'memsize',
+                   'mem_extra')
+        for key, value in self._radio.metadata.items():
+            if key in exclude:
+                continue
+            p = wx.propgrid.StringProperty(key, key, value=str(value))
             p.Enable(False)
             pg.Append(p)
 
