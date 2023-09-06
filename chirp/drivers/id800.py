@@ -21,7 +21,7 @@ MEM_FORMAT = """
 struct {
   u24 freq;
   u16 offset;
-  u8  unknown0:2,
+  u8  power:2,
       rtone:6;
   u8  duplex:2,
       ctone:6;
@@ -82,6 +82,9 @@ TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "", "-", "+"]
 DTCS_POL = ["NN", "NR", "RN", "RR"]
 STEPS = [5.0, 10.0, 12.5, 15, 20.0, 25.0, 30.0, 50.0, 100.0, 200.0, 6.25]
+POWER_LEVELS = [chirp_common.PowerLevel('High', watts=50),
+                chirp_common.PowerLevel('Low', watts=5),
+                chirp_common.PowerLevel('Mid', watts=15)]
 
 ID800_SPECIAL = {
     "C2": 510,
@@ -229,6 +232,7 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_skips = ["", "S", "P"]
         rf.valid_name_length = 6
         rf.valid_special_chans = sorted(ID800_SPECIAL.keys())
+        rf.valid_power_levels = list(POWER_LEVELS)
         rf.memory_bounds = (1, 499)
         return rf
 
@@ -274,6 +278,7 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         mem.dtcs_polarity = DTCS_POL[_mem.dtcs_polarity]
         mem.tuning_step = STEPS[_mem.tuning_step]
         mem.name = get_name(_mem)
+        mem.power = POWER_LEVELS[_mem.power]
 
         mem.skip = _flg.pskip and "P" or _flg.skip and "S" or ""
 
@@ -300,6 +305,8 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.dtcs_polarity = DTCS_POL.index(mem.dtcs_polarity)
         _mem.tuning_step = STEPS.index(mem.tuning_step)
+        if mem.power in POWER_LEVELS:
+            _mem.power = POWER_LEVELS.index(mem.power)
         set_name(_mem, mem.name)
 
         _flg.pskip = mem.skip == "P"
