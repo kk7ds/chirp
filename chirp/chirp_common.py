@@ -1508,8 +1508,11 @@ class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties):
         rf = self.get_features()
         if not rf.has_comment and isinstance(memory.number, int):
             self._metadata.setdefault('mem_extra', {})
-            self._metadata['mem_extra']['%04i_comment' % memory.number] = (
-                memory.comment)
+            key = '%04i_comment' % memory.number
+            if not memory.comment:
+                self._metadata['mem_extra'].pop(key, None)
+            else:
+                self._metadata['mem_extra'][key] = memory.comment
 
     def erase_memory_extra(self, number):
         rf = self.get_features()

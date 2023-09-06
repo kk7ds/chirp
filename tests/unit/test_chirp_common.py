@@ -728,8 +728,14 @@ class TestCloneModeExtras(base.BaseTest):
         # Now we should have the comment
         self.assertEqual('a comment', m.comment)
 
+        # Make sure it is in the metadata
+        self.assertIn('0000_comment', r.metadata['mem_extra'])
+
         # Erase the memory (only extra) and make sure we get no comment
         r.erase_memory_extra(0)
+
+        # Make sure it's gone from metadata
+        self.assertNotIn('0000_comment', r.metadata['mem_extra'])
 
         # Do a get, get_extra
         m = r.get_memory(0)
@@ -737,6 +743,11 @@ class TestCloneModeExtras(base.BaseTest):
         self.assertEqual(146520000, m.freq)
         # Now we should have no comment because we erased
         self.assertEqual('', m.comment)
+
+        r.set_memory_extra(m)
+
+        # Make sure we don't keep empty comments
+        self.assertNotIn('0000_comment', r.metadata['mem_extra'])
 
 
 class TestOverrideRules(base.BaseTest):
