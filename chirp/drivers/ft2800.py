@@ -190,7 +190,10 @@ class FT2800Radio(YaesuCloneModeRadio):
 
     @property
     def subtype(self):
-        return bytes(self.metadata['subtype_idblock'])
+        # If our image is from before the subtype was stashed, assume
+        # the default unmodified US ID block
+        return bytes(self.metadata.get('subtype_idblock',
+                                       SUPPORTED_IDBLOCKS[0]))
 
     @subtype.setter
     def subtype(self, value):
