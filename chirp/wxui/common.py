@@ -395,15 +395,22 @@ class ChirpSettingGrid(wx.Panel):
                     editor.SetLabel('')
                 editor.Enable(value.get_mutable())
                 self.pg.Append(editor)
+        self.pg.Bind(wx.propgrid.EVT_PG_CHANGING, self._check_change)
 
-                # Use object() as a sentinel that will never match the safe
-                # value to determine if we need to catch changes for this to
-                # check for a warning.
-                if element.get_warning(object()) or element.volatile:
-                    self.pg.Bind(wx.propgrid.EVT_PG_CHANGING,
-                                 lambda evt: self._check_change(evt, element))
+    def get_setting_by_name(self, name, index=0):
+        if INDEX_CHAR in name:
+            # FIXME: This will only work for single-index settings of course
+            name, _ = name.split(INDEX_CHAR, 1)
+        for setting_name, setting in self._group.items():
+            if name == setting_name:
+                return setting
 
-    def _check_change(self, event, setting):
+    def _check_change(self, event):
+        setting = self.get_setting_by_name(event.GetPropertyName())
+        if not setting:
+            LOG.error('Got change event for unknown setting %s' % (
+                event.GetPropertyName()))
+            return
         warning = setting.get_warning(event.GetValue())
         if warning:
             r = wx.MessageBox(warning, _('WARNING!'),
