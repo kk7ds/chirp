@@ -260,6 +260,7 @@ Retevis_RB87,@KC9HI,10-Mar-2023
 Retevis_RT15,@KC9HI,18-Feb-2023
 Retevis_RT16,@KC9HI,30-Nov-2022
 Retevis_RT19,@KC9HI,30-Nov-2022
+Retevis_RT20,@k9ps-paul,7-Sep-2023
 Retevis_RT21,@KC9HI,30-Nov-2022
 Retevis_RT21V,@KC9HI,24-Jul-2023
 Retevis_RT22,@KC9HI,9-Dec-2022

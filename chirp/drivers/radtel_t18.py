@@ -137,6 +137,7 @@ CMD_ACK = b"\x06"
 VOICE_LIST = ["Off", "Chinese", "English"]
 VOICE_LIST2 = ["English", "Chinese"]
 VOICE_LIST3 = ["Off", "English", "Chinese"]
+VOICE_LIST4 = ["Chinese", "English"]
 TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
                      "120 seconds", "150 seconds", "180 seconds",
                      "210 seconds", "240 seconds", "270 seconds",
@@ -690,7 +691,13 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   SCANMODE_LIST[_settings.scanmode]))
             basic.append(rs)
 
-        if self.MODEL == "RT22S":
+        if self.MODEL == "RT20":
+            rs = RadioSetting("voiceprompt", "Voice prompts",
+                              RadioSettingValueList(
+                                  VOICE_LIST4,
+                                  VOICE_LIST4[_settings.voiceprompt]))
+            basic.append(rs)
+        elif self.MODEL == "RT22S":
             rs = RadioSetting("voiceprompt", "Voice prompts",
                               RadioSettingValueBoolean(_settings.voiceprompt))
             basic.append(rs)
@@ -1022,6 +1029,24 @@ class T18Radio(chirp_common.CloneModeRadio):
             # Radios that have always been post-metadata, so never do
             # old-school detection
             return False
+
+
+@directory.register
+class RT20Radio(T18Radio):
+    """RETEVIS RT20"""
+    VENDOR = "Retevis"
+    MODEL = "RT20"
+    ACK_BLOCK = True
+    BLOCK_SIZE = 0x08
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low",  watts=0.50)]
+
+    _magic = b"8AOGRAM"
+    _fingerprint = [b"SMP558" + b"\x02"]
+    _upper = 16
+    _mem_params = (_upper  # number of channels
+                   )
 
 
 @directory.register
