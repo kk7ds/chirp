@@ -586,7 +586,7 @@ def _ident(radio):
     ver_response = radio.pipe.read(16)
     LOG.debug(util.hexprint(ver_response))
 
-    verok, model, bandlimit = check_ver(radio, ver_response,
+    verok, model, bandlimit = check_ver(ver_response,
                                         radio.ALLOWED_RADIO_TYPES)
     if not verok:
         _finish(radio)
