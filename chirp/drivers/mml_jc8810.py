@@ -1224,14 +1224,23 @@ class RT470Radio(JC8810base):
 
     # ==========
     # Notice to developers:
-    # The RT-470 support in this driver is currently based upon v1.23 firmware.
+    # The RT-470 support in this driver is currently based upon v1.25 firmware.
     # ==========
 
-    VALID_BANDS = [(100000000, 136000000),
+    _fingerprint = [b"\x00\x00\x00\x26\x00\x20\xD8\x04",
+                    b"\x00\x00\x00\x42\x00\x20\xF0\x04",
+                    b"\x00\x00\x00\x4A\x00\x20\xF8\x04",
+                    b"\x00\x00\x00\x3A\x00\x20\xE8\x04",  # fw 1.25A
+                    ]
+
+    VALID_BANDS = [(16000000, 100000000),
+                   (100000000, 136000000),
                    (136000000, 200000000),
                    (200000000, 300000000),
                    (300000000, 400000000),
-                   (400000000, 560000000)]
+                   (400000000, 560000000),
+                   (740000000, 1000000000),
+                   ]
 
 
 @directory.register
