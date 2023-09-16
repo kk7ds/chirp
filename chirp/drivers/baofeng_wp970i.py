@@ -997,7 +997,7 @@ class UV9G(WP970I):
     LENGTH_NAME = 7
 
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
-                    chirp_common.PowerLevel("Med",  watts=0.50),
+                    chirp_common.PowerLevel("Med",  watts=1.00),
                     chirp_common.PowerLevel("Low",  watts=0.50)]
     _magic = [MSTRING_UV9G, ]
     _gmrs = False  # sold as GMRS radio but supports full band TX/RX
