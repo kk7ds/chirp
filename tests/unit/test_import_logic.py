@@ -34,7 +34,12 @@ class FakeRadio(chirp_common.Radio):
 
 
 class FakeDstarRadio(FakeRadio, chirp_common.IcomDstarSupport):
-    pass
+    REQUIRES_CALL_LISTS = False
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.requires_call_lists = self.REQUIRES_CALL_LISTS
+        return rf
 
 
 class DstarTests(base.BaseTest):
@@ -374,6 +379,44 @@ class ImportFieldTests(base.BaseTest):
             import_logic.import_mem(radio, src_rf, mem)
             mock_check.assert_called_once_with(mock_get.return_value, mem)
             mock_get.assert_called_once_with(mem.number)
+
+    def test_import_mem_with_class(self):
+        radio = FakeRadio(None)
+        src_rf = chirp_common.RadioFeatures()
+        mem = chirp_common.Memory()
+        mem2 = import_logic.import_mem(radio, src_rf, mem,
+                                       mem_cls=chirp_common.DVMemory)
+        self.assertIsInstance(mem2, chirp_common.DVMemory)
+
+    def test_import_mem_dstar_logic(self):
+        radio = FakeRadio(None)
+        src_rf = chirp_common.RadioFeatures()
+        mem = chirp_common.DVMemory()
+        mem.mode = 'DV'
+
+        # non-DSTAR radio exposes only FM, so DV is not compatible
+        radio.MODES = ['FM']
+        self.assertRaises(import_logic.DestNotCompatible,
+                          import_logic.import_mem, radio, src_rf, mem)
+
+        # non-DSTAR radio exposes DV, so it is compatible, but obviously
+        # no call list manipulation needed.
+        radio.MODES = ['FM', 'DV']
+        with mock.patch('chirp.import_logic.ensure_has_calls') as mock_e:
+            import_logic.import_mem(radio, src_rf, mem)
+            mock_e.assert_not_called()
+
+        # A real D-STAR radio gets the full treatment, depending on the
+        # required call lists flag
+        radio = FakeDstarRadio(None)
+        with mock.patch('chirp.import_logic.ensure_has_calls') as mock_e:
+            radio.REQUIRES_CALL_LISTS = False
+            import_logic.import_mem(radio, src_rf, mem)
+            mock_e.assert_not_called()
+
+            radio.REQUIRES_CALL_LISTS = True
+            import_logic.import_mem(radio, src_rf, mem)
+            mock_e.assert_called()
 
     def test_import_mem_with_warnings(self):
         self._test_import_mem([chirp_common.ValidationWarning('Test')])
