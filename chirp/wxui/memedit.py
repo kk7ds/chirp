@@ -2028,10 +2028,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         selected = self._grid.GetSelectedRows()
         if len(selected) <= 1:
             selected = range(0, self._grid.GetNumberRows())
-        if isinstance(self.radio, chirp_common.IcomDstarSupport):
-            r = generic_csv.DSTARCSVRadio(None)
-        else:
-            r = generic_csv.CSVRadio(None)
+
+        r = generic_csv.CSVRadio(None)
         # The CSV driver defaults to a single non-empty memory at location
         # zero, so delete it before we go to export.
         r.erase_memory(0)
@@ -2041,7 +2039,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 # We don't export specials
                 continue
             if not m.empty:
-                m = import_logic.import_mem(r, self._features, m)
+                m = import_logic.import_mem(r, self._features, m,
+                                            mem_cls=chirp_common.Memory)
             r.set_memory(m)
         r.save(filename)
         LOG.info('Wrote exported CSV to %s' % filename)
