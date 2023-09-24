@@ -1,5 +1,6 @@
 import sys
 import time
+import threading
 from unittest import mock
 
 sys.modules['wx'] = wx = mock.MagicMock()
@@ -13,6 +14,7 @@ from chirp.wxui import radiothread  # noqa
 class TestRadioThread(base.BaseTest):
     def setUp(self):
         super().setUp()
+        self._lock = threading.Lock()
 
     def test_radiojob(self):
         radio = mock.MagicMock()
@@ -38,7 +40,7 @@ class TestRadioThread(base.BaseTest):
         # Simulate an edit conflict with the first event by returning
         # False for "delivered" to force us to queue an event.
         editor.radio_thread_event.side_effect = [False, True, True, True]
-        thread = radiothread.RadioThread(radio)
+        thread = radiothread.RadioThread(radio, self._lock)
         mem = mock.MagicMock()
         job1id = thread.submit(editor, 'get_memory', 12)
         job2id = thread.submit(editor, 'set_memory', mem)
@@ -85,7 +87,7 @@ class TestRadioThread(base.BaseTest):
         radio = mock.MagicMock()
         radio.get_features.side_effect = ValueError('some error')
         editor = mock.MagicMock()
-        thread = radiothread.RadioThread(radio)
+        thread = radiothread.RadioThread(radio, self._lock)
         mem = mock.MagicMock()
         thread.submit(editor, 'get_memory', 12)
         thread.submit(editor, 'set_memory', mem)
@@ -105,3 +107,19 @@ class TestRadioThread(base.BaseTest):
         radio.set_memory.assert_not_called()
         radio.get_features.assert_not_called()
         wx.PostEvent.assert_not_called()
+
+    def _lock_tester(self):
+        self.assertTrue(self._lock.locked)
+        return mock.sentinel.iran
+
+    def test_lock(self):
+        radio = mock.MagicMock()
+        radio.test = self._lock_tester
+        editor = mock.MagicMock()
+        thread = radiothread.RadioThread(radio, self._lock)
+        thread.submit(editor, 'test')
+        thread.start()
+        thread.end()
+        thread.join(5)
+        job = editor.radio_thread_event.call_args_list[0][0][0]
+        self.assertEqual(mock.sentinel.iran, job.result)

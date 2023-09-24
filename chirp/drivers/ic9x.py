@@ -52,7 +52,7 @@ CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
     "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
 
 
-class Lock:
+class IC9xState:
     """Maintains the state of an ic9x
 
     This makes sure that only one RadioThread accesses the radio at one
@@ -60,23 +60,19 @@ class Lock:
     so that we know when to re-send the magic wakeup sequence.
     """
     def __init__(self):
-        self.lock = threading.Lock()
         self.id = str(uuid.uuid4())
         self._last = 0
 
     def __enter__(self):
-        LOG.debug('%s locking', self.id)
-        self.lock.acquire()
-        LOG.debug('%s locked', self.id)
+        pass
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        self.lock.release()
         if exc_type is None:
             self._last = time.time()
         LOG.debug('%s unlocked success=%s', self.id, exc_type is None)
 
     def __repr__(self):
-        return '<IC9x Lock %s>' % self.id
+        return '<IC9x State %s>' % self.id
 
     @property
     def stale(self):
@@ -170,7 +166,7 @@ class IC9xRadio(icf.IcomLiveRadio):
         if 'lock' in kwargs:
             self._lock = kwargs.pop('lock')
         else:
-            self._lock = Lock()
+            self._lock = IC9xState()
         super().__init__(*args, **kwargs)
 
         self.__memcache = {}

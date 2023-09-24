@@ -54,7 +54,6 @@ RADIO_IDS = {
     "ID023": "TS-590S/SG_LiveMode"          # as SG
 }
 
-LOCK = threading.Lock()
 COMMAND_RESP_BUFSIZE = 8
 LAST_BAUD = 4800
 LAST_DELIMITER = ("\r", " ")
@@ -67,7 +66,7 @@ LAST_DELIMITER = ("\r", " ")
 
 def _command(ser, cmd, *args):
     """Send @cmd to radio via @ser"""
-    global LOCK, LAST_DELIMITER, COMMAND_RESP_BUFSIZE
+    global LAST_DELIMITER, COMMAND_RESP_BUFSIZE
 
     start = time.time()
 
@@ -97,8 +96,7 @@ def _command(ser, cmd, *args):
 
 
 def command(ser, cmd, *args):
-    with LOCK:
-        return _command(ser, cmd, *args)
+    return _command(ser, cmd, *args)
 
 
 def get_id(ser):
