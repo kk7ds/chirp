@@ -400,10 +400,11 @@ class UV17Pro(chirp_common.CloneModeRadio,
     DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low",  watts=1.00)]
-    _vhf_range = (130000000, 180000000)
+    _airband = (108000000, 136000000)
+    _vhf_range = (136000000, 174000000)
     _vhf2_range = (200000000, 260000000)
-    _uhf_range = (400000000, 521000000)
-    VALID_BANDS = [_vhf_range,
+    _uhf_range = (400000000, 520000000)
+    VALID_BANDS = [_vhf_range, _vhf2_range,
                    _uhf_range]
     PTTID_LIST = LIST_PTTID
     SCODE_LIST = LIST_SCODE
@@ -1366,5 +1367,8 @@ class UV17ProGPS(UV17Pro):
     _magic = MSTRING_UV17PROGPS
     _magics = [b"\x46", b"\x4d", b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01\x01\x04\x11\x08\x05\x0D\x0D\x01\x11\x0F\x09\x12\x09\x10\x04\x00"]
     _magicResponseLengths = [16, 7, 1]
+    VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
+                   UV17Pro._uhf_range]
+
 
 
