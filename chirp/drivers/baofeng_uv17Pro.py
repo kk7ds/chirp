@@ -398,8 +398,8 @@ class UV17Pro(chirp_common.CloneModeRadio,
     LENGTH_NAME = 12
     SKIP_VALUES = ["", "S"]
     DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
-    POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=1.00),
-                    chirp_common.PowerLevel("High", watts=5.00)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Low",  watts=1.00)]
     _vhf_range = (130000000, 180000000)
     _vhf2_range = (200000000, 260000000)
     _uhf_range = (400000000, 521000000)
