@@ -29,3 +29,4 @@ assets
 .vs/
 .vscode/
 /CppProperties.json
+.DS_Store
