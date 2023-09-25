@@ -370,9 +370,9 @@ class UV17Pro(chirp_common.CloneModeRadio,
     NEEDS_COMPAT_SERIAL = False
 
     MEM_STARTS = [0x0000, 0x9000, 0xA000, 0xD000]
-    MEM_SIZES =  [0x8000, 0x0040, 0x0280, 0x0040]
+    MEM_SIZES =  [0x8000, 0x0040, 0x02C0, 0x0040]
 
-    MEM_TOTAL = 0x8300
+    MEM_TOTAL = 0x8340
     BLOCK_SIZE = 0x40
     STIMEOUT = 2
     BAUDRATE = 115200
