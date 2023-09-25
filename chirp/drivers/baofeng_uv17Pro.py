@@ -404,6 +404,8 @@ class UV17Pro(chirp_common.CloneModeRadio,
     _vhf_range = (136000000, 174000000)
     _vhf2_range = (200000000, 260000000)
     _uhf_range = (400000000, 520000000)
+    _uhf2_range = (350000000, 390000000)
+
     VALID_BANDS = [_vhf_range, _vhf2_range,
                    _uhf_range]
     PTTID_LIST = LIST_PTTID
@@ -1368,7 +1370,10 @@ class UV17ProGPS(UV17Pro):
     _magics = [b"\x46", b"\x4d", b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01\x01\x04\x11\x08\x05\x0D\x0D\x01\x11\x0F\x09\x12\x09\x10\x04\x00"]
     _magicResponseLengths = [16, 7, 1]
     VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
-                   UV17Pro._uhf_range]
+                   UV17Pro._uhf_range, UV17Pro.uhf2_range]
 
+class UV17L(UV17Pro):
+    VENDOR = "Baofeng"
+    MODEL = "UV-17L"
 
 
