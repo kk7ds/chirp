@@ -24,7 +24,7 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettingValueFloat, RadioSettings, \
-    InvalidValueError
+    InvalidValueError, RadioSettingValue
 import time
 import struct
 import logging
@@ -379,6 +379,7 @@ class UV17Pro(chirp_common.CloneModeRadio,
 
     _gmrs = False
     _bw_shift = False
+    _support_banknames = False
 
     _tri_band = True
     _fileid = []
@@ -434,6 +435,35 @@ class UV17Pro(chirp_common.CloneModeRadio,
       u8 unknown6:8;
       char name[12];
     } memory[1000];
+
+    #seekto 0x8240;
+    struct {
+      char name1[12];
+      u32 unknown1;
+      char name2[12];
+      u32 unknown2;
+      char name3[12];
+      u32 unknown3;
+      char name4[12];
+      u32 unknown4;
+      char name5[12];
+      u32 unknown5;
+      char name6[12];
+      u32 unknown6;
+      char name7[12];
+      u32 unknown7;
+      char name8[12];
+      u32 unknown8;
+      char name9[12];
+      u32 unknown9;
+      char name10[12];
+      u32 unknown10;
+    } bank_names;
+
+    #seekto 0x8000;
+    struct {
+      char unknown[64];  
+    } settings;
     """
 
     @classmethod
@@ -475,6 +505,77 @@ class UV17Pro(chirp_common.CloneModeRadio,
         service = RadioSettingGroup("service", "Service Settings")
         top = RadioSettings(basic, advanced, other, work, fm_preset, dtmfe,
                             service)
+     
+        def _filterName(name):
+            fname = ""
+            for char in name:
+                if ord(str(char)) == 255:
+                    break
+                fname += str(char)
+            return fname
+        
+        if self._support_banknames:
+            _msg = _mem.bank_names
+            rs = RadioSetting("bank_names.name1", "Bank name 1",
+                            RadioSettingValueString(
+                                0, 12, _filterName(_msg.name1)))
+            other.append(rs)
+
+            _msg = _mem.bank_names
+            rs = RadioSetting("bank_names.name2", "Bank name 2",
+                            RadioSettingValueString(
+                                0, 12, _filterName(_msg.name2)))
+            
+            other.append(rs)
+            _msg = _mem.bank_names
+            rs = RadioSetting("bank_names.name3", "Bank name 3",
+                            RadioSettingValueString(
+                                0, 12, _filterName(_msg.name3)))
+            
+            other.append(rs)
+            _msg = _mem.bank_names
+            rs = RadioSetting("bank_names.name4", "Bank name 4",
+                            RadioSettingValueString(
+                                0, 12, _filterName(_msg.name4)))
+            
+            other.append(rs)
+            _msg = _mem.bank_names
+            rs = RadioSetting("bank_names.name5", "Bank name 5",
+                            RadioSettingValueString(
+                                0, 12, _filterName(_msg.name5)))
+            
+            other.append(rs)
+            _msg = _mem.bank_names
+            rs = RadioSetting("bank_names.name6", "Bank name 6",
+                            RadioSettingValueString(
+                                0, 12, _filterName(_msg.name6)))
+            
+            other.append(rs)
+            _msg = _mem.bank_names
+            rs = RadioSetting("bank_names.name7", "Bank name 7",
+                            RadioSettingValueString(
+                                0, 12, _filterName(_msg.name7)))
+            
+            other.append(rs)
+            _msg = _mem.bank_names
+            rs = RadioSetting("bank_names.name8", "Bank name 8",
+                            RadioSettingValueString(
+                                0, 12, _filterName(_msg.name8)))
+            
+            other.append(rs)
+            _msg = _mem.bank_names
+            rs = RadioSetting("bank_names.name9", "Bank name 9",
+                            RadioSettingValueString(
+                                0, 12, _filterName(_msg.name9)))
+            other.append(rs)
+
+            _msg = _mem.bank_names
+            rs = RadioSetting("bank_names.name10", "Bank name 10",
+                            RadioSettingValueString(
+                                0, 12, _filterName(_msg.name10)))
+            other.append(rs)
+
+
         return top
     
         # TODO: implement settings 
@@ -1366,12 +1467,14 @@ class UV17Pro(chirp_common.CloneModeRadio,
 class UV17ProGPS(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "UV-17ProGPS"
+    _support_banknames = True
     _magic = MSTRING_UV17PROGPS
     _magics = [b"\x46", b"\x4d", b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01\x01\x04\x11\x08\x05\x0D\x0D\x01\x11\x0F\x09\x12\x09\x10\x04\x00"]
     _magicResponseLengths = [16, 7, 1]
     VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
 
+@directory.register
 class UV17L(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "UV-17L"
