@@ -20,9 +20,7 @@ import logging
 import os
 import pickle
 import platform
-import shutil
 import sys
-import tempfile
 import time
 import webbrowser
 
@@ -1687,22 +1685,12 @@ class ChirpMain(wx.Frame):
 
     @common.error_proof()
     def _menu_debug_log(self, event):
-        pf = chirp_platform.get_platform()
-        src = pf.config_file('debug.log')
-        dst = tempfile.NamedTemporaryFile(
-            prefix='chirp_debug-',
-            suffix='.txt').name
-        shutil.copy(src, dst)
+        dst = common.temporary_debug_log()
         wx.LaunchDefaultApplication(dst)
 
     @common.error_proof()
     def _menu_debug_loc(self, event):
-        pf = chirp_platform.get_platform()
-        src = pf.config_file('debug.log')
-        dst = tempfile.NamedTemporaryFile(
-            prefix='chirp_debug-',
-            suffix='.txt').name
-        shutil.copy(src, dst)
+        dst = common.temporary_debug_log()
         common.reveal_location(dst)
 
     @common.error_proof()
