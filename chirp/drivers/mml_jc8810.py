@@ -59,7 +59,7 @@ struct {
   lbcd code[3];       // 0-2 Code
   u8 unknown6;        // 3
   char name[12];      // 4-F 12-character Alpha Tag
-} memory[256];
+} memory[%d];
 
 #seekto 0x9000;
 struct {
@@ -1360,7 +1360,7 @@ class A36plusRadio(JC8810base):
 
     # ==========
     # Notice to developers:
-    # The A36plus support in this driver is currently based upon v1.18
+    # The A36plus support in this driver is currently based upon v1.22
     # firmware.
     # ==========
 
@@ -1370,26 +1370,30 @@ class A36plusRadio(JC8810base):
     VALID_BANDS = [(108000000, 136000000),
                    (136000000, 180000000),
                    (200000000, 260000000),
-                   (350000000, 390000000),
-                   (400000000, 520000000)]
+                   (350000000, 400000000),
+                   (400000000, 520000000),
+                   ]
 
     _magic = b"PROGRAMJC37U"
     _fingerprint = [b"\x00\x00\x00\x42\x00\x20\xF0\x04",
-                    b"\x00\x00\x00\x5A\x00\x20\x08\x05"]
+                    b"\x00\x00\x00\x5A\x00\x20\x08\x05",  # fw 1.18
+                    b"\x00\x00\x00\x9E\x00\x20\x0C\x05",  # fw 1.22
+                    ]
 
     _ranges = [
-               (0x0000, 0x2000),
+               (0x0000, 0x4000),
                (0x8000, 0x8040),
                (0x9000, 0x9040),
                (0xA000, 0xA140),
                (0xB000, 0xB440)
               ]
     _memsize = 0xB440
-    _upper = 256
+    _upper = 512  # fw 1.22 expands from 256 to 512 channels
     _aninames = 10
     _mem_params = (_upper,  # number of channels
                    _aninames,  # number of aninames
                    )
+
 
 @directory.register
 class AR730Radio(UVA37Radio):
