@@ -173,9 +173,16 @@ struct {
 
 #seekto 0xB0C0;
 struct {
-  char name[6];       //      6-character ANI Code Group Names
-  u8 unused[10];
-} aninames[30];
+  char name[10];      //      10-character ANI Code Group Names
+  u8 unused[6];
+} aninames[%d];
+
+#seekto 0xB200;
+struct {
+  char name[10];      //      10-character Custom CH Names (Talkpod A36plus)
+  u8 unused[6];
+} customnames[30];
+
 """
 
 
@@ -420,6 +427,11 @@ class JC8810base(chirp_common.CloneModeRadio):
                (0xB000, 0xB300)
               ]
     _memsize = 0xB300
+    _upper = 256
+    _aninames = 30
+    _mem_params = (_upper,  # number of channels
+                   _aninames,  # number of aninames
+                   )
     _valid_chars = chirp_common.CHARSET_ALPHANUMERIC + \
         "`~!@#$%^&*()-=_+[]\\{}|;':\",./<>?"
 
@@ -443,13 +455,13 @@ class JC8810base(chirp_common.CloneModeRadio):
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]  # 25 kHz, 12.5 kHz.
         rf.valid_dtcs_codes = DTCS
-        rf.memory_bounds = (1, 256)
+        rf.memory_bounds = (1, self._upper)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 20., 25., 50.]
         rf.valid_bands = self.VALID_BANDS
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
 
     def sync_in(self):
         """Download from radio"""
@@ -877,7 +889,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             LOG.debug("Setting value: " + str(setting.value) + " from list")
             val = str(setting.value)
             index = SKEY3S_CHOICES.index(val)
-            val = SKEY2S_VALUES[index]
+            val = SKEY3S_VALUES[index]
             obj.set_value(val)
 
         if self.MODEL in ["RT-470"]:
@@ -887,7 +899,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
         elif self.MODEL in ["A36plus"]:
-            unwanted = [0, 5, 7, 8, 9]
+            unwanted = [0, 5, 7, 8, 11]
         else:
             unwanted = []
         SKEY3S_CHOICES = ALL_SKEY_CHOICES.copy()
@@ -958,7 +970,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
         elif self.MODEL in ["A36plus"]:
-            unwanted = [0, 5, 7, 8, 9]
+            unwanted = [0, 5, 7, 8, 11]
         else:
             unwanted = []
         SKEYTOP_CHOICES = ALL_SKEY_CHOICES.copy()
@@ -1122,39 +1134,44 @@ class JC8810base(chirp_common.CloneModeRadio):
                     filtered += " "
             return filtered
 
-        for i in range(0, 30):
+        end = 60 - self._aninames  # end of immutable ANI names
+        for i in range(0, end):
             _codeobj = self._memobj.anicodes[i].code
             _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
             rs = RadioSettingValueString(0, 3, _code, False)
             rs.set_charset(DTMF_CHARS)
             rset = RadioSetting("anicodes/%i.code" % i,
-                                "ANI Code %i" % (i + 1), rs)
+                                "ANI Code %i (NUM.%i)" % (i + 1, i + 1), rs)
             rset.set_apply_callback(apply_code, self._memobj.anicodes[i], 3)
             ani.append(rset)
 
-            _nameobj = "NUM.%i" % (i + 1)
-            rs = RadioSettingValueString(0, 6, _nameobj)
-            rs.set_mutable(False)
-            rset = RadioSetting("aninames/%i.code" % i,
-                                "ANI Code %i Name" % (i + 1), rs)
-            ani.append(rset)
-
-        for i in range(0, 30):
-            _codeobj = self._memobj.anicodes[i + 30].code
+        for i in range(end, 60):
+            _codeobj = self._memobj.anicodes[i].code
             _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
             rs = RadioSettingValueString(0, 3, _code, False)
             rs.set_charset(DTMF_CHARS)
-            rset = RadioSetting("anicodes/%i.code" % (i + 30),
-                                "ANI Code %i" % (i + 31), rs)
+            rset = RadioSetting("anicodes/%i.code" % (i),
+                                "ANI Code %i" % (i + 1), rs)
             rset.set_apply_callback(apply_code,
-                                    self._memobj.anicodes[i + 30], 3)
+                                    self._memobj.anicodes[i], 3)
             ani.append(rset)
 
-            _nameobj = self._memobj.aninames[i].name
-            rs = RadioSettingValueString(0, 6, _filter(_nameobj))
-            rset = RadioSetting("aninames/%i.name" % i,
-                                "ANI Code %i Name" % (i + 31), rs)
+            _nameobj = self._memobj.aninames[i - end].name
+            rs = RadioSettingValueString(0, 10, _filter(_nameobj))
+            rset = RadioSetting("aninames/%i.name" % (i - end),
+                                "ANI Code %i Name" % (i + 1), rs)
             ani.append(rset)
+
+        if self.MODEL == "A36plus":
+            custom = RadioSettingGroup("custom", "Custom Channel Names")
+            group.append(custom)
+
+            for i in range(0, 30):
+                _nameobj = self._memobj.customnames[i].name
+                rs = RadioSettingValueString(0, 10, _filter(_nameobj))
+                rset = RadioSetting("customnames/%i.name" % i,
+                                    "Custom Name %i" % (i + 1), rs)
+                custom.append(rset)
 
         if self.MODEL == "A36plus":
             # Menu 21: RX END TAIL
@@ -1368,7 +1385,11 @@ class A36plusRadio(JC8810base):
                (0xB000, 0xB440)
               ]
     _memsize = 0xB440
-
+    _upper = 256
+    _aninames = 10
+    _mem_params = (_upper,  # number of channels
+                   _aninames,  # number of aninames
+                   )
 
 @directory.register
 class AR730Radio(UVA37Radio):
