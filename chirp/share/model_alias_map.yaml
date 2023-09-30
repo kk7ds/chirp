@@ -163,8 +163,8 @@ Baofeng/Pofung:
 - alt: BF-F8HP
   model: UV-S9
   variant: 'tri-power: '
-- alt: Radioddity UV-5RX3
-  model: UV-S9/S9T/S9X3
+- alt: UV-S9X3
+  model: UV-S9/S9T
   variant: 'tri-band: '
 - alt: UV-82HP
   model: UV-X9
@@ -307,3 +307,6 @@ Quansheng:
   model: TG-UV2
 - alt: UV-K5
   model: UV-K5(8)
+Powerful:
+- alt: Quansheng UV-K5
+  model: UV-S5

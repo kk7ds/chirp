@@ -222,19 +222,28 @@ def _import_duplex(dst_radio, srcrf, mem):
         mem.duplex = ''
 
 
-def import_mem(dst_radio, src_features, src_mem, overrides={}):
+def import_mem(dst_radio, src_features, src_mem, overrides={}, mem_cls=None):
     """Perform import logic to create a destination memory from
     src_mem that will be compatible with @dst_radio"""
     dst_rf = dst_radio.get_features()
 
     if isinstance(src_mem, chirp_common.DVMemory):
-        if not isinstance(dst_radio, chirp_common.IcomDstarSupport):
+        # DV memory import logic: If the radio supports D-STAR and requires
+        # call lists, then we set the call list. Otherwise, if it just
+        # supports DV mode we don't, but allow the memory (i.e. CSV, etc).
+        # If neither, then it's not compatible.
+        if isinstance(dst_radio, chirp_common.IcomDstarSupport):
+            if dst_rf.requires_call_lists:
+                ensure_has_calls(dst_radio, src_mem)
+        elif 'DV' not in dst_rf.valid_modes:
             raise DestNotCompatible(
                 "Destination radio does not support D-STAR")
-        if dst_rf.requires_call_lists:
-            ensure_has_calls(dst_radio, src_mem)
 
-    dst_mem = src_mem.dupe()
+    if mem_cls:
+        dst_mem = mem_cls()
+        dst_mem.clone(src_mem)
+    else:
+        dst_mem = src_mem.dupe()
     # The source's immutable list almost definitely does not match the
     # latter, so eliminate that list here and rely on set_memory() on
     # the destination to enforce anything that should not be set.

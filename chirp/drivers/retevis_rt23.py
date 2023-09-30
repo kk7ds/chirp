@@ -384,7 +384,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
                                 "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
         rf.valid_power_levels = RT23_POWER_LEVELS
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
-        rf.valid_modes = ["FM", "NFM"]  # 25 KHz, 12.5 KHz.
+        rf.valid_modes = ["FM", "NFM"]  # 25 kHz, 12.5 kHz.
         rf.valid_dtcs_codes = RT23_DTCS
         rf.memory_bounds = (1, 128)
         rf.valid_tuning_steps = _STEP_LIST
@@ -476,7 +476,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
 
         mem.freq = int(_mem.rxfreq) * 10
 
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
+        # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if mem.freq == 0:
             mem.empty = True
             return mem

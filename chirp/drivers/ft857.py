@@ -541,10 +541,10 @@ class FT857Radio(ft817.FT817Radio):
         rs = RadioSetting("extended_menu", "Extended menu",
                           RadioSettingValueBoolean(_settings.extended_menu))
         extended.append(rs)
-        rs = RadioSetting("ars_144", "144MHz ARS",
+        rs = RadioSetting("ars_144", "144 MHz ARS",
                           RadioSettingValueBoolean(_settings.ars_144))
         basic.append(rs)
-        rs = RadioSetting("ars_430", "430MHz ARS",
+        rs = RadioSetting("ars_430", "430 MHz ARS",
                           RadioSettingValueBoolean(_settings.ars_430))
         basic.append(rs)
         options = ["enable", "disable"]
@@ -608,7 +608,7 @@ class FT857Radio(ft817.FT817Radio):
                                                 options[_settings.beacon_time])
                           )
         extended.append(rs)
-        options = ["440Hz", "880Hz", "1760Hz"]
+        options = ["440 Hz", "880 Hz", "1760 Hz"]
         rs = RadioSetting("beep_tone", "Beep tone",
                           RadioSettingValueList(options,
                                                 options[_settings.beep_tone]))
@@ -782,24 +782,25 @@ class FT857Radio(ft817.FT817Radio):
                           RadioSettingValueList(options,
                                                 options[_settings.disp_mode]))
         panel.append(rs)
-        options = ["60Hz", "120Hz", "240Hz"]
+        options = ["60 Hz", "120 Hz", "240 Hz"]
         rs = RadioSetting("dsp_bpf", "Dsp band pass filter",
                           RadioSettingValueList(options,
                                                 options[_settings.dsp_bpf]))
         cw.append(rs)
-        options = ["100Hz", "160Hz", "220Hz", "280Hz", "340Hz", "400Hz",
-                   "460Hz", "520Hz", "580Hz", "640Hz", "720Hz", "760Hz",
-                   "820Hz", "880Hz", "940Hz", "1000Hz"]
+        options = ["100 Hz", "160 Hz", "220 Hz", "280 Hz", "340 Hz", "400 Hz",
+                   "460 Hz", "520 Hz", "580 Hz", "640 Hz", "720 Hz", "760 Hz",
+                   "820 Hz", "880 Hz", "940 Hz", "1000 Hz"]
         rs = RadioSetting("dsp_hpf", "Dsp hi pass filter cut off",
                           RadioSettingValueList(options,
                                                 options[_settings.dsp_hpf]))
         basic.append(rs)
-        options = ["1000Hz", "1160Hz", "1320Hz", "1480Hz", "1650Hz", "1800Hz",
-                   "1970Hz", "2130Hz", "2290Hz", "2450Hz", "2610Hz", "2770Hz",
-                   "2940Hz", "3100Hz", "3260Hz", "3420Hz", "3580Hz", "3740Hz",
-                   "3900Hz", "4060Hz", "4230Hz", "4390Hz", "4550Hz", "4710Hz",
-                   "4870Hz", "5030Hz", "5190Hz", "5390Hz", "5520Hz", "5680Hz",
-                   "5840Hz", "6000Hz"]
+        options = ["1000 Hz", "1160 Hz", "1320 Hz", "1480 Hz", "1650 Hz",
+                   "1800 Hz", "1970 Hz", "2130 Hz", "2290 Hz", "2450 Hz",
+                   "2610 Hz", "2770 Hz", "2940 Hz", "3100 Hz", "3260 Hz",
+                   "3420 Hz", "3580 Hz", "3740 Hz", "3900 Hz", "4060 Hz",
+                   "4230 Hz", "4390 Hz", "4550 Hz", "4710 Hz", "4870 Hz",
+                   "5030 Hz", "5190 Hz", "5390 Hz", "5520 Hz", "5680 Hz",
+                   "5840 Hz", "6000 Hz"]
         rs = RadioSetting("dsp_lpf", "Dsp low pass filter cut off",
                           RadioSettingValueList(options,
                                                 options[_settings.dsp_lpf]))
@@ -1109,7 +1110,7 @@ class FT857Radio(ft817.FT817Radio):
 @directory.register
 class FT857USRadio(FT857Radio):
     """Yaesu FT857/897 (US version)"""
-    # seems that radios configured for 5MHz operations send one packet more
+    # seems that radios configured for 5 MHz operations send one packet more
     # than others so we have to distinguish sub models
     MODEL = "FT-857/897 (US)"
 

@@ -71,17 +71,34 @@ struct {
   u8 mra;               // MR Channel A
   u8 mrb;               // MR Channel B
   u8 disp_ab;           // Display A/B Selected
-  u16 fmcur;            // Broadcast FM station
+} settings;
+
+#seekto 0x063D;
+struct {
   u8 workmode;          // Work Mode
   u8 wx;                // NOAA WX ch#
   u8 area;              // Area Selected
-} settings;
+} settings2;
 
 #seekto 0x0D00;
 struct {
   char name[6];
   u8 unknown1[2];
 } names[%d];
+"""
+
+MEM_FM_U_FORMAT = """
+#seekto 0x063B;
+struct {
+  u16 fmcur;            // Broadcast FM station
+} fmpreset;
+"""
+
+MEM_FM_UL_FORMAT = """
+#seekto 0x063B;
+struct {
+  ul16 fmcur;           // Broadcast FM station
+} fmpreset;
 """
 
 CMD_ACK = b"\x06"
@@ -334,7 +351,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         rf.valid_dtcs_codes = self.DTCS_CODES
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_duplexes = self.DUPLEXES
-        rf.valid_modes = ["FM", "NFM"]  # 25 kHz, 12.5 KHz.
+        rf.valid_modes = ["FM", "NFM"]  # 25 kHz, 12.5 kHz.
         rf.memory_bounds = (1, self._upper)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 25.]
         rf.valid_bands = self.VALID_BANDS
@@ -342,7 +359,8 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
+        mem_format = MEM_FORMAT + MEM_FM_UL_FORMAT
+        self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
 
     def sync_in(self):
         """Download from radio"""
@@ -418,7 +436,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         mem.number = number
         mem.freq = int(_mem.rxfreq) * 10
 
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
+        # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if mem.freq == 0:
             mem.empty = True
             return mem
@@ -635,7 +653,9 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         return mem
 
     def get_settings(self):
+        _fmpreset = self._memobj.fmpreset
         _settings = self._memobj.settings
+        _settings2 = self._memobj.settings2
         basic = RadioSettingGroup("basic", "Basic Settings")
         top = RadioSettings(basic)
 
@@ -745,8 +765,8 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         if not self.MODEL.startswith("RB627"):
             if self.MODEL == "FRS-A1":
                 del WX_LIST[7:]
-            rs = RadioSettingValueList(WX_LIST, WX_LIST[_settings.wx])
-            rset = RadioSetting("wx", "NOAA WX Radio", rs)
+            rs = RadioSettingValueList(WX_LIST, WX_LIST[_settings2.wx])
+            rset = RadioSetting("settings2.wx", "NOAA WX Radio", rs)
             basic.append(rset)
 
         def myset_freq(setting, obj, atrb, mult):
@@ -756,7 +776,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
             return
 
         # FM Broadcast Settings
-        val = _settings.fmcur
+        val = _fmpreset.fmcur
         val = val / 10.0
         val_low = 76.0
         if self.MODEL == "FRS-A1":
@@ -764,20 +784,20 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         if val < val_low or val > 108.0:
             val = 90.4
         rx = RadioSettingValueFloat(val_low, 108.0, val, 0.1, 1)
-        rset = RadioSetting("settings.fmcur", "Broadcast FM Radio (MHz)", rx)
-        rset.set_apply_callback(myset_freq, _settings, "fmcur", 10)
+        rset = RadioSetting("fmpreset.fmcur", "Broadcast FM Radio (MHz)", rx)
+        rset.set_apply_callback(myset_freq, _fmpreset, "fmcur", 10)
         basic.append(rset)
 
         model_list = ["BF-T8", "BF-U9", "AR-8"]
         if self.MODEL in model_list:
             rs = RadioSettingValueList(WORKMODE_LIST,
-                                       WORKMODE_LIST[_settings.workmode])
-            rset = RadioSetting("workmode", "Work Mode", rs)
+                                       WORKMODE_LIST[_settings2.workmode])
+            rset = RadioSetting("settings2.workmode", "Work Mode", rs)
             basic.append(rset)
 
-            rs = RadioSettingValueList(AREA_LIST, AREA_LIST[_settings.area])
+            rs = RadioSettingValueList(AREA_LIST, AREA_LIST[_settings2.area])
             rs.set_mutable(False)
-            rset = RadioSetting("area", "Area", rs)
+            rset = RadioSetting("settings2.area", "Area", rs)
             basic.append(rset)
 
         return top
@@ -870,6 +890,10 @@ class RetevisRB27B(BFT8Radio):
               ]
     _memsize = 0x1040
 
+    def process_mmap(self):
+        mem_format = MEM_FORMAT + MEM_FM_U_FORMAT
+        self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
+
 
 @directory.register
 class RetevisRB27(RetevisRB27B):
@@ -886,6 +910,10 @@ class RetevisRB27(RetevisRB27B):
     _gmrs = False  # sold as GMRS radio but supports full band TX/RX
     _frs = _murs = _pmr = False
 
+    def process_mmap(self):
+        mem_format = MEM_FORMAT + MEM_FM_U_FORMAT
+        self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
+
 
 @directory.register
 class RetevisRB27V(RetevisRB27B):
@@ -896,6 +924,10 @@ class RetevisRB27V(RetevisRB27B):
     _upper = 5
     _murs = True
     _frs = _gmrs = _pmr = False
+
+    def process_mmap(self):
+        mem_format = MEM_FORMAT + MEM_FM_U_FORMAT
+        self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
 
 
 @directory.register

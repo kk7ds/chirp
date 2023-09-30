@@ -1001,7 +1001,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 
         def myset_fmfrq(setting, obj, atrb, nx):
             """ Callback to set xx.x FM freq in memory as xx.x * 100000"""
-            # in-valid even KHz freqs are allowed; to satisfy run_tests
+            # in-valid even kHz freqs are allowed; to satisfy run_tests
             vx = float(str(setting.value))
             vx = int(vx * 100000)
             setattr(obj[nx], atrb, vx)

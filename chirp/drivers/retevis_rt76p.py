@@ -186,7 +186,7 @@ RPSTE_LIST = ["Off"] + ["%s" % x for x in range(100, 1100, 100)]
 SCMODE_LIST = ["Time (TO)", "Carrier (CO)", "Search (SE)"]
 TDRAB_LIST = ["Off", "A Band", "B Band"]
 TIMEOUTTIMER_LIST = ["%s seconds" % x for x in range(15, 615, 15)]
-TONE_LIST = ["1000Hz", "1450Hz", "1750Hz", "2100Hz"]
+TONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
 VOICE_LIST = ["Off", "On"]
 WORKMODE_LIST = ["VFO Mode", "Channel Mode"]
 
@@ -370,7 +370,7 @@ class RT76PRadio(chirp_common.CloneModeRadio):
                                 "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
         rf.valid_power_levels = self.RT76P_POWER_LEVELS
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
-        rf.valid_modes = ["FM", "NFM"]  # 25 kHz, 12.5 KHz.
+        rf.valid_modes = ["FM", "NFM"]  # 25 kHz, 12.5 kHz.
         rf.valid_dtcs_codes = RT76P_DTCS
         rf.memory_bounds = (1, 128)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 20., 25., 50.]

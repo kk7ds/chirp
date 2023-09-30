@@ -1091,7 +1091,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
     #
     # The ID record returned by the radio also includes the
     # current frequency range
-    # as 4 bytes big-endian in 10Hz increments
+    # as 4 bytes big-endian in 10 Hz increments
     #
     # Offset
     #  0:10     Model, zero padded (Looks for 'KG-UV8D-B')
@@ -2006,7 +2006,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         # FM RADIO PRESETS
 
         # memory stores raw integer value like 760
-        # radio will divide 760 by 10 and interpret correctly at 76.0MHz
+        # radio will divide 760 by 10 and interpret correctly at 76.0 MHz
         for i in range(1, 21):
             chan = str(i)
             rs = RadioSetting("FM_radio" + chan, "FM Preset" + chan,

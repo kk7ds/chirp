@@ -438,6 +438,7 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
                                 "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
+        rf.valid_tones = TONES
         rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES
         rf.valid_bands = [(136000000, 174000000),
                           (400000000, 520000000)]

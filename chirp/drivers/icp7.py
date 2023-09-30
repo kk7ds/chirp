@@ -221,7 +221,7 @@ class ICP7Radio(icf.IcomCloneModeRadio):
             _mem.train_sql = 0  # Train SQL mode (0:off 1:Tone 2:MSK)
             _mem.tmode = TMODES.index(mem.tmode)
             _mem.duplex = DUPLEX.index(mem.duplex)
-            _mem.train_tone = 228  # Train SQL Tone (x10Hz)
+            _mem.train_tone = 228  # Train SQL Tone (x10 Hz)
             _mem.tuning_step = TUNING_STEPS.index(mem.tuning_step)
             _mem.rtone = chirp_common.TONES.index(mem.rtone)
             _mem.ctone = chirp_common.TONES.index(mem.ctone)

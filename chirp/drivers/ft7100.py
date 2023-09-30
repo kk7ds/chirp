@@ -663,7 +663,7 @@ class FT7100Radio(YaesuCloneModeRadio):
         if _mem.is_split:
             mem.offset = int(_mem.freq_tx_Hz)
         else:
-            mem.offset = int(_mem.offset_10khz)*10000   # 10kHz to Hz
+            mem.offset = int(_mem.offset_10khz)*10000   # 10 kHz to Hz
 
         if _mem.is_mode_am:
             mem.mode = "AM"

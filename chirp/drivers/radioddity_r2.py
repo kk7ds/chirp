@@ -65,7 +65,7 @@ struct {
     unknown2:1,
     bclo:1;
   u8 reserved[3];
-} memory[16];
+} memory[%(memnum)i];
 
 #seekto 0x03C0;
 struct {
@@ -315,10 +315,13 @@ class RadioddityR2(chirp_common.CloneModeRadio):
     _memsize = 0x03F0
     # never read more than 8 bytes at once
     _block_size = 0x08
-    # frequency range is 400-470MHz
+    # frequency range is 400-470 MHz
     _range = [400000000, 470000000]
     # maximum 16 channels
     _upper = 16
+    _mem_params = {
+        'memnum': _upper,  # number of channels
+    }
 
     _frs16 = _pmr = False
 
@@ -360,7 +363,7 @@ class RadioddityR2(chirp_common.CloneModeRadio):
 
     def process_mmap(self):
         """Process the mem map into the mem object"""
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
         # to set the vars on the class to the correct ones
 
     def sync_in(self):
@@ -441,7 +444,7 @@ class RadioddityR2(chirp_common.CloneModeRadio):
 
         mem.freq = int(_mem.rx_freq) * 10
 
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
+        # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if mem.freq == 0:
             mem.empty = True
             return mem
@@ -669,6 +672,23 @@ class RetevisRT24(RadioddityR2):
     MODEL = "RT24"
 
     _pmr = False  # sold as PMR radio but supports full band TX/RX
+
+
+@directory.register
+class RetevisRT24V(RadioddityR2):
+    """Retevis RT24V"""
+    VENDOR = "Retevis"
+    MODEL = "RT24V"
+
+    # sold as FreeNet radio but supports full band TX/RX
+
+    # frequency range is 136-174 MHz
+    _range = [136000000, 174000000]
+    # maximum 6 channels
+    _upper = 6
+    _mem_params = {
+        'memnum': _upper,  # number of channels
+    }
 
 
 @directory.register

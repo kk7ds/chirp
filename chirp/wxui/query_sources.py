@@ -218,6 +218,7 @@ class QuerySourceDialog(wx.Dialog):
 
     def do_query(self):
         LOG.info('Starting QueryThread for %s' % self.result_radio)
+        LOG.debug('Query Parameters: %s' % self.get_params())
         QueryThread(self, self.result_radio).start()
 
     def get_params(self):

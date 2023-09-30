@@ -1093,7 +1093,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         a_band.append(rs)
 
         tmp = str(_vfoa.step / 100.0)
-        rs = RadioSetting("step", "Freq step (KHz)",
+        rs = RadioSetting("step", "Freq step (kHz)",
                           RadioSettingValueList(LIST_STEPS, tmp))
         rs.set_apply_callback(my_word2raw, _vfoa, "step", 100)
         a_band.append(rs)
@@ -1201,7 +1201,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         b_band.append(rs)
 
         tmp = str(_vfob.step / 100.0)
-        rs = RadioSetting("step", "Freq step (KHz)",
+        rs = RadioSetting("step", "Freq step (kHz)",
                           RadioSettingValueList(LIST_STEPS, tmp))
         rs.set_apply_callback(my_word2raw, _vfob, "step", 100)
         b_band.append(rs)

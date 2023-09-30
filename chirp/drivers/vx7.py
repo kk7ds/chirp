@@ -351,7 +351,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
         if _is220(mem.freq):
             if str(mem.power) not in [str(l) for l in POWER_LEVELS_220]:
                 msgs.append(chirp_common.ValidationError(
-                        "Power level %s not supported on 220MHz band" %
+                        "Power level %s not supported on 220 MHz band" %
                             mem.power))
 
         return msgs

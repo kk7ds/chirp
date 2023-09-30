@@ -586,7 +586,7 @@ def _ident(radio):
     ver_response = radio.pipe.read(16)
     LOG.debug(util.hexprint(ver_response))
 
-    verok, model, bandlimit = check_ver(radio, ver_response,
+    verok, model, bandlimit = check_ver(ver_response,
                                         radio.ALLOWED_RADIO_TYPES)
     if not verok:
         _finish(radio)
@@ -789,6 +789,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
                 rf.valid_power_levels = FREENET_POWER_LEVELS
         else:
             rf.valid_power_levels = POWER_LEVELS
+        rf.valid_tones = TONES
         rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES
 
         try:
@@ -850,7 +851,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
 
         mem.number = number  # Set the memory number
 
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
+        # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if _mem.freq == 0:
             mem.empty = True
             return mem
@@ -889,13 +890,13 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         if _mem.channel_width == CHANNEL_WIDTH_12d5kHz:
             mem.mode = 'NFM'
         elif _embedded.mode == 0:  # PMR or FreeNet
-            LOG.info('PMR and FreeNet channels must be Channel Width 12.5kHz')
+            LOG.info('PMR and FreeNet channels must be Channel Width 12.5 kHz')
             mem.mode = 'NFM'
         elif _mem.channel_width == CHANNEL_WIDTH_25kHz:
             mem.mode = 'FM'
         elif _mem.channel_width == CHANNEL_WIDTH_20kHz:
             LOG.info(
-                '%s: get_mem: promoting 20kHz channel width to 25kHz' %
+                '%s: get_mem: promoting 20 kHz channel width to 25 kHz' %
                 mem.name)
             mem.mode = 'FM'
         else:
@@ -1050,7 +1051,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
             LOG.error('%s: set_mem: unhandled duplex: %s' %
                       (mem.name, mem.duplex))
 
-        # Set the channel width - remember we promote 20kHz channels to FM
+        # Set the channel width - remember we promote 20 kHz channels to FM
         # on import, so don't handle them here
         if mem.mode == 'FM':
             _mem.channel_width = CHANNEL_WIDTH_25kHz

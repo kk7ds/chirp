@@ -363,11 +363,11 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
     # attempts return the correct checksum... (well it does on my radio!)
     #
     # The ID record returned by the radio also includes the current frequency range
-    # as 4 bytes big-endian in 10Hz increments
+    # as 4 bytes big-endian in 10 Hz increments
     #
     # Offset
     #  0:10     Model, zero padded (Use first 7 chars for 'KG-UV8D')
-    #  11:14    UHF rx lower limit (in units of 10Hz)
+    #  11:14    UHF rx lower limit (in units of 10 Hz)
     #  15:18    UHF rx upper limit
     #  19:22    UHF tx lower limit
     #  23:26    UHF tx upper limit

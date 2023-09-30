@@ -728,8 +728,14 @@ class TestCloneModeExtras(base.BaseTest):
         # Now we should have the comment
         self.assertEqual('a comment', m.comment)
 
+        # Make sure it is in the metadata
+        self.assertIn('0000_comment', r.metadata['mem_extra'])
+
         # Erase the memory (only extra) and make sure we get no comment
         r.erase_memory_extra(0)
+
+        # Make sure it's gone from metadata
+        self.assertNotIn('0000_comment', r.metadata['mem_extra'])
 
         # Do a get, get_extra
         m = r.get_memory(0)
@@ -737,6 +743,11 @@ class TestCloneModeExtras(base.BaseTest):
         self.assertEqual(146520000, m.freq)
         # Now we should have no comment because we erased
         self.assertEqual('', m.comment)
+
+        r.set_memory_extra(m)
+
+        # Make sure we don't keep empty comments
+        self.assertNotIn('0000_comment', r.metadata['mem_extra'])
 
 
 class TestOverrideRules(base.BaseTest):
@@ -809,3 +820,40 @@ class TestMemory(base.BaseTest):
         m = chirp_common.FrozenMemory(chirp_common.Memory(123)).dupe()
         self.assertNotIsInstance(m, FrozenMemory)
         self.assertFalse(hasattr(m, '_frozen'))
+
+    def test_tone_validator(self):
+        m = chirp_common.Memory()
+        # 100.0 is a valid tone
+        m.rtone = 100.0
+        m.ctone = 100.0
+
+        # 100 is not (must be a float)
+        with self.assertRaises(ValueError):
+            m.rtone = 100
+        with self.assertRaises(ValueError):
+            m.ctone = 100
+
+        # 30.0 and 300.0 are out of range
+        with self.assertRaises(ValueError):
+            m.rtone = 30.0
+        with self.assertRaises(ValueError):
+            m.rtone = 300.0
+        with self.assertRaises(ValueError):
+            m.ctone = 30.0
+        with self.assertRaises(ValueError):
+            m.ctone = 300.0
+
+
+class TestRadioFeatures(base.BaseTest):
+    def test_valid_tones(self):
+        rf = chirp_common.RadioFeatures()
+        # These are valid tones
+        rf.valid_tones = [100.0, 107.2]
+
+        # These contain invalid tones
+        with self.assertRaises(ValueError):
+            rf.valid_tones = [100.0, 30.0]
+        with self.assertRaises(ValueError):
+            rf.valid_tones = [100.0, 300.0]
+        with self.assertRaises(ValueError):
+            rf.valid_tones = [100, 107.2]

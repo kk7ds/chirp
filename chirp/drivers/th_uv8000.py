@@ -1073,7 +1073,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
 
         def myset_fmfrq(setting, obj, atrb, nx):
             """ Callback to set xx.x FM freq in memory as xx.x * 40"""
-            # in-valid even KHz freqs are allowed; to satisfy run_tests
+            # in-valid even kHz freqs are allowed; to satisfy run_tests
             vx = float(str(setting.value))
             vx = int(vx * 40)
             setattr(obj[nx], atrb, vx)
@@ -1093,7 +1093,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         rx = RadioSettingValueList(LIST_STEPS, LIST_STEPS[_sets.freqstep])
-        rset = RadioSetting("setstuf.freqstep", "VFO Tune Step (KHz))", rx)
+        rset = RadioSetting("setstuf.freqstep", "VFO Tune Step (kHz)", rx)
         basic.append(rset)
 
         rx = RadioSettingValueBoolean(bool(_sets.dbw))     # true logic
@@ -1253,7 +1253,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
 
         options = ["5", "50", "100", "200(USA)"]    # 5 is not used
         rx = RadioSettingValueList(options, options[_sets.fmstep])
-        rset = RadioSetting("setstuf.fmstep", "FM Freq Step (KHz)", rx)
+        rset = RadioSetting("setstuf.fmstep", "FM Freq Step (kHz)", rx)
         fmb.append(rset)
 
         # FM Scan Range fmsclo and fmschi are unknown memory locations,
@@ -1382,8 +1382,8 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         mod_se = True     # UV8000SE has 3rd freq bank
         if mod_se:
             rx = RadioSettingValueBoolean(bool(_sets.frqr3))
-            rset = RadioSetting("setstuf.frqr3", "Freq Range 3 (220MHz)", rx)
-            rset.set_doc("Enable the 220MHz frequency bank.")
+            rset = RadioSetting("setstuf.frqr3", "Freq Range 3 (220 MHz)", rx)
+            rset.set_doc("Enable the 220 MHz frequency bank.")
             frng.append(rset)
 
         frqm = 100000

@@ -13,10 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import atexit
 import functools
 import logging
 import os
 import platform
+import shutil
+import tempfile
 import threading
 
 import wx
@@ -24,6 +27,7 @@ import wx
 from chirp import chirp_common
 from chirp.drivers import generic_csv
 from chirp import errors
+from chirp import platform as chirp_platform
 from chirp import settings
 from chirp.wxui import config
 from chirp.wxui import radiothread
@@ -395,15 +399,22 @@ class ChirpSettingGrid(wx.Panel):
                     editor.SetLabel('')
                 editor.Enable(value.get_mutable())
                 self.pg.Append(editor)
+        self.pg.Bind(wx.propgrid.EVT_PG_CHANGING, self._check_change)
 
-                # Use object() as a sentinel that will never match the safe
-                # value to determine if we need to catch changes for this to
-                # check for a warning.
-                if element.get_warning(object()) or element.volatile:
-                    self.pg.Bind(wx.propgrid.EVT_PG_CHANGING,
-                                 lambda evt: self._check_change(evt, element))
+    def get_setting_by_name(self, name, index=0):
+        if INDEX_CHAR in name:
+            # FIXME: This will only work for single-index settings of course
+            name, _ = name.split(INDEX_CHAR, 1)
+        for setting_name, setting in self._group.items():
+            if name == setting_name:
+                return setting
 
-    def _check_change(self, event, setting):
+    def _check_change(self, event):
+        setting = self.get_setting_by_name(event.GetPropertyName())
+        if not setting:
+            LOG.error('Got change event for unknown setting %s' % (
+                event.GetPropertyName()))
+            return
         warning = setting.get_warning(event.GetValue())
         if warning:
             r = wx.MessageBox(warning, _('WARNING!'),
@@ -595,12 +606,37 @@ class error_proof(object):
 
 
 def reveal_location(path):
-    if not os.path.isdir(path):
-        raise FileNotFoundError(_('Path %s does not exist') % path)
+    LOG.debug('Revealing path %s', path)
     system = platform.system()
     if system == 'Windows':
-        wx.Execute('explorer /select, %s' % path)
+        if not os.path.isdir(path):
+            # Windows can only reveal the containing directory of a file
+            path = os.path.dirname(path)
+        wx.Execute('explorer %s' % path)
     elif system == 'Darwin':
         wx.Execute('open -R %s' % path)
     else:
         raise Exception(_('Unable to reveal %s on this system') % path)
+
+
+def delete_atexit(path_):
+    def do(path):
+        try:
+            os.remove(path)
+            LOG.debug('Removed temporary file %s', path)
+        except Exception as e:
+            LOG.warning('Failed to remove %s: %s', path, e)
+
+    atexit.register(do, path_)
+
+
+def temporary_debug_log():
+    """Return a temporary copy of our debug log"""
+    pf = chirp_platform.get_platform()
+    src = pf.config_file('debug.log')
+    fd, dst = tempfile.mkstemp(
+        prefix='chirp_debug-',
+        suffix='.txt')
+    delete_atexit(dst)
+    shutil.copy(src, dst)
+    return dst

@@ -29,7 +29,7 @@ LOG = logging.getLogger(__name__)
 
 #
 #  Chirp Driver for TYT TH-9000D (models: 2M (144 MHz), 1.25M (220 MHz)
-#                                 and 70cm (440 MHz)  radios)
+#                                 and 70 cm (440 MHz) radios)
 #
 #  Version 1.0
 #
@@ -56,7 +56,7 @@ BGBRIGHT_LIST = ["%s" % x for x in range(1, 32)]
 SQUELCH_LIST = ["Off"] + ["Level %s" % x for x in range(1, 20)]
 TIMEOUT_LIST = ["Off"] + ["%s min" % x for x in range(1, 30)]
 TXPWR_LIST = ["60W", "25W"]  # maximum power for Hi setting
-TBSTFREQ_LIST = ["1750Hz", "2100Hz", "1000Hz", "1450Hz"]
+TBSTFREQ_LIST = ["1750 Hz", "2100 Hz", "1000 Hz", "1450 Hz"]
 BEEP_LIST = ["Off", "On"]
 
 MEM_FORMAT = """
@@ -131,7 +131,7 @@ struct {
 """
 #  TH9000  memory map
 #  section: 5  TX/RX Range
-#     used to set the TX/RX range of the radio (e.g.  222-228MHz for 220 meter)
+#     used to set the TX/RX range of the radio (e.g. 222-228 MHz for 220 meter)
 #     possible to set range for tx/rx
 #
 MEM_FORMAT = MEM_FORMAT + """
@@ -183,8 +183,8 @@ struct {
 #  1         u8 unknown;
 #  1         u8 bg_color ;       bg color, menu index,  blue 0 , orange 1,
 #                                purple 2
-#  1         u8 tbst_freq ;      tbst freq , menu 0 = 1750Hz, 1=2100 ,
-#                                2=1000 , 3=1450hz
+#  1         u8 tbst_freq ;      tbst freq, menu 0=1750 Hz, 1=2100,
+#                                2=1000, 3=1450 Hz
 #  1         u8 timeout_timer;   timeout timer, hex, value = minutes,
 #                                0= no timeout
 #  1         u8 unknown;
@@ -547,6 +547,7 @@ class Th9000Radio(chirp_common.CloneModeRadio,
         rf.valid_cross_modes = ['Tone->DTCS', 'DTCS->Tone',
                                 '->Tone', '->DTCS', 'Tone->Tone']
         rf.valid_power_levels = POWER_LEVELS
+        rf.valid_tones = TONES
         rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES
         rf.valid_bands = self.valid_freq
         rf.valid_tuning_steps = TUNING_STEPS
@@ -642,7 +643,7 @@ class Th9000Radio(chirp_common.CloneModeRadio,
 
         mem.skip = "S" if skipflag == 1 else ""
 
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
+        # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if mem.freq == 0:
             mem.empty = True
 
@@ -774,25 +775,25 @@ class Th9000Radio(chirp_common.CloneModeRadio,
         fhigh /= 1000
         fmidrange = (fhigh - flow) / 2
 
-        rs = RadioSetting("txrangelow", "TX Freq, Lower Limit (khz)",
+        rs = RadioSetting("txrangelow", "TX Freq, Lower Limit (kHz)",
                           RadioSettingValueInteger(
                               flow, flow + fmidrange,
                               int(_freqrange.txrangelow) / 10))
         freqrange.append(rs)
 
-        rs = RadioSetting("txrangehi", "TX Freq, Upper Limit (khz)",
+        rs = RadioSetting("txrangehi", "TX Freq, Upper Limit (kHz)",
                           RadioSettingValueInteger(
                               fhigh-fmidrange, fhigh,
                               int(_freqrange.txrangehi) / 10))
         freqrange.append(rs)
 
-        rs = RadioSetting("rxrangelow", "RX Freq, Lower Limit (khz)",
+        rs = RadioSetting("rxrangelow", "RX Freq, Lower Limit (kHz)",
                           RadioSettingValueInteger(
                               flow, flow+fmidrange,
                               int(_freqrange.rxrangelow) / 10))
         freqrange.append(rs)
 
-        rs = RadioSetting("rxrangehi", "RX Freq, Upper Limit (khz)",
+        rs = RadioSetting("rxrangehi", "RX Freq, Upper Limit (kHz)",
                           RadioSettingValueInteger(
                               fhigh-fmidrange, fhigh,
                               int(_freqrange.rxrangehi) / 10))

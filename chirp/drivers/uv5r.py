@@ -2090,7 +2090,7 @@ class RadioddityGT5RRadio(BaofengUV5R):
         msgs = super().validate_memory(mem)
 
         _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+        _msg_offset = 'Only simplex or +5 MHz offset allowed on GMRS'
 
         if not ((mem.freq >= self.vhftx[0] and mem.freq < self.vhftx[1]) or
                 (mem.freq >= self.uhftx[0] and mem.freq < self.uhftx[1])):

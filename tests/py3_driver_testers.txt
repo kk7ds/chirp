@@ -10,6 +10,8 @@
 # the form #BUGNUMBER.
 Abbree_AR-518,@KC9HI,16-Dec-2022
 Abbree_AR-63,@KC9HI,30-Nov-2022
+Abbree_AR-730,@KC9HI,17-Aug-2023
+Abbree_AR-F5,@KC9HI,09-Aug-2023
 Alinco_DJ175,+Alinco_DR235T,12-Dec-2022
 Alinco_DJ596,+Alinco_DR235T,12-Dec-2022
 Alinco_DJ-G7EG,@HB9UF,09-Dec-2022
@@ -71,6 +73,8 @@ Baofeng_UV-82WP,@KC9HI,3-Dec-2022
 Baofeng_UV-9G,@KC9HI,3-Dec-2022
 Baofeng_UV-9R,@KC9HI,3-Dec-2022
 Baofeng_UV-B5,@KC9HI,18-Nov-2022
+Baofeng_UV-S9X3,@KC9HI,22-Aug-2023
+Baofeng_W31E,@KC9HI,14-Aug-2023
 Baojie_BJ-218,+LUITON_LT-725UV,16-Feb-2023
 Baojie_BJ-318,@KC9HI,2-Jan-2023
 Cignus_XTR-5,+Radioddity_GS-5B,17-Mar-2023
@@ -220,6 +224,7 @@ Radioddity_UV-5RX3,@KC9HI,18-Nov-2022
 Radioddity_UV-82X3,@KC9HI,18-Nov-2022
 Radtel_RT-470,@KC9HI,2-Apr-2023
 Radtel_RT-470L,@KC9HI,5-May-2023
+Radtel_RT-470X,@KC9HI,10-Aug-2023
 Radtel_T18,@KC9HI,28-Nov-2022
 Retevis_H777S,@KC9HI,22-Dec-2022
 Retevis_H777_Plus,@KC9HI,4-Dec-2022
@@ -255,6 +260,7 @@ Retevis_RB87,@KC9HI,10-Mar-2023
 Retevis_RT15,@KC9HI,18-Feb-2023
 Retevis_RT16,@KC9HI,30-Nov-2022
 Retevis_RT19,@KC9HI,30-Nov-2022
+Retevis_RT20,@k9ps-paul,7-Sep-2023
 Retevis_RT21,@KC9HI,30-Nov-2022
 Retevis_RT21V,@KC9HI,24-Jul-2023
 Retevis_RT22,@KC9HI,9-Dec-2022
@@ -262,6 +268,7 @@ Retevis_RT23,@KC9HI,17-Dec-2022
 Retevis_RT22FRS,@KC9HI,9-Dec-2022
 Retevis_RT22S,@KC9HI,28-Nov-2022
 Retevis_RT24,@KC9HI,22-Dec-2022
+Retevis_RT24V,@KC9HI,27-Aug-2023
 Retevis_RT26,@KC9HI,17-Dec-2022
 Retevis_RT29_UHF,@KC9HI,30-Nov-2022
 Retevis_RT29_VHF,@KC9HI,30-Nov-2022
@@ -342,6 +349,7 @@ Yaesu_FT-4VR,+Yaesu_FT-4XE,24-Dec-2022
 Yaesu_FT-65R,#10266,13-Jan-2022
 Yaesu_FT-65E,@kwirk,27-Jan-2023
 Yaesu_FT-25R,+Yaesu_FT-4XE,24-Dec-2022
+Yaesu_FT-50,#10824,5-Sep-2023
 Yaesu_FT-60,N0EYE,9-Jan-2023
 Yaesu_FT-70D,@n8sqt,05-Dec-2022
 Yaesu_FT-7800_7900,@kk7ds,24-Oct-2022

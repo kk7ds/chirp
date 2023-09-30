@@ -92,7 +92,7 @@ EDGE_LIST = ["%sP" % x for x in range(0, 20)] + ["Band", "All"]
 PAUSE_LIST = ["%s sec" % x for x in range(2, 22, 2)] + ["Hold"]
 RESUME_LIST = ["%s sec" % x for x in range(0, 6)]
 APOFF_LIST = ["Off"] + ["%s min" % x for x in range(30, 150, 30)]
-D_SEL_LIST = ["100 KHz", "1 MHz", "10 MHz"]
+D_SEL_LIST = ["100 kHz", "1 MHz", "10 MHz"]
 
 
 @directory.register
@@ -135,7 +135,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
     def validate_memory(self, mem):
         if mem.freq < 30000000 and mem.mode != 'AM':
             return [chirp_common.ValidationError(
-                'Only AM is allowed below 30MHz')]
+                'Only AM is allowed below 30 MHz')]
         return icf.IcomCloneModeRadio.validate_memory(self, mem)
 
     def get_memory(self, number):
@@ -231,7 +231,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
                           RadioSettingValueBoolean(_settings.ritfunct))
         basic.append(rs)
 
-        rs = RadioSetting("rit", "RIT Shift (KHz)",
+        rs = RadioSetting("rit", "RIT Shift (kHz)",
                           RadioSettingValueInteger(-7, 7, _settings.rit))
         basic.append(rs)
 

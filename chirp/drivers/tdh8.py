@@ -376,7 +376,7 @@ MODE_LIST = ["Channel", "Name", "Frequency"]
 PONMSG_LIST = ["Full", "Message"]
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 PTTIDCODE_LIST = ["%s" % x for x in range(1, 16)]
-RTONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100Hz"]
+RTONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
 RESUME_LIST = ["TO", "CO", "SE"]
 ROGERRX_LIST = ["Off"] + AB_LIST
 RPSTE_LIST = ["OFF"] + ["%s" % x for x in range(1, 11)]
@@ -696,7 +696,7 @@ class TDH8(chirp_common.CloneModeRadio):
             "->Tone",
             "DTCS->DTCS"]
         rf.valid_power_levels = TX_POWER
-        rf.valid_duplexes = ["", "-", "+", "split", "Off"]
+        rf.valid_duplexes = ["", "-", "+", "split"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_tuning_steps = STEPS
 

@@ -1966,9 +1966,9 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         val = setting.value.get_value()
         setattr(obj, "name", val)
 
-    def apply_WiresX_roomid(cls, setting, obj):
+    def apply_WiresX_roomid(self, setting, obj):
         val = setting.value.get_value()
-        obj.ID = str(val)
+        obj.ID = self.zero_pad(val, 5)
 
     def apply_WiresX_roomname(cls, setting, obj):
         val = setting.value.get_value()
@@ -2082,12 +2082,12 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return False
 
-    def backtrack_zero_pad(self, number, l):
-        number = str(number).strip()
-        while len(number) < l:
-            number = '0' + number
-
-        return str(number)
+    @staticmethod
+    def zero_pad(number, length):
+        """
+        Applies a leading zero pad of length `length` to `number`
+        """
+        return str(number).rjust(length, "0")
 
     def _get_backtrack_settings(self):
 
@@ -2173,7 +2173,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
             if bt.status == 1 and self.backtrack_ll_validate(bt.lat, 0, 90):
                 val = RadioSettingValueString(
-                        0, 3, self.backtrack_zero_pad(bt.lat, 3))
+                        0, 3, self.zero_pad(bt.lat, 3))
             else:
                 val = RadioSettingValueString(0, 3, '   ')
             rs = RadioSetting("%s.lat" % bt_idx, prefix + "Latitude", val)
@@ -2183,7 +2183,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             if bt.status == 1 and \
                     self.backtrack_ll_validate(bt.lat_min, 0, 59):
                 val = RadioSettingValueString(
-                    0, 2, self.backtrack_zero_pad(bt.lat_min, 2))
+                    0, 2, self.zero_pad(bt.lat_min, 2))
             else:
                 val = RadioSettingValueString(0, 2, '  ')
             rs = RadioSetting(
@@ -2195,7 +2195,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             if bt.status == 1 and \
                     self.backtrack_ll_validate(bt.lat_dec_sec, 0, 9999):
                 val = RadioSettingValueString(
-                    0, 4, self.backtrack_zero_pad(bt.lat_dec_sec, 4))
+                    0, 4, self.zero_pad(bt.lat_dec_sec, 4))
             else:
                 val = RadioSettingValueString(0, 4, '    ')
             rs = RadioSetting(
@@ -2218,7 +2218,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
             if bt.status == 1 and self.backtrack_ll_validate(bt.lon, 0, 180):
                 val = RadioSettingValueString(
-                    0, 3, self.backtrack_zero_pad(bt.lon, 3))
+                    0, 3, self.zero_pad(bt.lon, 3))
             else:
                 val = RadioSettingValueString(0, 3, '   ')
             rs = RadioSetting("%s.lon" % bt_idx, prefix + "Longitude", val)
@@ -2228,7 +2228,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             if bt.status == 1 and \
                     self.backtrack_ll_validate(bt.lon_min, 0, 59):
                 val = RadioSettingValueString(
-                    0, 2, self.backtrack_zero_pad(bt.lon_min, 2))
+                    0, 2, self.zero_pad(bt.lon_min, 2))
             else:
                 val = RadioSettingValueString(0, 2, '  ')
             rs = RadioSetting(
@@ -2240,7 +2240,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             if bt.status == 1 and \
                     self.backtrack_ll_validate(bt.lon_dec_sec, 0, 9999):
                 val = RadioSettingValueString(
-                    0, 4, self.backtrack_zero_pad(bt.lon_dec_sec, 4))
+                    0, 4, self.zero_pad(bt.lon_dec_sec, 4))
             else:
                 val = RadioSettingValueString(0, 4, '    ')
             rs = RadioSetting(

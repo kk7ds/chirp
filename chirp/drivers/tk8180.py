@@ -244,8 +244,8 @@ def do_ident(radio):
         raise errors.RadioError('Radio refused program mode')
     if ident[:6] not in (radio._model,):
         model = ident[:5].decode()
-        variants = {b'\x06': 'K, K1, K3 (450-520MHz)',
-                    b'\x07': 'K2, K4 (400-470MHz)'}
+        variants = {b'\x06': 'K, K1, K3 (450-520 MHz)',
+                    b'\x07': 'K2, K4 (400-470 MHz)'}
         if model == 'P3180':
             model += ' ' + variants.get(ident[5], '(Unknown)')
         raise errors.RadioError('Unsupported radio model %s' % model)

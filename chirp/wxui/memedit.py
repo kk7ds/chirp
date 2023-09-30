@@ -577,13 +577,17 @@ class ChirpMemoryDropTarget(wx.DropTarget):
     def OnData(self, x, y, defResult):
         if not self.GetData():
             return wx.DragNone
+        payload = self.parse_data()
         x, y = self._memedit._grid.CalcUnscrolledPosition(x, y)
         y -= self._memedit._grid.GetColLabelSize()
         row, cell = self._memedit._grid.XYToCell(x, y)
-        if row < 0:
+        start_row = self._memedit.mem2row(payload['mems'][0].number)
+        if row < 0 or row == start_row:
+            LOG.debug('Ignoring drag from row %i -> %i',
+                      start_row, row)
             return wx.DragCancel
+
         LOG.debug('Memory dropped on row %s,%s' % (row, cell))
-        payload = self.parse_data()
         original_locs = [m.number for m in payload['mems']]
         source = self._memedit.FindWindowById(payload.pop('source'))
         if not self._memedit._cb_paste_memories(payload, row=row):
@@ -1364,7 +1368,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # offset in some cases. For radios that do not store offset itself,
         # we need to prompt for the offset so it is set in the same operation.
         # For split mode, we should always prompt, because trying to set a
-        # TX frequency of 600kHz is likely to fail on most radios.
+        # TX frequency of 600 kHz is likely to fail on most radios.
         if col_def.name == 'duplex' and val != '':
             if not self._resolve_duplex(mem):
                 event.Veto()
@@ -2024,10 +2028,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         selected = self._grid.GetSelectedRows()
         if len(selected) <= 1:
             selected = range(0, self._grid.GetNumberRows())
-        if isinstance(self.radio, chirp_common.IcomDstarSupport):
-            r = generic_csv.DSTARCSVRadio(None)
-        else:
-            r = generic_csv.CSVRadio(None)
+
+        r = generic_csv.CSVRadio(None)
         # The CSV driver defaults to a single non-empty memory at location
         # zero, so delete it before we go to export.
         r.erase_memory(0)
@@ -2037,7 +2039,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 # We don't export specials
                 continue
             if not m.empty:
-                m = import_logic.import_mem(r, self._features, m)
+                m = import_logic.import_mem(r, self._features, m,
+                                            mem_cls=chirp_common.Memory)
             r.set_memory(m)
         r.save(filename)
         LOG.info('Wrote exported CSV to %s' % filename)

@@ -360,7 +360,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
                                 "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
         rf.valid_power_levels = RT22_POWER_LEVELS
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
-        rf.valid_modes = ["NFM", "FM"]  # 12.5 KHz, 25 kHz.
+        rf.valid_modes = ["NFM", "FM"]  # 12.5 kHz, 25 kHz.
         rf.valid_dtcs_codes = RT22_DTCS
         rf.memory_bounds = (1, 16)
         rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 25.]
@@ -457,7 +457,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
         mem.number = number
         mem.freq = int(_mem.rxfreq) * 10
 
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
+        # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if mem.freq == 0:
             mem.empty = True
             return mem
@@ -625,26 +625,27 @@ class RT22Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(_settings.beep))
         basic.append(rs)
 
-        def _filter(name):
-            filtered = ""
-            for char in str(name):
-                if char in VALID_CHARS:
-                    filtered += char
-                else:
-                    filtered += " "
-            return filtered
+        if self.MODEL != "W31E":
+            def _filter(name):
+                filtered = ""
+                for char in str(name):
+                    if char in VALID_CHARS:
+                        filtered += char
+                    else:
+                        filtered += " "
+                return filtered
 
-        val = str(self._memobj.radio.id_0x200)
-        if val == "\xFF" * 8:
-            rs = RadioSetting("embedded_msg.line1", "Embedded Message 1",
-                              RadioSettingValueString(0, 32, _filter(
-                                  _message.line1)))
-            basic.append(rs)
+            val = str(self._memobj.radio.id_0x200)
+            if val == "\xFF" * 8:
+                rs = RadioSetting("embedded_msg.line1", "Embedded Message 1",
+                                  RadioSettingValueString(0, 32, _filter(
+                                      _message.line1)))
+                basic.append(rs)
 
-            rs = RadioSetting("embedded_msg.line2", "Embedded Message 2",
-                              RadioSettingValueString(0, 32, _filter(
-                                  _message.line2)))
-            basic.append(rs)
+                rs = RadioSetting("embedded_msg.line2", "Embedded Message 2",
+                                  RadioSettingValueString(0, 32, _filter(
+                                      _message.line2)))
+                basic.append(rs)
 
         return top
 
@@ -726,3 +727,16 @@ class RT22FRS(RT22Radio):
 class RT622(RT22Radio):
     VENDOR = "Retevis"
     MODEL = "RT622"
+
+
+@directory.register
+class W31E(RT22Radio):
+    """Baofeng W31E"""
+    VENDOR = "Baofeng"
+    MODEL = "W31E"
+
+    _ranges = [
+               (0x0000, 0x0200, 0x10),
+              ]
+    _memsize = 0x0200
+    _block_size = 0x40

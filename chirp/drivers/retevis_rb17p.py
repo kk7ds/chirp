@@ -246,7 +246,7 @@ class RB17P_Base(chirp_common.CloneModeRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_settings = True
-        rf.valid_modes = ["NFM", "FM"]  # 12.5 KHz, 25 kHz.
+        rf.valid_modes = ["NFM", "FM"]  # 12.5 kHz, 25 kHz.
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
@@ -320,7 +320,7 @@ class RB17P_Base(chirp_common.CloneModeRadio):
         mem.number = number
         mem.freq = int(_mem.rxfreq) * 10
 
-        # We'll consider any blank (i.e. 0MHz frequency) to be empty
+        # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if mem.freq == 0:
             mem.empty = True
             return mem
@@ -381,7 +381,7 @@ class RB17P_Base(chirp_common.CloneModeRadio):
                     mem.power = self.POWER_LEVELS[1]
                     immutable = ["duplex", "offset", "mode", "power"]
                 elif mem.freq in GMRS_FREQS3:
-                    # GMRS repeater channels, always either simplex or +5MHz
+                    # GMRS repeater channels, always either simplex or +5 MHz
                     if mem.duplex != '+':
                         mem.duplex = ''
                         mem.offset = 0
@@ -609,7 +609,7 @@ class RB17PRadio(RB17P_Base):
         msgs = super().validate_memory(mem)
 
         _msg_duplex = 'Duplex must be "off" for this frequency'
-        _msg_offset = 'Only simplex or +5MHz offset allowed on GMRS'
+        _msg_offset = 'Only simplex or +5 MHz offset allowed on GMRS'
 
         if mem.freq not in GMRS_FREQS:
             if mem.duplex != "off":

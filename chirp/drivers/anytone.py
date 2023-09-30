@@ -349,7 +349,7 @@ def _upload(radio):
     _finish(radio)
 
 
-TONES = [62.5] + list(chirp_common.TONES)
+TONES = tuple(sorted([62.5] + list(chirp_common.TONES)))
 TMODES = ['', 'Tone', 'DTCS', '']
 DUPLEXES = ['', '-', '+', 'off']
 MODES = ["FM", "FM", "NFM"]
@@ -408,6 +408,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_cross_modes = ['Tone->DTCS', 'DTCS->Tone',
                                 '->Tone', '->DTCS', 'Tone->Tone']
+        rf.valid_tones = TONES
         rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES
         rf.valid_bands = [(108000000, 500000000)]
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "-"

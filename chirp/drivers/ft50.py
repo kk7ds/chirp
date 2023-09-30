@@ -592,6 +592,7 @@ def _clone_out(radio):
 
 def __clone_out(radio):
     pipe = radio.pipe
+    pipe.timeout = 1
     block_lengths = radio._block_lengths
     total_written = 0
 
@@ -609,27 +610,27 @@ def __clone_out(radio):
     for block in radio._block_lengths:
         blocks += 1
         data = radio.get_mmap()[pos:pos + block]
-        # LOG.debug(util.hexprint(data))
+        # LOG.debug("Sending block: %s" % util.hexprint(data))
 
-        recvd = ""
+        recvd = b""
         # Radio echos every block received
         for byte in data:
             time.sleep(0.01)
-            pipe.write(byte)
+            pipe.write(bytes([byte]))
             # flush & sleep so don't loose ack
             pipe.flush()
             time.sleep(0.015)
             recvd += pipe.read(1)  # chew the echo
-        # LOG.debug(util.hexprint(recvd))
+        # LOG.debug("Echo was %s" % util.hexprint(recvd))
         LOG.debug("Bytes sent: %i" % len(data))
 
         # Radio does not ack last block
         if (blocks < 8):
             buf = pipe.read(block)
             LOG.debug("ACK attempt: " + util.hexprint(buf))
-            if buf and buf[0] != chr(yaesu_clone.CMD_ACK):
+            if buf and buf[0] != yaesu_clone.CMD_ACK:
                 buf = pipe.read(block)
-            if not buf or buf[-1] != chr(yaesu_clone.CMD_ACK):
+            if not buf or buf[-1] != yaesu_clone.CMD_ACK:
                 raise errors.RadioError("Radio did not ack block %i" % blocks)
 
         total_written += len(data)

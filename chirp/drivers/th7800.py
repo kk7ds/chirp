@@ -159,8 +159,8 @@ BUSY_LOCK = ["off", "Carrier", "2 tone"]
 MICKEYFUNC = ["None", "SCAN", "SQL.OFF", "TCALL", "PPTR", "PRI", "LOW", "TONE",
               "MHz", "REV", "HOME", "BAND", "VFO/MR"]
 SQLPRESET = ["Off", "2", "5", "9", "Full"]
-BANDS = ["30MHz", "50MHz", "60MHz", "108MHz", "150MHz", "250MHz", "350MHz",
-         "450MHz", "850MHz"]
+BANDS = ["30 MHz", "50 MHz", "60 MHz", "108 MHz", "150 MHz", "250 MHz", "350 MHz",
+         "450 MHz", "850 MHz"]
 STEPS = [2.5, 5.0, 6.25, 7.5, 8.33, 10.0, 12.5,
          15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 

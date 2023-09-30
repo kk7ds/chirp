@@ -235,17 +235,17 @@ BANDS_13CM = (
   bandplan.Band((2300000000, 2450000000), "13 Centimeter Band"),
   bandplan.Band((2300000000, 2303000000), "Analog & Digital 0.05-1.0 MHz, "
                 "including full duplex; paired with 2390-2393"),
-  bandplan.Band((2303000000, 2303750000), "Analog & Digital <50kHz; "
+  bandplan.Band((2303000000, 2303750000), "Analog & Digital <50 kHz; "
                 "paired with 2393 - 2393.750"),
   bandplan.Band((2303750000, 2304000000), "SSB, CW, digital weak-signal"),
-  bandplan.Band((2304000000, 2304100000), "Weak Signal EME Band, <3kHz"),
+  bandplan.Band((2304000000, 2304100000), "Weak Signal EME Band, <3 kHz"),
   bandplan.Band((2304100000, 2304300000),
-                "SSB, CW, digital weak-signal, <3kHz"),
-  bandplan.Band((2304300000, 2304400000), "Beacons, <3kHz"),
+                "SSB, CW, digital weak-signal, <3 kHz"),
+  bandplan.Band((2304300000, 2304400000), "Beacons, <3 kHz"),
   bandplan.Band((2304400000, 2304750000), "SSB, CW, digital weak-signal and "
-                "NBFM, <6kHz"),
+                "NBFM, <6 kHz"),
   bandplan.Band((2304750000, 2305000000), "Analog & Digital; paired with "
-                "2394.750-2395, <50kHz"),
+                "2394.750-2395, <50 kHz"),
   bandplan.Band((2305000000, 2310000000), "Analog & Digital, paired with "
                 "2395-2400, 0.05 - 1.0 MHz"),
   bandplan.Band((2310000000, 2390000000), "NON-AMATEUR"),
@@ -259,8 +259,8 @@ BANDS_13CM = (
   bandplan.Band((2395000000, 2400000000), "Analog & Digital, including full "
                 "duplex; paired with 2305-2310, 0.05-1.0 MHz"),
   bandplan.Band((2400000000, 2410000000), "Amateur Satellite Communications, "
-                "<6kHz"),
-  bandplan.Band((2410000000, 2450000000), "Broadband Modes, 22MHz max."),
+                "<6 kHz"),
+  bandplan.Band((2410000000, 2450000000), "Broadband Modes, 22 MHz max."),
 )
 
 BANDS = bandplan_iaru_r2.BANDS

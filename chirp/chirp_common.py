@@ -42,13 +42,15 @@ TONES = (
     225.7, 229.1, 233.6, 241.8, 250.3, 254.1,
 )
 
-TONES_EXTRA = (56.0, 57.0, 58.0, 59.0, 60.0, 61.0, 62.0,
-               62.5, 63.0, 64.0)
-
 OLD_TONES = list(TONES)
 [OLD_TONES.remove(x) for x in [159.8, 165.5, 171.3, 177.3, 183.5, 189.9,
                                196.6, 199.5, 206.5, 229.1, 254.1]]
 OLD_TONES = tuple(OLD_TONES)
+
+
+def VALIDTONE(v):
+    return isinstance(v, float) and 50 < v < 300
+
 
 # 104 DTCS Codes
 DTCS_CODES = (
@@ -335,8 +337,8 @@ class Memory:
         self.immutable = []
 
     _valid_map = {
-        "rtone":          TONES + TONES_EXTRA,
-        "ctone":          TONES + TONES_EXTRA,
+        "rtone":          VALIDTONE,
+        "ctone":          VALIDTONE,
         "dtcs":           ALL_DTCS_CODES,
         "rx_dtcs":        ALL_DTCS_CODES,
         "tmode":          TONE_MODES,
@@ -382,9 +384,15 @@ class Memory:
             raise ImmutableValueError("Field %s is not " % name +
                                       "mutable on this memory")
 
-        if name in self._valid_map and val not in self._valid_map[name]:
-            raise ValueError("`%s' is not in valid list: %s" %
-                             (val, self._valid_map[name]))
+        if name in self._valid_map:
+            valid = self._valid_map[name]
+            if callable(valid):
+                if not valid(val):
+                    raise ValueError("`%s' is not a valid value for `%s'" % (
+                                         val, name))
+            elif val not in self._valid_map[name]:
+                raise ValueError("`%s' is not in valid list: %s" %
+                                 (val, self._valid_map[name]))
 
         self.__dict__[name] = val
 
@@ -797,6 +805,10 @@ def NTUPLE(size):
     return checktuple
 
 
+def TONELIST(v):
+    assert all(VALIDTONE(x) for x in v)
+
+
 class RadioFeatures:
     """Radio Feature Flags"""
     _valid_map = {
@@ -830,7 +842,7 @@ class RadioFeatures:
         "valid_characters":     STRING,
         "valid_name_length":    INT(),
         "valid_cross_modes":    LIST,
-        "valid_tones":          LIST,
+        "valid_tones":          TONELIST,
         "valid_dtcs_pols":      LIST,
         "valid_dtcs_codes":     LIST,
         "valid_special_chans":  LIST,
@@ -939,7 +951,7 @@ class RadioFeatures:
                   "alphanumeric tag")
         self.init("valid_cross_modes", list(CROSS_MODES),
                   "Supported tone cross modes")
-        self.init("valid_tones", list(TONES + TONES_EXTRA),
+        self.init("valid_tones", list(TONES),
                   "Support Tones")
         self.init("valid_dtcs_pols", ["NN", "RN", "NR", "RR"],
                   "Supported DTCS polarities")
@@ -1496,8 +1508,11 @@ class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties):
         rf = self.get_features()
         if not rf.has_comment and isinstance(memory.number, int):
             self._metadata.setdefault('mem_extra', {})
-            self._metadata['mem_extra']['%04i_comment' % memory.number] = (
-                memory.comment)
+            key = '%04i_comment' % memory.number
+            if not memory.comment:
+                self._metadata['mem_extra'].pop(key, None)
+            else:
+                self._metadata['mem_extra'][key] = memory.comment
 
     def erase_memory_extra(self, number):
         rf = self.get_features()
@@ -1578,47 +1593,47 @@ class Status:
 
 
 def is_fractional_step(freq):
-    """Returns True if @freq requires a 12.5kHz or 6.25kHz step"""
+    """Returns True if @freq requires a 12.5 kHz or 6.25 kHz step"""
     return not is_5_0(freq) and (is_12_5(freq) or is_6_25(freq))
 
 
 def is_5_0(freq):
-    """Returns True if @freq is reachable by a 5kHz step"""
+    """Returns True if @freq is reachable by a 5 kHz step"""
     return (freq % 5000) == 0
 
 
 def is_10_0(freq):
-    """Returns True if @freq is reachable by a 10kHz step"""
+    """Returns True if @freq is reachable by a 10 kHz step"""
     return (freq % 10000) == 0
 
 
 def is_12_5(freq):
-    """Returns True if @freq is reachable by a 12.5kHz step"""
+    """Returns True if @freq is reachable by a 12.5 kHz step"""
     return (freq % 12500) == 0
 
 
 def is_6_25(freq):
-    """Returns True if @freq is reachable by a 6.25kHz step"""
+    """Returns True if @freq is reachable by a 6.25 kHz step"""
     return (freq % 6250) == 0
 
 
 def is_2_5(freq):
-    """Returns True if @freq is reachable by a 2.5kHz step"""
+    """Returns True if @freq is reachable by a 2.5 kHz step"""
     return (freq % 2500) == 0
 
 
 def is_8_33(freq):
-    """Returns True if @freq is reachable by a 8.33kHz step"""
+    """Returns True if @freq is reachable by a 8.33 kHz step"""
     return (freq % 25000) in [0, 8330, 16660]
 
 
 def is_1_0(freq):
-    """Returns True if @freq is reachable by a 1.0kHz step"""
+    """Returns True if @freq is reachable by a 1.0 kHz step"""
     return (freq % 1000) == 0
 
 
 def is_0_5(freq):
-    """Returns True if @freq is reachable by a 0.5kHz step"""
+    """Returns True if @freq is reachable by a 0.5 kHz step"""
     return (freq % 500) == 0
 
 
@@ -1655,7 +1670,7 @@ def required_step(freq, allowed=None):
 
 
 def fix_rounded_step(freq):
-    """Some radios imply the last bit of 12.5kHz and 6.25kHz step
+    """Some radios imply the last bit of 12.5 kHz and 6.25 kHz step
     frequencies. Take the base @freq and return the corrected one"""
     try:
         required_step(freq)
