@@ -45,7 +45,8 @@ LIST_AB = ["A", "B"]
 LIST_ALMOD = ["Site", "Tone", "Code"]
 LIST_BANDWIDTH = ["Wide", "Narrow"]
 LIST_COLOR = ["Off", "Blue", "Orange", "Purple"]
-LIST_DTMFSPEED = ["%s ms" % x for x in range(50, 2010, 10)]
+LIST_DTMFSPEED = ["%s ms" % x for x in [50, 100, 200, 300, 500]]
+LIST_HANGUPTIME = ["%s s" % x for x in [3, 4, 5, 6, 7, 8, 9, 10]]
 LIST_DTMFST = ["Off", "DT-ST", "ANI-ST", "DT+ANI"]
 LIST_MODE = ["Channel", "Name", "Frequency"]
 LIST_OFF1TO9 = ["Off"] + list("123456789")
@@ -72,7 +73,6 @@ STIMEOUT = 1.5
 
 def model_match(cls, data):
     """Match the opened image to the correct version"""
-
     return data[cls.MEM_TOTAL:] == bytes(cls.MODEL, 'utf-8')
 
     
@@ -392,6 +392,7 @@ class UV17Pro(chirp_common.CloneModeRadio,
     _recv_block_size = 0x40
     _mem_size = MEM_TOTAL
     _ack_block = True
+    _aniid = True
 
     MODES = ["NFM", "FM"]
     VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
@@ -436,6 +437,24 @@ class UV17Pro(chirp_common.CloneModeRadio,
       char name[12];
     } memory[1000];
 
+    #seekto 0x8040;
+    struct {
+      u8 code[5];
+      u8 unknown[1];
+      u8 unused1:6,
+         aniid:2;
+      u8 dtmfon;
+      u8 dtmfoff;
+    } ani;
+
+    #seekto 0x8060;
+    struct {
+      u8 code[5];
+      u8 name[10];
+      u8 unused:8;
+    } pttid[20];
+
+    
     #seekto 0x8240;
     struct {
       char name1[12];
@@ -462,7 +481,9 @@ class UV17Pro(chirp_common.CloneModeRadio,
 
     #seekto 0x8000;
     struct {
-      char unknown[64];  
+      char unknown1[57];
+      u8 hangup;
+      char unknown2[6];
     } settings;
     """
 
@@ -575,469 +596,11 @@ class UV17Pro(chirp_common.CloneModeRadio,
                                 0, 12, _filterName(_msg.name10)))
             other.append(rs)
 
-
-        return top
-    
-        # TODO: implement settings 
-
-        # Basic settings
-        if _mem.settings.squelch > 0x09:
-            val = 0x00
-        else:
-            val = _mem.settings.squelch
-        rs = RadioSetting("settings.squelch", "Squelch",
-                          RadioSettingValueList(
-                              LIST_OFF1TO9, LIST_OFF1TO9[val]))
-        basic.append(rs)
-
-        if _mem.settings.save > 0x04:
-            val = 0x00
-        else:
-            val = _mem.settings.save
-        rs = RadioSetting("settings.save", "Battery Saver",
-                          RadioSettingValueList(
-                              LIST_SAVE, LIST_SAVE[val]))
-        basic.append(rs)
-
-        if _mem.settings.vox > 0x0A:
-            val = 0x00
-        else:
-            val = _mem.settings.vox
-        rs = RadioSetting("settings.vox", "Vox",
-                          RadioSettingValueList(
-                              LIST_OFF1TO10, LIST_OFF1TO10[val]))
-        basic.append(rs)
-
-        if _mem.settings.abr > 0x0A:
-            val = 0x00
-        else:
-            val = _mem.settings.abr
-        rs = RadioSetting("settings.abr", "Backlight Timeout",
-                          RadioSettingValueList(
-                              LIST_OFF1TO10, LIST_OFF1TO10[val]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.tdr", "Dual Watch",
-                          RadioSettingValueBoolean(_mem.settings.tdr))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.beep", "Beep",
-                          RadioSettingValueBoolean(_mem.settings.beep))
-        basic.append(rs)
-
-        if _mem.settings.timeout > 0x27:
-            val = 0x03
-        else:
-            val = _mem.settings.timeout
-        rs = RadioSetting("settings.timeout", "Timeout Timer",
-                          RadioSettingValueList(
-                              LIST_TIMEOUT, LIST_TIMEOUT[val]))
-        basic.append(rs)
-
-        if _mem.settings.voice > 0x02:
-            val = 0x01
-        else:
-            val = _mem.settings.voice
-        rs = RadioSetting("settings.voice", "Voice Prompt",
-                          RadioSettingValueList(
-                              LIST_VOICE, LIST_VOICE[val]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.dtmfst", "DTMF Sidetone",
-                          RadioSettingValueList(LIST_DTMFST, LIST_DTMFST[
-                              _mem.settings.dtmfst]))
-        basic.append(rs)
-
-        if _mem.settings.screv > 0x02:
-            val = 0x01
-        else:
-            val = _mem.settings.screv
-        rs = RadioSetting("settings.screv", "Scan Resume",
-                          RadioSettingValueList(
-                              LIST_RESUME, LIST_RESUME[val]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.pttid", "When to send PTT ID",
-                          RadioSettingValueList(LIST_PTTID, LIST_PTTID[
-                              _mem.settings.pttid]))
-        basic.append(rs)
-
-        if _mem.settings.pttlt > 0x1E:
-            val = 0x05
-        else:
-            val = _mem.settings.pttlt
-        rs = RadioSetting("pttlt", "PTT ID Delay",
-                          RadioSettingValueInteger(0, 50, val))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.mdfa", "Display Mode (A)",
-                          RadioSettingValueList(LIST_MODE, LIST_MODE[
-                              _mem.settings.mdfa]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.mdfb", "Display Mode (B)",
-                          RadioSettingValueList(LIST_MODE, LIST_MODE[
-                              _mem.settings.mdfb]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.autolk", "Automatic Key Lock",
-                          RadioSettingValueBoolean(_mem.settings.autolk))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.wtled", "Standby LED Color",
-                          RadioSettingValueList(
-                              LIST_COLOR, LIST_COLOR[_mem.settings.wtled]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.rxled", "RX LED Color",
-                          RadioSettingValueList(
-                              LIST_COLOR, LIST_COLOR[_mem.settings.rxled]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.txled", "TX LED Color",
-                          RadioSettingValueList(
-                              LIST_COLOR, LIST_COLOR[_mem.settings.txled]))
-        basic.append(rs)
-
-        val = _mem.settings.almod
-        rs = RadioSetting("settings.almod", "Alarm Mode",
-                          RadioSettingValueList(
-                              LIST_ALMOD, LIST_ALMOD[val]))
-        basic.append(rs)
-
-        if _mem.settings.tdrab > 0x02:
-            val = 0x00
-        else:
-            val = _mem.settings.tdrab
-        rs = RadioSetting("settings.tdrab", "Dual Watch TX Priority",
-                          RadioSettingValueList(
-                              LIST_OFFAB, LIST_OFFAB[val]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.ste", "Squelch Tail Eliminate (HT to HT)",
-                          RadioSettingValueBoolean(_mem.settings.ste))
-        basic.append(rs)
-
-        if _mem.settings.rpste > 0x0A:
-            val = 0x00
-        else:
-            val = _mem.settings.rpste
-        rs = RadioSetting("settings.rpste",
-                          "Squelch Tail Eliminate (repeater)",
-                          RadioSettingValueList(
-                              LIST_RPSTE, LIST_RPSTE[val]))
-        basic.append(rs)
-
-        if _mem.settings.rptrl > 0x0A:
-            val = 0x00
-        else:
-            val = _mem.settings.rptrl
-        rs = RadioSetting("settings.rptrl", "STE Repeater Delay",
-                          RadioSettingValueList(
-                              LIST_STEDELAY, LIST_STEDELAY[val]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.ponmsg", "Power-On Message",
-                          RadioSettingValueList(LIST_PONMSG, LIST_PONMSG[
-                              _mem.settings.ponmsg]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.roger", "Roger Beep",
-                          RadioSettingValueBoolean(_mem.settings.roger))
-        basic.append(rs)
-
-        # Advanced settings
-        rs = RadioSetting("settings.reset", "RESET Menu",
-                          RadioSettingValueBoolean(_mem.settings.reset))
-        advanced.append(rs)
-
-        rs = RadioSetting("settings.menu", "All Menus",
-                          RadioSettingValueBoolean(_mem.settings.menu))
-        advanced.append(rs)
-
-        rs = RadioSetting("settings.fmradio", "Broadcast FM Radio",
-                          RadioSettingValueBoolean(_mem.settings.fmradio))
-        advanced.append(rs)
-
-        rs = RadioSetting("settings.alarm", "Alarm Sound",
-                          RadioSettingValueBoolean(_mem.settings.alarm))
-        advanced.append(rs)
-
-        # Other settings
-        def _filter(name):
-            filtered = ""
-            for char in str(name):
-                if char in chirp_common.CHARSET_ASCII:
-                    filtered += char
-                else:
-                    filtered += " "
-            return filtered
-
-        _msg = _mem.firmware_msg
-        val = RadioSettingValueString(0, 7, _filter(_msg.line1))
-        val.set_mutable(False)
-        rs = RadioSetting("firmware_msg.line1", "Firmware Message 1", val)
-        other.append(rs)
-
-        val = RadioSettingValueString(0, 7, _filter(_msg.line2))
-        val.set_mutable(False)
-        rs = RadioSetting("firmware_msg.line2", "Firmware Message 2", val)
-        other.append(rs)
-
-        _msg = _mem.sixpoweron_msg
-        val = RadioSettingValueString(0, 7, _filter(_msg.line1))
-        val.set_mutable(False)
-        rs = RadioSetting("sixpoweron_msg.line1", "6+Power-On Message 1", val)
-        other.append(rs)
-        val = RadioSettingValueString(0, 7, _filter(_msg.line2))
-        val.set_mutable(False)
-        rs = RadioSetting("sixpoweron_msg.line2", "6+Power-On Message 2", val)
-        other.append(rs)
-
-        _msg = _mem.poweron_msg
-        rs = RadioSetting("poweron_msg.line1", "Power-On Message 1",
-                          RadioSettingValueString(
-                              0, 7, _filter(_msg.line1)))
-        other.append(rs)
-        rs = RadioSetting("poweron_msg.line2", "Power-On Message 2",
-                          RadioSettingValueString(
-                              0, 7, _filter(_msg.line2)))
-        other.append(rs)
-
-        lower = 130
-        upper = 179
-        rs = RadioSetting("limits.vhf.lower", "VHF Lower Limit (MHz)",
-                          RadioSettingValueInteger(
-                              lower, upper, _mem.limits.vhf.lower))
-        other.append(rs)
-
-        rs = RadioSetting("limits.vhf.upper", "VHF Upper Limit (MHz)",
-                          RadioSettingValueInteger(
-                              lower, upper, _mem.limits.vhf.upper))
-        other.append(rs)
-
-        if self._tri_band:
-            lower = 200
-            upper = 260
-            rs = RadioSetting("limits.vhf2.lower", "VHF2 Lower Limit (MHz)",
-                              RadioSettingValueInteger(
-                                  lower, upper, _mem.limits.vhf2.lower))
-            other.append(rs)
-
-            rs = RadioSetting("limits.vhf2.upper", "VHF2 Upper Limit (MHz)",
-                              RadioSettingValueInteger(
-                                  lower, upper, _mem.limits.vhf2.upper))
-            other.append(rs)
-
-        lower = 400
-        upper = 520
-        rs = RadioSetting("limits.uhf.lower", "UHF Lower Limit (MHz)",
-                          RadioSettingValueInteger(
-                              lower, upper, _mem.limits.uhf.lower))
-        other.append(rs)
-
-        rs = RadioSetting("limits.uhf.upper", "UHF Upper Limit (MHz)",
-                          RadioSettingValueInteger(
-                              lower, upper, _mem.limits.uhf.upper))
-        other.append(rs)
-
-        # Work mode settings
-        rs = RadioSetting("settings.displayab", "Display",
-                          RadioSettingValueList(
-                              LIST_AB, LIST_AB[_mem.settings.displayab]))
-        work.append(rs)
-
-        rs = RadioSetting("settings.workmode", "VFO/MR Mode",
-                          RadioSettingValueList(
-                              LIST_WORKMODE,
-                              LIST_WORKMODE[_mem.settings.workmode]))
-        work.append(rs)
-
-        rs = RadioSetting("settings.keylock", "Keypad Lock",
-                          RadioSettingValueBoolean(_mem.settings.keylock))
-        work.append(rs)
-
-        rs = RadioSetting("wmchannel.mrcha", "MR A Channel",
-                          RadioSettingValueInteger(0, 127,
-                                                   _mem.wmchannel.mrcha))
-        work.append(rs)
-
-        rs = RadioSetting("wmchannel.mrchb", "MR B Channel",
-                          RadioSettingValueInteger(0, 127,
-                                                   _mem.wmchannel.mrchb))
-        work.append(rs)
-
-        def convert_bytes_to_freq(bytes):
-            real_freq = 0
-            for byte in bytes:
-                real_freq = (real_freq * 10) + byte
-            return chirp_common.format_freq(real_freq * 10)
-
-        def my_validate(value):
-            value = chirp_common.parse_freq(value)
-            msg = ("Can't be less than %i.0000")
-            if value > 99000000 and value < 130 * 1000000:
-                raise InvalidValueError(msg % (130))
-            msg = ("Can't be between %i.9975-%i.0000")
-            if (179 + 1) * 1000000 <= value and value < 400 * 1000000:
-                raise InvalidValueError(msg % (179, 400))
-            msg = ("Can't be greater than %i.9975")
-            if value > 99000000 and value > (520 + 1) * 1000000:
-                raise InvalidValueError(msg % (520))
-            return chirp_common.format_freq(value)
-
-        def apply_freq(setting, obj):
-            value = chirp_common.parse_freq(str(setting.value)) / 10
-            for i in range(7, -1, -1):
-                obj.freq[i] = value % 10
-                value /= 10
-
-        val1a = RadioSettingValueString(0, 10,
-                                        convert_bytes_to_freq(_mem.vfo.a.freq))
-        val1a.set_validate_callback(my_validate)
-        rs = RadioSetting("vfo.a.freq", "VFO A Frequency", val1a)
-        rs.set_apply_callback(apply_freq, _mem.vfo.a)
-        work.append(rs)
-
-        val1b = RadioSettingValueString(0, 10,
-                                        convert_bytes_to_freq(_mem.vfo.b.freq))
-        val1b.set_validate_callback(my_validate)
-        rs = RadioSetting("vfo.b.freq", "VFO B Frequency", val1b)
-        rs.set_apply_callback(apply_freq, _mem.vfo.b)
-        work.append(rs)
-
-        rs = RadioSetting("vfo.a.sftd", "VFO A Shift",
-                          RadioSettingValueList(
-                              LIST_SHIFTD, LIST_SHIFTD[_mem.vfo.a.sftd]))
-        work.append(rs)
-
-        rs = RadioSetting("vfo.b.sftd", "VFO B Shift",
-                          RadioSettingValueList(
-                              LIST_SHIFTD, LIST_SHIFTD[_mem.vfo.b.sftd]))
-        work.append(rs)
-
-        def convert_bytes_to_offset(bytes):
-            real_offset = 0
-            for byte in bytes:
-                real_offset = (real_offset * 10) + byte
-            return chirp_common.format_freq(real_offset * 1000)
-
-        def apply_offset(setting, obj):
-            value = chirp_common.parse_freq(str(setting.value)) / 1000
-            for i in range(5, -1, -1):
-                obj.offset[i] = value % 10
-                value /= 10
-
-        val1a = RadioSettingValueString(
-                    0, 10, convert_bytes_to_offset(_mem.vfo.a.offset))
-        rs = RadioSetting("vfo.a.offset",
-                          "VFO A Offset", val1a)
-        rs.set_apply_callback(apply_offset, _mem.vfo.a)
-        work.append(rs)
-
-        val1b = RadioSettingValueString(
-                    0, 10, convert_bytes_to_offset(_mem.vfo.b.offset))
-        rs = RadioSetting("vfo.b.offset",
-                          "VFO B Offset", val1b)
-        rs.set_apply_callback(apply_offset, _mem.vfo.b)
-        work.append(rs)
-
-        def apply_txpower_listvalue(setting, obj):
-            LOG.debug("Setting value: " + str(
-                      setting.value) + " from list")
-            val = str(setting.value)
-            index = TXP_CHOICES.index(val)
-            val = TXP_VALUES[index]
-            obj.set_value(val)
-
-        if self._tri_band:
-            if _mem.vfo.a.txpower3 in TXP_VALUES:
-                idx = TXP_VALUES.index(_mem.vfo.a.txpower3)
-            else:
-                idx = TXP_VALUES.index(0x00)
-            rs = RadioSettingValueList(TXP_CHOICES, TXP_CHOICES[idx])
-            rset = RadioSetting("vfo.a.txpower3", "VFO A Power", rs)
-            rset.set_apply_callback(apply_txpower_listvalue,
-                                    _mem.vfo.a.txpower3)
-            work.append(rset)
-
-            if _mem.vfo.b.txpower3 in TXP_VALUES:
-                idx = TXP_VALUES.index(_mem.vfo.b.txpower3)
-            else:
-                idx = TXP_VALUES.index(0x00)
-            rs = RadioSettingValueList(TXP_CHOICES, TXP_CHOICES[idx])
-            rset = RadioSetting("vfo.b.txpower3", "VFO B Power", rs)
-            rset.set_apply_callback(apply_txpower_listvalue,
-                                    _mem.vfo.b.txpower3)
-            work.append(rset)
-        else:
-            rs = RadioSetting("vfo.a.txpower3", "VFO A Power",
-                              RadioSettingValueList(
-                                  LIST_TXPOWER,
-                                  LIST_TXPOWER[min(_mem.vfo.a.txpower3, 0x02)]
-                                               ))
-            work.append(rs)
-
-            rs = RadioSetting("vfo.b.txpower3", "VFO B Power",
-                              RadioSettingValueList(
-                                  LIST_TXPOWER,
-                                  LIST_TXPOWER[min(_mem.vfo.b.txpower3, 0x02)]
-                                               ))
-            work.append(rs)
-
-        rs = RadioSetting("vfo.a.widenarr", "VFO A Bandwidth",
-                          RadioSettingValueList(
-                              LIST_BANDWIDTH,
-                              LIST_BANDWIDTH[_mem.vfo.a.widenarr]))
-        work.append(rs)
-
-        rs = RadioSetting("vfo.b.widenarr", "VFO B Bandwidth",
-                          RadioSettingValueList(
-                              LIST_BANDWIDTH,
-                              LIST_BANDWIDTH[_mem.vfo.b.widenarr]))
-        work.append(rs)
-
-        rs = RadioSetting("vfo.a.scode", "VFO A S-CODE",
-                          RadioSettingValueList(
-                              LIST_SCODE,
-                              LIST_SCODE[_mem.vfo.a.scode]))
-        work.append(rs)
-
-        rs = RadioSetting("vfo.b.scode", "VFO B S-CODE",
-                          RadioSettingValueList(
-                              LIST_SCODE,
-                              LIST_SCODE[_mem.vfo.b.scode]))
-        work.append(rs)
-
-        rs = RadioSetting("vfo.a.step", "VFO A Tuning Step",
-                          RadioSettingValueList(
-                              LIST_STEP, LIST_STEP[_mem.vfo.a.step]))
-        work.append(rs)
-        rs = RadioSetting("vfo.b.step", "VFO B Tuning Step",
-                          RadioSettingValueList(
-                              LIST_STEP, LIST_STEP[_mem.vfo.b.step]))
-        work.append(rs)
-
-        # broadcast FM settings
-        value = self._memobj.fm_presets
-        value_shifted = ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8)
-        if value_shifted >= 65.0 * 10 and value_shifted <= 108.0 * 10:
-            # storage method 3 (discovered 2022)
-            self._bw_shift = True
-            preset = value_shifted / 10.0
-        elif value >= 65.0 * 10 and value <= 108.0 * 10:
-            # storage method 2
-            preset = value / 10.0
-        elif value <= 108.0 * 10 - 650:
-            # original storage method (2012)
-            preset = value / 10.0 + 65
-        else:
-            # unknown (undiscovered method or no FM chip?)
-            preset = False
-        if preset:
-            rs = RadioSettingValueFloat(65, 108.0, preset, 0.1, 1)
-            rset = RadioSetting("fm_presets", "FM Preset(MHz)", rs)
-            fm_preset.append(rset)
+        _codeobj = self._memobj.ani.code
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 5, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("ani.code", "ANI Code", val)
 
         # DTMF settings
         def apply_code(setting, obj, length):
@@ -1049,7 +612,7 @@ class UV17Pro(chirp_common.CloneModeRadio,
                     code.append(0xFF)
             obj.code = code
 
-        for i in range(0, 15):
+        for i in range(0, 20):
             _codeobj = self._memobj.pttid[i].code
             _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
             val = RadioSettingValueString(0, 5, _code, False)
@@ -1085,29 +648,22 @@ class UV17Pro(chirp_common.CloneModeRadio,
         rs.set_apply_callback(apply_code, self._memobj.ani, 5)
         dtmfe.append(rs)
 
-        rs = RadioSetting("ani.aniid", "When to send ANI ID",
-                          RadioSettingValueList(LIST_PTTID,
-                                                LIST_PTTID[_mem.ani.aniid]))
+        if self._aniid:
+            rs = RadioSetting("ani.aniid", "When to send ANI ID",
+                            RadioSettingValueList(LIST_PTTID,
+                                                    LIST_PTTID[_mem.ani.aniid]))
+            dtmfe.append(rs)
+
+        rs = RadioSetting("settings.hangup", "Hang-up time",
+                        RadioSettingValueList(LIST_HANGUPTIME,
+                                                LIST_HANGUPTIME[_mem.settings.hangup]))
         dtmfe.append(rs)
 
-        # Service settings
-        for band in ["vhf", "uhf"]:
-            for index in range(0, 10):
-                key = "squelch.%s.sql%i" % (band, index)
-                if band == "vhf":
-                    _obj = self._memobj.squelch.vhf
-                elif band == "uhf":
-                    _obj = self._memobj.squelch.uhf
-                val = RadioSettingValueInteger(0, 123,
-                                               getattr(
-                                                   _obj, "sql%i" % (index)))
-                if index == 0:
-                    val.set_mutable(False)
-                name = "%s Squelch %i" % (band.upper(), index)
-                rs = RadioSetting(key, name, val)
-                service.append(rs)
 
         return top
+    
+        # TODO: implement settings 
+
     
     def sync_in(self):
         """Download from radio"""
@@ -1471,6 +1027,7 @@ class UV17ProGPS(UV17Pro):
     _magic = MSTRING_UV17PROGPS
     _magics = [b"\x46", b"\x4d", b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01\x01\x04\x11\x08\x05\x0D\x0D\x01\x11\x0F\x09\x12\x09\x10\x04\x00"]
     _magicResponseLengths = [16, 7, 1]
+    _aniid = False
     VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
 
