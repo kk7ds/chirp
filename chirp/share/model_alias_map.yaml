@@ -307,6 +307,8 @@ Quansheng:
   model: TG-UV2
 - alt: UV-K5
   model: UV-K5(8)
+- alt: UV-K5
+  model: UV-5R Plus
 Powerful:
 - alt: Quansheng UV-K5
   model: UV-S5
