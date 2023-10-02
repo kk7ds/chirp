@@ -1406,7 +1406,7 @@ class RT15Radio(T18Radio):
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
-    _frs16 = True
+    _frs16 = False  # sold as FRS radio but supports full band TX/RX
 
     @classmethod
     def match_model(cls, filedata, filename):
