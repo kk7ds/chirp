@@ -1,8 +1,8 @@
 name: chirp-snap
 summary: A free, open-source tool for programming your amateur radio
 description: |
-    CHIRP is a free, open-source tool for programming your amateur radio. 
-    It supports a large number of manufacturers and models, as well as 
+    CHIRP is a free, open-source tool for programming your amateur radio.
+    It supports a large number of manufacturers and models, as well as
     provides a way to interface with multiple data sources and formats.
 
 adopt-info: chirp
@@ -24,7 +24,7 @@ apps:
     command: bin/chirp
     desktop: lib/python3.10/site-packages/chirp/share/chirp.desktop
     extensions:
-      # WARNING: gnome extension is incompatible with python apps. 
+      # WARNING: gnome extension is incompatible with python apps.
       - gnome
     plugs:
       - home

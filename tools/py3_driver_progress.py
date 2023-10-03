@@ -208,8 +208,7 @@ def main():
     `NEEDS_COMPAT_SERIAL = False` flag on the radio class, and thus uses
     `MemoryMapBytes` exclusively internally. Whenever possible, all radios
     that are fixed for py3 should do so with this flag set to False and with
-    the byte-native memory map.
-    """),
+    the byte-native memory map."""),
           file=output)
 
     for driver, (tester, tested) in testers.items():

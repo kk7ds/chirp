@@ -28,7 +28,7 @@ the "Browser" tab in the left sidebar, which is visible when the Developer
 tools are enabled.
 
 The default size is 10. Values less than 4, greater than 144, or not
-recognized as an integer will result in a log message and the default 
+recognized as an integer will result in a log message and the default
 size will be used.
 
 ========
@@ -37,7 +37,7 @@ This specifies the fontsize used in the hex dump/diff display which is
 invoked by selecting View -> Developer -> Diff tabs.
 
 The default size is 11. Values less than 4, greater than 144, or not
-recognized as an integer will result in a log message and the default 
+recognized as an integer will result in a log message and the default
 size will be used.
 
 ========
@@ -60,5 +60,3 @@ Exceptions that have been observed in testing formats which are
 invalid in this context are caught, and the default format is used.
 
 ========
-
-

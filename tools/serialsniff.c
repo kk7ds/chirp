@@ -146,7 +146,7 @@ int saferead(int fd, char *buf, int len)
 		if ((val.it_value.tv_sec == 0) &&
 		    (val.it_value.tv_usec == 0)) {
 			if (!quiescent)
-				printf("Timeout\n"); 
+				printf("Timeout\n");
 			break;
 		}
 

@@ -465,21 +465,22 @@ For the purposes of the Python 3 effort, a "tested" radio means
 at least the following procedure was followed:
 1. Download from the radio
 1. Make some change to a memory
-1. If the radio has settings support, make sure settings load and tweak one setting
+1. If the radio has settings support, make sure settings load and tweak
+   one setting
 1. Upload to the radio
 1. Confirm that the changes stick and look correct, or at least are not a
    regression from the master py2 branch.
 
-The drivers are all passing the automated tests, but tests with real hardware
-and serial ports is important, especially around bytes-vs-string safety.
+The drivers are all passing the automated tests, but tests with real
+hardware and serial ports is important, especially around bytes-vs-string
+safety.
 
-To update this document, add/edit entries in `tests/py3_driver_testers.txt` and
-then run `tox -e makesupported`. Commit the result (including the changes to this `.md`
-file) and submit a PR.
+To update this document, add/edit entries in `tests/py3_driver_testers.txt`
+and then run `tox -e makesupported`. Commit the result (including the
+changes to this `.md` file) and submit a PR.
 
 The "Byte Clean" flag refers to whether or not the radio has set the
 `NEEDS_COMPAT_SERIAL = False` flag on the radio class, and thus uses
 `MemoryMapBytes` exclusively internally. Whenever possible, all radios
 that are fixed for py3 should do so with this flag set to False and with
 the byte-native memory map.
-
