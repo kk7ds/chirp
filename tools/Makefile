@@ -32,4 +32,3 @@ serialsniff: serialsniff.c
 
 clean:
 	$(REMOVE)  serialsniff *~ *.o *.bak core tags shar a.out
-
