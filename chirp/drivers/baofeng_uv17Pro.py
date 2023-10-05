@@ -370,9 +370,9 @@ class UV17Pro(chirp_common.CloneModeRadio,
     NEEDS_COMPAT_SERIAL = False
 
     MEM_STARTS = [0x0000, 0x9000, 0xA000, 0xD000]
-    MEM_SIZES =  [0x8000, 0x0040, 0x02C0, 0x0040]
+    MEM_SIZES =  [0x8040, 0x0040, 0x02C0, 0x0040]
 
-    MEM_TOTAL = 0x8340
+    MEM_TOTAL = 0x8380
     BLOCK_SIZE = 0x40
     STIMEOUT = 2
     BAUDRATE = 115200
@@ -437,7 +437,7 @@ class UV17Pro(chirp_common.CloneModeRadio,
       char name[12];
     } memory[1000];
 
-    #seekto 0x8040;
+    #seekto 0x8080;
     struct {
       u8 code[5];
       u8 unknown[1];
@@ -447,7 +447,7 @@ class UV17Pro(chirp_common.CloneModeRadio,
       u8 dtmfoff;
     } ani;
 
-    #seekto 0x8060;
+    #seekto 0x80A0;
     struct {
       u8 code[5];
       u8 name[10];
@@ -455,7 +455,7 @@ class UV17Pro(chirp_common.CloneModeRadio,
     } pttid[20];
 
     
-    #seekto 0x8240;
+    #seekto 0x8280;
     struct {
       char name1[12];
       u32 unknown1;
@@ -479,7 +479,35 @@ class UV17Pro(chirp_common.CloneModeRadio,
       u32 unknown10;
     } bank_names;
 
+    struct vfo {
+      u8 freq[8];
+      ul16 rxtone;
+      ul16 txtone;
+      u8 unknown1;
+      u8 bcl;
+      u8 sftd:3,
+         scode:5;
+      u8 pttid;
+      u8 lowpower;
+      u8 unknown2:1, 
+         wide:1,
+         unknown3:5,
+         fhss:1;
+      u8 unknown4;
+      u8 step;
+      u8 offset[6];
+      u8 unknown5[2];
+      u8 sqmode;
+      u8 unknown6[3];
+    };
+
     #seekto 0x8000;
+    struct {
+      struct vfo a;
+      struct vfo b;
+    } vfo;
+
+    #seekto 0x8040;
     struct {
       char unknown1[57];
       u8 hangup;
@@ -512,7 +540,11 @@ class UV17Pro(chirp_common.CloneModeRadio,
 
     def process_mmap(self):
         """Process the mem map into the mem object"""
-        self._memobj = bitwise.parse(self.MEM_FORMAT, self._mmap)
+        if (len(self._mmap) == self.MEM_TOTAL) or (len(self._mmap) == self.MEM_TOTAL + len(self.MODEL)):
+            self._memobj = bitwise.parse(self.MEM_FORMAT, self._mmap)
+        else:
+            raise errors.ImageDetectFailed('Image length mismatch.\nTry reloading the configuration'
+                                           ' from the radio.')
 
     def get_settings(self):
         """Translate the bit in the mem_struct into settings in the UI"""
@@ -659,8 +691,163 @@ class UV17Pro(chirp_common.CloneModeRadio,
                                                 LIST_HANGUPTIME[_mem.settings.hangup]))
         dtmfe.append(rs)
 
+        def convert_bytes_to_freq(bytes):
+            real_freq = 0
+            for byte in bytes:
+                real_freq = (real_freq * 10) + byte
+            return chirp_common.format_freq(real_freq * 10)
+
+        def my_validate(value):
+            value = chirp_common.parse_freq(value)
+            freqOk = False
+            for band in self.VALID_BANDS:
+                if value > band[0] and value < band[1]:
+                    freqOk = True
+            if not freqOk:
+                raise InvalidValueError("Invalid frequency!")
+            return chirp_common.format_freq(value)
+
+        def apply_freq(setting, obj):
+            value = chirp_common.parse_freq(str(setting.value)) / 10
+            for i in range(7, -1, -1):
+                obj.freq[i] = value % 10
+                value /= 10
+
+        val1a = RadioSettingValueString(0, 10,
+                                        convert_bytes_to_freq(_mem.vfo.a.freq))
+        val1a.set_validate_callback(my_validate)
+        rs = RadioSetting("vfo.a.freq", "VFO A Frequency", val1a)
+        rs.set_apply_callback(apply_freq, _mem.vfo.a)
+        work.append(rs)
+
+        val1b = RadioSettingValueString(0, 10,
+                                        convert_bytes_to_freq(_mem.vfo.b.freq))
+        val1b.set_validate_callback(my_validate)
+        rs = RadioSetting("vfo.b.freq", "VFO B Frequency", val1b)
+        rs.set_apply_callback(apply_freq, _mem.vfo.b)
+        work.append(rs)
+
+        rs = RadioSetting("vfo.a.sftd", "VFO A Shift",
+                          RadioSettingValueList(
+                              LIST_SHIFTD, LIST_SHIFTD[_mem.vfo.a.sftd]))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.sftd", "VFO B Shift",
+                          RadioSettingValueList(
+                              LIST_SHIFTD, LIST_SHIFTD[_mem.vfo.b.sftd]))
+        work.append(rs)
+
+
+        def convert_bytes_to_offset(bytes):
+            real_offset = 0
+            for byte in bytes:
+                real_offset = (real_offset * 10) + byte
+            return chirp_common.format_freq(real_offset * 1000)
+
+        def apply_offset(setting, obj):
+            value = chirp_common.parse_freq(str(setting.value)) / 1000
+            for i in range(5, -1, -1):
+                obj.offset[i] = value % 10
+                value /= 10
+
+        val1a = RadioSettingValueString(
+                    0, 10, convert_bytes_to_offset(_mem.vfo.a.offset))
+        rs = RadioSetting("vfo.a.offset",
+                          "VFO A Offset", val1a)
+        rs.set_apply_callback(apply_offset, _mem.vfo.a)
+        work.append(rs)
+
+        val1b = RadioSettingValueString(
+                    0, 10, convert_bytes_to_offset(_mem.vfo.b.offset))
+        rs = RadioSetting("vfo.b.offset",
+                          "VFO B Offset", val1b)
+        rs.set_apply_callback(apply_offset, _mem.vfo.b)
+        work.append(rs)
+
+        def apply_txpower_listvalue(setting, obj):
+            LOG.debug("Setting value: " + str(
+                      setting.value) + " from list")
+            val = str(setting.value)
+            index = TXP_CHOICES.index(val)
+            val = TXP_VALUES[index]
+            obj.set_value(val)
+
+        rs = RadioSetting("vfo.a.lowpower", "VFO A Power",
+                            RadioSettingValueList(
+                                LIST_TXPOWER,
+                                LIST_TXPOWER[min(_mem.vfo.a.lowpower, 0x02)]
+                                            ))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.lowpower", "VFO B Power",
+                            RadioSettingValueList(
+                                LIST_TXPOWER,
+                                LIST_TXPOWER[min(_mem.vfo.b.lowpower, 0x02)]
+                                            ))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.a.wide", "VFO A Bandwidth",
+                          RadioSettingValueList(
+                              LIST_BANDWIDTH,
+                              LIST_BANDWIDTH[_mem.vfo.a.wide]))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.wide", "VFO B Bandwidth",
+                          RadioSettingValueList(
+                              LIST_BANDWIDTH,
+                              LIST_BANDWIDTH[_mem.vfo.b.wide]))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.a.scode", "VFO A S-CODE",
+                          RadioSettingValueList(
+                              LIST_SCODE,
+                              LIST_SCODE[_mem.vfo.a.scode]))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.scode", "VFO B S-CODE",
+                          RadioSettingValueList(
+                              LIST_SCODE,
+                              LIST_SCODE[_mem.vfo.b.scode]))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.a.step", "VFO A Tuning Step",
+                          RadioSettingValueList(
+                              LIST_STEP, LIST_STEP[_mem.vfo.a.step]))
+        work.append(rs)
+        rs = RadioSetting("vfo.b.step", "VFO B Tuning Step",
+                          RadioSettingValueList(
+                              LIST_STEP, LIST_STEP[_mem.vfo.b.step]))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.a.bcl", "VFO A BCL",
+                          RadioSettingValueBoolean(_mem.vfo.a.bcl))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.bcl", "VFO B BCL",
+                          RadioSettingValueBoolean(_mem.vfo.b.bcl))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.a.pttid", "VFO A PTT ID",
+                          RadioSettingValueList(self.PTTID_LIST,
+                                                self.PTTID_LIST[_mem.vfo.a.pttid]))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.pttid", "VFO B PTT ID",
+                          RadioSettingValueList(self.PTTID_LIST,
+                                                self.PTTID_LIST[_mem.vfo.b.pttid]))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.a.fhss", "VFO A FHSS",
+                          RadioSettingValueBoolean(_mem.vfo.a.fhss))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.fhss", "VFO B FHSS",
+                          RadioSettingValueBoolean(_mem.vfo.b.fhss))
+        work.append(rs)
 
         return top
+    
+
     
         # TODO: implement settings 
 
