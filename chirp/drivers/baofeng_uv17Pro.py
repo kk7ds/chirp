@@ -62,7 +62,7 @@ LIST_SHIFTD = ["Off", "+", "-"]
 LIST_STEDELAY = ["Off"] + ["%s ms" % x for x in range(100, 1100, 100)]
 LIST_STEP = [str(x) for x in STEPS]
 LIST_TIMEOUT = ["%s sec" % x for x in range(15, 615, 15)]
-LIST_TXPOWER = ["High", "Mid", "Low"]
+LIST_TXPOWER = ["High", "Low"]
 LIST_VOICE = ["Off", "English", "Chinese"]
 LIST_WORKMODE = ["Frequency", "Channel"]
 
@@ -483,11 +483,11 @@ class UV17Pro(chirp_common.CloneModeRadio,
       u8 freq[8];
       ul16 rxtone;
       ul16 txtone;
-      u8 unknown1;
+      u8 unknown0;
       u8 bcl;
       u8 sftd:3,
          scode:5;
-      u8 pttid;
+      u8 unknown1;
       u8 lowpower;
       u8 unknown2:1, 
          wide:1,
@@ -509,9 +509,14 @@ class UV17Pro(chirp_common.CloneModeRadio,
 
     #seekto 0x8040;
     struct {
-      char unknown1[57];
+      char unknown0[11];
+      u8 pttid;
+      char unknown02[3];
+      u8 uknown2:7,
+         bcl:1;
+      char unknown3[41];
       u8 hangup;
-      char unknown2[6];
+      char unknown4[6];
     } settings;
     """
 
@@ -819,24 +824,6 @@ class UV17Pro(chirp_common.CloneModeRadio,
                               LIST_STEP, LIST_STEP[_mem.vfo.b.step]))
         work.append(rs)
 
-        rs = RadioSetting("vfo.a.bcl", "VFO A BCL",
-                          RadioSettingValueBoolean(_mem.vfo.a.bcl))
-        work.append(rs)
-
-        rs = RadioSetting("vfo.b.bcl", "VFO B BCL",
-                          RadioSettingValueBoolean(_mem.vfo.b.bcl))
-        work.append(rs)
-
-        rs = RadioSetting("vfo.a.pttid", "VFO A PTT ID",
-                          RadioSettingValueList(self.PTTID_LIST,
-                                                self.PTTID_LIST[_mem.vfo.a.pttid]))
-        work.append(rs)
-
-        rs = RadioSetting("vfo.b.pttid", "VFO B PTT ID",
-                          RadioSettingValueList(self.PTTID_LIST,
-                                                self.PTTID_LIST[_mem.vfo.b.pttid]))
-        work.append(rs)
-
         rs = RadioSetting("vfo.a.fhss", "VFO A FHSS",
                           RadioSettingValueBoolean(_mem.vfo.a.fhss))
         work.append(rs)
@@ -844,6 +831,16 @@ class UV17Pro(chirp_common.CloneModeRadio,
         rs = RadioSetting("vfo.b.fhss", "VFO B FHSS",
                           RadioSettingValueBoolean(_mem.vfo.b.fhss))
         work.append(rs)
+
+        rs = RadioSetting("settings.bcl", "BCL",
+                          RadioSettingValueBoolean(_mem.settings.bcl))
+        work.append(rs)
+
+        rs = RadioSetting("settings.pttid", "PTT ID",
+                          RadioSettingValueList(self.PTTID_LIST,
+                                                self.PTTID_LIST[_mem.settings.pttid]))
+        work.append(rs)
+
 
         return top
     
