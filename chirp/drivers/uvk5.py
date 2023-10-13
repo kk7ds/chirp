@@ -203,6 +203,29 @@ char name[8];
 char number[3];
 char unused_00[5];
 } dtmfcontact[16];
+
+#seekto 0x1ed0;
+struct {
+struct {
+    u8 start;
+    u8 mid;
+    u8 end;
+} low;
+struct {
+    u8 start;
+    u8 mid;
+    u8 end;
+} medium;
+struct {
+    u8 start;
+    u8 mid;
+    u8 end;
+} high;
+u8 unused_00[7];
+} perbandpowersettings[7];
+
+#seekto 0x1f40;
+ul16 battery_level[6];
 """
 # bits that we will save from the channel structure (mostly unknown)
 SAVE_MASK_0A = 0b11001100
