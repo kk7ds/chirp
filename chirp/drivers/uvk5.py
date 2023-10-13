@@ -184,13 +184,15 @@ u8 scanlist_unknown_0xff;
 
 
 #seekto 0xf40;
-u8 int_flock;
-u8 int_350tx;
-u8 int_unknown1;
-u8 int_200tx;
-u8 int_500tx;
-u8 int_350en;
-u8 int_scren;
+struct {
+u8 flock;
+u8 tx350;
+u8 killed;
+u8 tx200;
+u8 tx500;
+u8 en350;
+u8 enscramble;
+} lock;
 
 #seekto 0xf50;
 struct {
@@ -1127,27 +1129,31 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 
             # FLOCK
             if element.get_name() == "flock":
-                _mem.int_flock = FLOCK_LIST.index(str(element.value))
+                _mem.lock.flock = FLOCK_LIST.index(str(element.value))
 
             # 350TX
-            if element.get_name() == "350tx":
-                _mem.int_350tx = element.value and 1 or 0
+            if element.get_name() == "tx350":
+                _mem.lock.tx350 = element.value and 1 or 0
 
             # 200TX
-            if element.get_name() == "200tx":
-                _mem.int_200tx = element.value and 1 or 0
+            if element.get_name() == "tx200":
+                _mem.lock.tx200 = element.value and 1 or 0
 
             # 500TX
-            if element.get_name() == "500tx":
-                _mem.int_500tx = element.value and 1 or 0
+            if element.get_name() == "tx500":
+                _mem.lock.tx500 = element.value and 1 or 0
 
             # 350EN
-            if element.get_name() == "350en":
-                _mem.int_350en = element.value and 1 or 0
+            if element.get_name() == "en350":
+                _mem.lock.en350 = element.value and 1 or 0
 
             # SCREN
-            if element.get_name() == "scren":
-                _mem.int_scren = element.value and 1 or 0
+            if element.get_name() == "enscramble":
+                _mem.lock.enscramble = element.value and 1 or 0
+
+            # KILLED
+            if element.get_name() == "killed":
+                _mem.lock.killed = element.value and 1 or 0
 
             # fm radio
             for i in range(1, 21):
@@ -1839,7 +1845,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         # unlock settings
 
         # F-LOCK
-        tmpflock = _mem.int_flock
+        tmpflock = _mem.lock.flock
         if tmpflock >= len(FLOCK_LIST):
             tmpflock = 0
         rs = RadioSetting(
@@ -1848,33 +1854,39 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         unlock.append(rs)
 
         # 350TX
-        rs = RadioSetting("350tx", "350TX - unlock 350-400 MHz TX",
+        rs = RadioSetting("tx350", "350TX - unlock 350-400 MHz TX",
                           RadioSettingValueBoolean(
-                              bool(_mem.int_350tx > 0)))
+                              bool(_mem.lock.tx350 > 0)))
+        unlock.append(rs)
+
+        # Killed
+        rs = RadioSetting("Killed", "KILLED Device was disabled (via DTMF)",
+                          RadioSettingValueBoolean(
+                              bool(_mem.lock.killed > 0)))
         unlock.append(rs)
 
         # 200TX
-        rs = RadioSetting("200tx", "200TX - unlock 174-350 MHz TX",
+        rs = RadioSetting("tx200", "200TX - unlock 174-350 MHz TX",
                           RadioSettingValueBoolean(
-                              bool(_mem.int_200tx > 0)))
+                              bool(_mem.lock.tx200 > 0)))
         unlock.append(rs)
 
         # 500TX
-        rs = RadioSetting("500tx", "500TX - unlock 500-600 MHz TX",
+        rs = RadioSetting("tx500", "500TX - unlock 500-600 MHz TX",
                           RadioSettingValueBoolean(
-                              bool(_mem.int_500tx > 0)))
+                              bool(_mem.lock.tx500 > 0)))
         unlock.append(rs)
 
         # 350EN
-        rs = RadioSetting("350en", "350EN - unlock 350-400 MHz RX",
+        rs = RadioSetting("en350", "350EN - unlock 350-400 MHz RX",
                           RadioSettingValueBoolean(
-                              bool(_mem.int_350en > 0)))
+                              bool(_mem.lock.en350 > 0)))
         unlock.append(rs)
 
         # SCREEN
-        rs = RadioSetting("scren", "SCREN - scrambler enable",
+        rs = RadioSetting("scrambler", "SCREN - scrambler enable",
                           RadioSettingValueBoolean(
-                              bool(_mem.int_scren > 0)))
+                              bool(_mem.lock.enscramble > 0)))
         unlock.append(rs)
 
         # readonly info
