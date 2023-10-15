@@ -400,6 +400,13 @@ class UV17Pro(chirp_common.CloneModeRadio,
     LENGTH_NAME = 12
     SKIP_VALUES = ["", "S"]
     DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
+    RXTX_CODES = ('Off', )
+    for code in chirp_common.TONES:
+        RXTX_CODES = (RXTX_CODES + (str(code), ))
+    for code in DTCS_CODES:
+        RXTX_CODES = (RXTX_CODES + ('D' + str(code) + 'N', ))
+    for code in DTCS_CODES:
+        RXTX_CODES = (RXTX_CODES + ('D' + str(code) + 'I', ))
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low",  watts=1.00)]
     _airband = (108000000, 136000000)
@@ -564,73 +571,88 @@ class UV17Pro(chirp_common.CloneModeRadio,
         top = RadioSettings(basic, advanced, other, work, fm_preset, dtmfe,
                             service)
      
-        def _filterName(name):
+        def _filterName(name, zone):
             fname = ""
+            charset=chirp_common.CHARSET_ASCII
             for char in name:
                 if ord(str(char)) == 255:
                     break
+                if str(char) not in charset:
+                    char = "X"
                 fname += str(char)
+            if fname == "XXXXXX":
+                fname = "ZONE" + zone
             return fname
         
         if self._support_banknames:
+            _zone="01"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name1", "Bank name 1",
                             RadioSettingValueString(
-                                0, 12, _filterName(_msg.name1)))
+                                0, 12, _filterName(_msg.name1, _zone)))
             other.append(rs)
 
+            _zone="02"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name2", "Bank name 2",
                             RadioSettingValueString(
-                                0, 12, _filterName(_msg.name2)))
+                                0, 12, _filterName(_msg.name2, _zone)))
             
             other.append(rs)
+            _zone="03"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name3", "Bank name 3",
                             RadioSettingValueString(
-                                0, 12, _filterName(_msg.name3)))
-            
+                                0, 12, _filterName(_msg.name3, _zone)))
             other.append(rs)
+
+            _zone="04"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name4", "Bank name 4",
                             RadioSettingValueString(
-                                0, 12, _filterName(_msg.name4)))
-            
+                                0, 12, _filterName(_msg.name4, _zone)))            
             other.append(rs)
+
+            _zone="05"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name5", "Bank name 5",
                             RadioSettingValueString(
-                                0, 12, _filterName(_msg.name5)))
-            
+                                0, 12, _filterName(_msg.name5, _zone)))
             other.append(rs)
+
+            _zone="06"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name6", "Bank name 6",
                             RadioSettingValueString(
-                                0, 12, _filterName(_msg.name6)))
-            
+                                0, 12, _filterName(_msg.name6, _zone)))
             other.append(rs)
+
+            _zone="07"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name7", "Bank name 7",
                             RadioSettingValueString(
-                                0, 12, _filterName(_msg.name7)))
-            
+                                0, 12, _filterName(_msg.name7, _zone)))
             other.append(rs)
+
+            _zone="08"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name8", "Bank name 8",
                             RadioSettingValueString(
-                                0, 12, _filterName(_msg.name8)))
-            
+                                0, 12, _filterName(_msg.name8, _zone)))
             other.append(rs)
+
+            _zone="09"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name9", "Bank name 9",
                             RadioSettingValueString(
-                                0, 12, _filterName(_msg.name9)))
+                                0, 12, _filterName(_msg.name9, _zone)))
             other.append(rs)
 
+            _zone="10"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name10", "Bank name 10",
                             RadioSettingValueString(
-                                0, 12, _filterName(_msg.name10)))
+                                0, 12, _filterName(_msg.name10, _zone)))
             other.append(rs)
 
         _codeobj = self._memobj.ani.code
@@ -732,12 +754,12 @@ class UV17Pro(chirp_common.CloneModeRadio,
         rs.set_apply_callback(apply_freq, _mem.vfo.b)
         work.append(rs)
 
-        rs = RadioSetting("vfo.a.sftd", "VFO A Shift",
+        rs = RadioSetting("vfo.a.sftd", "VFO A Offset dir",
                           RadioSettingValueList(
                               LIST_SHIFTD, LIST_SHIFTD[_mem.vfo.a.sftd]))
         work.append(rs)
 
-        rs = RadioSetting("vfo.b.sftd", "VFO B Shift",
+        rs = RadioSetting("vfo.b.sftd", "VFO B Offset dir",
                           RadioSettingValueList(
                               LIST_SHIFTD, LIST_SHIFTD[_mem.vfo.b.sftd]))
         work.append(rs)
@@ -840,7 +862,63 @@ class UV17Pro(chirp_common.CloneModeRadio,
                           RadioSettingValueList(self.PTTID_LIST,
                                                 self.PTTID_LIST[_mem.settings.pttid]))
         work.append(rs)
+        
+        def getToneIndex(tone):            
+            if tone in [0, 0xFFFF]:
+                index = 0
+            elif tone >= 0x0258:
+                index = self.RXTX_CODES.index(str(tone / 10.0))
+            elif tone <= 0x0258:
+                index = 50 + tone
+                if tone > 0x69:
+                    index = tone - 0x6A + 156
+            return self.RXTX_CODES[index]
+        
+        def apply_rxtone(setting, obj):
+            index = self.RXTX_CODES.index(str(setting.value))
+            if index > 156:
+                obj.rxtone = index - 156 + 0x6A
+            elif index > 50:
+                obj.rxtone = index - 50
+            elif index == 0:
+                obj.rxtone = 0
+            else:
+                obj.rxtone = int(float(setting.value)*10) 
 
+        def apply_txtone(setting, obj):
+            index = self.RXTX_CODES.index(str(setting.value))
+            if index > 156:
+                obj.txtone = index - 156 + 0x6A
+            elif index > 50:
+                obj.txtone = index - 50
+            elif index == 0:
+                obj.txtone = 0
+            else:
+                obj.txtone = int(float(setting.value)*10) 
+        
+        rs = RadioSetting("vfo.a.rxtone", "VFA A RX QT/DQT",
+                          RadioSettingValueList(self.RXTX_CODES,
+                                                getToneIndex(_mem.vfo.a.rxtone)))
+        rs.set_apply_callback(apply_rxtone, _mem.vfo.a)
+        work.append(rs)
+
+        rs = RadioSetting("vfo.a.txtone", "VFA A TX QT/DQT",
+                          RadioSettingValueList(self.RXTX_CODES,
+                                                getToneIndex(_mem.vfo.a.txtone)))
+        rs.set_apply_callback(apply_txtone, _mem.vfo.a)
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.rxtone", "VFA B RX QT/DQT",
+                          RadioSettingValueList(self.RXTX_CODES,
+                                                getToneIndex(_mem.vfo.b.rxtone)))
+        rs.set_apply_callback(apply_rxtone, _mem.vfo.b)
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.txtone", "VFA B TX QT/DQT",
+                          RadioSettingValueList(self.RXTX_CODES,
+                                                getToneIndex(_mem.vfo.b.txtone)))
+        rs.set_apply_callback(apply_txtone, _mem.vfo.b)
+        work.append(rs)
 
         return top
     
