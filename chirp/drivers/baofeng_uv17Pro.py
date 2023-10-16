@@ -393,6 +393,7 @@ class UV17Pro(chirp_common.CloneModeRadio,
     _mem_size = MEM_TOTAL
     _ack_block = True
     _aniid = True
+    _vfoscan = False
 
     MODES = ["NFM", "FM"]
     VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
@@ -521,7 +522,10 @@ class UV17Pro(chirp_common.CloneModeRadio,
       char unknown02[3];
       u8 uknown2:7,
          bcl:1;
-      char unknown3[41];
+      char unknown5[28];
+      ul16 vfoscanmin;
+      ul16 vfoscanmax;
+      char unknown3[9];
       u8 hangup;
       char unknown4[6];
     } settings;
@@ -920,6 +924,29 @@ class UV17Pro(chirp_common.CloneModeRadio,
         rs.set_apply_callback(apply_txtone, _mem.vfo.b)
         work.append(rs)
 
+        if self._vfoscan:
+            def scan_validate(value):
+                freqOk = False
+                for band in self.VALID_BANDS:
+                    print(band)
+                    if value >= (band[0]/1000000) and value <= (band[1]/1000000):
+                        freqOk = True
+                if not freqOk:
+                    raise InvalidValueError("Invalid frequency!")
+                return value
+
+            scanMin = RadioSettingValueInteger(0, 800,
+                                            _mem.settings.vfoscanmin)
+            scanMin.set_validate_callback(scan_validate)
+            rs = RadioSetting("settings.vfoscanmin", "VFO scan range minimum", scanMin)
+            work.append(rs)
+
+            scanMax = RadioSettingValueInteger(0, 800,
+                                            _mem.settings.vfoscanmax)
+            scanMax.set_validate_callback(scan_validate)
+            rs = RadioSetting("settings.vfoscanmax", "VFO scan range maximum", scanMax)
+            work.append(rs)
+
         return top
     
 
@@ -1290,6 +1317,7 @@ class UV17ProGPS(UV17Pro):
     _magics = [b"\x46", b"\x4d", b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01\x01\x04\x11\x08\x05\x0D\x0D\x01\x11\x0F\x09\x12\x09\x10\x04\x00"]
     _magicResponseLengths = [16, 7, 1]
     _aniid = False
+    _vfoscan = True
     VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
 
