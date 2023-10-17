@@ -47,9 +47,11 @@ LIST_BANDWIDTH = ["Wide", "Narrow"]
 LIST_COLOR = ["Off", "Blue", "Orange", "Purple"]
 LIST_DTMFSPEED = ["%s ms" % x for x in [50, 100, 200, 300, 500]]
 LIST_HANGUPTIME = ["%s s" % x for x in [3, 4, 5, 6, 7, 8, 9, 10]]
+LIST_SIDE_TONE = ["Off", "Side Key", "ID", "Side + ID"]
 LIST_DTMFST = ["Off", "DT-ST", "ANI-ST", "DT+ANI"]
-LIST_MODE = ["Channel", "Name", "Frequency"]
-LIST_OFF1TO9 = ["Off"] + list("123456789")
+LIST_MODE = ["Name", "Frequency", "Channel Number"]
+LIST_OFF1TO5 = ["Off"] + list("12345")
+LIST_OFF1TO9 = LIST_OFF1TO5 + list("6789")
 LIST_OFF1TO10 = LIST_OFF1TO9 + ["10"]
 LIST_OFFAB = ["Off"] + LIST_AB
 LIST_RESUME = ["TO", "CO", "SE"]
@@ -61,10 +63,28 @@ LIST_SAVE = ["Off", "1:1", "1:2", "1:3", "1:4"]
 LIST_SHIFTD = ["Off", "+", "-"]
 LIST_STEDELAY = ["Off"] + ["%s ms" % x for x in range(100, 1100, 100)]
 LIST_STEP = [str(x) for x in STEPS]
-LIST_TIMEOUT = ["%s sec" % x for x in range(15, 615, 15)]
+LIST_TIMEOUT = ["Off"] + ["%s sec" % x for x in range(15, 195, 15)]
+LIST_TIMEOUT_ALARM = ["Off"] + ["%s sec" % x for x in range(1, 11)]
+LIST_PILOT_TONE = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
 LIST_TXPOWER = ["High", "Low"]
 LIST_VOICE = ["Off", "English", "Chinese"]
 LIST_WORKMODE = ["Frequency", "Channel"]
+LIST_POWERON_DISPLAY_TYPE = ["LOGO", "BATT voltage"]
+LIST_BEEP = ["Off", "Beep", "Voice", "Both"]
+LIST_LANGUAGE = ["English", "Chinese"]
+LIST_SCANMODE = ["Time", "Carrier", "Search"]
+LIST_ALARMMODE = ["Local", "Send Tone", "Send Code"]
+LIST_MENU_QUIT_TIME = ["%s sec" % x for x in range(5, 65, 5)]
+LIST_BACKLIGHT_TIMER = ["Always On"] + ["%s sec" % x for x in range(5, 25, 5)]
+LIST_ID_DELAY = ["%s ms" % x for x in range(0, 1600, 100)]
+LIST_QT_SAVEMODE = ["Both", "RX", "TX"]
+LIST_SKEY2_SHORT =["FM", "Scan", "Search", "Vox"]
+LIST_RPT_TAIL_CLEAR = ["%s ms" % x for x in range(0, 1100, 100)]
+LIST_VOX_DELAY_TIME = ["%s ms" % x for x in range(500, 2100, 100)]
+LIST_VOX_LEVEL = ["Off"] + ["%s" % x for x in range(1, 10, 1)]
+LIST_VOX_LEVEL_ALT = ["%s" % x for x in range(1, 10, 1)]
+LIST_GPS_MODE = ["GPS", "Beidou", "GPS + Beidou"]
+LIST_GPS_TIMEZONE = ["%s" % x for x in range(-12, 13, 1)]
 
 TXP_CHOICES = ["High", "Low"]
 TXP_VALUES = [0x00, 0x02]
@@ -394,6 +414,11 @@ class UV17Pro(chirp_common.CloneModeRadio,
     _ack_block = True
     _aniid = True
     _vfoscan = False
+    _has_gps = False
+    _voxsw = False
+    _pilot_tone = False
+    _send_id_delay = False
+    _skey2_short = False
 
     MODES = ["NFM", "FM"]
     VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
@@ -517,17 +542,56 @@ class UV17Pro(chirp_common.CloneModeRadio,
 
     #seekto 0x8040;
     struct {
-      char unknown0[11];
+      u8 squelch;
+      u8 savemode;
+      u8 vox;
+      u8 backlight;
+      u8 dualstandby;
+      u8 tot;
+      u8 beep;
+      u8 voicesw;
+      u8 voice;
+      u8 sidetone;
+      u8 scanmode;
       u8 pttid;
-      char unknown02[3];
-      u8 uknown2:7,
-         bcl:1;
-      char unknown5[28];
+      u8 pttdly;
+      u8 chadistype;
+      u8 chbdistype;
+      u8 bcl;
+      u8 autolock;
+      u8 alarmmode;
+      u8 alarmtone;
+      u8 unknown1;
+      u8 tailclear;
+      u8 rpttailclear;
+      u8 rpttaildet;
+      u8 roger;
+      u8 unknown2;
+      u8 fmenable;
+      u8 chaworkmode:4,
+         chbworkmode:4;
+      u8 keylock;
+      u8 powerondistype;
+      u8 tone;
+      u8 unknown4[2];
+      u8 voxdlytime;
+      u8 menuquittime;
+      u8 unknown5[6];
+      u8 totalarm;
+      u8 unknown6[2];
+      u8 ctsdcsscantype;
       ul16 vfoscanmin;
       ul16 vfoscanmax;
-      char unknown3[9];
+      u8 gpsw;
+      u8 gpsmode;
+      u8 unknown7[2];
+      u8 key2short;
+      u8 unknown8[2];
+      u8 rstmenu;  
+      u8 unknown9;
       u8 hangup;
-      char unknown4[6];
+      u8 voxsw;
+      u8 gpstimezone;
     } settings;
     """
 
@@ -566,15 +630,222 @@ class UV17Pro(chirp_common.CloneModeRadio,
         """Translate the bit in the mem_struct into settings in the UI"""
         _mem = self._memobj
         basic = RadioSettingGroup("basic", "Basic Settings")
-        advanced = RadioSettingGroup("advanced", "Advanced Settings")
-        other = RadioSettingGroup("other", "Other Settings")
-        work = RadioSettingGroup("work", "Work Mode Settings")
-        fm_preset = RadioSettingGroup("fm_preset", "FM Preset")
+        bank = RadioSettingGroup("bank", "Bank names")
+        work = RadioSettingGroup("work", "VFO Mode Settings")
         dtmfe = RadioSettingGroup("dtmfe", "DTMF Encode Settings")
-        service = RadioSettingGroup("service", "Service Settings")
-        top = RadioSettings(basic, advanced, other, work, fm_preset, dtmfe,
-                            service)
+        top = RadioSettings(basic, bank, work, dtmfe)
      
+        if _mem.settings.squelch > 0x05:
+            val = 0x00
+        else:
+            val = _mem.settings.squelch
+        rs = RadioSetting("settings.squelch", "Squelch",
+                          RadioSettingValueList(
+                              LIST_OFF1TO5, LIST_OFF1TO5[val]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.tot", "Timeout Timer",
+                          RadioSettingValueList(
+                              LIST_TIMEOUT, LIST_TIMEOUT[_mem.settings.tot]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.savemode", "Save Mode",
+                          RadioSettingValueBoolean(_mem.settings.savemode))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.totalarm", "Timeout Timer Alarm",
+                          RadioSettingValueList(
+                              LIST_TIMEOUT_ALARM, LIST_TIMEOUT_ALARM[_mem.settings.totalarm]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.dualstandby", "Dual Watch",
+                          RadioSettingValueBoolean(_mem.settings.dualstandby))
+        basic.append(rs)
+
+        if self._pilot_tone:
+            rs = RadioSetting("settings.tone", "Pilot Tone",
+                            RadioSettingValueList(
+                                LIST_PILOT_TONE, LIST_PILOT_TONE[_mem.settings.tone]))
+            basic.append(rs)
+
+        rs = RadioSetting("settings.sidetone", "Side Tone",
+                          RadioSettingValueList(
+                              LIST_SIDE_TONE, LIST_SIDE_TONE[_mem.settings.sidetone]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.tailclear", "Tail Clear",
+                          RadioSettingValueBoolean(_mem.settings.tailclear))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.powerondistype", "Power On Display Type",
+                          RadioSettingValueList(
+                              LIST_POWERON_DISPLAY_TYPE, LIST_POWERON_DISPLAY_TYPE[_mem.settings.powerondistype]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.beep", "Beep",
+                          RadioSettingValueList(
+                              LIST_BEEP, LIST_BEEP[_mem.settings.beep]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.roger", "Roger",
+                          RadioSettingValueBoolean(_mem.settings.roger))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.voice", "Language",
+                          RadioSettingValueList(
+                              LIST_LANGUAGE, LIST_LANGUAGE[_mem.settings.voice]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.voicesw", "Enable Voice",
+                          RadioSettingValueBoolean(_mem.settings.voicesw))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.scanmode", "Scan Mode",
+                          RadioSettingValueList(
+                              LIST_SCANMODE, LIST_SCANMODE[_mem.settings.scanmode]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.alarmmode", "Alarm Mode",
+                          RadioSettingValueList(
+                              LIST_ALARMMODE, LIST_ALARMMODE[_mem.settings.alarmmode]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.alarmtone", "Sound Alarm",
+                          RadioSettingValueBoolean(_mem.settings.alarmtone))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.keylock", "Key Lock",
+                          RadioSettingValueBoolean(_mem.settings.keylock))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.fmenable", "Disable FM radio",
+                          RadioSettingValueBoolean(_mem.settings.fmenable))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.autolock", "Key Auto Lock",
+                          RadioSettingValueBoolean(_mem.settings.autolock))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.menuquittime", "Menu Quit Timer",
+                          RadioSettingValueList(
+                              LIST_MENU_QUIT_TIME, LIST_MENU_QUIT_TIME[_mem.settings.menuquittime]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.backlight", "Backlight Timer",
+                          RadioSettingValueList(
+                              LIST_BACKLIGHT_TIMER, LIST_BACKLIGHT_TIMER[_mem.settings.backlight]))
+        basic.append(rs)
+
+        if self._send_id_delay:
+            rs = RadioSetting("settings.pttdly", "Send ID Delay",
+                            RadioSettingValueList(
+                                LIST_ID_DELAY, LIST_ID_DELAY[_mem.settings.pttdly]))
+            basic.append(rs)
+
+        rs = RadioSetting("settings.ctsdcsscantype", "QT Save Mode",
+                          RadioSettingValueList(
+                              LIST_QT_SAVEMODE, LIST_QT_SAVEMODE[_mem.settings.ctsdcsscantype]))
+        basic.append(rs)
+
+        def getKey2shortIndex(value):
+            if value == 0x07:
+                return 0
+            if value == 0x1C:
+                return 1
+            if value == 0x1D:
+                return 2
+            if value == 0x2D:
+                return 3
+            return 0
+        
+        def apply_Key2short(setting, obj):
+            val = str(setting.value)
+            if val == "FM":
+                obj.key2short = 0x07
+            if val == "Scan":
+                obj.key2short = 0x1C
+            if val == "Search":
+                obj.key2short = 0x1D
+            if val == "Vox":
+                obj.key2short = 0x2D
+
+        if self._skey2_short:
+            rs = RadioSetting("settings.key2short", "Skey2 Short",
+                            RadioSettingValueList(
+                                LIST_SKEY2_SHORT, LIST_SKEY2_SHORT[getKey2shortIndex(_mem.settings.key2short)]))
+            rs.set_apply_callback(apply_Key2short, _mem.settings)
+            basic.append(rs)
+
+        rs = RadioSetting("settings.chadistype", "Channel A display type",
+                          RadioSettingValueList(
+                              LIST_MODE, LIST_MODE[_mem.settings.chadistype]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.chaworkmode", "Channel A work mode",
+                          RadioSettingValueList(
+                              LIST_WORKMODE, LIST_WORKMODE[_mem.settings.chaworkmode]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.chbdistype", "Channel B display type",
+                          RadioSettingValueList(
+                              LIST_MODE, LIST_MODE[_mem.settings.chbdistype]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.chbworkmode", "Channel B work mode",
+                          RadioSettingValueList(
+                              LIST_WORKMODE, LIST_WORKMODE[_mem.settings.chbworkmode]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.rpttailclear", "Rpt Tail Clear",
+                          RadioSettingValueList(
+                              LIST_RPT_TAIL_CLEAR, LIST_RPT_TAIL_CLEAR[_mem.settings.rpttailclear]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.rpttaildet", "Rpt Tail Delay",
+                          RadioSettingValueList(
+                              LIST_RPT_TAIL_CLEAR, LIST_RPT_TAIL_CLEAR[_mem.settings.rpttaildet]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.rstmenu", "Enable Menu Rst",
+                          RadioSettingValueBoolean(_mem.settings.rstmenu))
+        basic.append(rs)
+
+        if self._voxsw:
+            rs = RadioSetting("settings.voxsw", "Vox Switch",
+                            RadioSettingValueBoolean(_mem.settings.voxsw))
+            basic.append(rs)
+
+            rs = RadioSetting("settings.vox", "Vox Level",
+                            RadioSettingValueList(
+                                LIST_VOX_LEVEL_ALT, LIST_VOX_LEVEL_ALT[_mem.settings.vox]))
+            basic.append(rs)
+        else:
+            rs = RadioSetting("settings.vox", "Vox Level",
+                            RadioSettingValueList(
+                                LIST_VOX_LEVEL, LIST_VOX_LEVEL[_mem.settings.vox]))
+            basic.append(rs)
+            
+
+        rs = RadioSetting("settings.voxdlytime", "Vox Delay Time",
+                          RadioSettingValueList(
+                              LIST_VOX_DELAY_TIME, LIST_VOX_DELAY_TIME[_mem.settings.voxdlytime]))
+        basic.append(rs)
+
+        if self._has_gps:
+            rs = RadioSetting("settings.gpsw", "GPS On",
+                            RadioSettingValueBoolean(_mem.settings.gpsw))
+            basic.append(rs)
+            
+            rs = RadioSetting("settings.gpsmode", "GPS Mode",
+                            RadioSettingValueList(
+                                LIST_GPS_MODE, LIST_GPS_MODE[_mem.settings.gpsmode]))
+            basic.append(rs)
+
+            rs = RadioSetting("settings.gpstimezone", "GPS Timezone",
+                            RadioSettingValueList(
+                                LIST_GPS_TIMEZONE, LIST_GPS_TIMEZONE[_mem.settings.gpstimezone]))
+            basic.append(rs)
+
         def _filterName(name, zone):
             fname = ""
             charset=chirp_common.CHARSET_ASCII
@@ -594,7 +865,7 @@ class UV17Pro(chirp_common.CloneModeRadio,
             rs = RadioSetting("bank_names.name1", "Bank name 1",
                             RadioSettingValueString(
                                 0, 12, _filterName(_msg.name1, _zone)))
-            other.append(rs)
+            bank.append(rs)
 
             _zone="02"
             _msg = _mem.bank_names
@@ -602,62 +873,62 @@ class UV17Pro(chirp_common.CloneModeRadio,
                             RadioSettingValueString(
                                 0, 12, _filterName(_msg.name2, _zone)))
             
-            other.append(rs)
+            bank.append(rs)
             _zone="03"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name3", "Bank name 3",
                             RadioSettingValueString(
                                 0, 12, _filterName(_msg.name3, _zone)))
-            other.append(rs)
+            bank.append(rs)
 
             _zone="04"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name4", "Bank name 4",
                             RadioSettingValueString(
                                 0, 12, _filterName(_msg.name4, _zone)))            
-            other.append(rs)
+            bank.append(rs)
 
             _zone="05"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name5", "Bank name 5",
                             RadioSettingValueString(
                                 0, 12, _filterName(_msg.name5, _zone)))
-            other.append(rs)
+            bank.append(rs)
 
             _zone="06"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name6", "Bank name 6",
                             RadioSettingValueString(
                                 0, 12, _filterName(_msg.name6, _zone)))
-            other.append(rs)
+            bank.append(rs)
 
             _zone="07"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name7", "Bank name 7",
                             RadioSettingValueString(
                                 0, 12, _filterName(_msg.name7, _zone)))
-            other.append(rs)
+            bank.append(rs)
 
             _zone="08"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name8", "Bank name 8",
                             RadioSettingValueString(
                                 0, 12, _filterName(_msg.name8, _zone)))
-            other.append(rs)
+            bank.append(rs)
 
             _zone="09"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name9", "Bank name 9",
                             RadioSettingValueString(
                                 0, 12, _filterName(_msg.name9, _zone)))
-            other.append(rs)
+            bank.append(rs)
 
             _zone="10"
             _msg = _mem.bank_names
             rs = RadioSetting("bank_names.name10", "Bank name 10",
                             RadioSettingValueString(
                                 0, 12, _filterName(_msg.name10, _zone)))
-            other.append(rs)
+            bank.append(rs)
 
         _codeobj = self._memobj.ani.code
         _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
@@ -751,23 +1022,10 @@ class UV17Pro(chirp_common.CloneModeRadio,
         rs.set_apply_callback(apply_freq, _mem.vfo.a)
         work.append(rs)
 
-        val1b = RadioSettingValueString(0, 10,
-                                        convert_bytes_to_freq(_mem.vfo.b.freq))
-        val1b.set_validate_callback(my_validate)
-        rs = RadioSetting("vfo.b.freq", "VFO B Frequency", val1b)
-        rs.set_apply_callback(apply_freq, _mem.vfo.b)
-        work.append(rs)
-
         rs = RadioSetting("vfo.a.sftd", "VFO A Offset dir",
                           RadioSettingValueList(
                               LIST_SHIFTD, LIST_SHIFTD[_mem.vfo.a.sftd]))
         work.append(rs)
-
-        rs = RadioSetting("vfo.b.sftd", "VFO B Offset dir",
-                          RadioSettingValueList(
-                              LIST_SHIFTD, LIST_SHIFTD[_mem.vfo.b.sftd]))
-        work.append(rs)
-
 
         def convert_bytes_to_offset(bytes):
             real_offset = 0
@@ -788,13 +1046,6 @@ class UV17Pro(chirp_common.CloneModeRadio,
         rs.set_apply_callback(apply_offset, _mem.vfo.a)
         work.append(rs)
 
-        val1b = RadioSettingValueString(
-                    0, 10, convert_bytes_to_offset(_mem.vfo.b.offset))
-        rs = RadioSetting("vfo.b.offset",
-                          "VFO B Offset", val1b)
-        rs.set_apply_callback(apply_offset, _mem.vfo.b)
-        work.append(rs)
-
         def apply_txpower_listvalue(setting, obj):
             LOG.debug("Setting value: " + str(
                       setting.value) + " from list")
@@ -810,23 +1061,10 @@ class UV17Pro(chirp_common.CloneModeRadio,
                                             ))
         work.append(rs)
 
-        rs = RadioSetting("vfo.b.lowpower", "VFO B Power",
-                            RadioSettingValueList(
-                                LIST_TXPOWER,
-                                LIST_TXPOWER[min(_mem.vfo.b.lowpower, 0x02)]
-                                            ))
-        work.append(rs)
-
         rs = RadioSetting("vfo.a.wide", "VFO A Bandwidth",
                           RadioSettingValueList(
                               LIST_BANDWIDTH,
                               LIST_BANDWIDTH[_mem.vfo.a.wide]))
-        work.append(rs)
-
-        rs = RadioSetting("vfo.b.wide", "VFO B Bandwidth",
-                          RadioSettingValueList(
-                              LIST_BANDWIDTH,
-                              LIST_BANDWIDTH[_mem.vfo.b.wide]))
         work.append(rs)
 
         rs = RadioSetting("vfo.a.scode", "VFO A S-CODE",
@@ -835,38 +1073,15 @@ class UV17Pro(chirp_common.CloneModeRadio,
                               LIST_SCODE[_mem.vfo.a.scode]))
         work.append(rs)
 
-        rs = RadioSetting("vfo.b.scode", "VFO B S-CODE",
-                          RadioSettingValueList(
-                              LIST_SCODE,
-                              LIST_SCODE[_mem.vfo.b.scode]))
-        work.append(rs)
-
         rs = RadioSetting("vfo.a.step", "VFO A Tuning Step",
                           RadioSettingValueList(
                               LIST_STEP, LIST_STEP[_mem.vfo.a.step]))
-        work.append(rs)
-        rs = RadioSetting("vfo.b.step", "VFO B Tuning Step",
-                          RadioSettingValueList(
-                              LIST_STEP, LIST_STEP[_mem.vfo.b.step]))
         work.append(rs)
 
         rs = RadioSetting("vfo.a.fhss", "VFO A FHSS",
                           RadioSettingValueBoolean(_mem.vfo.a.fhss))
         work.append(rs)
 
-        rs = RadioSetting("vfo.b.fhss", "VFO B FHSS",
-                          RadioSettingValueBoolean(_mem.vfo.b.fhss))
-        work.append(rs)
-
-        rs = RadioSetting("settings.bcl", "BCL",
-                          RadioSettingValueBoolean(_mem.settings.bcl))
-        work.append(rs)
-
-        rs = RadioSetting("settings.pttid", "PTT ID",
-                          RadioSettingValueList(self.PTTID_LIST,
-                                                self.PTTID_LIST[_mem.settings.pttid]))
-        work.append(rs)
-        
         def getToneIndex(tone):            
             if tone in [0, 0xFFFF]:
                 index = 0
@@ -912,6 +1127,53 @@ class UV17Pro(chirp_common.CloneModeRadio,
         rs.set_apply_callback(apply_txtone, _mem.vfo.a)
         work.append(rs)
 
+        val1b = RadioSettingValueString(0, 10,
+                                        convert_bytes_to_freq(_mem.vfo.b.freq))
+        val1b.set_validate_callback(my_validate)
+        rs = RadioSetting("vfo.b.freq", "VFO B Frequency", val1b)
+        rs.set_apply_callback(apply_freq, _mem.vfo.b)
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.sftd", "VFO B Offset dir",
+                          RadioSettingValueList(
+                              LIST_SHIFTD, LIST_SHIFTD[_mem.vfo.b.sftd]))
+        work.append(rs)
+
+        val1b = RadioSettingValueString(
+                    0, 10, convert_bytes_to_offset(_mem.vfo.b.offset))
+        rs = RadioSetting("vfo.b.offset",
+                          "VFO B Offset", val1b)
+        rs.set_apply_callback(apply_offset, _mem.vfo.b)
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.lowpower", "VFO B Power",
+                            RadioSettingValueList(
+                                LIST_TXPOWER,
+                                LIST_TXPOWER[min(_mem.vfo.b.lowpower, 0x02)]
+                                            ))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.wide", "VFO B Bandwidth",
+                          RadioSettingValueList(
+                              LIST_BANDWIDTH,
+                              LIST_BANDWIDTH[_mem.vfo.b.wide]))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.scode", "VFO B S-CODE",
+                          RadioSettingValueList(
+                              LIST_SCODE,
+                              LIST_SCODE[_mem.vfo.b.scode]))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.step", "VFO B Tuning Step",
+                          RadioSettingValueList(
+                              LIST_STEP, LIST_STEP[_mem.vfo.b.step]))
+        work.append(rs)
+
+        rs = RadioSetting("vfo.b.fhss", "VFO B FHSS",
+                          RadioSettingValueBoolean(_mem.vfo.b.fhss))
+        work.append(rs)
+
         rs = RadioSetting("vfo.b.rxtone", "VFA B RX QT/DQT",
                           RadioSettingValueList(self.RXTX_CODES,
                                                 getToneIndex(_mem.vfo.b.rxtone)))
@@ -928,7 +1190,6 @@ class UV17Pro(chirp_common.CloneModeRadio,
             def scan_validate(value):
                 freqOk = False
                 for band in self.VALID_BANDS:
-                    print(band)
                     if value >= (band[0]/1000000) and value <= (band[1]/1000000):
                         freqOk = True
                 if not freqOk:
@@ -947,6 +1208,15 @@ class UV17Pro(chirp_common.CloneModeRadio,
             rs = RadioSetting("settings.vfoscanmax", "VFO scan range maximum", scanMax)
             work.append(rs)
 
+        rs = RadioSetting("settings.bcl", "BCL",
+                          RadioSettingValueBoolean(_mem.settings.bcl))
+        work.append(rs)
+
+        rs = RadioSetting("settings.pttid", "PTT ID",
+                          RadioSettingValueList(self.PTTID_LIST,
+                                                self.PTTID_LIST[_mem.settings.pttid]))
+        work.append(rs)
+        
         return top
     
 
@@ -1318,6 +1588,11 @@ class UV17ProGPS(UV17Pro):
     _magicResponseLengths = [16, 7, 1]
     _aniid = False
     _vfoscan = True
+    _has_gps = True
+    _voxsw = True
+    _pilot_tone = True
+    _send_id_delay = True
+    _skey2_short = True
     VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
 
