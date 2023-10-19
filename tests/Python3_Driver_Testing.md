@@ -393,7 +393,7 @@
 | <a name="Yaesu_FT-70D"></a> Yaesu_FT-70D | [@n8sqt](https://github.com/n8sqt) | 05-Dec-2022 | Yes | 0.27% |
 | <a name="Yaesu_FT-7100M"></a> Yaesu_FT-7100M |  |  | Yes | 0.03% |
 | <a name="Yaesu_FT-7800_7900"></a> Yaesu_FT-7800_7900 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.14% |
-| <a name="Yaesu_FT-8100"></a> Yaesu_FT-8100 |  |  | Yes | 0.01% |
+| <a name="Yaesu_FT-8100"></a> Yaesu_FT-8100 | [Reported working](https://chirp.danplanet.com/issues/10904) | 19-Oct-2023 | Yes | 0.01% |
 | <a name="Yaesu_FT-817"></a> Yaesu_FT-817 | [@kk7ds](https://github.com/kk7ds) | 14-Feb-2019 | Yes | 0.04% |
 | <a name="Yaesu_FT-817ND"></a> Yaesu_FT-817ND | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.07% |
 | <a name="Yaesu_FT-817ND_US"></a> Yaesu_FT-817ND_US | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.02% |
@@ -425,7 +425,7 @@
 
 **Drivers:** 420
 
-**Tested:** 87% (366/54) (93% of usage stats)
+**Tested:** 87% (367/53) (93% of usage stats)
 
 **Byte clean:** 90% (380/40)
 
