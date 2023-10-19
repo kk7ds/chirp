@@ -353,6 +353,7 @@ Yaesu_FT-50,#10824,5-Sep-2023
 Yaesu_FT-60,N0EYE,9-Jan-2023
 Yaesu_FT-70D,@n8sqt,05-Dec-2022
 Yaesu_FT-7800_7900,@kk7ds,24-Oct-2022
+Yaesu_FT-8100,#10904,19-Oct-2023
 Yaesu_FT-8800,@kk7ds,24-Oct-2022
 Yaesu_FT-8900,#10753,30-Jul-2023
 Yaesu_FT-817,@kk7ds,14-Feb-2019
