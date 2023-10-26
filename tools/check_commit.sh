@@ -83,7 +83,10 @@ existing_drivers=$(git ls-tree --name-only $BASE chirp/drivers/)
 limit=20
 for nf in $added_files; do
     for of in $existing_drivers; do
-        change=$(wdiff -s $of $nf | grep $of | sed -r 's/.* ([0-9]+)% changed/\1/')
+        change=$(wdiff -s $of $nf | grep -I $of | sed -r 's/.* ([0-9]+)% changed/\1/')
+        if [ ! "$change" ]; then
+            continue
+        fi
         if [ "$change" -lt "$limit" ]; then
             fail "New file $nf shares at least $((100 - $change))% with $of!"
         fi
