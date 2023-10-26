@@ -87,7 +87,7 @@ CROSS_MODES = (
 
 MODES = ("WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY",
          "DIG", "PKT", "NCW", "NCWR", "CWR", "P25", "Auto", "RTTYR",
-         "FSK", "FSKR", "DMR", "DN")
+         "FSK", "FSKR", "DMR", "DN", "USER-L", "USER-U", "RTTY-L")
 
 TONE_MODES = (
     "",
@@ -929,7 +929,6 @@ class RadioFeatures:
         self.init("has_variable_power", False,
                   "Indicates the radio supports any power level between the "
                   "min and max in valid_power_levels")
-
         self.init("valid_modes", list(MODES),
                   "Supported emission (or receive) modes")
         self.init("valid_tmodes", [],
