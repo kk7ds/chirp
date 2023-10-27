@@ -2056,3 +2056,10 @@ class UVK5Radio(chirp_common.CloneModeRadio):
                     _mem4.channel_attributes[number].is_scanlist2 = 0
 
         return mem
+
+
+@directory.register
+class RA79Radio(UVK5Radio):
+    """Retevis RA79"""
+    VENDOR = "Retevis"
+    MODEL = "RA79"
