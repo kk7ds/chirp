@@ -136,8 +136,6 @@ Baofeng/Pofung:
   model: UV-5X (GMRS version)
 - alt: UV-82HP
   model: UV-8R
-- alt: Radioddity GA-510
-  model: UV-9R Pro (BF-H6 variant)
 - alt: Radioddity UV-5RX3
   model: UV-9S
 - alt: UV-82HP
