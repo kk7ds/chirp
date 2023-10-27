@@ -362,6 +362,7 @@
 | <a name="Wouxun_KG-818"></a> Wouxun_KG-818 | [Implied by Wouxun_KG-UV6](#user-content-Wouxun_KG-UV6) | 11-Dec-2022 | Yes | 0.04% |
 | <a name="Wouxun_KG-935G"></a> Wouxun_KG-935G | [@mrtjr1](https://github.com/mrtjr1) | 4-Jan-2022 | Yes | 0.05% |
 | <a name="Wouxun_KG-935G_Plus"></a> Wouxun_KG-935G_Plus | [@mrtjr1](https://github.com/mrtjr1) | 7-Feb-2023 | Yes |  |
+| <a name="Wouxun_KG-Q10H"></a> Wouxun_KG-Q10H | [@mrtjr1](https://github.com/mrtjr1) | 27-Oct-2023 | Yes |  |
 | <a name="Wouxun_KG-UV6"></a> Wouxun_KG-UV6 | [@KC9HI](https://github.com/KC9HI) | 11-Dec-2022 | Yes | 0.19% |
 | <a name="Wouxun_KG-UV8D"></a> Wouxun_KG-UV8D | Unit tested; needs confirm | 24-Dec-2022 | Yes | 0.24% |
 | <a name="Wouxun_KG-UV8D_Plus"></a> Wouxun_KG-UV8D_Plus | Unit tested; needs confirm | 2-Jan-2022 | Yes | 0.08% |
@@ -423,11 +424,19 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 420
+**Drivers:** 421
 
+<<<<<<< Updated upstream
 **Tested:** 87% (366/54) (93% of usage stats)
+=======
+<<<<<<< Updated upstream
+**Tested:** 87% (367/53) (93% of usage stats)
+=======
+**Tested:** 87% (367/54) (93% of usage stats)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
-**Byte clean:** 90% (380/40)
+**Byte clean:** 90% (381/40)
 
 ## Meaning of this testing
 
