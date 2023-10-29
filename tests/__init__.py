@@ -64,6 +64,7 @@ def _load_tests(loader, tests, pattern, suite=None):
         pattern = None
 
     driver_test_cases = (test_edges.TestCaseEdges,
+                         test_edges.TestBitwiseStrict,
                          test_brute_force.TestCaseBruteForce,
                          test_banks.TestCaseBanks,
                          test_detect.TestCaseDetect,

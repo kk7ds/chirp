@@ -732,7 +732,7 @@ class structDataElement(DataElement):
             s += "  %15s: %s%s" % (prop, repr(self._generators[prop]),
                                    os.linesep)
         s += "} %s (%i bytes at 0x%04X)%s" % (self._name,
-                                              self.size() / 8,
+                                              self.size() // 8,
                                               self._offset,
                                               os.linesep)
         return s
@@ -823,8 +823,6 @@ class structDataElement(DataElement):
 
 
 class Processor:
-    strict = False
-
     _types = {
         "u8":    u8DataElement,
         "u16":   u16DataElement,
@@ -859,7 +857,7 @@ class Processor:
         self._generators[name] = gen
 
     def do_bitfield(self, dtype, bitfield):
-        bytes = self._types[dtype](self._data, 0).size() / 8
+        bytes = self._types[dtype](self._data, 0).size() // 8
         bitsleft = bytes * 8
 
         for _bitdef, defn in bitfield:
@@ -916,7 +914,7 @@ class Processor:
                     self._offset += int((i+1) % 8 == 0)
                 else:
                     gen = self._types[dtype](self._data, self._offset)
-                    self._offset += (gen.size() / 8)
+                    self._offset += (gen.size() // 8)
                 res.append(gen)
 
             if count == 1:
@@ -965,16 +963,24 @@ class Processor:
         else:
             raise Exception("Internal error: What is `%s'?" % struct[0][0])
 
+    def assert_negative_seek(self, message):
+        warnings.warn(message, DeprecationWarning, stacklevel=6)
+
+    def assert_unnecessary_seek(self, message):
+        warnings.warn(message, DeprecationWarning, stacklevel=6)
+
     def parse_directive(self, directive):
         name = directive[0][0]
         value = directive[0][1][0][1]
         if name == "seekto":
-            if self._offset == int(value, 0):
-                if self.strict:
-                    raise SyntaxError('Unnecessary #seekto %s' % value)
-                else:
-                    LOG.warning('Unnecessary #seekto %s' % value)
-            self._offset = int(value, 0)
+            target = int(value, 0)
+            if self._offset == target:
+                self.assert_unnecessary_seek('Unnecessary #seekto %s' % value)
+            elif target < self._offset:
+                self.assert_negative_seek(
+                    'Invalid negative seek from 0x%04x to 0x%04x' % (
+                        self._offset, target))
+            self._offset = target
         elif name == "seek":
             self._offset += int(value, 0)
         elif name == "printoffset":
