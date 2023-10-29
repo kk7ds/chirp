@@ -212,7 +212,7 @@ struct {
         unk:2,
         dtmf_mode:1;
     u8  unk:1,
-        ts_mut:1
+        ts_mut:1,
         wires_auto:1,
         busy_lockout:1,
         edge_beep:1,

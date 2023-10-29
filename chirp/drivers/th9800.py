@@ -41,7 +41,7 @@ struct mem {
   u8 fmdev:2,       // wide=00, mid=01, narrow=10
      scramb:1,
      compand:1,
-     emphasis:1
+     emphasis:1,
      unknown1a:2,
      sqlmode:1;     // carrier, tone
   u8 rptmod:2,      // off, -, +
@@ -87,7 +87,7 @@ struct {
         right_func_key:1;
     u8  tbst_freq:2,
         ani_display:1,
-        unk0xdc25_4:1
+        unk0xdc25_4:1,
         mute_mode:2,
         unk0xdc25_10:2;
     u8  auto_xfer:1,

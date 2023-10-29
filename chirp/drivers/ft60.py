@@ -194,7 +194,7 @@ struct {
      x3B_6:2;
   u8 x3C_0:2,
      rev_hm:1,
-     mt_cl:1
+     mt_cl:1,
      resume:2,
      txsave:1,
      pag_abk:1;
@@ -235,7 +235,7 @@ struct mem {
   u8 unknown4:1,
      dtcs:7;
   u8 unknown5;
-  u16 unknown5_1:1
+  u16 unknown5_1:1,
       offset:15;
   u8 unknown6[3];
 };

@@ -32,24 +32,24 @@ MEM_FORMAT = """
 struct chns {
   ul32 rxfreq;
   ul32 txfreq;
-  ul16 scramble:4
+  ul16 scramble:4,
        rxtone:12; //decode:12
-  ul16 decodeDSCI:1
-       encodeDSCI:1
-       unk1:1
-       unk2:1
+  ul16 decodeDSCI:1,
+       encodeDSCI:1,
+       unk1:1,
+       unk2:1,
        txtone:12; //encode:12
-  u8   power:2
-       wide:2
-       b_lock:2
+  u8   power:2,
+       wide:2,
+       b_lock:2,
        unk3:2;
-  u8   unk4:3
-       signal:2
-       displayName:1
+  u8   unk4:3,
+       signal:2,
+       displayName:1,
        unk5:2;
-  u8   unk6:2
-       pttid:2
-       unk7:1
+  u8   unk6:2,
+       pttid:2,
+       unk7:1,
        step:3;               // not required
   u8   name[6];
 };
@@ -57,23 +57,23 @@ struct chns {
 struct vfo {
   ul32 rxfreq;
   ul32 txfreq;  // displayed as an offset
-  ul16 scramble:4
+  ul16 scramble:4,
        rxtone:12; //decode:12
-  ul16 decodeDSCI:1
-       encodeDSCI:1
-       unk1:1
-       unk2:1
+  ul16 decodeDSCI:1,
+       encodeDSCI:1,
+       unk1:1,
+       unk2:1,
        txtone:12; //encode:12
-  u8   power:2
-       wide:2
-       b_lock:2
+  u8   power:2,
+       wide:2,
+       b_lock:2,
        unk3:2;
-  u8   unk4:3
-       signal:2
-       displayName:1
+  u8   unk4:3,
+       signal:2,
+       displayName:1,
        unk5:2;
-  u8   unk6:2
-       pttid:2
+  u8   unk6:2,
+       pttid:2,
        step:4;
   u8   name[6];
 };
@@ -120,7 +120,7 @@ struct {
                           //        screen
      unk_bit4 : 1,        //
      sqlLevel : 4;        //        [05] *OFF, 1-9
-  u8 beep : 1             // 0x116D [09] *OFF, On
+  u8 beep : 1,             // 0x116D [09] *OFF, On
      callKind : 2,        //        code says 1750,2100,1000,1450 as options
                           //        not on screen
      introScreen: 2,      //        [20] *OFF, Voltage, Char String

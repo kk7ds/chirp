@@ -215,7 +215,7 @@ _MEM_FORMAT = """
                 power:1,
                 unknown2:1;
         u8      unknown3:1,
-                shift_dir:2
+                shift_dir:2,
                 unknown4:1,
                 compander:1,
                 mute_mode:2,
@@ -235,7 +235,7 @@ _MEM_FORMAT = """
                 power:1,
                 unknown2:1;
         u8      unknown3:1,
-                shift_dir:2
+                shift_dir:2,
                 unknown4:1,
                 compander:1,
                 mute_mode:2,
