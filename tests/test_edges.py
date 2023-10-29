@@ -1,3 +1,7 @@
+import pytest
+from unittest import mock
+
+from chirp import bitwise
 from chirp import chirp_common
 from chirp import errors
 from tests import base
@@ -163,3 +167,23 @@ class TestCaseEdges(base.DriverTest):
         self.assertEqual(m2.name.rstrip(), m2.name,
                          'Radio set and returned a memory with trailing '
                          'whitespace in the name')
+
+
+class TestBitwiseStrict(base.DriverTest):
+    def setUp(self):
+        pass
+
+    def _raise(self, message):
+        raise SyntaxError(message)
+
+    @pytest.mark.xfail(strict=False)
+    @mock.patch.object(bitwise.Processor, 'assert_negative_seek',
+                       side_effect=_raise)
+    def test_bitwise_negative_seek(self, mock_assert):
+        super().setUp()
+
+    @pytest.mark.xfail(strict=False)
+    @mock.patch.object(bitwise.Processor, 'assert_unnecessary_seek',
+                       side_effect=_raise)
+    def test_bitwise_unnecessary_seek(self, mock_assert):
+        super().setUp()
