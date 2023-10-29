@@ -81,7 +81,7 @@ struct {
      unknown_08311:1,
      chnameshow:1,      // Display Channel Names (Off, On)                 [25]
      voice:1,           // Voice Prompt (Off, On)                          [19]
-     beep:1             // Beep (Off, On)                                  [09]
+     beep:1,            // Beep (Off, On)                                  [09]
      batterysave:1;     // Battery Save aka Receiver Saver (Off, On)       [16]
   u8 unknown_0832:3,
      manual:1,          // Manual (Disabled, Enabled)

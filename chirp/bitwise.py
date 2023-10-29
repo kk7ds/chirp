@@ -817,6 +817,7 @@ class structDataElement(DataElement):
 
 
 class Processor:
+    strict = False
 
     _types = {
         "u8":    u8DataElement,
@@ -962,6 +963,11 @@ class Processor:
         name = directive[0][0]
         value = directive[0][1][0][1]
         if name == "seekto":
+            if self._offset == int(value, 0):
+                if self.strict:
+                    raise SyntaxError('Unnecessary #seekto %s' % value)
+                else:
+                    LOG.warning('Unnecessary #seekto %s' % value)
             self._offset = int(value, 0)
         elif name == "seek":
             self._offset += int(value, 0)
@@ -992,10 +998,11 @@ def parse(spec, data, offset=0):
 
 if __name__ == "__main__":
     defn = """
+// comment
 struct mytype { u8 foo; };
 struct mytype bar;
 struct {
-  u8 foo;
+  u8 foo; // inline
   u8 highbit:1,
      sixzeros:6,
      lowbit:1;
@@ -1003,7 +1010,7 @@ struct {
   bbcd fourdigits[2];
 } mystruct;
 """
-    data = "\xab\x7F\x81abc\x12\x34"
+    data = b"\xab\x7F\x81abc\x12\x34"
     tree = parse(defn, data)
 
     print(repr(tree))

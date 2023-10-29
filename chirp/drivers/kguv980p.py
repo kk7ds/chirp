@@ -556,7 +556,7 @@ _MEM_FORMAT = """
         u8      unknown3:6,
                 Unknown4_shft_dir:2;
         u8      unknown5:3,
-                compander:1
+                compander:1,
                 scrambler:4;
     } memory[1000];
 

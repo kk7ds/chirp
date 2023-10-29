@@ -42,7 +42,7 @@ struct mem {
   u8 fmdev:2,       // wide=00, mid=01, narrow=10
      scramb:1,
      compand:1,
-     emphasis:1
+     emphasis:1,
      unknown1a:2,
      sqlmode:1;     // carrier, tone
   u8 rptmod:2,      // off, -, +

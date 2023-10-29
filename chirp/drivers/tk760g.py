@@ -216,7 +216,7 @@ struct {
   // --
   u8 ptt_id:2,       // ??? BOT = 0, EOT = 1, Both = 2, NONE = 3
      beat_shift:1,      // 1 = off
-     unknown26:2        // ???
+     unknown26:2,       // ???
      power:1,           // power: 0 low / 1 high
      compander:1,       // 1 = off
      wide:1;            // wide 1 / 0 narrow

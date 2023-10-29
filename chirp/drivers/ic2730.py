@@ -37,7 +37,7 @@ except ImportError:
 
 MEM_FORMAT = """
 struct {
-  u24  freq_flags:6
+  u24  freq_flags:6,
        freq:18;
   u16  offset;
   u8   tune_step:4,
@@ -90,11 +90,11 @@ char nam[6];
 
 #seekto 0x4e80;
 struct {
-u24  loflags:6
+u24  loflags:6,
      lofreq:18;
-u24  hiflags:6
+u24  hiflags:6,
      hifreq:18;
-u8  flag:4
+u8  flag:4,
     mode:4;
 u8  tstp;
 char name[6];
@@ -122,7 +122,7 @@ u8  civbaud;
 u8  civtcvr;
 u8  sqlatt;
 u8  sqldly;
-u8  unk5014a:4
+u8  unk5014a:4,
     fanspeed:4;
 u8  unk5015;
 u8  bthvox;
@@ -193,8 +193,8 @@ u8  unk505a;
 u8  unk505b;
 u8  unk505c;
 u8  unk505d;
-u8  unk505e:6
-    rpthangup:1
+u8  unk505e:6,
+    rpthangup:1,
     unk505e2:1;
 u8  unk505f;
 } settings;

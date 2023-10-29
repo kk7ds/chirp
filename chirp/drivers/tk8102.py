@@ -39,7 +39,7 @@ struct {
      beatshift:1;
   u8 pttid:2,
      highpower:1,
-     scan:1
+     scan:1,
      unknown2:4;
   u8 unknown3[2];
 } memory[8];

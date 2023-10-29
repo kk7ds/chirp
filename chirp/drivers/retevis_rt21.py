@@ -338,7 +338,7 @@ struct {
   u8 unknown_7[2];     //                        005E-005F
   u8 channel_7[13];    //                        0060-006C
   u8 voicel:4,         // Voice Level            006D
-     unknown_9:3       //
+     unknown_9:3,      //
      warn:1;           // Warn Mode
 } settings;
 

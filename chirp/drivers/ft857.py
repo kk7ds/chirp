@@ -160,7 +160,7 @@ class FT857Radio(ft817.FT817Radio):
                 ars_430:1,
                 cw_weight:5;
             u8  cw_delay;
-            u8  cw_delay_hi:1
+            u8  cw_delay_hi:1,
                 cw_sidetone:7;
             u8  unknown10:2,
                 cw_speed:6;

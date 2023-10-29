@@ -178,7 +178,7 @@ struct mem {
   u8   dtcs_index;
   u8   is_mode_am:1,
        unknown71:2,
-       is_packet96:1
+       is_packet96:1,
        unknown72:2,
        power_index:2;
   u8   unknown81:2,

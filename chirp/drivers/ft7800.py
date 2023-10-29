@@ -30,20 +30,33 @@ LOG = logging.getLogger(__name__)
 ACK = b'\x06'
 
 MEM_FORMAT = """
+struct mem_struct {
+  u8 used:1,
+     unknown1:1,
+     mode:2,
+     unknown2:1,
+     duplex:3;
+  bbcd freq[3];
+  u8 clockshift:1,
+     tune_step:3,
+     unknown5:1, // TODO: tmode has extended settings, at least 4 bits
+     tmode:3;
+  bbcd split[3];
+  u8 power:2,
+     tone:6;
+  u8 unknown6:1,
+     dtcs:7;
+  u8 unknown7[2];
+  u8 offset;
+  u8 unknown9[3];
+};
+
 #seekto 0x002A;
 u8  banks_unk2;
 u8  current_channel;
 u8  unk3;
 u8  unk4;
 u8  current_menu;
-
-#seekto 0x0035;
-u8  banks_unk1;
-
-#seekto 0x00C8;
-struct {
-    u8  memory[16];
-} dtmf[16];
 
 #seekto 0x003A;
 struct {
@@ -86,29 +99,13 @@ struct {
     u8  unk6;
 } settings;
 
-struct mem_struct {
-  u8 used:1,
-     unknown1:1,
-     mode:2,
-     unknown2:1,
-     duplex:3;
-  bbcd freq[3];
-  u8 clockshift:1,
-     tune_step:3,
-     unknown5:1, // TODO: tmode has extended settings, at least 4 bits
-     tmode:3;
-  bbcd split[3];
-  u8 power:2,
-     tone:6;
-  u8 unknown6:1,
-     dtcs:7;
-  u8 unknown7[2];
-  u8 offset;
-  u8 unknown9[3];
-};
-
 #seekto 0x0048;
 struct mem_struct vfos[5];
+
+#seekto 0x00C8;
+struct {
+    u8  memory[16];
+} dtmf[16];
 
 #seekto 0x01C8;
 struct mem_struct homes[5];
@@ -793,6 +790,11 @@ struct {
   u8 name[6];
 } memory[500];
 
+#seekto 0x%X;
+struct {
+   u32 bitmap[16];
+} bank_channels[10];
+
 #seekto 0x51C8;
 struct {
   u8 skip0:2,
@@ -800,12 +802,6 @@ struct {
      skip2:2,
      skip3:2;
 } flags[250];
-
-#seekto 0x%X;
-struct {
-   u32 bitmap[16];
-} bank_channels[10];
-
 
 #seekto 0x7B48;
 u8 checksum;

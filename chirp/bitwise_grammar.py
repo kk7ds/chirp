@@ -35,7 +35,7 @@ def count():
 
 
 def bitdef():
-    return symbol, ":", count, -1
+    return symbol, ":", count
 
 
 def _bitdeflist():
@@ -43,7 +43,7 @@ def _bitdeflist():
 
 
 def bitfield():
-    return -2, _bitdeflist
+    return _bitdeflist
 
 
 def array():

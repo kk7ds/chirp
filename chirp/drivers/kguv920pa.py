@@ -147,14 +147,14 @@ _MEM_FORMAT = """
                 mute_mode:2,
                 unknown1_3downto0:3;
         u8      named:1,
-                scan_add:1
+                scan_add:1,
                 power:2,
                 unknown2_32:2,
                 isnarrow:2;
         u8      unknown3_7downto2:6,
                 duplex:2;
         u8      unknown4:3,
-                compander:1
+                compander:1,
                 scrambler:4;
     } vfoa;
 
@@ -168,14 +168,14 @@ _MEM_FORMAT = """
                 mute_mode:2,
                 unknown1_3downto0:3;
         u8      named:1,
-                scan_add:1
+                scan_add:1,
                 power:2,
                 unknown2_3downto2:2,
                 isnarrow:2;
         u8      unknown3_7downto2:6,
                 duplex:2;
         u8      unknown4:3,
-                compander:1
+                compander:1,
                 scrambler:4;
     } vfob;
 
@@ -311,14 +311,14 @@ _MEM_FORMAT = """
                 mute_mode:2,
                 unknown1_3downto0:3;
         u8      named:1,
-                scan_add:1
+                scan_add:1,
                 power:2,
                 unknown2_32:2,
                 isnarrow:2;
         u8      unknown3_7downto2:6,
                 shift_dir:2;
         u8      unknown4:3,
-                compander:1
+                compander:1,
                 scrambler:4;
     } memory[999];
 

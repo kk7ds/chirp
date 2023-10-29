@@ -50,7 +50,7 @@ struct {
   u8 lcd_dimmer;
   u8 dtmf_delay;
   u8 unknown0[3];
-  u8 unknown1:4
+  u8 unknown1:4,
      lcd_contrast:4;
   u8 lamp;
   u8 unknown2[7];
@@ -201,7 +201,7 @@ struct {
   u8 unknown7:1,
      aprs_units_wind_mph:1,
      aprs_units_rain_inch:1,
-     aprs_units_temperature_f:1
+     aprs_units_temperature_f:1,
      aprs_units_altitude_ft:1,
      unknown8:1,
      aprs_units_distance_m:1,

@@ -49,7 +49,7 @@ struct {
   u8 lcd_dimmer;        // 14 DIMMER
   u8 dtmf_delay;        // 18 DT DLY
   u8 unknown0[3];
-  u8 unknown1:4
+  u8 unknown1:4,
      lcd_contrast:4;
   u8 lamp;              // 28 LAMP
   u8 lock;              // 30 LOCK
@@ -76,7 +76,7 @@ struct {
   u8 busy_led:1,
      unknown9:2,
      bclo:1,            // 03 BCLO
-     beep_edge:1        // 06 BEP.EDG
+     beep_edge:1,       // 06 BEP.EDG
      unknown9_1:3;
   u8 unknown10:5,
      password:1,
@@ -248,7 +248,7 @@ struct {
   u8 unknown7:1,
      aprs_units_wind_mph:1,
      aprs_units_rain_inch:1,
-     aprs_units_temperature_f:1
+     aprs_units_temperature_f:1,
      aprs_units_altitude_ft:1,
      unknown8:1,
      aprs_units_distance_m:1,

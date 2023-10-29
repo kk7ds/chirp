@@ -92,7 +92,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             u8  tunerok:1,        // @ Byte 4 ?? Poss tuned ok
                 cnturon:1,
                 unk4b:1,
-                dnr_on:1
+                dnr_on:1,
                 notch:1,
                 unk4c:1,
                 tmode:2;         // Tone/Cross/etc as Off/Enc/Enc+Dec
@@ -146,7 +146,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 set0ea:1,
                 amfmdial:1, // 0= Enabled. 1 = Disabled
                 cwpitch:3;  // 0-based index
-            u8  sql_rfg:1
+            u8  sql_rfg:1,
                 set0F:2,
                 cwweigt:5;  // Index 1:2.5=0 -> 1:4.5=20
             u8  cw_dly;     // @x10  ms = val * 10
@@ -157,8 +157,8 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 emergen:1,
                 vox_dly:5;    // ms = val * 100
             u8  set15a:1,
-                stby_beep:1
-                set15b:1
+                stby_beep:1,
+                set15b:1,
                 mem_grp:1,
                 apo:4;
             u8  tot;        // Byte x16, 1:1
@@ -190,7 +190,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 cat_tot:2;      // Index 0-3
             u8  set2CA:2,
                 rtyrpol:1,
-                rtytpol:1
+                rtytpol:1,
                 rty_sft:2,
                 rty_ton:1,
                 set2CC:1;

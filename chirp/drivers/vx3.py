@@ -39,7 +39,7 @@ struct {
     u8  unk01_1:3,
         att_broadcast:1,
         att_marine:1,
-        unk01_2:2
+        unk01_2:2,
         att_wx:1;
     u8  unk02;
     u8  apo;

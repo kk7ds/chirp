@@ -84,11 +84,11 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
             u16 is_txdigtone:1,
                 txdtcs_pol:1,
                 txtone:14;
-            u8  txdtmf:4
+            u8  txdtmf:4,
                 pttid:4;
             u8  power:1,
                 wide:1,
-                compandor:1
+                compandor:1,
                 unknown3:5;
             u8  namelen;
             u8  name[7];
