@@ -568,7 +568,7 @@ def do_download(radio):
     if f:
         radio.FIRMWARE_VERSION = f
     else:
-        return False
+        raise errors.RadioError('Unable to determine firmware version')
 
     addr = 0
     while addr < MEM_SIZE:
