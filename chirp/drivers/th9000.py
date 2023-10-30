@@ -405,6 +405,7 @@ def _ident(radio):
 
         if response == b"QX\06":
             exito = True
+            break
 
     # check if we had EXITO
     if exito is False:
