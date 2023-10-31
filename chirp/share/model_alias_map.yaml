@@ -3,6 +3,9 @@ Abbree:
   model: AR-F3
 - alt: Wouxun KG-UV8D
   model: AR-F8
+Anysecu:
+- alt: Quansheng UV-K5
+  model: UV-K5
 Arcshell:
 - alt: Radtel T18
   model: AR-7
