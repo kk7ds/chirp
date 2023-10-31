@@ -106,12 +106,21 @@ class TestCaseEdges(base.DriverTest):
         lo, hi = self.rf.memory_bounds
         for name in self.rf.valid_special_chans:
             m1 = self.radio.get_memory(name)
+            # Flip to non-empty, but only touch it if it's false because some
+            # radios have empty in the immutable set.
+            if m1.empty:
+                m1.empty = False
             try:
                 del m1.extra
             except AttributeError:
                 pass
             if m1.freq > 130000000 and m1.freq < 500000000:
                 m1.freq += 5000
+            elif m1.freq == 0:
+                # If the memory was empty before, we likely need to pick
+                # a valid frequency. Use the bottom of the first supported
+                # band.
+                m1.freq = self.rf.valid_bands[0][0]
             try:
                 self.radio.set_memory(m1)
             except errors.RadioError:
