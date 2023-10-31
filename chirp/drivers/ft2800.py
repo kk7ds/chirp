@@ -315,6 +315,12 @@ class FT2800Radio(YaesuCloneModeRadio):
             # Empty -> Non-empty, so initialize
             _mem.set_raw("\x00" * (_mem.size() // 8))
 
+        # initializing unknowns
+        _mem.unknown1 = (0xFF, 0xFF, 0xFF, 0xFF)
+        _mem.unknown2 = (0x00, 0x00)
+        _mem.unknown3 = 0x01
+        _mem.unknown4 = 0x3C
+
         _mem.freq = mem.freq / 10
         _mem.offset = mem.offset / 100000
         _mem.duplex = DUPLEX.index(mem.duplex)
