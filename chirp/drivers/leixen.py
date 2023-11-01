@@ -77,7 +77,7 @@ struct {
   u8 unknown0x0194;
   u8 menuen:1,           // menu enable
      absel:1,            // a/b select
-     unknown:2
+     unknown:2,
      keymshort:4;        // m key short press
   u8 unknown:4,
      dtmfst:1,           // dtmf sidetone

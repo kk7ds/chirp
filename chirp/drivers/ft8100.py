@@ -108,15 +108,12 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_modes = list(MODES)
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
-        # This is not actually implemented, so don't expose it
-        rf.valid_duplexes.remove('split')
         rf.valid_power_levels = POWER_LEVELS_VHF
         rf.has_sub_devices = self.VARIANT == ''
 
         rf.valid_tuning_steps = list(STEPS)
         # This is not implemented properly, so don't expose it
         rf.valid_tuning_steps.remove(12.5)
-        rf.can_odd_split = False
 
         # This driver doesn't properly support the upper bound of 1300MHz
         # so limit us to 999MHz
@@ -132,9 +129,11 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
 
         # TODO
         # rf.valid_special_chans = SPECIALS.keys()
-
         # TODO
         # rf.has_tuning_step = False
+
+        rf.can_odd_split = True
+
         return rf
 
     def sync_in(self):
@@ -176,12 +175,7 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.tmode = TMODES[_mem.tone_enable]
         mem.mode = MODES[_mem.am]
         mem.duplex = DUPLEX[_mem.duplex]
-
-        if _mem.duplex == DUPLEX.index("split"):
-            tx_freq = int(_mem.offset) * 1000
-            mem.offset = tx_freq - mem.freq
-        else:
-            mem.offset = int(_mem.offset) * 1000
+        mem.offset = int(_mem.offset) * 1000
 
         if mem.freq // 100 == 4:
             mem.power = POWER_LEVELS_UHF[_mem.power]
@@ -209,12 +203,7 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.tone_enable = TMODES.index(mem.tmode)
         _mem.am = MODES.index(mem.mode)
         _mem.duplex = DUPLEX.index(mem.duplex)
-
-        if mem.duplex == "split":
-            tx_freq = mem.freq + mem.offset
-            _mem.offset = (tx_freq % 10000000) // 1000
-        else:
-            _mem.offset = mem.offset // 1000
+        _mem.offset = mem.offset // 1000
 
         if mem.power:
             _mem.power = POWER_LEVELS_VHF.index(mem.power)

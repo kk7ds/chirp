@@ -568,7 +568,7 @@ def do_download(radio):
     if f:
         radio.FIRMWARE_VERSION = f
     else:
-        return False
+        raise errors.RadioError('Unable to determine firmware version')
 
     addr = 0
     while addr < MEM_SIZE:
@@ -2056,3 +2056,10 @@ class UVK5Radio(chirp_common.CloneModeRadio):
                     _mem4.channel_attributes[number].is_scanlist2 = 0
 
         return mem
+
+
+@directory.register
+class RA79Radio(UVK5Radio):
+    """Retevis RA79"""
+    VENDOR = "Retevis"
+    MODEL = "RA79"

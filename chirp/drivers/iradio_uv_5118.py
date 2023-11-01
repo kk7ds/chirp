@@ -100,7 +100,7 @@ struct {
      save:3;                //               Power Save
   u8 dispmode:1,            // 0x0042        Display Mode
      dstandby:1,            //               Dual Standby
-     unknown_1:1
+     unknown_1:1,
      standby:1,             //               Radio Standby
      squelch:4;             //               Squelch Level
   u8 vox_level:4,           // 0x0043        VOX Level

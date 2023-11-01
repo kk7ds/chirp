@@ -101,7 +101,7 @@ struct {
      vox_gain:4;
   u8 unknown20:6,
      mic_gain:2;
-  u8 unknown21:5
+  u8 unknown21:5,
      vox_delay:3;
   u8 unknown22:4,
      vox_tot:4;

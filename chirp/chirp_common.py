@@ -85,6 +85,10 @@ CROSS_MODES = (
     "Tone->"
 )
 
+# This is the "master" list of modes, and in general things should not be
+# added here without significant consideration. These must remain stable and
+# universal to allow importing memories between different radio vendors and
+# models.
 MODES = ("WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY",
          "DIG", "PKT", "NCW", "NCWR", "CWR", "P25", "Auto", "RTTYR",
          "FSK", "FSKR", "DMR", "DN", "USER-L", "USER-U", "RTTY-L")

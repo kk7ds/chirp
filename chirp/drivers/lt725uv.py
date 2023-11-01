@@ -178,8 +178,8 @@ struct mem {
                           // BJ-318 band power overrides any
                           // individual channel power setting
       wide:1,
-      compander:1
-      scrambler:1
+      compander:1,
+      scrambler:1,
       unknown:4;
   u8  namelen;
   u8  name[7];
