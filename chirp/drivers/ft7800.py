@@ -530,7 +530,9 @@ class FT7800Radio(FTx800Radio):
     TMODES = ["", "Tone", "TSQL", "TSQL-R", "DTCS"]
 
     def get_bank_model(self):
-        return FT7800BankModel(self)
+        if not hasattr(self, '_banks'):
+            self._banks = FT7800BankModel(self)
+        return self._banks
 
     def get_features(self):
         rf = FTx800Radio.get_features(self)
@@ -864,7 +866,9 @@ class FT8800Radio(FTx800Radio):
         return [FT8800RadioLeft(self._mmap), FT8800RadioRight(self._mmap)]
 
     def get_bank_model(self):
-        return FT8800BankModel(self)
+        if not hasattr(self, '_banks'):
+            self._banks = FT8800BankModel(self)
+        return self._banks
 
     def _checksums(self):
         return [yaesu_clone.YaesuChecksum(0x0000, 0x56C7)]
