@@ -1,4 +1,3 @@
-import copy
 import logging
 
 from chirp import chirp_common
@@ -158,7 +157,7 @@ class TestCaseBruteForce(base.DriverTest):
         for mode in self.rf.valid_modes:
             self.assertIn(mode, chirp_common.MODES,
                           'Radio exposes non-standard mode')
-            tmp = copy.deepcopy(m)
+            tmp = m.dupe()
             if mode == "DV" and \
                 isinstance(self.radio,
                            chirp_common.IcomDstarSupport):
