@@ -821,6 +821,15 @@ class TestMemory(base.BaseTest):
         self.assertNotIsInstance(m, FrozenMemory)
         self.assertFalse(hasattr(m, '_frozen'))
 
+    def test_frozen_modifications(self):
+        orig = chirp_common.Memory(123)
+        orig.extra = [settings.RadioSetting(
+            'foo', 'Foo',
+            settings.RadioSettingValueBoolean(False))]
+        frozen = chirp_common.FrozenMemory(orig)
+        with self.assertRaises(ValueError):
+            frozen.extra[0].value = True
+
     def test_tone_validator(self):
         m = chirp_common.Memory()
         # 100.0 is a valid tone

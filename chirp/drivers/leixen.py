@@ -622,12 +622,8 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
             aliasop = None
         if mem.name:
             _mem.aliasop = False
-            if aliasop and not aliasop.changed():
-                aliasop.value = "Name"
         else:
             _mem.aliasop = True
-            if aliasop and not aliasop.changed():
-                aliasop.value = "Frequency"
 
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)

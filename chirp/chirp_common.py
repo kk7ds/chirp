@@ -658,6 +658,8 @@ def FrozenMemory(source):
                 setattr(self, k, v)
 
             self.__dict__['_frozen'] = True
+            for i in self.extra:
+                i.set_frozen()
 
         def __setattr__(self, k, v):
             if self._frozen:
