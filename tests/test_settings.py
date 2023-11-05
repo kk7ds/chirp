@@ -45,3 +45,16 @@ class TestCaseSettings(base.DriverTest):
             if not m.empty:
                 self.radio.set_memory(chirp_common.FrozenMemory(m))
                 break
+
+    def test_memory_extra_flat(self):
+        for i in range(*self.rf.memory_bounds):
+            m = self.radio.get_memory(i)
+            if not m.empty:
+                self.assertIsInstance(
+                    m.extra,
+                    (list, settings.RadioSettingGroup),
+                    'mem.extra must be a list or RadioSettingGroup')
+                for e in m.extra:
+                    self.assertIsInstance(
+                        e, settings.RadioSetting,
+                        'mem.extra items must be RadioSetting objects')
