@@ -557,7 +557,7 @@ class KenwoodTKx140Radio(chirp_common.CloneModeRadio):
         elif mem.duplex == 'split':
             _mem.tx_freq = mem.offset // 10
         elif mem.duplex == 'off':
-            _mem.tx_freq.set_raw(b'\xFF' * 4)
+            _mem.tx_freq = 0xFFFFFFFF
         elif mem.duplex == '-':
             _mem.tx_freq = (mem.freq - mem.offset) // 10
         elif mem.duplex == '+':
