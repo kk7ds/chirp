@@ -448,11 +448,11 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
         # Extra setting group, FD-268 don't uset it at all
         # FD-288's & others do it?
         mem.extra = RadioSettingGroup("extra", "Extra")
-        busy = RadioSetting("Busy", "Busy Channel Lockout",
+        busy = RadioSetting("busy_lock", "Busy Channel Lockout",
                             RadioSettingValueBoolean(
                                 bool(_mem.busy_lock)))
         mem.extra.append(busy)
-        scramble = RadioSetting("Scrambler", "Scrambler Option",
+        scramble = RadioSetting("scrambler", "Scrambler Option",
                                 RadioSettingValueBoolean(
                                     bool(_mem.scrambler)))
         mem.extra.append(scramble)
