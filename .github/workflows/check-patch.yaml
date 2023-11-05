@@ -3,7 +3,7 @@ on:
     pull_request:
 jobs:
     check_commit:
-        name: No new legacy code
+        name: check_commit
         runs-on: ubuntu-22.04
         steps:
             - name: Install tools
