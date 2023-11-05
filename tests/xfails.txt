@@ -6,7 +6,3 @@
 # One line per test nodeid with a comment above citing a bug number, example:
 # Bug #10931: FT-450 mem.extra fields cause UI corruption
 # tests/test_drivers.py::TestCaseBruteForce_Yaesu_FT-450D::test_mode
-
-# Bug #10931: FT-450 mem.extra fields cause UI corruption
-tests/test_drivers.py::TestCaseBruteForce_Yaesu_FT-450::test_mode
-tests/test_drivers.py::TestCaseBruteForce_Yaesu_FT-450D::test_mode

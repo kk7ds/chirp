@@ -26,6 +26,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 import time
 import struct
 import logging
+import itertools
 
 LOG = logging.getLogger(__name__)
 
@@ -39,6 +40,43 @@ T_STEPS.remove(100.0)
 T_STEPS.remove(125.0)
 T_STEPS.remove(200.0)
 
+
+def filters_for_mode(mode):
+    if mode in ("USB", "LSB"):
+        return "sb_width", ["1.8 kHz", "2.4 kHz", "3.0 kHz"]
+    elif mode in ("CW", "CWR"):
+        return "cw_width", ["300 Hz", "500 kHz", "2.4 kHz"]
+    elif mode == "DIG":
+        return "sb_width", ["300 Hz", "2.4 kHz", "3.0 kHz"]
+    elif mode == "AM":
+        return "am_width", ["3.0 kHz", "6.0 kHz", "9.0 kHz"]
+    elif mode in ("NFM", "FM"):
+        return "fm_width", ["2.5 kHz", "5.0 kHz"]
+    else:
+        raise ValueError("Internal error: unknown mode %s" % mode)
+
+
+def filter_to_hz(item):
+    mag, units = item.split(' ')
+    return float(mag) * (1000 if units == 'kHz' else 1)
+
+
+def all_filters():
+    options = list(itertools.chain.from_iterable(
+        filterlist for k, filterlist in [
+            filters_for_mode('CW'), filters_for_mode('USB'),
+            filters_for_mode('DIG'), filters_for_mode('FM'),
+            filters_for_mode('AM')]))
+    return sorted(set(options), key=filter_to_hz)
+
+
+def closest_filter(options, value):
+    value = filter_to_hz(value)
+    dists = [abs(value - filter_to_hz(o)) for o in options]
+    closest = options[dists.index(min(dists))]
+    LOG.debug('Chose %s as closest filter to %s from %s',
+              closest, value, ','.join(options))
+    return closest
 
 
 @directory.register
@@ -946,29 +984,10 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         rs.set_doc("IF bandpass filter shift")
         mem.extra.append(rs)
 
-        vx = 0
-        if mem.mode[1:] == "SB":
-            options = ["1.8 kHz", "2.4 kHz", "3.0 kHz"]
-            vx = _mem.sb_width
-            stx = "sb_width"
-        elif mem.mode[:1] == "CW":
-            options = ["300 Hz", "500 kHz", "2.4 kHz"]
-            vx = _mem.cw_width
-            stx = "cw_width"
-        elif mem.mode[:3] == "DIG":
-            options = ["300 Hz", "2.4 kHz", "3.0 kHz"]
-            vx = _mem.sb_width
-            stx = "sb_width"
-        elif mem.mode == "AM":
-            options = ["3.0 kHz", "6.0 kHz", "9.0 kHz"]
-            vx = _mem.am_width
-            stx = "am_width"
-        else:
-            options = ["2.5 kHz", "5.0 kHz"]
-            vx = _mem.fm_width
-            stx = "fm_width"
-        rs = RadioSetting(stx, ("IF Bandpass Filter Width " + stx),
-                          RadioSettingValueList(options, options[vx]))
+        stx, options = filters_for_mode(mem.mode)
+        vx = getattr(_mem, stx)
+        rs = RadioSetting("bpfilter", "IF Bandpass Filter Width",
+                          RadioSettingValueList(all_filters(), options[vx]))
         rs.set_doc("DSP IF bandpass Notch width (Hz)")
         mem.extra.append(rs)
 
@@ -1107,6 +1126,18 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                         setting.value = "USER-U"   # default moving to DIG mode
                     else:
                         LOG.error("In _set_memory invalid digital data type %s", stx)
+            elif setting.get_name() == "bpfilter":
+                element, options = filters_for_mode(mem.mode)
+                if str(setting.value) in options:
+                    setattr(_mem, element, options.index(str(setting.value)))
+                else:
+                    default = closest_filter(options, str(setting.value))
+                    LOG.warning('Memory specified filter width of %s for '
+                                'mode %s which is not in allowed list of '
+                                '%s. Defaulting to %s',
+                                str(setting.value), mem.mode,
+                                ','.join(options), default)
+                    setattr(_mem, element, options.index(default))
             else:
                 setattr(_mem, setting.get_name(), setting.value)
 
@@ -1672,6 +1703,20 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 except Exception:
                     LOG.debug(element.get_name())
                     raise
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+        if 'bpfilter' in mem.extra:
+            _, options = filters_for_mode(mem.mode)
+            bpfilter = str(mem.extra['bpfilter'].value)
+            if bpfilter not in options:
+                msgs.append(chirp_common.ValidationWarning(
+                    ('Filter width %s is not allowed for mode %s - '
+                     'the closest suitable option %s will be used') % (
+                         bpfilter, mem.mode,
+                         closest_filter(options, bpfilter))))
+        return msgs
+
 
 @directory.register
 class FT450Radio(FT450DRadio):
