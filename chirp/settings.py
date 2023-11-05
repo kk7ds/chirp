@@ -338,10 +338,17 @@ class RadioSettingGroup(object):
         self.__doc__ = name          # Longer explanation/documentation
         self._elements = {}
         self._element_order = []
+        self._frozen = False
 
         for element in elements:
             self._validate(element)
             self.append(element)
+
+    def set_frozen(self):
+        self._frozen = True
+        for i in self:
+            if isinstance(i, RadioSettingGroup):
+                i.set_frozen()
 
     def get_name(self):
         """Returns the group name"""
@@ -367,6 +374,8 @@ class RadioSettingGroup(object):
 
     def append(self, element):
         """Adds an element to the group"""
+        if self._frozen:
+            raise ValueError('Setting is frozen')
         self[element.get_name()] = element
 
     def __iter__(self):
@@ -502,6 +511,8 @@ class RadioSetting(RadioSettingGroup):
 
     def __setattr__(self, name, value):
         if name == "value":
+            if self._frozen:
+                raise ValueError('Value is frozen')
             if len(self) == 1:
                 self._elements[self._element_order[0]].set_value(value)
             else:

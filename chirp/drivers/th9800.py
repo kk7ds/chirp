@@ -398,12 +398,8 @@ class TYTTH9800Base(chirp_common.Radio):
             display = None
         if mem.name:
             _mem.display = True
-            if display and not display.changed():
-                display.value = "Name"
         else:
             _mem.display = False
-            if display and not display.changed():
-                display.value = "Frequency"
 
         _mem.scan = SCAN_MODES.index(mem.skip)
         if mem.skip == "P":
