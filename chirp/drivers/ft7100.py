@@ -771,7 +771,8 @@ class FT7100Radio(YaesuCloneModeRadio):
             else:
                 setattr(_mem, setting.get_name(), setting.value)
 
-        LOG.debug("encoded mem\n%s\n", (util.hexprint(_mem.get_raw()[0:25])))
+        LOG.debug("encoded mem\n%s\n",
+                  (util.hexprint(_mem.get_raw(asbytes=False)[0:25])))
         LOG.debug(repr(_mem))
 
     def get_settings(self):
@@ -839,7 +840,7 @@ class FT7100Radio(YaesuCloneModeRadio):
                 RadioSettingValueList(opts, opts[_overlay.cwid])))
 
         # 6  Callsign during ARTS operation.
-        cwidw = _overlay.cwidw.get_raw()
+        cwidw = _overlay.cwidw.get_raw(asbytes=False)
         cwidw = cwidw.rstrip('\x00')
         val = RadioSettingValueString(0, 6, cwidw)
         val.set_charset(CHARSET)

@@ -219,7 +219,7 @@ class DataElement:
     def set_value(self, value):
         raise Exception("Not implemented for %s" % self.__class__)
 
-    def get_raw(self, asbytes=False):
+    def get_raw(self, asbytes=True):
         raw = self._data[self._offset:self._offset+self._size]
         return self._compat_bytes(raw, asbytes)
 
@@ -261,7 +261,7 @@ class arrayDataElement(DataElement):
     def get_value(self):
         return list(self.__items)
 
-    def get_raw(self, asbytes=False):
+    def get_raw(self, asbytes=True):
         raw = [item.get_raw(asbytes=True) for item in self.__items]
         return self._compat_bytes(bytes(b''.join(raw)), asbytes)
 
@@ -792,7 +792,7 @@ class structDataElement(DataElement):
                 size += el.size()
         return int(size)
 
-    def get_raw(self, asbytes=False):
+    def get_raw(self, asbytes=True):
         size = self.size() // 8
         raw = self._data[self._offset:self._offset+size]
         return self._compat_bytes(raw, asbytes)

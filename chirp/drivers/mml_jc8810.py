@@ -493,7 +493,7 @@ class JC8810base(chirp_common.CloneModeRadio):
     def _is_txinh(self, _mem):
         raw_tx = ""
         for i in range(0, 4):
-            raw_tx += _mem.txfreq[i].get_raw()
+            raw_tx += _mem.txfreq[i].get_raw(asbytes=False)
         return raw_tx == "\xFF\xFF\xFF\xFF"
 
     def get_memory(self, number):
@@ -506,14 +506,14 @@ class JC8810base(chirp_common.CloneModeRadio):
         # Memory number
         mem.number = number
 
-        if _mem.get_raw()[0] == "\xff":
+        if _mem.get_raw(asbytes=False)[0] == "\xff":
             mem.empty = True
             return mem
 
         # Freq and offset
         mem.freq = int(_mem.rxfreq) * 10
         # tx freq can be blank
-        if _mem.get_raw()[4] == "\xFF":
+        if _mem.get_raw(asbytes=False)[4] == "\xFF":
             # TX freq not set
             mem.offset = 0
             mem.duplex = "off"

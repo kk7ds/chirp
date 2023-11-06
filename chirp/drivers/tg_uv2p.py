@@ -352,13 +352,14 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
         else:
             mem.number = number
 
-        if (_mem.freq.get_raw()[0] == "\xFF") or (_bf.band == "\x0F"):
+        if ((_mem.freq.get_raw(asbytes=False)[0] == "\xFF") or
+                (_bf.band == "\x0F")):
             mem.empty = True
             return mem
 
         mem.freq = int(_mem.freq) * 10
 
-        if _mem.offset.get_raw()[0] == "\xFF":
+        if _mem.offset.get_raw(asbytes=False)[0] == "\xFF":
             mem.offset = 0
         else:
             mem.offset = int(_mem.offset) * 10
@@ -701,7 +702,8 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
         if ch_num == 0xFF:
             return True
         _mem, _bf, _nam = self._get_memobjs(ch_num)
-        if (_mem.freq.get_raw()[0] == "\xFF") or (_bf.band == "\x0F"):
+        if ((_mem.freq.get_raw(asbytes=False)[0] == "\xFF") or
+                (_bf.band == "\x0F")):
             return False
         elif _bf.band == 0x00:
             return False

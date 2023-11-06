@@ -325,12 +325,12 @@ class RB17P_Base(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.rxfreq.get_raw() == "\xFF\xFF\xFF\xFF":
+        if _mem.rxfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
             return mem
 
-        if _mem.txfreq.get_raw() == "\xFF\xFF\xFF\xFF":
+        if _mem.txfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
             mem.duplex = "off"
             mem.offset = 0
         elif int(_mem.rxfreq) == int(_mem.txfreq):

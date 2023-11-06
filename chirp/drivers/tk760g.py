@@ -942,14 +942,14 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
         mem.number = number
 
         # A "blank" rxfreq is the indication of an empty memory
-        if _mem.rxfreq[0].get_raw() == '\xFF':
+        if _mem.rxfreq[0].get_raw(asbytes=False) == '\xFF':
             mem.empty = True
             return mem
 
         # Freq and offset
         mem.freq = int(_mem.rxfreq) * 10
         # tx freq can be blank
-        if _mem.get_raw()[16] == "\xFF":
+        if _mem.get_raw(asbytes=False)[16] == "\xFF":
             # TX freq not set
             mem.offset = 0
             mem.duplex = "off"

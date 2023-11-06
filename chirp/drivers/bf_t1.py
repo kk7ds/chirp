@@ -634,7 +634,7 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         else:
             mem.number = number
 
-        if _mem.get_raw()[0] == "\xFF":
+        if _mem.get_raw(asbytes=False)[0] == "\xFF":
             mem.empty = True
             return mem
 

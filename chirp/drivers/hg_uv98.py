@@ -442,7 +442,7 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw()[:4] == "\xFF\xFF\xFF\xFF":
+        if _mem.get_raw(asbytes=False)[:4] == "\xFF\xFF\xFF\xFF":
             mem.empty = True
             return mem
 
@@ -450,7 +450,7 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
             mem.name, mem.extd_number = SPECIAL_CHANNELS[mem.number]
         else:
             _name = self._memobj.name[number - 1]
-            mem.name, _, _ = _name.name.get_raw().partition("\xFF")
+            mem.name, _, _ = _name.name.get_raw(asbytes=False).partition("\xFF")
         # XXX: other drivers rstrip the name and test_badname enforces this
         mem.name = mem.name.rstrip()
         mem.freq = int(_mem.rx_freq) * 10

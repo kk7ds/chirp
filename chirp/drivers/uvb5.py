@@ -406,7 +406,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         else:
             mem.number = number
 
-        if _mem.freq.get_raw(asbytes=True)[0] == 0xff:
+        if _mem.freq.get_raw()[0] == 0xff:
             mem.empty = True
             return mem
 
@@ -462,7 +462,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
             _mem.set_raw("\xFF" * 16)
             return
 
-        if _mem.get_raw() == ("\xFF" * 16):
+        if _mem.get_raw(asbytes=False) == ("\xFF" * 16):
             _mem.set_raw("\x00" * 13 + "\xFF" * 3)
 
         _mem.freq = mem.freq / 10

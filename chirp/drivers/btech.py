@@ -827,14 +827,14 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         # Memory number
         mem.number = number
 
-        if _mem.get_raw()[0] == "\xFF":
+        if _mem.get_raw(asbytes=False)[0] == "\xFF":
             mem.empty = True
             return mem
 
         # Freq and offset
         mem.freq = int(_mem.rxfreq) * 10
         # tx freq can be blank
-        if _mem.get_raw()[4] == "\xFF":
+        if _mem.get_raw(asbytes=False)[4] == "\xFF":
             # TX freq not set
             mem.offset = 0
             mem.duplex = "off"
@@ -1005,7 +1005,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         mem_was_empty = False
         # same method as used in get_memory for determining if mem is empty
         # doing this BEFORE overwriting it with new values ...
-        if _mem.get_raw()[0] == "\xFF":
+        if _mem.get_raw(asbytes=False)[0] == "\xFF":
             LOG.debug("This mem was empty before")
             mem_was_empty = True
 
