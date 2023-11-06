@@ -314,7 +314,7 @@ class RadioSettingValueChannel(RadioSettingValueList):
             return str(int(m.number))
         return "{} {:.4f} {}".format(int(m.number), m.freq / float(1e6), m.name)
 
-    def __trunc__(self):
+    def __int__(self):
         return int(self.get_value().partition(" ")[0])
 
 

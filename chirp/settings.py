@@ -77,6 +77,9 @@ class RadioSettingValue:
     def __trunc__(self):
         return int(self.get_value())
 
+    def __int__(self):
+        return int(self.get_value())
+
     def __float__(self):
         return float(self.get_value())
 
@@ -203,6 +206,9 @@ class RadioSettingValueList(RadioSettingValue):
     def __trunc__(self):
         return self._options.index(self._current)
 
+    def __int__(self):
+        return self._options.index(self._current)
+
 
 class RadioSettingValueString(RadioSettingValue):
 
@@ -291,6 +297,12 @@ class RadioSettingValueMap(RadioSettingValueList):
         return self._mem_vals[self._options.index(self.get_value())]
 
     def __trunc__(self):
+        """Return memory value that matches current user option"""
+        index = self._options.index(self._current)
+        value = self._mem_vals[index]
+        return value
+
+    def __int__(self):
         """Return memory value that matches current user option"""
         index = self._options.index(self._current)
         value = self._mem_vals[index]
