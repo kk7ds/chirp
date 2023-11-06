@@ -60,6 +60,7 @@
 import struct
 import os
 import logging
+import warnings
 
 import six
 from builtins import bytes
@@ -201,6 +202,8 @@ class DataElement:
         if asbytes:
             return bytes(bs)
         else:
+            warnings.warn('Driver is using non-byte-native get_raw()',
+                          DeprecationWarning, stacklevel=3)
             return string_straight_decode(bs)
 
     def size(self):
@@ -225,6 +228,8 @@ class DataElement:
 
     def set_raw(self, data):
         if isinstance(data, str):
+            warnings.warn('Driver is using non-byte-native set_raw()',
+                          DeprecationWarning, stacklevel=2)
             data = string_straight_encode(data)
         self._data[self._offset] = data[:self._size]
 
@@ -665,6 +670,8 @@ class bcdDataElement(DataElement):
         if isinstance(data, int):
             self._data[self._offset] = data & 0xFF
         elif isinstance(data, str):
+            warnings.warn('Driver is using non-byte-native set_raw()',
+                          DeprecationWarning, stacklevel=2)
             self._data[self._offset] = string_straight_encode(data[0])
         elif isinstance(data, bytes) and len(data) == 1:
             self._data[self._offset] = int(data[0]) & 0xFF
@@ -801,6 +808,8 @@ class structDataElement(DataElement):
         if len(buffer) != (self.size() // 8):
             raise ValueError("Struct size mismatch during set_raw()")
         if isinstance(buffer, str):
+            warnings.warn('Driver is using non-byte-native set_raw()',
+                          DeprecationWarning, stacklevel=2)
             buffer = string_straight_encode(buffer)
         self._data[self._offset] = buffer
 
