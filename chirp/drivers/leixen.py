@@ -474,7 +474,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     def _is_txinh(self, _mem):
         raw_tx = ""
         for i in range(0, 4):
-            raw_tx += _mem.tx_freq[i].get_raw()
+            raw_tx += _mem.tx_freq[i].get_raw(asbytes=False)
         return raw_tx == b"\xFF\xFF\xFF\xFF"
 
     def _get_memobjs(self, number):
@@ -488,7 +488,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw()[:4] == "\xFF\xFF\xFF\xFF":
+        if _mem.get_raw(asbytes=False)[:4] == "\xFF\xFF\xFF\xFF":
             mem.empty = True
             return mem
 
@@ -590,7 +590,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         if mem.empty:
             _mem.set_raw(b"\xFF" * 16)
             return
-        elif _mem.get_raw() == (b"\xFF" * 16):
+        elif _mem.get_raw(asbytes=False) == (b"\xFF" * 16):
             _mem.set_raw(b"\xFF" * 8 + b"\xFF\x00\xFF\x00\xFF\xFE\xF0\xFC")
 
         _mem.rx_freq = mem.freq / 10

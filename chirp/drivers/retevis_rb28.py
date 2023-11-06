@@ -394,7 +394,7 @@ class RB28Radio(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[number - 1]
 
         if self._reserved:
-            _rsvd = _mem.reserved.get_raw()
+            _rsvd = _mem.reserved.get_raw(asbytes=False)
 
         mem.freq = int(_mem.rxfreq) * 10
 
@@ -403,7 +403,7 @@ class RB28Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.rxfreq.get_raw() == "\xFF\xFF\xFF\xFF":
+        if _mem.rxfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
             return mem
@@ -511,7 +511,7 @@ class RB28Radio(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[mem.number - 1]
 
         if self._reserved:
-            _rsvd = _mem.reserved.get_raw()
+            _rsvd = _mem.reserved.get_raw(asbytes=False)
 
         if mem.empty:
             if self._reserved:

@@ -860,7 +860,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
             mem.empty = True
             return mem
 
-        if _mem.get_raw()[0] == "\xFF":
+        if _mem.get_raw(asbytes=False)[0] == "\xFF":
             mem.empty = True
             return mem
 

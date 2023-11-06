@@ -132,7 +132,7 @@ def _set_freq(mem, freq):
 
 
 def _get_offset(mem):
-    raw = memmap.MemoryMap(mem.get_raw())
+    raw = memmap.MemoryMap(mem.get_raw(asbytes=False))
     if ord(raw[5]) & 0x0A:
         raw[5] = ord(raw[5]) & 0xF0
         mem.set_raw(raw.get_packed())
@@ -152,7 +152,7 @@ def _set_offset(mem, offset):
         extra = 0x00
 
     mem.offset = offset / 1000
-    raw = memmap.MemoryMap(mem.get_raw())
+    raw = memmap.MemoryMap(mem.get_raw(asbytes=False))
     raw[5] = ord(raw[5]) | extra
     mem.set_raw(raw.get_packed())
 

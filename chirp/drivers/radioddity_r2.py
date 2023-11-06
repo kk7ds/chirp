@@ -399,7 +399,7 @@ class RadioddityR2(chirp_common.CloneModeRadio):
     def decode_tone(self, val):
         """Parse the tone data to decode from mem, it returns:
         Mode (''|DTCS|Tone), Value (None|###), Polarity (None,N,R)"""
-        if val.get_raw() == "\xFF\xFF":
+        if val.get_raw(asbytes=False) == "\xFF\xFF":
             return '', None, None
 
         val = int(val)
@@ -449,7 +449,7 @@ class RadioddityR2(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.rx_freq.get_raw() == "\xFF\xFF\xFF\xFF":
+        if _mem.rx_freq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
             return mem
@@ -541,7 +541,7 @@ class RadioddityR2(chirp_common.CloneModeRadio):
         # Get a low-level memory object mapped to the image
         _mem = self._memobj.memory[mem.number - 1]
 
-        _rsvd = _mem.reserved.get_raw()
+        _rsvd = _mem.reserved.get_raw(asbytes=False)
 
         if mem.empty:
             _mem.set_raw("\xFF" * 13 + _rsvd)

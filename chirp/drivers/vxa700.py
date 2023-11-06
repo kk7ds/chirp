@@ -223,7 +223,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
 
     def get_raw_memory(self, number):
         _mem = self._get_mem(number)
-        return repr(_mem) + util.hexprint(_mem.get_raw())
+        return repr(_mem) + util.hexprint(_mem.get_raw(asbytes=False))
 
     def get_memory(self, number):
         _mem = self._get_mem(number)

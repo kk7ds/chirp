@@ -372,7 +372,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
 
         def _is_empty():
             for i in range(0, 4):
-                if _mem.rx_freq[i].get_raw() != "\xFF":
+                if _mem.rx_freq[i].get_raw(asbytes=False) != "\xFF":
                     return False
             return True
 

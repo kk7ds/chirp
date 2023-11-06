@@ -493,7 +493,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
     def _is_txinh(self, _mem):
         raw_tx = ""
         for i in range(0, 4):
-            raw_tx += _mem.txfreq[i].get_raw()
+            raw_tx += _mem.txfreq[i].get_raw(asbytes=False)
         return raw_tx == "\xFF\xFF\xFF\xFF"
 
     def _get_mem(self, num):

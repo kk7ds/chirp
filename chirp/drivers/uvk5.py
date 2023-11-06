@@ -1939,18 +1939,18 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             return mem
 
         # clean the channel memory, restore some bits if it was used before
-        if _mem.get_raw()[0] == "\xff":
+        if _mem.get_raw(asbytes=False)[0] == "\xff":
             # this was an empty memory
             _mem.set_raw("\x00" * 16)
         else:
             # this memory wasn't empty, save some bits that we don't know the
             # meaning of, or that we don't support yet
-            prev_0a = _mem.get_raw(asbytes=True)[0x0a] & SAVE_MASK_0A
-            prev_0b = _mem.get_raw(asbytes=True)[0x0b] & SAVE_MASK_0B
-            prev_0c = _mem.get_raw(asbytes=True)[0x0c] & SAVE_MASK_0C
-            prev_0d = _mem.get_raw(asbytes=True)[0x0d] & SAVE_MASK_0D
-            prev_0e = _mem.get_raw(asbytes=True)[0x0e] & SAVE_MASK_0E
-            prev_0f = _mem.get_raw(asbytes=True)[0x0f] & SAVE_MASK_0F
+            prev_0a = _mem.get_raw()[0x0a] & SAVE_MASK_0A
+            prev_0b = _mem.get_raw()[0x0b] & SAVE_MASK_0B
+            prev_0c = _mem.get_raw()[0x0c] & SAVE_MASK_0C
+            prev_0d = _mem.get_raw()[0x0d] & SAVE_MASK_0D
+            prev_0e = _mem.get_raw()[0x0e] & SAVE_MASK_0E
+            prev_0f = _mem.get_raw()[0x0f] & SAVE_MASK_0F
             _mem.set_raw("\x00" * 10 +
                          chr(prev_0a) + chr(prev_0b) + chr(prev_0c) +
                          chr(prev_0d) + chr(prev_0e) + chr(prev_0f))

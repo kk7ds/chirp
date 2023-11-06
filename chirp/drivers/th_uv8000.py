@@ -635,7 +635,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         """Convert raw channel memory data into UI columns"""
         mem.extra = RadioSettingGroup("extra", "Extra")
 
-        if _mem.get_raw()[0] == "\xff":
+        if _mem.get_raw(asbytes=False)[0] == "\xff":
             mem.empty = True
             return mem
 
