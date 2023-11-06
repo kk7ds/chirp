@@ -197,6 +197,12 @@ class DataElement:
         self._offset = int(offset)
         self._count = count
 
+    def _compat_bytes(self, bs, asbytes):
+        if asbytes:
+            return bytes(bs)
+        else:
+            return string_straight_decode(bs)
+
     def size(self):
         return int(self._size * 8)
 
@@ -215,10 +221,7 @@ class DataElement:
 
     def get_raw(self, asbytes=False):
         raw = self._data[self._offset:self._offset+self._size]
-        if asbytes:
-            return bytes(raw)
-        else:
-            return string_straight_decode(raw)
+        return self._compat_bytes(raw, asbytes)
 
     def set_raw(self, data):
         if isinstance(data, str):
@@ -259,11 +262,8 @@ class arrayDataElement(DataElement):
         return list(self.__items)
 
     def get_raw(self, asbytes=False):
-        raw = [item.get_raw(asbytes=asbytes) for item in self.__items]
-        if asbytes:
-            return bytes(b''.join(raw))
-        else:
-            return "".join(raw)
+        raw = [item.get_raw(asbytes=True) for item in self.__items]
+        return self._compat_bytes(bytes(b''.join(raw)), asbytes)
 
     def __setitem__(self, index, val):
         self.__items[index].set_value(val)
@@ -795,10 +795,7 @@ class structDataElement(DataElement):
     def get_raw(self, asbytes=False):
         size = self.size() // 8
         raw = self._data[self._offset:self._offset+size]
-        if asbytes:
-            return bytes(raw)
-        else:
-            return string_straight_decode(raw)
+        return self._compat_bytes(raw, asbytes)
 
     def set_raw(self, buffer):
         if len(buffer) != (self.size() // 8):
