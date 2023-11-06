@@ -1123,7 +1123,6 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                     elif stx == "N/A":
                         _mem.mode = 5
                         _mem.mode2 = 2
-                        setting.value = "USER-U"   # default moving to DIG mode
                     else:
                         LOG.error("In _set_memory invalid digital data type %s", stx)
             elif setting.get_name() == "bpfilter":
