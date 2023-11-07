@@ -16,7 +16,6 @@
 import functools
 import logging
 import pickle
-import platform
 import sys
 
 import wx
@@ -38,6 +37,7 @@ from chirp.wxui import developer
 
 LOG = logging.getLogger(__name__)
 CONF = config.get()
+WX_GTK = 'gtk' in wx.version().lower()
 
 
 class ChirpMemoryGrid(wx.grid.Grid, glr.GridWithLabelRenderersMixin):
@@ -676,6 +676,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._grid.Bind(wx.grid.EVT_GRID_LABEL_RIGHT_CLICK,
                         self._memory_rclick)
         self._grid.Bind(wx.grid.EVT_GRID_CELL_BEGIN_DRAG, self._memory_drag)
+        if WX_GTK:
+            self._grid.Bind(wx.EVT_KEY_DOWN, self._gtk_short_circuit_edit_copy)
         row_labels = self._grid.GetGridRowLabelWindow()
         row_labels.Bind(wx.EVT_LEFT_DOWN, self._row_click)
         row_labels.Bind(wx.EVT_LEFT_UP, self._row_click)
@@ -684,6 +686,19 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         self._dc = wx.ScreenDC()
         self.set_cell_attrs()
+
+    def _gtk_short_circuit_edit_copy(self, event):
+        # wxGTK is broken and does not direct Ctrl-C to the menu items
+        # because wx.grid.Grid() tries to implement something for it,
+        # which we don't want. The wxWidgets people say the only way is to
+        # grab it ourselves and direct it appropriately before wx.grid.Grid()
+        # can do it.
+        # https://github.com/wxWidgets/wxWidgets/issues/22625
+        if (event.GetKeyCode() == ord('C') and
+                event.GetModifiers() == wx.MOD_CONTROL):
+            self.cb_copy(cut=False)
+        else:
+            event.Skip()
 
     def _row_click(self, event):
         # In order to override the drag-to-multi-select behavior of the base
@@ -765,7 +780,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         return self._col_defs.index(self._col_def_by_name('comment'))
 
     def set_cell_attrs(self):
-        if platform.system() == 'Linux':
+        if WX_GTK:
             minwidth = 100
         else:
             minwidth = 75
