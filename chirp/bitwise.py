@@ -322,6 +322,19 @@ class arrayDataElement(DataElement):
         if len(value) != len(self.__items):
             raise ValueError("String expects exactly %i characters, not %i" % (
                              len(self.__items), len(value)))
+        if not isinstance(value, bytes) and hasattr(value, '__str__'):
+            # Special case to allow ASCII strings straight through because
+            # almost anything will support them. If the string is not fully
+            # supported by ASCII, then the driver should have provided a
+            # pre-encoded bytestring.
+            warnings.warn(
+                'String compatibility used - should pass bytes instead',
+                category=DeprecationWarning, stacklevel=4)
+            try:
+                value = str(value).encode('ascii')
+            except UnicodeEncodeError:
+                raise ValueError('Non-ASCII string set on char type: use '
+                                 'pre-encoded bytestring instead')
         for i in range(0, len(self.__items)):
             self.__items[i].set_value(value[i])
 
