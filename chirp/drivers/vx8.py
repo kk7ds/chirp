@@ -496,7 +496,7 @@ class VX8BankModel(chirp_common.BankModel):
 
 
 def _wipe_memory(mem):
-    mem.set_raw("\x00" * (mem.size() // 8))
+    mem.set_raw(b"\x00" * (mem.size() // 8))
 
 
 @directory.register
@@ -629,7 +629,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
     @staticmethod
     def _add_ff_pad(val, length):
-        return val.ljust(length, "\xFF")[:length]
+        return val.ljust(length, b"\xFF")[:length]
 
     @classmethod
     def _strip_ff_pads(cls, messages):
@@ -720,7 +720,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.power = 0
 
         label = "".join([chr(CHARSET.index(x)) for x in mem.name.rstrip()])
-        _mem.label = self._add_ff_pad(label, 16)
+        _mem.label = self._add_ff_pad(label.encode('ascii'), 16)
         # We only speak English here in chirpville
         _mem.charsetbits[0] = 0x00
         _mem.charsetbits[1] = 0x00
@@ -1338,7 +1338,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
                 ssid = int(ssid) % 16
             except ValueError:
                 ssid = default_ssid
-        setattr(obj, "callsign", cls._add_ff_pad(callsign, 6))
+        setattr(obj, "callsign", cls._add_ff_pad(callsign.encode('ascii'), 6))
         if ssid is not None:
             setattr(obj, "ssid", ssid)
 
@@ -1380,8 +1380,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     def apply_ff_padded_string(cls, setting, obj):
         # FF pad.
         val = setting.value.get_value()
-        max_len = getattr(obj, "padded_string").size() / 8
-        val = str(val).rstrip()
+        max_len = getattr(obj, "padded_string").size() // 8
+        val = str(val).rstrip().encode('ascii')
         setattr(obj, "padded_string", cls._add_ff_pad(val, max_len))
 
     @classmethod
@@ -1440,12 +1440,9 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     def apply_ff_padded_yaesu(cls, setting, obj):
         # FF pad yaesus custom string format.
         rawval = setting.value.get_value()
-        max_len = getattr(obj, "padded_yaesu").size() / 8
-        rawval = str(rawval).rstrip()
-        val = [CHARSET.index(x) for x in rawval]
-        for x in range(len(val), max_len):
-            val.append(0xFF)
-        obj.padded_yaesu = val
+        max_len = getattr(obj, "padded_yaesu").size() // 8
+        rawval = str(rawval).rstrip().translate(CHARSET).encode('ascii')
+        obj.padded_yaesu = list(rawval.ljust(max_len, b'\xFF')[0:max_len])
 
     def apply_volume(cls, setting, vfo):
         val = setting.value.get_value()
