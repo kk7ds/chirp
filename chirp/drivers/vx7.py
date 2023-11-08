@@ -168,7 +168,7 @@ class VX7BankModel(chirp_common.BankModel):
 
 
 def _wipe_memory(mem):
-    mem.set_raw("\x00" * (mem.size() // 8))
+    mem.set_raw(b"\x00" * (mem.size() // 8))
     mem.unknown1 = 0x05
     mem.ones = 0x03
 
@@ -286,7 +286,7 @@ class VX7Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.power = levels[0]
 
         for i in _mem.name:
-            if i == "\xFF":
+            if i == 0xFF:
                 break
             mem.name += CHARSET[i]
         mem.name = mem.name.rstrip()
