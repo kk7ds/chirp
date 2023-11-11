@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-06 14:12-0800\n"
+"POT-Creation-Date: 2023-11-19 14:10-0800\n"
 "PO-Revision-Date: 2023-03-11 18:37+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -42,17 +42,17 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s, %(min)i ile %(max)i arasında olmalıdır"
 
-#: ../wxui/memedit.py:1569
+#: ../wxui/memedit.py:1584
 #, python-format
 msgid "%i Memories"
 msgstr "%i Kaydı"
 
-#: ../wxui/memedit.py:1576
+#: ../wxui/memedit.py:1591
 #, python-format
 msgid "%i Memories and shift all up"
 msgstr "%i Kaydı ve hepsini yukarı kaydır"
 
-#: ../wxui/memedit.py:1572
+#: ../wxui/memedit.py:1587
 #, python-format
 msgid "%i Memories and shift block up"
 msgstr "%i Kaydı ve bloğu yukarı kaydır"
@@ -66,7 +66,7 @@ msgstr "%s kaydedilmedi. Kapanmadan önce kaydedilsin mi?"
 msgid "(none)"
 msgstr "(hiçbiri)"
 
-#: ../wxui/memedit.py:1900
+#: ../wxui/memedit.py:1915
 #, python-format
 msgid "...and %i more"
 msgstr ""
@@ -91,7 +91,7 @@ msgstr ""
 "   (değiştirmek için MONI'ye basılı tutarken kadranı çevirin)\n"
 "7. TAMAM'a tıklayın\n"
 
-#: ../drivers/ft2900.py:1227
+#: ../drivers/ft2900.py:1228
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -104,7 +104,7 @@ msgstr ""
 "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için \"SET MHz\"e "
 "basın.\n"
 
-#: ../drivers/ft2900.py:1232
+#: ../drivers/ft2900.py:1233
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -128,7 +128,7 @@ msgstr ""
 "deneyin,\n"
 "      ardından 1. adımdan başlayın.\n"
 
-#: ../drivers/ft7100.py:1126
+#: ../drivers/ft7100.py:1127
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -141,7 +141,7 @@ msgstr ""
 "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için \"TONE\" tuşuna "
 "basın.\n"
 
-#: ../drivers/ft7100.py:1131
+#: ../drivers/ft7100.py:1132
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -191,7 +191,7 @@ msgstr ""
 "3. Telsizi açarken [MHz], [LOW] ve [D/MR] tuşlarını basılı tutun.\n"
 "4. [D/MR(MW)] tuşuna basın (ekranda \"--WAIT--\" görünecektir).\n"
 
-#: ../drivers/ft450d.py:393
+#: ../drivers/ft450d.py:431
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -224,7 +224,7 @@ msgstr ""
 "4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için\n"
 "    [A] tuşuna basın.\n"
 
-#: ../drivers/ft450d.py:402
+#: ../drivers/ft450d.py:440
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -1034,7 +1034,7 @@ msgid ""
 "will happen now."
 msgstr ""
 
-#: ../wxui/memedit.py:1252
+#: ../wxui/memedit.py:1267
 #, python-format
 msgid ""
 "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
@@ -1049,21 +1049,21 @@ msgstr "Chirp İmaj Dosyaları"
 msgid "Choice Required"
 msgstr "Seçim Gerekli"
 
-#: ../wxui/memedit.py:1231
+#: ../wxui/memedit.py:1246
 #, python-format
 msgid "Choose %s DTCS Code"
 msgstr "%s DTCS Kodunu Seç"
 
-#: ../wxui/memedit.py:1228
+#: ../wxui/memedit.py:1243
 #, python-format
 msgid "Choose %s Tone"
 msgstr "%s Tonunu Seç"
 
-#: ../wxui/memedit.py:1262
+#: ../wxui/memedit.py:1277
 msgid "Choose Cross Mode"
 msgstr "Çapraz Modu Seç"
 
-#: ../wxui/memedit.py:1292
+#: ../wxui/memedit.py:1307
 msgid "Choose duplex"
 msgstr "Dubleks seç"
 
@@ -1100,11 +1100,11 @@ msgstr "Klon tamamlandı, sahte baytlar kontrol ediliyor"
 msgid "Cloning"
 msgstr "Klonlanıyor"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:470 ../drivers/ft817.py:343
+#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:508 ../drivers/ft817.py:343
 msgid "Cloning from radio"
 msgstr "Telsizden klonlama"
 
-#: ../drivers/bj9900.py:160 ../drivers/ft450d.py:499 ../drivers/ft817.py:381
+#: ../drivers/bj9900.py:160 ../drivers/ft450d.py:537 ../drivers/ft817.py:381
 msgid "Cloning to radio"
 msgstr "Telsize klonlama"
 
@@ -1116,7 +1116,7 @@ msgstr "Kapat"
 msgid "Close file"
 msgstr "Dosyayı kapat"
 
-#: ../wxui/memedit.py:1629
+#: ../wxui/memedit.py:1644
 #, fuzzy, python-format
 msgid "Cluster %i memories"
 msgstr "%i kaydı sırala"
@@ -1141,7 +1141,7 @@ msgstr ""
 "Arayüz kablonuzu 'TX/RX' ünitesinin arkasındaki\n"
 "PC Bağlantı Noktasına bağlayın. Kafadaki Com Portu DEĞİL.\n"
 
-#: ../wxui/memedit.py:1554
+#: ../wxui/memedit.py:1569
 #, fuzzy
 msgid "Copy"
 msgstr "Kopyala"
@@ -1164,7 +1164,7 @@ msgstr "Özel bağlantı noktasını girin:"
 msgid "Custom..."
 msgstr "Özel..."
 
-#: ../wxui/memedit.py:1550
+#: ../wxui/memedit.py:1565
 #, fuzzy
 msgid "Cut"
 msgstr "Kes"
@@ -1181,7 +1181,7 @@ msgstr ""
 "DTCS\n"
 "Polarite"
 
-#: ../wxui/memedit.py:2155
+#: ../wxui/memedit.py:2170
 msgid "DV Memory"
 msgstr "DV Kaydı"
 
@@ -1193,7 +1193,7 @@ msgstr "İleride Tehlike"
 msgid "Dec"
 msgstr "Dec"
 
-#: ../wxui/memedit.py:1563
+#: ../wxui/memedit.py:1578
 msgid "Delete"
 msgstr "Sil"
 
@@ -1207,11 +1207,11 @@ msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 "Geliştirici durumu artık %s. Etkili olması için CHIRP yeniden başlatılmalıdır"
 
-#: ../wxui/memedit.py:1663
+#: ../wxui/memedit.py:1678
 msgid "Diff Raw Memories"
 msgstr "Farklı Ham Kayıtlar"
 
-#: ../wxui/memedit.py:2080
+#: ../wxui/memedit.py:2095
 msgid "Digital Code"
 msgstr "Dijital Kod"
 
@@ -1258,12 +1258,12 @@ msgstr "İndirme talimatları"
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2110
+#: ../wxui/memedit.py:2125
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "%i kaydı için ayrıntıları düzenle"
 
-#: ../wxui/memedit.py:2108
+#: ../wxui/memedit.py:2123
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "%i kaydı için ayrıntıları düzenle"
@@ -1281,11 +1281,11 @@ msgstr "etkinleştirildi"
 msgid "Enter Frequency"
 msgstr "Frekans Gir"
 
-#: ../wxui/memedit.py:1279
+#: ../wxui/memedit.py:1294
 msgid "Enter Offset (MHz)"
 msgstr "Ofset girin (MHz)"
 
-#: ../wxui/memedit.py:1271
+#: ../wxui/memedit.py:1286
 msgid "Enter TX Frequency (MHz)"
 msgstr "TX Frekansını girin (MHz)"
 
@@ -1315,7 +1315,7 @@ msgstr "Telsizle iletişim hatası"
 msgid "Experimental driver"
 msgstr "Deneysel sürücü"
 
-#: ../wxui/memedit.py:2038
+#: ../wxui/memedit.py:2053
 msgid "Export can only write CSV files"
 msgstr "Dışa aktarma yalnızca CSV dosyalarını yazabilir"
 
@@ -1328,7 +1328,7 @@ msgstr "CSV'ye aktar"
 msgid "Export to CSV..."
 msgstr "CSV'ye aktar"
 
-#: ../wxui/memedit.py:2144
+#: ../wxui/memedit.py:2159
 msgid "Extra"
 msgstr "Ekstra"
 
@@ -1414,13 +1414,14 @@ msgstr ""
 "2 - Telsiz > Telsizden İndir: Telsiz kafasında herhangi bir ayar yapmayın!\n"
 "3 - Arayüz kablonuzu çıkarın\n"
 
-#: ../drivers/th_uv8000.py:525
+#: ../drivers/th_uv8000.py:518
+#, fuzzy
 msgid ""
 "Follow these instructions to download the radio memory:\n"
 "1 - Turn off your radio\n"
 "2 - Connect your interface cable\n"
 "3 - Turn on your radio, volume @ 50%\n"
-"4 - Radio > Download from radio\n"
+"4 - CHIRP Menu - Radio - Download from radio\n"
 msgstr ""
 "Telsiz hafızasını indirmek için şu talimatları izleyin:\n"
 "1 - Telsizinizi kapatın\n"
@@ -1516,13 +1517,14 @@ msgstr ""
 "2 - Telsiz > Telsize yükle: Telsiz kafasında herhangi bir ayar yapmayın!\n"
 "3 - Arayüz kablonuzu çıkarın\n"
 
-#: ../drivers/th_uv8000.py:531
+#: ../drivers/th_uv8000.py:524
+#, fuzzy
 msgid ""
 "Follow these instructions to upload the radio memory:\n"
 "1 - Turn off your radio\n"
 "2 - Connect your interface cable\n"
 "3 - Turn on your radio, volume @ 50%\n"
-"4 - Radio > Upload to radio\n"
+"4 - CHIRP Menu - Radio - Upload to radio\n"
 msgstr ""
 "Telsiz hafızasını yüklemek için şu talimatları izleyin:\n"
 "1 - Telsizinizi kapatın\n"
@@ -1668,15 +1670,15 @@ msgstr "GMRS"
 msgid "Getting settings"
 msgstr "Ayarlar alınıyor"
 
-#: ../wxui/memedit.py:838
+#: ../wxui/memedit.py:853
 msgid "Goto Memory"
 msgstr "Kayda Git"
 
-#: ../wxui/memedit.py:837
+#: ../wxui/memedit.py:852
 msgid "Goto Memory:"
 msgstr "Kayda Git:"
 
-#: ../wxui/memedit.py:806
+#: ../wxui/memedit.py:821
 #, fuzzy
 msgid "Goto..."
 msgstr "Git"
@@ -1693,7 +1695,7 @@ msgstr "Bana Yardım Et..."
 msgid "Hex"
 msgstr "Hex"
 
-#: ../wxui/memedit.py:815
+#: ../wxui/memedit.py:830
 #, fuzzy
 msgid "Hide empty memories"
 msgstr "Kayıtları sırala"
@@ -1725,11 +1727,11 @@ msgstr "Dizin"
 msgid "Info"
 msgstr "Bilgi"
 
-#: ../wxui/memedit.py:1254
+#: ../wxui/memedit.py:1269
 msgid "Information"
 msgstr "Bilgi"
 
-#: ../wxui/memedit.py:1544
+#: ../wxui/memedit.py:1559
 msgid "Insert Row Above"
 msgstr "Yukarıya Satır Ekle"
 
@@ -1746,7 +1748,7 @@ msgstr "Sürücü ile etkileşim"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Geçersiz %(value)s (ondalık basamak kullanın)"
 
-#: ../wxui/memedit.py:1399
+#: ../wxui/memedit.py:1414
 #, fuzzy
 msgid "Invalid Entry"
 msgstr "Geçersiz düzenleme: %s"
@@ -1755,7 +1757,7 @@ msgstr "Geçersiz düzenleme: %s"
 msgid "Invalid ZIP code"
 msgstr "Geçersiz Posta kodu"
 
-#: ../wxui/memedit.py:1398 ../wxui/memedit.py:2235
+#: ../wxui/memedit.py:1413 ../wxui/memedit.py:2250
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Geçersiz düzenleme: %s"
@@ -1846,7 +1848,7 @@ msgstr "Boylam"
 msgid "Memories"
 msgstr "Kayıtlar"
 
-#: ../wxui/memedit.py:1438
+#: ../wxui/memedit.py:1453
 #, python-format
 msgid "Memory %i is not deletable"
 msgstr "Kayıt %i silinemez"
@@ -1889,12 +1891,12 @@ msgstr "Modül başarıyla yüklendi"
 msgid "More than one port found: %s"
 msgstr "Birden fazla bağlantı noktası bulundu: %s"
 
-#: ../wxui/memedit.py:802
+#: ../wxui/memedit.py:817
 #, fuzzy
 msgid "Move Down"
 msgstr "Aşağı Taş_ı"
 
-#: ../wxui/memedit.py:792
+#: ../wxui/memedit.py:807
 #, fuzzy
 msgid "Move Up"
 msgstr "Yukarı _Taşı"
@@ -1907,7 +1909,7 @@ msgstr ""
 msgid "New version available"
 msgstr "Yeni sürüm mevcut"
 
-#: ../wxui/memedit.py:1699
+#: ../wxui/memedit.py:1714
 msgid "No empty rows below!"
 msgstr "Aşağıda boş satır yok!"
 
@@ -1929,7 +1931,7 @@ msgstr "Sonuç yok!"
 msgid "No results!"
 msgstr "Sonuç yok!"
 
-#: ../wxui/memedit.py:837
+#: ../wxui/memedit.py:852
 msgid "Number"
 msgstr "Numara"
 
@@ -2003,7 +2005,7 @@ msgstr "İsteğe bağlı: 45.0000"
 msgid "Optional: County, Hospital, etc."
 msgstr "İsteğe bağlı: İlçe, Hastane vb."
 
-#: ../wxui/memedit.py:1831
+#: ../wxui/memedit.py:1846
 msgid "Overwrite memories?"
 msgstr "Kayıtların üzerine yazılsın mı?"
 
@@ -2021,27 +2023,27 @@ msgstr ""
 msgid "Parsing"
 msgstr ""
 
-#: ../wxui/memedit.py:1558
+#: ../wxui/memedit.py:1573
 #, fuzzy
 msgid "Paste"
 msgstr "Yapıştır"
 
-#: ../wxui/memedit.py:1825
+#: ../wxui/memedit.py:1840
 #, fuzzy, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr "Yapıştırılan kayıtlar, mevcut %s kaydının üzerine yazılacak"
 
-#: ../wxui/memedit.py:1828
+#: ../wxui/memedit.py:1843
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "Yapıştırılan kayıtlar %s kayıtlarının üzerine yazılacak"
 
-#: ../wxui/memedit.py:1822
+#: ../wxui/memedit.py:1837
 #, fuzzy, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr "Yapıştırılan kayıtlar, %s kaydının üzerine yazılacak"
 
-#: ../wxui/memedit.py:1819
+#: ../wxui/memedit.py:1834
 #, fuzzy, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr "Yapıştırılan kayıt, %s kaydının üzerine yazacak"
@@ -2135,7 +2137,7 @@ msgstr "Baskı Önizleme"
 msgid "Printing"
 msgstr "Baskı"
 
-#: ../wxui/memedit.py:1537
+#: ../wxui/memedit.py:1552
 msgid "Properties"
 msgstr "Özellikler"
 
@@ -2156,7 +2158,7 @@ msgstr "RX DTCS"
 msgid "Radio"
 msgstr "Telsiz"
 
-#: ../drivers/ft60.py:85 ../drivers/ft450d.py:531 ../drivers/ft817.py:408
+#: ../drivers/ft60.py:85 ../drivers/ft450d.py:569 ../drivers/ft817.py:408
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "Telsiz %i bloğunu onaylamadı"
@@ -2275,7 +2277,7 @@ msgstr "Servis"
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: ../wxui/memedit.py:1655
+#: ../wxui/memedit.py:1670
 msgid "Show Raw Memory"
 msgstr "Ham Kaydı Göster"
 
@@ -2283,38 +2285,38 @@ msgstr "Ham Kaydı Göster"
 msgid "Show debug log location"
 msgstr "Hata ayıklama günlüğü konumunu göster"
 
-#: ../wxui/memedit.py:811
+#: ../wxui/memedit.py:826
 msgid "Show extra fields"
 msgstr ""
 
-#: ../wxui/memedit.py:1904
+#: ../wxui/memedit.py:1919
 msgid "Some memories are incompatible with this radio"
 msgstr "Bazı kayıtlar bu telsizle uyumlu değil"
 
-#: ../wxui/memedit.py:1772
+#: ../wxui/memedit.py:1787
 msgid "Some memories are not deletable"
 msgstr "Bazı anılar silinemez"
 
-#: ../wxui/memedit.py:1617
+#: ../wxui/memedit.py:1632
 #, python-format
 msgid "Sort %i memories"
 msgstr "%i kaydı sırala"
 
-#: ../wxui/memedit.py:1620
+#: ../wxui/memedit.py:1635
 #, python-format
 msgid "Sort %i memories ascending"
 msgstr "%i kaydı artan şekilde sırala"
 
-#: ../wxui/memedit.py:1639
+#: ../wxui/memedit.py:1654
 #, python-format
 msgid "Sort %i memories descending"
 msgstr "%i kaydı azalan şekilde sırala"
 
-#: ../wxui/memedit.py:1514
+#: ../wxui/memedit.py:1529
 msgid "Sort by column:"
 msgstr "Sütuna göre sırala:"
 
-#: ../wxui/memedit.py:1513
+#: ../wxui/memedit.py:1528
 msgid "Sort memories"
 msgstr "Kayıtları sırala"
 
@@ -2335,7 +2337,7 @@ msgstr "Eyalet/İl"
 msgid "Success"
 msgstr "Başarılı"
 
-#: ../drivers/ft450d.py:379
+#: ../drivers/ft450d.py:417
 #, fuzzy
 msgid ""
 "The FT-450D radio driver loads the 'Special Channels' tab\n"
@@ -2392,7 +2394,7 @@ msgid ""
 "memories across, or proceed with the import?"
 msgstr ""
 
-#: ../wxui/memedit.py:1579
+#: ../wxui/memedit.py:1594
 msgid "This Memory"
 msgstr "Bu kaydı"
 
@@ -2426,11 +2428,11 @@ msgstr ""
 "Ayrıca lütfen hata raporu ve geliştirme istekleri gönderin!\n"
 "Uyarıldınız. Kendi sorumluluğunuzda ilerleyin!"
 
-#: ../wxui/memedit.py:1583
+#: ../wxui/memedit.py:1598
 msgid "This memory and shift all up"
 msgstr "Bu kaydı ve hepsini yukarı kaydır"
 
-#: ../wxui/memedit.py:1581
+#: ../wxui/memedit.py:1596
 msgid "This memory and shift block up"
 msgstr "Bu kaydı ve bloğu yukarı kaydır"
 
@@ -2464,7 +2466,7 @@ msgstr "Bu, bir web sitesi kaydından bir modül yükleyecektir"
 msgid "Tone"
 msgstr "Ton"
 
-#: ../wxui/memedit.py:871
+#: ../wxui/memedit.py:886
 msgid "Tone Mode"
 msgstr "Ton Modu"
 
@@ -2472,7 +2474,7 @@ msgstr "Ton Modu"
 msgid "Tone Squelch"
 msgstr "Ton Susturucu"
 
-#: ../wxui/memedit.py:304 ../wxui/memedit.py:885
+#: ../wxui/memedit.py:304 ../wxui/memedit.py:900
 msgid "Tuning Step"
 msgstr "Ayarlama Adımı"
 
@@ -2488,7 +2490,7 @@ msgstr ""
 "Kablonuz için bağlantı noktası belirlenemiyor. Sürücülerinizi ve "
 "bağlantılarınızı kontrol edin."
 
-#: ../wxui/memedit.py:1319
+#: ../wxui/memedit.py:1334
 msgid "Unable to edit memory before radio is loaded"
 msgstr "Radyo yüklenmeden önce kayıt düzenlenemiyor"
 
@@ -2583,7 +2585,7 @@ msgstr "Değer tam olarak %i ondalık basamak olmalıdır"
 msgid "Value must be zero or greater"
 msgstr "Değer sıfır veya daha büyük olmalıdır"
 
-#: ../wxui/memedit.py:2135
+#: ../wxui/memedit.py:2150
 msgid "Values"
 msgstr ""
 
@@ -2599,11 +2601,11 @@ msgstr "Göster"
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/memedit.py:1405
+#: ../wxui/memedit.py:1420
 msgid "Warning"
 msgstr "Uyarı"
 
-#: ../wxui/memedit.py:1404
+#: ../wxui/memedit.py:1419
 #, python-format
 msgid "Warning: %s"
 msgstr "Uyarı: %s"
