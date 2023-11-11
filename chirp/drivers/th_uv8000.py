@@ -94,13 +94,10 @@ struct bitmap {
 #seekto 0x0010;
 struct chns chan_mem[128];
 
-#seekto 0x1010;
 struct frqx frq[2];
 
-#seekto 0x1050;
 struct fm_chn fm_stations[25];
 
-#seekto 0x1080;
 struct {
   u8  fmunk01[14];
   ul16 fmcur;
@@ -109,15 +106,12 @@ struct {
 #seekto 0x1190;
 struct bitmap chnmap;
 
-#seekto 0x11a0;
 struct bitmap skpchns;
 
-#seekto 0x011b0;
 struct {
   u8  fmset[4];
 } fmmap;
 
-#seekto 0x011b4;
 struct {
   u8  setunk01[4];
   u8  setunk02[3];
@@ -518,21 +512,20 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.info = \
-            ('Click on the "Special Channels" toggle-button of the memory '
-             'editor to see/set the upper and lower frequency-mode values.\n')
+            ('Remember the # T-R key is the VFO/MEM toggle.\n')
 
         rp.pre_download = _(
             "Follow these instructions to download the radio memory:\n"
             "1 - Turn off your radio\n"
             "2 - Connect your interface cable\n"
             "3 - Turn on your radio, volume @ 50%\n"
-            "4 - Radio > Download from radio\n")
+            "4 - CHIRP Menu - Radio - Download from radio\n")
         rp.pre_upload = _(
             "Follow these instructions to upload the radio memory:\n"
             "1 - Turn off your radio\n"
             "2 - Connect your interface cable\n"
             "3 - Turn on your radio, volume @ 50%\n"
-            "4 - Radio > Upload to radio\n")
+            "4 - CHIRP Menu - Radio - Upload to radio\n")
         return rp
 
     def get_features(self):
