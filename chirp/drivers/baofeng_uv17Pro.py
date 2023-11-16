@@ -1296,10 +1296,10 @@ class UV17Pro(chirp_common.CloneModeRadio,
         return rf
 
     def _is_txinh(self, _mem):
-        raw_tx = ""
+        raw_tx = b""
         for i in range(0, 4):
             raw_tx += _mem.txfreq[i].get_raw()
-        return raw_tx == "\xFF\xFF\xFF\xFF"
+        return raw_tx == b"\xFF\xFF\xFF\xFF"
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
@@ -1311,7 +1311,7 @@ class UV17Pro(chirp_common.CloneModeRadio,
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw()[0] == "\xff":
+        if _mem.get_raw()[0] == 255:
             mem.empty = True
             return mem
 
@@ -1351,8 +1351,6 @@ class UV17Pro(chirp_common.CloneModeRadio,
         try:
             mem.power = levels[_mem.lowpower]
         except IndexError:
-            LOG.error("Radio reported invalid power level %s (in %s)" %
-                        (_mem.power, levels))
             mem.power = levels[0]
 
         mem.mode = _mem.wide and "NFM" or  "FM"
@@ -1409,15 +1407,17 @@ class UV17Pro(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_mem.bcl))
         mem.extra.append(rs)
 
-        rs = RadioSetting("pttid", "PTT ID",
-                          RadioSettingValueList(self.PTTID_LIST,
-                                                self.PTTID_LIST[_mem.pttid]))
-        mem.extra.append(rs)
+        if (_mem.pttid != 0xFF):
+            rs = RadioSetting("pttid", "PTT ID",
+                            RadioSettingValueList(self.PTTID_LIST,
+                                                    self.PTTID_LIST[_mem.pttid]))
+            mem.extra.append(rs)
 
-        rs = RadioSetting("scode", "S-CODE",
-                          RadioSettingValueList(self.SCODE_LIST,
-                                                self.SCODE_LIST[_mem.scode]))
-        mem.extra.append(rs)
+        if (_mem.scode != 0xFF):
+            rs = RadioSetting("scode", "S-CODE",
+                            RadioSettingValueList(self.SCODE_LIST,
+                                                    self.SCODE_LIST[_mem.scode]))
+            mem.extra.append(rs)
 
         return mem
 
