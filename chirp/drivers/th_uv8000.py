@@ -519,13 +519,13 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
             "1 - Turn off your radio\n"
             "2 - Connect your interface cable\n"
             "3 - Turn on your radio, volume @ 50%\n"
-            "4 - CHIRP Menu - Radio - Download from radio\n")
+            "4 - OK\n")
         rp.pre_upload = _(
             "Follow these instructions to upload the radio memory:\n"
             "1 - Turn off your radio\n"
             "2 - Connect your interface cable\n"
             "3 - Turn on your radio, volume @ 50%\n"
-            "4 - CHIRP Menu - Radio - Upload to radio\n")
+            "4 - OK\n")
         return rp
 
     def get_features(self):
