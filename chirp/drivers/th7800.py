@@ -42,7 +42,7 @@ struct mem {
   u8 fmdev:2,       // wide=00, mid=01, narrow=10
      scramb:1,
      compand:1,
-     emphasis:1
+     emphasis:1,
      unknown1a:2,
      sqlmode:1;     // carrier, tone
   u8 rptmod:2,      // off, -, +
@@ -350,12 +350,8 @@ class TYTTH7800Base(chirp_common.Radio):
             display = None
         if mem.name:
             _mem.display = True
-            if display and not display.changed():
-                display.value = "Name"
         else:
             _mem.display = False
-            if display and not display.changed():
-                display.value = "Frequency"
 
         _mem.scan = SCAN_MODES.index(mem.skip)
         if mem.skip == "P":

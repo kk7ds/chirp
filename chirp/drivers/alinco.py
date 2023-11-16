@@ -787,7 +787,7 @@ class AlincoDJG7(AlincoStyleRadio):
             if _mem.skip:
                 mem.skip = "S"
             # FIXME find out what every other byte is used for. Japanese?
-            mem.name = str(_mem.name.get_raw()[::2]).rstrip('\0')
+            mem.name = str(_mem.name.get_raw(asbytes=False)[::2]).rstrip('\0')
         return mem
 
     def set_memory(self, mem):

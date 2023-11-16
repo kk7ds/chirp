@@ -81,7 +81,7 @@ struct {
      unknown_08311:1,
      chnameshow:1,      // Display Channel Names (Off, On)                 [25]
      voice:1,           // Voice Prompt (Off, On)                          [19]
-     beep:1             // Beep (Off, On)                                  [09]
+     beep:1,            // Beep (Off, On)                                  [09]
      batterysave:1;     // Battery Save aka Receiver Saver (Off, On)       [16]
   u8 unknown_0832:3,
      manual:1,          // Manual (Disabled, Enabled)
@@ -448,7 +448,7 @@ class Rt87BaseRadio(chirp_common.CloneModeRadio):
     def _is_txinh(self, _mem):
         raw_tx = ""
         for i in range(0, 4):
-            raw_tx += _mem.tx_freq[i].get_raw()
+            raw_tx += _mem.tx_freq[i].get_raw(asbytes=False)
         return raw_tx == "\xFF\xFF\xFF\xFF"
 
     def _bbcd2num(self, bcdarr, strlen=8):
@@ -478,7 +478,7 @@ class Rt87BaseRadio(chirp_common.CloneModeRadio):
         else:
             mem.number = number
 
-        if _mem.get_raw().startswith("\xFF\xFF\xFF\xFF"):
+        if _mem.get_raw(asbytes=False).startswith("\xFF\xFF\xFF\xFF"):
             mem.empty = True
             return mem
 

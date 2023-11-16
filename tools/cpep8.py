@@ -100,8 +100,16 @@ def get_exceptions(f):
 
 
 if args.files:
+    old_files = cpep8_manifest
     cpep8_manifest = []
-    flake8_manifest = args.files
+    flake8_manifest = []
+    for fn in args.files:
+        if not fn.startswith('./'):
+            fn = './' + fn
+        if fn in old_files:
+            cpep8_manifest.append(fn)
+        else:
+            flake8_manifest.append(fn)
 
 # read the blacklisted source files
 blacklist = file_to_lines(blacklist_filename)

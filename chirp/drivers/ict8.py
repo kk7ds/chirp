@@ -117,7 +117,7 @@ class ICT8ARadio(icf.IcomCloneModeRadio):
         mem.duplex = DUPLEX[_flg.duplex]
         mem.tmode = TMODES[_flg.tmode]
         mem.skip = _flg.skip and "S" or ""
-        if _name.name.get_raw() != "\xFF\xFF\xFF\xFF":
+        if _name.name.get_raw(asbytes=False) != "\xFF\xFF\xFF\xFF":
             mem.name = str(_name.name).rstrip()
 
         return mem

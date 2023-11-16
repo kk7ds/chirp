@@ -39,7 +39,7 @@ struct {
      beatshift:1;
   u8 pttid:2,
      highpower:1,
-     scan:1
+     scan:1,
      unknown2:4;
   u8 unknown3[2];
 } memory[8];
@@ -297,7 +297,7 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw()[:4] == "\xFF\xFF\xFF\xFF":
+        if _mem.get_raw(asbytes=False)[:4] == "\xFF\xFF\xFF\xFF":
             mem.empty = True
             return mem
 

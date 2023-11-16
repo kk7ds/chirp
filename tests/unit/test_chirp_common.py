@@ -821,6 +821,15 @@ class TestMemory(base.BaseTest):
         self.assertNotIsInstance(m, FrozenMemory)
         self.assertFalse(hasattr(m, '_frozen'))
 
+    def test_frozen_modifications(self):
+        orig = chirp_common.Memory(123)
+        orig.extra = [settings.RadioSetting(
+            'foo', 'Foo',
+            settings.RadioSettingValueBoolean(False))]
+        frozen = chirp_common.FrozenMemory(orig)
+        with self.assertRaises(ValueError):
+            frozen.extra[0].value = True
+
     def test_tone_validator(self):
         m = chirp_common.Memory()
         # 100.0 is a valid tone
@@ -842,6 +851,81 @@ class TestMemory(base.BaseTest):
             m.ctone = 30.0
         with self.assertRaises(ValueError):
             m.ctone = 300.0
+
+    def test_repr_dump(self):
+        m = chirp_common.Memory()
+        self.assertEqual(
+            "<Memory 0: freq=0,name='',vfo=0,rtone=88.5,ctone=88.5,dtcs=23,"
+            "rx_dtcs=23,tmode='',cross_mode='Tone->Tone',dtcs_polarity='NN',"
+            "skip='',power=None,duplex='',offset=600000,mode='FM',"
+            "tuning_step=5.0,comment='',empty=False,immutable=[]>", repr(m))
+
+        m.freq = 146520000
+        m.rtone = 107.2
+        m.tmode = 'Tone'
+        self.assertEqual(
+            "<Memory 0: freq=146520000,name='',vfo=0,rtone=107.2,ctone=88.5,"
+            "dtcs=23,rx_dtcs=23,tmode='Tone',cross_mode='Tone->Tone',"
+            "dtcs_polarity='NN',skip='',power=None,duplex='',offset=600000,"
+            "mode='FM',tuning_step=5.0,comment='',empty=False,immutable=[]>",
+            repr(m))
+
+        m.number = 101
+        m.extd_number = 'Call'
+        self.assertEqual(
+            "<Memory Call(101): freq=146520000,name='',vfo=0,rtone=107.2,"
+            "ctone=88.5,dtcs=23,rx_dtcs=23,tmode='Tone',"
+            "cross_mode='Tone->Tone',dtcs_polarity='NN',skip='',power=None,"
+            "duplex='',offset=600000,mode='FM',tuning_step=5.0,comment='',"
+            "empty=False,immutable=[]>", repr(m))
+
+        m.extra = settings.RadioSettingGroup('extra', 'Extra')
+        m.extra.append(
+            settings.RadioSetting('test1', 'Test Setting 1',
+                                  settings.RadioSettingValueBoolean(False)))
+        m.extra.append(
+            settings.RadioSetting('test2', 'Test Setting 2',
+                                  settings.RadioSettingValueList(
+                                      ['foo', 'bar'], 'foo')))
+        self.assertEqual(
+            "<Memory Call(101): freq=146520000,name='',vfo=0,rtone=107.2,"
+            "ctone=88.5,dtcs=23,rx_dtcs=23,tmode='Tone',"
+            "cross_mode='Tone->Tone',dtcs_polarity='NN',skip='',power=None,"
+            "duplex='',offset=600000,mode='FM',tuning_step=5.0,comment='',"
+            "empty=False,immutable=[],extra.test1='False',extra.test2='foo'>",
+            repr(m))
+
+    def test_debug_diff(self):
+        m1 = chirp_common.Memory(1)
+        m2 = chirp_common.Memory(1)
+
+        m1.freq = 146520000
+        m2.freq = 446000000
+        self.assertEqual('freq=146520000>446000000', m1.debug_diff(m2, '>'))
+
+        m2.tmode = 'TSQL'
+        self.assertEqual("freq=146520000/446000000,tmode=''/'TSQL'",
+                         m1.debug_diff(m2))
+
+        # Make sure ident diffs come first and are noticed
+        m2.number = 2
+        m2.freq = 146520000
+        self.assertEqual("ident=1/2,tmode=''/'TSQL'", m1.debug_diff(m2))
+
+        # Make sure we can diff extras, and amongst heterogeneous formats
+        m2.number = 1
+        m1.extra = settings.RadioSettingGroup('extra', 'Extra')
+        m2.extra = settings.RadioSettingGroup('extra', 'Extra')
+        m1.extra.append(
+            settings.RadioSetting('test1', 'Test Setting 1',
+                                  settings.RadioSettingValueBoolean(False)))
+        m2.extra.append(
+            settings.RadioSetting('test2', 'Test Setting 2',
+                                  settings.RadioSettingValueList(
+                                      ['foo', 'bar'], 'foo')))
+        self.assertEqual(
+            "extra.test1='False'/'<missing>',extra.test2='<missing>'/'foo',"
+            "tmode=''/'TSQL'", m1.debug_diff(m2))
 
 
 class TestRadioFeatures(base.BaseTest):

@@ -557,7 +557,7 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
             return
         _usd &= ~bitpos
 
-        if _mem.get_raw() == ("\xFF" * 32):
+        if _mem.get_raw(asbytes=False) == ("\xFF" * 32):
             LOG.debug("Initializing empty memory")
             _mem.set_raw("\x00" * 32)
             _mem.squelch = 3

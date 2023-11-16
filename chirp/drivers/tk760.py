@@ -470,7 +470,7 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
     def decode_tone(self, val):
         """Parse the tone data to decode from mem, it returns:
         Mode (''|DTCS|Tone), Value (None|###), Polarity (None,N,R)"""
-        if val.get_raw() == "\xFF\xFF":
+        if val.get_raw(asbytes=False) == "\xFF\xFF":
             return '', None, None
 
         val = int(val)
@@ -556,7 +556,8 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
         # Memory number
         mem.number = number
 
-        if _mem.get_raw()[0] == "\xFF" or not self.get_active(number - 1):
+        if (_mem.get_raw(asbytes=False)[0] == "\xFF" or
+                not self.get_active(number - 1)):
             mem.empty = True
             # but is not enough, you have to clear the memory in the mmap
             # to get it ready for the sync_out process
@@ -566,7 +567,7 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
         # Freq and offset
         mem.freq = int(_mem.rxfreq) * 10
         # tx freq can be blank
-        if _mem.get_raw()[4] == "\xFF":
+        if _mem.get_raw(asbytes=False)[4] == "\xFF":
             # TX freq not set
             mem.offset = 0
             mem.duplex = "off"

@@ -60,6 +60,7 @@
 import struct
 import os
 import logging
+import warnings
 
 import six
 from builtins import bytes
@@ -197,6 +198,14 @@ class DataElement:
         self._offset = int(offset)
         self._count = count
 
+    def _compat_bytes(self, bs, asbytes):
+        if asbytes:
+            return bytes(bs)
+        else:
+            warnings.warn('Driver is using non-byte-native get_raw()',
+                          DeprecationWarning, stacklevel=3)
+            return string_straight_decode(bs)
+
     def size(self):
         return int(self._size * 8)
 
@@ -213,15 +222,14 @@ class DataElement:
     def set_value(self, value):
         raise Exception("Not implemented for %s" % self.__class__)
 
-    def get_raw(self, asbytes=False):
+    def get_raw(self, asbytes=True):
         raw = self._data[self._offset:self._offset+self._size]
-        if asbytes:
-            return bytes(raw)
-        else:
-            return string_straight_decode(raw)
+        return self._compat_bytes(raw, asbytes)
 
     def set_raw(self, data):
         if isinstance(data, str):
+            warnings.warn('Driver is using non-byte-native set_raw()',
+                          DeprecationWarning, stacklevel=2)
             data = string_straight_encode(data)
         self._data[self._offset] = data[:self._size]
 
@@ -258,12 +266,9 @@ class arrayDataElement(DataElement):
     def get_value(self):
         return list(self.__items)
 
-    def get_raw(self, asbytes=False):
-        raw = [item.get_raw(asbytes=asbytes) for item in self.__items]
-        if asbytes:
-            return bytes(b''.join(raw))
-        else:
-            return "".join(raw)
+    def get_raw(self, asbytes=True):
+        raw = [item.get_raw(asbytes=True) for item in self.__items]
+        return self._compat_bytes(bytes(b''.join(raw)), asbytes)
 
     def __setitem__(self, index, val):
         self.__items[index].set_value(val)
@@ -665,6 +670,8 @@ class bcdDataElement(DataElement):
         if isinstance(data, int):
             self._data[self._offset] = data & 0xFF
         elif isinstance(data, str):
+            warnings.warn('Driver is using non-byte-native set_raw()',
+                          DeprecationWarning, stacklevel=2)
             self._data[self._offset] = string_straight_encode(data[0])
         elif isinstance(data, bytes) and len(data) == 1:
             self._data[self._offset] = int(data[0]) & 0xFF
@@ -725,7 +732,7 @@ class structDataElement(DataElement):
             s += "  %15s: %s%s" % (prop, repr(self._generators[prop]),
                                    os.linesep)
         s += "} %s (%i bytes at 0x%04X)%s" % (self._name,
-                                              self.size() / 8,
+                                              self.size() // 8,
                                               self._offset,
                                               os.linesep)
         return s
@@ -792,18 +799,17 @@ class structDataElement(DataElement):
                 size += el.size()
         return int(size)
 
-    def get_raw(self, asbytes=False):
+    def get_raw(self, asbytes=True):
         size = self.size() // 8
         raw = self._data[self._offset:self._offset+size]
-        if asbytes:
-            return bytes(raw)
-        else:
-            return string_straight_decode(raw)
+        return self._compat_bytes(raw, asbytes)
 
     def set_raw(self, buffer):
         if len(buffer) != (self.size() // 8):
             raise ValueError("Struct size mismatch during set_raw()")
         if isinstance(buffer, str):
+            warnings.warn('Driver is using non-byte-native set_raw()',
+                          DeprecationWarning, stacklevel=2)
             buffer = string_straight_encode(buffer)
         self._data[self._offset] = buffer
 
@@ -817,7 +823,6 @@ class structDataElement(DataElement):
 
 
 class Processor:
-
     _types = {
         "u8":    u8DataElement,
         "u16":   u16DataElement,
@@ -852,7 +857,7 @@ class Processor:
         self._generators[name] = gen
 
     def do_bitfield(self, dtype, bitfield):
-        bytes = self._types[dtype](self._data, 0).size() / 8
+        bytes = self._types[dtype](self._data, 0).size() // 8
         bitsleft = bytes * 8
 
         for _bitdef, defn in bitfield:
@@ -909,7 +914,7 @@ class Processor:
                     self._offset += int((i+1) % 8 == 0)
                 else:
                     gen = self._types[dtype](self._data, self._offset)
-                    self._offset += (gen.size() / 8)
+                    self._offset += (gen.size() // 8)
                 res.append(gen)
 
             if count == 1:
@@ -958,11 +963,24 @@ class Processor:
         else:
             raise Exception("Internal error: What is `%s'?" % struct[0][0])
 
+    def assert_negative_seek(self, message):
+        warnings.warn(message, DeprecationWarning, stacklevel=6)
+
+    def assert_unnecessary_seek(self, message):
+        warnings.warn(message, DeprecationWarning, stacklevel=6)
+
     def parse_directive(self, directive):
         name = directive[0][0]
         value = directive[0][1][0][1]
         if name == "seekto":
-            self._offset = int(value, 0)
+            target = int(value, 0)
+            if self._offset == target:
+                self.assert_unnecessary_seek('Unnecessary #seekto %s' % value)
+            elif target < self._offset:
+                self.assert_negative_seek(
+                    'Invalid negative seek from 0x%04x to 0x%04x' % (
+                        self._offset, target))
+            self._offset = target
         elif name == "seek":
             self._offset += int(value, 0)
         elif name == "printoffset":
@@ -992,10 +1010,11 @@ def parse(spec, data, offset=0):
 
 if __name__ == "__main__":
     defn = """
+// comment
 struct mytype { u8 foo; };
 struct mytype bar;
 struct {
-  u8 foo;
+  u8 foo; // inline
   u8 highbit:1,
      sixzeros:6,
      lowbit:1;
@@ -1003,7 +1022,7 @@ struct {
   bbcd fourdigits[2];
 } mystruct;
 """
-    data = "\xab\x7F\x81abc\x12\x34"
+    data = b"\xab\x7F\x81abc\x12\x34"
     tree = parse(defn, data)
 
     print(repr(tree))

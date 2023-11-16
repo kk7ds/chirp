@@ -135,7 +135,7 @@ struct mem_struct {
        step:3;
     u8 artsmode:2,
        unknown2:1,
-       isUhf2:1
+       isUhf2:1,
        power:2,
        shift:2;
     u8 skip:1,

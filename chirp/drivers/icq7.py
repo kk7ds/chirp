@@ -31,7 +31,7 @@ struct {
   u8  fractional:1,
       unknown:7;
   bbcd offset[2];
-  u16 ctone:6
+  u16 ctone:6,
       rtone:6,
       tune_step:4;
 } memory[200];

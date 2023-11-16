@@ -237,7 +237,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
          sftd:2,
          scode:4;
       u8 unknown4;
-      u8 unused3:1
+      u8 unused3:1,
          step:3,
          unused4:4;
       u8 unused5:1,

@@ -258,6 +258,7 @@
 | <a name="Retevis_H777S"></a> Retevis_H777S | [@KC9HI](https://github.com/KC9HI) | 22-Dec-2022 | Yes |  |
 | <a name="Retevis_H777_Plus"></a> Retevis_H777_Plus | [@KC9HI](https://github.com/KC9HI) | 4-Dec-2022 | Yes | 0.06% |
 | <a name="Retevis_RA685"></a> Retevis_RA685 | [@KC9HI](https://github.com/KC9HI) | 19-Nov-2022 | Yes | 0.25% |
+| <a name="Retevis_RA79"></a> Retevis_RA79 | [@KC9HI](https://github.com/KC9HI) | 27-Oct-2023 | Yes |  |
 | <a name="Retevis_RA85"></a> Retevis_RA85 | [@KC9HI](https://github.com/KC9HI) | 19-Nov-2022 | Yes | 0.05% |
 | <a name="Retevis_RB15"></a> Retevis_RB15 | [@KC9HI](https://github.com/KC9HI) | 18-Dec-2022 | Yes | 0.01% |
 | <a name="Retevis_RB17"></a> Retevis_RB17 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.02% |
@@ -382,6 +383,7 @@
 | <a name="Yaesu_FT-2800M"></a> Yaesu_FT-2800M | [Reported working](https://chirp.danplanet.com/issues/10616) | 05-Jun-2023 | Yes | 0.03% |
 | <a name="Yaesu_FT-2900R_1900R"></a> Yaesu_FT-2900R_1900R | [Reported working](https://chirp.danplanet.com/issues/10274) | 14-Jan-2023 | Yes | 0.05% |
 | <a name="Yaesu_FT-2900R_1900RTXMod_Opened_Xmit"></a> Yaesu_FT-2900R_1900RTXMod_Opened_Xmit | [Implied by Yaesu_FT-2900R_1900R](#user-content-Yaesu_FT-2900R_1900R) | 14-Jan-2023 | Yes |  |
+| <a name="Yaesu_FT-450"></a> Yaesu_FT-450 | [@WCurlew](https://github.com/WCurlew) | 03-Nov-2023 | Yes |  |
 | <a name="Yaesu_FT-450D"></a> Yaesu_FT-450D | [@Old-Phart](https://github.com/Old-Phart) | 01-Jun-2023 | Yes | 0.01% |
 | <a name="Yaesu_FT-4VR"></a> Yaesu_FT-4VR | [Implied by Yaesu_FT-4XE](#user-content-Yaesu_FT-4XE) | 24-Dec-2022 | Yes | 0.01% |
 | <a name="Yaesu_FT-4XE"></a> Yaesu_FT-4XE | Unit tested; needs confirm | 24-Dec-2022 | Yes | 0.14% |
@@ -393,7 +395,7 @@
 | <a name="Yaesu_FT-70D"></a> Yaesu_FT-70D | [@n8sqt](https://github.com/n8sqt) | 05-Dec-2022 | Yes | 0.27% |
 | <a name="Yaesu_FT-7100M"></a> Yaesu_FT-7100M |  |  | Yes | 0.03% |
 | <a name="Yaesu_FT-7800_7900"></a> Yaesu_FT-7800_7900 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.14% |
-| <a name="Yaesu_FT-8100"></a> Yaesu_FT-8100 |  |  | Yes | 0.01% |
+| <a name="Yaesu_FT-8100"></a> Yaesu_FT-8100 | [Reported working](https://chirp.danplanet.com/issues/10904) | 19-Oct-2023 | Yes | 0.01% |
 | <a name="Yaesu_FT-817"></a> Yaesu_FT-817 | [@kk7ds](https://github.com/kk7ds) | 14-Feb-2019 | Yes | 0.04% |
 | <a name="Yaesu_FT-817ND"></a> Yaesu_FT-817ND | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.07% |
 | <a name="Yaesu_FT-817ND_US"></a> Yaesu_FT-817ND_US | [Implied by Yaesu_FT-817](#user-content-Yaesu_FT-817) | 14-Feb-2019 | Yes | 0.02% |
@@ -423,11 +425,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 420
+**Drivers:** 422
 
-**Tested:** 87% (366/54) (93% of usage stats)
+**Tested:** 87% (369/53) (93% of usage stats)
 
-**Byte clean:** 90% (380/40)
+**Byte clean:** 90% (382/40)
 
 ## Meaning of this testing
 
@@ -465,21 +467,22 @@ For the purposes of the Python 3 effort, a "tested" radio means
 at least the following procedure was followed:
 1. Download from the radio
 1. Make some change to a memory
-1. If the radio has settings support, make sure settings load and tweak one setting
+1. If the radio has settings support, make sure settings load and tweak
+   one setting
 1. Upload to the radio
 1. Confirm that the changes stick and look correct, or at least are not a
    regression from the master py2 branch.
 
-The drivers are all passing the automated tests, but tests with real hardware
-and serial ports is important, especially around bytes-vs-string safety.
+The drivers are all passing the automated tests, but tests with real
+hardware and serial ports is important, especially around bytes-vs-string
+safety.
 
-To update this document, add/edit entries in `tests/py3_driver_testers.txt` and
-then run `tox -e makesupported`. Commit the result (including the changes to this `.md`
-file) and submit a PR.
+To update this document, add/edit entries in `tests/py3_driver_testers.txt`
+and then run `tox -e makesupported`. Commit the result (including the
+changes to this `.md` file) and submit a PR.
 
 The "Byte Clean" flag refers to whether or not the radio has set the
 `NEEDS_COMPAT_SERIAL = False` flag on the radio class, and thus uses
 `MemoryMapBytes` exclusively internally. Whenever possible, all radios
 that are fixed for py3 should do so with this flag set to False and with
 the byte-native memory map.
-

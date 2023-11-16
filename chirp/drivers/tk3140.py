@@ -505,7 +505,7 @@ class KenwoodTKx140Radio(chirp_common.CloneModeRadio):
         mask = 1 << (slot % 8)
         m.freq = int(_mem.rx_freq) * 10
         offset = int(_mem.tx_freq) * 10 - m.freq
-        if _mem.tx_freq.get_raw(asbytes=True) == b'\xFF\xFF\xFF\xFF':
+        if _mem.tx_freq.get_raw() == b'\xFF\xFF\xFF\xFF':
             m.offset = 0
             m.duplex = 'off'
         elif offset < 0:
@@ -557,7 +557,7 @@ class KenwoodTKx140Radio(chirp_common.CloneModeRadio):
         elif mem.duplex == 'split':
             _mem.tx_freq = mem.offset // 10
         elif mem.duplex == 'off':
-            _mem.tx_freq.set_raw(b'\xFF' * 4)
+            _mem.tx_freq = 0xFFFFFFFF
         elif mem.duplex == '-':
             _mem.tx_freq = (mem.freq - mem.offset) // 10
         elif mem.duplex == '+':

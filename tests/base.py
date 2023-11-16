@@ -1,5 +1,6 @@
 import functools
 import logging
+import os
 import unittest
 
 from chirp import chirp_common
@@ -15,6 +16,17 @@ class DriverTest(unittest.TestCase):
 
     def setUp(self):
         super().setUp()
+        self.patches = []
+
+        if ('CHIRP_TEST_BITWISE_STRICT_BYTES' in os.environ and
+                not self.RADIO_CLASS.NEEDS_COMPAT_SERIAL):
+            self.use_patch(unittest.mock.patch(
+                'chirp.bitwise.DataElement._compat_bytes',
+                side_effect=self._strict_bytes))
+            self.use_patch(unittest.mock.patch(
+                'chirp.bitwise.string_straight_encode',
+                side_effect=AssertionError(
+                    'string_straight_encode not allowed in strict mode')))
 
         self.parent = self.RADIO_CLASS(self.TEST_IMAGE)
         self.parent_rf = self.parent.get_features()
@@ -27,7 +39,6 @@ class DriverTest(unittest.TestCase):
         else:
             self.radio = self.parent
             self.rf = self.parent_rf
-        self.patches = []
 
     def use_patch(self, patch):
         self.patches.append(patch)
@@ -37,17 +48,18 @@ class DriverTest(unittest.TestCase):
         for patch in self.patches:
             patch.stop()
 
+    def _strict_bytes(self, bs, asbytes):
+        """Enforce strict get_raw() behavior returning bytes()"""
+        assert asbytes, 'asbytes must be True in strict mode'
+        assert isinstance(bs, bytes), 'Type should be bytes here'
+        return bs
+
     def get_mem(self):
         """Attempt to build a suitable memory for testing"""
         # Check to see if memory #1 has immutable fields, and if so,
         # use that as our template instead of constructing a memory ourselves
         try:
             m = self.radio.get_memory(1)
-            # Don't return extra because it will never match properly
-            try:
-                del m.extra
-            except AttributeError:
-                pass
             # Pre-filter the name so it will match what we expect back
             if 'name' not in m.immutable:
                 m.name = self.radio.filter_name(m.name)
@@ -129,6 +141,8 @@ class DriverTest(unittest.TestCase):
                 continue
             if k == "power":
                 continue  # FIXME
+            elif k == "extra":
+                continue
             elif k == "immutable":
                 continue
             elif k == "name":
@@ -179,6 +193,16 @@ class DriverTest(unittest.TestCase):
 
         self.assertEqual(a_vals, b_vals,
                          'Memories have unexpected differences')
+
+        # Consider mem.extra as matching if the structure remains the same.
+        # Since we don't know anything about model-specific things here we
+        # can't really assert any more than that, but we can ensure that the
+        # structure doesn't change due to the contents of the rest of the
+        # memory.
+        if a.extra and b.extra:
+            self.assertEqual([x.get_name() for x in a.extra],
+                             [x.get_name() for x in b.extra],
+                             'Memories have different mem.extra keys')
 
 
 def requires_feature(flag):

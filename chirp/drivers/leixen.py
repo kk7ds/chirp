@@ -77,7 +77,7 @@ struct {
   u8 unknown0x0194;
   u8 menuen:1,           // menu enable
      absel:1,            // a/b select
-     unknown:2
+     unknown:2,
      keymshort:4;        // m key short press
   u8 unknown:4,
      dtmfst:1,           // dtmf sidetone
@@ -474,7 +474,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     def _is_txinh(self, _mem):
         raw_tx = ""
         for i in range(0, 4):
-            raw_tx += _mem.tx_freq[i].get_raw()
+            raw_tx += _mem.tx_freq[i].get_raw(asbytes=False)
         return raw_tx == b"\xFF\xFF\xFF\xFF"
 
     def _get_memobjs(self, number):
@@ -488,7 +488,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw()[:4] == "\xFF\xFF\xFF\xFF":
+        if _mem.get_raw(asbytes=False)[:4] == "\xFF\xFF\xFF\xFF":
             mem.empty = True
             return mem
 
@@ -590,7 +590,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         if mem.empty:
             _mem.set_raw(b"\xFF" * 16)
             return
-        elif _mem.get_raw() == (b"\xFF" * 16):
+        elif _mem.get_raw(asbytes=False) == (b"\xFF" * 16):
             _mem.set_raw(b"\xFF" * 8 + b"\xFF\x00\xFF\x00\xFF\xFE\xF0\xFC")
 
         _mem.rx_freq = mem.freq / 10
@@ -622,12 +622,8 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
             aliasop = None
         if mem.name:
             _mem.aliasop = False
-            if aliasop and not aliasop.changed():
-                aliasop.value = "Name"
         else:
             _mem.aliasop = True
-            if aliasop and not aliasop.changed():
-                aliasop.value = "Frequency"
 
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)

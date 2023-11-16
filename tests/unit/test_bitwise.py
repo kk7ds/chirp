@@ -251,8 +251,8 @@ class TestBitwiseCharTypes(BaseTest):
     def test_string_get_raw(self):
         data = memmap.MemoryMapBytes(bytes(b"foobar"))
         obj = bitwise.parse("char foo[6];", data)
-        self.assertEqual('foobar', obj.foo.get_raw())
-        self.assertEqual(b'foobar', obj.foo.get_raw(asbytes=True))
+        self.assertEqual(b'foobar', obj.foo.get_raw())
+        self.assertEqual('foobar', obj.foo.get_raw(asbytes=False))
 
 
 class TestBitwiseStructTypes(BaseTest):
@@ -283,15 +283,24 @@ class TestBitwiseStructTypes(BaseTest):
         data = memmap.MemoryMapBytes(bytes(b".."))
         defn = "struct { u8 bar; u8 baz; } foo;"
         obj = bitwise.parse(defn, data)
-        self.assertEqual('..', obj.get_raw())
-        self.assertEqual(b'..', obj.get_raw(asbytes=True))
+        self.assertEqual(b'..', obj.get_raw())
+        self.assertEqual('..', obj.get_raw(asbytes=False))
 
     def test_struct_get_raw_small(self):
         data = memmap.MemoryMapBytes(bytes(b"."))
         defn = "struct { u8 bar; } foo;"
         obj = bitwise.parse(defn, data)
-        self.assertEqual('.', obj.get_raw())
-        self.assertEqual(b'.', obj.get_raw(asbytes=True))
+        self.assertEqual(b'.', obj.get_raw())
+        self.assertEqual('.', obj.get_raw(asbytes=False))
+
+    def test_struct_set_raw(self):
+        data = memmap.MemoryMapBytes(bytes(b"."))
+        defn = "struct { u8 bar; } foo;"
+        obj = bitwise.parse(defn, data)
+        obj.set_raw(b'1')
+        self.assertEqual(b'1', data.get_packed())
+        obj.set_raw('2')
+        self.assertEqual(b'2', data.get_packed())
 
 
 class TestBitwiseSeek(BaseTest):

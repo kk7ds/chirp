@@ -178,8 +178,8 @@ struct mem {
                           // BJ-318 band power overrides any
                           // individual channel power setting
       wide:1,
-      compander:1
-      scrambler:1
+      compander:1,
+      scrambler:1,
       unknown:4;
   u8  namelen;
   u8  name[7];
@@ -595,7 +595,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw()[0] == "\xff":
+        if _mem.get_raw(asbytes=False)[0] == "\xff":
             mem.empty = True
             return mem
 

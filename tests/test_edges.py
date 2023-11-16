@@ -1,3 +1,7 @@
+import pytest
+from unittest import mock
+
+from chirp import bitwise
 from chirp import chirp_common
 from chirp import errors
 from tests import base
@@ -106,12 +110,21 @@ class TestCaseEdges(base.DriverTest):
         lo, hi = self.rf.memory_bounds
         for name in self.rf.valid_special_chans:
             m1 = self.radio.get_memory(name)
+            # Flip to non-empty, but only touch it if it's false because some
+            # radios have empty in the immutable set.
+            if m1.empty:
+                m1.empty = False
             try:
                 del m1.extra
             except AttributeError:
                 pass
             if m1.freq > 130000000 and m1.freq < 500000000:
                 m1.freq += 5000
+            elif m1.freq == 0:
+                # If the memory was empty before, we likely need to pick
+                # a valid frequency. Use the bottom of the first supported
+                # band.
+                m1.freq = self.rf.valid_bands[0][0]
             try:
                 self.radio.set_memory(m1)
             except errors.RadioError:
@@ -154,3 +167,23 @@ class TestCaseEdges(base.DriverTest):
         self.assertEqual(m2.name.rstrip(), m2.name,
                          'Radio set and returned a memory with trailing '
                          'whitespace in the name')
+
+
+class TestBitwiseStrict(base.DriverTest):
+    def setUp(self):
+        pass
+
+    def _raise(self, message):
+        raise SyntaxError(message)
+
+    @pytest.mark.xfail(strict=False)
+    @mock.patch.object(bitwise.Processor, 'assert_negative_seek',
+                       side_effect=_raise)
+    def test_bitwise_negative_seek(self, mock_assert):
+        super().setUp()
+
+    @pytest.mark.xfail(strict=False)
+    @mock.patch.object(bitwise.Processor, 'assert_unnecessary_seek',
+                       side_effect=_raise)
+    def test_bitwise_unnecessary_seek(self, mock_assert):
+        super().setUp()

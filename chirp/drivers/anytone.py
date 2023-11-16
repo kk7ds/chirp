@@ -192,7 +192,7 @@ class FlagObj(object):
 
 
 def _is_loc_used(memobj, loc):
-    return memobj.flags[loc / 2].get_raw() != "\xFF"
+    return memobj.flags[loc / 2].get_raw(asbytes=False) != "\xFF"
 
 
 def _addr_to_loc(addr):

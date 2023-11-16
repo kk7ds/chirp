@@ -696,7 +696,7 @@ class TDH8(chirp_common.CloneModeRadio):
             "->Tone",
             "DTCS->DTCS"]
         rf.valid_power_levels = TX_POWER
-        rf.valid_duplexes = ["", "-", "+", "split"]
+        rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_tuning_steps = STEPS
 
@@ -783,7 +783,7 @@ class TDH8(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw()[0] == "\xff":
+        if _mem.get_raw(asbytes=False)[0] == "\xff":
             mem.empty = True
             return mem
 
@@ -851,6 +851,9 @@ class TDH8(chirp_common.CloneModeRadio):
         if int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
             mem.offset = 0
+        elif int(_mem.txfreq) == 66666665 and int(_mem.rxfreq) != 66666665:
+            mem.offset = 0
+            mem.duplex = 'off'
         else:
             mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
             mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
@@ -1018,6 +1021,8 @@ class TDH8(chirp_common.CloneModeRadio):
             _mem.txfreq = (mem.freq + mem.offset) / 10
         elif mem.duplex == "-":
             _mem.txfreq = (mem.freq - mem.offset) / 10
+        elif mem.duplex == 'off':
+            _mem.txfreq = 166666665
         else:
             _mem.txfreq = mem.freq / 10
 

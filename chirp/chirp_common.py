@@ -85,6 +85,10 @@ CROSS_MODES = (
     "Tone->"
 )
 
+# This is the "master" list of modes, and in general things should not be
+# added here without significant consideration. These must remain stable and
+# universal to allow importing memories between different radio vendors and
+# models.
 MODES = ("WFM", "FM", "NFM", "AM", "NAM", "DV", "USB", "LSB", "CW", "RTTY",
          "DIG", "PKT", "NCW", "NCWR", "CWR", "P25", "Auto", "RTTYR",
          "FSK", "FSKR", "DMR", "DN")
@@ -352,7 +356,37 @@ class Memory:
     }
 
     def __repr__(self):
-        return str(self)
+        ident, vals = self.debug_dump()
+        return '<Memory %s: %s>' % (
+            ident, ','.join('%s=%r' % item for item in vals))
+
+    def debug_diff(self, other, delim='/'):
+        my_ident, my_vals = self.debug_dump()
+        my_vals = dict(my_vals)
+
+        om_ident, om_vals = other.debug_dump()
+        om_vals = dict(om_vals)
+
+        diffs = []
+        if my_ident != om_ident:
+            diffs.append('ident=%s%s%s' % (my_ident, delim, om_ident))
+        for k in sorted(my_vals.keys() | om_vals.keys()):
+            myval = my_vals.get(k, '<missing>')
+            omval = om_vals.get(k, '<missing>')
+            if myval != omval:
+                diffs.append('%s=%r%s%r' % (k, myval, delim, omval))
+        return ','.join(diffs)
+
+    def debug_dump(self):
+        vals = [(k, v) for k, v in self.__dict__.items()
+                if k not in ('extra', 'number', 'extd_number')]
+        for extra in self.extra:
+            vals.append(('extra.%s' % extra.get_name(), str(extra.value)))
+        if self.extd_number:
+            ident = '%s(%i)' % (self.extd_number, self.number)
+        else:
+            ident = str(self.number)
+        return ident, vals
 
     def dupe(self):
         """Return a deep copy of @self"""
@@ -624,6 +658,8 @@ def FrozenMemory(source):
                 setattr(self, k, v)
 
             self.__dict__['_frozen'] = True
+            for i in self.extra:
+                i.set_frozen()
 
         def __setattr__(self, k, v):
             if self._frozen:

@@ -201,7 +201,7 @@ _MEM_FORMAT = """
                 power:1,
                 unknown2:1;
         u8      unknown3:1,
-                shift_dir:2
+                shift_dir:2,
                 unknown4:2,
                 mute_mode:2,
                 iswide:1;
@@ -219,7 +219,7 @@ _MEM_FORMAT = """
                 power:1,
                 unknown2:1;
         u8      unknown3:1,
-                shift_dir:2
+                shift_dir:2,
                 unknown4:2,
                 mute_mode:2,
                 iswide:1;

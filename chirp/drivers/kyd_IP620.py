@@ -36,10 +36,10 @@ struct {           // Channel memory structure
   lbcd tx_freq[4]; // TX frequency
   ul16 rx_tone;    // RX tone
   ul16 tx_tone;    // TX tone
-  u8 unknown_1:4   // n-a
+  u8 unknown_1:4,  // n-a
      busy_loc:2,   // NO-00, Crrier wave-01, SM-10
      n_a:2;        // n-a
-  u8 unknown_2:1   // n-a
+  u8 unknown_2:1,  // n-a
      scan_add:1,   // Scan add
      n_a:1,        // n-a
      w_n:1,        // Narrow-0 Wide-1
@@ -62,10 +62,10 @@ struct {           // Settings memory structure ( A-Frequency mode )
   lbcd freq_a_tx[4];
   ul16 freq_a_rx_tone;    // RX tone
   ul16 freq_a_tx_tone;    // TX tone
-  u8 unknown_1_5:4
+  u8 unknown_1_5:4,
   freq_a_busy_loc:2,
   n_a:2;
-  u8 unknown_1_6:3
+  u8 unknown_1_6:3,
   freq_a_w_n:1,
   n_a:1,
   na:1,
@@ -372,7 +372,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
 
         def _is_empty():
             for i in range(0, 4):
-                if _mem.rx_freq[i].get_raw() != "\xFF":
+                if _mem.rx_freq[i].get_raw(asbytes=False) != "\xFF":
                     return False
             return True
 

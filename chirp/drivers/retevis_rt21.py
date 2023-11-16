@@ -338,7 +338,7 @@ struct {
   u8 unknown_7[2];     //                        005E-005F
   u8 channel_7[13];    //                        0060-006C
   u8 voicel:4,         // Voice Level            006D
-     unknown_9:3       //
+     unknown_9:3,      //
      warn:1;           // Warn Mode
 } settings;
 
@@ -901,7 +901,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             _mem = self._memobj.memory[number - 1]
 
         if self._reserved:
-            _rsvd = _mem.reserved.get_raw()
+            _rsvd = _mem.reserved.get_raw(asbytes=False)
 
         mem.freq = int(_mem.rxfreq) * 10
 
@@ -910,7 +910,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.rxfreq.get_raw() == "\xFF\xFF\xFF\xFF":
+        if _mem.rxfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
             return mem
@@ -1176,7 +1176,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             _mem = self._memobj.memory[mem.number - 1]
 
         if self._reserved:
-            _rsvd = _mem.reserved.get_raw()
+            _rsvd = _mem.reserved.get_raw(asbytes=False)
 
         if self.MODEL == "RT86":
             _freqhops = self._memobj.freqhops[mem.number - 1]

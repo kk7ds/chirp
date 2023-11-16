@@ -229,6 +229,7 @@ Radtel_T18,@KC9HI,28-Nov-2022
 Retevis_H777S,@KC9HI,22-Dec-2022
 Retevis_H777_Plus,@KC9HI,4-Dec-2022
 Retevis_RA685,@KC9HI,19-Nov-2022
+Retevis_RA79,@KC9HI,27-Oct-2023
 Retevis_RA85,@KC9HI,19-Nov-2022
 Retevis_RB15,@KC9HI,18-Dec-2022
 Retevis_RB17,@KC9HI,28-Nov-2022
@@ -342,6 +343,7 @@ Yaesu_FT-1D_R,+Yaesu_FT3D_R,30-Dec-2022
 Yaesu_FT2D_R,+Yaesu_FT3D_R,30-Dec-2022
 Yaesu_FT2D_Rv2,+Yaesu_FT3D_R,30-Dec-2022
 Yaesu_FT3D_R,@kk7ds,30-Dec-2022
+Yaesu_FT-450,@WCurlew,03-Nov-2023
 Yaesu_FT-450D,@Old-Phart,01-Jun-2023
 Yaesu_FT-4XE,Unit tested; needs confirm,24-Dec-2022
 Yaesu_FT-4XR,+Yaesu_FT-4XE,24-Dec-2022
@@ -353,6 +355,7 @@ Yaesu_FT-50,#10824,5-Sep-2023
 Yaesu_FT-60,N0EYE,9-Jan-2023
 Yaesu_FT-70D,@n8sqt,05-Dec-2022
 Yaesu_FT-7800_7900,@kk7ds,24-Oct-2022
+Yaesu_FT-8100,#10904,19-Oct-2023
 Yaesu_FT-8800,@kk7ds,24-Oct-2022
 Yaesu_FT-8900,#10753,30-Jul-2023
 Yaesu_FT-817,@kk7ds,14-Feb-2019

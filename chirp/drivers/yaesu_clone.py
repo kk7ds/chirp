@@ -90,6 +90,8 @@ def __clone_in(radio):
             pipe.write(bytes([CMD_ACK]))
         if not chunk:
             raise errors.RadioError("No response from radio")
+        if blocks == 1:
+            LOG.debug('ID block: %s' % util.hexprint(chunk))
         if radio.status_fn:
             status.cur = len(data)
             radio.status_fn(status)

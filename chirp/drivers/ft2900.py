@@ -212,7 +212,7 @@ struct {
         unk:2,
         dtmf_mode:1;
     u8  unk:1,
-        ts_mut:1
+        ts_mut:1,
         wires_auto:1,
         busy_lockout:1,
         edge_beep:1,
@@ -572,7 +572,7 @@ class FT2900Radio(YaesuCloneModeRadio):
 
         mem.number = number
 
-        if _mem.get_raw()[0] == "\xFF" or not valid or not used:
+        if _mem.get_raw(asbytes=False)[0] == "\xFF" or not valid or not used:
             mem.empty = True
             return mem
 
@@ -710,7 +710,8 @@ class FT2900Radio(YaesuCloneModeRadio):
         _mem.unknown4 = 0
         _mem.unknown5 = 0
 
-        LOG.debug("encoded mem\n%s\n" % (util.hexprint(_mem.get_raw()[0:20])))
+        LOG.debug("encoded mem\n%s\n" % (util.hexprint(
+            _mem.get_raw(asbytes=False)[0:20])))
 
     def get_settings(self):
         _settings = self._memobj.settings

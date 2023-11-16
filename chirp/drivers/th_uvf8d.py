@@ -367,7 +367,7 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
         else:
             mem.number = number
 
-        if _mem.get_raw().startswith("\xFF\xFF\xFF\xFF"):
+        if _mem.get_raw(asbytes=False).startswith("\xFF\xFF\xFF\xFF"):
             mem.empty = True
             return mem
 
@@ -447,7 +447,7 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
         else:
             e.flags[7 - ((mem.number - 1) % 8)] = True
 
-        if _mem.get_raw() == ("\xFF" * 32):
+        if _mem.get_raw(asbytes=False) == ("\xFF" * 32):
             LOG.debug("Initializing empty memory")
             _mem.set_raw("\x00" * 32)
 

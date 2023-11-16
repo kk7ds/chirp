@@ -13,33 +13,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import time
-import os
 
 from chirp import chirp_common, directory, bitwise, errors
 from chirp.drivers import yaesu_clone
 
+LOG = logging.getLogger(__name__)
+
 TONES = chirp_common.OLD_TONES
-
 TMODES = ["", "Tone"]
-
 MODES = ['FM', 'AM']
-
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0]
-
 DUPLEX = ["", "-", "+", "split"]
-
 # "M" for masked memories, which are invisible until un-masked
 SKIPS = ["", "S", "M"]
-
 POWER_LEVELS_VHF = [chirp_common.PowerLevel("Low", watts=5),
                     chirp_common.PowerLevel("Mid", watts=20),
                     chirp_common.PowerLevel("High", watts=50)]
-
 POWER_LEVELS_UHF = [chirp_common.PowerLevel("Low", watts=5),
                     chirp_common.PowerLevel("Mid", watts=20),
                     chirp_common.PowerLevel("High", watts=35)]
-
 SPECIALS = {'1L': -1,
             '1U': -2,
             '2L': -3,
@@ -96,7 +90,7 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
     @classmethod
     def match_model(cls, data, path):
         if (len(data) == cls._memsize and
-                data[1:10] == '\x01\x01\x07\x08\x02\x01\x01\x00\x01'):
+                data[1:10] == b'\x01\x01\x07\x08\x02\x01\x01\x00\x01'):
             return True
 
         return False
@@ -110,6 +104,7 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_bank = False
         rf.has_name = False
 
+        rf.valid_tones = list(TONES)
         rf.valid_modes = list(MODES)
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
@@ -117,24 +112,33 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_sub_devices = self.VARIANT == ''
 
         rf.valid_tuning_steps = list(STEPS)
+        # This is not implemented properly, so don't expose it
+        rf.valid_tuning_steps.remove(12.5)
 
-        rf.valid_bands = [(110000000, 550000000),
-                          (750000000, 1300000000)]
+        # This driver doesn't properly support the upper bound of 1300MHz
+        # so limit us to 999MHz
+        if self.VARIANT == 'VHF':
+            rf.valid_bands = [(110000000, 280000000)]
+        else:
+            rf.valid_bands = [(280000000, 550000000),
+                              (750000000, 999000000)]
 
-        rf.valid_skips = SKIPS
-
-        rf.can_odd_split = True
+        # This is not actually implemented, so don't expose it
+        # rf.valid_skips = SKIPS
+        rf.valid_skips = []
 
         # TODO
         # rf.valid_special_chans = SPECIALS.keys()
-
         # TODO
         # rf.has_tuning_step = False
+
+        rf.can_odd_split = True
+
         return rf
 
     def sync_in(self):
         super(FT8100Radio, self).sync_in()
-        self.pipe.write(chr(yaesu_clone.CMD_ACK))
+        self.pipe.write(bytes([yaesu_clone.CMD_ACK]))
         self.pipe.read(1)
 
     def sync_out(self):
@@ -147,8 +151,7 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
 
         mem_format = MEM_FORMAT.format(memories=self._memstart,
                                        skips=self._skipstart,
-                                       enables=self._enablestart
-                                       )
+                                       enables=self._enablestart)
 
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
@@ -172,15 +175,9 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.tmode = TMODES[_mem.tone_enable]
         mem.mode = MODES[_mem.am]
         mem.duplex = DUPLEX[_mem.duplex]
+        mem.offset = int(_mem.offset) * 1000
 
-        if _mem.duplex == DUPLEX.index("split"):
-            tx_freq = int(_mem.offset) * 1000
-            print(self.VARIANT, number, tx_freq, mem.freq)
-            mem.offset = tx_freq - mem.freq
-        else:
-            mem.offset = int(_mem.offset) * 1000
-
-        if int(mem.freq / 100) == 4:
+        if mem.freq // 100 == 4:
             mem.power = POWER_LEVELS_UHF[_mem.power]
         else:
             mem.power = POWER_LEVELS_VHF[_mem.power]
@@ -188,8 +185,8 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
         # M01 can't be disabled
         if not self._memobj.enables[byte] & bit and number != 1:
             mem.empty = True
-
-        print('R', self.VARIANT, number, _mem.baud9600)
+        elif number == 1:
+            mem.immutable = ['empty']
 
         return mem
 
@@ -201,18 +198,12 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
 
         _mem = self._memobj.memory[mem.number - 1]
 
-        _mem.freq = int(mem.freq / 1000)
+        _mem.freq = mem.freq // 1000
         _mem.tone = TONES.index(mem.rtone)
         _mem.tone_enable = TMODES.index(mem.tmode)
         _mem.am = MODES.index(mem.mode)
         _mem.duplex = DUPLEX.index(mem.duplex)
-
-        if mem.duplex == "split":
-            tx_freq = mem.freq + mem.offset
-            _mem.split_high = tx_freq / 10000000
-            _mem.offset = (tx_freq % 10000000) / 1000
-        else:
-            _mem.offset = int(mem.offset / 1000)
+        _mem.offset = mem.offset // 1000
 
         if mem.power:
             _mem.power = POWER_LEVELS_VHF.index(mem.power)
@@ -226,7 +217,6 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
 
         # TODO expose these options
         _mem.baud9600 = 0
-        _mem.am = 0
 
         # These need to be cleared, otherwise strange things happen
         _mem.unknown4 = 0
@@ -243,10 +233,10 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
     def _bit_byte(self, number):
         if self.VARIANT == 'VHF':
             bit = 1 << ((number - 1) % 8)
-            byte = (number - 1) / 8
+            byte = (number - 1) // 8
         else:
             bit = 1 << ((number - 2) % 8)
-            byte = (number - 2) / 8
+            byte = (number - 2) // 8
 
         return bit, byte
 
@@ -290,18 +280,17 @@ def __clone_out(radio):
 
     pos = 0
     for block in radio._block_lengths:
-        if os.getenv("CHIRP_DEBUG"):
-            print("\nSending %i-%i" % (pos, pos + block))
+        LOG.debug("\nSending %i-%i" % (pos, pos + block))
         out = radio.get_mmap()[pos:pos + block]
 
         # need to chew byte-by-byte here or else we lose the ACK...not sure why
         for b in out:
-            pipe.write(b)
+            pipe.write(bytes([b]))
             pipe.read(1)  # chew the echo
 
         ack = pipe.read(1)
 
-        if ack != chr(yaesu_clone.CMD_ACK):
+        if ack[0] != yaesu_clone.CMD_ACK:
             raise Exception("block not ack'ed: %s" % repr(ack))
 
         total_written += len(out)
@@ -309,6 +298,6 @@ def __clone_out(radio):
 
         pos += block
 
-    print("Clone completed in %i seconds" % (time.time() - start))
+    LOG.debug("Clone completed in %i seconds" % (time.time() - start))
 
     return True

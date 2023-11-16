@@ -100,7 +100,7 @@ struct {
      save:3;                //               Power Save
   u8 dispmode:1,            // 0x0042        Display Mode
      dstandby:1,            //               Dual Standby
-     unknown_1:1
+     unknown_1:1,
      standby:1,             //               Radio Standby
      squelch:4;             //               Squelch Level
   u8 vox_level:4,           // 0x0043        VOX Level
@@ -455,12 +455,12 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.rxfreq.get_raw() == "\xFF\xFF\xFF\xFF":
+        if _mem.rxfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
             return mem
 
-        if _mem.get_raw() == ("\xFF" * 16):
+        if _mem.get_raw(asbytes=False) == ("\xFF" * 16):
             LOG.debug("Initializing empty memory")
             _mem.set_raw("\xFF" * 4 + "\x00\x30" + "\xFF" * 4 + "\x00\x30" +
                          "\x00" * 4)

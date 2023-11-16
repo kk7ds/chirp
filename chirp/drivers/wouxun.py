@@ -745,7 +745,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     def _is_txinh(self, _mem):
         raw_tx = ""
         for i in range(0, 4):
-            raw_tx += _mem.tx_freq[i].get_raw()
+            raw_tx += _mem.tx_freq[i].get_raw(asbytes=False)
         return raw_tx == "\xFF\xFF\xFF\xFF"
 
     def get_memory(self, number):
@@ -755,7 +755,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw() == ("\xff" * 16):
+        if _mem.get_raw(asbytes=False) == ("\xff" * 16):
             mem.empty = True
             return mem
 
@@ -851,7 +851,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
             wipe_memory(_mem, "\xFF")
             return
 
-        if _mem.get_raw() == ("\xFF" * 16):
+        if _mem.get_raw(asbytes=False) == ("\xFF" * 16):
             wipe_memory(_mem, "\x00")
 
         _mem.rx_freq = int(mem.freq / 10)

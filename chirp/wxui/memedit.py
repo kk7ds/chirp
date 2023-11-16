@@ -16,7 +16,6 @@
 import functools
 import logging
 import pickle
-import platform
 import sys
 
 import wx
@@ -38,6 +37,7 @@ from chirp.wxui import developer
 
 LOG = logging.getLogger(__name__)
 CONF = config.get()
+WX_GTK = 'gtk' in wx.version().lower()
 
 
 class ChirpMemoryGrid(wx.grid.Grid, glr.GridWithLabelRenderersMixin):
@@ -676,6 +676,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._grid.Bind(wx.grid.EVT_GRID_LABEL_RIGHT_CLICK,
                         self._memory_rclick)
         self._grid.Bind(wx.grid.EVT_GRID_CELL_BEGIN_DRAG, self._memory_drag)
+        if WX_GTK:
+            self._grid.Bind(wx.EVT_KEY_DOWN, self._gtk_short_circuit_edit_copy)
         row_labels = self._grid.GetGridRowLabelWindow()
         row_labels.Bind(wx.EVT_LEFT_DOWN, self._row_click)
         row_labels.Bind(wx.EVT_LEFT_UP, self._row_click)
@@ -684,6 +686,19 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         self._dc = wx.ScreenDC()
         self.set_cell_attrs()
+
+    def _gtk_short_circuit_edit_copy(self, event):
+        # wxGTK is broken and does not direct Ctrl-C to the menu items
+        # because wx.grid.Grid() tries to implement something for it,
+        # which we don't want. The wxWidgets people say the only way is to
+        # grab it ourselves and direct it appropriately before wx.grid.Grid()
+        # can do it.
+        # https://github.com/wxWidgets/wxWidgets/issues/22625
+        if (event.GetKeyCode() == ord('C') and
+                event.GetModifiers() == wx.MOD_CONTROL):
+            self.cb_copy(cut=False)
+        else:
+            event.Skip()
 
     def _row_click(self, event):
         # In order to override the drag-to-multi-select behavior of the base
@@ -765,7 +780,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         return self._col_defs.index(self._col_def_by_name('comment'))
 
     def set_cell_attrs(self):
-        if platform.system() == 'Linux':
+        if WX_GTK:
             minwidth = 100
         else:
             minwidth = 75
@@ -940,7 +955,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             if setting.get_name() not in self._extra_cols:
                 self._expand_extra_col(setting)
 
-    def _refresh_memory(self, number, memory):
+    def _refresh_memory(self, number, memory, orig_mem=None):
         row = self.mem2row(number)
 
         if isinstance(memory, Exception):
@@ -973,6 +988,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         if memory.extra:
             self._expand_extra(memory)
+
+        if orig_mem:
+            delta = orig_mem.debug_diff(memory, '->')
+            if delta:
+                LOG.debug('Driver refresh delta from set: %s', delta)
 
         self._memory_cache[row] = memory
 
@@ -1017,14 +1037,14 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         else:
             self._grid.SetRowLabelValue(row, '*%i' % memory.number)
 
-    def refresh_memory(self, number, lazy=False):
+    def refresh_memory(self, number, lazy=False, orig_mem=None):
         if lazy:
             executor = self.do_lazy_radio
         else:
             executor = self.do_radio
 
         def extra_cb(job):
-            self._refresh_memory(number, job.result)
+            self._refresh_memory(number, job.result, orig_mem=orig_mem)
 
         def get_cb(job):
             # If get_memory() failed, just refresh with the exception
@@ -1050,12 +1070,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     def set_memory(self, mem, refresh=True):
         """Update a memory in the radio and refresh our view on success"""
         row = self.mem2row(mem.number)
+        orig_mem = mem.dupe()
         if refresh:
             self.set_row_pending(row)
 
         def extra_cb(job):
             if refresh:
-                self.refresh_memory(mem.number)
+                self.refresh_memory(mem.number, orig_mem=orig_mem)
 
         def set_cb(job):
             if isinstance(job.result, Exception):
@@ -1067,6 +1088,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                     self.do_radio(extra_cb, 'set_memory_extra', mem)
                 else:
                     extra_cb(job)
+
+        LOG.debug('Setting memory: %r' % mem)
 
         # Use a FrozenMemory for the actual set to catch potential attempts
         # to modify the memory during set_memory().
@@ -1304,13 +1327,15 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         col_def = self._col_defs[col]
 
         try:
-            mem = self._memory_cache[row]
+            mem = self._memory_cache[row].dupe()
         except KeyError:
             # This means we never loaded this memory from the radio in the
             # first place, likely due to some error.
             wx.MessageBox(_('Unable to edit memory before radio is loaded'))
             event.Veto()
             return
+
+        orig_mem = mem.dupe()
 
         # Filter the name according to the radio's rules before we try to
         # validate it
@@ -1395,8 +1420,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                           _('Warning'))
 
         self.set_row_pending(row)
+        LOG.debug('Memory row %i column %i(%s) edited: %s',
+                  row, col, col_def.name, orig_mem.debug_diff(mem, '->'))
         self.set_memory(mem)
-        LOG.debug('Memory %i changed, column: %i:%s' % (row, col, mem))
 
         wx.CallAfter(self._resize_col_after_edit, row, col)
 
@@ -2184,8 +2210,8 @@ class ChirpMemPropDialog(wx.Dialog):
             setattr(mem, name, prop.GetValue())
         else:
             setattr(mem, name, value)
-        LOG.debug('Changed mem %i %s=%r' % (mem.number, name,
-                                            value))
+        LOG.debug('Properties dialog changed mem %i %s=%r',
+                  mem.number, name, value)
         if prop.GetName() == 'freq':
             mem.empty = False
 

@@ -554,12 +554,12 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
 
                 # Copy the zone record from the source, but then update
                 # the count
-                dest_zoneinfo.set_raw(source_zoneinfo.get_raw())
+                dest_zoneinfo.set_raw(source_zoneinfo.get_raw(asbytes=False))
                 dest_zoneinfo.count = count
 
                 source_i = 0
                 for dest_i in range(0, min(count, old_count)):
-                    dest[dest_i].set_raw(source[dest_i].get_raw())
+                    dest[dest_i].set_raw(source[dest_i].get_raw(asbytes=False))
             else:
                 LOG.debug('New zone %i' % zone_number)
                 dest_zone.zoneinfo.number = zone_number + 1
@@ -586,7 +586,8 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         if current == memories:
             LOG.debug('Shuffle not required')
             return
-        raw_data = [raw_memories[i].get_raw() for i, n in memories]
+        raw_data = [raw_memories[i].get_raw(asbytes=False)
+                    for i, n in memories]
         for i, raw_mem in enumerate(raw_data):
             raw_memories[i].set_raw(raw_mem)
 
@@ -712,7 +713,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         mem.power = POWER_LEVELS[_mem.highpower]
 
         offset = (int(_mem.tx_freq) - int(_mem.rx_freq)) * 10
-        if _mem.tx_freq.get_raw(asbytes=True) == b'\xFF\xFF\xFF\xFF':
+        if _mem.tx_freq.get_raw() == b'\xFF\xFF\xFF\xFF':
             mem.offset = 0
             mem.duplex = 'off'
         elif offset == 0:

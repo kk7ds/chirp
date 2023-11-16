@@ -174,7 +174,7 @@ struct {
 
         // 5
         u8 allow_keypad:1,
-           relay_without_disable_tail:1
+           relay_without_disable_tail:1,
            _unknown_0C65:1,
            call_channel_active:1,
            vox_gain:4;
@@ -242,8 +242,8 @@ struct {
         // 1
         u8 _unknown_0C91_1:3,
            channel_stepping:1,
-           unknown_0C91_2:1
-           receive_range:2
+           unknown_0C91_2:1,
+           receive_range:2,
            unknown_0C91_3:1;
 
         // 2-3
@@ -291,7 +291,7 @@ struct {
            compander:1,
            txpower:1,
            modulation_width:1,
-           txrx_reverse:1
+           txrx_reverse:1,
            bcl:2;
 
         // D

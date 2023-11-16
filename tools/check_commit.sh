@@ -65,16 +65,20 @@ for file in $(git diff --name-only ${BASE}..); do
     fi
 done
 
+if grep 'def match_model' added_lines; then
+    fail 'New drivers should not have match_model() implemented as it is not needed'
+fi
+
 if git log ${BASE}.. --merges | grep .; then
     fail Please do not include merge commits in your PR
 fi
 
 make -C chirp/locale clean all >/dev/null 2>&1
-if git diff chirp/locale | grep '^\+[^#+]' | grep -v POT-Creation; then
+if git diff chirp/locale | grep '^+[^#+]' | grep -v POT-Creation; then
     fail Locale files need updating
 fi
 
-added_files=$(git diff --name-only --diff-filter=A ${BASE}.. 2>&1)
+added_files=$(git diff --name-only --diff-filter=A ${BASE}.. | grep '\.py$' 2>&1)
 if echo $added_files | grep -q chirp.drivers && ! echo $added_files | grep -q tests.images; then
     fail All new drivers should include a test image
 fi
@@ -83,7 +87,10 @@ existing_drivers=$(git ls-tree --name-only $BASE chirp/drivers/)
 limit=20
 for nf in $added_files; do
     for of in $existing_drivers; do
-        change=$(wdiff -s $of $nf | grep $of | sed -r 's/.* ([0-9]+)% changed/\1/')
+        change=$(wdiff -s $of $nf | grep -I $of | sed -r 's/.* ([0-9]+)% changed/\1/')
+        if [ ! "$change" ]; then
+            continue
+        fi
         if [ "$change" -lt "$limit" ]; then
             fail "New file $nf shares at least $((100 - $change))% with $of!"
         fi

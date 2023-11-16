@@ -485,12 +485,12 @@ class T18Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.rxfreq.get_raw() == "\xFF\xFF\xFF\xFF":
+        if _mem.rxfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
             return mem
 
-        if _mem.txfreq.get_raw() == "\xFF\xFF\xFF\xFF":
+        if _mem.txfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
             mem.duplex = "off"
             mem.offset = 0
         elif int(_mem.rxfreq) == int(_mem.txfreq):
@@ -1406,7 +1406,7 @@ class RT15Radio(T18Radio):
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
-    _frs16 = True
+    _frs16 = False  # sold as FRS radio but supports full band TX/RX
 
     @classmethod
     def match_model(cls, filedata, filename):

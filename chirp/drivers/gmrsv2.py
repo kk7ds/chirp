@@ -286,7 +286,7 @@ class GMRSV2base(baofeng_common.BaofengCommonHT):
          sftd:2,
          unused5:4;
       u8 unknown4;
-      u8 unused3:1
+      u8 unused3:1,
          step:3,
          unused4:4;
       u8 txpower:1,
@@ -385,7 +385,7 @@ class GMRSV2base(baofeng_common.BaofengCommonHT):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw()[0] == "\xff":
+        if _mem.get_raw(asbytes=False)[0] == "\xff":
             mem.empty = True
             return mem
 

@@ -3,6 +3,9 @@ Abbree:
   model: AR-F3
 - alt: Wouxun KG-UV8D
   model: AR-F8
+Anysecu:
+- alt: Quansheng UV-K5
+  model: UV-K5
 Arcshell:
 - alt: Radtel T18
   model: AR-7
@@ -136,8 +139,6 @@ Baofeng/Pofung:
   model: UV-5X (GMRS version)
 - alt: UV-82HP
   model: UV-8R
-- alt: Radioddity GA-510
-  model: UV-9R Pro (BF-H6 variant)
 - alt: Radioddity UV-5RX3
   model: UV-9S
 - alt: UV-82HP
@@ -306,7 +307,11 @@ Quansheng:
 - alt: TG-UV2+
   model: TG-UV2
 - alt: UV-K5
+  model: UV-K6
+- alt: UV-K5
   model: UV-K5(8)
+- alt: UV-K5
+  model: UV-5R Plus
 Powerful:
 - alt: Quansheng UV-K5
   model: UV-S5

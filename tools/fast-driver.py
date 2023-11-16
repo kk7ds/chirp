@@ -28,8 +28,8 @@ def find_imports(of_modules):
     driver_imports = []
     for fn in glob.glob('chirp/drivers/*.py'):
         with open(fn) as f:
-            lines = [l for l in f.readlines()
-                     if 'import ' in l and 'drivers' in l]
+            lines = [ln for ln in f.readlines()
+                     if 'import ' in ln and 'drivers' in ln]
         imports = []
         for line in lines:
             imports.extend(parse_import_line(line))

@@ -92,4 +92,3 @@ for usbserial in /sys/class/tty/ttyUSB*; do
         break
     fi
 done
-
