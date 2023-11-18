@@ -84,15 +84,15 @@ if echo $added_files | grep -q chirp.drivers && ! echo $added_files | grep -q te
 fi
 
 existing_drivers=$(git ls-tree --name-only $BASE chirp/drivers/)
-limit=20
+limit=51
 for nf in $added_files; do
     for of in $existing_drivers; do
-        change=$(wdiff -s $of $nf | grep -I $of | sed -r 's/.* ([0-9]+)% changed/\1/')
-        if [ ! "$change" ]; then
+        common=$(wdiff -s $of $nf | grep -I $nf | sed -r 's/.* ([0-9]+)% common.*/\1/')
+        if [ ! "$common" ]; then
             continue
         fi
-        if [ "$change" -lt "$limit" ]; then
-            fail "New file $nf shares at least $((100 - $change))% with $of!"
+        if [ "$common" -gt "$limit" ]; then
+            fail "New file $nf shares at least ${common}% with $of!"
         fi
     done
 done
