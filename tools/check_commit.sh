@@ -78,14 +78,15 @@ if git diff chirp/locale | grep '^+[^#+]' | grep -v POT-Creation; then
     fail Locale files need updating
 fi
 
-added_files=$(git diff --name-only --diff-filter=A ${BASE}.. | grep '\.py$' 2>&1)
-if echo $added_files | grep -q chirp.drivers && ! echo $added_files | grep -q tests.images; then
+added_files=$(git diff --name-only --diff-filter=A ${BASE}..)
+added_py=$(git diff --name-only --diff-filter=A ${BASE}.. | grep '\.py$')
+if echo $added_py | grep -q chirp.drivers && ! echo $added_files | grep -q tests.images; then
     fail All new drivers should include a test image
 fi
 
 existing_drivers=$(git ls-tree --name-only $BASE chirp/drivers/)
 limit=51
-for nf in $added_files; do
+for nf in $added_py; do
     for of in $existing_drivers; do
         common=$(wdiff -s $of $nf | grep -I $nf | sed -r 's/.* ([0-9]+)% common.*/\1/')
         if [ ! "$common" ]; then
