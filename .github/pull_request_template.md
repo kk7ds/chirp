@@ -14,6 +14,7 @@ Please also follow these guidelines:
 
 * Keep cleanups in separate commits from functional changes.
 * Please write a reasonable commit message, especially if making some change that isn't totally obvious (such as adding a new model, adding a feature, etc).
+* The first line of every commit is emailed to the users' list after each build. It should be short, but meaningful for regular users (examples: "thd74: Fixed tone decoding" or "uv5r: Added settings support").
 * Do not add new py2-compatibility code (No new uses of `six`, `future`, etc).
 * All new drivers should set `NEEDS_COMPAT_SERIAL=False` and use `MemoryMapBytes`.
 * New drivers and radio models will affect the Python3 test matrix. You should regenerate this file with `tox -emakesupported` and include it in your commit.
