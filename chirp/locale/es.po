@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-19 14:10-0800\n"
+"POT-Creation-Date: 2023-11-24 10:51-0800\n"
 "PO-Revision-Date: 2023-11-20 23:35-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
@@ -1483,7 +1483,8 @@ msgstr ""
 #: ../drivers/mursv1.py:342 ../drivers/baofeng_wp970i.py:328
 #: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
 #: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
-#: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364 ../drivers/bf_t1.py:483
+#: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
+#: ../drivers/baofeng_uv17Pro.py:452 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1661,6 +1662,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:334 ../drivers/gmrsuv1.py:398
 #: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
 #: ../drivers/uv6r.py:348 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
+#: ../drivers/baofeng_uv17Pro.py:458
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2441,6 +2443,11 @@ msgstr ""
 "completamente actualizada por favor ayuda abriendo un reporte de error con "
 "un registro de depuración para que podamos agregar soporte para las otras "
 "revisiones."
+
+#: ../drivers/radtel_rt490.py:1317 ../drivers/radtel_rt490.py:1319
+#: ../drivers/radtel_rt490.py:1321
+msgid "This driver is in development and should be considered as experimental."
+msgstr ""
 
 #: ../drivers/th_uv88.py:495
 msgid "This is an early stage beta driver\n"

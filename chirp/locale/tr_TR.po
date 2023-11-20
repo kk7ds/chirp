@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-19 14:10-0800\n"
+"POT-Creation-Date: 2023-11-24 10:51-0800\n"
 "PO-Revision-Date: 2023-11-22 22:39+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -1444,7 +1444,8 @@ msgstr ""
 #: ../drivers/mursv1.py:342 ../drivers/baofeng_wp970i.py:328
 #: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
 #: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
-#: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364 ../drivers/bf_t1.py:483
+#: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
+#: ../drivers/baofeng_uv17Pro.py:452 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1619,6 +1620,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:334 ../drivers/gmrsuv1.py:398
 #: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
 #: ../drivers/uv6r.py:348 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
+#: ../drivers/baofeng_uv17Pro.py:458
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2393,6 +2395,11 @@ msgstr ""
 "Bu sürücü, ID-5100'ün v3'ü ile test edilmiştir. Telsiziniz tam olarak "
 "güncellenmemişse, lütfen hata ayıklama günlüğü içeren bir hata raporu açarak "
 "bize yardım edin, böylece diğer revizyonlar için destek verebilelim."
+
+#: ../drivers/radtel_rt490.py:1317 ../drivers/radtel_rt490.py:1319
+#: ../drivers/radtel_rt490.py:1321
+msgid "This driver is in development and should be considered as experimental."
+msgstr ""
 
 #: ../drivers/th_uv88.py:495
 msgid "This is an early stage beta driver\n"
