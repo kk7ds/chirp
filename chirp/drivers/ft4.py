@@ -246,7 +246,7 @@ def variable_len_resp(pipe):
     return response
 
 
-def sendcmd(pipe, cmd, response_len):
+def sendcmd(pipe, cmd, response_len, retry=0):
     """
     send a command bytelist to radio,receive and return the resulting bytelist.
     Input: pipe         - serial port object to use
@@ -274,8 +274,13 @@ def sendcmd(pipe, cmd, response_len):
         response = b""
     ack = pipe.read(1)
     if ack != b'\x06':
-        LOG.debug("missing ack: expected 0x06, got" + util.hexprint(ack))
-        raise errors.RadioError("Incorrect ACK on serial port.")
+        if retry < 5:
+            LOG.debug("retry: " + str(retry))
+            retry += 1
+            return sendcmd(pipe, cmd, response_len, retry)
+        else:
+            LOG.debug("missing ack: expected 0x06, got" + util.hexprint(ack))
+            raise errors.RadioError("Incorrect ACK on serial port.")
     return response
 
 
