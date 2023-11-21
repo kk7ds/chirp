@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-19 14:10-0800\n"
-"PO-Revision-Date: 2023-11-14 22:47-0300\n"
+"PO-Revision-Date: 2023-11-20 23:35-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1449,7 +1449,6 @@ msgstr ""
 "3 - Desconecta tu cable de interfaz\n"
 
 #: ../drivers/th_uv8000.py:518
-#, fuzzy
 msgid ""
 "Follow these instructions to download the radio memory:\n"
 "1 - Turn off your radio\n"
@@ -1461,7 +1460,7 @@ msgstr ""
 "1 - Apaga tu radio\n"
 "2 - Conecta tu cable de interfaz\n"
 "3 - Enciende tu radio, volumen @ 50%\n"
-"4 - Radio > Descargar desde radio\n"
+"4 - Menú de CHIRP - Radio > Descargar desde radio\n"
 
 #: ../drivers/ic2730.py:312
 msgid ""
@@ -1555,7 +1554,6 @@ msgstr ""
 "3 - Desconecta tu cable de interfaz\n"
 
 #: ../drivers/th_uv8000.py:524
-#, fuzzy
 msgid ""
 "Follow these instructions to upload the radio memory:\n"
 "1 - Turn off your radio\n"
@@ -1567,7 +1565,7 @@ msgstr ""
 "1 - Apaga tu radio\n"
 "2 - Conecta tu cable de interfaz\n"
 "3 - Enciende tu radio, volumen @ 50%\n"
-"4 - Radio > Cargar a radio\n"
+"4 - Menú de CHIRP - Radio > Cargar a radio\n"
 
 #: ../drivers/ic2730.py:320
 msgid ""
