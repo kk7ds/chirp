@@ -297,7 +297,7 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw(asbytes=False)[:4] == "\xFF\xFF\xFF\xFF":
+        if _mem.get_raw()[0:4] == b"\xFF\xFF\xFF\xFF":
             mem.empty = True
             return mem
 
@@ -382,7 +382,7 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * 16)
+            _mem.set_raw(b"\xFF" * 16)
             return
 
         _mem.unknown3[0] = 0x07
@@ -490,7 +490,8 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
                 setting = element.get_name()
 
             if "line" in setting:
-                value = str(element.value).ljust(32, "\xFF")
+                value = bytes(str(element.value).encode('ascii'))
+                value = value.ljust(32, b"\xFF")
             elif 'key' in setting:
                 value = int(element.value) + 4
             else:

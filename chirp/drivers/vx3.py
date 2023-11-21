@@ -342,7 +342,7 @@ class VX3BankModel(chirp_common.BankModel):
 
 
 def _wipe_memory(mem):
-    mem.set_raw("\x00" * (mem.size() // 8))
+    mem.set_raw(b"\x00" * (mem.size() // 8))
     # the following settings are set to match the defaults
     # on the radio, some of these fields are unknown
     mem.name = [0xFF for _i in range(0, 6)]

@@ -73,7 +73,7 @@
 | <a name="Baojie_BJ-318"></a> Baojie_BJ-318 | [@KC9HI](https://github.com/KC9HI) | 2-Jan-2023 | Yes | 0.10% |
 | <a name="Baojie_BJ-9900"></a> Baojie_BJ-9900 |  |  |  | 0.02% |
 | <a name="Baojie_BJ-UV55"></a> Baojie_BJ-UV55 |  |  | Yes | 0.03% |
-| <a name="Boblov_X3Plus"></a> Boblov_X3Plus |  |  |  | 0.02% |
+| <a name="Boblov_X3Plus"></a> Boblov_X3Plus |  |  | Yes | 0.02% |
 | <a name="CRT_Micron_UV"></a> CRT_Micron_UV | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.08% |
 | <a name="CRT_Micron_UV_V2"></a> CRT_Micron_UV_V2 | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.10% |
 | <a name="Cignus_XTR-5"></a> Cignus_XTR-5 | [Implied by Radioddity_GS-5B](#user-content-Radioddity_GS-5B) | 17-Mar-2023 | Yes |  |
@@ -429,7 +429,7 @@
 
 **Tested:** 87% (369/53) (93% of usage stats)
 
-**Byte clean:** 90% (382/40)
+**Byte clean:** 90% (383/39)
 
 ## Meaning of this testing
 

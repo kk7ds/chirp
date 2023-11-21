@@ -218,12 +218,12 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
 
         def _is_empty():
             for i in range(0, 4):
-                if _mem.rx_freq[i].get_raw(asbytes=False) != "\xFF":
+                if _mem.rx_freq[i].get_raw() != b"\xFF":
                     return False
             return True
 
         def _is_no_tone(field):
-            return field.get_raw(asbytes=False) in ["\x00\x00", "\xFF\xFF"]
+            return field.get_raw() in [b"\x00\x00", b"\xFF\xFF"]
 
         def _get_dtcs(value):
             # Upper nibble 0x80 -> DCS, 0xC0 -> Inv. DCS
@@ -238,12 +238,12 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
             if int(txfield) < 8000 or int(rxfield) < 8000:
                 raise Exception("Split tone not supported")
 
-            if txfield[0].get_raw(asbytes=False) == "\xFF":
+            if txfield[0].get_raw() == b"\xFF":
                 tp, tx = "N", None
             else:
                 tp, tx = _get_dtcs(int(txfield))
 
-            if rxfield[0].get_raw(asbytes=False) == "\xFF":
+            if rxfield[0].get_raw() == b"\xFF":
                 rp, rx = "N", None
             else:
                 rp, rx = _get_dtcs(int(rxfield))
@@ -303,7 +303,7 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
         _nam = self._memobj.names[mem.number - 1]
 
         if mem.empty:
-            wipe_memory(_mem, "\xFF")
+            wipe_memory(_mem, b"\xFF")
             return
 
         _mem.rx_freq = mem.freq / 10
@@ -316,10 +316,10 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
         _mem.skip = mem.skip != "S"
         _mem.iswide = mem.mode != "NFM"
 
-        _mem.rx_tone[0].set_raw("\xFF")
-        _mem.rx_tone[1].set_raw("\xFF")
-        _mem.tx_tone[0].set_raw("\xFF")
-        _mem.tx_tone[1].set_raw("\xFF")
+        _mem.rx_tone[0].set_raw(b"\xFF")
+        _mem.rx_tone[1].set_raw(b"\xFF")
+        _mem.tx_tone[0].set_raw(b"\xFF")
+        _mem.tx_tone[1].set_raw(b"\xFF")
 
         if mem.tmode == "DTCS":
             _mem.tx_tone = int("%x" % int("%i" % (mem.dtcs), 16))
@@ -329,9 +329,9 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
             txm = mem.dtcs_polarity[0] == "N" and 0x80 or 0xC0
             rxm = mem.dtcs_polarity[1] == "N" and 0x80 or 0xC0
             _mem.tx_tone[1].set_raw(
-                chr(ord(_mem.tx_tone[1].get_raw(asbytes=False)) | txm))
+                bytes([_mem.tx_tone[1].get_raw()[0] | txm]))
             _mem.rx_tone[1].set_raw(
-                chr(ord(_mem.rx_tone[1].get_raw(asbytes=False)) | rxm))
+                bytes([_mem.rx_tone[1].get_raw()[0] | rxm]))
 
         elif mem.tmode:
             _mem.tx_tone = int(mem.rtone * 10)
@@ -461,7 +461,7 @@ class Puxing2RRadio(chirp_common.CloneModeRadio):
 
         mem = chirp_common.Memory()
         mem.number = number
-        if _mem.get_raw(asbytes=False)[0:4] == "\xff\xff\xff\xff":
+        if _mem.get_raw()[0:4] == b"\xff\xff\xff\xff":
             mem.empty = True
             return mem
 
@@ -500,7 +500,7 @@ class Puxing2RRadio(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[mem.number-1]
 
         if mem.empty:
-            _mem.set_raw("\xff" * 16)
+            _mem.set_raw(b"\xff" * 16)
             return
 
         _mem.freq = mem.freq / 10
