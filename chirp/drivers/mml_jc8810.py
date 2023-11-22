@@ -37,7 +37,6 @@ from chirp.settings import (
 LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
-#seekto 0x0000;
 struct {
   lbcd rxfreq[4];     // 0-3
   lbcd txfreq[4];     // 4-7
@@ -150,12 +149,6 @@ struct {
                       //      RX END TAIL (A36plus)
 } settings;
 
-#seekto 0xA020;
-struct {
-  u8 code[5];         //      5-character DTMF Encoder Groups
-  u8 unused[11];
-} pttid[15];
-
 #seekto 0xA006;
 struct {
   u8 unused_a006:4,   // A006
@@ -165,6 +158,12 @@ struct {
   u8 unused_a008:5,   // A008
      dtmfoff:3;       //      DTMF Speed (off time)
 } dtmf;
+
+#seekto 0xA020;
+struct {
+  u8 code[5];         //      5-character DTMF Encoder Groups
+  u8 unused[11];
+} pttid[15];
 
 #seekto 0xB000;
 struct {
@@ -177,6 +176,9 @@ struct {
   u8 unused[6];
 } aninames[%d];
 
+"""
+
+MEM_FORMAT_A36PLUS = """
 #seekto 0xB200;
 struct {
   char name[10];      //      10-character Custom CH Names (Talkpod A36plus)
@@ -490,12 +492,6 @@ class JC8810base(chirp_common.CloneModeRadio):
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
 
-    def _is_txinh(self, _mem):
-        raw_tx = ""
-        for i in range(0, 4):
-            raw_tx += _mem.txfreq[i].get_raw(asbytes=False)
-        return raw_tx == "\xFF\xFF\xFF\xFF"
-
     def get_memory(self, number):
         """Get the mem representation from the radio image"""
         _mem = self._memobj.memory[number - 1]
@@ -506,14 +502,14 @@ class JC8810base(chirp_common.CloneModeRadio):
         # Memory number
         mem.number = number
 
-        if _mem.get_raw(asbytes=False)[0] == "\xff":
+        if _mem.get_raw()[:1] == b"\xFF":
             mem.empty = True
             return mem
 
         # Freq and offset
         mem.freq = int(_mem.rxfreq) * 10
         # tx freq can be blank
-        if _mem.get_raw(asbytes=False)[4] == "\xFF":
+        if _mem.get_raw()[:4] == b"\xFF\xFF\xFF\xFF":
             # TX freq not set
             mem.offset = 0
             mem.duplex = "off"
@@ -1393,6 +1389,10 @@ class A36plusRadio(JC8810base):
     _mem_params = (_upper,  # number of channels
                    _aninames,  # number of aninames
                    )
+
+    def process_mmap(self):
+        mem_format = MEM_FORMAT % self._mem_params + MEM_FORMAT_A36PLUS
+        self._memobj = bitwise.parse(mem_format, self._mmap)
 
 
 @directory.register
