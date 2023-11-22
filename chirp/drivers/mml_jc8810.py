@@ -84,7 +84,8 @@ struct {
      dtmfst:2;        //      DTMF ST
   u8 unused_900a:6,   // 900A
      screv:2;         //      Scan Mode
-  u8 unknown_900b;    // 900B
+  u8 unused_900B:4,   // 900B
+     pttid:4;         //      PTT-ID
   u8 unused_900c:5,   // 900C
      pttlt:3;         //      PTT Delay
   u8 unused_900d:6,   // 900D
@@ -151,8 +152,7 @@ struct {
 
 #seekto 0xA006;
 struct {
-  u8 unused_a006:4,   // A006
-     pttid:4;         //      PTT-ID
+  u8 unknown_A006;    // A006
   u8 unused_a007:5,   // A007
      dtmfon:3;        //      DTMF Speed (on time)
   u8 unused_a008:5,   // A008
@@ -289,6 +289,14 @@ def _enter_programming_mode(radio):
     if ident not in radio._fingerprint:
         LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio returned unknown identification string")
+
+    if radio.MODEL == "RT-470X":
+        if ident in radio._fingerprint_pcb1:
+            LOG.info("Radtel RT-470X - original pcb")
+            radio.RT470X_ORIG = True
+        elif ident in radio._fingerprint_pcb2:
+            LOG.info("Radtel RT-470X - pcb2")
+            radio.RT470X_ORIG = False
 
 
 def _exit_programming_mode(radio):
@@ -995,7 +1003,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("ponmsg", "Power On Message", rs)
         basic.append(rset)
 
-        if self.MODEL in ["HI-8811", "RT-470L"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
             rs = RadioSettingValueList(TAILCODE_LIST,
                                        TAILCODE_LIST[_settings.tailcode])
             rset = RadioSetting("tailcode", "Tail Code", rs)
@@ -1114,8 +1122,8 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("dtmf.dtmfoff", "DTMF Speed (off)", rs)
         dtmf.append(rset)
 
-        rs = RadioSettingValueList(PTTID_LIST, PTTID_LIST[_dtmf.pttid])
-        rset = RadioSetting("dtmf.pttid", "PTT ID", rs)
+        rs = RadioSettingValueList(PTTID_LIST, PTTID_LIST[_settings.pttid])
+        rset = RadioSetting("pttid", "PTT ID", rs)
         dtmf.append(rset)
 
         ani = RadioSettingGroup("ani", "ANI Code List Settings")
@@ -1290,8 +1298,22 @@ class RT470XRadio(RT470LRadio):
 
     # ==========
     # Notice to developers:
-    # The RT-470 support in this driver is currently based upon v1.18 firmware.
+    # The RT-470X support in this driver is currently based upon...
+    # - v1.18a firmware (original pcb)
+    # - v2.10a firmware (pcb2)
     # ==========
+
+    # original pcb
+    _fingerprint_pcb1 = [b"\x00\x00\x00\x20\x00\x20\xCC\x04",
+                         ]
+
+    # pcb 2
+    _fingerprint_pcb2 = [b"\x00\x00\x00\x2C\x00\x20\xD8\x04",  # fw v2.10A
+                         ]
+
+    _fingerprint = _fingerprint_pcb1 + _fingerprint_pcb2
+
+    RT470X_ORIG = False
 
     VALID_BANDS = [(100000000, 136000000),
                    (136000000, 200000000),
