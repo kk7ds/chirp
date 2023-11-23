@@ -85,12 +85,6 @@ for x in range(0xB0, 0xD7):
         CHARSET_GB2312 += bytes([x, y]).decode('gb2312')
 
 
-TXP_CHOICES = ["High", "Low"]
-TXP_VALUES = [0x00, 0x02]
-
-STIMEOUT = 1.5
-
-
 def model_match(cls, data):
     """Match the opened image to the correct version"""
     return data[cls.MEM_TOTAL:] == bytes(cls.MODEL, 'utf-8')
@@ -258,7 +252,6 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
 
     MEM_TOTAL = 0x8380
     BLOCK_SIZE = 0x40
-    STIMEOUT = 2
     BAUD_RATE = 115200
 
     _gmrs = False
@@ -318,9 +311,9 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
       lbcd txfreq[4];
       ul16 rxtone;
       ul16 txtone;
-      u8 scode:8;
-      u8 pttid:8;
-      u8 lowpower:8;
+      u8 scode;
+      u8 pttid;
+      u8 lowpower;
       u8 unknown1:1,
          wide:1,
          sqmode:2,
@@ -328,10 +321,10 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
          scan:1,
          unknown2:1,
          fhss:1;
-      u8 unknown3:8;
-      u8 unknown4:8;
-      u8 unknown5:8;
-      u8 unknown6:8;
+      u8 unknown3;
+      u8 unknown4;
+      u8 unknown5;
+      u8 unknown6;
       char name[12];
     } memory[1000];
 
@@ -390,8 +383,8 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
       u8 roger;
       u8 unknown2;
       u8 fmenable;
-      u8 chaworkmode:4,
-         chbworkmode:4;
+      u8 chbworkmode:4,
+         chaworkmode:4;
       u8 keylock;
       u8 powerondistype;
       u8 tone;
@@ -430,7 +423,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
     struct {
       u8 code[5];
       u8 name[10];
-      u8 unused:8;
+      u8 unused;
     } pttid[20];
 
     #seekto 0x8280;
