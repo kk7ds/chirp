@@ -84,7 +84,7 @@ struct lab right_label[518];
 _TMODES = ["", "Tone", "TSQL", "-RVT", "DTCS", "-PR", "-PAG"]
 TMODES = ["", "Tone", "TSQL", "", "DTCS", "", ""]
 MODES = ["FM", "AM", "NFM", "", "WFM"]
-DUPLEXES = ["", "", "-", "+", "split"]
+DUPLEXES = ["", "", "-", "+", "split", "off"]
 # TODO: add Japanese characters (viewable in special menu, scroll backwards)
 CHARSET = \
     ('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!"' +
@@ -333,21 +333,25 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = get_freq(int(_mem.freq) * 10000)
-        mem.rtone = chirp_common.TONES[_mem.tone]
-        mem.tmode = TMODES[_mem.tmode]
-
-        if _mem.oddsplit:
+        if _mem.offset == 0xFF:
+            # TX disabled
+            mem.duplex = "off"
+        elif _mem.oddsplit:
             mem.duplex = "split"
             mem.offset = get_freq(int(_mem.split) * 10000)
         else:
             mem.duplex = DUPLEXES[_mem.duplex]
             mem.offset = int(_mem.offset) * 50000
 
-        mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
+        mem.freq = get_freq(int(_mem.freq) * 10000)
+        if mem.duplex != "off":
+            mem.rtone = chirp_common.TONES[_mem.tone]
+            mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
+            mem.power = POWER_LEVELS[_mem.power]
+            mem.tmode = TMODES[_mem.tmode]
+
         mem.mode = MODES[_mem.mode]
         mem.skip = SKIPS[_mem.skip]
-        mem.power = POWER_LEVELS[_mem.power]
 
         for char in _lab.string:
             if char == 0xCA:
@@ -373,20 +377,27 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
             return
 
         set_freq(mem.freq, _mem, 'freq')
+
+        _mem.oddsplit = 0
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tmode = TMODES.index(mem.tmode)
-        _mem.mode = MODES.index(mem.mode)
-        _mem.skip = SKIPS.index(mem.skip)
-
-        _mem.oddsplit = 0
-        _mem.duplex = 0
-        if mem.duplex == "split":
+        _mem.duplex = DUPLEXES.index(mem.duplex)
+        if mem.duplex == "off":
+            _mem.tone = 0x3F
+            _mem.dtcs = 0x7F
+            _mem.offset = 0xFF
+            _mem.power = 0x03
+            _mem.tmode = 0x00
+            _mem.duplex = 0x00
+        elif mem.duplex == "split":
             set_freq(mem.offset, _mem, 'split')
             _mem.oddsplit = 1
         else:
             _mem.offset = mem.offset / 50000
-            _mem.duplex = DUPLEXES.index(mem.duplex)
+
+        _mem.mode = MODES.index(mem.mode)
+        _mem.skip = SKIPS.index(mem.skip)
 
         if mem.power:
             _mem.power = POWER_LEVELS.index(mem.power)
