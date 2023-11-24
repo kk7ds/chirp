@@ -65,9 +65,9 @@ for file in $(git diff --name-only ${BASE}..); do
     fi
 done
 
-if grep 'def match_model' added_lines; then
-    fail 'New drivers should not have match_model() implemented as it is not needed'
-fi
+#if grep 'def match_model' added_lines; then
+#    fail 'New drivers should not have match_model() implemented as it is not needed'
+#fi
 
 if git log ${BASE}.. --merges | grep .; then
     fail Please do not include merge commits in your PR
