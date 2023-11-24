@@ -342,6 +342,9 @@
 | <a name="Socotran_FB-8629"></a> Socotran_FB-8629 | [Implied by Radtel_RT-490](#user-content-Radtel_RT-490) | 11-Nov-2023 | Yes | 0.00% |
 | <a name="Socotran_JC-8629"></a> Socotran_JC-8629 | [Implied by Radtel_RT-490](#user-content-Radtel_RT-490) | 11-Nov-2023 | Yes |  |
 | <a name="TDXone_TD-Q8A"></a> TDXone_TD-Q8A | [@KC9HI](https://github.com/KC9HI) | 18-Dec-2022 |  | 0.02% |
+| <a name="TIDRADIO_TD-H3"></a> TIDRADIO_TD-H3 | [@songjunbiao](https://github.com/songjunbiao) | 1-Dec-2023 | Yes |  |
+| <a name="TIDRADIO_TD-H3-GMRS"></a> TIDRADIO_TD-H3-GMRS | [@songjunbiao](https://github.com/songjunbiao) | 1-Dec-2023 | Yes |  |
+| <a name="TIDRADIO_TD-H3-HAM"></a> TIDRADIO_TD-H3-HAM | [@songjunbiao](https://github.com/songjunbiao) | 1-Dec-2023 | Yes |  |
 | <a name="TIDRADIO_TD-H6"></a> TIDRADIO_TD-H6 | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes | 0.43% |
 | <a name="TIDRADIO_TD-H8"></a> TIDRADIO_TD-H8 | [@Sandmann34](https://github.com/Sandmann34) | 7-Feb-2023 | Yes |  |
 | <a name="TIDRADIO_TD-H8-GMRS"></a> TIDRADIO_TD-H8-GMRS | [@Sandmann34](https://github.com/Sandmann34) | 7-Feb-2023 | Yes |  |
@@ -438,11 +441,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 435
+**Drivers:** 438
 
-**Tested:** 87% (382/53) (93% of usage stats)
+**Tested:** 87% (385/53) (93% of usage stats)
 
-**Byte clean:** 90% (395/40)
+**Byte clean:** 90% (398/40)
 
 ## Meaning of this testing
 

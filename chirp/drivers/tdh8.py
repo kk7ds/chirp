@@ -83,7 +83,7 @@ struct {
      fmrec:1,
      mdfa:1,
      aworkmode:2;
-  u8 openmes:2,
+  u8 ponmsg:2,
      unused19:1,
      mdfb:1,
      unused20:1,
@@ -215,6 +215,14 @@ struct{
        block1:1;
 } fmusedflags[4];
 
+#seekto 0x1c08;
+struct {
+  char msg1[16];
+  char msg2[16];
+  char msg3[16];
+} poweron_msg;
+
+
 #seekto 0x1CC8;
 struct{
   u8 stopkey1;
@@ -285,6 +293,285 @@ struct{
 struct{
     u8 ecode[7];
 }endcode;
+"""
+
+MEM_FORMAT_H3 = """
+#seekto 0x0008;
+struct {
+  lbcd rxfreq[4];
+  lbcd txfreq[4];
+  lbcd rxtone[2];
+  lbcd txtone[2];
+  u8 unused1;
+  u8 pttid:2,
+     freqhop:1,
+     unused3:1,
+     unused4:1,
+     bcl:1,
+     unused5:1,
+     unused2:1;
+  u8 unused6:1,
+     scramble:1,
+     lowpower:2,
+     wide:1,
+     unused8:1,
+     offset:2;
+  u8 unused10;
+} memory[200];
+
+#seekto 0x0C98;
+struct{
+  u8 stopkey1;
+  u8 ssidekey1;
+  u8 ssidekey2;
+  u8 ltopkey2;
+  u8 lsidekey3;
+  u8 lsidekey4;
+} press;
+
+#seekto 0x0CA8;
+struct {
+  u8 txled:1,
+     rxled:1,
+     unused11:1,
+     ham:1,
+     gmrs:1,
+     unused14:1,
+     unused15:1,
+     pritx:1;
+  u8 scanmode:2,
+     unused16:1,
+     keyautolock:1,
+     unused17:1,
+     btnvoice:1,
+     unknown18:1,
+     voiceprompt:1;
+  u8 fmworkmode:1,
+     sync:1,
+     tonevoice:2,
+     fmrec:1,
+     mdfa:1,
+     aworkmode:2;
+  u8 ponmsg:2,
+     unused19:1,
+     mdfb:1,
+     unused20:1,
+     dbrx:1,
+     bworkmode:2;
+  u8 ablock;
+  u8 bblock;
+  u8 fmroad;
+  u8 unused21:1,
+     tailclean:1,
+     rogerprompt_:1,
+     kill:1,
+     stun:1,
+     voxgain:3;
+  u8 astep:4,
+     bstep:4;
+  u8 squelch;
+  u8 tot;
+  u8 rogerprompt:2,
+     unused11_4:4,
+     lang:1,
+     unused11_1:1;
+  u8 save;
+  u8 ligcon;
+  u8 voxdelay;
+  u8 onlychmode:1,
+     breathled:3,
+     unused:3,
+     alarm:1;
+} settings;
+
+#seekto 0x0CB8;
+struct {
+    u8 ofseta[4];
+    u8 ununsed26[12];
+} aoffset;
+
+#seekto 0x0CBC;
+struct {
+    u8 ofsetb[4];
+    u8 ununsed27[12];
+} boffset;
+
+#seekto 0x0CD8;
+struct{
+    u8 fmblock[4];
+}fmmode[25];
+
+
+#seekto 0x0D48;
+struct {
+  char name[8];
+} names[200];
+
+#seekto 0x1808;
+struct{
+    u8 stuncode[16];
+    u8 killcode[16];
+}skcode;
+
+#seekto 0x1828;
+struct{
+    u8 idcode[3];
+}icode;
+
+#seekto 0x1837;
+struct{
+    u8 gcode;
+}groupcode;
+
+#seekto 0x1838;
+struct{
+    u8 group1[7];
+}group1;
+
+#seekto 0x1848;
+struct{
+    u8 group2[7];
+}group2;
+
+#seekto 0x1858;
+struct{
+    u8 group3[7];
+}group3;
+
+#seekto 0x1868;
+struct{
+    u8 group4[7];
+}group4;
+
+#seekto 0x1878;
+struct{
+    u8 group5[7];
+}group5;
+
+#seekto 0x1888;
+struct{
+    u8 group6[7];
+}group6;
+
+#seekto 0x1898;
+struct{
+    u8 group7[7];
+}group7;
+
+#seekto 0x18A8;
+struct{
+    u8 group8[7];
+}group8;
+
+#seekto 0x18C8;
+struct{
+    u8 scode[7];
+}startcode;
+
+#seekto 0x18D8;
+struct{
+    u8 ecode[7];
+}endcode;
+
+#seekto 0x1908;
+struct{
+    u8 block8:1,
+       block7:1,
+       block6:1,
+       block5:1,
+       block4:1,
+       block3:1,
+       block2:1,
+       block1:1;
+} usedflags[25];
+
+#seekto 0x1928;
+struct{
+  u8 scan8:1,
+     scan7:1,
+     scan6:1,
+     scan5:1,
+     scan4:1,
+     scan3:1,
+     scan2:1,
+     scan1:1;
+} scanadd[25];
+
+#seekto 0x1948;
+struct{
+  u8  block8:1,
+       block7:1,
+       block6:1,
+       block5:1,
+       block4:1,
+       block3:1,
+       block2:1,
+       block1:1;
+} fmusedflags[4];
+
+#seekto 0x1958;
+struct {
+  lbcd rxfreqa[4];
+  lbcd txfreq[4];
+  u8 rxtone[2];
+  u8 txtone[2];
+  u8 unused1;
+  u8 pttid:2,
+     specialqta:1,
+     unused3:1,
+     unused4:1,
+     bcl:1,
+     unused5:1,
+     unused2:1;
+  u8 unused6:1,
+     unused7:1,
+     lowpower:2,
+     wide:1,
+     unused8:1,
+     offset:2;
+  u8 unused10;
+} vfoa;
+
+#seekto 0x1968;
+struct {
+  lbcd rxfreqb[4];
+  lbcd txfreq[4];
+  u8 rxtoneb[2];
+  u8 txtone[2];
+  u8 unused1;
+  u8 pttid:2,
+     specialqtb:1,
+     unused3:1,
+     unused4:1,
+     bclb:1,
+     unused5:1,
+     unused2:1;
+  u8 unused6:1,
+     unused7:1,
+     lowpowerb:2,
+     wideb:1,
+     unused8:1,
+     offsetb:2;
+  u8 unused10;
+} vfob;
+
+#seekto 0x1978;
+struct{
+    u8 vfo[4];
+}fmvfo;
+
+
+#seekto 0x1c08;
+struct {
+  char msg1[16];
+  char msg2[16];
+  char msg3[16];
+} poweron_msg;
+
+#seekto 0x1f28;
+struct{
+  u8 micgain;
+} mic;
 
 """
 
@@ -373,7 +660,7 @@ COLOR_LIST = ["Off", "Blue", "Orange", "Purple"]
 DTMFSPEED_LIST = ["%s ms" % x for x in range(50, 2010, 10)]
 DTMFST_LIST = ["OFF", "DT-ST", "ANI-ST", "DT+ANI"]
 MODE_LIST = ["Channel", "Name", "Frequency"]
-PONMSG_LIST = ["Full", "Message"]
+PONMSG_LIST = ["Full", "Message", "Icon"]
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 PTTIDCODE_LIST = ["%s" % x for x in range(1, 16)]
 RTONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
@@ -397,6 +684,10 @@ TXPOWER3_LIST = ["High", "Mid", "Low"]
 VOICE_LIST = ["Off", "English", "Chinese"]
 VOX_LIST = ["OFF"] + ["%s" % x for x in range(1, 11)]
 WORKMODE_LIST = ["Frequency", "Channel"]
+# mic
+MIC_GAIN_LIST = ['%s' % x for x in range(0, 10)]
+MIC_GAIN_LIST_H8 = ['%s' % x for x in range(0, 33)]
+H8_LIST = ["TD-H8", "TD-H8-HAM", "TD-H8-GMRS"]
 
 GMRS_FREQS = bandplan_na.GMRS_HIRPT
 
@@ -407,9 +698,11 @@ NOAA_FREQS = [162550000, 162400000, 162475000, 162425000, 162450000,
 HAM_GMRS_NAME = ["NOAA 1", "NOAA 2", "NOAA 3", "NOAA 4", "NOAA 5", "NOAA 6",
                  "NOAA 7", "NOAA 8", "NOAA 9", "NOAA 10", "NOAA 11"]
 
-ALL_MODEL = ["TD-H8", "TD-H8-HAM", "TD-H8-GMRS"]
+ALL_MODEL = ["TD-H8", "TD-H8-HAM", "TD-H8-GMRS", "TD-H3",
+             "TD-H3-HAM", "TD-H3-GMRS"]
 
 TD_H8 = b"\x50\x56\x4F\x4A\x48\x1C\x14"
+TD_H3 = b"\x50\x56\x4F\x4A\x48\x5C\x14"
 
 
 def _do_status(radio, block):
@@ -760,7 +1053,10 @@ class TDH8(chirp_common.CloneModeRadio):
         return self._memobj.memory[number]
 
     def _get_nam(self, number):
-        return self._memobj.names[number]
+        if self.MODEL in H8_LIST:
+            return self._memobj.names[number]
+        else:
+            return self._memobj.names[number - 1]
 
     def _get_fm(self, number):
         return self._memobj.fmmode[number]
@@ -913,7 +1209,10 @@ class TDH8(chirp_common.CloneModeRadio):
         return self._memobj.memory[number]
 
     def _set_nam(self, number):
-        return self._memobj.names[number]
+        if self.MODEL in H8_LIST:
+            return self._memobj.names[number]
+        else:
+            return self._memobj.names[number - 1]
 
     def _get_scan_list(self, scan_data):
         # scan_val_list - Get all scans Add data 1-200 digits
@@ -961,7 +1260,10 @@ class TDH8(chirp_common.CloneModeRadio):
 
         if mem.empty:
             _mem.set_raw("\xff" * 16)
-            _nam.set_raw("\xff" * 16)
+            if self.MODEL in H8_LIST:
+                _nam.set_raw("\xff" * 16)
+            else:
+                _nam.set_raw("\xff" * 8)
             return
 
         _mem.set_raw("\x00" * 16)
@@ -1116,7 +1418,7 @@ class TDH8(chirp_common.CloneModeRadio):
         _vfoa = self._memobj.vfoa
         _vfob = self._memobj.vfob
         _gcode = self._memobj.groupcode
-
+        _msg = self._memobj.poweron_msg
         basic = RadioSettingGroup("basic", "Basic Settings")
         abblock = RadioSettingGroup("abblock", "A/B Channel")
         fmmode = RadioSettingGroup("fmmode", "FM")
@@ -1160,15 +1462,6 @@ class TDH8(chirp_common.CloneModeRadio):
         rs = RadioSetting("sync", "SYNC",
                           RadioSettingValueList(
                               SYNC_LIST, SYNC_LIST[_settings.sync]))
-        basic.append(rs)
-
-        if _settings.lang in (2, 3):
-            langs = 1
-        else:
-            langs = 0
-        rs = RadioSetting("lang", "Language",
-                          RadioSettingValueList(
-                              LANG_LIST, LANG_LIST[langs]))
         basic.append(rs)
 
         rs = RadioSetting("save", "Battery Save",
@@ -1222,38 +1515,39 @@ class TDH8(chirp_common.CloneModeRadio):
         rs = RadioSetting("onlychmode", "Only CH Mode",
                           RadioSettingValueBoolean(_settings.onlychmode))
         basic.append(rs)
-
-        rs = RadioSetting("stopkey1", "SHORT_KEY_TOP",
-                          RadioSettingValueList(
-                              SHORT_KEY_LIST, SHORT_KEY_LIST[0]))
-        basic.append(rs)
-
         rs = RadioSetting("ssidekey1", "SHORT_KEY_PF1",
                           RadioSettingValueList(
                               SHORT_KEY_LIST, SHORT_KEY_LIST[
                                   _press.ssidekey1]))
         basic.append(rs)
-
-        rs = RadioSetting("ssidekey2", "SHORT_KEY_PF2",
-                          RadioSettingValueList(
-                              SHORT_KEY_LIST, SHORT_KEY_LIST[
-                                  _press.ssidekey2]))
-        basic.append(rs)
-
-        rs = RadioSetting("ltopkey2", "LONG_KEY_TOP",
-                          RadioSettingValueList(
-                              LONG_KEY_LIST, LONG_KEY_LIST[_press.ltopkey2]))
-        basic.append(rs)
-
         rs = RadioSetting("lsidekey3", "LONG_KEY_PF1",
                           RadioSettingValueList(
-                              LONG_KEY_LIST, LONG_KEY_LIST[_press.lsidekey3]))
+                              LONG_KEY_LIST,
+                              LONG_KEY_LIST[_press.lsidekey3]))
         basic.append(rs)
+        if self.MODEL in H8_LIST:
+            rs = RadioSetting("stopkey1", "SHORT_KEY_TOP",
+                              RadioSettingValueList(SHORT_KEY_LIST,
+                                                    SHORT_KEY_LIST[0]))
+            basic.append(rs)
 
-        rs = RadioSetting("lsidekey4", "LONG_KEY_PF2",
-                          RadioSettingValueList(
-                              LONG_KEY_LIST, LONG_KEY_LIST[_press.lsidekey4]))
-        basic.append(rs)
+            rs = RadioSetting("ltopkey2", "LONG_KEY_TOP",
+                              RadioSettingValueList(
+                                  LONG_KEY_LIST,
+                                  LONG_KEY_LIST[_press.ltopkey2]))
+            basic.append(rs)
+
+            rs = RadioSetting("ssidekey2", "SHORT_KEY_PF2",
+                              RadioSettingValueList(
+                                  SHORT_KEY_LIST,
+                                  SHORT_KEY_LIST[_press.ssidekey2]))
+            basic.append(rs)
+
+            rs = RadioSetting("lsidekey4", "LONG_KEY_PF2",
+                              RadioSettingValueList(
+                                LONG_KEY_LIST,
+                                LONG_KEY_LIST[_press.lsidekey4]))
+            basic.append(rs)
 
         rs = RadioSetting("voxgain", "VOX Gain",
                           RadioSettingValueList(
@@ -1263,6 +1557,46 @@ class TDH8(chirp_common.CloneModeRadio):
         rs = RadioSetting("voxdelay", "VOX Delay",
                           RadioSettingValueList(
                               VOX_DELAY, VOX_DELAY[_settings.voxdelay]))
+        basic.append(rs)
+
+        rs = RadioSetting("ponmsg", "Power-On Message",
+                          RadioSettingValueList(
+                              PONMSG_LIST, PONMSG_LIST[_settings.ponmsg]))
+        basic.append(rs)
+
+        # mic gain
+        if self.MODEL not in H8_LIST:
+            _mic = self._memobj.mic
+            rs = RadioSetting("micgain", "MIC GAIN",
+                              RadioSettingValueList(
+                                  MIC_GAIN_LIST, MIC_GAIN_LIST[_mic.micgain]))
+            basic.append(rs)
+
+        if self.MODEL not in H8_LIST:
+            rs = RadioSetting("kill", "Kill",
+                              RadioSettingValueBoolean(_settings.kill))
+            basic.append(rs)
+            rs = RadioSetting("stun", "Stun",
+                              RadioSettingValueBoolean(_settings.stun))
+            basic.append(rs)
+
+        def _filter(name):
+            filtered = ""
+            for char in str(name):
+                if char in chirp_common.CHARSET_ASCII:
+                    filtered += char
+                else:
+                    filtered += " "
+            return filtered
+
+        rs = RadioSetting("poweron_msg.msg1", "Power-On Message 1",
+                          RadioSettingValueString(0, 16, _filter(_msg.msg1)))
+        basic.append(rs)
+        rs = RadioSetting("poweron_msg.msg2", "Power-On Message 2",
+                          RadioSettingValueString(0, 16, _filter(_msg.msg2)))
+        basic.append(rs)
+        rs = RadioSetting("poweron_msg.msg3", "Power-On Message 3",
+                          RadioSettingValueString(0, 16, _filter(_msg.msg3)))
         basic.append(rs)
 
         # A channel
@@ -1567,6 +1901,28 @@ class TDH8(chirp_common.CloneModeRadio):
         ecode_val = RadioSettingValueString(0, 7, used_ecode)
         rs = RadioSetting("ecode", "PTT ID Ending(BOT)", ecode_val)
         dtmf.append(rs)
+        # H3
+        if self.MODEL not in H8_LIST:
+            # stuncode
+            ecode_list = self._memobj.skcode.stuncode
+            used_ecode = ''
+            for i in ecode_list:
+                if i == 0xFF:
+                    continue
+                used_ecode += str(i)[3]
+            ecode_val = RadioSettingValueString(0, 16, used_ecode)
+            rs = RadioSetting("stuncode", "Stun Code", ecode_val)
+            dtmf.append(rs)
+            # killcode
+            ecode_list = self._memobj.skcode.killcode
+            used_ecode = ''
+            for i in ecode_list:
+                if i == 0xFF:
+                    continue
+                used_ecode += str(i)[3]
+            ecode_val = RadioSettingValueString(0, 16, used_ecode)
+            rs = RadioSetting("killcode", "Kill Code", ecode_val)
+            dtmf.append(rs)
 
         return group
 
@@ -1590,6 +1946,7 @@ class TDH8(chirp_common.CloneModeRadio):
         _vfoa = self._memobj.vfoa
         _vfob = self._memobj.vfob
         _fmmode = self._memobj.fmmode
+
         for element in settings:
             if not isinstance(element, RadioSetting):
                 if element.get_name() == "fm_preset":
@@ -1669,11 +2026,18 @@ class TDH8(chirp_common.CloneModeRadio):
                     elif "group8" in name:
                         obj = self._memobj.group8.group8
                         setting = element.get_name()
-
+                    elif "micgain" in name:
+                        obj = self._memobj.mic.micgain
+                        setting = element.get_name()
+                    elif "killcode" in name:
+                        obj = self._memobj.skcode.killcode
+                        setting = element.get_name()
+                    elif "stuncode" in name:
+                        obj = self._memobj.skcode.stuncode
+                        setting = element.get_name()
                     else:
                         obj = _settings
                         setting = element.get_name()
-
                     if element.has_apply_callback():
                         LOG.debug("Using apply callback")
                         element.run_apply_callback()
@@ -2006,9 +2370,33 @@ class TDH8(chirp_common.CloneModeRadio):
                                 list_val.append(0xFF)
                                 lenth_val += 1
                         self._memobj.group8.group8 = list_val
-                    elif setting == 'lang':
-                        self._memobj.settings.lang = (
-                                str(element.value) == 'English' and 2 or 1)
+                    elif setting == 'micgain':
+                        self._memobj.mic.micgain = (
+                            str(element.value))
+                    elif setting == 'stuncode' and element.value.get_mutable():
+                        val = str(element.value)
+                        list_val = []
+                        lenth_val = 0
+                        while lenth_val < (len(val)):
+                            if val[lenth_val] != ' ':
+                                list_val.append(int(val[lenth_val], 16))
+                                lenth_val += 1
+                            else:
+                                list_val.append(0xFF)
+                                lenth_val += 1
+                        self._memobj.skcode.stuncode = list_val
+                    elif setting == 'killcode' and element.value.get_mutable():
+                        val = str(element.value)
+                        list_val = []
+                        lenth_val = 0
+                        while lenth_val < (len(val)):
+                            if val[lenth_val] != ' ':
+                                list_val.append(int(val[lenth_val], 16))
+                                lenth_val += 1
+                            else:
+                                list_val.append(0xFF)
+                                lenth_val += 1
+                        self._memobj.skcode.killcode = list_val
                     elif element.value.get_mutable():
                         setattr(obj, setting, element.value)
                 except Exception:
@@ -2062,3 +2450,50 @@ class TDH8_GMRS(TDH8):
 class UV68(TDH8):
     VENDOR = "TID"
     MODEL = "TD-UV68"
+
+
+@directory.register
+class TDH3(TDH8):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H3"
+    _memsize = 0x1fef
+    _ranges_main = [(0x0000, 0x1fef)]
+    _idents = [TD_H3]
+    _vhf_range = (136000000, 175000000)
+    _uhf_range = (400000000, 521000000)
+    _aux_block = True
+    _tri_power = True
+    _gmrs = False
+    _ham = False
+    _mem_params = (0x1F2F)
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)
+
+
+@directory.register
+class TDH3_HAM(TDH3):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H3-HAM"
+    ident_mode = b'P31185\xff\xff'
+    _ham = True
+    _vhf_range = (144000000, 149000000)
+    _uhf_range = (420000000, 451000000)
+
+
+@directory.register
+class TDH3_GMRS(TDH3):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H3-GMRS"
+    ident_mode = b'P31184\xff\xff'
+    _gmrs = True
+    _vhf_range = (136000000, 175000000)
+    _uhf_range = (400000000, 521000000)
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+        if 31 <= mem.number <= 54 and mem.freq not in GMRS_FREQS:
+            msgs.append(chirp_common.ValidationError(
+                "The frequency in channels 31-54 must be between"
+                "462.55000-462.72500 in 0.025 increments."))
+        return msgs
