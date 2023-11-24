@@ -82,21 +82,8 @@ struct chname {
   u8  extra_name[10];
 };
 
-#seekto 0x0000;
+// #seekto 0x0000;
 struct chns chan_mem[199];
-
-#seekto 0x1960;
-struct chname chan_name[199];
-
-#seekto 0x1180;
-struct {
-  u8 bitmap[26];    // one bit for each channel marked in use
-} chan_avail;
-
-#seekto 0x11A0;
-struct {
-  u8 bitmap[26];    // one bit for each channel skipped
-} chan_skip;
 
 #seekto 0x1140;
 struct {
@@ -165,6 +152,16 @@ struct {
   u8 name2[6];            // 0x117A unused
 } basicsettings;
 
+// #seekto 0x1180;
+struct {
+  u8 bitmap[26];    // one bit for each channel marked in use
+} chan_avail;
+
+#seekto 0x11A0;
+struct {
+  u8 bitmap[26];    // one bit for each channel skipped
+} chan_skip;
+
 #seekto 0x191E;
 struct {
   u8 unknown191e:4,       //
@@ -188,15 +185,18 @@ struct fm_chn {
   ul32 rxfreq;
 };
 
+// #seekto 0x1960;
+struct chname chan_name[199];
+
 #seekto 0x2180;
 struct fm_chn fm_stations[24];
 
-#seekto 0x021E0;
+// #seekto 0x21E0;
 struct {
   u8  fmset[4];
 } fmmap;
 
-#seekto 0x21E4;
+// #seekto 0x21E4;
 struct {
   ul32 fmcur;
 } fmfrqs;
