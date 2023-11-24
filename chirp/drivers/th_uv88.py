@@ -98,7 +98,61 @@ struct {
      ab:1,                //        * A, B
      unk_bit1_0:2;        //
 } workmodesettings;
+"""
 
+MEM_FORMAT_PT2 = """
+// #seekto 0x1180;
+struct {
+  u8 bitmap[26];    // one bit for each channel marked in use
+} chan_avail;
+
+#seekto 0x11A0;
+struct {
+  u8 bitmap[26];    // one bit for each channel skipped
+} chan_skip;
+
+#seekto 0x191E;
+struct {
+  u8 unknown191e:4,       //
+     region:4;            // 0x191E Radio Region (read only)
+                          // 0 = Unlocked  TX: 136-174 MHz / 400-480 MHz
+                          // 2-3 = Unknown
+                          // 3 = EU        TX: 144-146 MHz / 430-440 MHz
+                          // 4 = US        TX: 144-148 MHz / 420-450 MHz
+                          // 5-15 = Unknown
+} settings2;
+
+#seekto 0x1940;
+struct {
+  char name1[15];         // Intro Screen Line 1 (16 alpha text characters)
+  u8 unk1;
+  char name2[15];         // Intro Screen Line 2 (16 alpha text characters)
+  u8 unk2;
+} openradioname;
+
+struct fm_chn {
+  ul32 rxfreq;
+};
+
+// #seekto 0x1960;
+struct chname chan_name[199];
+
+#seekto 0x2180;
+struct fm_chn fm_stations[24];
+
+// #seekto 0x021E0;
+struct {
+  u8  fmset[4];
+} fmmap;
+
+// #seekto 0x21E4;
+struct {
+  ul32 fmcur;
+} fmfrqs;
+
+"""
+
+THUV88_SETTINGS = """
 #seekto 0x1160;
 struct {
   u8 introScreen1[12];    // 0x1160 *Intro Screen Line 1(truncated to 12 alpha
@@ -151,56 +205,60 @@ struct {
   u8 unk4;                // 0x1179
   u8 name2[6];            // 0x117A unused
 } basicsettings;
+"""
 
-// #seekto 0x1180;
+RA89_SETTINGS = """
+#seekto 0x1160;
 struct {
-  u8 bitmap[26];    // one bit for each channel marked in use
-} chan_avail;
-
-#seekto 0x11A0;
-struct {
-  u8 bitmap[26];    // one bit for each channel skipped
-} chan_skip;
-
-#seekto 0x191E;
-struct {
-  u8 unknown191e:4,       //
-     region:4;            // 0x191E Radio Region (read only)
-                          // 0 = Unlocked  TX: 136-174 MHz / 400-480 MHz
-                          // 2-3 = Unknown
-                          // 3 = EU        TX: 144-146 MHz / 430-440 MHz
-                          // 4 = US        TX: 144-148 MHz / 420-450 MHz
-                          // 5-15 = Unknown
-} settings2;
-
-#seekto 0x1940;
-struct {
-  char name1[15];         // Intro Screen Line 1 (16 alpha text characters)
-  u8 unk1;
-  char name2[15];         // Intro Screen Line 2 (16 alpha text characters)
-  u8 unk2;
-} openradioname;
-
-struct fm_chn {
-  ul32 rxfreq;
-};
-
-// #seekto 0x1960;
-struct chname chan_name[199];
-
-#seekto 0x2180;
-struct fm_chn fm_stations[24];
-
-// #seekto 0x21E0;
-struct {
-  u8  fmset[4];
-} fmmap;
-
-// #seekto 0x21E4;
-struct {
-  ul32 fmcur;
-} fmfrqs;
-
+  u8 sideKey2:4,          // 0x1160 side key 2
+     sideKey1:4;          //        side key 1
+  u8 unknownBytes[11];    // 0x1161 - 0x116B
+  u8 offFreqVoltage : 3,  // 0x116C unknown referred to in code but not on
+                          //        screen
+     unk_bit4 : 1,        //
+     sqlLevel : 4;        //        [05] *OFF, 1-9
+  u8 beep : 1,             // 0x116D [09] *OFF, On
+     callKind : 2,        //        code says 1750,2100,1000,1450 as options
+                          //        not on screen
+     introScreen: 2,      //        [20] *OFF, Voltage, Char String
+     unkstr2: 2,          //
+     txChSelect : 1;      //        [02] *Last CH, Main CH
+  u8 autoPowOff : 3,      // 0x116E not on screen? OFF, 30Min, 1HR, 2HR
+     unk : 1,             //
+     tot : 4;             //        [11] *OFF, 30 Second, 60 Second, 90 Second,
+                          //              ... , 270 Second
+  u8 unk_bit7:1,          // 0x116F
+     roger:1,             //        [14] *OFF, On
+     dailDef:1,           //        Unknown - 'Volume, Frequency'
+     language:1,          //        English only
+     endToneElim:2,       //        *Frequency, 120, 180, 240 (RA89)
+     unkCheckBox1:1,      //
+     unkCheckBox2:1;      //
+  u8 scanType: 2,         // 0x1170 [17] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
+     disMode : 2,         //        [33] *Frequency, Channel, Name
+     ledMode: 4;          //        [07] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
+  u8 unky;                // 0x1171
+  u8 str6;                // 0x1172 Has flags to do with logging - factory
+                          // enabled (bits 16,64,128)
+  u8 unk;                 // 0x1173
+  u8 swAudio : 1,         // 0x1174 [19] *OFF, On
+     radioMoni : 1,       //        [34] *OFF, On
+     keylock : 1,         //        [18] *OFF, On
+     dualWait : 1,        //        [06] *OFF, On
+     unk_bit3 : 1,        //
+     light : 3;           //        [08] *1, 2, 3, 4, 5, 6, 7
+  u8 voxSw : 1,           // 0x1175 [13] *OFF, On
+     voxDelay: 4,         //        *0.5S, 1.0S, 1.5S, 2.0S, 2.5S, 3.0S, 3.5S,
+                          //         4.0S, 4.5S, 5.0S
+     voxLevel : 3;        //        [03] *1, 2, 3, 4, 5, 6, 7
+  u8 str9 : 4,            // 0x1176
+     saveMode : 2,        //        [16] *OFF, 1:1, 1:2, 1:4
+     keyMode : 2;         //        [32] *ALL, PTT, KEY, Key & Side Key
+  u8 unk2;                // 0x1177
+  u8 unk3;                // 0x1178
+  u8 unk4;                // 0x1179
+  u8 name2[6];            // 0x117A unused
+} basicsettings;
 """
 
 MEM_SIZE = 0x22A0
@@ -561,7 +619,8 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 
     def process_mmap(self):
         """Process the mem map into the mem object"""
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        mem_format = MEM_FORMAT + THUV88_SETTINGS + MEM_FORMAT_PT2
+        self._memobj = bitwise.parse(mem_format, self._mmap)
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
@@ -819,7 +878,10 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         # Menu 07 - LED Mode
-        options = ["Off", "On", "Auto"]
+        if self.MODEL == "RA89":
+            options = ["Off", "On", "5s", "10s", "15s", "20s", "25s", "30s"]
+        else:
+            options = ["Off", "On", "Auto"]
         rx = RadioSettingValueList(options, options[_settings.ledMode])
         rset = RadioSetting("basicsettings.ledMode", "LED Display Mode", rx)
         basic.append(rset)
@@ -906,7 +968,10 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         group.append(advanced)
 
         # software only
-        options = ['Off', 'Frequency']
+        if self.MODEL == "RA89":
+            options = ['Frequency', '120', '180', '240']
+        else:
+            options = ['Off', 'Frequency']
         rx = RadioSettingValueList(options, options[_settings.endToneElim])
         rset = RadioSetting("basicsettings.endToneElim", "End Tone Elim", rx)
         advanced.append(rset)
@@ -958,6 +1023,17 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("settings2.region", "Region", rx)
         advanced.append(rset)
 
+        if self.MODEL == "RA89":
+            options = ["VOX", "Dual Wait", "Scan", "Moni", "1750 Tone",
+                       "Flashlight", "Power Level", "Alarm"]
+            rx = RadioSettingValueList(options, options[_settings.sideKey1])
+            rset = RadioSetting("basicsettings.sideKey1", "Side Key 1", rx)
+            advanced.append(rset)
+
+            rx = RadioSettingValueList(options, options[_settings.sideKey2])
+            rset = RadioSetting("basicsettings.sideKey2", "Side Key 2", rx)
+            advanced.append(rset)
+
         workmode = RadioSettingGroup("workmode", "Work Mode Settings")
         group.append(workmode)
 
@@ -971,7 +1047,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         options = ["Frequency", "Channel"]
         rx = RadioSettingValueList(options, options[_workmode.vfomrmodeb])
         rset = RadioSetting("workmodesettings.vfomrmodeb",
-                            "VFO/MR Mode B (BQ1.41+)", rx)
+                            "VFO/MR Mode B", rx)
         workmode.append(rset)
 
         # Toggle with [A/B] key
@@ -1101,6 +1177,23 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 class RT85(THUV88Radio):
     VENDOR = "Retevis"
     MODEL = "RT85"
+
+
+@directory.register
+class RA89(THUV88Radio):
+    VENDOR = "Retevis"
+    MODEL = "RA89"
+
+    _magic0 = b"\xFE\xFE\xEE\xEF\xE0" + b"UV99" + b"\xFD"
+    _magic2 = b"\xFE\xFE\xEE\xEF\xE2" + b"UV99" + b"\xFD"
+    _magic3 = b"\xFE\xFE\xEE\xEF\xE3" + b"UV99" + b"\xFD"
+    _magic5 = b"\xFE\xFE\xEE\xEF\xE5" + b"UV99" + b"\xFD"
+    _fingerprint = b"\xFE\xFE\xEF\xEE\xE1" + b"UV99"
+
+    def process_mmap(self):
+        """Process the mem map into the mem object"""
+        mem_format = MEM_FORMAT + RA89_SETTINGS + MEM_FORMAT_PT2
+        self._memobj = bitwise.parse(mem_format, self._mmap)
 
 
 @directory.register
