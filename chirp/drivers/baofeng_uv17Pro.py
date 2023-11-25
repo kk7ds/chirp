@@ -36,40 +36,19 @@ DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
 
 LIST_AB = ["A", "B"]
-LIST_ALMOD = ["Site", "Tone", "Code"]
 LIST_BANDWIDTH = ["Wide", "Narrow"]
-LIST_COLOR = ["Off", "Blue", "Orange", "Purple"]
 LIST_DTMFSPEED = ["%s ms" % x for x in [50, 100, 200, 300, 500]]
 LIST_HANGUPTIME = ["%s s" % x for x in [3, 4, 5, 6, 7, 8, 9, 10]]
 LIST_SIDE_TONE = ["Off", "Side Key", "ID", "Side + ID"]
-LIST_DTMFST = ["Off", "DT-ST", "ANI-ST", "DT+ANI"]
-LIST_MODE = ["Name", "Frequency", "Channel Number"]
-LIST_OFF1TO5 = ["Off"] + list("12345")
-LIST_OFF1TO9 = LIST_OFF1TO5 + list("6789")
-LIST_OFF1TO10 = LIST_OFF1TO9 + ["10"]
-LIST_OFFAB = ["Off"] + LIST_AB
-LIST_RESUME = ["TO", "CO", "SE"]
-LIST_PONMSG = ["Full", "Message"]
 LIST_PTTID = ["Off", "BOT", "EOT", "Both"]
-LIST_SCODE = ["%s" % x for x in range(1, 21)]
-LIST_RPSTE = ["Off"] + ["%s" % x for x in range(1, 11)]
-LIST_SAVE = ["Off", "1:1", "1:2", "1:3", "1:4"]
-LIST_SHIFTD = ["Off", "+", "-"]
-LIST_STEDELAY = ["Off"] + ["%s ms" % x for x in range(100, 1100, 100)]
-LIST_STEP = [str(x) for x in STEPS]
-LIST_TIMEOUT = ["Off"] + ["%s sec" % x for x in range(15, 195, 15)]
 LIST_TIMEOUT_ALARM = ["Off"] + ["%s sec" % x for x in range(1, 11)]
 LIST_PILOT_TONE = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
-LIST_TXPOWER = ["High", "Low"]
 LIST_VOICE = ["Off", "English", "Chinese"]
 LIST_WORKMODE = ["Frequency", "Channel"]
-LIST_POWERON_DISPLAY_TYPE = ["LOGO", "BATT voltage"]
 LIST_BEEP = ["Off", "Beep", "Voice", "Both"]
-LIST_LANGUAGE = ["English", "Chinese"]
 LIST_SCANMODE = ["Time", "Carrier", "Search"]
 LIST_ALARMMODE = ["Local", "Send Tone", "Send Code"]
 LIST_MENU_QUIT_TIME = ["%s sec" % x for x in range(5, 55, 5)] + ["60 sec"]
-LIST_BACKLIGHT_TIMER = ["Always On"] + ["%s sec" % x for x in range(5, 25, 5)]
 LIST_ID_DELAY = ["%s ms" % x for x in range(100, 3100, 100)]
 LIST_QT_SAVEMODE = ["Both", "RX", "TX"]
 LIST_SKEY2_SHORT = ["FM", "Scan", "Search", "Vox"]
@@ -115,23 +94,6 @@ def _crypt(symbol_index, buffer):
     return dec_buffer
 
 
-def _make_read_frame(addr, length):
-    """Pack the info in the header format"""
-    frame = _make_frame(b"\x52", addr, length)
-    # Return the data
-    return frame
-
-
-def _make_frame(cmd, addr, length, data=""):
-    """Pack the info in the header format"""
-    frame = cmd + struct.pack(">i", addr)[2:] + struct.pack("b", length)
-    # add the data if set
-    if len(data) != 0:
-        frame += data
-    # return the data
-    return frame
-
-
 def _do_ident(radio):
     # Flush input buffer
     baofeng_common._clean_buffer(radio)
@@ -147,97 +109,6 @@ def _do_ident(radio):
         raise errors.RadioError("Radio did not respond as expected (A)")
 
     return True
-
-
-def _download(radio):
-    """Get the memory map"""
-
-    # Put radio in program mode and identify it
-    _do_ident(radio)
-    for index in range(len(radio._magics)):
-        baofeng_common._rawsend(radio, radio._magics[index])
-        baofeng_common._rawrecv(radio, radio._magicResponseLengths[index])
-
-    data = b""
-
-    # UI progress
-    status = chirp_common.Status()
-    status.cur = 0
-    status.max = radio.MEM_TOTAL // radio.BLOCK_SIZE
-    status.msg = "Cloning from radio..."
-    radio.status_fn(status)
-
-    for i in range(len(radio.MEM_SIZES)):
-        MEM_SIZE = radio.MEM_SIZES[i]
-        MEM_START = radio.MEM_STARTS[i]
-        for addr in range(MEM_START, MEM_START + MEM_SIZE, radio.BLOCK_SIZE):
-            frame = _make_read_frame(addr, radio.BLOCK_SIZE)
-            # DEBUG
-            LOG.debug("Frame=" + util.hexprint(frame))
-
-            # Sending the read request
-            baofeng_common._rawsend(radio, frame)
-
-            # Now we read data
-            d = baofeng_common._rawrecv(radio, radio.BLOCK_SIZE + 4)
-
-            LOG.debug("Response Data= " + util.hexprint(d))
-            d = _crypt(1, d[4:])
-
-            # Aggregate the data
-            data += d
-
-            # UI Update
-            status.cur = len(data) // radio.BLOCK_SIZE
-            status.msg = "Cloning from radio..."
-            radio.status_fn(status)
-    return data
-
-
-def _upload(radio):
-    # Put radio in program mode and identify it
-    _do_ident(radio)
-    for index in range(len(radio._magics)):
-        baofeng_common._rawsend(radio, radio._magics[index])
-        baofeng_common._rawrecv(radio, radio._magicResponseLengths[index])
-
-    data = b""
-
-    # UI progress
-    status = chirp_common.Status()
-    status.cur = 0
-    status.max = radio.MEM_TOTAL // radio.BLOCK_SIZE
-    status.msg = "Cloning from radio..."
-    radio.status_fn(status)
-
-    data_addr = 0x00
-    radio_mem = radio.get_mmap()
-    for i in range(len(radio.MEM_SIZES)):
-        MEM_SIZE = radio.MEM_SIZES[i]
-        MEM_START = radio.MEM_STARTS[i]
-        for addr in range(MEM_START, MEM_START + MEM_SIZE, radio.BLOCK_SIZE):
-            data = radio_mem[data_addr:data_addr + radio.BLOCK_SIZE]
-            data = _crypt(1, data)
-            data_addr += radio.BLOCK_SIZE
-
-            frame = _make_frame(b"W", addr, radio.BLOCK_SIZE, data)
-            # DEBUG
-            LOG.debug("Frame=" + util.hexprint(frame))
-
-            # Sending the read request
-            baofeng_common._rawsend(radio, frame)
-
-            # receiving the response
-            ack = baofeng_common._rawrecv(radio, 1)
-            if ack != b"\x06":
-                msg = "Bad ack writing block 0x%04x" % addr
-                raise errors.RadioError(msg)
-
-            # UI Update
-            status.cur = data_addr // radio.BLOCK_SIZE
-            status.msg = "Cloning to radio..."
-            radio.status_fn(status)
-    return data
 
 
 @directory.register
@@ -278,6 +149,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
     _has_pilot_tone = False
     _has_send_id_delay = False
     _has_skey2_short = False
+    _scode_offset = 0
 
     MODES = ["NFM", "FM"]
     VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
@@ -303,7 +175,16 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
     VALID_BANDS = [_vhf_range, _vhf2_range,
                    _uhf_range]
     PTTID_LIST = LIST_PTTID
-    SCODE_LIST = LIST_SCODE
+    SCODE_LIST = ["%s" % x for x in range(1, 21)]
+    SQUELCH_LIST = ["Off"] + list("12345")
+    LIST_POWERON_DISPLAY_TYPE = ["LOGO", "BATT voltage"]
+    LIST_TIMEOUT = ["Off"] + ["%s sec" % x for x in range(15, 195, 15)]
+    LIST_VOICE = ["English", "Chinese"]
+    LIST_BACKLIGHT_TIMER = ["Always On"] + ["%s sec"
+                                            % x for x in range(5, 25, 5)]
+    LIST_MODE = ["Name", "Frequency", "Channel Number"]
+
+    CHANNELS = 1000
 
     MEM_FORMAT = """
     struct {
@@ -432,6 +313,21 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
     } bank_name[10];
     """
 
+    def _make_read_frame(self, addr, length):
+        """Pack the info in the header format"""
+        frame = self._make_frame(b"\x52", addr, length)
+        # Return the data
+        return frame
+
+    def _make_frame(self, cmd, addr, length, data=""):
+        """Pack the info in the header format"""
+        frame = cmd + struct.pack(">i", addr)[2:] + struct.pack("b", length)
+        # add the data if set
+        if len(data) != 0:
+            frame += data
+        # return the data
+        return frame
+
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
@@ -460,6 +356,209 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         # make lines shorter for style check.
         self._memobj = bitwise.parse(self.MEM_FORMAT, self._mmap)
 
+    def _download(radio):
+        """Get the memory map"""
+
+        # Put radio in program mode and identify it
+        _do_ident(radio)
+        for index in range(len(radio._magics)):
+            baofeng_common._rawsend(radio, radio._magics[index])
+            baofeng_common._rawrecv(radio, radio._magicResponseLengths[index])
+
+        data = b""
+
+        # UI progress
+        status = chirp_common.Status()
+        status.cur = 0
+        status.max = radio.MEM_TOTAL // radio.BLOCK_SIZE
+        status.msg = "Cloning from radio..."
+        radio.status_fn(status)
+
+        for i in range(len(radio.MEM_SIZES)):
+            MEM_SIZE = radio.MEM_SIZES[i]
+            MEM_START = radio.MEM_STARTS[i]
+            for addr in range(MEM_START, MEM_START + MEM_SIZE,
+                              radio.BLOCK_SIZE):
+                frame = radio._make_read_frame(addr, radio.BLOCK_SIZE)
+                # DEBUG
+                LOG.debug("Frame=" + util.hexprint(frame))
+
+                # Sending the read request
+                baofeng_common._rawsend(radio, frame)
+
+                # Now we read data
+                d = baofeng_common._rawrecv(radio, radio.BLOCK_SIZE + 4)
+
+                LOG.debug("Response Data= " + util.hexprint(d))
+                d = _crypt(1, d[4:])
+
+                # Aggregate the data
+                data += d
+
+                # UI Update
+                status.cur = len(data) // radio.BLOCK_SIZE
+                status.msg = "Cloning from radio..."
+                radio.status_fn(status)
+        return data
+
+    def _upload(radio):
+        # Put radio in program mode and identify it
+        _do_ident(radio)
+        for index in range(len(radio._magics)):
+            baofeng_common._rawsend(radio, radio._magics[index])
+            baofeng_common._rawrecv(radio, radio._magicResponseLengths[index])
+
+        data = b""
+
+        # UI progress
+        status = chirp_common.Status()
+        status.cur = 0
+        status.max = radio.MEM_TOTAL // radio.BLOCK_SIZE
+        status.msg = "Cloning from radio..."
+        radio.status_fn(status)
+
+        data_addr = 0x00
+        radio_mem = radio.get_mmap()
+        for i in range(len(radio.MEM_SIZES)):
+            MEM_SIZE = radio.MEM_SIZES[i]
+            MEM_START = radio.MEM_STARTS[i]
+            for addr in range(MEM_START, MEM_START + MEM_SIZE,
+                              radio.BLOCK_SIZE):
+                data = radio_mem[data_addr:data_addr + radio.BLOCK_SIZE]
+                data = _crypt(1, data)
+                data_addr += radio.BLOCK_SIZE
+
+                frame = radio._make_frame(b"W", addr, radio.BLOCK_SIZE, data)
+                # DEBUG
+                LOG.debug("Frame=" + util.hexprint(frame))
+
+                # Sending the read request
+                baofeng_common._rawsend(radio, frame)
+
+                # receiving the response
+                ack = baofeng_common._rawrecv(radio, 1)
+                if ack != b"\x06":
+                    msg = "Bad ack writing block 0x%04x" % addr
+                    raise errors.RadioError(msg)
+
+                # UI Update
+                status.cur = data_addr // radio.BLOCK_SIZE
+                status.msg = "Cloning to radio..."
+                radio.status_fn(status)
+        return data
+
+    # DTMF settings
+    def apply_code(self, setting, obj, length):
+        code = []
+        for j in range(0, length):
+            try:
+                code.append(DTMF_CHARS.index(str(setting.value)[j]))
+            except IndexError:
+                code.append(0xFF)
+        obj.code = code
+
+    def get_settings_common_dtmf(self, dtmfe):
+        for i in range(0, len(self.SCODE_LIST)):
+            _codeobj = self._memobj.pttid[i].code
+            _code = "".join([
+                DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+            val = RadioSettingValueString(0, 5, _code, False)
+            val.set_charset(DTMF_CHARS)
+            pttid = RadioSetting("pttid/%i.code" % i,
+                                 "Signal Code %i" % (i + 1), val)
+            pttid.set_apply_callback(self.apply_code, self._memobj.pttid[i], 5)
+            dtmfe.append(pttid)
+
+        _codeobj = self._memobj.ani.code
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 5, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("ani.code", "ANI Code", val)
+        rs.set_apply_callback(self.apply_code, self._memobj.ani, 5)
+        dtmfe.append(rs)
+
+    def get_settings_common_basic(self, basic, _mem):
+        if _mem.settings.squelch >= len(self.SQUELCH_LIST):
+            val = 0x00
+        else:
+            val = _mem.settings.squelch
+        rs = RadioSetting("settings.squelch", "Squelch",
+                          RadioSettingValueList(
+                              self.SQUELCH_LIST, self.SQUELCH_LIST[val]))
+        basic.append(rs)
+
+        if _mem.settings.tot >= len(self.LIST_TIMEOUT):
+            val = 0x03
+        else:
+            val = _mem.settings.tot
+        rs = RadioSetting("settings.tot", "Timeout Timer",
+                          RadioSettingValueList(
+                              self.LIST_TIMEOUT, self.LIST_TIMEOUT[val]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.dualstandby", "Dual Watch",
+                          RadioSettingValueBoolean(_mem.settings.dualstandby))
+        basic.append(rs)
+
+        if _mem.settings.powerondistype >= len(self.LIST_POWERON_DISPLAY_TYPE):
+            val = 0x00
+        else:
+            rs = RadioSetting("settings.powerondistype",
+                              "Power On Display Type",
+                              RadioSettingValueList(
+                                  self.LIST_POWERON_DISPLAY_TYPE,
+                                  self.LIST_POWERON_DISPLAY_TYPE[
+                                      _mem.settings.powerondistype]))
+            basic.append(rs)
+
+        if _mem.settings.voice >= len(self.LIST_VOICE):
+            val = 0x01
+        else:
+            val = _mem.settings.voice
+        rs = RadioSetting("settings.voice", "Voice Prompt",
+                          RadioSettingValueList(
+                              self.LIST_VOICE, self.LIST_VOICE[val]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.voicesw", "Enable Voice",
+                          RadioSettingValueBoolean(_mem.settings.voicesw))
+        basic.append(rs)
+
+        if _mem.settings.backlight >= len(self.LIST_BACKLIGHT_TIMER):
+            val = 0x00
+        else:
+            val = _mem.settings.backlight
+        rs = RadioSetting("settings.backlight", "Backlight Timer",
+                          RadioSettingValueList(
+                              self.LIST_BACKLIGHT_TIMER,
+                              self.LIST_BACKLIGHT_TIMER[val]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.autolock", "Key Auto Lock",
+                          RadioSettingValueBoolean(_mem.settings.autolock))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.beep", "Beep",
+                          RadioSettingValueList(
+                              LIST_BEEP, LIST_BEEP[_mem.settings.beep]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.roger", "Roger",
+                          RadioSettingValueBoolean(_mem.settings.roger))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.chadistype", "Channel A display type",
+                          RadioSettingValueList(
+                              self.LIST_MODE,
+                              self.LIST_MODE[_mem.settings.chadistype]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.chbdistype", "Channel B display type",
+                          RadioSettingValueList(
+                              self.LIST_MODE,
+                              self.LIST_MODE[_mem.settings.chbdistype]))
+        basic.append(rs)
+
     def get_settings(self):
         """Translate the bit in the mem_struct into settings in the UI"""
         _mem = self._memobj
@@ -468,19 +567,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         dtmfe = RadioSettingGroup("dtmfe", "DTMF Encode Settings")
         top = RadioSettings(basic, bank, dtmfe)
 
-        if _mem.settings.squelch > 0x05:
-            val = 0x00
-        else:
-            val = _mem.settings.squelch
-        rs = RadioSetting("settings.squelch", "Squelch",
-                          RadioSettingValueList(
-                              LIST_OFF1TO5, LIST_OFF1TO5[val]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.tot", "Timeout Timer",
-                          RadioSettingValueList(
-                              LIST_TIMEOUT, LIST_TIMEOUT[_mem.settings.tot]))
-        basic.append(rs)
+        self.get_settings_common_basic(basic, _mem)
 
         rs = RadioSetting("settings.savemode", "Save Mode",
                           RadioSettingValueBoolean(_mem.settings.savemode))
@@ -490,10 +577,6 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                           RadioSettingValueList(
                               LIST_TIMEOUT_ALARM,
                               LIST_TIMEOUT_ALARM[_mem.settings.totalarm]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.dualstandby", "Dual Watch",
-                          RadioSettingValueBoolean(_mem.settings.dualstandby))
         basic.append(rs)
 
         if self._has_pilot_tone:
@@ -511,32 +594,6 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
 
         rs = RadioSetting("settings.tailclear", "Tail Clear",
                           RadioSettingValueBoolean(_mem.settings.tailclear))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.powerondistype", "Power On Display Type",
-                          RadioSettingValueList(
-                              LIST_POWERON_DISPLAY_TYPE,
-                              LIST_POWERON_DISPLAY_TYPE[
-                                  _mem.settings.powerondistype]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.beep", "Beep",
-                          RadioSettingValueList(
-                              LIST_BEEP, LIST_BEEP[_mem.settings.beep]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.roger", "Roger",
-                          RadioSettingValueBoolean(_mem.settings.roger))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.voice", "Language",
-                          RadioSettingValueList(
-                              LIST_LANGUAGE,
-                              LIST_LANGUAGE[_mem.settings.voice]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.voicesw", "Enable Voice",
-                          RadioSettingValueBoolean(_mem.settings.voicesw))
         basic.append(rs)
 
         rs = RadioSetting("settings.scanmode", "Scan Mode",
@@ -559,25 +616,11 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                           RadioSettingValueBoolean(_mem.settings.keylock))
         basic.append(rs)
 
-        rs = RadioSetting("settings.fmenable", "Disable FM radio",
-                          RadioSettingValueBoolean(_mem.settings.fmenable))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.autolock", "Key Auto Lock",
-                          RadioSettingValueBoolean(_mem.settings.autolock))
-        basic.append(rs)
-
         rs = RadioSetting("settings.menuquittime", "Menu Quit Timer",
                           RadioSettingValueList(
                               LIST_MENU_QUIT_TIME,
                               LIST_MENU_QUIT_TIME[
                                   _mem.settings.menuquittime]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.backlight", "Backlight Timer",
-                          RadioSettingValueList(
-                              LIST_BACKLIGHT_TIMER,
-                              LIST_BACKLIGHT_TIMER[_mem.settings.backlight]))
         basic.append(rs)
 
         if self._has_send_id_delay:
@@ -618,20 +661,10 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
             rs.set_apply_callback(apply_Key2short, _mem.settings)
             basic.append(rs)
 
-        rs = RadioSetting("settings.chadistype", "Channel A display type",
-                          RadioSettingValueList(
-                              LIST_MODE, LIST_MODE[_mem.settings.chadistype]))
-        basic.append(rs)
-
         rs = RadioSetting("settings.chaworkmode", "Channel A work mode",
                           RadioSettingValueList(
                               LIST_WORKMODE,
                               LIST_WORKMODE[_mem.settings.chaworkmode]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.chbdistype", "Channel B display type",
-                          RadioSettingValueList(
-                              LIST_MODE, LIST_MODE[_mem.settings.chbdistype]))
         basic.append(rs)
 
         rs = RadioSetting("settings.chbworkmode", "Channel B work mode",
@@ -697,6 +730,10 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                                 LIST_GPS_TIMEZONE[_mem.settings.gpstimezone]))
             basic.append(rs)
 
+        rs = RadioSetting("settings.fmenable", "Disable FM radio",
+                          RadioSettingValueBoolean(_mem.settings.fmenable))
+        basic.append(rs)
+
         def _filterName(name):
             fname = b""
             for char in name:
@@ -720,26 +757,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                 rs.set_apply_callback(apply_bankname, _nameobj)
                 bank.append(rs)
 
-        # DTMF settings
-        def apply_code(setting, obj, length):
-            code = []
-            for j in range(0, length):
-                try:
-                    code.append(DTMF_CHARS.index(str(setting.value)[j]))
-                except IndexError:
-                    code.append(0xFF)
-            obj.code = code
-
-        for i in range(0, 20):
-            _codeobj = self._memobj.pttid[i].code
-            _code = "".join([
-                DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
-            val = RadioSettingValueString(0, 5, _code, False)
-            val.set_charset(DTMF_CHARS)
-            pttid = RadioSetting("pttid/%i.code" % i,
-                                 "Signal Code %i" % (i + 1), val)
-            pttid.set_apply_callback(apply_code, self._memobj.pttid[i], 5)
-            dtmfe.append(pttid)
+        self.get_settings_common_dtmf(dtmfe)
 
         if _mem.ani.dtmfon > 0xC3:
             val = 0x03
@@ -757,14 +775,6 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         rs = RadioSetting("ani.dtmfoff", "DTMF Speed (off)",
                           RadioSettingValueList(LIST_DTMFSPEED,
                                                 LIST_DTMFSPEED[val]))
-        dtmfe.append(rs)
-
-        _codeobj = self._memobj.ani.code
-        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
-        val = RadioSettingValueString(0, 5, _code, False)
-        val.set_charset(DTMF_CHARS)
-        rs = RadioSetting("ani.code", "ANI Code", val)
-        rs.set_apply_callback(apply_code, self._memobj.ani, 5)
         dtmfe.append(rs)
 
         if self._has_when_to_send_aniid:
@@ -785,7 +795,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
     def sync_in(self):
         """Download from radio"""
         try:
-            data = _download(self)
+            data = self._download()
         except errors.RadioError:
             # Pass through any real errors we raise
             raise
@@ -802,7 +812,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
     def sync_out(self):
         """Upload to radio"""
         try:
-            _upload(self)
+            self._upload()
         except errors.RadioError:
             raise
         except Exception:
@@ -846,7 +856,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
             "DTCS->DTCS"]
         rf.valid_skips = self.SKIP_VALUES
         rf.valid_dtcs_codes = self.DTCS_CODES
-        rf.memory_bounds = (0, 999)
+        rf.memory_bounds = (0, self.CHANNELS - 1)
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_bands = self.VALID_BANDS
         rf.valid_tuning_steps = STEPS
@@ -886,40 +896,41 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         else:
             memtone.set_value(0)
 
-    def get_memory(self, number):
-        _mem = self._memobj.memory[number]
+    def split_txfreq(self, _mem, freq):
+        if self._is_txinh(_mem):
+            # TX freq not set
+            duplex = "off"
+            offset = 0
+        else:
+            offset = (int(_mem.txfreq) * 10) - freq
+            if offset != 0:
+                if baofeng_common._split(self.get_features(), freq, int(
+                          _mem.txfreq) * 10):
+                    duplex = "split"
+                    offset = int(_mem.txfreq) * 10
+                elif offset < 0:
+                    offset = abs(offset)
+                    duplex = "-"
+                elif offset > 0:
+                    duplex = "+"
+            else:
+                duplex = ""
+                offset = 0
+        return offset, duplex
 
-        mem = chirp_common.Memory()
-        mem.number = number
-
+    def get_memory_common(self, _mem, name, mem):
         if _mem.get_raw()[0] == 255:
             mem.empty = True
             return mem
 
         mem.freq = int(_mem.rxfreq) * 10
 
-        if self._is_txinh(_mem):
-            # TX freq not set
-            mem.duplex = "off"
-            mem.offset = 0
-        else:
-            # TX freq set
-            offset = (int(_mem.txfreq) * 10) - mem.freq
-            if offset != 0:
-                if baofeng_common._split(self.get_features(), mem.freq, int(
-                          _mem.txfreq) * 10):
-                    mem.duplex = "split"
-                    mem.offset = int(_mem.txfreq) * 10
-                elif offset < 0:
-                    mem.offset = abs(offset)
-                    mem.duplex = "-"
-                elif offset > 0:
-                    mem.offset = offset
-                    mem.duplex = "+"
-            else:
-                mem.offset = 0
+        # TX freq set
+        mem.offset, mem.duplex = self.split_txfreq(_mem, mem.freq)
 
-        mem.name = str(_mem.name).replace('\xFF', '').rstrip()
+        txtone = self.decode_tone(_mem.txtone)
+        rxtone = self.decode_tone(_mem.rxtone)
+        chirp_common.split_tone_decode(mem, txtone, rxtone)
 
         if not _mem.scan:
             mem.skip = "S"
@@ -931,11 +942,6 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
             mem.power = levels[0]
 
         mem.mode = _mem.wide and "NFM" or "FM"
-
-        txtone = self.decode_tone(_mem.txtone)
-        rxtone = self.decode_tone(_mem.rxtone)
-
-        chirp_common.split_tone_decode(mem, txtone, rxtone)
 
         mem.extra = RadioSettingGroup("Extra", "extra")
 
@@ -949,25 +955,27 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                                                     _mem.pttid]))
         mem.extra.append(rs)
 
+        scode = (_mem.scode - self._scode_offset) % len(self.SCODE_LIST)
         rs = RadioSetting("scode", "S-CODE",
                           RadioSettingValueList(self.SCODE_LIST,
                                                 self.SCODE_LIST[
-                                                    _mem.scode]))
+                                                    scode]))
         mem.extra.append(rs)
+
+        mem.name = str(name).replace('\xFF', ' ').replace('\x00', ' ').rstrip()
+
+    def get_memory(self, number):
+        _mem = self._memobj.memory[number]
+
+        mem = chirp_common.Memory()
+        mem.number = number
+
+        self.get_memory_common(_mem, _mem.name, mem)
 
         return mem
 
-    def set_memory(self, mem):
+    def unsplit_txfreq(self, mem):
         _mem = self._memobj.memory[mem.number]
-
-        _mem.set_raw(b"\x00"*16 + b"\xff" * 16)
-
-        if mem.empty:
-            _mem.set_raw(b"\xff" * 32)
-            return
-
-        _mem.rxfreq = mem.freq / 10
-
         if mem.duplex == "off":
             for i in range(0, 4):
                 _mem.txfreq[i].set_raw(b"\xFF")
@@ -980,8 +988,9 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         else:
             _mem.txfreq = mem.freq / 10
 
-        _namelength = self.get_features().valid_name_length
-        _mem.name = mem.name.ljust(_namelength, '\xFF')
+    def set_memory_common(self, mem, _mem):
+        _mem.rxfreq = mem.freq / 10
+        self.unsplit_txfreq(mem)
 
         ((txmode, txtone, txpol), (rxmode, rxtone, rxpol)) = \
             chirp_common.split_tone_encode(mem)
@@ -1001,14 +1010,29 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
             # there are setting, parse
             for setting in mem.extra:
                 if setting.get_name() == "scode":
-                    setattr(_mem, setting.get_name(), str(int(setting.value)))
+                    setattr(_mem, setting.get_name(), str(int(setting.value) +
+                                                          self._scode_offset))
                 else:
                     setattr(_mem, setting.get_name(), setting.value)
         else:
             # there are no extra settings, load defaults
             _mem.bcl = 0
             _mem.pttid = 0
-            _mem.scode = 0
+            _mem.scode = self._scode_offset
+
+    def set_memory(self, mem):
+        _mem = self._memobj.memory[mem.number]
+
+        _mem.set_raw(b"\x00"*16 + b"\xff" * 16)
+
+        if mem.empty:
+            _mem.set_raw(b"\xff" * 32)
+            return
+
+        _namelength = self.get_features().valid_name_length
+        _mem.name = mem.name.ljust(_namelength, '\xFF')
+
+        self.set_memory_common(mem, _mem)
 
 
 @directory.register
