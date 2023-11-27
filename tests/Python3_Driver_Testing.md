@@ -350,6 +350,7 @@
 | <a name="TYT_TH-350"></a> TYT_TH-350 |  |  | Yes | 0.07% |
 | <a name="TYT_TH-7800"></a> TYT_TH-7800 | [Reported working](https://chirp.danplanet.com/issues/10585) | 4-Jul-2023 | Yes | 0.13% |
 | <a name="TYT_TH-7800_File"></a> TYT_TH-7800_File |  |  |  | 0.00% |
+| <a name="TYT_TH-8600"></a> TYT_TH-8600 | [Reported working](https://chirp.danplanet.com/issues/4851) | 25-Nov-2023 | Yes | 0.00% |
 | <a name="TYT_TH-9800"></a> TYT_TH-9800 | [Reported working](https://chirp.danplanet.com/issues/10755) | 30-Jul-2023 | Yes | 0.65% |
 | <a name="TYT_TH-9800_File"></a> TYT_TH-9800_File |  |  | Yes | 0.00% |
 | <a name="TYT_TH-UV3R"></a> TYT_TH-UV3R |  |  | Yes | 0.04% |
@@ -437,11 +438,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 434
+**Drivers:** 435
 
-**Tested:** 87% (379/55) (93% of usage stats)
+**Tested:** 87% (380/55) (93% of usage stats)
 
-**Byte clean:** 90% (394/40)
+**Byte clean:** 90% (395/40)
 
 ## Meaning of this testing
 
