@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-27 14:59-0800\n"
-"PO-Revision-Date: 2023-11-20 23:35-0300\n"
+"PO-Revision-Date: 2023-11-27 20:12-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1180,7 +1180,7 @@ msgstr ""
 
 #: ../wxui/query_sources.py:331
 msgid "Convert to FM"
-msgstr ""
+msgstr "Convertir a FM"
 
 #: ../wxui/memedit.py:1569
 msgid "Copy"
@@ -1255,9 +1255,8 @@ msgid "Digital Code"
 msgstr "Código digital"
 
 #: ../wxui/query_sources.py:335
-#, fuzzy
 msgid "Digital Modes"
-msgstr "Código digital"
+msgstr "Modos digitales"
 
 #: ../wxui/main.py:1678
 msgid "Disable reporting"
@@ -1299,6 +1298,8 @@ msgstr "Descargar instrucciones"
 #: ../wxui/query_sources.py:333
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
 msgstr ""
+"Los repetidores digital de modo dual que soportan análogo se mostrarán como "
+"FM."
 
 #: ../wxui/memedit.py:394
 msgid "Duplex"
@@ -2461,6 +2462,7 @@ msgstr ""
 #: ../drivers/radtel_rt490.py:1325
 msgid "This driver is in development and should be considered as experimental."
 msgstr ""
+"Este controlador está en desarrollo y debe ser considerado como experimental."
 
 #: ../drivers/th_uv88.py:553
 msgid "This is an early stage beta driver\n"
