@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-24 10:51-0800\n"
+"POT-Creation-Date: 2023-11-27 14:59-0800\n"
 "PO-Revision-Date: 2023-10-11 16:47+0300\n"
 "Last-Translator: Olesya Gerasimenko <translation-team@basealt.ru>\n"
 "Language-Team: Basealt Translation Team\n"
@@ -973,7 +973,7 @@ msgstr "О программе"
 msgid "About CHIRP"
 msgstr "О программе CHIRP"
 
-#: ../wxui/query_sources.py:355
+#: ../wxui/query_sources.py:361
 msgid "All"
 msgstr "Все"
 
@@ -985,7 +985,7 @@ msgstr "Все файлы"
 msgid "All supported formats|"
 msgstr "Все поддерживаемые форматы|"
 
-#: ../wxui/query_sources.py:283 ../wxui/query_sources.py:347
+#: ../wxui/query_sources.py:283 ../wxui/query_sources.py:353
 msgid "Amateur"
 msgstr "Любительская радиосвязь"
 
@@ -1005,7 +1005,7 @@ msgstr "Доступные модули"
 msgid "Bandplan"
 msgstr "Частотный план"
 
-#: ../wxui/query_sources.py:377 ../wxui/query_sources.py:590
+#: ../wxui/query_sources.py:383 ../wxui/query_sources.py:598
 msgid "Bands"
 msgstr "Полосы частот"
 
@@ -1025,7 +1025,7 @@ msgstr "Браузер"
 msgid "Building Radio Browser"
 msgstr "Браузер станций"
 
-#: ../wxui/query_sources.py:681
+#: ../wxui/query_sources.py:689
 msgid "Canada"
 msgstr "Канада"
 
@@ -1074,7 +1074,7 @@ msgstr "Выберите дуплекс"
 msgid "Choose the module to load from issue %i:"
 msgstr "Выберите модуль для загрузки из задачи %i:"
 
-#: ../wxui/query_sources.py:453
+#: ../wxui/query_sources.py:461
 msgid "City"
 msgstr "Город"
 
@@ -1143,12 +1143,16 @@ msgstr ""
 "Подключите ваш интерфейсный кабель к PC-порту на\n"
 "задней стороне модуля «TX/RX». НЕ к COM-порту на головке.\n"
 
+#: ../wxui/query_sources.py:331
+msgid "Convert to FM"
+msgstr ""
+
 #: ../wxui/memedit.py:1569
 msgid "Copy"
 msgstr "Копировать"
 
-#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:459
-#: ../wxui/query_sources.py:549
+#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:467
+#: ../wxui/query_sources.py:557
 msgid "Country"
 msgstr "Страна"
 
@@ -1215,6 +1219,11 @@ msgstr "Сравнить необработанные ячейки памяти"
 msgid "Digital Code"
 msgstr "Цифровой код"
 
+#: ../wxui/query_sources.py:335
+#, fuzzy
+msgid "Digital Modes"
+msgstr "Цифровой код"
+
 #: ../wxui/main.py:1678
 msgid "Disable reporting"
 msgstr "Отключить отправку отчётов"
@@ -1223,7 +1232,7 @@ msgstr "Отключить отправку отчётов"
 msgid "Disabled"
 msgstr "Отключено"
 
-#: ../wxui/query_sources.py:312 ../wxui/query_sources.py:572
+#: ../wxui/query_sources.py:312 ../wxui/query_sources.py:580
 msgid "Distance"
 msgstr "Расстояние"
 
@@ -1251,6 +1260,10 @@ msgstr "Загрузить из станции..."
 #: ../wxui/clone.py:515
 msgid "Download instructions"
 msgstr "Инструкции по загрузке"
+
+#: ../wxui/query_sources.py:333
+msgid "Dual-mode digital repeaters that support analog will be shown as FM"
+msgstr ""
 
 #: ../wxui/memedit.py:394
 msgid "Duplex"
@@ -1328,7 +1341,7 @@ msgstr "Экспорт в CSV..."
 msgid "Extra"
 msgstr "Дополнительно"
 
-#: ../wxui/query_sources.py:604
+#: ../wxui/query_sources.py:612
 msgid ""
 "FREE repeater database, which provides most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
@@ -1450,7 +1463,7 @@ msgstr ""
 #: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
 #: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
 #: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
-#: ../drivers/baofeng_uv17Pro.py:452 ../drivers/bf_t1.py:483
+#: ../drivers/baofeng_uv17Pro.py:445 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1630,7 +1643,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:334 ../drivers/gmrsuv1.py:398
 #: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
 #: ../drivers/uv6r.py:348 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
-#: ../drivers/baofeng_uv17Pro.py:458
+#: ../drivers/baofeng_uv17Pro.py:451
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1667,8 +1680,8 @@ msgstr "Найдено значение пустого списка для %(nam
 msgid "Frequency"
 msgstr "Частота"
 
-#: ../wxui/query_sources.py:284 ../wxui/query_sources.py:338
-#: ../wxui/query_sources.py:429
+#: ../wxui/query_sources.py:284 ../wxui/query_sources.py:344
+#: ../wxui/query_sources.py:436
 msgid "GMRS"
 msgstr "GMRS"
 
@@ -1705,7 +1718,7 @@ msgid "Hide empty memories"
 msgstr "Скрыть пустые ячейки памяти"
 
 #: ../wxui/query_sources.py:295 ../wxui/query_sources.py:301
-#: ../wxui/query_sources.py:556 ../wxui/query_sources.py:562
+#: ../wxui/query_sources.py:564 ../wxui/query_sources.py:570
 msgid "If set, sort results by distance from these coordinates"
 msgstr ""
 "Если установлено, упорядочить результаты по расстоянию от этих координат"
@@ -1781,7 +1794,7 @@ msgstr "Номер задачи:"
 msgid "LIVE"
 msgstr "В ЭФИРЕ"
 
-#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:564
+#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:572
 msgid "Latitude"
 msgstr "Широта"
 
@@ -1790,7 +1803,7 @@ msgstr "Широта"
 msgid "Length must be %i"
 msgstr "Длина должна составлять %i"
 
-#: ../wxui/query_sources.py:324 ../wxui/query_sources.py:524
+#: ../wxui/query_sources.py:324 ../wxui/query_sources.py:532
 msgid "Limit Bands"
 msgstr "Ограничение полос частот"
 
@@ -1798,11 +1811,11 @@ msgstr "Ограничение полос частот"
 msgid "Limit Modes"
 msgstr "Ограничение режимов"
 
-#: ../wxui/query_sources.py:539
+#: ../wxui/query_sources.py:547
 msgid "Limit Status"
 msgstr "Ограничение состояния"
 
-#: ../wxui/query_sources.py:310 ../wxui/query_sources.py:570
+#: ../wxui/query_sources.py:310 ../wxui/query_sources.py:578
 msgid "Limit results to this distance (km) from coordinates"
 msgstr "Ограничить результаты этим расстоянием (км) от координат"
 
@@ -1838,7 +1851,7 @@ msgstr ""
 msgid "Loading settings"
 msgstr "Загрузка параметров"
 
-#: ../wxui/query_sources.py:304 ../wxui/query_sources.py:565
+#: ../wxui/query_sources.py:304 ../wxui/query_sources.py:573
 msgid "Longitude"
 msgstr "Долгота"
 
@@ -1860,7 +1873,7 @@ msgstr "Чтобы редактировать ячейку памяти, нео�
 msgid "Memory {num} not in bank {bank}"
 msgstr "Ячейка памяти {num} отсутствует в банке {bank}"
 
-#: ../wxui/query_sources.py:516 ../wxui/memedit.py:510
+#: ../wxui/query_sources.py:524 ../wxui/memedit.py:510
 msgid "Mode"
 msgstr "Режим"
 
@@ -1868,7 +1881,7 @@ msgstr "Режим"
 msgid "Model"
 msgstr "Модель"
 
-#: ../wxui/query_sources.py:398
+#: ../wxui/query_sources.py:404
 msgid "Modes"
 msgstr "Режимы"
 
@@ -1922,7 +1935,7 @@ msgstr "В задаче %i не найдены модули"
 msgid "No results"
 msgstr "Нет результатов"
 
-#: ../sources/repeaterbook.py:284
+#: ../sources/repeaterbook.py:290
 msgid "No results!"
 msgstr "Нет результатов!"
 
@@ -1934,7 +1947,7 @@ msgstr "Число"
 msgid "Offset"
 msgstr "Смещение"
 
-#: ../wxui/query_sources.py:322 ../wxui/query_sources.py:522
+#: ../wxui/query_sources.py:322 ../wxui/query_sources.py:530
 msgid "Only certain bands"
 msgstr "Только некоторые полосы частот"
 
@@ -1946,7 +1959,7 @@ msgstr "Только некоторые режимы"
 msgid "Only memory tabs may be exported"
 msgstr "Можно экспортировать только вкладки памяти"
 
-#: ../wxui/query_sources.py:533
+#: ../wxui/query_sources.py:541
 msgid "Only working repeaters"
 msgstr "Только работающие репитеры"
 
@@ -1982,15 +1995,15 @@ msgstr "Открыть в новом окне"
 msgid "Open stock config directory"
 msgstr "Открыть каталог предустановленной конфигурации"
 
-#: ../wxui/query_sources.py:300 ../wxui/query_sources.py:561
+#: ../wxui/query_sources.py:300 ../wxui/query_sources.py:569
 msgid "Optional: -122.0000"
 msgstr "Опционально: -122.0000"
 
-#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:569
+#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:577
 msgid "Optional: 100"
 msgstr "Опционально: 100"
 
-#: ../wxui/query_sources.py:294 ../wxui/query_sources.py:555
+#: ../wxui/query_sources.py:294 ../wxui/query_sources.py:563
 msgid "Optional: 45.0000"
 msgstr "Опционально: 45.0000"
 
@@ -2169,7 +2182,7 @@ msgstr ""
 "когда выбранная модель не является американской, а станция является. "
 "Выберите правильную модель и повторите попытку."
 
-#: ../wxui/query_sources.py:828
+#: ../wxui/query_sources.py:836
 msgid "RadioReference Canada requires a login before you can query"
 msgstr "RadioReference Canada запрашивает вход перед выполнением запроса"
 
@@ -2246,11 +2259,11 @@ msgstr "Угроза безопасности"
 msgid "Select Bandplan..."
 msgstr "Выбрать частотный план..."
 
-#: ../wxui/query_sources.py:377 ../wxui/query_sources.py:590
+#: ../wxui/query_sources.py:383 ../wxui/query_sources.py:598
 msgid "Select Bands"
 msgstr "Выбор полос частот"
 
-#: ../wxui/query_sources.py:398
+#: ../wxui/query_sources.py:404
 msgid "Select Modes"
 msgstr "Выбор режимов"
 
@@ -2313,7 +2326,7 @@ msgstr "Упорядочить ячейки памяти"
 msgid "Sorting"
 msgstr "Сортировка"
 
-#: ../wxui/query_sources.py:456
+#: ../wxui/query_sources.py:464
 msgid "State"
 msgstr "Область"
 
@@ -2405,16 +2418,16 @@ msgstr ""
 "полностью, создайте отчёт об ошибке и приложите к нему журнал отладки, чтобы "
 "мы могли добавить соответствующую поддержку для других версий."
 
-#: ../drivers/radtel_rt490.py:1317 ../drivers/radtel_rt490.py:1319
-#: ../drivers/radtel_rt490.py:1321
+#: ../drivers/radtel_rt490.py:1321 ../drivers/radtel_rt490.py:1323
+#: ../drivers/radtel_rt490.py:1325
 msgid "This driver is in development and should be considered as experimental."
 msgstr ""
 
-#: ../drivers/th_uv88.py:495
+#: ../drivers/th_uv88.py:553
 msgid "This is an early stage beta driver\n"
 msgstr "Это ранняя бета-версия драйвера\n"
 
-#: ../drivers/th_uv88.py:497
+#: ../drivers/th_uv88.py:555
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr "Это ранняя бета-версия драйвера — отправляйте на свой страх и риск\n"
 
@@ -2534,7 +2547,7 @@ msgstr "Невозможно обнаружить %s в этой системе"
 msgid "Unable to set %s on this memory"
 msgstr "Невозможно установить %s для этой ячейки памяти"
 
-#: ../wxui/query_sources.py:680
+#: ../wxui/query_sources.py:688
 msgid "United States"
 msgstr "Соединённые Штаты"
 

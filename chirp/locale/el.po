@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-24 10:51-0800\n"
+"POT-Creation-Date: 2023-11-27 14:59-0800\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -635,7 +635,7 @@ msgstr "Σχετικά"
 msgid "About CHIRP"
 msgstr "Σχετικά με το CHIRP"
 
-#: ../wxui/query_sources.py:355
+#: ../wxui/query_sources.py:361
 msgid "All"
 msgstr "Όλες"
 
@@ -647,7 +647,7 @@ msgstr "Όλα τα αρχεία"
 msgid "All supported formats|"
 msgstr "Όλοι οι τύποι αρχείων|"
 
-#: ../wxui/query_sources.py:283 ../wxui/query_sources.py:347
+#: ../wxui/query_sources.py:283 ../wxui/query_sources.py:353
 msgid "Amateur"
 msgstr "Ραδιοερασιτέχνη"
 
@@ -667,7 +667,7 @@ msgstr ""
 msgid "Bandplan"
 msgstr "Χάρτης συχνοτήτων"
 
-#: ../wxui/query_sources.py:377 ../wxui/query_sources.py:590
+#: ../wxui/query_sources.py:383 ../wxui/query_sources.py:598
 msgid "Bands"
 msgstr "Μπάντες"
 
@@ -687,7 +687,7 @@ msgstr "Περιηγητής"
 msgid "Building Radio Browser"
 msgstr "Δημιουργία Περιηγητή Πομποδεκτών"
 
-#: ../wxui/query_sources.py:681
+#: ../wxui/query_sources.py:689
 msgid "Canada"
 msgstr "Καναδάς"
 
@@ -735,7 +735,7 @@ msgstr "Επιλογή duplex"
 msgid "Choose the module to load from issue %i:"
 msgstr ""
 
-#: ../wxui/query_sources.py:453
+#: ../wxui/query_sources.py:461
 msgid "City"
 msgstr "Πόλη"
 
@@ -796,12 +796,16 @@ msgid ""
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
 msgstr ""
 
+#: ../wxui/query_sources.py:331
+msgid "Convert to FM"
+msgstr ""
+
 #: ../wxui/memedit.py:1569
 msgid "Copy"
 msgstr ""
 
-#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:459
-#: ../wxui/query_sources.py:549
+#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:467
+#: ../wxui/query_sources.py:557
 msgid "Country"
 msgstr "Χώρα"
 
@@ -869,6 +873,11 @@ msgstr ""
 msgid "Digital Code"
 msgstr "Ψηφιακός Κωδικός"
 
+#: ../wxui/query_sources.py:335
+#, fuzzy
+msgid "Digital Modes"
+msgstr "Ψηφιακός Κωδικός"
+
 #: ../wxui/main.py:1678
 #, fuzzy
 msgid "Disable reporting"
@@ -878,7 +887,7 @@ msgstr "Αναφορές απενεργοποιημένες"
 msgid "Disabled"
 msgstr ""
 
-#: ../wxui/query_sources.py:312 ../wxui/query_sources.py:572
+#: ../wxui/query_sources.py:312 ../wxui/query_sources.py:580
 msgid "Distance"
 msgstr "Απόσταση"
 
@@ -907,6 +916,10 @@ msgstr "Λήψη Από Πομποδέκτη"
 #: ../wxui/clone.py:515
 msgid "Download instructions"
 msgstr "Οδηγίες λήψης"
+
+#: ../wxui/query_sources.py:333
+msgid "Dual-mode digital repeaters that support analog will be shown as FM"
+msgstr ""
 
 #: ../wxui/memedit.py:394
 msgid "Duplex"
@@ -986,7 +999,7 @@ msgstr "Εξαγωγή σε αρχείο μορφής .CSV"
 msgid "Extra"
 msgstr "Περισσότερα"
 
-#: ../wxui/query_sources.py:604
+#: ../wxui/query_sources.py:612
 msgid ""
 "FREE repeater database, which provides most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
@@ -1084,7 +1097,7 @@ msgstr ""
 #: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
 #: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
 #: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
-#: ../drivers/baofeng_uv17Pro.py:452 ../drivers/bf_t1.py:483
+#: ../drivers/baofeng_uv17Pro.py:445 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1199,7 +1212,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:334 ../drivers/gmrsuv1.py:398
 #: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
 #: ../drivers/uv6r.py:348 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
-#: ../drivers/baofeng_uv17Pro.py:458
+#: ../drivers/baofeng_uv17Pro.py:451
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1226,8 +1239,8 @@ msgstr ""
 msgid "Frequency"
 msgstr "Συχνότητα"
 
-#: ../wxui/query_sources.py:284 ../wxui/query_sources.py:338
-#: ../wxui/query_sources.py:429
+#: ../wxui/query_sources.py:284 ../wxui/query_sources.py:344
+#: ../wxui/query_sources.py:436
 msgid "GMRS"
 msgstr "GMRS"
 
@@ -1266,7 +1279,7 @@ msgid "Hide empty memories"
 msgstr "Αντικατάσταση μνημών;"
 
 #: ../wxui/query_sources.py:295 ../wxui/query_sources.py:301
-#: ../wxui/query_sources.py:556 ../wxui/query_sources.py:562
+#: ../wxui/query_sources.py:564 ../wxui/query_sources.py:570
 msgid "If set, sort results by distance from these coordinates"
 msgstr ""
 
@@ -1344,7 +1357,7 @@ msgstr ""
 msgid "LIVE"
 msgstr "LIVE"
 
-#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:564
+#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:572
 msgid "Latitude"
 msgstr "Γεωγραφικό πλάτος"
 
@@ -1353,7 +1366,7 @@ msgstr "Γεωγραφικό πλάτος"
 msgid "Length must be %i"
 msgstr "Το μήκος πρέπει να είναι %i"
 
-#: ../wxui/query_sources.py:324 ../wxui/query_sources.py:524
+#: ../wxui/query_sources.py:324 ../wxui/query_sources.py:532
 msgid "Limit Bands"
 msgstr "Περιορισμός Μπαντών"
 
@@ -1361,12 +1374,12 @@ msgstr "Περιορισμός Μπαντών"
 msgid "Limit Modes"
 msgstr ""
 
-#: ../wxui/query_sources.py:539
+#: ../wxui/query_sources.py:547
 #, fuzzy
 msgid "Limit Status"
 msgstr "Περιορισμός Μπαντών"
 
-#: ../wxui/query_sources.py:310 ../wxui/query_sources.py:570
+#: ../wxui/query_sources.py:310 ../wxui/query_sources.py:578
 msgid "Limit results to this distance (km) from coordinates"
 msgstr ""
 
@@ -1399,7 +1412,7 @@ msgstr ""
 msgid "Loading settings"
 msgstr "Φόρτωση ρυθμίσεων"
 
-#: ../wxui/query_sources.py:304 ../wxui/query_sources.py:565
+#: ../wxui/query_sources.py:304 ../wxui/query_sources.py:573
 msgid "Longitude"
 msgstr "Γεωγραφικό μήκος"
 
@@ -1421,7 +1434,7 @@ msgstr "Η μνήμη πρέπει να βρίσκεται σε ομάδα γι�
 msgid "Memory {num} not in bank {bank}"
 msgstr "Η μνήμη {num} δεν βρίσκεται στην ομάδα μνημών {bank}"
 
-#: ../wxui/query_sources.py:516 ../wxui/memedit.py:510
+#: ../wxui/query_sources.py:524 ../wxui/memedit.py:510
 #, fuzzy
 msgid "Mode"
 msgstr "Λειτουργία"
@@ -1430,7 +1443,7 @@ msgstr "Λειτουργία"
 msgid "Model"
 msgstr "Μοντέλο"
 
-#: ../wxui/query_sources.py:398
+#: ../wxui/query_sources.py:404
 msgid "Modes"
 msgstr ""
 
@@ -1486,7 +1499,7 @@ msgstr ""
 msgid "No results"
 msgstr "Κανένα αποτέλεσμα!"
 
-#: ../sources/repeaterbook.py:284
+#: ../sources/repeaterbook.py:290
 msgid "No results!"
 msgstr "Κανένα αποτέλεσμα!"
 
@@ -1498,7 +1511,7 @@ msgstr "Αριθμός"
 msgid "Offset"
 msgstr ""
 
-#: ../wxui/query_sources.py:322 ../wxui/query_sources.py:522
+#: ../wxui/query_sources.py:322 ../wxui/query_sources.py:530
 msgid "Only certain bands"
 msgstr "Μόνο ορισμένες μπάντες"
 
@@ -1510,7 +1523,7 @@ msgstr ""
 msgid "Only memory tabs may be exported"
 msgstr "Μόνο οι καρτέλες μνημών μπορούν να εξαχθούν"
 
-#: ../wxui/query_sources.py:533
+#: ../wxui/query_sources.py:541
 msgid "Only working repeaters"
 msgstr ""
 
@@ -1547,15 +1560,15 @@ msgstr ""
 msgid "Open stock config directory"
 msgstr "Άνοιγμα προεπιλεγμένων ρυθμίσεων"
 
-#: ../wxui/query_sources.py:300 ../wxui/query_sources.py:561
+#: ../wxui/query_sources.py:300 ../wxui/query_sources.py:569
 msgid "Optional: -122.0000"
 msgstr "Προαιρετικό: -122.0000"
 
-#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:569
+#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:577
 msgid "Optional: 100"
 msgstr "Προαιρετικό: 100"
 
-#: ../wxui/query_sources.py:294 ../wxui/query_sources.py:555
+#: ../wxui/query_sources.py:294 ../wxui/query_sources.py:563
 msgid "Optional: 45.0000"
 msgstr "Προαιρετικό: 45.0000"
 
@@ -1708,7 +1721,7 @@ msgid ""
 "and try again."
 msgstr ""
 
-#: ../wxui/query_sources.py:828
+#: ../wxui/query_sources.py:836
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 
@@ -1784,11 +1797,11 @@ msgstr ""
 msgid "Select Bandplan..."
 msgstr "Επιλογή χάρτη συχνοτήτων"
 
-#: ../wxui/query_sources.py:377 ../wxui/query_sources.py:590
+#: ../wxui/query_sources.py:383 ../wxui/query_sources.py:598
 msgid "Select Bands"
 msgstr "Επιλογή Μπαντών"
 
-#: ../wxui/query_sources.py:398
+#: ../wxui/query_sources.py:404
 msgid "Select Modes"
 msgstr ""
 
@@ -1853,7 +1866,7 @@ msgstr "Αντικατάσταση μνημών;"
 msgid "Sorting"
 msgstr "Εκτύπωση"
 
-#: ../wxui/query_sources.py:456
+#: ../wxui/query_sources.py:464
 msgid "State"
 msgstr "Πολιτεία"
 
@@ -1919,16 +1932,16 @@ msgid ""
 "add support for the other revisions."
 msgstr ""
 
-#: ../drivers/radtel_rt490.py:1317 ../drivers/radtel_rt490.py:1319
-#: ../drivers/radtel_rt490.py:1321
+#: ../drivers/radtel_rt490.py:1321 ../drivers/radtel_rt490.py:1323
+#: ../drivers/radtel_rt490.py:1325
 msgid "This driver is in development and should be considered as experimental."
 msgstr ""
 
-#: ../drivers/th_uv88.py:495
+#: ../drivers/th_uv88.py:553
 msgid "This is an early stage beta driver\n"
 msgstr ""
 
-#: ../drivers/th_uv88.py:497
+#: ../drivers/th_uv88.py:555
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr ""
 
@@ -2038,7 +2051,7 @@ msgstr ""
 msgid "Unable to set %s on this memory"
 msgstr "Πατήστε enter για καταχώρηση στη μνήμη"
 
-#: ../wxui/query_sources.py:680
+#: ../wxui/query_sources.py:688
 msgid "United States"
 msgstr "Ηνωμένες Πολιτείες"
 

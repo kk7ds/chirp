@@ -328,6 +328,12 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self.Bind(wx.EVT_CHECKBOX, self._select_modes, self._modefilter)
         self._add_grid(grid, _('Limit Modes'), self._modefilter)
 
+        self._fmconv = wx.CheckBox(panel, label=_('Convert to FM'))
+        self._fmconv.SetValue(CONF.get_bool('fmconv', 'repeaterbook'))
+        self._fmconv.SetToolTip(_('Dual-mode digital repeaters that support '
+                                  'analog will be shown as FM'))
+        self._add_grid(grid, _('Digital Modes'), self._fmconv)
+
         self._state_selected(None)
         self._service_selected(None)
 
@@ -412,6 +418,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         CONF.set('state', self._state.GetStringSelection(), 'repeaterbook')
         CONF.set('country', self._country.GetStringSelection(), 'repeaterbook')
         CONF.set('service', self._service.GetStringSelection(), 'repeaterbook')
+        CONF.set_bool('fmconv', self._fmconv.IsChecked(), 'repeaterbook')
         self.result_radio = repeaterbook.RepeaterBook()
         super().do_query()
 
@@ -428,6 +435,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
             'modes': self._limit_modes,
             'service': 'gmrs' if service == _('GMRS') else '',
             'service_display': self._service.GetStringSelection(),
+            'fmconv': self._fmconv.IsChecked(),
         }
 
 
