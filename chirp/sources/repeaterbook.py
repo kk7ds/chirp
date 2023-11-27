@@ -215,6 +215,7 @@ class RepeaterBook(base.NetworkResultRadio):
         search_filter = params.pop('filter', '')
         bands = params.pop('bands', [])
         modes = params.pop('modes', [])
+        fmconv = params.pop('fmconv', False)
         data_file = self.get_data(status,
                                   params.get('country'),
                                   params.pop('state'),
@@ -273,6 +274,11 @@ class RepeaterBook(base.NetworkResultRadio):
                 continue
             if not m:
                 continue
+            # Convert any non-FM repeater to FM if user requested it
+            if m.mode != 'FM' and fmconv and item.get('FM Analog') == 'Yes':
+                LOG.debug('Converting repeater %r from %r to FM: %s',
+                          item['Rptr ID'], m.mode, m.comment)
+                m.mode = 'FM'
             if modes and m.mode not in modes:
                 continue
             self._memories.append(m)
