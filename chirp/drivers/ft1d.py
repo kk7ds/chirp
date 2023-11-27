@@ -2358,7 +2358,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 ssid = int(ssid) % 16
             except ValueError:
                 ssid = default_ssid
-        setattr(obj, "callsign", cls._add_ff_pad(callsign, 6))
+        setattr(obj, "callsign", cls._add_ff_pad(callsign.encode(), 6))
         if ssid is not None:
             setattr(obj, "ssid", ssid)
 
