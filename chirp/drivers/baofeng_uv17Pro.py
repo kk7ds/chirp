@@ -789,10 +789,14 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                                                         _mem.ani.aniid]))
             dtmfe.append(rs)
 
+        if _mem.settings.hangup >= len(LIST_HANGUPTIME):
+            val = 0
+        else:
+            val = _mem.settings.hangup
         rs = RadioSetting("settings.hangup", "Hang-up time",
                           RadioSettingValueList(LIST_HANGUPTIME,
                                                 LIST_HANGUPTIME[
-                                                    _mem.settings.hangup]))
+                                                    val]))
         dtmfe.append(rs)
 
         return top
