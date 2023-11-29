@@ -1587,10 +1587,10 @@ class ChirpMain(wx.Frame):
 
         self.SetBackgroundColour((0xEA, 0x62, 0x62, 0xFF))
 
-        with open(filename) as module:
+        with open(filename, 'rb') as module:
             code = module.read()
         sha = hashlib.sha256()
-        sha.update(code.encode())
+        sha.update(code)
         LOG.info('Loading module %s SHA256 %s' % (filename, sha.hexdigest()))
 
         import importlib.util
