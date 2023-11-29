@@ -351,6 +351,7 @@
 | <a name="TYT_TH-350"></a> TYT_TH-350 |  |  | Yes | 0.07% |
 | <a name="TYT_TH-7800"></a> TYT_TH-7800 | [Reported working](https://chirp.danplanet.com/issues/10585) | 4-Jul-2023 | Yes | 0.13% |
 | <a name="TYT_TH-7800_File"></a> TYT_TH-7800_File |  |  |  | 0.00% |
+| <a name="TYT_TH-8600"></a> TYT_TH-8600 | [Reported working](https://chirp.danplanet.com/issues/4851)  |25-Nov-2023  | Yes | 0.00% |
 | <a name="TYT_TH-9800"></a> TYT_TH-9800 | [Reported working](https://chirp.danplanet.com/issues/10755) | 30-Jul-2023 | Yes | 0.65% |
 | <a name="TYT_TH-9800_File"></a> TYT_TH-9800_File |  |  | Yes | 0.00% |
 | <a name="TYT_TH-UV3R"></a> TYT_TH-UV3R |  |  | Yes | 0.04% |
