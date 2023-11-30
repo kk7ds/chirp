@@ -112,7 +112,7 @@ def _read_block(radio, start, size, first_command=False):
     msg = struct.pack(">BHB", ord("S"), start, size)
     radio.pipe.write(msg)
 
-    if first_command is False:
+    if radio._ack_block and first_command is False:
         ack = radio.pipe.read(1)
         if ack != b"\x06":
             raise errors.RadioError(
