@@ -124,7 +124,7 @@ class UV6R(baofeng_common.BaofengCommonHT):
     SCODE_LIST = LIST_SCODE
 
     MEM_FORMAT = """
-    #seekto 0x0000;
+    // #seekto 0x0000;
     struct {
       lbcd rxfreq[4];
       lbcd txfreq[4];
@@ -315,7 +315,7 @@ class UV6R(baofeng_common.BaofengCommonHT):
       char line2[8];
     } sixpoweron_msg;
 
-    #seekto 0x1FE0;
+    // #seekto 0x1FE0;
     struct {
       char line1[7];
       char line2[7];

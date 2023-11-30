@@ -525,9 +525,9 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
         return rf
 
     def _is_txinh(self, _mem):
-        raw_tx = ""
+        raw_tx = b""
         for i in range(0, 4):
-            raw_tx += _mem.txfreq[i].get_raw(asbytes=False)
+            raw_tx += _mem.txfreq[i].get_raw()
         return raw_tx == "\xFF\xFF\xFF\xFF"
 
     def get_memory(self, number):
@@ -537,7 +537,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw(asbytes=False)[0] == "\xff":
+        if _mem.get_raw()[:1] == b"\xff":
             mem.empty = True
             return mem
 
