@@ -1330,9 +1330,22 @@ class HI8811Radio(RT470LRadio):
 
     # ==========
     # Notice to developers:
-    # The HI-8811 support in this driver is currently based upon v1.17
-    # firmware.
+    # The HI-8811 support in this driver is currently based upon...
+    # - v1.17 firmware (original pcb)
+    # - v2.00 firmware (pcb2)
     # ==========
+
+    # original pcb
+    _fingerprint_pcb1 = [b"\x00\x00\x00\xfe\x00\x20\xAC\x04",
+                         b"\x00\x00\x00\x20\x00\x20\xCC\x04",  # fw v1.17
+                         b"\x00\x00\x00\x20\x00\x20\x07\x00",
+                         ]
+
+    # pcb 2
+    _fingerprint_pcb2 = [b"\x00\x00\x00\x28\x00\x20\xD4\x04",  # fw v2.00
+                         ]
+
+    _fingerprint = _fingerprint_pcb1 + _fingerprint_pcb2
 
 
 @directory.register
