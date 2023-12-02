@@ -220,28 +220,6 @@ struct {
   char line2[7];
 } firmware_msg;
 
-struct limit {
-  u8 enable;
-  bbcd lower[2];
-  bbcd upper[2];
-};
-
-#seekto 0x1908;
-struct {
-  struct limit vhf;
-  struct limit uhf;
-} limits_new;
-
-#seekto 0x1910;
-struct {
-  u8 unknown1[2];
-  struct limit vhf;
-  u8 unknown2;
-  u8 unknown3[8];
-  u8 unknown4[2];
-  struct limit uhf;
-} limits_old;
-
 struct squelch {
   u8 sql0;
   u8 sql1;
@@ -269,6 +247,28 @@ struct {
   u8 unknown[6];
   struct squelch uhf;
 } squelch_old;
+
+struct limit {
+  u8 enable;
+  bbcd lower[2];
+  bbcd upper[2];
+};
+
+#seekto 0x1908;
+struct {
+  struct limit vhf;
+  struct limit uhf;
+} limits_new;
+
+#seekto 0x1910;
+struct {
+  u8 unknown1[2];
+  struct limit vhf;
+  u8 unknown2;
+  u8 unknown3[8];
+  u8 unknown4[2];
+  struct limit uhf;
+} limits_old;
 
 """
 
@@ -908,9 +908,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         return repr(self._memobj.memory[number])
 
     def _is_txinh(self, _mem):
-        raw_tx = ""
+        raw_tx = b""
         for i in range(0, 4):
-            raw_tx += _mem.txfreq[i].get_raw(asbytes=False)
+            raw_tx += _mem.txfreq[i].get_raw()
         return raw_tx == "\xFF\xFF\xFF\xFF"
 
     def _get_mem(self, number):
@@ -926,7 +926,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw(asbytes=False)[0] == "\xff":
+        if _mem.get_raw()[:1] == b"\xff":
             mem.empty = True
             return mem
 
