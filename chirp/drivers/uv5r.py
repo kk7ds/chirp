@@ -675,12 +675,13 @@ def _do_upload(radio):
             # Uploading full Aux mem area is permitted
             aux_matched = True
 
-        if has_dropped_byte and not aux_matched:
-            msg = ("Image not supported by radio. You must...\n"
-                   "1. Download from radio.\n"
-                   "2. Make changes.\n"
-                   "3. Upload back to same radio.")
-            raise errors.RadioError(msg)
+        if not radio._all_range_flag:
+            if has_dropped_byte and not aux_matched:
+                msg = ("Image not supported by radio. You must...\n"
+                       "1. Download from radio.\n"
+                       "2. Make changes.\n"
+                       "3. Upload back to same radio.")
+                raise errors.RadioError(msg)
 
         # default ranges
         _ranges_main_default = [
