@@ -1,0 +1,2128 @@
+# Japanese translations for CHIRP package
+# Copyright (C) 2023 Dan Smith <chirp@f.danplanet.com>
+# This file is distributed under the same license as the CHIRP package.
+# weboo <weboo@users.noreply.github.com>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CHIRP\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-12-04 13:02+0900\n"
+"PO-Revision-Date: 2023-12-03 11:04+0900\n"
+"Last-Translator: weboo <weboo@users.noreply.github.com>\n"
+"Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
+"Language: ja_JP\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../drivers/ft2d.py:97
+msgid ""
+" 1. Turn radio off.\n"
+" 2. Connect cable to DATA terminal.\n"
+" 3. Press and hold in [DISP] key while turning on radio\n"
+"      (\"CLONE\" will appear on radio LCD).\n"
+" 4. Press [RECEIVE] screen button\n"
+"      (\"-WAIT-\" will appear on radio LCD).\n"
+"5. Finally, press OK button below.\n"
+msgstr ""
+
+#: ../wxui/query_sources.py:59
+#, python-format
+msgid "%(value)s must be between %(min)i and %(max)i"
+msgstr ""
+
+#: ../wxui/memedit.py:1584
+#, python-format
+msgid "%i Memories"
+msgstr ""
+
+#: ../wxui/memedit.py:1591
+#, python-format
+msgid "%i Memories and shift all up"
+msgstr ""
+
+#: ../wxui/memedit.py:1587
+#, python-format
+msgid "%i Memories and shift block up"
+msgstr ""
+
+#: ../wxui/main.py:1364
+#, python-format
+msgid "%s has not been saved. Save before closing?"
+msgstr "%s は保存されていません。保存しますか？"
+
+#: ../wxui/radioinfo.py:49
+msgid "(none)"
+msgstr ""
+
+#: ../wxui/memedit.py:1915
+#, python-format
+msgid "...and %i more"
+msgstr ""
+
+#: ../drivers/alinco.py:606 ../drivers/alinco.py:615
+msgid ""
+"1. Ensure your firmware version is 4_10 or higher\n"
+"2. Turn radio off\n"
+"3. Connect your interface cable\n"
+"4. Turn radio on\n"
+"5. Press and release PTT 3 times while holding MONI key\n"
+"6. Supported baud rates: 57600 (default) and 19200\n"
+"   (rotate dial while holding MONI to change)\n"
+"7. Click OK\n"
+msgstr ""
+
+#: ../drivers/ft2900.py:1228
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"A/N LOW\" button, turn radio on.\n"
+"4. <b>After clicking OK</b>, press \"SET MHz\" to send image.\n"
+msgstr ""
+
+#: ../drivers/ft2900.py:1233
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"A/N LOW\" button, turn radio on.\n"
+"4. Press \"MW D/MR\" to receive image.\n"
+"5. Make sure display says \"-WAIT-\" (see note below if not)\n"
+"6. Click OK to dismiss this dialog and start transfer.\n"
+"Note: if you don't see \"-WAIT-\" at step 5, try cycling\n"
+"      power and pressing and holding red \"*L\" button to unlock\n"
+"      radio, then start back at step 1.\n"
+msgstr ""
+
+#: ../drivers/ft7100.py:1127
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"TONE\" and \"REV\" buttons, turn radio on.\n"
+"4. <b>After clicking OK</b>, press \"TONE\" to send image.\n"
+msgstr ""
+
+#: ../drivers/ft7100.py:1132
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"TONE\" and \"REV\" buttons, turn radio on.\n"
+"4. Press \"REV\" to receive image.\n"
+"5. Make sure display says \"CLONE RX\" and green led is blinking\n"
+"6. Click OK to start transfer.\n"
+msgstr ""
+
+#: ../drivers/ft2800.py:206
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable\n"
+"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning "
+"it on\n"
+"4. Radio is in clone mode when TX/RX is flashing\n"
+"5. <b>After clicking OK</b>, press the MHz key on the radio to send image.\n"
+"    (\"TX\" will appear on the LCD). \n"
+msgstr ""
+
+#: ../drivers/ft2800.py:216
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable\n"
+"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning "
+"it on\n"
+"4. Radio is in clone mode when TX/RX is flashing\n"
+"5. Press the Low key on the radio (\"RX\" will appear on the LCD).\n"
+"6. Click OK."
+msgstr ""
+
+#: ../drivers/ft450d.py:431
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. <b>After clicking OK</b> here, press the [C.S.] key to\n"
+"    send image.\n"
+msgstr ""
+
+#: ../drivers/ft817.py:283
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. <b>After clicking OK</b>, press the [A] key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft450d.py:440
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Click OK here.\n"
+"    (\"Receiving\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft857.py:450
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Press the [A](RCV) key (\"receiving\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft817.py:291
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Press the [C] key (\"RX\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft857.py:441
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to CAT/LINEAR jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. <b>After clicking OK</b>,\n"
+"     press the [C](SEND) key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft7800.py:836
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the \"left\" [V/M] key while turning the\n"
+"     radio on.\n"
+"4. Rotate the \"right\" DIAL knob to select \"CLONE START\".\n"
+"5. Press the [SET] key. The display will disappear\n"
+"     for a moment, then the \"CLONE\" notation will appear.\n"
+"6. <b>After clicking OK</b>, press the \"left\" [V/M] key to\n"
+"     send image.\n"
+msgstr ""
+
+#: ../drivers/ft7800.py:846
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the \"left\" [V/M] key while turning the\n"
+"     radio on.\n"
+"4. Rotate the \"right\" DIAL knob to select \"CLONE START\".\n"
+"5. Press the [SET] key. The display will disappear\n"
+"     for a moment, then the \"CLONE\" notation will appear.\n"
+"6. Press the \"left\" [LOW] key (\"CLONE -RX-\" will appear on\n"
+"     the display).\n"
+msgstr ""
+
+#: ../drivers/vx8.py:584
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the [FW] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
+msgstr ""
+
+#: ../drivers/vx8.py:591
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the [FW] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft7800.py:283
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the [MHz(PRI)] key while turning the\n"
+"     radio on.\n"
+"4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
+"5. Press and hold in the [BAND(SET)] key. The display\n"
+"     will disappear for a moment, then the \"CLONE\" notation\n"
+"     will appear.\n"
+"6. Press the [LOW(ACC)] key (\"--RX--\" will appear on the display).\n"
+msgstr ""
+
+#: ../drivers/ft7800.py:272
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the [MHz(PRI)] key while turning the\n"
+" radio on.\n"
+"4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
+"5. Press and hold in the [BAND(SET)] key. The display\n"
+" will disappear for a moment, then the \"CLONE\" notation\n"
+" will appear.\n"
+"6. <b>After clicking OK</b>, press the [V/M(MW)] key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft2d.py:90
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold [DISP] key while turning on radio\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK here in chirp</b>,\n"
+"     press the [Send] screen button.\n"
+msgstr ""
+
+#: ../drivers/ft1d.py:898
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold in the [F] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft1d.py:905
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold in the [F] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [Dx] key (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ftm3200d.py:84
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [REV(DW)] key\n"
+"     to send image.\n"
+msgstr ""
+
+#: ../drivers/ftm3200d.py:92
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. Press the [MHz(SETUP)] key\n"
+"     (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ftm7250d.py:84
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC Jack.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [GM(AMS)] key\n"
+"     to send image.\n"
+msgstr ""
+
+#: ../drivers/ftm7250d.py:92
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC Jack.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. Press the [MHz(SETUP)] key\n"
+"     (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/vx5.py:317
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/EAR jack.\n"
+"3. Press and hold in the [F/W] key while turning the radio on\n"
+"    (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [VFO(DW)SC] key to receive\n"
+"    the image from the radio.\n"
+msgstr ""
+
+#: ../drivers/vx5.py:325
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/EAR jack.\n"
+"3. Press and hold in the [F/W] key while turning the radio on\n"
+"    (\"CLONE\" will appear on the display).\n"
+"4. Press the [MR(SKP)SC] key (\"CLONE WAIT\" will appear\n"
+"    on the LCD).\n"
+"5. Click OK to send image to radio.\n"
+msgstr ""
+
+#: ../drivers/ft50.py:195
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold [PTT] &amp; Knob while turning the\n"
+"     radio on.\n"
+"4. <b>After clicking OK</b>, press the [PTT] switch to send image.\n"
+msgstr ""
+
+#: ../drivers/ft50.py:202
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold [PTT] &amp; Knob while turning the\n"
+"     radio on.\n"
+"4. Press the [MONI] switch (\"WAIT\" will appear on the LCD).\n"
+"5. Press OK.\n"
+msgstr ""
+
+#: ../drivers/vx6.py:369 ../drivers/vx3.py:373
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [F/W] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
+msgstr ""
+
+#: ../drivers/vx6.py:376 ../drivers/vx3.py:380
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [F/W] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [V/M] key (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/vx7.py:192
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [MON-F] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
+msgstr ""
+
+#: ../drivers/vx7.py:200
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [MON-F] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [V/M] key (\"CLONE WAIT\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft60.py:354
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [MONI] switch while turning the\n"
+"     radio on.\n"
+"4. Rotate the DIAL job to select \"F8 CLONE\".\n"
+"5. Press the [F/W] key momentarily.\n"
+"6. <b>After clicking OK</b>, hold the [PTT] switch\n"
+"     for one second to send image.\n"
+msgstr ""
+
+#: ../drivers/ft60.py:363
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [MONI] switch while turning the\n"
+"     radio on.\n"
+"4. Rotate the DIAL job to select \"F8 CLONE\".\n"
+"5. Press the [F/W] key momentarily.\n"
+"6. Press the [MONI] switch (\"--RX--\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/vx170.py:101
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [moni] key while turning the radio on.\n"
+"4. Select CLONE in menu, then press F. Radio restarts in clone mode.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"5. <b>After clicking OK</b>, briefly hold [PTT] key to send image.\n"
+"    (\"-TX-\" will appear on the LCD). \n"
+msgstr ""
+
+#: ../drivers/ft1802.py:96
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic jack.\n"
+"3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
+"4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft1802.py:103
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic jack.\n"
+"3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
+"4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft1500m.py:96
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic jack.\n"
+"3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
+"   while turning the radio on.\n"
+"4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft1500m.py:103
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic jack.\n"
+"3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
+"   while turning the radio on.\n"
+"4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/uv5r.py:824
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Turn radio on (volume may need to be set at 100%).\n"
+"5. Ensure that the radio is tuned to channel with no activity.\n"
+"6. Click OK to download image from device.\n"
+msgstr ""
+
+#: ../drivers/uv5r.py:832
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Turn radio on (volume may need to be set at 100%).\n"
+"5. Ensure that the radio is tuned to channel with no activity.\n"
+"6. Click OK to upload image to device.\n"
+msgstr ""
+
+#: ../drivers/uvb5.py:288 ../drivers/wouxun.py:214 ../drivers/tg_uv2p.py:233
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Turn radio on.\n"
+"5. Ensure that the radio is tuned to channel with no activity.\n"
+"6. Click OK to download image from device.\n"
+msgstr ""
+
+#: ../drivers/uvb5.py:296 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:241
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Turn radio on.\n"
+"5. Ensure that the radio is tuned to channel with no activity.\n"
+"6. Click OK to upload image to device.\n"
+msgstr ""
+
+#: ../drivers/yaesu_clone.py:241
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect data cable.\n"
+"3. Prepare radio for clone.\n"
+"4. <b>After clicking OK</b>, press the key to send image.\n"
+msgstr ""
+
+#: ../drivers/yaesu_clone.py:246
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect data cable.\n"
+"3. Prepare radio for clone.\n"
+"4. Press the key to receive the image.\n"
+msgstr ""
+
+#: ../drivers/ft90.py:195
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect mic and hold [ACC] on mic while powering on.\n"
+"    (\"CLONE\" will appear on the display)\n"
+"3. Replace mic with PC programming cable.\n"
+"4. <b>After clicking OK</b>, press the [SET] key to send image.\n"
+msgstr ""
+
+#: ../drivers/ft90.py:202
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect mic and hold [ACC] on mic while powering on.\n"
+"    (\"CLONE\" will appear on the display)\n"
+"3. Replace mic with PC programming cable.\n"
+"4. Press the [DISP/SS] key\n"
+"    (\"R\" will appear on the lower left of LCD).\n"
+msgstr ""
+
+#: ../drivers/bj9900.py:102
+msgid ""
+"1. Turn radio off.\n"
+"2. Remove front head.\n"
+"3. Connect data cable to radio, use the same connector where\n"
+"     head was connected to, <b>not the mic connector</b>.\n"
+"4. Click OK.\n"
+msgstr ""
+
+#: ../drivers/vx170.py:112
+msgid ""
+"1. Turn radio off.\n"
+"3. Press and hold in the [moni] key while turning the radio on.\n"
+"4. Select CLONE in menu, then press F. Radio restarts in clone mode.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"5. Press the [moni] key (\"-RX-\" will appear on the LCD).\n"
+msgstr ""
+
+#: ../drivers/ft70.py:551
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Unclip battery.\n"
+"4. Press and hold in the [AMS] key and power key while clipping \n"
+" in back battery the(\"ADMS\" will appear on the display).\n"
+"5. <b>After clicking OK</b>, press the [BAND] key.\n"
+msgstr ""
+
+#: ../drivers/ft70.py:559
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Unclip battery.\n"
+"4. Press and hold in the [AMS] key and power key while clipping \n"
+" in back battery the(\"ADMS\" will appear on the display).\n"
+"5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD). OK</b>\n"
+" click <b>Then"
+msgstr ""
+
+#: ../drivers/uvk5.py:658
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Click OK to download image from device.\n"
+"\n"
+"It will may not work if you turn on the radio with the cable already "
+"attached\n"
+msgstr ""
+"1. 無線機の電源オン\n"
+"2. プログラミングケーブルを接続\n"
+"3. コネクタがしっかりと接続されているか確認\n"
+"4. OKボタンを押して無線機からダウンロードを開始\n"
+"\n"
+"ケーブルを接続した状態で電源オンにするとうまく動かない場合があります。\n"
+
+#: ../drivers/uvk5.py:665
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Click OK to upload the image to device.\n"
+"\n"
+"It will may not work if you turn on the radio with the cable already attached"
+msgstr ""
+"1. 無線機の電源オン\n"
+"2. プログラミングケーブルを接続\n"
+"3. コネクタがしっかりと接続されているか確認\n"
+"4. OKボタンを押して無線機へアップロードを開始\n"
+"\n"
+"ケーブルを接続した状態で電源オンにするとうまく動かない場合があります。"
+
+#: ../wxui/main.py:1772
+msgid ""
+"A new CHIRP version is available. Please visit the website as soon as "
+"possible to download it!"
+msgstr ""
+
+#: ../wxui/main.py:911
+msgid "About"
+msgstr "このアプリについて"
+
+#: ../wxui/main.py:1647
+msgid "About CHIRP"
+msgstr "CHIRP について"
+
+#: ../wxui/query_sources.py:361
+msgid "All"
+msgstr "すべて"
+
+#: ../wxui/main.py:1195
+msgid "All Files"
+msgstr ""
+
+#: ../wxui/main.py:1206
+msgid "All supported formats|"
+msgstr ""
+
+#: ../wxui/query_sources.py:283 ../wxui/query_sources.py:353
+msgid "Amateur"
+msgstr ""
+
+#: ../wxui/common.py:545 ../wxui/common.py:571
+msgid "An error has occurred"
+msgstr ""
+
+#: ../wxui/clone.py:112
+msgid "Applying settings"
+msgstr ""
+
+#: ../wxui/developer.py:515
+msgid "Available modules"
+msgstr ""
+
+#: ../wxui/main.py:1715
+msgid "Bandplan"
+msgstr "バンドプラン"
+
+#: ../wxui/query_sources.py:383 ../wxui/query_sources.py:598
+msgid "Bands"
+msgstr "バンド"
+
+#: ../wxui/main.py:210
+msgid "Banks"
+msgstr "バンク"
+
+#: ../wxui/developer.py:220
+msgid "Bin"
+msgstr ""
+
+#: ../wxui/main.py:221
+msgid "Browser"
+msgstr ""
+
+#: ../wxui/developer.py:409
+msgid "Building Radio Browser"
+msgstr ""
+
+#: ../wxui/query_sources.py:689
+msgid "Canada"
+msgstr ""
+
+#: ../wxui/common.py:434
+msgid ""
+"Changing this setting requires refreshing the settings from the image, which "
+"will happen now."
+msgstr ""
+
+#: ../wxui/memedit.py:1267
+#, python-format
+msgid ""
+"Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
+msgstr ""
+
+#: ../wxui/main.py:1194
+msgid "Chirp Image Files"
+msgstr ""
+
+#: ../wxui/memedit.py:342
+msgid "Choice Required"
+msgstr ""
+
+#: ../wxui/memedit.py:1246
+#, python-format
+msgid "Choose %s DTCS Code"
+msgstr ""
+
+#: ../wxui/memedit.py:1243
+#, python-format
+msgid "Choose %s Tone"
+msgstr ""
+
+#: ../wxui/memedit.py:1277
+msgid "Choose Cross Mode"
+msgstr ""
+
+#: ../wxui/memedit.py:1307
+msgid "Choose duplex"
+msgstr ""
+
+#: ../wxui/developer.py:514
+#, python-format
+msgid "Choose the module to load from issue %i:"
+msgstr ""
+
+#: ../wxui/query_sources.py:461
+msgid "City"
+msgstr ""
+
+#: ../drivers/ts590.py:670
+msgid ""
+"Click on the \"Special Channels\" toggle-button of the memory\n"
+"editor to see/set the EXT channels. P-VFO channels 100-109\n"
+"are considered Settings.\n"
+"Only a subset of the over 200 available radio settings\n"
+"are supported in this release.\n"
+"Ignore the beeps from the radio on upload and download.\n"
+msgstr ""
+
+#: ../drivers/ft817.py:360
+msgid "Clone completed, checking for spurious bytes"
+msgstr ""
+
+#: ../wxui/common.py:114
+msgid "Cloning"
+msgstr ""
+
+#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:508 ../drivers/ft817.py:343
+msgid "Cloning from radio"
+msgstr ""
+
+#: ../drivers/bj9900.py:160 ../drivers/ft450d.py:537 ../drivers/ft817.py:381
+msgid "Cloning to radio"
+msgstr ""
+
+#: ../wxui/main.py:989
+msgid "Close"
+msgstr "閉じる"
+
+#: ../wxui/main.py:990
+msgid "Close file"
+msgstr ""
+
+#: ../wxui/memedit.py:1644
+#, python-format
+msgid "Cluster %i memories"
+msgstr ""
+
+#: ../wxui/memedit.py:532
+msgid "Comment"
+msgstr "コメント"
+
+#: ../wxui/clone.py:218
+msgid "Communicate with radio"
+msgstr "無線機へ接続"
+
+#: ../wxui/clone.py:120
+msgid "Complete"
+msgstr "完了"
+
+#: ../drivers/tmd710.py:194 ../drivers/tmd710.py:197
+msgid ""
+"Connect your interface cable to the PC Port on the\n"
+"back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
+msgstr ""
+
+#: ../wxui/query_sources.py:331
+msgid "Convert to FM"
+msgstr ""
+
+#: ../wxui/memedit.py:1569
+msgid "Copy"
+msgstr "コピー"
+
+#: ../wxui/query_sources.py:281 ../wxui/query_sources.py:467
+#: ../wxui/query_sources.py:557
+msgid "Country"
+msgstr "国"
+
+#: ../wxui/memedit.py:524
+msgid "Cross mode"
+msgstr ""
+
+#: ../wxui/clone.py:408
+msgid "Custom Port"
+msgstr ""
+
+#: ../wxui/clone.py:36
+msgid "Custom..."
+msgstr ""
+
+#: ../wxui/memedit.py:1565
+msgid "Cut"
+msgstr "切り取り"
+
+#: ../wxui/memedit.py:455
+msgid "DTCS"
+msgstr ""
+
+#: ../wxui/memedit.py:501
+msgid ""
+"DTCS\n"
+"Polarity"
+msgstr ""
+
+#: ../wxui/memedit.py:2170
+msgid "DV Memory"
+msgstr ""
+
+#: ../wxui/main.py:1661
+msgid "Danger Ahead"
+msgstr ""
+
+#: ../wxui/developer.py:219
+msgid "Dec"
+msgstr ""
+
+#: ../wxui/memedit.py:1578
+msgid "Delete"
+msgstr "削除"
+
+#: ../wxui/main.py:916
+msgid "Developer Mode"
+msgstr "開発者モード"
+
+#: ../wxui/main.py:1667
+#, python-format
+msgid "Developer state is now %s. CHIRP must be restarted to take effect"
+msgstr ""
+
+#: ../wxui/memedit.py:1678
+msgid "Diff Raw Memories"
+msgstr ""
+
+#: ../wxui/memedit.py:2095
+msgid "Digital Code"
+msgstr ""
+
+#: ../wxui/query_sources.py:335
+msgid "Digital Modes"
+msgstr ""
+
+#: ../wxui/main.py:1678
+msgid "Disable reporting"
+msgstr "診断レポート送信を停止"
+
+#: ../wxui/memedit.py:431
+msgid "Disabled"
+msgstr ""
+
+#: ../wxui/query_sources.py:312 ../wxui/query_sources.py:580
+msgid "Distance"
+msgstr ""
+
+#: ../wxui/clone.py:168
+#, python-format
+msgid "Do not prompt again for %s"
+msgstr "次回 %s に接続する際にプロンプトを表示しない"
+
+#: ../wxui/bankedit.py:190
+msgid "Double-click to change bank name"
+msgstr ""
+
+#: ../wxui/main.py:991
+msgid "Download"
+msgstr "ダウンロード"
+
+#: ../wxui/main.py:992
+msgid "Download from radio"
+msgstr "無線機からダウンロード"
+
+#: ../wxui/main.py:823
+msgid "Download from radio..."
+msgstr "無線機からダウンロード..."
+
+#: ../wxui/clone.py:515
+msgid "Download instructions"
+msgstr "ダウンロード手順"
+
+#: ../wxui/query_sources.py:333
+msgid "Dual-mode digital repeaters that support analog will be shown as FM"
+msgstr ""
+
+#: ../wxui/memedit.py:394
+msgid "Duplex"
+msgstr ""
+
+#: ../wxui/memedit.py:2125
+#, python-format
+msgid "Edit details for %i memories"
+msgstr ""
+
+#: ../wxui/memedit.py:2123
+#, python-format
+msgid "Edit details for memory %i"
+msgstr ""
+
+#: ../wxui/main.py:860
+msgid "Enable Automatic Edits"
+msgstr "値を自動設定"
+
+#: ../wxui/memedit.py:431
+msgid "Enabled"
+msgstr ""
+
+#: ../wxui/memedit.py:250
+msgid "Enter Frequency"
+msgstr "周波数を入力"
+
+#: ../wxui/memedit.py:1294
+msgid "Enter Offset (MHz)"
+msgstr ""
+
+#: ../wxui/memedit.py:1286
+msgid "Enter TX Frequency (MHz)"
+msgstr ""
+
+#: ../wxui/bankedit.py:203
+#, python-format
+msgid "Enter a new name for bank %s:"
+msgstr ""
+
+#: ../wxui/clone.py:407
+msgid "Enter custom port:"
+msgstr ""
+
+#: ../wxui/common.py:322
+#, python-format
+msgid "Erased memory %s"
+msgstr ""
+
+#: ../wxui/settingsedit.py:132
+msgid "Error applying settings"
+msgstr ""
+
+#: ../wxui/clone.py:452
+msgid "Error communicating with radio"
+msgstr "無線機との通信エラー"
+
+#: ../wxui/clone.py:483
+msgid "Experimental driver"
+msgstr "実験的ドライバー"
+
+#: ../wxui/memedit.py:2053
+msgid "Export can only write CSV files"
+msgstr ""
+
+#: ../wxui/main.py:1349
+msgid "Export to CSV"
+msgstr "CSVにエクスポート"
+
+#: ../wxui/main.py:710
+msgid "Export to CSV..."
+msgstr "CSVにエクスポート..."
+
+#: ../wxui/memedit.py:2159
+msgid "Extra"
+msgstr ""
+
+#: ../wxui/query_sources.py:612
+msgid ""
+"FREE repeater database, which provides most up-to-date\n"
+"information about repeaters in Europe. No account is\n"
+"required."
+msgstr ""
+
+#: ../wxui/developer.py:417
+msgid "Failed to load radio browser"
+msgstr ""
+
+#: ../sources/przemienniki.py:57
+msgid "Failed to parse result"
+msgstr ""
+
+#: ../wxui/radioinfo.py:44
+msgid "Features"
+msgstr ""
+
+#: ../wxui/main.py:546
+#, python-format
+msgid "File does not exist: %s"
+msgstr ""
+
+#: ../wxui/main.py:1198 ../wxui/main.py:1279 ../wxui/main.py:1289
+#: ../wxui/main.py:1345 ../wxui/main.py:1613 ../wxui/main.py:1614
+msgid "Files"
+msgstr ""
+
+#: ../wxui/query_sources.py:318
+msgid "Filter"
+msgstr "フィルター"
+
+#: ../wxui/query_sources.py:316
+msgid "Filter results with location matching this string"
+msgstr ""
+
+#: ../wxui/main.py:1419
+msgid "Find"
+msgstr "検索"
+
+#: ../wxui/main.py:778
+msgid "Find Next"
+msgstr "次を検索"
+
+#: ../wxui/main.py:764
+msgid "Find..."
+msgstr "検索..."
+
+#: ../wxui/common.py:324
+#, python-format
+msgid "Finished radio job %s"
+msgstr ""
+
+#: ../drivers/ts590.py:677
+msgid ""
+"Follow these instructions to download the radio memory:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Download from radio: DO NOT mess with the radio\n"
+"during download!\n"
+"3 - Disconnect your interface cable\n"
+msgstr ""
+
+#: ../drivers/ts480.py:516
+msgid ""
+"Follow these instructions to download the radio memory:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Download from radio: Don't adjust any settings\n"
+"on the radio head!\n"
+"3 - Disconnect your interface cable\n"
+msgstr ""
+
+#: ../drivers/th_uv8000.py:518
+msgid ""
+"Follow these instructions to download the radio memory:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio, volume @ 50%\n"
+"4 - CHIRP Menu - Radio - Download from radio\n"
+msgstr ""
+
+#: ../drivers/ic2730.py:312
+msgid ""
+"Follow these instructions to download your config:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable to the Speaker-2 jack\n"
+"3 - Turn on your radio\n"
+"4 - Radio > Download from radio\n"
+"5 - Disconnect the interface cable! Otherwise there will be\n"
+"    no right-side audio!\n"
+msgstr ""
+
+#: ../drivers/mursv1.py:342 ../drivers/baofeng_wp970i.py:328
+#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
+#: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
+#: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
+#: ../drivers/baofeng_uv17Pro.py:437 ../drivers/bf_t1.py:483
+msgid ""
+"Follow these instructions to download your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the download of your radio data\n"
+msgstr ""
+
+#: ../drivers/tk760g.py:684
+msgid ""
+"Follow these instructions to download your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio (unlock it if password protected)\n"
+"4 - Click OK to start\n"
+msgstr ""
+
+#: ../drivers/tk760.py:342
+msgid ""
+"Follow these instructions to read your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Click OK to start\n"
+msgstr ""
+
+#: ../drivers/ts590.py:683
+msgid ""
+"Follow these instructions to upload the radio memory:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Upload to radio: DO NOT mess with the radio\n"
+"during upload!\n"
+"3 - Disconnect your interface cable\n"
+msgstr ""
+
+#: ../drivers/ts480.py:522
+msgid ""
+"Follow these instructions to upload the radio memory:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Upload to radio: Don't adjust any settings\n"
+"on the radio head!\n"
+"3 - Disconnect your interface cable\n"
+msgstr ""
+
+#: ../drivers/th_uv8000.py:524
+msgid ""
+"Follow these instructions to upload the radio memory:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio, volume @ 50%\n"
+"4 - CHIRP Menu - Radio - Upload to radio\n"
+msgstr ""
+
+#: ../drivers/ic2730.py:320
+msgid ""
+"Follow these instructions to upload your config:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable to the Speaker-2 jack\n"
+"3 - Turn on your radio\n"
+"4 - Radio > Upload to radio\n"
+"5 - Disconnect the interface cable, otherwise there will be\n"
+"    no right-side audio!\n"
+"6 - Cycle power on the radio to exit clone mode\n"
+msgstr ""
+
+#: ../drivers/btech.py:695 ../drivers/bf_t1.py:489
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the upload of your radio data\n"
+msgstr ""
+
+#: ../drivers/tk760g.py:690
+msgid ""
+"Follow these instructions to upload your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio (unlock it if password protected)\n"
+"4 - Click OK to start\n"
+msgstr ""
+
+#: ../drivers/tk760.py:348
+msgid ""
+"Follow these instructions to write your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Click OK to start\n"
+msgstr ""
+
+#: ../drivers/vgc.py:599 ../drivers/lt725uv.py:497
+msgid ""
+"Follow this instructions to download your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the download of your radio data\n"
+msgstr ""
+
+#: ../drivers/tk270.py:339
+msgid ""
+"Follow this instructions to read your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the download of your radio data\n"
+msgstr ""
+
+#: ../drivers/vgc.py:605 ../drivers/mursv1.py:348
+#: ../drivers/baofeng_wp970i.py:334 ../drivers/gmrsuv1.py:398
+#: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
+#: ../drivers/uv6r.py:348 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
+#: ../drivers/baofeng_uv17Pro.py:443
+msgid ""
+"Follow this instructions to upload your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the upload of your radio data\n"
+msgstr ""
+
+#: ../drivers/tk270.py:345
+msgid ""
+"Follow this instructions to write your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the upload of your radio data\n"
+msgstr ""
+
+#: ../wxui/memedit.py:125
+#, python-format
+msgid "Found empty list value for %(name)s: %(value)r"
+msgstr ""
+
+#: ../wxui/memedit.py:211
+msgid "Frequency"
+msgstr "周波数(MHz)"
+
+#: ../wxui/query_sources.py:284 ../wxui/query_sources.py:344
+#: ../wxui/query_sources.py:436
+msgid "GMRS"
+msgstr ""
+
+#: ../wxui/settingsedit.py:59
+msgid "Getting settings"
+msgstr ""
+
+#: ../wxui/memedit.py:853
+msgid "Goto Memory"
+msgstr ""
+
+#: ../wxui/memedit.py:852
+msgid "Goto Memory:"
+msgstr ""
+
+#: ../wxui/memedit.py:821
+msgid "Goto..."
+msgstr "行移動..."
+
+#: ../wxui/main.py:957
+msgid "Help"
+msgstr "ヘルプ"
+
+#: ../wxui/clone.py:35
+msgid "Help Me..."
+msgstr ""
+
+#: ../wxui/developer.py:218
+msgid "Hex"
+msgstr ""
+
+#: ../wxui/memedit.py:830
+msgid "Hide empty memories"
+msgstr "空のメモリーを非表示"
+
+#: ../wxui/query_sources.py:295 ../wxui/query_sources.py:301
+#: ../wxui/query_sources.py:564 ../wxui/query_sources.py:570
+msgid "If set, sort results by distance from these coordinates"
+msgstr ""
+
+#: ../wxui/main.py:1335
+msgid "Import"
+msgstr "インポート"
+
+#: ../wxui/main.py:704
+msgid "Import from file..."
+msgstr "ファイルからインポート..."
+
+#: ../wxui/main.py:1333
+msgid "Import not recommended"
+msgstr ""
+
+#: ../wxui/bankedit.py:62
+msgid "Index"
+msgstr ""
+
+#: ../wxui/main.py:223
+msgid "Info"
+msgstr ""
+
+#: ../wxui/memedit.py:1269
+msgid "Information"
+msgstr ""
+
+#: ../wxui/memedit.py:1559
+msgid "Insert Row Above"
+msgstr "上に1行追加"
+
+#: ../wxui/__init__.py:38
+msgid "Install desktop icon?"
+msgstr ""
+
+#: ../wxui/main.py:900
+msgid "Interact with driver"
+msgstr ""
+
+#: ../wxui/query_sources.py:57
+#, python-format
+msgid "Invalid %(value)s (use decimal degrees)"
+msgstr ""
+
+#: ../wxui/memedit.py:1414
+msgid "Invalid Entry"
+msgstr ""
+
+#: ../wxui/query_sources.py:110
+msgid "Invalid ZIP code"
+msgstr ""
+
+#: ../wxui/memedit.py:1413 ../wxui/memedit.py:2250
+#, python-format
+msgid "Invalid edit: %s"
+msgstr ""
+
+#: ../wxui/main.py:1610
+msgid "Invalid or unsupported module file"
+msgstr ""
+
+#: ../wxui/memedit.py:180 ../wxui/memedit.py:186
+#, python-format
+msgid "Invalid value: %r"
+msgstr ""
+
+#: ../wxui/developer.py:536
+msgid "Issue number:"
+msgstr ""
+
+#: ../wxui/main.py:341
+msgid "LIVE"
+msgstr ""
+
+#: ../wxui/query_sources.py:303 ../wxui/query_sources.py:572
+msgid "Latitude"
+msgstr "緯度"
+
+#: ../wxui/developer.py:199
+#, python-format
+msgid "Length must be %i"
+msgstr ""
+
+#: ../wxui/query_sources.py:324 ../wxui/query_sources.py:532
+msgid "Limit Bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:329
+msgid "Limit Modes"
+msgstr ""
+
+#: ../wxui/query_sources.py:547
+msgid "Limit Status"
+msgstr ""
+
+#: ../wxui/query_sources.py:310 ../wxui/query_sources.py:578
+msgid "Limit results to this distance (km) from coordinates"
+msgstr ""
+
+#: ../wxui/main.py:716
+msgid "Load Module..."
+msgstr ""
+
+#: ../wxui/developer.py:537
+msgid "Load module from issue"
+msgstr ""
+
+#: ../wxui/main.py:948
+msgid "Load module from issue..."
+msgstr ""
+
+#: ../wxui/main.py:1617
+msgid ""
+"Loading modules can be extremely dangerous, leading to damage to your "
+"computer, radio, or both. NEVER load a module from a source you do not "
+"trust, and especially not from anywhere other than the main CHIRP website "
+"(chirp.danplanet.com). Loading a module from another source is akin to "
+"giving them direct access to your computer and everything on it! Proceed "
+"despite this risk?"
+msgstr ""
+
+#: ../wxui/clone.py:114
+msgid "Loading settings"
+msgstr ""
+
+#: ../wxui/query_sources.py:304 ../wxui/query_sources.py:573
+msgid "Longitude"
+msgstr "軽度"
+
+#: ../wxui/main.py:202
+msgid "Memories"
+msgstr "メモリー"
+
+#: ../wxui/memedit.py:1453
+#, python-format
+msgid "Memory %i is not deletable"
+msgstr ""
+
+#: ../wxui/bankedit.py:233
+msgid "Memory must be in a bank to be edited"
+msgstr ""
+
+#: ../drivers/vx5.py:133
+#, python-brace-format
+msgid "Memory {num} not in bank {bank}"
+msgstr ""
+
+#: ../wxui/query_sources.py:524 ../wxui/memedit.py:510
+msgid "Mode"
+msgstr "受信モード"
+
+#: ../wxui/clone.py:248
+msgid "Model"
+msgstr "モデル"
+
+#: ../wxui/query_sources.py:404
+msgid "Modes"
+msgstr ""
+
+#: ../wxui/main.py:1614
+msgid "Module"
+msgstr ""
+
+#: ../wxui/main.py:1586
+msgid "Module Loaded"
+msgstr ""
+
+#: ../wxui/main.py:1701
+msgid "Module loaded successfully"
+msgstr ""
+
+#: ../wxui/clone.py:376
+#, python-format
+msgid "More than one port found: %s"
+msgstr ""
+
+#: ../wxui/memedit.py:817
+msgid "Move Down"
+msgstr "下に移動"
+
+#: ../wxui/memedit.py:807
+msgid "Move Up"
+msgstr "上に移動"
+
+#: ../wxui/main.py:651
+msgid "New Window"
+msgstr "新規ウィンドウ"
+
+#: ../wxui/main.py:1774
+msgid "New version available"
+msgstr ""
+
+#: ../wxui/memedit.py:1714
+msgid "No empty rows below!"
+msgstr ""
+
+#: ../wxui/developer.py:552
+msgid "No modules found"
+msgstr ""
+
+#: ../wxui/developer.py:551
+#, python-format
+msgid "No modules found in issue %i"
+msgstr ""
+
+#: ../sources/przemienniki.py:53
+msgid "No results"
+msgstr ""
+
+#: ../sources/repeaterbook.py:290
+msgid "No results!"
+msgstr ""
+
+#: ../wxui/memedit.py:852
+msgid "Number"
+msgstr ""
+
+#: ../wxui/memedit.py:209
+msgid "Offset"
+msgstr "オフセット"
+
+#: ../wxui/query_sources.py:322 ../wxui/query_sources.py:530
+msgid "Only certain bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:327
+msgid "Only certain modes"
+msgstr ""
+
+#: ../wxui/main.py:323
+msgid "Only memory tabs may be exported"
+msgstr ""
+
+#: ../wxui/query_sources.py:541
+msgid "Only working repeaters"
+msgstr ""
+
+#: ../wxui/main.py:985 ../wxui/main.py:1335
+msgid "Open"
+msgstr "開く"
+
+#: ../wxui/main.py:691
+msgid "Open Recent"
+msgstr "最近使ったファイル"
+
+#: ../wxui/main.py:986 ../wxui/main.py:1209
+msgid "Open a file"
+msgstr "ファイルを開く"
+
+#: ../wxui/main.py:1632
+msgid "Open a module"
+msgstr ""
+
+#: ../wxui/main.py:937
+msgid "Open debug log"
+msgstr ""
+
+#: ../wxui/main.py:516
+msgid "Open in new window"
+msgstr "新しいウィンドウで開く"
+
+#: ../wxui/main.py:608
+msgid "Open stock config directory"
+msgstr ""
+
+#: ../wxui/query_sources.py:300 ../wxui/query_sources.py:569
+msgid "Optional: -122.0000"
+msgstr ""
+
+#: ../wxui/query_sources.py:309 ../wxui/query_sources.py:577
+msgid "Optional: 100"
+msgstr ""
+
+#: ../wxui/query_sources.py:294 ../wxui/query_sources.py:563
+msgid "Optional: 45.0000"
+msgstr ""
+
+#: ../wxui/query_sources.py:315
+msgid "Optional: County, Hospital, etc."
+msgstr ""
+
+#: ../wxui/memedit.py:1846
+msgid "Overwrite memories?"
+msgstr "メモリーを上書きしますか？"
+
+#: ../drivers/ts480.py:512
+msgid ""
+"P-VFO channels 100-109 are considered Settings.\n"
+"Only a subset of the over 130 available radio settings\n"
+"are supported in this release.\n"
+msgstr ""
+
+#: ../sources/przemienniki.py:48
+msgid "Parsing"
+msgstr ""
+
+#: ../wxui/memedit.py:1573
+msgid "Paste"
+msgstr "ペースト"
+
+#: ../wxui/memedit.py:1840
+#, python-format
+msgid "Pasted memories will overwrite %s existing memories"
+msgstr ""
+
+#: ../wxui/memedit.py:1843
+#, python-format
+msgid "Pasted memories will overwrite memories %s"
+msgstr "ペーストするとメモリー %s が上書きされます"
+
+#: ../wxui/memedit.py:1837
+#, python-format
+msgid "Pasted memories will overwrite memory %s"
+msgstr "ペーストするとメモリー %s が上書きされます"
+
+#: ../wxui/memedit.py:1834
+#, python-format
+msgid "Pasted memory will overwrite memory %s"
+msgstr "ペーストするとメモリー %s が上書きされます"
+
+#: ../wxui/main.py:1778
+msgid "Please be sure to quit CHIRP before installing the new version!"
+msgstr ""
+
+#: ../drivers/ftlx011.py:302
+msgid ""
+"Please follow this steps carefully:\n"
+"1 - Turn on your radio\n"
+"2 - Connect the interface cable to your radio\n"
+"3 - Click the button on this window to start download\n"
+"    (you may see another dialog, click ok)\n"
+"4 - Radio will beep and led will flash\n"
+"5 - You will get a 10 seconds timeout to press \"MON\" before\n"
+"    data upload start\n"
+"6 - If all goes right radio will beep at end.\n"
+"After cloning remove the cable and power cycle your radio to\n"
+"get into normal mode.\n"
+msgstr ""
+
+#: ../drivers/ftlx011.py:293
+msgid ""
+"Please follow this steps carefully:\n"
+"1 - Turn on your radio\n"
+"2 - Connect the interface cable to your radio.\n"
+"3 - Click the button on this window to start download\n"
+"    (Radio will beep and led will flash)\n"
+"4 - Then press the \"A\" button in your radio to start cloning.\n"
+"    (At the end radio will beep)\n"
+msgstr ""
+
+#: ../wxui/main.py:1655
+msgid ""
+"Please note that developer mode is intended for use by developers of the "
+"CHIRP project, or under the direction of a developer. It enables behaviors "
+"and functions that can damage your computer and your radio if not used with "
+"EXTREME care. You have been warned! Proceed anyway?"
+msgstr ""
+
+#: ../wxui/common.py:187
+msgid "Please wait"
+msgstr "お待ちください"
+
+#: ../wxui/clone.py:353
+msgid "Plug in your cable and then click OK"
+msgstr ""
+
+#: ../wxui/clone.py:241
+msgid "Port"
+msgstr "ポート"
+
+#: ../wxui/memedit.py:274
+msgid "Power"
+msgstr ""
+
+#: ../wxui/developer.py:136
+msgid "Press enter to set this in memory"
+msgstr ""
+
+#: ../wxui/main.py:727
+msgid "Print Preview"
+msgstr "印刷プレビュー"
+
+#: ../wxui/printing.py:29
+msgid "Printing"
+msgstr "印刷"
+
+#: ../wxui/memedit.py:1552
+msgid "Properties"
+msgstr "プロパティ"
+
+#: ../wxui/main.py:1729
+#, python-format
+msgid "Query %s"
+msgstr ""
+
+#: ../wxui/memedit.py:457
+msgid "RX DTCS"
+msgstr ""
+
+#: ../wxui/main.py:956
+msgid "Radio"
+msgstr "無線機"
+
+#: ../drivers/ft60.py:85 ../drivers/ft450d.py:569 ../drivers/ft817.py:408
+#, python-format
+msgid "Radio did not ack block %i"
+msgstr ""
+
+#: ../wxui/clone.py:507 ../wxui/clone.py:572
+msgid "Radio information"
+msgstr ""
+
+#: ../drivers/ft817.py:365
+msgid ""
+"Radio sent data after the last awaited block, this happens when the selected "
+"model is a non-US but the radio is a US one. Please choose the correct model "
+"and try again."
+msgstr ""
+
+#: ../wxui/query_sources.py:836
+msgid "RadioReference Canada requires a login before you can query"
+msgstr ""
+
+#: ../wxui/common.py:436
+msgid "Refresh required"
+msgstr ""
+
+#: ../wxui/common.py:314
+#, python-format
+msgid "Refreshed memory %s"
+msgstr ""
+
+#: ../wxui/main.py:877
+msgid "Reload Driver"
+msgstr ""
+
+#: ../wxui/main.py:886
+msgid "Reload Driver and File"
+msgstr ""
+
+#: ../wxui/bankedit.py:205
+msgid "Rename bank"
+msgstr ""
+
+#: ../wxui/main.py:925
+msgid "Reporting enabled"
+msgstr "診断レポート送信"
+
+#: ../wxui/main.py:1674
+msgid ""
+"Reporting helps the CHIRP project know which radio models and OS platforms "
+"to spend our limited efforts on. We would really appreciate if you left it "
+"enabled. Really disable reporting?"
+msgstr ""
+"診断レポートは、CHIRPプロジェクトがどの無線機やOSに限られたリソースを使うべき"
+"かを判断するのに役立ちます。このまま有効にしておいていただけると有り難いで"
+"す。本当に無効にしますか？"
+
+#: ../wxui/main.py:1669
+msgid "Restart Required"
+msgstr "再起動が必要です"
+
+#: ../wxui/main.py:672
+#, python-format
+msgid "Restore %i tabs"
+msgstr ""
+
+#: ../wxui/common.py:318
+msgid "Retrieved settings"
+msgstr ""
+
+#: ../wxui/main.py:987
+msgid "Save"
+msgstr "保存"
+
+#: ../wxui/main.py:1366
+msgid "Save before closing?"
+msgstr "保存しますか？"
+
+#: ../wxui/main.py:988 ../wxui/main.py:1293
+msgid "Save file"
+msgstr "ファイルに保存"
+
+#: ../wxui/common.py:320
+msgid "Saved settings"
+msgstr "設定を保存"
+
+#: ../wxui/developer.py:527
+msgid "Security Risk"
+msgstr "セキュリティリスク"
+
+#: ../wxui/main.py:867
+msgid "Select Bandplan..."
+msgstr "バンドプランを選択..."
+
+#: ../wxui/query_sources.py:383 ../wxui/query_sources.py:598
+msgid "Select Bands"
+msgstr ""
+
+#: ../wxui/query_sources.py:404
+msgid "Select Modes"
+msgstr ""
+
+#: ../wxui/main.py:1714
+msgid "Select a bandplan"
+msgstr "バンドプラン選択"
+
+#: ../wxui/query_sources.py:286
+msgid "Service"
+msgstr "サービス"
+
+#: ../wxui/main.py:215
+msgid "Settings"
+msgstr "設定"
+
+#: ../wxui/memedit.py:1670
+msgid "Show Raw Memory"
+msgstr ""
+
+#: ../wxui/main.py:943
+msgid "Show debug log location"
+msgstr ""
+
+#: ../wxui/memedit.py:826
+msgid "Show extra fields"
+msgstr "追加フィールドを表示"
+
+#: ../wxui/memedit.py:1919
+msgid "Some memories are incompatible with this radio"
+msgstr ""
+
+#: ../wxui/memedit.py:1787
+msgid "Some memories are not deletable"
+msgstr ""
+
+#: ../wxui/memedit.py:1632
+#, python-format
+msgid "Sort %i memories"
+msgstr ""
+
+#: ../wxui/memedit.py:1635
+#, python-format
+msgid "Sort %i memories ascending"
+msgstr ""
+
+#: ../wxui/memedit.py:1654
+#, python-format
+msgid "Sort %i memories descending"
+msgstr ""
+
+#: ../wxui/memedit.py:1529
+msgid "Sort by column:"
+msgstr ""
+
+#: ../wxui/memedit.py:1528
+msgid "Sort memories"
+msgstr ""
+
+#: ../sources/przemienniki.py:60
+msgid "Sorting"
+msgstr ""
+
+#: ../wxui/query_sources.py:464
+msgid "State"
+msgstr ""
+
+#: ../wxui/query_sources.py:289
+msgid "State/Province"
+msgstr ""
+
+#: ../wxui/main.py:1702
+msgid "Success"
+msgstr "成功"
+
+#: ../drivers/ft450d.py:417
+msgid ""
+"The FT-450D radio driver loads the 'Special Channels' tab\n"
+"with the PMS scanning range memories (group 11), 60meter\n"
+"channels (group 12), the QMB (STO/RCL) memory, the HF and\n"
+"50m HOME memories and all the A and B VFO memories.\n"
+"There are VFO memories for the last frequency dialed in\n"
+"each band. The last mem-tune config is also stored.\n"
+"These Special Channels allow limited field editing.\n"
+"This driver also populates the 'Other' tab in the channel\n"
+"memory Properties window. This tab contains values for\n"
+"those channel memory settings that don't fall under the\n"
+"standard Chirp display columns. With FT450 support, the gui now\n"
+"uses the mode 'DIG' to represent data modes and a new column\n"
+"'DATA MODE' to select USER-U, USER-L and RTTY \n"
+msgstr ""
+
+#: ../drivers/boblov_x3plus.py:118
+msgid ""
+"The X3Plus driver is currently experimental.\n"
+"There are no known issues but you should proceed with caution.\n"
+"Please save an unedited copy of your first successful\n"
+"download to a CHIRP Radio Images (*.img) file.\n"
+msgstr ""
+
+#: ../wxui/developer.py:524
+msgid ""
+"The author of this module is not a recognized CHIRP developer. It is "
+"recommended that you not load this module as it could pose a security risk. "
+"Proceed anyway?"
+msgstr ""
+
+#: ../wxui/main.py:1326
+#, python-format
+msgid ""
+"The recommended procedure for importing memories is to open the source file "
+"and copy/paste memories from it into your target image. If you continue with "
+"this import function, CHIRP will replace all memories in your currently-open "
+"file with those in %(file)s. Would you like to open this file to copy/paste "
+"memories across, or proceed with the import?"
+msgstr ""
+
+#: ../wxui/memedit.py:1594
+msgid "This Memory"
+msgstr "行の内容を削除"
+
+#: ../drivers/id5100.py:333
+msgid ""
+"This driver has been tested with v3 of the ID-5100. If your radio is not "
+"fully updated please help by opening a bug report with a debug log so we can "
+"add support for the other revisions."
+msgstr ""
+
+#: ../drivers/radtel_rt490.py:1321 ../drivers/radtel_rt490.py:1323
+#: ../drivers/radtel_rt490.py:1325
+msgid "This driver is in development and should be considered as experimental."
+msgstr ""
+
+#: ../drivers/th_uv88.py:553
+msgid "This is an early stage beta driver\n"
+msgstr ""
+
+#: ../drivers/th_uv88.py:555
+msgid "This is an early stage beta driver - upload at your own risk\n"
+msgstr ""
+
+#: ../drivers/bj9900.py:108
+msgid ""
+"This is experimental support for BJ-9900 which is still under development.\n"
+"Please ensure you have a good backup with OEM software.\n"
+"Also please send in bug and enhancement requests!\n"
+"You have been warned. Proceed at your own risk!"
+msgstr ""
+
+#: ../wxui/memedit.py:1598
+msgid "This memory and shift all up"
+msgstr "行を削除して全体を上方向にシフト"
+
+#: ../wxui/memedit.py:1596
+msgid "This memory and shift block up"
+msgstr "行を削除してグループを上方向にシフト"
+
+#: ../drivers/fd268.py:302 ../drivers/fd268.py:308
+msgid ""
+"This radio has a tricky way of enter into program mode,\n"
+"even the original software has a few tries to get inside.\n"
+"I will try 8 times (most of the time ~3 will doit) and this\n"
+"can take a few seconds, if don't work, try again a few times.\n"
+"If you can get into it, please check the radio and cable.\n"
+msgstr ""
+
+#: ../drivers/uvk5.py:1910
+msgid ""
+"This should only be enabled if you are using modified firmware that supports "
+"wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
+"restrictions and may lead to undefined or unregulated behavior. Use at your "
+"own risk!"
+msgstr ""
+
+#: ../wxui/developer.py:534
+msgid "This will load a module from a website issue"
+msgstr ""
+
+#: ../wxui/memedit.py:360
+msgid "Tone"
+msgstr "トーン"
+
+#: ../wxui/memedit.py:886
+msgid "Tone Mode"
+msgstr "トーンモード"
+
+#: ../wxui/memedit.py:362
+msgid "Tone Squelch"
+msgstr "トーンスケルチ"
+
+#: ../wxui/memedit.py:304 ../wxui/memedit.py:900
+msgid "Tuning Step"
+msgstr "ステップ(kHz)"
+
+#: ../wxui/clone.py:347 ../wxui/clone.py:354 ../wxui/clone.py:365
+#: ../wxui/clone.py:373 ../wxui/clone.py:377
+msgid "USB Port Finder"
+msgstr ""
+
+#: ../wxui/clone.py:363
+msgid ""
+"Unable to determine port for your cable. Check your drivers and connections."
+msgstr ""
+
+#: ../wxui/memedit.py:1334
+msgid "Unable to edit memory before radio is loaded"
+msgstr ""
+
+#: ../wxui/main.py:1251
+#, python-format
+msgid "Unable to find stock config %r"
+msgstr ""
+
+#: ../wxui/common.py:220
+msgid "Unable to open the clipboard"
+msgstr ""
+
+#: ../sources/przemienniki.py:46
+msgid "Unable to query"
+msgstr ""
+
+#: ../drivers/ft817.py:322
+msgid ""
+"Unable to read last block. This often happens when the selected model is US "
+"but the radio is a non-US one (or widebanded). Please choose the correct "
+"model and try again."
+msgstr ""
+
+#: ../wxui/common.py:619
+#, python-format
+msgid "Unable to reveal %s on this system"
+msgstr ""
+
+#: ../wxui/memedit.py:161
+#, python-format
+msgid "Unable to set %s on this memory"
+msgstr ""
+
+#: ../wxui/query_sources.py:688
+msgid "United States"
+msgstr ""
+
+#: ../wxui/clone.py:346
+msgid "Unplug your cable (if needed) and then click OK"
+msgstr ""
+
+#: ../wxui/clone.py:587
+msgid "Upload instructions"
+msgstr "アップロード手順"
+
+#: ../wxui/main.py:994
+msgid "Upload to radio"
+msgstr "無線機にアップロード"
+
+#: ../wxui/main.py:831
+msgid "Upload to radio..."
+msgstr "無線機にアップロード..."
+
+#: ../wxui/common.py:316
+#, python-format
+msgid "Uploaded memory %s"
+msgstr ""
+
+#: ../wxui/main.py:799
+msgid "Use fixed-width font"
+msgstr "固定幅フォントを使用"
+
+#: ../wxui/main.py:807
+msgid "Use larger font"
+msgstr "大きいフォントを使用"
+
+#: ../wxui/developer.py:252
+#, python-format
+msgid "Value does not fit in %i bits"
+msgstr "値は %i bitにしてください"
+
+#: ../wxui/common.py:468
+#, python-format
+msgid "Value must be at least %.4f"
+msgstr "値は %.4f 以上にしてください"
+
+#: ../wxui/common.py:472
+#, python-format
+msgid "Value must be at most %.4f"
+msgstr "値は %.4f 以下にしてください"
+
+#: ../wxui/developer.py:296
+#, python-format
+msgid "Value must be exactly %i decimal digits"
+msgstr "値は %i 桁にしてください"
+
+#: ../wxui/developer.py:250 ../wxui/developer.py:294
+msgid "Value must be zero or greater"
+msgstr "値は 0 以上にしてください"
+
+#: ../wxui/memedit.py:2150
+msgid "Values"
+msgstr "値"
+
+#: ../wxui/clone.py:244
+msgid "Vendor"
+msgstr "会社"
+
+#: ../wxui/main.py:955
+msgid "View"
+msgstr "表示"
+
+#: ../wxui/common.py:420
+msgid "WARNING!"
+msgstr ""
+
+#: ../wxui/memedit.py:1420
+msgid "Warning"
+msgstr ""
+
+#: ../wxui/memedit.py:1419
+#, python-format
+msgid "Warning: %s"
+msgstr ""
+
+#: ../wxui/main.py:433
+msgid "Welcome"
+msgstr "ようこそ"
+
+#: ../wxui/__init__.py:37
+msgid "Would you like CHIRP to install a desktop icon for you?"
+msgstr "デスクトップにCHIRPのアイコンを設定しますか？"
+
+#: ../wxui/clone.py:371
+msgid "Your cable appears to be on port:"
+msgstr ""
+
+#: ../wxui/developer.py:172
+msgid "bits"
+msgstr ""
+
+#: ../wxui/developer.py:168
+msgid "bytes"
+msgstr ""
+
+#: ../wxui/developer.py:163
+msgid "bytes each"
+msgstr ""
+
+#: ../wxui/main.py:1652
+msgid "disabled"
+msgstr "無効"
+
+#: ../wxui/main.py:1652
+msgid "enabled"
+msgstr "有効"
+
+#: ../drivers/vx5.py:116
+#, python-brace-format
+msgid "{bank} is full"
+msgstr ""
