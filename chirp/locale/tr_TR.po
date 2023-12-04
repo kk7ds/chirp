@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-27 14:59-0800\n"
+"POT-Creation-Date: 2023-12-03 21:31-0800\n"
 "PO-Revision-Date: 2023-11-22 22:39+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -740,7 +740,7 @@ msgstr ""
 "3. Telsizi açarken [MHz], [LOW] ve [D/MR] tuşlarını basılı tutun.\n"
 "4. [D/MR(MW)] tuşuna basın (ekranda \"--WAIT--\" görünecektir).\n"
 
-#: ../drivers/uv5r.py:824
+#: ../drivers/uv5r.py:825
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -756,7 +756,7 @@ msgstr ""
 "5. Telsizin etkin olmayan kanala ayarlandığından emin olun.\n"
 "6. İmajı cihazdan indirmek için TAMAM'a tıklayın.\n"
 
-#: ../drivers/uv5r.py:832
+#: ../drivers/uv5r.py:833
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1458,7 +1458,7 @@ msgstr ""
 #: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
 #: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
 #: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
-#: ../drivers/baofeng_uv17Pro.py:445 ../drivers/bf_t1.py:483
+#: ../drivers/baofeng_uv17Pro.py:437 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1633,7 +1633,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:334 ../drivers/gmrsuv1.py:398
 #: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
 #: ../drivers/uv6r.py:348 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
-#: ../drivers/baofeng_uv17Pro.py:451
+#: ../drivers/baofeng_uv17Pro.py:443
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
