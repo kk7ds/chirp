@@ -341,6 +341,7 @@ Wouxun_KG-UV8H,@mrtjr1,27-Mar-2023
 Wouxun_KG-UV8E,W5EGL,2-Jan-2022
 Wouxun_KG-UV9D_Plus,@samwich,10-Jan-2023
 Wouxun_KG-UV920P-A,@KC9HI,22-Dec-2022
+Wouxun_KG-UV950P,@mrtjr1,29-Nov-2023
 Wouxun_KG-UV980P,@mrtjr1,23-jan-2023
 Wouxun_KG-UV9PX,@mrtjr1,20-Jan-2022
 Wouxun_KG-UV9GX,@mrtjr1,27-Mar-2023

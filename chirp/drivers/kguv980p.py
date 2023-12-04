@@ -1,5 +1,5 @@
 # Copyright 2022 Mel Terechenok <melvin.terechenok@gmail.com>
-# KG-UV980P , KG-1000G, KG-1000G Plus unified driver using
+# KG-UV980P , KG-1000G, KG-1000G Plus, KG-UV950P unified driver using
 # KG-935G, KG-UV8H, KG-UV920P, and KG-UV9D Plus drivers as resources
 #
 # Based on the previous work of Pavel Milanes CO7WT <pavelmc@gmail.com>
@@ -125,6 +125,7 @@ PTT_ID_MAP_1000GPLUS = [('Off', 0),
                         ('EOT',  2),
                         ('Both', 3)]
 BACKLIGHT_LIST = ["Off", "Red", "Orange", "Green"]
+BACKLIGHT_LIST_950 = ["Off", "White", "Blue", "Green"]
 SPEAKER_MAP = [('SPK_1',   1),
                ('SPK_2',   2),
                ('SPK_1+2', 3)]
@@ -646,6 +647,19 @@ def _oem_str_encode_1000GPLUS(in_str):
     return out_str
 
 
+def _str_decode_950(in_str):
+    out_str = ''
+    for c in in_str:
+        if c > 95:
+            out_str += ''
+        elif c >= 80:
+            out_str += chr(c-48)
+        else:
+            out_str += chr(c+48)
+
+    return out_str
+
+
 def _str_decode(in_str):
     out_str = ''
     stopchar = False
@@ -668,6 +682,22 @@ def _str_encode(in_str):
             pass
     while len(out_str) < 8:
         out_str += chr(0x00)
+    if out_str == "        " or out_str == "":
+        out_str = "\x00\x00\x00\x00\x00\x00\x00\x00"
+    return out_str
+
+
+def _str_encode_950(in_str):
+    out_str = ''
+    for c in in_str:
+        if ord(c) < 32 or ord(c) > 126:
+            out_str += ''
+        elif ord(c) >= 32 and ord(c) <= 47:
+            out_str += chr(int(ord(c) + 48))
+        else:
+            out_str += chr(int(ord(c) - 48))
+    while len(out_str) < 8:
+        out_str += chr(0x50)
     if out_str == "        " or out_str == "":
         out_str = "\x00\x00\x00\x00\x00\x00\x00\x00"
     return out_str
@@ -1036,9 +1066,14 @@ class KG980PRadio(chirp_common.CloneModeRadio,
             mem.offset = abs(_rxfreq - _txfreq)
 
         if _mem.named:
-            mem.name = _str_decode(self._memobj.names[number].name)
-            # Remove trailing whitespaces from the name
-            mem.name = mem.name.rstrip()
+            if self.MODEL != "KG-UV950P":
+                mem.name = _str_decode(self._memobj.names[number].name)
+                # Remove trailing whitespaces from the name
+                mem.name = mem.name.rstrip()
+            else:
+                mem.name = _str_decode_950(self._memobj.names[number].name)
+                # Remove trailing whitespaces from the name
+                mem.name = mem.name.rstrip()
         else:
             mem.name = ''
 
@@ -1128,7 +1163,10 @@ class KG980PRadio(chirp_common.CloneModeRadio,
         else:
             if len(mem.name) > 0:
                 _mem.named = True
-                name_encoded = _str_encode(mem.name)
+                if self.MODEL != "KG-UV950P":
+                    name_encoded = _str_encode(mem.name)
+                else:
+                    name_encoded = _str_encode_950(mem.name)
                 for i in range(0, 8):
                     _nam.name[i] = ord(name_encoded[i])
             else:
@@ -1249,7 +1287,8 @@ class KG980PRadio(chirp_common.CloneModeRadio,
         vfo_grp.append(vfob_grp)
         vfoa_grp.append(vfo150_grp)
         vfoa_grp.append(vfo450_grp)
-        if self.MODEL == "KG-UV980P":
+        if (self.MODEL == "KG-UV980P" or
+           self.MODEL == "KG-UV950P"):
             vfoa_grp.append(vfo20_grp)
             lmt_grp.append(txlim_grp)
         vfoa_grp.append(vfo50_grp)
@@ -1262,6 +1301,7 @@ class KG980PRadio(chirp_common.CloneModeRadio,
 
         # Configuration Settings
         if self.MODEL == "KG-1000G Plus":
+            backlight = BACKLIGHT_LIST
             voicemap = VOICE_MAP_1000GPLUS
             pttidmap = PTT_ID_MAP_1000GPLUS
             pttidlabel = "DTMF ID"
@@ -1304,7 +1344,52 @@ class KG980PRadio(chirp_common.CloneModeRadio,
             narrow7label = "W/N"
             mute7label = "SP Mute"
             scram7label = "Descrambler"
+        elif self.MODEL == "KG-UV950P":
+            backlight = BACKLIGHT_LIST_950
+            voicemap = VOICE_MAP
+            pttidmap = PTT_ID_MAP
+            pttidlabel = "Caller ID Tx Mode (PTT_ID)"
+            dtmflist = DTMF_ST_LIST
+            dtmflabel = "DTMF Sidetone"
+            spkmap = SPEAKER_MAP
+            key_l = KEY_LIST
+            scqt = SC_QT_MAP
+            pf1set = PF1_SETTINGS
+            wmmap = WORKMODE_MAP
+            totmap = TOT_MAP_1000GPLUS
+            lowvlabel = "Low Voltage Shutoff"
+            fanlabel = "Fan Mode"
+            alerttonelabel = "Alert Pulse (Hz)"
+            tonescanlabel = "CTCSS/DCS Scan"
+            pttdelaylabel = "Caller ID Tx Delay PTT-ID-DLY (ms)"
+            scandetlabel = "Scan DET"
+            txvoltlabel = "Threshold Voltage Tx"
+            holdtimrptlabel = "Hold Time of Repeat (ms)"
+            thrvollvllabel = "Threshold Voltage Level"
+            modepswlabel = "MODE PSW"
+            narrow1label = "150M Bandwidth"
+            mute1label = "150M Mute Mode"
+            scram1label = "150M Scrambler"
+            narrow2label = "450M Bandwidth"
+            mute2label = "450M Mute Mode"
+            scram2label = "450M Scrambler"
+            narrow3label = "20M Bandwidth"
+            mute3label = "20M Mute Mode"
+            scram3label = "20M Scrambler"
+            narrow4label = "50M Bandwidth"
+            mute4label = "50M Mute Mode"
+            scram4label = "50M Scrambler"
+            narrow5label = "350M Bandwidth"
+            mute5label = "350M Mute Mode"
+            scram5label = "350M Scrambler"
+            narrow6label = "850M Bandwidth"
+            mute6label = "850M Mute Mode"
+            scram6label = "850M Scrambler"
+            narrow7label = "Bandwidth"
+            mute7label = "Mute Mode"
+            scram7label = "Scrambler"
         else:   # 980P or 1000G radios
+            backlight = BACKLIGHT_LIST
             voicemap = VOICE_MAP
             pttidmap = PTT_ID_MAP
             pttidlabel = "Caller ID Tx Mode (PTT_ID)"
@@ -1417,20 +1502,20 @@ class KG980PRadio(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("wt_led", "Standby / WT LED",
                           RadioSettingValueList(
-                              BACKLIGHT_LIST,
-                              BACKLIGHT_LIST[_settings.wt_led]))
+                              backlight,
+                              backlight[_settings.wt_led]))
         cfg1_grp.append(rs)
 
         rs = RadioSetting("tx_led", "TX LED",
                           RadioSettingValueList(
-                              BACKLIGHT_LIST,
-                              BACKLIGHT_LIST[_settings.tx_led]))
+                              backlight,
+                              backlight[_settings.tx_led]))
         cfg1_grp.append(rs)
 
         rs = RadioSetting("rx_led", "Rx LED",
                           RadioSettingValueList(
-                              BACKLIGHT_LIST,
-                              BACKLIGHT_LIST[_settings.rx_led]))
+                              backlight,
+                              backlight[_settings.rx_led]))
         cfg1_grp.append(rs)
 
         if self.MODEL == "KG-1000G Plus":
@@ -1589,27 +1674,28 @@ class KG980PRadio(chirp_common.CloneModeRadio,
         rs.set_apply_callback(apply_psw_id, _oem)
         cfg2_grp.append(rs)
 
-        rs = RadioSetting("ABR", "Backlight On Time (ABR)",
-                          RadioSettingValueList(
-                              ABR_LIST,
-                              ABR_LIST[_settings.ABR]))
-        cfg2_grp.append(rs)
+        if self.MODEL != "KG-UV950P":
+            rs = RadioSetting("ABR", "Backlight On Time (ABR)",
+                              RadioSettingValueList(
+                                ABR_LIST,
+                                ABR_LIST[_settings.ABR]))
+            cfg2_grp.append(rs)
 
-        rs = RadioSetting("KeyA", "Key A",
-                          RadioSettingValueList(
-                              key_l,
-                              key_l[_settings.KeyA]))
-        cfg2_grp.append(rs)
-        rs = RadioSetting("KeyB", "Key B",
-                          RadioSettingValueList(
-                              key_l,
-                              key_l[_settings.KeyB]))
-        cfg2_grp.append(rs)
-        rs = RadioSetting("KeyC", "Key C",
-                          RadioSettingValueList(
-                              key_l,
-                              key_l[_settings.KeyC]))
-        cfg2_grp.append(rs)
+            rs = RadioSetting("KeyA", "Key A",
+                              RadioSettingValueList(
+                                key_l,
+                                key_l[_settings.KeyA]))
+            cfg2_grp.append(rs)
+            rs = RadioSetting("KeyB", "Key B",
+                              RadioSettingValueList(
+                                key_l,
+                                key_l[_settings.KeyB]))
+            cfg2_grp.append(rs)
+            rs = RadioSetting("KeyC", "Key C",
+                              RadioSettingValueList(
+                                key_l,
+                                key_l[_settings.KeyC]))
+            cfg2_grp.append(rs)
 
         if self.MODEL == "KG-1000G Plus":
             rs = RadioSetting("KeyD", "Key D",
@@ -1618,20 +1704,21 @@ class KG980PRadio(chirp_common.CloneModeRadio,
                                   KEY_LIST_1000GPLUS[_settings.KeyD]))
             cfg2_grp.append(rs)
 
-        rs = RadioSetting("key_lock", "Key Lock Active",
-                          RadioSettingValueBoolean(_settings.key_lock))
-        cfg2_grp.append(rs)
+        if self.MODEL != "KG-UV950P":
+            rs = RadioSetting("key_lock", "Key Lock Active",
+                              RadioSettingValueBoolean(_settings.key_lock))
+            cfg2_grp.append(rs)
 
-        rs = RadioSetting("act_area", "Active Area (BAND)",
-                          RadioSettingValueList(
-                              ACTIVE_AREA_LIST,
-                              ACTIVE_AREA_LIST[_settings.act_area]))
-        cfg2_grp.append(rs)
-        rs = RadioSetting("tdr_off", "TDR",
-                          RadioSettingValueList(
-                              TDR_LIST,
-                              TDR_LIST[_settings.tdr_off]))
-        cfg2_grp.append(rs)
+            rs = RadioSetting("act_area", "Active Area (BAND)",
+                              RadioSettingValueList(
+                                ACTIVE_AREA_LIST,
+                                ACTIVE_AREA_LIST[_settings.act_area]))
+            cfg2_grp.append(rs)
+            rs = RadioSetting("tdr_off", "TDR",
+                              RadioSettingValueList(
+                                TDR_LIST,
+                                TDR_LIST[_settings.tdr_off]))
+            cfg2_grp.append(rs)
 
         # Freq Limits settings
 
@@ -1686,7 +1773,8 @@ class KG980PRadio(chirp_common.CloneModeRadio,
                                                    val))
         rxlim_grp.append(rs)
 
-        if self.MODEL == "KG-UV980P":
+        if (self.MODEL == "KG-UV980P" or
+           self.MODEL == "KG-UV950P"):
             _temp = int(s.bandlimits.limit_10m_rx_start) // 10
             val = RadioSettingValueInteger(0, 999, _temp)
             rs = RadioSetting("bandlimits.limit_10m_rx_start",
@@ -1750,7 +1838,9 @@ class KG980PRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueInteger(0, 999,
                                                    val))
         rxlim_grp.append(rs)
-        if self.MODEL == "KG-UV980P":
+
+        if (self.MODEL == "KG-UV980P" or
+           self.MODEL == "KG-UV950P"):
             _temp = int(s.bandlimits.limit_144M_tx_start) // 10
             val = RadioSettingValueInteger(0, 999, _temp)
             rs = RadioSetting("bandlimits.limit_144M_tx_start",
@@ -1783,22 +1873,21 @@ class KG980PRadio(chirp_common.CloneModeRadio,
                                                        val))
             txlim_grp.append(rs)
 
-            if self.MODEL == "KG-UV980P":
-                _temp = int(s.bandlimits.limit_10m_tx_start) // 10
-                val = RadioSettingValueInteger(0, 999, _temp)
-                rs = RadioSetting("bandlimits.limit_10m_tx_start",
-                                  "20M tx Lower Limit (MHz)",
-                                  RadioSettingValueInteger(0, 999,
-                                                           val))
-                txlim_grp.append(rs)
+            _temp = int(s.bandlimits.limit_10m_tx_start) // 10
+            val = RadioSettingValueInteger(0, 999, _temp)
+            rs = RadioSetting("bandlimits.limit_10m_tx_start",
+                              "20M tx Lower Limit (MHz)",
+                              RadioSettingValueInteger(0, 999,
+                                                       val))
+            txlim_grp.append(rs)
 
-                _temp = int(s.bandlimits.limit_10m_tx_stop) // 10
-                val = RadioSettingValueInteger(0, 999, _temp)
-                rs = RadioSetting("bandlimits.limit_10m_tx_stop",
-                                  "20M tx Upper Limit (+ .9975 MHz)",
-                                  RadioSettingValueInteger(0, 999,
-                                                           val))
-                txlim_grp.append(rs)
+            _temp = int(s.bandlimits.limit_10m_tx_stop) // 10
+            val = RadioSettingValueInteger(0, 999, _temp)
+            rs = RadioSetting("bandlimits.limit_10m_tx_stop",
+                              "20M tx Upper Limit (+ .9975 MHz)",
+                              RadioSettingValueInteger(0, 999,
+                                                       val))
+            txlim_grp.append(rs)
 
             _temp = int(s.bandlimits.limit_6m_tx_start) // 10
             val = RadioSettingValueInteger(0, 999, _temp)
@@ -1981,7 +2070,8 @@ class KG980PRadio(chirp_common.CloneModeRadio,
         vfo450_grp.append(rs)
 
         # ###########################
-        if self.MODEL == "KG-UV980P":
+        if (self.MODEL == "KG-UV980P" or
+           self.MODEL == "KG-UV950P"):
             rs = RadioSetting("vfofreq3", "20M Freq",
                               RadioSettingValueFloat(
                                 0, 999.999999, (_freq_decode(
@@ -1989,7 +2079,8 @@ class KG980PRadio(chirp_common.CloneModeRadio,
                                                 1000000.0), 0.000001, 6))
             vfo20_grp.append(rs)
 
-            if self.MODEL == "KG-UV980P":
+            if (self.MODEL == "KG-UV980P" or
+               self.MODEL == "KG-UV950P"):
                 rs = RadioSetting("vfoofst3", "20M Offset",
                                   RadioSettingValueFloat(
                                     0, 999.999999, (_freq_decode(
@@ -2336,7 +2427,19 @@ class KG980PRadio(chirp_common.CloneModeRadio,
         def _decode(lst):
             LOG.debug("lst %s", lst)
             _str = ''.join([chr(c) for c in lst
-                            if chr(c) in SCANNAME_CHARSET])
+                            if chr(c) in chirp_common.CHARSET_ASCII])
+            return _str
+
+        def _decode_950(lst):
+            _str = ''
+            LOG.debug("lst %s", lst)
+            for c in lst:
+                if c > 78:
+                    temp = c - 48
+                else:
+                    temp = c + 48
+                if chr(temp) in chirp_common.CHARSET_ASCII:
+                    _str += chr(temp)
             return _str
 
         rs = RadioSetting("scan_a_act", "Scan A Active Group",
@@ -2352,7 +2455,10 @@ class KG980PRadio(chirp_common.CloneModeRadio,
 
         for i in range(1, 11):
             x = str(i)
-            _str = _decode(eval("_settings.scanname"+x))
+            if self.MODEL != "KG-UV950P":
+                _str = _decode(eval("_settings.scanname"+x))
+            else:
+                _str = _decode_950(eval("_settings.scanname"+x))
             LOG.debug("ScanName %s", i)
             LOG.debug("is %s", _str)
             # CPS treats PPPPPP as a blank name as it is the factory reset
@@ -2558,7 +2664,10 @@ class KG980PRadio(chirp_common.CloneModeRadio,
                         elif self._is_scan_name(element):
                             string = element[0].get_value()
                             LOG.debug("string %s" % (string))
-                            value = _str_encode(string)
+                            if self.MODEL != "KG-UV950P":
+                                value = _str_encode(string)
+                            else:
+                                value = _str_encode_950(string)
                             LOG.debug("scaname %s" % (value))
                             setattr(obj, setting, value.encode())
                         else:
@@ -2605,3 +2714,11 @@ class KG1000GPlusRadio(KG980PRadio):
     # """Wouxun KG-1000G Plus"""
     VENDOR = "Wouxun"
     MODEL = "KG-1000G Plus"
+
+
+@directory.register
+class KG950PGRadio(KG980PRadio):
+
+    # """Wouxun KG-950P"""
+    VENDOR = "Wouxun"
+    MODEL = "KG-UV950P"
