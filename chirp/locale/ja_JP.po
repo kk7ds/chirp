@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-04 13:02+0900\n"
+"POT-Creation-Date: 2023-12-03 21:31-0800\n"
 "PO-Revision-Date: 2023-12-03 11:04+0900\n"
 "Last-Translator: weboo <weboo@users.noreply.github.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -480,7 +480,7 @@ msgid ""
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:824
+#: ../drivers/uv5r.py:825
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -490,7 +490,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:832
+#: ../drivers/uv5r.py:833
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1516,6 +1516,10 @@ msgstr "開く"
 msgid "Open Recent"
 msgstr "最近使ったファイル"
 
+#: ../wxui/main.py:662
+msgid "Open Stock Config"
+msgstr ""
+
 #: ../wxui/main.py:986 ../wxui/main.py:1209
 msgid "Open a file"
 msgstr "ファイルを開く"
@@ -1664,6 +1668,10 @@ msgstr "プロパティ"
 #: ../wxui/main.py:1729
 #, python-format
 msgid "Query %s"
+msgstr ""
+
+#: ../wxui/main.py:837
+msgid "Query Source"
 msgstr ""
 
 #: ../wxui/memedit.py:457
