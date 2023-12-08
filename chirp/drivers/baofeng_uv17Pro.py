@@ -1069,3 +1069,11 @@ class UV17ProGPS(UV17Pro):
     _has_skey2_short = True
     VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
+
+
+@directory.register
+class BF5RM(UV17Pro):
+    VENDOR = "Baofeng"
+    MODEL = "5RM"
+    VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
+                   UV17Pro._uhf_range, UV17Pro._uhf2_range]
