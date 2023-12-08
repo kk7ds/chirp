@@ -568,9 +568,12 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         """Translate the bit in the mem_struct into settings in the UI"""
         _mem = self._memobj
         basic = RadioSettingGroup("basic", "Basic Settings")
-        bank = RadioSettingGroup("bank", "Bank names")
         dtmfe = RadioSettingGroup("dtmfe", "DTMF Encode Settings")
-        top = RadioSettings(basic, bank, dtmfe)
+        if self._has_support_for_banknames:
+            bank = RadioSettingGroup("bank", "Bank names")
+            top = RadioSettings(basic, bank, dtmfe)
+        else:
+            top = RadioSettings(basic, dtmfe)
 
         self.get_settings_common_basic(basic, _mem)
 
