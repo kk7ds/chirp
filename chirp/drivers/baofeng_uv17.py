@@ -386,6 +386,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
         # This is probably to do wear leveling on the memory
         # These numbers are needed, but make the channel memory
         # not continuous.
+        number = number - 1
         if number >= 762:
             _mem = self._memobj.mem4.mem[number - 762]
             return _mem
@@ -400,7 +401,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
 
     def get_memory(self, number):
         _mem = self.get_raw_memory(number)
-        _nam = self._memobj.names[number]
+        _nam = self._memobj.names[number - 1]
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -431,7 +432,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
 
     def set_memory(self, mem):
         _mem = self.get_raw_memory(mem.number)
-        _nam = self._memobj.names[mem.number]
+        _nam = self._memobj.names[mem.number - 1]
 
         if mem.empty:
             _mem.set_raw(b"\xff" * 16)

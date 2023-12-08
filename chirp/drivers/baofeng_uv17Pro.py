@@ -865,7 +865,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
             "DTCS->DTCS"]
         rf.valid_skips = self.SKIP_VALUES
         rf.valid_dtcs_codes = self.DTCS_CODES
-        rf.memory_bounds = (0, self.CHANNELS - 1)
+        rf.memory_bounds = (1, self.CHANNELS)
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_bands = self.VALID_BANDS
         rf.valid_tuning_steps = STEPS
@@ -974,7 +974,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         mem.name = str(name).replace('\xFF', ' ').replace('\x00', ' ').rstrip()
 
     def get_raw_memory(self, number):
-        return self._memobj.memory[number]
+        return self._memobj.memory[number - 1]
 
     def get_memory(self, number):
         _mem = self.get_raw_memory(number)
