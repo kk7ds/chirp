@@ -919,7 +919,7 @@ TX_POWER = [chirp_common.PowerLevel("Low",  watts=1.00),
             chirp_common.PowerLevel("Mid",  watts=4.00),
             chirp_common.PowerLevel("High", watts=8.00)]
 
-TDH8_CHARSET = chirp_common.CHARSET_UPPER_NUMERIC + \
+TDH8_CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
     "!@#$%^&*()+-=[]:\";'<>?,./"
 
 
