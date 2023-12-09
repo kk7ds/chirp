@@ -528,7 +528,7 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
         raw_tx = b""
         for i in range(0, 4):
             raw_tx += _mem.txfreq[i].get_raw()
-        return raw_tx == "\xFF\xFF\xFF\xFF"
+        return raw_tx == b"\xFF\xFF\xFF\xFF"
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
