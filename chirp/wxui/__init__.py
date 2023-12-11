@@ -164,7 +164,7 @@ def chirpmain():
 
     directory.import_drivers(limit=args.onlydriver)
 
-    if CONF.get('developer', 'state'):
+    if CONF.get_bool('developer', 'state'):
         from chirp.drivers import fake
         fake.register_fakes()
 
