@@ -953,7 +953,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         except IndexError:
             mem.power = levels[0]
 
-        mem.mode = _mem.wide and "NFM" or "FM"
+        mem.mode = _mem.wide and self.MODES[0] or self.MODES[1]
 
         mem.extra = RadioSettingGroup("Extra", "extra")
 
@@ -1013,7 +1013,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         self.encode_tone(_mem.rxtone, rxmode, rxtone, rxpol)
 
         _mem.scan = mem.skip != "S"
-        _mem.wide = mem.mode == "NFM"
+        _mem.wide = mem.mode == self.MODES[0]
 
         if mem.power:
             _mem.lowpower = self.POWER_LEVELS.index(mem.power)
