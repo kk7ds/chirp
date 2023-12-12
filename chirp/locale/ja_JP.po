@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 21:31-0800\n"
+"POT-Creation-Date: 2023-12-13 06:20+0900\n"
 "PO-Revision-Date: 2023-12-03 11:04+0900\n"
 "Last-Translator: weboo <weboo@users.noreply.github.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -840,6 +840,10 @@ msgid ""
 "Polarity"
 msgstr ""
 
+#: ../drivers/uvk5.py:887 ../drivers/uvk5.py:995
+msgid "DTMF decode"
+msgstr ""
+
 #: ../wxui/memedit.py:2170
 msgid "DV Memory"
 msgstr ""
@@ -913,6 +917,10 @@ msgstr "無線機からダウンロード..."
 #: ../wxui/clone.py:515
 msgid "Download instructions"
 msgstr "ダウンロード手順"
+
+#: ../drivers/uvk5.py:1321
+msgid "Driver information"
+msgstr ""
 
 #: ../wxui/query_sources.py:333
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
@@ -992,6 +1000,10 @@ msgstr "CSVにエクスポート..."
 
 #: ../wxui/memedit.py:2159
 msgid "Extra"
+msgstr ""
+
+#: ../drivers/uvk5.py:1319
+msgid "FM Radio"
 msgstr ""
 
 #: ../wxui/query_sources.py:612
@@ -1396,6 +1408,14 @@ msgstr ""
 msgid "Loading settings"
 msgstr ""
 
+#: ../drivers/uvk5.py:1828
+msgid "Logo string 1 (12 characters)"
+msgstr ""
+
+#: ../drivers/uvk5.py:1835
+msgid "Logo string 2 (12 characters)"
+msgstr ""
+
 #: ../wxui/query_sources.py:304 ../wxui/query_sources.py:573
 msgid "Longitude"
 msgstr "軽度"
@@ -1766,6 +1786,14 @@ msgstr "ファイルに保存"
 msgid "Saved settings"
 msgstr "設定を保存"
 
+#: ../drivers/uvk5.py:896 ../drivers/uvk5.py:1011
+msgid "Scanlists"
+msgstr ""
+
+#: ../drivers/uvk5.py:891 ../drivers/uvk5.py:1006
+msgid "Scrambler"
+msgstr ""
+
 #: ../wxui/developer.py:527
 msgid "Security Risk"
 msgstr "セキュリティリスク"
@@ -1919,6 +1947,18 @@ msgstr ""
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr ""
 
+#: ../drivers/uvk5.py:650
+msgid ""
+"This is an experimental driver for the Quansheng UV-K5. It may harm your "
+"radio, or worse. Use at your own risk.\n"
+"\n"
+"Before attempting to do any changes please download the memory image from "
+"the radio with chirp and keep it. This can be later used to recover the "
+"original settings. \n"
+"\n"
+"some details are not yet implemented"
+msgstr ""
+
 #: ../drivers/bj9900.py:108
 msgid ""
 "This is experimental support for BJ-9900 which is still under development.\n"
@@ -1944,7 +1984,7 @@ msgid ""
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
 
-#: ../drivers/uvk5.py:1910
+#: ../drivers/uvk5.py:1917
 msgid ""
 "This should only be enabled if you are using modified firmware that supports "
 "wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
