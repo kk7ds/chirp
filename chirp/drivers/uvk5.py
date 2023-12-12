@@ -646,14 +646,14 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 
     def get_prompts(x=None):
         rp = chirp_common.RadioPrompts()
-        rp.experimental = \
-            ('This is an experimental driver for the Quansheng UV-K5. '
-             'It may harm your radio, or worse. Use at your own risk.\n\n'
-             'Before attempting to do any changes please download '
-             'the memory image from the radio with chirp '
-             'and keep it. This can be later used to recover the '
-             'original settings. \n\n'
-             'some details are not yet implemented')
+        rp.experimental = _(
+            'This is an experimental driver for the Quansheng UV-K5. '
+            'It may harm your radio, or worse. Use at your own risk.\n\n'
+            'Before attempting to do any changes please download '
+            'the memory image from the radio with chirp '
+            'and keep it. This can be later used to recover the '
+            'original settings. \n\n'
+            'some details are not yet implemented')
         rp.pre_download = _(
             "1. Turn radio on.\n"
             "2. Connect cable to mic/spkr connector.\n"
@@ -871,23 +871,30 @@ class UVK5Radio(chirp_common.CloneModeRadio):
             # set some sane defaults:
             mem.power = UVK5_POWER_LEVELS[2]
             mem.extra = RadioSettingGroup("Extra", "extra")
-            rs = RadioSetting("bclo", "BCLO", RadioSettingValueBoolean(False))
+            rs = RadioSetting(
+                "bclo", "BCLO",
+                RadioSettingValueBoolean(False))
             mem.extra.append(rs)
-            rs = RadioSetting("frev", "FreqRev",
-                              RadioSettingValueBoolean(False))
+            rs = RadioSetting(
+                "frev", "FreqRev",
+                RadioSettingValueBoolean(False))
             mem.extra.append(rs)
-            rs = RadioSetting("pttid", "PTTID", RadioSettingValueList(
-                PTTID_LIST, PTTID_LIST[0]))
+            rs = RadioSetting(
+                "pttid", "PTTID",
+                RadioSettingValueList(PTTID_LIST, PTTID_LIST[0]))
             mem.extra.append(rs)
-            rs = RadioSetting("dtmfdecode", "DTMF decode",
-                              RadioSettingValueBoolean(False))
+            rs = RadioSetting(
+                "dtmfdecode", _("DTMF decode"),
+                RadioSettingValueBoolean(False))
             mem.extra.append(rs)
-            rs = RadioSetting("scrambler", "Scrambler", RadioSettingValueList(
-                SCRAMBLER_LIST, SCRAMBLER_LIST[0]))
+            rs = RadioSetting(
+                "scrambler", _("Scrambler"),
+                RadioSettingValueList(SCRAMBLER_LIST, SCRAMBLER_LIST[0]))
             mem.extra.append(rs)
 
-            rs = RadioSetting("scanlists", "Scanlists", RadioSettingValueList(
-                SCANLIST_LIST, SCANLIST_LIST[0]))
+            rs = RadioSetting(
+                "scanlists", _("Scanlists"),
+                RadioSettingValueList(SCANLIST_LIST, SCANLIST_LIST[0]))
             mem.extra.append(rs)
 
             # actually the step and duplex are overwritten by chirp based on
@@ -985,7 +992,7 @@ class UVK5Radio(chirp_common.CloneModeRadio):
 
         # DTMF DECODE
         is_dtmf = bool(_mem.dtmf_decode > 0)
-        rs = RadioSetting("dtmfdecode", "DTMF decode",
+        rs = RadioSetting("dtmfdecode", _("DTMF decode"),
                           RadioSettingValueBoolean(is_dtmf))
         mem.extra.append(rs)
         tmpcomment += "DTMFdecode:"+(is_dtmf and "ON" or "off")+" "
@@ -996,12 +1003,12 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         else:
             enc = 0
 
-        rs = RadioSetting("scrambler", "Scrambler", RadioSettingValueList(
+        rs = RadioSetting("scrambler", _("Scrambler"), RadioSettingValueList(
             SCRAMBLER_LIST, SCRAMBLER_LIST[enc]))
         mem.extra.append(rs)
         tmpcomment += "Scrambler:"+SCRAMBLER_LIST[enc]+" "
 
-        rs = RadioSetting("scanlists", "Scanlists", RadioSettingValueList(
+        rs = RadioSetting("scanlists", _("Scanlists"), RadioSettingValueList(
             SCANLIST_LIST, tmpscn))
         mem.extra.append(rs)
 
@@ -1309,9 +1316,9 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         dtmfc = RadioSettingGroup("dtmfc", "DTMF Contacts")
         scanl = RadioSettingGroup("scn", "Scan Lists")
         unlock = RadioSettingGroup("unlock", "Unlock Settings")
-        fmradio = RadioSettingGroup("fmradio", "FM Radio")
+        fmradio = RadioSettingGroup("fmradio", _("FM Radio"))
 
-        roinfo = RadioSettingGroup("roinfo", "Driver information")
+        roinfo = RadioSettingGroup("roinfo", _("Driver information"))
 
         top = RadioSettings(
                 basic, keya, dtmf, dtmfc, scanl, unlock, fmradio, roinfo)
@@ -1818,14 +1825,14 @@ class UVK5Radio(chirp_common.CloneModeRadio):
         # Logo string 1
         logo1 = str(_mem.logo_line1).strip("\x20\x00\xff") + "\x00"
         logo1 = _getstring(logo1.encode('ascii', errors='ignore'), 0, 12)
-        rs = RadioSetting("logo1", "Logo string 1 (12 characters)",
+        rs = RadioSetting("logo1", _("Logo string 1 (12 characters)"),
                           RadioSettingValueString(0, 12, logo1))
         basic.append(rs)
 
         # Logo string 2
         logo2 = str(_mem.logo_line2).strip("\x20\x00\xff") + "\x00"
         logo2 = _getstring(logo2.encode('ascii', errors='ignore'), 0, 12)
-        rs = RadioSetting("logo2", "Logo string 2 (12 characters)",
+        rs = RadioSetting("logo2", _("Logo string 2 (12 characters)"),
                           RadioSettingValueString(0, 12, logo2))
         basic.append(rs)
 
