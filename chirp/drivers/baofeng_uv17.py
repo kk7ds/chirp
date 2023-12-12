@@ -148,6 +148,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
     download_function = _download
     upload_function = _upload
 
+    MODES = ["FM", "NFM"]
     BLOCK_ORDER = [16, 17, 18, 19,  24, 25, 26, 4, 6]
     MEM_TOTAL = 0x9000
     WRITE_MEM_TOTAL = 0x9000
