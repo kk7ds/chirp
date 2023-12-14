@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-13 06:20+0900\n"
-"PO-Revision-Date: 2023-11-27 20:14-0300\n"
+"PO-Revision-Date: 2023-12-14 17:16-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1221,7 +1221,7 @@ msgstr ""
 
 #: ../drivers/uvk5.py:887 ../drivers/uvk5.py:995
 msgid "DTMF decode"
-msgstr ""
+msgstr "Decodificación DTMF"
 
 #: ../wxui/memedit.py:2170
 msgid "DV Memory"
@@ -1301,7 +1301,7 @@ msgstr "Descargar instrucciones"
 
 #: ../drivers/uvk5.py:1321
 msgid "Driver information"
-msgstr ""
+msgstr "Información del controlador"
 
 #: ../wxui/query_sources.py:333
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
@@ -1387,7 +1387,7 @@ msgstr "Extra"
 
 #: ../drivers/uvk5.py:1319
 msgid "FM Radio"
-msgstr ""
+msgstr "Radio FM"
 
 #: ../wxui/query_sources.py:612
 msgid ""
@@ -1898,11 +1898,11 @@ msgstr "Cargando ajustes"
 
 #: ../drivers/uvk5.py:1828
 msgid "Logo string 1 (12 characters)"
-msgstr ""
+msgstr "Cadena del logotipo 1 (12 caracteres)"
 
 #: ../drivers/uvk5.py:1835
 msgid "Logo string 2 (12 characters)"
-msgstr ""
+msgstr "Cadena del logotipo 2 (12 caracteres)"
 
 #: ../wxui/query_sources.py:304 ../wxui/query_sources.py:573
 msgid "Longitude"
@@ -1915,16 +1915,16 @@ msgstr "Memorias"
 #: ../wxui/memedit.py:1453
 #, python-format
 msgid "Memory %i is not deletable"
-msgstr "Memoria %i no es borrable"
+msgstr "La memoria %i no es borrable"
 
 #: ../wxui/bankedit.py:233
 msgid "Memory must be in a bank to be edited"
-msgstr "Memoria debe estar en un banco para ser editada"
+msgstr "La memoria debe estar en un banco para ser editada"
 
 #: ../drivers/vx5.py:133
 #, python-brace-format
 msgid "Memory {num} not in bank {bank}"
-msgstr "Memoria {num} no en banco {bank}"
+msgstr "La memoria {num} no está en banco {bank}"
 
 #: ../wxui/query_sources.py:524 ../wxui/memedit.py:510
 msgid "Mode"
@@ -2094,7 +2094,7 @@ msgstr "Las memorias pegadas sobrescribirán %s memorias existentes"
 #: ../wxui/memedit.py:1843
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
-msgstr "Memorias pegadas sobrescribirán memorias %s"
+msgstr "Las memorias pegadas sobrescribirán memorias %s"
 
 #: ../wxui/memedit.py:1837
 #, python-format
@@ -2308,11 +2308,11 @@ msgstr "Ajustes guardados"
 
 #: ../drivers/uvk5.py:896 ../drivers/uvk5.py:1011
 msgid "Scanlists"
-msgstr ""
+msgstr "Listas de escaneo"
 
 #: ../drivers/uvk5.py:891 ../drivers/uvk5.py:1006
 msgid "Scrambler"
-msgstr ""
+msgstr "Codificador"
 
 #: ../wxui/developer.py:527
 msgid "Security Risk"
@@ -2513,6 +2513,14 @@ msgid ""
 "\n"
 "some details are not yet implemented"
 msgstr ""
+"Este es un controlador experimental para la Quansheng UV-K5. Este podría "
+"dañar tu radio, o algo peor. Úsalo bajo tu propio riesgo.\n"
+"\n"
+"Antes de intentar hacer algún cambio por favor descarga la imagen de memoria "
+"de la radio con chirp y guárdala. Esta se puede usar después para recuperar "
+"los ajustes originales.\n"
+"\n"
+"algunos detalles aun no están implementados"
 
 #: ../drivers/bj9900.py:108
 msgid ""
