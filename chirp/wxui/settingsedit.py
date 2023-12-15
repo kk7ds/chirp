@@ -125,7 +125,15 @@ class ChirpSettingsEdit(common.ChirpEditor):
                                                             val))
                         realname, index = name.split(common.INDEX_CHAR)
                         if int(index) == j:
-                            setting[j] = val
+                            try:
+                                setting[j] = val
+                            finally:
+                                if setting[j].get_value() != val:
+                                    # setting value modified or not accepted in
+                                    # validate callback, propagate back to GUI
+                                    prop = self._propgrid.propgrid.GetProperty(
+                                        name)
+                                    prop.SetValue(setting[j].get_value())
             return True
         except Exception as e:
             LOG.exception('Failed to apply settings')
