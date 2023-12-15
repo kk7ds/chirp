@@ -41,6 +41,18 @@ struct {
        bcl:1;
     u8 unknown3[3];
 } memory[%d];
+#seekto 0x02B0;
+struct {
+    u8 voicesw;      // Voice SW            +
+    u8 voiceselect;  // Voice Select
+    u8 scan;         // Scan                +
+    u8 vox;          // VOX                 +
+    u8 voxgain;      // Vox Gain            +
+    u8 voxnotxonrx;  // Rx Disable Vox      +
+    u8 hivoltnotx;   // High Vol Inhibit TX +
+    u8 lovoltnotx;   // Low Vol Inhibit TX  +
+    u8 rxemergency;  // RX Emergency
+} settings2;
 #seekto 0x03C0;
 struct {
     u8 codesw:1,         // Retevis RB29 code switch
@@ -70,19 +82,6 @@ struct {
        power10w:1;       // Retevis RT85 power 10w on/off
                          // Retevis RT75 stop TX with low voltage
 } settings;
-
-#seekto 0x02B0;
-struct {
-    u8 voicesw;      // Voice SW            +
-    u8 voiceselect;  // Voice Select
-    u8 scan;         // Scan                +
-    u8 vox;          // VOX                 +
-    u8 voxgain;      // Vox Gain            +
-    u8 voxnotxonrx;  // Rx Disable Vox      +
-    u8 hivoltnotx;   // High Vol Inhibit TX +
-    u8 lovoltnotx;   // Low Vol Inhibit TX  +
-    u8 rxemergency;  // RX Emergency
-} settings2;
 """
 
 MEM_FORMAT_RB18 = """
@@ -485,12 +484,12 @@ class T18Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.rxfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
+        if _mem.rxfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
             return mem
 
-        if _mem.txfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
+        if _mem.txfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
             mem.duplex = "off"
             mem.offset = 0
         elif int(_mem.rxfreq) == int(_mem.txfreq):
