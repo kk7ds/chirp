@@ -60,6 +60,7 @@ Baofeng_BF-A58S,@KC9HI,3-Dec-2022
 Baofeng_BF-F8HP,@KC9HI,18-Nov-2022
 Baofeng_BF-M4,@cetinajero,8-May-2023
 Baofeng_BF-T1,@KC9HI,10-Dec-2022
+Baofeng_BF-T20,@KC9HI,15-Dec-2023
 Baofeng_BF-T8,@KC9HI,30-Nov-2022
 Baofeng_BF-V8A,@KC9HI,28-Nov-2022
 Baofeng_F-11,+Baofeng_UV-5R,18-Nov-2022

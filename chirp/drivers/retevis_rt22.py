@@ -740,3 +740,12 @@ class W31E(RT22Radio):
               ]
     _memsize = 0x0200
     _block_size = 0x40
+
+
+@directory.register
+class BFT20(RT22Radio):
+    """Baofeng BF-T20"""
+    VENDOR = "Baofeng"
+    MODEL = "BF-T20"
+
+    _fileid = [b"P330h33", ]
