@@ -1018,6 +1018,13 @@ class TMV71Radio(TMD710Radio):
     """Kenwood TM-V71"""
     MODEL = "TM-V71"
 
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_characters = ''.join(c for c in rf.valid_characters
+                                      if not c.isalpha() or
+                                      c not in rf.valid_characters.lower())
+        return rf
+
 
 @directory.register
 class TMD710GRadio(TMD710Radio):
