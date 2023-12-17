@@ -830,9 +830,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             val = SKEY2S_VALUES[index]
             obj.set_value(val)
 
-        if self.MODEL in ["RT-470"]:
-            unwanted = [0, 7, 9, 10, 11, 12]
-        elif self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470"]:
             unwanted = [9, 10, 11, 12]
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 9, 10, 11, 12]
@@ -863,9 +861,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             val = SKEY2L_VALUES[index]
             obj.set_value(val)
 
-        if self.MODEL in ["RT-470"]:
-            unwanted = [0, 7, 8, 9, 10, 11, 12]
-        elif self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470"]:
             unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 10, 11, 12]
@@ -896,9 +892,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             val = SKEY3S_VALUES[index]
             obj.set_value(val)
 
-        if self.MODEL in ["RT-470"]:
-            unwanted = [0, 7, 8, 9, 10, 11, 12]
-        elif self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470"]:
             unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
@@ -921,7 +915,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset.set_apply_callback(apply_skey3s_listvalue, _settings.skey3_sp)
         basic.append(rset)
 
-        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470"]:
             # Menu 24: PF3 LONG PRESS (RT-470L)
             def apply_skey3l_listvalue(setting, obj):
                 LOG.debug("Setting value: " + str(setting.value) +
@@ -931,7 +925,7 @@ class JC8810base(chirp_common.CloneModeRadio):
                 val = SKEY2L_VALUES[index]
                 obj.set_value(val)
 
-            if self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
+            if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470"]:
                 unwanted = [8, 9, 10, 11, 12]
             else:
                 unwanted = []
@@ -960,16 +954,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             val = SKEYTOP_VALUES[index]
             obj.set_value(val)
 
-        if self.MODEL in ["RT-470"]:
-            # ==========
-            # Notice to developers:
-            # The RT-470 v1.22 firmware added 'hidden' support for the
-            # Top Key (Short Press) feature. RT-470 radios with a firmware
-            # version prior to v1.22 will not honor the Top Key (Short
-            # Press) setting in CHIRP.
-            # ==========
-            unwanted = [0, 7, 8, 9, 10, 11, 12]
-        elif self.MODEL in ["HI-8811", "RT-470L", "RT-470X"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470"]:
             unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
@@ -1245,14 +1230,23 @@ class RT470Radio(JC8810base):
 
     # ==========
     # Notice to developers:
-    # The RT-470 support in this driver is currently based upon v1.25 firmware.
+    # The RT-470 support in this driver is currently based upon...
+    # - v1.25a firmware (original pcb)
+    # - v2.11a firmware (pcb2)
     # ==========
 
-    _fingerprint = [b"\x00\x00\x00\x26\x00\x20\xD8\x04",
-                    b"\x00\x00\x00\x42\x00\x20\xF0\x04",
-                    b"\x00\x00\x00\x4A\x00\x20\xF8\x04",
-                    b"\x00\x00\x00\x3A\x00\x20\xE8\x04",  # fw 1.25A
-                    ]
+    # original pcb
+    _fingerprint_pcb1 = [b"\x00\x00\x00\x26\x00\x20\xD8\x04",
+                         b"\x00\x00\x00\x42\x00\x20\xF0\x04",
+                         b"\x00\x00\x00\x4A\x00\x20\xF8\x04",
+                         b"\x00\x00\x00\x3A\x00\x20\xE8\x04",  # fw 1.25A
+                         ]
+
+    # pcb 2
+    _fingerprint_pcb2 = [b"\x00\x00\x00\x2C\x00\x20\xD8\x04",  # fw v2.11A
+                         ]
+
+    _fingerprint = _fingerprint_pcb1 + _fingerprint_pcb2
 
     VALID_BANDS = [(16000000, 100000000),
                    (100000000, 136000000),
