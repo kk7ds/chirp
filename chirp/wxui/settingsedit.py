@@ -124,6 +124,11 @@ class ChirpSettingsEdit(common.ChirpEditor):
                                                             j,
                                                             val))
                         realname, index = name.split(common.INDEX_CHAR)
+                        prop = page.propgrid.GetProperty(name)
+                        if not prop:
+                            LOG.warning('Unable to find property %s in page',
+                                        name)
+                            continue
                         if int(index) == j:
                             try:
                                 setting[j] = val
@@ -131,8 +136,6 @@ class ChirpSettingsEdit(common.ChirpEditor):
                                 if setting[j].get_value() != val:
                                     # setting value modified or not accepted in
                                     # validate callback, propagate back to GUI
-                                    prop = self._propgrid.propgrid.GetProperty(
-                                        name)
                                     prop.SetValue(setting[j].get_value())
             return True
         except Exception as e:
