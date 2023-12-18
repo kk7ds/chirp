@@ -665,6 +665,8 @@ class T18Radio(chirp_common.CloneModeRadio):
 
         if self.MODEL == "BF-V8A" or self.MODEL == "BF-T20FRS":
             _mem.set_raw("\x00" * 12 + "\x09\xFF\xFF\xFF")
+        elif self.MODEL == "RB29" or self.MODEL == "RB629":
+            _mem.set_raw("\x00" * 12 + "\xF7\xFF\xFF\xFF")
         else:
             _mem.set_raw("\x00" * 12 + "\xF9\xFF\xFF\xFF")
 
