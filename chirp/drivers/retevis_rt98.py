@@ -31,6 +31,7 @@ LOG = logging.getLogger(__name__)
 #
 #  Chirp Driver for Retevis RT98 models: RT98V (136-174 MHz)
 #                                        RT98U (400-490 MHz)
+#                                        RT98W (66-88 MHz)
 #
 #
 #
@@ -106,6 +107,7 @@ LIST_TIME46 = LIST_TIME50[4:]
 
 LIST_RT98V_MODES = ["FreeNet", "COM", "COMII"]
 LIST_RT98U_MODES = ["PMR", "COM", "COMII"]
+LIST_RT98W_MODES = ["", "", "", "", "", "", "COM"]
 
 LIST_RT98V_FREQS = ["Rx(149 - 149.2 MHz) Tx(149 - 149.2 MHz)",
                     "Rx(136 - 174 MHz) Tx(136 - 174 MHz)",
@@ -114,6 +116,14 @@ LIST_RT98V_FREQS = ["Rx(149 - 149.2 MHz) Tx(149 - 149.2 MHz)",
 LIST_RT98U_FREQS = ["Rx(446 - 446.2 MHz) Tx(446 - 446.2 MHz)",
                     "Rx(400 - 470 MHz) Tx(400 - 470 MHz)",
                     "Rx(450 - 470 MHz) Tx(450 - 470 MHz)"]
+
+LIST_RT98W_FREQS = ["",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "Rx(66 - 88 MHz) Tx(66 - 88 MHz)"]
 
 #  RT98  memory map
 #  section: 1  Channel Bank
@@ -488,6 +498,14 @@ RT98U_BAND_LIMITS = {0x00: [(446000000, 446200000)],
                      0x01: [(400000000, 470000000)],
                      0x02: [(450000000, 470000000)]}
 
+RT98W_BAND_LIMITS = {0x00: [(66000000, 88000000)],
+                     0x01: [(66000000, 88000000)],
+                     0x02: [(66000000, 88000000)],
+                     0x03: [(66000000, 88000000)],
+                     0x04: [(66000000, 88000000)],
+                     0x05: [(66000000, 88000000)],
+                     0x06: [(66000000, 88000000)]}
+
 
 # Get band limits from a band limit value
 def get_band_limits_Hz(radio_type, limit_value):
@@ -501,6 +519,11 @@ def get_band_limits_Hz(radio_type, limit_value):
             limit_value = 0x01
             LOG.warning('Unknown band limit value 0x%02x, default to 0x01')
         bandlimitfrequencies = RT98V_BAND_LIMITS[limit_value]
+    elif str(radio_type).rstrip("\00") in ["RT98W", "AT-779W"]:
+        if limit_value not in RT98W_BAND_LIMITS:
+            limit_value = 0x06
+            LOG.warning('Unknown band limit value 0x%02x, default to 0x06')
+        bandlimitfrequencies = RT98W_BAND_LIMITS[limit_value]
     return bandlimitfrequencies
 
 
@@ -689,10 +712,14 @@ def do_upload(radio):
             image_band_limits = LIST_RT98U_FREQS[int(_embedded.mode)]
         if str(_embedded.radio_type).rstrip("\00") in ["RT98V", "AT-779V"]:
             image_band_limits = LIST_RT98V_FREQS[int(_embedded.mode)]
+        if str(_embedded.radio_type).rstrip("\00") in ["RT98W", "AT-779W"]:
+            image_band_limits = LIST_RT98W_FREQS[int(_embedded.mode)]
         if str(model).rstrip("\00") in ["RT98U", "AT-779U"]:
             radio_band_limits = LIST_RT98U_FREQS[int(bandlimit)]
         if str(model).rstrip("\00") in ["RT98V", "AT-779V"]:
             radio_band_limits = LIST_RT98V_FREQS[int(bandlimit)]
+        if str(model).rstrip("\00") in ["RT98W", "AT-779W"]:
+            radio_band_limits = LIST_RT98W_FREQS[int(bandlimit)]
 
         LOG.warning('radio and image band limits differ')
         LOG.warning('image band limits: %s' % image_band_limits)
@@ -1296,6 +1323,8 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
 
         if str(_embedded.radio_type).rstrip("\00") in ["RT98V", "AT-779V"]:
             options = LIST_RT98V_MODES
+        elif str(_embedded.radio_type).rstrip("\00") in ["RT98W", "AT-779W"]:
+            options = LIST_RT98W_MODES
         else:
             options = LIST_RT98U_MODES
         rs = RadioSettingValueList(options, options[_embedded.mode])
@@ -1306,6 +1335,8 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         # frequency
         if str(_embedded.radio_type).rstrip("\00") in ["RT98V", "AT-779V"]:
             options = LIST_RT98V_FREQS
+        elif str(_embedded.radio_type).rstrip("\00") in ["RT98W", "AT-779W"]:
+            options = LIST_RT98W_FREQS
         else:
             options = LIST_RT98U_FREQS
         rs = RadioSettingValueList(options, options[_settings3.bandlimit])
@@ -1385,5 +1416,8 @@ class Rt98Radio(Rt98BaseRadio):
     # strings
     ALLOWED_RADIO_TYPES = {'RT98V': ['V100'],
                            'RT98U': ['V100'],
+                           'RT98W': ['V100'],
                            'AT-779V': ['V100'],
-                           'AT-779U': ['V100']}
+                           'AT-779U': ['V100'],
+                           'AT-779W': ['V100'],
+                           }
