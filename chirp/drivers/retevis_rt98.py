@@ -168,7 +168,7 @@ LIST_RT98U_FREQS = ["Rx(446 - 446.2 MHz) Tx(446 - 446.2 MHz)",
 #  9          u8 unknown7[9]
 #
 MEM_FORMAT = """
-#seekto 0x0000;
+// #seekto 0x0000;
 struct {
   bbcd freq[4];
   bbcd offset[4];
@@ -227,7 +227,7 @@ struct {
    bit c[8];
 } csetflag[32];
 
-#seekto 0x3260;
+// #seekto 0x3260;
 struct {
    bit c[8];
 } cskipflag[32];
@@ -860,7 +860,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
             mem.empty = True
             return mem
 
-        if _mem.get_raw(asbytes=False)[0] == "\xFF":
+        if _mem.get_raw()[0] == b"\xFF":
             mem.empty = True
             return mem
 
