@@ -15,6 +15,8 @@
 
 import collections
 import logging
+import platform
+import re
 import textwrap
 import threading
 
@@ -198,14 +200,32 @@ class ChirpRadioPromptDialog(wx.Dialog):
 
 
 def port_label(port):
-    if not port.description:
-        return port.device
-    elif port.description == 'n/a':
-        return port.device
-    elif port.device not in port.description:
-        return '%s (%s)' % (port.description, port.device)
+    if platform.system() == 'Windows':
+        # The OS format for description is "Long Name (COMn)", so use
+        # port: desc to make the port visible early in the string without
+        # changing the description format.
+        label_fmt = '%(dev)s: %(desc)s'
     else:
-        return port.description
+        label_fmt = '%(desc)s (%(dev)s)'
+    dev = port.device
+    if dev.startswith('/dev/'):
+        dev = dev.split('/dev/')[1]
+    if not port.description:
+        return dev
+    elif port.description == 'n/a':
+        return dev
+    else:
+        return label_fmt % ({'desc': port.description,
+                             'dev': dev})
+
+
+def port_sort_key(port):
+    _dev, label = port
+    m = re.match('^COM([0-9]+):.*', label)
+    if m:
+        return int(m.group(1))
+    else:
+        return label
 
 
 # Make this global so it sticks for a session
@@ -305,7 +325,7 @@ class ChirpCloneDialog(wx.Dialog):
         self.ports = [(port.device, port_label(port))
                       for port in system_ports
                       if port.device not in filter_ports]
-        self.ports.sort()
+        self.ports.sort(key=port_sort_key)
 
         favorite_ports = CONF.get('favorite_ports', 'state') or ''
         for port in favorite_ports.split(','):
