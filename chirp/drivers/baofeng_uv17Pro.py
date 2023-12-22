@@ -748,10 +748,10 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                 if ord(str(char)) == 255:
                     break
                 fname += int(char).to_bytes(1, 'big')
-            return fname.decode('gb2312')
+            return fname.decode('gb2312').strip()
 
         def apply_bankname(setting, obj):
-            name = str(setting.value).encode('gb2312')[:16]
+            name = str(setting.value).encode('gb2312')[:16].ljust(16, b"\xff")
             obj.name = name
 
         if self._has_support_for_banknames:
@@ -760,7 +760,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                 rs = RadioSetting("bank_name/%i.name" % i,
                                   "Bank name %i" % (i + 1),
                                   RadioSettingValueString(
-                                      0, 16, _filterName(_nameobj.name), True,
+                                      0, 16, _filterName(_nameobj.name), False,
                                       CHARSET_GB2312))
                 rs.set_apply_callback(apply_bankname, _nameobj)
                 bank.append(rs)
@@ -1054,6 +1054,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
 class UV17ProGPS(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "UV-17ProGPS"
+
     _has_support_for_banknames = True
     _magic = MSTRING_UV17PROGPS
     _magics = [b"\x46", b"\x4d", b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01" +
