@@ -220,12 +220,16 @@ def port_label(port):
 
 
 def port_sort_key(port):
-    _dev, label = port
-    m = re.match('^COM([0-9]+):.*', label)
-    if m:
-        return int(m.group(1))
-    else:
-        return label
+    key = port.device
+    if platform.system() == 'Windows':
+        try:
+            m = re.match('^COM([0-9]+)$', port.device)
+            if m:
+                key = 'COM%08i' % int(m.group(1))
+        except Exception as e:
+            LOG.warning('Failed to stable format %s: %s', port.device, e)
+
+    return key
 
 
 # Make this global so it sticks for a session
@@ -322,10 +326,11 @@ class ChirpCloneDialog(wx.Dialog):
             '/dev/cu.Bluetooth-Incoming-Port',
         ]
 
+        LOG.debug('All system ports: %s', [x.__dict__ for x in system_ports])
         self.ports = [(port.device, port_label(port))
-                      for port in system_ports
+                      for port in sorted(system_ports,
+                                         key=port_sort_key)
                       if port.device not in filter_ports]
-        self.ports.sort(key=port_sort_key)
 
         favorite_ports = CONF.get('favorite_ports', 'state') or ''
         for port in favorite_ports.split(','):

@@ -3,10 +3,17 @@ import time
 from unittest import mock
 
 sys.modules['wx'] = wx = mock.MagicMock()
+sys.modules['wx.lib'] = mock.MagicMock()
+sys.modules['wx.lib.scrolledpanel'] = mock.MagicMock()
+sys.modules['wx.lib.sized_controls'] = mock.MagicMock()
+sys.modules['wx.richtext'] = mock.MagicMock()
+wx.lib.newevent.NewCommandEvent.return_value = None, None
+sys.modules['chirp.wxui.developer'] = mock.MagicMock()
 
 # These need to be imported after the above mock so that we don't require
 # wx to be present for these tests
 from tests.unit import base  # noqa
+from chirp.wxui import clone  # noqa
 from chirp.wxui import radiothread  # noqa
 
 
@@ -105,3 +112,42 @@ class TestRadioThread(base.BaseTest):
         radio.set_memory.assert_not_called()
         radio.get_features.assert_not_called()
         wx.PostEvent.assert_not_called()
+
+
+class TestClone(base.BaseTest):
+    @mock.patch('platform.system', return_value='Linux')
+    def test_sort_ports_unix(self, system):
+        ports = [
+            mock.MagicMock(device='/dev/cu.zed',
+                           description='My Zed'),
+            mock.MagicMock(device='/dev/cu.abc',
+                           description='Some device'),
+            mock.MagicMock(device='/dev/cu.serial',
+                           description='')
+            ]
+        self.assertEqual(
+            ['Some device (cu.abc)',
+             'cu.serial',
+             'My Zed (cu.zed)'],
+            [clone.port_label(p)
+                for p in sorted(ports, key=clone.port_sort_key)])
+
+    @mock.patch('platform.system', return_value='Windows')
+    def test_sort_ports_windows(self, system):
+        ports = [
+            mock.MagicMock(device='COM7',
+                           description='Some serial device'),
+            mock.MagicMock(device='COM17',
+                           description='Some other device'),
+            mock.MagicMock(device='CNC0',
+                           description='Some weird device'),
+            mock.MagicMock(device='COM4',
+                           description=''),
+            ]
+        self.assertEqual(
+            ['CNC0: Some weird device',
+             'COM4',
+             'COM7: Some serial device',
+             'COM17: Some other device'],
+            [clone.port_label(p)
+                for p in sorted(ports, key=clone.port_sort_key)])
