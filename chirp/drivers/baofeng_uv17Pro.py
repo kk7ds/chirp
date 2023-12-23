@@ -1163,6 +1163,13 @@ class UV17Pro(bfc.BaofengCommonHT):
             mem.power = levels[0]
 
         mem.mode = _mem.wide and self.MODES[0] or self.MODES[1]
+        if (mem.freq >= self._airband[0] and mem.freq <= self._airband[1]):
+            # NOTE: AM is not in valid_modes because you can't arbitrarily
+            # enable it on this radio. However, we can expose it as immutable
+            # which will display properly in the UI and not allow the user
+            # to change those channels to FM.
+            mem.mode = "AM"
+            mem.immutable = ['mode']
 
         mem.extra = RadioSettingGroup("Extra", "extra")
 
