@@ -495,6 +495,13 @@ def _sayhello(serport):
         LOG.debug("Sending hello packet")
         _send_command(serport, hellopacket)
         o = _receive_reply(serport)
+
+        if o[0] == 0x18 and o[1] == 0x05:
+            LOG.warning("Radio is in firmware flash mode")
+            raise errors.RadioError(
+                    "This radio is in firmware flash mode (PTT + turn on). "
+                    "Please do this according to the vendor documentation")
+
         if (o):
             break
         tries -= 1
