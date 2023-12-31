@@ -1107,9 +1107,6 @@ class MURSV2(GMRSV2base):
         _msg_duplex = 'Duplex must be "off" for this frequency'
         _msg_offset = 'Only simplex or +5 MHz offset allowed on GMRS'
 
-        print('frequency')
-        print(mem.freq)
-        print(mem.freq in bandplan_na.ALL_MURS_FREQS)
         if mem.freq not in bandplan_na.ALL_MURS_FREQS:
             if mem.duplex != "off":
                 msgs.append(chirp_common.ValidationWarning(_msg_duplex))
