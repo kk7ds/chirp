@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-13 06:20+0900\n"
-"PO-Revision-Date: 2023-11-22 22:39+0300\n"
+"PO-Revision-Date: 2024-01-03 17:27+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
 "Language: tr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.1\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: ../drivers/ft2d.py:97
 msgid ""
@@ -1145,7 +1145,7 @@ msgstr ""
 
 #: ../wxui/query_sources.py:331
 msgid "Convert to FM"
-msgstr ""
+msgstr "FM'e dönüştür"
 
 #: ../wxui/memedit.py:1569
 msgid "Copy"
@@ -1186,7 +1186,7 @@ msgstr ""
 
 #: ../drivers/uvk5.py:887 ../drivers/uvk5.py:995
 msgid "DTMF decode"
-msgstr ""
+msgstr "DTMF kod çöz"
 
 #: ../wxui/memedit.py:2170
 msgid "DV Memory"
@@ -1223,9 +1223,8 @@ msgid "Digital Code"
 msgstr "Dijital Kod"
 
 #: ../wxui/query_sources.py:335
-#, fuzzy
 msgid "Digital Modes"
-msgstr "Dijital Kod"
+msgstr "Dijital Modlar"
 
 #: ../wxui/main.py:1678
 msgid "Disable reporting"
@@ -1266,11 +1265,13 @@ msgstr "İndirme talimatları"
 
 #: ../drivers/uvk5.py:1321
 msgid "Driver information"
-msgstr ""
+msgstr "Sürücü bilgileri"
 
 #: ../wxui/query_sources.py:333
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
 msgstr ""
+"Analogu destekleyen çift modlu dijital tekrarlayıcılar(röleler) FM olarak "
+"gösterilecek"
 
 #: ../wxui/memedit.py:394
 msgid "Duplex"
@@ -1350,7 +1351,7 @@ msgstr "Ekstra"
 
 #: ../drivers/uvk5.py:1319
 msgid "FM Radio"
-msgstr ""
+msgstr "FM Radyo"
 
 #: ../wxui/query_sources.py:612
 msgid ""
@@ -1855,11 +1856,11 @@ msgstr "Ayarlar yükleniyor"
 
 #: ../drivers/uvk5.py:1828
 msgid "Logo string 1 (12 characters)"
-msgstr ""
+msgstr "Logo dizesi 1 (12 karakter)"
 
 #: ../drivers/uvk5.py:1835
 msgid "Logo string 2 (12 characters)"
-msgstr ""
+msgstr "Logo dizesi 2 (12 karakter)"
 
 #: ../wxui/query_sources.py:304 ../wxui/query_sources.py:573
 msgid "Longitude"
@@ -2264,11 +2265,11 @@ msgstr "Kaydedilmiş ayarlar"
 
 #: ../drivers/uvk5.py:896 ../drivers/uvk5.py:1011
 msgid "Scanlists"
-msgstr ""
+msgstr "Tarama listeleri"
 
 #: ../drivers/uvk5.py:891 ../drivers/uvk5.py:1006
 msgid "Scrambler"
-msgstr ""
+msgstr "Karıştırıcı"
 
 #: ../wxui/developer.py:527
 msgid "Security Risk"
@@ -2441,6 +2442,7 @@ msgstr ""
 #: ../drivers/radtel_rt490.py:1325
 msgid "This driver is in development and should be considered as experimental."
 msgstr ""
+"Bu sürücü geliştirme aşamasındadır ve deneysel olarak değerlendirilmelidir."
 
 #: ../drivers/th_uv88.py:553
 msgid "This is an early stage beta driver\n"
@@ -2461,6 +2463,14 @@ msgid ""
 "\n"
 "some details are not yet implemented"
 msgstr ""
+"Bu Quansheng UV-K5 için deneysel bir sürücüdür. Telsizinize zarar verebilir "
+"veya daha kötüsü olabilir. Riski size ait olmak üzere kullanın.\n"
+"\n"
+"Herhangi bir değişiklik yapmadan önce lütfen hafıza imajını telsizden chirp "
+"ile indirin ve saklayın. (Yedekleme yapın) Bu daha sonra orijinal ayarları "
+"kurtarmak için kullanılabilir.\n"
+"\n"
+"bazı ayrıntılar henüz uygulanmadı"
 
 #: ../drivers/bj9900.py:108
 msgid ""
