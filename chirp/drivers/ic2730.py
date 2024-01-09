@@ -27,14 +27,6 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
 
 LOG = logging.getLogger(__name__)
 
-HAS_FUTURE = True
-try:                         # PY3 compliance
-    from builtins import bytes
-except ImportError:
-    HAS_FUTURE = False
-    LOG.debug('python-future package is not '
-              'available; %s requires it' % __name__)
-
 MEM_FORMAT = """
 struct {
   u24  freq_flags:6,
