@@ -18,7 +18,6 @@
 import logging
 import struct
 
-from chirp import bandplan_na
 from chirp import bitwise
 from chirp import chirp_common
 from chirp import directory
