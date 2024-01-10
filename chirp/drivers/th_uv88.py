@@ -212,7 +212,9 @@ RA89_SETTINGS = """
 struct {
   u8 sideKey2:4,          // 0x1160 side key 2
      sideKey1:4;          //        side key 1
-  u8 unknownBytes[11];    // 0x1161 - 0x116B
+  u8 sideKey2_long:4,     // 0x1161 side key 2 Long
+     sideKey1_long:4;     //        side key 1 Long
+  u8 unknownBytes[10];    // 0x1162 - 0x116B
   u8 offFreqVoltage : 3,  // 0x116C unknown referred to in code but not on
                           //        screen
      unk_bit4 : 1,        //
@@ -747,13 +749,20 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         mem.extra.append(step)
 
         scramble_value = _mem.scramble
-        if scramble_value >= 8:     # Looks like OFF is 0x0f ** CONFIRM
-            scramble_value = 0
-        scramble = RadioSetting("scramble", "Scramble",
-                                RadioSettingValueList(SCRAMBLE_LIST,
-                                                      SCRAMBLE_LIST[
-                                                          scramble_value]))
-        mem.extra.append(scramble)
+        if self.MODEL == "RA89":
+            if scramble_value >= 2:
+                scramble_value = 0
+            rs = RadioSetting("scramble", "Scramble",
+                              RadioSettingValueBoolean(_mem.scramble))
+            mem.extra.append(rs)
+        else:
+            if scramble_value >= 8:     # Looks like OFF is 0x0f ** CONFIRM
+                scramble_value = 0
+            scramble = RadioSetting("scramble", "Scramble",
+                                    RadioSettingValueList(SCRAMBLE_LIST,
+                                                          SCRAMBLE_LIST[
+                                                              scramble_value]))
+            mem.extra.append(scramble)
 
         optsig = RadioSetting("signal", "Optional signaling",
                               RadioSettingValueList(
@@ -942,7 +951,10 @@ class THUV88Radio(chirp_common.CloneModeRadio):
             basic.append(rset)
 
         # Menu 20 - Intro Screen
-        options = ["Off", "Voltage", "Character String"]
+        if self.MODEL == "RA89":
+            options = ["Off", "Voltage", "Character String", "Startup Logo"]
+        else:
+            options = ["Off", "Voltage", "Character String"]
         rx = RadioSettingValueList(options, options[_settings.introScreen])
         rset = RadioSetting("basicsettings.introScreen", "Intro Screen", rx)
         basic.append(rset)
@@ -1024,14 +1036,30 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         advanced.append(rset)
 
         if self.MODEL == "RA89":
-            options = ["VOX", "Dual Wait", "Scan", "Moni", "1750 Tone",
-                       "Flashlight", "Power Level", "Alarm"]
+            options = ["None", "VOX", "Dual Wait", "Scan", "Moni", "1750 Tone",
+                       "Flashlight", "Power Level", "Alarm",
+                       "Noise Cancelaton", "Temp Monitor", "FM Radio",
+                       "Talk Around", "Frequency Reverse"]
             rx = RadioSettingValueList(options, options[_settings.sideKey1])
             rset = RadioSetting("basicsettings.sideKey1", "Side Key 1", rx)
             advanced.append(rset)
 
-            rx = RadioSettingValueList(options, options[_settings.sideKey2])
-            rset = RadioSetting("basicsettings.sideKey2", "Side Key 2", rx)
+            rx = RadioSettingValueList(options,
+                                       options[_settings.sideKey1_long])
+            rset = RadioSetting("basicsettings.sideKey1_long",
+                                "Side Key 1 Long", rx)
+            advanced.append(rset)
+
+            rx = RadioSettingValueList(options,
+                                       options[_settings.sideKey2])
+            rset = RadioSetting("basicsettings.sideKey2",
+                                "Side Key 2", rx)
+            advanced.append(rset)
+
+            rx = RadioSettingValueList(options,
+                                       options[_settings.sideKey2_long])
+            rset = RadioSetting("basicsettings.sideKey2_long",
+                                "Side Key 2 Long", rx)
             advanced.append(rset)
 
         workmode = RadioSettingGroup("workmode", "Work Mode Settings")
