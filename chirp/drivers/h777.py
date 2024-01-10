@@ -291,7 +291,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     # TODO: Is it 1 watt?
     POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
                     chirp_common.PowerLevel("High", watts=5.00)]
-    VALID_BANDS = (400000000, 470000000)
+    VALID_BANDS = (400000000, 490000000)
     MAX_VOXLEVEL = 5
     ALIASES = [ArcshellAR5, ArcshellAR6, GV8SAlias, GV9SAlias, A8SAlias,
                TenwayTW325Alias, RetevisH777Alias]
