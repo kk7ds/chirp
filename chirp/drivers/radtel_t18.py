@@ -1495,7 +1495,7 @@ class BFT20FRSRadio(T18Radio):
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
-    _frs = True
+    _frs = False  # sold as FRS radio but supports full band TX/RX
 
     _ranges = [
         (0x0000, 0x0160),
