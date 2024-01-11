@@ -466,7 +466,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rf.valid_modes = ["FM", "NFM"]  # 25 kHz, 12.5 kHz.
         rf.valid_dtcs_codes = DTCS
         rf.memory_bounds = (1, self._upper)
-        rf.valid_tuning_steps = [2.5, 5., 6.25, 10., 12.5, 20., 25., 50.]
+        rf.valid_tuning_steps = [2.5, 5., 6.25, 8.33, 10., 12.5, 20., 25., 50.]
         rf.valid_bands = self.VALID_BANDS
         return rf
 
@@ -1294,7 +1294,7 @@ class RT470XRadio(RT470LRadio):
     # Notice to developers:
     # The RT-470X support in this driver is currently based upon...
     # - v1.18a firmware (original pcb)
-    # - v2.10a firmware (pcb2)
+    # - v2.13a firmware (pcb2)
     # ==========
 
     # original pcb
@@ -1303,6 +1303,7 @@ class RT470XRadio(RT470LRadio):
 
     # pcb 2
     _fingerprint_pcb2 = [b"\x00\x00\x00\x2C\x00\x20\xD8\x04",  # fw v2.10A
+                         b"\x00\x00\x00\x36\x00\x20\xDC\x04",  # fw v2.13A
                          ]
 
     _fingerprint = _fingerprint_pcb1 + _fingerprint_pcb2
