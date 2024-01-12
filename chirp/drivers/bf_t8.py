@@ -37,7 +37,7 @@ from chirp.settings import (
 LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
-#seekto 0x0000;
+// #seekto 0x0000;
 struct {
   lbcd rxfreq[4];       // RX Frequency
   lbcd txfreq[4];       // TX Frequency
@@ -53,7 +53,7 @@ struct {
   u8 unknown3[3];       //
 } memory[%d];
 
-#seekto 0x0630;
+// #seekto 0x0630;
 struct {
   u8 squelch;           // SQL
   u8 vox;               // Vox Lv
@@ -72,8 +72,10 @@ struct {
   u8 mrb;               // MR Channel B
   u8 disp_ab;           // Display A/B Selected
 } settings;
+"""
 
-#seekto 0x063D;
+MEM_FORMAT_PT2 = """
+// #seekto 0x063D;
 struct {
   u8 workmode;          // Work Mode
   u8 wx;                // NOAA WX ch#
@@ -88,14 +90,14 @@ struct {
 """
 
 MEM_FM_U_FORMAT = """
-#seekto 0x063B;
+// #seekto 0x063B;
 struct {
   u16 fmcur;            // Broadcast FM station
 } fmpreset;
 """
 
 MEM_FM_UL_FORMAT = """
-#seekto 0x063B;
+// #seekto 0x063B;
 struct {
   ul16 fmcur;           // Broadcast FM station
 } fmpreset;
@@ -359,7 +361,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         return rf
 
     def process_mmap(self):
-        mem_format = MEM_FORMAT + MEM_FM_UL_FORMAT
+        mem_format = MEM_FORMAT + MEM_FM_UL_FORMAT + MEM_FORMAT_PT2
         self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
 
     def sync_in(self):
@@ -415,10 +417,10 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                                        (rx_tmode, rx_tone, rx_pol))
 
     def _is_txinh(self, _mem):
-        raw_tx = ""
+        raw_tx = b""
         for i in range(0, 4):
-            raw_tx += _mem.txfreq[i].get_raw(asbytes=False)
-        return raw_tx == "\xFF\xFF\xFF\xFF"
+            raw_tx += _mem.txfreq[i].get_raw()
+        return raw_tx == b"\xFF\xFF\xFF\xFF"
 
     def _get_mem(self, number):
         return self._memobj.memory[number - 1]
@@ -441,12 +443,12 @@ class BFT8Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.rxfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
+        if _mem.rxfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
             return mem
 
-        if _mem.get_raw(asbytes=False) == ("\xFF" * 16):
+        if _mem.get_raw() == (b"\xFF" * 16):
             LOG.debug("Initializing empty memory")
             _mem.set_raw("\x00" * 13 + "\xFF" * 3)
 
@@ -891,7 +893,7 @@ class RetevisRB27B(BFT8Radio):
     _memsize = 0x1040
 
     def process_mmap(self):
-        mem_format = MEM_FORMAT + MEM_FM_U_FORMAT
+        mem_format = MEM_FORMAT + MEM_FM_U_FORMAT + MEM_FORMAT_PT2
         self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
 
 
@@ -911,7 +913,7 @@ class RetevisRB27(RetevisRB27B):
     _frs = _murs = _pmr = False
 
     def process_mmap(self):
-        mem_format = MEM_FORMAT + MEM_FM_U_FORMAT
+        mem_format = MEM_FORMAT + MEM_FM_U_FORMAT + MEM_FORMAT_PT2
         self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
 
 
@@ -926,7 +928,7 @@ class RetevisRB27V(RetevisRB27B):
     _frs = _gmrs = _pmr = False
 
     def process_mmap(self):
-        mem_format = MEM_FORMAT + MEM_FM_U_FORMAT
+        mem_format = MEM_FORMAT + MEM_FM_U_FORMAT + MEM_FORMAT_PT2
         self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
 
 
