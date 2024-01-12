@@ -143,7 +143,7 @@ class GMRSV2base(baofeng_common.BaofengCommonHT):
         return rf
 
     MEM_FORMAT = """
-    #seekto 0x0000;
+    // #seekto 0x0000;
     struct {
       lbcd rxfreq[4];
       lbcd txfreq[4];
@@ -168,7 +168,7 @@ class GMRSV2base(baofeng_common.BaofengCommonHT):
       u8 unused[11];
     } pttid[15];
 
-    #seekto 0x0DF0;
+    // #seekto 0x0DF0;
     struct {
       u8 dtmfon;
       u8 dtmfoff;
@@ -385,7 +385,7 @@ class GMRSV2base(baofeng_common.BaofengCommonHT):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw(asbytes=False)[0] == "\xff":
+        if _mem.get_raw()[:1] == b"\xff":
             mem.empty = True
             return mem
 
