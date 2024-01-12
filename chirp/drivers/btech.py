@@ -827,14 +827,14 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         # Memory number
         mem.number = number
 
-        if _mem.get_raw(asbytes=False)[0] == "\xFF":
+        if _mem.get_raw()[:1] == b"\xFF":
             mem.empty = True
             return mem
 
         # Freq and offset
         mem.freq = int(_mem.rxfreq) * 10
         # tx freq can be blank
-        if _mem.get_raw(asbytes=False)[4] == "\xFF":
+        if _mem.get_raw()[:4] == b"\xFF":
             # TX freq not set
             mem.offset = 0
             mem.duplex = "off"
@@ -3143,7 +3143,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
 
 
 MEM_FORMAT = """
-#seekto 0x0000;
+// #seekto 0x0000;
 struct {
   lbcd rxfreq[4];
   lbcd txfreq[4];
@@ -3289,7 +3289,7 @@ struct {
   u8 standard;   // one out of LIST_5TONE_STANDARDS
 } _5tone_codes[15];
 
-#seekto 0x25F0;
+// #seekto 0x25F0;
 struct {
   u8 _5tone_delay1; // * 10ms
   u8 _5tone_delay2; // * 10ms
@@ -3316,7 +3316,7 @@ struct {
   u8 code[16]; // 0=x0A, A=0x0D, B=0x0E, C=0x0F, D=0x00, #=0x0C *=0x0B
 } dtmf_codes[15];
 
-#seekto 0x29F0;
+// #seekto 0x29F0;
 struct {
   u8 dtmfspeed_on;  //list with 50..2000ms in steps of 10
   u8 dtmfspeed_off; //list with 50..2000ms in steps of 10
@@ -3630,7 +3630,7 @@ class LT588UV(BTech):
 
 
 COLOR_MEM_FORMAT = """
-#seekto 0x0000;
+// #seekto 0x0000;
 struct {
   lbcd rxfreq[4];
   lbcd txfreq[4];
@@ -3770,7 +3770,7 @@ struct {
   struct settings_vfo d;
 } vfo;
 
-#seekto 0x0F80;
+// #seekto 0x0F80;
 struct {
   char line1[8];
   char line2[8];
@@ -3804,7 +3804,7 @@ struct {
   u8 standard;   // one out of LIST_5TONE_STANDARDS
 } _5tone_codes[15];
 
-#seekto 0x25F0;
+// #seekto 0x25F0;
 struct {
   u8 _5tone_delay1; // * 10ms
   u8 _5tone_delay2; // * 10ms
@@ -3831,7 +3831,7 @@ struct {
   u8 code[16]; // 0=x0A, A=0x0D, B=0x0E, C=0x0F, D=0x00, #=0x0C *=0x0B
 } dtmf_codes[15];
 
-#seekto 0x29F0;
+// #seekto 0x29F0;
 struct {
   u8 dtmfspeed_on;  //list with 50..2000ms in steps of 10
   u8 dtmfspeed_off; //list with 50..2000ms in steps of 10
@@ -4175,7 +4175,7 @@ class DB25G(BTechColor):
 
 
 GMRS_MEM_FORMAT = """
-#seekto 0x0000;
+// #seekto 0x0000;
 struct {
   lbcd rxfreq[4];
   lbcd txfreq[4];
@@ -4199,7 +4199,7 @@ struct {
      pttid:2;
 } memory[256];
 
-#seekto 0x1000;
+// #seekto 0x1000;
 struct {
   char name[7];
   u8 unknown1[9];
@@ -4221,7 +4221,7 @@ struct {
   u8 standard;   // one out of LIST_5TONE_STANDARDS
 } _5tone_codes[15];
 
-#seekto 0x25F0;
+// #seekto 0x25F0;
 struct {
   u8 _5tone_delay1; // * 10ms
   u8 _5tone_delay2; // * 10ms
@@ -4243,7 +4243,7 @@ struct {
   u8 decode_reset_time; // * 100 + 100ms
 } _5tone_settings;
 
-#seekto 0x2900;
+// #seekto 0x2900;
 struct {
   u8 code[16]; // 0=x0A, A=0x0D, B=0x0E, C=0x0F, D=0x00, #=0x0C *=0x0B
 } dtmf_codes[15];
@@ -4334,7 +4334,9 @@ struct {
   char broadcast_station_name[6];
   u8 unknown[2];
 } fm_radio_preset[16];
+"""
 
+GMRS_MEM_FORMAT_PT2 = """
 #seekto 0x3280;
 struct {
   u8 unknown1;
@@ -4388,6 +4390,11 @@ struct {
   struct settings_vfo d;
 } vfo;
 
+#seekto 0x33B0;
+struct {
+  char line[16];
+} static_msg;
+
 #seekto 0x3D80;
 struct {
   u8 vhf_low[3];
@@ -4405,11 +4412,6 @@ struct {
   u8 uhf2_low[3];
   u8 uhf2_high[3];
 } ranges;
-
-#seekto 0x33B0;
-struct {
-  char line[16];
-} static_msg;
 
 #seekto 0x3F70;
 struct {
@@ -4563,7 +4565,8 @@ class BTechGMRS(BTechMobileCommon):
         """Process the mem map into the mem object"""
 
         # Get it
-        mem_format = GMRS_MEM_FORMAT + GMRS_ORIG_MEM_FORMAT
+        mem_format = GMRS_MEM_FORMAT + GMRS_ORIG_MEM_FORMAT + \
+            GMRS_MEM_FORMAT_PT2
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
         # load specific parameters from the radio image
@@ -4645,7 +4648,8 @@ class GMRS50V2(BTechGMRS):
         """Process the mem map into the mem object"""
 
         # Get it
-        mem_format = GMRS_MEM_FORMAT + GMRS_V2_MEM_FORMAT
+        mem_format = GMRS_MEM_FORMAT + GMRS_V2_MEM_FORMAT + \
+            GMRS_MEM_FORMAT_PT2
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
         # load specific parameters from the radio image
@@ -4677,7 +4681,7 @@ class GMRS50V2(BTechGMRS):
 
 
 COLORHT_MEM_FORMAT = """
-#seekto 0x0000;
+// #seekto 0x0000;
 struct {
   lbcd rxfreq[4];
   lbcd txfreq[4];
@@ -4844,7 +4848,7 @@ struct {
   u8 standard;   // one out of LIST_5TONE_STANDARDS
 } _5tone_codes[15];
 
-#seekto 0x25F0;
+// #seekto 0x25F0;
 struct {
   u8 _5tone_delay1; // * 10ms
   u8 _5tone_delay2; // * 10ms
@@ -4871,7 +4875,7 @@ struct {
   u8 code[16]; // 0=x0A, A=0x0D, B=0x0E, C=0x0F, D=0x00, #=0x0C *=0x0B
 } dtmf_codes[15];
 
-#seekto 0x29F0;
+// #seekto 0x29F0;
 struct {
   u8 dtmfspeed_on;  //list with 50..2000ms in steps of 10
   u8 dtmfspeed_off; //list with 50..2000ms in steps of 10
@@ -5045,7 +5049,7 @@ class KT8R(QYTColorHT):
 
 
 COLOR9900_MEM_FORMAT = """
-#seekto 0x0000;
+// #seekto 0x0000;
 struct {
   lbcd rxfreq[4];
   lbcd txfreq[4];
@@ -5185,7 +5189,7 @@ struct {
   struct settings_vfo d;
 } vfo;
 
-#seekto 0x0F80;
+// #seekto 0x0F80;
 struct {
   char line1[8];
   char line2[8];
@@ -5224,7 +5228,7 @@ struct {
   u8 standard;   // one out of LIST_5TONE_STANDARDS
 } _5tone_codes[15];
 
-#seekto 0x25F0;
+// #seekto 0x25F0;
 struct {
   u8 _5tone_delay1; // * 10ms
   u8 _5tone_delay2; // * 10ms
@@ -5251,7 +5255,7 @@ struct {
   u8 code[16]; // 0=x0A, A=0x0D, B=0x0E, C=0x0F, D=0x00, #=0x0C *=0x0B
 } dtmf_codes[15];
 
-#seekto 0x29F0;
+// #seekto 0x29F0;
 struct {
   u8 dtmfspeed_on;  //list with 50..2000ms in steps of 10      // 9f0
   u8 dtmfspeed_off; //list with 50..2000ms in steps of 10      // 9f1
@@ -5358,7 +5362,7 @@ struct {
 
 
 COLOR20V2_MEM_FORMAT = """
-#seekto 0x0000;
+// #seekto 0x0000;
 struct {
   lbcd rxfreq[4];
   lbcd txfreq[4];
@@ -5503,7 +5507,7 @@ struct {
   struct settings_vfo d;
 } vfo;
 
-#seekto 0x0F80;
+// #seekto 0x0F80;
 struct {
   char line1[8];
   char line2[8];
@@ -5542,7 +5546,7 @@ struct {
   u8 standard;   // one out of LIST_5TONE_STANDARDS
 } _5tone_codes[15];
 
-#seekto 0x25F0;
+// #seekto 0x25F0;
 struct {
   u8 _5tone_delay1; // * 10ms
   u8 _5tone_delay2; // * 10ms
@@ -5569,7 +5573,7 @@ struct {
   u8 code[16]; // 0=x0A, A=0x0D, B=0x0E, C=0x0F, D=0x00, #=0x0C *=0x0B
 } dtmf_codes[15];
 
-#seekto 0x29F0;
+// #seekto 0x29F0;
 struct {
   u8 dtmfspeed_on;  //list with 50..2000ms in steps of 10      // 9f0
   u8 dtmfspeed_off; //list with 50..2000ms in steps of 10      // 9f1
