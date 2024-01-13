@@ -266,9 +266,6 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
 
 
 class ChirpVariablePowerColumn(ChirpMemoryColumn):
-    def __init__(self, name, radio, power_levels):
-        super().__init__(name, radio)
-
     @property
     def level(self):
         return _('Power')
@@ -872,12 +869,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         valid_modes = filter_unknowns(self._features.valid_modes)
         valid_skips = filter_unknowns(self._features.valid_skips)
         valid_duplexes = filter_unknowns(self._features.valid_duplexes)
-        valid_power_levels = self._features.valid_power_levels
         valid_tuning_steps = self._features.valid_tuning_steps
         if self._features.has_variable_power:
-            power_col_cls = ChirpVariablePowerColumn
+            power_column = ChirpVariablePowerColumn('power', self._radio)
         else:
-            power_col_cls = ChirpChoiceColumn
+            valid_power_levels = self._features.valid_power_levels
+            power_column = ChirpChoiceColumn('power', self._radio,
+                                             valid_power_levels)
         defs = [
             ChirpFrequencyColumn('freq', self._radio),
             ChirpMemoryColumn('name', self._radio),
@@ -900,8 +898,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                               label=_('Tuning Step')),
             ChirpChoiceColumn('skip', self._radio,
                               valid_skips),
-            power_col_cls('power', self._radio,
-                          valid_power_levels),
+            power_column,
             ChirpCommentColumn('comment', self._radio),
         ]
         return defs
