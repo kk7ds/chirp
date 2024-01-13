@@ -853,7 +853,7 @@ class UV6R(baofeng_common.BaofengCommonHT):
         match_model = False
 
         # testing the file data size
-        if len(filedata) == 0x2008 or 0x2010:
+        if len(filedata) in (0x2008, 0x2010):
             match_size = True
 
         # testing the firmware model fingerprint
