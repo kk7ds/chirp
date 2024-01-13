@@ -145,7 +145,7 @@ class IC92Frame:
 
     def send(self, pipe, verbose=False):
         """Send the frame to the radio via @pipe"""
-        if verbose or True:
+        if verbose:
             LOG.debug("Sending:\n%s" % util.hexprint(self.get_raw()))
 
         response = ic9x_send(pipe, self.get_raw())
