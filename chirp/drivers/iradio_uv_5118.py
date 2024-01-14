@@ -26,23 +26,6 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
-struct memory {
-  ul32 rxfreq;                               // 00-03
-  ul16 rx_tone;   // PL/DPL Decode           // 04-05
-  ul32 txfreq;                               // 06-09
-  ul16 tx_tone;   // PL/DPL Encode           // 0a-0b
-  u8 lowpower:1,  // Power Level             // 0c
-     isnarrow:1,  // Bandwidth
-     unknown1:1,
-     unknown2:3,
-     bcl:1,       // Busy Channel Lockout
-     scan:1;      // Scan Add
-  u8 unknown3[3];                            // 0d-0f
-};
-
-#seekto 0x0050;
-struct memory channels[128];
-
 #seekto 0x0010;
 struct {
   u8 range174_180;  // 174-180 MHz
@@ -130,6 +113,23 @@ struct {
   u8 dsrangeb;              // 0x004E        Dual Standby Range B
   u8 tot;                   // 0x004F
 } settings;
+
+struct memory {
+  ul32 rxfreq;                               // 00-03
+  ul16 rx_tone;   // PL/DPL Decode           // 04-05
+  ul32 txfreq;                               // 06-09
+  ul16 tx_tone;   // PL/DPL Encode           // 0a-0b
+  u8 lowpower:1,  // Power Level             // 0c
+     isnarrow:1,  // Bandwidth
+     unknown1:1,
+     unknown2:3,
+     bcl:1,       // Busy Channel Lockout
+     scan:1;      // Scan Add
+  u8 unknown3[3];                            // 0d-0f
+};
+
+// #seekto 0x0050;
+struct memory channels[128];
 
 """
 
@@ -455,12 +455,12 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.rxfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
+        if _mem.rxfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
             return mem
 
-        if _mem.get_raw(asbytes=False) == ("\xFF" * 16):
+        if _mem.get_raw() == (b"\xFF" * 16):
             LOG.debug("Initializing empty memory")
             _mem.set_raw("\xFF" * 4 + "\x00\x30" + "\xFF" * 4 + "\x00\x30" +
                          "\x00" * 4)
