@@ -1670,13 +1670,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                       raw_item)
             menu.Append(raw_item)
 
-            if len(selected_rows) == 2:
-                diff_item = wx.MenuItem(menu, wx.NewId(),
-                                        _('Diff Raw Memories'))
-                self.Bind(wx.EVT_MENU,
-                          functools.partial(self._mem_diff, selected_rows),
-                          diff_item)
-                menu.Append(diff_item)
+            diff_item = wx.MenuItem(menu, wx.NewId(),
+                                    _('Diff Raw Memories'))
+            self.Bind(wx.EVT_MENU,
+                      functools.partial(self._mem_diff, selected_rows),
+                      diff_item)
+            menu.Append(diff_item)
+            menu.Enable(diff_item.GetId(), len(selected_rows) == 2)
 
         self.PopupMenu(menu)
         menu.Destroy()
