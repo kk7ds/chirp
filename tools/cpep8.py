@@ -138,7 +138,7 @@ for i in range(0, len(flake8_manifest), 10):
     files = flake8_manifest[i:i + 10]
     if args.verbose:
         print('Checking %s' % files)
-    r = subprocess.call(['flake8', '--builtins=_'] + files)
+    r = subprocess.call(['flake8', '--builtins=_,ngettext'] + files)
     if r != 0:
         total_errors += r
 

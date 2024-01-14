@@ -1578,14 +1578,18 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if len(selected_rows) > 1:
             del_item = wx.MenuItem(
                 delete_menu, wx.NewId(),
-                _('%i Memories') % len(selected_rows))
+                ngettext('%i Memory', '%i Memories',
+                         len(selected_rows)) % len(selected_rows))
             del_block_item = wx.MenuItem(
                 delete_menu, wx.NewId(),
-                _('%i Memories and shift block up') % (
-                    len(selected_rows)))
+                ngettext('%i Memory and shift block up',
+                         '%i Memories and shift block up',
+                         len(selected_rows)) % (len(selected_rows)))
             del_shift_item = wx.MenuItem(
                 delete_menu, wx.NewId(),
-                _('%i Memories and shift all up') % len(selected_rows))
+                ngettext('%i Memories and shift all up',
+                         '%i Memories and shift all up',
+                         len(selected_rows)) % len(selected_rows))
             to_delete = selected_rows
         else:
             del_item = wx.MenuItem(delete_menu, wx.NewId(), _('This Memory'))
@@ -1626,10 +1630,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         sort_menu = wx.Menu()
         sort_menu_item = menu.AppendSubMenu(
             sort_menu,
-            _('Sort %i memories') % len(selected_rows))
+            ngettext('Sort %i memory', 'Sort %i memories',
+                     len(selected_rows)) % len(selected_rows))
         sortasc_item = wx.MenuItem(
             sort_menu, wx.NewId(),
-            _('Sort %i memories ascending') % len(selected_rows))
+            ngettext('Sort %i memory ascending',
+                     'Sort %i memories ascending',
+                     len(selected_rows)) % len(selected_rows))
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._sort_memories, selected_rows,
                                     False),
@@ -1638,7 +1645,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         arrange_item = wx.MenuItem(
             menu, wx.NewId(),
-            _('Cluster %i memories') % used_selected)
+            ngettext('Cluster %i memory', 'Cluster %i memories',
+                     used_selected) % used_selected)
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._arrange_memories, selected_rows),
                   arrange_item)
@@ -1648,7 +1656,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         sortdesc_item = wx.MenuItem(
             menu, wx.NewId(),
-            _('Sort %i memories descending') % len(selected_rows))
+            ngettext('Sort %i memory descending',
+                     'Sort %i memories descending',
+                     len(selected_rows)) % len(selected_rows))
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._sort_memories, selected_rows,
                                     True),
