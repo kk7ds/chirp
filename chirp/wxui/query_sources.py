@@ -254,7 +254,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
     NAME = 'Repeaterbook'
 
     def get_info(self):
-        return (
+        return _(
             "RepeaterBook is Amateur Radio's most comprehensive,\n"
             "worldwide, FREE repeater directory.")
 
@@ -469,7 +469,7 @@ class DMRMARCQueryDialog(QuerySourceDialog):
         return vbox
 
     def get_info(self):
-        return 'The DMR-MARC Worldwide Network'
+        return _('The DMR-MARC Worldwide Network')
 
     def get_link(self):
         return 'https://www.dmr-marc.net'
@@ -645,7 +645,7 @@ class RRQueryDialog(QuerySourceDialog):
     NAME = 'RadioReference'
 
     def get_info(self):
-        return (
+        return _(
             "RadioReference.com is the world's largest\n"
             "radio communications data provider\n"
             "<small>Premium account required</small>")
