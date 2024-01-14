@@ -142,6 +142,7 @@ def chirpmain():
         app._lc.Init()
     app._lc.AddCatalog('CHIRP')
     builtins._ = wx.GetTranslation
+    builtins.ngettext = wx.GetTranslation
     LOG.debug('Using locale: %s (%i)',
               app._lc.GetCanonicalName(),
               lang)
