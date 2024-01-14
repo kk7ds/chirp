@@ -669,7 +669,8 @@ class ChirpMain(wx.Frame):
         if last_files:
             submenu_item = self.OPEN_RECENT_MENU.Append(
                 self.restore_tabs_item,
-                _('Restore %i tabs' % len(last_files)))
+                ngettext('Restore %i tab', 'Restore %i tabs', len(last_files))
+                % len(last_files))
             submenu_item.SetAccel(wx.AcceleratorEntry(
                 wx.MOD_CONTROL | wx.ACCEL_SHIFT, ord('T')))
             self.Bind(wx.EVT_MENU, self.restore_tabs, submenu_item)
