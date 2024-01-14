@@ -26,33 +26,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
-struct memory {
-  ul32 rxfreq;      // RX Frequency          00-03
-  ul16 rx_tone;     // PL/DPL Decode         04-05
-  ul32 txfreq;      // TX Frequency          06-09
-  ul16 tx_tone;     // PL/DPL Encode         0a-0b
-  ul24 mutecode;    // Mute Code             0c-0e
-  u8 unknown_0:2,   //                       0f
-     mutetype:2,    // Mute Type
-     unknown_1:4;   //
-  u8 isnarrow:1,    // Bandwidth             00
-     lowpower:1,    // Power
-     scan:1,        // Scan Add
-     bcl:2,         // Busy Lock
-     is_airband:1,  // Air Band (AM)
-     unknown_3:1,   //
-     unknown_4:1;   //
-  u8 unknown_5;     //                       01
-  u8 unused_0:4,    //                       02
-     scno:4;        // SC No.
-  u8 unknown_6[3];  //                       03-05
-  char name[10];    //                       06-0f
-};
-
-#seekto 0x1000;
-struct memory channels[999];
-
-#seekto 0x0000;
+// #seekto 0x0000;
 struct {
   char startuplabel[32];  // Startup Label         0000-001f
   char personalid[16];    // Personal ID           0020-002f
@@ -118,6 +92,32 @@ struct {
   ul16 quickch3;          // Quick CH 3            0076-0077
 } settings;
 
+struct memory {
+  ul32 rxfreq;      // RX Frequency          00-03
+  ul16 rx_tone;     // PL/DPL Decode         04-05
+  ul32 txfreq;      // TX Frequency          06-09
+  ul16 tx_tone;     // PL/DPL Encode         0a-0b
+  ul24 mutecode;    // Mute Code             0c-0e
+  u8 unknown_0:2,   //                       0f
+     mutetype:2,    // Mute Type
+     unknown_1:4;   //
+  u8 isnarrow:1,    // Bandwidth             00
+     lowpower:1,    // Power
+     scan:1,        // Scan Add
+     bcl:2,         // Busy Lock
+     is_airband:1,  // Air Band (AM)
+     unknown_3:1,   //
+     unknown_4:1;   //
+  u8 unknown_5;     //                       01
+  u8 unused_0:4,    //                       02
+     scno:4;        // SC No.
+  u8 unknown_6[3];  //                       03-05
+  char name[10];    //                       06-0f
+};
+
+#seekto 0x1000;
+struct memory channels[999];
+
 #seekto 0x8D20;
 struct {
   u8 senddelay;           // Send Delay            8d20
@@ -139,7 +139,7 @@ struct {
   u8 code_len;            // DTMF code length
 } dtmfcode[16];
 
-#seekto 0x8E30;
+// #seekto 0x8E30;
 struct {
   char kill[14];          // Remotely Kill         8e30-8e3d
   u8 unknown_0;           //                       8e3e
@@ -498,7 +498,7 @@ class IradioUV5118plus(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.rxfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
+        if _mem.rxfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
             return mem
