@@ -83,8 +83,10 @@ class MemoryDialog(wx.Dialog):
         if isinstance(mem, tuple):
             mem_a, mem_b = mem
             self._diff_memories(mem_a, mem_b)
+            self.SetTitle(_('Diff Raw Memories'))
         else:
             self._raw_memory(mem)
+            self.SetTitle(_('Show Raw Memory'))
 
         self.SetSize(640, 480)
         self.Centre()
