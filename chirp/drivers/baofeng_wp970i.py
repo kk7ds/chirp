@@ -982,6 +982,29 @@ class UVS9X3(BFA58S):
 
 
 @directory.register
+class BF5RXRadio(BFA58S):
+    VENDOR = "Baofeng"
+    MODEL = "5RX"
+    ALIASES = []
+    _magic = [MSTRING_UVS9X3, ]
+
+    _air_range = (108000000, 136000000)
+    _vhf_range = (136000000, 174000000)
+    _vhf2_range = (200000000, 260000000)
+    _uhf2_range = (350000000, 390000000)
+    _uhf_range = (400000000, 520000000)
+
+    def get_features(self):
+        rf = WP970I.get_features(self)
+        rf.valid_bands = [self._air_range,
+                          self._vhf_range,
+                          self._vhf2_range,
+                          self._uhf2_range,
+                          self._uhf_range]
+        return rf
+
+
+@directory.register
 class UV9R(WP970I):
     """Baofeng UV-9R"""
     VENDOR = "Baofeng"
