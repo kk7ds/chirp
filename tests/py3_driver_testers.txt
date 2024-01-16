@@ -52,6 +52,7 @@ BTECH_UV-50X2_G2,@KC9HI,30-Nov-2022
 BTECH_UV-50X3,@KC9HI,10-Dec-2022
 BTECH_UV-5X3,@KC9HI,9-Dec-2022
 Baofeng_5RM,@vdwel,7-Dec-2023
+Baofeng_5RX,@KC9HI,16-Jan-2024
 Baofeng_BF-1901,@cetinajero,3-Jul-2023
 Baofeng_BF-1904,@cetinajero,3-Jul-2023
 Baofeng_BF-888,@kk7ds,13-Feb-2019
