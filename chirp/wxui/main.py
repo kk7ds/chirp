@@ -604,7 +604,7 @@ class ChirpMain(wx.Frame):
         if user_stock_confs:
             stock.Append(wx.MenuItem(stock, wx.ID_SEPARATOR))
 
-        if sys.platform in ('darwin', 'win32'):
+        if sys.platform in ('darwin', 'linux', 'win32'):
             reveal = stock.Append(REVEAL_STOCK_DIR,
                                   _('Open stock config directory'))
             self.Bind(wx.EVT_MENU, self._menu_open_stock_config, reveal)

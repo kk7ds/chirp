@@ -615,6 +615,8 @@ def reveal_location(path):
         wx.Execute('explorer %s' % path)
     elif system == 'Darwin':
         wx.Execute('open -R %s' % path)
+    elif system == 'Linux':
+        wx.Execute('open %s' % path)
     else:
         raise Exception(_('Unable to reveal %s on this system') % path)
 
