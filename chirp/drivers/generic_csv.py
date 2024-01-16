@@ -204,6 +204,9 @@ class CSVRadio(chirp_common.FileBackedRadio):
         good = 0
         lineno = 0
         for line in reader:
+            # Skipping comment lines that start with #
+            if line and line[0].startswith('#'):
+                continue
             lineno += 1
             if lineno == 1:
                 header = line
@@ -311,7 +314,13 @@ class CSVRadio(chirp_common.FileBackedRadio):
             # CSV files are text
             return False
         return filename.lower().endswith("." + cls.FILE_EXTENSION) and \
-            (filedata.startswith("Location,") or filedata == "")
+            (find_csv_header(filedata) or filedata == "")
+
+
+def find_csv_header(filedata):
+    while filedata.startswith('#'):
+        filedata = filedata[filedata.find('\n') + 1:]
+    return filedata.startswith('Location,')
 
 
 @directory.register
