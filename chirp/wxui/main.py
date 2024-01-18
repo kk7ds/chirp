@@ -601,14 +601,14 @@ class ChirpMain(wx.Frame):
             add_stock(fn)
             found.append(os.path.basename(fn))
 
-        stock.Append(wx.MenuItem(stock, wx.ID_SEPARATOR))
+        if user_stock_confs:
+            stock.Append(wx.MenuItem(stock, wx.ID_SEPARATOR))
 
-        if sys.platform in ('darwin', 'win32'):
+        if sys.platform in ('darwin', 'linux', 'win32'):
             reveal = stock.Append(REVEAL_STOCK_DIR,
                                   _('Open stock config directory'))
             self.Bind(wx.EVT_MENU, self._menu_open_stock_config, reveal)
-
-        stock.Append(wx.MenuItem(stock, wx.ID_SEPARATOR))
+            stock.Append(wx.MenuItem(stock, wx.ID_SEPARATOR))
 
         for fn, hash in dist_stock_confs:
             if os.path.basename(fn) in found:
@@ -669,7 +669,8 @@ class ChirpMain(wx.Frame):
         if last_files:
             submenu_item = self.OPEN_RECENT_MENU.Append(
                 self.restore_tabs_item,
-                _('Restore %i tabs' % len(last_files)))
+                ngettext('Restore %i tab', 'Restore %i tabs', len(last_files))
+                % len(last_files))
             submenu_item.SetAccel(wx.AcceleratorEntry(
                 wx.MOD_CONTROL | wx.ACCEL_SHIFT, ord('T')))
             self.Bind(wx.EVT_MENU, self.restore_tabs, submenu_item)

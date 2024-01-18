@@ -46,6 +46,7 @@
 | <a name="BTECH_UV-50X3"></a> BTECH_UV-50X3 | [@KC9HI](https://github.com/KC9HI) | 10-Dec-2022 | Yes | 0.06% |
 | <a name="BTECH_UV-5X3"></a> BTECH_UV-5X3 | [@KC9HI](https://github.com/KC9HI) | 9-Dec-2022 | Yes | 0.43% |
 | <a name="Baofeng_5RM"></a> Baofeng_5RM | [@vdwel](https://github.com/vdwel) | 7-Dec-2023 | Yes |  |
+| <a name="Baofeng_5RX"></a> Baofeng_5RX | [@KC9HI](https://github.com/KC9HI) | 16-Jan-2024 | Yes |  |
 | <a name="Baofeng_BF-1901"></a> Baofeng_BF-1901 | [@cetinajero](https://github.com/cetinajero) | 3-Jul-2023 | Yes |  |
 | <a name="Baofeng_BF-1904"></a> Baofeng_BF-1904 | [@cetinajero](https://github.com/cetinajero) | 3-Jul-2023 | Yes |  |
 | <a name="Baofeng_BF-888"></a> Baofeng_BF-888 | [@kk7ds](https://github.com/kk7ds) | 13-Feb-2019 | Yes | **15.53%** |
@@ -444,11 +445,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 441
+**Drivers:** 442
 
-**Tested:** 87% (388/53) (93% of usage stats)
+**Tested:** 88% (389/53) (93% of usage stats)
 
-**Byte clean:** 90% (401/40)
+**Byte clean:** 90% (402/40)
 
 ## Meaning of this testing
 

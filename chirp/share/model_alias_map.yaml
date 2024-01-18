@@ -83,6 +83,8 @@ Baofeng/Pofung:
   model: GT-5
 - alt: UV-82HP
   model: GT-5TP
+- alt: 5RX
+  model: M-5R
   #- alt: BF-T1
   #  model: Mini
 - alt: Radioddity UV-5G

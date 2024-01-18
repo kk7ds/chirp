@@ -621,12 +621,6 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
 
         return top
 
-        group.append(RadioSetting(
-                "disnm", "Display Name",
-                RadioSettingValueBoolean(_settings.disnm)))
-
-        return group
-
     def set_settings(self, settings):
         _settings = self._memobj.settings
 

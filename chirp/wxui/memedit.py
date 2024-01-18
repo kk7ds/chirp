@@ -266,9 +266,6 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
 
 
 class ChirpVariablePowerColumn(ChirpMemoryColumn):
-    def __init__(self, name, radio, power_levels):
-        super().__init__(name, radio)
-
     @property
     def level(self):
         return _('Power')
@@ -872,12 +869,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         valid_modes = filter_unknowns(self._features.valid_modes)
         valid_skips = filter_unknowns(self._features.valid_skips)
         valid_duplexes = filter_unknowns(self._features.valid_duplexes)
-        valid_power_levels = self._features.valid_power_levels
         valid_tuning_steps = self._features.valid_tuning_steps
         if self._features.has_variable_power:
-            power_col_cls = ChirpVariablePowerColumn
+            power_column = ChirpVariablePowerColumn('power', self._radio)
         else:
-            power_col_cls = ChirpChoiceColumn
+            valid_power_levels = self._features.valid_power_levels
+            power_column = ChirpChoiceColumn('power', self._radio,
+                                             valid_power_levels)
         defs = [
             ChirpFrequencyColumn('freq', self._radio),
             ChirpMemoryColumn('name', self._radio),
@@ -900,8 +898,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                               label=_('Tuning Step')),
             ChirpChoiceColumn('skip', self._radio,
                               valid_skips),
-            power_col_cls('power', self._radio,
-                          valid_power_levels),
+            power_column,
             ChirpCommentColumn('comment', self._radio),
         ]
         return defs
@@ -1581,14 +1578,18 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if len(selected_rows) > 1:
             del_item = wx.MenuItem(
                 delete_menu, wx.NewId(),
-                _('%i Memories') % len(selected_rows))
+                ngettext('%i Memory', '%i Memories',
+                         len(selected_rows)) % len(selected_rows))
             del_block_item = wx.MenuItem(
                 delete_menu, wx.NewId(),
-                _('%i Memories and shift block up') % (
-                    len(selected_rows)))
+                ngettext('%i Memory and shift block up',
+                         '%i Memories and shift block up',
+                         len(selected_rows)) % (len(selected_rows)))
             del_shift_item = wx.MenuItem(
                 delete_menu, wx.NewId(),
-                _('%i Memories and shift all up') % len(selected_rows))
+                ngettext('%i Memories and shift all up',
+                         '%i Memories and shift all up',
+                         len(selected_rows)) % len(selected_rows))
             to_delete = selected_rows
         else:
             del_item = wx.MenuItem(delete_menu, wx.NewId(), _('This Memory'))
@@ -1629,10 +1630,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         sort_menu = wx.Menu()
         sort_menu_item = menu.AppendSubMenu(
             sort_menu,
-            _('Sort %i memories') % len(selected_rows))
+            ngettext('Sort %i memory', 'Sort %i memories',
+                     len(selected_rows)) % len(selected_rows))
         sortasc_item = wx.MenuItem(
             sort_menu, wx.NewId(),
-            _('Sort %i memories ascending') % len(selected_rows))
+            ngettext('Sort %i memory ascending',
+                     'Sort %i memories ascending',
+                     len(selected_rows)) % len(selected_rows))
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._sort_memories, selected_rows,
                                     False),
@@ -1641,7 +1645,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         arrange_item = wx.MenuItem(
             menu, wx.NewId(),
-            _('Cluster %i memories') % used_selected)
+            ngettext('Cluster %i memory', 'Cluster %i memories',
+                     used_selected) % used_selected)
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._arrange_memories, selected_rows),
                   arrange_item)
@@ -1651,7 +1656,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         sortdesc_item = wx.MenuItem(
             menu, wx.NewId(),
-            _('Sort %i memories descending') % len(selected_rows))
+            ngettext('Sort %i memory descending',
+                     'Sort %i memories descending',
+                     len(selected_rows)) % len(selected_rows))
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._sort_memories, selected_rows,
                                     True),
@@ -1673,13 +1680,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                       raw_item)
             menu.Append(raw_item)
 
-            if len(selected_rows) == 2:
-                diff_item = wx.MenuItem(menu, wx.NewId(),
-                                        _('Diff Raw Memories'))
-                self.Bind(wx.EVT_MENU,
-                          functools.partial(self._mem_diff, selected_rows),
-                          diff_item)
-                menu.Append(diff_item)
+            diff_item = wx.MenuItem(menu, wx.NewId(),
+                                    _('Diff Raw Memories'))
+            self.Bind(wx.EVT_MENU,
+                      functools.partial(self._mem_diff, selected_rows),
+                      diff_item)
+            menu.Append(diff_item)
+            menu.Enable(diff_item.GetId(), len(selected_rows) == 2)
 
         self.PopupMenu(menu)
         menu.Destroy()
