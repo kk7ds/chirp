@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-20 12:27+0100\n"
-"PO-Revision-Date: 2023-12-14 17:16-0300\n"
+"POT-Creation-Date: 2024-01-16 21:38+0100\n"
+"PO-Revision-Date: 2024-01-17 21:19-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.1\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -43,25 +43,25 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s debe estar entre %(min)i y %(max)i"
 
-#: ../wxui/memedit.py:1590
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1593
+#, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
-msgstr[0] "%i Memorias y desplazar todo hacia arriba"
+msgstr[0] "%i Memoria y desplazar todo hacia arriba"
 msgstr[1] "%i Memorias y desplazar todo hacia arriba"
 
-#: ../wxui/memedit.py:1581
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1584
+#, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
-msgstr[0] "%i Memorias"
+msgstr[0] "%i Memoria"
 msgstr[1] "%i Memorias"
 
-#: ../wxui/memedit.py:1585
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1588
+#, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
-msgstr[0] "%i Memorias y desplazar bloque hacia arriba"
+msgstr[0] "%i Memoria y desplazar bloque hacia arriba"
 msgstr[1] "%i Memorias y desplazar bloque hacia arriba"
 
 #: ../wxui/main.py:1372
@@ -1159,11 +1159,11 @@ msgstr "Cerrar"
 msgid "Close file"
 msgstr "Cerrar archivo"
 
-#: ../wxui/memedit.py:1648
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1651
+#, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
-msgstr[0] "Agrupar %i memorias"
+msgstr[0] "Agrupar %i memoria"
 msgstr[1] "Agrupar %i memorias"
 
 #: ../wxui/memedit.py:529
@@ -2259,6 +2259,9 @@ msgid ""
 "radio communications data provider\n"
 "<small>Premium account required</small>"
 msgstr ""
+"RadioReference.com es el proveedor de datos\n"
+"de comunicaciones de radio mas largo del mundo\n"
+"<small>Requiere cuenta premium</small>"
 
 #: ../wxui/common.py:436
 msgid "Refresh required"
@@ -2286,6 +2289,8 @@ msgid ""
 "RepeaterBook is Amateur Radio's most comprehensive,\n"
 "worldwide, FREE repeater directory."
 msgstr ""
+"RepeaterBook es el directorio GRATUITO de repetidores,\n"
+"mundial, de Radio Aficionados más completo."
 
 #: ../wxui/main.py:933
 msgid "Reporting enabled"
@@ -2306,10 +2311,10 @@ msgid "Restart Required"
 msgstr "Reinicio requerido"
 
 #: ../wxui/main.py:672
-#, fuzzy, python-format
+#, python-format
 msgid "Restore %i tab"
 msgid_plural "Restore %i tabs"
-msgstr[0] "Restaurar %i pestañas"
+msgstr[0] "Restaurar %i pestaña"
 msgstr[1] "Restaurar %i pestañas"
 
 #: ../wxui/main.py:815
@@ -2393,25 +2398,25 @@ msgstr "Algunas memorias son incompatibles con esta radio"
 msgid "Some memories are not deletable"
 msgstr "Algunas memorias no son borrables"
 
-#: ../wxui/memedit.py:1633
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1636
+#, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
-msgstr[0] "Ordenar %i memorias"
+msgstr[0] "Ordenar %i memoria"
 msgstr[1] "Ordenar %i memorias"
 
-#: ../wxui/memedit.py:1637
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1640
+#, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
-msgstr[0] "Ordenar %i memorias de forma ascendente"
+msgstr[0] "Ordenar %i memoria de forma ascendente"
 msgstr[1] "Ordenar %i memorias de forma ascendente"
 
-#: ../wxui/memedit.py:1659
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1662
+#, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
-msgstr[0] "Ordenar %i memorias de forma descendente"
+msgstr[0] "Ordenar %i memoria de forma descendente"
 msgstr[1] "Ordenar %i memorias de forma descendente"
 
 #: ../wxui/memedit.py:1526
@@ -2440,7 +2445,7 @@ msgstr "Éxito"
 
 #: ../wxui/query_sources.py:472
 msgid "The DMR-MARC Worldwide Network"
-msgstr ""
+msgstr "La red mundial DMR-MARC"
 
 #: ../drivers/ft450d.py:417
 msgid ""
