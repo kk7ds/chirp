@@ -1522,14 +1522,6 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                           "Revive code (5 chars 0-9 ABCD)", val)
         dtmf.append(rs)
 
-        val = RadioSettingValueString(0, 80,
-                                      "All DTMF Contacts are 3 codes "
-                                      "(valid: 0-9 * # ABCD), "
-                                      "or an empty string")
-        val.set_mutable(False)
-        rs = RadioSetting("dtmf_descr1", "DTMF Contacts", val)
-        dtmfc.append(rs)
-
         for i in range(1, 17):
             varname = "DTMF_"+str(i)
             varnumname = "DTMFNUM_"+str(i)
