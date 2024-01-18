@@ -120,19 +120,19 @@ MODEL_COMPAT = {
 
 def get_radio_by_image(image_file):
     """Attempt to get the radio class that owns @image_file"""
-    # Creating temp file for csv comment support
-    if image_file.endswith(".csv"):
-        with open(image_file, 'r') as origfile, \
-                open(image_file + '.chirptmp.csv', 'w') as tempfile:
-            for line in origfile:
-                # exclude lines starting with comment character "#"
-                if not line.startswith('#'):
-                    tempfile.write(line)
-        image_file = image_file + '.chirptmp.csv'
-
     if os.path.exists(image_file):
         with open(image_file, "rb") as f:
             filedata = f.read()
+            # If opening a .csv file, stripping comment lines from filedata
+            if image_file.endswith(".csv"):
+                filedata = filedata.split(b"\n")
+                filedata = b"\n".join(
+                    [
+                        line
+                        for line in filedata
+                        if not line.startswith(b"#")
+                    ]
+                )
     else:
         filedata = b""
 
@@ -151,14 +151,6 @@ def get_radio_by_image(image_file):
                 LOG.error('Radio class %s failed during detection: %s' % (
                     rclass.__name__, e))
                 pass
-
-        # Removing temp file created for csv comment support
-        if image_file.endswith(".chirptmp.csv"):
-            if os.path.exists(image_file):
-                try:
-                    os.remove(image_file)
-                except Exception as e:
-                    LOG.info('Failed to delete tmp file %s: %s', image_file, e)
 
         meta_vendor = metadata.get('vendor')
         meta_model = metadata.get('model')

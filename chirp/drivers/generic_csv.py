@@ -204,6 +204,9 @@ class CSVRadio(chirp_common.FileBackedRadio):
         good = 0
         lineno = 0
         for line in reader:
+            # Skipping comment lines that start with #
+            if line[0].startswith('#'):
+                continue
             lineno += 1
             if lineno == 1:
                 header = line
