@@ -2,13 +2,11 @@
 # DO NOT ADD NEW FILES!!  Instead, fix the code to be compliant.
 # Over time, this list should shrink and (eventually) be eliminated.
 ./chirp/drivers/kyd_IP620.py
-./chirp/drivers/kguv8dplus.py
 ./chirp/drivers/ft450d.py
 ./chirp/drivers/ft70.py
 ./chirp/drivers/hg_uv98.py
 ./chirp/drivers/hobbypcb.py
 ./chirp/drivers/retevis_rb28.py
-./chirp/drivers/bj9900.py
 ./chirp/drivers/th7800.py
 ./chirp/drivers/icx90.py
 ./chirp/drivers/kguv8e.py
