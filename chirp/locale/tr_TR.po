@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-20 12:27+0100\n"
-"PO-Revision-Date: 2024-01-03 17:27+0300\n"
+"POT-Creation-Date: 2024-01-16 21:38+0100\n"
+"PO-Revision-Date: 2024-01-20 18:51+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
 "Language: tr\n"
@@ -42,22 +42,22 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s, %(min)i ile %(max)i arasında olmalıdır"
 
-#: ../wxui/memedit.py:1590
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1593
+#, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
 msgstr[0] "%i Kaydı ve hepsini yukarı kaydır"
 msgstr[1] "%i Kaydı ve hepsini yukarı kaydır"
 
-#: ../wxui/memedit.py:1581
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1584
+#, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
 msgstr[0] "%i Kaydı"
 msgstr[1] "%i Kaydı"
 
-#: ../wxui/memedit.py:1585
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1588
+#, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
 msgstr[0] "%i Kaydı ve bloğu yukarı kaydır"
@@ -1124,11 +1124,11 @@ msgstr "Kapat"
 msgid "Close file"
 msgstr "Dosyayı kapat"
 
-#: ../wxui/memedit.py:1648
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1651
+#, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
-msgstr[0] "%i kaydı sırala"
+msgstr[0] "%i Kaydı sırala"
 msgstr[1] "%i kaydı sırala"
 
 #: ../wxui/memedit.py:529
@@ -2215,6 +2215,9 @@ msgid ""
 "radio communications data provider\n"
 "<small>Premium account required</small>"
 msgstr ""
+"RadioReference.com dünyanın en büyük\n"
+"telsiz iletişim veri sağlayıcısıdır\n"
+"<small>Premium hesap gereklidir</small>"
 
 #: ../wxui/common.py:436
 msgid "Refresh required"
@@ -2242,6 +2245,8 @@ msgid ""
 "RepeaterBook is Amateur Radio's most comprehensive,\n"
 "worldwide, FREE repeater directory."
 msgstr ""
+"RepeaterBook, Amatör Telsiz için dünya çapında en kapsamlı \n"
+"ÜCRETSİZ röle rehberidir."
 
 #: ../wxui/main.py:933
 msgid "Reporting enabled"
@@ -2263,11 +2268,11 @@ msgid "Restart Required"
 msgstr "Yeniden Başlatma Gerekiyor"
 
 #: ../wxui/main.py:672
-#, fuzzy, python-format
+#, python-format
 msgid "Restore %i tab"
 msgid_plural "Restore %i tabs"
-msgstr[0] "%i sekmesini geri yükle"
-msgstr[1] "%i sekmesini geri yükle"
+msgstr[0] "%i sekmeyi geri yükle"
+msgstr[1] "%i sekmeyi geri yükle"
 
 #: ../wxui/main.py:815
 #, fuzzy
@@ -2350,22 +2355,22 @@ msgstr "Bazı kayıtlar bu telsizle uyumlu değil"
 msgid "Some memories are not deletable"
 msgstr "Bazı anılar silinemez"
 
-#: ../wxui/memedit.py:1633
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1636
+#, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
 msgstr[0] "%i kaydı sırala"
 msgstr[1] "%i kaydı sırala"
 
-#: ../wxui/memedit.py:1637
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1640
+#, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
 msgstr[0] "%i kaydı artan şekilde sırala"
 msgstr[1] "%i kaydı artan şekilde sırala"
 
-#: ../wxui/memedit.py:1659
-#, fuzzy, python-format
+#: ../wxui/memedit.py:1662
+#, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
 msgstr[0] "%i kaydı azalan şekilde sırala"
@@ -2397,7 +2402,7 @@ msgstr "Başarılı"
 
 #: ../wxui/query_sources.py:472
 msgid "The DMR-MARC Worldwide Network"
-msgstr ""
+msgstr "DMR-MARC Dünya Çapında iletişim Ağı"
 
 #: ../drivers/ft450d.py:417
 #, fuzzy
