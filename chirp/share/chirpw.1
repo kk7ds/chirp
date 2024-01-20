@@ -2,7 +2,7 @@
 .\" First parameter, NAME, should be all caps
 .\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
 .\" other parameters are allowed: see man(7), man(1)
-.TH CHIRP 1 "February 12, 2011"
+.TH CHIRP "1" "January 2024"
 .\" Please adjust this date whenever revising the manpage.
 .\"
 .\" Some roff macros, for reference:
@@ -19,8 +19,14 @@
 chirpw \- A tool for programming two-way radio equipment
 .SH SYNOPSIS
 .B chirpw
-.RI [ options ]
-.br
+[\-h] [\-\-module module] [\-\-version] [\-\-profile]
+[\-\-onlydriver ONLYDRIVER [ONLYDRIVER ...]] [\-\-inspect]
+[\-\-page PAGE]
+[\-\-action {upload,download,query_rr,query_mg,query_rb,query_dm,new}]
+[\-\-restore] [\-\-force\-language FORCE_LANGUAGE]
+[\-\-no\-linux\-gdk\-backend] [\-\-install\-desktop\-app] [\-q] [\-v]
+[\-\-log LOG_FILE] [\-\-log\-level LOG_LEVEL]
+[file ...]
 .SH DESCRIPTION
 This manual page documents briefly the
 .B chirpw
@@ -36,11 +42,62 @@ A summary of options is included below.
 .TP
 .B \-\-help
 Show summary of options.
+.SS "positional arguments:"
 .TP
-.B \-\-profile
-Enable Profiling.
+file
+File to open
+.SS "options:"
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show summary of options
+.TP
+\fB\-\-module\fR module
+Load module on startup
+.TP
+\fB\-\-version\fR
+Print version and exit
+.TP
+\fB\-\-profile\fR
+Enable profiling
+.TP
+\fB\-\-onlydriver\fR ONLYDRIVER [ONLYDRIVER ...]
+Include this driver while loading
+.TP
+\fB\-\-inspect\fR
+Show wxPython inspector
+.TP
+\fB\-\-page\fR PAGE
+Select this page of the default editor at start
+.TP
+\fB\-\-action\fR {upload,download,query_rr,query_mg,query_rb,query_dm,new}
+Start UI action immediately
+.TP
+\fB\-\-restore\fR
+Restore previous tabs
+.TP
+\fB\-\-force\-language\fR FORCE_LANGUAGE
+Force locale to this ISO language code
+.TP
+\fB\-\-no\-linux\-gdk\-backend\fR
+Do not force GDK_BACKEND=x11
+.TP
+\fB\-\-install\-desktop\-app\fR
+Prompt to install a desktop icon
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Decrease verbosity
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Increase verbosity
+.TP
+\fB\-\-log\fR LOG_FILE
+Log messages to a file
+.TP
+\fB\-\-log\-level\fR LOG_LEVEL
+Log file verbosity (critical, error, warn, info,
+debug). Defaults to 'debug'.
 .SH AUTHOR
 chirpw was written by Dan Smith.
 .PP
-This manual page was written by Dan Smith (with help from Steve Conklin),
+This manual page was written using help2man
 for the Debian project (and may be used by others).
