@@ -43,6 +43,7 @@ WX_GTK = 'gtk' in wx.version().lower()
 class ChirpMemoryGrid(wx.grid.Grid, glr.GridWithLabelRenderersMixin):
     def __init__(self, *a, **k):
         wx.grid.Grid.__init__(self, *a, **k)
+        self.SetColLabelSize(wx.grid.GRID_AUTOSIZE)
         glr.GridWithLabelRenderersMixin.__init__(self)
 
 
