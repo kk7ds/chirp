@@ -811,6 +811,13 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_large_font, large_item)
         large_item.Check(CONF.get_bool('font_large', 'state', False))
 
+        restore_tabs = wx.MenuItem(view_menu, wx.NewId(),
+                                   _('Restore tabs on start'),
+                                   kind=wx.ITEM_CHECK)
+        view_menu.Append(restore_tabs)
+        self.Bind(wx.EVT_MENU, self._menu_restore_tabs, restore_tabs)
+        restore_tabs.Check(CONF.get_bool('restore_tabs', 'prefs', False))
+
         radio_menu = wx.Menu()
 
         if sys.platform == 'darwin':
@@ -1441,6 +1448,10 @@ class ChirpMain(wx.Frame):
         menuitem = event.GetEventObject().FindItemById(event.GetId())
         CONF.set_bool('font_large', menuitem.IsChecked(), 'state')
         self._update_font()
+
+    def _menu_restore_tabs(self, event):
+        menuitem = event.GetEventObject().FindItemById(event.GetId())
+        CONF.set_bool('restore_tabs', menuitem.IsChecked(), 'prefs')
 
     def _make_backup(self, radio):
         if not isinstance(radio, chirp_common.CloneModeRadio):
