@@ -46,12 +46,12 @@ if grep -E "[^_]_\([^\"']" added_lines; then
     fail 'Translated strings must be literals!'
 fi
 
-if grep '/cpep8.manifest' added_lines; then
+if git diff ${BASE}.. 'tools/cpep8.manifest' | tail -n +5 | grep -q '^+'; then
     fail 'Do not add new files to cpep8.manifest; no longer needed'
 fi
 
-if grep '/cpep8.blacklist' added_lines; then
-    fail 'Do not add new files to cpep8.blacklist'
+if git diff ${BASE}.. 'tools/cpep8.blacklist' | tail -n +5 | grep -q '^+'; then
+    fail 'Do not add new files to cpep8.blacklist; fix the code'
 fi
 
 grep -i 'license' added_lines > license_lines
