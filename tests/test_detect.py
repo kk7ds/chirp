@@ -5,12 +5,17 @@ from unittest import mock
 import pytest
 
 from chirp import directory
+from chirp import logger
 from tests import base
 
 
 class TestCaseDetect(base.DriverTest):
     def test_detect(self):
-        radio = directory.get_radio_by_image(self.TEST_IMAGE)
+        with logger.log_history(logging.WARNING, 'chirp.drivers') as history:
+            radio = directory.get_radio_by_image(self.TEST_IMAGE)
+            self.assertEqual([], history.get_history(),
+                             'Drivers should not log warnings/errors for '
+                             'good images')
         if hasattr(radio, '_orig_rclass'):
             radio = radio._orig_rclass(self.TEST_IMAGE)
         if isinstance(self.radio, radio.__class__):

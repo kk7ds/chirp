@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import atexit
+import contextlib
 import functools
 import logging
 import os
@@ -27,6 +28,7 @@ import wx
 from chirp import chirp_common
 from chirp.drivers import generic_csv
 from chirp import errors
+from chirp import logger
 from chirp import platform as chirp_platform
 from chirp import settings
 from chirp.wxui import config
@@ -642,3 +644,18 @@ def temporary_debug_log():
     delete_atexit(dst)
     shutil.copy(src, dst)
     return dst
+
+
+@contextlib.contextmanager
+def expose_logs(level, root, label):
+    with logger.log_history(level, root) as history:
+        try:
+            yield
+        finally:
+            if history.get_history():
+                msg = os.linesep.join(x.getMessage()
+                                      for x in history.get_history())
+                d = wx.MessageDialog(
+                    None, str(msg), label,
+                    style=wx.OK | wx.ICON_INFORMATION)
+                d.ShowModal()
