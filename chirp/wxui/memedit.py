@@ -1961,8 +1961,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
     def cb_delete(self):
         selected_rows = self.get_selected_rows_safe()
-        for row in selected_rows:
-            self.delete_memory_at(row, None)
+        self._delete_memories_at(selected_rows, None)
 
     def get_selected_rows_safe(self):
         """Return the currently-selected rows
