@@ -538,18 +538,19 @@ class ChirpMain(wx.Frame):
 
     @common.error_proof(errors.ImageDetectFailed, FileNotFoundError)
     def open_file(self, filename, exists=True, select=True, rclass=None):
-
         CSVRadio = directory.get_radio('Generic_CSV')
-        if exists:
-            if not os.path.exists(filename):
-                raise FileNotFoundError(
-                    _('File does not exist: %s') % filename)
-            if rclass is None:
-                radio = directory.get_radio_by_image(filename)
+        label = _('Driver messages')
+        with common.expose_logs(logging.WARNING, 'chirp.drivers', label):
+            if exists:
+                if not os.path.exists(filename):
+                    raise FileNotFoundError(
+                        _('File does not exist: %s') % filename)
+                if rclass is None:
+                    radio = directory.get_radio_by_image(filename)
+                else:
+                    radio = rclass(filename)
             else:
-                radio = rclass(filename)
-        else:
-            radio = CSVRadio(None)
+                radio = CSVRadio(None)
 
         if (not isinstance(radio, CSVRadio) or
                 isinstance(radio, chirp_common.NetworkSourceRadio)):
@@ -1328,7 +1329,6 @@ class ChirpMain(wx.Frame):
         filename = self._do_open()
         if filename is None:
             return
-        radio = directory.get_radio_by_image(filename)
         d = wx.MessageDialog(
             self,
             _('The recommended procedure for importing memories is to open '
@@ -1343,7 +1343,10 @@ class ChirpMain(wx.Frame):
         d.SetYesNoLabels(_('Import'), _('Open'))
         r = d.ShowModal()
         if r == wx.ID_YES:
-            self.current_editorset.current_editor.memedit_import_all(radio)
+            with common.expose_logs(logging.WARNING, 'chirp.drivers',
+                                    _('Import messages')):
+                radio = directory.get_radio_by_image(filename)
+                self.current_editorset.current_editor.memedit_import_all(radio)
         elif r == wx.ID_NO:
             self.open_file(filename)
         else:
