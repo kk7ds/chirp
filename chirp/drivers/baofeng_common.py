@@ -95,37 +95,92 @@ def _recv(radio, addr, length):
     return data
 
 
+def _read_from_data(data, data_start, data_stop):
+    data = data[data_start:data_stop]
+    return data
+
+
+def _get_data_from_image(radio, _data_start, _data_stop):
+    image_data = _read_from_data(
+        radio.get_mmap().get_byte_compatible(),
+        _data_start,
+        _data_stop)
+    return image_data
+
+
+def _read_block(radio, start, size, first_command=False):
+    msg = struct.pack(">BHB", ord("S"), start, size)
+    radio.pipe.write(msg)
+
+    if first_command is False:
+        ack = radio.pipe.read(1)
+        if ack != b"\x06":
+            raise errors.RadioError(
+                "Radio refused to send second block 0x%04x" % start)
+
+    answer = radio.pipe.read(4)
+    if len(answer) != 4:
+        raise errors.RadioError("Radio refused to send block 0x%04x" % start)
+
+    cmd, addr, length = struct.unpack(">BHB", answer)
+    if cmd != ord("X") or addr != start or length != size:
+        LOG.error("Invalid answer for block 0x%04x:" % start)
+        LOG.debug("CMD: %s  ADDR: %04x  SIZE: %02x" % (cmd, addr, length))
+        raise errors.RadioError("Unknown response from radio")
+
+    chunk = radio.pipe.read(size)
+    if not chunk:
+        raise errors.RadioError("Radio did not send block 0x%04x" % start)
+    elif len(chunk) != size:
+        LOG.error("Chunk length was 0x%04i" % len(chunk))
+        raise errors.RadioError("Radio sent incomplete block 0x%04x" % start)
+
+    radio.pipe.write(b"\x06")
+    time.sleep(0.05)
+
+    return chunk
+
+
+def _get_aux_data_from_radio(radio):
+    block0 = _read_block(radio, 0x1E80, 0x40, True)
+    block1 = _read_block(radio, 0x1EC0, 0x40, False)
+    block2 = _read_block(radio, 0x1F00, 0x40, False)
+    block3 = _read_block(radio, 0x1F40, 0x40, False)
+    block4 = _read_block(radio, 0x1F80, 0x40, False)
+    block5 = _read_block(radio, 0x1FC0, 0x40, False)
+    version = block1[48:62]
+    area1 = block2 + block3[0:32]
+    area2 = block3[48:64]
+    area3 = block4[16:64]
+    # check for dropped byte
+    dropped_byte = block5[15:16] == b"\xFF"  # True/False
+    return version, area1, area2, area3, dropped_byte
+
+
 def _get_radio_firmware_version(radio):
-    # There is a problem in new radios where a different firmware version is
-    # received when directly reading a single block as compared to what is
-    # received when reading sequential blocks. This causes a mismatch between
-    # the image firmware version and the radio firmware version when uploading
-    # an image that came from the same radio. The workaround is to read 1 or
-    # more consecutive blocks prior to reading the block with the firmware
-    # version.
-    #
-    # Read 2 consecutive blocks to get the radio firmware version.
-    for addr in range(0x1E80, 0x1F00, radio._recv_block_size):
-        frame = _make_frame("S", addr, radio._recv_block_size)
+    # New radios will reply with 'alternative' (aka: bad) data if the Aux
+    # memory area is read without first reading a block from another area
+    # of memory. Reading any block that is outside of the Aux memory area
+    # (which starts at 0x1EC0) prior to reading blocks in the Aux mem area
+    # turns out to be a workaround for this problem.
 
-        # sending the read request
-        _rawsend(radio, frame)
+    # read and disregard block0
+    block0 = _read_block(radio, 0x1E80, 0x40, True)
+    block1 = _read_block(radio, 0x1EC0, 0x40, False)
+    block2 = _read_block(radio, 0x1FC0, 0x40, False)
 
-        if radio._ack_block and addr != 0x1E80:
-            ack = _rawrecv(radio, 1)
-            if ack != b"\x06":
-                raise errors.RadioError(
-                    "Radio refused to send block 0x%04x" % addr)
+    # get firmware version
+    version = block1[48:62]  # firmware version
 
-        # now we read
-        block = _recv(radio, addr, radio._recv_block_size)
+    # Some new radios will drop the byte at 0x1FCF when read in 0x40 byte
+    # blocks. This results in the next 0x30 bytes being moved forward one
+    # position (putting 0xFF in position 0x1FCF and pads the now missing byte
+    # at the end, 0x1FFF, with 0x80).
 
-        _rawsend(radio, b"\x06")
-        time.sleep(0.05)
+    # detect dropped byte
+    dropped_byte = (block2[15:16] == b"\xFF")  # dropped byte?
 
-    # get firmware version from the last block read
-    version = block[48:64]
-    return version
+    return version, dropped_byte
 
 
 def _image_ident_from_data(data, start, stop):
@@ -134,7 +189,7 @@ def _image_ident_from_data(data, start, stop):
 
 def _get_image_firmware_version(radio):
     return _image_ident_from_data(radio.get_mmap(), radio._fw_ver_start,
-                                  radio._fw_ver_start + 0x10)
+                                  radio._fw_ver_start + 0x0E)
 
 
 def _do_ident(radio, magic):
@@ -204,9 +259,10 @@ def _download(radio):
     ident = _ident_radio(radio)
 
     # identify radio
-    radio_ident = _get_radio_firmware_version(radio)
+    radio_ident, has_dropped_byte = _get_radio_firmware_version(radio)
     LOG.info("Radio firmware version:")
     LOG.debug(util.hexprint(radio_ident))
+    LOG.info("Radio has dropped byte issue: %s" % repr(has_dropped_byte))
 
     if radio_ident == "\xFF" * 16:
         ident += radio.MODEL.ljust(8)
@@ -225,35 +281,49 @@ def _download(radio):
     status.msg = "Cloning from radio..."
     radio.status_fn(status)
 
+    start = 0
+    end = radio._mem_size
+    blocksize = radio._recv_block_size
+    passes = 1
+    if has_dropped_byte:
+        passes = 2
+        end = radio._mem_size - radio._recv_block_size
+
     data = b""
-    for addr in range(0, radio._mem_size, radio._recv_block_size):
-        frame = _make_frame("S", addr, radio._recv_block_size)
-        # DEBUG
-        LOG.info("Request sent:")
-        LOG.debug(util.hexprint(frame))
+    for i in range(0, passes):
+        if i == 1:
+            start = radio._mem_size - radio._recv_block_size
+            end = radio._mem_size
+            blocksize = 0x10
 
-        # sending the read request
-        _rawsend(radio, frame)
+        for addr in range(start, end, blocksize):
+            frame = _make_frame("S", addr, blocksize)
+            # DEBUG
+            LOG.info("Request sent:")
+            LOG.debug(util.hexprint(frame))
 
-        if radio._ack_block:
-            ack = _rawrecv(radio, 1)
-            if ack != b"\x06":
-                raise errors.RadioError(
-                    "Radio refused to send block 0x%04x" % addr)
+            # sending the read request
+            _rawsend(radio, frame)
 
-        # now we read
-        d = _recv(radio, addr, radio._recv_block_size)
+            if radio._ack_block:
+                ack = _rawrecv(radio, 1)
+                if ack != b"\x06":
+                    raise errors.RadioError(
+                        "Radio refused to send block 0x%04x" % addr)
 
-        _rawsend(radio, b"\x06")
-        time.sleep(0.05)
+            # now we read
+            d = _recv(radio, addr, blocksize)
 
-        # aggregate the data
-        data += d
+            _rawsend(radio, b"\x06")
+            time.sleep(0.05)
 
-        # UI Update
-        status.cur = addr // radio._recv_block_size
-        status.msg = "Cloning from radio..."
-        radio.status_fn(status)
+            # aggregate the data
+            data += d
+
+            # UI Update
+            status.cur = addr // blocksize
+            status.msg = "Cloning from radio..."
+            radio.status_fn(status)
 
     data += ident
 
@@ -266,9 +336,11 @@ def _upload(radio):
     _ident_radio(radio)
 
     # identify radio
-    radio_ident = _get_radio_firmware_version(radio)
+    radio_ident, aux_r1, aux_r2, aux_r3, \
+        has_dropped_byte = _get_aux_data_from_radio(radio)
     LOG.info("Radio firmware version:")
     LOG.debug(util.hexprint(radio_ident))
+    LOG.info("Radio has dropped byte issue: %s" % repr(has_dropped_byte))
     # identify image
     image_ident = _get_image_firmware_version(radio)
     LOG.info("Image firmware version:")
@@ -282,11 +354,49 @@ def _upload(radio):
             LOG.debug(msg)
             raise errors.RadioError("Image not supported by radio")
 
-    if radio_ident != b"0xFF" * 16 and image_ident == radio_ident:
-        _ranges = radio._ranges
+    aux_i1 = _get_data_from_image(radio, 0x1F00, 0x1F60)
+    aux_i2 = _get_data_from_image(radio, 0x1F70, 0x1F80)
+    aux_i3 = _get_data_from_image(radio, 0x1F90, 0x1FC0)
+
+    # check if Aux memory of image matches Aux memory of radio
+    aux_matched = False
+    if aux_i1 != aux_r1:
+        # Area 1 does not match
+        # The safest thing to do is to skip uploading Aux mem area.
+        LOG.info("Aux memory mis-match")
+        LOG.info("Aux area 1 from image is %s" % repr(aux_i1))
+        LOG.info("Aux area 1 from radio is %s" % repr(aux_r1))
+    elif aux_i2 != aux_r2:
+        # Area 2 does not match
+        # The safest thing to do is to skip uploading Aux mem area.
+        LOG.info("Aux memory mis-match")
+        LOG.info("Aux area 2 from image is %s" % repr(aux_i2))
+        LOG.info("Aux area 2 from radio is %s" % repr(aux_r2))
+    elif aux_i3 != aux_r3:
+        # Area 3 does not match
+        # The safest thing to do is to skip uploading Aux mem area.
+        LOG.info("Aux memory mis-match")
+        LOG.info("Aux area 3 from image is %s" % repr(aux_i3))
+        LOG.info("Aux area 3 from radio is %s" % repr(aux_r3))
     else:
+        # All areas matched
+        # Uploading full Aux mem area is permitted
+        aux_matched = True
+
+    if has_dropped_byte and not aux_matched:
+        msg = ("Image not supported by radio. You must...\n"
+               "1. Download from radio.\n"
+               "2. Make changes.\n"
+               "3. Upload back to same radio.")
+        raise errors.RadioError(msg)
+
+    if has_dropped_byte or (aux_matched and radio.VENDOR != "BTECH"):
         _ranges = [(0x0000, 0x0DF0),
-                   (0x0E00, 0x1800)]
+                   (0x0E00, 0x1800),
+                   (0x1E80, 0x2000),
+                   ]
+    else:
+        _ranges = radio._ranges
 
     # UI progress
     status = chirp_common.Status()
