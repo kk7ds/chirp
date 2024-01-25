@@ -28,6 +28,7 @@ import wx.lib.sized_controls
 from chirp import chirp_common
 from chirp import directory
 from chirp.drivers import fake
+from chirp import errors
 from chirp.wxui import config
 from chirp.wxui import common
 from chirp.wxui import developer
@@ -238,6 +239,7 @@ CUSTOM_PORTS = []
 
 class ChirpCloneDialog(wx.Dialog):
     def __init__(self, *a, **k):
+        allow_detected_models = k.pop('allow_detected_models', False)
         super(ChirpCloneDialog, self).__init__(
             *a, title=_('Communicate with radio'), **k)
         self._clone_thread = None
@@ -298,6 +300,9 @@ class ChirpCloneDialog(wx.Dialog):
         for rclass in directory.DRV_TO_RADIO.values():
             if (not issubclass(rclass, chirp_common.CloneModeRadio) and
                     not issubclass(rclass, chirp_common.LiveRadio)):
+                continue
+            if (getattr(rclass, '_DETECTED_MODEL', False) and
+                    not allow_detected_models):
                 continue
             self._vendors[rclass.VENDOR].append(rclass)
             self._add_aliases(rclass)
@@ -544,8 +549,26 @@ class ChirpDownloadDialog(ChirpCloneDialog):
                 self.cancel_action()
                 return
 
+        serial = open_serial(port, rclass)
+
+        # See if the driver detects we should be using a different radio class
+        # to communicate with this model
         try:
-            self._radio = rclass(open_serial(port, rclass))
+            rclass = rclass.detect_from_serial(serial)
+            LOG.info('Detected %s from serial', rclass)
+        except NotImplementedError:
+            pass
+        except errors.RadioError as e:
+            LOG.error('Radio serial detection failed: %s', e)
+            self.fail(str(e))
+            return
+        except Exception as e:
+            LOG.exception('Exception during detection: %s', e)
+            self.fail(_('Internal driver error'))
+            return
+
+        try:
+            self._radio = rclass(serial)
         except Exception as e:
             LOG.exception('Failed to open serial: %s' % e)
             self.fail(str(e))
@@ -569,7 +592,8 @@ class ChirpDownloadDialog(ChirpCloneDialog):
 
 class ChirpUploadDialog(ChirpCloneDialog):
     def __init__(self, radio, *a, **k):
-        super(ChirpUploadDialog, self).__init__(*a, **k)
+        super(ChirpUploadDialog, self).__init__(*a, allow_detected_models=True,
+                                                **k)
         self._radio = radio
 
         self.select_vendor_model(

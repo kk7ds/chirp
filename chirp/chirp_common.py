@@ -1394,6 +1394,7 @@ class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties):
     an image of the radio into an image file"""
     FILE_EXTENSION = "img"
     MAGIC = b'\x00\xffchirp\xeeimg\x00\x01'
+    DETECTED_MODELS = None
 
     _memsize = 0
 
@@ -1416,6 +1417,19 @@ class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties):
     def get_memsize(self):
         """Return the radio's memory size"""
         return self._memsize
+
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        """Communicate with the radio via serial to determine proper class
+
+        Returns an in implementation of CloneModeRadio if detected, or raises
+        RadioError if not. If NotImplemented is raised, we assume that no
+        detection is possible or necessary.
+        """
+        assert cls.DETECTED_MODELS is None, (
+            'Class has detected models but no detect_from_serial() '
+            'implementation')
+        raise NotImplementedError()
 
     @classmethod
     def match_model(cls, filedata, filename):
