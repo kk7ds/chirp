@@ -1078,3 +1078,6 @@ class BF5RM(UV17Pro):
     MODEL = "5RM"
     VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=8.00),
+                    chirp_common.PowerLevel("Low",  watts=1.00),
+                    chirp_common.PowerLevel("Medium", watts=5.00)]
