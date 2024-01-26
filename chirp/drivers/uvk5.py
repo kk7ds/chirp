@@ -577,6 +577,12 @@ def do_download(radio):
     else:
         raise errors.RadioError('Unable to determine firmware version')
 
+    if not radio.k5_approve_firmware(f):
+        raise errors.RadioError(
+            'Firmware version is not supported by this driver')
+
+    radio.metadata = {'uvk5_firmware': f}
+
     addr = 0
     while addr < MEM_SIZE:
         o = _readmem(serport, addr, MEM_BLOCK)
@@ -606,6 +612,12 @@ def do_upload(radio):
         radio.FIRMWARE_VERSION = f
     else:
         return False
+
+    if not radio.k5_approve_firmware(f):
+        raise errors.RadioError(
+            'Firmware version is not supported by this driver')
+    LOG.info('Uploading image from firmware %r to radio with %r',
+             radio.metadata.get('uvk5_firmware', 'unknown'), f)
 
     addr = 0
     while addr < PROG_SIZE:
@@ -641,8 +653,7 @@ def _find_band(nolimits, hz):
     return False
 
 
-@directory.register
-class UVK5Radio(chirp_common.CloneModeRadio):
+class UVK5RadioBase(chirp_common.CloneModeRadio):
     """Quansheng UV-K5"""
     VENDOR = "Quansheng"
     MODEL = "UV-K5"
@@ -650,6 +661,19 @@ class UVK5Radio(chirp_common.CloneModeRadio):
     NEEDS_COMPAT_SERIAL = False
     FIRMWARE_VERSION = ""
     _expanded_limits = False
+
+    @classmethod
+    def k5_approve_firmware(cls, firmware):
+        # All subclasses must implement this
+        raise NotImplementedError()
+
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        firmware = _sayhello(pipe)
+        for rclass in [UVK5Radio] + cls.DETECTED_MODELS:
+            if rclass.k5_approve_firmware(firmware):
+                return rclass
+        raise errors.RadioError('Firmware %r not supported' % firmware)
 
     def get_prompts(x=None):
         rp = chirp_common.RadioPrompts()
@@ -2070,6 +2094,14 @@ class UVK5Radio(chirp_common.CloneModeRadio):
                     _mem4.channel_attributes[number].is_scanlist2 = 0
 
         return mem
+
+
+@directory.register
+class UVK5Radio(UVK5RadioBase):
+    @classmethod
+    def k5_approve_firmware(cls, firmware):
+        approved_prefixes = ('k5_2.01.', 'app_2.01.', '2.01.')
+        return any(firmware.startswith(x) for x in approved_prefixes)
 
 
 @directory.register
