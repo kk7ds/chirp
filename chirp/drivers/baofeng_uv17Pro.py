@@ -21,7 +21,7 @@ from chirp import chirp_common, directory, memmap
 from chirp import bitwise
 from chirp.settings import RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
-    RadioSettingValueString, \
+    InvalidValueError, RadioSettingValueString, \
     RadioSettings, RadioSettingGroup
 import struct
 from chirp import errors, util
@@ -59,6 +59,7 @@ LIST_VOX_LEVEL = ["Off"] + ["%s" % x for x in range(1, 10, 1)]
 LIST_VOX_LEVEL_ALT = ["%s" % x for x in range(1, 10, 1)]
 LIST_GPS_MODE = ["GPS", "Beidou", "GPS + Beidou"]
 LIST_GPS_TIMEZONE = ["%s" % x for x in range(-12, 13, 1)]
+LIST_SHIFTS = ["Off", "+", "-"]
 CHARSET_GB2312 = chirp_common.CHARSET_ASCII
 for x in range(0xB0, 0xD7):
     for y in range(0xA1, 0xFF):
@@ -225,6 +226,8 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
     _gmrs = False
     _bw_shift = False
     _has_support_for_banknames = False
+    _has_workmode_support = False
+    _has_savemode = True
 
     _tri_band = True
     _fileid = []
@@ -255,6 +258,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
     SKIP_VALUES = ["", "S"]
     DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
     RXTX_CODES = ('Off', )
+    LIST_PW_SAVEMODE = ["Off", "On"]
     for code in chirp_common.TONES:
         RXTX_CODES = (RXTX_CODES + (str(code), ))
     for code in DTCS_CODES:
@@ -482,7 +486,8 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         rs = RadioSetting("ani.code", "ANI Code", val)
         rs.set_apply_callback(self.apply_code, self._memobj.ani, 5)
         dtmfe.append(rs)
-        
+
+    def get_settings_pro_dtmf(self, dtmfe, _mem):
         if _mem.ani.dtmfon > 0xC3:
             val = 0x03
         else:
@@ -599,9 +604,16 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                               self.LIST_MODE,
                               self.LIST_MODE[_mem.settings.chbdistype]))
         basic.append(rs)
-        
+
+    def get_settings_pro_basic(self, basic, _mem):
+
+        if _mem.settings.savemode > len(self.LIST_PW_SAVEMODE):
+            val = 0x01  # assume values out of range are some form of "On"
+        else:
+            val = _mem.settings.savemode
         rs = RadioSetting("settings.savemode", "Save Mode",
-                          RadioSettingValueBoolean(_mem.settings.savemode))
+                          RadioSettingValueList(self.LIST_PW_SAVEMODE,
+                                                self.LIST_PW_SAVEMODE[val]))
         basic.append(rs)
 
         rs = RadioSetting("settings.totalarm", "Timeout Timer Alarm",
@@ -764,61 +776,164 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         rs = RadioSetting("settings.fmenable", "Disable FM radio",
                           RadioSettingValueBoolean(_mem.settings.fmenable))
         basic.append(rs)
-        
-    def get_settings_common_workmode(self, workmode, _mem):        
-           
-           
+
+    def get_settings_common_workmode(self, workmode, _mem):
+
+        vfoA = RadioSettingGroup("vfoA", "VFO A")
+        vfoB = RadioSettingGroup("vfoB", "VFO B")
+
+        def convert_bytes_to_freq(bytes):
+            real_freq = 0
+            for byte in bytes:
+                real_freq = (real_freq * 10) + byte
+            return chirp_common.format_freq(real_freq * 10)
+
+        def my_validate(value):
+            value = chirp_common.parse_freq(value)
+            for band in self.VALID_BANDS:
+                if value > band[0] and value < band[1]:
+                    return chirp_common.format_freq(value)
+            msg = ("{0} is not in a valid band.".format(value))
+            raise InvalidValueError(msg)
+
+        def apply_freq(setting, obj):
+            value = chirp_common.parse_freq(str(setting.value)) / 10
+            for i in range(7, -1, -1):
+                obj.freq[i] = value % 10
+                value /= 10
+
+        freqA = RadioSettingValueString(0, 10,
+                                        convert_bytes_to_freq(_mem.vfo.a.freq))
+        freqA.set_validate_callback(my_validate)
+        rs = RadioSetting("vfo.a.freq", "Frequency", freqA)
+        rs.set_apply_callback(apply_freq, _mem.vfo.a)
+        vfoA.append(rs)
+
+        freqB = RadioSettingValueString(0, 10,
+                                        convert_bytes_to_freq(_mem.vfo.b.freq))
+        freqB.set_validate_callback(my_validate)
+        rs = RadioSetting("vfo.b.freq", "Frequency", freqB)
+        rs.set_apply_callback(apply_freq, _mem.vfo.b)
+        vfoB.append(rs)
+
+        if _mem.vfo.a.sftd >= len(LIST_SHIFTS):
+            val = 0
+        else:
+            val = _mem.vfo.a.sftd
+        rs = RadioSetting("vfo.a.sftd", "Shift",
+                          RadioSettingValueList(LIST_SHIFTS, LIST_SHIFTS[val]))
+        vfoA.append(rs)
+
+        if _mem.vfo.b.sftd >= len(LIST_SHIFTS):
+            val = 0
+        else:
+            val = _mem.vfo.b.sftd
+        rs = RadioSetting("vfo.b.sftd", "Shift",
+                          RadioSettingValueList(LIST_SHIFTS, LIST_SHIFTS[val]))
+        vfoB.append(rs)
+
+        def convert_bytes_to_offset(bytes):
+            real_offset = 0
+            for byte in bytes:
+                real_offset = (real_offset * 10) + byte
+            return chirp_common.format_freq(real_offset * 1000)
+
+        def apply_offset(setting, obj):
+            value = chirp_common.parse_freq(str(setting.value)) / 1000
+            for i in range(5, -1, -1):
+                obj.offset[i] = value % 10
+                value /= 10
+
+        offA = RadioSettingValueString(
+                0, 10, convert_bytes_to_offset(_mem.vfo.a.offset))
+        rs = RadioSetting("vfo.a.offset",
+                          "Offset (0.0-999.999)", offA)
+        rs.set_apply_callback(apply_offset, _mem.vfo.a)
+        vfoA.append(rs)
+
+        offB = RadioSettingValueString(
+                0, 10, convert_bytes_to_offset(_mem.vfo.b.offset))
+        rs = RadioSetting("vfo.b.offset",
+                          "Offset (0.0-999.999)", offB)
+        rs.set_apply_callback(apply_offset, _mem.vfo.b)
+        vfoB.append(rs)
+
         POWER_LEVELS = [str(x) for x in self.POWER_LEVELS]
         if _mem.vfo.a.lowpower >= len(POWER_LEVELS):
             val = 0
         else:
             val = _mem.vfo.a.lowpower
-        rs = RadioSetting("vfo.a.lowpower", "VFO A Power",
-                          RadioSettingValueList(POWER_LEVELS, POWER_LEVELS[val]))
-        workmode.append(rs)   
-        
+        rs = RadioSetting("vfo.a.lowpower", "Power",
+                          RadioSettingValueList(POWER_LEVELS,
+                                                POWER_LEVELS[val]))
+        vfoA.append(rs)
+
         if _mem.vfo.b.lowpower >= len(POWER_LEVELS):
             val = 0
         else:
             val = _mem.vfo.b.lowpower
-        rs = RadioSetting("vfo.b.lowpower", "VFO B Power",
-                          RadioSettingValueList(POWER_LEVELS, POWER_LEVELS[val]))
-        workmode.append(rs)  
-           
+        rs = RadioSetting("vfo.b.lowpower", "Power",
+                          RadioSettingValueList(POWER_LEVELS,
+                                                POWER_LEVELS[val]))
+        vfoB.append(rs)
+
         if _mem.vfo.a.wide >= len(LIST_BANDWIDTH):
             val = 0
         else:
             val = _mem.vfo.a.wide
-        rs = RadioSetting("vfo.a.wide", "VFO A Bandwidth",
-                          RadioSettingValueList(LIST_BANDWIDTH, LIST_BANDWIDTH[val]))
-        workmode.append(rs)
-        
+        rs = RadioSetting("vfo.a.wide", "Bandwidth",
+                          RadioSettingValueList(LIST_BANDWIDTH,
+                                                LIST_BANDWIDTH[val]))
+        vfoA.append(rs)
+
         if _mem.vfo.b.wide >= len(LIST_BANDWIDTH):
             val = 0
         else:
             val = _mem.vfo.b.wide
-        rs = RadioSetting("vfo.b.wide", "VFO B Bandwidth",
-                          RadioSettingValueList(LIST_BANDWIDTH, LIST_BANDWIDTH[val]))
-        workmode.append(rs)
-        
-        if _mem.vfo.b.step >= len(STEPS):
+        rs = RadioSetting("vfo.b.wide", "Bandwidth",
+                          RadioSettingValueList(LIST_BANDWIDTH,
+                                                LIST_BANDWIDTH[val]))
+        vfoB.append(rs)
+
+        if _mem.vfo.a.scode >= len(self.SCODE_LIST):
             val = 0
         else:
-            val = _mem.vfo.b.step
-        rs = RadioSetting("vfo.b.step", "VFO B Tuning Step",
-                          RadioSettingValueList(LIST_STEPS, LIST_STEPS[val]))
-        workmode.append(rs)
-                
+            val = _mem.vfo.a.scode
+        rs = RadioSetting("vfo.a.scode", "Signal Code",
+                          RadioSettingValueList(self.SCODE_LIST,
+                                                self.SCODE_LIST[val]))
+        vfoA.append(rs)
+
+        if _mem.vfo.b.scode >= len(self.SCODE_LIST):
+            val = 0
+        else:
+            val = _mem.vfo.b.scode
+        rs = RadioSetting("vfo.b.scode", "Signal Code",
+                          RadioSettingValueList(self.SCODE_LIST,
+                                                self.SCODE_LIST[val]))
+        vfoB.append(rs)
+
         if _mem.vfo.a.step >= len(STEPS):
             val = 0
         else:
             val = _mem.vfo.a.step
-        rs = RadioSetting("vfo.a.step", "VFO A Tuning Step",
+        rs = RadioSetting("vfo.a.step", "Tuning Step",
                           RadioSettingValueList(LIST_STEPS, LIST_STEPS[val]))
-        workmode.append(rs)
- 
+        vfoA.append(rs)
+
+        if _mem.vfo.b.step >= len(STEPS):
+            val = 0
+        else:
+            val = _mem.vfo.b.step
+        rs = RadioSetting("vfo.b.step", "Tuning Step",
+                          RadioSettingValueList(LIST_STEPS, LIST_STEPS[val]))
+        vfoB.append(rs)
+
+        workmode.append(vfoA)
+        workmode.append(vfoB)
+
     def get_settings_common_bank(self, bank, _mem):
-        
+
         def _filterName(name):
             fname = b""
             for char in name:
@@ -842,32 +957,67 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                 rs.set_apply_callback(apply_bankname, _nameobj)
                 bank.append(rs)
 
-
     def get_settings(self):
         """Translate the bit in the mem_struct into settings in the UI"""
         _mem = self._memobj
         supported = []
-        
+
         basic = RadioSettingGroup("basic", "Basic Settings")
         self.get_settings_common_basic(basic, _mem)
-        supported.append(basic) #add basic menu
-        
+        self.get_settings_pro_basic(basic, _mem)
+        supported.append(basic)  # add basic menu
+
         if self._has_workmode_support:
             workmode = RadioSettingGroup("workmode", "Work Mode Settings")
             self.get_settings_common_workmode(workmode, _mem)
-            supported.append(workmode) #add workmode menu if supported
-            
+            supported.append(workmode)  # add workmode menu if supported
+
         dtmfe = RadioSettingGroup("dtmfe", "DTMF Encode Settings")
         self.get_settings_common_dtmf(dtmfe, _mem)
-        supported.append(dtmfe) #add dtmfe menu
-        
+        self.get_settings_pro_dtmf(dtmfe, _mem)
+        supported.append(dtmfe)  # add dtmfe menu
+
         if self._has_support_for_banknames:
             bank = RadioSettingGroup("bank", "Bank names")
             self.get_settings_common_bank(bank, _mem)
-            supported.append(bank) #add bank menu if supported
-        
+            supported.append(bank)  # add bank menu if supported
+
         top = RadioSettings(*tuple(supported))
         return top
+
+    def set_settings(self, settings):
+        _settings = self._memobj.settings
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            else:
+                try:
+                    name = element.get_name()
+                    if "." in name:
+                        bits = name.split(".")
+                        obj = self._memobj
+                        for bit in bits[:-1]:
+                            if "/" in bit:
+                                bit, index = bit.split("/", 1)
+                                index = int(index)
+                                obj = getattr(obj, bit)[index]
+                            else:
+                                obj = getattr(obj, bit)
+                        setting = bits[-1]
+                    else:
+                        obj = _settings
+                        setting = element.get_name()
+
+                    if element.has_apply_callback():
+                        LOG.debug("Using apply callback")
+                        element.run_apply_callback()
+                    elif element.value.get_mutable():
+                        LOG.debug("Setting %s = %s" % (setting, element.value))
+                        setattr(obj, setting, element.value)
+                except Exception:
+                    LOG.debug(element.get_name())
+                    raise
 
     def sync_in(self):
         """Download from radio"""
@@ -1121,6 +1271,7 @@ class UV17ProGPS(UV17Pro):
     MODEL = "UV-17ProGPS"
 
     _has_support_for_banknames = True
+    _has_workmode_support = False
     _magic = MSTRING_UV17PROGPS
     _magics = [b"\x46", b"\x4d", b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01" +
                b"\x01\x04\x11\x08\x05\x0D\x0D\x01\x11\x0F\x09\x12\x09" +
@@ -1141,9 +1292,12 @@ class UV17ProGPS(UV17Pro):
 class BF5RM(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "5RM"
+
     VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=8.00),
-                    chirp_common.PowerLevel("Low",  watts=1.00),
+                    chirp_common.PowerLevel("Low", watts=1.00),
                     chirp_common.PowerLevel("Medium", watts=5.00)]
+    SCODE_LIST = ["%s" % x for x in range(1, 16)]
+    LIST_PW_SAVEMODE = ["Off", "1:1", "1:2", "1:4"]
     _has_workmode_support = True
