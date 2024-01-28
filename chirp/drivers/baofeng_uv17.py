@@ -359,7 +359,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
                           RadioSettingValueBoolean(_mem.settings.fmenable))
         basic.append(rs)
 
-        self.get_settings_common_dtmf(dtmfe)
+        self.get_settings_common_dtmf(dtmfe, _mem)
 
         return top
 
