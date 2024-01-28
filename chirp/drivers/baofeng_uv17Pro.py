@@ -34,6 +34,7 @@ MSTRING_UV17PROGPS = b"PROGRAMCOLORPROU"
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
+LIST_STEPS = ["2.5", "5.0", "6.25", "10.0", "12.5", "20.0", "25.0", "50.0"]
 
 LIST_AB = ["A", "B"]
 LIST_BANDWIDTH = ["Wide", "Narrow"]
@@ -462,7 +463,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                 code.append(0xFF)
         obj.code = code
 
-    def get_settings_common_dtmf(self, dtmfe):
+    def get_settings_common_dtmf(self, dtmfe, _mem):
         for i in range(0, len(self.SCODE_LIST)):
             _codeobj = self._memobj.pttid[i].code
             _code = "".join([
@@ -480,6 +481,41 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         val.set_charset(DTMF_CHARS)
         rs = RadioSetting("ani.code", "ANI Code", val)
         rs.set_apply_callback(self.apply_code, self._memobj.ani, 5)
+        dtmfe.append(rs)
+        
+        if _mem.ani.dtmfon > 0xC3:
+            val = 0x03
+        else:
+            val = _mem.ani.dtmfon
+        rs = RadioSetting("ani.dtmfon", "DTMF Speed (on)",
+                          RadioSettingValueList(LIST_DTMFSPEED,
+                                                LIST_DTMFSPEED[val]))
+        dtmfe.append(rs)
+
+        if _mem.ani.dtmfoff > 0xC3:
+            val = 0x03
+        else:
+            val = _mem.ani.dtmfoff
+        rs = RadioSetting("ani.dtmfoff", "DTMF Speed (off)",
+                          RadioSettingValueList(LIST_DTMFSPEED,
+                                                LIST_DTMFSPEED[val]))
+        dtmfe.append(rs)
+
+        if self._has_when_to_send_aniid:
+            rs = RadioSetting("ani.aniid", "When to send ANI ID",
+                              RadioSettingValueList(LIST_PTTID,
+                                                    LIST_PTTID[
+                                                        _mem.ani.aniid]))
+            dtmfe.append(rs)
+
+        if _mem.settings.hangup >= len(LIST_HANGUPTIME):
+            val = 0
+        else:
+            val = _mem.settings.hangup
+        rs = RadioSetting("settings.hangup", "Hang-up time",
+                          RadioSettingValueList(LIST_HANGUPTIME,
+                                                LIST_HANGUPTIME[
+                                                    val]))
         dtmfe.append(rs)
 
     def get_settings_common_basic(self, basic, _mem):
@@ -563,20 +599,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                               self.LIST_MODE,
                               self.LIST_MODE[_mem.settings.chbdistype]))
         basic.append(rs)
-
-    def get_settings(self):
-        """Translate the bit in the mem_struct into settings in the UI"""
-        _mem = self._memobj
-        basic = RadioSettingGroup("basic", "Basic Settings")
-        dtmfe = RadioSettingGroup("dtmfe", "DTMF Encode Settings")
-        if self._has_support_for_banknames:
-            bank = RadioSettingGroup("bank", "Bank names")
-            top = RadioSettings(basic, bank, dtmfe)
-        else:
-            top = RadioSettings(basic, dtmfe)
-
-        self.get_settings_common_basic(basic, _mem)
-
+        
         rs = RadioSetting("settings.savemode", "Save Mode",
                           RadioSettingValueBoolean(_mem.settings.savemode))
         basic.append(rs)
@@ -741,7 +764,61 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         rs = RadioSetting("settings.fmenable", "Disable FM radio",
                           RadioSettingValueBoolean(_mem.settings.fmenable))
         basic.append(rs)
-
+        
+    def get_settings_common_workmode(self, workmode, _mem):        
+           
+           
+        POWER_LEVELS = [str(x) for x in self.POWER_LEVELS]
+        if _mem.vfo.a.lowpower >= len(POWER_LEVELS):
+            val = 0
+        else:
+            val = _mem.vfo.a.lowpower
+        rs = RadioSetting("vfo.a.lowpower", "VFO A Power",
+                          RadioSettingValueList(POWER_LEVELS, POWER_LEVELS[val]))
+        workmode.append(rs)   
+        
+        if _mem.vfo.b.lowpower >= len(POWER_LEVELS):
+            val = 0
+        else:
+            val = _mem.vfo.b.lowpower
+        rs = RadioSetting("vfo.b.lowpower", "VFO B Power",
+                          RadioSettingValueList(POWER_LEVELS, POWER_LEVELS[val]))
+        workmode.append(rs)  
+           
+        if _mem.vfo.a.wide >= len(LIST_BANDWIDTH):
+            val = 0
+        else:
+            val = _mem.vfo.a.wide
+        rs = RadioSetting("vfo.a.wide", "VFO A Bandwidth",
+                          RadioSettingValueList(LIST_BANDWIDTH, LIST_BANDWIDTH[val]))
+        workmode.append(rs)
+        
+        if _mem.vfo.b.wide >= len(LIST_BANDWIDTH):
+            val = 0
+        else:
+            val = _mem.vfo.b.wide
+        rs = RadioSetting("vfo.b.wide", "VFO B Bandwidth",
+                          RadioSettingValueList(LIST_BANDWIDTH, LIST_BANDWIDTH[val]))
+        workmode.append(rs)
+        
+        if _mem.vfo.b.step >= len(STEPS):
+            val = 0
+        else:
+            val = _mem.vfo.b.step
+        rs = RadioSetting("vfo.b.step", "VFO B Tuning Step",
+                          RadioSettingValueList(LIST_STEPS, LIST_STEPS[val]))
+        workmode.append(rs)
+                
+        if _mem.vfo.a.step >= len(STEPS):
+            val = 0
+        else:
+            val = _mem.vfo.a.step
+        rs = RadioSetting("vfo.a.step", "VFO A Tuning Step",
+                          RadioSettingValueList(LIST_STEPS, LIST_STEPS[val]))
+        workmode.append(rs)
+ 
+    def get_settings_common_bank(self, bank, _mem):
+        
         def _filterName(name):
             fname = b""
             for char in name:
@@ -765,43 +842,31 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                 rs.set_apply_callback(apply_bankname, _nameobj)
                 bank.append(rs)
 
-        self.get_settings_common_dtmf(dtmfe)
 
-        if _mem.ani.dtmfon > 0xC3:
-            val = 0x03
-        else:
-            val = _mem.ani.dtmfon
-        rs = RadioSetting("ani.dtmfon", "DTMF Speed (on)",
-                          RadioSettingValueList(LIST_DTMFSPEED,
-                                                LIST_DTMFSPEED[val]))
-        dtmfe.append(rs)
-
-        if _mem.ani.dtmfoff > 0xC3:
-            val = 0x03
-        else:
-            val = _mem.ani.dtmfoff
-        rs = RadioSetting("ani.dtmfoff", "DTMF Speed (off)",
-                          RadioSettingValueList(LIST_DTMFSPEED,
-                                                LIST_DTMFSPEED[val]))
-        dtmfe.append(rs)
-
-        if self._has_when_to_send_aniid:
-            rs = RadioSetting("ani.aniid", "When to send ANI ID",
-                              RadioSettingValueList(LIST_PTTID,
-                                                    LIST_PTTID[
-                                                        _mem.ani.aniid]))
-            dtmfe.append(rs)
-
-        if _mem.settings.hangup >= len(LIST_HANGUPTIME):
-            val = 0
-        else:
-            val = _mem.settings.hangup
-        rs = RadioSetting("settings.hangup", "Hang-up time",
-                          RadioSettingValueList(LIST_HANGUPTIME,
-                                                LIST_HANGUPTIME[
-                                                    val]))
-        dtmfe.append(rs)
-
+    def get_settings(self):
+        """Translate the bit in the mem_struct into settings in the UI"""
+        _mem = self._memobj
+        supported = []
+        
+        basic = RadioSettingGroup("basic", "Basic Settings")
+        self.get_settings_common_basic(basic, _mem)
+        supported.append(basic) #add basic menu
+        
+        if self._has_workmode_support:
+            workmode = RadioSettingGroup("workmode", "Work Mode Settings")
+            self.get_settings_common_workmode(workmode, _mem)
+            supported.append(workmode) #add workmode menu if supported
+            
+        dtmfe = RadioSettingGroup("dtmfe", "DTMF Encode Settings")
+        self.get_settings_common_dtmf(dtmfe, _mem)
+        supported.append(dtmfe) #add dtmfe menu
+        
+        if self._has_support_for_banknames:
+            bank = RadioSettingGroup("bank", "Bank names")
+            self.get_settings_common_bank(bank, _mem)
+            supported.append(bank) #add bank menu if supported
+        
+        top = RadioSettings(*tuple(supported))
         return top
 
     def sync_in(self):
@@ -1078,3 +1143,7 @@ class BF5RM(UV17Pro):
     MODEL = "5RM"
     VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=8.00),
+                    chirp_common.PowerLevel("Low",  watts=1.00),
+                    chirp_common.PowerLevel("Medium", watts=5.00)]
+    _has_workmode_support = True
