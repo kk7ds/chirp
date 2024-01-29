@@ -388,36 +388,38 @@ KEYACTIONS_LIST = ["None", "Flashlight on/off", "Power select",
                    "Alarm on/off", "FM radio on/off", "Transmit 1750 Hz"]
 
 
-# the communication is obfuscated using this fine mechanism
 def xorarr(data: bytes):
+    """the communication is obfuscated using this fine mechanism"""
     tbl = [22, 108, 20, 230, 46, 145, 13, 64, 33, 53, 213, 64, 19, 3, 233, 128]
-    x = b""
-    r = 0
+    ret = b""
+    idx = 0
     for byte in data:
-        x += bytes([byte ^ tbl[r]])
-        r = (r+1) % len(tbl)
-    return x
+        ret += bytes([byte ^ tbl[idx]])
+        idx = (idx+1) % len(tbl)
+    return ret
 
 
-# if this crc was used for communication to AND from the radio, then it
-# would be a measure to increase reliability.
-# but it's only used towards the radio, so it's for further obfuscation
 def calculate_crc16_xmodem(data: bytes):
+    """
+    if this crc was used for communication to AND from the radio, then it
+    would be a measure to increase reliability.
+    but it's only used towards the radio, so it's for further obfuscation
+    """
     poly = 0x1021
     crc = 0x0
     for byte in data:
         crc = crc ^ (byte << 8)
-        for i in range(8):
+        for _ in range(8):
             crc = crc << 1
-            if (crc & 0x10000):
+            if crc & 0x10000:
                 crc = (crc ^ poly) & 0xFFFF
     return crc & 0xFFFF
 
 
 def _send_command(serport, data: bytes):
     """Send a command to UV-K5 radio"""
-    LOG.debug("Sending command (unobfuscated) len=0x%4.4x:\n%s" %
-              (len(data), util.hexprint(data)))
+    LOG.debug("Sending command (unobfuscated) len=0x%4.4x:\n%s",
+              len(data), util.hexprint(data))
 
     crc = calculate_crc16_xmodem(data)
     data2 = data + struct.pack("<H", crc)
@@ -426,65 +428,65 @@ def _send_command(serport, data: bytes):
         xorarr(data2) + \
         struct.pack(">H", 0xdcba)
     if DEBUG_SHOW_OBFUSCATED_COMMANDS:
-        LOG.debug("Sending command (obfuscated):\n%s" % util.hexprint(command))
+        LOG.debug("Sending command (obfuscated):\n%s", util.hexprint(command))
     try:
         result = serport.write(command)
-    except Exception:
-        raise errors.RadioError("Error writing data to radio")
+    except Exception as e:
+        raise errors.RadioError("Error writing data to radio") from e
     return result
 
 
 def _receive_reply(serport):
     header = serport.read(4)
     if len(header) != 4:
-        LOG.warning("Header short read: [%s] len=%i" %
-                    (util.hexprint(header), len(header)))
+        LOG.warning("Header short read: [%s] len=%i",
+                    util.hexprint(header), len(header))
         raise errors.RadioError("Header short read")
     if header[0] != 0xAB or header[1] != 0xCD or header[3] != 0x00:
-        LOG.warning("Bad response header: %s len=%i" %
-                    (util.hexprint(header), len(header)))
+        LOG.warning("Bad response header: %s len=%i",
+                    util.hexprint(header), len(header))
         raise errors.RadioError("Bad response header")
 
     cmd = serport.read(int(header[2]))
     if len(cmd) != int(header[2]):
-        LOG.warning("Body short read: [%s] len=%i" %
-                    (util.hexprint(cmd), len(cmd)))
+        LOG.warning("Body short read: [%s] len=%i",
+                    util.hexprint(cmd), len(cmd))
         raise errors.RadioError("Command body short read")
 
     footer = serport.read(4)
 
     if len(footer) != 4:
-        LOG.warning("Footer short read: [%s] len=%i" %
-                    (util.hexprint(footer), len(footer)))
+        LOG.warning("Footer short read: [%s] len=%i",
+                    util.hexprint(footer), len(footer))
         raise errors.RadioError("Footer short read")
 
     if footer[2] != 0xDC or footer[3] != 0xBA:
-        LOG.debug(
-                "Reply before bad response footer (obfuscated)"
-                "len=0x%4.4x:\n%s" % (len(cmd), util.hexprint(cmd)))
-        LOG.warning("Bad response footer: %s len=%i" %
-                    (util.hexprint(footer), len(footer)))
+        LOG.debug("Reply before bad response footer (obfuscated)"
+                  "len=0x%4.4x:\n%s", len(cmd), util.hexprint(cmd))
+        LOG.warning("Bad response footer: %s len=%i",
+                    util.hexprint(footer), len(footer))
         raise errors.RadioError("Bad response footer")
 
     if DEBUG_SHOW_OBFUSCATED_COMMANDS:
-        LOG.debug("Received reply (obfuscated) len=0x%4.4x:\n%s" %
-                  (len(cmd), util.hexprint(cmd)))
+        LOG.debug("Received reply (obfuscated) len=0x%4.4x:\n%s",
+                  len(cmd), util.hexprint(cmd))
 
     cmd2 = xorarr(cmd)
 
-    LOG.debug("Received reply (unobfuscated) len=0x%4.4x:\n%s" %
-              (len(cmd2), util.hexprint(cmd2)))
+    LOG.debug("Received reply (unobfuscated) len=0x%4.4x:\n%s",
+              len(cmd2), util.hexprint(cmd2))
 
     return cmd2
 
 
 def _getstring(data: bytes, begin, maxlen):
     tmplen = min(maxlen+1, len(data))
-    s = [data[i] for i in range(begin, tmplen)]
-    for key, val in enumerate(s):
+    ss = [data[i] for i in range(begin, tmplen)]
+    key = 0
+    for key, val in enumerate(ss):
         if val < ord(' ') or val > ord('~'):
-            break
-    return ''.join(chr(x) for x in s[0:key])
+            return ''.join(chr(x) for x in ss[0:key])
+    return ''
 
 
 def _sayhello(serport):
@@ -494,46 +496,43 @@ def _sayhello(serport):
     while True:
         LOG.debug("Sending hello packet")
         _send_command(serport, hellopacket)
-        o = _receive_reply(serport)
-
-        if o[0] == 0x18 and o[1] == 0x05:
-            LOG.warning("Radio is in firmware flash mode")
-            raise errors.RadioError(
-                    "This radio is in firmware flash mode (PTT + turn on). "
-                    "Please do this according to the vendor documentation")
-
-        if (o):
+        rep = _receive_reply(serport)
+        if rep:
             break
         tries -= 1
         if tries == 0:
             LOG.warning("Failed to initialise radio")
             raise errors.RadioError("Failed to initialize radio")
-    firmware = _getstring(o, 4, 16)
-    LOG.info("Found firmware: %s" % firmware)
+    if rep.startswith(b'\x18\x05'):
+        raise errors.RadioError("Radio is in programming mode, "
+                                "restart radio into normal mode")
+    firmware = _getstring(rep, 4, 24)
+
+    LOG.info("Found firmware: %s", firmware)
     return firmware
 
 
 def _readmem(serport, offset, length):
-    LOG.debug("Sending readmem offset=0x%4.4x len=0x%4.4x" % (offset, length))
+    LOG.debug("Sending readmem offset=0x%4.4x len=0x%4.4x", offset, length)
 
     readmem = b"\x1b\x05\x08\x00" + \
         struct.pack("<HBB", offset, length, 0) + \
         b"\x6a\x39\x57\x64"
     _send_command(serport, readmem)
-    o = _receive_reply(serport)
+    rep = _receive_reply(serport)
     if DEBUG_SHOW_MEMORY_ACTIONS:
-        LOG.debug("readmem Received data len=0x%4.4x:\n%s" %
-                  (len(o), util.hexprint(o)))
-    return o[8:]
+        LOG.debug("readmem Received data len=0x%4.4x:\n%s",
+                  len(rep), util.hexprint(rep))
+    return rep[8:]
 
 
 def _writemem(serport, data, offset):
-    LOG.debug("Sending writemem offset=0x%4.4x len=0x%4.4x" %
-              (offset, len(data)))
+    LOG.debug("Sending writemem offset=0x%4.4x len=0x%4.4x",
+              offset, len(data))
 
     if DEBUG_SHOW_MEMORY_ACTIONS:
-        LOG.debug("writemem sent data offset=0x%4.4x len=0x%4.4x:\n%s" %
-                  (offset, len(data), util.hexprint(data)))
+        LOG.debug("writemem sent data offset=0x%4.4x len=0x%4.4x:\n%s",
+                  offset, len(data), util.hexprint(data))
 
     dlen = len(data)
     writemem = b"\x1d\x05" + \
@@ -541,19 +540,18 @@ def _writemem(serport, data, offset):
         b"\x6a\x39\x57\x64"+data
 
     _send_command(serport, writemem)
-    o = _receive_reply(serport)
+    rep = _receive_reply(serport)
 
-    LOG.debug("writemem Received data: %s len=%i" % (util.hexprint(o), len(o)))
+    LOG.debug("writemem Received data: %s len=%i",
+              util.hexprint(rep), len(rep))
 
-    if (o[0] == 0x1e
-            and
-            o[4] == (offset & 0xff)
-            and
-            o[5] == (offset >> 8) & 0xff):
+    if (rep[0] == 0x1e and
+       rep[4] == (offset & 0xff) and
+       rep[5] == (offset >> 8) & 0xff):
         return True
-    else:
-        LOG.warning("Bad data from writemem")
-        raise errors.RadioError("Bad response to writemem")
+
+    LOG.warning("Bad data from writemem")
+    raise errors.RadioError("Bad response to writemem")
 
 
 def _resetradio(serport):
@@ -562,6 +560,7 @@ def _resetradio(serport):
 
 
 def do_download(radio):
+    """download eeprom from radio"""
     serport = radio.pipe
     serport.timeout = 0.5
     status = chirp_common.Status()
@@ -585,12 +584,12 @@ def do_download(radio):
 
     addr = 0
     while addr < MEM_SIZE:
-        o = _readmem(serport, addr, MEM_BLOCK)
+        data = _readmem(serport, addr, MEM_BLOCK)
         status.cur = addr
         radio.status_fn(status)
 
-        if o and len(o) == MEM_BLOCK:
-            eeprom += o
+        if data and len(data) == MEM_BLOCK:
+            eeprom += data
             addr += MEM_BLOCK
         else:
             raise errors.RadioError("Memory download incomplete")
@@ -599,12 +598,22 @@ def do_download(radio):
 
 
 def do_upload(radio):
+    """upload configuration to radio eeprom"""
     serport = radio.pipe
     serport.timeout = 0.5
     status = chirp_common.Status()
     status.cur = 0
-    status.max = PROG_SIZE
     status.msg = "Uploading to radio"
+
+    if radio._upload_calibration:
+        status.max = MEM_SIZE - radio._cal_start
+        start_addr = radio._cal_start
+        stop_addr = MEM_SIZE
+    else:
+        status.max = PROG_SIZE
+        start_addr = 0
+        stop_addr = PROG_SIZE
+
     radio.status_fn(status)
 
     f = _sayhello(serport)
@@ -618,14 +627,13 @@ def do_upload(radio):
             'Firmware version is not supported by this driver')
     LOG.info('Uploading image from firmware %r to radio with %r',
              radio.metadata.get('uvk5_firmware', 'unknown'), f)
-
-    addr = 0
-    while addr < PROG_SIZE:
-        o = radio.get_mmap()[addr:addr+MEM_BLOCK]
-        _writemem(serport, o, addr)
-        status.cur = addr
+    addr = start_addr
+    while addr < stop_addr:
+        dat = radio.get_mmap()[addr:addr+MEM_BLOCK]
+        _writemem(serport, dat, addr)
+        status.cur = addr - start_addr
         radio.status_fn(status)
-        if o:
+        if dat:
             addr += MEM_BLOCK
         else:
             raise errors.RadioError("Memory upload incomplete")
@@ -660,7 +668,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
     BAUD_RATE = 38400
     NEEDS_COMPAT_SERIAL = False
     FIRMWARE_VERSION = ""
+    _cal_start = 0
     _expanded_limits = False
+    _upload_calibration = False
 
     @classmethod
     def k5_approve_firmware(cls, firmware):
