@@ -632,7 +632,7 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
                     _settings.rxsave = 0
                 continue
             if element.get_name().endswith('_channel'):
-                LOG.debug(element.value, type(element.value))
+                LOG.debug('%s %s', element.value, type(element.value))
                 setattr(_settings, element.get_name(), int(element.value) - 1)
                 continue
             if not isinstance(element, RadioSetting):

@@ -576,7 +576,7 @@ class RadioddityR2(chirp_common.CloneModeRadio):
 
         # extra settings are unfortunately inverted
         for setting in mem.extra:
-            LOG.debug("@set_mem:", setting.get_name(), setting.value)
+            LOG.debug("@set_mem: %s %s", setting.get_name(), setting.value)
             setattr(_mem, setting.get_name(), not setting.value)
 
     def get_settings(self):
