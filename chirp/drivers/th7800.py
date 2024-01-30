@@ -378,7 +378,7 @@ class TYTTH7800Base(chirp_common.Radio):
         _mem.step = STEPS.index(mem.tuning_step)
 
         for setting in mem.extra:
-            LOG.debug("@set_mem:", setting.get_name(), setting.value)
+            LOG.debug("@set_mem: %s %s", setting.get_name(), setting.value)
             setattr(_mem, setting.get_name(), setting.value)
 
     def get_settings(self):
