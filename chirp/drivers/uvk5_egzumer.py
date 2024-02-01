@@ -1437,14 +1437,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
 
         # ----------------- Driver Info
 
-        if self.FIRMWARE_VERSION == "":
-            firmware = "To get the firmware version please download" \
-                       "the image from the radio first"
-        else:
-            firmware = self.FIRMWARE_VERSION
-
+        firmware = self.metadata.get('uvk5_firmware', 'UNKNOWN')
         append_label(roinfo, "Firmware Version", firmware)
-        append_label(roinfo, "Driver version", DRIVER_VERSION)
 
         # ----------------- Calibration
 
