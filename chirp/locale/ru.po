@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-22 17:10-0800\n"
+"POT-Creation-Date: 2024-02-01 15:14-0800\n"
 "PO-Revision-Date: 2023-10-11 16:47+0300\n"
 "Last-Translator: Olesya Gerasimenko <translation-team@basealt.ru>\n"
 "Language-Team: Basealt Translation Team\n"
@@ -931,7 +931,7 @@ msgstr ""
 " установки батареи обратно (на экране появится «ADMS»).\n"
 "5. Нажмите клавишу [MODE] (на экране появится «-WAIT-»). Затем нажмите «ОК»."
 
-#: ../drivers/uvk5.py:665
+#: ../drivers/uvk5.py:687
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -949,7 +949,7 @@ msgstr ""
 "Загрузка может не получиться, если вы включите станцию, когда кабель уже "
 "подключён\n"
 
-#: ../drivers/uvk5.py:672
+#: ../drivers/uvk5.py:694
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1002,7 +1002,7 @@ msgstr "Любительская радиосвязь"
 msgid "An error has occurred"
 msgstr "Ошибка"
 
-#: ../wxui/clone.py:114
+#: ../wxui/clone.py:115
 msgid "Applying settings"
 msgstr "Применение параметров"
 
@@ -1139,11 +1139,11 @@ msgstr[2] "Объединить ячейки памяти (%i) в кластер
 msgid "Comment"
 msgstr "Комментарий"
 
-#: ../wxui/clone.py:242
+#: ../wxui/clone.py:244
 msgid "Communicate with radio"
 msgstr "Обмен данными со станцией"
 
-#: ../wxui/clone.py:122
+#: ../wxui/clone.py:123
 msgid "Complete"
 msgstr "Завершено"
 
@@ -1172,11 +1172,11 @@ msgstr "Страна"
 msgid "Cross mode"
 msgstr "Кросс-режим"
 
-#: ../wxui/clone.py:433
+#: ../wxui/clone.py:438
 msgid "Custom Port"
 msgstr "Пользовательский порт"
 
-#: ../wxui/clone.py:38
+#: ../wxui/clone.py:39
 msgid "Custom..."
 msgstr "Пользовательский..."
 
@@ -1196,11 +1196,11 @@ msgstr ""
 "Полярность\n"
 "DTCS"
 
-#: ../drivers/uvk5.py:894 ../drivers/uvk5.py:1002
+#: ../drivers/uvk5.py:897
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2178
+#: ../wxui/memedit.py:2177
 msgid "DV Memory"
 msgstr "DV-память"
 
@@ -1231,7 +1231,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr "Сравнить необработанные ячейки памяти"
 
-#: ../wxui/memedit.py:2103
+#: ../wxui/memedit.py:2102
 msgid "Digital Code"
 msgstr "Цифровой код"
 
@@ -1253,7 +1253,7 @@ msgstr "Отключено"
 msgid "Distance"
 msgstr "Расстояние"
 
-#: ../wxui/clone.py:170
+#: ../wxui/clone.py:171
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "Не запрашивать снова для %s"
@@ -1274,11 +1274,11 @@ msgstr "Загрузить из станции"
 msgid "Download from radio..."
 msgstr "Загрузить из станции..."
 
-#: ../wxui/clone.py:540
+#: ../wxui/clone.py:545
 msgid "Download instructions"
 msgstr "Инструкции по загрузке"
 
-#: ../drivers/uvk5.py:1328
+#: ../drivers/uvk5.py:1315
 msgid "Driver information"
 msgstr ""
 
@@ -1294,12 +1294,12 @@ msgstr ""
 msgid "Duplex"
 msgstr "Дуплекс"
 
-#: ../wxui/memedit.py:2133
+#: ../wxui/memedit.py:2132
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Редактировать сведения о ячейках памяти (%i)"
 
-#: ../wxui/memedit.py:2131
+#: ../wxui/memedit.py:2130
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Редактировать сведения о ячейке памяти (%i)"
@@ -1329,7 +1329,7 @@ msgstr "Введите частоту TX (МГц)"
 msgid "Enter a new name for bank %s:"
 msgstr "Введите новое имя банка %s:"
 
-#: ../wxui/clone.py:432
+#: ../wxui/clone.py:437
 msgid "Enter custom port:"
 msgstr "Введите пользовательский порт:"
 
@@ -1342,15 +1342,15 @@ msgstr "Стёрта ячейка памяти %s"
 msgid "Error applying settings"
 msgstr "Ошибка применения параметров"
 
-#: ../wxui/clone.py:477
+#: ../wxui/clone.py:482
 msgid "Error communicating with radio"
 msgstr "Ошибка обмена данными со станцией"
 
-#: ../wxui/clone.py:508
+#: ../wxui/clone.py:513
 msgid "Experimental driver"
 msgstr "Экспериментальный драйвер"
 
-#: ../wxui/memedit.py:2061
+#: ../wxui/memedit.py:2060
 msgid "Export can only write CSV files"
 msgstr "При экспорте можно выполнять запись только в файлы CSV"
 
@@ -1362,11 +1362,11 @@ msgstr "Экспорт в CSV"
 msgid "Export to CSV..."
 msgstr "Экспорт в CSV..."
 
-#: ../wxui/memedit.py:2167
+#: ../wxui/memedit.py:2166
 msgid "Extra"
 msgstr "Дополнительно"
 
-#: ../drivers/uvk5.py:1326
+#: ../drivers/uvk5.py:1313
 msgid "FM Radio"
 msgstr ""
 
@@ -1492,7 +1492,7 @@ msgstr ""
 #: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
 #: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
 #: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
-#: ../drivers/baofeng_uv17Pro.py:437 ../drivers/bf_t1.py:483
+#: ../drivers/baofeng_uv17Pro.py:442 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1672,7 +1672,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:334 ../drivers/gmrsuv1.py:398
 #: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
 #: ../drivers/uv6r.py:348 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
-#: ../drivers/baofeng_uv17Pro.py:443
+#: ../drivers/baofeng_uv17Pro.py:448
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1734,7 +1734,7 @@ msgstr "Переход..."
 msgid "Help"
 msgstr "Справка"
 
-#: ../wxui/clone.py:37
+#: ../wxui/clone.py:38
 msgid "Help Me..."
 msgstr "Помощь..."
 
@@ -1792,6 +1792,11 @@ msgstr "Создать значок на рабочем столе?"
 msgid "Interact with driver"
 msgstr "Обмен данными с драйвером"
 
+#: ../wxui/clone.py:567
+#, fuzzy
+msgid "Internal driver error"
+msgstr "Ошибка"
+
 #: ../wxui/query_sources.py:57
 #, python-format
 msgid "Invalid %(value)s (use decimal degrees)"
@@ -1805,7 +1810,7 @@ msgstr "Некорректная запись"
 msgid "Invalid ZIP code"
 msgstr "Неверный почтовый индекс"
 
-#: ../wxui/memedit.py:1411 ../wxui/memedit.py:2258
+#: ../wxui/memedit.py:1411 ../wxui/memedit.py:2257
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Некорректное изменение: %s"
@@ -1881,15 +1886,15 @@ msgstr ""
 "всё равно что предоставить прямой доступ к своему компьютеру и всему на нём! "
 "Продолжить несмотря на этот риск?"
 
-#: ../wxui/clone.py:116
+#: ../wxui/clone.py:117
 msgid "Loading settings"
 msgstr "Загрузка параметров"
 
-#: ../drivers/uvk5.py:1835
+#: ../drivers/uvk5.py:1814
 msgid "Logo string 1 (12 characters)"
 msgstr ""
 
-#: ../drivers/uvk5.py:1842
+#: ../drivers/uvk5.py:1821
 msgid "Logo string 2 (12 characters)"
 msgstr ""
 
@@ -1920,7 +1925,7 @@ msgstr "Ячейка памяти {num} отсутствует в банке {ba
 msgid "Mode"
 msgstr "Режим"
 
-#: ../wxui/clone.py:272
+#: ../wxui/clone.py:274
 msgid "Model"
 msgstr "Модель"
 
@@ -1940,7 +1945,7 @@ msgstr "Модуль загружен"
 msgid "Module loaded successfully"
 msgstr "Модуль успешно загружен"
 
-#: ../wxui/clone.py:401
+#: ../wxui/clone.py:406
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Найдено более одного порта: %s"
@@ -2161,11 +2166,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Подождите"
 
-#: ../wxui/clone.py:378
+#: ../wxui/clone.py:383
 msgid "Plug in your cable and then click OK"
 msgstr "Подключите кабель и нажмите «ОК»"
 
-#: ../wxui/clone.py:265
+#: ../wxui/clone.py:267
 msgid "Port"
 msgstr "Порт"
 
@@ -2211,7 +2216,7 @@ msgstr "Станция"
 msgid "Radio did not ack block %i"
 msgstr "Станция не распознала блок %i"
 
-#: ../wxui/clone.py:532 ../wxui/clone.py:597
+#: ../wxui/clone.py:537 ../wxui/clone.py:621
 msgid "Radio information"
 msgstr "Информация о станции"
 
@@ -2315,11 +2320,11 @@ msgstr "Сохранить файл"
 msgid "Saved settings"
 msgstr "Сохранённые параметры"
 
-#: ../drivers/uvk5.py:903 ../drivers/uvk5.py:1018
+#: ../drivers/uvk5.py:911
 msgid "Scanlists"
 msgstr ""
 
-#: ../drivers/uvk5.py:898 ../drivers/uvk5.py:1013
+#: ../drivers/uvk5.py:907
 msgid "Scrambler"
 msgstr ""
 
@@ -2516,7 +2521,7 @@ msgstr "Это ранняя бета-версия драйвера\n"
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr "Это ранняя бета-версия драйвера — отправляйте на свой страх и риск\n"
 
-#: ../drivers/uvk5.py:657
+#: ../drivers/uvk5.py:679
 msgid ""
 "This is an experimental driver for the Quansheng UV-K5. It may harm your "
 "radio, or worse. Use at your own risk.\n"
@@ -2548,6 +2553,14 @@ msgstr "Эта ячейка памяти и сдвинуть все вверх"
 msgid "This memory and shift block up"
 msgstr "Эта ячейка памяти и сдвинуть блок вверх"
 
+#: ../drivers/uvk5_egzumer.py:1547
+msgid ""
+"This option may break your radio! Each radio has a unique set of calibration "
+"data and uploading the data from the image will cause physical harm to the "
+"radio if it is from a different piece of hardware. Do not use this unless "
+"you know what you are doing and accept the risk of destroying your radio!"
+msgstr ""
+
 #: ../drivers/fd268.py:302 ../drivers/fd268.py:308
 msgid ""
 "This radio has a tricky way of enter into program mode,\n"
@@ -2562,7 +2575,7 @@ msgstr ""
 "может занять несколько секунд. Если не получается, сделайте ещё\n"
 "несколько попыток. Если удалось войти, проверьте станцию и кабель.\n"
 
-#: ../drivers/uvk5.py:1924
+#: ../drivers/uvk5.py:1899
 msgid ""
 "This should only be enabled if you are using modified firmware that supports "
 "wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
@@ -2595,12 +2608,12 @@ msgstr "ТонШПД"
 msgid "Tuning Step"
 msgstr "Шаг настройки"
 
-#: ../wxui/clone.py:372 ../wxui/clone.py:379 ../wxui/clone.py:390
-#: ../wxui/clone.py:398 ../wxui/clone.py:402
+#: ../wxui/clone.py:377 ../wxui/clone.py:384 ../wxui/clone.py:395
+#: ../wxui/clone.py:403 ../wxui/clone.py:407
 msgid "USB Port Finder"
 msgstr "Поиск USB-портов"
 
-#: ../wxui/clone.py:388
+#: ../wxui/clone.py:393
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2648,11 +2661,11 @@ msgstr "Невозможно установить %s для этой ячейк�
 msgid "United States"
 msgstr "Соединённые Штаты"
 
-#: ../wxui/clone.py:371
+#: ../wxui/clone.py:376
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Отключите кабель (если требуется) и нажмите «ОК»"
 
-#: ../wxui/clone.py:612
+#: ../wxui/clone.py:636
 msgid "Upload instructions"
 msgstr "Отправка инструкций"
 
@@ -2701,11 +2714,11 @@ msgstr "Значение должно содержать десятичные ц
 msgid "Value must be zero or greater"
 msgstr "Значение должно быть больше или равно нулю"
 
-#: ../wxui/memedit.py:2158
+#: ../wxui/memedit.py:2157
 msgid "Values"
 msgstr "Значения"
 
-#: ../wxui/clone.py:268
+#: ../wxui/clone.py:270
 msgid "Vendor"
 msgstr "Изготовитель"
 
@@ -2734,7 +2747,7 @@ msgstr "Добро пожаловать"
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "Следует ли программе CHIRP создать значок на рабочем столе?"
 
-#: ../wxui/clone.py:396
+#: ../wxui/clone.py:401
 msgid "Your cable appears to be on port:"
 msgstr "Похоже, ваш кабель вставлен в порт:"
 
@@ -2960,9 +2973,6 @@ msgstr "{bank} полон"
 
 #~ msgid "Incompatible Memory"
 #~ msgstr "Несовместимая память"
-
-#~ msgid "Internal Error"
-#~ msgstr "Ошибка"
 
 #~ msgid "Internal Error: Column {name} not found"
 #~ msgstr "Ошибка: Столбец {name} не найден"

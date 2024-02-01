@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-22 17:10-0800\n"
+"POT-Creation-Date: 2024-02-01 15:14-0800\n"
 "PO-Revision-Date: 2023-12-03 11:04+0900\n"
 "Last-Translator: weboo <weboo@users.noreply.github.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -597,7 +597,7 @@ msgid ""
 " click <b>Then"
 msgstr ""
 
-#: ../drivers/uvk5.py:665
+#: ../drivers/uvk5.py:687
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -614,7 +614,7 @@ msgstr ""
 "\n"
 "ケーブルを接続した状態で電源オンにするとうまく動かない場合があります。\n"
 
-#: ../drivers/uvk5.py:672
+#: ../drivers/uvk5.py:694
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -666,7 +666,7 @@ msgstr ""
 msgid "An error has occurred"
 msgstr ""
 
-#: ../wxui/clone.py:114
+#: ../wxui/clone.py:115
 msgid "Applying settings"
 msgstr ""
 
@@ -793,11 +793,11 @@ msgstr[0] "%i 件を同一グループにまとめる"
 msgid "Comment"
 msgstr "コメント"
 
-#: ../wxui/clone.py:242
+#: ../wxui/clone.py:244
 msgid "Communicate with radio"
 msgstr "無線機へ接続"
 
-#: ../wxui/clone.py:122
+#: ../wxui/clone.py:123
 msgid "Complete"
 msgstr "完了"
 
@@ -824,11 +824,11 @@ msgstr "国"
 msgid "Cross mode"
 msgstr ""
 
-#: ../wxui/clone.py:433
+#: ../wxui/clone.py:438
 msgid "Custom Port"
 msgstr "ポートを手動で設定"
 
-#: ../wxui/clone.py:38
+#: ../wxui/clone.py:39
 msgid "Custom..."
 msgstr "カスタム..."
 
@@ -846,11 +846,11 @@ msgid ""
 "Polarity"
 msgstr "DTCS極性"
 
-#: ../drivers/uvk5.py:894 ../drivers/uvk5.py:1002
+#: ../drivers/uvk5.py:897
 msgid "DTMF decode"
 msgstr "DTMF デコード"
 
-#: ../wxui/memedit.py:2178
+#: ../wxui/memedit.py:2177
 msgid "DV Memory"
 msgstr ""
 
@@ -879,7 +879,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2103
+#: ../wxui/memedit.py:2102
 msgid "Digital Code"
 msgstr ""
 
@@ -900,7 +900,7 @@ msgstr ""
 msgid "Distance"
 msgstr ""
 
-#: ../wxui/clone.py:170
+#: ../wxui/clone.py:171
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "次回から %s に接続する際にプロンプトを表示しない"
@@ -921,11 +921,11 @@ msgstr "無線機からダウンロード"
 msgid "Download from radio..."
 msgstr "無線機からダウンロード..."
 
-#: ../wxui/clone.py:540
+#: ../wxui/clone.py:545
 msgid "Download instructions"
 msgstr "ダウンロード手順"
 
-#: ../drivers/uvk5.py:1328
+#: ../drivers/uvk5.py:1315
 msgid "Driver information"
 msgstr "ドライバー情報"
 
@@ -941,12 +941,12 @@ msgstr ""
 msgid "Duplex"
 msgstr ""
 
-#: ../wxui/memedit.py:2133
+#: ../wxui/memedit.py:2132
 #, python-format
 msgid "Edit details for %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2131
+#: ../wxui/memedit.py:2130
 #, python-format
 msgid "Edit details for memory %i"
 msgstr ""
@@ -976,7 +976,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:432
+#: ../wxui/clone.py:437
 msgid "Enter custom port:"
 msgstr "ポートを入力:"
 
@@ -989,15 +989,15 @@ msgstr ""
 msgid "Error applying settings"
 msgstr ""
 
-#: ../wxui/clone.py:477
+#: ../wxui/clone.py:482
 msgid "Error communicating with radio"
 msgstr "無線機との通信エラー"
 
-#: ../wxui/clone.py:508
+#: ../wxui/clone.py:513
 msgid "Experimental driver"
 msgstr "実験的ドライバー"
 
-#: ../wxui/memedit.py:2061
+#: ../wxui/memedit.py:2060
 msgid "Export can only write CSV files"
 msgstr ""
 
@@ -1009,11 +1009,11 @@ msgstr "CSVにエクスポート"
 msgid "Export to CSV..."
 msgstr "CSVにエクスポート..."
 
-#: ../wxui/memedit.py:2167
+#: ../wxui/memedit.py:2166
 msgid "Extra"
 msgstr ""
 
-#: ../drivers/uvk5.py:1326
+#: ../drivers/uvk5.py:1313
 msgid "FM Radio"
 msgstr "FMラジオ"
 
@@ -1113,7 +1113,7 @@ msgstr ""
 #: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
 #: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
 #: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
-#: ../drivers/baofeng_uv17Pro.py:437 ../drivers/bf_t1.py:483
+#: ../drivers/baofeng_uv17Pro.py:442 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1228,7 +1228,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:334 ../drivers/gmrsuv1.py:398
 #: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
 #: ../drivers/uv6r.py:348 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
-#: ../drivers/baofeng_uv17Pro.py:443
+#: ../drivers/baofeng_uv17Pro.py:448
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1280,7 +1280,7 @@ msgstr "行移動..."
 msgid "Help"
 msgstr "ヘルプ"
 
-#: ../wxui/clone.py:37
+#: ../wxui/clone.py:38
 msgid "Help Me..."
 msgstr "ポートが不明の場合..."
 
@@ -1337,6 +1337,11 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
+#: ../wxui/clone.py:567
+#, fuzzy
+msgid "Internal driver error"
+msgstr "実験的ドライバー"
+
 #: ../wxui/query_sources.py:57
 #, python-format
 msgid "Invalid %(value)s (use decimal degrees)"
@@ -1350,7 +1355,7 @@ msgstr ""
 msgid "Invalid ZIP code"
 msgstr ""
 
-#: ../wxui/memedit.py:1411 ../wxui/memedit.py:2258
+#: ../wxui/memedit.py:1411 ../wxui/memedit.py:2257
 #, python-format
 msgid "Invalid edit: %s"
 msgstr ""
@@ -1420,15 +1425,15 @@ msgid ""
 "despite this risk?"
 msgstr ""
 
-#: ../wxui/clone.py:116
+#: ../wxui/clone.py:117
 msgid "Loading settings"
 msgstr ""
 
-#: ../drivers/uvk5.py:1835
+#: ../drivers/uvk5.py:1814
 msgid "Logo string 1 (12 characters)"
 msgstr "起動メッセージ１（半角12文字）"
 
-#: ../drivers/uvk5.py:1842
+#: ../drivers/uvk5.py:1821
 msgid "Logo string 2 (12 characters)"
 msgstr "起動メッセージ２（半角12文字）"
 
@@ -1459,7 +1464,7 @@ msgstr ""
 msgid "Mode"
 msgstr "受信モード"
 
-#: ../wxui/clone.py:272
+#: ../wxui/clone.py:274
 msgid "Model"
 msgstr "モデル"
 
@@ -1479,7 +1484,7 @@ msgstr ""
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:401
+#: ../wxui/clone.py:406
 #, python-format
 msgid "More than one port found: %s"
 msgstr ""
@@ -1674,11 +1679,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "お待ちください"
 
-#: ../wxui/clone.py:378
+#: ../wxui/clone.py:383
 msgid "Plug in your cable and then click OK"
 msgstr "ケーブルを接続してOKをクリックしてください。"
 
-#: ../wxui/clone.py:265
+#: ../wxui/clone.py:267
 msgid "Port"
 msgstr "ポート"
 
@@ -1724,7 +1729,7 @@ msgstr "無線機"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:532 ../wxui/clone.py:597
+#: ../wxui/clone.py:537 ../wxui/clone.py:621
 msgid "Radio information"
 msgstr ""
 
@@ -1822,11 +1827,11 @@ msgstr "ファイルに保存"
 msgid "Saved settings"
 msgstr "設定を保存"
 
-#: ../drivers/uvk5.py:903 ../drivers/uvk5.py:1018
+#: ../drivers/uvk5.py:911
 msgid "Scanlists"
 msgstr "スキャンリスト"
 
-#: ../drivers/uvk5.py:898 ../drivers/uvk5.py:1013
+#: ../drivers/uvk5.py:907
 msgid "Scrambler"
 msgstr "スクランブル"
 
@@ -1995,7 +2000,7 @@ msgstr ""
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr ""
 
-#: ../drivers/uvk5.py:657
+#: ../drivers/uvk5.py:679
 msgid ""
 "This is an experimental driver for the Quansheng UV-K5. It may harm your "
 "radio, or worse. Use at your own risk.\n"
@@ -2031,6 +2036,14 @@ msgstr "この行を削除して全体を上方向にシフト"
 msgid "This memory and shift block up"
 msgstr "この行を削除してグループを上方向にシフト"
 
+#: ../drivers/uvk5_egzumer.py:1547
+msgid ""
+"This option may break your radio! Each radio has a unique set of calibration "
+"data and uploading the data from the image will cause physical harm to the "
+"radio if it is from a different piece of hardware. Do not use this unless "
+"you know what you are doing and accept the risk of destroying your radio!"
+msgstr ""
+
 #: ../drivers/fd268.py:302 ../drivers/fd268.py:308
 msgid ""
 "This radio has a tricky way of enter into program mode,\n"
@@ -2040,7 +2053,7 @@ msgid ""
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
 
-#: ../drivers/uvk5.py:1924
+#: ../drivers/uvk5.py:1899
 msgid ""
 "This should only be enabled if you are using modified firmware that supports "
 "wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
@@ -2068,12 +2081,12 @@ msgstr "トーンスケルチ"
 msgid "Tuning Step"
 msgstr "ステップ(kHz)"
 
-#: ../wxui/clone.py:372 ../wxui/clone.py:379 ../wxui/clone.py:390
-#: ../wxui/clone.py:398 ../wxui/clone.py:402
+#: ../wxui/clone.py:377 ../wxui/clone.py:384 ../wxui/clone.py:395
+#: ../wxui/clone.py:403 ../wxui/clone.py:407
 msgid "USB Port Finder"
 msgstr "USBポート検出"
 
-#: ../wxui/clone.py:388
+#: ../wxui/clone.py:393
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2118,11 +2131,11 @@ msgstr ""
 msgid "United States"
 msgstr ""
 
-#: ../wxui/clone.py:371
+#: ../wxui/clone.py:376
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "ケーブルを抜いてからOKをクリックしてください。"
 
-#: ../wxui/clone.py:612
+#: ../wxui/clone.py:636
 msgid "Upload instructions"
 msgstr "アップロード手順"
 
@@ -2171,11 +2184,11 @@ msgstr "値は %i 桁にしてください"
 msgid "Value must be zero or greater"
 msgstr "値は 0 以上にしてください"
 
-#: ../wxui/memedit.py:2158
+#: ../wxui/memedit.py:2157
 msgid "Values"
 msgstr "値"
 
-#: ../wxui/clone.py:268
+#: ../wxui/clone.py:270
 msgid "Vendor"
 msgstr "メーカー"
 
@@ -2204,7 +2217,7 @@ msgstr "ようこそ"
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "デスクトップにCHIRPのアイコンを設定しますか？"
 
-#: ../wxui/clone.py:396
+#: ../wxui/clone.py:401
 msgid "Your cable appears to be on port:"
 msgstr "あなたのケーブルが使用しているポート:"
 
