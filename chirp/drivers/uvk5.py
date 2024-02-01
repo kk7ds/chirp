@@ -267,9 +267,6 @@ BACKLIGHT_LIST = ["Off", "1s", "2s", "3s", "4s", "5s"]
 CROSSBAND_LIST = ["Off", "Band A", "Band B"]
 DUALWATCH_LIST = CROSSBAND_LIST
 
-# steps
-STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 8.33]
-
 # ctcss/dcs codes
 TMODES = ["", "Tone", "DTCS", "DTCS"]
 TONE_NONE = 0
@@ -669,6 +666,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
     _expanded_limits = False
     _upload_calibration = False
     _pttid_list = ["off", "BOT", "EOT", "BOTH"]
+    _steps = [1.0, 2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 8.33]
 
     @classmethod
     def k5_approve_firmware(cls, firmware):
@@ -726,7 +724,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
 
         # hack so we can input any frequency,
         # the 0.1 and 0.01 steps don't work unfortunately
-        rf.valid_tuning_steps = [0.01, 0.1, 1.0] + STEPS
+        rf.valid_tuning_steps = list(self._steps)
 
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
@@ -999,10 +997,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         mem.mode = self._get_mem_mode(_mem)
 
         # tuning step
-        tstep = _mem.step & 0x7
-        if tstep < len(STEPS):
-            mem.tuning_step = STEPS[tstep]
-        else:
+        try:
+            mem.tuning_step = self._steps[_mem.step]
+        except IndexError:
             mem.tuning_step = 2.5
 
         # power
@@ -2027,7 +2024,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         self._set_tone(mem, _mem)
 
         # step
-        _mem.step = STEPS.index(mem.tuning_step)
+        _mem.step = self._steps.index(mem.tuning_step)
 
         # tx power
         if str(mem.power) == str(UVK5_POWER_LEVELS[2]):
