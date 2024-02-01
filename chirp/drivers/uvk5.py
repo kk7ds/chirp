@@ -924,6 +924,18 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             SCANLIST_LIST, tmpscn))
         mem.extra.append(rs)
 
+    def _get_mem_mode(self, _mem):
+        if _mem.enable_am > 0:
+            if _mem.bandwidth > 0:
+                return "NAM"
+            else:
+                return "AM"
+        else:
+            if _mem.bandwidth > 0:
+                return "NFM"
+            else:
+                return "FM"
+
     # Extract a high-level memory object from the low-level memory map
     # This is called to populate a memory in the UI
     def get_memory(self, number2):
@@ -981,17 +993,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         # tone data
         self._get_tone(mem, _mem)
 
-        # mode
-        if _mem.enable_am > 0:
-            if _mem.bandwidth > 0:
-                mem.mode = "NAM"
-            else:
-                mem.mode = "AM"
-        else:
-            if _mem.bandwidth > 0:
-                mem.mode = "NFM"
-            else:
-                mem.mode = "FM"
+        mem.mode = self._get_mem_mode(_mem)
 
         # tuning step
         tstep = _mem.step & 0x7
@@ -1925,6 +1927,20 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
 
         return top
 
+    def _set_mem_mode(self, _mem, mode):
+        if mode == "NFM":
+            _mem.bandwidth = 1
+            _mem.enable_am = 0
+        elif mode == "FM":
+            _mem.bandwidth = 0
+            _mem.enable_am = 0
+        elif mode == "NAM":
+            _mem.bandwidth = 1
+            _mem.enable_am = 1
+        elif mode == "AM":
+            _mem.bandwidth = 0
+            _mem.enable_am = 1
+
     # Store details about a high-level memory to the memory map
     # This is called when a user edits a memory in the UI
     def set_memory(self, mem):
@@ -1975,19 +1991,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         # find band
         band = _find_band(self, mem.freq)
 
-        # mode
-        if mem.mode == "NFM":
-            _mem.bandwidth = 1
-            _mem.enable_am = 0
-        elif mem.mode == "FM":
-            _mem.bandwidth = 0
-            _mem.enable_am = 0
-        elif mem.mode == "NAM":
-            _mem.bandwidth = 1
-            _mem.enable_am = 1
-        elif mem.mode == "AM":
-            _mem.bandwidth = 0
-            _mem.enable_am = 1
+        self._set_mem_mode(_mem, mem.mode)
 
         # frequency/offset
         _mem.freq = mem.freq/10
