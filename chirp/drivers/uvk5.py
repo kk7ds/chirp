@@ -936,6 +936,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             else:
                 return "FM"
 
+    def _get_specials(self):
+        return dict(SPECIALS)
+
     # Extract a high-level memory object from the low-level memory map
     # This is called to populate a memory in the UI
     def get_memory(self, number2):
@@ -943,7 +946,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
 
         if isinstance(number2, str):
-            number = SPECIALS[number2]
+            number = self._get_specials()[number2]
             mem.extd_number = number2
         else:
             number = number2 - 1
