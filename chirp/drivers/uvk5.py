@@ -246,9 +246,6 @@ POWER_HIGH = 0b10
 POWER_MEDIUM = 0b01
 POWER_LOW = 0b00
 
-# dtmf_flags
-PTTID_LIST = ["off", "BOT", "EOT", "BOTH"]
-
 # power
 UVK5_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=1.50),
                      chirp_common.PowerLevel("Med",  watts=3.00),
@@ -671,6 +668,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
     _cal_start = 0
     _expanded_limits = False
     _upload_calibration = False
+    _pttid_list = ["off", "BOT", "EOT", "BOTH"]
 
     @classmethod
     def k5_approve_firmware(cls, firmware):
@@ -868,6 +866,64 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         chirp_common.split_tone_decode(mem, (tx_tmode, tx_tone, tx_pol),
                                        (rx_tmode, rx_tone, rx_pol))
 
+    def _get_mem_extra(self, mem, _mem):
+        tmpscn = SCANLIST_LIST[0]
+
+        # We'll also look at the channel attributes if a memory has them
+        if mem.number <= 200:
+            _mem3 = self._memobj.channel_attributes[mem.number - 1]
+            # free memory bit
+            if _mem3.is_free > 0:
+                mem.empty = True
+            # scanlists
+            if _mem3.is_scanlist1 > 0 and _mem3.is_scanlist2 > 0:
+                tmpscn = SCANLIST_LIST[3]  # "1+2"
+            elif _mem3.is_scanlist1 > 0:
+                tmpscn = SCANLIST_LIST[1]  # "1"
+            elif _mem3.is_scanlist2 > 0:
+                tmpscn = SCANLIST_LIST[2]  # "2"
+
+        mem.extra = RadioSettingGroup("Extra", "extra")
+
+        # BCLO
+        is_bclo = bool(_mem.bclo > 0)
+        rs = RadioSetting("bclo", "BCLO", RadioSettingValueBoolean(is_bclo))
+        mem.extra.append(rs)
+
+        # Frequency reverse - whatever that means, don't see it in the manual
+        is_frev = bool(_mem.freq_reverse > 0)
+        rs = RadioSetting("frev", "FreqRev", RadioSettingValueBoolean(is_frev))
+        mem.extra.append(rs)
+
+        # PTTID
+        try:
+            pttid = self._pttid_list[_mem.dtmf_pttid]
+        except IndexError:
+            pttid = 0
+        rs = RadioSetting("pttid", "PTTID", RadioSettingValueList(
+            self._pttid_list, pttid))
+        mem.extra.append(rs)
+
+        # DTMF DECODE
+        is_dtmf = bool(_mem.dtmf_decode > 0)
+        rs = RadioSetting("dtmfdecode", _("DTMF decode"),
+                          RadioSettingValueBoolean(is_dtmf))
+        mem.extra.append(rs)
+
+        # Scrambler
+        if _mem.scrambler & 0x0f < len(SCRAMBLER_LIST):
+            enc = _mem.scrambler & 0x0f
+        else:
+            enc = 0
+
+        rs = RadioSetting("scrambler", _("Scrambler"), RadioSettingValueList(
+            SCRAMBLER_LIST, SCRAMBLER_LIST[enc]))
+        mem.extra.append(rs)
+
+        rs = RadioSetting("scanlists", _("Scanlists"), RadioSettingValueList(
+            SCANLIST_LIST, tmpscn))
+        mem.extra.append(rs)
+
     # Extract a high-level memory object from the low-level memory map
     # This is called to populate a memory in the UI
     def get_memory(self, number2):
@@ -884,65 +940,13 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
 
         _mem = self._memobj.channel[number]
 
-        tmpcomment = ""
-
-        is_empty = False
         # We'll consider any blank (i.e. 0 MHz frequency) to be empty
         if (_mem.freq == 0xffffffff) or (_mem.freq == 0):
-            is_empty = True
-
-        tmpscn = SCANLIST_LIST[0]
-
-        # We'll also look at the channel attributes if a memory has them
-        if number < 200:
-            _mem3 = self._memobj.channel_attributes[number]
-            # free memory bit
-            if _mem3.is_free > 0:
-                is_empty = True
-            # scanlists
-            if _mem3.is_scanlist1 > 0 and _mem3.is_scanlist2 > 0:
-                tmpscn = SCANLIST_LIST[3]  # "1+2"
-            elif _mem3.is_scanlist1 > 0:
-                tmpscn = SCANLIST_LIST[1]  # "1"
-            elif _mem3.is_scanlist2 > 0:
-                tmpscn = SCANLIST_LIST[2]  # "2"
-
-        if is_empty:
             mem.empty = True
-            # set some sane defaults:
-            mem.power = UVK5_POWER_LEVELS[2]
-            mem.extra = RadioSettingGroup("Extra", "extra")
-            rs = RadioSetting(
-                "bclo", "BCLO",
-                RadioSettingValueBoolean(False))
-            mem.extra.append(rs)
-            rs = RadioSetting(
-                "frev", "FreqRev",
-                RadioSettingValueBoolean(False))
-            mem.extra.append(rs)
-            rs = RadioSetting(
-                "pttid", "PTTID",
-                RadioSettingValueList(PTTID_LIST, PTTID_LIST[0]))
-            mem.extra.append(rs)
-            rs = RadioSetting(
-                "dtmfdecode", _("DTMF decode"),
-                RadioSettingValueBoolean(False))
-            mem.extra.append(rs)
-            rs = RadioSetting(
-                "scrambler", _("Scrambler"),
-                RadioSettingValueList(SCRAMBLER_LIST, SCRAMBLER_LIST[0]))
-            mem.extra.append(rs)
 
-            rs = RadioSetting(
-                "scanlists", _("Scanlists"),
-                RadioSettingValueList(SCANLIST_LIST, SCANLIST_LIST[0]))
-            mem.extra.append(rs)
+        self._get_mem_extra(mem, _mem)
 
-            # actually the step and duplex are overwritten by chirp based on
-            # bandplan. they are here to document sane defaults for IARU r1
-            # mem.tuning_step = 25.0
-            # mem.duplex = ""
-
+        if mem.empty:
             return mem
 
         if number > 199:
@@ -1009,49 +1013,6 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             mem.empty = True
         else:
             mem.empty = False
-
-        mem.extra = RadioSettingGroup("Extra", "extra")
-
-        # BCLO
-        is_bclo = bool(_mem.bclo > 0)
-        rs = RadioSetting("bclo", "BCLO", RadioSettingValueBoolean(is_bclo))
-        mem.extra.append(rs)
-        tmpcomment += "BCLO:"+(is_bclo and "ON" or "off")+" "
-
-        # Frequency reverse - whatever that means, don't see it in the manual
-        is_frev = bool(_mem.freq_reverse > 0)
-        rs = RadioSetting("frev", "FreqRev", RadioSettingValueBoolean(is_frev))
-        mem.extra.append(rs)
-        tmpcomment += "FreqReverse:"+(is_frev and "ON" or "off")+" "
-
-        # PTTID
-        pttid = _mem.dtmf_pttid
-        rs = RadioSetting("pttid", "PTTID", RadioSettingValueList(
-            PTTID_LIST, PTTID_LIST[pttid]))
-        mem.extra.append(rs)
-        tmpcomment += "PTTid:"+PTTID_LIST[pttid]+" "
-
-        # DTMF DECODE
-        is_dtmf = bool(_mem.dtmf_decode > 0)
-        rs = RadioSetting("dtmfdecode", _("DTMF decode"),
-                          RadioSettingValueBoolean(is_dtmf))
-        mem.extra.append(rs)
-        tmpcomment += "DTMFdecode:"+(is_dtmf and "ON" or "off")+" "
-
-        # Scrambler
-        if _mem.scrambler & 0x0f < len(SCRAMBLER_LIST):
-            enc = _mem.scrambler & 0x0f
-        else:
-            enc = 0
-
-        rs = RadioSetting("scrambler", _("Scrambler"), RadioSettingValueList(
-            SCRAMBLER_LIST, SCRAMBLER_LIST[enc]))
-        mem.extra.append(rs)
-        tmpcomment += "Scrambler:"+SCRAMBLER_LIST[enc]+" "
-
-        rs = RadioSetting("scanlists", _("Scanlists"), RadioSettingValueList(
-            SCANLIST_LIST, tmpscn))
-        mem.extra.append(rs)
 
         return mem
 
@@ -2077,7 +2038,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 _mem.bclo = svalue and 1 or 0
 
             if sname == "pttid":
-                _mem.dtmf_pttid = PTTID_LIST.index(svalue)
+                _mem.dtmf_pttid = self._pttid_list.index(svalue)
 
             if sname == "frev":
                 _mem.freq_reverse = svalue and 1 or 0
