@@ -53,10 +53,8 @@ struct {
   u8 rxcode;
   u8 txcode;
 
-  u8 unknown1:2,
-  txcodeflag:2,
-  unknown2:2,
-  rxcodeflag:2;
+  u8 txcodeflag:4,
+     rxcodeflag:4;
 
   //u8 flags1;
   u8 flags1_unknown7:1,
@@ -94,8 +92,7 @@ struct {
 struct {
 u8 is_scanlist1:1,
 is_scanlist2:1,
-unknown1:1,
-unknown2:1,
+compander:2,
 is_free:1,
 band:3;
 } channel_attributes[200];
@@ -819,8 +816,6 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
 
         _mem.rxcodeflag = rxmoval
         _mem.txcodeflag = txmoval
-        _mem.unknown1 = 0
-        _mem.unknown2 = 0
         _mem.rxcode = rxtoval
         _mem.txcode = txtoval
 
@@ -1957,8 +1952,8 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 _mem2.set_raw("\xFF" * 16)
                 _mem4.channel_attributes[number].is_scanlist1 = 0
                 _mem4.channel_attributes[number].is_scanlist2 = 0
-                _mem4.channel_attributes[number].unknown1 = 0
-                _mem4.channel_attributes[number].unknown2 = 0
+                # Compander in other models, not supported here
+                _mem4.channel_attributes[number].compander = 0
                 _mem4.channel_attributes[number].is_free = 1
                 _mem4.channel_attributes[number].band = 0x7
             return mem
@@ -1983,8 +1978,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         if number < 200:
             _mem4.channel_attributes[number].is_scanlist1 = 0
             _mem4.channel_attributes[number].is_scanlist2 = 0
-            _mem4.channel_attributes[number].unknown1 = 0
-            _mem4.channel_attributes[number].unknown2 = 0
+            _mem4.channel_attributes[number].compander = 0
             _mem4.channel_attributes[number].is_free = 1
             _mem4.channel_attributes[number].band = 0x7
 
