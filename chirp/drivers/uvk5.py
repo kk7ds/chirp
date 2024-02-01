@@ -562,9 +562,7 @@ def do_download(radio):
 
     eeprom = b""
     f = _sayhello(serport)
-    if f:
-        radio.FIRMWARE_VERSION = f
-    else:
+    if not f:
         raise errors.RadioError('Unable to determine firmware version')
 
     if not radio.k5_approve_firmware(f):
@@ -608,10 +606,8 @@ def do_upload(radio):
     radio.status_fn(status)
 
     f = _sayhello(serport)
-    if f:
-        radio.FIRMWARE_VERSION = f
-    else:
-        return False
+    if not f:
+        raise errors.RadioError('Unable to determine firmware version')
 
     if not radio.k5_approve_firmware(f):
         raise errors.RadioError(
@@ -658,7 +654,6 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
     MODEL = "UV-K5"
     BAUD_RATE = 38400
     NEEDS_COMPAT_SERIAL = False
-    FIRMWARE_VERSION = ""
     _cal_start = 0
     _expanded_limits = False
     _upload_calibration = False
@@ -1889,11 +1884,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
 
         # readonly info
         # Firmware
-        if self.FIRMWARE_VERSION == "":
-            firmware = "To get the firmware version please download"
-            "the image from the radio first"
-        else:
-            firmware = self.FIRMWARE_VERSION
+        firmware = self.metadata.get('uvk5_firmware', 'UNKNOWN')
 
         val = RadioSettingValueString(0, 128, firmware)
         val.set_mutable(False)
