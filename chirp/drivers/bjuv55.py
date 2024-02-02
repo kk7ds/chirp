@@ -18,6 +18,7 @@
 import logging
 
 from chirp.drivers import uv5r
+from chirp.drivers import baofeng_common as bfc
 from chirp import chirp_common, directory
 from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
@@ -435,12 +436,6 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
                           RadioSettingValueInteger(0, 127, _mrcnb))
         workmode.append(rs)
 
-        def convert_bytes_to_freq(bytes):
-            real_freq = 0
-            for byte in bytes:
-                real_freq = (real_freq * 10) + byte
-            return chirp_common.format_freq(real_freq * 10)
-
         def my_validate(value):
             value = chirp_common.parse_freq(value)
             if 17400000 <= value and value < 40000000:
@@ -454,15 +449,17 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
                 obj.freq[i] = value % 10
                 value /= 10
 
-        val1a = RadioSettingValueString(
-                0, 10, convert_bytes_to_freq(self._memobj.vfoa.freq))
+        val1a = RadioSettingValueString(0, 10,
+                                        bfc.bcd_decode_freq(
+                                            self._memobj.vfoa.freq))
         val1a.set_validate_callback(my_validate)
         rs = RadioSetting("vfoa.freq", "VFO A Frequency", val1a)
         rs.set_apply_callback(apply_freq, self._memobj.vfoa)
         workmode.append(rs)
 
-        val1b = RadioSettingValueString(
-                0, 10, convert_bytes_to_freq(self._memobj.vfob.freq))
+        val1b = RadioSettingValueString(0, 10,
+                                        bfc.bcd_decode_freq(
+                                            self._memobj.vfob.freq))
         val1b.set_validate_callback(my_validate)
         rs = RadioSetting("vfob.freq", "VFO B Frequency", val1b)
         rs.set_apply_callback(apply_freq, self._memobj.vfob)

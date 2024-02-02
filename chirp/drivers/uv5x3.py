@@ -16,7 +16,7 @@
 
 import logging
 
-from chirp.drivers import baofeng_common
+from chirp.drivers import baofeng_common as bfc
 from chirp import chirp_common, directory
 from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting, \
@@ -94,7 +94,7 @@ def model_match(cls, data):
 
 
 @directory.register
-class UV5X3(baofeng_common.BaofengCommonHT):
+class UV5X3(bfc.BaofengCommonHT):
     """BTech UV-5X3"""
     VENDOR = "BTECH"
     MODEL = "UV-5X3"
@@ -780,15 +780,6 @@ class UV5X3(baofeng_common.BaofengCommonHT):
                                                    _mem.wmchannel.mrchb))
         work.append(rs)
 
-        def convert_bytes_to_freq(bytes):
-            real_freq = 0
-            for byte in bytes:
-                if byte > 9:
-                    real_freq = 0
-                    continue
-                real_freq = (real_freq * 10) + byte
-            return chirp_common.format_freq(real_freq * 10)
-
         def my_validate(value):
             _vhf_lower = int(_mem.limits.vhf.lower)
             _vhf_upper = int(_mem.limits.vhf.upper)
@@ -849,20 +840,22 @@ class UV5X3(baofeng_common.BaofengCommonHT):
                 value /= 10
 
         val1a = RadioSettingValueString(0, 10,
-                                        convert_bytes_to_freq(_mem.vfo.a.freq))
+                                        bfc.bcd_decode_freq(
+                                            _mem.vfo.a.freq))
         val1a.set_validate_callback(my_validate)
         rs = RadioSetting("vfo.a.freq", "VFO A Frequency", val1a)
         rs.set_apply_callback(apply_freq, _mem.vfo.a)
         work.append(rs)
 
         val1b = RadioSettingValueString(0, 10,
-                                        convert_bytes_to_freq(_mem.vfo.b.freq))
+                                        bfc.bcd_decode_freq(
+                                            _mem.vfo.b.freq))
         val1b.set_validate_callback(my_validate)
         rs = RadioSetting("vfo.b.freq", "VFO B Frequency", val1b)
         rs.set_apply_callback(apply_freq, _mem.vfo.b)
         work.append(rs)
 
-        val = convert_bytes_to_freq(_mem.subvfoa.vhf.freq)
+        val = bfc.bcd_decode_freq(_mem.subvfoa.vhf.freq)
         if int(float(val)) == 0:
             val = str(int(_mem.limits.vhf.lower)) + ".000000"
         val1a = RadioSettingValueString(0, 10, val)
@@ -871,7 +864,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         rs.set_apply_callback(apply_freq, _mem.subvfoa.vhf)
         work.append(rs)
 
-        val = convert_bytes_to_freq(_mem.subvfob.vhf.freq)
+        val = bfc.bcd_decode_freq(_mem.subvfob.vhf.freq)
         if int(float(val)) == 0:
             val = str(int(_mem.limits.vhf.lower)) + ".000000"
         val1b = RadioSettingValueString(0, 10, val)
@@ -880,7 +873,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         rs.set_apply_callback(apply_freq, _mem.subvfob.vhf)
         work.append(rs)
 
-        val = convert_bytes_to_freq(_mem.subvfoa.vhf2.freq)
+        val = bfc.bcd_decode_freq(_mem.subvfoa.vhf2.freq)
         if int(float(val)) == 0:
             val = str(int(_mem.limits.vhf2.lower)) + ".000000"
         val1a = RadioSettingValueString(0, 10, val)
@@ -889,7 +882,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         rs.set_apply_callback(apply_freq, _mem.subvfoa.vhf2)
         work.append(rs)
 
-        val = convert_bytes_to_freq(_mem.subvfob.vhf2.freq)
+        val = bfc.bcd_decode_freq(_mem.subvfob.vhf2.freq)
         if int(float(val)) == 0:
             val = str(int(_mem.limits.vhf2.lower)) + ".000000"
         val1b = RadioSettingValueString(0, 10, val)
@@ -898,7 +891,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         rs.set_apply_callback(apply_freq, _mem.subvfob.vhf2)
         work.append(rs)
 
-        val = convert_bytes_to_freq(_mem.subvfoa.uhf.freq)
+        val = bfc.bcd_decode_freq(_mem.subvfoa.uhf.freq)
         if int(float(val)) == 0:
             val = str(int(_mem.limits.uhf.lower)) + ".000000"
         val1a = RadioSettingValueString(0, 10, val)
@@ -907,7 +900,7 @@ class UV5X3(baofeng_common.BaofengCommonHT):
         rs.set_apply_callback(apply_freq, _mem.subvfoa.uhf)
         work.append(rs)
 
-        val = convert_bytes_to_freq(_mem.subvfob.uhf.freq)
+        val = bfc.bcd_decode_freq(_mem.subvfob.uhf.freq)
         if int(float(val)) == 0:
             val = str(int(_mem.limits.uhf.lower)) + ".000000"
         val1b = RadioSettingValueString(0, 10, val)

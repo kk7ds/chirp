@@ -19,6 +19,7 @@ import struct
 import time
 import logging
 
+from chirp.drivers import baofeng_common as bfc
 from chirp import chirp_common, errors, util, directory, memmap
 from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
@@ -1524,12 +1525,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                                                        _wmchannel.mrchb))
             workmode.append(rs)
 
-            def convert_bytes_to_freq(bytes):
-                real_freq = 0
-                for byte in bytes:
-                    real_freq = (real_freq * 10) + byte
-                return chirp_common.format_freq(real_freq * 10)
-
             def my_validate(value):
                 value = chirp_common.parse_freq(value)
                 if 17400000 <= value and value < 40000000:
@@ -1545,14 +1540,14 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                     value /= 10
 
             val1a = RadioSettingValueString(0, 10,
-                                            convert_bytes_to_freq(_vfoa.freq))
+                                            bfc.bcd_decode_freq(_vfoa.freq))
             val1a.set_validate_callback(my_validate)
             rs = RadioSetting("vfoa.freq", "VFO A Frequency", val1a)
             rs.set_apply_callback(apply_freq, _vfoa)
             workmode.append(rs)
 
             val1b = RadioSettingValueString(0, 10,
-                                            convert_bytes_to_freq(_vfob.freq))
+                                            bfc.bcd_decode_freq(_vfob.freq))
             val1b.set_validate_callback(my_validate)
             rs = RadioSetting("vfob.freq", "VFO B Frequency", val1b)
             rs.set_apply_callback(apply_freq, _vfob)
