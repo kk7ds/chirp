@@ -16,7 +16,7 @@
 
 import logging
 
-from chirp.drivers import baofeng_common
+from chirp.drivers import baofeng_common as bfc
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise
 from chirp.settings import RadioSetting, \
@@ -98,12 +98,12 @@ def _crypt(symbol_index, buffer):
 
 def _do_ident(radio):
     # Flush input buffer
-    baofeng_common._clean_buffer(radio)
+    bfc._clean_buffer(radio)
 
     # Ident radio
     magic = radio._magic
-    baofeng_common._rawsend(radio, magic)
-    ack = baofeng_common._rawrecv(radio, radio._magic_response_length)
+    bfc._rawsend(radio, magic)
+    ack = bfc._rawrecv(radio, radio._magic_response_length)
 
     if not ack.startswith(radio._fingerprint):
         if ack:
@@ -119,8 +119,8 @@ def _download(radio):
     # Put radio in program mode and identify it
     _do_ident(radio)
     for index in range(len(radio._magics)):
-        baofeng_common._rawsend(radio, radio._magics[index])
-        baofeng_common._rawrecv(radio, radio._magicResponseLengths[index])
+        bfc._rawsend(radio, radio._magics[index])
+        bfc._rawrecv(radio, radio._magicResponseLengths[index])
 
     data = b""
 
@@ -141,10 +141,10 @@ def _download(radio):
             LOG.debug("Frame=" + util.hexprint(frame))
 
             # Sending the read request
-            baofeng_common._rawsend(radio, frame)
+            bfc._rawsend(radio, frame)
 
             # Now we read data
-            d = baofeng_common._rawrecv(radio, radio.BLOCK_SIZE + 4)
+            d = bfc._rawrecv(radio, radio.BLOCK_SIZE + 4)
 
             LOG.debug("Response Data= " + util.hexprint(d))
             d = _crypt(1, d[4:])
@@ -163,8 +163,8 @@ def _upload(radio):
     # Put radio in program mode and identify it
     _do_ident(radio)
     for index in range(len(radio._magics)):
-        baofeng_common._rawsend(radio, radio._magics[index])
-        baofeng_common._rawrecv(radio, radio._magicResponseLengths[index])
+        bfc._rawsend(radio, radio._magics[index])
+        bfc._rawrecv(radio, radio._magicResponseLengths[index])
 
     data = b""
 
@@ -191,10 +191,10 @@ def _upload(radio):
             LOG.debug("Frame=" + util.hexprint(frame))
 
             # Sending the read request
-            baofeng_common._rawsend(radio, frame)
+            bfc._rawsend(radio, frame)
 
             # receiving the response
-            ack = baofeng_common._rawrecv(radio, 1)
+            ack = bfc._rawrecv(radio, 1)
             if ack != b"\x06":
                 msg = "Bad ack writing block 0x%04x" % addr
                 raise errors.RadioError(msg)
@@ -207,7 +207,7 @@ def _upload(radio):
 
 
 @directory.register
-class UV17Pro(baofeng_common.BaofengCommonHT):
+class UV17Pro(bfc.BaofengCommonHT):
     """Baofeng UV-17Pro"""
     VENDOR = "Baofeng"
     MODEL = "UV-17Pro"
@@ -782,12 +782,6 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         vfoA = RadioSettingGroup("vfoA", "VFO A")
         vfoB = RadioSettingGroup("vfoB", "VFO B")
 
-        def convert_bytes_to_freq(bytes):
-            real_freq = 0
-            for byte in bytes:
-                real_freq = (real_freq * 10) + byte
-            return chirp_common.format_freq(real_freq * 10)
-
         def my_validate(value):
             value = chirp_common.parse_freq(value)
             for band in self.VALID_BANDS:
@@ -803,14 +797,14 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
                 value /= 10
 
         freqA = RadioSettingValueString(0, 10,
-                                        convert_bytes_to_freq(_mem.vfo.a.freq))
+                                        bfc.bcd_decode_freq(_mem.vfo.a.freq))
         freqA.set_validate_callback(my_validate)
         rs = RadioSetting("vfo.a.freq", "Frequency", freqA)
         rs.set_apply_callback(apply_freq, _mem.vfo.a)
         vfoA.append(rs)
 
         freqB = RadioSettingValueString(0, 10,
-                                        convert_bytes_to_freq(_mem.vfo.b.freq))
+                                        bfc.bcd_decode_freq(_mem.vfo.b.freq))
         freqB.set_validate_callback(my_validate)
         rs = RadioSetting("vfo.b.freq", "Frequency", freqB)
         rs.set_apply_callback(apply_freq, _mem.vfo.b)
@@ -1131,7 +1125,7 @@ class UV17Pro(baofeng_common.BaofengCommonHT):
         else:
             offset = (int(_mem.txfreq) * 10) - freq
             if offset != 0:
-                if baofeng_common._split(self.get_features(), freq, int(
+                if bfc._split(self.get_features(), freq, int(
                           _mem.txfreq) * 10):
                     duplex = "split"
                     offset = int(_mem.txfreq) * 10

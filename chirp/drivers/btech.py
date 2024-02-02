@@ -21,6 +21,7 @@ import struct
 import logging
 
 from time import sleep
+from chirp.drivers import baofeng_common as bfc
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
@@ -1891,12 +1892,6 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 mrchd = RadioSetting("settings2.mrchd", "MR D channel", rs)
                 work.append(mrchd)
 
-        def convert_bytes_to_freq(bytes):
-            real_freq = 0
-            for byte in bytes:
-                real_freq = (real_freq * 10) + byte
-            return chirp_common.format_freq(real_freq * 10)
-
         def my_validate(value):
             _vhf_lower = int(convert_bytes_to_limit(_ranges.vhf_low))
             _vhf_upper = int(convert_bytes_to_limit(_ranges.vhf_high))
@@ -1949,14 +1944,14 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         _vhf_upper = (convert_bytes_to_limit(_ranges.vhf_high))
         _uhf_lower = (convert_bytes_to_limit(_ranges.uhf_low))
 
-        val1a = RadioSettingValueString(0, 10, convert_bytes_to_freq(
-                                        _mem.vfo.a.freq))
+        val1a = RadioSettingValueString(0, 10,
+                                        bfc.bcd_decode_freq(_mem.vfo.a.freq))
         val1a.set_validate_callback(my_validate)
         vfoafreq = RadioSetting("vfo.a.freq", "VFO A frequency", val1a)
         vfoafreq.set_apply_callback(apply_freq, _mem.vfo.a)
         work.append(vfoafreq)
 
-        val = convert_bytes_to_freq(_mem.vfo.b.freq)
+        val = bfc.bcd_decode_freq(_mem.vfo.b.freq)
         if self.MODEL in ["GMRS-50V2", "GMRS-50X1"]:
             if val[:3] > _vhf_upper and val[:3] < _uhf_lower:
                 val = "462.562500"
@@ -1967,15 +1962,16 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         work.append(vfobfreq)
 
         if self.COLOR_LCD:
-            val1c = RadioSettingValueString(0, 10, convert_bytes_to_freq(
-                                            _mem.vfo.c.freq))
+            val1c = RadioSettingValueString(0, 10,
+                                            bfc.bcd_decode_freq(
+                                                _mem.vfo.c.freq))
             val1c.set_validate_callback(my_validate)
             vfocfreq = RadioSetting("vfo.c.freq", "VFO C frequency", val1c)
             vfocfreq.set_apply_callback(apply_freq, _mem.vfo.c)
             work.append(vfocfreq)
 
             if not self.COLOR_LCD4:
-                val = convert_bytes_to_freq(_mem.vfo.d.freq)
+                val = bfc.bcd_decode_freq(_mem.vfo.d.freq)
                 if self.MODEL in ["GMRS-50V2", "GMRS-50X1"]:
                     if val[:3] > _vhf_upper and val[:3] < _uhf_lower:
                         val = "462.562500"
@@ -2275,8 +2271,8 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                         preset.broadcast_station_name)
 
                 val = RadioSettingValueFloat(0, 108,
-                                             convert_bytes_to_freq(
-                                                 preset.freq))
+                                             bfc.bcd_decode_freq(
+                                                preset.freq))
                 fmfreq = RadioSetting("fm_presets_" + str(i) + "_freq",
                                       "Frequency " + str(i), val)
                 val.set_validate_callback(fm_validate)

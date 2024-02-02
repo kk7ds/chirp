@@ -16,7 +16,7 @@
 
 import logging
 
-from chirp.drivers import baofeng_common
+from chirp.drivers import baofeng_common as bfc
 from chirp import chirp_common, directory
 from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting, \
@@ -89,7 +89,7 @@ def model_match(cls, data):
 
 
 @directory.register
-class UV6R(baofeng_common.BaofengCommonHT):
+class UV6R(bfc.BaofengCommonHT):
     """Baofeng UV-6R"""
     VENDOR = "Baofeng"
     MODEL = "UV-6R"
@@ -646,12 +646,6 @@ class UV6R(baofeng_common.BaofengCommonHT):
                                                    _mem.wmchannel.mrchb))
         work.append(rs)
 
-        def convert_bytes_to_freq(bytes):
-            real_freq = 0
-            for byte in bytes:
-                real_freq = (real_freq * 10) + byte
-            return chirp_common.format_freq(real_freq * 10)
-
         def my_validate(value):
             _vhf_lower = int(_mem.limits.vhf.lower)
             _vhf_upper = int(_mem.limits.vhf.upper)
@@ -676,14 +670,14 @@ class UV6R(baofeng_common.BaofengCommonHT):
                 value /= 10
 
         val1a = RadioSettingValueString(0, 10,
-                                        convert_bytes_to_freq(_mem.vfo.a.freq))
+                                        bfc.bcd_decode_freq(_mem.vfo.a.freq))
         val1a.set_validate_callback(my_validate)
         rs = RadioSetting("vfo.a.freq", "VFO A Frequency", val1a)
         rs.set_apply_callback(apply_freq, _mem.vfo.a)
         work.append(rs)
 
         val1b = RadioSettingValueString(0, 10,
-                                        convert_bytes_to_freq(_mem.vfo.b.freq))
+                                        bfc.bcd_decode_freq(_mem.vfo.b.freq))
         val1b.set_validate_callback(my_validate)
         rs = RadioSetting("vfo.b.freq", "VFO B Frequency", val1b)
         rs.set_apply_callback(apply_freq, _mem.vfo.b)

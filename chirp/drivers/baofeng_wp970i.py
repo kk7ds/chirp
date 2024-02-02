@@ -16,7 +16,7 @@
 
 import logging
 
-from chirp.drivers import baofeng_common
+from chirp.drivers import baofeng_common as bfc
 from chirp import chirp_common, directory
 from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting, \
@@ -83,7 +83,7 @@ def model_match(cls, data):
         return False
 
 
-class WP970I(baofeng_common.BaofengCommonHT):
+class WP970I(bfc.BaofengCommonHT):
     """Baofeng WP970I"""
     VENDOR = "Baofeng"
     MODEL = "WP970I"
@@ -339,7 +339,7 @@ class WP970I(baofeng_common.BaofengCommonHT):
         return rp
 
     def get_features(self):
-        rf = baofeng_common.BaofengCommonHT.get_features(self)
+        rf = bfc.BaofengCommonHT.get_features(self)
         rf.valid_tuning_steps = STEPS
         return rf
 
@@ -647,12 +647,6 @@ class WP970I(baofeng_common.BaofengCommonHT):
                                                    _mem.wmchannel.mrchb))
         work.append(rs)
 
-        def convert_bytes_to_freq(bytes):
-            real_freq = 0
-            for byte in bytes:
-                real_freq = (real_freq * 10) + byte
-            return chirp_common.format_freq(real_freq * 10)
-
         def my_validate(value):
             value = chirp_common.parse_freq(value)
             msg = ("Can't be less than %i.0000")
@@ -673,14 +667,14 @@ class WP970I(baofeng_common.BaofengCommonHT):
                 value /= 10
 
         val1a = RadioSettingValueString(0, 10,
-                                        convert_bytes_to_freq(_mem.vfo.a.freq))
+                                        bfc.bcd_decode_freq(_mem.vfo.a.freq))
         val1a.set_validate_callback(my_validate)
         rs = RadioSetting("vfo.a.freq", "VFO A Frequency", val1a)
         rs.set_apply_callback(apply_freq, _mem.vfo.a)
         work.append(rs)
 
         val1b = RadioSettingValueString(0, 10,
-                                        convert_bytes_to_freq(_mem.vfo.b.freq))
+                                        bfc.bcd_decode_freq(_mem.vfo.b.freq))
         val1b.set_validate_callback(my_validate)
         rs = RadioSetting("vfo.b.freq", "VFO B Frequency", val1b)
         rs.set_apply_callback(apply_freq, _mem.vfo.b)

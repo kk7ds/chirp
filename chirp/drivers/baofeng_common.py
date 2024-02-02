@@ -23,7 +23,8 @@ from chirp import chirp_common, memmap
 from chirp import errors, util
 from chirp import bandplan_na
 from chirp.settings import RadioSettingGroup, RadioSetting, \
-    RadioSettingValueBoolean, RadioSettingValueList
+    RadioSettingValueBoolean, InternalError, \
+    RadioSettingValueList
 
 LOG = logging.getLogger(__name__)
 
@@ -441,6 +442,16 @@ def _split(rf, f1, f2):
 
     # if you get here is because the freq pairs are split
     return True
+
+
+def bcd_decode_freq(bytes):
+    real_freq = 0
+    for byte in bytes:
+        if byte > 9:
+            msg = ("Found Invalid BCD Encoding")
+            raise InternalError(msg)
+        real_freq = (real_freq * 10) + byte
+    return chirp_common.format_freq(real_freq * 10)
 
 
 class BaofengCommonHT(chirp_common.CloneModeRadio,
