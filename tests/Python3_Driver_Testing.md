@@ -230,8 +230,11 @@
 | <a name="LUITON_LT-588UV"></a> LUITON_LT-588UV | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.01% |
 | <a name="LUITON_LT-725UV"></a> LUITON_LT-725UV | [@KC9HI](https://github.com/KC9HI) | 11-Dec-2022 | Yes | 0.02% |
 | <a name="Lanchonlh_HG-UV98"></a> Lanchonlh_HG-UV98 |  |  | Yes | 0.00% |
-| <a name="Leixen_VV-898"></a> Leixen_VV-898 | [Implied by Jetstream_JT270MH](#user-content-Jetstream_JT270MH) | 13-Dec-2022 | Yes | 0.18% |
-| <a name="Leixen_VV-898S"></a> Leixen_VV-898S | [@READ10](https://github.com/READ10) | 19-Dec-2022 | Yes | 0.10% |
+| <a name="Leixen_VV-898"></a> Leixen_VV-898 | [Implied by Jetstream_JT270MH](#user-content-Jetstream_JT270MH) | 13-Dec-2022 | Yes | 0.16% |
+| <a name="Leixen_VV-898E"></a> Leixen_VV-898E |  |  | Yes | 0.02% |
+| <a name="Leixen_VV-898E_Dual_Bank"></a> Leixen_VV-898E_Dual_Bank | [Implied by Leixen_VV-898S_Dual_Bank](#user-content-Leixen_VV-898S_Dual_Bank) | 10-Feb-2024 | Yes |  |
+| <a name="Leixen_VV-898S"></a> Leixen_VV-898S | [@READ10](https://github.com/READ10) | 19-Dec-2022 | Yes | 0.08% |
+| <a name="Leixen_VV-898S_Dual_Bank"></a> Leixen_VV-898S_Dual_Bank | [Reported working](https://chirp.danplanet.com/issues/4069) | 10-Feb-2024 | Yes |  |
 | <a name="MMLradio_JC-8629"></a> MMLradio_JC-8629 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2023 | Yes | 0.01% |
 | <a name="MTC_UV-5R-3"></a> MTC_UV-5R-3 | [Implied by BTECH_UV-5X3](#user-content-BTECH_UV-5X3) | 9-Dec-2022 | Yes | 0.02% |
 | <a name="Maverick_RA-100"></a> Maverick_RA-100 | [@cetinajero](https://github.com/cetinajero) | 7-Jul-2023 | Yes |  |
@@ -446,11 +449,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 443
+**Drivers:** 446
 
-**Tested:** 88% (390/53) (93% of usage stats)
+**Tested:** 87% (392/54) (93% of usage stats)
 
-**Byte clean:** 90% (403/40)
+**Byte clean:** 91% (406/40)
 
 ## Meaning of this testing
 

@@ -297,7 +297,7 @@ def do_ident(radio):
 
 
 def do_download(radio):
-    do_ident(radio)
+    # Ident should have already been done by the detect_from_serial()
 
     data = b""
     data += b"\xFF" * (0 - len(data))
@@ -355,19 +355,12 @@ def finish(radio):
     ack = radio.pipe.read(8)
 
 
-# Declaring Aliases
-class LT898UV(chirp_common.Alias):
-    VENDOR = "LUITON"
-    MODEL = "LT-898UV"
-
-
 @directory.register
 class LeixenVV898Radio(chirp_common.CloneModeRadio):
 
     """Leixen VV-898"""
     VENDOR = "Leixen"
     MODEL = "VV-898"
-    ALIASES = [LT898UV, ]
     BAUD_RATE = 9600
     NEEDS_COMPAT_SERIAL = False
 
@@ -392,6 +385,21 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                       'defaults': 3}
     _power_levels = [chirp_common.PowerLevel("Low", watts=4),
                      chirp_common.PowerLevel("High", watts=10)]
+
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        radio = cls(pipe)
+        do_ident(radio)
+        send(radio, make_frame(b"R", 0x0168, b'\x10'))
+        _addr, _data = recv(radio)
+        ident = _data[8:14]
+        LOG.debug('Got ident from radio:\n%s' % util.hexprint(ident))
+        for rclass in [cls] + (cls.DETECTED_MODELS or []):
+            if ident == rclass._model_ident:
+                return rclass
+        # Reset the radio if we didn't find a match
+        finish(radio)
+        raise errors.RadioError('Unable to detect a supported model')
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -472,9 +480,9 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
                                        (rx_tmode, rx_tone, rx_pol))
 
     def _is_txinh(self, _mem):
-        raw_tx = ""
+        raw_tx = b""
         for i in range(0, 4):
-            raw_tx += _mem.tx_freq[i].get_raw(asbytes=False)
+            raw_tx += _mem.tx_freq[i].get_raw()
         return raw_tx == b"\xFF\xFF\xFF\xFF"
 
     def _get_memobjs(self, number):
@@ -488,7 +496,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw(asbytes=False)[:4] == "\xFF\xFF\xFF\xFF":
+        if _mem.get_raw()[:4] == b"\xFF\xFF\xFF\xFF":
             mem.empty = True
             return mem
 
@@ -590,7 +598,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         if mem.empty:
             _mem.set_raw(b"\xFF" * 16)
             return
-        elif _mem.get_raw(asbytes=False) == (b"\xFF" * 16):
+        elif _mem.get_raw() == (b"\xFF" * 16):
             _mem.set_raw(b"\xFF" * 8 + b"\xFF\x00\xFF\x00\xFF\xFE\xF0\xFC")
 
         _mem.rx_freq = mem.freq / 10
@@ -962,13 +970,21 @@ class JetstreamJT270MRadio(LeixenVV898Radio):
     _model_ident = b'LX-\x89\x85\x53'
 
 
+class LT898UV(LeixenVV898Radio):
+    VENDOR = "LUITON"
+    MODEL = "LT-898UV"
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return False
+
+
 @directory.register
 class JetstreamJT270MHRadio(LeixenVV898Radio):
 
     """Jetstream JT270MH"""
     VENDOR = "Jetstream"
     MODEL = "JT270MH"
-    ALIASES = []
 
     _file_ident = b"Leixen"
     _model_ident = b'LX-\x89\x85\x85'
@@ -981,10 +997,12 @@ class JetstreamJT270MHRadio(LeixenVV898Radio):
     _power_levels = [chirp_common.PowerLevel("Low", watts=5),
                      chirp_common.PowerLevel("Mid", watts=10),
                      chirp_common.PowerLevel("High", watts=25)]
+    # Base radio has offset zero to distinguish from sub devices
+    _offset = 0
 
     def get_features(self):
         rf = super(JetstreamJT270MHRadio, self).get_features()
-        rf.has_sub_devices = self.VARIANT == ''
+        rf.has_sub_devices = self._offset == 0
         rf.memory_bounds = (1, 99)
         return rf
 
@@ -1009,21 +1027,12 @@ class JetstreamJT270MHRadioB(JetstreamJT270MHRadio):
     _offset = 2
 
 
-class VV898E(chirp_common.Alias):
-
-    '''Leixen has called this radio both 898E and S historically, ident is
-    identical'''
-    VENDOR = "Leixen"
-    MODEL = "VV-898E"
-
-
 @directory.register
 class LeixenVV898SRadio(LeixenVV898Radio):
 
     """Leixen VV-898S, also VV-898E which is identical"""
     VENDOR = "Leixen"
     MODEL = "VV-898S"
-    ALIASES = [VV898E, ]
 
     _model_ident = b'LX-\x89\x85\x75'
     _mem_formatter = {'unknownormode': 'mode:1',
@@ -1034,3 +1043,41 @@ class LeixenVV898SRadio(LeixenVV898Radio):
     _power_levels = [chirp_common.PowerLevel("Low", watts=5),
                      chirp_common.PowerLevel("Med", watts=10),
                      chirp_common.PowerLevel("High", watts=25)]
+
+
+@directory.register
+class VV898E(LeixenVV898SRadio):
+    '''Leixen has called this radio both 898E and S historically, ident is
+    identical'''
+    VENDOR = "Leixen"
+    MODEL = "VV-898E"
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return False
+
+
+@directory.register
+@directory.detected_by(LeixenVV898SRadio)
+class VV898SDualBank(JetstreamJT270MHRadio):
+    '''Newer VV898S 1.06+ firmware that features dual memory banks'''
+    VENDOR = "Leixen"
+    MODEL = "VV-898S"
+    VARIANT = "Dual Bank"
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return False
+
+
+@directory.register
+@directory.detected_by(VV898E)
+class VV898EDualBank(JetstreamJT270MHRadio):
+    '''Newer VV898E 1.06+ firmware that features dual memory banks'''
+    VENDOR = "Leixen"
+    MODEL = "VV-898E"
+    VARIANT = "Dual Bank"
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return False
