@@ -6,7 +6,7 @@ The following must be true before PRs can be merged:
 * Commits should be squashed into logical units.
 * Commits should be rebased (or simply rebase-able in the web UI) on current master. Do not put merge commits in a PR.
 * Commits in a single PR should be related.
-* Major new features or bug fixes should reference a [CHIRP issue](https://chirp.danplanet.com/projects/chirp/issues).
+* Major new features or bug fixes should reference a [CHIRP issue](https://chirp.danplanet.com/projects/chirp/issues). Do this with the pattern `Fixes #1234` or `Related to #1234` so that the ticket system links the commit to the issue.
 * New drivers should be accompanied by a test image in `tests/images` (except for thin aliases where the driver is sufficiently tested already).
 * All files must be GPLv3 licensed or contain no license verbiage. No additional restrictions can be placed on the usage (i.e. such as noncommercial).
 
