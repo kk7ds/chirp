@@ -953,6 +953,11 @@ class ChirpMain(wx.Frame):
                 self.Bind(wx.EVT_MENU, self._menu_debug_loc, debug_loc_menu)
                 help_menu.Append(debug_loc_menu)
 
+        backup_loc_menu = wx.MenuItem(help_menu, wx.NewId(),
+                                      _('Show image backup location'))
+        self.Bind(wx.EVT_MENU, self._menu_backup_loc, backup_loc_menu)
+        help_menu.Append(backup_loc_menu)
+
         lmfi_menu = wx.MenuItem(help_menu, wx.NewId(),
                                 _('Load module from issue...'))
         self.Bind(wx.EVT_MENU, self._menu_load_from_issue, lmfi_menu)
@@ -1707,6 +1712,11 @@ class ChirpMain(wx.Frame):
     def _menu_debug_loc(self, event):
         dst = common.temporary_debug_log()
         common.reveal_location(dst)
+
+    @common.error_proof()
+    def _menu_backup_loc(self, event):
+        backup_dir = chirp_platform.get_platform().config_file('backups')
+        common.reveal_location(backup_dir)
 
     @common.error_proof()
     def _menu_load_from_issue(self, event):
