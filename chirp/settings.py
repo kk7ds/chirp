@@ -480,6 +480,15 @@ class RadioSettingGroup(object):
         return self._name < other._name
 
 
+class RadioSettingSubGroup(RadioSettingGroup):
+    """A subgroup of related settings.
+
+    These are to be displayed with less weight than a regular group. Used
+    for repeated sections of related settings, or small groups that don't
+    merit their own panel of display in the UI.
+    """
+
+
 class RadioSetting(RadioSettingGroup):
 
     """A single setting, which could be an array of items like a group"""
