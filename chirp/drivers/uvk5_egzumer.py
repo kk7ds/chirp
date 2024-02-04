@@ -24,7 +24,7 @@ from chirp.drivers import uvk5
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueInteger, RadioSettingValueString, \
-    RadioSettings, InvalidValueError
+    RadioSettings, InvalidValueError, RadioSettingSubGroup
 
 LOG = logging.getLogger(__name__)
 
@@ -1464,11 +1464,12 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         bands = {"sqlBand1_3": "Frequency Band 1-3",
                  "sqlBand4_7": "Frequency Band 4-7"}
         for bnd, bndn in bands.items():
-            band_group_range = RadioSettingGroup(bnd, bndn)
+            band_group_range = RadioSettingSubGroup(bnd, bndn)
             radio_setting_group.append(band_group_range)
             for sql in range(0, 10):
-                band_group = RadioSettingGroup('%s_%i' % (bnd, sql),
-                                               "%s Squelch %i" % (bndn, sql))
+                band_group = RadioSettingSubGroup(
+                    '%s_%i' % (bnd, sql),
+                    "%s Squelch %i" % (bndn, sql))
                 band_group_range.append(band_group)
 
                 prefix = "_mem.cal.%s." % bnd
@@ -1521,7 +1522,7 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
 
         bands = {"rssiLevelsBands1_2": "1-2 ", "rssiLevelsBands3_7": "3-7 "}
         for bnd, bndn in bands.items():
-            band_group = RadioSettingGroup(bnd, 'Frequency Band %s' % bndn)
+            band_group = RadioSettingSubGroup(bnd, 'Frequency Band %s' % bndn)
             radio_setting_group.append(band_group)
 
             for lvl in [1, 2, 4, 6]:
@@ -1538,18 +1539,22 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         calibration.append(radio_setting_group)
 
         for bnd in range(0, 7):
-            band_group = RadioSettingGroup('txpower_band_%i' % bnd,
-                                           'TX Power Band %i' % (bnd + 1))
+            band_group = RadioSettingSubGroup('txpower_band_%i' % bnd,
+                                              'TX Power Band %i' % (bnd + 1))
             powers = {"low": "Low", "mid": "Medium", "hi": "High"}
+            radio_setting_group.append(band_group)
             for pwr, pwrn in powers.items():
                 bounds = ["lower", "center", "upper"]
+                subgroup = RadioSettingSubGroup('txpower_band_%i_%s' % (
+                    bnd, pwr), '%s %s' % (band_group.get_shortname(), pwrn))
+                band_group.append(subgroup)
                 for bound in bounds:
                     name = f"_mem.cal.txp[{bnd}].{pwr}.{bound}"
                     tempval = min_max_def(eval(name), 0, 255, 0)
                     val = RadioSettingValueInteger(0, 255, tempval)
                     label = '%s %s' % (pwrn, bound.capitalize())
                     radio_setting = RadioSetting(name, label, val)
-                    radio_setting_group.append(radio_setting)
+                    subgroup.append(radio_setting)
 
 #
 
