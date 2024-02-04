@@ -96,7 +96,8 @@ class ChirpSettingsEdit(common.ChirpEditor):
             self._group_control.AddPage(propgrid, group.get_shortname())
 
         for element in group.values():
-            if not isinstance(element, settings.RadioSetting):
+            if not isinstance(element, (settings.RadioSetting,
+                                        settings.RadioSettingSubGroup)):
                 self._add_group(element,
                                 parent=self._group_control.FindPage(propgrid))
 
