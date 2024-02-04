@@ -1023,7 +1023,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         val.set_charset(DTMF_CHARS_ID)
         ani_id_setting = \
             RadioSetting("dtmf_dtmf_local_code",
-                         "Local code (3 chars 0-9 ABCD) (ANI ID)", val)
+                         "Local code (ANI ID)", val)
+        ani_id_setting.set_doc('3 chars 0-9 ABCD')
 
         tmpval = str(_mem.dtmf.up_code).upper().strip(
                 "\x00\xff\x20")
@@ -1037,7 +1038,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         val.set_charset(DTMF_CHARS_UPDOWN)
         up_code_setting = \
             RadioSetting("dtmf_dtmf_up_code",
-                         "Up code (1-16 chars 0-9 ABCD*#) (UPCode)", val)
+                         "Up code", val)
+        up_code_setting.set_doc('1-16 chars 0-9 ABCD*#')
 
         tmpval = str(_mem.dtmf.down_code).upper().strip(
                 "\x00\xff\x20")
@@ -1051,7 +1053,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         val.set_charset(DTMF_CHARS_UPDOWN)
         dw_code_setting = \
             RadioSetting("dtmf_dtmf_down_code",
-                         "Down code (1-16 chars 0-9 ABCD*#) (DWCode)", val)
+                         "Down code", val)
+        dw_code_setting.set_doc('1-16 chars 0-9 ABCD*#')
 
         val = RadioSettingValueBoolean(_mem.dtmf.side_tone)
         dtmf_side_tone_setting = \
@@ -1098,7 +1101,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         val = RadioSettingValueString(5, 5, tmpval)
         val.set_charset(DTMF_CHARS_KILL)
         kill_code_setting = RadioSetting("dtmf_kill_code",
-                                         "Kill code (5 chars 0-9 ABCD)", val)
+                                         "Kill code", val)
+        kill_code_setting.set_doc('5 chars 0-9 ABCD')
 
         tmpval = str(_mem.dtmf.revive_code).upper().strip(
                 "\x00\xff\x20")
@@ -1113,7 +1117,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         val = RadioSettingValueString(5, 5, tmpval)
         val.set_charset(DTMF_CHARS_KILL)
         rev_code_setting = RadioSetting("dtmf_revive_code",
-                                        "Revive code (5 chars 0-9 ABCD)", val)
+                                        "Revive code", val)
+        rev_code_setting.set_doc('5 chars 0-9 ABCD')
 
         val = RadioSettingValueBoolean(_mem.int_KILLED)
         killed_setting = RadioSetting("int_KILLED", "DTMF kill lock", val)
@@ -1136,6 +1141,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
             val = RadioSettingValueString(0, 3, cntnum)
             val.set_charset(DTMF_CHARS)
             rs = RadioSetting(varnumname, varinumdescr, val)
+            rs.set_doc("DTMF Contacts are 3 codes (valid: 0-9 * # ABCD), "
+                       "or an empty string")
             dtmfc.append(rs)
 
         # ----------------- Scan Lists
@@ -1398,6 +1405,7 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
             rs = RadioSetting("FM_" + str(i), "Ch " + str(i),
                               RadioSettingValueString(0, 5, freq_name))
             fmradio.append(rs)
+            rs.set_doc('Frequency in MHz')
 
         # ----------------- Unlock settings
 
