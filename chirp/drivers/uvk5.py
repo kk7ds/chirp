@@ -747,8 +747,23 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
     def sync_out(self):
         do_upload(self)
 
+    def _check_firmware_at_load(self):
+        firmware = self.metadata.get('uvk5_firmware')
+        if not firmware:
+            LOG.warning(_('This image is missing firmware information. '
+                          'It may have been generated with an old or '
+                          'modified version of CHIRP. It is advised that '
+                          'you download a fresh image from your radio and '
+                          'use that going forward for the best safety and '
+                          'compatibility.'))
+        elif not self.k5_approve_firmware(self.metadata['uvk5_firmware']):
+            raise errors.RadioError(
+                'Image firmware is %r but is not supported by '
+                'this driver' % firmware)
+
     # Convert the raw byte array into a memory object structure
     def process_mmap(self):
+        self._check_firmware_at_load()
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     # Return a raw representation of the memory object, which

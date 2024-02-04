@@ -511,6 +511,7 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
 
     # Convert the raw byte array into a memory object structure
     def process_mmap(self):
+        self._check_firmware_at_load()
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def _get_mem_mode(self, _mem):

@@ -994,7 +994,7 @@ msgstr "Desteklenen tüm biçimler|"
 msgid "Amateur"
 msgstr "Amatör"
 
-#: ../wxui/common.py:568 ../wxui/common.py:595
+#: ../wxui/common.py:594 ../wxui/common.py:621
 msgid "An error has occurred"
 msgstr "Bir hata oluştu"
 
@@ -1034,7 +1034,7 @@ msgstr "Telsiz Tarayıcısı oluşturuluyor"
 msgid "Canada"
 msgstr "Kanada"
 
-#: ../wxui/common.py:441
+#: ../wxui/common.py:467
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -1192,7 +1192,7 @@ msgstr ""
 "DTCS\n"
 "Polarite"
 
-#: ../drivers/uvk5.py:897
+#: ../drivers/uvk5.py:912
 msgid "DTMF decode"
 msgstr "DTMF kod çöz"
 
@@ -1277,7 +1277,7 @@ msgstr "İndirme talimatları"
 msgid "Driver"
 msgstr "Sürücüyü Yeniden Yükle"
 
-#: ../drivers/uvk5.py:1315
+#: ../drivers/uvk5.py:1330
 msgid "Driver information"
 msgstr "Sürücü bilgileri"
 
@@ -1339,7 +1339,7 @@ msgstr "Özel bağlantı noktasını girin:"
 msgid "Erased memory %s"
 msgstr "%s kaydı silindi"
 
-#: ../wxui/settingsedit.py:139
+#: ../wxui/settingsedit.py:140
 msgid "Error applying settings"
 msgstr "Ayarlar uygulanırken hata oluştu"
 
@@ -1367,7 +1367,7 @@ msgstr "CSV'ye aktar..."
 msgid "Extra"
 msgstr "Ekstra"
 
-#: ../drivers/uvk5.py:1313
+#: ../drivers/uvk5.py:1328
 msgid "FM Radio"
 msgstr "FM Radyo"
 
@@ -1882,11 +1882,11 @@ msgstr ""
 msgid "Loading settings"
 msgstr "Ayarlar yükleniyor"
 
-#: ../drivers/uvk5.py:1814
+#: ../drivers/uvk5.py:1831
 msgid "Logo string 1 (12 characters)"
 msgstr "Logo dizesi 1 (12 karakter)"
 
-#: ../drivers/uvk5.py:1821
+#: ../drivers/uvk5.py:1838
 msgid "Logo string 2 (12 characters)"
 msgstr "Logo dizesi 2 (12 karakter)"
 
@@ -2237,7 +2237,7 @@ msgstr ""
 "telsiz iletişim veri sağlayıcısıdır\n"
 "<small>Premium hesap gereklidir</small>"
 
-#: ../wxui/common.py:443
+#: ../wxui/common.py:469
 msgid "Refresh required"
 msgstr "Yeniden Başlatma Gerekli"
 
@@ -2317,11 +2317,11 @@ msgstr "Dosyayı kaydet"
 msgid "Saved settings"
 msgstr "Kaydedilmiş ayarlar"
 
-#: ../drivers/uvk5.py:911
+#: ../drivers/uvk5.py:926
 msgid "Scanlists"
 msgstr "Tarama listeleri"
 
-#: ../drivers/uvk5.py:907
+#: ../drivers/uvk5.py:922
 msgid "Scrambler"
 msgstr "Karıştırıcı"
 
@@ -2513,6 +2513,14 @@ msgid "This driver is in development and should be considered as experimental."
 msgstr ""
 "Bu sürücü geliştirme aşamasındadır ve deneysel olarak değerlendirilmelidir."
 
+#: ../drivers/uvk5.py:753
+msgid ""
+"This image is missing firmware information. It may have been generated with "
+"an old or modified version of CHIRP. It is advised that you download a fresh "
+"image from your radio and use that going forward for the best safety and "
+"compatibility."
+msgstr ""
+
 #: ../drivers/th_uv88.py:557
 msgid "This is an early stage beta driver\n"
 msgstr "Bu erken aşama beta sürücüsüdür\n"
@@ -2561,7 +2569,7 @@ msgstr "Bu kaydı ve hepsini yukarı kaydır"
 msgid "This memory and shift block up"
 msgstr "Bu kaydı ve bloğu yukarı kaydır"
 
-#: ../drivers/uvk5_egzumer.py:1450
+#: ../drivers/uvk5_egzumer.py:1459
 msgid ""
 "This option may break your radio! Each radio has a unique set of calibration "
 "data and uploading the data from the image will cause physical harm to the "
@@ -2583,7 +2591,7 @@ msgstr ""
 "birkaç saniye sürebilir, işe yaramazsa birkaç kez tekrar deneyin.\n"
 "İşe yaramazsa, lütfen telsizi ve kabloyu kontrol edin.\n"
 
-#: ../drivers/uvk5.py:1899
+#: ../drivers/uvk5.py:1916
 msgid ""
 "This should only be enabled if you are using modified firmware that supports "
 "wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
@@ -2654,7 +2662,7 @@ msgstr ""
 "telsiz ABD dışı bir telsizdir (veya geniş bantlıdır). Lütfen doğru modeli "
 "seçin ve tekrar deneyin."
 
-#: ../wxui/common.py:646
+#: ../wxui/common.py:672
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "%s bu sistemde gösterilemiyor"
@@ -2702,12 +2710,12 @@ msgstr "Daha büyük yazı tipi kullan"
 msgid "Value does not fit in %i bits"
 msgstr "Değer %i bit'e sığmıyor"
 
-#: ../wxui/common.py:481
+#: ../wxui/common.py:507
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Değer en az %.4f olmalıdır"
 
-#: ../wxui/common.py:485
+#: ../wxui/common.py:511
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Değer en fazla %.4f olmalıdır"
@@ -2733,7 +2741,7 @@ msgstr "Tedarikçi"
 msgid "View"
 msgstr "Göster"
 
-#: ../wxui/common.py:427
+#: ../wxui/common.py:453
 msgid "WARNING!"
 msgstr "UYARI!"
 
