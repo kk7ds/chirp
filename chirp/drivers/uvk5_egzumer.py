@@ -792,7 +792,7 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
                 _mem.dtmf.decode_response = int(element.value)
 
             elif elname == "dtmf_auto_reset_time":
-                _mem.dtmf.auto_reset_time = int(int(element.value)/10)
+                _mem.dtmf.auto_reset_time = int(element.value)
 
             elif elname == "dtmf_preload_time":
                 _mem.dtmf.preload_time = int(int(element.value)/10)
@@ -1064,7 +1064,7 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         dtmf_resp_setting = RadioSetting("dtmf_decode_response",
                                          "Decode Response (D Resp)", val)
 
-        tmpval = min_max_def(_mem.dtmf.auto_reset_time, 5, 60, 5)
+        tmpval = min_max_def(_mem.dtmf.auto_reset_time, 5, 60, 10)
         val = RadioSettingValueInteger(5, 60, tmpval)
         d_hold_setting = RadioSetting("dtmf_auto_reset_time",
                                       "Auto reset time (s) (D Hold)", val)
