@@ -1534,6 +1534,8 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             val.set_charset(DTMF_CHARS)
             rs = RadioSetting(varnumname, varinumdescr, val)
             dtmfc.append(rs)
+            rs.set_doc("DTMF Contacts are 3 codes (valid: 0-9 * # ABCD), "
+                       "or an empty string")
 
         # scanlists
         if _mem.scanlist_default == 1:
