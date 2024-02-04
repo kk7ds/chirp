@@ -364,6 +364,7 @@ class ChirpSettingGrid(wx.Panel):
             wx.propgrid.PG_BOLD_MODIFIED)
 
         self.pg.Bind(wx.propgrid.EVT_PG_CHANGED, self._pg_changed)
+        self.pg.Bind(wx.EVT_MOTION, self._mouseover)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
@@ -373,6 +374,20 @@ class ChirpSettingGrid(wx.Panel):
 
         self._add_items(self._group)
         self.pg.Bind(wx.propgrid.EVT_PG_CHANGING, self._check_change)
+
+    def _mouseover(self, event):
+        prop = self.pg.HitTest(event.GetPosition()).GetProperty()
+        tip = None
+        if prop:
+            setting = self.get_setting_by_name(prop.GetName())
+            tip = setting.__doc__ or None
+            if tip and tip == setting.get_name():
+                # This is the default, which makes no sense, but it's been
+                # that way for ages, so just avoid exposing it here if it's
+                # set to the default.
+                tip = None
+
+        event.GetEventObject().SetToolTip(tip)
 
     def _add_items(self, group):
         for name, element in group.items():
