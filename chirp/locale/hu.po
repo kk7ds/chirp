@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-01 15:14-0800\n"
+"POT-Creation-Date: 2024-02-05 15:04-0800\n"
 "PO-Revision-Date: 2015-01-28 13:47+0100\n"
 "Last-Translator: Attila Joubert <joubert.attila@gmail.com>\n"
 "Language-Team: English\n"
@@ -60,7 +60,7 @@ msgstr[1] "... és a tömböt felfelé lépteti"
 msgid "%s has not been saved. Save before closing?"
 msgstr "A fájl megváltozott! Menti bezárás előtt?"
 
-#: ../wxui/radioinfo.py:49
+#: ../wxui/radioinfo.py:50
 msgid "(none)"
 msgstr ""
 
@@ -383,7 +383,7 @@ msgid ""
 "5. Press OK.\n"
 msgstr ""
 
-#: ../drivers/vx6.py:369 ../drivers/vx3.py:373
+#: ../drivers/vx6.py:370 ../drivers/vx3.py:373
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -392,7 +392,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
 
-#: ../drivers/vx6.py:376 ../drivers/vx3.py:380
+#: ../drivers/vx6.py:377 ../drivers/vx3.py:380
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -487,7 +487,7 @@ msgid ""
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:825
+#: ../drivers/uv5r.py:826
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -497,7 +497,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:833
+#: ../drivers/uv5r.py:834
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -931,6 +931,10 @@ msgstr "Letöltés a rádióról"
 msgid "Download instructions"
 msgstr "{name} Utasítások"
 
+#: ../wxui/radioinfo.py:62
+msgid "Driver"
+msgstr ""
+
 #: ../drivers/uvk5.py:1315
 msgid "Driver information"
 msgstr ""
@@ -1044,7 +1048,7 @@ msgstr ""
 msgid "Failed to parse result"
 msgstr ""
 
-#: ../wxui/radioinfo.py:44
+#: ../wxui/radioinfo.py:45
 msgid "Features"
 msgstr ""
 
@@ -1126,7 +1130,7 @@ msgid ""
 msgstr ""
 
 #: ../drivers/mursv1.py:342 ../drivers/baofeng_wp970i.py:328
-#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
+#: ../drivers/btech.py:690 ../drivers/gmrsuv1.py:392
 #: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
 #: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
 #: ../drivers/baofeng_uv17Pro.py:442 ../drivers/bf_t1.py:483
@@ -1195,7 +1199,7 @@ msgid ""
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
 
-#: ../drivers/btech.py:695 ../drivers/bf_t1.py:489
+#: ../drivers/btech.py:696 ../drivers/bf_t1.py:489
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2080,7 +2084,7 @@ msgstr "... és a tömböt felfelé lépteti"
 msgid "This memory and shift block up"
 msgstr "... és a tömböt felfelé lépteti"
 
-#: ../drivers/uvk5_egzumer.py:1547
+#: ../drivers/uvk5_egzumer.py:1450
 msgid ""
 "This option may break your radio! Each radio has a unique set of calibration "
 "data and uploading the data from the image will cause physical harm to the "

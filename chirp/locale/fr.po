@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-01 15:14-0800\n"
+"POT-Creation-Date: 2024-02-05 15:04-0800\n"
 "PO-Revision-Date: 2023-12-13 00:03+0100\n"
 "Last-Translator: Matthieu Lapadu-Hargues <mlhpub@free.fr>\n"
 "Language-Team: French\n"
@@ -67,7 +67,7 @@ msgstr[1] "%i Memoires et tout decaler vers le haut"
 msgid "%s has not been saved. Save before closing?"
 msgstr "%s n'a pas ete enregistre. Enregistrer avant de fermer?"
 
-#: ../wxui/radioinfo.py:49
+#: ../wxui/radioinfo.py:50
 msgid "(none)"
 msgstr "(vide)"
 
@@ -390,7 +390,7 @@ msgid ""
 "5. Press OK.\n"
 msgstr ""
 
-#: ../drivers/vx6.py:369 ../drivers/vx3.py:373
+#: ../drivers/vx6.py:370 ../drivers/vx3.py:373
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -399,7 +399,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
 
-#: ../drivers/vx6.py:376 ../drivers/vx3.py:380
+#: ../drivers/vx6.py:377 ../drivers/vx3.py:380
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -494,7 +494,7 @@ msgid ""
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:825
+#: ../drivers/uv5r.py:826
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -504,7 +504,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uv5r.py:833
+#: ../drivers/uv5r.py:834
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -941,6 +941,11 @@ msgstr "Telecharger depuis la radio - Lire..."
 msgid "Download instructions"
 msgstr "Instructions de telechargement"
 
+#: ../wxui/radioinfo.py:62
+#, fuzzy
+msgid "Driver"
+msgstr "Recharger pilote"
+
 #: ../drivers/uvk5.py:1315
 #, fuzzy
 msgid "Driver information"
@@ -1055,7 +1060,7 @@ msgstr "Echec du chargement du navigateur de la radio"
 msgid "Failed to parse result"
 msgstr "Echec d'analyse des resultats"
 
-#: ../wxui/radioinfo.py:44
+#: ../wxui/radioinfo.py:45
 msgid "Features"
 msgstr "Caracteristiques"
 
@@ -1135,7 +1140,7 @@ msgid ""
 msgstr ""
 
 #: ../drivers/mursv1.py:342 ../drivers/baofeng_wp970i.py:328
-#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
+#: ../drivers/btech.py:690 ../drivers/gmrsuv1.py:392
 #: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
 #: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
 #: ../drivers/baofeng_uv17Pro.py:442 ../drivers/bf_t1.py:483
@@ -1204,7 +1209,7 @@ msgid ""
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
 
-#: ../drivers/btech.py:695 ../drivers/bf_t1.py:489
+#: ../drivers/btech.py:696 ../drivers/bf_t1.py:489
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2133,7 +2138,7 @@ msgstr "Remonter ces memoires et decalage"
 msgid "This memory and shift block up"
 msgstr "Bloquer cette memoire et le decalage"
 
-#: ../drivers/uvk5_egzumer.py:1547
+#: ../drivers/uvk5_egzumer.py:1450
 msgid ""
 "This option may break your radio! Each radio has a unique set of calibration "
 "data and uploading the data from the image will cause physical harm to the "

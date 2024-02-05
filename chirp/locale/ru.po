@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-01 15:14-0800\n"
+"POT-Creation-Date: 2024-02-05 15:04-0800\n"
 "PO-Revision-Date: 2023-10-11 16:47+0300\n"
 "Last-Translator: Olesya Gerasimenko <translation-team@basealt.ru>\n"
 "Language-Team: Basealt Translation Team\n"
@@ -67,7 +67,7 @@ msgstr[2] "Ячейки памяти (%i) и сдвинуть блок ввер�
 msgid "%s has not been saved. Save before closing?"
 msgstr "Сохранение %s не было выполнено. Сохранить перед закрытием?"
 
-#: ../wxui/radioinfo.py:49
+#: ../wxui/radioinfo.py:50
 msgid "(none)"
 msgstr "(нет)"
 
@@ -582,7 +582,7 @@ msgstr ""
 "4. Нажмите переключатель [MONI] (на экране появится «WAIT»).\n"
 "5. Нажмите «OK».\n"
 
-#: ../drivers/vx6.py:369 ../drivers/vx3.py:373
+#: ../drivers/vx6.py:370 ../drivers/vx3.py:373
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -596,7 +596,7 @@ msgstr ""
 "     (на экране появится «CLONE»).\n"
 "4. <b>После нажатия «OK»</b> нажмите клавишу [BAND] для отправки образа.\n"
 
-#: ../drivers/vx6.py:376 ../drivers/vx3.py:380
+#: ../drivers/vx6.py:377 ../drivers/vx3.py:380
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -751,7 +751,7 @@ msgstr ""
 "   во время включения станции.\n"
 "4. Нажмите клавишу [D/MR(MW)] (на экране появится «--WAIT--»).\n"
 
-#: ../drivers/uv5r.py:825
+#: ../drivers/uv5r.py:826
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -767,7 +767,7 @@ msgstr ""
 "5. Убедитесь, что станция настроена на неактивный канал.\n"
 "6. Нажмите «ОК» для загрузки образа с устройства.\n"
 
-#: ../drivers/uv5r.py:833
+#: ../drivers/uv5r.py:834
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1278,6 +1278,11 @@ msgstr "Загрузить из станции..."
 msgid "Download instructions"
 msgstr "Инструкции по загрузке"
 
+#: ../wxui/radioinfo.py:62
+#, fuzzy
+msgid "Driver"
+msgstr "Перезагрузить драйвер"
+
 #: ../drivers/uvk5.py:1315
 msgid "Driver information"
 msgstr ""
@@ -1388,7 +1393,7 @@ msgstr "Не удалось загрузить браузер станций"
 msgid "Failed to parse result"
 msgstr "Не удалось проанализировать результат"
 
-#: ../wxui/radioinfo.py:44
+#: ../wxui/radioinfo.py:45
 msgid "Features"
 msgstr "Функции"
 
@@ -1489,7 +1494,7 @@ msgstr ""
 "    не будет звука!\n"
 
 #: ../drivers/mursv1.py:342 ../drivers/baofeng_wp970i.py:328
-#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
+#: ../drivers/btech.py:690 ../drivers/gmrsuv1.py:392
 #: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:342
 #: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
 #: ../drivers/baofeng_uv17Pro.py:442 ../drivers/bf_t1.py:483
@@ -1598,7 +1603,7 @@ msgstr ""
 "6 - Выключите и снова включите питание станции, чтобы выйти\n"
 "    из режима клонирования\n"
 
-#: ../drivers/btech.py:695 ../drivers/bf_t1.py:489
+#: ../drivers/btech.py:696 ../drivers/bf_t1.py:489
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2553,7 +2558,7 @@ msgstr "Эта ячейка памяти и сдвинуть все вверх"
 msgid "This memory and shift block up"
 msgstr "Эта ячейка памяти и сдвинуть блок вверх"
 
-#: ../drivers/uvk5_egzumer.py:1547
+#: ../drivers/uvk5_egzumer.py:1450
 msgid ""
 "This option may break your radio! Each radio has a unique set of calibration "
 "data and uploading the data from the image will cause physical harm to the "
