@@ -371,9 +371,6 @@ def _do_ident(radio):
     radio.pipe.parity = "N"
     radio.pipe.timeout = STIMEOUT
 
-    # Flush input buffer
-    _clean_buffer(radio)
-
     # Ident radio
     magic = radio._magic0
     _rawsend(radio, magic)
