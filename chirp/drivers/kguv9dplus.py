@@ -2784,28 +2784,28 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
                                            (l.lim_150M_Txlower_limit) / 10.0)
             rs = RadioSetting("limits.lim_150M_Txlower_limit",
                               "150M Tx Lower Limit (MHz)",
-                              RadioSettingValueInteger(136, 180, val))
+                              val)
             limgrp.append(rs)
 
             val = RadioSettingValueInteger(136, 180,
                                            (l.lim_150M_Txupper_limit) / 10.0)
             rs = RadioSetting("limits.lim_150M_Txupper_limit",
                               "150M Tx Upper Limit (MHz + 0.9975)",
-                              RadioSettingValueInteger(136, 180, val))
+                              val)
             limgrp.append(rs)
 
             val = RadioSettingValueInteger(400, 512,
                                            (l.lim_450M_Txlower_limit) / 10.0)
             rs = RadioSetting("limits.lim_450M_Txlower_limit",
                               "450M Tx Lower Limit (MHz)",
-                              RadioSettingValueInteger(400, 512, val))
+                              val)
             limgrp.append(rs)
 
             val = RadioSettingValueInteger(400, 512,
                                            (l.lim_450M_Txupper_limit) / 10.0)
             rs = RadioSetting("limits.lim_450M_Txupper_limit",
                               "450M Tx Upper Limit (MHz + 0.9975)",
-                              RadioSettingValueInteger(400, 512, val))
+                              val)
             limgrp.append(rs)
 
         val = RadioSettingValueInteger(108, 180,
@@ -2813,8 +2813,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
                                        10.0)
         rs = RadioSetting("limits.lim_150M_area_a_rxlower_limit",
                           "Rcvr A 150M Rx Lower Limit (MHz)",
-                          RadioSettingValueInteger(108, 180,
-                                                   val))
+                          val)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(108, 180,
@@ -2822,8 +2821,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
                                        10.0)
         rs = RadioSetting("limits.lim_150M_area_a_rxupper_limit",
                           "Rcvr A 150M Rx Upper Limit (MHz + 0.9975)",
-                          RadioSettingValueInteger(108, 180,
-                                                   val))
+                          val)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(136, 180,
@@ -2831,8 +2829,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
                                        10.0)
         rs = RadioSetting("limits.lim_150M_area_b_rxlower_limit",
                           "Rcvr B 150M Rx Lower Limit (MHz)",
-                          RadioSettingValueInteger(136, 180,
-                                                   val))
+                          val)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(136, 180,
@@ -2840,71 +2837,62 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
                                        10.0)
         rs = RadioSetting("limits.lim_150M_area_b_rxupper_limit",
                           "Rcvr B 150M Rx Upper Limit (MHz + 0.9975)",
-                          RadioSettingValueInteger(136, 180,
-                                                   val))
+                          val)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(400, 512,
                                        (l.lim_450M_rxlower_limit) / 10.0)
         rs = RadioSetting("limits.lim_450M_rxlower_limit",
                           "450M Rx Lower Limit (MHz)",
-                          RadioSettingValueInteger(400, 512,
-                                                   val))
+                          val)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(400, 512,
                                        (l.lim_450M_rxupper_limit) / 10.0)
         rs = RadioSetting("limits.lim_450M_rxupper_limit",
                           "450M Rx Upper Limit (MHz + 0.9975)",
-                          RadioSettingValueInteger(400, 512,
-                                                   val))
+                          val)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(350, 399,
                                        (l.lim_300M_rxlower_limit) / 10.0)
         rs = RadioSetting("limits.lim_300M_rxlower_limit",
                           "300M Rx Lower Limit (MHz)",
-                          RadioSettingValueInteger(350, 399,
-                                                   val))
+                          val)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(350, 399,
                                        (l.lim_300M_rxupper_limit) / 10.0)
         rs = RadioSetting("limits.lim_300M_rxupper_limit",
                           "300M Rx Upper Limit (MHz + 0.9975)",
-                          RadioSettingValueInteger(350, 399,
-                                                   val))
+                          val)
         limgrp.append(rs)
         val = RadioSettingValueInteger(700, 986,
                                        (l.lim_800M_rxlower_limit) / 10.0)
         rs = RadioSetting("limits.lim_800M_rxlower_limit",
                           "800M Rx Lower Limit (MHz)",
-                          RadioSettingValueInteger(700, 986,
-                                                   val))
+                          val)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(700, 986,
                                        (l.lim_800M_rxupper_limit) / 10.0)
         rs = RadioSetting("limits.lim_800M_rxupper_limit",
                           "800M Rx Upper Limit (MHz + 0.9975)",
-                          RadioSettingValueInteger(700, 986,
-                                                   val))
+                          val)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(219, 250,
                                        (l.lim_210M_rxlower_limit) / 10.0)
         rs = RadioSetting("limits.lim_210M_rxlower_limit",
                           "210M Rx Lower Limit (MHz)",
-                          RadioSettingValueInteger(219, 250,
-                                                   val))
+                          val)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(219, 250,
                                        (l.lim_210M_rxupper_limit) / 10.0)
         rs = RadioSetting("limits.lim_210M_rxupper_limit",
                           "210M Rx Upper Limit (MHz + 0.9975)",
-                          RadioSettingValueInteger(219, 250,
-                                                   val))
+                          val)
         limgrp.append(rs)
 
         return limgrp
