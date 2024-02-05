@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import copy
 import logging
 
 import wx
@@ -116,13 +117,8 @@ class ChirpSettingsEdit(common.ChirpEditor):
                         values = [setting.value]
                     for j, value in enumerate(values):
                         if not value.get_mutable():
-                            LOG.debug('Skipping immutable setting %r' % (
-                                setting.get_name()))
+                            # Do not update immutable settings
                             continue
-                        LOG.debug('Setting %s:%s[%i]=%r' % (page.name,
-                                                            setting.get_name(),
-                                                            j,
-                                                            val))
                         realname, index = name.split(common.INDEX_CHAR)
                         prop = page.propgrid.GetProperty(name)
                         if not prop:
@@ -161,10 +157,28 @@ class ChirpSettingsEdit(common.ChirpEditor):
         self.refresh()
         self.selected()
 
+    def _remove_dead_settings(self, root):
+        """Remove any settings that are immutable or uninitialized"""
+        for e in root.values():
+            if isinstance(e, settings.RadioSetting):
+                # Immutable and uninitialized settings don't get sent to the
+                # radio
+                if not e.value.get_mutable():
+                    LOG.debug('Skipping immutable %s', e.get_name())
+                    del root[e]
+                elif not e.value.initialized:
+                    LOG.debug('Skipping uninitialized %s', e.get_name())
+                    del root[e]
+            elif isinstance(e, settings.RadioSettingGroup):
+                self._remove_dead_settings(e)
+
     def _changed(self, event):
         if not self._apply_settings():
             return
-        self.do_radio(self._set_settings_cb, 'set_settings', self._settings)
+        settings = copy.deepcopy(self._settings)
+        for g in settings:
+            self._remove_dead_settings(g)
+        self.do_radio(self._set_settings_cb, 'set_settings', settings)
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
         if self._propgrid.needs_reload:
             LOG.warning('Settings grid needs a reload')

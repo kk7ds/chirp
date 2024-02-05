@@ -183,5 +183,7 @@ class TestSettingContainers(base.BaseTest):
 
     def test_setting_deferred(self):
         val = settings.RadioSettingValueInteger(0, 10, 12)
-        self.assertRaises(settings.InvalidValueError,
-                          settings.RadioSetting, 'test', 'Test', val)
+        rs = settings.RadioSetting('test', 'Test', val)
+        self.assertFalse(rs.value.initialized)
+        rs.value = 1
+        self.assertTrue(rs.value.initialized)
