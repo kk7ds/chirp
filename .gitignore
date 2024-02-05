@@ -29,3 +29,6 @@ assets
 .vs/
 .vscode/
 /CppProperties.json
+.coverage
+chirpwx.spec
+chirp/locale/.files
