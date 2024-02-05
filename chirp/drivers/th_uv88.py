@@ -28,6 +28,8 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
 
 LOG = logging.getLogger(__name__)
 
+CHAN_NUM = 200
+
 MEM_FORMAT = """
 struct chns {
   ul32 rxfreq;
@@ -83,7 +85,7 @@ struct chname {
 };
 
 // #seekto 0x0000;
-struct chns chan_mem[199];
+struct chns chan_mem[200]; // CHAN_NUM
 
 #seekto 0x1140;
 struct {
@@ -135,7 +137,7 @@ struct fm_chn {
 };
 
 // #seekto 0x1960;
-struct chname chan_name[199];
+struct chname chan_name[200]; // CHAN_NUM
 
 #seekto 0x2180;
 struct fm_chn fm_stations[24];
@@ -584,7 +586,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES  # this is just to
         # get it working, not sure this is right
         rf.valid_bands = self.VALID_BANDS
-        rf.memory_bounds = (1, 199)
+        rf.memory_bounds = (1, CHAN_NUM)
         rf.valid_skips = ["", "S"]
         return rf
 
@@ -1081,11 +1083,11 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("workmodesettings.ab", "A/B Select", rx)
         workmode.append(rset)
 
-        rx = RadioSettingValueInteger(1, 199, _workmode.mrAch + 1)
+        rx = RadioSettingValueInteger(1, CHAN_NUM, _workmode.mrAch + 1)
         rset = RadioSetting("workmodesettings.mrAch", "MR A Channel #", rx)
         workmode.append(rset)
 
-        rx = RadioSettingValueInteger(1, 199, _workmode.mrBch + 1)
+        rx = RadioSettingValueInteger(1, CHAN_NUM, _workmode.mrBch + 1)
         rset = RadioSetting("workmodesettings.mrBch", "MR B Channel #", rx)
         workmode.append(rset)
 
