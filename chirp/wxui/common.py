@@ -567,6 +567,7 @@ def _error_proof(*expected_errors):
 class error_proof(object):
     def __init__(self, *expected_exceptions):
         self._expected = expected_exceptions
+        self.fn = None
 
     @staticmethod
     def show_error(msg):
@@ -598,7 +599,8 @@ class error_proof(object):
     def __exit__(self, exc_type, exc_val, traceback):
         if exc_type:
             if exc_type in self._expected:
-                LOG.error('%s: %s: %s' % (self.fn, exc_type, exc_val))
+                LOG.error('%s: %s: %s',
+                          self.fn or 'context', exc_type, exc_val)
                 self.show_error(exc_val)
                 return True
             else:
