@@ -401,6 +401,11 @@ class ChirpSettingGrid(wx.Panel):
                     editor.SetLabel('')
                 editor.Enable(value.get_mutable())
                 self.pg.Append(editor)
+                if editor.IsValueUnspecified():
+                    # Mark invalid/unspecified values so the user can fix them
+                    self.pg.SetPropertyBackgroundColour(editor.GetName(),
+                                                        wx.YELLOW)
+
         self.pg.Bind(wx.propgrid.EVT_PG_CHANGING, self._check_change)
 
     def get_setting_by_name(self, name, index=0):
@@ -437,6 +442,9 @@ class ChirpSettingGrid(wx.Panel):
                 'the image, which will happen now.'),
                           _('Refresh required'), wx.OK)
 
+        # If we were unspecified or otherwise marked, clear those markings
+        self.pg.SetPropertyColoursToDefault(event.GetProperty().GetName())
+
     @property
     def name(self):
         return self._group.get_name()
@@ -454,8 +462,11 @@ class ChirpSettingGrid(wx.Panel):
 
     def _get_editor_int(self, setting, value):
         e = wx.propgrid.IntProperty(setting.get_shortname(),
-                                    setting.get_name(),
-                                    value=int(value))
+                                    setting.get_name())
+        if value.initialized:
+            e.SetValue(int(value))
+        else:
+            e.SetValueToUnspecified()
         e.SetEditor('SpinCtrl')
         e.SetAttribute(wx.propgrid.PG_ATTR_MIN, value.get_min())
         e.SetAttribute(wx.propgrid.PG_ATTR_MAX, value.get_max())
@@ -478,9 +489,13 @@ class ChirpSettingGrid(wx.Panel):
             def ValueToString(self, _value, flags=0):
                 return value.format(_value)
 
-        return ChirpFloatProperty(setting.get_shortname(),
-                                  setting.get_name(),
-                                  value=float(value))
+        e = ChirpFloatProperty(setting.get_shortname(),
+                               setting.get_name())
+        if value.initialized:
+            e.SetValue(float(value))
+        else:
+            e.SetValueToUnspecified()
+        return e
 
     def _get_editor_choice(self, setting, value):
         choices = value.get_options()
@@ -508,15 +523,21 @@ class ChirpSettingGrid(wx.Panel):
                     return False
                 return True
 
-        return ChirpStrProperty(setting.get_shortname(),
-                                setting.get_name(),
-                                value=str(value))
+        e = ChirpStrProperty(setting.get_shortname(),
+                             setting.get_name())
+        if value.initialized:
+            e.SetValue(str(value))
+        else:
+            e.SetValueToUnspecified()
+        return e
 
     def get_setting_values(self):
         """Return a dict of {name: (RadioSetting, newvalue)}"""
         values = {}
         for prop in self.pg._Items():
             if prop.IsCategory():
+                continue
+            if prop.IsValueUnspecified():
                 continue
             basename = prop.GetName().split(INDEX_CHAR)[0]
             if isinstance(prop, wx.propgrid.EnumProperty):

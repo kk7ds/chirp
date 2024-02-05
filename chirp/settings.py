@@ -380,9 +380,8 @@ class RadioSettingGroup(object):
                 try:
                     element.initialize()
                 except InvalidValueError as e:
-                    raise InvalidValueError(
-                        'Failed to load %s value %i: %s' % (
-                            self._name, i, e)) from e
+                    LOG.error('Failed to load %s value %i: %s',
+                              self._name, i, e)
 
             self.append(element)
 
@@ -457,6 +456,10 @@ class RadioSettingGroup(object):
             raise KeyError("Duplicate item %s" % name)
         self._elements[name] = value
         self._element_order.append(name)
+
+    def __delitem__(self, item):
+        del self._elements[item.get_name()]
+        self._element_order.remove(item.get_name())
 
     def __contains__(self, name):
         return name in self._elements
@@ -546,7 +549,7 @@ class RadioSetting(RadioSettingGroup):
                 return self._elements[self._element_order[0]]
             else:
                 return list(self._elements.values())
-        elif name in ('__getstate__', '__setstate__'):
+        elif name in ('__getstate__', '__setstate__', '__deepcopy__'):
             super().__getattr__(name)
         else:
             return self.__dict__[name]
