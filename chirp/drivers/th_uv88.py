@@ -527,7 +527,10 @@ class THUV88Radio(chirp_common.CloneModeRadio):
     MODEL = "TH-UV88"
     NEEDS_COMPAT_SERIAL = False
     MODES = ['WFM', 'FM', 'NFM']
-    TONES = chirp_common.TONES
+    # 62.5 is a non standard tone listed in the official programming software
+    # 169.9 is a non standard tone listed in the official programming software
+    # probably by mistake instead of 167.9
+    TONES = (62.5,) + chirp_common.TONES + (169.9,)
     DTCS_CODES = chirp_common.DTCS_CODES
     NAME_LENGTH = 10
     DTMF_CHARS = list("0123456789ABCD*#")
@@ -583,8 +586,8 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                                 "DTCS->DTCS"]
         rf.valid_skips = []
         rf.valid_power_levels = POWER_LEVELS
-        rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES  # this is just to
-        # get it working, not sure this is right
+        rf.valid_tones = self.TONES
+        rf.valid_dtcs_codes = self.DTCS_CODES
         rf.valid_bands = self.VALID_BANDS
         rf.memory_bounds = (1, CHAN_NUM)
         rf.valid_skips = ["", "S"]
