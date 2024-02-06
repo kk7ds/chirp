@@ -2330,7 +2330,7 @@ class KG980PRadio(chirp_common.CloneModeRadio,
 
         for i in range(1, 11):
             x = str(i)
-            _str = _decode(eval("_settings.scanname"+x))
+            _str = _decode(getattr(_settings, 'scanname%s' % x))
             LOG.debug("ScanName %s", i)
             LOG.debug("is %s", _str)
             # CPS treats PPPPPP as a blank name as it is the factory reset
@@ -2360,19 +2360,13 @@ class KG980PRadio(chirp_common.CloneModeRadio,
                               RadioSettingValueString(0, 8, _str))
             scanname_grp.append(rs)
 
-            scngrp = str(i)
-            rs = RadioSetting("scanlower"+scngrp, "Scan Lower "+scngrp,
-                              RadioSettingValueInteger(1, 999,
-                                                       eval(
-                                                        "_settings.\
-                                                        scanlower" +
-                                                        scngrp)))
+            val = getattr(_settings, 'scanlower%i' % i)
+            rs = RadioSetting("scanlower%i" % i, "Scan Lower %i" % i,
+                              RadioSettingValueInteger(1, 999, val))
             scan_grp.append(rs)
-            rs = RadioSetting("scanupper"+scngrp, "Scan Upper "+scngrp,
-                              RadioSettingValueInteger(1, 999,
-                                                       eval(
-                                                        "_settings.scanupper" +
-                                                        scngrp)))
+            val = getattr(_settings, 'scanupper%i' % i)
+            rs = RadioSetting("scanupper%i" % i, "Scan Upper %i" % i,
+                              RadioSettingValueInteger(1, 999, val))
             scan_grp.append(rs)
 # remote settings
         rs = RadioSetting("rc_power", "RC Power",
