@@ -23,7 +23,7 @@ from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettingValueList
 from chirp.settings import RadioSettingValueString, RadioSettingValueInteger
-from chirp.settings import RadioSettings
+from chirp.settings import RadioSettings, RadioSettingSubGroup
 
 LOG = logging.getLogger(__name__)
 
@@ -1041,7 +1041,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         zones.append(zone_count)
 
         for i in range(len(self._zones)):
-            zone = RadioSettingGroup('zone%i' % i, 'Zone %i' % (i + 1))
+            zone = RadioSettingSubGroup('zone%i' % i, 'Zone %i' % (i + 1))
 
             _zone = getattr(self._memobj, 'zone%i' % i).zoneinfo
             _name = str(_zone.name).rstrip('\x00')
@@ -1107,10 +1107,14 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         def _tones():
             return ['Off'] + [str(x) for x in tones]
 
+        ostgroup = RadioSettingGroup('ost', 'OST')
+        ostgroup.set_doc('Operator Selectable Tone')
+        parent.append(ostgroup)
+
         for i in range(0, 40):
             _ost = self._memobj.ost_tones[i]
-            ost = RadioSettingGroup('ost%i' % i,
-                                    'OST %i' % (i + 1))
+            ost = RadioSettingSubGroup('ost%i' % i,
+                                       'OST %i' % (i + 1))
 
             cur = str(_ost.name).rstrip('\x00')
             name = RadioSetting('name%i' % i, 'Name',
@@ -1145,7 +1149,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             tx.set_apply_callback(apply_tone, i, 'tx')
             ost.append(tx)
 
-            parent.append(ost)
+            ostgroup.append(ost)
 
     def get_settings(self):
         settings = self._memobj.settings
