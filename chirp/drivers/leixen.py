@@ -28,21 +28,21 @@ LOG = logging.getLogger(__name__)
 MEM_FORMAT = """
 #seekto 0x0184;
 struct {
-  u8 unknown:4,
+  u8 unknown1:4,
      sql:4;              // squelch level
-  u8 unknown0x0185;
+  u8 unknown2;
   u8 obeep:1,            // open beep
      dw_off:1,           // dual watch (inverted)
      kbeep:1,            // key beep
      rbeep:1,            // roger beep
-     unknown:2,
+     unknown3:2,
      ctdcsb:1,           // ct/dcs busy lock
-     unknown:1;
+     unknown4:1;
   u8 alarm:1,            // alarm key
-     unknown1:1,
+     unknown5:1,
      aliasen_off:1,      // alias enable (inverted)
      save:1,             // battery save
-     unknown2:2,
+     unknown6:2,
      mrcha:1,            // mr/cha
      vfomr:1;            // vfo/mr
   u8 keylock_off:1,      // key lock (inverted)
@@ -53,20 +53,20 @@ struct {
      lamp:2;             // backlight
   u8 opendis:2,          // open display
      fmen_off:1,         // fm enable (inverted)
-     unknown1:1,
+     unknown7:1,
      fmscan_off:1,       // fm scan (inverted)
      fmdw:1,             // fm dual watch
-     unknown2:2;
+     unknown8:2;
   u8 step:4,             // step
      vol:4;              // volume
   u8 apo:4,              // auto power off
      tot:4;              // time out timer
-  u8 unknown0x018C;
+  u8 unknown9;
   u8 voxdt:4,            // vox delay time
      voxgain:4;          // vox gain
-  u8 unknown0x018E;
-  u8 unknown0x018F;
-  u8 unknown:3,
+  u8 unknown10;
+  u8 unknown11;
+  u8 unknown12:3,
      lptime:5;           // long press time
   u8 keyp2long:4,        // p2 key long press
      keyp2short:4;       // p2 key short press
@@ -74,34 +74,34 @@ struct {
      keyp1short:4;       // p1 key short press
   u8 keyp3long:4,        // p3 key long press
      keyp3short:4;       // p3 key short press
-  u8 unknown0x0194;
+  u8 unknown13;
   u8 menuen:1,           // menu enable
      absel:1,            // a/b select
-     unknown:2,
+     unknown14:2,
      keymshort:4;        // m key short press
-  u8 unknown:4,
+  u8 unknown15:4,
      dtmfst:1,           // dtmf sidetone
      ackdecode:1,        // ack decode
      monitor:2;          // monitor
-  u8 unknown1:3,
+  u8 unknown16:3,
      reset:1,            // reset enable
-     unknown2:1,
+     unknown17:1,
      keypadmic_off:1,    // keypad mic (inverted)
-     unknown3:2;
-  u8 unknown0x0198;
-  u8 unknown1:3,
+     unknown18:2;
+  u8 unknown19;
+  u8 unknown20:3,
      dtmftime:5;         // dtmf digit time
-  u8 unknown1:3,
+  u8 unknown21:3,
      dtmfspace:5;        // dtmf digit space time
-  u8 unknown1:2,
+  u8 unknown22:2,
      dtmfdelay:6;        // dtmf first digit delay
-  u8 unknown1:1,
+  u8 unknown23:1,
      dtmfpretime:7;      // dtmf pretime
-  u8 unknown1:2,
+  u8 unknown24:2,
      dtmfdelay2:6;       // dtmf * and # digit delay
-  u8 unknown1:3,
+  u8 unknown25:3,
      smfont_off:1,       // small font (inverted)
-     unknown:4;
+     unknown26:4;
 } settings;
 
 #seekto 0x01cd;
