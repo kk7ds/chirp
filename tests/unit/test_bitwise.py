@@ -16,6 +16,7 @@
 from builtins import bytes
 
 import unittest
+from unittest import mock
 
 import six
 
@@ -301,6 +302,16 @@ class TestBitwiseStructTypes(BaseTest):
         self.assertEqual(b'1', data.get_packed())
         obj.set_raw('2')
         self.assertEqual(b'2', data.get_packed())
+
+    @mock.patch.object(bitwise.LOG, 'error')
+    def test_struct_duplicate(self, mock_log):
+        bitwise.parse('struct\n{ u8 foo; u8 foo1:2, foo:4, foo3:2;} bar;',
+                      memmap.MemoryMapBytes(b'\x00' * 128))
+        bitwise.parse('struct\n{ u8 foo; u8 foo;} bar;',
+                      memmap.MemoryMapBytes(b'\x00' * 128))
+        bitwise.parse('struct\n{ u8 foo; u8 foo[2];} bar;',
+                      memmap.MemoryMapBytes(b'\x00' * 128))
+        self.assertEqual(3, mock_log.call_count)
 
 
 class TestBitwiseSeek(BaseTest):
