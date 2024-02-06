@@ -390,18 +390,25 @@ class ChirpSettingGrid(wx.Panel):
 
         event.GetEventObject().SetToolTip(tip)
 
-    def _add_items(self, group):
+    def _add_items(self, group, parent=None):
+        def append(item):
+            if parent:
+                self.pg.AppendIn(parent, item)
+            else:
+                self.pg.Append(item)
+
         for name, element in group.items():
             if isinstance(element, settings.RadioSettingSubGroup):
-                self.pg.Append(wx.propgrid.PropertyCategory(
-                    element.get_shortname()))
-                self._add_items(element)
+                category = wx.propgrid.PropertyCategory(
+                               element.get_shortname(), element.get_name())
+                append(category)
+                self._add_items(element, parent=category)
                 continue
             elif not isinstance(element, settings.RadioSetting):
                 LOG.debug('Skipping nested group %s' % element)
                 continue
             if len(element.keys()) > 1:
-                self.pg.Append(wx.propgrid.PropertyCategory(
+                append(wx.propgrid.PropertyCategory(
                     element.get_shortname()))
 
             for i in element.keys():
@@ -426,7 +433,7 @@ class ChirpSettingGrid(wx.Panel):
                 if len(element.keys()) > 1:
                     editor.SetLabel('')
                 editor.Enable(value.get_mutable())
-                self.pg.Append(editor)
+                append(editor)
                 self._settings[element.get_name()] = element
                 if editor.IsValueUnspecified():
                     # Mark invalid/unspecified values so the user can fix them
