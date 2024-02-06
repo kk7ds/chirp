@@ -355,6 +355,7 @@ class ChirpSettingGrid(wx.Panel):
     def __init__(self, settinggroup, *a, **k):
         super(ChirpSettingGrid, self).__init__(*a, **k)
         self._group = settinggroup
+        self._settings = {}
         self._needs_reload = False
 
         self.pg = wx.propgrid.PropertyGrid(
@@ -363,6 +364,7 @@ class ChirpSettingGrid(wx.Panel):
             wx.propgrid.PG_BOLD_MODIFIED)
 
         self.pg.Bind(wx.propgrid.EVT_PG_CHANGED, self._pg_changed)
+        self.pg.Bind(wx.EVT_MOTION, self._mouseover)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
@@ -370,8 +372,31 @@ class ChirpSettingGrid(wx.Panel):
 
         self._choices = {}
 
-        for name, element in self._group.items():
-            if not isinstance(element, settings.RadioSetting):
+        self._add_items(self._group)
+        self.pg.Bind(wx.propgrid.EVT_PG_CHANGING, self._check_change)
+
+    def _mouseover(self, event):
+        prop = self.pg.HitTest(event.GetPosition()).GetProperty()
+        tip = None
+        if prop:
+            setting = self.get_setting_by_name(prop.GetName())
+            tip = setting.__doc__ or None
+            if tip and tip == setting.get_name():
+                # This is the default, which makes no sense, but it's been
+                # that way for ages, so just avoid exposing it here if it's
+                # set to the default.
+                tip = None
+
+        event.GetEventObject().SetToolTip(tip)
+
+    def _add_items(self, group):
+        for name, element in group.items():
+            if isinstance(element, settings.RadioSettingSubGroup):
+                self.pg.Append(wx.propgrid.PropertyCategory(
+                    element.get_shortname()))
+                self._add_items(element)
+                continue
+            elif not isinstance(element, settings.RadioSetting):
                 LOG.debug('Skipping nested group %s' % element)
                 continue
             if len(element.keys()) > 1:
@@ -401,13 +426,19 @@ class ChirpSettingGrid(wx.Panel):
                     editor.SetLabel('')
                 editor.Enable(value.get_mutable())
                 self.pg.Append(editor)
+                self._settings[element.get_name()] = element
+                if editor.IsValueUnspecified():
+                    # Mark invalid/unspecified values so the user can fix them
+                    self.pg.SetPropertyBackgroundColour(editor.GetName(),
+                                                        wx.YELLOW)
+
         self.pg.Bind(wx.propgrid.EVT_PG_CHANGING, self._check_change)
 
     def get_setting_by_name(self, name, index=0):
         if INDEX_CHAR in name:
             # FIXME: This will only work for single-index settings of course
             name, _ = name.split(INDEX_CHAR, 1)
-        for setting_name, setting in self._group.items():
+        for setting_name, setting in self._settings.items():
             if name == setting_name:
                 return setting
 
@@ -437,6 +468,9 @@ class ChirpSettingGrid(wx.Panel):
                 'the image, which will happen now.'),
                           _('Refresh required'), wx.OK)
 
+        # If we were unspecified or otherwise marked, clear those markings
+        self.pg.SetPropertyColoursToDefault(event.GetProperty().GetName())
+
     @property
     def name(self):
         return self._group.get_name()
@@ -454,8 +488,11 @@ class ChirpSettingGrid(wx.Panel):
 
     def _get_editor_int(self, setting, value):
         e = wx.propgrid.IntProperty(setting.get_shortname(),
-                                    setting.get_name(),
-                                    value=int(value))
+                                    setting.get_name())
+        if value.initialized:
+            e.SetValue(int(value))
+        else:
+            e.SetValueToUnspecified()
         e.SetEditor('SpinCtrl')
         e.SetAttribute(wx.propgrid.PG_ATTR_MIN, value.get_min())
         e.SetAttribute(wx.propgrid.PG_ATTR_MAX, value.get_max())
@@ -478,9 +515,13 @@ class ChirpSettingGrid(wx.Panel):
             def ValueToString(self, _value, flags=0):
                 return value.format(_value)
 
-        return ChirpFloatProperty(setting.get_shortname(),
-                                  setting.get_name(),
-                                  value=float(value))
+        e = ChirpFloatProperty(setting.get_shortname(),
+                               setting.get_name())
+        if value.initialized:
+            e.SetValue(float(value))
+        else:
+            e.SetValueToUnspecified()
+        return e
 
     def _get_editor_choice(self, setting, value):
         choices = value.get_options()
@@ -508,9 +549,13 @@ class ChirpSettingGrid(wx.Panel):
                     return False
                 return True
 
-        return ChirpStrProperty(setting.get_shortname(),
-                                setting.get_name(),
-                                value=str(value))
+        e = ChirpStrProperty(setting.get_shortname(),
+                             setting.get_name())
+        if value.initialized:
+            e.SetValue(str(value))
+        else:
+            e.SetValueToUnspecified()
+        return e
 
     def get_setting_values(self):
         """Return a dict of {name: (RadioSetting, newvalue)}"""
@@ -518,12 +563,14 @@ class ChirpSettingGrid(wx.Panel):
         for prop in self.pg._Items():
             if prop.IsCategory():
                 continue
+            if prop.IsValueUnspecified():
+                continue
             basename = prop.GetName().split(INDEX_CHAR)[0]
             if isinstance(prop, wx.propgrid.EnumProperty):
                 value = self._choices[basename][prop.GetValue()]
             else:
                 value = prop.GetValue()
-            setting = self._group[basename]
+            setting = self._settings[basename]
             values[prop.GetName()] = setting, value
         return values
 
@@ -567,6 +614,7 @@ def _error_proof(*expected_errors):
 class error_proof(object):
     def __init__(self, *expected_exceptions):
         self._expected = expected_exceptions
+        self.fn = None
 
     @staticmethod
     def show_error(msg):
@@ -598,7 +646,8 @@ class error_proof(object):
     def __exit__(self, exc_type, exc_val, traceback):
         if exc_type:
             if exc_type in self._expected:
-                LOG.error('%s: %s: %s' % (self.fn, exc_type, exc_val))
+                LOG.error('%s: %s: %s',
+                          self.fn or 'context', exc_type, exc_val)
                 self.show_error(exc_val)
                 return True
             else:

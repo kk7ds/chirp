@@ -197,8 +197,9 @@ struct {
 DUPLEX = ["", "-", "+", "split"]
 MODES = ["FM", "AM", "WFM", "FM"]  # last is auto
 TMODES = ["", "Tone", "TSQL",
+          "DTCS",
           "TSQL-R",  # This is "RV TN" as Yaesu calls it
-          "DTCS", "DTCS->", "Tone->DTCS", "DTCS->Tone"]
+          "DTCS->", "Tone->DTCS", "DTCS->Tone"]
 DTMFCHARSET = list("0123456789ABCD*#-")
 STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0,
          9.0, 200.0, 5.0]  # last is auto, 9.0k and 200.0k are unadvertised

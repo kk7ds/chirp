@@ -24,7 +24,7 @@ from chirp.drivers import uvk5
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueInteger, RadioSettingValueString, \
-    RadioSettings, InvalidValueError
+    RadioSettings, InvalidValueError, RadioSettingSubGroup
 
 LOG = logging.getLogger(__name__)
 
@@ -511,6 +511,7 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
 
     # Convert the raw byte array into a memory object structure
     def process_mmap(self):
+        self._check_firmware_at_load()
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
     def _get_mem_mode(self, _mem):
@@ -1023,7 +1024,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         val.set_charset(DTMF_CHARS_ID)
         ani_id_setting = \
             RadioSetting("dtmf_dtmf_local_code",
-                         "Local code (3 chars 0-9 ABCD) (ANI ID)", val)
+                         "Local code (ANI ID)", val)
+        ani_id_setting.set_doc('3 chars 0-9 ABCD')
 
         tmpval = str(_mem.dtmf.up_code).upper().strip(
                 "\x00\xff\x20")
@@ -1037,7 +1039,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         val.set_charset(DTMF_CHARS_UPDOWN)
         up_code_setting = \
             RadioSetting("dtmf_dtmf_up_code",
-                         "Up code (1-16 chars 0-9 ABCD*#) (UPCode)", val)
+                         "Up code", val)
+        up_code_setting.set_doc('1-16 chars 0-9 ABCD*#')
 
         tmpval = str(_mem.dtmf.down_code).upper().strip(
                 "\x00\xff\x20")
@@ -1051,7 +1054,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         val.set_charset(DTMF_CHARS_UPDOWN)
         dw_code_setting = \
             RadioSetting("dtmf_dtmf_down_code",
-                         "Down code (1-16 chars 0-9 ABCD*#) (DWCode)", val)
+                         "Down code", val)
+        dw_code_setting.set_doc('1-16 chars 0-9 ABCD*#')
 
         val = RadioSettingValueBoolean(_mem.dtmf.side_tone)
         dtmf_side_tone_setting = \
@@ -1098,7 +1102,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         val = RadioSettingValueString(5, 5, tmpval)
         val.set_charset(DTMF_CHARS_KILL)
         kill_code_setting = RadioSetting("dtmf_kill_code",
-                                         "Kill code (5 chars 0-9 ABCD)", val)
+                                         "Kill code", val)
+        kill_code_setting.set_doc('5 chars 0-9 ABCD')
 
         tmpval = str(_mem.dtmf.revive_code).upper().strip(
                 "\x00\xff\x20")
@@ -1113,7 +1118,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         val = RadioSettingValueString(5, 5, tmpval)
         val.set_charset(DTMF_CHARS_KILL)
         rev_code_setting = RadioSetting("dtmf_revive_code",
-                                        "Revive code (5 chars 0-9 ABCD)", val)
+                                        "Revive code", val)
+        rev_code_setting.set_doc('5 chars 0-9 ABCD')
 
         val = RadioSettingValueBoolean(_mem.int_KILLED)
         killed_setting = RadioSetting("int_KILLED", "DTMF kill lock", val)
@@ -1136,6 +1142,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
             val = RadioSettingValueString(0, 3, cntnum)
             val.set_charset(DTMF_CHARS)
             rs = RadioSetting(varnumname, varinumdescr, val)
+            rs.set_doc("DTMF Contacts are 3 codes (valid: 0-9 * # ABCD), "
+                       "or an empty string")
             dtmfc.append(rs)
 
         # ----------------- Scan Lists
@@ -1398,6 +1406,7 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
             rs = RadioSetting("FM_" + str(i), "Ch " + str(i),
                               RadioSettingValueString(0, 5, freq_name))
             fmradio.append(rs)
+            rs.set_doc('Frequency in MHz')
 
         # ----------------- Unlock settings
 
@@ -1464,11 +1473,12 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         bands = {"sqlBand1_3": "Frequency Band 1-3",
                  "sqlBand4_7": "Frequency Band 4-7"}
         for bnd, bndn in bands.items():
-            band_group_range = RadioSettingGroup(bnd, bndn)
+            band_group_range = RadioSettingSubGroup(bnd, bndn)
             radio_setting_group.append(band_group_range)
             for sql in range(0, 10):
-                band_group = RadioSettingGroup('%s_%i' % (bnd, sql),
-                                               "%s Squelch %i" % (bndn, sql))
+                band_group = RadioSettingSubGroup(
+                    '%s_%i' % (bnd, sql),
+                    "%s Squelch %i" % (bndn, sql))
                 band_group_range.append(band_group)
 
                 prefix = "_mem.cal.%s." % bnd
@@ -1521,7 +1531,7 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
 
         bands = {"rssiLevelsBands1_2": "1-2 ", "rssiLevelsBands3_7": "3-7 "}
         for bnd, bndn in bands.items():
-            band_group = RadioSettingGroup(bnd, 'Frequency Band %s' % bndn)
+            band_group = RadioSettingSubGroup(bnd, 'Frequency Band %s' % bndn)
             radio_setting_group.append(band_group)
 
             for lvl in [1, 2, 4, 6]:
@@ -1538,18 +1548,22 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         calibration.append(radio_setting_group)
 
         for bnd in range(0, 7):
-            band_group = RadioSettingGroup('txpower_band_%i' % bnd,
-                                           'TX Power Band %i' % (bnd + 1))
+            band_group = RadioSettingSubGroup('txpower_band_%i' % bnd,
+                                              'TX Power Band %i' % (bnd + 1))
             powers = {"low": "Low", "mid": "Medium", "hi": "High"}
+            radio_setting_group.append(band_group)
             for pwr, pwrn in powers.items():
                 bounds = ["lower", "center", "upper"]
+                subgroup = RadioSettingSubGroup('txpower_band_%i_%s' % (
+                    bnd, pwr), '%s %s' % (band_group.get_shortname(), pwrn))
+                band_group.append(subgroup)
                 for bound in bounds:
                     name = f"_mem.cal.txp[{bnd}].{pwr}.{bound}"
                     tempval = min_max_def(eval(name), 0, 255, 0)
                     val = RadioSettingValueInteger(0, 255, tempval)
                     label = '%s %s' % (pwrn, bound.capitalize())
                     radio_setting = RadioSetting(name, label, val)
-                    radio_setting_group.append(radio_setting)
+                    subgroup.append(radio_setting)
 
 #
 
