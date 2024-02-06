@@ -1611,7 +1611,7 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         name = "_mem.cal.xtalFreqLow"
         temp_val = min_max_def(eval(name), -1000, 1000, 0)
         val = RadioSettingValueInteger(-1000, 1000, temp_val)
-        radio_setting = RadioSetting(name, "Xtal frequecy low", val)
+        radio_setting = RadioSetting(name, "Xtal frequency low", val)
         radio_setting_group.append(radio_setting)
 
         name = "_mem.cal.volumeGain"
