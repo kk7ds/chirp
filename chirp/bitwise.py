@@ -60,6 +60,7 @@
 import struct
 import os
 import logging
+import re
 import warnings
 
 import six
@@ -232,6 +233,34 @@ class DataElement:
                           DeprecationWarning, stacklevel=2)
             data = string_straight_encode(data)
         self._data[self._offset] = data[:self._size]
+
+    def get_path(self, path):
+        """Retrieve a child element starting from here by symbolic path.
+
+        Examples:
+            .mystruct.foo[2].field1
+            [3]
+            .bar
+        """
+        tok = re.search('[.[]', path)
+        if tok:
+            tok = tok.group(0)
+        if path.startswith('.'):
+            return self.get_path(path[1:])
+        elif path.startswith('['):
+            index, rest = path.split(']', 1)
+            index = int(index[1:])
+            return self[index].get_path(rest)
+        elif tok == '.':
+            field, rest = path.split('.', 1)
+            return getattr(self, field).get_path(rest)
+        elif tok == '[':
+            field, rest = path.split('[', 1)
+            return getattr(self, field).get_path('[' + rest)
+        elif path:
+            return getattr(self, path)
+        else:
+            return self
 
     def __getattr__(self, name):
         raise AttributeError("Unknown attribute %s in %s" % (name,
@@ -782,6 +811,8 @@ class structDataElement(DataElement):
         try:
             return self._generators[name]
         except KeyError:
+            LOG.error('Request for struct element %s not in %s' % (
+                name, self._generators.keys()))
             raise AttributeError("No attribute %s in struct %s" % (
                 name, self._name))
 

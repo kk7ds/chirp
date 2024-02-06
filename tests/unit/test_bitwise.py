@@ -350,3 +350,23 @@ class TestBitwiseStringEncoders(BaseTest):
     def test_decode_bytes(self):
         self.assertEqual('foobar\x00',
                          bitwise.string_straight_decode(b'foobar\x00'))
+
+
+class TestPath(BaseTest):
+    def test_get_path(self):
+        fmt = ("u8 foo;"
+               "u8 bar[2];"
+               "struct {"
+               "  u8 foo;"
+               "  u8 bar[2];"
+               "  u8 baz1:4,"
+               "     baz2:4;"
+               "  struct {"
+               "    u16 childitem;"
+               "  } child;"
+               "} structure[2];")
+        obj = bitwise.parse(fmt, memmap.MemoryMapBytes(b'\x00' * 128))
+        obj.structure[0].bar[1] = 123
+        obj.structure[1].child.childitem = 456
+        self.assertEqual(123, obj.get_path('.structure[0].bar[1]'))
+        self.assertEqual(456, obj.get_path('structure[1].child.childitem'))
