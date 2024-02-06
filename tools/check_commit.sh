@@ -46,6 +46,10 @@ if grep -E "[^_]_\([^\"']" added_lines; then
     fail 'Translated strings must be literals!'
 fi
 
+if grep -E "eval\(" added_lines; then
+    fail 'Use of eval() is dangerous and not permitted!'
+fi
+
 if git diff ${BASE}.. 'tools/cpep8.manifest' | tail -n +5 | grep -q '^+'; then
     fail 'Do not add new files to cpep8.manifest; no longer needed'
 fi
@@ -97,5 +101,7 @@ for nf in $added_py; do
         fi
     done
 done
+
+rm -f added_lines license_lines
 
 exit $RETCODE
