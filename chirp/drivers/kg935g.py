@@ -1312,9 +1312,6 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         # always set it even if no dtcs is used
         mem.dtcs_polarity = "%s%s" % (tpol or "N", rpol or "N")
 
-        LOG.debug("Got TX %s (%i) RX %s (%i)" %
-                  (txmode, _mem.txtone, rxmode, _mem.rxtone))
-
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _nam = self._memobj.names[number]
@@ -1322,7 +1319,6 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         mem = chirp_common.Memory()
         mem.number = number
         _valid = self._memobj.valid[mem.number]
-        LOG.debug("%d %s", number, _valid == MEM_VALID)
         if _valid != MEM_VALID:
             mem.empty = True
             return mem
