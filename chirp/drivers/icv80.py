@@ -25,8 +25,6 @@ LOG = logging.getLogger(__name__)
 
 
 ICV80_MEM_FORMAT = """
-
-#seekto 0x0000;
 struct {
   ul16 freq;
   ul16 offset;
@@ -48,15 +46,13 @@ struct {
      dtcs_polarity:2,
      unknown8:2,
      tmode:2;
-  u8 unknown8:5,
+  u8 unknown9:5,
      tx_inhibit:1,
      power:2;
-} memory[208];
+} memory[207];
 
-#seekto 0x0cf0;
 u8 skip[32];
 
-#seekto 0x0d10;
 u8 unused[32];
 
 #seekto 0x0e50;
@@ -481,7 +477,7 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
                 _skip |= bit
             return
 
-        _mem.set_raw(b'\x00' * 15)
+        _mem.set_raw(b'\x00' * 16)
 
         if chirp_common.required_step(mem.freq) == 12.5:
             mult = 6250
