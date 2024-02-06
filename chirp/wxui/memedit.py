@@ -348,7 +348,7 @@ class ChirpToneColumn(ChirpChoiceColumn):
     def __init__(self, name, radio):
         self.rf = radio.get_features()
         tones = self.rf.valid_tones or chirp_common.TONES
-        tones = [str(x) for x in tones]
+        tones = [str(x) for x in sorted(tones)]
         super(ChirpToneColumn, self).__init__(name, radio,
                                               tones)
 
@@ -443,7 +443,7 @@ class ChirpDTCSColumn(ChirpChoiceColumn):
     def __init__(self, name, radio):
         rf = radio.get_features()
         codes = rf.valid_dtcs_codes or chirp_common.DTCS_CODES
-        dtcs_codes = ['%03i' % code for code in codes]
+        dtcs_codes = ['%03i' % code for code in sorted(codes)]
         super(ChirpDTCSColumn, self).__init__(name, radio,
                                               dtcs_codes)
 

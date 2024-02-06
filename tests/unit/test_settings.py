@@ -30,24 +30,28 @@ class TestSettingValues(base.BaseTest):
 
     def test_radio_setting_value_integer(self):
         value = settings.RadioSettingValueInteger(0, 10, 5)
+        value.initialize()
         self.assertEqual(value.get_value(), 5)
         self._set_and_test(value, 1, 0, 10)
         self._set_and_catch(value, -1, 11)
 
     def test_radio_setting_value_float(self):
         value = settings.RadioSettingValueFloat(1.0, 10.5, 5.0)
+        value.initialize()
         self.assertEqual(value.get_value(), 5.0)
         self._set_and_test(value, 2.5, 1.0, 10.5)
         self._set_and_catch(value, 0.9, 10.6, -1.5)
 
     def test_radio_setting_value_boolean(self):
         value = settings.RadioSettingValueBoolean(True)
+        value.initialize()
         self.assertTrue(value.get_value())
         self._set_and_test(value, True, False)
 
     def test_radio_setting_value_list(self):
         opts = ["Abc", "Def", "Ghi"]
         value = settings.RadioSettingValueList(opts, "Abc")
+        value.initialize()
         self.assertEqual(value.get_value(), "Abc")
         self.assertEqual(int(value), 0)
         self._set_and_test(value, "Def", "Ghi", "Abc")
@@ -57,6 +61,7 @@ class TestSettingValues(base.BaseTest):
     def test_radio_setting_value_list_by_index(self):
         opts = ["Abc", "Def", "Ghi"]
         value = settings.RadioSettingValueList(opts, current_index=1)
+        value.initialize()
         self.assertEqual(value.get_value(), "Def")
         self.assertEqual(int(value), 1)
         self._set_and_test(value, "Def", "Ghi", "Abc")
@@ -65,6 +70,7 @@ class TestSettingValues(base.BaseTest):
 
         # Make sure we int() the index, as we may pass a bitwise object
         value = settings.RadioSettingValueList(opts, current_index='1')
+        value.initialize()
         self.assertEqual(value.get_value(), "Def")
 
         value.set_index(0)
@@ -78,6 +84,7 @@ class TestSettingValues(base.BaseTest):
 
     def test_radio_setting_value_string(self):
         value = settings.RadioSettingValueString(1, 5, "foo", autopad=False)
+        value.initialize()
         self.assertEqual(value.get_value(), "foo")
         self.assertEqual(str(value), "foo")
         self._set_and_test(value, "a", "abc", "abdef")
@@ -88,6 +95,7 @@ class TestSettingValues(base.BaseTest):
             pass
 
         value = settings.RadioSettingValueString(0, 5, "foo", autopad=False)
+        value.initialize()
 
         def test_validate(val):
             if val == "bar":
@@ -98,6 +106,7 @@ class TestSettingValues(base.BaseTest):
 
     def test_changed(self):
         value = settings.RadioSettingValueBoolean(False)
+        value.initialize()
         self.assertFalse(value.changed())
         value.set_value(False)
         self.assertFalse(value.changed())
@@ -171,3 +180,10 @@ class TestSettingContainers(base.BaseTest):
         for c in settings.BANNED_NAME_CHARACTERS:
             self.assertRaises(settings.InvalidNameError,
                               settings.RadioSetting, "foo%sbar" % c, "Foo")
+
+    def test_setting_deferred(self):
+        val = settings.RadioSettingValueInteger(0, 10, 12)
+        rs = settings.RadioSetting('test', 'Test', val)
+        self.assertFalse(rs.value.initialized)
+        rs.value = 1
+        self.assertTrue(rs.value.initialized)

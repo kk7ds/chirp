@@ -1642,48 +1642,42 @@ class KG980PRadio(chirp_common.CloneModeRadio,
         val = RadioSettingValueInteger(0, 999, _temp)
         rs = RadioSetting("bandlimits.limit_144M_ChA_rx_start",
                           "144M Area A Rx Lower Limit (MHz)",
-                          RadioSettingValueInteger(0, 999,
-                                                   val))
+                          val)
         rxlim_grp.append(rs)
 
         _temp = int(s.bandlimits.limit_144M_ChA_rx_stop) // 10
         val = RadioSettingValueInteger(0, 999, _temp)
         rs = RadioSetting("bandlimits.limit_144M_ChA_rx_stop",
                           "144M Area A Rx Upper Limit (+ .9975 MHz)",
-                          RadioSettingValueInteger(0, 999,
-                                                   val))
+                          val)
         rxlim_grp.append(rs)
 
         _temp = int(s.bandlimits.limit_144M_ChB_rx_start) // 10
         val = RadioSettingValueInteger(0, 999, _temp)
         rs = RadioSetting("bandlimits.limit_144M_ChB_rx_start",
                           "144M Area B Rx Lower Limit (MHz)",
-                          RadioSettingValueInteger(0, 999,
-                                                   val))
+                          val)
         rxlim_grp.append(rs)
 
         _temp = int(s.bandlimits.limit_144M_ChB_rx_stop) // 10
         val = RadioSettingValueInteger(0, 999, _temp)
         rs = RadioSetting("bandlimits.limit_144M_ChB_rx_stop",
                           "144M Area B Rx Upper Limit (+ .9975 MHz)",
-                          RadioSettingValueInteger(0, 999,
-                                                   val))
+                          val)
         rxlim_grp.append(rs)
 
         _temp = int(s.bandlimits.limit_70cm_rx_start) // 10
         val = RadioSettingValueInteger(0, 999, _temp)
         rs = RadioSetting("bandlimits.limit_70cm_rx_start",
                           "450M Rx Lower Limit (MHz)",
-                          RadioSettingValueInteger(0, 999,
-                                                   val))
+                          val)
         rxlim_grp.append(rs)
 
         _temp = int(s.bandlimits.limit_70cm_rx_stop) // 10
         val = RadioSettingValueInteger(0, 999, _temp)
         rs = RadioSetting("bandlimits.limit_70cm_rx_stop",
                           "450M Rx Upper Limit (+ .9975 MHz)",
-                          RadioSettingValueInteger(0, 999,
-                                                   val))
+                          val)
         rxlim_grp.append(rs)
 
         if self.MODEL == "KG-UV980P":
@@ -1691,96 +1685,84 @@ class KG980PRadio(chirp_common.CloneModeRadio,
             val = RadioSettingValueInteger(0, 999, _temp)
             rs = RadioSetting("bandlimits.limit_10m_rx_start",
                               "20M Rx Lower Limit (MHz)",
-                              RadioSettingValueInteger(0, 999,
-                                                       val))
+                              val)
             rxlim_grp.append(rs)
 
             _temp = int(s.bandlimits.limit_10m_rx_stop) // 10
             val = RadioSettingValueInteger(0, 999, _temp)
             rs = RadioSetting("bandlimits.limit_10m_rx_stop",
                               "20M Rx Upper Limit (+ .9975 MHz)",
-                              RadioSettingValueInteger(0, 999,
-                                                       val))
+                              val)
             rxlim_grp.append(rs)
 
         _temp = int(s.bandlimits.limit_6m_rx_start) // 10
         val = RadioSettingValueInteger(0, 999, _temp)
         rs = RadioSetting("bandlimits.limit_6m_rx_start",
                           "50M Rx Lower Limit (MHz)",
-                          RadioSettingValueInteger(0, 999,
-                                                   val))
+                          val)
         rxlim_grp.append(rs)
 
         _temp = int(s.bandlimits.limit_6m_rx_stop) // 10
         val = RadioSettingValueInteger(0, 999, _temp)
         rs = RadioSetting("bandlimits.limit_6m_rx_stop",
                           "50M Rx Upper Limit (+ .9975 MHz)",
-                          RadioSettingValueInteger(0, 999,
-                                                   val))
+                          val)
         rxlim_grp.append(rs)
 
         _temp = int(s.bandlimits.limit_350M_rx_start) // 10
         val = RadioSettingValueInteger(0, 999, _temp)
         rs = RadioSetting("bandlimits.limit_350M_rx_start",
                           "350M Rx Lower Limit (MHz)",
-                          RadioSettingValueInteger(0, 999,
-                                                   val))
+                          val)
         rxlim_grp.append(rs)
 
         _temp = int(s.bandlimits.limit_350M_rx_stop) // 10
         val = RadioSettingValueInteger(0, 999, _temp)
         rs = RadioSetting("bandlimits.limit_350M_rx_stop",
                           "350M Rx Upper Limit (+ .9975 MHz)",
-                          RadioSettingValueInteger(0, 999,
-                                                   val))
+                          val)
         rxlim_grp.append(rs)
 
         _temp = int(s.bandlimits.limit_850M_rx_start) // 10
         val = RadioSettingValueInteger(0, 999, _temp)
         rs = RadioSetting("bandlimits.limit_850M_rx_start",
                           "850M Rx Lower Limit (MHz)",
-                          RadioSettingValueInteger(0, 999,
-                                                   val))
+                          val)
         rxlim_grp.append(rs)
 
         _temp = int(s.bandlimits.limit_850M_rx_stop) // 10
         val = RadioSettingValueInteger(0, 999, _temp)
         rs = RadioSetting("bandlimits.limit_850M_rx_stop",
                           "850M Rx Upper Limit (+ .9975 MHz)",
-                          RadioSettingValueInteger(0, 999,
-                                                   val))
+                          val)
         rxlim_grp.append(rs)
         if self.MODEL == "KG-UV980P":
             _temp = int(s.bandlimits.limit_144M_tx_start) // 10
             val = RadioSettingValueInteger(0, 999, _temp)
             rs = RadioSetting("bandlimits.limit_144M_tx_start",
                               "144M Tx Lower Limit (MHz)",
-                              RadioSettingValueInteger(0, 999,
-                                                       val))
+                              val)
             txlim_grp.append(rs)
 
             _temp = int(s.bandlimits.limit_144M_tx_stop) // 10
             val = RadioSettingValueInteger(0, 999, _temp)
             rs = RadioSetting("bandlimits.limit_144M_tx_stop",
                               "144M Tx Upper Limit (+ .9975 MHz)",
-                              RadioSettingValueInteger(0, 999,
-                                                       val))
+                              val)
             txlim_grp.append(rs)
 
             _temp = int(s.bandlimits.limit_70cm_tx_start) // 10
             val = RadioSettingValueInteger(0, 999, _temp)
             rs = RadioSetting("bandlimits.limit_70cm_tx_start",
                               "450M Tx Lower Limit (MHz)",
-                              RadioSettingValueInteger(0, 999,
-                                                       val))
+                              val)
             txlim_grp.append(rs)
 
             _temp = int(s.bandlimits.limit_70cm_tx_stop) // 10
             val = RadioSettingValueInteger(0, 999, _temp)
             rs = RadioSetting("bandlimits.limit_70cm_tx_stop",
                               "450M tx Upper Limit (+ .9975 MHz)",
-                              RadioSettingValueInteger(0, 999,
-                                                       val))
+                              val)
             txlim_grp.append(rs)
 
             if self.MODEL == "KG-UV980P":
@@ -1788,32 +1770,28 @@ class KG980PRadio(chirp_common.CloneModeRadio,
                 val = RadioSettingValueInteger(0, 999, _temp)
                 rs = RadioSetting("bandlimits.limit_10m_tx_start",
                                   "20M tx Lower Limit (MHz)",
-                                  RadioSettingValueInteger(0, 999,
-                                                           val))
+                                  val)
                 txlim_grp.append(rs)
 
                 _temp = int(s.bandlimits.limit_10m_tx_stop) // 10
                 val = RadioSettingValueInteger(0, 999, _temp)
                 rs = RadioSetting("bandlimits.limit_10m_tx_stop",
                                   "20M tx Upper Limit (+ .9975 MHz)",
-                                  RadioSettingValueInteger(0, 999,
-                                                           val))
+                                  val)
                 txlim_grp.append(rs)
 
             _temp = int(s.bandlimits.limit_6m_tx_start) // 10
             val = RadioSettingValueInteger(0, 999, _temp)
             rs = RadioSetting("bandlimits.limit_6m_tx_start",
                               "50M tx Lower Limit (MHz)",
-                              RadioSettingValueInteger(0, 999,
-                                                       val))
+                              val)
             txlim_grp.append(rs)
 
             _temp = int(s.bandlimits.limit_6m_tx_stop) // 10
             val = RadioSettingValueInteger(0, 999, _temp)
             rs = RadioSetting("bandlimits.limit_6m_tx_stop",
                               "50M tx Upper Limit (+ .9975 MHz)",
-                              RadioSettingValueInteger(0, 999,
-                                                       val))
+                              val)
             txlim_grp.append(rs)
 
         # VFO Settings
