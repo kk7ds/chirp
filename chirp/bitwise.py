@@ -765,6 +765,9 @@ class structDataElement(DataElement):
         else:
             return result
 
+    def __contains__(self, key):
+        return key in self._generators.keys()
+
     def __getitem__(self, key):
         return self._generators[key]
 
@@ -779,7 +782,8 @@ class structDataElement(DataElement):
         try:
             return self._generators[name]
         except KeyError:
-            raise AttributeError("No attribute %s in struct" % name)
+            raise AttributeError("No attribute %s in struct %s" % (
+                name, self._name))
 
     def __setattr__(self, name, value):
         if "_structDataElement__init" not in self.__dict__:
@@ -842,7 +846,7 @@ class Processor:
         "bbcd":  bbcdDataElement,
         }
 
-    def __init__(self, data, offset):
+    def __init__(self, data, offset, input):
         if hasattr(data, 'get_byte_compatible'):
             # bitwise uses the byte-compatible interface of MemoryMap,
             # if that is what was passed in
@@ -851,10 +855,26 @@ class Processor:
         self._offset = offset
         self._obj = None
         self._user_types = {}
+        self._input = input.split('\n')
 
     def do_symbol(self, symdef, gen):
         name = symdef[1]
         self._generators[name] = gen
+
+    def get_source_line(self, lineno):
+        return self._input[lineno]
+
+    def get_line_from_sym(self, sym):
+        name = sym.__name__
+        if ':' in name.line:
+            _, num = name.line.split(':')
+        else:
+            num = 0
+        return int(num)
+
+    def get_line_sym(self, sym):
+        num = self.get_line_from_sym(sym)
+        return '%i: %s' % (num, self.get_source_line(num))
 
     def do_bitfield(self, dtype, bitfield):
         bytes = self._types[dtype](self._data, 0).size() // 8
@@ -862,6 +882,13 @@ class Processor:
 
         for _bitdef, defn in bitfield:
             name = defn[0][1]
+            if name in self._generators:
+                newname = '%s_%06x' % (name, self._offset)
+                prevline = self._lines.get(name, 'unknown')
+                LOG.error('Duplicate definition for %s on line %s; '
+                          'renaming to %s (previous definition line %s)',
+                          name, self.get_line_sym(defn[0]), newname, prevline)
+                name = newname
             bits = int(defn[1][1])
             if bitsleft < 0:
                 raise ParseError("Invalid bitfield spec")
@@ -872,6 +899,7 @@ class Processor:
                 _subgen = self._types[dtype]
 
             self._generators[name] = bitDE(self._data, self._offset)
+            self._lines[name] = self.get_line_from_sym(defn[0])
             bitsleft -= bits
 
         if bitsleft:
@@ -906,6 +934,13 @@ class Processor:
                 sym = defn[1]
 
             name = sym[1]
+            if name in self._generators:
+                newname = '%s_%06x' % (name, self._offset)
+                prevline = self._lines.get(name, 'unknown')
+                LOG.error('Duplicate definition for %s on line %s; '
+                          'renaming to %s (previous definition line %s)',
+                          name, self.get_line_sym(sym), newname, prevline)
+                name = newname
             res = arrayDataElement(self._offset)
             size = 0
             for i in range(0, count):
@@ -921,6 +956,7 @@ class Processor:
                 self._generators[name] = res[0]
             else:
                 self._generators[name] = res
+            self._lines[name] = self.get_line_from_sym(sym)
 
     def parse_struct_decl(self, struct):
         block = struct[:-1]
@@ -941,9 +977,12 @@ class Processor:
                                         name=name)
             result.append(element)
             tmp = self._generators
+            tmp_lines = self._lines
             self._generators = element
+            self._lines = {}
             self.parse_block(block)
             self._generators = tmp
+            self._lines = tmp_lines
 
         if count == 1:
             self._generators[name] = result[0]
@@ -997,6 +1036,7 @@ class Processor:
                 self.parse_directive(d)
 
     def parse(self, lang):
+        self._lines = {}
         self._generators = structDataElement(self._data, self._offset)
         self.parse_block(lang)
         return self._generators
@@ -1004,7 +1044,7 @@ class Processor:
 
 def parse(spec, data, offset=0):
     ast = bitwise_grammar.parse(spec)
-    p = Processor(data, offset)
+    p = Processor(data, offset, spec)
     return p.parse(ast)
 
 
