@@ -1478,7 +1478,7 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
             for sql in range(0, 10):
                 band_group = RadioSettingSubGroup(
                     '%s_%i' % (bnd, sql),
-                    "%s Squelch %i" % (bndn, sql))
+                    "Squelch %i" % sql)
                 band_group_range.append(band_group)
 
                 prefix = "_mem.cal.%s." % bnd
@@ -1549,20 +1549,19 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
 
         for bnd in range(0, 7):
             band_group = RadioSettingSubGroup('txpower_band_%i' % bnd,
-                                              'TX Power Band %i' % (bnd + 1))
+                                              'Band %i' % (bnd + 1))
             powers = {"low": "Low", "mid": "Medium", "hi": "High"}
             radio_setting_group.append(band_group)
             for pwr, pwrn in powers.items():
                 bounds = ["lower", "center", "upper"]
                 subgroup = RadioSettingSubGroup('txpower_band_%i_%s' % (
-                    bnd, pwr), '%s %s' % (band_group.get_shortname(), pwrn))
+                    bnd, pwr), pwrn)
                 band_group.append(subgroup)
                 for bound in bounds:
                     name = f"_mem.cal.txp[{bnd}].{pwr}.{bound}"
                     tempval = min_max_def(eval(name), 0, 255, 0)
                     val = RadioSettingValueInteger(0, 255, tempval)
-                    label = '%s %s' % (pwrn, bound.capitalize())
-                    radio_setting = RadioSetting(name, label, val)
+                    radio_setting = RadioSetting(name, bound.capitalize(), val)
                     subgroup.append(radio_setting)
 
 #
