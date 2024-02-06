@@ -102,6 +102,24 @@ class RadioSettingValue:
     def __str__(self):
         return str(self.get_value())
 
+    def __floordiv__(self, value):
+        return int(self.get_value()) // value
+
+    def __div__(self, value):
+        return float(self.get_value()) / value
+
+    def __mul__(self, value):
+        return self.get_value() * value
+
+    def __gt__(self, value):
+        return self.get_value() > value
+
+    def __lt__(self, value):
+        return self.get_value() < value
+
+    def __eq__(self, value):
+        return self.get_value() == value
+
     @property
     def initialized(self):
         return self._current is not None
