@@ -126,11 +126,9 @@ struct {
 
 #seekto 0x1940;
 struct {
-  char name1[15];         // Intro Screen Line 1 (16 alpha text characters)
-  u8 unk1;
-  char name2[15];         // Intro Screen Line 2 (16 alpha text characters)
-  u8 unk2;
-} openradioname;
+  char name1[16];         // Intro Screen Line 1 (16 alpha text characters)
+  char name2[16];         // Intro Screen Line 2 (16 alpha text characters)
+}  openradioname;
 
 struct fm_chn {
   ul32 rxfreq;
@@ -157,8 +155,8 @@ struct {
 THUV88_SETTINGS = """
 #seekto 0x1160;
 struct {
-  u8 introScreen1[12];    // 0x1160 *Intro Screen Line 1(truncated to 12 alpha
-                          //         text characters)
+  char introScreen1[12];  // 0x1160 *Intro Screen Line 1(truncated to 12
+                          //        alpha text characters)
   u8 offFreqVoltage : 3,  // 0x116C unknown referred to in code but not on
                           //        screen
      unk_bit4 : 1,        //
@@ -861,6 +859,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         _settings = self._memobj.basicsettings
         _settings2 = self._memobj.settings2
         _workmode = self._memobj.workmodesettings
+        _openradioname = self._memobj.openradioname
 
         basic = RadioSettingGroup("basic", "Basic Settings")
         group = RadioSettings(basic)
@@ -990,29 +989,47 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("basicsettings.endToneElim", "End Tone Elim", rx)
         advanced.append(rset)
 
-        # software only
-        name = ""
-        for i in range(15):  # 0 - 15
-            char = chr(int(self._memobj.openradioname.name1[i]))
-            if char == "\x00":
-                char = " "  # Other software may have 0x00 mid-name
-            name += char
-        name = name.rstrip()  # remove trailing spaces
+        def _name_apply(setting, obj1, atrb1, obj2, atrb2):
+            # Store a trunctaded version avec the first line
+            # in basicsettings.intrScreen1. The original
+            # do this for an unkown reason
+            setattr(obj1, atrb1, str(setting.value)[:12])
+            setattr(obj2, atrb2, setting.value)
+            return
 
-        rx = RadioSettingValueString(0, 15, name)
+        def _name_validate(value):
+            # The 16th char is not displayed correctly.
+            # Force it to space
+            name = list(value)
+            name[15] = " "
+            return "".join(name)
+
+        def _char_to_name(name):
+            rname = ""
+            for i in range(16):  # 0 - 15
+                char = chr(int(name[i]))
+                if char == "\x00":
+                    char = " "  # Other software may have 0x00 mid-name
+                rname += char
+            return rname.rstrip()  # remove trailing spaces
+
+        # software only
+        rx = RadioSettingValueString(0, 16,
+                                     _char_to_name(_openradioname.name1))
+        rx.set_validate_callback(_name_validate)
         rset = RadioSetting("openradioname.name1", "Intro Line 1", rx)
+
+        # On model others than RA89 store a trunctated name1 into basicsettings
+        if self.MODEL != "RA89":
+            rset.set_apply_callback(_name_apply, _settings, "introScreen1",
+                                    _openradioname, "name1")
+
         advanced.append(rset)
 
         # software only
-        name = ""
-        for i in range(15):  # 0 - 15
-            char = chr(int(self._memobj.openradioname.name2[i]))
-            if char == "\x00":
-                char = " "  # Other software may have 0x00 mid-name
-            name += char
-        name = name.rstrip()  # remove trailing spaces
-
-        rx = RadioSettingValueString(0, 15, name)
+        rx = RadioSettingValueString(0, 16,
+                                     _char_to_name(_openradioname.name2))
+        rx.set_validate_callback(_name_validate)
         rset = RadioSetting("openradioname.name2", "Intro Line 2", rx)
         advanced.append(rset)
 
