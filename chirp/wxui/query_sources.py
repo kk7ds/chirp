@@ -651,7 +651,9 @@ class RRQueryDialog(QuerySourceDialog):
             "<small>Premium account required</small>")
 
     def get_link(self):
-        return 'https://www.radioreference.com/apps/content/?cid=3'
+        return (
+            'https://support.radioreference.com/hc/en-us/articles/'
+            '18860633200276-Programming-Using-the-RadioReference-Web-Service')
 
     def _add_grid(self, grid, label, widget):
         grid.Add(wx.StaticText(widget.GetParent(), label=label),
