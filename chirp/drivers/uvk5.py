@@ -2069,7 +2069,8 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
 class UVK5Radio(UVK5RadioBase):
     @classmethod
     def k5_approve_firmware(cls, firmware):
-        approved_prefixes = ('k5_2.01.', 'app_2.01.', '2.01.')
+        approved_prefixes = ('k5_2.01.', 'app_2.01.', '2.01.',
+                             '1o11')
         return any(firmware.startswith(x) for x in approved_prefixes)
 
 
