@@ -1389,12 +1389,29 @@ class FileBackedRadio(Radio):
         pass
 
 
-class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties):
+class DetectableInterface:
+    DETECTED_MODELS = None
+
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        """Communicate with the radio via serial to determine proper class
+
+        Returns an in implementation of CloneModeRadio if detected, or raises
+        RadioError if not. If NotImplemented is raised, we assume that no
+        detection is possible or necessary.
+        """
+        assert cls.DETECTED_MODELS is None, (
+            'Class has detected models but no detect_from_serial() '
+            'implementation')
+        raise NotImplementedError()
+
+
+class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties,
+                     DetectableInterface):
     """A clone-mode radio does a full memory dump in and out and we store
     an image of the radio into an image file"""
     FILE_EXTENSION = "img"
     MAGIC = b'\x00\xffchirp\xeeimg\x00\x01'
-    DETECTED_MODELS = None
 
     _memsize = 0
 
@@ -1417,19 +1434,6 @@ class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties):
     def get_memsize(self):
         """Return the radio's memory size"""
         return self._memsize
-
-    @classmethod
-    def detect_from_serial(cls, pipe):
-        """Communicate with the radio via serial to determine proper class
-
-        Returns an in implementation of CloneModeRadio if detected, or raises
-        RadioError if not. If NotImplemented is raised, we assume that no
-        detection is possible or necessary.
-        """
-        assert cls.DETECTED_MODELS is None, (
-            'Class has detected models but no detect_from_serial() '
-            'implementation')
-        raise NotImplementedError()
 
     @classmethod
     def match_model(cls, filedata, filename):
@@ -1571,7 +1575,7 @@ class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties):
             self._metadata['mem_extra'].pop('%04i_comment' % number, None)
 
 
-class LiveRadio(Radio):
+class LiveRadio(Radio, DetectableInterface):
     """Base class for all Live-Mode radios"""
     pass
 
