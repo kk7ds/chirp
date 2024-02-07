@@ -16,6 +16,7 @@
 import atexit
 import contextlib
 import functools
+import itertools
 import logging
 import os
 import platform
@@ -697,13 +698,19 @@ def temporary_debug_log():
 
 @contextlib.contextmanager
 def expose_logs(level, root, label):
-    with logger.log_history(level, root) as history:
+    if not isinstance(root, tuple):
+        root = (root,)
+
+    mgrs = (logger.log_history(level, x) for x in root)
+    with contextlib.ExitStack() as stack:
+        histories = [stack.enter_context(m) for m in mgrs]
         try:
             yield
         finally:
-            if history.get_history():
-                msg = os.linesep.join(x.getMessage()
-                                      for x in history.get_history())
+            lines = list(itertools.chain.from_iterable(x.get_history()
+                                                       for x in histories))
+            if lines:
+                msg = os.linesep.join(x.getMessage() for x in lines)
                 d = wx.MessageDialog(
                     None, str(msg), label,
                     style=wx.OK | wx.ICON_INFORMATION)
