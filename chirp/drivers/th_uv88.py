@@ -90,15 +90,15 @@ struct chns chan_mem[200]; // CHAN_NUM
 #seekto 0x1140;
 struct {
   u8 autoKeylock:1,       // 0x1140 [18] *OFF, On
-     unk_bit6_5:1,        //
+     unk1:1,              //
      vfomrmodeb:1,        //        *VFO B, MR B
      vfomrmode:1,         //        *VFO, MR
-     unk_bit3_0:4;        //
+     unk2:4;              //
   u8 mrAch;               // 0x1141 MR A Channel #
   u8 mrBch;               // 0x1142 MR B Channel #
-  u8 unk_bit7_3:5,        //
+  u8 unk3:5,              //
      ab:1,                //        * A, B
-     unk_bit1_0:2;        //
+     unk4:2;              //
 } workmodesettings;
 """
 
@@ -115,7 +115,7 @@ struct {
 
 #seekto 0x191E;
 struct {
-  u8 unknown191e:4,       //
+  u8 unk1:4,              //
      region:4;            // 0x191E Radio Region (read only)
                           // 0 = Unlocked  TX: 136-174 MHz / 400-480 MHz
                           // 2-3 = Unknown
@@ -159,52 +159,52 @@ THUV88_SETTINGS = """
 struct {
   u8 introScreen1[12];    // 0x1160 *Intro Screen Line 1(truncated to 12 alpha
                           //         text characters)
-  u8 offFreqVoltage : 3,  // 0x116C unknown referred to in code but not on
+  u8 offFreqVoltage:3,    // 0x116C unknown referred to in code but not on
                           //        screen
-     unk_bit4 : 1,        //
-     sqlLevel : 4;        //        [05] *OFF, 1-9
-  u8 beep : 1,             // 0x116D [09] *OFF, On
-     callKind : 2,        //        code says 1750,2100,1000,1450 as options
+     unk1:1,              //
+     sqlLevel:4;          //        [05] *OFF, 1-9
+  u8 beep:1,              // 0x116D [09] *OFF, On
+     callKind:2,          //        code says 1750,2100,1000,1450 as options
                           //        not on screen
-     introScreen: 2,      //        [20] *OFF, Voltage, Char String
-     unkstr2: 2,          //
-     txChSelect : 1;      //        [02] *Last CH, Main CH
-  u8 autoPowOff : 3,      // 0x116E not on screen? OFF, 30Min, 1HR, 2HR
-     unk : 1,             //
-     tot : 4;             //        [11] *OFF, 30 Second, 60 Second, 90 Second,
+     introScreen:2,       //        [20] *OFF, Voltage, Char String
+     unk2:2,              //
+     txChSelect:1;        //        [02] *Last CH, Main CH
+  u8 autoPowOff:3,        // 0x116E not on screen? OFF, 30Min, 1HR, 2HR
+     unk3:1,              //
+     tot:4;               //        [11] *OFF, 30 Second, 60 Second, 90 Second,
                           //              ... , 270 Second
-  u8 unk_bit7:1,          // 0x116F
+  u8 unk4:1,              // 0x116F
      roger:1,             //        [14] *OFF, On
      dailDef:1,           //        Unknown - 'Volume, Frequency'
      language:1,          //        ?Chinese, English (English only FW BQ1.38+)
-     unk_bit3:1,          //
+     unk5:1,              //
      endToneElim:1,       //        *OFF, Frequency
-     unkCheckBox1:1,      //
-     unkCheckBox2:1;      //
-  u8 scanResumeTime : 2,  // 0x1170 2S, 5S, 10S, 15S (not on screen)
-     disMode : 2,         //        [33] *Frequency, Channel, Name
-     scanType: 2,         //        [17] *To, Co, Se
-     ledMode: 2;          //        [07] *Off, On, Auto
-  u8 unky;                // 0x1171
-  u8 str6;                // 0x1172 Has flags to do with logging - factory
+     unk6:1,              //
+     unk7:1;              //
+  u8 scanResumeTime:2,    // 0x1170 2S, 5S, 10S, 15S (not on screen)
+     disMode:2,           //        [33] *Frequency, Channel, Name
+     scanType:2,          //        [17] *To, Co, Se
+     ledMode:2;           //        [07] *Off, On, Auto
+  u8 unk8;                // 0x1171
+  u8 unk9;                // 0x1172 Has flags to do with logging - factory
                           // enabled (bits 16,64,128)
-  u8 unk;                 // 0x1173
-  u8 swAudio : 1,         // 0x1174 [19] *OFF, On
-     radioMoni : 1,       //        [34] *OFF, On
-     keylock : 1,         //        [18] *OFF, On
-     dualWait : 1,        //        [06] *OFF, On
-     unk_bit3 : 1,        //
-     light : 3;           //        [08] *1, 2, 3, 4, 5, 6, 7
-  u8 voxSw : 1,           // 0x1175 [13] *OFF, On
-     voxDelay: 4,         //        *0.5S, 1.0S, 1.5S, 2.0S, 2.5S, 3.0S, 3.5S,
+  u8 unk10;               // 0x1173
+  u8 swAudio:1,           // 0x1174 [19] *OFF, On
+     radioMoni:1,         //        [34] *OFF, On
+     keylock:1,           //        [18] *OFF, On
+     dualWait:1,          //        [06] *OFF, On
+     unk11:1,             //
+     light:3;             //        [08] *1, 2, 3, 4, 5, 6, 7
+  u8 voxSw:1,             // 0x1175 [13] *OFF, On
+     voxDelay:4,          //        *0.5S, 1.0S, 1.5S, 2.0S, 2.5S, 3.0S, 3.5S,
                           //         4.0S, 4.5S, 5.0S
-     voxLevel : 3;        //        [03] *1, 2, 3, 4, 5, 6, 7
-  u8 str9 : 4,            // 0x1176
-     saveMode : 2,        //        [16] *OFF, 1:1, 1:2, 1:4
-     keyMode : 2;         //        [32] *ALL, PTT, KEY, Key & Side Key
-  u8 unk2;                // 0x1177
-  u8 unk3;                // 0x1178
-  u8 unk4;                // 0x1179
+     voxLevel:3;          //        [03] *1, 2, 3, 4, 5, 6, 7
+  u8 unk12:4,             // 0x1176
+     saveMode:2,          //        [16] *OFF, 1:1, 1:2, 1:4
+     keyMode:2;           //        [32] *ALL, PTT, KEY, Key & Side Key
+  u8 unk13;               // 0x1177
+  u8 unk14;               // 0x1178
+  u8 unk15;               // 0x1179
   u8 name2[6];            // 0x117A unused
 } basicsettings;
 """
@@ -217,50 +217,50 @@ struct {
   u8 sideKey2_long:4,     // 0x1161 side key 2 Long
      sideKey1_long:4;     //        side key 1 Long
   u8 unknownBytes[10];    // 0x1162 - 0x116B
-  u8 offFreqVoltage : 3,  // 0x116C unknown referred to in code but not on
+  u8 offFreqVoltage:3,    // 0x116C unknown referred to in code but not on
                           //        screen
-     unk_bit4 : 1,        //
-     sqlLevel : 4;        //        [05] *OFF, 1-9
-  u8 beep : 1,             // 0x116D [09] *OFF, On
-     callKind : 2,        //        code says 1750,2100,1000,1450 as options
+     unk1:1,              //
+     sqlLevel:4;          //        [05] *OFF, 1-9
+  u8 beep:1,              // 0x116D [09] *OFF, On
+     callKind:2,          //        code says 1750,2100,1000,1450 as options
                           //        not on screen
-     introScreen: 2,      //        [20] *OFF, Voltage, Char String
-     unkstr2: 2,          //
-     txChSelect : 1;      //        [02] *Last CH, Main CH
-  u8 autoPowOff : 3,      // 0x116E not on screen? OFF, 30Min, 1HR, 2HR
-     unk : 1,             //
-     tot : 4;             //        [11] *OFF, 30 Second, 60 Second, 90 Second,
+     introScreen:2,       //        [20] *OFF, Voltage, Char String
+     unk2:2,              //
+     txChSelect:1;        //        [02] *Last CH, Main CH
+  u8 autoPowOff:3,        // 0x116E not on screen? OFF, 30Min, 1HR, 2HR
+     unk3:1,              //
+     tot:4;               //        [11] *OFF, 30 Second, 60 Second, 90 Second,
                           //              ... , 270 Second
-  u8 unk_bit7:1,          // 0x116F
+  u8 unk4:1,              // 0x116F
      roger:1,             //        [14] *OFF, On
      dailDef:1,           //        Unknown - 'Volume, Frequency'
      language:1,          //        English only
      endToneElim:2,       //        *Frequency, 120, 180, 240 (RA89)
-     unkCheckBox1:1,      //
-     unkCheckBox2:1;      //
-  u8 scanType: 2,         // 0x1170 [17] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
-     disMode : 2,         //        [33] *Frequency, Channel, Name
-     ledMode: 4;          //        [07] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
-  u8 unky;                // 0x1171
-  u8 str6;                // 0x1172 Has flags to do with logging - factory
+     unk5:1,              //
+     unk6:1;              //
+  u8 scanType:2,          // 0x1170 [17] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
+     disMode:2,           //        [33] *Frequency, Channel, Name
+     ledMode:4;           //        [07] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
+  u8 unk7;                // 0x1171
+  u8 unk8;                // 0x1172 Has flags to do with logging - factory
                           // enabled (bits 16,64,128)
-  u8 unk;                 // 0x1173
-  u8 swAudio : 1,         // 0x1174 [19] *OFF, On
-     radioMoni : 1,       //        [34] *OFF, On
-     keylock : 1,         //        [18] *OFF, On
-     dualWait : 1,        //        [06] *OFF, On
-     unk_bit3 : 1,        //
-     light : 3;           //        [08] *1, 2, 3, 4, 5, 6, 7
-  u8 voxSw : 1,           // 0x1175 [13] *OFF, On
-     voxDelay: 4,         //        *0.5S, 1.0S, 1.5S, 2.0S, 2.5S, 3.0S, 3.5S,
+  u8 unk9;                // 0x1173
+  u8 swAudio:1,           // 0x1174 [19] *OFF, On
+     radioMoni:1,         //        [34] *OFF, On
+     keylock:1,           //        [18] *OFF, On
+     dualWait:1,          //        [06] *OFF, On
+     unk10:1,             //
+     light:3;             //        [08] *1, 2, 3, 4, 5, 6, 7
+  u8 voxSw:1,             // 0x1175 [13] *OFF, On
+     voxDelay:4,          //        *0.5S, 1.0S, 1.5S, 2.0S, 2.5S, 3.0S, 3.5S,
                           //         4.0S, 4.5S, 5.0S
-     voxLevel : 3;        //        [03] *1, 2, 3, 4, 5, 6, 7
-  u8 str9 : 4,            // 0x1176
-     saveMode : 2,        //        [16] *OFF, 1:1, 1:2, 1:4
-     keyMode : 2;         //        [32] *ALL, PTT, KEY, Key & Side Key
-  u8 unk2;                // 0x1177
-  u8 unk3;                // 0x1178
-  u8 unk4;                // 0x1179
+     voxLevel:3;          //        [03] *1, 2, 3, 4, 5, 6, 7
+  u8 unk11:4,             // 0x1176
+     saveMode:2,          //        [16] *OFF, 1:1, 1:2, 1:4
+     keyMode:2;           //        [32] *ALL, PTT, KEY, Key & Side Key
+  u8 unk12;               // 0x1177
+  u8 unk13;               // 0x1178
+  u8 unk14;               // 0x1179
   u8 name2[6];            // 0x117A unused
 } basicsettings;
 """
