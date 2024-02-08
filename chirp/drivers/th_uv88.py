@@ -126,11 +126,9 @@ struct {
 
 #seekto 0x1940;
 struct {
-  char name1[15];         // Intro Screen Line 1 (16 alpha text characters)
-  u8 unk1;
-  char name2[15];         // Intro Screen Line 2 (16 alpha text characters)
-  u8 unk2;
-} openradioname;
+  char name1[16];         // Intro Screen Line 1 (16 alpha text characters)
+  char name2[16];         // Intro Screen Line 2 (16 alpha text characters)
+}  openradioname;
 
 struct fm_chn {
   ul32 rxfreq;
@@ -157,21 +155,21 @@ struct {
 THUV88_SETTINGS = """
 #seekto 0x1160;
 struct {
-  u8 introScreen1[12];    // 0x1160 *Intro Screen Line 1(truncated to 12 alpha
-                          //         text characters)
-  u8 offFreqVoltage:3,    // 0x116C unknown referred to in code but not on
+  char introScreen1[12];  // 0x1160 *Intro Screen Line 1(truncated to 12
+                          //        alpha text characters)
+  u8 offFreqVoltage : 3,  // 0x116C unknown referred to in code but not on
                           //        screen
      unk1:1,              //
-     sqlLevel:4;          //        [05] *OFF, 1-9
-  u8 beep:1,              // 0x116D [09] *OFF, On
-     callKind:2,          //        code says 1750,2100,1000,1450 as options
+     sqlLevel : 4;        //        [05] *OFF, 1-9
+  u8 beep : 1,             // 0x116D [09] *OFF, On
+     callKind : 2,        //        code says 1750,2100,1000,1450 as options
                           //        not on screen
-     introScreen:2,       //        [20] *OFF, Voltage, Char String
+     introScreen: 2,      //        [20] *OFF, Voltage, Char String
      unk2:2,              //
-     txChSelect:1;        //        [02] *Last CH, Main CH
-  u8 autoPowOff:3,        // 0x116E not on screen? OFF, 30Min, 1HR, 2HR
+     txChSelect : 1;      //        [02] *Last CH, Main CH
+  u8 autoPowOff : 3,      // 0x116E not on screen? OFF, 30Min, 1HR, 2HR
      unk3:1,              //
-     tot:4;               //        [11] *OFF, 30 Second, 60 Second, 90 Second,
+     tot : 4;             //        [11] *OFF, 30 Second, 60 Second, 90 Second,
                           //              ... , 270 Second
   u8 unk4:1,              // 0x116F
      roger:1,             //        [14] *OFF, On
@@ -181,27 +179,27 @@ struct {
      endToneElim:1,       //        *OFF, Frequency
      unk6:1,              //
      unk7:1;              //
-  u8 scanResumeTime:2,    // 0x1170 2S, 5S, 10S, 15S (not on screen)
-     disMode:2,           //        [33] *Frequency, Channel, Name
-     scanType:2,          //        [17] *To, Co, Se
-     ledMode:2;           //        [07] *Off, On, Auto
+  u8 scanResumeTime : 2,  // 0x1170 2S, 5S, 10S, 15S (not on screen)
+     disMode : 2,         //        [33] *Frequency, Channel, Name
+     scanType: 2,         //        [17] *To, Co, Se
+     ledMode: 2;          //        [07] *Off, On, Auto
   u8 unk8;                // 0x1171
   u8 unk9;                // 0x1172 Has flags to do with logging - factory
                           // enabled (bits 16,64,128)
   u8 unk10;               // 0x1173
-  u8 swAudio:1,           // 0x1174 [19] *OFF, On
-     radioMoni:1,         //        [34] *OFF, On
-     keylock:1,           //        [18] *OFF, On
-     dualWait:1,          //        [06] *OFF, On
+  u8 swAudio : 1,         // 0x1174 [19] *OFF, On
+     radioMoni : 1,       //        [34] *OFF, On
+     keylock : 1,         //        [18] *OFF, On
+     dualWait : 1,        //        [06] *OFF, On
      unk11:1,             //
-     light:3;             //        [08] *1, 2, 3, 4, 5, 6, 7
-  u8 voxSw:1,             // 0x1175 [13] *OFF, On
-     voxDelay:4,          //        *0.5S, 1.0S, 1.5S, 2.0S, 2.5S, 3.0S, 3.5S,
+     light : 3;           //        [08] *1, 2, 3, 4, 5, 6, 7
+  u8 voxSw : 1,           // 0x1175 [13] *OFF, On
+     voxDelay: 4,         //        *0.5S, 1.0S, 1.5S, 2.0S, 2.5S, 3.0S, 3.5S,
                           //         4.0S, 4.5S, 5.0S
-     voxLevel:3;          //        [03] *1, 2, 3, 4, 5, 6, 7
+     voxLevel : 3;        //        [03] *1, 2, 3, 4, 5, 6, 7
   u8 unk12:4,             // 0x1176
-     saveMode:2,          //        [16] *OFF, 1:1, 1:2, 1:4
-     keyMode:2;           //        [32] *ALL, PTT, KEY, Key & Side Key
+     saveMode : 2,        //        [16] *OFF, 1:1, 1:2, 1:4
+     keyMode : 2;         //        [32] *ALL, PTT, KEY, Key & Side Key
   u8 unk13;               // 0x1177
   u8 unk14;               // 0x1178
   u8 unk15;               // 0x1179
@@ -217,19 +215,19 @@ struct {
   u8 sideKey2_long:4,     // 0x1161 side key 2 Long
      sideKey1_long:4;     //        side key 1 Long
   u8 unknownBytes[10];    // 0x1162 - 0x116B
-  u8 offFreqVoltage:3,    // 0x116C unknown referred to in code but not on
+  u8 offFreqVoltage : 3,  // 0x116C unknown referred to in code but not on
                           //        screen
      unk1:1,              //
-     sqlLevel:4;          //        [05] *OFF, 1-9
-  u8 beep:1,              // 0x116D [09] *OFF, On
-     callKind:2,          //        code says 1750,2100,1000,1450 as options
+     sqlLevel : 4;        //        [05] *OFF, 1-9
+  u8 beep : 1,             // 0x116D [09] *OFF, On
+     callKind : 2,        //        code says 1750,2100,1000,1450 as options
                           //        not on screen
-     introScreen:2,       //        [20] *OFF, Voltage, Char String
+     introScreen: 2,      //        [20] *OFF, Voltage, Char String
      unk2:2,              //
-     txChSelect:1;        //        [02] *Last CH, Main CH
-  u8 autoPowOff:3,        // 0x116E not on screen? OFF, 30Min, 1HR, 2HR
+     txChSelect : 1;      //        [02] *Last CH, Main CH
+  u8 autoPowOff : 3,      // 0x116E not on screen? OFF, 30Min, 1HR, 2HR
      unk3:1,              //
-     tot:4;               //        [11] *OFF, 30 Second, 60 Second, 90 Second,
+     tot : 4;             //        [11] *OFF, 30 Second, 60 Second, 90 Second,
                           //              ... , 270 Second
   u8 unk4:1,              // 0x116F
      roger:1,             //        [14] *OFF, On
@@ -238,26 +236,26 @@ struct {
      endToneElim:2,       //        *Frequency, 120, 180, 240 (RA89)
      unk5:1,              //
      unk6:1;              //
-  u8 scanType:2,          // 0x1170 [17] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
-     disMode:2,           //        [33] *Frequency, Channel, Name
-     ledMode:4;           //        [07] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
+  u8 scanType: 2,         // 0x1170 [17] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
+     disMode : 2,         //        [33] *Frequency, Channel, Name
+     ledMode: 4;          //        [07] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
   u8 unk7;                // 0x1171
   u8 unk8;                // 0x1172 Has flags to do with logging - factory
                           // enabled (bits 16,64,128)
   u8 unk9;                // 0x1173
-  u8 swAudio:1,           // 0x1174 [19] *OFF, On
-     radioMoni:1,         //        [34] *OFF, On
-     keylock:1,           //        [18] *OFF, On
-     dualWait:1,          //        [06] *OFF, On
+  u8 swAudio : 1,         // 0x1174 [19] *OFF, On
+     radioMoni : 1,       //        [34] *OFF, On
+     keylock : 1,         //        [18] *OFF, On
+     dualWait : 1,        //        [06] *OFF, On
      unk10:1,             //
-     light:3;             //        [08] *1, 2, 3, 4, 5, 6, 7
-  u8 voxSw:1,             // 0x1175 [13] *OFF, On
-     voxDelay:4,          //        *0.5S, 1.0S, 1.5S, 2.0S, 2.5S, 3.0S, 3.5S,
+     light : 3;           //        [08] *1, 2, 3, 4, 5, 6, 7
+  u8 voxSw : 1,           // 0x1175 [13] *OFF, On
+     voxDelay: 4,         //        *0.5S, 1.0S, 1.5S, 2.0S, 2.5S, 3.0S, 3.5S,
                           //         4.0S, 4.5S, 5.0S
-     voxLevel:3;          //        [03] *1, 2, 3, 4, 5, 6, 7
+     voxLevel : 3;        //        [03] *1, 2, 3, 4, 5, 6, 7
   u8 unk11:4,             // 0x1176
-     saveMode:2,          //        [16] *OFF, 1:1, 1:2, 1:4
-     keyMode:2;           //        [32] *ALL, PTT, KEY, Key & Side Key
+     saveMode : 2,        //        [16] *OFF, 1:1, 1:2, 1:4
+     keyMode : 2;         //        [32] *ALL, PTT, KEY, Key & Side Key
   u8 unk12;               // 0x1177
   u8 unk13;               // 0x1178
   u8 unk14;               // 0x1179
@@ -861,6 +859,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         _settings = self._memobj.basicsettings
         _settings2 = self._memobj.settings2
         _workmode = self._memobj.workmodesettings
+        _openradioname = self._memobj.openradioname
 
         basic = RadioSettingGroup("basic", "Basic Settings")
         group = RadioSettings(basic)
@@ -990,29 +989,45 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("basicsettings.endToneElim", "End Tone Elim", rx)
         advanced.append(rset)
 
-        # software only
-        name = ""
-        for i in range(15):  # 0 - 15
-            char = chr(int(self._memobj.openradioname.name1[i]))
-            if char == "\x00":
-                char = " "  # Other software may have 0x00 mid-name
-            name += char
-        name = name.rstrip()  # remove trailing spaces
+        def _name_apply(setting, obj1, atrb1, obj2, atrb2):
+            # Store a trunctaded version avec the first line
+            # in basicsettings.intrScreen1. The original
+            # do this for an unkown reason
+            setattr(obj1, atrb1, str(setting.value)[:12])
+            setattr(obj2, atrb2, setting.value)
+            return
 
-        rx = RadioSettingValueString(0, 15, name)
+        def _name_validate(value):
+            # The 16th char is not displayed correctly.
+            # Force it to space
+            return value[:15].ljust(16)
+
+        def _char_to_name(name):
+            rname = ""
+            for i in range(16):  # 0 - 15
+                char = chr(int(name[i]))
+                if char == "\x00":
+                    char = " "  # Other software may have 0x00 mid-name
+                rname += char
+            return rname.rstrip()  # remove trailing spaces
+
+        # software only
+        rx = RadioSettingValueString(0, 16,
+                                     _char_to_name(_openradioname.name1))
+        rx.set_validate_callback(_name_validate)
         rset = RadioSetting("openradioname.name1", "Intro Line 1", rx)
+
+        # On model others than RA89 store a trunctated name1 into basicsettings
+        if self.MODEL != "RA89":
+            rset.set_apply_callback(_name_apply, _settings, "introScreen1",
+                                    _openradioname, "name1")
+
         advanced.append(rset)
 
         # software only
-        name = ""
-        for i in range(15):  # 0 - 15
-            char = chr(int(self._memobj.openradioname.name2[i]))
-            if char == "\x00":
-                char = " "  # Other software may have 0x00 mid-name
-            name += char
-        name = name.rstrip()  # remove trailing spaces
-
-        rx = RadioSettingValueString(0, 15, name)
+        rx = RadioSettingValueString(0, 16,
+                                     _char_to_name(_openradioname.name2))
+        rx.set_validate_callback(_name_validate)
         rset = RadioSetting("openradioname.name2", "Intro Line 2", rx)
         advanced.append(rset)
 
