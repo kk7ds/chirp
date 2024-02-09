@@ -1,16 +1,8 @@
-import os
 import sys
-from glob import glob
-import warnings
+import pkgutil
 
-# This won't be here in the frozen build because we convert this file to
-# a static list of driver modules to import.
-warnings.filterwarnings('once', category=DeprecationWarning,
-                        module=__name__)
-
-module_dir = os.path.dirname(sys.modules["chirp.drivers"].__file__)
+module_dir = sys.modules["chirp.drivers"].__path__
 __all__ = []
-for i in sorted(glob(os.path.join(module_dir, "*.py"))):
-    name = os.path.basename(i)[:-3]
-    if not name.startswith("__"):
-        __all__.append(name)
+for i in pkgutil.iter_modules(module_dir):
+    __all__.append(i.name)
+__all__.sort()

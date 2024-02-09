@@ -14,10 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import glob
 import os
 import logging
-import sys
+import chirp.drivers
 
 from chirp import chirp_common, errors
 
@@ -196,27 +195,10 @@ def get_radio_by_image(image_file):
 
 
 def import_drivers(limit=None):
-    frozen = getattr(sys, 'frozen', False)
-    if sys.platform == 'win32' and frozen:
-        # We are in a frozen win32 build, so we can not glob
-        # the driver files, but we do not need to anyway
-        import chirp.drivers
-        for module in chirp.drivers.__all__:
-            try:
-                __import__('chirp.drivers.%s' % module)
-            except Exception as e:
-                print('Failed to import %s: %s' % (module, e))
-        return
-
-    # Safe import of everything in chirp/drivers. We need to import them
-    # to get them to register, but should not abort if one import fails
-    chirp_module_base = os.path.dirname(os.path.abspath(__file__))
-    driver_files = glob.glob(os.path.join(chirp_module_base,
-                                          'drivers',
-                                          '*.py'))
-    for driver_file in driver_files:
-        module, ext = os.path.splitext(driver_file)
-        driver_module = os.path.basename(module)
-        if limit and driver_module not in limit:
+    for module in chirp.drivers.__all__:
+        if limit and module not in limit:
             continue
-        __import__('chirp.drivers.%s' % driver_module)
+        try:
+            __import__('chirp.drivers.%s' % module)
+        except Exception as e:
+            print('Failed to import %s: %s' % (module, e))
