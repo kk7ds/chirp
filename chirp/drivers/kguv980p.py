@@ -53,7 +53,7 @@ DIR_FROM = 0x00
 config_map = (          # map address, write size, write count
     # (0x0, 64, 512),     # 0 to 8000 - full write use only
     (0x4c,  12, 1),    # Mode PSW --  Display name
-    (0x60,  44, 1),    # Freq Limits
+    (0x60,  16, 3),    # Freq Limits
     (0x740,  40, 1),    # FM chan 1-20
     (0x830,  16, 13),    # General settings
     (0x900, 8, 1),       # General settings
