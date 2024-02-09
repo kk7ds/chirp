@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-05 17:14-0800\n"
+"POT-Creation-Date: 2024-02-09 08:05+0900\n"
 "PO-Revision-Date: 2023-12-03 11:04+0900\n"
 "Last-Translator: weboo <weboo@users.noreply.github.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -34,22 +34,25 @@ msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr ""
 
 #: ../wxui/memedit.py:1591
-#, fuzzy, python-format
+#, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
 msgstr[0] "%i 件削除して全体を上方向にシフト"
+msgstr[1] "%i 件削除して全体を上方向にシフト"
 
 #: ../wxui/memedit.py:1582
-#, fuzzy, python-format
+#, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
 msgstr[0] "%i 件の内容を削除"
+msgstr[1] "%i 件の内容を削除"
 
 #: ../wxui/memedit.py:1586
-#, fuzzy, python-format
+#, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
 msgstr[0] "%i 件削除してグループを上方向にシフト"
+msgstr[1] "%i 件削除してグループを上方向にシフト"
 
 #: ../wxui/main.py:1380
 #, python-format
@@ -662,7 +665,7 @@ msgstr ""
 msgid "Amateur"
 msgstr ""
 
-#: ../wxui/common.py:594 ../wxui/common.py:621
+#: ../wxui/common.py:602 ../wxui/common.py:629
 msgid "An error has occurred"
 msgstr ""
 
@@ -698,11 +701,11 @@ msgstr ""
 msgid "Building Radio Browser"
 msgstr ""
 
-#: ../wxui/query_sources.py:689
+#: ../wxui/query_sources.py:691
 msgid "Canada"
 msgstr ""
 
-#: ../wxui/common.py:467
+#: ../wxui/common.py:475
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -763,7 +766,7 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr ""
 
-#: ../wxui/common.py:116
+#: ../wxui/common.py:117
 msgid "Cloning"
 msgstr ""
 
@@ -784,10 +787,11 @@ msgid "Close file"
 msgstr "ファイルを閉じる"
 
 #: ../wxui/memedit.py:1649
-#, fuzzy, python-format
+#, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
 msgstr[0] "%i 件を同一グループにまとめる"
+msgstr[1] "%i 件を同一グループにまとめる"
 
 #: ../wxui/memedit.py:530
 msgid "Comment"
@@ -984,7 +988,7 @@ msgstr ""
 msgid "Enter custom port:"
 msgstr "ポートを入力:"
 
-#: ../wxui/common.py:324
+#: ../wxui/common.py:325
 #, python-format
 msgid "Erased memory %s"
 msgstr ""
@@ -1070,10 +1074,10 @@ msgstr "次を検索"
 msgid "Find..."
 msgstr "検索..."
 
-#: ../wxui/common.py:326
+#: ../wxui/common.py:327
 #, python-format
 msgid "Finished radio job %s"
-msgstr ""
+msgstr "%s の処理が完了しました"
 
 #: ../drivers/ts590.py:677
 msgid ""
@@ -1266,7 +1270,7 @@ msgstr ""
 
 #: ../wxui/settingsedit.py:60
 msgid "Getting settings"
-msgstr ""
+msgstr "設定を取得しています"
 
 #: ../wxui/memedit.py:851
 msgid "Goto Memory"
@@ -1342,9 +1346,8 @@ msgid "Interact with driver"
 msgstr ""
 
 #: ../wxui/clone.py:567
-#, fuzzy
 msgid "Internal driver error"
-msgstr "実験的ドライバー"
+msgstr "内部ドライバーエラー"
 
 #: ../wxui/query_sources.py:57
 #, python-format
@@ -1431,7 +1434,7 @@ msgstr ""
 
 #: ../wxui/clone.py:117
 msgid "Loading settings"
-msgstr ""
+msgstr "設定をロードしています"
 
 #: ../drivers/uvk5.py:1831
 msgid "Logo string 1 (12 characters)"
@@ -1453,7 +1456,7 @@ msgstr "メモリー"
 #: ../wxui/memedit.py:1451
 #, python-format
 msgid "Memory %i is not deletable"
-msgstr ""
+msgstr "メモリー %i は削除できません"
 
 #: ../wxui/bankedit.py:233
 msgid "Memory must be in a bank to be edited"
@@ -1491,7 +1494,7 @@ msgstr ""
 #: ../wxui/clone.py:406
 #, python-format
 msgid "More than one port found: %s"
-msgstr ""
+msgstr "2つ以上のポートが見つかりました: %s"
 
 #: ../wxui/memedit.py:815
 msgid "Move Down"
@@ -1511,7 +1514,7 @@ msgstr "新しいバージョンが利用可能です"
 
 #: ../wxui/memedit.py:1722
 msgid "No empty rows below!"
-msgstr ""
+msgstr "空の行が見つかりません"
 
 #: ../wxui/developer.py:554
 msgid "No modules found"
@@ -1548,7 +1551,7 @@ msgstr ""
 
 #: ../wxui/main.py:323
 msgid "Only memory tabs may be exported"
-msgstr ""
+msgstr "メモリータブのみエクスポートできます"
 
 #: ../wxui/query_sources.py:541
 msgid "Only working repeaters"
@@ -1564,7 +1567,7 @@ msgstr "最近使ったファイル"
 
 #: ../wxui/main.py:663
 msgid "Open Stock Config"
-msgstr ""
+msgstr "テンプレートを開く"
 
 #: ../wxui/main.py:1000 ../wxui/main.py:1223
 msgid "Open a file"
@@ -1584,7 +1587,7 @@ msgstr "新しいウィンドウで開く"
 
 #: ../wxui/main.py:610
 msgid "Open stock config directory"
-msgstr ""
+msgstr "テンプレートディレクトリを開く"
 
 #: ../wxui/query_sources.py:300 ../wxui/query_sources.py:569
 msgid "Optional: -122.0000"
@@ -1624,7 +1627,7 @@ msgstr "ペースト"
 #: ../wxui/memedit.py:1848
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
-msgstr ""
+msgstr "ペーストすると %s 件のメモリーが上書きされます"
 
 #: ../wxui/memedit.py:1851
 #, python-format
@@ -1679,7 +1682,7 @@ msgid ""
 "EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
 
-#: ../wxui/common.py:189
+#: ../wxui/common.py:190
 msgid "Please wait"
 msgstr "お待ちください"
 
@@ -1744,7 +1747,7 @@ msgid ""
 "and try again."
 msgstr ""
 
-#: ../wxui/query_sources.py:836
+#: ../wxui/query_sources.py:838
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 
@@ -1755,11 +1758,11 @@ msgid ""
 "<small>Premium account required</small>"
 msgstr ""
 
-#: ../wxui/common.py:469
+#: ../wxui/common.py:477
 msgid "Refresh required"
-msgstr ""
+msgstr "更新が必要です"
 
-#: ../wxui/common.py:316
+#: ../wxui/common.py:317
 #, python-format
 msgid "Refreshed memory %s"
 msgstr "%s 件のメモリーを取得しました"
@@ -1801,17 +1804,17 @@ msgid "Restart Required"
 msgstr "再起動が必要です"
 
 #: ../wxui/main.py:673
-#, fuzzy, python-format
+#, python-format
 msgid "Restore %i tab"
 msgid_plural "Restore %i tabs"
 msgstr[0] "最近閉じた%i個のタブを開く"
+msgstr[1] "最近閉じた%i個のタブを開く"
 
 #: ../wxui/main.py:816
-#, fuzzy
 msgid "Restore tabs on start"
-msgstr "最近閉じた%i個のタブを開く"
+msgstr "起動時にタブを復元"
 
-#: ../wxui/common.py:320
+#: ../wxui/common.py:321
 msgid "Retrieved settings"
 msgstr "設定を取得しました"
 
@@ -1827,7 +1830,7 @@ msgstr "保存しますか？"
 msgid "Save file"
 msgstr "ファイルに保存"
 
-#: ../wxui/common.py:322
+#: ../wxui/common.py:323
 msgid "Saved settings"
 msgstr "設定を保存"
 
@@ -1881,7 +1884,7 @@ msgstr "追加フィールドを表示"
 
 #: ../wxui/main.py:957
 msgid "Show image backup location"
-msgstr ""
+msgstr "イメージのバックアップを表示"
 
 #: ../wxui/memedit.py:1927
 msgid "Some memories are incompatible with this radio"
@@ -1892,22 +1895,25 @@ msgid "Some memories are not deletable"
 msgstr ""
 
 #: ../wxui/memedit.py:1634
-#, fuzzy, python-format
+#, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
 msgstr[0] "並び替え（%i 件）"
+msgstr[1] "並び替え（%i 件）"
 
 #: ../wxui/memedit.py:1638
-#, fuzzy, python-format
+#, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
 msgstr[0] "昇順に並び替え（%i 件）"
+msgstr[1] "昇順に並び替え（%i 件）"
 
 #: ../wxui/memedit.py:1660
-#, fuzzy, python-format
+#, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
 msgstr[0] "降順に並び替え（%i 件）"
+msgstr[1] "降順に並び替え（%i 件）"
 
 #: ../wxui/memedit.py:1527
 msgid "Sort by column:"
@@ -2007,6 +2013,9 @@ msgid ""
 "image from your radio and use that going forward for the best safety and "
 "compatibility."
 msgstr ""
+"このイメージにはファームウェア情報が含まれていません。旧バージョンまたはカス"
+"タムバージョンのCHIRPで作成された可能性があります。データ保全と互換性のために"
+"新たに無線機からダウンロードし直すことをお勧めします。"
 
 #: ../drivers/th_uv88.py:557
 msgid "This is an early stage beta driver\n"
@@ -2028,8 +2037,8 @@ msgid ""
 "some details are not yet implemented"
 msgstr ""
 "Quansheng UV-K5 用は実験的なドライバーです。\n"
-"あなたの無線機が正常に動作しなくなる可能性があります。すべて自己責任でご利用"
-"ください。\n"
+"無線機が正常に動作しなくなる可能性があります。すべて自己責任でご利用くださ"
+"い。\n"
 "\n"
 "変更を行う前に無線機からダウンロードしたデータを保存しておくようにしてくださ"
 "い。\n"
@@ -2052,7 +2061,7 @@ msgstr "この行を削除して全体を上方向にシフト"
 msgid "This memory and shift block up"
 msgstr "この行を削除してグループを上方向にシフト"
 
-#: ../drivers/uvk5_egzumer.py:1459
+#: ../drivers/uvk5_egzumer.py:1455
 msgid ""
 "This option may break your radio! Each radio has a unique set of calibration "
 "data and uploading the data from the image will cause physical harm to the "
@@ -2118,7 +2127,7 @@ msgstr ""
 msgid "Unable to find stock config %r"
 msgstr ""
 
-#: ../wxui/common.py:222
+#: ../wxui/common.py:223
 msgid "Unable to open the clipboard"
 msgstr ""
 
@@ -2133,7 +2142,7 @@ msgid ""
 "model and try again."
 msgstr ""
 
-#: ../wxui/common.py:672
+#: ../wxui/common.py:680
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr ""
@@ -2143,7 +2152,7 @@ msgstr ""
 msgid "Unable to set %s on this memory"
 msgstr ""
 
-#: ../wxui/query_sources.py:688
+#: ../wxui/query_sources.py:690
 msgid "United States"
 msgstr ""
 
@@ -2163,7 +2172,7 @@ msgstr "無線機にアップロード"
 msgid "Upload to radio..."
 msgstr "無線機にアップロード..."
 
-#: ../wxui/common.py:318
+#: ../wxui/common.py:319
 #, python-format
 msgid "Uploaded memory %s"
 msgstr ""
@@ -2181,12 +2190,12 @@ msgstr "大きいフォントを使用"
 msgid "Value does not fit in %i bits"
 msgstr "値は %i bitにしてください"
 
-#: ../wxui/common.py:507
+#: ../wxui/common.py:515
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "値は %.4f 以上にしてください"
 
-#: ../wxui/common.py:511
+#: ../wxui/common.py:519
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "値は %.4f 以下にしてください"
@@ -2212,7 +2221,7 @@ msgstr "メーカー"
 msgid "View"
 msgstr "表示"
 
-#: ../wxui/common.py:453
+#: ../wxui/common.py:461
 msgid "WARNING!"
 msgstr ""
 
