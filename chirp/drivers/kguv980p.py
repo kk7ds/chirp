@@ -68,6 +68,7 @@ config_map = (          # map address, write size, write count
 
 
 MEM_VALID = 0x00
+MEM_INVALID = [0xFF, 0x80]
 TX_BLANK = 0x40
 RX_BLANK = 0x80
 
@@ -1006,10 +1007,21 @@ class KG980PRadio(chirp_common.CloneModeRadio,
         mem = chirp_common.Memory()
         mem.number = number
         _valid = self._memobj.valid[mem.number]
+        _nam = self._memobj.names[number]
 
-        if (_valid != MEM_VALID) & ((_mem.rxfreq == 0xFFFFFFFF) or
-                                    _mem.rxfreq == 0x00000000):
+        # Handle deleted channel quirks due to radio firmware
+        # not always clearing the valid channel indicators
+        if (_valid in MEM_INVALID or
+           (_valid != MEM_VALID) & ((_mem.rxfreq == 0xFFFFFFFF) or
+                                    _mem.rxfreq == 0x00000000)):
             mem.empty = True
+            if _valid == 0x80:
+                LOG.debug("Ch %s was deleted by using radio menu" % number)
+                LOG.debug("Current Memory: \n%s" % _mem)
+                LOG.debug("Clearing Ch %s memory" % number)
+                _mem.set_raw("\xFF" * (_mem.size() // 8))
+                _nam.set_raw("\xFF" * (_nam.size() // 8))
+                self._memobj.valid[mem.number] = 0xFF
             return mem
         elif (_valid != MEM_VALID) & ((_mem.rxfreq != 0xFFFFFFFF) and
                                       (_mem.rxfreq != 0x00000000)):
@@ -1122,8 +1134,7 @@ class KG980PRadio(chirp_common.CloneModeRadio,
 
         if mem.empty:
             self._memobj.valid[number] = 0xFF
-            _mem.rxfreq = 0xFFFFFFFF
-            _mem.txfreq = 0xFFFFFFFF
+            _mem.set_raw("\xFF" * (_mem.size() // 8))
             self._memobj.names[number].set_raw("\xFF" * (_nam.size() // 8))
         else:
             if len(mem.name) > 0:
@@ -1168,18 +1179,15 @@ class KG980PRadio(chirp_common.CloneModeRadio,
             _mem.scrambler = 0
             _mem.compander = 0
             # set the power
-            if mem.power:
-                _mem.power = self.POWER_LEVELS.index(mem.power)
-            else:
-                _mem.power = True
-            # pwr_index= mem.power
+            # Updated to resolve "Illegal set on attribute power" Warning
             if str(mem.power) == "None":
-                mem.power = self.POWER_LEVELS[1]
-            index = self.POWER_LEVELS.index(mem.power)
-            if index == 2:
-                _mem.power = 0b11
+                _mem.power = 0  # Default to Low power
             else:
-                _mem.power = self.POWER_LEVELS.index(mem.power)
+                index = self.POWER_LEVELS.index(mem.power)
+                if index == 2:
+                    _mem.power = 0b11  # Force H to value of binary 3
+                else:
+                    _mem.power = index
             # Not sure what this bit does yet but it causes
             # the radio to display
             # MED power when the CPS shows Low Power.
@@ -1197,6 +1205,7 @@ class KG980PRadio(chirp_common.CloneModeRadio,
             #  set to mute mode to QT (not QT+DTMF or QT*DTMF) by default
             #  This changes them in the channel memory
             _mem.mute_mode = 1
+            self._memobj.valid[number] = MEM_VALID
 
     def _get_settings(self):
         _settings = self._memobj.settings
