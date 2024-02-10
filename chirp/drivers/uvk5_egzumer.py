@@ -358,7 +358,7 @@ FLOCK_LIST = ["Default+ (137-174, 400-470 + Tx200, Tx350, Tx500)",
               "Unlock All"]
 
 SCANRESUME_LIST = ["Listen 5 seconds and resume",
-                   "Listen until carrier dissapears",
+                   "Listen until carrier disappears",
                    "Stop scanning after receiving a signal"]
 WELCOME_LIST = ["Full screen test", "User message", "Battery voltage", "None"]
 VOICE_LIST = ["Off", "Chinese", "English"]

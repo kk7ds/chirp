@@ -31,8 +31,8 @@ import itertools
 LOG = logging.getLogger(__name__)
 
 CMD_ACK = b'\x06'
-# can't update chirp_common data modes for this radio, so for wierd
-# data modes with will use main mode of DIG and then have these sub-modes
+# can't update chirp_common data modes for this radio, so for weird
+# data modes we will use main mode of DIG and then have these sub-modes
 DATA_MODES = ["USER-L", "USER-U", "RTTY", "N/A"]
 T_STEPS = sorted(list(chirp_common.TUNING_STEPS))
 T_STEPS.remove(30.0)
