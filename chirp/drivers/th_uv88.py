@@ -24,7 +24,7 @@ from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettingValueFloat, RadioSettings
+    RadioSettingValueFloat, RadioSettings, RadioSettingSubGroup
 
 LOG = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ struct chns {
        signal:2,
        displayName:1,
        unk5:2;
-  u8   unk6:2,
+  u8   pttidftones:2,
        pttid:2,
        unk7:1,
        step:3;               // not required
@@ -112,6 +112,138 @@ struct {
 struct {
   u8 bitmap[26];    // one bit for each channel skipped
 } chan_skip;
+
+
+struct dtmfenc {              // Size=0x0D (13)
+  u8   code[12];              // hexa E=* F=#
+  u8   unk1:2,
+       ani:1,
+       codelen:5;
+};
+
+struct dtmfsignal {
+  struct dtmfenc encode[16];   // 0x11C0
+  u8   unk0[16];               // 0x1290
+  u8   sidetone:1,             // 0x12A0
+       delimiter:3,            //        0=A  .. 5=#
+       speed:3,                //        0=50ms 1=100ms 2=200ms 3=300ms 4=500ms
+       ani:1;
+  u8   unk1:1,                 // 0x12A1
+       pttid:2,                //        0=None 1=Begin 2=End 3=Both
+       unk1b:2,
+       group:3;                //        0=OFF 1=A  .. 6=#
+  u8   unk2:4,                 // 0x12A2
+       firstdigit:4;           //        *100ms
+  u8   unk3;                   // 0x12A3
+  u8   unk4:3,                 // 0x12A4
+       autoresettime:5;        //        0 to 25
+  u8   unk5[2];                // 0x12A5
+  u8   encodemask[2];          // 0x12A7
+  u8   ownid[4];               // 0x12A9 Hexa E=* F=#
+  u8   ownidlen;               // 0x12AD
+  u8   unk6[2];                // 0x12AE
+  u8   pttidbegin[12];         // 0x12B0 Hexa E=* F=#
+  u8   pttidbeginlen;          // 0x12BC
+  u8   unk7[3];                // 0x12BD
+  u8   pttidend[12];           // 0x12C0 Hexa E=* F=#
+  u8   pttidendlen;            // 0x12CC
+  u8   unk8[3];                // 0x12CD
+  u8   stuncode[7];            // 0x12D0 Hexa E=* F=#
+  u8   stuncodelast:4,           // 0x12D7 15th digit
+       stuncodelen:4;
+  u8   killcode[7];            // 0x12D8 Hexa E=* F=#
+  u8   killcodelast:4,           // 0x12DF 15th digit
+       killcodelen:4;
+                               // 0x12E0
+};
+
+struct ttonesenc {             // Size=0xB (11)
+  u16  tone1;                  // Freq *10
+  u16  tone2;                  // Freq *10
+  char name[6];
+  u8   namelen;
+};
+
+struct ttonessignal {
+  struct ttonesenc encode[16]; // 0x1300
+  u8   unk1[16];               // 0x13B0
+  u16  tone1;                  // 0x13C0 Freq *10
+  u16  tone2;                  // 0x13C2 Freq *10
+  u16  tone3;                  // 0x13C4 Freq *10
+  u16  tone4;                  // 0x13C6 Freq *10
+  u8   unk2:1,                 // 0x13C8
+       sidetone:1,
+       unk3:2,
+       format:4;               //        0=A-B -> 14=LONG C
+  u8   firsttone;              // 0x13C9 0=500ms 95=10000ms 100ms steps
+  u8   secondtone;             // 0x13CA 0=500ms 95=10000ms 100ms steps
+  u8   longtone;               // 0x13CB 0=500ms 95=10000ms 100ms steps
+  u8   intervaltime;           // 0x13CC 0 to 20 * 100ms
+  u8   autoresettime;          // 0x13CD 0 to 25s
+  u8   encodemask[2];          // 0x13CE
+};
+
+struct ftonesenc {             // Size=0x20 (32)
+  u8   callid[4];              // Hexa
+  u8   callidlen;
+  u8   unk1[16];
+  u8   type:3,                 // 0=OFF/1=ANI
+       unk2:5;
+  char name[6];
+  u8   namelen;
+  u8   unk3[3];
+};
+
+struct ftonesdec {             // Size=0x10 (16)
+  u8   unk1:4,
+       active:1,
+       function:3;	           // select=0/stun=1/kill=2/wake=3
+  u8   code[6];                // Hexa
+  u8   codelen;
+  char chname[6];
+  u8   chnamelen;
+  u8   unk2;
+};
+
+struct ftonessignal {          // Size=0x2A0 (672)
+  struct ftonesenc encode[16]; // 0x13E0
+  u8   ownid[4];               // 0x15E0 Hexa
+  u8   ownidlen;               // 0x15E4
+  u8   unk1;                   // 0x15E5
+  u8   unk2:3,                 // 0x15E6
+       autoresettime:5;        //        0 to 25s
+  u8   unk3:4,                 // 0x15E7
+       firstdigit:4;           //        0 to 10 *100ms
+  u8   unk4;                   // 0x15E8
+  u8   unk5:2,                 // 0x15E9
+       repeater:3,             //        A=0/B=1/C=2/D=3/*=44/#=5
+       group:3;                //        A=0/B=1/C=2/D=3/*=44/#=5
+  u8   sidetone:1,             // 0x15EA
+       delimiter:3,            //        A=0/B=1/C=2/D=3/*=44/#=5
+       mode:4;                 //        ZVEI1=0/PZVEI1/ZVEI2/.../CCITT=13
+  u8   unk6:3,                 // 0x15EB
+       pttid:2,                //        0=None 1=Begin 2=End 3=Both
+       unk7:3;
+  u8   pttidbegin[4];          // 0x15EC Hexa
+  u8   pttidbeginlen;          // 0x15F0
+  u8   pttidend[4];            // 0x15F1
+  u8   pttidendlen;            // 0x15F5
+  u8   encodemask[2];          // 0x15F6
+  u8   decodemask;             // 0x15F8
+  u8   digitlen;               // 0x15F9 ms
+  u8   unk9[6];                // 0x15FA
+  struct ftonesdec decode[8];  // 0x1600
+                               // 0x1680
+};
+
+#seekto 0x11C0;
+struct {
+  struct dtmfsignal dtmf;       // 0x11C0
+  u8 unk1[32];                 // 0x12E0
+  struct ttonessignal ttones;  // 0x1300
+  u8 unk2[16];                 // 0x13D0
+  struct ftonessignal ftones;  // 0x13E0
+} optsignal;
 
 #seekto 0x191E;
 struct {
@@ -186,9 +318,11 @@ struct {
      scanType:2,          //        [17] *To, Co, Se
      ledMode:2;           //        [07] *Off, On, Auto
   u8 unk8;                // 0x1171
-  u8 unk9;                // 0x1172 Has flags to do with logging - factory
-                          // enabled (bits 16,64,128)
-  u8 unk10;               // 0x1173
+  u8 unk9:4,              // 0x1172 Has flags to do with logging - factory
+                          //        enabled (bits 16,64,128)
+     ftonesch:4;          //        active five tones channel
+  u8 dtmfch:4,            // 0x1173 active dtmf channel
+     ttonesch:4;          //        active two tones channel
   u8 swAudio:1,           // 0x1174 [19] *OFF, On
      radioMoni:1,         //        [34] *OFF, On
      keylock:1,           //        [18] *OFF, On
@@ -242,9 +376,11 @@ struct {
      disMode:2,           //        [33] *Frequency, Channel, Name
      ledMode:4;           //        [07] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
   u8 unk7;                // 0x1171
-  u8 unk8;                // 0x1172 Has flags to do with logging - factory
-                          // enabled (bits 16,64,128)
-  u8 unk9;                // 0x1173
+  u8 unk8:4,              // 0x1172 Has flags to do with logging - factory
+                          //        enabled (bits 16,64,128)
+     ftonesch:4;          //        five tones channel
+  u8 dtmfch:4,            // 0x1173 dtmf channel
+     ttonesch:4;          //        two tones channel
   u8 swAudio:1,           // 0x1174 [19] *OFF, On
      radioMoni:1,         //        [34] *OFF, On
      keylock:1,           //        [18] *OFF, On
@@ -281,6 +417,12 @@ OPTSIG_LIST = ["OFF", "DTMF", "2TONE", "5TONE"]
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
 LIST_STEPS = [str(x) for x in STEPS]
+OPTSIGENCTYPE_LIST = ["OFF", "ANI"]
+OPTSIGDECFUNC_LIST = ["Select", "Stun", "Kill", "Wake"]
+OPTSIGEXTDIGIT_LIST = ["A", "B", "C", "D", "*", "#"]
+OPTSIGTELDIGIT_LIST = ["0", "1", "2", "3", "4", "5", "6", "7",
+                       "8", "9", "A", "B", "C", "D", "*", "#"]
+CHARSET_TEL = "0123456789ABCD*#"
 
 
 def _clean_buffer(radio):
@@ -520,6 +662,24 @@ def _do_map(chn, sclr, mary):
     return mapbit
 
 
+def _do_map_int(chn, sclr, mary):
+    """Set or Clear the chn (1-128) bit in mary[] word array map"""
+    # chn is 1-based channel, sclr:1 = set, 0= = clear, 2= return state
+    # mary is u8/u16/u32
+    bv = (chn - 1)
+    msk = 1 << bv
+    mapbit = sclr
+    if sclr == 1:    # Set the bit
+        mary = mary | msk
+    elif sclr == 0:  # clear
+        mary = mary & (~ msk)     # ~ is complement
+    else:       # return current bit state
+        mapbit = 0
+        if (mary & msk) > 0:
+            mapbit = 1
+    return mapbit
+
+
 @directory.register
 class THUV88Radio(chirp_common.CloneModeRadio):
     """TYT UV88 Radio"""
@@ -668,6 +828,12 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 
         return self._get_memory(mem, _mem, _name)
 
+    def _add_pttid(self, setting, name, display, value):
+        rs = RadioSetting(name, display,
+                          RadioSettingValueList(PTTID_LIST,
+                                                PTTID_LIST[value]))
+        setting.append(rs)
+
     def _get_memory(self, mem, _mem, _name):
         """Convert raw channel memory data into UI columns"""
         mem.extra = RadioSettingGroup("extra", "Extra")
@@ -772,10 +938,10 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                                   OPTSIG_LIST[_mem.signal]))
         mem.extra.append(optsig)
 
-        rs = RadioSetting("pttid", "PTT ID",
-                          RadioSettingValueList(PTTID_LIST,
-                                                PTTID_LIST[_mem.pttid]))
-        mem.extra.append(rs)
+        self._add_pttid(mem.extra, "pttid", "DTMF PTT ID",
+                        _mem.pttid)
+        self._add_pttid(mem.extra, "pttidftones", "5 TONES PTT ID",
+                        _mem.pttidftones)
 
         return mem
 
@@ -861,6 +1027,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         _settings = self._memobj.basicsettings
         _settings2 = self._memobj.settings2
         _workmode = self._memobj.workmodesettings
+        _optsignal = self._memobj.optsignal
 
         basic = RadioSettingGroup("basic", "Basic Settings")
         group = RadioSettings(basic)
@@ -1093,6 +1260,496 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rx = RadioSettingValueInteger(1, CHAN_NUM, _workmode.mrBch + 1)
         rset = RadioSetting("workmodesettings.mrBch", "MR B Channel #", rx)
         workmode.append(rset)
+
+        # Optional signaling
+        def _set_namelen(setting, obj, atrb):
+            vx = str(setting.value)
+            vx = vx.rstrip()
+            setattr(obj, atrb, vx.ljust(6, " "))
+            setattr(obj, atrb+"len", len(vx))
+            return
+
+        def _add_namelen(setting, name, display, obj, atrb, maxlen,
+                         value, valuelen):
+            valname = ""
+            for i in range(valuelen):
+                char = chr(int(value[i]))
+                if char == "\x00":
+                    char = " "  # Other software may have 0x00 mid-name
+                valname += char
+
+            rx = RadioSettingValueString(0, maxlen, valname, False,
+                                         self.VALID_CHARS)
+            rset = RadioSetting(name, display, rx)
+            rset.set_apply_callback(_set_namelen, obj, atrb)
+            setting.append(rset)
+
+        def _tel_encode(char):
+            for i in range(len(OPTSIGTELDIGIT_LIST)):
+                if OPTSIGTELDIGIT_LIST[i] == char:
+                    return i
+            return 0
+
+        def _set_hexlen(setting, obj, atrb, maxlen):
+            vx = str(setting.value)
+            vx = vx.rstrip()
+            vxlen = len(vx)
+            vx = vx.ljust(maxlen, "0")
+            hval = []
+            LOG.debug(("HEXALEN %d:" % maxlen)+vx)
+            for i in range(maxlen // 2):
+                hval.append(_tel_encode(vx[2*i]) * 16 + _tel_encode(vx[2*i+1]))
+
+            if (maxlen % 2) == 1:
+                setattr(obj, atrb+"last", _tel_encode(vx[maxlen-1]))
+
+            setattr(obj, atrb, hval)
+            setattr(obj, atrb+"len", vxlen)
+            return
+
+        def _add_hexlen(setting, name, display, obj, atrb, maxlen,
+                        value, valuelen):
+            valname = ""
+            for i in range(valuelen):
+                if (i // 2) < len(value):
+                    if (i % 2) == 0:
+                        digit = int(value[i // 2]) // 16
+                    else:
+                        digit = int(value[i // 2]) % 16
+                else:
+                    digit = int(getattr(obj, atrb+"last"))
+
+                # Convert
+                valname += OPTSIGTELDIGIT_LIST[digit]
+
+            rx = RadioSettingValueString(0, maxlen, valname, False,
+                                         CHARSET_TEL)
+            rset = RadioSetting(name, display, rx)
+            rset.set_apply_callback(_set_hexlen, obj, atrb, maxlen)
+            setting.append(rset)
+
+        def _add_extdigit(setting, name, display, value, addoff):
+            digits = OPTSIGEXTDIGIT_LIST.copy()
+            if addoff:
+                digits.insert(0, "OFF")
+            digit = digits[value]
+            rx = RadioSettingValueList(digits, digit)
+            rset = RadioSetting(name, display, rx)
+            setting.append(rset)
+
+        def _add_ani(setting, name, display, value):
+            ani = OPTSIGENCTYPE_LIST[value]
+            rx = RadioSettingValueList(OPTSIGENCTYPE_LIST, ani)
+            rset = RadioSetting(name, display, rx)
+            setting.append(rset)
+
+        def _add_time(setting, name, display, start, step, count,
+                      format, value):
+            options = []
+            for i in range(count):
+                options.append(format % (start+i*step))
+            rx = RadioSettingValueList(options, options[value])
+            rset = RadioSetting(name, display, rx)
+            setting.append(rset)
+
+        def _set_int10(setting, obj, atrb):
+            vx = float(str(setting.value))
+            vx = int(vx * 10)
+            setattr(obj, atrb, vx)
+            return
+
+        def _add_int10(setting, name, display, obj, atrb, mini, maxi, value):
+            rx = RadioSettingValueFloat(mini, maxi, value / 10, 0.1, 1)
+            rset = RadioSetting(name, display, rx)
+            # This callback uses the array index
+            rset.set_apply_callback(_set_int10, obj, atrb)
+            setting.append(rset)
+
+        def _add_ttones_tone(setting, name, display, obj, atrb, value):
+            _add_int10(setting, name, display, obj, atrb, 300.0, 3116.0, value)
+
+        def _add_intname(setting, name, display, src, atrb, value):
+            options = []
+            for i in range(len(src)):
+                asname = str(getattr(src[i], atrb))
+                options.append("%02d - " % (i+1) + asname)
+
+            rx = RadioSettingValueList(options, options[value])
+            rset = RadioSetting(name, display, rx)
+            setting.append(rset)
+
+        def _set_mask_array(setting, src, idx):
+            if bool(setting.value):     # Enabled = 1
+                vx = 1
+            else:
+                vx = 0
+            _do_map(idx, vx, src)
+            return
+
+        def _set_mask_int(setting, src, idx):
+            if bool(setting.value):     # Enabled = 1
+                vx = 1
+            else:
+                vx = 0
+            _do_map_int(idx, vx, src)
+            return
+
+        def _add_active(setting, name, display, src, idx, value, array):
+            rx = RadioSettingValueBoolean(value)
+            rset = RadioSetting(name, display, rx)
+            if array:
+                rset.set_apply_callback(_set_mask_array, src, idx)
+            else:
+                rset.set_apply_callback(_set_mask_int, src, idx)
+            setting.append(rset)
+
+        optsignal = RadioSettingGroup("optsignal", "Optional signaling")
+        group.append(optsignal)
+
+        dtmf = RadioSettingGroup("dtmf", "DTMF")
+        optsignal.append(dtmf)
+
+        # Delimiter
+        _add_extdigit(dtmf, "optsignal.dtmf.delimiter", "Delimiter",
+                      _optsignal.dtmf.delimiter, False)
+
+        # Group
+        _add_extdigit(dtmf, "optsignal.dtmf.group", "Group",
+                      _optsignal.dtmf.group, True)
+
+        # Speed
+        options = ['50 ms', '100 ms', '200 ms', '300 ms', '500 ms']
+        rx = RadioSettingValueList(options, options[_optsignal.dtmf.speed])
+        rset = RadioSetting("optsignal.dtmf.speed", "Speed", rx)
+        dtmf.append(rset)
+
+        # First digit
+        _add_time(dtmf, "optsignal.dtmf.firstdigit",
+                  "First digit", 0, 0.1, 11, "%.1f s",
+                  _optsignal.dtmf.firstdigit)
+
+        # Autoreset time
+        _add_time(dtmf, "optsignal.dtmf.autoresettime",
+                  "Autoreset time", 0, 1, 26, "%d s",
+                  _optsignal.dtmf.autoresettime)
+
+        # ANI
+        rv = RadioSettingValueBoolean(_optsignal.dtmf.ani)
+        rx = RadioSetting("optsignal.dtmf.ani", "ANI", rv)
+        dtmf.append(rx)
+
+        # Stun
+        _add_hexlen(dtmf, "optsignal.dtmf.stuncode", "Stun",
+                    _optsignal.dtmf, "stuncode", 15,
+                    _optsignal.dtmf.stuncode,
+                    _optsignal.dtmf.stuncodelen)
+
+        # Kill
+        _add_hexlen(dtmf, "optsignal.dtmf.killcode", "Kill",
+                    _optsignal.dtmf, "killcode", 15,
+                    _optsignal.dtmf.killcode,
+                    _optsignal.dtmf.killcodelen)
+
+        dtmfenc = RadioSettingGroup("dtmfenc", "Encode")
+        dtmf.append(dtmfenc)
+
+        # Own ID
+        _add_hexlen(dtmfenc, "optsignal.dtmf.ownid", "Own ID",
+                    _optsignal.dtmf, "ownid", 8,
+                    _optsignal.dtmf.ownid,
+                    _optsignal.dtmf.ownidlen)
+
+        # PTT ID
+        self._add_pttid(dtmfenc, "optsignal.dtmf.pttid", "PTT ID",
+                        _optsignal.dtmf.pttid)
+
+        # PTT ID BEGIN
+        _add_hexlen(dtmfenc, "optsignal.dtmf.pttidbegin", "PTT ID Begin",
+                    _optsignal.dtmf, "pttidbegin", 24,
+                    _optsignal.dtmf.pttidbegin,
+                    _optsignal.dtmf.pttidbeginlen)
+
+        # PTT ID END
+        _add_hexlen(dtmfenc, "optsignal.dtmf.pttidend", "PTT ID End",
+                    _optsignal.dtmf, "pttidend", 24,
+                    _optsignal.dtmf.pttidend,
+                    _optsignal.dtmf.pttidendlen)
+
+        # Sidetone
+        rv = RadioSettingValueBoolean(_optsignal.dtmf.sidetone)
+        rx = RadioSetting("optsignal.dtmf.sidetone", "Sidetone", rv)
+        dtmfenc.append(rx)
+
+        # Select channel
+        options = ['1', '2', '3', '4', '5', '6', '7', '8',
+                   '9', '10', '11', '12', '13', '14', '15', '16']
+        rx = RadioSettingValueList(options, options[_settings.dtmfch])
+        rset = RadioSetting("basicsettings.dtmfch", "Select channel", rx)
+        dtmfenc.append(rset)
+
+        # Encode channels
+        for i in range(16):  # 0 - 15
+            sigchan = RadioSettingSubGroup("dtmfencchan%d" % i,
+                                           "Channel %02d" % (i+1))
+            dtmfenc.append(sigchan)
+
+            # Active
+            _add_active(sigchan, "active_%d" % i, "Active",
+                        _optsignal.dtmf.encodemask, i + 1,
+                        _do_map(i + 1, 2, _optsignal.dtmf.encodemask), True)
+
+            # ANI
+            _add_ani(sigchan, "optsignal.dtmf.encode/%d.ani" % i, "Type",
+                     _optsignal.dtmf.encode[i].ani)
+
+            # Code
+            _add_hexlen(sigchan, "optsignal.dtmf.encode/%d.code" % i, "Code",
+                        _optsignal.dtmf.encode[i], "code", 24,
+                        _optsignal.dtmf.encode[i].code,
+                        _optsignal.dtmf.encode[i].codelen)
+
+        ttones = RadioSettingGroup("ttones", "2 Tones")
+        optsignal.append(ttones)
+
+        # First tone
+        _add_time(ttones, "optsignal.ttones.firsttone",
+                  "First tone", 0.5, 0.1, 96, "%.1f s",
+                  _optsignal.ttones.firsttone)
+
+        # Second tone
+        _add_time(ttones, "optsignal.ttones.secondtone",
+                  "Second tone", 0.5, 0.1, 96, "%.1f s",
+                  _optsignal.ttones.secondtone)
+
+        # Long tone
+        _add_time(ttones, "optsignal.ttones.longtone",
+                  "Long tone", 0.5, 0.1, 96, "%.1f s",
+                  _optsignal.ttones.longtone)
+
+        # Interval
+        _add_time(ttones, "optsignal.ttones.intervaltime",
+                  "Interval", 0, 0.1, 21, "%.1f s",
+                  _optsignal.ttones.intervaltime)
+
+        # Auto reset time
+        _add_time(ttones, "optsignal.ttones.autoresettime",
+                  "Auto reset time", 0, 1, 26, "%d s",
+                  _optsignal.ttones.autoresettime)
+
+        # Encode settings
+        ttonesenc = RadioSettingGroup("ttonesenc", "Encode")
+        ttones.append(ttonesenc)
+
+        # Sidetone
+        rv = RadioSettingValueBoolean(_optsignal.ttones.sidetone)
+        rx = RadioSetting("optsignal.ttones.sidetone", "Sidetone", rv)
+        ttonesenc.append(rx)
+
+        # Select channel
+        _add_intname(ttonesenc, "basicsettings.ttonesch", "Select channel",
+                     _optsignal.ttones.encode, "name",
+                     _settings.ttonesch)
+
+        # 16 encode channels
+        for i in range(16):  # 0 - 15
+            sigchan = RadioSettingSubGroup("ttonesencchan%d" % i,
+                                           "Channel %02d" % (i+1))
+            ttonesenc.append(sigchan)
+
+            # Active
+            _add_active(sigchan, "active_%d" % i, "Active",
+                        _optsignal.ttones.encodemask, i + 1,
+                        _do_map(i + 1, 2, _optsignal.ttones.encodemask), True)
+
+            # Name
+            _add_namelen(sigchan, "name_%d" % i, "Name",
+                         _optsignal.ttones.encode[i],
+                         "name", 6,
+                         _optsignal.ttones.encode[i].name,
+                         _optsignal.ttones.encode[i].namelen)
+
+            # First Tone
+            _add_ttones_tone(sigchan, "tone1_%d" % i, "First Tone",
+                             _optsignal.ttones.encode[i],
+                             "tone1", _optsignal.ttones.encode[i].tone1)
+
+            # Second Tone
+            _add_ttones_tone(sigchan, "tone2_%d" % i, "Second Tone",
+                             _optsignal.ttones.encode[i],
+                             "tone2", _optsignal.ttones.encode[i].tone2)
+
+        # Decode settings
+        ttonesdec = RadioSettingGroup("ttonesdec", "Decode")
+        ttones.append(ttonesdec)
+
+        # Format
+        options = ['A-B', 'A-C', 'A-D', 'B-A', 'B-C', 'B-D',
+                   'C-A', 'C-B', 'C-D', 'D-A', 'D-B', 'D-C',
+                   'Long A', 'Long B', 'Long C', 'Long D']
+        rx = RadioSettingValueList(options, options[_optsignal.ttones.format])
+        rset = RadioSetting("optsignal.ttones.format", "Format", rx)
+        ttonesdec.append(rset)
+
+        # A tone
+        _add_ttones_tone(ttonesdec, "tone1", "A Tone",
+                         _optsignal.ttones,
+                         "tone1", _optsignal.ttones.tone1)
+
+        # B tone
+        _add_ttones_tone(ttonesdec, "tone2", "B Tone",
+                         _optsignal.ttones,
+                         "tone2", _optsignal.ttones.tone2)
+
+        # C tone
+        _add_ttones_tone(ttonesdec, "tone3", "C Tone",
+                         _optsignal.ttones,
+                         "tone3", _optsignal.ttones.tone3)
+
+        # D tone
+        _add_ttones_tone(ttonesdec, "tone4", "D Tone",
+                         _optsignal.ttones,
+                         "tone4", _optsignal.ttones.tone4)
+
+        # Five tones settings
+        ftones = RadioSettingGroup("ftones", "5 Tones")
+        optsignal.append(ftones)
+
+        # Standard
+        options = ['ZVEI 1', 'PZVEI 1', 'ZVEI 2', 'ZVEI 3', 'DZVEI',
+                   'PDZVEI', 'CCIR 1', 'CCIR 2', 'PCCIR', 'EEA',
+                   'Euro Signal', 'Natel', 'Modat', 'CCITT']
+        rx = RadioSettingValueList(options, options[_optsignal.ftones.mode])
+        rset = RadioSetting("optsignal.ftones.mode", "Standard", rx)
+        ftones.append(rset)
+
+        # Digit Length
+        rx = RadioSettingValueInteger(70, 255, _optsignal.ftones.digitlen)
+        rset = RadioSetting("optsignal.ftones.digitlen", "Digit Length (ms)",
+                            rx)
+        ftones.append(rset)
+
+        # Delimiter
+        _add_extdigit(ftones, "optsignal.ftones.delimiter", "Delimiter",
+                      _optsignal.ftones.delimiter, False)
+
+        # Group
+        _add_extdigit(ftones, "optsignal.ftones.group", "Groupe",
+                      _optsignal.ftones.group, False)
+
+        # Repeater
+        _add_extdigit(ftones, "optsignal.ftones.repeater", "Repeater",
+                      _optsignal.ftones.repeater, False)
+
+        # Auto reset time
+        _add_time(ftones, "optsignal.ftones.autoresettime",
+                  "Auto reset time", 0, 1, 26, "%d s",
+                  _optsignal.ftones.autoresettime)
+
+        # Encode settings
+        ftonesenc = RadioSettingGroup("ftonesenc", "Encode")
+        ftones.append(ftonesenc)
+
+        # Own ID
+        _add_hexlen(ftonesenc, "optsignal.ftones.ownid", "Own ID",
+                    _optsignal.ftones, "ownid", 8,
+                    _optsignal.ftones.ownid,
+                    _optsignal.ftones.ownidlen)
+
+        # First Digit
+        _add_time(ftones, "optsignal.ftones.firstdigit",
+                  "First Digit", 0, 100, 11, "%d ms",
+                  _optsignal.ftones.firstdigit)
+
+        # PTT ID
+        self._add_pttid(ftonesenc, "optsignal.ftones.pttid", "PTT ID",
+                        _optsignal.ftones.pttid)
+
+        # PTT ID Begin
+        _add_hexlen(ftonesenc, "optsignal.ftones.pttidbegin", "PTT ID Begin",
+                    _optsignal.ftones, "pttidbegin", 8,
+                    _optsignal.ftones.pttidbegin,
+                    _optsignal.ftones.pttidbeginlen)
+
+        # PTT ID End
+        _add_hexlen(ftonesenc, "optsignal.ftones.pttidend", "PTT ID End",
+                    _optsignal.ftones, "pttidend", 8,
+                    _optsignal.ftones.pttidend,
+                    _optsignal.ftones.pttidendlen)
+
+        # Sidetone
+        rv = RadioSettingValueBoolean(_optsignal.ftones.sidetone)
+        rx = RadioSetting("optsignal.ftones.sidetone", "Sidetone", rv)
+        ftonesenc.append(rx)
+
+        # Select channel
+        _add_intname(ftonesenc, "basicsettings.ftonesch", "Select channel",
+                     _optsignal.ftones.encode, "name",
+                     _settings.ftonesch)
+
+        # 16 Encode channels
+        for i in range(16):  # 0 - 15
+            sigchan = RadioSettingSubGroup("ftonesencchan%d" % i,
+                                           "Channel %02d" % (i+1))
+            ftonesenc.append(sigchan)
+
+            # Active
+            _add_active(sigchan, "active_%d" % i, "Active",
+                        _optsignal.ftones.encodemask, i + 1,
+                        _do_map(i + 1, 2, _optsignal.ftones.encodemask), True)
+
+            # Name
+            _add_namelen(sigchan, "name_%d" % i, "Name",
+                         _optsignal.ftones.encode[i],
+                         "name", 6,
+                         _optsignal.ftones.encode[i].name,
+                         _optsignal.ftones.encode[i].namelen)
+
+            # Type
+            _add_ani(sigchan, "optsignal.ftones.encode/%d.type" % i, "Type",
+                     _optsignal.ftones.encode[i].type)
+
+            # Call ID
+            _add_hexlen(sigchan, "optsignal.ftones.encode/%d.callid" % i,
+                        "Call ID",
+                        _optsignal.ftones.encode[i], "callid", 8,
+                        _optsignal.ftones.encode[i].callid,
+                        _optsignal.ftones.encode[i].callidlen)
+
+        ftonesdec = RadioSettingGroup("ftonesdec", "Decode")
+        ftones.append(ftonesdec)
+
+        # 8 Decode channels
+        for i in range(8):  # 0 - 7
+            sigchan = RadioSettingSubGroup("ftonesencchan%d" % i,
+                                           "Channel %02d" % (i+1))
+            ftonesdec.append(sigchan)
+
+            # Active
+            _add_active(sigchan, "active_%d" % i, "Active",
+                        _optsignal.ftones.decodemask, i + 1,
+                        _do_map_int(i + 1, 2, _optsignal.ftones.decodemask),
+                        False)
+
+            # Name
+            _add_namelen(sigchan, "chname_%d" % i, "Name",
+                         _optsignal.ftones.decode[i],
+                         "chname", 6,
+                         _optsignal.ftones.decode[i].chname,
+                         _optsignal.ftones.decode[i].chnamelen)
+
+            # Function
+            options = ['Select', 'Stun', 'Kill', 'Wake']
+            value = options[_optsignal.ftones.decode[i].function]
+            rx = RadioSettingValueList(options, value)
+            rset = RadioSetting("optsignal.ftones.decode/%d.function" % i,
+                                "Function", rx)
+            sigchan.append(rset)
+
+            # Code
+            _add_hexlen(sigchan, "optsignal.ftones.decode/%d.code" % i, "Code",
+                        _optsignal.ftones.decode[i], "code", 12,
+                        _optsignal.ftones.decode[i].code,
+                        _optsignal.ftones.decode[i].codelen)
 
         fmb = RadioSettingGroup("fmradioc", "FM Radio Settings")
         group.append(fmb)
