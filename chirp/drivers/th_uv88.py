@@ -24,7 +24,7 @@ from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettingValueFloat, RadioSettings
+    RadioSettingValueFloat, RadioSettings, RadioSettingSubGroup
 
 LOG = logging.getLogger(__name__)
 
@@ -1489,12 +1489,12 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 
         # Encode channels
         for i in range(16):  # 0 - 15
-            sigchan = RadioSettingGroup("dtmfencchan%d" % i,
-                                        "Channel %02d" % (i+1))
+            sigchan = RadioSettingSubGroup("dtmfencchan%d" % i,
+                                           "Channel %02d" % (i+1))
             dtmfenc.append(sigchan)
 
             # Active
-            _add_active(sigchan, "active", "Active",
+            _add_active(sigchan, "active_%d" % i, "Active",
                         _optsignal.dtmf.encodemask, i + 1,
                         _do_map(i + 1, 2, _optsignal.dtmf.encodemask), True)
 
@@ -1540,34 +1540,6 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         ttonesenc = RadioSettingGroup("ttonesenc", "Encode")
         ttones.append(ttonesenc)
 
-        # 16 encode channels
-        for i in range(16):  # 0 - 15
-            sigchan = RadioSettingGroup("ttonesencchan%d" % i,
-                                        "Channel %02d" % (i+1))
-            ttonesenc.append(sigchan)
-
-            # Active
-            _add_active(sigchan, "active", "Active",
-                        _optsignal.ttones.encodemask, i + 1,
-                        _do_map(i + 1, 2, _optsignal.ttones.encodemask), True)
-
-            # Name
-            _add_namelen(sigchan, "name", "Name",
-                         _optsignal.ttones.encode[i],
-                         "name", 6,
-                         _optsignal.ttones.encode[i].name,
-                         _optsignal.ttones.encode[i].namelen)
-
-            # First Tone
-            _add_ttones_tone(sigchan, "tone1", "First Tone",
-                             _optsignal.ttones.encode[i],
-                             "tone1", _optsignal.ttones.encode[i].tone1)
-
-            # Second Tone
-            _add_ttones_tone(sigchan, "tone2", "Second Tone",
-                             _optsignal.ttones.encode[i],
-                             "tone2", _optsignal.ttones.encode[i].tone2)
-
         # Sidetone
         rv = RadioSettingValueBoolean(_optsignal.ttones.sidetone)
         rx = RadioSetting("optsignal.ttones.sidetone", "Sidetone", rv)
@@ -1577,6 +1549,34 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         _add_intname(ttonesenc, "basicsettings.ttonesch", "Select channel",
                      _optsignal.ttones.encode, "name",
                      _settings.ttonesch)
+
+        # 16 encode channels
+        for i in range(16):  # 0 - 15
+            sigchan = RadioSettingSubGroup("ttonesencchan%d" % i,
+                                           "Channel %02d" % (i+1))
+            ttonesenc.append(sigchan)
+
+            # Active
+            _add_active(sigchan, "active_%d" % i, "Active",
+                        _optsignal.ttones.encodemask, i + 1,
+                        _do_map(i + 1, 2, _optsignal.ttones.encodemask), True)
+
+            # Name
+            _add_namelen(sigchan, "name_%d" % i, "Name",
+                         _optsignal.ttones.encode[i],
+                         "name", 6,
+                         _optsignal.ttones.encode[i].name,
+                         _optsignal.ttones.encode[i].namelen)
+
+            # First Tone
+            _add_ttones_tone(sigchan, "tone1_%d" % i, "First Tone",
+                             _optsignal.ttones.encode[i],
+                             "tone1", _optsignal.ttones.encode[i].tone1)
+
+            # Second Tone
+            _add_ttones_tone(sigchan, "tone2_%d" % i, "Second Tone",
+                             _optsignal.ttones.encode[i],
+                             "tone2", _optsignal.ttones.encode[i].tone2)
 
         # Decode settings
         ttonesdec = RadioSettingGroup("ttonesdec", "Decode")
@@ -1688,17 +1688,17 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 
         # 16 Encode channels
         for i in range(16):  # 0 - 15
-            sigchan = RadioSettingGroup("ftonesencchan%d" % i,
-                                        "Channel %02d" % (i+1))
+            sigchan = RadioSettingSubGroup("ftonesencchan%d" % i,
+                                           "Channel %02d" % (i+1))
             ftonesenc.append(sigchan)
 
             # Active
-            _add_active(sigchan, "active", "Active",
+            _add_active(sigchan, "active_%d" % i, "Active",
                         _optsignal.ftones.encodemask, i + 1,
                         _do_map(i + 1, 2, _optsignal.ftones.encodemask), True)
 
             # Name
-            _add_namelen(sigchan, "name", "Name",
+            _add_namelen(sigchan, "name_%d" % i, "Name",
                          _optsignal.ftones.encode[i],
                          "name", 6,
                          _optsignal.ftones.encode[i].name,
@@ -1720,18 +1720,18 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 
         # 8 Decode channels
         for i in range(8):  # 0 - 7
-            sigchan = RadioSettingGroup("ftonesencchan%d" % i,
-                                        "Channel %02d" % (i+1))
+            sigchan = RadioSettingSubGroup("ftonesencchan%d" % i,
+                                           "Channel %02d" % (i+1))
             ftonesdec.append(sigchan)
 
             # Active
-            _add_active(sigchan, "active", "Active",
+            _add_active(sigchan, "active_%d" % i, "Active",
                         _optsignal.ftones.decodemask, i + 1,
                         _do_map_int(i + 1, 2, _optsignal.ftones.decodemask),
                         False)
 
             # Name
-            _add_namelen(sigchan, "chname", "Name",
+            _add_namelen(sigchan, "chname_%d" % i, "Name",
                          _optsignal.ftones.decode[i],
                          "chname", 6,
                          _optsignal.ftones.decode[i].chname,
