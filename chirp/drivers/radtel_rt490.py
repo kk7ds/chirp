@@ -122,7 +122,7 @@ struct {
   u8 timeout;               // 5: n*30seconds, 0-240s
   u8 beep;                  // 6: bool
   u8 voice;                 // 7: bool
-  u8 byte_not_used_10;      // 8: Allways 1
+  u8 byte_not_used_10;      // 8: Always 1
   u8 dtmfst;                // 9: ['OFF', 'KB Side Tone', 'ANI Side Tone',
                             //     'KB ST + ANI ST']
   u8 scanmode;              // 10: ['TO', 'CO', 'SE']
@@ -146,7 +146,7 @@ struct {
      workmodea:4;           // 10:down  ['VFO', 'CH Mode']
   u8 kblock;                // 11: bool              // TODO TEST WITH autolock
   u8 powermsg;              // 12: 0=Image / 1=Voltage
-  u8 byte_not_used_21;      // 13: Allways 0
+  u8 byte_not_used_21;      // 13: Always 0
   u8 rpttone;               // 14: ['1000Hz', '1450Hz', '1750Hz', '2100Hz']
   u8 byte_not_used_22;      // 15: pad with xFF
   u8 vox_delay;             // 0: [str(float(a)/10)+'s' for a in range(5,21)]
@@ -1489,7 +1489,7 @@ struct settings {
   u8 timeout;           // 5: n*30seconds, 0-240s
   u8 beep;              // 6: bool
   u8 voice;             // 7: bool
-  u8 byte_not_used_10;  // 8: Allways 1
+  u8 byte_not_used_10;  // 8: Always 1
   u8 dtmfst;            // 9: ['OFF', 'KB Side Tone', 'ANI Side Tone',
                         //      'KB ST + ANI ST']
   u8 scanmode;          // 10: ['TO', 'CO', 'SE']
@@ -1512,7 +1512,7 @@ struct settings {
   workmode _workmode;   // 10: up    ['VFO', 'CH Mode']
   u8 kblock;            // 11: bool                  // TODO TEST WITH autolock
   u8 powermsg;          // 12: 0=Image / 1=Voltage
-  u8 byte_not_used_21;  // 13: Allways 0
+  u8 byte_not_used_21;  // 13: Always 0
   u8 rpttone;           // 14: ['1000Hz', '1450Hz', '1750Hz', '2100Hz']
   u8 byte_not_used_22;  // 15: pad with xFF
   u8 vox_delay;         // 0: [str(float(a)/10)+'s' for a in range(5,21)]

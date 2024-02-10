@@ -364,19 +364,19 @@ def _upload(radio):
     if aux_i1 != aux_r1:
         # Area 1 does not match
         # The safest thing to do is to skip uploading Aux mem area.
-        LOG.info("Aux memory mis-match")
+        LOG.info("Aux memory mismatch")
         LOG.info("Aux area 1 from image is %s" % repr(aux_i1))
         LOG.info("Aux area 1 from radio is %s" % repr(aux_r1))
     elif aux_i2 != aux_r2:
         # Area 2 does not match
         # The safest thing to do is to skip uploading Aux mem area.
-        LOG.info("Aux memory mis-match")
+        LOG.info("Aux memory mismatch")
         LOG.info("Aux area 2 from image is %s" % repr(aux_i2))
         LOG.info("Aux area 2 from radio is %s" % repr(aux_r2))
     elif aux_i3 != aux_r3:
         # Area 3 does not match
         # The safest thing to do is to skip uploading Aux mem area.
-        LOG.info("Aux memory mis-match")
+        LOG.info("Aux memory mismatch")
         LOG.info("Aux area 3 from image is %s" % repr(aux_i3))
         LOG.info("Aux area 3 from radio is %s" % repr(aux_r3))
     else:

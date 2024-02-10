@@ -694,7 +694,7 @@ class RRQueryDialog(QuerySourceDialog):
 
     def _call_validations(self, parent):
         if parent == self:
-            # If we're calling valiations at the top-level, redirect that to
+            # If we're calling validations at the top-level, redirect that to
             # the start of our country-specific widgets, based on whatever tab
             # is selected. This avoids trying to validate US things when
             # Canada is selected and so on.
