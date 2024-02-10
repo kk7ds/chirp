@@ -48,8 +48,7 @@ struct {
 } flags[1200];
 
 #seekto 0x4000;
-struct {
-  struct {
+struct memory {
     ul32 freq;
     ul32 offset;
     u8 tuning_step:4,
@@ -81,11 +80,14 @@ struct {
     char dv_rpt2call[8];
     u8 unknown9:1,
        dv_code:7;
-  } memories[6];
-  u8 pad[16];
-} memgroups[210];
+};
 
-#seekto 0x10000;
+struct {
+  struct memory memories[6];
+  u8 pad[16];
+} memgroups[192];
+
+//#seekto 0x10000;
 struct {
   char name[16];
 } names[1200];
