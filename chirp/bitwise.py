@@ -935,7 +935,7 @@ class Processor:
 
         if bitsleft:
             LOG.warn("WARNING: %i trailing bits unaccounted for in %s" %
-                     (bitsleft, bitfield))
+                     (bitsleft, name))
 
         return bytes
 
