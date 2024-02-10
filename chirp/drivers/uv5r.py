@@ -129,13 +129,13 @@ struct {
             // calls it tdrch. Since this is a minor difference, it will
             // be referred to by the wrong name for the UV-82HP.
   u8 displayab:1,
-     unknown1:2,
+     unknown7:2,
      fmradio:1,
      alarm:1,
-     unknown2:1,
+     unknown8:1,
      reset:1,
      menu:1;
-  u8 unknown1:6,
+  u8 unknown9:6,
      singleptt:1,
      vfomrlock:1;
   u8 workmode;

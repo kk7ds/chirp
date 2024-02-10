@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-05 17:14-0800\n"
-"PO-Revision-Date: 2024-01-17 21:19-0300\n"
+"PO-Revision-Date: 2024-02-08 20:27-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1309,9 +1309,8 @@ msgid "Download instructions"
 msgstr "Descargar instrucciones"
 
 #: ../wxui/radioinfo.py:62
-#, fuzzy
 msgid "Driver"
-msgstr "Recargar controlador"
+msgstr "Controlador"
 
 #: ../drivers/uvk5.py:1330
 msgid "Driver information"
@@ -1319,7 +1318,7 @@ msgstr "Información del controlador"
 
 #: ../wxui/main.py:542
 msgid "Driver messages"
-msgstr ""
+msgstr "Mensajes del controlador"
 
 #: ../wxui/query_sources.py:333
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
@@ -1796,7 +1795,7 @@ msgstr "Importar desde archivo..."
 
 #: ../wxui/main.py:1352
 msgid "Import messages"
-msgstr ""
+msgstr "Importar mensajes"
 
 #: ../wxui/main.py:1346
 msgid "Import not recommended"
@@ -1827,9 +1826,8 @@ msgid "Interact with driver"
 msgstr "Interactuar con controlador"
 
 #: ../wxui/clone.py:567
-#, fuzzy
 msgid "Internal driver error"
-msgstr "Error interno"
+msgstr "Error interno del controlador"
 
 #: ../wxui/query_sources.py:57
 #, python-format
@@ -2336,9 +2334,8 @@ msgstr[0] "Restaurar %i pestaña"
 msgstr[1] "Restaurar %i pestañas"
 
 #: ../wxui/main.py:816
-#, fuzzy
 msgid "Restore tabs on start"
-msgstr "Restaurar %i pestañas"
+msgstr "Restaurar pestañas al iniciar"
 
 #: ../wxui/common.py:320
 msgid "Retrieved settings"
@@ -2409,9 +2406,8 @@ msgid "Show extra fields"
 msgstr "Mostrar campos adicionales"
 
 #: ../wxui/main.py:957
-#, fuzzy
 msgid "Show image backup location"
-msgstr "Mostrar ubicación del registro de depuración"
+msgstr "Mostrar ubicación de la copia de respaldo de la imagen"
 
 #: ../wxui/memedit.py:1927
 msgid "Some memories are incompatible with this radio"
@@ -2568,6 +2564,10 @@ msgid ""
 "image from your radio and use that going forward for the best safety and "
 "compatibility."
 msgstr ""
+"A esta imagen le falta la información de firmware. Esta puede haber sido "
+"generada con una versión antigua o modificada de CHIRP. Se recomienda que "
+"descargues una imagen nueva de tu radio y utilizarla en adelante para la "
+"mejor seguridad y compatibilidad."
 
 #: ../drivers/th_uv88.py:557
 msgid "This is an early stage beta driver\n"
@@ -2626,6 +2626,11 @@ msgid ""
 "radio if it is from a different piece of hardware. Do not use this unless "
 "you know what you are doing and accept the risk of destroying your radio!"
 msgstr ""
+"¡Esta opción podría romper tu radio! Cara radio tiene un conjunto único de "
+"datos de calibración y cargar los datos de la imagen causará daño físico a "
+"la radio si esta es de una pieza de hardware diferente. ¡No uses esto a "
+"menos que sepas lo que estás haciendo y aceptas el riesgo de destruir tu "
+"radio!"
 
 #: ../drivers/fd268.py:302 ../drivers/fd268.py:308
 msgid ""
