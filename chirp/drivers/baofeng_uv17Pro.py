@@ -226,7 +226,7 @@ class UV17Pro(bfc.BaofengCommonHT):
     _gmrs = False
     _bw_shift = False
     _has_support_for_banknames = False
-    _has_workmode_support = False
+    _has_workmode_support = True
     _has_savemode = True
 
     _tri_band = True
