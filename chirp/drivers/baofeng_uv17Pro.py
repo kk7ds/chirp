@@ -1265,7 +1265,7 @@ class UV17ProGPS(UV17Pro):
     MODEL = "UV-17ProGPS"
 
     _has_support_for_banknames = True
-    _has_workmode_support = False
+    _has_workmode_support = True
     _magic = MSTRING_UV17PROGPS
     _magics = [b"\x46", b"\x4d", b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01" +
                b"\x01\x04\x11\x08\x05\x0D\x0D\x01\x11\x0F\x09\x12\x09" +
