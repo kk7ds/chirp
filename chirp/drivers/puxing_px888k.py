@@ -344,7 +344,7 @@ struct {
         u8 rxtx_stun_code_length;
         u8 cancel_rxtx_stun_code_length;
         u8 cancel_rxtx_stun_code[4];
-        u8 _unknown_0D4E[2];
+        u8 _unknown_0D5E[2];
 
 // 0x0d60
         struct {
@@ -1327,7 +1327,7 @@ class Puxing_PX888K_Radio(chirp_common.CloneModeRadio):
                              _data.ptt_id_edge,
                              PTT_ID_EDGES),
                 list_setting("Optional signal before/after transmission, " +
-                             "this setting overrides the PTT ID setting.",
+                             "this setting overrides the PTT ID setting",
                              "Opt Signal",
                              _data.opt_signal,
                              OPTSIGN_MODES))
