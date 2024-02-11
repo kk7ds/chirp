@@ -2255,7 +2255,7 @@ class ChirpMemPropDialog(wx.Dialog):
             msgs = self._radio.validate_memory(mem)
             if msgs:
                 wx.MessageBox(_('Invalid edit: %s') % '; '.join(msgs),
-                              'Invalid Entry')
+                              'Invalid Entry', parent=self)
                 raise errors.InvalidValueError()
 
     def _button(self, event):

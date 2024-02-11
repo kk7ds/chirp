@@ -375,14 +375,14 @@ class ChirpCloneDialog(wx.Dialog):
         r = wx.MessageBox(
             _('Unplug your cable (if needed) and then click OK'),
             _('USB Port Finder'),
-            style=wx.OK | wx.CANCEL | wx.OK_DEFAULT)
+            style=wx.OK | wx.CANCEL | wx.OK_DEFAULT, parent=self)
         if r == wx.CANCEL:
             return
         before = list_ports.comports()
         r = wx.MessageBox(
             _('Plug in your cable and then click OK'),
             _('USB Port Finder'),
-            style=wx.OK | wx.CANCEL | wx.OK_DEFAULT)
+            style=wx.OK | wx.CANCEL | wx.OK_DEFAULT, parent=self)
         if r == wx.CANCEL:
             return
         after = list_ports.comports()
@@ -392,7 +392,7 @@ class ChirpCloneDialog(wx.Dialog):
             wx.MessageBox(
                 _('Unable to determine port for your cable. '
                   'Check your drivers and connections.'),
-                _('USB Port Finder'))
+                _('USB Port Finder'), parent=self)
             self.set_ports(after)
             return
         elif len(changed) == 1:
@@ -400,11 +400,11 @@ class ChirpCloneDialog(wx.Dialog):
             wx.MessageBox(
                 '%s\n%s' % (_('Your cable appears to be on port:'),
                             port_label(found)),
-                _('USB Port Finder'))
+                _('USB Port Finder'), parent=self)
         else:
             wx.MessageBox(
                 _('More than one port found: %s') % ', '.join(changed),
-                _('USB Port Finder'))
+                _('USB Port Finder'), parent=self)
             self.set_ports(after)
             return
         self.set_ports(after, select=found.device)
@@ -480,7 +480,7 @@ class ChirpCloneDialog(wx.Dialog):
         def safe_fail():
             wx.MessageBox(message,
                           _('Error communicating with radio'),
-                          wx.ICON_ERROR)
+                          wx.ICON_ERROR, parent=self)
             self.cancel_action()
         wx.CallAfter(safe_fail)
 
