@@ -1035,6 +1035,7 @@ class RadioFeatures:
 
         if (self.valid_modes and
                 mem.mode not in self.valid_modes and
+                'mode' not in mem.immutable and
                 mem.mode != "Auto"):
             msg = ValidationError("Mode %s not supported" % mem.mode)
             msgs.append(msg)
