@@ -130,7 +130,7 @@ class ChirpMemoryColumn(object):
 
     def value(self, memory):
         if '.' in self._name:
-            parent, child = self._name.split('.')
+            parent, child = self._name.split('.', 1)
             try:
                 return getattr(memory, parent)[child].value
             except (AttributeError, KeyError):
@@ -151,7 +151,7 @@ class ChirpMemoryColumn(object):
 
     def digest_value(self, memory, input_value):
         if '.' in self._name:
-            parent, child = self._name.split('.')
+            parent, child = self._name.split('.', 1)
             try:
                 getattr(memory, parent)[child].value = self._digest_value(
                     memory, input_value)
