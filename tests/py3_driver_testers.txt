@@ -77,6 +77,7 @@ Baofeng_UV-82HP,@KC9HI,18-Nov-2022
 Baofeng_UV-82WP,@KC9HI,3-Dec-2022
 Baofeng_UV-9G,@KC9HI,3-Dec-2022
 Baofeng_UV-9R,@KC9HI,3-Dec-2022
+Baofeng_UV-13Pro,@vdwel,11-Feb-2024
 Baofeng_UV-17,@vdwel,27-Nov-2023
 Baofeng_UV-17Pro,@vdwel,27-Nov-2023
 Baofeng_UV-17ProGPS,@vdwel,27-Nov-2023
