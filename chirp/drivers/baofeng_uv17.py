@@ -452,3 +452,9 @@ class UV17(baofeng_uv17Pro.UV17Pro):
         _nam.name = mem.name.ljust(_namelength, '\x00')
 
         self.set_memory_common(mem, _mem)
+
+
+@directory.register
+class UV13Pro(UV17):
+    VENDOR = "Baofeng"
+    MODEL = "UV-13Pro"
