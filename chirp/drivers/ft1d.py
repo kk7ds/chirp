@@ -33,6 +33,16 @@ from chirp import util
 LOG = logging.getLogger(__name__)
 
 MEM_SETTINGS_FORMAT = """
+#seekto 0x047e;
+struct {
+  u8 unknown1;
+  u8 flag;
+  u16 unknown2;
+  struct {
+    u8 padded_yaesu[16];
+  } message;
+} opening_message;
+
 #seekto 0x049a;
 struct {
   u8 vfo_a;
@@ -92,6 +102,11 @@ struct {
      dw_rt:1;           // 23 DW RVT;
 } scan_settings;
 
+#seekto 0x54a;
+struct {
+    u16 in_use;
+} bank_used[24];
+
 #seekto 0x064a;
 struct {
   u8 unknown0[4];
@@ -136,20 +151,16 @@ struct {
   u8 checksum;
 } vfo_info[6];
 
-#seekto 0x047e;
-struct {
-  u8 unknown1;
-  u8 flag;
-  u16 unknown2;
-  struct {
-    u8 padded_yaesu[16];
-  } message;
-} opening_message;
-
 #seekto 0x%(dtmadd)04X; // FT-1D:0e4a, FT2D:094a
 struct {
   u8 memory[16];
 } dtmf[10];
+
+#seekto 0x0EFE;
+struct {
+  u8 unknown[2];
+  u8 name[16];
+} bank_info[24];
 
 #seekto 0x154a;
 // These "channels" seem to actually be a structure:
@@ -164,17 +175,6 @@ struct {
 struct {
     u16 channel[100];
 } bank_members[24];
-
-#seekto 0x54a;
-struct {
-    u16 in_use;
-} bank_used[24];
-
-#seekto 0x0EFE;
-struct {
-  u8 unknown[2];
-  u8 name[16];
-} bank_info[24];
 """
 
 MEM_FORMAT = """
@@ -428,8 +428,15 @@ struct {
     u8 unknown4:6,
         gm_ring:2;              // 24 GM RNG
     u8 temp_cf;               // Placeholder as not found
-    u8 unknown5;
     } first_settings;
+
+#seekto 0x04c0;
+struct {
+    u8 unknown1:5,
+        beep_level:3;           // 05 BEP.LVL
+    u8 unknown2:6,
+        beep_select:2;          // 04 BEEP
+    } beep_settings;
 
 #seekto 0x04ed;
 struct {
@@ -443,13 +450,11 @@ struct {
        unknown8:1;
      } test_bit_field;
 
-#seekto 0x04c0;
+#seekto 0x0ced0;
 struct {
-    u8 unknown1:5,
-        beep_level:3;           // 05 BEP.LVL
-    u8 unknown2:6,
-        beep_select:2;          // 04 BEEP
-    } beep_settings;
+    char callsign[10];              // 63 MYCALL
+    u16 charset;                    // character set ID
+    } my_call;
 
 #seekto 0xCF30;
 struct {
@@ -485,12 +490,6 @@ struct {
 struct {
     char message[32];
     } GM[10];
-
-#seekto 0x0ced0;
-struct {
-    char callsign[10];              // 63 MYCALL
-    u16 charset;                    // character set ID
-    } my_call;
 
 #seekto 0x1ddca;
 struct {
@@ -908,7 +907,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def process_mmap(self):
         mem_format = MEM_SETTINGS_FORMAT + MEM_FORMAT + MEM_APRS_FORMAT + \
-                MEM_BACKTRACK_FORMAT + MEM_GM_FORMAT + MEM_CHECKSUM_FORMAT
+                MEM_GM_FORMAT + MEM_BACKTRACK_FORMAT + MEM_CHECKSUM_FORMAT
         self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
 
     def get_features(self):
