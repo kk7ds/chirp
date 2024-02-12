@@ -986,7 +986,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                     num += len(x[1])
                     # num -= len(x[1])
             if array is None:
-                raise IndexError("Unknown special %s", memref)
+                raise IndexError("Unknown special %s" % memref)
             num += ndx
             # num -= ndx
         elif memref > self.MAX_MEM_SLOT:         # numbered special
@@ -1000,7 +1000,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                     break
                 ndx -= len(x[1])
             if array is None:
-                raise IndexError("Unknown memref number %s", memref)
+                raise IndexError("Unknown memref number %s" % memref)
         else:
             array = "memory"
             ndx = memref - 1
