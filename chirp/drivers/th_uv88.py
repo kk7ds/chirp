@@ -1353,9 +1353,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
             setting.append(rset)
 
         def _set_int10(setting, obj, atrb):
-            vx = float(str(setting.value))
-            vx = int(vx * 10)
-            setattr(obj, atrb, vx)
+            setattr(obj, atrb, setting.value * 10)
             return
 
         def _add_int10(setting, name, display, obj, atrb, mini, maxi, value):
@@ -1379,19 +1377,11 @@ class THUV88Radio(chirp_common.CloneModeRadio):
             setting.append(rset)
 
         def _set_mask_array(setting, src, idx):
-            if bool(setting.value):     # Enabled = 1
-                vx = 1
-            else:
-                vx = 0
-            _do_map(idx, vx, src)
+            _do_map(idx, bool(setting.value), src)
             return
 
         def _set_mask_int(setting, src, idx):
-            if bool(setting.value):     # Enabled = 1
-                vx = 1
-            else:
-                vx = 0
-            _do_map_int(idx, vx, src)
+            _do_map_int(idx, bool(setting.value), src)
             return
 
         def _add_active(setting, name, display, src, idx, value, array):
@@ -1755,11 +1745,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         group.append(fmb)
 
         def myset_mask(setting, obj, atrb, nx):
-            if bool(setting.value):     # Enabled = 1
-                vx = 1
-            else:
-                vx = 0
-            _do_map(nx + 1, vx, self._memobj.fmmap.fmset)
+            _do_map(nx + 1, bool(setting.value), self._memobj.fmmap.fmset)
             return
 
         def myset_fmfrq(setting, obj, atrb, nx):
