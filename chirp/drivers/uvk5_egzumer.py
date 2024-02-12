@@ -1570,7 +1570,7 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
             val = RadioSettingValueInteger(0, 4999, temp_val)
             label = 'Level %i%s' % (
                 lvl,
-                "(voltage calibration)" if lvl == 3 else "")
+                " (voltage calibration)" if lvl == 3 else "")
             radio_setting = RadioSetting(name, label, val)
             radio_setting_group.append(radio_setting)
 
@@ -1634,34 +1634,43 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         if _mem.BUILD_OPTIONS.ENABLE_AM_FIX:
             basic.append(am_fix_setting)
 
-        basic.append(bat_txt_setting)
-        basic.append(mic_bar_setting)
-        basic.append(ch_disp_setting)
-        basic.append(p_on_msg_setting)
-        basic.append(logo1_setting)
-        basic.append(logo2_setting)
+        dispSubGrp = RadioSettingSubGroup("dispSubGrp", "Display settings")
+        basic.append(dispSubGrp)
+        dispSubGrp.append(bat_txt_setting)
+        dispSubGrp.append(mic_bar_setting)
+        dispSubGrp.append(ch_disp_setting)
+        dispSubGrp.append(p_on_msg_setting)
+        dispSubGrp.append(logo1_setting)
+        dispSubGrp.append(logo2_setting)
 
-        basic.append(back_lt_setting)
-        basic.append(bl_min_setting)
-        basic.append(bl_max_setting)
-        basic.append(blt_trx_setting)
+        bcklSubGrp = RadioSettingSubGroup("bcklSubGrp", "Backlight settings")
+        basic.append(bcklSubGrp)
+        bcklSubGrp.append(back_lt_setting)
+        bcklSubGrp.append(bl_min_setting)
+        bcklSubGrp.append(bl_max_setting)
+        bcklSubGrp.append(blt_trx_setting)
 
+        audioSubGrp = RadioSettingSubGroup("audioSubGrp",
+                                           "Audio related settings")
+        basic.append(audioSubGrp)
         if _mem.BUILD_OPTIONS.ENABLE_VOX:
-            basic.append(vox_setting)
-        basic.append(mic_gain_setting)
-        basic.append(beep_setting)
-        basic.append(roger_setting)
-        basic.append(ste_setting)
-        basic.append(rp_ste_setting)
+            audioSubGrp.append(vox_setting)
+        audioSubGrp.append(mic_gain_setting)
+        audioSubGrp.append(beep_setting)
+        audioSubGrp.append(roger_setting)
+        audioSubGrp.append(ste_setting)
+        audioSubGrp.append(rp_ste_setting)
         if _mem.BUILD_OPTIONS.ENABLE_VOICE:
-            basic.append(voice_setting)
+            audioSubGrp.append(voice_setting)
         if _mem.BUILD_OPTIONS.ENABLE_ALARM:
-            basic.append(alarm_setting)
+            audioSubGrp.append(alarm_setting)
 
-        basic.append(freq0_setting)
-        basic.append(freq1_setting)
-        basic.append(tx_vfo_setting)
-        basic.append(keypad_cock_setting)
+        stateSubGrp = RadioSettingSubGroup("stateSubGrp", "Radio state")
+        basic.append(stateSubGrp)
+        stateSubGrp.append(freq0_setting)
+        stateSubGrp.append(freq1_setting)
+        stateSubGrp.append(tx_vfo_setting)
+        stateSubGrp.append(keypad_cock_setting)
 
         advanced.append(freq_mode_allowed_setting)
         advanced.append(bat_type_setting)
