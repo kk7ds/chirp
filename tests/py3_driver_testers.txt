@@ -145,6 +145,7 @@ Kenwood_TH-D72_clone_mode,@kk7ds,28-Nov-2022
 Kenwood_TH-D72_live_mode,@kk7ds,21-Oct-2022
 Kenwood_TH-D74_clone_mode,@kk7ds,30-Nov-2022
 Kenwood_TH-D74_live_mode,@kk7ds,20-Oct-2022
+Kenwood_TH-D75,#11122,114-Feb-2024
 Kenwood_TH-F6,@KC9HI,30-Nov-2022
 Kenwood_TH-F7,@sv1,19-Oct-2022
 Kenwood_TH-G71,*kenwood_live,12-Dec-2022

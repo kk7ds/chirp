@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-05 17:14-0800\n"
+"POT-Creation-Date: 2024-02-14 21:49-0800\n"
 "PO-Revision-Date: 2015-01-28 13:47+0100\n"
 "Last-Translator: Attila Joubert <joubert.attila@gmail.com>\n"
 "Language-Team: English\n"
@@ -285,7 +285,7 @@ msgid ""
 "     press the [Send] screen button.\n"
 msgstr ""
 
-#: ../drivers/ft1d.py:898
+#: ../drivers/ft1d.py:894
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -294,7 +294,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
 
-#: ../drivers/ft1d.py:905
+#: ../drivers/ft1d.py:901
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -653,7 +653,7 @@ msgstr ""
 msgid "Amateur"
 msgstr ""
 
-#: ../wxui/common.py:594 ../wxui/common.py:621
+#: ../wxui/common.py:602 ../wxui/common.py:629
 msgid "An error has occurred"
 msgstr "Hiba történt"
 
@@ -689,11 +689,11 @@ msgstr "Böngésző"
 msgid "Building Radio Browser"
 msgstr ""
 
-#: ../wxui/query_sources.py:689
+#: ../wxui/query_sources.py:691
 msgid "Canada"
 msgstr ""
 
-#: ../wxui/common.py:467
+#: ../wxui/common.py:475
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -755,7 +755,7 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr ""
 
-#: ../wxui/common.py:116
+#: ../wxui/common.py:117
 msgid "Cloning"
 msgstr "Klónozás"
 
@@ -992,7 +992,7 @@ msgstr ""
 msgid "Enter custom port:"
 msgstr ""
 
-#: ../wxui/common.py:324
+#: ../wxui/common.py:325
 #, fuzzy, python-format
 msgid "Erased memory %s"
 msgstr "A(z) {loc}. memóriahely törlése"
@@ -1086,7 +1086,7 @@ msgstr "RFinder"
 msgid "Find..."
 msgstr "RFinder"
 
-#: ../wxui/common.py:326
+#: ../wxui/common.py:327
 #, python-format
 msgid "Finished radio job %s"
 msgstr ""
@@ -1719,7 +1719,7 @@ msgid ""
 "EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
 
-#: ../wxui/common.py:189
+#: ../wxui/common.py:190
 msgid "Please wait"
 msgstr ""
 
@@ -1788,7 +1788,7 @@ msgid ""
 "and try again."
 msgstr ""
 
-#: ../wxui/query_sources.py:836
+#: ../wxui/query_sources.py:838
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 
@@ -1799,11 +1799,11 @@ msgid ""
 "<small>Premium account required</small>"
 msgstr ""
 
-#: ../wxui/common.py:469
+#: ../wxui/common.py:477
 msgid "Refresh required"
 msgstr ""
 
-#: ../wxui/common.py:316
+#: ../wxui/common.py:317
 #, fuzzy, python-format
 msgid "Refreshed memory %s"
 msgstr "ezek a memóriák"
@@ -1853,7 +1853,7 @@ msgstr[1] ""
 msgid "Restore tabs on start"
 msgstr ""
 
-#: ../wxui/common.py:320
+#: ../wxui/common.py:321
 msgid "Retrieved settings"
 msgstr ""
 
@@ -1869,7 +1869,7 @@ msgstr ""
 msgid "Save file"
 msgstr ""
 
-#: ../wxui/common.py:322
+#: ../wxui/common.py:323
 #, fuzzy
 msgid "Saved settings"
 msgstr "Beállítás"
@@ -2058,11 +2058,11 @@ msgid ""
 "compatibility."
 msgstr ""
 
-#: ../drivers/th_uv88.py:557
+#: ../drivers/th_uv88.py:555
 msgid "This is an early stage beta driver\n"
 msgstr ""
 
-#: ../drivers/th_uv88.py:559
+#: ../drivers/th_uv88.py:557
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr ""
 
@@ -2096,7 +2096,7 @@ msgstr "... és a tömböt felfelé lépteti"
 msgid "This memory and shift block up"
 msgstr "... és a tömböt felfelé lépteti"
 
-#: ../drivers/uvk5_egzumer.py:1459
+#: ../drivers/uvk5_egzumer.py:1455
 msgid ""
 "This option may break your radio! Each radio has a unique set of calibration "
 "data and uploading the data from the image will cause physical harm to the "
@@ -2162,7 +2162,7 @@ msgstr ""
 msgid "Unable to find stock config %r"
 msgstr "A csoportos beállítás megnyitása"
 
-#: ../wxui/common.py:222
+#: ../wxui/common.py:223
 #, fuzzy
 msgid "Unable to open the clipboard"
 msgstr "Nem érzékelek a {port} porton!"
@@ -2178,7 +2178,7 @@ msgid ""
 "model and try again."
 msgstr ""
 
-#: ../wxui/common.py:672
+#: ../wxui/common.py:680
 #, fuzzy, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Ennél a modellnél nem változtatható"
@@ -2188,13 +2188,18 @@ msgstr "Ennél a modellnél nem változtatható"
 msgid "Unable to set %s on this memory"
 msgstr "Ennél a modellnél nem változtatható"
 
-#: ../wxui/query_sources.py:688
+#: ../wxui/query_sources.py:690
 msgid "United States"
 msgstr ""
 
 #: ../wxui/clone.py:376
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
+
+#: ../drivers/thd74.py:328
+#, fuzzy, python-format
+msgid "Unsupported model %r"
+msgstr "Nem támogatott fájltípus"
 
 #: ../wxui/clone.py:636
 #, fuzzy
@@ -2211,7 +2216,7 @@ msgstr "Feltöltés a rádióra"
 msgid "Upload to radio..."
 msgstr "Feltöltés a rádióra"
 
-#: ../wxui/common.py:318
+#: ../wxui/common.py:319
 #, python-format
 msgid "Uploaded memory %s"
 msgstr ""
@@ -2229,12 +2234,12 @@ msgstr ""
 msgid "Value does not fit in %i bits"
 msgstr ""
 
-#: ../wxui/common.py:507
+#: ../wxui/common.py:515
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr ""
 
-#: ../wxui/common.py:511
+#: ../wxui/common.py:519
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr ""
@@ -2261,7 +2266,7 @@ msgstr "Gyártó"
 msgid "View"
 msgstr "Né_zet"
 
-#: ../wxui/common.py:453
+#: ../wxui/common.py:461
 msgid "WARNING!"
 msgstr ""
 
@@ -2822,9 +2827,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Nem sikerült beilleszteni {src} memóriát {dst} sorokba. Növelje a memória "
 #~ "határokat, vagy mutasson üres memóriára!"
-
-#~ msgid "Unsupported file type"
-#~ msgstr "Nem támogatott fájltípus"
 
 #~ msgid "Untitled"
 #~ msgstr "Névtelen"

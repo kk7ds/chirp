@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-05 17:14-0800\n"
+"POT-Creation-Date: 2024-02-14 21:49-0800\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -288,7 +288,7 @@ msgid ""
 "     press the [Send] screen button.\n"
 msgstr ""
 
-#: ../drivers/ft1d.py:898
+#: ../drivers/ft1d.py:894
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -297,7 +297,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
 
-#: ../drivers/ft1d.py:905
+#: ../drivers/ft1d.py:901
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -657,7 +657,7 @@ msgstr "Όλοι οι τύποι αρχείων|"
 msgid "Amateur"
 msgstr "Ραδιοερασιτέχνη"
 
-#: ../wxui/common.py:594 ../wxui/common.py:621
+#: ../wxui/common.py:602 ../wxui/common.py:629
 msgid "An error has occurred"
 msgstr "Παρουσιάστηκε ένα σφάλμα"
 
@@ -693,11 +693,11 @@ msgstr "Περιηγητής"
 msgid "Building Radio Browser"
 msgstr "Δημιουργία Περιηγητή Πομποδεκτών"
 
-#: ../wxui/query_sources.py:689
+#: ../wxui/query_sources.py:691
 msgid "Canada"
 msgstr "Καναδάς"
 
-#: ../wxui/common.py:467
+#: ../wxui/common.py:475
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -759,7 +759,7 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr ""
 
-#: ../wxui/common.py:116
+#: ../wxui/common.py:117
 msgid "Cloning"
 msgstr "Αντιγραφή"
 
@@ -991,7 +991,7 @@ msgstr "Εισάγετε ένα νέο όνομα για την ομάδα μν�
 msgid "Enter custom port:"
 msgstr "Εισάγετε προσαρμοσμένη θύρα:"
 
-#: ../wxui/common.py:324
+#: ../wxui/common.py:325
 #, python-format
 msgid "Erased memory %s"
 msgstr "Διεγράφη η μνήμη %s"
@@ -1080,7 +1080,7 @@ msgstr "Εύρεση επόμενου"
 msgid "Find..."
 msgstr "Εύρεση"
 
-#: ../wxui/common.py:326
+#: ../wxui/common.py:327
 #, python-format
 msgid "Finished radio job %s"
 msgstr "Τελείωσε η εργασία %s"
@@ -1705,7 +1705,7 @@ msgid ""
 "EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
 
-#: ../wxui/common.py:189
+#: ../wxui/common.py:190
 msgid "Please wait"
 msgstr "Παρακαλώ περιμένετε"
 
@@ -1770,7 +1770,7 @@ msgid ""
 "and try again."
 msgstr ""
 
-#: ../wxui/query_sources.py:836
+#: ../wxui/query_sources.py:838
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 
@@ -1781,12 +1781,12 @@ msgid ""
 "<small>Premium account required</small>"
 msgstr ""
 
-#: ../wxui/common.py:469
+#: ../wxui/common.py:477
 #, fuzzy
 msgid "Refresh required"
 msgstr "Απαιτείται επανεκκίνηση"
 
-#: ../wxui/common.py:316
+#: ../wxui/common.py:317
 #, python-format
 msgid "Refreshed memory %s"
 msgstr "Ανανεώθηκε η μνήμη %s"
@@ -1837,7 +1837,7 @@ msgstr[1] "Επαναφορά %i καρτελών"
 msgid "Restore tabs on start"
 msgstr "Επαναφορά %i καρτελών"
 
-#: ../wxui/common.py:320
+#: ../wxui/common.py:321
 msgid "Retrieved settings"
 msgstr "Ρυθμίσεις ανακτήθηκαν"
 
@@ -1853,7 +1853,7 @@ msgstr "Αποθήκευση πριν το κλείσιμο;"
 msgid "Save file"
 msgstr "Αποθήκευση αρχείου"
 
-#: ../wxui/common.py:322
+#: ../wxui/common.py:323
 msgid "Saved settings"
 msgstr "Ρυθμίσεις αποθηκεύθηκαν"
 
@@ -2037,11 +2037,11 @@ msgid ""
 "compatibility."
 msgstr ""
 
-#: ../drivers/th_uv88.py:557
+#: ../drivers/th_uv88.py:555
 msgid "This is an early stage beta driver\n"
 msgstr ""
 
-#: ../drivers/th_uv88.py:559
+#: ../drivers/th_uv88.py:557
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr ""
 
@@ -2082,7 +2082,7 @@ msgstr "Διαγραφή %i μνημών και μετακίνηση όλων π
 msgid "This memory and shift block up"
 msgstr "Διαγραφή %i μνημών και μετακίνηση ομάδας προς τα επάνω"
 
-#: ../drivers/uvk5_egzumer.py:1459
+#: ../drivers/uvk5_egzumer.py:1455
 msgid ""
 "This option may break your radio! Each radio has a unique set of calibration "
 "data and uploading the data from the image will cause physical harm to the "
@@ -2146,7 +2146,7 @@ msgstr ""
 msgid "Unable to find stock config %r"
 msgstr ""
 
-#: ../wxui/common.py:222
+#: ../wxui/common.py:223
 msgid "Unable to open the clipboard"
 msgstr "Αδυναμία ανοίγματος του πρόχειρου"
 
@@ -2161,7 +2161,7 @@ msgid ""
 "model and try again."
 msgstr ""
 
-#: ../wxui/common.py:672
+#: ../wxui/common.py:680
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr ""
@@ -2171,13 +2171,18 @@ msgstr ""
 msgid "Unable to set %s on this memory"
 msgstr "Πατήστε enter για καταχώρηση στη μνήμη"
 
-#: ../wxui/query_sources.py:688
+#: ../wxui/query_sources.py:690
 msgid "United States"
 msgstr "Ηνωμένες Πολιτείες"
 
 #: ../wxui/clone.py:376
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Αποσυνδέστε το καλώδιο σας (αν χρειάζεται) και μετά πατήστε OK"
+
+#: ../drivers/thd74.py:328
+#, python-format
+msgid "Unsupported model %r"
+msgstr ""
 
 #: ../wxui/clone.py:636
 msgid "Upload instructions"
@@ -2192,7 +2197,7 @@ msgstr "Αποστολή Σε Πομποδέκτη"
 msgid "Upload to radio..."
 msgstr "Αποστολή Σε Πομποδέκτη"
 
-#: ../wxui/common.py:318
+#: ../wxui/common.py:319
 #, python-format
 msgid "Uploaded memory %s"
 msgstr "Απεστάλη η μνήμη %s"
@@ -2210,12 +2215,12 @@ msgstr "Χρήση μεγαλύτερης γραμματοσειράς"
 msgid "Value does not fit in %i bits"
 msgstr "Η τιμή δεν χωράει σε %i bits"
 
-#: ../wxui/common.py:507
+#: ../wxui/common.py:515
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Η τιμή πρέπει να είναι τουλάχιστον %.4f"
 
-#: ../wxui/common.py:511
+#: ../wxui/common.py:519
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Η τιμή πρέπει να είναι το πολύ  %.4f"
@@ -2241,7 +2246,7 @@ msgstr "Προμηθευτής"
 msgid "View"
 msgstr "Εμφάνιση"
 
-#: ../wxui/common.py:453
+#: ../wxui/common.py:461
 msgid "WARNING!"
 msgstr ""
 
