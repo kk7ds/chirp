@@ -313,6 +313,24 @@ class TestBitwiseStructTypes(BaseTest):
                       memmap.MemoryMapBytes(b'\x00' * 128))
         self.assertEqual(3, mock_log.call_count)
 
+    def test_struct_fill_raw(self):
+        data = memmap.MemoryMapBytes(bytes(b"..."))
+        defn = "struct { u8 bar; u16 baz; } foo;"
+        obj = bitwise.parse(defn, data)
+        obj.fill_raw(b'\xAA')
+        self.assertEqual(0xAA, obj.foo.bar)
+        self.assertEqual(0xAAAA, obj.foo.baz)
+        obj.foo.fill_raw(b'\xBB')
+        self.assertEqual(0xBB, obj.foo.bar)
+        self.assertEqual(0xBBBB, obj.foo.baz)
+        obj.foo.bar.fill_raw(b'\xCC')
+        self.assertEqual(0xCC, obj.foo.bar)
+        self.assertEqual(0xBBBB, obj.foo.baz)
+
+        self.assertRaises(AssertionError, obj.fill_raw, '1')
+        self.assertRaises(AssertionError, obj.fill_raw, b'AB')
+        self.assertRaises(AssertionError, obj.fill_raw, False)
+
 
 class TestBitwiseSeek(BaseTest):
     def test_seekto(self):
