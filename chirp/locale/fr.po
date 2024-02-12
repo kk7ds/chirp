@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-05 17:14-0800\n"
+"POT-Creation-Date: 2024-02-14 21:49-0800\n"
 "PO-Revision-Date: 2023-12-13 00:03+0100\n"
 "Last-Translator: Matthieu Lapadu-Hargues <mlhpub@free.fr>\n"
 "Language-Team: French\n"
@@ -292,7 +292,7 @@ msgid ""
 "     press the [Send] screen button.\n"
 msgstr ""
 
-#: ../drivers/ft1d.py:898
+#: ../drivers/ft1d.py:894
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -301,7 +301,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
 
-#: ../drivers/ft1d.py:905
+#: ../drivers/ft1d.py:901
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -661,7 +661,7 @@ msgstr "Tours formats supportes|"
 msgid "Amateur"
 msgstr "Amateur"
 
-#: ../wxui/common.py:594 ../wxui/common.py:621
+#: ../wxui/common.py:602 ../wxui/common.py:629
 msgid "An error has occurred"
 msgstr "Une erreur s'est produite"
 
@@ -697,11 +697,11 @@ msgstr "Navigateur"
 msgid "Building Radio Browser"
 msgstr "Etablissement navigateur radio"
 
-#: ../wxui/query_sources.py:689
+#: ../wxui/query_sources.py:691
 msgid "Canada"
 msgstr "Canada"
 
-#: ../wxui/common.py:467
+#: ../wxui/common.py:475
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -772,7 +772,7 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr "Clonage termine, verification des octets parasites"
 
-#: ../wxui/common.py:116
+#: ../wxui/common.py:117
 msgid "Cloning"
 msgstr "Clonage"
 
@@ -1004,7 +1004,7 @@ msgstr "Saisir un nouveau nom pour la banque %s:"
 msgid "Enter custom port:"
 msgstr "Saisir un port personnalise:"
 
-#: ../wxui/common.py:324
+#: ../wxui/common.py:325
 #, python-format
 msgid "Erased memory %s"
 msgstr "Effacer la memoire %s"
@@ -1096,7 +1096,7 @@ msgstr "Rechercher le suivant"
 msgid "Find..."
 msgstr "Rechercher..."
 
-#: ../wxui/common.py:326
+#: ../wxui/common.py:327
 #, python-format
 msgid "Finished radio job %s"
 msgstr "Tache radio terminee %s"
@@ -1739,7 +1739,7 @@ msgstr ""
 "endommager votre ordinateur et votre radio s'ils ne sont pas utilises avec "
 "un EXTREME soin. Vous etes prevenu! Continuer malgré tout?"
 
-#: ../wxui/common.py:189
+#: ../wxui/common.py:190
 msgid "Please wait"
 msgstr "Patientez s'il vous plait"
 
@@ -1807,7 +1807,7 @@ msgstr ""
 "quand le modele selectionne n'est pas US mais que la radio est US. "
 "Selectionnez le bon modele et reessayez."
 
-#: ../wxui/query_sources.py:836
+#: ../wxui/query_sources.py:838
 msgid "RadioReference Canada requires a login before you can query"
 msgstr "RadioReference Canada necessite une connexion avant une requete"
 
@@ -1818,11 +1818,11 @@ msgid ""
 "<small>Premium account required</small>"
 msgstr ""
 
-#: ../wxui/common.py:469
+#: ../wxui/common.py:477
 msgid "Refresh required"
 msgstr "Rafraichissement necessaire"
 
-#: ../wxui/common.py:316
+#: ../wxui/common.py:317
 #, python-format
 msgid "Refreshed memory %s"
 msgstr "Rafraichir la memoire %s"
@@ -1876,7 +1876,7 @@ msgstr[1] "Restaurer %i onglets"
 msgid "Restore tabs on start"
 msgstr "Restaurer %i onglets"
 
-#: ../wxui/common.py:320
+#: ../wxui/common.py:321
 msgid "Retrieved settings"
 msgstr "Preferences recuperees"
 
@@ -1892,7 +1892,7 @@ msgstr "Enregistrer avant de fermer?"
 msgid "Save file"
 msgstr "Enregistrer fichier"
 
-#: ../wxui/common.py:322
+#: ../wxui/common.py:323
 msgid "Saved settings"
 msgstr "Preferences enregistrees"
 
@@ -2107,11 +2107,11 @@ msgid ""
 "compatibility."
 msgstr ""
 
-#: ../drivers/th_uv88.py:557
+#: ../drivers/th_uv88.py:555
 msgid "This is an early stage beta driver\n"
 msgstr "Ceci est un pilote recent en version beta\n"
 
-#: ../drivers/th_uv88.py:559
+#: ../drivers/th_uv88.py:557
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr ""
 "Ceci est un pilote recent en version beta - chargement a vos risques et "
@@ -2151,7 +2151,7 @@ msgstr "Remonter ces memoires et decalage"
 msgid "This memory and shift block up"
 msgstr "Bloquer cette memoire et le decalage"
 
-#: ../drivers/uvk5_egzumer.py:1459
+#: ../drivers/uvk5_egzumer.py:1455
 msgid ""
 "This option may break your radio! Each radio has a unique set of calibration "
 "data and uploading the data from the image will cause physical harm to the "
@@ -2230,7 +2230,7 @@ msgstr "Impossible d'editer une memoire avant telechargement de la radio"
 msgid "Unable to find stock config %r"
 msgstr "Impossible de trouver la configuration de base %r"
 
-#: ../wxui/common.py:222
+#: ../wxui/common.py:223
 msgid "Unable to open the clipboard"
 msgstr "Impossible d'ouvrir le presse-papier"
 
@@ -2248,7 +2248,7 @@ msgstr ""
 "modele selectionne est US mais que la radio n'est pas US (ou large-bande). "
 "Selectionnez le bon modele et reessayez."
 
-#: ../wxui/common.py:672
+#: ../wxui/common.py:680
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Impossible de montrer %s dans ce systeme"
@@ -2258,13 +2258,18 @@ msgstr "Impossible de montrer %s dans ce systeme"
 msgid "Unable to set %s on this memory"
 msgstr "Impossible de regler %s dans cette memoire"
 
-#: ../wxui/query_sources.py:688
+#: ../wxui/query_sources.py:690
 msgid "United States"
 msgstr "Etats-Unis"
 
 #: ../wxui/clone.py:376
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Debranchez votre cable (si necessaire) et cliquez sur OK"
+
+#: ../drivers/thd74.py:328
+#, fuzzy, python-format
+msgid "Unsupported model %r"
+msgstr "Type de fichier non-supporte"
 
 #: ../wxui/clone.py:636
 msgid "Upload instructions"
@@ -2278,7 +2283,7 @@ msgstr "Telecharger vers la radio"
 msgid "Upload to radio..."
 msgstr "Telecharger vers la radio..."
 
-#: ../wxui/common.py:318
+#: ../wxui/common.py:319
 #, python-format
 msgid "Uploaded memory %s"
 msgstr "Memoire telechargee %s"
@@ -2296,12 +2301,12 @@ msgstr "Utiliser une plus grande police"
 msgid "Value does not fit in %i bits"
 msgstr "La valeur ne correspond pas a %i bits"
 
-#: ../wxui/common.py:507
+#: ../wxui/common.py:515
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "La valeur doit etre d'au moins %.4f"
 
-#: ../wxui/common.py:511
+#: ../wxui/common.py:519
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "La valeur ne doit pas depasser %.4f"
@@ -2327,7 +2332,7 @@ msgstr "Fabricant"
 msgid "View"
 msgstr "Voir"
 
-#: ../wxui/common.py:453
+#: ../wxui/common.py:461
 msgid "WARNING!"
 msgstr "ATTENTION!"
 
@@ -2771,9 +2776,6 @@ msgstr "{bank} pleine"
 
 #~ msgid "URCALL"
 #~ msgstr "URCALL"
-
-#~ msgid "Unsupported file type"
-#~ msgstr "Type de fichier non-supporte"
 
 #~ msgid "Untitled"
 #~ msgstr "Sans titre"

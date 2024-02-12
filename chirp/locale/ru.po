@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-05 17:14-0800\n"
+"POT-Creation-Date: 2024-02-14 21:49-0800\n"
 "PO-Revision-Date: 2023-10-11 16:47+0300\n"
 "Last-Translator: Olesya Gerasimenko <translation-team@basealt.ru>\n"
 "Language-Team: Basealt Translation Team\n"
@@ -426,7 +426,7 @@ msgstr ""
 "4. <b>После нажатия «ОК» в этом окне chirp</b>\n"
 "    нажмите экранную кнопку [Send].\n"
 
-#: ../drivers/ft1d.py:898
+#: ../drivers/ft1d.py:894
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -441,7 +441,7 @@ msgstr ""
 "4. <b>После нажатия «ОК»</b> нажмите клавишу [BAND]\n"
 "    для отправки образа.\n"
 
-#: ../drivers/ft1d.py:905
+#: ../drivers/ft1d.py:901
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -998,7 +998,7 @@ msgstr "Все поддерживаемые форматы|"
 msgid "Amateur"
 msgstr "Любительская радиосвязь"
 
-#: ../wxui/common.py:594 ../wxui/common.py:621
+#: ../wxui/common.py:602 ../wxui/common.py:629
 msgid "An error has occurred"
 msgstr "Ошибка"
 
@@ -1034,11 +1034,11 @@ msgstr "Браузер"
 msgid "Building Radio Browser"
 msgstr "Браузер станций"
 
-#: ../wxui/query_sources.py:689
+#: ../wxui/query_sources.py:691
 msgid "Canada"
 msgstr "Канада"
 
-#: ../wxui/common.py:467
+#: ../wxui/common.py:475
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -1107,7 +1107,7 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr "Клонирование завершено, проверка наличия ложных байтов"
 
-#: ../wxui/common.py:116
+#: ../wxui/common.py:117
 msgid "Cloning"
 msgstr "Клонирование"
 
@@ -1338,7 +1338,7 @@ msgstr "Введите новое имя банка %s:"
 msgid "Enter custom port:"
 msgstr "Введите пользовательский порт:"
 
-#: ../wxui/common.py:324
+#: ../wxui/common.py:325
 #, python-format
 msgid "Erased memory %s"
 msgstr "Стёрта ячейка памяти %s"
@@ -1427,7 +1427,7 @@ msgstr "Найти далее"
 msgid "Find..."
 msgstr "Найти..."
 
-#: ../wxui/common.py:326
+#: ../wxui/common.py:327
 #, python-format
 msgid "Finished radio job %s"
 msgstr "Завершено задание станции %s"
@@ -2167,7 +2167,7 @@ msgstr ""
 "осторожно, чтобы не навредить вашему компьютеру и вашей станции. Вы были "
 "предупреждены. Всё равно продолжить?"
 
-#: ../wxui/common.py:189
+#: ../wxui/common.py:190
 msgid "Please wait"
 msgstr "Подождите"
 
@@ -2235,7 +2235,7 @@ msgstr ""
 "когда выбранная модель не является американской, а станция является. "
 "Выберите правильную модель и повторите попытку."
 
-#: ../wxui/query_sources.py:836
+#: ../wxui/query_sources.py:838
 msgid "RadioReference Canada requires a login before you can query"
 msgstr "RadioReference Canada запрашивает вход перед выполнением запроса"
 
@@ -2246,11 +2246,11 @@ msgid ""
 "<small>Premium account required</small>"
 msgstr ""
 
-#: ../wxui/common.py:469
+#: ../wxui/common.py:477
 msgid "Refresh required"
 msgstr "Требуется обновление"
 
-#: ../wxui/common.py:316
+#: ../wxui/common.py:317
 #, python-format
 msgid "Refreshed memory %s"
 msgstr "Обновлена ячейки памяти %s"
@@ -2305,7 +2305,7 @@ msgstr[2] "Восстановить вкладки (%i)"
 msgid "Restore tabs on start"
 msgstr "Восстановить вкладки (%i)"
 
-#: ../wxui/common.py:320
+#: ../wxui/common.py:321
 msgid "Retrieved settings"
 msgstr "Полученные параметры"
 
@@ -2321,7 +2321,7 @@ msgstr "Сохранить перед закрытием?"
 msgid "Save file"
 msgstr "Сохранить файл"
 
-#: ../wxui/common.py:322
+#: ../wxui/common.py:323
 msgid "Saved settings"
 msgstr "Сохранённые параметры"
 
@@ -2531,11 +2531,11 @@ msgid ""
 "compatibility."
 msgstr ""
 
-#: ../drivers/th_uv88.py:557
+#: ../drivers/th_uv88.py:555
 msgid "This is an early stage beta driver\n"
 msgstr "Это ранняя бета-версия драйвера\n"
 
-#: ../drivers/th_uv88.py:559
+#: ../drivers/th_uv88.py:557
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr "Это ранняя бета-версия драйвера — отправляйте на свой страх и риск\n"
 
@@ -2571,7 +2571,7 @@ msgstr "Эта ячейка памяти и сдвинуть все вверх"
 msgid "This memory and shift block up"
 msgstr "Эта ячейка памяти и сдвинуть блок вверх"
 
-#: ../drivers/uvk5_egzumer.py:1459
+#: ../drivers/uvk5_egzumer.py:1455
 msgid ""
 "This option may break your radio! Each radio has a unique set of calibration "
 "data and uploading the data from the image will cause physical harm to the "
@@ -2647,7 +2647,7 @@ msgstr "Перед редактированием ячейки памяти не
 msgid "Unable to find stock config %r"
 msgstr "Не удалось найти предустановленную конфигурацию %r"
 
-#: ../wxui/common.py:222
+#: ../wxui/common.py:223
 msgid "Unable to open the clipboard"
 msgstr "Не удалось открыть буфер обмена"
 
@@ -2665,7 +2665,7 @@ msgstr ""
 "американская модель, но станция не является американской (или "
 "широкополосной). Выберите правильную модель и повторите попытку."
 
-#: ../wxui/common.py:672
+#: ../wxui/common.py:680
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Невозможно обнаружить %s в этой системе"
@@ -2675,13 +2675,18 @@ msgstr "Невозможно обнаружить %s в этой системе"
 msgid "Unable to set %s on this memory"
 msgstr "Невозможно установить %s для этой ячейки памяти"
 
-#: ../wxui/query_sources.py:688
+#: ../wxui/query_sources.py:690
 msgid "United States"
 msgstr "Соединённые Штаты"
 
 #: ../wxui/clone.py:376
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Отключите кабель (если требуется) и нажмите «ОК»"
+
+#: ../drivers/thd74.py:328
+#, fuzzy, python-format
+msgid "Unsupported model %r"
+msgstr "Неподдерживаемый тип файла"
 
 #: ../wxui/clone.py:636
 msgid "Upload instructions"
@@ -2695,7 +2700,7 @@ msgstr "Отправка на станцию"
 msgid "Upload to radio..."
 msgstr "Отправка на станцию..."
 
-#: ../wxui/common.py:318
+#: ../wxui/common.py:319
 #, python-format
 msgid "Uploaded memory %s"
 msgstr "Отправлена ячейка памяти %s"
@@ -2713,12 +2718,12 @@ msgstr "Использовать более крупный шрифт"
 msgid "Value does not fit in %i bits"
 msgstr "Значение не помещается в %i бит"
 
-#: ../wxui/common.py:507
+#: ../wxui/common.py:515
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Значение не должно быть меньше %.4f"
 
-#: ../wxui/common.py:511
+#: ../wxui/common.py:519
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Значение не должно превышать %.4f"
@@ -2744,7 +2749,7 @@ msgstr "Изготовитель"
 msgid "View"
 msgstr "Вид"
 
-#: ../wxui/common.py:453
+#: ../wxui/common.py:461
 msgid "WARNING!"
 msgstr "ПРЕДУПРЕЖДЕНИЕ!"
 
@@ -3196,9 +3201,6 @@ msgstr "{bank} полон"
 
 #~ msgid "URCALL"
 #~ msgstr "URCALL"
-
-#~ msgid "Unsupported file type"
-#~ msgstr "Неподдерживаемый тип файла"
 
 #~ msgid "Untitled"
 #~ msgstr "Новый"

@@ -309,6 +309,7 @@ class THD74Radio(chirp_common.CloneModeRadio,
             raise errors.RadioError("No response to ID command")
 
     def _detect_baud(self):
+        id = None
         for baud in [9600, 19200, 38400, 57600]:
             self.pipe.baudrate = baud
             try:
@@ -319,11 +320,16 @@ class THD74Radio(chirp_common.CloneModeRadio,
             try:
                 id = self.get_id()
                 LOG.info("Radio %s at %i baud" % (id, baud))
-                return True
+                break
             except errors.RadioError:
                 pass
 
-        raise errors.RadioError("No response from radio")
+        if id and not self.MODEL.startswith(id):
+            raise errors.RadioError(_('Unsupported model %r' % id))
+        elif id:
+            return id
+        else:
+            raise errors.RadioError("No response from radio")
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
@@ -526,3 +532,8 @@ class THD74Radio(chirp_common.CloneModeRadio,
             return True
         else:
             return chirp_common.CloneModeRadio.match_model(filedata, filename)
+
+
+@directory.register
+class THD75Radio(THD74Radio):
+    MODEL = 'TH-D75'

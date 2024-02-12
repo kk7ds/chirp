@@ -154,6 +154,7 @@
 | <a name="Kenwood_TH-D72_live_mode"></a> Kenwood_TH-D72_live_mode | [@kk7ds](https://github.com/kk7ds) | 21-Oct-2022 | Yes | 0.00% |
 | <a name="Kenwood_TH-D74_clone_mode"></a> Kenwood_TH-D74_clone_mode | [@kk7ds](https://github.com/kk7ds) | 30-Nov-2022 | Yes | 0.00% |
 | <a name="Kenwood_TH-D74_live_mode"></a> Kenwood_TH-D74_live_mode | [@kk7ds](https://github.com/kk7ds) | 20-Oct-2022 | Yes | 0.00% |
+| <a name="Kenwood_TH-D75"></a> Kenwood_TH-D75 | [Reported working](https://chirp.danplanet.com/issues/11122) | 114-Feb-2024 | Yes |  |
 | <a name="Kenwood_TH-D7G"></a> Kenwood_TH-D7G | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/kenwood_live.py) | 12-Dec-2022 | Yes | 0.00% |
 | <a name="Kenwood_TH-F6"></a> Kenwood_TH-F6 | [@KC9HI](https://github.com/KC9HI) | 30-Nov-2022 | Yes | 0.03% |
 | <a name="Kenwood_TH-F7"></a> Kenwood_TH-F7 | [@sv1](https://github.com/sv1) | 19-Oct-2022 | Yes | 0.03% |
@@ -450,11 +451,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 447
+**Drivers:** 448
 
-**Tested:** 87% (393/54) (93% of usage stats)
+**Tested:** 87% (394/54) (93% of usage stats)
 
-**Byte clean:** 91% (407/40)
+**Byte clean:** 91% (408/40)
 
 ## Meaning of this testing
 
