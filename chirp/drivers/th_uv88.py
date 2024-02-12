@@ -1298,10 +1298,10 @@ class THUV88Radio(chirp_common.CloneModeRadio):
             hval = []
             LOG.debug(("HEXALEN %d:" % maxlen)+vx)
             for i in range(maxlen // 2):
-                hval.append(_tel_encode(vx[2*i]) * 16 + _tel_encode(vx[2*i+1]))
+                hval.append(_tel_encode(vx[2 * i]) * 16 + _tel_encode(vx[ 2 * i + 1]))
 
             if (maxlen % 2) == 1:
-                setattr(obj, atrb+"last", _tel_encode(vx[maxlen-1]))
+                setattr(obj, atrb + "last", _tel_encode(vx[maxlen - 1]))
 
             setattr(obj, atrb, hval)
             setattr(obj, atrb+"len", vxlen)
@@ -1347,7 +1347,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                       format, value):
             options = []
             for i in range(count):
-                options.append(format % (start+i*step))
+                options.append(format % (start + i * step))
             rx = RadioSettingValueList(options, options[value])
             rset = RadioSetting(name, display, rx)
             setting.append(rset)
@@ -1372,7 +1372,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
             options = []
             for i in range(len(src)):
                 asname = str(getattr(src[i], atrb))
-                options.append("%02d - " % (i+1) + asname)
+                options.append("%02d - " % (i + 1) + asname)
 
             rx = RadioSettingValueList(options, options[value])
             rset = RadioSetting(name, display, rx)
@@ -1490,7 +1490,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         # Encode channels
         for i in range(16):  # 0 - 15
             sigchan = RadioSettingSubGroup("dtmfencchan%d" % i,
-                                           "Channel %02d" % (i+1))
+                                           "Channel %02d" % (i + 1))
             dtmfenc.append(sigchan)
 
             # Active
@@ -1553,7 +1553,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         # 16 encode channels
         for i in range(16):  # 0 - 15
             sigchan = RadioSettingSubGroup("ttonesencchan%d" % i,
-                                           "Channel %02d" % (i+1))
+                                           "Channel %02d" % (i + 1))
             ttonesenc.append(sigchan)
 
             # Active
@@ -1689,7 +1689,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         # 16 Encode channels
         for i in range(16):  # 0 - 15
             sigchan = RadioSettingSubGroup("ftonesencchan%d" % i,
-                                           "Channel %02d" % (i+1))
+                                           "Channel %02d" % (i + 1))
             ftonesenc.append(sigchan)
 
             # Active
@@ -1721,7 +1721,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         # 8 Decode channels
         for i in range(8):  # 0 - 7
             sigchan = RadioSettingSubGroup("ftonesencchan%d" % i,
-                                           "Channel %02d" % (i+1))
+                                           "Channel %02d" % (i + 1))
             ftonesdec.append(sigchan)
 
             # Active
