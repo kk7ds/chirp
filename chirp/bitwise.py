@@ -262,6 +262,14 @@ class DataElement:
         else:
             return self
 
+    def fill_raw(self, byteval):
+        """Fill object with bytes
+
+        :param byteval: A bytes of length 1 to fill the object's memory with
+        """
+        assert isinstance(byteval, bytes) and len(byteval) == 1
+        self.set_raw(byteval * (self.size() // 8))
+
     def __getattr__(self, name):
         raise AttributeError("Unknown attribute %s in %s" % (name,
                                                              self.__class__))
