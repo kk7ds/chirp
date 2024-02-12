@@ -68,7 +68,7 @@ config_map = (          # map address, write size, write count
 
 
 MEM_VALID = 0x00
-MEM_INVALID = [0xFF, 0x80]
+MEM_INVALID = [0x80]
 TX_BLANK = 0x40
 RX_BLANK = 0x80
 
@@ -1011,21 +1011,27 @@ class KG980PRadio(chirp_common.CloneModeRadio,
 
         # Handle deleted channel quirks due to radio firmware
         # not always clearing the valid channel indicators
+        # _valid == 0x80 indicates channel was deleted thru radio menu and
+        # only part of the channel structure data is cleared by firmware
+        # _valid == 0x00 indicates the channel is Valid
+        # all other values the firmware uses for _valid: look for valid
+        # Rx and Tx freq values to determine validity
         if (_valid in MEM_INVALID or
-           (_valid != MEM_VALID) & ((_mem.rxfreq == 0xFFFFFFFF) or
-                                    _mem.rxfreq == 0x00000000)):
+           ((_valid != MEM_VALID) & ((_mem.rxfreq == 0xFFFFFFFF) or
+                                     _mem.rxfreq == 0x00000000))):
             mem.empty = True
             if _valid == 0x80:
                 LOG.debug("Ch %s was deleted by using radio menu" % number)
                 LOG.debug("Current Memory: \n%s" % _mem)
                 LOG.debug("Clearing Ch %s memory" % number)
-                _mem.set_raw("\xFF" * (_mem.size() // 8))
-                _nam.set_raw("\xFF" * (_nam.size() // 8))
-                self._memobj.valid[mem.number] = 0xFF
+                _mem.set_raw(b"\xFF" * (_mem.size() // 8))
+                _nam.set_raw(b"\xFF" * (_nam.size() // 8))
+            self._memobj.valid[mem.number] = 0xFF
             return mem
         elif (_valid != MEM_VALID) & ((_mem.rxfreq != 0xFFFFFFFF) and
                                       (_mem.rxfreq != 0x00000000)):
             mem.empty = False
+            self._memobj.valid[mem.number] = MEM_VALID
         else:
             mem.empty = False
         mem.freq = int(_mem.rxfreq) * 10
@@ -1134,8 +1140,8 @@ class KG980PRadio(chirp_common.CloneModeRadio,
 
         if mem.empty:
             self._memobj.valid[number] = 0xFF
-            _mem.set_raw("\xFF" * (_mem.size() // 8))
-            self._memobj.names[number].set_raw("\xFF" * (_nam.size() // 8))
+            _mem.set_raw(b"\xFF" * (_mem.size() // 8))
+            self._memobj.names[number].set_raw(b"\xFF" * (_nam.size() // 8))
         else:
             if len(mem.name) > 0:
                 _mem.named = True
