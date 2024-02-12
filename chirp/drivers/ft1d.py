@@ -878,7 +878,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     _SQUELCH = ["%d" % x for x in range(0, 16)]
     _VOLUME = ["%d" % x for x in range(0, 33)]
     _DG_ID = ["%d" % x for x in range(0, 100)]
-    _GM_RING = ("OFF", "IN RING", "AlWAYS")
+    _GM_RING = ("OFF", "IN RING", "ALWAYS")
     _GM_INTERVAL = ("LONG", "NORMAL", "OFF")
 
     _MYCALL_CHR_SET = list(string.ascii_uppercase) + \
