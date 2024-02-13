@@ -769,8 +769,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
             if k == 0:
                 k = 1
                 raise errors.InvalidValueError(
-                    "Invalid bank value '%k', bad data in the image? \
-                    Trying to fix this, review your bank data!" % k)
+                    "Invalid bank value '%s', bad data in the image? "
+                    "Trying to fix this, review your bank data!" % k)
             c = 1
             for i in v:
                 fdata += bytes([k, c, k - 1, i])
