@@ -762,7 +762,8 @@ class TestOverrideRules(base.BaseTest):
         'BTECH_GMRS-V2',
         'BTECH_MURS-V2',
         'Radioddity_DB25-G',
-        'Retevis_RB17P'
+        'Retevis_RB17P',
+        'Baofeng_UV-17ProGPS',
     ]
 
     def _test_radio_override_immutable_policy(self, rclass):

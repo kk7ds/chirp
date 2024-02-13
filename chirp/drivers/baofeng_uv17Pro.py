@@ -1288,6 +1288,22 @@ class UV17ProGPS(UV17Pro):
     VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
 
+    def check_set_memory_immutable_policy(self, existing, new):
+        if (self._airband[0] <= new.freq <= self._airband[1] and
+                new.mode == 'AM'):
+            # This is valid, so mark mode as immutable so it doesn't get
+            # blocked, and let the radio override it during set.
+            new.immutable.append('mode')
+            existing.immutable = []
+        elif existing.mode == 'AM' and new.mode in self.MODES:
+            # If we're going from a forced-AM channel to some valid one,
+            # clear immutable so we allow the change.
+            try:
+                existing.immutable.remove('mode')
+            except ValueError:
+                pass
+        super().check_set_memory_immutable_policy(existing, new)
+
 
 @directory.register
 class BF5RM(UV17Pro):
