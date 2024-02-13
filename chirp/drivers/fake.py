@@ -1,10 +1,14 @@
+import importlib
 import logging
+import os
+import struct
 import time
 
 from chirp import chirp_common
 from chirp import directory
 from chirp import errors
 from chirp import settings
+from chirp import util
 
 LOG = logging.getLogger(__name__)
 
@@ -145,6 +149,67 @@ class FakeKenwoodSerial:
         ret = self._rbuf[:n]
         self._rbuf = self._rbuf[n:]
         return ret
+
+
+# NOTE: This is not complete, it's just enough to do the ident dance with
+# these radios
+class FakeUV17Serial:
+    def get_radio(self):
+        baofeng_uv17 = importlib.import_module('chirp.drivers.baofeng_uv17')
+        self.rclass = baofeng_uv17.UV17
+
+    def __init__(self, *a, **k):
+        self._sbuf = b''
+        self.get_radio()
+        imgfn = os.path.join(os.path.dirname(__file__), '..', '..',
+                             'tests', 'images',
+                             '%s_%s.img' % (self.rclass.VENDOR,
+                                            self.rclass.MODEL))
+        LOG.debug('Opening %s' % imgfn)
+        try:
+            with open(imgfn, 'rb') as f:
+                self._img = f.read()
+            LOG.debug('Loaded image size 0x%x', len(self._img))
+        except FileNotFoundError:
+            LOG.error('Unable to open image, fixture will not work')
+            self._img = b''
+
+    def write(self, buffer):
+        baofeng_uv17Pro = importlib.import_module(
+            'chirp.drivers.baofeng_uv17Pro')
+        if buffer == self.rclass._magic:
+            LOG.debug('Sent first magic')
+            self._sbuf += self.rclass._fingerprint
+        elif buffer.startswith(b'R'):
+            LOG.debug('Got: %s' % util.hexprint(buffer))
+            cmd, addr, blen = struct.unpack('>cHb', buffer)
+            resp = struct.pack('>cHb', b'W', addr, blen)
+            block = self._img[addr:addr + blen] or (b'\x00' * blen)
+            LOG.debug('Sending block length 0x%x', len(block))
+            self._sbuf += resp + baofeng_uv17Pro._crypt(1, block)
+        else:
+            for magic, rlen in self.rclass._magics:
+                if buffer == magic:
+                    LOG.debug('Sent magic %r' % magic)
+                    self._sbuf += b' ' * rlen
+                    return
+            LOG.debug('Unrecognized ident string %r' % buffer)
+            self._sbuf += b'\x15' * 32
+
+    def read(self, length):
+        chunk = self._sbuf[:length]
+        self._sbuf = self._sbuf[length:]
+        return chunk
+
+    def close(self):
+        pass
+
+
+class FakeUV17ProSerial(FakeUV17Serial):
+    def get_radio(self):
+        baofeng_uv17Pro = importlib.import_module(
+            'chirp.drivers.baofeng_uv17Pro')
+        self.rclass = baofeng_uv17Pro.UV17Pro
 
 
 def register_fakes():
