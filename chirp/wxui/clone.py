@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import collections
+from gettext import gettext as _
 import logging
 import platform
 import re

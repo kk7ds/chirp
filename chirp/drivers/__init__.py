@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings('once', category=DeprecationWarning,
                         module=__name__)
 
-module_dir = os.path.dirname(sys.modules["chirp.drivers"].__file__)
+module_dir = os.path.dirname(sys.modules["chirp.drivers"].__file__ or '.')
 __all__ = []
 for i in sorted(glob(os.path.join(module_dir, "*.py"))):
     name = os.path.basename(i)[:-3]

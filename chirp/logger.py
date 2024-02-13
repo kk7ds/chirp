@@ -151,7 +151,7 @@ class Logger(object):
     def set_log_level_by_name(self, level):
         self.set_log_level(log_level_names[level])
 
-    instance = None
+    instance: object
 
 
 Logger.instance = Logger()
