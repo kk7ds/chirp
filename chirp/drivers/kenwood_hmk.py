@@ -124,8 +124,8 @@ class HMKRadio(generic_csv.CSVRadio):
             good += 1
 
         if not good:
-            for e in errors:
-                LOG.error("kenwood_hmk: %s", e)
+            for error in errors:
+                LOG.error("kenwood_hmk: %s", error)
             raise errors.InvalidDataError("No channels found")
 
     @classmethod
