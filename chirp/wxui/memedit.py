@@ -1508,7 +1508,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     def _do_sort_memories(self, rows, reverse, sortattr):
         memories = [self._memory_cache[r] for r in rows]
         LOG.debug('Sorting %s by %s%s',
-                  memories, reversed and '>' or '<', sortattr)
+                  memories, reverse and '>' or '<', sortattr)
         memories.sort(key=lambda m: getattr(m, sortattr), reverse=reverse)
         for i, mem in enumerate(memories):
             new_number = self.row2mem(rows[0] + i)
