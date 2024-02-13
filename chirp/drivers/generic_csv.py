@@ -96,6 +96,10 @@ class CSVRadio(chirp_common.FileBackedRadio):
         self.file_has_rTone = None  # Set in load(), used in _clean_tmode()
         self.file_has_cTone = None
 
+        # Persistence for comment lines
+        # List of tuples of (previous_memory, comment)
+        self._comments = []
+
         self._filename = pipe
         if self._filename and os.path.exists(self._filename):
             self.load()
@@ -201,11 +205,14 @@ class CSVRadio(chirp_common.FileBackedRadio):
     def _load(self, f):
         reader = csv.reader(f, delimiter=chirp_common.SEPCHAR, quotechar='"')
 
+        self._comments = []
         good = 0
         lineno = 0
+        last_number = -1
         for line in reader:
-            # Skipping comment lines that start with #
+            # Skip (but stash) comment lines that start with #
             if line and line[0].startswith('#'):
+                self._comments.append((last_number, ' '.join(line)))
                 continue
             lineno += 1
             if lineno == 1:
@@ -230,6 +237,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
                 self.errors.append("Line %i: %s" % (lineno, e))
                 continue
 
+            last_number = mem.number
             self._grow(mem.number)
             self.memories[mem.number] = mem
             good += 1
@@ -246,10 +254,23 @@ class CSVRadio(chirp_common.FileBackedRadio):
             self._filename = filename
 
         with open(self._filename, "w", newline='', encoding='utf-8') as f:
+            comments = list(self._comments)
             writer = csv.writer(f, delimiter=chirp_common.SEPCHAR)
+
+            for index, comment in comments[:]:
+                if index >= 0:
+                    break
+                writer.writerow([comment])
+                comments.pop(0)
+
             writer.writerow(chirp_common.Memory.CSV_FORMAT)
 
             for mem in self.memories:
+                for index, comment in comments[:]:
+                    if index >= mem.number:
+                        break
+                    writer.writerow([comment])
+                    comments.pop(0)
                 write_memory(writer, mem)
 
     # MMAP compatibility
