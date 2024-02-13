@@ -9,7 +9,7 @@ pos = {filename: polib.pofile(filename) for filename in filelist}
 
 formatter = Formatter()
 
-for name, po in pos.iteritems():
+for name, po in pos.items():
     print("Testing", name)
     for entry in po:
         if len(entry.msgstr) > 0:
