@@ -13,15 +13,4 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import sys
-from glob import glob
-
 CHIRP_VERSION = "py3dev"
-
-module_dir = os.path.dirname(sys.modules["chirp"].__file__)
-__all__ = []
-for i in glob(os.path.join(module_dir, "*.py")):
-    name = os.path.basename(i)[:-3]
-    if not name.startswith("__"):
-        __all__.append(name)
