@@ -670,7 +670,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
     _350_range = (350000000, 391000000)
     _upper = 199
     _magic = MSTRING
-    _fileid = None
+    _fileid = []
     _id2 = False
     btech3 = False
     _gmrs = False
