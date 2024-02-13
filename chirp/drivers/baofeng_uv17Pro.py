@@ -96,19 +96,25 @@ def _crypt(symbol_index, buffer):
     return dec_buffer
 
 
+def _sendmagic(radio, magic, response_len):
+    bfc._rawsend(radio, magic)
+    return bfc._rawrecv(radio, response_len)
+
+
 def _do_ident(radio):
     # Flush input buffer
     bfc._clean_buffer(radio)
 
     # Ident radio
-    magic = radio._magic
-    bfc._rawsend(radio, magic)
-    ack = bfc._rawrecv(radio, radio._magic_response_length)
+    ack = _sendmagic(radio, radio._magic, len(radio._fingerprint))
 
     if not ack.startswith(radio._fingerprint):
         if ack:
             LOG.debug(repr(ack))
         raise errors.RadioError("Radio did not respond as expected (A)")
+
+    for magic, resplen in radio._magics:
+        _sendmagic(radio, magic, resplen)
 
     return True
 
@@ -118,10 +124,6 @@ def _download(radio):
 
     # Put radio in program mode and identify it
     _do_ident(radio)
-    for index in range(len(radio._magics)):
-        bfc._rawsend(radio, radio._magics[index])
-        bfc._rawrecv(radio, radio._magicResponseLengths[index])
-
     data = b""
 
     # UI progress
@@ -162,10 +164,6 @@ def _download(radio):
 def _upload(radio):
     # Put radio in program mode and identify it
     _do_ident(radio)
-    for index in range(len(radio._magics)):
-        bfc._rawsend(radio, radio._magics[index])
-        bfc._rawrecv(radio, radio._magicResponseLengths[index])
-
     data = b""
 
     # UI progress
@@ -232,12 +230,11 @@ class UV17Pro(bfc.BaofengCommonHT):
     _tri_band = True
     _fileid = []
     _magic = MSTRING_UV17L
-    _magic_response_length = 1
     _fingerprint = b"\x06"
-    _magics = [b"\x46", b"\x4d",
-               b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01\x01\x04\x11\x08\x05" +
-               b"\x0D\x0D\x01\x11\x0F\x09\x12\x09\x10\x04\x00"]
-    _magicResponseLengths = [16, 15, 1]
+    _magics = [(b"\x46", 16),
+               (b"\x4d", 15),
+               (b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01\x01\x04\x11\x08\x05" +
+                b"\x0D\x0D\x01\x11\x0F\x09\x12\x09\x10\x04\x00", 1)]
     _fw_ver_start = 0x1EF0
     _recv_block_size = 0x40
     _mem_size = MEM_TOTAL
@@ -1274,10 +1271,11 @@ class UV17ProGPS(UV17Pro):
     _has_support_for_banknames = True
     _has_workmode_support = True
     _magic = MSTRING_UV17PROGPS
-    _magics = [b"\x46", b"\x4d", b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01" +
-               b"\x01\x04\x11\x08\x05\x0D\x0D\x01\x11\x0F\x09\x12\x09" +
-               b"\x10\x04\x00"]
-    _magicResponseLengths = [16, 7, 1]
+    _magics = [(b"\x46", 16),
+               (b"\x4d", 7),
+               (b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01" +
+                b"\x01\x04\x11\x08\x05\x0D\x0D\x01\x11\x0F\x09\x12\x09" +
+                b"\x10\x04\x00", 1)]
     _has_when_to_send_aniid = False
     _vfoscan = True
     _has_gps = True

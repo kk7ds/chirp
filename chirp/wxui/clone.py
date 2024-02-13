@@ -43,6 +43,8 @@ FAKES = {
     'Fake NOP': developer.FakeSerial(),
     'Fake Echo NOP': developer.FakeEchoSerial(),
     'Fake F7E': fake.FakeKenwoodSerial(),
+    'Fake UV17': fake.FakeUV17Serial(),
+    'Fake UV17Pro': fake.FakeUV17ProSerial(),
 }
 
 

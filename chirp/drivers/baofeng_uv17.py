@@ -30,11 +30,6 @@ LIST_SAVE = ["Off", "1:1", "1:2", "1:3", "1:4"]
 LIST_SCANMODE = ["Time", "Carrier", "Search"]
 
 
-def _sendmagic(radio, magic, response_len):
-    baofeng_common._rawsend(radio, magic)
-    baofeng_common._rawrecv(radio, response_len)
-
-
 # Locations of memory may differ each time, so a mapping has to be made first
 def _get_memory_map(radio):
     # Get memory map
@@ -44,17 +39,14 @@ def _get_memory_map(radio):
         baofeng_common._rawsend(radio, frame)
         blocknr = baofeng_common._rawrecv(radio, 6)[5]
         memory_map += [blocknr]
-        _sendmagic(radio, b"\x06", 1)
+        baofeng_uv17Pro._sendmagic(radio, b"\x06", 1)
     return memory_map
 
 
 def _download(radio):
     """Get the memory map"""
     baofeng_uv17Pro._do_ident(radio)
-
     data = b""
-    _start_communication(radio)
-
     memory_map = _get_memory_map(radio)
 
     status = chirp_common.Status()
@@ -89,7 +81,7 @@ def _download(radio):
             status.msg = "Cloning from radio..."
             radio.status_fn(status)
 
-            _sendmagic(radio, b"\x06", 1)
+            baofeng_uv17Pro._sendmagic(radio, b"\x06", 1)
     data += bytes(radio.MODEL, 'ascii')
     return data
 
@@ -97,9 +89,6 @@ def _download(radio):
 def _upload(radio):
     """Upload procedure"""
     baofeng_uv17Pro._do_ident(radio)
-
-    _start_communication(radio)
-
     memory_map = _get_memory_map(radio)
 
     status = chirp_common.Status()
@@ -140,11 +129,6 @@ def _upload(radio):
             radio.status_fn(status)
 
 
-def _start_communication(radio):
-    for magic in radio._magics:
-        _sendmagic(radio, magic[0], magic[1])
-
-
 @directory.register
 class UV17(baofeng_uv17Pro.UV17Pro):
     """Baofeng UV-17"""
@@ -162,14 +146,19 @@ class UV17(baofeng_uv17Pro.UV17Pro):
     BLOCK_SIZE = 0x40
     BAUD_RATE = 57600
     _magic = b"PSEARCH"
-    _magic_response_length = 8
-    _magics = [[b"PASSSTA", 3], [b"SYSINFO", 1],
-               [b"\x56\x00\x00\x0A\x0D", 13], [b"\x06", 1],
-               [b"\x56\x00\x10\x0A\x0D", 13], [b"\x06", 1],
-               [b"\x56\x00\x20\x0A\x0D", 13], [b"\x06", 1],
-               [b"\x56\x00\x00\x00\x0A", 11], [b"\x06", 1],
-               [b"\xFF\xFF\xFF\xFF\x0C\x55\x56\x31\x35\x39\x39\x39", 1],
-               [b"\02", 8], [b"\x06", 1]]
+    _magics = [(b"PASSSTA", 3),
+               (b"SYSINFO", 1),
+               (b"\x56\x00\x00\x0A\x0D", 13),
+               (b"\x06", 1),
+               (b"\x56\x00\x10\x0A\x0D", 13),
+               (b"\x06", 1),
+               (b"\x56\x00\x20\x0A\x0D", 13),
+               (b"\x06", 1),
+               (b"\x56\x00\x00\x00\x0A", 11),
+               (b"\x06", 1),
+               (b"\xFF\xFF\xFF\xFF\x0C\x55\x56\x31\x35\x39\x39\x39", 1),
+               (b"\02", 8),
+               (b"\x06", 1)]
     _fingerprint = b"\x06" + b"UV15999"
     _scode_offset = 1
 
