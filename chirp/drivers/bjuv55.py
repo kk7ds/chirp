@@ -29,7 +29,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 LOG = logging.getLogger(__name__)
 
 
-BJUV55_MODEL = "\x50\xBB\xDD\x55\x63\x98\x4D"
+BJUV55_MODEL = b"\x50\xBB\xDD\x55\x63\x98\x4D"
 
 COLOR_LIST = ["Off", "Blue", "Red", "Pink"]
 
@@ -155,7 +155,7 @@ struct {
      sftd:2,
      scode:4;
   u8 unknown4;
-  u8 unused3:1
+  u8 unused3:1,
      step:3,
      unused4:4;
   u8 txpower:1,
@@ -178,7 +178,7 @@ struct {
      sftd:2,
      scode:4;
   u8 unknown4;
-  u8 unused3:1
+  u8 unused3:1,
      step:3,
      unused4:4;
   u8 txpower:1,
@@ -234,6 +234,7 @@ struct {
 class BaojieBJUV55Radio(uv5r.BaofengUV5R):
     VENDOR = "Baojie"
     MODEL = "BJ-UV55"
+    NEEDS_COMPAT_SERIAL = False
     _basetype = [b"BJ55"]
     _idents = [BJUV55_MODEL]
     _mem_params = (0x1928  # poweron_msg offset
