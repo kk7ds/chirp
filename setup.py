@@ -13,7 +13,7 @@ setup(name='chirp',
           'requests',
           'six',
           'future',
-          'importlib-resources;python_version<"3.10"',
+          'importlib-resources;python_version<"3.9"',
           'yattag',
       ],
       extras_require={
