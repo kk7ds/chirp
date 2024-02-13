@@ -156,16 +156,7 @@ a {
 <table>
 """)
 
-models = {"Icom": [],
-          "Kenwood": [],
-          "Yaesu": [],
-          "Alinco": [],
-          "Baofeng": [],
-          "z_Other": [],
-          }
-
 models = []
-
 exclude = []
 
 for radio in directory.DRV_TO_RADIO.values():
