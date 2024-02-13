@@ -41,10 +41,8 @@ TONES = (
     225.7, 229.1, 233.6, 241.8, 250.3, 254.1,
 )
 
-OLD_TONES = list(TONES)
-[OLD_TONES.remove(x) for x in [159.8, 165.5, 171.3, 177.3, 183.5, 189.9,
-                               196.6, 199.5, 206.5, 229.1, 254.1]]
-OLD_TONES = tuple(OLD_TONES)
+OLD_TONES = tuple(set(TONES) - set([159.8, 165.5, 171.3, 177.3, 183.5, 189.9,
+                                    196.6, 199.5, 206.5, 229.1, 254.1]))
 
 
 def VALIDTONE(v):
@@ -66,12 +64,10 @@ DTCS_CODES = (
 )
 
 # 512 Possible DTCS Codes
-ALL_DTCS_CODES = []
-for a in range(0, 8):
-    for b in range(0, 8):
-        for c in range(0, 8):
-            ALL_DTCS_CODES.append((a * 100) + (b * 10) + c)
-ALL_DTCS_CODES = tuple(ALL_DTCS_CODES)
+ALL_DTCS_CODES = tuple([((a * 100) + (b * 10) + c)
+                        for a in range(0, 8)
+                        for b in range(0, 8)
+                        for c in range(0, 8)])
 
 CROSS_MODES = (
     "Tone->Tone",
