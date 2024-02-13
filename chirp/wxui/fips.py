@@ -6609,7 +6609,7 @@ if __name__ == "__main__":
     pp = PrettyPrinter(indent=2)
 
     import csv
-    fipsreader = csv.reader(open(argv[1], 'rb'), delimiter=',', quotechar='"')
+    fipsreader = csv.reader(open(argv[1], 'r'), delimiter=',', quotechar='"')
     for row in fipsreader:
         try:
             FIPS_COUNTIES[int(row[1])][row[3]] = row[2]

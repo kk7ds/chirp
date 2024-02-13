@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from gettext import gettext as _
 import logging
 import queue
 import tempfile
@@ -813,7 +814,7 @@ class RRQueryDialog(QuerySourceDialog):
 
     def _selected_county(self, chosencounty):
         self._ca_county_id = 0
-        for _, prov, cid, county in radioreference.CA_COUNTIES:
+        for _u, _prov, cid, county in radioreference.CA_COUNTIES:
             if county == chosencounty:
                 self._ca_county_id = cid
                 break

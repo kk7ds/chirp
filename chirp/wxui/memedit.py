@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import functools
+from gettext import gettext as _
 import logging
 import pickle
 import sys
@@ -73,7 +74,7 @@ class ChirpRowLabelRenderer(glr.GridDefaultRowLabelRenderer):
 
 
 class ChirpMemoryColumn(object):
-    DEFAULT = ''
+    DEFAULT: object = ''
 
     def __init__(self, name, radio, label=None):
         """
@@ -1141,7 +1142,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # Build our row label renderers so we can set colors to
         # indicate success or failure
         self._row_label_renderers = []
-        for row, _ in enumerate(
+        for row, _num in enumerate(
                 range(lower,
                       upper + len(self._features.valid_special_chans) + 1)):
             self._row_label_renderers.append(ChirpRowLabelRenderer())

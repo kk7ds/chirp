@@ -22,6 +22,7 @@ import pickle
 import platform
 import sys
 import time
+import typing
 import webbrowser
 
 if sys.version_info < (3, 10):
@@ -140,7 +141,7 @@ class ChirpDropTarget(wx.DropTarget):
 class ChirpEditorSet(wx.Panel):
     MEMEDIT_CLS = memedit.ChirpMemEdit
     SETTINGS_CLS = settingsedit.ChirpCloneSettingsEdit
-    BANK_CLS = bankedit.ChirpBankEditSync
+    BANK_CLS: typing.Union[type, None] = bankedit.ChirpBankEditSync
 
     @property
     def tab_name(self):

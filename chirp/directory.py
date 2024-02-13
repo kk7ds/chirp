@@ -187,10 +187,10 @@ def get_radio_by_image(image_file):
                 return DynamicRadioAlias(image_file)
 
     if metadata:
-        e = errors.ImageMetadataInvalidModel("Unsupported model %s %s" % (
+        ex = errors.ImageMetadataInvalidModel("Unsupported model %s %s" % (
             metadata.get("vendor"), metadata.get("model")))
-        e.metadata = metadata
-        raise e
+        ex.metadata = metadata
+        raise ex
     else:
         raise errors.ImageDetectFailed("Unknown file format")
 
