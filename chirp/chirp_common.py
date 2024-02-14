@@ -1401,6 +1401,10 @@ class DetectableInterface:
             'implementation')
         raise NotImplementedError()
 
+    @classmethod
+    def detected_models(cls):
+        return list(cls.DETECTED_MODELS or [])
+
 
 class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties,
                      DetectableInterface):

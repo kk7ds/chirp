@@ -665,14 +665,6 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         # All subclasses must implement this
         raise NotImplementedError()
 
-    @classmethod
-    def detect_from_serial(cls, pipe):
-        firmware = _sayhello(pipe)
-        for rclass in [UVK5Radio] + cls.DETECTED_MODELS:
-            if rclass.k5_approve_firmware(firmware):
-                return rclass
-        raise errors.RadioError('Firmware %r not supported' % firmware)
-
     def get_prompts(x=None):
         rp = chirp_common.RadioPrompts()
         rp.experimental = _(
@@ -2072,6 +2064,14 @@ class UVK5Radio(UVK5RadioBase):
         approved_prefixes = ('k5_2.01.', 'app_2.01.', '2.01.',
                              '1o11')
         return any(firmware.startswith(x) for x in approved_prefixes)
+
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        firmware = _sayhello(pipe)
+        for rclass in [UVK5Radio] + cls.detected_models():
+            if rclass.k5_approve_firmware(firmware):
+                return rclass
+        raise errors.RadioError('Firmware %r not supported' % firmware)
 
 
 @directory.register
