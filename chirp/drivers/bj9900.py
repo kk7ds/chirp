@@ -23,7 +23,7 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-CMD_ACK = 0x06
+CMD_ACK = b'\x06'
 
 
 @directory.register
@@ -34,6 +34,7 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
     MODEL = "BJ-9900"
     VARIANT = ""
     BAUD_RATE = 115200
+    NEEDS_COMPAT_SERIAL = False
 
     DUPLEX = ["", "-", "+", "split"]
     MODES = ["NFM", "FM"]
@@ -57,7 +58,7 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
     # 2 char per byte hex string
     # on CR LF terminated lines of 96 char
     # plus an empty line at the end
-    _datsize = (_memsize * 2) / 96 * 98 + 2
+    _datsize = (_memsize * 2) // 96 * 98 + 2
 
     # block are read in same order as original sw even though they are not
     # in physical order
@@ -91,7 +92,7 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
                 compandor:1,
                 unknown3:5;
             u8  namelen;
-            u8  name[7];
+            char name[7];
         } memory[128];
     """
 
@@ -114,21 +115,21 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
 
     def _read(self, addr, blocksize):
         # read a single block
-        msg = struct.pack(">4sHH", "READ", addr, blocksize)
+        msg = struct.pack(">4sHH", b"READ", addr, blocksize)
         LOG.debug("sending " + util.hexprint(msg))
         self.pipe.write(msg)
         block = self.pipe.read(blocksize)
         LOG.debug("received " + util.hexprint(block))
         if len(block) != blocksize:
-            raise Exception("Unable to read block at addr %04X expected"
-                            " %i got %i bytes" %
-                            (addr, blocksize, len(block)))
+            raise errors.RadioError(
+                ("Unable to read block at addr %04X expected"
+                 " %i got %i bytes") % (addr, blocksize, len(block)))
         return block
 
     def _clone_in(self):
         start = time.time()
 
-        data = ""
+        data = b""
         status = chirp_common.Status()
         status.msg = _("Cloning from radio")
         status.max = self._memsize
@@ -140,16 +141,21 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
 
         LOG.info("Clone completed in %i seconds" % (time.time() - start))
 
-        return memmap.MemoryMap(data)
+        # This driver will accept any amount of garbage, and fails tests
+        # as a result. This assertion appears correct based on the file
+        # data matching below. However, untested as of 2024-Feb.
+        assert data[-2:] == b'\r\n', 'Unrecognized radio image'
+
+        return memmap.MemoryMapBytes(data)
 
     def _write(self, addr, block):
         # write a single block
-        msg = struct.pack(">4sHH", "WRIE", addr, len(block)) + block
+        msg = struct.pack(">4sHH", b"WRIE", addr, len(block)) + block
         LOG.debug("sending " + util.hexprint(msg))
         self.pipe.write(msg)
         data = self.pipe.read(1)
         LOG.debug("received " + util.hexprint(data))
-        if ord(data) != CMD_ACK:
+        if data != CMD_ACK:
             raise errors.RadioError(
                 "Radio refused to accept block 0x%04x" % addr)
 
@@ -188,10 +194,10 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
 
     def process_mmap(self):
         if len(self._mmap) == self._datsize:
-            self._mmap = memmap.MemoryMap([
+            self._mmap = memmap.MemoryMapBytes([
                     chr(int(self._mmap.get(i, 2), 16))
                     for i in range(0, self._datsize, 2)
-                    if self._mmap.get(i, 2) != "\r\n"
+                    if self._mmap.get(i, 2) != b"\r\n"
                     ])
         try:
             self._memobj = bitwise.parse(
@@ -236,23 +242,22 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
         _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xff" * (_mem.size() // 8))    # clean up
+            _mem.fill_raw(b"\xff")
             _mem.namelen = 0
             return
 
         _mem.rxfreq = mem.freq / 10
         if mem.duplex == "split":
-            _mem.txfreq = mem.offset / 10
+            _mem.txfreq = mem.offset // 10
         elif mem.duplex == "+":
-            _mem.txfreq = (mem.freq + mem.offset) / 10
+            _mem.txfreq = (mem.freq + mem.offset) // 10
         elif mem.duplex == "-":
-            _mem.txfreq = (mem.freq - mem.offset) / 10
+            _mem.txfreq = (mem.freq - mem.offset) // 10
         else:
-            _mem.txfreq = mem.freq / 10
+            _mem.txfreq = mem.freq // 10
 
         _mem.namelen = len(mem.name)
-        for i in range(_mem.namelen):
-            _mem.name[i] = ord(mem.name[i])
+        _mem.name = mem.name.ljust(7)
 
         rxmode = ""
         txmode = ""
@@ -322,7 +327,7 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw(asbytes=False)[0] == "\xff":
+        if _mem.get_raw()[0] == 0xFF:
             mem.empty = True
             return mem
 
@@ -338,8 +343,7 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
             mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
             mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
 
-        for char in _mem.name[0:_mem.namelen]:
-            mem.name += chr(char)
+        mem.name = str(_mem.name)[:_mem.namelen]
 
         dtcs_pol = ["N", "N"]
 
@@ -389,7 +393,7 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
     @classmethod
     def match_model(cls, filedata, filename):
         return len(filedata) == cls._memsize or \
-            (len(filedata) == cls._datsize and filedata[-4:] == "\r\n\r\n")
+            (len(filedata) == cls._datsize and filedata[-4:] == b"\r\n\r\n")
 
 
 class BJ9900RadioLeft(BJ9900Radio):
