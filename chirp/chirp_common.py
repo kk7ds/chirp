@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from builtins import bytes
-from future import standard_library
 
 import base64
 import json
@@ -1978,7 +1977,6 @@ def http_user_agent():
 def urlretrieve(url, fn):
     """Grab an URL and save it in a specified file"""
 
-    standard_library.install_aliases()
     import urllib.request
     import urllib.error
 
