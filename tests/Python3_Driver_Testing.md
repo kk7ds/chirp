@@ -79,7 +79,7 @@
 | <a name="Baofeng_W31E"></a> Baofeng_W31E | [@KC9HI](https://github.com/KC9HI) | 14-Aug-2023 | Yes |  |
 | <a name="Baojie_BJ-218"></a> Baojie_BJ-218 | [Implied by LUITON_LT-725UV](#user-content-LUITON_LT-725UV) | 16-Feb-2023 | Yes | 0.29% |
 | <a name="Baojie_BJ-318"></a> Baojie_BJ-318 | [@KC9HI](https://github.com/KC9HI) | 2-Jan-2023 | Yes | 0.10% |
-| <a name="Baojie_BJ-9900"></a> Baojie_BJ-9900 |  |  |  | 0.02% |
+| <a name="Baojie_BJ-9900"></a> Baojie_BJ-9900 |  |  | Yes | 0.02% |
 | <a name="Baojie_BJ-UV55"></a> Baojie_BJ-UV55 |  |  | Yes | 0.03% |
 | <a name="Boblov_X3Plus"></a> Boblov_X3Plus |  |  |  | 0.02% |
 | <a name="Boristone_8RS"></a> Boristone_8RS | [Implied by Radtel_RT-490](#user-content-Radtel_RT-490) | 11-Nov-2023 | Yes | 0.00% |
@@ -454,7 +454,7 @@
 
 **Tested:** 87% (393/54) (93% of usage stats)
 
-**Byte clean:** 91% (407/40)
+**Byte clean:** 91% (408/39)
 
 ## Meaning of this testing
 
