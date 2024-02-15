@@ -332,6 +332,14 @@ class TestBitwiseStructTypes(BaseTest):
         self.assertRaises(AssertionError, obj.fill_raw, False)
 
 
+class TestBitwisePrintoffset(BaseTest):
+    @mock.patch.object(bitwise.LOG, 'debug')
+    def test_printoffset(self, mock_log):
+        defn = 'u8 foo; u16 bar; #printoffset "bar";'
+        bitwise.parse(defn, b"abcdZ")
+        mock_log.assert_called_once_with('bar: 3 (0x00000003)')
+
+
 class TestBitwiseSeek(BaseTest):
     def test_seekto(self):
         defn = "#seekto 4; char foo;"
