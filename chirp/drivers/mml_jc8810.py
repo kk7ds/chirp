@@ -1338,6 +1338,7 @@ class HI8811Radio(RT470LRadio):
 
     # pcb 2
     _fingerprint_pcb2 = [b"\x00\x00\x00\x28\x00\x20\xD4\x04",  # fw v2.00
+                         b"\x00\x00\x00\x28\x00\x20\x07\x00",  # fw v2.00
                          ]
 
     _fingerprint = _fingerprint_pcb1 + _fingerprint_pcb2
