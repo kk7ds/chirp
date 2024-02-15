@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-14 21:49-0800\n"
+"POT-Creation-Date: 2024-02-15 15:14-0800\n"
 "PO-Revision-Date: 2024-01-20 12:24+0100\n"
 "Last-Translator: Daniele Forsi <iu5hkx@gmail.com>\n"
 "Language-Team: \n"
@@ -787,7 +787,7 @@ msgstr[1] "Raggruppa %i memorie"
 msgid "Comment"
 msgstr "Commento"
 
-#: ../wxui/clone.py:244
+#: ../wxui/clone.py:248
 msgid "Communicate with radio"
 msgstr "Comunicazione con la radio"
 
@@ -818,7 +818,7 @@ msgstr "Nazione"
 msgid "Cross mode"
 msgstr "Modo cross"
 
-#: ../wxui/clone.py:438
+#: ../wxui/clone.py:442
 msgid "Custom Port"
 msgstr "Porta personalizzata"
 
@@ -896,10 +896,14 @@ msgstr "Disabilitata"
 msgid "Distance"
 msgstr "Distanza"
 
-#: ../wxui/clone.py:171
+#: ../wxui/clone.py:175
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "Non mostrarlo più per %s"
+
+#: ../wxui/clone.py:172
+msgid "Do you accept the risk?"
+msgstr ""
 
 #: ../wxui/bankedit.py:190
 msgid "Double-click to change bank name"
@@ -917,7 +921,7 @@ msgstr "Scarica dalla radio"
 msgid "Download from radio..."
 msgstr "Scarica dalla radio..."
 
-#: ../wxui/clone.py:545
+#: ../wxui/clone.py:560
 msgid "Download instructions"
 msgstr "Istruzioni per lo scaricamento"
 
@@ -978,7 +982,7 @@ msgstr "Inserire la frequenza TX (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:437
+#: ../wxui/clone.py:441
 msgid "Enter custom port:"
 msgstr "Inserire la porta personalizzata:"
 
@@ -992,11 +996,11 @@ msgstr "Memoria %s cancellata"
 msgid "Error applying settings"
 msgstr "Errore di scrittura della memoria"
 
-#: ../wxui/clone.py:482
+#: ../wxui/clone.py:486
 msgid "Error communicating with radio"
 msgstr "Errore durante la comunicazione con la radio"
 
-#: ../wxui/clone.py:513
+#: ../wxui/clone.py:518
 msgid "Experimental driver"
 msgstr "Driver sperimentale"
 
@@ -1344,7 +1348,7 @@ msgstr "Installare l'icona per il desktop?"
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:567
+#: ../wxui/clone.py:582
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Errore interno"
@@ -1471,7 +1475,7 @@ msgstr ""
 msgid "Mode"
 msgstr "Modo"
 
-#: ../wxui/clone.py:274
+#: ../wxui/clone.py:278
 msgid "Model"
 msgstr "Modello"
 
@@ -1491,7 +1495,7 @@ msgstr "Modulo caricato"
 msgid "Module loaded successfully"
 msgstr "Modulo caricato con successo"
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:410
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Trovata più di una porta: %s"
@@ -1686,11 +1690,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Attendere"
 
-#: ../wxui/clone.py:383
+#: ../wxui/clone.py:387
 msgid "Plug in your cable and then click OK"
 msgstr "Collegare il cavo e premere OK"
 
-#: ../wxui/clone.py:267
+#: ../wxui/clone.py:271
 msgid "Port"
 msgstr "Porta"
 
@@ -1736,7 +1740,7 @@ msgstr "Radio"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:537 ../wxui/clone.py:621
+#: ../wxui/clone.py:552 ../wxui/clone.py:636
 msgid "Radio information"
 msgstr "Informazioni sulla radio"
 
@@ -2045,7 +2049,7 @@ msgstr "Questa memoria e sposta tutto in alto"
 msgid "This memory and shift block up"
 msgstr "Questa memoria e sposta il blocco in alto"
 
-#: ../drivers/uvk5_egzumer.py:1455
+#: ../drivers/uvk5_egzumer.py:1460
 msgid ""
 "This option may break your radio! Each radio has a unique set of calibration "
 "data and uploading the data from the image will cause physical harm to the "
@@ -2090,12 +2094,12 @@ msgstr "Tone squelch"
 msgid "Tuning Step"
 msgstr "Step sintonia"
 
-#: ../wxui/clone.py:377 ../wxui/clone.py:384 ../wxui/clone.py:395
-#: ../wxui/clone.py:403 ../wxui/clone.py:407
+#: ../wxui/clone.py:381 ../wxui/clone.py:388 ../wxui/clone.py:399
+#: ../wxui/clone.py:407 ../wxui/clone.py:411
 msgid "USB Port Finder"
 msgstr ""
 
-#: ../wxui/clone.py:393
+#: ../wxui/clone.py:397
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2140,7 +2144,7 @@ msgstr "Impossibile impostare %s su questa memoria"
 msgid "United States"
 msgstr "Stati Uniti"
 
-#: ../wxui/clone.py:376
+#: ../wxui/clone.py:380
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Scollegare il cavo (se necessario) e poi premere OK"
 
@@ -2149,7 +2153,7 @@ msgstr "Scollegare il cavo (se necessario) e poi premere OK"
 msgid "Unsupported model %r"
 msgstr "Tipo file non supportato"
 
-#: ../wxui/clone.py:636
+#: ../wxui/clone.py:651
 msgid "Upload instructions"
 msgstr "Istruzioni per il caricamento"
 
@@ -2202,7 +2206,7 @@ msgstr "Il valore deve essere maggiore o uguale a zero"
 msgid "Values"
 msgstr "Valori"
 
-#: ../wxui/clone.py:270
+#: ../wxui/clone.py:274
 msgid "Vendor"
 msgstr "Produttore"
 
@@ -2231,7 +2235,7 @@ msgstr "Benvenuto"
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "Installare un'icona sul desktop?"
 
-#: ../wxui/clone.py:401
+#: ../wxui/clone.py:405
 msgid "Your cable appears to be on port:"
 msgstr "Il cavo sembra sulla porta:"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-14 21:49-0800\n"
+"POT-Creation-Date: 2024-02-15 15:14-0800\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -790,7 +790,7 @@ msgstr[1] "Διαγραφή %i Μνημών"
 msgid "Comment"
 msgstr "Σχόλιο"
 
-#: ../wxui/clone.py:244
+#: ../wxui/clone.py:248
 msgid "Communicate with radio"
 msgstr "Επικοινωνία με πομποδέκτη"
 
@@ -821,7 +821,7 @@ msgstr "Χώρα"
 msgid "Cross mode"
 msgstr ""
 
-#: ../wxui/clone.py:438
+#: ../wxui/clone.py:442
 #, fuzzy
 msgid "Custom Port"
 msgstr "Εισάγετε προσαρμοσμένη θύρα:"
@@ -904,10 +904,14 @@ msgstr ""
 msgid "Distance"
 msgstr "Απόσταση"
 
-#: ../wxui/clone.py:171
+#: ../wxui/clone.py:175
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "Να μην ερωτηθώ ξανά για %s"
+
+#: ../wxui/clone.py:172
+msgid "Do you accept the risk?"
+msgstr ""
 
 #: ../wxui/bankedit.py:190
 msgid "Double-click to change bank name"
@@ -926,7 +930,7 @@ msgstr "Λήψη Από Πομποδέκτη"
 msgid "Download from radio..."
 msgstr "Λήψη Από Πομποδέκτη"
 
-#: ../wxui/clone.py:545
+#: ../wxui/clone.py:560
 msgid "Download instructions"
 msgstr "Οδηγίες λήψης"
 
@@ -987,7 +991,7 @@ msgstr "Εισάγετε συχνότητα εκπομπής (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Εισάγετε ένα νέο όνομα για την ομάδα μνημών %s:"
 
-#: ../wxui/clone.py:437
+#: ../wxui/clone.py:441
 msgid "Enter custom port:"
 msgstr "Εισάγετε προσαρμοσμένη θύρα:"
 
@@ -1000,11 +1004,11 @@ msgstr "Διεγράφη η μνήμη %s"
 msgid "Error applying settings"
 msgstr "Σφάλμα εφαρμογής ρυθμίσεων"
 
-#: ../wxui/clone.py:482
+#: ../wxui/clone.py:486
 msgid "Error communicating with radio"
 msgstr "Σφάλμα επικοινωνίας με τον πομποδέκτη"
 
-#: ../wxui/clone.py:513
+#: ../wxui/clone.py:518
 msgid "Experimental driver"
 msgstr "Πειραματικός οδηγός"
 
@@ -1354,7 +1358,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr "Αλληλεπίδραση με οδηγό"
 
-#: ../wxui/clone.py:567
+#: ../wxui/clone.py:582
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Αλληλεπίδραση με οδηγό"
@@ -1488,7 +1492,7 @@ msgstr "Η μνήμη {num} δεν βρίσκεται στην ομάδα μνη
 msgid "Mode"
 msgstr "Λειτουργία"
 
-#: ../wxui/clone.py:274
+#: ../wxui/clone.py:278
 msgid "Model"
 msgstr "Μοντέλο"
 
@@ -1509,7 +1513,7 @@ msgstr "Module"
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:410
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Βρέθηκαν περισσότερες από μία θύρες: %s"
@@ -1709,11 +1713,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Παρακαλώ περιμένετε"
 
-#: ../wxui/clone.py:383
+#: ../wxui/clone.py:387
 msgid "Plug in your cable and then click OK"
 msgstr "Συνδέστε το καλώδιο σας και πατήστε OK"
 
-#: ../wxui/clone.py:267
+#: ../wxui/clone.py:271
 msgid "Port"
 msgstr "Θύρα"
 
@@ -1759,7 +1763,7 @@ msgstr "Πομποδέκτης"
 msgid "Radio did not ack block %i"
 msgstr "Ο πομποδέκτης δεν επιβεβαίωσε το μπλοκ %i"
 
-#: ../wxui/clone.py:537 ../wxui/clone.py:621
+#: ../wxui/clone.py:552 ../wxui/clone.py:636
 msgid "Radio information"
 msgstr "Πληροφορίες πομποδέκτη"
 
@@ -2082,7 +2086,7 @@ msgstr "Διαγραφή %i μνημών και μετακίνηση όλων π
 msgid "This memory and shift block up"
 msgstr "Διαγραφή %i μνημών και μετακίνηση ομάδας προς τα επάνω"
 
-#: ../drivers/uvk5_egzumer.py:1455
+#: ../drivers/uvk5_egzumer.py:1460
 msgid ""
 "This option may break your radio! Each radio has a unique set of calibration "
 "data and uploading the data from the image will cause physical harm to the "
@@ -2127,12 +2131,12 @@ msgstr "Τόνος Φίμωσης"
 msgid "Tuning Step"
 msgstr "Βήμα συντονισμού"
 
-#: ../wxui/clone.py:377 ../wxui/clone.py:384 ../wxui/clone.py:395
-#: ../wxui/clone.py:403 ../wxui/clone.py:407
+#: ../wxui/clone.py:381 ../wxui/clone.py:388 ../wxui/clone.py:399
+#: ../wxui/clone.py:407 ../wxui/clone.py:411
 msgid "USB Port Finder"
 msgstr "Έυρεση θυρών USB"
 
-#: ../wxui/clone.py:393
+#: ../wxui/clone.py:397
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2175,7 +2179,7 @@ msgstr "Πατήστε enter για καταχώρηση στη μνήμη"
 msgid "United States"
 msgstr "Ηνωμένες Πολιτείες"
 
-#: ../wxui/clone.py:376
+#: ../wxui/clone.py:380
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Αποσυνδέστε το καλώδιο σας (αν χρειάζεται) και μετά πατήστε OK"
 
@@ -2184,7 +2188,7 @@ msgstr "Αποσυνδέστε το καλώδιο σας (αν χρειάζετ
 msgid "Unsupported model %r"
 msgstr ""
 
-#: ../wxui/clone.py:636
+#: ../wxui/clone.py:651
 msgid "Upload instructions"
 msgstr "Οδηγίες αποστολής"
 
@@ -2238,7 +2242,7 @@ msgstr "Η τιμή πρέπει να είναι μηδέν ή μεγαλύτε�
 msgid "Values"
 msgstr ""
 
-#: ../wxui/clone.py:270
+#: ../wxui/clone.py:274
 msgid "Vendor"
 msgstr "Προμηθευτής"
 
@@ -2267,7 +2271,7 @@ msgstr "Καλωσήρθατε"
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr ""
 
-#: ../wxui/clone.py:401
+#: ../wxui/clone.py:405
 msgid "Your cable appears to be on port:"
 msgstr "Το καλώδιο σας φαίνεται να είανι στη θύρα:"
 
