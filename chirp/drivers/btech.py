@@ -817,6 +817,12 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
             LOG.error(msg)
             raise errors.InvalidDataError(msg)
 
+    def _is_txinh(self, _mem):
+        raw_tx = b""
+        for i in range(0, 4):
+            raw_tx += _mem.txfreq[i].get_raw()
+        return raw_tx == b"\xFF\xFF\xFF\xFF"
+
     def get_memory(self, number):
         """Get the mem representation from the radio image"""
         _mem = self._memobj.memory[number]
@@ -835,7 +841,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         # Freq and offset
         mem.freq = int(_mem.rxfreq) * 10
         # tx freq can be blank
-        if _mem.get_raw()[:4] == b"\xFF":
+        if self._is_txinh(_mem):
             # TX freq not set
             mem.offset = 0
             mem.duplex = "off"
