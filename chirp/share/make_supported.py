@@ -4,6 +4,7 @@ from chirp import directory
 from chirp import chirp_common
 import sys
 
+setattr(__builtins__, '_', str)
 sys.path.insert(0, ".")
 sys.path.insert(0, "..")
 
@@ -16,6 +17,9 @@ directory.import_drivers()
 RF = chirp_common.RadioFeatures()
 KEYS = [x for x in sorted(RF.__dict__.keys())
         if "_" in x and not x.startswith("_")]
+ADDITIONAL = {
+    'experimental': lambda r: bool(r.get_prompts().experimental),
+}
 
 RADIO_TYPES = {
     'Clone': chirp_common.CloneModeRadio,
@@ -48,8 +52,12 @@ def supported_row(radio):
         'row%04i' % counter,
         radio.VENDOR, radio.MODEL, radio.VARIANT)
     rf = radio.get_features()
-    for key in KEYS:
-        value = rf.__dict__[key]
+    for key in KEYS + list(ADDITIONAL.items()):
+        if isinstance(key, tuple):
+            key, valuefn = key
+            value = valuefn(radio)
+        else:
+            value = rf.__dict__[key]
         if key == "valid_bands":
             value = ["%s-%s MHz" % (chirp_common.format_freq(x),
                                     chirp_common.format_freq(y))
@@ -91,9 +99,16 @@ def supported_row(radio):
 def header_row():
     row = "<thead><tr>"
     row += "<th>Radio</th>\n"
-    for key in KEYS:
-        Key = key.split("_", 1)[1].title().replace("_", " ")
-        row += '<th title="%s">%s</th>' % (RF.get_doc(key), Key)
+    for key in KEYS + list(ADDITIONAL.keys()):
+        try:
+            Key = key.split("_", 1)[1].title().replace("_", " ")
+        except IndexError:
+            Key = key.title()
+        try:
+            doc = RF.get_doc(key)
+        except KeyError:
+            doc = ''
+        row += '<th title="%s">%s</th>' % (doc, Key)
     row += '<th title="Radio programming type">Type</th>\n'
     row += "</tr></thead>\n"
     return row
