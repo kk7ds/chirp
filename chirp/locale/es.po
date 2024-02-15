@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-15 15:14-0800\n"
-"PO-Revision-Date: 2024-02-08 20:27-0300\n"
+"PO-Revision-Date: 2024-02-15 20:45-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1290,7 +1290,7 @@ msgstr "No preguntar de nuevo para %s"
 
 #: ../wxui/clone.py:172
 msgid "Do you accept the risk?"
-msgstr ""
+msgstr "¿Aceptas el riesgo?"
 
 #: ../wxui/bankedit.py:190
 msgid "Double-click to change bank name"
@@ -2741,9 +2741,9 @@ msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Desconecta tu cable (si es necesario) y entonces haz clic en ACEPTAR"
 
 #: ../drivers/thd74.py:328
-#, fuzzy, python-format
+#, python-format
 msgid "Unsupported model %r"
-msgstr "Tipo de archivo no soportado"
+msgstr "Modelo no soportado %r"
 
 #: ../wxui/clone.py:651
 msgid "Upload instructions"
