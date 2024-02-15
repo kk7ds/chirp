@@ -78,7 +78,7 @@ class TestCSV(unittest.TestCase):
         lines.insert(0, '# Test file with comments')
         lines.insert(4, '# Test comment in the middle')
         lines.append('# Comment at the end')
-        with open(self.testfn, 'w') as f:
+        with open(self.testfn, 'w', newline='') as f:
             f.write('\r\n'.join(lines))
         csv = generic_csv.CSVRadio(self.testfn)
         mem = csv.get_memory(0)
