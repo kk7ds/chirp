@@ -869,19 +869,24 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
                 _mem[elname] = val
 
             if elname == "key1_shortpress_action":
-                _mem.key1_shortpress_action = element.value
+                _mem.key1_shortpress_action = \
+                    KEYACTIONS_LIST.index(element.value)
 
             elif elname == "key1_longpress_action":
-                _mem.key1_longpress_action = element.value
+                _mem.key1_longpress_action = \
+                    KEYACTIONS_LIST.index(element.value)
 
             elif elname == "key2_shortpress_action":
-                _mem.key2_shortpress_action = element.value
+                _mem.key2_shortpress_action = \
+                    KEYACTIONS_LIST.index(element.value)
 
             elif elname == "key2_longpress_action":
-                _mem.key2_longpress_action = element.value
+                _mem.key2_longpress_action = \
+                    KEYACTIONS_LIST.index(element.value)
 
             elif elname == "keyM_longpress_action":
-                _mem.keyM_longpress_action = element.value
+                _mem.keyM_longpress_action = \
+                    KEYACTIONS_LIST.index(element.value)
 
             elif element.changed() and elname.startswith("cal."):
                 _mem.get_path(elname).set_value(element.value)
