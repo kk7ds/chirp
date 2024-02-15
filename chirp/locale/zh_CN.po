@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-14 21:49-0800\n"
+"POT-Creation-Date: 2024-02-15 15:14-0800\n"
 "PO-Revision-Date: 2022-06-04 02:01+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language: zh_CN\n"
@@ -783,7 +783,7 @@ msgstr[0] "对比原始存储"
 msgid "Comment"
 msgstr "备注"
 
-#: ../wxui/clone.py:244
+#: ../wxui/clone.py:248
 msgid "Communicate with radio"
 msgstr ""
 
@@ -815,7 +815,7 @@ msgstr ""
 msgid "Cross mode"
 msgstr "收发使用不同亚音频"
 
-#: ../wxui/clone.py:438
+#: ../wxui/clone.py:442
 msgid "Custom Port"
 msgstr ""
 
@@ -899,9 +899,13 @@ msgstr "已启用"
 msgid "Distance"
 msgstr ""
 
-#: ../wxui/clone.py:171
+#: ../wxui/clone.py:175
 #, python-format
 msgid "Do not prompt again for %s"
+msgstr ""
+
+#: ../wxui/clone.py:172
+msgid "Do you accept the risk?"
 msgstr ""
 
 #: ../wxui/bankedit.py:190
@@ -922,7 +926,7 @@ msgstr "从电台下载"
 msgid "Download from radio..."
 msgstr "从电台下载"
 
-#: ../wxui/clone.py:545
+#: ../wxui/clone.py:560
 #, fuzzy
 msgid "Download instructions"
 msgstr "显示指引"
@@ -984,7 +988,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:437
+#: ../wxui/clone.py:441
 msgid "Enter custom port:"
 msgstr ""
 
@@ -998,11 +1002,11 @@ msgstr "正在擦除存储 {loc}"
 msgid "Error applying settings"
 msgstr "设置值有误：%s"
 
-#: ../wxui/clone.py:482
+#: ../wxui/clone.py:486
 msgid "Error communicating with radio"
 msgstr ""
 
-#: ../wxui/clone.py:513
+#: ../wxui/clone.py:518
 #, fuzzy
 msgid "Experimental driver"
 msgstr "继续使用不稳定的驱动？"
@@ -1361,7 +1365,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:567
+#: ../wxui/clone.py:582
 #, fuzzy
 msgid "Internal driver error"
 msgstr "内部错误"
@@ -1493,7 +1497,7 @@ msgstr ""
 msgid "Mode"
 msgstr "制式"
 
-#: ../wxui/clone.py:274
+#: ../wxui/clone.py:278
 msgid "Model"
 msgstr "型号"
 
@@ -1516,7 +1520,7 @@ msgstr "模块"
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:410
 #, python-format
 msgid "More than one port found: %s"
 msgstr ""
@@ -1720,11 +1724,11 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../wxui/clone.py:383
+#: ../wxui/clone.py:387
 msgid "Plug in your cable and then click OK"
 msgstr ""
 
-#: ../wxui/clone.py:267
+#: ../wxui/clone.py:271
 msgid "Port"
 msgstr "端口"
 
@@ -1773,7 +1777,7 @@ msgstr "电台"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:537 ../wxui/clone.py:621
+#: ../wxui/clone.py:552 ../wxui/clone.py:636
 #, fuzzy
 msgid "Radio information"
 msgstr "{information}"
@@ -2088,7 +2092,7 @@ msgstr "...并将区块上移"
 msgid "This memory and shift block up"
 msgstr "...并将区块上移"
 
-#: ../drivers/uvk5_egzumer.py:1455
+#: ../drivers/uvk5_egzumer.py:1460
 msgid ""
 "This option may break your radio! Each radio has a unique set of calibration "
 "data and uploading the data from the image will cause physical harm to the "
@@ -2135,12 +2139,12 @@ msgstr "接收亚音频"
 msgid "Tuning Step"
 msgstr "调谐间隔"
 
-#: ../wxui/clone.py:377 ../wxui/clone.py:384 ../wxui/clone.py:395
-#: ../wxui/clone.py:403 ../wxui/clone.py:407
+#: ../wxui/clone.py:381 ../wxui/clone.py:388 ../wxui/clone.py:399
+#: ../wxui/clone.py:407 ../wxui/clone.py:411
 msgid "USB Port Finder"
 msgstr ""
 
-#: ../wxui/clone.py:393
+#: ../wxui/clone.py:397
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2184,7 +2188,7 @@ msgstr "无法变更此型号电台"
 msgid "United States"
 msgstr ""
 
-#: ../wxui/clone.py:376
+#: ../wxui/clone.py:380
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
 
@@ -2193,7 +2197,7 @@ msgstr ""
 msgid "Unsupported model %r"
 msgstr "不支持的文件类型"
 
-#: ../wxui/clone.py:636
+#: ../wxui/clone.py:651
 #, fuzzy
 msgid "Upload instructions"
 msgstr "{instructions}"
@@ -2249,7 +2253,7 @@ msgstr ""
 msgid "Values"
 msgstr ""
 
-#: ../wxui/clone.py:270
+#: ../wxui/clone.py:274
 msgid "Vendor"
 msgstr "厂商"
 
@@ -2279,7 +2283,7 @@ msgstr ""
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr ""
 
-#: ../wxui/clone.py:401
+#: ../wxui/clone.py:405
 msgid "Your cable appears to be on port:"
 msgstr ""
 

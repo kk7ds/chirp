@@ -167,6 +167,10 @@ class ChirpRadioPromptDialog(wx.Dialog):
         instructions.SetLabelMarkup(self.message)
         vbox.Add(instructions,
                  border=20, flag=wx.ALL)
+        if self.prompt == 'experimental':
+            risk_warning = wx.StaticText(self)
+            risk_warning.SetLabelMarkup(_('Do you accept the risk?'))
+            vbox.Add(risk_warning, border=20, flag=wx.ALL)
         self.cb = wx.CheckBox(
             self, label=_("Do not prompt again for %s") % (
                 '%s %s' % (self.radio.VENDOR, self.radio.MODEL)))
@@ -509,12 +513,23 @@ class ChirpDownloadDialog(ChirpCloneDialog):
         rclass = self.get_selected_rclass()
         prompts = rclass.get_prompts()
         if prompts.experimental:
-            d = ChirpRadioPromptDialog(self,
-                                       title=_('Experimental driver'),
-                                       buttons=wx.OK,
-                                       radio=rclass,
-                                       prompt='experimental')
-            d.ShowModal()
+            d = ChirpRadioPromptDialog(
+                self,
+                title=_('Experimental driver'),
+                buttons=wx.YES_NO | wx.NO_DEFAULT,
+                radio=rclass,
+                prompt='experimental')
+            d.SetAffirmativeId(wx.ID_YES)
+            d.SetEscapeId(wx.ID_NO)
+            r = d.ShowModal()
+            if r == wx.ID_CANCEL:
+                LOG.info('User did not accept experimental risk for %s',
+                         rclass)
+                self.FindWindowById(wx.ID_OK).Disable()
+            else:
+                LOG.info('User accepted experimental risk for %s',
+                         rclass)
+                self.FindWindowById(wx.ID_OK).Enable()
 
     def _action(self, event):
         if event.GetEventObject().GetId() == wx.ID_CANCEL:

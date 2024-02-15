@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-14 21:49-0800\n"
+"POT-Creation-Date: 2024-02-15 15:14-0800\n"
 "PO-Revision-Date: 2011-11-29 16:07-0800\n"
 "Last-Translator: Dan Smith <dan@theine>\n"
 "Language-Team: English\n"
@@ -786,7 +786,7 @@ msgstr[1] "Diff raw memories"
 msgid "Comment"
 msgstr ""
 
-#: ../wxui/clone.py:244
+#: ../wxui/clone.py:248
 msgid "Communicate with radio"
 msgstr ""
 
@@ -818,7 +818,7 @@ msgstr ""
 msgid "Cross mode"
 msgstr ""
 
-#: ../wxui/clone.py:438
+#: ../wxui/clone.py:442
 msgid "Custom Port"
 msgstr ""
 
@@ -898,9 +898,13 @@ msgstr ""
 msgid "Distance"
 msgstr ""
 
-#: ../wxui/clone.py:171
+#: ../wxui/clone.py:175
 #, python-format
 msgid "Do not prompt again for %s"
+msgstr ""
+
+#: ../wxui/clone.py:172
+msgid "Do you accept the risk?"
 msgstr ""
 
 #: ../wxui/bankedit.py:190
@@ -921,7 +925,7 @@ msgstr "Download From Radio"
 msgid "Download from radio..."
 msgstr "Download From Radio"
 
-#: ../wxui/clone.py:545
+#: ../wxui/clone.py:560
 #, fuzzy
 msgid "Download instructions"
 msgstr "Download From Radio"
@@ -981,7 +985,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:437
+#: ../wxui/clone.py:441
 msgid "Enter custom port:"
 msgstr ""
 
@@ -994,11 +998,11 @@ msgstr "E_xchange"
 msgid "Error applying settings"
 msgstr ""
 
-#: ../wxui/clone.py:482
+#: ../wxui/clone.py:486
 msgid "Error communicating with radio"
 msgstr ""
 
-#: ../wxui/clone.py:513
+#: ../wxui/clone.py:518
 msgid "Experimental driver"
 msgstr ""
 
@@ -1349,7 +1353,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:567
+#: ../wxui/clone.py:582
 msgid "Internal driver error"
 msgstr ""
 
@@ -1476,7 +1480,7 @@ msgstr ""
 msgid "Mode"
 msgstr ""
 
-#: ../wxui/clone.py:274
+#: ../wxui/clone.py:278
 msgid "Model"
 msgstr ""
 
@@ -1496,7 +1500,7 @@ msgstr ""
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:410
 #, python-format
 msgid "More than one port found: %s"
 msgstr ""
@@ -1696,11 +1700,11 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../wxui/clone.py:383
+#: ../wxui/clone.py:387
 msgid "Plug in your cable and then click OK"
 msgstr ""
 
-#: ../wxui/clone.py:267
+#: ../wxui/clone.py:271
 msgid "Port"
 msgstr ""
 
@@ -1747,7 +1751,7 @@ msgstr "_Radio"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:537 ../wxui/clone.py:621
+#: ../wxui/clone.py:552 ../wxui/clone.py:636
 msgid "Radio information"
 msgstr ""
 
@@ -2062,7 +2066,7 @@ msgstr "_Delete"
 msgid "This memory and shift block up"
 msgstr "_Delete"
 
-#: ../drivers/uvk5_egzumer.py:1455
+#: ../drivers/uvk5_egzumer.py:1460
 msgid ""
 "This option may break your radio! Each radio has a unique set of calibration "
 "data and uploading the data from the image will cause physical harm to the "
@@ -2107,12 +2111,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr ""
 
-#: ../wxui/clone.py:377 ../wxui/clone.py:384 ../wxui/clone.py:395
-#: ../wxui/clone.py:403 ../wxui/clone.py:407
+#: ../wxui/clone.py:381 ../wxui/clone.py:388 ../wxui/clone.py:399
+#: ../wxui/clone.py:407 ../wxui/clone.py:411
 msgid "USB Port Finder"
 msgstr ""
 
-#: ../wxui/clone.py:393
+#: ../wxui/clone.py:397
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2155,7 +2159,7 @@ msgstr ""
 msgid "United States"
 msgstr ""
 
-#: ../wxui/clone.py:376
+#: ../wxui/clone.py:380
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
 
@@ -2164,7 +2168,7 @@ msgstr ""
 msgid "Unsupported model %r"
 msgstr ""
 
-#: ../wxui/clone.py:636
+#: ../wxui/clone.py:651
 msgid "Upload instructions"
 msgstr ""
 
@@ -2219,7 +2223,7 @@ msgstr ""
 msgid "Values"
 msgstr ""
 
-#: ../wxui/clone.py:270
+#: ../wxui/clone.py:274
 msgid "Vendor"
 msgstr ""
 
@@ -2249,7 +2253,7 @@ msgstr ""
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr ""
 
-#: ../wxui/clone.py:401
+#: ../wxui/clone.py:405
 msgid "Your cable appears to be on port:"
 msgstr ""
 
