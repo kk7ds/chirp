@@ -72,7 +72,7 @@ struct {
      abr:4;           //      Auto BackLight
   u8 unused_9004:7,   // 9004
      tdr:1;           //      TDR
-  u8 unused:5,        // 9005
+  u8 unused_9005:5,   // 9005
      tot:3;           //      Time-out Timer
   u8 unused_9006:7,   // 9006
      beep:1;          //      Beep
@@ -90,7 +90,7 @@ struct {
      pttlt:3;         //      PTT Delay
   u8 unused_900d:6,   // 900D
      mdfa:2;          //      Channel_A Display
-  u8 unused_9003:6,   // 900E
+  u8 unused_900e:6,   // 900E
      mdfb:2;          //      Channel_B Display
   u8 unknown_900f;    // 900F
   u8 unused_9010:4,   // 9010
