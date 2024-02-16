@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-15 16:02-0800\n"
+"POT-Creation-Date: 2024-02-16 14:38-0800\n"
 "PO-Revision-Date: 2023-10-11 16:47+0300\n"
 "Last-Translator: Olesya Gerasimenko <translation-team@basealt.ru>\n"
 "Language-Team: Basealt Translation Team\n"
@@ -1139,7 +1139,7 @@ msgstr[2] "Объединить ячейки памяти (%i) в кластер
 msgid "Comment"
 msgstr "Комментарий"
 
-#: ../wxui/clone.py:249
+#: ../wxui/clone.py:250
 msgid "Communicate with radio"
 msgstr "Обмен данными со станцией"
 
@@ -1172,7 +1172,7 @@ msgstr "Страна"
 msgid "Cross mode"
 msgstr "Кросс-режим"
 
-#: ../wxui/clone.py:443
+#: ../wxui/clone.py:444
 msgid "Custom Port"
 msgstr "Пользовательский порт"
 
@@ -1278,7 +1278,7 @@ msgstr "Загрузить из станции"
 msgid "Download from radio..."
 msgstr "Загрузить из станции..."
 
-#: ../wxui/clone.py:561
+#: ../wxui/clone.py:562
 msgid "Download instructions"
 msgstr "Инструкции по загрузке"
 
@@ -1338,7 +1338,7 @@ msgstr "Введите частоту TX (МГц)"
 msgid "Enter a new name for bank %s:"
 msgstr "Введите новое имя банка %s:"
 
-#: ../wxui/clone.py:442
+#: ../wxui/clone.py:443
 msgid "Enter custom port:"
 msgstr "Введите пользовательский порт:"
 
@@ -1351,11 +1351,11 @@ msgstr "Стёрта ячейка памяти %s"
 msgid "Error applying settings"
 msgstr "Ошибка применения параметров"
 
-#: ../wxui/clone.py:487
+#: ../wxui/clone.py:488
 msgid "Error communicating with radio"
 msgstr "Ошибка обмена данными со станцией"
 
-#: ../wxui/clone.py:519
+#: ../wxui/clone.py:520
 msgid "Experimental driver"
 msgstr "Экспериментальный драйвер"
 
@@ -1801,7 +1801,7 @@ msgstr "Создать значок на рабочем столе?"
 msgid "Interact with driver"
 msgstr "Обмен данными с драйвером"
 
-#: ../wxui/clone.py:583
+#: ../wxui/clone.py:584
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Ошибка"
@@ -1934,7 +1934,7 @@ msgstr "Ячейка памяти {num} отсутствует в банке {ba
 msgid "Mode"
 msgstr "Режим"
 
-#: ../wxui/clone.py:279
+#: ../wxui/clone.py:280
 msgid "Model"
 msgstr "Модель"
 
@@ -1954,7 +1954,7 @@ msgstr "Модуль загружен"
 msgid "Module loaded successfully"
 msgstr "Модуль успешно загружен"
 
-#: ../wxui/clone.py:411
+#: ../wxui/clone.py:412
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Найдено более одного порта: %s"
@@ -2175,11 +2175,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Подождите"
 
-#: ../wxui/clone.py:388
+#: ../wxui/clone.py:389
 msgid "Plug in your cable and then click OK"
 msgstr "Подключите кабель и нажмите «ОК»"
 
-#: ../wxui/clone.py:272
+#: ../wxui/clone.py:273
 msgid "Port"
 msgstr "Порт"
 
@@ -2225,7 +2225,7 @@ msgstr "Станция"
 msgid "Radio did not ack block %i"
 msgstr "Станция не распознала блок %i"
 
-#: ../wxui/clone.py:553 ../wxui/clone.py:637
+#: ../wxui/clone.py:554 ../wxui/clone.py:638
 msgid "Radio information"
 msgstr "Информация о станции"
 
@@ -2630,12 +2630,12 @@ msgstr "ТонШПД"
 msgid "Tuning Step"
 msgstr "Шаг настройки"
 
-#: ../wxui/clone.py:382 ../wxui/clone.py:389 ../wxui/clone.py:400
-#: ../wxui/clone.py:408 ../wxui/clone.py:412
+#: ../wxui/clone.py:383 ../wxui/clone.py:390 ../wxui/clone.py:401
+#: ../wxui/clone.py:409 ../wxui/clone.py:413
 msgid "USB Port Finder"
 msgstr "Поиск USB-портов"
 
-#: ../wxui/clone.py:398
+#: ../wxui/clone.py:399
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2683,7 +2683,7 @@ msgstr "Невозможно установить %s для этой ячейк�
 msgid "United States"
 msgstr "Соединённые Штаты"
 
-#: ../wxui/clone.py:381
+#: ../wxui/clone.py:382
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Отключите кабель (если требуется) и нажмите «ОК»"
 
@@ -2692,7 +2692,7 @@ msgstr "Отключите кабель (если требуется) и наж�
 msgid "Unsupported model %r"
 msgstr "Неподдерживаемый тип файла"
 
-#: ../wxui/clone.py:652
+#: ../wxui/clone.py:653
 msgid "Upload instructions"
 msgstr "Отправка инструкций"
 
@@ -2745,7 +2745,7 @@ msgstr "Значение должно быть больше или равно н
 msgid "Values"
 msgstr "Значения"
 
-#: ../wxui/clone.py:275
+#: ../wxui/clone.py:276
 msgid "Vendor"
 msgstr "Изготовитель"
 
@@ -2774,7 +2774,7 @@ msgstr "Добро пожаловать"
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "Следует ли программе CHIRP создать значок на рабочем столе?"
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:407
 msgid "Your cable appears to be on port:"
 msgstr "Похоже, ваш кабель вставлен в порт:"
 

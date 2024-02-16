@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from gettext import gettext as _
 import logging
 import queue
 import tempfile
@@ -32,6 +31,7 @@ from chirp.sources import przemienniki
 from chirp.wxui import common
 from chirp.wxui import config
 
+_ = wx.GetTranslation
 CONF = config.get()
 LOG = logging.getLogger(__name__)
 QueryThreadEvent, EVT_QUERY_THREAD = wx.lib.newevent.NewCommandEvent()

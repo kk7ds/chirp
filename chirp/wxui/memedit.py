@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import functools
-from gettext import gettext as _
 import logging
 import pickle
 import sys
@@ -36,6 +35,7 @@ from chirp.wxui import config
 from chirp.wxui import common
 from chirp.wxui import developer
 
+_ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
 CONF = config.get()
 WX_GTK = 'gtk' in wx.version().lower()
