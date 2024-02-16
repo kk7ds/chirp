@@ -594,7 +594,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             mem.skip = "S"
 
         _levels = self.POWER_LEVELS
-        if self.MODEL in ["A36plus", "UV-A37", "AR-730"]:
+        if self.MODEL in ["A36plus", "A36plus_8w", "UV-A37", "AR-730"]:
             if _mem.txpower == TXPOWER_HIGH:
                 mem.power = _levels[0]
             elif _mem.txpower == TXPOWER_LOW:
@@ -702,7 +702,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         _mem.narrow = mem.mode == "NFM"
 
         _levels = self.POWER_LEVELS
-        if self.MODEL in ["A36plus", "UV-A37", "AR-730"]:
+        if self.MODEL in ["A36plus", "A36plus_8w", "UV-A37", "AR-730"]:
             if mem.power is None:
                 _mem.txpower = TXPOWER_HIGH
             elif mem.power == _levels[0]:
@@ -763,7 +763,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("voice", "Voice Prompts", rs)
         basic.append(rset)
 
-        if self.MODEL not in ["A36plus", "UV-A37", "AR-730"]:
+        if self.MODEL not in ["A36plus", "A36plus_8w", "UV-A37", "AR-730"]:
             # Menu 17: LANGUAGE
             rs = RadioSettingValueList(LANGUAGE_LIST,
                                        LANGUAGE_LIST[_settings.language])
@@ -834,7 +834,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [9, 10, 11, 12]
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 9, 10, 11, 12]
-        elif self.MODEL in ["A36plus"]:
+        elif self.MODEL in ["A36plus", "A36plus_8w"]:
             unwanted = [0, 5, 7, 9, 10, 11]
         else:
             unwanted = []
@@ -865,7 +865,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 10, 11, 12]
-        elif self.MODEL in ["A36plus"]:
+        elif self.MODEL in ["A36plus", "A36plus_8w"]:
             unwanted = [0, 5, 7, 8, 11, 12]
         else:
             unwanted = []
@@ -896,7 +896,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
-        elif self.MODEL in ["A36plus"]:
+        elif self.MODEL in ["A36plus", "A36plus_8w"]:
             unwanted = [0, 5, 7, 8, 11]
         else:
             unwanted = []
@@ -958,7 +958,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
-        elif self.MODEL in ["A36plus"]:
+        elif self.MODEL in ["A36plus", "A36plus_8w"]:
             unwanted = [0, 5, 7, 8, 11]
         else:
             unwanted = []
@@ -1068,7 +1068,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("beep", "Beep", rs)
         basic.append(rset)
 
-        if self.MODEL not in ["A36plus", "UV-A37", "AR-730"]:
+        if self.MODEL not in ["A36plus", "A36plus_8w", "UV-A37", "AR-730"]:
             # Menu 48: RX END TAIL
             rs = RadioSettingValueList(TONERXEND_LIST,
                                        TONERXEND_LIST[_settings.rxendtail])
@@ -1151,7 +1151,7 @@ class JC8810base(chirp_common.CloneModeRadio):
                                 "ANI Code %i Name" % (i + 1), rs)
             ani.append(rset)
 
-        if self.MODEL == "A36plus":
+        if self.MODEL in ["A36plus", "A36plus_8w"]:
             custom = RadioSettingGroup("custom", "Custom Channel Names")
             group.append(custom)
 
@@ -1162,7 +1162,7 @@ class JC8810base(chirp_common.CloneModeRadio):
                                     "Custom Name %i" % (i + 1), rs)
                 custom.append(rset)
 
-        if self.MODEL == "A36plus":
+        if self.MODEL in ["A36plus", "A36plus_8w"]:
             # Menu 21: RX END TAIL
             rs = RadioSettingValueList(TONERXEND_LIST,
                                        TONERXEND_LIST[_settings.skey3_lp])
@@ -1405,6 +1405,7 @@ class A36plusRadio(JC8810base):
     _fingerprint = [b"\x00\x00\x00\x42\x00\x20\xF0\x04",
                     b"\x00\x00\x00\x5A\x00\x20\x08\x05",  # fw 1.18
                     b"\x00\x00\x00\x9E\x00\x20\x0C\x05",  # fw 1.22
+                    b"\x00\x00\x00\xFA\x00\x20\x40\x05",  # fw 1.4
                     ]
 
     _ranges = [
@@ -1424,6 +1425,25 @@ class A36plusRadio(JC8810base):
     def process_mmap(self):
         mem_format = MEM_FORMAT % self._mem_params + MEM_FORMAT_A36PLUS
         self._memobj = bitwise.parse(mem_format, self._mmap)
+
+
+@directory.register
+class A36plus8wRadio(A36plusRadio):
+    """Talkpod A36plus8w"""
+    VENDOR = "Talkpod"
+    MODEL = "A36plus_8w"
+
+    # ==========
+    # Notice to developers:
+    # The A36plus 8w support in this driver is currently based upon v1.4
+    # firmware.
+    # ==========
+
+    POWER_LEVELS = [chirp_common.PowerLevel("H", watts=8.00),
+                    chirp_common.PowerLevel("L", watts=1.00)]
+
+    _fingerprint = [b"\x00\x00\x00\xFA\x00\x20\x40\x05",  # fw 1.4
+                    ]
 
 
 @directory.register
