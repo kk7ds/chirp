@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-15 16:02-0800\n"
+"POT-Creation-Date: 2024-02-16 14:38-0800\n"
 "PO-Revision-Date: 2013-03-30 22:04-0300\n"
 "Last-Translator: Crezivando <crezivando@gmail.com>\n"
 "Language-Team: Language pt-BR\n"
@@ -787,7 +787,7 @@ msgstr[1] "Diff Memórias Raw"
 msgid "Comment"
 msgstr "Comentário"
 
-#: ../wxui/clone.py:249
+#: ../wxui/clone.py:250
 msgid "Communicate with radio"
 msgstr ""
 
@@ -820,7 +820,7 @@ msgstr ""
 msgid "Cross mode"
 msgstr "Modo Cross"
 
-#: ../wxui/clone.py:443
+#: ../wxui/clone.py:444
 msgid "Custom Port"
 msgstr ""
 
@@ -928,7 +928,7 @@ msgstr "Descarregar a partir do Rádio"
 msgid "Download from radio..."
 msgstr "Descarregar a partir do Rádio"
 
-#: ../wxui/clone.py:561
+#: ../wxui/clone.py:562
 #, fuzzy
 msgid "Download instructions"
 msgstr "Descarregar a partir do Rádio"
@@ -989,7 +989,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:442
+#: ../wxui/clone.py:443
 msgid "Enter custom port:"
 msgstr ""
 
@@ -1003,11 +1003,11 @@ msgstr "Apagando memória {loc}"
 msgid "Error applying settings"
 msgstr "Erro gravando memória"
 
-#: ../wxui/clone.py:487
+#: ../wxui/clone.py:488
 msgid "Error communicating with radio"
 msgstr ""
 
-#: ../wxui/clone.py:519
+#: ../wxui/clone.py:520
 msgid "Experimental driver"
 msgstr ""
 
@@ -1359,7 +1359,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:583
+#: ../wxui/clone.py:584
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Erro Interno"
@@ -1491,7 +1491,7 @@ msgstr ""
 msgid "Mode"
 msgstr "Modo"
 
-#: ../wxui/clone.py:279
+#: ../wxui/clone.py:280
 msgid "Model"
 msgstr "Modelo"
 
@@ -1512,7 +1512,7 @@ msgstr ""
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:411
+#: ../wxui/clone.py:412
 #, python-format
 msgid "More than one port found: %s"
 msgstr ""
@@ -1715,11 +1715,11 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../wxui/clone.py:388
+#: ../wxui/clone.py:389
 msgid "Plug in your cable and then click OK"
 msgstr ""
 
-#: ../wxui/clone.py:272
+#: ../wxui/clone.py:273
 msgid "Port"
 msgstr "Porta"
 
@@ -1766,7 +1766,7 @@ msgstr "Rádio"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:553 ../wxui/clone.py:637
+#: ../wxui/clone.py:554 ../wxui/clone.py:638
 #, fuzzy
 msgid "Radio information"
 msgstr "Recuperando informações do banco"
@@ -2130,12 +2130,12 @@ msgstr "TomSql"
 msgid "Tuning Step"
 msgstr "Tune Step"
 
-#: ../wxui/clone.py:382 ../wxui/clone.py:389 ../wxui/clone.py:400
-#: ../wxui/clone.py:408 ../wxui/clone.py:412
+#: ../wxui/clone.py:383 ../wxui/clone.py:390 ../wxui/clone.py:401
+#: ../wxui/clone.py:409 ../wxui/clone.py:413
 msgid "USB Port Finder"
 msgstr ""
 
-#: ../wxui/clone.py:398
+#: ../wxui/clone.py:399
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2179,7 +2179,7 @@ msgstr "Incapaz de efetuar alterações para este modelo"
 msgid "United States"
 msgstr ""
 
-#: ../wxui/clone.py:381
+#: ../wxui/clone.py:382
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
 
@@ -2188,7 +2188,7 @@ msgstr ""
 msgid "Unsupported model %r"
 msgstr "Tipo de arquivo não-suportado"
 
-#: ../wxui/clone.py:652
+#: ../wxui/clone.py:653
 msgid "Upload instructions"
 msgstr ""
 
@@ -2243,7 +2243,7 @@ msgstr ""
 msgid "Values"
 msgstr ""
 
-#: ../wxui/clone.py:275
+#: ../wxui/clone.py:276
 msgid "Vendor"
 msgstr "Fornecedor"
 
@@ -2273,7 +2273,7 @@ msgstr ""
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr ""
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:407
 msgid "Your cable appears to be on port:"
 msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-15 16:02-0800\n"
+"POT-Creation-Date: 2024-02-16 14:38-0800\n"
 "PO-Revision-Date: 2024-01-20 18:51+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -1135,7 +1135,7 @@ msgstr[1] "%i kaydı sırala"
 msgid "Comment"
 msgstr "Yorum"
 
-#: ../wxui/clone.py:249
+#: ../wxui/clone.py:250
 msgid "Communicate with radio"
 msgstr "Telsiz ile iletişim"
 
@@ -1168,7 +1168,7 @@ msgstr "Ülke"
 msgid "Cross mode"
 msgstr "Çapraz mod"
 
-#: ../wxui/clone.py:443
+#: ../wxui/clone.py:444
 msgid "Custom Port"
 msgstr "Özel Bağlantı Noktası"
 
@@ -1272,7 +1272,7 @@ msgstr "Telsizden indir"
 msgid "Download from radio..."
 msgstr "Telsizden indir..."
 
-#: ../wxui/clone.py:561
+#: ../wxui/clone.py:562
 msgid "Download instructions"
 msgstr "İndirme talimatları"
 
@@ -1334,7 +1334,7 @@ msgstr "TX Frekansını girin (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Banka %s için yeni bir ad girin:"
 
-#: ../wxui/clone.py:442
+#: ../wxui/clone.py:443
 msgid "Enter custom port:"
 msgstr "Özel bağlantı noktasını girin:"
 
@@ -1347,11 +1347,11 @@ msgstr "%s kaydı silindi"
 msgid "Error applying settings"
 msgstr "Ayarlar uygulanırken hata oluştu"
 
-#: ../wxui/clone.py:487
+#: ../wxui/clone.py:488
 msgid "Error communicating with radio"
 msgstr "Telsizle iletişim hatası"
 
-#: ../wxui/clone.py:519
+#: ../wxui/clone.py:520
 msgid "Experimental driver"
 msgstr "Deneysel sürücü"
 
@@ -1787,7 +1787,7 @@ msgstr "Masaüstü simgesi yüklensin mi?"
 msgid "Interact with driver"
 msgstr "Sürücü ile etkileşim"
 
-#: ../wxui/clone.py:583
+#: ../wxui/clone.py:584
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Sürücü ile etkileşim"
@@ -1921,7 +1921,7 @@ msgstr "{num} kaydı {bank} bankasında değil"
 msgid "Mode"
 msgstr "Mod"
 
-#: ../wxui/clone.py:279
+#: ../wxui/clone.py:280
 msgid "Model"
 msgstr "Model"
 
@@ -1941,7 +1941,7 @@ msgstr "Modül Yüklendi"
 msgid "Module loaded successfully"
 msgstr "Modül başarıyla yüklendi"
 
-#: ../wxui/clone.py:411
+#: ../wxui/clone.py:412
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Birden fazla bağlantı noktası bulundu: %s"
@@ -2162,11 +2162,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Lütfen bekleyin"
 
-#: ../wxui/clone.py:388
+#: ../wxui/clone.py:389
 msgid "Plug in your cable and then click OK"
 msgstr "Kablonuzu takın ve ardından Tamam'a tıklayın"
 
-#: ../wxui/clone.py:272
+#: ../wxui/clone.py:273
 msgid "Port"
 msgstr "Port"
 
@@ -2212,7 +2212,7 @@ msgstr "Telsiz"
 msgid "Radio did not ack block %i"
 msgstr "Telsiz %i bloğunu onaylamadı"
 
-#: ../wxui/clone.py:553 ../wxui/clone.py:637
+#: ../wxui/clone.py:554 ../wxui/clone.py:638
 msgid "Radio information"
 msgstr "Telsiz bilgisi"
 
@@ -2627,12 +2627,12 @@ msgstr "Ton Susturucu"
 msgid "Tuning Step"
 msgstr "Ayarlama Adımı"
 
-#: ../wxui/clone.py:382 ../wxui/clone.py:389 ../wxui/clone.py:400
-#: ../wxui/clone.py:408 ../wxui/clone.py:412
+#: ../wxui/clone.py:383 ../wxui/clone.py:390 ../wxui/clone.py:401
+#: ../wxui/clone.py:409 ../wxui/clone.py:413
 msgid "USB Port Finder"
 msgstr "USB Portu Bulucu"
 
-#: ../wxui/clone.py:398
+#: ../wxui/clone.py:399
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2680,7 +2680,7 @@ msgstr "Bu kayıtta %s ayarlanamıyor"
 msgid "United States"
 msgstr "Amerika Birleşik Devletleri"
 
-#: ../wxui/clone.py:381
+#: ../wxui/clone.py:382
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "(gerekirse) Kablonuzu çıkarın ve ardından Tamam'ı tıklayın"
 
@@ -2689,7 +2689,7 @@ msgstr "(gerekirse) Kablonuzu çıkarın ve ardından Tamam'ı tıklayın"
 msgid "Unsupported model %r"
 msgstr ""
 
-#: ../wxui/clone.py:652
+#: ../wxui/clone.py:653
 msgid "Upload instructions"
 msgstr "Yükleme talimatları"
 
@@ -2742,7 +2742,7 @@ msgstr "Değer sıfır veya daha büyük olmalıdır"
 msgid "Values"
 msgstr "Değerler"
 
-#: ../wxui/clone.py:275
+#: ../wxui/clone.py:276
 msgid "Vendor"
 msgstr "Tedarikçi"
 
@@ -2771,7 +2771,7 @@ msgstr "Hoşgeldiniz"
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "CHIRP'in sizin için bir masaüstü simgesi yüklemesini ister misiniz?"
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:407
 msgid "Your cable appears to be on port:"
 msgstr "Kablonuz şu bağlantı noktasında görünüyor:"
 

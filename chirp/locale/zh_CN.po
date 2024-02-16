@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-15 16:02-0800\n"
+"POT-Creation-Date: 2024-02-16 14:38-0800\n"
 "PO-Revision-Date: 2024-01-26 13:30+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language-Team: \n"
@@ -791,7 +791,7 @@ msgstr[0] "对比原始存储"
 msgid "Comment"
 msgstr "备注"
 
-#: ../wxui/clone.py:249
+#: ../wxui/clone.py:250
 msgid "Communicate with radio"
 msgstr ""
 
@@ -822,7 +822,7 @@ msgstr ""
 msgid "Cross mode"
 msgstr "收发使用不同亚音频"
 
-#: ../wxui/clone.py:443
+#: ../wxui/clone.py:444
 msgid "Custom Port"
 msgstr ""
 
@@ -925,7 +925,7 @@ msgstr "从电台下载"
 msgid "Download from radio..."
 msgstr "从电台下载……"
 
-#: ../wxui/clone.py:561
+#: ../wxui/clone.py:562
 msgid "Download instructions"
 msgstr "显示指引"
 
@@ -985,7 +985,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:442
+#: ../wxui/clone.py:443
 msgid "Enter custom port:"
 msgstr ""
 
@@ -998,11 +998,11 @@ msgstr "正在擦除存储 {loc}"
 msgid "Error applying settings"
 msgstr "设置值有误：%s"
 
-#: ../wxui/clone.py:487
+#: ../wxui/clone.py:488
 msgid "Error communicating with radio"
 msgstr ""
 
-#: ../wxui/clone.py:519
+#: ../wxui/clone.py:520
 #, fuzzy
 msgid "Experimental driver"
 msgstr "继续使用不稳定的驱动？"
@@ -1380,7 +1380,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:583
+#: ../wxui/clone.py:584
 #, fuzzy
 msgid "Internal driver error"
 msgstr "内部错误"
@@ -1509,7 +1509,7 @@ msgstr ""
 msgid "Mode"
 msgstr "制式"
 
-#: ../wxui/clone.py:279
+#: ../wxui/clone.py:280
 msgid "Model"
 msgstr "型号"
 
@@ -1529,7 +1529,7 @@ msgstr "模块加载"
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:411
+#: ../wxui/clone.py:412
 #, python-format
 msgid "More than one port found: %s"
 msgstr ""
@@ -1726,11 +1726,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "请等待"
 
-#: ../wxui/clone.py:388
+#: ../wxui/clone.py:389
 msgid "Plug in your cable and then click OK"
 msgstr ""
 
-#: ../wxui/clone.py:272
+#: ../wxui/clone.py:273
 msgid "Port"
 msgstr "端口"
 
@@ -1776,7 +1776,7 @@ msgstr "电台"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:553 ../wxui/clone.py:637
+#: ../wxui/clone.py:554 ../wxui/clone.py:638
 msgid "Radio information"
 msgstr "电台信息"
 
@@ -2138,12 +2138,12 @@ msgstr "接收亚音频"
 msgid "Tuning Step"
 msgstr "调谐间隔"
 
-#: ../wxui/clone.py:382 ../wxui/clone.py:389 ../wxui/clone.py:400
-#: ../wxui/clone.py:408 ../wxui/clone.py:412
+#: ../wxui/clone.py:383 ../wxui/clone.py:390 ../wxui/clone.py:401
+#: ../wxui/clone.py:409 ../wxui/clone.py:413
 msgid "USB Port Finder"
 msgstr ""
 
-#: ../wxui/clone.py:398
+#: ../wxui/clone.py:399
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2186,7 +2186,7 @@ msgstr "无法在此内容上设置 %s"
 msgid "United States"
 msgstr "美国"
 
-#: ../wxui/clone.py:381
+#: ../wxui/clone.py:382
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
 
@@ -2195,7 +2195,7 @@ msgstr ""
 msgid "Unsupported model %r"
 msgstr "不支持的文件类型"
 
-#: ../wxui/clone.py:652
+#: ../wxui/clone.py:653
 msgid "Upload instructions"
 msgstr ""
 
@@ -2248,7 +2248,7 @@ msgstr ""
 msgid "Values"
 msgstr ""
 
-#: ../wxui/clone.py:275
+#: ../wxui/clone.py:276
 msgid "Vendor"
 msgstr "厂商"
 
@@ -2277,7 +2277,7 @@ msgstr ""
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr ""
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:407
 msgid "Your cable appears to be on port:"
 msgstr ""
 

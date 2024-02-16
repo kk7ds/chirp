@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-15 16:02-0800\n"
+"POT-Creation-Date: 2024-02-16 14:38-0800\n"
 "PO-Revision-Date: 2023-07-12 21:21+0200\n"
 "Last-Translator: szporwolik\n"
 "Language-Team: Polish\n"
@@ -806,7 +806,7 @@ msgstr[2] "Grupuj %i pamięci"
 msgid "Comment"
 msgstr "Komentarz"
 
-#: ../wxui/clone.py:249
+#: ../wxui/clone.py:250
 msgid "Communicate with radio"
 msgstr "Skomunikuj się z radiostacją"
 
@@ -837,7 +837,7 @@ msgstr "Kraj"
 msgid "Cross mode"
 msgstr "Tryb krzyżowy"
 
-#: ../wxui/clone.py:443
+#: ../wxui/clone.py:444
 #, fuzzy
 msgid "Custom Port"
 msgstr "Wprowadź port:"
@@ -945,7 +945,7 @@ msgstr "Pobierz z radiostacji"
 msgid "Download from radio..."
 msgstr "Pobierz z radiostacji"
 
-#: ../wxui/clone.py:561
+#: ../wxui/clone.py:562
 msgid "Download instructions"
 msgstr "Instrukcje pobierania"
 
@@ -1005,7 +1005,7 @@ msgstr "Wprowadź częstotliwość nadawania (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Wprowadź nową nazwę dla banku %s:"
 
-#: ../wxui/clone.py:442
+#: ../wxui/clone.py:443
 msgid "Enter custom port:"
 msgstr "Wprowadź port:"
 
@@ -1018,11 +1018,11 @@ msgstr "Skasowano pamięć %s"
 msgid "Error applying settings"
 msgstr "Błąd stosowania ustawień"
 
-#: ../wxui/clone.py:487
+#: ../wxui/clone.py:488
 msgid "Error communicating with radio"
 msgstr "Błąd komunikacji z radiostacją"
 
-#: ../wxui/clone.py:519
+#: ../wxui/clone.py:520
 msgid "Experimental driver"
 msgstr "Sterownik eksperymentalny"
 
@@ -1373,7 +1373,7 @@ msgstr "Utworzyć skrót pulpitu?"
 msgid "Interact with driver"
 msgstr "Interakcja ze sterownikiem"
 
-#: ../wxui/clone.py:583
+#: ../wxui/clone.py:584
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Błąd wewnętrzny"
@@ -1508,7 +1508,7 @@ msgstr "Pamięć {num} nie jest w banku {bank}"
 msgid "Mode"
 msgstr "Tryb"
 
-#: ../wxui/clone.py:279
+#: ../wxui/clone.py:280
 msgid "Model"
 msgstr "Model"
 
@@ -1528,7 +1528,7 @@ msgstr "Załadowano moduł"
 msgid "Module loaded successfully"
 msgstr "Pomyślnie załadowano moduł"
 
-#: ../wxui/clone.py:411
+#: ../wxui/clone.py:412
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Znaleziono więcej niż jeden port: %s"
@@ -1727,11 +1727,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Proszę czekać"
 
-#: ../wxui/clone.py:388
+#: ../wxui/clone.py:389
 msgid "Plug in your cable and then click OK"
 msgstr "Podłącz kabel i naciśnij przycisk OK"
 
-#: ../wxui/clone.py:272
+#: ../wxui/clone.py:273
 msgid "Port"
 msgstr "Port"
 
@@ -1777,7 +1777,7 @@ msgstr "Radiostacja"
 msgid "Radio did not ack block %i"
 msgstr "Radiostacja nie potwierdziła (ack) bloku %i"
 
-#: ../wxui/clone.py:553 ../wxui/clone.py:637
+#: ../wxui/clone.py:554 ../wxui/clone.py:638
 msgid "Radio information"
 msgstr "Informacje o radiostacji"
 
@@ -2154,12 +2154,12 @@ msgstr "Ton RX"
 msgid "Tuning Step"
 msgstr "Krok strojenia"
 
-#: ../wxui/clone.py:382 ../wxui/clone.py:389 ../wxui/clone.py:400
-#: ../wxui/clone.py:408 ../wxui/clone.py:412
+#: ../wxui/clone.py:383 ../wxui/clone.py:390 ../wxui/clone.py:401
+#: ../wxui/clone.py:409 ../wxui/clone.py:413
 msgid "USB Port Finder"
 msgstr "Wykrywacz portów USB"
 
-#: ../wxui/clone.py:398
+#: ../wxui/clone.py:399
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2206,7 +2206,7 @@ msgstr "Nie można ustawić %s na tej pamięci"
 msgid "United States"
 msgstr "Stany Zjednoczone"
 
-#: ../wxui/clone.py:381
+#: ../wxui/clone.py:382
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Należy odpiąć kabel (jeśli to konieczne) i nacisnąć przycisk OK"
 
@@ -2215,7 +2215,7 @@ msgstr "Należy odpiąć kabel (jeśli to konieczne) i nacisnąć przycisk OK"
 msgid "Unsupported model %r"
 msgstr "Nieobsługiwany typ pliku"
 
-#: ../wxui/clone.py:652
+#: ../wxui/clone.py:653
 msgid "Upload instructions"
 msgstr "Instrukcje wysyłania"
 
@@ -2269,7 +2269,7 @@ msgstr "Wartość musi wynosić zero lub więcej"
 msgid "Values"
 msgstr "Wartości"
 
-#: ../wxui/clone.py:275
+#: ../wxui/clone.py:276
 msgid "Vendor"
 msgstr "Producent"
 
@@ -2298,7 +2298,7 @@ msgstr "Witamy"
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "Czy CHIRP ma utworzyć ikonę na pulpicie?"
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:407
 msgid "Your cable appears to be on port:"
 msgstr "Kabel jest widoczny na porcie:"
 

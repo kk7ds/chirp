@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-15 16:02-0800\n"
+"POT-Creation-Date: 2024-02-16 14:38-0800\n"
 "PO-Revision-Date: 2024-01-20 12:24+0100\n"
 "Last-Translator: Daniele Forsi <iu5hkx@gmail.com>\n"
 "Language-Team: \n"
@@ -787,7 +787,7 @@ msgstr[1] "Raggruppa %i memorie"
 msgid "Comment"
 msgstr "Commento"
 
-#: ../wxui/clone.py:249
+#: ../wxui/clone.py:250
 msgid "Communicate with radio"
 msgstr "Comunicazione con la radio"
 
@@ -818,7 +818,7 @@ msgstr "Nazione"
 msgid "Cross mode"
 msgstr "Modo cross"
 
-#: ../wxui/clone.py:443
+#: ../wxui/clone.py:444
 msgid "Custom Port"
 msgstr "Porta personalizzata"
 
@@ -921,7 +921,7 @@ msgstr "Scarica dalla radio"
 msgid "Download from radio..."
 msgstr "Scarica dalla radio..."
 
-#: ../wxui/clone.py:561
+#: ../wxui/clone.py:562
 msgid "Download instructions"
 msgstr "Istruzioni per lo scaricamento"
 
@@ -982,7 +982,7 @@ msgstr "Inserire la frequenza TX (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:442
+#: ../wxui/clone.py:443
 msgid "Enter custom port:"
 msgstr "Inserire la porta personalizzata:"
 
@@ -996,11 +996,11 @@ msgstr "Memoria %s cancellata"
 msgid "Error applying settings"
 msgstr "Errore di scrittura della memoria"
 
-#: ../wxui/clone.py:487
+#: ../wxui/clone.py:488
 msgid "Error communicating with radio"
 msgstr "Errore durante la comunicazione con la radio"
 
-#: ../wxui/clone.py:519
+#: ../wxui/clone.py:520
 msgid "Experimental driver"
 msgstr "Driver sperimentale"
 
@@ -1348,7 +1348,7 @@ msgstr "Installare l'icona per il desktop?"
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:583
+#: ../wxui/clone.py:584
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Errore interno"
@@ -1475,7 +1475,7 @@ msgstr ""
 msgid "Mode"
 msgstr "Modo"
 
-#: ../wxui/clone.py:279
+#: ../wxui/clone.py:280
 msgid "Model"
 msgstr "Modello"
 
@@ -1495,7 +1495,7 @@ msgstr "Modulo caricato"
 msgid "Module loaded successfully"
 msgstr "Modulo caricato con successo"
 
-#: ../wxui/clone.py:411
+#: ../wxui/clone.py:412
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Trovata più di una porta: %s"
@@ -1690,11 +1690,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Attendere"
 
-#: ../wxui/clone.py:388
+#: ../wxui/clone.py:389
 msgid "Plug in your cable and then click OK"
 msgstr "Collegare il cavo e premere OK"
 
-#: ../wxui/clone.py:272
+#: ../wxui/clone.py:273
 msgid "Port"
 msgstr "Porta"
 
@@ -1740,7 +1740,7 @@ msgstr "Radio"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:553 ../wxui/clone.py:637
+#: ../wxui/clone.py:554 ../wxui/clone.py:638
 msgid "Radio information"
 msgstr "Informazioni sulla radio"
 
@@ -2094,12 +2094,12 @@ msgstr "Tone squelch"
 msgid "Tuning Step"
 msgstr "Step sintonia"
 
-#: ../wxui/clone.py:382 ../wxui/clone.py:389 ../wxui/clone.py:400
-#: ../wxui/clone.py:408 ../wxui/clone.py:412
+#: ../wxui/clone.py:383 ../wxui/clone.py:390 ../wxui/clone.py:401
+#: ../wxui/clone.py:409 ../wxui/clone.py:413
 msgid "USB Port Finder"
 msgstr ""
 
-#: ../wxui/clone.py:398
+#: ../wxui/clone.py:399
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2144,7 +2144,7 @@ msgstr "Impossibile impostare %s su questa memoria"
 msgid "United States"
 msgstr "Stati Uniti"
 
-#: ../wxui/clone.py:381
+#: ../wxui/clone.py:382
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Scollegare il cavo (se necessario) e poi premere OK"
 
@@ -2153,7 +2153,7 @@ msgstr "Scollegare il cavo (se necessario) e poi premere OK"
 msgid "Unsupported model %r"
 msgstr "Tipo file non supportato"
 
-#: ../wxui/clone.py:652
+#: ../wxui/clone.py:653
 msgid "Upload instructions"
 msgstr "Istruzioni per il caricamento"
 
@@ -2206,7 +2206,7 @@ msgstr "Il valore deve essere maggiore o uguale a zero"
 msgid "Values"
 msgstr "Valori"
 
-#: ../wxui/clone.py:275
+#: ../wxui/clone.py:276
 msgid "Vendor"
 msgstr "Produttore"
 
@@ -2235,7 +2235,7 @@ msgstr "Benvenuto"
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "Installare un'icona sul desktop?"
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:407
 msgid "Your cable appears to be on port:"
 msgstr "Il cavo sembra sulla porta:"
 

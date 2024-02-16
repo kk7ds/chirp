@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import collections
-from gettext import gettext as _
 import logging
 import platform
 import re
@@ -34,6 +33,7 @@ from chirp.wxui import config
 from chirp.wxui import common
 from chirp.wxui import developer
 
+_ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
 CONF = config.get()
 HELPME = _('Help Me...')
@@ -245,6 +245,7 @@ CUSTOM_PORTS = []
 class ChirpCloneDialog(wx.Dialog):
     def __init__(self, *a, **k):
         allow_detected_models = k.pop('allow_detected_models', False)
+        print('_ is %r' % _)
         super(ChirpCloneDialog, self).__init__(
             *a, title=_('Communicate with radio'), **k)
         self._clone_thread = None
