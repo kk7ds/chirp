@@ -78,7 +78,6 @@ def _download(radio):
             radio.status_fn(status)
 
             baofeng_uv17Pro._sendmagic(radio, b"\x06", 1)
-    data += bytes(radio.MODEL, 'ascii')
     return data
 
 
