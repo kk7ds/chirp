@@ -458,8 +458,6 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
     _steps = [2.5, 5, 6.25, 10, 12.5, 25, 8.33, 0.01, 0.05, 0.1, 0.25, 0.5, 1,
               1.25, 9, 15, 20, 30, 50, 100, 125, 200, 250, 500]
 
-    upload_calibration = False
-
     @classmethod
     def k5_approve_firmware(cls, firmware):
         return firmware.startswith('EGZUMER ')
@@ -887,6 +885,9 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
             elif elname == "keyM_longpress_action":
                 _mem.keyM_longpress_action = \
                     KEYACTIONS_LIST.index(element.value)
+
+            elif elname == "upload_calibration":
+                self._upload_calibration = bool(element.value)
 
             elif element.changed() and elname.startswith("cal."):
                 _mem.get_path(elname).set_value(element.value)
