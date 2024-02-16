@@ -37,7 +37,8 @@ def _get_memory_map(radio):
     for addr in range(0x1FFF, 0x10FFF, 0x1000):
         frame = radio._make_frame(b"R", addr, 1)
         baofeng_common._rawsend(radio, frame)
-        blocknr = baofeng_common._rawrecv(radio, 6)[5]
+        blocknr = ord(baofeng_common._rawrecv(radio, 6)[5:])
+        blocknr = (blocknr >> 4 & 0xf) * 10 + (blocknr & 0xf)
         memory_map += [blocknr]
         baofeng_uv17Pro._sendmagic(radio, b"\x06", 1)
     return memory_map
@@ -56,11 +57,6 @@ def _download(radio):
     radio.status_fn(status)
 
     for block_number in radio.BLOCK_ORDER:
-        if block_number not in memory_map:
-            # Memory block not found.
-            raise errors.RadioError('Radio memory is corrupted. '
-                                    'Fix this by uploading a backup image '
-                                    'to the radio.')
         block_index = memory_map.index(block_number) + 1
         start_addr = block_index * 0x1000
         for addr in range(start_addr, start_addr + 0x1000,
@@ -98,13 +94,10 @@ def _upload(radio):
     radio.status_fn(status)
 
     for block_number in radio.BLOCK_ORDER:
-        # Choose a block number if memory map is corrupt
-        # This happens when the upload process is interrupted
+        # Choose a block number is memory map is corrupt
+        # This happens when te upload process is interrupted
         if block_number not in memory_map:
-            for bn in memory_map:
-                if bn not in radio.BLOCK_ORDER:
-                    memory_map[memory_map.index(bn)] = block_number
-                    break
+            memory_map[memory_map.index(165)] = block_number
         block_index = memory_map.index(block_number) + 1
         start_addr = block_index * 0x1000
         data_start_addr = radio.BLOCK_ORDER.index(block_number) * 0x1000
@@ -140,7 +133,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
     upload_function = _upload
 
     MODES = ["FM", "NFM"]
-    BLOCK_ORDER = [0x16, 0x17, 0x18, 0x19, 0x24, 0x25, 0x26, 0x4, 0x6]
+    BLOCK_ORDER = [16, 17, 18, 19,  24, 25, 26, 4, 6]
     MEM_TOTAL = 0x9000
     WRITE_MEM_TOTAL = 0x9000
     BLOCK_SIZE = 0x40
@@ -438,6 +431,6 @@ class UV17(baofeng_uv17Pro.UV17Pro):
         _mem.set_raw(b"\x00" * 16)
 
         _namelength = self.get_features().valid_name_length
-        _nam.name = mem.name.ljust(_namelength, '\x00')
+        _nam.name = mem.name.ljust(_namelength, '\xFF')
 
         self.set_memory_common(mem, _mem)
