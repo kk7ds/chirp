@@ -67,7 +67,6 @@ import six
 from builtins import bytes
 
 from chirp import bitwise_grammar
-from chirp.memmap import MemoryMap
 
 LOG = logging.getLogger(__name__)
 
@@ -1085,84 +1084,3 @@ def parse(spec, data, offset=0):
     ast = bitwise_grammar.parse(spec)
     p = Processor(data, offset, spec)
     return p.parse(ast)
-
-
-if __name__ == "__main__":
-    defn = """
-// comment
-struct mytype { u8 foo; };
-struct mytype bar;
-struct {
-  u8 foo; // inline
-  u8 highbit:1,
-     sixzeros:6,
-     lowbit:1;
-  char string[3];
-  bbcd fourdigits[2];
-} mystruct;
-"""
-    data = b"\xab\x7F\x81abc\x12\x34"
-    tree = parse(defn, data)
-
-    print(repr(tree))
-
-    print("Foo %i" % tree.mystruct.foo)
-    print("Highbit: %i SixZeros: %i: Lowbit: %i" % (tree.mystruct.highbit,
-                                                    tree.mystruct.sixzeros,
-                                                    tree.mystruct.lowbit))
-    print("String: %s" % tree.mystruct.string)
-    print("Fourdigits: %i" % tree.mystruct.fourdigits)
-
-    import sys
-    sys.exit(0)
-
-    test = """
-    struct {
-      u16 bar;
-      u16 baz;
-      u8 one;
-      u8 upper:2,
-         twobit:1,
-         onebit:1,
-         lower:4;
-      u8 array[3];
-      char str[3];
-      bbcd bcdL[2];
-    } foo[2];
-    u8 tail;
-    """
-    data = "\xfe\x10\x00\x08\xFF\x23\x01\x02\x03abc\x34\x89"
-    data = (data * 2) + "\x12"
-    data = MemoryMap(data)
-
-    ast = bitwise_grammar.parse(test)
-
-    # Just for testing, pretty-print the tree
-    pp(ast)
-
-    # Mess with it a little
-    p = Processor(data, 0)
-    obj = p.parse(ast)
-    print("Object: %s" % obj)
-    print(obj["foo"][0]["bcdL"])
-    print(obj["tail"])
-    print(obj["foo"][0]["bar"])
-    obj["foo"][0]["bar"].set_value(255 << 8)
-    obj["foo"][0]["twobit"].set_value(0)
-    obj["foo"][0]["onebit"].set_value(1)
-    print("%i" % int(obj["foo"][0]["bar"]))
-
-    for i in obj["foo"][0]["array"]:
-        print(int(i))
-    obj["foo"][0]["array"][1].set_value(255)
-
-    for i in obj["foo"][0]["bcdL"]:
-        print(i.get_value())
-
-    int_to_bcd(obj["foo"][0]["bcdL"], 1234)
-    print(bcd_to_int(obj["foo"][0]["bcdL"]))
-
-    set_string(obj["foo"][0]["str"], "xyz")
-    print(get_string(obj["foo"][0]["str"]))
-
-    print(repr(data.get_packed()))
