@@ -252,14 +252,14 @@ class GMRSV2base(bfc.BaofengCommonHT):
       u8 keylock;
       u8 cht;
       u8 unused40[5];
-      u8 unknown1:3,
+      u8 unknown3:3,
          fmradio:1,
          alarm:1,
          unknown2:1,
          reset:1,
          menu:1;
       u8 unused41;
-      u8 unknown:7,
+      u8 unknown4:7,
          workmode:1;
     } settings;
 
