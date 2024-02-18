@@ -26,24 +26,10 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
-#seekto 0x1000;
+#seekto 0x0010;
 struct {
-    lbcd rxfreq[4];
-    lbcd txfreq[4];
-    lbcd rxtone[2];
-    lbcd txtone[2];
-    u8 unknown1:4,
-       compander:1,
-       unknown2:1,
-       highpower:1,
-       unknown3:1;
-    u8 unknown4:3,
-       wide:1,
-       scan:1,
-       unknown5:1,
-       bcl:2;
-    u8 unknown6[2];
-} memory[128];
+  char name[10];      // 10-character Alpha Tag
+} names[128];
 #seekto 0x0810;
 struct {
     u8 unknown01:5,
@@ -76,10 +62,24 @@ struct {
        unknown14:1,
        sidekey:3;
 } settings;
-#seekto 0x0010;
+#seekto 0x1000;
 struct {
-  char name[10];      // 10-character Alpha Tag
-} names[128];
+    lbcd rxfreq[4];
+    lbcd txfreq[4];
+    lbcd rxtone[2];
+    lbcd txtone[2];
+    u8 unknown1:4,
+       compander:1,
+       unknown2:1,
+       highpower:1,
+       unknown3:1;
+    u8 unknown4:3,
+       wide:1,
+       scan:1,
+       unknown5:1,
+       bcl:2;
+    u8 unknown6[2];
+} memory[128];
 
 """
 
@@ -325,12 +325,12 @@ class RB17P_Base(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.rxfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
+        if _mem.rxfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
             return mem
 
-        if _mem.txfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
+        if _mem.txfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
             mem.duplex = "off"
             mem.offset = 0
         elif int(_mem.rxfreq) == int(_mem.txfreq):
@@ -408,18 +408,18 @@ class RB17P_Base(chirp_common.CloneModeRadio):
         _nam = self._memobj.names[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() // 8))
-            _nam.set_raw("\xFF" * (_nam.size() // 8))
+            _mem.set_raw(b"\xFF" * (_mem.size() // 8))
+            _nam.set_raw(b"\xFF" * (_nam.size() // 8))
 
             return
 
-        _mem.set_raw("\x00" * (_mem.size() // 8))
+        _mem.set_raw(b"\x00" * (_mem.size() // 8))
 
         _mem.rxfreq = mem.freq / 10
 
         if mem.duplex == "off":
             for i in range(0, 4):
-                _mem.txfreq[i].set_raw("\xFF")
+                _mem.txfreq[i].set_raw(b"\xFF")
         elif mem.duplex == "split":
             _mem.txfreq = mem.offset / 10
         elif mem.duplex == "+":
