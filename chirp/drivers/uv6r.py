@@ -221,9 +221,7 @@ class UV6R(bfc.BaofengCommonHT):
          ponmsg:1;
       u8 unused26:7,
          roger:1;
-      u8 unused27:7,
-         reset:1;
-      u8 unknown08;
+      u8 unknown08[2];
       u8 displayab:1,
          unknown09:2,
          fmradio:1,
