@@ -166,20 +166,20 @@ class WP970I(bfc.BaofengCommonHT):
     struct {
       u8 squelch;
       u8 step;
-      u8 unknown1;
+      u8 unknown_e22;
       u8 save;
       u8 vox;
-      u8 unknown2;
+      u8 unknown_e25;
       u8 abr;
       u8 tdr;
       u8 beep;
       u8 timeout;
-      u8 unknown3[4];
+      u8 unknown_e2a[4];
       u8 voice;
-      u8 unknown4;
+      u8 unknown_e2f;
       u8 dtmfst;
-      u8 unknown5;
-      u8 unknown12:6,
+      u8 unknown_e31;
+      u8 unknown_e32:6,
          screv:2;
       u8 pttid;
       u8 pttlt;
@@ -188,7 +188,7 @@ class WP970I(bfc.BaofengCommonHT):
       u8 bcl;
       u8 autolk;
       u8 sftd;
-      u8 unknown6[3];
+      u8 unknown_e3a[3];
       u8 wtled;
       u8 rxled;
       u8 txled;
@@ -203,13 +203,13 @@ class WP970I(bfc.BaofengCommonHT):
       u8 rogerrx;
       u8 tdrch;
       u8 displayab:1,
-         unknown1:2,
+         unknown_e4a1:2,
          fmradio:1,
          alarm:1,
-         unknown2:1,
+         unknown_e4a2:1,
          reset:1,
          menu:1;
-      u8 unknown1:6,
+      u8 unknown_e4b:6,
          singleptt:1,
          vfomrlock:1;
       u8 workmode;
