@@ -134,10 +134,7 @@ MAX_ADDR = 0x2000
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                 chirp_common.PowerLevel("High", watts=5)]
 MODES = ["FM", "NFM"]
-SPECIAL_CHANNELS = {
-    129: ("VFO-A", "A"),
-    130: ("VFO-B", "B"),
-}
+SPECIAL_CHANNELS = ['VFO-A', 'VFO-B']
 
 # Settings maps
 ABR_LIST = [str(v) for v in range(0, 151, 5)]
@@ -277,10 +274,11 @@ class RadioSettingValueChannel(RadioSettingValueList):
     def __init__(self, radio, current_raw):
         current = int(current_raw)
         current_mem = radio.get_memory(current)
+        lo, hi = radio.get_features().memory_bounds
         options = [
             self._format_memory(mem)
             for mem in [radio.get_memory(n)
-                        for n in range(*radio.get_features().memory_bounds)]]
+                        for n in range(lo, hi + 1)]]
         RadioSettingValueList.__init__(self, options,
                                        self._format_memory(current_mem))
 
@@ -344,7 +342,7 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
         rf.valid_skips = ["", "S"]
         rf.valid_bands = [(136000000, 174000000), (400000000, 500000000)]
         rf.valid_name_length = 8
-        rf.valid_special_chans = [129, 130]
+        rf.valid_special_chans = SPECIAL_CHANNELS
         rf.memory_bounds = (1, self._upper)
         return rf
 
@@ -413,23 +411,30 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
             mem.dtcs_polarity = "%s%s" % (tpol, rpol)
 
     def get_memory(self, number):
-        _mem = self._memobj.memory[number - 1]
 
         mem = chirp_common.Memory()
-        mem.number = number
+
+        if isinstance(number, str):
+            mem.number = MAX_CHANNELS + SPECIAL_CHANNELS.index(number) + 1
+            mem.extd_number = number
+        elif number > MAX_CHANNELS:
+            mem.number = number
+        else:
+            mem.number = number
+            _name = self._memobj.name[mem.number - 1]
+
+        _mem = self._memobj.memory[mem.number - 1]
+
+        if mem.number > MAX_CHANNELS:
+            mem.immutable = ['name']
+        else:
+            mem.name, _, _ = _name.name.get_raw().partition(b"\xFF")
+            mem.name = mem.name.decode('ascii').rstrip()
 
         if _mem.get_raw()[:4] == b"\xFF\xFF\xFF\xFF":
             mem.empty = True
             return mem
 
-        if mem.number in SPECIAL_CHANNELS:
-            mem.name, mem.extd_number = SPECIAL_CHANNELS[mem.number]
-        else:
-            _name = self._memobj.name[number - 1]
-            mem.name, _, _ = _name.name.get_raw().partition(b"\xFF")
-            mem.name = mem.name.decode('ascii')
-        # XXX: other drivers rstrip the name and test_badname enforces this
-        mem.name = mem.name.rstrip()
         mem.freq = int(_mem.rx_freq) * 10
         offset = (int(_mem.tx_freq) * 10) - mem.freq
         if offset < 0:
@@ -499,7 +504,7 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
             _mem.set_raw(b"\xFF" * 16)
             return
 
-        if mem.number not in SPECIAL_CHANNELS:
+        if mem.number < 129:
             _name = self._memobj.name[mem.number - 1]
             _namelength = self.get_features().valid_name_length
             for i in range(NAME_FIELD_SIZE):
