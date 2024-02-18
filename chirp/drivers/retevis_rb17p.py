@@ -40,7 +40,7 @@ struct {
     u8 unknown4:3,
        wide:1,
        scan:1,
-       unknown4:1,
+       unknown5:1,
        bcl:2;
     u8 unknown6[2];
 } memory[128];
