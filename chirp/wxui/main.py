@@ -1095,7 +1095,6 @@ class ChirpMain(wx.Frame):
         can_edit = False
         is_memedit = False
         is_bank = False
-        CSVRadio = directory.get_radio('Generic_CSV')
         if eset is not None:
             is_live = isinstance(eset.radio, chirp_common.LiveRadio)
             is_network = isinstance(eset.radio,
@@ -1103,9 +1102,7 @@ class ChirpMain(wx.Frame):
             can_close = True
             can_save = eset.modified and not is_live and not is_network
             can_saveas = not is_live and not is_network
-            can_upload = (not isinstance(eset.radio, CSVRadio) and
-                          not isinstance(eset.radio, common.LiveAdapter) and
-                          not is_live and not is_network)
+            can_upload = True
             is_memedit = isinstance(eset.current_editor, memedit.ChirpMemEdit)
             is_bank = isinstance(eset.current_editor, bankedit.ChirpBankEdit)
             can_edit = not is_network
@@ -1520,9 +1517,26 @@ class ChirpMain(wx.Frame):
     def _menu_upload(self, event):
         radio = self.current_editorset.radio
         report.report_model(radio, 'upload')
-        with clone.ChirpUploadDialog(radio, self) as d:
-            d.Centre()
-            d.ShowModal()
+        CSVRadio = directory.get_radio('Generic_CSV')
+
+        if isinstance(radio, chirp_common.LiveRadio):
+            msg = _('This is a live-mode radio, which means changes are '
+                    'sent to the radio in real-time as you make them. Upload '
+                    'is not necessary!')
+            d = wx.MessageDialog(self, msg, _('Live Radio'),
+                                 wx.ICON_INFORMATION)
+        elif isinstance(radio, (CSVRadio, base.NetworkResultRadio)):
+            msg = _('This is a radio-independent file and cannot be uploaded '
+                    'directly to a radio. Open a radio image (or download one '
+                    'from a radio) an then copy/paste items from this tab '
+                    'into that one in order to upload')
+            d = wx.MessageDialog(self, msg, _('Unable to upload this file'),
+                                 wx.ICON_INFORMATION)
+        else:
+            d = clone.ChirpUploadDialog(radio, self)
+
+        d.Centre()
+        d.ShowModal()
 
     @common.error_proof()
     def _menu_reload_driver(self, event, andfile=False):
