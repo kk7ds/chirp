@@ -611,8 +611,8 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
 
             # VOX
             elif elname == "vox":
-                voxvalue = element.value
-                _mem.vox_switch = int(voxvalue) > 0
+                voxvalue = int(element.value)
+                _mem.vox_switch = voxvalue > 0
                 _mem.vox_level = (voxvalue - 1) if _mem.vox_switch else 0
 
             # mic gain
