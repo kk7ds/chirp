@@ -369,7 +369,13 @@ class ChirpCloneDialog(wx.Dialog):
                 self._port.SetStringSelection(name)
                 break
         else:
-            LOG.warning('Unable to select %r' % select)
+            if self.ports:
+                port = self.ports[0]
+                self._port.SetStringSelection(port[0])
+            else:
+                port = '(no ports available)'
+            LOG.warning('Unable to select %r, defaulting to %s',
+                        select, port)
 
     def get_selected_port(self):
         selected = self._port.GetStringSelection()
