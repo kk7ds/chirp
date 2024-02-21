@@ -30,11 +30,22 @@ LIST_SAVE = ["Off", "1:1", "1:2", "1:3", "1:4"]
 LIST_SCANMODE = ["Time", "Carrier", "Search"]
 
 
+# Radios seem to have different memory sizes
+def _get_memory_size(radio):
+    response = baofeng_uv17Pro._sendmagic(radio, radio._magic_memsize[0][0],
+                                          radio._magic_memsize[0][1])
+    mem_size = struct.unpack("<I", response[7:])[0]
+    for magic, resplen in radio._magics2:
+        baofeng_uv17Pro._sendmagic(radio, magic, resplen)
+    return mem_size
+
+
 # Locations of memory may differ each time, so a mapping has to be made first
 def _get_memory_map(radio):
     # Get memory map
     memory_map = []
-    for addr in range(0x1FFF, 0x10FFF, 0x1000):
+    mem_size = _get_memory_size(radio)
+    for addr in range(0x1FFF, mem_size, 0x1000):
         frame = radio._make_frame(b"R", addr, 1)
         baofeng_common._rawsend(radio, frame)
         blocknr = ord(baofeng_common._rawrecv(radio, 6)[5:])
@@ -57,6 +68,11 @@ def _download(radio):
     radio.status_fn(status)
 
     for block_number in radio.BLOCK_ORDER:
+        if block_number not in memory_map:
+            # Memory block not found.
+            raise errors.RadioError('Radio memory is corrupted. ' +
+                                    'Fix this by uploading a backup image ' +
+                                    'to the radio.')
         block_index = memory_map.index(block_number) + 1
         start_addr = block_index * 0x1000
         for addr in range(start_addr, start_addr + 0x1000,
@@ -93,8 +109,8 @@ def _upload(radio):
     radio.status_fn(status)
 
     for block_number in radio.BLOCK_ORDER:
-        # Choose a block number is memory map is corrupt
-        # This happens when te upload process is interrupted
+        # Choose a block number if memory map is corrupt
+        # This can happen when the upload process was interrupted
         if block_number not in memory_map:
             memory_map[memory_map.index(165)] = block_number
         block_index = memory_map.index(block_number) + 1
@@ -145,12 +161,12 @@ class UV17(baofeng_uv17Pro.UV17Pro):
                (b"\x56\x00\x10\x0A\x0D", 13),
                (b"\x06", 1),
                (b"\x56\x00\x20\x0A\x0D", 13),
-               (b"\x06", 1),
-               (b"\x56\x00\x00\x00\x0A", 11),
-               (b"\x06", 1),
-               (b"\xFF\xFF\xFF\xFF\x0C\x55\x56\x31\x35\x39\x39\x39", 1),
-               (b"\02", 8),
                (b"\x06", 1)]
+    _magic_memsize = [(b"\x56\x00\x00\x00\x0A", 11)]
+    _magics2 = [(b"\x06", 1),
+                (b"\xFF\xFF\xFF\xFF\x0C\x55\x56\x31\x35\x39\x39\x39", 1),
+                (b"\02", 8),
+                (b"\x06", 1)]
     _fingerprint = b"\x06" + b"UV15999"
     _scode_offset = 1
 
@@ -288,7 +304,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
 
     def _make_frame(self, cmd, addr, length, data=""):
         """Pack the info in the header format"""
-        frame = struct.pack("<cH", cmd, addr) + struct.pack(">H", length)
+        frame = struct.pack("<cI", cmd, addr)[:-1] + struct.pack(">B", length)
         # add the data if set
         if len(data) != 0:
             frame += data
@@ -430,6 +446,12 @@ class UV17(baofeng_uv17Pro.UV17Pro):
         _mem.set_raw(b"\x00" * 16)
 
         _namelength = self.get_features().valid_name_length
-        _nam.name = mem.name.ljust(_namelength, '\xFF')
+        _nam.name = mem.name.ljust(_namelength, '\x00')
 
         self.set_memory_common(mem, _mem)
+
+
+@directory.register
+class UV13Pro(UV17):
+    VENDOR = "Baofeng"
+    MODEL = "UV-13Pro"
