@@ -763,6 +763,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
     def get_raw_memory(self, number):
         return repr(self._memobj.channel[number-1])
 
+    def _find_band(self, hz):
+        return _find_band(self._expanded_limits, hz)
+
     def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
 
@@ -778,13 +781,13 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             txfreq = mem.freq
 
         # find band
-        band = _find_band(self._expanded_limits, txfreq)
+        band = self._find_band(txfreq)
         if band is False:
             msg = "Transmit frequency %.4f MHz is not supported by this radio"\
                    % (txfreq/1000000.0)
             msgs.append(chirp_common.ValidationError(msg))
 
-        band = _find_band(self._expanded_limits, mem.freq)
+        band = self._find_band(mem.freq)
         if band is False:
             msg = "The frequency %.4f MHz is not supported by this radio" \
                    % (mem.freq/1000000.0)
