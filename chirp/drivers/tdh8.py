@@ -1081,7 +1081,10 @@ class TDH8(chirp_common.CloneModeRadio):
 
         if _mem.get_raw(asbytes=False)[0] == "\xff":
             mem.empty = True
+            self.set_usedFlag(mem)
             return mem
+
+        self.set_usedFlag(mem)
 
         # receiving frequency
         mem.freq = int(_mem.rxfreq) * 10
@@ -1254,20 +1257,7 @@ class TDH8(chirp_common.CloneModeRadio):
 
         return ([x_list, y_list])
 
-    def set_memory(self, mem):
-        _mem = self._get_mem(mem.number)
-        _nam = self._get_nam(mem.number)
-
-        if mem.empty:
-            _mem.set_raw("\xff" * 16)
-            if self.MODEL in H8_LIST:
-                _nam.set_raw("\xff" * 16)
-            else:
-                _nam.set_raw("\xff" * 8)
-            return
-
-        _mem.set_raw("\x00" * 16)
-
+    def set_usedFlag(self, mem):
         # When the channel is empty, you need to set "usedflags" to 0,
         # which means it is empty.When the channel has a value,
         # you need to set "usedflags" to 0,
@@ -1314,6 +1304,22 @@ class TDH8(chirp_common.CloneModeRadio):
                 _usedflags.block7 = 0
             elif block_xy[1] == 8:
                 _usedflags.block8 = 0
+
+    def set_memory(self, mem):
+        _mem = self._get_mem(mem.number)
+        _nam = self._get_nam(mem.number)
+
+        if mem.empty:
+            _mem.set_raw("\xff" * 16)
+            if self.MODEL in H8_LIST:
+                _nam.set_raw("\xff" * 16)
+            else:
+                _nam.set_raw("\xff" * 8)
+            return
+
+        _mem.set_raw("\x00" * 16)
+
+        self.set_usedFlag(mem)
 
         if mem.duplex == "":
             _mem.rxfreq = _mem.txfreq = mem.freq / 10
