@@ -62,6 +62,7 @@
 | <a name="Baofeng_F-11"></a> Baofeng_F-11 | [Implied by Baofeng_UV-5R](#user-content-Baofeng_UV-5R) | 18-Nov-2022 | Yes | 0.12% |
 | <a name="Baofeng_GT-3WP"></a> Baofeng_GT-3WP | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | 0.43% |
 | <a name="Baofeng_GT-5R"></a> Baofeng_GT-5R | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.68% |
+| <a name="Baofeng_UV-13Pro"></a> Baofeng_UV-13Pro | [@vdwel](https://github.com/vdwel) | 21-Feb-2024 | Yes |  |
 | <a name="Baofeng_UV-17"></a> Baofeng_UV-17 | [@vdwel](https://github.com/vdwel) | 27-Nov-2023 | Yes |  |
 | <a name="Baofeng_UV-17Pro"></a> Baofeng_UV-17Pro | [@vdwel](https://github.com/vdwel) | 27-Nov-2023 | Yes |  |
 | <a name="Baofeng_UV-17ProGPS"></a> Baofeng_UV-17ProGPS | [@vdwel](https://github.com/vdwel) | 27-Nov-2023 | Yes |  |
@@ -451,11 +452,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 448
+**Drivers:** 449
 
-**Tested:** 87% (394/54) (93% of usage stats)
+**Tested:** 87% (395/54) (93% of usage stats)
 
-**Byte clean:** 91% (409/39)
+**Byte clean:** 91% (410/39)
 
 ## Meaning of this testing
 
