@@ -1408,13 +1408,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         warnings, errors = chirp_common.split_validation_msgs(
             self._radio.validate_memory(mem))
         if errors:
-            LOG.warning('Memory failed validation: %s' % mem)
+            LOG.warning('Memory failed validation: %r', mem)
             wx.MessageBox(_('Invalid edit: %s') % '; '.join(errors),
                           _('Invalid Entry'))
             event.Skip()
             return
         if warnings:
-            LOG.warning('Memory validation had warnings: %s' % mem)
+            LOG.warning('Memory validation had warnings: %r', mem)
             wx.MessageBox(_('Warning: %s') % '; '.join(warnings),
                           _('Warning'))
 
