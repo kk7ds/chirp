@@ -73,6 +73,26 @@ class ChirpRowLabelRenderer(glr.GridDefaultRowLabelRenderer):
         self.DrawText(grid, dc, rect, text, hAlign, vAlign)
 
 
+DEFAULT_COLUMN_HELP = {
+    'freq': _('Receive frequency'),
+    'name': _('Memory label (stored in radio)'),
+    'tmode': _('Tone squelch mode'),
+    'rtone': _('Transmit tone'),
+    'ctone': _('Transmit/receive tone for TSQL mode, else receive tone'),
+    'dtcs': _('Transmit/receive DTCS code for DTCS mode, else transmit code'),
+    'rx_dtcs': _('Receive DTCS code'),
+    'dtcs_polarity': _('TX-RX DTCS polarity (normal or reversed)'),
+    'cross_mode': _('Complex or non-standard tone squelch mode '
+                    '(starts the tone mode selection wizard)'),
+    'duplex': _('Transmit shift, split mode, or transmit inhibit'),
+    'offset': _('Shift amount (or transmit frequency) controlled by duplex'),
+    'tuning_step': _('Frequency granularity in kHz'),
+    'skip': _('Scan control (skip, include, priority, etc)'),
+    'power': _('Transmit Power'),
+    'comment': _('Human-readable comment (not stored in radio)'),
+}
+
+
 class ChirpMemoryColumn(object):
     DEFAULT: object = ''
 
@@ -85,10 +105,19 @@ class ChirpMemoryColumn(object):
         self._label = label or _(name.title())
         self._radio = radio
         self._features = radio.get_features()
+        self._doc = None
 
     @property
     def name(self):
         return self._name
+
+    @property
+    def doc(self):
+        return self._doc or DEFAULT_COLUMN_HELP.get(self.name)
+
+    @doc.setter
+    def doc(self, value):
+        self._doc = value
 
     @property
     def label(self):
@@ -520,7 +549,7 @@ class ChirpCrossModeColumn(ChirpChoiceColumn):
 
     @property
     def label(self):
-        return _('Cross mode')
+        return _('Cross Mode')
 
     def hidden_for(self, memory):
         return memory.tmode != 'Cross'
@@ -683,6 +712,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         row_labels.Bind(wx.EVT_LEFT_DOWN, self._row_click)
         row_labels.Bind(wx.EVT_LEFT_UP, self._row_click)
         row_labels.Bind(wx.EVT_MOTION, self._rowheader_mouseover)
+        col_labels = self._grid.GetGridColLabelWindow()
+        col_labels.Bind(wx.EVT_MOTION, self._colheader_mouseover)
         self._dragging_rows = None
 
         self._dc = wx.ScreenDC()
@@ -761,6 +792,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 # Enough motion to consider this a drag motion
                 self._dragging_rows = None
                 return self._memory_drag(event)
+
+    def _colheader_mouseover(self, event):
+        x, y = self._grid.CalcUnscrolledPosition(event.GetX(), event.GetY())
+        _row, cell = self._grid.XYToCell(x, y)
+        col = self._col_defs[cell]
+        event.GetEventObject().SetToolTip(col.doc or None)
 
     def _memory_drag(self, event):
         data = self.cb_copy_getdata()
@@ -937,6 +974,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._extra_cols.add(setting.get_name())
         col = get_column_for_extra(self._radio, setting)
         if col:
+            col.doc = (setting.__doc__
+                       if setting.__doc__ != setting.get_name() else None)
             LOG.debug('Adding mem.extra column %s as %s',
                       setting.get_name(), col.__class__.__name__)
             # We insert extra columns in front of the comment column, which
