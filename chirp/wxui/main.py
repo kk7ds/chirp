@@ -664,12 +664,14 @@ class ChirpMain(wx.Frame):
                                 _("Open Stock Config"))
 
         self.OPEN_RECENT_MENU = wx.Menu()
+        self.restore_tabs_item = wx.NewId()
+
         last_files = [
             x for x in (CONF.get('last_open', 'state') or '').split('$')
             if x]
-        self.restore_tabs_item = wx.NewId()
+        self.adj_menu_open_recent(None)
         if last_files:
-            submenu_item = self.OPEN_RECENT_MENU.Append(
+            submenu_item = self.OPEN_RECENT_MENU.Prepend(
                 self.restore_tabs_item,
                 ngettext('Restore %i tab', 'Restore %i tabs', len(last_files))
                 % len(last_files))
@@ -677,20 +679,6 @@ class ChirpMain(wx.Frame):
                 wx.MOD_CONTROL | wx.ACCEL_SHIFT, ord('T')))
             self.Bind(wx.EVT_MENU, self.restore_tabs, submenu_item)
 
-        i = 0
-        fn = CONF.get("recent%i" % i, "state")
-        while fn:
-            submenu_item = self.OPEN_RECENT_MENU.Append(wx.ID_ANY, fn)
-            self.Bind(wx.EVT_MENU, self._menu_open_recent, submenu_item)
-            i += 1
-            if i >= KEEP_RECENT:
-                break
-            fn = CONF.get("recent%i" % i, "state")
-        if self.OPEN_RECENT_MENU.GetMenuItemCount() <= 0:
-            submenu_item = self.OPEN_RECENT_MENU.Append(wx.ID_ANY,
-                                                        EMPTY_MENU_LABEL)
-            submenu_item.Enable(False)
-            self.Bind(wx.EVT_MENU, self._menu_open_recent, submenu_item)
         file_menu.AppendSubMenu(self.OPEN_RECENT_MENU, _('Open Recent'))
 
         save_item = file_menu.Append(wx.ID_SAVE)
@@ -1012,59 +1000,56 @@ class ChirpMain(wx.Frame):
         tb.Realize()
 
     def adj_menu_open_recent(self, filename):
-        # Don't persist template names that have not been saved or do not
-        # exist.
-        if not os.path.exists(filename):
-            LOG.debug('Ignoring recent file %s', filename)
-            return
+        """Update the "open recent" menu
 
-        # Don't add stock config files to the recent files list
-        stock_dir = get_stock_configs()
-        this_dir = os.path.dirname(filename)
-        if (stock_dir and os.path.exists(stock_dir) and
-                this_dir and os.path.samefile(stock_dir, this_dir)):
-            return
+        If filename is passed, arrange for it to be the most-recent recent
+        file. Otherwise just synchronize config and the submenu state.
+        """
+        if filename:
+            # Don't persist template names that have not been saved or do not
+            # exist.
+            if not os.path.exists(filename):
+                LOG.debug('Ignoring recent file %s', filename)
+                return
+            # Don't add stock config files to the recent files list
+            stock_dir = get_stock_configs()
+            this_dir = os.path.dirname(filename)
+            if (stock_dir and os.path.exists(stock_dir) and
+                    this_dir and os.path.samefile(stock_dir, this_dir)):
+                return
 
-        # Travel the Open Recent menu looking for filename
-        found_mi = None
-        empty_mi = None
-        for i in range(0, self.OPEN_RECENT_MENU.GetMenuItemCount()):
-            menu_item = self.OPEN_RECENT_MENU.FindItemByPosition(i)
-            fn = menu_item.GetItemLabelText()
-            if fn == filename:
-                found_mi = menu_item
-            if fn == EMPTY_MENU_LABEL:
-                empty_mi = menu_item
+        # Make a list of recent files in config
+        recent = [CONF.get('recent%i' % i, 'state')
+                  for i in range(KEEP_RECENT)
+                  if CONF.get('recent%i' % i, 'state')]
+        while filename in recent:
+            # The old algorithm could have dupes, so keep looking and
+            # cleaning until they're gone
+            LOG.debug('File exists in recent, moving to front')
+            recent.remove(filename)
+        if filename:
+            recent.insert(0, filename)
+        recent = recent[:KEEP_RECENT]
+        LOG.debug('Recent is now %s' % recent)
 
-        # Move filename to top of menu or add it to top if it wasn't found
-        if found_mi:
-            self.OPEN_RECENT_MENU.Remove(found_mi)
-            self.OPEN_RECENT_MENU.Prepend(found_mi)
-        else:
-            submenu_item = self.OPEN_RECENT_MENU.Prepend(wx.ID_ANY, filename)
-            self.Bind(wx.EVT_MENU, self._menu_open_recent, submenu_item)
-
-        # Get rid of the place holder used in an empty menu
-        if empty_mi:
-            self.OPEN_RECENT_MENU.Delete(empty_mi)
-
-        # Trim the menu length
-        if self.OPEN_RECENT_MENU.GetMenuItemCount() > KEEP_RECENT:
-            for i in range(self.OPEN_RECENT_MENU.GetMenuItemCount() - 1,
-                           KEEP_RECENT - 1, -1):
-                extra_mi = self.OPEN_RECENT_MENU.FindItemByPosition(i)
-                self.OPEN_RECENT_MENU.Delete(extra_mi)
-
-        # Travel the Open Recent menu and save file names to config.
-        for i in range(0, self.OPEN_RECENT_MENU.GetMenuItemCount()):
-            if i >= KEEP_RECENT:
-                break
-            menu_item = self.OPEN_RECENT_MENU.FindItemByPosition(i)
-            if menu_item.GetId() == self.restore_tabs_item:
-                continue
-            fn = menu_item.GetItemLabelText()
-            CONF.set("recent%i" % i, fn, "state")
+        # Update and clean config
+        for i in range(KEEP_RECENT):
+            try:
+                CONF.set('recent%i' % i, recent[i], 'state')
+            except IndexError:
+                # Clean higher-order entries if they exist
+                CONF.remove_option('recent%i' % i, 'state')
         config._CONFIG.save()
+
+        # Clear the menu
+        while self.OPEN_RECENT_MENU.GetMenuItemCount():
+            self.OPEN_RECENT_MENU.Delete(
+                self.OPEN_RECENT_MENU.FindItemByPosition(0))
+
+        # Update the menu to match our list
+        for i, fn in enumerate(recent):
+            mi = self.OPEN_RECENT_MENU.Append(wx.ID_ANY, fn.replace('&', '&&'))
+            self.Bind(wx.EVT_MENU, self._menu_open_recent, mi)
 
     def _editor_page_changed(self, event):
         self._editors.GetPage(event.GetSelection())
