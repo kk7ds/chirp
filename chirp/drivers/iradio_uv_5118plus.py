@@ -550,11 +550,13 @@ class IradioUV5118plus(chirp_common.CloneModeRadio):
         mem.extra.append(rset)
 
         rs = RadioSettingValueInteger(0, 16777215, _mem.mutecode)
-        rset = RadioSetting("mutecode", "Mute Code (0-16777215)", rs)
+        rset = RadioSetting("mutecode", "Mute Code", rs)
+        rset.set_doc('Value between 0-16777215')
         mem.extra.append(rset)
 
         rs = RadioSettingValueInteger(0, 8, _mem.scno)
-        rset = RadioSetting("scno", "SC No. (0-8)", rs)
+        rset = RadioSetting("scno", "SC No.", rs)
+        rset.set_doc('Value between 0-8')
         mem.extra.append(rset)
 
         return mem
