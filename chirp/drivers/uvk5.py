@@ -1941,10 +1941,10 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         _mem4 = self._memobj
         # empty memory
         if mem.empty:
-            _mem.set_raw("\xFF" * 16)
+            _mem.set_raw(b"\xFF" * 16)
             if number < 200:
                 _mem2 = self._memobj.channelname[number]
-                _mem2.set_raw("\xFF" * 16)
+                _mem2.set_raw(b"\xFF" * 16)
                 _mem4.channel_attributes[number].is_scanlist1 = 0
                 _mem4.channel_attributes[number].is_scanlist2 = 0
                 # Compander in other models, not supported here
@@ -1956,7 +1956,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         # clean the channel memory, restore some bits if it was used before
         if _mem.get_raw(asbytes=False)[0] == "\xff":
             # this was an empty memory
-            _mem.set_raw("\x00" * 16)
+            _mem.set_raw(b"\x00" * 16)
         else:
             # this memory wasn't empty, save some bits that we don't know the
             # meaning of, or that we don't support yet
@@ -1966,9 +1966,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             prev_0d = _mem.get_raw()[0x0d] & SAVE_MASK_0D
             prev_0e = _mem.get_raw()[0x0e] & SAVE_MASK_0E
             prev_0f = _mem.get_raw()[0x0f] & SAVE_MASK_0F
-            _mem.set_raw("\x00" * 10 +
-                         chr(prev_0a) + chr(prev_0b) + chr(prev_0c) +
-                         chr(prev_0d) + chr(prev_0e) + chr(prev_0f))
+            _mem.set_raw(b"\x00" * 10 +
+                         bytes([prev_0a, prev_0b, prev_0c,
+                                prev_0d, prev_0e, prev_0f]))
 
         if number < 200:
             _mem4.channel_attributes[number].is_scanlist1 = 0
