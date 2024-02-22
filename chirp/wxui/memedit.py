@@ -1461,6 +1461,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         for row in rows:
             if not self._memory_cache[row].empty:
                 self.delete_memory_at(row, event)
+            elif row in self._memory_errors:
+                LOG.warning('Attempting to clear memory error '
+                            '%r for memory %i at row %i with delete',
+                            self._memory_errors[row], self.row2mem(row), row)
+                self.delete_memory_at(row, event)
+            else:
+                LOG.debug('Not re-deleting empty memory at row %i', row)
 
         if not shift_up:
             return
