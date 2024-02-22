@@ -559,6 +559,8 @@ def get_column_for_extra(radio, setting):
                                  label=label)
     elif isinstance(value, settings.RadioSettingValueBoolean):
         return ChirpFlagColumn(field, radio, label=label)
+    elif isinstance(value, settings.RadioSettingValueInteger):
+        return ChirpMemoryColumn(field, radio, label=label)
 
 
 class ChirpMemoryDropTarget(wx.DropTarget):
