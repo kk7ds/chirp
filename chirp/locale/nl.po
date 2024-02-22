@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-21 15:34-0800\n"
+"POT-Creation-Date: 2024-02-21 19:20-0800\n"
 "PO-Revision-Date: 2012-03-18 12:01+0100\n"
 "Last-Translator: Michael Tel <m.tel@xs4all.nl>\n"
 "Language-Team: Dutch\n"
@@ -34,21 +34,21 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr ""
 
-#: ../wxui/memedit.py:1592
+#: ../wxui/memedit.py:1633
 #, fuzzy, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
 msgstr[0] "Verwijderen (en naar boven verplaatsen)"
 msgstr[1] "Verwijderen (en naar boven verplaatsen)"
 
-#: ../wxui/memedit.py:1583
+#: ../wxui/memedit.py:1624
 #, fuzzy, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
 msgstr[0] "Kanalen"
 msgstr[1] "Kanalen"
 
-#: ../wxui/memedit.py:1587
+#: ../wxui/memedit.py:1628
 #, fuzzy, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
@@ -64,7 +64,7 @@ msgstr "Het bestand is aangepast. Wilt u de wijzigingen opslaan?"
 msgid "(none)"
 msgstr ""
 
-#: ../wxui/memedit.py:1924
+#: ../wxui/memedit.py:1965
 #, python-format
 msgid "...and %i more"
 msgstr ""
@@ -699,7 +699,7 @@ msgid ""
 "will happen now."
 msgstr ""
 
-#: ../wxui/memedit.py:1266
+#: ../wxui/memedit.py:1307
 #, python-format
 msgid ""
 "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
@@ -709,26 +709,26 @@ msgstr ""
 msgid "Chirp Image Files"
 msgstr ""
 
-#: ../wxui/memedit.py:341
+#: ../wxui/memedit.py:370
 msgid "Choice Required"
 msgstr ""
 
-#: ../wxui/memedit.py:1245
+#: ../wxui/memedit.py:1286
 #, fuzzy, python-format
 msgid "Choose %s DTCS Code"
 msgstr "DTCS code"
 
-#: ../wxui/memedit.py:1242
+#: ../wxui/memedit.py:1283
 #, python-format
 msgid "Choose %s Tone"
 msgstr ""
 
-#: ../wxui/memedit.py:1276
+#: ../wxui/memedit.py:1317
 #, fuzzy
 msgid "Choose Cross Mode"
 msgstr "Cross-mode"
 
-#: ../wxui/memedit.py:1306
+#: ../wxui/memedit.py:1347
 msgid "Choose duplex"
 msgstr ""
 
@@ -777,14 +777,14 @@ msgstr ""
 msgid "Close file"
 msgstr ""
 
-#: ../wxui/memedit.py:1650
+#: ../wxui/memedit.py:1691
 #, fuzzy, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
 msgstr[0] "Verschillen ruwe kanalen"
 msgstr[1] "Verschillen ruwe kanalen"
 
-#: ../wxui/memedit.py:531
+#: ../wxui/memedit.py:560
 msgid "Comment"
 msgstr "Opmerking"
 
@@ -797,6 +797,12 @@ msgstr ""
 msgid "Complete"
 msgstr "Volbracht"
 
+#: ../wxui/memedit.py:85
+msgid ""
+"Complex or non-standard tone squelch mode (starts the tone mode selection "
+"wizard)"
+msgstr ""
+
 #: ../drivers/tmd710.py:194 ../drivers/tmd710.py:197
 msgid ""
 "Connect your interface cable to the PC Port on the\n"
@@ -807,7 +813,7 @@ msgstr ""
 msgid "Convert to FM"
 msgstr ""
 
-#: ../wxui/memedit.py:1568
+#: ../wxui/memedit.py:1609
 msgid "Copy"
 msgstr "Kopiëren"
 
@@ -816,12 +822,12 @@ msgstr "Kopiëren"
 msgid "Country"
 msgstr ""
 
-#: ../wxui/memedit.py:523
+#: ../wxui/memedit.py:552
 #, fuzzy
-msgid "Cross mode"
+msgid "Cross Mode"
 msgstr "Cross-mode"
 
-#: ../wxui/clone.py:446
+#: ../wxui/clone.py:452
 msgid "Custom Port"
 msgstr ""
 
@@ -829,27 +835,27 @@ msgstr ""
 msgid "Custom..."
 msgstr ""
 
-#: ../wxui/memedit.py:1564
+#: ../wxui/memedit.py:1605
 msgid "Cut"
 msgstr "Knippen"
 
-#: ../wxui/memedit.py:454
+#: ../wxui/memedit.py:483
 #, fuzzy
 msgid "DTCS"
 msgstr "DTCS Pol"
 
-#: ../wxui/memedit.py:500
+#: ../wxui/memedit.py:529
 #, fuzzy
 msgid ""
 "DTCS\n"
 "Polarity"
 msgstr "DTCS Pol"
 
-#: ../drivers/uvk5.py:904
+#: ../drivers/uvk5.py:907
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2178
+#: ../wxui/memedit.py:2219
 msgid "DV Memory"
 msgstr ""
 
@@ -862,7 +868,7 @@ msgstr ""
 msgid "Dec"
 msgstr "Detecteren"
 
-#: ../wxui/memedit.py:1577
+#: ../wxui/memedit.py:1618
 msgid "Delete"
 msgstr "Verwijderen"
 
@@ -876,11 +882,11 @@ msgstr "Ontwerper"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 
-#: ../wxui/memedit.py:1686 ../wxui/developer.py:86
+#: ../wxui/memedit.py:1727 ../wxui/developer.py:86
 msgid "Diff Raw Memories"
 msgstr "Verschillen ruwe kanalen"
 
-#: ../wxui/memedit.py:2103
+#: ../wxui/memedit.py:2144
 msgid "Digital Code"
 msgstr "Digitale code"
 
@@ -893,7 +899,7 @@ msgstr "Digitale code"
 msgid "Disable reporting"
 msgstr ""
 
-#: ../wxui/memedit.py:430
+#: ../wxui/memedit.py:459
 msgid "Disabled"
 msgstr ""
 
@@ -929,7 +935,7 @@ msgstr "Download van radio"
 msgid "Download from radio..."
 msgstr "Download van radio"
 
-#: ../wxui/clone.py:564
+#: ../wxui/clone.py:570
 #, fuzzy
 msgid "Download instructions"
 msgstr "Download van radio"
@@ -938,7 +944,7 @@ msgstr "Download van radio"
 msgid "Driver"
 msgstr ""
 
-#: ../drivers/uvk5.py:1322
+#: ../drivers/uvk5.py:1325
 msgid "Driver information"
 msgstr ""
 
@@ -950,16 +956,16 @@ msgstr ""
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
 msgstr ""
 
-#: ../wxui/memedit.py:393
+#: ../wxui/memedit.py:422
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2133
+#: ../wxui/memedit.py:2174
 #, python-format
 msgid "Edit details for %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2131
+#: ../wxui/memedit.py:2172
 #, python-format
 msgid "Edit details for memory %i"
 msgstr ""
@@ -968,20 +974,20 @@ msgstr ""
 msgid "Enable Automatic Edits"
 msgstr ""
 
-#: ../wxui/memedit.py:430
+#: ../wxui/memedit.py:459
 msgid "Enabled"
 msgstr ""
 
-#: ../wxui/memedit.py:252
+#: ../wxui/memedit.py:281
 #, fuzzy
 msgid "Enter Frequency"
 msgstr "Frequentie"
 
-#: ../wxui/memedit.py:1293
+#: ../wxui/memedit.py:1334
 msgid "Enter Offset (MHz)"
 msgstr ""
 
-#: ../wxui/memedit.py:1285
+#: ../wxui/memedit.py:1326
 msgid "Enter TX Frequency (MHz)"
 msgstr ""
 
@@ -990,7 +996,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:445
+#: ../wxui/clone.py:451
 msgid "Enter custom port:"
 msgstr ""
 
@@ -1004,15 +1010,15 @@ msgstr "Wis kanaal {loc}"
 msgid "Error applying settings"
 msgstr "Fout bij het instellen van het geheugen"
 
-#: ../wxui/clone.py:490
+#: ../wxui/clone.py:496
 msgid "Error communicating with radio"
 msgstr ""
 
-#: ../wxui/clone.py:522
+#: ../wxui/clone.py:528
 msgid "Experimental driver"
 msgstr ""
 
-#: ../wxui/memedit.py:2061
+#: ../wxui/memedit.py:2102
 msgid "Export can only write CSV files"
 msgstr ""
 
@@ -1026,11 +1032,11 @@ msgstr "Exporteren naar bestand"
 msgid "Export to CSV..."
 msgstr "Exporteren naar bestand"
 
-#: ../wxui/memedit.py:2167
+#: ../wxui/memedit.py:2208
 msgid "Extra"
 msgstr ""
 
-#: ../drivers/uvk5.py:1320
+#: ../drivers/uvk5.py:1323
 msgid "FM Radio"
 msgstr ""
 
@@ -1264,14 +1270,18 @@ msgid ""
 "4 - Do the upload of your radio data\n"
 msgstr ""
 
-#: ../wxui/memedit.py:127
+#: ../wxui/memedit.py:156
 #, python-format
 msgid "Found empty list value for %(name)s: %(value)r"
 msgstr ""
 
-#: ../wxui/memedit.py:213
+#: ../wxui/memedit.py:242
 msgid "Frequency"
 msgstr "Frequentie"
+
+#: ../wxui/memedit.py:89
+msgid "Frequency granularity in kHz"
+msgstr ""
 
 #: ../wxui/query_sources.py:285 ../wxui/query_sources.py:345
 #: ../wxui/query_sources.py:437
@@ -1282,16 +1292,16 @@ msgstr ""
 msgid "Getting settings"
 msgstr ""
 
-#: ../wxui/memedit.py:852
+#: ../wxui/memedit.py:891
 #, fuzzy
 msgid "Goto Memory"
 msgstr "Toon ruw kanaal"
 
-#: ../wxui/memedit.py:851
+#: ../wxui/memedit.py:890
 msgid "Goto Memory:"
 msgstr ""
 
-#: ../wxui/memedit.py:820
+#: ../wxui/memedit.py:859
 msgid "Goto..."
 msgstr ""
 
@@ -1307,10 +1317,14 @@ msgstr ""
 msgid "Hex"
 msgstr ""
 
-#: ../wxui/memedit.py:829
+#: ../wxui/memedit.py:868
 #, fuzzy
 msgid "Hide empty memories"
 msgstr "Overschrijven?"
+
+#: ../wxui/memedit.py:92
+msgid "Human-readable comment (not stored in radio)"
+msgstr ""
 
 #: ../wxui/query_sources.py:296 ../wxui/query_sources.py:302
 #: ../wxui/query_sources.py:565 ../wxui/query_sources.py:571
@@ -1343,11 +1357,11 @@ msgstr "Index"
 msgid "Info"
 msgstr ""
 
-#: ../wxui/memedit.py:1268
+#: ../wxui/memedit.py:1309
 msgid "Information"
 msgstr ""
 
-#: ../wxui/memedit.py:1558
+#: ../wxui/memedit.py:1599
 #, fuzzy
 msgid "Insert Row Above"
 msgstr "Regel hierboven invoegen"
@@ -1360,7 +1374,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:586
+#: ../wxui/clone.py:592
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Interne fout"
@@ -1370,7 +1384,7 @@ msgstr "Interne fout"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Ongeldige waarde. Het moet een integer zijn."
 
-#: ../wxui/query_sources.py:66 ../wxui/memedit.py:1413
+#: ../wxui/query_sources.py:66 ../wxui/memedit.py:1454
 #, fuzzy
 msgid "Invalid Entry"
 msgstr "Ongeldige waarde voor dit veld"
@@ -1379,7 +1393,7 @@ msgstr "Ongeldige waarde voor dit veld"
 msgid "Invalid ZIP code"
 msgstr ""
 
-#: ../wxui/memedit.py:1412 ../wxui/memedit.py:2258
+#: ../wxui/memedit.py:1453 ../wxui/memedit.py:2299
 #, python-format
 msgid "Invalid edit: %s"
 msgstr ""
@@ -1388,7 +1402,7 @@ msgstr ""
 msgid "Invalid or unsupported module file"
 msgstr ""
 
-#: ../wxui/memedit.py:182 ../wxui/memedit.py:188
+#: ../wxui/memedit.py:211 ../wxui/memedit.py:217
 #, fuzzy, python-format
 msgid "Invalid value: %r"
 msgstr "Ongeldige waarde voor dit veld"
@@ -1461,11 +1475,11 @@ msgstr ""
 msgid "Loading settings"
 msgstr ""
 
-#: ../drivers/uvk5.py:1823
+#: ../drivers/uvk5.py:1826
 msgid "Logo string 1 (12 characters)"
 msgstr ""
 
-#: ../drivers/uvk5.py:1830
+#: ../drivers/uvk5.py:1833
 msgid "Logo string 2 (12 characters)"
 msgstr ""
 
@@ -1478,9 +1492,13 @@ msgstr ""
 msgid "Memories"
 msgstr "Kanalen"
 
-#: ../wxui/memedit.py:1452
+#: ../wxui/memedit.py:1493
 #, python-format
 msgid "Memory %i is not deletable"
+msgstr ""
+
+#: ../wxui/memedit.py:78
+msgid "Memory label (stored in radio)"
 msgstr ""
 
 #: ../wxui/bankedit.py:233
@@ -1492,7 +1510,7 @@ msgstr ""
 msgid "Memory {num} not in bank {bank}"
 msgstr ""
 
-#: ../wxui/query_sources.py:525 ../wxui/memedit.py:509
+#: ../wxui/query_sources.py:525 ../wxui/memedit.py:538
 #, fuzzy
 msgid "Mode"
 msgstr "Mode"
@@ -1518,17 +1536,17 @@ msgstr ""
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:414
+#: ../wxui/clone.py:420
 #, python-format
 msgid "More than one port found: %s"
 msgstr ""
 
-#: ../wxui/memedit.py:816
+#: ../wxui/memedit.py:855
 #, fuzzy
 msgid "Move Down"
 msgstr "Verplaats omlaa_g"
 
-#: ../wxui/memedit.py:806
+#: ../wxui/memedit.py:845
 #, fuzzy
 msgid "Move Up"
 msgstr "Verplaats om_hoog"
@@ -1541,7 +1559,7 @@ msgstr ""
 msgid "New version available"
 msgstr ""
 
-#: ../wxui/memedit.py:1723
+#: ../wxui/memedit.py:1764
 #, fuzzy
 msgid "No empty rows below!"
 msgstr "Regel hieronder invoegen"
@@ -1563,11 +1581,11 @@ msgstr ""
 msgid "No results!"
 msgstr ""
 
-#: ../wxui/query_sources.py:41 ../wxui/memedit.py:851
+#: ../wxui/query_sources.py:41 ../wxui/memedit.py:890
 msgid "Number"
 msgstr ""
 
-#: ../wxui/memedit.py:211
+#: ../wxui/memedit.py:240
 msgid "Offset"
 msgstr "Offset"
 
@@ -1639,7 +1657,7 @@ msgstr ""
 msgid "Optional: County, Hospital, etc."
 msgstr ""
 
-#: ../wxui/memedit.py:1855
+#: ../wxui/memedit.py:1896
 #, fuzzy
 msgid "Overwrite memories?"
 msgstr "Overschrijven?"
@@ -1655,26 +1673,26 @@ msgstr ""
 msgid "Parsing"
 msgstr ""
 
-#: ../wxui/memedit.py:1572
+#: ../wxui/memedit.py:1613
 msgid "Paste"
 msgstr "Plakken"
 
-#: ../wxui/memedit.py:1849
+#: ../wxui/memedit.py:1890
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr ""
 
-#: ../wxui/memedit.py:1852
+#: ../wxui/memedit.py:1893
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1846
+#: ../wxui/memedit.py:1887
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1843
+#: ../wxui/memedit.py:1884
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
@@ -1721,7 +1739,7 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../wxui/clone.py:391
+#: ../wxui/clone.py:397
 msgid "Plug in your cable and then click OK"
 msgstr ""
 
@@ -1729,7 +1747,7 @@ msgstr ""
 msgid "Port"
 msgstr "Poort"
 
-#: ../wxui/memedit.py:273
+#: ../wxui/memedit.py:302
 msgid "Power"
 msgstr "Vermogen"
 
@@ -1746,7 +1764,7 @@ msgstr ""
 msgid "Printing"
 msgstr ""
 
-#: ../wxui/memedit.py:1551
+#: ../wxui/memedit.py:1592
 msgid "Properties"
 msgstr ""
 
@@ -1759,7 +1777,7 @@ msgstr ""
 msgid "Query Source"
 msgstr ""
 
-#: ../wxui/memedit.py:456
+#: ../wxui/memedit.py:485
 msgid "RX DTCS"
 msgstr ""
 
@@ -1772,7 +1790,7 @@ msgstr "Radio"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:556 ../wxui/clone.py:640
+#: ../wxui/clone.py:562 ../wxui/clone.py:646
 #, fuzzy
 msgid "Radio information"
 msgstr "Informatie van de bank ophalen"
@@ -1794,6 +1812,15 @@ msgid ""
 "radio communications data provider\n"
 "<small>Premium account required</small>"
 msgstr ""
+
+#: ../wxui/memedit.py:83
+msgid "Receive DTCS code"
+msgstr ""
+
+#: ../wxui/memedit.py:77
+#, fuzzy
+msgid "Receive frequency"
+msgstr "Frequentie"
 
 #: ../wxui/common.py:477
 msgid "Refresh required"
@@ -1870,11 +1897,15 @@ msgstr ""
 msgid "Saved settings"
 msgstr ""
 
-#: ../drivers/uvk5.py:918
+#: ../wxui/memedit.py:90
+msgid "Scan control (skip, include, priority, etc)"
+msgstr ""
+
+#: ../drivers/uvk5.py:921
 msgid "Scanlists"
 msgstr ""
 
-#: ../drivers/uvk5.py:914
+#: ../drivers/uvk5.py:917
 msgid "Scrambler"
 msgstr ""
 
@@ -1909,7 +1940,11 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: ../wxui/memedit.py:1679 ../wxui/developer.py:89
+#: ../wxui/memedit.py:88
+msgid "Shift amount (or transmit frequency) controlled by duplex"
+msgstr ""
+
+#: ../wxui/memedit.py:1720 ../wxui/developer.py:89
 msgid "Show Raw Memory"
 msgstr "Toon ruw kanaal"
 
@@ -1917,7 +1952,7 @@ msgstr "Toon ruw kanaal"
 msgid "Show debug log location"
 msgstr ""
 
-#: ../wxui/memedit.py:825
+#: ../wxui/memedit.py:864
 msgid "Show extra fields"
 msgstr ""
 
@@ -1925,41 +1960,41 @@ msgstr ""
 msgid "Show image backup location"
 msgstr ""
 
-#: ../wxui/memedit.py:1928
+#: ../wxui/memedit.py:1969
 #, fuzzy
 msgid "Some memories are incompatible with this radio"
 msgstr "Geplakt kanaal {number} is niet compatibel met deze radio omdat:"
 
-#: ../wxui/memedit.py:1796
+#: ../wxui/memedit.py:1837
 msgid "Some memories are not deletable"
 msgstr ""
 
-#: ../wxui/memedit.py:1635
+#: ../wxui/memedit.py:1676
 #, fuzzy, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
 msgstr[0] "Verschillen ruwe kanalen"
 msgstr[1] "Verschillen ruwe kanalen"
 
-#: ../wxui/memedit.py:1639
+#: ../wxui/memedit.py:1680
 #, fuzzy, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
 msgstr[0] "Verschillen ruwe kanalen"
 msgstr[1] "Verschillen ruwe kanalen"
 
-#: ../wxui/memedit.py:1661
+#: ../wxui/memedit.py:1702
 #, fuzzy, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
 msgstr[0] "Verschillen ruwe kanalen"
 msgstr[1] "Verschillen ruwe kanalen"
 
-#: ../wxui/memedit.py:1528
+#: ../wxui/memedit.py:1569
 msgid "Sort by column:"
 msgstr ""
 
-#: ../wxui/memedit.py:1527
+#: ../wxui/memedit.py:1568
 #, fuzzy
 msgid "Sort memories"
 msgstr "Overschrijven?"
@@ -1978,6 +2013,10 @@ msgstr ""
 
 #: ../wxui/main.py:1742
 msgid "Success"
+msgstr ""
+
+#: ../wxui/memedit.py:84
+msgid "TX-RX DTCS polarity (normal or reversed)"
 msgstr ""
 
 #: ../wxui/query_sources.py:473
@@ -2026,7 +2065,7 @@ msgid ""
 "memories across, or proceed with the import?"
 msgstr ""
 
-#: ../wxui/memedit.py:1597
+#: ../wxui/memedit.py:1638
 #, fuzzy
 msgid "This Memory"
 msgstr "Toon ruw kanaal"
@@ -2092,12 +2131,12 @@ msgid ""
 "You have been warned. Proceed at your own risk!"
 msgstr ""
 
-#: ../wxui/memedit.py:1601
+#: ../wxui/memedit.py:1642
 #, fuzzy
 msgid "This memory and shift all up"
 msgstr "Verwijderen (en naar boven verplaatsen)"
 
-#: ../wxui/memedit.py:1599
+#: ../wxui/memedit.py:1640
 #, fuzzy
 msgid "This memory and shift block up"
 msgstr "Verwijderen (en naar boven verplaatsen)"
@@ -2119,7 +2158,7 @@ msgid ""
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
 
-#: ../drivers/uvk5.py:1908
+#: ../drivers/uvk5.py:1911
 msgid ""
 "This should only be enabled if you are using modified firmware that supports "
 "wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
@@ -2131,35 +2170,60 @@ msgstr ""
 msgid "This will load a module from a website issue"
 msgstr ""
 
-#: ../wxui/memedit.py:359
+#: ../wxui/memedit.py:388
 msgid "Tone"
 msgstr "Toon"
 
-#: ../wxui/memedit.py:886
+#: ../wxui/memedit.py:925
 msgid "Tone Mode"
 msgstr "Toonmodus"
 
-#: ../wxui/memedit.py:361
+#: ../wxui/memedit.py:390
 #, fuzzy
 msgid "Tone Squelch"
 msgstr "Toon squelch"
 
-#: ../wxui/memedit.py:303 ../wxui/memedit.py:900
+#: ../wxui/memedit.py:79
+#, fuzzy
+msgid "Tone squelch mode"
+msgstr "Toon squelch"
+
+#: ../wxui/memedit.py:91
+msgid "Transmit Power"
+msgstr ""
+
+#: ../wxui/memedit.py:87
+msgid "Transmit shift, split mode, or transmit inhibit"
+msgstr ""
+
+#: ../wxui/memedit.py:80
+msgid "Transmit tone"
+msgstr ""
+
+#: ../wxui/memedit.py:82
+msgid "Transmit/receive DTCS code for DTCS mode, else transmit code"
+msgstr ""
+
+#: ../wxui/memedit.py:81
+msgid "Transmit/receive tone for TSQL mode, else receive tone"
+msgstr ""
+
+#: ../wxui/memedit.py:332 ../wxui/memedit.py:939
 #, fuzzy
 msgid "Tuning Step"
 msgstr "Kanaal-afstand"
 
-#: ../wxui/clone.py:385 ../wxui/clone.py:392 ../wxui/clone.py:403
-#: ../wxui/clone.py:411 ../wxui/clone.py:415
+#: ../wxui/clone.py:391 ../wxui/clone.py:398 ../wxui/clone.py:409
+#: ../wxui/clone.py:417 ../wxui/clone.py:421
 msgid "USB Port Finder"
 msgstr ""
 
-#: ../wxui/clone.py:401
+#: ../wxui/clone.py:407
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
 
-#: ../wxui/memedit.py:1333
+#: ../wxui/memedit.py:1374
 msgid "Unable to edit memory before radio is loaded"
 msgstr ""
 
@@ -2189,7 +2253,7 @@ msgstr ""
 msgid "Unable to reveal %s on this system"
 msgstr "Niet in staat om wijzigingen voor dit model te maken"
 
-#: ../wxui/memedit.py:163
+#: ../wxui/memedit.py:192
 #, fuzzy, python-format
 msgid "Unable to set %s on this memory"
 msgstr "Niet in staat om wijzigingen voor dit model te maken"
@@ -2203,7 +2267,7 @@ msgstr "Niet in staat om wijzigingen voor dit model te maken"
 msgid "United States"
 msgstr ""
 
-#: ../wxui/clone.py:384
+#: ../wxui/clone.py:390
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
 
@@ -2212,7 +2276,7 @@ msgstr ""
 msgid "Unsupported model %r"
 msgstr "Niet-ondersteunende bestandstype"
 
-#: ../wxui/clone.py:655
+#: ../wxui/clone.py:661
 msgid "Upload instructions"
 msgstr ""
 
@@ -2263,7 +2327,7 @@ msgstr ""
 msgid "Value must be zero or greater"
 msgstr ""
 
-#: ../wxui/memedit.py:2158
+#: ../wxui/memedit.py:2199
 msgid "Values"
 msgstr ""
 
@@ -2280,11 +2344,11 @@ msgstr "Bee_ld"
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/memedit.py:1419
+#: ../wxui/memedit.py:1460
 msgid "Warning"
 msgstr ""
 
-#: ../wxui/memedit.py:1418
+#: ../wxui/memedit.py:1459
 #, python-format
 msgid "Warning: %s"
 msgstr ""
@@ -2297,7 +2361,7 @@ msgstr ""
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr ""
 
-#: ../wxui/clone.py:409
+#: ../wxui/clone.py:415
 msgid "Your cable appears to be on port:"
 msgstr ""
 
