@@ -45,7 +45,10 @@ def _get_memory_map(radio):
     # Get memory map
     memory_map = []
     mem_size = _get_memory_size(radio)
-    for addr in range(0x1FFF, mem_size, 0x1000):
+    if mem_size != radio._radio_memsize:
+        raise errors.RadioError("Incorrect radio model or model not supported "
+                                "(memory size doesn't match)")
+    for addr in range(0x1FFF, mem_size + 0x1000, 0x1000):
         frame = radio._make_frame(b"R", addr, 1)
         baofeng_common._rawsend(radio, frame)
         blocknr = ord(baofeng_common._rawrecv(radio, 6)[5:])
@@ -163,6 +166,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
                (b"\x56\x00\x20\x0A\x0D", 13),
                (b"\x06", 1)]
     _magic_memsize = [(b"\x56\x00\x00\x00\x0A", 11)]
+    _radio_memsize = 0xffff
     _magics2 = [(b"\x06", 1),
                 (b"\xFF\xFF\xFF\xFF\x0C\x55\x56\x31\x35\x39\x39\x39", 1),
                 (b"\02", 8),
@@ -455,3 +459,5 @@ class UV17(baofeng_uv17Pro.UV17Pro):
 class UV13Pro(UV17):
     VENDOR = "Baofeng"
     MODEL = "UV-13Pro"
+
+    _radio_memsize = 0x31fff
