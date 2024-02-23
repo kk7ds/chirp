@@ -298,7 +298,8 @@ u8 ENABLE_DTMF_CALLING:1,
    ENABLE_VOICE:1,
    ENABLE_NOAA:1,
    ENABLE_FMRADIO:1;
-u8 __UNUSED:3,
+u8 __UNUSED:2,
+   ENABLE_SPECTRUM:1,
    ENABLE_AM_FIX:1,
    ENABLE_BLMIN_TMP_OFF:1,
    ENABLE_RAW_DEMODULATORS:1,
@@ -418,7 +419,9 @@ KEYACTIONS_LIST = ["None",
                    "Lock keypad",
                    "Switch main VFO",
                    "Switch frequency/memory mode",
-                   "Switch demodulation"
+                   "Switch demodulation",
+                   "Min backlight temporary off",
+                   "Spectrum analyzer"
                    ]
 
 MIC_GAIN_LIST = ["+1.1dB", "+4.0dB", "+8.0dB", "+12.0dB", "+15.1dB"]
@@ -933,16 +936,21 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
         # Programmable keys
         def get_action(action_num):
             """"get actual key action"""
-            has_alarm = self._memobj.BUILD_OPTIONS.ENABLE_ALARM
-            has1750 = self._memobj.BUILD_OPTIONS.ENABLE_TX1750
-            has_flashlight = self._memobj.BUILD_OPTIONS.ENABLE_FLASHLIGHT
             lst = KEYACTIONS_LIST.copy()
-            if not has_alarm:
+            if not self._memobj.BUILD_OPTIONS.ENABLE_ALARM:
                 lst.remove("Alarm")
-            if not has1750:
+            if not self._memobj.BUILD_OPTIONS.ENABLE_TX1750:
                 lst.remove("1750Hz tone")
-            if not has_flashlight:
+            if not self._memobj.BUILD_OPTIONS.ENABLE_FLASHLIGHT:
                 lst.remove("Flashlight")
+            if not self._memobj.BUILD_OPTIONS.ENABLE_VOX:
+                lst.remove("VOX")
+            if not self._memobj.BUILD_OPTIONS.ENABLE_FMRADIO:
+                lst.remove("FM broadcast radio")
+            if not self._memobj.BUILD_OPTIONS.ENABLE_BLMIN_TMP_OFF:
+                lst.remove("Min backlight temporary off")
+            if not self._memobj.BUILD_OPTIONS.ENABLE_SPECTRUM:
+                lst.remove("Spectrum analyzer")
 
             action_num = int(action_num)
             if action_num >= len(KEYACTIONS_LIST) or \
