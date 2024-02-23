@@ -34,7 +34,7 @@ if grep -E '\wfuture\w' added_lines; then
     fail No new uses of future
 fi
 
-if grep -E '(from|import).*past' added_lines; then
+if grep -E '(from|import).*past(?!e)' added_lines; then
     fail Use of past library not allowed
 fi
 
