@@ -247,7 +247,6 @@ CUSTOM_PORTS = []
 class ChirpCloneDialog(wx.Dialog):
     def __init__(self, *a, **k):
         allow_detected_models = k.pop('allow_detected_models', False)
-        print('_ is %r' % _)
         super(ChirpCloneDialog, self).__init__(
             *a, title=_('Communicate with radio'), **k)
         self._clone_thread = None
@@ -374,7 +373,7 @@ class ChirpCloneDialog(wx.Dialog):
                 self._port.SetStringSelection(port[0])
             else:
                 port = '(no ports available)'
-            LOG.warning('Unable to select %r, defaulting to %s',
+            LOG.warning('Last port %r is unavailable, defaulting to %s',
                         select, port)
 
     def get_selected_port(self):
