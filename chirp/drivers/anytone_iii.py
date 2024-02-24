@@ -114,7 +114,6 @@ struct {
   u8 zeros128[128];
 } oem_info;
 
-#seekto 0x0100;
 struct flag chan_flags[750]; // Channel flags
 struct flag limit_flags[10]; // Limit channel flags
 //u8 effs8[8];
@@ -195,7 +194,6 @@ struct DTMF12p3 dtmf_encodings[16];
 #seekto 0x0540;                 // Hyper channels (12 x 2)
 struct memory hyper_channels[24];
 
-#seekto 0x0840;                 // Settings
 struct {
   u8 unknown1:6,
      display:2;             // Display Mode: [freq, chan, name]
@@ -460,13 +458,13 @@ struct {
   u8 unknown:6,
      mode:2;                // [Alarm, Transpond+Background,
                             //  Transpond+Alarm, Both]
-  u8 unknown:6,
+  u8 unknown2:6,
      eni_type:2;            // [None, DTMF, 5Tone]
   u8 id;                    // When DTMF: [M1-M16], When 5Tone: 0-99
   u8 alarm_time;            // [1-255] seconds
   u8 tx_time;               // [0-255] seconds
   u8 rx_time;               // [0-255] seconds
-  u8 unknown:7,
+  u8 unknown3:7,
      chan_select:1;         // [Assigned, Selected]
   ul16 channel;             // [0-749]
   u8 cycle;                 // [Continuous, 1-255]
@@ -938,7 +936,7 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
 
         if not is_hyper_chan and _flg.unused:
             mem.empty = True
-            _mem.set_raw("\x00" * 32)
+            _mem.fill_raw(b"\x00")
             _mem.name = SEVEN_SPACES
             _flg.scan = 0
 
