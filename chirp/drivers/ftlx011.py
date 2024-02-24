@@ -35,7 +35,6 @@ LOG = logging.getLogger(__name__)
 
 
 MEM_FORMAT = """
-#seekto 0x000;
 u8 rid;                 // Radio Identification
 
 struct {
@@ -55,7 +54,7 @@ u8 tot:4,                   // Time out timer: 16 values (0.0-7.5 in 0.5s step)
    tot_resume:2,            // Time out timer resume: 3, 2, 1, 0 => 0s, 6s, 20s, 60s
    unknownB:2;
 u8 a_key:2,                 // A key function: resume: 0-3: Talkaround, High/Low, Call, Accessory
-   unknownB:6;
+   unknownC:6;
 u8 pch1;                    // Priority channel 1
 u8 pch2;                    // Priority channel 1
 } settings;
@@ -80,7 +79,7 @@ struct {
   u8 unknownA[2];
 } memory[24];
 
-#seekto 0x0190;
+//#seekto 0x0190;
 char filename[11];
 
 #seekto 0x19C;
