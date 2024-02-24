@@ -142,7 +142,7 @@ struct {
       sql:4;
   u8  setunk27:1,   // 0x11c0
       voxdelay:2,
-      setunk28:1,
+      setunk31:1,
       voxgain:4;
   u8  fmstep:4,      // 0x11c1
       freqstep:4;
@@ -193,7 +193,7 @@ struct {
   u8  setunk65;
   u8  setunk66;
   u8  manfrqyn;     // 0x11fd
-  u8  setunk27:3,
+  u8  setunk30:3,
       frqr3:1,
       setunk28:1,
       frqr2:1,
@@ -628,7 +628,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         """Convert raw channel memory data into UI columns"""
         mem.extra = RadioSettingGroup("extra", "Extra")
 
-        if _mem.get_raw(asbytes=False)[0] == "\xff":
+        if _mem.get_raw()[0] == 0xff:
             mem.empty = True
             return mem
 
