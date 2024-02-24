@@ -188,7 +188,6 @@ class TestBitwiseStrict(base.DriverTest):
     def test_bitwise_unnecessary_seek(self, mock_assert):
         super().setUp()
 
-    @pytest.mark.xfail(strict=False)
     @mock.patch.object(bitwise.LOG, 'error')
     def test_bitwise_errors(self, mock_log):
         super().setUp()
