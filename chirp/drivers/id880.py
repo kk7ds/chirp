@@ -81,7 +81,7 @@ u8 name_flags[132];
 """
 
 TMODES = ["", "Tone", "TSQL", "TSQL", "DTCS", "DTCS", "TSQL-R", "DTCS-R"]
-DUPLEX = ["", "-", "+", "?3"]
+DUPLEX = ["", "-", "+", ""]
 DTCSP = ["NN", "NR", "RN", "RR"]
 MODES = ["FM", "NFM", "WFM", "AM", "NAM", "DV"]
 STEPS = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
