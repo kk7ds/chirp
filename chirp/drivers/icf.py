@@ -230,11 +230,11 @@ def get_clone_resp(pipe, length=None, max_count=None):
             if cnt >= max_count:
                 return True
         if length is None:
-            return buf.endswith("\xfd")
+            return buf.endswith(b"\xfd")
         else:
             return len(buf) == length
 
-    resp = ""
+    resp = b""
     cnt = 0
     while not exit_criteria(resp, length, cnt, max_count):
         resp += pipe.read(1)
@@ -263,7 +263,7 @@ def send_clone_frame(radio, cmd, data, raw=False, checksum=False):
     radio.pipe.write(frame.pack())
     if radio.MUNCH_CLONE_RESP:
         # Do max 2*len(frame) read(1) calls
-        get_clone_resp(radio.pipe, max_count=2*len(frame))
+        get_clone_resp(radio.pipe, max_count=2*len(frame.pack()))
 
     return frame
 
