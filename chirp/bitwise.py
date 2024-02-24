@@ -306,6 +306,12 @@ class arrayDataElement(DataElement):
         raw = [item.get_raw(asbytes=True) for item in self.__items]
         return self._compat_bytes(bytes(b''.join(raw)), asbytes)
 
+    def set_raw(self, data):
+        item_size = self.__items[0].size() // 8
+        assert len(data) / item_size == len(self), 'Invalid raw data length'
+        for i in range(len(self)):
+            self[i].set_raw(data[i * item_size:(i + 1) * item_size])
+
     def __setitem__(self, index, val):
         self.__items[index].set_value(val)
 
