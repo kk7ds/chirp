@@ -91,7 +91,7 @@ class TestCaseBruteForce(base.DriverTest):
         if 'duplex' in m.immutable:
             self.skipTest('Test memory has immutable duplex')
         for duplex in self.rf.valid_duplexes:
-            if duplex not in ["", "-", "+", "split"]:
+            if duplex not in ["", "-", "+", "split", "off"]:
                 continue
             if duplex == 'split':
                 self.assertTrue(self.rf.can_odd_split,
