@@ -98,6 +98,26 @@ class TestBitwiseBaseIntTypes(BaseTest):
             obj.foo[i] = i * 2
         self.assertEqual(b'\x00\x02\x04\x06', data.get_packed())
 
+    def test_int_array_set_raw(self):
+        data = memmap.MemoryMapBytes(bytes(b'\x00\x01\x02\x03'))
+        obj = bitwise.parse('u8 foo[4];', data)
+        obj.foo.set_raw(b'\x09\x08\x07\x06')
+        self.assertEqual(9, obj.foo[0])
+        self.assertEqual(8, obj.foo[1])
+        self.assertEqual(7, obj.foo[2])
+        self.assertEqual(6, obj.foo[3])
+
+        obj = bitwise.parse('u16 foo[2];', data)
+        obj.foo.set_raw(b'\x00\x01\x00\x02')
+        self.assertEqual(1, obj.foo[0])
+        self.assertEqual(2, obj.foo[1])
+
+        with self.assertRaises(AssertionError):
+            obj.foo.set_raw(b'123')
+
+        with self.assertRaises(AssertionError):
+            obj.foo.set_raw(b'12345')
+
 
 class TestBitfieldTypes(BaseTest):
     def test_bitfield_u8(self):
