@@ -189,7 +189,7 @@ struct {
     u8  rf_sql;
     u8  unk:6,
         pag_abk:1,
-        unk:1;
+        unk1:1;
     u8  pag_cdr_1;
     u8  pag_cdr_2;
     u8  pag_cdt_1;
@@ -204,38 +204,38 @@ struct {
     u8  xB3;
     u8  resume;
     u8  tot;
-    u8  unk:1,
+    u8  unk2:1,
         cw_id:1,
-        unk:1,
+        unk3:1,
         ts_speed:1,
         ars:1,
-        unk:2,
+        unk4:2,
         dtmf_mode:1;
-    u8  unk:1,
+    u8  unk5:1,
         ts_mut:1,
         wires_auto:1,
         busy_lockout:1,
         edge_beep:1,
-        unk:3;
-    u8  unk:2,
+        unk6:3;
+    u8  unk7:2,
         s_search:1,
-        unk:2,
+        unk8:2,
         cw_trng_units:1,
-        unk:2;
+        unk9:2;
     u8  dtmf_speed:1,
-        unk:2,
+        unk10:2,
         arts_interval:1,
-        unk:1,
+        unk11:1,
         inverted_dcs:1,
-        unk:1,
+        unk12:1,
         mw_mode:1;
-    u8  unk:2,
+    u8  unk13:2,
         wires_mode:1,
         wx_alert:1,
-        unk:1,
+        unk14:1,
         wx_vol_max:1,
         revert:1,
-        unk:1;
+        unk15:1;
     u8  vfo_scan;
     u8  scan_mode;
     u8  dtmf_delay;
@@ -243,25 +243,20 @@ struct {
     u8  xBF;
 } settings;
 
-#seekto 0x00d0;
-    u8  passwd[4];
-    u8  mbs;
-
-#seekto 0x00c0;
+//#seekto 0x00c0;
 struct {
   u16 in_use;
 } bank_used[8];
 
+//#seekto 0x00d0;
+    u8  passwd[4];
+    u8  mbs;
+
 #seekto 0x00ef;
   u8 currentTone;
 
-#seekto 0x00f0;
+//#seekto 0x00f0;
   u8 curChannelMem[20];
-
-#seekto 0x1e0;
-struct {
-  u8 dtmf_string[16];
-} dtmf_strings[10];
 
 #seekto 0x0127;
   u8 curChannelNum;
@@ -281,6 +276,11 @@ struct {
 #seekto 0x1df;
   u8 checksum2;
 
+//#seekto 0x1e0;
+struct {
+  u8 dtmf_string[16];
+} dtmf_strings[10];
+
 #seekto 0x0360;
 struct{
   u8 name[6];
@@ -292,7 +292,7 @@ struct{
   u16 channels[50];
 } banks[8];
 
-#seekto 0x06e4;
+//#seekto 0x06e4;
 struct {
   u8 even_pskip:1,
      even_skip:1,
@@ -302,9 +302,9 @@ struct {
      odd_skip:1,
      odd_valid:1,
      odd_masked:1;
-} flags[225];
+} flags[128];
 
-#seekto 0x0764;
+//#seekto 0x0764;
 struct {
   u8 unknown0:2,
      isnarrow:1,
@@ -394,7 +394,7 @@ def _encode_name(mem):
 
 
 def _wipe_memory(mem):
-    mem.set_raw(b"\xff" * (mem.size() // 8))
+    mem.fill_raw(b"\xff")
 
 
 class FT2900Bank(chirp_common.NamedBank):
@@ -572,7 +572,7 @@ class FT2900Radio(YaesuCloneModeRadio):
 
         mem.number = number
 
-        if _mem.get_raw(asbytes=False)[0] == "\xFF" or not valid or not used:
+        if _mem.get_raw()[0] == 0xFF or not valid or not used:
             mem.empty = True
             return mem
 
@@ -711,7 +711,7 @@ class FT2900Radio(YaesuCloneModeRadio):
         _mem.unknown5 = 0
 
         LOG.debug("encoded mem\n%s\n" % (util.hexprint(
-            _mem.get_raw(asbytes=False)[0:20])))
+            _mem.get_raw()[0:20])))
 
     def get_settings(self):
         _settings = self._memobj.settings
