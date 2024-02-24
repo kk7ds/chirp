@@ -1038,7 +1038,8 @@ class ChirpMain(wx.Frame):
                 CONF.set('recent%i' % i, recent[i], 'state')
             except IndexError:
                 # Clean higher-order entries if they exist
-                CONF.remove_option('recent%i' % i, 'state')
+                if CONF.is_defined('recent%i' % i, 'state'):
+                    CONF.remove_option('recent%i' % i, 'state')
         config._CONFIG.save()
 
         # Clear the menu
