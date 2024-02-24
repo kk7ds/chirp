@@ -369,7 +369,7 @@ BCLO = ['Off', 'Repeater', 'Busy']
 CHARSET = chirp_common.CHARSET_ASCII
 COLOR = ['Blue', 'Orange', 'Purple']
 DISPLAY = ['Frequency', 'N/A', 'Name']
-DUPLEXES = ['', 'N/A', '-', '+', 'split', 'off']
+DUPLEXES = ['', '', '-', '+', 'split', 'off']
 GMRS = ['GMRS %s' % x for x in range(1, 8)] + \
        ['GMRS %s' % x for x in range(15, 23)] + \
        ['GMRS Repeater %s' % x for x in range(15, 23)]
