@@ -239,7 +239,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 rty_sft:2,
                 rty_ton:1,
                 set2CC:1;
-            u8  dig_vox;        // 1:1
+            u8  dig_vox_dupe;   // 1:1
             u8  ext_mnu:1,
                 m_tune:1,
                 set2E:2,
@@ -313,7 +313,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             u8  set57;
         } settings;
 
-        #seekto 0x58;
+        //#seekto 0x58;
         struct mem_struct vfoa[11]; // The current cfgs for each vfo 'band'
         struct mem_struct vfob[11];
         struct mem_struct home[2];  // The 2 Home cfgs (HF and 6m)
@@ -325,11 +325,11 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         u8 visible[63];         // 1 bit per channel
         u8 pmsvisible;          // @ 0x382
 
-        #seekto 0x383;
+        //#seekto 0x383;
         u8 filled[63];
         u8 pmsfilled;           // @ 0x3c2
 
-        #seekto 0x3C3;
+        //#seekto 0x3C3;
         struct mem_struct memory[500];
         struct mem_struct pms[4];       // Programmed Scan limits @ x387F
 
