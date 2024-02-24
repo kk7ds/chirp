@@ -301,7 +301,7 @@ struct
 #seekto 0xc7;
   u8        opt_03_arts_mode_uhf_1_2;
 #seekto 0xa3;
-  u8        opt_03_arts_mode_vhf_2_2;
+  u8        opt_03_arts_mode_uhf_2_2;
 
 #seekto 0x8a;
   u8        opt_04_beep_1_2;
