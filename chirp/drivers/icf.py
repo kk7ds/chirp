@@ -210,7 +210,10 @@ def get_model_data(radio, mdata=b"\x00\x00\x00\x00", stream=None):
         stream = RadioStream(radio.pipe)
     frames = stream.get_frames()
 
-    if len(frames) != 1:
+    if len(frames) > 1:
+        LOG.debug('Got %i frames: %r', frames)
+        raise errors.RadioError("Received unexpected frame count")
+    elif len(frames) != 1:
         raise errors.RadioError("Unexpected response from radio")
 
     LOG.debug('Model query result:\n%s' % frames[0])
