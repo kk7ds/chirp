@@ -154,9 +154,9 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
              tx_time_out_alert:4;
           u8 unknown_flag_16:6,
              vfo_a_ch_disp:2;
-          u8 unknown_flag_15:6,
+          u8 unknown_flag_27:6,
              scan_mode:2;
-          u8 unknown_flag_16:7,
+          u8 unknown_flag_28:7,
              kbd_lock:1;
           u8 unknown_flag_17:6,
              ponmsg:2;
