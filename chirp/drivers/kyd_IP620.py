@@ -371,9 +371,8 @@ class IP620Radio(chirp_common.CloneModeRadio,
         _nam = self._memobj.chan_names[number - 1]
 
         def _is_empty():
-            for i in range(0, 4):
-                if _mem.rx_freq[i].get_raw(asbytes=False) != "\xFF":
-                    return False
+            if _mem.rx_freq.get_raw() != b"\xFF\xFF\xFF\xFF":
+                return False
             return True
 
         mem = chirp_common.Memory()
@@ -388,6 +387,8 @@ class IP620Radio(chirp_common.CloneModeRadio,
         if int(_mem.rx_freq) == int(_mem.tx_freq):
             mem.duplex = ""
             mem.offset = 0
+        elif _mem.tx_freq.get_raw() == b"\xFF\xFF\xFF\xFF":
+            mem.duplex = "off"
         else:
             mem.duplex = int(_mem.rx_freq) > int(_mem.tx_freq) and "-" or "+"
             mem.offset = abs(int(_mem.rx_freq) - int(_mem.tx_freq)) * 10
@@ -468,13 +469,12 @@ class IP620Radio(chirp_common.CloneModeRadio,
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() // 8))
+            _mem.fill_raw(b"\xFF")
             return
 
         _mem.rx_freq = mem.freq / 10
-        if mem.duplex == "OFF":
-            for i in range(0, 4):
-                _mem.tx_freq[i].set_raw("\xFF")
+        if mem.duplex == "off":
+            _mem.tx_freq.fill_raw(b"\xFF")
         elif mem.duplex == "+":
             _mem.tx_freq = (mem.freq + mem.offset) / 10
         elif mem.duplex == "-":
