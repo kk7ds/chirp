@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-21 19:20-0800\n"
-"PO-Revision-Date: 2024-02-15 20:45-0300\n"
+"PO-Revision-Date: 2024-02-23 21:47-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1183,6 +1183,8 @@ msgid ""
 "Complex or non-standard tone squelch mode (starts the tone mode selection "
 "wizard)"
 msgstr ""
+"Modo silenciador de tono complejo o no estándar (inicia el asistente de "
+"selección del modo de tono)"
 
 #: ../drivers/tmd710.py:194 ../drivers/tmd710.py:197
 msgid ""
@@ -1206,7 +1208,6 @@ msgid "Country"
 msgstr "País"
 
 #: ../wxui/memedit.py:552
-#, fuzzy
 msgid "Cross Mode"
 msgstr "Modo cruzado"
 
@@ -1755,7 +1756,7 @@ msgstr "Frecuencia"
 
 #: ../wxui/memedit.py:89
 msgid "Frequency granularity in kHz"
-msgstr ""
+msgstr "Granularidad de frecuencia en kHz"
 
 #: ../wxui/query_sources.py:285 ../wxui/query_sources.py:345
 #: ../wxui/query_sources.py:437
@@ -1796,7 +1797,7 @@ msgstr "Ocultar memorias vacías"
 
 #: ../wxui/memedit.py:92
 msgid "Human-readable comment (not stored in radio)"
-msgstr ""
+msgstr "Comentario legible para humanos (no almacenado en la radio)"
 
 #: ../wxui/query_sources.py:296 ../wxui/query_sources.py:302
 #: ../wxui/query_sources.py:565 ../wxui/query_sources.py:571
@@ -1910,9 +1911,8 @@ msgid "Limit results to this distance (km) from coordinates"
 msgstr "Limitar resultados a esta distancia (km) desde coordenadas"
 
 #: ../wxui/main.py:1526
-#, fuzzy
 msgid "Live Radio"
-msgstr "Radio FM"
+msgstr "Radio en vivo"
 
 #: ../wxui/main.py:719
 msgid "Load Module..."
@@ -1970,7 +1970,7 @@ msgstr "La memoria %i no es borrable"
 
 #: ../wxui/memedit.py:78
 msgid "Memory label (stored in radio)"
-msgstr ""
+msgstr "Etiqueta de memoria (almacenada en la radio)"
 
 #: ../wxui/bankedit.py:233
 msgid "Memory must be in a bank to be edited"
@@ -2308,14 +2308,12 @@ msgstr ""
 "<small>Requiere cuenta premium</small>"
 
 #: ../wxui/memedit.py:83
-#, fuzzy
 msgid "Receive DTCS code"
-msgstr "Código DTCS"
+msgstr "Código DTCS de recepción"
 
 #: ../wxui/memedit.py:77
-#, fuzzy
 msgid "Receive frequency"
-msgstr "Ingresar frecuencia"
+msgstr "Frecuencia de recepción"
 
 #: ../wxui/common.py:477
 msgid "Refresh required"
@@ -2397,7 +2395,7 @@ msgstr "Ajustes guardados"
 
 #: ../wxui/memedit.py:90
 msgid "Scan control (skip, include, priority, etc)"
-msgstr ""
+msgstr "Control de escáner (omitir, incluir, prioridad, etc)"
 
 #: ../drivers/uvk5.py:921
 msgid "Scanlists"
@@ -2438,6 +2436,8 @@ msgstr "Ajustes"
 #: ../wxui/memedit.py:88
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr ""
+"Cantidad de desplazamiento (o frecuencia de transmisión) controlada por "
+"dúplex"
 
 #: ../wxui/memedit.py:1720 ../wxui/developer.py:89
 msgid "Show Raw Memory"
@@ -2510,7 +2510,7 @@ msgstr "Éxito"
 
 #: ../wxui/memedit.py:84
 msgid "TX-RX DTCS polarity (normal or reversed)"
-msgstr ""
+msgstr "Polaridad TX-RX CTCS (normal o invertida)"
 
 #: ../wxui/query_sources.py:473
 msgid "The DMR-MARC Worldwide Network"
@@ -2624,6 +2624,8 @@ msgid ""
 "This is a live-mode radio, which means changes are sent to the radio in real-"
 "time as you make them. Upload is not necessary!"
 msgstr ""
+"Este es un modo de radio en vivo, lo que significa que los cambios son "
+"enviados a la radio en tiempo real cuando los haces. ¡Cargar no es necesario!"
 
 #: ../wxui/main.py:1529
 msgid ""
@@ -2631,6 +2633,10 @@ msgid ""
 "Open a radio image (or download one from a radio) an then copy/paste items "
 "from this tab into that one in order to upload"
 msgstr ""
+"Este es un archivo de radio independiente y no puede ser cargado "
+"directamente a una radio. Abre una imagen de radio (o descarga una de una "
+"radio) y entonces copia/pega los elementos desde esta pestaña a esa para "
+"cargar"
 
 #: ../drivers/th_uv88.py:555
 msgid "This is an early stage beta driver\n"
@@ -2739,29 +2745,32 @@ msgid "Tone Squelch"
 msgstr "Silenciador de tono"
 
 #: ../wxui/memedit.py:79
-#, fuzzy
 msgid "Tone squelch mode"
-msgstr "Silenciador de tono"
+msgstr "Modo de silenciador de tono"
 
 #: ../wxui/memedit.py:91
 msgid "Transmit Power"
-msgstr ""
+msgstr "Potencia de transmisión"
 
 #: ../wxui/memedit.py:87
 msgid "Transmit shift, split mode, or transmit inhibit"
 msgstr ""
+"Desplazamiento de transmisión, modo dividido, o inhibición de transmisión"
 
 #: ../wxui/memedit.py:80
 msgid "Transmit tone"
-msgstr ""
+msgstr "Tono de transmisión"
 
 #: ../wxui/memedit.py:82
 msgid "Transmit/receive DTCS code for DTCS mode, else transmit code"
 msgstr ""
+"Código DTCS de transmisión/recepción para el modo DTCS, sino, código de "
+"transmisión"
 
 #: ../wxui/memedit.py:81
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
 msgstr ""
+"Tono de transmisión/recepción para el modo TSQL, sino, tono de recepción"
 
 #: ../wxui/memedit.py:332 ../wxui/memedit.py:939
 msgid "Tuning Step"
@@ -2817,9 +2826,8 @@ msgid "Unable to set %s on this memory"
 msgstr "No se puede establecer %s en esta memoria"
 
 #: ../wxui/main.py:1533
-#, fuzzy
 msgid "Unable to upload this file"
-msgstr "No se puede revelar %s en este sistema"
+msgstr "No se puede cargar este archivo"
 
 #: ../wxui/query_sources.py:691
 msgid "United States"
