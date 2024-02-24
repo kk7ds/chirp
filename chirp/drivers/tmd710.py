@@ -28,21 +28,13 @@ from chirp.drivers import kenwood_live
 
 LOG = logging.getLogger(__name__)
 
-HAS_FUTURE = True
-try:                         # PY3 compliance
-    from builtins import bytes
-except ImportError:
-    HAS_FUTURE = False
-    LOG.debug('python-future package is not '
-              'available; %s requires it' % __name__)
-
 BAUD = 0
 STIMEOUT = 0.2
 TERM = b'\x0d'         # Cmd write terminator (CR)
 ACK = b'\x06'           # Data write acknowledge char
 W8S = 0.001      # short wait, secs
 W8L = 0.1       # long wait
-TMD710_DUPLEX = ["", "+", "-", "n/a", "split"]
+TMD710_DUPLEX = ["", "+", "-", "", "split"]
 TMD710_SKIP = ["", "S"]
 TMD710_MODES = ["FM", "NFM", "AM"]
 TMD710_BANDS = [(118000000, 135995000),
@@ -1251,847 +1243,847 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         return False
 
 
-if HAS_FUTURE:   # Only register drivers if environment is PY3 compliant
-    @directory.register
-    class KenwoodTMD710Radio(KenwoodTMx710Radio):
-        """ Kenwood TM-D710 VHF/UHF/APRS Radio model. """
-        VENDOR = "Kenwood"
-        MODEL = "TM-D710_CloneMode"
-        SHORT = ""       # Quick model code
+@directory.register
+class KenwoodTMD710Radio(KenwoodTMx710Radio):
+    """ Kenwood TM-D710 VHF/UHF/APRS Radio model. """
+    VENDOR = "Kenwood"
+    MODEL = "TM-D710_CloneMode"
+    SHORT = ""       # Quick model code
 
-        _num_blocks = 3
-        _num_packets = [0x9c, 1, 1]
+    _num_blocks = 3
+    _num_packets = [0x9c, 1, 1]
 
-        MEM_FORMAT = """
-        struct chns {            // 16 bytes channel structure
-        ul32  rxfreq;
-        u8   tstep;
-        u8   mode;
-        u8   tmode:4,
-            duplex:4;         // 4 = split
-        u8   rtone;
-        u8   ctone;
-        u8   dtcs;
-        ul32 offset;          // or Split mode TX freq
-        u8   splitstep;
-        u8   cross;           // not used
-        };
+    MEM_FORMAT = """
+    struct chns {            // 16 bytes channel structure
+    ul32  rxfreq;
+    u8   tstep;
+    u8   mode;
+    u8   tmode:4,
+        duplex:4;         // 4 = split
+    u8   rtone;
+    u8   ctone;
+    u8   dtcs;
+    ul32 offset;          // or Split mode TX freq
+    u8   splitstep;
+    u8   cross;           // not used
+    };
 
-        struct pm_grp {         // 512 bytes per group
-        u8   unk0200;
-        u8   a_mr;
-        u8   unk0202;
-        u8   unk0203;
-        u8   unk0204;
-        u8   unk0205;
-        u8   unk0206;
-        u8   a_pwr;
-        u8   wxalerta;
-        u8   asmsql;
-        u8   a_chn;
-        u8   unk020b;
-        u8   unk020c;
-        u8   b_mr;
-        u8   unk020e;
-        u8   unk020f;
-        u8   unk0210;
-        u8   unk0211;
-        u8   unk0212;
-        u8   b_pwr;
-        u8   wxalertb;
-        u8   bsmsql;
-        u8   b_chn;
-        u8   unk0217;
-        u8   unk0218;
-        u8   unk0219;
-        u8   unk021a;
-        u8   unk021b;
-        u8   unk021c;
-        u8   unk021d;
-        u8   unk021e;
-        u8   unk021f;
-        u8   unk0220;
-        u8   unk0221;
-        u8   unk0222;
-        u8   unk0223;
-        u8   unk0224;
-        u8   unk0225;
-        u8   unk0226;
-        u8   unk0227;
-        u8   unk0228;
-        u8   unk0229;
-        u8   unk022a;
-        u8   unk022b;
-        u8   unk022c;
-        u8   unk022d;
-        u8   unk022e;
-        u8   unk022f;
-        u8   unk0230;
-        u8   unk0231;
-        u8   sqclogic;
-        u8   txband;
-        u8   single;
-        u8   unk0235;
-        u8   mute;
-        u8   unk0237;
-        u8   unk0238;
-        u8   unk0239;
-        u8   unk0237a;
-        u8   unk023b;
-        u8   unk023c;
-        u8   unk023d;
-        u8   unk023e;
-        u8   unk023f;
-        struct chns vfo[10];         // 0x0240 - 0x02df
-        char pwron[8];
-        u8   unk02e8;
-        u8   unk02e9;
-        u8   unk02ea;
-        u8   unk02eb;
-        u8   unk02ec;
-        u8   unk02ed;
-        u8   unk02ee;
-        u8   unk02ef;
-        char memgrplk[10];
-        u8   unk02fa;
-        u8   unk02fb;
-        u8   unk02fc;
-        u8   unk02fd;
-        u8   unk02fe;
-        u8   unk02ff;
-        struct {
-            ul32 blow;
-            ul32 bhigh;
-        } progvfo[10];
-        u8   beepon;
-        u8   beepvol;
-        u8   extspkr;
-        u8   ance;
-        u8   lang;
-        u8   vcvol;
-        u8   vcspd;
-        u8   pbkrpt;
-        u8   pbkint;
-        u8   cntrec;
-        u8   vhfaip;
-        u8   uhfaip;
-        u8   ssqlhu;
-        u8   mutehu;
-        u8   beatshft;
-        u8   tot;
-        u8   recall;
-        u8   eclnkspd;
-        u8   dtmfhld;
-        u8   dtmfspd;
-        u8   dtmfpau;
-        u8   dtmflck;
-        u8   rptrofst;
-        u8   rptr1750;
-        u8   bright;
-        u8   autobri;
-        u8   bkltclr;
-        u8   pf1key;
-        u8   pf2key;
-        u8   micpf1;
-        u8   micpf2;
-        u8   micpf3;
-        u8   micpf4;
-        u8   miclck;
-        u8   unk0372;
-        u8   scnrsm;
-        u8   apo;
-        u8   extband;
-        u8   extbaud;
-        u8   sqcsrc;
-        u8   autopm;
-        u8   dispbar;
-        u8   unk037a;
-        u8   bkltcont;
-        u8   dsprev;
-        u8   vsmode;
-        u8   intband;
-        u8   wxscntm;
-        u8   scntot;
-        u8   scncot;
-        u8   unk0382;
-        u8   unk0383;
-        u8   unk0384;
-        u8   unk0385;
-        u8   unk0386;
-        u8   unk0387;
-        u8   unk0388;
-        u8   unk0389;
-        u8   unk038a;
-        u8   unk038b;
-        u8   unk038c;
-        u8   unk038d;
-        u8   unk038e;
-        u8   unk038f;
-        u8   abnd118;
-        u8   abnd144;
-        u8   abnd220;
-        u8   abnd300;
-        u8   abnd430;
-        u8   bbnd144;
-        u8   bbnd220;
-        u8   bbnd300;
-        u8   bbnd430;
-        u8   bbnd800;
-        u8   unk039a;
-        u8   unk039b;
-        u8   unk039c;
-        u8   unk039d;
-        u8   unk039e;
-        u8   unk039f;
-        u8   unk03a0[96];       // to 0x03ff
-        };                        // end of struct pm
+    struct pm_grp {         // 512 bytes per group
+    u8   unk0200;
+    u8   a_mr;
+    u8   unk0202;
+    u8   unk0203;
+    u8   unk0204;
+    u8   unk0205;
+    u8   unk0206;
+    u8   a_pwr;
+    u8   wxalerta;
+    u8   asmsql;
+    u8   a_chn;
+    u8   unk020b;
+    u8   unk020c;
+    u8   b_mr;
+    u8   unk020e;
+    u8   unk020f;
+    u8   unk0210;
+    u8   unk0211;
+    u8   unk0212;
+    u8   b_pwr;
+    u8   wxalertb;
+    u8   bsmsql;
+    u8   b_chn;
+    u8   unk0217;
+    u8   unk0218;
+    u8   unk0219;
+    u8   unk021a;
+    u8   unk021b;
+    u8   unk021c;
+    u8   unk021d;
+    u8   unk021e;
+    u8   unk021f;
+    u8   unk0220;
+    u8   unk0221;
+    u8   unk0222;
+    u8   unk0223;
+    u8   unk0224;
+    u8   unk0225;
+    u8   unk0226;
+    u8   unk0227;
+    u8   unk0228;
+    u8   unk0229;
+    u8   unk022a;
+    u8   unk022b;
+    u8   unk022c;
+    u8   unk022d;
+    u8   unk022e;
+    u8   unk022f;
+    u8   unk0230;
+    u8   unk0231;
+    u8   sqclogic;
+    u8   txband;
+    u8   single;
+    u8   unk0235;
+    u8   mute;
+    u8   unk0237;
+    u8   unk0238;
+    u8   unk0239;
+    u8   unk0237a;
+    u8   unk023b;
+    u8   unk023c;
+    u8   unk023d;
+    u8   unk023e;
+    u8   unk023f;
+    struct chns vfo[10];         // 0x0240 - 0x02df
+    char pwron[8];
+    u8   unk02e8;
+    u8   unk02e9;
+    u8   unk02ea;
+    u8   unk02eb;
+    u8   unk02ec;
+    u8   unk02ed;
+    u8   unk02ee;
+    u8   unk02ef;
+    char memgrplk[10];
+    u8   unk02fa;
+    u8   unk02fb;
+    u8   unk02fc;
+    u8   unk02fd;
+    u8   unk02fe;
+    u8   unk02ff;
+    struct {
+        ul32 blow;
+        ul32 bhigh;
+    } progvfo[10];
+    u8   beepon;
+    u8   beepvol;
+    u8   extspkr;
+    u8   ance;
+    u8   lang;
+    u8   vcvol;
+    u8   vcspd;
+    u8   pbkrpt;
+    u8   pbkint;
+    u8   cntrec;
+    u8   vhfaip;
+    u8   uhfaip;
+    u8   ssqlhu;
+    u8   mutehu;
+    u8   beatshft;
+    u8   tot;
+    u8   recall;
+    u8   eclnkspd;
+    u8   dtmfhld;
+    u8   dtmfspd;
+    u8   dtmfpau;
+    u8   dtmflck;
+    u8   rptrofst;
+    u8   rptr1750;
+    u8   bright;
+    u8   autobri;
+    u8   bkltclr;
+    u8   pf1key;
+    u8   pf2key;
+    u8   micpf1;
+    u8   micpf2;
+    u8   micpf3;
+    u8   micpf4;
+    u8   miclck;
+    u8   unk0372;
+    u8   scnrsm;
+    u8   apo;
+    u8   extband;
+    u8   extbaud;
+    u8   sqcsrc;
+    u8   autopm;
+    u8   dispbar;
+    u8   unk037a;
+    u8   bkltcont;
+    u8   dsprev;
+    u8   vsmode;
+    u8   intband;
+    u8   wxscntm;
+    u8   scntot;
+    u8   scncot;
+    u8   unk0382;
+    u8   unk0383;
+    u8   unk0384;
+    u8   unk0385;
+    u8   unk0386;
+    u8   unk0387;
+    u8   unk0388;
+    u8   unk0389;
+    u8   unk038a;
+    u8   unk038b;
+    u8   unk038c;
+    u8   unk038d;
+    u8   unk038e;
+    u8   unk038f;
+    u8   abnd118;
+    u8   abnd144;
+    u8   abnd220;
+    u8   abnd300;
+    u8   abnd430;
+    u8   bbnd144;
+    u8   bbnd220;
+    u8   bbnd300;
+    u8   bbnd430;
+    u8   bbnd800;
+    u8   unk039a;
+    u8   unk039b;
+    u8   unk039c;
+    u8   unk039d;
+    u8   unk039e;
+    u8   unk039f;
+    u8   unk03a0[96];       // to 0x03ff
+    };                        // end of struct pm
 
-        #seekto 0x0000;         // block1: x000 - x023f
-        struct {
-        u8   unk000[16];
-        u8   unk010;
-        u8   unk011;
-        char unk012[3];
-        u8   ansbck;
-        u8   pmrecall;            // 0x0016
-        u8   pnlklk;
-        u8   dspmemch;
-        u8   m10mz;
-        u8   micsens;
-        u8   opband;
-        u8   unk01c;
-        u8   rptrmode;
-        u8   rptrhold;
-        u8   rptridx;
-        u8   unk020;
-        u8   pcbaud;
-        u8   unk022;
-        u8   pwdon;               //  0x0023
-        u8   unk024;
-        u8   unk025;
-        u8   unk026;
-        u8   unk027;
-        u8   unk028;
-        u8   unk029;
-        char pswd[6];             // 0x023a - 23f
-        } block1;
+    #seekto 0x0000;         // block1: x000 - x023f
+    struct {
+    u8   unk000[16];
+    u8   unk010;
+    u8   unk011;
+    char unk012[3];
+    u8   ansbck;
+    u8   pmrecall;            // 0x0016
+    u8   pnlklk;
+    u8   dspmemch;
+    u8   m10mz;
+    u8   micsens;
+    u8   opband;
+    u8   unk01c;
+    u8   rptrmode;
+    u8   rptrhold;
+    u8   rptridx;
+    u8   unk020;
+    u8   pcbaud;
+    u8   unk022;
+    u8   pwdon;               //  0x0023
+    u8   unk024;
+    u8   unk025;
+    u8   unk026;
+    u8   unk027;
+    u8   unk028;
+    u8   unk029;
+    char pswd[6];             // 0x023a - 23f
+    } block1;
 
-        #seekto 0x0030;
-        struct {
-        char code[16];            // @ 0x0030
-        } dtmc[10];
+    #seekto 0x0030;
+    struct {
+    char code[16];            // @ 0x0030
+    } dtmc[10];
 
-        struct {
-        char id[8];               // 0x00d0 - 0x011f
-        } dtmn[10];
+    struct {
+    char id[8];               // 0x00d0 - 0x011f
+    } dtmn[10];
 
-        struct {                    // block1a: 0x0120 - 0x023f
-        u8   unk0120;
-        u8   unk0121;
-        u8   unk0122[78];
-        char rptrid[12];          // 0x0170 - 017b
-        u8   unk017c;
-        u8   unk017d;
-        u8   unk017e;
-        u8   unk017f;
-        u8   unk0180[128];        // 0x0180 - 0x01ff
-        } block1a;
+    struct {                    // block1a: 0x0120 - 0x023f
+    u8   unk0120;
+    u8   unk0121;
+    u8   unk0122[78];
+    char rptrid[12];          // 0x0170 - 017b
+    u8   unk017c;
+    u8   unk017d;
+    u8   unk017e;
+    u8   unk017f;
+    u8   unk0180[128];        // 0x0180 - 0x01ff
+    } block1a;
 
-        struct pm_grp pmg[6];       // 0x0200 - 0x0dff
+    struct pm_grp pmg[6];       // 0x0200 - 0x0dff
 
-        #seekto 0x0e00;
-        struct {
-        u8   band;
-        u8   skip;
-        } chmap[1030];              // to 0x0160b
+    #seekto 0x0e00;
+    struct {
+    u8   band;
+    u8   skip;
+    } chmap[1030];              // to 0x0160b
 
-        #seekto 0x01700;            // 0x01700 - 0x0575f
-        struct chns ch_mem[1030];   // 0-999 MR and 1000 -1029 Specials
+    #seekto 0x01700;            // 0x01700 - 0x0575f
+    struct chns ch_mem[1030];   // 0-999 MR and 1000 -1029 Specials
 
-        #seekto 0x05760;
-        struct chns call[2];
+    #seekto 0x05760;
+    struct chns call[2];
 
-        #seekto 0x05800;
-        struct {
-        char name[8];
-        } ch_nam[1020];         // ends @ 0x07e0
+    #seekto 0x05800;
+    struct {
+    char name[8];
+    } ch_nam[1020];         // ends @ 0x07e0
 
-        #seekto 0x077e0;        // 0x077e0 - 0x07830
-        struct {
-        char name[8];
-        } wxnam[10];
+    #seekto 0x077e0;        // 0x077e0 - 0x07830
+    struct {
+    char name[8];
+    } wxnam[10];
 
-        #seekto 0x07da0;
-        struct {
-        char pmname[16];
-        } pm_name[5];
+    #seekto 0x07da0;
+    struct {
+    char pmname[16];
+    } pm_name[5];
 
-        #seekto 0x07df0;
-        struct {
-        char comnt[32];
-        } mcpcom;
+    #seekto 0x07df0;
+    struct {
+    char comnt[32];
+    } mcpcom;
 
-        #seekto 0x08660;
-        struct {
-        char cmdr[10];
-        char tptr[10];
-        u8  skytone;          // 0x08674
-        } skycmd;
-                            // data stops at 0x09b98
-        """
+    #seekto 0x08660;
+    struct {
+    char cmdr[10];
+    char tptr[10];
+    u8  skytone;          // 0x08674
+    } skycmd;
+                        // data stops at 0x09b98
+    """
 
-        def _read_mem(radio):
-            """ Load the memory map """
-            global BAUD
-            status = chirp_common.Status()
-            status.cur = 0
-            val = 0
-            for mx in range(0, radio._num_blocks):
-                val += radio._num_packets[mx]
-            status.max = val
-            status.msg = "Reading %i packets" % val
-            radio.status_fn(status)
+    def _read_mem(radio):
+        """ Load the memory map """
+        global BAUD
+        status = chirp_common.Status()
+        status.cur = 0
+        val = 0
+        for mx in range(0, radio._num_blocks):
+            val += radio._num_packets[mx]
+        status.max = val
+        status.msg = "Reading %i packets" % val
+        radio.status_fn(status)
 
-            data = ""
+        data = ""
 
-            radio.pipe.baudrate = BAUD
-            cmc = b"0M PROGRAM" + TERM
-            resp0 = _command(radio.pipe, cmc, 3, W8S)
-            junk = radio.pipe.read(16)       # flushit
-            for bkx in range(0, 0x09c):
-                if bkx != 0x07f:            # Skip block 7f !!??
-                    cmc = struct.pack('>cHB', b'R', bkx << 8, 0)
-                    resp0 = _command(radio.pipe, cmc, 260, W8S)
-                    junk = _command(radio.pipe, ACK, 1, W8S)
-                    if len(resp0) < 260:
-                        junk = _command(radio.pipe, b"E", 2, W8S)
-                        sx = "Block 0x%x read error: " % bkx
-                        sx += "Got %i bytes, expected 260." % len(resp0)
-                        LOG.error(sx)
-                        sx = "Block read error! Check debug.log"
-                        raise errors.RadioError(sx)
-                    if bkx == 0:   # 1st packet of 1st block
-                        mht = resp0[4:7]   # [57 00 00 00] 03 4b 01 ff ff ...
-                        data = resp0[5:6]  # 2nd byte (4b) replaces 1st
-                        data += resp0[5:]  # then bytes 2 on (4b 4b 01 ff ...)
-                    else:
-                        data += resp0[4:]       # skip cmd echo
-                    _update_status(radio, status)        # UI Update
-            cmc = struct.pack('>cHB', b'R', 0xFEF0, 0x10)
-            resp0 = _command(radio.pipe, cmc, 0x014, W8S)
-            data += resp0[4:]
-            junk = _command(radio.pipe, ACK, 1, W8S)
-            _update_status(radio, status)
-            cmc = struct.pack('>cHB', b'R', 0xFF00, 0x90)
-            resp0 = _command(radio.pipe, cmc, 0x094, W8S)
-            data += resp0[4:]
-            junk = _command(radio.pipe, ACK, 1, W8S)
-            _update_status(radio, status)
-            # Exit Prog mode, no TERM
-            resp = _command(radio.pipe, b"E", 2, W8S)     # Rtns 06 0d
-            radio.pipe.baudrate = BAUD
-            return data
-
-        def _write_mem(radio):
-            """ PROG MCP Blocks Send """
-            global BAUD
-            # UI progress
-            status = chirp_common.Status()
-            status.cur = 0
-            val = 0
-            for mx in range(0, radio._num_blocks):
-                val += radio._num_packets[mx]
-            status.max = val
-            status.msg = "Writing %i packets" % val
-            radio.status_fn(status)
-
-            imgadr = 0
-            radio.pipe.baudrate = BAUD
-            resp0 = _command(radio.pipe, b"0M PROGRAM" + TERM, 3, W8S)
-            # Read block 0 magic header thingy, save it
-            cmc = b"R" + bytes([0, 0, 4])
-            resp0 = _command(radio.pipe, cmc, 8, W8S)
-            mht0 = resp0[4:]    # Expecting [57 00 00 04] 03 4b 01 ff
-            junk = _command(radio.pipe, ACK, 1, W8S)
-            cmc = b"W" + bytes([0, 0, 1, 0xff])
-            junk = _command(radio.pipe, cmc, 1, W8S)     # responds ACK
-            cmc = b"R" + bytes([0x80, 0, 3])
-            resp = _command(radio.pipe, cmc, 7, W8S)   # [57 80 00 03] 00 33 00
-            mht1 = resp[4:]
-            junk = _command(radio.pipe, ACK, 1, W8S)
-            cmc = b"W" + bytes([0x80, 0, 1, 0xff])
-            junk = _command(radio.pipe, cmc, 1, W8S)
-            imgadr = 4      # After 03 4b 01 ff
-            for bkx in range(0, radio._num_packets[0]):
-                cmc = b"W" + bytes([bkx, 0, 0])
-                imgstep = 256
-                if bkx == 0:
-                    imgstep = 0x0fc
-                    cmc = b"W" + bytes([0, 4, imgstep])
-                    cmc += radio.get_mmap()[imgadr:imgadr + imgstep]
-                else:       # after first packet
-                    cmc += radio.get_mmap()[imgadr:imgadr + imgstep]
-                if bkx != 0x07f:        # don't send 7f !
-                    resp0 = _command(radio.pipe, cmc, 1, W8S)
-                    if resp0 != ACK:
-                        LOG.error("Packet 0x%x Write error, no ACK." % bkx)
-                        sx = "Radio failed to acknowledge upload packet!"
-                        raise errors.RadioError(sx)
-                    imgadr += imgstep
+        radio.pipe.baudrate = BAUD
+        cmc = b"0M PROGRAM" + TERM
+        resp0 = _command(radio.pipe, cmc, 3, W8S)
+        junk = radio.pipe.read(16)       # flushit
+        for bkx in range(0, 0x09c):
+            if bkx != 0x07f:            # Skip block 7f !!??
+                cmc = struct.pack('>cHB', b'R', bkx << 8, 0)
+                resp0 = _command(radio.pipe, cmc, 260, W8S)
+                junk = _command(radio.pipe, ACK, 1, W8S)
+                if len(resp0) < 260:
+                    junk = _command(radio.pipe, b"E", 2, W8S)
+                    sx = "Block 0x%x read error: " % bkx
+                    sx += "Got %i bytes, expected 260." % len(resp0)
+                    LOG.error(sx)
+                    sx = "Block read error! Check debug.log"
+                    raise errors.RadioError(sx)
+                if bkx == 0:   # 1st packet of 1st block
+                    mht = resp0[4:7]   # [57 00 00 00] 03 4b 01 ff ff ...
+                    data = resp0[5:6]  # 2nd byte (4b) replaces 1st
+                    data += resp0[5:]  # then bytes 2 on (4b 4b 01 ff ...)
+                else:
+                    data += resp0[4:]       # skip cmd echo
                 _update_status(radio, status)        # UI Update
-            # write fe and ff blocks
-            cmc = b"W" + bytes([0xfe, 0xf0, 16])
-            cmc += radio.get_mmap()[imgadr:imgadr + 16]
-            resp0 = _command(radio.pipe, cmc, 1, W8S)
-            if resp0 != ACK:
-                LOG.error("Packet 0xfe Write error, no ACK.")
-                sx = "Radio failed to acknowledge upload packet!"
-                raise errors.RadioError(sx)
-            imgadr += 16
-            cmc = b"W" + bytes([0xff, 0, 0x90])
-            cmc += radio.get_mmap()[imgadr:imgadr + 0x090]
-            resp0 = _command(radio.pipe, cmc, 1, W8S)
-            if resp0 != ACK:
-                LOG.error("Packet 0xff Write error, no ACK.")
-                sx = "Radio failed to acknowledge upload packet!"
-                raise errors.RadioError(sx)
-            # Write mht1
-            cmc = b"W" + bytes([0x80, 0, 3]) + mht1
-            resp0 = _command(radio.pipe, cmc, 1, W8S)
-            if resp0 != ACK:
-                LOG.error("Mht1 Write error at 0x080 00 03 , no ACK.")
-                sx = "Radio failed to acknowledge upload packet!"
-                raise errors.RadioError(sx)
-            # and mht0
-            cmc = b"W" + bytes([0, 0, 4]) + mht0
-            resp0 = _command(radio.pipe, cmc, 1, W8S)
-            if resp0 != ACK:
-                LOG.error("Mht0 Write error at 00 00 04 , no ACK.")
-                sx = "Radio failed to acknowledge upload packet!"
-                raise errors.RadioError(sx)
-            # Write E to Exit PROG mode
-            resp = _command(radio.pipe, b"E", 2, W8S)
-            return
+        cmc = struct.pack('>cHB', b'R', 0xFEF0, 0x10)
+        resp0 = _command(radio.pipe, cmc, 0x014, W8S)
+        data += resp0[4:]
+        junk = _command(radio.pipe, ACK, 1, W8S)
+        _update_status(radio, status)
+        cmc = struct.pack('>cHB', b'R', 0xFF00, 0x90)
+        resp0 = _command(radio.pipe, cmc, 0x094, W8S)
+        data += resp0[4:]
+        junk = _command(radio.pipe, ACK, 1, W8S)
+        _update_status(radio, status)
+        # Exit Prog mode, no TERM
+        resp = _command(radio.pipe, b"E", 2, W8S)     # Rtns 06 0d
+        radio.pipe.baudrate = BAUD
+        return data
 
-    @directory.register
-    class KenwoodTMD710GRadio(KenwoodTMx710Radio):
-        """ Kenwood TM-D710G VHF/UHF/GPS/APRS Radio model. """
-        VENDOR = "Kenwood"
-        MODEL = "TM-D710G_CloneMode"
-        SHORT = "G"       # Quick model code 1 for G
+    def _write_mem(radio):
+        """ PROG MCP Blocks Send """
+        global BAUD
+        # UI progress
+        status = chirp_common.Status()
+        status.cur = 0
+        val = 0
+        for mx in range(0, radio._num_blocks):
+            val += radio._num_packets[mx]
+        status.max = val
+        status.msg = "Writing %i packets" % val
+        radio.status_fn(status)
 
-        _num_blocks = 2                # Only reading first 2, not GPS logs
-        _packet_size = [261, 261, 261]
-        _block_addr = [0, 0x100, 0x200]       # starting addr, each block
-        _num_packets = [0x7f, 0x0fe, 0x200]   # num packets per block, 0-based
+        imgadr = 0
+        radio.pipe.baudrate = BAUD
+        resp0 = _command(radio.pipe, b"0M PROGRAM" + TERM, 3, W8S)
+        # Read block 0 magic header thingy, save it
+        cmc = b"R" + bytes([0, 0, 4])
+        resp0 = _command(radio.pipe, cmc, 8, W8S)
+        mht0 = resp0[4:]    # Expecting [57 00 00 04] 03 4b 01 ff
+        junk = _command(radio.pipe, ACK, 1, W8S)
+        cmc = b"W" + bytes([0, 0, 1, 0xff])
+        junk = _command(radio.pipe, cmc, 1, W8S)     # responds ACK
+        cmc = b"R" + bytes([0x80, 0, 3])
+        resp = _command(radio.pipe, cmc, 7, W8S)   # [57 80 00 03] 00 33 00
+        mht1 = resp[4:]
+        junk = _command(radio.pipe, ACK, 1, W8S)
+        cmc = b"W" + bytes([0x80, 0, 1, 0xff])
+        junk = _command(radio.pipe, cmc, 1, W8S)
+        imgadr = 4      # After 03 4b 01 ff
+        for bkx in range(0, radio._num_packets[0]):
+            cmc = b"W" + bytes([bkx, 0, 0])
+            imgstep = 256
+            if bkx == 0:
+                imgstep = 0x0fc
+                cmc = b"W" + bytes([0, 4, imgstep])
+                cmc += radio.get_mmap()[imgadr:imgadr + imgstep]
+            else:       # after first packet
+                cmc += radio.get_mmap()[imgadr:imgadr + imgstep]
+            if bkx != 0x07f:        # don't send 7f !
+                resp0 = _command(radio.pipe, cmc, 1, W8S)
+                if resp0 != ACK:
+                    LOG.error("Packet 0x%x Write error, no ACK." % bkx)
+                    sx = "Radio failed to acknowledge upload packet!"
+                    raise errors.RadioError(sx)
+                imgadr += imgstep
+            _update_status(radio, status)        # UI Update
+        # write fe and ff blocks
+        cmc = b"W" + bytes([0xfe, 0xf0, 16])
+        cmc += radio.get_mmap()[imgadr:imgadr + 16]
+        resp0 = _command(radio.pipe, cmc, 1, W8S)
+        if resp0 != ACK:
+            LOG.error("Packet 0xfe Write error, no ACK.")
+            sx = "Radio failed to acknowledge upload packet!"
+            raise errors.RadioError(sx)
+        imgadr += 16
+        cmc = b"W" + bytes([0xff, 0, 0x90])
+        cmc += radio.get_mmap()[imgadr:imgadr + 0x090]
+        resp0 = _command(radio.pipe, cmc, 1, W8S)
+        if resp0 != ACK:
+            LOG.error("Packet 0xff Write error, no ACK.")
+            sx = "Radio failed to acknowledge upload packet!"
+            raise errors.RadioError(sx)
+        # Write mht1
+        cmc = b"W" + bytes([0x80, 0, 3]) + mht1
+        resp0 = _command(radio.pipe, cmc, 1, W8S)
+        if resp0 != ACK:
+            LOG.error("Mht1 Write error at 0x080 00 03 , no ACK.")
+            sx = "Radio failed to acknowledge upload packet!"
+            raise errors.RadioError(sx)
+        # and mht0
+        cmc = b"W" + bytes([0, 0, 4]) + mht0
+        resp0 = _command(radio.pipe, cmc, 1, W8S)
+        if resp0 != ACK:
+            LOG.error("Mht0 Write error at 00 00 04 , no ACK.")
+            sx = "Radio failed to acknowledge upload packet!"
+            raise errors.RadioError(sx)
+        # Write E to Exit PROG mode
+        resp = _command(radio.pipe, b"E", 2, W8S)
+        return
 
-        MEM_FORMAT = """
-        struct chns {            // 16 bytes channel structure
-        ul32  rxfreq;
-        u8   tstep;
-        u8   mode;
-        u8   tmode:4,
-            duplex:4;         // 4 = split
-        u8   rtone;
-        u8   ctone;
-        u8   dtcs;
-        u8   cross;
-        ul32 offset;          // or Split mode TX freq
-        u8   splitstep;
-        };
 
-        struct pm_grp {         // 512 bytes per group
-        u8   unk0200;
-        u8   a_mr;
-        u8   unk0202;
-        u8   unk0203;
-        u8   unk0204;
-        u8   unk0205;
-        u8   unk0206;
-        u8   a_pwr;
-        u8   wxalerta;
-        u8   asmsql;
-        u8   a_chn;
-        u8   unk020b;
-        u8   unk020c;
-        u8   b_mr;
-        u8   unk020e;
-        u8   unk020f;
-        u8   unk0210;
-        u8   unk0211;
-        u8   unk0212;
-        u8   b_pwr;
-        u8   wxalertb;
-        u8   bsmsql;
-        u8   b_chn;
-        u8   unk0217;
-        u8   unk0218;
-        u8   unk0219;
-        u8   unk021a;
-        u8   unk021b;
-        u8   unk021c;
-        u8   unk021d;
-        u8   unk021e;
-        u8   unk021f;
-        u8   unk0220;
-        u8   unk0221;
-        u8   unk0222;
-        u8   unk0223;
-        u8   unk0224;
-        u8   unk0225;
-        u8   unk0226;
-        u8   unk0227;
-        u8   unk0228;
-        u8   unk0229;
-        u8   unk022a;
-        u8   unk022b;
-        u8   unk022c;
-        u8   unk022d;
-        u8   unk022e;
-        u8   unk022f;
-        u8   unk0230;
-        u8   unk0231;
-        u8   sqclogic;
-        u8   txband;
-        u8   single;
-        u8   unk0235;
-        u8   mute;
-        u8   unk0237;
-        u8   unk0238;
-        u8   unk0239;
-        u8   unk0237a;
-        u8   unk023b;
-        u8   unk023c;
-        u8   unk023d;
-        u8   unk023e;
-        u8   unk023f;
-        struct chns vfo[10];         // 0x0240 - 0x02df
-        char pwron[8];
-        u8   unk02e8;
-        u8   unk02e9;
-        u8   unk02ea;
-        u8   unk02eb;
-        u8   unk02ec;
-        u8   unk02ed;
-        u8   unk02ee;
-        u8   unk02ef;
-        char memgrplk[10];
-        u8   unk02fa;
-        u8   unk02fb;
-        u8   unk02fc;
-        u8   unk02fd;
-        u8   unk02fe;
-        u8   unk02ff;
-        struct {
-            ul32 blow;
-            ul32 bhigh;
-        } progvfo[10];
-        u8   beepon;
-        u8   beepvol;
-        u8   extspkr;
-        u8   ance;
-        u8   lang;
-        u8   vcvol;
-        u8   vcspd;
-        u8   pbkrpt;
-        u8   pbkint;
-        u8   cntrec;
-        u8   vhfaip;
-        u8   uhfaip;
-        u8   ssqlhu;
-        u8   mutehu;
-        u8   beatshft;
-        u8   tot;
-        u8   recall;
-        u8   eclnkspd;
-        u8   dtmfhld;
-        u8   dtmfspd;
-        u8   dtmfpau;
-        u8   dtmflck;
-        u8   rptrofst;
-        u8   rptr1750;
-        u8   bright;
-        u8   autobri;
-        u8   bkltclr;
-        u8   pf1key;
-        u8   pf2key;
-        u8   micpf1;
-        u8   micpf2;
-        u8   micpf3;
-        u8   micpf4;
-        u8   miclck;
-        u8   unk0372;
-        u8   scnrsm;
-        u8   apo;
-        u8   extband;
-        u8   extbaud;
-        u8   sqcsrc;
-        u8   autopm;
-        u8   dispbar;
-        u8   unk037a;
-        u8   bkltcont;
-        u8   dsprev;
-        u8   vsmode;
-        u8   intband;
-        u8   wxscntm;
-        u8   scntot;
-        u8   scncot;
-        u8   unk0382;
-        u8   unk0383;
-        u8   unk0384;
-        u8   unk0385;
-        u8   unk0386;
-        u8   unk0387;
-        u8   unk0388;
-        u8   unk0389;
-        u8   unk038a;
-        u8   unk038b;
-        u8   unk038c;
-        u8   unk038d;
-        u8   unk038e;
-        u8   unk038f;
-        u8   abnd118;
-        u8   abnd144;
-        u8   abnd220;
-        u8   abnd300;
-        u8   abnd430;
-        u8   bbnd144;
-        u8   bbnd220;
-        u8   bbnd300;
-        u8   bbnd430;
-        u8   bbnd800;
-        u8   unk039a;
-        u8   unk039b;
-        u8   unk039c;
-        u8   unk039d;
-        u8   unk039e;
-        u8   unk039f;
-        u8   unk03a0[96];       // to 0x03ff
-        };                        // end of struct pm
+@directory.register
+class KenwoodTMD710GRadio(KenwoodTMx710Radio):
+    """ Kenwood TM-D710G VHF/UHF/GPS/APRS Radio model. """
+    VENDOR = "Kenwood"
+    MODEL = "TM-D710G_CloneMode"
+    SHORT = "G"       # Quick model code 1 for G
 
-        #seekto 0x0000;         // block1: x000 - x023f
-        struct {
-        u8   unk000[16];
-        u8   unk010;
-        u8   unk011;
-        char unk012[3];
-        u8   ansbck;
-        u8   pmrecall;            // 0x0016
-        u8   pnlklk;
-        u8   dspmemch;
-        u8   m10mz;
-        u8   micsens;
-        u8   opband;
-        u8   unk01c;
-        u8   rptrmode;
-        u8   rptrhold;
-        u8   rptridx;
-        u8   unk020;
-        u8   pcbaud;
-        u8   unk022;
-        u8   pwdon;               //  0x0023
-        u8   unk024;
-        u8   unk025;
-        u8   unk026;
-        u8   unk027;
-        u8   unk028;
-        u8   unk029;
-        char pswd[6];             // 0x023a - 23f
-        } block1;
+    _num_blocks = 2                # Only reading first 2, not GPS logs
+    _packet_size = [261, 261, 261]
+    _block_addr = [0, 0x100, 0x200]       # starting addr, each block
+    _num_packets = [0x7f, 0x0fe, 0x200]   # num packets per block, 0-based
 
-        #seekto 0x0030;
-        struct {
-        char code[16];            // @ 0x0030
-        } dtmc[10];
+    MEM_FORMAT = """
+    struct chns {            // 16 bytes channel structure
+    ul32  rxfreq;
+    u8   tstep;
+    u8   mode;
+    u8   tmode:4,
+        duplex:4;         // 4 = split
+    u8   rtone;
+    u8   ctone;
+    u8   dtcs;
+    u8   cross;
+    ul32 offset;          // or Split mode TX freq
+    u8   splitstep;
+    };
 
-        struct {
-        char id[8];               // 0x00d0 - 0x011f
-        } dtmn[10];
+    struct pm_grp {         // 512 bytes per group
+    u8   unk0200;
+    u8   a_mr;
+    u8   unk0202;
+    u8   unk0203;
+    u8   unk0204;
+    u8   unk0205;
+    u8   unk0206;
+    u8   a_pwr;
+    u8   wxalerta;
+    u8   asmsql;
+    u8   a_chn;
+    u8   unk020b;
+    u8   unk020c;
+    u8   b_mr;
+    u8   unk020e;
+    u8   unk020f;
+    u8   unk0210;
+    u8   unk0211;
+    u8   unk0212;
+    u8   b_pwr;
+    u8   wxalertb;
+    u8   bsmsql;
+    u8   b_chn;
+    u8   unk0217;
+    u8   unk0218;
+    u8   unk0219;
+    u8   unk021a;
+    u8   unk021b;
+    u8   unk021c;
+    u8   unk021d;
+    u8   unk021e;
+    u8   unk021f;
+    u8   unk0220;
+    u8   unk0221;
+    u8   unk0222;
+    u8   unk0223;
+    u8   unk0224;
+    u8   unk0225;
+    u8   unk0226;
+    u8   unk0227;
+    u8   unk0228;
+    u8   unk0229;
+    u8   unk022a;
+    u8   unk022b;
+    u8   unk022c;
+    u8   unk022d;
+    u8   unk022e;
+    u8   unk022f;
+    u8   unk0230;
+    u8   unk0231;
+    u8   sqclogic;
+    u8   txband;
+    u8   single;
+    u8   unk0235;
+    u8   mute;
+    u8   unk0237;
+    u8   unk0238;
+    u8   unk0239;
+    u8   unk0237a;
+    u8   unk023b;
+    u8   unk023c;
+    u8   unk023d;
+    u8   unk023e;
+    u8   unk023f;
+    struct chns vfo[10];         // 0x0240 - 0x02df
+    char pwron[8];
+    u8   unk02e8;
+    u8   unk02e9;
+    u8   unk02ea;
+    u8   unk02eb;
+    u8   unk02ec;
+    u8   unk02ed;
+    u8   unk02ee;
+    u8   unk02ef;
+    char memgrplk[10];
+    u8   unk02fa;
+    u8   unk02fb;
+    u8   unk02fc;
+    u8   unk02fd;
+    u8   unk02fe;
+    u8   unk02ff;
+    struct {
+        ul32 blow;
+        ul32 bhigh;
+    } progvfo[10];
+    u8   beepon;
+    u8   beepvol;
+    u8   extspkr;
+    u8   ance;
+    u8   lang;
+    u8   vcvol;
+    u8   vcspd;
+    u8   pbkrpt;
+    u8   pbkint;
+    u8   cntrec;
+    u8   vhfaip;
+    u8   uhfaip;
+    u8   ssqlhu;
+    u8   mutehu;
+    u8   beatshft;
+    u8   tot;
+    u8   recall;
+    u8   eclnkspd;
+    u8   dtmfhld;
+    u8   dtmfspd;
+    u8   dtmfpau;
+    u8   dtmflck;
+    u8   rptrofst;
+    u8   rptr1750;
+    u8   bright;
+    u8   autobri;
+    u8   bkltclr;
+    u8   pf1key;
+    u8   pf2key;
+    u8   micpf1;
+    u8   micpf2;
+    u8   micpf3;
+    u8   micpf4;
+    u8   miclck;
+    u8   unk0372;
+    u8   scnrsm;
+    u8   apo;
+    u8   extband;
+    u8   extbaud;
+    u8   sqcsrc;
+    u8   autopm;
+    u8   dispbar;
+    u8   unk037a;
+    u8   bkltcont;
+    u8   dsprev;
+    u8   vsmode;
+    u8   intband;
+    u8   wxscntm;
+    u8   scntot;
+    u8   scncot;
+    u8   unk0382;
+    u8   unk0383;
+    u8   unk0384;
+    u8   unk0385;
+    u8   unk0386;
+    u8   unk0387;
+    u8   unk0388;
+    u8   unk0389;
+    u8   unk038a;
+    u8   unk038b;
+    u8   unk038c;
+    u8   unk038d;
+    u8   unk038e;
+    u8   unk038f;
+    u8   abnd118;
+    u8   abnd144;
+    u8   abnd220;
+    u8   abnd300;
+    u8   abnd430;
+    u8   bbnd144;
+    u8   bbnd220;
+    u8   bbnd300;
+    u8   bbnd430;
+    u8   bbnd800;
+    u8   unk039a;
+    u8   unk039b;
+    u8   unk039c;
+    u8   unk039d;
+    u8   unk039e;
+    u8   unk039f;
+    u8   unk03a0[96];       // to 0x03ff
+    };                        // end of struct pm
 
-        struct {                    // block1a: 0x0120 - 0x023f
-        u8   unk0120;
-        u8   unk0121;
-        u8   unk0122[78];
-        char rptrid[12];          // 0x0170 - 017b
-        u8   unk017c;
-        u8   unk017d;
-        u8   unk017e;
-        u8   unk017f;
-        u8   unk0180[128];        // 0x0180 - 0x01ff
-        } block1a;
+    #seekto 0x0000;         // block1: x000 - x023f
+    struct {
+    u8   unk000[16];
+    u8   unk010;
+    u8   unk011;
+    char unk012[3];
+    u8   ansbck;
+    u8   pmrecall;            // 0x0016
+    u8   pnlklk;
+    u8   dspmemch;
+    u8   m10mz;
+    u8   micsens;
+    u8   opband;
+    u8   unk01c;
+    u8   rptrmode;
+    u8   rptrhold;
+    u8   rptridx;
+    u8   unk020;
+    u8   pcbaud;
+    u8   unk022;
+    u8   pwdon;               //  0x0023
+    u8   unk024;
+    u8   unk025;
+    u8   unk026;
+    u8   unk027;
+    u8   unk028;
+    u8   unk029;
+    char pswd[6];             // 0x023a - 23f
+    } block1;
 
-        struct pm_grp pmg[6];       // 0x0200 - 0x0dff
+    #seekto 0x0030;
+    struct {
+    char code[16];            // @ 0x0030
+    } dtmc[10];
 
-        #seekto 0x0e00;
-        struct {
-        u8   band;
-        u8   skip;
-        } chmap[1030];              // to 0x0160b
+    struct {
+    char id[8];               // 0x00d0 - 0x011f
+    } dtmn[10];
 
-        #seekto 0x01700;            // 0x01700 - 0x0575f
-        struct chns ch_mem[1030];   // 0-999 MR and 1000 -1029 Specials
+    struct {                    // block1a: 0x0120 - 0x023f
+    u8   unk0120;
+    u8   unk0121;
+    u8   unk0122[78];
+    char rptrid[12];          // 0x0170 - 017b
+    u8   unk017c;
+    u8   unk017d;
+    u8   unk017e;
+    u8   unk017f;
+    u8   unk0180[128];        // 0x0180 - 0x01ff
+    } block1a;
 
-        #seekto 0x058a0;
-        struct chns call[2];
+    struct pm_grp pmg[6];       // 0x0200 - 0x0dff
 
-        #seekto 0x05900;
-        struct {
-        char name[8];
-        } ch_nam[1020];         // ends @ 0x07840
+    #seekto 0x0e00;
+    struct {
+    u8   band;
+    u8   skip;
+    } chmap[1030];              // to 0x0160b
 
-        #seekto 0x078e0;        // 0x078e0 - 0x0792f
-        struct {
-        char name[8];
-        } wxnam[10];
+    #seekto 0x01700;            // 0x01700 - 0x0575f
+    struct chns ch_mem[1030];   // 0-999 MR and 1000 -1029 Specials
 
-        #seekto 0x07da0;
-        struct {
-        char pmname[16];
-        } pm_name[5];
+    #seekto 0x058a0;
+    struct chns call[2];
 
-        #seekto 0x07df0;
-        struct {
-        char comnt[32];
-        } mcpcom;
-                            // Block 1 ends @ 0x07eff
-                            // Block 2 starts @ 0x07f00
-        #seekto 0x08660;
-        struct {
-        char cmdr[10];
-        char tptr[10];
-        u8  skytone;          // 0x08674
-        } skycmd;
+    #seekto 0x05900;
+    struct {
+    char name[8];
+    } ch_nam[1020];         // ends @ 0x07840
 
-        #seekto 0x10ef0;
-        struct {
-        u8   bmp[1896];
-        u8   unk11658[8];     // 0x11658
-        char bmpfyl[64];      // 0x11660
-        u8   unk116a0[95];
-        u8   bmpon;           // 0x116ff
-        } bitmap;
+    #seekto 0x078e0;        // 0x078e0 - 0x0792f
+    struct {
+    char name[8];
+    } wxnam[10];
 
-                        // 2nd block ends @ 0x017cff
-        """
+    #seekto 0x07da0;
+    struct {
+    char pmname[16];
+    } pm_name[5];
 
-        def _make_command(self, cmd, addr, length, data=b''):
-            cmc = struct.pack('>IB', addr, length)
-            return cmd + cmc[1:] + data
+    #seekto 0x07df0;
+    struct {
+    char comnt[32];
+    } mcpcom;
+                        // Block 1 ends @ 0x07eff
+                        // Block 2 starts @ 0x07f00
+    #seekto 0x08660;
+    struct {
+    char cmdr[10];
+    char tptr[10];
+    u8  skytone;          // 0x08674
+    } skycmd;
 
-        def _read_mem(radio):
-            """ Load the memory map """
-            global BAUD
-            status = chirp_common.Status()
-            status.cur = 0
-            val = 0
-            for mx in range(0, radio._num_blocks):
-                val += radio._num_packets[mx]
-            status.max = val
-            status.msg = "Reading %i packets" % val
-            radio.status_fn(status)
+    #seekto 0x10ef0;
+    struct {
+    u8   bmp[1896];
+    u8   unk11658[8];     // 0x11658
+    char bmpfyl[64];      // 0x11660
+    u8   unk116a0[95];
+    u8   bmpon;           // 0x116ff
+    } bitmap;
 
-            data = b""
+                    // 2nd block ends @ 0x017cff
+    """
 
-            radio.pipe.baudrate = BAUD
-            resp0 = radio.pipe.read(16)     # flush
-            cmc = b"0M PROGRAM" + TERM
+    def _make_command(self, cmd, addr, length, data=b''):
+        cmc = struct.pack('>IB', addr, length)
+        return cmd + cmc[1:] + data
+
+    def _read_mem(radio):
+        """ Load the memory map """
+        global BAUD
+        status = chirp_common.Status()
+        status.cur = 0
+        val = 0
+        for mx in range(0, radio._num_blocks):
+            val += radio._num_packets[mx]
+        status.max = val
+        status.msg = "Reading %i packets" % val
+        radio.status_fn(status)
+
+        data = b""
+
+        radio.pipe.baudrate = BAUD
+        resp0 = radio.pipe.read(16)     # flush
+        cmc = b"0M PROGRAM" + TERM
+        resp0 = _command(radio.pipe, cmc, 3, W8S)
+        if resp0[:1] == "?":        # try once more
             resp0 = _command(radio.pipe, cmc, 3, W8S)
-            if resp0[:1] == "?":        # try once more
-                resp0 = _command(radio.pipe, cmc, 3, W8S)
-            radio.pipe.baudrate = 57600     # PROG mode is always 57.6
-            LOG.debug("Switching to 57600 baud download.")
-            junk = radio.pipe.read(1)       # trailing byte
-            for blkn in range(0, radio._num_blocks):
-                for bkx in range(0, radio._num_packets[blkn]):
-                    addr = (radio._block_addr[blkn] << 8) | (bkx << 8)
-                    resp0 = _command(radio.pipe,
-                                     radio._make_command(b'R', addr, 0),
-                                     radio._packet_size[blkn], W8S)
-                    if len(resp0) < radio._packet_size[blkn]:
-                        junk = _command(radio.pipe, b"E", 0, W8S)
-                        lb = len(resp0)
-                        xb = radio._packet_size[blkn]
-                        sx = "Block 0x%x, 0x%x read error: " % (blkn, bkx)
-                        sx += "Got %i bytes, expected %i." % (lb, xb)
-                        LOG.error(sx)
-                        sx = "Block read error! Check debug.log"
-                        raise errors.RadioError(sx)
-                    if blkn == 0 and bkx == 0:   # 1st packet of 1st block
-                        mht = resp0[5:9]   # Magic Header Thingy after cmd echo
-                        data += mht[0:1]
-                        data += b'\xff\xff\xff'
-                        data += resp0[9:]
-                    else:
-                        data += resp0[5:]       # skip cmd echo
-                    _update_status(radio, status)        # UI Update
-            # Exit Prog mode, no TERM
-            resp = _command(radio.pipe, b"E", 0, W8S)
-            radio.pipe.baudrate = BAUD
-            return data
+        radio.pipe.baudrate = 57600     # PROG mode is always 57.6
+        LOG.debug("Switching to 57600 baud download.")
+        junk = radio.pipe.read(1)       # trailing byte
+        for blkn in range(0, radio._num_blocks):
+            for bkx in range(0, radio._num_packets[blkn]):
+                addr = (radio._block_addr[blkn] << 8) | (bkx << 8)
+                resp0 = _command(radio.pipe,
+                                 radio._make_command(b'R', addr, 0),
+                                 radio._packet_size[blkn], W8S)
+                if len(resp0) < radio._packet_size[blkn]:
+                    junk = _command(radio.pipe, b"E", 0, W8S)
+                    lb = len(resp0)
+                    xb = radio._packet_size[blkn]
+                    sx = "Block 0x%x, 0x%x read error: " % (blkn, bkx)
+                    sx += "Got %i bytes, expected %i." % (lb, xb)
+                    LOG.error(sx)
+                    sx = "Block read error! Check debug.log"
+                    raise errors.RadioError(sx)
+                if blkn == 0 and bkx == 0:   # 1st packet of 1st block
+                    mht = resp0[5:9]   # Magic Header Thingy after cmd echo
+                    data += mht[0:1]
+                    data += b'\xff\xff\xff'
+                    data += resp0[9:]
+                else:
+                    data += resp0[5:]       # skip cmd echo
+                _update_status(radio, status)        # UI Update
+        # Exit Prog mode, no TERM
+        resp = _command(radio.pipe, b"E", 0, W8S)
+        radio.pipe.baudrate = BAUD
+        return data
 
-        def _write_mem(radio):
-            """ PROG MCP Blocks Send """
-            global BAUD
-            # UI progress
-            status = chirp_common.Status()
-            status.cur = 0
-            val = 0
-            for mx in range(0, radio._num_blocks):
-                val += radio._num_packets[mx]
-            status.max = val
-            status.msg = "Writing %i packets" % val
-            radio.status_fn(status)
+    def _write_mem(radio):
+        """ PROG MCP Blocks Send """
+        global BAUD
+        # UI progress
+        status = chirp_common.Status()
+        status.cur = 0
+        val = 0
+        for mx in range(0, radio._num_blocks):
+            val += radio._num_packets[mx]
+        status.max = val
+        status.msg = "Writing %i packets" % val
+        radio.status_fn(status)
 
-            imgadr = 0
-            radio.pipe.baudrate = BAUD
-            resp0 = _command(radio.pipe, b"0M PROGRAM" + TERM, 3, W8S)
-            radio.pipe.baudrate = 57600
-            LOG.debug("Switching to 57600 baud upload.")
-            junk = radio.pipe.read(1)
-            # Read block 0 magic header thingy, save it
-            addr = radio._block_addr[0] << 8
-            resp0 = _command(radio.pipe,
-                             radio._make_command(b'R', addr, 4),
-                             16, W8S)
-            mht0 = resp0[5:]
-            # Now get block 1 mht
-            addr = radio._block_addr[1] << 8
-            resp0 = _command(radio.pipe,
-                             radio._make_command(b'R', addr, 5),
-                             16, W8S)
-            mht1 = resp0[5:]
-            for blkn in range(0, radio._num_blocks):
-                for bkx in range(0, radio._num_packets[blkn]):
-                    addr = (radio._block_addr[blkn] << 8) | (bkx << 8)
+        imgadr = 0
+        radio.pipe.baudrate = BAUD
+        resp0 = _command(radio.pipe, b"0M PROGRAM" + TERM, 3, W8S)
+        radio.pipe.baudrate = 57600
+        LOG.debug("Switching to 57600 baud upload.")
+        junk = radio.pipe.read(1)
+        # Read block 0 magic header thingy, save it
+        addr = radio._block_addr[0] << 8
+        resp0 = _command(radio.pipe,
+                         radio._make_command(b'R', addr, 4),
+                         16, W8S)
+        mht0 = resp0[5:]
+        # Now get block 1 mht
+        addr = radio._block_addr[1] << 8
+        resp0 = _command(radio.pipe,
+                         radio._make_command(b'R', addr, 5),
+                         16, W8S)
+        mht1 = resp0[5:]
+        for blkn in range(0, radio._num_blocks):
+            for bkx in range(0, radio._num_packets[blkn]):
+                addr = (radio._block_addr[blkn] << 8) | (bkx << 8)
 
-                    if bkx == 0:    # First packet of the block includes mht
-                        if blkn == 0:
-                            data = (b'\xff\x4b\x01\x32' +
-                                    radio.get_mmap()[4:imgadr + 256])
-                        elif blkn == 1:
-                            data = mht1 + radio.get_mmap()[imgadr + 5:imgadr +
-                                                           256]
-                    else:       # after first packet
-                        data = radio.get_mmap()[imgadr:imgadr + 256]
-                    cmc = radio._make_command(b'W', addr, 0, data)
+                if bkx == 0:    # First packet of the block includes mht
+                    if blkn == 0:
+                        data = (b'\xff\x4b\x01\x32' +
+                                radio.get_mmap()[4:imgadr + 256])
+                    elif blkn == 1:
+                        data = mht1 + radio.get_mmap()[imgadr + 5:imgadr +
+                                                       256]
+                else:       # after first packet
+                    data = radio.get_mmap()[imgadr:imgadr + 256]
+                cmc = radio._make_command(b'W', addr, 0, data)
 
-                    resp0 = _command(radio.pipe, cmc, 6, W8S)
-                    if bkx > 0 and resp0 != ACK:
-                        LOG.error("Packet 0x%x Write error, no ACK!" % bkx)
-                        sx = "Radio failed to acknowledge upload. "
-                        sx += "See debug.log"
-                        raise errors.RadioError(sx)
-                    imgadr += 256
-                    _update_status(radio, status)        # UI Update
-            # Re-write magic headers
-            cmc = radio._make_command(b'W', (radio._block_addr[0] << 8) | 1, 3,
-                                      mht0[1:3] + b'\x32')
-            resp0 = _command(radio.pipe, cmc, 1, W8S)
-            cmc = radio._make_command(b'W', radio._block_addr[1] << 8, 5, mht1)
-            resp0 = _command(radio.pipe, cmc, 1, W8S)
-            cmc = radio._make_command(b'Z', radio._block_addr[0], 1, mht0[0:1])
-            resp0 = _command(radio.pipe, cmc, 16, W8S)
-            # Write E to Exit PROG mode
-            resp = _command(radio.pipe, b"E", 0, W8S)
-            radio.pipe.baudrate = BAUD
-            return
+                resp0 = _command(radio.pipe, cmc, 6, W8S)
+                if bkx > 0 and resp0 != ACK:
+                    LOG.error("Packet 0x%x Write error, no ACK!" % bkx)
+                    sx = "Radio failed to acknowledge upload. "
+                    sx += "See debug.log"
+                    raise errors.RadioError(sx)
+                imgadr += 256
+                _update_status(radio, status)        # UI Update
+        # Re-write magic headers
+        cmc = radio._make_command(b'W', (radio._block_addr[0] << 8) | 1, 3,
+                                  mht0[1:3] + b'\x32')
+        resp0 = _command(radio.pipe, cmc, 1, W8S)
+        cmc = radio._make_command(b'W', radio._block_addr[1] << 8, 5, mht1)
+        resp0 = _command(radio.pipe, cmc, 1, W8S)
+        cmc = radio._make_command(b'Z', radio._block_addr[0], 1, mht0[0:1])
+        resp0 = _command(radio.pipe, cmc, 16, W8S)
+        # Write E to Exit PROG mode
+        resp = _command(radio.pipe, b"E", 0, W8S)
+        radio.pipe.baudrate = BAUD
+        return
