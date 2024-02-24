@@ -312,7 +312,7 @@ class NC630aRadio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.rxfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
+        if _mem.rxfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
             return mem
@@ -320,6 +320,8 @@ class NC630aRadio(chirp_common.CloneModeRadio):
         if int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
             mem.offset = 0
+        elif _mem.txfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
+            mem.duplex = "off"
         else:
             mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
             mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
@@ -390,16 +392,15 @@ class NC630aRadio(chirp_common.CloneModeRadio):
         _skp = self._memobj.skipflags[bytepos]
 
         if mem.empty:
-            _mem.set_raw("\xFF" * 16)
+            _mem.fill_raw(b"\xFF")
             return
 
-        _mem.set_raw("\x00" * 14 + "\xFF" * 2)
+        _mem.set_raw(b"\x00" * 14 + b"\xFF" * 2)
 
         _mem.rxfreq = mem.freq / 10
 
         if mem.duplex == "off":
-            for i in range(0, 4):
-                _mem.txfreq[i].set_raw("\xFF")
+            _mem.txfreq.fill_raw(b"\xFF")
         elif mem.duplex == "split":
             _mem.txfreq = mem.offset / 10
         elif mem.duplex == "+":
