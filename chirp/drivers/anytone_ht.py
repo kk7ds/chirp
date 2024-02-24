@@ -498,7 +498,7 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
         mem.duplex = DUPLEXES[_mem.duplex]
         mem.mode = MODES[_mem.channel_width]
 
-        if _mem.tx_off is True:
+        if bool(_mem.tx_off):
             mem.duplex = "off"
             mem.offset = 0
 
