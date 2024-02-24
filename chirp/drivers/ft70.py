@@ -125,7 +125,7 @@ MEM_SETTINGS_FORMAT = """
     u8 dtmf_delay;                      // 18 DT DLY    DTMF delay
     u8 unknown0[3];
     u8 unknown1:4,
-    unknown1:4;
+    unknown1_2:4;
     u8 lamp;                            // 28 LAMP      Set the duration time of the backlight and keys to be lit
     u8 lock;                            // 30 LOCK      Configure the lock mode setting. KEY/DIAL/K+D/PTT/K+P/D+P/ALL
     u8 unknown2_1;
@@ -146,7 +146,7 @@ MEM_SETTINGS_FORMAT = """
     unknown8:1,
     ars:1,                              // 45 RPT.ARS   Turn the ARS function on/off.
     dtmf_speed:1,                       // 20 DT SPD    Set DTMF speed
-    unknown8:1,
+    unknown8_1:1,
     dtmf_mode:1;                        // DTMF Mode set from front panel
     u8 busy_led:1,                      // Not Supported ?
     unknown8_2:1,
