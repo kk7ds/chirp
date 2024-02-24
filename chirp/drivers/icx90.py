@@ -246,6 +246,8 @@ class ICx90Radio(icf.IcomCloneModeRadio):
     """Icom IC-E/T90"""
     VENDOR = "Icom"
     MODEL = "IC-E90"
+    # read clone response after each clone frame is sent
+    MUNCH_CLONE_RESP = True
 
     ALIASES = [ICT90_Alias]
 
