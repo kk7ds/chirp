@@ -239,6 +239,7 @@ def get_clone_resp(pipe, length=None, max_count=None):
     while not exit_criteria(resp, length, cnt, max_count):
         resp += pipe.read(1)
         cnt += 1
+    LOG.debug('Munched %i bytes: %s', len(resp), util.hexprint(resp))
     return resp
 
 
