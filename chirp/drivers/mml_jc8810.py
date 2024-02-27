@@ -131,7 +131,7 @@ struct {
   u8 unused_9022:7,   // 9022
      tailcode:1;      //      Tail Code (RT-470L)
   u8 unknown_9023;    // 9023
-  u8 unknown_9024;    // 9024
+  u8 unlock_sw_ch;    // 9024 UNLOCK SW CH (A36plus 8w)
   u8 unknown_9025;    // 9025
   u8 unknown_9026;    // 9026
   u8 unknown_9027;    // 9027
@@ -148,6 +148,18 @@ struct {
                       //      TAIL PHASE (A36plus)
   u8 skey3_lp;        // 9030 Skey3 Long (RT-470L)
                       //      RX END TAIL (A36plus)
+  u8 unknown_9031;    // 9031
+  u8 unknown_9032;    // 9032
+  u8 unknown_9033;    // 9033
+  u8 unknown_9034;    // 9034
+  u8 unknown_9035;    // 9035
+  u8 unknown_9036;    // 9036
+  u8 unknown_9037;    // 9037
+  u8 unknown_9038;    // 9038
+  u8 unknown_9039;    // 9039
+  u8 unknown_903a;    // 903a
+  u8 single_mode;     // 903b SINGLE MODE (A36plus 8w)
+  u8 dis_s_table;     // 903b DIS S TABLE (A36plus 8w)
 } settings;
 
 #seekto 0xA006;
@@ -1174,6 +1186,22 @@ class JC8810base(chirp_common.CloneModeRadio):
             rset = RadioSetting("rxendtail", "Tail Phase", rs)
             basic.append(rset)
 
+            # Menu 20: SINGLE MODE
+            rs = RadioSettingValueBoolean(_settings.single_mode)
+            rset = RadioSetting("single_mode", "Single Display Mode", rs)
+            basic.append(rset)
+
+            # Menu 48: UNLOCK SW CH
+            rs = RadioSettingValueBoolean(_settings.unlock_sw_ch)
+            rset = RadioSetting("unlock_sw_ch",
+                                "Override KB Lock for Channel Keys", rs)
+            basic.append(rset)
+
+            # Menu 49: DIS S TABLE
+            rs = RadioSettingValueBoolean(_settings.dis_s_table)
+            rset = RadioSetting("dis_s_table", "Display S Meter", rs)
+            basic.append(rset)
+
         return group
 
     def set_settings(self, settings):
@@ -1434,7 +1462,7 @@ class A36plus8wRadio(A36plusRadio):
 
     # ==========
     # Notice to developers:
-    # The A36plus 8w support in this driver is currently based upon v1.4
+    # The A36plus 8w support in this driver is currently based upon v1.6
     # firmware.
     # ==========
 
@@ -1442,6 +1470,7 @@ class A36plus8wRadio(A36plusRadio):
                     chirp_common.PowerLevel("L", watts=1.00)]
 
     _fingerprint = [b"\x00\x00\x00\xFA\x00\x20\x40\x05",  # fw 1.4
+                    b"\x00\x00\x00\xD8\x00\x20\x58\x05",  # fw 1.6
                     ]
 
 
