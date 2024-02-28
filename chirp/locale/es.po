@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-21 19:20-0800\n"
-"PO-Revision-Date: 2024-02-23 21:47-0300\n"
+"PO-Revision-Date: 2024-02-28 02:52-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1183,7 +1183,7 @@ msgid ""
 "Complex or non-standard tone squelch mode (starts the tone mode selection "
 "wizard)"
 msgstr ""
-"Modo silenciador de tono complejo o no estándar (inicia el asistente de "
+"Modo de silenciador de tono complejo o no estándar (inicia el asistente de "
 "selección del modo de tono)"
 
 #: ../drivers/tmd710.py:194 ../drivers/tmd710.py:197
@@ -2237,7 +2237,7 @@ msgstr "Puerto"
 
 #: ../wxui/memedit.py:302
 msgid "Power"
-msgstr "Poder"
+msgstr "Potencia"
 
 #: ../wxui/developer.py:138
 msgid "Press enter to set this in memory"
