@@ -129,16 +129,7 @@ struct{
 }fmmode[25];
 
 #seekto 0x1A08;
-struct{
-    u8 block8:1,
-       block7:1,
-       block6:1,
-       block5:1,
-       block4:1,
-       block3:1,
-       block2:1,
-       block1:1;
-} usedflags[25];
+bit usedflags[200];
 
 #seekto 0x1a28;
 struct{
@@ -204,16 +195,7 @@ struct {
 } vfob;
 
 #seekto 0x1B78;
-struct{
-   u8  block8:1,
-       block7:1,
-       block6:1,
-       block5:1,
-       block4:1,
-       block3:1,
-       block2:1,
-       block1:1;
-} fmusedflags[4];
+bit fmusedflags[32];
 
 #seekto 0x1c08;
 struct {
@@ -474,16 +456,7 @@ struct{
 }endcode;
 
 #seekto 0x1908;
-struct{
-    u8 block8:1,
-       block7:1,
-       block6:1,
-       block5:1,
-       block4:1,
-       block3:1,
-       block2:1,
-       block1:1;
-} usedflags[25];
+bit usedflags[200];
 
 #seekto 0x1928;
 struct{
@@ -498,16 +471,7 @@ struct{
 } scanadd[25];
 
 #seekto 0x1948;
-struct{
-  u8  block8:1,
-       block7:1,
-       block6:1,
-       block5:1,
-       block4:1,
-       block3:1,
-       block2:1,
-       block1:1;
-} fmusedflags[4];
+bit fmusedflags[32];
 
 #seekto 0x1958;
 struct {
@@ -1067,12 +1031,6 @@ class TDH8(chirp_common.CloneModeRadio):
     def _get_scan(self, number):
         return self._memobj.scanadd[number]
 
-    def _get_block_data(self, number):
-        return self._memobj.usedflags[number]
-
-    def _get_fmblock_data(self, number):
-        return self._memobj.fmusedflags[number]
-
     def get_memory(self, number):
         _mem = self._get_mem(number)
         _nam = self._get_nam(number)
@@ -1243,77 +1201,19 @@ class TDH8(chirp_common.CloneModeRadio):
 
         return ([x_list, y_list])
 
-    def get_block_xy(self, number):
-        if number % 8 != 0:
-            x_list = number / 8
-            y_list = number % 8
-
-        else:
-            x_list = (number / 8) - 1
-            y_list = 8
-
-        return ([x_list, y_list])
-
     def set_memory(self, mem):
         _mem = self._get_mem(mem.number)
         _nam = self._get_nam(mem.number)
 
+        # When the channel is empty, you need to set "usedflags" to 0,
+        # When the channel is used , you need to set "usedflags" to 1.
+        self._memobj.usedflags[mem.number - 1] = int(~mem.empty)
+
         if mem.empty:
-            _mem.set_raw("\xff" * 16)
-            if self.MODEL in H8_LIST:
-                _nam.set_raw("\xff" * 16)
-            else:
-                _nam.set_raw("\xff" * 8)
+            _mem.fill_raw(b'\xFF')
             return
 
-        _mem.set_raw("\x00" * 16)
-
-        # When the channel is empty, you need to set "usedflags" to 0,
-        # which means it is empty.When the channel has a value,
-        # you need to set "usedflags" to 0,
-        # indicating that it contains a value.
-        # The method "get_block_xy" is due to
-        # the particularity of the structure,
-        # x represents a certain structure group,
-        # and y represents a certain byte of the structure group.
-        if not mem.empty:
-            block_xy = self.get_block_xy(mem.number)
-            _usedflags = self._get_block_data(block_xy[0])
-            if block_xy[1] == 1:
-                _usedflags.block1 = 1
-            elif block_xy[1] == 2:
-                _usedflags.block2 = 1
-            elif block_xy[1] == 3:
-                _usedflags.block3 = 1
-            elif block_xy[1] == 4:
-                _usedflags.block4 = 1
-            elif block_xy[1] == 5:
-                _usedflags.block5 = 1
-            elif block_xy[1] == 6:
-                _usedflags.block6 = 1
-            elif block_xy[1] == 7:
-                _usedflags.block7 = 1
-            elif block_xy[1] == 8:
-                _usedflags.block8 = 1
-        else:
-            block_xy = self.get_block_xy(mem.number)
-            _usedflags = self._get_block_data(block_xy[0])
-            if block_xy[1] == 1:
-                _usedflags.block1 = 0
-            elif block_xy[1] == 2:
-                _usedflags.block2 = 0
-            elif block_xy[1] == 3:
-                _usedflags.block3 = 0
-            elif block_xy[1] == 4:
-                _usedflags.block4 = 0
-            elif block_xy[1] == 5:
-                _usedflags.block5 = 0
-            elif block_xy[1] == 6:
-                _usedflags.block6 = 0
-            elif block_xy[1] == 7:
-                _usedflags.block7 = 0
-            elif block_xy[1] == 8:
-                _usedflags.block8 = 0
+        _mem.fill_raw(b'\x00')
 
         if mem.duplex == "":
             _mem.rxfreq = _mem.txfreq = mem.freq / 10
@@ -2153,47 +2053,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                     0, int(val[lenth_val:lenth_val + 2], 16))
                                 lenth_val += 2
                         self._memobj.fmmode[num - 1].fmblock = list_val
-
-                        if val != '00000   ':
-                            fmblock_xy = self.get_block_xy(num)
-                            _fmusedflags = self._get_fmblock_data(
-                                fmblock_xy[0])
-                            if fmblock_xy[1] == 1:
-                                _fmusedflags.block1 = 1
-                            elif fmblock_xy[1] == 2:
-                                _fmusedflags.block2 = 1
-                            elif fmblock_xy[1] == 3:
-                                _fmusedflags.block3 = 1
-                            elif fmblock_xy[1] == 4:
-                                _fmusedflags.block4 = 1
-                            elif fmblock_xy[1] == 5:
-                                _fmusedflags.block5 = 1
-                            elif fmblock_xy[1] == 6:
-                                _fmusedflags.block6 = 1
-                            elif fmblock_xy[1] == 7:
-                                _fmusedflags.block7 = 1
-                            elif fmblock_xy[1] == 8:
-                                _fmusedflags.block8 = 1
-                        else:
-                            fmblock_xy = self.get_block_xy(num)
-                            _fmusedflags = self._get_fmblock_data(
-                                fmblock_xy[0])
-                            if fmblock_xy[1] == 1:
-                                _fmusedflags.block1 = 0
-                            elif fmblock_xy[1] == 2:
-                                _fmusedflags.block2 = 0
-                            elif fmblock_xy[1] == 3:
-                                _fmusedflags.block3 = 0
-                            elif fmblock_xy[1] == 4:
-                                _fmusedflags.block4 = 0
-                            elif fmblock_xy[1] == 5:
-                                _fmusedflags.block5 = 0
-                            elif fmblock_xy[1] == 6:
-                                _fmusedflags.block6 = 0
-                            elif fmblock_xy[1] == 7:
-                                _fmusedflags.block7 = 0
-                            elif fmblock_xy[1] == 8:
-                                _fmusedflags.block8 = 0
+                        self._memobj.fmusedflags[num-1] = int(val)
 
                     elif setting == 'fmvfo' and element.value.get_mutable():
                         val = str(element.value).replace('.', '').zfill(8)
