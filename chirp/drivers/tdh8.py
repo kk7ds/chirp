@@ -54,12 +54,6 @@ struct {
   u8 unused10;
 } memory[200];
 
-#seekto 0x0D38;
-struct {
-  char name[8];
-  u8 unknown2[8];
-} names[200];
-
 #seekto 0x0CA8;
 struct {
   u8 txled:1,
@@ -111,22 +105,26 @@ struct {
      alarm:1;
 } settings;
 
-#seekto 0x0CB8;
+//#seekto 0x0CB8;
 struct {
     u8 ofseta[4];
-    u8 ununsed26[12];
 } aoffset;
 
-#seekto 0x0CBC;
+//#seekto 0x0CBC;
 struct {
     u8 ofsetb[4];
-    u8 ununsed27[12];
 } boffset;
 
 #seekto 0x0CD8;
 struct{
     u8 fmblock[4];
 }fmmode[25];
+
+#seekto 0x0D48;
+struct {
+  char name[8];
+  u8 unknown2[8];
+} names[200];
 
 #seekto 0x1A08;
 bit usedflags[200];
@@ -171,7 +169,7 @@ struct {
   u8 unused10;
 } vfoa;
 
-#seekto 0x1B68;
+//#seekto 0x1B68;
 struct {
   lbcd rxfreqb[4];
   lbcd txfreq[4];
@@ -194,7 +192,7 @@ struct {
   u8 unused10;
 } vfob;
 
-#seekto 0x1B78;
+//#seekto 0x1B78;
 bit fmusedflags[32];
 
 #seekto 0x1c08;
@@ -366,23 +364,20 @@ struct {
      alarm:1;
 } settings;
 
-#seekto 0x0CB8;
+//#seekto 0x0CB8;
 struct {
     u8 ofseta[4];
-    u8 ununsed26[12];
 } aoffset;
 
-#seekto 0x0CBC;
+//#seekto 0x0CBC;
 struct {
     u8 ofsetb[4];
-    u8 ununsed27[12];
 } boffset;
 
 #seekto 0x0CD8;
 struct{
     u8 fmblock[4];
 }fmmode[25];
-
 
 #seekto 0x0D48;
 struct {
@@ -395,7 +390,7 @@ struct{
     u8 killcode[16];
 }skcode;
 
-#seekto 0x1828;
+//#seekto 0x1828;
 struct{
     u8 idcode[3];
 }icode;
@@ -405,7 +400,7 @@ struct{
     u8 gcode;
 }groupcode;
 
-#seekto 0x1838;
+//#seekto 0x1838;
 struct{
     u8 group1[7];
 }group1;
@@ -496,7 +491,7 @@ struct {
   u8 unused10;
 } vfoa;
 
-#seekto 0x1968;
+//#seekto 0x1968;
 struct {
   lbcd rxfreqb[4];
   lbcd txfreq[4];
@@ -519,7 +514,7 @@ struct {
   u8 unused10;
 } vfob;
 
-#seekto 0x1978;
+//#seekto 0x1978;
 struct{
     u8 vfo[4];
 }fmvfo;
@@ -1017,10 +1012,7 @@ class TDH8(chirp_common.CloneModeRadio):
         return self._memobj.memory[number]
 
     def _get_nam(self, number):
-        if self.MODEL in H8_LIST:
-            return self._memobj.names[number]
-        else:
-            return self._memobj.names[number - 1]
+        return self._memobj.names[number - 1]
 
     def _get_fm(self, number):
         return self._memobj.fmmode[number]
@@ -1037,7 +1029,7 @@ class TDH8(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw(asbytes=False)[0] == "\xff":
+        if _mem.get_raw()[0] == 0xff:
             mem.empty = True
             return mem
 
@@ -1167,10 +1159,7 @@ class TDH8(chirp_common.CloneModeRadio):
         return self._memobj.memory[number]
 
     def _set_nam(self, number):
-        if self.MODEL in H8_LIST:
-            return self._memobj.names[number]
-        else:
-            return self._memobj.names[number - 1]
+        return self._memobj.names[number - 1]
 
     def _get_scan_list(self, scan_data):
         # scan_val_list - Get all scans Add data 1-200 digits
@@ -1207,7 +1196,7 @@ class TDH8(chirp_common.CloneModeRadio):
 
         # When the channel is empty, you need to set "usedflags" to 0,
         # When the channel is used , you need to set "usedflags" to 1.
-        self._memobj.usedflags[mem.number - 1] = int(~mem.empty)
+        self._memobj.usedflags[mem.number - 1] = int(not mem.empty)
 
         if mem.empty:
             _mem.fill_raw(b'\xFF')
