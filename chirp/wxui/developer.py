@@ -358,10 +358,10 @@ class ChirpBrowserPanel(wx.lib.scrolledpanel.ScrolledPanel):
             label = wx.StaticText(self)
             pos = wx.StaticText(
                 self, label='%i bits (%i bytes) at 0x%06x-0x%06x' % (
-                self._memobj.size(),
-                self._memobj.size() // 8,
-                self._memobj.get_offset(),
-                self._memobj.get_offset() + self._memobj.size() // 8))
+                    self._memobj.size(),
+                    self._memobj.size() // 8,
+                    self._memobj.get_offset(),
+                    self._memobj.get_offset() + self._memobj.size() // 8))
             self._sizer.Add(label, 0, wx.ALIGN_CENTER)
             self._sizer.Add(pos, 1, flag=wx.EXPAND)
 
