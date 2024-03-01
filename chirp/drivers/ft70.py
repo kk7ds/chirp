@@ -560,10 +560,10 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
             "2. Connect cable to DATA terminal.\n"
             "3. Unclip battery.\n"
             "4. Press and hold in the [AMS] key and power key while clipping"
-            " \n in back battery the"
+            " \n in back battery the "
             "(\"ADMS\" will appear on the display).\n"
-            "5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD)."
-            " OK</b>\n click <b>Then")
+            "5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
+            "<b>Then click OK</b>")
         return rp
 
     def process_mmap(self):

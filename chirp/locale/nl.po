@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-28 16:52-0800\n"
+"POT-Creation-Date: 2024-03-02 13:32-0800\n"
 "PO-Revision-Date: 2012-03-18 12:01+0100\n"
 "Last-Translator: Michael Tel <m.tel@xs4all.nl>\n"
 "Language-Team: Dutch\n"
@@ -580,6 +580,17 @@ msgid ""
 "5. Press the [moni] key (\"-RX-\" will appear on the LCD).\n"
 msgstr ""
 
+#: ../drivers/ft70.py:559
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Unclip battery.\n"
+"4. Press and hold in the [AMS] key and power key while clipping \n"
+" in back battery the (\"ADMS\" will appear on the display).\n"
+"5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
+"<b>Then click OK</b>"
+msgstr ""
+
 #: ../drivers/ft70.py:551
 msgid ""
 "1. Turn radio on.\n"
@@ -588,17 +599,6 @@ msgid ""
 "4. Press and hold in the [AMS] key and power key while clipping \n"
 " in back battery the(\"ADMS\" will appear on the display).\n"
 "5. <b>After clicking OK</b>, press the [BAND] key.\n"
-msgstr ""
-
-#: ../drivers/ft70.py:559
-msgid ""
-"1. Turn radio on.\n"
-"2. Connect cable to DATA terminal.\n"
-"3. Unclip battery.\n"
-"4. Press and hold in the [AMS] key and power key while clipping \n"
-" in back battery the(\"ADMS\" will appear on the display).\n"
-"5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD). OK</b>\n"
-" click <b>Then"
 msgstr ""
 
 #: ../drivers/uvk5.py:679
@@ -788,7 +788,7 @@ msgstr[1] "Verschillen ruwe kanalen"
 msgid "Comment"
 msgstr "Opmerking"
 
-#: ../wxui/clone.py:252
+#: ../wxui/clone.py:251
 msgid "Communicate with radio"
 msgstr ""
 
@@ -827,7 +827,7 @@ msgstr ""
 msgid "Cross Mode"
 msgstr "Cross-mode"
 
-#: ../wxui/clone.py:452
+#: ../wxui/clone.py:451
 msgid "Custom Port"
 msgstr ""
 
@@ -935,7 +935,7 @@ msgstr "Download van radio"
 msgid "Download from radio..."
 msgstr "Download van radio"
 
-#: ../wxui/clone.py:570
+#: ../wxui/clone.py:569
 #, fuzzy
 msgid "Download instructions"
 msgstr "Download van radio"
@@ -996,7 +996,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:451
+#: ../wxui/clone.py:450
 msgid "Enter custom port:"
 msgstr ""
 
@@ -1010,11 +1010,11 @@ msgstr "Wis kanaal {loc}"
 msgid "Error applying settings"
 msgstr "Fout bij het instellen van het geheugen"
 
-#: ../wxui/clone.py:496
+#: ../wxui/clone.py:495
 msgid "Error communicating with radio"
 msgstr ""
 
-#: ../wxui/clone.py:528
+#: ../wxui/clone.py:527
 msgid "Experimental driver"
 msgstr ""
 
@@ -1374,7 +1374,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:592
+#: ../wxui/clone.py:591
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Interne fout"
@@ -1515,7 +1515,7 @@ msgstr ""
 msgid "Mode"
 msgstr "Mode"
 
-#: ../wxui/clone.py:282
+#: ../wxui/clone.py:281
 msgid "Model"
 msgstr "Model"
 
@@ -1536,7 +1536,7 @@ msgstr ""
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:420
+#: ../wxui/clone.py:419
 #, python-format
 msgid "More than one port found: %s"
 msgstr ""
@@ -1701,7 +1701,7 @@ msgstr ""
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr ""
 
-#: ../drivers/ftlx011.py:302
+#: ../drivers/ftlx011.py:301
 msgid ""
 "Please follow this steps carefully:\n"
 "1 - Turn on your radio\n"
@@ -1716,7 +1716,7 @@ msgid ""
 "get into normal mode.\n"
 msgstr ""
 
-#: ../drivers/ftlx011.py:293
+#: ../drivers/ftlx011.py:292
 msgid ""
 "Please follow this steps carefully:\n"
 "1 - Turn on your radio\n"
@@ -1739,11 +1739,11 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../wxui/clone.py:397
+#: ../wxui/clone.py:396
 msgid "Plug in your cable and then click OK"
 msgstr ""
 
-#: ../wxui/clone.py:275
+#: ../wxui/clone.py:274
 msgid "Port"
 msgstr "Poort"
 
@@ -1790,7 +1790,7 @@ msgstr "Radio"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:562 ../wxui/clone.py:646
+#: ../wxui/clone.py:561 ../wxui/clone.py:645
 #, fuzzy
 msgid "Radio information"
 msgstr "Informatie van de bank ophalen"
@@ -1959,10 +1959,6 @@ msgstr ""
 #: ../wxui/main.py:946
 msgid "Show image backup location"
 msgstr ""
-
-#: ../wxui/__init__.py:215 ../wxui/__init__.py:216 ../wxui/memedit.py:941
-msgid "Skip"
-msgstr "Overslaan"
 
 #: ../wxui/memedit.py:1976
 #, fuzzy
@@ -2217,12 +2213,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Kanaal-afstand"
 
-#: ../wxui/clone.py:391 ../wxui/clone.py:398 ../wxui/clone.py:409
-#: ../wxui/clone.py:417 ../wxui/clone.py:421
+#: ../wxui/clone.py:390 ../wxui/clone.py:397 ../wxui/clone.py:408
+#: ../wxui/clone.py:416 ../wxui/clone.py:420
 msgid "USB Port Finder"
 msgstr ""
 
-#: ../wxui/clone.py:407
+#: ../wxui/clone.py:406
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2271,7 +2267,7 @@ msgstr "Niet in staat om wijzigingen voor dit model te maken"
 msgid "United States"
 msgstr ""
 
-#: ../wxui/clone.py:390
+#: ../wxui/clone.py:389
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
 
@@ -2280,7 +2276,7 @@ msgstr ""
 msgid "Unsupported model %r"
 msgstr "Niet-ondersteunende bestandstype"
 
-#: ../wxui/clone.py:661
+#: ../wxui/clone.py:660
 msgid "Upload instructions"
 msgstr ""
 
@@ -2335,7 +2331,7 @@ msgstr ""
 msgid "Values"
 msgstr ""
 
-#: ../wxui/clone.py:278
+#: ../wxui/clone.py:277
 msgid "Vendor"
 msgstr "Merk"
 
@@ -2365,7 +2361,7 @@ msgstr ""
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr ""
 
-#: ../wxui/clone.py:415
+#: ../wxui/clone.py:414
 msgid "Your cable appears to be on port:"
 msgstr ""
 
@@ -2712,6 +2708,9 @@ msgstr ""
 
 #~ msgid "Show raw memory"
 #~ msgstr "Toon ruw geheugen"
+
+#~ msgid "Skip"
+#~ msgstr "Overslaan"
 
 #~ msgid "Special Channels"
 #~ msgstr "Speciale kanalen"
