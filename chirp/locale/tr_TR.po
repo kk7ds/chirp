@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-28 16:52-0800\n"
-"PO-Revision-Date: 2024-01-20 18:51+0300\n"
+"PO-Revision-Date: 2024-03-02 00:22+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
 "Language: tr\n"
@@ -1148,6 +1148,8 @@ msgid ""
 "Complex or non-standard tone squelch mode (starts the tone mode selection "
 "wizard)"
 msgstr ""
+"Karmaşık veya standart olmayan ton susturucu modu (ton modu seçim "
+"sihirbazını başlatır)"
 
 #: ../drivers/tmd710.py:186 ../drivers/tmd710.py:189
 msgid ""
@@ -1171,9 +1173,8 @@ msgid "Country"
 msgstr "Ülke"
 
 #: ../wxui/memedit.py:552
-#, fuzzy
 msgid "Cross Mode"
-msgstr "Çapraz mod"
+msgstr "Çapraz Mod"
 
 #: ../wxui/clone.py:452
 msgid "Custom Port"
@@ -1261,7 +1262,7 @@ msgstr "%s için tekrar sorma"
 
 #: ../wxui/clone.py:175
 msgid "Do you accept the risk?"
-msgstr ""
+msgstr "Riski kabul ediyor musun?"
 
 #: ../wxui/bankedit.py:190
 msgid "Double-click to change bank name"
@@ -1284,9 +1285,8 @@ msgid "Download instructions"
 msgstr "İndirme talimatları"
 
 #: ../wxui/radioinfo.py:62
-#, fuzzy
 msgid "Driver"
-msgstr "Sürücüyü Yeniden Yükle"
+msgstr "Sürücü"
 
 #: ../drivers/uvk5.py:1325
 msgid "Driver information"
@@ -1294,7 +1294,7 @@ msgstr "Sürücü bilgileri"
 
 #: ../wxui/main.py:543
 msgid "Driver messages"
-msgstr ""
+msgstr "Sürücü mesajları"
 
 #: ../wxui/query_sources.py:334
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
@@ -1714,7 +1714,7 @@ msgstr "Frekans"
 
 #: ../wxui/memedit.py:89
 msgid "Frequency granularity in kHz"
-msgstr ""
+msgstr "kHz cinsinden frekans ayrıntı düzeyi"
 
 #: ../wxui/query_sources.py:285 ../wxui/query_sources.py:345
 #: ../wxui/query_sources.py:437
@@ -1755,7 +1755,7 @@ msgstr "Boş kayıtları gizle"
 
 #: ../wxui/memedit.py:92
 msgid "Human-readable comment (not stored in radio)"
-msgstr ""
+msgstr "İnsan tarafından okunabilen yorum (telsizde saklanmaz)"
 
 #: ../wxui/query_sources.py:296 ../wxui/query_sources.py:302
 #: ../wxui/query_sources.py:565 ../wxui/query_sources.py:571
@@ -1772,7 +1772,7 @@ msgstr "Dosyadan İçe Aktar..."
 
 #: ../wxui/main.py:1336
 msgid "Import messages"
-msgstr ""
+msgstr "Mesajları içe aktar"
 
 #: ../wxui/main.py:1330
 msgid "Import not recommended"
@@ -1803,9 +1803,8 @@ msgid "Interact with driver"
 msgstr "Sürücü ile etkileşim"
 
 #: ../wxui/clone.py:592
-#, fuzzy
 msgid "Internal driver error"
-msgstr "Sürücü ile etkileşim"
+msgstr "Dahili sürücü hatası"
 
 #: ../wxui/query_sources.py:58
 #, python-format
@@ -1869,9 +1868,8 @@ msgid "Limit results to this distance (km) from coordinates"
 msgstr "Sonuçları koordinatlardan bu mesafeye (km) sınırla"
 
 #: ../wxui/main.py:1512
-#, fuzzy
 msgid "Live Radio"
-msgstr "FM Radyo"
+msgstr "Canlı Radyo"
 
 #: ../wxui/main.py:707
 msgid "Load Module..."
@@ -1930,7 +1928,7 @@ msgstr "Kayıt %i silinemez"
 
 #: ../wxui/memedit.py:78
 msgid "Memory label (stored in radio)"
-msgstr ""
+msgstr "Kayıt etiketi (radyoda saklanır)"
 
 #: ../wxui/bankedit.py:233
 msgid "Memory must be in a bank to be edited"
@@ -2267,12 +2265,11 @@ msgstr ""
 
 #: ../wxui/memedit.py:83
 msgid "Receive DTCS code"
-msgstr ""
+msgstr "DTCS kodu al"
 
 #: ../wxui/memedit.py:77
-#, fuzzy
 msgid "Receive frequency"
-msgstr "Frekans Gir"
+msgstr "Alım frekansı"
 
 #: ../wxui/common.py:477
 msgid "Refresh required"
@@ -2330,9 +2327,8 @@ msgstr[0] "%i sekmeyi geri yükle"
 msgstr[1] "%i sekmeyi geri yükle"
 
 #: ../wxui/main.py:805
-#, fuzzy
 msgid "Restore tabs on start"
-msgstr "%i sekmesini geri yükle"
+msgstr "Başlangıçta sekmeleri geri yükle"
 
 #: ../wxui/common.py:321
 msgid "Retrieved settings"
@@ -2356,7 +2352,7 @@ msgstr "Kaydedilmiş ayarlar"
 
 #: ../wxui/memedit.py:90
 msgid "Scan control (skip, include, priority, etc)"
-msgstr ""
+msgstr "Tarama kontrolü (atlama, dahil etme, öncelik vb.)"
 
 #: ../drivers/uvk5.py:921
 msgid "Scanlists"
@@ -2397,6 +2393,7 @@ msgstr "Ayarlar"
 #: ../wxui/memedit.py:88
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr ""
+"Çift yönlü tarafından kontrol edilen kaydırma miktarı (veya iletim frekansı)"
 
 #: ../wxui/memedit.py:1727 ../wxui/developer.py:89
 msgid "Show Raw Memory"
@@ -2411,13 +2408,12 @@ msgid "Show extra fields"
 msgstr "Ekstra alanları göster"
 
 #: ../wxui/main.py:946
-#, fuzzy
 msgid "Show image backup location"
-msgstr "Hata ayıklama günlüğü konumunu göster"
+msgstr "İmaj yedekleme konumunu göster"
 
 #: ../wxui/__init__.py:215 ../wxui/__init__.py:216 ../wxui/memedit.py:941
 msgid "Skip"
-msgstr ""
+msgstr "Atla"
 
 #: ../wxui/memedit.py:1976
 msgid "Some memories are incompatible with this radio"
@@ -2474,7 +2470,7 @@ msgstr "Başarılı"
 
 #: ../wxui/memedit.py:84
 msgid "TX-RX DTCS polarity (normal or reversed)"
-msgstr ""
+msgstr "TX-RX DTCS polaritesi (normal veya ters)"
 
 #: ../wxui/query_sources.py:473
 msgid "The DMR-MARC Worldwide Network"
@@ -2573,12 +2569,18 @@ msgid ""
 "image from your radio and use that going forward for the best safety and "
 "compatibility."
 msgstr ""
+"Bu imajda donanım yazılımı bilgileri eksik. CHIRP'in eski veya değiştirilmiş "
+"bir sürümüyle oluşturulmuş olabilir. En iyi güvenlik ve uyumluluk için "
+"telsizinizden yeni bir imaj indirmeniz ve bunu ileriye doğru kullanmanız "
+"önerilir."
 
 #: ../wxui/main.py:1509
 msgid ""
 "This is a live-mode radio, which means changes are sent to the radio in real-"
 "time as you make them. Upload is not necessary!"
 msgstr ""
+"Bu, canlı modlu bir telsizdir; bu, değişiklik yaptığınızda gerçek zamanlı "
+"olarak radyoya gönderildiği anlamına gelir. Yükleme gerekli değildir!"
 
 #: ../wxui/main.py:1515
 msgid ""
@@ -2586,6 +2588,9 @@ msgid ""
 "Open a radio image (or download one from a radio) an then copy/paste items "
 "from this tab into that one in order to upload"
 msgstr ""
+"Bu telsizden bağımsız bir dosyadır ve doğrudan telsize yüklenemez. Bir "
+"telsiz imajını açın (veya telsizden bir tane indirin) ve ardından yüklemek "
+"için bu sekmedeki öğeleri o sekmeye kopyalayın/yapıştırın."
 
 #: ../drivers/th_uv88.py:555
 msgid "This is an early stage beta driver\n"
@@ -2642,6 +2647,11 @@ msgid ""
 "radio if it is from a different piece of hardware. Do not use this unless "
 "you know what you are doing and accept the risk of destroying your radio!"
 msgstr ""
+"Bu seçenek telsizinizi bozabilir! Her telsizin benzersiz bir kalibrasyon "
+"veri seti vardır ve görüntüdeki verilerin yüklenmesi, eğer telsiz farklı bir "
+"donanımdan geliyorsa, telsize fiziksel zarar verecektir. Ne yaptığınızı "
+"bilmiyorsanız ve telsizinizin zarar görme riskini kabul etmiyorsanız bunu "
+"kullanmayın!"
 
 #: ../drivers/fd268.py:302 ../drivers/fd268.py:308
 msgid ""
@@ -2686,29 +2696,28 @@ msgid "Tone Squelch"
 msgstr "Ton Susturucu"
 
 #: ../wxui/memedit.py:79
-#, fuzzy
 msgid "Tone squelch mode"
-msgstr "Ton Susturucu"
+msgstr "Ton susturma modu"
 
 #: ../wxui/memedit.py:91
 msgid "Transmit Power"
-msgstr ""
+msgstr "İletim Gücü"
 
 #: ../wxui/memedit.py:87
 msgid "Transmit shift, split mode, or transmit inhibit"
-msgstr ""
+msgstr "İletim kaydırma, bölme modu veya iletim engelleme"
 
 #: ../wxui/memedit.py:80
 msgid "Transmit tone"
-msgstr ""
+msgstr "İletim tonu"
 
 #: ../wxui/memedit.py:82
 msgid "Transmit/receive DTCS code for DTCS mode, else transmit code"
-msgstr ""
+msgstr "DTCS modu için DTCS kodunu gönderin/alın, aksi takdirde kodu iletin"
 
 #: ../wxui/memedit.py:81
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
-msgstr ""
+msgstr "TSQL modu için gönderme/alma tonu, aksi takdirde ton al"
 
 #: ../wxui/memedit.py:332 ../wxui/memedit.py:939
 msgid "Tuning Step"
@@ -2764,9 +2773,8 @@ msgid "Unable to set %s on this memory"
 msgstr "Bu kayıtta %s ayarlanamıyor"
 
 #: ../wxui/main.py:1519
-#, fuzzy
 msgid "Unable to upload this file"
-msgstr "%s bu sistemde gösterilemiyor"
+msgstr "Bu dosya yüklenemiyor"
 
 #: ../wxui/query_sources.py:691
 msgid "United States"
@@ -2779,7 +2787,7 @@ msgstr "(gerekirse) Kablonuzu çıkarın ve ardından Tamam'ı tıklayın"
 #: ../drivers/thd74.py:328
 #, python-format
 msgid "Unsupported model %r"
-msgstr ""
+msgstr "Desteklenmeyen model %r"
 
 #: ../wxui/clone.py:661
 msgid "Upload instructions"
