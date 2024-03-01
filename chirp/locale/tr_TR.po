@@ -895,6 +895,25 @@ msgstr ""
 "      (ekranda \"CLONE\" görünecektir).\n"
 "5. [moni] tuşuna basın (ekranda \"-RX-\" görünecektir).\n"
 
+#: ../drivers/ft70.py:559
+#, fuzzy
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Unclip battery.\n"
+"4. Press and hold in the [AMS] key and power key while clipping \n"
+" in back battery the (\"ADMS\" will appear on the display).\n"
+"5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
+"<b>Then click OK</b>"
+msgstr ""
+"1. Radyoyu açın.\n"
+"2. Kabloyu DATA terminaline bağlayın.\n"
+"3. Bataryayı çıkartın.\n"
+"4. Bataryayı takarken [AMS] tuşuna ve güç tuşuna basılı tutun (\"ADMS\" "
+"ekranda görünecektir).\n"
+"5. [MODE] tuşuna basın (LCD'de \"-WAIT-\" görünecektir). Sonra </b> TAMAM "
+"<b> tıklayın"
+
 #: ../drivers/ft70.py:551
 msgid ""
 "1. Turn radio on.\n"
@@ -910,24 +929,6 @@ msgstr ""
 "4. Bataryayı takarken [AMS] tuşuna ve güç tuşuna basılı tutun (\"ADMS\" "
 "ekranda görünecektir).\n"
 "5. <b>Tamam'a tıkladıktan sonra</b>, [BAND] tuşuna basın.\n"
-
-#: ../drivers/ft70.py:559
-msgid ""
-"1. Turn radio on.\n"
-"2. Connect cable to DATA terminal.\n"
-"3. Unclip battery.\n"
-"4. Press and hold in the [AMS] key and power key while clipping \n"
-" in back battery the(\"ADMS\" will appear on the display).\n"
-"5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD). OK</b>\n"
-" click <b>Then"
-msgstr ""
-"1. Radyoyu açın.\n"
-"2. Kabloyu DATA terminaline bağlayın.\n"
-"3. Bataryayı çıkartın.\n"
-"4. Bataryayı takarken [AMS] tuşuna ve güç tuşuna basılı tutun (\"ADMS\" "
-"ekranda görünecektir).\n"
-"5. [MODE] tuşuna basın (LCD'de \"-WAIT-\" görünecektir). Sonra </b> TAMAM "
-"<b> tıklayın"
 
 #: ../drivers/uvk5.py:679
 msgid ""
@@ -1135,7 +1136,7 @@ msgstr[1] "%i kaydı sırala"
 msgid "Comment"
 msgstr "Yorum"
 
-#: ../wxui/clone.py:252
+#: ../wxui/clone.py:251
 msgid "Communicate with radio"
 msgstr "Telsiz ile iletişim"
 
@@ -1176,7 +1177,7 @@ msgstr "Ülke"
 msgid "Cross Mode"
 msgstr "Çapraz Mod"
 
-#: ../wxui/clone.py:452
+#: ../wxui/clone.py:451
 msgid "Custom Port"
 msgstr "Özel Bağlantı Noktası"
 
@@ -1280,7 +1281,7 @@ msgstr "Telsizden indir"
 msgid "Download from radio..."
 msgstr "Telsizden indir..."
 
-#: ../wxui/clone.py:570
+#: ../wxui/clone.py:569
 msgid "Download instructions"
 msgstr "İndirme talimatları"
 
@@ -1341,7 +1342,7 @@ msgstr "TX Frekansını girin (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Banka %s için yeni bir ad girin:"
 
-#: ../wxui/clone.py:451
+#: ../wxui/clone.py:450
 msgid "Enter custom port:"
 msgstr "Özel bağlantı noktasını girin:"
 
@@ -1354,11 +1355,11 @@ msgstr "%s kaydı silindi"
 msgid "Error applying settings"
 msgstr "Ayarlar uygulanırken hata oluştu"
 
-#: ../wxui/clone.py:496
+#: ../wxui/clone.py:495
 msgid "Error communicating with radio"
 msgstr "Telsizle iletişim hatası"
 
-#: ../wxui/clone.py:528
+#: ../wxui/clone.py:527
 msgid "Experimental driver"
 msgstr "Deneysel sürücü"
 
@@ -1943,7 +1944,7 @@ msgstr "{num} kaydı {bank} bankasında değil"
 msgid "Mode"
 msgstr "Mod"
 
-#: ../wxui/clone.py:282
+#: ../wxui/clone.py:281
 msgid "Model"
 msgstr "Model"
 
@@ -1963,7 +1964,7 @@ msgstr "Modül Yüklendi"
 msgid "Module loaded successfully"
 msgstr "Modül başarıyla yüklendi"
 
-#: ../wxui/clone.py:420
+#: ../wxui/clone.py:419
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Birden fazla bağlantı noktası bulundu: %s"
@@ -2123,7 +2124,7 @@ msgstr "Yapıştırılan kayıt, %s kaydının üzerine yazacak"
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Lütfen yeni sürümü yüklemeden önce CHIRP'den çıktığınızdan emin olun!"
 
-#: ../drivers/ftlx011.py:302
+#: ../drivers/ftlx011.py:301
 msgid ""
 "Please follow this steps carefully:\n"
 "1 - Turn on your radio\n"
@@ -2149,7 +2150,7 @@ msgstr ""
 "Klonladıktan sonra kabloyu çıkarın ve normal moda geçmek için telsizinizi "
 "kapatıp açın.\n"
 
-#: ../drivers/ftlx011.py:293
+#: ../drivers/ftlx011.py:292
 msgid ""
 "Please follow this steps carefully:\n"
 "1 - Turn on your radio\n"
@@ -2184,11 +2185,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Lütfen bekleyin"
 
-#: ../wxui/clone.py:397
+#: ../wxui/clone.py:396
 msgid "Plug in your cable and then click OK"
 msgstr "Kablonuzu takın ve ardından Tamam'a tıklayın"
 
-#: ../wxui/clone.py:275
+#: ../wxui/clone.py:274
 msgid "Port"
 msgstr "Port"
 
@@ -2234,7 +2235,7 @@ msgstr "Telsiz"
 msgid "Radio did not ack block %i"
 msgstr "Telsiz %i bloğunu onaylamadı"
 
-#: ../wxui/clone.py:562 ../wxui/clone.py:646
+#: ../wxui/clone.py:561 ../wxui/clone.py:645
 msgid "Radio information"
 msgstr "Telsiz bilgisi"
 
@@ -2723,12 +2724,12 @@ msgstr "TSQL modu için gönderme/alma tonu, aksi takdirde ton al"
 msgid "Tuning Step"
 msgstr "Ayarlama Adımı"
 
-#: ../wxui/clone.py:391 ../wxui/clone.py:398 ../wxui/clone.py:409
-#: ../wxui/clone.py:417 ../wxui/clone.py:421
+#: ../wxui/clone.py:390 ../wxui/clone.py:397 ../wxui/clone.py:408
+#: ../wxui/clone.py:416 ../wxui/clone.py:420
 msgid "USB Port Finder"
 msgstr "USB Portu Bulucu"
 
-#: ../wxui/clone.py:407
+#: ../wxui/clone.py:406
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2780,7 +2781,7 @@ msgstr "Bu dosya yüklenemiyor"
 msgid "United States"
 msgstr "Amerika Birleşik Devletleri"
 
-#: ../wxui/clone.py:390
+#: ../wxui/clone.py:389
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "(gerekirse) Kablonuzu çıkarın ve ardından Tamam'ı tıklayın"
 
@@ -2789,7 +2790,7 @@ msgstr "(gerekirse) Kablonuzu çıkarın ve ardından Tamam'ı tıklayın"
 msgid "Unsupported model %r"
 msgstr "Desteklenmeyen model %r"
 
-#: ../wxui/clone.py:661
+#: ../wxui/clone.py:660
 msgid "Upload instructions"
 msgstr "Yükleme talimatları"
 
@@ -2842,7 +2843,7 @@ msgstr "Değer sıfır veya daha büyük olmalıdır"
 msgid "Values"
 msgstr "Değerler"
 
-#: ../wxui/clone.py:278
+#: ../wxui/clone.py:277
 msgid "Vendor"
 msgstr "Tedarikçi"
 
@@ -2871,7 +2872,7 @@ msgstr "Hoşgeldiniz"
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "CHIRP'in sizin için bir masaüstü simgesi yüklemesini ister misiniz?"
 
-#: ../wxui/clone.py:415
+#: ../wxui/clone.py:414
 msgid "Your cable appears to be on port:"
 msgstr "Kablonuz şu bağlantı noktasında görünüyor:"
 
