@@ -21,7 +21,7 @@ from chirp import chirp_common, directory, memmap
 from chirp import bitwise
 from chirp.settings import RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
-    InvalidValueError, RadioSettingValueString, \
+    RadioSettingValueString, \
     RadioSettings, RadioSettingGroup
 import struct
 from chirp import errors, util
@@ -782,10 +782,11 @@ class UV17Pro(bfc.BaofengCommonHT):
         def my_validate(value):
             value = chirp_common.parse_freq(value)
             for band in self.VALID_BANDS:
-                if value > band[0] and value < band[1]:
+                if value >= band[0] and value < band[1]:
                     return chirp_common.format_freq(value)
             msg = ("{0} is not in a valid band.".format(value))
-            raise InvalidValueError(msg)
+            LOG.debug(msg)
+            return chirp_common.format_freq(band[0])  # Default to valid value
 
         def apply_freq(setting, obj):
             value = chirp_common.parse_freq(str(setting.value)) / 10
