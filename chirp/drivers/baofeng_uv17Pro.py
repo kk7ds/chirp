@@ -1332,3 +1332,9 @@ class BF5RM(UV17Pro):
             except ValueError:
                 pass
         super().check_set_memory_immutable_policy(existing, new)
+
+
+@directory.register
+class BFK5Plus(BF5RM):
+    VENDOR = "Baofeng"
+    MODEL = "K5-Plus"
