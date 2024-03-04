@@ -52,6 +52,10 @@ INDEX_CHAR = settings.BANNED_NAME_CHARACTERS[0]
 EDIT_LOCK = threading.Lock()
 
 
+class ExportFailed(Exception):
+    pass
+
+
 def closes_clipboard(fn):
     @functools.wraps(fn)
     def wrapper(*a, **k):

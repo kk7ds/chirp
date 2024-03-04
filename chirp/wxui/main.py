@@ -317,7 +317,7 @@ class ChirpEditorSet(wx.Panel):
     def close(self):
         pass
 
-    @common.error_proof()
+    @common.error_proof(common.ExportFailed)
     def export_to_file(self, filename):
         current = self.current_editor
         if not isinstance(current, memedit.ChirpMemEdit):
