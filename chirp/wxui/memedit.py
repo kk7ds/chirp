@@ -2121,8 +2121,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 # We don't export specials
                 continue
             if not m.empty:
-                m = import_logic.import_mem(r, self._features, m,
-                                            mem_cls=chirp_common.Memory)
+                try:
+                    m = import_logic.import_mem(r, self._features, m,
+                                                mem_cls=chirp_common.Memory)
+                except import_logic.ImportError as e:
+                    LOG.error('Failed to export %r: %s', m, e)
+                    raise common.ExportFailed(
+                        'Failed to export memory %i: %s' % (m.number, e))
             r.set_memory(m)
         r.save(filename)
         LOG.info('Wrote exported CSV to %s' % filename)
