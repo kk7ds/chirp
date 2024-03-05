@@ -290,9 +290,15 @@ class UV17(baofeng_uv17Pro.UV17Pro):
     } vfo;
 
     #seekto 0x4000;
-    struct {
+    struct channelname {
       char name[11];
-    } names[999];
+    };
+
+    struct channelname names1[372];
+    #seek 0x4;
+    struct channelname names2[372];
+    #seek 0x4;
+    struct channelname names3[255];
 
     #seekto 0x8000;
     struct {
@@ -408,9 +414,20 @@ class UV17(baofeng_uv17Pro.UV17Pro):
         _mem = self._memobj.mem1.mem[number]
         return _mem
 
+    def get_channel_name(self, number):
+        number = number - 1
+        if number >= 744:
+            _name = self._memobj.names3[number - 744]
+            return _name
+        if number >= 372:
+            _name = self._memobj.names2[number - 372]
+            return _name
+        _name = self._memobj.names1[number]
+        return _name
+
     def get_memory(self, number):
         _mem = self.get_raw_memory(number)
-        _nam = self._memobj.names[number - 1]
+        _nam = self.get_channel_name(number)
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -441,7 +458,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
 
     def set_memory(self, mem):
         _mem = self.get_raw_memory(mem.number)
-        _nam = self._memobj.names[mem.number - 1]
+        _nam = self.get_channel_name(mem.number)
 
         if mem.empty:
             _mem.set_raw(b"\xff" * 16)
