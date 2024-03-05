@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-02 13:32-0800\n"
+"POT-Creation-Date: 2024-03-05 15:50-0800\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -657,7 +657,7 @@ msgstr "Όλοι οι τύποι αρχείων|"
 msgid "Amateur"
 msgstr "Ραδιοερασιτέχνη"
 
-#: ../wxui/common.py:602 ../wxui/common.py:629
+#: ../wxui/common.py:606 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr "Παρουσιάστηκε ένα σφάλμα"
 
@@ -697,7 +697,7 @@ msgstr "Δημιουργία Περιηγητή Πομποδεκτών"
 msgid "Canada"
 msgstr "Καναδάς"
 
-#: ../wxui/common.py:475
+#: ../wxui/common.py:479
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -759,7 +759,7 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr ""
 
-#: ../wxui/common.py:117
+#: ../wxui/common.py:121
 msgid "Cloning"
 msgstr "Αντιγραφή"
 
@@ -858,7 +858,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2226
+#: ../wxui/memedit.py:2231
 msgid "DV Memory"
 msgstr "Μνήμη DV"
 
@@ -887,7 +887,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2151
+#: ../wxui/memedit.py:2156
 #, fuzzy
 msgid "Digital Code"
 msgstr "Ψηφιακός Κωδικός"
@@ -962,12 +962,12 @@ msgstr ""
 msgid "Duplex"
 msgstr ""
 
-#: ../wxui/memedit.py:2181
+#: ../wxui/memedit.py:2186
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Επεξεργασία λεπτομερειών για %i μνήμες"
 
-#: ../wxui/memedit.py:2179
+#: ../wxui/memedit.py:2184
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Επεξεργασία λεπτομερειών για τη μνήμη %i"
@@ -1002,7 +1002,7 @@ msgstr "Εισάγετε ένα νέο όνομα για την ομάδα μν�
 msgid "Enter custom port:"
 msgstr "Εισάγετε προσαρμοσμένη θύρα:"
 
-#: ../wxui/common.py:325
+#: ../wxui/common.py:329
 #, python-format
 msgid "Erased memory %s"
 msgstr "Διεγράφη η μνήμη %s"
@@ -1032,7 +1032,7 @@ msgstr "Εξαγωγή σε αρχείο μορφής .CSV"
 msgid "Export to CSV..."
 msgstr "Εξαγωγή σε αρχείο μορφής .CSV"
 
-#: ../wxui/memedit.py:2215
+#: ../wxui/memedit.py:2220
 msgid "Extra"
 msgstr "Περισσότερα"
 
@@ -1091,7 +1091,7 @@ msgstr "Εύρεση επόμενου"
 msgid "Find..."
 msgstr "Εύρεση"
 
-#: ../wxui/common.py:327
+#: ../wxui/common.py:331
 #, python-format
 msgid "Finished radio job %s"
 msgstr "Τελείωσε η εργασία %s"
@@ -1392,7 +1392,7 @@ msgstr "Μη έγκυρη τιμή: %s"
 msgid "Invalid ZIP code"
 msgstr "Μη έγκυρος ΤΚ"
 
-#: ../wxui/memedit.py:1453 ../wxui/memedit.py:2306
+#: ../wxui/memedit.py:1453 ../wxui/memedit.py:2311
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Μη έγκυρη τιμή: %s"
@@ -1467,9 +1467,9 @@ msgid ""
 "Loading modules can be extremely dangerous, leading to damage to your "
 "computer, radio, or both. NEVER load a module from a source you do not "
 "trust, and especially not from anywhere other than the main CHIRP website "
-"(chirp.danplanet.com). Loading a module from another source is akin to "
-"giving them direct access to your computer and everything on it! Proceed "
-"despite this risk?"
+"(chirpmyradio.com). Loading a module from another source is akin to giving "
+"them direct access to your computer and everything on it! Proceed despite "
+"this risk?"
 msgstr ""
 
 #: ../wxui/clone.py:120
@@ -1733,7 +1733,7 @@ msgid ""
 "EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
 
-#: ../wxui/common.py:190
+#: ../wxui/common.py:194
 msgid "Please wait"
 msgstr "Παρακαλώ περιμένετε"
 
@@ -1818,12 +1818,12 @@ msgstr ""
 msgid "Receive frequency"
 msgstr "Εισάγετε συχνότητα"
 
-#: ../wxui/common.py:477
+#: ../wxui/common.py:481
 #, fuzzy
 msgid "Refresh required"
 msgstr "Απαιτείται επανεκκίνηση"
 
-#: ../wxui/common.py:317
+#: ../wxui/common.py:321
 #, python-format
 msgid "Refreshed memory %s"
 msgstr "Ανανεώθηκε η μνήμη %s"
@@ -1874,7 +1874,7 @@ msgstr[1] "Επαναφορά %i καρτελών"
 msgid "Restore tabs on start"
 msgstr "Επαναφορά %i καρτελών"
 
-#: ../wxui/common.py:321
+#: ../wxui/common.py:325
 msgid "Retrieved settings"
 msgstr "Ρυθμίσεις ανακτήθηκαν"
 
@@ -1890,7 +1890,7 @@ msgstr "Αποθήκευση πριν το κλείσιμο;"
 msgid "Save file"
 msgstr "Αποθήκευση αρχείου"
 
-#: ../wxui/common.py:323
+#: ../wxui/common.py:327
 msgid "Saved settings"
 msgstr "Ρυθμίσεις αποθηκεύθηκαν"
 
@@ -2233,7 +2233,7 @@ msgstr ""
 msgid "Unable to find stock config %r"
 msgstr ""
 
-#: ../wxui/common.py:223
+#: ../wxui/common.py:227
 msgid "Unable to open the clipboard"
 msgstr "Αδυναμία ανοίγματος του πρόχειρου"
 
@@ -2248,7 +2248,7 @@ msgid ""
 "model and try again."
 msgstr ""
 
-#: ../wxui/common.py:680
+#: ../wxui/common.py:684
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr ""
@@ -2289,7 +2289,7 @@ msgstr "Αποστολή Σε Πομποδέκτη"
 msgid "Upload to radio..."
 msgstr "Αποστολή Σε Πομποδέκτη"
 
-#: ../wxui/common.py:319
+#: ../wxui/common.py:323
 #, python-format
 msgid "Uploaded memory %s"
 msgstr "Απεστάλη η μνήμη %s"
@@ -2307,12 +2307,12 @@ msgstr "Χρήση μεγαλύτερης γραμματοσειράς"
 msgid "Value does not fit in %i bits"
 msgstr "Η τιμή δεν χωράει σε %i bits"
 
-#: ../wxui/common.py:515
+#: ../wxui/common.py:519
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Η τιμή πρέπει να είναι τουλάχιστον %.4f"
 
-#: ../wxui/common.py:519
+#: ../wxui/common.py:523
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Η τιμή πρέπει να είναι το πολύ  %.4f"
@@ -2326,7 +2326,7 @@ msgstr "Η τιμή πρέπει να έιναι ακριβώς %i δεκαδι�
 msgid "Value must be zero or greater"
 msgstr "Η τιμή πρέπει να είναι μηδέν ή μεγαλύτερη"
 
-#: ../wxui/memedit.py:2206
+#: ../wxui/memedit.py:2211
 msgid "Values"
 msgstr ""
 
@@ -2338,7 +2338,7 @@ msgstr "Προμηθευτής"
 msgid "View"
 msgstr "Εμφάνιση"
 
-#: ../wxui/common.py:461
+#: ../wxui/common.py:465
 msgid "WARNING!"
 msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-28 16:52-0800\n"
+"POT-Creation-Date: 2024-03-05 15:50-0800\n"
 "PO-Revision-Date: 2024-03-02 00:22+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -995,7 +995,7 @@ msgstr "Desteklenen tüm biçimler|"
 msgid "Amateur"
 msgstr "Amatör"
 
-#: ../wxui/common.py:602 ../wxui/common.py:629
+#: ../wxui/common.py:606 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr "Bir hata oluştu"
 
@@ -1035,7 +1035,7 @@ msgstr "Telsiz Tarayıcısı oluşturuluyor"
 msgid "Canada"
 msgstr "Kanada"
 
-#: ../wxui/common.py:475
+#: ../wxui/common.py:479
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -1105,7 +1105,7 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr "Klon tamamlandı, sahte baytlar kontrol ediliyor"
 
-#: ../wxui/common.py:117
+#: ../wxui/common.py:121
 msgid "Cloning"
 msgstr "Klonlanıyor"
 
@@ -1205,7 +1205,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr "DTMF kod çöz"
 
-#: ../wxui/memedit.py:2226
+#: ../wxui/memedit.py:2231
 msgid "DV Memory"
 msgstr "DV Kaydı"
 
@@ -1235,7 +1235,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr "Farklı Ham Kayıtlar"
 
-#: ../wxui/memedit.py:2151
+#: ../wxui/memedit.py:2156
 msgid "Digital Code"
 msgstr "Dijital Kod"
 
@@ -1307,12 +1307,12 @@ msgstr ""
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2181
+#: ../wxui/memedit.py:2186
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "%i kaydı için ayrıntıları düzenle"
 
-#: ../wxui/memedit.py:2179
+#: ../wxui/memedit.py:2184
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "%i kaydı için ayrıntıları düzenle"
@@ -1346,7 +1346,7 @@ msgstr "Banka %s için yeni bir ad girin:"
 msgid "Enter custom port:"
 msgstr "Özel bağlantı noktasını girin:"
 
-#: ../wxui/common.py:325
+#: ../wxui/common.py:329
 #, python-format
 msgid "Erased memory %s"
 msgstr "%s kaydı silindi"
@@ -1375,7 +1375,7 @@ msgstr "CSV'ye aktar"
 msgid "Export to CSV..."
 msgstr "CSV'ye aktar..."
 
-#: ../wxui/memedit.py:2215
+#: ../wxui/memedit.py:2220
 msgid "Extra"
 msgstr "Ekstra"
 
@@ -1435,7 +1435,7 @@ msgstr "Sonraki Bul"
 msgid "Find..."
 msgstr "Bul..."
 
-#: ../wxui/common.py:327
+#: ../wxui/common.py:331
 #, python-format
 msgid "Finished radio job %s"
 msgstr "%s telsiz işleri tamamlandı"
@@ -1803,7 +1803,7 @@ msgstr "Masaüstü simgesi yüklensin mi?"
 msgid "Interact with driver"
 msgstr "Sürücü ile etkileşim"
 
-#: ../wxui/clone.py:592
+#: ../wxui/clone.py:591
 msgid "Internal driver error"
 msgstr "Dahili sürücü hatası"
 
@@ -1820,7 +1820,7 @@ msgstr "Geçersiz Girdi"
 msgid "Invalid ZIP code"
 msgstr "Geçersiz Posta kodu"
 
-#: ../wxui/memedit.py:1453 ../wxui/memedit.py:2306
+#: ../wxui/memedit.py:1453 ../wxui/memedit.py:2311
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Geçersiz düzenleme: %s"
@@ -1889,13 +1889,13 @@ msgid ""
 "Loading modules can be extremely dangerous, leading to damage to your "
 "computer, radio, or both. NEVER load a module from a source you do not "
 "trust, and especially not from anywhere other than the main CHIRP website "
-"(chirp.danplanet.com). Loading a module from another source is akin to "
-"giving them direct access to your computer and everything on it! Proceed "
-"despite this risk?"
+"(chirpmyradio.com). Loading a module from another source is akin to giving "
+"them direct access to your computer and everything on it! Proceed despite "
+"this risk?"
 msgstr ""
 "Modülleri yüklemek son derece tehlikeli olabilir ve bilgisayarınıza, "
 "telsizinize veya her ikisine birden zarar verebilir. ASLA güvenmediğiniz bir "
-"kaynaktan ve özellikle ana CHIRP web sitesi (chirp.danplanet.com) dışında "
+"kaynaktan ve özellikle ana CHIRP web sitesi (chirpmyradio.com) dışında "
 "herhangi bir yerden modül yüklemeyin. Başka bir kaynaktan bir modül "
 "yüklemek, kaynak sahiplerinin bilgisayarınıza ve üzerindeki her şeye "
 "doğrudan erişim sağlamasına olanak sağlayabilir! Bu riske rağmen devam "
@@ -2181,7 +2181,7 @@ msgstr ""
 "telsizinize zarar verebilecek davranış ve işlevleri mümkün kılar. Uyarıldın! "
 "Yine de devam edilsin mi?"
 
-#: ../wxui/common.py:190
+#: ../wxui/common.py:194
 msgid "Please wait"
 msgstr "Lütfen bekleyin"
 
@@ -2272,11 +2272,11 @@ msgstr "DTCS kodu al"
 msgid "Receive frequency"
 msgstr "Alım frekansı"
 
-#: ../wxui/common.py:477
+#: ../wxui/common.py:481
 msgid "Refresh required"
 msgstr "Yeniden Başlatma Gerekli"
 
-#: ../wxui/common.py:317
+#: ../wxui/common.py:321
 #, python-format
 msgid "Refreshed memory %s"
 msgstr "Yenilenmiş %s kaydı"
@@ -2331,7 +2331,7 @@ msgstr[1] "%i sekmeyi geri yükle"
 msgid "Restore tabs on start"
 msgstr "Başlangıçta sekmeleri geri yükle"
 
-#: ../wxui/common.py:321
+#: ../wxui/common.py:325
 msgid "Retrieved settings"
 msgstr "Alınan ayarlar"
 
@@ -2347,7 +2347,7 @@ msgstr "Kapanmadan önce kaydedilsin mi?"
 msgid "Save file"
 msgstr "Dosyayı kaydet"
 
-#: ../wxui/common.py:323
+#: ../wxui/common.py:327
 msgid "Saved settings"
 msgstr "Kaydedilmiş ayarlar"
 
@@ -2411,10 +2411,6 @@ msgstr "Ekstra alanları göster"
 #: ../wxui/main.py:946
 msgid "Show image backup location"
 msgstr "İmaj yedekleme konumunu göster"
-
-#: ../wxui/__init__.py:215 ../wxui/__init__.py:216 ../wxui/memedit.py:941
-msgid "Skip"
-msgstr "Atla"
 
 #: ../wxui/memedit.py:1976
 msgid "Some memories are incompatible with this radio"
@@ -2745,7 +2741,7 @@ msgstr "Radyo yüklenmeden önce kayıt düzenlenemiyor"
 msgid "Unable to find stock config %r"
 msgstr "%r stok yapılandırması bulunamadı"
 
-#: ../wxui/common.py:223
+#: ../wxui/common.py:227
 msgid "Unable to open the clipboard"
 msgstr "Pano açılamıyor"
 
@@ -2763,7 +2759,7 @@ msgstr ""
 "telsiz ABD dışı bir telsizdir (veya geniş bantlıdır). Lütfen doğru modeli "
 "seçin ve tekrar deneyin."
 
-#: ../wxui/common.py:680
+#: ../wxui/common.py:684
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "%s bu sistemde gösterilemiyor"
@@ -2802,7 +2798,7 @@ msgstr "Telsize yükle"
 msgid "Upload to radio..."
 msgstr "Telsize yükle..."
 
-#: ../wxui/common.py:319
+#: ../wxui/common.py:323
 #, python-format
 msgid "Uploaded memory %s"
 msgstr "Yüklenen kayıt %s"
@@ -2820,12 +2816,12 @@ msgstr "Daha büyük yazı tipi kullan"
 msgid "Value does not fit in %i bits"
 msgstr "Değer %i bit'e sığmıyor"
 
-#: ../wxui/common.py:515
+#: ../wxui/common.py:519
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Değer en az %.4f olmalıdır"
 
-#: ../wxui/common.py:519
+#: ../wxui/common.py:523
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Değer en fazla %.4f olmalıdır"
@@ -2839,7 +2835,7 @@ msgstr "Değer tam olarak %i ondalık basamak olmalıdır"
 msgid "Value must be zero or greater"
 msgstr "Değer sıfır veya daha büyük olmalıdır"
 
-#: ../wxui/memedit.py:2206
+#: ../wxui/memedit.py:2211
 msgid "Values"
 msgstr "Değerler"
 
@@ -2851,7 +2847,7 @@ msgstr "Tedarikçi"
 msgid "View"
 msgstr "Göster"
 
-#: ../wxui/common.py:461
+#: ../wxui/common.py:465
 msgid "WARNING!"
 msgstr "UYARI!"
 
@@ -3009,6 +3005,9 @@ msgstr "{bank} dolu"
 
 #~ msgid "Show raw memory"
 #~ msgstr "Ham kaydı göster"
+
+#~ msgid "Skip"
+#~ msgstr "Atla"
 
 #~ msgid ""
 #~ "The reporting feature of CHIRP is designed to help <u>improve quality</u> "

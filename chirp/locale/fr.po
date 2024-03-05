@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-02 13:32-0800\n"
+"POT-Creation-Date: 2024-03-05 15:50-0800\n"
 "PO-Revision-Date: 2023-12-13 00:03+0100\n"
 "Last-Translator: Matthieu Lapadu-Hargues <mlhpub@free.fr>\n"
 "Language-Team: French\n"
@@ -669,7 +669,7 @@ msgstr "Tours formats supportes|"
 msgid "Amateur"
 msgstr "Amateur"
 
-#: ../wxui/common.py:602 ../wxui/common.py:629
+#: ../wxui/common.py:606 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr "Une erreur s'est produite"
 
@@ -709,7 +709,7 @@ msgstr "Etablissement navigateur radio"
 msgid "Canada"
 msgstr "Canada"
 
-#: ../wxui/common.py:475
+#: ../wxui/common.py:479
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -780,7 +780,7 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr "Clonage termine, verification des octets parasites"
 
-#: ../wxui/common.py:117
+#: ../wxui/common.py:121
 msgid "Cloning"
 msgstr "Clonage"
 
@@ -879,7 +879,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2226
+#: ../wxui/memedit.py:2231
 msgid "DV Memory"
 msgstr "Memoire DV"
 
@@ -910,7 +910,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr "Comparaison memoires brutes"
 
-#: ../wxui/memedit.py:2151
+#: ../wxui/memedit.py:2156
 msgid "Digital Code"
 msgstr "Digital Code"
 
@@ -984,12 +984,12 @@ msgstr ""
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2181
+#: ../wxui/memedit.py:2186
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Editer les details pour %i memoires"
 
-#: ../wxui/memedit.py:2179
+#: ../wxui/memedit.py:2184
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Editer les details pour la memoire %i"
@@ -1023,7 +1023,7 @@ msgstr "Saisir un nouveau nom pour la banque %s:"
 msgid "Enter custom port:"
 msgstr "Saisir un port personnalise:"
 
-#: ../wxui/common.py:325
+#: ../wxui/common.py:329
 #, python-format
 msgid "Erased memory %s"
 msgstr "Effacer la memoire %s"
@@ -1052,7 +1052,7 @@ msgstr "Exporter vers un fichier CSV"
 msgid "Export to CSV..."
 msgstr "Exporter vers un fichier CSV..."
 
-#: ../wxui/memedit.py:2215
+#: ../wxui/memedit.py:2220
 msgid "Extra"
 msgstr "Extra"
 
@@ -1115,7 +1115,7 @@ msgstr "Rechercher le suivant"
 msgid "Find..."
 msgstr "Rechercher..."
 
-#: ../wxui/common.py:327
+#: ../wxui/common.py:331
 #, python-format
 msgid "Finished radio job %s"
 msgstr "Tache radio terminee %s"
@@ -1413,7 +1413,7 @@ msgstr "Entree invalide"
 msgid "Invalid ZIP code"
 msgstr "Code postal invalide"
 
-#: ../wxui/memedit.py:1453 ../wxui/memedit.py:2306
+#: ../wxui/memedit.py:1453 ../wxui/memedit.py:2311
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Edition invalide: %s"
@@ -1483,14 +1483,14 @@ msgid ""
 "Loading modules can be extremely dangerous, leading to damage to your "
 "computer, radio, or both. NEVER load a module from a source you do not "
 "trust, and especially not from anywhere other than the main CHIRP website "
-"(chirp.danplanet.com). Loading a module from another source is akin to "
-"giving them direct access to your computer and everything on it! Proceed "
-"despite this risk?"
+"(chirpmyradio.com). Loading a module from another source is akin to giving "
+"them direct access to your computer and everything on it! Proceed despite "
+"this risk?"
 msgstr ""
 "Charger des modules peut etre extremement dangereux, causant des dommages a "
 "votre ordinateur, radio ou les deux. NE JAMAIS charger un module issu d'une "
 "source dont vous n'avez pas confiance, et plus specialement d'ailleurs que "
-"du site internet principal de CHIRP (chirp.danplanet.com). Charger un module "
+"du site internet principal de CHIRP (chirpmyradio.com). Charger un module "
 "depuis une autre source revient a donner un acces direct a votre ordinateur "
 "et a tout ce qu'il contient! Continuez malgre le risque?"
 
@@ -1775,7 +1775,7 @@ msgstr ""
 "endommager votre ordinateur et votre radio s'ils ne sont pas utilises avec "
 "un EXTREME soin. Vous etes prevenu! Continuer malgré tout?"
 
-#: ../wxui/common.py:190
+#: ../wxui/common.py:194
 msgid "Please wait"
 msgstr "Patientez s'il vous plait"
 
@@ -1863,11 +1863,11 @@ msgstr ""
 msgid "Receive frequency"
 msgstr "Entrer la frequence"
 
-#: ../wxui/common.py:477
+#: ../wxui/common.py:481
 msgid "Refresh required"
 msgstr "Rafraichissement necessaire"
 
-#: ../wxui/common.py:317
+#: ../wxui/common.py:321
 #, python-format
 msgid "Refreshed memory %s"
 msgstr "Rafraichir la memoire %s"
@@ -1921,7 +1921,7 @@ msgstr[1] "Restaurer %i onglets"
 msgid "Restore tabs on start"
 msgstr "Restaurer %i onglets"
 
-#: ../wxui/common.py:321
+#: ../wxui/common.py:325
 msgid "Retrieved settings"
 msgstr "Preferences recuperees"
 
@@ -1937,7 +1937,7 @@ msgstr "Enregistrer avant de fermer?"
 msgid "Save file"
 msgstr "Enregistrer fichier"
 
-#: ../wxui/common.py:323
+#: ../wxui/common.py:327
 msgid "Saved settings"
 msgstr "Preferences enregistrees"
 
@@ -2325,7 +2325,7 @@ msgstr "Impossible d'editer une memoire avant telechargement de la radio"
 msgid "Unable to find stock config %r"
 msgstr "Impossible de trouver la configuration de base %r"
 
-#: ../wxui/common.py:223
+#: ../wxui/common.py:227
 msgid "Unable to open the clipboard"
 msgstr "Impossible d'ouvrir le presse-papier"
 
@@ -2343,7 +2343,7 @@ msgstr ""
 "modele selectionne est US mais que la radio n'est pas US (ou large-bande). "
 "Selectionnez le bon modele et reessayez."
 
-#: ../wxui/common.py:680
+#: ../wxui/common.py:684
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Impossible de montrer %s dans ce systeme"
@@ -2383,7 +2383,7 @@ msgstr "Telecharger vers la radio"
 msgid "Upload to radio..."
 msgstr "Telecharger vers la radio..."
 
-#: ../wxui/common.py:319
+#: ../wxui/common.py:323
 #, python-format
 msgid "Uploaded memory %s"
 msgstr "Memoire telechargee %s"
@@ -2401,12 +2401,12 @@ msgstr "Utiliser une plus grande police"
 msgid "Value does not fit in %i bits"
 msgstr "La valeur ne correspond pas a %i bits"
 
-#: ../wxui/common.py:515
+#: ../wxui/common.py:519
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "La valeur doit etre d'au moins %.4f"
 
-#: ../wxui/common.py:519
+#: ../wxui/common.py:523
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "La valeur ne doit pas depasser %.4f"
@@ -2420,7 +2420,7 @@ msgstr "La valeur doit comporter exactement %i decimales"
 msgid "Value must be zero or greater"
 msgstr "Les valeur doivent etre zero ou positives"
 
-#: ../wxui/memedit.py:2206
+#: ../wxui/memedit.py:2211
 msgid "Values"
 msgstr "Valeurs"
 
@@ -2432,7 +2432,7 @@ msgstr "Fabricant"
 msgid "View"
 msgstr "Voir"
 
-#: ../wxui/common.py:461
+#: ../wxui/common.py:465
 msgid "WARNING!"
 msgstr "ATTENTION!"
 

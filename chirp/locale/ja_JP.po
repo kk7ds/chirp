@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-02 13:32-0800\n"
+"POT-Creation-Date: 2024-03-05 15:50-0800\n"
 "PO-Revision-Date: 2023-12-03 11:04+0900\n"
 "Last-Translator: weboo <weboo@users.noreply.github.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -665,7 +665,7 @@ msgstr ""
 msgid "Amateur"
 msgstr ""
 
-#: ../wxui/common.py:602 ../wxui/common.py:629
+#: ../wxui/common.py:606 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr ""
 
@@ -705,7 +705,7 @@ msgstr ""
 msgid "Canada"
 msgstr ""
 
-#: ../wxui/common.py:475
+#: ../wxui/common.py:479
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -766,7 +766,7 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr ""
 
-#: ../wxui/common.py:117
+#: ../wxui/common.py:121
 msgid "Cloning"
 msgstr ""
 
@@ -861,7 +861,7 @@ msgstr "DTCS極性"
 msgid "DTMF decode"
 msgstr "DTMF デコード"
 
-#: ../wxui/memedit.py:2226
+#: ../wxui/memedit.py:2231
 msgid "DV Memory"
 msgstr ""
 
@@ -890,7 +890,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2151
+#: ../wxui/memedit.py:2156
 msgid "Digital Code"
 msgstr ""
 
@@ -960,12 +960,12 @@ msgstr ""
 msgid "Duplex"
 msgstr ""
 
-#: ../wxui/memedit.py:2181
+#: ../wxui/memedit.py:2186
 #, python-format
 msgid "Edit details for %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2179
+#: ../wxui/memedit.py:2184
 #, python-format
 msgid "Edit details for memory %i"
 msgstr ""
@@ -999,7 +999,7 @@ msgstr ""
 msgid "Enter custom port:"
 msgstr "ポートを入力:"
 
-#: ../wxui/common.py:325
+#: ../wxui/common.py:329
 #, python-format
 msgid "Erased memory %s"
 msgstr ""
@@ -1028,7 +1028,7 @@ msgstr "CSVにエクスポート"
 msgid "Export to CSV..."
 msgstr "CSVにエクスポート..."
 
-#: ../wxui/memedit.py:2215
+#: ../wxui/memedit.py:2220
 msgid "Extra"
 msgstr ""
 
@@ -1085,7 +1085,7 @@ msgstr "次を検索"
 msgid "Find..."
 msgstr "検索..."
 
-#: ../wxui/common.py:327
+#: ../wxui/common.py:331
 #, python-format
 msgid "Finished radio job %s"
 msgstr "%s の処理が完了しました"
@@ -1381,7 +1381,7 @@ msgstr ""
 msgid "Invalid ZIP code"
 msgstr ""
 
-#: ../wxui/memedit.py:1453 ../wxui/memedit.py:2306
+#: ../wxui/memedit.py:1453 ../wxui/memedit.py:2311
 #, python-format
 msgid "Invalid edit: %s"
 msgstr ""
@@ -1451,9 +1451,9 @@ msgid ""
 "Loading modules can be extremely dangerous, leading to damage to your "
 "computer, radio, or both. NEVER load a module from a source you do not "
 "trust, and especially not from anywhere other than the main CHIRP website "
-"(chirp.danplanet.com). Loading a module from another source is akin to "
-"giving them direct access to your computer and everything on it! Proceed "
-"despite this risk?"
+"(chirpmyradio.com). Loading a module from another source is akin to giving "
+"them direct access to your computer and everything on it! Proceed despite "
+"this risk?"
 msgstr ""
 
 #: ../wxui/clone.py:120
@@ -1710,7 +1710,7 @@ msgid ""
 "EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
 
-#: ../wxui/common.py:190
+#: ../wxui/common.py:194
 msgid "Please wait"
 msgstr "お待ちください"
 
@@ -1795,11 +1795,11 @@ msgstr ""
 msgid "Receive frequency"
 msgstr "周波数を入力"
 
-#: ../wxui/common.py:477
+#: ../wxui/common.py:481
 msgid "Refresh required"
 msgstr "更新が必要です"
 
-#: ../wxui/common.py:317
+#: ../wxui/common.py:321
 #, python-format
 msgid "Refreshed memory %s"
 msgstr "%s 件のメモリーを取得しました"
@@ -1851,7 +1851,7 @@ msgstr[1] "最近閉じた%i個のタブを開く"
 msgid "Restore tabs on start"
 msgstr "起動時にタブを復元"
 
-#: ../wxui/common.py:321
+#: ../wxui/common.py:325
 msgid "Retrieved settings"
 msgstr "設定を取得しました"
 
@@ -1867,7 +1867,7 @@ msgstr "保存しますか？"
 msgid "Save file"
 msgstr "ファイルに保存"
 
-#: ../wxui/common.py:323
+#: ../wxui/common.py:327
 msgid "Saved settings"
 msgstr "設定を保存"
 
@@ -2214,7 +2214,7 @@ msgstr ""
 msgid "Unable to find stock config %r"
 msgstr ""
 
-#: ../wxui/common.py:223
+#: ../wxui/common.py:227
 msgid "Unable to open the clipboard"
 msgstr ""
 
@@ -2229,7 +2229,7 @@ msgid ""
 "model and try again."
 msgstr ""
 
-#: ../wxui/common.py:680
+#: ../wxui/common.py:684
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr ""
@@ -2268,7 +2268,7 @@ msgstr "無線機にアップロード"
 msgid "Upload to radio..."
 msgstr "無線機にアップロード..."
 
-#: ../wxui/common.py:319
+#: ../wxui/common.py:323
 #, python-format
 msgid "Uploaded memory %s"
 msgstr ""
@@ -2286,12 +2286,12 @@ msgstr "大きいフォントを使用"
 msgid "Value does not fit in %i bits"
 msgstr "値は %i bitにしてください"
 
-#: ../wxui/common.py:515
+#: ../wxui/common.py:519
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "値は %.4f 以上にしてください"
 
-#: ../wxui/common.py:519
+#: ../wxui/common.py:523
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "値は %.4f 以下にしてください"
@@ -2305,7 +2305,7 @@ msgstr "値は %i 桁にしてください"
 msgid "Value must be zero or greater"
 msgstr "値は 0 以上にしてください"
 
-#: ../wxui/memedit.py:2206
+#: ../wxui/memedit.py:2211
 msgid "Values"
 msgstr "値"
 
@@ -2317,7 +2317,7 @@ msgstr "メーカー"
 msgid "View"
 msgstr "表示"
 
-#: ../wxui/common.py:461
+#: ../wxui/common.py:465
 msgid "WARNING!"
 msgstr ""
 
