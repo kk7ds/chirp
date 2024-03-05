@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-02 13:32-0800\n"
+"POT-Creation-Date: 2024-03-05 15:50-0800\n"
 "PO-Revision-Date: 2023-10-11 16:47+0300\n"
 "Last-Translator: Olesya Gerasimenko <translation-team@basealt.ru>\n"
 "Language-Team: Basealt Translation Team\n"
@@ -999,7 +999,7 @@ msgstr "Все поддерживаемые форматы|"
 msgid "Amateur"
 msgstr "Любительская радиосвязь"
 
-#: ../wxui/common.py:602 ../wxui/common.py:629
+#: ../wxui/common.py:606 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr "Ошибка"
 
@@ -1039,7 +1039,7 @@ msgstr "Браузер станций"
 msgid "Canada"
 msgstr "Канада"
 
-#: ../wxui/common.py:475
+#: ../wxui/common.py:479
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -1108,7 +1108,7 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr "Клонирование завершено, проверка наличия ложных байтов"
 
-#: ../wxui/common.py:117
+#: ../wxui/common.py:121
 msgid "Cloning"
 msgstr "Клонирование"
 
@@ -1208,7 +1208,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2226
+#: ../wxui/memedit.py:2231
 msgid "DV Memory"
 msgstr "DV-память"
 
@@ -1239,7 +1239,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr "Сравнить необработанные ячейки памяти"
 
-#: ../wxui/memedit.py:2151
+#: ../wxui/memedit.py:2156
 msgid "Digital Code"
 msgstr "Цифровой код"
 
@@ -1311,12 +1311,12 @@ msgstr ""
 msgid "Duplex"
 msgstr "Дуплекс"
 
-#: ../wxui/memedit.py:2181
+#: ../wxui/memedit.py:2186
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Редактировать сведения о ячейках памяти (%i)"
 
-#: ../wxui/memedit.py:2179
+#: ../wxui/memedit.py:2184
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Редактировать сведения о ячейке памяти (%i)"
@@ -1350,7 +1350,7 @@ msgstr "Введите новое имя банка %s:"
 msgid "Enter custom port:"
 msgstr "Введите пользовательский порт:"
 
-#: ../wxui/common.py:325
+#: ../wxui/common.py:329
 #, python-format
 msgid "Erased memory %s"
 msgstr "Стёрта ячейка памяти %s"
@@ -1379,7 +1379,7 @@ msgstr "Экспорт в CSV"
 msgid "Export to CSV..."
 msgstr "Экспорт в CSV..."
 
-#: ../wxui/memedit.py:2215
+#: ../wxui/memedit.py:2220
 msgid "Extra"
 msgstr "Дополнительно"
 
@@ -1439,7 +1439,7 @@ msgstr "Найти далее"
 msgid "Find..."
 msgstr "Найти..."
 
-#: ../wxui/common.py:327
+#: ../wxui/common.py:331
 #, python-format
 msgid "Finished radio job %s"
 msgstr "Завершено задание станции %s"
@@ -1835,7 +1835,7 @@ msgstr "Некорректная запись"
 msgid "Invalid ZIP code"
 msgstr "Неверный почтовый индекс"
 
-#: ../wxui/memedit.py:1453 ../wxui/memedit.py:2306
+#: ../wxui/memedit.py:1453 ../wxui/memedit.py:2311
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Некорректное изменение: %s"
@@ -1905,15 +1905,15 @@ msgid ""
 "Loading modules can be extremely dangerous, leading to damage to your "
 "computer, radio, or both. NEVER load a module from a source you do not "
 "trust, and especially not from anywhere other than the main CHIRP website "
-"(chirp.danplanet.com). Loading a module from another source is akin to "
-"giving them direct access to your computer and everything on it! Proceed "
-"despite this risk?"
+"(chirpmyradio.com). Loading a module from another source is akin to giving "
+"them direct access to your computer and everything on it! Proceed despite "
+"this risk?"
 msgstr ""
 "Загрузка модулей может представлять опасность для вашего компьютера и/или "
 "станции. НИКОГДА не загружайте модуль из источника, которому вы не "
 "доверяете, в особенности — из любого источника, отличного от основного веб-"
-"сайта CHIRP (chirp.danplanet.com). Загрузить модуль из другого источника — "
-"всё равно что предоставить прямой доступ к своему компьютеру и всему на нём! "
+"сайта CHIRP (chirpmyradio.com). Загрузить модуль из другого источника — всё "
+"равно что предоставить прямой доступ к своему компьютеру и всему на нём! "
 "Продолжить несмотря на этот риск?"
 
 #: ../wxui/clone.py:120
@@ -2196,7 +2196,7 @@ msgstr ""
 "осторожно, чтобы не навредить вашему компьютеру и вашей станции. Вы были "
 "предупреждены. Всё равно продолжить?"
 
-#: ../wxui/common.py:190
+#: ../wxui/common.py:194
 msgid "Please wait"
 msgstr "Подождите"
 
@@ -2284,11 +2284,11 @@ msgstr ""
 msgid "Receive frequency"
 msgstr "Введите частоту"
 
-#: ../wxui/common.py:477
+#: ../wxui/common.py:481
 msgid "Refresh required"
 msgstr "Требуется обновление"
 
-#: ../wxui/common.py:317
+#: ../wxui/common.py:321
 #, python-format
 msgid "Refreshed memory %s"
 msgstr "Обновлена ячейки памяти %s"
@@ -2343,7 +2343,7 @@ msgstr[2] "Восстановить вкладки (%i)"
 msgid "Restore tabs on start"
 msgstr "Восстановить вкладки (%i)"
 
-#: ../wxui/common.py:321
+#: ../wxui/common.py:325
 msgid "Retrieved settings"
 msgstr "Полученные параметры"
 
@@ -2359,7 +2359,7 @@ msgstr "Сохранить перед закрытием?"
 msgid "Save file"
 msgstr "Сохранить файл"
 
-#: ../wxui/common.py:323
+#: ../wxui/common.py:327
 msgid "Saved settings"
 msgstr "Сохранённые параметры"
 
@@ -2735,7 +2735,7 @@ msgstr "Перед редактированием ячейки памяти не
 msgid "Unable to find stock config %r"
 msgstr "Не удалось найти предустановленную конфигурацию %r"
 
-#: ../wxui/common.py:223
+#: ../wxui/common.py:227
 msgid "Unable to open the clipboard"
 msgstr "Не удалось открыть буфер обмена"
 
@@ -2753,7 +2753,7 @@ msgstr ""
 "американская модель, но станция не является американской (или "
 "широкополосной). Выберите правильную модель и повторите попытку."
 
-#: ../wxui/common.py:680
+#: ../wxui/common.py:684
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Невозможно обнаружить %s в этой системе"
@@ -2793,7 +2793,7 @@ msgstr "Отправка на станцию"
 msgid "Upload to radio..."
 msgstr "Отправка на станцию..."
 
-#: ../wxui/common.py:319
+#: ../wxui/common.py:323
 #, python-format
 msgid "Uploaded memory %s"
 msgstr "Отправлена ячейка памяти %s"
@@ -2811,12 +2811,12 @@ msgstr "Использовать более крупный шрифт"
 msgid "Value does not fit in %i bits"
 msgstr "Значение не помещается в %i бит"
 
-#: ../wxui/common.py:515
+#: ../wxui/common.py:519
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Значение не должно быть меньше %.4f"
 
-#: ../wxui/common.py:519
+#: ../wxui/common.py:523
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Значение не должно превышать %.4f"
@@ -2830,7 +2830,7 @@ msgstr "Значение должно содержать десятичные ц
 msgid "Value must be zero or greater"
 msgstr "Значение должно быть больше или равно нулю"
 
-#: ../wxui/memedit.py:2206
+#: ../wxui/memedit.py:2211
 msgid "Values"
 msgstr "Значения"
 
@@ -2842,7 +2842,7 @@ msgstr "Изготовитель"
 msgid "View"
 msgstr "Вид"
 
-#: ../wxui/common.py:461
+#: ../wxui/common.py:465
 msgid "WARNING!"
 msgstr "ПРЕДУПРЕЖДЕНИЕ!"
 

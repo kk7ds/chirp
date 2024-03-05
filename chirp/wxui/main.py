@@ -1640,7 +1640,7 @@ class ChirpMain(wx.Frame):
                                'or both. NEVER load a module from a source '
                                'you do not trust, and especially not from '
                                'anywhere other than the main CHIRP website '
-                               '(chirp.danplanet.com). Loading a module from '
+                               '(chirpmyradio.com). Loading a module from '
                                'another source is akin to giving them direct '
                                'access to your computer and everything on '
                                'it! Proceed despite this risk?'),
@@ -1794,7 +1794,7 @@ def display_update_notice(version):
 
     CONF.set_int("last_update_check", int(time.time()), "state")
 
-    url = 'https://chirp.danplanet.com/projects/chirp/wiki/ChirpNextBuild'
+    url = 'https://chirpmyradio.com/projects/chirp/wiki/ChirpNextBuild'
     msg = _('A new CHIRP version is available. Please visit the '
             'website as soon as possible to download it!')
     d = wx.MessageDialog(None, msg, _('New version available'),

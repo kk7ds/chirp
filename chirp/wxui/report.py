@@ -34,7 +34,7 @@ logging.getLogger('urllib3.connectionpool').setLevel(logging.INFO)
 SESSION = None
 DISABLED = False
 SEM = threading.Semaphore(2)
-BASE = 'http://chirp.danplanet.com/report'
+BASE = 'http://chirpmyradio.com/report'
 
 
 def get_environment():

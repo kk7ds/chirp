@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-02 13:32-0800\n"
+"POT-Creation-Date: 2024-03-05 15:50-0800\n"
 "PO-Revision-Date: 2015-11-30 10:36+0200\n"
 "Last-Translator: laser <student.laser@gmail.com>\n"
 "Language-Team: laser <student.laser@gmail.com>\n"
@@ -652,7 +652,7 @@ msgstr ""
 msgid "Amateur"
 msgstr ""
 
-#: ../wxui/common.py:602 ../wxui/common.py:629
+#: ../wxui/common.py:606 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr "Сталася помилка"
 
@@ -692,7 +692,7 @@ msgstr ""
 msgid "Canada"
 msgstr ""
 
-#: ../wxui/common.py:475
+#: ../wxui/common.py:479
 msgid ""
 "Changing this setting requires refreshing the settings from the image, which "
 "will happen now."
@@ -754,7 +754,7 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr ""
 
-#: ../wxui/common.py:117
+#: ../wxui/common.py:121
 msgid "Cloning"
 msgstr "Клонування"
 
@@ -856,7 +856,7 @@ msgstr "DTCS Pol"
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2226
+#: ../wxui/memedit.py:2231
 msgid "DV Memory"
 msgstr ""
 
@@ -889,7 +889,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr "Порівняти Raw пам'ять"
 
-#: ../wxui/memedit.py:2151
+#: ../wxui/memedit.py:2156
 msgid "Digital Code"
 msgstr "Цифровий код"
 
@@ -963,12 +963,12 @@ msgstr ""
 msgid "Duplex"
 msgstr "Дуплекс"
 
-#: ../wxui/memedit.py:2181
+#: ../wxui/memedit.py:2186
 #, python-format
 msgid "Edit details for %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2179
+#: ../wxui/memedit.py:2184
 #, python-format
 msgid "Edit details for memory %i"
 msgstr ""
@@ -1003,7 +1003,7 @@ msgstr ""
 msgid "Enter custom port:"
 msgstr ""
 
-#: ../wxui/common.py:325
+#: ../wxui/common.py:329
 #, fuzzy, python-format
 msgid "Erased memory %s"
 msgstr "Стирання пам'яті {loc}"
@@ -1035,7 +1035,7 @@ msgstr "Експорт до файлу"
 msgid "Export to CSV..."
 msgstr "Експорт до файлу"
 
-#: ../wxui/memedit.py:2215
+#: ../wxui/memedit.py:2220
 msgid "Extra"
 msgstr ""
 
@@ -1093,7 +1093,7 @@ msgstr ""
 msgid "Find..."
 msgstr ""
 
-#: ../wxui/common.py:327
+#: ../wxui/common.py:331
 #, python-format
 msgid "Finished radio job %s"
 msgstr ""
@@ -1396,7 +1396,7 @@ msgstr "Неприпустиме значення для цього поля"
 msgid "Invalid ZIP code"
 msgstr ""
 
-#: ../wxui/memedit.py:1453 ../wxui/memedit.py:2306
+#: ../wxui/memedit.py:1453 ../wxui/memedit.py:2311
 #, python-format
 msgid "Invalid edit: %s"
 msgstr ""
@@ -1469,9 +1469,9 @@ msgid ""
 "Loading modules can be extremely dangerous, leading to damage to your "
 "computer, radio, or both. NEVER load a module from a source you do not "
 "trust, and especially not from anywhere other than the main CHIRP website "
-"(chirp.danplanet.com). Loading a module from another source is akin to "
-"giving them direct access to your computer and everything on it! Proceed "
-"despite this risk?"
+"(chirpmyradio.com). Loading a module from another source is akin to giving "
+"them direct access to your computer and everything on it! Proceed despite "
+"this risk?"
 msgstr ""
 
 #: ../wxui/clone.py:120
@@ -1740,7 +1740,7 @@ msgid ""
 "EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
 
-#: ../wxui/common.py:190
+#: ../wxui/common.py:194
 msgid "Please wait"
 msgstr ""
 
@@ -1828,11 +1828,11 @@ msgstr ""
 msgid "Receive frequency"
 msgstr "Частота"
 
-#: ../wxui/common.py:477
+#: ../wxui/common.py:481
 msgid "Refresh required"
 msgstr ""
 
-#: ../wxui/common.py:317
+#: ../wxui/common.py:321
 #, python-format
 msgid "Refreshed memory %s"
 msgstr ""
@@ -1883,7 +1883,7 @@ msgstr[1] ""
 msgid "Restore tabs on start"
 msgstr ""
 
-#: ../wxui/common.py:321
+#: ../wxui/common.py:325
 msgid "Retrieved settings"
 msgstr ""
 
@@ -1899,7 +1899,7 @@ msgstr ""
 msgid "Save file"
 msgstr ""
 
-#: ../wxui/common.py:323
+#: ../wxui/common.py:327
 msgid "Saved settings"
 msgstr ""
 
@@ -2239,7 +2239,7 @@ msgstr ""
 msgid "Unable to find stock config %r"
 msgstr "Відкрити заводські конфігурації"
 
-#: ../wxui/common.py:223
+#: ../wxui/common.py:227
 #, fuzzy
 msgid "Unable to open the clipboard"
 msgstr "Не вдалося виявити радіо на {port}"
@@ -2255,7 +2255,7 @@ msgid ""
 "model and try again."
 msgstr ""
 
-#: ../wxui/common.py:680
+#: ../wxui/common.py:684
 #, fuzzy, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Не вдається внести зміни до цієї моделі"
@@ -2297,7 +2297,7 @@ msgstr "Записати в радіостанцію"
 msgid "Upload to radio..."
 msgstr "Записати в радіостанцію"
 
-#: ../wxui/common.py:319
+#: ../wxui/common.py:323
 #, python-format
 msgid "Uploaded memory %s"
 msgstr ""
@@ -2315,12 +2315,12 @@ msgstr ""
 msgid "Value does not fit in %i bits"
 msgstr ""
 
-#: ../wxui/common.py:515
+#: ../wxui/common.py:519
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr ""
 
-#: ../wxui/common.py:519
+#: ../wxui/common.py:523
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr ""
@@ -2334,7 +2334,7 @@ msgstr ""
 msgid "Value must be zero or greater"
 msgstr ""
 
-#: ../wxui/memedit.py:2206
+#: ../wxui/memedit.py:2211
 msgid "Values"
 msgstr ""
 
@@ -2347,7 +2347,7 @@ msgstr "Виробник"
 msgid "View"
 msgstr "В_игляд"
 
-#: ../wxui/common.py:461
+#: ../wxui/common.py:465
 msgid "WARNING!"
 msgstr ""
 

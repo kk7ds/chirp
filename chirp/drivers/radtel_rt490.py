@@ -17,7 +17,7 @@
 # for inclusion in CHIRP here.
 # The code is also available under the BSD 2-Clause "Simplified" License
 # here:
-# https://chirp.danplanet.com/attachments/7833
+# https://chirpmyradio.com/attachments/7833
 
 #  Python3 byte clean by Darryl Pogue
 #  Pep8 style compliant by Jim Unroe <rock.unroe@gmail.com>

@@ -480,7 +480,7 @@ class IssueModuleLoader:
 
     def get_attachments_from_issue(self, issue):
         r = self.session.get(
-            'https://chirp.danplanet.com/issues/%i.json' % issue,
+            'https://chirpmyradio.com/issues/%i.json' % issue,
             params={'include': 'attachments'})
         LOG.debug('Fetched attachments for issue %i (status %s)' % (
             issue, r.status_code))
@@ -492,7 +492,7 @@ class IssueModuleLoader:
                 a['filesize'] < (256 * 1024)]
 
     def get_user_is_developer(self, uid):
-        r = self.session.get('https://chirp.danplanet.com/users/%i.json' % uid,
+        r = self.session.get('https://chirpmyradio.com/users/%i.json' % uid,
                              params={'include': 'memberships'})
         LOG.debug('Fetched info for user %i (status %s)',
                   uid, r.status_code)
