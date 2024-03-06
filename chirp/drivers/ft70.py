@@ -36,6 +36,16 @@ LOG = logging.getLogger(__name__)
 # 47    RX.MOD      Select the receive mode. Auto FM AM
 
 MEM_SETTINGS_FORMAT = """
+    #seekto 0x047e;
+    struct {
+    u8 unknown1;
+    u8 flag;
+    u16 unknown2;
+    struct {
+    char padded_string[6];              // 36 OPN.MSG   Select MSG then key vm to edit it
+    } message;
+    } opening_message;                  // 36 OPN.MSG   Select the Opening Message when transceiver is ON. OFF/MSG/DC
+
 
 // FT-70DE New Model #5329
 //
@@ -96,22 +106,9 @@ MEM_SETTINGS_FORMAT = """
     u8 unknown4:6,
     gm_ring:2;              // 24 GM RNG    Select the beep option while receiving digital GM info. OFF/IN RNG/ALWAYS
     u8 temp_cf;             // Placeholder as not found
-    u8 unknown5;
     } first_settings;
 
-    #seekto 0x04ed;
-    struct {
-    u8 unknown1:1,
-    unknown2:1,
-    unknown3:1,
-    unknown4:1,
-    unknown5:1,
-    unknown6:1,
-    unknown7:1,
-    unknown8:1;
-    } test_bit_field;
-
-    #seekto 0x04c0;
+    //#seekto 0x04c0;
     struct {
     u8 unknown1:5,
     beep_level:3;           // 05 BEP.LVL   Beep volume setting LEVEL1 - LEVEL4 - LEVEL7
@@ -190,10 +187,12 @@ MEM_SETTINGS_FORMAT = """
     u8 unknown45;
     u8 prog_key1;           // P1 Set Mode Items to the Programmable Key
     u8 prog_key2;           // P2 Set Mode Items to the Programmable Key
-    u8 unknown48;
-    u8 unknown49;
-    u8 unknown50;
     } scan_settings;
+
+    #seekto 0x54a;
+    struct {
+    u16 in_use;
+    } bank_used[24];
 
     #seekto 0x064b;
     struct {
@@ -213,42 +212,22 @@ MEM_SETTINGS_FORMAT = """
     volume:5;               // # VOL and Dial  Adjust the volume level
     } scan_settings_2;
 
-    #seekto 0x0690;         // Memory or VFO Settings Map?
-    struct {
-    u8 unknown[48];         // Array cannot be 64 elements!
-    u8 unknown1[16];        // Exception: Not implemented for chirp.bitwise.structDataElement
-    } vfo_info_1;
+    //#seekto 0x0690;         // Memory or VFO Settings Map?
+    //struct {
+    //u8 unknown[48];         // Array cannot be 64 elements!
+    //u8 unknown1[16];        // Exception: Not implemented for chirp.bitwise.structDataElement
+    //} vfo_info_1;
 
-    #seekto 0x0710;         // Backup Memory or VFO Settings Map?
-    struct {
-    u8 unknown[48];
-    u8 unknown1[16];
-    } vfo_backup_info_1;
-
-    #seekto 0x047e;
-    struct {
-    u8 unknown1;
-    u8 flag;
-    u16 unknown2;
-    struct {
-    char padded_string[6];              // 36 OPN.MSG   Select MSG then key vm to edit it
-    } message;
-    } opening_message;                  // 36 OPN.MSG   Select the Opening Message when transceiver is ON. OFF/MSG/DC
+    //#seekto 0x0710;         // Backup Memory or VFO Settings Map?
+    //struct {
+    //u8 unknown[48];
+    //u8 unknown1[16];
+    //} vfo_backup_info_1;
 
     #seekto 0x094a;                     // DTMF Memories
     struct {
     u8 memory[16];
     } dtmf[10];
-
-    #seekto 0x154a;
-    struct {
-    u16 channel[100];
-    } bank_members[24];
-
-    #seekto 0x54a;
-    struct {
-    u16 in_use;
-    } bank_used[24];
 
     #seekto 0x0EFE;
     struct {
@@ -257,6 +236,13 @@ MEM_SETTINGS_FORMAT = """
     u8 unknown1[10];
     } bank_info[24];
 
+    #seekto 0x154a;
+    struct {
+    u16 channel[100];
+    } bank_members[24];
+"""
+
+MEM_SETTINGS_FORMAT_HI = """
     #seekto 0xCF30;
     struct {
     u8 unknown0;
@@ -292,6 +278,16 @@ MEM_SETTINGS_FORMAT = """
     """
 
 MEM_FORMAT = """
+    //#seekto 0x280A;
+    struct {
+    u8 nosubvfo:1,
+    unknown:3,
+    pskip:1,                            // PSkip (Select?)
+    skip:1,                             // Skip memory during scan
+    used:1,                             // Memory used
+    valid:1;                            // Always 1?
+    } flag[%d];
+
     #seekto 0x2D4A;
     struct {                            // 32 Bytes per memory entry
     u8 display_tag:1,                   // 0 Display Freq, 1 Display Name
@@ -328,16 +324,6 @@ MEM_FORMAT = """
        bell:1;
     } memory[%d];                        // DN, VW, FM, AM
                                         // AMS DN, AMS VW, AMS FM
-
-    #seekto 0x280A;
-    struct {
-    u8 nosubvfo:1,
-    unknown:3,
-    pskip:1,                            // PSkip (Select?)
-    skip:1,                             // Skip memory during scan
-    used:1,                             // Memory used
-    valid:1;                            // Always 1?
-    } flag[%d];
     """
 
 MEM_CALLSIGN_FORMAT = """
@@ -568,7 +554,8 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def process_mmap(self):
 
-        mem_format = MEM_SETTINGS_FORMAT + MEM_FORMAT + MEM_CALLSIGN_FORMAT + MEM_CHECKSUM_FORMAT
+        mem_format = (MEM_SETTINGS_FORMAT + MEM_FORMAT + MEM_CALLSIGN_FORMAT +
+                      MEM_SETTINGS_FORMAT_HI + MEM_CHECKSUM_FORMAT)
 
         self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
 
