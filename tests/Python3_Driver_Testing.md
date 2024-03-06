@@ -232,7 +232,7 @@
 | <a name="LUITON_LT-580_VHF"></a> LUITON_LT-580_VHF | [@KC9HI](https://github.com/KC9HI) | 8-Dec-2022 | Yes | 0.01% |
 | <a name="LUITON_LT-588UV"></a> LUITON_LT-588UV | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2022 | Yes | 0.01% |
 | <a name="LUITON_LT-725UV"></a> LUITON_LT-725UV | [@KC9HI](https://github.com/KC9HI) | 11-Dec-2022 | Yes | 0.02% |
-| <a name="Lanchonlh_HG-UV98"></a> Lanchonlh_HG-UV98 |  |  | Yes | 0.00% |
+| <a name="Lanchonlh_HG-UV98"></a> Lanchonlh_HG-UV98 | [Reported working](https://chirp.danplanet.com/issues/11179) | 23-Feb-2024 | Yes | 0.00% |
 | <a name="Leixen_VV-898"></a> Leixen_VV-898 | [Implied by Jetstream_JT270MH](#user-content-Jetstream_JT270MH) | 13-Dec-2022 | Yes | 0.16% |
 | <a name="Leixen_VV-898E"></a> Leixen_VV-898E |  |  | Yes | 0.02% |
 | <a name="Leixen_VV-898E_Dual_Bank"></a> Leixen_VV-898E_Dual_Bank | [Implied by Leixen_VV-898S_Dual_Bank](#user-content-Leixen_VV-898S_Dual_Bank) | 10-Feb-2024 | Yes |  |
@@ -455,7 +455,7 @@
 
 **Drivers:** 450
 
-**Tested:** 87% (395/55) (93% of usage stats)
+**Tested:** 88% (396/54) (93% of usage stats)
 
 **Byte clean:** 91% (411/39)
 
