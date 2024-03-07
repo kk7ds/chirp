@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-05 15:50-0800\n"
-"PO-Revision-Date: 2024-02-28 02:52-0300\n"
+"PO-Revision-Date: 2024-03-07 16:21-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -926,7 +926,6 @@ msgstr ""
 "5. Presiona la tecla [moni] (\"-RX-\" aparecerá en la LCD).\n"
 
 #: ../drivers/ft70.py:559
-#, fuzzy
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to DATA terminal.\n"
@@ -942,9 +941,8 @@ msgstr ""
 "4. Presiona y mantén la tecla [AMS] y la tecla de encendido mientras "
 "enganchas \n"
 " de vuelta la batería (\"ADMS\" aparecerá en la pantalla).\n"
-"5. Presiona la tecla [MODE] (\"-WAIT-\" aparecerá en la LCD). Entonces "
-"cliquea </b>\n"
-" Aceptar <b>"
+"5. Presiona la tecla [MODE] (\"-WAIT-\" aparecerá en la LCD).\n"
+"</b>Entonces cliquea Aceptar<b>"
 
 #: ../drivers/ft70.py:551
 msgid ""
