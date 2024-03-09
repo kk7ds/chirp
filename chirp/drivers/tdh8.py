@@ -1646,7 +1646,11 @@ class TDH8(chirp_common.CloneModeRadio):
         _fmv_temp = ''
         for x in range(_fmv_len, -1, -1):
             _fmv_temp += str(_fmv[x])[2:]
-        _fmv_block = int(_fmv_temp)
+        try:
+            _fmv_block = int(_fmv_temp)
+        except ValueError:
+            LOG.error('Invalid fmv_block %s' % _fmv_temp)
+            _fmv_block = 0
         _fmv_block = '%i.%i' % (_fmv_block / 10, _fmv_block % 10)
         rs = RadioSetting(
             "fmvfo", "VFO", RadioSettingValueFloat(
