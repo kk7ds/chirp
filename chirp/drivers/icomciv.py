@@ -346,7 +346,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
     # each radio supports a subset
     # WARNING: "S-AM" and "PSK" are not valid (yet) for chirp
     _MODES = [
-        "LSB", "USB", "AM", "CW", "RTTY", "FM", "WFM", "CWR"
+        "LSB", "USB", "AM", "CW", "RTTY", "FM", "WFM", "CWR",
         "RTTYR", "S-AM", "PSK", None, None, None, None, None,
         None, None, None, None, None, None, None, None,
         "DV",
