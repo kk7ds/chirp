@@ -79,6 +79,7 @@ DEFAULT_COLUMN_HELP = {
     'tmode': _('Tone squelch mode'),
     'rtone': _('Transmit tone'),
     'ctone': _('Transmit/receive tone for TSQL mode, else receive tone'),
+    'mode': _('Transmit/receive modulation (FM, AM, SSB, etc)'),
     'dtcs': _('Transmit/receive DTCS code for DTCS mode, else transmit code'),
     'rx_dtcs': _('Receive DTCS code'),
     'dtcs_polarity': _('TX-RX DTCS polarity (normal or reversed)'),
