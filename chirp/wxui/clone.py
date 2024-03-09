@@ -254,7 +254,7 @@ class ChirpCloneDialog(wx.Dialog):
         grid.AddGrowableCol(1)
         bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
 
-        if CONF.get_bool('developer', 'state'):
+        if developer.developer_mode():
             for fakeserial in FAKES.keys():
                 if fakeserial not in CUSTOM_PORTS:
                     CUSTOM_PORTS.append(fakeserial)

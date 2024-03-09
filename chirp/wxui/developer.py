@@ -27,12 +27,14 @@ import wx.lib.scrolledpanel
 
 from chirp import bitwise
 from chirp import util
+import chirp.wxui
 from chirp.wxui import common
 from chirp.wxui import report
 
 LOG = logging.getLogger(__name__)
 BrowserChanged, EVT_BROWSER_CHANGED = wx.lib.newevent.NewCommandEvent()
 FROZEN = getattr(sys, 'frozen', False)
+developer_mode = chirp.wxui.developer_mode
 
 
 def simple_diff(a, b, diffsonly=False):
