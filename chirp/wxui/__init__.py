@@ -9,11 +9,24 @@ if sys.version_info < (3, 10):
 else:
     import importlib.resources as importlib_resources
 
+from chirp import CHIRP_VERSION
 from chirp import directory
 from chirp import logger
 
 LOG = logging.getLogger(__name__)
 CONF = None
+
+
+def developer_mode(enabled=None):
+    if not CONF:
+        return False
+
+    if enabled is True:
+        CONF.set('developer_mode', CHIRP_VERSION, 'state')
+    elif enabled is False:
+        CONF.remove_option('developer_mode', 'state')
+
+    return CONF.get('developer_mode', 'state') == CHIRP_VERSION
 
 
 def maybe_install_desktop():
@@ -165,9 +178,10 @@ def chirpmain():
 
     directory.import_drivers(limit=args.onlydriver)
 
-    if CONF.get_bool('developer', 'state'):
+    if developer_mode():
         from chirp.drivers import fake
         fake.register_fakes()
+        LOG.warning('Developer mode is enabled')
 
     # wxGTK on Wayland seems to have problems. Override GDK_BACKEND to
     # use X11, unless we were asked not to

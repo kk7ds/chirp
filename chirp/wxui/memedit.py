@@ -1721,7 +1721,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         insert_item.Enable(not self.busy and self.editable)
         menu.Enable(sort_menu_item.GetId(), not self.busy and can_sort)
 
-        if CONF.get_bool('developer', 'state'):
+        if developer.developer_mode():
             menu.Append(wx.MenuItem(menu, wx.ID_SEPARATOR))
 
             raw_item = wx.MenuItem(menu, wx.NewId(), _('Show Raw Memory'))

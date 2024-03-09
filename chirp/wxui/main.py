@@ -215,7 +215,7 @@ class ChirpEditorSet(wx.Panel):
             settings = self.SETTINGS_CLS(parent_radio, self._editors)
             self.add_editor(settings, _('Settings'))
 
-        if (CONF.get_bool('developer', 'state') and
+        if (developer.developer_mode() and
                 isinstance(radio, chirp_common.CloneModeRadio)):
             browser = developer.ChirpRadioBrowser(parent_radio, self._editors)
             browser.Bind(common.EVT_EDITOR_CHANGED, self._refresh_all)
@@ -702,7 +702,7 @@ class ChirpMain(wx.Frame):
         export_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('E')))
         self.Bind(wx.EVT_MENU, self._menu_export, export_item)
 
-        if CONF.get_bool('developer', 'state'):
+        if developer.developer_mode():
             loadmod_item = file_menu.Append(wx.MenuItem(file_menu, wx.NewId(),
                                                         _('Load Module...')))
             self.Bind(wx.EVT_MENU, self._menu_load_module, loadmod_item)
@@ -866,7 +866,7 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_select_bandplan, select_bandplan)
         radio_menu.Append(select_bandplan)
 
-        if CONF.get_bool('developer', 'state'):
+        if developer.developer_mode():
             radio_menu.Append(wx.MenuItem(file_menu, wx.ID_SEPARATOR))
 
             self._reload_driver_item = wx.NewId()
@@ -917,7 +917,7 @@ class ChirpMain(wx.Frame):
                   functools.partial(self._menu_developer, developer_menu),
                   developer_menu)
         help_menu.Append(developer_menu)
-        developer_menu.Check(CONF.get_bool('developer', 'state'))
+        developer_menu.Check(developer.developer_mode())
 
         reporting_menu = wx.MenuItem(help_menu, wx.NewId(),
                                      _('Reporting enabled'),
@@ -1669,7 +1669,7 @@ class ChirpMain(wx.Frame):
                       wx.OK | wx.ICON_INFORMATION)
 
     def _menu_developer(self, menuitem, event):
-        CONF.set_bool('developer', menuitem.IsChecked(), 'state')
+        developer.developer_mode(menuitem.IsChecked())
         state = menuitem.IsChecked() and _('enabled') or _('disabled')
         if menuitem.IsChecked():
             msg = _(
@@ -1688,6 +1688,7 @@ class ChirpMain(wx.Frame):
         wx.MessageBox(_('Developer state is now %s. '
                         'CHIRP must be restarted to take effect') % state,
                       _('Restart Required'), wx.OK)
+        LOG.info('User set developer mode to %s', menuitem.IsChecked())
 
     def _menu_reporting(self, menuitem, event):
         if not menuitem.IsChecked():
