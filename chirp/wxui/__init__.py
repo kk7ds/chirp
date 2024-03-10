@@ -80,9 +80,6 @@ def chirpmain():
     # about duplicate "Windows bitmap file" handlers
     import wx.richtext
 
-    from chirp.wxui import config
-    CONF = config.get()
-
     actions = ['upload', 'download', 'query_rr', 'query_mg',
                'query_rb', 'query_dm', 'new']
 
@@ -106,6 +103,9 @@ def chirpmain():
                         help="Restore previous tabs")
     parser.add_argument('--force-language', default=None,
                         help='Force locale to this ISO language code')
+    parser.add_argument('--config-dir',
+                        help=('Use this alternate directory for config and '
+                              'other profile data'))
     if sys.platform == 'linux':
         parser.add_argument('--no-linux-gdk-backend', action='store_true',
                             help='Do not force GDK_BACKEND=x11')
@@ -116,6 +116,17 @@ def chirpmain():
     logger.add_arguments(parser)
     args = parser.parse_args()
     logger.handle_options(args)
+    from chirp.wxui import config
+
+    if args.config_dir:
+        try:
+            os.mkdir(args.config_dir)
+        except Exception:
+            pass
+        assert os.path.isdir(args.config_dir), \
+            '--config must specify directory'
+        config._CONFIG = config.ChirpConfig(args.config_dir)
+    CONF = config.get()
 
     app = wx.App()
     if args.force_language:
@@ -179,9 +190,9 @@ def chirpmain():
     directory.import_drivers(limit=args.onlydriver)
 
     if developer_mode():
+        LOG.warning('Developer mode is enabled')
         from chirp.drivers import fake
         fake.register_fakes()
-        LOG.warning('Developer mode is enabled')
 
     # wxGTK on Wayland seems to have problems. Override GDK_BACKEND to
     # use X11, unless we were asked not to
