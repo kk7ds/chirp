@@ -17,10 +17,7 @@ import base64
 import binascii
 
 from chirp import platform
-try:
-    from ConfigParser import ConfigParser
-except ImportError:
-    from configparser import ConfigParser
+from configparser import ConfigParser
 import os
 
 
