@@ -39,13 +39,15 @@ CONF = config.get()
 HELPME = _('Help Me...')
 CUSTOM = _('Custom...')
 
-FAKES = {
-    'Fake NOP': developer.FakeSerial(),
-    'Fake Echo NOP': developer.FakeEchoSerial(),
-    'Fake F7E': fake.FakeKenwoodSerial(),
-    'Fake UV17': fake.FakeUV17Serial(),
-    'Fake UV17Pro': fake.FakeUV17ProSerial(),
-}
+
+def get_fakes():
+    return {
+        'Fake NOP': developer.FakeSerial(),
+        'Fake Echo NOP': developer.FakeEchoSerial(),
+        'Fake F7E': fake.FakeKenwoodSerial(),
+        'Fake UV17': fake.FakeUV17Serial(),
+        'Fake UV17Pro': fake.FakeUV17ProSerial(),
+    }
 
 
 class CloneThread(threading.Thread):
@@ -128,7 +130,7 @@ class SettingsThread(threading.Thread):
 
 def open_serial(port, rclass):
     if port.startswith('Fake'):
-        return FAKES[port]
+        return get_fakes()[port]
     if '://' in port:
         pipe = serial.serial_for_url(port, do_not_open=True)
         pipe.timeout = 0.25
@@ -255,7 +257,7 @@ class ChirpCloneDialog(wx.Dialog):
         bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
 
         if developer.developer_mode():
-            for fakeserial in FAKES.keys():
+            for fakeserial in get_fakes().keys():
                 if fakeserial not in CUSTOM_PORTS:
                     CUSTOM_PORTS.append(fakeserial)
 
