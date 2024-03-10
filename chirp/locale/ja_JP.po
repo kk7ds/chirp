@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-09 11:47-0800\n"
+"POT-Creation-Date: 2024-03-10 10:13-0700\n"
 "PO-Revision-Date: 2023-12-03 11:04+0900\n"
 "Last-Translator: weboo <weboo@users.noreply.github.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -633,7 +633,7 @@ msgstr ""
 "\n"
 "ケーブルを接続した状態で電源オンにするとうまく動かない場合があります。"
 
-#: ../wxui/main.py:1799
+#: ../wxui/main.py:1809
 msgid ""
 "A new CHIRP version is available. Please visit the website as soon as "
 "possible to download it!"
@@ -669,7 +669,7 @@ msgstr ""
 msgid "An error has occurred"
 msgstr ""
 
-#: ../wxui/clone.py:118
+#: ../wxui/clone.py:120
 msgid "Applying settings"
 msgstr ""
 
@@ -677,7 +677,7 @@ msgstr ""
 msgid "Available modules"
 msgstr ""
 
-#: ../wxui/main.py:1742
+#: ../wxui/main.py:1752
 msgid "Bandplan"
 msgstr "バンドプラン"
 
@@ -797,11 +797,11 @@ msgstr[1] "%i 件を同一グループにまとめる"
 msgid "Comment"
 msgstr "コメント"
 
-#: ../wxui/clone.py:251
+#: ../wxui/clone.py:253
 msgid "Communicate with radio"
 msgstr "無線機へ接続"
 
-#: ../wxui/clone.py:126
+#: ../wxui/clone.py:128
 msgid "Complete"
 msgstr "完了"
 
@@ -835,7 +835,7 @@ msgstr "国"
 msgid "Cross Mode"
 msgstr "トーンモード"
 
-#: ../wxui/clone.py:451
+#: ../wxui/clone.py:453
 msgid "Custom Port"
 msgstr "ポートを手動で設定"
 
@@ -911,12 +911,12 @@ msgstr ""
 msgid "Distance"
 msgstr ""
 
-#: ../wxui/clone.py:178
+#: ../wxui/clone.py:180
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "次回から %s に接続する際にプロンプトを表示しない"
 
-#: ../wxui/clone.py:175
+#: ../wxui/clone.py:177
 msgid "Do you accept the risk?"
 msgstr ""
 
@@ -936,7 +936,7 @@ msgstr "無線機からダウンロード"
 msgid "Download from radio..."
 msgstr "無線機からダウンロード..."
 
-#: ../wxui/clone.py:569
+#: ../wxui/clone.py:571
 msgid "Download instructions"
 msgstr "ダウンロード手順"
 
@@ -995,7 +995,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:450
+#: ../wxui/clone.py:452
 msgid "Enter custom port:"
 msgstr "ポートを入力:"
 
@@ -1008,11 +1008,11 @@ msgstr ""
 msgid "Error applying settings"
 msgstr ""
 
-#: ../wxui/clone.py:495
+#: ../wxui/clone.py:497
 msgid "Error communicating with radio"
 msgstr "無線機との通信エラー"
 
-#: ../wxui/clone.py:527
+#: ../wxui/clone.py:529
 msgid "Experimental driver"
 msgstr "実験的ドライバー"
 
@@ -1364,7 +1364,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:591
+#: ../wxui/clone.py:593
 msgid "Internal driver error"
 msgstr "内部ドライバーエラー"
 
@@ -1446,6 +1446,12 @@ msgstr ""
 msgid "Load module from issue..."
 msgstr ""
 
+#: ../wxui/main.py:1727
+msgid ""
+"Loading a module will not affect open tabs. It is recommended (unless "
+"instructed otherwise) to close all tabs before loading a module."
+msgstr ""
+
 #: ../wxui/main.py:1638
 msgid ""
 "Loading modules can be extremely dangerous, leading to damage to your "
@@ -1456,7 +1462,7 @@ msgid ""
 "this risk?"
 msgstr ""
 
-#: ../wxui/clone.py:120
+#: ../wxui/clone.py:122
 msgid "Loading settings"
 msgstr "設定をロードしています"
 
@@ -1499,7 +1505,7 @@ msgstr ""
 msgid "Mode"
 msgstr "受信モード"
 
-#: ../wxui/clone.py:281
+#: ../wxui/clone.py:283
 msgid "Model"
 msgstr "モデル"
 
@@ -1515,11 +1521,11 @@ msgstr ""
 msgid "Module Loaded"
 msgstr ""
 
-#: ../wxui/main.py:1728
+#: ../wxui/main.py:1738
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:419
+#: ../wxui/clone.py:421
 #, python-format
 msgid "More than one port found: %s"
 msgstr "2つ以上のポートが見つかりました: %s"
@@ -1536,7 +1542,7 @@ msgstr "上に移動"
 msgid "New Window"
 msgstr "新規ウィンドウ"
 
-#: ../wxui/main.py:1801
+#: ../wxui/main.py:1811
 msgid "New version available"
 msgstr "新しいバージョンが利用可能です"
 
@@ -1672,7 +1678,7 @@ msgstr "ペーストするとメモリー %s が上書きされます"
 msgid "Pasted memory will overwrite memory %s"
 msgstr "ペーストするとメモリー %s が上書きされます"
 
-#: ../wxui/main.py:1805
+#: ../wxui/main.py:1815
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "新しいバージョンをインストールする前に必ずCHIRPを終了してください。"
 
@@ -1714,11 +1720,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "お待ちください"
 
-#: ../wxui/clone.py:396
+#: ../wxui/clone.py:398
 msgid "Plug in your cable and then click OK"
 msgstr "ケーブルを接続してOKをクリックしてください。"
 
-#: ../wxui/clone.py:274
+#: ../wxui/clone.py:276
 msgid "Port"
 msgstr "ポート"
 
@@ -1742,7 +1748,7 @@ msgstr "印刷"
 msgid "Properties"
 msgstr "プロパティ"
 
-#: ../wxui/main.py:1756
+#: ../wxui/main.py:1766
 #, python-format
 msgid "Query %s"
 msgstr ""
@@ -1764,7 +1770,7 @@ msgstr "無線機"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:561 ../wxui/clone.py:645
+#: ../wxui/clone.py:563 ../wxui/clone.py:647
 msgid "Radio information"
 msgstr ""
 
@@ -1899,7 +1905,7 @@ msgstr ""
 msgid "Select Modes"
 msgstr ""
 
-#: ../wxui/main.py:1741
+#: ../wxui/main.py:1751
 msgid "Select a bandplan"
 msgstr "バンドプラン選択"
 
@@ -1980,7 +1986,7 @@ msgstr ""
 msgid "State/Province"
 msgstr ""
 
-#: ../wxui/main.py:1729
+#: ../wxui/main.py:1739
 msgid "Success"
 msgstr "成功"
 
@@ -2197,12 +2203,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "ステップ(kHz)"
 
-#: ../wxui/clone.py:390 ../wxui/clone.py:397 ../wxui/clone.py:408
-#: ../wxui/clone.py:416 ../wxui/clone.py:420
+#: ../wxui/clone.py:392 ../wxui/clone.py:399 ../wxui/clone.py:410
+#: ../wxui/clone.py:418 ../wxui/clone.py:422
 msgid "USB Port Finder"
 msgstr "USBポート検出"
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:408
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2251,7 +2257,7 @@ msgstr ""
 msgid "United States"
 msgstr ""
 
-#: ../wxui/clone.py:389
+#: ../wxui/clone.py:391
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "ケーブルを抜いてからOKをクリックしてください。"
 
@@ -2260,7 +2266,7 @@ msgstr "ケーブルを抜いてからOKをクリックしてください。"
 msgid "Unsupported model %r"
 msgstr ""
 
-#: ../wxui/clone.py:660
+#: ../wxui/clone.py:662
 msgid "Upload instructions"
 msgstr "アップロード手順"
 
@@ -2313,7 +2319,7 @@ msgstr "値は 0 以上にしてください"
 msgid "Values"
 msgstr "値"
 
-#: ../wxui/clone.py:277
+#: ../wxui/clone.py:279
 msgid "Vendor"
 msgstr "メーカー"
 
@@ -2325,7 +2331,7 @@ msgstr "表示"
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/memedit.py:1461
+#: ../wxui/memedit.py:1461 ../wxui/main.py:1731
 msgid "Warning"
 msgstr ""
 
@@ -2342,7 +2348,7 @@ msgstr "ようこそ"
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "デスクトップにCHIRPのアイコンを設定しますか？"
 
-#: ../wxui/clone.py:414
+#: ../wxui/clone.py:416
 msgid "Your cable appears to be on port:"
 msgstr "あなたのケーブルが使用しているポート:"
 

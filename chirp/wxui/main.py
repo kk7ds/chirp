@@ -1722,6 +1722,16 @@ class ChirpMain(wx.Frame):
 
     @common.error_proof()
     def _menu_load_from_issue(self, event):
+        if self.current_editorset:
+            r = wx.MessageBox(
+                _('Loading a module will not affect open tabs. '
+                  'It is recommended (unless instructed '
+                  'otherwise) to close all tabs before loading '
+                  'a module.'),
+                _('Warning'),
+                wx.ICON_WARNING | wx.OK | wx.CANCEL | wx.CANCEL_DEFAULT)
+            if r == wx.CANCEL:
+                return
         module = developer.IssueModuleLoader(self).run()
         if module:
             if self.load_module(module):
