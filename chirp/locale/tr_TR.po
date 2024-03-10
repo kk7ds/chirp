@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-09 11:47-0800\n"
+"POT-Creation-Date: 2024-03-10 10:13-0700\n"
 "PO-Revision-Date: 2024-03-02 00:22+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -963,7 +963,7 @@ msgstr ""
 "\n"
 "Kablo takılıyken telsizi açarsanız çalışmayabilir"
 
-#: ../wxui/main.py:1799
+#: ../wxui/main.py:1809
 msgid ""
 "A new CHIRP version is available. Please visit the website as soon as "
 "possible to download it!"
@@ -999,7 +999,7 @@ msgstr "Amatör"
 msgid "An error has occurred"
 msgstr "Bir hata oluştu"
 
-#: ../wxui/clone.py:118
+#: ../wxui/clone.py:120
 msgid "Applying settings"
 msgstr "Ayarlar uygulanıyor"
 
@@ -1007,7 +1007,7 @@ msgstr "Ayarlar uygulanıyor"
 msgid "Available modules"
 msgstr "Mevcut modüller"
 
-#: ../wxui/main.py:1742
+#: ../wxui/main.py:1752
 msgid "Bandplan"
 msgstr "Bant planı"
 
@@ -1136,11 +1136,11 @@ msgstr[1] "%i kaydı sırala"
 msgid "Comment"
 msgstr "Yorum"
 
-#: ../wxui/clone.py:251
+#: ../wxui/clone.py:253
 msgid "Communicate with radio"
 msgstr "Telsiz ile iletişim"
 
-#: ../wxui/clone.py:126
+#: ../wxui/clone.py:128
 msgid "Complete"
 msgstr "Tamamla"
 
@@ -1177,7 +1177,7 @@ msgstr "Ülke"
 msgid "Cross Mode"
 msgstr "Çapraz Mod"
 
-#: ../wxui/clone.py:451
+#: ../wxui/clone.py:453
 msgid "Custom Port"
 msgstr "Özel Bağlantı Noktası"
 
@@ -1256,12 +1256,12 @@ msgstr "Devre dışı"
 msgid "Distance"
 msgstr "Mesafe"
 
-#: ../wxui/clone.py:178
+#: ../wxui/clone.py:180
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "%s için tekrar sorma"
 
-#: ../wxui/clone.py:175
+#: ../wxui/clone.py:177
 msgid "Do you accept the risk?"
 msgstr "Riski kabul ediyor musun?"
 
@@ -1281,7 +1281,7 @@ msgstr "Telsizden indir"
 msgid "Download from radio..."
 msgstr "Telsizden indir..."
 
-#: ../wxui/clone.py:569
+#: ../wxui/clone.py:571
 msgid "Download instructions"
 msgstr "İndirme talimatları"
 
@@ -1342,7 +1342,7 @@ msgstr "TX Frekansını girin (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Banka %s için yeni bir ad girin:"
 
-#: ../wxui/clone.py:450
+#: ../wxui/clone.py:452
 msgid "Enter custom port:"
 msgstr "Özel bağlantı noktasını girin:"
 
@@ -1355,11 +1355,11 @@ msgstr "%s kaydı silindi"
 msgid "Error applying settings"
 msgstr "Ayarlar uygulanırken hata oluştu"
 
-#: ../wxui/clone.py:495
+#: ../wxui/clone.py:497
 msgid "Error communicating with radio"
 msgstr "Telsizle iletişim hatası"
 
-#: ../wxui/clone.py:527
+#: ../wxui/clone.py:529
 msgid "Experimental driver"
 msgstr "Deneysel sürücü"
 
@@ -1803,7 +1803,7 @@ msgstr "Masaüstü simgesi yüklensin mi?"
 msgid "Interact with driver"
 msgstr "Sürücü ile etkileşim"
 
-#: ../wxui/clone.py:591
+#: ../wxui/clone.py:593
 msgid "Internal driver error"
 msgstr "Dahili sürücü hatası"
 
@@ -1884,6 +1884,12 @@ msgstr "Kayıttan modül yükle"
 msgid "Load module from issue..."
 msgstr "Kayıttan modül yükle..."
 
+#: ../wxui/main.py:1727
+msgid ""
+"Loading a module will not affect open tabs. It is recommended (unless "
+"instructed otherwise) to close all tabs before loading a module."
+msgstr ""
+
 #: ../wxui/main.py:1638
 msgid ""
 "Loading modules can be extremely dangerous, leading to damage to your "
@@ -1901,7 +1907,7 @@ msgstr ""
 "doğrudan erişim sağlamasına olanak sağlayabilir! Bu riske rağmen devam "
 "edilsin mi?"
 
-#: ../wxui/clone.py:120
+#: ../wxui/clone.py:122
 msgid "Loading settings"
 msgstr "Ayarlar yükleniyor"
 
@@ -1944,7 +1950,7 @@ msgstr "{num} kaydı {bank} bankasında değil"
 msgid "Mode"
 msgstr "Mod"
 
-#: ../wxui/clone.py:281
+#: ../wxui/clone.py:283
 msgid "Model"
 msgstr "Model"
 
@@ -1960,11 +1966,11 @@ msgstr "Modül"
 msgid "Module Loaded"
 msgstr "Modül Yüklendi"
 
-#: ../wxui/main.py:1728
+#: ../wxui/main.py:1738
 msgid "Module loaded successfully"
 msgstr "Modül başarıyla yüklendi"
 
-#: ../wxui/clone.py:419
+#: ../wxui/clone.py:421
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Birden fazla bağlantı noktası bulundu: %s"
@@ -1981,7 +1987,7 @@ msgstr "Yukarı Taşı"
 msgid "New Window"
 msgstr "Yeni Pencere"
 
-#: ../wxui/main.py:1801
+#: ../wxui/main.py:1811
 msgid "New version available"
 msgstr "Yeni sürüm mevcut"
 
@@ -2120,7 +2126,7 @@ msgstr "Yapıştırılan kayıtlar, %s kaydının üzerine yazılacak"
 msgid "Pasted memory will overwrite memory %s"
 msgstr "Yapıştırılan kayıt, %s kaydının üzerine yazacak"
 
-#: ../wxui/main.py:1805
+#: ../wxui/main.py:1815
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Lütfen yeni sürümü yüklemeden önce CHIRP'den çıktığınızdan emin olun!"
 
@@ -2185,11 +2191,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Lütfen bekleyin"
 
-#: ../wxui/clone.py:396
+#: ../wxui/clone.py:398
 msgid "Plug in your cable and then click OK"
 msgstr "Kablonuzu takın ve ardından Tamam'a tıklayın"
 
-#: ../wxui/clone.py:274
+#: ../wxui/clone.py:276
 msgid "Port"
 msgstr "Port"
 
@@ -2213,7 +2219,7 @@ msgstr "Baskı"
 msgid "Properties"
 msgstr "Özellikler"
 
-#: ../wxui/main.py:1756
+#: ../wxui/main.py:1766
 #, python-format
 msgid "Query %s"
 msgstr "%s sorgusu"
@@ -2235,7 +2241,7 @@ msgstr "Telsiz"
 msgid "Radio did not ack block %i"
 msgstr "Telsiz %i bloğunu onaylamadı"
 
-#: ../wxui/clone.py:561 ../wxui/clone.py:645
+#: ../wxui/clone.py:563 ../wxui/clone.py:647
 msgid "Radio information"
 msgstr "Telsiz bilgisi"
 
@@ -2379,7 +2385,7 @@ msgstr "Bantları Seç"
 msgid "Select Modes"
 msgstr "Modları Seç"
 
-#: ../wxui/main.py:1741
+#: ../wxui/main.py:1751
 msgid "Select a bandplan"
 msgstr "Bir bant planı seçin"
 
@@ -2461,7 +2467,7 @@ msgstr "Devlet"
 msgid "State/Province"
 msgstr "Eyalet/İl"
 
-#: ../wxui/main.py:1729
+#: ../wxui/main.py:1739
 msgid "Success"
 msgstr "Başarılı"
 
@@ -2724,12 +2730,12 @@ msgstr "TSQL modu için gönderme/alma tonu, aksi takdirde ton al"
 msgid "Tuning Step"
 msgstr "Ayarlama Adımı"
 
-#: ../wxui/clone.py:390 ../wxui/clone.py:397 ../wxui/clone.py:408
-#: ../wxui/clone.py:416 ../wxui/clone.py:420
+#: ../wxui/clone.py:392 ../wxui/clone.py:399 ../wxui/clone.py:410
+#: ../wxui/clone.py:418 ../wxui/clone.py:422
 msgid "USB Port Finder"
 msgstr "USB Portu Bulucu"
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:408
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2781,7 +2787,7 @@ msgstr "Bu dosya yüklenemiyor"
 msgid "United States"
 msgstr "Amerika Birleşik Devletleri"
 
-#: ../wxui/clone.py:389
+#: ../wxui/clone.py:391
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "(gerekirse) Kablonuzu çıkarın ve ardından Tamam'ı tıklayın"
 
@@ -2790,7 +2796,7 @@ msgstr "(gerekirse) Kablonuzu çıkarın ve ardından Tamam'ı tıklayın"
 msgid "Unsupported model %r"
 msgstr "Desteklenmeyen model %r"
 
-#: ../wxui/clone.py:660
+#: ../wxui/clone.py:662
 msgid "Upload instructions"
 msgstr "Yükleme talimatları"
 
@@ -2843,7 +2849,7 @@ msgstr "Değer sıfır veya daha büyük olmalıdır"
 msgid "Values"
 msgstr "Değerler"
 
-#: ../wxui/clone.py:277
+#: ../wxui/clone.py:279
 msgid "Vendor"
 msgstr "Tedarikçi"
 
@@ -2855,7 +2861,7 @@ msgstr "Göster"
 msgid "WARNING!"
 msgstr "UYARI!"
 
-#: ../wxui/memedit.py:1461
+#: ../wxui/memedit.py:1461 ../wxui/main.py:1731
 msgid "Warning"
 msgstr "Uyarı"
 
@@ -2872,7 +2878,7 @@ msgstr "Hoşgeldiniz"
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "CHIRP'in sizin için bir masaüstü simgesi yüklemesini ister misiniz?"
 
-#: ../wxui/clone.py:414
+#: ../wxui/clone.py:416
 msgid "Your cable appears to be on port:"
 msgstr "Kablonuz şu bağlantı noktasında görünüyor:"
 

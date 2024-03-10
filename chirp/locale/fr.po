@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-09 11:47-0800\n"
+"POT-Creation-Date: 2024-03-10 10:13-0700\n"
 "PO-Revision-Date: 2023-12-13 00:03+0100\n"
 "Last-Translator: Matthieu Lapadu-Hargues <mlhpub@free.fr>\n"
 "Language-Team: French\n"
@@ -637,7 +637,7 @@ msgid ""
 "It will may not work if you turn on the radio with the cable already attached"
 msgstr ""
 
-#: ../wxui/main.py:1799
+#: ../wxui/main.py:1809
 msgid ""
 "A new CHIRP version is available. Please visit the website as soon as "
 "possible to download it!"
@@ -673,7 +673,7 @@ msgstr "Amateur"
 msgid "An error has occurred"
 msgstr "Une erreur s'est produite"
 
-#: ../wxui/clone.py:118
+#: ../wxui/clone.py:120
 msgid "Applying settings"
 msgstr "Application des preferences"
 
@@ -681,7 +681,7 @@ msgstr "Application des preferences"
 msgid "Available modules"
 msgstr "Modules disponibles"
 
-#: ../wxui/main.py:1742
+#: ../wxui/main.py:1752
 msgid "Bandplan"
 msgstr "Plan de frequences"
 
@@ -811,11 +811,11 @@ msgstr[1] "Groupement %i memoires"
 msgid "Comment"
 msgstr "Commentaire"
 
-#: ../wxui/clone.py:251
+#: ../wxui/clone.py:253
 msgid "Communicate with radio"
 msgstr "Communique avec la radio"
 
-#: ../wxui/clone.py:126
+#: ../wxui/clone.py:128
 msgid "Complete"
 msgstr "Termine"
 
@@ -851,7 +851,7 @@ msgstr "Pays"
 msgid "Cross Mode"
 msgstr "Cross mode"
 
-#: ../wxui/clone.py:451
+#: ../wxui/clone.py:453
 msgid "Custom Port"
 msgstr "Personnalisation du port"
 
@@ -931,12 +931,12 @@ msgstr "Descative"
 msgid "Distance"
 msgstr "Distance"
 
-#: ../wxui/clone.py:178
+#: ../wxui/clone.py:180
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "Ne plus demander pendant %s"
 
-#: ../wxui/clone.py:175
+#: ../wxui/clone.py:177
 msgid "Do you accept the risk?"
 msgstr ""
 
@@ -956,7 +956,7 @@ msgstr "Telecharger depuis la radio - Lire"
 msgid "Download from radio..."
 msgstr "Telecharger depuis la radio - Lire..."
 
-#: ../wxui/clone.py:569
+#: ../wxui/clone.py:571
 msgid "Download instructions"
 msgstr "Instructions de telechargement"
 
@@ -1019,7 +1019,7 @@ msgstr "Saisir la frequence d'emission (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Saisir un nouveau nom pour la banque %s:"
 
-#: ../wxui/clone.py:450
+#: ../wxui/clone.py:452
 msgid "Enter custom port:"
 msgstr "Saisir un port personnalise:"
 
@@ -1032,11 +1032,11 @@ msgstr "Effacer la memoire %s"
 msgid "Error applying settings"
 msgstr "Erreur lors de l'application des preferences"
 
-#: ../wxui/clone.py:495
+#: ../wxui/clone.py:497
 msgid "Error communicating with radio"
 msgstr "Erreur de communication avec la radio"
 
-#: ../wxui/clone.py:527
+#: ../wxui/clone.py:529
 msgid "Experimental driver"
 msgstr "Pilote experimental"
 
@@ -1395,7 +1395,7 @@ msgstr "Installer une icone sur le bureau?"
 msgid "Interact with driver"
 msgstr "Interaction avec le pilote"
 
-#: ../wxui/clone.py:591
+#: ../wxui/clone.py:593
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Erreur interne"
@@ -1478,6 +1478,12 @@ msgstr "Chargement module depuis un probleme"
 msgid "Load module from issue..."
 msgstr "Chargement module depuis un probleme..."
 
+#: ../wxui/main.py:1727
+msgid ""
+"Loading a module will not affect open tabs. It is recommended (unless "
+"instructed otherwise) to close all tabs before loading a module."
+msgstr ""
+
 #: ../wxui/main.py:1638
 msgid ""
 "Loading modules can be extremely dangerous, leading to damage to your "
@@ -1494,7 +1500,7 @@ msgstr ""
 "depuis une autre source revient a donner un acces direct a votre ordinateur "
 "et a tout ce qu'il contient! Continuez malgre le risque?"
 
-#: ../wxui/clone.py:120
+#: ../wxui/clone.py:122
 msgid "Loading settings"
 msgstr "Chargement des preferences"
 
@@ -1537,7 +1543,7 @@ msgstr "Memoire {num} pas dans la banque {bank}"
 msgid "Mode"
 msgstr "Mode"
 
-#: ../wxui/clone.py:281
+#: ../wxui/clone.py:283
 msgid "Model"
 msgstr "Modele"
 
@@ -1553,11 +1559,11 @@ msgstr "Module"
 msgid "Module Loaded"
 msgstr "Module charge"
 
-#: ../wxui/main.py:1728
+#: ../wxui/main.py:1738
 msgid "Module loaded successfully"
 msgstr "Module charge avec succes"
 
-#: ../wxui/clone.py:419
+#: ../wxui/clone.py:421
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Plus d'un port trouve: %s"
@@ -1574,7 +1580,7 @@ msgstr "Monter"
 msgid "New Window"
 msgstr "Nouvelle fenetre"
 
-#: ../wxui/main.py:1801
+#: ../wxui/main.py:1811
 msgid "New version available"
 msgstr "Nouvelle version disponible"
 
@@ -1713,7 +1719,7 @@ msgstr "Les memoires collees vont ecraser la memoire %s"
 msgid "Pasted memory will overwrite memory %s"
 msgstr "La memoire collee va ecraser la memoire %s"
 
-#: ../wxui/main.py:1805
+#: ../wxui/main.py:1815
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Soyez certain de quitter CHIRP avant d'installer la nouvelle version!"
 
@@ -1779,11 +1785,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Patientez s'il vous plait"
 
-#: ../wxui/clone.py:396
+#: ../wxui/clone.py:398
 msgid "Plug in your cable and then click OK"
 msgstr "Branchez votre cable et cliquez sur OK"
 
-#: ../wxui/clone.py:274
+#: ../wxui/clone.py:276
 msgid "Port"
 msgstr "Port"
 
@@ -1807,7 +1813,7 @@ msgstr "Impression"
 msgid "Properties"
 msgstr "Proprietes"
 
-#: ../wxui/main.py:1756
+#: ../wxui/main.py:1766
 #, python-format
 msgid "Query %s"
 msgstr "Interroger %s"
@@ -1829,7 +1835,7 @@ msgstr "Radio"
 msgid "Radio did not ack block %i"
 msgstr "La radio n'a pas accuse reception du bloc %i"
 
-#: ../wxui/clone.py:561 ../wxui/clone.py:645
+#: ../wxui/clone.py:563 ../wxui/clone.py:647
 msgid "Radio information"
 msgstr "Informations de la radio"
 
@@ -1969,7 +1975,7 @@ msgstr "Choix des bandes"
 msgid "Select Modes"
 msgstr "Choix des modes"
 
-#: ../wxui/main.py:1741
+#: ../wxui/main.py:1751
 msgid "Select a bandplan"
 msgstr "Choix d'un plan de frequences"
 
@@ -2051,7 +2057,7 @@ msgstr "Etat"
 msgid "State/Province"
 msgstr "Etat/Province"
 
-#: ../wxui/main.py:1729
+#: ../wxui/main.py:1739
 msgid "Success"
 msgstr "Reussi"
 
@@ -2308,12 +2314,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Pas de reglage"
 
-#: ../wxui/clone.py:390 ../wxui/clone.py:397 ../wxui/clone.py:408
-#: ../wxui/clone.py:416 ../wxui/clone.py:420
+#: ../wxui/clone.py:392 ../wxui/clone.py:399 ../wxui/clone.py:410
+#: ../wxui/clone.py:418 ../wxui/clone.py:422
 msgid "USB Port Finder"
 msgstr "Recherche de port USB"
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:408
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2366,7 +2372,7 @@ msgstr "Impossible de montrer %s dans ce systeme"
 msgid "United States"
 msgstr "Etats-Unis"
 
-#: ../wxui/clone.py:389
+#: ../wxui/clone.py:391
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Debranchez votre cable (si necessaire) et cliquez sur OK"
 
@@ -2375,7 +2381,7 @@ msgstr "Debranchez votre cable (si necessaire) et cliquez sur OK"
 msgid "Unsupported model %r"
 msgstr "Type de fichier non-supporte"
 
-#: ../wxui/clone.py:660
+#: ../wxui/clone.py:662
 msgid "Upload instructions"
 msgstr "Instruction de telechargement"
 
@@ -2428,7 +2434,7 @@ msgstr "Les valeur doivent etre zero ou positives"
 msgid "Values"
 msgstr "Valeurs"
 
-#: ../wxui/clone.py:277
+#: ../wxui/clone.py:279
 msgid "Vendor"
 msgstr "Fabricant"
 
@@ -2440,7 +2446,7 @@ msgstr "Voir"
 msgid "WARNING!"
 msgstr "ATTENTION!"
 
-#: ../wxui/memedit.py:1461
+#: ../wxui/memedit.py:1461 ../wxui/main.py:1731
 msgid "Warning"
 msgstr "Attention"
 
@@ -2457,7 +2463,7 @@ msgstr "Bienvenue"
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "Souhaitez-vous que CHIRP installe une icone pour vous sur le bureau?"
 
-#: ../wxui/clone.py:414
+#: ../wxui/clone.py:416
 msgid "Your cable appears to be on port:"
 msgstr ""
 "Votre cable apparai\n"
