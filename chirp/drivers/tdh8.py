@@ -29,7 +29,7 @@ from chirp import bandplan_na
 
 LOG = logging.getLogger(__name__)
 
-
+AIRBAND = (108000000, 135999999)
 MEM_FORMAT = """
 #seekto 0x0008;
 struct {
@@ -664,6 +664,13 @@ TD_H8 = b"\x50\x56\x4F\x4A\x48\x1C\x14"
 TD_H3 = b"\x50\x56\x4F\x4A\x48\x5C\x14"
 
 
+def in_range(freq, ranges):
+    for lo, hi in ranges:
+        if lo <= freq <= hi:
+            return True
+    return False
+
+
 def _do_status(radio, block):
     status = chirp_common.Status()
     status.msg = "Cloning"
@@ -893,8 +900,8 @@ class TDH8(chirp_common.CloneModeRadio):
     _memsize = 0x1eef
     _ranges_main = [(0x0000, 0x1eef)]
     _idents = [TD_H8]
-    _vhf_range = (136000000, 175000000)
-    _uhf_range = (400000000, 521000000)
+    _txbands = [(136000000, 175000000), (400000000, 521000000)]
+    _rxbands = []
     _aux_block = True
     _tri_power = True
     _gmrs = False
@@ -952,12 +959,8 @@ class TDH8(chirp_common.CloneModeRadio):
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_tuning_steps = STEPS
 
-        normal_bands = [self._vhf_range, self._uhf_range]
-
-        if self._mmap is None:
-            rf.valid_bands = [normal_bands[0], normal_bands[1]]
-        else:
-            rf.valid_bands = normal_bands
+        rf.valid_bands = self._txbands + self._rxbands
+        rf.valid_bands.sort()
         rf.memory_bounds = (1, 199)
         return rf
 
@@ -1097,7 +1100,8 @@ class TDH8(chirp_common.CloneModeRadio):
         if int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
             mem.offset = 0
-        elif int(_mem.txfreq) == 66666665 and int(_mem.rxfreq) != 66666665:
+        elif (_mem.txfreq.get_raw()[0] == 0xFF and
+              _mem.rxfreq.get_raw()[0] != 0xFF):
             mem.offset = 0
             mem.duplex = 'off'
         else:
@@ -1152,6 +1156,13 @@ class TDH8(chirp_common.CloneModeRadio):
             "freqhop", "Frequency Hop", RadioSettingValueList(
                 FREQHOP_VALUES, FREQHOP_VALUES[_mem.freqhop]))
         mem.extra.append(rs)
+
+        if in_range(mem.freq, self._rxbands):
+            mem.duplex = 'off'
+            mem.immutable.append('duplex')
+        if in_range(mem.freq, [AIRBAND]):
+            mem.mode = 'AM'
+            mem.immutable.append('mode')
 
         return mem
 
@@ -1213,9 +1224,12 @@ class TDH8(chirp_common.CloneModeRadio):
         elif mem.duplex == "-":
             _mem.txfreq = (mem.freq - mem.offset) / 10
         elif mem.duplex == 'off':
-            _mem.txfreq = 166666665
+            _mem.txfreq.fill_raw(b'\xFF')
         else:
             _mem.txfreq = mem.freq / 10
+
+        if in_range(mem.freq, self._rxbands):
+            _mem.txfreq.fill_raw(b'\xFF')
 
         _mem.rxfreq = mem.freq / 10
         _namelength = self.get_features().valid_name_length
@@ -2277,8 +2291,7 @@ class TDH8_HAM(TDH8):
     MODEL = "TD-H8-HAM"
     ident_mode = b'P31185\xff\xff'
     _ham = True
-    _vhf_range = (144000000, 149000000)
-    _uhf_range = (420000000, 451000000)
+    _txbands = [(144000000, 149000000), (420000000, 451000000)]
 
 
 @directory.register
@@ -2287,8 +2300,7 @@ class TDH8_GMRS(TDH8):
     MODEL = "TD-H8-GMRS"
     ident_mode = b'P31184\xff\xff'
     _gmrs = True
-    _vhf_range = (136000000, 175000000)
-    _uhf_range = (400000000, 521000000)
+    _txbands = [(136000000, 175000000), (400000000, 521000000)]
 
     def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
@@ -2312,8 +2324,8 @@ class TDH3(TDH8):
     _memsize = 0x1fef
     _ranges_main = [(0x0000, 0x1fef)]
     _idents = [TD_H3]
-    _vhf_range = (136000000, 175000000)
-    _uhf_range = (400000000, 521000000)
+    _txbands = [(136000000, 600000000)]
+    _rxbands = [(50000000, 107999000), (108000000, 136000000)]
     _aux_block = True
     _tri_power = True
     _gmrs = False
@@ -2330,8 +2342,7 @@ class TDH3_HAM(TDH3):
     MODEL = "TD-H3-HAM"
     ident_mode = b'P31185\xff\xff'
     _ham = True
-    _vhf_range = (144000000, 149000000)
-    _uhf_range = (420000000, 451000000)
+    _txbands = [(144000000, 149000000), (420000000, 451000000)]
 
 
 @directory.register
@@ -2340,8 +2351,7 @@ class TDH3_GMRS(TDH3):
     MODEL = "TD-H3-GMRS"
     ident_mode = b'P31184\xff\xff'
     _gmrs = True
-    _vhf_range = (136000000, 175000000)
-    _uhf_range = (400000000, 521000000)
+    _txbands = [(136000000, 175000000), (400000000, 521000000)]
 
     def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
