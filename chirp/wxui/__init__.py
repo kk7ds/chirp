@@ -29,7 +29,7 @@ def developer_mode(enabled=None):
     return CONF.get('developer_mode', 'state') == CHIRP_VERSION
 
 
-def maybe_install_desktop():
+def maybe_install_desktop(args):
     local = os.path.join(os.path.expanduser('~'), '.local')
     desktop_path = os.path.join(local, 'share',
                                 'applications', 'chirp.desktop')
@@ -42,7 +42,20 @@ def maybe_install_desktop():
             importlib_resources.files('chirp.share')
             .joinpath('chirp.ico')) as p:
         icon_path = str(p)
+
+    # If asked not to do this, always bail
+    if args.no_install_desktop_app:
+        return
+
+    # Already exists, don't prompt user
     if os.path.exists(desktop_path):
+        LOG.debug('Desktop file exists')
+        return
+
+    # If already asked and not explicitly opted-in, stop nagging
+    if (CONF.get_bool('offered_desktop', 'state') and not
+            args.install_desktop_app):
+        LOG.debug('Desktop file missing but user previously offered')
         return
 
     import wx
@@ -107,12 +120,16 @@ def chirpmain():
                         help=('Use this alternate directory for config and '
                               'other profile data'))
     if sys.platform == 'linux':
+        desktop = parser.add_mutually_exclusive_group()
         parser.add_argument('--no-linux-gdk-backend', action='store_true',
                             help='Do not force GDK_BACKEND=x11')
-        parser.add_argument('--install-desktop-app', action='store_true',
-                            default=not CONF.get_bool('offered_desktop',
-                                                      'state'),
-                            help='Prompt to install a desktop icon')
+        desktop.add_argument('--install-desktop-app', action='store_true',
+                             default=False,
+                             help=('Install a desktop icon even if it was '
+                                   'previously refused'))
+        desktop.add_argument('--no-install-desktop-app', action='store_true',
+                             default=False,
+                             help='Do not prompt to install a desktop icon')
     logger.add_arguments(parser)
     args = parser.parse_args()
     logger.handle_options(args)
@@ -231,9 +248,9 @@ def chirpmain():
     report.check_for_updates(
         lambda ver: wx.CallAfter(main.display_update_notice, ver))
 
-    if sys.platform == 'linux' and args.install_desktop_app:
+    if sys.platform == 'linux':
         try:
-            maybe_install_desktop()
+            maybe_install_desktop(args)
         except Exception as e:
             LOG.exception('Failed to run linux desktop installer: %s', e)
 
