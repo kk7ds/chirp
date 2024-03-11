@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-10 10:13-0700\n"
-"PO-Revision-Date: 2024-03-11 16:38-0300\n"
+"PO-Revision-Date: 2024-03-11 19:00-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -2777,7 +2777,7 @@ msgstr ""
 
 #: ../wxui/memedit.py:82
 msgid "Transmit/receive modulation (FM, AM, SSB, etc)"
-msgstr "Modulación de transmisión/recepción (FM, AMD, SSD, etc)"
+msgstr "Modulación de transmisión/recepción (FM, AM, SSB, etc)"
 
 #: ../wxui/memedit.py:81
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
