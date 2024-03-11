@@ -23,6 +23,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueBoolean, \
     RadioSettingValueString, RadioSettingValueList, RadioSettingValueMap, \
     RadioSettings, RadioSettingValueFloat
+from chirp.drivers.settings_mixin import SettingsMixin
 
 LOG = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class KenwoodD7Position(RadioSettingGroup):
                           RadioSettingValueBoolean(False))
         self.append(rs)
 
-    def kenwood_d7_read_value(self):
+    def read_setting_from_radio(self):
         index = self._get_index()
         name = self.get_name()
         rawval = self._radio._kenwood_get(name)[1]
@@ -102,7 +103,7 @@ class KenwoodD7Position(RadioSettingGroup):
             return True
         return False
 
-    def kenwood_d7_set_value(self):
+    def set_setting_to_radio(self):
         index = self._get_index()
         latd = self['latd%s' % index].value.get_value()
         latm = self['latm%s' % index].value.get_value()
@@ -151,7 +152,7 @@ class KenwoodD7DTMFMemory(RadioSettingGroup):
     def _get_index(self):
         return "%02d" % int(self._name.split(" ", 1)[1])
 
-    def kenwood_d7_read_value(self):
+    def read_setting_from_radio(self):
         index = self._get_index()
         value = self._radio._kenwood_get("DM %s" % index)[1]
         value = value.replace("E", "*").replace("F", "#")
@@ -167,7 +168,7 @@ class KenwoodD7DTMFMemory(RadioSettingGroup):
                 return True
         return False
 
-    def kenwood_d7_set_value(self):
+    def set_setting_to_radio(self):
         for element in self:
             if not element.changed():
                 continue
@@ -198,7 +199,7 @@ class KenwoodD7ProgrammableVFOs(RadioSettingGroup):
         name = element.get_name()
         return int(name.split(" ", 1)[1])
 
-    def kenwood_d7_read_value(self):
+    def read_setting_from_radio(self):
         for element in self:
             index = self._get_index(element)
             rv = self._radio._kenwood_get("PV %d" % index)[1]
@@ -221,7 +222,7 @@ class KenwoodD7ProgrammableVFOs(RadioSettingGroup):
 
     # TODO: Custom validator things...
 
-    def kenwood_d7_set_value(self):
+    def set_setting_to_radio(self):
         for element in self:
             index = self._get_index(element)
             pvdl = "PV %dL" % index
@@ -235,7 +236,7 @@ class KenwoodD7ProgrammableVFOs(RadioSettingGroup):
                 element[pvdu].value._has_changed = False
 
 
-class KenwoodD7Family(chirp_common.LiveRadio):
+class KenwoodD7Family(SettingsMixin, chirp_common.LiveRadio):
     VENDOR = "Kenwood"
     MODEL = ""
     NEEDS_COMPAT_SERIAL = False
@@ -496,6 +497,34 @@ class KenwoodD7Family(chirp_common.LiveRadio):
     def _call_index_to_memid(self, index):
         return self._CALL_CHANS[index]
 
+    def _command(self, cmd, *args):
+        """Send @cmd to radio via @ser"""
+
+        # This lock is needed to allow clicking the settings tab while
+        # the memories are still loading.  Most important with the TH-D7A
+        # and TH-D7A(G) with the 9600bps maximum.
+        with self._LOCK:
+            if args:
+                cmd += self._ARG_DELIMITER + self._ARG_DELIMITER.join(args)
+            cmd += self._CMD_DELIMITER
+            self._drain_input()
+
+            LOG.debug("PC->RADIO: %s" % cmd.strip())
+            self.pipe.write(cmd.encode('cp1252'))
+            cd = self._CMD_DELIMITER.encode('cp1252')
+            keep_reading = True
+            while keep_reading:
+                result = self.pipe.read_until(cd).decode('cp1252')
+                if result.endswith(self._CMD_DELIMITER):
+                    keep_reading = self._keep_reading(result)
+                    LOG.debug("RADIO->PC: %r" % result.strip())
+                    result = result[:-1]
+                else:
+                    keep_reading = False
+                    LOG.error("Timeout waiting for data")
+
+        return result.strip()
+
     def _cmd_get_memory_name(self, memid):
         return "MNA", "%i,%s" % (self._vfo, memid)
 
@@ -519,84 +548,6 @@ class KenwoodD7Family(chirp_common.LiveRadio):
         if (self._is_call(memid)):
             return "CW", "%d,%d%s" % (self._call_index(memid), sd, spec)
         return "MW", "%i,%d,%s%s" % (self._vfo, sd, memid, spec)
-
-    def _count_settings(self, entries):
-        for entry in entries:
-            if (type(entry[1]) is tuple):
-                self._count_settings(entry[1])
-            else:
-                self._setting_count += 1
-
-    def _create_group(self, entries, grp=None):
-        if grp is None:
-            grp = RadioSettings()
-        for entry in entries:
-            if (type(entry[1]) is tuple):
-                subgrp = RadioSettingGroup(entry[0].lower(), entry[0])
-                grp.append(self._create_group(entry[1], subgrp))
-            else:
-                setting = self._get_setting_data(entry[0])
-                if setting['type'] == 'undefined':
-                    continue
-                if setting['type'] == 'list':
-                    rsvl = RadioSettingValueList(setting['values'])
-                    rs = RadioSetting(entry[0], entry[1], rsvl)
-                elif setting['type'] == 'bool':
-                    rs = RadioSetting(entry[0], entry[1],
-                                      RadioSettingValueBoolean(False))
-                elif setting['type'] == 'string':
-                    params = {}
-                    if 'charset' in setting:
-                        params['charset'] = setting['charset']
-                    else:
-                        params['charset'] = chirp_common.CHARSET_ASCII
-                    minlen = 'min_len' in setting and setting['min_len'] or 0
-                    dummy = params['charset'][0] * minlen
-                    rsvs = RadioSettingValueString(minlen,
-                                                   setting['max_len'],
-                                                   dummy,
-                                                   False, **params)
-                    rs = RadioSetting(entry[0], entry[1], rsvs)
-                elif setting['type'] == 'integer':
-                    rs = RadioSetting(entry[0], entry[1],
-                                      RadioSettingValueInteger(setting['min'],
-                                                               setting['max'],
-                                                               setting['min']))
-                elif setting['type'] == 'map':
-                    rsvs = RadioSettingValueMap(setting['map'],
-                                                setting['map'][0][1])
-                    rs = RadioSetting(entry[0], entry[1], rsvs)
-                else:
-                    rs = setting['type'](entry[0], entry[1], self)
-                rs.kenwood_d7_loaded = False
-                grp.append(rs)
-                self._setcache[entry[0]] = rs
-        return grp
-
-    def _do_prerequisite(self, cmd, get, do):
-        if get:
-            arg = 'get_requires'
-        else:
-            arg = 'set_requires'
-        setting = self._get_setting_data(cmd)
-        if arg not in setting:
-            return
-        # Undo prerequisites in the reverse order they were applied
-        if not do:
-            it = reversed(setting[arg])
-        else:
-            it = iter(setting[arg])
-        for prereq, value in it:
-            entry = self._setcache[prereq]
-            if not entry.kenwood_d7_loaded:
-                self._refresh_setting(entry)
-            if do:
-                entry.kenwood_d7_old_value = entry.value.get_value()
-                entry.value.set_value(value)
-            else:
-                entry.value.set_value(entry.kenwood_d7_old_value)
-            sdata = self._get_setting_data(prereq)
-            self._set_setting(prereq, sdata, entry)
 
     def _drain_input(self):
         oldto = self.pipe.timeout
@@ -656,15 +607,6 @@ class KenwoodD7Family(chirp_common.LiveRadio):
         if self._is_pscan(memid_or_index):
             return ['skip']
         return []
-
-    def _get_setting_data(self, setting):
-        if setting in self._SETTINGS:
-            return self._SETTINGS[setting]
-        if setting in self._COMMON_SETTINGS:
-            return self._COMMON_SETTINGS[setting]
-        if (setting.upper() == setting):
-            LOG.debug("Undefined setting: %s" % setting)
-        return {'type': 'undefined'}
 
     def _get_setting_digits(self, setting_data):
         if 'digits' in setting_data:
@@ -881,46 +823,33 @@ class KenwoodD7Family(chirp_common.LiveRadio):
         else:
             mem.offset = int(spec[3])
 
-    def _refresh_setting(self, entry):
+    def _read_setting_from_radio(self, entry, setting):
         name = entry.get_name()
-        setting = self._get_setting_data(name)
-        # TODO: It would be nice to bump_wait_dialog here...
-        #       Also, this is really only useful for the cli. :(
-        if self.status_fn:
-            status = chirp_common.Status()
-            status.cur = self._cur_setting
-            status.max = self._setting_count
-            status.msg = "Fetching %-30s" % entry.get_shortname()
-            # self.bump_wait_dialog(int(status.cur * 100 / status.max),
-            #                       "Fetching %s" % entry[1])
-            self.status_fn(status)
-        self._cur_setting += 1
-        if setting['type'] == 'list':
+        LOG.debug('Type of %s is %s' % (name, setting['type']))
+        if setting['type'] in ('integer', 'list'):
             value = self._kenwood_get_int(name)
-            entry.value.set_index(value)
         elif setting['type'] == 'bool':
             value = self._kenwood_get_bool(name)
-            entry.value.set_value(value)
         elif setting['type'] == 'string':
             value = self._kenwood_get(name)[1]
-            entry.value.set_value(value)
-        elif setting['type'] == 'integer':
-            value = self._kenwood_get_int(name)
-            entry.value.set_value(value)
         elif setting['type'] == 'map':
             value = self._kenwood_get(name)[1]
-            entry.value.set_mem_val(value)
-        else:
-            entry.kenwood_d7_read_value()
-        if hasattr(entry, 'value'):
-            if hasattr(entry.value, '_has_changed'):
-                entry.value._has_changed = False
-        entry.kenwood_d7_loaded = True
 
-    def _refresh_settings(self):
-        for entry in self._setcache.values():
-            if not entry.kenwood_d7_loaded:
-                self._refresh_setting(entry)
+        LOG.debug('Returning %r as %s %s' % (value, setting['type'], name))
+        return value
+
+    def _set_setting_to_radio(self, entry, setting):
+        value = entry.value.get_value()
+        name = entry.get_name()
+        if setting['type'] in ('integer', 'list'):
+            digits = self._get_setting_digits(setting)
+            self._kenwood_set_int(name, value, digits)
+        elif setting['type'] == 'bool':
+            self._kenwood_set_bool(name, value)
+        elif setting['type'] == 'string':
+            self._kenwood_set(name, value)
+        elif setting['type'] == 'map':
+            self._kenwood_set(name, entry.value.get_mem_val())
 
     def _validate_memid(self, memid_or_index):
         if isinstance(memid_or_index, int):
@@ -941,66 +870,6 @@ class KenwoodD7Family(chirp_common.LiveRadio):
         if memory.number is None:
             return self._validate_memid(memory.extd_number)
         return self._validate_memid(memory.number)
-
-    def _set_setting(self, name, sdata, element):
-        if sdata['type'] == 'bool':
-            value = element.value.get_value()
-            self._kenwood_set_bool(name, value)
-            element.value._has_changed = False
-        elif sdata['type'] == 'integer':
-            value = element.value.get_value()
-            digits = self._get_setting_digits(sdata)
-            self._kenwood_set_int(name, value, digits)
-            element.value._has_changed = False
-        elif sdata['type'] == 'string':
-            value = element.value.get_value()
-            self._kenwood_set(name, value)
-            element.value._has_changed = False
-        elif sdata['type'] == 'list':
-            value = element.value.get_value()
-            digits = self._get_setting_digits(sdata)
-            self._kenwood_set_int(name, sdata['values'].index(value),
-                                  digits)
-            element.value._has_changed = False
-        elif sdata['type'] == 'map':
-            self._kenwood_set(name, element.value.get_mem_val())
-            element.value._has_changed = False
-        # TODO: I would like to have tried this first then fetched
-        # value, but we can't use hasattr() on settings due to the
-        # Magic foo.value attribute in chirp/settings.py.  Instead,
-        # I need to get_value() each time. :(
-        elif hasattr(element, 'kenwood_d7_set_value'):
-            element.kenwood_d7_set_value()
-        else:
-            raise TypeError('No way to set %s value' % name)
-
-    def _command(self, cmd, *args):
-        """Send @cmd to radio via @ser"""
-
-        # This lock is needed to allow clicking the settings tab while
-        # the memories are still loading.  Most important with the TH-D7A
-        # and TH-D7A(G) with the 9600bps maximum.
-        with self._LOCK:
-            if args:
-                cmd += self._ARG_DELIMITER + self._ARG_DELIMITER.join(args)
-            cmd += self._CMD_DELIMITER
-            self._drain_input()
-
-            LOG.debug("PC->RADIO: %s" % cmd.strip())
-            self.pipe.write(cmd.encode('cp1252'))
-            cd = self._CMD_DELIMITER.encode('cp1252')
-            keep_reading = True
-            while keep_reading:
-                result = self.pipe.read_until(cd).decode('cp1252')
-                if result.endswith(self._CMD_DELIMITER):
-                    keep_reading = self._keep_reading(result)
-                    LOG.debug("RADIO->PC: %r" % result.strip())
-                    result = result[:-1]
-                else:
-                    keep_reading = False
-                    LOG.error("Timeout waiting for data")
-
-        return result.strip()
 
     def erase_memory(self, memid_or_index):
         index, memid = self._validate_memid(memid_or_index)
@@ -1072,19 +941,6 @@ class KenwoodD7Family(chirp_common.LiveRadio):
 
         return mem
 
-    def get_settings(self):
-        if self._setting_count == 0:
-            self._count_settings(self._SETTINGS_MENUS)
-        ret = self._create_group(self._SETTINGS_MENUS)
-        self._cur_setting = 0
-        self._refresh_settings()
-        status = chirp_common.Status()
-        status.cur = self._setting_count
-        status.max = self._setting_count
-        status.msg = "%-40s" % "Done"
-        self.status_fn(status)
-        return ret
-
     def set_memory(self, memory):
         index, memid = self._validate_memory(memory)
         if memory.empty:
@@ -1111,18 +967,6 @@ class KenwoodD7Family(chirp_common.LiveRadio):
             if self._iserr(result):
                 raise errors.InvalidDataError("Radio refused %s" %
                                               memid)
-
-    def set_settings(self, settings):
-        for element in settings:
-            name = element.get_name()
-            sdata = self._get_setting_data(name)
-            if sdata['type'] == 'undefined':
-                if isinstance(element, RadioSettingGroup):
-                    self.set_settings(element)
-                continue
-            if not element.changed():
-                continue
-            self._set_setting(name, sdata, element)
 
 
 @directory.register
