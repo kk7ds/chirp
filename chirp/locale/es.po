@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-10 10:13-0700\n"
-"PO-Revision-Date: 2024-03-07 16:21-0300\n"
+"PO-Revision-Date: 2024-03-11 16:38-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1915,7 +1915,7 @@ msgstr "Radio en vivo"
 
 #: ../wxui/main.py:707
 msgid "Load Module..."
-msgstr "Cargar modulo..."
+msgstr "Cargar módulo..."
 
 #: ../wxui/developer.py:543
 msgid "Load module from issue"
@@ -1930,6 +1930,9 @@ msgid ""
 "Loading a module will not affect open tabs. It is recommended (unless "
 "instructed otherwise) to close all tabs before loading a module."
 msgstr ""
+"Cargar un módulo no afectará las pestañas abiertas. Se recomienda (a menos "
+"que se indique lo contrario) cerrar todas las pestañas antes de cargar un "
+"módulo."
 
 #: ../wxui/main.py:1638
 msgid ""
@@ -2000,7 +2003,7 @@ msgstr "Modos"
 
 #: ../wxui/main.py:1635
 msgid "Module"
-msgstr "Modulo"
+msgstr "Módulo"
 
 #: ../wxui/main.py:1607
 msgid "Module Loaded"
@@ -2094,7 +2097,7 @@ msgstr "Abrir un archivo"
 
 #: ../wxui/main.py:1653
 msgid "Open a module"
-msgstr "Abrir un modulo"
+msgstr "Abrir un módulo"
 
 #: ../wxui/main.py:935
 msgid "Open debug log"
@@ -2571,8 +2574,8 @@ msgid ""
 "recommended that you not load this module as it could pose a security risk. "
 "Proceed anyway?"
 msgstr ""
-"El autor de este modulo no está reconocido por el desarrollador de CHIRP. Se "
-"recomienda que no cargues este modulo ya que podría poner un riesgo de "
+"El autor de este módulo no está reconocido por el desarrollador de CHIRP. Se "
+"recomienda que no cargues este módulo ya que podría poner un riesgo de "
 "seguridad. ¿Proceder de todos modos?"
 
 #: ../wxui/main.py:1323
@@ -2774,7 +2777,7 @@ msgstr ""
 
 #: ../wxui/memedit.py:82
 msgid "Transmit/receive modulation (FM, AM, SSB, etc)"
-msgstr ""
+msgstr "Modulación de transmisión/recepción (FM, AMD, SSD, etc)"
 
 #: ../wxui/memedit.py:81
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
