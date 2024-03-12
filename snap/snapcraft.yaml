@@ -43,9 +43,9 @@ parts:
       - PYTHONPATH: ""
     override-pull: |
       sudo apt install -y curl
-      ver_with_next=$(basename $(curl -H "User-Agent: goldstar611" -Ls -o/dev/null -w '%{url_effective}' https://trac.chirp.danplanet.com/download?stream=next))
+      ver_with_next=$(basename $(curl -H "User-Agent: goldstar611" -Ls -o/dev/null -w '%{url_effective}' https://archive.chirpmyradio.com/download?stream=next))
       ver_without_next=${ver_with_next//next-/}
-      curl -H "User-Agent: goldstar611" -o ${SNAPCRAFT_PART_SRC}/chirp-src.tar.gz https://trac.chirp.danplanet.com/chirp_next/${ver_with_next}/chirp-${ver_without_next}.tar.gz
+      curl -H "User-Agent: goldstar611" -o ${SNAPCRAFT_PART_SRC}/chirp-src.tar.gz https://archive.chirpmyradio.com/chirp_next/${ver_with_next}/chirp-${ver_without_next}.tar.gz
       tar -xz -C ${SNAPCRAFT_PART_SRC} -f ${SNAPCRAFT_PART_SRC}/chirp-src.tar.gz --strip-components=1
       # Fix icon
       sed -i 's,Icon=chirp,Icon=${SNAP}/lib/python3.10/site-packages/chirp/share/chirp.svg,g' ${SNAPCRAFT_PART_SRC}/chirp/share/chirp.desktop
