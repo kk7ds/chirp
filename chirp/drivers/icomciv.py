@@ -142,6 +142,40 @@ bbcd ctone_tx[2];             // 15-17 tone rx squelch setting
 char name[10];             // 18-27 Callsign
 """
 
+MEM_IC7400_FORMAT = """
+bbcd number[2];
+u8   unknown1;
+lbcd freq[5];
+u8   mode;
+u8   filter;
+u8   unknown2:7,
+     dig:1;
+u8   unknown3:2,
+     duplex:2,
+     unknown4:1,
+     tmode:3;
+bbcd rtone[3];
+bbcd ctone[3];
+u8   dtcs_polarity;
+bbcd dtcs[2];
+// As with IC-7300 it seems the following are duplicated parameters save for
+// `dig` which seem to be zeroed in unknown5
+lbcd freq_tx[5];
+u8   mode_tx;
+u8   filter_tx;
+u8 unknown5;
+u8   unknown6:2,
+     duplex_tx:2,
+     unknown7:1,
+     tmode_tx:3;
+bbcd rtone_tx[3];
+bbcd ctone_tx[3];
+u8   dtcs_polarity_tx;
+bbcd dtcs_tx[2];
+// End TX duplicate block
+char name[8];
+"""
+
 MEM_IC7610_FORMAT = """
 bbcd number[2];            // 1,2
 u8   spl:4,                // 3 split and select memory settings
@@ -297,6 +331,12 @@ class DupToneMemFrame(MemFrame):
     def get_obj(self):
         self._data = MemoryMapBytes(bytes(self._data))
         return bitwise.parse(mem_duptone_format, self._data)
+
+
+class IC7400MemFrame(MemFrame):
+    def get_obj(self):
+        self._data = MemoryMapBytes(bytes(self._data))
+        return bitwise.parse(MEM_IC7400_FORMAT, self._data)
 
 
 class IC7300MemFrame(MemFrame):
@@ -897,6 +937,44 @@ class Icom746Radio(IcomCIVRadio):
         self._rf.valid_skips = []
         self._rf.valid_name_length = 9
         self._rf.valid_characters = chirp_common.CHARSET_ASCII
+        self._rf.memory_bounds = (1, 99)
+
+
+@directory.register
+class Icom7400Radio(IcomCIVRadio):
+    """Icom IC-7400"""
+    MODEL = "IC-7400"
+    BAUD_RATE = 9600
+    _model = "\x66"
+    _template = 102
+
+    _num_banks = 1		# Banks not supported
+
+    def _initialize(self):
+        self._classes["mem"] = IC7400MemFrame
+        self._rf.has_bank = False
+        self._rf.has_dtcs_polarity = True
+        self._rf.has_dtcs = True
+        self._rf.has_ctone = True
+        self._rf.has_offset = False
+        self._rf.has_name = True
+        self._rf.has_tuning_step = False
+        self._rf.valid_modes = [
+            "LSB", "USB", "AM", "CW", "RTTY", "FM", "USB", "CWR", "RTTYR"
+        ]
+        self._rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
+        self._rf.valid_duplexes = ["", "-", "+"]
+        self._rf.valid_bands = [(30000, 174000000)]
+        self._rf.valid_tuning_steps = []
+        self._rf.valid_skips = []
+        self._rf.valid_name_length = 8
+        self._rf.valid_characters = " !#$%&'()*+,-./" \
+            "0123456789" \
+            ":;<=>?" \
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
+            "[\\]^_" \
+            "abcdefghijklmnopqrstuvwxyz" \
+            "{|}~"
         self._rf.memory_bounds = (1, 99)
 
 

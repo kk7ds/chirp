@@ -114,6 +114,7 @@
 | <a name="Icom_IC-7100"></a> Icom_IC-7100 | Mike W | 16-Feb-2023 | Yes | 0.06% |
 | <a name="Icom_IC-7200"></a> Icom_IC-7200 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes |  |
 | <a name="Icom_IC-7300"></a> Icom_IC-7300 | [@kk7ds](https://github.com/kk7ds) | 22-Oct-2022 | Yes | 0.03% |
+| <a name="Icom_IC-7400"></a> Icom_IC-7400 |  |  | Yes |  |
 | <a name="Icom_IC-746"></a> Icom_IC-746 | [Reported working](https://chirp.danplanet.com/issues/10346) | 3-Feb-2023 | Yes |  |
 | <a name="Icom_IC-7610"></a> Icom_IC-7610 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.00% |
 | <a name="Icom_IC-910"></a> Icom_IC-910 | [@mfncooper](https://github.com/mfncooper) | 1-Oct-2021 | Yes | 0.00% |
@@ -453,11 +454,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 450
+**Drivers:** 451
 
-**Tested:** 88% (396/54) (93% of usage stats)
+**Tested:** 87% (396/55) (93% of usage stats)
 
-**Byte clean:** 91% (411/39)
+**Byte clean:** 91% (412/39)
 
 ## Meaning of this testing
 
