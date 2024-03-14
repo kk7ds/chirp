@@ -127,7 +127,16 @@ struct {
 } names[200];
 
 #seekto 0x1A08;
-bit usedflags[200];
+struct{
+    u8 block8:1,
+       block7:1,
+       block6:1,
+       block5:1,
+       block4:1,
+       block3:1,
+       block2:1,
+       block1:1;
+} usedflags[25];
 
 #seekto 0x1a28;
 struct{
@@ -169,7 +178,7 @@ struct {
   u8 unused10;
 } vfoa;
 
-//#seekto 0x1B68;
+#seekto 0x1B68;
 struct {
   lbcd rxfreqb[4];
   lbcd txfreq[4];
@@ -192,8 +201,17 @@ struct {
   u8 unused10;
 } vfob;
 
-//#seekto 0x1B78;
-bit fmusedflags[32];
+#seekto 0x1B78;
+struct{
+   u8  block8:1,
+       block7:1,
+       block6:1,
+       block5:1,
+       block4:1,
+       block3:1,
+       block2:1,
+       block1:1;
+} fmusedflags[4];
 
 #seekto 0x1c08;
 struct {
@@ -451,7 +469,16 @@ struct{
 }endcode;
 
 #seekto 0x1908;
-bit usedflags[200];
+struct{
+    u8 block8:1,
+       block7:1,
+       block6:1,
+       block5:1,
+       block4:1,
+       block3:1,
+       block2:1,
+       block1:1;
+} usedflags[25];
 
 #seekto 0x1928;
 struct{
@@ -466,7 +493,16 @@ struct{
 } scanadd[25];
 
 #seekto 0x1948;
-bit fmusedflags[32];
+struct{
+  u8  block8:1,
+       block7:1,
+       block6:1,
+       block5:1,
+       block4:1,
+       block3:1,
+       block2:1,
+       block1:1;
+} fmusedflags[4];
 
 #seekto 0x1958;
 struct {
@@ -881,10 +917,6 @@ def _do_upload(radio):
     LOG.debug("Upload all done.")
 
 
-TX_POWER = [chirp_common.PowerLevel("Low",  watts=1.00),
-            chirp_common.PowerLevel("Mid",  watts=4.00),
-            chirp_common.PowerLevel("High", watts=8.00)]
-
 TDH8_CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
     "!@#$%^&*()+-=[]:\";'<>?,./"
 
@@ -900,8 +932,7 @@ class TDH8(chirp_common.CloneModeRadio):
     _memsize = 0x1eef
     _ranges_main = [(0x0000, 0x1eef)]
     _idents = [TD_H8]
-    _vhf_range = (136000000, 175000000)
-    _uhf_range = (400000000, 521000000)
+    _bands = [(136000000, 175000000), (400000000, 521000000)]
     _rx_range = []
     _aux_block = True
     _tri_power = True
@@ -913,6 +944,9 @@ class TDH8(chirp_common.CloneModeRadio):
     _fw_ver_file_start = 0x1838
     _fw_ver_file_stop = 0x1846
     _valid_chars = TDH8_CHARSET
+    TX_POWER = [chirp_common.PowerLevel("Low",  watts=1.00),
+            chirp_common.PowerLevel("Mid",  watts=4.00),
+            chirp_common.PowerLevel("High", watts=8.00)]
 
     @classmethod
     def get_prompts(cls):
@@ -955,15 +989,15 @@ class TDH8(chirp_common.CloneModeRadio):
             "DTCS->Tone",
             "->Tone",
             "DTCS->DTCS"]
-        rf.valid_power_levels = TX_POWER
+        rf.valid_power_levels = self.TX_POWER
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_tuning_steps = STEPS
 
-        normal_bands = [self._vhf_range, self._uhf_range]
+        normal_bands = self._bands
 
         if self._mmap is None:
-            rf.valid_bands = [normal_bands[0], normal_bands[1]]
+            rf.valid_bands = [b for b in normal_bands]
         else:
             rf.valid_bands = normal_bands
         rf.valid_bands += self._rx_range
@@ -1032,6 +1066,12 @@ class TDH8(chirp_common.CloneModeRadio):
 
     def _get_scan(self, number):
         return self._memobj.scanadd[number]
+    
+    def _get_block_data(self, number):
+        return self._memobj.usedflags[number]
+
+    def _get_fmblock_data(self, number):
+        return self._memobj.fmusedflags[number]
 
     def get_memory(self, number):
         _mem = self._get_mem(number)
@@ -1051,11 +1091,17 @@ class TDH8(chirp_common.CloneModeRadio):
 
         # power
         try:
-            mem.power = TX_POWER[_mem.lowpower]
+            if self.MODEL not in H8_LIST:
+                if _mem.lowpower == 2:
+                    mem.power = self.TX_POWER[1]
+                else:
+                    mem.power = self.TX_POWER[_mem.lowpower]
+            else:
+                mem.power = self.TX_POWER[_mem.lowpower]
         except IndexError:
             LOG.error("Radio reported invalid power level %s (in %s)" %
-                      (_mem.lowpower, TX_POWER))
-            mem.power = TX_POWER[0]
+                      (_mem.lowpower, self.TX_POWER))
+            mem.power = self.TX_POWER[0]
 
         # Channel name
         for char in _nam.name:
@@ -1122,7 +1168,7 @@ class TDH8(chirp_common.CloneModeRadio):
                 mem.immutable.append('freq')
                 if mem.number >= 8 and mem.number <= 14:
                     mem.mode = 'NFM'
-                    mem.power = TX_POWER[0]
+                    mem.power = self.TX_POWER[0]
                     mem.immutable = ['freq', 'mode', 'power',
                                      'duplex', 'offset']
             elif mem.number >= 31 and mem.number <= 54:
@@ -1208,19 +1254,77 @@ class TDH8(chirp_common.CloneModeRadio):
 
         return ([x_list, y_list])
 
+    def get_block_xy(self, number):
+        if number % 8 != 0:
+            x_list = number / 8
+            y_list = number % 8
+
+        else:
+            x_list = (number / 8) - 1
+            y_list = 8
+
+        return ([x_list, y_list])
+
     def set_memory(self, mem):
         _mem = self._get_mem(mem.number)
         _nam = self._get_nam(mem.number)
 
-        # When the channel is empty, you need to set "usedflags" to 0,
-        # When the channel is used , you need to set "usedflags" to 1.
-        self._memobj.usedflags[mem.number - 1] = int(not mem.empty)
-
         if mem.empty:
-            _mem.fill_raw(b'\xFF')
+            _mem.set_raw("\xff" * 16)
+            if self.MODEL in H8_LIST:
+                _nam.set_raw("\xff" * 16)
+            else:
+                _nam.set_raw("\xff" * 8)
             return
 
-        _mem.fill_raw(b'\x00')
+        _mem.set_raw("\x00" * 16)
+
+        # When the channel is empty, you need to set "usedflags" to 0,
+        # which means it is empty.When the channel has a value,
+        # you need to set "usedflags" to 0,
+        # indicating that it contains a value.
+        # The method "get_block_xy" is due to
+        # the particularity of the structure,
+        # x represents a certain structure group,
+        # and y represents a certain byte of the structure group.
+        if not mem.empty:
+            block_xy = self.get_block_xy(mem.number)
+            _usedflags = self._get_block_data(block_xy[0])
+            if block_xy[1] == 1:
+                _usedflags.block1 = 1
+            elif block_xy[1] == 2:
+                _usedflags.block2 = 1
+            elif block_xy[1] == 3:
+                _usedflags.block3 = 1
+            elif block_xy[1] == 4:
+                _usedflags.block4 = 1
+            elif block_xy[1] == 5:
+                _usedflags.block5 = 1
+            elif block_xy[1] == 6:
+                _usedflags.block6 = 1
+            elif block_xy[1] == 7:
+                _usedflags.block7 = 1
+            elif block_xy[1] == 8:
+                _usedflags.block8 = 1
+        else:
+            block_xy = self.get_block_xy(mem.number)
+            _usedflags = self._get_block_data(block_xy[0])
+            if block_xy[1] == 1:
+                _usedflags.block1 = 0
+            elif block_xy[1] == 2:
+                _usedflags.block2 = 0
+            elif block_xy[1] == 3:
+                _usedflags.block3 = 0
+            elif block_xy[1] == 4:
+                _usedflags.block4 = 0
+            elif block_xy[1] == 5:
+                _usedflags.block5 = 0
+            elif block_xy[1] == 6:
+                _usedflags.block6 = 0
+            elif block_xy[1] == 7:
+                _usedflags.block7 = 0
+            elif block_xy[1] == 8:
+                _usedflags.block8 = 0
 
         if mem.duplex == "":
             _mem.rxfreq = _mem.txfreq = mem.freq / 10
@@ -1234,9 +1338,6 @@ class TDH8(chirp_common.CloneModeRadio):
             _mem.txfreq.fill_raw(b'\xFF')
         else:
             _mem.txfreq = mem.freq / 10
-
-        if in_range(mem.freq, self._rx_range):
-            _mem.txfreq.fill_raw(b'\xFF')
 
         _mem.rxfreq = mem.freq / 10
         _namelength = self.get_features().valid_name_length
@@ -2067,8 +2168,46 @@ class TDH8(chirp_common.CloneModeRadio):
                                     0, int(val[lenth_val:lenth_val + 2], 16))
                                 lenth_val += 2
                         self._memobj.fmmode[num - 1].fmblock = list_val
-                        self._memobj.fmusedflags[num-1] = int(val)
-
+                        if val != '00000   ':
+                            fmblock_xy = self.get_block_xy(num)
+                            _fmusedflags = self._get_fmblock_data(
+                                fmblock_xy[0])
+                            if fmblock_xy[1] == 1:
+                                _fmusedflags.block1 = 1
+                            elif fmblock_xy[1] == 2:
+                                _fmusedflags.block2 = 1
+                            elif fmblock_xy[1] == 3:
+                                _fmusedflags.block3 = 1
+                            elif fmblock_xy[1] == 4:
+                                _fmusedflags.block4 = 1
+                            elif fmblock_xy[1] == 5:
+                                _fmusedflags.block5 = 1
+                            elif fmblock_xy[1] == 6:
+                                _fmusedflags.block6 = 1
+                            elif fmblock_xy[1] == 7:
+                                _fmusedflags.block7 = 1
+                            elif fmblock_xy[1] == 8:
+                                _fmusedflags.block8 = 1
+                        else:
+                            fmblock_xy = self.get_block_xy(num)
+                            _fmusedflags = self._get_fmblock_data(
+                                fmblock_xy[0])
+                            if fmblock_xy[1] == 1:
+                                _fmusedflags.block1 = 0
+                            elif fmblock_xy[1] == 2:
+                                _fmusedflags.block2 = 0
+                            elif fmblock_xy[1] == 3:
+                                _fmusedflags.block3 = 0
+                            elif fmblock_xy[1] == 4:
+                                _fmusedflags.block4 = 0
+                            elif fmblock_xy[1] == 5:
+                                _fmusedflags.block5 = 0
+                            elif fmblock_xy[1] == 6:
+                                _fmusedflags.block6 = 0
+                            elif fmblock_xy[1] == 7:
+                                _fmusedflags.block7 = 0
+                            elif fmblock_xy[1] == 8:
+                                _fmusedflags.block8 = 0
                     elif setting == 'fmvfo' and element.value.get_mutable():
                         val = str(element.value).replace('.', '').zfill(8)
                         lenth_val = 0
@@ -2298,8 +2437,10 @@ class TDH8_HAM(TDH8):
     MODEL = "TD-H8-HAM"
     ident_mode = b'P31185\xff\xff'
     _ham = True
-    _vhf_range = (144000000, 149000000)
-    _uhf_range = (420000000, 451000000)
+    _bands = [(144000000, 149000000), (420000000, 451000000)]
+    TX_POWER = [chirp_common.PowerLevel("Low",  watts=1.00),
+            chirp_common.PowerLevel("Mid",  watts=4.00),
+            chirp_common.PowerLevel("High", watts=8.00)]
 
 
 @directory.register
@@ -2308,8 +2449,9 @@ class TDH8_GMRS(TDH8):
     MODEL = "TD-H8-GMRS"
     ident_mode = b'P31184\xff\xff'
     _gmrs = True
-    _vhf_range = (136000000, 175000000)
-    _uhf_range = (400000000, 521000000)
+    _bands = [(136000000, 175000000), (400000000, 521000000)]
+    TX_POWER = [chirp_common.PowerLevel("Low",  watts=1.00),
+            chirp_common.PowerLevel("High", watts=8.00)]
 
     def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
@@ -2333,14 +2475,17 @@ class TDH3(TDH8):
     _memsize = 0x1fef
     _ranges_main = [(0x0000, 0x1fef)]
     _idents = [TD_H3]
-    _vhf_range = (136000000, 175000000)
-    _uhf_range = (400000000, 521000000)
-    _rx_range = [(50000000, 107999000), (108000000, 136000000)]
+    _bands = [(50000000, 76000000), (76000000, 108000000),
+              (108000000, 136000000), (136000000, 174000000),
+              (174000000, 350000000), (350000000, 400000000),
+              (400000000, 470000000), (470000000, 600000000)]
     _aux_block = True
     _tri_power = True
     _gmrs = False
     _ham = False
     _mem_params = (0x1F2F)
+    TX_POWER = [chirp_common.PowerLevel("Low",  watts=1.00),
+            chirp_common.PowerLevel("High",  watts=4.00)]
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)
@@ -2352,8 +2497,9 @@ class TDH3_HAM(TDH3):
     MODEL = "TD-H3-HAM"
     ident_mode = b'P31185\xff\xff'
     _ham = True
-    _vhf_range = (144000000, 149000000)
-    _uhf_range = (420000000, 451000000)
+    _bands = [(144000000, 149000000), (420000000, 451000000)]
+    TX_POWER = [chirp_common.PowerLevel("Low",  watts=1.00),
+            chirp_common.PowerLevel("High",  watts=4.00)]
 
 
 @directory.register
@@ -2362,8 +2508,9 @@ class TDH3_GMRS(TDH3):
     MODEL = "TD-H3-GMRS"
     ident_mode = b'P31184\xff\xff'
     _gmrs = True
-    _vhf_range = (136000000, 175000000)
-    _uhf_range = (400000000, 521000000)
+    _bands = [(136000000, 175000000), (400000000, 521000000)]
+    TX_POWER = [chirp_common.PowerLevel("Low",  watts=1.00),
+            chirp_common.PowerLevel("High",  watts=4.00)]
 
     def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
