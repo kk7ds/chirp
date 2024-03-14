@@ -226,9 +226,15 @@ class RadioSettingValueList(RadioSettingValue):
     def __init__(self, options, current=None, current_index=0):
         RadioSettingValue.__init__(self)
         self._options = list(options)
-        self.queue_current(current or self._options[int(current_index)])
+        self.queue_current(current if current is not None
+                           else int(current_index))
 
     def set_value(self, value):
+        if isinstance(value, int):
+            try:
+                value = self._options[value]
+            except IndexError:
+                raise InvalidValueError("Value for %s is out of range" % value)
         if value not in self._options:
             raise InvalidValueError("%s is not valid for this setting" % value)
         RadioSettingValue.set_value(self, value)
