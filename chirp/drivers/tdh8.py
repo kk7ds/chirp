@@ -1472,7 +1472,7 @@ class TDH8(chirp_common.CloneModeRadio):
             _mic = self._memobj.mic
             rs = RadioSetting("micgain", "MIC GAIN",
                               RadioSettingValueList(
-                                  MIC_GAIN_LIST, MIC_GAIN_LIST[_mic.micgain]))
+                                  MIC_GAIN_LIST, current_index=_mic.micgain))
             basic.append(rs)
 
         if self.MODEL not in H8_LIST:
