@@ -18,6 +18,7 @@
 # Example definitions:
 #
 #  bit  foo[8];  /* Eight single bit values                 */
+#  lbit foo[16]; /* Sixteen single-bit values, little-endian*/
 #  u8   foo;     /* Unsigned 8-bit value                    */
 #  u16  foo;     /* Unsigned 16-bit value                   */
 #  ul16 foo;     /* Unsigned 16-bit value (LE)              */
@@ -952,13 +953,13 @@ class Processor:
 
         return bytes
 
-    def do_bitarray(self, i, count):
+    def do_bitarray(self, i, count, bigendian=True):
         if count % 8 != 0:
             raise ValueError("bit array must be divisible by 8.")
 
         class bitDE(bitDataElement):
             _nbits = 1
-            _shift = 8 - i % 8
+            _shift = (8 - i % 8) if bigendian else (i % 8) + 1
 
         return bitDE(self._data, self._offset)
 
@@ -990,6 +991,9 @@ class Processor:
             for i in range(0, count):
                 if dtype == "bit":
                     gen = self.do_bitarray(i, count)
+                    self._offset += int((i+1) % 8 == 0)
+                elif dtype == "lbit":
+                    gen = self.do_bitarray(i, count, bigendian=False)
                     self._offset += int((i+1) % 8 == 0)
                 else:
                     gen = self._types[dtype](self._data, self._offset)

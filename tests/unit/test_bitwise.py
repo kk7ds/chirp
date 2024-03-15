@@ -192,6 +192,16 @@ class TestBitType(BaseTest):
             obj.foo[i] = i % 2
         self.assertEqual(data.get_packed(), b"\x55\x55\x55")
 
+    def test_lbit_array(self):
+        defn = "lbit foo[24];"
+        data = memmap.MemoryMapBytes(bytes(b"\x00\x20\x80"))
+        obj = bitwise.parse(defn, data)
+        for i, v in [(0, False), (13, True), (23, True)]:
+            self.assertEqual(bool(obj.foo[i]), v)
+        for i in range(0, 24):
+            obj.foo[i] = i % 2
+        self.assertEqual(data.get_packed(), b"\xAA\xAA\xAA")
+
     def test_bit_array_fail(self):
         self.assertRaises(ValueError, bitwise.parse, "bit foo[23];", b"000")
 
