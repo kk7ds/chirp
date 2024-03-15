@@ -127,7 +127,7 @@ struct {
 } names[200];
 
 #seekto 0x1A08;
-bit usedflags[200];
+lbit usedflags[200];
 
 #seekto 0x1a28;
 struct{
@@ -193,7 +193,7 @@ struct {
 } vfob;
 
 //#seekto 0x1B78;
-bit fmusedflags[32];
+lbit fmusedflags[32];
 
 #seekto 0x1c08;
 struct {
@@ -451,7 +451,7 @@ struct{
 }endcode;
 
 #seekto 0x1908;
-bit usedflags[200];
+lbit usedflags[200];
 
 #seekto 0x1928;
 struct{
@@ -466,7 +466,7 @@ struct{
 } scanadd[25];
 
 #seekto 0x1948;
-bit fmusedflags[32];
+lbit fmusedflags[32];
 
 #seekto 0x1958;
 struct {
