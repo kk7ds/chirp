@@ -130,16 +130,7 @@ struct {
 lbit usedflags[200];
 
 #seekto 0x1a28;
-struct{
-  u8 scan8:1,
-     scan7:1,
-     scan6:1,
-     scan5:1,
-     scan4:1,
-     scan3:1,
-     scan2:1,
-     scan1:1;
-} scanadd[25];
+lbit scanadd[200];
 
 #seekto 0x1B38;
 struct{
@@ -454,16 +445,7 @@ struct{
 lbit usedflags[200];
 
 #seekto 0x1928;
-struct{
-  u8 scan8:1,
-     scan7:1,
-     scan6:1,
-     scan5:1,
-     scan4:1,
-     scan3:1,
-     scan2:1,
-     scan1:1;
-} scanadd[25];
+lbit scanadd[200];
 
 #seekto 0x1948;
 lbit fmusedflags[32];
@@ -1023,9 +1005,6 @@ class TDH8(chirp_common.CloneModeRadio):
     def _get_get_scanvfo(self, number):
         return self._memobj.fmvfo[number]
 
-    def _get_scan(self, number):
-        return self._memobj.scanadd[number]
-
     def get_memory(self, number):
         _mem = self._get_mem(number)
         _nam = self._get_nam(number)
@@ -1082,20 +1061,7 @@ class TDH8(chirp_common.CloneModeRadio):
 
         chirp_common.split_tone_decode(mem, txtone, rxtone)
 
-        # skip/scanadd
-        scan_val_list = []
-        for x in range(25):
-            a = self._get_scan(x)
-            for i in range(0, 8):
-                scan_val = (getattr(a, 'scan%i' % (i+1)))
-                # print(str(scan_val)[3])
-                used_scan_val = str(scan_val)[3]
-                scan_val_list.append(used_scan_val)
-
-        if int(scan_val_list[number - 1]) == 0:
-            mem.skip = 'S'
-        elif int(scan_val_list[number - 1]) == 1:
-            mem.skip = ''
+        mem.skip = '' if self._memobj.scanadd[mem.number - 1] else 'S'
 
         if int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
@@ -1260,25 +1226,7 @@ class TDH8(chirp_common.CloneModeRadio):
             _mem.lowpower = 0
 
         # Skip/Scanadd Setting
-        scanlist = self._get_scan_list(mem.number)
-        _scan = self._get_scan(scanlist[0])
-
-        if scanlist[1] == 1:
-            _scan.scan1 = mem.skip != "S"
-        elif scanlist[1] == 2:
-            _scan.scan2 = mem.skip != "S"
-        elif scanlist[1] == 3:
-            _scan.scan3 = mem.skip != "S"
-        elif scanlist[1] == 4:
-            _scan.scan4 = mem.skip != "S"
-        elif scanlist[1] == 5:
-            _scan.scan5 = mem.skip != "S"
-        elif scanlist[1] == 6:
-            _scan.scan6 = mem.skip != "S"
-        elif scanlist[1] == 7:
-            _scan.scan7 = mem.skip != "S"
-        elif scanlist[1] == 8:
-            _scan.scan8 = mem.skip != "S"
+        self._memobj.scanadd[mem.number - 1] = mem.skip != 'S'
 
         for setting in mem.extra:
             if (self.ident_mode == b'P31185\xff\xff' or
