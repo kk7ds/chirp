@@ -620,8 +620,6 @@ TDRAB_LIST = ["Off"] + AB_LIST
 TDRCH_LIST = ["CH%s" % x for x in range(1, 129)]
 TIMEOUT_LIST = ["%s sec" % x for x in range(15, 615, 15)] + \
     ["Off (if supported by radio)"]
-TXPOWER_LIST = ["High", "Low"]
-TXPOWER3_LIST = ["High", "Mid", "Low"]
 VOICE_LIST = ["Off", "English", "Chinese"]
 VOX_LIST = ["OFF"] + ["%s" % x for x in range(1, 11)]
 WORKMODE_LIST = ["Frequency", "Channel"]
@@ -863,10 +861,6 @@ def _do_upload(radio):
     LOG.debug("Upload all done.")
 
 
-TX_POWER = [chirp_common.PowerLevel("Low",  watts=1.00),
-            chirp_common.PowerLevel("Mid",  watts=4.00),
-            chirp_common.PowerLevel("High", watts=8.00)]
-
 TDH8_CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
     "!@#$%^&*()+-=[]:\";'<>?,./"
 
@@ -894,6 +888,9 @@ class TDH8(chirp_common.CloneModeRadio):
     _fw_ver_file_start = 0x1838
     _fw_ver_file_stop = 0x1846
     _valid_chars = TDH8_CHARSET
+    _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
+                 chirp_common.PowerLevel("Mid",  watts=4.00),
+                 chirp_common.PowerLevel("High", watts=8.00)]
 
     @classmethod
     def get_prompts(cls):
@@ -936,7 +933,7 @@ class TDH8(chirp_common.CloneModeRadio):
             "DTCS->Tone",
             "->Tone",
             "DTCS->DTCS"]
-        rf.valid_power_levels = TX_POWER
+        rf.valid_power_levels = self._tx_power
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_tuning_steps = STEPS
@@ -1020,11 +1017,11 @@ class TDH8(chirp_common.CloneModeRadio):
 
         # power
         try:
-            mem.power = TX_POWER[_mem.lowpower]
+            mem.power = self._tx_power[_mem.lowpower]
         except IndexError:
             LOG.error("Radio reported invalid power level %s (in %s)" %
-                      (_mem.lowpower, TX_POWER))
-            mem.power = TX_POWER[0]
+                      (_mem.lowpower, self._tx_power))
+            mem.power = self._tx_power[0]
 
         # Channel name
         for char in _nam.name:
@@ -1076,7 +1073,7 @@ class TDH8(chirp_common.CloneModeRadio):
                 mem.immutable.append('freq')
                 if mem.number >= 8 and mem.number <= 14:
                     mem.mode = 'NFM'
-                    mem.power = TX_POWER[0]
+                    mem.power = self._tx_power[0]
                     mem.immutable = ['freq', 'mode', 'power',
                                      'duplex', 'offset']
             elif mem.number >= 31 and mem.number <= 54:
@@ -2244,6 +2241,8 @@ class TDH8_GMRS(TDH8):
     ident_mode = b'P31184\xff\xff'
     _gmrs = True
     _txbands = [(136000000, 175000000), (400000000, 521000000)]
+    _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
+                 chirp_common.PowerLevel("High", watts=8.00)]
 
     def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
@@ -2274,6 +2273,8 @@ class TDH3(TDH8):
     _gmrs = False
     _ham = False
     _mem_params = (0x1F2F)
+    _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
+                 chirp_common.PowerLevel("High",  watts=4.00)]
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)
