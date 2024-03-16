@@ -1015,9 +1015,6 @@ class TDH8(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        # receiving frequency
-        mem.freq = int(_mem.rxfreq) * 10
-
         # narrow and wide
         mem.mode = _mem.wide and "NFM" or "FM"
 
@@ -1063,16 +1060,14 @@ class TDH8(chirp_common.CloneModeRadio):
 
         mem.skip = '' if self._memobj.scanadd[mem.number - 1] else 'S'
 
-        if int(_mem.rxfreq) == int(_mem.txfreq):
-            mem.duplex = ""
-            mem.offset = 0
-        elif (_mem.txfreq.get_raw()[0] == 0xFF and
-              _mem.rxfreq.get_raw()[0] != 0xFF):
+        mem.freq = int(_mem.rxfreq) * 10
+        if _mem.txfreq.get_raw() == b'\xff\xff\xff\xff':
             mem.offset = 0
             mem.duplex = 'off'
         else:
-            mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
-            mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
+            chirp_common.split_to_offset(mem,
+                                         int(_mem.rxfreq) * 10,
+                                         int(_mem.txfreq) * 10)
 
         if self._gmrs:
             # mem.duplex = ""
