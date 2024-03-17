@@ -15,21 +15,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
 import os
 import sys
 import serial
-import commands
 
-from chirp import idrp, chirp_common
+from chirp import chirp_common
+from chirp.drivers import idrp
 
 
-def open_device():
+def open_device(dev):
     try:
-        s = serial.Serial(port="/dev/icom",
+        s = serial.Serial(port=dev,
                           baudrate=idrp.IDRPx000V.BAUD_RATE,
                           timeout=0.1)
-    except Exception, e:
-        print "Unable to open serial port %s: %s" % ("/dev/icom", e)
+    except Exception as e:
+        print("Unable to open serial port %s: %s" % (dev, e))
         return None
 
     rp = idrp.IDRPx000V(s)
@@ -37,15 +38,15 @@ def open_device():
     return rp
 
 
-def read_freq():
-    rp = open_device()
+def read_freq(dev):
+    rp = open_device(dev)
     if not rp:
         return 0
 
     try:
         mem = rp.get_memory(0)
-    except Exception, e:
-        print "Unable to read memory from device: %s" % e
+    except Exception as e:
+        print("Unable to read memory from device: %s" % e)
         return 0
 
     rp.pipe.close()
@@ -56,32 +57,32 @@ def read_freq():
 def _set_freq(rp):
     try:
         mem = rp.get_memory(0)
-    except Exception, e:
-        print "Unable to read memory from device: %s" % e
+    except Exception as e:
+        print("Unable to read memory from device: %s" % e)
         return False
 
-    print "\nNew frequency [%s]: " % chirp_common.format_freq(mem.freq),
+    print("\nNew frequency [%s]: " % chirp_common.format_freq(mem.freq))
     input = sys.stdin.readline().strip()
 
     if not input:
-        print "Frequency unchanged"
+        print("Frequency unchanged")
         return False
 
     try:
         mem.freq = chirp_common.parse_freq(input)
     except Exception:
-        print "Invalid entry `%s'" % input
+        print("Invalid entry `%s'" % input)
         return False
 
     try:
         rp.set_memory(mem)
-    except Exception, e:
-        print "Failed to set frequency to %s: %s" % \
-            (chirp_common.format_freq(mem.freq), e)
+    except Exception as e:
+        print("Failed to set frequency to %s: %s" % (
+                  chirp_common.format_freq(mem.freq), e))
         return False
 
-    print "Successfully set frequency to %s" % \
-        chirp_common.format_freq(mem.freq)
+    print("Successfully set frequency to %s" % (
+              chirp_common.format_freq(mem.freq)))
     return True
 
 
@@ -92,25 +93,25 @@ def set_freq():
 
     try:
         res = _set_freq(rp)
-    except Exception, e:
-        print "Unknown error while setting frequency: %s" % e
+    except Exception as e:
+        print("Unknown error while setting frequency: %s" % e)
         res = False
 
     rp.pipe.close()
     return res
 
 
-def main_menu():
-    print "Looking for a repeater...",
+def main_menu(dev):
+    print("Looking for a repeater...")
     sys.stdout.flush()
-    freq = read_freq()
+    freq = read_freq(dev)
     if not freq:
         return 1
-    print "\r                                          \r",
+    print("\r                                          \r")
 
     cmd = ""
     while cmd != "3":
-        print """
+        print("""
 KK7DS ID-RP* Frequency Tool
 Current Setting: %s
 --------------------------------
@@ -118,31 +119,23 @@ Current Setting: %s
 2. Re-read current frequency
 3. Quit
 --------------------------------
-> """ % chirp_common.format_freq(freq),
+> """ % chirp_common.format_freq(freq))
 
         cmd = sys.stdin.readline().strip()
 
         if cmd == "1":
-            if set_freq():
-                freq = read_freq()
+            if set_freq(dev):
+                freq = read_freq(dev)
         elif cmd == "2":
-            freq = read_freq()
+            freq = read_freq(dev)
         elif cmd != "3":
-            print "Invalid entry"
+            print("Invalid entry")
 
     return 0
 
 
 if __name__ == "__main__":
-    if os.path.exists("tools/icomsio.sh"):
-        path = "tools/icomsio.sh"
-    else:
-        path = "icomsio.sh"
-    r = os.system(path)
-    if r:
-        sys.exit(r)
-
-    if not os.geteuid() == 0:
-        print "Sorry, this must be run as root"
-        sys.exit(1)
-    sys.exit(main_menu())
+    p = argparse.ArgumentParser()
+    p.add_argument('dev', help='Serial device')
+    args = p.parse_args()
+    sys.exit(main_menu(args.dev))
