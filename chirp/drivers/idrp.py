@@ -25,10 +25,10 @@ def parse_frames(buf):
     """Parse frames from the radio"""
     frames = []
 
-    while "\xfe\xfe" in buf:
+    while b"\xfe\xfe" in buf:
         try:
-            start = buf.index("\xfe\xfe")
-            end = buf[start:].index("\xfd") + start + 1
+            start = buf.index(b"\xfe\xfe")
+            end = buf[start:].index(b"\xfd") + start + 1
         except Exception:
             LOG.error("Unable to parse frames")
             break
@@ -41,10 +41,10 @@ def parse_frames(buf):
 
 def send(pipe, buf):
     """Send data in @buf to @pipe"""
-    pipe.write("\xfe\xfe%s\xfd" % buf)
+    pipe.write(b"\xfe\xfe%s\xfd" % buf)
     pipe.flush()
 
-    data = ""
+    data = b""
     while True:
         buf = pipe.read(4096)
         if not buf:
@@ -58,7 +58,7 @@ def send(pipe, buf):
 
 def send_magic(pipe):
     """Send the magic wakeup call to @pipe"""
-    send(pipe, ("\xfe" * 15) + "\x01\x7f\x19")
+    send(pipe, (b"\xfe" * 15) + b"\x01\x7f\x19")
 
 
 def drain(pipe):
@@ -72,14 +72,14 @@ def drain(pipe):
 def set_freq(pipe, freq):
     """Set the frequency of the radio on @pipe to @freq"""
     freqbcd = util.bcd_encode(freq, bigendian=False, width=9)
-    buf = "\x01\x7f\x05" + freqbcd
+    buf = b"\x01\x7f\x05" + freqbcd
 
     drain(pipe)
     send_magic(pipe)
     resp = send(pipe, buf)
     for frame in resp:
         if len(frame) == 6:
-            if frame[4] == "\xfb":
+            if frame[4] == b"\xfb":
                 return True
 
     raise errors.InvalidDataError("Repeater reported error")
@@ -87,14 +87,14 @@ def set_freq(pipe, freq):
 
 def get_freq(pipe):
     """Get the frequency of the radio attached to @pipe"""
-    buf = "\x01\x7f\x1a\x09"
+    buf = b"\x01\x7f\x1a\x09"
 
     drain(pipe)
     send_magic(pipe)
     resp = send(pipe, buf)
 
     for frame in resp:
-        if frame[4] == "\x03":
+        if frame[4] == b"\x03":
             els = frame[5:10]
 
             freq = int("%02x%02x%02x%02x%02x" % (ord(els[4]),
