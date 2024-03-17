@@ -545,6 +545,7 @@ class ChirpSettingGrid(wx.Panel):
             e.SetValue(choices.index(str(value)))
         else:
             e.SetValueToUnspecified()
+        return e
 
     def _get_editor_bool(self, setting, value):
         prop = wx.propgrid.BoolProperty(setting.get_shortname(),
