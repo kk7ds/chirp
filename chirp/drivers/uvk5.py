@@ -884,12 +884,12 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         mem.extra = RadioSettingGroup("Extra", "extra")
 
         # BCLO
-        is_bclo = bool(_mem.bclo > 0)
+        is_bclo = not mem.empty and bool(_mem.bclo > 0)
         rs = RadioSetting("bclo", "BCLO", RadioSettingValueBoolean(is_bclo))
         mem.extra.append(rs)
 
         # Frequency reverse - whatever that means, don't see it in the manual
-        is_frev = bool(_mem.freq_reverse > 0)
+        is_frev = not mem.empty and bool(_mem.freq_reverse > 0)
         rs = RadioSetting("frev", "FreqRev", RadioSettingValueBoolean(is_frev))
         mem.extra.append(rs)
 
@@ -903,7 +903,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         mem.extra.append(rs)
 
         # DTMF DECODE
-        is_dtmf = bool(_mem.dtmf_decode > 0)
+        is_dtmf = not mem.empty and bool(_mem.dtmf_decode > 0)
         rs = RadioSetting("dtmfdecode", _("DTMF decode"),
                           RadioSettingValueBoolean(is_dtmf))
         mem.extra.append(rs)
