@@ -30,7 +30,7 @@ def parse_frames(buf):
             start = buf.index(b"\xfe\xfe")
             end = buf[start:].index(b"\xfd") + start + 1
         except Exception:
-            LOG.error("Unable to parse frames")
+            LOG.error("Unable to parse frames (buffer %i)", len(buf))
             break
 
         frames.append(buf[start:end])
@@ -53,11 +53,13 @@ def send(pipe, buf):
         data += buf
         LOG.debug("Got: \n%s" % util.hexprint(buf))
 
+    LOG.debug('Sent %i bytes, received %i', len(buf), len(data))
     return parse_frames(data)
 
 
 def send_magic(pipe):
     """Send the magic wakeup call to @pipe"""
+    LOG.debug('Sending magic wakeup')
     send(pipe, (b"\xfe" * 15) + b"\x01\x7f\x19")
 
 
@@ -104,6 +106,8 @@ def get_freq(pipe):
                                                  ord(els[0])))
             LOG.debug("Freq: %f" % freq)
             return freq
+        else:
+            LOG.debug('Unhandled frame type %i', frame[4])
 
     raise errors.InvalidDataError("No frequency frame received")
 

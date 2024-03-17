@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
-import os
+import logging
 import sys
 import serial
 
@@ -137,5 +137,7 @@ Current Setting: %s
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument('dev', help='Serial device')
+    p.add_argument('--debug', action='store_true')
     args = p.parse_args()
+    logging.basicConfig(level=logging.DEBUG if args.debug else logging.WARNING)
     sys.exit(main_menu(args.dev))
