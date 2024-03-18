@@ -117,7 +117,7 @@ struct {
 
 #seekto 0x0CD8;
 struct{
-    u8 fmblock[4];
+    lbcd fmblock[4];
 }fmmode[25];
 
 #seekto 0x0D48;
@@ -133,9 +133,7 @@ lbit usedflags[200];
 lbit scanadd[200];
 
 #seekto 0x1B38;
-struct{
-    u8 vfo[4];
-}fmvfo;
+lbcd fmvfo[4];
 
 #seekto 0x1B58;
 struct {
@@ -367,7 +365,7 @@ struct {
 
 #seekto 0x0CD8;
 struct{
-    u8 fmblock[4];
+    lbcd fmblock[4];
 }fmmode[25];
 
 #seekto 0x0D48;
@@ -497,10 +495,7 @@ struct {
 } vfob;
 
 //#seekto 0x1978;
-struct{
-    u8 vfo[4];
-}fmvfo;
-
+lbcd fmvfo[4];
 
 #seekto 0x1c08;
 struct {
@@ -1579,36 +1574,33 @@ class TDH8(chirp_common.CloneModeRadio):
         fmmode.append(rs)
 
         # FM
+        numeric = '0123456789.'
         for i in range(25):
-            _fm = self._get_fm(i).fmblock
-            _fm_len = len(_fm) - 1
-            _fm_temp = ''
-            for x in range(_fm_len, -1, -1):
-                _fm_temp += str(_fm[x])[2:]
-            if _fm_temp == "00000000" or _fm_temp == 'FFFFFFFF':
-                rs = RadioSetting('block' + str(i), "Channel" + " " + str(i+1),
-                                  RadioSettingValueString(0, 5, ""))
+            if self._memobj.fmusedflags[i]:
+                _fm = self._get_fm(i).fmblock
+                try:
+                    assert 760 < int(_fm) < 1080
+                    val = '%.1f' % (int(_fm) / 10)
+                except (ValueError, AssertionError):
+                    LOG.warning('FM channel index %i is invalid', i)
+                    val = ''
             else:
-                _fm_block = int(_fm_temp)
-                _fm_block = '%i.%i' % (_fm_block / 10, _fm_block % 10)
-                rs = RadioSetting('block' + str(i), "Channel" + " " + str(i+1),
-                                  RadioSettingValueString(0, 5, _fm_block))
+                val = ''
+            rs = RadioSetting('block%02i' % i, "Channel %i" % (i + 1),
+                              RadioSettingValueString(0, 5,
+                                                      val,
+                                                      False, charset=numeric))
             fmmode.append(rs)
 
-        _fmv = self._memobj.fmvfo.vfo
-        _fmv_len = len(_fmv) - 1
-        _fmv_temp = ''
-        for x in range(_fmv_len, -1, -1):
-            _fmv_temp += str(_fmv[x])[2:]
         try:
-            _fmv_block = int(_fmv_temp)
+            _fmv = int(self._memobj.fmvfo) / 10
         except ValueError:
-            LOG.error('Invalid fmv_block %s' % _fmv_temp)
-            _fmv_block = 0
-        _fmv_block = '%i.%i' % (_fmv_block / 10, _fmv_block % 10)
+            LOG.warning('FM VFO is invalid')
+            _fmv = 0
+
         rs = RadioSetting(
             "fmvfo", "VFO", RadioSettingValueFloat(
-                76.0, 108.0, _fmv_block, 0.1, 1))
+                76.0, 108.0, _fmv, 0.1, 1))
         fmmode.append(rs)
 
         # DTMF
@@ -1783,7 +1775,7 @@ class TDH8(chirp_common.CloneModeRadio):
 
         def fm_validate(value):
             if 760 > value or value > 1080:
-                msg = ("FM Channel muse be between 76.0-108.0")
+                msg = ("FM Channel must be between 76.0-108.0")
                 raise InvalidValueError(msg)
 
         _settings = self._memobj.settings
@@ -1835,7 +1827,7 @@ class TDH8(chirp_common.CloneModeRadio):
                         obj = _fmmode
                         setting = element.get_name()
                     elif "fmvfo" in name:
-                        obj = self._memobj.fmvfo.vfo
+                        obj = self._memobj.fmvfo
                         setting = element.get_name()
                     elif "gcode" in name:
                         obj = self._memobj.groupcode.gcode
@@ -1985,35 +1977,22 @@ class TDH8(chirp_common.CloneModeRadio):
 
                     # FM
                     elif "block" in name:
-
-                        val = str(element.value).replace('.', '').zfill(8)
-                        num = int(element.get_name().replace('block', '')) + 1
-                        lenth_val = 0
-                        list_val = []
-                        if str(element.value)[0] == ' ':
-                            list_val = [0, 0, 0, 0]
+                        num = int(name[-2:], 10)
+                        val = str(element.value)
+                        if val.strip():
+                            try:
+                                val = int(float(val) * 10)
+                            except ValueError:
+                                raise InvalidValueError(
+                                    'Value must be between 76.0-108.0')
+                            fm_validate(val)
                         else:
-                            val = val.replace(' ', '').zfill(8)
-                            fm_validate(int(val))
-                            while lenth_val < (len(val)):
-                                list_val.insert(
-                                    0, int(val[lenth_val:lenth_val + 2], 16))
-                                lenth_val += 2
-                        self._memobj.fmmode[num - 1].fmblock = list_val
-                        self._memobj.fmusedflags[num-1] = int(val)
+                            val = 0
+                        self._memobj.fmmode[num].fmblock = val
+                        self._memobj.fmusedflags[num] = bool(val)
 
                     elif setting == 'fmvfo' and element.value.get_mutable():
-                        val = str(element.value).replace('.', '').zfill(8)
-                        lenth_val = 0
-                        list_val = []
-                        if " " in val:
-                            list_val = [0, 0, 0, 0]
-                        else:
-                            while lenth_val < (len(val)):
-                                list_val.insert(
-                                    0, int(val[lenth_val:lenth_val + 2], 16))
-                                lenth_val += 2
-                        self._memobj.fmvfo.vfo = list_val
+                        self._memobj.fmvfo = int(element.value * 10)
 
                     elif setting == 'gcode' and element.value.get_mutable():
                         val = str(element.value)
