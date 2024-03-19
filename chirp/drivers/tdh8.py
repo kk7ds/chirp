@@ -928,7 +928,7 @@ class TDH8(chirp_common.CloneModeRadio):
             "DTCS->Tone",
             "->Tone",
             "DTCS->DTCS"]
-        rf.valid_power_levels = self._tx_power
+        rf.valid_power_levels = [x for x in self._tx_power if x]
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_modes = ["FM", "NFM"]
         rf.valid_tuning_steps = STEPS
@@ -2221,6 +2221,7 @@ class TDH8_GMRS(TDH8):
     _gmrs = True
     _txbands = [(136000000, 175000000), (400000000, 521000000)]
     _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
+                 None,  # No mid power
                  chirp_common.PowerLevel("High", watts=8.00)]
 
     def validate_memory(self, mem):
@@ -2253,6 +2254,7 @@ class TDH3(TDH8):
     _ham = False
     _mem_params = (0x1F2F)
     _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
+                 None,  # No mid power on H3
                  chirp_common.PowerLevel("High",  watts=4.00)]
 
     def process_mmap(self):
