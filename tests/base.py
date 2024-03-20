@@ -132,6 +132,14 @@ class DriverTest(unittest.TestCase):
     def assertEqualMem(self, a, b, ignore=None):
         if a.tmode == "Cross":
             tx_mode, rx_mode = a.cross_mode.split("->")
+        if ignore is None:
+            ignore = []
+
+        if a.duplex == b.duplex == 'off':
+            # If we're asking for duplex=off, we should not obsess over the
+            # driver keeping track of our offset, as it may use the offset
+            # field to manage the TX behavior
+            ignore.append('offset')
 
         a_vals = {}
         b_vals = {}
