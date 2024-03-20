@@ -427,6 +427,8 @@ class ChirpSettingGrid(wx.Panel):
                     editor = self._get_editor_bool(element, value)
                 elif isinstance(value, settings.RadioSettingValueString):
                     editor = self._get_editor_str(element, value)
+                elif isinstance(value, settings.RadioSettingValueRGB):
+                    editor = self._get_editor_rgb(element, value)
                 else:
                     LOG.warning('Unsupported setting type %r' % value)
                     editor = None
@@ -572,6 +574,11 @@ class ChirpSettingGrid(wx.Panel):
             e.SetValueToUnspecified()
         return e
 
+    def _get_editor_rgb(self, setting, value):
+        return wx.propgrid.ColourProperty(setting.get_shortname(),
+                                          setting.get_name(),
+                                          wx.Colour(*value.get_value()))
+
     def get_setting_values(self):
         """Return a dict of {name: (RadioSetting, newvalue)}"""
         values = {}
@@ -581,7 +588,10 @@ class ChirpSettingGrid(wx.Panel):
             if prop.IsValueUnspecified():
                 continue
             basename = prop.GetName().split(INDEX_CHAR)[0]
-            if isinstance(prop, wx.propgrid.EnumProperty):
+            if isinstance(prop, wx.propgrid.ColourProperty):
+                c = prop.GetValue()
+                value = c.red, c.green, c.blue
+            elif isinstance(prop, wx.propgrid.EnumProperty):
                 value = self._choices[basename][prop.GetValue()]
             else:
                 value = prop.GetValue()
