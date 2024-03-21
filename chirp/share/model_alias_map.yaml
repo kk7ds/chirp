@@ -95,6 +95,8 @@ Baofeng/Pofung:
   model: P11UV
 - alt: Radioddity UV-5G
   model: UV-5G
+- alt: Baofeng GM-5RH
+  model: UV-5G Plus
 - alt: BF-F8HP
   model: UV-5R HTQ
 - alt: BF-F8HP
