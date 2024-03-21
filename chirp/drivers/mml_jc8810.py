@@ -1271,6 +1271,7 @@ class RT470Radio(JC8810base):
 
     # pcb 2
     _fingerprint_pcb2 = [b"\x00\x00\x00\x2C\x00\x20\xD8\x04",  # fw v2.11A
+                         b"\x00\x00\x00\x36\x00\x20\xDC\x04",  # fw v2.13A
                          ]
 
     _fingerprint = _fingerprint_pcb1 + _fingerprint_pcb2
