@@ -66,6 +66,7 @@ Baofeng_BF-T20FRS,@KC9HI,17-Dec-2023
 Baofeng_BF-T8,@KC9HI,30-Nov-2022
 Baofeng_BF-V8A,@KC9HI,28-Nov-2022
 Baofeng_F-11,+Baofeng_UV-5R,18-Nov-2022
+Baofeng_GM-5RH,@KC9HI,21-Mar-2024
 Baofeng_GT-3WP,@KC9HI,3-Dec-2022
 Baofeng_GT-5R,@KC9HI,18-Nov-2022
 Baofeng_UV-3R,@yarda,26-Sep-2022

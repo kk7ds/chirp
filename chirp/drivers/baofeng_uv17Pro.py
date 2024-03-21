@@ -31,6 +31,8 @@ LOG = logging.getLogger(__name__)
 # Baofeng UV-17L magic string
 MSTRING_UV17L = b"PROGRAMBFNORMALU"
 MSTRING_UV17PROGPS = b"PROGRAMCOLORPROU"
+# Baofeng GM-5RH magic string
+MSTRING_GM5RH = b"PROGRAMBFGMRS05U"
 
 DTMF_CHARS = "0123456789 *#ABCD"
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -1339,3 +1341,19 @@ class BF5RM(UV17Pro):
 class BFK5Plus(BF5RM):
     VENDOR = "Baofeng"
     MODEL = "K5-Plus"
+
+
+@directory.register
+class GM5RH(UV17Pro):
+    VENDOR = "Baofeng"
+    MODEL = "GM-5RH"
+
+    VALID_BANDS = [UV17Pro._vhf_range, UV17Pro._vhf2_range, UV17Pro._uhf_range]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Low", watts=0.50),
+                    chirp_common.PowerLevel("Medium", watts=3.00)]
+    SCODE_LIST = ["%s" % x for x in range(1, 16)]
+    LIST_PW_SAVEMODE = ["Off", "1:1", "2:1", "3:1", "4:1"]
+    _has_workmode_support = True
+
+    _magic = MSTRING_GM5RH
