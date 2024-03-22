@@ -24,6 +24,7 @@ LOG = logging.getLogger(__name__)
 
 class DetectorRadio(chirp_common.Radio):
     """Minimal radio for model detection"""
+    MUNCH_CLONE_RESP = False
 
     def get_payload(self, data, raw, checksum):
         return data

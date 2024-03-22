@@ -210,7 +210,10 @@ def get_model_data(radio, mdata=b"\x00\x00\x00\x00", stream=None):
         stream = RadioStream(radio.pipe)
     frames = stream.get_frames()
 
-    if len(frames) != 1:
+    if len(frames) > 1:
+        LOG.debug('Got %i frames: %r', frames)
+        raise errors.RadioError("Received unexpected frame count")
+    elif len(frames) != 1:
         raise errors.RadioError("Unexpected response from radio")
 
     LOG.debug('Model query result:\n%s' % frames[0])
@@ -227,15 +230,16 @@ def get_clone_resp(pipe, length=None, max_count=None):
             if cnt >= max_count:
                 return True
         if length is None:
-            return buf.endswith("\xfd")
+            return buf.endswith(b"\xfd")
         else:
             return len(buf) == length
 
-    resp = ""
+    resp = b""
     cnt = 0
     while not exit_criteria(resp, length, cnt, max_count):
         resp += pipe.read(1)
         cnt += 1
+    LOG.debug('Munched %i bytes: %s', len(resp), util.hexprint(resp))
     return resp
 
 
@@ -258,6 +262,9 @@ def send_clone_frame(radio, cmd, data, raw=False, checksum=False):
         pass
 
     radio.pipe.write(frame.pack())
+    if radio.MUNCH_CLONE_RESP:
+        # Do max 2*len(frame) read(1) calls
+        get_clone_resp(radio.pipe, max_count=2*len(frame.pack()))
 
     return frame
 
@@ -806,6 +813,15 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     VENDOR = "Icom"
     BAUDRATE = 9600
     NEEDS_COMPAT_SERIAL = False
+    # Ideally, the driver should read clone response after each clone frame
+    # is sent, but for some reason it hasn't behaved this way for years.
+    # So not to break the existing tested drivers the MUNCH_CLONE_RESP flag
+    # was added. It's False by default which brings the old behavior,
+    # i.e. clone response is not read. The expectation is that new Icom
+    # drivers will use MUNCH_CLONE_RESP = True and old drivers will be
+    # gradually migrated to this. Once all Icom drivers will use
+    # MUNCH_CLONE_RESP = True, this flag will be removed.
+    MUNCH_CLONE_RESP = False
     FORMATS = [directory.register_format('Icom ICF', '*.icf')]
 
     _model = "\x00\x00\x00\x00"  # 4-byte model string

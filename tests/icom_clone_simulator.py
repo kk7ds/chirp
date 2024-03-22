@@ -144,6 +144,9 @@ class FakeIcomRadio(object):
         assert isinstance(
             data, bytes), 'Bytes required, %s received' % data.__class__
 
+        if self._radio.MUNCH_CLONE_RESP:
+            self.queue(data)
+
         while data.startswith(b'\xfe\xfe\xfe'):
             data = data[1:]
 
