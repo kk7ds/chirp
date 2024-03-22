@@ -3,6 +3,7 @@
 **.pyc
 **.orig
 **.rej
+PKG-INFO
 dist
 build/bdist
 tools/cpep8.venv/
