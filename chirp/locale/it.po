@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-10 10:13-0700\n"
+"POT-Creation-Date: 2024-03-29 14:51-0700\n"
 "PO-Revision-Date: 2024-01-20 12:24+0100\n"
 "Last-Translator: Daniele Forsi <iu5hkx@gmail.com>\n"
 "Language-Team: \n"
@@ -655,7 +655,7 @@ msgstr "Tutti i formati supportati|"
 msgid "Amateur"
 msgstr "Radioamatore"
 
-#: ../wxui/common.py:606 ../wxui/common.py:633
+#: ../wxui/common.py:609 ../wxui/common.py:636
 msgid "An error has occurred"
 msgstr "Si è verificato un errore"
 
@@ -1130,7 +1130,7 @@ msgstr ""
 #: ../drivers/btech.py:690 ../drivers/gmrsuv1.py:392
 #: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:340
 #: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
-#: ../drivers/baofeng_uv17Pro.py:439 ../drivers/bf_t1.py:483
+#: ../drivers/baofeng_uv17Pro.py:441 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1245,7 +1245,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:334 ../drivers/gmrsuv1.py:398
 #: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
 #: ../drivers/uv6r.py:346 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
-#: ../drivers/baofeng_uv17Pro.py:445
+#: ../drivers/baofeng_uv17Pro.py:447
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1355,7 +1355,7 @@ msgstr "Informazioni"
 msgid "Insert Row Above"
 msgstr "Inserisci riga sopra"
 
-#: ../wxui/__init__.py:51
+#: ../wxui/__init__.py:64
 msgid "Install desktop icon?"
 msgstr "Installare l'icona per il desktop?"
 
@@ -2223,7 +2223,7 @@ msgid ""
 "model and try again."
 msgstr ""
 
-#: ../wxui/common.py:684
+#: ../wxui/common.py:687
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Impossibile rivelare %s su questo sistema"
@@ -2329,7 +2329,7 @@ msgstr ""
 msgid "Welcome"
 msgstr "Benvenuto"
 
-#: ../wxui/__init__.py:50
+#: ../wxui/__init__.py:63
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "Installare un'icona sul desktop?"
 

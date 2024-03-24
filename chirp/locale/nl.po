@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-10 10:13-0700\n"
+"POT-Creation-Date: 2024-03-29 14:51-0700\n"
 "PO-Revision-Date: 2012-03-18 12:01+0100\n"
 "Last-Translator: Michael Tel <m.tel@xs4all.nl>\n"
 "Language-Team: Dutch\n"
@@ -653,7 +653,7 @@ msgstr ""
 msgid "Amateur"
 msgstr ""
 
-#: ../wxui/common.py:606 ../wxui/common.py:633
+#: ../wxui/common.py:609 ../wxui/common.py:636
 msgid "An error has occurred"
 msgstr "Er is een fout opgetreden"
 
@@ -1137,7 +1137,7 @@ msgstr ""
 #: ../drivers/btech.py:690 ../drivers/gmrsuv1.py:392
 #: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:340
 #: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
-#: ../drivers/baofeng_uv17Pro.py:439 ../drivers/bf_t1.py:483
+#: ../drivers/baofeng_uv17Pro.py:441 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1252,7 +1252,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:334 ../drivers/gmrsuv1.py:398
 #: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
 #: ../drivers/uv6r.py:346 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
-#: ../drivers/baofeng_uv17Pro.py:445
+#: ../drivers/baofeng_uv17Pro.py:447
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1366,7 +1366,7 @@ msgstr ""
 msgid "Insert Row Above"
 msgstr "Regel hierboven invoegen"
 
-#: ../wxui/__init__.py:51
+#: ../wxui/__init__.py:64
 msgid "Install desktop icon?"
 msgstr ""
 
@@ -2258,7 +2258,7 @@ msgid ""
 "model and try again."
 msgstr ""
 
-#: ../wxui/common.py:684
+#: ../wxui/common.py:687
 #, fuzzy, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Niet in staat om wijzigingen voor dit model te maken"
@@ -2367,7 +2367,7 @@ msgstr ""
 msgid "Welcome"
 msgstr ""
 
-#: ../wxui/__init__.py:50
+#: ../wxui/__init__.py:63
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr ""
 
