@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-10 10:13-0700\n"
+"POT-Creation-Date: 2024-03-29 14:51-0700\n"
 "PO-Revision-Date: 2024-03-11 19:00-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
@@ -1026,7 +1026,7 @@ msgstr "Todos los formatos soportados|"
 msgid "Amateur"
 msgstr "Aficionado"
 
-#: ../wxui/common.py:606 ../wxui/common.py:633
+#: ../wxui/common.py:609 ../wxui/common.py:636
 msgid "An error has occurred"
 msgstr "Ha ocurrido un error"
 
@@ -1538,7 +1538,7 @@ msgstr ""
 #: ../drivers/btech.py:690 ../drivers/gmrsuv1.py:392
 #: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:340
 #: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
-#: ../drivers/baofeng_uv17Pro.py:439 ../drivers/bf_t1.py:483
+#: ../drivers/baofeng_uv17Pro.py:441 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1716,7 +1716,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:334 ../drivers/gmrsuv1.py:398
 #: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
 #: ../drivers/uv6r.py:346 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
-#: ../drivers/baofeng_uv17Pro.py:445
+#: ../drivers/baofeng_uv17Pro.py:447
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1836,7 +1836,7 @@ msgstr "Información"
 msgid "Insert Row Above"
 msgstr "Insertar fila arriba"
 
-#: ../wxui/__init__.py:51
+#: ../wxui/__init__.py:64
 msgid "Install desktop icon?"
 msgstr "¿Instalar icono de escritorio?"
 
@@ -2827,7 +2827,7 @@ msgstr ""
 "seleccionado es de EE.UU pero la radio no es una de EE.UU (o de banda "
 "ancha). Por favor elije el modelo correcto e intenta de nuevo."
 
-#: ../wxui/common.py:684
+#: ../wxui/common.py:687
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "No se puede revelar %s en este sistema"
@@ -2932,7 +2932,7 @@ msgstr "Advertencia: %s"
 msgid "Welcome"
 msgstr "Bienvenido"
 
-#: ../wxui/__init__.py:50
+#: ../wxui/__init__.py:63
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "¿Quieres que CHIRP instale un icono en el escritorio para ti?"
 
