@@ -175,7 +175,8 @@ class BandPlans(object):
 
         for band in current_plan.bands:
             if (band.limits[0] >= min_freq and
-                    band.name.lower().endswith('meter band')):
+                    (band.name.lower().endswith('meter band') or
+                     band.name.lower().endswith('cm band'))):
                 add_nodupes(band)
         return sorted(bands_with_repeaters,
                       key=lambda b: b.limits[0])
