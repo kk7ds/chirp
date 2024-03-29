@@ -197,6 +197,9 @@ Jianpai:
   model: FT-UV78
 - alt: Abbree AR-63
   model: G63
+KSUN:
+- alt: Quansheng UV-K5
+  model: UV60D
 Marui:
 - alt: TYT TH-UV88
   model: MR-UV1
