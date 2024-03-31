@@ -26,6 +26,7 @@ CONF = config.get()
 try:
     from suds.client import Client
     from suds import WebFault
+    from suds.plugin import MessagePlugin
     HAVE_SUDS = True
 except ImportError:
     HAVE_SUDS = False
@@ -85,8 +86,14 @@ class RadioReferenceRadio(base.NetworkResultRadio):
                 "Suds library required for RadioReference.com import.\n" +
                 "Try installing your distribution's python-suds package.")
 
+        class UnicodeFilter(MessagePlugin):
+            def received(self, context):
+                decoded = context.reply.decode('latin1')
+                reencoded = decoded.encode('utf-8')
+                context.reply = reencoded
+
         self._auth = {"appKey": self.APPKEY, "username": "", "password": ""}
-        self._client = Client(self.URL)
+        self._client = Client(self.URL, plugins=[UnicodeFilter()])
         self._freqs = []
         self._modes = None
         self._zipcounty = None
