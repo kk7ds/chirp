@@ -203,7 +203,7 @@ class Frame:
     def __init__(self):
         self._data = b""
 
-    def set_command(self, cmd, sub):
+    def set_command(self, cmd, sub=None):
         """Set the command number (and optional subcommand)"""
         self._cmd = cmd
         self._sub = sub
@@ -218,7 +218,10 @@ class Frame:
 
     def send(self, src, dst, serial, willecho=True):
         """Send the frame over @serial, using @src and @dst addresses"""
-        hdr = struct.pack("BBBBBB", 0xFE, 0xFE, src, dst, self._cmd, self._sub)
+        hdr = struct.pack("BBBBB", 0xFE, 0xFE, src, dst, self._cmd)
+        # Some commands have no subcommand
+        if self._sub is not None:
+            hdr += bytes([self._sub])
         raw = bytearray(hdr)
         if isinstance(self._data, MemoryMapBytes):
             data = self._data.get_packed()
@@ -255,8 +258,14 @@ class Frame:
         LOG.debug("%02x <- %02x:\n%s" % (dst, src, util.hexprint(bytes(data))))
 
         self._cmd = data[4]
-        self._sub = data[5]
-        self._data = data[6:-1]
+        # If we've been set with a None subcommand, assume we don't expect
+        # it from the radio
+        if self._sub is None:
+            dataidx = 5
+        else:
+            self._sub = data[5]
+            dataidx = 6
+        self._data = data[dataidx:-1]
 
         return src, dst
 
@@ -451,7 +460,6 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             LOG.debug("Interface echo: %s" % self._willecho)
             try:
                 f = self._get_template_memory()
-                print('Chew: %i' % len(self.pipe.read(128)))
                 LOG.info('Detected %i baud' % baud)
                 break
             except errors.RadioError:
