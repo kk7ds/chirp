@@ -1380,7 +1380,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     def apply_ff_padded_string(cls, setting, obj):
         # FF pad.
         val = setting.value.get_value()
-        max_len = getattr(obj, "padded_string").size() / 8
+        max_len = getattr(obj, "padded_string").size() // 8
         val = str(val).rstrip()
         setattr(obj, "padded_string", cls._add_ff_pad(val, max_len))
 
