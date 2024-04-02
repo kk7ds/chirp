@@ -1013,7 +1013,8 @@ class TDH8(chirp_common.CloneModeRadio):
         # power
         try:
             mem.power = self._tx_power[_mem.lowpower]
-        except IndexError:
+            assert mem.power is not None
+        except (IndexError, AssertionError):
             LOG.error("Radio reported invalid power level %s (in %s)" %
                       (_mem.lowpower, self._tx_power))
             mem.power = self._tx_power[0]
@@ -1203,14 +1204,12 @@ class TDH8(chirp_common.CloneModeRadio):
         else:
             _mem.wide = 1
 
-        if str(mem.power) == "Low":
+        try:
+            _mem.lowpower = self._tx_power.index(mem.power or
+                                                 self._tx_power[-1])
+        except ValueError:
             _mem.lowpower = 0
-        elif str(mem.power) == "Mid":
-            _mem.lowpower = 1
-        elif str(mem.power) == "High":
-            _mem.lowpower = 10
-        else:
-            _mem.lowpower = 0
+            LOG.warning('Unsupported power %r', mem.power)
 
         # Skip/Scanadd Setting
         self._memobj.scanadd[mem.number - 1] = mem.skip != 'S'
@@ -2254,7 +2253,6 @@ class TDH3(TDH8):
     _ham = False
     _mem_params = (0x1F2F)
     _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
-                 None,  # No mid power on H3
                  chirp_common.PowerLevel("High",  watts=4.00)]
 
     def process_mmap(self):
