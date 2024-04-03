@@ -229,6 +229,9 @@ class RepeaterBook(base.NetworkResultRadio):
             if lat == 0 and lon == 0:
                 # No sort if not provided
                 return 0
+            if not item.get('Lat') or not item.get('Long'):
+                # Invalid or missing coordinates
+                return 0
             return distance(lat, lon,
                             float(item.get('Lat', 0)),
                             float(item.get('Long', 0)))
