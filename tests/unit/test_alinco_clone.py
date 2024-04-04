@@ -19,7 +19,7 @@ import unittest
 from unittest import mock
 
 from chirp import directory
-from chirp.drivers import alinco
+from chirp.drivers import alinco, alinco_dr735t
 from chirp import memmap
 
 
@@ -34,6 +34,29 @@ class FakeAlincoSerial:
     def zero(self):
         """Zero the mmap before an upload"""
         self.image = memmap.MemoryMapBytes(b'\x00' * len(self.image))
+
+    def _handle_rw_dr735tn(self, data):
+        if b'R' in data:
+            addr_idx = data.index(b'R')-4
+        elif b'W' in data:
+            addr_idx = data.index(b'W')-4
+        else:
+            raise Exception('Unable to handle RW command %r' % data)
+        addr = int(data[addr_idx: addr_idx+4], 16)
+        cmd = chr(data[addr_idx+4])
+
+        if cmd == 'R':
+            bin_chunk = self.image[addr:addr+64]
+            hex_chunk = binascii.hexlify(bin_chunk)
+            assert (len(hex_chunk) == 128)
+            self.readbuf.append(hex_chunk)
+            self.readbuf.append(b'\r\n')
+
+        if cmd == 'W':
+            hex_chunk = data[addr_idx+5:addr_idx+128+5].decode()
+            bin_chunk = binascii.unhexlify(hex_chunk)
+            self.image[addr] = bin_chunk
+            self.readbuf.append(b'OK\r\n')
 
     def _handle_rw(self, data):
         if b'R' in data:
@@ -87,8 +110,23 @@ class FakeAlincoSerial:
             self.readbuf.append(ident_ack)
         elif data.startswith(b'AL~F'):
             self._handle_rw(data)
-        elif data.startswith(b'AL~E'):
+        elif data.startswith(b'AL~E') and self.ident != b"DR735TN":
             self.readbuf.append(b'OK' * 10)
+        elif data.startswith(b'AL~WHO'):
+            # radio responds with model to WHO
+            self.ident = b"DR735TN"
+            # expect back "DR735TN\r\nOK\r\n"
+            self.readbuf.append(self.ident+b"\r\n")
+        elif data.startswith(b'AL~DR735J'):
+            # this is somehow making the radio writeable...
+            self.readbuf.append(b'OK\r\n')
+
+        elif data.startswith(b'AL~RESET') and self.ident == b"DR735TN":
+            self.readbuf.append(b'OK\r\n')
+
+        elif data.startswith(b'AL~EEPEL'):
+            self._handle_rw_dr735tn(data)
+
         else:
             raise Exception('Unable to handle %r' % data)
 
@@ -133,6 +171,9 @@ class AlincoCloneTest(unittest.TestCase):
 
     def test_dr235(self):
         self._test_alinco(alinco.DR235Radio)
+
+    def test_dr735(self):
+        self._test_alinco(alinco_dr735t.AlincoDR735T)
 
     def test_dj175(self):
         # The 175 has a slightly different download string, so test it

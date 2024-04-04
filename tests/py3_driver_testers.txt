@@ -22,6 +22,7 @@ Alinco_DR06T,+Alinco_DR235T,12-Dec-2022
 Alinco_DR135T,+Alinco_DR235T,12-Dec-2022
 Alinco_DR235T,@kk7ds,12-Dec-2022
 Alinco_DR435T,+Alinco_DR235T,12-Dec-2022
+Alinco_DR735T,@jacobcalvert,03-April-2024
 Anysecu_UV-A37,@KC9HI,5-Jun-2023
 Anysecu_WP-9900,@KC9HI,11-Nov-2022
 Anysecu_AC-580,+Radioddity_GS-5B,17-Mar-2023

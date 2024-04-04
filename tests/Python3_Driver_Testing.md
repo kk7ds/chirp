@@ -16,6 +16,7 @@
 | <a name="Alinco_DR135T"></a> Alinco_DR135T | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.04% |
 | <a name="Alinco_DR235T"></a> Alinco_DR235T | [@kk7ds](https://github.com/kk7ds) | 12-Dec-2022 | Yes | 0.02% |
 | <a name="Alinco_DR435T"></a> Alinco_DR435T | [Implied by Alinco_DR235T](#user-content-Alinco_DR235T) | 12-Dec-2022 | Yes | 0.02% |
+| <a name="Alinco_DR735T"></a> Alinco_DR735T | [@jacobcalvert](https://github.com/jacobcalvert) | 03-April-2024 | Yes |  |
 | <a name="AnyTone_5888UV"></a> AnyTone_5888UV | [@kk7ds](https://github.com/kk7ds) | 9-Dec-2022 | Yes | 0.14% |
 | <a name="AnyTone_5888UVIII"></a> AnyTone_5888UVIII | [@bschuler42](https://github.com/bschuler42) | 9-Jan-2023 | Yes | 0.04% |
 | <a name="AnyTone_778UV"></a> AnyTone_778UV | [Implied by Retevis_RT95](#user-content-Retevis_RT95) | 13-Nov-2022 | Yes | 0.17% |
@@ -455,11 +456,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 452
+**Drivers:** 453
 
-**Tested:** 87% (397/55) (93% of usage stats)
+**Tested:** 87% (398/55) (93% of usage stats)
 
-**Byte clean:** 91% (413/39)
+**Byte clean:** 91% (414/39)
 
 ## Meaning of this testing
 
