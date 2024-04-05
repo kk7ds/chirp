@@ -17,14 +17,16 @@ LOG = logging.getLogger()
 # Note these are only the frequencies from the chart that fit into the
 # US band edges.
 BANDS = {
-    160: [i for i in range(1805, 2005, 10)],
+    160: [i for i in range(1805, 2005, 20)],
     80: [i for i in range(3510, 4010, 10)],
     40: [i for i in range(7013, 7313, 25)],
+    30: [10125],
     20: [i for i in range(14025, 14325, 50)],
     17: [18075, 18125, 18165],
     15: [i for i in range(21025, 21475, 50)],
     12: [24891, 24963],
     10: [i for i in range(28050, 29750, 100)],
+    6: [i for i in range(50125, 54125, 250)],
 }
 
 
@@ -157,11 +159,11 @@ class PowerFrame(BitwiseFrame):
 
     @property
     def power(self):
-        return int(100 * int(self._obj.power) / 256)
+        return int(100 * int(self._obj.power) / 212)
 
     @power.setter
     def power(self, power):
-        self._obj.power = 256 * (power / 100)
+        self._obj.power = 212 * (power / 100)
 
 
 class Demo:
