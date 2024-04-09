@@ -64,7 +64,6 @@ import logging
 import re
 import warnings
 
-import six
 from builtins import bytes
 
 from chirp import bitwise_grammar
@@ -75,20 +74,6 @@ LOG = logging.getLogger(__name__)
 class ParseError(Exception):
     """Indicates an error parsing a definition"""
     pass
-
-
-def byte_to_int(b):
-    if six.PY3 or isinstance(b, int):
-        return b
-    else:
-        return ord(b)
-
-
-def int_to_byte(i):
-    if six.PY3:
-        return bytes([i])
-    else:
-        return chr(i)
 
 
 def string_straight_encode(string):
@@ -107,7 +92,7 @@ def string_straight_encode(string):
     # specific binary values in memory). Ideally we would have
     # written all of chirp with bytes() for these values, but alas.
     # We can get the intended string here by doing bytes([ord(char)]).
-    return bytes(b''.join(int_to_byte(ord(b)) for b in string))
+    return bytes(b''.join(bytes([ord(b)]) for b in string))
 
 
 def string_straight_decode(string):
@@ -125,7 +110,7 @@ def string_straight_decode(string):
     # will detect '\xFF' properly.
     # FIXMEPY3: Remove this and the hack below when drivers convert to
     # bytestrings.
-    return ''.join(chr(byte_to_int(b)) for b in string)
+    return ''.join(chr(b) for b in string)
 
 
 def format_binary(nbits, value, pad=8):

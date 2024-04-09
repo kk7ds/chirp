@@ -11,7 +11,6 @@ setup(name='chirp',
       install_requires=[
           'pyserial',
           'requests',
-          'six',
           'importlib-resources;python_version<"3.10"',
           'yattag',
       ],

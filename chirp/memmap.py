@@ -15,8 +15,6 @@
 
 from builtins import bytes
 
-import six
-
 from chirp import util
 
 
@@ -64,9 +62,7 @@ class MemoryMapBytes(object):
                 self._data[pos] = byte
                 pos += 1
         elif isinstance(value, str):
-            if six.PY3:
-                value = value.encode()
-            for byte in value:
+            for byte in value.encode():
                 self._data[pos] = ord(byte)
                 pos += 1
         else:
@@ -123,9 +119,7 @@ class MemoryMap(MemoryMapBytes):
         from chirp import bitwise
         self._bitwise = bitwise
 
-        if six.PY3 and isinstance(data, bytes):
-            # Be graceful if py3-enabled code uses this,
-            # just don't encode it
+        if isinstance(data, bytes):
             encode = bytes
         else:
             encode = self._bitwise.string_straight_encode
