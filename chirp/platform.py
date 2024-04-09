@@ -20,8 +20,6 @@ import re
 import logging
 from subprocess import Popen
 
-import six
-
 LOG = logging.getLogger(__name__)
 
 
@@ -105,8 +103,8 @@ class Platform:
 
         if we_are_frozen():
             # Win32, find the directory of the executable
-            return os.path.dirname(six.text_type(sys.executable,
-                                                 sys.getfilesystemencoding()))
+            return os.path.dirname(str(sys.executable,
+                                       sys.getfilesystemencoding()))
         else:
             # UNIX: Find the parent directory of this module
             return os.path.dirname(os.path.abspath(os.path.join(_find_me(),

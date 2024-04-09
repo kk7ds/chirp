@@ -6,8 +6,6 @@ import re
 import sys
 import collections
 
-import six
-
 
 class keyword(str):
     pass
@@ -61,7 +59,7 @@ print_trace = False
 
 
 def u(text):
-    return six.text_type(text)
+    return str(text)
 
 
 def skip(skipper, text, skipWS, skipComments):
