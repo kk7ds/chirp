@@ -22,6 +22,7 @@ import os
 import platform
 import shutil
 import tempfile
+import textwrap
 import threading
 
 import wx
@@ -711,7 +712,7 @@ def temporary_debug_log():
 
 
 @contextlib.contextmanager
-def expose_logs(level, root, label):
+def expose_logs(level, root, label, maxlen=128):
     if not isinstance(root, tuple):
         root = (root,)
 
@@ -724,7 +725,8 @@ def expose_logs(level, root, label):
             lines = list(itertools.chain.from_iterable(x.get_history()
                                                        for x in histories))
             if lines:
-                msg = os.linesep.join(x.getMessage() for x in lines)
+                msg = os.linesep.join(textwrap.shorten(x.getMessage(), maxlen)
+                                      for x in lines)
                 d = wx.MessageDialog(
                     None, str(msg), label,
                     style=wx.OK | wx.ICON_INFORMATION)
