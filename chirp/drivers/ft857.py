@@ -34,7 +34,7 @@ class FT857Radio(ft817.FT817Radio):
     MODEL = "FT-857/897"
     _model = ""
 
-    TMODES = {
+    TMODES: dict[int, str] = {
         0x04: "Tone",
         0x05: "TSQL",
         # 0x08 : "DTCS Enc", not supported in UI yet

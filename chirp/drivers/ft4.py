@@ -562,7 +562,7 @@ TONE_DICT = {}          # encode sql_type.
 CROSS_DICT = {}         # encode sql_type.
 
 for sql_type in reversed(range(0, len(RADIO_TMODES))):
-    sql_type_row = RADIO_TMODES[sql_type]
+    sql_type_row: list = RADIO_TMODES[sql_type]
     for decode_row in sql_type_row[0]:
         suppress = None
         if len(decode_row) == 3:

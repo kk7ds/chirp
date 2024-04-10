@@ -2219,8 +2219,10 @@ class TDH8_GMRS(TDH8):
     ident_mode = b'P31184\xff\xff'
     _gmrs = True
     _txbands = [(136000000, 175000000), (400000000, 521000000)]
-    _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
-                 None,  # No mid power
+    _tx_power = [chirp_common.PowerLevel("Low", watts=1.00),
+                 # This index should not be used on this radio, but if we
+                 # find it, just treat it like "low"
+                 chirp_common.PowerLevel("Low", watts=1.00),
                  chirp_common.PowerLevel("High", watts=8.00)]
 
     def validate_memory(self, mem):
