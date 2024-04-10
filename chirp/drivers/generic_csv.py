@@ -243,7 +243,6 @@ class CSVRadio(chirp_common.FileBackedRadio):
             good += 1
 
         if not good:
-            LOG.error(self.errors)
             raise errors.InvalidDataError("No channels found")
 
     def save(self, filename=None):
