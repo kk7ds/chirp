@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import typing
+
 from chirp.drivers import icf
 from chirp import chirp_common, directory, bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting, \
@@ -285,7 +287,7 @@ class IC2730Radio(icf.IcomCloneModeRadio):
     _raw_frames = True
     _highbit_flip = True
 
-    _icf_data = {
+    _icf_data: dict[str, typing.Any] = {
         'MapRev': 1,
         'EtcData': 0,  # This might be wrong
         'Comment': '',
@@ -1316,7 +1318,6 @@ class IC2730Radio(icf.IcomCloneModeRadio):
 
     def set_settings(self, settings):
         _settings = self._memobj.settings
-        _mem = self._memobj
         for element in settings:
             if not isinstance(element, RadioSetting):
                 self.set_settings(element)
