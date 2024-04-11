@@ -4,6 +4,10 @@ inputs:
   tox_target:
     required: true
     type: string
+  py_version:
+    required: false
+    type: string
+    default: '3'
 
 runs:
   using: "composite"
@@ -13,7 +17,7 @@ runs:
       run: |
         sudo apt-get update
         sudo apt-get install python3-pip python3-wxgtk4.0
-        sudo python3 -mpip install tox
+        sudo python${{ inputs.py_version }} -mpip install tox
     - name: Run tox
       shell: bash
       run: |

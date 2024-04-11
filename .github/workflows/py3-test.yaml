@@ -40,6 +40,25 @@ jobs:
         with:
           tox_target: fast-driver
 
+  driver-next:
+    name: Driver tests (Python 3.12)
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install python 3.12
+        uses: actions/setup-python@v5
+        id: pyinst
+        with:
+          python-version: '3.12'
+      - run: "sudo ln -s ${{ steps.pyinst.outputs.python-path }} /usr/local/bin/python3.12"
+      - run: "echo $PATH; ls -l /usr/local/bin"
+      - name: Run tox
+        uses: ./.github/actions/py3-tox
+        with:
+          tox_target: fast-driver
+          py_version: '3.12'
+
   matrix:
     name: Create support matrix
     runs-on: ubuntu-22.04
