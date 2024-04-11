@@ -4,5 +4,4 @@ pyserial
 requests
 pywin32; platform_system=="Windows"
 suds
-importlib-resources;python_version<"3.10"
 yattag

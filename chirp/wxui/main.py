@@ -16,6 +16,7 @@
 import datetime
 import functools
 import hashlib
+from importlib import resources
 import logging
 import os
 import pickle
@@ -25,10 +26,6 @@ import time
 import typing
 import webbrowser
 
-if sys.version_info < (3, 10):
-    import importlib_resources
-else:
-    import importlib.resources as importlib_resources
 
 import wx
 import wx.aui
@@ -374,9 +371,8 @@ class ChirpWelcomePanel(wx.Panel):
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(vbox)
-        with importlib_resources.as_file(
-            importlib_resources.files('chirp.share')
-            .joinpath('welcome_screen.png')
+        with resources.as_file(
+            resources.files('chirp.share').joinpath('welcome_screen.png')
         ) as welcome:
             bmp = wx.Bitmap(str(welcome))
         width, height = self.GetSize()
@@ -453,9 +449,8 @@ class ChirpMain(wx.Frame):
         self.add_tab_panel = wx.Panel(self, pos=(0, 0), size=(600, 600))
         self.add_tab_panel.Hide()
 
-        with importlib_resources.as_file(
-            importlib_resources.files('chirp.share')
-            .joinpath('plus-icon.png')
+        with resources.as_file(
+            resources.files('chirp.share').joinpath('plus-icon.png')
         ) as icon:
             self.add_tab_bm = wx.Bitmap(str(icon), wx.BITMAP_TYPE_ANY)
 
@@ -525,9 +520,8 @@ class ChirpMain(wx.Frame):
             icon = 'chirp.ico'
         else:
             icon = 'chirp.png'
-        with importlib_resources.as_file(
-            importlib_resources.files('chirp.share')
-            .joinpath(icon)
+        with resources.as_file(
+            resources.files('chirp.share').joinpath(icon)
         ) as path:
             self.SetIcon(wx.Icon(str(path)))
 
@@ -588,7 +582,7 @@ class ChirpMain(wx.Frame):
         dist_stock_confs = sorted(
             [
                 (conf.name, hashlib.md5(conf.read_bytes())) for conf
-                in importlib_resources.files('chirp.stock_configs').iterdir()
+                in resources.files('chirp.stock_configs').iterdir()
                 if conf.is_file()
             ]
         )
@@ -1233,9 +1227,8 @@ class ChirpMain(wx.Frame):
 
         user_stock_dir = get_stock_configs()
         user_stock_conf = os.path.join(user_stock_dir, fn)
-        with importlib_resources.as_file(
-            importlib_resources.files('chirp.stock_configs')
-            .joinpath(fn)
+        with resources.as_file(
+            resources.files('chirp.stock_configs').joinpath(fn)
         ) as path:
             dist_stock_conf = str(path)
         if os.path.exists(user_stock_conf):
