@@ -1,13 +1,9 @@
 import argparse
 import builtins
+from importlib import resources
 import logging
 import os
 import sys
-
-if sys.version_info < (3, 10):
-    import importlib_resources
-else:
-    import importlib.resources as importlib_resources
 
 from chirp import CHIRP_VERSION
 from chirp import directory
@@ -33,14 +29,13 @@ def maybe_install_desktop(args):
     local = os.path.join(os.path.expanduser('~'), '.local')
     desktop_path = os.path.join(local, 'share',
                                 'applications', 'chirp.desktop')
-    with importlib_resources.as_file(
-            importlib_resources.files('chirp.share')
-            .joinpath('chirp.desktop')) as desktop_src:
+    with resources.as_file(
+            resources.files('chirp.share').joinpath('chirp.desktop')
+    ) as desktop_src:
         with open(desktop_src) as f:
             desktop_content = f.readlines()
-    with importlib_resources.as_file(
-            importlib_resources.files('chirp.share')
-            .joinpath('chirp.ico')) as p:
+    with resources.as_file(
+            resources.files('chirp.share').joinpath('chirp.ico')) as p:
         icon_path = str(p)
 
     # If asked not to do this, always bail
@@ -168,8 +163,7 @@ def chirpmain():
     else:
         lang = wx.Locale.GetSystemLanguage()
 
-    localedir = str(os.path.join(importlib_resources.files('chirp'),
-                                 'locale'))
+    localedir = str(os.path.join(resources.files('chirp'), 'locale'))
     app._lc = wx.Locale()
     if localedir and os.path.isdir(localedir):
         wx.Locale.AddCatalogLookupPathPrefix(localedir)
