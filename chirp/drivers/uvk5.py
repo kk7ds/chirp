@@ -888,7 +888,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("bclo", "BCLO", RadioSettingValueBoolean(is_bclo))
         mem.extra.append(rs)
 
-        # Frequency reverse - whatever that means, don't see it in the manual
+        # Frequency reverse - reverse tx/rx frequency
         is_frev = not mem.empty and bool(_mem.freq_reverse > 0)
         rs = RadioSetting("frev", "FreqRev", RadioSettingValueBoolean(is_frev))
         mem.extra.append(rs)
