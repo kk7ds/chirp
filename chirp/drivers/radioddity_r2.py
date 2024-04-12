@@ -180,13 +180,19 @@ def _r2_enter_programming_mode(radio):
         raise errors.RadioError("Radio is password protected")
     try:
         serial.write(CMD_ACK)
-        ack = serial.read(6)
+        ack = serial.read(1)
 
     except:
         _r2_exit_programming_mode(radio)
         raise errors.RadioError("Error communicating with radio 2")
 
-    if ack != CMD_ACK:
+    # The latest Retevis RT24 (and likely the RT24V and H777S) models no
+    # longer acknowlege the CMD_ACK above so the 'ack' will be empty and
+    # fail the check causing cloning to fail.
+    #
+    # The factory CPS continues with or without an ack so CHIRP will
+    # behave the same way.
+    if ack and ack != CMD_ACK:
         _r2_exit_programming_mode(radio)
         raise errors.RadioError("Radio refused to enter programming mode 2")
 
