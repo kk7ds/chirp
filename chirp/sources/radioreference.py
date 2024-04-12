@@ -157,9 +157,14 @@ class RadioReferenceRadio(base.NetworkResultRadio):
                                                              self._auth)
                 self._freqs += result
                 status_cur += 1
-                status.send_status(
-                    'Fetching %s:%s' % (cat.cName, subcat.scName),
-                    status_cur / status_max * 100)
+                try:
+                    status.send_status(
+                        'Fetching %s:%s' % (cat.cName, subcat.scName),
+                        status_cur / status_max * 100)
+                except AttributeError:
+                    LOG.debug('Category %r subcat %r has no name',
+                              cat.cName, subcat.scid)
+                    pass
 
         for agency in county.agencyList:
             agency = self._client.service.getAgencyInfo(agency.aid, self._auth)
