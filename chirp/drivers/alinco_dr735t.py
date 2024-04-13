@@ -127,6 +127,8 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
         self.pipe.read(len(command))
         # expect DR735TN\r\n
         radio_id = self.pipe.read(9).strip()
+        if not radio_id:
+            raise errors.RadioError("No response from radio")
         LOG.debug('Model string is %s' % util.hexprint(radio_id))
         return radio_id == b"DR735TN"
 
