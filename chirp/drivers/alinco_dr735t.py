@@ -17,6 +17,7 @@ from chirp import chirp_common, bitwise, errors, memmap, directory
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettingValueList
 from chirp.drivers.alinco import ALINCO_TONES, CHARSET
+from chirp import util
 
 import logging
 import codecs
@@ -126,6 +127,7 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
         self.pipe.read(len(command))
         # expect DR735TN\r\n
         radio_id = self.pipe.read(9).strip()
+        LOG.debug('Model string is %s' % util.hexprint(radio_id))
         return radio_id == b"DR735TN"
 
     def do_download(self):
