@@ -338,6 +338,9 @@ class CSVRadio(chirp_common.FileBackedRadio):
 
 
 def find_csv_header(filedata):
+    if filedata.startswith('\ufeff') or filedata.startswith('\ufffe'):
+        # Skip BOM
+        filedata = filedata[1:]
     while filedata.startswith('#'):
         filedata = filedata[filedata.find('\n') + 1:]
     return filedata.startswith('Location,')
