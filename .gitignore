@@ -29,3 +29,5 @@ assets
 .vs/
 .vscode/
 /CppProperties.json
+/tests/__pycache__/test_drivers.cpython-311-pytest-7.1.3.pyc.12932
+/sync.ffs_db
