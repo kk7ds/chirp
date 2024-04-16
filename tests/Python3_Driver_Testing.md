@@ -409,8 +409,10 @@
 | <a name="Yaesu_FT2D_R"></a> Yaesu_FT2D_R | [Implied by Yaesu_FT3D_R](#user-content-Yaesu_FT3D_R) | 30-Dec-2022 | Yes | 0.02% |
 | <a name="Yaesu_FT2D_Rv2"></a> Yaesu_FT2D_Rv2 | [Implied by Yaesu_FT3D_R](#user-content-Yaesu_FT3D_R) | 30-Dec-2022 | Yes |  |
 | <a name="Yaesu_FT3D_R"></a> Yaesu_FT3D_R | [@kk7ds](https://github.com/kk7ds) | 30-Dec-2022 | Yes | 0.03% |
+| <a name="Yaesu_FTM-200"></a> Yaesu_FTM-200 | [@Old-Phart](https://github.com/Old-Phart) | 16-Apr-2024 | Yes |  |
 | <a name="Yaesu_FTM-3200D_R"></a> Yaesu_FTM-3200D_R |  |  | Yes | 0.02% |
 | <a name="Yaesu_FTM-350"></a> Yaesu_FTM-350 | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 | Yes | 0.02% |
+| <a name="Yaesu_FTM-6000"></a> Yaesu_FTM-6000 | [@Old-Phart](https://github.com/Old-Phart) | 16-Apr-2024 | Yes |  |
 | <a name="Yaesu_FTM-7250D_R"></a> Yaesu_FTM-7250D_R |  |  | Yes | 0.04% |
 | <a name="Yaesu_VX-170"></a> Yaesu_VX-170 |  |  | Yes | 0.03% |
 | <a name="Yaesu_VX-2"></a> Yaesu_VX-2 | [@thomasrussellmurphy](https://github.com/thomasrussellmurphy) | 20-Jan-2023 | Yes | 0.04% |
@@ -425,11 +427,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 422
+**Drivers:** 424
 
-**Tested:** 87% (369/53) (93% of usage stats)
+**Tested:** 87% (370/54) (93% of usage stats)
 
-**Byte clean:** 90% (382/40)
+**Byte clean:** 90% (384/40)
 
 ## Meaning of this testing
 
