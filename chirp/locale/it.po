@@ -1,4 +1,4 @@
-# English translations for CHIRP package.
+# Italian translations for CHIRP package.
 # Copyright (C) 2011 Dan Smith <dsmith@danplanet.com>
 # This file is distributed under the same license as the CHIRP package.
 # Dan Smith <dan@theine>, 2011.
@@ -10,9 +10,9 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-14 08:27+0200\n"
-"PO-Revision-Date: 2024-04-14 17:26+0200\n"
+"PO-Revision-Date: 2024-04-19 09:08+0200\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
-"Language-Team: \n"
+"Language-Team: CHIRP Italian Translation\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -36,7 +36,7 @@ msgstr ""
 "      (Sul display apparirà la scritta \"CLONE\").\n"
 " 4. Premere il pulsante dello schermo [RECEIVE]\n"
 "      (Sul display apparirà la scritta \"-WAIT-\").\n"
-"5. Infine, premere il pulsante OK in basso.\n"
+" 5. Infine, premere sul pulsante OK situato in basso.\n"
 
 #: ../wxui/query_sources.py:60
 #, python-format
@@ -132,9 +132,9 @@ msgstr ""
 "la nota seguente)\n"
 "6. Fare clic su OK per chiudere la finestra di dialogo ed avviare il "
 "trasferimento.\n"
-"Nota: se al punto 5 non viene visualizzato il messaggio \"-WAIT-\",      "
-"provare a spegnere la radio, tenendo premuto il pulsante      rosso \"*L\" "
-"per sbloccarla, quindi ricominciare dal punto 1.\n"
+"Nota: se al punto 5 non viene visualizzato il messaggio \"-WAIT-\",\n"
+"      provare a spegnere la radio, tenendo premuto il pulsante\n"
+"      rosso \"*L\" per sbloccarla, quindi ricominciare dal punto 1.\n"
 
 #: ../drivers/ft7100.py:1127
 msgid ""
@@ -583,7 +583,7 @@ msgid ""
 msgstr ""
 "1. Spegnere la radio.\n"
 "2. Collegare il cavo alla presa MIC/SP.\n"
-"3. Tenere premuta il tasto [PTT] &amp; mentre si accende\n"
+"3. Tenere premuto il tasto [PTT] &amp; mentre si accende\n"
 "     la radio.\n"
 "4. <b>Dopo aver fatto clic su OK</b>, premere il tasto [PTT] per inviare "
 "l'immagine.\n"
@@ -600,7 +600,6 @@ msgstr ""
 "1. Spegnere la radio.\n"
 "2. Collegare il cavo alla presa MIC/SP.\n"
 "3. Tenere premuto il tasto [PTT] &amp; mentre si accende\n"
-" \n"
 "     la radio.\n"
 "4. Premere l'interruttore [MONI] (sul display apparirà la scritta "
 "\"WAIT\").\n"
@@ -677,7 +676,8 @@ msgid ""
 msgstr ""
 "1. Spegnere la radio.\n"
 "2. Collegare il cavo alla presa MIC/SP.\n"
-"3. Tenere premuto l'interruttore [MONI] mentre si accende la radio.\n"
+"3. Tenere premuto l'interruttore [MONI] mentre si accende\n"
+"     la radio.\n"
 "4. Ruotare il selettore e selezionare \"F8 CLONE\".\n"
 "5. Premere momentaneamente il tasto [F/W].\n"
 "6. <b>Dopo aver fatto clic su OK</b>, tenere premuto il tasto [PTT]\n"
@@ -917,7 +917,7 @@ msgstr ""
 "1. Spegnere la radio.\n"
 "2. Rimuovere la parte anteriore.\n"
 "3. Collegare il cavo dati alla radio, utilizzando lo stesso connettore\n"
-"     del pannello frontale, <b>non il connettore del microfono</b>.\n"
+"     del pannello frontale, <b>non al connettore del microfono</b>.\n"
 "4. Fare clic su OK.\n"
 
 #: ../drivers/vx170.py:112
@@ -950,7 +950,7 @@ msgstr ""
 "3. Staccare la batteria.\n"
 "4. Tenere premuto il tasto [AMS] e il tasto di accensione mentre si "
 "aggancia\n"
-" la batteria posteriore (sullo display apparirà la scritta \"ADMS\").\n"
+" la batteria posteriore (sul display apparirà la scritta \"ADMS\").\n"
 "5. Premere il tasto [MODE] (sul display apparirà la scritta \"-WAIT-\").\n"
 "<b>Quindi, fare clic su OK</b>"
 
@@ -1042,7 +1042,7 @@ msgstr "Si è verificato un errore"
 
 #: ../wxui/clone.py:120
 msgid "Applying settings"
-msgstr "Applicare le impostazioni"
+msgstr "Applicazione delle impostazioni"
 
 #: ../wxui/developer.py:521
 msgid "Available modules"
@@ -1112,7 +1112,7 @@ msgstr "Scegliere il Tono %s"
 
 #: ../wxui/memedit.py:1318
 msgid "Choose Cross Mode"
-msgstr "Scegliere il modo Cross"
+msgstr "Scegliere la modalità Cross"
 
 #: ../wxui/memedit.py:1348
 msgid "Choose duplex"
@@ -1136,10 +1136,12 @@ msgid ""
 "are supported in this release.\n"
 "Ignore the beeps from the radio on upload and download.\n"
 msgstr ""
-"Fare clic sul pulsante \"Canali speciali\" dell'editor di memoria\n"
+"Fare clic sul pulsante \"Special Channels\" dell'editor di memoria\n"
 "per vedere/impostare i canali EXT. I canali P-VFO 100-109\n"
 "sono considerati impostazioni.\n"
 "Solo un sottoinsieme delle oltre 200 impostazioni radio disponibili\n"
+"sono supportate in questa versione.\n"
+"Ignorare i segnali acustici della radio durante l'upload e il download.\n"
 
 #: ../drivers/ft817.py:360
 msgid "Clone completed, checking for spurious bytes"
@@ -1216,7 +1218,7 @@ msgstr "Nazione"
 
 #: ../wxui/memedit.py:553
 msgid "Cross Mode"
-msgstr "Modalità incrociata"
+msgstr "Modalità Cross"
 
 #: ../wxui/clone.py:453
 msgid "Custom Port"
@@ -1239,8 +1241,8 @@ msgid ""
 "DTCS\n"
 "Polarity"
 msgstr ""
-"Polarità\n"
-"DTCS"
+"DTCS\n"
+"Polarità"
 
 #: ../drivers/uvk5.py:907
 msgid "DTMF decode"
@@ -1275,7 +1277,7 @@ msgstr ""
 
 #: ../wxui/memedit.py:1735 ../wxui/developer.py:88
 msgid "Diff Raw Memories"
-msgstr "Diff memorie grezze"
+msgstr "Diff memorie raw"
 
 #: ../wxui/memedit.py:2157
 msgid "Digital Code"
@@ -1287,7 +1289,7 @@ msgstr "Modi digitali"
 
 #: ../wxui/main.py:1693
 msgid "Disable reporting"
-msgstr "Disabilita le notifiche"
+msgstr "Disabilita notifiche"
 
 #: ../wxui/memedit.py:460
 msgid "Disabled"
@@ -1325,7 +1327,7 @@ msgstr "Scarica dalla radio..."
 
 #: ../wxui/clone.py:571
 msgid "Download instructions"
-msgstr "Istruzioni per lo scaricamento"
+msgstr "Istruzioni per il download"
 
 #: ../wxui/radioinfo.py:62
 msgid "Driver"
@@ -1365,7 +1367,7 @@ msgstr "Abilita modifiche automatiche"
 
 #: ../wxui/memedit.py:460
 msgid "Enabled"
-msgstr "Abilitata"
+msgstr "Abilitato"
 
 #: ../wxui/memedit.py:282
 msgid "Enter Frequency"
@@ -1391,7 +1393,7 @@ msgstr "Inserire la porta personalizzata:"
 #: ../wxui/common.py:330
 #, python-format
 msgid "Erased memory %s"
-msgstr "Memoria %s cancellata"
+msgstr "Memoria %s eliminata"
 
 #: ../wxui/settingsedit.py:140
 msgid "Error applying settings"
@@ -1506,7 +1508,7 @@ msgid ""
 msgstr ""
 "Seguire le seguenti istruzioni per scaricare la memoria della radio:\n"
 "1 - Collegare il cavo dati dell'interfaccia\n"
-"2 - Radio > Scarica dalla radio: Non regolare le impostazioni\n"
+"2 - Radio > Scarica dalla radio: non regolare le impostazioni\n"
 "della radio!\n"
 "3 - Scollegare il cavo dati dell'interfaccia\n"
 
@@ -1599,8 +1601,8 @@ msgid ""
 msgstr ""
 "Seguire le seguenti istruzioni per caricare la memoria della radio:\n"
 "1 - Collegare il cavo dati dell'interfaccia\n"
-"2 - Radio > Carica sulla radio: NON intervenire sulla radio durante il "
-"caricamento!\n"
+"2 - Radio > Carica sulla radio: NON intervenire sulla radio\n"
+"durante il caricamento!\n"
 "3 - Scollegare il cavo dati dell'interfaccia\n"
 
 #: ../drivers/ts480.py:522
@@ -1805,7 +1807,7 @@ msgstr "Nascondi memorie vuote"
 
 #: ../wxui/memedit.py:93
 msgid "Human-readable comment (not stored in radio)"
-msgstr "Commento leggibile dall'uomo (non memorizzato nella radio)"
+msgstr "Commento leggibile dall'essere umano (non memorizzato nella radio)"
 
 #: ../wxui/query_sources.py:296 ../wxui/query_sources.py:302
 #: ../wxui/query_sources.py:565 ../wxui/query_sources.py:571
@@ -1823,11 +1825,11 @@ msgstr "Importa da file..."
 
 #: ../wxui/main.py:1329
 msgid "Import messages"
-msgstr "Importa i messaggi"
+msgstr "Importa messaggi"
 
 #: ../wxui/main.py:1323
 msgid "Import not recommended"
-msgstr "Importazione non raccomandata"
+msgstr "Importazione non consigliata"
 
 #: ../wxui/bankedit.py:62
 msgid "Index"
@@ -1847,7 +1849,7 @@ msgstr "Inserisci riga sopra"
 
 #: ../wxui/__init__.py:59
 msgid "Install desktop icon?"
-msgstr "Installare l'icona per il desktop?"
+msgstr "Installare l'icona sul desktop?"
 
 #: ../wxui/main.py:892
 msgid "Interact with driver"
@@ -1860,7 +1862,7 @@ msgstr "Errore interno del driver"
 #: ../wxui/query_sources.py:58
 #, python-format
 msgid "Invalid %(value)s (use decimal degrees)"
-msgstr "Valore %(value)s non valido (usare gradi decimali)"
+msgstr "Il valore %(value)s non è valido (usare i gradi decimali)"
 
 #: ../wxui/memedit.py:1455 ../wxui/query_sources.py:66
 msgid "Invalid Entry"
@@ -1890,7 +1892,7 @@ msgstr "Numero del problema:"
 
 #: ../wxui/main.py:339
 msgid "LIVE"
-msgstr "In diretta"
+msgstr "In diretta live"
 
 #: ../wxui/query_sources.py:88 ../wxui/query_sources.py:304
 #: ../wxui/query_sources.py:573
@@ -1920,7 +1922,7 @@ msgstr "Limita i risultati a questa distanza (km) dalle coordinate"
 
 #: ../wxui/main.py:1505
 msgid "Live Radio"
-msgstr "Radio in diretta"
+msgstr "Radio in diretta live"
 
 #: ../wxui/main.py:701
 msgid "Load Module..."
@@ -1940,7 +1942,7 @@ msgid ""
 "instructed otherwise) to close all tabs before loading a module."
 msgstr ""
 "Il caricamento di un modulo non influisce sulle schede aperte. Si consiglia "
-"(salvo istruzioni diverse) di chiudere tutte le schede prima di caricare un "
+"(salvo istruzioni diverse) di chiudere tutte le schede, prima di caricare un "
 "modulo."
 
 #: ../wxui/main.py:1631
@@ -2000,7 +2002,7 @@ msgstr "La memoria {num} non è presente nel banco {bank}"
 
 #: ../wxui/memedit.py:539 ../wxui/query_sources.py:525
 msgid "Mode"
-msgstr "Modo"
+msgstr "Modalità"
 
 #: ../wxui/clone.py:283
 msgid "Model"
@@ -2008,7 +2010,7 @@ msgstr "Modello"
 
 #: ../wxui/query_sources.py:405
 msgid "Modes"
-msgstr "Modi"
+msgstr "Modalità"
 
 #: ../wxui/main.py:1628
 msgid "Module"
@@ -2078,7 +2080,7 @@ msgstr "Solo alcune bande"
 
 #: ../wxui/query_sources.py:328
 msgid "Only certain modes"
-msgstr "Solo alcuni modi"
+msgstr "Solo alcune modalità"
 
 #: ../wxui/main.py:321
 msgid "Only memory tabs may be exported"
@@ -2102,15 +2104,15 @@ msgstr "Apri configurazione standard"
 
 #: ../wxui/main.py:983 ../wxui/main.py:1201
 msgid "Open a file"
-msgstr "Apri file"
+msgstr "Apri un file"
 
 #: ../wxui/main.py:1646
 msgid "Open a module"
-msgstr "Apri modulo"
+msgstr "Apri un modulo"
 
 #: ../wxui/main.py:929
 msgid "Open debug log"
-msgstr "Apri registro di debug"
+msgstr "Apri il registro di debug"
 
 #: ../wxui/main.py:512
 msgid "Open in new window"
@@ -2118,7 +2120,7 @@ msgstr "Apri in nuova finestra"
 
 #: ../wxui/main.py:605
 msgid "Open stock config directory"
-msgstr "Apri directory configurazioni standard"
+msgstr "Apri la directory delle configurazioni standard"
 
 #: ../wxui/query_sources.py:301 ../wxui/query_sources.py:570
 msgid "Optional: -122.0000"
@@ -2176,11 +2178,11 @@ msgstr "Le memorie incollate sovrascriveranno la memoria %s"
 #: ../wxui/memedit.py:1892
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
-msgstr "La memoria incollata sovrascrivera la memoria %s"
+msgstr "La memoria incollata sovrascriverà la memoria %s"
 
 #: ../wxui/main.py:1808
 msgid "Please be sure to quit CHIRP before installing the new version!"
-msgstr "Assicurarsi di uscire da CHIRP prima di installare la nuova versione!"
+msgstr "Chiudere CHIRP prima di installare la nuova versione!"
 
 #: ../drivers/ftlx011.py:301
 msgid ""
@@ -2246,7 +2248,7 @@ msgstr "Attendere"
 
 #: ../wxui/clone.py:398
 msgid "Plug in your cable and then click OK"
-msgstr "Collegare il cavo e premere OK"
+msgstr "Collegare il cavo e fare clic su OK"
 
 #: ../wxui/clone.py:276
 msgid "Port"
@@ -2258,7 +2260,7 @@ msgstr "Potenza"
 
 #: ../wxui/developer.py:140
 msgid "Press enter to set this in memory"
-msgstr "Premere Invio per impostarlo in memoria"
+msgstr "Premere invio per impostarlo in memoria"
 
 #: ../wxui/main.py:712
 msgid "Print Preview"
@@ -2311,7 +2313,7 @@ msgstr ""
 #: ../wxui/query_sources.py:839
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
-"RadioReference Canada richiede il login prima di poter effettuare le "
+"RadioReference Canada richiede un login prima di poter effettuare le "
 "interrogazioni"
 
 #: ../wxui/query_sources.py:650
@@ -2372,8 +2374,8 @@ msgid ""
 "enabled. Really disable reporting?"
 msgstr ""
 "Le segnalazioni aiutano il progetto CHIRP a sapere su quali modelli di radio "
-"e piattaforme OS spendere i nostri limitati sforzi. Vi saremmo grati se la "
-"lasciaste abilitata. Disabilitare davvero la segnalazione?"
+"e piattaforme OS spendere i nostri limitati sforzi. Vi saremmo grati se le "
+"lasciaste abilitate. Vuoi davvero disabilitare le segnalazioni?"
 
 #: ../wxui/main.py:1683
 msgid "Restart Required"
@@ -2428,19 +2430,19 @@ msgstr "Rischio di sicurezza"
 
 #: ../wxui/main.py:859
 msgid "Select Bandplan..."
-msgstr "Seleziona bandplan..."
+msgstr "Seleziona il piano di banda..."
 
 #: ../wxui/query_sources.py:384 ../wxui/query_sources.py:599
 msgid "Select Bands"
-msgstr "Selezionare le bande"
+msgstr "Seleziona le bande"
 
 #: ../wxui/query_sources.py:405
 msgid "Select Modes"
-msgstr "Selezionare i modi"
+msgstr "Seleziona le modalità"
 
 #: ../wxui/main.py:1744
 msgid "Select a bandplan"
-msgstr "Selezionare un bandplan"
+msgstr "Seleziona un piano di banda"
 
 #: ../wxui/query_sources.py:287
 msgid "Service"
@@ -2452,12 +2454,11 @@ msgstr "Impostazioni"
 
 #: ../wxui/memedit.py:89
 msgid "Shift amount (or transmit frequency) controlled by duplex"
-msgstr ""
-"Quantità di spostamento (o frequenza di trasmissione) controllata dal duplex"
+msgstr "Shift (o frequenza di trasmissione) controllato dal duplex"
 
 #: ../wxui/memedit.py:1728 ../wxui/developer.py:91
 msgid "Show Raw Memory"
-msgstr "Mostra memoria grezza"
+msgstr "Mostra memoria raw"
 
 #: ../wxui/main.py:935
 msgid "Show debug log location"
@@ -2477,7 +2478,7 @@ msgstr "Alcune memorie sono incompatibili con questa radio"
 
 #: ../wxui/memedit.py:1845
 msgid "Some memories are not deletable"
-msgstr "Alcune memorie non sono cancellabili"
+msgstr "Alcune memorie non sono eliminabili"
 
 #: ../wxui/memedit.py:1684
 #, python-format
@@ -2728,7 +2729,7 @@ msgid ""
 msgstr ""
 "Questa radio ha un modo complesso per entrare in modalità programma,\n"
 "anche il software originale richiede alcuni tentativi per entrare.\n"
-"Proverò 8 volte (la maggior parte delle volte ne bastano 3) e questo\n"
+"Proverò 8 volte (la maggior parte delle volte ne bastano circa 3) e questo\n"
 "può richiedere alcuni secondi, se non funziona, riprovare più volte.\n"
 "Se riuscite a entrare, controllate la radio ed il cavo.\n"
 
@@ -2747,7 +2748,7 @@ msgstr ""
 
 #: ../wxui/developer.py:540
 msgid "This will load a module from a website issue"
-msgstr "Questo caricherà un modulo da un problema del sito web"
+msgstr "Caricherà un modulo da un sito web"
 
 #: ../wxui/memedit.py:389
 msgid "Tone"
@@ -2772,8 +2773,7 @@ msgstr "Potenza di trasmissione"
 #: ../wxui/memedit.py:88
 msgid "Transmit shift, split mode, or transmit inhibit"
 msgstr ""
-"Spostamento della trasmissione, modalità split o inibizione della "
-"trasmissione"
+"Shift della trasmissione, modalità split o inibizione della trasmissione"
 
 #: ../wxui/memedit.py:80
 msgid "Transmit tone"
@@ -2858,7 +2858,7 @@ msgstr "Stati Uniti"
 
 #: ../wxui/clone.py:391
 msgid "Unplug your cable (if needed) and then click OK"
-msgstr "Scollegare il cavo (se necessario) e poi premere OK"
+msgstr "Scollegare il cavo (se necessario) e quindi fare clic su OK"
 
 #: ../drivers/thd74.py:328
 #, python-format
@@ -2893,7 +2893,7 @@ msgstr "Usa carattere più grande"
 #: ../wxui/developer.py:256
 #, python-format
 msgid "Value does not fit in %i bits"
-msgstr "Il valore non entra in %i bit"
+msgstr "Il valore non rientra in %i bit"
 
 #: ../wxui/common.py:520
 #, python-format
@@ -2949,7 +2949,7 @@ msgstr "Installare un'icona sul desktop?"
 
 #: ../wxui/clone.py:416
 msgid "Your cable appears to be on port:"
-msgstr "Il cavo sembra sulla porta:"
+msgstr "Il cavo sembra collegato alla porta:"
 
 #: ../wxui/developer.py:176
 msgid "bits"
