@@ -280,6 +280,7 @@
 | <a name="Radtel_RT-470L"></a> Radtel_RT-470L | [@KC9HI](https://github.com/KC9HI) | 5-May-2023 | Yes |  |
 | <a name="Radtel_RT-470X"></a> Radtel_RT-470X | [@KC9HI](https://github.com/KC9HI) | 10-Aug-2023 | Yes |  |
 | <a name="Radtel_RT-490"></a> Radtel_RT-490 | [@KC9HI](https://github.com/KC9HI) | 11-Nov-2023 | Yes | 0.08% |
+| <a name="Radtel_RT-730"></a> Radtel_RT-730 | [@KC9HI](https://github.com/KC9HI) | 11-May-2024 | Yes |  |
 | <a name="Radtel_T18"></a> Radtel_T18 | [@KC9HI](https://github.com/KC9HI) | 28-Nov-2022 | Yes | 0.07% |
 | <a name="Retevis_H777S"></a> Retevis_H777S | [@KC9HI](https://github.com/KC9HI) | 22-Dec-2022 | Yes |  |
 | <a name="Retevis_H777_Plus"></a> Retevis_H777_Plus | [@KC9HI](https://github.com/KC9HI) | 4-Dec-2022 | Yes | 0.06% |
@@ -458,11 +459,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 455
+**Drivers:** 456
 
-**Tested:** 87% (399/56) (93% of usage stats)
+**Tested:** 87% (400/56) (93% of usage stats)
 
-**Byte clean:** 91% (416/39)
+**Byte clean:** 91% (417/39)
 
 ## Meaning of this testing
 
