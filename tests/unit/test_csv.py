@@ -55,6 +55,10 @@ class TestCSV(unittest.TestCase):
     def test_parse_modern(self, output_encoding='utf-8'):
         with open(self.testfn, 'w', encoding=output_encoding) as f:
             f.write(CHIRP_CSV_MODERN)
+        # Make sure we detect the file
+        with open(self.testfn, 'rb') as f:
+            self.assertTrue(generic_csv.CSVRadio.match_model(
+                f.read(), self.testfn))
         csv = generic_csv.CSVRadio(self.testfn)
         mem = csv.get_memory(1)
         self.assertEqual(1, mem.number)
@@ -72,14 +76,18 @@ class TestCSV(unittest.TestCase):
         self.assertEqual('5.0W', str(mem.power))
         self.assertIn('UHF calling', mem.comment)
 
-    def test_csv_with_comments(self):
+    def test_csv_with_comments(self, output_encoding='utf-8'):
         lines = list(CHIRP_CSV_MODERN.strip().split('\n'))
         lines.insert(0, '# This is a comment')
         lines.insert(0, '# Test file with comments')
         lines.insert(4, '# Test comment in the middle')
         lines.append('# Comment at the end')
-        with open(self.testfn, 'w', newline='') as f:
+        with open(self.testfn, 'w', newline='', encoding=output_encoding) as f:
             f.write('\r\n'.join(lines))
+        # Make sure we detect the file
+        with open(self.testfn, 'rb') as f:
+            self.assertTrue(generic_csv.CSVRadio.match_model(
+                f.read(), self.testfn))
         csv = generic_csv.CSVRadio(self.testfn)
         mem = csv.get_memory(0)
         self.assertEqual(146520000, mem.freq)
@@ -91,6 +99,9 @@ class TestCSV(unittest.TestCase):
         self.assertEqual(lines, read_lines)
 
     def test_parse_modern_bom(self):
+        self.test_parse_modern(output_encoding='utf-8-sig')
+
+    def test_parse_modern_bom_with_comments(self):
         self.test_parse_modern(output_encoding='utf-8-sig')
 
     def test_parse_minimal(self):
