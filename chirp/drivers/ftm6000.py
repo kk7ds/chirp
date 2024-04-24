@@ -53,7 +53,7 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
     MODES = ["FM", "AM", "NFM"]
     TMODES = ["", "Tone", "TSQL", "TSQL-R", "DTCS", "Cross"]
     CROSS_MODES = ["->DTCS", "Tone->DTCS", "DTCS->Tone"]
-    DUPLEX = ["", "n/a", "-", "+", "split"]
+    DUPLEX = ["", "off", "-", "+", "split"]
     T_STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
     VALID_BANDS = [(108000000, 137000000),
                    (137000000, 174000000),
@@ -1471,29 +1471,29 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
         fmenu = RadioSettingGroup("fmnu", "Quick Functions")
         mic = RadioSettingGroup("mic", "Microphone")
         sig = RadioSettingGroup("sig", "Signalling")
-        dat = RadioSettingGroup("dat", "Data")
         opts = RadioSettingGroup("opts", "Options")
         dtmf = RadioSettingGroup("dtmf", "DTMF")
         scan = RadioSettingGroup("scan", "Scanning")
-        wires = RadioSettingGroup("wires", "GM/WIRES-X")
-        aprscom = RadioSettingGroup("aprscom", "APRS Settings")
-        aprsdgp = RadioSettingGroup("aprsdgp", "APRS Digipeater")
-        aprsmsg = RadioSettingGroup("aprsmsg", "APRS Messages")
-        bcnfltr = RadioSettingGroup("bcnfltr", "APRS Beacon Filter")
-        bcnunit = RadioSettingGroup("bcnunit", "APRS Beacon Units")
-        bcnrngr = RadioSettingGroup("bcnrngr", "APRS Beacon Ringer")
-        bcnstat = RadioSettingGroup("bcnstat", "APRS Beacon Status")
-        bcnsmrt = RadioSettingGroup("bcnsmrt", "APRS Smart Beaconing")
         other = RadioSettingGroup("other", "Other")
 
         if self.FTM200:
+            dat = RadioSettingGroup("dat", "Data")
+            wires = RadioSettingGroup("wires", "GM/WIRES-X")
+            aprscom = RadioSettingGroup("aprscom", "APRS Settings")
+            aprsdgp = RadioSettingGroup("aprsdgp", "APRS Digipeater")
+            aprsmsg = RadioSettingGroup("aprsmsg", "APRS Messages")
+            bcnfltr = RadioSettingGroup("bcnfltr", "APRS Beacon Filter")
+            bcnunit = RadioSettingGroup("bcnunit", "APRS Beacon Units")
+            bcnrngr = RadioSettingGroup("bcnrngr", "APRS Beacon Ringer")
+            bcnstat = RadioSettingGroup("bcnstat", "APRS Beacon Status")
+            bcnsmrt = RadioSettingGroup("bcnsmrt", "APRS Smart Beaconing")            
             group = RadioSettings(cfg, dsp, fmenu, mic, sig, opts, dtmf,
                                   scan, dat, wires, aprscom, aprsmsg,
                                   aprsdgp, bcnfltr, bcnunit, bcnrngr,
                                   bcnstat, bcnsmrt, other)
         else:
             group = RadioSettings(cfg, dsp, fmenu, mic, sig, opts, dtmf,
-                                  scan)
+                                  scan, other)
 
         menu_items = ["01: Auto Power Off (APO)", "02: ARTS Mode",
                       "03: ARTS Interval", "04: Busy Channel Lockout (BCLO)",
@@ -1514,7 +1514,6 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
 
         # Begin Config settings
         if self.FTM200:
-
             sx = self._b2s(_mic.csign, 0xff)
             rx = RadioSettingValueString(0, 10, sx, False)
             rs = RadioSetting("micset.csign", "Call Sign Label", rx)
@@ -1995,47 +1994,48 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
         # End of Scan settings
 
         # Begin Data settings
-        options = ["4700 bps", "9600 bps", "19200 bps", "38400 bps",
-                   "57600 bps"]
-        rx = RadioSettingValueList(options, options[_wierd.comspd])
-        rs = RadioSetting("wierd.comspd", "COM Port Speed", rx)
-        dat.append(rs)
+        if self.FTM200:    
+            options = ["4700 bps", "9600 bps", "19200 bps", "38400 bps",
+                       "57600 bps"]
+            rx = RadioSettingValueList(options, options[_wierd.comspd])
+            rs = RadioSetting("wierd.comspd", "COM Port Speed", rx)
+            dat.append(rs)
 
-        options = ["Off", "GPS Out", "Packet", "Waypoint"]
-        rx = RadioSettingValueList(options, options[_wierd.comout])
-        rs = RadioSetting("wierd.comout", "COM Port Output", rx)
-        dat.append(rs)
+            options = ["Off", "GPS Out", "Packet", "Waypoint"]
+            rx = RadioSettingValueList(options, options[_wierd.comout])
+            rs = RadioSetting("wierd.comout", "COM Port Output", rx)
+            dat.append(rs)
 
-        options = ["NMEA9", "NMEA8", "NMEA7", "NMEA6"]
-        rx = RadioSettingValueList(options, options[_wierd.comwpf])
-        rs = RadioSetting("wierd.comwpf", "COM Port Waypoint Format", rx)
-        dat.append(rs)
+            options = ["NMEA9", "NMEA8", "NMEA7", "NMEA6"]
+            rx = RadioSettingValueList(options, options[_wierd.comwpf])
+            rs = RadioSetting("wierd.comwpf", "COM Port Waypoint Format", rx)
+            dat.append(rs)
 
-        options = ["All", "Mobile", "Frequency", "Object/Item", "Digipeater",
-                   "VoIP", "Weather", "Yaesu", "Call Ringer", "Rng Ringer"]
-        rx = RadioSettingValueList(options, options[_wierd.comflt])
-        rs = RadioSetting("wierd.comflt", "COM Port Waypoint Filter", rx)
-        dat.append(rs)
+            options = ["All", "Mobile", "Frequency", "Object/Item", "Digipeater",
+                       "VoIP", "Weather", "Yaesu", "Call Ringer", "Rng Ringer"]
+            rx = RadioSettingValueList(options, options[_wierd.comflt])
+            rs = RadioSetting("wierd.comflt", "COM Port Waypoint Filter", rx)
+            dat.append(rs)
 
-        options = ["Main Band", "Sub Band", "A-Band Fix", "B-Band Fix"]
-        rx = RadioSettingValueList(options, options[_wierd.dbsela])
-        rs = RadioSetting("wierd.dbsela", "Data Band Select: APRS", rx)
-        dat.append(rs)
-        rx = RadioSettingValueList(options, options[_wierd.dbseld])
-        rs = RadioSetting("wierd.dbseld", "Data Band Select: Data", rx)
-        dat.append(rs)
+            options = ["Main Band", "Sub Band", "A-Band Fix", "B-Band Fix"]
+            rx = RadioSettingValueList(options, options[_wierd.dbsela])
+            rs = RadioSetting("wierd.dbsela", "Data Band Select: APRS", rx)
+            dat.append(rs)
+            rx = RadioSettingValueList(options, options[_wierd.dbseld])
+            rs = RadioSetting("wierd.dbseld", "Data Band Select: Data", rx)
+            dat.append(rs)
 
-        options = ["1200 bps", "9600 bps"]
-        rx = RadioSettingValueList(options, options[_wierd.dspda])
-        rs = RadioSetting("wierd.dspda", "Data Speed: APRS", rx)
-        dat.append(rs)
-        rx = RadioSettingValueList(options, options[_wierd.pktspd])
-        rs = RadioSetting("wierd.pktspd", "Data Speed: Data", rx)
-        dat.append(rs)
+            options = ["1200 bps", "9600 bps"]
+            rx = RadioSettingValueList(options, options[_wierd.dspda])
+            rs = RadioSetting("wierd.dspda", "Data Speed: APRS", rx)
+            dat.append(rs)
+            rx = RadioSettingValueList(options, options[_wierd.pktspd])
+            rs = RadioSetting("wierd.pktspd", "Data Speed: Data", rx)
+            dat.append(rs)
 
-        rx = RadioSettingValueList(offon, offon[_wierd.datsql])
-        rs = RadioSetting("wierd.datsql", "Data Squelch", rx)
-        dat.append(rs)
+            rx = RadioSettingValueList(offon, offon[_wierd.datsql])
+            rs = RadioSetting("wierd.datsql", "Data Squelch", rx)
+            dat.append(rs)
         # End of Data Settings
 
         # Begin Options settings
@@ -2865,7 +2865,7 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
         return group       # End get_settings()
 
     def set_settings(self, settings):
-        _setx = self._memobj.setts
+        # _setx = self._memobj.setts
         for element in settings:
             if not isinstance(element, RadioSetting):
                 self.set_settings(element)
@@ -2885,7 +2885,8 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
                                 obj = getattr(obj, bit)
                         setting = bits[-1]
                     else:
-                        obj = _setx
+                        # obj = _setx
+                        obj = self._memobj
                         setting = element.get_name()
 
                     if element.has_apply_callback():
