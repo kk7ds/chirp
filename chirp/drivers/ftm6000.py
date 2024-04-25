@@ -42,11 +42,11 @@ class Ftm6000RAlias(chirp_common.Alias):
 class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
     """Yaesu FTM-6000"""
     FTM200 = False
-    # TESTME = False
+    TESTME = False
     BAUD_RATE = 38400
-    COM_BITS = 8    # number of data bitsTMODEW
-    COM_PRTY = 'N'   # parity checking
-    COM_STOP = 1   # stop bits
+    COM_BITS = 8
+    COM_PRTY = 'N'
+    COM_STOP = 1
     MODEL = "FTM-6000"
     NAME_LEN = 6        # Valid Name Length
     ALIASES = [Ftm6000RAlias]
@@ -2914,4 +2914,4 @@ class FTM200radio(FTM6000Radio):
     ALIASES = [Ftm200dAlias]
     CHARSET = list(chirp_common.CHARSET_ASCII)
     MODES = ["AM", "FM", "NFM", "DN"]
-    # TESTME = False
+    TESTME = False
