@@ -33,6 +33,7 @@ import sys
 LOG = logging.getLogger(__name__)
 CMD_ACK = b'\x06'
 
+
 class Ftm6000RAlias(chirp_common.Alias):
     Vendor = "Yaesu"
     MODEL = "FTM-6000R"
@@ -43,6 +44,7 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
     """Yaesu FTM-6000"""
     FTM200 = False
     TESTME = False
+    NEEDS_COMPAT_SERIAL = False
     BAUD_RATE = 38400
     COM_BITS = 8
     COM_PRTY = 'N'
@@ -61,8 +63,8 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
                    (400000000, 480000000),
                    (480000000, 999999999)]
     POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=50),
-                chirp_common.PowerLevel("Mid", watts=20),
-                chirp_common.PowerLevel("Low", watts=5)]
+                    chirp_common.PowerLevel("Mid", watts=20),
+                    chirp_common.PowerLevel("Low", watts=5)]
     SKIPS = ["", "S"]
     # No lowercase,{} or ~
     CHARSET = [chr(x) for x in list(range(ord(" "), ord("_") + 1)) +
@@ -668,7 +670,7 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
                 break
             time.sleep(0.5)
         if len(data) == blsz:
-            LOG.debug("Received block %s, sub %s" % (hex(data[0]), 
+            LOG.debug("Received block %s, sub %s" % (hex(data[0]),
                       hex(data[1])))
             checksum = data[blsz - 1]
             cs = 0
@@ -1486,7 +1488,7 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
             bcnunit = RadioSettingGroup("bcnunit", "APRS Beacon Units")
             bcnrngr = RadioSettingGroup("bcnrngr", "APRS Beacon Ringer")
             bcnstat = RadioSettingGroup("bcnstat", "APRS Beacon Status")
-            bcnsmrt = RadioSettingGroup("bcnsmrt", "APRS Smart Beaconing")            
+            bcnsmrt = RadioSettingGroup("bcnsmrt", "APRS Smart Beaconing")
             group = RadioSettings(cfg, dsp, fmenu, mic, sig, opts, dtmf,
                                   scan, dat, wires, aprscom, aprsmsg,
                                   aprsdgp, bcnfltr, bcnunit, bcnrngr,
@@ -1497,9 +1499,9 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
 
         menu_items = ["01: Auto Power Off (APO)", "02: ARTS Mode",
                       "03: ARTS Interval", "04: Busy Channel Lockout (BCLO)",
-                      "05: Beep", "06: Bell", "07: Clock Type", 
-                      "08: LCD Dimmer", "09: DTMF Manual/Auto", 
-                      "10: DTMF TX", "11:DTMF Codes", "12: Home", 
+                      "05: Beep", "06: Bell", "07: Clock Type",
+                      "08: LCD Dimmer", "09: DTMF Manual/Auto",
+                      "10: DTMF TX", "11:DTMF Codes", "12: Home",
                       "13: Microphone Gain", "14: Microphone P Keys",
                       "15: Pager TX/RX", "16: Packet Speed", "17:RX Mode",
                       "18: Band Select", "19: Repeater Reverse",
@@ -1507,7 +1509,7 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
                       "23: Scan Type", "24: Squelch Type", "25:Squelch Code",
                       "26: Squelch Expansion", "27: Step",
                       "28: Radio Temperature", "29: Time Out Timer (TOT)",
-                      "30: TX Power", "31: Version", "32: Voltage", 
+                      "30: TX Power", "31: Version", "32: Voltage",
                       "33: Width", "34: Weather Alert", "35: Bluetooth"]
         offon = ["Off", "On"]
         onoff = ["On", "Off"]     # Inverted logic
@@ -1560,7 +1562,7 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
 
             options = ["Off", "0.5 Hours", "1 Hours", "1.5 Hours", "2 Hours",
                        "3 Hours", "4 Hours", "5 Hours", "6 Hours", "7 Hours",
-                       "8 Hours", "9 Hours", "10 Hours", "11 Hours", 
+                       "8 Hours", "9 Hours", "10 Hours", "11 Hours",
                        "12 Hours"]
             v0 = _setx.apo      # Hours BCD
             v1 = _setx.apo1     # 0.5 hours yes/no
@@ -1994,7 +1996,7 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
         # End of Scan settings
 
         # Begin Data settings
-        if self.FTM200:    
+        if self.FTM200:
             options = ["4700 bps", "9600 bps", "19200 bps", "38400 bps",
                        "57600 bps"]
             rx = RadioSettingValueList(options, options[_wierd.comspd])
@@ -2011,8 +2013,9 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
             rs = RadioSetting("wierd.comwpf", "COM Port Waypoint Format", rx)
             dat.append(rs)
 
-            options = ["All", "Mobile", "Frequency", "Object/Item", "Digipeater",
-                       "VoIP", "Weather", "Yaesu", "Call Ringer", "Rng Ringer"]
+            options = ["All", "Mobile", "Frequency", "Object/Item",
+                       "Digipeater", "VoIP", "Weather", "Yaesu",
+                       "Call Ringer", "Rng Ringer"]
             rx = RadioSettingValueList(options, options[_wierd.comflt])
             rs = RadioSetting("wierd.comflt", "COM Port Waypoint Filter", rx)
             dat.append(rs)
@@ -2088,7 +2091,7 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
 
             options = ["Low", "Normal", "High"]
             rx = RadioSettingValueList(options, options[_mic.usbcamql])
-            rs = RadioSetting("micset.usbcamql", "USB Camera: Image Quality", 
+            rs = RadioSetting("micset.usbcamql", "USB Camera: Image Quality",
                               rx)
             opts.append(rs)
 
@@ -2645,7 +2648,7 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
             options.append("\\")
             sx = chr(_wierd.aprsym4a)
             rx = RadioSettingValueList(options, sx)
-            rs = RadioSetting("wierd.aprsym4a", "My Symbol #4 First Value", 
+            rs = RadioSetting("wierd.aprsym4a", "My Symbol #4 First Value",
                               rx)
             rs.set_apply_callback(self._c2u8, _wierd, "aprsym4a")
             aprsmsg.append(rs)
@@ -2655,7 +2658,7 @@ class FTM6000Radio(yaesu_clone.YaesuCloneModeRadio):
                 options.append(chr(i))   # full ascii
             sx = chr(_wierd.aprsym4b)
             rx = RadioSettingValueList(options, sx)
-            rs = RadioSetting("wierd.aprsym4b", "My Symbol #4 Second Value", 
+            rs = RadioSetting("wierd.aprsym4b", "My Symbol #4 Second Value",
                               rx)
             rs.set_apply_callback(self._c2u8, _wierd, "aprsym4b")
             aprsmsg.append(rs)
@@ -2914,4 +2917,5 @@ class FTM200radio(FTM6000Radio):
     ALIASES = [Ftm200dAlias]
     CHARSET = list(chirp_common.CHARSET_ASCII)
     MODES = ["AM", "FM", "NFM", "DN"]
+    NEEDS_COMPAT_SERIAL = False
     TESTME = False
