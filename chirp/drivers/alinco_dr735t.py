@@ -13,11 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp import chirp_common, bitwise, errors, memmap, directory
+from chirp import chirp_common, bitwise, errors, memmap, directory, util
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettingValueList
 from chirp.drivers.alinco import ALINCO_TONES, CHARSET
-from chirp import util
 
 import logging
 import codecs
@@ -108,11 +107,13 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
         rf.valid_modes = list(self.MODE_MAP.values())
         rf.valid_skips = ["", "S"]
         rf.valid_bands = self._freq_ranges
+        rf.valid_tuning_steps = [5.0, 6.25, 12.5]
         rf.memory_bounds = (0, self._no_channels-1)
         rf.has_ctone = True
         rf.has_bank = False
         rf.has_dtcs_polarity = False
-        rf.valid_tuning_steps = [5.0]
+        rf.has_tuning_step = False
+
         rf.can_delete = False
         rf.valid_name_length = 6
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC
@@ -130,7 +131,7 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
         if not radio_id:
             raise errors.RadioError("No response from radio")
         LOG.debug('Model string is %s' % util.hexprint(radio_id))
-        return radio_id == b"DR735TN"
+        return radio_id in (b"DR735TN", b"DR735TE")
 
     def do_download(self):
         if not self._identify():
@@ -216,28 +217,48 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
         return repr(self._memobj.memory[number])
 
     def get_memory(self, number):
+
         _mem = self._memobj.memory[number]
         mem = chirp_common.Memory()
         mem.number = number                 # Set the memory number
-        mem.freq = int(_mem.frequency)
-        mem.name = "".join([CHARSET[_mem.name[i]] for i in range(6)]).strip()
-
-        mem.tmode = self.TONE_MODE_MAP[int(_mem.subtone_selection)]
-        mem.duplex = self.SHIFT_DIR_MAP[_mem.shift_direction]
-        mem.offset = _mem.shift
-
-        mem.rtone = ALINCO_TONES[_mem.rx_tone_index]
-        mem.ctone = ALINCO_TONES[_mem.tx_tone_index]
-        mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs_index]
-        mem.power = self.POWER_MAP[_mem.power_index]
-        mem.skip = 'S' if bool(_mem.skip) else ''
-        mem.mode = self.MODE_MAP[int(_mem.mode)]
-
-        self._get_extra(_mem, mem)
-
-        if _mem.used == 0:
+        if _mem.used != 0x55:
             mem.empty = True
-        return mem
+            mem.freq = 400000000
+            mem.name = ""
+
+            mem.tmode = self.TONE_MODE_MAP[0]
+            mem.duplex = self.SHIFT_DIR_MAP[0]
+            mem.offset = 0
+
+            mem.rtone = ALINCO_TONES[0]
+            mem.ctone = ALINCO_TONES[0]
+            mem.dtcs = chirp_common.DTCS_CODES[0]
+            mem.power = self.POWER_MAP[0]
+            mem.skip = ''
+            mem.mode = self.MODE_MAP[0]
+            self._get_extra_default(mem)
+
+            return mem
+        else:
+            mem.empty = False
+            mem.freq = int(_mem.frequency)
+            mem.name = "".join([CHARSET[_mem.name[i]]
+                               for i in range(6)]).strip()
+
+            mem.tmode = self.TONE_MODE_MAP[int(_mem.subtone_selection)]
+            mem.duplex = self.SHIFT_DIR_MAP[_mem.shift_direction]
+            mem.offset = _mem.shift
+
+            mem.rtone = ALINCO_TONES[_mem.rx_tone_index]
+            mem.ctone = ALINCO_TONES[_mem.tx_tone_index]
+            mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs_index]
+            mem.power = self.POWER_MAP[_mem.power_index]
+            mem.skip = 'S' if bool(_mem.skip) else ''
+            mem.mode = self.MODE_MAP[int(_mem.mode)]
+
+            self._get_extra(_mem, mem)
+
+            return mem
 
     def set_memory(self, mem):
         # Get a low-level memory object mapped to the image
@@ -297,6 +318,49 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
             _mem.shift_direction = self.SHIFT_DIR_MAP.index("")
 
         self._set_extra(_mem, mem)
+
+    def _get_extra_default(self, mem):
+        mem.extra = RadioSettingGroup("extra", "Extra")
+        het_mode = RadioSetting("heterodyne_mode", "Heterodyne Mode",
+                                RadioSettingValueList(
+                                    self.HET_MODE_MAP,
+                                    current=self.HET_MODE_MAP[0]
+                                ))
+        het_mode.set_doc("Heterodyne Mode")
+
+        bcl = RadioSetting("bcl", "BCL",
+                           RadioSettingValueBoolean(
+                               False
+                           ))
+        bcl.set_doc("Busy Channel Lockout")
+
+        stby_screen = RadioSetting("stby_screen", "Standby Screen Color",
+                                   RadioSettingValueList(
+                                       self.SCREEN_COLOR_MAP,
+                                       current=self.SCREEN_COLOR_MAP[0]
+                                   ))
+        stby_screen.set_doc("Standby Screen Color")
+
+        rx_screen = RadioSetting("rx_screen", "RX Screen Color",
+                                 RadioSettingValueList(
+                                     self.SCREEN_COLOR_MAP,
+                                     current=self.SCREEN_COLOR_MAP[0]
+                                 ))
+        rx_screen.set_doc("RX Screen Color")
+
+        tx_screen = RadioSetting("tx_screen", "TX Screen Color",
+                                 RadioSettingValueList(
+                                     self.SCREEN_COLOR_MAP,
+                                     current=self.SCREEN_COLOR_MAP[0]
+                                 ))
+
+        tx_screen.set_doc("TX Screen Color")
+
+        mem.extra.append(het_mode)
+        mem.extra.append(bcl)
+        mem.extra.append(stby_screen)
+        mem.extra.append(rx_screen)
+        mem.extra.append(tx_screen)
 
     def _get_extra(self, _mem, mem):
         mem.extra = RadioSettingGroup("extra", "Extra")
