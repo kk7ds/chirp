@@ -1013,8 +1013,10 @@ class TDH8(chirp_common.CloneModeRadio):
         # power
         try:
             mem.power = self._tx_power[_mem.lowpower]
-            assert mem.power is not None
-        except (IndexError, AssertionError):
+            if mem.power is None:
+                # Gaps are basically missing power levels
+                raise IndexError()
+        except IndexError:
             LOG.error("Radio reported invalid power level %s (in %s)" %
                       (_mem.lowpower, self._tx_power))
             mem.power = self._tx_power[0]
@@ -1578,9 +1580,10 @@ class TDH8(chirp_common.CloneModeRadio):
             if self._memobj.fmusedflags[i]:
                 _fm = self._get_fm(i).fmblock
                 try:
-                    assert 760 < int(_fm) < 1080
+                    if not (760 < int(_fm) < 1080):
+                        raise ValueError()
                     val = '%.1f' % (int(_fm) / 10)
-                except (ValueError, AssertionError):
+                except ValueError:
                     LOG.warning('FM channel index %i is invalid', i)
                     val = ''
             else:
@@ -2220,9 +2223,6 @@ class TDH8_GMRS(TDH8):
     _gmrs = True
     _txbands = [(136000000, 175000000), (400000000, 521000000)]
     _tx_power = [chirp_common.PowerLevel("Low", watts=1.00),
-                 # This index should not be used on this radio, but if we
-                 # find it, just treat it like "low"
-                 chirp_common.PowerLevel("Low", watts=1.00),
                  chirp_common.PowerLevel("High", watts=8.00)]
 
     def validate_memory(self, mem):
