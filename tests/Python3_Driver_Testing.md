@@ -272,6 +272,7 @@
 | <a name="Radioddity_GS-5B"></a> Radioddity_GS-5B | [@lunapiercook](https://github.com/lunapiercook) | 5-Mar-2023 | Yes |  |
 | <a name="Radioddity_R2"></a> Radioddity_R2 | [@KC9HI](https://github.com/KC9HI) | 17-Dec-2022 | Yes | 0.04% |
 | <a name="Radioddity_UV-5G"></a> Radioddity_UV-5G | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.47% |
+| <a name="Radioddity_UV-5G_Plus"></a> Radioddity_UV-5G_Plus |  |  | Yes |  |
 | <a name="Radioddity_UV-5RX3"></a> Radioddity_UV-5RX3 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.90% |
 | <a name="Radioddity_UV-82X3"></a> Radioddity_UV-82X3 | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | 0.05% |
 | <a name="Radtel_RT-470"></a> Radtel_RT-470 | [@KC9HI](https://github.com/KC9HI) | 2-Apr-2023 | Yes | 0.00% |
@@ -456,11 +457,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 453
+**Drivers:** 454
 
-**Tested:** 87% (398/55) (93% of usage stats)
+**Tested:** 87% (398/56) (93% of usage stats)
 
-**Byte clean:** 91% (414/39)
+**Byte clean:** 91% (415/39)
 
 ## Meaning of this testing
 
