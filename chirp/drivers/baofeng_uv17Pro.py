@@ -1357,3 +1357,9 @@ class GM5RH(UV17Pro):
     _has_workmode_support = True
 
     _magic = MSTRING_GM5RH
+
+
+@directory.register
+class UV5GPlus(GM5RH):
+    VENDOR = "Radioddity"
+    MODEL = "UV-5G Plus"
