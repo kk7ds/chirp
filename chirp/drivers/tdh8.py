@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import struct
-import time
 import logging
 
 
@@ -675,8 +674,7 @@ def _firmware_version_from_image(radio):
     return version
 
 
-def _do_ident(radio, magic, secondack=True):
-    serial = radio.pipe
+def _do_ident(serial, magic, secondack=True):
     serial.timeout = 1
 
     LOG.info("Sending Magic: %s" % util.hexprint(magic))
@@ -758,42 +756,9 @@ IDENT_BLACKLIST = {
 }
 
 
-def _ident_radio(radio):
-    for magic in radio._idents:
-        error = None
-        try:
-            data = _do_ident(radio, magic)
-            return data
-        except errors.RadioError as e:
-            error = e
-            time.sleep(2)
-
-    if error:
-        raise error
-    raise errors.RadioError("Radio did not respond")
-
-
 def _do_download(radio):
-    data = _ident_radio(radio)
-    append_model = False
-    # HAM OR GMRS
-    # Determine the walkie-talkie mode
-    # TDH8 have three mode:ham, gmrs and normal
-
-    LOG.info("Radio mode is " + str(data)[2:8])
-    LOG.info("Chirp choose mode is " + str(data)[2:8])
-    # The Ham and GMRS modes are subclasses of this model TDH8.
-    # We compare the radio identification to the value of that class to
-    # make sure the user chose the model that matches
-    # the radio we're talking to right now. If they do not match,
-    # we refuse to talk to the radio until the user selects the correct model.
-
-    if radio.ident_mode == data:
-        LOG.info("Successful match.")
-    else:
-        msg = ("Model mismatch!")
-        raise errors.RadioError(msg)
-
+    # Radio must have already been ident'd by detect_from_serial()
+    data = radio.ident_mode
     # Main block
     LOG.info("Downloading...")
 
@@ -803,9 +768,6 @@ def _do_download(radio):
         _do_status(radio, i)
     _do_status(radio, radio._memsize)
     LOG.info("done.")
-
-    if append_model:
-        data += radio.MODEL.ljust(8)
 
     return memmap.MemoryMapBytes(data)
 
@@ -835,7 +797,7 @@ def _write_block(radio, addr, data):
 
 
 def _do_upload(radio):
-    data = _ident_radio(radio)
+    data = _do_ident(radio.pipe, radio._idents[0])
     radio_version = _get_radio_firmware_version(radio)
     LOG.info("Radio Version is %s" % repr(radio_version))
 
@@ -886,6 +848,16 @@ class TDH8(chirp_common.CloneModeRadio):
     _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
                  chirp_common.PowerLevel("Mid",  watts=4.00),
                  chirp_common.PowerLevel("High", watts=8.00)]
+
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        ident = _do_ident(pipe, cls._idents[0])
+        for rclass in [cls] + cls.detected_models():
+            if (rclass.ident_mode == ident and
+                    rclass.MODEL.startswith(cls.MODEL)):
+                return rclass
+        LOG.error('No model match found for %r', ident)
+        raise errors.RadioError('Unsupported model')
 
     @classmethod
     def get_prompts(cls):
@@ -2207,6 +2179,7 @@ class TDH8(chirp_common.CloneModeRadio):
 
 
 @directory.register
+@directory.detected_by(TDH8)
 class TDH8_HAM(TDH8):
     VENDOR = "TIDRADIO"
     MODEL = "TD-H8-HAM"
@@ -2216,6 +2189,7 @@ class TDH8_HAM(TDH8):
 
 
 @directory.register
+@directory.detected_by(TDH8)
 class TDH8_GMRS(TDH8):
     VENDOR = "TIDRADIO"
     MODEL = "TD-H8-GMRS"
@@ -2262,6 +2236,7 @@ class TDH3(TDH8):
 
 
 @directory.register
+@directory.detected_by(TDH3)
 class TDH3_HAM(TDH3):
     VENDOR = "TIDRADIO"
     MODEL = "TD-H3-HAM"
@@ -2271,6 +2246,7 @@ class TDH3_HAM(TDH3):
 
 
 @directory.register
+@directory.detected_by(TDH3)
 class TDH3_GMRS(TDH3):
     VENDOR = "TIDRADIO"
     MODEL = "TD-H3-GMRS"
