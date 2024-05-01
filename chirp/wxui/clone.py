@@ -324,7 +324,9 @@ class ChirpCloneDialog(wx.Dialog):
             self.select_vendor_model(CONF.get('last_vendor', 'state'),
                                      CONF.get('last_model', 'state'))
         except ValueError:
-            LOG.warning('Last vendor/model not found')
+            LOG.warning('Last vendor/model (%s/%s) not found',
+                        CONF.get('last_vendor', 'state'),
+                        CONF.get('last_model', 'state'))
 
         self.SetMinSize((400, 200))
         self.Fit()
