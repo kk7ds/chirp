@@ -448,12 +448,47 @@ class ChirpBrowserTreeBook(wx.Treebook):
 
 
 class FakeSerial(serial.SerialBase):
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        self._fake_buf = bytearray()
+
+    @property
+    def in_waiting(self):
+        return len(self._fake_buf)
+
     def write(self, buf):
         LOG.debug('Fake serial write:\n%s' % util.hexprint(buf))
 
-    def read(self, count):
-        LOG.debug('Fake serial read %i' % count)
-        return b''
+    def read(self, count=None):
+        if count is None:
+            count = len(self._fake_buf)
+        data = self._fake_buf[:count]
+        self._fake_buf = self._fake_buf[count:]
+        LOG.debug('Fake serial read %i: %s', count, util.hexprint(data))
+        return data
+
+    def flush(self):
+        LOG.debug('Fake serial flushed')
+
+
+class FakeAT778(FakeSerial):
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        from chirp.drivers import anytone778uv
+        self._emulated = anytone778uv.RetevisRT95vox
+
+    def write(self, buf):
+        if buf == b'PROGRAM':
+            self._fake_buf.extend(buf + b'QX\x06')
+        elif buf == b'\x02':
+            model = list(self._emulated.ALLOWED_RADIO_TYPES.keys())[0]
+            version = self._emulated.ALLOWED_RADIO_TYPES[model][0]
+            self._fake_buf.extend(buf + b'\x49%7.7s\x00%6.6s\x06' % (
+                model.encode().ljust(7, b'\x00'),
+                version.encode().ljust(6, b'\x00')))
+        else:
+            raise Exception('Full clone not implemented')
+        super().write(buf)
 
 
 class FakeEchoSerial(FakeSerial):

@@ -368,14 +368,12 @@ def cstring_to_py_string(cstring):
 
 
 # Check the radio version reported to see if it's one we support,
-# returns bool version supported, and the band index
+# returns bool version supported, the band index, and has_vox
 def check_ver(ver_response, allowed_types):
     ''' Check the returned radio version is one we approve of '''
 
     LOG.debug('ver_response = ')
     LOG.debug(util.hexprint(ver_response))
-
-    global HAS_VOX
 
     resp = bitwise.parse(VER_FORMAT, ver_response)
     verok = False
@@ -386,8 +384,6 @@ def check_ver(ver_response, allowed_types):
         LOG.debug('radio model: \'%s\' version: \'%s\'' %
                   (model, version))
         LOG.debug('allowed_types = %s' % allowed_types)
-
-        HAS_VOX = "P" == model[-1:]
 
         if model in allowed_types:
             LOG.debug('model in allowed_types')
@@ -404,8 +400,7 @@ def check_ver(ver_response, allowed_types):
 # Put the radio in programming mode, sending the initial command and checking
 # the response.  raise RadioError if there is no response (500ms timeout), and
 # if the returned version isn't matched by check_ver
-def enter_program_mode(radio):
-    serial = radio.pipe
+def enter_program_mode(serial):
     # place the radio in program mode, and confirm
     program_response = send_serial_command(serial, b'PROGRAM')
 
@@ -414,29 +409,26 @@ def enter_program_mode(radio):
     LOG.debug('entered program mode')
 
     # read the radio ID string, make sure it matches one we know about
-    ver_response = send_serial_command(serial, b'\x02')
+    return send_serial_command(serial, b'\x02')
 
-    verok, bandlimit = check_ver(ver_response, radio.ALLOWED_RADIO_TYPES)
+
+def get_bandlimit_from_ver(radio, ver_response):
+    verok, bandlimit, = check_ver(ver_response,
+                                  radio.ALLOWED_RADIO_TYPES)
     if not verok:
-        exit_program_mode(radio)
-        ver = "V2" if radio.VENDOR == "CRT" else "VOX"
-        if HAS_VOX and ("V2" and "VOX") not in radio.MODEL:
-            raise errors.RadioError(
-                'Radio identified as model with VOX\n'
-                'Try %s-%s %s' %
-                (radio.VENDOR, radio.MODEL, ver))
-        else:
-            raise errors.RadioError(
-                'Radio version not in allowed list for %s-%s:\n'
-                '%s' %
-                (radio.VENDOR, radio.MODEL, util.hexprint(ver_response)))
+        LOG.debug('Radio version response not allowed for %s-%s: %s',
+                  radio.VENDOR, radio.MODEL, ver_response)
+        raise errors.RadioError('Radio model/version mismatch')
 
     return bandlimit
 
 
 # Exit programming mode
-def exit_program_mode(radio):
-    send_serial_command(radio.pipe, b'END')
+def exit_program_mode(serial):
+    try:
+        send_serial_command(serial, b'END')
+    except Exception as e:
+        LOG.error('Failed to exit programming mode: %s', e)
 
 
 # Parse a packet from the radio returning the header (R/W, address, data, and
@@ -456,12 +448,13 @@ def parse_read_response(resp):
 def do_download(radio):
     '''Download memories from the radio'''
 
+    # NOTE: The radio is already in programming mode because of
+    # detect_from_serial()
+
     # Get the serial port connection
     serial = radio.pipe
 
     try:
-        enter_program_mode(radio)
-
         memory_data = bytes()
 
         # status info for the UI
@@ -482,6 +475,8 @@ def do_download(radio):
             # LOG.debug('read response:\n%s' % util.hexprint(read_response))
 
             address, data, valid = parse_read_response(read_response)
+            if not valid:
+                raise errors.RadioError('Invalid response received from radio')
             memory_data += data
 
             # update UI
@@ -489,11 +484,12 @@ def do_download(radio):
                 // MEMORY_RW_BLOCK_SIZE
             radio.status_fn(status)
 
-        exit_program_mode(radio)
     except errors.RadioError as e:
         raise e
     except Exception as e:
         raise errors.RadioError('Failed to download from radio: %s' % e)
+    finally:
+        exit_program_mode(radio.pipe)
 
     return memmap.MemoryMapBytes(memory_data)
 
@@ -510,7 +506,8 @@ def make_write_data_cmd(addr, data, datalen):
 # Upload a memory map to the radio
 def do_upload(radio):
     try:
-        bandlimit = enter_program_mode(radio)
+        ver_response = enter_program_mode(radio.pipe)
+        bandlimit = get_bandlimit_from_ver(radio, ver_response)
 
         if bandlimit != radio._memobj.radio_settings.bandlimit:
             LOG.warning('radio and image bandlimits differ'
@@ -561,17 +558,18 @@ def do_upload(radio):
                 LOG.debug(' * write cmd:\n%s' % util.hexprint(write_command))
                 LOG.debug(' * write response:\n%s' %
                           util.hexprint(write_response))
-                exit_program_mode(radio)
+                exit_program_mode(radio.pipe)
                 raise errors.RadioError('Radio NACK\'d write command')
 
             # update UI
             status.cur = idx
             radio.status_fn(status)
-        exit_program_mode(radio)
     except errors.RadioError:
         raise
     except Exception as e:
         raise errors.RadioError('Failed to download from radio: %s' % e)
+    finally:
+        exit_program_mode(radio.pipe)
 
 
 # Get the value of @bitfield @number of bits in from 0
@@ -634,6 +632,17 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
     NEEDS_COMPAT_SERIAL = False
     NAME_LENGTH = 5
     HAS_VOX = False
+
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        ver_response = enter_program_mode(pipe)
+        for radio_cls in cls.detected_models():
+            ver_ok, _ = check_ver(ver_response, radio_cls.ALLOWED_RADIO_TYPES)
+            if ver_ok:
+                return radio_cls
+        LOG.warning('No match for ver_response: %s',
+                    util.hexprint(ver_response))
+        raise errors.RadioError('Incorrect radio model')
 
     @classmethod
     def get_prompts(cls):
@@ -1780,6 +1789,7 @@ class AnyTone778UVvox(AnyTone778UVvoxBase):
 
 
 @directory.register
+@directory.detected_by(RetevisRT95)
 class RetevisRT95vox(AnyTone778UVvoxBase):
     VENDOR = "Retevis"
     MODEL = "RT95 VOX"

@@ -47,6 +47,7 @@ def get_fakes():
         'Fake F7E': fake.FakeKenwoodSerial(),
         'Fake UV17': fake.FakeUV17Serial(),
         'Fake UV17Pro': fake.FakeUV17ProSerial(),
+        'Fake AT778': developer.FakeAT778(),
     }
 
 
