@@ -10,6 +10,10 @@ from tests import base
 LOG = logging.getLogger(__name__)
 
 
+class SerialException(Exception):
+    pass
+
+
 class SerialNone:
     def flush(self):
         pass
@@ -39,10 +43,10 @@ class SerialNone:
 
 class SerialError(SerialNone):
     def read(self, size=None):
-        raise Exception("Foo")
+        raise SerialException("Foo")
 
     def write(self, data):
-        raise Exception("Bar")
+        raise SerialException("Bar")
 
 
 class SerialGarbage(SerialNone):
@@ -87,6 +91,18 @@ class TestCaseClone(base.DriverTest):
         # behavior on init.
         LOG.info('Initializing radio with fake serial; Radio should not fail')
         orig_mmap = self.parent._mmap
+
+        try:
+            cls = self.RADIO_CLASS.detect_from_serial(serial)
+            if cls and cls != self.RADIO_CLASS:
+                self.fail('Radio detection did not return self')
+        except NotImplementedError:
+            pass
+        except errors.RadioError:
+            pass
+        except SerialException:
+            pass
+
         self.radio = self.RADIO_CLASS(serial)
         self.radio._mmap = orig_mmap
         self.radio.status_fn = lambda s: True
