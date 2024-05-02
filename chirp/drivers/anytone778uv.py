@@ -51,18 +51,6 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-# Gross hack to handle missing future module on un-updatable
-# platforms like MacOS. Just avoid registering these radio
-# classes for now.
-try:
-    from builtins import bytes
-    has_future = True
-except ImportError:
-    has_future = False
-    LOG.debug('python-future package is not '
-              'available; %s requires it' % __name__)
-
-
 # Here is where we define the memory map for the radio. Since
 # We often just know small bits of it, we can use #seekto to skip
 # around as needed.
@@ -1730,46 +1718,49 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
 
 
 # Original non-VOX models
-if has_future:
-    @directory.register
-    class AnyTone778UV(AnyTone778UVBase):
-        VENDOR = "AnyTone"
-        MODEL = "778UV"
-        # Allowed radio types is a dict keyed by model of a list of version
-        # strings
-        ALLOWED_RADIO_TYPES = {'AT778UV': ['V100', 'V200']}
+@directory.register
+class AnyTone778UV(AnyTone778UVBase):
+    VENDOR = "AnyTone"
+    MODEL = "778UV"
+    # Allowed radio types is a dict keyed by model of a list of version
+    # strings
+    ALLOWED_RADIO_TYPES = {'AT778UV': ['V100', 'V200']}
 
-    @directory.register
-    class RetevisRT95(AnyTone778UVBase):
-        VENDOR = "Retevis"
-        MODEL = "RT95"
-        # Allowed radio types is a dict keyed by model of a list of version
-        # strings
-        ALLOWED_RADIO_TYPES = {'RT95': ['V100']}
 
-    @directory.register
-    class CRTMicronUV(AnyTone778UVBase):
-        VENDOR = "CRT"
-        MODEL = "Micron UV"
-        # Allowed radio types is a dict keyed by model of a list of version
-        # strings
-        ALLOWED_RADIO_TYPES = {'MICRON': ['V100']}
+@directory.register
+class RetevisRT95(AnyTone778UVBase):
+    VENDOR = "Retevis"
+    MODEL = "RT95"
+    # Allowed radio types is a dict keyed by model of a list of version
+    # strings
+    ALLOWED_RADIO_TYPES = {'RT95': ['V100']}
 
-    @directory.register
-    class MidlandDBR2500(AnyTone778UVBase):
-        VENDOR = "Midland"
-        MODEL = "DBR2500"
-        # Allowed radio types is a dict keyed by model of a list of version
-        # strings
-        ALLOWED_RADIO_TYPES = {'DBR2500': ['V100']}
 
-    @directory.register
-    class YedroYCM04vus(AnyTone778UVBase):
-        VENDOR = "Yedro"
-        MODEL = "YC-M04VUS"
-        # Allowed radio types is a dict keyed by model of a list of version
-        # strings
-        ALLOWED_RADIO_TYPES = {'YCM04UV': ['V100']}
+@directory.register
+class CRTMicronUV(AnyTone778UVBase):
+    VENDOR = "CRT"
+    MODEL = "Micron UV"
+    # Allowed radio types is a dict keyed by model of a list of version
+    # strings
+    ALLOWED_RADIO_TYPES = {'MICRON': ['V100']}
+
+
+@directory.register
+class MidlandDBR2500(AnyTone778UVBase):
+    VENDOR = "Midland"
+    MODEL = "DBR2500"
+    # Allowed radio types is a dict keyed by model of a list of version
+    # strings
+    ALLOWED_RADIO_TYPES = {'DBR2500': ['V100']}
+
+
+@directory.register
+class YedroYCM04vus(AnyTone778UVBase):
+    VENDOR = "Yedro"
+    MODEL = "YC-M04VUS"
+    # Allowed radio types is a dict keyed by model of a list of version
+    # strings
+    ALLOWED_RADIO_TYPES = {'YCM04UV': ['V100']}
 
 
 class AnyTone778UVvoxBase(AnyTone778UVBase):
@@ -1779,27 +1770,28 @@ class AnyTone778UVvoxBase(AnyTone778UVBase):
 
 
 # New VOX models
-if has_future:
-    @directory.register
-    class AnyTone778UVvox(AnyTone778UVvoxBase):
-        VENDOR = "AnyTone"
-        MODEL = "778UV VOX"
-        # Allowed radio types is a dict keyed by model of a list of version
-        # strings
-        ALLOWED_RADIO_TYPES = {'778UV-P': ['V100']}
+@directory.register
+class AnyTone778UVvox(AnyTone778UVvoxBase):
+    VENDOR = "AnyTone"
+    MODEL = "778UV VOX"
+    # Allowed radio types is a dict keyed by model of a list of version
+    # strings
+    ALLOWED_RADIO_TYPES = {'778UV-P': ['V100']}
 
-    @directory.register
-    class RetevisRT95vox(AnyTone778UVvoxBase):
-        VENDOR = "Retevis"
-        MODEL = "RT95 VOX"
-        # Allowed radio types is a dict keyed by model of a list of version
-        # strings
-        ALLOWED_RADIO_TYPES = {'RT95-P': ['V100']}
 
-    @directory.register
-    class CRTMicronUVvox(AnyTone778UVvoxBase):
-        VENDOR = "CRT"
-        MODEL = "Micron UV V2"
-        # Allowed radio types is a dict keyed by model of a list of version
-        # strings
-        ALLOWED_RADIO_TYPES = {'MICRONP': ['V100']}
+@directory.register
+class RetevisRT95vox(AnyTone778UVvoxBase):
+    VENDOR = "Retevis"
+    MODEL = "RT95 VOX"
+    # Allowed radio types is a dict keyed by model of a list of version
+    # strings
+    ALLOWED_RADIO_TYPES = {'RT95-P': ['V100']}
+
+
+@directory.register
+class CRTMicronUVvox(AnyTone778UVvoxBase):
+    VENDOR = "CRT"
+    MODEL = "Micron UV V2"
+    # Allowed radio types is a dict keyed by model of a list of version
+    # strings
+    ALLOWED_RADIO_TYPES = {'MICRONP': ['V100']}
