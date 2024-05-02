@@ -852,9 +852,8 @@ class TDH8(chirp_common.CloneModeRadio):
     @classmethod
     def detect_from_serial(cls, pipe):
         ident = _do_ident(pipe, cls._idents[0])
-        for rclass in [cls] + cls.detected_models():
-            if (rclass.ident_mode == ident and
-                    rclass.MODEL.startswith(cls.MODEL)):
+        for rclass in cls.detected_models():
+            if rclass.ident_mode == ident:
                 return rclass
         LOG.error('No model match found for %r', ident)
         raise errors.RadioError('Unsupported model')

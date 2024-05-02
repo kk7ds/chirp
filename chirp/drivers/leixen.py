@@ -394,7 +394,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         _addr, _data = recv(radio)
         ident = _data[8:14]
         LOG.debug('Got ident from radio:\n%s' % util.hexprint(ident))
-        for rclass in [cls] + cls.detected_models():
+        for rclass in cls.detected_models():
             if ident == rclass._model_ident:
                 return rclass
         # Reset the radio if we didn't find a match
