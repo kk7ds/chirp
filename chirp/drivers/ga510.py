@@ -29,14 +29,6 @@ from chirp.settings import RadioSettingValueInteger, RadioSettingValueString
 
 LOG = logging.getLogger(__name__)
 
-try:
-    from builtins import bytes
-    has_future = True
-except ImportError:
-    has_future = False
-    LOG.debug('python-future package is not available; '
-              '%s requires it' % __name__)
-
 # GA510 and SHX8800 also have DTCS code 645
 DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 

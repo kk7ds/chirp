@@ -64,8 +64,6 @@ import logging
 import re
 import warnings
 
-from builtins import bytes
-
 from chirp import bitwise_grammar
 
 LOG = logging.getLogger(__name__)

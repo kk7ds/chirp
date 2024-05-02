@@ -16,7 +16,6 @@
 
 """FT817 - FT817ND - FT817ND/US management module"""
 
-from builtins import bytes
 from chirp.drivers import yaesu_clone
 from chirp import chirp_common, util, memmap, errors, directory, bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
