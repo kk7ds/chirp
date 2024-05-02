@@ -2071,7 +2071,7 @@ class UVK5Radio(UVK5RadioBase):
     @classmethod
     def detect_from_serial(cls, pipe):
         firmware = _sayhello(pipe)
-        for rclass in [UVK5Radio] + cls.detected_models():
+        for rclass in cls.detected_models():
             if rclass.k5_approve_firmware(firmware):
                 return rclass
         raise errors.RadioError('Firmware %r not supported' % firmware)

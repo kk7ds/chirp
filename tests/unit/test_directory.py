@@ -4,6 +4,7 @@ import json
 import os
 import shutil
 import tempfile
+from unittest import mock
 
 import yaml
 
@@ -143,3 +144,50 @@ class TestAliasMap(base.BaseTest):
                 # before we add it to ensure there are no duplicates
                 self.assertNotIn(model['model'], directory_models[vendor])
                 directory_models[vendor].add(model['model'])
+
+
+class TestDetectedBy(base.BaseTest):
+    @mock.patch('chirp.directory.DRV_TO_RADIO', new={})
+    @mock.patch('chirp.directory.RADIO_TO_DRV', new={})
+    def test_detected_isolation(self):
+        @directory.register
+        class BaseRadio(chirp_common.CloneModeRadio):
+            VENDOR = 'CHIRP'
+            MODEL = 'Base'
+
+        @directory.register
+        class SubRadio1(BaseRadio):
+            MODEL = 'Sub1'
+
+        @directory.register
+        @directory.detected_by(SubRadio1)
+        class SubRadio2(SubRadio1):
+            MODEL = 'Sub2'
+
+        # BaseRadio should not think it detects the subs
+        self.assertEqual([BaseRadio], BaseRadio.detected_models())
+
+        # Sub1 detects both itself and Sub2
+        self.assertEqual([SubRadio1, SubRadio2], SubRadio1.detected_models())
+
+        # If include_self=False, Sub1 should not include itself
+        self.assertEqual([SubRadio2],
+                         SubRadio1.detected_models(include_self=False))
+
+        # Sub2 does not also detect Sub1
+        self.assertEqual([SubRadio2], SubRadio2.detected_models())
+
+    @mock.patch('chirp.directory.DRV_TO_RADIO', new={})
+    @mock.patch('chirp.directory.RADIO_TO_DRV', new={})
+    def test_detected_include_self(self):
+        class BaseRadio(chirp_common.CloneModeRadio):
+            VENDOR = 'CHIRP'
+            MODEL = 'Base'
+
+        @directory.register
+        @directory.detected_by(BaseRadio)
+        class SubRadio(BaseRadio):
+            MODEL = 'Sub'
+
+        # BaseRadio should not include itself since it is not registered
+        self.assertEqual([SubRadio], BaseRadio.detected_models())

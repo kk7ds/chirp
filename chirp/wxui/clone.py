@@ -242,6 +242,10 @@ def port_sort_key(port):
     return key
 
 
+def model_value(rclass):
+    return ('%s %s' % (rclass.MODEL, rclass.VARIANT)).strip()
+
+
 # Make this global so it sticks for a session
 CUSTOM_PORTS = []
 
@@ -310,7 +314,7 @@ class ChirpCloneDialog(wx.Dialog):
             if (not issubclass(rclass, chirp_common.CloneModeRadio) and
                     not issubclass(rclass, chirp_common.LiveRadio)):
                 continue
-            if (getattr(rclass, '_DETECTED_MODEL', False) and
+            if (getattr(rclass, '_DETECTED_BY', None) and
                     not allow_detected_models):
                 continue
             self._vendors[rclass.VENDOR].append(rclass)
@@ -445,9 +449,7 @@ class ChirpCloneDialog(wx.Dialog):
         self.FindWindowById(wx.ID_OK).Disable()
 
     def _persist_choices(self):
-        CONF.set('last_vendor', self._vendor.GetStringSelection(), 'state')
-        CONF.set('last_model', self._model.GetStringSelection(), 'state')
-        CONF.set('last_port', self.get_selected_port(), 'state')
+        raise NotImplementedError()
 
     def _selected_port(self, event):
         if self._port.GetStringSelection() == CUSTOM:
@@ -464,7 +466,7 @@ class ChirpCloneDialog(wx.Dialog):
         self._persist_choices()
 
     def _select_vendor(self, vendor):
-        models = [('%s %s' % (x.MODEL, x.VARIANT)).strip()
+        models = [model_value(x)
                   for x in self._vendors[vendor]]
         self._model.Set(models)
         self._model.SetSelection(0)
@@ -617,6 +619,12 @@ class ChirpDownloadDialog(ChirpCloneDialog):
         self._clone_thread = CloneThread(self._radio, self, 'sync_in')
         self._clone_thread.start()
 
+    def _persist_choices(self):
+        # On download, persist the selections from the actual UI boxes
+        CONF.set('last_vendor', self._vendor.GetStringSelection(), 'state')
+        CONF.set('last_model', self._model.GetStringSelection(), 'state')
+        CONF.set('last_port', self.get_selected_port(), 'state')
+
 
 class ChirpUploadDialog(ChirpCloneDialog):
     def __init__(self, radio, *a, **k):
@@ -624,9 +632,7 @@ class ChirpUploadDialog(ChirpCloneDialog):
                                                 **k)
         self._radio = radio
 
-        self.select_vendor_model(
-            self._radio.VENDOR,
-            ('%s %s' % (self._radio.MODEL, self._radio.VARIANT)).strip())
+        self.select_vendor_model(self._radio.VENDOR, model_value(self._radio))
         self.disable_model_select()
 
         if isinstance(self._radio, chirp_common.LiveRadio):
@@ -691,3 +697,13 @@ class ChirpUploadDialog(ChirpCloneDialog):
 
         self._clone_thread = CloneThread(self._radio, self, 'sync_out')
         self._clone_thread.start()
+
+    def _persist_choices(self):
+        # On upload, we may have a detected-only subclass, which won't be
+        # selectable normally. If so, use the detected_by instead of the
+        # actual driver
+        parent = getattr(self._radio, '_DETECTED_BY', None)
+        model = model_value(parent or self._radio)
+        CONF.set('last_vendor', self._vendor.GetStringSelection(), 'state')
+        CONF.set('last_model', model, 'state')
+        CONF.set('last_port', self.get_selected_port(), 'state')

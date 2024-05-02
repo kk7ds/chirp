@@ -1387,9 +1387,11 @@ class FileBackedRadio(Radio):
         pass
 
 
-class DetectableInterface:
-    DETECTED_MODELS = None
+def class_detected_models_attribute(cls):
+    return 'DETECTED_MODELS_%s' % cls.__name__
 
+
+class DetectableInterface:
     @classmethod
     def detect_from_serial(cls, pipe):
         """Communicate with the radio via serial to determine proper class
@@ -1398,14 +1400,28 @@ class DetectableInterface:
         RadioError if not. If NotImplemented is raised, we assume that no
         detection is possible or necessary.
         """
-        assert cls.DETECTED_MODELS is None, (
+        detected = getattr(cls, class_detected_models_attribute(cls), None)
+        assert detected is None, (
             'Class has detected models but no detect_from_serial() '
             'implementation')
         raise NotImplementedError()
 
     @classmethod
-    def detected_models(cls):
-        return list(cls.DETECTED_MODELS or [])
+    def detected_models(cls, include_self=True):
+        detected = getattr(cls, class_detected_models_attribute(cls), [])
+        # Only include this class if it is registered
+        if include_self and hasattr(cls, '_DETECTED_BY'):
+            extra = [cls]
+        else:
+            extra = []
+        return extra + list(detected)
+
+    @classmethod
+    def detect_model(cls, detected_cls):
+        detected_attr = class_detected_models_attribute(cls)
+        if getattr(cls, detected_attr, None) is None:
+            setattr(cls, detected_attr, [])
+        getattr(cls, detected_attr).append(detected_cls)
 
 
 class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties,
