@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-01 19:23-0700\n"
-"PO-Revision-Date: 2024-03-11 19:00-0300\n"
+"PO-Revision-Date: 2024-05-02 15:35-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -2636,7 +2636,6 @@ msgstr ""
 "enviados a la radio en tiempo real cuando los haces. ¡Cargar no es necesario!"
 
 #: ../wxui/main.py:1508
-#, fuzzy
 msgid ""
 "This is a radio-independent file and cannot be uploaded directly to a radio. "
 "Open a radio image (or download one from a radio) and then copy/paste items "
