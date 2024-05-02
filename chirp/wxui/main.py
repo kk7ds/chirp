@@ -1507,7 +1507,7 @@ class ChirpMain(wx.Frame):
         elif isinstance(radio, (CSVRadio, base.NetworkResultRadio)):
             msg = _('This is a radio-independent file and cannot be uploaded '
                     'directly to a radio. Open a radio image (or download one '
-                    'from a radio) an then copy/paste items from this tab '
+                    'from a radio) and then copy/paste items from this tab '
                     'into that one in order to upload')
             d = wx.MessageDialog(self, msg, _('Unable to upload this file'),
                                  wx.ICON_INFORMATION)

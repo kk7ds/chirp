@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-14 08:27+0200\n"
+"POT-Creation-Date: 2024-05-01 19:23-0700\n"
 "PO-Revision-Date: 2024-04-19 09:08+0200\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
@@ -814,7 +814,7 @@ msgstr ""
 "attività.\n"
 "6. Fare clic su OK per caricare l'immagine sul dispositivo.\n"
 
-#: ../drivers/tg_uv2p.py:233 ../drivers/wouxun.py:214 ../drivers/uvb5.py:288
+#: ../drivers/uvb5.py:288 ../drivers/wouxun.py:214 ../drivers/tg_uv2p.py:233
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -831,7 +831,7 @@ msgstr ""
 "attività.\n"
 "6. Fare clic su OK per scaricare l'immagine dal dispositivo.\n"
 
-#: ../drivers/tg_uv2p.py:241 ../drivers/wouxun.py:222 ../drivers/uvb5.py:296
+#: ../drivers/uvb5.py:296 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:241
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1151,11 +1151,11 @@ msgstr "Clonazione completata, controllo dei byte spuri"
 msgid "Cloning"
 msgstr "Clonazione"
 
-#: ../drivers/ft450d.py:508 ../drivers/bj9900.py:134 ../drivers/ft817.py:343
+#: ../drivers/bj9900.py:134 ../drivers/ft450d.py:508 ../drivers/ft817.py:343
 msgid "Cloning from radio"
 msgstr "Clonazione dalla radio"
 
-#: ../drivers/ft450d.py:537 ../drivers/bj9900.py:166 ../drivers/ft817.py:381
+#: ../drivers/bj9900.py:166 ../drivers/ft450d.py:537 ../drivers/ft817.py:381
 msgid "Cloning to radio"
 msgstr "Clonazione verso la radio"
 
@@ -1545,11 +1545,11 @@ msgstr ""
 "sarà\n"
 "    l'audio del lato destro!\n"
 
-#: ../drivers/bf_t1.py:483 ../drivers/mursv1.py:342
-#: ../drivers/baofeng_wp970i.py:328 ../drivers/baofeng_uv17Pro.py:441
-#: ../drivers/gmrsuv1.py:392 ../drivers/btech.py:690 ../drivers/uv6r.py:340
-#: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv5x3.py:418
-#: ../drivers/gmrsv2.py:364
+#: ../drivers/mursv1.py:342 ../drivers/baofeng_wp970i.py:328
+#: ../drivers/btech.py:690 ../drivers/gmrsuv1.py:392
+#: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:340
+#: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
+#: ../drivers/baofeng_uv17Pro.py:441 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1653,7 +1653,7 @@ msgstr ""
 "    l'audio del lato destro!\n"
 "6 - Accendere la radio per uscire dalla modalità clone.\n"
 
-#: ../drivers/bf_t1.py:489 ../drivers/btech.py:696
+#: ../drivers/btech.py:696 ../drivers/bf_t1.py:489
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1695,7 +1695,7 @@ msgstr ""
 "3 - Accendere la radio\n"
 "4 - Fare clic su OK per iniziare\n"
 
-#: ../drivers/lt725uv.py:497 ../drivers/vgc.py:599
+#: ../drivers/vgc.py:599 ../drivers/lt725uv.py:497
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1723,11 +1723,11 @@ msgstr ""
 "3 - Accendere la radio\n"
 "4 - Effettuare il download dei dati dalla radio\n"
 
-#: ../drivers/mursv1.py:348 ../drivers/baofeng_wp970i.py:334
-#: ../drivers/baofeng_uv17Pro.py:447 ../drivers/gmrsuv1.py:398
-#: ../drivers/lt725uv.py:503 ../drivers/vgc.py:605 ../drivers/uv6r.py:346
-#: ../drivers/tdxone_tdq8a.py:461 ../drivers/uv5x3.py:424
-#: ../drivers/gmrsv2.py:370
+#: ../drivers/vgc.py:605 ../drivers/mursv1.py:348
+#: ../drivers/baofeng_wp970i.py:334 ../drivers/gmrsuv1.py:398
+#: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
+#: ../drivers/uv6r.py:346 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
+#: ../drivers/baofeng_uv17Pro.py:447
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1864,7 +1864,7 @@ msgstr "Errore interno del driver"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Il valore %(value)s non è valido (usare i gradi decimali)"
 
-#: ../wxui/memedit.py:1455 ../wxui/query_sources.py:66
+#: ../wxui/query_sources.py:66 ../wxui/memedit.py:1455
 msgid "Invalid Entry"
 msgstr "Valore non valido"
 
@@ -2000,7 +2000,7 @@ msgstr "La memoria deve trovarsi in un banco per essere modificata"
 msgid "Memory {num} not in bank {bank}"
 msgstr "La memoria {num} non è presente nel banco {bank}"
 
-#: ../wxui/memedit.py:539 ../wxui/query_sources.py:525
+#: ../wxui/query_sources.py:525 ../wxui/memedit.py:539
 msgid "Mode"
 msgstr "Modalità"
 
@@ -2066,7 +2066,7 @@ msgstr "Nessun risultato"
 msgid "No results!"
 msgstr "Nessun risultato!"
 
-#: ../wxui/memedit.py:891 ../wxui/query_sources.py:41
+#: ../wxui/query_sources.py:41 ../wxui/memedit.py:891
 msgid "Number"
 msgstr "Numero"
 
@@ -2645,9 +2645,10 @@ msgstr ""
 "caricamento non è necessario!"
 
 #: ../wxui/main.py:1508
+#, fuzzy
 msgid ""
 "This is a radio-independent file and cannot be uploaded directly to a radio. "
-"Open a radio image (or download one from a radio) an then copy/paste items "
+"Open a radio image (or download one from a radio) and then copy/paste items "
 "from this tab into that one in order to upload"
 msgstr ""
 "Questo è un file indipendente dalla radio e non può essere caricato "
