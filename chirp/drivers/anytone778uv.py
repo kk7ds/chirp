@@ -1780,6 +1780,7 @@ class AnyTone778UVvoxBase(AnyTone778UVBase):
 
 # New VOX models
 @directory.register
+@directory.detected_by(AnyTone778UV)
 class AnyTone778UVvox(AnyTone778UVvoxBase):
     VENDOR = "AnyTone"
     MODEL = "778UV VOX"
@@ -1799,6 +1800,7 @@ class RetevisRT95vox(AnyTone778UVvoxBase):
 
 
 @directory.register
+@directory.detected_by(CRTMicronUV)
 class CRTMicronUVvox(AnyTone778UVvoxBase):
     VENDOR = "CRT"
     MODEL = "Micron UV V2"
