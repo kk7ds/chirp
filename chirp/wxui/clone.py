@@ -295,6 +295,11 @@ class ChirpCloneDialog(wx.Dialog):
         vbox.Add(grid, proportion=1,
                  flag=wx.TOP | wx.BOTTOM | wx.EXPAND,
                  border=20)
+        self.model_msg = wx.StaticText(
+            self,
+            label='',
+            style=(wx.ALIGN_CENTER_HORIZONTAL | wx.ST_NO_AUTORESIZE |
+                   wx.ELLIPSIZE_END))
         self.status_msg = wx.StaticText(
             self, label='',
             style=(wx.ALIGN_CENTER_HORIZONTAL | wx.ST_NO_AUTORESIZE |
@@ -304,6 +309,9 @@ class ChirpCloneDialog(wx.Dialog):
                  flag=wx.EXPAND | wx.BOTTOM)
         vbox.Add(self.gauge, flag=wx.EXPAND | wx.RIGHT | wx.LEFT, border=10,
                  proportion=0)
+        vbox.Add(self.model_msg,
+                 border=5, proportion=0,
+                 flag=wx.EXPAND | wx.BOTTOM)
         vbox.Add(wx.StaticLine(self), flag=wx.EXPAND | wx.ALL, border=5)
         vbox.Add(bs, flag=wx.ALL, border=10)
         self.SetSizer(vbox)
@@ -527,6 +535,7 @@ class ChirpDownloadDialog(ChirpCloneDialog):
         super(ChirpDownloadDialog, self)._selected_model(event)
         rclass = self.get_selected_rclass()
         prompts = rclass.get_prompts()
+        self.model_msg.SetLabel('')
         if prompts.experimental:
             d = ChirpRadioPromptDialog(
                 self,
@@ -596,6 +605,9 @@ class ChirpDownloadDialog(ChirpCloneDialog):
             LOG.exception('Exception during detection: %s', e)
             self.fail(_('Internal driver error'))
             return
+
+        self.model_msg.SetLabel('%s %s %s' % (
+            rclass.VENDOR, rclass.MODEL, rclass.VARIANT))
 
         try:
             self._radio = rclass(serial)
