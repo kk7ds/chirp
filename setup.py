@@ -17,7 +17,10 @@ setup(name='chirp',
           'wx': ['wxPython'],
       },
       entry_points={
-          'console_scripts': ["chirp=chirp.wxui:chirpmain",
-                              "chirpc=chirp.cli.main:main"],
+          'console_scripts': [
+              "chirp=chirp.wxui:chirpmain",
+              "chirpc=chirp.cli.main:main",
+              "experttune=chirp.cli.experttune:main",
+          ],
       },
       )
