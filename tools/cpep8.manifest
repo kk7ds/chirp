@@ -24,7 +24,6 @@
 ./chirp/drivers/gmrsv2.py
 ./chirp/drivers/h777.py
 ./chirp/drivers/icf.py
-./chirp/drivers/icomciv.py
 ./chirp/drivers/iradio_uv_5118.py
 ./chirp/drivers/kenwood_live.py
 ./chirp/drivers/kg935g.py
