@@ -12,6 +12,7 @@ setup(name='chirp',
           'pyserial',
           'requests',
           'yattag',
+          'suds',
       ],
       extras_require={
           'wx': ['wxPython'],
