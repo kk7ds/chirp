@@ -198,7 +198,7 @@ SPLIT = ["", "spl"]
 class Frame:
     """Base class for an ICF frame"""
     _cmd = 0x00
-    _sub = 0x00
+    _sub: int | None = 0x00
 
     def __init__(self):
         self._data = b""
@@ -459,7 +459,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             self._willecho = self._detect_echo()
             LOG.debug("Interface echo: %s" % self._willecho)
             try:
-                f = self._get_template_memory()
+                self._get_template_memory()
                 LOG.info('Detected %i baud' % baud)
                 break
             except errors.RadioError:

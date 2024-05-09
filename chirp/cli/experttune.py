@@ -33,7 +33,7 @@ BANDS = {
 class BitwiseFrame(icomciv.Frame):
     _fmt = ''
     _datalen = 0
-    _querycmd = None
+    _querycmd: int | None = None
 
     def __init__(self):
         super().__init__()
