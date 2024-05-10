@@ -56,6 +56,7 @@ Baofeng_5RM,@vdwel,7-Dec-2023
 Baofeng_5RX,@KC9HI,16-Jan-2024
 Baofeng_BF-1901,@cetinajero,3-Jul-2023
 Baofeng_BF-1904,@cetinajero,3-Jul-2023
+Baofeng_BF-1909,@KC9HI,10-May-2024
 Baofeng_BF-888,@kk7ds,13-Feb-2019
 Baofeng_BF-A58,@KC9HI,3-Dec-2022
 Baofeng_BF-A58S,@KC9HI,3-Dec-2022
