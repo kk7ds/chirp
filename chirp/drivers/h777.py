@@ -128,7 +128,7 @@ def _h777_enter_programming_mode(radio):
     except:
         raise errors.RadioError("Error communicating with radio")
 
-    if not ident.startswith(b"P3107"):
+    if not ident.startswith(radio.IDENT):
         LOG.debug(util.hexprint(ident))
         raise errors.RadioError("Radio returned unknown identification string")
 
@@ -285,6 +285,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     VENDOR = "Baofeng"
     MODEL = "BF-888"
     PROGRAM_CMD = b'PROGRAM'
+    IDENT = b"P3107"
     BAUD_RATE = 9600
     NEEDS_COMPAT_SERIAL = False
 
@@ -399,12 +400,12 @@ class H777Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if _mem.rxfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
+        if _mem.rxfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
             mem.freq = 0
             mem.empty = True
             return mem
 
-        if _mem.txfreq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
+        if _mem.txfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
             mem.duplex = "off"
             mem.offset = 0
         elif int(_mem.rxfreq) == int(_mem.txfreq):
@@ -725,6 +726,30 @@ class BF1904Radio(BF1901Radio):
     VENDOR = "Baofeng"
     MODEL = "BF-1904"
     ALIASES = []
+
+    # TODO: Is it 1 watt?
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
+                    chirp_common.PowerLevel("High", watts=10.00)]
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
+
+
+@directory.register
+class BF1909Radio(BF1901Radio):
+    VENDOR = "Baofeng"
+    MODEL = "BF-1909"
+    ALIASES = []
+    IDENT = b"P320h"
+    _ranges = [
+        (0x0000, 0x0110),
+        (0x0250, 0x0260),
+        (0x02B0, 0x02C0),
+        (0x03C0, 0x03E0),
+    ]
+    _memsize = 0x03F0
 
     # TODO: Is it 1 watt?
     POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
