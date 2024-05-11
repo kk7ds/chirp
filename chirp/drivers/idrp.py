@@ -81,7 +81,7 @@ def set_freq(pipe, freq):
     resp = send(pipe, buf)
     for frame in resp:
         if len(frame) == 6:
-            if frame[4] == b"\xfb":
+            if frame[4] == 251:
                 return True
 
     raise errors.InvalidDataError("Repeater reported error")
@@ -96,14 +96,14 @@ def get_freq(pipe):
     resp = send(pipe, buf)
 
     for frame in resp:
-        if frame[4] == b"\x03":
+        if frame[4] == 3:
             els = frame[5:10]
 
-            freq = int("%02x%02x%02x%02x%02x" % (ord(els[4]),
-                                                 ord(els[3]),
-                                                 ord(els[2]),
-                                                 ord(els[1]),
-                                                 ord(els[0])))
+            freq = int("%02x%02x%02x%02x%02x" % (els[4],
+                                                 els[3],
+                                                 els[2],
+                                                 els[1],
+                                                 els[0]))
             LOG.debug("Freq: %f" % freq)
             return freq
         else:

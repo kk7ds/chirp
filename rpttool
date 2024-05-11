@@ -86,8 +86,8 @@ def _set_freq(rp):
     return True
 
 
-def set_freq():
-    rp = open_device()
+def set_freq(dev):
+    rp = open_device(dev)
     if not rp:
         return
 

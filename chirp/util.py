@@ -86,9 +86,9 @@ def bcd_encode(val, bigendian=True, width=None):
     digits = []
     while val != 0:
         digits.append(val % 10)
-        val /= 10
+        val //= 10
 
-    result = ""
+    result = b""
 
     if len(digits) % 2 != 0:
         digits.append(0)
