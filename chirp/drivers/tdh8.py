@@ -2498,7 +2498,7 @@ class TDH3(TDH8):
     _ranges_main = [(0x0000, 0x1fef)]
     _idents = [TD_H3]
     _txbands = [(136000000, 600000000)]
-    _rxbands = [(50000000, 107999000), (108000000, 136000000)]
+    _rxbands = [(18000000, 107999000), (108000000, 136000000)]
     _aux_block = True
     _tri_power = True
     _gmrs = False
