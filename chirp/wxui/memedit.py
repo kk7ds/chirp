@@ -2064,7 +2064,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         for mem in to_set:
             self.set_memory(mem)
         cursor_r, cursor_c = self._grid.GetGridCursorCoords()
-        self._grid.SetGridCursor(cursor_r + direction, cursor_c)
+        cursor_r += direction
+        if 0 <= cursor_r <= last_row:
+            # Avoid pushing the cursor past the edges
+            self._grid.SetGridCursor(cursor_r, cursor_c)
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
