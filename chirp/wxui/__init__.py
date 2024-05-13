@@ -25,7 +25,7 @@ def developer_mode(enabled=None):
     return CONF.get('developer_mode', 'state') == CHIRP_VERSION
 
 
-def maybe_install_desktop(args):
+def maybe_install_desktop(args, parent):
     local = os.path.join(os.path.expanduser('~'), '.local')
     desktop_path = os.path.join(local, 'share',
                                 'applications', 'chirp.desktop')
@@ -56,7 +56,7 @@ def maybe_install_desktop(args):
     import wx
     r = wx.MessageBox(
         _('Would you like CHIRP to install a desktop icon for you?'),
-        _('Install desktop icon?'), style=wx.YES_NO)
+        _('Install desktop icon?'), parent=parent, style=wx.YES_NO)
     if r != wx.YES:
         CONF.set_bool('offered_desktop', True, 'state')
         return
@@ -244,7 +244,7 @@ def chirpmain():
 
     if sys.platform == 'linux':
         try:
-            maybe_install_desktop(args)
+            maybe_install_desktop(args, mainwindow)
         except Exception as e:
             LOG.exception('Failed to run linux desktop installer: %s', e)
 

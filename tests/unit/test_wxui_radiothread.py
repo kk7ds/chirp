@@ -205,21 +205,21 @@ class TestStartup(base.BaseTest):
             # If we made it through all the checks, and thus prompted the user,
             # make sure we get to the makedirs part if expected
             self.assertRaises(TestException,
-                              self.maybe_install_desktop, self.args)
+                              self.maybe_install_desktop, self.args, None)
         elif answ is False:
             # If we were supposed to make it to the prompt but answer no,
             # make sure we did
-            self.maybe_install_desktop(self.args)
+            self.maybe_install_desktop(self.args, None)
             self.assertFalse(os.makedirs.called)
             self.assertTrue(wx.MessageBox.called)
         else:
             # If we were not supposed to make it to the prompt, make sure we
             # didn't, nor did we do any create actions
-            self.maybe_install_desktop(self.args)
+            self.maybe_install_desktop(self.args, None)
             self.assertFalse(os.makedirs.called)
             self.assertFalse(wx.MessageBox.called)
 
     def test_linux_desktop_file_exists(self):
         os.path.exists.return_value = True
-        self.maybe_install_desktop(self.args)
+        self.maybe_install_desktop(self.args, None)
         self.assertFalse(os.makedirs.called)
