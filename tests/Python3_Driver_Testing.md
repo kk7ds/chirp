@@ -443,8 +443,10 @@
 | <a name="Yaesu_FT2D_R"></a> Yaesu_FT2D_R | [Implied by Yaesu_FT3D_R](#user-content-Yaesu_FT3D_R) | 30-Dec-2022 | Yes | 0.02% |
 | <a name="Yaesu_FT2D_Rv2"></a> Yaesu_FT2D_Rv2 | [Implied by Yaesu_FT3D_R](#user-content-Yaesu_FT3D_R) | 30-Dec-2022 | Yes |  |
 | <a name="Yaesu_FT3D_R"></a> Yaesu_FT3D_R | [@kk7ds](https://github.com/kk7ds) | 30-Dec-2022 | Yes | 0.03% |
+| <a name="Yaesu_FTM-200"></a> Yaesu_FTM-200 | [@Old-Phart](https://github.com/Old-Phart) | 16-Apr-2024 | Yes |  |
 | <a name="Yaesu_FTM-3200D_R"></a> Yaesu_FTM-3200D_R |  |  | Yes | 0.02% |
 | <a name="Yaesu_FTM-350"></a> Yaesu_FTM-350 | [@kk7ds](https://github.com/kk7ds) | 4-Dec-2022 | Yes | 0.02% |
+| <a name="Yaesu_FTM-6000"></a> Yaesu_FTM-6000 | [@Old-Phart](https://github.com/Old-Phart) | 16-Apr-2024 | Yes |  |
 | <a name="Yaesu_FTM-7250D_R"></a> Yaesu_FTM-7250D_R |  |  | Yes | 0.04% |
 | <a name="Yaesu_VX-170"></a> Yaesu_VX-170 |  |  | Yes | 0.03% |
 | <a name="Yaesu_VX-2"></a> Yaesu_VX-2 | [@thomasrussellmurphy](https://github.com/thomasrussellmurphy) | 20-Jan-2023 | Yes | 0.04% |
