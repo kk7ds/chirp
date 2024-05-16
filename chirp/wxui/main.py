@@ -802,6 +802,11 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_restore_tabs, restore_tabs)
         restore_tabs.Check(CONF.get_bool('restore_tabs', 'prefs', False))
 
+        lang_item = wx.MenuItem(view_menu, wx.NewId(),
+                                _('Language') + '...')
+        self.Bind(wx.EVT_MENU, self._menu_language, lang_item)
+        view_menu.Append(lang_item)
+
         radio_menu = wx.Menu()
 
         if sys.platform == 'darwin':
@@ -1437,6 +1442,51 @@ class ChirpMain(wx.Frame):
     def _menu_restore_tabs(self, event):
         menuitem = event.GetEventObject().FindItemById(event.GetId())
         CONF.set_bool('restore_tabs', menuitem.IsChecked(), 'prefs')
+
+    @common.error_proof()
+    def _menu_language(self, event):
+        def fmt_lang(lang):
+            return '%s - %s' % (lang.DescriptionNative,
+                                lang.Description.split(' ')[0])
+
+        trans = wx.Translations.Get()
+        langs = {fmt_lang(wx.Locale.FindLanguageInfo(code)): code
+                 for code in trans.GetAvailableTranslations('CHIRP')}
+        # This is stupid, but wx.GetSingleChoice does not honor the width
+        # parameter. But, we can pad out the automatic sepection to get some
+        # extra padding in the dialog since we don't otherwise index it.
+        choices = ([_('Automatic from system') + ' ' * 30] +
+                   sorted(langs.keys()))
+        try:
+            current = wx.Locale.FindLanguageInfo(
+                CONF.get('force_language', 'prefs'))
+            initial = choices.index(fmt_lang(current.DescriptionNative))
+        except TypeError:
+            # Unset in the config (i.e. None)
+            initial = 0
+        except IndexError:
+            LOG.debug('Unable to find current language selection; '
+                      'defaulting to auto')
+            initial = 0
+
+        choice = wx.GetSingleChoice(_('Select Language'), _('Language'),
+                                    choices, parent=self,
+                                    initialSelection=initial)
+        if not choice:
+            return
+
+        try:
+            LOG.debug('User chose override language %r (%r)',
+                      choice, langs[choice])
+            CONF.set('force_language', langs[choice], 'prefs')
+        except KeyError:
+            LOG.debug('User chose automatic language')
+            CONF.remove_option('force_language', 'prefs')
+
+        if initial != choices.index(choice):
+            wx.MessageBox(_('CHIRP must be restarted for the new selection '
+                            'to take effect'),
+                          _('Restart Required'))
 
     def _make_backup(self, radio):
         if not isinstance(radio, chirp_common.CloneModeRadio):
