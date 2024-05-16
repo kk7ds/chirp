@@ -70,15 +70,19 @@ class ChirpGridTable(wx.grid.GridStringTable):
         # order. That convoluted scheme makes us always sort empty values at
         # the bottom instead of the top of the list, which is what a human
         # will want.
-        sorted_values = sorted((
-            (asc != bool(
-                super(ChirpGridTable, self).GetValue(realrow, col).strip()),
-             super(ChirpGridTable, self).GetValue(realrow, col),
-             realrow)
-            for realrow in range(0, self.GetRowsCount())),
-            reverse=not asc)
-        self._rowmap = dict((i, mapping[-1])
-                            for i, mapping in enumerate(sorted_values))
+        if col < 0:
+            self._rowmap = {x: x for x in range(0, self.GetRowsCount())}
+        else:
+            sorted_values = sorted((
+                (asc != bool(
+                    super(ChirpGridTable, self).GetValue(
+                        realrow, col).strip()),
+                 super(ChirpGridTable, self).GetValue(realrow, col),
+                 realrow)
+                for realrow in range(0, self.GetRowsCount())),
+                reverse=not asc)
+            self._rowmap = dict((i, mapping[-1])
+                                for i, mapping in enumerate(sorted_values))
         self._rowmap_rev = {v: k for k, v in self._rowmap.items()}
 
     def GetValue(self, row, col):
@@ -762,6 +766,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         row_labels.Bind(wx.EVT_MOTION, self._rowheader_mouseover)
         col_labels = self._grid.GetGridColLabelWindow()
         col_labels.Bind(wx.EVT_MOTION, self._colheader_mouseover)
+        corner_label = self._grid.GetGridCornerLabelWindow()
+        corner_label.Bind(wx.EVT_LEFT_DOWN, self._sort_column)
         self._dragging_rows = None
 
         self._dc = wx.ScreenDC()
@@ -1405,9 +1411,14 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         return True
 
     def _sort_column(self, event):
-        col = event.GetCol()
-        cur = self._grid.GetSortingColumn()
-        asc = not self._grid.IsSortOrderAscending() if col == cur else True
+        if isinstance(event, wx.grid.GridEvent):
+            col = event.GetCol()
+            cur = self._grid.GetSortingColumn()
+            asc = not self._grid.IsSortOrderAscending() if col == cur else True
+        else:
+            col = -1
+            asc = True
+            self._grid.SetSortingColumn(wx.NOT_FOUND, True)
         LOG.debug('Sorting col %s asc %s', col, asc)
         self._table.sort_via(col, asc)
         self.refresh()
