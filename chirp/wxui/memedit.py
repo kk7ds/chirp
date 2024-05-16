@@ -1179,14 +1179,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         lower, upper = self._features.memory_bounds
 
         def setlabel(row, number):
+            row = self._table.rowmap[row]
             self._grid.SetRowLabelValue(row, '%s' % number)
 
         # Build our row label renderers so we can set colors to
         # indicate success or failure
         self._row_label_renderers = []
-        for row, _num in enumerate(
-                range(lower,
-                      upper + len(self._features.valid_special_chans) + 1)):
+        for row in range(0, self._grid.GetNumberRows()):
             self._row_label_renderers.append(ChirpRowLabelRenderer())
             self._grid.SetRowLabelRenderer(row, self._row_label_renderers[-1])
 
