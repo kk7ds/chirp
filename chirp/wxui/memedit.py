@@ -41,6 +41,53 @@ CONF = config.get()
 WX_GTK = 'gtk' in wx.version().lower()
 
 
+class ChirpGridTable(wx.grid.GridStringTable):
+    def __init__(self, features, num_cols):
+        self._features = features
+        num_rows = (self._features.memory_bounds[1] -
+                    self._features.memory_bounds[0] +
+                    len(self._features.valid_special_chans) + 1)
+        super().__init__(num_rows, num_cols)
+        self._rowmap = {x: x for x in range(0, self.GetRowsCount())}
+        self._rowmap_rev = {v: k for k, v in self._rowmap.items()}
+
+    @property
+    def rowmap(self):
+        return self._rowmap
+
+    @property
+    def rowmap_rev(self):
+        return self._rowmap_rev
+
+    def sort_via(self, col, asc=True):
+        # We sort the current values for the requested column and generate
+        # a mapping of "view row" to "real row" from that ordering. The mapping
+        # is used to translate get/set requests to the appropriate row in the
+        # underlying data store.
+        # The list of values we actually sort is a tuple of:
+        #   (empty, value, location)
+        # Where the empty flag is conditionally negated based on our sort
+        # order. That convoluted scheme makes us always sort empty values at
+        # the bottom instead of the top of the list, which is what a human
+        # will want.
+        sorted_values = sorted((
+            (asc != bool(
+                super(ChirpGridTable, self).GetValue(realrow, col).strip()),
+             super(ChirpGridTable, self).GetValue(realrow, col),
+             realrow)
+            for realrow in range(0, self.GetRowsCount())),
+            reverse=not asc)
+        self._rowmap = dict((i, mapping[-1])
+                            for i, mapping in enumerate(sorted_values))
+        self._rowmap_rev = {v: k for k, v in self._rowmap.items()}
+
+    def GetValue(self, row, col):
+        return super().GetValue(self._rowmap[row], col)
+
+    def SetValue(self, row, col, value):
+        return super().SetValue(self._rowmap[row], col, value)
+
+
 class ChirpMemoryGrid(wx.grid.Grid, glr.GridWithLabelRenderersMixin):
     def __init__(self, *a, **k):
         wx.grid.Grid.__init__(self, *a, **k)
@@ -677,10 +724,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self.bandplan = bandplan.BandPlans(CONF)
 
         self._grid = ChirpMemoryGrid(self)
-        self._grid.CreateGrid(
-            self._features.memory_bounds[1] - self._features.memory_bounds[0] +
-            len(self._features.valid_special_chans) + 1,
-            len(self._col_defs))
+        self._table = ChirpGridTable(self._features, len(self._col_defs))
+        self._grid.AssignTable(self._table)
         self._grid.SetSelectionMode(wx.grid.Grid.SelectRows)
         self._grid.DisableDragRowSize()
         self._grid.EnableDragCell()
@@ -698,6 +743,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._variable_font = self._grid.GetDefaultCellFont()
         self.update_font(False)
 
+        self._grid.Bind(wx.grid.EVT_GRID_COL_SORT,
+                        self._sort_column)
         self._grid.Bind(wx.grid.EVT_GRID_CELL_CHANGING,
                         self._memory_edited)
         self._grid.Bind(wx.grid.EVT_GRID_CELL_CHANGED,
@@ -828,7 +875,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             if not col_def.valid:
                 self._grid.HideCol(col)
             else:
-                self._grid.SetColLabelValue(col, col_def.label)
+                label = col_def.label
+                if self._grid.GetSortingColumn() == col:
+                    asc = self._grid.IsSortOrderAscending()
+                    label += ' ' + (asc and '▲' or '▼')
+                self._grid.SetColLabelValue(col, label)
                 attr = wx.grid.GridCellAttr()
                 attr.SetEditor(col_def.get_editor())
                 self._grid.SetColAttr(col, attr)
@@ -953,12 +1004,15 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
     def mem2row(self, number):
         if isinstance(number, str):
-            return self._special_rows[number]
-        if number in self._special_numbers:
-            return self._special_rows[self._special_numbers[number]]
-        return number - self._features.memory_bounds[0]
+            row = self._special_rows[number]
+        elif number in self._special_numbers:
+            row = self._special_rows[self._special_numbers[number]]
+        else:
+            row = number - self._features.memory_bounds[0]
+        return self._table.rowmap_rev[row]
 
     def row2mem(self, row):
+        row = self._table.rowmap[row]
         if row in self._special_rows.values():
             row2number = {v: k for k, v in self._special_rows.items()}
             return row2number[row]
@@ -1179,7 +1233,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         lower, upper = self._features.memory_bounds
 
         def setlabel(row, number):
-            row = self._table.rowmap[row]
+            row = self.mem2row(number)
             self._grid.SetRowLabelValue(row, '%s' % number)
 
         # Build our row label renderers so we can set colors to
@@ -1349,6 +1403,17 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 return False
             mem.duplex = duplex
         return True
+
+    def _sort_column(self, event):
+        col = event.GetCol()
+        cur = self._grid.GetSortingColumn()
+        asc = not self._grid.IsSortOrderAscending() if col == cur else True
+        LOG.debug('Sorting col %s asc %s', col, asc)
+        self._table.sort_via(col, asc)
+        self.refresh()
+        # This needs to be called after we're done here so that the grid's
+        # sort/asc attributes are updated
+        wx.CallAfter(self.set_cell_attrs)
 
     @common.error_proof()
     def _memory_edited(self, event):
@@ -1821,10 +1886,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
     def cb_copy_getdata(self, cut=False):
         rows = self.get_selected_rows_safe()
-        offset = self._features.memory_bounds[0]
         mems = []
         for row in rows:
-            mem = self.synchronous_get_memory(row + offset)
+            mem = self.synchronous_get_memory(self.row2mem(row))
             mems.append(mem)
         rcid = directory.radio_class_id(self._radio.__class__)
         payload = {'mems': mems,
