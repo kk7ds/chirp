@@ -773,6 +773,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._dc = wx.ScreenDC()
         self.set_cell_attrs()
 
+    @property
+    def is_sorted(self):
+        return self._grid.GetSortingColumn() != wx.NOT_FOUND
+
     def _gtk_short_circuit_edit_copy(self, event):
         # wxGTK is broken and does not direct Ctrl-C to the menu items
         # because wx.grid.Grid() tries to implement something for it,
@@ -1741,7 +1745,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         delete_menu.Append(del_shift_item)
 
         # Only offer sort if a contiguous group of non-empty, non-special
-        # memories is selected
+        # memories is selected and we're not sorted by column
         empty_selected = any([self._memory_cache[r].empty
                               for r in selected_rows])
         used_selected = sum([0 if self._memory_cache[r].empty else 1
@@ -1752,6 +1756,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             selected_rows[-1] - selected_rows[0] == len(selected_rows) - 1)
         can_sort = (len(selected_rows) > 1 and contig_selected and
                     not empty_selected and not special_selected and
+                    not self.is_sorted and
                     self.editable)
         sort_menu = wx.Menu()
         sort_menu_item = menu.AppendSubMenu(
@@ -1792,8 +1797,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         sort_menu.Append(sortdesc_item)
 
         # Don't allow bulk operations on live radios with pending jobs
-        del_block_item.Enable(not self.busy)
-        del_shift_item.Enable(not self.busy)
+        del_block_item.Enable(not self.busy and not self.is_sorted)
+        del_shift_item.Enable(not self.busy and not self.is_sorted)
         insert_item.Enable(not self.busy and self.editable)
         menu.Enable(sort_menu_item.GetId(), not self.busy and can_sort)
 
@@ -1929,6 +1934,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self.cb_copy_data(self.cb_copy_getdata(cut=cut))
 
     def memedit_import_all(self, source_radio):
+        if self.is_sorted:
+            wx.MessageBox(_('Unable to import while the view is sorted'))
+            return
         source_rf = source_radio.get_features()
         first = max(source_rf.memory_bounds[0],
                     self._features.memory_bounds[0])
@@ -2098,6 +2106,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         return selected
 
     def cb_move(self, direction):
+        if self.is_sorted:
+            wx.MessageBox(
+                _('Move operations are disabled while the view is sorted'))
+            return
         selected = self.get_selected_rows_safe()
         last_row = self._grid.GetNumberRows() - 1
         if direction < 0 and selected[0] == 0:
