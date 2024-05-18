@@ -230,6 +230,8 @@ Radtel:
   model: RT-590
 - alt: Quansheng UV-K5
   model: RT-600
+- alt: Abbree AR-F5
+  model: RT-610
 - alt: Abbree AR-518
   model: RT-850
 - alt: Ruyage UV58Plus
