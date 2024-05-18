@@ -228,6 +228,8 @@ Radtel:
   model: RT-590
 - alt: Quansheng UV-K5
   model: RT-600
+- alt: Abbree AR-518
+  model: RT-850
 Retevis:
 - alt: Retevis H777 Plus
   model: H777 (FRS)
