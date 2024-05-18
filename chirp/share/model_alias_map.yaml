@@ -224,6 +224,8 @@ Radioddity:
 Radtel:
 - alt: Retevis RT22
   model: RT-10
+- alt: Abbree AR-730
+  model: RT-420
 - alt: Quansheng UV-K5
   model: RT-590
 - alt: Quansheng UV-K5
