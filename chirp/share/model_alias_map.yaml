@@ -226,6 +226,8 @@ Radtel:
   model: RT-10
 - alt: Quansheng UV-K5
   model: RT-590
+- alt: Quansheng UV-K5
+  model: RT-600
 Retevis:
 - alt: Retevis H777 Plus
   model: H777 (FRS)
