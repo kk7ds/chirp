@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-16 15:11-0700\n"
-"PO-Revision-Date: 2024-04-19 09:08+0200\n"
+"PO-Revision-Date: 2024-05-18 19:22+0200\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
 "Language: it\n"
@@ -1046,7 +1046,7 @@ msgstr "Applicazione delle impostazioni"
 
 #: ../wxui/main.py:1458
 msgid "Automatic from system"
-msgstr ""
+msgstr "Automatico dal sistema"
 
 #: ../wxui/developer.py:556
 msgid "Available modules"
@@ -1077,11 +1077,8 @@ msgid "Building Radio Browser"
 msgstr "Creazione del browser della radio"
 
 #: ../wxui/main.py:1487
-#, fuzzy
 msgid "CHIRP must be restarted for the new selection to take effect"
-msgstr ""
-"Lo stato dello sviluppatore è ora impostato su %s. Per avere effetto, CHIRP "
-"deve essere riavviato"
+msgstr "Per rendere effettiva la nuova selezione, è necessario riavviare CHIRP"
 
 #: ../wxui/query_sources.py:692
 msgid "Canada"
@@ -1907,7 +1904,7 @@ msgstr "In diretta live"
 
 #: ../wxui/main.py:806 ../wxui/main.py:1472
 msgid "Language"
-msgstr ""
+msgstr "Lingua"
 
 #: ../wxui/query_sources.py:88 ../wxui/query_sources.py:304
 #: ../wxui/query_sources.py:573
@@ -2055,6 +2052,8 @@ msgstr "Sposta su"
 #: ../wxui/memedit.py:2111
 msgid "Move operations are disabled while the view is sorted"
 msgstr ""
+"Le operazioni di spostamento sono disabilitate quando la visualizzazione è "
+"ordinata"
 
 #: ../wxui/main.py:647
 msgid "New Window"
@@ -2456,9 +2455,8 @@ msgid "Select Bands"
 msgstr "Seleziona le bande"
 
 #: ../wxui/main.py:1472
-#, fuzzy
 msgid "Select Language"
-msgstr "Seleziona le bande"
+msgstr "Seleziona la lingua"
 
 #: ../wxui/query_sources.py:405
 msgid "Select Modes"
@@ -2669,7 +2667,6 @@ msgstr ""
 "caricamento non è necessario!"
 
 #: ../wxui/main.py:1558
-#, fuzzy
 msgid ""
 "This is a radio-independent file and cannot be uploaded directly to a radio. "
 "Open a radio image (or download one from a radio) and then copy/paste items "
@@ -2846,9 +2843,8 @@ msgid "Unable to find stock config %r"
 msgstr "Impossibile trovare la configurazione standard %r"
 
 #: ../wxui/memedit.py:1938
-#, fuzzy
 msgid "Unable to import while the view is sorted"
-msgstr "Impossibile modificare la memoria prima di averla caricata dalla radio"
+msgstr "Impossibile importare mentre la visualizzazione è ordinata"
 
 #: ../wxui/common.py:228
 msgid "Unable to open the clipboard"
