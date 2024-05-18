@@ -230,6 +230,8 @@ Radtel:
   model: RT-600
 - alt: Abbree AR-518
   model: RT-850
+- alt: Ruyage UV58Plus
+  model: RT-890
 Retevis:
 - alt: Retevis H777 Plus
   model: H777 (FRS)
