@@ -729,8 +729,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         self._grid = ChirpMemoryGrid(self)
         self._table = ChirpGridTable(self._features, len(self._col_defs))
-        self._grid.AssignTable(self._table)
-        self._grid.SetSelectionMode(wx.grid.Grid.SelectRows)
+        # AssignTable added in wxPython 4.1, so use the older interface for
+        # earlier version support (i.e. Ubuntu Jammy)
+        self._grid.SetTable(self._table, takeOwnership=True,
+                            selmode=wx.grid.Grid.SelectRows)
         self._grid.DisableDragRowSize()
         self._grid.EnableDragCell()
         self._grid.SetFocus()
