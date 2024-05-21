@@ -128,9 +128,18 @@ def _h777_enter_programming_mode(radio):
     except:
         raise errors.RadioError("Error communicating with radio")
 
-    if not ident.startswith(radio.IDENT):
-        LOG.debug(util.hexprint(ident))
-        raise errors.RadioError("Radio returned unknown identification string")
+    # check if ident is OK
+    itis = False
+    for fp in radio.IDENT:
+        if fp in ident:
+            # got it!
+            itis = True
+
+            break
+
+    if itis is False:
+        LOG.debug("Incorrect model ID, got this:\n\n" + util.hexprint(ident))
+        raise errors.RadioError("Radio identification failed.")
 
     try:
         serial.write(CMD_ACK)
@@ -285,7 +294,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     VENDOR = "Baofeng"
     MODEL = "BF-888"
     PROGRAM_CMD = b'PROGRAM'
-    IDENT = b"P3107"
+    IDENT = [b"P3107", ]
     BAUD_RATE = 9600
     NEEDS_COMPAT_SERIAL = False
 
@@ -742,7 +751,9 @@ class BF1909Radio(BF1901Radio):
     VENDOR = "Baofeng"
     MODEL = "BF-1909"
     ALIASES = []
-    IDENT = b"P320h"
+    IDENT = [b"P320h",
+             b"P3107" + b"\xF4" + b"AM",
+             ]
     _ranges = [
         (0x0000, 0x0110),
         (0x0250, 0x0260),
