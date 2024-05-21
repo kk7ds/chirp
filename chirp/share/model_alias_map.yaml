@@ -123,6 +123,8 @@ Baofeng/Pofung:
   model: UV-5RE, UV-5RE+
 - alt: UV-5R
   model: UV-5RG, RK, RQ, RS, RT, RU
+- alt: Baofeng 5RM
+  model: UV-5RH Pro Max
 - alt: BF-F8HP
   model: UV-5RHP
 - alt: Radioddity UV-5RX3
