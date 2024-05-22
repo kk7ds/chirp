@@ -1844,7 +1844,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     @common.error_proof()
     def _mem_insert(self, row, event):
         # Traverse memories downward until we find a hole
-        for i in range(row, self.mem2row(self._features.memory_bounds[1] + 1)):
+        for i in range(row, self.mem2row(self._features.memory_bounds[1]) + 1):
             mem = self._memory_cache[i]
             if mem.empty:
                 LOG.debug("Found empty memory %i at row %i" % (mem.number, i))
