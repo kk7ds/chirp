@@ -1471,7 +1471,7 @@ class ChirpMain(wx.Frame):
         try:
             current = wx.Locale.FindLanguageInfo(
                 CONF.get('force_language', 'prefs'))
-            initial = choices.index(fmt_lang(current.DescriptionNative))
+            initial = choices.index(fmt_lang(current))
         except TypeError:
             # Unset in the config (i.e. None)
             initial = 0
