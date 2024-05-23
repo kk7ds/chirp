@@ -1772,6 +1772,15 @@ class ChirpMain(wx.Frame):
     @common.error_proof()
     def _menu_backup_loc(self, event):
         backup_dir = chirp_platform.get_platform().config_file('backups')
+
+        # Backup directory may not exist if no backup has been made
+        try:
+            os.makedirs(backup_dir, exist_ok=True)
+        except Exception as e:
+            LOG.warning('Failed to create backup directory %s: %s' %
+                        (backup_dir, e))
+            return
+
         common.reveal_location(backup_dir)
 
     @common.error_proof()
