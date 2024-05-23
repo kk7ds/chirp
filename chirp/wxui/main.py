@@ -366,14 +366,25 @@ class ChirpLiveEditorSet(ChirpEditorSet):
 
 class ChirpWelcomePanel(wx.Panel):
     """Fake "editorset" that just displays the welcome image."""
+
     def __init__(self, *a, **k):
         super(ChirpWelcomePanel, self).__init__(*a, **k)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(vbox)
-        with resources.as_file(
-            resources.files('chirp.share').joinpath('welcome_screen.png')
-        ) as welcome:
+
+        # Search for welcome_screen_en_US, welcome_screen_en, welcome_screen
+        locale = wx.App.Get()._lc.GetCanonicalName()
+        locale_base_path = resources.files('chirp.share')
+        welcome_file = locale_base_path.joinpath(
+            'welcome_screen_%s.png' % locale)
+        if not os.path.exists(welcome_file):
+            welcome_file = locale_base_path.joinpath(
+                'welcome_screen_%s.png' % locale[0:2])
+        if not os.path.exists(welcome_file):
+            welcome_file = locale_base_path.joinpath('welcome_screen.png')
+
+        with resources.as_file(welcome_file) as welcome:
             bmp = wx.Bitmap(str(welcome))
         width, height = self.GetSize()
         img = wx.StaticBitmap(self, wx.ID_ANY, bmp)
