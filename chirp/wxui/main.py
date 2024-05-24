@@ -26,6 +26,7 @@ import time
 import typing
 import webbrowser
 
+from chirp.sources import radioreference
 
 import wx
 import wx.aui
@@ -1835,7 +1836,12 @@ class ChirpMain(wx.Frame):
             self.add_editorset(editorset)
 
     def _menu_query_rr(self, event):
-        self._do_network_query(query_sources.RRQueryDialog)
+        if radioreference.HAVE_SUDS:
+            self._do_network_query(query_sources.RRQueryDialog)
+        else:
+            common.error_proof.show_error(
+                _('The python3-suds package is required '
+                  'to query this source.'))
 
     def _menu_query_rb(self, event):
         self._do_network_query(query_sources.RepeaterBookQueryDialog)
