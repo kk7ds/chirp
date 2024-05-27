@@ -329,6 +329,11 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         self.Bind(wx.EVT_CHECKBOX, self._select_modes, self._modefilter)
         self._add_grid(grid, _('Limit Modes'), self._modefilter)
 
+        self._openonly = wx.CheckBox(panel, label=_('Open repeaters only'))
+        self._openonly.SetValue(CONF.get_bool('openonly', 'repeaterbook'))
+        self._openonly.SetToolTip(_('Exclude private and closed repeaters'))
+        self._add_grid(grid, _('Limit use'), self._openonly)
+
         self._fmconv = wx.CheckBox(panel, label=_('Convert to FM'))
         self._fmconv.SetValue(CONF.get_bool('fmconv', 'repeaterbook'))
         self._fmconv.SetToolTip(_('Dual-mode digital repeaters that support '
@@ -420,6 +425,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         CONF.set('country', self._country.GetStringSelection(), 'repeaterbook')
         CONF.set('service', self._service.GetStringSelection(), 'repeaterbook')
         CONF.set_bool('fmconv', self._fmconv.IsChecked(), 'repeaterbook')
+        CONF.set_bool('openonly', self._openonly.IsChecked(), 'repeaterbook')
         self.result_radio = repeaterbook.RepeaterBook()
         super().do_query()
 
@@ -437,6 +443,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
             'service': 'gmrs' if service == _('GMRS') else '',
             'service_display': self._service.GetStringSelection(),
             'fmconv': self._fmconv.IsChecked(),
+            'openonly': self._openonly.IsChecked(),
         }
 
 

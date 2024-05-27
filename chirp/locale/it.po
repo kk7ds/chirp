@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-25 11:31+0200\n"
+"POT-Creation-Date: 2024-05-30 17:16-0700\n"
 "PO-Revision-Date: 2024-05-25 11:29+0200\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
@@ -814,7 +814,7 @@ msgstr ""
 "attività.\n"
 "6. Fare clic su OK per caricare l'immagine sul dispositivo.\n"
 
-#: ../drivers/tg_uv2p.py:233 ../drivers/wouxun.py:214 ../drivers/uvb5.py:288
+#: ../drivers/uvb5.py:288 ../drivers/wouxun.py:214 ../drivers/tg_uv2p.py:233
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -831,7 +831,7 @@ msgstr ""
 "attività.\n"
 "6. Fare clic su OK per scaricare l'immagine dal dispositivo.\n"
 
-#: ../drivers/tg_uv2p.py:241 ../drivers/wouxun.py:222 ../drivers/uvb5.py:296
+#: ../drivers/uvb5.py:296 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:241
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1020,7 +1020,7 @@ msgstr "Informazioni"
 msgid "About CHIRP"
 msgstr "Informazioni su CHIRP"
 
-#: ../wxui/query_sources.py:362
+#: ../wxui/query_sources.py:367
 msgid "All"
 msgstr "Tutto"
 
@@ -1032,7 +1032,7 @@ msgstr "Tutti i file"
 msgid "All supported formats|"
 msgstr "Tutti i formati supportati|"
 
-#: ../wxui/query_sources.py:284 ../wxui/query_sources.py:354
+#: ../wxui/query_sources.py:284 ../wxui/query_sources.py:359
 msgid "Amateur"
 msgstr "Radioamatore"
 
@@ -1056,7 +1056,7 @@ msgstr "Moduli disponibili"
 msgid "Bandplan"
 msgstr "Bandplan"
 
-#: ../wxui/query_sources.py:384 ../wxui/query_sources.py:599
+#: ../wxui/query_sources.py:389 ../wxui/query_sources.py:606
 msgid "Bands"
 msgstr "Bande"
 
@@ -1080,7 +1080,7 @@ msgstr "Creazione del browser della radio"
 msgid "CHIRP must be restarted for the new selection to take effect"
 msgstr "Per rendere effettiva la nuova selezione, è necessario riavviare CHIRP"
 
-#: ../wxui/query_sources.py:692
+#: ../wxui/query_sources.py:699
 msgid "Canada"
 msgstr "Canada"
 
@@ -1131,7 +1131,7 @@ msgstr "Scegliere il duplex"
 msgid "Choose the module to load from issue %i:"
 msgstr "Scegliere il modulo da caricare dal sito %i:"
 
-#: ../wxui/query_sources.py:462
+#: ../wxui/query_sources.py:469
 msgid "City"
 msgstr "Città"
 
@@ -1159,11 +1159,11 @@ msgstr "Clonazione completata, controllo dei byte spuri"
 msgid "Cloning"
 msgstr "Clonazione"
 
-#: ../drivers/ft450d.py:508 ../drivers/bj9900.py:134 ../drivers/ft817.py:342
+#: ../drivers/bj9900.py:134 ../drivers/ft450d.py:508 ../drivers/ft817.py:342
 msgid "Cloning from radio"
 msgstr "Clonazione dalla radio"
 
-#: ../drivers/ft450d.py:537 ../drivers/bj9900.py:166 ../drivers/ft817.py:380
+#: ../drivers/bj9900.py:166 ../drivers/ft450d.py:537 ../drivers/ft817.py:380
 msgid "Cloning to radio"
 msgstr "Clonazione verso la radio"
 
@@ -1211,7 +1211,7 @@ msgstr ""
 "situata sul retro dell'unita 'TX/RX'. NON alla porta COM del pannello "
 "frontale.\n"
 
-#: ../wxui/query_sources.py:332
+#: ../wxui/query_sources.py:337
 msgid "Convert to FM"
 msgstr "Converti in FM"
 
@@ -1219,8 +1219,8 @@ msgstr "Converti in FM"
 msgid "Copy"
 msgstr "Copia"
 
-#: ../wxui/query_sources.py:282 ../wxui/query_sources.py:468
-#: ../wxui/query_sources.py:558
+#: ../wxui/query_sources.py:282 ../wxui/query_sources.py:475
+#: ../wxui/query_sources.py:565
 msgid "Country"
 msgstr "Nazione"
 
@@ -1291,7 +1291,7 @@ msgstr "Diff memorie raw"
 msgid "Digital Code"
 msgstr "Codice digitale"
 
-#: ../wxui/query_sources.py:336
+#: ../wxui/query_sources.py:341
 msgid "Digital Modes"
 msgstr "Modi digitali"
 
@@ -1304,7 +1304,7 @@ msgid "Disabled"
 msgstr "Disabilitata"
 
 #: ../wxui/query_sources.py:100 ../wxui/query_sources.py:313
-#: ../wxui/query_sources.py:581
+#: ../wxui/query_sources.py:588
 msgid "Distance"
 msgstr "Distanza"
 
@@ -1349,7 +1349,7 @@ msgstr "Informazioni sul driver"
 msgid "Driver messages"
 msgstr "Messaggi del driver"
 
-#: ../wxui/query_sources.py:334
+#: ../wxui/query_sources.py:339
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
 msgstr ""
 "I ripetitori digitali dual-mode che supportano l'analogico saranno mostrati "
@@ -1411,6 +1411,10 @@ msgstr "Si è verificato un errore durante l'applicazione delle impostazioni"
 msgid "Error communicating with radio"
 msgstr "Errore durante la comunicazione con la radio"
 
+#: ../wxui/query_sources.py:334
+msgid "Exclude private and closed repeaters"
+msgstr ""
+
 #: ../wxui/clone.py:543
 msgid "Experimental driver"
 msgstr "Driver sperimentale"
@@ -1435,7 +1439,7 @@ msgstr "Extra"
 msgid "FM Radio"
 msgstr "Radio FM"
 
-#: ../wxui/query_sources.py:613
+#: ../wxui/query_sources.py:620
 msgid ""
 "FREE repeater database, which provides most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
@@ -1553,11 +1557,11 @@ msgstr ""
 "sarà\n"
 "    l'audio del lato destro!\n"
 
-#: ../drivers/bf_t1.py:483 ../drivers/mursv1.py:342
-#: ../drivers/baofeng_wp970i.py:328 ../drivers/baofeng_uv17Pro.py:441
-#: ../drivers/gmrsuv1.py:392 ../drivers/btech.py:689 ../drivers/uv6r.py:340
-#: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv5x3.py:418
-#: ../drivers/gmrsv2.py:364
+#: ../drivers/mursv1.py:342 ../drivers/baofeng_wp970i.py:328
+#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:392
+#: ../drivers/tdxone_tdq8a.py:455 ../drivers/uv6r.py:340
+#: ../drivers/uv5x3.py:418 ../drivers/gmrsv2.py:364
+#: ../drivers/baofeng_uv17Pro.py:441 ../drivers/bf_t1.py:483
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1661,7 +1665,7 @@ msgstr ""
 "    l'audio del lato destro!\n"
 "6 - Accendere la radio per uscire dalla modalità clone.\n"
 
-#: ../drivers/bf_t1.py:489 ../drivers/btech.py:695
+#: ../drivers/btech.py:695 ../drivers/bf_t1.py:489
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1703,7 +1707,7 @@ msgstr ""
 "3 - Accendere la radio\n"
 "4 - Fare clic su OK per iniziare\n"
 
-#: ../drivers/lt725uv.py:497 ../drivers/vgc.py:599
+#: ../drivers/vgc.py:599 ../drivers/lt725uv.py:497
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1731,11 +1735,11 @@ msgstr ""
 "3 - Accendere la radio\n"
 "4 - Effettuare il download dei dati dalla radio\n"
 
-#: ../drivers/mursv1.py:348 ../drivers/baofeng_wp970i.py:334
-#: ../drivers/baofeng_uv17Pro.py:447 ../drivers/gmrsuv1.py:398
-#: ../drivers/lt725uv.py:503 ../drivers/vgc.py:605 ../drivers/uv6r.py:346
-#: ../drivers/tdxone_tdq8a.py:461 ../drivers/uv5x3.py:424
-#: ../drivers/gmrsv2.py:370
+#: ../drivers/vgc.py:605 ../drivers/mursv1.py:348
+#: ../drivers/baofeng_wp970i.py:334 ../drivers/gmrsuv1.py:398
+#: ../drivers/lt725uv.py:503 ../drivers/tdxone_tdq8a.py:461
+#: ../drivers/uv6r.py:346 ../drivers/uv5x3.py:424 ../drivers/gmrsv2.py:370
+#: ../drivers/baofeng_uv17Pro.py:447
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1776,8 +1780,8 @@ msgstr "Frequenza"
 msgid "Frequency granularity in kHz"
 msgstr "Granularità della frequenza in kHz"
 
-#: ../wxui/query_sources.py:285 ../wxui/query_sources.py:345
-#: ../wxui/query_sources.py:437
+#: ../wxui/query_sources.py:285 ../wxui/query_sources.py:350
+#: ../wxui/query_sources.py:443
 msgid "GMRS"
 msgstr "GMRS"
 
@@ -1818,7 +1822,7 @@ msgid "Human-readable comment (not stored in radio)"
 msgstr "Commento leggibile dall'essere umano (non memorizzato nella radio)"
 
 #: ../wxui/query_sources.py:296 ../wxui/query_sources.py:302
-#: ../wxui/query_sources.py:565 ../wxui/query_sources.py:571
+#: ../wxui/query_sources.py:572 ../wxui/query_sources.py:578
 msgid "If set, sort results by distance from these coordinates"
 msgstr ""
 "Se impostata, ordina i risultati secondo la distanza da tali coordinate"
@@ -1872,7 +1876,7 @@ msgstr "Errore interno del driver"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Il valore %(value)s non è valido (usare i gradi decimali)"
 
-#: ../wxui/memedit.py:1536 ../wxui/query_sources.py:66
+#: ../wxui/query_sources.py:66 ../wxui/memedit.py:1536
 msgid "Invalid Entry"
 msgstr "Valore non valido"
 
@@ -1907,7 +1911,7 @@ msgid "Language"
 msgstr "Lingua"
 
 #: ../wxui/query_sources.py:88 ../wxui/query_sources.py:304
-#: ../wxui/query_sources.py:573
+#: ../wxui/query_sources.py:580
 msgid "Latitude"
 msgstr "Latitudine"
 
@@ -1916,7 +1920,7 @@ msgstr "Latitudine"
 msgid "Length must be %i"
 msgstr "La lunghezza deve essere %i"
 
-#: ../wxui/query_sources.py:325 ../wxui/query_sources.py:533
+#: ../wxui/query_sources.py:325 ../wxui/query_sources.py:540
 msgid "Limit Bands"
 msgstr "Limita bande"
 
@@ -1924,13 +1928,18 @@ msgstr "Limita bande"
 msgid "Limit Modes"
 msgstr "Limita modi"
 
-#: ../wxui/query_sources.py:548
+#: ../wxui/query_sources.py:555
 msgid "Limit Status"
 msgstr "Limita stato"
 
-#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:579
+#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:586
 msgid "Limit results to this distance (km) from coordinates"
 msgstr "Limita i risultati a questa distanza (km) dalle coordinate"
+
+#: ../wxui/query_sources.py:335
+#, fuzzy
+msgid "Limit use"
+msgstr "Limita stato"
 
 #: ../wxui/main.py:1566
 msgid "Live Radio"
@@ -1986,7 +1995,7 @@ msgid "Logo string 2 (12 characters)"
 msgstr "Stringa del logo 2 (12 caratteri)"
 
 #: ../wxui/query_sources.py:94 ../wxui/query_sources.py:305
-#: ../wxui/query_sources.py:574
+#: ../wxui/query_sources.py:581
 msgid "Longitude"
 msgstr "Longitudine"
 
@@ -2012,7 +2021,7 @@ msgstr "La memoria deve trovarsi in un banco per essere modificata"
 msgid "Memory {num} not in bank {bank}"
 msgstr "La memoria {num} non è presente nel banco {bank}"
 
-#: ../wxui/memedit.py:590 ../wxui/query_sources.py:525
+#: ../wxui/query_sources.py:532 ../wxui/memedit.py:590
 msgid "Mode"
 msgstr "Modalità"
 
@@ -2020,7 +2029,7 @@ msgstr "Modalità"
 msgid "Model"
 msgstr "Modello"
 
-#: ../wxui/query_sources.py:405
+#: ../wxui/query_sources.py:410
 msgid "Modes"
 msgstr "Modalità"
 
@@ -2080,11 +2089,11 @@ msgstr "Nessun modulo trovato nel sito %i"
 msgid "No results"
 msgstr "Nessun risultato"
 
-#: ../sources/repeaterbook.py:293
+#: ../sources/repeaterbook.py:300
 msgid "No results!"
 msgstr "Nessun risultato!"
 
-#: ../wxui/memedit.py:954 ../wxui/query_sources.py:41
+#: ../wxui/query_sources.py:41 ../wxui/memedit.py:954
 msgid "Number"
 msgstr "Numero"
 
@@ -2092,7 +2101,7 @@ msgstr "Numero"
 msgid "Offset"
 msgstr "Offset"
 
-#: ../wxui/query_sources.py:323 ../wxui/query_sources.py:531
+#: ../wxui/query_sources.py:323 ../wxui/query_sources.py:538
 msgid "Only certain bands"
 msgstr "Solo alcune bande"
 
@@ -2104,7 +2113,7 @@ msgstr "Solo alcune modalità"
 msgid "Only memory tabs may be exported"
 msgstr "È possibile esportare solo le schede di memoria"
 
-#: ../wxui/query_sources.py:542
+#: ../wxui/query_sources.py:549
 msgid "Only working repeaters"
 msgstr "Solo ripetitori funzionanti"
 
@@ -2136,19 +2145,23 @@ msgstr "Apri il registro di debug"
 msgid "Open in new window"
 msgstr "Apri in nuova finestra"
 
+#: ../wxui/query_sources.py:332
+msgid "Open repeaters only"
+msgstr ""
+
 #: ../wxui/main.py:616
 msgid "Open stock config directory"
 msgstr "Apri la directory delle configurazioni standard"
 
-#: ../wxui/query_sources.py:301 ../wxui/query_sources.py:570
+#: ../wxui/query_sources.py:301 ../wxui/query_sources.py:577
 msgid "Optional: -122.0000"
 msgstr "Opzionale: -122.0000"
 
-#: ../wxui/query_sources.py:310 ../wxui/query_sources.py:578
+#: ../wxui/query_sources.py:310 ../wxui/query_sources.py:585
 msgid "Optional: 100"
 msgstr "Opzionale: 100"
 
-#: ../wxui/query_sources.py:295 ../wxui/query_sources.py:564
+#: ../wxui/query_sources.py:295 ../wxui/query_sources.py:571
 msgid "Optional: 45.0000"
 msgstr "Opzionale: 45.0000"
 
@@ -2328,13 +2341,13 @@ msgstr ""
 "modello selezionato non è statunitense ma la radio è statunitense. Scegliere "
 "il modello corretto e riprovare."
 
-#: ../wxui/query_sources.py:839
+#: ../wxui/query_sources.py:846
 msgid "RadioReference Canada requires a login before you can query"
 msgstr ""
 "RadioReference Canada richiede un login prima di poter effettuare le "
 "interrogazioni"
 
-#: ../wxui/query_sources.py:650
+#: ../wxui/query_sources.py:657
 msgid ""
 "RadioReference.com is the world's largest\n"
 "radio communications data provider\n"
@@ -2450,7 +2463,7 @@ msgstr "Rischio di sicurezza"
 msgid "Select Bandplan..."
 msgstr "Seleziona bandplan..."
 
-#: ../wxui/query_sources.py:384 ../wxui/query_sources.py:599
+#: ../wxui/query_sources.py:389 ../wxui/query_sources.py:606
 msgid "Select Bands"
 msgstr "Seleziona le bande"
 
@@ -2458,7 +2471,7 @@ msgstr "Seleziona le bande"
 msgid "Select Language"
 msgstr "Seleziona la lingua"
 
-#: ../wxui/query_sources.py:405
+#: ../wxui/query_sources.py:410
 msgid "Select Modes"
 msgstr "Seleziona le modalità"
 
@@ -2535,7 +2548,7 @@ msgstr "Ordina memorie"
 msgid "Sorting"
 msgstr "Ordinamento"
 
-#: ../wxui/query_sources.py:465
+#: ../wxui/query_sources.py:472
 msgid "State"
 msgstr "Stato"
 
@@ -2551,7 +2564,7 @@ msgstr "Successo"
 msgid "TX-RX DTCS polarity (normal or reversed)"
 msgstr "Polarità DTCS TX-RX (normale o invertita)"
 
-#: ../wxui/query_sources.py:473
+#: ../wxui/query_sources.py:480
 msgid "The DMR-MARC Worldwide Network"
 msgstr "La rete mondiale DMR-MARC"
 
@@ -2878,7 +2891,7 @@ msgstr "Impossibile impostare %s su questa memoria"
 msgid "Unable to upload this file"
 msgstr "Impossibile caricare questo file"
 
-#: ../wxui/query_sources.py:691
+#: ../wxui/query_sources.py:698
 msgid "United States"
 msgstr "Stati Uniti"
 
