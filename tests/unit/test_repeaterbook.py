@@ -42,6 +42,7 @@ class TestRepeaterbook(unittest.TestCase):
             'lat': 45,
             'lon': -122,
             'dist': 100,
+            'openonly': False,
         })
         m = rb.get_memory(0)
         self.assertIsInstance(m, chirp_common.Memory)
@@ -71,6 +72,7 @@ class TestRepeaterbook(unittest.TestCase):
             'lat': 45,
             'lon': -122,
             'dist': 0,
+            'openonly': False,
         })
         m = rb.get_memory(0)
         self.assertIsInstance(m, chirp_common.Memory)
@@ -88,6 +90,7 @@ class TestRepeaterbook(unittest.TestCase):
             'lon': -122,
             'dist': 100,
             'service': 'gmrs',
+            'openonly': False,
         })
         m = rb.get_memory(0)
         self.assertIsInstance(m, chirp_common.Memory)
@@ -104,6 +107,7 @@ class TestRepeaterbook(unittest.TestCase):
             'lat': -26,
             'lon': 133,
             'dist': 20000,
+            'openonly': False,
         })
         m = rb.get_memory(0)
         self.assertIsInstance(m, chirp_common.Memory)
@@ -123,6 +127,7 @@ class TestRepeaterbook(unittest.TestCase):
                   'lat': 45,
                   'lon': -122,
                   'dist': 0,
+                  'openonly': False,
                   'filter': 'tower'}
         rb = self._test_with_mocked(params)
         self.assertGreater(sum(rb.get_features().memory_bounds), 5)
@@ -133,6 +138,7 @@ class TestRepeaterbook(unittest.TestCase):
                   'lat': 45,
                   'lon': -122,
                   'dist': 0,
+                  'openonly': False,
                   'filter': 'tower'}
         rb1 = self._test_with_mocked(dict(params))
         self.assertGreater(sum(rb1.get_features().memory_bounds), 5)

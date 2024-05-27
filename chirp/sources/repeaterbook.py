@@ -216,6 +216,8 @@ class RepeaterBook(base.NetworkResultRadio):
         bands = params.pop('bands', [])
         modes = params.pop('modes', [])
         fmconv = params.pop('fmconv', False)
+        openonly = params.pop('openonly')
+
         data_file = self.get_data(status,
                                   params.get('country'),
                                   params.pop('state'),
@@ -244,6 +246,9 @@ class RepeaterBook(base.NetworkResultRadio):
             return (not search_filter or
                     search_filter.lower() in content.lower())
 
+        def open_repeater(item):
+            return item['Use'] == 'OPEN'
+
         def included_band(item):
             if not bands:
                 return True
@@ -256,6 +261,8 @@ class RepeaterBook(base.NetworkResultRadio):
         for item in sorted(json.loads(open(data_file, 'rb').read())['results'],
                            key=sorter):
             if not item:
+                continue
+            if openonly and not open_repeater(item):
                 continue
             if item['Operational Status'] != 'On-air':
                 continue
