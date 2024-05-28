@@ -251,9 +251,6 @@ Retevis:
   model: RB27V (full band support)
 - alt: Retevis RB27
   model: RB627B (full band support)
-Rugged Radios:
-- alt: Baofeng UV-5R
-  model: RH5R, RH5R-V2
 Ruyage:
 - alt: Abbree AR-518
   model: UV58
