@@ -20,16 +20,12 @@ from chirp import chirp_common, errors
 from chirp.sources import base
 from chirp.wxui import config
 
+from suds.client import Client
+from suds import WebFault
+from suds.plugin import MessagePlugin
+
 LOG = logging.getLogger(__name__)
 CONF = config.get()
-
-try:
-    from suds.client import Client
-    from suds import WebFault
-    from suds.plugin import MessagePlugin
-    HAVE_SUDS = True
-except ImportError:
-    HAVE_SUDS = False
 
 MODES = {
     "FM":     "FM",
@@ -80,11 +76,6 @@ class RadioReferenceRadio(base.NetworkResultRadio):
 
     def __init__(self):
         chirp_common.NetworkSourceRadio.__init__(self, None)
-
-        if not HAVE_SUDS:
-            raise errors.RadioError(
-                "Suds library required for RadioReference.com import.\n" +
-                "Try installing your distribution's python-suds package.")
 
         class UnicodeFilter(MessagePlugin):
             def received(self, context):
