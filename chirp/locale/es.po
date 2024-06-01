@@ -1403,7 +1403,7 @@ msgstr "Error comunicándose con la radio"
 
 #: ../wxui/query_sources.py:334
 msgid "Exclude private and closed repeaters"
-msgstr ""
+msgstr "Excluir repetidores privados y cerrados"
 
 #: ../wxui/clone.py:543
 msgid "Experimental driver"
@@ -1931,9 +1931,8 @@ msgid "Limit results to this distance (km) from coordinates"
 msgstr "Limitar resultados a esta distancia (km) desde coordenadas"
 
 #: ../wxui/query_sources.py:335
-#, fuzzy
 msgid "Limit use"
-msgstr "Estado límite"
+msgstr "Limitar uso"
 
 #: ../wxui/main.py:1566
 msgid "Live Radio"
@@ -2141,7 +2140,7 @@ msgstr "Abrir en nueva ventana"
 
 #: ../wxui/query_sources.py:332
 msgid "Open repeaters only"
-msgstr ""
+msgstr "Sólo repetidores abiertos"
 
 #: ../wxui/main.py:616
 msgid "Open stock config directory"
