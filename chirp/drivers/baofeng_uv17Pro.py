@@ -1267,6 +1267,12 @@ class UV17Pro(bfc.BaofengCommonHT):
 
 
 @directory.register
+class UV25(UV17Pro):
+    VENDOR = "Baofeng"
+    MODEL = "UV-25"
+
+
+@directory.register
 class UV17ProGPS(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "UV-17ProGPS"
