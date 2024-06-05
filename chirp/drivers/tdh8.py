@@ -1342,7 +1342,7 @@ class TDH8(chirp_common.CloneModeRadio):
             try:
                 _nam.name[i] = mem.name[i]
             except IndexError:
-                _nam.name[i] = "\xFF"
+                _nam.name[i] = "\x00"
 
         txtone, rxtone = chirp_common.split_tone_encode(mem)
 
