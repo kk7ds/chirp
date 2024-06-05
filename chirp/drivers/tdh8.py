@@ -610,11 +610,11 @@ struct {
   char msg4[16];
 } poweron_msg;
 
+#seekto 0x1A08;
+lbit usedflags[200];
+
 #seekto 0x1A28;
 lbit scanadd[200];
-
-#seekto 0x1B08;
-lbit usedflags[200];
 
 #seekto 0x1B38;
 lbcd fmvfo[4];
