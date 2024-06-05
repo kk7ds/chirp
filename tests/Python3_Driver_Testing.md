@@ -151,6 +151,7 @@
 | <a name="Jetstream_JT270M"></a> Jetstream_JT270M | [Implied by Jetstream_JT270M](#user-content-Jetstream_JT270M) | 13-Dec-2022 | Yes | 0.01% |
 | <a name="Jetstream_JT270MH"></a> Jetstream_JT270MH | [@kk7ds](https://github.com/kk7ds) | 13-Dec-2022 | Yes | 0.01% |
 | <a name="Jianpai_8800_Plus"></a> Jianpai_8800_Plus | [Implied by Radtel_RT-490](#user-content-Radtel_RT-490) | 11-Nov-2023 | Yes | 0.01% |
+| <a name="KSUN_M6"></a> KSUN_M6 |  |  | Yes |  |
 | <a name="KYD_IP-620"></a> KYD_IP-620 |  |  |  | 0.02% |
 | <a name="KYD_NC-630A"></a> KYD_NC-630A |  |  |  | 0.02% |
 | <a name="Kenwood_HMK"></a> Kenwood_HMK | [Implied by Generic_CSV](#user-content-Generic_CSV) | 4-Dec-2022 |  | 0.00% |
@@ -461,11 +462,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 458
+**Drivers:** 459
 
-**Tested:** 87% (402/56) (93% of usage stats)
+**Tested:** 87% (402/57) (93% of usage stats)
 
-**Byte clean:** 91% (419/39)
+**Byte clean:** 91% (420/39)
 
 ## Meaning of this testing
 
