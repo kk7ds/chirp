@@ -1005,6 +1005,7 @@ class TDH8(chirp_common.CloneModeRadio):
     ident_mode = b'P31183\xff\xff'
     BAUD_RATE = 38400
     NEEDS_COMPAT_SERIAL = False
+    MODES = ["FM", "NFM"]
     _memsize = 0x1eef
     _ranges_main = [(0x0000, 0x1eef)]
     _idents = [TD_H8]
@@ -1076,7 +1077,7 @@ class TDH8(chirp_common.CloneModeRadio):
             "DTCS->DTCS"]
         rf.valid_power_levels = [x for x in self._tx_power if x]
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
-        rf.valid_modes = ["FM", "NFM"]
+        rf.valid_modes = self.MODES
         rf.valid_tuning_steps = STEPS
 
         rf.valid_bands = self._txbands + self._rxbands
@@ -1265,6 +1266,10 @@ class TDH8(chirp_common.CloneModeRadio):
             mem.duplex = 'off'
             mem.immutable.append('duplex')
         if in_range(mem.freq, [AIRBAND]):
+            # NOTE: AM is not in valid_modes because you can't arbitrarily
+            # enable it on this radio. However, we can expose it as immutable
+            # which will display properly in the UI and not allow the user
+            # to change those channels to FM.
             mem.mode = 'AM'
             mem.immutable.append('mode')
 
@@ -2556,3 +2561,22 @@ class RT730(TDH8):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_RT730, self._mmap)
+
+    def check_set_memory_immutable_policy(self, existing, new):
+        if (AIRBAND[0] <= new.freq <= AIRBAND[1] and
+                new.mode == 'AM'):
+            # This is valid, so mark mode as immutable so it doesn't get
+            # blocked, and let the radio override it during set.
+            new.immutable.append('mode')
+            existing.immutable = []
+        elif existing.mode == 'AM' and new.mode in self.MODES:
+            # If we're going from a forced-AM channel to some valid one,
+            # clear immutable so we allow the change.
+            try:
+                existing.immutable.remove('mode')
+            except ValueError:
+                pass
+        if (in_range(new.freq, self._txbands) and
+                'duplex' in existing.immutable):
+            existing.immutable.remove('duplex')
+        super().check_set_memory_immutable_policy(existing, new)
