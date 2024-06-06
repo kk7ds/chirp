@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 17:16-0700\n"
+"POT-Creation-Date: 2024-06-05 19:55-0700\n"
 "PO-Revision-Date: 2011-11-29 16:07-0800\n"
 "Last-Translator: Dan Smith <dan@theine>\n"
 "Language-Team: English\n"
@@ -1284,6 +1284,11 @@ msgstr ""
 
 #: ../wxui/memedit.py:294
 msgid "Frequency"
+msgstr ""
+
+#: ../import_logic.py:76
+#, python-format
+msgid "Frequency %s is out of supported range"
 msgstr ""
 
 #: ../wxui/memedit.py:141

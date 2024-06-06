@@ -69,6 +69,14 @@ def ensure_has_calls(radio, memory):
         radio.set_repeater_call_list(rlist)
 
 
+def _import_freq(dst_radio, _srcrf, mem):
+    dst_bands = dst_radio.get_features().valid_bands
+    if not any(lo < mem.freq <= hi for (lo, hi) in dst_bands):
+        raise DestNotCompatible(
+            _('Frequency %s is out of supported range') % (
+                chirp_common.format_freq(mem.freq)))
+
+
 # Filter the name according to the destination's rules
 def _import_name(dst_radio, _srcrf, mem):
     mem.name = dst_radio.filter_name(mem.name)
@@ -252,7 +260,8 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}, mem_cls=None):
     for k, v in overrides.items():
         dst_mem.__dict__[k] = v
 
-    helpers = [_import_name,
+    helpers = [_import_freq,
+               _import_name,
                _import_power,
                _import_tone,
                _import_dtcs,
