@@ -24,6 +24,7 @@ class FakeRadio(chirp_common.Radio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
+        rf.valid_bands = [(100000000, 500000000)]
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_tmodes = self.TMODES
         rf.valid_modes = self.MODES
@@ -155,8 +156,16 @@ class DstarTests(base.BaseTest):
 
 
 class ImportFieldTests(base.BaseTest):
+    def test_import_freq(self):
+        mem = chirp_common.Memory()
+        mem.freq = 10
+        self.assertRaises(import_logic.DestNotCompatible,
+                          import_logic._import_freq,
+                          FakeRadio(None), None, mem)
+
     def test_import_name(self):
         mem = chirp_common.Memory()
+        mem.freq = 146520000
         mem.name = 'foo'
         import_logic._import_name(FakeRadio(None), None, mem)
         self.assertEqual(mem.name, 'filtered-name')
@@ -165,6 +174,7 @@ class ImportFieldTests(base.BaseTest):
         radio = FakeRadio(None)
         same_rf = radio.get_features()
         mem = chirp_common.Memory()
+        mem.freq = 146520000
         mem.power = same_rf.valid_power_levels[0]
         import_logic._import_power(radio, same_rf, mem)
         self.assertEqual(mem.power, same_rf.valid_power_levels[0])
@@ -173,6 +183,7 @@ class ImportFieldTests(base.BaseTest):
         radio = FakeRadio(None)
         src_rf = chirp_common.RadioFeatures()
         mem = chirp_common.Memory()
+        mem.freq = 146520000
         mem.power = None
         import_logic._import_power(radio, src_rf, mem)
         self.assertEqual(mem.power, radio.POWER_LEVELS[1])
@@ -181,6 +192,7 @@ class ImportFieldTests(base.BaseTest):
         radio = FakeRadio(None)
         src_rf = chirp_common.RadioFeatures()
         mem = chirp_common.Memory()
+        mem.freq = 146520000
         mem.power = None
         with mock.patch.object(radio, 'get_features') as mock_gf:
             mock_gf.return_value = chirp_common.RadioFeatures()
@@ -196,6 +208,7 @@ class ImportFieldTests(base.BaseTest):
         radio = FakeRadio(None)
         src_rf = radio.get_features()  # Steal a copy before we stub out
         mem = chirp_common.Memory()
+        mem.freq = 146520000
         mem.power = src_rf.valid_power_levels[0]
         with mock.patch.object(radio, 'get_features') as mock_gf:
             mock_gf.return_value = chirp_common.RadioFeatures()
@@ -211,6 +224,7 @@ class ImportFieldTests(base.BaseTest):
             chirp_common.PowerLevel('baz', watts=1),
         ]
         mem = chirp_common.Memory()
+        mem.freq = 146520000
         mem.power = src_rf.valid_power_levels[0]
         import_logic._import_power(radio, src_rf, mem)
         self.assertEqual(mem.power, radio.POWER_LEVELS[0])
@@ -224,6 +238,7 @@ class ImportFieldTests(base.BaseTest):
             chirp_common.PowerLevel('baz', watts=1),
         ]
         mem = chirp_common.Memory()
+        mem.freq = 146520000
         mem.power = src_rf.valid_power_levels[0]
         import_logic._import_power(radio, src_rf, mem)
         self.assertEqual(mem.power, radio.POWER_LEVELS[0])
@@ -233,6 +248,7 @@ class ImportFieldTests(base.BaseTest):
         src_rf = chirp_common.RadioFeatures()
         src_rf.has_ctone = False
         mem = chirp_common.Memory()
+        mem.freq = 146520000
         mem.tmode = 'TSQL'
         mem.rtone = 100.0
         import_logic._import_tone(radio, src_rf, mem)
@@ -354,6 +370,7 @@ class ImportFieldTests(base.BaseTest):
         radio = FakeRadio(None)
         src_rf = chirp_common.RadioFeatures()
         mem = chirp_common.Memory()
+        mem.freq = 146520000
 
         with mock.patch.object(mem, 'dupe') as mock_dupe:
             mock_dupe.return_value = mem
@@ -374,6 +391,7 @@ class ImportFieldTests(base.BaseTest):
         radio = FakeRadio(None)
         src_rf = chirp_common.RadioFeatures()
         mem = chirp_common.Memory()
+        mem.freq = 146520000
         with mock.patch.object(mem, 'dupe') as mock_dupe:
             mock_dupe.return_value = mem
             import_logic.import_mem(radio, src_rf, mem)
@@ -384,6 +402,7 @@ class ImportFieldTests(base.BaseTest):
         radio = FakeRadio(None)
         src_rf = chirp_common.RadioFeatures()
         mem = chirp_common.Memory()
+        mem.freq = 146520000
         mem2 = import_logic.import_mem(radio, src_rf, mem,
                                        mem_cls=chirp_common.DVMemory)
         self.assertIsInstance(mem2, chirp_common.DVMemory)
@@ -392,6 +411,7 @@ class ImportFieldTests(base.BaseTest):
         radio = FakeRadio(None)
         src_rf = chirp_common.RadioFeatures()
         mem = chirp_common.DVMemory()
+        mem.freq = 146520000
         mem.mode = 'DV'
 
         # non-DSTAR radio exposes only FM, so DV is not compatible
