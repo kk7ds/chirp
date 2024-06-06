@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-05 19:55-0700\n"
-"PO-Revision-Date: 2024-05-20 23:31-0400\n"
+"PO-Revision-Date: 2024-06-05 23:57-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1768,7 +1768,7 @@ msgstr "Frecuencia"
 #: ../import_logic.py:76
 #, python-format
 msgid "Frequency %s is out of supported range"
-msgstr ""
+msgstr "La frecuencia %s está fuera del rango soportado"
 
 #: ../wxui/memedit.py:141
 msgid "Frequency granularity in kHz"
