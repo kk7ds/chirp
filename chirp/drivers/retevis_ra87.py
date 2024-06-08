@@ -800,7 +800,7 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         # menu 12 - SCAN
-        options = ["Carrier Operated (CO)", "Time Operated (TO)",
+        options = ["Time Operated (TO)", "Carrier Operated (CO)",
                    "SEarch (SE)"]
         rs = RadioSettingValueList(options, options[_settings.scan])
         rset = RadioSetting("scan", "Scan Resume Method", rs)
