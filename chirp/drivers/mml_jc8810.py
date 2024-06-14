@@ -847,7 +847,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [0, 5, 7, 9, 10, 11, 12]
         elif self.MODEL in ["A36plus", "A36plus_8w"]:
             unwanted = [0, 5, 7, 9, 10, 11]
-        elif self.MODEL in ["RT-630"]:
+        elif self.MODEL in ["RT-630", "RT-495"]:
             unwanted = [5, 9, 10, 11, 12]
         else:
             unwanted = []
@@ -880,7 +880,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [0, 5, 7, 8, 10, 11, 12]
         elif self.MODEL in ["A36plus", "A36plus_8w"]:
             unwanted = [0, 5, 7, 8, 11, 12]
-        elif self.MODEL in ["RT-630"]:
+        elif self.MODEL in ["RT-630", "RT-495"]:
             unwanted = [5, 9, 10, 11, 12]
         else:
             unwanted = []
@@ -913,7 +913,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
         elif self.MODEL in ["A36plus", "A36plus_8w"]:
             unwanted = [0, 5, 7, 8, 11]
-        elif self.MODEL in ["RT-630"]:
+        elif self.MODEL in ["RT-630", "RT-495"]:
             unwanted = [5, 9, 10, 11, 12]
         else:
             unwanted = []
@@ -932,7 +932,8 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset.set_apply_callback(apply_skey3s_listvalue, _settings.skey3_sp)
         basic.append(rset)
 
-        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470", "RT-630"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470", "RT-630",
+                          "RT-495"]:
             # Menu 24: PF3 LONG PRESS (RT-470L)
             def apply_skey3l_listvalue(setting, obj):
                 LOG.debug("Setting value: " + str(setting.value) +
@@ -944,7 +945,7 @@ class JC8810base(chirp_common.CloneModeRadio):
 
             if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470"]:
                 unwanted = [8, 9, 10, 11, 12]
-            elif self.MODEL in ["RT-630"]:
+            elif self.MODEL in ["RT-630", "RT-495"]:
                 unwanted = [5, 9, 10, 11, 12]
             else:
                 unwanted = []
@@ -1007,7 +1008,7 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("ponmsg", "Power On Message", rs)
         basic.append(rset)
 
-        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-630"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-630", "RT-495"]:
             rs = RadioSettingValueList(TAILCODE_LIST,
                                        TAILCODE_LIST[_settings.tailcode])
             rset = RadioSetting("tailcode", "Tail Code", rs)
@@ -1539,3 +1540,19 @@ class RT630Radio(JC8810base):
                (0xB500, 0xB740)
                ]
     _memsize = 0xB740
+
+
+@directory.register
+class RT495Radio(RT630Radio):
+    """Radtel RT-495"""
+    VENDOR = "Radtel"
+    MODEL = "RT-495"
+
+    # ==========
+    # Notice to developers:
+    # The RT-495 support in this driver is currently based upon v0.07 firmware.
+    # ==========
+
+    _fingerprint = [b"\x00\x00\x00\x24\x00\x20\xD0\x04",  # fw 0.06
+                    b"\x00\x00\x00\x32\x00\x20\xD8\x04",  # fw 0.07
+                    ]
