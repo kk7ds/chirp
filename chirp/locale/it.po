@@ -1009,8 +1009,7 @@ msgid ""
 "A new CHIRP version is available. Please visit the website as soon as "
 "possible to download it!"
 msgstr ""
-"È disponibile una nuova versione di CHIRP. Visitare il sito web prima "
-"possibile per scaricarla!"
+"È disponibile una nuova versione di CHIRP. Visita il sito per scaricarla!"
 
 #: ../wxui/main.py:919
 msgid "About"
@@ -1870,7 +1869,7 @@ msgstr "Installare l'icona sul desktop?"
 
 #: ../wxui/main.py:908
 msgid "Interact with driver"
-msgstr "Interagire con il driver"
+msgstr "Interagisci con il driver"
 
 #: ../wxui/clone.py:607
 msgid "Internal driver error"
@@ -2143,7 +2142,7 @@ msgstr "Apri un modulo"
 
 #: ../wxui/main.py:945
 msgid "Open debug log"
-msgstr "Apri il registro di debug"
+msgstr "Apri registro di debug"
 
 #: ../wxui/main.py:523
 msgid "Open in new window"
@@ -2509,7 +2508,7 @@ msgstr "Mostra campi aggiuntivi"
 
 #: ../wxui/main.py:956
 msgid "Show image backup location"
-msgstr "Mostra la posizione del backup dell'immagine"
+msgstr "Mostra posizione del backup dell'immagine"
 
 #: ../wxui/memedit.py:2061
 msgid "Some memories are incompatible with this radio"
