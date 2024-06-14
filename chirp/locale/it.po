@@ -1779,7 +1779,7 @@ msgstr "Frequenza"
 #: ../import_logic.py:76
 #, python-format
 msgid "Frequency %s is out of supported range"
-msgstr ""
+msgstr "La frequenza %s non rientra nel range supportato"
 
 #: ../wxui/memedit.py:141
 msgid "Frequency granularity in kHz"
