@@ -189,8 +189,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
     LIST_MODE = ["Name", "Frequency"]
     CHANNELS = 999
 
-    MEM_FORMAT = """
-    #seekto 0x0030;
+    MEM_DEFS = """
     struct channel {
       lbcd rxfreq[4];
       lbcd txfreq[4];
@@ -209,28 +208,10 @@ class UV17(baofeng_uv17Pro.UV17Pro):
          scan:1;
       u8 unknown4;
     };
-
-    struct {
-      struct channel mem[252];
-    } mem1;
-
-    #seek 0x10;
-    struct {
-      struct channel mem[255];
-    } mem2;
-
-    #seek 0x10;
-    struct {
-      struct channel mem[255];
-    } mem3;
-
-    #seek 0x10;
-    struct {
-      struct channel mem[237];
-    } mem4;
-
-    #seekto 0x7000;
-    struct {
+    struct channelname {
+      char name[11];
+    };
+    struct settings {
       u8 powerondistype;
       u8 unknown0[15];
       char boottext1[10];
@@ -261,7 +242,39 @@ class UV17(baofeng_uv17Pro.UV17Pro):
       u8 unknown9:6,
          chbdistype:1,
          chadistype:1;
-    } settings;
+    };
+    struct ani {
+      u8 unknown[5];
+      u8 code[5];
+    };
+    struct pttid {
+      u8 code[5];
+    };
+    """
+
+    MEM_LAYOUT = """
+    #seekto 0x0030;
+    struct {
+      struct channel mem[252];
+    } mem1;
+
+    #seek 0x10;
+    struct {
+      struct channel mem[255];
+    } mem2;
+
+    #seek 0x10;
+    struct {
+      struct channel mem[255];
+    } mem3;
+
+    #seek 0x10;
+    struct {
+      struct channel mem[237];
+    } mem4;
+
+    #seekto 0x7000;
+    struct settings settings;
 
     struct vfo {
       lbcd rxfreq[4];
@@ -289,10 +302,6 @@ class UV17(baofeng_uv17Pro.UV17Pro):
     } vfo;
 
     #seekto 0x4000;
-    struct channelname {
-      char name[11];
-    };
-
     struct channelname names1[372];
     #seek 0x4;
     struct channelname names2[372];
@@ -300,16 +309,11 @@ class UV17(baofeng_uv17Pro.UV17Pro):
     struct channelname names3[255];
 
     #seekto 0x8000;
-    struct {
-      u8 code[5];
-    } pttid[15];
+    struct pttid pttid[15];
 
-    struct {
-      u8 unknown[5];
-      u8 code[5];
-    } ani;
-
+    struct ani ani;
     """
+    MEM_FORMAT = MEM_DEFS + MEM_LAYOUT
 
     def _make_frame(self, cmd, addr, length, data=""):
         """Pack the info in the header format"""
@@ -395,7 +399,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
 
         return mode, xval, pol
 
-    def get_raw_memory(self, number):
+    def _get_raw_memory(self, number):
         # The flash memory contains page_numbers
         # This is probably to do wear leveling on the memory
         # These numbers are needed, but make the channel memory
@@ -413,6 +417,9 @@ class UV17(baofeng_uv17Pro.UV17Pro):
         _mem = self._memobj.mem1.mem[number]
         return _mem
 
+    def get_raw_memory(self, number):
+        return repr(self._get_raw_memory(number))
+
     def get_channel_name(self, number):
         number = number - 1
         if number >= 744:
@@ -425,7 +432,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
         return _name
 
     def get_memory(self, number):
-        _mem = self.get_raw_memory(number)
+        _mem = self._get_raw_memory(number)
         _nam = self.get_channel_name(number)
 
         mem = chirp_common.Memory()
@@ -456,7 +463,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
             memtone.set_value(memtone + 0x4000)
 
     def set_memory(self, mem):
-        _mem = self.get_raw_memory(mem.number)
+        _mem = self._get_raw_memory(mem.number)
         _nam = self.get_channel_name(mem.number)
 
         if mem.empty:

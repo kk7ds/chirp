@@ -1191,11 +1191,14 @@ class UV17Pro(bfc.BaofengCommonHT):
 
         mem.name = str(name).replace('\xFF', ' ').replace('\x00', ' ').rstrip()
 
-    def get_raw_memory(self, number):
+    def _get_raw_memory(self, number):
         return self._memobj.memory[number - 1]
 
+    def get_raw_memory(self, number):
+        return repr(self._get_raw_memory(number))
+
     def get_memory(self, number):
-        _mem = self.get_raw_memory(number)
+        _mem = self._get_raw_memory(number)
 
         mem = chirp_common.Memory()
         mem.number = number
@@ -1205,7 +1208,7 @@ class UV17Pro(bfc.BaofengCommonHT):
         return mem
 
     def unsplit_txfreq(self, mem):
-        _mem = self.get_raw_memory(mem.number)
+        _mem = self._get_raw_memory(mem.number)
         if mem.duplex == "off":
             for i in range(0, 4):
                 _mem.txfreq[i].set_raw(b"\xFF")
@@ -1251,7 +1254,7 @@ class UV17Pro(bfc.BaofengCommonHT):
             _mem.scode = self._scode_offset
 
     def set_memory(self, mem):
-        _mem = self.get_raw_memory(mem.number)
+        _mem = self._get_raw_memory(mem.number)
 
         _mem.set_raw(b"\x00"*16 + b"\xff" * 16)
 
