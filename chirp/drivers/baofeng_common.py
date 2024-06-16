@@ -51,6 +51,8 @@ def _rawrecv(radio, amount):
         raise errors.RadioError(msg)
 
     if len(data) != amount:
+        LOG.debug('Wanted %i, got %i: %s',
+                  amount, len(data), util.hexprint(data))
         msg = "Error reading data from radio: not the amount of data we want."
         raise errors.RadioError(msg)
 
