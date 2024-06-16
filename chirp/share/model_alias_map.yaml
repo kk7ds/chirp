@@ -25,6 +25,10 @@ Baofeng/Pofung:
   model: AR-152
 - alt: UV-5R
   model: B-580T
+- alt: UV-25
+  model: BF-18H
+- alt: UV-25
+  model: BF-18L
 - alt: BF-888
   model: BF-88E
   #- alt: BF/T1
