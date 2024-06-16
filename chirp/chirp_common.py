@@ -1176,7 +1176,7 @@ class Radio(Alias):
     # Whether or not we should assert RTS when opening the serial port
     WANTS_RTS = True
     ALIASES = []
-    NEEDS_COMPAT_SERIAL = True
+    NEEDS_COMPAT_SERIAL = False
     FORMATS: list[str] = []
 
     def status_fn(self, status):

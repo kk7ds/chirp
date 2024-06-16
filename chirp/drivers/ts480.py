@@ -447,6 +447,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
     """ Kenwood TS-480 simulated clone mode """
     VENDOR = "Kenwood"
     MODEL = "TS-480_CloneMode"
+    NEEDS_COMPAT_SERIAL = True
     ID = "ID020;"
     # Settings read/write cmd sequence list
     SETC = ["AS0", "SS", "AG0", "AN", "FA", "FB",

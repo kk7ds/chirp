@@ -206,6 +206,7 @@ class NC630aRadio(chirp_common.CloneModeRadio):
     MODEL = "NC-630A"
     ALIASES = [MT700Alias]
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = True
 
     _ranges = [
                (0x0000, 0x0330),

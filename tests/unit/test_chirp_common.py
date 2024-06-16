@@ -574,7 +574,8 @@ class TestImageMetadata(base.BaseTest):
             f.write(b'thisisrawdata')
             f.flush()
 
-        with mock.patch('chirp.memmap.MemoryMap') as mock_mmap:
+        with mock.patch('chirp.memmap.MemoryMapBytes.__init__') as mock_mmap:
+            mock_mmap.return_value = None
             chirp_common.CloneModeRadio(None).load_mmap(fn)
             mock_mmap.assert_called_once_with(b'thisisrawdata')
         os.remove(fn)
@@ -586,7 +587,8 @@ class TestImageMetadata(base.BaseTest):
             f.write(chirp_common.CloneModeRadio.MAGIC + b'bad')
             f.flush()
 
-        with mock.patch('chirp.memmap.MemoryMap') as mock_mmap:
+        with mock.patch('chirp.memmap.MemoryMapBytes.__init__') as mock_mmap:
+            mock_mmap.return_value = None
             chirp_common.CloneModeRadio(None).load_mmap(fn)
             mock_mmap.assert_called_once_with(b'thisisrawdata')
         os.remove(fn)

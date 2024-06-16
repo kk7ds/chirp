@@ -170,6 +170,7 @@ class VXA700Radio(chirp_common.CloneModeRadio):
     """Vertex Standard VXA-700"""
     VENDOR = "Vertex Standard"
     MODEL = "VXA-700"
+    NEEDS_COMPAT_SERIAL = True
     _memsize = 4096
 
     def sync_in(self):

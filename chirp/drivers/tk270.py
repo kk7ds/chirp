@@ -319,6 +319,7 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
     VARIANT = ""
     MODEL = ""
     _kind = ""
+    NEEDS_COMPAT_SERIAL = True
 
     @classmethod
     def get_prompts(cls):

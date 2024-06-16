@@ -50,6 +50,7 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
     VENDOR = 'Boblov'
     MODEL = 'X3Plus'
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = True
     CHANNELS = 16
 
     MEM_FORMAT = """

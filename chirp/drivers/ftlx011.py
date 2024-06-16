@@ -272,6 +272,7 @@ def int_to_bcd(data):
 class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     """Vertex FTL1011/2011/7011 4/8/12/24 channels"""
     VENDOR = "Vertex Standard"
+    NEEDS_COMPAT_SERIAL = True
     _memsize = MEM_SIZE
     _upper = 0
     _range = []

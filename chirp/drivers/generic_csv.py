@@ -58,6 +58,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
     """A driver for Generic CSV files"""
     VENDOR = "Generic"
     MODEL = "CSV"
+    NEEDS_COMPAT_SERIAL = True
     FILE_EXTENSION = "csv"
     FORMATS = [directory.register_format('CSV', '*.csv')]
 
