@@ -1,4 +1,4 @@
-# Copyright 2011 Dan Smith <dsmith@danplanet.com>
+# Copyright 2024 Dan Smith <dsmith@danplanet.com>
 # Portions copyright 2023 Dave Liske <dave@micuisine.com>
 # Portions copyright 2020 by Jiauxn Yang <jiaxun.yang@flygoat.com>
 #
@@ -21,6 +21,8 @@ import struct
 from chirp import bitwise
 from chirp import chirp_common
 from chirp import directory
+from chirp.drivers import baofeng_uv17
+from chirp.drivers import baofeng_uv17Pro
 from chirp import errors
 from chirp import memmap
 from chirp.settings import RadioSetting, RadioSettingGroup, RadioSettings
@@ -60,7 +62,7 @@ def start_program(radio):
 
 
 def do_download(radio):
-    ident = start_program(radio)
+    # No start_program() here because it was done in detect_from_serial()
 
     s = chirp_common.Status()
     s.msg = 'Downloading'
@@ -354,6 +356,24 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
     _magic = (b'PROGROMBFHU')
 
     _gmrs = False
+
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        for rcls in reversed(cls.detected_models()):
+            pipe.baudrate = rcls.BAUD_RATE
+            radio = rcls(pipe)
+            try:
+                if isinstance(radio, baofeng_uv17Pro.UV17Pro):
+                    ident = baofeng_uv17Pro._do_ident(radio)
+                else:
+                    ident = start_program(radio)
+            except errors.RadioError:
+                LOG.debug('No response from radio with %s', rcls)
+                pipe.read(256)
+                continue
+            if ident:
+                return rcls
+        raise errors.RadioError('No response from radio')
 
     def sync_in(self):
         try:
@@ -1074,3 +1094,69 @@ class AbbreeARF5Radio(RadioddityGA510Radio):
 
     def _set_nam(self, number):
         return self._memobj.names[number - 1]
+
+
+@directory.register
+@directory.detected_by(RadioddityGA510Radio)
+class RadioddityGA510v2(baofeng_uv17.UV17):
+    """Baofeng UV-17"""
+    VENDOR = "Radioddity"
+    MODEL = "GA-510"
+    VARIANT = "V2"
+
+    MODES = ["FM", "NFM"]
+    BLOCK_ORDER = [2, 4, 6, 16, 24]
+    MEM_TOTAL = 0x6000
+    WRITE_MEM_TOTAL = 0x6000
+    BLOCK_SIZE = 0x40
+    BAUD_RATE = 57600
+
+    _magic = b"PSEARCH"
+    _magic_response_length = 8
+    _magics = [(b"PASSSTA", 3), (b"SYSINFO", 1),
+               (b"\x56\x00\x00\x0A\x0D", 13), (b"\x06", 1),
+               (b"\x56\x00\x10\x0A\x0D", 13), (b"\x06", 1),
+               (b"\x56\x00\x20\x0A\x0D", 13), (b"\x06", 1),
+               (b"\x56\x00\x00\x00\x0A", 11), (b"\x06", 1),
+               (b"\xFF\xFF\xFF\xFF\x0C\x44\x4d\x52\x31\x37\x30\x32", 1),
+               (b"\02", 8), (b"\x06", 1)]
+    _magic_memsize = []
+    _radio_memsize = 0x10000
+    _magics2 = []
+    _fingerprint = b"\x06DMR1702"
+    _scode_offset = 1
+
+    _tri_band = False
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
+                    chirp_common.PowerLevel("Medium", watts=5.00),
+                    chirp_common.PowerLevel("High",  watts=10.00)]
+
+    LENGTH_NAME = 11
+    SCODE_LIST = ["%s" % x for x in range(1, 16)]
+    SQUELCH_LIST = ["Off"] + list("123456789")
+    LIST_POWERON_DISPLAY_TYPE = ["Full", "Message", "Voltage"]
+    LIST_TIMEOUT = ["Off"] + ["%s sec" % x for x in range(15, 615, 15)]
+    LIST_VOICE = ["Chinese", "English"]
+    LIST_BACKLIGHT_TIMER = ["Always On"] + ["%s sec" % x for x in range(1, 11)]
+    LIST_MODE = ["Name", "Frequency"]
+    CHANNELS = 128
+
+    MEM_LAYOUT = """
+    #seekto 0x1000;
+    struct settings settings;
+
+    #seekto 0x2000;
+    struct pttid pttid[15];
+    struct ani ani;
+
+    #seekto 0x3040;
+    struct {
+      struct channel mem[128];
+    } mem1;
+
+    #seekto 0x400B;
+    struct channelname names1[128];
+    """
+    MEM_FORMAT = baofeng_uv17.UV17.MEM_DEFS + MEM_LAYOUT
+
+    _has_workmode_support = False
