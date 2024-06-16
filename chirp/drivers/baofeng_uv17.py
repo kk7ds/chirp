@@ -44,7 +44,10 @@ def _get_memory_size(radio):
 def _get_memory_map(radio):
     # Get memory map
     memory_map = []
-    mem_size = _get_memory_size(radio)
+    if radio._magic_memsize:
+        mem_size = _get_memory_size(radio)
+    else:
+        mem_size = radio._radio_memsize
     if mem_size != radio._radio_memsize:
         raise errors.RadioError("Incorrect radio model or model not supported "
                                 "(memory size doesn't match)")
@@ -60,7 +63,9 @@ def _get_memory_map(radio):
 
 def _download(radio):
     """Get the memory map"""
-    baofeng_uv17Pro._do_ident(radio)
+    if not radio._DETECTED_BY:
+        # The GA510v2 (at least) is detected, and thus has already done ident
+        baofeng_uv17Pro._do_ident(radio)
     data = b""
     memory_map = _get_memory_map(radio)
 
@@ -73,6 +78,8 @@ def _download(radio):
     for block_number in radio.BLOCK_ORDER:
         if block_number not in memory_map:
             # Memory block not found.
+            LOG.error('Block %i (0x%x) not in memory map: %s',
+                      block_number, block_number, memory_map)
             raise errors.RadioError('Radio memory is corrupted. ' +
                                     'Fix this by uploading a backup image ' +
                                     'to the radio.')
