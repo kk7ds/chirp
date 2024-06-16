@@ -173,7 +173,6 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
     BAUD_RATE = 9600
     VENDOR = "Kenwood"
     MODEL = ""
-    NEEDS_COMPAT_SERIAL = False
     # Lots of Kenwood radios actually require RTS, even some of the ones with
     # USB integrated
     HARDWARE_FLOW = True

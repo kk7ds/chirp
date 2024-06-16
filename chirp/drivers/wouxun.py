@@ -59,7 +59,6 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     VENDOR = "Wouxun"
     MODEL = "KG-UVD1P"
     _model = b"KG669V"
-    NEEDS_COMPAT_SERIAL = False
 
     _querymodel = (b"HiWOUXUN\x02", b"PROGUV6X\x02")
 

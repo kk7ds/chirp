@@ -384,7 +384,6 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
     VENDOR = 'Kenwood'
     MODEL = 'TK-x180'
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     FORMATS = [directory.register_format('Kenwood KPG-89D', '*.dat')]
 
     _system_start = 0x0B00

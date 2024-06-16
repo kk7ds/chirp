@@ -574,7 +574,6 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                     chirp_common.ExperimentalRadio):
     """BTECH's UV-50X3"""
     VENDOR = "BTECH"
-    NEEDS_COMPAT_SERIAL = False
     _air_range = (108000000, 136000000)
     _vhf_range = (136000000, 174000000)
     _vhf2_range = (174000000, 250000000)

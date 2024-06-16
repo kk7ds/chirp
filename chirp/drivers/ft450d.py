@@ -88,7 +88,6 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
     COM_PRTY = 'N'   # parity checking
     COM_STOP = 1   # stop bits
     MODEL = "FT-450D"
-    NEEDS_COMPAT_SERIAL = False
 
     DUPLEX = ["", "-", "+"]
     MODES = ["LSB", "USB",  "CW",  "AM", "FM", "DIG",

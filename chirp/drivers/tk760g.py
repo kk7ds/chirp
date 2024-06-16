@@ -673,7 +673,6 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
     _kind = ""
     VARIANT = ""
     MODEL = ""
-    NEEDS_COMPAT_SERIAL = False
 
     @classmethod
     def get_prompts(cls):

@@ -225,7 +225,6 @@ class THD72Radio(chirp_common.CloneModeRadio):
     VENDOR = "Kenwood"
     MODEL = "TH-D72 (clone mode)"
     HARDWARE_FLOW = sys.platform == "darwin"  # only OS X driver needs hw flow
-    NEEDS_COMPAT_SERIAL = False
     FORMATS = [directory.register_format('Kenwood MCP4A', '*.mc4')]
 
     mem_upper_limit = 1022

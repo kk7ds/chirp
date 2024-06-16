@@ -79,7 +79,6 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
     """Base class for all known Alinco radios"""
     _memsize = 0
     _model = b"NONE"
-    NEEDS_COMPAT_SERIAL = False
 
     def _send(self, data):
         LOG.debug("PC->R: (%2i)\n%s" % (len(data), util.hexprint(data)))

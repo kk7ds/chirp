@@ -453,7 +453,6 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
     MODEL = "UV-K5"
     VARIANT = "egzumer"
     BAUD_RATE = 38400
-    NEEDS_COMPAT_SERIAL = False
     FIRMWARE_VERSION = ""
     _cal_start = 0x1E00  # calibration memory start address
     _pttid_list = ["Off", "Up code", "Down code", "Up+Down code",

@@ -747,7 +747,6 @@ class RT21Radio(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RT21"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     BLOCK_SIZE = 0x10
     BLOCK_SIZE_UP = 0x10
 

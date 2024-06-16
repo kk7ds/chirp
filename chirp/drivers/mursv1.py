@@ -81,7 +81,6 @@ class MURSV1(baofeng_common.BaofengCommonHT):
     """BTech MURS-V1"""
     VENDOR = "BTECH"
     MODEL = "MURS-V1"
-    NEEDS_COMPAT_SERIAL = False
 
     _fileid = [MURSV1_fp1, ]
 

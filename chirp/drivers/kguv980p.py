@@ -711,7 +711,6 @@ class KG980PRadio(chirp_common.CloneModeRadio,
     _model = b"KG-UV950R2"
     _file_ident = b"980P"
     BAUD_RATE = 19200
-    NEEDS_COMPAT_SERIAL = False
     # Start Byte for Communication messages
     _record_start = 0xDA
     # _cs_size = 0x0F for 4-bit checksum, 0xFF for 8-Bit checksum

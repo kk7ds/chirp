@@ -87,7 +87,6 @@ class WP970I(bfc.BaofengCommonHT):
     """Baofeng WP970I"""
     VENDOR = "Baofeng"
     MODEL = "WP970I"
-    NEEDS_COMPAT_SERIAL = False
 
     _tri_band = False
     _fileid = []

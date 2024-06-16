@@ -197,7 +197,6 @@ class UV3RRadio(chirp_common.CloneModeRadio):
     """Baofeng UV-3R"""
     VENDOR = "Baofeng"
     MODEL = "UV-3R"
-    NEEDS_COMPAT_SERIAL = False
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()

@@ -426,7 +426,6 @@ class LT725UV(chirp_common.CloneModeRadio):
     """LUITON LT-725UV Radio"""
     VENDOR = "LUITON"
     MODEL = "LT-725UV"
-    NEEDS_COMPAT_SERIAL = False
     MODES = ["NFM", "FM"]
     TONES = chirp_common.TONES
     DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))

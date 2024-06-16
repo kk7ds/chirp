@@ -1034,7 +1034,6 @@ class KG935GRadio(chirp_common.CloneModeRadio,
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=0.5),
                     chirp_common.PowerLevel("M", watts=4.5),
                     chirp_common.PowerLevel("H", watts=5.5)]
-    NEEDS_COMPAT_SERIAL = False
     _record_start = 0x7C
 
     def _checksum(self, data):
@@ -2193,7 +2192,6 @@ class KG935GPlusRadio(KG935GRadio):
     """Wouxun KG-935G Plus"""
     VENDOR = "Wouxun"
     MODEL = "KG-935G Plus"
-    NEEDS_COMPAT_SERIAL = False
 
     def process_mmap(self):
         self._memobj = bitwise.parse(_MEM_FORMAT_935GPLUS, self._mmap)
@@ -2205,7 +2203,6 @@ class KGUV8HRadio(KG935GRadio):
     """Wouxun KG-UV8H"""
     VENDOR = "Wouxun"
     MODEL = "KG-UV8H"
-    NEEDS_COMPAT_SERIAL = False
 
     def process_mmap(self):
         self._memobj = bitwise.parse(_MEM_FORMAT_UV8H, self._mmap)

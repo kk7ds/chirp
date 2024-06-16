@@ -296,7 +296,6 @@ class H777Radio(chirp_common.CloneModeRadio):
     PROGRAM_CMD = b'PROGRAM'
     IDENT = [b"P3107", ]
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
 
     # TODO: Is it 1 watt?
     POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),

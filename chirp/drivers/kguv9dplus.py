@@ -1091,7 +1091,6 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
     _model = b"KG-UV9D"
     _rev = b"00"  # default rev for the radio I know about...
     _file_ident = b"kg-uv9d"
-    NEEDS_COMPAT_SERIAL = False
     BAUD_RATE = 19200
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("M", watts=2),
@@ -2474,7 +2473,6 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
     _model = b"KG-UV9D"
     _rev = b"02"  # default rev for the radio I know about...
     _file_ident = b"kg-uv9px"
-    NEEDS_COMPAT_SERIAL = False
     _valid_steps = STEPS
     _step_list = STEP_LIST
 
@@ -2906,7 +2904,6 @@ class KGUV9GXRadio(KGUV9PXRadio):
     MODEL = "KG-UV9GX"
     _model = b"KG-UV9D"
     _rev = b"02"  # default rev for the radio I know about...
-    NEEDS_COMPAT_SERIAL = False
     _valid_steps = STEPS
     _step_list = STEP_LIST
 
@@ -2925,7 +2922,6 @@ class KGUV9KRadio(KGUV9DPlusRadio):
     _model = b"KG-UV9D"
     _file_ident = b"kg-uv9k"
     _rev = b"02"  # default rev for the radio I know about...
-    NEEDS_COMPAT_SERIAL = False
     _step_list = STEP_LIST_9K
     _valid_steps = STEPS_9K
 
@@ -2944,7 +2940,6 @@ class KGUV9GProRadio(KGUV9DPlusRadio):
     _model = b"KG-UV9D"
     _file_ident = b"kg-uv9gpro"
     _rev = b"02"  # default rev for the radio I know about...
-    NEEDS_COMPAT_SERIAL = False
     _step_list = STEP_LIST
     _valid_steps = STEPS
 

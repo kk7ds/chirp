@@ -98,7 +98,6 @@ class UV5X3(bfc.BaofengCommonHT):
     """BTech UV-5X3"""
     VENDOR = "BTECH"
     MODEL = "UV-5X3"
-    NEEDS_COMPAT_SERIAL = False
 
     _fileid = [UV5X3_fp3,
                UV5X3_fp2,

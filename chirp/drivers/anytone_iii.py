@@ -796,7 +796,6 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
     VENDOR = "AnyTone"
     MODEL = "5888UVIII"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     _file_ident = b"588UVP"
 
     _ranges = [

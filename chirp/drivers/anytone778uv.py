@@ -629,7 +629,6 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                        chirp_common.ExperimentalRadio):
     '''AnyTone 778UV and probably Retevis RT95 and others'''
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     NAME_LENGTH = 5
     HAS_VOX = False
 

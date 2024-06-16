@@ -362,7 +362,6 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     VENDOR = "Leixen"
     MODEL = "VV-898"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
 
     _file_ident = b"Leixen"
     _model_ident = b'LX-\x89\x85\x63'

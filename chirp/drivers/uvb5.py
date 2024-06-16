@@ -266,7 +266,6 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
     VENDOR = "Baofeng"
     MODEL = "UV-B5"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     SPECIALS = {
         "VFO1": -2,
         "VFO2": -1,

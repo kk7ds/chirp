@@ -124,7 +124,6 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
     VENDOR = "Kenwood"
     MODEL = "TM-x710"
     SHORT = "X"       # Short model ID code
-    NEEDS_COMPAT_SERIAL = False
 
     _upper = 999         # Number of normal chans
 

@@ -759,7 +759,6 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
     VENDOR = "Retevis"
     MODEL = "RT98 Base"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
 
     _memsize = 0x3E00
     _ranges = [(0x0000, 0x3310),

@@ -239,7 +239,6 @@ class FTM350Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 48000
     VENDOR = "Yaesu"
     MODEL = "FTM-350"
-    NEEDS_COMPAT_SERIAL = False
 
     _model = ""
     _memsize = 65536

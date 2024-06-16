@@ -254,7 +254,6 @@ class Th350Radio(BaofengUVB5):
     VENDOR = "TYT"
     MODEL = "TH-350"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     SPECIALS = {
         "VFO1": -3,
         "VFO2": -2,

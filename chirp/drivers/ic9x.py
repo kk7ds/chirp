@@ -116,7 +116,6 @@ class IC9xBank(icf.IcomNamedBank):
 class IC9xRadio(icf.IcomLiveRadio):
     """Base class for Icom IC-9x radios"""
     MODEL = "IC-91/92AD"
-    NEEDS_COMPAT_SERIAL = False
 
     _model = "ic9x"    # Fake model info for detect.py
     vfo = 0

@@ -333,7 +333,6 @@ class RT76PRadio(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RT76P"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     BLOCK_SIZE = 0x40
     BLOCK_SIZE_UP = 0x20
 

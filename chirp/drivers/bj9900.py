@@ -34,7 +34,6 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
     MODEL = "BJ-9900"
     VARIANT = ""
     BAUD_RATE = 115200
-    NEEDS_COMPAT_SERIAL = False
 
     DUPLEX = ["", "-", "+", "split"]
     MODES = ["NFM", "FM"]

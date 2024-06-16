@@ -422,7 +422,6 @@ class JC8810base(chirp_common.CloneModeRadio):
     VENDOR = "MML"
     MODEL = "JC-8810base"
     BAUD_RATE = 57600
-    NEEDS_COMPAT_SERIAL = False
     BLOCK_SIZE = 0x40
     BLOCK_SIZE_UP = 0x40
 

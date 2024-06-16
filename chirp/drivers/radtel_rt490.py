@@ -401,7 +401,6 @@ class RT490Radio(chirp_common.CloneModeRadio):
     MODEL = "RT-490"
     BLOCK_SIZE = 0x40  # 64 bytes
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
 
     POWER_LEVELS = [chirp_common.PowerLevel("H", watts=5.00),
                     chirp_common.PowerLevel("L", watts=3.00)]

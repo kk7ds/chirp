@@ -519,7 +519,6 @@ class Th9000Radio(chirp_common.CloneModeRadio,
     VENDOR = "TYT"
     MODEL = "TH9000 Base"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     valid_freq = [(900000000, 999000000)]
 
     _memsize = MMAPSIZE

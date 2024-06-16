@@ -655,7 +655,6 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
     VENDOR = "Quansheng"
     MODEL = "UV-K5"
     BAUD_RATE = 38400
-    NEEDS_COMPAT_SERIAL = False
     _cal_start = 0
     _expanded_limits = False
     _upload_calibration = False

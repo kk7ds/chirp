@@ -145,7 +145,6 @@ class UV17(baofeng_uv17Pro.UV17Pro):
     """Baofeng UV-17"""
     VENDOR = "Baofeng"
     MODEL = "UV-17"
-    NEEDS_COMPAT_SERIAL = False
 
     download_function = _download
     upload_function = _upload

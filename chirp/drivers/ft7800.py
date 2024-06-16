@@ -252,7 +252,6 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
     MODES = list(MODES)
-    NEEDS_COMPAT_SERIAL = False
     _block_size = 64
 
     POWER_LEVELS_VHF = [chirp_common.PowerLevel("Hi", watts=50),

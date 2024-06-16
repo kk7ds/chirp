@@ -438,7 +438,6 @@ def do_upload(radio):
 class RA87StyleRadio(chirp_common.CloneModeRadio):
     """Retevis RA87"""
     VENDOR = "Retevis"
-    NEEDS_COMPAT_SERIAL = False
     BAUD_RATE = 9600
     BLOCK_SIZE = 0x40
     CMD_EXIT = b"EZ" + b"\xA5" + b"2#E" + b"\xF2"

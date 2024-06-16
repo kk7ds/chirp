@@ -1004,7 +1004,6 @@ class TDH8(chirp_common.CloneModeRadio):
     MODEL = "TD-H8"
     ident_mode = b'P31183\xff\xff'
     BAUD_RATE = 38400
-    NEEDS_COMPAT_SERIAL = False
     MODES = ["FM", "NFM"]
     _memsize = 0x1eef
     _ranges_main = [(0x0000, 0x1eef)]

@@ -306,7 +306,6 @@ class BFT8Radio(chirp_common.CloneModeRadio):
     VENDOR = "Baofeng"
     MODEL = "BF-T8"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     BLOCK_SIZE = BLOCK_SIZE_UP = 0x10
     ODD_SPLIT = True
     HAS_NAMES = False

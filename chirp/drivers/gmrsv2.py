@@ -77,7 +77,6 @@ class GMRSV2base(bfc.BaofengCommonHT):
     """BTech GMRS-V2base"""
     VENDOR = ""
     MODEL = ""
-    NEEDS_COMPAT_SERIAL = False
 
     _fw_ver_start = 0x1EF0
     _recv_block_size = 0x40
@@ -1055,7 +1054,6 @@ class GMRSV2(GMRSV2base):
     """BTech GMRS-V2"""
     VENDOR = "BTECH"
     MODEL = "GMRS-V2"
-    NEEDS_COMPAT_SERIAL = False
 
     _fileid = [GMRSV2_fp1, ]
 
