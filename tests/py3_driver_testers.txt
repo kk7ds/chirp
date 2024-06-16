@@ -256,6 +256,7 @@ Radtel_T18,@KC9HI,28-Nov-2022
 Retevis_H777S,@KC9HI,22-Dec-2022
 Retevis_H777_Plus,@KC9HI,4-Dec-2022
 Retevis_P2,@KC9HI,15-Jun-2024
+Retevis_P62,@KC9HI,15-Jun-2024
 Retevis_RA685,@KC9HI,19-Nov-2022
 Retevis_RA79,@KC9HI,27-Oct-2023
 Retevis_RA85,@KC9HI,19-Nov-2022
