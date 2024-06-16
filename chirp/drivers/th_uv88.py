@@ -1000,7 +1000,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         group.append(advanced)
 
         # software only
-        if self.MODEL in ["RA89", "P2"]:
+        if self.MODEL in ["RA89", "P2", "P62"]:
             options = ['Frequency', '120', '180', '240']
         else:
             options = ['Off', 'Frequency']
@@ -1081,7 +1081,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                            "Flashlight", "Power Level", "Alarm",
                            "Noise Cancelaton", "Temp Monitor", "FM Radio",
                            "Talk Around", "Frequency Reverse"]
-            elif self.MODEL == "P2":
+            elif self.MODEL in ["P2", "P62"]:
                 options = ["None", "VOX", "ManDown Sw",
                            "Scan", "Moni", "1750 Tone",
                            "Power Level", "Alarm", "Noise Cancelaton",
@@ -1317,3 +1317,9 @@ class P2(THUV88Radio):
         """Process the mem map into the mem object"""
         mem_format = MEM_FORMAT + RA89_SETTINGS + MEM_FORMAT_PT2
         self._memobj = bitwise.parse(mem_format, self._mmap)
+
+
+@directory.register
+class P62(P2):
+    VENDOR = "Retevis"
+    MODEL = "P62"
