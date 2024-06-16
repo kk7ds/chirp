@@ -380,7 +380,6 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
     MODEL = "5888UV"
     BAUD_RATE = 9600
     _file_ident = [b"QX588UV", b"588UVN"]
-    NEEDS_COMPAT_SERIAL = False
 
     # May try to mirror the OEM behavior later
     _ranges = [

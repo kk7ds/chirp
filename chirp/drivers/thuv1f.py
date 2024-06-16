@@ -184,7 +184,6 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
     """TYT TH-UVF1"""
     VENDOR = "TYT"
     MODEL = "TH-UVF1"
-    NEEDS_COMPAT_SERIAL = False
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()

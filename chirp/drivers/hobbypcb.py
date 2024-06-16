@@ -51,7 +51,6 @@ class HobbyPCBRSUV3Radio(chirp_common.LiveRadio):
     VENDOR = "HobbyPCB"
     MODEL = "RS-UV3"
     BAUD_RATE = 19200
-    NEEDS_COMPAT_SERIAL = False
 
     def __init__(self, *args, **kwargs):
         super(HobbyPCBRSUV3Radio, self).__init__(*args, **kwargs)

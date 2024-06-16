@@ -1099,7 +1099,6 @@ class Puxing_PX888K_Radio(chirp_common.CloneModeRadio):
     VENDOR = "Puxing"
     MODEL = "PX-888K"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
 
     @classmethod
     def match_model(cls, filedata, filename):

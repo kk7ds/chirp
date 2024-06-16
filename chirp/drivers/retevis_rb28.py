@@ -301,7 +301,6 @@ class RB28Radio(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RB28"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     BLOCK_SIZE = 0x20
     BLOCK_SIZE_UP = 0x10
 

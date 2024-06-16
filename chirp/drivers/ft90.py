@@ -61,7 +61,6 @@ class FT90Radio(yaesu_clone.YaesuCloneModeRadio):
     VENDOR = "Yaesu"
     MODEL = "FT-90"
     ID = b"\x8E\xF6"
-    NEEDS_COMPAT_SERIAL = False
 
     _memsize = 4063
     # block 03 (200 Bytes long) repeats 18 times; channel memories

@@ -248,7 +248,6 @@ class KSunM6Radio(chirp_common.CloneModeRadio):
     VENDOR = "KSUN"
     MODEL = "M6"
     BAUD_RATE = 4800
-    NEEDS_COMPAT_SERIAL = False
     BLOCK_SIZE = 0x10
     START_ADDR = 0x0050
     CHANNELS = 80

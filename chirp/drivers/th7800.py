@@ -678,7 +678,6 @@ class TYTTH7800Radio(TYTTH7800Base, chirp_common.CloneModeRadio,
     VENDOR = "TYT"
     MODEL = "TH-7800"
     BAUD_RATE = 38400
-    NEEDS_COMPAT_SERIAL = False
 
     _memsize = 65296
     _mmap_offset = 0x0010

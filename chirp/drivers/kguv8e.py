@@ -308,7 +308,6 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("H", watts=5)]
     _record_start = 0x7B
-    NEEDS_COMPAT_SERIAL = False
 
     def _checksum(self, data):
         cs = 0

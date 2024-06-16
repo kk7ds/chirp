@@ -63,7 +63,6 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
     VENDOR = "Alinco"
     MODEL = "DR735T"
     BAUD_RATE = 38400
-    NEEDS_COMPAT_SERIAL = False
 
     TONE_MODE_MAP = {
         0x00: "",

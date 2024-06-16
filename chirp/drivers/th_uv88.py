@@ -526,7 +526,6 @@ class THUV88Radio(chirp_common.CloneModeRadio):
     """TYT UV88 Radio"""
     VENDOR = "TYT"
     MODEL = "TH-UV88"
-    NEEDS_COMPAT_SERIAL = False
     MODES = ['WFM', 'FM', 'NFM']
     # 62.5 is a non standard tone listed in the official programming software
     # 169.9 is a non standard tone listed in the official programming software

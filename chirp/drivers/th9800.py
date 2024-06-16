@@ -199,7 +199,6 @@ def isValidDate(month, day, year):
 class TYTTH9800Base(chirp_common.Radio):
     """Base class for TYT TH-9800"""
     VENDOR = "TYT"
-    NEEDS_COMPAT_SERIAL = False
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()

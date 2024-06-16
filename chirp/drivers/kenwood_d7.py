@@ -238,7 +238,6 @@ class KenwoodD7ProgrammableVFOs(RadioSettingGroup):
 class KenwoodD7Family(chirp_common.LiveRadio):
     VENDOR = "Kenwood"
     MODEL = ""
-    NEEDS_COMPAT_SERIAL = False
     HARDWARE_FLOW = False
 
     _ARG_DELIMITER = " "

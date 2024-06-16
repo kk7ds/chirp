@@ -458,7 +458,6 @@ class BFT1(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     """Baofeng BT-F1 radio & possibly alike radios"""
     VENDOR = "Baofeng"
     MODEL = "BF-T1"
-    NEEDS_COMPAT_SERIAL = False
     _vhf_range = (130000000, 174000000)
     _uhf_range = (400000000, 520000000)
     _upper = 20

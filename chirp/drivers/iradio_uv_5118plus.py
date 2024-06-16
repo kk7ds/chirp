@@ -357,7 +357,6 @@ class IradioUV5118plus(chirp_common.CloneModeRadio):
     MODEL = "UV-5118plus"
     NAME_LENGTH = 10
     BAUD_RATE = 115200
-    NEEDS_COMPAT_SERIAL = False
 
     BLOCK_SIZE = 0x80
     magic = b"58" + b"\x05\x10\x82"

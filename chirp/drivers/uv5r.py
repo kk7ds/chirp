@@ -783,7 +783,6 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
     VENDOR = "Baofeng"
     MODEL = "UV-5R"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
 
     _memsize = 0x1808
     _basetype = BASETYPE_UV5R

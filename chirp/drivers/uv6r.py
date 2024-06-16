@@ -93,7 +93,6 @@ class UV6R(bfc.BaofengCommonHT):
     """Baofeng UV-6R"""
     VENDOR = "Baofeng"
     MODEL = "UV-6R"
-    NEEDS_COMPAT_SERIAL = False
 
     _fileid = [UV6R_fp2, UV6R_fp1, ]
 

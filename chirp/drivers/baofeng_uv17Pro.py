@@ -211,7 +211,6 @@ class UV17Pro(bfc.BaofengCommonHT):
     """Baofeng UV-17Pro"""
     VENDOR = "Baofeng"
     MODEL = "UV-17Pro"
-    NEEDS_COMPAT_SERIAL = False
 
     MEM_STARTS = [0x0000, 0x9000, 0xA000, 0xD000]
     MEM_SIZES = [0x8040, 0x0040, 0x02C0, 0x0040]

@@ -78,7 +78,6 @@ class TYTUV3RRadio(chirp_common.CloneModeRadio):
     MODEL = "TH-UV3R"
     BAUD_RATE = 2400
     _memsize = 2320
-    NEEDS_COMPAT_SERIAL = False
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()

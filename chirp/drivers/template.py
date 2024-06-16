@@ -75,7 +75,6 @@ class TemplateRadio(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600    # Replace this with your baud rate
 
     # All new drivers should be "Byte Clean" so leave this in place.
-    NEEDS_COMPAT_SERIAL = False
 
     # Return information about this radio's features, including
     # how many memories it has, what bands it supports, etc

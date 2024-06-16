@@ -299,7 +299,6 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
     """RETEVIS RB15 BASE"""
     VENDOR = "Retevis"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
 
     BLOCK_SIZE = 0x10
     magic = b"21" + b"\x05\x10" + b"x"

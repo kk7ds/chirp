@@ -530,7 +530,6 @@ class FT7100Radio(YaesuCloneModeRadio):
     VARIANT = ""
     IDBLOCK = b"Vartex Standard AH003M M-Map V04"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
 
     # Return information about this radio's features, including
     # how many memories it has, what bands it supports, etc

@@ -182,7 +182,6 @@ class THD74Radio(chirp_common.CloneModeRadio,
                  chirp_common.IcomDstarSupport):
     VENDOR = "Kenwood"
     MODEL = "TH-D74 (clone mode)"
-    NEEDS_COMPAT_SERIAL = False
     BAUD_RATE = 9600
     HARDWARE_FLOW = sys.platform == "darwin"  # only OS X driver needs hw flow
     FORMATS = [directory.register_format('Kenwood MCP-D74', '*.d74')]

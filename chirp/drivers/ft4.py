@@ -676,7 +676,6 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     MODEL = "SCU-35Generic"  # No radio directly uses the base class
     BAUD_RATE = 9600
     MAX_MEM_SLOT = 200
-    NEEDS_COMPAT_SERIAL = False
     DUPLEX_OFF_VIA_OFFSET = False
 
     # These settings are common to all radios in this family.

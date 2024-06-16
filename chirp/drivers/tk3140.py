@@ -322,7 +322,6 @@ POWER_LEVELS = [chirp_common.PowerLevel('Low', watts=1),
 class KenwoodTKx140Radio(chirp_common.CloneModeRadio):
     VENDOR = 'Kenwood'
     FORMATS = [directory.register_format('Kenwood KPG-74D', '*.dat')]
-    NEEDS_COMPAT_SERIAL = False
 
     def sync_in(self):
         try:

@@ -82,7 +82,6 @@ class HF90StyleRadio(chirp_common.CloneModeRadio,
     MODES = ["LSB", "USB"]
     DUPLEX = ["", "+", "-", "split", "off"]
     BAUD_RATE = 4800
-    NEEDS_COMPAT_SERIAL = False
 
     HF90_POWER_LEVELS = ["Low", "High"]
 

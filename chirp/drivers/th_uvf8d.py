@@ -268,7 +268,6 @@ class TYTUVF8DRadio(chirp_common.CloneModeRadio):
     VENDOR = "TYT"
     MODEL = "TH-UVF8D"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()

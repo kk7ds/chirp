@@ -409,7 +409,6 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
     VENDOR = "AnyTone"
     MODEL = "TERMN-8R"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     _file_ident = b"TERMN8R"
 
     # May try to mirror the OEM behavior later

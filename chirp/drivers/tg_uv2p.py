@@ -219,7 +219,6 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
     VENDOR = "Quansheng"
     MODEL = "TG-UV2+"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
 
     _memsize = 0x2000
 

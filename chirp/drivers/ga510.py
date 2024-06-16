@@ -345,7 +345,6 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
     VENDOR = 'Radioddity'
     MODEL = 'GA-510'
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     POWER_LEVELS = [
         chirp_common.PowerLevel('H', watts=10),
         chirp_common.PowerLevel('L', watts=1),

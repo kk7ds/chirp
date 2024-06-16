@@ -36,7 +36,6 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
     """Yaesu FT-817"""
     BAUD_RATE = 9600
     MODEL = "FT-817"
-    NEEDS_COMPAT_SERIAL = False
     _model = ""
     _US_model = False
 

@@ -226,7 +226,6 @@ class RB17P_Base(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RB17P Base"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     BLOCK_SIZE = 0x40
 
     VALID_BANDS = [(400000000, 470000000)]

@@ -336,7 +336,6 @@ class Rt87BaseRadio(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RT87 Base"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
     _MAGIC = b"PGM2017"
 
     def get_features(self):

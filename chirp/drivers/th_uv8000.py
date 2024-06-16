@@ -479,7 +479,6 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
     """TYT UV8000D Radio"""
     VENDOR = "TYT"
     MODEL = "TH-UV8000"
-    NEEDS_COMPAT_SERIAL = False
     MODES = ["NFM", "FM"]
     TONES = chirp_common.TONES
     DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))

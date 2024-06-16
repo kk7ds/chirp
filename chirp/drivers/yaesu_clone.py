@@ -230,7 +230,6 @@ class YaesuCloneModeRadio(chirp_common.CloneModeRadio):
     _block_size = 8
 
     VENDOR = "Yaesu"
-    NEEDS_COMPAT_SERIAL = False
     _model = b"ABCDE"
 
     @classmethod

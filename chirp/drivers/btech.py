@@ -660,7 +660,6 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
     COLOR_LCD3 = False  # Color HT Radios
     COLOR_LCD4 = False  # Waterproof Mobile Radios
     NAME_LENGTH = 6
-    NEEDS_COMPAT_SERIAL = False
     UPLOAD_MEM_SIZE = 0X3100
     _power_levels = [chirp_common.PowerLevel("High", watts=25),
                      chirp_common.PowerLevel("Low", watts=10)]

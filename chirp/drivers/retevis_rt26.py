@@ -345,7 +345,6 @@ class RT26Radio(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "RT26"
     BAUD_RATE = 4800
-    NEEDS_COMPAT_SERIAL = False
 
     _ranges = [
                (0x0000, 0x0190, 0x10),

@@ -304,7 +304,6 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
     MODEL = "HG-UV98"
     IDENT = b"P3107\0\0\0"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
 
     _upper = MAX_CHANNELS
 

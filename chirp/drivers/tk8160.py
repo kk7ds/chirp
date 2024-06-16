@@ -272,7 +272,6 @@ def do_upload(radio):
 class TKx160Radio(chirp_common.CloneModeRadio):
     VENDOR = 'Kenwood'
     FORMATS = [directory.register_format('Kenwood KPG-99D', '*.dat')]
-    NEEDS_COMPAT_SERIAL = False
     _memsize = 0x4000
 
     def sync_in(self):

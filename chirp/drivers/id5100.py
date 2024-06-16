@@ -83,7 +83,6 @@ MULTS = [5000, 6250, 25000 / 3.0]
 class ID4100Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     VENDOR = 'Icom'
     MODEL = 'ID-4100'
-    NEEDS_COMPAT_SERIAL = False
 
     _model = b'\x38\x66\x00\x01'
     _endframe = 'Icom Inc.8F'

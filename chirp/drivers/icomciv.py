@@ -384,7 +384,6 @@ class BankSpecialChannel(SpecialChannel):
 class IcomCIVRadio(icf.IcomLiveRadio):
     """Base class for ICOM CIV-based radios"""
     BAUD_RATE = 19200
-    NEEDS_COMPAT_SERIAL = False
     MODEL = "CIV Radio"
     # RTS is interpreted as "transmit now" on some interface boxes for these
     WANTS_RTS = False

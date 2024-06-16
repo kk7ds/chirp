@@ -311,7 +311,6 @@ class RadioddityR2(chirp_common.CloneModeRadio):
     VENDOR = "Radioddity"
     MODEL = "R2"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
 
     # definitions on how to read StartAddr EndAddr BlockZize
     _ranges = [

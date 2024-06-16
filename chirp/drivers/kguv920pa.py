@@ -525,7 +525,6 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=5),
                     chirp_common.PowerLevel("M", watts=20),
                     chirp_common.PowerLevel("H", watts=50)]
-    NEEDS_COMPAT_SERIAL = False
 
     def _write_record(self, cmd, payload=None):
         _length = 0
