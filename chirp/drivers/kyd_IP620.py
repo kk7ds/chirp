@@ -163,6 +163,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
     VENDOR = "KYD"
     MODEL = "IP-620"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = True
 
     _ranges = [
                (0x0000, 0x2000),

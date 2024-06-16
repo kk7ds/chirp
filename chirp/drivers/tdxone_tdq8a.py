@@ -427,6 +427,7 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
     """TDXone TD-Q8A Radio"""
     VENDOR = "TDXone"
     MODEL = "TD-Q8A"
+    NEEDS_COMPAT_SERIAL = True
 
     _model = b'TD-Q8A'
     _magic = [MSTRING_TDQ8A, MSTRING_TDQ8A, ]

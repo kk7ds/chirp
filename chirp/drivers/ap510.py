@@ -349,6 +349,7 @@ class AP510Radio(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Sainsonic"
     MODEL = "AP510"
+    NEEDS_COMPAT_SERIAL = True
 
     _model = b"AVRT5"
     mem_upper_limit = 0

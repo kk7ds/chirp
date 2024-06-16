@@ -538,7 +538,7 @@ class TYTTH7800Base(chirp_common.Radio):
 class TYTTH7800File(TYTTH7800Base, chirp_common.FileBackedRadio):
     """TYT TH-7800 .dat file"""
     MODEL = "TH-7800 File"
-
+    NEEDS_COMPAT_SERIAL = True
     FILE_EXTENSION = "dat"
 
     _memsize = 69632

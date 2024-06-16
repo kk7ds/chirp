@@ -286,6 +286,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
     VENDOR = "Feidaxin"
     MODEL = "FD-268 & alike Radios"
     BAUD_RATE = 9600
+    NEEDS_COMPAT_SERIAL = True
     _memsize = MEM_SIZE
     _upper = 99
     _VFO_DEFAULT = 0

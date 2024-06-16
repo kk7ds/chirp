@@ -561,6 +561,7 @@ class TS590Radio(chirp_common.CloneModeRadio):
     """Kenwood TS-590"""
     VENDOR = "Kenwood"
     MODEL = "TS-590SG_CloneMode"
+    NEEDS_COMPAT_SERIAL = True
     ID = "ID023;"
     SG = True
     # Settings read/write cmd sequence list
