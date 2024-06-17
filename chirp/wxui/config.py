@@ -15,10 +15,13 @@
 
 import base64
 import binascii
+import logging
 
 from chirp import platform
 from configparser import ConfigParser
 import os
+
+LOG = logging.getLogger(__name__)
 
 
 class ChirpConfig:
@@ -32,11 +35,16 @@ class ChirpConfig:
 
         cfg = os.path.join(basepath, name)
         if os.path.exists(cfg):
-            self.__config.read(cfg)
+            try:
+                self.__config.read(cfg, encoding='utf-8-sig')
+            except UnicodeDecodeError:
+                LOG.warning('Failed to read config as UTF-8; '
+                            'falling back to default encoding')
+                self.__config.read(cfg)
 
     def save(self):
         cfg = os.path.join(self.__basepath, self.__name)
-        with open(cfg, "w") as cfg_file:
+        with open(cfg, "w", encoding='utf-8') as cfg_file:
             self.__config.write(cfg_file)
 
     def get(self, key, section, raw=False):
