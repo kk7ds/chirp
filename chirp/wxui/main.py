@@ -40,6 +40,7 @@ from chirp import platform as chirp_platform
 from chirp.sources import base
 from chirp.wxui import config
 from chirp.wxui import bankedit
+from chirp.wxui import bugreport
 from chirp.wxui import common
 from chirp.wxui import clone
 from chirp.wxui import developer
@@ -961,6 +962,13 @@ class ChirpMain(wx.Frame):
                                 _('Load module from issue...'))
         self.Bind(wx.EVT_MENU, self._menu_load_from_issue, lmfi_menu)
         help_menu.Append(lmfi_menu)
+
+        bug_report = wx.MenuItem(help_menu, wx.NewId(),
+                                 _('Send details for a bug...'))
+        self.Bind(wx.EVT_MENU,
+                  functools.partial(bugreport.BugReportDialog.do_report, self),
+                  bug_report)
+        help_menu.Append(bug_report)
 
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, wx.GetStockLabel(wx.ID_FILE))

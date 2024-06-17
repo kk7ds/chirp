@@ -182,6 +182,9 @@ def get_radio_by_image(image_file):
                     MODEL = meta_model
                     VARIANT = metadata.get('variant')
 
+                    def __repr__(self):
+                        return repr(self._orig_rclass)
+
                 return DynamicRadioAlias(image_file)
 
     if metadata:
