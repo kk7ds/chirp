@@ -2,7 +2,10 @@ import os
 import tempfile
 import unittest
 
+import ddt
+
 from chirp import chirp_common
+from chirp import directory
 from chirp.drivers import generic_csv
 
 CHIRP_CSV_LEGACY = (
@@ -197,3 +200,15 @@ class TestCSV(unittest.TestCase):
         # its internal state and the following assertion will fail.
         m.name = 'bar'
         self.assertEqual('foo', radio.get_memory(0).name)
+
+
+@ddt.ddt
+class RTCSV(unittest.TestCase):
+    def _test_open(self, sample):
+        sample_fn = os.path.join(os.path.dirname(__file__), sample)
+        radio = directory.get_radio_by_image(sample_fn)
+        self.assertIsInstance(radio, generic_csv.RTCSVRadio)
+
+    @ddt.data('ft3d', 'ftm400', 'ftm500')
+    def test_sample_file(self, arg):
+        self._test_open('rtcsv_%s.csv' % arg)
