@@ -23,6 +23,7 @@ import requests
 import wx
 
 from chirp import CHIRP_VERSION
+from chirp import chirp_common
 from chirp import logger
 from chirp import platform
 from chirp.wxui import common
@@ -161,7 +162,7 @@ class BugReportDialog(wx.Dialog):
         manifest['config.txt'] = '\n'.join(clean_lines)
 
         editor = self.GetParent().current_editorset
-        if editor:
+        if editor and isinstance(editor._radio, chirp_common.FileBackedRadio):
             tmpf = tempfile.mktemp('-capture.img', 'chirp')
             LOG.debug('Capturing focused open file %s from %s',
                       editor.filename, editor._radio)
