@@ -1308,9 +1308,16 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 mem.offset = want_offset
 
         if defaults.step_khz in features.valid_tuning_steps:
-            LOG.debug(
-                'Chose default step %s from bandplan' % defaults.step_khz)
             want_tuning_step = defaults.step_khz
+            if mem.freq % (want_tuning_step * 1000):
+                want_tuning_step = chirp_common.required_step(mem.freq)
+                LOG.debug('Bandplan step %s not suitable for %s, choosing %s',
+                          defaults.step_khz,
+                          chirp_common.format_freq(mem.freq),
+                          want_tuning_step)
+            else:
+                LOG.debug(
+                    'Chose default step %s from bandplan' % defaults.step_khz)
         else:
             want_tuning_step = 5.0
             try:
