@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-17 16:41-0700\n"
-"PO-Revision-Date: 2024-06-05 23:57-0400\n"
+"PO-Revision-Date: 2024-06-17 22:57-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1265,7 +1265,7 @@ msgstr "Borrar"
 
 #: ../wxui/bugreport.py:255
 msgid "Details successfully uploaded"
-msgstr ""
+msgstr "Detalles cargados exitosamente"
 
 #: ../wxui/main.py:925
 msgid "Developer Mode"
@@ -1453,9 +1453,9 @@ msgid "Failed to parse result"
 msgstr "Fallo al analizar el resultado"
 
 #: ../wxui/bugreport.py:261
-#, fuzzy, python-format
+#, python-format
 msgid "Failed to upload details: %s"
-msgstr "Fallo al cargar navegador de radio"
+msgstr "Fallo al cargar detalles: %s"
 
 #: ../wxui/radioinfo.py:45
 msgid "Features"
@@ -1903,14 +1903,12 @@ msgid "Invalid value: %r"
 msgstr "Valor inválido: %r"
 
 #: ../wxui/bugreport.py:79
-#, fuzzy
 msgid "Issue Number"
-msgstr "Número de problema:"
+msgstr "Número del problema"
 
 #: ../wxui/bugreport.py:116
-#, fuzzy
 msgid "Issue must be a number!"
-msgstr "Número de problema:"
+msgstr "¡El problema debe ser un número!"
 
 #: ../wxui/developer.py:577
 msgid "Issue number:"
@@ -2107,9 +2105,8 @@ msgid "No results!"
 msgstr "¡No hay resultados!"
 
 #: ../wxui/bugreport.py:82
-#, fuzzy
 msgid "Notes"
-msgstr "Nota:"
+msgstr "Notas"
 
 #: ../wxui/query_sources.py:41 ../wxui/memedit.py:954
 msgid "Number"
@@ -2207,7 +2204,7 @@ msgstr "Analizando"
 
 #: ../wxui/bugreport.py:73
 msgid "Password"
-msgstr ""
+msgstr "Contraseña"
 
 #: ../wxui/memedit.py:1702
 msgid "Paste"
@@ -2503,11 +2500,11 @@ msgstr "Seleccionar plan de banda"
 
 #: ../wxui/bugreport.py:43
 msgid "Send bug details"
-msgstr ""
+msgstr "Enviar detalles del error"
 
 #: ../wxui/main.py:967
 msgid "Send details for a bug..."
-msgstr ""
+msgstr "Enviar detalles para un error..."
 
 #: ../wxui/query_sources.py:287
 msgid "Service"
@@ -2661,6 +2658,10 @@ msgid ""
 "recomended that you quit now and run CHIRP non-interactively (or with stdin "
 "redirected to /dev/null)"
 msgstr ""
+"El archivo de registro de depuración no está disponible cuando CHIRP se "
+"ejecuta interactivamente desde la línea de comandos. Por lo tanto, esta "
+"herramienta no cargará lo que esperas. Se recomienda que salgas ahora y "
+"ejecutes CHIRP de forma no interactiva (o con stdin redirigido a /dev/null)"
 
 #: ../wxui/main.py:1340
 #, python-format
@@ -2777,6 +2778,8 @@ msgid ""
 "This is the ticket number for an already-created issue on the chirpmyradio."
 "com website"
 msgstr ""
+"Este es el número de boleto para un problema ya creado en el sitio web "
+"chirpmyradio.com"
 
 #: ../wxui/memedit.py:1731
 msgid "This memory and shift all up"
@@ -2834,6 +2837,12 @@ msgid ""
 "config file, and any open image files will be uploaded. An attempt will be "
 "made to redact any personal information before it leaves your system."
 msgstr ""
+"Esta herramienta cargará detalles acerca de tu sistema a un problema "
+"existente en el rastreador de CHIRP. Esta requiere tu nombre de usuario y "
+"contraseña para chirpmyradio.com para poder trabajar. Información de tu "
+"sistema, incluyendo tu registro de depuración, archivo de configuración, y "
+"cualquier archivo de imagen abierto serán cargados. Se hará un intento para "
+"redactar cualquier información personal antes de que esta deje tu sistema."
 
 #: ../wxui/developer.py:575
 msgid "This will load a module from a website issue"
@@ -2984,11 +2993,11 @@ msgstr "Usar fuente más grande"
 
 #: ../wxui/bugreport.py:68
 msgid "Username"
-msgstr ""
+msgstr "Nombre de usuario"
 
 #: ../wxui/bugreport.py:124
 msgid "Username and password are required!"
-msgstr ""
+msgstr "¡Se requieren nombre de usuario y contraseña!"
 
 #: ../wxui/developer.py:256
 #, python-format
