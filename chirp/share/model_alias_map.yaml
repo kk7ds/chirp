@@ -339,6 +339,8 @@ Quansheng:
 - alt: UV-K5
   model: UV-K5(8)
 - alt: UV-K5
+  model: UV-K5(99)
+- alt: UV-K5
   model: UV-5R Plus
 Powerful:
 - alt: Quansheng UV-K5
