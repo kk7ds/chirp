@@ -543,8 +543,12 @@ class ChirpMain(wx.Frame):
         if isinstance(eset, ChirpEditorSet):
             return eset
 
+    def enable_bugreport(self):
+        self.bug_report_item.Enable(True)
+
     @common.error_proof(errors.ImageDetectFailed, FileNotFoundError)
     def open_file(self, filename, exists=True, select=True, rclass=None):
+        self.enable_bugreport()
         CSVRadio = directory.get_radio('Generic_CSV')
         label = _('Driver messages')
         with common.expose_logs(logging.WARNING, 'chirp.drivers', label):
@@ -963,12 +967,14 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_load_from_issue, lmfi_menu)
         help_menu.Append(lmfi_menu)
 
-        bug_report = wx.MenuItem(help_menu, wx.NewId(),
-                                 _('Send details for a bug...'))
+        self.bug_report_item = wx.MenuItem(
+            help_menu, wx.NewId(),
+            _('Report or update a bug...'))
+        self.bug_report_item.Enable(False)
         self.Bind(wx.EVT_MENU,
-                  functools.partial(bugreport.BugReportDialog.do_report, self),
-                  bug_report)
-        help_menu.Append(bug_report)
+                  functools.partial(bugreport.do_bugreport, self),
+                  self.bug_report_item)
+        help_menu.Append(self.bug_report_item)
 
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, wx.GetStockLabel(wx.ID_FILE))
@@ -1550,6 +1556,7 @@ class ChirpMain(wx.Frame):
             LOG.exception('Failed to prune: %s' % e)
 
     def _menu_download(self, event):
+        self.enable_bugreport()
         with clone.ChirpDownloadDialog(self) as d:
             d.Centre()
             if d.ShowModal() == wx.ID_OK:
@@ -1834,6 +1841,7 @@ class ChirpMain(wx.Frame):
                 CONF.set_bool(shortname, shortname == selected, 'bandplan')
 
     def _do_network_query(self, query_cls):
+        self.enable_bugreport()
         d = query_cls(self, title=_('Query %s') % query_cls.NAME)
         r = d.ShowModal()
         if r == wx.ID_OK:
