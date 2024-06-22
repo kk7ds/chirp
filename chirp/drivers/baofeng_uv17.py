@@ -179,6 +179,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
                 (b"\x06", 1)]
     _fingerprint = b"\x06" + b"UV15999"
     _scode_offset = 1
+    _mem_positions = ()
 
     _tri_band = False
     POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
