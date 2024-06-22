@@ -55,6 +55,7 @@
 | <a name="Baofeng_BF-A58"></a> Baofeng_BF-A58 | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | **1.46%** |
 | <a name="Baofeng_BF-A58S"></a> Baofeng_BF-A58S | [@KC9HI](https://github.com/KC9HI) | 3-Dec-2022 | Yes | 0.59% |
 | <a name="Baofeng_BF-F8HP"></a> Baofeng_BF-F8HP | [@KC9HI](https://github.com/KC9HI) | 18-Nov-2022 | Yes | **6.33%** |
+| <a name="Baofeng_BF-F8HP-PRO"></a> Baofeng_BF-F8HP-PRO |  |  | Yes |  |
 | <a name="Baofeng_BF-M4"></a> Baofeng_BF-M4 | [@cetinajero](https://github.com/cetinajero) | 8-May-2023 | Yes |  |
 | <a name="Baofeng_BF-T1"></a> Baofeng_BF-T1 | [@KC9HI](https://github.com/KC9HI) | 10-Dec-2022 | Yes | 0.76% |
 | <a name="Baofeng_BF-T20"></a> Baofeng_BF-T20 | [@KC9HI](https://github.com/KC9HI) | 15-Dec-2023 | Yes |  |
@@ -467,11 +468,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 464
+**Drivers:** 465
 
-**Tested:** 87% (406/58) (93% of usage stats)
+**Tested:** 87% (406/59) (93% of usage stats)
 
-**Byte clean:** 91% (425/39)
+**Byte clean:** 91% (426/39)
 
 ## Meaning of this testing
 
