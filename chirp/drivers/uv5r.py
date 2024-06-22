@@ -561,13 +561,15 @@ def _ident_radio(radio):
 def _do_download(radio):
     data = _ident_radio(radio)
 
-    if radio.MODEL == "BJ-UV55":
+    if not radio._aux_block:
+        _read_block(radio, 0x0000, 0x40, True)
+    elif radio.MODEL == "BJ-UV55":
         radio_version = _get_radio_firmware_version(radio)
     else:
         radio_version, has_dropped_byte = \
             _get_radio_firmware_version(radio)
-    LOG.info("Radio Version is %s" % repr(radio_version))
-    LOG.info("Radio has dropped byte issue: %s" % repr(has_dropped_byte))
+        LOG.info("Radio Version is %s" % repr(radio_version))
+        LOG.info("Radio has dropped byte issue: %s" % repr(has_dropped_byte))
 
     # Main block
     LOG.debug("downloading main block...")
@@ -619,8 +621,16 @@ def _do_upload(radio):
         if image_upper_band != radio_upper_band:
             raise errors.RadioError("Image not supported by radio")
 
-    image_version = _firmware_version_from_image(radio)
-    if radio.MODEL == "BJ-UV55":
+    if radio._aux_block:
+        image_version = _firmware_version_from_image(radio)
+    if not radio._aux_block:
+        _ranges_main_default = [
+            (0x0008, 0x0CF8),  # skip 0x0CF8 - 0x0D08
+            (0x0D08, 0x0DF8),  # skip 0x0DF8 - 0x0E08
+            (0x0E08, 0x1808),
+            ]
+        _ranges_aux_default = []
+    elif radio.MODEL == "BJ-UV55":
         radio_version = _get_radio_firmware_version(radio)
 
         # default ranges
@@ -710,8 +720,8 @@ def _do_upload(radio):
                 (0x1FC0, 0x1FD0),  # new band limits
                 ]
 
-    LOG.info("Image Version is %s" % repr(image_version))
-    LOG.info("Radio Version is %s" % repr(radio_version))
+        LOG.info("Image Version is %s" % repr(image_version))
+        LOG.info("Radio Version is %s" % repr(radio_version))
 
     if radio._all_range_flag:
         # user enabled 'Range Override Parameter', upload everything
@@ -735,11 +745,12 @@ def _do_upload(radio):
         LOG.info("Old image, not writing aux block")
         return  # Old image, no aux block
 
-    # Auxiliary block at radio address 0x1EC0, our offset 0x1808
-    for start_addr, end_addr in ranges_aux:
-        for i in range(start_addr, end_addr, 0x10):
-            addr = 0x1808 + (i - 0x1EC0)
-            _send_block(radio, i, mmap[addr:addr + 0x10])
+    if radio._aux_block:
+        # Auxiliary block at radio address 0x1EC0, our offset 0x1808
+        for start_addr, end_addr in ranges_aux:
+            for i in range(start_addr, end_addr, 0x10):
+                addr = 0x1808 + (i - 0x1EC0)
+                _send_block(radio, i, mmap[addr:addr + 0x10])
 
     if radio._all_range_flag:
         radio._all_range_flag = False
