@@ -521,13 +521,18 @@ class UV17Pro(bfc.BaofengCommonHT):
 
             # Signal Code Name
             _nameobj = self._memobj.pttid[i]
-            rs = RadioSetting("pttid/%i.name" % i,
-                              "Signal Code %i Name" % (i + 1),
-                              RadioSettingValueString(
-                                  0, 10, self._filterCodeName(_nameobj.name),
-                                  False, CHARSET_GB2312))
-            rs.set_apply_callback(self.apply_codename, _nameobj)
-            dtmfe.append(rs)
+            try:
+                rs = RadioSetting(
+                    "pttid/%i.name" % i,
+                    "Signal Code %i Name" % (i + 1),
+                    RadioSettingValueString(
+                        0, 10, self._filterCodeName(_nameobj.name),
+                        False, CHARSET_GB2312))
+                rs.set_apply_callback(self.apply_codename, _nameobj)
+                dtmfe.append(rs)
+            except AttributeError:
+                # UV17, et al do not have pttid.name
+                pass
 
         _codeobj = self._memobj.ani.code
         _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
