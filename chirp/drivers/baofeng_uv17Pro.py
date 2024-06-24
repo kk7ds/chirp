@@ -580,35 +580,6 @@ class UV17Pro(bfc.BaofengCommonHT):
                                                     val]))
         dtmfe.append(rs)
 
-    def get_settings_f8hp_pro_dtmf(self, dtmfe, _mem):
-        rs = RadioSetting("ani.separatecode", "Separate Code",
-                          RadioSettingValueList(
-                            self.LIST_SEPARATE_CODE,
-                            self.LIST_SEPARATE_CODE[_mem.ani.separatecode]))
-        dtmfe.append(rs)
-
-        rs = RadioSetting("ani.groupcallcode", "Group Call Code",
-                          RadioSettingValueList(
-                            self.LIST_GROUP_CALL_CODE,
-                            self.LIST_GROUP_CALL_CODE[_mem.ani.groupcallcode]))
-        dtmfe.append(rs)
-
-        _codeobj = self._memobj.upcode.code
-        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
-        val = RadioSettingValueString(0, 16, _code, False)
-        val.set_charset(DTMF_CHARS)
-        rs = RadioSetting("upcode.code", "Up Code", val)
-        rs.set_apply_callback(self.apply_code, self._memobj.upcode, 16)
-        dtmfe.append(rs)
-
-        _codeobj = self._memobj.downcode.code
-        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
-        val = RadioSettingValueString(0, 16, _code, False)
-        val.set_charset(DTMF_CHARS)
-        rs = RadioSetting("downcode.code", "Down Code", val)
-        rs.set_apply_callback(self.apply_code, self._memobj.downcode, 16)
-        dtmfe.append(rs)
-
     def get_settings_common_basic(self, basic, _mem):
         if _mem.settings.squelch >= len(self.SQUELCH_LIST):
             val = 0x00
@@ -867,58 +838,6 @@ class UV17Pro(bfc.BaofengCommonHT):
                           RadioSettingValueBoolean(_mem.settings.fmenable))
         basic.append(rs)
 
-    def get_settings_f8hp_pro_basic(self, basic, _mem):
-
-        # ############ #
-        # BF-F8HP Pro  #
-        # ############ #
-
-        rs = RadioSetting("settings.dispani", "Display ANI",
-                          RadioSettingValueBoolean(_mem.settings.dispani))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.pontime", "Power on Time",
-                          RadioSettingValueList(
-                            self.LIST_POWER_ON_TIME,
-                            self.LIST_POWER_ON_TIME[_mem.settings.pontime]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.gpsunits", "GPS Speed Units",
-                          RadioSettingValueList(
-                            self.LIST_GPS_UNITS,
-                            self.LIST_GPS_UNITS[_mem.settings.gpsunits]))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.inputdtmf", "Input DTMF",
-                          RadioSettingValueBoolean(_mem.settings.inputdtmf))
-        basic.append(rs)
-
-        rs = RadioSetting("settings.singlewatch", "Single Watch",
-                          RadioSettingValueBoolean(_mem.settings.singlewatch))
-        basic.append(rs)
-
-        def _filterStationID(name):
-            fname = b""
-            for char in name:
-                if ord(str(char)) in [0, 255]:
-                    break
-                fname += int(char).to_bytes(1, 'big')
-            return fname.decode('gb2312').strip()
-
-        def apply_stationid(setting, obj):
-            stationid = (str(setting.value).encode('gb2312')[:8].ljust(8,
-                         b"\xFF"))
-            obj.stationid = stationid
-
-        _nameobj = self._memobj.settings
-        rs = RadioSetting("settings.stationid",
-                          "StationID",
-                          RadioSettingValueString(
-                              0, 8, _filterStationID(_nameobj.stationid),
-                              False, CHARSET_GB2312))
-        rs.set_apply_callback(apply_stationid, _nameobj)
-        basic.append(rs)
-
     def get_settings_common_workmode(self, workmode, _mem):
 
         vfoA = RadioSettingGroup("vfoA", "VFO A")
@@ -1105,8 +1024,6 @@ class UV17Pro(bfc.BaofengCommonHT):
         basic = RadioSettingGroup("basic", "Basic Settings")
         self.get_settings_common_basic(basic, _mem)
         self.get_settings_pro_basic(basic, _mem)
-        if self.MODEL == "BF-F8HP_Pro":
-            self.get_settings_f8hp_pro_basic(basic, _mem)
         supported.append(basic)  # add basic menu
 
         if self._has_workmode_support:
@@ -1117,8 +1034,6 @@ class UV17Pro(bfc.BaofengCommonHT):
         dtmfe = RadioSettingGroup("dtmfe", "DTMF Encode Settings")
         self.get_settings_common_dtmf(dtmfe, _mem)
         self.get_settings_pro_dtmf(dtmfe, _mem)
-        if self.MODEL == "BF-F8HP_Pro":
-            self.get_settings_f8hp_pro_dtmf(dtmfe, _mem)
         supported.append(dtmfe)  # add dtmfe menu
 
         if self._has_support_for_banknames:
@@ -1568,3 +1483,83 @@ class F8HPPro(UV17Pro):
 
     MEM_TOTAL = 0x8440
     _mem_positions = (0x80C0, 0x80E0, 0x8380)
+
+    def get_settings_pro_dtmf(self, dtmfe, _mem):
+        super().get_settings_pro_dtmf(dtmfe, _mem)
+
+        rs = RadioSetting("ani.separatecode", "Separate Code",
+                          RadioSettingValueList(
+                            self.LIST_SEPARATE_CODE,
+                            self.LIST_SEPARATE_CODE[_mem.ani.separatecode]))
+        dtmfe.append(rs)
+
+        rs = RadioSetting("ani.groupcallcode", "Group Call Code",
+                          RadioSettingValueList(
+                            self.LIST_GROUP_CALL_CODE,
+                            self.LIST_GROUP_CALL_CODE[_mem.ani.groupcallcode]))
+        dtmfe.append(rs)
+
+        _codeobj = self._memobj.upcode.code
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 16, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("upcode.code", "Up Code", val)
+        rs.set_apply_callback(self.apply_code, self._memobj.upcode, 16)
+        dtmfe.append(rs)
+
+        _codeobj = self._memobj.downcode.code
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
+        val = RadioSettingValueString(0, 16, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("downcode.code", "Down Code", val)
+        rs.set_apply_callback(self.apply_code, self._memobj.downcode, 16)
+        dtmfe.append(rs)
+
+    def get_settings_pro_basic(self, basic, _mem):
+        super().get_settings_pro_basic(basic, _mem)
+
+        rs = RadioSetting("settings.dispani", "Display ANI",
+                          RadioSettingValueBoolean(_mem.settings.dispani))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.pontime", "Power on Time",
+                          RadioSettingValueList(
+                            self.LIST_POWER_ON_TIME,
+                            self.LIST_POWER_ON_TIME[_mem.settings.pontime]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.gpsunits", "GPS Speed Units",
+                          RadioSettingValueList(
+                            self.LIST_GPS_UNITS,
+                            self.LIST_GPS_UNITS[_mem.settings.gpsunits]))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.inputdtmf", "Input DTMF",
+                          RadioSettingValueBoolean(_mem.settings.inputdtmf))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.singlewatch", "Single Watch",
+                          RadioSettingValueBoolean(_mem.settings.singlewatch))
+        basic.append(rs)
+
+        def _filterStationID(name):
+            fname = b""
+            for char in name:
+                if ord(str(char)) in [0, 255]:
+                    break
+                fname += int(char).to_bytes(1, 'big')
+            return fname.decode('gb2312').strip()
+
+        def apply_stationid(setting, obj):
+            stationid = (str(setting.value).encode('gb2312')[:8].ljust(8,
+                         b"\xFF"))
+            obj.stationid = stationid
+
+        _nameobj = self._memobj.settings
+        rs = RadioSetting("settings.stationid",
+                          "StationID",
+                          RadioSettingValueString(
+                              0, 8, _filterStationID(_nameobj.stationid),
+                              False, CHARSET_GB2312))
+        rs.set_apply_callback(apply_stationid, _nameobj)
+        basic.append(rs)
