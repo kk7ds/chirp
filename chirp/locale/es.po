@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-25 14:59-0700\n"
-"PO-Revision-Date: 2024-06-17 22:57-0400\n"
+"PO-Revision-Date: 2024-06-26 00:31-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -71,15 +71,15 @@ msgstr "%s no ha sido guardado. ¿Guardar antes de cerrar?"
 
 #: ../wxui/bugreport.py:424
 msgid "(Describe what actually happened instead)"
-msgstr ""
+msgstr "(Describe lo que ocurrió en cambio)"
 
 #: ../wxui/bugreport.py:422
 msgid "(Describe what you expected to happen)"
-msgstr ""
+msgstr "(Describe lo que esperabas que ocurriera)"
 
 #: ../wxui/bugreport.py:420
 msgid "(Describe what you were doing)"
-msgstr ""
+msgstr "(Describe lo que estabas haciendo)"
 
 #: ../wxui/radioinfo.py:50
 msgid "(none)"
@@ -1076,18 +1076,16 @@ msgid "Browser"
 msgstr "Navegador"
 
 #: ../wxui/bugreport.py:390
-#, fuzzy
 msgid "Bug number not found"
-msgstr "Número de problema:"
+msgstr "Número de error no encontrado"
 
 #: ../wxui/bugreport.py:367
-#, fuzzy
 msgid "Bug number:"
-msgstr "Número de problema:"
+msgstr "Número de error:"
 
 #: ../wxui/bugreport.py:323
 msgid "Bug subject:"
-msgstr ""
+msgstr "Asunto del error:"
 
 #: ../wxui/developer.py:415
 msgid "Building Radio Browser"
@@ -1290,9 +1288,8 @@ msgid "Delete"
 msgstr "Borrar"
 
 #: ../wxui/bugreport.py:464
-#, fuzzy
 msgid "Detailed information"
-msgstr "Información del controlador"
+msgstr "Información detallada"
 
 #: ../wxui/main.py:929
 msgid "Developer Mode"
@@ -1425,26 +1422,33 @@ msgid ""
 "Enter details about this update. Be descriptive about what you were doing, "
 "what you expected to happen, and what actually happened."
 msgstr ""
+"Ingresa detalles sobre esta actualización. Se descriptivo sobre lo que "
+"estabas haciendo, lo que esperabas que ocurriera, y lo que realmente ocurrió."
 
 #: ../wxui/bugreport.py:310
 msgid ""
 "Enter information about the bug including a short but meaningful subject and "
 "information about the radio model (if applicable) in question."
 msgstr ""
+"Ingresa información sobre el error incluyendo un asunto breve pero "
+"significativo e información sobre el modelo de radio (si es aplicable) en "
+"cuestión."
 
 #: ../wxui/bugreport.py:412
 msgid "Enter information to add to the bug here"
-msgstr ""
+msgstr "Ingresa la información para agregar al error aquí"
 
 #: ../wxui/bugreport.py:358
 msgid "Enter the bug number that should be updated"
-msgstr ""
+msgstr "Ingresa el numero de error que debe ser actualizado"
 
 #: ../wxui/bugreport.py:188
 msgid ""
 "Enter your username and password for chirpmyradio.com. If you do not have an "
 "account click below to create one before proceeding."
 msgstr ""
+"Ingresar tu nombre de usuario y contraseña para chirpmyradio.com. Si no "
+"tienes una cuenta cliquea debajo para crear una antes de proceder."
 
 #: ../wxui/common.py:330
 #, python-format
@@ -1494,7 +1498,7 @@ msgid ""
 "required."
 msgstr ""
 "Base de datos de repetidores GRATUITA, la cual proporciona la\n"
-"información más actualizada sobre de repetidores en Europa. No requiere\n"
+"información más actualizada sobre repetidores en Europa. No requiere\n"
 "cuenta."
 
 #: ../wxui/developer.py:423
@@ -1506,9 +1510,8 @@ msgid "Failed to parse result"
 msgstr "Fallo al analizar el resultado"
 
 #: ../wxui/bugreport.py:592
-#, fuzzy
 msgid "Failed to send bug report:"
-msgstr "Fallo al analizar el resultado"
+msgstr "Fallo al enviar el reporte de error:"
 
 #: ../wxui/radioinfo.py:45
 msgid "Features"
@@ -1516,7 +1519,7 @@ msgstr "Caracteristicas"
 
 #: ../wxui/bugreport.py:152
 msgid "File a new bug"
-msgstr ""
+msgstr "Archivar un nuevo error"
 
 #: ../wxui/main.py:558
 #, python-format
@@ -1529,9 +1532,8 @@ msgid "Files"
 msgstr "Archivos"
 
 #: ../wxui/bugreport.py:462
-#, fuzzy
 msgid "Files:"
-msgstr "Archivos"
+msgstr "Archivos:"
 
 #: ../wxui/query_sources.py:319
 msgid "Filter"
@@ -2053,7 +2055,7 @@ msgstr "Cargando ajustes"
 
 #: ../wxui/bugreport.py:282
 msgid "Login failed: Check your username and password"
-msgstr ""
+msgstr "Inicio de sesión fallido: Comprueba tu nombre de usuario y contraseña"
 
 #: ../drivers/uvk5.py:1827
 msgid "Logo string 1 (12 characters)"
@@ -2406,7 +2408,7 @@ msgstr "Información de radio"
 
 #: ../wxui/bugreport.py:331
 msgid "Radio model:"
-msgstr ""
+msgstr "Modelo de radio:"
 
 #: ../drivers/ft817.py:363
 msgid ""
@@ -2473,12 +2475,12 @@ msgstr ""
 
 #: ../wxui/main.py:972
 msgid "Report or update a bug..."
-msgstr ""
+msgstr "Reportar o actualizar un error..."
 
 #: ../wxui/bugreport.py:459
-#, fuzzy, python-format
+#, python-format
 msgid "Reporting a new bug: %r"
-msgstr "Reportes habilitados"
+msgstr "Reportando un nuevo error: %r"
 
 #: ../wxui/main.py:938
 msgid "Reporting enabled"
@@ -2650,7 +2652,7 @@ msgstr "Éxito"
 
 #: ../wxui/bugreport.py:595
 msgid "Successfully sent bug report:"
-msgstr ""
+msgstr "Reporte de error enviado exitosamente:"
 
 #: ../wxui/memedit.py:136
 msgid "TX-RX DTCS polarity (normal or reversed)"
@@ -2728,7 +2730,7 @@ msgstr ""
 
 #: ../wxui/bugreport.py:444
 msgid "The following information will be submitted:"
-msgstr ""
+msgstr "La siguiente información será enviada:"
 
 #: ../wxui/main.py:1346
 #, python-format
@@ -2904,12 +2906,12 @@ msgid ""
 "config file, and any open image files will be uploaded. An attempt will be "
 "made to redact any personal information before it leaves your system."
 msgstr ""
-"Esta herramienta cargará detalles acerca de tu sistema a un problema "
-"existente en el rastreador de CHIRP. Esta requiere tu nombre de usuario y "
-"contraseña para chirpmyradio.com para poder trabajar. Información de tu "
-"sistema, incluyendo tu registro de depuración, archivo de configuración, y "
-"cualquier archivo de imagen abierto serán cargados. Se hará un intento para "
-"redactar cualquier información personal antes de que esta deje tu sistema."
+"Esta herramienta cargará detalles sobre tu sistema a un problema existente "
+"en el rastreador de CHIRP. Esta requiere tu nombre de usuario y contraseña "
+"para chirpmyradio.com para poder trabajar. Información de tu sistema, "
+"incluyendo tu registro de depuración, archivo de configuración, y cualquier "
+"archivo de imagen abierto serán cargados. Se hará un intento para redactar "
+"cualquier información personal antes de que esta deje tu sistema."
 
 #: ../wxui/developer.py:575
 msgid "This will load a module from a website issue"
@@ -3035,12 +3037,12 @@ msgstr "Modelo no soportado %r"
 
 #: ../wxui/bugreport.py:158
 msgid "Update an existing bug"
-msgstr ""
+msgstr "Actualizar un error existente"
 
 #: ../wxui/bugreport.py:461
-#, fuzzy, python-format
+#, python-format
 msgid "Updating bug %s"
-msgstr "Actualizando lista URCALL"
+msgstr "Actualizando error %s"
 
 #: ../wxui/clone.py:683
 msgid "Upload instructions"
@@ -3134,6 +3136,9 @@ msgid ""
 "number of issues you can open to avoid abuse. If you really need to open "
 "another, please do so via the website."
 msgstr ""
+"Haz abierto múltiples problemas dentro de la última semana. CHIRP limita el "
+"numero de problemas que puedes abrir para evitar abusos. Si realmente "
+"necesitas abrir otro, por favor hazlo a través del sitio web."
 
 #: ../wxui/clone.py:431
 msgid "Your cable appears to be on port:"
