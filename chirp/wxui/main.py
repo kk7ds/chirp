@@ -970,11 +970,11 @@ class ChirpMain(wx.Frame):
         self.bug_report_item = wx.MenuItem(
             help_menu, wx.NewId(),
             _('Report or update a bug...'))
-        self.bug_report_item.Enable(False)
         self.Bind(wx.EVT_MENU,
                   functools.partial(bugreport.do_bugreport, self),
                   self.bug_report_item)
         help_menu.Append(self.bug_report_item)
+        self.bug_report_item.Enable(False)
 
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, wx.GetStockLabel(wx.ID_FILE))
