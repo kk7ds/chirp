@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-25 14:59-0700\n"
-"PO-Revision-Date: 2024-06-20 13:02+0200\n"
+"POT-Creation-Date: 2024-06-27 19:04+0200\n"
+"PO-Revision-Date: 2024-06-27 19:05+0200\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
 "Language: it\n"
@@ -71,15 +71,15 @@ msgstr "%s non è stato salvato. Salvarlo prima di chiudere?"
 
 #: ../wxui/bugreport.py:424
 msgid "(Describe what actually happened instead)"
-msgstr ""
+msgstr "(Descrivi ciò che è realmente accaduto)"
 
 #: ../wxui/bugreport.py:422
 msgid "(Describe what you expected to happen)"
-msgstr ""
+msgstr "(Descrivi cosa ti aspettavi che accadesse)"
 
 #: ../wxui/bugreport.py:420
 msgid "(Describe what you were doing)"
-msgstr ""
+msgstr "(Descrivi cosa stavi facendo)"
 
 #: ../wxui/radioinfo.py:50
 msgid "(none)"
@@ -826,7 +826,7 @@ msgstr ""
 "attività.\n"
 "6. Fare clic su OK per caricare l'immagine sul dispositivo.\n"
 
-#: ../drivers/uvb5.py:287 ../drivers/wouxun.py:213 ../drivers/tg_uv2p.py:232
+#: ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:213 ../drivers/uvb5.py:287
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -843,7 +843,7 @@ msgstr ""
 "attività.\n"
 "6. Fare clic su OK per scaricare l'immagine dal dispositivo.\n"
 
-#: ../drivers/uvb5.py:295 ../drivers/wouxun.py:221 ../drivers/tg_uv2p.py:240
+#: ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:221 ../drivers/uvb5.py:295
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1047,8 +1047,8 @@ msgstr "Tutti i formati supportati|"
 msgid "Amateur"
 msgstr "Radioamatore"
 
-#: ../wxui/bugreport.py:284 ../wxui/bugreport.py:391 ../wxui/common.py:610
-#: ../wxui/common.py:637
+#: ../wxui/common.py:610 ../wxui/common.py:637 ../wxui/bugreport.py:284
+#: ../wxui/bugreport.py:391
 msgid "An error has occurred"
 msgstr "Si è verificato un errore"
 
@@ -1086,16 +1086,15 @@ msgstr "Browser"
 
 #: ../wxui/bugreport.py:390
 msgid "Bug number not found"
-msgstr ""
+msgstr "Il numero del bug non esiste"
 
 #: ../wxui/bugreport.py:367
-#, fuzzy
 msgid "Bug number:"
-msgstr "Numero:"
+msgstr "Numero del bug:"
 
 #: ../wxui/bugreport.py:323
 msgid "Bug subject:"
-msgstr ""
+msgstr "Oggetto del bug:"
 
 #: ../wxui/developer.py:415
 msgid "Building Radio Browser"
@@ -1184,11 +1183,11 @@ msgstr "Clonazione completata, controllo dei byte spuri"
 msgid "Cloning"
 msgstr "Clonazione"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft817.py:341
+#: ../drivers/ft450d.py:507 ../drivers/bj9900.py:133 ../drivers/ft817.py:341
 msgid "Cloning from radio"
 msgstr "Clonazione dalla radio"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft817.py:379
+#: ../drivers/ft450d.py:536 ../drivers/bj9900.py:165 ../drivers/ft817.py:379
 msgid "Cloning to radio"
 msgstr "Clonazione verso la radio"
 
@@ -1298,9 +1297,8 @@ msgid "Delete"
 msgstr "Elimina"
 
 #: ../wxui/bugreport.py:464
-#, fuzzy
 msgid "Detailed information"
-msgstr "Informazioni sul driver"
+msgstr "Informazioni dettagliate"
 
 #: ../wxui/main.py:929
 msgid "Developer Mode"
@@ -1433,26 +1431,33 @@ msgid ""
 "Enter details about this update. Be descriptive about what you were doing, "
 "what you expected to happen, and what actually happened."
 msgstr ""
+"Inserisci i dettagli di questo aggiornamento. Sii descrittivo su ciò che "
+"stavi facendo, su ciò che ti aspettavi accadesse e su ciò che è "
+"effettivamente accaduto."
 
 #: ../wxui/bugreport.py:310
 msgid ""
 "Enter information about the bug including a short but meaningful subject and "
 "information about the radio model (if applicable) in question."
 msgstr ""
+"Immetti le informazioni sul bug, compreso un oggetto breve ma significativo "
+"e le informazioni sul modello della radio (se applicabile) in questione."
 
 #: ../wxui/bugreport.py:412
 msgid "Enter information to add to the bug here"
-msgstr ""
+msgstr "Inserisci qui le informazioni da aggiungere al bug"
 
 #: ../wxui/bugreport.py:358
 msgid "Enter the bug number that should be updated"
-msgstr ""
+msgstr "Digita il numero del bug da aggiornare"
 
 #: ../wxui/bugreport.py:188
 msgid ""
 "Enter your username and password for chirpmyradio.com. If you do not have an "
 "account click below to create one before proceeding."
 msgstr ""
+"Inserisci il nome utente e la password di chirpmyradio.com. Se non disponi "
+"di un account, fai clic qui sotto per crearne uno prima di procedere."
 
 #: ../wxui/common.py:330
 #, python-format
@@ -1514,9 +1519,8 @@ msgid "Failed to parse result"
 msgstr "Impossibile elaborare il risultato"
 
 #: ../wxui/bugreport.py:592
-#, fuzzy
 msgid "Failed to send bug report:"
-msgstr "Impossibile elaborare il risultato"
+msgstr "Impossibile inviare la segnalazione del bug:"
 
 #: ../wxui/radioinfo.py:45
 msgid "Features"
@@ -1524,7 +1528,7 @@ msgstr "Funzionalità"
 
 #: ../wxui/bugreport.py:152
 msgid "File a new bug"
-msgstr ""
+msgstr "Segnala un nuovo bug"
 
 #: ../wxui/main.py:558
 #, python-format
@@ -1537,9 +1541,8 @@ msgid "Files"
 msgstr "File"
 
 #: ../wxui/bugreport.py:462
-#, fuzzy
 msgid "Files:"
-msgstr "File"
+msgstr "File:"
 
 #: ../wxui/query_sources.py:319
 msgid "Filter"
@@ -1627,11 +1630,11 @@ msgstr ""
 "sarà\n"
 "    l'audio del lato destro!\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
-#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:440 ../drivers/bf_t1.py:482
+#: ../drivers/bf_t1.py:482 ../drivers/mursv1.py:341
+#: ../drivers/baofeng_wp970i.py:327 ../drivers/baofeng_uv17Pro.py:440
+#: ../drivers/gmrsuv1.py:391 ../drivers/btech.py:689 ../drivers/uv6r.py:339
+#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv5x3.py:417
+#: ../drivers/gmrsv2.py:363
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1735,7 +1738,7 @@ msgstr ""
 "    l'audio del lato destro!\n"
 "6 - Accendere la radio per uscire dalla modalità clone.\n"
 
-#: ../drivers/btech.py:695 ../drivers/bf_t1.py:488
+#: ../drivers/bf_t1.py:488 ../drivers/btech.py:695
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1777,7 +1780,7 @@ msgstr ""
 "3 - Accendere la radio\n"
 "4 - Fare clic su OK per iniziare\n"
 
-#: ../drivers/vgc.py:598 ../drivers/lt725uv.py:496
+#: ../drivers/lt725uv.py:496 ../drivers/vgc.py:598
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1805,11 +1808,11 @@ msgstr ""
 "3 - Accendere la radio\n"
 "4 - Effettuare il download dei dati dalla radio\n"
 
-#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
-#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:446
+#: ../drivers/mursv1.py:347 ../drivers/baofeng_wp970i.py:333
+#: ../drivers/baofeng_uv17Pro.py:446 ../drivers/gmrsuv1.py:397
+#: ../drivers/lt725uv.py:502 ../drivers/vgc.py:604 ../drivers/uv6r.py:345
+#: ../drivers/tdxone_tdq8a.py:462 ../drivers/uv5x3.py:423
+#: ../drivers/gmrsv2.py:369
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1951,7 +1954,7 @@ msgstr "Errore interno del driver"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Il valore %(value)s non è valido (usare i gradi decimali)"
 
-#: ../wxui/query_sources.py:66 ../wxui/memedit.py:1543
+#: ../wxui/memedit.py:1543 ../wxui/query_sources.py:66
 msgid "Invalid Entry"
 msgstr "Valore non valido"
 
@@ -2062,7 +2065,7 @@ msgstr "Caricamento delle impostazioni"
 
 #: ../wxui/bugreport.py:282
 msgid "Login failed: Check your username and password"
-msgstr ""
+msgstr "Accesso non riuscito: controlla il nome utente e la password"
 
 #: ../drivers/uvk5.py:1827
 msgid "Logo string 1 (12 characters)"
@@ -2099,7 +2102,7 @@ msgstr "La memoria deve trovarsi in un banco per essere modificata"
 msgid "Memory {num} not in bank {bank}"
 msgstr "La memoria {num} non è presente nel banco {bank}"
 
-#: ../wxui/query_sources.py:532 ../wxui/memedit.py:590
+#: ../wxui/memedit.py:590 ../wxui/query_sources.py:532
 msgid "Mode"
 msgstr "Modalità"
 
@@ -2171,7 +2174,7 @@ msgstr "Nessun risultato"
 msgid "No results!"
 msgstr "Nessun risultato!"
 
-#: ../wxui/query_sources.py:41 ../wxui/memedit.py:954
+#: ../wxui/memedit.py:954 ../wxui/query_sources.py:41
 msgid "Number"
 msgstr "Numero"
 
@@ -2415,7 +2418,7 @@ msgstr "Informazioni sulla radio"
 
 #: ../wxui/bugreport.py:331
 msgid "Radio model:"
-msgstr ""
+msgstr "Modello della radio:"
 
 #: ../drivers/ft817.py:363
 msgid ""
@@ -2482,12 +2485,12 @@ msgstr ""
 
 #: ../wxui/main.py:972
 msgid "Report or update a bug..."
-msgstr ""
+msgstr "Segnala o aggiorna un bug..."
 
 #: ../wxui/bugreport.py:459
-#, fuzzy, python-format
+#, python-format
 msgid "Reporting a new bug: %r"
-msgstr "Reporting abilitato"
+msgstr "Segnalazione di un nuovo bug: %r"
 
 #: ../wxui/main.py:938
 msgid "Reporting enabled"
@@ -2657,7 +2660,7 @@ msgstr "Successo"
 
 #: ../wxui/bugreport.py:595
 msgid "Successfully sent bug report:"
-msgstr ""
+msgstr "Segnalazione del bug inviata con successo:"
 
 #: ../wxui/memedit.py:136
 msgid "TX-RX DTCS polarity (normal or reversed)"
@@ -2734,7 +2737,7 @@ msgstr ""
 
 #: ../wxui/bugreport.py:444
 msgid "The following information will be submitted:"
-msgstr ""
+msgstr "Saranno trasmesse le seguenti informazioni:"
 
 #: ../wxui/main.py:1346
 #, python-format
@@ -3044,12 +3047,12 @@ msgstr "Modello non supportato %r"
 
 #: ../wxui/bugreport.py:158
 msgid "Update an existing bug"
-msgstr ""
+msgstr "Aggiorna un bug esistente"
 
 #: ../wxui/bugreport.py:461
 #, python-format
 msgid "Updating bug %s"
-msgstr ""
+msgstr "Aggiornamento del bug %s"
 
 #: ../wxui/clone.py:683
 msgid "Upload instructions"
@@ -3143,6 +3146,9 @@ msgid ""
 "number of issues you can open to avoid abuse. If you really need to open "
 "another, please do so via the website."
 msgstr ""
+"Hai aperto più segnalazioni nell'ultima settimana. Per evitare abusi, CHIRP "
+"limita il numero di segnalazioni che è possibile aprire. Se hai davvero "
+"bisogno di aprirne un altro, fallo tramite il sito."
 
 #: ../wxui/clone.py:431
 msgid "Your cable appears to be on port:"
@@ -3172,28 +3178,3 @@ msgstr "abilitato"
 #, python-brace-format
 msgid "{bank} is full"
 msgstr "{bank} è pieno"
-
-#~ msgid "Details successfully uploaded"
-#~ msgstr "Dettagli caricati con successo"
-
-#, python-format
-#~ msgid "Failed to upload details: %s"
-#~ msgstr "Impossibile caricare i dettagli: %s"
-
-#~ msgid "Issue Number"
-#~ msgstr "Numero"
-
-#~ msgid "Issue must be a number!"
-#~ msgstr "Deve essere un numero!"
-
-#~ msgid "Notes"
-#~ msgstr "Note"
-
-#~ msgid "Send bug details"
-#~ msgstr "Invia i dettagli di un bug"
-
-#~ msgid "Send details for a bug..."
-#~ msgstr "Invia i dettagli di un bug..."
-
-#~ msgid "Username and password are required!"
-#~ msgstr "Nome utente e password sono obbligatori!"
