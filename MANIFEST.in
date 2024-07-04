@@ -1,4 +1,5 @@
 include chirp/share/*.desktop
+include chirp/share/*.metainfo.xml
 include chirp/share/*.png
 include chirp/share/*.svg
 include chirp/share/*.ico
