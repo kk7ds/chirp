@@ -1,7 +1,7 @@
 # CHIRP Project
 
 This is the official git repository for the
-__[CHIRP](https://chirp.danplanet.com)__ project.
+__[CHIRP](https://www.chirpmyradio.com)__ project.
 
 When submitting PRs, please squash commits into logical units in a fashion
 similar to what is currently expected by the project on the mailing list.
