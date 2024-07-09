@@ -55,10 +55,8 @@ struct {
       skip: 1,
       tx_tone: 2,
       tx_code: 12;
-  u8 _unk3: 1,
-     compander: 1,
-     _unk4: 1,
-     hopping: 1,
+  u8 compander: 2, // only 0b00/0b01 allowed
+     hopping: 2, // only 0b00/0b01 allowed
      scrambler: 4;
 } memory[80];
 """
