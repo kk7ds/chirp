@@ -333,6 +333,18 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
                            ))
         bcl.set_doc("Busy Channel Lockout")
 
+        fav = RadioSetting("fav", "Favorite",
+                           RadioSettingValueBoolean(
+                               False
+                           ))
+        fav.set_doc("Favorite Channel")
+
+        bell = RadioSetting("bell", "Bell",
+                            RadioSettingValueBoolean(
+                                False
+                            ))
+        bell.set_doc("Bell Alert")
+
         stby_screen = RadioSetting("stby_screen", "Standby Screen Color",
                                    RadioSettingValueList(
                                        self.SCREEN_COLOR_MAP,
@@ -357,6 +369,8 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
 
         mem.extra.append(het_mode)
         mem.extra.append(bcl)
+        mem.extra.append(fav)
+        mem.extra.append(bell)
         mem.extra.append(stby_screen)
         mem.extra.append(rx_screen)
         mem.extra.append(tx_screen)
@@ -376,6 +390,18 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
                                bool(_mem.busy_channel_lockout)
                            ))
         bcl.set_doc("Busy Channel Lockout")
+
+        fav = RadioSetting("fav", "Favorite",
+                           RadioSettingValueBoolean(
+                                bool(_mem.favorite)
+                           ))
+        fav.set_doc("Favorite Channel")
+
+        bell = RadioSetting("bell", "Bell",
+                            RadioSettingValueBoolean(
+                                bool(_mem.bell)
+                            ))
+        bell.set_doc("Bell Alert")
 
         stby_screen = RadioSetting("stby_screen", "Standby Screen Color",
                                    RadioSettingValueList(
@@ -404,6 +430,8 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
         mem.extra.append(het_mode)
         mem.extra.append(bcl)
         mem.extra.append(stby_screen)
+        mem.extra.append(fav)
+        mem.extra.append(bell)
         mem.extra.append(rx_screen)
         mem.extra.append(tx_screen)
 
@@ -417,6 +445,14 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
 
             if setting.get_name() == "bcl":
                 _mem.busy_channel_lockout = \
+                    0x01 if setting.value else 0x00
+
+            if setting.get_name() == "fav":
+                _mem.favorite = \
+                    0x01 if setting.value else 0x00
+
+            if setting.get_name() == "bell":
+                _mem.bell = \
                     0x01 if setting.value else 0x00
 
             if setting.get_name() == "stby_screen":
