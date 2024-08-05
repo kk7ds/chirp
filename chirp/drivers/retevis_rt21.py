@@ -764,6 +764,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
     _ack_1st_block = True
     _skipflags = True
     _reserved = False
+    _mask = 0x2000  # bit mask to identify DTCS tone decoding is used
     _gmrs = _frs = _pmr = False
     _echo = False
 
@@ -842,7 +843,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             return code, pol
 
         tpol = False
-        if _mem.tx_tone != 0xFFFF and _mem.tx_tone > 0x2000:
+        if _mem.tx_tone != 0xFFFF and _mem.tx_tone > self._mask:
             tcode, tpol = _get_dcs(_mem.tx_tone)
             mem.dtcs = tcode
             txmode = "DTCS"
@@ -853,7 +854,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             txmode = ""
 
         rpol = False
-        if _mem.rx_tone != 0xFFFF and _mem.rx_tone > 0x2000:
+        if _mem.rx_tone != 0xFFFF and _mem.rx_tone > self._mask:
             rcode, rpol = _get_dcs(_mem.rx_tone)
             mem.rx_dtcs = rcode
             rxmode = "DTCS"
@@ -1121,7 +1122,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
     def _set_tone(self, mem, _mem):
         def _set_dcs(code, pol):
-            val = int("%i" % code, 8) + 0x2000
+            val = int("%i" % code, 8) + self._mask
             if pol == "R":
                 val += 0x8000
             return val
@@ -1894,6 +1895,7 @@ class RB26Radio(RT21Radio):
     _ack_1st_block = False
     _skipflags = True
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _gmrs = True
 
     _ranges = [
@@ -1924,6 +1926,7 @@ class RT76Radio(RT21Radio):
     _ack_1st_block = False
     _skipflags = False
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _gmrs = True
 
     _ranges = [
@@ -2005,6 +2008,7 @@ class RB23Radio(RT21Radio):
     _ack_1st_block = False
     _skipflags = True
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _gmrs = True
 
     _ranges = [
@@ -2037,6 +2041,7 @@ class RT19Radio(RT21Radio):
     _ack_1st_block = False
     _skipflags = False
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _frs = True
 
     _ranges = [
@@ -2065,6 +2070,7 @@ class RT619Radio(RT19Radio):
                    0x100,   # memory start
                    _upper   # number of freqhops
                    )
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _frs = False
     _pmr = True
 
@@ -2092,6 +2098,7 @@ class AR63Radio(RT21Radio):
     _ack_1st_block = False
     _skipflags = True
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _gmrs = False
 
     _ranges = [
@@ -2125,6 +2132,7 @@ class RT40BRadio(RT21Radio):
     _ack_1st_block = False
     _skipflags = True
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _gmrs = True
     _echo = True
 
@@ -2156,6 +2164,7 @@ class RB28BRadio(RT21Radio):
     _ack_1st_block = False
     _skipflags = False
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _frs = True
 
     _ranges = [
@@ -2179,6 +2188,7 @@ class RB628BRadio(RB28BRadio):
     _magic = b"PHOGR\x09\xB2"
     _fingerprint = [b"P32073" + b"\x02\xFF", ]
     _upper = 16
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _frs = False
     _pmr = True
 
@@ -2203,6 +2213,7 @@ class RT86Radio(RT21Radio):
     _ack_1st_block = False
     _skipflags = True
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
 
     _ranges = [
                (0x0000, 0x01A0),
