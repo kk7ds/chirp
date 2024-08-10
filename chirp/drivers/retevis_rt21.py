@@ -176,6 +176,7 @@ struct {
   u8 channel_8[13];    //                        0070-007C
   u8 unknown_8;        //                        007D
   u8 tail;             // QT/DQT Tail(inverted)  007E
+  u8 tailmode;         // QT/DQT Tail Mode       007F
 } settings;
 
 #seekto 0x01F0;
@@ -528,6 +529,7 @@ PFKEY_LIST = ["None", "Monitor", "Lamp", "Warn", "VOX", "VOX Delay",
 PFKEY28B_LIST = ["None", "Scan", "Warn", "TX Power", "Monitor"]
 PFKEY86_LIST = ["None", "Monitor", "Lamp", "Warn", "VOX", "VOX Delay",
                 "Key Lock", "TX Power", "Scan"]
+PFKEY89_LIST = PFKEY_LIST + ["Bluetooth ON/OFF"]
 POT_LIST = ["Channel Type", "Volume Type"]
 SAVE_LIST = ["Standard", "Super"]
 SAVEM_LIST = ["1-5", "1-8", "1-10", "1-15"]
@@ -764,6 +766,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
     _ack_1st_block = True
     _skipflags = True
     _reserved = False
+    _mask = 0x2000  # bit mask to identify DTCS tone decoding is used
     _gmrs = _frs = _pmr = False
     _echo = False
 
@@ -842,7 +845,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             return code, pol
 
         tpol = False
-        if _mem.tx_tone != 0xFFFF and _mem.tx_tone > 0x2000:
+        if _mem.tx_tone != 0xFFFF and _mem.tx_tone > self._mask:
             tcode, tpol = _get_dcs(_mem.tx_tone)
             mem.dtcs = tcode
             txmode = "DTCS"
@@ -853,7 +856,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             txmode = ""
 
         rpol = False
-        if _mem.rx_tone != 0xFFFF and _mem.rx_tone > 0x2000:
+        if _mem.rx_tone != 0xFFFF and _mem.rx_tone > self._mask:
             rcode, rpol = _get_dcs(_mem.rx_tone)
             mem.rx_dtcs = rcode
             rxmode = "DTCS"
@@ -976,8 +979,10 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 mem.extra.append(rset)
 
         if self.MODEL == "RB26" or self.MODEL == "RT76" \
-                or self.MODEL == "RB23" or self.MODEL == "AR-63":
-            if self.MODEL == "RB26" or self.MODEL == "RB23":
+                or self.MODEL == "RB23" or self.MODEL == "AR-63" \
+                or self.MODEL == "RB89":
+            if self.MODEL == "RB26" or self.MODEL == "RB23" \
+                    or self.MODEL == "RB89":
                 rs = RadioSettingValueBoolean(_mem.bcl)
                 rset = RadioSetting("bcl", "Busy Channel Lockout", rs)
                 mem.extra.append(rset)
@@ -1121,7 +1126,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
     def _set_tone(self, mem, _mem):
         def _set_dcs(code, pol):
-            val = int("%i" % code, 8) + 0x2000
+            val = int("%i" % code, 8) + self._mask
             if pol == "R":
                 val += 0x8000
             return val
@@ -1408,8 +1413,10 @@ class RT21Radio(chirp_common.CloneModeRadio):
                           "RT76",
                           "RT86",
                           "RT619",
+                          "RB89",
                           ]:
-            if self.MODEL == "RB26" or self.MODEL == "RB23":
+            if self.MODEL == "RB26" or self.MODEL == "RB23" \
+                    or self.MODEL == "RB89":
                 _settings2 = self._memobj.settings2
                 _settings3 = self._memobj.settings3
 
@@ -1465,7 +1472,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 rset = RadioSetting("voice", "Voice Annumciation", rs)
                 basic.append(rset)
 
-            if self.MODEL == "RB26" or self.MODEL == "RB23":
+            if self.MODEL == "RB26" or self.MODEL == "RB23" \
+                    or self.MODEL == "RB89":
                 rs = RadioSettingValueList(VOICE_LIST2,
                                            VOICE_LIST2[_settings.voice])
                 rset = RadioSetting("voice", "Voice Annumciation", rs)
@@ -1476,7 +1484,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 rset = RadioSetting("chnumberd", "Channel Number Enable", rs)
                 basic.append(rset)
 
-            if self.MODEL == "RT86":
+            if self.MODEL == "RT86" or self.MODEL == "RB89":
                 rs = RadioSettingValueList(SPECIAL_LIST,
                                            SPECIAL_LIST[_settings.tailmode])
                 rset = RadioSetting("tailmode", "QT/DQT Tail Mode", rs)
@@ -1493,6 +1501,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             if self.MODEL in ["RB23",
                               "RB26",
                               "RT86",
+                              "RB89",
                               ]:
                 rs = RadioSettingValueBoolean(not _settings.tail)
                 rset = RadioSetting("tail", "QT/DQT Tail", rs)
@@ -1536,7 +1545,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 rset = RadioSetting("voxd", "Vox Delay", rs)
                 basic.append(rset)
 
-            if self.MODEL == "RB26" or self.MODEL == "RB23":
+            if self.MODEL == "RB26" or self.MODEL == "RB23" \
+                    or self.MODEL == "RB89":
                 rs = RadioSettingValueBoolean(_settings3.vox)
                 rset = RadioSetting("settings3.vox", "Vox Function", rs)
                 basic.append(rset)
@@ -1689,6 +1699,17 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
             rs = RadioSettingValueList(PFKEY86_LIST,
                                        PFKEY86_LIST[_settings.pf2])
+            rset = RadioSetting("pf2", "PF2 Key Set", rs)
+            basic.append(rset)
+
+        if self.MODEL == "RB89":
+            rs = RadioSettingValueList(PFKEY89_LIST,
+                                       PFKEY89_LIST[_settings.pf1])
+            rset = RadioSetting("pf1", "PF1 Key Set", rs)
+            basic.append(rset)
+
+            rs = RadioSettingValueList(PFKEY89_LIST,
+                                       PFKEY89_LIST[_settings.pf2])
             rset = RadioSetting("pf2", "PF2 Key Set", rs)
             basic.append(rset)
 
@@ -1894,6 +1915,7 @@ class RB26Radio(RT21Radio):
     _ack_1st_block = False
     _skipflags = True
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _gmrs = True
 
     _ranges = [
@@ -1924,6 +1946,7 @@ class RT76Radio(RT21Radio):
     _ack_1st_block = False
     _skipflags = False
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _gmrs = True
 
     _ranges = [
@@ -2005,6 +2028,7 @@ class RB23Radio(RT21Radio):
     _ack_1st_block = False
     _skipflags = True
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _gmrs = True
 
     _ranges = [
@@ -2037,6 +2061,7 @@ class RT19Radio(RT21Radio):
     _ack_1st_block = False
     _skipflags = False
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _frs = True
 
     _ranges = [
@@ -2065,6 +2090,7 @@ class RT619Radio(RT19Radio):
                    0x100,   # memory start
                    _upper   # number of freqhops
                    )
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _frs = False
     _pmr = True
 
@@ -2092,6 +2118,7 @@ class AR63Radio(RT21Radio):
     _ack_1st_block = False
     _skipflags = True
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _gmrs = False
 
     _ranges = [
@@ -2125,6 +2152,7 @@ class RT40BRadio(RT21Radio):
     _ack_1st_block = False
     _skipflags = True
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _gmrs = True
     _echo = True
 
@@ -2156,6 +2184,7 @@ class RB28BRadio(RT21Radio):
     _ack_1st_block = False
     _skipflags = False
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _frs = True
 
     _ranges = [
@@ -2179,6 +2208,7 @@ class RB628BRadio(RB28BRadio):
     _magic = b"PHOGR\x09\xB2"
     _fingerprint = [b"P32073" + b"\x02\xFF", ]
     _upper = 16
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
     _frs = False
     _pmr = True
 
@@ -2203,6 +2233,7 @@ class RT86Radio(RT21Radio):
     _ack_1st_block = False
     _skipflags = True
     _reserved = True
+    _mask = 0x2800  # bit mask to identify DTCS tone decoding is used
 
     _ranges = [
                (0x0000, 0x01A0),
@@ -2211,3 +2242,31 @@ class RT86Radio(RT21Radio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_RT86, self._mmap)
+
+
+@directory.register
+class RB89Radio(RT21Radio):
+    """RETEVIS RB89"""
+    VENDOR = "Retevis"
+    MODEL = "RB89"
+    BLOCK_SIZE = 0x20
+    BLOCK_SIZE_UP = 0x10
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    _magic = b"PHOGR" + b"\x01" + b"0"
+    _fingerprint = [b"P32073" + b"\x01\xFF", ]
+    _upper = 30
+    _ack_1st_block = False
+    _skipflags = True
+    _reserved = True
+    _gmrs = False  # sold as GMRS radio but supports full band TX/RX
+
+    _ranges = [
+               (0x0000, 0x0330),
+              ]
+    _memsize = 0x0340
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT_RB26, self._mmap)
