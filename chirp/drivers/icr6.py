@@ -15,20 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-# TODO:
-# Channel: Frequency setting
-# Channel: TSQL freq or DTCS code with polarity
-# Channel: Skip scan settings
-# Channel: Comment (not sure if supported in ICF)
-# Banks - channel assignment and name editing
-# Validate TS by freq/band (e.g. 9k TS is only for AM brdcast. Airband?)
-#   CS-R6 shows red X if setting invalid, use that to verify Chirp-output ICF
-# Scan edges per manual
-# Radio settings - lamp, delays, keytones, ...
-
 # Notes:
-#
 # USA models have WX alert and block certain frequencies (see manual).
+
+import logging
 
 from chirp.drivers import icf
 from chirp import chirp_common, directory, bitwise
@@ -36,11 +26,11 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, \
     RadioSettingValueFloat, RadioSettings
-#    RadioSettingValueInteger, \
+
+LOG = logging.getLogger(__name__)
 
 mem_format = """
-// Channel memories: 1300x 16-byte blocks
-// 0x000 to 0x513F inclusive
+// Channel memories: 1300x 16-byte blocks: 0x0000 to 0x513f inclusive
 struct {
   u8 freq0;               // Freq: low byte
   u8 freq1;               // Freq: mid byte
@@ -64,32 +54,10 @@ struct {
      unknown10m:4,
      vsc:1,               // Voice Squelch Control: 0=Off, 1=On
      canceller:2;         // USA-only Canceller option: Index to "CANCELLER"
-  u8 name0;
-  u8 name1;
-  u8 name2;
-  u8 name3;
-  u8 name4;
+  u8 name[5];             // 6 Chars coded into 5 bytes
 } memory[1300];
 
-// Unknown: 0x5140 to 0x5F7F inclusive
-struct {
-  u8 unknown0;
-  u8 unknown1;
-  u8 unknown2;
-  u8 unknown3;
-  u8 unknown4;
-  u8 unknown5;
-  u8 unknown6;
-  u8 unknown7;
-  u8 unknown8;
-  u8 unknown9;
-  u8 unknown10;
-  u8 unknown11;
-  u8 unknown12;
-  u8 unknown13;
-  u8 unknown14;
-  u8 unknown15;
-} mystery1[200];
+#seekto 0x5dc0;           // Unknown: 0x5140 to 0x5f7f inclusive
 
 // 25x Scan Edges with names - 0x5dc0 to 0x5f4f inclusive
 // Mulitply the 32-bit by 3 to get freq in Hz
@@ -111,88 +79,24 @@ struct {
   char name[6];
 } pgmscanedge[25];
 
-// Unknown
-struct {
-  u8 unknown0;
-  u8 unknown1;
-  u8 unknown2;
-  u8 unknown3;
-  u8 unknown4;
-  u8 unknown5;
-  u8 unknown6;
-  u8 unknown7;
-  u8 unknown8;
-  u8 unknown9;
-  u8 unknown10;
-  u8 unknown11;
-  u8 unknown12;
-  u8 unknown13;
-  u8 unknown14;
-  u8 unknown15;
-} mystery1b[3];
+#seekto 0x5f80;       // Possibly padding
 
-// Channel control flags: 0x5F80 to 0x69A7 inclusive
+// Channel control flags: 0x5f80 to 0x69a7 inclusive
 struct {
   u8 hide_channel:1,  // Channel enable/disable aka show/hide
      skip:2,          // Scan skip: 0=No, 1 = "Skip", 3 = mem&vfo ("P")
-     unknown0d:1,
-     unknown0e:1,
-     unknown0f:1,
-     unknown0g:1,
-     unknown0h:1;
+     unknown0:5;
   u8 unknown1;
 } flags[1300];
 
-// Eight bytes of Padding,  everything seems to work on 16-byte boundaries:
-struct {
-  u8 unknown0; // Start: 0x69A8
-  u8 unknown1; // End:   0x69AF
-  u8 unknown2;
-  u8 unknown3;
-  u8 unknown4;
-  u8 unknown5;
-  u8 unknown6;
-  u8 unknown7;
-} padding;
-
-// Unknown: Coded as 34 blocks of 16-bytes. 0x69B0 to 0x6BCF
-struct {
-  u8 unknown0;
-  u8 unknown1;
-  u8 unknown2;
-  u8 unknown3;
-  u8 unknown4;
-  u8 unknown5;
-  u8 unknown6;
-  u8 unknown7;
-  u8 unknown8;
-  u8 unknown9;
-  u8 unknown10;
-  u8 unknown11;
-  u8 unknown12;
-  u8 unknown13;
-  u8 unknown14;
-  u8 unknown15;
-} mystery2[34];
+#seekto 0x6bd0;           // 8 bytes padding then 34x16 bytes unknown
 
 // Device Settings: 0x6bd0 to 0x6c0f
 struct {
-  u8 unknown00;  // 6bd0
-  u8 unknown01;  // 6bd1
-  u8 unknown02;  // 6bd2
-  u8 unknown03;  // 6bd3
-  u8 unknown04;  // 6bd4
-  u8 unknown05;  // 6bd5
-  u8 unknown06;  // 6bd6
-  u8 unknown07;  // 6bd7
-  u8 unknown08;  // 6bd8
-  u8 unknown09;  // 6bd9
-  u8 unknown10;  // 6bda
-  u8 unknown11;  // 6bdb
-  u8 unknown12;  // 6bdc
+  u8 unknown[13];         // Bytes 0-12 inclusive
   u8 unknown13_6bdd:6,
      func_dial_step:2;    // 00=100kHz, 01=1MHz, 02=10MHz
-  u8 unknown14;  // 6bde
+  u8 unknown14;
   u8 unknown15_6bdf:7,
      key_beep:1;          // 0=Off, 1=On
   u8 unknown16_6be0:2,
@@ -202,107 +106,46 @@ struct {
   u8 unknown18_6be2:7,
      power_save:1;        // 0=Off, 1=On
   u8 unknown17_6be3:7,
-     am_ant:1;           // 0=Ext, 1=Bar
+     am_ant:1;            // 0=Ext, 1=Bar
   u8 unknown20_6be4:7,
-     fm_ant:1;           // 0=Ext, 1=Ear (headset lead)
-  u8 unknown21;  // 6be5
-  u8 unknown22;  // 6be6
-  u8 unknown23;  // 6be7
-  u8 unknown24;  // 6be8
-  u8 unknown25;  // 6be9
-  u8 unknown26;  // 6bea
-  u8 unknown27;  // 6beb
-  u8 unknown28;  // 6bec
-  u8 unknown29;  // 6bed
-  u8 unknown30;  // 6bee
-  u8 unknown31;  // 6bef
-  u8 unknown32;  // 6bf0
-  u8 unknown33;  // 6bf1
+     fm_ant:1;            // 0=Ext, 1=Ear (headset lead)
+  u8 unknown21[13];       // Bytes 21-33 inclusive
   u8 civ_address;         // 6bf2: CI-V address, full byte
   u8 unknown35_6bf3:5,
      civ_baud_rate:3;     // 6bf3: Index to CIV_BAUD_RATES, range 0-5
   u8 unknown35_6bf4:7,
-    civ_transceive:1;    // 6bf4: Report frequency and mode changes
-  u8 unknown37;  // 6bf5
-  u8 unknown38;  // 6bf6
-  u8 unknown39;  // 6bf7
-  u8 unknown40;  // 6bf8
-  u8 unknown41;  // 6bf9
-  u8 unknown42;  // 6bfa
-  u8 unknown43;  // 6bfb
-  u8 unknown44;  // 6bfc
-  u8 unknown45;  // 6bfd
-  u8 unknown46;  // 6bfe
-  u8 unknown47;  // 6bff
-  u8 unknown48;  // 6c00
-  u8 unknown49;  // 6c01
-  u8 unknown50;  // c602
-  u8 unknown51;  // c603
+    civ_transceive:1;     // 6bf4: Report frequency and mode changes
+  u8 unknown37[15];       // Bytes 37-51
   u8 unknown52h_6c04:3,   // Fixed 001 seen during tests
      dial_function:1,     // 0=Tuning Dial, 1=Audio Volume
      unknown52m_6c04:2,   // Fixed 10 seen during tests
      mem_display_type:2;  // 00=Freq, 01=BankName, 02=MemName, 03=ChNum
-  u8 unknown54;  // 6c05
-  u8 unknown55;  // 6c06
-  u8 unknown56;  // 6c07
-  u8 unknown57;  // 6c08
-  u8 unknown58;  // 6c09
-  u8 unknown59;  // 6c0a
-  u8 unknown60;  // 6c0b
-  u8 unknown61;  // 6c0c
-  u8 unknown62;  // 6c0d
-  u8 unknown63;  // 6c0e
-  u8 unknown53;  // 6c0f
+  u8 unknown54[11];       // Bytes 54-63 inclusive
 } settings;
 
-
-// Unknown. Coded as 15 blocks of 16-bytes. 0x6C10 to 0x6CFF
-struct {
-  u8 unknown0;
-  u8 unknown1;
-  u8 unknown2;
-  u8 unknown3;
-  u8 unknown4;
-  u8 unknown5;
-  u8 unknown6;
-  u8 unknown7;
-  u8 unknown8;
-  u8 unknown9;
-  u8 unknown10;
-  u8 unknown11;
-  u8 unknown12;
-  u8 unknown13;
-  u8 unknown14;
-  u8 unknown15;
-} mystery4[15];
+#seekto 0x6d00;           // Unknown: 0x6c10 to 0x6cff
 
 // Device comment string. Grab it from the ICF?
-struct { // Start: 6D00, End: 6D0F
+struct { // Start: 6d00, End: 6d0f
   char comment[16];
 } device_comment;
 
-// 22x ASCII-coded bank names
-// 0x6D10 to 0x6DBF inclusive
+// 22x ASCII-coded bank names - 0x6d10 to 0x6dbf inclusive
 struct {
   char name[6];
-  u8 unknown0; // Padding?
-  u8 unknown1; // Padding?
+  u8 padding[2];
 } bank_names[22];
 
-// ASCII-coded scan link names x10: 0x6DC0 to 0x6E0F
+// 10x ASCII-coded scan link names - 0x6dc0 to 0x6e0f
 struct {
   char name[6];
-  u8 unknown0;
-  u8 unknown1;
+  u8 padding[2];
 } prog_scan_link_names[10];
 
-// Unknown: Tail end of memory? 6E10 onwards
-struct {  // Start: 6E10
-  u8 unknown0;
-} mystery5[64];
+#seekto 0x6e50;     // Unknown - 0x6e10 to 0x6e4f
 
+// The string "IcomCloneFormat3" at end of block
 struct {
-  // The string "IcomCloneFormat3" at end of block
   char footer[16];
 } footer;
 """
@@ -314,13 +157,7 @@ TONE_MODES = ["", "TSQL", "TSQL-R", "DTCS", "DTCS-R"]
 #    "TQQL-R" (Tone Squelch Reverse),
 #    "DTCS-R" (DTCS Reverse)”,
 #    "OFF"
-TONES = (67.0,  69.3,  71.9,  74.4,  77.0,  79.7,  82.5,  85.4,
-         88.5,  91.5,  94.8,  97.4, 100.0, 103.5, 107.2, 110.9,
-         114.8, 118.8, 123.0, 127.3, 131.8, 136.5, 141.3, 146.2,
-         151.4, 156.7, 159.8, 162.2, 165.5, 167.9, 171.3, 173.8,
-         177.3, 179.9, 183.5, 186.2, 189.9, 192.8, 196.6, 199.5,
-         203.5, 206.5, 210.7, 218.1, 225.7, 229.1, 233.6, 241.8,
-         250.3, 254.1)
+TONES = list(chirp_common.TONES)
 
 # USA model have a Canceller function with various options and
 # training frequencies. Fields only show in CS-R6 after importing ICF from
@@ -339,35 +176,21 @@ STEPS = [5, 6.25, 8.333333, 9, 10, 12.5, 15, 20,
 # Note: 8.33k only within Air Band, 9k only within AM broadcast band
 
 # Other per-channel settings from CS-R6
-#  DTCS Codes:
-#    023, 025, 026, 031, 032, 036, 043, 047,
-#    051, 053, 054, 065, 071, 072, 073, 074,
-#    114, 115, 116, 122, 125, 131, 132, 134,
-#    143, 145, 152, 155, 156, 162, 165, 172, 174,
-#    205, 212, 223, 225, 226, 243, 244, 245, 246,
-#    251, 252, 255, 261, 263, 265, 266, 271, 274,
-#    306, 311, 315, 325, 331, 332, 343, 346,
-#    351, 356, 364, 365, 371,
-#    411, 412, 413, 423, 431, 432, 445, 446,
-#    452, 454, 455, 462, 464, 465, 466,
-#    503, 506, 516, 523, 526, 532, 546, 565,
-#    606, 612, 624, 627, 631, 632, 654, 662, 664,
-#    703, 712, 723, 731, 732, 734, 743, 754
+# DTCS_CODES = list(chirp_common.DTCS_CODES) - same 104 codes used
 #  DTCS Polarity:
 
 # The IC-R6 manual has | and , but these aren't recognised by CS-R6 and
-# the front panel shows : and . instead so we're going with them.
-# CS-R6 also accepts : and . (and will show same when reading from radio).
+# the front panel shows : and . instead so we'll go those (per radio & CS-R6).
 ICR6_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()*+-./:= "
 
 # Radio-coded alphabet. "^" is ivalid in IC-R6 so used here as a placeholder.
 CODED_CHRS = " ^^^^^^^()*+^-./0123456789:^^=^^^ABCDEFGHIJKLMNOPQRSTUVWXYZ^^^^^"
 NAME_LENGTH = 6
 
-# Valid Rx Frequencies:
+# Valid Rx Frequencies - for now using Global:
 #   USA: 0.1–821.995, 851–866.995, 896–1309.995  MHz
 #   France: 0.1–29.995, 50.2–51.2, 87–107.995, 144–146, 430–440, 1240–1300 MHz
-#   Rest of World: 0.100–1309.995  MHz continuous
+#   Global/Rest of World: 0.100–1309.995  MHz continuous
 
 SQUELCH_LEVEL = ["Open", "Auto", "Level 1", "Level 2", "Level 3", "Level 4",
                  "Level 5", "Level 6", "Level 7", "Level 8", "Level 9"]
@@ -388,8 +211,7 @@ class ICR6Bank(icf.IcomBank):
         if len(name) > 6:
             return
 
-        # Bank names are ASCII-coded (unlike the channel names)
-        # but restricted to certain characters. Validate:
+        # ASCII-coded but restricted to certain characters. Validate:
         for c in name:
             if c not in ICR6_CHARSET:
                 return
@@ -400,11 +222,12 @@ class ICR6Bank(icf.IcomBank):
 
 @directory.register
 class ICR6Radio(icf.IcomCloneModeRadio):
-    """Icom IC-R6 Receiver - UK model"""
+    """Icom IC-R6 Receiver - Global model"""
     VENDOR = "Icom"
     MODEL = "IC-R6"
     _model = "\x32\x50\x00\x01"
-    _memsize = 0x6e5f
+    _memsize = 0x6e60
+    _ranges = [(0x0000, _memsize, 32)]
     _endframe = "Icom Inc\x2e73"
 
     _num_banks = 22
@@ -480,7 +303,7 @@ class ICR6Radio(icf.IcomCloneModeRadio):
                                int(_mem.freq0))
             mem.offset = 9000 * ((_mem.offset_h * 256) + _mem.offset_l)
         else:
-            print(f"Unknown freq multiplier: {_mem.freq_flags}")
+            LOG.exception(f"Unknown freq multiplier: {_mem.freq_flags}")
             mem.freq = 1234567890
             mem.offset = 0
 
@@ -503,15 +326,15 @@ class ICR6Radio(icf.IcomCloneModeRadio):
         # Channel names are encoded in 6x 6-bit groups spanning 5 bytes.
         # Mask only the needed bits and then lookup character for each group
         # Mem format: 0000AAAA AABBBBBB CCCCCCDD DDDDEEEE EEFFFFFF
-        mem.name = CODED_CHRS[((_mem.name0 & 0x0F) << 2)
-                              | ((_mem.name1 & 0xC0) >> 6)] + \
-            CODED_CHRS[_mem.name1 & 0x3F] + \
-            CODED_CHRS[(_mem.name2 & 0xFC) >> 2] + \
-            CODED_CHRS[((_mem.name2 & 0x03) << 4)
-                       | ((_mem.name3 & 0xF0) >> 4)] + \
-            CODED_CHRS[((_mem.name3 & 0x0F) << 2)
-                       | ((_mem.name4 & 0xC0) >> 6)] + \
-            CODED_CHRS[(_mem.name4 & 0x3F)]
+        mem.name = CODED_CHRS[((_mem.name[0] & 0x0f) << 2)
+                              | ((_mem.name[1] & 0xc0) >> 6)] + \
+            CODED_CHRS[_mem.name[1] & 0x3f] + \
+            CODED_CHRS[(_mem.name[2] & 0xfc) >> 2] + \
+            CODED_CHRS[((_mem.name[2] & 0x03) << 4)
+                       | ((_mem.name[3] & 0xf0) >> 4)] + \
+            CODED_CHRS[((_mem.name[3] & 0x0f) << 2)
+                       | ((_mem.name[4] & 0xc0) >> 6)] + \
+            CODED_CHRS[(_mem.name[4] & 0x3f)]
         mem.name = mem.name.rstrip(" ").strip("^")
 
         return mem
@@ -560,7 +383,6 @@ class ICR6Radio(icf.IcomCloneModeRadio):
             if (flow > 0) and (flow >= fhigh):
                 flow, fhigh = fhigh, flow
 
-            print(f"EDGE: {flow} -> {fhigh}")
             rx = RadioSettingValueFloat(0.1, 1309.995, flow, 0.010, 6)
             rset = RadioSetting("pgmscanedge/%d.lofreq" % kx,
                                 f"-- Scan {kx} Low Limit", rx)
@@ -575,72 +397,9 @@ class ICR6Radio(icf.IcomCloneModeRadio):
             #                        "hifreq")
             edges.append(rset)
 
-            # Tuning Step
-            # p_ts = ["-", 5, 6.25, 8.33, 9, 10, 12.5, 15, 20,
-            #        25, 30, 50, 100, 125, 200]
-
-            # Attenuation
-            # ndxt = 0
-            # ndxm = 0
-            # bxnd = 0
-            # tsopt = ["-", "5k", "6.25k", "10k", "12.5k", "15k",
-            #         "20k", "25k", "30k", "50k"]
-            # mdopt = ["-", "FM", "FM-N"]
-            # if fhigh > 0:
-            #    if fhigh < 135.0:  # Air band
-            #       bxnd = 1
-            #       tsopt = ["-", "8.33k", "25k", "Auto"]
-            #        ndxt = _pses[kx].tstp
-            #        if ndxt == 0xe:     # Auto
-            #            ndxt = 3
-            #        elif ndxt == 8:     # 25k
-            #            ndxt = 2
-            #        elif ndxt == 2:     # 8.33k
-            #            ndxt = 1
-            #        else:
-            #            ndxt = 0
-            #        mdopt = ["-"]
-            #    elif (flow >= 137.0) and (fhigh <= 174.0):   # VHF
-            #        ndxt = _pses[kx].tstp - 1
-            #        ndxm = _pses[kx].mode + 1
-            #        bxnd = 2
-            #    elif (flow >= 375.0) and (fhigh <= 550.0):  # UHF
-            #        ndxt = _pses[kx].tstp - 1
-            #        ndxm = _pses[kx].mode + 1
-            #        bxnd = 3
-            #    else:   # Mixed, ndx's = 0 default
-            #        tsopt = ["-"]
-            #        mdopt = ["-"]
-            #        bxnd = 4
-            #    if (ndxt > 9) or (ndxt < 0):
-            #        ndxt = 0   # trap ff
-            #    if ndxm > 2:
-            #        ndxm = 0
-            # # end if fhigh > 0
-            # rx = RadioSettingValueList(tsopt, tsopt[ndxt])
-            # rset = RadioSetting("pgmscanedge/%d.tstp" % kx,
-            #                    "-- Scan %d Freq Step" % kx, rx)
-            # rset.set_apply_callback(myset_tsopt, _pses, kx, "tstp", bxnd)
-            # edges.append(rset)
-
-            # rx = RadioSettingValueList(mdopt, mdopt[ndxm])
-            # rset = RadioSetting("pgmscanedge/%d.mode" % kx,
-            #                    "-- Scan %d Mode" % kx, rx)
-            # rset.set_apply_callback(myset_mdopt, _pses, kx, "mode", bxnd)
-            # edges.append(rset)
-        # End for kx (Edges)
-
-        # -------------------
-        #   COMMON SETTINGS
-        # -------------------
-
-        # Set Mode - Func + Up/Down
-        # Set Mode - Power Save
-        # Set Mode - Dial Function
-        # Sounds - Key Beep
-        # Sounds - Beep level
-        # Display - Backlight
-        # Display - Memory Display Name
+        # -------------------------------
+        #   COMMON SETTINGS - Incomplete
+        # -------------------------------
 
         # Antenna - AM
         options = ["Ext", "Bar"]
@@ -672,36 +431,27 @@ class ICR6Radio(icf.IcomCloneModeRadio):
         rset = RadioSetting("settings.civ_transceive", "CI-V Transceive", rx)
         common.append(rset)
 
-        # Scan - Program Skip Scan
-        # Scan - Bank Link A-H
-        # Scan - Bank Link I-P
-        # Scan - Bank Link Q-Y
-        # Scan - Pause Timer
-        # Scan - Resume Timer
-        # Scan - Stop Beep
-
         return group
 
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number]
         _flag = self._memobj.flags[mem.number]
 
+        _flag.hide_channel = mem.empty
         if mem.empty:
-            _flag.hide_channel = 1
             return
-        _flag.hide_channel = 0
 
         # Channel Names - 6x chars each coded via lookup and bitmapped...
         name_str = mem.name.strip("'").ljust(6)
-        _mem.name0 = (CODED_CHRS.index(name_str[0]) & 0x3C) >> 2
-        _mem.name1 = ((CODED_CHRS.index(name_str[0]) & 0x03) << 6) | \
-                     (CODED_CHRS.index(name_str[1]) & 0x3F)
-        _mem.name2 = (CODED_CHRS.index(name_str[2]) << 2) | \
-                     ((CODED_CHRS.index(name_str[3]) & 0x30) >> 4)
-        _mem.name3 = ((CODED_CHRS.index(name_str[3]) & 0x0F) << 4) | \
-                     ((CODED_CHRS.index(name_str[4]) & 0x3C) >> 2)
-        _mem.name4 = ((CODED_CHRS.index(name_str[4]) & 0x03) << 6) | \
-                     (CODED_CHRS.index(name_str[5]) & 0x3F)
+        _mem.name[0] = (CODED_CHRS.index(name_str[0]) & 0x3c) >> 2
+        _mem.name[1] = ((CODED_CHRS.index(name_str[0]) & 0x03) << 6) | \
+            (CODED_CHRS.index(name_str[1]) & 0x3f)
+        _mem.name[2] = (CODED_CHRS.index(name_str[2]) << 2) | \
+            ((CODED_CHRS.index(name_str[3]) & 0x30) >> 4)
+        _mem.name[3] = ((CODED_CHRS.index(name_str[3]) & 0x0f) << 4) | \
+            ((CODED_CHRS.index(name_str[4]) & 0x3c) >> 2)
+        _mem.name[4] = ((CODED_CHRS.index(name_str[4]) & 0x03) << 6) | \
+            (CODED_CHRS.index(name_str[5]) & 0x3f)
 
         if mem.ctone in TONES:
             _mem.ctone = TONES.index(mem.ctone)
@@ -716,9 +466,9 @@ class ICR6Radio(icf.IcomCloneModeRadio):
         #  - Some common multiples of 5k and 9k (i.e. 45k)
         #    are stored as 9k multiples. However if duplex is
         #    a 5k multiple (normally is) we must set 5k.
-        #  - Logic needs more mapping for the common cases
-        #  - 10/15/20/... k are stored as multiples of 5k
-        #  - These are independent of TS
+        #  - Logic needs more mapping for the common cases.
+        #  - 10/15/20/... k are stored as multiples of 5k.
+        #  - Step size is independent of TS.
         if mem.freq % 9000 == 0 and mem.freq % 5000 != 0:
             # 9k multiple but not 5k - use 9k
             _mem.freq_flags = 60
@@ -742,7 +492,7 @@ class ICR6Radio(icf.IcomCloneModeRadio):
         elif mem.freq % 5000 == 0 and mem.freq % 9000 == 0:
             # 45k case
             if mem.offset/9000 != 0:
-                # Can't be 9k, must be 5k
+                # Can't be 9k, must be 5k for duplex/offset
                 _mem.freq_flags = 0
 
                 _mem.freq0 = int(mem.freq / 5000) & 0x00ff
@@ -781,9 +531,7 @@ class ICR6Radio(icf.IcomCloneModeRadio):
             _mem.offset_h = (int(mem.offset/8330) & 0xff00) >> 8
 
         else:
-            print(f"Unknown freq multiplier: {_mem.freq_flags}")
-            mem.freq = 1234567890
-            mem.offset_l = mem.offset_h = 0
+            LOG.exception(f"Can't find multiplier for freq {mem.freq} Hz")
 
         # Memory scan skip
         if mem.skip == "":
