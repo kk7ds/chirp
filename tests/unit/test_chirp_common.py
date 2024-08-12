@@ -769,6 +769,7 @@ class TestOverrideRules(base.BaseTest):
         'Baofeng_5RM',
         'Baofeng_K5-Plus',
         'Radtel_RT-730',
+        'TIDRADIO_TD-H8-HAM',
     ]
 
     def _test_radio_override_immutable_policy(self, rclass):
