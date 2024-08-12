@@ -2465,7 +2465,16 @@ class TDH8_HAM(TDH8):
     MODEL = "TD-H8-HAM"
     ident_mode = b'P31185\xff\xff'
     _ham = True
+    _rxbands = [(136000000, 143999000), (149000001, 174000000),
+                (400000000, 419999000), (451000001, 521000000)]
     _txbands = [(144000000, 149000000), (420000000, 451000000)]
+
+    def check_set_memory_immutable_policy(self, existing, new):
+        # Immutable duplex handling is done in set_memory, so no need
+        # to ever obsess over it here.
+        if 'duplex' in existing.immutable:
+            existing.immutable.remove('duplex')
+        super().check_set_memory_immutable_policy(existing, new)
 
 
 @directory.register
