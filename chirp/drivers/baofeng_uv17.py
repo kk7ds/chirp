@@ -196,7 +196,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
     LIST_MODE = ["Name", "Frequency"]
     CHANNELS = 999
 
-    MEM_DEFS = """
+    CHANNEL_DEF = """
     struct channel {
       lbcd rxfreq[4];
       lbcd txfreq[4];
@@ -215,6 +215,8 @@ class UV17(baofeng_uv17Pro.UV17Pro):
          scan:1;
       u8 unknown4;
     };
+    """
+    MEM_DEFS = """
     struct channelname {
       char name[11];
     };
@@ -320,7 +322,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
 
     struct ani ani;
     """
-    MEM_FORMAT = MEM_DEFS + MEM_LAYOUT
+    MEM_FORMAT = CHANNEL_DEF + MEM_DEFS + MEM_LAYOUT
 
     def _make_frame(self, cmd, addr, length, data=""):
         """Pack the info in the header format"""
