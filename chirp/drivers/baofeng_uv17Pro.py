@@ -361,7 +361,7 @@ class UV17Pro(bfc.BaofengCommonHT):
       u8 rpttailclear;
       u8 rpttaildet;
       u8 roger;
-      u8 unknown2;
+      u8 a_or_b_selected; // a=0, b=1
       u8 fmenable;
       u8 chbworkmode:4,
          chaworkmode:4;
