@@ -741,14 +741,12 @@ SCAN_VALUES = ["Del", "Add"]
 
 # AB CHANNEL
 A_OFFSET = ["Off", "-", "+"]
-A_TX_POWER = ["Low", "Mid", "High"]
 A_BAND = ["Wide", "Narrow"]
 A_BUSYLOCK = ["Off", "On"]
 A_SPEC_QTDQT = ["Off", "On"]
 A_WORKMODE = ["VFO", "VFO+CH", "CH Mode"]
 
 B_OFFSET = ["Off", "-", "+"]
-B_TX_POWER = ["Low", "Mid", "High"]
 B_BAND = ["Wide", "Narrow"]
 B_BUSYLOCK = ["Off", "On"]
 B_SPEC_QTDQT = ["Off", "On"]
@@ -1719,9 +1717,15 @@ class TDH8(chirp_common.CloneModeRadio):
                                   A_OFFSET, A_OFFSET[_vfoa.offset]))
             abblock.append(rs)
 
+            try:
+                self._tx_power[_vfoa.lowpower]
+                cur_a_power = _vfoa.lowpower
+            except IndexError:
+                cur_a_power = 0
             rs = RadioSetting("lowpower", "A TX Power",
                               RadioSettingValueList(
-                                  A_TX_POWER, A_TX_POWER[_vfoa.lowpower]))
+                                  [str(x) for x in self._tx_power],
+                                  str(self._tx_power[cur_a_power])))
             abblock.append(rs)
 
             rs = RadioSetting("wide", "A Band",
@@ -1781,9 +1785,15 @@ class TDH8(chirp_common.CloneModeRadio):
                                   B_OFFSET, B_OFFSET[_vfob.offsetb]))
             abblock.append(rs)
 
+            try:
+                self._tx_power[_vfob.lowpowerb]
+                cur_b_power = _vfob.lowpowerb
+            except IndexError:
+                cur_b_power = 0
             rs = RadioSetting("lowpowerb", "B TX Power",
                               RadioSettingValueList(
-                                  B_TX_POWER, B_TX_POWER[_vfob.lowpowerb]))
+                                  [str(x) for x in self._tx_power],
+                                  str(self._tx_power[cur_b_power])))
             abblock.append(rs)
 
             rs = RadioSetting("wideb", "B Band",
