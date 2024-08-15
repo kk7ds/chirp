@@ -421,6 +421,9 @@ class RT490Radio(chirp_common.CloneModeRadio):
                (0x3FC0, 0x4000)
               ]
 
+    _valid_chars = chirp_common.CHARSET_ALPHANUMERIC + \
+        "`~!@#$%^&*()-=_+[]\\{}|;':\",./<>?"
+
     if RT490_EXPERIMENTAL:
         # Experimental driver (already heavily tested)
         _ranges = [(0x0000, 0x2400), (0x3400, 0x3C40), (0x3F80, 0x4000)]
