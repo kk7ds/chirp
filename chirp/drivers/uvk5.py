@@ -273,10 +273,8 @@ TONE_DCS = 2
 TONE_RDCS = 3
 
 
-CTCSS_TONES = chirp_common.TONES # yes they were an exact match.
-
-# lifted from ft4.py
-DTCS_CODES = chirp_common.DTCS_CODES # yes, they were an exact match also
+CTCSS_TONES = chirp_common.TONES        # tone list was exact match to common.
+DTCS_CODES = chirp_common.DTCS_CODES    # tone list was exact match to common.
 
 
 FLOCK_LIST = ["Off", "FCC", "CE", "GB", "430", "438"]
@@ -2067,13 +2065,17 @@ class RA79Radio(UVK5Radio):
     VENDOR = "Retevis"
     MODEL = "RA79"
 
-# EI2081  
-# This is from a radio i purchased from AliExperess store "Eagle Store" 
-# which was quoted as both "Quansheng UV-K6" (in title) and "Quansheng UV-K5(99)" in the imagery.
+
+# This is from a radio i purchased from AliExperess store "Eagle Store"
+# which was quoted as both "Quansheng UV-K6" (in title)
+# and "Quansheng UV-K5(99)" in the imagery.
 # I'm not 100% sure it's legit Quansheng!
+
+
 @directory.register
 class UVK5_99_Radio(UVK5Radio):
     MODEL = "UV-K5(99)"
+
     @classmethod
     def k5_approve_firmware(cls, firmware):
         approved_prefixes = ('OSFW-bd90ca3')
