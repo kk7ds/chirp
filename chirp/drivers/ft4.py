@@ -30,6 +30,8 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueList, RadioSettingValueString, RadioSettings
 
 LOG = logging.getLogger(__name__)
+COMM_DIRECTION_FROM = 0
+COMM_DIRECTION_TO = 1
 
 
 # Layout of Radio memory image.
@@ -301,7 +303,7 @@ def enter_clonemode(radio):
     raise errors.RadioError("expected QX from radio.")
 
 
-def startcomms(radio, way):
+def startcomms(radio, direction):
     """
     For either upload or download, put the radio into PROGRAM mode
     and check the radio's ID. In this preliminary version of the driver,
@@ -310,8 +312,23 @@ def startcomms(radio, way):
         send "PROGRAM" to command the radio into clone mode
         read the initial string (version?)
     """
+
+    progress_messages = {
+        COMM_DIRECTION_FROM: _("Cloning from radio"),
+        COMM_DIRECTION_TO: _("Cloning to radio")
+    }
+
     progressbar = chirp_common.Status()
-    progressbar.msg = "Cloning " + way + " radio"
+    if direction in progress_messages:
+        progressbar.msg = progress_messages[direction]
+    else:
+        LOG.debug(
+            f"direction parameter value is not recognised: {direction}"
+            )
+        raise errors.InvalidValueError(
+            f"Unexpected parameter received: {direction}"
+            )
+
     progressbar.max = radio.numblocks
     enter_clonemode(radio)
     id_response = sendcmd(radio.pipe, b'\x02', None)
@@ -372,7 +389,7 @@ def do_download(radio):
     """
     image = bytearray(radio.get_memsize())
     pipe = radio.pipe  # Get the serial port connection
-    progressbar = startcomms(radio, "from")
+    progressbar = startcomms(radio, COMM_DIRECTION_FROM)
     for blocknum in range(radio.numblocks):
         for i in range(0, 3):
             if getblock(pipe, 16 * blocknum, image):
@@ -404,7 +421,7 @@ def do_upload(radio):
       send "END"
     """
     pipe = radio.pipe  # Get the serial port connection
-    progressbar = startcomms(radio, "to")
+    progressbar = startcomms(radio, COMM_DIRECTION_TO)
     data = get_mmap_data(radio)
     for _i in range(1, radio.numblocks):
         putblock(pipe, 16*_i, data[16*_i:16*(_i+1)])
@@ -698,16 +715,15 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
-        rp.experimental = (
-            'Tested and mostly works, but may give you issues\n'
-            'when using lesser common radio variants.\n'
-            'Proceed at your own risk, and let us know about issues!'
+        rp.experimental = _(
+            "Tested and mostly works, but may give you issues\n"
+            "when using lesser common radio variants.\n"
+            "Proceed at your own risk, and let us know about issues!"
             )
 
-        rp.pre_download = "".join([
-            "1. Connect programming cable to MIC jack.\n",
+        rp.pre_download = _(
+            "1. Connect programming cable to MIC jack.\n"
             "2. Press OK."
-            ]
             )
         rp.pre_upload = rp.pre_download
         return rp
