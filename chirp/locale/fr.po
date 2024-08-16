@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-25 14:59-0700\n"
+"POT-Creation-Date: 2024-08-20 14:47-0700\n"
 "PO-Revision-Date: 2024-05-22 16:39-0400\n"
 "Last-Translator: Alexandre J. Raymond <alexandre.j.raymond@gmail.com>\n"
 "Language-Team: French\n"
@@ -87,6 +87,12 @@ msgstr "(vide)"
 #, python-format
 msgid "...and %i more"
 msgstr "...et %i de plus"
+
+#: ../drivers/ft4.py:725
+msgid ""
+"1. Connect programming cable to MIC jack.\n"
+"2. Press OK."
+msgstr ""
 
 #: ../drivers/alinco.py:605 ../drivers/alinco.py:614
 msgid ""
@@ -971,7 +977,7 @@ msgstr ""
 "reconnectant la batterie (\"ADMS\" va apparaître sur l'écran LCD).\n"
 "5. <b>Après avoir cliqué sur OK</b>, appuyez sur la touche [BAND].\n"
 
-#: ../drivers/uvk5.py:680
+#: ../drivers/uvk5.py:658
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -989,7 +995,7 @@ msgstr ""
 "Cela peut ne pas fonctionner si vous allumez la radio avec le câble déjà "
 "branché\n"
 
-#: ../drivers/uvk5.py:687
+#: ../drivers/uvk5.py:665
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1177,11 +1183,13 @@ msgstr "Clonage terminé, vérification des octets erronés"
 msgid "Cloning"
 msgstr "Clonage"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft817.py:341
+#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft4.py:317
+#: ../drivers/ft817.py:341
 msgid "Cloning from radio"
 msgstr "Téléchargement depuis la radio - Lire"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft817.py:379
+#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft4.py:318
+#: ../drivers/ft817.py:379
 msgid "Cloning to radio"
 msgstr "Téléchargement vers la radio - Écrire"
 
@@ -1269,7 +1277,7 @@ msgstr ""
 "Polarité\n"
 "DTCS"
 
-#: ../drivers/uvk5.py:908
+#: ../drivers/uvk5.py:886
 msgid "DTMF decode"
 msgstr "Décodage DTMF"
 
@@ -1363,7 +1371,7 @@ msgstr "Instructions de téléchargement"
 msgid "Driver"
 msgstr "Pilote"
 
-#: ../drivers/uvk5.py:1326
+#: ../drivers/uvk5.py:1304
 msgid "Driver information"
 msgstr "Informations sur les pilotes"
 
@@ -1483,7 +1491,7 @@ msgstr "Exporter vers un fichier CSV..."
 msgid "Extra"
 msgstr "Extra"
 
-#: ../drivers/uvk5.py:1324
+#: ../drivers/uvk5.py:1302
 msgid "FM Radio"
 msgstr "Radio FM"
 
@@ -2060,11 +2068,11 @@ msgstr "Chargement des préférences"
 msgid "Login failed: Check your username and password"
 msgstr ""
 
-#: ../drivers/uvk5.py:1827
+#: ../drivers/uvk5.py:1805
 msgid "Logo string 1 (12 characters)"
 msgstr "Texte logo 1 (12 caractères)"
 
-#: ../drivers/uvk5.py:1834
+#: ../drivers/uvk5.py:1812
 msgid "Logo string 2 (12 characters)"
 msgstr "Texte logo 2 (12 caractères)"
 
@@ -2535,11 +2543,11 @@ msgstr "Préférences enregistrées"
 msgid "Scan control (skip, include, priority, etc)"
 msgstr "Contrôles de scan (sauter, inclure, priorité, etc)"
 
-#: ../drivers/uvk5.py:922
+#: ../drivers/uvk5.py:900
 msgid "Scanlists"
 msgstr "Lists de scan"
 
-#: ../drivers/ksun_m6.py:420 ../drivers/uvk5.py:918
+#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:896
 msgid "Scrambler"
 msgstr "Brouilleur"
 
@@ -2656,6 +2664,13 @@ msgstr ""
 msgid "TX-RX DTCS polarity (normal or reversed)"
 msgstr "Polarité DTCS TX-RX (normale ou inversée)"
 
+#: ../drivers/ft4.py:719
+msgid ""
+"Tested and mostly works, but may give you issues\n"
+"when using lesser common radio variants.\n"
+"Proceed at your own risk, and let us know about issues!"
+msgstr ""
+
 #: ../wxui/query_sources.py:480
 msgid "The DMR-MARC Worldwide Network"
 msgstr "Le réseau mondial DMR-MARC"
@@ -2759,13 +2774,13 @@ msgstr ""
 "débogage pour que nous puissions ajouter du support pour les autres "
 "révisions."
 
-#: ../drivers/radtel_rt490.py:1320 ../drivers/radtel_rt490.py:1322
-#: ../drivers/radtel_rt490.py:1324
+#: ../drivers/radtel_rt490.py:1324 ../drivers/radtel_rt490.py:1326
+#: ../drivers/radtel_rt490.py:1328
 msgid "This driver is in development and should be considered as experimental."
 msgstr ""
 "Ce pilote est en développement et devrait être considéré comme expérimental."
 
-#: ../drivers/uvk5.py:746
+#: ../drivers/uvk5.py:724
 msgid ""
 "This image is missing firmware information. It may have been generated with "
 "an old or modified version of CHIRP. It is advised that you download a fresh "
@@ -2807,7 +2822,7 @@ msgstr ""
 "Ceci est un pilote récent en version beta - chargement à vos risques et "
 "périls\n"
 
-#: ../drivers/uvk5.py:672
+#: ../drivers/uvk5.py:650
 msgid ""
 "This is an experimental driver for the Quansheng UV-K5. It may harm your "
 "radio, or worse. Use at your own risk.\n"
@@ -2884,7 +2899,7 @@ msgstr ""
 "quelques fois.\n"
 "Si vous ne parvenez pas à entrer, vérifiez la radio et le câble.\n"
 
-#: ../drivers/uvk5.py:1912
+#: ../drivers/uvk5.py:1890
 msgid ""
 "This should only be enabled if you are using modified firmware that supports "
 "wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
