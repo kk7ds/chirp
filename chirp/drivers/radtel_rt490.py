@@ -421,6 +421,9 @@ class RT490Radio(chirp_common.CloneModeRadio):
                (0x3FC0, 0x4000)
               ]
 
+    _valid_chars = chirp_common.CHARSET_ALPHANUMERIC + \
+        "`~!@#$%^&*()-=_+[]\\{}|;':\",./<>?"
+
     if RT490_EXPERIMENTAL:
         # Experimental driver (already heavily tested)
         _ranges = [(0x0000, 0x2400), (0x3400, 0x3C40), (0x3F80, 0x4000)]
@@ -1298,6 +1301,7 @@ class RT490Radio(chirp_common.CloneModeRadio):
         rf.can_odd_split = True
         rf.has_name = True
         rf.valid_name_length = 12
+        rf.valid_characters = self._valid_chars
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone", "DTCS->", "->DTCS", "Tone->DTCS",
