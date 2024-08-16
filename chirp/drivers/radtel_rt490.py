@@ -1301,6 +1301,7 @@ class RT490Radio(chirp_common.CloneModeRadio):
         rf.can_odd_split = True
         rf.has_name = True
         rf.valid_name_length = 12
+        rf.valid_characters = self._valid_chars
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone", "DTCS->", "->DTCS", "Tone->DTCS",
