@@ -1108,10 +1108,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
             for col, col_def in enumerate(self._col_defs):
                 self._grid.SetCellValue(row, col, col_def.render_value(memory))
+                immutable = col_def.name in memory.immutable or (
+                    'extra' in col_def.name and 'extra' in memory.immutable)
                 self._grid.SetReadOnly(row, col,
-                                       col_def.name in memory.immutable or
-                                       not self.editable)
-                if col_def.name in memory.immutable:
+                                       immutable or not self.editable)
+                if immutable:
                     color = (0xF5, 0xF5, 0xF5, 0xFF)
                 else:
                     color = self._default_cell_bg_color
