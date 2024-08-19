@@ -2053,7 +2053,8 @@ class UVK5Radio(UVK5RadioBase):
         for rclass in cls.detected_models():
             if rclass.k5_approve_firmware(firmware):
                 return rclass
-        raise errors.RadioError('Firmware %r not supported' % firmware)
+
+        return UVK5RestrictedRadio
 
 
 @directory.register
@@ -2061,3 +2062,36 @@ class RA79Radio(UVK5Radio):
     """Retevis RA79"""
     VENDOR = "Retevis"
     MODEL = "RA79"
+
+
+@directory.register
+@directory.detected_by(UVK5Radio)
+class UVK5RestrictedRadio(UVK5RadioBase):
+    VARIANT = 'unsupported'
+
+    @classmethod
+    def k5_approve_firmware(cls, firmware):
+        return False
+
+    def process_mmap(self):
+        firmware = self.metadata.get('uvk5_firmware', '<unknown>')
+        LOG.warning('Firmware %s is not supported by CHIRP. '
+                    'Image data will be read-only.', firmware)
+        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+
+    def sync_out(self):
+        raise errors.RadioError(
+            _('Upload is disabled due to unsupported firmware version'))
+
+    def get_memory(self, n):
+        mem = super().get_memory(n)
+        mem.immutable = dir(mem)
+        return mem
+
+    def set_memory(self, m):
+        raise errors.InvalidValueError(
+            _('Memories are read-only due to unsupported firmware version'))
+
+    def set_settings(self, settings):
+        raise errors.InvalidValueError(
+            _('Settings are read-only due to unsupported firmware version'))
