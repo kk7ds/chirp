@@ -1572,8 +1572,11 @@ class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties,
         rf = self.get_features()
         if not rf.has_comment and isinstance(memory.number, int):
             self._metadata.setdefault('mem_extra', {})
-            memory.comment = self._metadata['mem_extra'].get(
-                '%04i_comment' % memory.number, '')
+            try:
+                memory.comment = self._metadata['mem_extra'].get(
+                    '%04i_comment' % memory.number, '')
+            except ImmutableValueError:
+                pass
         return memory
 
     def set_memory_extra(self, memory):
