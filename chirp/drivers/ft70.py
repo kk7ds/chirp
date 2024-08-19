@@ -569,7 +569,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_bands = [(500000, 999900000)]
         rf.valid_skips = SKIPS
         rf.valid_power_levels = POWER_LEVELS
-        rf.valid_characters = "".join(CHARSET)
+        rf.valid_characters = "".join(CHARSET).upper()
         rf.valid_name_length = 6
         rf.memory_bounds = (1, 900)
         rf.can_odd_split = True
