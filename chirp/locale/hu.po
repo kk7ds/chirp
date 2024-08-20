@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-20 14:47-0700\n"
+"POT-Creation-Date: 2024-08-20 14:50-0700\n"
 "PO-Revision-Date: 2015-01-28 13:47+0100\n"
 "Last-Translator: Attila Joubert <joubert.attila@gmail.com>\n"
 "Language-Team: English\n"
@@ -34,21 +34,21 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr ""
 
-#: ../wxui/memedit.py:1729
+#: ../wxui/memedit.py:1730
 #, fuzzy, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
 msgstr[0] "... és a tömböt felfelé lépteti"
 msgstr[1] "... és a tömböt felfelé lépteti"
 
-#: ../wxui/memedit.py:1720
+#: ../wxui/memedit.py:1721
 #, fuzzy, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
 msgstr[0] "Memória"
 msgstr[1] "Memória"
 
-#: ../wxui/memedit.py:1724
+#: ../wxui/memedit.py:1725
 #, fuzzy, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
@@ -76,7 +76,7 @@ msgstr ""
 msgid "(none)"
 msgstr ""
 
-#: ../wxui/memedit.py:2064
+#: ../wxui/memedit.py:2065
 #, fuzzy, python-format
 msgid "...and %i more"
 msgstr "...és minden memória felfelé lép"
@@ -739,7 +739,7 @@ msgid ""
 "will happen now."
 msgstr ""
 
-#: ../wxui/memedit.py:1380
+#: ../wxui/memedit.py:1381
 #, python-format
 msgid ""
 "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
@@ -753,22 +753,22 @@ msgstr ""
 msgid "Choice Required"
 msgstr ""
 
-#: ../wxui/memedit.py:1359
+#: ../wxui/memedit.py:1360
 #, fuzzy, python-format
 msgid "Choose %s DTCS Code"
 msgstr "RX DTCS kód"
 
-#: ../wxui/memedit.py:1356
+#: ../wxui/memedit.py:1357
 #, python-format
 msgid "Choose %s Tone"
 msgstr ""
 
-#: ../wxui/memedit.py:1390
+#: ../wxui/memedit.py:1391
 #, fuzzy
 msgid "Choose Cross Mode"
 msgstr "Kereszt-üzem"
 
-#: ../wxui/memedit.py:1420
+#: ../wxui/memedit.py:1421
 msgid "Choose duplex"
 msgstr ""
 
@@ -819,7 +819,7 @@ msgstr ""
 msgid "Close file"
 msgstr ""
 
-#: ../wxui/memedit.py:1788
+#: ../wxui/memedit.py:1789
 #, fuzzy, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
@@ -855,7 +855,7 @@ msgstr ""
 msgid "Convert to FM"
 msgstr ""
 
-#: ../wxui/memedit.py:1705
+#: ../wxui/memedit.py:1706
 msgid "Copy"
 msgstr "Másolás"
 
@@ -877,7 +877,7 @@ msgstr ""
 msgid "Custom..."
 msgstr ""
 
-#: ../wxui/memedit.py:1701
+#: ../wxui/memedit.py:1702
 msgid "Cut"
 msgstr "Kivágás"
 
@@ -897,7 +897,7 @@ msgstr "DTCS pol."
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2330
+#: ../wxui/memedit.py:2331
 #, fuzzy
 msgid "DV Memory"
 msgstr "ez a memória"
@@ -911,7 +911,7 @@ msgstr ""
 msgid "Dec"
 msgstr "Érzékelés"
 
-#: ../wxui/memedit.py:1714
+#: ../wxui/memedit.py:1715
 msgid "Delete"
 msgstr "Törlés"
 
@@ -930,11 +930,11 @@ msgstr "Fejlesztői"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 
-#: ../wxui/memedit.py:1824 ../wxui/developer.py:88
+#: ../wxui/memedit.py:1825 ../wxui/developer.py:88
 msgid "Diff Raw Memories"
 msgstr "Memóriasorok összehasonlítása"
 
-#: ../wxui/memedit.py:2255
+#: ../wxui/memedit.py:2256
 msgid "Digital Code"
 msgstr "Digitális kód"
 
@@ -1009,12 +1009,12 @@ msgstr ""
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2285
+#: ../wxui/memedit.py:2286
 #, fuzzy, python-format
 msgid "Edit details for %i memories"
 msgstr "Több memória szerkesztése"
 
-#: ../wxui/memedit.py:2283
+#: ../wxui/memedit.py:2284
 #, python-format
 msgid "Edit details for memory %i"
 msgstr ""
@@ -1033,11 +1033,11 @@ msgstr "Engedélyezve"
 msgid "Enter Frequency"
 msgstr "Frekvencia"
 
-#: ../wxui/memedit.py:1407
+#: ../wxui/memedit.py:1408
 msgid "Enter Offset (MHz)"
 msgstr ""
 
-#: ../wxui/memedit.py:1399
+#: ../wxui/memedit.py:1400
 msgid "Enter TX Frequency (MHz)"
 msgstr ""
 
@@ -1099,7 +1099,7 @@ msgstr ""
 msgid "Experimental driver"
 msgstr "Folytassam kísérleti driver-rel?"
 
-#: ../wxui/memedit.py:2208
+#: ../wxui/memedit.py:2209
 msgid "Export can only write CSV files"
 msgstr ""
 
@@ -1113,7 +1113,7 @@ msgstr "Export fájlba"
 msgid "Export to CSV..."
 msgstr "Export fájlba"
 
-#: ../wxui/memedit.py:2319
+#: ../wxui/memedit.py:2320
 msgid "Extra"
 msgstr ""
 
@@ -1460,12 +1460,12 @@ msgstr "Sorszám"
 msgid "Info"
 msgstr ""
 
-#: ../wxui/memedit.py:1382
+#: ../wxui/memedit.py:1383
 #, fuzzy
 msgid "Information"
 msgstr "%s információk beolvasása"
 
-#: ../wxui/memedit.py:1695
+#: ../wxui/memedit.py:1696
 #, fuzzy
 msgid "Insert Row Above"
 msgstr "Memória beszúrása fölé"
@@ -1488,7 +1488,7 @@ msgstr "Belső hiba"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Érvénytelen érték! Egész szám kell legyen."
 
-#: ../wxui/query_sources.py:66 ../wxui/memedit.py:1543
+#: ../wxui/query_sources.py:66 ../wxui/memedit.py:1544
 #, fuzzy
 msgid "Invalid Entry"
 msgstr "Érvénytelen érték %s"
@@ -1497,7 +1497,7 @@ msgstr "Érvénytelen érték %s"
 msgid "Invalid ZIP code"
 msgstr ""
 
-#: ../wxui/memedit.py:1542 ../wxui/memedit.py:2410
+#: ../wxui/memedit.py:1543 ../wxui/memedit.py:2411
 #, fuzzy, python-format
 msgid "Invalid edit: %s"
 msgstr "Érvénytelen érték %s"
@@ -1615,7 +1615,11 @@ msgstr ""
 msgid "Memories"
 msgstr "Memória"
 
-#: ../wxui/memedit.py:1582
+#: ../drivers/uvk5.py:2093
+msgid "Memories are read-only due to unsupported firmware version"
+msgstr ""
+
+#: ../wxui/memedit.py:1583
 #, python-format
 msgid "Memory %i is not deletable"
 msgstr ""
@@ -1676,7 +1680,7 @@ msgstr "Lefel_é"
 msgid "Move Up"
 msgstr "Fe_lfelé"
 
-#: ../wxui/memedit.py:2120
+#: ../wxui/memedit.py:2121
 msgid "Move operations are disabled while the view is sorted"
 msgstr ""
 
@@ -1689,7 +1693,7 @@ msgstr ""
 msgid "New version available"
 msgstr "A CHIRP egy új verziója érhető el:"
 
-#: ../wxui/memedit.py:1861
+#: ../wxui/memedit.py:1862
 #, fuzzy
 msgid "No empty rows below!"
 msgstr "Memória beszúrása alá"
@@ -1791,7 +1795,7 @@ msgstr ""
 msgid "Optional: County, Hospital, etc."
 msgstr ""
 
-#: ../wxui/memedit.py:1995
+#: ../wxui/memedit.py:1996
 #, fuzzy
 msgid "Overwrite memories?"
 msgstr "Felülírja?"
@@ -1811,26 +1815,26 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: ../wxui/memedit.py:1709
+#: ../wxui/memedit.py:1710
 msgid "Paste"
 msgstr "Beillesztés"
 
-#: ../wxui/memedit.py:1989
+#: ../wxui/memedit.py:1990
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr ""
 
-#: ../wxui/memedit.py:1992
+#: ../wxui/memedit.py:1993
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1986
+#: ../wxui/memedit.py:1987
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1983
+#: ../wxui/memedit.py:1984
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
@@ -1902,7 +1906,7 @@ msgstr ""
 msgid "Printing"
 msgstr ""
 
-#: ../wxui/memedit.py:1688
+#: ../wxui/memedit.py:1689
 msgid "Properties"
 msgstr ""
 
@@ -2099,11 +2103,15 @@ msgstr ""
 msgid "Settings"
 msgstr "Beállítás"
 
+#: ../drivers/uvk5.py:2097
+msgid "Settings are read-only due to unsupported firmware version"
+msgstr ""
+
 #: ../wxui/memedit.py:140
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr ""
 
-#: ../wxui/memedit.py:1817 ../wxui/developer.py:91
+#: ../wxui/memedit.py:1818 ../wxui/developer.py:91
 msgid "Show Raw Memory"
 msgstr "Memóriasor mutatása"
 
@@ -2119,43 +2127,43 @@ msgstr ""
 msgid "Show image backup location"
 msgstr ""
 
-#: ../wxui/memedit.py:2068
+#: ../wxui/memedit.py:2069
 #, fuzzy
 msgid "Some memories are incompatible with this radio"
 msgstr ""
 "A beillesztett {number}. számú memória nem kompatibilis ezzel a rádióval, "
 "mert:"
 
-#: ../wxui/memedit.py:1933
+#: ../wxui/memedit.py:1934
 msgid "Some memories are not deletable"
 msgstr ""
 
-#: ../wxui/memedit.py:1773
+#: ../wxui/memedit.py:1774
 #, fuzzy, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
 msgstr[0] "Memóriasorok összehasonlítása"
 msgstr[1] "Memóriasorok összehasonlítása"
 
-#: ../wxui/memedit.py:1777
+#: ../wxui/memedit.py:1778
 #, fuzzy, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
 msgstr[0] "Memóriasorok összehasonlítása"
 msgstr[1] "Memóriasorok összehasonlítása"
 
-#: ../wxui/memedit.py:1799
+#: ../wxui/memedit.py:1800
 #, fuzzy, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
 msgstr[0] "Memóriasorok összehasonlítása"
 msgstr[1] "Memóriasorok összehasonlítása"
 
-#: ../wxui/memedit.py:1665
+#: ../wxui/memedit.py:1666
 msgid "Sort by column:"
 msgstr ""
 
-#: ../wxui/memedit.py:1664
+#: ../wxui/memedit.py:1665
 #, fuzzy
 msgid "Sort memories"
 msgstr "Felülírja?"
@@ -2250,7 +2258,7 @@ msgid ""
 "memories across, or proceed with the import?"
 msgstr ""
 
-#: ../wxui/memedit.py:1734
+#: ../wxui/memedit.py:1735
 #, fuzzy
 msgid "This Memory"
 msgstr "ez a memória"
@@ -2322,12 +2330,12 @@ msgid ""
 "com website"
 msgstr ""
 
-#: ../wxui/memedit.py:1738
+#: ../wxui/memedit.py:1739
 #, fuzzy
 msgid "This memory and shift all up"
 msgstr "... és a tömböt felfelé lépteti"
 
-#: ../wxui/memedit.py:1736
+#: ../wxui/memedit.py:1737
 #, fuzzy
 msgid "This memory and shift block up"
 msgstr "... és a tömböt felfelé lépteti"
@@ -2427,7 +2435,7 @@ msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
 
-#: ../wxui/memedit.py:1463
+#: ../wxui/memedit.py:1464
 msgid "Unable to edit memory before radio is loaded"
 msgstr ""
 
@@ -2436,7 +2444,7 @@ msgstr ""
 msgid "Unable to find stock config %r"
 msgstr "A csoportos beállítás megnyitása"
 
-#: ../wxui/memedit.py:1947
+#: ../wxui/memedit.py:1948
 #, fuzzy
 msgid "Unable to import while the view is sorted"
 msgstr "Nem érzékelek a {port} porton!"
@@ -2499,6 +2507,10 @@ msgstr "URCALL lista frissítése."
 msgid "Upload instructions"
 msgstr "{instructions}"
 
+#: ../drivers/uvk5.py:2084
+msgid "Upload is disabled due to unsupported firmware version"
+msgstr ""
+
 #: ../wxui/main.py:1021
 #, fuzzy
 msgid "Upload to radio"
@@ -2550,7 +2562,7 @@ msgstr ""
 msgid "Value must be zero or greater"
 msgstr ""
 
-#: ../wxui/memedit.py:2310
+#: ../wxui/memedit.py:2311
 msgid "Values"
 msgstr ""
 
@@ -2567,11 +2579,11 @@ msgstr "Né_zet"
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/bugreport.py:174 ../wxui/memedit.py:1549 ../wxui/main.py:1809
+#: ../wxui/bugreport.py:174 ../wxui/memedit.py:1550 ../wxui/main.py:1809
 msgid "Warning"
 msgstr ""
 
-#: ../wxui/memedit.py:1548
+#: ../wxui/memedit.py:1549
 #, python-format
 msgid "Warning: %s"
 msgstr ""
