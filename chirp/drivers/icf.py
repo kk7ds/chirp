@@ -1034,7 +1034,7 @@ class IcomLiveRadio(chirp_common.LiveRadio):
             return None
 
 
-def warp_byte_size(inbytes, obw=8, ibw=8):
+def warp_byte_size(inbytes, obw=8, ibw=8, iskip=0, opad=0):
     """Convert between "byte sizes".
 
     This will pack N-bit characters into a sequence of 8-bit bytes,
@@ -1042,17 +1042,23 @@ def warp_byte_size(inbytes, obw=8, ibw=8):
 
     ibw (input bit width) is the width of the storage
     obw (output bit width) is the width of the characters to extract
+    iskip is the number of input padding bits to skip
+    opad is the number of output zero padding bits to add
 
     ibw=8,obw=7 will pull seven-bit characters from a sequence of bytes
     ibw=7,obw=8 will pack seven-bit characters into a sequence of bytes
     """
     if isinstance(inbytes, str):
         inbytes = [ord(x) for x in inbytes]
-    outbit = 0
+    outbit = opad
     tmp = 0
     stripmask = 1 << (ibw - 1)
     for byte in inbytes:
         inbit = 0
+        while iskip:
+            byte = (byte << 1) & 0xFF
+            inbit += 1
+            iskip -= 1
         for i in range(0, max(obw, ibw - inbit)):
             if inbit == ibw:
                 # Move to next char

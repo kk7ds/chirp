@@ -227,6 +227,8 @@ R&L Electronics:
 Radioddity:
 - alt: Radioddity UV-5G
   model: UV-5X
+- alt: AnyTone 5888UV
+  model: DB50
 Radtel:
 - alt: Retevis RT22
   model: RT-10

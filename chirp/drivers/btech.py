@@ -2548,12 +2548,16 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                                           val]))
             dtmf_dec_settings.append(line)
         else:
+            if _mem.dtmf_settings.resettime > 0x4F:
+                val = 0x4F
+            else:
+                val = _mem.dtmf_settings.resettime
             line = RadioSetting(
                 "dtmf_settings.resettime",
                 "Reset time",
                 RadioSettingValueList(LIST_5TONE_RESET,
                                       LIST_5TONE_RESET[
-                                          _mem.dtmf_settings.resettime]))
+                                          val]))
             dtmf_dec_settings.append(line)
 
         if _mem.dtmf_settings.delayproctime > 0x27:

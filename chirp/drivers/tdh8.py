@@ -741,14 +741,12 @@ SCAN_VALUES = ["Del", "Add"]
 
 # AB CHANNEL
 A_OFFSET = ["Off", "-", "+"]
-A_TX_POWER = ["Low", "Mid", "High"]
 A_BAND = ["Wide", "Narrow"]
 A_BUSYLOCK = ["Off", "On"]
 A_SPEC_QTDQT = ["Off", "On"]
 A_WORKMODE = ["VFO", "VFO+CH", "CH Mode"]
 
 B_OFFSET = ["Off", "-", "+"]
-B_TX_POWER = ["Low", "Mid", "High"]
 B_BAND = ["Wide", "Narrow"]
 B_BUSYLOCK = ["Off", "On"]
 B_SPEC_QTDQT = ["Off", "On"]
@@ -1719,9 +1717,15 @@ class TDH8(chirp_common.CloneModeRadio):
                                   A_OFFSET, A_OFFSET[_vfoa.offset]))
             abblock.append(rs)
 
+            try:
+                self._tx_power[_vfoa.lowpower]
+                cur_a_power = _vfoa.lowpower
+            except IndexError:
+                cur_a_power = 0
             rs = RadioSetting("lowpower", "A TX Power",
                               RadioSettingValueList(
-                                  A_TX_POWER, A_TX_POWER[_vfoa.lowpower]))
+                                  [str(x) for x in self._tx_power],
+                                  str(self._tx_power[cur_a_power])))
             abblock.append(rs)
 
             rs = RadioSetting("wide", "A Band",
@@ -1781,9 +1785,15 @@ class TDH8(chirp_common.CloneModeRadio):
                                   B_OFFSET, B_OFFSET[_vfob.offsetb]))
             abblock.append(rs)
 
+            try:
+                self._tx_power[_vfob.lowpowerb]
+                cur_b_power = _vfob.lowpowerb
+            except IndexError:
+                cur_b_power = 0
             rs = RadioSetting("lowpowerb", "B TX Power",
                               RadioSettingValueList(
-                                  B_TX_POWER, B_TX_POWER[_vfob.lowpowerb]))
+                                  [str(x) for x in self._tx_power],
+                                  str(self._tx_power[cur_b_power])))
             abblock.append(rs)
 
             rs = RadioSetting("wideb", "B Band",
@@ -2465,7 +2475,16 @@ class TDH8_HAM(TDH8):
     MODEL = "TD-H8-HAM"
     ident_mode = b'P31185\xff\xff'
     _ham = True
+    _rxbands = [(136000000, 143999000), (149000001, 174000000),
+                (400000000, 419999000), (451000001, 521000000)]
     _txbands = [(144000000, 149000000), (420000000, 451000000)]
+
+    def check_set_memory_immutable_policy(self, existing, new):
+        # Immutable duplex handling is done in set_memory, so no need
+        # to ever obsess over it here.
+        if 'duplex' in existing.immutable:
+            existing.immutable.remove('duplex')
+        super().check_set_memory_immutable_policy(existing, new)
 
 
 @directory.register

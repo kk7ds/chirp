@@ -159,3 +159,32 @@ class TestCloneICF(unittest.TestCase):
         f = icf.IcfFrame(icf.ADDR_PC, icf.ADDR_RADIO, icf.CMD_CLONE_ID)
         f.payload = b'\x01\x02'
         self.assertEqual(b'\xfe\xfe\xee\xef\xe0\x01\x02\xfd', f.pack())
+
+
+class TestICFUtil(unittest.TestCase):
+    def test_warp_byte_size(self):
+        # 4-bit chars to 8-bit bytes
+        input = bytes([0x12, 0x34])
+        output = bytes(icf.warp_byte_size(input, obw=4))
+        self.assertEqual(b'\x01\x02\x03\x04', output)
+
+    def test_warp_byte_size_skip(self):
+        # 4-bit chars to 8-bit bytes with 4 bits of padding ignored
+        input = bytes([0x12, 0x34])
+        output = bytes(icf.warp_byte_size(input, obw=4, iskip=4))
+        self.assertEqual(b'\x02\x03\x04', output)
+
+    def test_warp_byte_size_pad(self):
+        # 8-bit bytes to 4-bit chars, with 4 bits of padding added
+        input = bytes([2, 3, 4])
+        output = bytes(icf.warp_byte_size(input, ibw=4, opad=4))
+        self.assertEqual(b'\x02\x34', output)
+
+    def test_warp_byte_size_symmetric_padded(self):
+        # Make sure we can go from 8->4-> with padding and get back what we
+        # put in
+        ref = bytes([1, 2, 3, 4, 5, 6])
+        stored = bytes(icf.warp_byte_size(bytes(ref), ibw=6, opad=4))
+        self.assertEqual(5, len(bytes(stored)))
+        self.assertEqual(ref,
+                         bytes(icf.warp_byte_size(stored, obw=6, iskip=4)))

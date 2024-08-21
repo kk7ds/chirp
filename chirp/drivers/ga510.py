@@ -1141,6 +1141,26 @@ class RadioddityGA510v2(baofeng_uv17.UV17):
     LIST_MODE = ["Name", "Frequency"]
     CHANNELS = 128
 
+    CHANNEL_DEF = """
+      struct channel {
+      lbcd rxfreq[4];
+      lbcd txfreq[4];
+      u8 unused1;
+      ul16 rxtone;
+      ul16 txtone;
+      u8 unknown1:1,
+         bcl:1,
+         pttid:2,
+         unknown2:1,
+         wide:1,
+         lowpower:2;
+      u8 scode:4,
+         unknown3:3,
+         scan:1;
+      u8 unknown4;
+    };
+    """
+
     MEM_LAYOUT = """
     #seekto 0x1000;
     struct settings settings;
@@ -1157,6 +1177,6 @@ class RadioddityGA510v2(baofeng_uv17.UV17):
     #seekto 0x400B;
     struct channelname names1[128];
     """
-    MEM_FORMAT = baofeng_uv17.UV17.MEM_DEFS + MEM_LAYOUT
+    MEM_FORMAT = CHANNEL_DEF + baofeng_uv17.UV17.MEM_DEFS + MEM_LAYOUT
 
     _has_workmode_support = False
