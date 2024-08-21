@@ -126,6 +126,7 @@
 | <a name="Icom_IC-E90"></a> Icom_IC-E90 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.04% |
 | <a name="Icom_IC-P7"></a> Icom_IC-P7 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Icom_IC-Q7A"></a> Icom_IC-Q7A | [@KC9HI](https://github.com/KC9HI) | 20-Nov-2022 | Yes | 0.01% |
+| <a name="Icom_IC-R6"></a> Icom_IC-R6 | Probably works(https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 10-Aug-2024 | Yes | 0.01% |
 | <a name="Icom_IC-T70"></a> Icom_IC-T70 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.03% |
 | <a name="Icom_IC-T7H"></a> Icom_IC-T7H | [Reported working](https://chirp.danplanet.com/issues/10752) | 30-Jul-2023 | Yes | 0.02% |
 | <a name="Icom_IC-T8A"></a> Icom_IC-T8A | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.01% |
