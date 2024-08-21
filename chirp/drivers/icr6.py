@@ -26,6 +26,7 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, \
     RadioSettingValueFloat, RadioSettings
+from chirp.drivers.icf import warp_byte_size
 
 LOG = logging.getLogger(__name__)
 
@@ -253,7 +254,7 @@ class ICR6Radio(icf.IcomCloneModeRadio):
         rf.valid_name_length = NAME_LENGTH
         rf.can_delete = True
         rf.has_ctone = True
-        rf.has_dtcs = False           # TODO
+        rf.has_dtcs = False           # TO
         rf.has_dtcs_polarity = False  # TODO
         rf.has_bank = False           # TODO
         rf.has_bank_names = False     # TODO
@@ -303,7 +304,7 @@ class ICR6Radio(icf.IcomCloneModeRadio):
                                int(_mem.freq0))
             mem.offset = 9000 * ((_mem.offset_h * 256) + _mem.offset_l)
         else:
-            LOG.exception(f"Unknown freq multiplier: {_mem.freq_flags}")
+            LOG.exception("Unknown freq multiplier %d", _mem.freq_flags)
             mem.freq = 1234567890
             mem.offset = 0
 
@@ -323,18 +324,10 @@ class ICR6Radio(icf.IcomCloneModeRadio):
         elif _flag.skip == 3:
             mem.skip = "P"     # 3 = mem&vfo ("Pskip")
 
-        # Channel names are encoded in 6x 6-bit groups spanning 5 bytes.
-        # Mask only the needed bits and then lookup character for each group
-        # Mem format: 0000AAAA AABBBBBB CCCCCCDD DDDDEEEE EEFFFFFF
-        mem.name = CODED_CHRS[((_mem.name[0] & 0x0f) << 2)
-                              | ((_mem.name[1] & 0xc0) >> 6)] + \
-            CODED_CHRS[_mem.name[1] & 0x3f] + \
-            CODED_CHRS[(_mem.name[2] & 0xfc) >> 2] + \
-            CODED_CHRS[((_mem.name[2] & 0x03) << 4)
-                       | ((_mem.name[3] & 0xf0) >> 4)] + \
-            CODED_CHRS[((_mem.name[3] & 0x0f) << 2)
-                       | ((_mem.name[4] & 0xc0) >> 6)] + \
-            CODED_CHRS[(_mem.name[4] & 0x3f)]
+        # Channel name - packed into 6x 6-bit groups with 4 bits padding
+        mem.name = ''.join(CODED_CHRS[x] for x in warp_byte_size(_mem.name,
+                                                                 obw=6, ibw=8,
+                                                                 iskip=4))
         mem.name = mem.name.rstrip(" ").strip("^")
 
         return mem
@@ -441,17 +434,10 @@ class ICR6Radio(icf.IcomCloneModeRadio):
         if mem.empty:
             return
 
-        # Channel Names - 6x chars each coded via lookup and bitmapped...
-        name_str = mem.name.strip("'").ljust(6)
-        _mem.name[0] = (CODED_CHRS.index(name_str[0]) & 0x3c) >> 2
-        _mem.name[1] = ((CODED_CHRS.index(name_str[0]) & 0x03) << 6) | \
-            (CODED_CHRS.index(name_str[1]) & 0x3f)
-        _mem.name[2] = (CODED_CHRS.index(name_str[2]) << 2) | \
-            ((CODED_CHRS.index(name_str[3]) & 0x30) >> 4)
-        _mem.name[3] = ((CODED_CHRS.index(name_str[3]) & 0x0f) << 4) | \
-            ((CODED_CHRS.index(name_str[4]) & 0x3c) >> 2)
-        _mem.name[4] = ((CODED_CHRS.index(name_str[4]) & 0x03) << 6) | \
-            (CODED_CHRS.index(name_str[5]) & 0x3f)
+        # Channel Names - 6 chars Coded via lookup and packed into 6-bits each
+        coded_chars = ''.join(chr(CODED_CHRS.index(x))
+                              for x in mem.name.strip("'").ljust(6))
+        _mem.name = list(warp_byte_size(coded_chars, 8, 6, opad=4))
 
         if mem.ctone in TONES:
             _mem.ctone = TONES.index(mem.ctone)
@@ -465,7 +451,7 @@ class ICR6Radio(icf.IcomCloneModeRadio):
         #  Frequency: step size and count:
         #  - Some common multiples of 5k and 9k (i.e. 45k)
         #    are stored as 9k multiples. However if duplex is
-        #    a 5k multiple (normally is) we must set 5k.
+        #    a 5k multiple (normally is) we must use 5k.
         #  - Logic needs more mapping for the common cases.
         #  - 10/15/20/... k are stored as multiples of 5k.
         #  - Step size is independent of TS.
@@ -480,7 +466,7 @@ class ICR6Radio(icf.IcomCloneModeRadio):
             _mem.offset_l = (int(mem.offset/9000) & 0x00ff)
             _mem.offset_h = (int(mem.offset/9000) & 0xff00) >> 8
         elif mem.freq % 5000 == 0 and mem.freq % 9000 != 0:
-            # 5k multiple but not 9k - use 9k
+            # 5k multiple but not 9k - use 5k
             _mem.freq_flags = 0
 
             _mem.freq0 = int(mem.freq / 5000) & 0x00ff
@@ -531,7 +517,7 @@ class ICR6Radio(icf.IcomCloneModeRadio):
             _mem.offset_h = (int(mem.offset/8330) & 0xff00) >> 8
 
         else:
-            LOG.exception(f"Can't find multiplier for freq {mem.freq} Hz")
+            LOG.exception("Can't find multiplier for freq %d Hz", mem.freq)
 
         # Memory scan skip
         if mem.skip == "":
