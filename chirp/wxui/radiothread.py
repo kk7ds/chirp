@@ -21,6 +21,7 @@ import uuid
 LOG = logging.getLogger(__name__)
 _JOB_COUNTER = 0
 _JOB_COUNTER_LOCK = threading.Lock()
+_JOB_LOCK = threading.Lock()
 
 
 def jobnumber():
@@ -69,7 +70,9 @@ class RadioJob:
 
     def dispatch(self, radio):
         try:
-            self.result = getattr(radio, self.fn)(*self.args, **self.kwargs)
+            with _JOB_LOCK:
+                self.result = getattr(radio, self.fn)(*self.args,
+                                                      **self.kwargs)
         except Exception as e:
             LOG.exception('Failed to run %r' % self)
             self.result = e
