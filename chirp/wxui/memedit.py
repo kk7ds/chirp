@@ -875,7 +875,16 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
     @property
     def comment_col(self):
-        return self._col_defs.index(self._col_def_by_name('comment'))
+        # If we're not displaying the comment field (like for live radios),
+        # we need to choose the field before the comment as the point for
+        # expansion
+        has_comment = (self._features.has_comment or
+                       isinstance(self._radio, chirp_common.CloneModeRadio))
+        if has_comment:
+            offset = 0
+        else:
+            offset = -1
+        return self._col_defs.index(self._col_def_by_name('comment')) + offset
 
     def set_cell_attrs(self):
         if WX_GTK:
