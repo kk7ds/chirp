@@ -123,6 +123,7 @@
 | <a name="Icom_IC-7610"></a> Icom_IC-7610 | [@kk7ds](https://github.com/kk7ds) | 24-Oct-2022 | Yes | 0.00% |
 | <a name="Icom_IC-910"></a> Icom_IC-910 | [@mfncooper](https://github.com/mfncooper) | 1-Oct-2021 | Yes | 0.00% |
 | <a name="Icom_IC-91_92AD"></a> Icom_IC-91_92AD | [@kk7ds](https://github.com/kk7ds) | 23-Nov-2022 | Yes | 0.03% |
+| <a name="Icom_IC-9700"></a> Icom_IC-9700 |  |  | Yes |  |
 | <a name="Icom_IC-E90"></a> Icom_IC-E90 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.04% |
 | <a name="Icom_IC-P7"></a> Icom_IC-P7 | [Probably works](https://github.com/kk7ds/chirp/blob/py3/chirp/drivers/icf.py) | 12-Dec-2022 | Yes | 0.01% |
 | <a name="Icom_IC-Q7A"></a> Icom_IC-Q7A | [@KC9HI](https://github.com/KC9HI) | 20-Nov-2022 | Yes | 0.01% |
@@ -469,11 +470,11 @@
 | <a name="Zastone_ZT-X6"></a> Zastone_ZT-X6 | [Implied by Retevis_RT22](#user-content-Retevis_RT22) | 9-Dec-2022 | Yes | 0.11% |
 ## Stats
 
-**Drivers:** 466
+**Drivers:** 467
 
-**Tested:** 87% (407/59) (93% of usage stats)
+**Tested:** 87% (407/60) (93% of usage stats)
 
-**Byte clean:** 91% (427/39)
+**Byte clean:** 91% (428/39)
 
 ## Meaning of this testing
 
