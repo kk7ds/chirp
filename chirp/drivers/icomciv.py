@@ -142,6 +142,30 @@ bbcd ctone_tx[2];             // 15-17 tone rx squelch setting
 char name[10];             // 18-27 Callsign
 """
 
+MEM_IC9700_FORMAT = """
+u8 bank;
+bbcd number[2];
+u8 select_memory;
+lbcd freq[5];
+bbcd mode;
+u8 filter;
+bbcd data_mode;
+u8 duplex:4,
+   tmode:4;
+u8 dig_sql:4,
+   unused1:4;
+bbcd rtone[3];
+bbcd ctone[3];
+u8 dtcs_polarity;
+bbcd dtcs[2];
+u8 dig_code;
+lbcd duplexOffset[3];
+char urcall[8];
+char rpt1call[8];
+char rpt2call[8];
+char name[16];
+"""
+
 MEM_IC7400_FORMAT = """
 bbcd number[2];
 u8   unknown1;
@@ -354,6 +378,10 @@ class IC7300MemFrame(MemFrame):
 
 class IC7610MemFrame(MemFrame):
     FORMAT = MEM_IC7610_FORMAT
+
+
+class IC9700MemFrame(BankMemFrame):
+    FORMAT = MEM_IC9700_FORMAT
 
 
 class SpecialChannel(object):
@@ -614,7 +642,9 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 
         mem.freq = int(memobj.freq)
         try:
-            mem.mode = self._MODES[memobj.mode]
+            # Note that memobj.mode could be a bcd on some radios, so we must
+            # coerce it to an int for the index operation.
+            mem.mode = self._MODES[int(memobj.mode)]
 
             # We do not know what a variety of the positions between
             # PSK and DV mean, so let's behave as if those values
@@ -1152,6 +1182,101 @@ class Icom7610Radio(Icom7300Radio):
     def _initialize(self):
         super()._initialize()
         self._classes['mem'] = IC7610MemFrame
+
+
+@directory.register
+class Icom9700Radio(IcomCIVRadio):
+    MODEL = 'IC-9700'
+    _model = '\xA2'
+    _template = 100
+    BANDS = {
+        1: (144, 148),
+        2: (430, 450),
+        3: (1240, 1300),
+    }
+    _MODES = [
+        "LSB", "USB", "AM", "CW", "RTTY", "FM", "CWR",
+        "RTTY-R", None, None, None, None, None, None, None, None, None,
+        "DV", None, None, None, None, "DD", None, None, None, None, None,
+    ]
+
+    def get_sub_devices(self):
+        return [Icom9700RadioBand(self, 1),
+                Icom9700RadioBand(self, 2),
+                Icom9700RadioBand(self, 3)]
+
+    def _initialize(self):
+        super()._initialize()
+        self._rf.has_sub_devices = True
+        self._rf.memory_bounds = (1, 99)
+        self._classes['mem'] = IC9700MemFrame
+
+
+class Icom9700RadioBand(Icom9700Radio):
+    _SPECIAL_CHANNELS = {
+        "1A": 100,
+        "1B": 101,
+        "2A": 102,
+        "2B": 103,
+        "3A": 104,
+        "4B": 105,
+        "C1": 106,
+        "C2": 107,
+    }
+    _SPECIAL_CHANNELS_REV = dict(zip(_SPECIAL_CHANNELS.values(),
+                                     _SPECIAL_CHANNELS.keys()))
+
+    def _detect_echo(self):
+        self._parent._willecho
+
+    def _is_special(self, number):
+        return isinstance(number, str) or number > 99
+
+    def _get_special_info(self, number):
+        info = BankSpecialChannel()
+        info.bank = self._band
+        if isinstance(number, str):
+            info.name = number
+            info.channel = self._SPECIAL_CHANNELS[number]
+            info.location = info.channel
+        else:
+            info.location = number
+            info.name = self._SPECIAL_CHANNELS_REV[number]
+            info.channel = info.location
+        return info
+
+    def __init__(self, parent, band):
+        self._parent = parent
+        self._band = band
+        self.VARIANT = '%i band' % (self.BANDS[band][0])
+        super().__init__(parent.pipe)
+
+    def mem_to_ch_bnk(self, mem):
+        return mem, self._band
+
+    def _initialize(self):
+        super()._initialize()
+        self._rf.has_name = True
+        self._rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS']
+        self._rf.has_dtcs = True
+        self._rf.has_dtcs_polarity = True
+        self._rf.has_bank = True
+        self._rf.has_tuning_step = False
+        self._rf.has_nostep_tuning = True
+        self._rf.can_odd_split = False
+        self._rf.memory_bounds = (1, 99)
+        self._rf.valid_bands = [(x * 1000000, y * 1000000) for x, y in
+                                [self.BANDS[self._band]]]
+        self._rf.valid_name_length = 16
+        self._rf.valid_characters = (chirp_common.CHARSET_ALPHANUMERIC +
+                                     '!#$%&\\?"\'`^+-*/.,:=<>()[]{}|_~@')
+        self._rf.valid_special_chans = sorted(self._SPECIAL_CHANNELS.keys())
+        # Last item is RPS for DD mode
+        self._rf.valid_duplexes = ['', '-', '+']
+        self._rf.valid_modes = [x for x in self._MODES if x]
+        if self._band != 3:
+            self._rf.valid_modes.remove('DD')
+        self._classes['mem'] = IC9700MemFrame
 
 
 def probe_model(ser):
