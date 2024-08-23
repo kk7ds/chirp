@@ -187,7 +187,7 @@ class Puxing777Radio(chirp_common.CloneModeRadio):
         elif self._memobj.model.model == PUXING_MODELS[328]:
             # There are PX-777 that says to be model 328 ...
             # for them we only know this freq limits till now
-            if self._memobj.model.limits == 0xEE:
+            if self._memobj.model.limits in (0xEE, 0xEF):
                 rf.valid_bands = [PUXING_777_BANDS[1]]
             else:
                 raise Exception("Unsupported band limits 0x%02x for PX-777" %
