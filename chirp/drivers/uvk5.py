@@ -127,7 +127,7 @@ u8 key2_longpress_action;
 u8 scan_resume_mode;
 u8 auto_keypad_lock;
 u8 power_on_dispmode;
-u8 password[4];
+u8 password[8];
 
 #seekto 0xea0;
 u8 keypad_tone;
@@ -257,9 +257,6 @@ CHANNELDISP_LIST = ["Frequency", "Channel No", "Channel Name"]
 # battery save
 BATSAVE_LIST = ["OFF", "1:1", "1:2", "1:3", "1:4"]
 
-# Backlight auto mode
-BACKLIGHT_LIST = ["Off", "1s", "2s", "3s", "4s", "5s"]
-
 # Crossband receiving/transmitting
 CROSSBAND_LIST = ["Off", "Band A", "Band B"]
 DUALWATCH_LIST = CROSSBAND_LIST
@@ -282,7 +279,6 @@ SCANRESUME_LIST = ["TO: Resume after 5 seconds",
 
 WELCOME_LIST = ["Full Screen", "Welcome Info", "Voltage"]
 KEYPADTONE_LIST = ["Off", "Chinese", "English"]
-LANGUAGE_LIST = ["Chinese", "English"]
 ALARMMODE_LIST = ["SITE", "TONE"]
 REMENDOFTALK_LIST = ["Off", "ROGER", "MDC"]
 RTE_LIST = ["Off", "100ms", "200ms", "300ms", "400ms",
@@ -638,6 +634,8 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
     _upload_calibration = False
     _pttid_list = ["off", "BOT", "EOT", "BOTH"]
     _steps = [1.0, 2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 8.33]
+    _langs = ["Chinese", "English"]
+    _backlight = ["Off"] + ['%is' % (i + 1) for i in range(5)]
 
     @classmethod
     def k5_approve_firmware(cls, firmware):
@@ -1047,7 +1045,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             # Backlight auto mode
             if element.get_name() == "backlight_auto_mode":
                 _mem.backlight_auto_mode = \
-                        BACKLIGHT_LIST.index(str(element.value))
+                        self._backlight.index(str(element.value))
 
             # Tail tone elimination
             if element.get_name() == "tail_note_elimination":
@@ -1084,7 +1082,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
 
             # Language
             if element.get_name() == "language":
-                _mem.language = LANGUAGE_LIST.index(str(element.value))
+                _mem.language = self._langs.index(str(element.value))
 
             # Alarm mode
             if element.get_name() == "alarm_mode":
@@ -1681,12 +1679,12 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
 
         # Backlight auto mode
         tmpback = _mem.backlight_auto_mode
-        if tmpback >= len(BACKLIGHT_LIST):
+        if tmpback >= len(self._backlight):
             tmpback = 0
         rs = RadioSetting("backlight_auto_mode",
                           "Backlight auto mode",
                           RadioSettingValueList(
-                              BACKLIGHT_LIST,
+                              self._backlight,
                               current_index=tmpback))
         basic.append(rs)
 
@@ -1758,11 +1756,12 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
 
         # Language
         tmplanguage = _mem.language
-        if tmplanguage >= len(LANGUAGE_LIST):
+        if tmplanguage >= len(self._langs):
             tmplanguage = 0
         rs = RadioSetting("language", "Language", RadioSettingValueList(
-            LANGUAGE_LIST, current_index=tmplanguage))
-        basic.append(rs)
+            self._langs, current_index=tmplanguage))
+        if self._langs:
+            basic.append(rs)
 
         # Alarm mode
         tmpalarmmode = _mem.alarm_mode
@@ -2067,6 +2066,27 @@ class RA79Radio(UVK5Radio):
 class MaxTalkerTK6(UVK5Radio):
     VENDOR = "MaxTalker"
     MODEL = "TK-6"
+
+
+@directory.register
+@directory.detected_by(UVK5Radio)
+class OSFWUVK5Radio(UVK5RadioBase):
+    VARIANT = 'OSFW'
+    _langs = []
+    _backlight = ['Off'] + ['%is' % (i + 1) for i in range(60)]
+
+    @classmethod
+    def k5_approve_firmware(cls, firmware):
+        return firmware in ("OSFW-bd90ca3",)
+
+    def _find_band(self, hz):
+        return _find_band(True, hz)
+
+    def set_settings(self, settings):
+        # Something about this firmware needs this cleared to avoid getting
+        # locked.
+        self._memobj.password.fill_raw(b'\xFF')
+        return super().set_settings(settings)
 
 
 @directory.register
