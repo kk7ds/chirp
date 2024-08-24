@@ -187,7 +187,7 @@ def _r2_enter_programming_mode(radio):
         raise errors.RadioError("Error communicating with radio 2")
 
     # The latest Retevis RT24 (and likely the RT24V and H777S) models no
-    # longer acknowlege the CMD_ACK above so the 'ack' will be empty and
+    # longer acknowledge the CMD_ACK above so the 'ack' will be empty and
     # fail the check causing cloning to fail.
     #
     # The factory CPS continues with or without an ack so CHIRP will

@@ -289,7 +289,7 @@ class KSunM6Radio(chirp_common.CloneModeRadio):
 
         led = settings.led
         rsv = RadioSettingValueList(LED_LIST, LED_LIST[led])
-        rs = RadioSetting("led", "LED brighness", rsv)
+        rs = RadioSetting("led", "LED brightness", rsv)
         basic.append(rs)
 
         led_timeout = settings.led_timeout
