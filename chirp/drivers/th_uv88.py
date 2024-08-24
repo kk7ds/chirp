@@ -1010,7 +1010,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         def _name_apply(setting, obj1, atrb1, obj2, atrb2):
             # Store a trunctaded version avec the first line
             # in basicsettings.intrScreen1. The original
-            # do this for an unkown reason
+            # do this for an unknown reason
             setattr(obj1, atrb1, str(setting.value)[:12])
             setattr(obj2, atrb2, setting.value)
             return
@@ -1036,7 +1036,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
             rx.set_validate_callback(_name_validate)
             rset = RadioSetting("openradioname.name1", "Intro Line 1", rx)
 
-            # On model others than RA89 store a trunctated name1 into
+            # On model others than RA89 store a truncated name1 into
             # basicsettings
             if self.MODEL != "RA89":
                 rset.set_apply_callback(_name_apply, _settings, "introScreen1",

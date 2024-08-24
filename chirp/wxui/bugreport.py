@@ -168,7 +168,7 @@ class Start(BugReportPage):
                 self,
                 _('The debug log file is not available when CHIRP is run '
                   'interactively from the command-line. Thus, this tool will '
-                  'not upload what you expect. It is recomended that you '
+                  'not upload what you expect. It is recommended that you '
                   'quit now and run CHIRP non-interactively (or with stdin '
                   'redirected to /dev/null)'),
                 _('Warning'),

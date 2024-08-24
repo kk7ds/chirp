@@ -823,7 +823,7 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
         # menu 17 - APO
         options = ["Off", "30", "60", "90", "120", "180"]
         rs = RadioSettingValueList(options, options[_settings.apo])
-        rset = RadioSetting("apo", "Automaitc Power Off [min]", rs)
+        rset = RadioSetting("apo", "Automatic Power Off [min]", rs)
         rset.set_doc("Menu 17")
         basic.append(rset)
 
