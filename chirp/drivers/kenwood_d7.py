@@ -254,6 +254,7 @@ class KenwoodD7Family(chirp_common.LiveRadio):
     _TONES = chirp_common.OLD_TONES
     _LOWER = 0
     _UPPER = 199
+    _BANDS = []
 
     _CALL_CHANS = ("VHF Call", "UHF Call")
     _SPECIAL_CHANS = ("L0", "U0",
@@ -1035,6 +1036,7 @@ class KenwoodD7Family(chirp_common.LiveRadio):
         rf.valid_tuning_steps = self._STEPS
         rf.memory_bounds = (self._LOWER, self._UPPER)
         rf.valid_special_chans = self._SPECIAL_CHANS
+        rf.valid_bands = self._BANDS
         return rf
 
     def get_memory(self, memid_or_index):
@@ -1129,6 +1131,7 @@ class THD7Radio(KenwoodD7Family):
     """Kenwood TH-D7"""
     MODEL = "TH-D7"
 
+    _BANDS = [(118000000, 174000000), (400000000, 470000000)]
     _SETTINGS = {
         "BEPT": {'type': 'list',
                  'values': ("Off", "Mine", "All New")},
@@ -1230,6 +1233,7 @@ class THD7GRadio(KenwoodD7Family):
     """Kenwood TH-D7G"""
     MODEL = "TH-D7G"
 
+    _BANDS = [(118000000, 174000000), (400000000, 470000000)]
     _APRS_EXTRA = (('WEATHER Station (blue)', '1,/#'),
                    ('House QTH (VHF)', '1,/-'),
                    ('Boy Scouts', '1,/,'),
@@ -2099,6 +2103,7 @@ class TMD700Radio(KenwoodD7Family):
     _BAUDS = [57600, 38400, 19200, 9600]
     _LOWER = 1
     _UPPER = 200
+    _BANDS = [(118000000, 524000000), (800000000, 1300000000)]
 
     _BOOL = {'type': 'bool'}
     _PKEY_FUNCTION = {'type': 'list',
