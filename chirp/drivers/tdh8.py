@@ -1002,7 +1002,7 @@ class TDH8(chirp_common.CloneModeRadio):
     MODEL = "TD-H8"
     ident_mode = b'P31183\xff\xff'
     BAUD_RATE = 38400
-    MODES = ["FM", "NFM"]
+    MODES = ["FM", "NFM", "AM"]
     _memsize = 0x1eef
     _ranges_main = [(0x0000, 0x1eef)]
     _idents = [TD_H8]
@@ -1261,14 +1261,8 @@ class TDH8(chirp_common.CloneModeRadio):
 
         if in_range(mem.freq, self._rxbands):
             mem.duplex = 'off'
-            mem.immutable.append('duplex')
         if in_range(mem.freq, [AIRBAND]):
-            # NOTE: AM is not in valid_modes because you can't arbitrarily
-            # enable it on this radio. However, we can expose it as immutable
-            # which will display properly in the UI and not allow the user
-            # to change those channels to FM.
             mem.mode = 'AM'
-            mem.immutable.append('mode')
 
         return mem
 
@@ -2467,6 +2461,19 @@ class TDH8(chirp_common.CloneModeRadio):
                 LOG.debug(element.get_name())
                 raise
 
+    def validate_memory(self, mem):
+        msgs = []
+        if in_range(mem.freq, [AIRBAND]) and not mem.mode == 'AM':
+            msgs.append(chirp_common.ValidationWarning(
+                _('Frequency in this range requires AM mode')))
+        if not in_range(mem.freq, [AIRBAND]) and mem.mode == 'AM':
+            msgs.append(chirp_common.ValidationWarning(
+                _('Frequency in this range must not be AM mode')))
+        if not in_range(mem.freq, self._txbands) and mem.duplex != 'off':
+            msgs.append(chirp_common.ValidationWarning(
+                _('Frequency outside TX bands must be duplex=off')))
+        return msgs + super().validate_memory(mem)
+
 
 @directory.register
 @directory.detected_by(TDH8)
@@ -2478,13 +2485,6 @@ class TDH8_HAM(TDH8):
     _rxbands = [(136000000, 143999000), (149000001, 174000000),
                 (400000000, 419999000), (451000001, 521000000)]
     _txbands = [(144000000, 149000000), (420000000, 451000000)]
-
-    def check_set_memory_immutable_policy(self, existing, new):
-        # Immutable duplex handling is done in set_memory, so no need
-        # to ever obsess over it here.
-        if 'duplex' in existing.immutable:
-            existing.immutable.remove('duplex')
-        super().check_set_memory_immutable_policy(existing, new)
 
 
 @directory.register
@@ -2579,22 +2579,3 @@ class RT730(TDH8):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_RT730, self._mmap)
-
-    def check_set_memory_immutable_policy(self, existing, new):
-        if (AIRBAND[0] <= new.freq <= AIRBAND[1] and
-                new.mode == 'AM'):
-            # This is valid, so mark mode as immutable so it doesn't get
-            # blocked, and let the radio override it during set.
-            new.immutable.append('mode')
-            existing.immutable = []
-        elif existing.mode == 'AM' and new.mode in self.MODES:
-            # If we're going from a forced-AM channel to some valid one,
-            # clear immutable so we allow the change.
-            try:
-                existing.immutable.remove('mode')
-            except ValueError:
-                pass
-        if (in_range(new.freq, self._txbands) and
-                'duplex' in existing.immutable):
-            existing.immutable.remove('duplex')
-        super().check_set_memory_immutable_policy(existing, new)
