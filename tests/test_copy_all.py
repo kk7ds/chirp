@@ -1,5 +1,6 @@
 import os
 
+from chirp import chirp_common
 from chirp.drivers import generic_csv
 from chirp import import_logic
 from tests import base
@@ -47,6 +48,16 @@ class TestCaseCopyAll(base.DriverTest):
             except import_logic.DestNotCompatible:
                 continue
 
+            warn, err = chirp_common.split_validation_msgs(
+                self.radio.validate_memory(dst_mem))
             self.radio.set_memory(dst_mem)
+
+            if warn:
+                # If the radio warned about something, we can assume it's
+                # about duplex (i.e. tx inhibit) or mode (i.e. AM only on
+                # airband)
+                ignore = ['duplex', 'mode']
+            else:
+                ignore = None
             ret_mem = self.radio.get_memory(dst_number)
-            self.assertEqualMem(dst_mem, ret_mem)
+            self.assertEqualMem(dst_mem, ret_mem, ignore=ignore)
