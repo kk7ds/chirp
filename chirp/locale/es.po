@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-24 14:40+0200\n"
-"PO-Revision-Date: 2024-06-26 00:31-0400\n"
+"POT-Creation-Date: 2024-08-20 14:50-0700\n"
+"PO-Revision-Date: 2024-08-25 00:38-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -95,6 +95,8 @@ msgid ""
 "1. Connect programming cable to MIC jack.\n"
 "2. Press OK."
 msgstr ""
+"1. Conecta el cable de programación a la toma MIC.\n"
+"2. Presiona Aceptar."
 
 #: ../drivers/alinco.py:605 ../drivers/alinco.py:614
 msgid ""
@@ -2085,6 +2087,8 @@ msgstr "Memorias"
 #: ../drivers/uvk5.py:2093
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
+"Las memorias son de sólo lectura debido a una versión de firmware no "
+"soportada"
 
 #: ../wxui/memedit.py:1583
 #, python-format
@@ -2590,6 +2594,7 @@ msgstr "Ajustes"
 #: ../drivers/uvk5.py:2097
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr ""
+"Los ajustes son de sólo lectura debido a una versión de firmware no soportada"
 
 #: ../wxui/memedit.py:140
 msgid "Shift amount (or transmit frequency) controlled by duplex"
@@ -2680,6 +2685,9 @@ msgid ""
 "when using lesser common radio variants.\n"
 "Proceed at your own risk, and let us know about issues!"
 msgstr ""
+"Probada y en su mayoría funciona, pero puede darte algunos problemas\n"
+"cuando se utilizan variantes de radio poco comunes.\n"
+"¡Procede bajo tu propio riesgo, y haznos saber sobre los problemas!"
 
 #: ../wxui/query_sources.py:480
 msgid "The DMR-MARC Worldwide Network"
@@ -3075,6 +3083,7 @@ msgstr "Cargar instrucciones"
 #: ../drivers/uvk5.py:2084
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr ""
+"La carga está deshabilitada debido a una versión de firmware no soportada"
 
 #: ../wxui/main.py:1021
 msgid "Upload to radio"
