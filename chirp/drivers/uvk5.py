@@ -545,7 +545,7 @@ def do_download(radio):
     if not f:
         raise errors.RadioError('Unable to determine firmware version')
 
-    if not radio.k5_approve_firmware(f):
+    if not radio.k5_approve_firmware(f) and radio.VARIANT != 'unsupported':
         raise errors.RadioError(
             'Firmware version is not supported by this driver')
 
