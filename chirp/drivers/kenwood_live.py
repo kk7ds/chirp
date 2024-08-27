@@ -394,6 +394,7 @@ class KenwoodOldLiveRadio(KenwoodLiveRadio):
 class TMV7Radio(KenwoodOldLiveRadio):
     """Kenwood TM-V7"""
     MODEL = "TM-V7"
+    HARDWARE_FLOW = False
 
     mem_upper_limit = 200  # Will be updated
 
