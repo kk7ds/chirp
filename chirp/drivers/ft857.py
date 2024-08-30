@@ -514,7 +514,7 @@ class FT857Radio(ft817.FT817Radio):
             # this code has already been tested
             _mem.dcs = _mem.rxdcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         elif mem.tmode == "DTCS":
-            _mem.dcs = _mem.rxdcs = chirp_common.DTCS_CODES.index(mem.rx_dtcs)
+            _mem.dcs = _mem.rxdcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         elif mem.tmode == "Cross":
             _mem.tone = chirp_common.TONES.index(mem.rtone)
             _mem.rxtone = chirp_common.TONES.index(mem.ctone)
