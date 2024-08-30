@@ -855,11 +855,17 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
 
             dtmf.append(rs)
 
+            try:
+                current_group = DTMFCHARS[int(anicode.groupcode)]
+            except IndexError:
+                LOG.warning('ANI group code index %i out of range',
+                            anicode.groupcode)
+                current_group = DTMFCHARS[0]
             dtmf.append(
                 RadioSetting(
                     "anicode.groupcode", "Group Code",
                     RadioSettingValueList(list(DTMFCHARS),
-                                          DTMFCHARS[int(anicode.groupcode)])))
+                                          current_group)))
 
         else:
             dtmf.append(
