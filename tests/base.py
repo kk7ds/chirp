@@ -174,15 +174,16 @@ class DriverTest(unittest.TestCase):
                                         (a.tmode == "Cross" and
                                          rx_mode == "Tone"))):
                 continue
-            elif k == "dtcs" and not (
-                    (a.tmode == "DTCS" and not self.rf.has_rx_dtcs) or
-                    (a.tmode == "Cross" and tx_mode == "DTCS") or
-                    (a.tmode == "Cross" and rx_mode == "DTCS" and
-                     not self.rf.has_rx_dtcs)):
+            elif k == "dtcs" and (a.tmode != 'DTCS' or
+                                  (a.tmode == 'Cross' and tx_mode != 'DTCS')):
+                # If we are not in a tmode where a transmit DTCS code is
+                # required, we do not care if the code is persisted.
                 continue
             elif k == "rx_dtcs" and (not self.rf.has_rx_dtcs or
                                      not (a.tmode == "Cross" and
                                           rx_mode == "DTCS")):
+                # If we are not in a tmode where a receive DTCS code is
+                # required, we do not care if the code is persisted.
                 continue
             elif k == "offset" and not a.duplex:
                 continue
