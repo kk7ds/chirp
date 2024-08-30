@@ -1040,10 +1040,10 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
             elif mem.tmode == 'DTCS':
                 _mem.dtcs_encode_en = 1
                 _mem.dtcs_encode_code, _mem.dtcs_encode_code_highbit = \
-                    dtcs_code_val_to_bits(mem.rx_dtcs)
+                    dtcs_code_val_to_bits(mem.dtcs)
                 _mem.dtcs_decode_en = 1
                 _mem.dtcs_decode_code, _mem.dtcs_decode_code_highbit = \
-                    dtcs_code_val_to_bits(mem.rx_dtcs)
+                    dtcs_code_val_to_bits(mem.dtcs)
                 _mem.tone_squelch_en = 1
             elif mem.tmode == 'Cross':
                 txmode, rxmode = mem.cross_mode.split('->')
