@@ -1030,7 +1030,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
         if mem.tmode == "TSQL":
             chan.tx_ctcss = chan.rx_ctcss  # CHIRP uses ctone for TSQL
         if mem.tmode == "DTCS":
-            chan.tx_dcs = chan.rx_dcs     # CHIRP uses rx_dtcs for DTCS
+            chan.rx_dcs = chan.tx_dcs     # CHIRP uses rx_dtcs for DTCS
         # select the correct internal dictionary and key
         mode_dict, key = [
             (TONE_DICT, mem.tmode),
