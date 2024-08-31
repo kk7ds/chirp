@@ -1292,7 +1292,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             basic.append(rset)
 
             rs = RadioSettingValueList(VOICE_LIST, VOICE_LIST[_settings.voice])
-            rset = RadioSetting("voice", "Voice Annumciation", rs)
+            rset = RadioSetting("voice", "Voice Annunciation", rs)
             basic.append(rset)
 
             if self.MODEL == "RB17A":
