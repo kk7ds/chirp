@@ -579,12 +579,12 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
 
         _mem.rxfreq = mem.freq // 10
         if mem.duplex == '':
-            if isinstance(self, Senhaix8800Radio):
-                _mem.allow_tx = False
             _mem.txfreq = mem.freq // 10
         elif mem.duplex == 'split':
             _mem.txfreq = mem.offset // 10
         elif mem.duplex == 'off':
+            if isinstance(self, Senhaix8800Radio):
+                _mem.allow_tx = False
             for i in range(0, 4):
                 _mem.txfreq[i].set_raw(b'\xFF')
         elif mem.duplex == '-':
