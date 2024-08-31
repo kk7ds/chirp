@@ -548,6 +548,10 @@ class RT22Radio(chirp_common.CloneModeRadio):
             _mem.set_raw("\xFF" * (_mem.size() // 8))
             return
 
+        # Initialize the memory to a known-good state
+        _mem.fill_raw(b'\x00')
+        _mem.unknown5[0] = 0x80
+
         _mem.rxfreq = mem.freq / 10
 
         if mem.duplex == "off":
