@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-25 09:47-0700\n"
+"POT-Creation-Date: 2024-08-31 08:35-0700\n"
 "PO-Revision-Date: 2023-10-11 16:47+0300\n"
 "Last-Translator: Olesya Gerasimenko <translation-team@basealt.ru>\n"
 "Language-Team: Basealt Translation Team\n"
@@ -83,7 +83,7 @@ msgstr ""
 msgid "(none)"
 msgstr "(нет)"
 
-#: ../wxui/memedit.py:2074
+#: ../wxui/memedit.py:2092
 #, python-format
 msgid "...and %i more"
 msgstr "...и ещё %i"
@@ -1187,7 +1187,7 @@ msgstr[2] "Объединить ячейки памяти (%i) в кластер
 msgid "Comment"
 msgstr "Комментарий"
 
-#: ../wxui/clone.py:258
+#: ../wxui/clone.py:286
 msgid "Communicate with radio"
 msgstr "Обмен данными со станцией"
 
@@ -1227,7 +1227,7 @@ msgstr "Страна"
 msgid "Cross Mode"
 msgstr "Кросс-режим"
 
-#: ../wxui/clone.py:466
+#: ../wxui/clone.py:495
 msgid "Custom Port"
 msgstr "Пользовательский порт"
 
@@ -1255,7 +1255,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2340
+#: ../wxui/memedit.py:2358
 msgid "DV Memory"
 msgstr "DV-память"
 
@@ -1291,7 +1291,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr "Сравнить необработанные ячейки памяти"
 
-#: ../wxui/memedit.py:2265
+#: ../wxui/memedit.py:2283
 msgid "Digital Code"
 msgstr "Цифровой код"
 
@@ -1338,7 +1338,7 @@ msgstr "Загрузить из станции"
 msgid "Download from radio..."
 msgstr "Загрузить из станции..."
 
-#: ../wxui/clone.py:585
+#: ../wxui/clone.py:624
 msgid "Download instructions"
 msgstr "Инструкции по загрузке"
 
@@ -1363,12 +1363,12 @@ msgstr ""
 msgid "Duplex"
 msgstr "Дуплекс"
 
-#: ../wxui/memedit.py:2295
+#: ../wxui/memedit.py:2313
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Редактировать сведения о ячейках памяти (%i)"
 
-#: ../wxui/memedit.py:2293
+#: ../wxui/memedit.py:2311
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Редактировать сведения о ячейке памяти (%i)"
@@ -1398,7 +1398,7 @@ msgstr "Введите частоту TX (МГц)"
 msgid "Enter a new name for bank %s:"
 msgstr "Введите новое имя банка %s:"
 
-#: ../wxui/clone.py:465
+#: ../wxui/clone.py:494
 msgid "Enter custom port:"
 msgstr "Введите пользовательский порт:"
 
@@ -1437,7 +1437,7 @@ msgstr "Стёрта ячейка памяти %s"
 msgid "Error applying settings"
 msgstr "Ошибка применения параметров"
 
-#: ../wxui/clone.py:510
+#: ../wxui/clone.py:549
 msgid "Error communicating with radio"
 msgstr "Ошибка обмена данными со станцией"
 
@@ -1445,11 +1445,11 @@ msgstr "Ошибка обмена данными со станцией"
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:543
+#: ../wxui/clone.py:582
 msgid "Experimental driver"
 msgstr "Экспериментальный драйвер"
 
-#: ../wxui/memedit.py:2218
+#: ../wxui/memedit.py:2236
 msgid "Export can only write CSV files"
 msgstr "При экспорте можно выполнять запись только в файлы CSV"
 
@@ -1461,7 +1461,7 @@ msgstr "Экспорт в CSV"
 msgid "Export to CSV..."
 msgstr "Экспорт в CSV..."
 
-#: ../wxui/memedit.py:2329
+#: ../wxui/memedit.py:2347
 msgid "Extra"
 msgstr "Дополнительно"
 
@@ -1930,7 +1930,7 @@ msgstr "Создать значок на рабочем столе?"
 msgid "Interact with driver"
 msgstr "Обмен данными с драйвером"
 
-#: ../wxui/clone.py:607
+#: ../wxui/clone.py:646
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Ошибка"
@@ -1948,7 +1948,7 @@ msgstr "Некорректная запись"
 msgid "Invalid ZIP code"
 msgstr "Неверный почтовый индекс"
 
-#: ../wxui/memedit.py:1552 ../wxui/memedit.py:2420
+#: ../wxui/memedit.py:1552 ../wxui/memedit.py:2438
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Некорректное изменение: %s"
@@ -2070,7 +2070,7 @@ msgstr "Долгота"
 msgid "Memories"
 msgstr "Ячейки памяти"
 
-#: ../drivers/uvk5.py:2093
+#: ../drivers/uvk5.py:2094
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -2096,7 +2096,7 @@ msgstr "Ячейка памяти {num} отсутствует в банке {ba
 msgid "Mode"
 msgstr "Режим"
 
-#: ../wxui/clone.py:288
+#: ../wxui/clone.py:317
 msgid "Model"
 msgstr "Модель"
 
@@ -2116,7 +2116,7 @@ msgstr "Модуль загружен"
 msgid "Module loaded successfully"
 msgstr "Модуль успешно загружен"
 
-#: ../wxui/clone.py:436
+#: ../wxui/clone.py:465
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Найдено более одного порта: %s"
@@ -2129,7 +2129,7 @@ msgstr "Переместить вниз"
 msgid "Move Up"
 msgstr "Переместить вверх"
 
-#: ../wxui/memedit.py:2130
+#: ../wxui/memedit.py:2148
 msgid "Move operations are disabled while the view is sorted"
 msgstr ""
 
@@ -2153,6 +2153,10 @@ msgstr "Модули не найдены"
 #, python-format
 msgid "No modules found in issue %i"
 msgstr "В задаче %i не найдены модули"
+
+#: ../wxui/memedit.py:2030
+msgid "No more space available; some memories were not applied"
+msgstr ""
 
 #: ../sources/przemienniki.py:53
 msgid "No results"
@@ -2238,7 +2242,7 @@ msgstr "Опционально: 45.0000"
 msgid "Optional: County, Hospital, etc."
 msgstr "Опционально: округ, больница и т.д."
 
-#: ../wxui/memedit.py:2005
+#: ../wxui/memedit.py:2010
 msgid "Overwrite memories?"
 msgstr "Перезаписать ячейки памяти?"
 
@@ -2264,22 +2268,22 @@ msgstr ""
 msgid "Paste"
 msgstr "Вставить"
 
-#: ../wxui/memedit.py:1999
+#: ../wxui/memedit.py:2004
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr "Вставленные ячейки памяти перезапишут существующие ячейки памяти (%s)"
 
-#: ../wxui/memedit.py:2002
+#: ../wxui/memedit.py:2007
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "Вставленные ячейки памяти перезапишут ячейки памяти (%s)"
 
-#: ../wxui/memedit.py:1996
+#: ../wxui/memedit.py:2001
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr "Вставленные ячейки памяти перезапишут ячейку памяти %s"
 
-#: ../wxui/memedit.py:1993
+#: ../wxui/memedit.py:1998
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr "Вставленная ячейка памяти перезапишет ячейку памяти %s"
@@ -2349,11 +2353,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Подождите"
 
-#: ../wxui/clone.py:413
+#: ../wxui/clone.py:442
 msgid "Plug in your cable and then click OK"
 msgstr "Подключите кабель и нажмите «ОК»"
 
-#: ../wxui/clone.py:281
+#: ../wxui/clone.py:309
 msgid "Port"
 msgstr "Порт"
 
@@ -2399,7 +2403,7 @@ msgstr "Станция"
 msgid "Radio did not ack block %i"
 msgstr "Станция не распознала блок %i"
 
-#: ../wxui/clone.py:577 ../wxui/clone.py:668
+#: ../wxui/clone.py:616 ../wxui/clone.py:708
 msgid "Radio information"
 msgstr "Информация о станции"
 
@@ -2570,7 +2574,7 @@ msgstr "Служба"
 msgid "Settings"
 msgstr "Параметры"
 
-#: ../drivers/uvk5.py:2097
+#: ../drivers/uvk5.py:2098
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -2595,7 +2599,7 @@ msgstr "Показать дополнительные поля"
 msgid "Show image backup location"
 msgstr "Показать расположение журнала отладки"
 
-#: ../wxui/memedit.py:2078
+#: ../wxui/memedit.py:2096
 msgid "Some memories are incompatible with this radio"
 msgstr "Некоторые ячейки памяти несовместимы с этой станцией"
 
@@ -2927,12 +2931,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Шаг настройки"
 
-#: ../wxui/clone.py:407 ../wxui/clone.py:414 ../wxui/clone.py:425
-#: ../wxui/clone.py:433 ../wxui/clone.py:437
+#: ../wxui/clone.py:436 ../wxui/clone.py:443 ../wxui/clone.py:454
+#: ../wxui/clone.py:462 ../wxui/clone.py:466
 msgid "USB Port Finder"
 msgstr "Поиск USB-портов"
 
-#: ../wxui/clone.py:423
+#: ../wxui/clone.py:452
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2990,7 +2994,7 @@ msgstr "Невозможно обнаружить %s в этой системе"
 msgid "United States"
 msgstr "Соединённые Штаты"
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:435
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Отключите кабель (если требуется) и нажмите «ОК»"
 
@@ -3008,11 +3012,11 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "Обновление URCALL"
 
-#: ../wxui/clone.py:683
+#: ../wxui/clone.py:723
 msgid "Upload instructions"
 msgstr "Отправка инструкций"
 
-#: ../drivers/uvk5.py:2084
+#: ../drivers/uvk5.py:2085
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr ""
 
@@ -3065,11 +3069,11 @@ msgstr "Значение должно содержать десятичные ц
 msgid "Value must be zero or greater"
 msgstr "Значение должно быть больше или равно нулю"
 
-#: ../wxui/memedit.py:2320
+#: ../wxui/memedit.py:2338
 msgid "Values"
 msgstr "Значения"
 
-#: ../wxui/clone.py:284
+#: ../wxui/clone.py:312
 msgid "Vendor"
 msgstr "Изготовитель"
 
@@ -3105,7 +3109,7 @@ msgid ""
 "another, please do so via the website."
 msgstr ""
 
-#: ../wxui/clone.py:431
+#: ../wxui/clone.py:460
 msgid "Your cable appears to be on port:"
 msgstr "Похоже, ваш кабель вставлен в порт:"
 

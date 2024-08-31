@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-25 09:47-0700\n"
+"POT-Creation-Date: 2024-08-31 08:35-0700\n"
 "PO-Revision-Date: 2012-03-18 12:01+0100\n"
 "Last-Translator: Michael Tel <m.tel@xs4all.nl>\n"
 "Language-Team: Dutch\n"
@@ -76,7 +76,7 @@ msgstr ""
 msgid "(none)"
 msgstr ""
 
-#: ../wxui/memedit.py:2074
+#: ../wxui/memedit.py:2092
 #, python-format
 msgid "...and %i more"
 msgstr ""
@@ -830,7 +830,7 @@ msgstr[1] "Verschillen ruwe kanalen"
 msgid "Comment"
 msgstr "Opmerking"
 
-#: ../wxui/clone.py:258
+#: ../wxui/clone.py:286
 msgid "Communicate with radio"
 msgstr ""
 
@@ -869,7 +869,7 @@ msgstr ""
 msgid "Cross Mode"
 msgstr "Cross-mode"
 
-#: ../wxui/clone.py:466
+#: ../wxui/clone.py:495
 msgid "Custom Port"
 msgstr ""
 
@@ -897,7 +897,7 @@ msgstr "DTCS Pol"
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2340
+#: ../wxui/memedit.py:2358
 msgid "DV Memory"
 msgstr ""
 
@@ -933,7 +933,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr "Verschillen ruwe kanalen"
 
-#: ../wxui/memedit.py:2265
+#: ../wxui/memedit.py:2283
 msgid "Digital Code"
 msgstr "Digitale code"
 
@@ -982,7 +982,7 @@ msgstr "Download van radio"
 msgid "Download from radio..."
 msgstr "Download van radio"
 
-#: ../wxui/clone.py:585
+#: ../wxui/clone.py:624
 #, fuzzy
 msgid "Download instructions"
 msgstr "Download van radio"
@@ -1007,12 +1007,12 @@ msgstr ""
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2295
+#: ../wxui/memedit.py:2313
 #, python-format
 msgid "Edit details for %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2293
+#: ../wxui/memedit.py:2311
 #, python-format
 msgid "Edit details for memory %i"
 msgstr ""
@@ -1043,7 +1043,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:465
+#: ../wxui/clone.py:494
 msgid "Enter custom port:"
 msgstr ""
 
@@ -1083,7 +1083,7 @@ msgstr "Wis kanaal {loc}"
 msgid "Error applying settings"
 msgstr "Fout bij het instellen van het geheugen"
 
-#: ../wxui/clone.py:510
+#: ../wxui/clone.py:549
 msgid "Error communicating with radio"
 msgstr ""
 
@@ -1091,11 +1091,11 @@ msgstr ""
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:543
+#: ../wxui/clone.py:582
 msgid "Experimental driver"
 msgstr ""
 
-#: ../wxui/memedit.py:2218
+#: ../wxui/memedit.py:2236
 msgid "Export can only write CSV files"
 msgstr ""
 
@@ -1109,7 +1109,7 @@ msgstr "Exporteren naar bestand"
 msgid "Export to CSV..."
 msgstr "Exporteren naar bestand"
 
-#: ../wxui/memedit.py:2329
+#: ../wxui/memedit.py:2347
 msgid "Extra"
 msgstr ""
 
@@ -1481,7 +1481,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:607
+#: ../wxui/clone.py:646
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Interne fout"
@@ -1500,7 +1500,7 @@ msgstr "Ongeldige waarde voor dit veld"
 msgid "Invalid ZIP code"
 msgstr ""
 
-#: ../wxui/memedit.py:1552 ../wxui/memedit.py:2420
+#: ../wxui/memedit.py:1552 ../wxui/memedit.py:2438
 #, python-format
 msgid "Invalid edit: %s"
 msgstr ""
@@ -1618,7 +1618,7 @@ msgstr ""
 msgid "Memories"
 msgstr "Kanalen"
 
-#: ../drivers/uvk5.py:2093
+#: ../drivers/uvk5.py:2094
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -1645,7 +1645,7 @@ msgstr ""
 msgid "Mode"
 msgstr "Mode"
 
-#: ../wxui/clone.py:288
+#: ../wxui/clone.py:317
 msgid "Model"
 msgstr "Model"
 
@@ -1666,7 +1666,7 @@ msgstr ""
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:436
+#: ../wxui/clone.py:465
 #, python-format
 msgid "More than one port found: %s"
 msgstr ""
@@ -1681,7 +1681,7 @@ msgstr "Verplaats omlaa_g"
 msgid "Move Up"
 msgstr "Verplaats om_hoog"
 
-#: ../wxui/memedit.py:2130
+#: ../wxui/memedit.py:2148
 msgid "Move operations are disabled while the view is sorted"
 msgstr ""
 
@@ -1705,6 +1705,10 @@ msgstr ""
 #: ../wxui/developer.py:592
 #, python-format
 msgid "No modules found in issue %i"
+msgstr ""
+
+#: ../wxui/memedit.py:2030
+msgid "No more space available; some memories were not applied"
 msgstr ""
 
 #: ../sources/przemienniki.py:53
@@ -1795,7 +1799,7 @@ msgstr ""
 msgid "Optional: County, Hospital, etc."
 msgstr ""
 
-#: ../wxui/memedit.py:2005
+#: ../wxui/memedit.py:2010
 #, fuzzy
 msgid "Overwrite memories?"
 msgstr "Overschrijven?"
@@ -1819,22 +1823,22 @@ msgstr ""
 msgid "Paste"
 msgstr "Plakken"
 
-#: ../wxui/memedit.py:1999
+#: ../wxui/memedit.py:2004
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2002
+#: ../wxui/memedit.py:2007
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1996
+#: ../wxui/memedit.py:2001
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1993
+#: ../wxui/memedit.py:1998
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
@@ -1881,11 +1885,11 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../wxui/clone.py:413
+#: ../wxui/clone.py:442
 msgid "Plug in your cable and then click OK"
 msgstr ""
 
-#: ../wxui/clone.py:281
+#: ../wxui/clone.py:309
 msgid "Port"
 msgstr "Poort"
 
@@ -1932,7 +1936,7 @@ msgstr "Radio"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:577 ../wxui/clone.py:668
+#: ../wxui/clone.py:616 ../wxui/clone.py:708
 #, fuzzy
 msgid "Radio information"
 msgstr "Informatie van de bank ophalen"
@@ -2100,7 +2104,7 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: ../drivers/uvk5.py:2097
+#: ../drivers/uvk5.py:2098
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -2124,7 +2128,7 @@ msgstr ""
 msgid "Show image backup location"
 msgstr ""
 
-#: ../wxui/memedit.py:2078
+#: ../wxui/memedit.py:2096
 #, fuzzy
 msgid "Some memories are incompatible with this radio"
 msgstr "Geplakt kanaal {number} is niet compatibel met deze radio omdat:"
@@ -2419,12 +2423,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Kanaal-afstand"
 
-#: ../wxui/clone.py:407 ../wxui/clone.py:414 ../wxui/clone.py:425
-#: ../wxui/clone.py:433 ../wxui/clone.py:437
+#: ../wxui/clone.py:436 ../wxui/clone.py:443 ../wxui/clone.py:454
+#: ../wxui/clone.py:462 ../wxui/clone.py:466
 msgid "USB Port Finder"
 msgstr ""
 
-#: ../wxui/clone.py:423
+#: ../wxui/clone.py:452
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2478,7 +2482,7 @@ msgstr "Niet in staat om wijzigingen voor dit model te maken"
 msgid "United States"
 msgstr ""
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:435
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
 
@@ -2496,11 +2500,11 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "Bijwerken URCALL lijst"
 
-#: ../wxui/clone.py:683
+#: ../wxui/clone.py:723
 msgid "Upload instructions"
 msgstr ""
 
-#: ../drivers/uvk5.py:2084
+#: ../drivers/uvk5.py:2085
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr ""
 
@@ -2555,11 +2559,11 @@ msgstr ""
 msgid "Value must be zero or greater"
 msgstr ""
 
-#: ../wxui/memedit.py:2320
+#: ../wxui/memedit.py:2338
 msgid "Values"
 msgstr ""
 
-#: ../wxui/clone.py:284
+#: ../wxui/clone.py:312
 msgid "Vendor"
 msgstr "Merk"
 
@@ -2596,7 +2600,7 @@ msgid ""
 "another, please do so via the website."
 msgstr ""
 
-#: ../wxui/clone.py:431
+#: ../wxui/clone.py:460
 msgid "Your cable appears to be on port:"
 msgstr ""
 

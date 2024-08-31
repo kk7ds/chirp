@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-25 09:47-0700\n"
+"POT-Creation-Date: 2024-08-31 08:35-0700\n"
 "PO-Revision-Date: 2015-01-28 13:47+0100\n"
 "Last-Translator: Attila Joubert <joubert.attila@gmail.com>\n"
 "Language-Team: English\n"
@@ -76,7 +76,7 @@ msgstr ""
 msgid "(none)"
 msgstr ""
 
-#: ../wxui/memedit.py:2074
+#: ../wxui/memedit.py:2092
 #, fuzzy, python-format
 msgid "...and %i more"
 msgstr "...és minden memória felfelé lép"
@@ -830,7 +830,7 @@ msgstr[1] "Memóriasorok összehasonlítása"
 msgid "Comment"
 msgstr "Megjegyzés"
 
-#: ../wxui/clone.py:258
+#: ../wxui/clone.py:286
 msgid "Communicate with radio"
 msgstr ""
 
@@ -869,7 +869,7 @@ msgstr ""
 msgid "Cross Mode"
 msgstr "Kereszt-üzem"
 
-#: ../wxui/clone.py:466
+#: ../wxui/clone.py:495
 msgid "Custom Port"
 msgstr ""
 
@@ -897,7 +897,7 @@ msgstr "DTCS pol."
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2340
+#: ../wxui/memedit.py:2358
 #, fuzzy
 msgid "DV Memory"
 msgstr "ez a memória"
@@ -934,7 +934,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr "Memóriasorok összehasonlítása"
 
-#: ../wxui/memedit.py:2265
+#: ../wxui/memedit.py:2283
 msgid "Digital Code"
 msgstr "Digitális kód"
 
@@ -984,7 +984,7 @@ msgstr "Letöltés a rádióról"
 msgid "Download from radio..."
 msgstr "Letöltés a rádióról"
 
-#: ../wxui/clone.py:585
+#: ../wxui/clone.py:624
 #, fuzzy
 msgid "Download instructions"
 msgstr "{name} Utasítások"
@@ -1009,12 +1009,12 @@ msgstr ""
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2295
+#: ../wxui/memedit.py:2313
 #, fuzzy, python-format
 msgid "Edit details for %i memories"
 msgstr "Több memória szerkesztése"
 
-#: ../wxui/memedit.py:2293
+#: ../wxui/memedit.py:2311
 #, python-format
 msgid "Edit details for memory %i"
 msgstr ""
@@ -1046,7 +1046,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:465
+#: ../wxui/clone.py:494
 msgid "Enter custom port:"
 msgstr ""
 
@@ -1086,7 +1086,7 @@ msgstr "A(z) {loc}. memóriahely törlése"
 msgid "Error applying settings"
 msgstr "Hiba a(z) %s érték beállításakor"
 
-#: ../wxui/clone.py:510
+#: ../wxui/clone.py:549
 msgid "Error communicating with radio"
 msgstr ""
 
@@ -1094,12 +1094,12 @@ msgstr ""
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:543
+#: ../wxui/clone.py:582
 #, fuzzy
 msgid "Experimental driver"
 msgstr "Folytassam kísérleti driver-rel?"
 
-#: ../wxui/memedit.py:2218
+#: ../wxui/memedit.py:2236
 msgid "Export can only write CSV files"
 msgstr ""
 
@@ -1113,7 +1113,7 @@ msgstr "Export fájlba"
 msgid "Export to CSV..."
 msgstr "Export fájlba"
 
-#: ../wxui/memedit.py:2329
+#: ../wxui/memedit.py:2347
 msgid "Extra"
 msgstr ""
 
@@ -1490,7 +1490,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:607
+#: ../wxui/clone.py:646
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Belső hiba"
@@ -1509,7 +1509,7 @@ msgstr "Érvénytelen érték %s"
 msgid "Invalid ZIP code"
 msgstr ""
 
-#: ../wxui/memedit.py:1552 ../wxui/memedit.py:2420
+#: ../wxui/memedit.py:1552 ../wxui/memedit.py:2438
 #, fuzzy, python-format
 msgid "Invalid edit: %s"
 msgstr "Érvénytelen érték %s"
@@ -1627,7 +1627,7 @@ msgstr ""
 msgid "Memories"
 msgstr "Memória"
 
-#: ../drivers/uvk5.py:2093
+#: ../drivers/uvk5.py:2094
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -1654,7 +1654,7 @@ msgstr ""
 msgid "Mode"
 msgstr "Mód"
 
-#: ../wxui/clone.py:288
+#: ../wxui/clone.py:317
 msgid "Model"
 msgstr "Modell"
 
@@ -1677,7 +1677,7 @@ msgstr "Modul betöltése"
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:436
+#: ../wxui/clone.py:465
 #, python-format
 msgid "More than one port found: %s"
 msgstr ""
@@ -1692,7 +1692,7 @@ msgstr "Lefel_é"
 msgid "Move Up"
 msgstr "Fe_lfelé"
 
-#: ../wxui/memedit.py:2130
+#: ../wxui/memedit.py:2148
 msgid "Move operations are disabled while the view is sorted"
 msgstr ""
 
@@ -1717,6 +1717,10 @@ msgstr ""
 #: ../wxui/developer.py:592
 #, python-format
 msgid "No modules found in issue %i"
+msgstr ""
+
+#: ../wxui/memedit.py:2030
+msgid "No more space available; some memories were not applied"
 msgstr ""
 
 #: ../sources/przemienniki.py:53
@@ -1807,7 +1811,7 @@ msgstr ""
 msgid "Optional: County, Hospital, etc."
 msgstr ""
 
-#: ../wxui/memedit.py:2005
+#: ../wxui/memedit.py:2010
 #, fuzzy
 msgid "Overwrite memories?"
 msgstr "Felülírja?"
@@ -1831,22 +1835,22 @@ msgstr ""
 msgid "Paste"
 msgstr "Beillesztés"
 
-#: ../wxui/memedit.py:1999
+#: ../wxui/memedit.py:2004
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2002
+#: ../wxui/memedit.py:2007
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1996
+#: ../wxui/memedit.py:2001
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1993
+#: ../wxui/memedit.py:1998
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
@@ -1893,11 +1897,11 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../wxui/clone.py:413
+#: ../wxui/clone.py:442
 msgid "Plug in your cable and then click OK"
 msgstr ""
 
-#: ../wxui/clone.py:281
+#: ../wxui/clone.py:309
 msgid "Port"
 msgstr "Port"
 
@@ -1946,7 +1950,7 @@ msgstr "Rádió"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:577 ../wxui/clone.py:668
+#: ../wxui/clone.py:616 ../wxui/clone.py:708
 #, fuzzy
 msgid "Radio information"
 msgstr "%s információk lekérése"
@@ -2115,7 +2119,7 @@ msgstr ""
 msgid "Settings"
 msgstr "Beállítás"
 
-#: ../drivers/uvk5.py:2097
+#: ../drivers/uvk5.py:2098
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -2139,7 +2143,7 @@ msgstr ""
 msgid "Show image backup location"
 msgstr ""
 
-#: ../wxui/memedit.py:2078
+#: ../wxui/memedit.py:2096
 #, fuzzy
 msgid "Some memories are incompatible with this radio"
 msgstr ""
@@ -2437,12 +2441,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Lépésköz"
 
-#: ../wxui/clone.py:407 ../wxui/clone.py:414 ../wxui/clone.py:425
-#: ../wxui/clone.py:433 ../wxui/clone.py:437
+#: ../wxui/clone.py:436 ../wxui/clone.py:443 ../wxui/clone.py:454
+#: ../wxui/clone.py:462 ../wxui/clone.py:466
 msgid "USB Port Finder"
 msgstr ""
 
-#: ../wxui/clone.py:423
+#: ../wxui/clone.py:452
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2496,7 +2500,7 @@ msgstr "Ennél a modellnél nem változtatható"
 msgid "United States"
 msgstr ""
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:435
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
 
@@ -2514,12 +2518,12 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "URCALL lista frissítése."
 
-#: ../wxui/clone.py:683
+#: ../wxui/clone.py:723
 #, fuzzy
 msgid "Upload instructions"
 msgstr "{instructions}"
 
-#: ../drivers/uvk5.py:2084
+#: ../drivers/uvk5.py:2085
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr ""
 
@@ -2574,11 +2578,11 @@ msgstr ""
 msgid "Value must be zero or greater"
 msgstr ""
 
-#: ../wxui/memedit.py:2320
+#: ../wxui/memedit.py:2338
 msgid "Values"
 msgstr ""
 
-#: ../wxui/clone.py:284
+#: ../wxui/clone.py:312
 msgid "Vendor"
 msgstr "Gyártó"
 
@@ -2615,7 +2619,7 @@ msgid ""
 "another, please do so via the website."
 msgstr ""
 
-#: ../wxui/clone.py:431
+#: ../wxui/clone.py:460
 msgid "Your cable appears to be on port:"
 msgstr ""
 
