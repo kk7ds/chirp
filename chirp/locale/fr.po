@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-25 09:47-0700\n"
+"POT-Creation-Date: 2024-08-31 08:35-0700\n"
 "PO-Revision-Date: 2024-05-22 16:39-0400\n"
 "Last-Translator: Alexandre J. Raymond <alexandre.j.raymond@gmail.com>\n"
 "Language-Team: French\n"
@@ -83,7 +83,7 @@ msgstr ""
 msgid "(none)"
 msgstr "(vide)"
 
-#: ../wxui/memedit.py:2074
+#: ../wxui/memedit.py:2092
 #, python-format
 msgid "...and %i more"
 msgstr "...et %i de plus"
@@ -1212,7 +1212,7 @@ msgstr[1] "Mémoires groupement %i"
 msgid "Comment"
 msgstr "Commentaire"
 
-#: ../wxui/clone.py:258
+#: ../wxui/clone.py:286
 msgid "Communicate with radio"
 msgstr "Communiquer avec la radio"
 
@@ -1253,7 +1253,7 @@ msgstr "Pays"
 msgid "Cross Mode"
 msgstr "Mode cross"
 
-#: ../wxui/clone.py:466
+#: ../wxui/clone.py:495
 msgid "Custom Port"
 msgstr "Port personnalisé"
 
@@ -1281,7 +1281,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr "Décodage DTMF"
 
-#: ../wxui/memedit.py:2340
+#: ../wxui/memedit.py:2358
 msgid "DV Memory"
 msgstr "Mémoire DV"
 
@@ -1317,7 +1317,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr "Comparaison mémoires brutes"
 
-#: ../wxui/memedit.py:2265
+#: ../wxui/memedit.py:2283
 msgid "Digital Code"
 msgstr "Code numérique"
 
@@ -1363,7 +1363,7 @@ msgstr "Télécharger depuis la radio"
 msgid "Download from radio..."
 msgstr "Télécharger depuis la radio..."
 
-#: ../wxui/clone.py:585
+#: ../wxui/clone.py:624
 msgid "Download instructions"
 msgstr "Instructions de téléchargement"
 
@@ -1389,12 +1389,12 @@ msgstr ""
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2295
+#: ../wxui/memedit.py:2313
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Éditer les details pour %i mémoires"
 
-#: ../wxui/memedit.py:2293
+#: ../wxui/memedit.py:2311
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Editer les details pour la mémoire %i"
@@ -1424,7 +1424,7 @@ msgstr "Saisir la fréquence d'émission (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Saisir un nouveau nom pour la banque %s:"
 
-#: ../wxui/clone.py:465
+#: ../wxui/clone.py:494
 msgid "Enter custom port:"
 msgstr "Saisir un port personnalisé:"
 
@@ -1463,7 +1463,7 @@ msgstr "Mémoire %s effacée"
 msgid "Error applying settings"
 msgstr "Erreur lors de l'application des préférences"
 
-#: ../wxui/clone.py:510
+#: ../wxui/clone.py:549
 msgid "Error communicating with radio"
 msgstr "Erreur de communication avec la radio"
 
@@ -1471,11 +1471,11 @@ msgstr "Erreur de communication avec la radio"
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:543
+#: ../wxui/clone.py:582
 msgid "Experimental driver"
 msgstr "Pilote expérimental"
 
-#: ../wxui/memedit.py:2218
+#: ../wxui/memedit.py:2236
 msgid "Export can only write CSV files"
 msgstr "L'exportation ne peut écrire que des fichiers CSV"
 
@@ -1487,7 +1487,7 @@ msgstr "Exporter vers un fichier CSV"
 msgid "Export to CSV..."
 msgstr "Exporter vers un fichier CSV..."
 
-#: ../wxui/memedit.py:2329
+#: ../wxui/memedit.py:2347
 msgid "Extra"
 msgstr "Extra"
 
@@ -1957,7 +1957,7 @@ msgstr "Installer une icône sur le bureau?"
 msgid "Interact with driver"
 msgstr "Intéragir avec le pilote"
 
-#: ../wxui/clone.py:607
+#: ../wxui/clone.py:646
 msgid "Internal driver error"
 msgstr "Erreur interne du pilote"
 
@@ -1974,7 +1974,7 @@ msgstr "Entrée invalide"
 msgid "Invalid ZIP code"
 msgstr "Code postal invalide"
 
-#: ../wxui/memedit.py:1552 ../wxui/memedit.py:2420
+#: ../wxui/memedit.py:1552 ../wxui/memedit.py:2438
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Édition invalide: %s"
@@ -2097,7 +2097,7 @@ msgstr "Longitude"
 msgid "Memories"
 msgstr "Mémoires"
 
-#: ../drivers/uvk5.py:2093
+#: ../drivers/uvk5.py:2094
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -2123,7 +2123,7 @@ msgstr "Mémoire {num} pas dans la banque {bank}"
 msgid "Mode"
 msgstr "Mode"
 
-#: ../wxui/clone.py:288
+#: ../wxui/clone.py:317
 msgid "Model"
 msgstr "Modèle"
 
@@ -2143,7 +2143,7 @@ msgstr "Module chargé"
 msgid "Module loaded successfully"
 msgstr "Module chargé avec succès"
 
-#: ../wxui/clone.py:436
+#: ../wxui/clone.py:465
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Plus d'un port trouvé: %s"
@@ -2156,7 +2156,7 @@ msgstr "Descendre"
 msgid "Move Up"
 msgstr "Monter"
 
-#: ../wxui/memedit.py:2130
+#: ../wxui/memedit.py:2148
 msgid "Move operations are disabled while the view is sorted"
 msgstr "Les déplacements sont désactivés lorsque la vue est triée"
 
@@ -2180,6 +2180,10 @@ msgstr "Aucun module trouvé"
 #, python-format
 msgid "No modules found in issue %i"
 msgstr "Aucun module trouvé pour le problème %i"
+
+#: ../wxui/memedit.py:2030
+msgid "No more space available; some memories were not applied"
+msgstr ""
 
 #: ../sources/przemienniki.py:53
 msgid "No results"
@@ -2265,7 +2269,7 @@ msgstr "Optionnel: 45.0000"
 msgid "Optional: County, Hospital, etc."
 msgstr "Optionnel: Comté, Hôpital, etc."
 
-#: ../wxui/memedit.py:2005
+#: ../wxui/memedit.py:2010
 msgid "Overwrite memories?"
 msgstr "Écraser les mémoires?"
 
@@ -2291,22 +2295,22 @@ msgstr ""
 msgid "Paste"
 msgstr "Coller"
 
-#: ../wxui/memedit.py:1999
+#: ../wxui/memedit.py:2004
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr "Les mémoires collées vont écraser %s mémoires existantes"
 
-#: ../wxui/memedit.py:2002
+#: ../wxui/memedit.py:2007
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "Les mémoires collées vont écraser les mémoires %s"
 
-#: ../wxui/memedit.py:1996
+#: ../wxui/memedit.py:2001
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr "Les mémoires collées vont écraser la mémoire %s"
 
-#: ../wxui/memedit.py:1993
+#: ../wxui/memedit.py:1998
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr "La mémoire collee va écraser la mémoire %s"
@@ -2377,11 +2381,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Patientez s'il vous plaît"
 
-#: ../wxui/clone.py:413
+#: ../wxui/clone.py:442
 msgid "Plug in your cable and then click OK"
 msgstr "Branchez votre câble et cliquez sur OK"
 
-#: ../wxui/clone.py:281
+#: ../wxui/clone.py:309
 msgid "Port"
 msgstr "Port"
 
@@ -2427,7 +2431,7 @@ msgstr "Radio"
 msgid "Radio did not ack block %i"
 msgstr "La radio n'a pas accusé reception du bloc %i"
 
-#: ../wxui/clone.py:577 ../wxui/clone.py:668
+#: ../wxui/clone.py:616 ../wxui/clone.py:708
 msgid "Radio information"
 msgstr "Informations de la radio"
 
@@ -2599,7 +2603,7 @@ msgstr "Service"
 msgid "Settings"
 msgstr "Préférences"
 
-#: ../drivers/uvk5.py:2097
+#: ../drivers/uvk5.py:2098
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -2623,7 +2627,7 @@ msgstr "Montrer les champs supplémentaires"
 msgid "Show image backup location"
 msgstr "Montrer l'emplacement du fichier de débogage"
 
-#: ../wxui/memedit.py:2078
+#: ../wxui/memedit.py:2096
 msgid "Some memories are incompatible with this radio"
 msgstr "Des mémoires sont incompatibles avec cette radio"
 
@@ -2991,12 +2995,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Pas de réglage"
 
-#: ../wxui/clone.py:407 ../wxui/clone.py:414 ../wxui/clone.py:425
-#: ../wxui/clone.py:433 ../wxui/clone.py:437
+#: ../wxui/clone.py:436 ../wxui/clone.py:443 ../wxui/clone.py:454
+#: ../wxui/clone.py:462 ../wxui/clone.py:466
 msgid "USB Port Finder"
 msgstr "Rechercher port USB"
 
-#: ../wxui/clone.py:423
+#: ../wxui/clone.py:452
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -3052,7 +3056,7 @@ msgstr "Impossible de télécharger ce fichier"
 msgid "United States"
 msgstr "Etats-Unis"
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:435
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Débranchez votre câble (si nécessaire) et cliquez sur OK"
 
@@ -3070,11 +3074,11 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "Mise à jour de la liste URCALL"
 
-#: ../wxui/clone.py:683
+#: ../wxui/clone.py:723
 msgid "Upload instructions"
 msgstr "Instruction de téléchargement"
 
-#: ../drivers/uvk5.py:2084
+#: ../drivers/uvk5.py:2085
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr ""
 
@@ -3127,11 +3131,11 @@ msgstr "La valeur doit comporter exactement %i décimales"
 msgid "Value must be zero or greater"
 msgstr "La valeur doit être zero ou positive"
 
-#: ../wxui/memedit.py:2320
+#: ../wxui/memedit.py:2338
 msgid "Values"
 msgstr "Valeurs"
 
-#: ../wxui/clone.py:284
+#: ../wxui/clone.py:312
 msgid "Vendor"
 msgstr "Fabricant"
 
@@ -3167,7 +3171,7 @@ msgid ""
 "another, please do so via the website."
 msgstr ""
 
-#: ../wxui/clone.py:431
+#: ../wxui/clone.py:460
 msgid "Your cable appears to be on port:"
 msgstr "Votre câble apparaît sur le port:"
 

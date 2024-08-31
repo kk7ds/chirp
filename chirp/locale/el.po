@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-25 09:47-0700\n"
+"POT-Creation-Date: 2024-08-31 08:35-0700\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -79,7 +79,7 @@ msgstr ""
 msgid "(none)"
 msgstr "(καμία)"
 
-#: ../wxui/memedit.py:2074
+#: ../wxui/memedit.py:2092
 #, python-format
 msgid "...and %i more"
 msgstr ""
@@ -833,7 +833,7 @@ msgstr[1] "Διαγραφή %i Μνημών"
 msgid "Comment"
 msgstr "Σχόλιο"
 
-#: ../wxui/clone.py:258
+#: ../wxui/clone.py:286
 msgid "Communicate with radio"
 msgstr "Επικοινωνία με πομποδέκτη"
 
@@ -871,7 +871,7 @@ msgstr "Χώρα"
 msgid "Cross Mode"
 msgstr "Τύπος τόνου"
 
-#: ../wxui/clone.py:466
+#: ../wxui/clone.py:495
 #, fuzzy
 msgid "Custom Port"
 msgstr "Εισάγετε προσαρμοσμένη θύρα:"
@@ -901,7 +901,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2340
+#: ../wxui/memedit.py:2358
 msgid "DV Memory"
 msgstr "Μνήμη DV"
 
@@ -935,7 +935,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2265
+#: ../wxui/memedit.py:2283
 #, fuzzy
 msgid "Digital Code"
 msgstr "Ψηφιακός Κωδικός"
@@ -985,7 +985,7 @@ msgstr "Λήψη Από Πομποδέκτη"
 msgid "Download from radio..."
 msgstr "Λήψη Από Πομποδέκτη"
 
-#: ../wxui/clone.py:585
+#: ../wxui/clone.py:624
 msgid "Download instructions"
 msgstr "Οδηγίες λήψης"
 
@@ -1010,12 +1010,12 @@ msgstr ""
 msgid "Duplex"
 msgstr ""
 
-#: ../wxui/memedit.py:2295
+#: ../wxui/memedit.py:2313
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Επεξεργασία λεπτομερειών για %i μνήμες"
 
-#: ../wxui/memedit.py:2293
+#: ../wxui/memedit.py:2311
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Επεξεργασία λεπτομερειών για τη μνήμη %i"
@@ -1046,7 +1046,7 @@ msgstr "Εισάγετε συχνότητα εκπομπής (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Εισάγετε ένα νέο όνομα για την ομάδα μνημών %s:"
 
-#: ../wxui/clone.py:465
+#: ../wxui/clone.py:494
 msgid "Enter custom port:"
 msgstr "Εισάγετε προσαρμοσμένη θύρα:"
 
@@ -1085,7 +1085,7 @@ msgstr "Διεγράφη η μνήμη %s"
 msgid "Error applying settings"
 msgstr "Σφάλμα εφαρμογής ρυθμίσεων"
 
-#: ../wxui/clone.py:510
+#: ../wxui/clone.py:549
 msgid "Error communicating with radio"
 msgstr "Σφάλμα επικοινωνίας με τον πομποδέκτη"
 
@@ -1093,11 +1093,11 @@ msgstr "Σφάλμα επικοινωνίας με τον πομποδέκτη"
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:543
+#: ../wxui/clone.py:582
 msgid "Experimental driver"
 msgstr "Πειραματικός οδηγός"
 
-#: ../wxui/memedit.py:2218
+#: ../wxui/memedit.py:2236
 msgid "Export can only write CSV files"
 msgstr "Η εξαγωγή είναι δυνατή μόνο σε αρχεία CSV"
 
@@ -1110,7 +1110,7 @@ msgstr "Εξαγωγή σε αρχείο μορφής .CSV"
 msgid "Export to CSV..."
 msgstr "Εξαγωγή σε αρχείο μορφής .CSV"
 
-#: ../wxui/memedit.py:2329
+#: ../wxui/memedit.py:2347
 msgid "Extra"
 msgstr "Περισσότερα"
 
@@ -1482,7 +1482,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr "Αλληλεπίδραση με οδηγό"
 
-#: ../wxui/clone.py:607
+#: ../wxui/clone.py:646
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Αλληλεπίδραση με οδηγό"
@@ -1501,7 +1501,7 @@ msgstr "Μη έγκυρη τιμή: %s"
 msgid "Invalid ZIP code"
 msgstr "Μη έγκυρος ΤΚ"
 
-#: ../wxui/memedit.py:1552 ../wxui/memedit.py:2420
+#: ../wxui/memedit.py:1552 ../wxui/memedit.py:2438
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Μη έγκυρη τιμή: %s"
@@ -1621,7 +1621,7 @@ msgstr "Γεωγραφικό μήκος"
 msgid "Memories"
 msgstr "Μνήμες"
 
-#: ../drivers/uvk5.py:2093
+#: ../drivers/uvk5.py:2094
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -1648,7 +1648,7 @@ msgstr "Η μνήμη {num} δεν βρίσκεται στην ομάδα μνη
 msgid "Mode"
 msgstr "Λειτουργία"
 
-#: ../wxui/clone.py:288
+#: ../wxui/clone.py:317
 msgid "Model"
 msgstr "Μοντέλο"
 
@@ -1669,7 +1669,7 @@ msgstr "Module"
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:436
+#: ../wxui/clone.py:465
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Βρέθηκαν περισσότερες από μία θύρες: %s"
@@ -1682,7 +1682,7 @@ msgstr ""
 msgid "Move Up"
 msgstr ""
 
-#: ../wxui/memedit.py:2130
+#: ../wxui/memedit.py:2148
 msgid "Move operations are disabled while the view is sorted"
 msgstr ""
 
@@ -1705,6 +1705,10 @@ msgstr ""
 #: ../wxui/developer.py:592
 #, python-format
 msgid "No modules found in issue %i"
+msgstr ""
+
+#: ../wxui/memedit.py:2030
+msgid "No more space available; some memories were not applied"
 msgstr ""
 
 #: ../sources/przemienniki.py:53
@@ -1794,7 +1798,7 @@ msgstr "Προαιρετικό: 45.0000"
 msgid "Optional: County, Hospital, etc."
 msgstr "Προαιρετικό: Επαρχία, Νοσοκομείο κλπ"
 
-#: ../wxui/memedit.py:2005
+#: ../wxui/memedit.py:2010
 msgid "Overwrite memories?"
 msgstr "Αντικατάσταση μνημών;"
 
@@ -1817,22 +1821,22 @@ msgstr ""
 msgid "Paste"
 msgstr ""
 
-#: ../wxui/memedit.py:1999
+#: ../wxui/memedit.py:2004
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2002
+#: ../wxui/memedit.py:2007
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1996
+#: ../wxui/memedit.py:2001
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1993
+#: ../wxui/memedit.py:1998
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
@@ -1881,11 +1885,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Παρακαλώ περιμένετε"
 
-#: ../wxui/clone.py:413
+#: ../wxui/clone.py:442
 msgid "Plug in your cable and then click OK"
 msgstr "Συνδέστε το καλώδιο σας και πατήστε OK"
 
-#: ../wxui/clone.py:281
+#: ../wxui/clone.py:309
 msgid "Port"
 msgstr "Θύρα"
 
@@ -1931,7 +1935,7 @@ msgstr "Πομποδέκτης"
 msgid "Radio did not ack block %i"
 msgstr "Ο πομποδέκτης δεν επιβεβαίωσε το μπλοκ %i"
 
-#: ../wxui/clone.py:577 ../wxui/clone.py:668
+#: ../wxui/clone.py:616 ../wxui/clone.py:708
 msgid "Radio information"
 msgstr "Πληροφορίες πομποδέκτη"
 
@@ -2097,7 +2101,7 @@ msgstr "Υπηρεσία"
 msgid "Settings"
 msgstr "Ρυθμίσεις"
 
-#: ../drivers/uvk5.py:2097
+#: ../drivers/uvk5.py:2098
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -2122,7 +2126,7 @@ msgstr ""
 msgid "Show image backup location"
 msgstr "Εμφάνιση τοποθεσίας αρχείου καταγραφής αποσφαλμάτωσης"
 
-#: ../wxui/memedit.py:2078
+#: ../wxui/memedit.py:2096
 msgid "Some memories are incompatible with this radio"
 msgstr "Κάποιες μνήμες δεν είναι συμβατές με αυτόν τον πομποδέκτη"
 
@@ -2422,12 +2426,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Βήμα συντονισμού"
 
-#: ../wxui/clone.py:407 ../wxui/clone.py:414 ../wxui/clone.py:425
-#: ../wxui/clone.py:433 ../wxui/clone.py:437
+#: ../wxui/clone.py:436 ../wxui/clone.py:443 ../wxui/clone.py:454
+#: ../wxui/clone.py:462 ../wxui/clone.py:466
 msgid "USB Port Finder"
 msgstr "Έυρεση θυρών USB"
 
-#: ../wxui/clone.py:423
+#: ../wxui/clone.py:452
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2480,7 +2484,7 @@ msgstr "Πατήστε enter για καταχώρηση στη μνήμη"
 msgid "United States"
 msgstr "Ηνωμένες Πολιτείες"
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:435
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Αποσυνδέστε το καλώδιο σας (αν χρειάζεται) και μετά πατήστε OK"
 
@@ -2498,11 +2502,11 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr ""
 
-#: ../wxui/clone.py:683
+#: ../wxui/clone.py:723
 msgid "Upload instructions"
 msgstr "Οδηγίες αποστολής"
 
-#: ../drivers/uvk5.py:2084
+#: ../drivers/uvk5.py:2085
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr ""
 
@@ -2556,11 +2560,11 @@ msgstr "Η τιμή πρέπει να έιναι ακριβώς %i δεκαδι�
 msgid "Value must be zero or greater"
 msgstr "Η τιμή πρέπει να είναι μηδέν ή μεγαλύτερη"
 
-#: ../wxui/memedit.py:2320
+#: ../wxui/memedit.py:2338
 msgid "Values"
 msgstr ""
 
-#: ../wxui/clone.py:284
+#: ../wxui/clone.py:312
 msgid "Vendor"
 msgstr "Προμηθευτής"
 
@@ -2596,7 +2600,7 @@ msgid ""
 "another, please do so via the website."
 msgstr ""
 
-#: ../wxui/clone.py:431
+#: ../wxui/clone.py:460
 msgid "Your cable appears to be on port:"
 msgstr "Το καλώδιο σας φαίνεται να είανι στη θύρα:"
 

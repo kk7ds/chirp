@@ -1984,7 +1984,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         overwrite = []
         for i in range(len(mems)):
-            mem = self._memory_cache[row + i]
+            try:
+                mem = self._memory_cache[row + i]
+            except KeyError:
+                # No more memories in the target. This will be handled/reported
+                # in the actual paste loop below.
+                break
             if not mem.empty:
                 overwrite.append(mem.extd_number or mem.number)
 
@@ -2015,7 +2020,20 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         errormsgs = []
         modified = False
         for mem in mems:
-            existing = self._memory_cache[row]
+            try:
+                existing = self._memory_cache[row]
+            except KeyError:
+                if not mem.empty:
+                    LOG.debug('Not pasting to row %i beyond end of memory',
+                              row)
+                    errormsgs.append(
+                        (mem, _('No more space available; '
+                                'some memories were not applied')))
+                    break
+                else:
+                    # Don't complain about empty memories past the end of the
+                    # current radio's memory upper bound.
+                    continue
             number = self.row2mem(row)
             # We need to disable immutable checking while we reassign these
             # numbers. This might be a flag that we should be copying things

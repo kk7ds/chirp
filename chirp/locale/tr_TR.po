@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-25 09:47-0700\n"
+"POT-Creation-Date: 2024-08-31 08:35-0700\n"
 "PO-Revision-Date: 2024-08-30 00:06+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -84,7 +84,7 @@ msgstr "(Ne yaptığınızı anlatın)"
 msgid "(none)"
 msgstr "(hiçbiri)"
 
-#: ../wxui/memedit.py:2074
+#: ../wxui/memedit.py:2092
 #, python-format
 msgid "...and %i more"
 msgstr "...ve %i daha"
@@ -1178,7 +1178,7 @@ msgstr[1] "%i kaydı sırala"
 msgid "Comment"
 msgstr "Yorum"
 
-#: ../wxui/clone.py:258
+#: ../wxui/clone.py:286
 msgid "Communicate with radio"
 msgstr "Telsiz ile iletişim"
 
@@ -1219,7 +1219,7 @@ msgstr "Ülke"
 msgid "Cross Mode"
 msgstr "Çapraz Mod"
 
-#: ../wxui/clone.py:466
+#: ../wxui/clone.py:495
 msgid "Custom Port"
 msgstr "Özel Bağlantı Noktası"
 
@@ -1247,7 +1247,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr "DTMF kod çöz"
 
-#: ../wxui/memedit.py:2340
+#: ../wxui/memedit.py:2358
 msgid "DV Memory"
 msgstr "DV Kaydı"
 
@@ -1281,7 +1281,7 @@ msgstr ""
 msgid "Diff Raw Memories"
 msgstr "Farklı Ham Kayıtlar"
 
-#: ../wxui/memedit.py:2265
+#: ../wxui/memedit.py:2283
 msgid "Digital Code"
 msgstr "Dijital Kod"
 
@@ -1327,7 +1327,7 @@ msgstr "Telsizden indir"
 msgid "Download from radio..."
 msgstr "Telsizden indir..."
 
-#: ../wxui/clone.py:585
+#: ../wxui/clone.py:624
 msgid "Download instructions"
 msgstr "İndirme talimatları"
 
@@ -1353,12 +1353,12 @@ msgstr ""
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2295
+#: ../wxui/memedit.py:2313
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "%i kaydı için ayrıntıları düzenle"
 
-#: ../wxui/memedit.py:2293
+#: ../wxui/memedit.py:2311
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "%i kaydı için ayrıntıları düzenle"
@@ -1388,7 +1388,7 @@ msgstr "TX Frekansını girin (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Banka %s için yeni bir ad girin:"
 
-#: ../wxui/clone.py:465
+#: ../wxui/clone.py:494
 msgid "Enter custom port:"
 msgstr "Özel bağlantı noktasını girin:"
 
@@ -1433,7 +1433,7 @@ msgstr "%s kaydı silindi"
 msgid "Error applying settings"
 msgstr "Ayarlar uygulanırken hata oluştu"
 
-#: ../wxui/clone.py:510
+#: ../wxui/clone.py:549
 msgid "Error communicating with radio"
 msgstr "Telsizle iletişim hatası"
 
@@ -1441,11 +1441,11 @@ msgstr "Telsizle iletişim hatası"
 msgid "Exclude private and closed repeaters"
 msgstr "Özel ve kapalı röleleri hariç tut"
 
-#: ../wxui/clone.py:543
+#: ../wxui/clone.py:582
 msgid "Experimental driver"
 msgstr "Deneysel sürücü"
 
-#: ../wxui/memedit.py:2218
+#: ../wxui/memedit.py:2236
 msgid "Export can only write CSV files"
 msgstr "Dışa aktarma yalnızca CSV dosyalarını yazabilir"
 
@@ -1457,7 +1457,7 @@ msgstr "CSV'ye aktar"
 msgid "Export to CSV..."
 msgstr "CSV'ye aktar..."
 
-#: ../wxui/memedit.py:2329
+#: ../wxui/memedit.py:2347
 msgid "Extra"
 msgstr "Ekstra"
 
@@ -1914,7 +1914,7 @@ msgstr "Masaüstü simgesi yüklensin mi?"
 msgid "Interact with driver"
 msgstr "Sürücü ile etkileşim"
 
-#: ../wxui/clone.py:607
+#: ../wxui/clone.py:646
 msgid "Internal driver error"
 msgstr "Dahili sürücü hatası"
 
@@ -1931,7 +1931,7 @@ msgstr "Geçersiz Girdi"
 msgid "Invalid ZIP code"
 msgstr "Geçersiz Posta kodu"
 
-#: ../wxui/memedit.py:1552 ../wxui/memedit.py:2420
+#: ../wxui/memedit.py:1552 ../wxui/memedit.py:2438
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Geçersiz düzenleme: %s"
@@ -2054,7 +2054,7 @@ msgstr "Boylam"
 msgid "Memories"
 msgstr "Kayıtlar"
 
-#: ../drivers/uvk5.py:2093
+#: ../drivers/uvk5.py:2094
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
 "Desteklenmeyen aygıt yazılımı sürümü nedeniyle bellekler salt okunurdur"
@@ -2081,7 +2081,7 @@ msgstr "{num} kaydı {bank} bankasında değil"
 msgid "Mode"
 msgstr "Mod"
 
-#: ../wxui/clone.py:288
+#: ../wxui/clone.py:317
 msgid "Model"
 msgstr "Model"
 
@@ -2101,7 +2101,7 @@ msgstr "Modül Yüklendi"
 msgid "Module loaded successfully"
 msgstr "Modül başarıyla yüklendi"
 
-#: ../wxui/clone.py:436
+#: ../wxui/clone.py:465
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Birden fazla bağlantı noktası bulundu: %s"
@@ -2114,7 +2114,7 @@ msgstr "Aşağı Taşı"
 msgid "Move Up"
 msgstr "Yukarı Taşı"
 
-#: ../wxui/memedit.py:2130
+#: ../wxui/memedit.py:2148
 msgid "Move operations are disabled while the view is sorted"
 msgstr "Görünüm sıralanırken taşıma işlemleri devre dışıdır"
 
@@ -2138,6 +2138,10 @@ msgstr "Modül bulunamadı"
 #, python-format
 msgid "No modules found in issue %i"
 msgstr "%i kadında modül bulunamadı"
+
+#: ../wxui/memedit.py:2030
+msgid "No more space available; some memories were not applied"
+msgstr ""
 
 #: ../sources/przemienniki.py:53
 msgid "No results"
@@ -2223,7 +2227,7 @@ msgstr "İsteğe bağlı: 45.0000"
 msgid "Optional: County, Hospital, etc."
 msgstr "İsteğe bağlı: bölge, Hastane vb."
 
-#: ../wxui/memedit.py:2005
+#: ../wxui/memedit.py:2010
 msgid "Overwrite memories?"
 msgstr "Kayıtların üzerine yazılsın mı?"
 
@@ -2249,22 +2253,22 @@ msgstr "Şifre"
 msgid "Paste"
 msgstr "Yapıştır"
 
-#: ../wxui/memedit.py:1999
+#: ../wxui/memedit.py:2004
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr "Yapıştırılan kayıtlar, mevcut %s kayıtlarının üzerine yazılacak"
 
-#: ../wxui/memedit.py:2002
+#: ../wxui/memedit.py:2007
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "Yapıştırılan kayıtlar %s kayıtlarının üzerine yazılacak"
 
-#: ../wxui/memedit.py:1996
+#: ../wxui/memedit.py:2001
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr "Yapıştırılan kayıtlar, %s kaydının üzerine yazılacak"
 
-#: ../wxui/memedit.py:1993
+#: ../wxui/memedit.py:1998
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr "Yapıştırılan kayıt, %s kaydının üzerine yazacak"
@@ -2334,11 +2338,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Lütfen bekleyin"
 
-#: ../wxui/clone.py:413
+#: ../wxui/clone.py:442
 msgid "Plug in your cable and then click OK"
 msgstr "Kablonuzu takın ve ardından Tamam'a tıklayın"
 
-#: ../wxui/clone.py:281
+#: ../wxui/clone.py:309
 msgid "Port"
 msgstr "Port"
 
@@ -2384,7 +2388,7 @@ msgstr "Telsiz"
 msgid "Radio did not ack block %i"
 msgstr "Telsiz %i bloğunu onaylamadı"
 
-#: ../wxui/clone.py:577 ../wxui/clone.py:668
+#: ../wxui/clone.py:616 ../wxui/clone.py:708
 msgid "Radio information"
 msgstr "Telsiz bilgisi"
 
@@ -2557,7 +2561,7 @@ msgstr "Servis"
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: ../drivers/uvk5.py:2097
+#: ../drivers/uvk5.py:2098
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr "Desteklenmeyen aygıt yazılımı sürümü nedeniyle ayarlar salt okunurdur"
 
@@ -2582,7 +2586,7 @@ msgstr "Ekstra alanları göster"
 msgid "Show image backup location"
 msgstr "İmaj yedekleme konumunu göster"
 
-#: ../wxui/memedit.py:2078
+#: ../wxui/memedit.py:2096
 msgid "Some memories are incompatible with this radio"
 msgstr "Bazı kayıtlar bu telsizle uyumlu değil"
 
@@ -2948,12 +2952,12 @@ msgstr "TSQL modu için gönderme/alma tonu, aksi takdirde ton al"
 msgid "Tuning Step"
 msgstr "Ayarlama Adımı"
 
-#: ../wxui/clone.py:407 ../wxui/clone.py:414 ../wxui/clone.py:425
-#: ../wxui/clone.py:433 ../wxui/clone.py:437
+#: ../wxui/clone.py:436 ../wxui/clone.py:443 ../wxui/clone.py:454
+#: ../wxui/clone.py:462 ../wxui/clone.py:466
 msgid "USB Port Finder"
 msgstr "USB Portu Bulucu"
 
-#: ../wxui/clone.py:423
+#: ../wxui/clone.py:452
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -3009,7 +3013,7 @@ msgstr "Bu dosya yüklenemiyor"
 msgid "United States"
 msgstr "Amerika Birleşik Devletleri"
 
-#: ../wxui/clone.py:406
+#: ../wxui/clone.py:435
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "(gerekirse) Kablonuzu çıkarın ve ardından Tamam'ı tıklayın"
 
@@ -3027,11 +3031,11 @@ msgstr "Mevcut bir hatayı güncelle"
 msgid "Updating bug %s"
 msgstr "%s hatası güncelleniyor"
 
-#: ../wxui/clone.py:683
+#: ../wxui/clone.py:723
 msgid "Upload instructions"
 msgstr "Yükleme talimatları"
 
-#: ../drivers/uvk5.py:2084
+#: ../drivers/uvk5.py:2085
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr ""
 "Desteklenmeyen aygıt yazılımı sürümü nedeniyle yükleme devre dışı bırakıldı"
@@ -3085,11 +3089,11 @@ msgstr "Değer tam olarak %i ondalık basamak olmalıdır"
 msgid "Value must be zero or greater"
 msgstr "Değer sıfır veya daha büyük olmalıdır"
 
-#: ../wxui/memedit.py:2320
+#: ../wxui/memedit.py:2338
 msgid "Values"
 msgstr "Değerler"
 
-#: ../wxui/clone.py:284
+#: ../wxui/clone.py:312
 msgid "Vendor"
 msgstr "Tedarikçi"
 
@@ -3128,7 +3132,7 @@ msgstr ""
 "önlemek için açabileceğiniz konu sayısını sınırlar. Gerçekten başka bir konu "
 "açmanız gerekiyorsa, lütfen bunu web sitesi üzerinden yapın."
 
-#: ../wxui/clone.py:431
+#: ../wxui/clone.py:460
 msgid "Your cable appears to be on port:"
 msgstr "Kablonuz şu bağlantı noktasında görünüyor:"
 
