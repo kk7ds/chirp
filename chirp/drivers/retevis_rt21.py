@@ -1928,6 +1928,12 @@ class RB26Radio(RT21Radio):
 
 
 @directory.register
+class RB626(RB26Radio):
+    MODEL = 'RB626'
+    _gmrs = False
+
+
+@directory.register
 class RT76Radio(RT21Radio):
     """RETEVIS RT76"""
     VENDOR = "Retevis"
