@@ -35,6 +35,7 @@ LOG = logging.getLogger(__name__)
 DTCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
 
 DTMFCHARS = '0123456789ABCD*#'
+AIRBAND = (108000000, 136000000)
 
 
 def reset(radio):
@@ -1045,6 +1046,33 @@ class Senhaix8800Radio(RadioddityGA510Radio):
         chirp_common.PowerLevel('L', watts=1)]
     _mem_format = MODEL_SHX8800_FORMAT
     _magic = b'PROGROMSHXU'
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_bands = rf.valid_bands + [AIRBAND]
+        rf.valid_modes = rf.valid_modes + ['AM']
+        return rf
+
+    def get_memory(self, number):
+        m = super().get_memory(number)
+        if chirp_common.in_range(m.freq, [AIRBAND]):
+            m.mode = 'AM'
+        return m
+
+    def validate_memory(self, mem):
+        msgs = []
+        if chirp_common.in_range(mem.freq, [AIRBAND]):
+            if not mem.mode == 'AM':
+                msgs.append(chirp_common.ValidationWarning(
+                    _('Frequency in this range requires AM mode')))
+            if mem.duplex or mem.tmode:
+                msgs.append(chirp_common.ValidationError(
+                    _('AM mode does not allow duplex or tone')))
+        elif not chirp_common.in_range(
+                mem.freq, [AIRBAND]) and mem.mode == 'AM':
+            msgs.append(chirp_common.ValidationWarning(
+                _('Frequency in this range must not be AM mode')))
+        return msgs + super().validate_memory(mem)
 
 
 @directory.register

@@ -2063,3 +2063,11 @@ def mem_to_text(mem):
         elif mode == 'DTCS':
             pieces.append('D%03i' % tone)
     return '[%s]' % '/'.join(pieces)
+
+
+def in_range(freq, ranges):
+    """Check if freq is in any of the provided ranges"""
+    for lo, hi in ranges:
+        if lo <= freq <= hi:
+            return True
+    return False

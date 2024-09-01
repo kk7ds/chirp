@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-31 08:35-0700\n"
+"POT-Creation-Date: 2024-09-01 16:01-0700\n"
 "PO-Revision-Date: 2024-08-30 00:06+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -990,6 +990,10 @@ msgstr ""
 "Yeni bir CHIRP sürümü mevcut. İndirmek için lütfen en kısa zamanda web "
 "sitesini ziyaret edin!"
 
+#: ../drivers/ga510.py:1070
+msgid "AM mode does not allow duplex or tone"
+msgstr ""
+
 #: ../wxui/main.py:924
 msgid "About"
 msgstr "Hakkında"
@@ -1816,15 +1820,15 @@ msgstr "Frekans %s desteklenen aralığın dışında"
 msgid "Frequency granularity in kHz"
 msgstr "kHz cinsinden frekans ayrıntı düzeyi"
 
-#: ../drivers/tdh8.py:2471
+#: ../drivers/ga510.py:1074 ../drivers/tdh8.py:2464
 msgid "Frequency in this range must not be AM mode"
 msgstr "Bu aralıktaki frekans AM modu olmamalıdır"
 
-#: ../drivers/tdh8.py:2468
+#: ../drivers/ga510.py:1067 ../drivers/tdh8.py:2461
 msgid "Frequency in this range requires AM mode"
 msgstr "Bu aralıktaki frekans AM modunu gerektirir"
 
-#: ../drivers/tdh8.py:2474
+#: ../drivers/tdh8.py:2468
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr "TX bantları dışındaki frekanslar dupleks=kapalı olmalıdır"
 
