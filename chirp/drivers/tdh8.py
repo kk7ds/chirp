@@ -811,13 +811,6 @@ TD_H3 = b"\x50\x56\x4F\x4A\x48\x5C\x14"
 RT_730 = b"\x50\x47\x4F\x4A\x48\xC3\x44"
 
 
-def in_range(freq, ranges):
-    for lo, hi in ranges:
-        if lo <= freq <= hi:
-            return True
-    return False
-
-
 def _do_status(radio, block):
     status = chirp_common.Status()
     status.msg = "Cloning"
@@ -1259,9 +1252,9 @@ class TDH8(chirp_common.CloneModeRadio):
                     FREQHOP_VALUES, FREQHOP_VALUES[_mem.freqhop]))
             mem.extra.append(rs)
 
-        if in_range(mem.freq, self._rxbands):
+        if chirp_common.in_range(mem.freq, self._rxbands):
             mem.duplex = 'off'
-        if in_range(mem.freq, [AIRBAND]):
+        if chirp_common.in_range(mem.freq, [AIRBAND]):
             mem.mode = 'AM'
 
         return mem
@@ -1328,7 +1321,7 @@ class TDH8(chirp_common.CloneModeRadio):
         else:
             _mem.txfreq = mem.freq / 10
 
-        if in_range(mem.freq, self._rxbands):
+        if chirp_common.in_range(mem.freq, self._rxbands):
             _mem.txfreq.fill_raw(b'\xFF')
 
         _mem.rxfreq = mem.freq / 10
@@ -2463,13 +2456,14 @@ class TDH8(chirp_common.CloneModeRadio):
 
     def validate_memory(self, mem):
         msgs = []
-        if in_range(mem.freq, [AIRBAND]) and not mem.mode == 'AM':
+        if chirp_common.in_range(mem.freq, [AIRBAND]) and not mem.mode == 'AM':
             msgs.append(chirp_common.ValidationWarning(
                 _('Frequency in this range requires AM mode')))
-        if not in_range(mem.freq, [AIRBAND]) and mem.mode == 'AM':
+        if not chirp_common.in_range(mem.freq, [AIRBAND]) and mem.mode == 'AM':
             msgs.append(chirp_common.ValidationWarning(
                 _('Frequency in this range must not be AM mode')))
-        if not in_range(mem.freq, self._txbands) and mem.duplex != 'off':
+        if (not chirp_common.in_range(mem.freq, self._txbands) and
+                mem.duplex != 'off'):
             msgs.append(chirp_common.ValidationWarning(
                 _('Frequency outside TX bands must be duplex=off')))
         return msgs + super().validate_memory(mem)

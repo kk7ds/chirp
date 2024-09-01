@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-31 08:35-0700\n"
+"POT-Creation-Date: 2024-09-01 16:01-0700\n"
 "PO-Revision-Date: 2013-03-30 22:04-0300\n"
 "Last-Translator: Crezivando <crezivando@gmail.com>\n"
 "Language-Team: Language pt-BR\n"
@@ -643,6 +643,10 @@ msgstr ""
 msgid ""
 "A new CHIRP version is available. Please visit the website as soon as "
 "possible to download it!"
+msgstr ""
+
+#: ../drivers/ga510.py:1070
+msgid "AM mode does not allow duplex or tone"
 msgstr ""
 
 #: ../wxui/main.py:924
@@ -1377,15 +1381,15 @@ msgstr ""
 msgid "Frequency granularity in kHz"
 msgstr ""
 
-#: ../drivers/tdh8.py:2471
+#: ../drivers/ga510.py:1074 ../drivers/tdh8.py:2464
 msgid "Frequency in this range must not be AM mode"
 msgstr ""
 
-#: ../drivers/tdh8.py:2468
+#: ../drivers/ga510.py:1067 ../drivers/tdh8.py:2461
 msgid "Frequency in this range requires AM mode"
 msgstr ""
 
-#: ../drivers/tdh8.py:2474
+#: ../drivers/tdh8.py:2468
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr ""
 
