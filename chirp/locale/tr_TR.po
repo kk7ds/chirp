@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-01 16:01-0700\n"
+"POT-Creation-Date: 2024-09-03 15:41-0700\n"
 "PO-Revision-Date: 2024-08-30 00:06+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -79,6 +79,11 @@ msgstr "(Ne olacağını beklediğinizi açıklayın)"
 #: ../wxui/bugreport.py:420
 msgid "(Describe what you were doing)"
 msgstr "(Ne yaptığınızı anlatın)"
+
+#: ../wxui/bugreport.py:426
+msgid ""
+"(Has this ever worked before? New radio? Does it work with OEM software?)"
+msgstr ""
 
 #: ../wxui/radioinfo.py:50
 msgid "(none)"
@@ -1267,7 +1272,7 @@ msgstr "Dec"
 msgid "Delete"
 msgstr "Sil"
 
-#: ../wxui/bugreport.py:464
+#: ../wxui/bugreport.py:467
 msgid "Detailed information"
 msgstr "Detaylı bilgi"
 
@@ -1487,7 +1492,7 @@ msgstr "Telsiz tarayıcısı yüklenemedi"
 msgid "Failed to parse result"
 msgstr "Sonuç ayrıştırılamadı"
 
-#: ../wxui/bugreport.py:592
+#: ../wxui/bugreport.py:595
 msgid "Failed to send bug report:"
 msgstr "Hata raporu gönderilemedi:"
 
@@ -1509,7 +1514,7 @@ msgstr "Dosya mevcut değil: %s"
 msgid "Files"
 msgstr "Dosyalar"
 
-#: ../wxui/bugreport.py:462
+#: ../wxui/bugreport.py:465
 msgid "Files:"
 msgstr "Dosyalar:"
 
@@ -2466,7 +2471,7 @@ msgstr ""
 msgid "Report or update a bug..."
 msgstr "Bir hatayı bildirin veya güncelleyin..."
 
-#: ../wxui/bugreport.py:459
+#: ../wxui/bugreport.py:462
 #, python-format
 msgid "Reporting a new bug: %r"
 msgstr "Yeni hata bildiriliyor: %r"
@@ -2643,7 +2648,7 @@ msgstr "Eyalet/İl"
 msgid "Success"
 msgstr "Başarılı"
 
-#: ../wxui/bugreport.py:595
+#: ../wxui/bugreport.py:598
 msgid "Successfully sent bug report:"
 msgstr "Hata raporu başarıyla gönderildi:"
 
@@ -2728,7 +2733,7 @@ msgstr ""
 "yüklemeyecektir. Şimdi çıkıp CHIRP'i etkileşimsiz olarak (veya stdin /dev/"
 "null'a yönlendirilmiş olarak) çalıştırmanız önerilir"
 
-#: ../wxui/bugreport.py:444
+#: ../wxui/bugreport.py:447
 msgid "The following information will be submitted:"
 msgstr "Aşağıdaki bilgiler sunulacaktır:"
 
@@ -3030,7 +3035,7 @@ msgstr "Desteklenmeyen model %r"
 msgid "Update an existing bug"
 msgstr "Mevcut bir hatayı güncelle"
 
-#: ../wxui/bugreport.py:461
+#: ../wxui/bugreport.py:464
 #, python-format
 msgid "Updating bug %s"
 msgstr "%s hatası güncelleniyor"

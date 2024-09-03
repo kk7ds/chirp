@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-01 16:01-0700\n"
+"POT-Creation-Date: 2024-09-03 15:41-0700\n"
 "PO-Revision-Date: 2011-11-29 16:07-0800\n"
 "Last-Translator: Dan Smith <dan@theine>\n"
 "Language-Team: English\n"
@@ -69,6 +69,11 @@ msgstr ""
 
 #: ../wxui/bugreport.py:420
 msgid "(Describe what you were doing)"
+msgstr ""
+
+#: ../wxui/bugreport.py:426
+msgid ""
+"(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr ""
 
 #: ../wxui/radioinfo.py:50
@@ -914,7 +919,7 @@ msgstr ""
 msgid "Delete"
 msgstr "_Delete"
 
-#: ../wxui/bugreport.py:464
+#: ../wxui/bugreport.py:467
 msgid "Detailed information"
 msgstr ""
 
@@ -1129,7 +1134,7 @@ msgstr ""
 msgid "Failed to parse result"
 msgstr ""
 
-#: ../wxui/bugreport.py:592
+#: ../wxui/bugreport.py:595
 msgid "Failed to send bug report:"
 msgstr ""
 
@@ -1152,7 +1157,7 @@ msgstr ""
 msgid "Files"
 msgstr "_File"
 
-#: ../wxui/bugreport.py:462
+#: ../wxui/bugreport.py:465
 #, fuzzy
 msgid "Files:"
 msgstr "_File"
@@ -1987,7 +1992,7 @@ msgstr ""
 msgid "Report or update a bug..."
 msgstr ""
 
-#: ../wxui/bugreport.py:459
+#: ../wxui/bugreport.py:462
 #, fuzzy, python-format
 msgid "Reporting a new bug: %r"
 msgstr "Reporting is disabled"
@@ -2166,7 +2171,7 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
-#: ../wxui/bugreport.py:595
+#: ../wxui/bugreport.py:598
 msgid "Successfully sent bug report:"
 msgstr ""
 
@@ -2225,7 +2230,7 @@ msgid ""
 "redirected to /dev/null)"
 msgstr ""
 
-#: ../wxui/bugreport.py:444
+#: ../wxui/bugreport.py:447
 msgid "The following information will be submitted:"
 msgstr ""
 
@@ -2472,7 +2477,7 @@ msgstr ""
 msgid "Update an existing bug"
 msgstr ""
 
-#: ../wxui/bugreport.py:461
+#: ../wxui/bugreport.py:464
 #, python-format
 msgid "Updating bug %s"
 msgstr ""

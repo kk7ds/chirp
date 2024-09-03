@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-01 16:01-0700\n"
+"POT-Creation-Date: 2024-09-03 15:41-0700\n"
 "PO-Revision-Date: 2024-09-02 22:50-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
@@ -80,6 +80,11 @@ msgstr "(Describe lo que esperabas que ocurriera)"
 #: ../wxui/bugreport.py:420
 msgid "(Describe what you were doing)"
 msgstr "(Describe lo que estabas haciendo)"
+
+#: ../wxui/bugreport.py:426
+msgid ""
+"(Has this ever worked before? New radio? Does it work with OEM software?)"
+msgstr ""
 
 #: ../wxui/radioinfo.py:50
 msgid "(none)"
@@ -1301,7 +1306,7 @@ msgstr "Decimal"
 msgid "Delete"
 msgstr "Borrar"
 
-#: ../wxui/bugreport.py:464
+#: ../wxui/bugreport.py:467
 msgid "Detailed information"
 msgstr "Información detallada"
 
@@ -1523,7 +1528,7 @@ msgstr "Fallo al cargar navegador de radio"
 msgid "Failed to parse result"
 msgstr "Fallo al analizar el resultado"
 
-#: ../wxui/bugreport.py:592
+#: ../wxui/bugreport.py:595
 msgid "Failed to send bug report:"
 msgstr "Fallo al enviar el reporte de error:"
 
@@ -1545,7 +1550,7 @@ msgstr "El archivo no existe: %s"
 msgid "Files"
 msgstr "Archivos"
 
-#: ../wxui/bugreport.py:462
+#: ../wxui/bugreport.py:465
 msgid "Files:"
 msgstr "Archivos:"
 
@@ -2513,7 +2518,7 @@ msgstr ""
 msgid "Report or update a bug..."
 msgstr "Reportar o actualizar un error..."
 
-#: ../wxui/bugreport.py:459
+#: ../wxui/bugreport.py:462
 #, python-format
 msgid "Reporting a new bug: %r"
 msgstr "Reportando un nuevo error: %r"
@@ -2691,7 +2696,7 @@ msgstr "Estado/Provincia"
 msgid "Success"
 msgstr "Éxito"
 
-#: ../wxui/bugreport.py:595
+#: ../wxui/bugreport.py:598
 msgid "Successfully sent bug report:"
 msgstr "Reporte de error enviado exitosamente:"
 
@@ -2779,7 +2784,7 @@ msgstr ""
 "herramienta no cargará lo que esperas. Se recomienda que salgas ahora y "
 "ejecutes CHIRP de forma no interactiva (o con stdin redirigido a /dev/null)"
 
-#: ../wxui/bugreport.py:444
+#: ../wxui/bugreport.py:447
 msgid "The following information will be submitted:"
 msgstr "La siguiente información será enviada:"
 
@@ -3090,7 +3095,7 @@ msgstr "Modelo no soportado %r"
 msgid "Update an existing bug"
 msgstr "Actualizar un error existente"
 
-#: ../wxui/bugreport.py:461
+#: ../wxui/bugreport.py:464
 #, python-format
 msgid "Updating bug %s"
 msgstr "Actualizando error %s"

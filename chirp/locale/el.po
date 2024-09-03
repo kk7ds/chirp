@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-01 16:01-0700\n"
+"POT-Creation-Date: 2024-09-03 15:41-0700\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -73,6 +73,11 @@ msgstr ""
 
 #: ../wxui/bugreport.py:420
 msgid "(Describe what you were doing)"
+msgstr ""
+
+#: ../wxui/bugreport.py:426
+msgid ""
+"(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr ""
 
 #: ../wxui/radioinfo.py:50
@@ -921,7 +926,7 @@ msgstr "Dec"
 msgid "Delete"
 msgstr "Διαγραφή"
 
-#: ../wxui/bugreport.py:464
+#: ../wxui/bugreport.py:467
 #, fuzzy
 msgid "Detailed information"
 msgstr "Πληροφορίες πομποδέκτη"
@@ -1138,7 +1143,7 @@ msgstr "Αδυναμία φόρτωσης περιηγητή πομποδεκτ�
 msgid "Failed to parse result"
 msgstr "Αδυναμία φόρτωσης περιηγητή πομποδεκτών"
 
-#: ../wxui/bugreport.py:592
+#: ../wxui/bugreport.py:595
 #, fuzzy
 msgid "Failed to send bug report:"
 msgstr "Αδυναμία φόρτωσης περιηγητή πομποδεκτών"
@@ -1161,7 +1166,7 @@ msgstr "Το αρχείο δεν υπάρχει: %s"
 msgid "Files"
 msgstr "Αρχεία"
 
-#: ../wxui/bugreport.py:462
+#: ../wxui/bugreport.py:465
 #, fuzzy
 msgid "Files:"
 msgstr "Αρχεία"
@@ -2006,7 +2011,7 @@ msgstr ""
 msgid "Report or update a bug..."
 msgstr ""
 
-#: ../wxui/bugreport.py:459
+#: ../wxui/bugreport.py:462
 #, fuzzy, python-format
 msgid "Reporting a new bug: %r"
 msgstr "Αναφορές ενεργοποιημένες"
@@ -2185,7 +2190,7 @@ msgstr "Πολιτεία / Επαρχία"
 msgid "Success"
 msgstr ""
 
-#: ../wxui/bugreport.py:595
+#: ../wxui/bugreport.py:598
 msgid "Successfully sent bug report:"
 msgstr ""
 
@@ -2244,7 +2249,7 @@ msgid ""
 "redirected to /dev/null)"
 msgstr ""
 
-#: ../wxui/bugreport.py:444
+#: ../wxui/bugreport.py:447
 msgid "The following information will be submitted:"
 msgstr ""
 
@@ -2501,7 +2506,7 @@ msgstr ""
 msgid "Update an existing bug"
 msgstr ""
 
-#: ../wxui/bugreport.py:461
+#: ../wxui/bugreport.py:464
 #, python-format
 msgid "Updating bug %s"
 msgstr ""
