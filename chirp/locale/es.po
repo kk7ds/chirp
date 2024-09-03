@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-01 16:01-0700\n"
-"PO-Revision-Date: 2024-08-25 00:38-0400\n"
+"PO-Revision-Date: 2024-09-02 22:50-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.4\n"
+"X-Generator: Poedit 3.5\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -1024,7 +1024,7 @@ msgstr ""
 
 #: ../drivers/ga510.py:1070
 msgid "AM mode does not allow duplex or tone"
-msgstr ""
+msgstr "El modo AMD no permite dúplex o tono"
 
 #: ../wxui/main.py:924
 msgid "About"
@@ -1864,15 +1864,15 @@ msgstr "Granularidad de frecuencia en kHz"
 
 #: ../drivers/ga510.py:1074 ../drivers/tdh8.py:2464
 msgid "Frequency in this range must not be AM mode"
-msgstr ""
+msgstr "La frecuencia en este rango no debe ser modo AM"
 
 #: ../drivers/ga510.py:1067 ../drivers/tdh8.py:2461
 msgid "Frequency in this range requires AM mode"
-msgstr ""
+msgstr "La frecuencia en este rango requiere modo AM"
 
 #: ../drivers/tdh8.py:2468
 msgid "Frequency outside TX bands must be duplex=off"
-msgstr ""
+msgstr "La frecuencia fuera de las bandas TX debe ser dúplex=off"
 
 #: ../wxui/query_sources.py:285 ../wxui/query_sources.py:350
 #: ../wxui/query_sources.py:443
@@ -2190,7 +2190,7 @@ msgstr "No se encontraron módulos en problema %i"
 
 #: ../wxui/memedit.py:2030
 msgid "No more space available; some memories were not applied"
-msgstr ""
+msgstr "No hay más espacio disponible; algunas memorias no fueron aplicadas"
 
 #: ../sources/przemienniki.py:53
 msgid "No results"
@@ -2768,7 +2768,6 @@ msgstr ""
 "seguridad. ¿Proceder de todos modos?"
 
 #: ../wxui/bugreport.py:169
-#, fuzzy
 msgid ""
 "The debug log file is not available when CHIRP is run interactively from the "
 "command-line. Thus, this tool will not upload what you expect. It is "
