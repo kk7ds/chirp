@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-01 16:01-0700\n"
+"POT-Creation-Date: 2024-09-03 15:41-0700\n"
 "PO-Revision-Date: 2024-05-22 16:39-0400\n"
 "Last-Translator: Alexandre J. Raymond <alexandre.j.raymond@gmail.com>\n"
 "Language-Team: French\n"
@@ -77,6 +77,11 @@ msgstr ""
 
 #: ../wxui/bugreport.py:420
 msgid "(Describe what you were doing)"
+msgstr ""
+
+#: ../wxui/bugreport.py:426
+msgid ""
+"(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr ""
 
 #: ../wxui/radioinfo.py:50
@@ -1301,7 +1306,7 @@ msgstr "Dec"
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ../wxui/bugreport.py:464
+#: ../wxui/bugreport.py:467
 #, fuzzy
 msgid "Detailed information"
 msgstr "Informations sur les pilotes"
@@ -1517,7 +1522,7 @@ msgstr "Échec du chargement du navigateur de la radio"
 msgid "Failed to parse result"
 msgstr "Échec d'analyse des résultats"
 
-#: ../wxui/bugreport.py:592
+#: ../wxui/bugreport.py:595
 #, fuzzy
 msgid "Failed to send bug report:"
 msgstr "Échec d'analyse des résultats"
@@ -1540,7 +1545,7 @@ msgstr "Fichier inexistant: %s"
 msgid "Files"
 msgstr "Fichiers"
 
-#: ../wxui/bugreport.py:462
+#: ../wxui/bugreport.py:465
 #, fuzzy
 msgid "Files:"
 msgstr "Fichiers"
@@ -2508,7 +2513,7 @@ msgstr ""
 msgid "Report or update a bug..."
 msgstr ""
 
-#: ../wxui/bugreport.py:459
+#: ../wxui/bugreport.py:462
 #, fuzzy, python-format
 msgid "Reporting a new bug: %r"
 msgstr "Rapport d'utilisation activé"
@@ -2684,7 +2689,7 @@ msgstr "État/Province"
 msgid "Success"
 msgstr "Réussi"
 
-#: ../wxui/bugreport.py:595
+#: ../wxui/bugreport.py:598
 msgid "Successfully sent bug report:"
 msgstr ""
 
@@ -2767,7 +2772,7 @@ msgid ""
 "redirected to /dev/null)"
 msgstr ""
 
-#: ../wxui/bugreport.py:444
+#: ../wxui/bugreport.py:447
 msgid "The following information will be submitted:"
 msgstr ""
 
@@ -3073,7 +3078,7 @@ msgstr "Modèle non supporté %r"
 msgid "Update an existing bug"
 msgstr ""
 
-#: ../wxui/bugreport.py:461
+#: ../wxui/bugreport.py:464
 #, fuzzy, python-format
 msgid "Updating bug %s"
 msgstr "Mise à jour de la liste URCALL"

@@ -422,6 +422,9 @@ class BugUpdateInfo(BugReportPage):
                 _('(Describe what you expected to happen)'),
                 '',
                 _('(Describe what actually happened instead)'),
+                '',
+                _('(Has this ever worked before? New radio? '
+                  'Does it work with OEM software?)'),
             ]))
 
         return len(self.details.GetValue()) > 10
