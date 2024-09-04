@@ -193,6 +193,12 @@ def get_radio_by_image(image_file):
         ex.metadata = metadata
         raise ex
     else:
+        # If we don't find anything else and the file appears to be a CSV
+        # file, then explicitly open it with the generic driver so we can
+        # get relevant errors instead of just "Unknown file format".
+        if image_file.lower().endswith('.csv'):
+            rclass = get_radio('Generic_CSV')
+            return rclass(image_file)
         raise errors.ImageDetectFailed("Unknown file format")
 
 
