@@ -551,7 +551,8 @@ class ChirpMain(wx.Frame):
         self.enable_bugreport()
         CSVRadio = directory.get_radio('Generic_CSV')
         label = _('Driver messages')
-        with common.expose_logs(logging.WARNING, 'chirp.drivers', label):
+        with common.expose_logs(logging.WARNING, 'chirp.drivers', label,
+                                parent=self):
             if exists:
                 if not os.path.exists(filename):
                     raise FileNotFoundError(
@@ -1356,7 +1357,7 @@ class ChirpMain(wx.Frame):
         r = d.ShowModal()
         if r == wx.ID_YES:
             with common.expose_logs(logging.WARNING, 'chirp.drivers',
-                                    _('Import messages')):
+                                    _('Import messages'), parent=self):
                 radio = directory.get_radio_by_image(filename)
                 self.current_editorset.current_editor.memedit_import_all(radio)
         elif r == wx.ID_NO:
