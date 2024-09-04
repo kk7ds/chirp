@@ -23,6 +23,11 @@ CHIRP_CSV_MODERN = (
 0,Nat Simplex,146.520000,,0.600000,TSQL,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,50W,This is the national calling frequency on 2m,,,,
 1,National Simp,446.000000,-,5.000000,DTCS,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,5.0W,This is NOT the UHF calling frequency,,,,
 """)  # noqa
+CHIRP_CSV_MODERN_QUOTED_HEADER = (
+    """"Location","Name","Frequency","Duplex","Offset","Tone","rToneFreq","cToneFreq","DtcsCode","DtcsPolarity","RxDtcsCode","CrossMode","Mode","TStep","Skip","Power","Comment","URCALL","RPT1CALL","RPT2CALL","DVCODE"
+0,Nat Simplex,146.520000,,0.600000,TSQL,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,50W,This is the national calling frequency on 2m,,,,
+1,"National Simp",446.000000,-,5.000000,DTCS,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,5.0W,This is NOT the UHF calling frequency,,,,
+""")  # noqa
 
 
 class TestCSV(unittest.TestCase):
@@ -55,9 +60,9 @@ class TestCSV(unittest.TestCase):
         self.assertEqual('NFM', mem.mode)
         self.assertEqual(12.5, mem.tuning_step)
 
-    def test_parse_modern(self, output_encoding='utf-8'):
+    def test_parse_modern(self, output_encoding='utf-8', data=None):
         with open(self.testfn, 'w', encoding=output_encoding) as f:
-            f.write(CHIRP_CSV_MODERN)
+            f.write(data or CHIRP_CSV_MODERN)
         # Make sure we detect the file
         with open(self.testfn, 'rb') as f:
             self.assertTrue(generic_csv.CSVRadio.match_model(
@@ -79,8 +84,8 @@ class TestCSV(unittest.TestCase):
         self.assertEqual('5.0W', str(mem.power))
         self.assertIn('UHF calling', mem.comment)
 
-    def test_csv_with_comments(self, output_encoding='utf-8'):
-        lines = list(CHIRP_CSV_MODERN.strip().split('\n'))
+    def _test_csv_with_comments(self, data, output_encoding='utf-8'):
+        lines = list(data.strip().split('\n'))
         lines.insert(0, '# This is a comment')
         lines.insert(0, '# Test file with comments')
         lines.insert(4, '# Test comment in the middle')
@@ -99,7 +104,21 @@ class TestCSV(unittest.TestCase):
         csv.save(self.testfn)
         with open(self.testfn, 'r') as f:
             read_lines = [x.strip() for x in f.readlines()]
-        self.assertEqual(lines, read_lines)
+        # Ignore quotes
+        self.assertEqual([x.replace('"', '') for x in lines], read_lines)
+
+    def test_csv_with_comments(self):
+        self._test_csv_with_comments(CHIRP_CSV_MODERN)
+
+    def test_csv_with_comments_quoted_header(self):
+        self._test_csv_with_comments(CHIRP_CSV_MODERN_QUOTED_HEADER)
+
+    def test_parse_modern_quoted_header(self):
+        self.test_parse_modern(data=CHIRP_CSV_MODERN_QUOTED_HEADER)
+
+    def test_parse_modern_quoted_header_bom(self):
+        self.test_parse_modern(output_encoding='utf-8-sig',
+                               data=CHIRP_CSV_MODERN_QUOTED_HEADER)
 
     def test_parse_modern_bom(self):
         self.test_parse_modern(output_encoding='utf-8-sig')
