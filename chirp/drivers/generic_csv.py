@@ -348,7 +348,9 @@ def find_csv_header(filedata):
         filedata = filedata[1:]
     while filedata.startswith('#'):
         filedata = filedata[filedata.find('\n') + 1:]
-    return filedata.startswith('Location,')
+    delims = ['', '"', "'"]
+    return any([filedata.startswith('%sLocation%s,' % (d, d))
+                for d in delims])
 
 
 @directory.register
