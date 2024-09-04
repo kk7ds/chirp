@@ -218,6 +218,10 @@ class CSVRadio(chirp_common.FileBackedRadio):
             lineno += 1
             if lineno == 1:
                 header = line
+                for field in header:
+                    # Log unknown header names for the UI to capture and expose
+                    if field not in chirp_common.Memory.CSV_FORMAT:
+                        LOG.error('Header line has unknown field %r' % field)
                 self.file_has_rTone = "rToneFreq" in header
                 self.file_has_cTone = "cToneFreq" in header
                 continue
