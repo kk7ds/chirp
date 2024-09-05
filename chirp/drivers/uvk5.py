@@ -684,6 +684,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rf.valid_power_levels = UVK5_POWER_LEVELS
         rf.valid_special_chans = list(SPECIALS.keys())
         rf.valid_duplexes = ["", "-", "+", "off"]
+        rf.valid_skips = []
 
         # hack so we can input any frequency,
         # the 0.1 and 0.01 steps don't work unfortunately
@@ -696,8 +697,6 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rf.valid_characters = chirp_common.CHARSET_ASCII
         rf.valid_modes = ["FM", "NFM", "AM", "NAM"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
-
-        rf.valid_skips = [""]
 
         # This radio supports memories 1-200, 201-214 are the VFO memories
         rf.memory_bounds = (1, 200)
