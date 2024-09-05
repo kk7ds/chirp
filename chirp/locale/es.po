@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-03 15:41-0700\n"
-"PO-Revision-Date: 2024-09-02 22:50-0400\n"
+"PO-Revision-Date: 2024-09-04 23:19-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -85,6 +85,7 @@ msgstr "(Describe lo que estabas haciendo)"
 msgid ""
 "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr ""
+"(¿Ha funcionado esto antes? ¿Radio nueva? ¿Funciona con el software OEM?)"
 
 #: ../wxui/radioinfo.py:50
 msgid "(none)"
@@ -1029,7 +1030,7 @@ msgstr ""
 
 #: ../drivers/ga510.py:1070
 msgid "AM mode does not allow duplex or tone"
-msgstr "El modo AMD no permite dúplex o tono"
+msgstr "El modo AM no permite dúplex o tono"
 
 #: ../wxui/main.py:924
 msgid "About"
