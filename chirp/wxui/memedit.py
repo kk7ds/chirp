@@ -607,6 +607,12 @@ class ChirpCrossModeColumn(ChirpChoiceColumn):
         return memory.tmode != 'Cross'
 
 
+class ChirpSkipColumn(ChirpChoiceColumn):
+    @property
+    def valid(self):
+        return self._features.valid_skips
+
+
 class ChirpCommentColumn(ChirpMemoryColumn):
     # This is just here so it is marked for translation
     __TITLE = _('Comment')
@@ -1010,8 +1016,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             ChirpChoiceColumn('tuning_step', self._radio,
                               valid_tuning_steps,
                               label=_('Tuning Step')),
-            ChirpChoiceColumn('skip', self._radio,
-                              valid_skips),
+            ChirpSkipColumn('skip', self._radio,
+                            valid_skips),
             power_column,
             ChirpCommentColumn('comment', self._radio),
         ]
