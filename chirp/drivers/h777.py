@@ -704,6 +704,19 @@ class BFM4Radio(H777Radio):
 
 
 @directory.register
+class MT8SRadio(H777Radio):
+    VENDOR = "MaxTalker"
+    MODEL = "MT-8S"
+    ALIASES = []
+    _has_fm = False
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
+
+
+@directory.register
 class BF1901Radio(H777Radio):
     VENDOR = "Baofeng"
     MODEL = "BF-1901"
