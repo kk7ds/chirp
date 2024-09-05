@@ -2065,6 +2065,12 @@ class RA79Radio(UVK5Radio):
 
 
 @directory.register
+class MaxTalkerTK6(UVK5Radio):
+    VENDOR = "MaxTalker"
+    MODEL = "TK-6"
+
+
+@directory.register
 @directory.detected_by(UVK5Radio)
 class UVK5RestrictedRadio(UVK5RadioBase):
     VARIANT = 'unsupported'
