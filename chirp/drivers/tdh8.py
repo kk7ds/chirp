@@ -1237,19 +1237,19 @@ class TDH8(chirp_common.CloneModeRadio):
         if self.MODEL != "RT-730":
             rs = RadioSetting("pttid", "PTT ID",
                               RadioSettingValueList(PTTID_VALUES,
-                                                    PTTID_VALUES[_mem.pttid]))
+                                                    current_index=_mem.pttid))
             mem.extra.append(rs)
 
         # Busylock
         rs = RadioSetting("bcl", "Busy Lock",
                           RadioSettingValueList(BCLOCK_VALUES,
-                                                BCLOCK_VALUES[_mem.bcl]))
+                                                current_index=_mem.bcl))
         mem.extra.append(rs)
 
         if self.MODEL != "RT-730":
             rs = RadioSetting(
                 "freqhop", "Frequency Hop", RadioSettingValueList(
-                    FREQHOP_VALUES, FREQHOP_VALUES[_mem.freqhop]))
+                    FREQHOP_VALUES, current_index=_mem.freqhop))
             mem.extra.append(rs)
 
         if chirp_common.in_range(mem.freq, self._rxbands):
@@ -1406,75 +1406,81 @@ class TDH8(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("squelch", "Squelch Level",
                           RadioSettingValueList(
-                              SQUELCH, SQUELCH[_settings.squelch]))
+                              SQUELCH, current_index=_settings.squelch))
         basic.append(rs)
 
         if self.MODEL != "RT-730":
             rs = RadioSetting("ligcon", "Light Control",
                               RadioSettingValueList(
-                                  LIGHT_LIST, LIGHT_LIST[_settings.ligcon]))
+                                  LIGHT_LIST, current_index=_settings.ligcon))
             basic.append(rs)
 
         rs = RadioSetting("voiceprompt", "Voice Prompt",
                           RadioSettingValueList(
-                              VOICE_PRMPT_LIST, VOICE_PRMPT_LIST[
-                                  _settings.voiceprompt]))
+                              VOICE_PRMPT_LIST,
+                              current_index=_settings.voiceprompt))
         basic.append(rs)
 
         rs = RadioSetting("keyautolock", "Auto Lock",
                           RadioSettingValueList(
-                              AUTOLOCK_LIST, AUTOLOCK_LIST[
-                                  _settings.keyautolock]))
+                              AUTOLOCK_LIST,
+                              current_index=_settings.keyautolock))
         basic.append(rs)
 
         if self.MODEL != "RT-730":
             rs = RadioSetting("mdfa", "MDF-A",
                               RadioSettingValueList(
-                                  MDFA_LIST, MDFA_LIST[_settings.mdfa]))
+                                  MDFA_LIST,
+                                  current_index=_settings.mdfa))
             basic.append(rs)
 
             rs = RadioSetting("mdfb", "MDF-B",
                               RadioSettingValueList(
-                                  MDFB_LIST, MDFB_LIST[_settings.mdfb]))
+                                  MDFB_LIST,
+                                  current_index=_settings.mdfb))
             basic.append(rs)
 
             rs = RadioSetting("sync", "SYNC",
                               RadioSettingValueList(
-                                  SYNC_LIST, SYNC_LIST[_settings.sync]))
+                                  SYNC_LIST,
+                                  current_index=_settings.sync))
             basic.append(rs)
 
             rs = RadioSetting("save", "Battery Save",
                               RadioSettingValueList(
                                   BTV_SAVER_LIST,
-                                  BTV_SAVER_LIST[_settings.save]))
+                                  current_index=_settings.save))
             basic.append(rs)
 
         rs = RadioSetting("dbrx", "Double Rx",
                           RadioSettingValueList(
-                              DBRX_LIST, DBRX_LIST[_settings.dbrx]))
+                              DBRX_LIST,
+                              current_index=_settings.dbrx))
         basic.append(rs)
 
         if self.MODEL != "RT-730":
             rs = RadioSetting("astep", "A Step",
                               RadioSettingValueList(
-                                  ASTEP_LIST, ASTEP_LIST[_settings.astep]))
+                                  ASTEP_LIST,
+                                  current_index=_settings.astep))
             basic.append(rs)
 
             rs = RadioSetting("bstep", "B Step",
                               RadioSettingValueList(
-                                  BSTEP_LIST, BSTEP_LIST[_settings.bstep]))
+                                  BSTEP_LIST,
+                                  current_index=_settings.bstep))
             basic.append(rs)
 
         rs = RadioSetting("scanmode", "Scan Mode",
                           RadioSettingValueList(
-                              SCAN_MODE_LIST, SCAN_MODE_LIST[
-                                  _settings.scanmode]))
+                              SCAN_MODE_LIST,
+                              current_index=_settings.scanmode))
         basic.append(rs)
 
         if self.MODEL != "RT-730":
             rs = RadioSetting("pritx", "Priority TX",
                               RadioSettingValueList(
-                                  PRIO_LIST, PRIO_LIST[_settings.pritx]))
+                                  PRIO_LIST, current_index=_settings.pritx))
             basic.append(rs)
 
         rs = RadioSetting("btnvoice", "Beep",
@@ -1501,13 +1507,13 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(rs)
             rs = RadioSetting("ssidekey1", "SHORT_KEY_PF1",
                               RadioSettingValueList(
-                                  SHORT_KEY_LIST, SHORT_KEY_LIST[
-                                      _press.ssidekey1]))
+                                  SHORT_KEY_LIST,
+                                  current_index=_press.ssidekey1))
             basic.append(rs)
             rs = RadioSetting("lsidekey3", "LONG_KEY_PF1",
                               RadioSettingValueList(
                                   LONG_KEY_LIST,
-                                  LONG_KEY_LIST[_press.lsidekey3]))
+                                  current_index=_press.lsidekey3))
             basic.append(rs)
 
         if self.MODEL in H8_LIST:
@@ -1519,35 +1525,38 @@ class TDH8(chirp_common.CloneModeRadio):
             rs = RadioSetting("ltopkey2", "LONG_KEY_TOP",
                               RadioSettingValueList(
                                   LONG_KEY_LIST,
-                                  LONG_KEY_LIST[_press.ltopkey2]))
+                                  current_index=_press.ltopkey2))
             basic.append(rs)
 
             rs = RadioSetting("ssidekey2", "SHORT_KEY_PF2",
                               RadioSettingValueList(
                                   SHORT_KEY_LIST,
-                                  SHORT_KEY_LIST[_press.ssidekey2]))
+                                  current_index=_press.ssidekey2))
             basic.append(rs)
 
             rs = RadioSetting("lsidekey4", "LONG_KEY_PF2",
                               RadioSettingValueList(
                                 LONG_KEY_LIST,
-                                LONG_KEY_LIST[_press.lsidekey4]))
+                                current_index=_press.lsidekey4))
             basic.append(rs)
 
         if self.MODEL != "RT-730":
             rs = RadioSetting("voxgain", "VOX Gain",
                               RadioSettingValueList(
-                                  VOX_GAIN, VOX_GAIN[_settings.voxgain]))
+                                  VOX_GAIN,
+                                  current_index=_settings.voxgain))
             basic.append(rs)
 
             rs = RadioSetting("voxdelay", "VOX Delay",
                               RadioSettingValueList(
-                                  VOX_DELAY, VOX_DELAY[_settings.voxdelay]))
+                                  VOX_DELAY,
+                                  current_index=_settings.voxdelay))
             basic.append(rs)
 
             rs = RadioSetting("ponmsg", "Power-On Message",
                               RadioSettingValueList(
-                                  PONMSG_LIST, PONMSG_LIST[_settings.ponmsg]))
+                                  PONMSG_LIST,
+                                  current_index=_settings.ponmsg))
             basic.append(rs)
 
             # mic gain
@@ -1594,38 +1603,43 @@ class TDH8(chirp_common.CloneModeRadio):
             rs = RadioSetting("ligcon", "Light Control",
                               RadioSettingValueList(
                                   LIGHT730_LIST,
-                                  LIGHT730_LIST[_settings.ligcon]))
+                                  current_index=_settings.ligcon))
             basic.append(rs)
 
             rs = RadioSetting("tot", "Time-out Timer",
                               RadioSettingValueList(
-                                  TIMEOUT730_LIST, TIMEOUT730_LIST[
-                                      _settings.tot]))
+                                  TIMEOUT730_LIST,
+                                  current_index=_settings.tot))
             basic.append(rs)
 
             rs = RadioSetting("press.rogerprompt", "Roger",
                               RadioSettingValueList(
-                                  PTTID_LIST, PTTID_LIST[_press.rogerprompt]))
+                                  PTTID_LIST,
+                                  current_index=_press.rogerprompt))
             basic.append(rs)
 
             rs = RadioSetting("lang", "Language",
                               RadioSettingValueList(
-                                  LANG_LIST, LANG_LIST[_settings.lang]))
+                                  LANG_LIST,
+                                  current_index=_settings.lang))
             basic.append(rs)
 
             rs = RadioSetting("save", "Battery Save",
                               RadioSettingValueList(
-                                  OFFON_LIST, OFFON_LIST[_settings.save]))
+                                  OFFON_LIST,
+                                  current_index=_settings.save))
             basic.append(rs)
 
             rs = RadioSetting("mdfa", "Channel Names",
                               RadioSettingValueList(
-                                  OFFON_LIST, OFFON_LIST[_settings.mdfa]))
+                                  OFFON_LIST,
+                                  current_index=_settings.mdfa))
             basic.append(rs)
 
             rs = RadioSetting("hoptype", "Hop Type",
                               RadioSettingValueList(
-                                  HOP_LIST, HOP_LIST[_settings.hoptype]))
+                                  HOP_LIST,
+                                  current_index=_settings.hoptype))
             basic.append(rs)
 
             rs = RadioSetting("tailclean", "QT/DQT Tail",
@@ -1634,35 +1648,35 @@ class TDH8(chirp_common.CloneModeRadio):
 
             rs = RadioSetting("press.ssidekey1", "PF1 Key(Short)",
                               RadioSettingValueList(
-                                  SHORT_KEY730_LIST, SHORT_KEY730_LIST[
-                                      _press.ssidekey1]))
+                                  SHORT_KEY730_LIST,
+                                  current_index=_press.ssidekey1))
             basic.append(rs)
             rs = RadioSetting("press.lsidekey1", "PF1 Key(Long)",
                               RadioSettingValueList(
                                   LONG_KEY730_LIST,
-                                  LONG_KEY730_LIST[_press.lsidekey1]))
+                                  current_index=_press.lsidekey1))
             basic.append(rs)
             rs = RadioSetting("press.ssidekey2", "PF2 Key(Short)",
                               RadioSettingValueList(
-                                  SHORT_KEY730_LIST, SHORT_KEY730_LIST[
-                                      _press.ssidekey2]))
+                                  SHORT_KEY730_LIST,
+                                  current_index=_press.ssidekey2))
             basic.append(rs)
             rs = RadioSetting("press.lsidekey2", "PF2 Key(Long)",
                               RadioSettingValueList(
                                   LONG_KEY730_LIST,
-                                  LONG_KEY730_LIST[_press.lsidekey2]))
+                                  current_index=_press.lsidekey2))
             basic.append(rs)
 
             rs = RadioSetting("voxgain", "VOX Gain",
                               RadioSettingValueList(
                                   VOX_GAIN730,
-                                  VOX_GAIN730[_settings.voxgain]))
+                                  current_index=_settings.voxgain))
             basic.append(rs)
 
             rs = RadioSetting("voxdelay", "VOX Delay",
                               RadioSettingValueList(
                                   VOX_DELAY730,
-                                  VOX_DELAY730[_settings.voxdelay]))
+                                  current_index=_settings.voxdelay))
             basic.append(rs)
 
         if self.MODEL != "RT-730":
@@ -1701,7 +1715,7 @@ class TDH8(chirp_common.CloneModeRadio):
 
             rs = RadioSetting("offset", "A Offset",
                               RadioSettingValueList(
-                                  A_OFFSET, A_OFFSET[_vfoa.offset]))
+                                  A_OFFSET, current_index=_vfoa.offset))
             abblock.append(rs)
 
             try:
@@ -1717,7 +1731,7 @@ class TDH8(chirp_common.CloneModeRadio):
 
             rs = RadioSetting("wide", "A Band",
                               RadioSettingValueList(
-                                  A_BAND, A_BAND[_vfoa.wide]))
+                                  A_BAND, current_index=_vfoa.wide))
             abblock.append(rs)
 
             rs = RadioSetting("bcl", "A Busy Lock",
@@ -1808,12 +1822,14 @@ class TDH8(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("fmworkmode", "Work Mode",
                           RadioSettingValueList(
-                              FM_WORKMODE, FM_WORKMODE[_settings.fmworkmode]))
+                              FM_WORKMODE,
+                              current_index=_settings.fmworkmode))
         fmmode.append(rs)
 
         rs = RadioSetting("fmroad", "Channel",
                           RadioSettingValueList(
-                              FM_CHANNEL, FM_CHANNEL[_settings.fmroad]))
+                              FM_CHANNEL,
+                              current_index=_settings.fmroad))
         fmmode.append(rs)
 
         rs = RadioSetting("fmrec", "Forbid Receive",
