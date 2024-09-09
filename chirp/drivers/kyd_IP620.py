@@ -401,17 +401,17 @@ class IP620Radio(chirp_common.CloneModeRadio,
         mem.extra = RadioSettingGroup("Extra", "extra")
         rs = RadioSetting("lout", "Lock out",
                           RadioSettingValueList(OFF_ON_LIST,
-                                                OFF_ON_LIST[_mem.lout]))
+                                                current_index=_mem.lout))
         mem.extra.append(rs)
 
         rs = RadioSetting("busy_loc", "Busy lock",
                           RadioSettingValueList(BUSYLOCK_LIST,
-                                                BUSYLOCK_LIST[_mem.busy_loc]))
+                                                current_index=_mem.busy_loc))
         mem.extra.append(rs)
 
         rs = RadioSetting("scan_add", "Scan add",
                           RadioSettingValueList(NO_YES_LIST,
-                                                NO_YES_LIST[_mem.scan_add]))
+                                                current_index=_mem.scan_add))
         mem.extra.append(rs)
         # TODO: Show name channel
 #        count = 0
@@ -500,92 +500,92 @@ class IP620Radio(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("rf_sql", "Squelch level (SQL)",
                           RadioSettingValueList(RFSQL_LIST,
-                                                RFSQL_LIST[_settings.rf_sql]))
+                                                current_index=_settings.rf_sql))
         basic.append(rs)
 
         rs = RadioSetting("step_freq", "Step frequency kHz (STP)",
                           RadioSettingValueList(STEP_LIST,
-                                                STEP_LIST[_settings.step_freq]))
+                                                current_index=_settings.step_freq))
         basic.append(rs)
 
         rs = RadioSetting("fm_radio", "FM radio (DW)",
                           RadioSettingValueList(OFF_ON_LIST,
-                                                OFF_ON_LIST[_settings_misc.fm_radio]))
+                                                current_index=_settings_misc.fm_radio))
         basic.append(rs)
 
         rs = RadioSetting("call_tone", "Call tone (CK)",
                           RadioSettingValueList(CALLTONE_LIST,
-                                                CALLTONE_LIST[_settings.call_tone]))
+                                                current_index=_settings.call_tone))
         basic.append(rs)
 
         rs = RadioSetting("tot", "Time-out timer (TOT)",
                           RadioSettingValueList(TIMEOUT_LIST,
-                                                TIMEOUT_LIST[_settings.tot]))
+                                                current_index=_settings.tot))
         basic.append(rs)
 
         rs = RadioSetting("chan_disp_way", "Channel display way",
                           RadioSettingValueList(CH_FLAG_LIST,
-                                                CH_FLAG_LIST[_settings.chan_disp_way]))
+                                                current_index=_settings.chan_disp_way))
         basic.append(rs)
 
         rs = RadioSetting("vox", "VOX Gain (VOX)",
                           RadioSettingValueList(VOX_LIST,
-                                                VOX_LIST[_settings.vox]))
+                                                current_index=_settings.vox))
         basic.append(rs)
 
         rs = RadioSetting("vox_dly", "VOX Delay",
                           RadioSettingValueList(VOXDELAY_LIST,
-                                                VOXDELAY_LIST[_settings.vox_dly]))
+                                                current_index=_settings.vox_dly))
         basic.append(rs)
 
         rs = RadioSetting("beep", "Beep (BP)",
                           RadioSettingValueList(OFF_ON_LIST,
-                                                OFF_ON_LIST[_settings.beep]))
+                                                current_index=_settings.beep))
         basic.append(rs)
 
         rs = RadioSetting("auto_lock", "Auto lock (KY)",
                           RadioSettingValueList(NO_YES_LIST,
-                                                NO_YES_LIST[_settings_misc.auto_lock]))
+                                                current_index=_settings_misc.auto_lock))
         basic.append(rs)
 
         rs = RadioSetting("bat_save", "Battery Saver (SAV)",
                           RadioSettingValueList(BAT_SAVE_LIST,
-                                                BAT_SAVE_LIST[_settings.bat_save]))
+                                                current_index=_settings.bat_save))
         basic.append(rs)
 
         rs = RadioSetting("chan_pri", "Channel PRI (PRI)",
                           RadioSettingValueList(OFF_ON_LIST,
-                                                OFF_ON_LIST[_settings.chan_pri]))
+                                                current_index=_settings.chan_pri))
         basic.append(rs)
 
         rs = RadioSetting("chan_pri_num", "Channel PRI time Sec (PRI)",
                           RadioSettingValueList(PRI_NUM_LIST,
-                                                PRI_NUM_LIST[_settings.chan_pri_num]))
+                                                current_index=_settings.chan_pri_num))
         basic.append(rs)
 
         rs = RadioSetting("end_beep", "End beep (ET)",
                           RadioSettingValueList(ENDBEEP_LIST,
-                                                ENDBEEP_LIST[_settings.end_beep]))
+                                                current_index=_settings.end_beep))
         basic.append(rs)
 
         rs = RadioSetting("ch_mode", "CH mode",
                           RadioSettingValueList(ON_OFF_LIST,
-                                                ON_OFF_LIST[_settings.ch_mode]))
+                                                current_index=_settings.ch_mode))
         basic.append(rs)
 
         rs = RadioSetting("scan_rev", "Scan rev (SCAN)",
                           RadioSettingValueList(SCANM_LIST,
-                                                SCANM_LIST[_settings.scan_rev]))
+                                                current_index=_settings.scan_rev))
         basic.append(rs)
 
         rs = RadioSetting("enc", "Frequency lock (ENC)",
                           RadioSettingValueList(OFF_ON_LIST,
-                                                OFF_ON_LIST[_settings.enc]))
+                                                current_index=_settings.enc))
         basic.append(rs)
 
         rs = RadioSetting("wait_back_light", "Wait back light (LED)",
                           RadioSettingValueList(BACKLIGHT_LIST,
-                                                BACKLIGHT_LIST[_settings.wait_back_light]))
+                                                current_index=_settings.wait_back_light))
         basic.append(rs)
 
         return top

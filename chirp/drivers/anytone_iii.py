@@ -1008,17 +1008,17 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("pttid", "PTT ID",
                           RadioSettingValueList(PTT_IDS,
-                                                PTT_IDS[_mem.pttid]))
+                                                current_index=_mem.pttid))
         mem.extra.append(rs)
 
         rs = RadioSetting("bclo", "Busy Channel Lockout",
                           RadioSettingValueList(BCLO,
-                                                BCLO[_mem.bclo]))
+                                                current_index=_mem.bclo))
         mem.extra.append(rs)
 
         rs = RadioSetting("optsig", "Optional Signaling",
                           RadioSettingValueList(OPT_SIGS,
-                                                OPT_SIGS[_mem.optsig]))
+                                                current_index=_mem.optsig))
         mem.extra.append(rs)
 
         rs = RadioSetting("OPTSIGSQL", "Squelch w/Opt Signaling",
@@ -1029,24 +1029,25 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                               else "Off"))
         mem.extra.append(rs)
 
-        rs = RadioSetting("dtmf_enc_num", "DTMF",
-                          RadioSettingValueList(DTMF_SLOTS,
-                                                DTMF_SLOTS[_mem.dtmf_enc_num]))
+        rs = RadioSetting(
+            "dtmf_enc_num", "DTMF",
+            RadioSettingValueList(
+                DTMF_SLOTS, current_index=_mem.dtmf_enc_num))
         mem.extra.append(rs)
 
         rs = RadioSetting("twotone", "2-Tone",
                           RadioSettingValueList(TONE2_SLOTS,
-                                                TONE2_SLOTS[_mem.twotone]))
+                                                current_index=_mem.twotone))
         mem.extra.append(rs)
 
         rs = RadioSetting("fivetone", "5-Tone",
                           RadioSettingValueList(TONE5_SLOTS,
-                                                TONE5_SLOTS[_mem.fivetone]))
+                                                current_index=_mem.fivetone))
         mem.extra.append(rs)
 
         rs = RadioSetting("scramble", "Scrambler Switch",
                           RadioSettingValueList(SCRAMBLE_CODES,
-                                                SCRAMBLE_CODES[_mem.scramble]))
+                                                current_index=_mem.scramble))
         mem.extra.append(rs)
 
         # Memory properties dialog is only capable of Boolean and List
@@ -1213,9 +1214,9 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                             chirp_common.CHARSET_ASCII))))
         basic.append(
             RadioSetting(
-                "display",
-                "Display",
-                RadioSettingValueList(DISPLAY, DISPLAY[_settings.display])))
+                "display", "Display",
+                RadioSettingValueList(
+                    DISPLAY, current_index=_settings.display)))
         basic.append(
             RadioSetting(
                 "disp_chan_lock",
@@ -1227,24 +1228,24 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                 "Scan Pause Time",
                 RadioSettingValueList(
                     SCAN_PAUSES,
-                    SCAN_PAUSES[_settings.scan_tot])))
+                    current_index=_settings.scan_tot)))
         basic.append(
             RadioSetting(
                 "scan_mode",
                 "Scan Mode",
                 RadioSettingValueList(
                     SCAN_MODES,
-                    SCAN_MODES[_settings.scan_mode])))
+                    current_index=_settings.scan_mode)))
         basic.append(
             RadioSetting(
                 "ptt_tot",
                 "Talk Timeout",
-                RadioSettingValueList(TOT, TOT[_settings.ptt_tot])))
+                RadioSettingValueList(TOT, current_index=_settings.ptt_tot)))
         basic.append(
             RadioSetting(
                 "apo",
                 "Auto Power Off",
-                RadioSettingValueList(APO, APO[_settings.apo])))
+                RadioSettingValueList(APO, current_index=_settings.apo)))
         basic.append(
             RadioSetting(
                 "beep_on",
@@ -1252,9 +1253,9 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                 RadioSettingValueBoolean(_settings.beep_on)))
         basic.append(
             RadioSetting(
-                "beep_hi",
-                "Beep Volume",
-                RadioSettingValueList(BEEP_VOL, BEEP_VOL[_settings.beep_hi])))
+                "beep_hi", "Beep Volume",
+                RadioSettingValueList(
+                    BEEP_VOL, current_index=_settings.beep_hi)))
         basic.append(
             RadioSetting(
                 "ext_spk_on",
@@ -1266,14 +1267,14 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                 "Deputy Chan Mute",
                 RadioSettingValueList(
                     DEPUTY_CHAN_MUTES,
-                    DEPUTY_CHAN_MUTES[_settings.deputy_mute])))
+                    current_index=_settings.deputy_mute)))
         basic.append(
             RadioSetting(
                 "tail_elim_type",
                 "Tail Eliminator",
                 RadioSettingValueList(
                     TAIL_ELIM_TYPES,
-                    TAIL_ELIM_TYPES[_settings.tail_elim_type])))
+                    current_index=_settings.tail_elim_type)))
         basic.append(
             RadioSetting(
                 "no_tone_elim_tail",
@@ -1298,14 +1299,14 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                 "Left RF Squelch",
                 RadioSettingValueList(
                     RF_SQUELCHES,
-                    RF_SQUELCHES[_settings.rfsql_left])))
+                    current_index=_settings.rfsql_left)))
         sqls.append(
             RadioSetting(
                 "rfsql_right",
                 "Right RF Squelch",
                 RadioSettingValueList(
                     RF_SQUELCHES,
-                    RF_SQUELCHES[_settings.rfsql_right])))
+                    current_index=_settings.rfsql_right)))
         allGroups.append(sqls)
 
         keys = RadioSettingGroup("keys", "Keys / Buttons")
@@ -1315,35 +1316,35 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                 "SQL Key Mode",
                 RadioSettingValueList(
                     SQL_BTN_MODES,
-                    SQL_BTN_MODES[_settings.sql_key_mode])))
+                    current_index=_settings.sql_key_mode)))
         keys.append(
             RadioSetting(
                 "key_a_func",
                 "PA Key Function",
                 RadioSettingValueList(
                     KEY_FUNCS,
-                    KEY_FUNCS[_settings.key_a_func])))
+                    current_index=_settings.key_a_func)))
         keys.append(
             RadioSetting(
                 "key_b_func",
                 "PB Key Function",
                 RadioSettingValueList(
                     KEY_FUNCS,
-                    KEY_FUNCS[_settings.key_b_func])))
+                    current_index=_settings.key_b_func)))
         keys.append(
             RadioSetting(
                 "key_c_func",
                 "PC Key Function",
                 RadioSettingValueList(
                     KEY_FUNCS,
-                    KEY_FUNCS[_settings.key_c_func])))
+                    current_index=_settings.key_c_func)))
         keys.append(
             RadioSetting(
                 "key_d_func",
                 "PD Key Function",
                 RadioSettingValueList(
                     KEY_FUNCS,
-                    KEY_FUNCS[_settings.key_d_func])))
+                    current_index=_settings.key_d_func)))
         keys.append(
             RadioSetting(
                 "key_bright",
@@ -1360,7 +1361,7 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                 "PTT Key Lock",
                 RadioSettingValueList(
                     PTT_KEY_LOCKS,
-                    PTT_KEY_LOCKS[_settings.ptt_lockout])))
+                    current_index=_settings.ptt_lockout)))
         keys.append(
             RadioSetting(
                 "keypad_lock",
@@ -1426,14 +1427,14 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                 "TBST Freq",
                 RadioSettingValueList(
                     TBST_FREQS,
-                    TBST_FREQS[_settings.tbst_freq])))
+                    current_index=_settings.tbst_freq)))
         advanced.append(
             RadioSetting(
                 "long_key_time",
                 "Long Key Time",
                 RadioSettingValueList(
                     LONG_KEY_TIMES,
-                    LONG_KEY_TIMES[int((_settings.long_key_time-100) / 50)])))
+                    current_index=int((_settings.long_key_time-100) / 50))))
         advanced.append(
             RadioSetting(
                 "clk_shift",
@@ -1464,21 +1465,21 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                     "Main Band",
                     RadioSettingValueList(
                         HYPER_MAINS,
-                        HYPER_MAINS[_hyperSettings.main])))
+                        current_index=_hyperSettings.main)))
             hyperGroup.append(
                 RadioSetting(
                     "sub_display",
                     "Sub Display",
                     RadioSettingValueList(
                         HYPER_SUB_DISPLAYS,
-                        HYPER_SUB_DISPLAYS[_hyperSettings.sub_display])))
+                        current_index=_hyperSettings.sub_display)))
             hyperGroup.append(
                 RadioSetting(
                     "spkr_mode",
                     "Speakers",
                     RadioSettingValueList(
                         HYPER_SPKR_MODES,
-                        HYPER_SPKR_MODES[_hyperSettings.spkr_mode])))
+                        current_index=_hyperSettings.spkr_mode)))
             hyperGroup.append(
                 RadioSetting(
                     "vfo_band_edge",
@@ -1510,14 +1511,14 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                     "Left Mode",
                     RadioSettingValueList(
                         HYPER_MODES,
-                        HYPER_MODES[_hyperSettings.left_mode])))
+                        current_index=_hyperSettings.left_mode)))
             hyperGroup.append(
                 RadioSetting(
                     "right_mode",
                     "Right Mode",
                     RadioSettingValueList(
                         HYPER_MODES,
-                        HYPER_MODES[_hyperSettings.right_mode])))
+                        current_index=_hyperSettings.right_mode)))
             hyperGroup.append(
                 RadioSetting(
                     "left_channel",
@@ -1544,42 +1545,42 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                     "Left VFO Band",
                     RadioSettingValueList(
                         HYPER_L_VFOS,
-                        HYPER_L_VFOS[_hyperSettings.left_vfo_band])))
+                        current_index=_hyperSettings.left_vfo_band)))
             hyperGroup.append(
                 RadioSetting(
                     "right_vfo_band",
                     "Right VFO Band",
                     RadioSettingValueList(
                         HYPER_R_VFOS,
-                        HYPER_R_VFOS[_hyperSettings.right_vfo_band])))
+                        current_index=_hyperSettings.right_vfo_band)))
             hyperGroup.append(
                 RadioSetting(
                     "left_work_bank",
                     "Left Work Bank",
                     RadioSettingValueList(
                         BANK_CHOICES,
-                        BANK_CHOICES[_hyperSettings.left_work_bank])))
+                        current_index=_hyperSettings.left_work_bank)))
             hyperGroup.append(
                 RadioSetting(
                     "right_work_bank",
                     "Right Work Bank",
                     RadioSettingValueList(
                         BANK_CHOICES,
-                        BANK_CHOICES[_hyperSettings.right_work_bank])))
+                        current_index=_hyperSettings.right_work_bank)))
             hyperGroup.append(
                 RadioSetting(
                     "left_bank_mode",
                     "Left Bank Mode",
                     RadioSettingValueList(
                         HYPER_BANK_MODES,
-                        HYPER_BANK_MODES[_hyperSettings.left_bank_mode])))
+                        current_index=_hyperSettings.left_bank_mode)))
             hyperGroup.append(
                 RadioSetting(
                     "right_bank_mode",
                     "Right Bank Mode",
                     RadioSettingValueList(
                         HYPER_BANK_MODES,
-                        HYPER_BANK_MODES[_hyperSettings.right_bank_mode])))
+                        current_index=_hyperSettings.right_bank_mode)))
             hyperGroup.append(
                 RadioSetting(
                     "left_bank_sw",
@@ -1634,14 +1635,14 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                 "Alarm Mode",
                 RadioSettingValueList(
                     EMER_MODES,
-                    EMER_MODES[_emergency.mode])))
+                    current_index=_emergency.mode)))
         emer.append(
             RadioSetting(
                 "eni_type",
                 "ENI Type",
                 RadioSettingValueList(
                     EMER_ENI_TYPES,
-                    EMER_ENI_TYPES[_emergency.eni_type])))
+                    current_index=_emergency.eni_type)))
         emer.append(
             RadioSetting(
                 "emergency.id",
@@ -1686,7 +1687,7 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                 "ENI Channel",
                 RadioSettingValueList(
                     EMER_CHAN_SEL,
-                    EMER_CHAN_SEL[_emergency.chan_select])))
+                    current_index=_emergency.chan_select)))
         emer.append(
             RadioSetting(
                 "channel",
@@ -1703,7 +1704,7 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                 "Cycle",
                 RadioSettingValueList(
                     EMER_CYCLES,
-                    EMER_CYCLES[_emergency.cycle])))
+                    current_index=_emergency.cycle)))
         allGroups.append(emer)
 
         dtmfGroup = RadioSettingGroup("dtmf", "DTMF")
@@ -1726,14 +1727,14 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                 "Encode Preload Time",
                 RadioSettingValueList(
                     DTMF_PRELOADS,
-                    DTMF_PRELOADS[_settings.dtmf_preload_time])))
+                    current_index=_settings.dtmf_preload_time)))
         dtmfGroup.append(
             RadioSetting(
                 "dtmf_speed",
                 "Speed",
                 RadioSettingValueList(
                     DTMF_SPEEDS,
-                    DTMF_SPEEDS[_settings.dtmf_speed])))
+                    current_index=_settings.dtmf_speed)))
         dtmfGroup.append(
             RadioSetting(
                 "dtmf_interval_char",
@@ -1756,7 +1757,7 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                 "Decode Response",
                 RadioSettingValueList(
                     DTMF_RESPONSES,
-                    DTMF_RESPONSES[_settings.dtmf_dec_resp])))
+                    current_index=_settings.dtmf_dec_resp)))
         dtmfGroup.append(
             RadioSetting(
                 "dtmf_first_dig_time",

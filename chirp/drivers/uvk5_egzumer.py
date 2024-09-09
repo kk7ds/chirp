@@ -1385,7 +1385,7 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
 
         # Battery Type
         tmpbtype = list_def(_mem.Battery_type, BATTYPE_LIST, 0)
-        val = RadioSettingValueList(BATTYPE_LIST, BATTYPE_LIST[tmpbtype])
+        val = RadioSettingValueList(BATTYPE_LIST, current_index=tmpbtype)
         bat_type_setting = RadioSetting("Battery_type",
                                         "Battery Type (BatTyp)", val)
 

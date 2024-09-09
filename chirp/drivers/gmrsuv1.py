@@ -670,7 +670,7 @@ class GMRSV1(bfc.BaofengCommonHT):
             val = _mem.settings.squelch
         rs = RadioSetting("settings.squelch", "Squelch",
                           RadioSettingValueList(
-                              LIST_OFF1TO9, LIST_OFF1TO9[val]))
+                              LIST_OFF1TO9, current_index=val))
         basic.append(rs)
 
         if _mem.settings.save > 0x04:
@@ -679,7 +679,7 @@ class GMRSV1(bfc.BaofengCommonHT):
             val = _mem.settings.save
         rs = RadioSetting("settings.save", "Battery Saver",
                           RadioSettingValueList(
-                              LIST_SAVE, LIST_SAVE[val]))
+                              LIST_SAVE, current_index=val))
         basic.append(rs)
 
         if _mem.settings.vox > 0x0A:
@@ -688,7 +688,7 @@ class GMRSV1(bfc.BaofengCommonHT):
             val = _mem.settings.vox
         rs = RadioSetting("settings.vox", "Vox",
                           RadioSettingValueList(
-                              LIST_OFF1TO10, LIST_OFF1TO10[val]))
+                              LIST_OFF1TO10, current_index=val))
         basic.append(rs)
 
         if _mem.settings.abr > 0x0A:
@@ -697,7 +697,7 @@ class GMRSV1(bfc.BaofengCommonHT):
             val = _mem.settings.abr
         rs = RadioSetting("settings.abr", "Backlight Timeout",
                           RadioSettingValueList(
-                              LIST_OFF1TO10, LIST_OFF1TO10[val]))
+                              LIST_OFF1TO10, current_index=val))
         basic.append(rs)
 
         rs = RadioSetting("settings.tdr", "Dual Watch",
@@ -714,7 +714,7 @@ class GMRSV1(bfc.BaofengCommonHT):
             val = _mem.settings.timeout
         rs = RadioSetting("settings.timeout", "Timeout Timer",
                           RadioSettingValueList(
-                              LIST_TIMEOUT, LIST_TIMEOUT[val]))
+                              LIST_TIMEOUT, current_index=val))
         basic.append(rs)
 
         if _mem.settings.voice > 0x02:
@@ -723,12 +723,13 @@ class GMRSV1(bfc.BaofengCommonHT):
             val = _mem.settings.voice
         rs = RadioSetting("settings.voice", "Voice Prompt",
                           RadioSettingValueList(
-                              LIST_VOICE, LIST_VOICE[val]))
+                              LIST_VOICE, current_index=val))
         basic.append(rs)
 
-        rs = RadioSetting("settings.dtmfst", "DTMF Sidetone",
-                          RadioSettingValueList(LIST_DTMFST, LIST_DTMFST[
-                              _mem.settings.dtmfst]))
+        rs = RadioSetting(
+            "settings.dtmfst", "DTMF Sidetone",
+            RadioSettingValueList(
+                LIST_DTMFST, current_index=_mem.settings.dtmfst))
         basic.append(rs)
 
         if _mem.settings.screv > 0x02:
@@ -737,12 +738,13 @@ class GMRSV1(bfc.BaofengCommonHT):
             val = _mem.settings.screv
         rs = RadioSetting("settings.screv", "Scan Resume",
                           RadioSettingValueList(
-                              LIST_RESUME, LIST_RESUME[val]))
+                              LIST_RESUME, current_index=val))
         basic.append(rs)
 
-        rs = RadioSetting("settings.pttid", "When to send PTT ID",
-                          RadioSettingValueList(LIST_PTTID, LIST_PTTID[
-                              _mem.settings.pttid]))
+        rs = RadioSetting(
+            "settings.pttid", "When to send PTT ID",
+            RadioSettingValueList(
+                LIST_PTTID, current_index=_mem.settings.pttid))
         basic.append(rs)
 
         if _mem.settings.pttlt > 0x32:
@@ -753,14 +755,16 @@ class GMRSV1(bfc.BaofengCommonHT):
                           RadioSettingValueInteger(0, 50, val))
         basic.append(rs)
 
-        rs = RadioSetting("settings.mdfa", "Display Mode (A)",
-                          RadioSettingValueList(LIST_MODE, LIST_MODE[
-                              _mem.settings.mdfa]))
+        rs = RadioSetting(
+            "settings.mdfa", "Display Mode (A)",
+            RadioSettingValueList(
+                LIST_MODE, current_index=_mem.settings.mdfa))
         basic.append(rs)
 
-        rs = RadioSetting("settings.mdfb", "Display Mode (B)",
-                          RadioSettingValueList(LIST_MODE, LIST_MODE[
-                              _mem.settings.mdfb]))
+        rs = RadioSetting(
+            "settings.mdfb", "Display Mode (B)",
+            RadioSettingValueList(
+                LIST_MODE, current_index=_mem.settings.mdfb))
         basic.append(rs)
 
         rs = RadioSetting("settings.sync", "Sync A & B",
@@ -769,23 +773,23 @@ class GMRSV1(bfc.BaofengCommonHT):
 
         rs = RadioSetting("settings.wtled", "Standby LED Color",
                           RadioSettingValueList(
-                              LIST_COLOR, LIST_COLOR[_mem.settings.wtled]))
+                              LIST_COLOR, current_index=_mem.settings.wtled))
         basic.append(rs)
 
         rs = RadioSetting("settings.rxled", "RX LED Color",
                           RadioSettingValueList(
-                              LIST_COLOR, LIST_COLOR[_mem.settings.rxled]))
+                              LIST_COLOR, current_index=_mem.settings.rxled))
         basic.append(rs)
 
         rs = RadioSetting("settings.txled", "TX LED Color",
                           RadioSettingValueList(
-                              LIST_COLOR, LIST_COLOR[_mem.settings.txled]))
+                              LIST_COLOR, current_index=_mem.settings.txled))
         basic.append(rs)
 
         val = _mem.settings.almod
         rs = RadioSetting("settings.almod", "Alarm Mode",
                           RadioSettingValueList(
-                              LIST_ALMOD, LIST_ALMOD[val]))
+                              LIST_ALMOD, current_index=val))
         basic.append(rs)
 
         rs = RadioSetting("settings.dbptt", "Double PTT",
@@ -798,7 +802,7 @@ class GMRSV1(bfc.BaofengCommonHT):
             val = _mem.settings.tdrab
         rs = RadioSetting("settings.tdrab", "Dual Watch TX Priority",
                           RadioSettingValueList(
-                              LIST_OFFAB, LIST_OFFAB[val]))
+                              LIST_OFFAB, current_index=val))
         basic.append(rs)
 
         rs = RadioSetting("settings.ste", "Squelch Tail Eliminate (HT to HT)",
@@ -812,7 +816,7 @@ class GMRSV1(bfc.BaofengCommonHT):
         rs = RadioSetting("settings.rpste",
                           "Squelch Tail Eliminate (repeater)",
                           RadioSettingValueList(
-                              LIST_RPSTE, LIST_RPSTE[val]))
+                              LIST_RPSTE, current_index=val))
         basic.append(rs)
 
         if _mem.settings.rptrl > 0x0A:
@@ -821,27 +825,28 @@ class GMRSV1(bfc.BaofengCommonHT):
             val = _mem.settings.rptrl
         rs = RadioSetting("settings.rptrl", "STE Repeater Delay",
                           RadioSettingValueList(
-                              LIST_STEDELAY, LIST_STEDELAY[val]))
+                              LIST_STEDELAY, current_index=val))
         basic.append(rs)
 
-        rs = RadioSetting("settings.ponmsg", "Power-On Message",
-                          RadioSettingValueList(LIST_PONMSG, LIST_PONMSG[
-                              _mem.settings.ponmsg]))
+        rs = RadioSetting(
+            "settings.ponmsg", "Power-On Message",
+            RadioSettingValueList(
+                LIST_PONMSG, current_index=_mem.settings.ponmsg))
         basic.append(rs)
 
         rs = RadioSetting("settings.roger", "Roger Beep",
                           RadioSettingValueBoolean(_mem.settings.roger))
         basic.append(rs)
 
-        rs = RadioSetting("settings.rtone", "Tone Burst Frequency",
-                          RadioSettingValueList(LIST_RTONE, LIST_RTONE[
-                              _mem.settings.rtone]))
+        rs = RadioSetting(
+            "settings.rtone", "Tone Burst Frequency",
+            RadioSettingValueList(
+                LIST_RTONE, current_index=_mem.settings.rtone))
         basic.append(rs)
 
         rs = RadioSetting("settings.rogerrx", "Roger Beep (RX)",
                           RadioSettingValueList(
-                             LIST_OFFAB, LIST_OFFAB[
-                                 _mem.settings.rogerrx]))
+                             LIST_OFFAB, current_index=_mem.settings.rogerrx))
         basic.append(rs)
 
         # Advanced settings
@@ -905,13 +910,13 @@ class GMRSV1(bfc.BaofengCommonHT):
         # Work mode settings
         rs = RadioSetting("settings.displayab", "Display",
                           RadioSettingValueList(
-                              LIST_AB, LIST_AB[_mem.settings.displayab]))
+                              LIST_AB, current_index=_mem.settings.displayab))
         work.append(rs)
 
         rs = RadioSetting("settings.workmode", "VFO/MR Mode",
                           RadioSettingValueList(
                               LIST_WORKMODE,
-                              LIST_WORKMODE[_mem.settings.workmode]))
+                              current_index=_mem.settings.workmode))
         work.append(rs)
 
         rs = RadioSetting("settings.keylock", "Keypad Lock",
@@ -963,11 +968,11 @@ class GMRSV1(bfc.BaofengCommonHT):
 
         rs = RadioSetting("vfo.a.step", "VFO A Tuning Step",
                           RadioSettingValueList(
-                              LIST_STEP, LIST_STEP[_mem.vfo.a.step]))
+                              LIST_STEP, current_index=_mem.vfo.a.step))
         work.append(rs)
         rs = RadioSetting("vfo.b.step", "VFO B Tuning Step",
                           RadioSettingValueList(
-                              LIST_STEP, LIST_STEP[_mem.vfo.b.step]))
+                              LIST_STEP, current_index=_mem.vfo.b.step))
         work.append(rs)
 
         # broadcast FM settings
@@ -1008,7 +1013,7 @@ class GMRSV1(bfc.BaofengCommonHT):
             val = _mem.ani.dtmfon
         rs = RadioSetting("ani.dtmfon", "DTMF Speed (on)",
                           RadioSettingValueList(LIST_DTMFSPEED,
-                                                LIST_DTMFSPEED[val]))
+                                                current_index=val))
         dtmfe.append(rs)
 
         if _mem.ani.dtmfoff > 0xC3:
@@ -1017,7 +1022,7 @@ class GMRSV1(bfc.BaofengCommonHT):
             val = _mem.ani.dtmfoff
         rs = RadioSetting("ani.dtmfoff", "DTMF Speed (off)",
                           RadioSettingValueList(LIST_DTMFSPEED,
-                                                LIST_DTMFSPEED[val]))
+                                                current_index=val))
         dtmfe.append(rs)
 
         _codeobj = self._memobj.ani.code
@@ -1030,7 +1035,7 @@ class GMRSV1(bfc.BaofengCommonHT):
 
         rs = RadioSetting("ani.aniid", "When to send ANI ID",
                           RadioSettingValueList(LIST_PTTID,
-                                                LIST_PTTID[_mem.ani.aniid]))
+                                                current_index=_mem.ani.aniid))
         dtmfe.append(rs)
 
         def apply_alarmcode(setting, obj, length):

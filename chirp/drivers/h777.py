@@ -499,7 +499,7 @@ class H777Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("voicelanguage", "Voice language",
                           RadioSettingValueList(
                               VOICE_LIST,
-                              VOICE_LIST[_settings.voicelanguage]))
+                              current_index=_settings.voicelanguage))
         basic.append(rs)
 
         rs = RadioSetting("scan", "Scan",
@@ -575,11 +575,11 @@ class H777Radio(chirp_common.CloneModeRadio):
                                       self._memobj.settings2.sidekeyfunction]))
             basic.append(rs)
 
-        rs = RadioSetting("settings2.timeouttimer", "Timeout timer",
-                          RadioSettingValueList(
-                              TIMEOUTTIMER_LIST,
-                              TIMEOUTTIMER_LIST[
-                                  self._memobj.settings2.timeouttimer]))
+        rs = RadioSetting(
+            "settings2.timeouttimer", "Timeout timer",
+            RadioSettingValueList(
+                TIMEOUTTIMER_LIST,
+                current_index=self._memobj.settings2.timeouttimer))
         basic.append(rs)
 
         return top

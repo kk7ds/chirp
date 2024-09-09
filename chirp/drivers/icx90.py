@@ -404,68 +404,68 @@ class ICx90Radio(icf.IcomCloneModeRadio):
                          RadioSettingValueInteger(0, MEM_NUM - 1, self.memobj.mem_channel)))
             basic.append(RadioSetting("squelch_level", "Squelch level",
                          RadioSettingValueList(SQUELCH_LEVEL,
-                                               SQUELCH_LEVEL[self.memobj.squelch_level])))
+                                               current_index=self.memobj.squelch_level)))
             basic.append(RadioSetting("scan_resume", "Scan resume",
                          RadioSettingValueList(SCAN_RESUME,
-                                               SCAN_RESUME[self.memobj.scan_resume])))
+                                               current_index=self.memobj.scan_resume)))
             basic.append(RadioSetting("scan_pause", "Scan pause",
                          RadioSettingValueList(SCAN_PAUSE,
-                                               SCAN_PAUSE[self.memobj.scan_pause])))
+                                               current_index=self.memobj.scan_pause)))
             basic.append(RadioSetting("beep_volume", "Beep audio",
                          RadioSettingValueList(BEEP_VOLUME,
-                                               BEEP_VOLUME[self.memobj.beep_volume])))
+                                               current_index=self.memobj.beep_volume)))
             basic.append(RadioSetting("beep", "Operation beep",
                          RadioSettingValueBoolean(self.memobj.beep)))
             basic.append(RadioSetting("backlight", "LCD backlight",
                          RadioSettingValueList(BACKLIGHT,
-                                               BACKLIGHT[self.memobj.backlight])))
+                                               current_index=self.memobj.backlight)))
             basic.append(RadioSetting("busy_led", "Busy LED",
                          RadioSettingValueBoolean(self.memobj.busy_led)))
             basic.append(RadioSetting("auto_power_off", "Auto power off",
                          RadioSettingValueList(AUTO_POWER_OFF,
-                                               AUTO_POWER_OFF[self.memobj.auto_power_off])))
+                                               current_index=self.memobj.auto_power_off)))
             basic.append(RadioSetting("power_save", "Power save",
                          RadioSettingValueList(POWER_SAVE,
-                                               POWER_SAVE[self.memobj.power_save])))
+                                               current_index=self.memobj.power_save)))
             basic.append(RadioSetting("monitor", "Monitor",
                          RadioSettingValueList(MONITOR,
-                                               MONITOR[self.memobj.monitor])))
+                                               current_index=self.memobj.monitor)))
             basic.append(RadioSetting("dial_speedup", "Dial speedup",
                          RadioSettingValueBoolean(self.memobj.dial_speedup)))
             basic.append(RadioSetting("auto_repeater", "Auto repeater",
                          RadioSettingValueList(AUTO_REPEATER,
-                                               AUTO_REPEATER[self.memobj.auto_repeater])))
+                                               current_index=self.memobj.auto_repeater)))
             basic.append(RadioSetting("hm_75a_function", "HM-75A function",
                          RadioSettingValueList(HM_75A_FUNCTION,
-                                               HM_75A_FUNCTION[self.memobj.hm_75a_function])))
+                                               current_index=self.memobj.hm_75a_function)))
             basic.append(RadioSetting("wx_alert", "WX alert",
                          RadioSettingValueBoolean(self.memobj.wx_alert)))
             basic.append(RadioSetting("wx_channel", "Current WX channel",
                          RadioSettingValueList(WX_CHANNEL,
-                                               WX_CHANNEL[self.memobj.wx_channel])))
+                                               current_index=self.memobj.wx_channel)))
             basic.append(RadioSetting("comment", "Comment",
                          RadioSettingValueString(0, COMMENT_LEN,
                                                  str(self.memobj.comment),
                                                  autopad=True)))
             basic.append(RadioSetting("tune_step", "Current tune step",
                          RadioSettingValueList(TUNE_STEP_STR,
-                                               TUNE_STEP_STR[self.memobj.tune_step])))
+                                               current_index=self.memobj.tune_step)))
             basic.append(RadioSetting("band_selected", "Selected band",
                          RadioSettingValueInteger(0, BANDS - 1, self.memobj.band_selected)))
             basic.append(RadioSetting("memory_display", "Memory display",
                          RadioSettingValueList(MEMORY_DISPLAY,
-                                               MEMORY_DISPLAY[self.memobj.memory_display])))
+                                               current_index=self.memobj.memory_display)))
             basic.append(RadioSetting("memory_name", "Memory name",
                          RadioSettingValueBoolean(self.memobj.memory_name)))
             basic.append(RadioSetting("dial_select", "Dial select",
                          RadioSettingValueList(DIAL_SELECT,
-                                               DIAL_SELECT[self.memobj.dial_select])))
+                                               current_index=self.memobj.dial_select)))
             basic.append(RadioSetting("power", "RF power",
                          RadioSettingValueList(POWER,
-                                               POWER[self.memobj.power])))
+                                               current_index=self.memobj.power)))
             basic.append(RadioSetting("vfo", "Current VFO",
                          RadioSettingValueList(VFO,
-                                               VFO[self.memobj.vfo])))
+                                               current_index=self.memobj.vfo)))
             basic.append(RadioSetting("attenuator", "RF attenuator",
                          RadioSettingValueBoolean(self.memobj.attenuator)))
             basic.append(RadioSetting("skip_scan", "Skip scan",
@@ -477,20 +477,20 @@ class ICx90Radio(icf.IcomCloneModeRadio):
 #                         OPERATION_MODE[self.memobj.mode])))
             basic.append(RadioSetting("vfo_scan", "VFO scan",
                          RadioSettingValueList(VFO_SCAN,
-                                               VFO_SCAN[self.memobj.vfo_scan])))
+                                               current_index=self.memobj.vfo_scan)))
             basic.append(RadioSetting("memory_scan", "Memory scan",
                          RadioSettingValueList(MEMORY_SCAN,
-                                               MEMORY_SCAN[self.memobj.memory_scan])))
+                                               current_index=self.memobj.memory_scan)))
             basic.append(RadioSetting("tv_channel", "Current TV channel",
                          RadioSettingValueInteger(0, TV_CHANNELS - 1, self.memobj.tv_channel)))
 
             # DTMF auto dial
             dtmf_autodial.append(RadioSetting("autodial", "Autodial",
                                  RadioSettingValueList(AUTODIAL,
-                                                       AUTODIAL[self.memobj.autodial])))
+                                                       current_index=self.memobj.autodial)))
             dtmf_autodial.append(RadioSetting("dtmf_speed", "Speed",
                                  RadioSettingValueList(DTMF_SPEED,
-                                                       DTMF_SPEED[self.memobj.dtmf_speed])))
+                                                       current_index=self.memobj.dtmf_speed)))
             for x in range(DTMF_AUTODIAL_NUM):
                 rs = RadioSetting("dtmf_codes[%d].dtmf_digits" % x, "DTMF autodial: %d" % x,
                                   RadioSettingValueString(0, DTMF_DIGITS_NUM,
@@ -508,23 +508,23 @@ class ICx90Radio(icf.IcomCloneModeRadio):
                             RadioSettingValueBoolean(self.memobj.scan_stop_light)))
             expand_1.append(RadioSetting("light_postion", "Light position",
                             RadioSettingValueList(LIGHT_POSITION,
-                                                  LIGHT_POSITION[self.memobj.light_position])))
+                                                  current_index=self.memobj.light_position)))
             expand_1.append(RadioSetting("light_color", "Light color",
                             RadioSettingValueList(LIGHT_COLOR,
-                                                  LIGHT_COLOR[self.memobj.light_color])))
+                                                  current_index=self.memobj.light_color)))
             expand_1.append(RadioSetting("band_edge_beep", "Band edge beep",
                             RadioSettingValueBoolean(self.memobj.band_edge_beep)))
             expand_1.append(RadioSetting("auto_power_on", "Auto power on",
                             RadioSettingValueList(AUTO_POWER_ON,
-                                                  AUTO_POWER_ON[self.memobj.auto_power_on])))
+                                                  current_index=self.memobj.auto_power_on)))
             expand_1.append(RadioSetting("key_lock", "Key lock",
                             RadioSettingValueList(KEY_LOCK,
-                                                  KEY_LOCK[self.memobj.key_lock])))
+                                                  current_index=self.memobj.key_lock)))
             expand_1.append(RadioSetting("ptt_lock", "PTT lock",
                             RadioSettingValueBoolean(self.memobj.ptt_lock)))
             expand_1.append(RadioSetting("lcd_contrast", "LCD contrast",
                             RadioSettingValueList(LCD_CONTRAST,
-                                                  LCD_CONTRAST[self.memobj.lcd_contrast])))
+                                                  current_index=self.memobj.lcd_contrast)))
             expand_1.append(RadioSetting("opening_message", "Opening message",
                             RadioSettingValueBoolean(self.memobj.opening_message)))
             expand_1.append(RadioSetting("opening_message_text", "Opening message",
@@ -539,10 +539,10 @@ class ICx90Radio(icf.IcomCloneModeRadio):
                             RadioSettingValueBoolean(self.memobj.busy_lockout)))
             expand_2.append(RadioSetting("timeout_timer", "Timeout timer",
                             RadioSettingValueList(TIMEOUT_TIMER,
-                                                  TIMEOUT_TIMER[self.memobj.timeout_timer])))
+                                                  current_index=self.memobj.timeout_timer)))
             expand_2.append(RadioSetting("active_band", "Active band",
                             RadioSettingValueList(ACTIVE_BAND,
-                                                  ACTIVE_BAND[self.memobj.active_band])))
+                                                  current_index=self.memobj.active_band)))
             expand_2.append(RadioSetting("fm_narrow", "FM narrow",
                             RadioSettingValueBoolean(self.memobj.fm_narrow)))
             expand_2.append(RadioSetting("split", "Split",
@@ -551,7 +551,7 @@ class ICx90Radio(icf.IcomCloneModeRadio):
                             RadioSettingValueBoolean(self.memobj.morse_code_enable)))
             expand_2.append(RadioSetting("morse_code_speed", "Morse code speed",
                             RadioSettingValueList(MORSE_CODE_SPEED,
-                                                  MORSE_CODE_SPEED[self.memobj.morse_code_speed])))
+                                                  current_index=self.memobj.morse_code_speed)))
 
             return group
         except:

@@ -443,7 +443,7 @@ class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
         options = ["off", "30m", "1h", "3h", "5h", "8h"]
         rs = RadioSetting(
                 "apo", "APO time (hrs)",
-                RadioSettingValueList(options, options[_settings.apo]))
+                RadioSettingValueList(options, current_index=_settings.apo))
         basic.append(rs)
 
         rs = RadioSetting(
@@ -469,7 +469,7 @@ class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
         options = ["off", "1", "3", "5", "8", "cont"]
         rs = RadioSetting(
                 "bell", "Bell",
-                RadioSettingValueList(options, options[_settings.bell]))
+                RadioSettingValueList(options, current_index=_settings.bell))
         basic.append(rs)
 
         rs = RadioSetting(
@@ -479,8 +479,9 @@ class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
 
         options = ["5", "10", "50", "100"]
         rs = RadioSetting(
-                "chcounter", "Channel Counter (MHz)",
-                RadioSettingValueList(options, options[_settings.chcounter]))
+            "chcounter", "Channel Counter (MHz)",
+            RadioSettingValueList(
+                options, current_index=_settings.chcounter))
         basic.append(rs)
 
         rs = RadioSetting(
@@ -491,7 +492,7 @@ class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
         options = list(map(str, list(range(0, 12+1))))
         rs = RadioSetting(
                 "dimmer", "Dimmer",
-                RadioSettingValueList(options, options[_settings.dimmer]))
+                RadioSettingValueList(options, current_index=_settings.dimmer))
         basic.append(rs)
 
         rs = RadioSetting(
@@ -502,21 +503,22 @@ class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
         options = ["beep", "strobe", "bp+str", "beam",
                    "bp+beam", "cw", "bp+cw"]
         rs = RadioSetting(
-                "emergmode", "Emergency Mode",
-                RadioSettingValueList(options, options[_settings.emergmode]))
+            "emergmode", "Emergency Mode",
+            RadioSettingValueList(
+                options, current_index=_settings.emergmode))
         basic.append(rs)
 
         options = ["Home", "Reverse"]
         rs = RadioSetting(
                 "hmrv", "HM/RV key",
-                RadioSettingValueList(options, options[_settings.hmrv]))
+                RadioSettingValueList(options, current_index=_settings.hmrv))
         basic.append(rs)
 
         options = ["My Menu", "Internet"]
         rs = RadioSetting(
                 "internet_key", "Internet key",
                 RadioSettingValueList(
-                    options, options[_settings.internet_key]))
+                    options, current_index=_settings.internet_key))
         basic.append(rs)
 
         options = ["1 APO", "2 AR BEP", "3 AR INT", "4 ARS", "5 ATT",
@@ -533,58 +535,63 @@ class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
                    "47 VFO MD", "48 TR SQL (JAPAN)", "48 WX ALT"]
 
         rs = RadioSetting(
-                "mymenu", "My Menu function",
-                RadioSettingValueList(options, options[_settings.mymenu - 9]))
+            "mymenu", "My Menu function",
+            RadioSettingValueList(
+                options, current_index=_settings.mymenu - 9))
         basic.append(rs)
 
         options = ["wires", "link"]
         rs = RadioSetting(
                 "internet_mode", "Internet mode",
                 RadioSettingValueList(
-                    options, options[_settings.internet_mode]))
+                    options, current_index=_settings.internet_mode))
         basic.append(rs)
 
         options = ["key", "cont", "off"]
         rs = RadioSetting(
                 "lamp", "Lamp mode",
-                RadioSettingValueList(options, options[_settings.lamp]))
+                RadioSettingValueList(options, current_index=_settings.lamp))
         basic.append(rs)
 
         options = ["key", "dial", "key+dial", "ptt",
                    "key+ptt", "dial+ptt", "all"]
         rs = RadioSetting(
                 "lock", "Lock mode",
-                RadioSettingValueList(options, options[_settings.lock]))
+                RadioSettingValueList(options, current_index=_settings.lock))
         basic.append(rs)
 
         options = ["monitor", "tone call"]
         rs = RadioSetting(
-                "moni_tcall", "MONI key",
-                RadioSettingValueList(options, options[_settings.moni_tcall]))
+            "moni_tcall", "MONI key",
+            RadioSettingValueList(
+                options, current_index=_settings.moni_tcall))
         basic.append(rs)
 
         options = ["lower", "next"]
         rs = RadioSetting(
                 "mwmode", "Memory write mode",
-                RadioSettingValueList(options, options[_settings.mwmode]))
+                RadioSettingValueList(options, current_index=_settings.mwmode))
         basic.append(rs)
 
         options = list(map(str, list(range(0, 15+1))))
         rs = RadioSetting(
-                "nfm_sql", "NFM Sql",
-                RadioSettingValueList(options, options[_settings.nfm_sql]))
+            "nfm_sql", "NFM Sql",
+            RadioSettingValueList(
+                options, current_index=_settings.nfm_sql))
         basic.append(rs)
 
         options = list(map(str, list(range(0, 8+1))))
         rs = RadioSetting(
-                "wfm_sql", "WFM Sql",
-                RadioSettingValueList(options, options[_settings.wfm_sql]))
+            "wfm_sql", "WFM Sql",
+            RadioSettingValueList(
+                options, current_index=_settings.wfm_sql))
         basic.append(rs)
 
         options = ["off", "dc", "msg"]
         rs = RadioSetting(
-                "openmsgmode", "Opening message",
-                RadioSettingValueList(options, options[_settings.openmsgmode]))
+            "openmsgmode", "Opening message",
+            RadioSettingValueList(
+                options, current_index=_settings.openmsgmode))
         basic.append(rs)
 
         openmsg = RadioSettingValueString(
@@ -596,25 +603,26 @@ class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
         options = ["3s", "5s", "10s", "busy", "hold"]
         rs = RadioSetting(
                 "resume", "Resume",
-                RadioSettingValueList(options, options[_settings.resume]))
+                RadioSettingValueList(options, current_index=_settings.resume))
         basic.append(rs)
 
         options = ["off"] + list(map(str, list(range(1, 9+1))))
         rs = RadioSetting(
                 "rfsql", "RF Sql",
-                RadioSettingValueList(options, options[_settings.rfsql]))
+                RadioSettingValueList(options, current_index=_settings.rfsql))
         basic.append(rs)
 
         options = ["off", "200ms", "300ms", "500ms", "1s", "2s"]
         rs = RadioSetting(
                 "rxsave", "RX pwr save",
-                RadioSettingValueList(options, options[_settings.rxsave]))
+                RadioSettingValueList(options, current_index=_settings.rxsave))
         basic.append(rs)
 
         options = ["single", "cont"]
         rs = RadioSetting(
-                "smartsearch", "Smart search",
-                RadioSettingValueList(options, options[_settings.smartsearch]))
+            "smartsearch", "Smart search",
+            RadioSettingValueList(
+                options, current_index=_settings.smartsearch))
         basic.append(rs)
 
         rs = RadioSetting(
@@ -630,7 +638,7 @@ class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
         options = ["off", "1", "3", "5", "10"]
         rs = RadioSetting(
                 "tot", "TOT (mins)",
-                RadioSettingValueList(options, options[_settings.tot]))
+                RadioSettingValueList(options, current_index=_settings.tot))
         basic.append(rs)
 
         rs = RadioSetting(
@@ -640,8 +648,9 @@ class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
 
         options = ["all", "band"]
         rs = RadioSetting(
-                "vfomode", "VFO mode",
-                RadioSettingValueList(options, options[_settings.vfomode]))
+            "vfomode", "VFO mode",
+            RadioSettingValueList(
+                options, current_index=_settings.vfomode))
         basic.append(rs)
 
         rs = RadioSetting(
@@ -658,13 +667,14 @@ class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting(
                 "artsinterval", "ARTS Interval",
                 RadioSettingValueList(
-                    options, options[_settings.artsinterval]))
+                    options, current_index=_settings.artsinterval))
         arts.append(rs)
 
         options = ["off", "in range", "always"]
         rs = RadioSetting(
-                "artsbeep", "ARTS Beep",
-                RadioSettingValueList(options, options[_settings.artsbeep]))
+            "artsbeep", "ARTS Beep",
+            RadioSettingValueList(
+                options, current_index=_settings.artsbeep))
         arts.append(rs)
 
         rs = RadioSetting(
@@ -681,8 +691,9 @@ class VX2Radio(yaesu_clone.YaesuCloneModeRadio):
         # setup dtmf
         options = ["manual", "auto"]
         rs = RadioSetting(
-                "dtmfmode", "DTMF mode",
-                RadioSettingValueList(options, options[_settings.dtmfmode]))
+            "dtmfmode", "DTMF mode",
+            RadioSettingValueList(
+                options, current_index=_settings.dtmfmode))
         dtmf.append(rs)
 
         for i in range(0, 8+1):

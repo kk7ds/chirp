@@ -837,7 +837,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         clockfmt = RadioSetting(
             'clockfmt', 'Clock Format',
             RadioSettingValueList(CLOCKFMT,
-                                  CLOCKFMT[settings.clockfmt]))
+                                  current_index=settings.clockfmt))
         clockfmt.set_apply_callback(apply_clockfmt)
         common1.append(clockfmt)
 
@@ -847,7 +847,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         datefmt = RadioSetting(
             'datefmt', 'Date Format',
             RadioSettingValueList(DATEFMT,
-                                  DATEFMT[settings.datefmt]))
+                                  current_index=settings.datefmt))
         datefmt.set_apply_callback(apply_datefmt)
         common1.append(datefmt)
 

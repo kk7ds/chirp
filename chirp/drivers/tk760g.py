@@ -1163,7 +1163,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
             if tv == 255:
                 tv = 32
             tvol = RadioSetting("settings.tone_vol", "Minimum tone volume",
-                                RadioSettingValueList(TVOL, TVOL[tv]))
+                                RadioSettingValueList(TVOL, current_index=tv))
             basic.append(tvol)
 
         sql = RadioSetting("settings.sql_level", "SQL Ref Level",

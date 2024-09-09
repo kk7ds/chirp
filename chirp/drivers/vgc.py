@@ -931,89 +931,103 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
 
         # Audio: A01-A04
 
-        aftone = RadioSetting("settings.aftone", "AF tone control",
-                              RadioSettingValueList(LIST_AFTONE, LIST_AFTONE[
-                                  _mem.settings.aftone]))
+        aftone = RadioSetting(
+            "settings.aftone", "AF tone control",
+            RadioSettingValueList(
+                LIST_AFTONE, current_index=_mem.settings.aftone))
         basic.append(aftone)
 
-        spkr = RadioSetting("settings.spkr", "Speaker",
-                            RadioSettingValueList(LIST_SPKR, LIST_SPKR[
-                                _mem.settings.spkr]))
+        spkr = RadioSetting(
+            "settings.spkr", "Speaker",
+            RadioSettingValueList(
+                LIST_SPKR, current_index=_mem.settings.spkr))
         basic.append(spkr)
 
-        audio = RadioSetting("settings.audio", "Stereo/Mono",
-                             RadioSettingValueList(LIST_AUDIO, LIST_AUDIO[
-                                 _mem.settings.audio]))
+        audio = RadioSetting(
+            "settings.audio", "Stereo/Mono",
+            RadioSettingValueList(
+                LIST_AUDIO, current_index=_mem.settings.audio))
         basic.append(audio)
 
-        sbmute = RadioSetting("settings.sbmute", "Sub band mute",
-                              RadioSettingValueList(LIST_SBMUTE, LIST_SBMUTE[
-                                  _mem.settings.sbmute]))
+        sbmute = RadioSetting(
+            "settings.sbmute", "Sub band mute",
+            RadioSettingValueList(
+                LIST_SBMUTE, current_index=_mem.settings.sbmute))
         basic.append(sbmute)
 
         # TX/RX: B01-B08
 
-        mgain = RadioSetting("settings.mgain", "Mic gain",
-                             RadioSettingValueList(LIST_MLNHM, LIST_MLNHM[
-                                 _mem.settings.mgain]))
+        mgain = RadioSetting(
+            "settings.mgain", "Mic gain",
+            RadioSettingValueList(
+                LIST_MLNHM, current_index=_mem.settings.mgain))
         basic.append(mgain)
 
-        ptt = RadioSetting("settings.ptt", "PTT mode",
-                           RadioSettingValueList(LIST_PTT, LIST_PTT[
-                               _mem.settings.ptt]))
+        ptt = RadioSetting(
+            "settings.ptt", "PTT mode",
+            RadioSettingValueList(
+                LIST_PTT, current_index=_mem.settings.ptt))
         basic.append(ptt)
 
         # B03 (per channel)
         # B04 (per channel)
 
-        rxexp = RadioSetting("settings.rxexp", "RX expansion",
-                             RadioSettingValueList(LIST_RXEXP, LIST_RXEXP[
-                                 _mem.settings.rxexp]))
+        rxexp = RadioSetting(
+            "settings.rxexp", "RX expansion",
+            RadioSettingValueList(
+                LIST_RXEXP, current_index=_mem.settings.rxexp))
         basic.append(rxexp)
 
-        vox = RadioSetting("settings.vox", "Vox",
-                           RadioSettingValueList(LIST_VOX, LIST_VOX[
-                               _mem.settings.vox]))
+        vox = RadioSetting(
+            "settings.vox", "Vox",
+            RadioSettingValueList(
+                LIST_VOX, current_index=_mem.settings.vox))
         basic.append(vox)
 
-        voxs = RadioSetting("settings.voxs", "Vox sensitivity",
-                            RadioSettingValueList(LIST_MLNHM, LIST_MLNHM[
-                                _mem.settings.voxs]))
+        voxs = RadioSetting(
+            "settings.voxs", "Vox sensitivity",
+            RadioSettingValueList(
+                LIST_MLNHM, current_index=_mem.settings.voxs))
         basic.append(voxs)
 
         # B08 (per channel)
 
         # Display: C01-C06
 
-        display = RadioSetting("settings.display", "Display select",
-                               RadioSettingValueList(
-                                   LIST_DISPLAY, LIST_DISPLAY[
-                                       _mem.settings.display]))
+        display = RadioSetting(
+            "settings.display", "Display select",
+            RadioSettingValueList(
+                LIST_DISPLAY, current_index=_mem.settings.display))
         basic.append(display)
 
-        lcdb = RadioSetting("settings.lcdb", "LCD brightness",
-                            RadioSettingValueList(LIST_MINMAX, LIST_MINMAX[
-                                _mem.settings.lcdb]))
+        lcdb = RadioSetting(
+            "settings.lcdb", "LCD brightness",
+            RadioSettingValueList(
+                LIST_MINMAX, current_index=_mem.settings.lcdb))
         basic.append(lcdb)
 
-        color = RadioSetting("settings.color", "LCD color",
-                             RadioSettingValueList(LIST_COLOR, LIST_COLOR[
-                                 _mem.settings.color]))
+        color = RadioSetting(
+            "settings.color", "LCD color",
+            RadioSettingValueList(
+                LIST_COLOR, current_index=_mem.settings.color))
         basic.append(color)
 
-        lcdc = RadioSetting("settings.lcdc", "LCD contrast",
-                            RadioSettingValueList(LIST_MINMAX, LIST_MINMAX[
-                                _mem.settings.lcdc]))
+        lcdc = RadioSetting(
+            "settings.lcdc", "LCD contrast",
+            RadioSettingValueList(
+                LIST_MINMAX, current_index=_mem.settings.lcdc))
         basic.append(lcdc)
 
-        btime = RadioSetting("settings.btime", "LCD backlight time",
-                             RadioSettingValueList(LIST_BTIME, LIST_BTIME[
-                                 _mem.settings.btime]))
+        btime = RadioSetting(
+            "settings.btime", "LCD backlight time",
+            RadioSettingValueList(
+                LIST_BTIME, current_index=_mem.settings.btime))
         basic.append(btime)
 
-        keyb = RadioSetting("settings.keyb", "Key brightness",
-                            RadioSettingValueList(LIST_MINMAX, LIST_MINMAX[
-                                _mem.settings.keyb]))
+        keyb = RadioSetting(
+            "settings.keyb", "Key brightness",
+            RadioSettingValueList(
+                LIST_MINMAX, current_index=_mem.settings.keyb))
         basic.append(keyb)
 
         # Memory: D01-D04
@@ -1021,28 +1035,32 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         # D01 (per channel)
         # D02 (per channel)
 
-        mrscan = RadioSetting("settings.mrscan", "Memory scan type",
-                              RadioSettingValueList(LIST_MRSCAN, LIST_MRSCAN[
-                                  _mem.settings.mrscan]))
+        mrscan = RadioSetting(
+            "settings.mrscan", "Memory scan type",
+            RadioSettingValueList(
+                LIST_MRSCAN, current_index=_mem.settings.mrscan))
         basic.append(mrscan)
 
         # D04 (per channel)
 
         # Scan: E01-E04
 
-        dwstop = RadioSetting("settings.dwstop", "Dual watch stop",
-                              RadioSettingValueList(LIST_DWSTOP, LIST_DWSTOP[
-                                  _mem.settings.dwstop]))
+        dwstop = RadioSetting(
+            "settings.dwstop", "Dual watch stop",
+            RadioSettingValueList(
+                LIST_DWSTOP, current_index=_mem.settings.dwstop))
         basic.append(dwstop)
 
-        scand = RadioSetting("settings.scand", "Scan direction",
-                             RadioSettingValueList(LIST_SCAND, LIST_SCAND[
-                                 _mem.settings.scand]))
+        scand = RadioSetting(
+            "settings.scand", "Scan direction",
+            RadioSettingValueList(
+                LIST_SCAND, current_index=_mem.settings.scand))
         basic.append(scand)
 
-        scanr = RadioSetting("settings.scanr", "Scan resume",
-                             RadioSettingValueList(LIST_SCANR, LIST_SCANR[
-                                 _mem.settings.scanr]))
+        scanr = RadioSetting(
+            "settings.scanr", "Scan resume",
+            RadioSettingValueList(
+                LIST_SCANR, current_index=_mem.settings.scanr))
         basic.append(scanr)
 
         scansb = RadioSetting("settings.scansb", "Scan stop beep",
@@ -1051,80 +1069,89 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
 
         # System: F01-F09
 
-        apo = RadioSetting("settings.apo", "Automatic power off [hours]",
-                           RadioSettingValueList(LIST_APO, LIST_APO[
-                               _mem.settings.apo]))
+        apo = RadioSetting(
+            "settings.apo", "Automatic power off [hours]",
+            RadioSettingValueList(
+                LIST_APO, current_index=_mem.settings.apo))
         basic.append(apo)
 
         ars = RadioSetting("settings.ars", "Automatic repeater shift",
                            RadioSettingValueBoolean(_mem.settings.ars))
         basic.append(ars)
 
-        beep = RadioSetting("settings.beep", "Beep volume",
-                            RadioSettingValueList(LIST_BEEP, LIST_BEEP[
-                                _mem.settings.beep]))
+        beep = RadioSetting(
+            "settings.beep", "Beep volume",
+            RadioSettingValueList(
+                LIST_BEEP, current_index=_mem.settings.beep))
         basic.append(beep)
 
-        fkey = RadioSetting("settings.fkey", "F key",
-                            RadioSettingValueList(LIST_FKEY, LIST_FKEY[
-                                _mem.settings.fkey]))
+        fkey = RadioSetting(
+            "settings.fkey", "F key",
+            RadioSettingValueList(
+                LIST_FKEY, current_index=_mem.settings.fkey))
         basic.append(fkey)
 
-        pfkey1 = RadioSetting("settings.pfkey1", "Mic P1 key",
-                              RadioSettingValueList(LIST_PFKEY, LIST_PFKEY[
-                                  _mem.settings.pfkey1]))
+        pfkey1 = RadioSetting(
+            "settings.pfkey1", "Mic P1 key",
+            RadioSettingValueList(
+                LIST_PFKEY, current_index=_mem.settings.pfkey1))
         basic.append(pfkey1)
 
-        pfkey2 = RadioSetting("settings.pfkey2", "Mic P2 key",
-                              RadioSettingValueList(LIST_PFKEY, LIST_PFKEY[
-                                  _mem.settings.pfkey2]))
+        pfkey2 = RadioSetting(
+            "settings.pfkey2", "Mic P2 key",
+            RadioSettingValueList(
+                LIST_PFKEY, current_index=_mem.settings.pfkey2))
         basic.append(pfkey2)
 
-        pfkey3 = RadioSetting("settings.pfkey3", "Mic P3 key",
-                              RadioSettingValueList(LIST_PFKEY, LIST_PFKEY[
-                                  _mem.settings.pfkey3]))
+        pfkey3 = RadioSetting(
+            "settings.pfkey3", "Mic P3 key",
+            RadioSettingValueList(
+                LIST_PFKEY, current_index=_mem.settings.pfkey3))
         basic.append(pfkey3)
 
-        pfkey4 = RadioSetting("settings.pfkey4", "Mic P4 key",
-                              RadioSettingValueList(LIST_PFKEY, LIST_PFKEY[
-                                  _mem.settings.pfkey4]))
+        pfkey4 = RadioSetting(
+            "settings.pfkey4", "Mic P4 key",
+            RadioSettingValueList(
+                LIST_PFKEY, current_index=_mem.settings.pfkey4))
         basic.append(pfkey4)
 
-        omode = RadioSetting("settings.omode", "Operation mode",
-                             RadioSettingValueList(LIST_AB, LIST_AB[
-                                 _mem.settings.omode]))
+        omode = RadioSetting(
+            "settings.omode", "Operation mode",
+            RadioSettingValueList(
+                LIST_AB, current_index=_mem.settings.omode))
         basic.append(omode)
 
-        rxcoverm = RadioSetting("settings.rxcoverm", "RX coverage - memory",
-                                RadioSettingValueList(
-                                    LIST_COVERAGE, LIST_COVERAGE[
-                                        _mem.settings.rxcoverm]))
+        rxcoverm = RadioSetting(
+            "settings.rxcoverm", "RX coverage - memory",
+            RadioSettingValueList(
+                LIST_COVERAGE, current_index=_mem.settings.rxcoverm))
         basic.append(rxcoverm)
 
-        rxcoverv = RadioSetting("settings.rxcoverv", "RX coverage - VFO",
-                                RadioSettingValueList(
-                                    LIST_COVERAGE, LIST_COVERAGE[
-                                        _mem.settings.rxcoverv]))
+        rxcoverv = RadioSetting(
+            "settings.rxcoverv", "RX coverage - VFO",
+            RadioSettingValueList(
+                LIST_COVERAGE, current_index=_mem.settings.rxcoverv))
         basic.append(rxcoverv)
 
-        tot = RadioSetting("settings.tot", "Time out timer [min]",
-                           RadioSettingValueList(LIST_TOT, LIST_TOT[
-                                                 _mem.settings.tot]))
+        tot = RadioSetting(
+            "settings.tot", "Time out timer [min]",
+            RadioSettingValueList(
+                LIST_TOT, current_index=_mem.settings.tot))
         basic.append(tot)
 
         # Timer/Clock: G01-G04
 
         # G01
-        datefmt = RadioSetting("settings.datefmt", "Date format",
-                               RadioSettingValueList(
-                                   LIST_DATEFMT, LIST_DATEFMT[
-                                       _mem.settings.datefmt]))
+        datefmt = RadioSetting(
+            "settings.datefmt", "Date format",
+            RadioSettingValueList(
+                LIST_DATEFMT, current_index=_mem.settings.datefmt))
         basic.append(datefmt)
 
-        timefmt = RadioSetting("settings.timefmt", "Time format",
-                               RadioSettingValueList(
-                                   LIST_TIMEFMT, LIST_TIMEFMT[
-                                       _mem.settings.timefmt]))
+        timefmt = RadioSetting(
+            "settings.timefmt", "Time format",
+            RadioSettingValueList(
+                LIST_TIMEFMT, current_index=_mem.settings.timefmt))
         basic.append(timefmt)
 
         timesig = RadioSetting("settings.timesig", "Time signal",
@@ -1132,15 +1159,16 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
         basic.append(timesig)
 
         tz = RadioSetting("settings.tz", "Time zone",
-                          RadioSettingValueList(LIST_TZ, LIST_TZ[
-                              _mem.settings.tz]))
+                          RadioSettingValueList(
+                              LIST_TZ, current_index=_mem.settings.tz))
         basic.append(tz)
 
         # Signaling: H01-H06
 
-        bell = RadioSetting("settings.bell", "Bell ringer",
-                            RadioSettingValueList(LIST_BELL, LIST_BELL[
-                                _mem.settings.bell]))
+        bell = RadioSetting(
+            "settings.bell", "Bell ringer",
+            RadioSettingValueList(
+                LIST_BELL, current_index=_mem.settings.bell))
         basic.append(bell)
 
         # H02 (per channel)
@@ -1157,9 +1185,10 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
 
         # H04 (per channel)
 
-        decbandsel = RadioSetting("settings.decbandsel", "DTMF band select",
-                                  RadioSettingValueList(LIST_AB, LIST_AB[
-                                      _mem.settings.decbandsel]))
+        decbandsel = RadioSetting(
+            "settings.decbandsel", "DTMF band select",
+            RadioSettingValueList(
+                LIST_AB, current_index=_mem.settings.decbandsel))
         basic.append(decbandsel)
 
         sqlexp = RadioSetting("settings.sqlexp", "SQL expansion",
@@ -1168,22 +1197,22 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
 
         # Pkt: I01-I03
 
-        databnd = RadioSetting("settings.databnd", "Packet data band",
-                               RadioSettingValueList(
-                                   LIST_DATABND, LIST_DATABND[
-                                       _mem.settings.databnd]))
+        databnd = RadioSetting(
+            "settings.databnd", "Packet data band",
+            RadioSettingValueList(
+                LIST_DATABND, current_index=_mem.settings.databnd))
         basic.append(databnd)
 
-        dataspd = RadioSetting("settings.dataspd", "Packet data speed",
-                               RadioSettingValueList(
-                                   LIST_DATASPD, LIST_DATASPD[
-                                       _mem.settings.dataspd]))
+        dataspd = RadioSetting(
+            "settings.dataspd", "Packet data speed",
+            RadioSettingValueList(
+                LIST_DATASPD, current_index=_mem.settings.dataspd))
         basic.append(dataspd)
 
-        datasql = RadioSetting("settings.datasql", "Packet data squelch",
-                               RadioSettingValueList(
-                                   LIST_DATASQL, LIST_DATASQL[
-                                       _mem.settings.datasql]))
+        datasql = RadioSetting(
+            "settings.datasql", "Packet data squelch",
+            RadioSettingValueList(
+                LIST_DATASQL, current_index=_mem.settings.datasql))
         basic.append(datasql)
 
         # Other
@@ -1192,9 +1221,10 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_mem.settings.dw))
         other.append(dw)
 
-        cpuclk = RadioSetting("settings.cpuclk", "CPU clock frequency",
-                              RadioSettingValueList(LIST_CPUCLK, LIST_CPUCLK[
-                                  _mem.settings.cpuclk]))
+        cpuclk = RadioSetting(
+            "settings.cpuclk", "CPU clock frequency",
+            RadioSettingValueList(
+                LIST_CPUCLK, current_index=_mem.settings.cpuclk))
         other.append(cpuclk)
 
         def _filter(name):
@@ -1218,44 +1248,52 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
 
         # Work
 
-        workmoda = RadioSetting("settings.workmoda", "Work mode A",
-                                RadioSettingValueList(LIST_WORK, LIST_WORK[
-                                    _mem.settings.workmoda]))
+        workmoda = RadioSetting(
+            "settings.workmoda", "Work mode A",
+            RadioSettingValueList(
+                LIST_WORK, current_index=_mem.settings.workmoda))
         work.append(workmoda)
 
-        workmodb = RadioSetting("settings.workmodb", "Work mode B",
-                                RadioSettingValueList(LIST_WORK, LIST_WORK[
-                                    _mem.settings.workmodb]))
+        workmodb = RadioSetting(
+            "settings.workmodb", "Work mode B",
+            RadioSettingValueList(
+                LIST_WORK, current_index=_mem.settings.workmodb))
         work.append(workmodb)
 
-        wbanda = RadioSetting("settings.wbanda", "Work band A",
-                              RadioSettingValueList(LIST_WBANDA, LIST_WBANDA[
-                                  (_mem.settings.wbanda) - 1]))
+        wbanda = RadioSetting(
+            "settings.wbanda", "Work band A",
+            RadioSettingValueList(
+                LIST_WBANDA, current_index=(_mem.settings.wbanda) - 1))
         work.append(wbanda)
 
-        wbandb = RadioSetting("settings.wbandb", "Work band B",
-                              RadioSettingValueList(LIST_WBANDB, LIST_WBANDB[
-                                  (_mem.settings.wbandb) - 4]))
+        wbandb = RadioSetting(
+            "settings.wbandb", "Work band B",
+            RadioSettingValueList(
+                LIST_WBANDB, current_index=(_mem.settings.wbandb) - 4))
         work.append(wbandb)
 
-        sqla = RadioSetting("settings.sqla", "Squelch A",
-                            RadioSettingValueList(LIST_SQL, LIST_SQL[
-                                _mem.settings.sqla]))
+        sqla = RadioSetting(
+            "settings.sqla", "Squelch A",
+            RadioSettingValueList(
+                LIST_SQL, current_index=_mem.settings.sqla))
         work.append(sqla)
 
-        sqlb = RadioSetting("settings.sqlb", "Squelch B",
-                            RadioSettingValueList(LIST_SQL, LIST_SQL[
-                                _mem.settings.sqlb]))
+        sqlb = RadioSetting(
+            "settings.sqlb", "Squelch B",
+            RadioSettingValueList(
+                LIST_SQL, current_index=_mem.settings.sqlb))
         work.append(sqlb)
 
-        stepa = RadioSetting("settings.stepa", "Auto step A",
-                             RadioSettingValueList(LIST_STEP, LIST_STEP[
-                                 _mem.settings.stepa]))
+        stepa = RadioSetting(
+            "settings.stepa", "Auto step A",
+            RadioSettingValueList(
+                LIST_STEP, current_index=_mem.settings.stepa))
         work.append(stepa)
 
-        stepb = RadioSetting("settings.stepb", "Auto step B",
-                             RadioSettingValueList(LIST_STEP, LIST_STEP[
-                                 _mem.settings.stepb]))
+        stepb = RadioSetting(
+            "settings.stepb", "Auto step B",
+            RadioSettingValueList(
+                LIST_STEP, current_index=_mem.settings.stepb))
         work.append(stepb)
 
         mrcha = RadioSetting("settings.mrcha", "Current channel A",
@@ -1288,52 +1326,60 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
                                                         _mem.settings.wprichb))
         work.append(wprichb)
 
-        smode = RadioSetting("settings.smode", "Smart function mode",
-                             RadioSettingValueList(LIST_SMODE, LIST_SMODE[
-                                 _mem.settings.smode]))
+        smode = RadioSetting(
+            "settings.smode", "Smart function mode",
+            RadioSettingValueList(
+                LIST_SMODE, current_index=_mem.settings.smode))
         work.append(smode)
 
         # dtmf
 
-        ttdkey = RadioSetting("dtmf.ttdkey", "D key function",
-                              RadioSettingValueList(LIST_TTDKEY, LIST_TTDKEY[
-                                  _mem.dtmf.ttdkey]))
+        ttdkey = RadioSetting(
+            "dtmf.ttdkey", "D key function",
+            RadioSettingValueList(
+                LIST_TTDKEY, current_index=_mem.dtmf.ttdkey))
         dtmf.append(ttdkey)
 
-        ttdgt = RadioSetting("dtmf.ttdgt", "Digit time",
-                             RadioSettingValueList(LIST_TT200, LIST_TT200[
-                                 (_mem.dtmf.ttdgt) - 5]))
+        ttdgt = RadioSetting(
+            "dtmf.ttdgt", "Digit time",
+            RadioSettingValueList(
+                LIST_TT200, current_index=(_mem.dtmf.ttdgt) - 5))
         dtmf.append(ttdgt)
 
-        ttint = RadioSetting("dtmf.ttint", "Interval time",
-                             RadioSettingValueList(LIST_TT200, LIST_TT200[
-                                 (_mem.dtmf.ttint) - 5]))
+        ttint = RadioSetting(
+            "dtmf.ttint", "Interval time",
+            RadioSettingValueList(
+                LIST_TT200, current_index=(_mem.dtmf.ttint) - 5))
         dtmf.append(ttint)
 
-        tt1stdgt = RadioSetting("dtmf.tt1stdgt", "1st digit time",
-                                RadioSettingValueList(LIST_TT200, LIST_TT200[
-                                    (_mem.dtmf.tt1stdgt) - 5]))
+        tt1stdgt = RadioSetting(
+            "dtmf.tt1stdgt", "1st digit time",
+            RadioSettingValueList(
+                LIST_TT200, current_index=(_mem.dtmf.tt1stdgt) - 5))
         dtmf.append(tt1stdgt)
 
-        tt1stdly = RadioSetting("dtmf.tt1stdly", "1st digit delay time",
-                                RadioSettingValueList(LIST_TT1000, LIST_TT1000[
-                                    (_mem.dtmf.tt1stdly) - 2]))
+        tt1stdly = RadioSetting(
+            "dtmf.tt1stdly", "1st digit delay time",
+            RadioSettingValueList(
+                LIST_TT1000, current_index=(_mem.dtmf.tt1stdly) - 2))
         dtmf.append(tt1stdly)
 
-        ttdlyqt = RadioSetting("dtmf.ttdlyqt", "Digit delay when use qt",
-                               RadioSettingValueList(LIST_TT1000, LIST_TT1000[
-                                   (_mem.dtmf.ttdlyqt) - 2]))
+        ttdlyqt = RadioSetting(
+            "dtmf.ttdlyqt", "Digit delay when use qt",
+            RadioSettingValueList(
+                LIST_TT1000, current_index=(_mem.dtmf.ttdlyqt) - 2))
         dtmf.append(ttdlyqt)
 
-        ttsig = RadioSetting("dtmf2.ttsig", "Signal",
-                             RadioSettingValueList(LIST_TTSIG, LIST_TTSIG[
-                                 _mem.dtmf2.ttsig]))
+        ttsig = RadioSetting(
+            "dtmf2.ttsig", "Signal",
+            RadioSettingValueList(
+                LIST_TTSIG, current_index=_mem.dtmf2.ttsig))
         dtmf.append(ttsig)
 
-        ttautorst = RadioSetting("dtmf2.ttautorst", "Auto reset time",
-                                 RadioSettingValueList(
-                                     LIST_TTAUTORST, LIST_TTAUTORST[
-                                         _mem.dtmf2.ttautorst]))
+        ttautorst = RadioSetting(
+            "dtmf2.ttautorst", "Auto reset time",
+            RadioSettingValueList(
+                LIST_TTAUTORST, current_index=_mem.dtmf2.ttautorst))
         dtmf.append(ttautorst)
 
         if _mem.dtmf2.ttgrpcode > 0x06:
@@ -1342,13 +1388,13 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
             val = _mem.dtmf2.ttgrpcode
         ttgrpcode = RadioSetting("dtmf2.ttgrpcode", "Group code",
                                  RadioSettingValueList(LIST_TTGRPCODE,
-                                                       LIST_TTGRPCODE[val]))
+                                                       current_index=val))
         dtmf.append(ttgrpcode)
 
-        ttintcode = RadioSetting("dtmf2.ttintcode", "Interval code",
-                                 RadioSettingValueList(
-                                     LIST_TTINTCODE, LIST_TTINTCODE[
-                                         _mem.dtmf2.ttintcode]))
+        ttintcode = RadioSetting(
+            "dtmf2.ttintcode", "Interval code",
+            RadioSettingValueList(
+                LIST_TTINTCODE, current_index=_mem.dtmf2.ttintcode))
         dtmf.append(ttintcode)
 
         if _mem.dtmf2.ttalert > 0x04:
@@ -1357,13 +1403,13 @@ class VGCStyleRadio(chirp_common.CloneModeRadio,
             val = _mem.dtmf2.ttalert
         ttalert = RadioSetting("dtmf2.ttalert", "Alert tone/transpond",
                                RadioSettingValueList(LIST_TTALERT,
-                                                     LIST_TTALERT[val]))
+                                                     current_index=val))
         dtmf.append(ttalert)
 
-        ttautod = RadioSetting("dtmf.ttautod", "Auto dial group",
-                               RadioSettingValueList(
-                                   LIST_TTAUTOD, LIST_TTAUTOD[
-                                       _mem.dtmf.ttautod]))
+        ttautod = RadioSetting(
+            "dtmf.ttautod", "Auto dial group",
+            RadioSettingValueList(
+                LIST_TTAUTOD, current_index=_mem.dtmf.ttautod))
         dtmf.append(ttautod)
 
         # setup 9 dtmf autodial entries

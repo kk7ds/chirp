@@ -194,7 +194,7 @@ class HobbyPCBRSUV3Radio(chirp_common.LiveRadio):
         ai = RadioSetting('AI%i', 'Arduino Input Pin',
                           RadioSettingValueList(
                               input_pin,
-                              input_pin[int(_get('AI'))]))
+                              current_index=int(_get('AI'))))
         io.append(ai)
 
         output_pin = ['LOW', 'SQ OPEN', 'DTMF DETECT', 'TX ON', 'CTCSS DET',
@@ -202,20 +202,20 @@ class HobbyPCBRSUV3Radio(chirp_common.LiveRadio):
         ao = RadioSetting('AO%i', 'Arduino Output Pin',
                           RadioSettingValueList(
                               output_pin,
-                              output_pin[int(_get('AO'))]))
+                              current_index=int(_get('AO'))))
         io.append(ao)
 
         bauds = [str(x) for x in BAUDS]
         b1 = RadioSetting('B1%i', 'Arduino Baudrate',
                           RadioSettingValueList(
                               bauds,
-                              bauds[int(_get('B1'))]))
+                              current_index=int(_get('B1'))))
         io.append(b1)
 
         b2 = RadioSetting('B2%i', 'Main Baudrate',
                           RadioSettingValueList(
                               bauds,
-                              bauds[int(_get('B2'))]))
+                              current_index=int(_get('B2'))))
         io.append(b2)
 
         dtmf = RadioSettingGroup('dtmf', 'DTMF Settings')
@@ -267,7 +267,7 @@ class HobbyPCBRSUV3Radio(chirp_common.LiveRadio):
         ld = RadioSetting('LD%i', 'LED Mode',
                           RadioSettingValueList(
                               ledmode,
-                              ledmode[int(_get('LD'))]))
+                              current_index=int(_get('LD'))))
         general.append(ld)
 
         sq = RadioSetting('SQ%i', 'Squelch Level',

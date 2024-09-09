@@ -763,7 +763,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             _scram = 0
         rs = RadioSetting("scrambler", "Scrambler",
                           RadioSettingValueList(SCRAMBLER_LIST,
-                                                SCRAMBLER_LIST[_scram]))
+                                                current_index=_scram))
         mem.extra.append(rs)
 
         rs = RadioSetting("compander", "Compander",
@@ -856,17 +856,17 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("roger", "Roger Beep",
                           RadioSettingValueList(ROGER_LIST,
-                                                ROGER_LIST[_settings.roger]))
+                                                current_index=_settings.roger))
         cfg_grp.append(rs)
         rs = RadioSetting("roger_time", "Roger Tx Duration (ms)",
                           RadioSettingValueList(
                               ROGER_TIMES,
-                              ROGER_TIMES[_settings.roger_time]))
+                              current_index=_settings.roger_time))
         cfg_grp.append(rs)
         rs = RadioSetting("roger_int", "Roger Interval (ms)",
                           RadioSettingValueList(
                               ROGER_INTERVALS,
-                              ROGER_INTERVALS[_settings.roger_int]))
+                              current_index=_settings.roger_int))
         cfg_grp.append(rs)
         val = RadioSettingValueString(1, 6,
                                       _roger_decode(_settings.roger_begin),
@@ -900,7 +900,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("dtmf_st", "DTMF Sidetone",
                           RadioSettingValueList(
                               DTMF_ST_LIST,
-                              DTMF_ST_LIST[_settings.dtmf_st]))
+                              current_index=_settings.dtmf_st))
         cfg_grp.append(rs)
         rs = RadioSetting("pri_ch_sw", "Priority Channel Switch",
                           RadioSettingValueBoolean(_settings.pri_ch_sw))
@@ -912,7 +912,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("apo_time", "Auto Power-Off (Min)",
                           RadioSettingValueList(
                               APO_TIME_LIST,
-                              APO_TIME_LIST[_settings.apo_time]))
+                              current_index=_settings.apo_time))
         cfg_grp.append(rs)
         rs = RadioSetting("alert", "Alert Pulse (Hz)",
                           RadioSettingValueMap(ALERT_MAP, _settings.alert))
@@ -920,24 +920,24 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("fan_mode", "Fan Mode",
                           RadioSettingValueList(
                               FAN_MODE_LIST,
-                              FAN_MODE_LIST[_settings.fan_mode]))
+                              current_index=_settings.fan_mode))
         cfg_grp.append(rs)
         rs = RadioSetting("low_v", "Low Voltage Shutoff",
                           RadioSettingValueBoolean(_settings.low_v))
         cfg_grp.append(rs)
         rs = RadioSetting("ans", "Noise Reduction",
                           RadioSettingValueList(ANS_LIST,
-                                                ANS_LIST[_settings.ans]))
+                                                current_index=_settings.ans))
         cfg_grp.append(rs)
         rs = RadioSetting("dtmf_time", "DTMF Tx Duration (ms)",
                           RadioSettingValueList(
                               DTMF_TIMES,
-                              DTMF_TIMES[_settings.dtmf_time]))
+                              current_index=_settings.dtmf_time))
         cfg_grp.append(rs)
         rs = RadioSetting("dtmf_interval", "DTMF Interval (ms)",
                           RadioSettingValueList(
                               DTMF_INTERVALS,
-                              DTMF_INTERVALS[_settings.dtmf_interval]))
+                              current_index=_settings.dtmf_interval))
         cfg_grp.append(rs)
 
         #
@@ -960,7 +960,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         ui_grp.append(rs)
         rs = RadioSetting("voice", "Voice Guide",
                           RadioSettingValueList(VOICE_LIST,
-                                                VOICE_LIST[_settings.voice]))
+                                                current_index=_settings.voice))
         ui_grp.append(rs)
         rs = RadioSetting("beep", "Beep",
                           RadioSettingValueBoolean(_settings.beep))
@@ -968,7 +968,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("active_display", "Active Display",
                           RadioSettingValueList(
                               AB_LIST,
-                              AB_LIST[_settings.active_display]))
+                              current_index=_settings.active_display))
         ui_grp.append(rs)
         rs = RadioSetting("single_display", "Single Display",
                           RadioSettingValueBoolean(_settings.single_display))
@@ -976,17 +976,17 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("tx_led", "TX Backlight",
                           RadioSettingValueList(
                               BACKLIGHT_LIST,
-                              BACKLIGHT_LIST[_settings.tx_led]))
+                              current_index=_settings.tx_led))
         ui_grp.append(rs)
         rs = RadioSetting("wt_led", "Standby Backlight",
                           RadioSettingValueList(
                               BACKLIGHT_LIST,
-                              BACKLIGHT_LIST[_settings.wt_led]))
+                              current_index=_settings.wt_led))
         ui_grp.append(rs)
         rs = RadioSetting("rx_led", "Rx Backlight",
                           RadioSettingValueList(
                               BACKLIGHT_LIST,
-                              BACKLIGHT_LIST[_settings.rx_led]))
+                              current_index=_settings.rx_led))
         ui_grp.append(rs)
 
         #
@@ -1021,7 +1021,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         vfoa_grp.append(rs)
         rs = RadioSetting("vfoa.duplex", "Duplex",
                           RadioSettingValueList(DUPLEX_LIST,
-                                                DUPLEX_LIST[_vfoa.duplex]))
+                                                current_index=_vfoa.duplex))
         vfoa_grp.append(rs)
         rs = RadioSetting("vfoa.isnarrow", "Mode",
                           RadioSettingValueMap(BANDWIDTH_MAP, _vfoa.isnarrow))
@@ -1031,7 +1031,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             _vfoa_scram = 0
         rs = RadioSetting("vfoa.scrambler", "Scrambler",
                           RadioSettingValueList(SCRAMBLER_LIST,
-                                                SCRAMBLER_LIST[_vfoa_scram]))
+                                                current_index=_vfoa_scram))
         vfoa_grp.append(rs)
         rs = RadioSetting("vfoa.compander", "Compander",
                           RadioSettingValueBoolean(_vfoa.compander))
@@ -1042,7 +1042,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         vfoa_grp.append(rs)
         rs = RadioSetting("step_a", "Step (kHz)",
                           RadioSettingValueList(
-                              STEP_LIST, STEP_LIST[_settings.step_a]))
+                              STEP_LIST, current_index=_settings.step_a))
         vfoa_grp.append(rs)
         rs = RadioSetting("squelch_a", "Squelch",
                           RadioSettingValueInteger(
@@ -1084,7 +1084,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         vfob_grp.append(rs)
         rs = RadioSetting("vfob.duplex", "Duplex",
                           RadioSettingValueList(DUPLEX_LIST,
-                                                DUPLEX_LIST[_vfob.duplex]))
+                                                current_index=_vfob.duplex))
         vfob_grp.append(rs)
         rs = RadioSetting("vfob.isnarrow", "Mode",
                           RadioSettingValueMap(BANDWIDTH_MAP, _vfob.isnarrow))
@@ -1094,7 +1094,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             _vfob_scram = 0
         rs = RadioSetting("vfob.scrambler", "Scrambler",
                           RadioSettingValueList(SCRAMBLER_LIST,
-                                                SCRAMBLER_LIST[_vfob_scram]))
+                                                current_index=_vfob_scram))
         vfob_grp.append(rs)
         rs = RadioSetting("vfob.compander", "Compander",
                           RadioSettingValueBoolean(_vfob.compander))
@@ -1104,7 +1104,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         vfob_grp.append(rs)
         rs = RadioSetting("step_b", "Step (kHz)",
                           RadioSettingValueList(
-                              STEP_LIST, STEP_LIST[_settings.step_b]))
+                              STEP_LIST, current_index=_settings.step_b))
         vfob_grp.append(rs)
         rs = RadioSetting("squelch_b", "Squelch",
                           RadioSettingValueInteger(
@@ -1120,10 +1120,8 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("sc_rev", "Scan Resume Mode",
                           RadioSettingValueMap(SC_REV_MAP, _settings.sc_rev))
         scn_grp.append(rs)
-        rs = RadioSetting("scan_group", "Scan Group",
-                          RadioSettingValueList(SCAN_GROUP_LIST,
-                                                SCAN_GROUP_LIST[
-                                                    _settings.scan_group]))
+        rs = RadioSetting("scan_group", "Scan Group", RadioSettingValueList(
+            SCAN_GROUP_LIST, current_index=_settings.scan_group))
         scn_grp.append(rs)
         rs = RadioSetting("grp1_lower", "Group 1 Lower",
                           RadioSettingValueInteger(1, 999,
@@ -1170,10 +1168,8 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("rpt_ptt", "PTT",
                           RadioSettingValueBoolean(_settings.rpt_ptt))
         rpt_grp.append(rs)
-        rs = RadioSetting("rpt_mode", "Mode",
-                          RadioSettingValueList(RPT_MODE_LIST,
-                                                RPT_MODE_LIST[
-                                                    _settings.rpt_mode]))
+        rs = RadioSetting("rpt_mode", "Mode", RadioSettingValueList(
+            RPT_MODE_LIST, current_index=_settings.rpt_mode))
         rpt_grp.append(rs)
         rs = RadioSetting("rpt_tone", "Tone",
                           RadioSettingValueBoolean(_settings.rpt_tone))

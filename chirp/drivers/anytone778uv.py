@@ -1118,31 +1118,36 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
 
         # Menu 3 - Display Mode
         options = ["Frequency", "Channel", "Name"]
-        rs = RadioSettingValueList(options, options[_settings.displayMode])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.displayMode)
         rset = RadioSetting("settings.displayMode", "Display Mode", rs)
         function.append(rset)
 
         # VFO/MR A
         options = ["MR", "VFO"]
-        rs = RadioSettingValueList(options, options[_radio_settings.vfomrA])
+        rs = RadioSettingValueList(
+            options, current_index=_radio_settings.vfomrA)
         rset = RadioSetting("radio_settings.vfomrA", "VFO/MR mode A", rs)
         function.append(rset)
 
         # MR Channel A
         options = ["%s" % x for x in range(1, 201)]
-        rs = RadioSettingValueList(options, options[_radio_settings.mrChanA])
+        rs = RadioSettingValueList(
+            options, current_index=_radio_settings.mrChanA)
         rset = RadioSetting("radio_settings.mrChanA", "MR channel A", rs)
         function.append(rset)
 
         # VFO/MR B
         options = ["MR", "VFO"]
-        rs = RadioSettingValueList(options, options[_radio_settings.vfomrB])
+        rs = RadioSettingValueList(
+            options, current_index=_radio_settings.vfomrB)
         rset = RadioSetting("radio_settings.vfomrB", "VFO/MR mode B", rs)
         function.append(rset)
 
         # MR Channel B
         options = ["%s" % x for x in range(1, 201)]
-        rs = RadioSettingValueList(options, options[_radio_settings.mrChanB])
+        rs = RadioSettingValueList(
+            options, current_index=_radio_settings.mrChanB)
         rset = RadioSetting("radio_settings.mrChanB", "MR channel B", rs)
         function.append(rset)
 
@@ -1160,19 +1165,21 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
 
         # Menu 11 - Backlight Brightness
         options = ["%s" % x for x in range(1, 4)]
-        rs = RadioSettingValueList(options, options[_settings.backlightBr - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.backlightBr - 1)
         rset = RadioSetting("settings.backlightBr", "Backlight brightness", rs)
         function.append(rset)
 
         # Menu 15 - Screen Direction
         options = ["Positive", "Inverted"]
-        rs = RadioSettingValueList(options, options[_settings.screenDir])
+        rs = RadioSettingValueList(options, current_index=_settings.screenDir)
         rset = RadioSetting("settings.screenDir", "Screen direction", rs)
         function.append(rset)
 
         # Hand Mic Key Brightness
         options = ["%s" % x for x in range(1, 32)]
-        rs = RadioSettingValueList(options, options[_settings.micKeyBrite - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.micKeyBrite - 1)
         rset = RadioSetting("settings.micKeyBrite",
                             "Hand mic key brightness", rs)
         function.append(rset)
@@ -1180,34 +1187,37 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         # VOL SET
         # Menu 1 - Beep Volume
         options = ["OFF"] + ["%s" % x for x in range(1, 6)]
-        rs = RadioSettingValueList(options, options[_settings.beepVolume])
+        rs = RadioSettingValueList(options, current_index=_settings.beepVolume)
         rset = RadioSetting("settings.beepVolume", "Beep volume", rs)
         function.append(rset)
 
         # Menu 5 - Volume level Setup
         options = ["%s" % x for x in range(1, 37)]
-        rs = RadioSettingValueList(options, options[_settings.speakerVol - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.speakerVol - 1)
         rset = RadioSetting("settings.speakerVol", "Speaker volume", rs)
         function.append(rset)
 
         # Menu 16 - Speaker Switch
         options = ["Host on | Hand mic off", "Host on | Hand mic on",
                    "Host off | Hand mic on"]
-        rs = RadioSettingValueList(options, options[_settings.speakerSwitch])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.speakerSwitch)
         rset = RadioSetting("settings.speakerSwitch", "Speaker switch", rs)
         function.append(rset)
 
         # STE SET
         # STE Frequency
         options = ["Off", "55.2 Hz", "259.2 Hz"]
-        rs = RadioSettingValueList(options, options[_settings.steFrequency])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.steFrequency)
         rset = RadioSetting("settings.steFrequency", "STE frequency", rs)
         function.append(rset)
 
         # STE Type
         options = ["Off", "Silent", "120 degrees", "180 degrees",
                    "240 degrees"]
-        rs = RadioSettingValueList(options, options[_settings.steType])
+        rs = RadioSettingValueList(options, current_index=_settings.steType)
         rset = RadioSetting("settings.steType", "STE type", rs)
         function.append(rset)
 
@@ -1257,7 +1267,8 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
 
         # Menu 13 - Auto Power Off
         options = ["Off", "30 minutes", "60 minutes", "120 minutes"]
-        rs = RadioSettingValueList(options, options[_settings.autoPowerOff])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.autoPowerOff)
         rset = RadioSetting("settings.autoPowerOff", "Auto power off", rs)
         function.append(rset)
 
@@ -1269,32 +1280,35 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         # FUNCTION SET
         # Menu 4 - Squelch Level A
         options = ["OFF"] + ["%s" % x for x in range(1, 10)]
-        rs = RadioSettingValueList(options, options[_settings.squelchLevelA])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.squelchLevelA)
         rset = RadioSetting("settings.squelchLevelA", "Squelch level A", rs)
         function.append(rset)
 
         # Squelch Level B
         options = ["OFF"] + ["%s" % x for x in range(1, 10)]
-        rs = RadioSettingValueList(options, options[_settings.squelchLevelB])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.squelchLevelB)
         rset = RadioSetting("settings.squelchLevelB", "Squelch level B", rs)
         function.append(rset)
 
         # Menu 7 - Scan Type
         options = ["Time operated (TO)", "Carrier operated (CO)",
                    "Search (SE)"]
-        rs = RadioSettingValueList(options, options[_settings.scanType])
+        rs = RadioSettingValueList(options, current_index=_settings.scanType)
         rset = RadioSetting("settings.scanType", "Scan mode", rs)
         function.append(rset)
 
         # Menu 8 - Scan Recovery Time
         options = ["%s seconds" % x for x in range(5, 20, 5)]
-        rs = RadioSettingValueList(options, options[_settings.scanRecoveryT])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.scanRecoveryT)
         rset = RadioSetting("settings.scanRecoveryT", "Scan recovery time", rs)
         function.append(rset)
 
         # Main
         options = ["A", "B"]
-        rs = RadioSettingValueList(options, options[_settings.main])
+        rs = RadioSettingValueList(options, current_index=_settings.main)
         rset = RadioSetting("settings.main", "Main", rs)
         function.append(rset)
 
@@ -1305,13 +1319,15 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
 
         # Menu 12 - Time Out Timer
         options = ["OFF"] + ["%s minutes" % x for x in range(1, 31)]
-        rs = RadioSettingValueList(options, options[_settings.timeOutTimer])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.timeOutTimer)
         rset = RadioSetting("settings.timeOutTimer", "Time out timer", rs)
         function.append(rset)
 
         # TBST Frequency
         options = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
-        rs = RadioSettingValueList(options, options[_settings.tbstFrequency])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.tbstFrequency)
         rset = RadioSetting("settings.tbstFrequency", "TBST frequency", rs)
         function.append(rset)
 
@@ -1323,20 +1339,22 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
 
         # MON Key Function
         options = ["Squelch off momentary", "Squelch off"]
-        rs = RadioSettingValueList(options, options[_settings.monKeyFunction])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.monKeyFunction)
         rset = RadioSetting("settings.monKeyFunction", "MON key function", rs)
         function.append(rset)
 
         # Frequency Step
         options = ["2.5 kHz", "5 kHz", "6.25 kHz", "10 kHz", "12.5 kHz",
                    "20 kHz", "25 kHz", "30 kHz", "50 kHz"]
-        rs = RadioSettingValueList(options, options[_settings.frequencyStep])
+        rs = RadioSettingValueList(
+            options, current_index=_settings.frequencyStep)
         rset = RadioSetting("settings.frequencyStep", "Frequency step", rs)
         function.append(rset)
 
         # Knob Mode
         options = ["Volume", "Channel"]
-        rs = RadioSettingValueList(options, options[_settings.knobMode])
+        rs = RadioSettingValueList(options, current_index=_settings.knobMode)
         rset = RadioSetting("settings.knobMode", "Knob mode", rs)
         function.append(rset)
 
@@ -1355,13 +1373,15 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
             # VOX Delay
             options = ["0.5 S", "1.0 S", "1.5 S", "2.0 S", "2.5 S",
                        "3.0 S", "3.5 S", "4.0 S", "4.5 S"]
-            rs = RadioSettingValueList(options, options[_settings.voxDelay])
+            rs = RadioSettingValueList(
+                options, current_index=_settings.voxDelay)
             rset = RadioSetting("settings.voxDelay", "VOX delay", rs)
             function.append(rset)
 
             # VOX Level
             options = ["%s" % x for x in range(1, 10)]
-            rs = RadioSettingValueList(options, options[_settings.voxLevel])
+            rs = RadioSettingValueList(
+                options, current_index=_settings.voxLevel)
             rset = RadioSetting("settings.voxLevel", "VOX Level", rs)
             function.append(rset)
 
@@ -1378,74 +1398,86 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
 
         # Key Mode 1
         # P1
-        rs = RadioSettingValueList(options, options[_pfkeys.keyMode1P1 - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_pfkeys.keyMode1P1 - 1)
         rset = RadioSetting("pfkeys.keyMode1P1",
                             "Key mode 1 P1", rs)
         pfkeys.append(rset)
 
         # P2
-        rs = RadioSettingValueList(options, options[_pfkeys.keyMode1P2 - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_pfkeys.keyMode1P2 - 1)
         rset = RadioSetting("pfkeys.keyMode1P2",
                             "Key mode 1 P2", rs)
         pfkeys.append(rset)
 
         # P3
-        rs = RadioSettingValueList(options, options[_pfkeys.keyMode1P3 - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_pfkeys.keyMode1P3 - 1)
         rset = RadioSetting("pfkeys.keyMode1P3",
                             "Key mode 1 P3", rs)
         pfkeys.append(rset)
 
         # P4
-        rs = RadioSettingValueList(options, options[_pfkeys.keyMode1P4 - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_pfkeys.keyMode1P4 - 1)
         rset = RadioSetting("pfkeys.keyMode1P4",
                             "Key mode 1 P4", rs)
         pfkeys.append(rset)
 
         # P5
-        rs = RadioSettingValueList(options, options[_pfkeys.keyMode1P5 - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_pfkeys.keyMode1P5 - 1)
         rset = RadioSetting("pfkeys.keyMode1P5",
                             "Key mode 1 P5", rs)
         pfkeys.append(rset)
 
         # P6
-        rs = RadioSettingValueList(options, options[_pfkeys.keyMode1P6 - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_pfkeys.keyMode1P6 - 1)
         rset = RadioSetting("pfkeys.keyMode1P6",
                             "Key mode 1 P6", rs)
         pfkeys.append(rset)
 
         # Key Mode 2
         # P1
-        rs = RadioSettingValueList(options, options[_pfkeys.keyMode2P1 - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_pfkeys.keyMode2P1 - 1)
         rset = RadioSetting("pfkeys.keyMode2P1",
                             "Key mode 2 P1", rs)
         pfkeys.append(rset)
 
         # P2
-        rs = RadioSettingValueList(options, options[_pfkeys.keyMode2P2 - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_pfkeys.keyMode2P2 - 1)
         rset = RadioSetting("pfkeys.keyMode2P2",
                             "Key mode 2 P2", rs)
         pfkeys.append(rset)
 
         # P3
-        rs = RadioSettingValueList(options, options[_pfkeys.keyMode2P3 - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_pfkeys.keyMode2P3 - 1)
         rset = RadioSetting("pfkeys.keyMode2P3",
                             "Key mode 2 P3", rs)
         pfkeys.append(rset)
 
         # P4
-        rs = RadioSettingValueList(options, options[_pfkeys.keyMode2P4 - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_pfkeys.keyMode2P4 - 1)
         rset = RadioSetting("pfkeys.keyMode2P4",
                             "Key mode 2 P4", rs)
         pfkeys.append(rset)
 
         # P5
-        rs = RadioSettingValueList(options, options[_pfkeys.keyMode2P5 - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_pfkeys.keyMode2P5 - 1)
         rset = RadioSetting("pfkeys.keyMode2P5",
                             "Key mode 2 P5", rs)
         pfkeys.append(rset)
 
         # P6
-        rs = RadioSettingValueList(options, options[_pfkeys.keyMode2P6 - 1])
+        rs = RadioSettingValueList(
+            options, current_index=_pfkeys.keyMode2P6 - 1)
         rset = RadioSetting("pfkeys.keyMode2P6",
                             "Key mode 2 P6", rs)
         pfkeys.append(rset)
@@ -1457,25 +1489,25 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
             options.insert(15, "VOX")
 
         # PA
-        rs = RadioSettingValueList(options, options[_settings.keyPA - 2])
+        rs = RadioSettingValueList(options, current_index=_settings.keyPA - 2)
         rset = RadioSetting("settings.keyPA",
                             "Key PA", rs)
         pfkeys.append(rset)
 
         # PB
-        rs = RadioSettingValueList(options, options[_settings.keyPB - 2])
+        rs = RadioSettingValueList(options, current_index=_settings.keyPB - 2)
         rset = RadioSetting("settings.keyPB",
                             "Key PB", rs)
         pfkeys.append(rset)
 
         # PC
-        rs = RadioSettingValueList(options, options[_settings.keyPC - 2])
+        rs = RadioSettingValueList(options, current_index=_settings.keyPC - 2)
         rset = RadioSetting("settings.keyPC",
                             "Key PC", rs)
         pfkeys.append(rset)
 
         # PD
-        rs = RadioSettingValueList(options, options[_settings.keyPD - 2])
+        rs = RadioSettingValueList(options, current_index=_settings.keyPD - 2)
         rset = RadioSetting("settings.keyPD",
                             "Key PD", rs)
         pfkeys.append(rset)
@@ -1487,7 +1519,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         # DTMF Transmitting Time
         options = ["50 milliseconds", "100 milliseconds", "200 milliseconds",
                    "300 milliseconds", "500 milliseconds"]
-        rs = RadioSettingValueList(options, options[_settings.dtmfTxTime])
+        rs = RadioSettingValueList(options, current_index=_settings.dtmfTxTime)
         rset = RadioSetting("settings.dtmfTxTime",
                             "DTMF transmitting time", rs)
         dtmf.append(rset)
@@ -1511,7 +1543,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
             idx = IC_VALUES.index(0x0E)
         rs = RadioSetting("dtmf.intervalChar", "DTMF interval character",
                           RadioSettingValueList(IC_CHOICES,
-                                                IC_CHOICES[idx]))
+                                                current_index=idx))
         rs.set_apply_callback(apply_ic_listvalue, _dtmf.intervalChar)
         dtmf.append(rs)
 
@@ -1532,37 +1564,38 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
             idx = GC_VALUES.index(0x0A)
         rs = RadioSetting("dtmf.groupCode", "DTMF interval character",
                           RadioSettingValueList(GC_CHOICES,
-                                                GC_CHOICES[idx]))
+                                                current_index=idx))
         rs.set_apply_callback(apply_gc_listvalue, _dtmf.groupCode)
         dtmf.append(rs)
 
         # Decoding Response
         options = ["None", "Beep tone", "Beep tone & respond"]
-        rs = RadioSettingValueList(options, options[_dtmf.decodingResponse])
+        rs = RadioSettingValueList(
+            options, current_index=_dtmf.decodingResponse)
         rset = RadioSetting("dtmf.decodingResponse", "Decoding response", rs)
         dtmf.append(rset)
 
         # First Digit Time
         options = ["%s" % x for x in range(0, 2510, 10)]
-        rs = RadioSettingValueList(options, options[_dtmf.firstDigitTime])
+        rs = RadioSettingValueList(options, current_index=_dtmf.firstDigitTime)
         rset = RadioSetting("dtmf.firstDigitTime", "First Digit Time(ms)", rs)
         dtmf.append(rset)
 
         # First Digit Time
         options = ["%s" % x for x in range(10, 2510, 10)]
-        rs = RadioSettingValueList(options, options[_dtmf.pretime - 1])
+        rs = RadioSettingValueList(options, current_index=_dtmf.pretime - 1)
         rset = RadioSetting("dtmf.pretime", "Pretime(ms)", rs)
         dtmf.append(rset)
 
         # Auto Reset Time
         options = ["%s" % x for x in range(0, 25100, 100)]
-        rs = RadioSettingValueList(options, options[_dtmf.autoResetTime])
+        rs = RadioSettingValueList(options, current_index=_dtmf.autoResetTime)
         rset = RadioSetting("dtmf.autoResetTime", "Auto Reset time(ms)", rs)
         dtmf.append(rset)
 
         # Time-Lapse After Encode
         options = ["%s" % x for x in range(10, 2510, 10)]
-        rs = RadioSettingValueList(options, options[_dtmf.timeLapse - 1])
+        rs = RadioSettingValueList(options, current_index=_dtmf.timeLapse - 1)
         rset = RadioSetting("dtmf.timeLapse",
                             "Time-lapse after encode(ms)", rs)
         dtmf.append(rset)
@@ -1570,7 +1603,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
         # PTT ID Pause Time
         options = ["Off", "-", "-", "-", "-"] + [
                    "%s" % x for x in range(5, 76)]
-        rs = RadioSettingValueList(options, options[_dtmf.pauseTime])
+        rs = RadioSettingValueList(options, current_index=_dtmf.pauseTime)
         rset = RadioSetting("dtmf.pauseTime", "PTT ID pause time(s)", rs)
         dtmf.append(rset)
 

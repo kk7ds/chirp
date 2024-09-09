@@ -283,34 +283,34 @@ class KSunM6Radio(chirp_common.CloneModeRadio):
         top = RadioSettings(basic)
 
         voice = settings.voice
-        rsv = RadioSettingValueList(VOICE_LIST, VOICE_LIST[voice])
+        rsv = RadioSettingValueList(VOICE_LIST, current_index=voice)
         rs = RadioSetting("voice", "Voice language", rsv)
         basic.append(rs)
 
         led = settings.led
-        rsv = RadioSettingValueList(LED_LIST, LED_LIST[led])
+        rsv = RadioSettingValueList(LED_LIST, current_index=led)
         rs = RadioSetting("led", "LED brightness", rsv)
         basic.append(rs)
 
         led_timeout = settings.led_timeout
         rsv = RadioSettingValueList(LED_TIMEOUT_LIST,
-                                    LED_TIMEOUT_LIST[led_timeout])
+                                    current_index=led_timeout)
         rs = RadioSetting("led_timeout", "LED timeout", rsv)
         basic.append(rs)
 
         lock_timeout = settings.lock_timeout
         rsv = RadioSettingValueList(LOCK_TIMEOUT_LIST,
-                                    LOCK_TIMEOUT_LIST[lock_timeout])
+                                    current_index=lock_timeout)
         rs = RadioSetting("lock_timeout", "Key Lock timeout", rsv)
         basic.append(rs)
 
         tot = settings.tot
-        rsv = RadioSettingValueList(TOT_LIST, TOT_LIST[tot])
+        rsv = RadioSettingValueList(TOT_LIST, current_index=tot)
         rs = RadioSetting("tot", "Time-Out Timer", rsv)
         basic.append(rs)
 
         bat_save = settings.bat_save
-        rsv = RadioSettingValueList(BAT_SAVE_LIST, BAT_SAVE_LIST[bat_save])
+        rsv = RadioSettingValueList(BAT_SAVE_LIST, current_index=bat_save)
         rs = RadioSetting("bat_save", "Battery Save", rsv)
         basic.append(rs)
 
@@ -414,7 +414,7 @@ class KSunM6Radio(chirp_common.CloneModeRadio):
         mem.extra.append(rs)
 
         scrambler = False if mem.empty else _mem.scrambler
-        rsv = RadioSettingValueList(SCRAMBLER_LIST, SCRAMBLER_LIST[scrambler])
+        rsv = RadioSettingValueList(SCRAMBLER_LIST, current_index=scrambler)
         rs = RadioSetting("scrambler", _("Scrambler"), rsv)
         mem.extra.append(rs)
 

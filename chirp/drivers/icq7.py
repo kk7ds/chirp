@@ -224,7 +224,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
 
         rs = RadioSetting("autorp", "Auto Repeater Function",
                           RadioSettingValueList(
-                              AUTORP_LIST, AUTORP_LIST[_settings.autorp]))
+                              AUTORP_LIST, current_index=_settings.autorp))
         basic.append(rs)
 
         rs = RadioSetting("ritfunct", "RIT Runction",
@@ -242,29 +242,29 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         rs = RadioSetting("lockgroup", "Lock Group",
                           RadioSettingValueList(
                               LOCKGROUP_LIST,
-                              LOCKGROUP_LIST[_settings.lockgroup]))
+                              current_index=_settings.lockgroup))
         basic.append(rs)
 
         rs = RadioSetting("squelch", "Squelch",
                           RadioSettingValueList(
-                              SQUELCH_LIST, SQUELCH_LIST[_settings.squelch]))
+                              SQUELCH_LIST, current_index=_settings.squelch))
         basic.append(rs)
 
         rs = RadioSetting("monitor", "Monitor Switch Function",
                           RadioSettingValueList(
                               MONITOR_LIST,
-                              MONITOR_LIST[_settings.monitor]))
+                              current_index=_settings.monitor))
         basic.append(rs)
 
         rs = RadioSetting("light", "Display Backlighting",
                           RadioSettingValueList(
-                              LIGHT_LIST, LIGHT_LIST[_settings.light]))
+                              LIGHT_LIST, current_index=_settings.light))
         basic.append(rs)
 
         rs = RadioSetting("priority", "Priority Watch Operation",
                           RadioSettingValueList(
                               PRIORITY_LIST,
-                              PRIORITY_LIST[_settings.priority]))
+                              current_index=_settings.priority))
         basic.append(rs)
 
         rs = RadioSetting("p_scan", "Frequency Skip Function",
@@ -274,22 +274,22 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
         rs = RadioSetting("bnk_scan", "Memory Bank Scan Selection",
                           RadioSettingValueList(
                               BANKSCAN_LIST,
-                              BANKSCAN_LIST[_settings.bnk_scan]))
+                              current_index=_settings.bnk_scan))
         basic.append(rs)
 
         rs = RadioSetting("edge", "Band Edge Scan Selection",
                           RadioSettingValueList(
-                              EDGE_LIST, EDGE_LIST[_settings.edge]))
+                              EDGE_LIST, current_index=_settings.edge))
         basic.append(rs)
 
         rs = RadioSetting("pause", "Scan Pause Time",
                           RadioSettingValueList(
-                              PAUSE_LIST, PAUSE_LIST[_settings.pause]))
+                              PAUSE_LIST, current_index=_settings.pause))
         basic.append(rs)
 
         rs = RadioSetting("resume", "Scan Resume Time",
                           RadioSettingValueList(
-                              RESUME_LIST, RESUME_LIST[_settings.resume]))
+                              RESUME_LIST, current_index=_settings.resume))
         basic.append(rs)
 
         rs = RadioSetting("p_save", "Power Saver",
@@ -298,7 +298,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
 
         rs = RadioSetting("ap_off", "Auto Power-off Function",
                           RadioSettingValueList(
-                              APOFF_LIST, APOFF_LIST[_settings.ap_off]))
+                              APOFF_LIST, current_index=_settings.ap_off))
         basic.append(rs)
 
         rs = RadioSetting("speed", "Dial Speed Acceleration",
@@ -307,7 +307,7 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
 
         rs = RadioSetting("d_sel", "Dial Select Step",
                           RadioSettingValueList(
-                              D_SEL_LIST, D_SEL_LIST[_settings.d_sel]))
+                              D_SEL_LIST, current_index=_settings.d_sel))
         basic.append(rs)
 
         return group

@@ -670,7 +670,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             val = _mem.recvmode
         recvmode = RadioSetting("recvmode", "Receiving mode",
                                 RadioSettingValueList(LIST_RECVMODE,
-                                                      LIST_RECVMODE[val]))
+                                                      current_index=val))
         mem.extra.append(recvmode)
 
         if _mem.botsignal == 0xFF:
@@ -679,7 +679,7 @@ class LT725UV(chirp_common.CloneModeRadio):
             val = _mem.botsignal
         botsignal = RadioSetting("botsignal", "Launch signaling",
                                  RadioSettingValueList(LIST_SIGNAL,
-                                                       LIST_SIGNAL[val]))
+                                                       current_index=val))
         mem.extra.append(botsignal)
 
         if _mem.eotsignal == 0xFF:
@@ -687,7 +687,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         else:
             val = _mem.eotsignal
 
-        rx = RadioSettingValueList(LIST_SIGNAL, LIST_SIGNAL[val])
+        rx = RadioSettingValueList(LIST_SIGNAL, current_index=val)
         eotsignal = RadioSetting("eotsignal", "Transmit end signaling", rx)
         mem.extra.append(eotsignal)
 
@@ -804,10 +804,10 @@ class LT725UV(chirp_common.CloneModeRadio):
         group = RadioSettings(basic, a_band, b_band, lims, codes)
 
         # Basic Settings
-        bnd_mode = RadioSetting("settings.init_bank", "TDR Band Default",
-                                RadioSettingValueList(LIST_TDR_DEF,
-                                                      LIST_TDR_DEF[
-                                                          _sets.init_bank]))
+        bnd_mode = RadioSetting(
+            "settings.init_bank", "TDR Band Default",
+            RadioSettingValueList(
+                LIST_TDR_DEF, current_index=_sets.init_bank))
         basic.append(bnd_mode)
 
         # BJ-318 set by vfo, skip
@@ -819,14 +819,14 @@ class LT725UV(chirp_common.CloneModeRadio):
         # BJ-318 set by vfo, skip
         if self.MODEL != "BJ-318":
             vala = _vfoa.bpower        # 2bits values 0,1,2= Low, Mid, High
-            rx = RadioSettingValueList(LIST_BPOWER, LIST_BPOWER[vala])
+            rx = RadioSettingValueList(LIST_BPOWER, current_index=vala)
             powera = RadioSetting("upper.vfoa.bpower", "Power (Upper)", rx)
             basic.append(powera)
 
         # BJ-318 set by vfo, skip
         if self.MODEL != "BJ-318":
             valb = _vfob.bpower
-            rx = RadioSettingValueList(LIST_BPOWER, LIST_BPOWER[valb])
+            rx = RadioSettingValueList(LIST_BPOWER, current_index=valb)
             powerb = RadioSetting("lower.vfob.bpower", "Power (Lower)", rx)
             basic.append(powerb)
 
@@ -939,27 +939,27 @@ class LT725UV(chirp_common.CloneModeRadio):
         # not used in BJ-318, skip
         if self.MODEL != "BJ-318":
             rs = RadioSettingValueList(LIST_COLOR,
-                                       LIST_COLOR[_sets.wtled])
+                                       current_index=_sets.wtled)
             wtled = RadioSetting("settings.wtled", "Standby LED Color", rs)
             basic.append(wtled)
 
         # not used in BJ-318, skip
         if self.MODEL != "BJ-318":
             rs = RadioSettingValueList(LIST_COLOR,
-                                       LIST_COLOR[_sets.rxled])
+                                       current_index=_sets.rxled)
             rxled = RadioSetting("settings.rxled", "RX LED Color", rs)
             basic.append(rxled)
 
         # not used in BJ-318, skip
         if self.MODEL != "BJ-318":
             rs = RadioSettingValueList(LIST_COLOR,
-                                       LIST_COLOR[_sets.txled])
+                                       current_index=_sets.txled)
             txled = RadioSetting("settings.txled", "TX LED Color", rs)
             basic.append(txled)
 
-        ledsw = RadioSetting("settings.ledsw", "Back light mode",
-                             RadioSettingValueList(LIST_LEDSW, LIST_LEDSW[
-                                 _sets.ledsw]))
+        ledsw = RadioSetting(
+            "settings.ledsw", "Back light mode",
+            RadioSettingValueList(LIST_LEDSW, current_index=_sets.ledsw))
         basic.append(ledsw)
 
         beep = RadioSetting("settings.beep", "Beep",
@@ -967,8 +967,8 @@ class LT725UV(chirp_common.CloneModeRadio):
         basic.append(beep)
 
         ring = RadioSetting("settings.ring", "Ring",
-                            RadioSettingValueList(LIST_RING, LIST_RING[
-                                _sets.ring]))
+                            RadioSettingValueList(
+                                LIST_RING, current_index=_sets.ring))
         basic.append(ring)
 
         bcl = RadioSetting("settings.bcl", "Busy channel lockout",
@@ -1021,7 +1021,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         # Freq Mode, convert bit 1 state to index pointer
         val = _vfoa.frq_chn_mode // 2
 
-        rx = RadioSettingValueList(LIST_VFOMODE, LIST_VFOMODE[val])
+        rx = RadioSettingValueList(LIST_VFOMODE, current_index=val)
         rs = RadioSetting("upper.vfoa.frq_chn_mode", "Default Mode", rx)
         rs.set_apply_callback(my_spcl, _vfoa, "frq_chn_mode")
         a_band.append(rs)
@@ -1048,7 +1048,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         a_band.append(rs)
 
         rx = RadioSettingValueList(LIST_RECVMODE,
-                                   LIST_RECVMODE[_vfoa.rx_mode])
+                                   current_index=_vfoa.rx_mode)
         rs = RadioSetting("upper.vfoa.rx_mode", "Default Recv Mode", rx)
         a_band.append(rs)
 
@@ -1059,16 +1059,17 @@ class LT725UV(chirp_common.CloneModeRadio):
                               "txdtcs_pol", "tx_tone")
         a_band.append(rs)
 
-        rs = RadioSetting("upper.vfoa.launch_sig", "Launch Signaling",
-                          RadioSettingValueList(LIST_SIGNAL,
-                                                LIST_SIGNAL[_vfoa.launch_sig]))
+        rs = RadioSetting(
+            "upper.vfoa.launch_sig", "Launch Signaling",
+            RadioSettingValueList(
+                LIST_SIGNAL, current_index=_vfoa.launch_sig))
         a_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_SIGNAL, LIST_SIGNAL[_vfoa.tx_end_sig])
+        rx = RadioSettingValueList(LIST_SIGNAL, current_index=_vfoa.tx_end_sig)
         rs = RadioSetting("upper.vfoa.tx_end_sig", "Xmit End Signaling", rx)
         a_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_BW, LIST_BW[_vfoa.fm_bw])
+        rx = RadioSettingValueList(LIST_BW, current_index=_vfoa.fm_bw)
         rs = RadioSetting("upper.vfoa.fm_bw", "Wide/Narrow Band", rx)
         a_band.append(rs)
 
@@ -1080,7 +1081,7 @@ class LT725UV(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(bool(_vfoa.scrm_blr)))
         a_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_SHIFT, LIST_SHIFT[_vfoa.shift])
+        rx = RadioSettingValueList(LIST_SHIFT, current_index=_vfoa.shift)
         rs = RadioSetting("upper.vfoa.shift", "Xmit Shift", rx)
         a_band.append(rs)
 
@@ -1117,7 +1118,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         # BJ-318 Upper Screen Color
         if self.MODEL == "BJ-318":
             rs_u = RadioSettingValueList(LIST_COLOR318,
-                                         LIST_COLOR318[_lims.up_scr_color])
+                                         current_index=_lims.up_scr_color)
             up_scr_color = RadioSetting("hello_lims.up_scr_color",
                                         "Screen Color", rs_u)
             a_band.append(up_scr_color)
@@ -1125,14 +1126,14 @@ class LT725UV(chirp_common.CloneModeRadio):
         # BJ-318 Upper band power
         if self.MODEL == "BJ-318":
             val_b = _vfoa.bpower        # 2bits values 0,1,2= Low, Mid, High
-            rx = RadioSettingValueList(LIST_BPOWER, LIST_BPOWER[val_b])
+            rx = RadioSettingValueList(LIST_BPOWER, current_index=val_b)
             power_u = RadioSetting("upper.vfoa.bpower", "Power", rx)
             a_band.append(power_u)
 
         # LOWER BAND SETTINGS
 
         val = _vfob.frq_chn_mode // 2
-        rx = RadioSettingValueList(LIST_VFOMODE, LIST_VFOMODE[val])
+        rx = RadioSettingValueList(LIST_VFOMODE, current_index=val)
         rs = RadioSetting("lower.vfob.frq_chn_mode", "Default Mode", rx)
         rs.set_apply_callback(my_spcl, _vfob, "frq_chn_mode")
         b_band.append(rs)
@@ -1158,7 +1159,7 @@ class LT725UV(chirp_common.CloneModeRadio):
                               "rxdtcs_pol", "rx_tone")
         b_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_RECVMODE, LIST_RECVMODE[_vfob.rx_mode])
+        rx = RadioSettingValueList(LIST_RECVMODE, current_index=_vfob.rx_mode)
         rs = RadioSetting("lower.vfob.rx_mode", "Default Recv Mode", rx)
         b_band.append(rs)
 
@@ -1169,15 +1170,15 @@ class LT725UV(chirp_common.CloneModeRadio):
                               "txdtcs_pol", "tx_tone")
         b_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_SIGNAL, LIST_SIGNAL[_vfob.launch_sig])
+        rx = RadioSettingValueList(LIST_SIGNAL, current_index=_vfob.launch_sig)
         rs = RadioSetting("lower.vfob.launch_sig", "Launch Signaling", rx)
         b_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_SIGNAL, LIST_SIGNAL[_vfob.tx_end_sig])
+        rx = RadioSettingValueList(LIST_SIGNAL, current_index=_vfob.tx_end_sig)
         rs = RadioSetting("lower.vfob.tx_end_sig", "Xmit End Signaling", rx)
         b_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_BW, LIST_BW[_vfob.fm_bw])
+        rx = RadioSettingValueList(LIST_BW, current_index=_vfob.fm_bw)
         rs = RadioSetting("lower.vfob.fm_bw", "Wide/Narrow Band", rx)
         b_band.append(rs)
 
@@ -1189,7 +1190,7 @@ class LT725UV(chirp_common.CloneModeRadio):
                           RadioSettingValueBoolean(bool(_vfob.scrm_blr)))
         b_band.append(rs)
 
-        rx = RadioSettingValueList(LIST_SHIFT, LIST_SHIFT[_vfob.shift])
+        rx = RadioSettingValueList(LIST_SHIFT, current_index=_vfob.shift)
         rs = RadioSetting("lower.vfob.shift", "Xmit Shift", rx)
         b_band.append(rs)
 
@@ -1225,7 +1226,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         # BJ-318 Lower Screen Color
         if self.MODEL == "BJ-318":
             rs_l = RadioSettingValueList(LIST_COLOR318,
-                                         LIST_COLOR318[_lims.dn_scr_color])
+                                         current_index=_lims.dn_scr_color)
             dn_scr_color = RadioSetting("hello_lims.dn_scr_color",
                                         "Screen Color", rs_l)
             b_band.append(dn_scr_color)
@@ -1233,7 +1234,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         # BJ-318 lower band power
         if self.MODEL == "BJ-318":
             val_l = _vfoa.bpower        # 2bits values 0,1,2= Low, Mid, High
-            rx = RadioSettingValueList(LIST_BPOWER, LIST_BPOWER[val_l])
+            rx = RadioSettingValueList(LIST_BPOWER, current_index=val_l)
             powera = RadioSetting("lower.vfob.bpower", "Power", rx)
             b_band.append(powera)
 
@@ -1442,7 +1443,7 @@ class LT725UV(chirp_common.CloneModeRadio):
         if val > 2:
             val = 0
 
-        rx = RadioSettingValueList(LIST_STATE, LIST_STATE[val])
+        rx = RadioSettingValueList(LIST_STATE, current_index=val)
         rs = RadioSetting("codes.state_now", "Current State", rx)
         codes.append(rs)
 

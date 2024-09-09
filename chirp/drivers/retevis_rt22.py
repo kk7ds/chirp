@@ -593,17 +593,17 @@ class RT22Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("tot", "Time-out timer",
                           RadioSettingValueList(
                               TIMEOUTTIMER_LIST,
-                              TIMEOUTTIMER_LIST[_settings.tot]))
+                              current_index=_settings.tot))
         basic.append(rs)
 
         rs = RadioSetting("voice", "Voice Prompts",
                           RadioSettingValueList(
-                              VOICE_LIST, VOICE_LIST[_settings.voice]))
+                              VOICE_LIST, current_index=_settings.voice))
         basic.append(rs)
 
         rs = RadioSetting("pf2key", "PF2 Key",
                           RadioSettingValueList(
-                              PF2KEY_LIST, PF2KEY_LIST[_settings.pf2key]))
+                              PF2KEY_LIST, current_index=_settings.pf2key))
         basic.append(rs)
 
         rs = RadioSetting("vox", "Vox",
@@ -612,13 +612,13 @@ class RT22Radio(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("voxgain", "VOX Level",
                           RadioSettingValueList(
-                              VOX_LIST, VOX_LIST[_settings.voxgain]))
+                              VOX_LIST, current_index=_settings.voxgain))
         basic.append(rs)
 
         rs = RadioSetting("voxdelay", "VOX Delay Time (Old | New)",
                           RadioSettingValueList(
                               VOXDELAY_LIST,
-                              VOXDELAY_LIST[_settings.voxdelay]))
+                              current_index=_settings.voxdelay))
         basic.append(rs)
 
         rs = RadioSetting("save", "Battery Save",

@@ -327,13 +327,13 @@ class KenwoodTKx102Radio(chirp_common.CloneModeRadio):
 
         pttid = RadioSetting("pttid", "PTT ID",
                              RadioSettingValueList(PTTID,
-                                                   PTTID[_mem.pttid]))
+                                                   current_index=_mem.pttid))
         mem.extra.append(pttid)
 
-        signal = RadioSetting("signaling", "Signaling",
-                              RadioSettingValueList(SIGNAL,
-                                                    SIGNAL[
-                                                      _mem.signaling & 0x01]))
+        signal = RadioSetting(
+            "signaling", "Signaling",
+            RadioSettingValueList(
+                SIGNAL, current_index=_mem.signaling & 0x01))
         mem.extra.append(signal)
 
         return mem

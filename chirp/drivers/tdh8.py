@@ -1519,7 +1519,7 @@ class TDH8(chirp_common.CloneModeRadio):
         if self.MODEL in H8_LIST:
             rs = RadioSetting("stopkey1", "SHORT_KEY_TOP",
                               RadioSettingValueList(SHORT_KEY_LIST,
-                                                    SHORT_KEY_LIST[0]))
+                                                    current_index=0))
             basic.append(rs)
 
             rs = RadioSetting("ltopkey2", "LONG_KEY_TOP",
@@ -1736,18 +1736,19 @@ class TDH8(chirp_common.CloneModeRadio):
 
             rs = RadioSetting("bcl", "A Busy Lock",
                               RadioSettingValueList(
-                                  A_BUSYLOCK, A_BUSYLOCK[_vfoa.bcl]))
+                                  A_BUSYLOCK, current_index=_vfoa.bcl))
             abblock.append(rs)
 
             rs = RadioSetting("specialqta", "A Special QT/DQT",
                               RadioSettingValueList(
                                   A_SPEC_QTDQT,
-                                  A_SPEC_QTDQT[_vfoa.specialqta]))
+                                  current_index=_vfoa.specialqta))
             abblock.append(rs)
 
-            rs = RadioSetting("aworkmode", "A Work Mode",
-                              RadioSettingValueList(
-                                  A_WORKMODE, A_WORKMODE[_settings.aworkmode]))
+            rs = RadioSetting(
+                "aworkmode", "A Work Mode",
+                RadioSettingValueList(
+                    A_WORKMODE, current_index=_settings.aworkmode))
             abblock.append(rs)
 
             # B channel
@@ -1783,7 +1784,7 @@ class TDH8(chirp_common.CloneModeRadio):
 
             rs = RadioSetting("offsetb", "B Offset",
                               RadioSettingValueList(
-                                  B_OFFSET, B_OFFSET[_vfob.offsetb]))
+                                  B_OFFSET, current_index=_vfob.offsetb))
             abblock.append(rs)
 
             try:
@@ -1799,23 +1800,24 @@ class TDH8(chirp_common.CloneModeRadio):
 
             rs = RadioSetting("wideb", "B Band",
                               RadioSettingValueList(
-                                  B_BAND, B_BAND[_vfob.wideb]))
+                                  B_BAND, current_index=_vfob.wideb))
             abblock.append(rs)
 
             rs = RadioSetting("bclb", "B Busy Lock",
                               RadioSettingValueList(
-                                  B_BUSYLOCK, B_BUSYLOCK[_vfob.bclb]))
+                                  B_BUSYLOCK, current_index=_vfob.bclb))
             abblock.append(rs)
 
             rs = RadioSetting("specialqtb", "B Special QT/DQT",
                               RadioSettingValueList(
                                   B_SPEC_QTDQT,
-                                  B_SPEC_QTDQT[_vfob.specialqtb]))
+                                  current_index=_vfob.specialqtb))
             abblock.append(rs)
 
-            rs = RadioSetting("bworkmode", "B Work Mode",
-                              RadioSettingValueList(
-                                  B_WORKMODE, B_WORKMODE[_settings.bworkmode]))
+            rs = RadioSetting(
+                "bworkmode", "B Work Mode",
+                RadioSettingValueList(
+                    B_WORKMODE, current_index=_settings.bworkmode))
             abblock.append(rs)
 
         group.append(fmmode)

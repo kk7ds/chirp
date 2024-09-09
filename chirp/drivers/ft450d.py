@@ -928,7 +928,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options = DATA_MODES
         rs = RadioSetting("data_modes", "DATA MODE",
                           RadioSettingValueList(options,
-                                                options[vx_data]))
+                                                current_index=vx_data))
         rs.set_doc("Extended Data Modes")
         mem.extra.append(rs)
 
@@ -950,20 +950,20 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options = ["Peak", "Null"]
         rs = RadioSetting("cnturpk", "Contour Filter Mode",
                           RadioSettingValueList(options,
-                                                options[_mem.cnturpk]))
+                                                current_index=_mem.cnturpk))
         mem.extra.append(rs)
 
         options = ["Low", "High"]
         rs = RadioSetting("cnturgn", "Contour Filter Gain",
                           RadioSettingValueList(options,
-                                                options[_mem.cnturgn]))
+                                                current_index=_mem.cnturgn))
         rs.set_doc("Filter gain/attenuation")
         mem.extra.append(rs)
 
         options = ["-2", "-1", "Center", "+1", "+2"]
         rs = RadioSetting("cnturmd", "Contour Filter Notch",
                           RadioSettingValueList(options,
-                                                options[_mem.cnturmd]))
+                                                current_index=_mem.cnturmd))
         rs.set_doc("Filter notch offset")
         mem.extra.append(rs)
 
@@ -979,7 +979,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         if _mem.notch_pos > 0:
             vx = 2
         rs = RadioSetting("notch_pos", "Notch Position",
-                          RadioSettingValueList(options, options[vx]))
+                          RadioSettingValueList(options, current_index=vx))
         rs.set_doc("IF bandpass filter shift")
         mem.extra.append(rs)
 
@@ -999,7 +999,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                           "8", "9", "10", "11"]
         rs = RadioSetting("dnr_val", "DSP Noise Reduction Alg",
                           RadioSettingValueList(options,
-                                                options[_mem.dnr_val]))
+                                                current_index=_mem.dnr_val))
         rs.set_doc("Digital noise reduction algorithm number (1-11)")
         mem.extra.append(rs)
 
@@ -1216,7 +1216,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options[0] = "Off"
         rs = RadioSetting("tot", "TX 'TOT' time-out (mins)",
                           RadioSettingValueList(options,
-                                                options[_settings.tot]))
+                                                current_index=_settings.tot))
         tab.append(rs)
 
         bx = not _settings.cat_rts     # Convert from Enable=0
@@ -1228,13 +1228,13 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options = ["0", "100ms", "1000ms", "3000ms"]
         rs = RadioSetting("cat_tot", "CAT Timeout",
                           RadioSettingValueList(options,
-                                                options[_settings.cat_tot]))
+                                                current_index=_settings.cat_tot))
         tab.append(rs)
 
         options = ["4800", "9600", "19200", "38400", "Data"]
         rs = RadioSetting("catrate", "CAT rate",
                           RadioSettingValueList(options,
-                                                options[_settings.catrate]))
+                                                current_index=_settings.catrate))
         tab.append(rs)
 
         rs = RadioSetting("mem_grp", "Mem groups",
@@ -1268,7 +1268,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options = ["ATAS", "EXT ATU", "INT ATU", "INTRATU", "F-TRANS"]
         rs = RadioSetting("tuner", "Antenna Tuner",
                           RadioSettingValueList(options,
-                                                options[_settings.tuner]))
+                                                current_index=_settings.tuner))
         tab.append(rs)
 
         rs = RadioSetting("rfpower", "RF power (watts)",
@@ -1286,7 +1286,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options = ["%i Hz" % i for i in range(400, 801, 100)]
         rs = RadioSetting("cwpitch", "CW pitch",
                           RadioSettingValueList(options,
-                                                options[_settings.cwpitch]))
+                                                current_index=_settings.cwpitch))
         cw.append(rs)
 
         rs = RadioSetting("cwspeed", "CW speed (wpm)",
@@ -1297,13 +1297,13 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options = ["1:%1.1f" % (i / 10) for i in range(25, 46, 1)]
         rs = RadioSetting("cwweigt", "CW weight",
                           RadioSettingValueList(options,
-                                                options[_settings.cwweigt]))
+                                                current_index=_settings.cwweigt))
         cw.append(rs)
 
         options = ["15ms", "20ms", "25ms", "30ms"]
         rs = RadioSetting("cw_qsk", "CW delay before TX in QSK mode",
                           RadioSettingValueList(options,
-                                                options[_settings.cw_qsk]))
+                                                current_index=_settings.cw_qsk))
         cw.append(rs)
 
         rs = RadioSetting("cwstone_sgn", "CW sidetone volume Linked",
@@ -1324,7 +1324,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options = ["Numeric", "Alpha", "Mixed"]
         rs = RadioSetting("cwtrain", "CW Training mode",
                           RadioSettingValueList(options,
-                                                options[_settings.cwtrain]))
+                                                current_index=_settings.cwtrain))
         cw.append(rs)
 
         rs = RadioSetting("cw_auto", "CW key jack- auto CW mode",
@@ -1335,7 +1335,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options = ["Normal", "Reverse"]
         rs = RadioSetting("cw_key", "CW paddle wiring",
                           RadioSettingValueList(options,
-                                                options[_settings.cw_key]))
+                                                current_index=_settings.cw_key))
         cw.append(rs)
 
         rs = RadioSetting("beacon_time", "CW beacon Tx interval (secs)",
@@ -1373,7 +1373,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options = ["440 Hz", "880 Hz", "1760 Hz"]
         rs = RadioSetting("beepton", "Beep frequency",
                           RadioSettingValueList(options,
-                                                options[_settings.beepton]))
+                                                current_index=_settings.beepton))
         pnlset.append(rs)
 
         rs = RadioSetting("beepvol_sgn", "Beep volume Linked",
@@ -1405,19 +1405,19 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options = ["RF-Gain", "Squelch"]
         rs = RadioSetting("sql_rfg", "Squelch/RF-Gain",
                           RadioSettingValueList(options,
-                                                options[_settings.sql_rfg]))
+                                                current_index=_settings.sql_rfg))
         pnlset.append(rs)
 
         options = ["Frequencies", "Panel", "All"]
         rs = RadioSetting("lockmod", "Lock Mode",
                           RadioSettingValueList(options,
-                                                options[_settings.lockmod]))
+                                                current_index=_settings.lockmod))
         pnlset.append(rs)
 
         options = ["Dial", "SEL"]
         rs = RadioSetting("clar_btn", "CLAR button control",
                           RadioSettingValueList(options,
-                                                options[_settings.clar_btn]))
+                                                current_index=_settings.clar_btn))
         pnlset.append(rs)
 
         if _settings.dialstp_mode == 0:             # AM/FM
@@ -1426,13 +1426,13 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             options = ["AM/FM:100Hz", "AM/FM:200Hz"]
         rs = RadioSetting("dialstp", "Dial tuning step",
                           RadioSettingValueList(options,
-                                                options[_settings.dialstp]))
+                                                current_index=_settings.dialstp))
         pnlset.append(rs)
 
         options = ["0.5secs", "1.0secs", "1.5secs", "2.0secs"]
         rs = RadioSetting("keyhold", "Buttons hold-to-activate time",
                           RadioSettingValueList(options,
-                                                options[_settings.keyhold]))
+                                                current_index=_settings.keyhold))
         pnlset.append(rs)
 
         rs = RadioSetting("m_tune", "Memory tune",
@@ -1447,7 +1447,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                    "Mic Gain", "RF Power"]
         rs = RadioSetting("seldial", "SEL dial 2nd function (push)",
                           RadioSettingValueList(options,
-                                                options[_settings.seldial]))
+                                                current_index=_settings.seldial))
         pnlset.append(rs)
     # End _do_panel_settings
 
@@ -1472,12 +1472,12 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             FT450agc = _settings.agc & int('0x7',16)
             rs = RadioSetting("agc", "AGC",
                               RadioSettingValueList(options,
-                                                    options[FT450agc]))
+                                                    current_index=FT450agc))
         else:
             options = ["Auto", "Fast",  "Slow", "Auto/Fast", "Auto/Slow", "?5?"]
             rs = RadioSetting("agc", "AGC",
                               RadioSettingValueList(options,
-                                                    options[_settings.agc]))
+                                                    current_index=_settings.agc))
         pnlcfg.append(rs)
 
         rs = RadioSetting("keyer", "Keyer",
@@ -1495,7 +1495,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options = ["PO",  "ALC", "SWR"]
         rs = RadioSetting("mtr_mode", "S-Meter mode",
                           RadioSettingValueList(options,
-                                                options[_settings.mtr_mode]))
+                                                current_index=_settings.mtr_mode))
         pnlcfg.append(rs)
         # End _do_panel_Buttons
 
@@ -1524,24 +1524,24 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options = ["170 Hz", "200 Hz", "425 Hz", "850 Hz"]
         rs = RadioSetting("rty_sft", "RTTY FSK Freq Shift",
                           RadioSettingValueList(options,
-                                                options[_settings.rty_sft]))
+                                                current_index=_settings.rty_sft))
         voxdat.append(rs)
 
         options = ["1275 Hz", "2125 Hz"]
         rs = RadioSetting("rty_ton", "RTTY FSK Mark tone",
                           RadioSettingValueList(options,
-                                                options[_settings.rty_ton]))
+                                                current_index=_settings.rty_ton))
         voxdat.append(rs)
 
         options = ["Normal", "Reverse"]
         rs = RadioSetting("rtyrpol", "RTTY Mark/Space RX polarity",
                           RadioSettingValueList(options,
-                                                options[_settings.rtyrpol]))
+                                                current_index=_settings.rtyrpol))
         voxdat.append(rs)
 
         rs = RadioSetting("rtytpol", "RTTY Mark/Space TX polarity",
                           RadioSettingValueList(options,
-                                                options[_settings.rtytpol]))
+                                                current_index=_settings.rtytpol))
         voxdat.append(rs)
         # End _do_vox_settings
 
@@ -1555,7 +1555,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         options = ["Low", "Normal", "High"]
         rs = RadioSetting("micgain", "Mic Gain",
                           RadioSettingValueList(options,
-                                                options[_settings.micgain]))
+                                                current_index=_settings.micgain))
         mic.append(rs)
 
         rs = RadioSetting("micscan", "Mic scan enabled",

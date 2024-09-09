@@ -595,30 +595,30 @@ class RadioddityR2(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("settings.timeout", "Timeout Timer",
                           RadioSettingValueList(
-                              TIMEOUT_LIST, TIMEOUT_LIST[_settings.timeout]))
+                              TIMEOUT_LIST, current_index=_settings.timeout))
 
         basic.append(rs)
 
         rs = RadioSetting("settings.scanmode", "Scan Mode",
                           RadioSettingValueList(
                               SCANMODE_LIST,
-                              SCANMODE_LIST[_settings.scanmode]))
+                              current_index=_settings.scanmode))
         basic.append(rs)
 
         rs = RadioSetting("settings.voice", "Voice Prompts",
                           RadioSettingValueList(
-                              VOICE_LIST, VOICE_LIST[_settings.voice]))
+                              VOICE_LIST, current_index=_settings.voice))
         basic.append(rs)
 
         rs = RadioSetting("settings.voxgain", "VOX Level",
                           RadioSettingValueList(
-                              VOX_LIST, VOX_LIST[_settings.voxgain]))
+                              VOX_LIST, current_index=_settings.voxgain))
         basic.append(rs)
 
         rs = RadioSetting("settings.voxdelay", "VOX Delay Time",
                           RadioSettingValueList(
                               VOXDELAY_LIST,
-                              VOXDELAY_LIST[_settings.voxdelay]))
+                              current_index=_settings.voxdelay))
         basic.append(rs)
 
         rs = RadioSetting("settings.save", "Battery Save",

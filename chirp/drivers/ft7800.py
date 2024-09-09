@@ -586,7 +586,7 @@ class FT7800Radio(FTx800Radio):
         opts = ["off"] + ["%0.1f" % (t / 60.0) for t in range(30, 750, 30)]
         basic.append(RadioSetting(
                 "apo", "APO time (hrs)",
-                RadioSettingValueList(opts, opts[_settings.apo])))
+                RadioSettingValueList(opts, current_index=_settings.apo)))
 
         basic.append(RadioSetting(
                 "beep_scan", "Beep: Scan",
@@ -601,62 +601,76 @@ class FT7800Radio(FTx800Radio):
                 RadioSettingValueBoolean(_settings.beep_key)))
 
         opts = ["T/RX Normal", "RX Reverse", "TX Reverse", "T/RX Reverse"]
-        basic.append(RadioSetting(
+        basic.append(
+            RadioSetting(
                 "dcs_polarity", "DCS polarity",
-                RadioSettingValueList(opts, opts[_settings.dcs_polarity])))
+                RadioSettingValueList(
+                    opts, current_index=_settings.dcs_polarity)))
 
         opts = ["off", "dim 1", "dim 2", "dim 3"]
         basic.append(RadioSetting(
                 "dimmer", "Dimmer",
-                RadioSettingValueList(opts, opts[_settings.dimmer])))
+                RadioSettingValueList(opts, current_index=_settings.dimmer)))
 
         opts = ["manual", "auto", "1-auto"]
-        basic.append(RadioSetting(
+        basic.append(
+            RadioSetting(
                 "hyper_write", "Hyper Write",
-                RadioSettingValueList(opts, opts[_settings.hyper_write])))
+                RadioSettingValueList(
+                    opts, current_index=_settings.hyper_write)))
 
         opts = ["", "key", "dial", "key+dial", "ptt",
                 "ptt+key", "ptt+dial", "all"]
         basic.append(RadioSetting(
                 "lock", "Lock mode",
-                RadioSettingValueList(opts, opts[_settings.lock])))
+                RadioSettingValueList(opts, current_index=_settings.lock)))
 
         opts = ["MH-42", "MH-48"]
-        basic.append(RadioSetting(
+        basic.append(
+            RadioSetting(
                 "microphone_type", "Microphone Type",
-                RadioSettingValueList(opts, opts[_settings.microphone_type])))
+                RadioSettingValueList(
+                    opts, current_index=_settings.microphone_type)))
 
         opts = ["off"] + ["S-%d" % n for n in range(2, 10)] + ["S-Full"]
         basic.append(RadioSetting(
                 "rf_sql", "RF Squelch",
-                RadioSettingValueList(opts, opts[_settings.rf_sql])))
+                RadioSettingValueList(opts, current_index=_settings.rf_sql)))
 
         opts = ["time", "hold", "busy"]
-        basic.append(RadioSetting(
+        basic.append(
+            RadioSetting(
                 "scan_resume", "Scan Resume",
-                RadioSettingValueList(opts, opts[_settings.scan_resume])))
+                RadioSettingValueList(
+                    opts, current_index=_settings.scan_resume)))
 
         opts = ["single", "continuous"]
-        basic.append(RadioSetting(
+        basic.append(
+            RadioSetting(
                 "smart_search", "Smart Search",
-                RadioSettingValueList(opts, opts[_settings.smart_search])))
+                RadioSettingValueList(
+                    opts, current_index=_settings.smart_search)))
 
         opts = ["off"] + ["%d" % t for t in range(1, 31)]
         basic.append(RadioSetting(
                 "tot", "Time-out timer (mins)",
-                RadioSettingValueList(opts, opts[_settings.tot])))
+                RadioSettingValueList(opts, current_index=_settings.tot)))
 
         # dtmf tab
 
         opts = ["50", "100", "250", "450", "750", "1000"]
-        dtmf.append(RadioSetting(
+        dtmf.append(
+            RadioSetting(
                 "dtmf_delay", "DTMF delay (ms)",
-                RadioSettingValueList(opts, opts[_settings.dtmf_delay])))
+                RadioSettingValueList(
+                    opts, current_index=_settings.dtmf_delay)))
 
         opts = ["50", "75", "100"]
-        dtmf.append(RadioSetting(
+        dtmf.append(
+            RadioSetting(
                 "dtmf_speed", "DTMF speed (ms)",
-                RadioSettingValueList(opts, opts[_settings.dtmf_speed])))
+                RadioSettingValueList(
+                    opts, current_index=_settings.dtmf_speed)))
 
         for i in range(16):
             name = "dtmf%02d" % i
@@ -676,14 +690,18 @@ class FT7800Radio(FTx800Radio):
         # arts tab
 
         opts = ["off", "in range", "always"]
-        arts.append(RadioSetting(
+        arts.append(
+            RadioSetting(
                 "arts_mode", "ARTS beep",
-                RadioSettingValueList(opts, opts[_settings.arts_mode])))
+                RadioSettingValueList(
+                    opts, current_index=_settings.arts_mode)))
 
         opts = ["15", "25"]
-        arts.append(RadioSetting(
+        arts.append(
+            RadioSetting(
                 "arts_interval", "ARTS interval",
-                RadioSettingValueList(opts, opts[_settings.arts_interval])))
+                RadioSettingValueList(
+                    opts, current_index=_settings.arts_interval)))
 
         arts.append(RadioSetting(
                 "arts_cwid_enable", "CW ID",
@@ -698,14 +716,18 @@ class FT7800Radio(FTx800Radio):
         # prog buttons
 
         opts = ["WX", "Reverse", "Repeater", "SQL Off", "Lock", "Dimmer"]
-        prog.append(RadioSetting(
+        prog.append(
+            RadioSetting(
                 "prog_panel_acc", "Prog Panel - Low(ACC)",
-                RadioSettingValueList(opts, opts[_settings.prog_panel_acc])))
+                RadioSettingValueList(
+                    opts, current_index=_settings.prog_panel_acc)))
 
         opts = ["Reverse", "Home"]
-        prog.append(RadioSetting(
+        prog.append(
+            RadioSetting(
                 "prog_tone_vm", "TONE | V/M",
-                RadioSettingValueList(opts, opts[_settings.prog_tone_vm])))
+                RadioSettingValueList(
+                    opts, current_index=_settings.prog_tone_vm)))
 
         opts = ["" for n in range(26)] + \
             ["Priority", "Low", "Tone", "MHz", "Reverse", "Home", "Band",
@@ -714,19 +736,19 @@ class FT7800Radio(FTx800Radio):
 
         prog.append(RadioSetting(
                 "prog_p1", "P1",
-                RadioSettingValueList(opts, opts[_settings.prog_p1])))
+                RadioSettingValueList(opts, current_index=_settings.prog_p1)))
 
         prog.append(RadioSetting(
                 "prog_p2", "P2",
-                RadioSettingValueList(opts, opts[_settings.prog_p2])))
+                RadioSettingValueList(opts, current_index=_settings.prog_p2)))
 
         prog.append(RadioSetting(
                 "prog_p3", "P3",
-                RadioSettingValueList(opts, opts[_settings.prog_p3])))
+                RadioSettingValueList(opts, current_index=_settings.prog_p3)))
 
         prog.append(RadioSetting(
                 "prog_p4", "P4",
-                RadioSettingValueList(opts, opts[_settings.prog_p4])))
+                RadioSettingValueList(opts, current_index=_settings.prog_p4)))
 
         return top
 

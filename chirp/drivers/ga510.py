@@ -760,7 +760,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                 RadioSetting(key, title,
                              RadioSettingValueList(
                                  choices,
-                                 choices[val])))
+                                 current_index=val)))
 
         if self.VENDOR == "Retevis":
             # Side Keys
@@ -783,7 +783,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                 idx = SK_VALUES.index(0xFF)
             rs = RadioSetting('skey.skey1sp', 'Side Key 1 - Short Press',
                               RadioSettingValueList(SK_CHOICES,
-                                                    SK_CHOICES[idx]))
+                                                    current_index=idx))
             rs.set_apply_callback(apply_sk_listvalue, _skey.skey1sp)
             adv.append(rs)
 
@@ -794,7 +794,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                 idx = SK_VALUES.index(0xFF)
             rs = RadioSetting('skey.skey1lp', 'Side Key 1 - Long Press',
                               RadioSettingValueList(SK_CHOICES,
-                                                    SK_CHOICES[idx]))
+                                                    current_index=idx))
             rs.set_apply_callback(apply_sk_listvalue, _skey.skey1lp)
             adv.append(rs)
 
@@ -805,7 +805,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                 idx = SK_VALUES.index(0xFF)
             rs = RadioSetting('skey.skey2sp', 'Side Key 2 - Short Press',
                               RadioSettingValueList(SK_CHOICES,
-                                                    SK_CHOICES[idx]))
+                                                    current_index=idx))
             rs.set_apply_callback(apply_sk_listvalue, _skey.skey2sp)
             adv.append(rs)
 
@@ -816,7 +816,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                 idx = SK_VALUES.index(0xFF)
             rs = RadioSetting('skey.skey2lp', 'Side Key 2 - Long Press',
                               RadioSettingValueList(SK_CHOICES,
-                                                    SK_CHOICES[idx]))
+                                                    current_index=idx))
             rs.set_apply_callback(apply_sk_listvalue, _skey.skey2lp)
             adv.append(rs)
 

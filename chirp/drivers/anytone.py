@@ -526,16 +526,17 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         mem.extra.append(rs)
 
         rs = RadioSetting("pttid", "PTT ID",
-                          RadioSettingValueList(PTT_IDS, PTT_IDS[_mem.pttid]))
+                          RadioSettingValueList(
+                              PTT_IDS, current_index=_mem.pttid))
         mem.extra.append(rs)
 
         rs = RadioSetting("bclo", "Busy Channel Lockout",
-                          RadioSettingValueList(BCLO, BCLO[_mem.bclo]))
+                          RadioSettingValueList(BCLO, current_index=_mem.bclo))
         mem.extra.append(rs)
 
         rs = RadioSetting("optsig", "Optional Signaling",
                           RadioSettingValueList(OPT_SIGS,
-                                                OPT_SIGS[_mem.optsig]))
+                                                current_index=_mem.optsig))
         mem.extra.append(rs)
 
         rs = RadioSetting("OPTSIGSQL", "Squelch w/Opt Signaling",
@@ -545,19 +546,20 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
                               else "Off"))
         mem.extra.append(rs)
 
-        rs = RadioSetting("dtmfSlotNum", "DTMF",
-                          RadioSettingValueList(DTMF_SLOTS,
-                                                DTMF_SLOTS[_mem.dtmfSlotNum]))
+        rs = RadioSetting(
+            "dtmfSlotNum", "DTMF",
+            RadioSettingValueList(
+                DTMF_SLOTS, current_index=_mem.dtmfSlotNum))
         mem.extra.append(rs)
 
         rs = RadioSetting("twotone", "2-Tone",
                           RadioSettingValueList(TONE2_SLOTS,
-                                                TONE2_SLOTS[_mem.twotone]))
+                                                current_index=_mem.twotone))
         mem.extra.append(rs)
 
         rs = RadioSetting("fivetone", "5-Tone",
                           RadioSettingValueList(TONE5_SLOTS,
-                                                TONE5_SLOTS[_mem.fivetone]))
+                                                current_index=_mem.fivetone))
         mem.extra.append(rs)
 
         # Chose not to expose scramble rs = RadioSetting("scramble",
@@ -666,15 +668,14 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         settings = RadioSettings(basic)
 
         display = ["Frequency", "Channel", "Name"]
-        rs = RadioSetting("display", "Display",
-                          RadioSettingValueList(display,
-                                                display[_settings.display]))
+        rs = RadioSetting("display", "Display", RadioSettingValueList(
+            display, current_index=_settings.display))
         basic.append(rs)
 
         apo = ["Off"] + ['%.1f hour(s)' % (0.5 * x) for x in range(1, 25)]
         rs = RadioSetting("apo", "Automatic Power Off",
                           RadioSettingValueList(apo,
-                                                apo[_settings.apo]))
+                                                current_index=_settings.apo))
         basic.append(rs)
 
         def filter(s):
@@ -697,7 +698,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         MUTE_CHOICES = ["Off", "TX", "RX", "TX/RX"]
         rs = RadioSetting("mute", "Sub Band Mute",
                           RadioSettingValueList(MUTE_CHOICES,
-                                                MUTE_CHOICES[_settings.mute]))
+                                                current_index=_settings.mute))
         basic.append(rs)
 
         return settings

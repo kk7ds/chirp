@@ -808,18 +808,18 @@ class FT7100Radio(YaesuCloneModeRadio):
         common.append(
             RadioSetting(
                 "apo", "Automatic Power Off",
-                RadioSettingValueList(opts, opts[_overlay.apo])))
+                RadioSettingValueList(opts, current_index=_overlay.apo)))
 
         # 2 Automatic Repeater Shift function
         opts = ["Off", "On"]
         band.append(
             RadioSetting(
                 "ars_vhf", "Automatic Repeater Shift VHF",
-                RadioSettingValueList(opts, opts[_overlay.ars_vhf])))
+                RadioSettingValueList(opts, current_index=_overlay.ars_vhf)))
         band.append(
             RadioSetting(
                 "ars_uhf", "Automatic Repeater Shift UHF",
-                RadioSettingValueList(opts, opts[_overlay.ars_uhf])))
+                RadioSettingValueList(opts, current_index=_overlay.ars_uhf)))
 
         # 3  Selects the ARTS mode.
         # -> Only useful to set it on the radio directly
@@ -829,14 +829,14 @@ class FT7100Radio(YaesuCloneModeRadio):
         common.append(
             RadioSetting(
                 "beep", "Key/Button Beep",
-                RadioSettingValueList(opts, opts[_overlay.beep])))
+                RadioSettingValueList(opts, current_index=_overlay.beep)))
 
         # 5 Enables/disables the CW IDer during ARTS operation.
         opts = ["Off", "On"]
         arts.append(
             RadioSetting(
                 "cwid", "Enables/Disables the CW ID",
-                RadioSettingValueList(opts, opts[_overlay.cwid])))
+                RadioSettingValueList(opts, current_index=_overlay.cwid)))
 
         # 6  Callsign during ARTS operation.
         cwidw = _overlay.cwidw.get_raw(asbytes=False)
@@ -856,7 +856,7 @@ class FT7100Radio(YaesuCloneModeRadio):
         common.append(
             RadioSetting(
                 "dim", "Display Illumination",
-                RadioSettingValueList(opts, opts[_overlay.dim])))
+                RadioSettingValueList(opts, current_index=_overlay.dim)))
 
         # 8 Setting the DCS code number.
         #   Note: This Menu item can be set independently for each band,
@@ -870,11 +870,11 @@ class FT7100Radio(YaesuCloneModeRadio):
         band.append(
             RadioSetting(
                 "dcsnr_vhf", "DCS coding VHF",
-                RadioSettingValueList(opts, opts[_overlay.dcsnr_vhf])))
+                RadioSettingValueList(opts, current_index=_overlay.dcsnr_vhf)))
         band.append(
             RadioSetting(
                 "dcsnr_uhf", "DCS coding UHF",
-                RadioSettingValueList(opts, opts[_overlay.dcsnr_uhf])))
+                RadioSettingValueList(opts, current_index=_overlay.dcsnr_uhf)))
 
         # 11 Selects the 'sub' band display format
         opts = ["Frequency", "Off / Sub Band disabled",
@@ -882,21 +882,21 @@ class FT7100Radio(YaesuCloneModeRadio):
         common.append(
             RadioSetting(
                 "disp", "Sub Band Display Format",
-                RadioSettingValueList(opts, opts[_overlay.disp])))
+                RadioSettingValueList(opts, current_index=_overlay.disp)))
 
         # 12 Setting the DTMF Autodialer delay time
         opts = ["50 ms", "250 ms", "450 ms", "750 ms", "1 s"]
         dtmf.append(
             RadioSetting(
                 "dtmfd", "Autodialer delay time",
-                RadioSettingValueList(opts, opts[_overlay.dtmfd])))
+                RadioSettingValueList(opts, current_index=_overlay.dtmfd)))
 
         # 13 Setting the DTMF Autodialer sending speed
         opts = ["50 ms", "75 ms", "100 ms"]
         dtmf.append(
             RadioSetting(
                 "dtmfs", "Autodialer sending speed",
-                RadioSettingValueList(opts, opts[_overlay.dtmfs])))
+                RadioSettingValueList(opts, current_index=_overlay.dtmfs)))
 
         # 14 Current DTMF Autodialer memory
         rs = RadioSetting("dtmfw", "Current Autodialer memory",
@@ -953,14 +953,14 @@ class FT7100Radio(YaesuCloneModeRadio):
         common.append(
             RadioSetting(
                 "lockt", "PTT switch lock",
-                RadioSettingValueList(opts, opts[_overlay.lockt])))
+                RadioSettingValueList(opts, current_index=_overlay.lockt)))
 
         # 17 Selects the Microphone type to be used
         opts = ["MH-42", "MH-48"]
         common.append(
             RadioSetting(
                 "mic", "Microphone type",
-                RadioSettingValueList(opts, opts[_overlay.mic])))
+                RadioSettingValueList(opts, current_index=_overlay.mic)))
 
         # 18 Reduces the audio level on the sub receiver when the
         #    main receiver is active
@@ -968,7 +968,7 @@ class FT7100Radio(YaesuCloneModeRadio):
         common.append(
             RadioSetting(
                 "mute", "Mute Sub Receiver",
-                RadioSettingValueList(opts, opts[_overlay.mute])))
+                RadioSettingValueList(opts, current_index=_overlay.mute)))
 
         # 20 - 23 Programming the microphones button assignment
         buttons = [
@@ -984,7 +984,7 @@ class FT7100Radio(YaesuCloneModeRadio):
             rs = RadioSetting(
                 "button" + str(i), button,
                 RadioSettingValueList(opts_button,
-                                      opts_button[_overlay.button[i]]))
+                                      current_index=_overlay.button[i]))
 
             def apply_button(setting, index):
                 value_string = setting.value.get_value()
@@ -998,29 +998,32 @@ class FT7100Radio(YaesuCloneModeRadio):
         band.append(
             RadioSetting(
                 "rf_sql_vhf", "RF Sql VHF",
-                RadioSettingValueList(opts, opts[_overlay.rf_sql_vhf])))
+                RadioSettingValueList(
+                    opts, current_index=_overlay.rf_sql_vhf)))
         band.append(
             RadioSetting(
                 "rf_sql_uhf", "RF Sql UHF",
-                RadioSettingValueList(opts, opts[_overlay.rf_sql_uhf])))
+                RadioSettingValueList(
+                    opts, current_index=_overlay.rf_sql_uhf)))
 
         # 25 Selects the Scan-Resume mode
         opts = ["Busy", "Time"]
         band.append(
             RadioSetting(
                 "scan_vhf", "Scan-Resume VHF",
-                RadioSettingValueList(opts, opts[_overlay.scan_vhf])))
+                RadioSettingValueList(opts, current_index=_overlay.scan_vhf)))
         band.append(
             RadioSetting(
                 "scan_uhf", "Scan-Resume UHF",
-                RadioSettingValueList(opts, opts[_overlay.scan_uhf])))
+                RadioSettingValueList(opts, current_index=_overlay.scan_uhf)))
 
         # 28 Defining the audio path to the external speaker
         opts = ["Off", "Band A", "Band B", "Both"]
         common.append(
             RadioSetting(
                 "speaker_cnt", "External Speaker",
-                RadioSettingValueList(opts, opts[_overlay.speaker_cnt])))
+                RadioSettingValueList(
+                    opts, current_index=_overlay.speaker_cnt)))
 
         # 31 Sets the Time-Out Timer
         opts = ["Off", "Band A", "Band B", "Both"]
@@ -1034,32 +1037,33 @@ class FT7100Radio(YaesuCloneModeRadio):
         band.append(
             RadioSetting(
                 "txnar_vhf", "TX Narrowband VHF",
-                RadioSettingValueList(opts, opts[_overlay.txnar_vhf])))
+                RadioSettingValueList(opts, current_index=_overlay.txnar_vhf)))
         band.append(
             RadioSetting(
                 "txnar_uhf", "TX Narrowband UHF",
-                RadioSettingValueList(opts, opts[_overlay.txnar_uhf])))
+                RadioSettingValueList(opts, current_index=_overlay.txnar_uhf)))
 
         # 33 Enables/disables the VFO Tracking feature
         opts = ["Off", "On"]
         common.append(
             RadioSetting(
                 "vfotr", "VFO Tracking",
-                RadioSettingValueList(opts, opts[_overlay.vfotr])))
+                RadioSettingValueList(opts, current_index=_overlay.vfotr)))
 
         # 34 Selects the receiving mode on the VHF band
         opts = ["Inhibit (only FM)", "AM", "Auto"]
         common.append(
             RadioSetting(
                 "am", "AM Mode",
-                RadioSettingValueList(opts, opts[_overlay.am])))
+                RadioSettingValueList(opts, current_index=_overlay.am)))
 
         # Current Band
         opts = ["VHF", "UHF"]
         common.append(
             RadioSetting(
                 "current_band", "Current Band",
-                RadioSettingValueList(opts, opts[_overlay.current_band])))
+                RadioSettingValueList(
+                    opts, current_index=_overlay.current_band)))
 
         # Show number of VHF and UHF channels
         val = RadioSettingValueString(0, 7,
