@@ -1456,7 +1456,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
 
         rs = RadioSetting("pnl_cs", "C.S. Function",
                           RadioSettingValueList(self.FUNC_LIST,
-                                                self.FUNC_LIST[_settings.pnl_cs]))
+                                                current_index=_settings.pnl_cs))
         pnlcfg.append(rs)
 
         rs = RadioSetting("nb", "Noise blanker",
@@ -1565,17 +1565,17 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
 
         rs = RadioSetting("pm_dwn", "Mic Down button function",
                           RadioSettingValueList(self.FUNC_LIST,
-                                                self.FUNC_LIST[_settings.pm_dwn]))
+                                                current_index=_settings.pm_dwn))
         mic.append(rs)
 
         rs = RadioSetting("pm_fst", "Mic Fast button function",
                           RadioSettingValueList(self.FUNC_LIST,
-                                                self.FUNC_LIST[_settings.pm_fst]))
+                                                current_index=_settings.pm_fst))
         mic.append(rs)
 
         rs = RadioSetting("pm_up", "Mic Up button function",
                           RadioSettingValueList(self.FUNC_LIST,
-                                                self.FUNC_LIST[_settings.pm_up]))
+                                                current_index=_settings.pm_up))
         mic.append(rs)
         # End _do_mic_settings
 

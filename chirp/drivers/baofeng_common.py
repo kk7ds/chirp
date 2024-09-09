@@ -660,12 +660,12 @@ class BaofengCommonHT(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("pttid", "PTT ID",
                           RadioSettingValueList(self.PTTID_LIST,
-                                                self.PTTID_LIST[_mem.pttid]))
+                                                current_index=_mem.pttid))
         mem.extra.append(rs)
 
         rs = RadioSetting("scode", "S-CODE",
                           RadioSettingValueList(self.SCODE_LIST,
-                                                self.SCODE_LIST[_mem.scode]))
+                                                current_index=_mem.scode))
         mem.extra.append(rs)
 
         immutable = []

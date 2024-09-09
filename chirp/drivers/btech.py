@@ -1118,7 +1118,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         # Basic
         if self.COLOR_LCD:
             val = min(_mem.settings.tmr, len(self.LIST_TMR) - 1)
-            rs = RadioSettingValueList(self.LIST_TMR, self.LIST_TMR[val])
+            rs = RadioSettingValueList(self.LIST_TMR, current_index=val)
             tmr = RadioSetting("settings.tmr", "Transceiver multi-receive", rs)
             basic.append(tmr)
         else:

@@ -890,33 +890,28 @@ class FT857Radio(ft817.FT817Radio):
         extended.append(rs)
         rs = RadioSetting("pg_a", "Programmable key MFq:A",
                           RadioSettingValueList(self.PROGRAMMABLEOPTIONS,
-                                                self.PROGRAMMABLEOPTIONS[
-                                                    _settings.pg_a]))
+                                                current_index=_settings.pg_a))
         extended.append(rs)
         rs = RadioSetting("pg_b", "Programmable key MFq:B",
                           RadioSettingValueList(self.PROGRAMMABLEOPTIONS,
-                                                self.PROGRAMMABLEOPTIONS[
-                                                    _settings.pg_b]))
+                                                current_index=_settings.pg_b))
         extended.append(rs)
         rs = RadioSetting("pg_c", "Programmable key MFq:C",
                           RadioSettingValueList(self.PROGRAMMABLEOPTIONS,
-                                                self.PROGRAMMABLEOPTIONS[
-                                                    _settings.pg_c]))
+                                                current_index=_settings.pg_c))
         extended.append(rs)
         rs = RadioSetting("pg_acc", "Programmable mic key ACC",
-                          RadioSettingValueList(self.PROGRAMMABLEOPTIONS,
-                                                self.PROGRAMMABLEOPTIONS[
-                                                    _settings.pg_acc]))
+                          RadioSettingValueList(
+                              self.PROGRAMMABLEOPTIONS,
+                              current_index=_settings.pg_acc))
         extended.append(rs)
         rs = RadioSetting("pg_p1", "Programmable mic key P1",
                           RadioSettingValueList(self.PROGRAMMABLEOPTIONS,
-                                                self.PROGRAMMABLEOPTIONS[
-                                                    _settings.pg_p1]))
+                                                current_index=_settings.pg_p1))
         extended.append(rs)
         rs = RadioSetting("pg_p2", "Programmable mic key P2",
                           RadioSettingValueList(self.PROGRAMMABLEOPTIONS,
-                                                self.PROGRAMMABLEOPTIONS[
-                                                    _settings.pg_p2]))
+                                                current_index=_settings.pg_p2))
         extended.append(rs)
         rs = RadioSetting("pkt1200", "Packet 1200 gain level",
                           RadioSettingValueInteger(0, 100,
@@ -986,9 +981,9 @@ class FT857Radio(ft817.FT817Radio):
                 options, current_index=_settings.tuner_atas))
         extended.append(rs)
         rs = RadioSetting("tx_if_filter", "Transmit IF filter",
-                          RadioSettingValueList(self.FILTERS,
-                                                self.FILTERS[
-                                                    _settings.tx_if_filter]))
+                          RadioSettingValueList(
+                              self.FILTERS,
+                              current_index=_settings.tx_if_filter))
         basic.append(rs)
         rs = RadioSetting("vox_delay", "VOX delay (*100 ms)",
                           RadioSettingValueInteger(1, 30, _settings.vox_delay))

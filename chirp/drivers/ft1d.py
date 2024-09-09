@@ -1315,12 +1315,12 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         val = RadioSettingValueList(
             chirp_common.APRS_SSID,
-            chirp_common.APRS_SSID[aprs.my_callsign.ssid])
+            current_index=aprs.my_callsign.ssid)
         rs = RadioSetting("aprs.my_callsign.ssid", "My SSID", val)
         menu.append(rs)
 
         val = RadioSettingValueList(self._MY_SYMBOL,
-                                    self._MY_SYMBOL[aprs.selected_my_symbol])
+                                    current_index=aprs.selected_my_symbol)
         rs = RadioSetting("aprs.selected_my_symbol", "My Symbol", val)
         menu.append(rs)
 
@@ -1337,7 +1337,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         val = RadioSettingValueList(
             chirp_common.APRS_POSITION_COMMENT,
-            chirp_common.APRS_POSITION_COMMENT[aprs.selected_position_comment])
+            current_index=aprs.selected_position_comment)
         rs = RadioSetting("aprs.selected_position_comment", "Position Comment",
                           val)
         menu.append(rs)
@@ -1375,67 +1375,67 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         menu.append(rs)
 
         val = RadioSettingValueList(
-            self._TIME_SOURCE, self._TIME_SOURCE[aprs.set_time_manually])
+            self._TIME_SOURCE, current_index=aprs.set_time_manually)
         rs = RadioSetting("aprs.set_time_manually", "Time Source", val)
         menu.append(rs)
 
-        val = RadioSettingValueList(self._TZ, self._TZ[aprs.timezone])
+        val = RadioSettingValueList(self._TZ, current_index=aprs.timezone)
         rs = RadioSetting("aprs.timezone", "Timezone", val)
         menu.append(rs)
 
         val = RadioSettingValueList(self._SPEED_UNITS,
-                                    self._SPEED_UNITS[aprs.aprs_units_speed])
+                                    current_index=aprs.aprs_units_speed)
         rs = RadioSetting("aprs.aprs_units_speed", "APRS Speed Units", val)
         menu.append(rs)
 
         val = RadioSettingValueList(self._SPEED_UNITS,
-                                    self._SPEED_UNITS[aprs.gps_units_speed])
+                                    current_index=aprs.gps_units_speed)
         rs = RadioSetting("aprs.gps_units_speed", "GPS Speed Units", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
-            self._ALT_UNITS, self._ALT_UNITS[aprs.aprs_units_altitude_ft])
+            self._ALT_UNITS, current_index=aprs.aprs_units_altitude_ft)
         rs = RadioSetting("aprs.aprs_units_altitude_ft", "APRS Altitude Units",
                           val)
         menu.append(rs)
 
         val = RadioSettingValueList(
-            self._ALT_UNITS, self._ALT_UNITS[aprs.gps_units_altitude_ft])
+            self._ALT_UNITS, current_index=aprs.gps_units_altitude_ft)
         rs = RadioSetting("aprs.gps_units_altitude_ft", "GPS Altitude Units",
                           val)
         menu.append(rs)
 
         val = RadioSettingValueList(
-            self._POS_UNITS, self._POS_UNITS[aprs.aprs_units_position_mmss])
+            self._POS_UNITS, current_index=aprs.aprs_units_position_mmss)
         rs = RadioSetting("aprs.aprs_units_position_mmss",
                           "APRS Position Format", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
-            self._POS_UNITS, self._POS_UNITS[aprs.gps_units_position_sss])
+            self._POS_UNITS, current_index=aprs.gps_units_position_sss)
         rs = RadioSetting("aprs.gps_units_position_sss",
                           "GPS Position Format", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
-            self._DIST_UNITS, self._DIST_UNITS[aprs.aprs_units_distance_m])
+            self._DIST_UNITS, current_index=aprs.aprs_units_distance_m)
         rs = RadioSetting("aprs.aprs_units_distance_m", "APRS Distance Units",
                           val)
         menu.append(rs)
 
         val = RadioSettingValueList(self._WIND_UNITS,
-                                    self._WIND_UNITS[aprs.aprs_units_wind_mph])
+                                    current_index=aprs.aprs_units_wind_mph)
         rs = RadioSetting("aprs.aprs_units_wind_mph", "APRS Wind Speed Units",
                           val)
         menu.append(rs)
 
         val = RadioSettingValueList(
-            self._RAIN_UNITS, self._RAIN_UNITS[aprs.aprs_units_rain_inch])
+            self._RAIN_UNITS, current_index=aprs.aprs_units_rain_inch)
         rs = RadioSetting("aprs.aprs_units_rain_inch", "APRS Rain Units", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
-            self._TEMP_UNITS, self._TEMP_UNITS[aprs.aprs_units_temperature_f])
+            self._TEMP_UNITS, current_index=aprs.aprs_units_temperature_f)
         rs = RadioSetting("aprs.aprs_units_temperature_f",
                           "APRS Temperature Units", val)
         menu.append(rs)
@@ -1547,7 +1547,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         menu = RadioSettingGroup("aprs_rx", "APRS Receive")
         aprs = self._memobj.aprs
 
-        val = RadioSettingValueList(self._RX_BAUD, self._RX_BAUD[aprs.rx_baud])
+        val = RadioSettingValueList(self._RX_BAUD, current_index=aprs.rx_baud)
         rs = RadioSetting("aprs.rx_baud", "Modem RX", val)
         menu.append(rs)
 
@@ -1569,37 +1569,37 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         menu.append(rs)
 
         val = RadioSettingValueList(self._FLASH,
-                                    self._FLASH[aprs.flash_msg])
+                                    current_index=aprs.flash_msg)
         rs = RadioSetting("aprs.flash_msg", "Flash on personal message", val)
         menu.append(rs)
 
         if self._has_vibrate:
             val = RadioSettingValueList(self._FLASH,
-                                        self._FLASH[aprs.vibrate_msg])
+                                        current_index=aprs.vibrate_msg)
             rs = RadioSetting("aprs.vibrate_msg",
                               "Vibrate on personal message", val)
             menu.append(rs)
 
         val = RadioSettingValueList(self._FLASH[:10],
-                                    self._FLASH[aprs.flash_bln])
+                                    current_index=aprs.flash_bln)
         rs = RadioSetting("aprs.flash_bln", "Flash on bulletin message", val)
         menu.append(rs)
 
         if self._has_vibrate:
             val = RadioSettingValueList(self._FLASH[:10],
-                                        self._FLASH[aprs.vibrate_bln])
+                                        current_index=aprs.vibrate_bln)
             rs = RadioSetting("aprs.vibrate_bln",
                               "Vibrate on bulletin message", val)
             menu.append(rs)
 
         val = RadioSettingValueList(self._FLASH[:10],
-                                    self._FLASH[aprs.flash_grp])
+                                    current_index=aprs.flash_grp)
         rs = RadioSetting("aprs.flash_grp", "Flash on group message", val)
         menu.append(rs)
 
         if self._has_vibrate:
             val = RadioSettingValueList(self._FLASH[:10],
-                                        self._FLASH[aprs.vibrate_grp])
+                                        current_index=aprs.vibrate_grp)
             rs = RadioSetting("aprs.vibrate_grp",
                               "Vibrate on group message", val)
             menu.append(rs)
@@ -1616,7 +1616,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         # TODO: Use filter_val as the list entries and update it on edit.
         val = RadioSettingValueList(
             self._MSG_GROUP_NAMES,
-            self._MSG_GROUP_NAMES[aprs.selected_msg_group])
+            current_index=aprs.selected_msg_group)
         rs = RadioSetting("aprs.selected_msg_group", "Selected Message Group",
                           val)
         menu.append(rs)
@@ -1659,18 +1659,18 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         beacon_type = (aprs.tx_smartbeacon << 1) | aprs.tx_interval_beacon
         val = RadioSettingValueList(self._BEACON_TYPE,
-                                    self._BEACON_TYPE[beacon_type])
+                                    current_index=beacon_type)
         rs = RadioSetting("aprs.transmit", "TX Beacons", val)
         rs.set_apply_callback(self.apply_beacon_type, aprs)
         menu.append(rs)
 
         val = RadioSettingValueList(self._TX_DELAY,
-                                    self._TX_DELAY[aprs.tx_delay])
+                                    current_index=aprs.tx_delay)
         rs = RadioSetting("aprs.tx_delay", "TX Delay", val)
         menu.append(rs)
 
         val = RadioSettingValueList(self._BEACON_INT,
-                                    self._BEACON_INT[aprs.beacon_interval])
+                                    current_index=aprs.beacon_interval)
         rs = RadioSetting("aprs.beacon_interval", "Beacon Interval", val)
         menu.append(rs)
 
@@ -1757,7 +1757,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         val = RadioSettingValueList(
             self._SMARTBEACON_PROFILE,
-            self._SMARTBEACON_PROFILE[aprs.active_smartbeaconing])
+            current_index=aprs.active_smartbeaconing)
         rs = RadioSetting("aprs.active_smartbeaconing", "SmartBeacon profile",
                           val)
         menu.append(rs)
@@ -1830,7 +1830,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         digital_settings = self._memobj.digital_settings
         val = RadioSettingValueList(
             self._AMS_TX_MODE,
-            self._AMS_TX_MODE[digital_settings.ams_tx_mode])
+            current_index=digital_settings.ams_tx_mode)
         rs = RadioSetting("digital_settings.ams_tx_mode",
                           "AMS TX Mode", val)
         menu.append(rs)
@@ -1838,14 +1838,14 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         # 16 DIG VW  Turn the VW mode selection ON or OFF.
         val = RadioSettingValueList(
             self._VW_MODE,
-            self._VW_MODE[digital_settings.vw_mode])
+            current_index=digital_settings.vw_mode)
         rs = RadioSetting("digital_settings.vw_mode", "VW Mode", val)
         menu.append(rs)
 
         # TX DG-ID Long Press Mode Key, Dial
         val = RadioSettingValueList(
             self._DG_ID,
-            self._DG_ID[digital_settings.tx_dg_id])
+            current_index=digital_settings.tx_dg_id)
         rs = RadioSetting("digital_settings.tx_dg_id",
                           "TX DG-ID", val)
         menu.append(rs)
@@ -1853,7 +1853,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         # RX DG-ID Long Press Mode Key, Mode Key to select, Dial
         val = RadioSettingValueList(
             self._DG_ID,
-            self._DG_ID[digital_settings.rx_dg_id])
+            current_index=digital_settings.rx_dg_id)
         rs = RadioSetting("digital_settings.rx_dg_id",
                           "RX DG-ID", val)
         menu.append(rs)
@@ -1863,9 +1863,9 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         val = RadioSettingValueList(
             self._DIG_POP_UP,
-            self._DIG_POP_UP[
+            current_index=(
                 0 if digital_settings_more.digital_popup == 0
-                else digital_settings_more.digital_popup - 9])
+                else digital_settings_more.digital_popup - 9))
 
         rs = RadioSetting("digital_settings_more.digital_popup",
                           "Digital Popup", val)
@@ -1876,7 +1876,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         # 07  BEP.STB    Standby Beep in the digital C4FM mode. On/Off
         val = RadioSettingValueList(
             self._STANDBY_BEEP,
-            self._STANDBY_BEEP[digital_settings.standby_beep])
+            current_index=digital_settings.standby_beep)
         rs = RadioSetting("digital_settings.standby_beep",
                           "Standby Beep", val)
         menu.append(rs)
@@ -1886,7 +1886,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         first_settings = self._memobj.first_settings
         val = RadioSettingValueList(
             self._GM_RING,
-            self._GM_RING[first_settings.gm_ring])
+            current_index=first_settings.gm_ring)
         rs = RadioSetting("first_settings.gm_ring", "GM Ring", val)
         GMmenu.append(rs)
 
@@ -1894,7 +1894,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         scan_settings = self._memobj.scan_settings
         val = RadioSettingValueList(
             self._GM_INTERVAL,
-            self._GM_INTERVAL[scan_settings.gm_interval])
+            current_index=scan_settings.gm_interval)
         rs = RadioSetting("scan_settings.gm_interval",
                           "GM Interval", val)
         GMmenu.append(rs)
@@ -1976,20 +1976,20 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         val = RadioSettingValueList(
             self._DTMF_MODE,
-            self._DTMF_MODE[dtmf.dtmf_mode])
+            current_index=dtmf.dtmf_mode)
         rs = RadioSetting("scan_settings.dtmf_mode", "DTMF Mode", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
             self._DTMF_SPEED,
-            self._DTMF_SPEED[dtmf.dtmf_speed])
+            current_index=dtmf.dtmf_speed)
         rs = RadioSetting(
             "scan_settings.dtmf_speed", "DTMF AutoDial Speed", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
             self._DTMF_DELAY,
-            self._DTMF_DELAY[dtmf.dtmf_delay])
+            current_index=dtmf.dtmf_delay)
         rs = RadioSetting(
             "scan_settings.dtmf_delay", "DTMF AutoDial Delay", val)
         menu.append(rs)
@@ -2017,13 +2017,13 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         val = RadioSettingValueList(
             self._LCD_DIMMER,
-            self._LCD_DIMMER[scan_settings.lcd_dimmer])
+            current_index=scan_settings.lcd_dimmer)
         rs = RadioSetting("scan_settings.lcd_dimmer", "LCD Dimmer", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
             self._LCD_CONTRAST,
-            self._LCD_CONTRAST[scan_settings.lcd_contrast - 1])
+            current_index=scan_settings.lcd_contrast - 1)
         rs = RadioSetting("scan_settings.lcd_contrast", "LCD Contrast",
                           val)
         rs.set_apply_callback(self.apply_lcd_contrast, scan_settings)
@@ -2031,7 +2031,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         val = RadioSettingValueList(
             self._LAMP_KEY,
-            self._LAMP_KEY[scan_settings.lamp])
+            current_index=scan_settings.lamp)
         rs = RadioSetting("scan_settings.lamp", "Lamp", val)
         menu.append(rs)
 
@@ -2039,7 +2039,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         val = RadioSettingValueList(
             self._BEEP_SELECT,
-            self._BEEP_SELECT[beep_select.beep])
+            current_index=beep_select.beep)
         rs = RadioSetting("beep_select.beep", "Beep Select", val)
         menu.append(rs)
 
@@ -2047,7 +2047,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         val = RadioSettingValueList(
             self._OPENING_MESSAGE,
-            self._OPENING_MESSAGE[opening_message.flag])
+            current_index=opening_message.flag)
         rs = RadioSetting("opening_message.flag", "Opening Msg Mode",
                           val)
         menu.append(rs)
@@ -2104,7 +2104,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
             val = RadioSettingValueList(
                 self._BACKTRACK_STATUS,
-                self._BACKTRACK_STATUS[0 if bt.status == 1 else 1])
+                current_index=0 if bt.status == 1 else 1)
             rs = RadioSetting(
                     "%s.status" % bt_idx,
                     prefix + "status", val)
@@ -2253,14 +2253,14 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         val = RadioSettingValueList(
             self._VOL_MODE,
-            self._VOL_MODE[scan_settings.vol_mode])
+            current_index=scan_settings.vol_mode)
         rs = RadioSetting("scan_settings.vol_mode", "Volume Mode", val)
         menu.append(rs)
 
         vfoa = self._memobj.vfo_info[0]
         val = RadioSettingValueList(
             self._VOLUME,
-            self._VOLUME[vfoa.volume])
+            current_index=vfoa.volume)
         rs = RadioSetting("vfo_info[0].volume", "VFO A Volume", val)
         rs.set_apply_callback(self.apply_volume, 0)
         menu.append(rs)
@@ -2268,7 +2268,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         vfob = self._memobj.vfo_info[1]
         val = RadioSettingValueList(
             self._VOLUME,
-            self._VOLUME[vfob.volume])
+            current_index=vfob.volume)
         rs = RadioSetting("vfo_info[1].volume", "VFO B Volume", val)
         rs.set_apply_callback(self.apply_volume, 1)
         menu.append(rs)
@@ -2276,43 +2276,43 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         squelch = self._memobj.squelch
         val = RadioSettingValueList(
             self._SQUELCH,
-            self._SQUELCH[squelch.vfo_a])
+            current_index=squelch.vfo_a)
         rs = RadioSetting("squelch.vfo_a", "VFO A Squelch", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
             self._SQUELCH,
-            self._SQUELCH[squelch.vfo_b])
+            current_index=squelch.vfo_b)
         rs = RadioSetting("squelch.vfo_b", "VFO B Squelch", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
             self._SCAN_RESTART,
-            self._SCAN_RESTART[scan_settings.scan_restart])
+            current_index=scan_settings.scan_restart)
         rs = RadioSetting("scan_settings.scan_restart", "Scan Restart", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
             self._SCAN_RESUME,
-            self._SCAN_RESUME[scan_settings.scan_resume])
+            current_index=scan_settings.scan_resume)
         rs = RadioSetting("scan_settings.scan_resume", "Scan Resume", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
             self._OFF_ON,
-            self._OFF_ON[scan_settings.busy_led])
+            current_index=scan_settings.busy_led)
         rs = RadioSetting("scan_settings.busy_led", "Busy LED", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
             self._OFF_ON,
-            self._OFF_ON[scan_settings.scan_lamp])
+            current_index=scan_settings.scan_lamp)
         rs = RadioSetting("scan_settings.scan_lamp", "Scan Lamp", val)
         menu.append(rs)
 
         val = RadioSettingValueList(
             self._TOT_TIME,
-            self._TOT_TIME[scan_settings.tot])
+            current_index=scan_settings.tot)
         rs = RadioSetting("scan_settings.tot", "Transmit Timeout (TOT)", val)
         menu.append(rs)
 
