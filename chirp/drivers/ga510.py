@@ -483,14 +483,12 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
 
         # pttid, signal
 
-        cur = PTTID[int(_mem.pttid)]
         s = RadioSetting('pttid', 'PTTID',
-                         RadioSettingValueList(PTTID, cur))
+                         RadioSettingValueList(PTTID, int(_mem.pttid)))
         group.append(s)
 
-        cur = SIGNAL[int(_mem.signal)]
         s = RadioSetting('signal', 'Signal',
-                         RadioSettingValueList(SIGNAL, cur))
+                         RadioSettingValueList(SIGNAL, int(_mem.signal)))
         group.append(s)
 
         return group

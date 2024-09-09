@@ -872,12 +872,8 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         mem.extra.append(rs)
 
         # PTTID
-        try:
-            pttid = self._pttid_list[_mem.dtmf_pttid]
-        except IndexError:
-            pttid = 0
         rs = RadioSetting("pttid", "PTTID", RadioSettingValueList(
-            self._pttid_list, pttid))
+            self._pttid_list, current_index=_mem.dtmf_pttid))
         mem.extra.append(rs)
 
         # DTMF DECODE
@@ -2009,7 +2005,10 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 _mem.bclo = svalue and 1 or 0
 
             if sname == "pttid":
-                _mem.dtmf_pttid = self._pttid_list.index(svalue)
+                try:
+                    _mem.dtmf_pttid = self._pttid_list.index(svalue)
+                except ValueError:
+                    _mem.dtmf_pttid = 0
 
             if sname == "frev":
                 _mem.freq_reverse = svalue and 1 or 0
