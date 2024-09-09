@@ -286,7 +286,7 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         rs = RadioSetting("tdrab", "Dual Watch TX Priority",
                           RadioSettingValueList(
                               uv5r.TDRAB_LIST,
-                              uv5r.TDRAB_LIST[_settings.tdrab]))
+                              current_index=_settings.tdrab))
         advanced.append(rs)
 
         rs = RadioSetting("alarm", "Alarm",
@@ -300,23 +300,23 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         rs = RadioSetting("timeout", "Timeout Timer",
                           RadioSettingValueList(
                               uv5r.TIMEOUT_LIST,
-                              uv5r.TIMEOUT_LIST[_settings.timeout]))
+                              current_index=_settings.timeout))
         basic.append(rs)
 
         rs = RadioSetting("screv", "Scan Resume",
                           RadioSettingValueList(
                               uv5r.RESUME_LIST,
-                              uv5r.RESUME_LIST[_settings.screv]))
+                              current_index=_settings.screv))
         advanced.append(rs)
 
         rs = RadioSetting("mdfa", "Display Mode (A)",
                           RadioSettingValueList(
-                              uv5r.MODE_LIST, uv5r.MODE_LIST[_settings.mdfa]))
+                              uv5r.MODE_LIST, current_index=_settings.mdfa))
         basic.append(rs)
 
         rs = RadioSetting("mdfb", "Display Mode (B)",
                           RadioSettingValueList(
-                              uv5r.MODE_LIST, uv5r.MODE_LIST[_settings.mdfb]))
+                              uv5r.MODE_LIST, current_index=_settings.mdfb))
         basic.append(rs)
 
         rs = RadioSetting("bcl", "Busy Channel Lockout",
@@ -620,19 +620,19 @@ class BaojieBJUV55Radio(uv5r.BaofengUV5R):
         rs = RadioSetting("dtmfst", "DTMF Sidetone",
                           RadioSettingValueList(
                               uv5r.DTMFST_LIST,
-                              uv5r.DTMFST_LIST[_settings.dtmfst]))
+                              current_index=_settings.dtmfst))
         dtmf.append(rs)
 
         rs = RadioSetting("ani.dtmfon", "DTMF Speed (on)",
                           RadioSettingValueList(
                               uv5r.DTMFSPEED_LIST,
-                              uv5r.DTMFSPEED_LIST[self._memobj.ani.dtmfon]))
+                              current_index=self._memobj.ani.dtmfon))
         dtmf.append(rs)
 
         rs = RadioSetting("ani.dtmfoff", "DTMF Speed (off)",
                           RadioSettingValueList(
                               uv5r.DTMFSPEED_LIST,
-                              uv5r.DTMFSPEED_LIST[self._memobj.ani.dtmfoff]))
+                              current_index=self._memobj.ani.dtmfoff))
         dtmf.append(rs)
 
         return group

@@ -664,12 +664,12 @@ class RB28Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         rs = RadioSettingValueList(self.PFKEY_LIST,
-                                   self.PFKEY_LIST[_settings.pfkey_lt])
+                                   current_index=_settings.pfkey_lt)
         rset = RadioSetting("pfkey_lt", "Key Set < Long", rs)
         basic.append(rset)
 
         rs = RadioSettingValueList(self.PFKEY_LIST,
-                                   self.PFKEY_LIST[_settings.pfkey_gt])
+                                   current_index=_settings.pfkey_gt)
         rset = RadioSetting("pfkey_gt", "Key Set > Long", rs)
         basic.append(rset)
 

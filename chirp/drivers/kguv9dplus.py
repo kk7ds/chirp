@@ -2181,7 +2181,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             RadioSetting(prefix + ".step",
                          "Frequency Step (Menu 3)",
                          RadioSettingValueList(
-                             self._step_list, self._step_list[c.step])))
+                             self._step_list, current_index=c.step)))
         af.append(
             RadioSetting(prefix + ".scan_mode",
                          "Scan Mode (Menu 20)",
@@ -2634,7 +2634,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
             RadioSetting(prefix + ".step",
                          "Frequency Step (Menu 3)",
                          RadioSettingValueList(
-                             self._step_list, self._step_list[c.step])))
+                             self._step_list, current_index=c.step)))
         af.append(
             RadioSetting(prefix + ".scan_mode",
                          "Scan Mode (Menu 20)",

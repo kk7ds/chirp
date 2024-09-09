@@ -510,8 +510,8 @@ class H777Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("settings2.scanmode", "Scan mode",
                               RadioSettingValueList(
                                   self.SCANMODE_LIST,
-                                  self.SCANMODE_LIST[
-                                      self._memobj.settings2.scanmode]))
+                                  current_index=(
+                                      self._memobj.settings2.scanmode)))
             basic.append(rs)
 
         rs = RadioSetting("vox", "VOX",
@@ -539,7 +539,7 @@ class H777Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("alarm", "Alarm",
                               RadioSettingValueList(
                                     self.ALARM_LIST,
-                                    self.ALARM_LIST[_settings.alarm]))
+                                    current_index=_settings.alarm))
         else:
             rs = RadioSetting("alarm", "Alarm",
                               RadioSettingValueBoolean(_settings.alarm))
@@ -571,8 +571,8 @@ class H777Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("settings2.sidekeyfunction", "Side key function",
                               RadioSettingValueList(
                                   self.SIDEKEYFUNCTION_LIST,
-                                  self.SIDEKEYFUNCTION_LIST[
-                                      self._memobj.settings2.sidekeyfunction]))
+                                  current_index=(
+                                      self._memobj.settings2.sidekeyfunction)))
             basic.append(rs)
 
         rs = RadioSetting(
