@@ -538,13 +538,12 @@ class RT23Radio(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("pttid", "PTT ID",
                           RadioSettingValueList(
-                              LIST_PTTID, LIST_PTTID[_mem.pttid]))
+                              LIST_PTTID, current_index=_mem.pttid))
         mem.extra.append(rs)
 
         rs = RadioSetting("signaling", "Optional Signaling",
                           RadioSettingValueList(LIST_SIGNALING,
-                                                LIST_SIGNALING[
-                                                    _mem.signaling]))
+                                                current_index=_mem.signaling))
         mem.extra.append(rs)
 
         return mem
@@ -626,7 +625,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
 
         vox = RadioSetting("vox", "VOX Gain",
                            RadioSettingValueList(
-                               LIST_VOX, LIST_VOX[_settings.vox]))
+                               LIST_VOX, current_index=_settings.vox))
         basic.append(vox)
 
         squelch = RadioSetting("squelch", "Squelch Level",
@@ -639,20 +638,21 @@ class RT23Radio(chirp_common.CloneModeRadio):
         basic.append(relay)
 
         tot = RadioSetting("tot", "Time-out timer", RadioSettingValueList(
-                           LIST_TOT, LIST_TOT[_settings.tot]))
+                           LIST_TOT, current_index=_settings.tot))
         basic.append(tot)
 
         beep = RadioSetting("beep", "Key Beep",
                             RadioSettingValueBoolean(_settings.beep))
         basic.append(beep)
 
-        color = RadioSetting("color", "Background Color",
-                             RadioSettingValueList(
-                                 LIST_COLOR, LIST_COLOR[_settings.color - 1]))
+        color = RadioSetting(
+            "color", "Background Color",
+            RadioSettingValueList(
+                LIST_COLOR, current_index=_settings.color - 1))
         basic.append(color)
 
         vot = RadioSetting("vot", "VOX Delay Time", RadioSettingValueList(
-                           LIST_VOT, LIST_VOT[_settings.vot]))
+                           LIST_VOT, current_index=_settings.vot))
         basic.append(vot)
 
         dwait = RadioSetting("dwait", "Dual Standby",
@@ -660,11 +660,11 @@ class RT23Radio(chirp_common.CloneModeRadio):
         basic.append(dwait)
 
         led = RadioSetting("led", "Background Light", RadioSettingValueList(
-                           LIST_LED, LIST_LED[_settings.led]))
+                           LIST_LED, current_index=_settings.led))
         basic.append(led)
 
         voice = RadioSetting("voice", "Voice Prompt", RadioSettingValueList(
-                             LIST_VOICE, LIST_VOICE[_settings.voice]))
+                             LIST_VOICE, current_index=_settings.voice))
         basic.append(voice)
 
         roger = RadioSetting("roger", "Roger Beep",
@@ -677,7 +677,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
 
         opnset = RadioSetting("opnset", "Open Mode Set",
                               RadioSettingValueList(
-                                  LIST_OPNSET, LIST_OPNSET[_settings.opnset]))
+                                  LIST_OPNSET, current_index=_settings.opnset))
         basic.append(opnset)
 
         def _filter(name):
@@ -696,7 +696,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
         basic.append(ponmsg)
 
         scans = RadioSetting("scans", "Scan Mode", RadioSettingValueList(
-                             LIST_SCANS, LIST_SCANS[_settings.scans]))
+                             LIST_SCANS, current_index=_settings.scans))
         basic.append(scans)
 
         dw = RadioSetting("dw", "FM Radio Dual Watch",
@@ -707,9 +707,10 @@ class RT23Radio(chirp_common.CloneModeRadio):
                             RadioSettingValueBoolean(_settings.name))
         basic.append(name)
 
-        rptrl = RadioSetting("rptrl", "Repeater TX Delay",
-                             RadioSettingValueList(LIST_RPTRL, LIST_RPTRL[
-                                 _settings.rptrl]))
+        rptrl = RadioSetting(
+            "rptrl", "Repeater TX Delay",
+            RadioSettingValueList(
+                LIST_RPTRL, current_index=_settings.rptrl))
         basic.append(rptrl)
 
         rptspk = RadioSetting("rptspk", "Repeater Speaker",
@@ -722,12 +723,12 @@ class RT23Radio(chirp_common.CloneModeRadio):
 
         rptmod = RadioSetting("rptmod", "Repeater Mode",
                               RadioSettingValueList(
-                                  LIST_RPTMOD, LIST_RPTMOD[_settings.rptmod]))
+                                  LIST_RPTMOD, current_index=_settings.rptmod))
         basic.append(rptmod)
 
         volmod = RadioSetting("volmod", "Volume Mode",
                               RadioSettingValueList(
-                                  LIST_VOLMOD, LIST_VOLMOD[_settings.volmod]))
+                                  LIST_VOLMOD, current_index=_settings.volmod))
         basic.append(volmod)
 
         dst = RadioSetting("dst", "DTMF Side Tone",
@@ -736,7 +737,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
 
         txsel = RadioSetting("txsel", "Priority TX Channel",
                              RadioSettingValueList(
-                                 LIST_TXSEL, LIST_TXSEL[_settings.txsel]))
+                                 LIST_TXSEL, current_index=_settings.txsel))
         basic.append(txsel)
 
         ste = RadioSetting("ste", "Squelch Tail Eliminate",
@@ -750,7 +751,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
             val = _settings.pf1
         pf1 = RadioSetting("pf1", "PF1 Key",
                            RadioSettingValueList(
-                               LIST_PFKEY, LIST_PFKEY[val]))
+                               LIST_PFKEY, current_index=val))
         advanced.append(pf1)
 
         if _settings.pf2 > 0x0A:
@@ -759,7 +760,7 @@ class RT23Radio(chirp_common.CloneModeRadio):
             val = _settings.pf2
         pf2 = RadioSetting("pf2", "PF2 Key",
                            RadioSettingValueList(
-                               LIST_PFKEY, LIST_PFKEY[val]))
+                               LIST_PFKEY, current_index=val))
         advanced.append(pf2)
 
         # other
@@ -788,14 +789,16 @@ class RT23Radio(chirp_common.CloneModeRadio):
         other.append(rs)
 
         # work mode
-        vfomr_a = RadioSetting("vfomr_a", "Display Mode A",
-                               RadioSettingValueList(
-                                   LIST_VFOMR, LIST_VFOMR[_settings.vfomr_a]))
+        vfomr_a = RadioSetting(
+            "vfomr_a", "Display Mode A",
+            RadioSettingValueList(
+                LIST_VFOMR, current_index=_settings.vfomr_a))
         workmode.append(vfomr_a)
 
-        vfomr_b = RadioSetting("vfomr_b", "Display Mode B",
-                               RadioSettingValueList(
-                                   LIST_VFOMR, LIST_VFOMR[_settings.vfomr_b]))
+        vfomr_b = RadioSetting(
+            "vfomr_b", "Display Mode B",
+            RadioSettingValueList(
+                LIST_VFOMR, current_index=_settings.vfomr_b))
         workmode.append(vfomr_b)
 
         mrcha = RadioSetting("mrcha", "Channel # A",
@@ -809,10 +812,10 @@ class RT23Radio(chirp_common.CloneModeRadio):
         workmode.append(mrchb)
 
         # fm radio
-        vfomr_fm = RadioSetting("vfomr_fm", "FM Radio Display Mode",
-                                RadioSettingValueList(
-                                    LIST_VFOMRFM, LIST_VFOMRFM[
-                                        _settings.vfomr_fm]))
+        vfomr_fm = RadioSetting(
+            "vfomr_fm", "FM Radio Display Mode",
+            RadioSettingValueList(
+                LIST_VFOMRFM, current_index=_settings.vfomr_fm))
         fmradio.append(vfomr_fm)
 
         fmch = RadioSetting("fmch", "FM Radio Channel #",

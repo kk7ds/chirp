@@ -668,15 +668,15 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         model_list = ["RB27B", "RB27V", "RB627B"]
         if self.MODEL in model_list:
             # Menu 09 (RB27x/RB627x)
-            rs = RadioSettingValueList(TOT2_LIST, TOT2_LIST[_settings.tot])
+            rs = RadioSettingValueList(TOT2_LIST, current_index=_settings.tot)
         else:
             # Menu 11 / 09 (RB27)
-            rs = RadioSettingValueList(TOT_LIST, TOT_LIST[_settings.tot])
+            rs = RadioSettingValueList(TOT_LIST, current_index=_settings.tot)
         rset = RadioSetting("tot", "Time-out timer", rs)
         basic.append(rset)
 
         # Menu 06
-        rs = RadioSettingValueList(VOX_LIST, VOX_LIST[_settings.vox])
+        rs = RadioSettingValueList(VOX_LIST, current_index=_settings.vox)
         rset = RadioSetting("vox", "VOX Level", rs)
         basic.append(rset)
 
@@ -695,13 +695,14 @@ class BFT8Radio(chirp_common.CloneModeRadio):
                 idx = VOICE_VALUES.index(_settings.voice)
             else:
                 idx = VOICE_VALUES.index(0x00)
-            rs = RadioSettingValueList(VOICE_CHOICES, VOICE_CHOICES[idx])
+            rs = RadioSettingValueList(VOICE_CHOICES, current_index=idx)
             rset = RadioSetting("voice", "Voice", rs)
             rset.set_apply_callback(apply_voice_listvalue, _settings.voice)
             basic.append(rset)
         else:
             # Menu 15 (BF-T8)
-            rs = RadioSettingValueList(VOICE_LIST, VOICE_LIST[_settings.voice])
+            rs = RadioSettingValueList(
+                VOICE_LIST, current_index=_settings.voice)
             rset = RadioSetting("voice", "Voice", rs)
             basic.append(rset)
 
@@ -726,12 +727,12 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         # Menu 04
-        rs = RadioSettingValueList(ABR_LIST, ABR_LIST[_settings.abr])
+        rs = RadioSettingValueList(ABR_LIST, current_index=_settings.abr)
         rset = RadioSetting("abr", "Back Light", rs)
         basic.append(rset)
 
         # Menu 13 / 11 (RB-27/RB627)
-        rs = RadioSettingValueList(RING_LIST, RING_LIST[_settings.ring])
+        rs = RadioSettingValueList(RING_LIST, current_index=_settings.ring)
         rset = RadioSetting("ring", "Ring", rs)
         basic.append(rset)
 
@@ -741,7 +742,7 @@ class BFT8Radio(chirp_common.CloneModeRadio):
 
         # Menu 15 (FRS-A1)
         if self.MODEL == "FRS-A1":
-            rs = RadioSettingValueList(MDF_LIST, MDF_LIST[_settings.mdf])
+            rs = RadioSettingValueList(MDF_LIST, current_index=_settings.mdf)
             rset = RadioSetting("mdf", "Display Type", rs)
             basic.append(rset)
 
@@ -759,14 +760,14 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("mrb", "MR B Channel #", rs)
         basic.append(rset)
 
-        rs = RadioSettingValueList(AB_LIST, AB_LIST[_settings.disp_ab])
+        rs = RadioSettingValueList(AB_LIST, current_index=_settings.disp_ab)
         rset = RadioSetting("disp_ab", "Selected Display Line", rs)
         basic.append(rset)
 
         if not self.MODEL.startswith("RB627"):
             if self.MODEL == "FRS-A1":
                 del WX_LIST[7:]
-            rs = RadioSettingValueList(WX_LIST, WX_LIST[_settings2.wx])
+            rs = RadioSettingValueList(WX_LIST, current_index=_settings2.wx)
             rset = RadioSetting("settings2.wx", "NOAA WX Radio", rs)
             basic.append(rset)
 
@@ -792,11 +793,12 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         model_list = ["BF-T8", "BF-U9", "AR-8"]
         if self.MODEL in model_list:
             rs = RadioSettingValueList(WORKMODE_LIST,
-                                       WORKMODE_LIST[_settings2.workmode])
+                                       current_index=_settings2.workmode)
             rset = RadioSetting("settings2.workmode", "Work Mode", rs)
             basic.append(rset)
 
-            rs = RadioSettingValueList(AREA_LIST, AREA_LIST[_settings2.area])
+            rs = RadioSettingValueList(
+                AREA_LIST, current_index=_settings2.area)
             rs.set_mutable(False)
             rset = RadioSetting("settings2.area", "Area", rs)
             basic.append(rset)

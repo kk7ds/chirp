@@ -546,7 +546,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
         top = RadioSettings(basic, sidekey, dwatch, txallow)
 
         voice = RadioSetting("voice", "Language", RadioSettingValueList(
-                             LIST_VOICE, LIST_VOICE[_settings.voice]))
+                             LIST_VOICE, current_index=_settings.voice))
         basic.append(voice)
 
         beep = RadioSetting("beep", "Key Beep",
@@ -555,34 +555,34 @@ class IradioUV5118(chirp_common.CloneModeRadio):
 
         roger = RadioSetting("roger", "Roger Tone",
                              RadioSettingValueList(
-                                 LIST_ROGER, LIST_ROGER[_settings.roger]))
+                                 LIST_ROGER, current_index=_settings.roger))
         basic.append(roger)
 
         save = RadioSetting("save", "Battery Save",
                             RadioSettingValueList(
-                                LIST_SAVE, LIST_SAVE[_settings.save]))
+                                LIST_SAVE, current_index=_settings.save))
         basic.append(save)
 
         dispmode = RadioSetting("dispmode", "Display Mode",
                                 RadioSettingValueList(
                                     LIST_DISPM,
-                                    LIST_DISPM[_settings.dispmode]))
+                                    current_index=_settings.dispmode))
         basic.append(dispmode)
 
         brightness = RadioSetting("brightness", "Screen Light",
                                   RadioSettingValueList(
                                       LIST_BRIGHT,
-                                      LIST_BRIGHT[_settings.brightness]))
+                                      current_index=_settings.brightness))
         basic.append(brightness)
 
         screen = RadioSetting("screen", "Screen",
                               RadioSettingValueBoolean(_settings.screen))
         basic.append(screen)
 
-        display_timer = RadioSetting("display_timer", "Display Timer",
-                                     RadioSettingValueList(
-                                         LIST_TIMER,
-                                         LIST_TIMER[_settings.display_timer]))
+        display_timer = RadioSetting(
+            "display_timer", "Display Timer",
+            RadioSettingValueList(
+                LIST_TIMER, current_index=_settings.display_timer))
         basic.append(display_timer)
 
         led = RadioSetting("led", "LED",
@@ -592,7 +592,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
         led_timer = RadioSetting("led_timer", "LED Timer",
                                  RadioSettingValueList(
                                      LIST_TIMER,
-                                     LIST_TIMER[_settings.led_timer]))
+                                     current_index=_settings.led_timer))
         basic.append(led_timer)
 
         squelch = RadioSetting("squelch", "Squelch Level",
@@ -621,7 +621,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
         scramble = RadioSetting("scramble", "Scramble",
                                 RadioSettingValueList(
                                     LIST_SCRAMBLE,
-                                    LIST_SCRAMBLE[_settings.scramble]))
+                                    current_index=_settings.scramble))
         basic.append(scramble)
 
         rp = RadioSetting("rp", "Offset",
@@ -631,13 +631,13 @@ class IradioUV5118(chirp_common.CloneModeRadio):
         txpri = RadioSetting("txpri", "TX Priority",
                              RadioSettingValueList(
                                  LIST_TXPRI,
-                                 LIST_TXPRI[_settings.txpri]))
+                                 current_index=_settings.txpri))
         basic.append(txpri)
 
         tot = RadioSetting("tot", "Time-out Timer",
                            RadioSettingValueList(
                                LIST_TIMER,
-                               LIST_TIMER[_settings.tot]))
+                               current_index=_settings.tot))
         basic.append(tot)
 
         tail_tone = RadioSetting("tail_tone", "Tail Tone",
@@ -648,7 +648,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
         alarm = RadioSetting("alarm", "Alarm",
                              RadioSettingValueList(
                                  LIST_ALARM,
-                                 LIST_ALARM[_settings.alarm]))
+                                 current_index=_settings.alarm))
         basic.append(alarm)
 
         freq_lock = RadioSetting("freq_lock", "Frequency Lock",
@@ -662,7 +662,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
         auto_lock = RadioSetting("auto_lock", "Auto Lock Timer",
                                  RadioSettingValueList(
                                      LIST_TIMER,
-                                     LIST_TIMER[_settings.auto_lock]))
+                                     current_index=_settings.auto_lock))
         basic.append(auto_lock)
 
         radio = RadioSetting("radio", "Broadcast FM Radio",
@@ -693,25 +693,25 @@ class IradioUV5118(chirp_common.CloneModeRadio):
         pfkey1short = RadioSetting("pfkey1short", "Side Key 1 - Short Press",
                                    RadioSettingValueList(
                                        LIST_SKEY,
-                                       LIST_SKEY[_settings.pfkey1short]))
+                                       current_index=_settings.pfkey1short))
         sidekey.append(pfkey1short)
 
         pfkey1long = RadioSetting("pfkey1long", "Side Key 1 - Long Press",
                                   RadioSettingValueList(
                                       LIST_SKEY,
-                                      LIST_SKEY[_settings.pfkey1long]))
+                                      current_index=_settings.pfkey1long))
         sidekey.append(pfkey1long)
 
         pfkey2short = RadioSetting("pfkey2short", "Side Key 2 - Short Press",
                                    RadioSettingValueList(
                                        LIST_SKEY,
-                                       LIST_SKEY[_settings.pfkey2short]))
+                                       current_index=_settings.pfkey2short))
         sidekey.append(pfkey2short)
 
         pfkey2long = RadioSetting("pfkey2long", "Side Key 2 - Long Press",
                                   RadioSettingValueList(
                                       LIST_SKEY,
-                                      LIST_SKEY[_settings.pfkey2long]))
+                                      current_index=_settings.pfkey2long))
         sidekey.append(pfkey2long)
 
         dstandby = RadioSetting("dstandby", "Dual Standby",
@@ -740,7 +740,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range174_180)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range174_180", "174-180 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range174_180)
         txallow.append(rset)
@@ -749,7 +749,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range180_190)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range180_190", "180-190 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range180_190)
         txallow.append(rset)
@@ -758,7 +758,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range190_200)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range190_200", "190-200 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range190_200)
         txallow.append(rset)
@@ -767,7 +767,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range200_210)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range200_210", "200-210 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range200_210)
         txallow.append(rset)
@@ -776,7 +776,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range210_220)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range210_220", "210-220 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range210_220)
         txallow.append(rset)
@@ -785,7 +785,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range220_230)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range220_230", "220-230 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range220_230)
         txallow.append(rset)
@@ -794,7 +794,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range230_240)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range230_240", "230-240 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range230_240)
         txallow.append(rset)
@@ -803,7 +803,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range240_250)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range240_250", "240-250 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range240_250)
         txallow.append(rset)
@@ -812,7 +812,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range250_260)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range250_260", "250-260 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range250_260)
         txallow.append(rset)
@@ -821,7 +821,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range260_270)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range260_270", "260-270 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range260_270)
         txallow.append(rset)
@@ -830,7 +830,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range270_280)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range270_280", "270-280 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range270_280)
         txallow.append(rset)
@@ -839,7 +839,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range280_290)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range280_290", "280-290 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range280_290)
         txallow.append(rset)
@@ -848,7 +848,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range290_300)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range290_300", "290-300 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range290_300)
         txallow.append(rset)
@@ -857,7 +857,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range300_310)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range300_310", "300-310 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range300_310)
         txallow.append(rset)
@@ -866,7 +866,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range310_320)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range310_320", "310-320 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range310_320)
         txallow.append(rset)
@@ -875,7 +875,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range320_330)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range320_330", "320-330 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range320_330)
         txallow.append(rset)
@@ -884,7 +884,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range330_340)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range330_340", "330-340 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range330_340)
         txallow.append(rset)
@@ -893,7 +893,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range340_350)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range340_350", "340-350 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range340_350)
         txallow.append(rset)
@@ -902,7 +902,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range350_360)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range350_360", "350-360 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range350_360)
         txallow.append(rset)
@@ -911,7 +911,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range360_370)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range360_370", "360-370 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range360_370)
         txallow.append(rset)
@@ -920,7 +920,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range370_380)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range370_380", "370-380 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range370_380)
         txallow.append(rset)
@@ -929,7 +929,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range380_390)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range380_390", "380-390 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range380_390)
         txallow.append(rset)
@@ -938,7 +938,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range390_400)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range390_400", "390-400 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range390_400)
         txallow.append(rset)
@@ -947,7 +947,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range520_530)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range520_530", "520-530 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range520_530)
         txallow.append(rset)
@@ -956,7 +956,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range530_540)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range530_540", "530-540 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range530_540)
         txallow.append(rset)
@@ -965,7 +965,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range540_550)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range540_550", "540-550 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range540_550)
         txallow.append(rset)
@@ -974,7 +974,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range550_560)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range550_560", "550-560 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range550_560)
         txallow.append(rset)
@@ -983,7 +983,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range560_570)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range560_570", "560-570 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range560_570)
         txallow.append(rset)
@@ -992,7 +992,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range570_580)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range570_580", "570-580 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range570_580)
         txallow.append(rset)
@@ -1001,7 +1001,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range580_590)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range580_590", "580-590 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range580_590)
         txallow.append(rset)
@@ -1010,7 +1010,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range590_600)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range590_600", "590-600 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range590_600)
         txallow.append(rset)
@@ -1019,7 +1019,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range600_610)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range600_610", "600-610 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range600_610)
         txallow.append(rset)
@@ -1028,7 +1028,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range610_620)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range610_620", "610-620 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range610_620)
         txallow.append(rset)
@@ -1037,7 +1037,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range620_630)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range620_630", "620-630 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range620_630)
         txallow.append(rset)
@@ -1046,7 +1046,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range630_640)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range630_640", "630-640 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range630_640)
         txallow.append(rset)
@@ -1055,7 +1055,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range640_650)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range640_650", "640-650 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range640_650)
         txallow.append(rset)
@@ -1064,7 +1064,7 @@ class IradioUV5118(chirp_common.CloneModeRadio):
             idx = TXALLOW_VALUES.index(_txallow.range650_660)
         else:
             idx = TXALLOW_VALUES.index(0xFF)
-        rs = RadioSettingValueList(TXALLOW_CHOICES, TXALLOW_CHOICES[idx])
+        rs = RadioSettingValueList(TXALLOW_CHOICES, current_index=idx)
         rset = RadioSetting("txallow.range650_660", "650-660 MHz", rs)
         rset.set_apply_callback(apply_txallow_listvalue, _txallow.range650_660)
         txallow.append(rset)

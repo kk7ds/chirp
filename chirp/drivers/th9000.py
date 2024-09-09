@@ -730,44 +730,52 @@ class Th9000Radio(chirp_common.CloneModeRadio,
         rs = RadioSetting("startname", "Startup Label", val)
         basic.append(rs)
 
-        rs = RadioSetting("bg_color", "LCD Color",
-                          RadioSettingValueList(BGCOLOR_LIST, BGCOLOR_LIST[
-                                                _settings.bg_color]))
+        rs = RadioSetting(
+            "bg_color", "LCD Color",
+            RadioSettingValueList(
+                BGCOLOR_LIST, current_index=_settings.bg_color))
         basic.append(rs)
 
-        rs = RadioSetting("bg_brightness", "LCD Brightness",
-                          RadioSettingValueList(BGBRIGHT_LIST, BGBRIGHT_LIST[
-                                                _settings.bg_brightness]))
+        rs = RadioSetting(
+            "bg_brightness", "LCD Brightness",
+            RadioSettingValueList(
+                BGBRIGHT_LIST, current_index=_settings.bg_brightness))
         basic.append(rs)
 
-        rs = RadioSetting("squelch", "Squelch Level",
-                          RadioSettingValueList(SQUELCH_LIST, SQUELCH_LIST[
-                                                _settings.squelch]))
+        rs = RadioSetting(
+            "squelch", "Squelch Level",
+            RadioSettingValueList(
+                SQUELCH_LIST, current_index=_settings.squelch))
         basic.append(rs)
 
-        rs = RadioSetting("timeout_timer", "Timeout Timer (TOT)",
-                          RadioSettingValueList(TIMEOUT_LIST, TIMEOUT_LIST[
-                                                _settings.timeout_timer]))
+        rs = RadioSetting(
+            "timeout_timer", "Timeout Timer (TOT)",
+            RadioSettingValueList(
+                TIMEOUT_LIST, current_index=_settings.timeout_timer))
         basic.append(rs)
 
-        rs = RadioSetting("auto_power_off", "Auto Power Off (APO)",
-                          RadioSettingValueList(APO_LIST, APO_LIST[
-                                                _settings.auto_power_off]))
+        rs = RadioSetting(
+            "auto_power_off", "Auto Power Off (APO)",
+            RadioSettingValueList(
+                APO_LIST, current_index=_settings.auto_power_off))
         basic.append(rs)
 
-        rs = RadioSetting("voice_prompt", "Beep Prompt",
-                          RadioSettingValueList(BEEP_LIST, BEEP_LIST[
-                                                 _settings.voice_prompt]))
+        rs = RadioSetting(
+            "voice_prompt", "Beep Prompt",
+            RadioSettingValueList(
+                BEEP_LIST, current_index=_settings.voice_prompt))
         basic.append(rs)
 
-        rs = RadioSetting("tbst_freq", "Tone Burst Frequency",
-                          RadioSettingValueList(TBSTFREQ_LIST, TBSTFREQ_LIST[
-                                                _settings.tbst_freq]))
+        rs = RadioSetting(
+            "tbst_freq", "Tone Burst Frequency",
+            RadioSettingValueList(
+                TBSTFREQ_LIST, current_index=_settings.tbst_freq))
         basic.append(rs)
 
-        rs = RadioSetting("choose_tx_power", "Max Level of TX Power",
-                          RadioSettingValueList(TXPWR_LIST, TXPWR_LIST[
-                                                _settings.choose_tx_power]))
+        rs = RadioSetting(
+            "choose_tx_power", "Max Level of TX Power",
+            RadioSettingValueList(
+                TXPWR_LIST, current_index=_settings.choose_tx_power))
         basic.append(rs)
 
         (flow, fhigh) = self.valid_freq[0]

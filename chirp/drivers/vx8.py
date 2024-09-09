@@ -827,7 +827,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         if aprs.custom_symbol >= len(chirp_common.APRS_SYMBOLS):
             symbols.append("%d" % aprs.custom_symbol)
             selected = len(symbols) - 1
-        val = RadioSettingValueList(symbols, symbols[selected])
+        val = RadioSettingValueList(symbols, current_index=selected)
         rs = RadioSetting("aprs.custom_symbol_text", "User Selected Symbol",
                           val)
         rs.set_apply_callback(self.apply_custom_symbol, aprs)
@@ -858,7 +858,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         # position_str[1] = "%s %s" % (latitude, longitude)
         # position_str[2] = "%s %s" % (latitude, longitude)
         val = RadioSettingValueList(position_str,
-                                    position_str[aprs.selected_position])
+                                    current_index=aprs.selected_position)
         rs = RadioSetting("aprs.selected_position", "My Position", val)
         menu.append(rs)
 
@@ -1087,8 +1087,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
             rs.set_apply_callback(self.apply_ff_padded_string,
                                   self._memobj.aprs_beacon_status_txt[index])
             menu.append(rs)
-        val = RadioSettingValueList(desc,
-                                    desc[aprs.selected_beacon_status_txt])
+        val = RadioSettingValueList(
+            desc, current_index=aprs.selected_beacon_status_txt)
         rs = RadioSetting("aprs.selected_beacon_status_txt",
                           "Beacon Status Text", val)
         menu.append(rs)
@@ -1121,7 +1121,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
         path_str[7] = self._DIGI_PATHS[7]
         val = RadioSettingValueList(path_str,
-                                    path_str[aprs2.selected_digi_path])
+                                    current_index=aprs2.selected_digi_path)
         rs = RadioSetting("aprs2.selected_digi_path",
                           "Selected Digi Path", val)
         menu.append(rs)
@@ -1525,8 +1525,8 @@ class VX8DRadio(VX8Radio):
             rs.set_apply_callback(self.apply_ff_padded_string,
                                   self._memobj.aprs_beacon_status_txt[index])
             menu.append(rs)
-        val = RadioSettingValueList(desc,
-                                    desc[aprs.selected_beacon_status_txt])
+        val = RadioSettingValueList(
+            desc, current_index=aprs.selected_beacon_status_txt)
         rs = RadioSetting("aprs.selected_beacon_status_txt",
                           "Beacon Status Text", val)
         menu.append(rs)
@@ -1585,7 +1585,7 @@ class VX8DRadio(VX8Radio):
         path_str[6] = self._DIGI_PATHS[6]
         path_str[7] = self._DIGI_PATHS[7]
         val = RadioSettingValueList(path_str,
-                                    path_str[aprs2.selected_digi_path])
+                                    current_index=aprs2.selected_digi_path)
         rs = RadioSetting("aprs2.selected_digi_path",
                           "Selected Digi Path", val)
         menu.append(rs)

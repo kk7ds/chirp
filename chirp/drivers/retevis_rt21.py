@@ -953,7 +953,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
         if self.MODEL == "RT21" or self.MODEL == "RB17A" or \
                 self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF" or \
                 self.MODEL == "RT21V":
-            rs = RadioSettingValueList(BCL_LIST, BCL_LIST[_mem.bcl])
+            rs = RadioSettingValueList(BCL_LIST, current_index=_mem.bcl)
             rset = RadioSetting("bcl", "Busy Channel Lockout", rs)
             mem.extra.append(rset)
 
@@ -962,13 +962,14 @@ class RT21Radio(chirp_common.CloneModeRadio):
             mem.extra.append(rset)
 
             if self.MODEL == "RB17A":
-                rs = RadioSettingValueList(CDCSS_LIST, CDCSS_LIST[_mem.cdcss])
+                rs = RadioSettingValueList(
+                    CDCSS_LIST, current_index=_mem.cdcss)
                 rset = RadioSetting("cdcss", "Cdcss Mode", rs)
                 mem.extra.append(rset)
 
             if self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF":
                 rs = RadioSettingValueList(CDCSS2_LIST,
-                                           CDCSS2_LIST[_mem.cdcss])
+                                           current_index=_mem.cdcss)
                 rset = RadioSetting("cdcss", "Cdcss Mode", rs)
                 mem.extra.append(rset)
 
@@ -993,7 +994,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
             if self.MODEL == "AR-63":
                 rs = RadioSettingValueList(SCRAMBLE_LIST,
-                                           SCRAMBLE_LIST[_mem.scramble])
+                                           current_index=_mem.scramble)
                 rset = RadioSetting("scramble", "Scramble", rs)
                 mem.extra.append(rset)
 
@@ -1005,7 +1006,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             _freqhops = self._memobj.freqhops[number - 1]
 
             rs = RadioSettingValueList(FUNCTION_LIST,
-                                       FUNCTION_LIST[_mem.function])
+                                       current_index=_mem.function)
             rset = RadioSetting("function", "Function", rs)
             mem.extra.append(rset)
 
@@ -1014,7 +1015,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             mem.extra.append(rset)
 
             rs = RadioSettingValueList(FREQHOP_LIST,
-                                       FREQHOP_LIST[_freqhops.freqhop])
+                                       current_index=_freqhops.freqhop)
             rset = RadioSetting("freqhop", "Frequency Hop", rs)
             mem.extra.append(rset)
 
@@ -1036,7 +1037,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             _freqhops = self._memobj.freqhops[number - 1]
 
             rs = RadioSettingValueList(FUNCTION_LIST,
-                                       FUNCTION_LIST[_mem.audio])
+                                       current_index=_mem.audio)
             rset = RadioSetting("audio", "Audio", rs)
             mem.extra.append(rset)
 
@@ -1045,7 +1046,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
             mem.extra.append(rset)
 
             rs = RadioSettingValueList(HOP86_LIST,
-                                       HOP86_LIST[_freqhops.freqhop])
+                                       current_index=_freqhops.freqhop)
             rset = RadioSetting("freqhop", "Frequency Hop", rs)
             mem.extra.append(rset)
 
@@ -1278,12 +1279,12 @@ class RT21Radio(chirp_common.CloneModeRadio):
             _keys = self._memobj.keys
 
             rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
-                                       TIMEOUTTIMER_LIST[_settings.tot])
+                                       current_index=_settings.tot)
             rset = RadioSetting("tot", "Time-out timer", rs)
             basic.append(rset)
 
             rs = RadioSettingValueList(TOTALERT_LIST,
-                                       TOTALERT_LIST[_settings.totalert])
+                                       current_index=_settings.totalert)
             rset = RadioSetting("totalert", "TOT Pre-alert", rs)
             basic.append(rset)
 
@@ -1291,13 +1292,14 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("squelch", "Squelch Level", rs)
             basic.append(rset)
 
-            rs = RadioSettingValueList(VOICE_LIST, VOICE_LIST[_settings.voice])
+            rs = RadioSettingValueList(
+                VOICE_LIST, current_index=_settings.voice)
             rset = RadioSetting("voice", "Voice Annunciation", rs)
             basic.append(rset)
 
             if self.MODEL == "RB17A":
                 rs = RadioSettingValueList(ALARM_LIST,
-                                           ALARM_LIST[_settings.alarm])
+                                           current_index=_settings.alarm)
                 rset = RadioSetting("alarm", "Alarm Type", rs)
                 basic.append(rset)
 
@@ -1313,13 +1315,13 @@ class RT21Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("use_vox", "VOX", rs)
             basic.append(rset)
 
-            rs = RadioSettingValueList(VOX_LIST, VOX_LIST[_settings.vox])
+            rs = RadioSettingValueList(VOX_LIST, current_index=_settings.vox)
             rset = RadioSetting("vox", "VOX Gain", rs)
             basic.append(rset)
 
             if self.MODEL == "RT29_UHF" or self.MODEL == "RT29_VHF":
                 rs = RadioSettingValueList(VOXD_LIST,
-                                           VOXD_LIST[_settings.voxd])
+                                           current_index=_settings.voxd)
                 rset = RadioSetting("voxd", "Vox Delay", rs)
                 basic.append(rset)
 
@@ -1336,7 +1338,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                     idx = PF1_VALUES.index(_keys.pf1)
                 else:
                     idx = LIST_DTMF_SPECIAL_VALUES.index(0x04)
-                rs = RadioSettingValueList(PF1_CHOICES, PF1_CHOICES[idx])
+                rs = RadioSettingValueList(PF1_CHOICES, current_index=idx)
                 rset = RadioSetting("keys.pf1", "PF1 Key Function", rs)
                 rset.set_apply_callback(apply_pf1_listvalue, _keys.pf1)
                 basic.append(rset)
@@ -1355,7 +1357,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 else:
                     idx = LIST_DTMF_SPECIAL_VALUES.index(0x04)
                 rs = RadioSettingValueList(PF1_17A_CHOICES,
-                                           PF1_17A_CHOICES[idx])
+                                           current_index=idx)
                 rset = RadioSetting("keys.pf1", "PF1 Key Function", rs)
                 rset.set_apply_callback(apply_pf1_17a_listvalue, _keys.pf1)
                 basic.append(rset)
@@ -1373,7 +1375,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                     idx = TOPKEY_VALUES.index(_keys.topkey)
                 else:
                     idx = TOPKEY_VALUES.index(0x0C)
-                rs = RadioSettingValueList(TOPKEY_CHOICES, TOPKEY_CHOICES[idx])
+                rs = RadioSettingValueList(TOPKEY_CHOICES, current_index=idx)
                 rset = RadioSetting("keys.topkey", "Top Key Function", rs)
                 rset.set_apply_callback(apply_topkey_listvalue, _keys.topkey)
                 basic.append(rset)
@@ -1391,7 +1393,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                     idx = PFKEY_VALUES.index(_keys.pf1)
                 else:
                     idx = PFKEY_VALUES.index(0x04)
-                rs = RadioSettingValueList(PFKEY_CHOICES, PFKEY_CHOICES[idx])
+                rs = RadioSettingValueList(PFKEY_CHOICES, current_index=idx)
                 rset = RadioSetting("keys.pf1", "PF1 Key Function", rs)
                 rset.set_apply_callback(apply_pfkey_listvalue, _keys.pf1)
                 basic.append(rset)
@@ -1400,7 +1402,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                     idx = PFKEY_VALUES.index(_keys.pf2)
                 else:
                     idx = PFKEY_VALUES.index(0x0A)
-                rs = RadioSettingValueList(PFKEY_CHOICES, PFKEY_CHOICES[idx])
+                rs = RadioSettingValueList(PFKEY_CHOICES, current_index=idx)
                 rset = RadioSetting("keys.pf2", "PF2 Key Function", rs)
                 rset.set_apply_callback(apply_pfkey_listvalue, _keys.pf2)
                 basic.append(rset)
@@ -1425,18 +1427,18 @@ class RT21Radio(chirp_common.CloneModeRadio):
             basic.append(rset)
 
             rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
-                                       TIMEOUTTIMER_LIST[_settings.tot])
+                                       current_index=_settings.tot)
             rset = RadioSetting("tot", "Time-out timer", rs)
             basic.append(rset)
 
             if self.MODEL == "RT19" or self.MODEL == "RT619":
                 rs = RadioSettingValueList(VOICE_LIST,
-                                           VOICE_LIST[_settings.voice])
+                                           current_index=_settings.voice)
                 rset = RadioSetting("voice", "Voice Prompts", rs)
                 basic.append(rset)
 
                 rs = RadioSettingValueList(BOOTSEL_LIST,
-                                           BOOTSEL_LIST[_settings.bootsel])
+                                           current_index=_settings.bootsel)
                 rset = RadioSetting("bootsel", "Boot Select", rs)
                 basic.append(rset)
 
@@ -1449,18 +1451,18 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 basic.append(rset)
 
                 rs = RadioSettingValueList(VOXL_LIST,
-                                           VOXL_LIST[_settings.voxl])
+                                           current_index=_settings.voxl)
                 rset = RadioSetting("voxl", "Vox Level", rs)
                 basic.append(rset)
 
                 rs = RadioSettingValueList(VOXD_LIST,
-                                           VOXD_LIST[_settings.voxd])
+                                           current_index=_settings.voxd)
                 rset = RadioSetting("voxd", "Vox Delay", rs)
                 basic.append(rset)
 
             if self.MODEL == "AR-63":
                 rs = RadioSettingValueList(VOICE_LIST,
-                                           VOICE_LIST[_settings.voice])
+                                           current_index=_settings.voice)
                 rset = RadioSetting("voice", "Voice Prompts", rs)
                 basic.append(rset)
 
@@ -1468,14 +1470,14 @@ class RT21Radio(chirp_common.CloneModeRadio):
                               "RT86",
                               ]:
                 rs = RadioSettingValueList(VOICE_LIST3,
-                                           VOICE_LIST3[_settings.voice])
+                                           current_index=_settings.voice)
                 rset = RadioSetting("voice", "Voice Annumciation", rs)
                 basic.append(rset)
 
             if self.MODEL == "RB26" or self.MODEL == "RB23" \
                     or self.MODEL == "RB89":
                 rs = RadioSettingValueList(VOICE_LIST2,
-                                           VOICE_LIST2[_settings.voice])
+                                           current_index=_settings.voice)
                 rset = RadioSetting("voice", "Voice Annumciation", rs)
                 basic.append(rset)
 
@@ -1486,7 +1488,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
             if self.MODEL == "RT86" or self.MODEL == "RB89":
                 rs = RadioSettingValueList(SPECIAL_LIST,
-                                           SPECIAL_LIST[_settings.tailmode])
+                                           current_index=_settings.tailmode)
                 rset = RadioSetting("tailmode", "QT/DQT Tail Mode", rs)
                 basic.append(rset)
 
@@ -1509,7 +1511,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
 
             if self.MODEL != "AR-63" and self.MODEL != "RT40B":
                 rs = RadioSettingValueList(SAVE_LIST,
-                                           SAVE_LIST[_settings.savem])
+                                           current_index=_settings.savem)
                 rset = RadioSetting("savem", "Battery Save Mode", rs)
                 basic.append(rset)
 
@@ -1517,12 +1519,12 @@ class RT21Radio(chirp_common.CloneModeRadio):
                     self.MODEL != "AR-63" and \
                     self.MODEL != "RT40B":
                 rs = RadioSettingValueList(GAIN_LIST,
-                                           GAIN_LIST[_settings.gain])
+                                           current_index=_settings.gain)
                 rset = RadioSetting("gain", "MIC Gain", rs)
                 basic.append(rset)
 
                 rs = RadioSettingValueList(WARN_LIST,
-                                           WARN_LIST[_settings.warn])
+                                           current_index=_settings.warn)
                 rset = RadioSetting("warn", "Warn Mode", rs)
                 basic.append(rset)
 
@@ -1536,12 +1538,12 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 basic.append(rset)
 
                 rs = RadioSettingValueList(VOXL_LIST,
-                                           VOXL_LIST[_settings.voxl])
+                                           current_index=_settings.voxl)
                 rset = RadioSetting("voxl", "Vox Level", rs)
                 basic.append(rset)
 
                 rs = RadioSettingValueList(VOXD_LIST,
-                                           VOXD_LIST[_settings.voxd])
+                                           current_index=_settings.voxd)
                 rset = RadioSetting("voxd", "Vox Delay", rs)
                 basic.append(rset)
 
@@ -1552,23 +1554,23 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 basic.append(rset)
 
                 rs = RadioSettingValueList(VOXL_LIST,
-                                           VOXL_LIST[_settings3.voxl])
+                                           current_index=_settings3.voxl)
                 rset = RadioSetting("settings3.voxl", "Vox Level", rs)
                 basic.append(rset)
 
                 rs = RadioSettingValueList(VOXD_LIST,
-                                           VOXD_LIST[_settings3.voxd])
+                                           current_index=_settings3.voxd)
                 rset = RadioSetting("settings3.voxd", "Vox Delay", rs)
                 basic.append(rset)
 
                 if self.MODEL == "RB26":
                     rs = RadioSettingValueList(PFKEY_LIST,
-                                               PFKEY_LIST[_settings.pf1])
+                                               current_index=_settings.pf1)
                     rset = RadioSetting("pf1", "PF1 Key Set", rs)
                     basic.append(rset)
 
                     rs = RadioSettingValueList(PFKEY_LIST,
-                                               PFKEY_LIST[_settings.pf2])
+                                               current_index=_settings.pf2)
                     rset = RadioSetting("pf2", "PF2 Key Set", rs)
                     basic.append(rset)
                 elif self.MODEL == "RB23":
@@ -1585,7 +1587,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                     else:
                         idx = PFKEY23_VALUES.index(0x01)
                     rs = RadioSettingValueList(PFKEY23_CHOICES,
-                                               PFKEY23_CHOICES[idx])
+                                               current_index=idx)
                     rset = RadioSetting("settings.pf1", "PF1 Key Function", rs)
                     rset.set_apply_callback(apply_pfkey_listvalue,
                                             _settings.pf1)
@@ -1596,7 +1598,7 @@ class RT21Radio(chirp_common.CloneModeRadio):
                     else:
                         idx = PFKEY23_VALUES.index(0x03)
                     rs = RadioSettingValueList(PFKEY23_CHOICES,
-                                               PFKEY23_CHOICES[idx])
+                                               current_index=idx)
                     rset = RadioSetting("settings.pf2", "PF2 Key Function", rs)
                     rset.set_apply_callback(apply_pfkey_listvalue,
                                             _settings.pf2)
@@ -1612,12 +1614,12 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 basic.append(rset)
 
                 rs = RadioSettingValueList(VOXL_LIST,
-                                           VOXL_LIST[_settings.voxl])
+                                           current_index=_settings.voxl)
                 rset = RadioSetting("voxl", "Vox Level", rs)
                 basic.append(rset)
 
                 rs = RadioSettingValueList(VOXD_LIST,
-                                           VOXD_LIST[_settings.voxd])
+                                           current_index=_settings.voxd)
                 rset = RadioSetting("voxd", "Vox Delay", rs)
                 basic.append(rset)
 
@@ -1635,12 +1637,12 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 basic.append(rset)
 
                 rs = RadioSettingValueList(HOP_LIST,
-                                           HOP_LIST[_settings.hop])
+                                           current_index=_settings.hop)
                 rset = RadioSetting("hop", "Hop Mode", rs)
                 basic.append(rset)
 
                 rs = RadioSettingValueList(TAIL_LIST,
-                                           TAIL_LIST[_settings.tailmode])
+                                           current_index=_settings.tailmode)
                 rset = RadioSetting("tailmode", "DCS Tail Mode", rs)
                 basic.append(rset)
 
@@ -1649,23 +1651,23 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 basic.append(rset)
 
                 rs = RadioSettingValueList(VOXL_LIST,
-                                           VOXL_LIST[_settings.voxl])
+                                           current_index=_settings.voxl)
                 rset = RadioSetting("voxl", "Vox Level", rs)
                 basic.append(rset)
 
                 rs = RadioSettingValueList(VOXD_LIST,
-                                           VOXD_LIST[_settings.voxd])
+                                           current_index=_settings.voxd)
                 rset = RadioSetting("voxd", "Vox Delay", rs)
                 basic.append(rset)
 
             if self.MODEL == "RT40B":
                 rs = RadioSettingValueList(VOICE_LIST,
-                                           VOICE_LIST[_settings.voice])
+                                           current_index=_settings.voice)
                 rset = RadioSetting("voice", "Voice Prompts", rs)
                 basic.append(rset)
 
                 rs = RadioSettingValueList(SAVEM_LIST,
-                                           SAVEM_LIST[_settings.savem])
+                                           current_index=_settings.savem)
                 rset = RadioSetting("savem", "Battery Save Mode", rs)
                 basic.append(rset)
 
@@ -1682,34 +1684,34 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 basic.append(rset)
 
                 rs = RadioSettingValueList(VOXL_LIST,
-                                           VOXL_LIST[_settings.voxl])
+                                           current_index=_settings.voxl)
                 rset = RadioSetting("voxl", "Vox Level", rs)
                 basic.append(rset)
 
                 rs = RadioSettingValueList(VOXD_LIST,
-                                           VOXD_LIST[_settings.voxd])
+                                           current_index=_settings.voxd)
                 rset = RadioSetting("voxd", "Vox Delay", rs)
                 basic.append(rset)
 
         if self.MODEL == "RT86":
             rs = RadioSettingValueList(PFKEY86_LIST,
-                                       PFKEY86_LIST[_settings.pf1])
+                                       current_index=_settings.pf1)
             rset = RadioSetting("pf1", "PF1 Key Set", rs)
             basic.append(rset)
 
             rs = RadioSettingValueList(PFKEY86_LIST,
-                                       PFKEY86_LIST[_settings.pf2])
+                                       current_index=_settings.pf2)
             rset = RadioSetting("pf2", "PF2 Key Set", rs)
             basic.append(rset)
 
         if self.MODEL == "RB89":
             rs = RadioSettingValueList(PFKEY89_LIST,
-                                       PFKEY89_LIST[_settings.pf1])
+                                       current_index=_settings.pf1)
             rset = RadioSetting("pf1", "PF1 Key Set", rs)
             basic.append(rset)
 
             rs = RadioSettingValueList(PFKEY89_LIST,
-                                       PFKEY89_LIST[_settings.pf2])
+                                       current_index=_settings.pf2)
             rset = RadioSetting("pf2", "PF2 Key Set", rs)
             basic.append(rset)
 
@@ -1719,27 +1721,27 @@ class RT21Radio(chirp_common.CloneModeRadio):
             basic.append(rset)
 
             rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
-                                       TIMEOUTTIMER_LIST[_settings.tot])
+                                       current_index=_settings.tot)
             rset = RadioSetting("tot", "Time-out timer", rs)
             basic.append(rset)
 
             rs = RadioSettingValueList(VOICE_LIST2,
-                                       VOICE_LIST2[_settings.voice])
+                                       current_index=_settings.voice)
             rset = RadioSetting("voice", "Voice Annumciation", rs)
             basic.append(rset)
 
             rs = RadioSettingValueList(POT_LIST,
-                                       POT_LIST[_settings.pwrontype])
+                                       current_index=_settings.pwrontype)
             rset = RadioSetting("pwrontype", "Power on Type", rs)
             basic.append(rset)
 
             rs = RadioSettingValueList(SAVE_LIST,
-                                       SAVE_LIST[_settings.savem])
+                                       current_index=_settings.savem)
             rset = RadioSetting("savem", "Battery Save Mode", rs)
             basic.append(rset)
 
             rs = RadioSettingValueList(GAIN_LIST,
-                                       GAIN_LIST[_settings.gain])
+                                       current_index=_settings.gain)
             rset = RadioSetting("gain", "MIC Gain", rs)
             basic.append(rset)
 
@@ -1768,22 +1770,22 @@ class RT21Radio(chirp_common.CloneModeRadio):
             basic.append(rset)
 
             rs = RadioSettingValueList(VOXL_LIST,
-                                       VOXL_LIST[_settings.voxl])
+                                       current_index=_settings.voxl)
             rset = RadioSetting("voxl", "Vox Level", rs)
             basic.append(rset)
 
             rs = RadioSettingValueList(VOXD_LIST,
-                                       VOXD_LIST[_settings.voxd])
+                                       current_index=_settings.voxd)
             rset = RadioSetting("voxd", "Vox Delay", rs)
             basic.append(rset)
 
             rs = RadioSettingValueList(PFKEY28B_LIST,
-                                       PFKEY28B_LIST[_settings.pfkey_lt])
+                                       current_index=_settings.pfkey_lt)
             rset = RadioSetting("pfkey_lt", "Key Set <", rs)
             basic.append(rset)
 
             rs = RadioSettingValueList(PFKEY28B_LIST,
-                                       PFKEY28B_LIST[_settings.pfkey_gt])
+                                       current_index=_settings.pfkey_gt)
             rset = RadioSetting("pfkey_gt", "Key Set >", rs)
             basic.append(rset)
 

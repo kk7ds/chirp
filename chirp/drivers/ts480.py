@@ -842,7 +842,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
 
         options = ["ANT1", "ANT2"]
         # CAUTION: an has value of 1 or 2
-        rx = RadioSettingValueList(options, options[_sets.an - 1])
+        rx = RadioSettingValueList(options, current_index=_sets.an - 1)
         rset = RadioSetting("settings.an", "Antenna Selected", rx)
         # Add 1 to the changed value. S/b 1/2
         rset.set_apply_callback(my_val_list, options, _sets, "an", 1)
@@ -879,7 +879,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         options = ["Menu A", "Menu B"]
-        rx = RadioSettingValueList(options, options[_sets.mf])
+        rx = RadioSettingValueList(options, current_index=_sets.mf)
         sx = "Menu Selected"
         rset = RadioSetting("settings.mf", sx, rx)
         rset.set_apply_callback(my_val_list, options, _sets, "mf")
@@ -909,7 +909,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
             kx = _chm[mx].xmode
             options = ["None", "LSB", "USB", "CW", "FM", "AM", "FSK",
                        "CW-R", "N/A", "FSK-R"]
-            rx = RadioSettingValueList(options, options[kx])
+            rx = RadioSettingValueList(options, current_index=kx)
             sx = "    VFO-Band %i Tx/Rx Mode" % (mx - 100)
             rset = RadioSetting("ch_mem.xmode/%d" % mx, sx, rx)
             rset.set_apply_callback(my_val_list, options, _chm,
@@ -952,7 +952,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
                 menb.append(rset)
 
             options = ["250", "500", "1000"]
-            rx = RadioSettingValueList(options, options[_mex[mx].ex003])
+            rx = RadioSettingValueList(options, current_index=_mex[mx].ex003)
             sx = my_labels(3)
             rset = RadioSetting("exset.ex003/%d" % mx, sx, rx)
             rset.set_apply_callback(my_val_list, options, _mex,
@@ -981,7 +981,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
                 menb.append(rset)
 
             options = ["100", "200", "300", "400", "500"]
-            rx = RadioSettingValueList(options, options[_mex[mx].ex009])
+            rx = RadioSettingValueList(options, current_index=_mex[mx].ex009)
             sx = my_labels(9)
             rset = RadioSetting("exset.ex009/%d" % mx, sx, rx)
             rset.set_apply_callback(my_val_list, options, _mex,
@@ -1001,7 +1001,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
                 menb.append(rset)
 
             options = ["TO", "CO"]
-            rx = RadioSettingValueList(options, options[_mex[mx].ex011])
+            rx = RadioSettingValueList(options, current_index=_mex[mx].ex011)
             sx = my_labels(11)
             rset = RadioSetting("exset.ex011/%d" % mx, sx, rx)
             rset.set_apply_callback(my_val_list, options, _mex,
@@ -1021,7 +1021,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
                 menb.append(rset)
 
             options = ["Off", "3", "5", "10", "20", "30"]
-            rx = RadioSettingValueList(options, options[_mex[mx].ex022])
+            rx = RadioSettingValueList(options, current_index=_mex[mx].ex022)
             sx = my_labels(22)
             rset = RadioSetting("exset.ex022/%d" % mx, sx, rx)
             rset.set_apply_callback(my_val_list, options, _mex,
@@ -1089,7 +1089,7 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
             mx = _asf[ix].asmode - 1     # Same logic as xmode
             if _asf[ix].asmode == 9:
                 mx = 7
-            rx = RadioSettingValueList(TS480_MODES, TS480_MODES[mx])
+            rx = RadioSettingValueList(TS480_MODES, current_index=mx)
             rset = RadioSetting("asf.asmode/%d" % ix, "   Mode", rx)
             rset.set_apply_callback(my_asf_mode, _asf, ix)
             amode.append(rset)

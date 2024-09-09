@@ -367,18 +367,19 @@ class UV17(baofeng_uv17Pro.UV17Pro):
             val = _mem.settings.powersave
         rs = RadioSetting("settings.powersave", "Battery Saver",
                           RadioSettingValueList(
-                              LIST_SAVE, LIST_SAVE[val]))
+                              LIST_SAVE, current_index=val))
         basic.append(rs)
 
         rs = RadioSetting("settings.scanmode", "Scan Mode",
                           RadioSettingValueList(
                               LIST_SCANMODE,
-                              LIST_SCANMODE[_mem.settings.scanmode]))
+                              current_index=_mem.settings.scanmode))
         basic.append(rs)
 
-        rs = RadioSetting("settings.dtmfst", "DTMF Sidetone",
-                          RadioSettingValueList(LIST_DTMFST, LIST_DTMFST[
-                              _mem.settings.dtmfst]))
+        rs = RadioSetting(
+            "settings.dtmfst", "DTMF Sidetone",
+            RadioSettingValueList(
+                LIST_DTMFST, current_index=_mem.settings.dtmfst))
         basic.append(rs)
 
         rs = RadioSetting("settings.fmenable", "Enable FM radio",

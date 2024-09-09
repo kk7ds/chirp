@@ -163,7 +163,7 @@ class ICV86Radio(icf.IcomCloneModeRadio):
         setmode.append(
             RadioSetting(
                 "lcd", "LCD Backlight",
-                RadioSettingValueList(opts, opts[_settings.lcd])))
+                RadioSettingValueList(opts, current_index=_settings.lcd)))
 
         # Mic Gain
         rs = RadioSetting("mic", "Mic Gain",
@@ -179,14 +179,14 @@ class ICV86Radio(icf.IcomCloneModeRadio):
         setmode.append(
             RadioSetting(
                 "dial_assignment", "Dial Assignment",
-                RadioSettingValueList(opts, opts[_settings.dial_assignment])))
+                RadioSettingValueList(opts, current_index=_settings.dial_assignment)))
 
         # Display Type
         opts = ["Frequency", "Channel", "Name"]
         setmode.append(
             RadioSetting(
                 "disp_type", "Display Type",
-                RadioSettingValueList(opts, opts[_settings.disp_type])))
+                RadioSettingValueList(opts, current_index=_settings.disp_type)))
 
         return settings
 

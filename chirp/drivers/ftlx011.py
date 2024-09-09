@@ -516,7 +516,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         bcl = RadioSetting("bclo", "Busy channel lockout",
                            RadioSettingValueList(LIST_BCL,
-                                                 LIST_BCL[bcls]))
+                                                 current_index=bcls))
         mem.extra.append(bcl)
 
         # return mem
@@ -627,23 +627,23 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         # ## Basic Settings
         scanr = RadioSetting("scan_resume", "Scan resume by",
                              RadioSettingValueList(
-                              LIST_SCAN_RESUME, LIST_SCAN_RESUME[_settings.scan_resume]))
+                              LIST_SCAN_RESUME, current_index=_settings.scan_resume))
         basic.append(scanr)
 
         scant = RadioSetting("scan_time", "Scan time per channel",
                              RadioSettingValueList(
-                              LIST_SCAN_TIME, LIST_SCAN_TIME[_settings.scan_time]))
+                              LIST_SCAN_TIME, current_index=_settings.scan_time))
         basic.append(scant)
 
         LIST_PCH = ["%s" % x for x in range(1, _settings.chcount + 1)]
         pch1 = RadioSetting("pch1", "Priority channel 1",
                             RadioSettingValueList(
-                                 LIST_PCH, LIST_PCH[_settings.pch1]))
+                                 LIST_PCH, current_index=_settings.pch1))
         basic.append(pch1)
 
         pch2 = RadioSetting("pch2", "Priority channel 2",
                             RadioSettingValueList(
-                                LIST_PCH, LIST_PCH[_settings.pch2]))
+                                LIST_PCH, current_index=_settings.pch2))
         basic.append(pch2)
 
         scanp = RadioSetting("priority_during_scan", "Disable priority during scan",
@@ -652,7 +652,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         scanps = RadioSetting("priority_speed", "Priority scan speed",
                               RadioSettingValueList(
-                                LIST_SCAN_P_SPEED, LIST_SCAN_P_SPEED[_settings.priority_speed]))
+                                LIST_SCAN_P_SPEED, current_index=_settings.priority_speed))
         basic.append(scanps)
 
         oh = RadioSetting("off_hook", "Off Hook",  # inverted
@@ -665,17 +665,17 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         tot = RadioSetting("tot", "Time out timer",
                            RadioSettingValueList(
-                                 LIST_TOT, LIST_TOT[_settings.tot]))
+                                 LIST_TOT, current_index=_settings.tot))
         basic.append(tot)
 
         totr = RadioSetting("tot_resume", "Time out timer resume guard",
                             RadioSettingValueList(
-                               LIST_TOT_RESUME, LIST_TOT_RESUME[_settings.tot_resume]))
+                               LIST_TOT_RESUME, current_index=_settings.tot_resume))
         basic.append(totr)
 
         ak = RadioSetting("a_key", "A Key function",
                           RadioSettingValueList(
-                                LIST_A_KEY, LIST_A_KEY[_settings.a_key]))
+                                LIST_A_KEY, current_index=_settings.a_key))
         basic.append(ak)
 
         monitor = RadioSetting("monitor", "Monitor",  # inverted
@@ -684,7 +684,7 @@ class ftlx011(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         homec = RadioSetting("home_channel", "Home Channel is",
                              RadioSettingValueList(
-                                 LIST_HOME_CHANNEL, LIST_HOME_CHANNEL[_settings.home_channel]))
+                                 LIST_HOME_CHANNEL, current_index=_settings.home_channel))
         basic.append(homec)
 
         txd = RadioSetting("tx_carrier_delay", "Talk Back",

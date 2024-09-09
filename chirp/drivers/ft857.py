@@ -548,24 +548,25 @@ class FT857Radio(ft817.FT817Radio):
                           RadioSettingValueBoolean(_settings.ars_430))
         basic.append(rs)
         options = ["enable", "disable"]
-        rs = RadioSetting("disable_amfm_dial", "AM&FM Dial",
-                          RadioSettingValueList(options,
-                                                options[
-                                                    _settings.disable_amfm_dial
-                                                        ]))
+        rs = RadioSetting(
+            "disable_amfm_dial", "AM&FM Dial",
+            RadioSettingValueList(
+                options, current_index=_settings.disable_amfm_dial))
         panel.append(rs)
         rs = RadioSetting("am_mic", "AM mic gain",
                           RadioSettingValueInteger(0, 100, _settings.am_mic))
         basic.append(rs)
         options = ["OFF", "1h", "2h", "3h", "4h", "5h", "6h"]
-        rs = RadioSetting("apo_time", "APO time",
-                          RadioSettingValueList(options,
-                                                options[_settings.apo_time]))
+        rs = RadioSetting(
+            "apo_time", "APO time",
+            RadioSettingValueList(
+                options, current_index=_settings.apo_time))
         basic.append(rs)
         options = ["OFF", "Range", "All"]
-        rs = RadioSetting("arts_beep", "ARTS beep",
-                          RadioSettingValueList(options,
-                                                options[_settings.arts_beep]))
+        rs = RadioSetting(
+            "arts_beep", "ARTS beep",
+            RadioSettingValueList(
+                options, current_index=_settings.arts_beep))
         basic.append(rs)
         rs = RadioSetting("arts_id", "ARTS ID",
                           RadioSettingValueBoolean(_settings.arts_id))
@@ -603,15 +604,16 @@ class FT857Radio(ft817.FT817Radio):
         rs = RadioSetting("beacon_text3", "Beacon text3", st)
         extended.append(rs)
         options = ["OFF"] + ["%i sec" % i for i in range(1, 256)]
-        rs = RadioSetting("beacon_time", "Beacon time",
-                          RadioSettingValueList(options,
-                                                options[_settings.beacon_time])
-                          )
+        rs = RadioSetting(
+            "beacon_time", "Beacon time",
+            RadioSettingValueList(
+                options, current_index=_settings.beacon_time))
         extended.append(rs)
         options = ["440 Hz", "880 Hz", "1760 Hz"]
-        rs = RadioSetting("beep_tone", "Beep tone",
-                          RadioSettingValueList(options,
-                                                options[_settings.beep_tone]))
+        rs = RadioSetting(
+            "beep_tone", "Beep tone",
+            RadioSettingValueList(
+                options, current_index=_settings.beep_tone))
         panel.append(rs)
         rs = RadioSetting("beep_vol", "Beep volume",
                           RadioSettingValueInteger(0, 100, _settings.beep_vol))
@@ -633,84 +635,87 @@ class FT857Radio(ft817.FT817Radio):
                                                    _settings.t_usb_car))
         extended.append(rs)
         options = ["4800", "9600", "38400"]
-        rs = RadioSetting("cat_rate", "CAT rate",
-                          RadioSettingValueList(options,
-                                                options[_settings.cat_rate]))
+        rs = RadioSetting(
+            "cat_rate", "CAT rate",
+            RadioSettingValueList(
+                options, current_index=_settings.cat_rate))
         basic.append(rs)
         options = ["CAT", "Linear", "Tuner"]
-        rs = RadioSetting("cat_lin_tun", "CAT/LIN/TUN selection",
-                          RadioSettingValueList(options,
-                                                options[_settings.cat_lin_tun])
-                          )
+        rs = RadioSetting(
+            "cat_lin_tun", "CAT/LIN/TUN selection",
+            RadioSettingValueList(
+                options, current_index=_settings.cat_lin_tun))
         extended.append(rs)
         options = ["MAIN", "VFO/MEM", "CLAR"]
         # TODO test the 3 options on non D radio
         # which have only SEL and MAIN
-        rs = RadioSetting("clar_dial_sel", "Clarifier dial selection",
-                          RadioSettingValueList(options,
-                                                options[
-                                                    _settings.clar_dial_sel]))
+        rs = RadioSetting(
+            "clar_dial_sel", "Clarifier dial selection",
+            RadioSettingValueList(
+                options, current_index=_settings.clar_dial_sel))
         panel.append(rs)
         rs = RadioSetting("cw_auto_mode", "CW Automatic mode",
                           RadioSettingValueBoolean(_settings.cw_auto_mode))
         cw.append(rs)
         options = ["USB", "LSB", "AUTO"]
-        rs = RadioSetting("cw_bfo", "CW BFO",
-                          RadioSettingValueList(options,
-                                                options[_settings.cw_bfo]))
+        rs = RadioSetting("cw_bfo", "CW BFO", RadioSettingValueList(
+            options, current_index=_settings.cw_bfo))
         cw.append(rs)
         options = ["FULL"] + ["%i ms" % (i * 10) for i in range(3, 301)]
         val = (_settings.cw_delay + _settings.cw_delay_hi * 256) - 2
         rs = RadioSetting("cw_delay", "CW delay",
-                          RadioSettingValueList(options, options[val]))
+                          RadioSettingValueList(options, current_index=val))
         cw.append(rs)
         options = ["Normal", "Reverse"]
-        rs = RadioSetting("cw_key_rev", "CW key reverse",
-                          RadioSettingValueList(options,
-                                                options[_settings.cw_key_rev]))
+        rs = RadioSetting(
+            "cw_key_rev", "CW key reverse",
+            RadioSettingValueList(
+                options, current_index=_settings.cw_key_rev))
         cw.append(rs)
         rs = RadioSetting("cw_paddle", "CW paddle",
                           RadioSettingValueBoolean(_settings.cw_paddle))
         cw.append(rs)
         options = ["%i Hz" % i for i in range(400, 801, 100)]
-        rs = RadioSetting("cw_pitch", "CW pitch",
-                          RadioSettingValueList(options,
-                                                options[_settings.cw_pitch]))
+        rs = RadioSetting(
+            "cw_pitch", "CW pitch",
+            RadioSettingValueList(
+                options, current_index=_settings.cw_pitch))
         cw.append(rs)
         options = ["%i ms" % i for i in range(5, 31, 5)]
-        rs = RadioSetting("cw_qsk", "CW QSK",
-                          RadioSettingValueList(options,
-                                                options[_settings.cw_qsk]))
+        rs = RadioSetting("cw_qsk", "CW QSK", RadioSettingValueList(
+            options, current_index=_settings.cw_qsk))
         cw.append(rs)
         rs = RadioSetting("cw_sidetone", "CW sidetone volume",
                           RadioSettingValueInteger(0, 100,
                                                    _settings.cw_sidetone))
         cw.append(rs)
         options = ["%i wpm" % i for i in range(4, 61)]
-        rs = RadioSetting("cw_speed", "CW speed",
-                          RadioSettingValueList(options,
-                                                options[_settings.cw_speed]))
+        rs = RadioSetting(
+            "cw_speed", "CW speed",
+            RadioSettingValueList(
+                options, current_index=_settings.cw_speed))
         cw.append(rs)
         options = ["Numeric", "Alphabet", "AlphaNumeric"]
-        rs = RadioSetting("cw_training", "CW training",
-                          RadioSettingValueList(options,
-                                                options[_settings.cw_training])
-                          )
+        rs = RadioSetting(
+            "cw_training", "CW training",
+            RadioSettingValueList(
+                options, current_index=_settings.cw_training))
         cw.append(rs)
         options = ["1:%1.1f" % (i / 10) for i in range(25, 46, 1)]
-        rs = RadioSetting("cw_weight", "CW weight",
-                          RadioSettingValueList(options,
-                                                options[_settings.cw_weight]))
+        rs = RadioSetting(
+            "cw_weight", "CW weight",
+            RadioSettingValueList(
+                options, current_index=_settings.cw_weight))
         cw.append(rs)
         options = ["Tn-Rn", "Tn-Riv", "Tiv-Rn", "Tiv-Riv"]
-        rs = RadioSetting("dcs_inv", "DCS inv",
-                          RadioSettingValueList(options,
-                                                options[_settings.dcs_inv]))
+        rs = RadioSetting("dcs_inv", "DCS inv", RadioSettingValueList(
+            options, current_index=_settings.dcs_inv))
         extended.append(rs)
         options = ["Fine", "Coarse"]
-        rs = RadioSetting("dial_step", "Dial step",
-                          RadioSettingValueList(options,
-                                                options[_settings.dial_step]))
+        rs = RadioSetting(
+            "dial_step", "Dial step",
+            RadioSettingValueList(
+                options, current_index=_settings.dial_step))
         panel.append(rs)
         rs = RadioSetting("dig_disp", "Dig disp (*10 Hz)",
                           RadioSettingValueInteger(-300, 300,
@@ -721,9 +726,10 @@ class FT857Radio(ft817.FT817Radio):
                                                    _settings.dig_mic))
         packet.append(rs)
         options = ["RTTYL", "RTTYU", "PSK31-L", "PSK31-U", "USER-L", "USER-U"]
-        rs = RadioSetting("dig_mode", "Dig mode",
-                          RadioSettingValueList(options,
-                                                options[_settings.dig_mode]))
+        rs = RadioSetting(
+            "dig_mode", "Dig mode",
+            RadioSettingValueList(
+                options, current_index=_settings.dig_mode))
         packet.append(rs)
         rs = RadioSetting("dig_shift", "Dig shift (*10 Hz)",
                           RadioSettingValueInteger(-300, 300,
@@ -733,9 +739,10 @@ class FT857Radio(ft817.FT817Radio):
                           RadioSettingValueInteger(0, 100, _settings.dig_vox))
         packet.append(rs)
         options = ["ARTS", "BAND", "FIX", "MEMGRP", "MODE", "MTR", "VFO"]
-        rs = RadioSetting("disp_color", "Display color mode",
-                          RadioSettingValueList(options,
-                                                options[_settings.disp_color]))
+        rs = RadioSetting(
+            "disp_color", "Display color mode",
+            RadioSettingValueList(
+                options, current_index=_settings.disp_color))
         panel.append(rs)
         rs = RadioSetting("disp_color_arts", "Display color ARTS set",
                           RadioSettingValueInteger(0, 1,
@@ -778,21 +785,22 @@ class FT857Radio(ft817.FT817Radio):
                                                    _settings.disp_intensity))
         panel.append(rs)
         options = ["OFF", "Auto1", "Auto2", "ON"]
-        rs = RadioSetting("disp_mode", "Display backlight mode",
-                          RadioSettingValueList(options,
-                                                options[_settings.disp_mode]))
+        rs = RadioSetting(
+            "disp_mode", "Display backlight mode",
+            RadioSettingValueList(
+                options, current_index=_settings.disp_mode))
         panel.append(rs)
         options = ["60 Hz", "120 Hz", "240 Hz"]
         rs = RadioSetting("dsp_bpf", "Dsp band pass filter",
-                          RadioSettingValueList(options,
-                                                options[_settings.dsp_bpf]))
+                          RadioSettingValueList(
+                              options, current_index=_settings.dsp_bpf))
         cw.append(rs)
         options = ["100 Hz", "160 Hz", "220 Hz", "280 Hz", "340 Hz", "400 Hz",
                    "460 Hz", "520 Hz", "580 Hz", "640 Hz", "720 Hz", "760 Hz",
                    "820 Hz", "880 Hz", "940 Hz", "1000 Hz"]
-        rs = RadioSetting("dsp_hpf", "Dsp hi pass filter cut off",
-                          RadioSettingValueList(options,
-                                                options[_settings.dsp_hpf]))
+        rs = RadioSetting(
+            "dsp_hpf", "Dsp hi pass filter cut off",
+            RadioSettingValueList(options, current_index=_settings.dsp_hpf))
         basic.append(rs)
         options = ["1000 Hz", "1160 Hz", "1320 Hz", "1480 Hz", "1650 Hz",
                    "1800 Hz", "1970 Hz", "2130 Hz", "2290 Hz", "2450 Hz",
@@ -801,14 +809,15 @@ class FT857Radio(ft817.FT817Radio):
                    "4230 Hz", "4390 Hz", "4550 Hz", "4710 Hz", "4870 Hz",
                    "5030 Hz", "5190 Hz", "5390 Hz", "5520 Hz", "5680 Hz",
                    "5840 Hz", "6000 Hz"]
-        rs = RadioSetting("dsp_lpf", "Dsp low pass filter cut off",
-                          RadioSettingValueList(options,
-                                                options[_settings.dsp_lpf]))
+        rs = RadioSetting(
+            "dsp_lpf", "Dsp low pass filter cut off",
+            RadioSettingValueList(options, current_index=_settings.dsp_lpf))
         basic.append(rs)
         options = ["OFF", "LPF", "HPF", "BOTH"]
-        rs = RadioSetting("dsp_mic_eq", "Dsp mic equalization",
-                          RadioSettingValueList(options,
-                                                options[_settings.dsp_mic_eq]))
+        rs = RadioSetting(
+            "dsp_mic_eq", "Dsp mic equalization",
+            RadioSettingValueList(
+                options, current_index=_settings.dsp_mic_eq))
         basic.append(rs)
         rs = RadioSetting("dsp_nr", "DSP noise reduction level",
                           RadioSettingValueInteger(1, 16,
@@ -822,40 +831,40 @@ class FT857Radio(ft817.FT817Radio):
                           RadioSettingValueBoolean(_settings.home_vfo))
         panel.append(rs)
         options = ["Dial", "Freq", "Panel", "All"]
-        rs = RadioSetting("lock_mode", "Lock mode",
-                          RadioSettingValueList(options,
-                                                options[_settings.lock_mode]))
+        rs = RadioSetting(
+            "lock_mode", "Lock mode",
+            RadioSettingValueList(
+                options, current_index=_settings.lock_mode))
         panel.append(rs)
         rs = RadioSetting("mem_group", "Mem group",
                           RadioSettingValueBoolean(_settings.mem_group))
         basic.append(rs)
         options = ["CW SIDETONE", "CW SPEED", "MHz/MEM GRP", "MIC GAIN",
                    "NB LEVEL", "RF POWER", "STEP"]
-        rs = RadioSetting("mem_vfo_dial_mode", "Mem/VFO dial mode",
-                          RadioSettingValueList(options,
-                                                options[
-                                                    _settings.mem_vfo_dial_mode
-                                                       ]))
+        rs = RadioSetting(
+            "mem_vfo_dial_mode", "Mem/VFO dial mode",
+            RadioSettingValueList(
+                options, current_index=_settings.mem_vfo_dial_mode))
         panel.append(rs)
         rs = RadioSetting("mic_scan", "Mic scan",
                           RadioSettingValueBoolean(_settings.mic_scan))
         basic.append(rs)
         options = ["NOR", "RMT", "CAT"]
         rs = RadioSetting("mic_sel", "Mic selection",
-                          RadioSettingValueList(options,
-                                                options[_settings.mic_sel]))
+                          RadioSettingValueList(
+                              options, current_index=_settings.mic_sel))
         extended.append(rs)
         options = ["SIG", "CTR", "VLT", "N/A", "FS", "OFF"]
-        rs = RadioSetting("mtr_arx_sel", "Meter receive selection",
-                          RadioSettingValueList(options,
-                                                options[_settings.mtr_arx_sel])
-                          )
+        rs = RadioSetting(
+            "mtr_arx_sel", "Meter receive selection",
+            RadioSettingValueList(
+                options, current_index=_settings.mtr_arx_sel))
         extended.append(rs)
         options = ["PWR", "ALC", "MOD", "SWR", "VLT", "N/A", "OFF"]
-        rs = RadioSetting("mtr_atx_sel", "Meter transmit selection",
-                          RadioSettingValueList(options,
-                                                options[_settings.mtr_atx_sel])
-                          )
+        rs = RadioSetting(
+            "mtr_atx_sel", "Meter transmit selection",
+            RadioSettingValueList(
+                options, current_index=_settings.mtr_atx_sel))
         extended.append(rs)
         rs = RadioSetting("mtr_peak_hold", "Meter peak hold",
                           RadioSettingValueBoolean(_settings.mtr_peak_hold))
@@ -917,9 +926,10 @@ class FT857Radio(ft817.FT817Radio):
                           RadioSettingValueInteger(0, 100, _settings.pkt9600))
         packet.append(rs)
         options = ["1200", "9600"]
-        rs = RadioSetting("pkt_rate", "Packet rate",
-                          RadioSettingValueList(options,
-                                                options[_settings.pkt_rate]))
+        rs = RadioSetting(
+            "pkt_rate", "Packet rate",
+            RadioSettingValueList(
+                options, current_index=_settings.pkt_rate))
         packet.append(rs)
         rs = RadioSetting("proc_level", "Proc level",
                           RadioSettingValueInteger(0, 100,
@@ -942,9 +952,10 @@ class FT857Radio(ft817.FT817Radio):
                                                    _settings.rf_power_uhf))
         basic.append(rs)
         options = ["TIME", "BUSY", "STOP"]
-        rs = RadioSetting("scan_mode", "Scan mode",
-                          RadioSettingValueList(options,
-                                                options[_settings.scan_mode]))
+        rs = RadioSetting(
+            "scan_mode", "Scan mode",
+            RadioSettingValueList(
+                options, current_index=_settings.scan_mode))
         basic.append(rs)
         rs = RadioSetting("scan_resume", "Scan resume",
                           RadioSettingValueInteger(1, 10,
@@ -954,23 +965,25 @@ class FT857Radio(ft817.FT817Radio):
                           RadioSettingValueBoolean(_settings.split_tone))
         extended.append(rs)
         options = ["RF-Gain", "Squelch"]
-        rs = RadioSetting("sql_rf_gain", "Squelch/RF-Gain",
-                          RadioSettingValueList(options,
-                                                options[_settings.sql_rf_gain])
-                          )
+        rs = RadioSetting(
+            "sql_rf_gain", "Squelch/RF-Gain",
+            RadioSettingValueList(
+                options, current_index=_settings.sql_rf_gain))
         panel.append(rs)
         rs = RadioSetting("ssb_mic", "SSB Mic gain",
                           RadioSettingValueInteger(0, 100, _settings.ssb_mic))
         basic.append(rs)
         options = ["Off"] + ["%i" % i for i in range(1, 21)]
-        rs = RadioSetting("tot_time", "Time-out timer",
-                          RadioSettingValueList(options,
-                                                options[_settings.tot_time]))
+        rs = RadioSetting(
+            "tot_time", "Time-out timer",
+            RadioSettingValueList(
+                options, current_index=_settings.tot_time))
         basic.append(rs)
         options = ["OFF", "ATAS(HF)", "ATAS(HF&50)", "ATAS(ALL)", "TUNER"]
-        rs = RadioSetting("tuner_atas", "Tuner/ATAS device",
-                          RadioSettingValueList(options,
-                                                options[_settings.tuner_atas]))
+        rs = RadioSetting(
+            "tuner_atas", "Tuner/ATAS device",
+            RadioSettingValueList(
+                options, current_index=_settings.tuner_atas))
         extended.append(rs)
         rs = RadioSetting("tx_if_filter", "Transmit IF filter",
                           RadioSettingValueList(self.FILTERS,
@@ -997,9 +1010,10 @@ class FT857Radio(ft817.FT817Radio):
                               (-1 if _settings.xvtr_b_negative else 1)))
         extended.append(rs)
         options = ["OFF", "XVTR A", "XVTR B"]
-        rs = RadioSetting("xvtr_sel", "Transverter function selection",
-                          RadioSettingValueList(options,
-                                                options[_settings.xvtr_sel]))
+        rs = RadioSetting(
+            "xvtr_sel", "Transverter function selection",
+            RadioSettingValueList(
+                options, current_index=_settings.xvtr_sel))
         extended.append(rs)
 
         rs = RadioSetting("disp", "Display large",
@@ -1011,13 +1025,13 @@ class FT857Radio(ft817.FT817Radio):
         options = ["Auto", "Fast", "Slow", "Off"]
         rs = RadioSetting("agc", "AGC",
                           RadioSettingValueList(options,
-                                                options[_settings.agc]))
+                                                current_index=_settings.agc))
         panelcontr.append(rs)
         options = ["PWR", "ALC", "SWR", "MOD"]
-        rs = RadioSetting("pwr_meter_mode", "Power meter mode",
-                          RadioSettingValueList(options,
-                                                options[
-                                                    _settings.pwr_meter_mode]))
+        rs = RadioSetting(
+            "pwr_meter_mode", "Power meter mode",
+            RadioSettingValueList(
+                options, current_index=_settings.pwr_meter_mode))
         panelcontr.append(rs)
         rs = RadioSetting("vox", "Vox",
                           RadioSettingValueBoolean(_settings.vox))
@@ -1029,23 +1043,22 @@ class FT857Radio(ft817.FT817Radio):
                           RadioSettingValueBoolean(_settings.kyr))
         cw.append(rs)
         options = ["enabled", "disabled"]
-        rs = RadioSetting("fst", "Fast",
-                          RadioSettingValueList(options, options[_settings.fst]
-                                                ))
+        rs = RadioSetting("fst", "Fast", RadioSettingValueList(
+            options, current_index=_settings.fst))
         panelcontr.append(rs)
         options = ["enabled", "disabled"]
         rs = RadioSetting("lock", "Lock",
                           RadioSettingValueList(options,
-                                                options[_settings.lock]))
+                                                current_index=_settings.lock))
         panelcontr.append(rs)
         rs = RadioSetting("scope_peakhold", "Scope max hold",
                           RadioSettingValueBoolean(_settings.scope_peakhold))
         panelcontr.append(rs)
         options = ["21", "31", "127"]
-        rs = RadioSetting("scope_width", "Scope width (channels)",
-                          RadioSettingValueList(options,
-                                                options[_settings.scope_width])
-                          )
+        rs = RadioSetting(
+            "scope_width", "Scope width (channels)",
+            RadioSettingValueList(
+                options, current_index=_settings.scope_width))
         panelcontr.append(rs)
         rs = RadioSetting("proc", "Speech processor",
                           RadioSettingValueBoolean(_settings.proc))

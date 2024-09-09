@@ -774,7 +774,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
                 fil = RadioSetting(
                     "filter", "Filter",
                     RadioSettingValueList(options,
-                                          options[memobj.filter - 1]))
+                                          current_index=memobj.filter - 1))
             except AttributeError:
                 pass
             else:
@@ -1417,7 +1417,7 @@ class Icom9700SatelliteBand(Icom9700Radio):
         fil = RadioSetting(
             "filter", "Filter",
             RadioSettingValueList(options,
-                                  options[memobj.filter - 1]))
+                                  current_index=memobj.filter - 1))
         fil.set_doc("Filter settings")
         if not mem.extra:
             mem.extra = RadioSettingGroup("extra", "Extra")

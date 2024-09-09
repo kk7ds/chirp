@@ -553,41 +553,41 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
         basic.append(
             RadioSetting("roger", "Roger Beep",
                          RadioSettingValueList(ROGER_LIST,
-                                               ROGER_LIST[_settings.roger])))
+                                               current_index=_settings.roger)))
         basic.append(
             RadioSetting("beep", "System Beep",
                          RadioSettingValueBoolean(_settings.beep)))
         basic.append(
             RadioSetting("tot", "Timeout Timer (sec)",
                          RadioSettingValueList(TOT_LIST,
-                                               TOT_LIST[_settings.tot])))
+                                               current_index=_settings.tot)))
         basic.append(
             RadioSetting("toa", "Timeout Timer Alarm",
                          RadioSettingValueList(TOA_LIST,
-                                               TOA_LIST[_settings.toa])))
+                                               current_index=_settings.toa)))
         basic.append(
             RadioSetting("lockmode", "Lock Mode",
                          RadioSettingValueList(
                             LOCKMODE_LIST,
-                            LOCKMODE_LIST[_settings.lockmode])))
+                            current_index=_settings.lockmode)))
         basic.append(
             RadioSetting("autolock", "Auto Lock",
                          RadioSettingValueList(
                             AUTOLOCK_LIST,
-                            AUTOLOCK_LIST[_settings.autolock])))
+                            current_index=_settings.autolock)))
         basic.append(
             RadioSetting("auto_lock_dly", "Auto Lock Delay",
                          RadioSettingValueList(
                             AUTOLOCK_DLY_LIST,
-                            AUTOLOCK_DLY_LIST[_settings.auto_lock_dly])))
+                            current_index=_settings.auto_lock_dly)))
         display.append(
             RadioSetting("abr", "Screen Save",
                          RadioSettingValueList(ABR_LIST,
-                                               ABR_LIST[_settings.abr])))
+                                               current_index=_settings.abr)))
         display.append(
             RadioSetting("abr_lv", "Back Light Brightness",
                          RadioSettingValueList(ABR_LV_LIST,
-                                               ABR_LV_LIST[_settings.abr_lv])))
+                                               current_index=_settings.abr_lv)))
         display.append(
             RadioSetting("night_mode", "Night Mode (Light on Dark)",
                          RadioSettingValueBoolean(_settings.night_mode)))
@@ -595,11 +595,11 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
             RadioSetting("menu_dly", "Menu Delay",
                          RadioSettingValueList(
                             MENU_DLY_LIST,
-                            MENU_DLY_LIST[_settings.menu_dly])))
+                            current_index=_settings.menu_dly)))
         display.append(
             RadioSetting("english", "Language",
                          RadioSettingValueList(LANG_LIST,
-                                               LANG_LIST[_settings.english])))
+                                               current_index=_settings.english)))
         scan.append(
             RadioSetting("pri_scn", "Priority Scan",
                          RadioSettingValueBoolean(_settings.pri_scn)))
@@ -609,35 +609,35 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
         scan.append(
             RadioSetting("sc_rev", "Scan Resume",
                          RadioSettingValueList(SC_REV_LIST,
-                                               SC_REV_LIST[_settings.sc_rev])))
+                                               current_index=_settings.sc_rev)))
         scan.append(
             RadioSetting("sc_qt", "Code Save",
                          RadioSettingValueList(SC_QT_LIST,
-                                               SC_QT_LIST[_settings.sc_qt])))
+                                               current_index=_settings.sc_qt)))
         buttons.append(
             RadioSetting("pf1_short", "PF1 (Side, Upper) Button Short Press",
                          RadioSettingValueList(PF1_LIST,
-                                               PF1_LIST[_settings.pf1_short])))
+                                               current_index=_settings.pf1_short)))
         buttons.append(
             RadioSetting("pf1_long", "PF1 (Side, Upper) Button Long Press",
                          RadioSettingValueList(PF1_LIST,
-                                               PF1_LIST[_settings.pf1_long])))
+                                               current_index=_settings.pf1_long)))
         buttons.append(
             RadioSetting("pf2_short", "PF2 (Side, Lower) Button Short Press",
                          RadioSettingValueList(PF2_LIST,
-                                               PF2_LIST[_settings.pf2_short])))
+                                               current_index=_settings.pf2_short)))
         buttons.append(
             RadioSetting("pf2_long", "PF2 (Side, Lower) Button Long Press",
                          RadioSettingValueList(PF2_LIST,
-                                               PF2_LIST[_settings.pf2_long])))
+                                               current_index=_settings.pf2_long)))
         buttons.append(
             RadioSetting("top_short", "Top Button Short Press",
                          RadioSettingValueList(TOP_LIST,
-                                               TOP_LIST[_settings.top_short])))
+                                               current_index=_settings.top_short)))
         buttons.append(
             RadioSetting("top_long", "Top Button Long Press",
                          RadioSettingValueList(TOP_LIST,
-                                               TOP_LIST[_settings.top_long])))
+                                               current_index=_settings.top_long)))
         vfo.append(
             RadioSetting("tdr", "VFO B Enabled",
                          RadioSettingValueBoolean(_settings.tdr)))
@@ -645,20 +645,20 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
             RadioSetting("ch_a_step", "VFO Frequency Step (A)",
                          RadioSettingValueList(
                             STEP_LIST,
-                            STEP_LIST[_settings.ch_a_step])))
+                            current_index=_settings.ch_a_step)))
         vfo.append(
             RadioSetting("ch_b_step", "VFO Frequency Step (B)",
                          RadioSettingValueList(
                             STEP_LIST,
-                            STEP_LIST[_settings.ch_b_step])))
+                            current_index=_settings.ch_b_step)))
         vfo.append(
             RadioSetting("ch_a_sql", "Squelch (A)",
                 RadioSettingValueList(SQL_LIST,
-                                      SQL_LIST[_settings.ch_a_sql])))
+                                      current_index=_settings.ch_a_sql)))
         vfo.append(
             RadioSetting("ch_b_sql", "Squelch (B)",
                          RadioSettingValueList(SQL_LIST,
-                                               SQL_LIST[_settings.ch_b_sql])))
+                                               current_index=_settings.ch_b_sql)))
         vfo.append(
             RadioSetting("ch_a_mem_ch", "Memory Channel (A)",
                          RadioSettingValueChannel(self,
@@ -671,28 +671,28 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
             RadioSetting("ch_a_ch_mdf", "Memory Display Format (A)",
                          RadioSettingValueList(
                             MDF_LIST,
-                            MDF_LIST[_settings.ch_a_ch_mdf])))
+                            current_index=_settings.ch_a_ch_mdf)))
         vfo.append(
             RadioSetting("ch_b_ch_mdf", "Memory Display Format (B)",
                          RadioSettingValueList(
                             MDF_LIST,
-                            MDF_LIST[_settings.ch_b_ch_mdf])))
+                            current_index=_settings.ch_b_ch_mdf)))
         vfo.append(
             RadioSetting("ch_a_v_m", "VFO/MEM (A)",
                          RadioSettingValueList(
-                             VM_LIST, VM_LIST[_settings.ch_a_v_m])))
+                             VM_LIST, current_index=_settings.ch_a_v_m)))
         vfo.append(
             RadioSetting("ch_b_v_m", "VFO/MEM (B)",
                          RadioSettingValueList(
-                             VM_LIST, VM_LIST[_settings.ch_b_v_m])))
+                             VM_LIST, current_index=_settings.ch_b_v_m)))
         advanced.append(
             RadioSetting("vox_grd", "VOX Sensitivity",
                          RadioSettingValueList(
-                             VOX_LIST, VOX_LIST[_settings.vox_grd])))
+                             VOX_LIST, current_index=_settings.vox_grd)))
         advanced.append(
             RadioSetting("vox_dly", "VOX Delay",
                          RadioSettingValueList(
-                             VOX_DLY_LIST, VOX_DLY_LIST[_settings.vox_dly])))
+                             VOX_DLY_LIST, current_index=_settings.vox_dly)))
         advanced.append(
             RadioSetting("voice", "Voice Assist",
                          RadioSettingValueBoolean(_settings.voice)))
@@ -703,7 +703,7 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
             RadioSetting("aprs_rx_band", "RX Band",
                          RadioSettingValueList(
                              APRS_RX_LIST,
-                             APRS_RX_LIST[_settings.aprs_rx_band])))
+                             current_index=_settings.aprs_rx_band)))
         aprs.append(
             RadioSetting("ch_a_mute", "Band A Mute",
                          RadioSettingValueBoolean(_settings.ch_a_mute)))
@@ -714,7 +714,7 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
             RadioSetting("tx_priority", "TX Priority",
                 RadioSettingValueList(
                     TX_PRIORITY_LIST,
-                    TX_PRIORITY_LIST[_settings.tx_priority])))
+                    current_index=_settings.tx_priority)))
         aprs.append(
             RadioSetting("aprs_rx_popup", "APRS Popup",
                          RadioSettingValueBoolean(_settings.aprs_rx_popup)))
@@ -728,7 +728,7 @@ class LanchonlhHG_UV98(chirp_common.CloneModeRadio, chirp_common.ExperimentalRad
             RadioSetting("beacon_exit_dly", "Beacon Message Delay",
                          RadioSettingValueList(
                              BEACON_EXIT_DLY_LIST,
-                             BEACON_EXIT_DLY_LIST[_settings.beacon_exit_dly])))
+                             current_index=_settings.beacon_exit_dly)))
 
         return top
 

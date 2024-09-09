@@ -300,7 +300,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         mem.tuning_step = TMD710_STEPS[_mem.tstep]
 
         if self.SHORT == "G":         # Only the 710G
-            rx = RadioSettingValueList(STEPS_STR, STEPS_STR[_mem.splitstep])
+            rx = RadioSettingValueList(STEPS_STR, current_index=_mem.splitstep)
             sx = "Split TX step (kHz)"
             rset = RadioSetting("splitstep", sx, rx)
             mem.extra.append(rset)
@@ -550,7 +550,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             disp.append(rset)
 
         opts = ["VFO", "Mem Recall"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].a_mr])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].a_mr)
         sx = "A: Left Side VFO/MR"
         rset = RadioSetting("pmg/0.a_mr", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "a_mr")
@@ -561,7 +561,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("pmg/0.a_chn", sx, rx)
         disp.append(rset)
 
-        rx = RadioSettingValueList(opts, opts[_pmg[0].b_mr])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].b_mr)
         sx = "B: Right Side VFO/MR"
         rset = RadioSetting("pmg/0.b_mr", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "b_mr")
@@ -578,7 +578,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         disp.append(rset)
 
         opts = ["Amber", "Green"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].bkltclr])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].bkltclr)
         sx = "Backlight color"
         rset = RadioSetting("pmg/0.bkltclr", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "bkltclr")
@@ -592,7 +592,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         disp.append(rset)
 
         opts = ["Positive", "Negative"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].dsprev])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].dsprev)
         sx = "Color mode"
         rset = RadioSetting("pmg/0.dsprev", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "dsprev")
@@ -632,7 +632,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         aud.append(rset)
 
         opts = ["Mode1", "Mode2"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].extspkr])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].extspkr)
         sx = "External Speaker"
         rset = RadioSetting("pmg/0.extspkr", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "extspkr")
@@ -654,14 +654,14 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         aud.append(rset)
 
         opts = ["Off", "Auto", "Manual"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].ance])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].ance)
         sx = "     Announce mode"
         rset = RadioSetting("pmg/0.ance", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "ance")
         aud.append(rset)
 
         opts = ["English", "Japanese"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].lang])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].lang)
         sx = "     Announce language"
         rset = RadioSetting("pmg/0.lang", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "lang")
@@ -680,56 +680,56 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
 
         # ===== AUX GROUP =====
         opts = ["9600", "19200", "38400", "57600"]
-        rx = RadioSettingValueList(opts, opts[_blk1.pcbaud])
+        rx = RadioSettingValueList(opts, current_index=_blk1.pcbaud)
         sx = "PC port baud rate"
         rset = RadioSetting("block1.pcbaud", sx, rx)
         rset.set_apply_callback(_val_list, opts, _blk1, "pcbaud")
         aux.append(rset)
 
         opts = ["A-Band", "B-Band", "TX-A / RX-B", "RX-A / TX-B"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].intband])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].intband)
         sx = "Internal TNC band"
         rset = RadioSetting("pmg/0.intband", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "intband")
         aux.append(rset)
 
         opts = ["A-Band", "B-Band", "TX-A / RX-B", "RX-A / TX-B"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].extband])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].extband)
         sx = "External TNC band"
         rset = RadioSetting("pmg/0.extband", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "extband")
         aux.append(rset)
 
         opts = ["1200", "9600"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].extbaud])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].extbaud)
         sx = "External TNC baud"
         rset = RadioSetting("pmg/0.extbaud", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "extbaud")
         aux.append(rset)
 
         opts = ["Off", "BUSY", "SQL", "TX", "BUSY/TX", "SQL/TX"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].sqcsrc])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].sqcsrc)
         sx = "SQC output source"
         rset = RadioSetting("pmg/0.sqcsrc", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "sqcsrc")
         aux.append(rset)
 
         opts = ["Low", "High"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].sqclogic])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].sqclogic)
         sx = "SQC logic"
         rset = RadioSetting("pmg/0.sqclogic", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "sqclogic")
         aux.append(rset)
 
         opts = ["Off", "30", "60", "90", "120", "180"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].apo])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].apo)
         sx = "APO: Auto Power Off (Mins)"
         rset = RadioSetting("pmg/0.apo", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "apo")
         aux.append(rset)
 
         opts = ["Time Operate (TO)", "Carrier Operate (CO)", "Seek"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].scnrsm])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].scnrsm)
         sx = "Scan resume mode"
         rset = RadioSetting("pmg/0.scnrsm", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "scnrsm")
@@ -749,7 +749,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
 
         opts = ["Mode 1: 1ch", "Mode 2: 61ch", "Mode 3: 91ch",
                 "Mode 4: 181ch"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].vsmode])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].vsmode)
         sx = "Visual scan"
         rset = RadioSetting("pmg/0.vsmode", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "vsmode")
@@ -767,34 +767,34 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
 
         # ===== TX / RX Group =========
         opts = ["A: Left", "B: Right"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].txband])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].txband)
         sx = "TX Side (PTT)"
         rset = RadioSetting("pmg/0.txband", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "txband")
         txrx.append(rset)
 
         opts = ["High (50W)", "Medium (10W)", "Low (5W)"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].a_pwr])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].a_pwr)
         sx = "A-Band transmit power"
         rset = RadioSetting("pmg/0.a_pwr", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "a_pwr")
         txrx.append(rset)
 
-        rx = RadioSettingValueList(opts, opts[_pmg[0].b_pwr])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].b_pwr)
         sx = "B-Band transmit power"
         rset = RadioSetting("pmg/0.b_pwr", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "b_pwr")
         txrx.append(rset)
 
         opts = ["Off", "125", "250", "500", "750", "1000"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].mutehu])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].mutehu)
         sx = "Rx Mute hangup time (ms)"
         rset = RadioSetting("pmg/0.mutehu", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "mutehu")
         txrx.append(rset)
 
         opts = ["Off", "125", "250", "500"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].ssqlhu])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].ssqlhu)
         sx = "S-meter SQL hangup time (ms)"
         rset = RadioSetting("pmg/0.ssqlhu", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "ssqlhu")
@@ -826,13 +826,13 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         txrx.append(rset)
 
         opts = ["High", "Medium", "Low"]
-        rx = RadioSettingValueList(opts, opts[_blk1.micsens])
+        rx = RadioSettingValueList(opts, current_index=_blk1.micsens)
         sx = "Microphone sensitivity (gain)"
         rset = RadioSetting("block1.micsens", sx, rx)
         txrx.append(rset)
 
         opts = ["3", "5", "10"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].tot])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].tot)
         sx = "Time-Out timer (Mins)"
         rset = RadioSetting("pmg/0.tot", sx, rx)
         #  rset.set_apply_callback(_val_list, opts, _pmg[0], "tot")
@@ -849,7 +849,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         txrx.append(rset)
 
         opts = ["Off", "15", "30", "60"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].wxscntm])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].wxscntm)
         sx = "WX alert scan memory time (Mins)"
         rset = RadioSetting("pmg/0.wxscntm", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "wxscntm")
@@ -862,14 +862,14 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         dtmf.append(rset)
 
         opts = ["100", "250", "500", "750", "1000", "1500", "2000"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].dtmfpau])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].dtmfpau)
         sx = "DTMF pause duration (mS)"
         rset = RadioSetting("pmg/0.dtmfpau", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "dtmfpau")
         dtmf.append(rset)
 
         opts = ["Fast", "Slow"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].dtmfspd])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].dtmfspd)
         sx = "DTMF speed"
         rset = RadioSetting("pmg/0.dtmfspd", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "dtmfspd")
@@ -892,7 +892,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
 
         # ===== MEMORY GROUP =====
         opts = ["All Bands", "Current Band"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].recall])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].recall)
         sx = "Memory recall method"
         rset = RadioSetting("pmg/0.recall", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "recall")
@@ -904,7 +904,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         memz.append(rset)
 
         opts = ["Fast", "Slow"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].eclnkspd])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].eclnkspd)
         sx = "Echolink speed"
         rset = RadioSetting("pmg/0.eclnkspd", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "eclnkspd")
@@ -927,14 +927,14 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         rptr.append(rset)
 
         opts = ["Cross Band", "TX:A-Band / RX:B-Band", "RX:A-Band / TX:B-Band"]
-        rx = RadioSettingValueList(opts, opts[_blk1.rptrmode])
+        rx = RadioSettingValueList(opts, current_index=_blk1.rptrmode)
         sx = "Repeater Mode"
         rset = RadioSetting("block1.rptrmode", sx, rx)
         rset.set_apply_callback(_val_list, opts, _blk1, "rptrmode")
         rptr.append(rset)
 
         opts = ["Off", "Morse", "Voice"]
-        rx = RadioSettingValueList(opts, opts[_blk1.rptridx])
+        rx = RadioSettingValueList(opts, current_index=_blk1.rptridx)
         sx = "Repeater ID transmit"
         rset = RadioSetting("block1.rptridx", sx, rx)
         rset.set_apply_callback(_val_list, opts, _blk1, "rptridx")
@@ -975,13 +975,13 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         opts = ["WX CH", "FRQ.BAND", "CTRL", "MONITOR", "VGS", "VOICE",
                 "GROUP UP", "MENU", "MUTE", "SHIFT", "DUAL", "M>V",
                 "1750 Tone"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].pf1key])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].pf1key)
         sx = "Front panel PF1 key"
         rset = RadioSetting("pmg/0.pf1key", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "pf1key")
         pfk.append(rset)
 
-        rx = RadioSettingValueList(opts, opts[_pmg[0].pf2key])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].pf2key)
         sx = "Front panel PF2 key"
         rset = RadioSetting("pmg/0.pf2key", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "pf2key")
@@ -993,25 +993,25 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
                 "LOCK", "A/B", "ENTER", "1750 Tone", "M.LIST",
                 "S.LIST", "MSG.NEW", "REPLY", "POS", "P.MONI",
                 "BEACON", "DX", "WX"]
-        rx = RadioSettingValueList(opts, opts[_pmg[0].micpf1])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].micpf1)
         sx = "Microphone PF1 key"
         rset = RadioSetting("pmg/0.micpf1", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "micpf1")
         pfk.append(rset)
 
-        rx = RadioSettingValueList(opts, opts[_pmg[0].micpf2])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].micpf2)
         sx = "Microphone PF2 key"
         rset = RadioSetting("pmg/0.micpf2", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "micpf2")
         pfk.append(rset)
 
-        rx = RadioSettingValueList(opts, opts[_pmg[0].micpf3])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].micpf3)
         sx = "Microphone PF3 key"
         rset = RadioSetting("pmg/0.micpf3", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "micpf3")
         pfk.append(rset)
 
-        rx = RadioSettingValueList(opts, opts[_pmg[0].micpf4])
+        rx = RadioSettingValueList(opts, current_index=_pmg[0].micpf4)
         sx = "Microphone PF4 key"
         rset = RadioSetting("pmg/0.micpf4", sx, rx)
         rset.set_apply_callback(_val_list, opts, _pmg[0], "micpf4")
@@ -1084,7 +1084,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         opts = []
         for val in TMD710_TONES:
             opts.append(str(val))
-        rx = RadioSettingValueList(opts, opts[_skyc.skytone])
+        rx = RadioSettingValueList(opts, current_index=_skyc.skytone)
         sx = "Tone frequency"
         rset = RadioSetting("skycmd.skytone", sx, rx)
         rset.set_apply_callback(_val_list, opts, _skyc, "skytone")
@@ -1110,7 +1110,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             pmm.append(rset)
 
             opts = ["VFO", "Mem Recall"]
-            rx = RadioSettingValueList(opts, opts[_pmg[ix].a_mr])
+            rx = RadioSettingValueList(opts, current_index=_pmg[ix].a_mr)
             sx = "-   A: Left Side VFO/MR"
             rset = RadioSetting("pmg/%i.a_mr" % ix, sx, rx)
             rset.set_apply_callback(_val_list, opts, _pmg[ix], "a_mr")
@@ -1121,7 +1121,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("pmg/%i.a_chn" % ix, sx, rx)
             pmm.append(rset)
 
-            rx = RadioSettingValueList(opts, opts[_pmg[ix].b_mr])
+            rx = RadioSettingValueList(opts, current_index=_pmg[ix].b_mr)
             sx = "-   B: Right Side VFO/MR"
             rset = RadioSetting("pmg/%i.b_mr" % ix, sx, rx)
             rset.set_apply_callback(_val_list, opts, _pmg[ix], "b_mr")
@@ -1138,7 +1138,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             pmm.append(rset)
 
             opts = ["Amber", "Green"]
-            rx = RadioSettingValueList(opts, opts[_pmg[ix].bkltclr])
+            rx = RadioSettingValueList(opts, current_index=_pmg[ix].bkltclr)
             sx = "-   Backlight color"
             rset = RadioSetting("pmg/%i.bkltclr" % ix, sx, rx)
             rset.set_apply_callback(_val_list, opts, _pmg[ix], "bkltclr")
@@ -1152,7 +1152,7 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             pmm.append(rset)
 
             opts = ["Positive", "Negative"]
-            rx = RadioSettingValueList(opts, opts[_pmg[ix].dsprev])
+            rx = RadioSettingValueList(opts, current_index=_pmg[ix].dsprev)
             sx = "-   Color mode"
             rset = RadioSetting("pmg/%i.dsprev" % ix, sx, rx)
             rset.set_apply_callback(_val_list, opts, _pmg[ix], "dsprev")
@@ -1176,20 +1176,20 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             pmm.append(rset)
 
             opts = ["A: Left", "B: Right"]
-            rx = RadioSettingValueList(opts, opts[_pmg[ix].txband])
+            rx = RadioSettingValueList(opts, current_index=_pmg[ix].txband)
             sx = "-   X Side (PTT)"
             rset = RadioSetting("pmg/%i.txband" % ix, sx, rx)
             rset.set_apply_callback(_val_list, opts, _pmg[ix], "txband")
             pmm.append(rset)
 
             opts = ["High (50W)", "Medium (10W)", "Low (5W)"]
-            rx = RadioSettingValueList(opts, opts[_pmg[ix].a_pwr])
+            rx = RadioSettingValueList(opts, current_index=_pmg[ix].a_pwr)
             sx = "-   A-Band transmit power"
             rset = RadioSetting("pmg/%i.a_pwr" % ix, sx, rx)
             rset.set_apply_callback(_val_list, opts, _pmg[ix], "a_pwr")
             pmm.append(rset)
 
-            rx = RadioSettingValueList(opts, opts[_pmg[ix].b_pwr])
+            rx = RadioSettingValueList(opts, current_index=_pmg[ix].b_pwr)
             sx = "-   B-Band transmit power"
             rset = RadioSetting("pmg/%i.b_pwr" % ix, sx, rx)
             rset.set_apply_callback(_val_list, opts, _pmg[ix], "b_pwr")

@@ -747,7 +747,7 @@ class THF6ARadio(KenwoodLiveRadio):
             options = self._SETTINGS_OPTIONS[setting]
             rs = RadioSetting(setting, name,
                               RadioSettingValueList(options,
-                                                    options[value]))
+                                                    current_index=value))
             group.append(rs)
 
         for setting, group, name, minv, maxv in ints:

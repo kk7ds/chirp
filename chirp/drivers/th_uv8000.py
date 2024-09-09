@@ -732,7 +732,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
 
         # ID code can't be done in extra - no Integer method or call-back
 
-        rx = RadioSettingValueList(LIST_PTT, LIST_PTT[_mem.ptt])
+        rx = RadioSettingValueList(LIST_PTT, current_index=_mem.ptt)
         rset = RadioSetting("ptt", "Xmit PTT ID", rx)
         mem.extra.append(rset)
 
@@ -1076,7 +1076,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         rset.set_apply_callback(my_adjraw, _sets, "voxgain", -1)
         basic.append(rset)
 
-        rx = RadioSettingValueList(LIST_VOXDLY, LIST_VOXDLY[_sets.voxdelay])
+        rx = RadioSettingValueList(LIST_VOXDLY, current_index=_sets.voxdelay)
         rset = RadioSetting("setstuf.voxdelay", "Vox Delay (secs)", rx)
         basic.append(rset)
 
@@ -1084,7 +1084,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("setstuf.sql", "Squelch", rx)
         basic.append(rset)
 
-        rx = RadioSettingValueList(LIST_STEPS, LIST_STEPS[_sets.freqstep])
+        rx = RadioSettingValueList(LIST_STEPS, current_index=_sets.freqstep)
         rset = RadioSetting("setstuf.freqstep", "VFO Tune Step (kHz)", rx)
         basic.append(rset)
 
@@ -1093,12 +1093,12 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         options = ["Off", "On", "Auto"]
-        rx = RadioSettingValueList(options, options[_sets.lampon])
+        rx = RadioSettingValueList(options, current_index=_sets.lampon)
         rset = RadioSetting("setstuf.lampon", "Backlight (LED)", rx)
         basic.append(rset)
 
         options = ["Orange", "Purple", "Blue"]
-        rx = RadioSettingValueList(options, options[_sets.ledclr])
+        rx = RadioSettingValueList(options, current_index=_sets.ledclr)
         rset = RadioSetting("setstuf.ledclr", "Backlight Color (LIGHT)", rx)
         basic.append(rset)
 
@@ -1115,7 +1115,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         rset.set_apply_callback(my_invbool, _sets, "xbandon")
         basic.append(rset)
 
-        rx = RadioSettingValueList(LIST_TIMEOUT, LIST_TIMEOUT[_sets.tot])
+        rx = RadioSettingValueList(LIST_TIMEOUT, current_index=_sets.tot)
         rset = RadioSetting("setstuf.tot", "TX Timeout (Secs)", rx)
         basic.append(rset)
 
@@ -1130,12 +1130,12 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         options = ["None", "Message", "DC Volts"]
-        rx = RadioSettingValueList(options, options[_sets.openmsg])
+        rx = RadioSettingValueList(options, current_index=_sets.openmsg)
         rset = RadioSetting("setstuf.openmsg", "Power-On Display", rx)
         basic.append(rset)
 
         options = ["Channel Name", "Frequency"]
-        rx = RadioSettingValueList(options, options[_sets.chs_name])
+        rx = RadioSettingValueList(options, current_index=_sets.chs_name)
         rset = RadioSetting("setstuf.chs_name", "Display Name/Frq", rx)
         basic.append(rset)
 
@@ -1150,14 +1150,14 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
 
         # Advanced (Strange) Settings
         options = ["Busy: Last Tx Band", "Edit: Current Band"]
-        rx = RadioSettingValueList(options, options[_sets.txsel])
+        rx = RadioSettingValueList(options, current_index=_sets.txsel)
         rset = RadioSetting("setstuf.txsel", "Transmit Priority", rx)
         rset.set_doc("'Busy' transmits on last band used, not current one.")
         adv.append(rset)
 
         options = ["Off", "English", "Unk", "Chinese"]
         val = _sets.voice
-        rx = RadioSettingValueList(options, options[val])
+        rx = RadioSettingValueList(options, current_index=val)
         rset = RadioSetting("setstuf.voice", "Voice", rx)
         adv.append(rset)
 
@@ -1165,14 +1165,14 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         val = (_sets.batsav & 0x3) + 1     # ratio
         if (_sets.batsav & 0x4) == 0:    # Off
             val = 0
-        rx = RadioSettingValueList(options, options[val])
+        rx = RadioSettingValueList(options, current_index=val)
         rset = RadioSetting("setstuf.batsav", "Battery Saver", rx)
         rset.set_apply_callback(my_batsav, _sets, "batsav")
         adv.append(rset)
 
         # Find out what & where SuperSave is
         options = ["Off", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        rx = RadioSettingValueList(options, options[_sets.supersave])
+        rx = RadioSettingValueList(options, current_index=_sets.supersave)
         rset = RadioSetting("setstuf.supersave", "Super Save (Secs)", rx)
         rset.set_doc("Unknown radio attribute??")
         adv.append(rset)
@@ -1190,7 +1190,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         adv.append(rset)
 
         options = ["None", "Low", "High", "Both"]
-        rx = RadioSettingValueList(options, options[_sets.voltx])
+        rx = RadioSettingValueList(options, current_index=_sets.voltx)
         rset = RadioSetting("setstuf.voltx", "Transmit Inhibit Voltage", rx)
         rset.set_doc("Block Transmit if battery volts are too high or low,")
         adv.append(rset)
@@ -1199,7 +1199,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         if _sets.manfrqyn == 0xaa:
             val = 1
         options = ["No", "Yes"]
-        rx = RadioSettingValueList(options, options[val])
+        rx = RadioSettingValueList(options, current_index=val)
         rset = RadioSetting("setstuf.manfrqyn", "Manual Frequency", rx)
         rset.set_apply_callback(my_manfrq, _sets, "manfrqyn")
         adv.append(rset)
@@ -1210,14 +1210,14 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
 
         # Scan Settings
         options = ["CO: During Rx", "TO: Timed", "SE: Halt"]
-        rx = RadioSettingValueList(options, options[_sets.scanmode])
+        rx = RadioSettingValueList(options, current_index=_sets.scanmode)
         rset = RadioSetting("setstuf.scanmode",
                             "Scan Mode (Scan Pauses When)", rx)
         scn.append(rset)
 
         options = ["100", "150", "200", "250",
                    "300", "350", "400", "450"]
-        rx = RadioSettingValueList(options, options[_sets.scanspeed])
+        rx = RadioSettingValueList(options, current_index=_sets.scanspeed)
         rset = RadioSetting("setstuf.scanspeed", "Scan Speed (ms)", rx)
         scn.append(rset)
 
@@ -1244,7 +1244,7 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         fmb.append(rset)
 
         options = ["5", "50", "100", "200(USA)"]    # 5 is not used
-        rx = RadioSettingValueList(options, options[_sets.fmstep])
+        rx = RadioSettingValueList(options, current_index=_sets.fmstep)
         rset = RadioSetting("setstuf.fmstep", "FM Freq Step (kHz)", rx)
         fmb.append(rset)
 
@@ -1286,31 +1286,31 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
 
         # DTMF Settings
         options = [str(x) for x in range(4, 16)]
-        rx = RadioSettingValueList(options, options[_sets.dtmfspd])
+        rx = RadioSettingValueList(options, current_index=_sets.dtmfspd)
         rset = RadioSetting("setstuf.dtmfspd",
                             "Tx Speed (digits/sec)", rx)
         dtmf.append(rset)
 
         options = [str(x) for x in range(0, 1100, 100)]
-        rx = RadioSettingValueList(options, options[_sets.dtmfdig1time])
+        rx = RadioSettingValueList(options, current_index=_sets.dtmfdig1time)
         rset = RadioSetting("setstuf.dtmfdig1time",
                             "Tx 1st Digit Time (ms)", rx)
         dtmf.append(rset)
 
         options = [str(x) for x in range(100, 1100, 100)]
-        rx = RadioSettingValueList(options, options[_sets.dtmfdig1dly])
+        rx = RadioSettingValueList(options, current_index=_sets.dtmfdig1dly)
         rset = RadioSetting("setstuf.dtmfdig1dly",
                             "Tx 1st Digit Delay (ms)", rx)
         dtmf.append(rset)
 
         options = ["0", "100", "500", "1000"]
-        rx = RadioSettingValueList(options, options[_sets.dtmfspms])
+        rx = RadioSettingValueList(options, current_index=_sets.dtmfspms)
         rset = RadioSetting("setstuf.dtmfspms",
                             "Tx Star & Pound Time (ms)", rx)
         dtmf.append(rset)
 
         options = ["None"] + [str(x) for x in range(600, 2100, 100)]
-        rx = RadioSettingValueList(options, options[_sets.codespctim])
+        rx = RadioSettingValueList(options, current_index=_sets.codespctim)
         rset = RadioSetting("setstuf.codespctim",
                             "Tx Code Space Time (ms)", rx)
         dtmf.append(rset)
@@ -1324,12 +1324,12 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         dtmf.append(rset)
 
         options = ["Off", "A", "B", "C", "D"]
-        rx = RadioSettingValueList(options, options[_sets.grpcode])
+        rx = RadioSettingValueList(options, current_index=_sets.grpcode)
         rset = RadioSetting("setstuf.grpcode", "Rx Group Code", rx)
         dtmf.append(rset)
 
         options = ["Off"] + [str(x) for x in range(1, 16)]
-        rx = RadioSettingValueList(options, options[_sets.autoresettmo])
+        rx = RadioSettingValueList(options, current_index=_sets.autoresettmo)
         rset = RadioSetting("setstuf.autoresettmo",
                             "Rx Auto Reset Timeout (secs)", rx)
         dtmf.append(rset)
@@ -1343,13 +1343,13 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
         dtmf.append(rset)
 
         options = [str(x) for x in range(500, 1600, 100)]
-        rx = RadioSettingValueList(options, options[_sets.decodetmo])
+        rx = RadioSettingValueList(options, current_index=_sets.decodetmo)
         rset = RadioSetting("setstuf.decodetmo",
                             "Rx Decode Timeout (ms)", rx)
         dtmf.append(rset)
 
         options = ["Tx & Rx Inhibit", "Tx Inhibit"]
-        rx = RadioSettingValueList(options, options[_sets.stuntype])
+        rx = RadioSettingValueList(options, current_index=_sets.stuntype)
         rset = RadioSetting("setstuf.stuntype", "Stun Type", rx)
         dtmf.append(rset)
 

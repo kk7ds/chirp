@@ -640,7 +640,7 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
 
         options = ['Off', 'Freq 1', 'Freq 2', 'Freq 3',
                    'Freq 4', 'Freq 5', 'Freq 6', 'User']
-        rs = RadioSettingValueList(options, options[_mem.scramble])
+        rs = RadioSettingValueList(options, current_index=_mem.scramble)
         rset = RadioSetting("scramble", "Scramble", rs)
         mem.extra.append(rset)
 
@@ -780,14 +780,14 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
 
         # menu 08 - SQL
         options = ["Off"] + ["S%s" % x for x in range(0, 8)]
-        rs = RadioSettingValueList(options, options[_settings.sql])
+        rs = RadioSettingValueList(options, current_index=_settings.sql)
         rset = RadioSetting("sql", "S-Meter Squelch Level", rs)
         rset.set_doc("Menu 8 (Off, S1, S2, S3, S4, S5, S6, S7)")
         basic.append(rset)
 
         # menu 09 - SQH
         options = ["Off", "125", "250", "500"]
-        rs = RadioSettingValueList(options, options[_settings.sqh])
+        rs = RadioSettingValueList(options, current_index=_settings.sqh)
         rset = RadioSetting("sqh", "Squelch Hang Time [ms]", rs)
         rset.set_doc("Menu 9 (Off, 125, 250, 500)")
         basic.append(rset)
@@ -801,35 +801,35 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
         # menu 12 - SCAN
         options = ["Time Operated (TO)", "Carrier Operated (CO)",
                    "SEarch (SE)"]
-        rs = RadioSettingValueList(options, options[_settings.scan])
+        rs = RadioSettingValueList(options, current_index=_settings.scan)
         rset = RadioSetting("scan", "Scan Resume Method", rs)
         rset.set_doc("Menu 12")
         basic.append(rset)
 
         # menu 14 - ECHO
         options = ["Auto (S/RX)", "Manual (D/RX)"]
-        rs = RadioSettingValueList(options, options[_settings.echo])
+        rs = RadioSettingValueList(options, current_index=_settings.echo)
         rset = RadioSetting("echo", "Response Mode", rs)
         rset.set_doc("Menu 14")
         basic.append(rset)
 
         # menu 16 - MDF
         options = ["Name", "Frequency"]
-        rs = RadioSettingValueList(options, options[_settings.mdf])
+        rs = RadioSettingValueList(options, current_index=_settings.mdf)
         rset = RadioSetting("mdf", "Memory Display Format", rs)
         rset.set_doc("Menu 16")
         basic.append(rset)
 
         # menu 17 - APO
         options = ["Off", "30", "60", "90", "120", "180"]
-        rs = RadioSettingValueList(options, options[_settings.apo])
+        rs = RadioSettingValueList(options, current_index=_settings.apo)
         rset = RadioSetting("apo", "Automatic Power Off [min]", rs)
         rset.set_doc("Menu 17")
         basic.append(rset)
 
         # menu 18 - CK
         options = ["CALL", "1750"]
-        rs = RadioSettingValueList(options, options[_settings.ck])
+        rs = RadioSettingValueList(options, current_index=_settings.ck)
         rset = RadioSetting("ck", "CALL Key", rs)
         rset.set_doc("Menu 18")
         basic.append(rset)
@@ -842,7 +842,7 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
 
         # menu 20 - TOT
         options = ["3", "5", "10"]
-        rs = RadioSettingValueList(options, options[_settings.tot])
+        rs = RadioSettingValueList(options, current_index=_settings.tot)
         rset = RadioSetting("tot", "Time-Out Timer [min]", rs)
         rset.set_doc("Menu 20")
         basic.append(rset)
@@ -935,22 +935,22 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
                    "SQL", "M-V", "M.IN", "C IN", "MENU", "SHIFT", "LOW",
                    "CONTR", "LOCK", "STEP"]
         # menu 39: - PF 1
-        rs = RadioSettingValueList(options, options[_settings.pf1])
+        rs = RadioSettingValueList(options, current_index=_settings.pf1)
         rset = RadioSetting("pf1", "PF Key 1", rs)
         pfkey.append(rset)
 
         # menu 40: - PF 2
-        rs = RadioSettingValueList(options, options[_settings.pf2])
+        rs = RadioSettingValueList(options, current_index=_settings.pf2)
         rset = RadioSetting("pf2", "PF Key 2", rs)
         pfkey.append(rset)
 
         # menu 41: - PF 3
-        rs = RadioSettingValueList(options, options[_settings.pf3])
+        rs = RadioSettingValueList(options, current_index=_settings.pf3)
         rset = RadioSetting("pf3", "PF Key 3", rs)
         pfkey.append(rset)
 
         # menu 42: - PF 4
-        rs = RadioSettingValueList(options, options[_settings.pf4])
+        rs = RadioSettingValueList(options, current_index=_settings.pf4)
         rset = RadioSetting("pf4", "PF Key 4", rs)
         pfkey.append(rset)
 
@@ -1007,7 +1007,7 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
         # LCD Display
         # menu 43 - L.LIG
         options = ["Off", "On", "Auto"]
-        rs = RadioSettingValueList(options, options[_settings.llig])
+        rs = RadioSettingValueList(options, current_index=_settings.llig)
         rset = RadioSetting("llig", "LCD Light", rs)
         lcd.append(rset)
 
@@ -1033,7 +1033,7 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
 
         # menu 48 - K.LIG
         options = ["Off", "On", "Auto"]
-        rs = RadioSettingValueList(options, options[_settings.klig])
+        rs = RadioSettingValueList(options, current_index=_settings.klig)
         rset = RadioSetting("klig", "Keypad Light", rs)
         lcd.append(rset)
 
@@ -1060,7 +1060,7 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
         # DTMF - Encode
         # menu 52 - PTTID
         options = ["Off", "BOT", "EOT", "Both"]
-        rs = RadioSettingValueList(options, options[_settings.pttid])
+        rs = RadioSettingValueList(options, current_index=_settings.pttid)
         rset = RadioSetting("pttid", "When to send PTT ID", rs)
         dtmf_enc.append(rset)
 
@@ -1103,14 +1103,14 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
 
         # menu 30 - PA
         options = ["100", "250", "500", "750", "1000", "1500", "2000"]
-        rs = RadioSettingValueList(options, options[_settings.pa])
+        rs = RadioSettingValueList(options, current_index=_settings.pa)
         rset = RadioSetting("pa", "DTMF Pause [ms]", rs)
         rset.set_doc("Menu 30")
         dtmf_enc.append(rset)
 
         # menu 28 - SPD
         options = ["Fast", "Slow"]
-        rs = RadioSettingValueList(options, options[_settings.spd])
+        rs = RadioSettingValueList(options, current_index=_settings.spd)
         rset = RadioSetting("spd", "DTMF Speed", rs)
         rset.set_doc("Menu 28")
         dtmf_enc.append(rset)
@@ -1126,13 +1126,13 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
 
         #
         options = ["Off", "A", "B", "C", "D", "*", "#"]
-        rs = RadioSettingValueList(options, options[_dtmfd.grpcode])
+        rs = RadioSettingValueList(options, current_index=_dtmfd.grpcode)
         rset = RadioSetting("dtmfd.grpcode", "Group Code", rs)
         dtmf_dec.append(rset)
 
         #
         options = ["Off"] + ["%s" % x for x in range(1, 251)]
-        rs = RadioSettingValueList(options, options[_dtmfd.art])
+        rs = RadioSettingValueList(options, current_index=_dtmfd.art)
         rset = RadioSetting("dtmfd.art", "Auto Reset Time[s]", rs)
         dtmf_dec.append(rset)
 
@@ -1151,7 +1151,7 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
 
         #
         options = ["TX Inhibit", "TX/RX Inhibit"]
-        rs = RadioSettingValueList(options, options[_dtmfd.stuntype])
+        rs = RadioSettingValueList(options, current_index=_dtmfd.stuntype)
         rset = RadioSetting("dtmfd.stuntype", "Stun Type", rs)
         dtmf_dec.append(rset)
 

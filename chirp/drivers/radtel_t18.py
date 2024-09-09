@@ -713,8 +713,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("timeouttimer", "Timeout timer",
                           RadioSettingValueList(
                               TIMEOUTTIMER_LIST,
-                              TIMEOUTTIMER_LIST[
-                                  _settings.timeouttimer]))
+                              current_index=_settings.timeouttimer))
         basic.append(rs)
 
         if self.MODEL == "RB18" or self.MODEL == "RB618":
@@ -730,14 +729,14 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("scanmode", "Scan mode",
                               RadioSettingValueList(
                                   SCANMODE_LIST,
-                                  SCANMODE_LIST[_settings.scanmode]))
+                                  current_index=_settings.scanmode))
             basic.append(rs)
 
         if self.MODEL == "RT20":
             rs = RadioSetting("voiceprompt", "Voice prompts",
                               RadioSettingValueList(
                                   VOICE_LIST4,
-                                  VOICE_LIST4[_settings.voiceprompt]))
+                                  current_index=_settings.voiceprompt))
             basic.append(rs)
         elif self.MODEL == "RT22S":
             rs = RadioSetting("voiceprompt", "Voice prompts",
@@ -756,14 +755,14 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("voiceprompt", "Voice prompts",
                               RadioSettingValueList(
                                   VOICE_LIST3,
-                                  VOICE_LIST3[_settings.voiceprompt]))
+                                  current_index=_settings.voiceprompt))
             basic.append(rs)
         else:
             if self.MODEL != "RB87":
                 rs = RadioSetting("voiceprompt", "Voice prompts",
                                   RadioSettingValueList(
                                       VOICE_LIST,
-                                      VOICE_LIST[_settings.voiceprompt]))
+                                      current_index=_settings.voiceprompt))
                 basic.append(rs)
 
         rs = RadioSetting("batterysaver", "Battery saver",
@@ -798,27 +797,27 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("voxlevel", "Vox level",
                               RadioSettingValueList(
                                   VOXLEVEL_LIST,
-                                  VOXLEVEL_LIST[_settings.voxlevel]))
+                                  current_index=_settings.voxlevel))
             basic.append(rs)
 
             rs = RadioSetting("voxdelay", "VOX delay",
                               RadioSettingValueList(
                                   VOXDELAY_LIST,
-                                  VOXDELAY_LIST[_settings.voxdelay]))
+                                  current_index=_settings.voxdelay))
             basic.append(rs)
 
         if self.MODEL == "RT22S":
             rs = RadioSetting("sidekey2", "Side Key 2(Long)",
                               RadioSettingValueList(
                                   SIDEKEY2_LIST,
-                                  SIDEKEY2_LIST[_settings.sidekey2]))
+                                  current_index=_settings.sidekey2))
             basic.append(rs)
 
         if self.MODEL == "RB18" or self.MODEL == "RB618":
             rs = RadioSetting("language", "Language",
                               RadioSettingValueList(
                                   VOICE_LIST2,
-                                  VOICE_LIST2[_settings.language]))
+                                  current_index=_settings.language))
             basic.append(rs)
 
             rs = RadioSetting("tail", "Tail",
@@ -853,31 +852,31 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("speccode", "SpecCode Select",
                               RadioSettingValueList(
                                   SPECCODE_LIST,
-                                  SPECCODE_LIST[_settings.speccode]))
+                                  current_index=_settings.speccode))
             basic.append(rs)
 
             rs = RadioSetting("sidekey2", "Side Key 1(Short)",
                               RadioSettingValueList(
                                   SIDEKEY85SHORT_LIST,
-                                  SIDEKEY85SHORT_LIST[_settings.sidekey2]))
+                                  current_index=_settings.sidekey2))
             basic.append(rs)
 
             rs = RadioSetting("sidekey1L", "Side Key 1(Long)",
                               RadioSettingValueList(
                                   SIDEKEY85LONG_LIST,
-                                  SIDEKEY85LONG_LIST[_settings.sidekey1L]))
+                                  current_index=_settings.sidekey1L))
             basic.append(rs)
 
             rs = RadioSetting("sidekey2S", "Side Key 2(Short)",
                               RadioSettingValueList(
                                   SIDEKEY85SHORT_LIST,
-                                  SIDEKEY85SHORT_LIST[_settings.sidekey2S]))
+                                  current_index=_settings.sidekey2S))
             basic.append(rs)
 
             rs = RadioSetting("sidekey2L", "Side Key 2(Long)",
                               RadioSettingValueList(
                                   SIDEKEY85LONG_LIST,
-                                  SIDEKEY85LONG_LIST[_settings.sidekey2L]))
+                                  current_index=_settings.sidekey2L))
             basic.append(rs)
 
             rs = RadioSetting("power10w", "Power 10W",
@@ -888,25 +887,25 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("sidekey2", "Side Key 1(Short)",
                               RadioSettingValueList(
                                   SIDEKEY75_LIST,
-                                  SIDEKEY75_LIST[_settings.sidekey2]))
+                                  current_index=_settings.sidekey2))
             basic.append(rs)
 
             rs = RadioSetting("sidekey1L", "Side Key 1(Long)",
                               RadioSettingValueList(
                                   SIDEKEY75_LIST,
-                                  SIDEKEY75_LIST[_settings.sidekey1L]))
+                                  current_index=_settings.sidekey1L))
             basic.append(rs)
 
             rs = RadioSetting("sidekey2S", "Side Key 2(Short)",
                               RadioSettingValueList(
                                   SIDEKEY75_LIST,
-                                  SIDEKEY75_LIST[_settings.sidekey2S]))
+                                  current_index=_settings.sidekey2S))
             basic.append(rs)
 
             rs = RadioSetting("sidekey2L", "Side Key 2(Long)",
                               RadioSettingValueList(
                                   SIDEKEY75_LIST,
-                                  SIDEKEY75_LIST[_settings.sidekey2L]))
+                                  current_index=_settings.sidekey2L))
             basic.append(rs)
 
             rs = RadioSetting("power10w", "Low Voltage Stop TX",
@@ -917,7 +916,7 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("sidekey2", "Side Key 1(Long)",
                               RadioSettingValueList(
                                   SIDEKEY87_LIST,
-                                  SIDEKEY87_LIST[_settings.sidekey2]))
+                                  current_index=_settings.sidekey2))
             basic.append(rs)
 
         if self.MODEL == "FRS-B1":
@@ -948,7 +947,7 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("sidekey2", "Left Navigation Button(Long)",
                               RadioSettingValueList(
                                   SIDEKEY19_LIST,
-                                  SIDEKEY19_LIST[_settings.sidekey2]))
+                                  current_index=_settings.sidekey2))
             basic.append(rs)
 
         if self.MODEL == "RT47" or self.MODEL == "RT47V" or \
@@ -956,20 +955,20 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("sidekey2", "Side Key 1(Long)",
                               RadioSettingValueList(
                                   SIDEKEY47_LIST,
-                                  SIDEKEY47_LIST[_settings.sidekey2]))
+                                  current_index=_settings.sidekey2))
             basic.append(rs)
 
             rs = RadioSetting("sidekey2S", "Side Key 2(Long)",
                               RadioSettingValueList(
                                   SIDEKEY47_LIST,
-                                  SIDEKEY47_LIST[_settings.sidekey2S]))
+                                  current_index=_settings.sidekey2S))
             basic.append(rs)
 
         if self.MODEL == "BF-V8A" or self.MODEL == "BF-T20FRS":
             rs = RadioSetting("sidekey2", "Side key",
                               RadioSettingValueList(
                                   SIDEKEYV8A_LIST,
-                                  SIDEKEYV8A_LIST[_settings.sidekey2]))
+                                  current_index=_settings.sidekey2))
             basic.append(rs)
 
             rs = RadioSetting("settings2.rxemergency", "RX emergency",
@@ -979,7 +978,7 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("settings2.voiceselect", "Language",
                               RadioSettingValueList(
                                   VOICE_LIST2,
-                                  VOICE_LIST2[_settings2.voiceselect]))
+                                  current_index=_settings2.voiceselect))
             basic.append(rs)
 
             rs = RadioSetting("settings2.hivoltnotx",
@@ -1012,13 +1011,13 @@ class T18Radio(chirp_common.CloneModeRadio):
             rs = RadioSetting("sidekey2S", "Side Key(Short)",
                               RadioSettingValueList(
                                   SIDEKEY29_LIST,
-                                  SIDEKEY29_LIST[_settings.sidekey2S]))
+                                  current_index=_settings.sidekey2S))
             basic.append(rs)
 
             rs = RadioSetting("sidekey2L", "Side Key(Long)",
                               RadioSettingValueList(
                                   SIDEKEY29_LIST,
-                                  SIDEKEY29_LIST[_settings.sidekey2L]))
+                                  current_index=_settings.sidekey2L))
             basic.append(rs)
 
         return top

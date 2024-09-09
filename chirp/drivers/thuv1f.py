@@ -331,7 +331,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("pttid", "PTT ID",
                           RadioSettingValueList(PTTID_LIST,
-                                                PTTID_LIST[_mem.pttid]))
+                                                current_index=_mem.pttid))
         mem.extra.append(rs)
 
         rs = RadioSetting("vox", "VOX",
@@ -340,12 +340,12 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("bcl", "Busy Channel Lockout",
                           RadioSettingValueList(BCL_LIST,
-                                                BCL_LIST[_mem.bcl]))
+                                                current_index=_mem.bcl))
         mem.extra.append(rs)
 
         rs = RadioSetting("scramble_code", "Scramble Code",
                           RadioSettingValueList(
-                              CODES_LIST, CODES_LIST[_mem.scramble_code]))
+                              CODES_LIST, current_index=_mem.scramble_code))
         mem.extra.append(rs)
 
         return mem
@@ -397,20 +397,21 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
         group.append(
             RadioSetting("led", "LED Mode",
                          RadioSettingValueList(LED_LIST,
-                                               LED_LIST[_settings.led])))
+                                               current_index=_settings.led)))
         group.append(
             RadioSetting("light", "Light Color",
                          RadioSettingValueList(LIGHT_LIST,
-                                               LIGHT_LIST[_settings.light])))
+                                               current_index=_settings.light)))
 
         group.append(
             RadioSetting("squelch", "Squelch Level",
                          RadioSettingValueInteger(0, 9, _settings.squelch)))
 
         group.append(
-            RadioSetting("vox_level", "VOX Level",
-                         RadioSettingValueList(VOX_LIST,
-                                               VOX_LIST[_settings.vox_level])))
+            RadioSetting(
+                "vox_level", "VOX Level",
+                RadioSettingValueList(
+                    VOX_LIST, current_index=_settings.vox_level)))
 
         group.append(
             RadioSetting("beep", "Beep",
@@ -427,7 +428,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
         group.append(
             RadioSetting("tot", "Timeout Timer",
                          RadioSettingValueList(TOT_LIST,
-                                               TOT_LIST[_settings.tot])))
+                                               current_index=_settings.tot)))
 
         group.append(
             RadioSetting("roger", "Roger Beep",
@@ -444,7 +445,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
         group.append(
             RadioSetting("scans", "Scans",
                          RadioSettingValueList(SCANS_LIST,
-                                               SCANS_LIST[_settings.scans])))
+                                               current_index=_settings.scans)))
 
         group.append(
             RadioSetting("autolk", "Auto Lock",
@@ -455,9 +456,10 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
                          RadioSettingValueBoolean(_settings.voice)))
 
         group.append(
-            RadioSetting("opnmsg", "Opening Message",
-                         RadioSettingValueList(OPNMSG_LIST,
-                                               OPNMSG_LIST[_settings.opnmsg])))
+            RadioSetting(
+                "opnmsg", "Opening Message",
+                RadioSettingValueList(
+                    OPNMSG_LIST, current_index=_settings.opnmsg)))
 
         group.append(
             RadioSetting("disnm", "Display Name",

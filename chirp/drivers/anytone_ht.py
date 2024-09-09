@@ -531,12 +531,12 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("bcl", "Busy Channel Lockout",
                           RadioSettingValueList(BCLO,
-                                                BCLO[_mem.bcl]))
+                                                current_index=_mem.bcl))
         mem.extra.append(rs)
 
         rs = RadioSetting("squelch", "Squelch",
                           RadioSettingValueList(SQUELCH,
-                                                SQUELCH[_mem.squelch]))
+                                                current_index=_mem.squelch))
         mem.extra.append(rs)
 
         return mem
@@ -652,43 +652,43 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
                               0, 6, _filter(_msg.line2)))
         cfg_grp.append(rs)
 
-        rs = RadioSetting("display", "Display Mode",
-                          RadioSettingValueList(DISPLAY,
-                                                DISPLAY[_settings.display]))
+        rs = RadioSetting("display", "Display Mode", RadioSettingValueList(
+            DISPLAY, current_index=_settings.display))
         cfg_grp.append(rs)
 
         rs = RadioSetting("upvfomr", "Up VFO/MR",
-                          RadioSettingValueList(VFOMR,
-                                                VFOMR[_settings.upvfomr]))
+                          RadioSettingValueList(
+                              VFOMR, current_index=_settings.upvfomr))
         cfg_grp.append(rs)
 
         rs = RadioSetting("dnvfomr", "Down VFO/MR",
-                          RadioSettingValueList(VFOMR,
-                                                VFOMR[_settings.dnvfomr]))
+                          RadioSettingValueList(
+                              VFOMR, current_index=_settings.dnvfomr))
         cfg_grp.append(rs)
 
-        rs = RadioSetting("upwork", "Up Work Mode",
-                          RadioSettingValueList(WORKMODE,
-                                                WORKMODE[_settings.upwork]))
+        rs = RadioSetting(
+            "upwork", "Up Work Mode",
+            RadioSettingValueList(
+                WORKMODE, current_index=_settings.upwork))
         cfg_grp.append(rs)
 
-        rs = RadioSetting("upmrbank", "Up MR Bank",
-                          RadioSettingValueList(MRBANK,
-                                                MRBANK[_settings.upmrbank]))
+        rs = RadioSetting("upmrbank", "Up MR Bank", RadioSettingValueList(
+            MRBANK, current_index=_settings.upmrbank))
         cfg_grp.append(rs)
 
         rs = RadioSetting("upmrch", "Up MR Channel",
                           RadioSettingValueInteger(0, 200, _settings.upmrch))
         cfg_grp.append(rs)
 
-        rs = RadioSetting("dnwork", "Down Work Mode",
-                          RadioSettingValueList(WORKMODE,
-                                                WORKMODE[_settings.dnwork]))
+        rs = RadioSetting(
+            "dnwork", "Down Work Mode",
+            RadioSettingValueList(
+                WORKMODE, current_index=_settings.dnwork))
         cfg_grp.append(rs)
 
         rs = RadioSetting("dnmrbank", "Down MR Bank",
-                          RadioSettingValueList(MRBANK,
-                                                MRBANK[_settings.dnmrbank]))
+                          RadioSettingValueList(
+                              MRBANK, current_index=_settings.dnmrbank))
         cfg_grp.append(rs)
 
         rs = RadioSetting("dnmrch", "Down MR Channel",
@@ -697,100 +697,106 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("main", "Main",
                           RadioSettingValueList(MAIN,
-                                                MAIN[_settings.main]))
+                                                current_index=_settings.main))
         cfg_grp.append(rs)
 
         rs = RadioSetting("pause", "Scan Pause Time",
                           RadioSettingValueList(PAUSE,
-                                                PAUSE[_settings.pause]))
+                                                current_index=_settings.pause))
         cfg_grp.append(rs)
 
         rs = RadioSetting("stop", "Function Keys Stop Time",
                           RadioSettingValueList(STOP,
-                                                STOP[_settings.stop]))
+                                                current_index=_settings.stop))
         cfg_grp.append(rs)
 
-        rs = RadioSetting("backlight", "Backlight",
-                          RadioSettingValueList(BACKLIGHT,
-                                                BACKLIGHT[
-                                                    _settings.backlight]))
+        rs = RadioSetting(
+            "backlight", "Backlight",
+            RadioSettingValueList(
+                BACKLIGHT, current_index=_settings.backlight))
         cfg_grp.append(rs)
 
         rs = RadioSetting("color", "Backlight Color",
                           RadioSettingValueList(COLOR,
-                                                COLOR[_settings.color]))
+                                                current_index=_settings.color))
         cfg_grp.append(rs)
 
-        rs = RadioSetting("vdisplay", "Vice-Machine Display",
-                          RadioSettingValueList(VDISPLAY,
-                                                VDISPLAY[_settings.vdisplay]))
+        rs = RadioSetting(
+            "vdisplay", "Vice-Machine Display",
+            RadioSettingValueList(
+                VDISPLAY, current_index=_settings.vdisplay))
         cfg_grp.append(rs)
 
-        rs = RadioSetting("voxlevel", "Vox Level",
-                          RadioSettingValueList(VOXLEVEL,
-                                                VOXLEVEL[_settings.voxlevel]))
+        rs = RadioSetting(
+            "voxlevel", "Vox Level",
+            RadioSettingValueList(
+                VOXLEVEL, current_index=_settings.voxlevel))
         cfg_grp.append(rs)
 
-        rs = RadioSetting("voxdelay", "Vox Delay",
-                          RadioSettingValueList(VOXDELAY,
-                                                VOXDELAY[_settings.voxdelay]))
+        rs = RadioSetting(
+            "voxdelay", "Vox Delay",
+            RadioSettingValueList(
+                VOXDELAY, current_index=_settings.voxdelay))
         cfg_grp.append(rs)
 
         rs = RadioSetting("tot", "Time Out Timer",
                           RadioSettingValueList(TOT,
-                                                TOT[_settings.tot]))
+                                                current_index=_settings.tot))
         cfg_grp.append(rs)
 
         rs = RadioSetting("tbst", "Tone Burst",
                           RadioSettingValueList(TBST,
-                                                TBST[_settings.tbst]))
+                                                current_index=_settings.tbst))
         cfg_grp.append(rs)
 
         rs = RadioSetting("monikey", "MONI Key Function",
-                          RadioSettingValueList(MONI,
-                                                MONI[_settings.monikey]))
+                          RadioSettingValueList(
+                              MONI, current_index=_settings.monikey))
         cfg_grp.append(rs)
 
         if self.MODEL == "TERMN-8R":
-            rs = RadioSetting("pf1key", "PF1 Key Function",
-                              RadioSettingValueList(PFKEYT,
-                                                    PFKEYT[_settings.pf1key]))
+            rs = RadioSetting(
+                "pf1key", "PF1 Key Function",
+                RadioSettingValueList(
+                    PFKEYT, current_index=_settings.pf1key))
             cfg_grp.append(rs)
 
-            rs = RadioSetting("pf2key", "PF2 Key Function",
-                              RadioSettingValueList(PFKEYT,
-                                                    PFKEYT[_settings.pf2key]))
+            rs = RadioSetting(
+                "pf2key", "PF2 Key Function",
+                RadioSettingValueList(
+                    PFKEYT, current_index=_settings.pf2key))
             cfg_grp.append(rs)
 
         if self.MODEL == "OBLTR-8R":
-            rs = RadioSetting("pf1key", "PF1 Key Function",
-                              RadioSettingValueList(PFKEYO,
-                                                    PFKEYO[_settings.pf1key]))
+            rs = RadioSetting(
+                "pf1key", "PF1 Key Function",
+                RadioSettingValueList(
+                    PFKEYO, current_index=_settings.pf1key))
             cfg_grp.append(rs)
 
             rs = RadioSetting("fmam", "PF2 Key Function",
-                              RadioSettingValueList(PFKEYO,
-                                                    PFKEYO[_settings.fmam]))
+                              RadioSettingValueList(
+                                  PFKEYO, current_index=_settings.fmam))
             cfg_grp.append(rs)
 
         rs = RadioSetting("apo", "Automatic Power Off",
                           RadioSettingValueList(APO,
-                                                APO[_settings.apo]))
+                                                current_index=_settings.apo))
         cfg_grp.append(rs)
 
         rs = RadioSetting("save", "Power Save",
                           RadioSettingValueList(SAVE,
-                                                SAVE[_settings.save]))
+                                                current_index=_settings.save))
         cfg_grp.append(rs)
 
         rs = RadioSetting("tail", "Tail Eliminator Type",
                           RadioSettingValueList(TAIL,
-                                                TAIL[_settings.tail]))
+                                                current_index=_settings.tail))
         cfg_grp.append(rs)
 
         rs = RadioSetting("fmvfomr", "FM VFO/MR",
-                          RadioSettingValueList(VFOMR,
-                                                VFOMR[_settings.fmvfomr]))
+                          RadioSettingValueList(
+                              VFOMR, current_index=_settings.fmvfomr))
         cfg_grp.append(rs)
 
         rs = RadioSetting("fmmrch", "FM MR Channel",
@@ -799,27 +805,26 @@ class AnyToneTERMN8RRadio(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("noaa", "NOAA",
                           RadioSettingValueList(NOAA,
-                                                NOAA[_settings.noaa]))
+                                                current_index=_settings.noaa))
         cfg_grp.append(rs)
 
         rs = RadioSetting("noaach", "NOAA Channel",
-                          RadioSettingValueList(NOAACH,
-                                                NOAACH[_settings.noaach]))
+                          RadioSettingValueList(
+                              NOAACH, current_index=_settings.noaach))
         cfg_grp.append(rs)
 
-        rs = RadioSetting("part95", "PART95",
-                          RadioSettingValueList(PART95,
-                                                PART95[_settings.part95]))
+        rs = RadioSetting("part95", "PART95", RadioSettingValueList(
+            PART95, current_index=_settings.part95))
         cfg_grp.append(rs)
 
         rs = RadioSetting("gmrs", "GMRS",
                           RadioSettingValueList(GMRS,
-                                                GMRS[_settings.gmrs]))
+                                                current_index=_settings.gmrs))
         cfg_grp.append(rs)
 
         rs = RadioSetting("murs", "MURS",
                           RadioSettingValueList(MURS,
-                                                MURS[_settings.murs]))
+                                                current_index=_settings.murs))
         cfg_grp.append(rs)
 
         for i in range(0, 9):

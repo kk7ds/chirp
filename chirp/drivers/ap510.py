@@ -496,15 +496,17 @@ class AP510Radio(chirp_common.CloneModeRadio):
                         RadioSettingValueInteger(0, 7, ssid3)))
         except NotImplementedError:
             aprs.append(RadioSetting("path", "Path",
-                        RadioSettingValueList(PATH,
-                                              PATH[int(self._mmap.path)])))
+                        RadioSettingValueList(
+                            PATH,
+                            current_index=int(self._mmap.path))))
         aprs.append(RadioSetting("table", "Table or Overlay",
                     RadioSettingValueList(TABLE, self._mmap.symbol[1])))
         aprs.append(RadioSetting("symbol", "Symbol",
                     RadioSettingValueList(SYMBOL, self._mmap.symbol[0])))
         aprs.append(RadioSetting("beacon", "Beacon Mode",
-                    RadioSettingValueList(BEACON,
-                                          BEACON[int(self._mmap.beacon) - 1])))
+                    RadioSettingValueList(
+                        BEACON,
+                        current_index=int(self._mmap.beacon) - 1)))
         aprs.append(RadioSetting("rate", "Beacon Rate (seconds)",
                     RadioSettingValueInteger(10, 9999, self._mmap.rate)))
         aprs.append(RadioSetting("comment", "Comment",
@@ -634,7 +636,8 @@ class AP510Radio(chirp_common.CloneModeRadio):
             system.append(RadioSetting("tf_card", "TF card format",
                           RadioSettingValueList(
                               TF_CARD,
-                              TF_CARD[int(self._mmap.multiple['tf_card'])])))
+                              current_index=(
+                                  int(self._mmap.multiple['tf_card'])))))
         except NotImplementedError:
             pass
 

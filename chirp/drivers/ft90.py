@@ -546,13 +546,15 @@ struct  {
         basic.append(rs)
         options = ["Off", "S-3", "S-5", "S-Full"]
         rs = RadioSetting(
-                "rfsqlvl", "RF Squelch Level",
-                RadioSettingValueList(options, options[_settings.rfsqlvl]))
+            "rfsqlvl", "RF Squelch Level",
+            RadioSettingValueList(
+                options, current_index=_settings.rfsqlvl))
         basic.append(rs)
         options = ["Off", "Band A", "Band B", "Both"]
         rs = RadioSetting(
-                "pttlock", "PTT Lock",
-                RadioSettingValueList(options, options[_settings.pttlock]))
+            "pttlock", "PTT Lock",
+            RadioSettingValueList(
+                options, current_index=_settings.pttlock))
         basic.append(rs)
 
         rs = RadioSetting(
@@ -568,78 +570,85 @@ struct  {
         options = ["OFF"] + [str(x) for x in (range(1, 12+1))]
         rs = RadioSetting(
                 "apo", "APO time (hrs)",
-                RadioSettingValueList(options, options[_settings.apo]))
+                RadioSettingValueList(options, current_index=_settings.apo))
         basic.append(rs)
 
         options = ["Off"] + [str(x) for x in (range(1, 60+1))]
         rs = RadioSetting(
                 "tot", "Time Out Timer (mins)",
-                RadioSettingValueList(options, options[_settings.tot]))
+                RadioSettingValueList(options, current_index=_settings.tot))
         basic.append(rs)
 
         options = ["off", "Auto/TX", "Auto", "TX"]
         rs = RadioSetting(
-                "fancontrol", "Fan Control",
-                RadioSettingValueList(options, options[_settings.fancontrol]))
+            "fancontrol", "Fan Control",
+            RadioSettingValueList(
+                options, current_index=_settings.fancontrol))
         basic.append(rs)
 
         keyopts = ["Scan Up", "Scan Down", "Repeater", "Reverse", "Tone Burst",
                    "Tx Power", "Home Ch", "VFO/MR", "Tone", "Priority"]
         rs = RadioSetting(
                 "key_lt", "Left Key",
-                RadioSettingValueList(keyopts, keyopts[_settings.key_lt]))
+                RadioSettingValueList(keyopts, current_index=_settings.key_lt))
         keymaps.append(rs)
         rs = RadioSetting(
                 "key_rt", "Right Key",
-                RadioSettingValueList(keyopts, keyopts[_settings.key_rt]))
+                RadioSettingValueList(keyopts, current_index=_settings.key_rt))
         keymaps.append(rs)
         rs = RadioSetting(
                 "key_p1", "P1 Key",
-                RadioSettingValueList(keyopts, keyopts[_settings.key_p1]))
+                RadioSettingValueList(keyopts, current_index=_settings.key_p1))
         keymaps.append(rs)
         rs = RadioSetting(
                 "key_p2", "P2 Key",
-                RadioSettingValueList(keyopts, keyopts[_settings.key_p2]))
+                RadioSettingValueList(keyopts, current_index=_settings.key_p2))
         keymaps.append(rs)
         rs = RadioSetting(
-                "key_acc", "ACC Key",
-                RadioSettingValueList(keyopts, keyopts[_settings.key_acc]))
+            "key_acc", "ACC Key",
+            RadioSettingValueList(
+                keyopts, current_index=_settings.key_acc))
         keymaps.append(rs)
 
         options = [str(x) for x in range(0, 12+1)]
         rs = RadioSetting(
-                "lcdcontrast", "LCD Contrast",
-                RadioSettingValueList(options, options[_settings.lcdcontrast]))
+            "lcdcontrast", "LCD Contrast",
+            RadioSettingValueList(
+                options, current_index=_settings.lcdcontrast))
         basic.append(rs)
 
         options = ["off", "d4", "d3", "d2", "d1"]
         rs = RadioSetting(
                 "dimmer", "Dimmer",
-                RadioSettingValueList(options, options[_settings.dimmer]))
+                RadioSettingValueList(options, current_index=_settings.dimmer))
         basic.append(rs)
 
         options = ["TRX Normal", "RX Reverse", "TX Reverse", "TRX Reverse"]
         rs = RadioSetting(
-                "dcsmode", "DCS Mode",
-                RadioSettingValueList(options, options[_settings.dcsmode]))
+            "dcsmode", "DCS Mode",
+            RadioSettingValueList(
+                options, current_index=_settings.dcsmode))
         basic.append(rs)
 
         options = ["50 ms", "100 ms"]
         rs = RadioSetting(
-                "dtmfspeed", "DTMF Speed",
-                RadioSettingValueList(options, options[_settings.dtmfspeed]))
+            "dtmfspeed", "DTMF Speed",
+            RadioSettingValueList(
+                options, current_index=_settings.dtmfspeed))
         autodial.append(rs)
 
         options = ["50 ms", "250 ms", "450 ms", "750 ms", "1 sec"]
         rs = RadioSetting(
-                "dtmftxdelay", "DTMF TX Delay",
-                RadioSettingValueList(options, options[_settings.dtmftxdelay]))
+            "dtmftxdelay", "DTMF TX Delay",
+            RadioSettingValueList(
+                options, current_index=_settings.dtmftxdelay))
         autodial.append(rs)
 
         options = [str(x) for x in range(1, 8 + 1)]
         rs = RadioSetting(
-                "dtmf_active", "DTMF Active",
-                RadioSettingValueList(options, options[_settings.dtmf_active]))
+            "dtmf_active", "DTMF Active",
+            RadioSettingValueList(
+                options, current_index=_settings.dtmf_active))
         autodial.append(rs)
 
         # setup 8 dtmf autodial entries

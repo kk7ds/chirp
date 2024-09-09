@@ -588,22 +588,22 @@ class RB28Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
-                                   TIMEOUTTIMER_LIST[_settings.tot - 1])
+                                   current_index=_settings.tot - 1)
         rset = RadioSetting("tot", "Time-out timer", rs)
         basic.append(rset)
 
         rs = RadioSettingValueList(VOICE_LIST,
-                                   VOICE_LIST[_settings.voice])
+                                   current_index=_settings.voice)
         rset = RadioSetting("voice", "Voice Prompts", rs)
         basic.append(rset)
 
         rs = RadioSettingValueList(SAVE_LIST,
-                                   SAVE_LIST[_settings.savem])
+                                   current_index=_settings.savem)
         rset = RadioSetting("savem", "Battery Save Mode", rs)
         basic.append(rset)
 
         rs = RadioSettingValueList(BACKLIGHT_LIST,
-                                   BACKLIGHT_LIST[_settings.backlight])
+                                   current_index=_settings.backlight)
         rset = RadioSetting("backlight", "Back Light", rs)
         basic.append(rset)
 
@@ -654,12 +654,12 @@ class RB28Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         rs = RadioSettingValueList(VOXL_LIST,
-                                   VOXL_LIST[_settings.voxl])
+                                   current_index=_settings.voxl)
         rset = RadioSetting("voxl", "Vox Level", rs)
         basic.append(rset)
 
         rs = RadioSettingValueList(VOXD_LIST,
-                                   VOXD_LIST[_settings.voxd])
+                                   current_index=_settings.voxd)
         rset = RadioSetting("voxd", "Vox Delay", rs)
         basic.append(rset)
 

@@ -198,7 +198,8 @@ class IC2300Radio(icf.IcomCloneModeRadio):
         # Memory display style
         opt = ["Frequency", "Label"]
         dsp = RadioSetting("display_style", "Display style",
-                           RadioSettingValueList(opt, opt[_mem.display_style]))
+                           RadioSettingValueList(
+                               opt, current_index=_mem.display_style))
         dsp.set_doc("Memory display style")
         mem.extra.append(dsp)
 
@@ -248,50 +249,49 @@ class IC2300Radio(icf.IcomCloneModeRadio):
         # Transmit timeout
         opt = ['Disabled', '1 minute'] + \
               [s + ' minutes' for s in map(str, range(2, 31))]
-        rs = RadioSetting("tx_timeout", "Transmit timeout (min)",
-                          RadioSettingValueList(opt, opt[
-                              _settings.tx_timeout
-                          ]))
+        rs = RadioSetting(
+            "tx_timeout", "Transmit timeout (min)",
+            RadioSettingValueList(opt, current_index=_settings.tx_timeout))
         basic.append(rs)
 
         # Auto Repeater (USA model only)
         opt = ["Disabled", "Duplex Only", "Duplex and tone"]
-        rs = RadioSetting("auto_repeater", "Auto repeater",
-                          RadioSettingValueList(opt, opt[
-                              _settings.auto_repeater
-                          ]))
+        rs = RadioSetting(
+            "auto_repeater", "Auto repeater",
+            RadioSettingValueList(
+                opt, current_index=_settings.auto_repeater))
         basic.append(rs)
 
         # Auto Power Off
         opt = ["Disabled", "30 minutes", "60 minutes", "120 minutes"]
-        rs = RadioSetting("auto_power_off", "Auto power off",
-                          RadioSettingValueList(opt, opt[
-                              _settings.auto_power_off
-                          ]))
+        rs = RadioSetting(
+            "auto_power_off", "Auto power off",
+            RadioSettingValueList(
+                opt, current_index=_settings.auto_power_off))
         basic.append(rs)
 
         # Squelch Delay
         opt = ["Short", "Long"]
-        rs = RadioSetting("squelch_delay", "Squelch delay",
-                          RadioSettingValueList(opt, opt[
-                              _settings.squelch_delay
-                          ]))
+        rs = RadioSetting(
+            "squelch_delay", "Squelch delay",
+            RadioSettingValueList(
+                opt, current_index=_settings.squelch_delay))
         basic.append(rs)
 
         # Squelch Type
         opt = ["Noise squelch", "S-meter squelch", "Squelch attenuator"]
-        rs = RadioSetting("squelch_type", "Squelch type",
-                          RadioSettingValueList(opt, opt[
-                              _settings.squelch_type
-                          ]))
+        rs = RadioSetting(
+            "squelch_type", "Squelch type",
+            RadioSettingValueList(
+                opt, current_index=_settings.squelch_type))
         basic.append(rs)
 
         # Repeater Lockout
         opt = ["Disabled", "Repeater lockout", "Busy lockout"]
-        rs = RadioSetting("repeater_lockout", "Repeater lockout",
-                          RadioSettingValueList(opt, opt[
-                              _settings.repeater_lockout
-                          ]))
+        rs = RadioSetting(
+            "repeater_lockout", "Repeater lockout",
+            RadioSettingValueList(
+                opt, current_index=_settings.repeater_lockout))
         basic.append(rs)
 
         # DTMF Speed
@@ -300,16 +300,15 @@ class IC2300Radio(icf.IcomCloneModeRadio):
                "300ms interval, 1.6 cps",
                "500ms interval, 1.0 cps"]
         rs = RadioSetting("dtmf_speed", "DTMF speed",
-                          RadioSettingValueList(opt, opt[
-                              _settings.dtmf_speed
-                          ]))
+                          RadioSettingValueList(
+                              opt, current_index=_settings.dtmf_speed))
         basic.append(rs)
 
         # Scan pause timer
         opt = [s + ' seconds' for s in map(str, range(2, 22, 2))] + ['Hold']
         rs = RadioSetting("scan_pause_timer", "Scan pause timer",
                           RadioSettingValueList(
-                              opt, opt[_settings.scan_pause_timer]))
+                              opt, current_index=_settings.scan_pause_timer))
         basic.append(rs)
 
         # Scan Resume Timer
@@ -317,7 +316,7 @@ class IC2300Radio(icf.IcomCloneModeRadio):
               [s + ' seconds' for s in map(str, range(1, 6))] + ['Hold']
         rs = RadioSetting("scan_resume_timer", "Scan resume timer",
                           RadioSettingValueList(
-                              opt, opt[_settings.scan_resume_timer]))
+                              opt, current_index=_settings.scan_resume_timer))
         basic.append(rs)
 
         # Weather Alert (USA model only)
@@ -332,9 +331,10 @@ class IC2300Radio(icf.IcomCloneModeRadio):
 
         # Memory Display Type
         opt = ["Frequency", "Channel", "Name"]
-        rs = RadioSetting("display_type", "Memory display",
-                          RadioSettingValueList(opt,
-                                                opt[_settings.display_type]))
+        rs = RadioSetting(
+            "display_type", "Memory display",
+            RadioSettingValueList(
+                opt, current_index=_settings.display_type))
         front_panel.append(rs)
 
         # Display backlight brightness;
@@ -342,14 +342,15 @@ class IC2300Radio(icf.IcomCloneModeRadio):
         rs = RadioSetting("display_brightness", "Backlight brightness",
                           RadioSettingValueList(
                               opt,
-                              opt[_settings.display_brightness]))
+                              current_index=_settings.display_brightness))
         front_panel.append(rs)
 
         # Display backlight color
         opt = ["Amber", "Yellow", "Green"]
-        rs = RadioSetting("display_color", "Backlight color",
-                          RadioSettingValueList(opt,
-                                                opt[_settings.display_color]))
+        rs = RadioSetting(
+            "display_color", "Backlight color",
+            RadioSettingValueList(
+                opt, current_index=_settings.display_color))
         front_panel.append(rs)
 
         # Display contrast
@@ -357,21 +358,21 @@ class IC2300Radio(icf.IcomCloneModeRadio):
         rs = RadioSetting("display_contrast", "Display contrast",
                           RadioSettingValueList(
                               opt,
-                              opt[_settings.display_contrast]))
+                              current_index=_settings.display_contrast))
         front_panel.append(rs)
 
         # Auto dimmer
         opt = ["Disabled", "Backlight off", "1 (dimmest)", "2", "3"]
         rs = RadioSetting("auto_dimmer", "Auto dimmer",
-                          RadioSettingValueList(opt,
-                                                opt[_settings.auto_dimmer]))
+                          RadioSettingValueList(
+                              opt, current_index=_settings.auto_dimmer))
         front_panel.append(rs)
 
         # Microphone gain
         opt = ["Low", "High"]
         rs = RadioSetting("mic_gain", "Microphone gain",
-                          RadioSettingValueList(opt,
-                                                opt[_settings.mic_gain]))
+                          RadioSettingValueList(
+                              opt, current_index=_settings.mic_gain))
         front_panel.append(rs)
 
         # Key press beep

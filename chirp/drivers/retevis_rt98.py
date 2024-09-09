@@ -1158,13 +1158,13 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         # Function Setup
         # MODE SET
         rs = RadioSettingValueList(LIST_DISPLAY_MODE,
-                                   LIST_DISPLAY_MODE[_settings.display_mode])
+                                   current_index=_settings.display_mode)
         rset = RadioSetting("display_mode", "Display Mode", rs)
         function.append(rset)
 
         if "AT-779" in str(_embedded.radio_type):
             rs = RadioSettingValueList(LIST_VFOMR,
-                                       LIST_VFOMR[_settings3.vfomr])
+                                       current_index=_settings3.vfomr)
             rset = RadioSetting("settings3.vfomr", "VFO/MR", rs)
             function.append(rset)
 
@@ -1201,38 +1201,40 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
 
         # ON/OFF SET
         rs = RadioSettingValueList(LIST_APO,
-                                   LIST_APO[_settings.auto_power_off])
+                                   current_index=_settings.auto_power_off)
         rset = RadioSetting("auto_power_off", "Auto Power Off", rs)
         function.append(rset)
 
-        rs = RadioSettingValueList(LIST_AOP, LIST_AOP[_settings.auto_power_on])
+        rs = RadioSettingValueList(
+            LIST_AOP, current_index=_settings.auto_power_on)
         rset = RadioSetting("auto_power_on", "Power On Method", rs)
         function.append(rset)
 
         # STE SET
         rs = RadioSettingValueList(LIST_STE_FREQ,
-                                   LIST_STE_FREQ[_settings.ste_frequency])
+                                   current_index=_settings.ste_frequency)
         rset = RadioSetting("ste_frequency", "STE Frequency", rs)
         function.append(rset)
 
         rs = RadioSettingValueList(LIST_STE_TYPE,
-                                   LIST_STE_TYPE[_settings.ste_type])
+                                   current_index=_settings.ste_type)
         rset = RadioSetting("ste_type", "STE Type", rs)
         function.append(rset)
 
         # FUNCTION SET
-        rs = RadioSettingValueList(LIST_STEP, LIST_STEP[_settings.tuning_step])
+        rs = RadioSettingValueList(
+            LIST_STEP, current_index=_settings.tuning_step)
         rset = RadioSetting("tuning_step", "Tuning Step", rs)
         function.append(rset)
 
         rs = RadioSettingValueList(LIST_SQUELCH,
-                                   LIST_SQUELCH[_settings.squelch])
+                                   current_index=_settings.squelch)
         rset = RadioSetting("squelch", "Squelch Level", rs)
         function.append(rset)
 
         if "AT-779" in str(_embedded.radio_type):
             rs = RadioSettingValueList(LIST_SCAN,
-                                       LIST_SCAN[_settings.scan_resume])
+                                       current_index=_settings.scan_resume)
             rset = RadioSetting("scan_resume", "Frequency Scan", rs)
             function.append(rset)
 
@@ -1241,7 +1243,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         function.append(rset)
 
         rs = RadioSettingValueList(LIST_TIMEOUT,
-                                   LIST_TIMEOUT[_settings.timeout_timer])
+                                   current_index=_settings.timeout_timer)
         rset = RadioSetting("timeout_timer", "Timeout Timer", rs)
         function.append(rset)
 
@@ -1271,7 +1273,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         scanning.append(rset)
 
         rs = RadioSettingValueList(LIST_PRIORITY_CH,
-                                   LIST_PRIORITY_CH[_settings2.priority_ch])
+                                   current_index=_settings2.priority_ch)
         rset = RadioSetting("settings2.priority_ch", "Priority Channel", rs)
         scanning.append(rset)
 
@@ -1284,30 +1286,30 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         scanning.append(rset)
 
         rs = RadioSettingValueList(LIST_REVERT_CH,
-                                   LIST_REVERT_CH[_settings2.revert_ch])
+                                   current_index=_settings2.revert_ch)
         rset = RadioSetting("settings2.revert_ch", "Revert Channel", rs)
         scanning.append(rset)
 
         rs = RadioSettingValueList(LIST_TIME46,
-                                   LIST_TIME46[_settings2.look_back_time_a])
+                                   current_index=_settings2.look_back_time_a)
         rset = RadioSetting("settings2.look_back_time_a",
                             "Look Back Time A", rs)
         scanning.append(rset)
 
         rs = RadioSettingValueList(LIST_TIME46,
-                                   LIST_TIME46[_settings2.look_back_time_b])
+                                   current_index=_settings2.look_back_time_b)
         rset = RadioSetting("settings2.look_back_time_b",
                             "Look Back Time B", rs)
         scanning.append(rset)
 
         rs = RadioSettingValueList(LIST_TIME50,
-                                   LIST_TIME50[_settings2.dropout_delay_time])
+                                   current_index=_settings2.dropout_delay_time)
         rset = RadioSetting("settings2.dropout_delay_time",
                             "Dropout Delay Time", rs)
         scanning.append(rset)
 
         rs = RadioSettingValueList(LIST_TIME50,
-                                   LIST_TIME50[_settings2.dwell_time])
+                                   current_index=_settings2.dwell_time)
         rset = RadioSetting("settings2.dwell_time", "Dwell Time", rs)
         scanning.append(rset)
 
@@ -1326,7 +1328,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
             options = LIST_RT98W_MODES
         else:
             options = LIST_RT98U_MODES
-        rs = RadioSettingValueList(options, options[_embedded.mode])
+        rs = RadioSettingValueList(options, current_index=_embedded.mode)
         rs.set_mutable(False)
         rset = RadioSetting("embedded_msg.mode", "Mode", rs)
         embedded.append(rset)
@@ -1338,7 +1340,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
             options = LIST_RT98W_FREQS
         else:
             options = LIST_RT98U_FREQS
-        rs = RadioSettingValueList(options, options[_settings3.bandlimit])
+        rs = RadioSettingValueList(options, current_index=_settings3.bandlimit)
         rs.set_mutable(False)
         rset = RadioSetting("settings3.bandlimit", "Frequency", rs)
         embedded.append(rset)

@@ -520,7 +520,7 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
             val = _mem.bcl
         rs = RadioSetting("bcl", "BCL",
                           RadioSettingValueList(
-                              LIST_BCL, LIST_BCL[val]))
+                              LIST_BCL, current_index=val))
         mem.extra.append(rs)
 
         rs = RadioSetting("encode", "Encode",
@@ -572,7 +572,7 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
         top = RadioSettings(basic, sidekey, voxset)
 
         voice = RadioSetting("voice", "Language", RadioSettingValueList(
-                             LIST_VOICE, LIST_VOICE[_settings.voice]))
+                             LIST_VOICE, current_index=_settings.voice))
         basic.append(voice)
 
         beep = RadioSetting("beep", "Key Beep",
@@ -586,13 +586,13 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
 
         save = RadioSetting("save", "Battery Save",
                             RadioSettingValueList(
-                                LIST_SAVE, LIST_SAVE[_settings.save]))
+                                LIST_SAVE, current_index=_settings.save))
         basic.append(save)
 
         backlight = RadioSetting("backlight", "Backlight",
                                  RadioSettingValueList(
                                      LIST_BACKLIGHT,
-                                     LIST_BACKLIGHT[_settings.backlight]))
+                                     current_index=_settings.backlight))
         basic.append(backlight)
 
         vibrate = RadioSetting("vibrate", "Vibrate",
@@ -610,7 +610,7 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
 
         roger = RadioSetting("roger", "Roger Tone",
                              RadioSettingValueList(
-                                 LIST_ROGER, LIST_ROGER[_settings.roger]))
+                                 LIST_ROGER, current_index=_settings.roger))
         basic.append(roger)
 
         squelch = RadioSetting("squelch", "Squelch Level",
@@ -630,7 +630,7 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
             idx = TOT_VALUES.index(_settings.tot)
         else:
             idx = TOT_VALUES.index(0x78)
-        rs = RadioSettingValueList(TOT_CHOICES, TOT_CHOICES[idx])
+        rs = RadioSettingValueList(TOT_CHOICES, current_index=idx)
         rset = RadioSetting("tot", "Time-out Timer", rs)
         rset.set_apply_callback(apply_tot_listvalue, _settings.tot)
         basic.append(rset)
@@ -649,7 +649,7 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
             idx = SKEY_VALUES.index(_settings.skeyus)
         else:
             idx = SKEY_VALUES.index(0x01)
-        rs = RadioSettingValueList(SKEY_CHOICES, SKEY_CHOICES[idx])
+        rs = RadioSettingValueList(SKEY_CHOICES, current_index=idx)
         rset = RadioSetting("skeyus", "Side Key(upper) - Short Press", rs)
         rset.set_apply_callback(apply_skey_listvalue, _settings.skeyus)
         sidekey.append(rset)
@@ -659,7 +659,7 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
             idx = SKEY_VALUES.index(_settings.skeyul)
         else:
             idx = SKEY_VALUES.index(0x04)
-        rs = RadioSettingValueList(SKEY_CHOICES, SKEY_CHOICES[idx])
+        rs = RadioSettingValueList(SKEY_CHOICES, current_index=idx)
         rset = RadioSetting("skeyul", "Side Key(upper) - Long Press", rs)
         rset.set_apply_callback(apply_skey_listvalue, _settings.skeyul)
         sidekey.append(rset)
@@ -669,7 +669,7 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
             idx = SKEY_VALUES.index(_settings.skeyds)
         else:
             idx = SKEY_VALUES.index(0x03)
-        rs = RadioSettingValueList(SKEY_CHOICES, SKEY_CHOICES[idx])
+        rs = RadioSettingValueList(SKEY_CHOICES, current_index=idx)
         rset = RadioSetting("skeyds", "Side Key(lower) - Short Press", rs)
         rset.set_apply_callback(apply_skey_listvalue, _settings.skeyds)
         sidekey.append(rset)
@@ -679,7 +679,7 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
             idx = SKEY_VALUES.index(_settings.skeydl)
         else:
             idx = SKEY_VALUES.index(0x14)
-        rs = RadioSettingValueList(SKEY_CHOICES, SKEY_CHOICES[idx])
+        rs = RadioSettingValueList(SKEY_CHOICES, current_index=idx)
         rset = RadioSetting("skeydl", "Side Key(lower) - Long Press", rs)
         rset.set_apply_callback(apply_skey_listvalue, _settings.skeydl)
         sidekey.append(rset)
@@ -696,7 +696,7 @@ class RB15RadioBase(chirp_common.CloneModeRadio):
 
         voxd = RadioSetting("voxd", "VOX Delay (seconde)",
                             RadioSettingValueList(
-                                LIST_VOXD, LIST_VOXD[_settings.voxd]))
+                                LIST_VOXD, current_index=_settings.voxd))
         voxset.append(voxd)
 
         return top

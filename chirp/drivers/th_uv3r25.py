@@ -147,7 +147,7 @@ class TYTUV3R25Radio(TYTUV3RRadio):
         rs = RadioSetting("voice_mode", "Voice Mode",
                           RadioSettingValueList(
                               VOICE_MODE_LIST,
-                              VOICE_MODE_LIST[_mem.voice_mode-1]))
+                              current_index=_mem.voice_mode-1))
         mem.extra.append(rs)
 
         return mem

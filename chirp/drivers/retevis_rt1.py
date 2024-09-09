@@ -513,7 +513,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("lpt", "Long Press Time[s]",
                           RadioSettingValueList(
                               LIST_LPT,
-                              LIST_LPT[_settings.lpt]))
+                              current_index=_settings.lpt))
         basic.append(rs)
 
         if _settings.k1shortp > 4:
@@ -523,7 +523,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("k1shortp", "Key 1 Short Press",
                           RadioSettingValueList(
                               LIST_SHORT_PRESS,
-                              LIST_SHORT_PRESS[val]))
+                              current_index=val))
         basic.append(rs)
 
         if _settings.k1longp > 6:
@@ -533,7 +533,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("k1longp", "Key 1 Long Press",
                           RadioSettingValueList(
                               LIST_LONG_PRESS,
-                              LIST_LONG_PRESS[val]))
+                              current_index=val))
         basic.append(rs)
 
         if _settings.k2shortp > 4:
@@ -543,7 +543,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("k2shortp", "Key 2 Short Press",
                           RadioSettingValueList(
                               LIST_SHORT_PRESS,
-                              LIST_SHORT_PRESS[val]))
+                              current_index=val))
         basic.append(rs)
 
         if _settings.k2longp > 6:
@@ -553,7 +553,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("k2longp", "Key 2 Long Press",
                           RadioSettingValueList(
                               LIST_LONG_PRESS,
-                              LIST_LONG_PRESS[val]))
+                              current_index=val))
         basic.append(rs)
 
         rs = RadioSetting("voxc", "VOX Control",
@@ -571,7 +571,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("voxd", "VOX Delay Time",
                           RadioSettingValueList(
                               LIST_VOXDELAY,
-                              LIST_VOXDELAY[_settings.voxd]))
+                              current_index=_settings.voxd))
         basic.append(rs)
 
         rs = RadioSetting("voxi", "VOX Inhibit on Receive",
@@ -593,7 +593,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("voice", "Voice Prompts",
                           RadioSettingValueList(
                               LIST_VOICE,
-                              LIST_VOICE[val]))
+                              current_index=val))
         basic.append(rs)
 
         rs = RadioSetting("tone", "Tone",
@@ -615,7 +615,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("tot", "Time-out Timer[s]",
                           RadioSettingValueList(
                               LIST_TIMEOUTTIMER,
-                              LIST_TIMEOUTTIMER[val]))
+                              current_index=val))
         basic.append(rs)
 
         if _settings.save < 3:
@@ -625,13 +625,13 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("save", "Battery Saver",
                           RadioSettingValueList(
                               LIST_SAVE,
-                              LIST_SAVE[val]))
+                              current_index=val))
         basic.append(rs)
 
         rs = RadioSetting("ssave", "Super Battery Saver[s]",
                           RadioSettingValueList(
                               LIST_SSAVE,
-                              LIST_SSAVE[_settings.ssave]))
+                              current_index=_settings.ssave))
         basic.append(rs)
 
         rs = RadioSetting("alarm", "Incept Alarm",
@@ -649,7 +649,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("prioritych", "Priority Channel",
                           RadioSettingValueList(
                               LIST_PRIORITYCH,
-                              LIST_PRIORITYCH[val]))
+                              current_index=val))
         basic.append(rs)
 
         if _settings.scanspeed > 8:
@@ -659,7 +659,7 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("scanspeed", "Scan Speed[ms]",
                           RadioSettingValueList(
                               LIST_SCANSPEED,
-                              LIST_SCANSPEED[val]))
+                              current_index=val))
         basic.append(rs)
 
         if _settings.scandelay > 27:
@@ -669,13 +669,13 @@ class RT1Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("scandelay", "Scan Droupout Delay Time[s]",
                           RadioSettingValueList(
                               LIST_SCANDELAY,
-                              LIST_SCANDELAY[val]))
+                              current_index=val))
         basic.append(rs)
 
         rs = RadioSetting("txtone", "Tx Tone",
                           RadioSettingValueList(
                               LIST_TXTONE,
-                              LIST_TXTONE[_settings.txtone]))
+                              current_index=_settings.txtone))
         basic.append(rs)
 
         return top

@@ -745,23 +745,23 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
             sett.sql = 6
 
         tot = RadioSetting("settings.tot", "Time Out Timer (TOT)",
-                           RadioSettingValueList(TOT, TOT[int(sett.tot)]))
+                           RadioSettingValueList(TOT, current_index=int(sett.tot)))
         basic.append(tot)
 
         tota = RadioSetting("settings.tot_alert", "TOT pre-plert",
-                            RadioSettingValueList(TOT_A, TOT_A[int(sett.tot_alert)]))
+                            RadioSettingValueList(TOT_A, current_index=int(sett.tot_alert)))
         basic.append(tota)
 
         totrk = RadioSetting("settings.tot_rekey", "TOT rekey time",
-                             RadioSettingValueList(TOT_RK, TOT_RK[int(sett.tot_rekey)]))
+                             RadioSettingValueList(TOT_RK, current_index=int(sett.tot_rekey)))
         basic.append(totrk)
 
         totrs = RadioSetting("settings.tot_reset", "TOT reset time",
-                             RadioSettingValueList(TOT_RS, TOT_RS[int(sett.tot_reset)]))
+                             RadioSettingValueList(TOT_RS, current_index=int(sett.tot_reset)))
         basic.append(totrs)
 
         sql = RadioSetting("settings.sql", "Squelch level",
-                           RadioSettingValueList(SQL, SQL[int(sett.sql)]))
+                           RadioSettingValueList(SQL, current_index=int(sett.sql)))
         basic.append(sql)
 
         # front keys
@@ -769,35 +769,35 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         if m > 3:
             m = 1
         mon = RadioSetting("settings.kMoni", "Monitor",
-                           RadioSettingValueList(MONI, MONI[m]))
+                           RadioSettingValueList(MONI, current_index=m))
         fkeys.append(mon)
 
         s = int(sett.kScan)
         if s > 3:
             s = 1
         scn = RadioSetting("settings.kScan", "Scan",
-                           RadioSettingValueList(SCAN, SCAN[s]))
+                           RadioSettingValueList(SCAN, current_index=s))
         fkeys.append(scn)
 
         d = int(sett.kDial)
         if d > 1:
             d = 0
         dial = RadioSetting("settings.kDial", "Dial",
-                            RadioSettingValueList(YESNO, YESNO[d]))
+                            RadioSettingValueList(YESNO, current_index=d))
         fkeys.append(dial)
 
         t = int(sett.kTa)
         if t > 2:
             t = 2
         ta = RadioSetting("settings.kTa", "Ta",
-                          RadioSettingValueList(TA, TA[t]))
+                          RadioSettingValueList(TA, current_index=t))
         fkeys.append(ta)
 
         l = int(sett.kLo)
         if l > 1:
             l = 0
         low = RadioSetting("settings.kLo", "Low",
-                           RadioSettingValueList(YESNO, YESNO[l]))
+                           RadioSettingValueList(YESNO, current_index=l))
         fkeys.append(low)
 
         return top

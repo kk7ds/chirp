@@ -893,7 +893,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             enc = 0
 
         rs = RadioSetting("scrambler", _("Scrambler"), RadioSettingValueList(
-            SCRAMBLER_LIST, SCRAMBLER_LIST[enc]))
+            SCRAMBLER_LIST, current_index=enc))
         mem.extra.append(rs)
 
         rs = RadioSetting("scanlists", _("Scanlists"), RadioSettingValueList(
@@ -1311,7 +1311,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             tmpval = 0
         rs = RadioSetting("key1_shortpress_action", "Side key 1 short press",
                           RadioSettingValueList(
-                              KEYACTIONS_LIST, KEYACTIONS_LIST[tmpval]))
+                              KEYACTIONS_LIST, current_index=tmpval))
         keya.append(rs)
 
         tmpval = int(_mem.key1_longpress_action)
@@ -1319,7 +1319,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             tmpval = 0
         rs = RadioSetting("key1_longpress_action", "Side key 1 long press",
                           RadioSettingValueList(
-                              KEYACTIONS_LIST, KEYACTIONS_LIST[tmpval]))
+                              KEYACTIONS_LIST, current_index=tmpval))
         keya.append(rs)
 
         tmpval = int(_mem.key2_shortpress_action)
@@ -1327,7 +1327,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             tmpval = 0
         rs = RadioSetting("key2_shortpress_action", "Side key 2 short press",
                           RadioSettingValueList(
-                              KEYACTIONS_LIST, KEYACTIONS_LIST[tmpval]))
+                              KEYACTIONS_LIST, current_index=tmpval))
         keya.append(rs)
 
         tmpval = int(_mem.key2_longpress_action)
@@ -1335,7 +1335,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             tmpval = 0
         rs = RadioSetting("key2_longpress_action", "Side key 2 long press",
                           RadioSettingValueList(
-                              KEYACTIONS_LIST, KEYACTIONS_LIST[tmpval]))
+                              KEYACTIONS_LIST, current_index=tmpval))
         keya.append(rs)
 
         # DTMF settings
@@ -1368,7 +1368,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("dtmf_decode_response", "Decode Response",
                           RadioSettingValueList(
                               DTMF_DECODE_RESPONSE_LIST,
-                              DTMF_DECODE_RESPONSE_LIST[tmpval]))
+                              current_index=tmpval))
         dtmf.append(rs)
 
         tmpval = _mem.dtmf_settings.auto_reset_time
@@ -1648,7 +1648,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "Channel display mode",
                 RadioSettingValueList(
                     CHANNELDISP_LIST,
-                    CHANNELDISP_LIST[tmpchdispmode]))
+                    current_index=tmpchdispmode))
         basic.append(rs)
 
         # Crossband receiving/transmitting
@@ -1660,7 +1660,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "Cross-band receiving/transmitting",
                 RadioSettingValueList(
                     CROSSBAND_LIST,
-                    CROSSBAND_LIST[tmpcross]))
+                    current_index=tmpcross))
         basic.append(rs)
 
         # Battery save
@@ -1672,7 +1672,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "Battery Save",
                 RadioSettingValueList(
                     BATSAVE_LIST,
-                    BATSAVE_LIST[tmpbatsave]))
+                    current_index=tmpbatsave))
         basic.append(rs)
 
         # Dual watch
@@ -1680,7 +1680,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         if tmpdual >= len(DUALWATCH_LIST):
             tmpdual = 0
         rs = RadioSetting("dualwatch", "Dual Watch", RadioSettingValueList(
-            DUALWATCH_LIST, DUALWATCH_LIST[tmpdual]))
+            DUALWATCH_LIST, current_index=tmpdual))
         basic.append(rs)
 
         # Backlight auto mode
@@ -1691,7 +1691,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                           "Backlight auto mode",
                           RadioSettingValueList(
                               BACKLIGHT_LIST,
-                              BACKLIGHT_LIST[tmpback]))
+                              current_index=tmpback))
         basic.append(rs)
 
         # Tail tone elimination
@@ -1723,7 +1723,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "Scan resume mode",
                 RadioSettingValueList(
                     SCANRESUME_LIST,
-                    SCANRESUME_LIST[tmpscanres]))
+                    current_index=tmpscanres))
         basic.append(rs)
 
         # Keypad locked
@@ -1749,7 +1749,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "Power on display mode",
                 RadioSettingValueList(
                     WELCOME_LIST,
-                    WELCOME_LIST[tmpdispmode]))
+                    current_index=tmpdispmode))
         basic.append(rs)
 
         # Keypad Tone
@@ -1757,7 +1757,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         if tmpkeypadtone >= len(KEYPADTONE_LIST):
             tmpkeypadtone = 0
         rs = RadioSetting("keypad_tone", "Keypad tone", RadioSettingValueList(
-            KEYPADTONE_LIST, KEYPADTONE_LIST[tmpkeypadtone]))
+            KEYPADTONE_LIST, current_index=tmpkeypadtone))
         basic.append(rs)
 
         # Language
@@ -1765,7 +1765,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         if tmplanguage >= len(LANGUAGE_LIST):
             tmplanguage = 0
         rs = RadioSetting("language", "Language", RadioSettingValueList(
-            LANGUAGE_LIST, LANGUAGE_LIST[tmplanguage]))
+            LANGUAGE_LIST, current_index=tmplanguage))
         basic.append(rs)
 
         # Alarm mode
@@ -1773,7 +1773,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         if tmpalarmmode >= len(ALARMMODE_LIST):
             tmpalarmmode = 0
         rs = RadioSetting("alarm_mode", "Alarm mode", RadioSettingValueList(
-            ALARMMODE_LIST, ALARMMODE_LIST[tmpalarmmode]))
+            ALARMMODE_LIST, current_index=tmpalarmmode))
         basic.append(rs)
 
         # Reminding of end of talk
@@ -1785,7 +1785,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "Reminding of end of talk",
                 RadioSettingValueList(
                     REMENDOFTALK_LIST,
-                    REMENDOFTALK_LIST[tmpalarmmode]))
+                    current_index=tmpalarmmode))
         basic.append(rs)
 
         # Repeater tail tone elimination
@@ -1795,7 +1795,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting(
                 "repeater_tail_elimination",
                 "Repeater tail tone elimination",
-                RadioSettingValueList(RTE_LIST, RTE_LIST[tmprte]))
+                RadioSettingValueList(RTE_LIST, current_index=tmprte))
         basic.append(rs)
 
         # Logo string 1
@@ -1833,7 +1833,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             tmpflock = 0
         rs = RadioSetting(
             "flock", "F-LOCK",
-            RadioSettingValueList(FLOCK_LIST, FLOCK_LIST[tmpflock]))
+            RadioSettingValueList(FLOCK_LIST, current_index=tmpflock))
         unlock.append(rs)
 
         # 350TX

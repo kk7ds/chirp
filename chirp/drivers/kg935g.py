@@ -1527,8 +1527,8 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         # Call Settings
         rs = RadioSetting("cur_call_grp", "Current Call Group",
                           RadioSettingValueList(CALLGROUP_LIST,
-                                                CALLGROUP_LIST[_settings.
-                                                               cur_call_grp]))
+                                                current_index=_settings.
+                                                cur_call_grp))
         call_grp.append(rs)
 
         def apply_callid(setting, obj):
@@ -1569,10 +1569,10 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                                                _settings.DspBrtAct))
         cfg_grp.append(rs)
         if self.MODEL != "KG-UV8H":
-            rs = RadioSetting("DspBrtSby", "Display Brightness STANDBY",
-                              RadioSettingValueList(
-                                    DSPBRTSBY_LIST, DSPBRTSBY_LIST[
-                                        _settings.DspBrtSby]))
+            rs = RadioSetting(
+                "DspBrtSby", "Display Brightness STANDBY",
+                RadioSettingValueList(
+                    DSPBRTSBY_LIST, current_index=_settings.DspBrtSby))
             cfg_grp.append(rs)
         rs = RadioSetting("wxalert", "Weather Alert",
                           RadioSettingValueBoolean(_settings.wxalert))
@@ -1581,8 +1581,8 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         if self.MODEL == "KG-935G Plus":
             rs = RadioSetting("wxalert_type", "Weather Alert Notification",
                               RadioSettingValueList(WX_TYPE,
-                                                    WX_TYPE[_settings.
-                                                            wxalert_type]))
+                                                    current_index=_settings.
+                                                    wxalert_type))
             cfg_grp.append(rs)
 
         rs = RadioSetting("power_save", "Battery Saver",
@@ -1590,17 +1590,17 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("theme", "Theme",
                           RadioSettingValueList(
-                              themelist, themelist[_settings.theme]))
+                              themelist, current_index=_settings.theme))
         cfg_grp.append(rs)
         rs = RadioSetting("backlight", "Backlight Active Time",
                           RadioSettingValueList(BACKLIGHT_LIST,
-                                                BACKLIGHT_LIST[_settings.
-                                                               backlight]))
+                                                current_index=_settings.
+                                                backlight))
         cfg_grp.append(rs)
         rs = RadioSetting("scan_rev", "Scan Mode",
                           RadioSettingValueList(SCANMODE_LIST,
-                                                SCANMODE_LIST[_settings.
-                                                              scan_rev]))
+                                                current_index=_settings.
+                                                scan_rev))
         cfg_grp.append(rs)
         rs = RadioSetting("prich_sw", "Priority Channel Scan",
                           RadioSettingValueBoolean(_settings.prich_sw))
@@ -1614,24 +1614,24 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("ToneScnSave", "Tone Scan Save",
                           RadioSettingValueList(TONESCANSAVELIST,
-                                                TONESCANSAVELIST[_settings.
-                                                                 ToneScnSave]))
+                                                current_index=_settings.
+                                                ToneScnSave))
         cfg_grp.append(rs)
         rs = RadioSetting("roger_beep", "Roger Beep",
                           RadioSettingValueList(ROGER_LIST,
-                                                ROGER_LIST[_settings.
-                                                           roger_beep]))
+                                                current_index=_settings.
+                                                roger_beep))
         cfg_grp.append(rs)
         rs = RadioSetting("timeout", "Timeout Timer (TOT)",
                           RadioSettingValueList(
-                              TIMEOUT_LIST, TIMEOUT_LIST[_settings.timeout]))
+                              TIMEOUT_LIST, current_index=_settings.timeout))
         cfg_grp.append(rs)
         rs = RadioSetting("toalarm", "Timeout Alarm (TOA)",
                           RadioSettingValueInteger(0, 10, _settings.toalarm))
         cfg_grp.append(rs)
         rs = RadioSetting("vox", "VOX",
                           RadioSettingValueList(LIST_10,
-                                                LIST_10[_settings.vox]))
+                                                current_index=_settings.vox))
         cfg_grp.append(rs)
         rs = RadioSetting("voice", "Voice Guide",
                           RadioSettingValueBoolean(_settings.voice))
@@ -1647,45 +1647,47 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("smuteset", "Secondary Area Mute (SMUTESET)",
                           RadioSettingValueList(SMUTESET_LIST,
-                                                SMUTESET_LIST[_settings.
-                                                              smuteset]))
+                                                current_index=_settings.
+                                                smuteset))
         cfg_grp.append(rs)
         rs = RadioSetting("ani_sw", ani_msg,
                           RadioSettingValueBoolean(_settings.ani_sw))
         cfg_grp.append(rs)
         rs = RadioSetting("dtmf_st", "DTMF Sidetone (SIDETONE)",
                           RadioSettingValueList(DTMFST_LIST,
-                                                DTMFST_LIST[_settings.
-                                                            dtmf_st]))
+                                                current_index=_settings.
+                                                dtmf_st))
         cfg_grp.append(rs)
         rs = RadioSetting("alert", "Alert Tone",
                           RadioSettingValueList(ALERTS_LIST,
-                                                ALERTS_LIST[_settings.alert]))
+                                                current_index=_settings.alert))
         cfg_grp.append(rs)
         rs = RadioSetting("ptt_delay", pttdly_msg,
                           RadioSettingValueMap(PTTDELAY_TIMES,
                                                _settings.ptt_delay))
         cfg_grp.append(rs)
-        rs = RadioSetting("ptt_id", idtx_msg,
-                          RadioSettingValueList(PTTID_LIST,
-                                                PTTID_LIST[_settings.ptt_id]))
+        rs = RadioSetting(
+            "ptt_id", idtx_msg,
+            RadioSettingValueList(
+                PTTID_LIST, current_index=_settings.ptt_id))
         cfg_grp.append(rs)
 
-        rs = RadioSetting("ring_time", "Ring Time",
-                          RadioSettingValueList(LIST_10,
-                                                LIST_10[_settings.ring_time]))
+        rs = RadioSetting(
+            "ring_time", "Ring Time",
+            RadioSettingValueList(
+                LIST_10, current_index=_settings.ring_time))
         cfg_grp.append(rs)
 
         if self.MODEL == "KG-UV8H":
             rs = RadioSetting("language", "Language",
                               RadioSettingValueList(
                                     LANGUAGE_LIST,
-                                    LANGUAGE_LIST[_settings.language]))
+                                    current_index=_settings.language))
             cfg_grp.append(rs)
             rs = RadioSetting("rptmode", "Radio Work Mode",
                               RadioSettingValueList(
                                     RPTMODE_LIST,
-                                    RPTMODE_LIST[_settings.rptmode]))
+                                    current_index=_settings.rptmode))
             cfg_grp.append(rs)
             rs = RadioSetting("rpttype", "Repeater Type",
                               RadioSettingValueMap(RPTTYPE_MAP,
@@ -1697,9 +1699,10 @@ class KG935GRadio(chirp_common.CloneModeRadio,
             rs = RadioSetting("rptptt", "Repeater PTT",
                               RadioSettingValueBoolean(_settings.rptptt))
             cfg_grp.append(rs)
-            rs = RadioSetting("rpt_hold", "RPT Hold Time",
-                              RadioSettingValueList(
-                                  HOLD_TIMES, HOLD_TIMES[_settings.rpt_hold]))
+            rs = RadioSetting(
+                "rpt_hold", "RPT Hold Time",
+                RadioSettingValueList(
+                    HOLD_TIMES, current_index=_settings.rpt_hold))
             cfg_grp.append(rs)
 
         rs = RadioSetting("rpt_tone", "Repeater Tone",
@@ -1716,7 +1719,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("ponmsg", "Poweron message",
                           RadioSettingValueList(
-                               PONMSG_LIST, PONMSG_LIST[_settings.ponmsg]))
+                               PONMSG_LIST, current_index=_settings.ponmsg))
         cfg_grp.append(rs)
         rs = RadioSetting("dtmf_tx_time", "DTMF Transmit Time",
                           RadioSettingValueMap(DTMF_TIMES,
@@ -1731,7 +1734,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
             rs = RadioSetting("batt_ind", "Battery Indicator",
                               RadioSettingValueList(
                                   BATT_DISP_LIST,
-                                  BATT_DISP_LIST[_settings.batt_ind]))
+                                  current_index=_settings.batt_ind))
             cfg_grp.append(rs)
 
             rs = RadioSetting("sim_rec", "Simultaneous Receive",
@@ -1781,35 +1784,35 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         rs = RadioSetting("pf1_shrt", "PF1 SHORT Key function",
                           RadioSettingValueList(
                               pfkeyshort,
-                              pfkeyshort[_settings.pf1_shrt]))
+                              current_index=_settings.pf1_shrt))
         key_grp.append(rs)
         rs = RadioSetting("pf1_long", "PF1 LONG Key function",
                           RadioSettingValueList(
                               pfkeylong,
-                              pfkeylong[_settings.pf1_long]))
+                              current_index=_settings.pf1_long))
         key_grp.append(rs)
         if self.MODEL != "KG-UV8H":
             rs = RadioSetting("pf2_shrt", "PF2 SHORT Key function",
                               RadioSettingValueList(
                                   pfkeyshort,
-                                  pfkeyshort[_settings.pf2_shrt]))
+                                  current_index=_settings.pf2_shrt))
             key_grp.append(rs)
             rs = RadioSetting("pf2_long", "PF2 LONG Key function",
                               RadioSettingValueList(
                                   pfkeylong,
-                                  pfkeylong[_settings.pf2_long]))
+                                  current_index=_settings.pf2_long))
             key_grp.append(rs)
 
 #       SCAN GROUP settings
         rs = RadioSetting("ScnGrpA_Act", "Scan Group A Active",
                           RadioSettingValueList(SCANGRP_LIST,
-                                                SCANGRP_LIST[_settings.
-                                                             ScnGrpA_Act]))
+                                                current_index=_settings.
+                                                ScnGrpA_Act))
         scan_grp.append(rs)
         rs = RadioSetting("ScnGrpB_Act", "Scan Group B Active",
                           RadioSettingValueList(SCANGRP_LIST,
-                                                SCANGRP_LIST[_settings.
-                                                             ScnGrpB_Act]))
+                                                current_index=_settings.
+                                                ScnGrpB_Act))
         scan_grp.append(rs)
 
         for i in range(1, 11):
@@ -1829,8 +1832,8 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         #
         rs = RadioSetting("work_mode_a", vfo_area + "A Workmode",
                           RadioSettingValueList(workmodelist,
-                                                workmodelist[_settings.
-                                                             work_mode_a]))
+                                                current_index=_settings.
+                                                work_mode_a))
         vfoa_grp.append(rs)
         rs = RadioSetting("work_ch_a", vfo_area + "A Work Channel",
                           RadioSettingValueInteger(1, 999,
@@ -1867,20 +1870,20 @@ class KG935GRadio(chirp_common.CloneModeRadio,
             _vfoa.power = 2
         rs = RadioSetting("vfoa.power", vfo_area + "A Power",
                           RadioSettingValueList(
-                              POWER_LIST, POWER_LIST[_vfoa.power]))
+                              POWER_LIST, current_index=_vfoa.power))
         vfoa_grp.append(rs)
         rs = RadioSetting("vfoa.iswide", vfo_area + "A Wide/Narrow",
                           RadioSettingValueList(
-                              BANDWIDTH_LIST, BANDWIDTH_LIST[_vfoa.iswide]))
+                              BANDWIDTH_LIST, current_index=_vfoa.iswide))
         vfoa_grp.append(rs)
         rs = RadioSetting("vfoa.mute_mode", vfo_area + "A Mute (SP Mute)",
                           RadioSettingValueList(
-                              SPMUTE_LIST, SPMUTE_LIST[_vfoa.mute_mode]))
+                              SPMUTE_LIST, current_index=_vfoa.mute_mode))
         vfoa_grp.append(rs)
         if self.MODEL == "KG-UV8H":
             rs = RadioSetting("vfoa.ofst_dir", vfo_area + "A Shift Dir",
                               RadioSettingValueList(
-                                  OFFSET_LIST, OFFSET_LIST[_vfoa.ofst_dir]))
+                                  OFFSET_LIST, current_index=_vfoa.ofst_dir))
             vfoa_grp.append(rs)
         else:
             rs = RadioSetting("VFO_repeater_a", vfo_area + "A Repeater",
@@ -1890,28 +1893,28 @@ class KG935GRadio(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("vfoa.scrambler", vfo_area + "A Descramble",
                           RadioSettingValueList(
-                              SCRAMBLE_LIST, SCRAMBLE_LIST[_vfoa.scrambler]))
+                              SCRAMBLE_LIST, current_index=_vfoa.scrambler))
         vfoa_grp.append(rs)
 
         rs = RadioSetting("vfoa.cmpndr", vfo_area + "A Compander",
                           RadioSettingValueList(
-                             ONOFF_LIST, ONOFF_LIST[_vfoa.cmpndr]))
+                             ONOFF_LIST, current_index=_vfoa.cmpndr))
         vfoa_grp.append(rs)
 
         rs = RadioSetting("vfoa.step", vfo_area + "A Step (kHz)",
                           RadioSettingValueList(
-                              STEP_LIST, STEP_LIST[_vfoa.step]))
+                              STEP_LIST, current_index=_vfoa.step))
         vfoa_grp.append(rs)
         rs = RadioSetting("vfoa.squelch", vfo_area + "A Squelch",
                           RadioSettingValueList(
-                              LIST_10, LIST_10[_vfoa.squelch]))
+                              LIST_10, current_index=_vfoa.squelch))
         vfoa_grp.append(rs)
 
         # VFO B Settings
         rs = RadioSetting("work_mode_b", vfo_area + "B Workmode",
                           RadioSettingValueList(workmodelist,
-                                                workmodelist[_settings.
-                                                             work_mode_b]))
+                                                current_index=_settings.
+                                                work_mode_b))
         vfob_grp.append(rs)
         rs = RadioSetting("work_ch_b", vfo_area + "B Work Channel",
                           RadioSettingValueInteger(1, 999,
@@ -1949,20 +1952,20 @@ class KG935GRadio(chirp_common.CloneModeRadio,
             _vfob.power = 2
         rs = RadioSetting("vfob.power", vfo_area + "B Power",
                           RadioSettingValueList(
-                              POWER_LIST, POWER_LIST[_vfob.power]))
+                              POWER_LIST, current_index=_vfob.power))
         vfob_grp.append(rs)
         rs = RadioSetting("vfob.iswide", vfo_area + "B Wide/Narrow",
                           RadioSettingValueList(
-                              BANDWIDTH_LIST, BANDWIDTH_LIST[_vfob.iswide]))
+                              BANDWIDTH_LIST, current_index=_vfob.iswide))
         vfob_grp.append(rs)
         rs = RadioSetting("vfob.mute_mode", vfo_area + "B Mute (SP Mute)",
                           RadioSettingValueList(
-                              SPMUTE_LIST, SPMUTE_LIST[_vfob.mute_mode]))
+                              SPMUTE_LIST, current_index=_vfob.mute_mode))
         vfob_grp.append(rs)
         if self.MODEL == "KG-UV8H":
             rs = RadioSetting("vfob.ofst_dir", vfo_area + "B Shift Dir",
                               RadioSettingValueList(
-                                  OFFSET_LIST, OFFSET_LIST[_vfob.ofst_dir]))
+                                  OFFSET_LIST, current_index=_vfob.ofst_dir))
             vfob_grp.append(rs)
         else:
             rs = RadioSetting("VFO_repeater_b", vfo_area + "B Repeater",
@@ -1972,21 +1975,21 @@ class KG935GRadio(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("vfob.scrambler", vfo_area + "B Descramble",
                           RadioSettingValueList(
-                              SCRAMBLE_LIST, SCRAMBLE_LIST[_vfob.scrambler]))
+                              SCRAMBLE_LIST, current_index=_vfob.scrambler))
         vfob_grp.append(rs)
 
         rs = RadioSetting("vfob.cmpndr", vfo_area + "B Compander",
                           RadioSettingValueList(
-                              ONOFF_LIST, ONOFF_LIST[_vfob.cmpndr]))
+                              ONOFF_LIST, current_index=_vfob.cmpndr))
         vfob_grp.append(rs)
 
         rs = RadioSetting("vfob.step", vfo_area + "B Step (kHz)",
                           RadioSettingValueList(
-                              STEP_LIST, STEP_LIST[_vfob.step]))
+                              STEP_LIST, current_index=_vfob.step))
         vfob_grp.append(rs)
         rs = RadioSetting("vfob.squelch", vfo_area + "B Squelch",
                           RadioSettingValueList(
-                              LIST_10, LIST_10[_vfob.squelch]))
+                              LIST_10, current_index=_vfob.squelch))
         vfob_grp.append(rs)
 
         # FM RADIO PRESETS
