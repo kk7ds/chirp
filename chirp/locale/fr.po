@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-05 16:29-0700\n"
+"POT-Creation-Date: 2024-09-09 14:41-0700\n"
 "PO-Revision-Date: 2024-05-22 16:39-0400\n"
 "Last-Translator: Alexandre J. Raymond <alexandre.j.raymond@gmail.com>\n"
 "Language-Team: French\n"
@@ -67,19 +67,19 @@ msgstr[1] "%i Mémoires et décaler le bloc vers le haut"
 msgid "%s has not been saved. Save before closing?"
 msgstr "%s n'a pas été enregistré. Enregistrer avant de fermer ?"
 
-#: ../wxui/bugreport.py:424
+#: ../wxui/bugreport.py:426
 msgid "(Describe what actually happened instead)"
 msgstr ""
 
-#: ../wxui/bugreport.py:422
+#: ../wxui/bugreport.py:424
 msgid "(Describe what you expected to happen)"
 msgstr ""
 
-#: ../wxui/bugreport.py:420
+#: ../wxui/bugreport.py:422
 msgid "(Describe what you were doing)"
 msgstr ""
 
-#: ../wxui/bugreport.py:426
+#: ../wxui/bugreport.py:428
 msgid ""
 "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr ""
@@ -120,7 +120,7 @@ msgstr ""
 "   (tournez le rotacteur en maintenant appuyée la touche MONI\n"
 "7. Cliquez sur OK\n"
 
-#: ../drivers/ft2900.py:1228
+#: ../drivers/ft2900.py:1253
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -133,7 +133,7 @@ msgstr ""
 "4. <b>Après avoir cliqué sur OK</b>, appuyez sur \"SET MHz\" pour envoyer "
 "l'image.\n"
 
-#: ../drivers/ft2900.py:1233
+#: ../drivers/ft2900.py:1258
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -157,7 +157,7 @@ msgstr ""
 "déverrouiller\n"
 "      la radio, retournez ensuite à l'étape 1.\n"
 
-#: ../drivers/ft7100.py:1126
+#: ../drivers/ft7100.py:1130
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -171,7 +171,7 @@ msgstr ""
 "4. <b>Après avoir cliqué sur OK</b>, appuyez sur \"TONE\" pour envoyer "
 "l'image.\n"
 
-#: ../drivers/ft7100.py:1131
+#: ../drivers/ft7100.py:1135
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -332,7 +332,7 @@ msgstr ""
 "4. <b>Après avoir cliqué sur OK</b>,\n"
 "     appuyez sur la touche [C](SEND) pour envoyer l'image.\n"
 
-#: ../drivers/ft7800.py:835
+#: ../drivers/ft7800.py:857
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -354,7 +354,7 @@ msgstr ""
 "6. <b>Après avoir cliqué sur OK</b>, appuyez la touche [V/M] à gauche\n"
 "     pour envoyer l'image.\n"
 
-#: ../drivers/ft7800.py:845
+#: ../drivers/ft7800.py:867
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -1025,7 +1025,7 @@ msgstr ""
 "Une nouvelle version de CHIRP est disponible. Visitez le site internet dès "
 "que possible pour la télécharger!"
 
-#: ../drivers/ga510.py:1070
+#: ../drivers/ga510.py:1068
 msgid "AM mode does not allow duplex or tone"
 msgstr ""
 
@@ -1053,7 +1053,7 @@ msgstr "Tous les formats supportés|"
 msgid "Amateur"
 msgstr "Amateur"
 
-#: ../wxui/bugreport.py:284 ../wxui/bugreport.py:391 ../wxui/common.py:609
+#: ../wxui/bugreport.py:284 ../wxui/bugreport.py:393 ../wxui/common.py:609
 #: ../wxui/common.py:636
 msgid "An error has occurred"
 msgstr "Une erreur s'est produite"
@@ -1090,17 +1090,17 @@ msgstr "Corbeille"
 msgid "Browser"
 msgstr "Navigateur"
 
-#: ../wxui/bugreport.py:390
+#: ../wxui/bugreport.py:392
 #, fuzzy
 msgid "Bug number not found"
 msgstr "Problème numero:"
 
-#: ../wxui/bugreport.py:367
+#: ../wxui/bugreport.py:369
 #, fuzzy
 msgid "Bug number:"
 msgstr "Problème numero:"
 
-#: ../wxui/bugreport.py:323
+#: ../wxui/bugreport.py:324
 msgid "Bug subject:"
 msgstr ""
 
@@ -1286,7 +1286,7 @@ msgstr ""
 "Polarité\n"
 "DTCS"
 
-#: ../drivers/uvk5.py:885
+#: ../drivers/uvk5.py:881
 msgid "DTMF decode"
 msgstr "Décodage DTMF"
 
@@ -1306,7 +1306,7 @@ msgstr "Dec"
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ../wxui/bugreport.py:467
+#: ../wxui/bugreport.py:469
 #, fuzzy
 msgid "Detailed information"
 msgstr "Informations sur les pilotes"
@@ -1380,7 +1380,7 @@ msgstr "Instructions de téléchargement"
 msgid "Driver"
 msgstr "Pilote"
 
-#: ../drivers/uvk5.py:1303
+#: ../drivers/uvk5.py:1299
 msgid "Driver information"
 msgstr "Informations sur les pilotes"
 
@@ -1437,7 +1437,7 @@ msgstr "Saisir un nouveau nom pour la banque %s:"
 msgid "Enter custom port:"
 msgstr "Saisir un port personnalisé:"
 
-#: ../wxui/bugreport.py:405
+#: ../wxui/bugreport.py:407
 msgid ""
 "Enter details about this update. Be descriptive about what you were doing, "
 "what you expected to happen, and what actually happened."
@@ -1446,14 +1446,15 @@ msgstr ""
 #: ../wxui/bugreport.py:310
 msgid ""
 "Enter information about the bug including a short but meaningful subject and "
-"information about the radio model (if applicable) in question."
+"information about the radio model (if applicable) in question. In the next "
+"step you will have a chance to add more details about the problem."
 msgstr ""
 
-#: ../wxui/bugreport.py:412
+#: ../wxui/bugreport.py:414
 msgid "Enter information to add to the bug here"
 msgstr ""
 
-#: ../wxui/bugreport.py:358
+#: ../wxui/bugreport.py:360
 msgid "Enter the bug number that should be updated"
 msgstr ""
 
@@ -1500,7 +1501,7 @@ msgstr "Exporter vers un fichier CSV..."
 msgid "Extra"
 msgstr "Extra"
 
-#: ../drivers/uvk5.py:1301
+#: ../drivers/uvk5.py:1297
 msgid "FM Radio"
 msgstr "Radio FM"
 
@@ -1522,7 +1523,7 @@ msgstr "Échec du chargement du navigateur de la radio"
 msgid "Failed to parse result"
 msgstr "Échec d'analyse des résultats"
 
-#: ../wxui/bugreport.py:595
+#: ../wxui/bugreport.py:597
 #, fuzzy
 msgid "Failed to send bug report:"
 msgstr "Échec d'analyse des résultats"
@@ -1545,7 +1546,7 @@ msgstr "Fichier inexistant: %s"
 msgid "Files"
 msgstr "Fichiers"
 
-#: ../wxui/bugreport.py:465
+#: ../wxui/bugreport.py:467
 #, fuzzy
 msgid "Files:"
 msgstr "Fichiers"
@@ -1867,15 +1868,15 @@ msgstr ""
 msgid "Frequency granularity in kHz"
 msgstr "Granularité fréquence en kHz"
 
-#: ../drivers/ga510.py:1074 ../drivers/tdh8.py:2464
+#: ../drivers/ga510.py:1072 ../drivers/tdh8.py:2482
 msgid "Frequency in this range must not be AM mode"
 msgstr ""
 
-#: ../drivers/ga510.py:1067 ../drivers/tdh8.py:2461
+#: ../drivers/ga510.py:1065 ../drivers/tdh8.py:2479
 msgid "Frequency in this range requires AM mode"
 msgstr ""
 
-#: ../drivers/tdh8.py:2468
+#: ../drivers/tdh8.py:2486
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr ""
 
@@ -2089,11 +2090,11 @@ msgstr "Chargement des préférences"
 msgid "Login failed: Check your username and password"
 msgstr ""
 
-#: ../drivers/uvk5.py:1804
+#: ../drivers/uvk5.py:1800
 msgid "Logo string 1 (12 characters)"
 msgstr "Texte logo 1 (12 caractères)"
 
-#: ../drivers/uvk5.py:1811
+#: ../drivers/uvk5.py:1807
 msgid "Logo string 2 (12 characters)"
 msgstr "Texte logo 2 (12 caractères)"
 
@@ -2106,7 +2107,7 @@ msgstr "Longitude"
 msgid "Memories"
 msgstr "Mémoires"
 
-#: ../drivers/uvk5.py:2093
+#: ../drivers/uvk5.py:2098
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -2444,7 +2445,7 @@ msgstr "La radio n'a pas accusé reception du bloc %i"
 msgid "Radio information"
 msgstr "Informations de la radio"
 
-#: ../wxui/bugreport.py:331
+#: ../wxui/bugreport.py:333
 msgid "Radio model:"
 msgstr ""
 
@@ -2513,7 +2514,7 @@ msgstr ""
 msgid "Report or update a bug..."
 msgstr ""
 
-#: ../wxui/bugreport.py:462
+#: ../wxui/bugreport.py:464
 #, fuzzy, python-format
 msgid "Reporting a new bug: %r"
 msgstr "Rapport d'utilisation activé"
@@ -2572,11 +2573,11 @@ msgstr "Préférences enregistrées"
 msgid "Scan control (skip, include, priority, etc)"
 msgstr "Contrôles de scan (sauter, inclure, priorité, etc)"
 
-#: ../drivers/uvk5.py:899
+#: ../drivers/uvk5.py:895
 msgid "Scanlists"
 msgstr "Lists de scan"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:895
+#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:891
 msgid "Scrambler"
 msgstr "Brouilleur"
 
@@ -2612,7 +2613,7 @@ msgstr "Service"
 msgid "Settings"
 msgstr "Préférences"
 
-#: ../drivers/uvk5.py:2097
+#: ../drivers/uvk5.py:2102
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -2689,7 +2690,7 @@ msgstr "État/Province"
 msgid "Success"
 msgstr "Réussi"
 
-#: ../wxui/bugreport.py:598
+#: ../wxui/bugreport.py:600
 msgid "Successfully sent bug report:"
 msgstr ""
 
@@ -2772,7 +2773,7 @@ msgid ""
 "redirected to /dev/null)"
 msgstr ""
 
-#: ../wxui/bugreport.py:447
+#: ../wxui/bugreport.py:449
 msgid "The following information will be submitted:"
 msgstr ""
 
@@ -2807,8 +2808,8 @@ msgstr ""
 "débogage pour que nous puissions ajouter du support pour les autres "
 "révisions."
 
-#: ../drivers/radtel_rt490.py:1324 ../drivers/radtel_rt490.py:1326
-#: ../drivers/radtel_rt490.py:1328
+#: ../drivers/radtel_rt490.py:1345 ../drivers/radtel_rt490.py:1347
+#: ../drivers/radtel_rt490.py:1349
 msgid "This driver is in development and should be considered as experimental."
 msgstr ""
 "Ce pilote est en développement et devrait être considéré comme expérimental."
@@ -2889,7 +2890,7 @@ msgstr ""
 "Envoyez aussi vos demandes d'améliorations ou rapports de bogues!\n"
 "Vous avez été prévenu. Procedez à vos risques et périls!"
 
-#: ../wxui/bugreport.py:372
+#: ../wxui/bugreport.py:374
 msgid ""
 "This is the ticket number for an already-created issue on the chirpmyradio."
 "com website"
@@ -2932,7 +2933,7 @@ msgstr ""
 "quelques fois.\n"
 "Si vous ne parvenez pas à entrer, vérifiez la radio et le câble.\n"
 
-#: ../drivers/uvk5.py:1889
+#: ../drivers/uvk5.py:1885
 msgid ""
 "This should only be enabled if you are using modified firmware that supports "
 "wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
@@ -3078,7 +3079,7 @@ msgstr "Modèle non supporté %r"
 msgid "Update an existing bug"
 msgstr ""
 
-#: ../wxui/bugreport.py:464
+#: ../wxui/bugreport.py:466
 #, fuzzy, python-format
 msgid "Updating bug %s"
 msgstr "Mise à jour de la liste URCALL"
@@ -3087,7 +3088,7 @@ msgstr "Mise à jour de la liste URCALL"
 msgid "Upload instructions"
 msgstr "Instruction de téléchargement"
 
-#: ../drivers/uvk5.py:2084
+#: ../drivers/uvk5.py:2089
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr ""
 
