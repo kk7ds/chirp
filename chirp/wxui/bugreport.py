@@ -309,7 +309,8 @@ class GetCreds(BugReportPage):
 class NewBugInfo(BugReportPage):
     INST = _('Enter information about the bug including a short but '
              'meaningful subject and information about the radio model '
-             '(if applicable) in question.')
+             '(if applicable) in question. In the next step you will have '
+             'a chance to add more details about the problem.')
 
     def _build(self, vbox):
         self.context.bugsubj = self.context.bugmodel = None
@@ -323,6 +324,7 @@ class NewBugInfo(BugReportPage):
             panel, label=_('Bug subject:')),
             border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
         self.subj = wx.TextCtrl(panel)
+        self.subj.SetMaxLength(100)
         self.subj.Bind(wx.EVT_TEXT, self.validate_next)
         grid.Add(self.subj, 1, border=20,
                  flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
