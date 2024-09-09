@@ -778,10 +778,10 @@ class RT490Radio(chirp_common.CloneModeRadio):
                                              'vfo_'+chan.lower()].fhss])
         ret.append(RadioSetting('settings_vfo.vfo_%s.fhss' % chan.lower(),
                                 'FHSS (Encryption)', rsvl))
-        rsvl = RadioSettingValueList(['Wide', 'Narrow'],
-                                     ['Wide', 'Narrow'][
-                                         _mem.settings_vfo[
-                                             'vfo_'+chan.lower()].narrow])
+        chanwidth = ['Wide', 'Narrow']
+        rsvl = RadioSettingValueList(
+            chanwidth,
+            int(bool(_mem.settings_vfo['vfo_'+chan.lower()].narrow)))
         ret.append(RadioSetting('settings_vfo.vfo_%s.narrow' % chan.lower(),
                                 'Wide / Narrow', rsvl))
         rsvl = RadioSettingValueList(self.TUNING_STEPS_LIST,
