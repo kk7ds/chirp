@@ -514,10 +514,7 @@ u8 checksum;
 TMODES = ["", "Tone", "TSQL", "DTCS"]
 DUPLEX = ["", "-", "+", "split"]
 MODES = ["FM", "AM", "WFM"]
-STEPS = list(chirp_common.TUNING_STEPS)
-STEPS.remove(30.0)
-STEPS.append(100.0)
-STEPS.insert(2, 0.0)  # There is a skipped tuning step at index 2 (?)
+STEPS = [5.0, 6.25, 8.33, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0, 9.0]
 SKIPS = ["", "S", "P"]
 FT1_DTMF_CHARS = list("0123456789ABCD*#-")
 
@@ -1042,7 +1039,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.duplex = ""
             mem.power = POWER_LEVELS[0]
             mem.mode = "FM"
-            mem.tuning_step = 0
+            mem.tuning_step = STEPS[0]
         else:
             mem.freq = chirp_common.fix_rounded_step(int(_mem.freq) * 1000)
             mem.offset = int(_mem.offset) * 1000
