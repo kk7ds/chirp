@@ -503,6 +503,11 @@ class TestStepFunctions(base.BaseTest):
         self.assertEqual(2.5, chirp_common.required_step(self._005[0],
                                                          allowed=[2.5]))
 
+    def test_required_step_finds_radio_specific(self):
+        # Make sure we find a radio-specific step, 10Hz in this case
+        self.assertEqual(0.01, chirp_common.required_step(
+            146000010, allowed=[5.0, 10.0, 0.01, 20.0]))
+
     def test_required_step_fail(self):
         self.assertRaises(errors.InvalidDataError,
                           chirp_common.required_step,
