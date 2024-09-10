@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-09 14:41-0700\n"
-"PO-Revision-Date: 2024-09-04 23:19-0400\n"
+"PO-Revision-Date: 2024-09-10 15:21-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1446,7 +1446,6 @@ msgstr ""
 "estabas haciendo, lo que esperabas que ocurriera, y lo que realmente ocurrió."
 
 #: ../wxui/bugreport.py:310
-#, fuzzy
 msgid ""
 "Enter information about the bug including a short but meaningful subject and "
 "information about the radio model (if applicable) in question. In the next "
@@ -1454,7 +1453,8 @@ msgid ""
 msgstr ""
 "Ingresa información sobre el error incluyendo un asunto breve pero "
 "significativo e información sobre el modelo de radio (si es aplicable) en "
-"cuestión."
+"cuestión. En el siguiente paso tendrás la oportunidad de agregar mas "
+"detalles sobre el problema."
 
 #: ../wxui/bugreport.py:414
 msgid "Enter information to add to the bug here"
