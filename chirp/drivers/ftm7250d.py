@@ -109,7 +109,7 @@ class FTM7250Radio(ft1d.FT1Radio):
         rf.valid_tmodes = [x for x in TMODES if x is not None]
         rf.valid_cross_modes = [x for x in CROSS_MODES if x is not None]
         rf.valid_duplexes = list(ft1d.DUPLEX)
-        rf.valid_tuning_steps = list(STEPS)
+        rf.valid_tuning_steps = [x for x in STEPS if x]
         rf.valid_bands = [(108000000, 580000000)]
         # rf.valid_skips = SKIPS
         rf.valid_power_levels = POWER_LEVELS

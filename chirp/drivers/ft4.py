@@ -534,7 +534,8 @@ POWER_LEVELS = [
 # these steps encode to 0-9 on all radios, but encoding #2 is disallowed
 # on the US versions (FT-4XR)
 STEP_CODE = [0, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
-US_LEGAL_STEPS = list(STEP_CODE)  # copy to pass to UI on US radios
+VALID_STEPS = [x for x in STEP_CODE if x]
+US_LEGAL_STEPS = list(VALID_STEPS)  # copy to pass to UI on US radios
 US_LEGAL_STEPS.remove(6.25)       # euro radios just use STEP_CODE
 
 # Map the radio image sql_type (0-6) to the CHIRP mem values.
@@ -1333,7 +1334,7 @@ class YaesuFT4XERadio(YaesuFT4GenericRadio):
     id_str = b'IFT-35R\x00\x00V100\x00\x00'
     valid_bands = VALID_BANDS_DUAL
     DUPLEX_AUTO = DUPLEX_AUTO_EU
-    legal_steps = STEP_CODE
+    legal_steps = VALID_STEPS
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
 
 
@@ -1373,7 +1374,7 @@ class YaesuFT65RRadio(YaesuFT65GenericRadio):
     id_str = b'IH-420\x00\x00\x00V100\x00\x00'
     valid_bands = VALID_BANDS_DUAL
     DUPLEX_AUTO = DUPLEX_AUTO_US
-    legal_steps = STEP_CODE
+    legal_steps = VALID_STEPS
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
     DUPLEX_OFF_VIA_OFFSET = [  # matches the order of valid_bands
         None,  # Don't modify broadcast FM memories
@@ -1391,7 +1392,7 @@ class YaesuFT65ERadio(YaesuFT65GenericRadio):
     id_str = b'IH-420\x00\x00\x00V100\x00\x00'
     valid_bands = VALID_BANDS_DUAL
     DUPLEX_AUTO = DUPLEX_AUTO_EU
-    legal_steps = STEP_CODE
+    legal_steps = VALID_STEPS
     BAND_ASSIGNMENTS = BAND_ASSIGNMENTS_DUALBAND
 
 

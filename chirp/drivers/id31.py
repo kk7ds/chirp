@@ -198,7 +198,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.has_bank_index = True
         rf.has_bank_names = True
         rf.valid_tmodes = list(TMODES)
-        rf.valid_tuning_steps = sorted(list(TUNING_STEPS))
+        rf.valid_tuning_steps = sorted([x for x in TUNING_STEPS if x])
         rf.valid_modes = list(self.MODES.values())
         rf.valid_skips = ["", "S", "P"]
         rf.valid_characters = chirp_common.CHARSET_ASCII

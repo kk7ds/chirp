@@ -130,7 +130,7 @@ class ICP7Radio(icf.IcomCloneModeRadio):
         rf.valid_modes = MODES
         rf.valid_bands = [(495000, 999990000)]
         rf.valid_skips = ["", "S", "P"]
-        rf.valid_tuning_steps = TUNING_STEPS
+        rf.valid_tuning_steps = [x for x in TUNING_STEPS if x]
         rf.valid_name_length = 6
         rf.has_settings = True
         rf.has_ctone = True
