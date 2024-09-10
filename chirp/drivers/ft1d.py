@@ -916,7 +916,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_modes = list(MODES) + ['NFM', 'DN']
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
-        rf.valid_tuning_steps = list(STEPS)
+        rf.valid_tuning_steps = [x for x in STEPS if x]
         rf.valid_bands = [(500000, 999900000)]
         rf.valid_skips = SKIPS
         rf.valid_power_levels = POWER_LEVELS
