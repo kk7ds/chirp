@@ -814,6 +814,10 @@ def LIST(v):
     assert hasattr(v, '__iter__')
 
 
+def LIST_NONZERO_INT(v):
+    assert all(x > 0 for x in v)
+
+
 def INT(min=0, max=None):
     def checkint(v):
         assert isinstance(v, int)
@@ -865,7 +869,7 @@ class RadioFeatures:
         "valid_modes":          LIST,
         "valid_tmodes":         LIST,
         "valid_duplexes":       LIST,
-        "valid_tuning_steps":   LIST,
+        "valid_tuning_steps":   LIST_NONZERO_INT,
         "valid_bands":          LIST,
         "valid_skips":          LIST,
         "valid_power_levels":   LIST,
@@ -1736,8 +1740,19 @@ def required_step(freq, allowed=None):
         8.33: is_8_33,
     }
 
+    # Try the above "standard" steps first in order
     for step, validate in steps.items():
         if step in allowed and validate(freq):
+            return step
+
+    # Try any additional steps in the allowed list
+    for step in allowed:
+        if step in steps:
+            # Already tried
+            continue
+        if make_is(int(step * 1000))(freq):
+            LOG.debug('Chose non-standard step %s for %s' % (
+                step, format_freq(freq)))
             return step
 
     raise errors.InvalidDataError("Unable to find a supported " +
