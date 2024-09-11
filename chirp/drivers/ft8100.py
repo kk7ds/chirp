@@ -95,6 +95,22 @@ class FT8100Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return False
 
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(
+            "1. Turn Radio off.\n"
+            "2. Connect data cable.\n"
+            "3. While holding \"F/W\" button, turn radio on.\n"
+            "4. <b>After clicking OK</b>, press \"RPT\" to send image.\n")
+        rp.pre_upload = _(
+            "1. Turn Radio off.\n"
+            "2. Connect data cable.\n"
+            "3. While holding \"F/W\" button, turn radio on.\n"
+            "4. Press \"REV\" to receive image.\n"
+            "5. Click OK to start transfer.\n")
+        return rp
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (1, 99)
