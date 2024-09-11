@@ -731,6 +731,7 @@ class RT22FRS(RT22Radio):
 class RT622(RT22Radio):
     VENDOR = "Retevis"
     MODEL = "RT622"
+    _fileid = RT22Radio._fileid + [b'\xFF\xFF\xF8\xFF']
 
 
 @directory.register
