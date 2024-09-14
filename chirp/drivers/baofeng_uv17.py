@@ -483,7 +483,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
         _mem.set_raw(b"\x00" * 16)
 
         _namelength = self.get_features().valid_name_length
-        _nam.name = mem.name.ljust(_namelength, '\x00')
+        _nam.name = mem.name[:_namelength].ljust(11, '\x00')
 
         self.set_memory_common(mem, _mem)
 
