@@ -1163,7 +1163,7 @@ class RadioddityGA510v2(baofeng_uv17.UV17):
                     chirp_common.PowerLevel("Medium", watts=5.00),
                     chirp_common.PowerLevel("High",  watts=10.00)]
 
-    LENGTH_NAME = 11
+    LENGTH_NAME = 8
     SCODE_LIST = ["%s" % x for x in range(1, 16)]
     SQUELCH_LIST = ["Off"] + list("123456789")
     LIST_POWERON_DISPLAY_TYPE = ["Full", "Message", "Voltage"]
