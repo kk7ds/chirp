@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-09 14:41-0700\n"
-"PO-Revision-Date: 2024-08-30 00:06+0300\n"
+"PO-Revision-Date: 2024-09-14 10:00+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
 "Language: tr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.4\n"
+"X-Generator: Poedit 3.5\n"
 
 #: ../drivers/ft2d.py:97
 msgid ""
@@ -84,6 +84,7 @@ msgstr "(Ne yaptığınızı anlatın)"
 msgid ""
 "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr ""
+"(Bu daha önce işe yaradı mı? Yeni telsiz? OEM yazılımıyla çalışıyor mu?)"
 
 #: ../wxui/radioinfo.py:50
 msgid "(none)"
@@ -997,7 +998,7 @@ msgstr ""
 
 #: ../drivers/ga510.py:1068
 msgid "AM mode does not allow duplex or tone"
-msgstr ""
+msgstr "AM modu, çift yönlü veya tonlu sese izin vermez"
 
 #: ../wxui/main.py:925
 msgid "About"
@@ -1410,14 +1411,14 @@ msgstr ""
 "beklediğinizi ve gerçekte ne olduğunu açıklayıcı olun."
 
 #: ../wxui/bugreport.py:310
-#, fuzzy
 msgid ""
 "Enter information about the bug including a short but meaningful subject and "
 "information about the radio model (if applicable) in question. In the next "
 "step you will have a chance to add more details about the problem."
 msgstr ""
-"Hata hakkında kısa ama anlamlı bir konu başlığı ve (varsa) söz konusu telsiz "
-"modeli hakkında bilgi içeren bilgileri girin."
+"Hata hakkında kısa ama anlamlı bir bilgi ve söz konusu telsiz modeli (varsa) "
+"hakkında bilgi girin. Bir sonraki adımda sorun hakkında daha fazla ayrıntı "
+"ekleme şansınız olacak."
 
 #: ../wxui/bugreport.py:414
 msgid "Enter information to add to the bug here"
@@ -2152,7 +2153,7 @@ msgstr "%i kadında modül bulunamadı"
 
 #: ../wxui/memedit.py:2036
 msgid "No more space available; some memories were not applied"
-msgstr ""
+msgstr "Daha fazla alan yok; bazı kayıtlar uygulanmadı"
 
 #: ../sources/przemienniki.py:53
 msgid "No results"
@@ -2802,7 +2803,7 @@ msgid ""
 "from this tab into that one in order to upload"
 msgstr ""
 "Bu, telsizden bağımsız bir dosyadır ve doğrudan bir telsize yüklenemez. Bir "
-"telsiz görüntüsü açın (veya bir telsizden indirin) ve ardından öğeleri bu "
+"telsiz imajı açın (veya bir telsizden indirin) ve ardından öğeleri bu "
 "sekmeden diğerine kopyalayıp yapıştırın."
 
 #: ../drivers/th_uv88.py:560
