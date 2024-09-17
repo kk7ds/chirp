@@ -1344,14 +1344,35 @@ class RT470XRadio(RT470LRadio):
                          ]
 
     _fingerprint = _fingerprint_pcb1 + _fingerprint_pcb2
-
     RT470X_ORIG = False
-
     VALID_BANDS = [(100000000, 136000000),
                    (136000000, 200000000),
                    (200000000, 300000000),
                    (300000000, 400000000),
                    (400000000, 560000000)]
+    _AIRBAND = (118000000, 136000000)
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_modes.append('AM')
+        return rf
+
+    def validate_memory(self, mem):
+        msgs = []
+        in_range = chirp_common.in_range
+        if in_range(mem.freq, [self._AIRBAND]) and not mem.mode == 'AM':
+            msgs.append(chirp_common.ValidationWarning(
+                _('Frequency in this range requires AM mode')))
+        if not in_range(mem.freq, [self._AIRBAND]) and mem.mode == 'AM':
+            msgs.append(chirp_common.ValidationWarning(
+                _('Frequency in this range must not be AM mode')))
+        return msgs + super().validate_memory(mem)
+
+    def get_memory(self, number):
+        mem = super().get_memory(number)
+        if chirp_common.in_range(mem.freq, [self._AIRBAND]):
+            mem.mode = 'AM'
+        return mem
 
 
 @directory.register
