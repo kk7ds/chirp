@@ -164,12 +164,13 @@ class ChirpSettingsEdit(common.ChirpEditor):
             if isinstance(e, settings.RadioSetting):
                 # Immutable and uninitialized settings don't get sent to the
                 # radio
-                if not e.value.get_mutable():
-                    LOG.debug('Skipping immutable %s', e.get_name())
-                    del root[e]
-                elif not e.value.initialized:
-                    LOG.debug('Skipping uninitialized %s', e.get_name())
-                    del root[e]
+                for value in e:
+                    if not value.get_mutable():
+                        LOG.debug('Skipping immutable %s', e.get_name())
+                        del root[e]
+                    elif not value.initialized:
+                        LOG.debug('Skipping uninitialized %s', e.get_name())
+                        del root[e]
             elif isinstance(e, settings.RadioSettingGroup):
                 self._remove_dead_settings(e)
 
