@@ -19,6 +19,7 @@ import platform
 import re
 import textwrap
 import threading
+import webbrowser
 
 import serial
 from serial.tools import list_ports
@@ -38,6 +39,10 @@ LOG = logging.getLogger(__name__)
 CONF = config.get()
 HELPME = _('Help Me...')
 CUSTOM = _('Custom...')
+
+
+def is_prolific_warning(string):
+    return 'PL2303' in string and 'CONTACT YOUR SUPPLIER' in string
 
 
 def get_fakes():
@@ -468,6 +473,18 @@ class ChirpCloneDialog(wx.Dialog):
             return
         self.set_ports(after, select=found.device)
 
+    def _prolific_assist(self, event):
+        r = wx.MessageBox(
+            _('Your Prolific-based USB device will not work without '
+              'reverting to an older version of the driver. Visit the '
+              'CHIRP website to read more about how to resolve this?'),
+            _('Prolific USB device'),
+            style=wx.YES | wx.NO | wx.YES_DEFAULT, parent=self)
+        if r == wx.YES:
+            webbrowser.open(
+                'https://chirpmyradio.com/projects/chirp/wiki/'
+                'ProlificDriverDeprecation')
+
     def _add_aliases(self, rclass):
         for alias in rclass.ALIASES:
             class DynamicRadioAlias(rclass):
@@ -490,6 +507,7 @@ class ChirpCloneDialog(wx.Dialog):
         raise NotImplementedError()
 
     def _selected_port(self, event):
+        okay_btn = self.FindWindowById(self.GetAffirmativeId())
         if self._port.GetStringSelection() == CUSTOM:
             port = wx.GetTextFromUser(_('Enter custom port:'),
                                       _('Custom Port'),
@@ -501,7 +519,12 @@ class ChirpCloneDialog(wx.Dialog):
         elif self._port.GetStringSelection() == HELPME:
             self._port_assist(event)
             return
+        elif is_prolific_warning(self._port.GetStringSelection()):
+            self._prolific_assist(event)
+            okay_btn.Enable(False)
+            return
         self._persist_choices()
+        okay_btn.Enable(True)
 
     def _select_vendor(self, vendor):
         display_models = []

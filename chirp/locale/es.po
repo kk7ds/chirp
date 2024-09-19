@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-16 17:13-0700\n"
+"POT-Creation-Date: 2024-09-19 15:48-0700\n"
 "PO-Revision-Date: 2024-09-19 01:21-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
@@ -858,7 +858,7 @@ msgstr ""
 "5. Asegúrate de que la radio esté sintonizada a un canal sin actividad.\n"
 "6. Cliquea Aceptar para cargar la imagen al dispositivo.\n"
 
-#: ../drivers/uvb5.py:287 ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:213
+#: ../drivers/uvb5.py:287 ../drivers/wouxun.py:213 ../drivers/tg_uv2p.py:232
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -874,7 +874,7 @@ msgstr ""
 "5. Asegúrate de que la radio esté sintonizada a un canal sin actividad.\n"
 "6. Cliquea Aceptar para descargar la imagen desde dispositivo.\n"
 
-#: ../drivers/uvb5.py:295 ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:221
+#: ../drivers/uvb5.py:295 ../drivers/wouxun.py:221 ../drivers/tg_uv2p.py:240
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1087,7 +1087,7 @@ msgstr "Aficionado"
 msgid "An error has occurred"
 msgstr "Ha ocurrido un error"
 
-#: ../wxui/clone.py:121
+#: ../wxui/clone.py:126
 msgid "Applying settings"
 msgstr "Aplicando ajustes"
 
@@ -1219,13 +1219,13 @@ msgstr "Clonado completado, comprobando por bytes espurios"
 msgid "Cloning"
 msgstr "Clonando"
 
-#: ../drivers/ft817.py:341 ../drivers/ft4.py:317 ../drivers/bj9900.py:133
-#: ../drivers/ft450d.py:507
+#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft4.py:317
+#: ../drivers/ft817.py:341
 msgid "Cloning from radio"
 msgstr "Clonando desde radio"
 
-#: ../drivers/ft817.py:379 ../drivers/ft4.py:318 ../drivers/bj9900.py:165
-#: ../drivers/ft450d.py:536
+#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft4.py:318
+#: ../drivers/ft817.py:379
 msgid "Cloning to radio"
 msgstr "Clonando a radio"
 
@@ -1248,11 +1248,11 @@ msgstr[1] "Agrupar %i memorias"
 msgid "Comment"
 msgstr "Comentario"
 
-#: ../wxui/clone.py:286
+#: ../wxui/clone.py:291
 msgid "Communicate with radio"
 msgstr "Comunicarse con la radio"
 
-#: ../wxui/clone.py:129
+#: ../wxui/clone.py:134
 msgid "Complete"
 msgstr "Completado"
 
@@ -1289,11 +1289,11 @@ msgstr "País"
 msgid "Cross Mode"
 msgstr "Modo cruzado"
 
-#: ../wxui/clone.py:495
+#: ../wxui/clone.py:513
 msgid "Custom Port"
 msgstr "Puerto personalizado"
 
-#: ../wxui/clone.py:40
+#: ../wxui/clone.py:41
 msgid "Custom..."
 msgstr "Personalizado..."
 
@@ -1373,12 +1373,12 @@ msgstr "Desahbilitado"
 msgid "Distance"
 msgstr "Distancia"
 
-#: ../wxui/clone.py:181
+#: ../wxui/clone.py:186
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "No preguntar de nuevo para %s"
 
-#: ../wxui/clone.py:178
+#: ../wxui/clone.py:183
 msgid "Do you accept the risk?"
 msgstr "¿Aceptas el riesgo?"
 
@@ -1398,7 +1398,7 @@ msgstr "Descargar desde radio"
 msgid "Download from radio..."
 msgstr "Descargar desde radio..."
 
-#: ../wxui/clone.py:624
+#: ../wxui/clone.py:647
 msgid "Download instructions"
 msgstr "Descargar instrucciones"
 
@@ -1459,7 +1459,7 @@ msgstr "Ingresar frecuencia TX (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Ingresa un nuevo nombre para el banco %s:"
 
-#: ../wxui/clone.py:494
+#: ../wxui/clone.py:512
 msgid "Enter custom port:"
 msgstr "Ingresar puerto personalizado:"
 
@@ -1507,7 +1507,7 @@ msgstr "Memoria borrada %s"
 msgid "Error applying settings"
 msgstr "Error aplicando ajustes"
 
-#: ../wxui/clone.py:549
+#: ../wxui/clone.py:572
 msgid "Error communicating with radio"
 msgstr "Error comunicándose con la radio"
 
@@ -1515,7 +1515,7 @@ msgstr "Error comunicándose con la radio"
 msgid "Exclude private and closed repeaters"
 msgstr "Excluir repetidores privados y cerrados"
 
-#: ../wxui/clone.py:582
+#: ../wxui/clone.py:605
 msgid "Experimental driver"
 msgstr "Controlador experimental"
 
@@ -1668,11 +1668,11 @@ msgstr ""
 "5 - ¡Desconecta el cable de interfaz! ¡De lo contrario no habrá\n"
 "    audio del lado derecho!\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/btech.py:689 ../drivers/gmrsv2.py:363
-#: ../drivers/uv6r.py:339 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/gmrsuv1.py:391 ../drivers/baofeng_uv17Pro.py:440
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/bf_t1.py:482
-#: ../drivers/uv5x3.py:417
+#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:391
+#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
+#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
+#: ../drivers/baofeng_uv17Pro.py:440 ../drivers/bf_t1.py:482
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1846,11 +1846,11 @@ msgstr ""
 "3 - Enciende tu radio\n"
 "4 - Haz la descarga de tus datos de radio\n"
 
-#: ../drivers/mursv1.py:347 ../drivers/vgc.py:604 ../drivers/gmrsv2.py:369
-#: ../drivers/uv6r.py:345 ../drivers/baofeng_wp970i.py:333
-#: ../drivers/lt725uv.py:502 ../drivers/gmrsuv1.py:397
-#: ../drivers/baofeng_uv17Pro.py:446 ../drivers/tdxone_tdq8a.py:462
-#: ../drivers/uv5x3.py:423
+#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
+#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
+#: ../drivers/baofeng_uv17Pro.py:446
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1896,11 +1896,13 @@ msgstr "La frecuencia %s está fuera del rango soportado"
 msgid "Frequency granularity in kHz"
 msgstr "Granularidad de frecuencia en kHz"
 
-#: ../drivers/ga510.py:1072 ../drivers/tdh8.py:2482
+#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1368
+#: ../drivers/tdh8.py:2482
 msgid "Frequency in this range must not be AM mode"
 msgstr "La frecuencia en este rango no debe ser modo AM"
 
-#: ../drivers/ga510.py:1065 ../drivers/tdh8.py:2479
+#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1365
+#: ../drivers/tdh8.py:2479
 msgid "Frequency in this range requires AM mode"
 msgstr "La frecuencia en este rango requiere modo AM"
 
@@ -1933,7 +1935,7 @@ msgstr "Ir a..."
 msgid "Help"
 msgstr "Ayuda"
 
-#: ../wxui/clone.py:39
+#: ../wxui/clone.py:40
 msgid "Help Me..."
 msgstr "Ayúdame..."
 
@@ -1995,7 +1997,7 @@ msgstr "¿Instalar icono de escritorio?"
 msgid "Interact with driver"
 msgstr "Interactuar con controlador"
 
-#: ../wxui/clone.py:646
+#: ../wxui/clone.py:669
 msgid "Internal driver error"
 msgstr "Error interno del controlador"
 
@@ -2004,7 +2006,7 @@ msgstr "Error interno del controlador"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "%(value)s inválido (usa grados decimales)"
 
-#: ../wxui/memedit.py:1553 ../wxui/query_sources.py:66
+#: ../wxui/query_sources.py:66 ../wxui/memedit.py:1553
 msgid "Invalid Entry"
 msgstr "Entrada inválida"
 
@@ -2109,7 +2111,7 @@ msgstr ""
 "es como darles acceso directo a tu computador y a todo en este! ¿Proceder a "
 "pesar de este riesgo?"
 
-#: ../wxui/clone.py:123
+#: ../wxui/clone.py:128
 msgid "Loading settings"
 msgstr "Cargando ajustes"
 
@@ -2158,11 +2160,11 @@ msgstr "La memoria debe estar en un banco para ser editada"
 msgid "Memory {num} not in bank {bank}"
 msgstr "La memoria {num} no está en banco {bank}"
 
-#: ../wxui/memedit.py:590 ../wxui/query_sources.py:532
+#: ../wxui/query_sources.py:532 ../wxui/memedit.py:590
 msgid "Mode"
 msgstr "Modo"
 
-#: ../wxui/clone.py:317
+#: ../wxui/clone.py:322
 msgid "Model"
 msgstr "Modelo"
 
@@ -2182,7 +2184,7 @@ msgstr "Módulo cargado"
 msgid "Module loaded successfully"
 msgstr "Módulo cargado exitosamente"
 
-#: ../wxui/clone.py:465
+#: ../wxui/clone.py:470
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Más de un puerto encontrado: %s"
@@ -2234,7 +2236,7 @@ msgstr "No hay resultados"
 msgid "No results!"
 msgstr "¡No hay resultados!"
 
-#: ../wxui/memedit.py:969 ../wxui/query_sources.py:41
+#: ../wxui/query_sources.py:41 ../wxui/memedit.py:969
 msgid "Number"
 msgstr "Numero"
 
@@ -2422,11 +2424,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Por favor espera"
 
-#: ../wxui/clone.py:442
+#: ../wxui/clone.py:447
 msgid "Plug in your cable and then click OK"
 msgstr "Conecta tu cable y luego haz clic en ACEPTAR"
 
-#: ../wxui/clone.py:309
+#: ../wxui/clone.py:314
 msgid "Port"
 msgstr "Puerto"
 
@@ -2445,6 +2447,10 @@ msgstr "Previsualización de impresión"
 #: ../wxui/printing.py:29
 msgid "Printing"
 msgstr "Imprimiendo"
+
+#: ../wxui/clone.py:481
+msgid "Prolific USB device"
+msgstr ""
 
 #: ../wxui/memedit.py:1698
 msgid "Properties"
@@ -2467,12 +2473,12 @@ msgstr "RX DTCS"
 msgid "Radio"
 msgstr "Radio"
 
-#: ../drivers/ft817.py:406 ../drivers/ft450d.py:568 ../drivers/ft60.py:85
+#: ../drivers/ft60.py:85 ../drivers/ft450d.py:568 ../drivers/ft817.py:406
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "La radio no reconoció el bloque %i"
 
-#: ../wxui/clone.py:616 ../wxui/clone.py:708
+#: ../wxui/clone.py:639 ../wxui/clone.py:731
 msgid "Radio information"
 msgstr "Información de radio"
 
@@ -3050,12 +3056,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Paso de sintonización"
 
-#: ../wxui/clone.py:436 ../wxui/clone.py:443 ../wxui/clone.py:454
-#: ../wxui/clone.py:462 ../wxui/clone.py:466
+#: ../wxui/clone.py:441 ../wxui/clone.py:448 ../wxui/clone.py:459
+#: ../wxui/clone.py:467 ../wxui/clone.py:471
 msgid "USB Port Finder"
 msgstr "Buscador de puertos USB"
 
-#: ../wxui/clone.py:452
+#: ../wxui/clone.py:457
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -3111,7 +3117,7 @@ msgstr "No se puede cargar este archivo"
 msgid "United States"
 msgstr "Estados Unidos"
 
-#: ../wxui/clone.py:435
+#: ../wxui/clone.py:440
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Desconecta tu cable (si es necesario) y entonces haz clic en ACEPTAR"
 
@@ -3129,7 +3135,7 @@ msgstr "Actualizar un error existente"
 msgid "Updating bug %s"
 msgstr "Actualizando error %s"
 
-#: ../wxui/clone.py:723
+#: ../wxui/clone.py:746
 msgid "Upload instructions"
 msgstr "Cargar instrucciones"
 
@@ -3191,7 +3197,7 @@ msgstr "Valor debe ser cero o superior"
 msgid "Values"
 msgstr "Valores"
 
-#: ../wxui/clone.py:312
+#: ../wxui/clone.py:317
 msgid "Vendor"
 msgstr "Vendedor"
 
@@ -3203,7 +3209,7 @@ msgstr "Ver"
 msgid "WARNING!"
 msgstr "¡ADVERTENCIA!"
 
-#: ../wxui/memedit.py:1559 ../wxui/bugreport.py:174 ../wxui/main.py:1810
+#: ../wxui/bugreport.py:174 ../wxui/memedit.py:1559 ../wxui/main.py:1810
 msgid "Warning"
 msgstr "Advertencia"
 
@@ -3230,7 +3236,14 @@ msgstr ""
 "numero de problemas que puedes abrir para evitar abusos. Si realmente "
 "necesitas abrir otro, por favor hazlo a través del sitio web."
 
-#: ../wxui/clone.py:460
+#: ../wxui/clone.py:478
+msgid ""
+"Your Prolific-based USB device will not work without reverting to an older "
+"version of the driver. Visit the CHIRP website to read more about how to "
+"resolve this?"
+msgstr ""
+
+#: ../wxui/clone.py:465
 msgid "Your cable appears to be on port:"
 msgstr "Tu cable parece estar en puerto:"
 
