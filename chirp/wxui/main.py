@@ -1885,7 +1885,7 @@ def display_update_notice(version):
 
     CONF.set_int("last_update_check", int(time.time()), "state")
 
-    url = 'https://chirpmyradio.com/projects/chirp/wiki/ChirpNextBuild'
+    url = 'https://chirpmyradio.com'
     msg = _('A new CHIRP version is available. Please visit the '
             'website as soon as possible to download it!')
     d = wx.MessageDialog(None, msg, _('New version available'),
