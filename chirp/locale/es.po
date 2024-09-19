@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-16 17:13-0700\n"
-"PO-Revision-Date: 2024-09-10 15:21-0300\n"
+"PO-Revision-Date: 2024-09-19 01:21-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -162,7 +162,6 @@ msgstr ""
 "      la radio, entonces vuelve a iniciar en el paso 1.\n"
 
 #: ../drivers/ft8100.py:94
-#, fuzzy
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -171,12 +170,10 @@ msgid ""
 msgstr ""
 "1. Apaga la radio.\n"
 "2. Conecta el cable de datos.\n"
-"3. Mientras mantienes presionado el botón \"A/N LOW\", enciende la radio.\n"
-"4. <b>Después de cliquear Aceptar</b>, presiona \"SET MHz\" para enviar "
-"imagen.\n"
+"3. Mientras mantienes presionado el botón \"F/W\", enciende la radio.\n"
+"4. <b>Después de cliquear Aceptar</b>, presiona \"RPT\" para enviar imagen.\n"
 
 #: ../drivers/ft8100.py:99
-#, fuzzy
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -186,11 +183,8 @@ msgid ""
 msgstr ""
 "1. Apaga la radio.\n"
 "2. Conecta el cable de datos.\n"
-"3. Mientras mantienes presionados los botones \"TONE\" y \"REV\", enciende "
-"la radio.\n"
+"3. Mientras mantienes presionado el botón \"F/W\", enciende la radio.\n"
 "4. Presiona \"REV\" para recibir la imagen.\n"
-"5. Asegúrate de que la pantalla diga \"CLONE RX\" y el led verde esté "
-"parpadeando\n"
 "6. Cliquea Aceptar para iniciar la transferencia.\n"
 
 #: ../drivers/ft7100.py:1130
@@ -1485,7 +1479,7 @@ msgid ""
 msgstr ""
 "Ingresa información sobre el error incluyendo un asunto breve pero "
 "significativo e información sobre el modelo de radio (si es aplicable) en "
-"cuestión. En el siguiente paso tendrás la oportunidad de agregar mas "
+"cuestión. En el siguiente paso tendrás la oportunidad de agregar más "
 "detalles sobre el problema."
 
 #: ../wxui/bugreport.py:414
@@ -2509,7 +2503,7 @@ msgid ""
 "<small>Premium account required</small>"
 msgstr ""
 "RadioReference.com es el proveedor de datos\n"
-"de comunicaciones de radio mas largo del mundo\n"
+"de comunicaciones de radio más largo del mundo\n"
 "<small>Requiere cuenta premium</small>"
 
 #: ../wxui/memedit.py:135
