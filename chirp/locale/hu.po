@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-16 17:13-0700\n"
+"POT-Creation-Date: 2024-09-19 15:48-0700\n"
 "PO-Revision-Date: 2015-01-28 13:47+0100\n"
 "Last-Translator: Attila Joubert <joubert.attila@gmail.com>\n"
 "Language-Team: English\n"
@@ -547,7 +547,7 @@ msgid ""
 "6. Click OK to upload image to device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:287 ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:213
+#: ../drivers/uvb5.py:287 ../drivers/wouxun.py:213 ../drivers/tg_uv2p.py:232
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -557,7 +557,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:295 ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:221
+#: ../drivers/uvb5.py:295 ../drivers/wouxun.py:221 ../drivers/tg_uv2p.py:240
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -702,7 +702,7 @@ msgstr ""
 msgid "An error has occurred"
 msgstr "Hiba történt"
 
-#: ../wxui/clone.py:121
+#: ../wxui/clone.py:126
 msgid "Applying settings"
 msgstr ""
 
@@ -825,14 +825,14 @@ msgstr ""
 msgid "Cloning"
 msgstr "Klónozás"
 
-#: ../drivers/ft817.py:341 ../drivers/ft4.py:317 ../drivers/bj9900.py:133
-#: ../drivers/ft450d.py:507
+#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft4.py:317
+#: ../drivers/ft817.py:341
 #, fuzzy
 msgid "Cloning from radio"
 msgstr "Letöltés a rádióról"
 
-#: ../drivers/ft817.py:379 ../drivers/ft4.py:318 ../drivers/bj9900.py:165
-#: ../drivers/ft450d.py:536
+#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft4.py:318
+#: ../drivers/ft817.py:379
 #, fuzzy
 msgid "Cloning to radio"
 msgstr "Feltöltés a rádióra"
@@ -856,11 +856,11 @@ msgstr[1] "Memóriasorok összehasonlítása"
 msgid "Comment"
 msgstr "Megjegyzés"
 
-#: ../wxui/clone.py:286
+#: ../wxui/clone.py:291
 msgid "Communicate with radio"
 msgstr ""
 
-#: ../wxui/clone.py:129
+#: ../wxui/clone.py:134
 #, fuzzy
 msgid "Complete"
 msgstr "Befejeződött"
@@ -895,11 +895,11 @@ msgstr ""
 msgid "Cross Mode"
 msgstr "Kereszt-üzem"
 
-#: ../wxui/clone.py:495
+#: ../wxui/clone.py:513
 msgid "Custom Port"
 msgstr ""
 
-#: ../wxui/clone.py:40
+#: ../wxui/clone.py:41
 msgid "Custom..."
 msgstr ""
 
@@ -983,12 +983,12 @@ msgstr "Engedélyezve"
 msgid "Distance"
 msgstr ""
 
-#: ../wxui/clone.py:181
+#: ../wxui/clone.py:186
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr ""
 
-#: ../wxui/clone.py:178
+#: ../wxui/clone.py:183
 msgid "Do you accept the risk?"
 msgstr ""
 
@@ -1010,7 +1010,7 @@ msgstr "Letöltés a rádióról"
 msgid "Download from radio..."
 msgstr "Letöltés a rádióról"
 
-#: ../wxui/clone.py:624
+#: ../wxui/clone.py:647
 #, fuzzy
 msgid "Download instructions"
 msgstr "{name} Utasítások"
@@ -1072,7 +1072,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:494
+#: ../wxui/clone.py:512
 msgid "Enter custom port:"
 msgstr ""
 
@@ -1113,7 +1113,7 @@ msgstr "A(z) {loc}. memóriahely törlése"
 msgid "Error applying settings"
 msgstr "Hiba a(z) %s érték beállításakor"
 
-#: ../wxui/clone.py:549
+#: ../wxui/clone.py:572
 msgid "Error communicating with radio"
 msgstr ""
 
@@ -1121,7 +1121,7 @@ msgstr ""
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:582
+#: ../wxui/clone.py:605
 #, fuzzy
 msgid "Experimental driver"
 msgstr "Folytassam kísérleti driver-rel?"
@@ -1257,11 +1257,11 @@ msgid ""
 "    no right-side audio!\n"
 msgstr ""
 
-#: ../drivers/mursv1.py:341 ../drivers/btech.py:689 ../drivers/gmrsv2.py:363
-#: ../drivers/uv6r.py:339 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/gmrsuv1.py:391 ../drivers/baofeng_uv17Pro.py:440
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/bf_t1.py:482
-#: ../drivers/uv5x3.py:417
+#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:391
+#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
+#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
+#: ../drivers/baofeng_uv17Pro.py:440 ../drivers/bf_t1.py:482
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1372,11 +1372,11 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/mursv1.py:347 ../drivers/vgc.py:604 ../drivers/gmrsv2.py:369
-#: ../drivers/uv6r.py:345 ../drivers/baofeng_wp970i.py:333
-#: ../drivers/lt725uv.py:502 ../drivers/gmrsuv1.py:397
-#: ../drivers/baofeng_uv17Pro.py:446 ../drivers/tdxone_tdq8a.py:462
-#: ../drivers/uv5x3.py:423
+#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
+#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
+#: ../drivers/baofeng_uv17Pro.py:446
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1412,11 +1412,13 @@ msgstr ""
 msgid "Frequency granularity in kHz"
 msgstr ""
 
-#: ../drivers/ga510.py:1072 ../drivers/tdh8.py:2482
+#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1368
+#: ../drivers/tdh8.py:2482
 msgid "Frequency in this range must not be AM mode"
 msgstr ""
 
-#: ../drivers/ga510.py:1065 ../drivers/tdh8.py:2479
+#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1365
+#: ../drivers/tdh8.py:2479
 msgid "Frequency in this range requires AM mode"
 msgstr ""
 
@@ -1452,7 +1454,7 @@ msgstr ""
 msgid "Help"
 msgstr "Súgó"
 
-#: ../wxui/clone.py:39
+#: ../wxui/clone.py:40
 msgid "Help Me..."
 msgstr ""
 
@@ -1517,7 +1519,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:646
+#: ../wxui/clone.py:669
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Belső hiba"
@@ -1527,7 +1529,7 @@ msgstr "Belső hiba"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Érvénytelen érték! Egész szám kell legyen."
 
-#: ../wxui/memedit.py:1553 ../wxui/query_sources.py:66
+#: ../wxui/query_sources.py:66 ../wxui/memedit.py:1553
 #, fuzzy
 msgid "Invalid Entry"
 msgstr "Érvénytelen érték %s"
@@ -1629,7 +1631,7 @@ msgid ""
 "this risk?"
 msgstr ""
 
-#: ../wxui/clone.py:123
+#: ../wxui/clone.py:128
 msgid "Loading settings"
 msgstr ""
 
@@ -1676,12 +1678,12 @@ msgstr ""
 msgid "Memory {num} not in bank {bank}"
 msgstr ""
 
-#: ../wxui/memedit.py:590 ../wxui/query_sources.py:532
+#: ../wxui/query_sources.py:532 ../wxui/memedit.py:590
 #, fuzzy
 msgid "Mode"
 msgstr "Mód"
 
-#: ../wxui/clone.py:317
+#: ../wxui/clone.py:322
 msgid "Model"
 msgstr "Modell"
 
@@ -1704,7 +1706,7 @@ msgstr "Modul betöltése"
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:465
+#: ../wxui/clone.py:470
 #, python-format
 msgid "More than one port found: %s"
 msgstr ""
@@ -1758,7 +1760,7 @@ msgstr ""
 msgid "No results!"
 msgstr ""
 
-#: ../wxui/memedit.py:969 ../wxui/query_sources.py:41
+#: ../wxui/query_sources.py:41 ../wxui/memedit.py:969
 msgid "Number"
 msgstr ""
 
@@ -1924,11 +1926,11 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../wxui/clone.py:442
+#: ../wxui/clone.py:447
 msgid "Plug in your cable and then click OK"
 msgstr ""
 
-#: ../wxui/clone.py:309
+#: ../wxui/clone.py:314
 msgid "Port"
 msgstr "Port"
 
@@ -1947,6 +1949,10 @@ msgstr ""
 
 #: ../wxui/printing.py:29
 msgid "Printing"
+msgstr ""
+
+#: ../wxui/clone.py:481
+msgid "Prolific USB device"
 msgstr ""
 
 #: ../wxui/memedit.py:1698
@@ -1972,12 +1978,12 @@ msgstr "RX DTCS kód"
 msgid "Radio"
 msgstr "Rádió"
 
-#: ../drivers/ft817.py:406 ../drivers/ft450d.py:568 ../drivers/ft60.py:85
+#: ../drivers/ft60.py:85 ../drivers/ft450d.py:568 ../drivers/ft817.py:406
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:616 ../wxui/clone.py:708
+#: ../wxui/clone.py:639 ../wxui/clone.py:731
 #, fuzzy
 msgid "Radio information"
 msgstr "%s információk lekérése"
@@ -2468,12 +2474,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Lépésköz"
 
-#: ../wxui/clone.py:436 ../wxui/clone.py:443 ../wxui/clone.py:454
-#: ../wxui/clone.py:462 ../wxui/clone.py:466
+#: ../wxui/clone.py:441 ../wxui/clone.py:448 ../wxui/clone.py:459
+#: ../wxui/clone.py:467 ../wxui/clone.py:471
 msgid "USB Port Finder"
 msgstr ""
 
-#: ../wxui/clone.py:452
+#: ../wxui/clone.py:457
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2527,7 +2533,7 @@ msgstr "Ennél a modellnél nem változtatható"
 msgid "United States"
 msgstr ""
 
-#: ../wxui/clone.py:435
+#: ../wxui/clone.py:440
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
 
@@ -2545,7 +2551,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "URCALL lista frissítése."
 
-#: ../wxui/clone.py:723
+#: ../wxui/clone.py:746
 #, fuzzy
 msgid "Upload instructions"
 msgstr "{instructions}"
@@ -2609,7 +2615,7 @@ msgstr ""
 msgid "Values"
 msgstr ""
 
-#: ../wxui/clone.py:312
+#: ../wxui/clone.py:317
 msgid "Vendor"
 msgstr "Gyártó"
 
@@ -2622,7 +2628,7 @@ msgstr "Né_zet"
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/memedit.py:1559 ../wxui/bugreport.py:174 ../wxui/main.py:1810
+#: ../wxui/bugreport.py:174 ../wxui/memedit.py:1559 ../wxui/main.py:1810
 msgid "Warning"
 msgstr ""
 
@@ -2646,7 +2652,14 @@ msgid ""
 "another, please do so via the website."
 msgstr ""
 
-#: ../wxui/clone.py:460
+#: ../wxui/clone.py:478
+msgid ""
+"Your Prolific-based USB device will not work without reverting to an older "
+"version of the driver. Visit the CHIRP website to read more about how to "
+"resolve this?"
+msgstr ""
+
+#: ../wxui/clone.py:465
 msgid "Your cable appears to be on port:"
 msgstr ""
 

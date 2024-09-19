@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-16 17:13-0700\n"
+"POT-Creation-Date: 2024-09-19 15:48-0700\n"
 "PO-Revision-Date: 2023-12-03 11:04+0900\n"
 "Last-Translator: weboo <weboo@users.noreply.github.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -546,7 +546,7 @@ msgid ""
 "6. Click OK to upload image to device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:287 ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:213
+#: ../drivers/uvb5.py:287 ../drivers/wouxun.py:213 ../drivers/tg_uv2p.py:232
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -556,7 +556,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:295 ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:221
+#: ../drivers/uvb5.py:295 ../drivers/wouxun.py:221 ../drivers/tg_uv2p.py:240
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -714,7 +714,7 @@ msgstr ""
 msgid "An error has occurred"
 msgstr ""
 
-#: ../wxui/clone.py:121
+#: ../wxui/clone.py:126
 msgid "Applying settings"
 msgstr ""
 
@@ -837,13 +837,13 @@ msgstr ""
 msgid "Cloning"
 msgstr ""
 
-#: ../drivers/ft817.py:341 ../drivers/ft4.py:317 ../drivers/bj9900.py:133
-#: ../drivers/ft450d.py:507
+#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft4.py:317
+#: ../drivers/ft817.py:341
 msgid "Cloning from radio"
 msgstr ""
 
-#: ../drivers/ft817.py:379 ../drivers/ft4.py:318 ../drivers/bj9900.py:165
-#: ../drivers/ft450d.py:536
+#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft4.py:318
+#: ../drivers/ft817.py:379
 msgid "Cloning to radio"
 msgstr ""
 
@@ -866,11 +866,11 @@ msgstr[1] "%i 件を同一グループにまとめる"
 msgid "Comment"
 msgstr "コメント"
 
-#: ../wxui/clone.py:286
+#: ../wxui/clone.py:291
 msgid "Communicate with radio"
 msgstr "無線機へ接続"
 
-#: ../wxui/clone.py:129
+#: ../wxui/clone.py:134
 msgid "Complete"
 msgstr "完了"
 
@@ -904,11 +904,11 @@ msgstr "国"
 msgid "Cross Mode"
 msgstr "トーンモード"
 
-#: ../wxui/clone.py:495
+#: ../wxui/clone.py:513
 msgid "Custom Port"
 msgstr "ポートを手動で設定"
 
-#: ../wxui/clone.py:40
+#: ../wxui/clone.py:41
 msgid "Custom..."
 msgstr "カスタム..."
 
@@ -985,12 +985,12 @@ msgstr ""
 msgid "Distance"
 msgstr ""
 
-#: ../wxui/clone.py:181
+#: ../wxui/clone.py:186
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "次回から %s に接続する際にプロンプトを表示しない"
 
-#: ../wxui/clone.py:178
+#: ../wxui/clone.py:183
 msgid "Do you accept the risk?"
 msgstr ""
 
@@ -1010,7 +1010,7 @@ msgstr "無線機からダウンロード"
 msgid "Download from radio..."
 msgstr "無線機からダウンロード..."
 
-#: ../wxui/clone.py:624
+#: ../wxui/clone.py:647
 msgid "Download instructions"
 msgstr "ダウンロード手順"
 
@@ -1069,7 +1069,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:494
+#: ../wxui/clone.py:512
 msgid "Enter custom port:"
 msgstr "ポートを入力:"
 
@@ -1109,7 +1109,7 @@ msgstr ""
 msgid "Error applying settings"
 msgstr ""
 
-#: ../wxui/clone.py:549
+#: ../wxui/clone.py:572
 msgid "Error communicating with radio"
 msgstr "無線機との通信エラー"
 
@@ -1117,7 +1117,7 @@ msgstr "無線機との通信エラー"
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:582
+#: ../wxui/clone.py:605
 msgid "Experimental driver"
 msgstr "実験的ドライバー"
 
@@ -1245,11 +1245,11 @@ msgid ""
 "    no right-side audio!\n"
 msgstr ""
 
-#: ../drivers/mursv1.py:341 ../drivers/btech.py:689 ../drivers/gmrsv2.py:363
-#: ../drivers/uv6r.py:339 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/gmrsuv1.py:391 ../drivers/baofeng_uv17Pro.py:440
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/bf_t1.py:482
-#: ../drivers/uv5x3.py:417
+#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:391
+#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
+#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
+#: ../drivers/baofeng_uv17Pro.py:440 ../drivers/bf_t1.py:482
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1360,11 +1360,11 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/mursv1.py:347 ../drivers/vgc.py:604 ../drivers/gmrsv2.py:369
-#: ../drivers/uv6r.py:345 ../drivers/baofeng_wp970i.py:333
-#: ../drivers/lt725uv.py:502 ../drivers/gmrsuv1.py:397
-#: ../drivers/baofeng_uv17Pro.py:446 ../drivers/tdxone_tdq8a.py:462
-#: ../drivers/uv5x3.py:423
+#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
+#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
+#: ../drivers/baofeng_uv17Pro.py:446
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1400,11 +1400,13 @@ msgstr ""
 msgid "Frequency granularity in kHz"
 msgstr ""
 
-#: ../drivers/ga510.py:1072 ../drivers/tdh8.py:2482
+#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1368
+#: ../drivers/tdh8.py:2482
 msgid "Frequency in this range must not be AM mode"
 msgstr ""
 
-#: ../drivers/ga510.py:1065 ../drivers/tdh8.py:2479
+#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1365
+#: ../drivers/tdh8.py:2479
 msgid "Frequency in this range requires AM mode"
 msgstr ""
 
@@ -1437,7 +1439,7 @@ msgstr "行移動..."
 msgid "Help"
 msgstr "ヘルプ"
 
-#: ../wxui/clone.py:39
+#: ../wxui/clone.py:40
 msgid "Help Me..."
 msgstr "ポートが不明の場合..."
 
@@ -1498,7 +1500,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:646
+#: ../wxui/clone.py:669
 msgid "Internal driver error"
 msgstr "内部ドライバーエラー"
 
@@ -1507,7 +1509,7 @@ msgstr "内部ドライバーエラー"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr ""
 
-#: ../wxui/memedit.py:1553 ../wxui/query_sources.py:66
+#: ../wxui/query_sources.py:66 ../wxui/memedit.py:1553
 msgid "Invalid Entry"
 msgstr ""
 
@@ -1604,7 +1606,7 @@ msgid ""
 "this risk?"
 msgstr ""
 
-#: ../wxui/clone.py:123
+#: ../wxui/clone.py:128
 msgid "Loading settings"
 msgstr "設定をロードしています"
 
@@ -1651,11 +1653,11 @@ msgstr ""
 msgid "Memory {num} not in bank {bank}"
 msgstr ""
 
-#: ../wxui/memedit.py:590 ../wxui/query_sources.py:532
+#: ../wxui/query_sources.py:532 ../wxui/memedit.py:590
 msgid "Mode"
 msgstr "受信モード"
 
-#: ../wxui/clone.py:317
+#: ../wxui/clone.py:322
 msgid "Model"
 msgstr "モデル"
 
@@ -1675,7 +1677,7 @@ msgstr ""
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:465
+#: ../wxui/clone.py:470
 #, python-format
 msgid "More than one port found: %s"
 msgstr "2つ以上のポートが見つかりました: %s"
@@ -1725,7 +1727,7 @@ msgstr ""
 msgid "No results!"
 msgstr ""
 
-#: ../wxui/memedit.py:969 ../wxui/query_sources.py:41
+#: ../wxui/query_sources.py:41 ../wxui/memedit.py:969
 msgid "Number"
 msgstr "行"
 
@@ -1886,11 +1888,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "お待ちください"
 
-#: ../wxui/clone.py:442
+#: ../wxui/clone.py:447
 msgid "Plug in your cable and then click OK"
 msgstr "ケーブルを接続してOKをクリックしてください。"
 
-#: ../wxui/clone.py:309
+#: ../wxui/clone.py:314
 msgid "Port"
 msgstr "ポート"
 
@@ -1909,6 +1911,10 @@ msgstr "印刷プレビュー"
 #: ../wxui/printing.py:29
 msgid "Printing"
 msgstr "印刷"
+
+#: ../wxui/clone.py:481
+msgid "Prolific USB device"
+msgstr ""
 
 #: ../wxui/memedit.py:1698
 msgid "Properties"
@@ -1931,12 +1937,12 @@ msgstr ""
 msgid "Radio"
 msgstr "無線機"
 
-#: ../drivers/ft817.py:406 ../drivers/ft450d.py:568 ../drivers/ft60.py:85
+#: ../drivers/ft60.py:85 ../drivers/ft450d.py:568 ../drivers/ft817.py:406
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:616 ../wxui/clone.py:708
+#: ../wxui/clone.py:639 ../wxui/clone.py:731
 msgid "Radio information"
 msgstr ""
 
@@ -2429,12 +2435,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "ステップ(kHz)"
 
-#: ../wxui/clone.py:436 ../wxui/clone.py:443 ../wxui/clone.py:454
-#: ../wxui/clone.py:462 ../wxui/clone.py:466
+#: ../wxui/clone.py:441 ../wxui/clone.py:448 ../wxui/clone.py:459
+#: ../wxui/clone.py:467 ../wxui/clone.py:471
 msgid "USB Port Finder"
 msgstr "USBポート検出"
 
-#: ../wxui/clone.py:452
+#: ../wxui/clone.py:457
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2487,7 +2493,7 @@ msgstr ""
 msgid "United States"
 msgstr ""
 
-#: ../wxui/clone.py:435
+#: ../wxui/clone.py:440
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "ケーブルを抜いてからOKをクリックしてください。"
 
@@ -2505,7 +2511,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr ""
 
-#: ../wxui/clone.py:723
+#: ../wxui/clone.py:746
 msgid "Upload instructions"
 msgstr "アップロード手順"
 
@@ -2566,7 +2572,7 @@ msgstr "値は 0 以上にしてください"
 msgid "Values"
 msgstr "値"
 
-#: ../wxui/clone.py:312
+#: ../wxui/clone.py:317
 msgid "Vendor"
 msgstr "メーカー"
 
@@ -2578,7 +2584,7 @@ msgstr "表示"
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/memedit.py:1559 ../wxui/bugreport.py:174 ../wxui/main.py:1810
+#: ../wxui/bugreport.py:174 ../wxui/memedit.py:1559 ../wxui/main.py:1810
 msgid "Warning"
 msgstr ""
 
@@ -2602,7 +2608,14 @@ msgid ""
 "another, please do so via the website."
 msgstr ""
 
-#: ../wxui/clone.py:460
+#: ../wxui/clone.py:478
+msgid ""
+"Your Prolific-based USB device will not work without reverting to an older "
+"version of the driver. Visit the CHIRP website to read more about how to "
+"resolve this?"
+msgstr ""
+
+#: ../wxui/clone.py:465
 msgid "Your cable appears to be on port:"
 msgstr "あなたのケーブルが使用しているポート:"
 
