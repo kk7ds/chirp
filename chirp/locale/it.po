@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-19 15:48-0700\n"
-"PO-Revision-Date: 2024-09-11 11:12+0200\n"
+"POT-Creation-Date: 2024-09-20 06:07+0200\n"
+"PO-Revision-Date: 2024-09-20 06:06+0200\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
 "Language: it\n"
@@ -152,7 +152,7 @@ msgstr ""
 "1. Spegnere la radio.\n"
 "2. Collegare il cavo dati.\n"
 "3. Tenendo premuto il pulsante \"A/N LOW\", accendere la radio.\n"
-"4. Premere \"MV D/MR\" per acquisire l'immagine.\n"
+"4. Premere \"MW D/MR\" per acquisire l'immagine.\n"
 "5. Assicurarsi che il display indichi \"-WAIT-\" (in caso contrario, vedere "
 "la nota seguente)\n"
 "6. Fare clic su OK per chiudere la finestra di dialogo ed avviare il "
@@ -162,7 +162,6 @@ msgstr ""
 "      rosso \"*L\" per sbloccarla, quindi ricominciare dal punto 1.\n"
 
 #: ../drivers/ft8100.py:94
-#, fuzzy
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -171,12 +170,11 @@ msgid ""
 msgstr ""
 "1. Spegnere la radio.\n"
 "2. Collegare il cavo dati.\n"
-"3. Tenendo premuto il pulsante \"A/N LOW\", accendere la radio.\n"
-"4. <b>Dopo aver fatto clic su OK</b>, premere \"SET MHz\" per inviare "
+"3. Tenendo premuto il pulsante \"F/W\", accendere la radio.\n"
+"4. <b>Dopo aver fatto clic su OK</b>, premere \"RPT\" per inviare "
 "l'immagine.\n"
 
 #: ../drivers/ft8100.py:99
-#, fuzzy
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -186,11 +184,9 @@ msgid ""
 msgstr ""
 "1. Spegnere la radio.\n"
 "2. Collegare il cavo dati.\n"
-"3. Tenendo premuto i pulsanti \"TONE\" e \"REV\", accendere la radio.\n"
+"3. Tenendo premuto il pulsante \"F/W\", accendere la radio.\n"
 "4. Premere \"REV\" per acquisire l'immagine.\n"
-"5. Assicurarsi che il display indichi \"CLONE RX\" e che il led verde "
-"lampeggi.\n"
-"6. Fare clic su OK per avviare il trasferimento.\n"
+"5. Fare clic su OK per avviare il trasferimento.\n"
 
 #: ../drivers/ft7100.py:1130
 msgid ""
@@ -870,7 +866,7 @@ msgstr ""
 "attività.\n"
 "6. Fare clic su OK per caricare l'immagine sul dispositivo.\n"
 
-#: ../drivers/uvb5.py:287 ../drivers/wouxun.py:213 ../drivers/tg_uv2p.py:232
+#: ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:213 ../drivers/uvb5.py:287
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -887,7 +883,7 @@ msgstr ""
 "attività.\n"
 "6. Fare clic su OK per scaricare l'immagine dal dispositivo.\n"
 
-#: ../drivers/uvb5.py:295 ../drivers/wouxun.py:221 ../drivers/tg_uv2p.py:240
+#: ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:221 ../drivers/uvb5.py:295
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1095,8 +1091,8 @@ msgstr "Tutti i formati supportati|"
 msgid "Amateur"
 msgstr "Radioamatore"
 
-#: ../wxui/bugreport.py:284 ../wxui/bugreport.py:393 ../wxui/common.py:609
-#: ../wxui/common.py:636
+#: ../wxui/common.py:609 ../wxui/common.py:636 ../wxui/bugreport.py:284
+#: ../wxui/bugreport.py:393
 msgid "An error has occurred"
 msgstr "Si è verificato un errore"
 
@@ -1231,12 +1227,12 @@ msgstr "Clonazione completata, controllo dei byte spuri"
 msgid "Cloning"
 msgstr "Clonazione"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft4.py:317
+#: ../drivers/ft4.py:317 ../drivers/ft450d.py:507 ../drivers/bj9900.py:133
 #: ../drivers/ft817.py:341
 msgid "Cloning from radio"
 msgstr "Clonazione dalla radio"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft4.py:318
+#: ../drivers/ft4.py:318 ../drivers/ft450d.py:536 ../drivers/bj9900.py:165
 #: ../drivers/ft817.py:379
 msgid "Cloning to radio"
 msgstr "Clonazione verso la radio"
@@ -1683,11 +1679,11 @@ msgstr ""
 "sarà\n"
 "    l'audio del lato destro!\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:689 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
-#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:440 ../drivers/bf_t1.py:482
+#: ../drivers/bf_t1.py:482 ../drivers/mursv1.py:341
+#: ../drivers/baofeng_wp970i.py:327 ../drivers/baofeng_uv17Pro.py:440
+#: ../drivers/gmrsuv1.py:391 ../drivers/btech.py:689 ../drivers/uv6r.py:339
+#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv5x3.py:417
+#: ../drivers/gmrsv2.py:363
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1791,7 +1787,7 @@ msgstr ""
 "    l'audio del lato destro!\n"
 "6 - Accendere la radio per uscire dalla modalità clone.\n"
 
-#: ../drivers/btech.py:695 ../drivers/bf_t1.py:488
+#: ../drivers/bf_t1.py:488 ../drivers/btech.py:695
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1833,7 +1829,7 @@ msgstr ""
 "3 - Accendere la radio\n"
 "4 - Fare clic su OK per iniziare\n"
 
-#: ../drivers/vgc.py:598 ../drivers/lt725uv.py:496
+#: ../drivers/lt725uv.py:496 ../drivers/vgc.py:598
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1861,11 +1857,11 @@ msgstr ""
 "3 - Accendere la radio\n"
 "4 - Effettuare il download dei dati dalla radio\n"
 
-#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
-#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:446
+#: ../drivers/mursv1.py:347 ../drivers/baofeng_wp970i.py:333
+#: ../drivers/baofeng_uv17Pro.py:446 ../drivers/gmrsuv1.py:397
+#: ../drivers/lt725uv.py:502 ../drivers/vgc.py:604 ../drivers/uv6r.py:345
+#: ../drivers/tdxone_tdq8a.py:462 ../drivers/uv5x3.py:423
+#: ../drivers/gmrsv2.py:369
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1911,13 +1907,13 @@ msgstr "La frequenza %s non rientra nel range supportato"
 msgid "Frequency granularity in kHz"
 msgstr "Granularità della frequenza in kHz"
 
-#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1368
-#: ../drivers/tdh8.py:2482
+#: ../drivers/tdh8.py:2482 ../drivers/mml_jc8810.py:1368
+#: ../drivers/ga510.py:1072
 msgid "Frequency in this range must not be AM mode"
 msgstr "La frequenza in questo intervallo non deve essere in modalità AM"
 
-#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1365
-#: ../drivers/tdh8.py:2479
+#: ../drivers/tdh8.py:2479 ../drivers/mml_jc8810.py:1365
+#: ../drivers/ga510.py:1065
 msgid "Frequency in this range requires AM mode"
 msgstr "La frequenza in questo intervallo richiede la modalità AM"
 
@@ -2021,7 +2017,7 @@ msgstr "Errore interno del driver"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Il valore %(value)s non è valido (usare i gradi decimali)"
 
-#: ../wxui/query_sources.py:66 ../wxui/memedit.py:1553
+#: ../wxui/memedit.py:1553 ../wxui/query_sources.py:66
 msgid "Invalid Entry"
 msgstr "Valore non valido"
 
@@ -2175,7 +2171,7 @@ msgstr "La memoria deve trovarsi in un banco per essere modificata"
 msgid "Memory {num} not in bank {bank}"
 msgstr "La memoria {num} non è presente nel banco {bank}"
 
-#: ../wxui/query_sources.py:532 ../wxui/memedit.py:590
+#: ../wxui/memedit.py:590 ../wxui/query_sources.py:532
 msgid "Mode"
 msgstr "Modalità"
 
@@ -2251,7 +2247,7 @@ msgstr "Nessun risultato"
 msgid "No results!"
 msgstr "Nessun risultato!"
 
-#: ../wxui/query_sources.py:41 ../wxui/memedit.py:969
+#: ../wxui/memedit.py:969 ../wxui/query_sources.py:41
 msgid "Number"
 msgstr "Numero"
 
@@ -2465,7 +2461,7 @@ msgstr "Stampa in corso"
 
 #: ../wxui/clone.py:481
 msgid "Prolific USB device"
-msgstr ""
+msgstr "Dispositivo USB Prolific"
 
 #: ../wxui/memedit.py:1698
 msgid "Properties"
@@ -3260,6 +3256,9 @@ msgid ""
 "version of the driver. Visit the CHIRP website to read more about how to "
 "resolve this?"
 msgstr ""
+"Il dispositivo USB basato su Prolific non funzionerà senza tornare a una "
+"versione precedente del driver. Visitare il sito web di CHIRP, per saperne "
+"di più su come risolvere questo problema?"
 
 #: ../wxui/clone.py:465
 msgid "Your cable appears to be on port:"
