@@ -741,14 +741,14 @@ class TH8600Radio(chirp_common.CloneModeRadio):
         mem.power = POWER_LEVELS[int(_mem.power)]
 
         rs = RadioSettingValueList(B_LOCK_LIST,
-                                   B_LOCK_LIST[min(_mem.b_lock, 0x02)])
+                                   current_index=min(_mem.b_lock, 0x02))
         b_lock = RadioSetting("b_lock", "B_Lock", rs)
         mem.extra.append(b_lock)
 
         optsig = RadioSetting("signal", "Optional signaling",
                               RadioSettingValueList(
                                   OPTSIG_LIST,
-                                  OPTSIG_LIST[_mem.signal]))
+                                  current_index=_mem.signal))
         mem.extra.append(optsig)
 
         vlist = RadioSettingValueList(PTTID_LIST, PTTID_LIST[_mem.dtmfpttid])
@@ -756,7 +756,7 @@ class TH8600Radio(chirp_common.CloneModeRadio):
         mem.extra.append(dtmfpttid)
 
         vlist2 = RadioSettingValueList(PTTID_LIST,
-                                       PTTID_LIST[_mem.fivetonepttid])
+                                       current_index=_mem.fivetonepttid)
         fivetonepttid = RadioSetting("fivetonepttid", "5 Tone PTT ID", vlist2)
         mem.extra.append(fivetonepttid)
 
@@ -866,76 +866,79 @@ class TH8600Radio(chirp_common.CloneModeRadio):
 
         # Display Mode
         options = ['Frequency', 'Channel #', 'Name']
-        rx = RadioSettingValueList(options, options[_settings.disMode])
+        rx = RadioSettingValueList(options, current_index=_settings.disMode)
         rset = RadioSetting("basicsettings.disMode", "Display Mode", rx)
         basic.append(rset)
 
         # Subscreen Mode
         options = ['Off', 'Frequency', 'Voltage']
-        rx = RadioSettingValueList(options, options[_settings.subDisplay])
+        rx = RadioSettingValueList(options, current_index=_settings.subDisplay)
         rset = RadioSetting("basicsettings.subDisplay", "Subscreen Mode", rx)
         basic.append(rset)
 
         # Squelch Level
         options = ["OFF"] + ["%s" % x for x in range(1, 10)]
-        rx = RadioSettingValueList(options, options[_settings.sqlLevel])
+        rx = RadioSettingValueList(options, current_index=_settings.sqlLevel)
         rset = RadioSetting("basicsettings.sqlLevel", "Squelch Level", rx)
         basic.append(rset)
 
         # Tone Burst Frequency
         options = ['1750', '2100', '1000', '1450']
-        rx = RadioSettingValueList(options, options[_settings.burstFreq])
+        rx = RadioSettingValueList(options, current_index=_settings.burstFreq)
         rset = RadioSetting("basicsettings.burstFreq",
                             "Tone Burst Frequency (Hz)", rx)
         basic.append(rset)
 
         # PTT Release
         options = ['Off', 'Begin', 'End', 'Both']
-        rx = RadioSettingValueList(options, options[_settings.pttRelease])
+        rx = RadioSettingValueList(options, current_index=_settings.pttRelease)
         rset = RadioSetting("basicsettings.pttRelease", "PTT Release", rx)
         basic.append(rset)
 
         # TX Channel Select
         options = ["Last Channel", "Main Channel"]
-        rx = RadioSettingValueList(options, options[_settings.txChSelect])
+        rx = RadioSettingValueList(options, current_index=_settings.txChSelect)
         rset = RadioSetting("basicsettings.txChSelect",
                             "Priority Transmit", rx)
         basic.append(rset)
 
         # LED Mode
         options = ["On", "5 Second", "10 Second"]
-        rx = RadioSettingValueList(options, options[_settings.ledMode])
+        rx = RadioSettingValueList(options, current_index=_settings.ledMode)
         rset = RadioSetting("basicsettings.ledMode", "LED Display Mode", rx)
         basic.append(rset)
 
         # Scan Type
         options = ["TO", "CO", "SE"]
-        rx = RadioSettingValueList(options, options[_settings.scanType])
+        rx = RadioSettingValueList(options, current_index=_settings.scanType)
         rset = RadioSetting("basicsettings.scanType", "Scan Type", rx)
         basic.append(rset)
 
         # Resume Time
         options = ["2 seconds", "5 seconds", "10 seconds", "15 seconds"]
-        rx = RadioSettingValueList(options, options[_settings.scanResumeTime])
+        rx = RadioSettingValueList(options,
+                                   current_index=_settings.scanResumeTime)
         rset = RadioSetting("basicsettings.scanResumeTime",
                             "Scan Resume Time", rx)
         basic.append(rset)
 
         # Tail Elim
         options = ["Off", "Frequency", "No Frequency"]
-        rx = RadioSettingValueList(options, options[_settings.sqlTailElim])
+        rx = RadioSettingValueList(options,
+                                   current_index=_settings.sqlTailElim)
         rset = RadioSetting("basicsettings.sqlTailElim", "Sql Tail Elim", rx)
         basic.append(rset)
 
         # Auto Power Off
         options = ["Off", "30 minute", "60 minute", "120 minute"]
-        rx = RadioSettingValueList(options, options[_settings.autoPowOff])
+        rx = RadioSettingValueList(options,
+                                   current_index=_settings.autoPowOff)
         rset = RadioSetting("basicsettings.autoPowOff", "Auto Power Off", rx)
         basic.append(rset)
 
         # TOT
         options = ["Off"] + ["%s minutes" % x for x in range(1, 31, 1)]
-        rx = RadioSettingValueList(options, options[_settings.tot])
+        rx = RadioSettingValueList(options, current_index=_settings.tot)
         rset = RadioSetting("basicsettings.tot",
                             "Transmission Time-out Timer", rx)
         basic.append(rset)
@@ -947,7 +950,7 @@ class TH8600Radio(chirp_common.CloneModeRadio):
 
         # Volume
         options = ["%s" % x for x in range(0, 16)]
-        rx = RadioSettingValueList(options, options[_settings.volume])
+        rx = RadioSettingValueList(options, current_index=_settings.volume)
         rset = RadioSetting("basicsettings.volume",
                             "Volume", rx)
         basic.append(rset)
@@ -979,32 +982,32 @@ class TH8600Radio(chirp_common.CloneModeRadio):
         key_options = ["A/B", "Low", "Monitor", "Scan",
                        "Tone", "M/V", "MHz", "Mute"]
         # LO key function
-        options = key_options
-        rx = RadioSettingValueList(options, options[_settings.lowKeyFunc])
+        rx = RadioSettingValueList(key_options,
+                                   current_index=_settings.lowKeyFunc)
         rset = RadioSetting("basicsettings.lowKeyFunc", "LO Key Function", rx)
         basic.append(rset)
 
         # Mz key function
-        options = key_options
-        rx = RadioSettingValueList(options, options[_settings.mzKeyFunc])
+        rx = RadioSettingValueList(key_options,
+                                   current_index=_settings.mzKeyFunc)
         rset = RadioSetting("basicsettings.mzKeyFunc", "Mz Key Function", rx)
         basic.append(rset)
 
         # CT key function
-        options = key_options
-        rx = RadioSettingValueList(options, options[_settings.ctKeyFunc])
+        rx = RadioSettingValueList(key_options,
+                                   current_index=_settings.ctKeyFunc)
         rset = RadioSetting("basicsettings.ctKeyFunc", "CT Key Function", rx)
         basic.append(rset)
 
         # V/M key function
-        options = key_options
-        rx = RadioSettingValueList(options, options[_settings.vmKeyFunc])
+        rx = RadioSettingValueList(key_options,
+                                   current_index=_settings.vmKeyFunc)
         rset = RadioSetting("basicsettings.vmKeyFunc", "V/M Key Function", rx)
         basic.append(rset)
 
         # A/B key function
-        options = key_options
-        rx = RadioSettingValueList(options, options[_settings.abKeyFunc])
+        rx = RadioSettingValueList(key_options,
+                                   current_index=_settings.abKeyFunc)
         rset = RadioSetting("basicsettings.abKeyFunc", "A/B Key Function", rx)
         basic.append(rset)
 
