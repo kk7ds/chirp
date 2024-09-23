@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-09-19 15:48-0700\n"
-"PO-Revision-Date: 2024-09-19 01:21-0300\n"
+"PO-Revision-Date: 2024-09-23 16:10-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -2450,7 +2450,7 @@ msgstr "Imprimiendo"
 
 #: ../wxui/clone.py:481
 msgid "Prolific USB device"
-msgstr ""
+msgstr "Dispositivo USB Prolific"
 
 #: ../wxui/memedit.py:1698
 msgid "Properties"
@@ -3242,6 +3242,9 @@ msgid ""
 "version of the driver. Visit the CHIRP website to read more about how to "
 "resolve this?"
 msgstr ""
+"Tu dispositivo USB basado en Prolific no funcionará sin revertir a una "
+"versión más antigua del controlador. Visita el sitio web de CHIRP para leer "
+"más sobre ¿cómo resolver esto?"
 
 #: ../wxui/clone.py:465
 msgid "Your cable appears to be on port:"
