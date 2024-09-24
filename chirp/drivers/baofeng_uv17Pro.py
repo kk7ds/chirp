@@ -1366,3 +1366,11 @@ class GM5RH(UV17Pro):
 class UV5GPlus(GM5RH):
     VENDOR = "Radioddity"
     MODEL = "UV-5G Plus"
+
+
+@directory.register
+class UV17RPlus(UV17Pro):
+    VENDOR = "Baofeng"
+    MODEL = "UV-17R-Plus"
+    VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
+                   UV17Pro._uhf_range, UV17Pro._uhf2_range]
