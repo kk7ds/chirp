@@ -265,7 +265,7 @@ class UV17Pro(bfc.BaofengCommonHT):
         RXTX_CODES = (RXTX_CODES + ('D' + str(code) + 'I', ))
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
                     chirp_common.PowerLevel("Low",  watts=1.00)]
-    _airband = (108000000, 136000000)
+    _airband = (108000000, 135999999)
     _vhf_range = (136000000, 174000000)
     _vhf2_range = (200000000, 260000000)
     _uhf_range = (400000000, 520000000)
@@ -1080,6 +1080,20 @@ class UV17Pro(bfc.BaofengCommonHT):
 
         return rf
 
+    def validate_memory(self, mem):
+        msgs = []
+        if 'AM' in self.MODES:
+            if chirp_common.in_range(mem.freq,
+                                     [self._airband]) and mem.mode != 'AM':
+                msgs.append(chirp_common.ValidationWarning(
+                    _('Frequency in this range requires AM mode')))
+            if not chirp_common.in_range(mem.freq,
+                                         [self._airband]) and mem.mode == 'AM':
+                msgs.append(chirp_common.ValidationWarning(
+                    _('Frequency in this range must not be AM mode')))
+
+        return msgs + super().validate_memory(mem)
+
     def decode_tone(self, val):
         mode = ""
         pol = "N"
@@ -1159,13 +1173,9 @@ class UV17Pro(bfc.BaofengCommonHT):
             mem.power = levels[0]
 
         mem.mode = _mem.wide and self.MODES[0] or self.MODES[1]
-        if (mem.freq >= self._airband[0] and mem.freq <= self._airband[1]):
-            # NOTE: AM is not in valid_modes because you can't arbitrarily
-            # enable it on this radio. However, we can expose it as immutable
-            # which will display properly in the UI and not allow the user
-            # to change those channels to FM.
+        if chirp_common.in_range(mem.freq, [self._airband]):
+            print('freq %i means am' % mem.freq)
             mem.mode = "AM"
-            mem.immutable = ['mode']
 
         mem.extra = RadioSettingGroup("Extra", "extra")
 
@@ -1291,22 +1301,7 @@ class UV17ProGPS(UV17Pro):
     _has_skey2_short = True
     VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
-
-    def check_set_memory_immutable_policy(self, existing, new):
-        if (self._airband[0] <= new.freq <= self._airband[1] and
-                new.mode == 'AM'):
-            # This is valid, so mark mode as immutable so it doesn't get
-            # blocked, and let the radio override it during set.
-            new.immutable.append('mode')
-            existing.immutable = []
-        elif existing.mode == 'AM' and new.mode in self.MODES:
-            # If we're going from a forced-AM channel to some valid one,
-            # clear immutable so we allow the change.
-            try:
-                existing.immutable.remove('mode')
-            except ValueError:
-                pass
-        super().check_set_memory_immutable_policy(existing, new)
+    MODES = UV17Pro.MODES + ['AM']
 
 
 @directory.register
@@ -1322,22 +1317,7 @@ class BF5RM(UV17Pro):
     SCODE_LIST = ["%s" % x for x in range(1, 16)]
     LIST_PW_SAVEMODE = ["Off", "1:1", "1:2", "1:4"]
     _has_workmode_support = True
-
-    def check_set_memory_immutable_policy(self, existing, new):
-        if (self._airband[0] <= new.freq <= self._airband[1] and
-                new.mode == 'AM'):
-            # This is valid, so mark mode as immutable so it doesn't get
-            # blocked, and let the radio override it during set.
-            new.immutable.append('mode')
-            existing.immutable = []
-        elif existing.mode == 'AM' and new.mode in self.MODES:
-            # If we're going from a forced-AM channel to some valid one,
-            # clear immutable so we allow the change.
-            try:
-                existing.immutable.remove('mode')
-            except ValueError:
-                pass
-        super().check_set_memory_immutable_policy(existing, new)
+    MODES = UV17Pro.MODES + ['AM']
 
 
 @directory.register
@@ -1374,3 +1354,4 @@ class UV17RPlus(UV17Pro):
     MODEL = "UV-17R-Plus"
     VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
+    MODES = UV17Pro.MODES + ['AM']
