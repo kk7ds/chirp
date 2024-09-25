@@ -72,7 +72,10 @@ class TestCaseEdges(base.DriverTest):
                     m.tuning_step = step
                     self.radio.set_memory(m)
                     n = self.radio.get_memory(m.number)
-                    self.assertEqualMem(m, n, ignore=['tuning_step'])
+                    # Some radios have per-band required modes, which we
+                    # don't care about testing here
+                    self.assertEqualMem(m, n, ignore=['tuning_step',
+                                                      'mode'])
 
     def test_empty_to_not(self):
         firstband = self.rf.valid_bands[0]
