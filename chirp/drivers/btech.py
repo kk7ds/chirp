@@ -26,6 +26,7 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
     RadioSettingValueFloat, RadioSettings, InvalidValueError
+from chirp import settings
 
 LOG = logging.getLogger(__name__)
 
@@ -2275,9 +2276,12 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
                 line.set_apply_callback(apply_fm_preset_name,
                                         preset.broadcast_station_name)
 
-                val = RadioSettingValueFloat(0, 108,
-                                             bfc.bcd_decode_freq(
-                                                preset.freq))
+                try:
+                    presetval = bfc.bcd_decode_freq(preset.freq)
+                except settings.InternalError:
+                    presetval = ''
+
+                val = RadioSettingValueFloat(0, 108, presetval)
                 fmfreq = RadioSetting("fm_presets_" + str(i) + "_freq",
                                       "Frequency " + str(i), val)
                 val.set_validate_callback(fm_validate)
