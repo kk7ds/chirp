@@ -282,6 +282,8 @@ TXQ:
 TYT:
 - alt: Explorer QRZ-1
   model: QRZ-1
+- alt: TH-7800
+  model: TH-7900
 Tacklife:
 - alt: Radioddity R2
   model: MTR01
