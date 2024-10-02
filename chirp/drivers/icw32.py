@@ -100,6 +100,7 @@ class ICW32ARadio(icf.IcomCloneModeRadio):
         rf.valid_tmodes = ["", "Tone", "TSQL"]
         rf.valid_name_length = 8
         rf.valid_special_chans = sorted(_get_special().keys())
+        rf.valid_tuning_steps = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0]
 
         rf.has_sub_devices = self.VARIANT == ""
         rf.has_ctone = True
