@@ -45,6 +45,15 @@ def is_prolific_warning(string):
     return 'PL2303' in string and 'CONTACT YOUR SUPPLIER' in string
 
 
+def get_model_label(rclass):
+    detected = ','.join(
+        detected_value(rclass, m)
+        for m in rclass.detected_models(include_self=False))
+    if len(detected) > (32 - 5):
+        detected = 'others'
+    return detected
+
+
 def get_fakes():
     return {
         'Fake NOP': developer.FakeSerial(),
@@ -532,8 +541,7 @@ class ChirpCloneDialog(wx.Dialog):
         for rclass in self._vendors[vendor]:
             display = model_value(rclass)
             actual_models.append(display)
-            detected = ','.join(detected_value(rclass, x) for x in
-                                rclass.detected_models(include_self=False))
+            detected = get_model_label(rclass)
             if detected:
                 display += ' (+ %s)' % detected
             display_models.append(display)

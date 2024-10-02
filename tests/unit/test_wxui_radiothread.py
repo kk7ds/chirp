@@ -164,15 +164,9 @@ class TestClone(base.BaseTest):
         # be visible in the model box.
         for rclass in [x for x in directory.DRV_TO_RADIO.values()
                        if issubclass(x, chirp_common.DetectableInterface)]:
-            labels = []
-            for child_rclass in rclass.detected_models(include_self=False):
-                label = clone.detected_value(rclass, child_rclass)
-                self.assertNotEqual('', label)
-                labels.append(label)
-            if labels:
-                label = '%s (+ %s)' % (rclass.MODEL, ','.join(labels))
-                self.assertLessEqual(len(label), 32,
-                                     'Label %r is too long' % label)
+            label = clone.get_model_label(rclass)
+            self.assertLessEqual(len(label), 32,
+                                 'Label %r is too long' % label)
 
 
 class TestException(Exception):
