@@ -1415,7 +1415,7 @@ class Rt98Radio(Rt98BaseRadio):
     MODEL = "RT98"
     # Allowed radio types is a dict keyed by model of a list of version
     # strings
-    ALLOWED_RADIO_TYPES = {'RT98V': ['V100'],
+    ALLOWED_RADIO_TYPES = {'RT98V': ['V100', 'V101'],
                            'RT98U': ['V100'],
                            'RT98W': ['V100'],
                            'AT-779V': ['V100'],
