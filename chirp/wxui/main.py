@@ -28,6 +28,7 @@ import webbrowser
 
 
 import wx
+import wx.adv
 import wx.aui
 import wx.lib.newevent
 
@@ -415,6 +416,9 @@ class ChirpMain(wx.Frame):
                               CONF.get_int('window_y', 'state')))
 
         ALL_MAIN_WINDOWS.append(self)
+
+        if not CONF.get_bool('agreed_to_license', 'state'):
+            wx.CallAfter(self._menu_about, None)
 
         self.set_icon()
         self._drop_target = ChirpDropTarget(self)
@@ -1731,12 +1735,66 @@ class ChirpMain(wx.Frame):
 
     def _menu_about(self, event):
         pyver = sys.version_info
-        aboutinfo = 'CHIRP %s on Python %s wxPython %s' % (
-            CHIRP_VERSION,
-            '%s.%s.%s' % (pyver.major, pyver.minor, pyver.micro),
-            wx.version())
-        wx.MessageBox(aboutinfo, _('About CHIRP'),
-                      wx.OK | wx.ICON_INFORMATION)
+        d = wx.Dialog(self, title=_('About CHIRP'))
+        d.SetSize((500, 400))
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        d.SetSizer(vbox)
+
+        label = wx.StaticText(d, label='CHIRP %s' % CHIRP_VERSION)
+        label.SetFont(label.GetFont().Scale(2))
+        vbox.Add(label, 0,
+                 border=10,
+                 flag=wx.ALIGN_CENTER | wx.ALL)
+
+        details = ('Python %s.%s.%s' % (pyver.major, pyver.minor, pyver.micro),
+                   'wxPython %s' % wx.version())
+        for detail in details:
+            label = wx.StaticText(d, label=detail)
+            vbox.Add(label, 0,
+                     border=10,
+                     flag=wx.ALIGN_CENTER)
+
+        license_link = wx.adv.HyperlinkCtrl(
+            d, label=_('Click here for full license text'),
+            url=('https://www.chirpmyradio.com/projects/chirp/repository/'
+                 'github/revisions/master/entry/COPYING'))
+        vbox.Add(license_link, border=10, flag=wx.ALL | wx.ALIGN_CENTER)
+
+        licheader = """
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details."""
+
+        lic = wx.TextCtrl(
+            d, value=licheader.strip(),
+            style=wx.TE_WORDWRAP | wx.TE_MULTILINE | wx.TE_READONLY)
+        vbox.Add(lic, border=10, flag=wx.ALL | wx.EXPAND, proportion=1)
+
+        license_approved = CONF.get_bool('agreed_to_license', 'state')
+
+        if not license_approved:
+            buttons = wx.OK | wx.CANCEL
+        else:
+            buttons = wx.OK
+        bs = d.CreateButtonSizer(buttons)
+        vbox.Add(bs, border=10, flag=wx.ALL)
+        if not license_approved:
+            d.FindWindowById(wx.ID_OK).SetLabel(_('Agree'))
+            d.FindWindowById(wx.ID_CANCEL).SetLabel(_('Close'))
+        d.Center()
+        r = d.ShowModal()
+        if r == wx.ID_OK:
+            LOG.debug('User approved license')
+            CONF.set_bool('agreed_to_license', True, 'state')
+        else:
+            LOG.debug('User did not approve license - exiting')
+            self.Close()
 
     def _menu_developer(self, menuitem, event):
         developer.developer_mode(menuitem.IsChecked())
