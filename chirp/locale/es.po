@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-07 20:46-0700\n"
-"PO-Revision-Date: 2024-09-23 16:10-0300\n"
+"PO-Revision-Date: 2024-10-09 22:27-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1068,7 +1068,7 @@ msgstr "Acerca de CHIRP"
 
 #: ../wxui/main.py:1788
 msgid "Agree"
-msgstr ""
+msgstr "De acuerdo"
 
 #: ../wxui/query_sources.py:367
 msgid "All"
@@ -1200,7 +1200,7 @@ msgstr "Ciudad"
 
 #: ../wxui/main.py:1758
 msgid "Click here for full license text"
-msgstr ""
+msgstr "Cliquea aquí para el texto de licencia completo"
 
 #: ../drivers/ts590.py:671
 msgid ""
