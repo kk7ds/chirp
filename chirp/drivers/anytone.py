@@ -406,6 +406,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         rf.valid_modes = ["FM", "NFM", "AM"]
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_cross_modes = ['Tone->DTCS', 'DTCS->Tone',
+                                'DTCS->DTCS',
                                 '->Tone', '->DTCS', 'Tone->Tone']
         rf.valid_tones = TONES
         rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES
