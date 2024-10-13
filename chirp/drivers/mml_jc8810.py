@@ -1355,6 +1355,7 @@ class RT470XRadio(RT470LRadio):
     def get_features(self):
         rf = super().get_features()
         rf.valid_modes.append('AM')
+        rf.valid_bands = [(18000000, 1000000000)]
         return rf
 
     def validate_memory(self, mem):
