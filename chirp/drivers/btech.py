@@ -272,6 +272,7 @@ KT8900D_fp1 = b"VC8632"
 KT8900D_fp2 = b"VC3402"
 KT8900D_fp3 = b"VC7062"
 KT8900D_fp4 = b"VC3062"
+KT8900D_fp5 = b"VC8192"
 
 # LUITON LT-588UV
 LT588UV_fp = b"V2G1F4"
@@ -4090,7 +4091,8 @@ class KT8900D(BTechColor):
     _vhf_range = (136000000, 175000000)
     _uhf_range = (400000000, 481000000)
     _magic = MSTRING_KT8900D
-    _fileid = [KT8900D_fp4, KT8900D_fp3, KT8900D_fp2, KT8900D_fp1, KT8900D_fp]
+    _fileid = [KT8900D_fp5, KT8900D_fp4, KT8900D_fp3, KT8900D_fp2, KT8900D_fp1,
+               KT8900D_fp]
 
     # Clones
     ALIASES = [OTGRadioV1]
