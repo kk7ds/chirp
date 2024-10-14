@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-07 20:46-0700\n"
+"POT-Creation-Date: 2024-10-15 21:22-0700\n"
 "PO-Revision-Date: 2024-10-09 22:27-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
@@ -1677,7 +1677,7 @@ msgstr ""
 "    audio del lado derecho!\n"
 
 #: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:690 ../drivers/gmrsuv1.py:391
+#: ../drivers/btech.py:693 ../drivers/gmrsuv1.py:391
 #: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
 #: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
 #: ../drivers/baofeng_uv17Pro.py:465 ../drivers/bf_t1.py:482
@@ -1784,7 +1784,7 @@ msgstr ""
 "    audio del lado derecho!\n"
 "6 - Apaga y enciende la radio para salir del modo de clonación\n"
 
-#: ../drivers/btech.py:696 ../drivers/bf_t1.py:488
+#: ../drivers/btech.py:699 ../drivers/bf_t1.py:488
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1904,12 +1904,12 @@ msgstr "La frecuencia %s está fuera del rango soportado"
 msgid "Frequency granularity in kHz"
 msgstr "Granularidad de frecuencia en kHz"
 
-#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1368
+#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1369
 #: ../drivers/tdh8.py:2482 ../drivers/baofeng_uv17Pro.py:1159
 msgid "Frequency in this range must not be AM mode"
 msgstr "La frecuencia en este rango no debe ser modo AM"
 
-#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1365
+#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1366
 #: ../drivers/tdh8.py:2479 ../drivers/baofeng_uv17Pro.py:1155
 msgid "Frequency in this range requires AM mode"
 msgstr "La frecuencia en este rango requiere modo AM"
@@ -1954,6 +1954,12 @@ msgstr "Hexadecimal"
 #: ../wxui/memedit.py:947
 msgid "Hide empty memories"
 msgstr "Ocultar memorias vacías"
+
+#: ../drivers/retevis_rt98.py:1003
+msgid ""
+"Honor the CTCSS/DCS receive squelch configuration when enabled, else only "
+"carrier squelch"
+msgstr ""
 
 #: ../wxui/memedit.py:144
 msgid "Human-readable comment (not stored in radio)"
@@ -2527,6 +2533,10 @@ msgstr "Código DTCS de recepción"
 #: ../wxui/memedit.py:128
 msgid "Receive frequency"
 msgstr "Frecuencia de recepción"
+
+#: ../drivers/retevis_rt98.py:1219
+msgid "Recommend using 55.2"
+msgstr ""
 
 #: ../wxui/common.py:481
 msgid "Refresh required"

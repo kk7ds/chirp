@@ -1000,6 +1000,8 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
 
         rs = RadioSettingValueBoolean(bool(_mem.squelch_mode))
         rset = RadioSetting("squelch_mode", "Squelch mode", rs)
+        rset.set_doc(_('Honor the CTCSS/DCS receive squelch configuration '
+                       'when enabled, else only carrier squelch'))
         mem.extra.append(rset)
 
         return mem
@@ -1214,6 +1216,7 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
         rs = RadioSettingValueList(LIST_STE_FREQ,
                                    current_index=_settings.ste_frequency)
         rset = RadioSetting("ste_frequency", "STE Frequency", rs)
+        rset.set_doc(_('Recommend using 55.2'))
         function.append(rset)
 
         rs = RadioSettingValueList(LIST_STE_TYPE,
