@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-15 21:22-0700\n"
-"PO-Revision-Date: 2024-10-16 22:48-0300\n"
+"POT-Creation-Date: 2024-10-16 21:38-0700\n"
+"PO-Revision-Date: 2024-10-09 22:27-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1091,7 +1091,7 @@ msgstr "Aficionado"
 msgid "An error has occurred"
 msgstr "Ha ocurrido un error"
 
-#: ../wxui/clone.py:135
+#: ../wxui/clone.py:136
 msgid "Applying settings"
 msgstr "Aplicando ajustes"
 
@@ -1185,6 +1185,11 @@ msgstr "Elegir %s tono"
 msgid "Choose Cross Mode"
 msgstr "Elegir modo cruzado"
 
+#: ../wxui/clone.py:569
+#, fuzzy
+msgid "Choose a recent model"
+msgstr "Elegir modo cruzado"
+
 #: ../wxui/memedit.py:1430
 msgid "Choose duplex"
 msgstr "Elegir Dúplex"
@@ -1256,11 +1261,11 @@ msgstr[1] "Agrupar %i memorias"
 msgid "Comment"
 msgstr "Comentario"
 
-#: ../wxui/clone.py:300
+#: ../wxui/clone.py:301
 msgid "Communicate with radio"
 msgstr "Comunicarse con la radio"
 
-#: ../wxui/clone.py:143
+#: ../wxui/clone.py:144
 msgid "Complete"
 msgstr "Completado"
 
@@ -1297,7 +1302,7 @@ msgstr "País"
 msgid "Cross Mode"
 msgstr "Modo cruzado"
 
-#: ../wxui/clone.py:522
+#: ../wxui/clone.py:530
 msgid "Custom Port"
 msgstr "Puerto personalizado"
 
@@ -1381,12 +1386,12 @@ msgstr "Desahbilitado"
 msgid "Distance"
 msgstr "Distancia"
 
-#: ../wxui/clone.py:195
+#: ../wxui/clone.py:196
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "No preguntar de nuevo para %s"
 
-#: ../wxui/clone.py:192
+#: ../wxui/clone.py:193
 msgid "Do you accept the risk?"
 msgstr "¿Aceptas el riesgo?"
 
@@ -1406,7 +1411,7 @@ msgstr "Descargar desde radio"
 msgid "Download from radio..."
 msgstr "Descargar desde radio..."
 
-#: ../wxui/clone.py:655
+#: ../wxui/clone.py:685
 msgid "Download instructions"
 msgstr "Descargar instrucciones"
 
@@ -1467,7 +1472,7 @@ msgstr "Ingresar frecuencia TX (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Ingresa un nuevo nombre para el banco %s:"
 
-#: ../wxui/clone.py:521
+#: ../wxui/clone.py:529
 msgid "Enter custom port:"
 msgstr "Ingresar puerto personalizado:"
 
@@ -1515,7 +1520,7 @@ msgstr "Memoria borrada %s"
 msgid "Error applying settings"
 msgstr "Error aplicando ajustes"
 
-#: ../wxui/clone.py:580
+#: ../wxui/clone.py:606
 msgid "Error communicating with radio"
 msgstr "Error comunicándose con la radio"
 
@@ -1523,7 +1528,7 @@ msgstr "Error comunicándose con la radio"
 msgid "Exclude private and closed repeaters"
 msgstr "Excluir repetidores privados y cerrados"
 
-#: ../wxui/clone.py:613
+#: ../wxui/clone.py:639
 msgid "Experimental driver"
 msgstr "Controlador experimental"
 
@@ -1960,8 +1965,6 @@ msgid ""
 "Honor the CTCSS/DCS receive squelch configuration when enabled, else only "
 "carrier squelch"
 msgstr ""
-"Respeta la configuración de silenciamiento de recepción CTCSS/DCS cuando "
-"está activada, de lo contrario sólo silenciamiento de portadora"
 
 #: ../wxui/memedit.py:144
 msgid "Human-readable comment (not stored in radio)"
@@ -2013,7 +2016,7 @@ msgstr "¿Instalar icono de escritorio?"
 msgid "Interact with driver"
 msgstr "Interactuar con controlador"
 
-#: ../wxui/clone.py:677
+#: ../wxui/clone.py:707
 msgid "Internal driver error"
 msgstr "Error interno del controlador"
 
@@ -2127,7 +2130,7 @@ msgstr ""
 "es como darles acceso directo a tu computador y a todo en este! ¿Proceder a "
 "pesar de este riesgo?"
 
-#: ../wxui/clone.py:137
+#: ../wxui/clone.py:138
 msgid "Loading settings"
 msgstr "Cargando ajustes"
 
@@ -2180,7 +2183,7 @@ msgstr "La memoria {num} no está en banco {bank}"
 msgid "Mode"
 msgstr "Modo"
 
-#: ../wxui/clone.py:331
+#: ../wxui/clone.py:339
 msgid "Model"
 msgstr "Modelo"
 
@@ -2200,7 +2203,7 @@ msgstr "Módulo cargado"
 msgid "Module loaded successfully"
 msgstr "Módulo cargado exitosamente"
 
-#: ../wxui/clone.py:479
+#: ../wxui/clone.py:487
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Más de un puerto encontrado: %s"
@@ -2440,11 +2443,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Por favor espera"
 
-#: ../wxui/clone.py:456
+#: ../wxui/clone.py:464
 msgid "Plug in your cable and then click OK"
 msgstr "Conecta tu cable y luego haz clic en ACEPTAR"
 
-#: ../wxui/clone.py:323
+#: ../wxui/clone.py:324
 msgid "Port"
 msgstr "Puerto"
 
@@ -2464,7 +2467,7 @@ msgstr "Previsualización de impresión"
 msgid "Printing"
 msgstr "Imprimiendo"
 
-#: ../wxui/clone.py:490
+#: ../wxui/clone.py:498
 msgid "Prolific USB device"
 msgstr "Dispositivo USB Prolific"
 
@@ -2494,7 +2497,7 @@ msgstr "Radio"
 msgid "Radio did not ack block %i"
 msgstr "La radio no reconoció el bloque %i"
 
-#: ../wxui/clone.py:647 ../wxui/clone.py:739
+#: ../wxui/clone.py:677 ../wxui/clone.py:781
 msgid "Radio information"
 msgstr "Información de radio"
 
@@ -2536,9 +2539,19 @@ msgstr "Código DTCS de recepción"
 msgid "Receive frequency"
 msgstr "Frecuencia de recepción"
 
+#: ../wxui/clone.py:570
+#, fuzzy
+msgid "Recent"
+msgstr "Abrir reciente"
+
+#: ../wxui/clone.py:331
+#, fuzzy
+msgid "Recent..."
+msgstr "Abrir reciente"
+
 #: ../drivers/retevis_rt98.py:1219
 msgid "Recommend using 55.2"
-msgstr "Se recomienda usar 55.2"
+msgstr ""
 
 #: ../wxui/common.py:481
 msgid "Refresh required"
@@ -3076,12 +3089,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Paso de sintonización"
 
-#: ../wxui/clone.py:450 ../wxui/clone.py:457 ../wxui/clone.py:468
-#: ../wxui/clone.py:476 ../wxui/clone.py:480
+#: ../wxui/clone.py:458 ../wxui/clone.py:465 ../wxui/clone.py:476
+#: ../wxui/clone.py:484 ../wxui/clone.py:488
 msgid "USB Port Finder"
 msgstr "Buscador de puertos USB"
 
-#: ../wxui/clone.py:466
+#: ../wxui/clone.py:474
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -3137,7 +3150,7 @@ msgstr "No se puede cargar este archivo"
 msgid "United States"
 msgstr "Estados Unidos"
 
-#: ../wxui/clone.py:449
+#: ../wxui/clone.py:457
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Desconecta tu cable (si es necesario) y entonces haz clic en ACEPTAR"
 
@@ -3155,7 +3168,7 @@ msgstr "Actualizar un error existente"
 msgid "Updating bug %s"
 msgstr "Actualizando error %s"
 
-#: ../wxui/clone.py:754
+#: ../wxui/clone.py:796
 msgid "Upload instructions"
 msgstr "Cargar instrucciones"
 
@@ -3217,7 +3230,7 @@ msgstr "Valor debe ser cero o superior"
 msgid "Values"
 msgstr "Valores"
 
-#: ../wxui/clone.py:326
+#: ../wxui/clone.py:335
 msgid "Vendor"
 msgstr "Vendedor"
 
@@ -3256,7 +3269,7 @@ msgstr ""
 "numero de problemas que puedes abrir para evitar abusos. Si realmente "
 "necesitas abrir otro, por favor hazlo a través del sitio web."
 
-#: ../wxui/clone.py:487
+#: ../wxui/clone.py:495
 msgid ""
 "Your Prolific-based USB device will not work without reverting to an older "
 "version of the driver. Visit the CHIRP website to read more about how to "
@@ -3266,7 +3279,7 @@ msgstr ""
 "versión más antigua del controlador. Visita el sitio web de CHIRP para leer "
 "más sobre ¿cómo resolver esto?"
 
-#: ../wxui/clone.py:474
+#: ../wxui/clone.py:482
 msgid "Your cable appears to be on port:"
 msgstr "Tu cable parece estar en puerto:"
 

@@ -39,6 +39,7 @@ LOG = logging.getLogger(__name__)
 CONF = config.get()
 HELPME = _('Help Me...')
 CUSTOM = _('Custom...')
+ID_RECENT = wx.NewId()
 
 
 def is_prolific_warning(string):
@@ -322,9 +323,16 @@ class ChirpCloneDialog(wx.Dialog):
         self.Bind(wx.EVT_CHOICE, self._selected_port, self._port)
         _add_grid(_('Port'), self._port)
 
-        self._vendor = wx.Choice(self, choices=['Icom', 'Yaesu'])
-        _add_grid(_('Vendor'), self._vendor)
+        panel = wx.Panel(self)
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+        panel.SetSizer(hbox)
+        self._vendor = wx.Choice(panel, choices=['Icom', 'Yaesu'])
         self.Bind(wx.EVT_CHOICE, self._selected_vendor, self._vendor)
+        self._recent = wx.Button(panel, ID_RECENT, label=_('Recent...'))
+        self._recent.Enable(bool(CONF.get('recent_models', 'state')))
+        hbox.Add(self._vendor, proportion=1, border=10, flag=wx.RIGHT)
+        hbox.Add(self._recent)
+        _add_grid(_('Vendor'), panel)
 
         self._model_choices = []
         self._model = wx.Choice(self, choices=self._model_choices)
@@ -550,6 +558,24 @@ class ChirpCloneDialog(wx.Dialog):
         self._model.Set(display_models)
         self._model.SetSelection(0)
 
+    def _do_recent(self):
+        recent = CONF.get('recent_models', 'state')
+        if recent:
+            recent = recent.split(';')
+        else:
+            recent = []
+        recent_strs = ['%s %s' % tuple(vm.split(':', 1)) for vm in recent]
+        d = wx.SingleChoiceDialog(self,
+                                  _('Choose a recent model'),
+                                  _('Recent'),
+                                  recent_strs)
+        d.SetSize((300, 300))
+        d.Center()
+        c = d.ShowModal()
+        if c == wx.ID_OK:
+            vendor, model = recent[d.GetSelection()].split(':')
+            self.select_vendor_model(vendor, model)
+
     def _selected_vendor(self, event):
         self._select_vendor(event.GetString())
         self._persist_choices()
@@ -627,10 +653,14 @@ class ChirpDownloadDialog(ChirpCloneDialog):
                 self.FindWindowById(wx.ID_OK).Enable()
 
     def _action(self, event):
-        if event.GetEventObject().GetId() == wx.ID_CANCEL:
+        id = event.GetEventObject().GetId()
+        if id == wx.ID_CANCEL:
             if self._clone_thread:
                 self._clone_thread.stop()
-            self.EndModal(event.GetEventObject().GetId())
+            self.EndModal(id)
+            return
+        elif id == ID_RECENT:
+            self._do_recent()
             return
 
         self._persist_choices()
@@ -708,6 +738,18 @@ class ChirpDownloadDialog(ChirpCloneDialog):
         CONF.set('last_model', self._model_choices[self._model.GetSelection()],
                  'state')
         CONF.set('last_port', self.get_selected_port(), 'state')
+        recent = CONF.get('recent_models', 'state')
+        if recent:
+            recent = recent.split(';')
+        else:
+            recent = []
+        modelstr = '%s:%s' % (self._vendor.GetStringSelection(),
+                              self._model_choices[self._model.GetSelection()])
+        if modelstr in recent:
+            recent.remove(modelstr)
+        recent.insert(0, modelstr)
+        recent = recent[:10]
+        CONF.set('recent_models', ';'.join(recent), 'state')
 
 
 class ChirpUploadDialog(ChirpCloneDialog):
