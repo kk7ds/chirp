@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-15 21:22-0700\n"
+"POT-Creation-Date: 2024-10-16 21:38-0700\n"
 "PO-Revision-Date: 2015-01-28 13:47+0100\n"
 "Last-Translator: Attila Joubert <joubert.attila@gmail.com>\n"
 "Language-Team: English\n"
@@ -706,7 +706,7 @@ msgstr ""
 msgid "An error has occurred"
 msgstr "Hiba történt"
 
-#: ../wxui/clone.py:135
+#: ../wxui/clone.py:136
 msgid "Applying settings"
 msgstr ""
 
@@ -798,6 +798,11 @@ msgstr ""
 msgid "Choose Cross Mode"
 msgstr "Kereszt-üzem"
 
+#: ../wxui/clone.py:569
+#, fuzzy
+msgid "Choose a recent model"
+msgstr "Kereszt-üzem"
+
 #: ../wxui/memedit.py:1430
 msgid "Choose duplex"
 msgstr ""
@@ -864,11 +869,11 @@ msgstr[1] "Memóriasorok összehasonlítása"
 msgid "Comment"
 msgstr "Megjegyzés"
 
-#: ../wxui/clone.py:300
+#: ../wxui/clone.py:301
 msgid "Communicate with radio"
 msgstr ""
 
-#: ../wxui/clone.py:143
+#: ../wxui/clone.py:144
 #, fuzzy
 msgid "Complete"
 msgstr "Befejeződött"
@@ -903,7 +908,7 @@ msgstr ""
 msgid "Cross Mode"
 msgstr "Kereszt-üzem"
 
-#: ../wxui/clone.py:522
+#: ../wxui/clone.py:530
 msgid "Custom Port"
 msgstr ""
 
@@ -991,12 +996,12 @@ msgstr "Engedélyezve"
 msgid "Distance"
 msgstr ""
 
-#: ../wxui/clone.py:195
+#: ../wxui/clone.py:196
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr ""
 
-#: ../wxui/clone.py:192
+#: ../wxui/clone.py:193
 msgid "Do you accept the risk?"
 msgstr ""
 
@@ -1018,7 +1023,7 @@ msgstr "Letöltés a rádióról"
 msgid "Download from radio..."
 msgstr "Letöltés a rádióról"
 
-#: ../wxui/clone.py:655
+#: ../wxui/clone.py:685
 #, fuzzy
 msgid "Download instructions"
 msgstr "{name} Utasítások"
@@ -1080,7 +1085,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:521
+#: ../wxui/clone.py:529
 msgid "Enter custom port:"
 msgstr ""
 
@@ -1121,7 +1126,7 @@ msgstr "A(z) {loc}. memóriahely törlése"
 msgid "Error applying settings"
 msgstr "Hiba a(z) %s érték beállításakor"
 
-#: ../wxui/clone.py:580
+#: ../wxui/clone.py:606
 msgid "Error communicating with radio"
 msgstr ""
 
@@ -1129,7 +1134,7 @@ msgstr ""
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:613
+#: ../wxui/clone.py:639
 #, fuzzy
 msgid "Experimental driver"
 msgstr "Folytassam kísérleti driver-rel?"
@@ -1533,7 +1538,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:677
+#: ../wxui/clone.py:707
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Belső hiba"
@@ -1645,7 +1650,7 @@ msgid ""
 "this risk?"
 msgstr ""
 
-#: ../wxui/clone.py:137
+#: ../wxui/clone.py:138
 msgid "Loading settings"
 msgstr ""
 
@@ -1697,7 +1702,7 @@ msgstr ""
 msgid "Mode"
 msgstr "Mód"
 
-#: ../wxui/clone.py:331
+#: ../wxui/clone.py:339
 msgid "Model"
 msgstr "Modell"
 
@@ -1720,7 +1725,7 @@ msgstr "Modul betöltése"
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:479
+#: ../wxui/clone.py:487
 #, python-format
 msgid "More than one port found: %s"
 msgstr ""
@@ -1940,11 +1945,11 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../wxui/clone.py:456
+#: ../wxui/clone.py:464
 msgid "Plug in your cable and then click OK"
 msgstr ""
 
-#: ../wxui/clone.py:323
+#: ../wxui/clone.py:324
 msgid "Port"
 msgstr "Port"
 
@@ -1965,7 +1970,7 @@ msgstr ""
 msgid "Printing"
 msgstr ""
 
-#: ../wxui/clone.py:490
+#: ../wxui/clone.py:498
 msgid "Prolific USB device"
 msgstr ""
 
@@ -1997,7 +2002,7 @@ msgstr "Rádió"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:647 ../wxui/clone.py:739
+#: ../wxui/clone.py:677 ../wxui/clone.py:781
 #, fuzzy
 msgid "Radio information"
 msgstr "%s információk lekérése"
@@ -2033,6 +2038,16 @@ msgstr "DTCS kód"
 #, fuzzy
 msgid "Receive frequency"
 msgstr "Frekvencia"
+
+#: ../wxui/clone.py:570
+#, fuzzy
+msgid "Recent"
+msgstr "Leg_utóbbi"
+
+#: ../wxui/clone.py:331
+#, fuzzy
+msgid "Recent..."
+msgstr "Leg_utóbbi"
 
 #: ../drivers/retevis_rt98.py:1219
 msgid "Recommend using 55.2"
@@ -2492,12 +2507,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Lépésköz"
 
-#: ../wxui/clone.py:450 ../wxui/clone.py:457 ../wxui/clone.py:468
-#: ../wxui/clone.py:476 ../wxui/clone.py:480
+#: ../wxui/clone.py:458 ../wxui/clone.py:465 ../wxui/clone.py:476
+#: ../wxui/clone.py:484 ../wxui/clone.py:488
 msgid "USB Port Finder"
 msgstr ""
 
-#: ../wxui/clone.py:466
+#: ../wxui/clone.py:474
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2551,7 +2566,7 @@ msgstr "Ennél a modellnél nem változtatható"
 msgid "United States"
 msgstr ""
 
-#: ../wxui/clone.py:449
+#: ../wxui/clone.py:457
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
 
@@ -2569,7 +2584,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "URCALL lista frissítése."
 
-#: ../wxui/clone.py:754
+#: ../wxui/clone.py:796
 #, fuzzy
 msgid "Upload instructions"
 msgstr "{instructions}"
@@ -2633,7 +2648,7 @@ msgstr ""
 msgid "Values"
 msgstr ""
 
-#: ../wxui/clone.py:326
+#: ../wxui/clone.py:335
 msgid "Vendor"
 msgstr "Gyártó"
 
@@ -2670,14 +2685,14 @@ msgid ""
 "another, please do so via the website."
 msgstr ""
 
-#: ../wxui/clone.py:487
+#: ../wxui/clone.py:495
 msgid ""
 "Your Prolific-based USB device will not work without reverting to an older "
 "version of the driver. Visit the CHIRP website to read more about how to "
 "resolve this?"
 msgstr ""
 
-#: ../wxui/clone.py:474
+#: ../wxui/clone.py:482
 msgid "Your cable appears to be on port:"
 msgstr ""
 

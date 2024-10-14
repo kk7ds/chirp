@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-15 21:22-0700\n"
+"POT-Creation-Date: 2024-10-16 21:38-0700\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -710,7 +710,7 @@ msgstr "Ραδιοερασιτέχνη"
 msgid "An error has occurred"
 msgstr "Παρουσιάστηκε ένα σφάλμα"
 
-#: ../wxui/clone.py:135
+#: ../wxui/clone.py:136
 msgid "Applying settings"
 msgstr "Εφαρμογή ρυθμίσεων"
 
@@ -802,6 +802,11 @@ msgstr "Επιλέξτε τόνο %s"
 msgid "Choose Cross Mode"
 msgstr ""
 
+#: ../wxui/clone.py:569
+#, fuzzy
+msgid "Choose a recent model"
+msgstr "Επιλέξτε κωδικό DTCS %s"
+
 #: ../wxui/memedit.py:1430
 #, fuzzy
 msgid "Choose duplex"
@@ -867,11 +872,11 @@ msgstr[1] "Διαγραφή %i Μνημών"
 msgid "Comment"
 msgstr "Σχόλιο"
 
-#: ../wxui/clone.py:300
+#: ../wxui/clone.py:301
 msgid "Communicate with radio"
 msgstr "Επικοινωνία με πομποδέκτη"
 
-#: ../wxui/clone.py:143
+#: ../wxui/clone.py:144
 msgid "Complete"
 msgstr "Ολοκληρωμένη"
 
@@ -905,7 +910,7 @@ msgstr "Χώρα"
 msgid "Cross Mode"
 msgstr "Τύπος τόνου"
 
-#: ../wxui/clone.py:522
+#: ../wxui/clone.py:530
 #, fuzzy
 msgid "Custom Port"
 msgstr "Εισάγετε προσαρμοσμένη θύρα:"
@@ -993,12 +998,12 @@ msgstr ""
 msgid "Distance"
 msgstr "Απόσταση"
 
-#: ../wxui/clone.py:195
+#: ../wxui/clone.py:196
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "Να μην ερωτηθώ ξανά για %s"
 
-#: ../wxui/clone.py:192
+#: ../wxui/clone.py:193
 msgid "Do you accept the risk?"
 msgstr ""
 
@@ -1019,7 +1024,7 @@ msgstr "Λήψη Από Πομποδέκτη"
 msgid "Download from radio..."
 msgstr "Λήψη Από Πομποδέκτη"
 
-#: ../wxui/clone.py:655
+#: ../wxui/clone.py:685
 msgid "Download instructions"
 msgstr "Οδηγίες λήψης"
 
@@ -1080,7 +1085,7 @@ msgstr "Εισάγετε συχνότητα εκπομπής (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Εισάγετε ένα νέο όνομα για την ομάδα μνημών %s:"
 
-#: ../wxui/clone.py:521
+#: ../wxui/clone.py:529
 msgid "Enter custom port:"
 msgstr "Εισάγετε προσαρμοσμένη θύρα:"
 
@@ -1120,7 +1125,7 @@ msgstr "Διεγράφη η μνήμη %s"
 msgid "Error applying settings"
 msgstr "Σφάλμα εφαρμογής ρυθμίσεων"
 
-#: ../wxui/clone.py:580
+#: ../wxui/clone.py:606
 msgid "Error communicating with radio"
 msgstr "Σφάλμα επικοινωνίας με τον πομποδέκτη"
 
@@ -1128,7 +1133,7 @@ msgstr "Σφάλμα επικοινωνίας με τον πομποδέκτη"
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:613
+#: ../wxui/clone.py:639
 msgid "Experimental driver"
 msgstr "Πειραματικός οδηγός"
 
@@ -1525,7 +1530,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr "Αλληλεπίδραση με οδηγό"
 
-#: ../wxui/clone.py:677
+#: ../wxui/clone.py:707
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Αλληλεπίδραση με οδηγό"
@@ -1639,7 +1644,7 @@ msgid ""
 "this risk?"
 msgstr ""
 
-#: ../wxui/clone.py:137
+#: ../wxui/clone.py:138
 msgid "Loading settings"
 msgstr "Φόρτωση ρυθμίσεων"
 
@@ -1691,7 +1696,7 @@ msgstr "Η μνήμη {num} δεν βρίσκεται στην ομάδα μνη
 msgid "Mode"
 msgstr "Λειτουργία"
 
-#: ../wxui/clone.py:331
+#: ../wxui/clone.py:339
 msgid "Model"
 msgstr "Μοντέλο"
 
@@ -1712,7 +1717,7 @@ msgstr "Module"
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/clone.py:479
+#: ../wxui/clone.py:487
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Βρέθηκαν περισσότερες από μία θύρες: %s"
@@ -1928,11 +1933,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Παρακαλώ περιμένετε"
 
-#: ../wxui/clone.py:456
+#: ../wxui/clone.py:464
 msgid "Plug in your cable and then click OK"
 msgstr "Συνδέστε το καλώδιο σας και πατήστε OK"
 
-#: ../wxui/clone.py:323
+#: ../wxui/clone.py:324
 msgid "Port"
 msgstr "Θύρα"
 
@@ -1952,7 +1957,7 @@ msgstr "Προεπισκόπηση εκτύπωσης"
 msgid "Printing"
 msgstr "Εκτύπωση"
 
-#: ../wxui/clone.py:490
+#: ../wxui/clone.py:498
 msgid "Prolific USB device"
 msgstr ""
 
@@ -1982,7 +1987,7 @@ msgstr "Πομποδέκτης"
 msgid "Radio did not ack block %i"
 msgstr "Ο πομποδέκτης δεν επιβεβαίωσε το μπλοκ %i"
 
-#: ../wxui/clone.py:647 ../wxui/clone.py:739
+#: ../wxui/clone.py:677 ../wxui/clone.py:781
 msgid "Radio information"
 msgstr "Πληροφορίες πομποδέκτη"
 
@@ -2016,6 +2021,16 @@ msgstr ""
 #, fuzzy
 msgid "Receive frequency"
 msgstr "Εισάγετε συχνότητα"
+
+#: ../wxui/clone.py:570
+#, fuzzy
+msgid "Recent"
+msgstr "Άνοιγμα πρόσφατου"
+
+#: ../wxui/clone.py:331
+#, fuzzy
+msgid "Recent..."
+msgstr "Άνοιγμα πρόσφατου"
 
 #: ../drivers/retevis_rt98.py:1219
 msgid "Recommend using 55.2"
@@ -2477,12 +2492,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Βήμα συντονισμού"
 
-#: ../wxui/clone.py:450 ../wxui/clone.py:457 ../wxui/clone.py:468
-#: ../wxui/clone.py:476 ../wxui/clone.py:480
+#: ../wxui/clone.py:458 ../wxui/clone.py:465 ../wxui/clone.py:476
+#: ../wxui/clone.py:484 ../wxui/clone.py:488
 msgid "USB Port Finder"
 msgstr "Έυρεση θυρών USB"
 
-#: ../wxui/clone.py:466
+#: ../wxui/clone.py:474
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2535,7 +2550,7 @@ msgstr "Πατήστε enter για καταχώρηση στη μνήμη"
 msgid "United States"
 msgstr "Ηνωμένες Πολιτείες"
 
-#: ../wxui/clone.py:449
+#: ../wxui/clone.py:457
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Αποσυνδέστε το καλώδιο σας (αν χρειάζεται) και μετά πατήστε OK"
 
@@ -2553,7 +2568,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr ""
 
-#: ../wxui/clone.py:754
+#: ../wxui/clone.py:796
 msgid "Upload instructions"
 msgstr "Οδηγίες αποστολής"
 
@@ -2615,7 +2630,7 @@ msgstr "Η τιμή πρέπει να είναι μηδέν ή μεγαλύτε�
 msgid "Values"
 msgstr ""
 
-#: ../wxui/clone.py:326
+#: ../wxui/clone.py:335
 msgid "Vendor"
 msgstr "Προμηθευτής"
 
@@ -2651,14 +2666,14 @@ msgid ""
 "another, please do so via the website."
 msgstr ""
 
-#: ../wxui/clone.py:487
+#: ../wxui/clone.py:495
 msgid ""
 "Your Prolific-based USB device will not work without reverting to an older "
 "version of the driver. Visit the CHIRP website to read more about how to "
 "resolve this?"
 msgstr ""
 
-#: ../wxui/clone.py:474
+#: ../wxui/clone.py:482
 msgid "Your cable appears to be on port:"
 msgstr "Το καλώδιο σας φαίνεται να είανι στη θύρα:"
 

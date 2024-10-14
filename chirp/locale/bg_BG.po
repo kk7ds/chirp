@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-15 21:22-0700\n"
+"POT-Creation-Date: 2024-10-16 21:38-0700\n"
 "PO-Revision-Date: 2024-09-05 02:01-0700\n"
 "Last-Translator: Стоян <stoyanster от гмаил>\n"
 "Language-Team: Bulgarian <dict@ludost.net>\n"
@@ -720,7 +720,7 @@ msgstr "Любителски"
 msgid "An error has occurred"
 msgstr "Възникна грешка"
 
-#: ../wxui/clone.py:135
+#: ../wxui/clone.py:136
 msgid "Applying settings"
 msgstr "Прилагане на настройки"
 
@@ -812,6 +812,11 @@ msgstr "Изберете тон за %s"
 msgid "Choose Cross Mode"
 msgstr "Изберете режим на прекръстосване"
 
+#: ../wxui/clone.py:569
+#, fuzzy
+msgid "Choose a recent model"
+msgstr "Изберете режим на прекръстосване"
+
 #: ../wxui/memedit.py:1430
 msgid "Choose duplex"
 msgstr "Изберете дуплекс"
@@ -876,11 +881,11 @@ msgstr[1] "Групиране на %i записа"
 msgid "Comment"
 msgstr "Коментар"
 
-#: ../wxui/clone.py:300
+#: ../wxui/clone.py:301
 msgid "Communicate with radio"
 msgstr "Осъществяване на връзка със станция"
 
-#: ../wxui/clone.py:143
+#: ../wxui/clone.py:144
 msgid "Complete"
 msgstr "Завършено"
 
@@ -917,7 +922,7 @@ msgstr "Държава"
 msgid "Cross Mode"
 msgstr "Режим на прекръстосване"
 
-#: ../wxui/clone.py:522
+#: ../wxui/clone.py:530
 msgid "Custom Port"
 msgstr "Порт по избор"
 
@@ -997,12 +1002,12 @@ msgstr "Изключено"
 msgid "Distance"
 msgstr "Разстояние"
 
-#: ../wxui/clone.py:195
+#: ../wxui/clone.py:196
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "Без повторно питане за %s"
 
-#: ../wxui/clone.py:192
+#: ../wxui/clone.py:193
 msgid "Do you accept the risk?"
 msgstr "Приемате ли риска?"
 
@@ -1022,7 +1027,7 @@ msgstr "Изтегляне от станция"
 msgid "Download from radio..."
 msgstr "Изтегляне от станция…"
 
-#: ../wxui/clone.py:655
+#: ../wxui/clone.py:685
 msgid "Download instructions"
 msgstr "Инструкции за изтегляне"
 
@@ -1083,7 +1088,7 @@ msgstr "Въведете честота на предаване (МХц)"
 msgid "Enter a new name for bank %s:"
 msgstr "Въведете ново име за банка %s:"
 
-#: ../wxui/clone.py:521
+#: ../wxui/clone.py:529
 msgid "Enter custom port:"
 msgstr "Въведете порт по избор:"
 
@@ -1123,7 +1128,7 @@ msgstr "Премахнат е запис № %s"
 msgid "Error applying settings"
 msgstr "Грешка при прилагане на настройкит"
 
-#: ../wxui/clone.py:580
+#: ../wxui/clone.py:606
 msgid "Error communicating with radio"
 msgstr "Грешка при връзката със станцията"
 
@@ -1131,7 +1136,7 @@ msgstr "Грешка при връзката със станцията"
 msgid "Exclude private and closed repeaters"
 msgstr "Изключване на частните и затворени ретранслатори"
 
-#: ../wxui/clone.py:613
+#: ../wxui/clone.py:639
 msgid "Experimental driver"
 msgstr "Изпитателен управляващ софтуер"
 
@@ -1542,7 +1547,7 @@ msgstr "Добавяне на пикограма към работния пло�
 msgid "Interact with driver"
 msgstr "Взаимодействие с управляващия софтуер"
 
-#: ../wxui/clone.py:677
+#: ../wxui/clone.py:707
 msgid "Internal driver error"
 msgstr "Вътрешна грешка на управляващия софтуер"
 
@@ -1656,7 +1661,7 @@ msgstr ""
 "източници е равносилно на това да им дадете пълен достъп до компютъра и "
 "всичко в него! Желаете ли да продължите, въпреки риска?"
 
-#: ../wxui/clone.py:137
+#: ../wxui/clone.py:138
 msgid "Loading settings"
 msgstr "Зареждане на настройки"
 
@@ -1709,7 +1714,7 @@ msgstr "Записът {num} не е в банката {bank}"
 msgid "Mode"
 msgstr "Режим"
 
-#: ../wxui/clone.py:331
+#: ../wxui/clone.py:339
 msgid "Model"
 msgstr "Модел"
 
@@ -1729,7 +1734,7 @@ msgstr "Зареден е модул"
 msgid "Module loaded successfully"
 msgstr "Модулът е зареден"
 
-#: ../wxui/clone.py:479
+#: ../wxui/clone.py:487
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Намерен е повече от един порт: %s"
@@ -1948,11 +1953,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Изчакайте"
 
-#: ../wxui/clone.py:456
+#: ../wxui/clone.py:464
 msgid "Plug in your cable and then click OK"
 msgstr "Включете кабела и натиснете „Добре“"
 
-#: ../wxui/clone.py:323
+#: ../wxui/clone.py:324
 msgid "Port"
 msgstr "Порт"
 
@@ -1972,7 +1977,7 @@ msgstr "Преглед за отпечатване"
 msgid "Printing"
 msgstr "Отпечатване"
 
-#: ../wxui/clone.py:490
+#: ../wxui/clone.py:498
 msgid "Prolific USB device"
 msgstr ""
 
@@ -2002,7 +2007,7 @@ msgstr "Станция"
 msgid "Radio did not ack block %i"
 msgstr "Станцията не е приела блок %i"
 
-#: ../wxui/clone.py:647 ../wxui/clone.py:739
+#: ../wxui/clone.py:677 ../wxui/clone.py:781
 msgid "Radio information"
 msgstr "Сведения за станцията"
 
@@ -2041,6 +2046,16 @@ msgstr "Код на DTCS на приемане"
 #: ../wxui/memedit.py:128
 msgid "Receive frequency"
 msgstr "Честота на приемане"
+
+#: ../wxui/clone.py:570
+#, fuzzy
+msgid "Recent"
+msgstr "Отваряне на предишни"
+
+#: ../wxui/clone.py:331
+#, fuzzy
+msgid "Recent..."
+msgstr "Отваряне на предишни"
 
 #: ../drivers/retevis_rt98.py:1219
 msgid "Recommend using 55.2"
@@ -2517,12 +2532,12 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Стъпка"
 
-#: ../wxui/clone.py:450 ../wxui/clone.py:457 ../wxui/clone.py:468
-#: ../wxui/clone.py:476 ../wxui/clone.py:480
+#: ../wxui/clone.py:458 ../wxui/clone.py:465 ../wxui/clone.py:476
+#: ../wxui/clone.py:484 ../wxui/clone.py:488
 msgid "USB Port Finder"
 msgstr "Търсене на порт на USB"
 
-#: ../wxui/clone.py:466
+#: ../wxui/clone.py:474
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -2578,7 +2593,7 @@ msgstr "Грешка при качване на файла"
 msgid "United States"
 msgstr "САЩ"
 
-#: ../wxui/clone.py:449
+#: ../wxui/clone.py:457
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Изключете кабела (ако е необходимо) и натиснете бутона„Добре“"
 
@@ -2596,7 +2611,7 @@ msgstr "Промяна на съществуващ дефект"
 msgid "Updating bug %s"
 msgstr "Промяна на дефект %s"
 
-#: ../wxui/clone.py:754
+#: ../wxui/clone.py:796
 msgid "Upload instructions"
 msgstr "Инструкции за изпращане"
 
@@ -2659,7 +2674,7 @@ msgstr "Стойността трябва да бъде нула или пове
 msgid "Values"
 msgstr "Стойности"
 
-#: ../wxui/clone.py:326
+#: ../wxui/clone.py:335
 msgid "Vendor"
 msgstr "Производител"
 
@@ -2699,14 +2714,14 @@ msgstr ""
 "приложението. Ако трябва да докладвате нов дефект го направете през "
 "страницата."
 
-#: ../wxui/clone.py:487
+#: ../wxui/clone.py:495
 msgid ""
 "Your Prolific-based USB device will not work without reverting to an older "
 "version of the driver. Visit the CHIRP website to read more about how to "
 "resolve this?"
 msgstr ""
 
-#: ../wxui/clone.py:474
+#: ../wxui/clone.py:482
 msgid "Your cable appears to be on port:"
 msgstr "Изглежда кабелът е включен в порт:"
 

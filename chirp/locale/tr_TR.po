@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-15 21:22-0700\n"
+"POT-Creation-Date: 2024-10-16 21:38-0700\n"
 "PO-Revision-Date: 2024-09-14 10:00+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -1064,7 +1064,7 @@ msgstr "Amatör"
 msgid "An error has occurred"
 msgstr "Bir hata oluştu"
 
-#: ../wxui/clone.py:135
+#: ../wxui/clone.py:136
 msgid "Applying settings"
 msgstr "Ayarlar uygulanıyor"
 
@@ -1157,6 +1157,11 @@ msgstr "%s Tonunu Seç"
 msgid "Choose Cross Mode"
 msgstr "Çapraz Modu Seç"
 
+#: ../wxui/clone.py:569
+#, fuzzy
+msgid "Choose a recent model"
+msgstr "Çapraz Modu Seç"
+
 #: ../wxui/memedit.py:1430
 msgid "Choose duplex"
 msgstr "Dubleks seç"
@@ -1227,11 +1232,11 @@ msgstr[1] "%i kaydı sırala"
 msgid "Comment"
 msgstr "Yorum"
 
-#: ../wxui/clone.py:300
+#: ../wxui/clone.py:301
 msgid "Communicate with radio"
 msgstr "Telsiz ile iletişim"
 
-#: ../wxui/clone.py:143
+#: ../wxui/clone.py:144
 msgid "Complete"
 msgstr "Tamamla"
 
@@ -1268,7 +1273,7 @@ msgstr "Ülke"
 msgid "Cross Mode"
 msgstr "Çapraz Mod"
 
-#: ../wxui/clone.py:522
+#: ../wxui/clone.py:530
 msgid "Custom Port"
 msgstr "Özel Bağlantı Noktası"
 
@@ -1351,12 +1356,12 @@ msgstr "Devre dışı"
 msgid "Distance"
 msgstr "Mesafe"
 
-#: ../wxui/clone.py:195
+#: ../wxui/clone.py:196
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "%s için tekrar sorma"
 
-#: ../wxui/clone.py:192
+#: ../wxui/clone.py:193
 msgid "Do you accept the risk?"
 msgstr "Riski kabul ediyor musun?"
 
@@ -1376,7 +1381,7 @@ msgstr "Telsizden indir"
 msgid "Download from radio..."
 msgstr "Telsizden indir..."
 
-#: ../wxui/clone.py:655
+#: ../wxui/clone.py:685
 msgid "Download instructions"
 msgstr "İndirme talimatları"
 
@@ -1437,7 +1442,7 @@ msgstr "TX Frekansını girin (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Banka %s için yeni bir ad girin:"
 
-#: ../wxui/clone.py:521
+#: ../wxui/clone.py:529
 msgid "Enter custom port:"
 msgstr "Özel bağlantı noktasını girin:"
 
@@ -1484,7 +1489,7 @@ msgstr "%s kaydı silindi"
 msgid "Error applying settings"
 msgstr "Ayarlar uygulanırken hata oluştu"
 
-#: ../wxui/clone.py:580
+#: ../wxui/clone.py:606
 msgid "Error communicating with radio"
 msgstr "Telsizle iletişim hatası"
 
@@ -1492,7 +1497,7 @@ msgstr "Telsizle iletişim hatası"
 msgid "Exclude private and closed repeaters"
 msgstr "Özel ve kapalı röleleri hariç tut"
 
-#: ../wxui/clone.py:613
+#: ../wxui/clone.py:639
 msgid "Experimental driver"
 msgstr "Deneysel sürücü"
 
@@ -1973,7 +1978,7 @@ msgstr "Masaüstü simgesi yüklensin mi?"
 msgid "Interact with driver"
 msgstr "Sürücü ile etkileşim"
 
-#: ../wxui/clone.py:677
+#: ../wxui/clone.py:707
 msgid "Internal driver error"
 msgstr "Dahili sürücü hatası"
 
@@ -2088,7 +2093,7 @@ msgstr ""
 "doğrudan erişim sağlamasına olanak sağlayabilir! Bu riske rağmen devam "
 "edilsin mi?"
 
-#: ../wxui/clone.py:137
+#: ../wxui/clone.py:138
 msgid "Loading settings"
 msgstr "Ayarlar yükleniyor"
 
@@ -2140,7 +2145,7 @@ msgstr "{num} kaydı {bank} bankasında değil"
 msgid "Mode"
 msgstr "Mod"
 
-#: ../wxui/clone.py:331
+#: ../wxui/clone.py:339
 msgid "Model"
 msgstr "Model"
 
@@ -2160,7 +2165,7 @@ msgstr "Modül Yüklendi"
 msgid "Module loaded successfully"
 msgstr "Modül başarıyla yüklendi"
 
-#: ../wxui/clone.py:479
+#: ../wxui/clone.py:487
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Birden fazla bağlantı noktası bulundu: %s"
@@ -2397,11 +2402,11 @@ msgstr ""
 msgid "Please wait"
 msgstr "Lütfen bekleyin"
 
-#: ../wxui/clone.py:456
+#: ../wxui/clone.py:464
 msgid "Plug in your cable and then click OK"
 msgstr "Kablonuzu takın ve ardından Tamam'a tıklayın"
 
-#: ../wxui/clone.py:323
+#: ../wxui/clone.py:324
 msgid "Port"
 msgstr "Port"
 
@@ -2421,7 +2426,7 @@ msgstr "Baskı Önizleme"
 msgid "Printing"
 msgstr "Baskı"
 
-#: ../wxui/clone.py:490
+#: ../wxui/clone.py:498
 msgid "Prolific USB device"
 msgstr ""
 
@@ -2451,7 +2456,7 @@ msgstr "Telsiz"
 msgid "Radio did not ack block %i"
 msgstr "Telsiz %i bloğunu onaylamadı"
 
-#: ../wxui/clone.py:647 ../wxui/clone.py:739
+#: ../wxui/clone.py:677 ../wxui/clone.py:781
 msgid "Radio information"
 msgstr "Telsiz bilgisi"
 
@@ -2491,6 +2496,16 @@ msgstr "DTCS kodu al"
 #: ../wxui/memedit.py:128
 msgid "Receive frequency"
 msgstr "Alım frekansı"
+
+#: ../wxui/clone.py:570
+#, fuzzy
+msgid "Recent"
+msgstr "Son Kullanılanları Aç"
+
+#: ../wxui/clone.py:331
+#, fuzzy
+msgid "Recent..."
+msgstr "Son Kullanılanları Aç"
 
 #: ../drivers/retevis_rt98.py:1219
 msgid "Recommend using 55.2"
@@ -3019,12 +3034,12 @@ msgstr "TSQL modu için gönderme/alma tonu, aksi takdirde ton al"
 msgid "Tuning Step"
 msgstr "Ayarlama Adımı"
 
-#: ../wxui/clone.py:450 ../wxui/clone.py:457 ../wxui/clone.py:468
-#: ../wxui/clone.py:476 ../wxui/clone.py:480
+#: ../wxui/clone.py:458 ../wxui/clone.py:465 ../wxui/clone.py:476
+#: ../wxui/clone.py:484 ../wxui/clone.py:488
 msgid "USB Port Finder"
 msgstr "USB Portu Bulucu"
 
-#: ../wxui/clone.py:466
+#: ../wxui/clone.py:474
 msgid ""
 "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
@@ -3080,7 +3095,7 @@ msgstr "Bu dosya yüklenemiyor"
 msgid "United States"
 msgstr "Amerika Birleşik Devletleri"
 
-#: ../wxui/clone.py:449
+#: ../wxui/clone.py:457
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "(gerekirse) Kablonuzu çıkarın ve ardından Tamam'ı tıklayın"
 
@@ -3098,7 +3113,7 @@ msgstr "Mevcut bir hatayı güncelle"
 msgid "Updating bug %s"
 msgstr "%s hatası güncelleniyor"
 
-#: ../wxui/clone.py:754
+#: ../wxui/clone.py:796
 msgid "Upload instructions"
 msgstr "Yükleme talimatları"
 
@@ -3160,7 +3175,7 @@ msgstr "Değer sıfır veya daha büyük olmalıdır"
 msgid "Values"
 msgstr "Değerler"
 
-#: ../wxui/clone.py:326
+#: ../wxui/clone.py:335
 msgid "Vendor"
 msgstr "Tedarikçi"
 
@@ -3199,14 +3214,14 @@ msgstr ""
 "önlemek için açabileceğiniz konu sayısını sınırlar. Gerçekten başka bir konu "
 "açmanız gerekiyorsa, lütfen bunu web sitesi üzerinden yapın."
 
-#: ../wxui/clone.py:487
+#: ../wxui/clone.py:495
 msgid ""
 "Your Prolific-based USB device will not work without reverting to an older "
 "version of the driver. Visit the CHIRP website to read more about how to "
 "resolve this?"
 msgstr ""
 
-#: ../wxui/clone.py:474
+#: ../wxui/clone.py:482
 msgid "Your cable appears to be on port:"
 msgstr "Kablonuz şu bağlantı noktasında görünüyor:"
 
