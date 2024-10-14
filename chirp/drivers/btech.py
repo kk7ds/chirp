@@ -235,6 +235,7 @@ KT8900_fp4 = b"M2G304"
 KT8900_fp5 = b"M2G314"
 KT8900_fp6 = b"M2G424"
 KT8900_fp7 = b"M27184"
+KT8900_fp8 = b"M2C194"
 
 # KT8900R
 KT8900R_fp = b"M3G1F4"
@@ -3585,7 +3586,8 @@ class KT9800(BTech):
                KT8900_fp4,
                KT8900_fp5,
                KT8900_fp6,
-               KT8900_fp7]
+               KT8900_fp7,
+               KT8900_fp8]
     # Clones
     ALIASES = [JT6188Mini, SSGT890, ZastoneMP300]
 
