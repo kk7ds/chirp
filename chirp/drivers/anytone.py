@@ -234,6 +234,11 @@ valid_model = [b'QX588UV', b'HR-2040', b'DB-50M\x00', b'DB-750X']
 
 
 def _ident(radio):
+    # Chew garbage
+    try:
+        radio.pipe.read(32)
+    except Exception:
+        raise errors.RadioError("Unable to flush serial connection")
     radio.pipe.timeout = 1
     _echo_write(radio, b"PROGRAM")
     response = radio.pipe.read(3)
