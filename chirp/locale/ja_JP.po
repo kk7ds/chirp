@@ -709,6 +709,10 @@ msgstr ""
 msgid "All supported formats|"
 msgstr ""
 
+#: ../wxui/clone.py:574
+msgid "Always start with recent list"
+msgstr ""
+
 #: ../wxui/query_sources.py:284 ../wxui/query_sources.py:359
 msgid "Amateur"
 msgstr ""
@@ -810,7 +814,7 @@ msgstr ""
 msgid "Choose Cross Mode"
 msgstr ""
 
-#: ../wxui/clone.py:569
+#: ../wxui/clone.py:570
 msgid "Choose a recent model"
 msgstr ""
 
@@ -916,7 +920,7 @@ msgstr "国"
 msgid "Cross Mode"
 msgstr "トーンモード"
 
-#: ../wxui/clone.py:530
+#: ../wxui/clone.py:531
 msgid "Custom Port"
 msgstr "ポートを手動で設定"
 
@@ -1022,7 +1026,7 @@ msgstr "無線機からダウンロード"
 msgid "Download from radio..."
 msgstr "無線機からダウンロード..."
 
-#: ../wxui/clone.py:685
+#: ../wxui/clone.py:697
 msgid "Download instructions"
 msgstr "ダウンロード手順"
 
@@ -1081,7 +1085,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:529
+#: ../wxui/clone.py:530
 msgid "Enter custom port:"
 msgstr "ポートを入力:"
 
@@ -1121,7 +1125,7 @@ msgstr ""
 msgid "Error applying settings"
 msgstr ""
 
-#: ../wxui/clone.py:606
+#: ../wxui/clone.py:612
 msgid "Error communicating with radio"
 msgstr "無線機との通信エラー"
 
@@ -1129,7 +1133,7 @@ msgstr "無線機との通信エラー"
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:639
+#: ../wxui/clone.py:651
 msgid "Experimental driver"
 msgstr "実験的ドライバー"
 
@@ -1518,7 +1522,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:707
+#: ../wxui/clone.py:719
 msgid "Internal driver error"
 msgstr "内部ドライバーエラー"
 
@@ -1960,7 +1964,7 @@ msgstr "無線機"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:677 ../wxui/clone.py:781
+#: ../wxui/clone.py:689 ../wxui/clone.py:793
 msgid "Radio information"
 msgstr ""
 
@@ -1995,7 +1999,7 @@ msgstr ""
 msgid "Receive frequency"
 msgstr "周波数を入力"
 
-#: ../wxui/clone.py:570
+#: ../wxui/clone.py:571
 #, fuzzy
 msgid "Recent"
 msgstr "最近使ったファイル"
@@ -2543,7 +2547,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr ""
 
-#: ../wxui/clone.py:796
+#: ../wxui/clone.py:808
 msgid "Upload instructions"
 msgstr "アップロード手順"
 

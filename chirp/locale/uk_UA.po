@@ -696,6 +696,10 @@ msgstr "CSV-файли"
 msgid "All supported formats|"
 msgstr ""
 
+#: ../wxui/clone.py:574
+msgid "Always start with recent list"
+msgstr ""
+
 #: ../wxui/query_sources.py:284 ../wxui/query_sources.py:359
 msgid "Amateur"
 msgstr ""
@@ -797,7 +801,7 @@ msgstr ""
 msgid "Choose Cross Mode"
 msgstr "Кросрежим"
 
-#: ../wxui/clone.py:569
+#: ../wxui/clone.py:570
 #, fuzzy
 msgid "Choose a recent model"
 msgstr "Кросрежим"
@@ -908,7 +912,7 @@ msgstr ""
 msgid "Cross Mode"
 msgstr "Кросрежим"
 
-#: ../wxui/clone.py:530
+#: ../wxui/clone.py:531
 msgid "Custom Port"
 msgstr ""
 
@@ -1024,7 +1028,7 @@ msgstr "Скопіювати з радіостанції"
 msgid "Download from radio..."
 msgstr "Скопіювати з радіостанції"
 
-#: ../wxui/clone.py:685
+#: ../wxui/clone.py:697
 #, fuzzy
 msgid "Download instructions"
 msgstr "Скопіювати з радіостанції"
@@ -1085,7 +1089,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:529
+#: ../wxui/clone.py:530
 msgid "Enter custom port:"
 msgstr ""
 
@@ -1126,7 +1130,7 @@ msgstr "Стирання пам'яті {loc}"
 msgid "Error applying settings"
 msgstr "Помилка настройки пам'яті"
 
-#: ../wxui/clone.py:606
+#: ../wxui/clone.py:612
 msgid "Error communicating with radio"
 msgstr ""
 
@@ -1134,7 +1138,7 @@ msgstr ""
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:639
+#: ../wxui/clone.py:651
 msgid "Experimental driver"
 msgstr ""
 
@@ -1532,7 +1536,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:707
+#: ../wxui/clone.py:719
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Внутрішня помилка"
@@ -1994,7 +1998,7 @@ msgstr "Радіостанція"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:677 ../wxui/clone.py:781
+#: ../wxui/clone.py:689 ../wxui/clone.py:793
 #, fuzzy
 msgid "Radio information"
 msgstr "Отримання інформації банку"
@@ -2030,7 +2034,7 @@ msgstr ""
 msgid "Receive frequency"
 msgstr "Частота"
 
-#: ../wxui/clone.py:570
+#: ../wxui/clone.py:571
 #, fuzzy
 msgid "Recent"
 msgstr "Ос_танні"
@@ -2573,7 +2577,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "Оновлення списку URCALL"
 
-#: ../wxui/clone.py:796
+#: ../wxui/clone.py:808
 msgid "Upload instructions"
 msgstr ""
 

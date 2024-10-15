@@ -714,6 +714,10 @@ msgstr "Wszystkie pliki"
 msgid "All supported formats|"
 msgstr "Wszystkie wspierane formaty|"
 
+#: ../wxui/clone.py:574
+msgid "Always start with recent list"
+msgstr ""
+
 #: ../wxui/query_sources.py:284 ../wxui/query_sources.py:359
 msgid "Amateur"
 msgstr "Amatorska"
@@ -822,7 +826,7 @@ msgstr "Wybierz %s ton"
 msgid "Choose Cross Mode"
 msgstr "Wybierz tryb krzyżowy"
 
-#: ../wxui/clone.py:569
+#: ../wxui/clone.py:570
 #, fuzzy
 msgid "Choose a recent model"
 msgstr "Wybierz tryb krzyżowy"
@@ -930,7 +934,7 @@ msgstr "Kraj"
 msgid "Cross Mode"
 msgstr "Tryb krzyżowy"
 
-#: ../wxui/clone.py:530
+#: ../wxui/clone.py:531
 #, fuzzy
 msgid "Custom Port"
 msgstr "Wprowadź port:"
@@ -1043,7 +1047,7 @@ msgstr "Pobierz z radiostacji"
 msgid "Download from radio..."
 msgstr "Pobierz z radiostacji"
 
-#: ../wxui/clone.py:685
+#: ../wxui/clone.py:697
 msgid "Download instructions"
 msgstr "Instrukcje pobierania"
 
@@ -1103,7 +1107,7 @@ msgstr "Wprowadź częstotliwość nadawania (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Wprowadź nową nazwę dla banku %s:"
 
-#: ../wxui/clone.py:529
+#: ../wxui/clone.py:530
 msgid "Enter custom port:"
 msgstr "Wprowadź port:"
 
@@ -1143,7 +1147,7 @@ msgstr "Skasowano pamięć %s"
 msgid "Error applying settings"
 msgstr "Błąd stosowania ustawień"
 
-#: ../wxui/clone.py:606
+#: ../wxui/clone.py:612
 msgid "Error communicating with radio"
 msgstr "Błąd komunikacji z radiostacją"
 
@@ -1151,7 +1155,7 @@ msgstr "Błąd komunikacji z radiostacją"
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:639
+#: ../wxui/clone.py:651
 msgid "Experimental driver"
 msgstr "Sterownik eksperymentalny"
 
@@ -1549,7 +1553,7 @@ msgstr "Utworzyć skrót pulpitu?"
 msgid "Interact with driver"
 msgstr "Interakcja ze sterownikiem"
 
-#: ../wxui/clone.py:707
+#: ../wxui/clone.py:719
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Błąd wewnętrzny"
@@ -2005,7 +2009,7 @@ msgstr "Radiostacja"
 msgid "Radio did not ack block %i"
 msgstr "Radiostacja nie potwierdziła (ack) bloku %i"
 
-#: ../wxui/clone.py:677 ../wxui/clone.py:781
+#: ../wxui/clone.py:689 ../wxui/clone.py:793
 msgid "Radio information"
 msgstr "Informacje o radiostacji"
 
@@ -2043,7 +2047,7 @@ msgstr ""
 msgid "Receive frequency"
 msgstr "Wprowadź częstotliwość"
 
-#: ../wxui/clone.py:570
+#: ../wxui/clone.py:571
 #, fuzzy
 msgid "Recent"
 msgstr "Otwórz ostatnio używany"
@@ -2599,7 +2603,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "Pobieranie listy URCALL"
 
-#: ../wxui/clone.py:796
+#: ../wxui/clone.py:808
 msgid "Upload instructions"
 msgstr "Instrukcje wysyłania"
 
