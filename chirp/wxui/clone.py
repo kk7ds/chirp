@@ -515,6 +515,7 @@ class ChirpCloneDialog(wx.Dialog):
     def disable_model_select(self):
         self._vendor.Disable()
         self._model.Disable()
+        self._recent.Disable()
 
     def disable_running(self):
         self._port.Disable()
@@ -569,12 +570,17 @@ class ChirpCloneDialog(wx.Dialog):
                                   _('Choose a recent model'),
                                   _('Recent'),
                                   recent_strs)
+        box = d.GetSizer()
+        always = wx.CheckBox(d, label=_('Always start with recent list'))
+        always.SetValue(CONF.get_bool('always_start_recent', 'state'))
+        box.Insert(box.GetItemCount() - 1, always, border=10, flag=wx.ALL)
         d.SetSize((300, 300))
         d.Center()
         c = d.ShowModal()
-        if c == wx.ID_OK:
+        if c == wx.ID_OK and recent:
             vendor, model = recent[d.GetSelection()].split(':')
             self.select_vendor_model(vendor, model)
+            CONF.set_bool('always_start_recent', always.GetValue(), 'state')
 
     def _selected_vendor(self, event):
         self._select_vendor(event.GetString())
@@ -628,6 +634,12 @@ class ChirpCloneDialog(wx.Dialog):
 
 
 class ChirpDownloadDialog(ChirpCloneDialog):
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        if (CONF.get_bool('always_start_recent', 'state') and
+                CONF.get('recent_models', 'state')):
+            self._do_recent()
+
     def _selected_model(self, event):
         super(ChirpDownloadDialog, self)._selected_model(event)
         rclass = self.get_selected_rclass()

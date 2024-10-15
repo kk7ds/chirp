@@ -696,6 +696,10 @@ msgstr "Arquivos CSV"
 msgid "All supported formats|"
 msgstr ""
 
+#: ../wxui/clone.py:574
+msgid "Always start with recent list"
+msgstr ""
+
 #: ../wxui/query_sources.py:284 ../wxui/query_sources.py:359
 msgid "Amateur"
 msgstr ""
@@ -797,7 +801,7 @@ msgstr ""
 msgid "Choose Cross Mode"
 msgstr "Modo Cross"
 
-#: ../wxui/clone.py:569
+#: ../wxui/clone.py:570
 #, fuzzy
 msgid "Choose a recent model"
 msgstr "Modo Cross"
@@ -907,7 +911,7 @@ msgstr ""
 msgid "Cross Mode"
 msgstr "Modo Cross"
 
-#: ../wxui/clone.py:530
+#: ../wxui/clone.py:531
 msgid "Custom Port"
 msgstr ""
 
@@ -1020,7 +1024,7 @@ msgstr "Descarregar a partir do Rádio"
 msgid "Download from radio..."
 msgstr "Descarregar a partir do Rádio"
 
-#: ../wxui/clone.py:685
+#: ../wxui/clone.py:697
 #, fuzzy
 msgid "Download instructions"
 msgstr "Descarregar a partir do Rádio"
@@ -1081,7 +1085,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:529
+#: ../wxui/clone.py:530
 msgid "Enter custom port:"
 msgstr ""
 
@@ -1122,7 +1126,7 @@ msgstr "Apagando memória {loc}"
 msgid "Error applying settings"
 msgstr "Erro gravando memória"
 
-#: ../wxui/clone.py:606
+#: ../wxui/clone.py:612
 msgid "Error communicating with radio"
 msgstr ""
 
@@ -1130,7 +1134,7 @@ msgstr ""
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:639
+#: ../wxui/clone.py:651
 msgid "Experimental driver"
 msgstr ""
 
@@ -1528,7 +1532,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:707
+#: ../wxui/clone.py:719
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Erro Interno"
@@ -1987,7 +1991,7 @@ msgstr "Rádio"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:677 ../wxui/clone.py:781
+#: ../wxui/clone.py:689 ../wxui/clone.py:793
 #, fuzzy
 msgid "Radio information"
 msgstr "Recuperando informações do banco"
@@ -2023,7 +2027,7 @@ msgstr ""
 msgid "Receive frequency"
 msgstr "Frequência"
 
-#: ../wxui/clone.py:570
+#: ../wxui/clone.py:571
 #, fuzzy
 msgid "Recent"
 msgstr "_Recente"
@@ -2565,7 +2569,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "Atualizando lista URCALL"
 
-#: ../wxui/clone.py:796
+#: ../wxui/clone.py:808
 msgid "Upload instructions"
 msgstr ""
 

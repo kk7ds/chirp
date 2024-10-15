@@ -1055,6 +1055,10 @@ msgstr "Tüm Dosyalar"
 msgid "All supported formats|"
 msgstr "Desteklenen tüm biçimler|"
 
+#: ../wxui/clone.py:574
+msgid "Always start with recent list"
+msgstr ""
+
 #: ../wxui/query_sources.py:284 ../wxui/query_sources.py:359
 msgid "Amateur"
 msgstr "Amatör"
@@ -1157,7 +1161,7 @@ msgstr "%s Tonunu Seç"
 msgid "Choose Cross Mode"
 msgstr "Çapraz Modu Seç"
 
-#: ../wxui/clone.py:569
+#: ../wxui/clone.py:570
 #, fuzzy
 msgid "Choose a recent model"
 msgstr "Çapraz Modu Seç"
@@ -1273,7 +1277,7 @@ msgstr "Ülke"
 msgid "Cross Mode"
 msgstr "Çapraz Mod"
 
-#: ../wxui/clone.py:530
+#: ../wxui/clone.py:531
 msgid "Custom Port"
 msgstr "Özel Bağlantı Noktası"
 
@@ -1381,7 +1385,7 @@ msgstr "Telsizden indir"
 msgid "Download from radio..."
 msgstr "Telsizden indir..."
 
-#: ../wxui/clone.py:685
+#: ../wxui/clone.py:697
 msgid "Download instructions"
 msgstr "İndirme talimatları"
 
@@ -1442,7 +1446,7 @@ msgstr "TX Frekansını girin (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Banka %s için yeni bir ad girin:"
 
-#: ../wxui/clone.py:529
+#: ../wxui/clone.py:530
 msgid "Enter custom port:"
 msgstr "Özel bağlantı noktasını girin:"
 
@@ -1489,7 +1493,7 @@ msgstr "%s kaydı silindi"
 msgid "Error applying settings"
 msgstr "Ayarlar uygulanırken hata oluştu"
 
-#: ../wxui/clone.py:606
+#: ../wxui/clone.py:612
 msgid "Error communicating with radio"
 msgstr "Telsizle iletişim hatası"
 
@@ -1497,7 +1501,7 @@ msgstr "Telsizle iletişim hatası"
 msgid "Exclude private and closed repeaters"
 msgstr "Özel ve kapalı röleleri hariç tut"
 
-#: ../wxui/clone.py:639
+#: ../wxui/clone.py:651
 msgid "Experimental driver"
 msgstr "Deneysel sürücü"
 
@@ -1978,7 +1982,7 @@ msgstr "Masaüstü simgesi yüklensin mi?"
 msgid "Interact with driver"
 msgstr "Sürücü ile etkileşim"
 
-#: ../wxui/clone.py:707
+#: ../wxui/clone.py:719
 msgid "Internal driver error"
 msgstr "Dahili sürücü hatası"
 
@@ -2456,7 +2460,7 @@ msgstr "Telsiz"
 msgid "Radio did not ack block %i"
 msgstr "Telsiz %i bloğunu onaylamadı"
 
-#: ../wxui/clone.py:677 ../wxui/clone.py:781
+#: ../wxui/clone.py:689 ../wxui/clone.py:793
 msgid "Radio information"
 msgstr "Telsiz bilgisi"
 
@@ -2497,7 +2501,7 @@ msgstr "DTCS kodu al"
 msgid "Receive frequency"
 msgstr "Alım frekansı"
 
-#: ../wxui/clone.py:570
+#: ../wxui/clone.py:571
 #, fuzzy
 msgid "Recent"
 msgstr "Son Kullanılanları Aç"
@@ -3113,7 +3117,7 @@ msgstr "Mevcut bir hatayı güncelle"
 msgid "Updating bug %s"
 msgstr "%s hatası güncelleniyor"
 
-#: ../wxui/clone.py:796
+#: ../wxui/clone.py:808
 msgid "Upload instructions"
 msgstr "Yükleme talimatları"
 

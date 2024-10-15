@@ -704,6 +704,10 @@ msgstr "全部文件"
 msgid "All supported formats|"
 msgstr ""
 
+#: ../wxui/clone.py:574
+msgid "Always start with recent list"
+msgstr ""
+
 #: ../wxui/query_sources.py:284 ../wxui/query_sources.py:359
 msgid "Amateur"
 msgstr ""
@@ -803,7 +807,7 @@ msgstr ""
 msgid "Choose Cross Mode"
 msgstr "收发使用不同亚音频"
 
-#: ../wxui/clone.py:569
+#: ../wxui/clone.py:570
 #, fuzzy
 msgid "Choose a recent model"
 msgstr "收发使用不同亚音频"
@@ -909,7 +913,7 @@ msgstr ""
 msgid "Cross Mode"
 msgstr "收发使用不同亚音频"
 
-#: ../wxui/clone.py:530
+#: ../wxui/clone.py:531
 msgid "Custom Port"
 msgstr ""
 
@@ -1017,7 +1021,7 @@ msgstr "从电台下载"
 msgid "Download from radio..."
 msgstr "从电台下载……"
 
-#: ../wxui/clone.py:685
+#: ../wxui/clone.py:697
 msgid "Download instructions"
 msgstr "显示指引"
 
@@ -1077,7 +1081,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:529
+#: ../wxui/clone.py:530
 msgid "Enter custom port:"
 msgstr ""
 
@@ -1117,7 +1121,7 @@ msgstr "正在擦除存储 {loc}"
 msgid "Error applying settings"
 msgstr "设置值有误：%s"
 
-#: ../wxui/clone.py:606
+#: ../wxui/clone.py:612
 msgid "Error communicating with radio"
 msgstr ""
 
@@ -1125,7 +1129,7 @@ msgstr ""
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:639
+#: ../wxui/clone.py:651
 #, fuzzy
 msgid "Experimental driver"
 msgstr "继续使用不稳定的驱动？"
@@ -1549,7 +1553,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:707
+#: ../wxui/clone.py:719
 #, fuzzy
 msgid "Internal driver error"
 msgstr "内部错误"
@@ -1997,7 +2001,7 @@ msgstr "电台"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:677 ../wxui/clone.py:781
+#: ../wxui/clone.py:689 ../wxui/clone.py:793
 msgid "Radio information"
 msgstr "电台信息"
 
@@ -2033,7 +2037,7 @@ msgstr "DTCS 代码"
 msgid "Receive frequency"
 msgstr "频率"
 
-#: ../wxui/clone.py:570
+#: ../wxui/clone.py:571
 msgid "Recent"
 msgstr ""
 
@@ -2571,7 +2575,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "正在更新 URCALL 列表"
 
-#: ../wxui/clone.py:796
+#: ../wxui/clone.py:808
 msgid "Upload instructions"
 msgstr ""
 

@@ -1085,6 +1085,10 @@ msgstr "Tous les fichiers"
 msgid "All supported formats|"
 msgstr "Tous les formats supportés|"
 
+#: ../wxui/clone.py:574
+msgid "Always start with recent list"
+msgstr ""
+
 #: ../wxui/query_sources.py:284 ../wxui/query_sources.py:359
 msgid "Amateur"
 msgstr "Amateur"
@@ -1191,7 +1195,7 @@ msgstr "Choisir tonalité %s"
 msgid "Choose Cross Mode"
 msgstr "Choisir mode cross"
 
-#: ../wxui/clone.py:569
+#: ../wxui/clone.py:570
 #, fuzzy
 msgid "Choose a recent model"
 msgstr "Choisir mode cross"
@@ -1307,7 +1311,7 @@ msgstr "Pays"
 msgid "Cross Mode"
 msgstr "Mode cross"
 
-#: ../wxui/clone.py:530
+#: ../wxui/clone.py:531
 msgid "Custom Port"
 msgstr "Port personnalisé"
 
@@ -1417,7 +1421,7 @@ msgstr "Télécharger depuis la radio"
 msgid "Download from radio..."
 msgstr "Télécharger depuis la radio..."
 
-#: ../wxui/clone.py:685
+#: ../wxui/clone.py:697
 msgid "Download instructions"
 msgstr "Instructions de téléchargement"
 
@@ -1478,7 +1482,7 @@ msgstr "Saisir la fréquence d'émission (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Saisir un nouveau nom pour la banque %s:"
 
-#: ../wxui/clone.py:529
+#: ../wxui/clone.py:530
 msgid "Enter custom port:"
 msgstr "Saisir un port personnalisé:"
 
@@ -1518,7 +1522,7 @@ msgstr "Mémoire %s effacée"
 msgid "Error applying settings"
 msgstr "Erreur lors de l'application des préférences"
 
-#: ../wxui/clone.py:606
+#: ../wxui/clone.py:612
 msgid "Error communicating with radio"
 msgstr "Erreur de communication avec la radio"
 
@@ -1526,7 +1530,7 @@ msgstr "Erreur de communication avec la radio"
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:639
+#: ../wxui/clone.py:651
 msgid "Experimental driver"
 msgstr "Pilote expérimental"
 
@@ -2020,7 +2024,7 @@ msgstr "Installer une icône sur le bureau?"
 msgid "Interact with driver"
 msgstr "Intéragir avec le pilote"
 
-#: ../wxui/clone.py:707
+#: ../wxui/clone.py:719
 msgid "Internal driver error"
 msgstr "Erreur interne du pilote"
 
@@ -2498,7 +2502,7 @@ msgstr "Radio"
 msgid "Radio did not ack block %i"
 msgstr "La radio n'a pas accusé reception du bloc %i"
 
-#: ../wxui/clone.py:677 ../wxui/clone.py:781
+#: ../wxui/clone.py:689 ../wxui/clone.py:793
 msgid "Radio information"
 msgstr "Informations de la radio"
 
@@ -2538,7 +2542,7 @@ msgstr "Recevoir code DTCS"
 msgid "Receive frequency"
 msgstr "Fréquence de réception"
 
-#: ../wxui/clone.py:570
+#: ../wxui/clone.py:571
 #, fuzzy
 msgid "Recent"
 msgstr "Ouvrir récent"
@@ -3155,7 +3159,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "Mise à jour de la liste URCALL"
 
-#: ../wxui/clone.py:796
+#: ../wxui/clone.py:808
 msgid "Upload instructions"
 msgstr "Instruction de téléchargement"
 

@@ -711,6 +711,10 @@ msgstr "Всички файлове"
 msgid "All supported formats|"
 msgstr "Всички поддържани формати|"
 
+#: ../wxui/clone.py:574
+msgid "Always start with recent list"
+msgstr ""
+
 #: ../wxui/query_sources.py:284 ../wxui/query_sources.py:359
 msgid "Amateur"
 msgstr "Любителски"
@@ -812,7 +816,7 @@ msgstr "Изберете тон за %s"
 msgid "Choose Cross Mode"
 msgstr "Изберете режим на прекръстосване"
 
-#: ../wxui/clone.py:569
+#: ../wxui/clone.py:570
 #, fuzzy
 msgid "Choose a recent model"
 msgstr "Изберете режим на прекръстосване"
@@ -922,7 +926,7 @@ msgstr "Държава"
 msgid "Cross Mode"
 msgstr "Режим на прекръстосване"
 
-#: ../wxui/clone.py:530
+#: ../wxui/clone.py:531
 msgid "Custom Port"
 msgstr "Порт по избор"
 
@@ -1027,7 +1031,7 @@ msgstr "Изтегляне от станция"
 msgid "Download from radio..."
 msgstr "Изтегляне от станция…"
 
-#: ../wxui/clone.py:685
+#: ../wxui/clone.py:697
 msgid "Download instructions"
 msgstr "Инструкции за изтегляне"
 
@@ -1088,7 +1092,7 @@ msgstr "Въведете честота на предаване (МХц)"
 msgid "Enter a new name for bank %s:"
 msgstr "Въведете ново име за банка %s:"
 
-#: ../wxui/clone.py:529
+#: ../wxui/clone.py:530
 msgid "Enter custom port:"
 msgstr "Въведете порт по избор:"
 
@@ -1128,7 +1132,7 @@ msgstr "Премахнат е запис № %s"
 msgid "Error applying settings"
 msgstr "Грешка при прилагане на настройкит"
 
-#: ../wxui/clone.py:606
+#: ../wxui/clone.py:612
 msgid "Error communicating with radio"
 msgstr "Грешка при връзката със станцията"
 
@@ -1136,7 +1140,7 @@ msgstr "Грешка при връзката със станцията"
 msgid "Exclude private and closed repeaters"
 msgstr "Изключване на частните и затворени ретранслатори"
 
-#: ../wxui/clone.py:639
+#: ../wxui/clone.py:651
 msgid "Experimental driver"
 msgstr "Изпитателен управляващ софтуер"
 
@@ -1547,7 +1551,7 @@ msgstr "Добавяне на пикограма към работния пло�
 msgid "Interact with driver"
 msgstr "Взаимодействие с управляващия софтуер"
 
-#: ../wxui/clone.py:707
+#: ../wxui/clone.py:719
 msgid "Internal driver error"
 msgstr "Вътрешна грешка на управляващия софтуер"
 
@@ -2007,7 +2011,7 @@ msgstr "Станция"
 msgid "Radio did not ack block %i"
 msgstr "Станцията не е приела блок %i"
 
-#: ../wxui/clone.py:677 ../wxui/clone.py:781
+#: ../wxui/clone.py:689 ../wxui/clone.py:793
 msgid "Radio information"
 msgstr "Сведения за станцията"
 
@@ -2047,7 +2051,7 @@ msgstr "Код на DTCS на приемане"
 msgid "Receive frequency"
 msgstr "Честота на приемане"
 
-#: ../wxui/clone.py:570
+#: ../wxui/clone.py:571
 #, fuzzy
 msgid "Recent"
 msgstr "Отваряне на предишни"
@@ -2611,7 +2615,7 @@ msgstr "Промяна на съществуващ дефект"
 msgid "Updating bug %s"
 msgstr "Промяна на дефект %s"
 
-#: ../wxui/clone.py:796
+#: ../wxui/clone.py:808
 msgid "Upload instructions"
 msgstr "Инструкции за изпращане"
 
