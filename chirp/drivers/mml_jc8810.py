@@ -1446,7 +1446,7 @@ class A36plusRadio(JC8810base):
 
     # ==========
     # Notice to developers:
-    # The A36plus support in this driver is currently based upon v1.22
+    # The A36plus support in this driver is currently based upon v1.26
     # firmware.
     # ==========
 
@@ -1465,6 +1465,7 @@ class A36plusRadio(JC8810base):
                     b"\x00\x00\x00\x5A\x00\x20\x08\x05",  # fw 1.18
                     b"\x00\x00\x00\x9E\x00\x20\x0C\x05",  # fw 1.22
                     b"\x00\x00\x00\xFA\x00\x20\x40\x05",  # fw 1.4
+                    b"\x00\x00\x00\x9C\x00\x20\x04\x05",  # fw 1.26
                     ]
 
     _ranges = [
