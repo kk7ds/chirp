@@ -1331,3 +1331,16 @@ class P2(THUV88Radio):
 class P62(P2):
     VENDOR = "Retevis"
     MODEL = "P62"
+
+
+@directory.register
+class THUV98Radio(THUV88Radio):
+    """TYT UV98 Radio"""
+    VENDOR = "TYT"
+    MODEL = "TH-UV98"
+
+    _magic0 = b"\xFE\xFE\xEE\xEF\xE0" + b"UV98" + b"\xFD"
+    _magic2 = b"\xFE\xFE\xEE\xEF\xE2" + b"UV98" + b"\xFD"
+    _magic3 = b"\xFE\xFE\xEE\xEF\xE3" + b"UV98" + b"\xFD"
+    _magic5 = b"\xFE\xFE\xEE\xEF\xE5" + b"UV98" + b"\xFD"
+    _fingerprint = b"\xFE\xFE\xEF\xEE\xE1" + b"UV98"
