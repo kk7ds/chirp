@@ -704,7 +704,7 @@ msgstr "全部文件"
 msgid "All supported formats|"
 msgstr ""
 
-#: ../wxui/clone.py:574
+#: ../wxui/clone.py:589
 msgid "Always start with recent list"
 msgstr ""
 
@@ -1021,7 +1021,7 @@ msgstr "从电台下载"
 msgid "Download from radio..."
 msgstr "从电台下载……"
 
-#: ../wxui/clone.py:697
+#: ../wxui/clone.py:717
 msgid "Download instructions"
 msgstr "显示指引"
 
@@ -1121,7 +1121,7 @@ msgstr "正在擦除存储 {loc}"
 msgid "Error applying settings"
 msgstr "设置值有误：%s"
 
-#: ../wxui/clone.py:612
+#: ../wxui/clone.py:632
 msgid "Error communicating with radio"
 msgstr ""
 
@@ -1129,7 +1129,7 @@ msgstr ""
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:651
+#: ../wxui/clone.py:671
 #, fuzzy
 msgid "Experimental driver"
 msgstr "继续使用不稳定的驱动？"
@@ -1553,7 +1553,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:719
+#: ../wxui/clone.py:739
 #, fuzzy
 msgid "Internal driver error"
 msgstr "内部错误"
@@ -2001,7 +2001,7 @@ msgstr "电台"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:689 ../wxui/clone.py:793
+#: ../wxui/clone.py:709 ../wxui/clone.py:813
 msgid "Radio information"
 msgstr "电台信息"
 
@@ -2066,6 +2066,14 @@ msgstr "重新加载驱动程序"
 #: ../wxui/main.py:904
 msgid "Reload Driver and File"
 msgstr "重新加载驱动程序和文件"
+
+#: ../wxui/clone.py:591
+msgid "Remove"
+msgstr ""
+
+#: ../wxui/clone.py:592
+msgid "Remove selected model from list"
+msgstr ""
 
 #: ../wxui/bankedit.py:205
 msgid "Rename bank"
@@ -2575,7 +2583,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "正在更新 URCALL 列表"
 
-#: ../wxui/clone.py:808
+#: ../wxui/clone.py:828
 msgid "Upload instructions"
 msgstr ""
 

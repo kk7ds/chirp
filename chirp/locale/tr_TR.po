@@ -1055,7 +1055,7 @@ msgstr "Tüm Dosyalar"
 msgid "All supported formats|"
 msgstr "Desteklenen tüm biçimler|"
 
-#: ../wxui/clone.py:574
+#: ../wxui/clone.py:589
 msgid "Always start with recent list"
 msgstr ""
 
@@ -1385,7 +1385,7 @@ msgstr "Telsizden indir"
 msgid "Download from radio..."
 msgstr "Telsizden indir..."
 
-#: ../wxui/clone.py:697
+#: ../wxui/clone.py:717
 msgid "Download instructions"
 msgstr "İndirme talimatları"
 
@@ -1493,7 +1493,7 @@ msgstr "%s kaydı silindi"
 msgid "Error applying settings"
 msgstr "Ayarlar uygulanırken hata oluştu"
 
-#: ../wxui/clone.py:612
+#: ../wxui/clone.py:632
 msgid "Error communicating with radio"
 msgstr "Telsizle iletişim hatası"
 
@@ -1501,7 +1501,7 @@ msgstr "Telsizle iletişim hatası"
 msgid "Exclude private and closed repeaters"
 msgstr "Özel ve kapalı röleleri hariç tut"
 
-#: ../wxui/clone.py:651
+#: ../wxui/clone.py:671
 msgid "Experimental driver"
 msgstr "Deneysel sürücü"
 
@@ -1982,7 +1982,7 @@ msgstr "Masaüstü simgesi yüklensin mi?"
 msgid "Interact with driver"
 msgstr "Sürücü ile etkileşim"
 
-#: ../wxui/clone.py:719
+#: ../wxui/clone.py:739
 msgid "Internal driver error"
 msgstr "Dahili sürücü hatası"
 
@@ -2460,7 +2460,7 @@ msgstr "Telsiz"
 msgid "Radio did not ack block %i"
 msgstr "Telsiz %i bloğunu onaylamadı"
 
-#: ../wxui/clone.py:689 ../wxui/clone.py:793
+#: ../wxui/clone.py:709 ../wxui/clone.py:813
 msgid "Radio information"
 msgstr "Telsiz bilgisi"
 
@@ -2531,6 +2531,14 @@ msgstr "Sürücüyü Yeniden Yükle"
 #: ../wxui/main.py:904
 msgid "Reload Driver and File"
 msgstr "Sürücüyü ve Dosyayı Yeniden Yükle"
+
+#: ../wxui/clone.py:591
+msgid "Remove"
+msgstr ""
+
+#: ../wxui/clone.py:592
+msgid "Remove selected model from list"
+msgstr ""
 
 #: ../wxui/bankedit.py:205
 msgid "Rename bank"
@@ -3117,7 +3125,7 @@ msgstr "Mevcut bir hatayı güncelle"
 msgid "Updating bug %s"
 msgstr "%s hatası güncelleniyor"
 
-#: ../wxui/clone.py:808
+#: ../wxui/clone.py:828
 msgid "Upload instructions"
 msgstr "Yükleme talimatları"
 

@@ -1055,7 +1055,7 @@ msgstr "Все файлы"
 msgid "All supported formats|"
 msgstr "Все поддерживаемые форматы|"
 
-#: ../wxui/clone.py:574
+#: ../wxui/clone.py:589
 msgid "Always start with recent list"
 msgstr ""
 
@@ -1393,7 +1393,7 @@ msgstr "Загрузить из станции"
 msgid "Download from radio..."
 msgstr "Загрузить из станции..."
 
-#: ../wxui/clone.py:697
+#: ../wxui/clone.py:717
 msgid "Download instructions"
 msgstr "Инструкции по загрузке"
 
@@ -1493,7 +1493,7 @@ msgstr "Стёрта ячейка памяти %s"
 msgid "Error applying settings"
 msgstr "Ошибка применения параметров"
 
-#: ../wxui/clone.py:612
+#: ../wxui/clone.py:632
 msgid "Error communicating with radio"
 msgstr "Ошибка обмена данными со станцией"
 
@@ -1501,7 +1501,7 @@ msgstr "Ошибка обмена данными со станцией"
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:651
+#: ../wxui/clone.py:671
 msgid "Experimental driver"
 msgstr "Экспериментальный драйвер"
 
@@ -1994,7 +1994,7 @@ msgstr "Создать значок на рабочем столе?"
 msgid "Interact with driver"
 msgstr "Обмен данными с драйвером"
 
-#: ../wxui/clone.py:719
+#: ../wxui/clone.py:739
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Ошибка"
@@ -2471,7 +2471,7 @@ msgstr "Станция"
 msgid "Radio did not ack block %i"
 msgstr "Станция не распознала блок %i"
 
-#: ../wxui/clone.py:689 ../wxui/clone.py:793
+#: ../wxui/clone.py:709 ../wxui/clone.py:813
 msgid "Radio information"
 msgstr "Информация о станции"
 
@@ -2539,6 +2539,14 @@ msgstr "Перезагрузить драйвер"
 #: ../wxui/main.py:904
 msgid "Reload Driver and File"
 msgstr "Перезагрузить драйвер и файл"
+
+#: ../wxui/clone.py:591
+msgid "Remove"
+msgstr ""
+
+#: ../wxui/clone.py:592
+msgid "Remove selected model from list"
+msgstr ""
 
 #: ../wxui/bankedit.py:205
 msgid "Rename bank"
@@ -3094,7 +3102,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "Обновление URCALL"
 
-#: ../wxui/clone.py:808
+#: ../wxui/clone.py:828
 msgid "Upload instructions"
 msgstr "Отправка инструкций"
 

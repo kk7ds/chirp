@@ -1091,7 +1091,7 @@ msgstr "Tutti i file"
 msgid "All supported formats|"
 msgstr "Tutti i formati supportati|"
 
-#: ../wxui/clone.py:574
+#: ../wxui/clone.py:589
 msgid "Always start with recent list"
 msgstr ""
 
@@ -1424,7 +1424,7 @@ msgstr "Scarica dalla radio"
 msgid "Download from radio..."
 msgstr "Scarica dalla radio..."
 
-#: ../wxui/clone.py:697
+#: ../wxui/clone.py:717
 msgid "Download instructions"
 msgstr "Istruzioni per il download"
 
@@ -1534,7 +1534,7 @@ msgstr "Memoria %s eliminata"
 msgid "Error applying settings"
 msgstr "Si è verificato un errore durante l'applicazione delle impostazioni"
 
-#: ../wxui/clone.py:612
+#: ../wxui/clone.py:632
 msgid "Error communicating with radio"
 msgstr "Errore durante la comunicazione con la radio"
 
@@ -1542,7 +1542,7 @@ msgstr "Errore durante la comunicazione con la radio"
 msgid "Exclude private and closed repeaters"
 msgstr "Escludi ripetitori privati e chiusi"
 
-#: ../wxui/clone.py:651
+#: ../wxui/clone.py:671
 msgid "Experimental driver"
 msgstr "Driver sperimentale"
 
@@ -2031,7 +2031,7 @@ msgstr "Installare l'icona sul desktop?"
 msgid "Interact with driver"
 msgstr "Interagisci con il driver"
 
-#: ../wxui/clone.py:719
+#: ../wxui/clone.py:739
 msgid "Internal driver error"
 msgstr "Errore interno del driver"
 
@@ -2512,7 +2512,7 @@ msgstr "Radio"
 msgid "Radio did not ack block %i"
 msgstr "La radio non ha accettato il blocco %i"
 
-#: ../wxui/clone.py:689 ../wxui/clone.py:793
+#: ../wxui/clone.py:709 ../wxui/clone.py:813
 msgid "Radio information"
 msgstr "Informazioni sulla radio"
 
@@ -2584,6 +2584,14 @@ msgstr "Ricarica il driver"
 #: ../wxui/main.py:904
 msgid "Reload Driver and File"
 msgstr "Ricarica il driver e il file"
+
+#: ../wxui/clone.py:591
+msgid "Remove"
+msgstr ""
+
+#: ../wxui/clone.py:592
+msgid "Remove selected model from list"
+msgstr ""
 
 #: ../wxui/bankedit.py:205
 msgid "Rename bank"
@@ -3185,7 +3193,7 @@ msgstr "Aggiorna un bug esistente"
 msgid "Updating bug %s"
 msgstr "Aggiornamento del bug %s"
 
-#: ../wxui/clone.py:808
+#: ../wxui/clone.py:828
 msgid "Upload instructions"
 msgstr "Istruzioni per il caricamento"
 

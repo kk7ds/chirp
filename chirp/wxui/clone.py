@@ -571,10 +571,32 @@ class ChirpCloneDialog(wx.Dialog):
                                   _('Recent'),
                                   recent_strs)
         box = d.GetSizer()
-        always = wx.CheckBox(d, label=_('Always start with recent list'))
+        panel = wx.Panel(d)
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+        panel.SetSizer(hbox)
+        box.Insert(box.GetItemCount() - 1, panel)
+
+        def remove_selected(event):
+            listbox = [x for x in d.GetChildren()
+                       if isinstance(x, wx.ListBox)][0]
+            idx = listbox.GetSelection()
+            listbox.Delete(idx)
+            del recent_strs[idx]
+            del recent[idx]
+            CONF.set('recent_models', ';'.join(recent), 'state')
+            listbox.SetSelection(max(0, idx - 1))
+
+        always = wx.CheckBox(panel, label=_('Always start with recent list'))
         always.SetValue(CONF.get_bool('always_start_recent', 'state'))
-        box.Insert(box.GetItemCount() - 1, always, border=10, flag=wx.ALL)
+        remove = wx.Button(panel, label=_('Remove'))
+        remove.SetToolTip(_('Remove selected model from list'))
+        remove.Bind(wx.EVT_BUTTON, remove_selected)
+        hbox.Add(always, border=10, flag=wx.ALL | wx.EXPAND)
+        hbox.Add(remove, border=10, flag=wx.ALL)
+
         d.SetSize((300, 300))
+        d.SetMaxSize((300, 300))
+        d.SetMinSize((300, 300))
         d.Center()
         c = d.ShowModal()
         if c == wx.ID_OK and recent:

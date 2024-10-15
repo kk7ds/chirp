@@ -709,7 +709,7 @@ msgstr ""
 msgid "All supported formats|"
 msgstr ""
 
-#: ../wxui/clone.py:574
+#: ../wxui/clone.py:589
 msgid "Always start with recent list"
 msgstr ""
 
@@ -1026,7 +1026,7 @@ msgstr "無線機からダウンロード"
 msgid "Download from radio..."
 msgstr "無線機からダウンロード..."
 
-#: ../wxui/clone.py:697
+#: ../wxui/clone.py:717
 msgid "Download instructions"
 msgstr "ダウンロード手順"
 
@@ -1125,7 +1125,7 @@ msgstr ""
 msgid "Error applying settings"
 msgstr ""
 
-#: ../wxui/clone.py:612
+#: ../wxui/clone.py:632
 msgid "Error communicating with radio"
 msgstr "無線機との通信エラー"
 
@@ -1133,7 +1133,7 @@ msgstr "無線機との通信エラー"
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:651
+#: ../wxui/clone.py:671
 msgid "Experimental driver"
 msgstr "実験的ドライバー"
 
@@ -1522,7 +1522,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:719
+#: ../wxui/clone.py:739
 msgid "Internal driver error"
 msgstr "内部ドライバーエラー"
 
@@ -1964,7 +1964,7 @@ msgstr "無線機"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:689 ../wxui/clone.py:793
+#: ../wxui/clone.py:709 ../wxui/clone.py:813
 msgid "Radio information"
 msgstr ""
 
@@ -2028,6 +2028,14 @@ msgstr ""
 
 #: ../wxui/main.py:904
 msgid "Reload Driver and File"
+msgstr ""
+
+#: ../wxui/clone.py:591
+msgid "Remove"
+msgstr ""
+
+#: ../wxui/clone.py:592
+msgid "Remove selected model from list"
 msgstr ""
 
 #: ../wxui/bankedit.py:205
@@ -2547,7 +2555,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr ""
 
-#: ../wxui/clone.py:808
+#: ../wxui/clone.py:828
 msgid "Upload instructions"
 msgstr "アップロード手順"
 

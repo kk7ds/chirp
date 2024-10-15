@@ -1085,7 +1085,7 @@ msgstr "Tous les fichiers"
 msgid "All supported formats|"
 msgstr "Tous les formats supportés|"
 
-#: ../wxui/clone.py:574
+#: ../wxui/clone.py:589
 msgid "Always start with recent list"
 msgstr ""
 
@@ -1421,7 +1421,7 @@ msgstr "Télécharger depuis la radio"
 msgid "Download from radio..."
 msgstr "Télécharger depuis la radio..."
 
-#: ../wxui/clone.py:697
+#: ../wxui/clone.py:717
 msgid "Download instructions"
 msgstr "Instructions de téléchargement"
 
@@ -1522,7 +1522,7 @@ msgstr "Mémoire %s effacée"
 msgid "Error applying settings"
 msgstr "Erreur lors de l'application des préférences"
 
-#: ../wxui/clone.py:612
+#: ../wxui/clone.py:632
 msgid "Error communicating with radio"
 msgstr "Erreur de communication avec la radio"
 
@@ -1530,7 +1530,7 @@ msgstr "Erreur de communication avec la radio"
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:651
+#: ../wxui/clone.py:671
 msgid "Experimental driver"
 msgstr "Pilote expérimental"
 
@@ -2024,7 +2024,7 @@ msgstr "Installer une icône sur le bureau?"
 msgid "Interact with driver"
 msgstr "Intéragir avec le pilote"
 
-#: ../wxui/clone.py:719
+#: ../wxui/clone.py:739
 msgid "Internal driver error"
 msgstr "Erreur interne du pilote"
 
@@ -2502,7 +2502,7 @@ msgstr "Radio"
 msgid "Radio did not ack block %i"
 msgstr "La radio n'a pas accusé reception du bloc %i"
 
-#: ../wxui/clone.py:689 ../wxui/clone.py:793
+#: ../wxui/clone.py:709 ../wxui/clone.py:813
 msgid "Radio information"
 msgstr "Informations de la radio"
 
@@ -2572,6 +2572,14 @@ msgstr "Recharger pilote"
 #: ../wxui/main.py:904
 msgid "Reload Driver and File"
 msgstr "Recharger pilote et fichier"
+
+#: ../wxui/clone.py:591
+msgid "Remove"
+msgstr ""
+
+#: ../wxui/clone.py:592
+msgid "Remove selected model from list"
+msgstr ""
 
 #: ../wxui/bankedit.py:205
 msgid "Rename bank"
@@ -3159,7 +3167,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "Mise à jour de la liste URCALL"
 
-#: ../wxui/clone.py:808
+#: ../wxui/clone.py:828
 msgid "Upload instructions"
 msgstr "Instruction de téléchargement"
 

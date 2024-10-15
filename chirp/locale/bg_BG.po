@@ -711,7 +711,7 @@ msgstr "Всички файлове"
 msgid "All supported formats|"
 msgstr "Всички поддържани формати|"
 
-#: ../wxui/clone.py:574
+#: ../wxui/clone.py:589
 msgid "Always start with recent list"
 msgstr ""
 
@@ -1031,7 +1031,7 @@ msgstr "Изтегляне от станция"
 msgid "Download from radio..."
 msgstr "Изтегляне от станция…"
 
-#: ../wxui/clone.py:697
+#: ../wxui/clone.py:717
 msgid "Download instructions"
 msgstr "Инструкции за изтегляне"
 
@@ -1132,7 +1132,7 @@ msgstr "Премахнат е запис № %s"
 msgid "Error applying settings"
 msgstr "Грешка при прилагане на настройкит"
 
-#: ../wxui/clone.py:612
+#: ../wxui/clone.py:632
 msgid "Error communicating with radio"
 msgstr "Грешка при връзката със станцията"
 
@@ -1140,7 +1140,7 @@ msgstr "Грешка при връзката със станцията"
 msgid "Exclude private and closed repeaters"
 msgstr "Изключване на частните и затворени ретранслатори"
 
-#: ../wxui/clone.py:651
+#: ../wxui/clone.py:671
 msgid "Experimental driver"
 msgstr "Изпитателен управляващ софтуер"
 
@@ -1551,7 +1551,7 @@ msgstr "Добавяне на пикограма към работния пло�
 msgid "Interact with driver"
 msgstr "Взаимодействие с управляващия софтуер"
 
-#: ../wxui/clone.py:719
+#: ../wxui/clone.py:739
 msgid "Internal driver error"
 msgstr "Вътрешна грешка на управляващия софтуер"
 
@@ -2011,7 +2011,7 @@ msgstr "Станция"
 msgid "Radio did not ack block %i"
 msgstr "Станцията не е приела блок %i"
 
-#: ../wxui/clone.py:689 ../wxui/clone.py:793
+#: ../wxui/clone.py:709 ../wxui/clone.py:813
 msgid "Radio information"
 msgstr "Сведения за станцията"
 
@@ -2081,6 +2081,14 @@ msgstr "Презареждане на управляващия софтуер"
 #: ../wxui/main.py:904
 msgid "Reload Driver and File"
 msgstr "Презареждане на управляващия софтуер и файлове"
+
+#: ../wxui/clone.py:591
+msgid "Remove"
+msgstr ""
+
+#: ../wxui/clone.py:592
+msgid "Remove selected model from list"
+msgstr ""
 
 #: ../wxui/bankedit.py:205
 msgid "Rename bank"
@@ -2615,7 +2623,7 @@ msgstr "Промяна на съществуващ дефект"
 msgid "Updating bug %s"
 msgstr "Промяна на дефект %s"
 
-#: ../wxui/clone.py:808
+#: ../wxui/clone.py:828
 msgid "Upload instructions"
 msgstr "Инструкции за изпращане"
 
