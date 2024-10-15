@@ -1082,7 +1082,7 @@ msgstr "Todos los archivos"
 msgid "All supported formats|"
 msgstr "Todos los formatos soportados|"
 
-#: ../wxui/clone.py:574
+#: ../wxui/clone.py:589
 msgid "Always start with recent list"
 msgstr ""
 
@@ -1415,7 +1415,7 @@ msgstr "Descargar desde radio"
 msgid "Download from radio..."
 msgstr "Descargar desde radio..."
 
-#: ../wxui/clone.py:697
+#: ../wxui/clone.py:717
 msgid "Download instructions"
 msgstr "Descargar instrucciones"
 
@@ -1524,7 +1524,7 @@ msgstr "Memoria borrada %s"
 msgid "Error applying settings"
 msgstr "Error aplicando ajustes"
 
-#: ../wxui/clone.py:612
+#: ../wxui/clone.py:632
 msgid "Error communicating with radio"
 msgstr "Error comunicándose con la radio"
 
@@ -1532,7 +1532,7 @@ msgstr "Error comunicándose con la radio"
 msgid "Exclude private and closed repeaters"
 msgstr "Excluir repetidores privados y cerrados"
 
-#: ../wxui/clone.py:651
+#: ../wxui/clone.py:671
 msgid "Experimental driver"
 msgstr "Controlador experimental"
 
@@ -2020,7 +2020,7 @@ msgstr "¿Instalar icono de escritorio?"
 msgid "Interact with driver"
 msgstr "Interactuar con controlador"
 
-#: ../wxui/clone.py:719
+#: ../wxui/clone.py:739
 msgid "Internal driver error"
 msgstr "Error interno del controlador"
 
@@ -2501,7 +2501,7 @@ msgstr "Radio"
 msgid "Radio did not ack block %i"
 msgstr "La radio no reconoció el bloque %i"
 
-#: ../wxui/clone.py:689 ../wxui/clone.py:793
+#: ../wxui/clone.py:709 ../wxui/clone.py:813
 msgid "Radio information"
 msgstr "Información de radio"
 
@@ -2573,6 +2573,14 @@ msgstr "Recargar controlador"
 #: ../wxui/main.py:904
 msgid "Reload Driver and File"
 msgstr "Recargar controlador y archivo"
+
+#: ../wxui/clone.py:591
+msgid "Remove"
+msgstr ""
+
+#: ../wxui/clone.py:592
+msgid "Remove selected model from list"
+msgstr ""
 
 #: ../wxui/bankedit.py:205
 msgid "Rename bank"
@@ -3172,7 +3180,7 @@ msgstr "Actualizar un error existente"
 msgid "Updating bug %s"
 msgstr "Actualizando error %s"
 
-#: ../wxui/clone.py:808
+#: ../wxui/clone.py:828
 msgid "Upload instructions"
 msgstr "Cargar instrucciones"
 

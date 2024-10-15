@@ -697,7 +697,7 @@ msgstr "CSV fájlok"
 msgid "All supported formats|"
 msgstr ""
 
-#: ../wxui/clone.py:574
+#: ../wxui/clone.py:589
 msgid "Always start with recent list"
 msgstr ""
 
@@ -1027,7 +1027,7 @@ msgstr "Letöltés a rádióról"
 msgid "Download from radio..."
 msgstr "Letöltés a rádióról"
 
-#: ../wxui/clone.py:697
+#: ../wxui/clone.py:717
 #, fuzzy
 msgid "Download instructions"
 msgstr "{name} Utasítások"
@@ -1130,7 +1130,7 @@ msgstr "A(z) {loc}. memóriahely törlése"
 msgid "Error applying settings"
 msgstr "Hiba a(z) %s érték beállításakor"
 
-#: ../wxui/clone.py:612
+#: ../wxui/clone.py:632
 msgid "Error communicating with radio"
 msgstr ""
 
@@ -1138,7 +1138,7 @@ msgstr ""
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:651
+#: ../wxui/clone.py:671
 #, fuzzy
 msgid "Experimental driver"
 msgstr "Folytassam kísérleti driver-rel?"
@@ -1542,7 +1542,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:719
+#: ../wxui/clone.py:739
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Belső hiba"
@@ -2006,7 +2006,7 @@ msgstr "Rádió"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:689 ../wxui/clone.py:793
+#: ../wxui/clone.py:709 ../wxui/clone.py:813
 #, fuzzy
 msgid "Radio information"
 msgstr "%s információk lekérése"
@@ -2072,6 +2072,14 @@ msgstr ""
 
 #: ../wxui/main.py:904
 msgid "Reload Driver and File"
+msgstr ""
+
+#: ../wxui/clone.py:591
+msgid "Remove"
+msgstr ""
+
+#: ../wxui/clone.py:592
+msgid "Remove selected model from list"
 msgstr ""
 
 #: ../wxui/bankedit.py:205
@@ -2588,7 +2596,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "URCALL lista frissítése."
 
-#: ../wxui/clone.py:808
+#: ../wxui/clone.py:828
 #, fuzzy
 msgid "Upload instructions"
 msgstr "{instructions}"

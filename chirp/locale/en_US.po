@@ -696,7 +696,7 @@ msgstr "CSV Files"
 msgid "All supported formats|"
 msgstr ""
 
-#: ../wxui/clone.py:574
+#: ../wxui/clone.py:589
 msgid "Always start with recent list"
 msgstr ""
 
@@ -1019,7 +1019,7 @@ msgstr "Download From Radio"
 msgid "Download from radio..."
 msgstr "Download From Radio"
 
-#: ../wxui/clone.py:697
+#: ../wxui/clone.py:717
 #, fuzzy
 msgid "Download instructions"
 msgstr "Download From Radio"
@@ -1119,7 +1119,7 @@ msgstr "E_xchange"
 msgid "Error applying settings"
 msgstr ""
 
-#: ../wxui/clone.py:612
+#: ../wxui/clone.py:632
 msgid "Error communicating with radio"
 msgstr ""
 
@@ -1127,7 +1127,7 @@ msgstr ""
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:651
+#: ../wxui/clone.py:671
 msgid "Experimental driver"
 msgstr ""
 
@@ -1524,7 +1524,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:719
+#: ../wxui/clone.py:739
 msgid "Internal driver error"
 msgstr ""
 
@@ -1973,7 +1973,7 @@ msgstr "_Radio"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:689 ../wxui/clone.py:793
+#: ../wxui/clone.py:709 ../wxui/clone.py:813
 msgid "Radio information"
 msgstr ""
 
@@ -2036,6 +2036,14 @@ msgstr ""
 
 #: ../wxui/main.py:904
 msgid "Reload Driver and File"
+msgstr ""
+
+#: ../wxui/clone.py:591
+msgid "Remove"
+msgstr ""
+
+#: ../wxui/clone.py:592
+msgid "Remove selected model from list"
 msgstr ""
 
 #: ../wxui/bankedit.py:205
@@ -2542,7 +2550,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr ""
 
-#: ../wxui/clone.py:808
+#: ../wxui/clone.py:828
 msgid "Upload instructions"
 msgstr ""
 

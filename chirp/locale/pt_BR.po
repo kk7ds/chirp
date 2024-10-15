@@ -696,7 +696,7 @@ msgstr "Arquivos CSV"
 msgid "All supported formats|"
 msgstr ""
 
-#: ../wxui/clone.py:574
+#: ../wxui/clone.py:589
 msgid "Always start with recent list"
 msgstr ""
 
@@ -1024,7 +1024,7 @@ msgstr "Descarregar a partir do Rádio"
 msgid "Download from radio..."
 msgstr "Descarregar a partir do Rádio"
 
-#: ../wxui/clone.py:697
+#: ../wxui/clone.py:717
 #, fuzzy
 msgid "Download instructions"
 msgstr "Descarregar a partir do Rádio"
@@ -1126,7 +1126,7 @@ msgstr "Apagando memória {loc}"
 msgid "Error applying settings"
 msgstr "Erro gravando memória"
 
-#: ../wxui/clone.py:612
+#: ../wxui/clone.py:632
 msgid "Error communicating with radio"
 msgstr ""
 
@@ -1134,7 +1134,7 @@ msgstr ""
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
-#: ../wxui/clone.py:651
+#: ../wxui/clone.py:671
 msgid "Experimental driver"
 msgstr ""
 
@@ -1532,7 +1532,7 @@ msgstr ""
 msgid "Interact with driver"
 msgstr ""
 
-#: ../wxui/clone.py:719
+#: ../wxui/clone.py:739
 #, fuzzy
 msgid "Internal driver error"
 msgstr "Erro Interno"
@@ -1991,7 +1991,7 @@ msgstr "Rádio"
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:689 ../wxui/clone.py:793
+#: ../wxui/clone.py:709 ../wxui/clone.py:813
 #, fuzzy
 msgid "Radio information"
 msgstr "Recuperando informações do banco"
@@ -2056,6 +2056,14 @@ msgstr ""
 
 #: ../wxui/main.py:904
 msgid "Reload Driver and File"
+msgstr ""
+
+#: ../wxui/clone.py:591
+msgid "Remove"
+msgstr ""
+
+#: ../wxui/clone.py:592
+msgid "Remove selected model from list"
 msgstr ""
 
 #: ../wxui/bankedit.py:205
@@ -2569,7 +2577,7 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "Atualizando lista URCALL"
 
-#: ../wxui/clone.py:808
+#: ../wxui/clone.py:828
 msgid "Upload instructions"
 msgstr ""
 
