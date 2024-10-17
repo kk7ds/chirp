@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-15 21:22-0700\n"
-"PO-Revision-Date: 2024-10-09 22:27-0300\n"
+"PO-Revision-Date: 2024-10-16 22:48-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1960,6 +1960,8 @@ msgid ""
 "Honor the CTCSS/DCS receive squelch configuration when enabled, else only "
 "carrier squelch"
 msgstr ""
+"Respeta la configuración de silenciamiento de recepción CTCSS/DCS cuando "
+"está activada, de lo contrario sólo silenciamiento de portadora"
 
 #: ../wxui/memedit.py:144
 msgid "Human-readable comment (not stored in radio)"
@@ -2536,7 +2538,7 @@ msgstr "Frecuencia de recepción"
 
 #: ../drivers/retevis_rt98.py:1219
 msgid "Recommend using 55.2"
-msgstr ""
+msgstr "Se recomienda usar 55.2"
 
 #: ../wxui/common.py:481
 msgid "Refresh required"
