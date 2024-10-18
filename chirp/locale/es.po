@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-16 21:38-0700\n"
-"PO-Revision-Date: 2024-10-09 22:27-0300\n"
+"PO-Revision-Date: 2024-10-18 15:43-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1084,7 +1084,7 @@ msgstr "Todos los formatos soportados|"
 
 #: ../wxui/clone.py:589
 msgid "Always start with recent list"
-msgstr ""
+msgstr "Siempre iniciar con la lista reciente"
 
 #: ../wxui/query_sources.py:284 ../wxui/query_sources.py:359
 msgid "Amateur"
@@ -1190,9 +1190,8 @@ msgid "Choose Cross Mode"
 msgstr "Elegir modo cruzado"
 
 #: ../wxui/clone.py:570
-#, fuzzy
 msgid "Choose a recent model"
-msgstr "Elegir modo cruzado"
+msgstr "Elegir un modelo reciente"
 
 #: ../wxui/memedit.py:1430
 msgid "Choose duplex"
@@ -1969,6 +1968,8 @@ msgid ""
 "Honor the CTCSS/DCS receive squelch configuration when enabled, else only "
 "carrier squelch"
 msgstr ""
+"Respeta la configuración del silenciador de recepción CTCSS/DCS cuando está "
+"activada, de lo contrario sólo el silenciador de portadora"
 
 #: ../wxui/memedit.py:144
 msgid "Human-readable comment (not stored in radio)"
@@ -2544,18 +2545,16 @@ msgid "Receive frequency"
 msgstr "Frecuencia de recepción"
 
 #: ../wxui/clone.py:571
-#, fuzzy
 msgid "Recent"
-msgstr "Abrir reciente"
+msgstr "Reciente"
 
 #: ../wxui/clone.py:331
-#, fuzzy
 msgid "Recent..."
-msgstr "Abrir reciente"
+msgstr "Reciente..."
 
 #: ../drivers/retevis_rt98.py:1219
 msgid "Recommend using 55.2"
-msgstr ""
+msgstr "Se recomienda usar 55.2"
 
 #: ../wxui/common.py:481
 msgid "Refresh required"
@@ -2576,11 +2575,11 @@ msgstr "Recargar controlador y archivo"
 
 #: ../wxui/clone.py:591
 msgid "Remove"
-msgstr ""
+msgstr "Remover"
 
 #: ../wxui/clone.py:592
 msgid "Remove selected model from list"
-msgstr ""
+msgstr "Remover el modelo seleccionado de la lista"
 
 #: ../wxui/bankedit.py:205
 msgid "Rename bank"
