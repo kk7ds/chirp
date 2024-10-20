@@ -955,6 +955,8 @@ class RT21Radio(chirp_common.CloneModeRadio):
                 self.MODEL == "RT21V":
             rs = RadioSettingValueList(BCL_LIST, current_index=_mem.bcl)
             rset = RadioSetting("bcl", "Busy Channel Lockout", rs)
+            rset.set_doc('QT is the same as Tone/CTCSS, '
+                         'DQT is the same as DTCS/DCS')
             mem.extra.append(rset)
 
             rs = RadioSettingValueInteger(1, 8, _mem.scramble_type + 1)
