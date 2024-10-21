@@ -51,4 +51,3 @@ Yaesu_FT-1802M
 Yaesu_FT-7100M
 Yaesu_FTM-3200D_R
 Yaesu_FTM-7250D_R
-Yaesu_VX-170
