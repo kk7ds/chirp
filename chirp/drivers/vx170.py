@@ -13,10 +13,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chirp.drivers import yaesu_clone, ft7800
-from chirp import chirp_common, directory, bitwise
+import logging
 
+from chirp.drivers import yaesu_clone, ft7800
+from chirp import chirp_common, directory, bitwise, errors
+
+LOG = logging.getLogger(__name__)
 MEM_FORMAT = """
+char model[6];
 #seekto 0x018A;
 struct {
     u16 in_use;
@@ -82,7 +86,7 @@ struct {
 class VX170Radio(ft7800.FTx800Radio):
     """Yaesu VX-170"""
     MODEL = "VX-170"
-    _model = "AH022"
+    _model = "AH022$"
     _memsize = 6057
     _block_lengths = [8, 6048, 1]
     _block_size = 32
@@ -92,7 +96,7 @@ class VX170Radio(ft7800.FTx800Radio):
                         chirp_common.PowerLevel("Lo", watts=0.50)]
 
     MODES = ["FM", "NFM"]
-    TMODES = ["", "Tone", "TSQL", "DTCS"]
+    TMODES = ["", "Tone", "TSQL", "TSQL-R", "DTCS"]
 
     @classmethod
     def get_prompts(cls):
@@ -123,6 +127,11 @@ class VX170Radio(ft7800.FTx800Radio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        if str(self._memobj.model) != self._model:
+            LOG.debug('Expected %r, found %r' % (self._model,
+                                                 str(self._memobj.model)))
+            raise errors.RadioError(
+              'Invalid model - radio is not %s' % self.MODEL)
 
     def get_features(self):
         rf = super(VX170Radio, self).get_features()
@@ -131,4 +140,18 @@ class VX170Radio(ft7800.FTx800Radio):
         rf.valid_modes = self.MODES
         rf.memory_bounds = (1, 200)
         rf.valid_bands = [(137000000, 174000000)]
+        return rf
+
+
+@directory.register
+class VX177Radio(VX170Radio):
+    MODEL = 'VX-177'
+    _model = 'AH022U'
+    POWER_LEVELS_UHF = [chirp_common.PowerLevel("Hi", watts=5.00),
+                        chirp_common.PowerLevel("Med", watts=2.00),
+                        chirp_common.PowerLevel("Lo", watts=0.50)]
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_bands = [(420000000, 470000000)]
         return rf
