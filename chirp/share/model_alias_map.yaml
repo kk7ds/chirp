@@ -278,6 +278,8 @@ TIDRADIO:
   model: BF-F8TD
 - alt: Baofeng UV-82HP
   model: UV-82
+- alt: Baofeng BF-888
+  model: TD-V2
 TXQ:
 - alt: Abbree AR-63
   model: G63
