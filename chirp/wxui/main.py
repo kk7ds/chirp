@@ -410,10 +410,14 @@ class ChirpMain(wx.Frame):
 
         self.SetSize(int(CONF.get('window_w', 'state') or 1024),
                      int(CONF.get('window_h', 'state') or 768))
-        if not ALL_MAIN_WINDOWS and CONF.is_defined('window_x', 'state'):
-            # Only restore position for the first window of the session
-            self.SetPosition((CONF.get_int('window_x', 'state'),
-                              CONF.get_int('window_y', 'state')))
+        try:
+            x = max(0, CONF.get_int('window_x', 'state'))
+            y = max(0, CONF.get_int('window_y', 'state'))
+            if not ALL_MAIN_WINDOWS:
+                # Only restore position for the first window of the session
+                self.SetPosition((x, y))
+        except TypeError:
+            pass
 
         ALL_MAIN_WINDOWS.append(self)
 
