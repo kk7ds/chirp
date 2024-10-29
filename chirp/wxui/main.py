@@ -321,6 +321,7 @@ class ChirpEditorSet(wx.Panel):
         current = self.current_editor
         if not isinstance(current, memedit.ChirpMemEdit):
             raise Exception(_('Only memory tabs may be exported'))
+        LOG.debug('Exporting to %r' % filename)
         current.export_to_file(filename)
 
     def update_font(self):
@@ -562,6 +563,7 @@ class ChirpMain(wx.Frame):
         with common.expose_logs(logging.WARNING, 'chirp.drivers', label,
                                 parent=self):
             if exists:
+                LOG.debug('Doing open from %r' % filename)
                 if not os.path.exists(filename):
                     raise FileNotFoundError(
                         _('File does not exist: %s') % filename)
@@ -1366,6 +1368,7 @@ class ChirpMain(wx.Frame):
         if r == wx.ID_YES:
             with common.expose_logs(logging.WARNING, 'chirp.drivers',
                                     _('Import messages'), parent=self):
+                LOG.debug('Doing import from %r' % filename)
                 radio = directory.get_radio_by_image(filename)
                 self.current_editorset.current_editor.memedit_import_all(radio)
         elif r == wx.ID_NO:
