@@ -1390,6 +1390,7 @@ class BF5RM(UV17Pro):
                     chirp_common.PowerLevel("Low", watts=1.00),
                     chirp_common.PowerLevel("Medium", watts=5.00)]
     SCODE_LIST = ["%s" % x for x in range(1, 16)]
+    SQUELCH_LIST = ["Off"] + list("123456789")
     LIST_PW_SAVEMODE = ["Off", "1:1", "1:2", "1:4"]
     _has_workmode_support = True
     MODES = UV17Pro.MODES + ['AM']
