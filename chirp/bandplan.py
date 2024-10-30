@@ -180,3 +180,8 @@ class BandPlans(object):
                 add_nodupes(band)
         return sorted(bands_with_repeaters,
                       key=lambda b: b.limits[0])
+
+
+BANDS_AIR = (
+  Band((118000000, 136975000), "Aviation", mode="AM"),
+)

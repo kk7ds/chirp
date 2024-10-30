@@ -112,4 +112,4 @@ BANDS = bandplan_iaru_r3.BANDS_20M + bandplan_iaru_r3.BANDS_17M + \
         bandplan_iaru_r3.BANDS_15M + bandplan_iaru_r3.BANDS_12M + \
         bandplan_iaru_r3.BANDS_10M + bandplan_iaru_r3.BANDS_6M + \
         BANDS_10M + BANDS_6M + BANDS_2M + BANDS_70CM + BANDS_23CM + \
-        BANDS_13CM + BANDS_9CM + BANDS_6CM
+        BANDS_13CM + BANDS_9CM + BANDS_6CM + bandplan.BANDS_AIR
