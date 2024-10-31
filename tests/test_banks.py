@@ -48,6 +48,10 @@ class TestCaseBanks(base.DriverTest):
 
         model = self.radio.get_bank_model()
 
+        if isinstance(model, chirp_common.StaticBankModel):
+            # Nothing to test with this type
+            return
+
         # If in your bank model every channel has to be tied to a bank, just
         # add a variable named channelAlwaysHasBank to it and make it True
         try:
