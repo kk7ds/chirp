@@ -120,6 +120,8 @@ class ID51Radio(id31.ID31Radio):
                              b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
                              b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'):
                 return True
+        if filename.lower().endswith('.icf'):
+            return super().match_model(filedata, filename)
         return False
 
     def get_features(self):
