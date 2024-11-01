@@ -118,9 +118,14 @@ def _get_freq(_mem):
     else:
         mult = 5000
 
+    if freq & 0x00040000:
+        omult = 6250
+    else:
+        omult = 5000
+
     freq &= 0x0003FFFF
 
-    return (freq * mult), (offs * mult)
+    return (freq * mult), (offs * omult)
 
 
 def _set_freq(_mem, freq, offset):
@@ -131,8 +136,15 @@ def _set_freq(_mem, freq, offset):
         mult = 5000
         flag = 0x00000000
 
-    _mem.freq = (freq // mult) | flag
-    _mem.offset = (offset // mult)
+    if chirp_common.is_fractional_step(offset):
+        omult = 6250
+        oflag = 0x00040000
+    else:
+        omult = 5000
+        oflag = 0x00000000
+
+    _mem.freq = (freq // mult) | flag | oflag
+    _mem.offset = (offset // omult)
 
 
 class ID31Bank(icf.IcomBank):
