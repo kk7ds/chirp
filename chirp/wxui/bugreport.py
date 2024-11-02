@@ -454,7 +454,11 @@ class BugUpdateInfo(BugReportPage):
     def _build(self, vbox):
         self.context.bugdetails = None
         self.details = wx.TextCtrl(self, style=wx.TE_MULTILINE)
-        self.details.SetHint(_('Enter information to add to the bug here'))
+        try:
+            self.details.SetHint(_('Enter information to add to the bug here'))
+        except Exception:
+            # Older wx doesn't allow this on multi-line fields (?)
+            pass
         self.details.Bind(wx.EVT_TEXT, self.validate_next)
         vbox.Add(self.details, 1, border=20,
                  flag=wx.EXPAND | wx.LEFT | wx.RIGHT)
