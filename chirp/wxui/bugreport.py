@@ -17,6 +17,7 @@ import datetime
 import logging
 import os
 import platform
+import subprocess
 import tempfile
 import threading
 
@@ -42,6 +43,34 @@ def get_chirp_platform():
     """Get the proper platform name for the chirp site's field"""
     p = platform.system()
     return 'MacOS' if p == 'Darwin' else p
+
+
+def get_macos_system_info(manifest):
+    try:
+        sp = subprocess.check_output(
+            'system_profiler SPSoftwareDataType SPUSBDataType',
+            shell=True)
+    except Exception as e:
+        sp = 'Error getting system_profiler data: %s' % e
+    manifest['files']['macos_system_info.txt'] = sp
+
+
+def get_linux_system_info(manifest):
+    try:
+        sp = subprocess.check_output('lsusb',
+                                     shell=True)
+    except Exception as e:
+        sp = 'Error getting system data: %s' % e
+    manifest['files']['linux_system_info.txt'] = sp
+
+
+def get_windows_system_info(manifest):
+    try:
+        sp = subprocess.check_output('pnputil /enum-devices /connected',
+                                     shell=True)
+    except Exception as e:
+        sp = 'Error getting system data: %s' % e
+    manifest['files']['win_system_info.txt'] = sp
 
 
 @common.error_proof()
@@ -74,6 +103,20 @@ def prepare_report(chirpmain):
         editor._radio.save(tmpf)
         with open(tmpf, 'rb') as f:
             manifest['files'][os.path.basename(editor.filename)] = f.read()
+
+    # Gather system details, if available
+    system = platform.system()
+    if system == 'Darwin':
+        LOG.debug('Capturing macOS system_profiler data')
+        get_macos_system_info(manifest)
+    elif system == 'Linux':
+        LOG.debug('Capturing linux system info')
+        get_linux_system_info(manifest)
+    elif system == 'Windows':
+        LOG.debug('Capturing windows system info')
+        get_windows_system_info(manifest)
+    else:
+        LOG.debug('No system info support for %s', system)
 
     # Snapshot debug log last
     if logger.Logger.instance.has_debug_log_file:
