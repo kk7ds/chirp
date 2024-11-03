@@ -2669,8 +2669,8 @@ class TDH3(TDH8):
     _gmrs = False
     _ham = False
     _mem_params = (0x1F2F)
-    _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
-                 chirp_common.PowerLevel("High",  watts=4.00)]
+    _tx_power = [chirp_common.PowerLevel("Low",  watts=2.00),
+                 chirp_common.PowerLevel("High",  watts=5.00)]
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)
