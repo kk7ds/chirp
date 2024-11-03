@@ -696,8 +696,6 @@ struct{
 SQUELCH = ['%s' % x for x in range(0, 10)]
 LIGHT_LIST = ["CONT", "5s", "10s", "15s", "30s"]
 LIGHT730_LIST = ["CONT", "10s", "20s", "30s"]
-VOICE_PRMPT_LIST = ["OFF", "ON"]
-AUTOLOCK_LIST = ["OFF", "ON"]
 TIME_OUT_LIST = ["OFF", "60s", "120s", "180s"]
 MDFA_LIST = ["Frequency", "Name"]
 MDFB_LIST = ["Frequency", "Name"]
@@ -705,8 +703,6 @@ HOP_LIST = ["A", "B", "C", "D"]
 SYNC_LIST = ["ON", "OFF"]
 LANG_LIST = ["Chinese", "English"]
 BTV_SAVER_LIST = ["OFF", "1:1", "1:2", "1:3", "1:4"]
-DBRX_LIST = ["OFF", "ON"]
-OFFON_LIST = ["OFF", "ON"]
 ASTEP_LIST = ["2.50K", "5.00K", "6.25K",
               "10.00K", "12.00K", "25.00K", "50.00K"]
 BSTEP_LIST = ["2.50K", "5.00K", "6.25K",
@@ -747,14 +743,8 @@ VFOB_NAME = ["rxfreqb",
              "offsetb"]
 
 TOT_LIST = ["OFF", "30S", "60S", "90S", "120S", "150S", "180S", "210S"]
-TX220_LIST = ["OFF", "ON"]
-TX350_LIST = ["OFF", "ON"]
-TX500_LIST = ["OFF", "ON"]
-AM_BAND_LIST = ["OFF", "ON"]
 ALARM_LIST = ["On site", "Alarm"]
 
-DTMF_SIDETONE_LIST = ["OFF", "ON"]
-DTMF_DECODE_LIST = ["OFF", "ON"]
 DTMF_AUTO_RESET_LIST = ["OFF", "5S", "10S", "15S"]
 DTMF_DECODING_RESPONSE_LIST = ["NULL", "RING", "REPLY", "BOTH"]
 DTMF_SPEED_LIST = ["80ms",
@@ -1467,15 +1457,11 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(rs)
 
         rs = RadioSetting("voiceprompt", "Voice Prompt",
-                          RadioSettingValueList(
-                              VOICE_PRMPT_LIST,
-                              current_index=_settings.voiceprompt))
+                          RadioSettingValueBoolean(_settings.voiceprompt))
         basic.append(rs)
 
         rs = RadioSetting("keyautolock", "Auto Lock",
-                          RadioSettingValueList(
-                              AUTOLOCK_LIST,
-                              current_index=_settings.keyautolock))
+                          RadioSettingValueBoolean(_settings.keyautolock))
         basic.append(rs)
 
         if self.MODEL != "RT-730":
@@ -1504,9 +1490,7 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(rs)
 
         rs = RadioSetting("dbrx", "Double Rx",
-                          RadioSettingValueList(
-                              DBRX_LIST,
-                              current_index=_settings.dbrx))
+                          RadioSettingValueBoolean(_settings.dbrx))
         basic.append(rs)
 
         if self.MODEL != "RT-730":
@@ -1621,9 +1605,7 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(rs)
 
             rs = RadioSetting("amband", "AM BAND",
-                              RadioSettingValueList(
-                                AM_BAND_LIST,
-                                current_index=_settings.amband))
+                              RadioSettingValueBoolean(_settings.amband))
             basic.append(rs)
 
             rs = RadioSetting("tot", "Time-Out Timer",
@@ -1633,21 +1615,15 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(rs)
 
             rs = RadioSetting("tx220", "TX 220",
-                              RadioSettingValueList(
-                                TX220_LIST,
-                                current_index=_settings.tx220))
+                              RadioSettingValueBoolean(_settings.tx220))
             basic.append(rs)
 
             rs = RadioSetting("tx350", "TX 350",
-                              RadioSettingValueList(
-                                TX350_LIST,
-                                current_index=_settings.tx350))
+                              RadioSettingValueBoolean(_settings.tx350))
             basic.append(rs)
 
             rs = RadioSetting("tx500", "TX 500",
-                              RadioSettingValueList(
-                                TX500_LIST,
-                                current_index=_settings.tx500))
+                              RadioSettingValueBoolean(_settings.tx500))
             basic.append(rs)
 
             # older firmware sets 0xCA0-0xCA7 to FF
@@ -1743,15 +1719,11 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(rs)
 
             rs = RadioSetting("save", "Battery Save",
-                              RadioSettingValueList(
-                                  OFFON_LIST,
-                                  current_index=_settings.save))
+                              RadioSettingValueBoolean(_settings.save))
             basic.append(rs)
 
             rs = RadioSetting("mdfa", "Channel Names",
-                              RadioSettingValueList(
-                                  OFFON_LIST,
-                                  current_index=_settings.mdfa))
+                              RadioSettingValueBoolean(_settings.mdfa))
             basic.append(rs)
 
             rs = RadioSetting("hoptype", "Hop Type",
@@ -2155,15 +2127,12 @@ class TDH8(chirp_common.CloneModeRadio):
                 # Scanband is not defined for FF
                 # so it's a proxy for old firmware that needs these hidden
                 rs = RadioSetting("dtmfst", "DTMF Side Tones",
-                                  RadioSettingValueList(
-                                    DTMF_SIDETONE_LIST,
-                                    current_index=_settings.dtmfst))
+                                  RadioSettingValueBoolean(_settings.dtmfst))
                 dtmf.append(rs)
 
                 rs = RadioSetting("dtmfdecode", "DTMF Decode Enable",
-                                  RadioSettingValueList(
-                                    DTMF_DECODE_LIST,
-                                    current_index=_settings.dtmfdecode))
+                                  RadioSettingValueBoolean(
+                                    _settings.dtmfdecode))
                 dtmf.append(rs)
 
                 rs = RadioSetting("dtmfautorst", "DTMF Auto Reset Times",
