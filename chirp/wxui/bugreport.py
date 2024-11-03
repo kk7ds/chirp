@@ -20,6 +20,7 @@ import platform
 import subprocess
 import tempfile
 import threading
+import time
 
 import requests
 import wx
@@ -594,13 +595,9 @@ class ResultPage(BugReportPage):
         self.context.bugnum = manifest['issue']
         LOG.info('Created new issue %s', manifest['issue'])
 
-    def _send_report(self, manifest):
-        if 'issue' not in manifest:
-            self._create_bug(manifest)
-
-        tokens = []
-        for fn in manifest['files']:
-            LOG.debug('Uploading %s', fn)
+    def _upload_file(self, manifest, fn):
+        for i in range(3):
+            LOG.debug('Uploading %s attempt %i', fn, i + 1)
             r = self.context.session.post(
                 BASE + '/uploads.json',
                 params={'filename': fn},
@@ -608,15 +605,29 @@ class ResultPage(BugReportPage):
                 headers={
                     'Content-Type': 'application/octet-stream'},
                 auth=self.context.auth)
-            if r.status_code != 201:
+            if r.status_code >= 500:
+                LOG.error('Failed to upload %s: %s %s',
+                          fn, r.status_code, r.reason)
+                time.sleep(2 + (2 * i))
+            elif r.status_code != 201:
                 LOG.error('Failed to upload %s: %s %s',
                           fn, r.status_code, r.reason)
                 raise Exception('Failed to upload file')
+            return r.json()['upload']['token']
+        raise Exception('Failed to upload %s after multiple attempts', fn)
+
+    def _send_report(self, manifest):
+        if 'issue' not in manifest:
+            self._create_bug(manifest)
+
+        tokens = []
+        for fn in manifest['files']:
+            token = self._upload_file(manifest, fn)
             if fn.lower().endswith('.img'):
                 ct = 'application/octet-stream'
             else:
                 ct = 'text/plain'
-            tokens.append({'token': r.json()['upload']['token'],
+            tokens.append({'token': token,
                            'filename': fn,
                            'content_type': ct})
         LOG.debug('File tokens: %s', tokens)
