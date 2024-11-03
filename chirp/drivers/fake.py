@@ -251,6 +251,7 @@ class FakeClone(chirp_common.CloneModeRadio):
         self._specials = [chirp_common.Memory(100 + i) for i in range(3)]
         for i, mem in enumerate(self._memories + self._specials):
             mem.freq = 146000000 + (i * 100000)
+            mem.empty = i < 5
             if mem in self._specials:
                 mem.extd_number = 'Special %i' % mem.number
         self._special_names = [x.extd_number for x in self._specials]

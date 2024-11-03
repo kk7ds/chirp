@@ -292,6 +292,10 @@ class ChirpBankEdit(common.ChirpEditor):
         self._memory_cache[mem.extd_number or mem.number] = mem
         self._grid.SetRowLabelValue(self.mem2row(mem),
                                     mem.extd_number or ('%i' % mem.number))
+        if mem.empty:
+            self._grid.HideRow(self.mem2row(mem))
+        else:
+            self._grid.ShowRow(self.mem2row(mem))
 
         bank_index = None
         member = [bank.get_index()
