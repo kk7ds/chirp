@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-02 13:30-0700\n"
-"PO-Revision-Date: 2024-10-18 15:43-0300\n"
+"PO-Revision-Date: 2024-11-04 20:55-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -2209,9 +2209,8 @@ msgid "Module loaded successfully"
 msgstr "Módulo cargado exitosamente"
 
 #: ../wxui/clone.py:654
-#, fuzzy
 msgid "More Info"
-msgstr "Información"
+msgstr "Más información"
 
 #: ../wxui/clone.py:493
 #, python-format
