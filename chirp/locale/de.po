@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-10 10:34-0800\n"
+"POT-Creation-Date: 2024-11-10 10:50-0800\n"
 "PO-Revision-Date: 2012-10-02 22:11+0100\n"
 "Last-Translator: Benjamin, HB9EUK <hb9euk@hb9d.org>\n"
 "Language-Team: German\n"
@@ -74,8 +74,7 @@ msgid "(Describe what you were doing)"
 msgstr ""
 
 #: ../wxui/bugreport.py:476
-msgid ""
-"(Has this ever worked before? New radio? Does it work with OEM software?)"
+msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr ""
 
 #: ../wxui/radioinfo.py:50
@@ -165,8 +164,7 @@ msgstr ""
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable\n"
-"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning "
-"it on\n"
+"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning it on\n"
 "4. Radio is in clone mode when TX/RX is flashing\n"
 "5. <b>After clicking OK</b>, press the MHz key on the radio to send image.\n"
 "    (\"TX\" will appear on the LCD). \n"
@@ -176,8 +174,7 @@ msgstr ""
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable\n"
-"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning "
-"it on\n"
+"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning it on\n"
 "4. Radio is in clone mode when TX/RX is flashing\n"
 "5. Press the Low key on the radio (\"RX\" will appear on the LCD).\n"
 "6. Click OK."
@@ -424,7 +421,7 @@ msgid ""
 "5. Press OK.\n"
 msgstr ""
 
-#: ../drivers/vx6.py:370 ../drivers/vx3.py:373
+#: ../drivers/vx3.py:373 ../drivers/vx6.py:370
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -433,7 +430,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
 
-#: ../drivers/vx6.py:377 ../drivers/vx3.py:380
+#: ../drivers/vx3.py:380 ../drivers/vx6.py:377
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -548,7 +545,7 @@ msgid ""
 "6. Click OK to upload image to device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:287 ../drivers/wouxun.py:213 ../drivers/tg_uv2p.py:232
+#: ../drivers/tg_uv2p.py:232 ../drivers/uvb5.py:287 ../drivers/wouxun.py:213
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -558,7 +555,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:295 ../drivers/wouxun.py:221 ../drivers/tg_uv2p.py:240
+#: ../drivers/tg_uv2p.py:240 ../drivers/uvb5.py:295 ../drivers/wouxun.py:221
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -649,8 +646,7 @@ msgid ""
 "3. Make sure connector is firmly connected.\n"
 "4. Click OK to download image from device.\n"
 "\n"
-"It will may not work if you turn on the radio with the cable already "
-"attached\n"
+"It will may not work if you turn on the radio with the cable already attached\n"
 msgstr ""
 
 #: ../drivers/uvk5.py:663
@@ -664,9 +660,7 @@ msgid ""
 msgstr ""
 
 #: ../wxui/main.py:1954
-msgid ""
-"A new CHIRP version is available. Please visit the website as soon as "
-"possible to download it!"
+msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr ""
 
 #: ../drivers/ga510.py:1068
@@ -706,8 +700,8 @@ msgstr ""
 msgid "Amateur"
 msgstr ""
 
-#: ../wxui/bugreport.py:328 ../wxui/bugreport.py:437 ../wxui/common.py:609
-#: ../wxui/common.py:636
+#: ../wxui/common.py:609 ../wxui/common.py:636 ../wxui/bugreport.py:328
+#: ../wxui/bugreport.py:437
 msgid "An error has occurred"
 msgstr "Ein Fehler ist aufgetreten"
 
@@ -769,15 +763,12 @@ msgid "Canada"
 msgstr ""
 
 #: ../wxui/common.py:479
-msgid ""
-"Changing this setting requires refreshing the settings from the image, which "
-"will happen now."
+msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr ""
 
 #: ../wxui/memedit.py:1390
 #, python-format
-msgid ""
-"Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
+msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr ""
 
 #: ../wxui/main.py:1227
@@ -843,13 +834,13 @@ msgstr ""
 msgid "Cloning"
 msgstr "Klonen"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft4.py:317
+#: ../drivers/bj9900.py:133 ../drivers/ft4.py:317 ../drivers/ft450d.py:507
 #: ../drivers/ft817.py:341
 #, fuzzy
 msgid "Cloning from radio"
 msgstr "Download vom Gerät"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft4.py:318
+#: ../drivers/bj9900.py:165 ../drivers/ft4.py:318 ../drivers/ft450d.py:536
 #: ../drivers/ft817.py:379
 #, fuzzy
 msgid "Cloning to radio"
@@ -884,9 +875,7 @@ msgid "Complete"
 msgstr "Beendet"
 
 #: ../wxui/memedit.py:137
-msgid ""
-"Complex or non-standard tone squelch mode (starts the tone mode selection "
-"wizard)"
+msgid "Complex or non-standard tone squelch mode (starts the tone mode selection wizard)"
 msgstr ""
 
 #: ../drivers/tmd710.py:185 ../drivers/tmd710.py:188
@@ -973,7 +962,7 @@ msgstr "Entwickler"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 
-#: ../wxui/memedit.py:1834 ../wxui/developer.py:88
+#: ../wxui/developer.py:88 ../wxui/memedit.py:1834
 msgid "Diff Raw Memories"
 msgstr "Vergleiche Rohspeicher"
 
@@ -1094,16 +1083,11 @@ msgid "Enter custom port:"
 msgstr ""
 
 #: ../wxui/bugreport.py:451
-msgid ""
-"Enter details about this update. Be descriptive about what you were doing, "
-"what you expected to happen, and what actually happened."
+msgid "Enter details about this update. Be descriptive about what you were doing, what you expected to happen, and what actually happened."
 msgstr ""
 
 #: ../wxui/bugreport.py:354
-msgid ""
-"Enter information about the bug including a short but meaningful subject and "
-"information about the radio model (if applicable) in question. In the next "
-"step you will have a chance to add more details about the problem."
+msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem."
 msgstr ""
 
 #: ../wxui/bugreport.py:459
@@ -1115,9 +1099,7 @@ msgid "Enter the bug number that should be updated"
 msgstr ""
 
 #: ../wxui/bugreport.py:232
-msgid ""
-"Enter your username and password for chirpmyradio.com. If you do not have an "
-"account click below to create one before proceeding."
+msgid "Enter your username and password for chirpmyradio.com. If you do not have an account click below to create one before proceeding."
 msgstr ""
 
 #: ../wxui/common.py:329
@@ -1274,11 +1256,11 @@ msgid ""
 "    no right-side audio!\n"
 msgstr ""
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:693 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
-#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:465 ../drivers/bf_t1.py:482
+#: ../drivers/baofeng_uv17Pro.py:465 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/bf_t1.py:482 ../drivers/btech.py:693 ../drivers/gmrsuv1.py:391
+#: ../drivers/gmrsv2.py:363 ../drivers/mursv1.py:341
+#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv5x3.py:417
+#: ../drivers/uv6r.py:339
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1344,7 +1326,7 @@ msgid ""
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
 
-#: ../drivers/btech.py:699 ../drivers/bf_t1.py:488
+#: ../drivers/bf_t1.py:488 ../drivers/btech.py:699
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1371,7 +1353,7 @@ msgid ""
 "4 - Click OK to start\n"
 msgstr ""
 
-#: ../drivers/vgc.py:598 ../drivers/lt725uv.py:496
+#: ../drivers/lt725uv.py:496 ../drivers/vgc.py:598
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1389,11 +1371,10 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
-#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:471
+#: ../drivers/baofeng_uv17Pro.py:471 ../drivers/baofeng_wp970i.py:333
+#: ../drivers/gmrsuv1.py:397 ../drivers/gmrsv2.py:369 ../drivers/lt725uv.py:502
+#: ../drivers/mursv1.py:347 ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/uv5x3.py:423 ../drivers/uv6r.py:345 ../drivers/vgc.py:604
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1429,13 +1410,13 @@ msgstr ""
 msgid "Frequency granularity in kHz"
 msgstr ""
 
-#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1369
-#: ../drivers/tdh8.py:2612 ../drivers/baofeng_uv17Pro.py:1162
+#: ../drivers/baofeng_uv17Pro.py:1162 ../drivers/ga510.py:1072
+#: ../drivers/mml_jc8810.py:1369 ../drivers/tdh8.py:2612
 msgid "Frequency in this range must not be AM mode"
 msgstr ""
 
-#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1366
-#: ../drivers/tdh8.py:2609 ../drivers/baofeng_uv17Pro.py:1158
+#: ../drivers/baofeng_uv17Pro.py:1158 ../drivers/ga510.py:1065
+#: ../drivers/mml_jc8810.py:1366 ../drivers/tdh8.py:2609
 msgid "Frequency in this range requires AM mode"
 msgstr ""
 
@@ -1483,9 +1464,7 @@ msgid "Hide empty memories"
 msgstr "Überschreiben?"
 
 #: ../drivers/retevis_rt98.py:1003
-msgid ""
-"Honor the CTCSS/DCS receive squelch configuration when enabled, else only "
-"carrier squelch"
+msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
 msgstr ""
 
 #: ../wxui/memedit.py:144
@@ -1636,19 +1615,11 @@ msgid "Load module from issue..."
 msgstr "Module laden"
 
 #: ../wxui/main.py:1871
-msgid ""
-"Loading a module will not affect open tabs. It is recommended (unless "
-"instructed otherwise) to close all tabs before loading a module."
+msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
 msgstr ""
 
 #: ../wxui/main.py:1719
-msgid ""
-"Loading modules can be extremely dangerous, leading to damage to your "
-"computer, radio, or both. NEVER load a module from a source you do not "
-"trust, and especially not from anywhere other than the main CHIRP website "
-"(chirpmyradio.com). Loading a module from another source is akin to giving "
-"them direct access to your computer and everything on it! Proceed despite "
-"this risk?"
+msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr ""
 
 #: ../wxui/clone.py:144
@@ -1939,11 +1910,7 @@ msgid ""
 msgstr ""
 
 #: ../wxui/main.py:1811
-msgid ""
-"Please note that developer mode is intended for use by developers of the "
-"CHIRP project, or under the direction of a developer. It enables behaviors "
-"and functions that can damage your computer and your radio if not used with "
-"EXTREME care. You have been warned! Proceed anyway?"
+msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
 
 #: ../wxui/common.py:194
@@ -2001,7 +1968,7 @@ msgstr ""
 msgid "Radio"
 msgstr "Gerät"
 
-#: ../drivers/ft60.py:85 ../drivers/ft450d.py:568 ../drivers/ft817.py:406
+#: ../drivers/ft450d.py:568 ../drivers/ft60.py:85 ../drivers/ft817.py:406
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr ""
@@ -2016,10 +1983,7 @@ msgid "Radio model:"
 msgstr ""
 
 #: ../drivers/ft817.py:363
-msgid ""
-"Radio sent data after the last awaited block, this happens when the selected "
-"model is a non-US but the radio is a US one. Please choose the correct model "
-"and try again."
+msgid "Radio sent data after the last awaited block, this happens when the selected model is a non-US but the radio is a US one. Please choose the correct model and try again."
 msgstr ""
 
 #: ../wxui/query_sources.py:846
@@ -2107,10 +2071,7 @@ msgid "Reporting enabled"
 msgstr "Report ist deaktiviert"
 
 #: ../wxui/main.py:1831
-msgid ""
-"Reporting helps the CHIRP project know which radio models and OS platforms "
-"to spend our limited efforts on. We would really appreciate if you left it "
-"enabled. Really disable reporting?"
+msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
 msgstr ""
 
 #: ../wxui/main.py:1526 ../wxui/main.py:1825
@@ -2157,7 +2118,7 @@ msgstr ""
 msgid "Scanlists"
 msgstr ""
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:889
+#: ../drivers/uvk5.py:889 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr ""
 
@@ -2205,7 +2166,7 @@ msgstr ""
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr ""
 
-#: ../wxui/memedit.py:1827 ../wxui/developer.py:91
+#: ../wxui/developer.py:91 ../wxui/memedit.py:1827
 msgid "Show Raw Memory"
 msgstr "Zeige RAW Speicher"
 
@@ -2224,8 +2185,7 @@ msgstr ""
 #: ../wxui/memedit.py:2096
 #, fuzzy
 msgid "Some memories are incompatible with this radio"
-msgstr ""
-"Eingefügter Speicher {number} ist nicht mit diesem Gerät kompatibel weil:"
+msgstr "Eingefügter Speicher {number} ist nicht mit diesem Gerät kompatibel weil:"
 
 #: ../wxui/memedit.py:1943
 msgid "Some memories are not deletable"
@@ -2323,18 +2283,11 @@ msgid ""
 msgstr ""
 
 #: ../wxui/developer.py:565
-msgid ""
-"The author of this module is not a recognized CHIRP developer. It is "
-"recommended that you not load this module as it could pose a security risk. "
-"Proceed anyway?"
+msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
 msgstr ""
 
 #: ../wxui/bugreport.py:213
-msgid ""
-"The debug log file is not available when CHIRP is run interactively from the "
-"command-line. Thus, this tool will not upload what you expect. It is "
-"recommended that you quit now and run CHIRP non-interactively (or with stdin "
-"redirected to /dev/null)"
+msgid "The debug log file is not available when CHIRP is run interactively from the command-line. Thus, this tool will not upload what you expect. It is recommended that you quit now and run CHIRP non-interactively (or with stdin redirected to /dev/null)"
 msgstr ""
 
 #: ../wxui/bugreport.py:497
@@ -2343,12 +2296,7 @@ msgstr ""
 
 #: ../wxui/main.py:1357
 #, python-format
-msgid ""
-"The recommended procedure for importing memories is to open the source file "
-"and copy/paste memories from it into your target image. If you continue with "
-"this import function, CHIRP will replace all memories in your currently-open "
-"file with those in %(file)s. Would you like to open this file to copy/paste "
-"memories across, or proceed with the import?"
+msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr ""
 
 #: ../wxui/memedit.py:1744
@@ -2357,10 +2305,7 @@ msgid "This Memory"
 msgstr "Zeige RAW Speicher"
 
 #: ../drivers/id5100.py:332
-msgid ""
-"This driver has been tested with v3 of the ID-5100. If your radio is not "
-"fully updated please help by opening a bug report with a debug log so we can "
-"add support for the other revisions."
+msgid "This driver has been tested with v3 of the ID-5100. If your radio is not fully updated please help by opening a bug report with a debug log so we can add support for the other revisions."
 msgstr ""
 
 #: ../drivers/radtel_rt490.py:1345 ../drivers/radtel_rt490.py:1347
@@ -2369,24 +2314,15 @@ msgid "This driver is in development and should be considered as experimental."
 msgstr ""
 
 #: ../drivers/uvk5.py:721
-msgid ""
-"This image is missing firmware information. It may have been generated with "
-"an old or modified version of CHIRP. It is advised that you download a fresh "
-"image from your radio and use that going forward for the best safety and "
-"compatibility."
+msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr ""
 
 #: ../wxui/main.py:1590
-msgid ""
-"This is a live-mode radio, which means changes are sent to the radio in real-"
-"time as you make them. Upload is not necessary!"
+msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"
 msgstr ""
 
 #: ../wxui/main.py:1596
-msgid ""
-"This is a radio-independent file and cannot be uploaded directly to a radio. "
-"Open a radio image (or download one from a radio) and then copy/paste items "
-"from this tab into that one in order to upload"
+msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
 msgstr ""
 
 #: ../drivers/th_uv88.py:560
@@ -2399,12 +2335,9 @@ msgstr ""
 
 #: ../drivers/uvk5.py:648
 msgid ""
-"This is an experimental driver for the Quansheng UV-K5. It may harm your "
-"radio, or worse. Use at your own risk.\n"
+"This is an experimental driver for the Quansheng UV-K5. It may harm your radio, or worse. Use at your own risk.\n"
 "\n"
-"Before attempting to do any changes please download the memory image from "
-"the radio with chirp and keep it. This can be later used to recover the "
-"original settings. \n"
+"Before attempting to do any changes please download the memory image from the radio with chirp and keep it. This can be later used to recover the original settings. \n"
 "\n"
 "some details are not yet implemented"
 msgstr ""
@@ -2418,9 +2351,7 @@ msgid ""
 msgstr ""
 
 #: ../wxui/bugreport.py:418
-msgid ""
-"This is the ticket number for an already-created issue on the chirpmyradio."
-"com website"
+msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
 msgstr ""
 
 #: ../wxui/memedit.py:1748
@@ -2434,11 +2365,7 @@ msgid "This memory and shift block up"
 msgstr "Löschen (und nach oben verschieben)"
 
 #: ../drivers/uvk5_egzumer.py:1468
-msgid ""
-"This option may break your radio! Each radio has a unique set of calibration "
-"data and uploading the data from the image will cause physical harm to the "
-"radio if it is from a different piece of hardware. Do not use this unless "
-"you know what you are doing and accept the risk of destroying your radio!"
+msgid "This option may break your radio! Each radio has a unique set of calibration data and uploading the data from the image will cause physical harm to the radio if it is from a different piece of hardware. Do not use this unless you know what you are doing and accept the risk of destroying your radio!"
 msgstr ""
 
 #: ../drivers/fd268.py:303 ../drivers/fd268.py:309
@@ -2451,20 +2378,11 @@ msgid ""
 msgstr ""
 
 #: ../drivers/uvk5.py:1884
-msgid ""
-"This should only be enabled if you are using modified firmware that supports "
-"wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
-"restrictions and may lead to undefined or unregulated behavior. Use at your "
-"own risk!"
+msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
 msgstr ""
 
 #: ../wxui/bugreport.py:181
-msgid ""
-"This tool will upload details about your system to an existing issue on the "
-"CHIRP tracker. It requires your username and password for chirpmyradio.com "
-"in order to work. Information about your system, including your debug log, "
-"config file, and any open image files will be uploaded. An attempt will be "
-"made to redact any personal information before it leaves your system."
+msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
 msgstr ""
 
 #: ../wxui/developer.py:575
@@ -2524,8 +2442,7 @@ msgid "USB Port Finder"
 msgstr ""
 
 #: ../wxui/clone.py:480
-msgid ""
-"Unable to determine port for your cable. Check your drivers and connections."
+msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
 
 #: ../wxui/memedit.py:1473
@@ -2552,10 +2469,7 @@ msgid "Unable to query"
 msgstr ""
 
 #: ../drivers/ft817.py:320
-msgid ""
-"Unable to read last block. This often happens when the selected model is US "
-"but the radio is a non-US one (or widebanded). Please choose the correct "
-"model and try again."
+msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr ""
 
 #: ../wxui/common.py:687
@@ -2671,7 +2585,7 @@ msgstr "_Ansicht"
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/bugreport.py:218 ../wxui/memedit.py:1559 ../wxui/main.py:1875
+#: ../wxui/memedit.py:1559 ../wxui/main.py:1875 ../wxui/bugreport.py:218
 msgid "Warning"
 msgstr ""
 
@@ -2689,17 +2603,11 @@ msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr ""
 
 #: ../wxui/bugreport.py:309
-msgid ""
-"You have opened multiple issues within the last week. CHIRP limits the "
-"number of issues you can open to avoid abuse. If you really need to open "
-"another, please do so via the website."
+msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
 msgstr ""
 
 #: ../wxui/clone.py:501
-msgid ""
-"Your Prolific-based USB device will not work without reverting to an older "
-"version of the driver. Visit the CHIRP website to read more about how to "
-"resolve this?"
+msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
 msgstr ""
 
 #: ../wxui/clone.py:488
@@ -2775,13 +2683,8 @@ msgstr ""
 #~ msgid "Cannot be imported because"
 #~ msgstr "Kann nicht Importiert werden weil"
 
-#~ msgid ""
-#~ "Choose a language or Auto to use the operating system default. You will "
-#~ "need to restart the application before the change will take effect"
-#~ msgstr ""
-#~ "Wählen Sie eine Sprache oder Auto, um die Defaultsprache vom "
-#~ "Betriebssystem zu verwenden. Bevor die Änderungen wirksam werden, müssen "
-#~ "Sie Chirp neu starten."
+#~ msgid "Choose a language or Auto to use the operating system default. You will need to restart the application before the change will take effect"
+#~ msgstr "Wählen Sie eine Sprache oder Auto, um die Defaultsprache vom Betriebssystem zu verwenden. Bevor die Änderungen wirksam werden, müssen Sie Chirp neu starten."
 
 #~ msgid "Clone Progress"
 #~ msgstr "Klonen Fortschritt"
@@ -2918,18 +2821,11 @@ msgstr ""
 #~ msgid "ICF Files"
 #~ msgstr "ICF Datei"
 
-#~ msgid ""
-#~ "ICF files cannot be edited, only displayed or imported into another file. "
-#~ "Open in read-only mode?"
-#~ msgstr ""
-#~ "ICF-Dateien können nicht bearbeitet werden, nur angezeigt oder importiert "
-#~ "in eine andere Datei. Öffnen im Read-Only-Modus?"
+#~ msgid "ICF files cannot be edited, only displayed or imported into another file. Open in read-only mode?"
+#~ msgstr "ICF-Dateien können nicht bearbeitet werden, nur angezeigt oder importiert in eine andere Datei. Öffnen im Read-Only-Modus?"
 
-#~ msgid ""
-#~ "If you wish to disable this feature you may do so in the <u>Help</u> menu"
-#~ msgstr ""
-#~ "Wenn Sie diese Funktion deaktivieren möchten, können Sie das im <u>Hilfe</"
-#~ "u> Menu machen"
+#~ msgid "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+#~ msgstr "Wenn Sie diese Funktion deaktivieren möchten, können Sie das im <u>Hilfe</u> Menu machen"
 
 #~ msgid "Import from data source"
 #~ msgstr "Import aus der Datenquelle"
@@ -2973,12 +2869,8 @@ msgstr ""
 #~ msgid "Location {number} is already being imported"
 #~ msgstr "Standort {number} wurde bereits importiert"
 
-#~ msgid ""
-#~ "Location {number} is already being imported. Choose another valü for 'New "
-#~ "Location' before selection 'Import'"
-#~ msgstr ""
-#~ "Standort {number} wurde bereits importiert. Wählen Sie einen anderen Wert "
-#~ "für 'Neuen Standort' vor der Auswahl 'Import'"
+#~ msgid "Location {number} is already being imported. Choose another valü for 'New Location' before selection 'Import'"
+#~ msgstr "Standort {number} wurde bereits importiert. Wählen Sie einen anderen Wert für 'Neuen Standort' vor der Auswahl 'Import'"
 
 #~ msgid "Looking for a free spot ({number})"
 #~ msgstr "Suche nach einer freien Stelle ({number})"
@@ -3102,41 +2994,19 @@ msgstr ""
 #~ msgstr "Datei {name} existiert bereit, wollen Sie diese überschreiben?"
 
 #~ msgid ""
-#~ "The reporting feature of CHIRP is designed to help <u>improve quality</u> "
-#~ "by allowing the authors to focus on the radio drivers used most often and "
-#~ "errors experienced by the users. The reports contain no identifying "
-#~ "information and are used only for statistical purposes by the authors. "
-#~ "Your privacy is extremely important, but <u>please consider leaving this "
-#~ "feature enabled to help make CHIRP better!</u>\n"
+#~ "The reporting feature of CHIRP is designed to help <u>improve quality</u> by allowing the authors to focus on the radio drivers used most often and errors experienced by the users. The reports contain no identifying information and are used only for statistical purposes by the authors. Your privacy is extremely important, but <u>please consider leaving this feature enabled to help make CHIRP better!</u>\n"
 #~ "\n"
 #~ "<b>Are you sure you want to disable this feature?</b>"
 #~ msgstr ""
-#~ "Die Reporting-Funktion von CHIRP soll helfen, <u>die Qualität ständig zu "
-#~ "verbessern</u>, in dem sich die Autoren auf die Fehler der am häufigsten "
-#~ "verwendeten Radio-Treiber konzentrieren können. Die Berichte enthalten "
-#~ "keine identifizierbaren Informationen und werden zu rein statistischen "
-#~ "Zwecken verwendet. Ihre Privatsphäre ist uns sehr wichtig, <u>bitte "
-#~ "lassen Sie diese Funktion aktiviert, so helfen Sie mit, CHIRP weiter zu "
-#~ "verbessern!</u> \n"
+#~ "Die Reporting-Funktion von CHIRP soll helfen, <u>die Qualität ständig zu verbessern</u>, in dem sich die Autoren auf die Fehler der am häufigsten verwendeten Radio-Treiber konzentrieren können. Die Berichte enthalten keine identifizierbaren Informationen und werden zu rein statistischen Zwecken verwendet. Ihre Privatsphäre ist uns sehr wichtig, <u>bitte lassen Sie diese Funktion aktiviert, so helfen Sie mit, CHIRP weiter zu verbessern!</u> \n"
 #~ "\n"
 #~ "<b>Sind Sie sicher, dass Sie diese Funktion deaktivieren wollen?</b>"
 
 #~ msgid "The {vendor} {model} has multiple independent sub-devices"
 #~ msgstr "Der {vendor} {model} hat mehrere unabhängige Sub-Geräte"
 
-#~ msgid ""
-#~ "The {vendor} {model} operates in <b>live mode</b>. This means that any "
-#~ "changes you make are immediately sent to the radio. Because of this, you "
-#~ "cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish "
-#~ "to edit the contents offline, please <u>Export</u> to a CSV file, using "
-#~ "the <b>File menu</b>."
-#~ msgstr ""
-#~ "Die {vendor} {model} arbeitet im <b> Live-Modus</b>. Dies bedeutet, dass "
-#~ "alle Änderungen sofort an das Radio gesendet werden. Aus diesem Grund "
-#~ "können Sie die Funktionen <u> Speichern </u> oder <u> hochladen </u> "
-#~ "nicht verwenden. Wenn Sie die Inhalte offline bearbeiten wollen, bitte "
-#~ "mit <u> Exportieren </u> in eine CSV-Datei speichern, unter <b> Datei "
-#~ "Exportieren </b>."
+#~ msgid "The {vendor} {model} operates in <b>live mode</b>. This means that any changes you make are immediately sent to the radio. Because of this, you cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to edit the contents offline, please <u>Export</u> to a CSV file, using the <b>File menu</b>."
+#~ msgstr "Die {vendor} {model} arbeitet im <b> Live-Modus</b>. Dies bedeutet, dass alle Änderungen sofort an das Radio gesendet werden. Aus diesem Grund können Sie die Funktionen <u> Speichern </u> oder <u> hochladen </u> nicht verwenden. Wenn Sie die Inhalte offline bearbeiten wollen, bitte mit <u> Exportieren </u> in eine CSV-Datei speichern, unter <b> Datei Exportieren </b>."
 
 #~ msgid "There was an error during export: {error}"
 #~ msgstr "Es gab einen Fehler beim Export: {error}"
@@ -3147,21 +3017,11 @@ msgstr ""
 #~ msgid "There was an error opening {fname}: {error}"
 #~ msgstr "Es gab einen Fehler beim Öffnen {fname}: {error}"
 
-#~ msgid ""
-#~ "There were errors while opening {file}. The affected memories will not be "
-#~ "importable!"
-#~ msgstr ""
-#~ "Es gab Fehler beim Öffnen {file}. Die betroffenen Speicher werden nicht "
-#~ "importiert!"
+#~ msgid "There were errors while opening {file}. The affected memories will not be importable!"
+#~ msgstr "Es gab Fehler beim Öffnen {file}. Die betroffenen Speicher werden nicht importiert!"
 
-#~ msgid ""
-#~ "This operation requires moving all subsequent channels by one spot until "
-#~ "an empty location is reached.  This can take a LONG time.  Are you sure "
-#~ "you want to do this?"
-#~ msgstr ""
-#~ "Dieser Vorgang erfordert eine Verschiebung aller nachfolgenden Kanäle, "
-#~ "bis eine leere Stelle gefunden wird. Dies kann sehr lange dauern. Sind "
-#~ "Sie sicher dass Sie das wollen?"
+#~ msgid "This operation requires moving all subsequent channels by one spot until an empty location is reached.  This can take a LONG time.  Are you sure you want to do this?"
+#~ msgstr "Dieser Vorgang erfordert eine Verschiebung aller nachfolgenden Kanäle, bis eine leere Stelle gefunden wird. Dies kann sehr lange dauern. Sind Sie sicher dass Sie das wollen?"
 
 #~ msgid "This radio's driver is experimental. Do you want to proceed?"
 #~ msgstr "Dieser Geräte Treiber ist experimentell. Wollen Sie fortfahren?"
@@ -3175,12 +3035,8 @@ msgstr ""
 #~ msgid "URCALL"
 #~ msgstr "URCALL"
 
-#~ msgid ""
-#~ "Unable to paste {src} memories into {dst} rows. Increase the memory "
-#~ "bounds or show empty memories."
-#~ msgstr ""
-#~ "Kann {src} Speicher in {dst} Zeilen einfügen. Erhöhen Sie die Speicher-"
-#~ "Grenzen oder zeigen leere Speicher."
+#~ msgid "Unable to paste {src} memories into {dst} rows. Increase the memory bounds or show empty memories."
+#~ msgstr "Kann {src} Speicher in {dst} Zeilen einfügen. Erhöhen Sie die Speicher-Grenzen oder zeigen leere Speicher."
 
 #~ msgid "Untitled"
 #~ msgstr "Namenlos"
