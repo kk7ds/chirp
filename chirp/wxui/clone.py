@@ -600,9 +600,9 @@ class ChirpCloneDialog(wx.Dialog):
         hbox.Add(always, border=10, flag=wx.ALL | wx.EXPAND)
         hbox.Add(remove, border=10, flag=wx.ALL)
 
-        d.SetSize((300, 300))
-        d.SetMaxSize((300, 300))
-        d.SetMinSize((300, 300))
+        d.SetSize((400, 400))
+        d.SetMinSize((400, 400))
+        d.SetMaxSize((400, 400))
         d.Center()
         c = d.ShowModal()
         if c == wx.ID_OK and recent:
