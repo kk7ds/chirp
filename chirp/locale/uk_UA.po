@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-02 13:30-0700\n"
+"POT-Creation-Date: 2024-11-10 10:34-0800\n"
 "PO-Revision-Date: 2015-11-30 10:36+0200\n"
 "Last-Translator: laser <student.laser@gmail.com>\n"
 "Language-Team: laser <student.laser@gmail.com>\n"
@@ -59,19 +59,19 @@ msgstr[1] "Видалити (та зсунути вгору)"
 msgid "%s has not been saved. Save before closing?"
 msgstr "Файл змінено, зберегти зміни перед закриттям?"
 
-#: ../wxui/bugreport.py:426
+#: ../wxui/bugreport.py:474
 msgid "(Describe what actually happened instead)"
 msgstr ""
 
-#: ../wxui/bugreport.py:424
+#: ../wxui/bugreport.py:472
 msgid "(Describe what you expected to happen)"
 msgstr ""
 
-#: ../wxui/bugreport.py:422
+#: ../wxui/bugreport.py:470
 msgid "(Describe what you were doing)"
 msgstr ""
 
-#: ../wxui/bugreport.py:428
+#: ../wxui/bugreport.py:476
 msgid ""
 "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr ""
@@ -704,7 +704,7 @@ msgstr ""
 msgid "Amateur"
 msgstr ""
 
-#: ../wxui/bugreport.py:284 ../wxui/bugreport.py:393 ../wxui/common.py:609
+#: ../wxui/bugreport.py:328 ../wxui/bugreport.py:437 ../wxui/common.py:609
 #: ../wxui/common.py:636
 msgid "An error has occurred"
 msgstr "Сталася помилка"
@@ -742,15 +742,15 @@ msgstr ""
 msgid "Browser"
 msgstr ""
 
-#: ../wxui/bugreport.py:392
+#: ../wxui/bugreport.py:436
 msgid "Bug number not found"
 msgstr ""
 
-#: ../wxui/bugreport.py:369
+#: ../wxui/bugreport.py:413
 msgid "Bug number:"
 msgstr ""
 
-#: ../wxui/bugreport.py:324
+#: ../wxui/bugreport.py:368
 msgid "Bug subject:"
 msgstr ""
 
@@ -959,7 +959,7 @@ msgstr "Визначити"
 msgid "Delete"
 msgstr "Видалити"
 
-#: ../wxui/bugreport.py:469
+#: ../wxui/bugreport.py:517
 #, fuzzy
 msgid "Detailed information"
 msgstr "Отримання інформації банку"
@@ -1093,28 +1093,28 @@ msgstr ""
 msgid "Enter custom port:"
 msgstr ""
 
-#: ../wxui/bugreport.py:407
+#: ../wxui/bugreport.py:451
 msgid ""
 "Enter details about this update. Be descriptive about what you were doing, "
 "what you expected to happen, and what actually happened."
 msgstr ""
 
-#: ../wxui/bugreport.py:310
+#: ../wxui/bugreport.py:354
 msgid ""
 "Enter information about the bug including a short but meaningful subject and "
 "information about the radio model (if applicable) in question. In the next "
 "step you will have a chance to add more details about the problem."
 msgstr ""
 
-#: ../wxui/bugreport.py:414
+#: ../wxui/bugreport.py:459
 msgid "Enter information to add to the bug here"
 msgstr ""
 
-#: ../wxui/bugreport.py:360
+#: ../wxui/bugreport.py:404
 msgid "Enter the bug number that should be updated"
 msgstr ""
 
-#: ../wxui/bugreport.py:188
+#: ../wxui/bugreport.py:232
 msgid ""
 "Enter your username and password for chirpmyradio.com. If you do not have an "
 "account click below to create one before proceeding."
@@ -1179,7 +1179,7 @@ msgstr ""
 msgid "Failed to parse result"
 msgstr ""
 
-#: ../wxui/bugreport.py:597
+#: ../wxui/bugreport.py:655
 msgid "Failed to send bug report:"
 msgstr ""
 
@@ -1187,7 +1187,7 @@ msgstr ""
 msgid "Features"
 msgstr ""
 
-#: ../wxui/bugreport.py:152
+#: ../wxui/bugreport.py:196
 msgid "File a new bug"
 msgstr ""
 
@@ -1202,7 +1202,7 @@ msgstr ""
 msgid "Files"
 msgstr "_Файл"
 
-#: ../wxui/bugreport.py:467
+#: ../wxui/bugreport.py:515
 #, fuzzy
 msgid "Files:"
 msgstr "_Файл"
@@ -1426,16 +1426,16 @@ msgid "Frequency granularity in kHz"
 msgstr ""
 
 #: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1369
-#: ../drivers/tdh8.py:2482 ../drivers/baofeng_uv17Pro.py:1162
+#: ../drivers/tdh8.py:2612 ../drivers/baofeng_uv17Pro.py:1162
 msgid "Frequency in this range must not be AM mode"
 msgstr ""
 
 #: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1366
-#: ../drivers/tdh8.py:2479 ../drivers/baofeng_uv17Pro.py:1158
+#: ../drivers/tdh8.py:2609 ../drivers/baofeng_uv17Pro.py:1158
 msgid "Frequency in this range requires AM mode"
 msgstr ""
 
-#: ../drivers/tdh8.py:2486
+#: ../drivers/tdh8.py:2616
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr ""
 
@@ -1652,7 +1652,7 @@ msgstr ""
 msgid "Loading settings"
 msgstr ""
 
-#: ../wxui/bugreport.py:282
+#: ../wxui/bugreport.py:326
 msgid "Login failed: Check your username and password"
 msgstr ""
 
@@ -1875,7 +1875,7 @@ msgstr ""
 msgid "Parsing"
 msgstr ""
 
-#: ../wxui/bugreport.py:215
+#: ../wxui/bugreport.py:259
 msgid "Password"
 msgstr ""
 
@@ -2007,7 +2007,7 @@ msgstr ""
 msgid "Radio information"
 msgstr "Отримання інформації банку"
 
-#: ../wxui/bugreport.py:333
+#: ../wxui/bugreport.py:377
 msgid "Radio model:"
 msgstr ""
 
@@ -2092,7 +2092,7 @@ msgstr ""
 msgid "Report or update a bug..."
 msgstr ""
 
-#: ../wxui/bugreport.py:464
+#: ../wxui/bugreport.py:512
 #, fuzzy, python-format
 msgid "Reporting a new bug: %r"
 msgstr "Звіти вимкнуто"
@@ -2272,7 +2272,7 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
-#: ../wxui/bugreport.py:600
+#: ../wxui/bugreport.py:658
 msgid "Successfully sent bug report:"
 msgstr ""
 
@@ -2323,7 +2323,7 @@ msgid ""
 "Proceed anyway?"
 msgstr ""
 
-#: ../wxui/bugreport.py:169
+#: ../wxui/bugreport.py:213
 msgid ""
 "The debug log file is not available when CHIRP is run interactively from the "
 "command-line. Thus, this tool will not upload what you expect. It is "
@@ -2331,7 +2331,7 @@ msgid ""
 "redirected to /dev/null)"
 msgstr ""
 
-#: ../wxui/bugreport.py:449
+#: ../wxui/bugreport.py:497
 msgid "The following information will be submitted:"
 msgstr ""
 
@@ -2411,7 +2411,7 @@ msgid ""
 "You have been warned. Proceed at your own risk!"
 msgstr ""
 
-#: ../wxui/bugreport.py:374
+#: ../wxui/bugreport.py:418
 msgid ""
 "This is the ticket number for an already-created issue on the chirpmyradio."
 "com website"
@@ -2452,7 +2452,7 @@ msgid ""
 "own risk!"
 msgstr ""
 
-#: ../wxui/bugreport.py:137
+#: ../wxui/bugreport.py:181
 msgid ""
 "This tool will upload details about your system to an existing issue on the "
 "CHIRP tracker. It requires your username and password for chirpmyradio.com "
@@ -2580,11 +2580,11 @@ msgstr ""
 msgid "Unsupported model %r"
 msgstr "Файл непідтримуваного типу"
 
-#: ../wxui/bugreport.py:158
+#: ../wxui/bugreport.py:202
 msgid "Update an existing bug"
 msgstr ""
 
-#: ../wxui/bugreport.py:466
+#: ../wxui/bugreport.py:514
 #, fuzzy, python-format
 msgid "Updating bug %s"
 msgstr "Оновлення списку URCALL"
@@ -2620,7 +2620,7 @@ msgstr ""
 msgid "Use larger font"
 msgstr ""
 
-#: ../wxui/bugreport.py:205
+#: ../wxui/bugreport.py:249
 msgid "Username"
 msgstr ""
 
@@ -2665,7 +2665,7 @@ msgstr "В_игляд"
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/bugreport.py:174 ../wxui/memedit.py:1559 ../wxui/main.py:1875
+#: ../wxui/bugreport.py:218 ../wxui/memedit.py:1559 ../wxui/main.py:1875
 msgid "Warning"
 msgstr ""
 
@@ -2682,7 +2682,7 @@ msgstr ""
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr ""
 
-#: ../wxui/bugreport.py:265
+#: ../wxui/bugreport.py:309
 msgid ""
 "You have opened multiple issues within the last week. CHIRP limits the "
 "number of issues you can open to avoid abuse. If you really need to open "
