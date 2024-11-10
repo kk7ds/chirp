@@ -1304,9 +1304,14 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         defaults = self.bandplan.get_defaults_for_frequency(mem.freq)
         features = self._features
 
+        LOG.debug('Using band defaults: %s' % defaults)
+
         if not defaults.offset:
             want_duplex = ''
             want_offset = None
+        elif defaults.duplex is not None:
+            want_duplex = defaults.duplex
+            want_offset = abs(defaults.offset)
         elif defaults.offset > 0:
             want_duplex = '+'
             want_offset = defaults.offset
