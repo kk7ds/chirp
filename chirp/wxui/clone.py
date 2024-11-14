@@ -91,6 +91,12 @@ class CloneThread(threading.Thread):
     def run(self):
         try:
             self._fn()
+        except errors.SpecificRadioError as e:
+            if self._dialog:
+                LOG.exception('Failed to clone: %s', e)
+                self._dialog.fail(e)
+            else:
+                LOG.warning('Clone failed after cancel: %s', e)
         except Exception as e:
             if self._dialog:
                 LOG.exception('Failed to clone: %s' % e)
@@ -594,9 +600,9 @@ class ChirpCloneDialog(wx.Dialog):
         hbox.Add(always, border=10, flag=wx.ALL | wx.EXPAND)
         hbox.Add(remove, border=10, flag=wx.ALL)
 
-        d.SetSize((300, 300))
-        d.SetMaxSize((300, 300))
-        d.SetMinSize((300, 300))
+        d.SetSize((400, 400))
+        d.SetMinSize((400, 400))
+        d.SetMaxSize((400, 400))
         d.Center()
         c = d.ShowModal()
         if c == wx.ID_OK and recent:
@@ -628,11 +634,28 @@ class ChirpCloneDialog(wx.Dialog):
         self._radio.pipe.close()
         wx.CallAfter(self.EndModal, wx.ID_OK)
 
-    def fail(self, message):
+    def fail(self, error):
+        if isinstance(error, errors.SpecificRadioError):
+            link = error.get_link()
+            message = str(error)
+        else:
+            link = None
+            message = str(error)
+
         def safe_fail():
-            wx.MessageBox(message,
-                          _('Error communicating with radio'),
-                          wx.ICON_ERROR, parent=self)
+            if link:
+                buttons = wx.YES_NO | wx.NO_DEFAULT
+            else:
+                buttons = wx.OK
+            d = wx.MessageDialog(self, message,
+                                 _('Error communicating with radio'),
+                                 wx.ICON_ERROR | buttons)
+            if link:
+                d.SetYesNoLabels(_('More Info'), wx.ID_OK)
+            r = d.ShowModal()
+            if r == wx.ID_YES:
+                webbrowser.open(link)
+
             self.cancel_action()
         wx.CallAfter(safe_fail)
 

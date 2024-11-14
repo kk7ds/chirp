@@ -1,13 +1,13 @@
 # Copyright (C) 2022 Dan Smith <dsmith@danplanet.com>
 # This file is distributed under the same license as the CHIRP package.
 #
-# DuckSoft, BH2UEP <realducksoft@gmail.com>, 2022.
+# DuckSoft, BH2UEP <realducksoft@gmail.com>, 2022-2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-16 21:38-0700\n"
-"PO-Revision-Date: 2024-01-26 13:30+0800\n"
+"POT-Creation-Date: 2024-11-10 10:50-0800\n"
+"PO-Revision-Date: 2024-11-11 02:28+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.5\n"
 
 #: ../drivers/ft2d.py:97
 msgid ""
@@ -27,66 +27,74 @@ msgid ""
 "      (\"-WAIT-\" will appear on radio LCD).\n"
 "5. Finally, press OK button below.\n"
 msgstr ""
+" 1. 关闭电台。\n"
+" 2. 连接线到 DATA 端口。\n"
+" 3. 在打开电台时按住 [DISP] 键\n"
+"      （电台显示屏上会显示“CLONE”）。\n"
+" 4. 按 [RECEIVE] 屏幕按钮\n"
+"      （电台显示屏上会显示“-WAIT-”）。\n"
+"5. 最后，按下面的 OK 按钮。\n"
 
 #: ../wxui/query_sources.py:60
 #, python-format
 msgid "%(value)s must be between %(min)i and %(max)i"
-msgstr ""
+msgstr "%(value)s 必须在 %(min)i 和 %(max)i 之间"
 
 #: ../wxui/memedit.py:1739
-#, fuzzy, python-format
+#, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
-msgstr[0] "...并将区块上移"
+msgstr[0] "%i 个存储并将所有上移"
 
 #: ../wxui/memedit.py:1730
-#, fuzzy, python-format
+#, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
-msgstr[0] "存储"
+msgstr[0] "%i 个存储"
 
 #: ../wxui/memedit.py:1734
-#, fuzzy, python-format
+#, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
-msgstr[0] "...并将区块上移"
+msgstr[0] "%i 个存储并上移区块"
 
-#: ../wxui/main.py:1392
+#: ../wxui/main.py:1399
 #, python-format
 msgid "%s has not been saved. Save before closing?"
 msgstr "%s 还没有被保存。要在关闭程序前保存吗？"
 
-#: ../wxui/bugreport.py:426
+#: ../wxui/bugreport.py:474
 msgid "(Describe what actually happened instead)"
-msgstr ""
+msgstr "（描述实际发生的情况）"
 
-#: ../wxui/bugreport.py:424
+#: ../wxui/bugreport.py:472
 msgid "(Describe what you expected to happen)"
-msgstr ""
+msgstr "（描述期望发生的情况）"
 
-#: ../wxui/bugreport.py:422
+#: ../wxui/bugreport.py:470
 msgid "(Describe what you were doing)"
-msgstr ""
+msgstr "（描述你做了什么）"
 
-#: ../wxui/bugreport.py:428
-msgid ""
-"(Has this ever worked before? New radio? Does it work with OEM software?)"
-msgstr ""
+#: ../wxui/bugreport.py:476
+msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
+msgstr "（这之前曾经奏效过吗？是新电台吗？使用原厂软件能正常工作吗？）"
 
 #: ../wxui/radioinfo.py:50
 msgid "(none)"
-msgstr ""
+msgstr "（无）"
 
 #: ../wxui/memedit.py:2092
-#, fuzzy, python-format
+#, python-format
 msgid "...and %i more"
-msgstr "...并将所有存储上移"
+msgstr "...以及其他 %i 个"
 
 #: ../drivers/ft4.py:726
 msgid ""
 "1. Connect programming cable to MIC jack.\n"
 "2. Press OK."
 msgstr ""
+"1. 将编程线连接到 MIC 插孔。\n"
+"2. 按 OK。"
 
 #: ../drivers/alinco.py:605 ../drivers/alinco.py:614
 msgid ""
@@ -99,6 +107,14 @@ msgid ""
 "   (rotate dial while holding MONI to change)\n"
 "7. Click OK\n"
 msgstr ""
+"1. 确保你的固件版本是 4_10 或更高\n"
+"2. 关闭电台\n"
+"3. 连接你的接口线\n"
+"4. 打开电台\n"
+"5. 按住 MONI 键不放，点按 PTT 键 3 次\n"
+"6. 支持的波特率：57600（默认）和 19200\n"
+"   （按住 MONI 键旋转旋钮以更改）\n"
+"7. 点击 OK\n"
 
 #: ../drivers/ft2900.py:1253
 msgid ""
@@ -107,6 +123,10 @@ msgid ""
 "3. While holding \"A/N LOW\" button, turn radio on.\n"
 "4. <b>After clicking OK</b>, press \"SET MHz\" to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住 \"A/N LOW\" 键的同时，打开电台。\n"
+"4. <b>点击 OK 后</b>，按 \"SET MHz\" 键发送镜像。\n"
 
 #: ../drivers/ft2900.py:1258
 msgid ""
@@ -120,6 +140,14 @@ msgid ""
 "      power and pressing and holding red \"*L\" button to unlock\n"
 "      radio, then start back at step 1.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住 \"A/N LOW\" 键的同时，打开电台。\n"
+"4. 按 \"MW D/MR\" 键接收镜像。\n"
+"5. 确保显示屏显示 \"-WAIT-\"（如果没有，请参见下面的说明）\n"
+"6. 点击 OK 关闭此对话框并开始传输。\n"
+"说明：如果在第 5 步看不到 \"-WAIT-\"，请尝试重新开关电源\n"
+"      并按住红色 \"*L\" 键解锁电台，然后从第 1 步开始。\n"
 
 #: ../drivers/ft8100.py:94
 msgid ""
@@ -128,6 +156,10 @@ msgid ""
 "3. While holding \"F/W\" button, turn radio on.\n"
 "4. <b>After clicking OK</b>, press \"RPT\" to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住 \"F/W\" 键的同时，打开电台。\n"
+"4. <b>点击 OK 后</b>，按 \"RPT\" 键发送镜像。\n"
 
 #: ../drivers/ft8100.py:99
 msgid ""
@@ -137,6 +169,11 @@ msgid ""
 "4. Press \"REV\" to receive image.\n"
 "5. Click OK to start transfer.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住 \"F/W\" 键的同时，打开电台。\n"
+"4. 按 \"REV\" 键接收镜像。\n"
+"5. 点击 OK 开始传输。\n"
 
 #: ../drivers/ft7100.py:1130
 msgid ""
@@ -145,6 +182,10 @@ msgid ""
 "3. While holding \"TONE\" and \"REV\" buttons, turn radio on.\n"
 "4. <b>After clicking OK</b>, press \"TONE\" to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住 \"TONE\" 和 \"REV\" 键的同时，打开电台。\n"
+"4. <b>点击 OK 后</b>，按 \"TONE\" 键发送镜像。\n"
 
 #: ../drivers/ft7100.py:1135
 msgid ""
@@ -155,28 +196,43 @@ msgid ""
 "5. Make sure display says \"CLONE RX\" and green led is blinking\n"
 "6. Click OK to start transfer.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住 \"TONE\" 和 \"REV\" 键的同时，打开电台。\n"
+"4. 按 \"REV\" 键接收镜像。\n"
+"5. 确保显示屏显示 \"CLONE RX\" 并且绿色指示灯在闪烁\n"
+"6. 点击 OK 开始传输。\n"
 
 #: ../drivers/ft2800.py:206
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable\n"
-"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning "
-"it on\n"
+"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning it on\n"
 "4. Radio is in clone mode when TX/RX is flashing\n"
 "5. <b>After clicking OK</b>, press the MHz key on the radio to send image.\n"
 "    (\"TX\" will appear on the LCD). \n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 按住电台上的 MHz、Low、D/MR 三个键的同时，打开电台。\n"
+"4. 当 TX/RX 闪烁时，电台处于克隆模式\n"
+"5. <b>点击 OK 后</b>，按电台上的 MHz 键发送镜像。\n"
 
 #: ../drivers/ft2800.py:216
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable\n"
-"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning "
-"it on\n"
+"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning it on\n"
 "4. Radio is in clone mode when TX/RX is flashing\n"
 "5. Press the Low key on the radio (\"RX\" will appear on the LCD).\n"
 "6. Click OK."
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 按住电台上的 MHz、Low、D/MR 三个键的同时，打开电台。\n"
+"4. 当 TX/RX 闪烁时，电台处于克隆模式\n"
+"5. 按电台上的 Low 键（LCD 上会显示 \"RX\"）。\n"
+"6. 点击 OK。"
 
 #: ../drivers/ft450d.py:430
 msgid ""
@@ -188,6 +244,11 @@ msgid ""
 "4. <b>After clicking OK</b> here, press the [C.S.] key to\n"
 "    send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MODE &lt;] 和 [MODE &gt;] 两个键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE MODE\"）。\n"
+"4. <b>点击 OK 后</b>，按电台上的 [C.S.] 键发送镜像。\n"
 
 #: ../drivers/ft817.py:281
 msgid ""
@@ -198,6 +259,11 @@ msgid ""
 "     display).\n"
 "4. <b>After clicking OK</b>, press the [A] key to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MODE &lt;] 和 [MODE &gt;] 两个键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE MODE\"）。\n"
+"4. <b>点击 OK 后</b>，按电台上的 [A] 键发送镜像。\n"
 
 #: ../drivers/ft450d.py:439
 msgid ""
@@ -209,6 +275,9 @@ msgid ""
 "4. Click OK here.\n"
 "    (\"Receiving\" will appear on the LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MODE &lt;] 和 [MODE &gt;] 两个键的同时，打开电台\n"
 
 #: ../drivers/ft857.py:450
 msgid ""
@@ -219,6 +288,11 @@ msgid ""
 "     display).\n"
 "4. Press the [A](RCV) key (\"receiving\" will appear on the LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MODE &lt;] 和 [MODE &gt;] 两个键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE MODE\"）。\n"
+"4. 按电台上的 [A](RCV) 键（LCD 上会显示 \"receiving\"）。\n"
 
 #: ../drivers/ft817.py:289
 msgid ""
@@ -229,6 +303,11 @@ msgid ""
 "     display).\n"
 "4. Press the [C] key (\"RX\" will appear on the LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MODE &lt;] 和 [MODE &gt;] 两个键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE MODE\"）。\n"
+"4. 按电台上的 [C] 键（LCD 上会显示 \"RX\"）。\n"
 
 #: ../drivers/ft857.py:441
 msgid ""
@@ -240,6 +319,12 @@ msgid ""
 "4. <b>After clicking OK</b>,\n"
 "     press the [C](SEND) key to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线到 CAT/LINEAR。\n"
+"3. 在按住电台上的 [MODE &lt;] 和 [MODE &gt;] 两个键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE MODE\"）。\n"
+"4. <b>点击 OK 后</b>，\n"
+"    按电台上的 [C](SEND) 键发送镜像。\n"
 
 #: ../drivers/ft7800.py:857
 msgid ""
@@ -253,6 +338,12 @@ msgid ""
 "6. <b>After clicking OK</b>, press the \"left\" [V/M] key to\n"
 "     send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 \"left\" [V/M] 键的同时，打开电台。\n"
+"4. 旋转 \"right\" DIAL 旋钮选择 \"CLONE START\"。\n"
+"5. 按 [SET] 键。显示屏会消失一会儿，然后会显示 \"CLONE\"。\n"
+"6. <b>点击 OK 后</b>，按 \"left\" [V/M] 键发送镜像。\n"
 
 #: ../drivers/ft7800.py:867
 msgid ""
@@ -266,6 +357,12 @@ msgid ""
 "6. Press the \"left\" [LOW] key (\"CLONE -RX-\" will appear on\n"
 "     the display).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 \"left\" [V/M] 键的同时，打开电台。\n"
+"4. 旋转 \"right\" DIAL 旋钮选择 \"CLONE START\"。\n"
+"5. 按 [SET] 键。短暂熄屏后显示 \"CLONE\"。\n"
+"6. 按 \"left\" [LOW] 键（显示屏上会显示 \"CLONE -RX-\"）。\n"
 
 #: ../drivers/vx8.py:584
 msgid ""
@@ -275,6 +372,11 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [FW] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. <b>点击 OK 后</b>，按 [BAND] 键发送镜像。\n"
 
 #: ../drivers/vx8.py:591
 msgid ""
@@ -284,6 +386,11 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [FW] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. 按 [MODE] 键（LCD 上会显示 \"-WAIT-\"）。\n"
 
 #: ../drivers/ft7800.py:282
 msgid ""
@@ -297,6 +404,12 @@ msgid ""
 "     will appear.\n"
 "6. Press the [LOW(ACC)] key (\"--RX--\" will appear on the display).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MHz(PRI)] 键的同时，打开电台。\n"
+"4. 旋转 DIAL 旋钮选择 \"F-7 CLONE\"。\n"
+"5. 在按住 [BAND(SET)] 键。短暂熄屏后显示 \"CLONE\"。\n"
+"6. 按 [LOW(ACC)] 键（显示屏上会显示 \"--RX--\"）。\n"
 
 #: ../drivers/ft7800.py:271
 msgid ""
@@ -310,6 +423,12 @@ msgid ""
 " will appear.\n"
 "6. <b>After clicking OK</b>, press the [V/M(MW)] key to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MHz(PRI)] 键的同时，打开电台。\n"
+"4. 旋转 DIAL 旋钮选择 \"F-7 CLONE\"。\n"
+"5. 在按住 [BAND(SET)] 键。短暂熄屏后显示 \"CLONE\"。\n"
+"6. <b>点击 OK 后</b>，按 [V/M(MW)] 键发送镜像。\n"
 
 #: ../drivers/ft2d.py:90
 msgid ""
@@ -320,6 +439,12 @@ msgid ""
 "4. <b>After clicking OK here in chirp</b>,\n"
 "     press the [Send] screen button.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住 [DISP] 键的同时打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. <b>在 chirp 中点击 OK 后</b>，\n"
+"    按 [Send] 屏幕按钮。\n"
 
 #: ../drivers/ft1d.py:891
 msgid ""
@@ -329,6 +454,11 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [F] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. <b>点击 OK 后</b>，按 [BAND] 键发送镜像。\n"
 
 #: ../drivers/ft1d.py:898
 msgid ""
@@ -338,6 +468,11 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. Press the [Dx] key (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [F] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. 按 [Dx] 键（LCD 上会显示 \"-WAIT-\"）。\n"
 
 #: ../drivers/ftm3200d.py:84
 msgid ""
@@ -348,6 +483,12 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [REV(DW)] key\n"
 "     to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MHz(SETUP)] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. <b>点击 OK 后</b>，按 [REV(DW)] 键\n"
+"    发送镜像。\n"
 
 #: ../drivers/ftm3200d.py:92
 msgid ""
@@ -358,6 +499,12 @@ msgid ""
 "4. Press the [MHz(SETUP)] key\n"
 "     (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MHz(SETUP)] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. 按 [MHz(SETUP)] 键\n"
+"    （LCD 上会显示 \"-WAIT-\"）。\n"
 
 #: ../drivers/ftm7250d.py:84
 msgid ""
@@ -368,6 +515,12 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [GM(AMS)] key\n"
 "     to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MHz(SETUP)] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. <b>点击 OK 后</b>，按 [GM(AMS)] 键\n"
+"    发送镜像。\n"
 
 #: ../drivers/ftm7250d.py:92
 msgid ""
@@ -378,6 +531,12 @@ msgid ""
 "4. Press the [MHz(SETUP)] key\n"
 "     (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MHz(SETUP)] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. 按 [MHz(SETUP)] 键\n"
+"    （LCD 上会显示 \"-WAIT-\"）。\n"
 
 #: ../drivers/vx5.py:317
 msgid ""
@@ -388,6 +547,12 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [VFO(DW)SC] key to receive\n"
 "    the image from the radio.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [F/W] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. <b>点击 OK 后</b>，按 [VFO(DW)SC] 键\n"
+"    接收电台的镜像。\n"
 
 #: ../drivers/vx5.py:325
 msgid ""
@@ -399,6 +564,12 @@ msgid ""
 "    on the LCD).\n"
 "5. Click OK to send image to radio.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [F/W] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. 按 [MR(SKP)SC] 键（LCD 上会显示 \"CLONE WAIT\"）。\n"
+"5. 点击 OK 发送镜像到电台。\n"
 
 #: ../drivers/ft50.py:195
 msgid ""
@@ -408,6 +579,10 @@ msgid ""
 "     radio on.\n"
 "4. <b>After clicking OK</b>, press the [PTT] switch to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [PTT] 和旋钮的同时，打开电台。\n"
+"4. <b>点击 OK 后</b>，按 [PTT] 键发送镜像。\n"
 
 #: ../drivers/ft50.py:202
 msgid ""
@@ -418,8 +593,13 @@ msgid ""
 "4. Press the [MONI] switch (\"WAIT\" will appear on the LCD).\n"
 "5. Press OK.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [PTT] 和旋钮的同时，打开电台。\n"
+"4. 按 [MONI] 键（LCD 上会显示 \"WAIT\"）。\n"
+"5. 点击 OK。\n"
 
-#: ../drivers/vx6.py:370 ../drivers/vx3.py:373
+#: ../drivers/vx3.py:373 ../drivers/vx6.py:370
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -427,8 +607,14 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [F/W] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. <b>点击 OK 后</b>，按 [BAND] 键\n"
+"    发送镜像。\n"
 
-#: ../drivers/vx6.py:377 ../drivers/vx3.py:380
+#: ../drivers/vx3.py:380 ../drivers/vx6.py:377
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -436,6 +622,11 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. Press the [V/M] key (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [F/W] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. 按 [V/M] 键（LCD 上会显示 \"-WAIT-\"）。\n"
 
 #: ../drivers/vx7.py:192
 msgid ""
@@ -445,6 +636,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MON-F] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. <b>点击 OK 后</b>，按 [BAND] 键\n"
+"    发送镜像。\n"
 
 #: ../drivers/vx7.py:200
 msgid ""
@@ -454,6 +651,11 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. Press the [V/M] key (\"CLONE WAIT\" will appear on the LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MON-F] 键的同时，打开电台\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"4. 按 [V/M] 键（LCD 上会显示 \"CLONE WAIT\"）。\n"
 
 #: ../drivers/ft60.py:354
 msgid ""
@@ -466,6 +668,13 @@ msgid ""
 "6. <b>After clicking OK</b>, hold the [PTT] switch\n"
 "     for one second to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MONI] 键的同时，打开电台。\n"
+"4. 旋转 DIAL 旋钮选择 \"F8 CLONE\"。\n"
+"5. 短按 [F/W] 键。\n"
+"6. <b>点击 OK 后</b>，按住 [PTT] 键\n"
+"    一秒钟发送镜像。\n"
 
 #: ../drivers/ft60.py:363
 msgid ""
@@ -477,8 +686,14 @@ msgid ""
 "5. Press the [F/W] key momentarily.\n"
 "6. Press the [MONI] switch (\"--RX--\" will appear on the LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MONI] 键的同时，打开电台。\n"
+"4. 旋转 DIAL 旋钮选择 \"F8 CLONE\"。\n"
+"5. 短按 [F/W] 键。\n"
+"6. 按 [MONI] 键（LCD 上会显示 \"--RX--\"）。\n"
 
-#: ../drivers/vx170.py:101
+#: ../drivers/vx170.py:105
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -488,6 +703,14 @@ msgid ""
 "5. <b>After clicking OK</b>, briefly hold [PTT] key to send image.\n"
 "    (\"-TX-\" will appear on the LCD). \n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [moni] 键的同时，打开电台。\n"
+"4. 在菜单中选择 CLONE，然后按 F 键。\n"
+"    电台会重新启动进入克隆模式\n"
+"    （显示屏上会显示 \"CLONE\"）。\n"
+"5. <b>点击 OK 后</b>，短按 [PTT] 键\n"
+"    发送镜像（LCD 上会显示 \"-TX-\"）。\n"
 
 #: ../drivers/ft1802.py:96
 msgid ""
@@ -496,6 +719,10 @@ msgid ""
 "3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
 "4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [LOW(A/N)] 键的同时，打开电台。\n"
+"4. <b>点击 OK 后</b>，按 [MHz(SET)] 键发送镜像。\n"
 
 #: ../drivers/ft1802.py:103
 msgid ""
@@ -504,6 +731,10 @@ msgid ""
 "3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [LOW(A/N)] 键的同时，打开电台。\n"
+"4. 按 [D/MR(MW)] 键（LCD 上会显示 \"--WAIT--\"）。\n"
 
 #: ../drivers/ft1500m.py:96
 msgid ""
@@ -513,6 +744,10 @@ msgid ""
 "   while turning the radio on.\n"
 "4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MHz]、[LOW] 和 [D/MR] 键的同时，打开电台。\n"
+"4. <b>点击 OK 后</b>，按 [MHz(SET)] 键发送镜像。\n"
 
 #: ../drivers/ft1500m.py:103
 msgid ""
@@ -522,6 +757,10 @@ msgid ""
 "   while turning the radio on.\n"
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 在按住电台上的 [MHz]、[LOW] 和 [D/MR] 键的同时，打开电台。\n"
+"4. 按 [D/MR(MW)] 键（LCD 上会显示 \"--WAIT--\"）。\n"
 
 #: ../drivers/uv5r.py:834
 msgid ""
@@ -532,6 +771,12 @@ msgid ""
 "5. Ensure that the radio is tuned to channel with no activity.\n"
 "6. Click OK to download image from device.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 确保连接器连接牢固。\n"
+"4. 打开电台（音量可能需要设置为 100%）。\n"
+"5. 确保电台调到没有活动的频道。\n"
+"6. 点击 OK 下载设备中的镜像。\n"
 
 #: ../drivers/uv5r.py:842
 msgid ""
@@ -542,8 +787,14 @@ msgid ""
 "5. Ensure that the radio is tuned to channel with no activity.\n"
 "6. Click OK to upload image to device.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 确保连接器连接牢固。\n"
+"4. 打开电台（音量可能需要设置为 100%）。\n"
+"5. 确保电台调到没有活动的频道。\n"
+"6. 点击 OK 上传镜像到设备。\n"
 
-#: ../drivers/uvb5.py:287 ../drivers/wouxun.py:213 ../drivers/tg_uv2p.py:232
+#: ../drivers/tg_uv2p.py:232 ../drivers/uvb5.py:287 ../drivers/wouxun.py:213
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -552,8 +803,14 @@ msgid ""
 "5. Ensure that the radio is tuned to channel with no activity.\n"
 "6. Click OK to download image from device.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 确保连接器连接牢固。\n"
+"4. 打开电台。\n"
+"5. 确保电台调到没有活动的频道。\n"
+"6. 点击 OK 下载设备中的镜像。\n"
 
-#: ../drivers/uvb5.py:295 ../drivers/wouxun.py:221 ../drivers/tg_uv2p.py:240
+#: ../drivers/tg_uv2p.py:240 ../drivers/uvb5.py:295 ../drivers/wouxun.py:221
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -562,6 +819,12 @@ msgid ""
 "5. Ensure that the radio is tuned to channel with no activity.\n"
 "6. Click OK to upload image to device.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 确保连接器连接牢固。\n"
+"4. 打开电台。\n"
+"5. 确保电台调到没有活动的频道。\n"
+"6. 点击 OK 上传镜像到设备。\n"
 
 #: ../drivers/yaesu_clone.py:239
 msgid ""
@@ -570,6 +833,10 @@ msgid ""
 "3. Prepare radio for clone.\n"
 "4. <b>After clicking OK</b>, press the key to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 准备克隆电台。\n"
+"4. <b>点击 OK 后</b>，按键发送镜像。\n"
 
 #: ../drivers/yaesu_clone.py:244
 msgid ""
@@ -578,6 +845,10 @@ msgid ""
 "3. Prepare radio for clone.\n"
 "4. Press the key to receive the image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接数据线。\n"
+"3. 准备克隆电台。\n"
+"4. 按键接收镜像。\n"
 
 #: ../drivers/ft90.py:194
 msgid ""
@@ -587,6 +858,11 @@ msgid ""
 "3. Replace mic with PC programming cable.\n"
 "4. <b>After clicking OK</b>, press the [SET] key to send image.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接麦克风，同时按住麦克风上的 [ACC] 键打开电台。\n"
+"    （显示屏上会显示 \"CLONE\"）\n"
+"3. 用 PC 编程线替换麦克风。\n"
+"4. <b>点击 OK 后</b>，按 [SET] 键发送镜像。\n"
 
 #: ../drivers/ft90.py:201
 msgid ""
@@ -597,6 +873,11 @@ msgid ""
 "4. Press the [DISP/SS] key\n"
 "    (\"R\" will appear on the lower left of LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 连接麦克风，同时按住麦克风上的 [ACC] 键打开电台。\n"
+"    （显示屏上会显示 \"CLONE\"）\n"
+"3. 用 PC 编程线替换麦克风。\n"
+"4. 按 [DISP/SS] 键\n"
 
 #: ../drivers/bj9900.py:102
 msgid ""
@@ -606,8 +887,13 @@ msgid ""
 "     head was connected to, <b>not the mic connector</b>.\n"
 "4. Click OK.\n"
 msgstr ""
+"1. 关闭电台。\n"
+"2. 拆下前面板。\n"
+"3. 连接数据线到电台，使用与前面板连接的相同连接器，\n"
+"     <b>不是麦克风连接器</b>。\n"
+"4. 点击 OK。\n"
 
-#: ../drivers/vx170.py:112
+#: ../drivers/vx170.py:116
 msgid ""
 "1. Turn radio off.\n"
 "3. Press and hold in the [moni] key while turning the radio on.\n"
@@ -615,6 +901,11 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "5. Press the [moni] key (\"-RX-\" will appear on the LCD).\n"
 msgstr ""
+"1. 关闭电台。\n"
+"3. 按住 [moni] 键打开电台。\n"
+"4. 在菜单中选择 CLONE，然后按 F。电台会重新启动进入克隆模式。\n"
+"     （显示屏上会显示 \"CLONE\"）\n"
+"5. 按 [moni] 键（显示屏上会显示 \"-RX-\"）\n"
 
 #: ../drivers/ft70.py:545
 msgid ""
@@ -626,6 +917,12 @@ msgid ""
 "5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
 "<b>Then click OK</b>"
 msgstr ""
+"1. 打开电台。\n"
+"2. 连接数据线到 DATA 端口。\n"
+"3. 拆下电池。\n"
+"4. 同时按住 [AMS] 键和电源键，然后插上电池（显示屏上会显示 \"ADMS\"）。\n"
+"5. 按 [MODE] 键（显示屏上会显示 \"-WAIT-\"）。\n"
+"<b>然后点击 OK</b>"
 
 #: ../drivers/ft70.py:537
 msgid ""
@@ -636,6 +933,11 @@ msgid ""
 " in back battery the(\"ADMS\" will appear on the display).\n"
 "5. <b>After clicking OK</b>, press the [BAND] key.\n"
 msgstr ""
+"1. 打开电台。\n"
+"2. 连接数据线到 DATA 端口。\n"
+"3. 拆下电池。\n"
+"4. 同时按住 [AMS] 键和电源键，然后插上电池（显示屏上会显示 \"ADMS\"）。\n"
+"5. <b>点击 OK 后</b>，按 [BAND] 键。\n"
 
 #: ../drivers/uvk5.py:656
 msgid ""
@@ -644,8 +946,7 @@ msgid ""
 "3. Make sure connector is firmly connected.\n"
 "4. Click OK to download image from device.\n"
 "\n"
-"It will may not work if you turn on the radio with the cable already "
-"attached\n"
+"It will may not work if you turn on the radio with the cable already attached\n"
 msgstr ""
 "1. 打开电台。\n"
 "2. 将数据线连接至麦克风和录音机接口。\n"
@@ -670,128 +971,123 @@ msgstr ""
 "\n"
 "如果在已连接数据线的情况下打开电台，则可能无法进行"
 
-#: ../wxui/main.py:1947
-msgid ""
-"A new CHIRP version is available. Please visit the website as soon as "
-"possible to download it!"
+#: ../wxui/main.py:1954
+msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "新的 CHIRP 版本已经推出。请尽快访问网站下载！"
 
 #: ../drivers/ga510.py:1068
 msgid "AM mode does not allow duplex or tone"
-msgstr ""
+msgstr "AM制式下不支持双工或亚音频"
 
-#: ../wxui/main.py:929
+#: ../wxui/main.py:935
 msgid "About"
-msgstr ""
+msgstr "关于"
 
-#: ../wxui/main.py:1738
+#: ../wxui/main.py:1745
 msgid "About CHIRP"
 msgstr "关于CHIRP"
 
-#: ../wxui/main.py:1788
+#: ../wxui/main.py:1795
 msgid "Agree"
-msgstr ""
+msgstr "同意"
 
 #: ../wxui/query_sources.py:367
 msgid "All"
 msgstr "全选"
 
-#: ../wxui/main.py:1222
+#: ../wxui/main.py:1228
 msgid "All Files"
 msgstr "全部文件"
 
-#: ../wxui/main.py:1233
+#: ../wxui/main.py:1239
 msgid "All supported formats|"
-msgstr ""
+msgstr "所有支持的格式|"
 
-#: ../wxui/clone.py:589
+#: ../wxui/clone.py:595
 msgid "Always start with recent list"
-msgstr ""
+msgstr "总是以最近的列表启动"
 
 #: ../wxui/query_sources.py:284 ../wxui/query_sources.py:359
 msgid "Amateur"
-msgstr ""
+msgstr "业余"
 
-#: ../wxui/bugreport.py:284 ../wxui/bugreport.py:393 ../wxui/common.py:609
-#: ../wxui/common.py:636
+#: ../wxui/common.py:609 ../wxui/common.py:636 ../wxui/bugreport.py:328
+#: ../wxui/bugreport.py:437
 msgid "An error has occurred"
 msgstr "发生错误"
 
-#: ../wxui/clone.py:136
+#: ../wxui/clone.py:142
 msgid "Applying settings"
-msgstr ""
+msgstr "应用设置"
 
-#: ../wxui/main.py:1488
+#: ../wxui/main.py:1495
 msgid "Automatic from system"
-msgstr ""
+msgstr "系统自动"
 
 #: ../wxui/developer.py:556
 msgid "Available modules"
-msgstr ""
+msgstr "可用模块"
 
-#: ../wxui/main.py:1889
+#: ../wxui/main.py:1896
 msgid "Bandplan"
-msgstr ""
+msgstr "频带计划"
 
 #: ../wxui/query_sources.py:389 ../wxui/query_sources.py:606
 msgid "Bands"
-msgstr ""
+msgstr "频带"
 
 #: ../wxui/main.py:210
 msgid "Banks"
-msgstr ""
+msgstr "存储"
 
 #: ../wxui/developer.py:224
 msgid "Bin"
-msgstr ""
+msgstr "条目"
 
 #: ../wxui/main.py:221
 msgid "Browser"
 msgstr "数据浏览器"
 
-#: ../wxui/bugreport.py:392
+#: ../wxui/bugreport.py:436
 msgid "Bug number not found"
-msgstr ""
+msgstr "Bug 编号未找到"
 
-#: ../wxui/bugreport.py:369
+#: ../wxui/bugreport.py:413
 msgid "Bug number:"
-msgstr ""
+msgstr "Bug 编号："
 
-#: ../wxui/bugreport.py:324
+#: ../wxui/bugreport.py:368
 msgid "Bug subject:"
-msgstr ""
+msgstr "Bug 标题："
 
 #: ../wxui/developer.py:415
 msgid "Building Radio Browser"
-msgstr ""
+msgstr "正在构建电台浏览器"
 
-#: ../wxui/main.py:1517
+#: ../wxui/main.py:1524
 msgid "CHIRP must be restarted for the new selection to take effect"
-msgstr ""
+msgstr "CHIRP 必须重新启动才能生效"
 
 #: ../wxui/query_sources.py:699
 msgid "Canada"
-msgstr ""
+msgstr "加拿大"
 
 #: ../wxui/common.py:479
-msgid ""
-"Changing this setting requires refreshing the settings from the image, which "
-"will happen now."
-msgstr ""
+msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
+msgstr "更改此设置需要从映像中刷新设置，这将立即发生。"
 
 #: ../wxui/memedit.py:1390
 #, python-format
-msgid ""
-"Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
-msgstr ""
+msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
+msgstr "收发一致的 %s 频道使用 \"%s\" 亚音频模式表示"
 
-#: ../wxui/main.py:1221
+#: ../wxui/main.py:1227
 msgid "Chirp Image Files"
-msgstr ""
+msgstr "CHIRP 映像文件"
 
 #: ../wxui/memedit.py:422
 msgid "Choice Required"
-msgstr ""
+msgstr "需要选择"
 
 #: ../wxui/memedit.py:1369
 #, python-format
@@ -801,33 +1097,32 @@ msgstr "选择 %s DTCS 接收代码"
 #: ../wxui/memedit.py:1366
 #, python-format
 msgid "Choose %s Tone"
-msgstr ""
+msgstr "选择 %s 亚音频"
 
 #: ../wxui/memedit.py:1400
 msgid "Choose Cross Mode"
 msgstr "收发使用不同亚音频"
 
-#: ../wxui/clone.py:570
-#, fuzzy
+#: ../wxui/clone.py:576
 msgid "Choose a recent model"
-msgstr "收发使用不同亚音频"
+msgstr "选择一个最近的型号"
 
 #: ../wxui/memedit.py:1430
 msgid "Choose duplex"
-msgstr ""
+msgstr "选择双工"
 
 #: ../wxui/developer.py:555
-#, fuzzy, python-format
+#, python-format
 msgid "Choose the module to load from issue %i:"
-msgstr "选择一个来导入："
+msgstr "选择要从 issue %i 加载的模块："
 
 #: ../wxui/query_sources.py:469
 msgid "City"
-msgstr ""
+msgstr "城市"
 
-#: ../wxui/main.py:1758
+#: ../wxui/main.py:1765
 msgid "Click here for full license text"
-msgstr ""
+msgstr "点击这里查看完整的许可证文本"
 
 #: ../drivers/ts590.py:671
 msgid ""
@@ -838,66 +1133,70 @@ msgid ""
 "are supported in this release.\n"
 "Ignore the beeps from the radio on upload and download.\n"
 msgstr ""
+"点击记忆编辑器的“特殊频道”切换按钮以查看/设置 EXT 频道。\n"
+"P-VFO 频道 100-109 被认为是设置。\n"
+"在此版本中，仅支持 200 多个可用的电台设置中的一部分。\n"
+"上传和下载时，请忽略电台发出的哔哔声。\n"
 
 #: ../drivers/ft817.py:358
 msgid "Clone completed, checking for spurious bytes"
-msgstr ""
+msgstr "下载完成，正在检查是否有多余的字节"
 
 #: ../wxui/common.py:121
 msgid "Cloning"
-msgstr "正在复制"
+msgstr "正在下载"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft4.py:317
+#: ../drivers/bj9900.py:133 ../drivers/ft4.py:317 ../drivers/ft450d.py:507
 #: ../drivers/ft817.py:341
 msgid "Cloning from radio"
 msgstr "从电台下载"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft4.py:318
+#: ../drivers/bj9900.py:165 ../drivers/ft4.py:318 ../drivers/ft450d.py:536
 #: ../drivers/ft817.py:379
 msgid "Cloning to radio"
 msgstr "上传到电台"
 
-#: ../wxui/main.py:1021 ../wxui/main.py:1789
+#: ../wxui/main.py:1027 ../wxui/main.py:1796
 msgid "Close"
-msgstr ""
+msgstr "关闭"
 
-#: ../wxui/main.py:1022
+#: ../wxui/main.py:1028
 msgid "Close file"
-msgstr "全部文件"
+msgstr "关闭文件"
 
 #: ../wxui/memedit.py:1798
-#, fuzzy, python-format
+#, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
-msgstr[0] "对比原始存储"
+msgstr[0] "Cluster %i 个记忆"
 
 #: ../wxui/memedit.py:618
 msgid "Comment"
 msgstr "备注"
 
-#: ../wxui/clone.py:301
+#: ../wxui/clone.py:307
 msgid "Communicate with radio"
-msgstr ""
+msgstr "与电台通信"
 
-#: ../wxui/clone.py:144
+#: ../wxui/clone.py:150
 msgid "Complete"
 msgstr "已完成"
 
 #: ../wxui/memedit.py:137
-msgid ""
-"Complex or non-standard tone squelch mode (starts the tone mode selection "
-"wizard)"
-msgstr ""
+msgid "Complex or non-standard tone squelch mode (starts the tone mode selection wizard)"
+msgstr "复杂或非标准的亚音频静噪模式（启动亚音频模式选择向导）"
 
 #: ../drivers/tmd710.py:185 ../drivers/tmd710.py:188
 msgid ""
 "Connect your interface cable to the PC Port on the\n"
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
 msgstr ""
+"将接口电缆连接到“TX/RX”单元背面的 PC 端口。\n"
+"请注意不是头部的 Com 端口。\n"
 
 #: ../wxui/query_sources.py:337
 msgid "Convert to FM"
-msgstr ""
+msgstr "转换到 FM"
 
 #: ../wxui/memedit.py:1715
 msgid "Copy"
@@ -906,20 +1205,19 @@ msgstr "复制"
 #: ../wxui/query_sources.py:282 ../wxui/query_sources.py:475
 #: ../wxui/query_sources.py:565
 msgid "Country"
-msgstr ""
+msgstr "国家或地区"
 
 #: ../wxui/memedit.py:604
-#, fuzzy
 msgid "Cross Mode"
 msgstr "收发使用不同亚音频"
 
-#: ../wxui/clone.py:531
+#: ../wxui/clone.py:537
 msgid "Custom Port"
-msgstr ""
+msgstr "自定义端口"
 
 #: ../wxui/clone.py:41
 msgid "Custom..."
-msgstr ""
+msgstr "自定义..."
 
 #: ../wxui/memedit.py:1711
 msgid "Cut"
@@ -935,19 +1233,19 @@ msgid ""
 "Polarity"
 msgstr ""
 "DTCS\n"
-"策略"
+"极性"
 
 #: ../drivers/uvk5.py:879
 msgid "DTMF decode"
-msgstr ""
+msgstr "DTMF 解码"
 
 #: ../wxui/memedit.py:2358
 msgid "DV Memory"
 msgstr "该存储"
 
-#: ../wxui/main.py:1810
+#: ../wxui/main.py:1817
 msgid "Danger Ahead"
-msgstr ""
+msgstr "前方危险"
 
 #: ../wxui/developer.py:223
 msgid "Dec"
@@ -957,21 +1255,20 @@ msgstr "探测"
 msgid "Delete"
 msgstr "删除"
 
-#: ../wxui/bugreport.py:469
-#, fuzzy
+#: ../wxui/bugreport.py:517
 msgid "Detailed information"
-msgstr "电台信息"
+msgstr "详细信息"
 
-#: ../wxui/main.py:934
+#: ../wxui/main.py:940
 msgid "Developer Mode"
 msgstr "开发者模式"
 
-#: ../wxui/main.py:1816
+#: ../wxui/main.py:1823
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
-msgstr ""
+msgstr "开发者状态现在是 %s。CHIRP 必须重新启动才能生效"
 
-#: ../wxui/memedit.py:1834 ../wxui/developer.py:88
+#: ../wxui/developer.py:88 ../wxui/memedit.py:1834
 msgid "Diff Raw Memories"
 msgstr "对比原始存储"
 
@@ -981,11 +1278,11 @@ msgstr "数字代码"
 
 #: ../wxui/query_sources.py:341
 msgid "Digital Modes"
-msgstr "数字代码"
+msgstr "数字模式"
 
-#: ../wxui/main.py:1828
+#: ../wxui/main.py:1835
 msgid "Disable reporting"
-msgstr ""
+msgstr "禁用报告"
 
 #: ../wxui/memedit.py:511
 msgid "Disabled"
@@ -994,71 +1291,70 @@ msgstr "已禁用"
 #: ../wxui/query_sources.py:100 ../wxui/query_sources.py:313
 #: ../wxui/query_sources.py:588
 msgid "Distance"
-msgstr ""
+msgstr "距离"
 
-#: ../wxui/clone.py:196
+#: ../wxui/clone.py:202
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "不再对 %s 提示"
 
-#: ../wxui/clone.py:193
+#: ../wxui/clone.py:199
 msgid "Do you accept the risk?"
-msgstr ""
+msgstr "您接受风险吗？"
 
 #: ../wxui/bankedit.py:190
 msgid "Double-click to change bank name"
-msgstr ""
+msgstr "双击以更改存储区名称"
 
-#: ../wxui/main.py:1023
+#: ../wxui/main.py:1029
 msgid "Download"
-msgstr ""
+msgstr "下载"
 
-#: ../wxui/main.py:1024
+#: ../wxui/main.py:1030
 msgid "Download from radio"
 msgstr "从电台下载"
 
-#: ../wxui/main.py:841
+#: ../wxui/main.py:847
 msgid "Download from radio..."
 msgstr "从电台下载……"
 
-#: ../wxui/clone.py:717
+#: ../wxui/clone.py:742
 msgid "Download instructions"
 msgstr "显示指引"
 
 #: ../wxui/radioinfo.py:62
-#, fuzzy
 msgid "Driver"
-msgstr "重新加载驱动程序"
+msgstr "驱动程序"
 
 #: ../drivers/uvk5.py:1297
 msgid "Driver information"
-msgstr ""
+msgstr "驱动程序信息"
 
-#: ../wxui/main.py:557
+#: ../wxui/main.py:562
 msgid "Driver messages"
-msgstr ""
+msgstr "驱动程序消息"
 
 #: ../wxui/query_sources.py:339
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
-msgstr ""
+msgstr "支持模拟的双模数字中继将显示为 FM"
 
 #: ../wxui/memedit.py:474
 msgid "Duplex"
-msgstr "差频方向"
+msgstr "双工"
 
 #: ../wxui/memedit.py:2313
 #, python-format
 msgid "Edit details for %i memories"
-msgstr ""
+msgstr "修改 %i 个存储的详细信息"
 
 #: ../wxui/memedit.py:2311
 #, python-format
 msgid "Edit details for memory %i"
-msgstr ""
+msgstr "修改存储 %i 的详细信息"
 
-#: ../wxui/main.py:878
+#: ../wxui/main.py:884
 msgid "Enable Automatic Edits"
-msgstr ""
+msgstr "启用自动编辑"
 
 #: ../wxui/memedit.py:511
 msgid "Enabled"
@@ -1070,159 +1366,147 @@ msgstr "频率"
 
 #: ../wxui/memedit.py:1417
 msgid "Enter Offset (MHz)"
-msgstr ""
+msgstr "输入频差（MHz）"
 
 #: ../wxui/memedit.py:1409
 msgid "Enter TX Frequency (MHz)"
-msgstr ""
+msgstr "输入发射频率（MHz）"
 
 #: ../wxui/bankedit.py:203
 #, python-format
 msgid "Enter a new name for bank %s:"
-msgstr ""
+msgstr "输入存储区 %s 的新名称："
 
-#: ../wxui/clone.py:530
+#: ../wxui/clone.py:536
 msgid "Enter custom port:"
-msgstr ""
+msgstr "输入自定义端口："
 
-#: ../wxui/bugreport.py:407
-msgid ""
-"Enter details about this update. Be descriptive about what you were doing, "
-"what you expected to happen, and what actually happened."
-msgstr ""
+#: ../wxui/bugreport.py:451
+msgid "Enter details about this update. Be descriptive about what you were doing, what you expected to happen, and what actually happened."
+msgstr "输入有关此更新的详细信息。描述您正在做什么，您期望发生什么以及实际发生了什么。"
 
-#: ../wxui/bugreport.py:310
-msgid ""
-"Enter information about the bug including a short but meaningful subject and "
-"information about the radio model (if applicable) in question. In the next "
-"step you will have a chance to add more details about the problem."
-msgstr ""
+#: ../wxui/bugreport.py:354
+msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem."
+msgstr "输入有关 Bug 的信息，包括一个简短但有意义的主题以及有关所讨论的无线电型号的信息（如果适用）。在下一步中，您将有机会添加有关问题的更多详细信息。"
 
-#: ../wxui/bugreport.py:414
+#: ../wxui/bugreport.py:459
 msgid "Enter information to add to the bug here"
-msgstr ""
+msgstr "在此处输入要添加到 Bug 的信息"
 
-#: ../wxui/bugreport.py:360
+#: ../wxui/bugreport.py:404
 msgid "Enter the bug number that should be updated"
-msgstr ""
+msgstr "输入要更新的 Bug 编号"
 
-#: ../wxui/bugreport.py:188
-msgid ""
-"Enter your username and password for chirpmyradio.com. If you do not have an "
-"account click below to create one before proceeding."
-msgstr ""
+#: ../wxui/bugreport.py:232
+msgid "Enter your username and password for chirpmyradio.com. If you do not have an account click below to create one before proceeding."
+msgstr "输入您在 chirpmyradio.com 的用户名和密码。如果您没有帐户，请在继续之前单击下面的链接创建一个。"
 
 #: ../wxui/common.py:329
-#, fuzzy, python-format
+#, python-format
 msgid "Erased memory %s"
-msgstr "正在擦除存储 {loc}"
+msgstr "已擦除存储 %s"
 
 #: ../wxui/settingsedit.py:140
 msgid "Error applying settings"
-msgstr "设置值有误：%s"
+msgstr "应用设置时出错"
 
-#: ../wxui/clone.py:632
+#: ../wxui/clone.py:651
 msgid "Error communicating with radio"
-msgstr ""
+msgstr "与电台通信时出错"
 
 #: ../wxui/query_sources.py:334
 msgid "Exclude private and closed repeaters"
-msgstr ""
+msgstr "排除私有和已关闭的中继"
 
-#: ../wxui/clone.py:671
-#, fuzzy
+#: ../wxui/clone.py:696
 msgid "Experimental driver"
-msgstr "继续使用不稳定的驱动？"
+msgstr "实验性的驱动程序"
 
 #: ../wxui/memedit.py:2236
 msgid "Export can only write CSV files"
-msgstr ""
+msgstr "只能导出CSV文件"
 
-#: ../wxui/main.py:1377
+#: ../wxui/main.py:1384
 msgid "Export to CSV"
 msgstr "以CSV文件格式导出"
 
-#: ../wxui/main.py:716
+#: ../wxui/main.py:722
 msgid "Export to CSV..."
 msgstr "以CSV文件格式导出……"
 
 #: ../wxui/memedit.py:2347
 msgid "Extra"
-msgstr ""
+msgstr "更多"
 
 #: ../drivers/uvk5.py:1295
 msgid "FM Radio"
-msgstr ""
+msgstr "FM电台"
 
 #: ../wxui/query_sources.py:620
 msgid ""
 "FREE repeater database, which provides most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
 "required."
-msgstr ""
+msgstr "免费中继数据库，提供欧洲中继的最新信息。不需要帐户。"
 
 #: ../wxui/developer.py:423
 msgid "Failed to load radio browser"
-msgstr ""
+msgstr "无法加载电台浏览器"
 
 #: ../sources/przemienniki.py:57
 msgid "Failed to parse result"
-msgstr ""
+msgstr "无法解析结果"
 
-#: ../wxui/bugreport.py:597
+#: ../wxui/bugreport.py:655
 msgid "Failed to send bug report:"
-msgstr ""
+msgstr "无法发送 Bug 报告："
 
 #: ../wxui/radioinfo.py:45
 msgid "Features"
-msgstr ""
+msgstr "特性"
 
-#: ../wxui/bugreport.py:152
+#: ../wxui/bugreport.py:196
 msgid "File a new bug"
-msgstr ""
+msgstr "提交新 Bug"
 
-#: ../wxui/main.py:563
+#: ../wxui/main.py:569
 #, python-format
 msgid "File does not exist: %s"
-msgstr ""
+msgstr "文件不存在：%s"
 
-#: ../wxui/main.py:1225 ../wxui/main.py:1305 ../wxui/main.py:1315
-#: ../wxui/main.py:1373 ../wxui/main.py:1708 ../wxui/main.py:1709
+#: ../wxui/main.py:1231 ../wxui/main.py:1311 ../wxui/main.py:1321
+#: ../wxui/main.py:1380 ../wxui/main.py:1715 ../wxui/main.py:1716
 msgid "Files"
 msgstr "文件"
 
-#: ../wxui/bugreport.py:467
-#, fuzzy
+#: ../wxui/bugreport.py:515
 msgid "Files:"
-msgstr "文件"
+msgstr "文件："
 
 #: ../wxui/query_sources.py:319
 msgid "Filter"
-msgstr ""
+msgstr "过滤"
 
 #: ../wxui/query_sources.py:317
 msgid "Filter results with location matching this string"
-msgstr ""
+msgstr "过滤位置匹配此字符串的结果"
 
-#: ../wxui/main.py:1447
-#, fuzzy
+#: ../wxui/main.py:1454
 msgid "Find"
-msgstr "RFinder"
+msgstr "查找"
 
-#: ../wxui/main.py:784
-#, fuzzy
+#: ../wxui/main.py:790
 msgid "Find Next"
-msgstr "RFinder"
+msgstr "查找下一个"
 
-#: ../wxui/main.py:770
-#, fuzzy
+#: ../wxui/main.py:776
 msgid "Find..."
-msgstr "寻找……"
+msgstr "查找..."
 
 #: ../wxui/common.py:331
 #, python-format
 msgid "Finished radio job %s"
-msgstr ""
+msgstr "已完成电台作业 %s"
 
 #: ../drivers/ts590.py:678
 msgid ""
@@ -1232,6 +1516,10 @@ msgid ""
 "during download!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
+"请按照以下指示下载电台存储：\n"
+"1 - 连接您的接口电缆\n"
+"2 - 电台 > 从电台下载：在下载期间不要对电台进行任何操作！\n"
+"3 - 断开接口电缆\n"
 
 #: ../drivers/ts480.py:517
 msgid ""
@@ -1241,6 +1529,10 @@ msgid ""
 "on the radio head!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
+"请按照以下指示下载电台存储：\n"
+"1 - 连接您的接口电缆\n"
+"2 - 电台 > 从电台下载：不要调整电台头上的任何设置！\n"
+"3 - 断开接口电缆\n"
 
 #: ../drivers/th_uv8000.py:517
 msgid ""
@@ -1250,6 +1542,11 @@ msgid ""
 "3 - Turn on your radio, volume @ 50%\n"
 "4 - CHIRP Menu - Radio - Download from radio\n"
 msgstr ""
+"请按照以下指示下载电台存储：\n"
+"1 - 关闭您的电台\n"
+"2 - 连接您的接口电缆\n"
+"3 - 打开您的电台，音量设置为 50%\n"
+"4 - CHIRP 菜单 - 电台 - 从电台下载\n"
 
 #: ../drivers/ic2730.py:306
 msgid ""
@@ -1261,12 +1558,18 @@ msgid ""
 "5 - Disconnect the interface cable! Otherwise there will be\n"
 "    no right-side audio!\n"
 msgstr ""
+"请按照以下指示下载您的配置：\n"
+"1 - 关闭您的电台\n"
+"2 - 将接口电缆连接到扬声器-2插孔\n"
+"3 - 打开您的电台\n"
+"4 - 电台 > 从电台下载\n"
+"5 - 断开接口电缆！否则将没有右侧音频！\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:693 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
-#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:465 ../drivers/bf_t1.py:482
+#: ../drivers/baofeng_uv17Pro.py:465 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/bf_t1.py:482 ../drivers/btech.py:693 ../drivers/gmrsuv1.py:391
+#: ../drivers/gmrsv2.py:363 ../drivers/mursv1.py:341
+#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv5x3.py:417
+#: ../drivers/uv6r.py:339
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1274,6 +1577,11 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the download of your radio data\n"
 msgstr ""
+"请按照以下指示下载您的信息：\n"
+"1 - 关闭您的电台\n"
+"2 - 连接您的接口电缆\n"
+"3 - 打开您的电台\n"
+"4 - 下载您的电台数据\n"
 
 #: ../drivers/tk760g.py:683
 msgid ""
@@ -1283,6 +1591,11 @@ msgid ""
 "3 - Turn on your radio (unlock it if password protected)\n"
 "4 - Click OK to start\n"
 msgstr ""
+"请按照以下指示下载您的电台：\n"
+"1 - 关闭您的电台\n"
+"2 - 连接您的接口电缆\n"
+"3 - 打开您的电台（如果有密码保护，请解锁）\n"
+"4 - 单击“确定”开始\n"
 
 #: ../drivers/tk760.py:341
 msgid ""
@@ -1292,6 +1605,11 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Click OK to start\n"
 msgstr ""
+"请按照以下指示读取您的电台：\n"
+"1 - 关闭您的电台\n"
+"2 - 连接您的接口电缆\n"
+"3 - 打开您的电台\n"
+"4 - 单击“确定”开始\n"
 
 #: ../drivers/ts590.py:684
 msgid ""
@@ -1301,6 +1619,10 @@ msgid ""
 "during upload!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
+"请按照以下指示上传电台存储：\n"
+"1 - 连接您的接口电缆\n"
+"2 - 电台 > 上传到电台：上传期间不要操作电台！\n"
+"3 - 断开接口电缆\n"
 
 #: ../drivers/ts480.py:523
 msgid ""
@@ -1310,6 +1632,10 @@ msgid ""
 "on the radio head!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
+"请按照以下指示上传电台存储：\n"
+"1 - 连接您的接口电缆\n"
+"2 - 电台 > 上传到电台：不要调整电台头上的任何设置！\n"
+"3 - 断开接口电缆\n"
 
 #: ../drivers/th_uv8000.py:523
 msgid ""
@@ -1319,6 +1645,11 @@ msgid ""
 "3 - Turn on your radio, volume @ 50%\n"
 "4 - CHIRP Menu - Radio - Upload to radio\n"
 msgstr ""
+"请按照以下指示上传电台存储：\n"
+"1 - 关闭您的电台\n"
+"2 - 连接您的接口电缆\n"
+"3 - 打开您的电台，音量设置为 50%\n"
+"4 - CHIRP 菜单 - 电台 - 上传到电台\n"
 
 #: ../drivers/ic2730.py:314
 msgid ""
@@ -1331,8 +1662,15 @@ msgid ""
 "    no right-side audio!\n"
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
+"请按照以下指示上传您的配置：\n"
+"1 - 关闭您的电台\n"
+"2 - 将您的接口电缆连接到扬声器 2 插孔\n"
+"3 - 打开您的电台\n"
+"4 - 电台 > 上传到电台\n"
+"5 - 断开接口电缆，否则将没有右侧音频！\n"
+"6 - 重启电台以退出克隆模式\n"
 
-#: ../drivers/btech.py:699 ../drivers/bf_t1.py:488
+#: ../drivers/bf_t1.py:488 ../drivers/btech.py:699
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1340,6 +1678,11 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the upload of your radio data\n"
 msgstr ""
+"请按照以下指示上传您的信息：\n"
+"1 - 关闭您的电台\n"
+"2 - 连接您的接口电缆\n"
+"3 - 打开您的电台\n"
+"4 - 上传您的电台数据\n"
 
 #: ../drivers/tk760g.py:689
 msgid ""
@@ -1369,7 +1712,7 @@ msgstr ""
 "3 - 打开电台\n"
 "4 - 单击 \"确定 \"开始\n"
 
-#: ../drivers/vgc.py:598 ../drivers/lt725uv.py:496
+#: ../drivers/lt725uv.py:496 ../drivers/vgc.py:598
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1397,11 +1740,10 @@ msgstr ""
 "3 - 打开电台\n"
 "4 - 下载电台数据\n"
 
-#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
-#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:471
+#: ../drivers/baofeng_uv17Pro.py:471 ../drivers/baofeng_wp970i.py:333
+#: ../drivers/gmrsuv1.py:397 ../drivers/gmrsv2.py:369 ../drivers/lt725uv.py:502
+#: ../drivers/mursv1.py:347 ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/uv5x3.py:423 ../drivers/uv6r.py:345 ../drivers/vgc.py:604
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1432,7 +1774,7 @@ msgstr ""
 #: ../wxui/memedit.py:208
 #, python-format
 msgid "Found empty list value for %(name)s: %(value)r"
-msgstr ""
+msgstr "发现 %(name)s 的空列表值：%(value)r"
 
 #: ../wxui/memedit.py:294
 msgid "Frequency"
@@ -1441,30 +1783,30 @@ msgstr "频率"
 #: ../import_logic.py:76
 #, python-format
 msgid "Frequency %s is out of supported range"
-msgstr ""
+msgstr "频率 %s 超出支持范围"
 
 #: ../wxui/memedit.py:141
 msgid "Frequency granularity in kHz"
-msgstr ""
+msgstr "频率粒度（kHz）"
 
-#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1369
-#: ../drivers/tdh8.py:2482 ../drivers/baofeng_uv17Pro.py:1159
+#: ../drivers/baofeng_uv17Pro.py:1162 ../drivers/ga510.py:1072
+#: ../drivers/mml_jc8810.py:1369 ../drivers/tdh8.py:2612
 msgid "Frequency in this range must not be AM mode"
-msgstr ""
+msgstr "此范围内的频率不能是AM模式"
 
-#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1366
-#: ../drivers/tdh8.py:2479 ../drivers/baofeng_uv17Pro.py:1155
+#: ../drivers/baofeng_uv17Pro.py:1158 ../drivers/ga510.py:1065
+#: ../drivers/mml_jc8810.py:1366 ../drivers/tdh8.py:2609
 msgid "Frequency in this range requires AM mode"
-msgstr ""
+msgstr "此范围内的频率需要是AM模式"
 
-#: ../drivers/tdh8.py:2486
+#: ../drivers/tdh8.py:2616
 msgid "Frequency outside TX bands must be duplex=off"
-msgstr ""
+msgstr "超出发射频段的频率必须是双工=关闭"
 
 #: ../wxui/query_sources.py:285 ../wxui/query_sources.py:350
 #: ../wxui/query_sources.py:443
 msgid "GMRS"
-msgstr ""
+msgstr "GMRS"
 
 #: ../wxui/settingsedit.py:60
 msgid "Getting settings"
@@ -1472,62 +1814,60 @@ msgstr "正在获取设置"
 
 #: ../wxui/memedit.py:970
 msgid "Goto Memory"
-msgstr "前往数据"
+msgstr "前往存储"
 
 #: ../wxui/memedit.py:969
 msgid "Goto Memory:"
-msgstr "前往数据："
+msgstr "前往存储："
 
 #: ../wxui/memedit.py:938
 msgid "Goto..."
-msgstr "前往……"
+msgstr "前往..."
 
-#: ../wxui/main.py:989
+#: ../wxui/main.py:995
 msgid "Help"
 msgstr "帮助"
 
 #: ../wxui/clone.py:40
 msgid "Help Me..."
-msgstr "帮助..."
+msgstr "帮助我..."
 
 #: ../wxui/developer.py:222
 msgid "Hex"
-msgstr ""
+msgstr "十六进制"
 
 #: ../wxui/memedit.py:947
 msgid "Hide empty memories"
 msgstr "隐藏无数据的内容"
 
 #: ../drivers/retevis_rt98.py:1003
-msgid ""
-"Honor the CTCSS/DCS receive squelch configuration when enabled, else only "
-"carrier squelch"
-msgstr ""
+msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
+msgstr "当启用时，遵守CTCSS/DCS接收静噪配置，否则只有载波静噪"
 
 #: ../wxui/memedit.py:144
 msgid "Human-readable comment (not stored in radio)"
-msgstr ""
+msgstr "人类可读的注释（不存储在电台中）"
 
 #: ../wxui/query_sources.py:296 ../wxui/query_sources.py:302
 #: ../wxui/query_sources.py:572 ../wxui/query_sources.py:578
 msgid "If set, sort results by distance from these coordinates"
-msgstr ""
+msgstr "设置后按距离排序"
 
-#: ../wxui/main.py:1360
+#: ../wxui/main.py:1366
 msgid "Import"
 msgstr "导入"
 
-#: ../wxui/main.py:710
+#: ../wxui/main.py:716
 msgid "Import from file..."
-msgstr "从文件导入……"
+msgstr "从文件导入..."
+
+#: ../wxui/main.py:1370
+msgid "Import messages"
+msgstr "导入消息"
 
 #: ../wxui/main.py:1364
-msgid "Import messages"
-msgstr ""
-
-#: ../wxui/main.py:1358
 msgid "Import not recommended"
-msgstr ""
+msgstr "不推荐导入"
 
 #: ../wxui/bankedit.py:62
 msgid "Index"
@@ -1535,11 +1875,11 @@ msgstr "索引"
 
 #: ../wxui/main.py:223
 msgid "Info"
-msgstr ""
+msgstr "信息"
 
 #: ../wxui/memedit.py:1392
 msgid "Information"
-msgstr "{information}"
+msgstr "信息"
 
 #: ../wxui/memedit.py:1705
 msgid "Insert Row Above"
@@ -1547,38 +1887,37 @@ msgstr "上方插入一行"
 
 #: ../wxui/__init__.py:59
 msgid "Install desktop icon?"
-msgstr ""
+msgstr "要安装桌面图标吗？"
 
-#: ../wxui/main.py:918
+#: ../wxui/main.py:924
 msgid "Interact with driver"
-msgstr ""
+msgstr "与驱动程序交互"
 
-#: ../wxui/clone.py:739
-#, fuzzy
+#: ../wxui/clone.py:764
 msgid "Internal driver error"
-msgstr "内部错误"
+msgstr "内部驱动程序错误"
 
 #: ../wxui/query_sources.py:58
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid %(value)s (use decimal degrees)"
-msgstr "无效值。必须为整数。"
+msgstr "无效的 %(value)s（请使用十进制度数）"
 
 #: ../wxui/query_sources.py:66 ../wxui/memedit.py:1553
 msgid "Invalid Entry"
-msgstr "设置值无效：%s"
+msgstr "无效项目"
 
 #: ../wxui/query_sources.py:111
 msgid "Invalid ZIP code"
-msgstr ""
+msgstr "无效的邮政编码"
 
 #: ../wxui/memedit.py:1552 ../wxui/memedit.py:2438
 #, python-format
 msgid "Invalid edit: %s"
-msgstr "设置值无效：%s"
+msgstr "编辑无效：%s"
 
-#: ../wxui/main.py:1705
+#: ../wxui/main.py:1712
 msgid "Invalid or unsupported module file"
-msgstr ""
+msgstr "无效或不支持的模块文件"
 
 #: ../wxui/memedit.py:263 ../wxui/memedit.py:269
 #, python-format
@@ -1587,102 +1926,90 @@ msgstr "%r 值无效"
 
 #: ../wxui/developer.py:577
 msgid "Issue number:"
-msgstr ""
+msgstr "问题编号："
 
-#: ../wxui/main.py:341
+#: ../wxui/main.py:342
 msgid "LIVE"
-msgstr ""
+msgstr "实时"
 
-#: ../wxui/main.py:827 ../wxui/main.py:1502
-#, fuzzy
+#: ../wxui/main.py:833 ../wxui/main.py:1509
 msgid "Language"
 msgstr "更改语言 (Change Language)"
 
 #: ../wxui/query_sources.py:88 ../wxui/query_sources.py:304
 #: ../wxui/query_sources.py:580
 msgid "Latitude"
-msgstr ""
+msgstr "纬度"
 
 #: ../wxui/developer.py:203
 #, python-format
 msgid "Length must be %i"
-msgstr ""
+msgstr "长度必须是 %i"
 
 #: ../wxui/query_sources.py:325 ../wxui/query_sources.py:540
 msgid "Limit Bands"
-msgstr ""
+msgstr "限制频段"
 
 #: ../wxui/query_sources.py:330
 msgid "Limit Modes"
-msgstr ""
+msgstr "限制模式"
 
 #: ../wxui/query_sources.py:555
 msgid "Limit Status"
-msgstr ""
+msgstr "限制状态"
 
 #: ../wxui/query_sources.py:311 ../wxui/query_sources.py:586
 msgid "Limit results to this distance (km) from coordinates"
-msgstr ""
+msgstr "限制结果到这个距离（公里）"
 
 #: ../wxui/query_sources.py:335
 msgid "Limit use"
-msgstr ""
+msgstr "限制使用方式"
 
-#: ../wxui/main.py:1586
-#, fuzzy
+#: ../wxui/main.py:1593
 msgid "Live Radio"
-msgstr "电台"
+msgstr "实时电台"
 
-#: ../wxui/main.py:722
+#: ../wxui/main.py:728
 msgid "Load Module..."
-msgstr "加载模块……"
+msgstr "加载模块..."
 
 #: ../wxui/developer.py:578
-#, fuzzy
 msgid "Load module from issue"
-msgstr "加载模块"
+msgstr "从 issue 加载模块"
 
-#: ../wxui/main.py:971
-#, fuzzy
+#: ../wxui/main.py:977
 msgid "Load module from issue..."
-msgstr "加载模块"
+msgstr "从 issue 加载模块..."
 
-#: ../wxui/main.py:1864
-msgid ""
-"Loading a module will not affect open tabs. It is recommended (unless "
-"instructed otherwise) to close all tabs before loading a module."
-msgstr ""
+#: ../wxui/main.py:1871
+msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
+msgstr "加载模块不会影响打开的标签页。建议（除非另有说明）在加载模块之前关闭所有标签页。"
 
-#: ../wxui/main.py:1712
-msgid ""
-"Loading modules can be extremely dangerous, leading to damage to your "
-"computer, radio, or both. NEVER load a module from a source you do not "
-"trust, and especially not from anywhere other than the main CHIRP website "
-"(chirpmyradio.com). Loading a module from another source is akin to giving "
-"them direct access to your computer and everything on it! Proceed despite "
-"this risk?"
-msgstr ""
+#: ../wxui/main.py:1719
+msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
+msgstr "加载模块可能极其危险，可能导致您的计算机、无线电或两者都受损。绝对不要从您不信任的来源加载模块，尤其不要从主要的 CHIRP 网站（chirpmyradio.com）之外的任何地方加载模块。从其他来源加载模块等同于让他们直接访问您的计算机和上面的所有内容！尽管存在这种风险，是否继续？"
 
-#: ../wxui/clone.py:138
+#: ../wxui/clone.py:144
 msgid "Loading settings"
-msgstr ""
+msgstr "加载设置中"
 
-#: ../wxui/bugreport.py:282
+#: ../wxui/bugreport.py:326
 msgid "Login failed: Check your username and password"
-msgstr ""
+msgstr "登录失败：请检查您的用户名和密码"
 
 #: ../drivers/uvk5.py:1799
 msgid "Logo string 1 (12 characters)"
-msgstr ""
+msgstr "Logo 字符串 1（12 个字符）"
 
 #: ../drivers/uvk5.py:1806
 msgid "Logo string 2 (12 characters)"
-msgstr ""
+msgstr "Logo 字符串 2（12 个字符）"
 
 #: ../wxui/query_sources.py:94 ../wxui/query_sources.py:305
 #: ../wxui/query_sources.py:581
 msgid "Longitude"
-msgstr ""
+msgstr "经度"
 
 #: ../wxui/main.py:202
 msgid "Memories"
@@ -1690,31 +2017,31 @@ msgstr "存储"
 
 #: ../drivers/uvk5.py:2118
 msgid "Memories are read-only due to unsupported firmware version"
-msgstr ""
+msgstr "由于不支持的固件版本，存储是只读的"
 
 #: ../wxui/memedit.py:1592
 #, python-format
 msgid "Memory %i is not deletable"
-msgstr ""
+msgstr "存储 %i 不能删除"
 
 #: ../wxui/memedit.py:129
 msgid "Memory label (stored in radio)"
-msgstr ""
+msgstr "存储标签（存储在电台中）"
 
 #: ../wxui/bankedit.py:233
 msgid "Memory must be in a bank to be edited"
-msgstr ""
+msgstr "存储必须在一个存储区中才能编辑"
 
 #: ../drivers/vx5.py:133
 #, python-brace-format
 msgid "Memory {num} not in bank {bank}"
-msgstr ""
+msgstr "存储 {num} 不在存储区 {bank}"
 
 #: ../wxui/query_sources.py:532 ../wxui/memedit.py:590
 msgid "Mode"
 msgstr "制式"
 
-#: ../wxui/clone.py:339
+#: ../wxui/clone.py:345
 msgid "Model"
 msgstr "型号"
 
@@ -1722,22 +2049,26 @@ msgstr "型号"
 msgid "Modes"
 msgstr "制式"
 
-#: ../wxui/main.py:1709
+#: ../wxui/main.py:1716
 msgid "Module"
 msgstr "模块"
 
-#: ../wxui/main.py:1681
+#: ../wxui/main.py:1688
 msgid "Module Loaded"
-msgstr "模块加载"
+msgstr "模块已加载"
 
-#: ../wxui/main.py:1875
+#: ../wxui/main.py:1882
 msgid "Module loaded successfully"
-msgstr ""
+msgstr "模块加载成功"
 
-#: ../wxui/clone.py:487
+#: ../wxui/clone.py:654
+msgid "More Info"
+msgstr "更多信息"
+
+#: ../wxui/clone.py:493
 #, python-format
 msgid "More than one port found: %s"
-msgstr ""
+msgstr "找到多个端口：%s"
 
 #: ../wxui/memedit.py:934
 msgid "Move Down"
@@ -1749,44 +2080,44 @@ msgstr "上移"
 
 #: ../wxui/memedit.py:2148
 msgid "Move operations are disabled while the view is sorted"
-msgstr ""
+msgstr "排序启用时不能移动"
 
-#: ../wxui/main.py:668
+#: ../wxui/main.py:674
 msgid "New Window"
 msgstr "创建一个新的窗口"
 
-#: ../wxui/main.py:1949
+#: ../wxui/main.py:1956
 msgid "New version available"
 msgstr "有新版本"
 
 #: ../wxui/memedit.py:1871
 msgid "No empty rows below!"
-msgstr ""
+msgstr "下方已无空行！"
 
 #: ../wxui/developer.py:593
 msgid "No modules found"
-msgstr ""
+msgstr "未找到模块"
 
 #: ../wxui/developer.py:592
 #, python-format
 msgid "No modules found in issue %i"
-msgstr ""
+msgstr "在 issue %i 中未找到模块"
 
 #: ../wxui/memedit.py:2030
 msgid "No more space available; some memories were not applied"
-msgstr ""
+msgstr "没有更多空间可用；一些存储未应用"
 
 #: ../sources/przemienniki.py:53
 msgid "No results"
-msgstr ""
+msgstr "无结果"
 
 #: ../sources/repeaterbook.py:300
 msgid "No results!"
-msgstr ""
+msgstr "无结果！"
 
 #: ../wxui/query_sources.py:41 ../wxui/memedit.py:969
 msgid "Number"
-msgstr ""
+msgstr "编号"
 
 #: ../wxui/memedit.py:292
 msgid "Offset"
@@ -1794,77 +2125,75 @@ msgstr "频差"
 
 #: ../wxui/query_sources.py:323 ../wxui/query_sources.py:538
 msgid "Only certain bands"
-msgstr ""
+msgstr "仅特定频段"
 
 #: ../wxui/query_sources.py:328
 msgid "Only certain modes"
-msgstr ""
+msgstr "仅特定制式"
 
 #: ../wxui/main.py:323
 msgid "Only memory tabs may be exported"
-msgstr ""
+msgstr "只有存储标签可以导出"
 
 #: ../wxui/query_sources.py:549
 msgid "Only working repeaters"
-msgstr ""
+msgstr "仅活跃中继台"
 
-#: ../wxui/main.py:1017 ../wxui/main.py:1360
+#: ../wxui/main.py:1023 ../wxui/main.py:1366
 msgid "Open"
 msgstr "打开"
 
-#: ../wxui/main.py:697
+#: ../wxui/main.py:703
 msgid "Open Recent"
-msgstr ""
+msgstr "打开最近"
 
-#: ../wxui/main.py:679
+#: ../wxui/main.py:685
 msgid "Open Stock Config"
-msgstr "打开预留配置"
+msgstr "打开预设配置"
 
-#: ../wxui/main.py:1018 ../wxui/main.py:1236
-#, fuzzy
+#: ../wxui/main.py:1024 ../wxui/main.py:1242
 msgid "Open a file"
-msgstr "打开最近的文件"
+msgstr "打开文件"
 
-#: ../wxui/main.py:1727
+#: ../wxui/main.py:1734
 msgid "Open a module"
-msgstr ""
+msgstr "打开模块"
 
-#: ../wxui/main.py:955
+#: ../wxui/main.py:961
 msgid "Open debug log"
 msgstr "打开调试日志"
 
-#: ../wxui/main.py:528
+#: ../wxui/main.py:533
 msgid "Open in new window"
-msgstr ""
+msgstr "在新窗口中打开"
 
 #: ../wxui/query_sources.py:332
 msgid "Open repeaters only"
-msgstr ""
+msgstr "仅打开中继台"
 
-#: ../wxui/main.py:626
+#: ../wxui/main.py:632
 msgid "Open stock config directory"
-msgstr ""
+msgstr "打开预设配置目录"
 
 #: ../wxui/query_sources.py:301 ../wxui/query_sources.py:577
 msgid "Optional: -122.0000"
-msgstr ""
+msgstr "可选：-122.0000"
 
 #: ../wxui/query_sources.py:310 ../wxui/query_sources.py:585
-#, fuzzy
 msgid "Optional: 100"
-msgstr "选项"
+msgstr "可选：100"
 
 #: ../wxui/query_sources.py:295 ../wxui/query_sources.py:571
 msgid "Optional: 45.0000"
-msgstr ""
+msgstr "可选：45.0000"
 
 #: ../wxui/query_sources.py:316
 msgid "Optional: County, Hospital, etc."
-msgstr ""
+msgstr "可选：县，医院，等等."
 
 #: ../wxui/memedit.py:2010
 msgid "Overwrite memories?"
-msgstr "要覆盖吗？"
+msgstr "要覆盖存储吗？"
 
 #: ../drivers/ts480.py:513
 msgid ""
@@ -1872,14 +2201,16 @@ msgid ""
 "Only a subset of the over 130 available radio settings\n"
 "are supported in this release.\n"
 msgstr ""
+"P-VFO 频道 100-109 被认为是设置。\n"
+"在这个版本中，仅支持超过 130 个可用的电台设置中的一部分。\n"
 
 #: ../sources/przemienniki.py:48
 msgid "Parsing"
-msgstr ""
+msgstr "解析"
 
-#: ../wxui/bugreport.py:215
+#: ../wxui/bugreport.py:259
 msgid "Password"
-msgstr ""
+msgstr "密码"
 
 #: ../wxui/memedit.py:1719
 msgid "Paste"
@@ -1888,26 +2219,26 @@ msgstr "粘贴"
 #: ../wxui/memedit.py:2004
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
-msgstr ""
+msgstr "粘贴的存储将覆盖 %s 个现有存储"
 
 #: ../wxui/memedit.py:2007
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
-msgstr ""
+msgstr "粘贴的存储将覆盖存储 %s"
 
 #: ../wxui/memedit.py:2001
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
-msgstr ""
+msgstr "粘贴的存储将覆盖存储 %s"
 
 #: ../wxui/memedit.py:1998
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
-msgstr ""
+msgstr "粘贴的存储将覆盖存储 %s"
 
-#: ../wxui/main.py:1953
+#: ../wxui/main.py:1960
 msgid "Please be sure to quit CHIRP before installing the new version!"
-msgstr ""
+msgstr "请确保在安装新版本之前退出 CHIRP！"
 
 #: ../drivers/ftlx011.py:302
 msgid ""
@@ -1923,6 +2254,15 @@ msgid ""
 "After cloning remove the cable and power cycle your radio to\n"
 "get into normal mode.\n"
 msgstr ""
+"请仔细遵循以下步骤：\n"
+"1 - 打开您的电台\n"
+"2 - 将接口电缆连接到您的电台\n"
+"3 - 单击此窗口上的按钮以开始下载\n"
+"    (您可能会看到另一个对话框，请单击确定)\n"
+"4 - 电台将发出蜂鸣声并闪烁灯光\n"
+"5 - 在数据上传开始之前，您将获得 10 秒的超时时间来按下“MON”\n"
+"6 - 如果一切顺利，电台将在结束时发出蜂鸣声。\n"
+"克隆后，请拔掉电缆并重新启动电台，以进入正常模式。\n"
 
 #: ../drivers/ftlx011.py:293
 msgid ""
@@ -1934,24 +2274,27 @@ msgid ""
 "4 - Then press the \"A\" button in your radio to start cloning.\n"
 "    (At the end radio will beep)\n"
 msgstr ""
+"请仔细遵循以下步骤：\n"
+"1 - 打开您的电台\n"
+"2 - 将接口电缆连接到您的电台。\n"
+"3 - 单击此窗口上的按钮以开始下载\n"
+"    (电台将发出蜂鸣声并闪烁灯光)\n"
+"4 - 然后按下电台上的“A”按钮开始克隆。\n"
+"    (在结束时电台将发出蜂鸣声)\n"
 
-#: ../wxui/main.py:1804
-msgid ""
-"Please note that developer mode is intended for use by developers of the "
-"CHIRP project, or under the direction of a developer. It enables behaviors "
-"and functions that can damage your computer and your radio if not used with "
-"EXTREME care. You have been warned! Proceed anyway?"
-msgstr ""
+#: ../wxui/main.py:1811
+msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
+msgstr "请注意，开发者模式是为 CHIRP 项目的开发人员使用，或在开发人员的指导下使用。如果不小心使用，它会启用可能会损坏您的计算机和电台的行为和功能。您已经被警告！是否继续？"
 
 #: ../wxui/common.py:194
 msgid "Please wait"
 msgstr "请等待"
 
-#: ../wxui/clone.py:464
+#: ../wxui/clone.py:470
 msgid "Plug in your cable and then click OK"
-msgstr ""
+msgstr "插入您的电缆，然后单击确定"
 
-#: ../wxui/clone.py:324
+#: ../wxui/clone.py:330
 msgid "Port"
 msgstr "端口"
 
@@ -1963,28 +2306,28 @@ msgstr "功率"
 msgid "Press enter to set this in memory"
 msgstr "设置存储时出错"
 
-#: ../wxui/main.py:733
+#: ../wxui/main.py:739
 msgid "Print Preview"
 msgstr "打印预览"
 
 #: ../wxui/printing.py:29
 msgid "Printing"
-msgstr ""
+msgstr "正在打印"
 
-#: ../wxui/clone.py:498
+#: ../wxui/clone.py:504
 msgid "Prolific USB device"
-msgstr ""
+msgstr "Prolific USB 设备"
 
 #: ../wxui/memedit.py:1698
 msgid "Properties"
 msgstr "属性"
 
-#: ../wxui/main.py:1904
+#: ../wxui/main.py:1911
 #, python-format
 msgid "Query %s"
-msgstr ""
+msgstr "查询 %s"
 
-#: ../wxui/main.py:855
+#: ../wxui/main.py:861
 msgid "Query Source"
 msgstr "查询数据源"
 
@@ -1992,33 +2335,30 @@ msgstr "查询数据源"
 msgid "RX DTCS"
 msgstr "DTCS 接收代码"
 
-#: ../wxui/main.py:988
+#: ../wxui/main.py:994
 msgid "Radio"
 msgstr "电台"
 
-#: ../drivers/ft60.py:85 ../drivers/ft450d.py:568 ../drivers/ft817.py:406
+#: ../drivers/ft450d.py:568 ../drivers/ft60.py:85 ../drivers/ft817.py:406
 #, python-format
 msgid "Radio did not ack block %i"
-msgstr ""
+msgstr "电台未确认块 %i"
 
-#: ../wxui/clone.py:709 ../wxui/clone.py:813
+#: ../wxui/clone.py:734 ../wxui/clone.py:838
 msgid "Radio information"
 msgstr "电台信息"
 
-#: ../wxui/bugreport.py:333
+#: ../wxui/bugreport.py:377
 msgid "Radio model:"
-msgstr ""
+msgstr "电台型号："
 
 #: ../drivers/ft817.py:363
-msgid ""
-"Radio sent data after the last awaited block, this happens when the selected "
-"model is a non-US but the radio is a US one. Please choose the correct model "
-"and try again."
-msgstr ""
+msgid "Radio sent data after the last awaited block, this happens when the selected model is a non-US but the radio is a US one. Please choose the correct model and try again."
+msgstr "电台在最后一个等待的块之后发送了数据，这是因为所选的型号是非美国型号，但电台是美国型号。请选择正确的型号并重试。"
 
 #: ../wxui/query_sources.py:846
 msgid "RadioReference Canada requires a login before you can query"
-msgstr ""
+msgstr "RadioReference Canada 需要登录才能查询"
 
 #: ../wxui/query_sources.py:657
 msgid ""
@@ -2026,162 +2366,154 @@ msgid ""
 "radio communications data provider\n"
 "<small>Premium account required</small>"
 msgstr ""
+"RadioReference.com 是世界上最大的无线电通信数据提供商\n"
+"<small>需要高级账户</small>"
 
 #: ../wxui/memedit.py:135
-#, fuzzy
 msgid "Receive DTCS code"
-msgstr "DTCS 代码"
+msgstr "接收 DTCS 代码"
 
 #: ../wxui/memedit.py:128
-#, fuzzy
 msgid "Receive frequency"
-msgstr "频率"
+msgstr "接收频率"
 
-#: ../wxui/clone.py:571
+#: ../wxui/clone.py:577
 msgid "Recent"
-msgstr ""
+msgstr "最近"
 
-#: ../wxui/clone.py:331
+#: ../wxui/clone.py:337
 msgid "Recent..."
-msgstr ""
+msgstr "最近..."
 
 #: ../drivers/retevis_rt98.py:1219
 msgid "Recommend using 55.2"
-msgstr ""
+msgstr "建议使用 55.2"
 
 #: ../wxui/common.py:481
-#, fuzzy
 msgid "Refresh required"
 msgstr "需要刷新"
 
 #: ../wxui/common.py:321
 #, python-format
 msgid "Refreshed memory %s"
-msgstr ""
+msgstr "刷新了存储 %s"
 
-#: ../wxui/main.py:895
+#: ../wxui/main.py:901
 msgid "Reload Driver"
 msgstr "重新加载驱动程序"
 
-#: ../wxui/main.py:904
+#: ../wxui/main.py:910
 msgid "Reload Driver and File"
 msgstr "重新加载驱动程序和文件"
 
-#: ../wxui/clone.py:591
+#: ../wxui/clone.py:597
 msgid "Remove"
-msgstr ""
+msgstr "删除"
 
-#: ../wxui/clone.py:592
+#: ../wxui/clone.py:598
 msgid "Remove selected model from list"
-msgstr ""
+msgstr "从列表中删除所选的型号"
 
 #: ../wxui/bankedit.py:205
 msgid "Rename bank"
-msgstr ""
+msgstr "重命名存储区"
 
 #: ../wxui/query_sources.py:259
 msgid ""
 "RepeaterBook is Amateur Radio's most comprehensive,\n"
 "worldwide, FREE repeater directory."
-msgstr ""
+msgstr "RepeaterBook 是业余无线电最全面的、全球范围内的、免费的中继台目录。"
 
-#: ../wxui/main.py:977
+#: ../wxui/main.py:983
 msgid "Report or update a bug..."
-msgstr ""
+msgstr "报告或更新 Bug..."
 
-#: ../wxui/bugreport.py:464
-#, fuzzy, python-format
+#: ../wxui/bugreport.py:512
+#, python-format
 msgid "Reporting a new bug: %r"
-msgstr "启用报告功能"
+msgstr "正在报告新 Bug：%r"
 
-#: ../wxui/main.py:943
+#: ../wxui/main.py:949
 msgid "Reporting enabled"
 msgstr "启用报告功能"
 
-#: ../wxui/main.py:1824
-msgid ""
-"Reporting helps the CHIRP project know which radio models and OS platforms "
-"to spend our limited efforts on. We would really appreciate if you left it "
-"enabled. Really disable reporting?"
-msgstr ""
+#: ../wxui/main.py:1831
+msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
+msgstr "报告有助于 CHIRP 项目了解哪些电台型号和操作系统平台值得我们有限的努力。如果您保持它启用，我们将不胜感激。真的要禁用报告吗？"
 
-#: ../wxui/main.py:1519 ../wxui/main.py:1818
+#: ../wxui/main.py:1526 ../wxui/main.py:1825
 msgid "Restart Required"
-msgstr ""
+msgstr "需要重新启动"
 
-#: ../wxui/main.py:691
+#: ../wxui/main.py:697
 #, python-format
 msgid "Restore %i tab"
 msgid_plural "Restore %i tabs"
-msgstr[0] ""
+msgstr[0] "恢复 %i 个标签页"
 
-#: ../wxui/main.py:820
+#: ../wxui/main.py:826
 msgid "Restore tabs on start"
-msgstr ""
+msgstr "启动时恢复标签页"
 
 #: ../wxui/common.py:325
 msgid "Retrieved settings"
-msgstr ""
+msgstr "已取得设置"
 
-#: ../wxui/main.py:1019
+#: ../wxui/main.py:1025
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
-#: ../wxui/main.py:1394
+#: ../wxui/main.py:1401
 msgid "Save before closing?"
-msgstr "在保存前关闭？"
+msgstr "在关闭前保存？"
 
-#: ../wxui/main.py:1020 ../wxui/main.py:1319
+#: ../wxui/main.py:1026 ../wxui/main.py:1325
 msgid "Save file"
 msgstr "保存文件"
 
 #: ../wxui/common.py:327
-#, fuzzy
 msgid "Saved settings"
-msgstr "设置"
+msgstr "已保存设置"
 
 #: ../wxui/memedit.py:142
 msgid "Scan control (skip, include, priority, etc)"
-msgstr ""
+msgstr "扫描控制（跳过、包含、优先级等）"
 
 #: ../drivers/uvk5.py:893
 msgid "Scanlists"
-msgstr ""
+msgstr "扫描列表"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:889
+#: ../drivers/uvk5.py:889 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
-msgstr ""
+msgstr "加密器"
 
 #: ../wxui/developer.py:568
 msgid "Security Risk"
-msgstr ""
+msgstr "安全风险"
 
-#: ../wxui/main.py:885
+#: ../wxui/main.py:891
 msgid "Select Bandplan..."
-msgstr ""
+msgstr "选择频段计划..."
 
 #: ../wxui/query_sources.py:389 ../wxui/query_sources.py:606
-#, fuzzy
 msgid "Select Bands"
-msgstr "选择列"
+msgstr "选择频段"
 
-#: ../wxui/main.py:1502
-#, fuzzy
+#: ../wxui/main.py:1509
 msgid "Select Language"
 msgstr "更改语言 (Change Language)"
 
 #: ../wxui/query_sources.py:410
-#, fuzzy
 msgid "Select Modes"
-msgstr "选择列"
+msgstr "选择制式"
 
-#: ../wxui/main.py:1888
+#: ../wxui/main.py:1895
 msgid "Select a bandplan"
-msgstr ""
+msgstr "选择一个频段计划"
 
 #: ../wxui/query_sources.py:287
 msgid "Service"
-msgstr ""
+msgstr "服务"
 
 #: ../wxui/main.py:215
 msgid "Settings"
@@ -2189,17 +2521,17 @@ msgstr "设置"
 
 #: ../drivers/uvk5.py:2122
 msgid "Settings are read-only due to unsupported firmware version"
-msgstr ""
+msgstr "由于不支持的固件版本，设置是只读的"
 
 #: ../wxui/memedit.py:140
 msgid "Shift amount (or transmit frequency) controlled by duplex"
-msgstr ""
+msgstr "由双工控制的移动量（或发射频率）"
 
-#: ../wxui/memedit.py:1827 ../wxui/developer.py:91
+#: ../wxui/developer.py:91 ../wxui/memedit.py:1827
 msgid "Show Raw Memory"
 msgstr "显示原始存储"
 
-#: ../wxui/main.py:961
+#: ../wxui/main.py:967
 msgid "Show debug log location"
 msgstr "打开调试日志所在文件夹"
 
@@ -2207,10 +2539,9 @@ msgstr "打开调试日志所在文件夹"
 msgid "Show extra fields"
 msgstr "显示更多其他内容"
 
-#: ../wxui/main.py:966
-#, fuzzy
+#: ../wxui/main.py:972
 msgid "Show image backup location"
-msgstr "打开调试日志所在文件夹"
+msgstr "打开镜像备份所在文件夹"
 
 #: ../wxui/memedit.py:2096
 msgid "Some memories are incompatible with this radio"
@@ -2221,55 +2552,54 @@ msgid "Some memories are not deletable"
 msgstr "某些内容不可被删除"
 
 #: ../wxui/memedit.py:1783
-#, fuzzy, python-format
+#, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
-msgstr[0] "对比原始存储"
+msgstr[0] "将 %i 个存储排序"
 
 #: ../wxui/memedit.py:1787
-#, fuzzy, python-format
+#, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
-msgstr[0] "对比原始存储"
+msgstr[0] "将 %i 个存储升序排列"
 
 #: ../wxui/memedit.py:1809
-#, fuzzy, python-format
+#, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
-msgstr[0] "对比原始存储"
+msgstr[0] "将 %i 个存储降序排列"
 
 #: ../wxui/memedit.py:1675
 msgid "Sort by column:"
-msgstr ""
+msgstr "排序列："
 
 #: ../wxui/memedit.py:1674
 msgid "Sort memories"
-msgstr ""
+msgstr "排序存储"
 
 #: ../sources/przemienniki.py:60
-#, fuzzy
 msgid "Sorting"
-msgstr "设置"
+msgstr "排序"
 
 #: ../wxui/query_sources.py:472
 msgid "State"
-msgstr ""
+msgstr "州"
 
 #: ../wxui/query_sources.py:290
 msgid "State/Province"
 msgstr "州/省"
 
-#: ../wxui/main.py:1876
+#: ../wxui/main.py:1883
 msgid "Success"
-msgstr ""
+msgstr "成功"
 
-#: ../wxui/bugreport.py:600
+#: ../wxui/bugreport.py:658
 msgid "Successfully sent bug report:"
-msgstr ""
+msgstr "成功发送错误报告："
 
 #: ../wxui/memedit.py:136
 msgid "TX-RX DTCS polarity (normal or reversed)"
-msgstr ""
+msgstr "发射-接收 DTCS 极性（正常或反转）"
 
 #: ../drivers/ft4.py:720
 msgid ""
@@ -2277,10 +2607,12 @@ msgid ""
 "when using lesser common radio variants.\n"
 "Proceed at your own risk, and let us know about issues!"
 msgstr ""
+"已测试并基本可用，但在使用较少见的电台变种时可能会出现问题。\n"
+"请自行决定是否继续，如有问题请告知我们！"
 
 #: ../wxui/query_sources.py:480
 msgid "The DMR-MARC Worldwide Network"
-msgstr ""
+msgstr "DMR-MARC 全球网络"
 
 #: ../drivers/ft450d.py:416
 msgid ""
@@ -2298,6 +2630,10 @@ msgid ""
 "uses the mode 'DIG' to represent data modes and a new column\n"
 "'DATA MODE' to select USER-U, USER-L and RTTY \n"
 msgstr ""
+"FT-450D 电台驱动程序加载\"特殊频道\"选项卡，包括 PMS 扫描范围存储器（组 11）、60 米频道（组 12）、QMB（STO/RCL）存储器、HF 和50 米 HOME 存储器以及所有 A 和 B VFO 存储器。\n"
+"每个波段都有最后拨号的频率的 VFO 存储器。还存储了最后的 mem-tune 配置。这些特殊频道允许有限的字段编辑。\n"
+"此驱动程序还填充了通道存储器属性窗口中的\"其他\"选项卡。此选项卡包含不属于标准 Chirp 显示列的那些通道存储器设置的值。\n"
+"随着 FT450 的支持，GUI 现在使用模式\"DIG\"来表示数据模式，并添加了一个新列\"数据模式\"来选择 USER-U、USER-L 和 RTTY\n"
 
 #: ../drivers/boblov_x3plus.py:119
 msgid ""
@@ -2306,97 +2642,71 @@ msgid ""
 "Please save an unedited copy of your first successful\n"
 "download to a CHIRP Radio Images (*.img) file.\n"
 msgstr ""
+"X3Plus 驱动程序目前处于实验阶段。\n"
+"没有已知问题，但您应谨慎操作。\n"
+"请将首次成功下载的未编辑副本保存为 CHIRP 电台镜像 (*.img) 文件。\n"
 
 #: ../wxui/developer.py:565
-msgid ""
-"The author of this module is not a recognized CHIRP developer. It is "
-"recommended that you not load this module as it could pose a security risk. "
-"Proceed anyway?"
-msgstr ""
+msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
+msgstr "此模块的作者不是 CHIRP 开发人员。建议您不要加载此模块，因为可能会带来安全风险。是否继续？"
 
-#: ../wxui/bugreport.py:169
-msgid ""
-"The debug log file is not available when CHIRP is run interactively from the "
-"command-line. Thus, this tool will not upload what you expect. It is "
-"recommended that you quit now and run CHIRP non-interactively (or with stdin "
-"redirected to /dev/null)"
-msgstr ""
+#: ../wxui/bugreport.py:213
+msgid "The debug log file is not available when CHIRP is run interactively from the command-line. Thus, this tool will not upload what you expect. It is recommended that you quit now and run CHIRP non-interactively (or with stdin redirected to /dev/null)"
+msgstr "当从命令行交互式运行 CHIRP 时，调试日志文件不可用。因此，此工具不会上传您期望的内容。建议您现在退出并以非交互方式运行 CHIRP（或将 stdin 重定向到 /dev/null）"
 
-#: ../wxui/bugreport.py:449
+#: ../wxui/bugreport.py:497
 msgid "The following information will be submitted:"
-msgstr ""
+msgstr "将提交以下信息："
 
-#: ../wxui/main.py:1351
+#: ../wxui/main.py:1357
 #, python-format
-msgid ""
-"The recommended procedure for importing memories is to open the source file "
-"and copy/paste memories from it into your target image. If you continue with "
-"this import function, CHIRP will replace all memories in your currently-open "
-"file with those in %(file)s. Would you like to open this file to copy/paste "
-"memories across, or proceed with the import?"
-msgstr ""
+msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
+msgstr "导入存储的推荐方法是打开源文件，然后将存储从源文件复制/粘贴到目标镜像中。如果继续使用此导入功能，CHIRP 将使用 %(file)s 中的存储替换当前打开文件中的所有存储。您想要打开此文件以复制/粘贴记忆，还是继续导入？"
 
 #: ../wxui/memedit.py:1744
 msgid "This Memory"
 msgstr "该内容"
 
 #: ../drivers/id5100.py:332
-msgid ""
-"This driver has been tested with v3 of the ID-5100. If your radio is not "
-"fully updated please help by opening a bug report with a debug log so we can "
-"add support for the other revisions."
-msgstr ""
+msgid "This driver has been tested with v3 of the ID-5100. If your radio is not fully updated please help by opening a bug report with a debug log so we can add support for the other revisions."
+msgstr "此驱动程序已经与 ID-5100 的 v3 版本进行了测试。如果您的电台没有完全更新，请通过打开一个带有调试日志的错误报告来帮助我们，以便我们可以为其他版本添加支持。"
 
 #: ../drivers/radtel_rt490.py:1345 ../drivers/radtel_rt490.py:1347
 #: ../drivers/radtel_rt490.py:1349
 msgid "This driver is in development and should be considered as experimental."
-msgstr ""
+msgstr "此驱动程序正在开发中，应被视为实验性的。"
 
 #: ../drivers/uvk5.py:721
-msgid ""
-"This image is missing firmware information. It may have been generated with "
-"an old or modified version of CHIRP. It is advised that you download a fresh "
-"image from your radio and use that going forward for the best safety and "
-"compatibility."
-msgstr ""
+msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
+msgstr "此镜像缺少固件信息。可能是使用旧版或修改版的 CHIRP 生成的。建议您从电台下载一个新镜像，并将其用于以后的最佳安全性和兼容性。"
 
-#: ../wxui/main.py:1583
-msgid ""
-"This is a live-mode radio, which means changes are sent to the radio in real-"
-"time as you make them. Upload is not necessary!"
-msgstr ""
+#: ../wxui/main.py:1590
+msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"
+msgstr "这是一个实时模式电台，这意味着更改将实时发送到电台。不需要上传！"
 
-#: ../wxui/main.py:1589
-msgid ""
-"This is a radio-independent file and cannot be uploaded directly to a radio. "
-"Open a radio image (or download one from a radio) and then copy/paste items "
-"from this tab into that one in order to upload"
-msgstr ""
+#: ../wxui/main.py:1596
+msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
+msgstr "这是一个与电台无关的文件，不能直接上传到电台。打开一个电台镜像（或从电台下载一个），然后将此选项卡中的项目复制/粘贴到该选项卡中，以便上传"
 
 #: ../drivers/th_uv88.py:560
 msgid "This is an early stage beta driver\n"
-msgstr ""
+msgstr "这是一个早期测试版驱动程序\n"
 
 #: ../drivers/th_uv88.py:562
 msgid "This is an early stage beta driver - upload at your own risk\n"
-msgstr ""
+msgstr "这是一个早期测试版驱动程序 - 上传风险自负\n"
 
 #: ../drivers/uvk5.py:648
 msgid ""
-"This is an experimental driver for the Quansheng UV-K5. It may harm your "
-"radio, or worse. Use at your own risk.\n"
+"This is an experimental driver for the Quansheng UV-K5. It may harm your radio, or worse. Use at your own risk.\n"
 "\n"
-"Before attempting to do any changes please download the memory image from "
-"the radio with chirp and keep it. This can be later used to recover the "
-"original settings. \n"
+"Before attempting to do any changes please download the memory image from the radio with chirp and keep it. This can be later used to recover the original settings. \n"
 "\n"
 "some details are not yet implemented"
 msgstr ""
-"这是泉盛 UV-K5 的实验性驱动程序。它可能会损坏您的电台，甚至会更糟。使用风险请"
-"自负。\n"
+"这是泉盛 UV-K5 的实验性驱动程序。它可能会损坏您的电台，甚至会更糟。使用风险请自负。\n"
 "\n"
-"在尝试去进行任何修改之前，请从电台中下载并保存内存映像。您以后可以用它恢复设"
-"置。\n"
+"在尝试去进行任何修改之前，请从电台中下载并保存内存映像。您以后可以用它恢复设置。\n"
 "\n"
 "某些细节功能尚未实现"
 
@@ -2407,30 +2717,26 @@ msgid ""
 "Also please send in bug and enhancement requests!\n"
 "You have been warned. Proceed at your own risk!"
 msgstr ""
+"这是仍在开发中的 BJ-9900 的实验性支持。\n"
+"请确保您使用 OEM 软件进行了良好的备份。\n"
+"同时请发送错误和增强请求！\n"
+"您已被警告。请自行承担风险！"
 
-#: ../wxui/bugreport.py:374
-msgid ""
-"This is the ticket number for an already-created issue on the chirpmyradio."
-"com website"
-msgstr ""
+#: ../wxui/bugreport.py:418
+msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
+msgstr "这是 chirpmyradio.com 网站上已创建问题的票号"
 
 #: ../wxui/memedit.py:1748
-#, fuzzy
 msgid "This memory and shift all up"
-msgstr "...并将区块上移"
+msgstr "此存储并上移所有"
 
 #: ../wxui/memedit.py:1746
-#, fuzzy
 msgid "This memory and shift block up"
-msgstr "...并将区块上移"
+msgstr "此存储并上移区块"
 
 #: ../drivers/uvk5_egzumer.py:1468
-msgid ""
-"This option may break your radio! Each radio has a unique set of calibration "
-"data and uploading the data from the image will cause physical harm to the "
-"radio if it is from a different piece of hardware. Do not use this unless "
-"you know what you are doing and accept the risk of destroying your radio!"
-msgstr ""
+msgid "This option may break your radio! Each radio has a unique set of calibration data and uploading the data from the image will cause physical harm to the radio if it is from a different piece of hardware. Do not use this unless you know what you are doing and accept the risk of destroying your radio!"
+msgstr "此选项可能会损坏您的电台！每台电台都有一组独特的校准数据，如果上传的数据来自不同的硬件设备，将会对电台造成物理损害。除非您知道自己在做什么并接受破坏电台的风险，否则不要使用此选项！"
 
 #: ../drivers/fd268.py:303 ../drivers/fd268.py:309
 msgid ""
@@ -2440,27 +2746,22 @@ msgid ""
 "can take a few seconds, if don't work, try again a few times.\n"
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
+"这台电台进入编程模式的方式有点棘手，\n"
+"即使原始软件也需要尝试多次才能进入。\n"
+"我将尝试 8 次（大多数情况下 ~3 次就可以），这可能需要几秒钟，如果不起作用，请再试几次。\n"
+"如果还是无法进入，请检查电台和电缆。\n"
 
 #: ../drivers/uvk5.py:1884
-msgid ""
-"This should only be enabled if you are using modified firmware that supports "
-"wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM "
-"restrictions and may lead to undefined or unregulated behavior. Use at your "
-"own risk!"
-msgstr ""
+msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
+msgstr "只有当您使用了扩频的修改固件时才应启用此选项。启用此选项将导致 CHIRP 不强制执行 OEM 限制，并可能导致未定义或不受监管的行为。使用风险自负！"
 
-#: ../wxui/bugreport.py:137
-msgid ""
-"This tool will upload details about your system to an existing issue on the "
-"CHIRP tracker. It requires your username and password for chirpmyradio.com "
-"in order to work. Information about your system, including your debug log, "
-"config file, and any open image files will be uploaded. An attempt will be "
-"made to redact any personal information before it leaves your system."
-msgstr ""
+#: ../wxui/bugreport.py:181
+msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
+msgstr "此工具将向 CHIRP 跟踪器上的现有问题上传有关您的系统的详细信息。为了正常工作，它需要您在 chirpmyradio.com 上的用户名和密码。将上传有关您的系统的信息，包括调试日志、配置文件和任何打开的镜像文件。在发送之前，我们将尝试删除任何个人信息。"
 
 #: ../wxui/developer.py:575
 msgid "This will load a module from a website issue"
-msgstr ""
+msgstr "这将从网站 issue 中加载一个模块"
 
 #: ../wxui/memedit.py:440
 msgid "Tone"
@@ -2472,79 +2773,73 @@ msgstr "亚音频制式"
 
 #: ../wxui/memedit.py:442
 msgid "Tone Squelch"
-msgstr "接收亚音频"
+msgstr "亚音频静噪"
 
 #: ../wxui/memedit.py:130
-#, fuzzy
 msgid "Tone squelch mode"
-msgstr "接收亚音频"
+msgstr "亚音频静噪模式"
 
 #: ../wxui/memedit.py:143
 msgid "Transmit Power"
-msgstr ""
+msgstr "发射功率"
 
 #: ../wxui/memedit.py:139
 msgid "Transmit shift, split mode, or transmit inhibit"
-msgstr ""
+msgstr "频差发射、分频模式或发射禁止"
 
 #: ../wxui/memedit.py:131
 msgid "Transmit tone"
-msgstr ""
+msgstr "发射亚音频"
 
 #: ../wxui/memedit.py:134
 msgid "Transmit/receive DTCS code for DTCS mode, else transmit code"
-msgstr ""
+msgstr "DTCS 模式下的发射/接收 DTCS 代码，否则为发射代码"
 
 #: ../wxui/memedit.py:133
 msgid "Transmit/receive modulation (FM, AM, SSB, etc)"
-msgstr ""
+msgstr "发射/接收调制方式（FM、AM、SSB 等）"
 
 #: ../wxui/memedit.py:132
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
-msgstr ""
+msgstr "TSQL 模式下的发射/接收亚音频，否则为接收亚音频"
 
 #: ../wxui/memedit.py:384 ../wxui/memedit.py:1018
 msgid "Tuning Step"
 msgstr "调谐间隔"
 
-#: ../wxui/clone.py:458 ../wxui/clone.py:465 ../wxui/clone.py:476
-#: ../wxui/clone.py:484 ../wxui/clone.py:488
+#: ../wxui/clone.py:464 ../wxui/clone.py:471 ../wxui/clone.py:482
+#: ../wxui/clone.py:490 ../wxui/clone.py:494
 msgid "USB Port Finder"
-msgstr ""
+msgstr "USB 端口查找器"
 
-#: ../wxui/clone.py:474
-msgid ""
-"Unable to determine port for your cable. Check your drivers and connections."
-msgstr ""
+#: ../wxui/clone.py:480
+msgid "Unable to determine port for your cable. Check your drivers and connections."
+msgstr "无法确定您的电缆端口。检查您的驱动程序和连接。"
 
 #: ../wxui/memedit.py:1473
 msgid "Unable to edit memory before radio is loaded"
-msgstr ""
+msgstr "无法在加载电台之前编辑存储器"
 
-#: ../wxui/main.py:1277
+#: ../wxui/main.py:1283
 #, python-format
 msgid "Unable to find stock config %r"
-msgstr ""
+msgstr "无法找到预设配置 %r"
 
 #: ../wxui/memedit.py:1957
-#, fuzzy
 msgid "Unable to import while the view is sorted"
-msgstr "无法打开此镜像：型号不支持"
+msgstr "无法在视图排序时导入"
 
 #: ../wxui/common.py:227
 msgid "Unable to open the clipboard"
-msgstr "无法打开此镜像：型号不支持"
+msgstr "无法打开剪贴板"
 
 #: ../sources/przemienniki.py:46
 msgid "Unable to query"
-msgstr ""
+msgstr "无法查询"
 
 #: ../drivers/ft817.py:320
-msgid ""
-"Unable to read last block. This often happens when the selected model is US "
-"but the radio is a non-US one (or widebanded). Please choose the correct "
-"model and try again."
-msgstr ""
+msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
+msgstr "无法读取最后一个块。这通常发生在所选模型为美国，但电台是非美国的（或扩频的）情况下。请选择正确的模型并重试。"
 
 #: ../wxui/common.py:687
 #, python-format
@@ -2556,46 +2851,45 @@ msgstr "无法在此系统上显示 %s"
 msgid "Unable to set %s on this memory"
 msgstr "无法在此内容上设置 %s"
 
-#: ../wxui/main.py:1593
-#, fuzzy
+#: ../wxui/main.py:1600
 msgid "Unable to upload this file"
-msgstr "无法在此系统上显示 %s"
+msgstr "无法上传此文件"
 
 #: ../wxui/query_sources.py:698
 msgid "United States"
 msgstr "美国"
 
-#: ../wxui/clone.py:457
+#: ../wxui/clone.py:463
 msgid "Unplug your cable (if needed) and then click OK"
-msgstr ""
+msgstr "拔掉您的电缆（如果需要）然后点击确定"
 
 #: ../drivers/thd74.py:327
-#, fuzzy, python-format
+#, python-format
 msgid "Unsupported model %r"
-msgstr "不支持的文件类型"
+msgstr "不支持的型号 %r"
 
-#: ../wxui/bugreport.py:158
+#: ../wxui/bugreport.py:202
 msgid "Update an existing bug"
-msgstr ""
+msgstr "更新现有 Bug"
 
-#: ../wxui/bugreport.py:466
-#, fuzzy, python-format
+#: ../wxui/bugreport.py:514
+#, python-format
 msgid "Updating bug %s"
-msgstr "正在更新 URCALL 列表"
+msgstr "正在更新 Bug %s"
 
-#: ../wxui/clone.py:828
+#: ../wxui/clone.py:853
 msgid "Upload instructions"
-msgstr ""
+msgstr "上传说明"
 
 #: ../drivers/uvk5.py:2109
 msgid "Upload is disabled due to unsupported firmware version"
-msgstr ""
+msgstr "由于不支持的固件版本，上传被禁用"
 
-#: ../wxui/main.py:1026
+#: ../wxui/main.py:1032
 msgid "Upload to radio"
 msgstr "上传到电台"
 
-#: ../wxui/main.py:849
+#: ../wxui/main.py:855
 msgid "Upload to radio..."
 msgstr "上传到电台……"
 
@@ -2604,117 +2898,111 @@ msgstr "上传到电台……"
 msgid "Uploaded memory %s"
 msgstr ""
 
-#: ../wxui/main.py:805
+#: ../wxui/main.py:811
 msgid "Use fixed-width font"
-msgstr "使用固定宽度字体"
+msgstr "使用等宽字体"
 
-#: ../wxui/main.py:813
+#: ../wxui/main.py:819
 msgid "Use larger font"
 msgstr "使用大号字体"
 
-#: ../wxui/bugreport.py:205
+#: ../wxui/bugreport.py:249
 msgid "Username"
-msgstr ""
+msgstr "用户名"
 
 #: ../wxui/developer.py:256
 #, python-format
 msgid "Value does not fit in %i bits"
-msgstr ""
+msgstr "数值无法用 %i 位表示"
 
 #: ../wxui/common.py:519
 #, python-format
 msgid "Value must be at least %.4f"
-msgstr ""
+msgstr "数值必须至少为 %.4f"
 
 #: ../wxui/common.py:523
 #, python-format
 msgid "Value must be at most %.4f"
-msgstr ""
+msgstr "数值必须至多为 %.4f"
 
 #: ../wxui/developer.py:300
 #, python-format
 msgid "Value must be exactly %i decimal digits"
-msgstr ""
+msgstr "数值必须正好为 %i 位十进制数"
 
 #: ../wxui/developer.py:254 ../wxui/developer.py:298
 msgid "Value must be zero or greater"
-msgstr ""
+msgstr "数值必须为零或更大"
 
 #: ../wxui/memedit.py:2338
 msgid "Values"
-msgstr ""
+msgstr "数值"
 
-#: ../wxui/clone.py:335
+#: ../wxui/clone.py:341
 msgid "Vendor"
 msgstr "厂商"
 
-#: ../wxui/main.py:987
+#: ../wxui/main.py:993
 msgid "View"
 msgstr "查看"
 
 #: ../wxui/common.py:465
 msgid "WARNING!"
-msgstr ""
+msgstr "警告！"
 
-#: ../wxui/bugreport.py:174 ../wxui/memedit.py:1559 ../wxui/main.py:1868
+#: ../wxui/memedit.py:1559 ../wxui/main.py:1875 ../wxui/bugreport.py:218
 msgid "Warning"
-msgstr ""
+msgstr "警告"
 
 #: ../wxui/memedit.py:1558
 #, python-format
 msgid "Warning: %s"
-msgstr ""
+msgstr "警告：%s"
 
-#: ../wxui/main.py:446
+#: ../wxui/main.py:451
 msgid "Welcome"
-msgstr ""
+msgstr "欢迎"
 
 #: ../wxui/__init__.py:58
 msgid "Would you like CHIRP to install a desktop icon for you?"
-msgstr ""
+msgstr "您是否希望 CHIRP 为您安装一个桌面图标？"
 
-#: ../wxui/bugreport.py:265
-msgid ""
-"You have opened multiple issues within the last week. CHIRP limits the "
-"number of issues you can open to avoid abuse. If you really need to open "
-"another, please do so via the website."
-msgstr ""
+#: ../wxui/bugreport.py:309
+msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
+msgstr "您在过去一周内打开了多个 issue。CHIRP 限制您可以打开的问题数量以避免滥用。如果您确实需要打开另一个问题，请通过网站打开。"
 
-#: ../wxui/clone.py:495
-msgid ""
-"Your Prolific-based USB device will not work without reverting to an older "
-"version of the driver. Visit the CHIRP website to read more about how to "
-"resolve this?"
-msgstr ""
+#: ../wxui/clone.py:501
+msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
+msgstr "您的基于 Prolific 的 USB 设备将无法工作，除非回滚到旧版本的驱动程序。访问 CHIRP 网站以了解更多关于如何解决此问题的信息？"
 
-#: ../wxui/clone.py:482
+#: ../wxui/clone.py:488
 msgid "Your cable appears to be on port:"
-msgstr ""
+msgstr "您的电缆似乎在端口："
 
 #: ../wxui/developer.py:176
 msgid "bits"
-msgstr ""
+msgstr "比特"
 
 #: ../wxui/developer.py:172
 msgid "bytes"
-msgstr ""
+msgstr "字节"
 
 #: ../wxui/developer.py:167
 msgid "bytes each"
-msgstr ""
+msgstr "字节每个"
 
-#: ../wxui/main.py:1801
+#: ../wxui/main.py:1808
 msgid "disabled"
 msgstr "已禁用"
 
-#: ../wxui/main.py:1801
+#: ../wxui/main.py:1808
 msgid "enabled"
 msgstr "已启用"
 
 #: ../drivers/vx5.py:116
 #, python-brace-format
 msgid "{bank} is full"
-msgstr ""
+msgstr "{bank} 已满"
 
 #, python-brace-format
 #~ msgid "Adding memory {number}"
@@ -2726,12 +3014,8 @@ msgstr ""
 #~ msgid "Auto"
 #~ msgstr "自动"
 
-#~ msgid ""
-#~ "Band plans define default channel settings for frequencies in a region.  "
-#~ "Choose a band plan or None for completely manual channel settings."
-#~ msgstr ""
-#~ "频段计划定义了一个区域内频率的默认频道设置。请选择一个频段计划，或选"
-#~ "择“无”以完全手动设置频道。"
+#~ msgid "Band plans define default channel settings for frequencies in a region.  Choose a band plan or None for completely manual channel settings."
+#~ msgstr "频段计划定义了一个区域内频率的默认频道设置。请选择一个频段计划，或选择“无”以完全手动设置频道。"
 
 #~ msgid "CHIRP Native File"
 #~ msgstr "CHIRP 原生文件"
@@ -2760,12 +3044,8 @@ msgstr ""
 #~ msgid "Channel Defaults"
 #~ msgstr "频道默认值"
 
-#~ msgid ""
-#~ "Choose a language or Auto to use the operating system default. You will "
-#~ "need to restart the application before the change will take effect"
-#~ msgstr ""
-#~ "选择一种语言或自动使用操作系统的默认语言。你需要重新启动程序才能使改变生"
-#~ "效。"
+#~ msgid "Choose a language or Auto to use the operating system default. You will need to restart the application before the change will take effect"
+#~ msgstr "选择一种语言或自动使用操作系统的默认语言。你需要重新启动程序才能使改变生效。"
 
 #~ msgid "Clear Recently Opened"
 #~ msgstr "清空最近项目"
@@ -2904,13 +3184,10 @@ msgstr ""
 #~ msgid "ICF Files"
 #~ msgstr "ICF 文件"
 
-#~ msgid ""
-#~ "ICF files cannot be edited, only displayed or imported into another file. "
-#~ "Open in read-only mode?"
+#~ msgid "ICF files cannot be edited, only displayed or imported into another file. Open in read-only mode?"
 #~ msgstr "不能编辑 ICF 文件，只能展示或导入到其他文件中。以只读模式打开吗？"
 
-#~ msgid ""
-#~ "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+#~ msgid "If you wish to disable this feature you may do so in the <u>Help</u> menu"
 #~ msgstr "要禁用此功能，您可在 <u>帮助</u> 菜单中操作"
 
 #~ msgid "Import From Data Source"
@@ -2968,11 +3245,8 @@ msgstr ""
 #~ msgstr "位置 {number} 已被导入"
 
 #, python-brace-format
-#~ msgid ""
-#~ "Location {number} is already being imported. Choose another value for "
-#~ "'New Location' before selection 'Import'"
-#~ msgstr ""
-#~ "位置 {number} 已被导入。请为“新位置”选择一个新的值，然后再选择“导入”。"
+#~ msgid "Location {number} is already being imported. Choose another value for 'New Location' before selection 'Import'"
+#~ msgstr "位置 {number} 已被导入。请为“新位置”选择一个新的值，然后再选择“导入”。"
 
 #, python-brace-format
 #~ msgid "Looking for a free spot ({number})"
@@ -3150,19 +3424,11 @@ msgstr ""
 #~ msgstr "przemienniki.net"
 
 #~ msgid ""
-#~ "The reporting feature of CHIRP is designed to help <u>improve quality</u> "
-#~ "by allowing the authors to focus on the radio drivers used most often and "
-#~ "errors experienced by the users. The reports contain no identifying "
-#~ "information and are used only for statistical purposes by the authors. "
-#~ "Your privacy is extremely important, but <u>please consider leaving this "
-#~ "feature enabled to help make CHIRP better!</u>\n"
+#~ "The reporting feature of CHIRP is designed to help <u>improve quality</u> by allowing the authors to focus on the radio drivers used most often and errors experienced by the users. The reports contain no identifying information and are used only for statistical purposes by the authors. Your privacy is extremely important, but <u>please consider leaving this feature enabled to help make CHIRP better!</u>\n"
 #~ "\n"
 #~ "<b>Are you sure you want to disable this feature?</b>"
 #~ msgstr ""
-#~ "CHIRP 的报告功能旨在帮助<u>改善软件质量</u>，让作者能关注最常使用的电台驱"
-#~ "动程序以及用户遇到的错误。这些报告不包含任何识别信息，仅用于作者的统计目"
-#~ "的。您的隐私非常重要，但<u>请考虑启用这一功能，以帮助 CHIRP 变得更好！</"
-#~ "u>\n"
+#~ "CHIRP 的报告功能旨在帮助<u>改善软件质量</u>，让作者能关注最常使用的电台驱动程序以及用户遇到的错误。这些报告不包含任何识别信息，仅用于作者的统计目的。您的隐私非常重要，但<u>请考虑启用这一功能，以帮助 CHIRP 变得更好！</u>\n"
 #~ "\n"
 #~ "<b>确定要禁用此功能吗？</b>"
 
@@ -3171,16 +3437,8 @@ msgstr ""
 #~ msgstr "电台 {vendor} {model} 有多个独立的子设备"
 
 #, python-brace-format
-#~ msgid ""
-#~ "The {vendor} {model} operates in <b>live mode</b>. This means that any "
-#~ "changes you make are immediately sent to the radio. Because of this, you "
-#~ "cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish "
-#~ "to edit the contents offline, please <u>Export</u> to a CSV file, using "
-#~ "the <b>File menu</b>."
-#~ msgstr ""
-#~ "此电台 {vendor} {model} 工作在<b>实时模式</b>，也就是说变更会即时发送给电"
-#~ "台。因此，您不能进行<u>保存</u>或者<u>上传</u> 操作。如果您想离线编辑内"
-#~ "容，请使用<b>文件菜单</b>的<u>导出</u>到 CSV 功能。"
+#~ msgid "The {vendor} {model} operates in <b>live mode</b>. This means that any changes you make are immediately sent to the radio. Because of this, you cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to edit the contents offline, please <u>Export</u> to a CSV file, using the <b>File menu</b>."
+#~ msgstr "此电台 {vendor} {model} 工作在<b>实时模式</b>，也就是说变更会即时发送给电台。因此，您不能进行<u>保存</u>或者<u>上传</u> 操作。如果您想离线编辑内容，请使用<b>文件菜单</b>的<u>导出</u>到 CSV 功能。"
 
 #, python-brace-format
 #~ msgid "There was an error during export: {error}"
@@ -3195,18 +3453,11 @@ msgstr ""
 #~ msgstr "打开 {fname} 时出错：{error}"
 
 #, python-brace-format
-#~ msgid ""
-#~ "There were errors while opening {file}. The affected memories will not be "
-#~ "importable!"
+#~ msgid "There were errors while opening {file}. The affected memories will not be importable!"
 #~ msgstr "打开 {file} 时出错。受影响的存储将不可导入！"
 
-#~ msgid ""
-#~ "This operation requires moving all subsequent channels by one spot until "
-#~ "an empty location is reached.  This can take a LONG time.  Are you sure "
-#~ "you want to do this?"
-#~ msgstr ""
-#~ "此操作需要移动所有相邻的频道直至出现空位。可能需要非常非常长的时间。确认要"
-#~ "这样做吗？"
+#~ msgid "This operation requires moving all subsequent channels by one spot until an empty location is reached.  This can take a LONG time.  Are you sure you want to do this?"
+#~ msgstr "此操作需要移动所有相邻的频道直至出现空位。可能需要非常非常长的时间。确认要这样做吗？"
 
 #~ msgid "This radio's driver is experimental. Do you want to proceed?"
 #~ msgstr "此电台的驱动程序尚不稳定。要继续吗？"
@@ -3224,18 +3475,11 @@ msgstr ""
 #~ msgid "Unable to detect radio on {port}"
 #~ msgstr "无法在 {port} 上检测到电台"
 
-#~ msgid ""
-#~ "Unable to open this image. It was generated with a newer version of CHIRP "
-#~ "and thus may be for a radio model that is not supported by this version. "
-#~ "Please update to the latest version of CHIRP and try again."
-#~ msgstr ""
-#~ "无法打开此镜像。此镜像由较新版本的 CHIRP 生成，当前版本可能还不支持对应的"
-#~ "型号。请更新 CHIRP 后再试。"
+#~ msgid "Unable to open this image. It was generated with a newer version of CHIRP and thus may be for a radio model that is not supported by this version. Please update to the latest version of CHIRP and try again."
+#~ msgstr "无法打开此镜像。此镜像由较新版本的 CHIRP 生成，当前版本可能还不支持对应的型号。请更新 CHIRP 后再试。"
 
 #, python-brace-format
-#~ msgid ""
-#~ "Unable to paste {src} memories into {dst} rows. Increase the memory "
-#~ "bounds or show empty memories."
+#~ msgid "Unable to paste {src} memories into {dst} rows. Increase the memory bounds or show empty memories."
 #~ msgstr "无法将 {src} 个存储粘贴到 {dst} 行中。请增加存储上线或显示空存储。"
 
 #~ msgid "Untitled"

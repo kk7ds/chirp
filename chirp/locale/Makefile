@@ -21,7 +21,7 @@ chirpui.pot:
 
 %.po: chirpui.pot
 	if [ -f $@ ]; then                                \
-	msgmerge -sU $@ chirpui.pot;                       \
+	msgmerge --no-wrap -sU $@ chirpui.pot;            \
 	else                                              \
 	msginit --input=chirpui.pot --locale=$(@:%.po=%); \
 	fi

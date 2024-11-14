@@ -118,9 +118,14 @@ def _get_freq(_mem):
     else:
         mult = 5000
 
+    if freq & 0x00040000:
+        omult = 6250
+    else:
+        omult = 5000
+
     freq &= 0x0003FFFF
 
-    return (freq * mult), (offs * mult)
+    return (freq * mult), (offs * omult)
 
 
 def _set_freq(_mem, freq, offset):
@@ -131,8 +136,15 @@ def _set_freq(_mem, freq, offset):
         mult = 5000
         flag = 0x00000000
 
-    _mem.freq = (freq // mult) | flag
-    _mem.offset = (offset // mult)
+    if chirp_common.is_fractional_step(offset):
+        omult = 6250
+        oflag = 0x00040000
+    else:
+        omult = 5000
+        oflag = 0x00000000
+
+    _mem.freq = (freq // mult) | flag | oflag
+    _mem.offset = (offset // omult)
 
 
 class ID31Bank(icf.IcomBank):
@@ -197,7 +209,7 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.has_ctone = True
         rf.has_bank_index = True
         rf.has_bank_names = True
-        rf.valid_tmodes = list(TMODES)
+        rf.valid_tmodes = list(set(TMODES))
         rf.valid_tuning_steps = sorted([x for x in TUNING_STEPS if x])
         rf.valid_modes = list(self.MODES.values())
         rf.valid_skips = ["", "S", "P"]
@@ -295,6 +307,8 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         _mem.rtone = chirp_common.TONES.index(memory.rtone)
         _mem.ctone = chirp_common.TONES.index(memory.ctone)
         _mem.tmode = TMODES.index(memory.tmode)
+        if TMODES.count(memory.tmode) > 1:
+            _mem.tmode += 1
         _mem.duplex = DUPLEX.index(memory.duplex)
         _mem.dtcs = chirp_common.DTCS_CODES.index(memory.dtcs)
         _mem.dtcs_polarity = DTCS_POLARITY.index(memory.dtcs_polarity)

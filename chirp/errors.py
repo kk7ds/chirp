@@ -13,6 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import enum
+
+
+class Reasons(enum.Enum):
+    NO_CONNECTION_K1 = "No response from radio. Check connector and cabling!"
+
 
 class InvalidDataError(Exception):
     """The radio driver encountered some invalid data"""
@@ -47,3 +53,23 @@ class ImageDetectFailed(Exception):
 class ImageMetadataInvalidModel(Exception):
     """The image contains metadata but no suitable driver is found"""
     pass
+
+
+class SpecificRadioError(RadioError):
+    """An error with a specific reason and troubleshooting reference."""
+    CODE: None | Reasons = None
+
+    def __init__(self, msg=None):
+        if self.CODE not in Reasons:
+            raise RuntimeError('Invalid reason; '
+                               'must be one of chirp.errors.Reasons')
+        super().__init__(msg or self.CODE.value)
+
+    def get_link(self):
+        return ('https://chirpmyradio.com/projects/chirp/wiki/'
+                'Error-%s' % self.CODE.name)
+
+
+class RadioNoContactLikelyK1(SpecificRadioError):
+    """A radio that uses a K1 connector likely to have fitment issues."""
+    CODE = Reasons.NO_CONNECTION_K1

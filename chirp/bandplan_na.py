@@ -178,6 +178,11 @@ BANDS_70CM = (
                 "(local option)", input_offset=-5000000),
 )
 
+BANDS_US_GMRS = (
+  bandplan.Band((462550000, 462725000), "GMRS Repeaters",
+                input_offset=5000000, duplex=''),
+)
+
 BANDS_33CM = (
   bandplan.Band((902000000, 928000000), "33 Centimeter Band"),
   bandplan.Band((902075000, 902100000), "CW/SSB, Weak signal"),
@@ -267,7 +272,7 @@ BANDS = bandplan_iaru_r2.BANDS + \
         BANDS_160M + BANDS_80M + BANDS_40M + BANDS_30M + BANDS_20M + \
         BANDS_17M + BANDS_15M + BANDS_12M + BANDS_10M + BANDS_6M + \
         BANDS_2M + BANDS_1_25M + BANDS_70CM + BANDS_33CM + BANDS_23CM + \
-        BANDS_13CM
+        BANDS_13CM + BANDS_US_GMRS
 
 
 # US 2017+ GMRS/FRS Frequencies
