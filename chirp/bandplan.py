@@ -22,7 +22,8 @@ LOG = logging.getLogger(__name__)
 
 class Band(object):
     def __init__(self, limits, name, mode=None, step_khz=None,
-                 input_offset=None, output_offset=None, tones=None):
+                 input_offset=None, output_offset=None, tones=None,
+                 duplex=None):
         # Apply semantic and chirp limitations to settings.
         # memedit applies radio limitations when settings are applied.
         try:
@@ -46,14 +47,10 @@ class Band(object):
         self.step_khz = step_khz
         self.tones = tones
         self.limits = limits
-        self.offset = None
-        self.duplex = "simplex"
-        if input_offset is not None:
-            self.offset = input_offset
-            self.duplex = "rpt TX"
-        elif output_offset is not None:
-            self.offset = output_offset
-            self.duplex = "rpt RX"
+        self.offset = input_offset
+        self.duplex = duplex
+        if duplex is None and self.offset:
+            self.duplex = '+' if self.offset > 0 else '-'
 
     def __eq__(self, other):
         return (other.limits[0] == self.limits[0] and
@@ -72,9 +69,10 @@ class Band(object):
             return self
         limits = (self.limits[0] + self.offset, self.limits[1] + self.offset)
         offset = -1 * self.offset
-        if self.duplex == "rpt RX":
+        if self.duplex in '+-':
+            duplex = '+' if self.duplex == '-' else '-'
             return Band(limits, self.name, self.mode, self.step_khz,
-                        input_offset=offset, tones=self.tones)
+                        input_offset=offset, tones=self.tones, duplex=duplex)
         return Band(limits, self.name, self.mode, self.step_khz,
                     output_offset=offset, tones=self.tones)
 
@@ -135,7 +133,8 @@ class BandPlans(object):
                     result.mode = match.mode or result.mode
                     result.step_khz = match.step_khz or result.step_khz
                     result.offset = match.offset or result.offset
-                    result.duplex = match.duplex or result.duplex
+                    result.duplex = (match.duplex if match.duplex is not None
+                                     else result.duplex)
                     result.tones = match.tones or result.tones
                     if match.name:
                         result.name = '/'.join((result.name or '', match.name))

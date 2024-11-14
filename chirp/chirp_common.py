@@ -758,6 +758,48 @@ class BankModel(MappingModel):
         super(BankModel, self).__init__(radio, name)
 
 
+class StaticBank(Bank):
+    pass
+
+
+class StaticBankModel(BankModel):
+    MSG = 'This radio has fixed banks and does not allow reassignment'
+    channelAlwaysHasBank = True
+
+    """A BankModel that shows a static mapping but does not allow changes."""
+    def __init__(self, radio, name='Banks', banks=10):
+        super().__init__(radio, name=name)
+        self._num_banks = banks
+        self._rf = radio.get_features()
+        self._banks = []
+        for i in range(self._num_banks):
+            self._banks.append(StaticBank(self, i + 1, 'Bank'))
+
+    def get_num_mappings(self):
+        return self._num_banks
+
+    def get_mappings(self):
+        return self._banks
+
+    def get_mapping_memories(self, bank):
+        lo, hi = self._rf.memory_bounds
+        count = (hi - lo + 1) / self._num_banks
+        offset = lo + ((bank.get_index() - 1) * count)
+        return [self._radio.get_memory(offset + i) for i in range(count)]
+
+    def get_memory_mappings(self, memory):
+        lo, hi = self._rf.memory_bounds
+        mems = hi - lo + 1
+        count = mems // self._num_banks
+        return [self._banks[(memory.number - lo) // count]]
+
+    def remove_memory_from_mapping(self, memory, mapping):
+        raise NotImplementedError(self.MSG)
+
+    def add_memory_to_mapping(self, memory, mapping):
+        raise NotImplementedError(self.MSG)
+
+
 class MappingModelIndexInterface:
     """Interface for mappings with index capabilities"""
 

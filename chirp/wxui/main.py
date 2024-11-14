@@ -1525,30 +1525,30 @@ class ChirpMain(wx.Frame):
                             'to take effect'),
                           _('Restart Required'))
 
-    def _make_backup(self, radio):
+    def _make_backup(self, radio, backup_type):
         if not isinstance(radio, chirp_common.CloneModeRadio):
             LOG.debug('Not backing up %s' % radio)
             return
         backup_dir = chirp_platform.get_platform().config_file('backups')
         now = datetime.datetime.now()
-        fn = os.path.join(backup_dir,
-                          '%s_%s' % (directory.radio_class_id(radio.__class__),
-                                     now.strftime('%Y%m%dT%H%M%S.img')))
+        backup_fn = os.path.join(backup_dir,
+                                 '%s_%s_%s' % (directory.radio_class_id(
+                                               radio.__class__),
+                                               backup_type,
+                                               now.strftime(
+                                                   '%Y%m%dT%H%M%S.img')))
         try:
             os.makedirs(backup_dir, exist_ok=True)
-            radio.save(fn)
-            LOG.info('Saved backup to %s', fn)
+            radio.save(backup_fn)
+            LOG.info('Saved %s backup to %s', backup_type, backup_fn)
         except Exception as e:
-            LOG.warning('Failed to backup %s: %s', radio, e)
+            LOG.warning('Failed to backup %s %s: %s', backup_type, radio, e)
             return
 
         try:
             keep_days = CONF.get_int('keep_backups_days', 'prefs')
         except TypeError:
             keep_days = 365
-        if keep_days < 0:
-            # Never prune
-            return
         try:
             files = os.listdir(backup_dir)
             bydate = [(os.stat(os.path.join(backup_dir, f)).st_mtime, f)
@@ -1556,7 +1556,7 @@ class ChirpMain(wx.Frame):
             now = time.time()
             for mtime, fn in sorted(bydate):
                 age = (now - mtime) // 86400
-                if age > keep_days:
+                if keep_days > 0 and age > keep_days:
                     os.remove(os.path.join(backup_dir, fn))
                     LOG.warning('Pruned backup %s older than %i days',
                                 fn, keep_days)
@@ -1567,13 +1567,15 @@ class ChirpMain(wx.Frame):
         except Exception as e:
             LOG.exception('Failed to prune: %s' % e)
 
+        return backup_fn
+
     def _menu_download(self, event):
         self.enable_bugreport()
         with clone.ChirpDownloadDialog(self) as d:
             d.Centre()
             if d.ShowModal() == wx.ID_OK:
                 radio = d._radio
-                self._make_backup(radio)
+                self._make_backup(radio, 'download')
                 report.report_model(radio, 'download')
                 if isinstance(radio, chirp_common.LiveRadio):
                     editorset = ChirpLiveEditorSet(radio, None, self._editors)
@@ -1583,6 +1585,7 @@ class ChirpMain(wx.Frame):
 
     def _menu_upload(self, event):
         radio = self.current_editorset.radio
+        fn = self._make_backup(radio, 'upload')
         report.report_model(radio, 'upload')
         CSVRadio = directory.get_radio('Generic_CSV')
 
@@ -1603,7 +1606,13 @@ class ChirpMain(wx.Frame):
             d = clone.ChirpUploadDialog(radio, self)
 
         d.Centre()
-        d.ShowModal()
+        r = d.ShowModal()
+        if r != wx.ID_OK:
+            LOG.info('Removing un-uploaded backup %s', fn)
+            try:
+                os.remove(fn)
+            except Exception:
+                pass
 
     @common.error_proof()
     def _menu_reload_driver(self, event, andfile=False):

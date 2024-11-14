@@ -17,8 +17,10 @@ import datetime
 import logging
 import os
 import platform
+import subprocess
 import tempfile
 import threading
+import time
 
 import requests
 import wx
@@ -42,6 +44,34 @@ def get_chirp_platform():
     """Get the proper platform name for the chirp site's field"""
     p = platform.system()
     return 'MacOS' if p == 'Darwin' else p
+
+
+def get_macos_system_info(manifest):
+    try:
+        sp = subprocess.check_output(
+            'system_profiler SPSoftwareDataType SPUSBDataType',
+            shell=True)
+    except Exception as e:
+        sp = 'Error getting system_profiler data: %s' % e
+    manifest['files']['macos_system_info.txt'] = sp
+
+
+def get_linux_system_info(manifest):
+    try:
+        sp = subprocess.check_output('lsusb',
+                                     shell=True)
+    except Exception as e:
+        sp = 'Error getting system data: %s' % e
+    manifest['files']['linux_system_info.txt'] = sp
+
+
+def get_windows_system_info(manifest):
+    try:
+        sp = subprocess.check_output('pnputil /enum-devices /connected',
+                                     shell=True)
+    except Exception as e:
+        sp = 'Error getting system data: %s' % e
+    manifest['files']['win_system_info.txt'] = sp
 
 
 @common.error_proof()
@@ -74,6 +104,20 @@ def prepare_report(chirpmain):
         editor._radio.save(tmpf)
         with open(tmpf, 'rb') as f:
             manifest['files'][os.path.basename(editor.filename)] = f.read()
+
+    # Gather system details, if available
+    system = platform.system()
+    if system == 'Darwin':
+        LOG.debug('Capturing macOS system_profiler data')
+        get_macos_system_info(manifest)
+    elif system == 'Linux':
+        LOG.debug('Capturing linux system info')
+        get_linux_system_info(manifest)
+    elif system == 'Windows':
+        LOG.debug('Capturing windows system info')
+        get_windows_system_info(manifest)
+    else:
+        LOG.debug('No system info support for %s', system)
 
     # Snapshot debug log last
     if logger.Logger.instance.has_debug_log_file:
@@ -411,7 +455,11 @@ class BugUpdateInfo(BugReportPage):
     def _build(self, vbox):
         self.context.bugdetails = None
         self.details = wx.TextCtrl(self, style=wx.TE_MULTILINE)
-        self.details.SetHint(_('Enter information to add to the bug here'))
+        try:
+            self.details.SetHint(_('Enter information to add to the bug here'))
+        except Exception:
+            # Older wx doesn't allow this on multi-line fields (?)
+            pass
         self.details.Bind(wx.EVT_TEXT, self.validate_next)
         vbox.Add(self.details, 1, border=20,
                  flag=wx.EXPAND | wx.LEFT | wx.RIGHT)
@@ -547,13 +595,9 @@ class ResultPage(BugReportPage):
         self.context.bugnum = manifest['issue']
         LOG.info('Created new issue %s', manifest['issue'])
 
-    def _send_report(self, manifest):
-        if 'issue' not in manifest:
-            self._create_bug(manifest)
-
-        tokens = []
-        for fn in manifest['files']:
-            LOG.debug('Uploading %s', fn)
+    def _upload_file(self, manifest, fn):
+        for i in range(3):
+            LOG.debug('Uploading %s attempt %i', fn, i + 1)
             r = self.context.session.post(
                 BASE + '/uploads.json',
                 params={'filename': fn},
@@ -561,15 +605,29 @@ class ResultPage(BugReportPage):
                 headers={
                     'Content-Type': 'application/octet-stream'},
                 auth=self.context.auth)
-            if r.status_code != 201:
+            if r.status_code >= 500:
+                LOG.error('Failed to upload %s: %s %s',
+                          fn, r.status_code, r.reason)
+                time.sleep(2 + (2 * i))
+            elif r.status_code != 201:
                 LOG.error('Failed to upload %s: %s %s',
                           fn, r.status_code, r.reason)
                 raise Exception('Failed to upload file')
+            return r.json()['upload']['token']
+        raise Exception('Failed to upload %s after multiple attempts', fn)
+
+    def _send_report(self, manifest):
+        if 'issue' not in manifest:
+            self._create_bug(manifest)
+
+        tokens = []
+        for fn in manifest['files']:
+            token = self._upload_file(manifest, fn)
             if fn.lower().endswith('.img'):
                 ct = 'application/octet-stream'
             else:
                 ct = 'text/plain'
-            tokens.append({'token': r.json()['upload']['token'],
+            tokens.append({'token': token,
                            'filename': fn,
                            'content_type': ct})
         LOG.debug('File tokens: %s', tokens)
