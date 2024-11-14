@@ -18,6 +18,7 @@
 from chirp.drivers import kguv920base
 from chirp import directory
 
+
 @directory.register
 class KGUVR5Radio(kguv920base.KGUV920Radio):
 
@@ -29,7 +30,6 @@ class KGUVR5Radio(kguv920base.KGUV920Radio):
     _min_freq = 136000000
     _max_freq = 320000000
 
-    
     def getUhfMinLimit(self):
         return 200
 
@@ -44,10 +44,10 @@ class KGUVR5Radio(kguv920base.KGUV920Radio):
 
     def getMaxTxOffset(self):
         return 399999999
-    
+
     def getMinFreq(self):
         return 136000000
-    
+
     def getMaxFreq(self):
         return 320999999
 
@@ -56,9 +56,3 @@ class KGUVR5Radio(kguv920base.KGUV920Radio):
         rf.valid_bands = [(136000000, 174000000),  # supports 2m
                           (200000000, 320000000)]  # supports 200-320mhz
         return rf
-
-#    @classmethod
-#    def get_prompts(cls):
-#        rp = chirp_common.RadioPrompts()
-#       rp.info = ("Please do not increase the band limits above the default values as the radio will reset to factory settings.")
-#        return rp

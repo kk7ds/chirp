@@ -20,7 +20,7 @@ from chirp import directory
 
 @directory.register
 class KGUV920PARadio(kguv920base.KGUV920Radio):
-    
+
     """Wouxun KG-UV920P-A"""
     MODEL = "KG-UV920P-A"
     _model = "KG-UV920Rr"   # what the radio responds to CMD_ID with
@@ -29,7 +29,6 @@ class KGUV920PARadio(kguv920base.KGUV920Radio):
     _min_freq = 136000000
     _max_freq = 520000000
 
-    
     def getUhfMinLimit(self):
         return 420
 
@@ -44,10 +43,10 @@ class KGUV920PARadio(kguv920base.KGUV920Radio):
 
     def getMaxTxOffset(self):
         return 470000000
-    
+
     def getMinFreq(self):
         return 136000000
-    
+
     def getMaxFreq(self):
         return 520999999
 
