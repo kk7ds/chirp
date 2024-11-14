@@ -841,12 +841,6 @@ class KGUV920Radio(chirp_common.CloneModeRadio,
     def getMaxFreq(self):
         pass
 
-#    @classmethod
-#    def get_prompts(cls):
-#        rp = chirp_common.RadioPrompts()
-#       rp.info = ("Please do not increase the band limits above the default values as the radio will reset to factory settings.")
-#        return rp
-
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number-1])
 
@@ -983,14 +977,14 @@ class KGUV920Radio(chirp_common.CloneModeRadio,
         rmt_grp = RadioSettingGroup("rmt_grp", "Remote Control")
         fmp_grp = RadioSettingGroup("fmp_grp", "FM Radio Presets")
         adv_settings_grp = RadioSettingGroup(
-            "adv_settings_grp", 
+            "adv_settings_grp",
             "Advanced settings"
         )
         pwd_grp = RadioSettingGroup("pwd_grp", "PON Passwords")
         oem_grp = RadioSettingGroup("oem_grp", "OEM Info")
 
-        group = RadioSettings(cfg_grp, ui_grp, vfoa_grp, vfob_grp, 
-                              scn_grp, rpt_grp, rmt_grp, fmp_grp, 
+        group = RadioSettings(cfg_grp, ui_grp, vfoa_grp, vfob_grp,
+                              scn_grp, rpt_grp, rmt_grp, fmp_grp,
                               adv_settings_grp, pwd_grp, oem_grp)
 
         #
@@ -1087,10 +1081,10 @@ class KGUV920Radio(chirp_common.CloneModeRadio,
         cfg_grp.append(rs)
         rs = RadioSetting("mode_pwd", "VFO/MR Password",
                           RadioSettingValueString(
-                              6, 
-                              6, 
-                              _pwd_decode(_adv_settings.mode_pwd), 
-                              True, 
+                              6,
+                              6,
+                              _pwd_decode(_adv_settings.mode_pwd),
+                              True,
                               "1234567890"))
         cfg_grp.append(rs)
 
@@ -1368,7 +1362,7 @@ class KGUV920Radio(chirp_common.CloneModeRadio,
         #
         # Advanced settings
         #
-        rs = RadioSetting("use_25_step", "Use 2,5kHz Step", 
+        rs = RadioSetting("use_25_step", "Use 2,5kHz Step",
                           RadioSettingValueBoolean(_adv_settings.use_25_step))
         adv_settings_grp.append(rs)
 
@@ -1403,7 +1397,7 @@ class KGUV920Radio(chirp_common.CloneModeRadio,
                               _limit_decode(_adv_settings.vhf_tx_stop))
                           )
         adv_settings_grp.append(rs)
-        
+
         rs = RadioSetting("uhf_rx_start", "UHF RX Lower Limit (MHz)",
                           RadioSettingValueInteger(
                               self.getUhfMinLimit(),
@@ -1502,42 +1496,42 @@ class KGUV920Radio(chirp_common.CloneModeRadio,
                               255,
                               int(_adv_settings.high_pwr_10))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_11", "High TX Power 11",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.high_pwr_11))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_12", "High TX Power 12",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.high_pwr_12))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_13", "High TX Power 13",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.high_pwr_13))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_14", "High TX Power 14",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.high_pwr_14))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_15", "High TX Power 15",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.high_pwr_15))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_16", "High TX Power 16",
                           RadioSettingValueInteger(
                               0,
@@ -1614,42 +1608,42 @@ class KGUV920Radio(chirp_common.CloneModeRadio,
                               255,
                               int(_adv_settings.med_1_pwr_10))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_11", "Medium 1 TX Power 11",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.med_1_pwr_11))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_12", "Medium 1 TX Power 12",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.med_1_pwr_12))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_13", "Medium 1 TX Power 13",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.med_1_pwr_13))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_14", "Medium 1 TX Power 14",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.med_1_pwr_14))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_15", "Medium 1 TX Power 15",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.med_1_pwr_15))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_16", "Medium 1 TX Power 16",
                           RadioSettingValueInteger(
                               0,
@@ -1726,42 +1720,42 @@ class KGUV920Radio(chirp_common.CloneModeRadio,
                               255,
                               int(_adv_settings.low_pwr_10))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_11", "Low TX Power 11",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.low_pwr_11))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_12", "Low TX Power 12",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.low_pwr_12))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_13", "Low TX Power 13",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.low_pwr_13))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_14", "Low TX Power 14",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.low_pwr_14))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_15", "Low TX Power 15",
                           RadioSettingValueInteger(
                               0,
                               255,
                               int(_adv_settings.low_pwr_15))
                           )
-        adv_settings_grp.append(rs)        
+        adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_16", "Low TX Power 16",
                           RadioSettingValueInteger(
                               0,
