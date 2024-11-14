@@ -982,12 +982,16 @@ class KGUV920Radio(chirp_common.CloneModeRadio,
         rpt_grp = RadioSettingGroup("rmt_grp", "Repeater")
         rmt_grp = RadioSettingGroup("rmt_grp", "Remote Control")
         fmp_grp = RadioSettingGroup("fmp_grp", "FM Radio Presets")
-        adv_settings_grp = RadioSettingGroup("adv_settings_grp", "Advanced settings")
+        adv_settings_grp = RadioSettingGroup(
+            "adv_settings_grp", 
+            "Advanced settings"
+        )
         pwd_grp = RadioSettingGroup("pwd_grp", "PON Passwords")
         oem_grp = RadioSettingGroup("oem_grp", "OEM Info")
 
-        group = RadioSettings(cfg_grp, ui_grp, vfoa_grp, vfob_grp, scn_grp,
-                              rpt_grp, rmt_grp, fmp_grp, adv_settings_grp, pwd_grp, oem_grp)
+        group = RadioSettings(cfg_grp, ui_grp, vfoa_grp, vfob_grp, 
+                              scn_grp, rpt_grp, rmt_grp, fmp_grp, 
+                              adv_settings_grp, pwd_grp, oem_grp)
 
         #
         # Configuration Settings
@@ -1082,7 +1086,12 @@ class KGUV920Radio(chirp_common.CloneModeRadio,
                               current_index=_settings.dtmf_interval))
         cfg_grp.append(rs)
         rs = RadioSetting("mode_pwd", "VFO/MR Password",
-                          RadioSettingValueString(6, 6, _pwd_decode(_adv_settings.mode_pwd), True, "1234567890"))
+                          RadioSettingValueString(
+                              6, 
+                              6, 
+                              _pwd_decode(_adv_settings.mode_pwd), 
+                              True, 
+                              "1234567890"))
         cfg_grp.append(rs)
 
         #
@@ -1364,245 +1373,408 @@ class KGUV920Radio(chirp_common.CloneModeRadio,
         adv_settings_grp.append(rs)
 
         rs = RadioSetting("vhf_rx_start", "VHF RX Lower Limit (MHz)",
-                          RadioSettingValueInteger(self.getVhfMinLimit(),
-                                                   self.getVhfMaxLimit(),
-                                                   _limit_decode(_adv_settings.vhf_rx_start)))
+                          RadioSettingValueInteger(
+                              self.getVhfMinLimit(),
+                              self.getVhfMaxLimit(),
+                              _limit_decode(_adv_settings.vhf_rx_start))
+                          )
 
         adv_settings_grp.append(rs)
         rs = RadioSetting("vhf_rx_stop", "VHF RX Upper Limit (MHz)",
-                          RadioSettingValueInteger(self.getVhfMinLimit(),
-                                                   self.getVhfMaxLimit(),
-                                                   _limit_decode(_adv_settings.vhf_rx_stop)))
+                          RadioSettingValueInteger(
+                              self.getVhfMinLimit(),
+                              self.getVhfMaxLimit(),
+                              _limit_decode(_adv_settings.vhf_rx_stop))
+                          )
         adv_settings_grp.append(rs)
 
         rs = RadioSetting("vhf_tx_start", "VHF TX Lower Limit (MHz)",
-                          RadioSettingValueInteger(self.getVhfMinLimit(),
-                                                   self.getVhfMaxLimit(),
-                                                   _limit_decode(_adv_settings.vhf_tx_start)))
+                          RadioSettingValueInteger(
+                              self.getVhfMinLimit(),
+                              self.getVhfMaxLimit(),
+                              _limit_decode(_adv_settings.vhf_tx_start))
+                          )
 
         adv_settings_grp.append(rs)
         rs = RadioSetting("vhf_tx_stop", "VHF TX Upper Limit (MHz)",
-                          RadioSettingValueInteger(self.getVhfMinLimit(),
-                                                   self.getVhfMaxLimit(),
-                                                   _limit_decode(_adv_settings.vhf_tx_stop)))
+                          RadioSettingValueInteger(
+                              self.getVhfMinLimit(),
+                              self.getVhfMaxLimit(),
+                              _limit_decode(_adv_settings.vhf_tx_stop))
+                          )
         adv_settings_grp.append(rs)
         
         rs = RadioSetting("uhf_rx_start", "UHF RX Lower Limit (MHz)",
-                          RadioSettingValueInteger(self.getUhfMinLimit(),
-                                                   self.getUhfMaxLimit(),
-                                                   _limit_decode(_adv_settings.uhf_rx_start)))
+                          RadioSettingValueInteger(
+                              self.getUhfMinLimit(),
+                              self.getUhfMaxLimit(),
+                              _limit_decode(_adv_settings.uhf_rx_start))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("uhf_rx_stop", "UHF RX Upper Limit (MHz)",
-                          RadioSettingValueInteger(self.getUhfMinLimit(),
-                                                   self.getUhfMaxLimit(),
-                                                   _limit_decode(_adv_settings.uhf_rx_stop)))
+                          RadioSettingValueInteger(
+                              self.getUhfMinLimit(),
+                              self.getUhfMaxLimit(),
+                              _limit_decode(_adv_settings.uhf_rx_stop))
+                          )
         adv_settings_grp.append(rs)
 
         rs = RadioSetting("uhf_tx_start", "UHF TX Lower Limit (MHz)",
-                          RadioSettingValueInteger(self.getUhfMinLimit(),
-                                                   self.getUhfMaxLimit(),
-                                                   _limit_decode(_adv_settings.uhf_tx_start)))
+                          RadioSettingValueInteger(
+                              self.getUhfMinLimit(),
+                              self.getUhfMaxLimit(),
+                              _limit_decode(_adv_settings.uhf_tx_start))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("uhf_tx_stop", "UHF TX Upper Limit (MHz)",
-                          RadioSettingValueInteger(self.getUhfMinLimit(),
-                                                   self.getUhfMaxLimit(),
-                                                   _limit_decode(_adv_settings.uhf_tx_stop)))
+                          RadioSettingValueInteger(
+                              self.getUhfMinLimit(),
+                              self.getUhfMaxLimit(),
+                              _limit_decode(_adv_settings.uhf_tx_stop))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_1", "High TX Power 1",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_1)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_1))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_2", "High TX Power 2",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_2)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_2))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_3", "High TX Power 3",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_3)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_3))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_4", "High TX Power 4",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_4)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_4))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_5", "High TX Power 5",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_5)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_5))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_6", "High TX Power 6",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_6)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_6))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_7", "High TX Power 7",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_7)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_7))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_8", "High TX Power 8",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_8)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_8))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_9", "High TX Power 9",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_9)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_9))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("high_pwr_10", "High TX Power 10",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_10)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_10))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("high_pwr_11", "High TX Power 11",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_11)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_11))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("high_pwr_12", "High TX Power 12",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_12)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_12))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("high_pwr_13", "High TX Power 13",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_13)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_13))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("high_pwr_14", "High TX Power 14",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_14)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_14))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("high_pwr_15", "High TX Power 15",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_15)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_15))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("high_pwr_16", "High TX Power 16",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.high_pwr_16)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.high_pwr_16))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_1", "Medium 1 TX Power 1",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_1)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_1))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_2", "Medium 1 TX Power 2",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_2)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_2))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_3", "Medium 1 TX Power 3",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_3)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_3))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_4", "Medium 1 TX Power 4",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_4)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_4))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_5", "Medium 1 TX Power 5",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_5)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_5))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_6", "Medium 1 TX Power 6",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_6)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_6))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_7", "Medium 1 TX Power 7",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_7)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_7))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_8", "Medium 1 TX Power 8",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_8)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_8))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_9", "Medium 1 TX Power 9",
-                          RadioSettingValueInteger(0, 255,
-                                         int(_adv_settings.med_1_pwr_9)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_9))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("med_1_pwr_10", "Medium 1 TX Power 10",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_10)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_10))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("med_1_pwr_11", "Medium 1 TX Power 11",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_11)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_11))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("med_1_pwr_12", "Medium 1 TX Power 12",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_12)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_12))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("med_1_pwr_13", "Medium 1 TX Power 13",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_13)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_13))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("med_1_pwr_14", "Medium 1 TX Power 14",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_14)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_14))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("med_1_pwr_15", "Medium 1 TX Power 15",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_15)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_15))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("med_1_pwr_16", "Medium 1 TX Power 16",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.med_1_pwr_16)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.med_1_pwr_16))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_1", "Low TX Power 1",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_1)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_1))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_2", "Low TX Power 2",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_2)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_2))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_3", "Low TX Power 3",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_3)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_3))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_4", "Low TX Power 4",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_4)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_4))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_5", "Low TX Power 5",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_5)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_5))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_6", "Low TX Power 6",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_6)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_6))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_7", "Low TX Power 7",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_7)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_7))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_8", "Low TX Power 8",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_8)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_8))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_9", "Low TX Power 9",
-                          RadioSettingValueInteger(0, 255, 
-                                                   int(_adv_settings.low_pwr_9)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_9))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("low_pwr_10", "Low TX Power 10",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_10)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_10))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("low_pwr_11", "Low TX Power 11",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_11)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_11))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("low_pwr_12", "Low TX Power 12",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_12)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_12))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("low_pwr_13", "Low TX Power 13",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_13)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_13))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("low_pwr_14", "Low TX Power 14",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_14)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_14))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("low_pwr_15", "Low TX Power 15",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_15)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_15))
+                          )
         adv_settings_grp.append(rs)        
         rs = RadioSetting("low_pwr_16", "Low TX Power 16",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.low_pwr_16)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.low_pwr_16))
+                          )
         adv_settings_grp.append(rs)
         rs = RadioSetting("power_2_factor", "Medium power 1-2 Factor",
-                          RadioSettingValueInteger(0, 255,
-                                                   int(_adv_settings.power_2_factor)))
+                          RadioSettingValueInteger(
+                              0,
+                              255,
+                              int(_adv_settings.power_2_factor))
+                          )
         adv_settings_grp.append(rs)
 
         #
