@@ -1575,3 +1575,19 @@ class UV5RH(UV17Pro):
     LIST_PW_SAVEMODE = ["Off", "1:1", "1:2", "1:4"]
     MODES = UV17Pro.MODES + ['AM']
     _has_workmode_support = True
+
+
+@directory.register
+class UV21ProV2(UV17Pro):
+    VENDOR = "Baofeng"
+    MODEL = "UV-21Pro-v2"
+
+    VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
+                   UV17Pro._uhf_range, UV17Pro._uhf2_range]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
+                    chirp_common.PowerLevel("Low", watts=2.00)]
+    SCODE_LIST = ["%s" % x for x in range(1, 16)]
+    SQUELCH_LIST = ["Off"] + list("123456789")
+    LIST_PW_SAVEMODE = ["Off", "1:1", "1:2", "1:4"]
+    MODES = UV17Pro.MODES + ['AM']
+    _has_workmode_support = True
