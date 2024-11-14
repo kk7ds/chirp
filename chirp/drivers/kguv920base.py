@@ -618,7 +618,6 @@ def _set_tone(mem, _mem):
 # 2 bytes location + data.
 
 
-@directory.register
 class KGUV920Radio(chirp_common.CloneModeRadio,
                    chirp_common.ExperimentalRadio):
 

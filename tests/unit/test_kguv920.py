@@ -18,7 +18,7 @@ import struct
 
 import unittest
 
-from chirp.drivers import kguv920pa
+from chirp.drivers import kguv920base, kguv920pa
 from chirp import memmap
 
 
@@ -44,7 +44,7 @@ class TestClone(unittest.TestCase):
         s.ibuf = struct.pack(
             'BBBB10sB', 0, 0, 0,
             len(kguv920pa.KGUV920PARadio._model),
-            kguv920pa._str_encode(kguv920pa.KGUV920PARadio._model), 3)
+            kguv920base._str_encode(kguv920pa.KGUV920PARadio._model), 3)
         print(s.ibuf)
         d = kguv920pa.KGUV920PARadio(s)
         d._identify()
