@@ -18,6 +18,7 @@
 from chirp.drivers import kguv920base
 from chirp import directory
 
+
 @directory.register
 class KGUV920PARadio(kguv920base.KGUV920Radio):
 
