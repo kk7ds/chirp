@@ -701,8 +701,7 @@ class KGUV920Radio(chirp_common.CloneModeRadio,
 
         for block in range(0, blocks):
             for j in range(0, blockSize):
-                out += "%02x" % 
-                    util.byte_to_int(data[(block * blockSize) + j])
+                out += "%02x" % util.byte_to_int(data[(block * blockSize) + j])
 
         return out
 
