@@ -1796,9 +1796,12 @@ def required_step(freq, allowed=None):
     }
 
     # Try the above "standard" steps first in order
+    required_step = None
     for step, validate in steps.items():
         if step in allowed and validate(freq):
             return step
+        elif validate(freq) and required_step is None:
+            required_step = step
 
     # Try any additional steps in the allowed list
     for step in allowed:
@@ -1810,8 +1813,14 @@ def required_step(freq, allowed=None):
                 step, format_freq(freq)))
             return step
 
-    raise errors.InvalidDataError("Unable to find a supported " +
-                                  "tuning step for %s" % format_freq(freq))
+    if required_step is not None:
+        raise errors.InvalidDataError((
+            'Frequency %s requires step %.2f, '
+            'which is not supported') % (
+                format_freq(freq), required_step))
+    else:
+        raise errors.InvalidDataError("Unable to find a supported " +
+                                      "tuning step for %s" % format_freq(freq))
 
 
 def fix_rounded_step(freq):
