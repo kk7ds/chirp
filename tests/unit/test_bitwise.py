@@ -18,7 +18,6 @@ from builtins import bytes
 import unittest
 from unittest import mock
 
-import six
 
 from chirp import bitwise
 from chirp import memmap
@@ -256,10 +255,7 @@ class TestBitwiseCharTypes(BaseTest):
         data = memmap.MemoryMapBytes(bytes(b"\xFFoobar1"))
         obj = bitwise.parse("struct {char foo[7];} bar;", data)
 
-        if six.PY3:
-            expected = '\xffoobar1'
-        else:
-            expected = '\\xffoobar1'
+        expected = '\xffoobar1'
 
         self.assertIn(expected, repr(obj.bar))
 
