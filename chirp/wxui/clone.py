@@ -677,6 +677,19 @@ class ChirpCloneDialog(wx.Dialog):
         LOG.debug('Selected %r' % self._vendors[vendor][model])
         return self._vendors[vendor][model]
 
+    def _action(self, event):
+        id = event.GetEventObject().GetId()
+        if id == wx.ID_CANCEL:
+            if self._clone_thread:
+                self._clone_thread.stop()
+            self.EndModal(id)
+            return
+        try:
+            self._actual_action(event)
+        except Exception as e:
+            self.fail(str(e))
+            return
+
 
 class ChirpDownloadDialog(ChirpCloneDialog):
     def __init__(self, *a, **k):
@@ -709,14 +722,9 @@ class ChirpDownloadDialog(ChirpCloneDialog):
                          rclass)
                 self.FindWindowById(wx.ID_OK).Enable()
 
-    def _action(self, event):
+    def _actual_action(self, event):
         id = event.GetEventObject().GetId()
-        if id == wx.ID_CANCEL:
-            if self._clone_thread:
-                self._clone_thread.stop()
-            self.EndModal(id)
-            return
-        elif id == ID_RECENT:
+        if id == ID_RECENT:
             self._do_recent()
             return
 
@@ -821,13 +829,7 @@ class ChirpUploadDialog(ChirpCloneDialog):
         if isinstance(self._radio, chirp_common.LiveRadio):
             self._radio = common.LiveAdapter(self._radio)
 
-    def _action(self, event):
-        if event.GetEventObject().GetId() == wx.ID_CANCEL:
-            if self._clone_thread:
-                self._clone_thread.stop()
-            self.EndModal(event.GetEventObject().GetId())
-            return
-
+    def _actual_action(self, event):
         self._persist_choices()
         self.disable_running()
         port = self.get_selected_port()
