@@ -509,6 +509,11 @@ class FakeEchoSerial(FakeSerial):
             return b''
 
 
+class FakeErrorOpenSerial(FakeSerial):
+    def __init__(self, *a, **k):
+        raise Exception('Failed open')
+
+
 class IssueModuleLoader:
     def __init__(self, parent):
         self._parent = parent
