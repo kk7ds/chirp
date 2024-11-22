@@ -57,12 +57,13 @@ def get_model_label(rclass):
 
 def get_fakes():
     return {
-        'Fake NOP': developer.FakeSerial(),
-        'Fake Echo NOP': developer.FakeEchoSerial(),
-        'Fake F7E': fake.FakeKenwoodSerial(),
-        'Fake UV17': fake.FakeUV17Serial(),
-        'Fake UV17Pro': fake.FakeUV17ProSerial(),
-        'Fake AT778': developer.FakeAT778(),
+        'Fake NOP': developer.FakeSerial,
+        'Fake Echo NOP': developer.FakeEchoSerial,
+        'Fake F7E': fake.FakeKenwoodSerial,
+        'Fake UV17': fake.FakeUV17Serial,
+        'Fake UV17Pro': fake.FakeUV17ProSerial,
+        'Fake AT778': developer.FakeAT778,
+        'Fake Open Error': developer.FakeErrorOpenSerial,
     }
 
 
@@ -152,7 +153,7 @@ class SettingsThread(threading.Thread):
 
 def open_serial(port, rclass):
     if port.startswith('Fake'):
-        return get_fakes()[port]
+        return get_fakes()[port]()
     if '://' in port:
         pipe = serial.serial_for_url(port, do_not_open=True)
         pipe.timeout = 0.25
