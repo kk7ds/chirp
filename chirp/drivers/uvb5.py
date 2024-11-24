@@ -271,6 +271,9 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         "VFO2": -1,
     }
 
+    # Allow changing channel name length in radios that inherit from this class
+    NAME_LENGTH = 5
+
     _memsize = 0x1000
 
     @classmethod
@@ -313,7 +316,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         rf.can_odd_split = True
         rf.valid_skips = ["", "S"]
         rf.valid_characters = CHARSET
-        rf.valid_name_length = 5
+        rf.valid_name_length = self.NAME_LENGTH
         rf.valid_tuning_steps = UVB5_STEPS
         rf.valid_bands = [(130000000, 175000000),
                           (220000000, 269000000),
@@ -483,7 +486,7 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         _mem.highpower = mem.power == POWER_LEVELS[1]
 
         if _nam:
-            for i in range(0, 5):
+            for i in range(0, self.NAME_LENGTH):
                 try:
                     _nam[i] = CHARSET.index(mem.name[i])
                 except IndexError:
