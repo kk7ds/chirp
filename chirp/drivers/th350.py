@@ -260,6 +260,8 @@ class Th350Radio(BaofengUVB5):
         "VFO3": -1,
     }
 
+    NAME_LENGTH = 5
+
     _memsize = 0x1000
 
     @classmethod
@@ -284,7 +286,7 @@ class Th350Radio(BaofengUVB5):
         rf.can_odd_split = True
         rf.valid_skips = ["", "S"]
         rf.valid_characters = CHARSET
-        rf.valid_name_length = 5
+        rf.valid_name_length = self.NAME_LENGTH
         rf.valid_bands = [(130000000, 175000000),
                           (220000000, 269000000),
                           (400000000, 520000000)]
@@ -393,3 +395,165 @@ class Th350Radio(BaofengUVB5):
     def match_model(cls, filedata, filename):
         return (filedata.startswith(b"TRI350 Radio Program data") and
                 len(filedata) == (cls._memsize + 0x30))
+
+# US version has channel names that are 8 characters long
+
+
+@directory.register
+class Th350USRadio(Th350Radio):
+    """TYT TH-350US"""
+    VARIANT = "US"
+    BAUD_RATE = 9600
+
+    MEM_FORMAT = """
+    struct memory {
+      lbcd freq[4];
+      lbcd offset[4];
+      u8 unknown1:2,
+         txpol:1,
+         rxpol:1,
+         compander:1,
+         scrambler:1,
+         unknown2:2;
+      u8 rxtoneb;
+      u8 rxtonea;
+      u8 txtoneb;
+      u8 txtonea;
+      u8 pttid:1,
+         scanadd:1,
+         isnarrow:1,
+         bcl:1,
+         highpower:1,
+         revfreq:1,
+         duplex:2;
+      u8 unknown[2];
+    };
+
+    #seekto 0x0000;
+    char ident[32];
+    u8 blank[16];
+    struct memory vfo1;
+    struct memory channels[128];
+    #seekto 0x0840;
+    struct memory vfo3;
+    struct memory vfo2;
+
+    #seekto 0x0930;
+    struct {
+      u8 name[8];
+    } names[128];
+
+    #seekto 0x0D30;
+    struct {
+      u8 squelch;
+      u8 freqmode_ab:1,
+         save_funct:1,
+         backlight:1,
+         beep_tone_disabled:1,
+         roger:1,
+         tdr:1,
+         scantype:2;
+      u8 language:1,
+         workmode_b:1,
+         workmode_a:1,
+         workmode_fm:1,
+         voice_prompt:1,
+         fm:1,
+         pttid:2;
+      u8 unknown_0:5,
+         timeout:3;
+      u8 mdf_b:2,
+         mdf_a:2,
+         unknown_1:2,
+         txtdr:2;
+      u8 unknown_2:4,
+         ste_disabled:1,
+         unknown_3:2,
+         sidetone:1;
+      u8 vox;
+      u8 unk1;
+      u8 mem_chan_a;
+      u16 fm_vfo;
+      u8 unk4;
+      u8 unk5;
+      u8 mem_chan_b;
+      u8 unk6;
+      u8 last_menu; // number of last menu item accessed
+    } settings;
+
+    #seekto 0x0D50;
+    struct {
+      u8 code[6];
+    } pttid;
+
+    #seekto 0x0F30;
+    struct {
+      lbcd lower_vhf[2];
+      lbcd upper_vhf[2];
+      lbcd lower_uhf[2];
+      lbcd upper_uhf[2];
+    } limits;
+
+    #seekto 0x0FF0;
+    struct {
+      u8 vhfsquelch0;
+      u8 vhfsquelch1;
+      u8 vhfsquelch2;
+      u8 vhfsquelch3;
+      u8 vhfsquelch4;
+      u8 vhfsquelch5;
+      u8 vhfsquelch6;
+      u8 vhfsquelch7;
+      u8 vhfsquelch8;
+      u8 vhfsquelch9;
+      u8 unknown1[6];
+      u8 uhfsquelch0;
+      u8 uhfsquelch1;
+      u8 uhfsquelch2;
+      u8 uhfsquelch3;
+      u8 uhfsquelch4;
+      u8 uhfsquelch5;
+      u8 uhfsquelch6;
+      u8 uhfsquelch7;
+      u8 uhfsquelch8;
+      u8 uhfsquelch9;
+      u8 unknown2[6];
+      u8 vhfhipwr0;
+      u8 vhfhipwr1;
+      u8 vhfhipwr2;
+      u8 vhfhipwr3;
+      u8 vhfhipwr4;
+      u8 vhfhipwr5;
+      u8 vhfhipwr6;
+      u8 vhfhipwr7;
+      u8 vhflopwr0;
+      u8 vhflopwr1;
+      u8 vhflopwr2;
+      u8 vhflopwr3;
+      u8 vhflopwr4;
+      u8 vhflopwr5;
+      u8 vhflopwr6;
+      u8 vhflopwr7;
+      u8 uhfhipwr0;
+      u8 uhfhipwr1;
+      u8 uhfhipwr2;
+      u8 uhfhipwr3;
+      u8 uhfhipwr4;
+      u8 uhfhipwr5;
+      u8 uhfhipwr6;
+      u8 uhfhipwr7;
+      u8 uhflopwr0;
+      u8 uhflopwr1;
+      u8 uhflopwr2;
+      u8 uhflopwr3;
+      u8 uhflopwr4;
+      u8 uhflopwr5;
+      u8 uhflopwr6;
+      u8 uhflopwr7;
+    } test;
+    """
+
+    NAME_LENGTH = 8
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(self.MEM_FORMAT, self._mmap)
