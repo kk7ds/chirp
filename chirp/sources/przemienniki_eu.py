@@ -16,33 +16,33 @@
 import logging
 
 import requests
+import wx
 
 from chirp.drivers import generic_csv
 from chirp import errors
 from chirp.sources import base
 
+_ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
 
 
-class Przemienniki(base.NetworkResultRadio):
-    VENDOR = 'przemienniki.net'
+class PrzemiennikiEu(base.NetworkResultRadio):
+    VENDOR = 'przemienniki.eu'
 
     def get_label(self):
-        return 'przemienniki.net'
+        return 'przemienniki.eu'
 
     def do_fetch(self, status, params):
-        status.send_status('Querying', 10)
-        if not params['range'] or int(params['range']) == 0:
-            params.pop('range')
+        status.send_status(_('Querying'), 10)
         LOG.debug('query params: %s' % str(params))
         try:
-            r = requests.get('http://przemienniki.net/export/chirp.csv',
+            r = requests.get('https://przemienniki.eu/eksport-danych/chirp/',
                              headers=base.HEADERS,
                              params=params,
                              stream=True)
             r.raise_for_status()
         except requests.exceptions.RequestException as e:
-            LOG.error('Failed to query przemienniki: %s' % e)
+            LOG.error('Failed to query przemienniki.eu: %s' % e)
             status.send_fail(_('Unable to query'))
             return
         status.send_status(_('Parsing'), 20)
@@ -59,13 +59,10 @@ class Przemienniki(base.NetworkResultRadio):
 
         status.send_status(_('Sorting'), 80)
 
-        self._memories = [csv.get_memory(x) for x in range(1, 999)
+        self._memories = [csv.get_memory(x) for x in range(0, 999)
                           if not csv.get_memory(x).empty]
-        if not any([params['latitude'], params['longitude']]):
-            LOG.debug('Sorting memories by name')
-            self._memories.sort(key=lambda m: m.name)
-            # Now renumber them
-            for i, mem in enumerate(self._memories):
-                mem.number = i + 1
+        self._memories.sort(key=lambda m: m.name)
+        for i, mem in enumerate(self._memories):
+            mem.number = i + 1
 
         return status.send_end()
