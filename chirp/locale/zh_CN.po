@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-10 10:50-0800\n"
+"POT-Creation-Date: 2024-11-27 12:36+0100\n"
 "PO-Revision-Date: 2024-11-11 02:28+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language-Team: \n"
@@ -35,30 +35,30 @@ msgstr ""
 "      （电台显示屏上会显示“-WAIT-”）。\n"
 "5. 最后，按下面的 OK 按钮。\n"
 
-#: ../wxui/query_sources.py:60
+#: ../wxui/query_sources.py:62
 #, python-format
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s 必须在 %(min)i 和 %(max)i 之间"
 
-#: ../wxui/memedit.py:1739
+#: ../wxui/memedit.py:1744
 #, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
 msgstr[0] "%i 个存储并将所有上移"
 
-#: ../wxui/memedit.py:1730
+#: ../wxui/memedit.py:1735
 #, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
 msgstr[0] "%i 个存储"
 
-#: ../wxui/memedit.py:1734
+#: ../wxui/memedit.py:1739
 #, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
 msgstr[0] "%i 个存储并上移区块"
 
-#: ../wxui/main.py:1399
+#: ../wxui/main.py:1404
 #, python-format
 msgid "%s has not been saved. Save before closing?"
 msgstr "%s 还没有被保存。要在关闭程序前保存吗？"
@@ -83,7 +83,7 @@ msgstr "（这之前曾经奏效过吗？是新电台吗？使用原厂软件能
 msgid "(none)"
 msgstr "（无）"
 
-#: ../wxui/memedit.py:2092
+#: ../wxui/memedit.py:2097
 #, python-format
 msgid "...and %i more"
 msgstr "...以及其他 %i 个"
@@ -599,7 +599,7 @@ msgstr ""
 "4. 按 [MONI] 键（LCD 上会显示 \"WAIT\"）。\n"
 "5. 点击 OK。\n"
 
-#: ../drivers/vx3.py:373 ../drivers/vx6.py:370
+#: ../drivers/vx6.py:370 ../drivers/vx3.py:373
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -614,7 +614,7 @@ msgstr ""
 "4. <b>点击 OK 后</b>，按 [BAND] 键\n"
 "    发送镜像。\n"
 
-#: ../drivers/vx3.py:380 ../drivers/vx6.py:377
+#: ../drivers/vx6.py:377 ../drivers/vx3.py:380
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -794,7 +794,7 @@ msgstr ""
 "5. 确保电台调到没有活动的频道。\n"
 "6. 点击 OK 上传镜像到设备。\n"
 
-#: ../drivers/tg_uv2p.py:232 ../drivers/uvb5.py:287 ../drivers/wouxun.py:213
+#: ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:213 ../drivers/uvb5.py:287
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -810,7 +810,7 @@ msgstr ""
 "5. 确保电台调到没有活动的频道。\n"
 "6. 点击 OK 下载设备中的镜像。\n"
 
-#: ../drivers/tg_uv2p.py:240 ../drivers/uvb5.py:295 ../drivers/wouxun.py:221
+#: ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:221 ../drivers/uvb5.py:295
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -971,7 +971,7 @@ msgstr ""
 "\n"
 "如果在已连接数据线的情况下打开电台，则可能无法进行"
 
-#: ../wxui/main.py:1954
+#: ../wxui/main.py:1971
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "新的 CHIRP 版本已经推出。请尽快访问网站下载！"
 
@@ -979,60 +979,61 @@ msgstr "新的 CHIRP 版本已经推出。请尽快访问网站下载！"
 msgid "AM mode does not allow duplex or tone"
 msgstr "AM制式下不支持双工或亚音频"
 
-#: ../wxui/main.py:935
+#: ../wxui/main.py:940
 msgid "About"
 msgstr "关于"
 
-#: ../wxui/main.py:1745
+#: ../wxui/main.py:1759
 msgid "About CHIRP"
 msgstr "关于CHIRP"
 
-#: ../wxui/main.py:1795
+#: ../wxui/main.py:1809
 msgid "Agree"
 msgstr "同意"
 
-#: ../wxui/query_sources.py:367
+#: ../wxui/query_sources.py:404
 msgid "All"
 msgstr "全选"
 
-#: ../wxui/main.py:1228
+#: ../wxui/main.py:1233
 msgid "All Files"
 msgstr "全部文件"
 
-#: ../wxui/main.py:1239
+#: ../wxui/main.py:1244
 msgid "All supported formats|"
 msgstr "所有支持的格式|"
 
-#: ../wxui/clone.py:595
+#: ../wxui/clone.py:596
 msgid "Always start with recent list"
 msgstr "总是以最近的列表启动"
 
-#: ../wxui/query_sources.py:284 ../wxui/query_sources.py:359
+#: ../wxui/query_sources.py:321 ../wxui/query_sources.py:396
 msgid "Amateur"
 msgstr "业余"
 
-#: ../wxui/common.py:609 ../wxui/common.py:636 ../wxui/bugreport.py:328
-#: ../wxui/bugreport.py:437
+#: ../wxui/bugreport.py:328 ../wxui/bugreport.py:437 ../wxui/common.py:609
+#: ../wxui/common.py:636
 msgid "An error has occurred"
 msgstr "发生错误"
 
-#: ../wxui/clone.py:142
+#: ../wxui/clone.py:143
 msgid "Applying settings"
 msgstr "应用设置"
 
-#: ../wxui/main.py:1495
+#: ../wxui/main.py:1500
 msgid "Automatic from system"
 msgstr "系统自动"
 
-#: ../wxui/developer.py:556
+#: ../wxui/developer.py:561
 msgid "Available modules"
 msgstr "可用模块"
 
-#: ../wxui/main.py:1896
+#: ../wxui/main.py:1910
 msgid "Bandplan"
 msgstr "频带计划"
 
-#: ../wxui/query_sources.py:389 ../wxui/query_sources.py:606
+#: ../wxui/query_sources.py:426 ../wxui/query_sources.py:643
+#: ../wxui/query_sources.py:800
 msgid "Bands"
 msgstr "频带"
 
@@ -1064,11 +1065,11 @@ msgstr "Bug 标题："
 msgid "Building Radio Browser"
 msgstr "正在构建电台浏览器"
 
-#: ../wxui/main.py:1524
+#: ../wxui/main.py:1529
 msgid "CHIRP must be restarted for the new selection to take effect"
 msgstr "CHIRP 必须重新启动才能生效"
 
-#: ../wxui/query_sources.py:699
+#: ../wxui/query_sources.py:926
 msgid "Canada"
 msgstr "加拿大"
 
@@ -1076,12 +1077,12 @@ msgstr "加拿大"
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "更改此设置需要从映像中刷新设置，这将立即发生。"
 
-#: ../wxui/memedit.py:1390
+#: ../wxui/memedit.py:1395
 #, python-format
 msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr "收发一致的 %s 频道使用 \"%s\" 亚音频模式表示"
 
-#: ../wxui/main.py:1227
+#: ../wxui/main.py:1232
 msgid "Chirp Image Files"
 msgstr "CHIRP 映像文件"
 
@@ -1089,38 +1090,38 @@ msgstr "CHIRP 映像文件"
 msgid "Choice Required"
 msgstr "需要选择"
 
-#: ../wxui/memedit.py:1369
+#: ../wxui/memedit.py:1374
 #, python-format
 msgid "Choose %s DTCS Code"
 msgstr "选择 %s DTCS 接收代码"
 
-#: ../wxui/memedit.py:1366
+#: ../wxui/memedit.py:1371
 #, python-format
 msgid "Choose %s Tone"
 msgstr "选择 %s 亚音频"
 
-#: ../wxui/memedit.py:1400
+#: ../wxui/memedit.py:1405
 msgid "Choose Cross Mode"
 msgstr "收发使用不同亚音频"
 
-#: ../wxui/clone.py:576
+#: ../wxui/clone.py:577
 msgid "Choose a recent model"
 msgstr "选择一个最近的型号"
 
-#: ../wxui/memedit.py:1430
+#: ../wxui/memedit.py:1435
 msgid "Choose duplex"
 msgstr "选择双工"
 
-#: ../wxui/developer.py:555
+#: ../wxui/developer.py:560
 #, python-format
 msgid "Choose the module to load from issue %i:"
 msgstr "选择要从 issue %i 加载的模块："
 
-#: ../wxui/query_sources.py:469
+#: ../wxui/query_sources.py:506
 msgid "City"
 msgstr "城市"
 
-#: ../wxui/main.py:1765
+#: ../wxui/main.py:1779
 msgid "Click here for full license text"
 msgstr "点击这里查看完整的许可证文本"
 
@@ -1146,25 +1147,25 @@ msgstr "下载完成，正在检查是否有多余的字节"
 msgid "Cloning"
 msgstr "正在下载"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft4.py:317 ../drivers/ft450d.py:507
-#: ../drivers/ft817.py:341
+#: ../drivers/ft4.py:317 ../drivers/bj9900.py:133 ../drivers/ft817.py:341
+#: ../drivers/ft450d.py:507
 msgid "Cloning from radio"
 msgstr "从电台下载"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft4.py:318 ../drivers/ft450d.py:536
-#: ../drivers/ft817.py:379
+#: ../drivers/ft4.py:318 ../drivers/bj9900.py:165 ../drivers/ft817.py:379
+#: ../drivers/ft450d.py:536
 msgid "Cloning to radio"
 msgstr "上传到电台"
 
-#: ../wxui/main.py:1027 ../wxui/main.py:1796
+#: ../wxui/main.py:1032 ../wxui/main.py:1810
 msgid "Close"
 msgstr "关闭"
 
-#: ../wxui/main.py:1028
+#: ../wxui/main.py:1033
 msgid "Close file"
 msgstr "关闭文件"
 
-#: ../wxui/memedit.py:1798
+#: ../wxui/memedit.py:1803
 #, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
@@ -1174,11 +1175,11 @@ msgstr[0] "Cluster %i 个记忆"
 msgid "Comment"
 msgstr "备注"
 
-#: ../wxui/clone.py:307
+#: ../wxui/clone.py:308
 msgid "Communicate with radio"
 msgstr "与电台通信"
 
-#: ../wxui/clone.py:150
+#: ../wxui/clone.py:151
 msgid "Complete"
 msgstr "已完成"
 
@@ -1194,16 +1195,16 @@ msgstr ""
 "将接口电缆连接到“TX/RX”单元背面的 PC 端口。\n"
 "请注意不是头部的 Com 端口。\n"
 
-#: ../wxui/query_sources.py:337
+#: ../wxui/query_sources.py:374
 msgid "Convert to FM"
 msgstr "转换到 FM"
 
-#: ../wxui/memedit.py:1715
+#: ../wxui/memedit.py:1720
 msgid "Copy"
 msgstr "复制"
 
-#: ../wxui/query_sources.py:282 ../wxui/query_sources.py:475
-#: ../wxui/query_sources.py:565
+#: ../wxui/query_sources.py:319 ../wxui/query_sources.py:512
+#: ../wxui/query_sources.py:602
 msgid "Country"
 msgstr "国家或地区"
 
@@ -1211,7 +1212,7 @@ msgstr "国家或地区"
 msgid "Cross Mode"
 msgstr "收发使用不同亚音频"
 
-#: ../wxui/clone.py:537
+#: ../wxui/clone.py:538
 msgid "Custom Port"
 msgstr "自定义端口"
 
@@ -1219,7 +1220,7 @@ msgstr "自定义端口"
 msgid "Custom..."
 msgstr "自定义..."
 
-#: ../wxui/memedit.py:1711
+#: ../wxui/memedit.py:1716
 msgid "Cut"
 msgstr "剪切"
 
@@ -1239,11 +1240,11 @@ msgstr ""
 msgid "DTMF decode"
 msgstr "DTMF 解码"
 
-#: ../wxui/memedit.py:2358
+#: ../wxui/memedit.py:2363
 msgid "DV Memory"
 msgstr "该存储"
 
-#: ../wxui/main.py:1817
+#: ../wxui/main.py:1831
 msgid "Danger Ahead"
 msgstr "前方危险"
 
@@ -1251,7 +1252,7 @@ msgstr "前方危险"
 msgid "Dec"
 msgstr "探测"
 
-#: ../wxui/memedit.py:1724
+#: ../wxui/memedit.py:1729
 msgid "Delete"
 msgstr "删除"
 
@@ -1259,28 +1260,28 @@ msgstr "删除"
 msgid "Detailed information"
 msgstr "详细信息"
 
-#: ../wxui/main.py:940
+#: ../wxui/main.py:945
 msgid "Developer Mode"
 msgstr "开发者模式"
 
-#: ../wxui/main.py:1823
+#: ../wxui/main.py:1837
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "开发者状态现在是 %s。CHIRP 必须重新启动才能生效"
 
-#: ../wxui/developer.py:88 ../wxui/memedit.py:1834
+#: ../wxui/developer.py:88 ../wxui/memedit.py:1839
 msgid "Diff Raw Memories"
 msgstr "对比原始存储"
 
-#: ../wxui/memedit.py:2283
+#: ../wxui/memedit.py:2288
 msgid "Digital Code"
 msgstr "数字代码"
 
-#: ../wxui/query_sources.py:341
+#: ../wxui/query_sources.py:378
 msgid "Digital Modes"
 msgstr "数字模式"
 
-#: ../wxui/main.py:1835
+#: ../wxui/main.py:1849
 msgid "Disable reporting"
 msgstr "禁用报告"
 
@@ -1288,17 +1289,17 @@ msgstr "禁用报告"
 msgid "Disabled"
 msgstr "已禁用"
 
-#: ../wxui/query_sources.py:100 ../wxui/query_sources.py:313
-#: ../wxui/query_sources.py:588
+#: ../wxui/query_sources.py:102 ../wxui/query_sources.py:350
+#: ../wxui/query_sources.py:625 ../wxui/query_sources.py:782
 msgid "Distance"
 msgstr "距离"
 
-#: ../wxui/clone.py:202
+#: ../wxui/clone.py:203
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "不再对 %s 提示"
 
-#: ../wxui/clone.py:199
+#: ../wxui/clone.py:200
 msgid "Do you accept the risk?"
 msgstr "您接受风险吗？"
 
@@ -1306,11 +1307,11 @@ msgstr "您接受风险吗？"
 msgid "Double-click to change bank name"
 msgstr "双击以更改存储区名称"
 
-#: ../wxui/main.py:1029
+#: ../wxui/main.py:1034
 msgid "Download"
 msgstr "下载"
 
-#: ../wxui/main.py:1030
+#: ../wxui/main.py:1035
 msgid "Download from radio"
 msgstr "从电台下载"
 
@@ -1318,7 +1319,7 @@ msgstr "从电台下载"
 msgid "Download from radio..."
 msgstr "从电台下载……"
 
-#: ../wxui/clone.py:742
+#: ../wxui/clone.py:751
 msgid "Download instructions"
 msgstr "显示指引"
 
@@ -1334,7 +1335,7 @@ msgstr "驱动程序信息"
 msgid "Driver messages"
 msgstr "驱动程序消息"
 
-#: ../wxui/query_sources.py:339
+#: ../wxui/query_sources.py:376
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
 msgstr "支持模拟的双模数字中继将显示为 FM"
 
@@ -1342,17 +1343,17 @@ msgstr "支持模拟的双模数字中继将显示为 FM"
 msgid "Duplex"
 msgstr "双工"
 
-#: ../wxui/memedit.py:2313
+#: ../wxui/memedit.py:2318
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "修改 %i 个存储的详细信息"
 
-#: ../wxui/memedit.py:2311
+#: ../wxui/memedit.py:2316
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "修改存储 %i 的详细信息"
 
-#: ../wxui/main.py:884
+#: ../wxui/main.py:889
 msgid "Enable Automatic Edits"
 msgstr "启用自动编辑"
 
@@ -1364,11 +1365,11 @@ msgstr "已启用"
 msgid "Enter Frequency"
 msgstr "频率"
 
-#: ../wxui/memedit.py:1417
+#: ../wxui/memedit.py:1422
 msgid "Enter Offset (MHz)"
 msgstr "输入频差（MHz）"
 
-#: ../wxui/memedit.py:1409
+#: ../wxui/memedit.py:1414
 msgid "Enter TX Frequency (MHz)"
 msgstr "输入发射频率（MHz）"
 
@@ -1377,7 +1378,7 @@ msgstr "输入发射频率（MHz）"
 msgid "Enter a new name for bank %s:"
 msgstr "输入存储区 %s 的新名称："
 
-#: ../wxui/clone.py:536
+#: ../wxui/clone.py:537
 msgid "Enter custom port:"
 msgstr "输入自定义端口："
 
@@ -1410,23 +1411,23 @@ msgstr "已擦除存储 %s"
 msgid "Error applying settings"
 msgstr "应用设置时出错"
 
-#: ../wxui/clone.py:651
+#: ../wxui/clone.py:652
 msgid "Error communicating with radio"
 msgstr "与电台通信时出错"
 
-#: ../wxui/query_sources.py:334
+#: ../wxui/query_sources.py:371
 msgid "Exclude private and closed repeaters"
 msgstr "排除私有和已关闭的中继"
 
-#: ../wxui/clone.py:696
+#: ../wxui/clone.py:710
 msgid "Experimental driver"
 msgstr "实验性的驱动程序"
 
-#: ../wxui/memedit.py:2236
+#: ../wxui/memedit.py:2241
 msgid "Export can only write CSV files"
 msgstr "只能导出CSV文件"
 
-#: ../wxui/main.py:1384
+#: ../wxui/main.py:1389
 msgid "Export to CSV"
 msgstr "以CSV文件格式导出"
 
@@ -1434,7 +1435,7 @@ msgstr "以CSV文件格式导出"
 msgid "Export to CSV..."
 msgstr "以CSV文件格式导出……"
 
-#: ../wxui/memedit.py:2347
+#: ../wxui/memedit.py:2352
 msgid "Extra"
 msgstr "更多"
 
@@ -1442,7 +1443,7 @@ msgstr "更多"
 msgid "FM Radio"
 msgstr "FM电台"
 
-#: ../wxui/query_sources.py:620
+#: ../wxui/query_sources.py:657
 msgid ""
 "FREE repeater database, which provides most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
@@ -1453,7 +1454,7 @@ msgstr "免费中继数据库，提供欧洲中继的最新信息。不需要帐
 msgid "Failed to load radio browser"
 msgstr "无法加载电台浏览器"
 
-#: ../sources/przemienniki.py:57
+#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
 msgid "Failed to parse result"
 msgstr "无法解析结果"
 
@@ -1474,8 +1475,8 @@ msgstr "提交新 Bug"
 msgid "File does not exist: %s"
 msgstr "文件不存在：%s"
 
-#: ../wxui/main.py:1231 ../wxui/main.py:1311 ../wxui/main.py:1321
-#: ../wxui/main.py:1380 ../wxui/main.py:1715 ../wxui/main.py:1716
+#: ../wxui/main.py:1236 ../wxui/main.py:1316 ../wxui/main.py:1326
+#: ../wxui/main.py:1385 ../wxui/main.py:1729 ../wxui/main.py:1730
 msgid "Files"
 msgstr "文件"
 
@@ -1483,15 +1484,15 @@ msgstr "文件"
 msgid "Files:"
 msgstr "文件："
 
-#: ../wxui/query_sources.py:319
+#: ../wxui/query_sources.py:356
 msgid "Filter"
 msgstr "过滤"
 
-#: ../wxui/query_sources.py:317
+#: ../wxui/query_sources.py:354
 msgid "Filter results with location matching this string"
 msgstr "过滤位置匹配此字符串的结果"
 
-#: ../wxui/main.py:1454
+#: ../wxui/main.py:1459
 msgid "Find"
 msgstr "查找"
 
@@ -1565,10 +1566,10 @@ msgstr ""
 "4 - 电台 > 从电台下载\n"
 "5 - 断开接口电缆！否则将没有右侧音频！\n"
 
-#: ../drivers/baofeng_uv17Pro.py:465 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/bf_t1.py:482 ../drivers/btech.py:693 ../drivers/gmrsuv1.py:391
-#: ../drivers/gmrsv2.py:363 ../drivers/mursv1.py:341
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv5x3.py:417
+#: ../drivers/baofeng_wp970i.py:327 ../drivers/bf_t1.py:482
+#: ../drivers/baofeng_uv17Pro.py:465 ../drivers/gmrsv2.py:363
+#: ../drivers/uv5x3.py:417 ../drivers/btech.py:693 ../drivers/gmrsuv1.py:391
+#: ../drivers/tdxone_tdq8a.py:456 ../drivers/mursv1.py:341
 #: ../drivers/uv6r.py:339
 msgid ""
 "Follow these instructions to download your info:\n"
@@ -1712,7 +1713,7 @@ msgstr ""
 "3 - 打开电台\n"
 "4 - 单击 \"确定 \"开始\n"
 
-#: ../drivers/lt725uv.py:496 ../drivers/vgc.py:598
+#: ../drivers/vgc.py:598 ../drivers/lt725uv.py:496
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1740,10 +1741,11 @@ msgstr ""
 "3 - 打开电台\n"
 "4 - 下载电台数据\n"
 
-#: ../drivers/baofeng_uv17Pro.py:471 ../drivers/baofeng_wp970i.py:333
-#: ../drivers/gmrsuv1.py:397 ../drivers/gmrsv2.py:369 ../drivers/lt725uv.py:502
-#: ../drivers/mursv1.py:347 ../drivers/tdxone_tdq8a.py:462
-#: ../drivers/uv5x3.py:423 ../drivers/uv6r.py:345 ../drivers/vgc.py:604
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/baofeng_uv17Pro.py:471
+#: ../drivers/gmrsv2.py:369 ../drivers/uv5x3.py:423 ../drivers/vgc.py:604
+#: ../drivers/gmrsuv1.py:397 ../drivers/lt725uv.py:502
+#: ../drivers/tdxone_tdq8a.py:462 ../drivers/mursv1.py:347
+#: ../drivers/uv6r.py:345
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1789,13 +1791,13 @@ msgstr "频率 %s 超出支持范围"
 msgid "Frequency granularity in kHz"
 msgstr "频率粒度（kHz）"
 
-#: ../drivers/baofeng_uv17Pro.py:1162 ../drivers/ga510.py:1072
-#: ../drivers/mml_jc8810.py:1369 ../drivers/tdh8.py:2612
+#: ../drivers/mml_jc8810.py:1369 ../drivers/baofeng_uv17Pro.py:1162
+#: ../drivers/ga510.py:1072 ../drivers/tdh8.py:2612
 msgid "Frequency in this range must not be AM mode"
 msgstr "此范围内的频率不能是AM模式"
 
-#: ../drivers/baofeng_uv17Pro.py:1158 ../drivers/ga510.py:1065
-#: ../drivers/mml_jc8810.py:1366 ../drivers/tdh8.py:2609
+#: ../drivers/mml_jc8810.py:1366 ../drivers/baofeng_uv17Pro.py:1158
+#: ../drivers/ga510.py:1065 ../drivers/tdh8.py:2609
 msgid "Frequency in this range requires AM mode"
 msgstr "此范围内的频率需要是AM模式"
 
@@ -1803,8 +1805,8 @@ msgstr "此范围内的频率需要是AM模式"
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr "超出发射频段的频率必须是双工=关闭"
 
-#: ../wxui/query_sources.py:285 ../wxui/query_sources.py:350
-#: ../wxui/query_sources.py:443
+#: ../wxui/query_sources.py:322 ../wxui/query_sources.py:387
+#: ../wxui/query_sources.py:480
 msgid "GMRS"
 msgstr "GMRS"
 
@@ -1824,7 +1826,7 @@ msgstr "前往存储："
 msgid "Goto..."
 msgstr "前往..."
 
-#: ../wxui/main.py:995
+#: ../wxui/main.py:1000
 msgid "Help"
 msgstr "帮助"
 
@@ -1848,12 +1850,13 @@ msgstr "当启用时，遵守CTCSS/DCS接收静噪配置，否则只有载波静
 msgid "Human-readable comment (not stored in radio)"
 msgstr "人类可读的注释（不存储在电台中）"
 
-#: ../wxui/query_sources.py:296 ../wxui/query_sources.py:302
-#: ../wxui/query_sources.py:572 ../wxui/query_sources.py:578
+#: ../wxui/query_sources.py:333 ../wxui/query_sources.py:339
+#: ../wxui/query_sources.py:609 ../wxui/query_sources.py:615
+#: ../wxui/query_sources.py:760 ../wxui/query_sources.py:766
 msgid "If set, sort results by distance from these coordinates"
 msgstr "设置后按距离排序"
 
-#: ../wxui/main.py:1366
+#: ../wxui/main.py:1371
 msgid "Import"
 msgstr "导入"
 
@@ -1861,11 +1864,11 @@ msgstr "导入"
 msgid "Import from file..."
 msgstr "从文件导入..."
 
-#: ../wxui/main.py:1370
+#: ../wxui/main.py:1375
 msgid "Import messages"
 msgstr "导入消息"
 
-#: ../wxui/main.py:1364
+#: ../wxui/main.py:1369
 msgid "Import not recommended"
 msgstr "不推荐导入"
 
@@ -1877,11 +1880,11 @@ msgstr "索引"
 msgid "Info"
 msgstr "信息"
 
-#: ../wxui/memedit.py:1392
+#: ../wxui/memedit.py:1397
 msgid "Information"
 msgstr "信息"
 
-#: ../wxui/memedit.py:1705
+#: ../wxui/memedit.py:1710
 msgid "Insert Row Above"
 msgstr "上方插入一行"
 
@@ -1889,33 +1892,39 @@ msgstr "上方插入一行"
 msgid "Install desktop icon?"
 msgstr "要安装桌面图标吗？"
 
-#: ../wxui/main.py:924
+#: ../wxui/main.py:929
 msgid "Interact with driver"
 msgstr "与驱动程序交互"
 
-#: ../wxui/clone.py:764
+#: ../wxui/clone.py:773
 msgid "Internal driver error"
 msgstr "内部驱动程序错误"
 
-#: ../wxui/query_sources.py:58
+#: ../wxui/query_sources.py:60
 #, python-format
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "无效的 %(value)s（请使用十进制度数）"
 
-#: ../wxui/query_sources.py:66 ../wxui/memedit.py:1553
+#: ../wxui/query_sources.py:68 ../wxui/query_sources.py:121
+#: ../wxui/memedit.py:1558
 msgid "Invalid Entry"
 msgstr "无效项目"
 
-#: ../wxui/query_sources.py:111
+#: ../wxui/query_sources.py:148
 msgid "Invalid ZIP code"
 msgstr "无效的邮政编码"
 
-#: ../wxui/memedit.py:1552 ../wxui/memedit.py:2438
+#: ../wxui/memedit.py:1557 ../wxui/memedit.py:2443
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "编辑无效：%s"
 
-#: ../wxui/main.py:1712
+#: ../wxui/query_sources.py:121
+#, fuzzy
+msgid "Invalid locator"
+msgstr "无效项目"
+
+#: ../wxui/main.py:1726
 msgid "Invalid or unsupported module file"
 msgstr "无效或不支持的模块文件"
 
@@ -1924,7 +1933,7 @@ msgstr "无效或不支持的模块文件"
 msgid "Invalid value: %r"
 msgstr "%r 值无效"
 
-#: ../wxui/developer.py:577
+#: ../wxui/developer.py:582
 msgid "Issue number:"
 msgstr "问题编号："
 
@@ -1932,12 +1941,12 @@ msgstr "问题编号："
 msgid "LIVE"
 msgstr "实时"
 
-#: ../wxui/main.py:833 ../wxui/main.py:1509
+#: ../wxui/main.py:833 ../wxui/main.py:1514
 msgid "Language"
 msgstr "更改语言 (Change Language)"
 
-#: ../wxui/query_sources.py:88 ../wxui/query_sources.py:304
-#: ../wxui/query_sources.py:580
+#: ../wxui/query_sources.py:90 ../wxui/query_sources.py:341
+#: ../wxui/query_sources.py:617 ../wxui/query_sources.py:768
 msgid "Latitude"
 msgstr "纬度"
 
@@ -1946,27 +1955,34 @@ msgstr "纬度"
 msgid "Length must be %i"
 msgstr "长度必须是 %i"
 
-#: ../wxui/query_sources.py:325 ../wxui/query_sources.py:540
+#: ../wxui/query_sources.py:362 ../wxui/query_sources.py:577
+#: ../wxui/query_sources.py:730
 msgid "Limit Bands"
 msgstr "限制频段"
 
-#: ../wxui/query_sources.py:330
+#: ../wxui/query_sources.py:367
 msgid "Limit Modes"
 msgstr "限制模式"
 
-#: ../wxui/query_sources.py:555
+#: ../wxui/query_sources.py:592 ../wxui/query_sources.py:745
 msgid "Limit Status"
 msgstr "限制状态"
 
-#: ../wxui/query_sources.py:311 ../wxui/query_sources.py:586
+#: ../wxui/query_sources.py:753
+#, fuzzy
+msgid "Limit prefixes"
+msgstr "限制模式"
+
+#: ../wxui/query_sources.py:348 ../wxui/query_sources.py:623
+#: ../wxui/query_sources.py:780
 msgid "Limit results to this distance (km) from coordinates"
 msgstr "限制结果到这个距离（公里）"
 
-#: ../wxui/query_sources.py:335
+#: ../wxui/query_sources.py:372
 msgid "Limit use"
 msgstr "限制使用方式"
 
-#: ../wxui/main.py:1593
+#: ../wxui/main.py:1601
 msgid "Live Radio"
 msgstr "实时电台"
 
@@ -1974,25 +1990,29 @@ msgstr "实时电台"
 msgid "Load Module..."
 msgstr "加载模块..."
 
-#: ../wxui/developer.py:578
+#: ../wxui/developer.py:583
 msgid "Load module from issue"
 msgstr "从 issue 加载模块"
 
-#: ../wxui/main.py:977
+#: ../wxui/main.py:982
 msgid "Load module from issue..."
 msgstr "从 issue 加载模块..."
 
-#: ../wxui/main.py:1871
+#: ../wxui/main.py:1885
 msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
 msgstr "加载模块不会影响打开的标签页。建议（除非另有说明）在加载模块之前关闭所有标签页。"
 
-#: ../wxui/main.py:1719
+#: ../wxui/main.py:1733
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr "加载模块可能极其危险，可能导致您的计算机、无线电或两者都受损。绝对不要从您不信任的来源加载模块，尤其不要从主要的 CHIRP 网站（chirpmyradio.com）之外的任何地方加载模块。从其他来源加载模块等同于让他们直接访问您的计算机和上面的所有内容！尽管存在这种风险，是否继续？"
 
-#: ../wxui/clone.py:144
+#: ../wxui/clone.py:145
 msgid "Loading settings"
 msgstr "加载设置中"
+
+#: ../wxui/query_sources.py:108
+msgid "Locator"
+msgstr ""
 
 #: ../wxui/bugreport.py:326
 msgid "Login failed: Check your username and password"
@@ -2006,8 +2026,8 @@ msgstr "Logo 字符串 1（12 个字符）"
 msgid "Logo string 2 (12 characters)"
 msgstr "Logo 字符串 2（12 个字符）"
 
-#: ../wxui/query_sources.py:94 ../wxui/query_sources.py:305
-#: ../wxui/query_sources.py:581
+#: ../wxui/query_sources.py:96 ../wxui/query_sources.py:342
+#: ../wxui/query_sources.py:618 ../wxui/query_sources.py:769
 msgid "Longitude"
 msgstr "经度"
 
@@ -2019,7 +2039,7 @@ msgstr "存储"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "由于不支持的固件版本，存储是只读的"
 
-#: ../wxui/memedit.py:1592
+#: ../wxui/memedit.py:1597
 #, python-format
 msgid "Memory %i is not deletable"
 msgstr "存储 %i 不能删除"
@@ -2037,35 +2057,36 @@ msgstr "存储必须在一个存储区中才能编辑"
 msgid "Memory {num} not in bank {bank}"
 msgstr "存储 {num} 不在存储区 {bank}"
 
-#: ../wxui/query_sources.py:532 ../wxui/memedit.py:590
+#: ../wxui/query_sources.py:569 ../wxui/query_sources.py:722
+#: ../wxui/memedit.py:590
 msgid "Mode"
 msgstr "制式"
 
-#: ../wxui/clone.py:345
+#: ../wxui/clone.py:346
 msgid "Model"
 msgstr "型号"
 
-#: ../wxui/query_sources.py:410
+#: ../wxui/query_sources.py:447
 msgid "Modes"
 msgstr "制式"
 
-#: ../wxui/main.py:1716
+#: ../wxui/main.py:1730
 msgid "Module"
 msgstr "模块"
 
-#: ../wxui/main.py:1688
+#: ../wxui/main.py:1702
 msgid "Module Loaded"
 msgstr "模块已加载"
 
-#: ../wxui/main.py:1882
+#: ../wxui/main.py:1896
 msgid "Module loaded successfully"
 msgstr "模块加载成功"
 
-#: ../wxui/clone.py:654
+#: ../wxui/clone.py:655
 msgid "More Info"
 msgstr "更多信息"
 
-#: ../wxui/clone.py:493
+#: ../wxui/clone.py:494
 #, python-format
 msgid "More than one port found: %s"
 msgstr "找到多个端口：%s"
@@ -2078,7 +2099,7 @@ msgstr "下移"
 msgid "Move Up"
 msgstr "上移"
 
-#: ../wxui/memedit.py:2148
+#: ../wxui/memedit.py:2153
 msgid "Move operations are disabled while the view is sorted"
 msgstr "排序启用时不能移动"
 
@@ -2086,28 +2107,28 @@ msgstr "排序启用时不能移动"
 msgid "New Window"
 msgstr "创建一个新的窗口"
 
-#: ../wxui/main.py:1956
+#: ../wxui/main.py:1973
 msgid "New version available"
 msgstr "有新版本"
 
-#: ../wxui/memedit.py:1871
+#: ../wxui/memedit.py:1876
 msgid "No empty rows below!"
 msgstr "下方已无空行！"
 
-#: ../wxui/developer.py:593
+#: ../wxui/developer.py:598
 msgid "No modules found"
 msgstr "未找到模块"
 
-#: ../wxui/developer.py:592
+#: ../wxui/developer.py:597
 #, python-format
 msgid "No modules found in issue %i"
 msgstr "在 issue %i 中未找到模块"
 
-#: ../wxui/memedit.py:2030
+#: ../wxui/memedit.py:2035
 msgid "No more space available; some memories were not applied"
 msgstr "没有更多空间可用；一些存储未应用"
 
-#: ../sources/przemienniki.py:53
+#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
 msgid "No results"
 msgstr "无结果"
 
@@ -2115,7 +2136,7 @@ msgstr "无结果"
 msgid "No results!"
 msgstr "无结果！"
 
-#: ../wxui/query_sources.py:41 ../wxui/memedit.py:969
+#: ../wxui/query_sources.py:43 ../wxui/memedit.py:969
 msgid "Number"
 msgstr "编号"
 
@@ -2123,23 +2144,29 @@ msgstr "编号"
 msgid "Offset"
 msgstr "频差"
 
-#: ../wxui/query_sources.py:323 ../wxui/query_sources.py:538
+#: ../wxui/query_sources.py:360 ../wxui/query_sources.py:575
+#: ../wxui/query_sources.py:728
 msgid "Only certain bands"
 msgstr "仅特定频段"
 
-#: ../wxui/query_sources.py:328
+#: ../wxui/query_sources.py:365
 msgid "Only certain modes"
+msgstr "仅特定制式"
+
+#: ../wxui/query_sources.py:751
+#, fuzzy
+msgid "Only certain prefixes"
 msgstr "仅特定制式"
 
 #: ../wxui/main.py:323
 msgid "Only memory tabs may be exported"
 msgstr "只有存储标签可以导出"
 
-#: ../wxui/query_sources.py:549
+#: ../wxui/query_sources.py:586 ../wxui/query_sources.py:739
 msgid "Only working repeaters"
 msgstr "仅活跃中继台"
 
-#: ../wxui/main.py:1023 ../wxui/main.py:1366
+#: ../wxui/main.py:1028 ../wxui/main.py:1371
 msgid "Open"
 msgstr "打开"
 
@@ -2151,15 +2178,15 @@ msgstr "打开最近"
 msgid "Open Stock Config"
 msgstr "打开预设配置"
 
-#: ../wxui/main.py:1024 ../wxui/main.py:1242
+#: ../wxui/main.py:1029 ../wxui/main.py:1247
 msgid "Open a file"
 msgstr "打开文件"
 
-#: ../wxui/main.py:1734
+#: ../wxui/main.py:1748
 msgid "Open a module"
 msgstr "打开模块"
 
-#: ../wxui/main.py:961
+#: ../wxui/main.py:966
 msgid "Open debug log"
 msgstr "打开调试日志"
 
@@ -2167,7 +2194,7 @@ msgstr "打开调试日志"
 msgid "Open in new window"
 msgstr "在新窗口中打开"
 
-#: ../wxui/query_sources.py:332
+#: ../wxui/query_sources.py:369
 msgid "Open repeaters only"
 msgstr "仅打开中继台"
 
@@ -2175,23 +2202,39 @@ msgstr "仅打开中继台"
 msgid "Open stock config directory"
 msgstr "打开预设配置目录"
 
-#: ../wxui/query_sources.py:301 ../wxui/query_sources.py:577
+#: ../wxui/query_sources.py:338 ../wxui/query_sources.py:614
 msgid "Optional: -122.0000"
 msgstr "可选：-122.0000"
 
-#: ../wxui/query_sources.py:310 ../wxui/query_sources.py:585
+#: ../wxui/query_sources.py:347 ../wxui/query_sources.py:622
+#: ../wxui/query_sources.py:779
 msgid "Optional: 100"
 msgstr "可选：100"
 
-#: ../wxui/query_sources.py:295 ../wxui/query_sources.py:571
+#: ../wxui/query_sources.py:765
+#, fuzzy
+msgid "Optional: 20.0000"
+msgstr "可选：-122.0000"
+
+#: ../wxui/query_sources.py:332 ../wxui/query_sources.py:608
 msgid "Optional: 45.0000"
 msgstr "可选：45.0000"
 
-#: ../wxui/query_sources.py:316
+#: ../wxui/query_sources.py:759
+#, fuzzy
+msgid "Optional: 52.0000"
+msgstr "可选：45.0000"
+
+#: ../wxui/query_sources.py:773
+#, fuzzy
+msgid "Optional: AA00 - AA00aa11"
+msgstr "可选：-122.0000"
+
+#: ../wxui/query_sources.py:353
 msgid "Optional: County, Hospital, etc."
 msgstr "可选：县，医院，等等."
 
-#: ../wxui/memedit.py:2010
+#: ../wxui/memedit.py:2015
 msgid "Overwrite memories?"
 msgstr "要覆盖存储吗？"
 
@@ -2204,7 +2247,7 @@ msgstr ""
 "P-VFO 频道 100-109 被认为是设置。\n"
 "在这个版本中，仅支持超过 130 个可用的电台设置中的一部分。\n"
 
-#: ../sources/przemienniki.py:48
+#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
 msgid "Parsing"
 msgstr "解析"
 
@@ -2212,31 +2255,31 @@ msgstr "解析"
 msgid "Password"
 msgstr "密码"
 
-#: ../wxui/memedit.py:1719
+#: ../wxui/memedit.py:1724
 msgid "Paste"
 msgstr "粘贴"
 
-#: ../wxui/memedit.py:2004
+#: ../wxui/memedit.py:2009
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr "粘贴的存储将覆盖 %s 个现有存储"
 
-#: ../wxui/memedit.py:2007
+#: ../wxui/memedit.py:2012
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "粘贴的存储将覆盖存储 %s"
 
-#: ../wxui/memedit.py:2001
+#: ../wxui/memedit.py:2006
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr "粘贴的存储将覆盖存储 %s"
 
-#: ../wxui/memedit.py:1998
+#: ../wxui/memedit.py:2003
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr "粘贴的存储将覆盖存储 %s"
 
-#: ../wxui/main.py:1960
+#: ../wxui/main.py:1977
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "请确保在安装新版本之前退出 CHIRP！"
 
@@ -2282,7 +2325,7 @@ msgstr ""
 "4 - 然后按下电台上的“A”按钮开始克隆。\n"
 "    (在结束时电台将发出蜂鸣声)\n"
 
-#: ../wxui/main.py:1811
+#: ../wxui/main.py:1825
 msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
 msgstr "请注意，开发者模式是为 CHIRP 项目的开发人员使用，或在开发人员的指导下使用。如果不小心使用，它会启用可能会损坏您的计算机和电台的行为和功能。您已经被警告！是否继续？"
 
@@ -2290,17 +2333,25 @@ msgstr "请注意，开发者模式是为 CHIRP 项目的开发人员使用，�
 msgid "Please wait"
 msgstr "请等待"
 
-#: ../wxui/clone.py:470
+#: ../wxui/clone.py:471
 msgid "Plug in your cable and then click OK"
 msgstr "插入您的电缆，然后单击确定"
 
-#: ../wxui/clone.py:330
+#: ../wxui/query_sources.py:831
+msgid "Polish repeaters database"
+msgstr ""
+
+#: ../wxui/clone.py:331
 msgid "Port"
 msgstr "端口"
 
 #: ../wxui/memedit.py:354
 msgid "Power"
 msgstr "功率"
+
+#: ../wxui/query_sources.py:819
+msgid "Prefixes"
+msgstr ""
 
 #: ../wxui/developer.py:140
 msgid "Press enter to set this in memory"
@@ -2314,15 +2365,19 @@ msgstr "打印预览"
 msgid "Printing"
 msgstr "正在打印"
 
-#: ../wxui/clone.py:504
+#: ../wxui/clone.py:505
 msgid "Prolific USB device"
 msgstr "Prolific USB 设备"
 
-#: ../wxui/memedit.py:1698
+#: ../wxui/memedit.py:1703
 msgid "Properties"
 msgstr "属性"
 
-#: ../wxui/main.py:1911
+#: ../wxui/query_sources.py:775
+msgid "QTH Locator"
+msgstr ""
+
+#: ../wxui/main.py:1925
 #, python-format
 msgid "Query %s"
 msgstr "查询 %s"
@@ -2331,20 +2386,25 @@ msgstr "查询 %s"
 msgid "Query Source"
 msgstr "查询数据源"
 
+#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
+#, fuzzy
+msgid "Querying"
+msgstr "查询 %s"
+
 #: ../wxui/memedit.py:537
 msgid "RX DTCS"
 msgstr "DTCS 接收代码"
 
-#: ../wxui/main.py:994
+#: ../wxui/main.py:999
 msgid "Radio"
 msgstr "电台"
 
-#: ../drivers/ft450d.py:568 ../drivers/ft60.py:85 ../drivers/ft817.py:406
+#: ../drivers/ft60.py:85 ../drivers/ft817.py:406 ../drivers/ft450d.py:568
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "电台未确认块 %i"
 
-#: ../wxui/clone.py:734 ../wxui/clone.py:838
+#: ../wxui/clone.py:743 ../wxui/clone.py:841
 msgid "Radio information"
 msgstr "电台信息"
 
@@ -2356,11 +2416,11 @@ msgstr "电台型号："
 msgid "Radio sent data after the last awaited block, this happens when the selected model is a non-US but the radio is a US one. Please choose the correct model and try again."
 msgstr "电台在最后一个等待的块之后发送了数据，这是因为所选的型号是非美国型号，但电台是美国型号。请选择正确的型号并重试。"
 
-#: ../wxui/query_sources.py:846
+#: ../wxui/query_sources.py:1073
 msgid "RadioReference Canada requires a login before you can query"
 msgstr "RadioReference Canada 需要登录才能查询"
 
-#: ../wxui/query_sources.py:657
+#: ../wxui/query_sources.py:884
 msgid ""
 "RadioReference.com is the world's largest\n"
 "radio communications data provider\n"
@@ -2377,11 +2437,11 @@ msgstr "接收 DTCS 代码"
 msgid "Receive frequency"
 msgstr "接收频率"
 
-#: ../wxui/clone.py:577
+#: ../wxui/clone.py:578
 msgid "Recent"
 msgstr "最近"
 
-#: ../wxui/clone.py:337
+#: ../wxui/clone.py:338
 msgid "Recent..."
 msgstr "最近..."
 
@@ -2398,19 +2458,19 @@ msgstr "需要刷新"
 msgid "Refreshed memory %s"
 msgstr "刷新了存储 %s"
 
-#: ../wxui/main.py:901
+#: ../wxui/main.py:906
 msgid "Reload Driver"
 msgstr "重新加载驱动程序"
 
-#: ../wxui/main.py:910
+#: ../wxui/main.py:915
 msgid "Reload Driver and File"
 msgstr "重新加载驱动程序和文件"
 
-#: ../wxui/clone.py:597
+#: ../wxui/clone.py:598
 msgid "Remove"
 msgstr "删除"
 
-#: ../wxui/clone.py:598
+#: ../wxui/clone.py:599
 msgid "Remove selected model from list"
 msgstr "从列表中删除所选的型号"
 
@@ -2418,13 +2478,13 @@ msgstr "从列表中删除所选的型号"
 msgid "Rename bank"
 msgstr "重命名存储区"
 
-#: ../wxui/query_sources.py:259
+#: ../wxui/query_sources.py:296
 msgid ""
 "RepeaterBook is Amateur Radio's most comprehensive,\n"
 "worldwide, FREE repeater directory."
 msgstr "RepeaterBook 是业余无线电最全面的、全球范围内的、免费的中继台目录。"
 
-#: ../wxui/main.py:983
+#: ../wxui/main.py:988
 msgid "Report or update a bug..."
 msgstr "报告或更新 Bug..."
 
@@ -2433,15 +2493,15 @@ msgstr "报告或更新 Bug..."
 msgid "Reporting a new bug: %r"
 msgstr "正在报告新 Bug：%r"
 
-#: ../wxui/main.py:949
+#: ../wxui/main.py:954
 msgid "Reporting enabled"
 msgstr "启用报告功能"
 
-#: ../wxui/main.py:1831
+#: ../wxui/main.py:1845
 msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
 msgstr "报告有助于 CHIRP 项目了解哪些电台型号和操作系统平台值得我们有限的努力。如果您保持它启用，我们将不胜感激。真的要禁用报告吗？"
 
-#: ../wxui/main.py:1526 ../wxui/main.py:1825
+#: ../wxui/main.py:1531 ../wxui/main.py:1839
 msgid "Restart Required"
 msgstr "需要重新启动"
 
@@ -2459,15 +2519,15 @@ msgstr "启动时恢复标签页"
 msgid "Retrieved settings"
 msgstr "已取得设置"
 
-#: ../wxui/main.py:1025
+#: ../wxui/main.py:1030
 msgid "Save"
 msgstr "保存"
 
-#: ../wxui/main.py:1401
+#: ../wxui/main.py:1406
 msgid "Save before closing?"
 msgstr "在关闭前保存？"
 
-#: ../wxui/main.py:1026 ../wxui/main.py:1325
+#: ../wxui/main.py:1031 ../wxui/main.py:1330
 msgid "Save file"
 msgstr "保存文件"
 
@@ -2487,31 +2547,37 @@ msgstr "扫描列表"
 msgid "Scrambler"
 msgstr "加密器"
 
-#: ../wxui/developer.py:568
+#: ../wxui/developer.py:573
 msgid "Security Risk"
 msgstr "安全风险"
 
-#: ../wxui/main.py:891
+#: ../wxui/main.py:896
 msgid "Select Bandplan..."
 msgstr "选择频段计划..."
 
-#: ../wxui/query_sources.py:389 ../wxui/query_sources.py:606
+#: ../wxui/query_sources.py:426 ../wxui/query_sources.py:643
+#: ../wxui/query_sources.py:800
 msgid "Select Bands"
 msgstr "选择频段"
 
-#: ../wxui/main.py:1509
+#: ../wxui/main.py:1514
 msgid "Select Language"
 msgstr "更改语言 (Change Language)"
 
-#: ../wxui/query_sources.py:410
+#: ../wxui/query_sources.py:447
 msgid "Select Modes"
 msgstr "选择制式"
 
-#: ../wxui/main.py:1895
+#: ../wxui/main.py:1909
 msgid "Select a bandplan"
 msgstr "选择一个频段计划"
 
-#: ../wxui/query_sources.py:287
+#: ../wxui/query_sources.py:819
+#, fuzzy
+msgid "Select prefixes"
+msgstr "选择制式"
+
+#: ../wxui/query_sources.py:324
 msgid "Service"
 msgstr "服务"
 
@@ -2527,11 +2593,11 @@ msgstr "由于不支持的固件版本，设置是只读的"
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "由双工控制的移动量（或发射频率）"
 
-#: ../wxui/developer.py:91 ../wxui/memedit.py:1827
+#: ../wxui/developer.py:91 ../wxui/memedit.py:1832
 msgid "Show Raw Memory"
 msgstr "显示原始存储"
 
-#: ../wxui/main.py:967
+#: ../wxui/main.py:972
 msgid "Show debug log location"
 msgstr "打开调试日志所在文件夹"
 
@@ -2539,57 +2605,57 @@ msgstr "打开调试日志所在文件夹"
 msgid "Show extra fields"
 msgstr "显示更多其他内容"
 
-#: ../wxui/main.py:972
+#: ../wxui/main.py:977
 msgid "Show image backup location"
 msgstr "打开镜像备份所在文件夹"
 
-#: ../wxui/memedit.py:2096
+#: ../wxui/memedit.py:2101
 msgid "Some memories are incompatible with this radio"
 msgstr "某些内容与此电台不兼容"
 
-#: ../wxui/memedit.py:1943
+#: ../wxui/memedit.py:1948
 msgid "Some memories are not deletable"
 msgstr "某些内容不可被删除"
 
-#: ../wxui/memedit.py:1783
+#: ../wxui/memedit.py:1788
 #, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
 msgstr[0] "将 %i 个存储排序"
 
-#: ../wxui/memedit.py:1787
+#: ../wxui/memedit.py:1792
 #, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
 msgstr[0] "将 %i 个存储升序排列"
 
-#: ../wxui/memedit.py:1809
+#: ../wxui/memedit.py:1814
 #, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
 msgstr[0] "将 %i 个存储降序排列"
 
-#: ../wxui/memedit.py:1675
+#: ../wxui/memedit.py:1680
 msgid "Sort by column:"
 msgstr "排序列："
 
-#: ../wxui/memedit.py:1674
+#: ../wxui/memedit.py:1679
 msgid "Sort memories"
 msgstr "排序存储"
 
-#: ../sources/przemienniki.py:60
+#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
 msgid "Sorting"
 msgstr "排序"
 
-#: ../wxui/query_sources.py:472
+#: ../wxui/query_sources.py:509
 msgid "State"
 msgstr "州"
 
-#: ../wxui/query_sources.py:290
+#: ../wxui/query_sources.py:327
 msgid "State/Province"
 msgstr "州/省"
 
-#: ../wxui/main.py:1883
+#: ../wxui/main.py:1897
 msgid "Success"
 msgstr "成功"
 
@@ -2610,7 +2676,7 @@ msgstr ""
 "已测试并基本可用，但在使用较少见的电台变种时可能会出现问题。\n"
 "请自行决定是否继续，如有问题请告知我们！"
 
-#: ../wxui/query_sources.py:480
+#: ../wxui/query_sources.py:517
 msgid "The DMR-MARC Worldwide Network"
 msgstr "DMR-MARC 全球网络"
 
@@ -2646,7 +2712,7 @@ msgstr ""
 "没有已知问题，但您应谨慎操作。\n"
 "请将首次成功下载的未编辑副本保存为 CHIRP 电台镜像 (*.img) 文件。\n"
 
-#: ../wxui/developer.py:565
+#: ../wxui/developer.py:570
 msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
 msgstr "此模块的作者不是 CHIRP 开发人员。建议您不要加载此模块，因为可能会带来安全风险。是否继续？"
 
@@ -2658,12 +2724,12 @@ msgstr "当从命令行交互式运行 CHIRP 时，调试日志文件不可用�
 msgid "The following information will be submitted:"
 msgstr "将提交以下信息："
 
-#: ../wxui/main.py:1357
+#: ../wxui/main.py:1362
 #, python-format
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr "导入存储的推荐方法是打开源文件，然后将存储从源文件复制/粘贴到目标镜像中。如果继续使用此导入功能，CHIRP 将使用 %(file)s 中的存储替换当前打开文件中的所有存储。您想要打开此文件以复制/粘贴记忆，还是继续导入？"
 
-#: ../wxui/memedit.py:1744
+#: ../wxui/memedit.py:1749
 msgid "This Memory"
 msgstr "该内容"
 
@@ -2680,11 +2746,11 @@ msgstr "此驱动程序正在开发中，应被视为实验性的。"
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr "此镜像缺少固件信息。可能是使用旧版或修改版的 CHIRP 生成的。建议您从电台下载一个新镜像，并将其用于以后的最佳安全性和兼容性。"
 
-#: ../wxui/main.py:1590
+#: ../wxui/main.py:1598
 msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"
 msgstr "这是一个实时模式电台，这意味着更改将实时发送到电台。不需要上传！"
 
-#: ../wxui/main.py:1596
+#: ../wxui/main.py:1604
 msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
 msgstr "这是一个与电台无关的文件，不能直接上传到电台。打开一个电台镜像（或从电台下载一个），然后将此选项卡中的项目复制/粘贴到该选项卡中，以便上传"
 
@@ -2726,11 +2792,11 @@ msgstr ""
 msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
 msgstr "这是 chirpmyradio.com 网站上已创建问题的票号"
 
-#: ../wxui/memedit.py:1748
+#: ../wxui/memedit.py:1753
 msgid "This memory and shift all up"
 msgstr "此存储并上移所有"
 
-#: ../wxui/memedit.py:1746
+#: ../wxui/memedit.py:1751
 msgid "This memory and shift block up"
 msgstr "此存储并上移区块"
 
@@ -2759,7 +2825,7 @@ msgstr "只有当您使用了扩频的修改固件时才应启用此选项。启
 msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
 msgstr "此工具将向 CHIRP 跟踪器上的现有问题上传有关您的系统的详细信息。为了正常工作，它需要您在 chirpmyradio.com 上的用户名和密码。将上传有关您的系统的信息，包括调试日志、配置文件和任何打开的镜像文件。在发送之前，我们将尝试删除任何个人信息。"
 
-#: ../wxui/developer.py:575
+#: ../wxui/developer.py:580
 msgid "This will load a module from a website issue"
 msgstr "这将从网站 issue 中加载一个模块"
 
@@ -2807,25 +2873,25 @@ msgstr "TSQL 模式下的发射/接收亚音频，否则为接收亚音频"
 msgid "Tuning Step"
 msgstr "调谐间隔"
 
-#: ../wxui/clone.py:464 ../wxui/clone.py:471 ../wxui/clone.py:482
-#: ../wxui/clone.py:490 ../wxui/clone.py:494
+#: ../wxui/clone.py:465 ../wxui/clone.py:472 ../wxui/clone.py:483
+#: ../wxui/clone.py:491 ../wxui/clone.py:495
 msgid "USB Port Finder"
 msgstr "USB 端口查找器"
 
-#: ../wxui/clone.py:480
+#: ../wxui/clone.py:481
 msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr "无法确定您的电缆端口。检查您的驱动程序和连接。"
 
-#: ../wxui/memedit.py:1473
+#: ../wxui/memedit.py:1478
 msgid "Unable to edit memory before radio is loaded"
 msgstr "无法在加载电台之前编辑存储器"
 
-#: ../wxui/main.py:1283
+#: ../wxui/main.py:1288
 #, python-format
 msgid "Unable to find stock config %r"
 msgstr "无法找到预设配置 %r"
 
-#: ../wxui/memedit.py:1957
+#: ../wxui/memedit.py:1962
 msgid "Unable to import while the view is sorted"
 msgstr "无法在视图排序时导入"
 
@@ -2833,7 +2899,7 @@ msgstr "无法在视图排序时导入"
 msgid "Unable to open the clipboard"
 msgstr "无法打开剪贴板"
 
-#: ../sources/przemienniki.py:46
+#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
 msgid "Unable to query"
 msgstr "无法查询"
 
@@ -2851,15 +2917,15 @@ msgstr "无法在此系统上显示 %s"
 msgid "Unable to set %s on this memory"
 msgstr "无法在此内容上设置 %s"
 
-#: ../wxui/main.py:1600
+#: ../wxui/main.py:1608
 msgid "Unable to upload this file"
 msgstr "无法上传此文件"
 
-#: ../wxui/query_sources.py:698
+#: ../wxui/query_sources.py:925
 msgid "United States"
 msgstr "美国"
 
-#: ../wxui/clone.py:463
+#: ../wxui/clone.py:464
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "拔掉您的电缆（如果需要）然后点击确定"
 
@@ -2877,7 +2943,7 @@ msgstr "更新现有 Bug"
 msgid "Updating bug %s"
 msgstr "正在更新 Bug %s"
 
-#: ../wxui/clone.py:853
+#: ../wxui/clone.py:856
 msgid "Upload instructions"
 msgstr "上传说明"
 
@@ -2885,7 +2951,7 @@ msgstr "上传说明"
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "由于不支持的固件版本，上传被禁用"
 
-#: ../wxui/main.py:1032
+#: ../wxui/main.py:1037
 msgid "Upload to radio"
 msgstr "上传到电台"
 
@@ -2934,15 +3000,15 @@ msgstr "数值必须正好为 %i 位十进制数"
 msgid "Value must be zero or greater"
 msgstr "数值必须为零或更大"
 
-#: ../wxui/memedit.py:2338
+#: ../wxui/memedit.py:2343
 msgid "Values"
 msgstr "数值"
 
-#: ../wxui/clone.py:341
+#: ../wxui/clone.py:342
 msgid "Vendor"
 msgstr "厂商"
 
-#: ../wxui/main.py:993
+#: ../wxui/main.py:998
 msgid "View"
 msgstr "查看"
 
@@ -2950,11 +3016,11 @@ msgstr "查看"
 msgid "WARNING!"
 msgstr "警告！"
 
-#: ../wxui/memedit.py:1559 ../wxui/main.py:1875 ../wxui/bugreport.py:218
+#: ../wxui/main.py:1889 ../wxui/bugreport.py:218 ../wxui/memedit.py:1564
 msgid "Warning"
 msgstr "警告"
 
-#: ../wxui/memedit.py:1558
+#: ../wxui/memedit.py:1563
 #, python-format
 msgid "Warning: %s"
 msgstr "警告：%s"
@@ -2971,11 +3037,15 @@ msgstr "您是否希望 CHIRP 为您安装一个桌面图标？"
 msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
 msgstr "您在过去一周内打开了多个 issue。CHIRP 限制您可以打开的问题数量以避免滥用。如果您确实需要打开另一个问题，请通过网站打开。"
 
-#: ../wxui/clone.py:501
+#: ../wxui/clone.py:502
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
 msgstr "您的基于 Prolific 的 USB 设备将无法工作，除非回滚到旧版本的驱动程序。访问 CHIRP 网站以了解更多关于如何解决此问题的信息？"
 
-#: ../wxui/clone.py:488
+#: ../wxui/query_sources.py:774
+msgid "Your QTH Locator"
+msgstr ""
+
+#: ../wxui/clone.py:489
 msgid "Your cable appears to be on port:"
 msgstr "您的电缆似乎在端口："
 
@@ -2991,11 +3061,11 @@ msgstr "字节"
 msgid "bytes each"
 msgstr "字节每个"
 
-#: ../wxui/main.py:1808
+#: ../wxui/main.py:1822
 msgid "disabled"
 msgstr "已禁用"
 
-#: ../wxui/main.py:1808
+#: ../wxui/main.py:1822
 msgid "enabled"
 msgstr "已启用"
 
@@ -3414,6 +3484,10 @@ msgstr "{bank} 已满"
 
 #~ msgid "Special Channels"
 #~ msgstr "特殊频道"
+
+#, fuzzy
+#~ msgid "Status"
+#~ msgstr "州"
 
 #, python-brace-format
 #~ msgid "The file {name} already exists. Do you want to overwrite it?"

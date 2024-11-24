@@ -873,10 +873,15 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_query_dm, query_dm_item)
         source_menu.Append(query_dm_item)
 
-        query_prz_item = wx.MenuItem(source_menu, wx.NewId(),
-                                     'przemienniki.net')
-        self.Bind(wx.EVT_MENU, self._menu_query_prz, query_prz_item)
-        source_menu.Append(query_prz_item)
+        query_prznet_item = wx.MenuItem(source_menu, wx.NewId(),
+                                        'przemienniki.net')
+        self.Bind(wx.EVT_MENU, self._menu_query_prznet, query_prznet_item)
+        source_menu.Append(query_prznet_item)
+
+        query_przeu_item = wx.MenuItem(source_menu, wx.NewId(),
+                                       'przemienniki.eu')
+        self.Bind(wx.EVT_MENU, self._menu_query_przeu, query_przeu_item)
+        source_menu.Append(query_przeu_item)
 
         radio_menu.Append(wx.MenuItem(radio_menu, wx.ID_SEPARATOR))
 
@@ -1934,8 +1939,11 @@ GNU General Public License for more details."""
     def _menu_query_dm(self, event):
         self._do_network_query(query_sources.DMRMARCQueryDialog)
 
-    def _menu_query_prz(self, event):
-        self._do_network_query(query_sources.PrzemiennikiQueryDialog)
+    def _menu_query_prznet(self, event):
+        self._do_network_query(query_sources.PrzemiennikiNetQueryDialog)
+
+    def _menu_query_przeu(self, event):
+        self._do_network_query(query_sources.PrzemiennikiEuQueryDialog)
 
 
 def display_update_notice(version):

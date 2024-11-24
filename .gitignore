@@ -32,3 +32,5 @@ assets
 .coverage
 chirpwx.spec
 chirp/locale/.files
+# for pycharm IDE
+.idea
