@@ -1494,7 +1494,8 @@ class ChirpMain(wx.Frame):
 
         trans = wx.Translations.Get()
         langs = {fmt_lang(wx.Locale.FindLanguageInfo(code)): code
-                 for code in trans.GetAvailableTranslations('CHIRP')}
+                 for code in trans.GetAvailableTranslations('CHIRP')
+                 if code != 'messages'}
         # This is stupid, but wx.GetSingleChoice does not honor the width
         # parameter. But, we can pad out the automatic selection to get some
         # extra padding in the dialog since we don't otherwise index it.
