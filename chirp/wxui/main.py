@@ -1499,7 +1499,7 @@ class ChirpMain(wx.Frame):
         # parameter. But, we can pad out the automatic selection to get some
         # extra padding in the dialog since we don't otherwise index it.
         choices = ([_('Automatic from system') + ' ' * 30] +
-                   sorted(langs.keys()))
+                   sorted(langs.keys(), key=str.casefold))
         try:
             current = wx.Locale.FindLanguageInfo(
                 CONF.get('force_language', 'prefs'))
