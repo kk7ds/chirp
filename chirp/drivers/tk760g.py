@@ -26,7 +26,7 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
 LOG = logging.getLogger(__name__)
 
 # #### IMPORTANT DATA ##########################################
-# This radios have a span of
+# These radios have a span of
 # 0x00000 - 0x08000 => Radio Memory / Settings data
 # 0x08000 - 0x10000 => FIRMWARE... hum...
 # ##############################################################
@@ -42,7 +42,7 @@ struct {
   u8 tot_rekey;             // x12 TOT Re-key value range(0, 60); off= 0
   u8 unknown1;              // x13 unknown
   u8 tot_reset;             // x14 TOT Re-key value range(0, 60); off= 0
-  u8 unknown2;              // x15 unknowns
+  u8 unknown2;              // x15 unknown
   u8 tot_alert;             // x16 TOT pre alert: range(0,10); 0 = off
   u8 unknown3[7];           // x17-x1d unknown
   u8 sql_level;             // x1e  SQ reference level
@@ -308,9 +308,9 @@ KEYS = {
     0x3d: "Horn alert",
     0x3e: "Selectable QT",                  # Just in updated firmwares (768G)
     0x3f: "2-tone encode",
-    0x40: "Monitor A: open mommentary",
+    0x40: "Monitor A: open momentary",
     0x41: "Monitor B: Open Toggle",
-    0x42: "Monitor C: Carrier mommentary",
+    0x42: "Monitor C: Carrier momentary",
     0x43: "Monitor D: Carrier toggle",
     0x44: "Operator selectable tone",
     0x45: "Redial",
@@ -1035,8 +1035,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
         # frequency
         _mem.rxfreq = mem.freq / 10
 
-        # this are a mystery yet, but so falr there is no impact
-        # whit this default values for new channels
+        # this are a mystery yet, but so far there is no impact
+        # with this default values for new channels
         if int(_mem.rx_unkw) == 0xff:
             _mem.rx_unkw = 0x35
             _mem.tx_unkw = 0x32
