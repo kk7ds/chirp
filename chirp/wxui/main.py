@@ -243,6 +243,7 @@ class ChirpEditorSet(wx.Panel):
         page.selected()
         wx.PostEvent(self, EditorSetChanged(self.GetId(), editorset=self))
 
+    @common.error_proof()
     def save(self, filename=None):
         if filename is None:
             filename = self.filename
