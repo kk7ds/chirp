@@ -840,7 +840,8 @@ class JC8810base(chirp_common.CloneModeRadio):
             val = SKEY2S_VALUES[index]
             obj.set_value(val)
 
-        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470X_BT",
+                          "RT-470"]:
             unwanted = [9, 10, 11, 12]
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 9, 10, 11, 12]
@@ -873,7 +874,8 @@ class JC8810base(chirp_common.CloneModeRadio):
             val = SKEY2L_VALUES[index]
             obj.set_value(val)
 
-        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470X_BT",
+                          "RT-470"]:
             unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 10, 11, 12]
@@ -906,7 +908,8 @@ class JC8810base(chirp_common.CloneModeRadio):
             val = SKEY3S_VALUES[index]
             obj.set_value(val)
 
-        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470X_BT",
+                          "RT-470"]:
             unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
@@ -931,8 +934,8 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset.set_apply_callback(apply_skey3s_listvalue, _settings.skey3_sp)
         basic.append(rset)
 
-        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470", "RT-630",
-                          "RT-495"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470X_BT",
+                          "RT-470", "RT-630", "RT-495"]:
             # Menu 24: PF3 LONG PRESS (RT-470L)
             def apply_skey3l_listvalue(setting, obj):
                 LOG.debug("Setting value: " + str(setting.value) +
@@ -942,7 +945,8 @@ class JC8810base(chirp_common.CloneModeRadio):
                 val = SKEY2L_VALUES[index]
                 obj.set_value(val)
 
-            if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470"]:
+            if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470X_BT",
+                              "RT-470"]:
                 unwanted = [8, 9, 10, 11, 12]
             elif self.MODEL in ["RT-630", "RT-495"]:
                 unwanted = [5, 9, 10, 11, 12]
@@ -973,7 +977,8 @@ class JC8810base(chirp_common.CloneModeRadio):
             val = SKEYTOP_VALUES[index]
             obj.set_value(val)
 
-        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470X_BT",
+                          "RT-470"]:
             unwanted = [8, 9, 10, 11, 12]
         elif self.MODEL in ["UV-A37", "AR-730"]:
             unwanted = [0, 5, 7, 8, 9, 10, 11, 12]
@@ -1007,7 +1012,8 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("ponmsg", "Power On Message", rs)
         basic.append(rset)
 
-        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-630", "RT-495"]:
+        if self.MODEL in ["HI-8811", "RT-470L", "RT-470X", "RT-470X_BT",
+                          "RT-630", "RT-495"]:
             rs = RadioSettingValueList(TAILCODE_LIST,
                                        current_index=_settings.tailcode)
             rset = RadioSetting("tailcode", "Tail Code", rs)
@@ -1126,9 +1132,12 @@ class JC8810base(chirp_common.CloneModeRadio):
         rset = RadioSetting("dtmf.dtmfoff", "DTMF Speed (off)", rs)
         dtmf.append(rset)
 
-        rs = RadioSettingValueList(PTTID_LIST, current_index=_settings.pttid)
-        rset = RadioSetting("pttid", "PTT ID", rs)
-        dtmf.append(rset)
+        # RT470X Plus Bluetooth does not seem to have correct PTTID setting
+        if self.MODEL not in ["RT-470X_BT"]:
+            rs = RadioSettingValueList(
+                PTTID_LIST, current_index=_settings.pttid)
+            rset = RadioSetting("pttid", "PTT ID", rs)
+            dtmf.append(rset)
 
         ani = RadioSettingGroup("ani", "ANI Code List Settings")
         group.append(ani)
@@ -1374,6 +1383,19 @@ class RT470XRadio(RT470LRadio):
         if chirp_common.in_range(mem.freq, [self._AIRBAND]):
             mem.mode = 'AM'
         return mem
+
+
+@directory.register
+class RT470XPlusRadio(RT470XRadio):
+    """Radtel RT-470X Plus BT"""
+    VENDOR = "Radtel"
+    MODEL = "RT-470X_BT"
+    RT470X_ORIG = False  # BT fingerprint will fall automatically here
+
+    # BT version
+    _fingerprint_bt = [b"\x01\x36\x01\x80\x04\x00\x05\x20"  # fw v0.15
+                       ]
+    _fingerprint = _fingerprint_bt
 
 
 @directory.register
