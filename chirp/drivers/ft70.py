@@ -206,6 +206,17 @@ MEM_SETTINGS_FORMAT = """
     unknown8:1;
     } scan_settings_1;
 
+    struct bank_aux {
+      u8 unknown1;
+      u8 max_bank;
+      u8 unknown2;
+      u8 unknown3;
+    };
+    #seekto 0x654;
+    struct bank_aux bank_aux1;
+    #seekto 0x6D4;
+    struct bank_aux bank_aux2;
+
     #seekto 0x06B6;
     struct {
     u8 unknown1:3,
@@ -417,13 +428,30 @@ class FT70BankModel(chirp_common.BankModel):
         for index in range(empty, len(_members.channel)):
             _members.channel[index] = 0xFFFF
 
+        max_bank = -1
+        for index, bank in enumerate(self._radio._memobj.bank_used):
+            if int(bank.in_use) != 0xFFFF:
+                max_bank = max(max_bank, index)
+        LOG.debug('Determined max bank to be %i', max_bank)
+        if max_bank == -1:
+            self._radio._memobj.bank_aux1.fill_raw(b'\xFF')
+            self._radio._memobj.bank_aux2.fill_raw(b'\xFF')
+        else:
+            self._radio._memobj.bank_aux1.fill_raw(b'\x00')
+            self._radio._memobj.bank_aux2.fill_raw(b'\x00')
+            self._radio._memobj.bank_aux1.max_bank = max_bank
+            self._radio._memobj.bank_aux2.max_bank = max_bank
+
     def add_memory_to_mapping(self, memory, bank):
         channels_in_bank = self._channel_numbers_in_bank(bank)
         channels_in_bank.add(memory.number)
-        self._update_bank_with_channel_numbers(bank, channels_in_bank)
 
         _bank_used = self._radio._memobj.bank_used[bank.index]
         _bank_used.in_use = 0x06
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
+        # ~0x655 changes? Highest zero-origin bank used?
+        # First bank used 0x654-0x657 goes FF -> 00
+        # Also change 0x6d5 to match?
 
     def remove_memory_from_mapping(self, memory, bank):
         channels_in_bank = self._channel_numbers_in_bank(bank)
@@ -432,11 +460,11 @@ class FT70BankModel(chirp_common.BankModel):
         except KeyError:
             raise Exception("Memory %i is not in bank %s. Cannot remove" %
                             (memory.number, bank))
-        self._update_bank_with_channel_numbers(bank, channels_in_bank)
 
         if not channels_in_bank:
             _bank_used = self._radio._memobj.bank_used[bank.index]
             _bank_used.in_use = 0xFFFF
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
 
     def get_mapping_memories(self, bank):
         memories = []
