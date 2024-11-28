@@ -289,7 +289,9 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
     @property
     def label(self):
         if self._name == 'offset':
-            return _('Offset')
+            return (_('Offset/\nTX Freq')
+                    if 'split' in self._features.valid_duplexes
+                    else _('Offset'))
         else:
             return _('Frequency')
 
