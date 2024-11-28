@@ -505,6 +505,9 @@ def _clone_to_radio(radio):
             LOG.debug("Waiting for clone result...")
             time.sleep(0.5)
 
+    if radio.ignore_clone_result():
+        return True
+
     if len(frames) == 0:
         raise errors.RadioError("Did not get clone result from radio")
     elif result.cmd != CMD_CLONE_OK:
@@ -807,6 +810,7 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
 
     _model = "\x00\x00\x00\x00"  # 4-byte model string
     _endframe = ""               # Model-unique ending frame
+    _ignore_clone_ok = False
     _ranges = []                 # Ranges of the mmap to send to the radio
     _num_banks = 10              # Most simple Icoms have 10 banks, A-J
     _bank_index_bounds = (0, 99)
@@ -839,6 +843,10 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     def get_endframe(self):
         """Returns the magic clone end frame for this radio"""
         return bytes([util.byte_to_int(x) for x in self._endframe])
+
+    def ignore_clone_result(self):
+        """ignore the result of a clone"""
+        return self._ignore_clone_ok
 
     def get_ranges(self):
         """Returns the ranges this radio likes to have in a clone"""
