@@ -75,7 +75,7 @@ def _download(radio):
     status.msg = "Cloning from radio..."
     radio.status_fn(status)
 
-    for block_number in radio.BLOCK_ORDER:
+    for block_number in radio.BLOCK_O_READ:
         if block_number not in memory_map:
             # Memory block not found.
             LOG.error('Block %i (0x%x) not in memory map: %s',
@@ -158,6 +158,10 @@ class UV17(baofeng_uv17Pro.UV17Pro):
 
     MODES = ["FM", "NFM"]
     BLOCK_ORDER = [16, 17, 18, 19,  24, 25, 26, 4, 6]
+
+    # Add extra read blocks (e.g. calibration block 2) to the end here:
+    BLOCK_O_READ = list(BLOCK_ORDER)
+
     MEM_TOTAL = 0x9000
     WRITE_MEM_TOTAL = 0x9000
     BLOCK_SIZE = 0x40
@@ -487,6 +491,14 @@ class UV17(baofeng_uv17Pro.UV17Pro):
         _nam.name = mem.name[:_namelength].ljust(11, '\x00')
 
         self.set_memory_common(mem, _mem)
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.has_bank = False
+        return rf
+
+    def get_mapping_models(self):
+        return []
 
 
 @directory.register
