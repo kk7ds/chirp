@@ -73,9 +73,10 @@ class BaseIcomCloneTest():
     def test_sync_out(self):
         self.radio._mmap = memmap.MemoryMapBytes(
             bytes(b'\x00') * self.radio.get_memsize())
-        self.radio._mmap[50] = bytes(b'abcdefgh')
+        start = self.radio._ranges[0][0]
+        self.radio._mmap[start] = bytes(b'abcdefgh')
         self.radio.sync_out()
-        self.assertEqual(b'abcdefgh', self.simulator._memory[50:58])
+        self.assertEqual(b'abcdefgh', self.simulator._memory[start:start + 8])
 
 
 class TestRawRadioData(unittest.TestCase):
