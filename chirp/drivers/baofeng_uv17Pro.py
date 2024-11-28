@@ -37,8 +37,6 @@ MSTRING_GM5RH = b"PROGRAMBFGMRS05U"
 MSTRING_BFF8HPPRO = b"PROGRAMBF5RTECHU"
 
 DTMF_CHARS = "0123456789 *#ABCD"
-STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
-LIST_STEPS = ["2.5", "5.0", "6.25", "10.0", "12.5", "20.0", "25.0", "50.0"]
 
 LIST_AB = ["A", "B"]
 LIST_BANDWIDTH = ["Wide", "Narrow"]
@@ -271,6 +269,9 @@ class UV17Pro(bfc.BaofengCommonHT):
     _vhf2_range = (200000000, 260000000)
     _uhf_range = (400000000, 520000000)
     _uhf2_range = (350000000, 390000000)
+
+    STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
+    LIST_STEPS = ["2.5", "5.0", "6.25", "10.0", "12.5", "20.0", "25.0", "50.0"]
 
     VALID_BANDS = [_vhf_range, _vhf2_range,
                    _uhf_range]
@@ -966,20 +967,22 @@ class UV17Pro(bfc.BaofengCommonHT):
                                                 current_index=val))
         vfoB.append(rs)
 
-        if _mem.vfo.a.step >= len(STEPS):
+        if _mem.vfo.a.step >= len(self.STEPS):
             val = 0
         else:
             val = _mem.vfo.a.step
         rs = RadioSetting("vfo.a.step", "Tuning Step",
-                          RadioSettingValueList(LIST_STEPS, current_index=val))
+                          RadioSettingValueList(self.LIST_STEPS,
+                                                current_index=val))
         vfoA.append(rs)
 
-        if _mem.vfo.b.step >= len(STEPS):
+        if _mem.vfo.b.step >= len(self.STEPS):
             val = 0
         else:
             val = _mem.vfo.b.step
         rs = RadioSetting("vfo.b.step", "Tuning Step",
-                          RadioSettingValueList(LIST_STEPS, current_index=val))
+                          RadioSettingValueList(self.LIST_STEPS,
+                                                current_index=val))
         vfoB.append(rs)
 
         workmode.append(vfoA)
@@ -1145,7 +1148,7 @@ class UV17Pro(bfc.BaofengCommonHT):
         rf.memory_bounds = (1, self.CHANNELS)
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_bands = self.VALID_BANDS
-        rf.valid_tuning_steps = STEPS
+        rf.valid_tuning_steps = self.STEPS
 
         return rf
 
