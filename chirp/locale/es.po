@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-28 08:20-0800\n"
-"PO-Revision-Date: 2024-11-04 20:55-0300\n"
+"PO-Revision-Date: 2024-11-28 22:45-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1175,7 +1175,7 @@ msgstr ""
 "Cliquea en el botón para alternar \"Canales Especiales\" del editor de memoria\n"
 "para ver/establecer los canales EXT. Los canales P-VFO 100-109\n"
 "se consideran Ajustes.\n"
-"Solo un subconjunto de las más de 200 ajustes de radio disponibles\n"
+"Sólo un subconjunto de las más de 200 ajustes de radio disponibles\n"
 "están soportados en este lanzamiento.\n"
 "Ignora los pitidos de la radio al cargar y descargar.\n"
 
@@ -1466,7 +1466,7 @@ msgstr "Controlador experimental"
 
 #: ../wxui/memedit.py:2243
 msgid "Export can only write CSV files"
-msgstr "Exportar solo puede escribir archivos CSV"
+msgstr "Exportar sólo puede escribir archivos CSV"
 
 #: ../wxui/main.py:1390
 msgid "Export to CSV"
@@ -1970,9 +1970,8 @@ msgid "Invalid edit: %s"
 msgstr "Edición inválida: %s"
 
 #: ../wxui/query_sources.py:122
-#, fuzzy
 msgid "Invalid locator"
-msgstr "Entrada inválida"
+msgstr "Localizador inválido"
 
 #: ../wxui/main.py:1727
 msgid "Invalid or unsupported module file"
@@ -2019,9 +2018,8 @@ msgid "Limit Status"
 msgstr "Estado límite"
 
 #: ../wxui/query_sources.py:755
-#, fuzzy
 msgid "Limit prefixes"
-msgstr "Modos límite"
+msgstr "Limitar prefijos"
 
 #: ../wxui/query_sources.py:349 ../wxui/query_sources.py:624
 #: ../wxui/query_sources.py:782
@@ -2062,7 +2060,7 @@ msgstr "Cargando ajustes"
 
 #: ../wxui/query_sources.py:108
 msgid "Locator"
-msgstr ""
+msgstr "Localizador"
 
 #: ../wxui/bugreport.py:326
 msgid "Login failed: Check your username and password"
@@ -2199,24 +2197,25 @@ msgid ""
 "Offset/\n"
 "TX Freq"
 msgstr ""
+"Desplazamiento/\n"
+"Frecuencia de TX"
 
 #: ../wxui/query_sources.py:361 ../wxui/query_sources.py:576
 #: ../wxui/query_sources.py:729
 msgid "Only certain bands"
-msgstr "Solo ciertas bandas"
+msgstr "Sólo ciertas bandas"
 
 #: ../wxui/query_sources.py:366
 msgid "Only certain modes"
-msgstr "Solo ciertos modos"
+msgstr "Sólo ciertos modos"
 
 #: ../wxui/query_sources.py:753
-#, fuzzy
 msgid "Only certain prefixes"
-msgstr "Solo ciertos modos"
+msgstr "Sólo ciertos prefijos"
 
 #: ../wxui/main.py:324
 msgid "Only memory tabs may be exported"
-msgstr "Solo pestañas de memorias pueden ser exportadas"
+msgstr "Sólo pestañas de memorias pueden ser exportadas"
 
 #: ../wxui/query_sources.py:587 ../wxui/query_sources.py:740
 msgid "Only working repeaters"
@@ -2268,23 +2267,20 @@ msgid "Optional: 100"
 msgstr "Opcional: 100"
 
 #: ../wxui/query_sources.py:767
-#, fuzzy
 msgid "Optional: 20.0000"
-msgstr "Opcional: -122.0000"
+msgstr "Opcional: 20.0000"
 
 #: ../wxui/query_sources.py:333 ../wxui/query_sources.py:609
 msgid "Optional: 45.0000"
 msgstr "Opcional: 45.0000"
 
 #: ../wxui/query_sources.py:761
-#, fuzzy
 msgid "Optional: 52.0000"
-msgstr "Opcional: 45.0000"
+msgstr "Opcional: 52.0000"
 
 #: ../wxui/query_sources.py:775
-#, fuzzy
 msgid "Optional: AA00 - AA00aa11"
-msgstr "Opcional: -122.0000"
+msgstr "Opcional: AA00 - AA00aa11"
 
 #: ../wxui/query_sources.py:354
 msgid "Optional: County, Hospital, etc."
@@ -2301,7 +2297,7 @@ msgid ""
 "are supported in this release.\n"
 msgstr ""
 "Los canales P-VFO 100-109 se consideran Ajustes.\n"
-"Solo un subconjunto de las más de 130 ajustes de radio disponibles\n"
+"Sólo un subconjunto de las más de 130 ajustes de radio disponibles\n"
 "están soportados en este lanzamiento.\n"
 
 #: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
@@ -2398,7 +2394,7 @@ msgstr "Conecta tu cable y luego haz clic en ACEPTAR"
 
 #: ../wxui/query_sources.py:833
 msgid "Polish repeaters database"
-msgstr ""
+msgstr "Base de datos de repetidores Polacos"
 
 #: ../wxui/clone.py:331
 msgid "Port"
@@ -2410,7 +2406,7 @@ msgstr "Potencia"
 
 #: ../wxui/query_sources.py:821
 msgid "Prefixes"
-msgstr ""
+msgstr "Prefijos"
 
 #: ../wxui/developer.py:140
 msgid "Press enter to set this in memory"
@@ -2434,7 +2430,7 @@ msgstr "Propiedades"
 
 #: ../wxui/query_sources.py:777
 msgid "QTH Locator"
-msgstr ""
+msgstr "Localizador de QTH"
 
 #: ../wxui/main.py:1926
 #, python-format
@@ -2446,9 +2442,8 @@ msgid "Query Source"
 msgstr "Consultar fuente"
 
 #: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
-#, fuzzy
 msgid "Querying"
-msgstr "Consulta %s"
+msgstr "Consultando"
 
 #: ../wxui/memedit.py:539
 msgid "RX DTCS"
@@ -2636,9 +2631,8 @@ msgid "Select a bandplan"
 msgstr "Seleccionar plan de banda"
 
 #: ../wxui/query_sources.py:821
-#, fuzzy
 msgid "Select prefixes"
-msgstr "Seleccionar modos"
+msgstr "Seleccionar prefijos"
 
 #: ../wxui/query_sources.py:325
 msgid "Service"
@@ -3122,7 +3116,7 @@ msgstr "Tu dispositivo USB basado en Prolific no funcionará sin revertir a una 
 
 #: ../wxui/query_sources.py:776
 msgid "Your QTH Locator"
-msgstr ""
+msgstr "Tú localizador de QTH"
 
 #: ../wxui/clone.py:489
 msgid "Your cable appears to be on port:"
