@@ -80,12 +80,15 @@ class TestRepeaterbook(unittest.TestCase):
         self.assertGreater(sum(f.memory_bounds), 20)
 
     @pytest.mark.network
-    def test_get_oregon_gmrs(self):
+    def test_get_california_gmrs(self):
+        self._test_get_gmrs('California')
+
+    def _test_get_gmrs(self, state):
         rb = repeaterbook.RepeaterBook()
         self.assertRaises(IndexError, rb.get_memory, 0)
         rb.do_fetch(mock.MagicMock(), {
             'country': 'United States',
-            'state': 'Oregon',
+            'state': state,
             'lat': 45,
             'lon': -122,
             'dist': 100,

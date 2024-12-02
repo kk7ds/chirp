@@ -270,6 +270,7 @@ class QuerySourceDialog(wx.Dialog):
         return ''
 
     def status(self, status, percent):
+        LOG.debug('[%i] Query dialog status %r', percent, status)
         wx.PostEvent(self, QueryThreadEvent(self.GetId(),
                                             status=status, percent=percent))
 

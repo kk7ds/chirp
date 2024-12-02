@@ -126,7 +126,10 @@ class RepeaterBook(base.NetworkResultRadio):
         if r.status_code != 200:
             if modified:
                 status.send_status('Using cached data', 50)
-            status.send_fail('Got error code %i from server' % r.status_code)
+            status.send_fail('Got error code %i (%s) from server' % (
+                r.status_code, r.reason))
+            LOG.error('Repeaterbook query %r returned %i (%s)',
+                      r.url, r.status_code, r.reason)
             return
         tmp = data_file + '.tmp'
         chunk_size = 8192
@@ -143,6 +146,9 @@ class RepeaterBook(base.NetworkResultRadio):
             results = json.loads(data)
         except Exception as e:
             LOG.exception('Invalid JSON in response: %s' % e)
+            LOG.error('Repeaterbook query %r returned %i',
+                      r.url, r.status_code)
+            LOG.error('Start of data:%s%s', os.linesep, data[:256])
             status.send_fail('RepeaterBook returned invalid response')
             return
 
