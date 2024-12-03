@@ -33,14 +33,14 @@ class TestRepeaterbook(unittest.TestCase):
         shutil.rmtree(self.tempdir)
 
     @pytest.mark.network
-    def test_get_oregon(self):
+    def _test_get_state(self, state, coords=(None, None)):
         rb = repeaterbook.RepeaterBook()
         self.assertRaises(IndexError, rb.get_memory, 0)
         rb.do_fetch(mock.MagicMock(), {
             'country': 'United States',
-            'state': 'Oregon',
-            'lat': 45,
-            'lon': -122,
+            'state': state,
+            'lat': coords[0],
+            'lon': coords[1],
             'dist': 100,
             'openonly': False,
         })
@@ -63,34 +63,21 @@ class TestRepeaterbook(unittest.TestCase):
             raise Exception('Did not find any DV results')
 
     @pytest.mark.network
-    def test_get_wyoming(self):
-        rb = repeaterbook.RepeaterBook()
-        self.assertRaises(IndexError, rb.get_memory, 0)
-        rb.do_fetch(mock.MagicMock(), {
-            'country': 'United States',
-            'state': 'Wyoming',
-            'lat': 45,
-            'lon': -122,
-            'dist': 0,
-            'openonly': False,
-        })
-        m = rb.get_memory(0)
-        self.assertIsInstance(m, chirp_common.Memory)
-        f = rb.get_features()
-        self.assertGreater(sum(f.memory_bounds), 20)
+    def test_get_oregon(self):
+        self._test_get_state('Oregon', (45, -122))
 
     @pytest.mark.network
-    def test_get_california_gmrs(self):
-        self._test_get_gmrs('California')
+    def test_get_california(self):
+        self._test_get_state('California')
 
-    def _test_get_gmrs(self, state):
+    def _test_get_gmrs(self, state, coords=(None, None)):
         rb = repeaterbook.RepeaterBook()
         self.assertRaises(IndexError, rb.get_memory, 0)
         rb.do_fetch(mock.MagicMock(), {
             'country': 'United States',
             'state': state,
-            'lat': 45,
-            'lon': -122,
+            'lat': coords[0],
+            'lon': coords[1],
             'dist': 100,
             'service': 'gmrs',
             'openonly': False,
@@ -99,6 +86,10 @@ class TestRepeaterbook(unittest.TestCase):
         self.assertIsInstance(m, chirp_common.Memory)
         f = rb.get_features()
         self.assertGreater(sum(f.memory_bounds), 1)
+
+    @pytest.mark.network
+    def test_get_california_gmrs(self):
+        self._test_get_gmrs('California')
 
     @pytest.mark.network
     def test_get_australia(self):
