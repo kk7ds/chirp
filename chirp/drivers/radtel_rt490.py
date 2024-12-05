@@ -421,8 +421,8 @@ class RT490Radio(chirp_common.CloneModeRadio):
                (0x3FC0, 0x4000)
               ]
 
-    _valid_chars = chirp_common.CHARSET_ALPHANUMERIC + \
-        "`~!@#$%^&*()-=_+[]\\{}|;':\",./<>?"
+    def filter_name(self, name):
+        return name.encode('gb2312')[:12].decode('gb2312', errors='replace')
 
     if RT490_EXPERIMENTAL:
         # Experimental driver (already heavily tested)
@@ -1084,7 +1084,8 @@ class RT490Radio(chirp_common.CloneModeRadio):
         return top
 
     def get_raw_memory(self, number):
-        return repr(self._memobj.memory[number])
+        return '\n'.join([repr(self._memobj.memory[number]),
+                          repr(self._memobj.memname[number])])
 
     # TODO Add Code when RadioSettingValueString is fixed
     def _get_extra(self, _mem, num):
@@ -1178,8 +1179,14 @@ class RT490Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.name = ''.join([str(c) for c in _nam.name
-                            if ord(str(c)) < 127]).rstrip()
+        try:
+            mem.name = bytes(
+                _nam.name.get_raw()).rstrip(b'\xFF').decode('gb2312')
+        except UnicodeDecodeError:
+            if _nam.name[0].get_raw() != b'\xFF':
+                LOG.error('Unable to decode name buffer %r',
+                          _nam.name.get_raw())
+            mem.name = ''
         mem.freq = int(_mem.rxfreq) * 10
         offset = (int(_mem.txfreq) - int(_mem.rxfreq)) * 10
         if self._is_txinh(_mem) or _mem.tx_enable == 0:
@@ -1235,9 +1242,7 @@ class RT490Radio(chirp_common.CloneModeRadio):
             LOG.debug('Initializing new memory %i' % memidx)
             _mem.set_raw(b'\x00' * 16)
 
-        _nam.name = mem.name.ljust(12, chr(255))  # with xFF pad (mimic factory
-        #                                           behavior)
-
+        _nam.name.set_raw(mem.name.encode('gb2312').ljust(12, b'\xFF')[:12])
         _mem.rxfreq = mem.freq / 10
         _mem.tx_enable = 1
         if mem.duplex == '':
@@ -1322,7 +1327,8 @@ class RT490Radio(chirp_common.CloneModeRadio):
         rf.can_odd_split = True
         rf.has_name = True
         rf.valid_name_length = 12
-        rf.valid_characters = self._valid_chars
+        # We implement filter_name() ourselves
+        rf.valid_characters = ''
         rf.valid_skips = ["", "S"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone", "DTCS->", "->DTCS", "Tone->DTCS",
