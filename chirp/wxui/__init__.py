@@ -83,10 +83,6 @@ def maybe_install_desktop(args, parent):
 
 def chirpmain():
     global CONF
-    import wx
-    # This must be imported before wx.App() to squelch warnings on startup
-    # about duplicate "Windows bitmap file" handlers
-    import wx.richtext
 
     actions = ['upload', 'download', 'query_rr', 'query_mg',
                'query_rb', 'query_dm', 'new']
@@ -140,6 +136,16 @@ def chirpmain():
         config._CONFIG = config.ChirpConfig(args.config_dir)
     CONF = config.get()
 
+    # wxGTK on Wayland seems to have problems. Override GDK_BACKEND to
+    # use X11, unless we were asked not to.
+    # NOTE this needs to happen before we import wx to be effective!
+    if sys.platform == 'linux' and not args.no_linux_gdk_backend:
+        os.putenv('GDK_BACKEND', 'x11')
+
+    import wx
+    # This must be imported before wx.App() to squelch warnings on startup
+    # about duplicate "Windows bitmap file" handlers
+    import wx.richtext
     app = wx.App()
     if args.force_language:
         force_lang = wx.Locale.FindLanguageInfo(args.force_language)
@@ -204,11 +210,6 @@ def chirpmain():
         LOG.warning('Developer mode is enabled')
         from chirp.drivers import fake
         fake.register_fakes()
-
-    # wxGTK on Wayland seems to have problems. Override GDK_BACKEND to
-    # use X11, unless we were asked not to
-    if sys.platform == 'linux' and not args.no_linux_gdk_backend:
-        os.putenv('GDK_BACKEND', 'x11')
 
     app.SetAppName('CHIRP')
     mainwindow = main.ChirpMain(None, title='CHIRP')
