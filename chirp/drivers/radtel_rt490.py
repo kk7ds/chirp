@@ -243,7 +243,7 @@ struct {
 #seekto 0x3F80;             // Hmm hmm
 struct {
   u8 unknown_data_0[16];
-  u8 unknown_data_1;
+  u8 language;
   u8 active;                // Bool radio killed (killed=0, active=1)
   u8 unknown_data_2[46];
 } management_settings;
@@ -1021,6 +1021,14 @@ class RT490Radio(chirp_common.CloneModeRadio):
                            current_index=_mem.settings.powermsg)))
         ret.append(RadioSetting('settings.rx_time', 'Show RX Time',
                    RadioSettingValueBoolean(_mem.settings.rx_time)))
+
+        ret.append(RadioSetting(
+            'management_settings.language',
+            _('Language'),
+            RadioSettingValueList(
+                ['English', 'Chinese'],
+                current_index=_mem.management_settings.language)))
+
         return ret
 
     def _get_memcodes(self):
