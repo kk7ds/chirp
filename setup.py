@@ -13,6 +13,7 @@ setup(name='chirp',
           'requests',
           'yattag',
           'suds',
+          'lark',
       ],
       extras_require={
           'wx': ['wxPython'],

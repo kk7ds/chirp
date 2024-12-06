@@ -34,6 +34,7 @@ from chirp import settings
 from chirp.wxui import config
 from chirp.wxui import common
 from chirp.wxui import developer
+from chirp.wxui import memquery
 
 _ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
@@ -747,6 +748,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._default_cell_bg_color = self._grid.GetCellBackgroundColour(0, 0)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
+        self._filter_query = memquery.SearchBox(self,
+                                                style=wx.TE_PROCESS_ENTER)
+        self._filter_query.Bind(wx.EVT_TEXT_ENTER, self._do_filter_query)
+        sizer.Add(self._filter_query, 0, wx.EXPAND | wx.ALL, border=5)
         sizer.Add(self._grid, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
@@ -786,6 +791,49 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     @property
     def is_sorted(self):
         return self._grid.GetSortingColumn() != wx.NOT_FOUND
+
+    @common.error_proof()
+    def _do_filter_query(self, event=None):
+        filter_str = self._filter_query.GetValue()
+
+        if filter_str:
+            try:
+                mems = self._filter_query.filter_memories(
+                    self._memory_cache.values())
+                rows_to_show = [self.mem2row(m.number)
+                                for m in mems if not m.empty]
+                LOG.debug('Filtering rows for query %r', filter_str)
+            except Exception as e:
+                if filter_str.isalnum():
+                    # Assume simple search string
+                    mems = rows_to_show = None
+                    LOG.debug('Filtering rows for search %r', filter_str)
+                else:
+                    LOG.exception('Parse error: %s', e)
+                    return
+
+        num_rows = self._grid.GetNumberRows()
+        visible = 0
+        for row in range(0, num_rows):
+            if not filter_str.strip():
+                show = True
+            elif mems is None:
+                # Simple search
+                buffer = ''.join(
+                    self._grid.GetCellValue(
+                        row,
+                        self._col_defs.index(self._col_def_by_name(x)))
+                    for x in ['freq', 'name', 'comment'])
+                show = filter_str.lower() in buffer.lower()
+            else:
+                show = row in rows_to_show
+            if show:
+                self._grid.ShowRow(row)
+                visible += 1
+            else:
+                self._grid.HideRow(row)
+        LOG.debug('Showing %i/%i rows', visible, num_rows)
+        self._filter_query.help.Hide()
 
     def _gtk_short_circuit_edit_copy(self, event):
         # wxGTK is broken and does not direct Ctrl-C to the menu items
@@ -1455,6 +1503,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # This needs to be called after we're done here so that the grid's
         # sort/asc attributes are updated
         wx.CallAfter(self.set_cell_attrs)
+        # If we are filtered we need to re-filter after the above refresh
+        wx.CallAfter(self._do_filter_query)
 
     @common.error_proof()
     def _memory_edited(self, event):
@@ -2147,6 +2197,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         selected = self._grid.GetSelectedRows()
         if not selected:
             selected = [self._grid.GetGridCursorRow()]
+        else:
+            # Filter out any rows that aren't actually visible because of
+            # hide-empty or an active filter query
+            selected = [r for r in selected if self._grid.IsRowShown(r)]
         return selected
 
     def cb_move(self, direction):

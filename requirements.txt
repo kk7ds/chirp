@@ -5,3 +5,4 @@ requests
 pywin32; platform_system=="Windows"
 suds
 yattag
+lark
