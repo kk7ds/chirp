@@ -673,38 +673,37 @@ class RT490Radio(chirp_common.CloneModeRadio):
         if dtmf_speed_on > len(self.DTMF_SPEEDS)-1:
             _mem.settings_dtmf.dtmf_speed_on = 0
             LOG.debug('DTMF Speed On overflow')
-        cur = self.DTMF_SPEEDS[dtmf_speed_on]
         dtmf.append(
             RadioSetting(
                 'settings_dtmf.dtmf_speed_on', 'DTMF Speed (on time in ms)',
-                RadioSettingValueList(self.DTMF_SPEEDS, cur)))
+                RadioSettingValueList(self.DTMF_SPEEDS,
+                                      current_index=dtmf_speed_on)))
         # DTMF Speed (on time in ms)
         dtmf_speed_off = int(_mem.settings_dtmf.dtmf_speed_off)
         if dtmf_speed_off > len(self.DTMF_SPEEDS)-1:
             _mem.settings_dtmf.dtmf_speed_off = 0
             LOG.debug('DTMF Speed Off overflow')
-        cur = self.DTMF_SPEEDS[dtmf_speed_off]
         dtmf.append(
             RadioSetting(
                 'settings_dtmf.dtmf_speed_off', 'DTMF Speed (off time in ms)',
-                RadioSettingValueList(self.DTMF_SPEEDS, cur)))
+                RadioSettingValueList(self.DTMF_SPEEDS,
+                                      current_index=dtmf_speed_off)))
         # PTT ID
         pttid = int(_mem.settings_dtmf.pttid)
         if pttid > len(self.PTTID)-1:
             _mem.settings_dtmf.pttid = 0
             LOG.debug('PTT ID overflow')
-        cur = self.PTTID[pttid]
         dtmf.append(
             RadioSetting(
                 'settings_dtmf.pttid', 'Send DTMF Code (PTT ID)',
-                RadioSettingValueList(self.PTTID, cur)))
+                RadioSettingValueList(self.PTTID, current_index=pttid)))
         # PTT ID Delay
         pttiddelay = int(_mem.settings.pttiddelay)
         if pttiddelay > len(self.PTTIDDELAYS)-1:
             _mem.settings.pttiddelay = 0
             LOG.debug('PTT ID  Delay overflow')
-        cur = self.PTTIDDELAYS[pttiddelay]
-        rsvl = RadioSettingValueList(self.PTTIDDELAYS, cur)
+        rsvl = RadioSettingValueList(self.PTTIDDELAYS,
+                                     current_index=pttiddelay)
         dtmf.append(RadioSetting('settings.pttiddelay',
                     'PTT ID Delay', rsvl))
         rsvl = RadioSettingValueList(self.DTMFSTLIST,
@@ -778,7 +777,7 @@ class RT490Radio(chirp_common.CloneModeRadio):
         chanwidth = ['Wide', 'Narrow']
         rsvl = RadioSettingValueList(
             chanwidth,
-            int(bool(_mem.settings_vfo['vfo_'+chan.lower()].narrow)))
+            current_index=int(_mem.settings_vfo['vfo_'+chan.lower()].narrow))
         ret.append(RadioSetting('settings_vfo.vfo_%s.narrow' % chan.lower(),
                                 'Wide / Narrow', rsvl))
         rsvl = RadioSettingValueList(self.TUNING_STEPS_LIST,
