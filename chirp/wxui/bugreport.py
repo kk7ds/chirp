@@ -84,16 +84,16 @@ def prepare_report(chirpmain):
     LOG.debug('Capturing config file %s stamped %s', conf_fn,
               datetime.datetime.fromtimestamp(
                   os.stat(conf_fn).st_mtime).isoformat())
-    with open(conf_fn) as f:
+    with open(conf_fn, 'rb') as f:
         config_lines = f.readlines()
     clean_lines = []
     for line in list(config_lines):
-        if 'password' in line:
-            key, value = line.split('=', 1)
-            value = '***REDACTED***'
-            line = '%s = %s' % (key.strip(), value)
+        if b'password' in line:
+            key, value = line.split(b'=', 1)
+            value = b'***REDACTED***'
+            line = b'%s = %s' % (key.strip(), value)
         clean_lines.append(line.strip())
-    manifest['files']['config.txt'] = '\n'.join(clean_lines)
+    manifest['files']['config.txt'] = b'\n'.join(clean_lines)
 
     # Attach the currently-open file
     editor = chirpmain.current_editorset
@@ -122,7 +122,7 @@ def prepare_report(chirpmain):
     # Snapshot debug log last
     if logger.Logger.instance.has_debug_log_file:
         tmp = common.temporary_debug_log()
-        with open(tmp) as f:
+        with open(tmp, 'rb') as f:
             manifest['files']['debug_log.txt'] = f.read()
         tmpf = tempfile.mktemp('.config', 'chirp')
 
