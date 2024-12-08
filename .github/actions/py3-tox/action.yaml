@@ -2,11 +2,11 @@ name: Python3 tox runner
 description: Runs tox py3 targets
 inputs:
   tox_target:
+    description: "The tox target to run"
     required: true
-    type: string
   py_version:
+    description: "The python version to use"
     required: false
-    type: string
     default: '3'
 
 runs:
