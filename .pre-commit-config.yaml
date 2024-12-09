@@ -1,23 +1,43 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v3.2.0
-  hooks:
-  - id: trailing-whitespace
-    exclude_types:
-      - binary
-    exclude: \.img$
-  - id: end-of-file-fixer
-    exclude_types:
-      - binary
-    exclude: \.img$
-  - id: check-yaml
-- repo: local
-  hooks:
-    - id: pep8
-      verbose: true
-      name: pep8
-      entry: env PATH=.tox/style/bin python tools/cpep8.py
-      files: \.py$
-      language: python
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude_types:
+          - binary
+        exclude: \.img$
+      - id: end-of-file-fixer
+        exclude_types:
+          - binary
+        exclude: \.img$
+      - id: check-yaml
+  - repo: local
+    hooks:
+      - id: pep8
+        verbose: true
+        name: pep8
+        entry: env PATH=.tox/style/bin python tools/cpep8.py
+        files: \.py$
+        language: python
+  - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+    rev: 0.2.3
+    hooks:
+      - id: yamlfmt
+        args: [--mapping, "2", --offset, "2", --sequence, "4", --implicit_start, --preserve-quotes]
+        exclude: chirp/share/model_alias_map.yaml$
+  - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.14.0
+    hooks:
+      - id: pretty-format-toml
+        args: [--autofix]
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.30.0
+    hooks:
+      - id: check-github-actions
+      - id: check-github-workflows
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+      - id: check-useless-excludes
