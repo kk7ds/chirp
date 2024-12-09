@@ -242,6 +242,7 @@ class UV17Pro(bfc.BaofengCommonHT):
     _has_voxsw = False
     _has_pilot_tone = False
     _has_send_id_delay = False
+    _has_skey1_short = False
     _has_skey2_short = False
     _scode_offset = 0
     _encrsym = 1
@@ -389,7 +390,8 @@ class UV17Pro(bfc.BaofengCommonHT):
       ul16 vfoscanmax;
       u8 gpsw;
       u8 gpsmode;
-      u8 unknown7[2];
+      u8 key1short;
+      u8 unknown7;
       u8 key2short;
       u8 unknown8[2];
       u8 rstmenu;
@@ -735,12 +737,32 @@ class UV17Pro(bfc.BaofengCommonHT):
                               current_index=_mem.settings.ctsdcsscantype))
         basic.append(rs)
 
+        def getKey1shortIndex(value):
+            key_to_index = {0x07: 0,
+                            0x1C: 1,
+                            0x1D: 2,
+                            0x2D: 3,
+                            0x0A: 4,
+                            0x0C: 5}
+            return key_to_index.get(int(value), 0)
+
+        def apply_Key1short(setting, obj):
+            val = str(setting.value)
+            key_to_index = {'FM': 0x07,
+                            'Scan': 0x1C,
+                            'Search': 0x1D,
+                            'Vox': 0x2D,
+                            'TX Power': 0x0A,
+                            'NOAA': 0x0C}
+            obj.key1short = key_to_index.get(val, 0x07)
+
         def getKey2shortIndex(value):
             key_to_index = {0x07: 0,
                             0x1C: 1,
                             0x1D: 2,
                             0x2D: 3,
-                            0x0A: 4}
+                            0x0A: 4,
+                            0x0C: 5}
             return key_to_index.get(int(value), 0)
 
         def apply_Key2short(setting, obj):
@@ -749,8 +771,18 @@ class UV17Pro(bfc.BaofengCommonHT):
                             'Scan': 0x1C,
                             'Search': 0x1D,
                             'Vox': 0x2D,
-                            'TX Power': 0x0A}
+                            'TX Power': 0x0A,
+                            'NOAA': 0x0C}
             obj.key2short = key_to_index.get(val, 0x07)
+
+        if self._has_skey1_short:
+            rs = RadioSetting("settings.key1short", "Skey1 Short",
+                              RadioSettingValueList(
+                                self.LIST_SKEY2_SHORT,
+                                current_index=getKey1shortIndex(
+                                        _mem.settings.key1short)))
+            rs.set_apply_callback(apply_Key1short, _mem.settings)
+            basic.append(rs)
 
         if self._has_skey2_short:
             rs = RadioSetting("settings.key2short", "Skey2 Short",
@@ -1443,12 +1475,23 @@ class F8HPPro(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "BF-F8HP-PRO"
 
+    # ==========
+    # Notice to developers:
+    # The BF-F8HP-PRO support in this driver is currently based upon v0.33
+    # firmware.
+    # ==========
+
     _magic = MSTRING_BFF8HPPRO
     _magics = [(b"\x46", 16),
                (b"\x4d", 6),
                (b"\x53\x45\x4E\x44\x12\x0D\x0A\x0A\x10\x03\x0D\x02\x11\x0C" +
                 b"\x12\x0A\x11\x06\x04\x0E\x02\x09\x0D\x00\x00", 1)]
     _encrsym = 3
+
+    STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0, 100.0]
+    LIST_STEPS = ["2.5", "5.0", "6.25", "10.0", "12.5", "20.0", "25.0", "50.0",
+                  "100.0"]
+
     VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=8.00),
@@ -1458,11 +1501,11 @@ class F8HPPro(UV17Pro):
     LIST_GPS_UNITS = ['km/h', 'MPH', 'kn']
     LIST_POWERON_DISPLAY_TYPE = ["LOGO", "BATT voltage", "Station ID"]
     LIST_BEEP = ["Off", "On"]
-    LIST_MENU_QUIT_TIME = ["10 sec", "20 sec", "30 sec", "60 sec", "Off"]
+    LIST_MENU_QUIT_TIME = ["Off", "10 sec", "20 sec", "30 sec", "60 sec"]
     LIST_BACKLIGHT_TIMER = ["Always On", "5 sec", "10 sec", "15 sec",
                             "20 sec", "30 sec", "60 sec"]
-    LIST_ID_DELAY = ["%s ms" % x for x in range(0, 1600, 100)]
-    LIST_SKEY2_SHORT = ["FM", "Scan", "Search", "Vox", "TX Power"]
+    LIST_ID_DELAY = ["%s ms" % x for x in range(100, 3100, 100)]
+    LIST_SKEY2_SHORT = ["FM", "Scan", "Search", "Vox", "TX Power", "NOAA"]
     MODES = UV17Pro.MODES + ['AM']
 
     _has_support_for_banknames = True
@@ -1471,6 +1514,7 @@ class F8HPPro(UV17Pro):
     _has_voxsw = True
     _has_pilot_tone = True
     _has_send_id_delay = True
+    _has_skey1_short = True
     _has_skey2_short = True
     _has_voice = False
     _has_when_to_send_aniid = False
