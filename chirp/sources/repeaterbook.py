@@ -167,7 +167,7 @@ class RepeaterBook(base.NetworkResultRadio):
         status.send_status('Download complete', 50)
         return data_file
 
-    def item_to_memory(self, item, number):
+    def item_to_memory(self, item):
         if item.get('D-Star') == 'Yes':
             m = chirp_common.DVMemory()
             m.dv_urcall = 'CQCQCQ'.ljust(8)
@@ -175,7 +175,6 @@ class RepeaterBook(base.NetworkResultRadio):
             m.dv_rpt2call = item.get('Callsign')[:8].ljust(8)
         else:
             m = chirp_common.Memory()
-        m.number = number
         m.freq = chirp_common.parse_freq(item['Frequency'])
         try:
             m.tuning_step = chirp_common.required_step(m.freq)
@@ -281,9 +280,8 @@ class RepeaterBook(base.NetworkResultRadio):
                 continue
             if not included_band(item):
                 continue
-            i += 1
             try:
-                m = self.item_to_memory(item, i)
+                m = self.item_to_memory(item)
             except Exception as e:
                 LOG.warning('Unable to convert repeater %s: %s',
                             item['Rptr ID'], e)
@@ -297,6 +295,8 @@ class RepeaterBook(base.NetworkResultRadio):
                 m.mode = 'FM'
             if modes and m.mode not in modes:
                 continue
+            m.number = i
+            i += 1
             self._memories.append(m)
 
         self.MODEL = '%s %s' % (params.get('country'),
