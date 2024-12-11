@@ -1434,6 +1434,12 @@ class BF5RM(UV17Pro):
 
 
 @directory.register
+class MaxTalkerP15(BF5RM):
+    VENDOR = 'MaxTalker'
+    MODEL = 'P15'
+
+
+@directory.register
 class BFK5Plus(BF5RM):
     VENDOR = "Baofeng"
     MODEL = "K5-Plus"
