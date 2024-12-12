@@ -1,4 +1,4 @@
-Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,Mode,Tstep,Skip,Comment,URCALL,RPT1CALL,RPT2CALL
+Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,Mode,TStep,Skip,Comment,URCALL,RPT1CALL,RPT2CALL
 1,AAR002,159.810000,,0.000000,,88.5,88.5,023,NN,FM,5.00,,,,,
 2,AAR003,159.930000,,0.000000,,88.5,88.5,023,NN,FM,5.00,,,,,
 3,AAR004,160.050000,,0.000000,,88.5,88.5,023,NN,FM,5.00,,,,,
