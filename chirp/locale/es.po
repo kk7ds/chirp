@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-11 10:07-0800\n"
-"PO-Revision-Date: 2024-11-28 22:45-0300\n"
+"PO-Revision-Date: 2024-12-14 00:30-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1202,9 +1202,8 @@ msgid "Close"
 msgstr "Cerrar"
 
 #: ../wxui/memquery.py:151
-#, fuzzy
 msgid "Close String"
-msgstr "Cerrar archivo"
+msgstr "Cerrar cadena"
 
 #: ../wxui/main.py:1034
 msgid "Close file"
@@ -1212,7 +1211,7 @@ msgstr "Cerrar archivo"
 
 #: ../wxui/memquery.py:209
 msgid "Close string value with double-quote (\")"
-msgstr ""
+msgstr "Cerrar el valor de la cadena con comillas dobles (\")"
 
 #: ../wxui/memedit.py:1855
 #, python-format
@@ -1458,9 +1457,8 @@ msgid "Erased memory %s"
 msgstr "Memoria borrada %s"
 
 #: ../wxui/memquery.py:336
-#, fuzzy
 msgid "Error applying filter"
-msgstr "Error aplicando ajustes"
+msgstr "Error aplicando filtro"
 
 #: ../wxui/settingsedit.py:140
 msgid "Error applying settings"
@@ -1472,35 +1470,35 @@ msgstr "Error comunicándose con la radio"
 
 #: ../wxui/memquery.py:236
 msgid "Example: \"foo\""
-msgstr ""
+msgstr "Ejemplo: \"foo\""
 
 #: ../wxui/memquery.py:244
 msgid "Example: ( expression )"
-msgstr ""
+msgstr "Ejemplo: ( expresión )"
 
 #: ../wxui/memquery.py:238
 msgid "Example: 123"
-msgstr ""
+msgstr "Ejemplo: 123"
 
 #: ../wxui/memquery.py:240
 msgid "Example: 146.52"
-msgstr ""
+msgstr "Ejemplo: 146.52"
 
 #: ../wxui/memquery.py:242
 msgid "Example: AND, OR"
-msgstr ""
+msgstr "Ejemplo: Y, O"
 
 #: ../wxui/memquery.py:250
 msgid "Example: freq<146.0,148.0>"
-msgstr ""
+msgstr "Ejemplo: frec<146.0,148.0>"
 
 #: ../wxui/memquery.py:248
 msgid "Example: name=\"myrepeater"
-msgstr ""
+msgstr "Ejemplo: nombre=\"mirepetidor"
 
 #: ../wxui/memquery.py:246
 msgid "Example: name~\"myrepea\""
-msgstr ""
+msgstr "Ejemplo: nombre~\"mirepe\""
 
 #: ../wxui/query_sources.py:373
 msgid "Exclude private and closed repeaters"
@@ -1583,9 +1581,8 @@ msgid "Filter results with location matching this string"
 msgstr "Filtrar resultados con ubicación coincidiendo esta cadena"
 
 #: ../wxui/memquery.py:270
-#, fuzzy
 msgid "Filter..."
-msgstr "Filtrar"
+msgstr "Filtrar..."
 
 #: ../wxui/main.py:1460
 msgid "Find"
@@ -1601,11 +1598,11 @@ msgstr "Buscar..."
 
 #: ../wxui/memquery.py:155
 msgid "Finish Float"
-msgstr ""
+msgstr "Finalizar flotante"
 
 #: ../wxui/memquery.py:211
 msgid "Finish float value like: 146.52"
-msgstr ""
+msgstr "Finalizar valor flotante como: 146.52"
 
 #: ../wxui/common.py:331
 #, python-format
@@ -2154,7 +2151,7 @@ msgstr "La memoria %i no es borrable"
 #: ../wxui/memquery.py:203
 #, python-format
 msgid "Memory field name (one of %s)"
-msgstr ""
+msgstr "Nombre del campo de memoria (uno de %s)"
 
 #: ../wxui/memedit.py:130
 msgid "Memory label (stored in radio)"
@@ -2230,7 +2227,7 @@ msgstr "¡No hay filas vacías debajo!"
 #: ../wxui/memquery.py:254
 #, python-format
 msgid "No example for %s"
-msgstr ""
+msgstr "No hay ejemplo para %s"
 
 #: ../wxui/developer.py:598
 msgid "No modules found"
@@ -2272,7 +2269,7 @@ msgstr ""
 #: ../wxui/memquery.py:252
 #, python-format
 msgid "One of: %s"
-msgstr ""
+msgstr "Uno de: %s"
 
 #: ../wxui/query_sources.py:362 ../wxui/query_sources.py:577
 #: ../wxui/query_sources.py:730
@@ -2333,7 +2330,7 @@ msgstr "Abrir directorio de configuración original"
 
 #: ../wxui/memquery.py:143
 msgid "Operator"
-msgstr ""
+msgstr "Operador"
 
 #: ../wxui/query_sources.py:340 ../wxui/query_sources.py:616
 msgid "Optional: -122.0000"
@@ -2507,14 +2504,12 @@ msgid "Properties"
 msgstr "Propiedades"
 
 #: ../wxui/memquery.py:139
-#, fuzzy
 msgid "Property Name"
-msgstr "Propiedades"
+msgstr "Nombre de la propiedad"
 
 #: ../wxui/memquery.py:147
-#, fuzzy
 msgid "Property Value"
-msgstr "Propiedades"
+msgstr "Valor de la propiedad"
 
 #: ../wxui/query_sources.py:778
 msgid "QTH Locator"
@@ -2531,16 +2526,15 @@ msgstr "Consultar fuente"
 
 #: ../wxui/memquery.py:330
 msgid "Query string is invalid"
-msgstr ""
+msgstr "La cadena de consulta es inválida."
 
 #: ../wxui/memquery.py:186
-#, fuzzy
 msgid "Query syntax OK"
-msgstr "Consulta %s"
+msgstr "Sintaxis de consulta OK"
 
 #: ../wxui/memquery.py:170
 msgid "Query syntax help"
-msgstr ""
+msgstr "Ayuda de la sintaxis de consulta"
 
 #: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
 msgid "Querying"
@@ -3049,7 +3043,7 @@ msgstr "Paso de sintonización"
 
 #: ../wxui/memquery.py:188
 msgid "Type a simple search string or a formatted query and press enter"
-msgstr ""
+msgstr "Escribe una cadena de búsqueda simple o una consulta formateada y presiona enter"
 
 #: ../wxui/clone.py:465 ../wxui/clone.py:472 ../wxui/clone.py:483
 #: ../wxui/clone.py:491 ../wxui/clone.py:495
@@ -3180,7 +3174,7 @@ msgstr "Valor debe ser cero o superior"
 
 #: ../wxui/memquery.py:206
 msgid "Value to search memory field for"
-msgstr ""
+msgstr "Valor a buscar en el campo de memoria"
 
 #: ../wxui/memedit.py:2399
 msgid "Values"
