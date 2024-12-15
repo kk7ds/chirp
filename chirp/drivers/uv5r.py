@@ -392,7 +392,7 @@ def _do_ident(radio, magic, secondack=True):
     if ack != b"\x06":
         if ack:
             LOG.debug(repr(ack))
-        raise errors.RadioError("Radio did not respond")
+        raise errors.RadioNoContactLikelyK1()
 
     serial.write(b"\x02")
 
@@ -555,7 +555,7 @@ def _ident_radio(radio):
 
     if error:
         raise error
-    raise errors.RadioError("Radio did not respond")
+    raise errors.RadioNoContactLikelyK1()
 
 
 def _do_download(radio):
