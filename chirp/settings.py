@@ -328,7 +328,7 @@ class RadioSettingValueMap(RadioSettingValueList):
                                         "instead of: %s" % str(map_entry))
         user_options = [e[0] for e in map_entries]
         self._mem_vals = [e[1] for e in map_entries]
-        RadioSettingValueList.__init__(self, user_options, user_options[0])
+        RadioSettingValueList.__init__(self, user_options, current_index=0)
         if mem_val is not None:
             self.set_mem_val(mem_val)
         elif user_option is not None:
