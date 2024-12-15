@@ -1039,7 +1039,6 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         return group
 
     def set_settings(self, settings):
-        print(self._memobj.button_assignments)
         for group in settings:
             for button in group:
                 groupKey = group.get_name()
