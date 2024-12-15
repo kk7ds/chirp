@@ -1035,10 +1035,6 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
               RadioSettingValueMap(
                     BUTTON_FUNCTION_LIST,
                     self._memobj.button_assignments[buttonName]))
-            # TODO satisfy above current_index futurewarning. Maybe with:
-            # user_option=next((i for i, (_, value) in \
-            # enumerate(BUTTON_FUNCTION_LIST) \
-            # if value == self._memobj.button_assignments[buttonName]), None)))
             button_assignments.append(rs)
         return group
 
