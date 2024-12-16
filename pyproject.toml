@@ -1,0 +1,10 @@
+[tool.mypy]
+disable_error_code = ["import-untyped", "var-annotated", "import-not-found"]
+exclude = ['chirp/share/*']
+
+[[tool.mypy.overrides]]
+disable_error_code = ["assignment"]
+module = "chirp.drivers.*"
+
+[tool.pytest.ini_options]
+addopts = ["--color=yes", "--disable-warnings", "--self-contained-html"]
