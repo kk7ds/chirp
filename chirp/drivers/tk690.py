@@ -140,12 +140,11 @@ struct {
   char soft_ver[5];
 } properties;
 
-#seekto 0x4090;
+#seekto 0x40A0;
 struct {
   char name[16];
 } grp_names[160];
 
-#seekto 0x4AA0;
 struct {
   char name[16];
 } chs_names[160];
@@ -499,13 +498,14 @@ class Kenwoodx90BankModel(chirp_common.BankModel):
 
     def get_mappings(self):
         banks = []
+        group_name_len = self._radio._group_name_chars
         for i in range(0, self._radio._num_banks):
             # display group number
             bindex = i + 1
             # display name of the channel
-            gname = "%03i" % bindex
+            gname = self._radio.get_group_name(i)
             # assign the channel
-            bank = self._radio._bclass(self, i, gname)
+            bank = self._radio._bclass(self, bindex, gname)
             bank.index = i
             banks.append(bank)
         return banks
@@ -542,6 +542,13 @@ class MemBank(chirp_common.Bank):
     # bank indexes
     index = 0
 
+    def get_name(self):
+        return self._model._radio.get_group_name(self.index)
+
+    def set_name(self, name):
+        self._name = self._model._radio.set_group_name(self.index, name)
+        print(self._name)
+
 
 class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     """Kenwood TK-790 radio base class"""
@@ -553,6 +560,7 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                     chirp_common.PowerLevel("Low", watts=5)]
     MODES = ["NFM", "FM"]  # 12.5 / 25 Khz
     _name_chars = 8
+    _group_name_chars = 8
     # others
     _memsize = MEM_SIZE
     _range = [136000000, 162000000]
@@ -639,6 +647,8 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         # the channel name length is a variable in the radio settings
         self._name_chars = int(self._memobj.settings.ch_name_length)
+        self._group_name_chars = int(self._memobj.settings.grp_name_length)
+
 
     def sync_in(self):
         """Do a download of the radio eeprom"""
@@ -1019,6 +1029,19 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         # update the memmap
         self._fill(0x1480, bl)
         self._fill(0x1600, bb)
+
+    def get_group_name(self, index):
+        if self._memobj.grp_names[index].name.get_raw()[0]==(0xFF):
+            return ""
+        return self._memobj.grp_names[index].name.get_raw()\
+            .decode("ascii")[0:self._group_name_chars]
+    
+    def set_group_name(self, index, name):
+        name = name.upper()
+        formatted_name = "".join([x for x in name[:self._group_name_chars]
+                                  if x in VALID_CHARS]).ljust(16)[:16]
+        self._memobj.grp_names[index].name = formatted_name
+        return formatted_name[:self._group_name_chars]
 
     def get_settings(self):
         """Translate the MEM_FORMAT structs into the UI"""
