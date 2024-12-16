@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import platform
 
 import wx
@@ -24,6 +25,7 @@ from chirp.wxui import config
 from chirp.wxui import memedit
 
 CONF = config.get()
+LOG = logging.getLogger(__name__)
 
 
 if platform.system() == 'Linux':
@@ -73,13 +75,17 @@ class ChirpBankEdit(common.ChirpEditor):
         self._radio = radio
         self._features = radio.get_features()
         self._bankmodel = radio.get_bank_model()
+        if isinstance(self._bankmodel, chirp_common.SpecialBankModelInterface):
+            self._specials = self._bankmodel.get_bankable_specials()
+        else:
+            self._specials = []
 
         self._col_defs = self._setup_columns()
 
         self._grid = memedit.ChirpMemoryGrid(self)
         self._grid.CreateGrid(
             self._features.memory_bounds[1] - self._features.memory_bounds[0] +
-            1, len(self._col_defs))
+            1 + len(self._specials), len(self._col_defs))
         # GridSelectNone only available in >=4.2.0
         if hasattr(wx.grid.Grid, 'GridSelectNone'):
             self._grid.SetSelectionMode(wx.grid.Grid.GridSelectNone)
@@ -143,6 +149,10 @@ class ChirpBankEdit(common.ChirpEditor):
             mem = self._radio.get_memory(i)
             self._refresh_memory(mem)
 
+        for special in self._specials:
+            mem = self._radio.get_memory(special)
+            self._refresh_memory(mem)
+
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=True)
 
     def _setup_columns(self):
@@ -174,10 +184,23 @@ class ChirpBankEdit(common.ChirpEditor):
         return bank + self._meta_cols
 
     def row2mem(self, row):
-        return row + self._features.memory_bounds[0]
+        number = row + self._features.memory_bounds[0]
+        try:
+            return self._memory_cache[number]
+        except KeyError:
+            special = self._specials[row -
+                                     self._features.memory_bounds[1] -
+                                     self._features.memory_bounds[0] - 1]
+            return self._memory_cache[special]
 
     def mem2row(self, mem):
-        return mem - self._features.memory_bounds[0]
+        if mem.extd_number:
+            row = (self._features.memory_bounds[1] -
+                   self._features.memory_bounds[0] +
+                   self._specials.index(mem.extd_number) + 1)
+            return row
+        else:
+            return mem.number - self._features.memory_bounds[0]
 
     def _colheader_mouseover(self, event):
         x = event.GetX()
@@ -223,16 +246,16 @@ class ChirpBankEdit(common.ChirpEditor):
         if isinstance(self._col_defs[col], ChirpBankIndexColumn):
             self._change_memory_index(self.row2mem(row), int(value))
 
-    def _change_memory_index(self, number, index):
+    def _change_memory_index(self, mem, index):
         for i, bank_index in enumerate(self._bank_index_order):
-            if self._grid.GetCellValue(self.mem2row(number),
+            if self._grid.GetCellValue(self.mem2row(mem),
                                        self.bank2col(i)) == BANK_SET_VALUE:
                 member_bank = self._bank_indexes[bank_index]
                 break
         else:
             raise Exception(_('Memory must be in a bank to be edited'))
 
-        self._bankmodel.set_memory_index(self._memory_cache[number],
+        self._bankmodel.set_memory_index(self._memory_cache[mem.number],
                                          member_bank,
                                          index)
 
@@ -253,8 +276,7 @@ class ChirpBankEdit(common.ChirpEditor):
                                         self.col2bank(col),
                                         value != BANK_SET_VALUE)
 
-    def _change_memory_mapping(self, number, bank, present):
-        mem = self._memory_cache[number]
+    def _change_memory_mapping(self, mem, bank, present):
         bank = self._bank_indexes[self._bank_index_order[bank]]
         if present:
             self._bankmodel.add_memory_to_mapping(mem, bank)
@@ -267,16 +289,20 @@ class ChirpBankEdit(common.ChirpEditor):
 
     @common.error_proof()
     def _refresh_memory(self, mem):
-        self._memory_cache[mem.number] = mem
-        self._grid.SetRowLabelValue(self.mem2row(mem.number),
-                                    '%i' % mem.number)
+        self._memory_cache[mem.extd_number or mem.number] = mem
+        self._grid.SetRowLabelValue(self.mem2row(mem),
+                                    mem.extd_number or ('%i' % mem.number))
+        if mem.empty:
+            self._grid.HideRow(self.mem2row(mem))
+        else:
+            self._grid.ShowRow(self.mem2row(mem))
 
         bank_index = None
         member = [bank.get_index()
                   for bank in self._bankmodel.get_memory_mappings(mem)]
         for i, bank in enumerate(self._bank_indexes.values()):
             present = bank.get_index() in member and not mem.empty
-            self._grid.SetCellValue(self.mem2row(mem.number),
+            self._grid.SetCellValue(self.mem2row(mem),
                                     self.bank2col(i),
                                     present and BANK_SET_VALUE or '')
             if present and isinstance(self._bankmodel,
@@ -290,14 +316,14 @@ class ChirpBankEdit(common.ChirpEditor):
             if meta_col.name == 'freq':
                 freq = '' if mem.empty else chirp_common.format_freq(mem.freq)
                 self._grid.SetCellValue(
-                    self.mem2row(mem.number), i, freq)
+                    self.mem2row(mem), i, freq)
             elif meta_col.name == 'name':
                 self._grid.SetCellValue(
-                    self.mem2row(mem.number),
+                    self.mem2row(mem),
                     i, '' if mem.empty else mem.name)
             elif meta_col.name == 'bank_index' and bank_index is not None:
                 self._grid.SetCellValue(
-                    self.mem2row(mem.number),
+                    self.mem2row(mem),
                     i, '' if mem.empty else '%i' % bank_index)
 
 

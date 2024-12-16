@@ -821,6 +821,19 @@ class MappingModelIndexInterface:
         raise NotImplementedError()
 
 
+class SpecialBankModelInterface:
+    """Interface for bank models that include special channels.
+
+    If this is mixed into a BankModel, then any special channels returned by
+    get_bankable_specials() are candidates for parameters where a Memory is
+    used.
+    """
+
+    def get_bankable_specials(self):
+        """Return a list of special names that can be put into banks."""
+        return []
+
+
 class MTOBankModel(BankModel):
     """A bank model where one memory can be in multiple banks at once """
     pass
