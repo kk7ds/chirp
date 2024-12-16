@@ -140,7 +140,7 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
 
         for channel_no in range(0, self._no_channels):
 
-            command = f"AL~EEPEL{channel_no<<6 :04X}R\r\n".encode()
+            command = f"AL~EEPEL{channel_no << 6:04X}R\r\n".encode()
             self.pipe.write(command)
             self.pipe.read(len(command))
             channel_spec = self.pipe.read(128)  # 64 bytes, as hex
@@ -173,7 +173,7 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
         for channel_no in range(0, self._no_channels):
             write_data = self.get_mmap()[channel_no*64:(channel_no+1)*64]
             write_data = codecs.encode(write_data, 'hex').upper()
-            command = f"AL~EEPEL{channel_no<<6 :04X}W".encode(
+            command = f"AL~EEPEL{channel_no << 6:04X}W".encode(
             ) + write_data + b"\r\n"
             LOG.debug(f"COMM: {command}")
             self.pipe.write(command)
