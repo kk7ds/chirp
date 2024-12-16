@@ -117,7 +117,7 @@ class ChirpBankEdit(common.ChirpEditor):
         self._memory_cache = {}
 
         self._grid.Bind(wx.grid.EVT_GRID_CELL_CHANGING, self._cell_changing)
-        self._grid.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self._memory_changed)
+        self._grid.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self._cell_changing)
         self._grid.Bind(wx.grid.EVT_GRID_LABEL_LEFT_DCLICK, self._label_click)
         self._grid.GetGridColLabelWindow().Bind(wx.EVT_MOTION,
                                                 self._colheader_mouseover)
@@ -244,7 +244,7 @@ class ChirpBankEdit(common.ChirpEditor):
         col = event.GetCol()
         value = event.GetString()
         # if index value changed, update memory index
-        if isinstance(self._col_defs[col], ChirpBankIndexColumn):
+        if isinstance(self._col_defs[col], ChirpBankIndexColumn) and value:
             self._change_memory_index(self.row2mem(row), int(value))
         # if activating a checkbox with spacebar, treat it like a click
         elif isinstance(self._col_defs[col], ChirpBankToggleColumn):
@@ -252,6 +252,8 @@ class ChirpBankEdit(common.ChirpEditor):
             self._change_memory_mapping(self.row2mem(row),
                                         self.col2bank(col),
                                         gridCellValue != BANK_SET_VALUE)
+        else:
+            event.Skip()
 
     def _change_memory_index(self, mem, index):
         for i, bank_index in enumerate(self._bank_index_order):
@@ -267,21 +269,6 @@ class ChirpBankEdit(common.ChirpEditor):
                                          index)
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
-
-    @common.error_proof()
-    def _memory_changed(self, event):
-        row = event.GetRow()
-        col = event.GetCol()
-        value = self._grid.GetCellValue(row, col)
-
-        if isinstance(self._col_defs[col], ChirpBankIndexColumn):
-            event.Skip()
-        elif col < self._meta_cols:
-            event.Skip()
-        else:
-            self._change_memory_mapping(self.row2mem(row),
-                                        self.col2bank(col),
-                                        value != BANK_SET_VALUE)
 
     def _change_memory_mapping(self, mem, bank, present):
         bank = self._bank_indexes[self._bank_index_order[bank]]
