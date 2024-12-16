@@ -110,7 +110,7 @@ class ChirpBankEdit(common.ChirpEditor):
 
         self._memory_cache = {}
 
-        self._grid.Bind(wx.grid.EVT_GRID_CELL_CHANGING, self._index_changed)
+        self._grid.Bind(wx.grid.EVT_GRID_CELL_CHANGING, self._cell_changing)
         self._grid.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self._memory_changed)
         self._grid.Bind(wx.grid.EVT_GRID_LABEL_LEFT_DCLICK, self._label_click)
         self._grid.GetGridColLabelWindow().Bind(wx.EVT_MOTION,
@@ -216,12 +216,19 @@ class ChirpBankEdit(common.ChirpEditor):
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=True)
 
     @common.error_proof()
-    def _index_changed(self, event):
+    def _cell_changing(self, event):
         row = event.GetRow()
         col = event.GetCol()
         value = event.GetString()
+        # if index value changed, update memory index
         if isinstance(self._col_defs[col], ChirpBankIndexColumn):
             self._change_memory_index(self.row2mem(row), int(value))
+        # if activating a checkbox with spacebar, treat it like a click
+        elif isinstance(self._col_defs[col], ChirpBankToggleColumn):
+            gridCellValue = self._grid.GetCellValue(row, col)
+            self._change_memory_mapping(self.row2mem(row),
+                                        self.col2bank(col),
+                                        gridCellValue != BANK_SET_VALUE)
 
     def _change_memory_index(self, number, index):
         for i, bank_index in enumerate(self._bank_index_order):
