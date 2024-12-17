@@ -169,7 +169,6 @@ RX_BLOCK_SIZE_M = 16
 MEM_MR = range(1, 11)
 RX_BLOCK_SIZE_H = 32
 MEM_HR = range(0, 0x2000, RX_BLOCK_SIZE_H)
-# define an empty block of data, as it will be used a lot in this code
 EMPTY_BLOCK = b"\xFF" * 256
 EMPTY_L = b"\xFF" * RX_BLOCK_SIZE_L
 EMPTY_H = b"\xFF" * RX_BLOCK_SIZE_H
@@ -234,12 +233,9 @@ def _make_frameh(cmd, addr):
 def _handshake(radio, msg="", full=True):
     """Make a full handshake"""
     if full is True:
-        # send ACK
         radio.pipe.write(ACK_CMD)
 
-    # receive ACK
     ack = radio.pipe.read(1)
-    # check ACK
     if ack != ACK_CMD:
         mesg = "Handshake failed, got ack: '0x%02x': %s" % (ord(ack), msg)
         LOG.debug(mesg)
@@ -307,7 +303,6 @@ def _open_radio(radio):
 
     ack = radio.pipe.read(10)
     if ack == ACK_CMD:
-        # successful acknowledgement
         pass
     elif ack.endswith(b'\xb5\x15\xc5m\xf5\x95\x01') or ack == b'':
         raise errors.RadioError("No response response from radio,"
@@ -321,13 +316,11 @@ def _open_radio(radio):
     rid = radio.pipe.read(10)
 
     if not rid.startswith(radio.TYPE):
-        # bad response, properly close the radio before exception
         LOG.debug("Incorrect model ID:")
         LOG.debug(util.hexprint(rid))
         LOG.debug("expected %s" % radio.TYPE)
         raise errors.RadioError("Radio Model Incorrect")
 
-    # DEBUG
     LOG.debug("Full radio identity string is:\n%s" % util.hexprint(rid))
 
     _handshake(radio)
@@ -342,10 +335,8 @@ def do_download(radio):
     status.msg = ""
     radio.status_fn(status)
 
-    # open the radio
     _open_radio(radio)
 
-    # initialize variables
     data = b""
     memory_index = 0
 
@@ -356,12 +347,10 @@ def do_download(radio):
         if d is False:
             d = EMPTY_L
 
-        # aggregate the data
         data += d
 
-        # UI update
         memory_index += RX_BLOCK_SIZE_L
-        status.cur = memory_index    # update the progress bar
+        status.cur = memory_index
         status.msg = "Cloning from Main MCU (Low mem)..."
         radio.status_fn(status)
 
@@ -373,11 +362,9 @@ def do_download(radio):
             raise errors.RadioError(
                 "Problem receiving short block %d on mid mem" % addr)
 
-        # Aggregate data and hansdhake
         data += d[1:]
         _handshake(radio, "Middle mem ack error")
 
-        # UI update
         memory_index += RX_BLOCK_SIZE_M
         status.cur = memory_index
         status.msg = "Cloning from 'unknown' (mid mem)..."
@@ -390,10 +377,8 @@ def do_download(radio):
         if d is False:
             d = EMPTY_H
 
-        # aggregate the data
         data += d
 
-        # UI update
         memory_index += RX_BLOCK_SIZE_H
         status.cur = memory_index
         status.msg = "Cloning from Head (High mem)..."
@@ -410,10 +395,8 @@ def do_upload(radio):
     status.max = MEM_SIZE
     status.msg = "Getting the radio into program mode."
     radio.status_fn(status)
-    # open the radio
     _open_radio(radio)
 
-    # initialize variables
     memory_index = 0
     img = radio.get_mmap()
 
@@ -435,42 +418,33 @@ def do_upload(radio):
             cs = _checksum(data)
             sdata = _make_framel(b"W", addr) + data + bytes([cs])
 
-        # send the data
         radio.pipe.write(sdata)
 
-        # check ack
         msg = "Bad ACK on low block %04x" % addr
         _handshake(radio, msg, False)
 
-        # UI Update
         memory_index += RX_BLOCK_SIZE_L
-        status.cur = memory_index   # update the progress bar
+        status.cur = memory_index
         status.msg = "Cloning to Main MCU (Low mem)..."
         radio.status_fn(status)
 
     for addr in MEM_MR:
-        # this is the data to write
         data = img[memory_index:memory_index + RX_BLOCK_SIZE_M]
         sdata = _make_framem(b"Y", addr) + b"\x00" + data
 
-        # send it
         radio.pipe.write(sdata)
 
-        # check ack
         msg = "Bad ACK on mid block %04x" % addr
         _handshake(radio, msg, not short)
 
-        # UI Update
         memory_index += RX_BLOCK_SIZE_M
         status.cur = memory_index
         status.msg = "Cloning from middle mem..."
         radio.status_fn(status)
 
     for addr in MEM_HR:
-        # this is the data to write
         data = img[memory_index:memory_index + RX_BLOCK_SIZE_H]
-        # this is the full packet to send
-        sdata = b""
+        # sdata is the full packet to send
 
         # building the data to send
         if data == EMPTY_H:
@@ -480,14 +454,11 @@ def do_upload(radio):
             # normal
             sdata = _make_frameh(b"X", addr) + data
 
-        # send the data
         radio.pipe.write(sdata)
 
-        # check ack
         msg = "Bad ACK on low block %04x" % addr
         _handshake(radio, msg, False)
 
-        # UI Update
         memory_index += RX_BLOCK_SIZE_H
         status.cur = memory_index
         status.msg = "Cloning to Head MCU (high mem)..."
@@ -509,11 +480,8 @@ class Kenwoodx90BankModel(chirp_common.BankModel):
     def get_mappings(self):
         banks = []
         for i in range(0, self._radio._num_banks):
-            # display group number
             bindex = i + 1
-            # display name of the channel
             gname = self._radio.get_group_name(i)
-            # assign the channel
             bank = self._radio._bclass(self, bindex, gname)
             bank.index = i
             banks.append(bank)
@@ -527,7 +495,7 @@ class Kenwoodx90BankModel(chirp_common.BankModel):
             raise Exception("Memory %i not in bank %s. Cannot remove." %
                             (memory.number, bank))
 
-        # We can't "Remove" it for good the kenwood paradigm don't allow it
+        # We can't "Remove" it for good, the kenwood paradigm doesn't allow it
         # instead we move it to bank 0
         self._radio._set_bank(memory.number, 0)
 
@@ -570,7 +538,7 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     MODES = ["NFM", "FM"]  # 12.5 / 25 Khz
     _name_chars = 8
     _group_name_chars = 8
-    # others
+
     _memsize = MEM_SIZE
     _range = [136000000, 162000000]
     _upper = 160
@@ -644,7 +612,6 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         to the identified variant of the radio, and other runtime data"""
         rid = _get_rid(self.get_mmap())
         self._banks = dict()
-        # identify the radio variant and set the environment to correct values
         try:
             self._upper, low, high, self._kind = self.VARIANTS[rid]
             self._range = [low * 1000000, high * 1000000]
@@ -655,7 +622,6 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             raise errors.RadioError(
                 "Wrong Kenwood radio, ID or unknown variant, see LOG output.")
 
-        # the channel name length is a variable in the radio settings
         self._name_chars = int(self._memobj.settings.ch_name_length)
         self._group_name_chars = int(self._memobj.settings.grp_name_length)
         self._head_type = self._memobj.properties.rid.headtype.get_value()
@@ -682,7 +648,6 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
     def _get_bank_struct(self):
         """Parse the bank data in the mem into the self.bank variable"""
-        # Variables
         gl = self._memobj.group_limits
         gb = self._memobj.group_belong
         bank_count = 0
@@ -691,12 +656,10 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             # check for empty banks
             if bg.index == 255 and bg.length == 255:
                 self._banks[bank_count] = list()
-                # increment the bank count
                 bank_count += 1
                 continue
 
             for i in range(0, bg.length):
-                # bank inside this channel
                 position = bg.index + i
                 index = int(gb[position].index)
 
@@ -706,18 +669,14 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                     self._banks[bank_count] = list()
                     self._banks[bank_count].append(index)
 
-            # increment the bank count
             bank_count += 1
 
     def process_mmap(self):
         """Process the memory object"""
-        # load the memobj
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
 
-        # set the vars on the class to the correct ones
         self._set_variant()
 
-        # load the bank data
         self._get_bank_struct()
 
     def load_mmap(self, filename):
@@ -740,7 +699,7 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             chirp_common.CloneModeRadio.save_mmap(self, filename)
 
     def _prep_dat_header(self):
-        # if dat header imported with file
+        # if dat header imported with file, use it
         if self._dat_header_mmap is not None:
             return self._dat_header_mmap
         # otherwise build our own header
@@ -792,25 +751,20 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         _chs_names = self._memobj.chs_names[number-1]
 
-        # Create a high-level memory object to return to the UI
         mem = chirp_common.Memory()
 
-        # Memory number
         mem.number = number
 
         if _mem.get_raw()[0] == 0xFF:
             mem.empty = True
             return mem
 
-        # Freq and offset
         mem.freq = int(_mem.rxfreq) * 10
         # tx freq can be blank
         if _mem.get_raw()[4] == 0xFF:
-            # TX freq not set
             mem.offset = 0
             mem.duplex = "off"
         else:
-            # TX feq set
             offset = (int(_mem.txfreq) * 10) - mem.freq
             if offset < 0:
                 mem.offset = abs(offset)
@@ -821,28 +775,22 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             else:
                 mem.offset = 0
 
-        # name TAG of the channel
         mem.name = str(_chs_names.name).rstrip(" ")[:self._name_chars + 1]
 
-        # power (0 = high, 1 = low)
         mem.power = self.POWER_LEVELS[int(_mem.power)]
 
-        # wide/narrow
         if self.MODEL == "TK-690" and _mem.wide == 1:
             LOG.debug("Invalid bandwidth mode entry found for TK-690. Fixing")
             _mem.wide = 0
         mem.mode = self.MODES[int(_mem.wide)]
 
-        # skip
         mem.skip = SKIP_VALUES[int(_mem.add)]
 
-        # tone data
         rxtone = txtone = None
         txtone = self._decode_tone(_mem.txtone)
         rxtone = self._decode_tone(_mem.rxtone)
         chirp_common.split_tone_decode(mem, txtone, rxtone)
 
-        # Extra
         mem.extra = RadioSettingGroup("extra", "Extra")
 
         bcl = RadioSetting("bcl", "Busy channel lockout",
@@ -866,28 +814,21 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
     def set_memory(self, mem):
         """Set the memory data in the eeprom img from the UI"""
-        # get the eprom representation of this channel
         _mem = self._memobj.memory[mem.number - 1]
         _ch_name = self._memobj.chs_names[mem.number - 1]
 
-        # if empty memory
         if mem.empty:
-            # the channel it self
             _mem.set_raw(b"\xFF" * 16)
 
-            # the name tag
             for byte in _ch_name.name:
                 byte.set_raw(b"\xFF")
 
-            # delete it from the banks
             self._del_channel_from_bank(mem.number)
 
             return
 
-        # frequency
         _mem.rxfreq = mem.freq / 10
 
-        # duplex
         if mem.duplex == "+":
             _mem.txfreq = (mem.freq + mem.offset) / 10
         elif mem.duplex == "-":
@@ -900,25 +841,20 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             _mem.txfreq = mem.freq / 10
             _mem.txdisable = 0
 
-        # tone data
         ((txmode, txtone, txpol), (rxmode, rxtone, rxpol)) = \
             chirp_common.split_tone_encode(mem)
         self._encode_tone(_mem.txtone, txmode, txtone, txpol)
         self._encode_tone(_mem.rxtone, rxmode, rxtone, rxpol)
 
-        # name TAG of the channel
         _ch_name.name = str(mem.name).ljust(16, " ")
 
-        # power, # default power is low  (0 = high, 1 = low)
         if mem.power is None:
             _mem.power = 0
         else:
             self.POWER_LEVELS.index(mem.power)
 
-        # wide/narrow
         _mem.wide = self.MODES.index(mem.mode)
 
-        # scan add property
         _mem.add = SKIP_VALUES.index(mem.skip)
 
         # setting required but unknown value
@@ -979,10 +915,8 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         if b is not None:
             self._del_channel_from_bank(loc, b)
 
-        # adding it
         self._banks[bank].append(loc - 1)
 
-        # if the update was successful, update in the memmap
         self._update_bank_memmap()
 
     def _del_channel_from_bank(self, loc, bank=None):
@@ -995,10 +929,8 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
 
         # in case memory entry isn't saved to any bank, no need to delete:
         if bank is not None:
-            # remove it
             self._banks[bank].pop(self._banks[bank].index(loc - 1))
 
-        # if the delete was successful update in the memmap
         self._update_bank_memmap()
 
     def _update_bank_memmap(self):
@@ -1028,15 +960,13 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                 if cgi == 1:
                     bl += bytes([gbi, len(self._banks[bank])])
 
-                # increment both indexes
                 gbi += 1
                 cgi += 1
 
-        # fill the gaps before write it
+        # fill the gaps before writing
         bb += b"\xff" * 2 * int(self._num_banks - len(bb) / 2)
         bl += b"\xff" * 2 * int(self._num_banks - len(bl) / 2)
 
-        # update the memmap
         self._fill(0x1480, bl)
         self._fill(0x1600, bb)
 
@@ -1062,7 +992,6 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     def validate_name_lengths(self, new_length):
         max_length = self.get_max_combined_name_length()
         if new_length > max_length:
-            # mesg = "Can't be more than %i for this radio" % max_length
             return max_length
         return new_length
 
