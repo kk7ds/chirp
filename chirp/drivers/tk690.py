@@ -24,7 +24,7 @@ import struct
 from chirp import chirp_common, directory, memmap, errors, util, bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
-    RadioSettings, RadioSettingValueMap
+    RadioSettings, RadioSettingValueMap, RadioSettingValueInteger
 LOG = logging.getLogger(__name__)
 
 # Note: the exported .dat files from the official KPG-44D software have a
@@ -134,7 +134,16 @@ struct {
 struct {
   u8 unknown10[10];
   char soft[6];
-  u8 rid[10];
+  struct {
+    char variant[5];
+    u8 unknown1;
+    u8 memorysource;  //0x50 if exported from KPG44D, 0x00 if cloned from radio
+    u8 unknown2:5,
+       headtype:1,    //0 = basic head, 4 = full head
+       unknown3:2;
+    u8 unknown4;
+    u8 unknown5;
+  } rid;
   u8 unknown11[6];
   u8 unknown12[11];
   char soft_ver[5];
@@ -169,6 +178,7 @@ SKIP_VALUES = ["S", ""]
 TONES = chirp_common.TONES
 DTCS_CODES = chirp_common.DTCS_CODES
 OPTSIG_LIST = ["None", "DTMF", "2-Tone 1", "2-Tone 2", "2-Tone 3"]
+HEAD_TYPES = ["Basic", "Full"]
 
 BUTTON_FUNCTION_LIST = [
             ('Aux A', 0), ('Aux B', 1), ('Aux C', 2),
@@ -498,7 +508,6 @@ class Kenwoodx90BankModel(chirp_common.BankModel):
 
     def get_mappings(self):
         banks = []
-        group_name_len = self._radio._group_name_chars
         for i in range(0, self._radio._num_banks):
             # display group number
             bindex = i + 1
@@ -569,6 +578,7 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     _num_banks = 160
     _bclass = MemBank
     _kind = ""
+    _head_type = 0
     FORMATS = [directory.register_format('Kenwood KPG-44D', '*.dat')]
 
     @classmethod
@@ -648,7 +658,7 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         # the channel name length is a variable in the radio settings
         self._name_chars = int(self._memobj.settings.ch_name_length)
         self._group_name_chars = int(self._memobj.settings.grp_name_length)
-
+        self._head_type = self._memobj.properties.rid.headtype.get_value()
 
     def sync_in(self):
         """Do a download of the radio eeprom"""
@@ -1031,11 +1041,11 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         self._fill(0x1600, bb)
 
     def get_group_name(self, index):
-        if self._memobj.grp_names[index].name.get_raw()[0]==(0xFF):
+        if self._memobj.grp_names[index].name.get_raw()[0] == (0xFF):
             return ""
         return self._memobj.grp_names[index].name.get_raw()\
             .decode("ascii")[0:self._group_name_chars]
-    
+
     def set_group_name(self, index, name):
         name = name.upper()
         formatted_name = "".join([x for x in name[:self._group_name_chars]
@@ -1043,18 +1053,83 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         self._memobj.grp_names[index].name = formatted_name
         return formatted_name[:self._group_name_chars]
 
+    def get_max_combined_name_length(self):
+        max_length = 8
+        if self._head_type:  # if full head
+            max_length = 14
+        return max_length
+
+    def validate_name_lengths(self, new_length):
+        max_length = self.get_max_combined_name_length()
+        if new_length > max_length:
+            # mesg = "Can't be more than %i for this radio" % max_length
+            return max_length
+        return new_length
+
+    def apply_both_name_lengths(self, ch_length, grp_length):
+        print("apply ch, grp: "+str(ch_length)+", "+str(grp_length))
+        self._name_chars = ch_length
+        self._group_name_chars = grp_length
+        self._memobj.settings.ch_name_length = ch_length
+        self._memobj.settings.grp_name_length = grp_length
+
+    def apply_ch_name_length(self, new_length):
+        new_length = self.validate_name_lengths(new_length)
+        print("apply ch"+str(new_length))
+        max_length = self.get_max_combined_name_length()
+        self.apply_both_name_lengths(new_length, max_length - new_length)
+
+    def apply_grp_name_length(self, new_length):
+        new_length = self.validate_name_lengths(new_length)
+        print("apply grp"+str(new_length))
+        max_length = self.get_max_combined_name_length()
+        self.apply_both_name_lengths(max_length - new_length, new_length)
+
     def get_settings(self):
         """Translate the MEM_FORMAT structs into the UI"""
+        basic_settings = RadioSettingGroup("basic_settings",
+                                           "Basic Settings")
         button_assignments = RadioSettingGroup("button_assignments",
                                                "Configurable Button Functions")
-        group = RadioSettings(button_assignments)
+        group = RadioSettings(basic_settings, button_assignments)
+        rs = RadioSetting("head_type",
+                          "Type of control-head:",
+                          RadioSettingValueList(
+                              HEAD_TYPES,
+                              current_index=self._memobj.
+                              properties.rid.headtype))
+        rs.set_volatile(True)
+        basic_settings.append(rs)
+
+        ch_len_setting = RadioSettingValueInteger(0,
+                                                  14,
+                                                  self._memobj.settings
+                                                  .ch_name_length)
+
+        rs = RadioSetting("ch_name_length", "Channel Name Length",
+                          ch_len_setting)
+        # rs.set_apply_callback(self.apply_ch_name_length)
+        # rs.set_volatile(True)
+        basic_settings.append(rs)
+
+        grp_len_setting = RadioSettingValueInteger(0,
+                                                   14,
+                                                   self._memobj.settings
+                                                   .grp_name_length)
+
+        rs = RadioSetting("grp_name_length", "Group Name Length",
+                          grp_len_setting)
+        # rs.set_apply_callback(self.apply_grp_name_length)
+        # rs.set_volatile(True)
+        basic_settings.append(rs)
+
         for buttonName in ASSIGNABLE_BUTTONS:
-            _fullHeadWarning = ""
-            if buttonName in FULL_HEAD_ONLY_BUTTONS:
-                _fullHeadWarning = "  (If Equipped)"
+            # don't show full_head buttons if basic head equipped
+            if buttonName in FULL_HEAD_ONLY_BUTTONS and self._head_type == 0:
+                continue
             rs = RadioSetting(
               buttonName,
-              "Configured function for "+buttonName+" button"+_fullHeadWarning,
+              "Configured function for "+buttonName+" button",
               RadioSettingValueMap(
                     BUTTON_FUNCTION_LIST,
                     self._memobj.button_assignments[buttonName]))
@@ -1062,13 +1137,32 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         return group
 
     def set_settings(self, settings):
+        old_ch_len = self._name_chars
+        old_grp_len = self._group_name_chars
+        print("settings!"+str(old_grp_len))
         for group in settings:
             for button in group:
                 groupKey = group.get_name()
                 settingKey = button.get_name()
-                self._memobj[groupKey][settingKey] = \
-                    [value for (key, value) in BUTTON_FUNCTION_LIST
-                        if key == button.value.get_value()][0]
+                if groupKey == "button_assignments":
+                    self._memobj[groupKey][settingKey] = \
+                        [value for (key, value) in BUTTON_FUNCTION_LIST
+                            if key == button.value.get_value()][0]
+                elif groupKey == "basic_settings":
+                    if settingKey == "head_type":
+                        self._memobj.properties.rid.headtype = \
+                            button.value.__int__()
+                        self._head_type = button.value.__int__()
+                    elif settingKey == "ch_name_length":
+                        if button.value.__int__() != old_ch_len:
+                            self.apply_ch_name_length(button.value.__int__())
+                        else:
+                            button.value.set_value(self._name_chars)
+                    elif settingKey == "grp_name_length":
+                        if button.value.__int__() != old_grp_len:
+                            self.apply_grp_name_length(button.value.__int__())
+                        else:
+                            button.value.set_value(self._group_name_chars)
 
 
 @directory.register
