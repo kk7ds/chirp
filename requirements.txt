@@ -1,5 +1,4 @@
-wxPython>=4.0,<4.2.0 ; platform_system=="Linux" # See https://github.com/wxWidgets/Phoenix/issues/2225
-wxPython==4.2.0 ; platform_system!="Linux"
+wxPython>=4.2.1 # Fixes https://github.com/wxWidgets/Phoenix/issues/2225
 pyserial
 requests
 pywin32; platform_system=="Windows"
