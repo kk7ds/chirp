@@ -995,24 +995,14 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             return max_length
         return new_length
 
-    def apply_both_name_lengths(self, ch_length, grp_length):
-        print("apply ch, grp: "+str(ch_length)+", "+str(grp_length))
-        self._name_chars = ch_length
-        self._group_name_chars = grp_length
-        self._memobj.settings.ch_name_length = ch_length
-        self._memobj.settings.grp_name_length = grp_length
-
     def apply_ch_name_length(self, new_length):
         new_length = self.validate_name_lengths(new_length)
         print("apply ch"+str(new_length))
         max_length = self.get_max_combined_name_length()
-        self.apply_both_name_lengths(new_length, max_length - new_length)
-
-    def apply_grp_name_length(self, new_length):
-        new_length = self.validate_name_lengths(new_length)
-        print("apply grp"+str(new_length))
-        max_length = self.get_max_combined_name_length()
-        self.apply_both_name_lengths(max_length - new_length, new_length)
+        self._name_chars = new_length
+        self._group_name_chars = max_length - new_length
+        self._memobj.settings.ch_name_length = new_length
+        self._memobj.settings.grp_name_length = max_length - new_length
 
     def get_settings(self):
         """Translate the MEM_FORMAT structs into the UI"""
@@ -1038,13 +1028,14 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         rs = RadioSetting("ch_name_length", "Channel Name Length",
                           ch_len_setting)
         # rs.set_apply_callback(self.apply_ch_name_length)
-        # rs.set_volatile(True)
+        rs.set_volatile(True)
         basic_settings.append(rs)
 
         grp_len_setting = RadioSettingValueInteger(0,
                                                    14,
                                                    self._memobj.settings
                                                    .grp_name_length)
+        grp_len_setting.set_mutable(False)
 
         rs = RadioSetting("grp_name_length", "Group Name Length",
                           grp_len_setting)
@@ -1053,15 +1044,20 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         basic_settings.append(rs)
 
         for buttonName in ASSIGNABLE_BUTTONS:
-            # don't show full_head buttons if basic head equipped
+            _fullHeadWarning = ""
+            if buttonName in FULL_HEAD_ONLY_BUTTONS:
+                _fullHeadWarning = "  (If Equipped)"
+            button_func_setting = RadioSettingValueMap(
+                    BUTTON_FUNCTION_LIST,
+                    self._memobj.button_assignments[buttonName])
+            # disable configuring full_head buttons if basic head equipped
             if buttonName in FULL_HEAD_ONLY_BUTTONS and self._head_type == 0:
-                continue
+                button_func_setting.set_mutable(False)
+
             rs = RadioSetting(
               buttonName,
-              "Configured function for "+buttonName+" button",
-              RadioSettingValueMap(
-                    BUTTON_FUNCTION_LIST,
-                    self._memobj.button_assignments[buttonName]))
+              "Configured function for "+buttonName+" button"+_fullHeadWarning,
+              button_func_setting)
             button_assignments.append(rs)
         return group
 
@@ -1083,15 +1079,7 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                             button.value.__int__()
                         self._head_type = button.value.__int__()
                     elif settingKey == "ch_name_length":
-                        if button.value.__int__() != old_ch_len:
-                            self.apply_ch_name_length(button.value.__int__())
-                        else:
-                            button.value.set_value(self._name_chars)
-                    elif settingKey == "grp_name_length":
-                        if button.value.__int__() != old_grp_len:
-                            self.apply_grp_name_length(button.value.__int__())
-                        else:
-                            button.value.set_value(self._group_name_chars)
+                        self.apply_ch_name_length(button.value.__int__())
 
 
 @directory.register
