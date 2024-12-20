@@ -31,7 +31,6 @@ class ChirpSettingsEdit(common.ChirpEditor):
 
         self._radio = radio
         self._settings = None
-        self._propgrid = None
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
@@ -85,7 +84,6 @@ class ChirpSettingsEdit(common.ChirpEditor):
 
     def _add_group(self, group, parent=None):
         propgrid = common.ChirpSettingGrid(group, self._group_control)
-        self._propgrid = propgrid
         self.Bind(common.EVT_EDITOR_CHANGED, self._changed, propgrid)
         LOG.debug('Adding page for %s (parent=%s)' % (group.get_shortname(),
                                                       parent))
@@ -174,6 +172,7 @@ class ChirpSettingsEdit(common.ChirpEditor):
             elif isinstance(e, settings.RadioSettingGroup):
                 self._remove_dead_settings(e)
 
+    @common.error_proof()
     def _changed(self, event):
         if not self._apply_settings():
             return
@@ -182,7 +181,7 @@ class ChirpSettingsEdit(common.ChirpEditor):
             self._remove_dead_settings(g)
         self.do_radio(self._set_settings_cb, 'set_settings', settings)
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
-        if self._propgrid.needs_reload:
+        if event.reload:
             LOG.warning('Settings grid needs a reload')
             wx.CallAfter(self._reload)
 
