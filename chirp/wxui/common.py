@@ -473,12 +473,12 @@ class ChirpSettingGrid(wx.Panel):
             else:
                 LOG.info('User made change to %s=%s despite warning',
                          event.GetPropertyName(), event.GetValue())
-        self._needs_reload = setting.volatile
-        if self.needs_reload:
+        if setting.volatile:
             wx.MessageBox(_(
                 'Changing this setting requires refreshing the settings from '
                 'the image, which will happen now.'),
                           _('Refresh required'), wx.OK)
+            self._needs_reload = True
 
         # If we were unspecified or otherwise marked, clear those markings
         self.pg.SetPropertyColoursToDefault(event.GetProperty().GetName())
@@ -488,15 +488,13 @@ class ChirpSettingGrid(wx.Panel):
         return self._group.get_name()
 
     @property
-    def needs_reload(self):
-        return self._needs_reload
-
-    @property
     def propgrid(self):
         return self.pg
 
     def _pg_changed(self, event):
-        wx.PostEvent(self, EditorChanged(self.GetId()))
+        wx.PostEvent(self, EditorChanged(self.GetId(),
+                                         reload=self._needs_reload))
+        self._needs_reload = False
 
     def _get_editor_int(self, setting, value):
         e = wx.propgrid.IntProperty(setting.get_shortname(),
