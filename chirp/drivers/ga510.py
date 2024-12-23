@@ -1138,6 +1138,7 @@ class RadioddityGA510v2(baofeng_uv17.UV17):
 
     MODES = ["FM", "NFM"]
     BLOCK_ORDER = [2, 4, 6, 16, 24]
+    BLOCK_O_READ = list(BLOCK_ORDER)
     MEM_TOTAL = 0x6000
     WRITE_MEM_TOTAL = 0x6000
     BLOCK_SIZE = 0x40
