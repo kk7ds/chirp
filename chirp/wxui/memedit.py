@@ -611,6 +611,9 @@ class ChirpCrossModeColumn(ChirpChoiceColumn):
 
 
 class ChirpSkipColumn(ChirpChoiceColumn):
+    # This is just here so it is marked for translation
+    __TITLE = _('Skip')
+
     @property
     def valid(self):
         return self._features.valid_skips
