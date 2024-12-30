@@ -16,8 +16,7 @@
 import logging
 
 from chirp import chirp_common, directory, errors
-from chirp.drivers.kenwood_live import KenwoodLiveRadio, \
-    command, iserr, NOCACHE
+from chirp.drivers.kenwood_live import KenwoodLiveRadio, iserr, NOCACHE
 
 LOG = logging.getLogger(__name__)
 
@@ -94,7 +93,7 @@ class TS850Radio(KenwoodLiveRadio):
         if number in self._memcache and not NOCACHE:
             return self._memcache[number]
 
-        result = command(self.pipe, *self._cmd_get_memory(number))
+        result = self.command(self.pipe, *self._cmd_get_memory(number))
 
         if result == "N":
             mem = chirp_common.Memory()
@@ -107,7 +106,7 @@ class TS850Radio(KenwoodLiveRadio):
         self._memcache[mem.number] = mem
 
         # check for split frequency operation
-        result = command(self.pipe, *self._cmd_get_split(number))
+        result = self.command(self.pipe, *self._cmd_get_split(number))
         self._parse_split_spec(mem, result)
 
         return mem
@@ -130,7 +129,8 @@ class TS850Radio(KenwoodLiveRadio):
         # Clear out memory contents to prevent errors
         spec = self._make_base_spec(memory, 0)
         spec = "".join(spec)
-        result = command(self.pipe, *self._cmd_set_memory(memory.number, spec))
+        result = self.command(self.pipe,
+                              *self._cmd_set_memory(memory.number, spec))
 
         if iserr(result):
             raise errors.InvalidDataError("Radio refused %i" %
@@ -139,15 +139,16 @@ class TS850Radio(KenwoodLiveRadio):
         # If we have a split set the transmit frequency first.
         if memory.duplex == TS850_DUPLEX[1]:
             spec = "".join(self._make_split_spec(memory))
-            result = command(self.pipe, *self._cmd_set_split(memory.number,
-                                                             spec))
+            result = self.command(self.pipe,
+                                  *self._cmd_set_split(memory.number, spec))
             if iserr(result):
                 raise errors.InvalidDataError("Radio refused %i" %
                                               memory.number)
 
         spec = self._make_mem_spec(memory)
         spec = "".join(spec)
-        result = command(self.pipe, *self._cmd_set_memory(memory.number, spec))
+        result = self.command(self.pipe,
+                              *self._cmd_set_memory(memory.number, spec))
         if iserr(result):
             raise errors.InvalidDataError("Radio refused %i" % memory.number)
 
@@ -155,7 +156,7 @@ class TS850Radio(KenwoodLiveRadio):
         if number not in self._memcache:
             return
 
-        resp = command(self.pipe, *self._cmd_erase_memory(number))
+        resp = self.command(self.pipe, *self._cmd_erase_memory(number))
         if iserr(resp):
             raise errors.RadioError("Radio refused delete of %i" % number)
 

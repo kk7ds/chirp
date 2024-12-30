@@ -85,7 +85,7 @@ def _connect_radio(radio):
     """Determine baud rate and verify radio on-line"""
     global BAUD
     xid = "D710" + radio.SHORT
-    resp = kenwood_live.get_id(radio.pipe)
+    resp = kenwood_live.KenwoodLiveRadio().get_id(radio.pipe)
     BAUD = radio.pipe.baudrate      # As detected by kenwood_live
     LOG.debug("Got [%s] at %i Baud." % (resp, BAUD))
     resp = resp[3:]     # Strip "ID " prefix
