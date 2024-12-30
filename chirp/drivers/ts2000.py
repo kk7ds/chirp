@@ -16,8 +16,7 @@
 import re
 from chirp import chirp_common, directory, util, errors
 from chirp.drivers import kenwood_live
-from chirp.drivers.kenwood_live import KenwoodLiveRadio, \
-    command, iserr, NOCACHE
+from chirp.drivers.kenwood_live import KenwoodLiveRadio, iserr, NOCACHE
 
 TS2000_SSB_STEPS = [1.0, 2.5, 5.0, 10.0]
 TS2000_FM_STEPS = [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
@@ -88,7 +87,7 @@ class TS2000Radio(KenwoodLiveRadio):
         if number not in self._memcache:
             return
 
-        resp = command(self.pipe, *self._cmd_erase_memory(number))
+        resp = self.command(self.pipe, *self._cmd_erase_memory(number))
         if iserr(resp):
             raise errors.RadioError("Radio refused delete of %i" % number)
         del self._memcache[number]
@@ -100,7 +99,7 @@ class TS2000Radio(KenwoodLiveRadio):
         if number in self._memcache and not NOCACHE:
             return self._memcache[number]
 
-        result = command(self.pipe, *self._cmd_get_memory(number))
+        result = self.command(self.pipe, *self._cmd_get_memory(number))
         if result == "N":
             mem = chirp_common.Memory()
             mem.number = number
@@ -113,7 +112,7 @@ class TS2000Radio(KenwoodLiveRadio):
 
         # check for split frequency operation
         if mem.duplex == "" and self._kenwood_split:
-            result = command(self.pipe, *self._cmd_get_split(number))
+            result = self.command(self.pipe, *self._cmd_get_split(number))
             self._parse_split_spec(mem, result)
 
         return mem
@@ -190,13 +189,14 @@ class TS2000Radio(KenwoodLiveRadio):
 
         spec = self._make_mem_spec(memory)
         spec = "".join(spec)
-        r1 = command(self.pipe, *self._cmd_set_memory(memory.number, spec))
+        r1 = self.command(self.pipe,
+                          *self._cmd_set_memory(memory.number, spec))
         if not iserr(r1):
             memory.name = memory.name.rstrip()
             self._memcache[memory.number] = memory
 
             # if we're tuned to the channel, reload it
-            r1 = command(self.pipe, *self._cmd_cur_memory(memory.number))
+            r1 = self.command(self.pipe, *self._cmd_cur_memory(memory.number))
             if not iserr(r1):
                 pattern = re.compile("MC([0-9]{3})")
                 match = pattern.search(r1)
@@ -204,16 +204,17 @@ class TS2000Radio(KenwoodLiveRadio):
                     cur_mem = int(match.group(1))
                     if cur_mem == memory.number:
                         cur_mem = \
-                            command(self.pipe,
-                                    *self._cmd_recall_memory(memory.number))
+                            self.command(
+                                self.pipe,
+                                *self._cmd_recall_memory(memory.number))
         else:
             raise errors.InvalidDataError("Radio refused %i" % memory.number)
 
         # FIXME
         if memory.duplex == "split" and self._kenwood_split:
             spec = "".join(self._make_split_spec(memory))
-            result = command(self.pipe, *self._cmd_set_split(memory.number,
-                                                             spec))
+            result = self.command(self.pipe,
+                                  *self._cmd_set_split(memory.number, spec))
             if iserr(result):
                 raise errors.InvalidDataError("Radio refused %i" %
                                               memory.number)
