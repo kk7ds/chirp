@@ -47,6 +47,7 @@ THF6_MODES = ["FM", "WFM", "AM", "LSB", "USB", "CW"]
 
 
 RADIO_IDS = {
+    "ID007": "TS-790E",
     "ID019": "TS-2000",
     "ID009": "TS-850",
     "ID020": "TS-480_LiveMode",
