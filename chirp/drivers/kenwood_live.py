@@ -272,6 +272,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
 
         spec = self._make_mem_spec(memory)
         spec = ",".join(spec)
+        del self._memcache[memory.number]
         r1 = self.command(self.pipe,
                           *self._cmd_set_memory(memory.number, spec))
         if not iserr(r1) and self._has_name:
@@ -281,7 +282,6 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
                 *self._cmd_set_memory_name(memory.number, memory.name))
             if not iserr(r2):
                 memory.name = memory.name.rstrip()
-                self._memcache[memory.number] = memory.dupe()
             else:
                 raise errors.InvalidDataError("Radio refused name %i: %s" %
                                               (memory.number,
