@@ -45,8 +45,8 @@ parts:
       sudo apt install -y curl
       ver_with_next=$(basename $(curl -H "User-Agent: goldstar611" -Ls -o/dev/null -w '%{url_effective}' https://archive.chirpmyradio.com/download?stream=next))
       ver_without_next=${ver_with_next//next-/}
-      curl -H "User-Agent: goldstar611" -o ${SNAPCRAFT_PART_SRC}/chirp-src.tar.gz https://archive.chirpmyradio.com/chirp_next/${ver_with_next}/chirp-${ver_without_next}.tar.gz
-      tar -xz -C ${SNAPCRAFT_PART_SRC} -f ${SNAPCRAFT_PART_SRC}/chirp-src.tar.gz --strip-components=1
+      curl -H "User-Agent: goldstar611" -o ${SNAPCRAFT_PART_SRC}/chirp.whl https://archive.chirpmyradio.com/chirp_next/${ver_with_next}/chirp-${ver_without_next}-py3-none-any.whl
+      pip install --no-input ${SNAPCRAFT_PART_SRC}/chirp.whl
       # Fix icon
       sed -i 's,Icon=chirp,Icon=${SNAP}/lib/python3.10/site-packages/chirp/share/chirp.svg,g' ${SNAPCRAFT_PART_SRC}/chirp/share/chirp.desktop
       # snap version cannot be longer than 32 characters
@@ -54,12 +54,6 @@ parts:
       SNAP_VERSION="snap-$(date +%Y%m%d)+${TARBALL_SHA_SHORT}"
       craftctl set version="$SNAP_VERSION"
     stage-packages:
-      - python3-requests
-      - python3-serial
-      - python3-six
-      - python3-suds
-      - python3-future
-      - python3-yattag
       - python3-wxgtk4.0
     stage:
       # WORKAROUND: Skip venv from python plugin
