@@ -751,10 +751,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._default_cell_bg_color = self._grid.GetCellBackgroundColour(0, 0)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-        self._filter_query = memquery.SearchBox(self,
-                                                style=wx.TE_PROCESS_ENTER)
-        self._filter_query.Bind(wx.EVT_TEXT_ENTER, self._do_filter_query)
-        sizer.Add(self._filter_query, 0, wx.EXPAND | wx.ALL, border=5)
+        if sys.platform != 'linux':
+            # FIXME: This doesn't work properly on Linux/GTK because the help
+            # window takes over focus from everything and has to be force quit.
+            self._filter_query = memquery.SearchBox(self,
+                                                    style=wx.TE_PROCESS_ENTER)
+            self._filter_query.Bind(wx.EVT_TEXT_ENTER, self._do_filter_query)
+            sizer.Add(self._filter_query, 0, wx.EXPAND | wx.ALL, border=5)
         sizer.Add(self._grid, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
