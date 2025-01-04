@@ -186,17 +186,22 @@ class RadioStream:
 
 
 def decode_model(data):
-    if len(data) != 49:
+    if len(data) == 49:
+        rev = util.byte_to_int(data[5])
+        LOG.info('Radio revision is %i' % rev)
+        comment = data[6:6 + 16]
+        LOG.info('Radio comment is %r' % comment)
+        serial = binascii.unhexlify(data[35:35 + 14])
+        model, b1, b2, u1, s3 = struct.unpack('>HBBBH', serial)
+        serial_num = '%04i%02i%02i%04i' % (model, b1, b2, s3)
+        LOG.info('Radio serial is %r' % serial_num)
+    if len(data) == 56:
+        rev = None
+        comment = data[6:6 + 32]
+        LOG.info('Radio comment is %r' % comment)
+    else:
+        rev = None
         LOG.info('Unable to decode %i-byte model data' % len(data))
-        return None
-    rev = util.byte_to_int(data[5])
-    LOG.info('Radio revision is %i' % rev)
-    comment = data[6:6 + 16]
-    LOG.info('Radio comment is %r' % comment)
-    serial = binascii.unhexlify(data[35:35 + 14])
-    model, b1, b2, u1, s3 = struct.unpack('>HBBBH', serial)
-    serial_num = '%04i%02i%02i%04i' % (model, b1, b2, s3)
-    LOG.info('Radio serial is %r' % serial_num)
     return rev
 
 
