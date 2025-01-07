@@ -703,10 +703,6 @@ HOP_LIST = ["A", "B", "C", "D"]
 SYNC_LIST = ["ON", "OFF"]
 LANG_LIST = ["Chinese", "English"]
 BTV_SAVER_LIST = ["OFF", "1:1", "1:2", "1:3", "1:4"]
-ASTEP_LIST = ["2.50K", "5.00K", "6.25K",
-              "10.00K", "12.00K", "25.00K", "50.00K"]
-BSTEP_LIST = ["2.50K", "5.00K", "6.25K",
-              "10.00K", "12.00K", "25.00K", "50.00K"]
 SCAN_MODE_LIST = ["TO", "CO", "SE"]
 PRIO_LIST = ["Edit", "Busy"]
 SHORT_KEY_LIST = ["None", "FM Radio", "Lamp", "Monitor",
@@ -804,7 +800,6 @@ COLOR_LIST = ["Off", "Blue", "Orange", "Purple"]
 DTMFSPEED_LIST = ["%s ms" % x for x in range(50, 2010, 10)]
 DTMFST_LIST = ["OFF", "DT-ST", "ANI-ST", "DT+ANI"]
 MODE_LIST = ["Channel", "Name", "Frequency"]
-PONMSG_LIST = ["Full", "Message", "Icon"]
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 PTTIDCODE_LIST = ["%s" % x for x in range(1, 16)]
 RTONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
@@ -1053,6 +1048,7 @@ class TDH8(chirp_common.CloneModeRadio):
     _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
                  chirp_common.PowerLevel("Mid",  watts=4.00),
                  chirp_common.PowerLevel("High", watts=8.00)]
+    _ponmsg_list = ["Full", "Message", "Icon"]
 
     @classmethod
     def detect_from_serial(cls, pipe):
@@ -1496,13 +1492,13 @@ class TDH8(chirp_common.CloneModeRadio):
         if self.MODEL != "RT-730":
             rs = RadioSetting("astep", "A Step",
                               RadioSettingValueList(
-                                  ASTEP_LIST,
+                                  STEP_LIST,
                                   current_index=_settings.astep))
             basic.append(rs)
 
             rs = RadioSetting("bstep", "B Step",
                               RadioSettingValueList(
-                                  BSTEP_LIST,
+                                  STEP_LIST,
                                   current_index=_settings.bstep))
             basic.append(rs)
 
@@ -1649,7 +1645,7 @@ class TDH8(chirp_common.CloneModeRadio):
 
             rs = RadioSetting("ponmsg", "Power-On Message",
                               RadioSettingValueList(
-                                  PONMSG_LIST,
+                                  self._ponmsg_list,
                                   current_index=_settings.ponmsg))
             basic.append(rs)
 
@@ -2671,6 +2667,7 @@ class TDH3(TDH8):
     _mem_params = (0x1F2F)
     _tx_power = [chirp_common.PowerLevel("Low",  watts=2.00),
                  chirp_common.PowerLevel("High",  watts=5.00)]
+    _ponmsg_list = ["Off", "Message", "Icon"]
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)
