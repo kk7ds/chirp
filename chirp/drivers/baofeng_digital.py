@@ -471,3 +471,16 @@ class BaofengW31D(BaofengDigital):
     ]
     _serial_id = 0x04
     _proto = PROTO_D
+
+
+@directory.register
+class BaofengBFT20D(BaofengDigital):
+    """Baofeng BF-T20D"""
+    MODEL = 'BF-T20D'
+    VALID_BANDS = [(400000000, 480000000)]
+    POWER_LEVELS = [
+        chirp_common.PowerLevel("Low", watts=0.5),
+        chirp_common.PowerLevel("High", watts=2.00),
+    ]
+    _serial_id = 0x05
+    _proto = PROTO_D
