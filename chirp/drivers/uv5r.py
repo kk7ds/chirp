@@ -2025,12 +2025,16 @@ class TDUV5RRadio(chirp_common.Alias):
     MODEL = "TD-UV5R TriPower"
 
 
+class UV5R8WTri(chirp_common.Alias):
+    VENDOR = "Baofeng"
+    MODEL = "UV-5R 8W TriPower"
+
 @directory.register
 class BaofengBFF8HPRadio(BaofengUV5R):
     VENDOR = "Baofeng"
     MODEL = "BF-F8HP"
     ALIASES = [RT5_TPAlias, ROGA5SAlias, UV5XPAlias, TSTIF8Alias,
-               TenwayUV5RPro, TSTST9Alias, TDUV5RRadio]
+               TenwayUV5RPro, TSTST9Alias, TDUV5RRadio, UV5R8WTri]
     _basetype = BASETYPE_F8HP
     _idents = [UV5R_MODEL_291,
                UV5R_MODEL_A58
