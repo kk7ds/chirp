@@ -299,6 +299,9 @@ class ChirpEditorSet(wx.Panel):
             return
         self._editors.SetSelection(index)
 
+    def selected(self):
+        self.current_editor.selected()
+
     def cb_copy(self, cut=False):
         return self.current_editor.cb_copy(cut=cut)
 
@@ -597,6 +600,7 @@ class ChirpMain(wx.Frame):
         self.Bind(EVT_EDITORSET_CHANGED, self._editor_changed, editorset)
         self.Bind(common.EVT_STATUS_MESSAGE, self._editor_status, editorset)
         self._update_editorset_title(editorset)
+        editorset.selected()
 
     def add_stock_menu(self):
         stock = wx.Menu()
@@ -1096,6 +1100,9 @@ class ChirpMain(wx.Frame):
     def _editor_page_changed(self, event):
         self._editors.GetPage(event.GetSelection())
         self._update_window_for_editor()
+        editors = self._editors.GetPage(event.GetSelection())
+        if editors:
+            editors.selected()
 
     def _editor_changed(self, event):
         self._update_editorset_title(event.editorset)
