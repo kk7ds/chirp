@@ -779,8 +779,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._grid.Bind(wx.grid.EVT_GRID_LABEL_RIGHT_CLICK,
                         self._memory_rclick)
         self._grid.Bind(wx.grid.EVT_GRID_CELL_BEGIN_DRAG, self._memory_drag)
-        if WX_GTK:
-            self._grid.Bind(wx.EVT_KEY_DOWN, self._gtk_short_circuit_edit_copy)
+        self.Bind(wx.EVT_KEY_DOWN, self._keyboard_overrides)
         row_labels = self._grid.GetGridRowLabelWindow()
         row_labels.Bind(wx.EVT_LEFT_DOWN, self._row_click)
         row_labels.Bind(wx.EVT_LEFT_UP, self._row_click)
@@ -841,15 +840,22 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         LOG.debug('Showing %i/%i rows', visible, num_rows)
         self._filter_query.help.Hide()
 
-    def _gtk_short_circuit_edit_copy(self, event):
-        # wxGTK is broken and does not direct Ctrl-C to the menu items
-        # because wx.grid.Grid() tries to implement something for it,
-        # which we don't want. The wxWidgets people say the only way is to
-        # grab it ourselves and direct it appropriately before wx.grid.Grid()
-        # can do it.
-        # https://github.com/wxWidgets/wxWidgets/issues/22625
-        if (event.GetKeyCode() == ord('C') and
-                event.GetModifiers() == wx.MOD_CONTROL):
+    def _keyboard_overrides(self, event):
+        if event.GetKeyCode() in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+            if not self._grid.CanEnableCellControl():
+                return
+            # Make the enter key start/stop editing instead of the default
+            # behavior
+            self._grid.EnableCellEditControl(
+                not self._grid.IsCellEditControlShown())
+        elif (WX_GTK and event.GetKeyCode() == ord('C') and
+              event.GetModifiers() == wx.MOD_CONTROL):
+            # wxGTK is broken and does not direct Ctrl-C to the menu items
+            # because wx.grid.Grid() tries to implement something for it,
+            # which we don't want. The wxWidgets people say the only way is to
+            # grab it ourselves and direct it appropriately before
+            # wx.grid.Grid() can do it.
+            # https://github.com/wxWidgets/wxWidgets/issues/22625
             self.cb_copy(cut=False)
         else:
             event.Skip()
@@ -1981,6 +1987,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
         wx.CallAfter(self._grid.AutoSizeRows, setAsMin=False)
         wx.CallAfter(self._grid.SetRowLabelSize, wx.grid.GRID_AUTOSIZE)
+
+    def selected(self):
+        self._grid.SetFocus()
 
     def cb_copy_getdata(self, cut=False):
         rows = self.get_selected_rows_safe()
