@@ -1042,7 +1042,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   current_index=_settings.sidekey2L))
             basic.append(rs)
 
-        if self.MODEL == "H777H_FRS":
+        if self.MODEL == "H777H_FRS" or self.MODEL == "H777H_PMR":
             rs = RadioSetting("codesw", "Code Switch",
                               RadioSettingValueBoolean(_settings.codesw))
             basic.append(rs)
@@ -1568,3 +1568,16 @@ class H777HFRSRadio(T18Radio):
     _reserved = True
     _frs16 = True
     _pmr = False
+
+
+@directory.register
+class H777HPMRRadio(H777HFRSRadio):
+    """Retevis H777H PMR"""
+    VENDOR = "Retevis"
+    MODEL = "H777H_PMR"  # SKU: A9104K
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=0.500),
+                    chirp_common.PowerLevel("Low", watts=0.500)]
+
+    _frs16 = False
+    _pmr = True
