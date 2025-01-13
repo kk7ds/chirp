@@ -492,14 +492,6 @@ class UV17(baofeng_uv17Pro.UV17Pro):
 
         self.set_memory_common(mem, _mem)
 
-    def get_features(self):
-        rf = super().get_features()
-        rf.has_bank = False
-        return rf
-
-    def get_mapping_models(self):
-        return []
-
 
 @directory.register
 class UV13Pro(UV17):

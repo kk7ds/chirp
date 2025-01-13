@@ -1139,15 +1139,12 @@ class UV17Pro(bfc.BaofengCommonHT):
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
 
-    def get_bank_model(self):
-        return chirp_common.StaticBankModel(self, banks=10)
-
     def get_features(self):
         """Get the radio's features"""
 
         rf = chirp_common.RadioFeatures()
         rf.has_settings = True
-        rf.has_bank = True
+        rf.has_bank = False
         rf.has_tuning_step = False
         rf.can_odd_split = True
         rf.has_name = True
@@ -1415,6 +1412,14 @@ class UV17ProGPS(UV17Pro):
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
     MODES = UV17Pro.MODES + ['AM']
 
+    def get_bank_model(self):
+        return chirp_common.StaticBankModel(self, banks=10)
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.has_bank = True
+        return rf
+
 
 @directory.register
 class BF5RM(UV17Pro):
@@ -1610,6 +1615,14 @@ class F8HPPro(UV17Pro):
                               False, CHARSET_GB2312))
         rs.set_apply_callback(apply_stationid, _nameobj)
         basic.append(rs)
+
+    def get_bank_model(self):
+        return chirp_common.StaticBankModel(self, banks=10)
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.has_bank = True
+        return rf
 
 
 @directory.register
