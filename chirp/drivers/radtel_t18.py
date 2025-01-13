@@ -56,9 +56,10 @@ struct {
 #seekto 0x03C0;
 struct {
     u8 codesw:1,         // Retevis RB29 code switch
+                         // Retevis H777H code switch
        scanmode:1,
        vox:1,            // Retevis RB19 VOX
-       speccode:1,
+       speccode:1,       // Retevis H777H VOX
        voiceprompt:2,
        batterysaver:1,
        beep:1;           // Retevis RB87 vox
@@ -68,6 +69,7 @@ struct {
                          // Retevis RB19 sidekey 2 long
                          // Retevis RT47 sidekey 1 long
                          // Retevis RB87 sidekey 1 long
+                         // Retevis H777H roger
     u8 timeouttimer;
     u8 voxlevel;
     u8 sidekey2S;
@@ -176,10 +178,6 @@ VOICE_LIST = ["Off", "Chinese", "English"]
 VOICE_LIST2 = ["English", "Chinese"]
 VOICE_LIST3 = ["Off", "English", "Chinese"]
 VOICE_LIST4 = ["Chinese", "English"]
-TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
-                     "120 seconds", "150 seconds", "180 seconds",
-                     "210 seconds", "240 seconds", "270 seconds",
-                     "300 seconds"]
 SCANMODE_LIST = ["Carrier", "Time"]
 VOXLEVEL_LIST = ["Off", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 VOXDELAY_LIST = ["0.5 seconds", "1.0 seconds", "1.5 seconds",
@@ -223,6 +221,10 @@ SIDEKEYV8A_LIST = ["Off",
                    "High/Low Power",
                    "Alarm"]
 SIDEKEY87_LIST = ["Scan", "Emergency Alarm"]
+SIDEKEYH777H_LIST = ["Off",
+                     "VOX",
+                     "SCAN",
+                     "Monitor"]
 
 FRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
               462687500, 462712500]
@@ -427,6 +429,11 @@ class T18Radio(chirp_common.CloneModeRadio):
 
     VALID_BANDS = [(400000000, 470000000)]
 
+    TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
+                         "120 seconds", "150 seconds", "180 seconds",
+                         "210 seconds", "240 seconds", "270 seconds",
+                         "300 seconds"]
+
     _magic = b"1ROGRAM"
     _fingerprint = [b"SMP558" + b"\x00\x00"]
     _upper = 16
@@ -434,6 +441,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                    )
     _frs = _frs16 = _murs = _pmr = _gmrs = False
     _echo = False
+    _reserved = False
 
     _ranges = [
         (0x0000, 0x03F0),
@@ -515,6 +523,10 @@ class T18Radio(chirp_common.CloneModeRadio):
         mem = chirp_common.Memory()
 
         mem.number = number
+
+        if self._reserved:
+            _rsvd = _mem.unknown3.get_raw()
+
         mem.freq = int(_mem.rxfreq) * 10
 
         # We'll consider any blank (i.e. 0 MHz frequency) to be empty
@@ -657,23 +669,31 @@ class T18Radio(chirp_common.CloneModeRadio):
         # Get a low-level memory object mapped to the image
         _mem = self._memobj.memory[mem.number - 1]
 
+        if self._reserved:
+            _rsvd = _mem.unknown3.get_raw()
+
         if mem.empty:
-            _mem.set_raw("\xFF" * (_mem.size() // 8))
+            if self._reserved:
+                _mem.set_raw(b"\xFF" * 13 + _rsvd)
+            else:
+                _mem.set_raw(b"\xFF" * (_mem.size() // 8))
 
             return
 
-        if self.MODEL == "BF-V8A" or self.MODEL == "BF-T20FRS":
-            _mem.set_raw("\x00" * 12 + "\x09\xFF\xFF\xFF")
+        if self._reserved:
+            _mem.set_raw(b"\x00" * 13 + _rsvd)
+        elif self.MODEL == "BF-V8A" or self.MODEL == "BF-T20FRS":
+            _mem.set_raw(b"\x00" * 12 + b"\x09\xFF\xFF\xFF")
         elif self.MODEL == "RB29" or self.MODEL == "RB629":
-            _mem.set_raw("\x00" * 12 + "\xF7\xFF\xFF\xFF")
+            _mem.set_raw(b"\x00" * 12 + b"\xF7\xFF\xFF\xFF")
         else:
-            _mem.set_raw("\x00" * 12 + "\xF9\xFF\xFF\xFF")
+            _mem.set_raw(b"\x00" * 12 + b"\xF9\xFF\xFF\xFF")
 
         _mem.rxfreq = mem.freq / 10
 
         if mem.duplex == "off":
             for i in range(0, 4):
-                _mem.txfreq[i].set_raw("\xFF")
+                _mem.txfreq[i].set_raw(b"\xFF")
         elif mem.duplex == "split":
             _mem.txfreq = mem.offset / 10
         elif mem.duplex == "+":
@@ -692,6 +712,8 @@ class T18Radio(chirp_common.CloneModeRadio):
 
         _mem.narrow = 'N' in mem.mode
         _mem.skip = mem.skip == "S"
+
+        _mem.unknown2 = 1
 
         for setting in mem.extra:
             # NOTE: Only three settings right now, all are inverted
@@ -712,7 +734,7 @@ class T18Radio(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("timeouttimer", "Timeout timer",
                           RadioSettingValueList(
-                              TIMEOUTTIMER_LIST,
+                              self.TIMEOUTTIMER_LIST,
                               current_index=_settings.timeouttimer))
         basic.append(rs)
 
@@ -1018,6 +1040,25 @@ class T18Radio(chirp_common.CloneModeRadio):
                               RadioSettingValueList(
                                   SIDEKEY29_LIST,
                                   current_index=_settings.sidekey2L))
+            basic.append(rs)
+
+        if self.MODEL == "H777H_FRS":
+            rs = RadioSetting("codesw", "Code Switch",
+                              RadioSettingValueBoolean(_settings.codesw))
+            basic.append(rs)
+
+            rs = RadioSetting("speccode", "VOX",
+                              RadioSettingValueBoolean(_settings.speccode))
+            basic.append(rs)
+
+            rs = RadioSetting("sidekey2L", "Side Key 2(Long)",
+                              RadioSettingValueList(
+                                  SIDEKEYH777H_LIST,
+                                  current_index=_settings.sidekey2L))
+            basic.append(rs)
+
+            rs = RadioSetting("sidekey2", "Roger",
+                              RadioSettingValueBoolean(_settings.sidekey2))
             basic.append(rs)
 
         return top
@@ -1504,3 +1545,26 @@ class BFT20FRSRadio(T18Radio):
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_T20FRS %
                                      self._mem_params, self._mmap)
+
+
+@directory.register
+class H777HFRSRadio(T18Radio):
+    """Retevis H777H FRS"""
+    VENDOR = "Retevis"
+    MODEL = "H777H_FRS"  # SKU: A9104J
+    ACK_BLOCK = False
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.000),
+                    chirp_common.PowerLevel("Low", watts=0.500)]
+
+    TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
+                         "120 seconds", "150 seconds", "180 seconds"]
+
+    _magic = b"C701RAD"
+    _fingerprint = [b"SMP558" + b"\x02"]
+    _upper = 16
+    _mem_params = (_upper  # number of channels
+                   )
+    _reserved = True
+    _frs16 = True
+    _pmr = False
