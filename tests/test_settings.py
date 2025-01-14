@@ -35,6 +35,9 @@ class TestCaseSettings(base.DriverTest):
             self.assertEqual(a.get_value(), b.get_value(),
                              'Setting value changed from %r to %r' % (
                                  a.get_value(), b.get_value()))
+        except Exception as e:
+            print('Failed %s on %s' % (e, a.get_name()))
+            raise
 
     def test_memory_extra_frozen(self):
         # Find the first non-empty memory and try to set it back as a
