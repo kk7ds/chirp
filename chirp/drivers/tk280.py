@@ -361,8 +361,10 @@ struct {
   char name[10];     // Channel name, 10 chars
   lbcd rxfreq[4];    // rx freq
   lbcd txfreq[4];    // tx freq
-  u8 rx_unkw;        // unknown yet
-  u8 tx_unkw;        // unknown yet
+  u8 unknown_rx:4,
+     rx_step:4;      // rx tuning step
+  u8 unknown_tx:4,
+     tx_step:4;
   ul16 rx_tone;      // rx tone
   ul16 tx_tone;      // tx tone
   u8 unknown23[5];   // unknown yet
@@ -830,6 +832,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         rf.memory_bounds = (1, self._upper)
         rf.has_sub_devices = True
         rf.has_bank = False
+        rf.can_odd_split = True
         return rf
 
     def get_sub_devices(self):
@@ -1719,11 +1722,8 @@ class TKx80Group(KenwoodTKx80):
 
         _mem.rxfreq = mem.freq // 10
 
-        # this are a mistery yet, but so falr there is no impact
-        # whit this default values for new channels
-        if int(_mem.rx_unkw) == 0xff:
-            _mem.rx_unkw = 0x35
-            _mem.tx_unkw = 0x32
+        _mem.unknown_rx = 0x3
+        _mem.unknown_tx = 0x3
 
         if mem.duplex == "+":
             _mem.txfreq = (mem.freq + mem.offset) // 10
@@ -1731,8 +1731,29 @@ class TKx80Group(KenwoodTKx80):
             _mem.txfreq = (mem.freq - mem.offset) // 10
         elif mem.duplex == "off":
             _mem.txfreq.fill_raw(b'\xFF')
-        else:
+        elif mem.duplex == 'split':
             _mem.txfreq = mem.offset // 10
+        else:
+            _mem.txfreq = mem.freq // 10
+
+        step_lookup = {
+            2.5: 0x0,
+            6.25: 0x2,
+            12.5: 0x5,
+            5.0: 0x1,
+        }
+        try:
+            _mem.rx_step = step_lookup[chirp_common.required_step(
+                int(_mem.rxfreq) * 10)]
+        except errors.InvalidDataError:
+            LOG.warning('Unknown step for rx freq, defaulting to 5kHz')
+            _mem.rx_step = 0x1
+        try:
+            _mem.tx_step = step_lookup[chirp_common.required_step(
+                int(_mem.txfreq) * 10)]
+        except errors.InvalidDataError:
+            LOG.warning('Unknown step for tx freq, defaulting to 5kHz')
+            _mem.tx_step = 0x1
 
         ((txmode, txtone, txpol), (rxmode, rxtone, rxpol)) = \
             chirp_common.split_tone_encode(mem)
