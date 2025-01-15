@@ -371,6 +371,14 @@ class ChirpSettingGrid(wx.Panel):
         self.pg.Bind(wx.propgrid.EVT_PG_CHANGED, self._pg_changed)
         self.pg.Bind(wx.EVT_MOTION, self._mouseover)
 
+        self.pg.DedicateKey(wx.WXK_TAB)
+        self.pg.DedicateKey(wx.WXK_RETURN)
+        self.pg.DedicateKey(wx.WXK_UP)
+        self.pg.DedicateKey(wx.WXK_DOWN)
+        self.pg.AddActionTrigger(wx.propgrid.PG_ACTION_EDIT, wx.WXK_RETURN)
+        self.pg.AddActionTrigger(wx.propgrid.PG_ACTION_NEXT_PROPERTY,
+                                 wx.WXK_RETURN)
+
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
         sizer.Add(self.pg, 1, wx.EXPAND)

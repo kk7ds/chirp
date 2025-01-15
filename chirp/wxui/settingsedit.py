@@ -38,9 +38,16 @@ class ChirpSettingsEdit(common.ChirpEditor):
         self._group_control = wx.Treebook(self, style=wx.LB_LEFT)
         self._group_control.GetTreeCtrl().SetMinSize((250, -1))
         sizer.Add(self._group_control, 1, wx.EXPAND)
+        self._group_control.GetTreeCtrl().Bind(wx.EVT_KEY_DOWN,
+                                               self._key)
 
         self._initialized = False
         self._restore_selection = None
+
+    def _key(self, event):
+        if event.GetKeyCode() in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+            self._group_control.GetCurrentPage().SetFocus()
+        event.Skip()
 
     def _initialize(self, job):
         self.stop_wait_dialog()
@@ -52,6 +59,10 @@ class ChirpSettingsEdit(common.ChirpEditor):
             if self._restore_selection is not None:
                 self._group_control.SetSelection(self._restore_selection)
                 self._restore_selection = None
+
+            # Focus the selector after it loads
+            tc = self._group_control.GetTreeCtrl()
+            wx.CallAfter(tc.SetFocus)
 
     def selected(self):
         if not self._initialized:
