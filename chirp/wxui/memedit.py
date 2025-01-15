@@ -674,6 +674,7 @@ class ChirpMemoryDropTarget(wx.DropTarget):
         payload = self.parse_data()
         x, y = self._memedit._grid.CalcUnscrolledPosition(x, y)
         y -= self._memedit._grid.GetColLabelSize()
+        y -= self._memedit._grid.GetPosition()[1]
         row, cell = self._memedit._grid.XYToCell(x, y)
         start_row = self._memedit.mem2row(payload['mems'][0].number)
         if row < 0 or row == start_row:
@@ -703,6 +704,7 @@ class ChirpMemoryDropTarget(wx.DropTarget):
 
         x, y = self._memedit._grid.CalcUnscrolledPosition(x, y)
         y -= self._memedit._grid.GetColLabelSize()
+        y -= self._memedit._grid.GetPosition()[1]
         row, cell = self._memedit._grid.XYToCell(x, y)
         max_row = self._memedit._grid.GetNumberRows()
         if row >= 0:
