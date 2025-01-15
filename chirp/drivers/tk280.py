@@ -1093,6 +1093,72 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
                 'Group %i' % group_number,
                 name, enable, count))
 
+    def _parse_qtdqt(self, v):
+        v = v.upper().strip()
+        if v.startswith('D'):
+            try:
+                val = int(v[1:4])
+                pol = v[4]
+                return 'DTCS', val, pol
+            except (ValueError, IndexError):
+                raise errors.InvalidValueError(
+                    'DCS value must be in the form "D023N"')
+        elif v:
+            try:
+                val = float(v)
+                return 'Tone', val, ''
+            except ValueError:
+                raise errors.InvalidValueError(
+                    'Tone value must be in the form 103.5')
+        else:
+            return '', None, None
+
+    def _format_qtdtq(self, raw):
+        mode, val, pol = self._decode_tone(raw)
+        if mode == 'DTCS':
+            return 'D%03.3i%s' % (val, pol)
+        elif mode == 'Tone':
+            return '%3.1f' % val
+        else:
+            return ''
+
+    def _get_settings_ost(self, ost):
+        def apply_ost(setting, index, which):
+            try:
+                mode, val, pol = self._parse_qtdqt(str(setting.value))
+            except Exception:
+                LOG.error('Failed to parse %r', str(setting.value))
+                raise
+            self._encode_tone(getattr(self._memobj.ost[index], which),
+                              mode, val, pol)
+
+        for i in range(16):
+            name = MemSetting(
+                'ost[%i].ost_name' % i, 'Name',
+                RadioSettingValueString(
+                    0, 10, str(self._memobj.ost[i].ost_name).rstrip('\xFF')))
+            rxt = RadioSetting(
+                'ost[%i].ost_dec_tone' % i, 'RX Tone',
+                RadioSettingValueString(
+                    0, 5,
+                    self._format_qtdtq(self._memobj.ost[i].ost_dec_tone)))
+            rxt.set_apply_callback(apply_ost, i, 'ost_dec_tone')
+            rxt.set_doc('Receive squelch mode and value '
+                        '(either like 103.5 or D023N)')
+            txt = RadioSetting(
+                'ost[%i].ost_enc_tone' % i, 'TX Tone',
+                RadioSettingValueString(
+                    0, 5,
+                    self._format_qtdtq(self._memobj.ost[i].ost_enc_tone)))
+            txt.set_apply_callback(apply_ost, i, 'ost_enc_tone')
+            txt.set_doc('Transmit mode and value '
+                        '(either like 103.5 or D023N)')
+            sg = RadioSettingSubGroup('ost%i' % i, 'OST %i' % (i + 1))
+            sg.append(name)
+            sg.append(rxt)
+            sg.append(txt)
+            ost.append(sg)
+
     def get_settings(self):
         """Translate the bit in the mem_struct into settings in the UI"""
         sett = self._memobj.settings
@@ -1107,12 +1173,14 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         fkeys = RadioSettingGroup("keys", "Controls")
         scaninf = RadioSettingGroup("scaninf", "Scan Information")
         dtmfset = RadioSettingGroup("dtmfset", "DTMF")
+        ost = RadioSettingGroup("ost", "OST")
         groups = RadioSettingGroup("groups", "Groups")
 
         top = RadioSettings(optfeat1, optfeat2, dealer, fkeys, scaninf,
-                            dtmfset, groups)
+                            dtmfset, ost, groups)
 
         self._get_settings_groups(groups)
+        self._get_settings_ost(ost)
         # If user changes passwords to blank, which is actually x20 not xFF,
         # that sets impossible password.
         # Read-only to view unknown passwords only
@@ -1536,6 +1604,9 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         # This should just be group geometry settings at this point
         other_settings = {s.get_name(): s for s in all_other_settings}
         self._set_settings_groups(other_settings)
+        for setting in all_other_settings:
+            if setting.has_apply_callback():
+                setting.run_apply_callback()
 
 
 class TKx80Group(KenwoodTKx80):
