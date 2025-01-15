@@ -135,7 +135,10 @@ struct memory {
   u8 number;
   lbcd rx_freq[4];
   lbcd tx_freq[4];
-  u8 unknown1[2];
+  u8 unknown11:4,
+     rx_step:4;
+  u8 unknown12:4,
+     tx_step:4;
   ul16 rx_tone;
   ul16 tx_tone;
   char name[12];
@@ -744,8 +747,8 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
                                         'memory allocation')
 
             # Default values for unknown things
-            _mem.unknown1[0] = 0x36
-            _mem.unknown1[1] = 0x36
+            _mem.unknown11 = 0x3
+            _mem.unknown12 = 0x3
             _mem.unknown2 = [0xFF for i in range(0, 19)]
             _mem.unknown3_1 = 0xF
             _mem.unknown3_2 = 0x1
@@ -786,6 +789,25 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             _mem.tx_freq = (mem.freq + mem.offset) // 10
         else:
             raise errors.RadioError('Unsupported duplex mode %r' % mem.duplex)
+
+        try:
+            tx_step = chirp_common.required_step(int(_mem.tx_freq) * 10)
+        except errors.InvalidDataError:
+            tx_step = 5
+        try:
+            rx_step = chirp_common.required_step(int(_mem.rx_freq) * 10)
+        except errors.InvalidDataError:
+            rx_step = 5
+
+        step_lookup = {
+            2.5: 0x1,
+            6.25: 0x3,
+            12.5: 0x3,
+            5: 0x2,
+        }
+        # Default to 5kHz if we don't know any better
+        _mem.rx_step = step_lookup.get(rx_step, 0x2)
+        _mem.tx_step = step_lookup.get(tx_step, 0x2)
 
         skipbyte = self._memobj.skipflags[(mem.number - 1) // 8]
         if mem.skip == 'S':
