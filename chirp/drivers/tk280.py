@@ -666,8 +666,9 @@ def _open_radio(radio, status):
     # after that we are ready to receive the radio image or to write to it
     radio.pipe.write(b'O')
 
-    radio.metadata = {'tkx80_ver': ver.strip(b'\xFF'),
-                      'tkx80_rid': rid.strip(b'\xFF')}
+    radio.metadata = {'tkx80_ver': ver.strip(b'\xFF').decode('ascii',
+                                                             errors='ignore'),
+                      'tkx80_rid': list(rid.strip(b'\xFF'))}
 
 
 def exchange_ack(pipe):
