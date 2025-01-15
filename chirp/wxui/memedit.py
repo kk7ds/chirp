@@ -2411,6 +2411,14 @@ class ChirpMemPropDialog(wx.Dialog):
         self._pg = wx.propgrid.PropertyGrid(self._tabs,
                                             style=wx.propgrid.PG_BOLD_MODIFIED)
         self._pg.Bind(wx.propgrid.EVT_PG_CHANGED, self._mem_prop_changed)
+
+        self._pg.DedicateKey(wx.WXK_RETURN)
+        self._pg.DedicateKey(wx.WXK_UP)
+        self._pg.DedicateKey(wx.WXK_DOWN)
+        self._pg.AddActionTrigger(wx.propgrid.PG_ACTION_EDIT, wx.WXK_RETURN)
+        self._pg.AddActionTrigger(wx.propgrid.PG_ACTION_NEXT_PROPERTY,
+                                  wx.WXK_RETURN)
+
         self._tabs.InsertPage(0, self._pg, _('Values'))
         page_index = 0
         self._extra_page = None
