@@ -1200,11 +1200,11 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
                                   current_index=int(sett.signalling_type)))
         optfeat1.append(sigtyp)
 
-        if self.TYPE[0] == "P":
+        if self.TYPE[0:1] == b"P":
             bsav = MemSetting(
                 "settings.battery_save", "Battery Save",
-                RadioSettingValueList(BSAVE.values(),
-                                      current_index=sett.battery_save))
+                RadioSettingValueMap([(v, k) for k, v in BSAVE.items()],
+                                     sett.battery_save))
             optfeat1.append(bsav)
 
         tot = MemSetting("settings.tot", "Time Out Timer (TOT)",
