@@ -40,9 +40,16 @@ class ChirpSettingsEdit(common.ChirpEditor):
         sizer.Add(self._group_control, 1, wx.EXPAND)
         self._group_control.GetTreeCtrl().Bind(wx.EVT_KEY_DOWN,
                                                self._key)
+        self._group_control.Bind(wx.EVT_TREEBOOK_PAGE_CHANGED,
+                                 self._click)
 
         self._initialized = False
         self._restore_selection = None
+
+    def _click(self, event):
+        # This has to eat this event in order to avoid unfocusing the
+        # treeview while clicking to start keyboard nav.
+        pass
 
     def _key(self, event):
         if event.GetKeyCode() in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
