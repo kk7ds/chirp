@@ -56,7 +56,7 @@ LOG = logging.getLogger(__name__)
 #
 
 MEM_FORMAT = """
-#seekto 0x0000;
+//#seekto 0x0000;
 struct {
   // x00-x01, Edit>>Model Information>>Radio Format,
   // '03 00':Conventional Format, '00 03':Trunked Format
@@ -140,7 +140,10 @@ struct {
   u8 unknown23[6];
   u8 unknown133;            // FleetSync Enhanced, 00:enable, FF:disable
   char ident[8];            // radio identification string
-  u8 unknown26[12];         // Passwords, see passwords struct below
+  struct {
+    char radio[6];        // 0xAF-0xB4, 6 digit Radio Password
+    char data[6];         // 0xB5-0xBA, 6 digit Data Password
+  } passwords;
   char lastsoftversion[5];  // software version employed to program the radio
   char dtmf_prim_code[7];   // DTMF Decode, Primary Code
   char dtmf_sec_code[7];    // DTMF Decode, Secondary Code
@@ -169,19 +172,6 @@ struct {
      ptt_id_when:2,         // PTT ID, '10'=BOT, '01'=EOT, '00'=Both
      signalling_type:1;     //Signalling, '1'=OR, '0'=AND
 } settings;
-
-#seekto 0xA7;
-struct {
-// 0xA7, M or P... trying to work around absent model and type in tk-380
-// but doesn't work. Still need the id struct.
-  char type;
-} id;
-
-#seekto 0xAF;
-struct {
-  char radio[6];        // 0xAF-0xB4, 6 digit Radio Password
-  char data[6];         // 0xB5-0xBA, 6 digit Data Password
-} passwords;
 
 //These are ALL the keys on TK-380 keypad version. These locations are assigned
 // functions from values in KEYS below
@@ -219,7 +209,7 @@ struct {
   u8 kPOUND;        // Numkey #
 } keys;
 
-#seekto 0x0140;
+//#seekto 0x0140;
 struct {
   lbcd tf01_rx[4];
   lbcd tf01_tx[4];
@@ -331,7 +321,7 @@ struct {
   u8 unknown118[2];     // unknown
 } ost[16];
 
-#seekto 0x800;
+//#seekto 0x800;
 struct {
   u8 2t_a_tone_y[4];    // 2t_a_tone_x and 2t_a_tone_z
   u8 2t_b_tone_y[4];    // 2t_b_tone_x and 2t_b_tone_z
@@ -451,7 +441,7 @@ struct {
   u8 unknown127[2];
 } fs_id_list[64];
 
-#seekto 0x7000;
+//#seekto 0x7000;
 struct {
   u8 fs_sl_status;       // FleetSync, Status List, Status: 10-99
   u8 unknown120;
@@ -1164,7 +1154,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         sett = self._memobj.settings
         msc = self._memobj.misc
         keys = self._memobj.keys
-        passwd = self._memobj.passwords
+        passwd = self._memobj.settings.passwords
         fsync = self._memobj.fleetsync
 
         optfeat1 = RadioSettingGroup("optfeat1", "Optional Features 1")
@@ -1307,13 +1297,6 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
                           RadioSettingValueInvertedBoolean(
                               not sett.ptt_release_tone))
         optfeat2.append(pttr)
-
-        # Save Battery only for portables?
-        """if self.TYPE[0] == "P":
-            bs = int(sett.battery_save) == 0x32 and True or False
-            bsave = RadioSetting("settings.battery_save", "Battery Saver",
-                                 RadioSettingValueBoolean(bs))
-            optfeat1.append(bsave)"""
 
         # PTT ID Section
         pdt = MemSetting("misc.ptt_id_type", "PTT ID Type",
