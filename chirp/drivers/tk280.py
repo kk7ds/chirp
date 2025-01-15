@@ -809,7 +809,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         rf.has_ctone = True
         rf.has_cross = True
         rf.valid_modes = MODES
-        rf.valid_duplexes = ["", "-", "+", "off"]
+        rf.valid_duplexes = ["", "-", "+", "off", "split"]
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_cross_modes = [
             "Tone->Tone",
@@ -1732,7 +1732,7 @@ class TKx80Group(KenwoodTKx80):
         elif mem.duplex == "off":
             _mem.txfreq.fill_raw(b'\xFF')
         else:
-            _mem.txfreq = mem.freq // 10
+            _mem.txfreq = mem.offset // 10
 
         ((txmode, txtone, txpol), (rxmode, rxtone, rxpol)) = \
             chirp_common.split_tone_encode(mem)
