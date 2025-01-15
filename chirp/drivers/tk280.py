@@ -868,6 +868,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self._compact_mappings()
 
     def _decode_tone(self, val):
         """Parse the tone data to decode from mem, it returns:
@@ -927,15 +928,24 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
 
         Raise IndexError if not mapped.
         """
+        try:
+            return self._map_cache[(group, number)]
+        except KeyError:
+            if not allocate:
+                raise IndexError('Memory %i-%i not mapped' % (group, number))
+
+        LOG.debug('Cache miss for allocating %i,%i' % (group, number))
         empty = None
         free_memories = set(range(250))
         this_group_index = None
-        # Count to 150 and...
+        # Count to 250 and...
         for i in range(250):
-            # Look for an existing mapping for this group,number
             mapping = self._memobj.group_mapping[i]
             if mapping.group == group and mapping.number == number:
-                # Direct hit, return
+                # Direct hit, return it. But, we should have found this in the
+                # cache
+                LOG.warning('Found mapping for %i-%i but was not in cache?',
+                            group, number)
                 return mapping
             elif empty is None and mapping.group == 0xFF:
                 # Record the earliest-available mapping
@@ -950,30 +960,28 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
             if self._memobj.groups[i].number == group:
                 this_group_index = i
 
-        if allocate:
-            if this_group_index is None:
-                raise errors.RadioError(
-                    'Allocate for group %i did not find a record' % group)
-            # Use the first available memory location
-            memory = list(sorted(free_memories))[0]
-            self._memobj.group_mapping[empty].group = group
-            self._memobj.group_mapping[empty].number = number
-            self._memobj.group_mapping[empty].group_index = this_group_index
-            self._memobj.group_mapping[empty].index = memory
-            self._memobj.groups[this_group_index].channels += 1
-            LOG.info(('Allocating slot %i memory %i for %i-%i '
-                      'grp index %i channels %i') % (
-                empty, memory,  group, number, this_group_index,
-                self._memobj.groups[this_group_index].channels))
-            self._compact_mappings()
-            # The above may have rearranged things so re-search for our
-            # new slot
-            return self._get_memory_mapping(group, number)
-        else:
-            raise IndexError('Memory %i-%i not mapped' % (group, number))
+        if this_group_index is None:
+            raise errors.RadioError(
+                'Allocate for group %i did not find a record' % group)
+        # Use the first available memory location
+        memory = list(sorted(free_memories))[0]
+        mapping = self._memobj.group_mapping[empty]
+        mapping.group = group
+        mapping.number = number
+        mapping.group_index = this_group_index
+        mapping.index = memory
+        self._memobj.groups[this_group_index].channels += 1
+        LOG.info(('Allocating slot %i memory %i for %i-%i '
+                  'grp index %i channels %i') % (
+            empty, memory,  group, number, this_group_index,
+            self._memobj.groups[this_group_index].channels))
+        self._compact_mappings()
+        # The above may have rearranged things so re-search for our
+        # new slot
+        return self._get_memory_mapping(group, number)
 
     def _delete_memory_mapping(self, group, number):
-        mapping = self._get_memory_mapping(group, number)
+        mapping = self._parent._get_memory_mapping(group, number)
         mem = self._memobj.memory[mapping.index]
         group_rec = self._memobj.groups[mapping.group_index]
         group_rec.channels -= 1
@@ -1004,6 +1012,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
 
         memories = 0
         groups = set()
+        self._map_cache = {}
         # Count to 250 again and...
         for i in range(250):
             # Update all the mappings with the new sorted survey results
@@ -1013,10 +1022,14 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
                 groups.add(group)
             except IndexError:
                 group = number = group_index = index = 0xFF
-            self._memobj.group_mapping[i].group = group
-            self._memobj.group_mapping[i].number = number
-            self._memobj.group_mapping[i].group_index = group_index
-            self._memobj.group_mapping[i].index = index
+            mapping = self._memobj.group_mapping[i]
+            mapping.group = group
+            mapping.number = number
+            mapping.group_index = group_index
+            mapping.index = index
+
+            # Rebuild our cache
+            self._map_cache[int(mapping.group), int(mapping.number)] = mapping
 
             # Also update the groups with correct memory counts
             group = int(self._memobj.groups[i].number)
@@ -1595,7 +1608,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
 class TKx80Group(KenwoodTKx80):
     def __init__(self, parent, group, name):
         self._parent = parent
-        self._group = group
+        self._group = int(group)
         self.VARIANT = name
         self.TYPE = parent.TYPE
 
@@ -1610,6 +1623,9 @@ class TKx80Group(KenwoodTKx80):
     def load_mmap(self, filename):
         self._parent.load_mmap(filename)
 
+    def _compact_mappings(self):
+        self._parent._compact_mappings()
+
     def get_sub_devices(self):
         return []
 
@@ -1623,7 +1639,7 @@ class TKx80Group(KenwoodTKx80):
         """Return a raw representation of the memory object, which
         is very helpful for development"""
         try:
-            mapping = self._get_memory_mapping(self.group, number)
+            mapping = self._parent._get_memory_mapping(self.group, number)
         except IndexError:
             return 'Memory not set'
         return repr(self._memobj.memory[mapping.index])
@@ -1632,7 +1648,7 @@ class TKx80Group(KenwoodTKx80):
         mem = chirp_common.Memory()
         mem.number = number
         try:
-            mapping = self._get_memory_mapping(self.group, number)
+            mapping = self._parent._get_memory_mapping(self.group, number)
         except IndexError:
             mem.empty = True
             return mem
@@ -1688,8 +1704,8 @@ class TKx80Group(KenwoodTKx80):
 
     def set_memory(self, mem):
         try:
-            mapping = self._get_memory_mapping(self.group, mem.number,
-                                               allocate=True)
+            mapping = self._parent._get_memory_mapping(self.group, mem.number,
+                                                       allocate=True)
         except IndexError as e:
             # Out of memory
             raise errors.RadioError(str(e))
