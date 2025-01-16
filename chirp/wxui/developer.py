@@ -44,7 +44,15 @@ def simple_diff(a, b, diffsonly=False):
 
     diff = ""
     for i in range(0, len(lines_a)):
-        if lines_a[i] != lines_b[i]:
+        try:
+            line_a = lines_a[i]
+        except IndexError:
+            line_a = ''
+        try:
+            line_b = lines_b[i]
+        except IndexError:
+            line_b = ''
+        if line_a != line_b:
             diff += "-%s%s" % (lines_a[i], os.linesep)
             diff += "+%s%s" % (lines_b[i], os.linesep)
             blankprinted = False
@@ -68,6 +76,7 @@ class MemoryDialog(wx.Dialog):
 
         self.text = wx.richtext.RichTextCtrl(
             self, style=wx.VSCROLL | wx.HSCROLL | wx.NO_BORDER)
+        self.text.SetEditable(False)
         sizer.Add(self.text, 1, wx.EXPAND)
 
         sizer.Add(wx.StaticLine(self), 0)

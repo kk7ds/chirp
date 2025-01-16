@@ -1900,6 +1900,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                       functools.partial(self._mem_showraw, event.GetRow()),
                       raw_item)
             menu.Append(raw_item)
+            menu.Enable(raw_item.GetId(), len(selected_rows) == 1)
 
             diff_item = wx.MenuItem(menu, wx.NewId(),
                                     _('Diff Raw Memories'))
@@ -1908,6 +1909,14 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                       diff_item)
             menu.Append(diff_item)
             menu.Enable(diff_item.GetId(), len(selected_rows) == 2)
+
+            diff_across_item = wx.MenuItem(menu, wx.NewId(),
+                                           _('Diff against another editor'))
+            self.Bind(wx.EVT_MENU,
+                      functools.partial(self._mem_diff_across, event.GetRow()),
+                      diff_across_item)
+            menu.Append(diff_across_item)
+            menu.Enable(diff_across_item.GetId(), len(selected_rows) == 1)
 
         self.PopupMenu(menu)
         menu.Destroy()
@@ -1972,6 +1981,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         mem_b = self._radio.get_raw_memory(self.row2mem(rows[1]))
         with developer.MemoryDialog((mem_a, mem_b), self) as d:
             d.ShowModal()
+
+    def _mem_diff_across(self, row, event):
+        evt = common.CrossEditorAction(self.GetId(), memory=self.row2mem(row))
+        evt.SetEventObject(self)
+        wx.PostEvent(self, evt)
 
     def update_font(self, refresh=True):
         fixed = CONF.get_bool('font_fixed', 'state', False)
