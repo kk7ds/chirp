@@ -203,9 +203,14 @@ class RadioSettingValueFloat(RadioSettingValue):
 
 class RadioSettingValueBoolean(RadioSettingValue):
 
-    """A boolean setting"""
+    """A boolean setting
 
-    def __init__(self, current):
+    If using MemSetting, mem_vals can be set to the False, True values
+    that are to be actually stored in memory instead of 0, 1
+    """
+
+    def __init__(self, current, mem_vals=(0, 1)):
+        self._mem_vals = mem_vals
         RadioSettingValue.__init__(self)
         self.queue_current(current)
 
@@ -730,6 +735,12 @@ class MemSetting(RadioSetting):
                                              self.value.mem_pad_char)
         else:
             value = self.value
+
+        # After we determined if this is inverted or not, convert to the values
+        # that memory wants to see.
+        if isinstance(self.value, RadioSettingValueBoolean):
+            value = self.value._mem_vals[int(value)]
+
         obj = memobj
         elements = self._path.split('.')
         for element in elements[:-1]:
