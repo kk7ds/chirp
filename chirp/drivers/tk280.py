@@ -1130,6 +1130,17 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
             return ''
 
     def _get_settings_ost(self, ost):
+        rs = MemSetting('settings.ost_backup', 'OST Backup',
+                        RadioSettingValueInvertedBoolean(
+                            not self._memobj.settings.ost_backup))
+        rs.set_doc('Store OST on channel even if dialed away')
+        ost.append(rs)
+
+        rs = MemSetting('settings.ost_direct', 'OST Direct',
+                        RadioSettingValueInvertedBoolean(
+                            not self._memobj.settings.ost_direct))
+        ost.append(rs)
+
         def apply_ost(setting, index, which):
             try:
                 mode, val, pol = self._parse_qtdqt(str(setting.value))
