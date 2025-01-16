@@ -1134,6 +1134,11 @@ class ChirpMain(wx.Frame):
         label = wx.StaticText(d, label=_('Select a tab and memory to diff'),
                               style=wx.ALIGN_CENTER_HORIZONTAL)
         tab = wx.Choice(d, choices=list(tabs.keys()))
+        try:
+            tab.SetStringSelection(self._last_diff_tab)
+        except AttributeError:
+            # No last default
+            pass
         memory = wx.SpinCtrl(d)
         memory.SetMin(0)
         memory.SetMax(2000)
@@ -1146,6 +1151,7 @@ class ChirpMain(wx.Frame):
         vbox.Add(buttons, proportion=0, flag=wx.EXPAND)
         d.CenterOnParent()
         c = d.ShowModal()
+        self._last_diff_tab = tab.GetStringSelection()
         if c == wx.ID_OK:
             mem_a = event.GetEventObject()._radio.get_raw_memory(event.memory)
             editor = tabs[tab.GetStringSelection()]
