@@ -286,6 +286,11 @@ class ChirpEditorSet(wx.Panel):
     def current_editor_index(self):
         return self._editors.GetSelection()
 
+    def iter_editors(self, onlycls=None):
+        for title, editor in self._editor_index.items():
+            if onlycls is None or isinstance(editor, onlycls):
+                yield title, editor
+
     def select_editor(self, index=None, name=None):
         if index is None and name:
             try:
@@ -461,6 +466,7 @@ class ChirpMain(wx.Frame):
         self._editors.Bind(wx.aui.EVT_AUINOTEBOOK_TAB_RIGHT_DOWN,
                            self._tab_rclick)
         self.Bind(wx.EVT_CLOSE, self._window_close)
+        self.Bind(common.EVT_CROSS_EDITOR_ACTION, self._editor_cross_action)
 
         self.statusbar = self.CreateStatusBar(2)
         self.statusbar.SetStatusWidths([-1, 200])
@@ -1111,6 +1117,41 @@ class ChirpMain(wx.Frame):
     def _editor_status(self, event):
         # FIXME: Should probably only do this for the current editorset
         self.statusbar.SetStatusText(event.message)
+
+    def _editor_cross_action(self, event):
+        tabs = {}
+        for i in range(self._editors.GetPageCount()):
+            page = self._editors.GetPage(i)
+            for title, editor in page.iter_editors(
+                    onlycls=memedit.ChirpMemEdit):
+                tabs['%s::%s' % (os.path.basename(page.filename), title)] = \
+                    editor
+
+        d = wx.Dialog(self, title=_('Choose Diff Target'))
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        d.SetSizer(vbox)
+
+        label = wx.StaticText(d, label=_('Select a tab and memory to diff'),
+                              style=wx.ALIGN_CENTER_HORIZONTAL)
+        tab = wx.Choice(d, choices=list(tabs.keys()))
+        memory = wx.SpinCtrl(d)
+        memory.SetMin(0)
+        memory.SetMax(2000)
+        memory.SetValue(event.memory)
+        buttons = d.CreateButtonSizer(wx.OK | wx.CANCEL)
+
+        vbox.Add(label, proportion=1, flag=wx.EXPAND | wx.ALL, border=10)
+        vbox.Add(tab, proportion=0, flag=wx.EXPAND | wx.ALL, border=10)
+        vbox.Add(memory, proportion=0, flag=wx.EXPAND | wx.ALL, border=10)
+        vbox.Add(buttons, proportion=0, flag=wx.EXPAND)
+        d.CenterOnParent()
+        c = d.ShowModal()
+        if c == wx.ID_OK:
+            mem_a = event.GetEventObject()._radio.get_raw_memory(event.memory)
+            editor = tabs[tab.GetStringSelection()]
+            mem_b = editor._radio.get_raw_memory(memory.GetValue())
+            with developer.MemoryDialog((mem_a, mem_b), self) as d:
+                d.ShowModal()
 
     def _editor_close(self, event):
         eset = self._editors.GetPage(event.GetSelection())
