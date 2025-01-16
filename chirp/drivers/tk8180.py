@@ -25,6 +25,7 @@ from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettingValueList
 from chirp.settings import RadioSettingValueString, RadioSettingValueInteger
 from chirp.settings import RadioSettings, RadioSettingSubGroup
+from chirp.settings import RadioSettingValueMap
 
 LOG = logging.getLogger(__name__)
 
@@ -63,7 +64,8 @@ struct {
   u8 alert_tone;
   u8 sidetone;
   u8 locator_tone;
-  u8 unknown3[2];
+  u8 battsave; // FF=off, 30=short, 31=med, 32=long
+  u8 battwarn; // FF=off, 30=Transmit, 31=Always, 32=AlwaysBeep
   u8 ignition_mode;
   u8 ignition_time;  // In tens of minutes (6 = 1h)
   u8 micsense;
@@ -72,13 +74,17 @@ struct {
   u8 unknown4;
 
   // 0x0180
-  u8 unknown5[16];
+  u8 pttid_type; // 30=DTMF, 31=FleetSync
+  u8 pttid_dtmf_bot_count; // number of digits
+  u8 pttid_dtmf_bot_code[8]; // digits, 0xFF padded
+  u8 pttid_dtmf_eot_count; // number of digits
+  u8 pttid_dtmf_eot_code[8]; // digits, 0xFF padded
 
-  // 0x0190
-  u8 unknown6[3];
+  // 0x0193
   u8 pon_msgtype;
   u8 unknown7[8];
-  u8 unknown8_1:2,
+  u8 battstatus:1,
+     unknown8_1:1,
      ssi:1,
      busy_led:1,
      power_switch_memory:1,
@@ -143,7 +149,9 @@ struct memory {
   ul16 rx_tone;
   ul16 tx_tone;
   char name[12];
-  u8 unknown2[19];
+  u8 unknown1[2];
+  u8 pttid;
+  u8 unknown2[16];
   u8 unknown3_1:4,
      highpower:1,
      unknown3_2:1,
@@ -182,10 +190,47 @@ DATEFMT = ['Day/Month', 'Month/Day']
 MICSENSE = ['On']
 ONLY_MOBILE_SETTINGS = ['power_switch_memory', 'off_hook_decode',
                         'ignition_sense', 'mvp', 'it', 'ignition_mode']
-
+PTTID_SETTINGS = {
+    'Off': 0xFF,
+    'BOT': 0x30,
+    'EOT': 0x31,
+    'Both': 0x32,
+}
+PTTID_TYPES = {
+    'DTMF': 0x30,
+    'FleetSync': 0x31,
+}
+BATTSAVE_SETTINGS = {
+    'Off': 0xFF,
+    'Short': 0x30,
+    'Medium': 0x31,
+    'Long': 0x32,
+}
+BATTWARN_SETTINGS = {
+    'Off': 0xFF,
+    'Transmit': 0x30,
+    'Always': 0x31,
+    'Always with Beep': 0x32,
+}
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5),
                 chirp_common.PowerLevel("High", watts=50)]
+
+
+def decode_dtmf(array):
+    return ''.join('%x%x' % (int(i) & 0x0F, (int(i) & 0xF0) >> 4)
+                   for i in array if i != 0xFF)
+
+
+def encode_dtmf(string):
+    nibs = [int(c, 16) for c in string]
+    nibs += [0xF for i in range(16 - len(nibs))]
+    bytevals = [(nibs[i + 1] << 4) | nibs[i] for i in range(0, 16, 2)]
+    return bytevals
+
+
+def reverse_dict(d):
+    return {v: k for k, v in d.items()}
 
 
 def set_choice(setting, obj, key, choices, default='Off'):
@@ -721,6 +766,12 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         skipbit = skipbyte & (1 << (mem.number - 1) % 8)
         mem.skip = skipbit and 'S' or ''
 
+        mem.extra = RadioSettingGroup('extra', 'Extra')
+        mem.extra.append(MemSetting(
+            'pttid', 'PTTID',
+            RadioSettingValueMap(PTTID_SETTINGS.items(),
+                                 int(_mem.pttid))))
+
         return mem
 
     def set_memory(self, mem):
@@ -750,11 +801,15 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             # Default values for unknown things
             _mem.unknown11 = 0x3
             _mem.unknown12 = 0x3
-            _mem.unknown2 = [0xFF for i in range(0, 19)]
+            _mem.unknown1 = [0xFF, 0xFF]
+            _mem.unknown2 = [0xFF for i in range(0, 16)]
             _mem.unknown3_1 = 0xF
             _mem.unknown3_2 = 0x1
             _mem.unknown3_3 = 0x0
             _mem.unknown4 = 0xFF
+
+            # Defaults for known things that might not always get set
+            _mem.pttid = 0xFF
 
         if mem.empty:
             LOG.debug('Need to shrink zone %i' % self._zone)
@@ -816,6 +871,9 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         else:
             skipbyte &= ~(1 << (mem.number - 1) % 8)
 
+        for setting in mem.extra:
+            setting.apply_to_memobj(_mem)
+
     def _pure_choice_setting(self, settings_key, name, choices, default='Off'):
         if default is not None:
             ui_choices = [default] + choices
@@ -847,7 +905,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
 
     def _get_common1(self):
         settings = self._memobj.settings
-        common1 = RadioSettingGroup('common1', 'Common 1')
+        common1 = RadioSettingSubGroup('common1', 'Common 1')
 
         common1.append(self._pure_choice_setting('sublcd',
                                                  'Sub LCD Display',
@@ -926,7 +984,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
 
     def _get_common2(self):
         settings = self._memobj.settings
-        common2 = RadioSettingGroup('common2', 'Common 2')
+        common2 = RadioSettingSubGroup('common2', 'Common 2')
 
         def apply_ponmsgtext(setting):
             settings.pon_msgtext = (
@@ -1011,6 +1069,47 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             common2.append(volpreset)
 
         return common2
+
+    def _get_common3(self):
+        settings = self._memobj.settings
+        group = RadioSettingSubGroup('common3', 'Common 3')
+
+        rs = MemSetting('settings.battsave', 'Battery Save',
+                        RadioSettingValueMap(BATTSAVE_SETTINGS.items(),
+                                             settings.battsave))
+        group.append(rs)
+
+        rs = MemSetting('settings.battwarn', 'Battery Warning',
+                        RadioSettingValueMap(BATTWARN_SETTINGS.items(),
+                                             settings.battwarn))
+        group.append(rs)
+
+        rs = MemSetting('settings.battstatus', 'Battery Status',
+                        RadioSettingValueInvertedBoolean(
+                            not settings.battstatus))
+        group.append(rs)
+
+        rs = MemSetting('settings.pttid_type', 'PTTID Type',
+                        RadioSettingValueMap(PTTID_TYPES.items(),
+                                             settings.pttid_type))
+        group.append(rs)
+
+        def apply_dtmf(setting, which):
+            setattr(settings, which, encode_dtmf(str(setting.value).strip()))
+
+        code = decode_dtmf(settings.pttid_dtmf_bot_code)
+        rs = RadioSetting('pttid_bot', 'Beginning of Transmit',
+                          RadioSettingValueString(0, 16, code))
+        rs.set_apply_callback(apply_dtmf, 'pttid_dtmf_bot_code')
+        group.append(rs)
+
+        code = decode_dtmf(settings.pttid_dtmf_eot_code)
+        rs = RadioSetting('pttid_eot', 'End of Transmit',
+                          RadioSettingValueString(0, 16, code))
+        rs.set_apply_callback(apply_dtmf, 'pttid_dtmf_eot_code')
+        group.append(rs)
+
+        return group
 
     def _get_conventional(self):
         settings = self._memobj.settings
@@ -1130,8 +1229,9 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
                                        'OST %i' % (i + 1))
 
             cur = str(_ost.name).rstrip('\x00')
-            name = RadioSetting('name%i' % i, 'Name',
-                                RadioSettingValueString(0, 12, cur))
+            name = MemSetting('ost_tones[%i].name' % i, 'Name',
+                              RadioSettingValueString(0, 12, cur,
+                                                      mem_pad_char='\x00'))
             ost.append(name)
 
             if _ost.rxtone == 0xFFFF:
@@ -1170,8 +1270,11 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         zones = self._get_zones()
         common1 = self._get_common1()
         common2 = self._get_common2()
+        common3 = self._get_common3()
+        common = RadioSettingGroup('common', 'Common',
+                                   common1, common2, common3)
         conv = self._get_conventional()
-        top = RadioSettings(zones, common1, common2, conv)
+        top = RadioSettings(zones, common, conv)
         return top
 
     def set_settings(self, settings):
