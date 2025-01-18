@@ -117,6 +117,50 @@ struct {
   ul16 txtone;
 } ost_tones[40];
 
+// Button config
+// 0xFF = none 0x00=2t 0x26=lamp 04=autotel 01=autodial 12= 5=chentry
+// 13=clock 02=autodial-prog 08=call1 09=call2 (up to call6) 21=function
+// 20=fixedvol 28=lowpow 2A=monitor 2B=monmoment 42=TA 43=teldisc
+// 1E=displaychar 3D=sqlvl 3E=sqoff 3F=sqoffmom 32=password
+// 10=grpup (but more changes)
+// 0E=grpdn (but more changes)
+// 0x582 selector mode FF=none 30=group 31=channel
+// 0x583 keypad type ff=none 30=dtmf
+// 0x584 keypad op:
+// 0x58E 0x04 list sel key (inverted)
+// ff=none
+#seekto 0x0582;
+u8 selector_knob; // FF=none 30=group 31=channel
+u8 keypad_type; // ff=none 30=12-key
+// 30=channel 31=OST 32=DTMF(autodial) 33=DTMF(keypad auto ptt)
+// 34=FS(SC) 35=FS(ST) 36=FS(SC+ST)
+u8 keypad_op;
+u8 lsk_unknown1:5,
+   list_selector_key:1,
+   lsk_unknown2:3;
+#seekto 0x05C0;
+// side1 primary 0x5C0
+// S 0x5C8
+// A 0x5D0
+// B 0x5D8
+// C 0x5E0
+// side2 primary 0x5E8
+// two?
+// aux primary 0x600
+// 0 0x608
+// 1 0x610
+// .. *
+// 0x668 ?
+// mic pf1 0x688
+// mic pf2 0x690
+
+struct button {
+  u8 primary;
+  u8 secondary;
+  u8 unknown[6]; // These all change for some of the more advanced ones
+};
+struct button buttons[26];
+
 #seekto 0x0A00;
 ul16 zone_starts[128];
 
@@ -211,6 +255,98 @@ BATTWARN_SETTINGS = {
     'Transmit': 0x30,
     'Always': 0x31,
     'Always with Beep': 0x32,
+}
+# The buttons in memory are not logically arranged for display and sorting
+# would do weird things, so map them manually here
+BUTTONS = {
+    'Side 1': 0,
+    'Side 2': 5,
+    'S': 1,
+    'A': 2,
+    'B': 3,
+    'C': 4,
+    # Skip 2
+    'Top Aux': 8,
+    'DTMF 0': 9,
+    'DTMF 1': 10,
+    'DTMF 2': 11,
+    'DTMF 3': 12,
+    'DTMF 4': 13,
+    'DTMF 5': 14,
+    'DTMF 6': 15,
+    'DTMF 7': 16,
+    'DTMF 8': 17,
+    'DTMF 9': 18,
+    'DTMF *': 19,
+    'DTMF #': 20,
+    'Mic PF1': 24,
+    'Mic PF2': 25,
+}
+# IDs of the buttons that can only be primary
+PRIMARY_ONLY = [0x0E, 0x10, 0x21, 0x2B, 0x3F, 0x4B, 0x4C]
+BUTTON_FUNCTIONS = {
+    'None': 0xFF,
+    '2-tone': 0x00,
+    'Autodial': 0x01,
+    'Autodial Programming': 0x02,
+    # 0x03
+    'Auto Telephone': 0x04,
+    # 0x06 0x07
+    'Call 1': 0x08,
+    'Call 2': 0x09,
+    'Call 3': 0x0A,
+    'Call 4': 0x0B,
+    'Call 5': 0x0C,
+    'Call 6': 0x0D,
+    # 0x0D
+    'CH/GID Down': 0x0E,
+    # 0x0F
+    'CH/GID Up': 0x10,
+    # 0x11
+    'Channel Entry': 0x12,
+    'Clock': 0x13,
+    'Display Character': 0x1E,
+    'Fixed Volume': 0x20,
+    'Function': 0x21,
+    'Monitor': 0x2A,
+    'Monitor Momentary': 0x2B,
+    'Transceiver Password': 0x32,
+    'Squelch Level': 0x3D,
+    'Squelch Off': 0x3E,
+    'Squelch Off (momentary)': 0x3F,
+    'Talk Around': 0x42,
+    'Telephone Disconnect': 0x43,
+    'Zone Down': 0x4B,
+    'Zone Up': 0x4C,
+    'CH/GID Recall': 0x4E,
+}
+# These are only available on the portable transceiver
+PORTABLE_BUTTON_FUNCTIONS = {
+    'AUX': 0x05,
+    'Lamp': 0x26,
+    'Low TX Power': 0x28,
+}
+# These are only available on the mobile transceiver
+MOBILE_BUTTON_FUNCTIONS = {
+}
+KNOB_MODE = {
+    'None': 0xFF,
+    'Group': 0x30,
+    'Channel': 0x31,
+}
+KEYPAD_TYPE = {
+    'None': 0xFF,
+    '12-key': 0x30,
+}
+KEYPAD_OP = {
+    'None': 0xFF,
+    'Channel': 0x30,
+    'OST': 0x31,
+    'DTMF (autodial)': 0x32,
+    'DTMF (Keypad Auto PTT)': 0x33,
+    'FleetSync (Selcall)': 0x34,
+    'FleetSync (Status)': 0x35,
+    'FleetSync (Selcall+Status)': 0x36,
 }
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5),
@@ -437,6 +573,11 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
 
     _system_start = 0x0B00
     _memsize = 0xD100
+
+    @property
+    def is_mobile(self):
+        """True if this is a mobile transceiver"""
+        return self.MODEL[3] in ('78')
 
     def __init__(self, *a, **k):
         self._zones = []
@@ -1264,6 +1405,57 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
 
             ostgroup.append(ost)
 
+    def _get_keys(self):
+        if self.is_mobile:
+            model_functions = MOBILE_BUTTON_FUNCTIONS
+        else:
+            model_functions = PORTABLE_BUTTON_FUNCTIONS
+
+        pri_functions = model_functions | BUTTON_FUNCTIONS
+        sec_functions = (
+            {k: v for k, v in (model_functions | BUTTON_FUNCTIONS).items()
+             if v not in PRIMARY_ONLY})
+
+        group = RadioSettingGroup('keys', 'Keys')
+        pri = RadioSettingSubGroup('primary', 'Primary')
+        sec = RadioSettingSubGroup('secondary', 'Secondary')
+        buttons = self._memobj.buttons
+
+        rs = MemSetting('selector_knob', 'Selector Knob',
+                        RadioSettingValueMap(KNOB_MODE.items(),
+                                             self._memobj.selector_knob))
+        group.append(rs)
+
+        rs = MemSetting('keypad_type', 'Keypad Type',
+                        RadioSettingValueMap(KEYPAD_TYPE.items(),
+                                             self._memobj.keypad_type))
+        group.append(rs)
+
+        rs = MemSetting('keypad_op', 'Keypad Operation',
+                        RadioSettingValueMap(KEYPAD_OP.items(),
+                                             self._memobj.keypad_op))
+        group.append(rs)
+
+        rs = MemSetting('list_selector_key', 'List Selector Key',
+                        RadioSettingValueInvertedBoolean(
+                            not self._memobj.list_selector_key))
+        group.append(rs)
+
+        for key, index in BUTTONS.items():
+            rs = MemSetting('buttons[%i].primary' % index, key,
+                            RadioSettingValueMap(pri_functions.items(),
+                                                 buttons[index].primary))
+            pri.append(rs)
+
+            rs = MemSetting('buttons[%i].secondary' % index, key,
+                            RadioSettingValueMap(sec_functions.items(),
+                                                 buttons[index].secondary))
+            sec.append(rs)
+        group.append(pri)
+        group.append(sec)
+
+        return group
+
     def get_settings(self):
         settings = self._memobj.settings
 
@@ -1274,7 +1466,8 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         common = RadioSettingGroup('common', 'Common',
                                    common1, common2, common3)
         conv = self._get_conventional()
-        top = RadioSettings(zones, common, conv)
+        keys = self._get_keys()
+        top = RadioSettings(zones, common, conv, keys)
         return top
 
     def set_settings(self, settings):
