@@ -411,6 +411,8 @@ class ChirpCloneDialog(wx.Dialog):
         filter_ports = [
             # MacOS unpaired bluetooth serial
             '/dev/cu.Bluetooth-Incoming-Port',
+            '/dev/cu.debug-console',
+            '/dev/cu.wlan-debug',
         ]
 
         LOG.debug('All system ports: %s', [x.__dict__ for x in system_ports])
