@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-15 17:16-0800\n"
-"PO-Revision-Date: 2024-12-24 16:37+0100\n"
+"POT-Creation-Date: 2025-01-18 20:21+0100\n"
+"PO-Revision-Date: 2025-01-18 20:20+0100\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
 "Language: it\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.5\n"
 
 #: ../drivers/ft2d.py:97
 msgid ""
@@ -829,7 +829,7 @@ msgstr ""
 "5. Assicurarsi che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fare clic su OK per caricare l'immagine sul dispositivo.\n"
 
-#: ../drivers/uvb5.py:290 ../drivers/wouxun.py:213 ../drivers/tg_uv2p.py:232
+#: ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:213 ../drivers/uvb5.py:290
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -845,7 +845,7 @@ msgstr ""
 "5. Assicurarsi che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fare clic su OK per scaricare l'immagine dal dispositivo.\n"
 
-#: ../drivers/uvb5.py:298 ../drivers/wouxun.py:221 ../drivers/tg_uv2p.py:240
+#: ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:221 ../drivers/uvb5.py:298
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1049,8 +1049,8 @@ msgstr "Inizia sempre con un elenco recente"
 msgid "Amateur"
 msgstr "Radioamatore"
 
-#: ../wxui/bugreport.py:328 ../wxui/bugreport.py:437 ../wxui/common.py:616
-#: ../wxui/common.py:643
+#: ../wxui/common.py:616 ../wxui/common.py:643 ../wxui/bugreport.py:328
+#: ../wxui/bugreport.py:437
 msgid "An error has occurred"
 msgstr "Si è verificato un errore"
 
@@ -1131,20 +1131,20 @@ msgstr "Scelta richiesta"
 #: ../wxui/memedit.py:1438
 #, python-format
 msgid "Choose %s DTCS Code"
-msgstr "Scegliere il codice DTCS %s"
+msgstr "Scegli il codice DTCS %s"
 
 #: ../wxui/memedit.py:1435
 #, python-format
 msgid "Choose %s Tone"
-msgstr "Scegliere il Tono %s"
+msgstr "Scegli il Tono %s"
 
 #: ../wxui/memedit.py:1469
 msgid "Choose Cross Mode"
-msgstr "Scegliere la modalità Cross"
+msgstr "Scegli la modalità cross"
 
 #: ../wxui/main.py:1130
 msgid "Choose Diff Target"
-msgstr ""
+msgstr "Scegli un tipo di diff"
 
 #: ../wxui/clone.py:577
 msgid "Choose a recent model"
@@ -1152,12 +1152,12 @@ msgstr "Scegli un modello recente"
 
 #: ../wxui/memedit.py:1499
 msgid "Choose duplex"
-msgstr "Scegliere il duplex"
+msgstr "Scegli il duplex"
 
 #: ../wxui/developer.py:569
 #, python-format
 msgid "Choose the module to load from issue %i:"
-msgstr "Scegliere il modulo da caricare dal sito %i:"
+msgstr "Scegli il modulo da caricare dal sito %i:"
 
 #: ../wxui/query_sources.py:508
 msgid "City"
@@ -1191,12 +1191,12 @@ msgstr "Clonazione completata, controllo dei byte spuri"
 msgid "Cloning"
 msgstr "Clonazione"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft4.py:317
+#: ../drivers/ft4.py:317 ../drivers/ft450d.py:507 ../drivers/bj9900.py:133
 #: ../drivers/ft817.py:341
 msgid "Cloning from radio"
 msgstr "Clonazione dalla radio"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft4.py:318
+#: ../drivers/ft4.py:318 ../drivers/ft450d.py:536 ../drivers/bj9900.py:165
 #: ../drivers/ft817.py:379
 msgid "Cloning to radio"
 msgstr "Clonazione verso la radio"
@@ -1328,7 +1328,7 @@ msgstr "Diff memorie raw"
 
 #: ../wxui/memedit.py:1914
 msgid "Diff against another editor"
-msgstr ""
+msgstr "Diff rispetto ad un altro editor"
 
 #: ../wxui/memedit.py:2375
 msgid "Digital Code"
@@ -1550,7 +1550,7 @@ msgstr ""
 msgid "Failed to load radio browser"
 msgstr "Impossibile caricare il browser della radio"
 
-#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
+#: ../sources/przemienniki_net.py:59 ../sources/przemienniki_eu.py:57
 msgid "Failed to parse result"
 msgstr "Impossibile elaborare il risultato"
 
@@ -1677,11 +1677,11 @@ msgstr ""
 "5 - Scollegare il cavo dati dell'interfaccia! In caso contrario, non ci sarà\n"
 "    l'audio del lato destro!\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:693 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
-#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:468 ../drivers/bf_t1.py:482
+#: ../drivers/bf_t1.py:482 ../drivers/mursv1.py:341
+#: ../drivers/baofeng_wp970i.py:327 ../drivers/baofeng_uv17Pro.py:468
+#: ../drivers/gmrsuv1.py:391 ../drivers/btech.py:693 ../drivers/uv6r.py:339
+#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv5x3.py:417
+#: ../drivers/gmrsv2.py:363
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1785,7 +1785,7 @@ msgstr ""
 "    l'audio del lato destro!\n"
 "6 - Accendere la radio per uscire dalla modalità clone.\n"
 
-#: ../drivers/btech.py:699 ../drivers/bf_t1.py:488
+#: ../drivers/bf_t1.py:488 ../drivers/btech.py:699
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1827,7 +1827,7 @@ msgstr ""
 "3 - Accendere la radio\n"
 "4 - Fare clic su OK per iniziare\n"
 
-#: ../drivers/vgc.py:598 ../drivers/lt725uv.py:496
+#: ../drivers/lt725uv.py:496 ../drivers/vgc.py:598
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1855,11 +1855,11 @@ msgstr ""
 "3 - Accendere la radio\n"
 "4 - Effettuare il download dei dati dalla radio\n"
 
-#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
-#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:474
+#: ../drivers/mursv1.py:347 ../drivers/baofeng_wp970i.py:333
+#: ../drivers/baofeng_uv17Pro.py:474 ../drivers/gmrsuv1.py:397
+#: ../drivers/lt725uv.py:502 ../drivers/vgc.py:604 ../drivers/uv6r.py:345
+#: ../drivers/tdxone_tdq8a.py:462 ../drivers/uv5x3.py:423
+#: ../drivers/gmrsv2.py:369
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1905,13 +1905,13 @@ msgstr "La frequenza %s non rientra nel range supportato"
 msgid "Frequency granularity in kHz"
 msgstr "Granularità della frequenza in kHz"
 
-#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1378
 #: ../drivers/tdh8.py:2608 ../drivers/baofeng_uv17Pro.py:1193
+#: ../drivers/mml_jc8810.py:1378 ../drivers/ga510.py:1072
 msgid "Frequency in this range must not be AM mode"
 msgstr "La frequenza in questo intervallo non deve essere in modalità AM"
 
-#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1375
 #: ../drivers/tdh8.py:2605 ../drivers/baofeng_uv17Pro.py:1189
+#: ../drivers/mml_jc8810.py:1375 ../drivers/ga510.py:1065
 msgid "Frequency in this range requires AM mode"
 msgstr "La frequenza in questo intervallo richiede la modalità AM"
 
@@ -2019,8 +2019,8 @@ msgstr "Errore interno del driver"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Il valore %(value)s non è valido (usare i gradi decimali)"
 
-#: ../wxui/query_sources.py:68 ../wxui/query_sources.py:122
-#: ../wxui/memedit.py:1624
+#: ../wxui/memedit.py:1624 ../wxui/query_sources.py:68
+#: ../wxui/query_sources.py:122
 msgid "Invalid Entry"
 msgstr "Valore non valido"
 
@@ -2054,7 +2054,7 @@ msgstr "Numero:"
 msgid "LIVE"
 msgstr "In diretta live"
 
-#: ../drivers/radtel_rt490.py:1026 ../wxui/main.py:844 ../wxui/main.py:1564
+#: ../wxui/main.py:844 ../wxui/main.py:1564 ../drivers/radtel_rt490.py:1026
 msgid "Language"
 msgstr "Lingua"
 
@@ -2174,8 +2174,8 @@ msgstr "La memoria deve trovarsi in un banco per essere modificata"
 msgid "Memory {num} not in bank {bank}"
 msgstr "La memoria {num} non è presente nel banco {bank}"
 
-#: ../wxui/query_sources.py:571 ../wxui/query_sources.py:724
-#: ../wxui/memedit.py:593
+#: ../wxui/memedit.py:593 ../wxui/query_sources.py:571
+#: ../wxui/query_sources.py:724
 msgid "Mode"
 msgstr "Modalità"
 
@@ -2250,7 +2250,7 @@ msgstr "Nessun modulo trovato nel sito %i"
 msgid "No more space available; some memories were not applied"
 msgstr "Non c'è più spazio disponibile; alcune memorie non sono state inserite"
 
-#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
+#: ../sources/przemienniki_net.py:55 ../sources/przemienniki_eu.py:53
 msgid "No results"
 msgstr "Nessun risultato"
 
@@ -2258,7 +2258,7 @@ msgstr "Nessun risultato"
 msgid "No results!"
 msgstr "Nessun risultato!"
 
-#: ../wxui/query_sources.py:43 ../wxui/memedit.py:1033
+#: ../wxui/memedit.py:1033 ../wxui/query_sources.py:43
 msgid "Number"
 msgstr "Numero"
 
@@ -2383,7 +2383,7 @@ msgstr ""
 "In questa versione, è supportato solo un sottoinsieme\n"
 "delle oltre 130 impostazioni radio disponibili.\n"
 
-#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
+#: ../sources/przemienniki_net.py:50 ../sources/przemienniki_eu.py:48
 msgid "Parsing"
 msgstr "Elaborazione"
 
@@ -2544,7 +2544,7 @@ msgstr "La sintassi della query è OK"
 msgid "Query syntax help"
 msgstr "Aiuto per la sintassi delle query"
 
-#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
+#: ../sources/przemienniki_net.py:36 ../sources/przemienniki_eu.py:36
 msgid "Querying"
 msgstr "Interrogazione"
 
@@ -2735,7 +2735,7 @@ msgstr "Seleziona un blandplan"
 
 #: ../wxui/main.py:1134
 msgid "Select a tab and memory to diff"
-msgstr ""
+msgstr "Seleziona una scheda e la memoria per diff"
 
 #: ../wxui/query_sources.py:822
 msgid "Select prefixes"
@@ -2814,7 +2814,7 @@ msgstr "Ordina per colonna:"
 msgid "Sort memories"
 msgstr "Ordina memorie"
 
-#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
+#: ../sources/przemienniki_net.py:62 ../sources/przemienniki_eu.py:60
 msgid "Sorting"
 msgstr "Ordinamento"
 
@@ -3086,7 +3086,7 @@ msgstr "Impossibile importare mentre la visualizzazione è ordinata"
 msgid "Unable to open the clipboard"
 msgstr "Impossibile aprire gli appunti"
 
-#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
+#: ../sources/przemienniki_net.py:48 ../sources/przemienniki_eu.py:46
 msgid "Unable to query"
 msgstr "Impossibile eseguire la ricerca"
 
