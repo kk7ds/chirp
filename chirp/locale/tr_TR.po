@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-19 07:25-0800\n"
-"PO-Revision-Date: 2024-09-14 10:00+0300\n"
+"POT-Creation-Date: 2025-01-15 17:16-0800\n"
+"PO-Revision-Date: 2025-01-19 16:11+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
 "Language: tr\n"
@@ -138,7 +138,6 @@ msgstr ""
 "      ardından 1. adımdan başlayın.\n"
 
 #: ../drivers/ft8100.py:94
-#, fuzzy
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -147,11 +146,10 @@ msgid ""
 msgstr ""
 "1. Telsizi kapatın.\n"
 "2. Veri kablosunu bağlayın.\n"
-"3. \"A/N LOW\" tuşunu basılı tutarken telsizi açın.\n"
-"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için \"SET MHz\"e basın.\n"
+"3.  \"F/W\" tuşunu basılı tutarken telsizi açın.\n"
+"4. <b>TAMAM'ı tıkladıktan sonra</b>, imajı göndermek için \"RPT\"ye basın.\n"
 
 #: ../drivers/ft8100.py:99
-#, fuzzy
 msgid ""
 "1. Turn Radio off.\n"
 "2. Connect data cable.\n"
@@ -161,10 +159,9 @@ msgid ""
 msgstr ""
 "1. Telsizi kapatın.\n"
 "2. Veri kablosunu bağlayın.\n"
-"3. \"TONE\" ve \"REV\" tuşlarını basılı tutarken telsizi açın.\n"
+"3. \"F/W\" düğmesini basılı tutarken telsizi açın.\n"
 "4. İmajı almak için \"REV\" tuşuna basın.\n"
-"5. Ekranda \"CLONE RX\" yazdığından ve yeşil ledin yanıp söndüğünden emin olun.\n"
-"6. Aktarımı başlatmak için TAMAM'a tıklayın.\n"
+"5. Aktarımı başlatmak için Tamam'a tıklayın.\n"
 
 #: ../drivers/ft7100.py:1130
 msgid ""
@@ -980,7 +977,7 @@ msgstr "CHIRP Hakkında"
 
 #: ../wxui/main.py:1859
 msgid "Agree"
-msgstr ""
+msgstr "Kabul ediyorum"
 
 #: ../wxui/query_sources.py:406
 msgid "All"
@@ -996,7 +993,7 @@ msgstr "Desteklenen tüm biçimler|"
 
 #: ../wxui/clone.py:596
 msgid "Always start with recent list"
-msgstr ""
+msgstr "Her zaman son listeyle başla"
 
 #: ../wxui/query_sources.py:323 ../wxui/query_sources.py:398
 msgid "Amateur"
@@ -1097,12 +1094,11 @@ msgstr "Çapraz Modu Seç"
 
 #: ../wxui/main.py:1130
 msgid "Choose Diff Target"
-msgstr ""
+msgstr "Farklı Hedef Seçin"
 
 #: ../wxui/clone.py:577
-#, fuzzy
 msgid "Choose a recent model"
-msgstr "Çapraz Modu Seç"
+msgstr "Son modellerden birini seçin"
 
 #: ../wxui/memedit.py:1499
 msgid "Choose duplex"
@@ -1119,7 +1115,7 @@ msgstr "Şehir"
 
 #: ../wxui/main.py:1829
 msgid "Click here for full license text"
-msgstr ""
+msgstr "Tam lisans metni için buraya tıklayın"
 
 #: ../drivers/ts590.py:671
 msgid ""
@@ -1160,9 +1156,8 @@ msgid "Close"
 msgstr "Kapat"
 
 #: ../wxui/memquery.py:151
-#, fuzzy
 msgid "Close String"
-msgstr "Dosyayı kapat"
+msgstr "Dizeyi Kapat"
 
 #: ../wxui/main.py:1044
 msgid "Close file"
@@ -1170,7 +1165,7 @@ msgstr "Dosyayı kapat"
 
 #: ../wxui/memquery.py:209
 msgid "Close string value with double-quote (\")"
-msgstr ""
+msgstr "Dize değerini çift tırnak işaretiyle (\") kapatın"
 
 #: ../wxui/memedit.py:1869
 #, python-format
@@ -1283,7 +1278,7 @@ msgstr "Farklı Ham Kayıtlar"
 
 #: ../wxui/memedit.py:1914
 msgid "Diff against another editor"
-msgstr ""
+msgstr "Başka bir editöre göre fark"
 
 #: ../wxui/memedit.py:2375
 msgid "Digital Code"
@@ -1412,7 +1407,7 @@ msgstr "Güncellenmesi gereken hata numarasını girin"
 
 #: ../wxui/bugreport.py:232
 msgid "Enter your username and password for chirpmyradio.com. If you do not have an account click below to create one before proceeding."
-msgstr "chirpmyradio.com için kullanıcı adınızı ve şifrenizi girin. Hesabınız yoksa devam etmeden önce bir tane oluşturmak için aşağıya tıklayın."
+msgstr "chirpmyradio.com için kullanıcı adınızı ve şifrenizi girin. Hesabınız yoksa devam etmeden önce bir hesap oluşturmak için aşağıya tıklayın."
 
 #: ../wxui/common.py:330
 #, python-format
@@ -1420,9 +1415,8 @@ msgid "Erased memory %s"
 msgstr "%s kaydı silindi"
 
 #: ../wxui/memquery.py:336
-#, fuzzy
 msgid "Error applying filter"
-msgstr "Ayarlar uygulanırken hata oluştu"
+msgstr "Filtre uygulanırken hata oluştu"
 
 #: ../wxui/settingsedit.py:156
 msgid "Error applying settings"
@@ -1434,35 +1428,35 @@ msgstr "Telsizle iletişim hatası"
 
 #: ../wxui/memquery.py:236
 msgid "Example: \"foo\""
-msgstr ""
+msgstr "Örnek: \"foo\""
 
 #: ../wxui/memquery.py:244
 msgid "Example: ( expression )"
-msgstr ""
+msgstr "Örnek: ( ifade )"
 
 #: ../wxui/memquery.py:238
 msgid "Example: 123"
-msgstr ""
+msgstr "Örnek: 123"
 
 #: ../wxui/memquery.py:240
 msgid "Example: 146.52"
-msgstr ""
+msgstr "Örnek: 146.52"
 
 #: ../wxui/memquery.py:242
 msgid "Example: AND, OR"
-msgstr ""
+msgstr "Örnek: VE, VEYA"
 
 #: ../wxui/memquery.py:250
 msgid "Example: freq<146.0,148.0>"
-msgstr ""
+msgstr "Örnek: freq<146.0,148.0>"
 
 #: ../wxui/memquery.py:248
 msgid "Example: name=\"myrepeater"
-msgstr ""
+msgstr "Örnek: name=\"myrepeater"
 
 #: ../wxui/memquery.py:246
 msgid "Example: name~\"myrepea\""
-msgstr ""
+msgstr "Örnek: name~\"myrepea\""
 
 #: ../wxui/query_sources.py:373
 msgid "Exclude private and closed repeaters"
@@ -1545,9 +1539,8 @@ msgid "Filter results with location matching this string"
 msgstr "Bu dizeyle eşleşen konuma sahip sonuçları filtrele"
 
 #: ../wxui/memquery.py:270
-#, fuzzy
 msgid "Filter..."
-msgstr "Filtre"
+msgstr "Filtre..."
 
 #: ../wxui/main.py:1508
 msgid "Find"
@@ -1563,11 +1556,11 @@ msgstr "Bul..."
 
 #: ../wxui/memquery.py:155
 msgid "Finish Float"
-msgstr ""
+msgstr "Float'ı bitir"
 
 #: ../wxui/memquery.py:211
 msgid "Finish float value like: 146.52"
-msgstr ""
+msgstr "Float değerini şu şekilde bitirin: 146.52"
 
 #: ../wxui/common.py:332
 #, python-format
@@ -1909,7 +1902,7 @@ msgstr "Boş kayıtları gizle"
 
 #: ../drivers/retevis_rt98.py:1003
 msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
-msgstr ""
+msgstr "Etkinleştirildiğinde CTCSS/DCS alma susturucu konfigürasyonunu dikkate alın, aksi takdirde yalnızca taşıyıcı susturucu"
 
 #: ../wxui/memedit.py:145
 msgid "Human-readable comment (not stored in radio)"
@@ -1985,9 +1978,8 @@ msgid "Invalid edit: %s"
 msgstr "Geçersiz düzenleme: %s"
 
 #: ../wxui/query_sources.py:122
-#, fuzzy
 msgid "Invalid locator"
-msgstr "Geçersiz Girdi"
+msgstr "Geçersiz konum belirleyici"
 
 #: ../wxui/main.py:1776
 msgid "Invalid or unsupported module file"
@@ -2034,9 +2026,8 @@ msgid "Limit Status"
 msgstr "Durum Sınırla"
 
 #: ../wxui/query_sources.py:756
-#, fuzzy
 msgid "Limit prefixes"
-msgstr "Modları Sınırla"
+msgstr "Önekleri sınırla"
 
 #: ../wxui/query_sources.py:350 ../wxui/query_sources.py:625
 #: ../wxui/query_sources.py:783
@@ -2077,7 +2068,7 @@ msgstr "Ayarlar yükleniyor"
 
 #: ../wxui/query_sources.py:108
 msgid "Locator"
-msgstr ""
+msgstr "Konum Belirleyici"
 
 #: ../wxui/bugreport.py:326
 msgid "Login failed: Check your username and password"
@@ -2102,7 +2093,7 @@ msgstr "Kayıtlar"
 
 #: ../drivers/uvk5.py:2118
 msgid "Memories are read-only due to unsupported firmware version"
-msgstr "Desteklenmeyen aygıt yazılımı sürümü nedeniyle bellekler salt okunurdur"
+msgstr "Desteklenmeyen aygıt yazılımı sürümü nedeniyle kayıtlar salt okunurdur"
 
 #: ../wxui/memedit.py:1663
 #, python-format
@@ -2112,7 +2103,7 @@ msgstr "Kayıt %i silinemez"
 #: ../wxui/memquery.py:203
 #, python-format
 msgid "Memory field name (one of %s)"
-msgstr ""
+msgstr "Kayıt alanı adı (%s'den biri)"
 
 #: ../wxui/memedit.py:130
 msgid "Memory label (stored in radio)"
@@ -2153,9 +2144,8 @@ msgid "Module loaded successfully"
 msgstr "Modül başarıyla yüklendi"
 
 #: ../wxui/clone.py:655
-#, fuzzy
 msgid "More Info"
-msgstr "Bilgi"
+msgstr "Daha Fazla Bilgi"
 
 #: ../wxui/clone.py:494
 #, python-format
@@ -2189,7 +2179,7 @@ msgstr "Aşağıda boş satır yok!"
 #: ../wxui/memquery.py:254
 #, python-format
 msgid "No example for %s"
-msgstr ""
+msgstr "%s için örnek yok"
 
 #: ../wxui/developer.py:607
 msgid "No modules found"
@@ -2225,11 +2215,13 @@ msgid ""
 "Offset/\n"
 "TX Freq"
 msgstr ""
+"Ofset/\n"
+"TX Frekansı"
 
 #: ../wxui/memquery.py:252
 #, python-format
 msgid "One of: %s"
-msgstr ""
+msgstr "Şunlardan biri: %s"
 
 #: ../wxui/query_sources.py:362 ../wxui/query_sources.py:577
 #: ../wxui/query_sources.py:730
@@ -2241,9 +2233,8 @@ msgid "Only certain modes"
 msgstr "Yalnızca belirli modlar"
 
 #: ../wxui/query_sources.py:754
-#, fuzzy
 msgid "Only certain prefixes"
-msgstr "Yalnızca belirli modlar"
+msgstr "Sadece belirli ön ekler"
 
 #: ../wxui/main.py:332
 msgid "Only memory tabs may be exported"
@@ -2291,7 +2282,7 @@ msgstr "Hazır yapılandırma dizinini aç"
 
 #: ../wxui/memquery.py:143
 msgid "Operator"
-msgstr ""
+msgstr "Operatör"
 
 #: ../wxui/query_sources.py:340 ../wxui/query_sources.py:616
 msgid "Optional: -122.0000"
@@ -2303,23 +2294,20 @@ msgid "Optional: 100"
 msgstr "İsteğe bağlı: 100"
 
 #: ../wxui/query_sources.py:768
-#, fuzzy
 msgid "Optional: 20.0000"
-msgstr "İsteğe bağlı: -122.0000"
+msgstr "İsteğe bağlı: 20.0000"
 
 #: ../wxui/query_sources.py:334 ../wxui/query_sources.py:610
 msgid "Optional: 45.0000"
 msgstr "İsteğe bağlı: 45.0000"
 
 #: ../wxui/query_sources.py:762
-#, fuzzy
 msgid "Optional: 52.0000"
-msgstr "İsteğe bağlı: 45.0000"
+msgstr "Opsiyonel: 52.0000"
 
 #: ../wxui/query_sources.py:776
-#, fuzzy
 msgid "Optional: AA00 - AA00aa11"
-msgstr "İsteğe bağlı: -122.0000"
+msgstr "İsteğe bağlı: AA00 - AA00aa11"
 
 #: ../wxui/query_sources.py:355
 msgid "Optional: County, Hospital, etc."
@@ -2429,7 +2417,7 @@ msgstr "Kablonuzu takın ve ardından Tamam'a tıklayın"
 
 #: ../wxui/query_sources.py:834
 msgid "Polish repeaters database"
-msgstr ""
+msgstr "Polonya tekrarlayıcılar veritabanı"
 
 #: ../wxui/clone.py:331
 msgid "Port"
@@ -2441,7 +2429,7 @@ msgstr "Güç"
 
 #: ../wxui/query_sources.py:822
 msgid "Prefixes"
-msgstr ""
+msgstr "Ön ekler"
 
 #: ../wxui/developer.py:149
 msgid "Press enter to set this in memory"
@@ -2457,25 +2445,23 @@ msgstr "Baskı"
 
 #: ../wxui/clone.py:505
 msgid "Prolific USB device"
-msgstr ""
+msgstr "Verimli USB aygıtı"
 
 #: ../wxui/memedit.py:1769
 msgid "Properties"
 msgstr "Özellikler"
 
 #: ../wxui/memquery.py:139
-#, fuzzy
 msgid "Property Name"
-msgstr "Özellikler"
+msgstr "Özellik Adı"
 
 #: ../wxui/memquery.py:147
-#, fuzzy
 msgid "Property Value"
-msgstr "Özellikler"
+msgstr "Özellik Değeri"
 
 #: ../wxui/query_sources.py:778
 msgid "QTH Locator"
-msgstr ""
+msgstr "QTH Bulucu"
 
 #: ../wxui/main.py:1975
 #, python-format
@@ -2488,21 +2474,19 @@ msgstr "Kaynaktan Sorgula"
 
 #: ../wxui/memquery.py:330
 msgid "Query string is invalid"
-msgstr ""
+msgstr "Sorgu dizesi geçersiz"
 
 #: ../wxui/memquery.py:186
-#, fuzzy
 msgid "Query syntax OK"
-msgstr "%s sorgusu"
+msgstr "Sorgu sözdizimi Tamam"
 
 #: ../wxui/memquery.py:170
 msgid "Query syntax help"
-msgstr ""
+msgstr "Sorgu sözdizimi yardımı"
 
 #: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
-#, fuzzy
 msgid "Querying"
-msgstr "%s sorgusu"
+msgstr "Sorgulama"
 
 #: ../wxui/memedit.py:540
 msgid "RX DTCS"
@@ -2552,18 +2536,16 @@ msgid "Receive frequency"
 msgstr "Alım frekansı"
 
 #: ../wxui/clone.py:578
-#, fuzzy
 msgid "Recent"
-msgstr "Son Kullanılanları Aç"
+msgstr "Geçmiş"
 
 #: ../wxui/clone.py:338
-#, fuzzy
 msgid "Recent..."
-msgstr "Son Kullanılanları Aç"
+msgstr "Geçmiş..."
 
 #: ../drivers/retevis_rt98.py:1219
 msgid "Recommend using 55.2"
-msgstr ""
+msgstr "55.2'yi kullanmanızı öneririz"
 
 #: ../wxui/common.py:489
 msgid "Refresh required"
@@ -2584,11 +2566,11 @@ msgstr "Sürücüyü ve Dosyayı Yeniden Yükle"
 
 #: ../wxui/clone.py:598
 msgid "Remove"
-msgstr ""
+msgstr "Kaldır"
 
 #: ../wxui/clone.py:599
 msgid "Remove selected model from list"
-msgstr ""
+msgstr "Seçili modeli listeden kaldır"
 
 #: ../wxui/bankedit.py:205
 msgid "Rename bank"
@@ -2693,12 +2675,11 @@ msgstr "Bir bant planı seçin"
 
 #: ../wxui/main.py:1134
 msgid "Select a tab and memory to diff"
-msgstr ""
+msgstr "Farklılaştırmak için bir sekme ve kayıt seçin"
 
 #: ../wxui/query_sources.py:822
-#, fuzzy
 msgid "Select prefixes"
-msgstr "Modları Seç"
+msgstr "Ön ekleri seç"
 
 #: ../wxui/query_sources.py:326
 msgid "Service"
@@ -2888,7 +2869,7 @@ msgstr "Bu, canlı modlu bir telsizdir; bu, değişiklik yaptığınızda gerçe
 
 #: ../wxui/main.py:1654
 msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
-msgstr "Bu, telsizden bağımsız bir dosyadır ve doğrudan bir telsize yüklenemez. Bir telsiz imajı açın (veya bir telsizden indirin) ve ardından öğeleri bu sekmeden diğerine kopyalayıp yapıştırın."
+msgstr "Bu, telsizden bağımsız bir dosyadır ve doğrudan bir telsize yüklenemez. Bir telsiz imajı açın (veya bir telsizden indirin) ve ardından yüklemek için öğeleri bu sekmeden diğerine kopyalayıp yapıştırın"
 
 #: ../drivers/th_uv88.py:560
 msgid "This is an early stage beta driver\n"
@@ -3012,7 +2993,7 @@ msgstr "Ayarlama Adımı"
 
 #: ../wxui/memquery.py:188
 msgid "Type a simple search string or a formatted query and press enter"
-msgstr ""
+msgstr "Basit bir arama dizesi veya biçimlendirilmiş bir sorgu yazın ve enter'a basın"
 
 #: ../wxui/clone.py:465 ../wxui/clone.py:472 ../wxui/clone.py:483
 #: ../wxui/clone.py:491 ../wxui/clone.py:495
@@ -3143,7 +3124,7 @@ msgstr "Değer sıfır veya daha büyük olmalıdır"
 
 #: ../wxui/memquery.py:206
 msgid "Value to search memory field for"
-msgstr ""
+msgstr "Kayıt alanında arama yapılacak değer"
 
 #: ../wxui/memedit.py:2438
 msgid "Values"
@@ -3184,11 +3165,11 @@ msgstr "Geçtiğimiz hafta içinde birden fazla konu açtınız. CHIRP, kötüye
 
 #: ../wxui/clone.py:502
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
-msgstr ""
+msgstr "Prolific tabanlı USB aygıtınız, sürücünün eski bir sürümüne geri dönmeden çalışmayacaktır. Bunu nasıl çözeceğiniz hakkında daha fazla bilgi edinmek için CHIRP web sitesini ziyaret edin?"
 
 #: ../wxui/query_sources.py:777
 msgid "Your QTH Locator"
-msgstr ""
+msgstr "QTH Bulucunuz"
 
 #: ../wxui/clone.py:489
 msgid "Your cable appears to be on port:"
