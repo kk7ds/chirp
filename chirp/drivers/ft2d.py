@@ -90,16 +90,16 @@ class FT2D(ft1d.FT1Radio):
             "1. Turn radio off.\n"
             "2. Connect cable to DATA terminal.\n"
             "3. Press and hold [DISP] key while turning on radio\n"
-            "     (\"CLONE\" will appear on the display).\n"
-            "4. <b>After clicking OK here in chirp</b>,\n"
+            "     (\"CLONE\" will appear on radio LCD).\n"
+            "4. <b>After clicking OK here in Chirp</b>,\n"
             "     press the [Send] screen button.\n")
         rp.pre_upload = _(
-            " 1. Turn radio off.\n"
-            " 2. Connect cable to DATA terminal.\n"
-            " 3. Press and hold in [DISP] key while turning on radio\n"
-            "      (\"CLONE\" will appear on radio LCD).\n"
-            " 4. Press [RECEIVE] screen button\n"
-            "      (\"-WAIT-\" will appear on radio LCD).\n"
+            "1. Turn radio off.\n"
+            "2. Connect cable to DATA terminal.\n"
+            "3. Press and hold in [DISP] key while turning on radio\n"
+            "     (\"CLONE\" will appear on radio LCD).\n"
+            "4. Press [RECEIVE] screen button\n"
+            "     (\"-WAIT-\" will appear on radio LCD).\n"
             "5. Finally, press OK button below.\n")
         return rp
 
