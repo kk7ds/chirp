@@ -150,6 +150,11 @@ struct {
   char soft_ver[5];
 } properties;
 
+struct {
+  lbcd rxfreq[4];       // 00-03
+  lbcd txfreq[4];       // 04-07
+} test_frequencies[16];
+
 #seekto 0x40A0;
 struct {
   char name[16];
@@ -544,8 +549,8 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     BAUD_RATE = 9600
     VARIANT = ""
     MODEL = ""
-    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=45),
-                    chirp_common.PowerLevel("Low", watts=5)]
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=110),
+                    chirp_common.PowerLevel("Low", watts=45)]
     MODES = ["NFM", "FM"]  # 12.5 / 25 Khz
     _name_chars = 8
     _group_name_chars = 8
@@ -877,7 +882,7 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         if mem.power is None:
             _mem.power = 0
         else:
-            self.POWER_LEVELS.index(mem.power)
+            _mem.power = self.POWER_LEVELS.index(mem.power)
 
         _mem.wide = self.MODES.index(mem.mode)
 
@@ -1044,7 +1049,10 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                                            "Basic Settings")
         button_assignments = RadioSettingGroup("button_assignments",
                                                "Configurable Button Functions")
-        group = RadioSettings(basic_settings, button_assignments)
+        test_frequencies = RadioSettingGroup("test_frequencies",
+                                             "Test Frequencies")
+        group = RadioSettings(basic_settings, button_assignments,
+                              test_frequencies)
 
         # Basic Settings:
         rs = RadioSetting("head_type",
@@ -1096,6 +1104,28 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
               "Configured function for "+buttonName+" button"+_fullHeadWarning,
               button_func_setting)
             button_assignments.append(rs)
+
+        for index in range(0, 16):
+            rxfreq = int(self._memobj.test_frequencies[index]["rxfreq"])*10
+            txfreq = int(self._memobj.test_frequencies[index]["txfreq"])*10
+            # don't populate invalid values
+            if not ((self._range[0] < rxfreq < self._range[1]) or
+                    (self._range[0] < txfreq < self._range[1])):
+                rs = RadioSetting("add_testfreq_%i" % index,
+                                  "Add test frequency #%i" % index,
+                                  RadioSettingValueBoolean(False))
+                rs.set_volatile(True)
+                test_frequencies.append(rs)
+            else:
+                for direction in ["rx", "tx"]:
+                    key = "set_testfreq_%i_%s" % (index, direction)
+                    name = "test frequency %i %s" % (index+1, direction)
+                    rs = RadioSetting(key, name,
+                                      RadioSettingValueInteger(
+                                          self._range[0]/10, self._range[1]/10,
+                                          self._memobj.test_frequencies[index]
+                                          [direction+"freq"]))
+                    test_frequencies.append(rs)
         return group
 
     def set_settings(self, settings):
@@ -1117,6 +1147,18 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                     elif settingKey == "poweron_msg":
                         self._memobj.poweron_msg = _filter_settings_string(
                             button.value.get_value())
+                elif groupKey == "test_frequencies":
+                    keyItems = settingKey.split("_")
+                    if keyItems[0] == "set":
+                        self._memobj.test_frequencies[
+                             int(keyItems[2])][
+                             keyItems[3]+"freq"] = int(button.value)
+                    elif keyItems[0] == "add" and button.value.get_value():
+                        centerFreq = (self._range[0]+self._range[1])/2/10
+                        self._memobj.test_frequencies[
+                             int(keyItems[2])]["rxfreq"] = centerFreq
+                        self._memobj.test_frequencies[
+                             int(keyItems[2])]["txfreq"] = centerFreq
 
 
 @directory.register
@@ -1128,7 +1170,7 @@ class TK690Radio(Kenwoodx90):
     VARIANTS = {
         b"M0690\x01": (160, 28, 37, "K"),  # see note below
         b"M0690\x02": (160, 35, 43, "K2"),
-        b"M0690\x03": (160, 136, 156, "K3")
+        b"M0690\x03": (160, 40, 54, "K3")
     }
 
 
