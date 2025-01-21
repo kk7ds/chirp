@@ -68,7 +68,7 @@ struct {
   u8 tot_rekey;             // TOT Re-key value range(0, 60); off= 0
   u8 unknown1;              // unknown
   u8 tot_reset;             // TOT Re-key value range(0, 60); off= 0
-  u8 unknown2;              // unknows
+  u8 unknown2;              // unknowns
   u8 tot_alert;             // TOT pre alert: range(0,10); 0 = off
   u8 unknown3[7];           // 1d, unknown
   u8 sql_level;             // SQ reference level
@@ -120,7 +120,7 @@ struct {
      control_tone:1,        // control tone (key tone), enabled: 1-on
      poweron_tone:1;        // power on tone, enabled: 1-on
   u8 unknown19[5];
-  u8 min_vol;               // minimum volume posible: range(0,32); 0 = off
+  u8 min_vol;               // minimum volume possible: range(0,32); 0 = off
   u8 tone_vol;              // minimum tone volume FF=Continuous, range(0, 31)
   u8 sub_lcd_disp;          // Sub LCD Display (FF=none, 30=Group, 31=Channel)
   u8 grp_name_len;          // Group Name text length (0-10)
@@ -390,7 +390,7 @@ struct {
   char d_an[10];    // A/N
   u8 unknown33[4];  // unknown
   u8 d_code[8];     // Code
-  u8 unknown34[8];  // unkown
+  u8 unknown34[8];  // unknown
 } dtmf_memory[32];
 
 #seekto 0x6000;
@@ -512,7 +512,7 @@ TOT_REKEY = ["off"] + ["%s" % x for x in range(1, 61)]
 TOT_RESET = ["off"] + ["%s" % x for x in range(1, 16)]
 VOL = ["off"] + ["%s" % x for x in range(1, 32)]
 TVOL = ["%s" % x for x in range(0, 33)]
-TVOL[32] = "Continous"
+TVOL[32] = "Continuous"
 SQL = ["off"] + ["%s" % x for x in range(1, 10)]
 SIG_TYPE = ["AND", "OR"]
 CM0 = {
@@ -570,7 +570,7 @@ KEYS = {
     0x40: "Monitor A: Open Momentary",
     0x41: "Monitor B: Open Toggle",
     0x42: "Monitor C: Carrier Squelch Momentary",
-    0x43: "Monitor D: Carrier Squelch Toogle",
+    0x43: "Monitor D: Carrier Squelch Toggle",
     0x44: "AUX",
     0x45: "Redial",
     0x46: "RF Power Low",                   # portable only ?
@@ -1413,13 +1413,13 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
                               current_index=sett.sq_logic_sig))
         optfeat2.append(sqls)
 
-        aclt = MemSetting("settings.access_log_type", "Acess Logic Type",
+        aclt = MemSetting("settings.access_log_type", "Access Logic Type",
                           RadioSettingValueList(
                               ALT.values(),
                               current_index=sett.access_log_type))
         optfeat2.append(aclt)
 
-        acls = MemSetting("settings.access_log_sig", "Acess Logic Signal",
+        acls = MemSetting("settings.access_log_sig", "Access Logic Signal",
                           RadioSettingValueList(
                               ALS.values(),
                               current_index=sett.access_log_sig))
@@ -1469,7 +1469,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         dtmfset.append(decpc)
 
         # front keys
-        # The Mobile only parameters are wraped here
+        # The Mobile only parameters are wrapped here
         if self.TYPE[0] == ord("M"):
             vu = MemSetting("keys.kVOL_UP", "VOL UP(Left Arrow Up)",
                             RadioSettingValueMap(
