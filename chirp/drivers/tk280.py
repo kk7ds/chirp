@@ -178,15 +178,15 @@ struct {
 #seekto 0x0110;
 struct {
   u8 kA;            // A button
-  u8 kLEFT;         // Triangle to Left
-  u8 kRIGHT;        // Triangle to Right
-  u8 kSIDE1;        // Side button 1 (lamp)
+  u8 kLEFT;         // Triangle to Left on portable, B
+  u8 kRIGHT;        // Triangle to Right on portable, C
+  u8 kSIDE1;        // Side button 1 (lamp), D on mobile
   u8 kSCN;          // S switch
   u8 kMON;          // Side button 2 (mon)
   u8 kORANGE;       // Orange button on portable, Foot Switch on mobile
-// PF1(ORANGE) on portable, Group Up (Right Side Up Arrow) on mobile
+  // PF1(ORANGE) on portable, Group Up (Right Side Up Arrow) on mobile
   u8 kPF1;
-// PF2(BLACK) on portable, Group Down (Right Side Down Arrow) on mobile
+  // PF2(BLACK) on portable, Group Down (Right Side Down Arrow) on mobile
   u8 kPF2;
   u8 kVOL_UP;       // Volume Up (Left Side Up Arrow), Mobile only
   u8 kVOL_DOWN;     // Volume Down (Left Side Down Arrow), Mobile only
@@ -1472,34 +1472,29 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         # The Mobile only parameters are wraped here
         if self.TYPE[0] == ord("M"):
             vu = MemSetting("keys.kVOL_UP", "VOL UP(Left Arrow Up)",
-                            RadioSettingValueList(
-                                KEYS.values(),
-                                current_index=keys.kVOL_UP))
+                            RadioSettingValueMap(
+                                KEY_MAP, keys.kVOL_UP))
             fkeys.append(vu)
 
             vd = MemSetting("keys.kVOL_DOWN", "VOL DOWN(Left Arrow Down)",
-                            RadioSettingValueList(
-                                KEYS.values(),
-                                current_index=keys.kVOL_DOWN))
+                            RadioSettingValueMap(
+                                KEY_MAP, keys.kVOL_DOWN))
             fkeys.append(vd)
 
             chu = MemSetting("keys.kPF1", "Group UP(Right Side Up Arrow)",
-                             RadioSettingValueList(
-                                 KEYS.values(),
-                                 current_index=keys.kPF1))
+                             RadioSettingValueMap(
+                                 KEY_MAP, keys.kPF1))
             fkeys.append(chu)
 
             chd = MemSetting("keys.kPF2",
                              "Group DOWN(Right Side Down Arrow)",
-                             RadioSettingValueList(
-                                 KEYS.values(),
-                                 current_index=keys.kPF2))
+                             RadioSettingValueMap(
+                                 KEY_MAP, keys.kPF2))
             fkeys.append(chd)
 
             foot = MemSetting("keys.kORANGE", "Foot switch",
-                              RadioSettingValueList(
-                                  KEYS.values(),
-                                  current_index=keys.kORANGE))
+                              RadioSettingValueMap(
+                                  KEY_MAP, keys.kORANGE))
             fkeys.append(foot)
 
         if self.TYPE[0] == ord("P"):
@@ -1538,15 +1533,20 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
                               KEY_MAP, keys.kA))
         fkeys.append(abtn)
 
-        bbtn = MemSetting("keys.kLEFT", "Left Arrow(B on Portable)",
+        bbtn = MemSetting("keys.kLEFT", "B",
                           RadioSettingValueMap(
                               KEY_MAP, keys.kLEFT))
         fkeys.append(bbtn)
 
-        cbtn = MemSetting("keys.kRIGHT", "Right Arrow(C on Portable)",
+        cbtn = MemSetting("keys.kRIGHT", "C",
                           RadioSettingValueMap(
                               KEY_MAP, keys.kRIGHT))
         fkeys.append(cbtn)
+
+        if self.TYPE[0] == ord('M'):
+            dkey = MemSetting("keys.kSIDE1", "D",
+                              RadioSettingValueMap(KEY_MAP, keys.kSIDE1))
+            fkeys.append(dkey)
 
         # TODO Make the following (keypad 0-9,*,#) contingent on variant.
         # Only concerned with TK-380 for now
@@ -1848,7 +1848,7 @@ class TK380_Radios(KenwoodTKx80):
     _steps = chirp_common.COMMON_TUNING_STEPS + (6.25,)
 
 
-# Not yet tested
+@directory.register
 class TK780_Radios(KenwoodTKx80):
     """Kenwood TK-780 Radio """
     MODEL = "TK-780"
@@ -1859,9 +1859,10 @@ class TK780_Radios(KenwoodTKx80):
     #    b"M0780\x05\xFF":    (250, 136, 174, "K2"),
     #    }
     _range = [(136000000, 174000000)]
+    _steps = chirp_common.COMMON_TUNING_STEPS + (2.5, 6.25)
 
 
-# Not yet tested
+@directory.register
 class TK880_Radios(KenwoodTKx80):
     """Kenwood TK-880 Radio """
     MODEL = "TK-880"
@@ -1875,3 +1876,4 @@ class TK880_Radios(KenwoodTKx80):
     #     b"M0880\x08\xFF":    (250, 400, 450, "K3"),
     #     }
     _range = [(400000000, 520000000)]
+    _steps = chirp_common.COMMON_TUNING_STEPS + (6.25, 12.5)
