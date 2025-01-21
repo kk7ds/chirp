@@ -788,6 +788,12 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             _mem.rxfreq = 0xFFFFFFFF
             return
 
+        # Zero the entire structure and set these fields to default values
+        # instead of leaving unused fields as FF
+        _mem.fill_raw(b'\x00')
+        _mem.unknown2_32 = 0x02
+        _mem.mute_mode = 0x01
+
         _mem.rxfreq = _freq_encode(mem.freq)
         if mem.duplex == "off":
             _mem.txfreq = 0xFFFFFFFF
