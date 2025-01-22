@@ -554,8 +554,8 @@ KEYS = {
     0x34: "Emergency",
     0x35: "Home Channel",                   # Possible portable only, check it
     0x36: "Function",
-    0x37: "CH down",
-    0x38: "CH up",
+    0x37: "Channel down",
+    0x38: "Channel up",
     0x39: "Key lock",
     0x3b: "Public address",
     0x3c: "Reverse",                        # Not all firmware versions?
@@ -569,19 +569,17 @@ KEYS = {
     0x45: "Redial",
     0x47: "Scan",
     0x48: "Scan Del/Add",
-    0x4a: "GROUP down",
-    0x4b: "GROUP up",
+    0x4a: "Group Down",
+    0x4b: "Group Up",
     0x4e: "Operator Selectable Tone",
     0x4f: "None",
-    0x50: "VOL down",
-    0x51: "VOL up",
+    0x50: "Volume down",
+    0x51: "Volume up",
     0x52: "Talk around",
 }
 PORTABLE_KEYS = {
     0x3a: "Lamp",
     0x5d: "AUX",
-    0xa1: "Channel Up/Down",    # Knob for portables only
-    0xa2: "Group Up/Down",      # Knob for portables only
     0x46: "RF Power Low",
 }
 MOBILE_KEYS = {
@@ -1184,16 +1182,18 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         passwd = self._memobj.settings.passwords
         fsync = self._memobj.fleetsync
 
-        optfeat1 = RadioSettingGroup("optfeat1", "Optional Features 1")
-        optfeat2 = RadioSettingGroup("optfeat2", "Optional Features 2")
+        optfeat1 = RadioSettingSubGroup("optfeat1", "Optional Features 1")
+        optfeat2 = RadioSettingSubGroup("optfeat2", "Optional Features 2")
+        optfeat = RadioSettingGroup("optfeat", "Optional Features",
+                                    optfeat1, optfeat2)
         dealer = RadioSettingGroup("dealer", "Dealer Settings")
-        fkeys = RadioSettingGroup("keys", "Controls")
+        fkeys = RadioSettingGroup("keys", "Keys")
         scaninf = RadioSettingGroup("scaninf", "Scan Information")
         dtmfset = RadioSettingGroup("dtmfset", "DTMF")
         ost = RadioSettingGroup("ost", "OST")
         groups = RadioSettingGroup("groups", "Groups")
 
-        top = RadioSettings(optfeat1, optfeat2, dealer, fkeys, scaninf,
+        top = RadioSettings(optfeat, dealer, fkeys, scaninf,
                             dtmfset, ost, groups)
 
         self._get_settings_groups(groups)
@@ -1474,103 +1474,58 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
             KEYS.items(),
             model_keys.items())])
 
-        # front keys
-        # The Mobile only parameters are wrapped here
-        if self.TYPE[0] == ord("M"):
-            vu = MemSetting("keys.kVOL_UP", "VOL UP(Left Arrow Up)",
-                            RadioSettingValueMap(
-                                key_map, keys.kVOL_UP))
-            fkeys.append(vu)
-
-            vd = MemSetting("keys.kVOL_DOWN", "VOL DOWN(Left Arrow Down)",
-                            RadioSettingValueMap(
-                                key_map, keys.kVOL_DOWN))
-            fkeys.append(vd)
-
-            chu = MemSetting("keys.kPF1", "Group UP(Right Side Up Arrow)",
-                             RadioSettingValueMap(
-                                 key_map, keys.kPF1))
-            fkeys.append(chu)
-
-            chd = MemSetting("keys.kPF2",
-                             "Group DOWN(Right Side Down Arrow)",
-                             RadioSettingValueMap(
-                                 key_map, keys.kPF2))
-            fkeys.append(chd)
-
-            foot = MemSetting("keys.kORANGE", "Foot switch",
-                              RadioSettingValueMap(
-                                  key_map, keys.kORANGE))
-            fkeys.append(foot)
+        mobile_keys = {
+            'VOL_UP': 'Volume Up (Left Arrow Up)',
+            'VOL_DOWN': 'Volume Down (Left Arrow Down)',
+            'PF1': 'Group Up (Right Side Up Arrow)',
+            'PF2': 'Group Down (Right Side Down Arrow)',
+            'ORANGE': 'Foot Switch',
+            'MON': 'MON',
+            'SCN': 'SCN',
+            'A': 'A',
+            'LEFT': 'B',
+            'RIGHT': 'C',
+            'SIDE1': 'D',
+        }
+        portable_keys = {
+            'PF1': 'Orange',
+            'SIDE1': 'Side 1',
+            'MON': 'Side 2',
+            'SCN': 'S',
+            'A': 'A',
+            'LEFT': 'B',
+            'RIGHT': 'C',
+        }
 
         if self.TYPE[0] == ord("P"):
+            knob_map = {'Channel Up/Down': 0xa1,
+                        'Group Up/Down': 0xa2}
             knob = MemSetting("keys.kP_KNOB", "Knob",
                               RadioSettingValueMap(
-                                  key_map,
+                                  knob_map.items(),
                                   keys.kP_KNOB))
             fkeys.append(knob)
 
-            orange = MemSetting("keys.kPF1", "Orange",
-                                RadioSettingValueMap(
-                                    key_map, keys.kPF1))
-            fkeys.append(orange)
-
-            side1 = MemSetting("keys.kSIDE1", "Side 1",
-                               RadioSettingValueMap(
-                                   key_map, keys.kSIDE1))
-            fkeys.append(side1)
-
-        mon_name = "MON"
-        if self.TYPE[0] == ord("P"):
-            mon_name = "Side 2"
-
-        mon = MemSetting("keys.kMON", mon_name,
-                         RadioSettingValueMap(
-                             key_map, keys.kMON))
-        fkeys.append(mon)
-
-        sbtn = MemSetting("keys.kSCN", "Scan/S",
-                          RadioSettingValueMap(
-                              key_map, keys.kSCN))
-        fkeys.append(sbtn)
-
-        abtn = MemSetting("keys.kA", "A",
-                          RadioSettingValueMap(
-                              key_map, keys.kA))
-        fkeys.append(abtn)
-
-        bbtn = MemSetting("keys.kLEFT", "B",
-                          RadioSettingValueMap(
-                              key_map, keys.kLEFT))
-        fkeys.append(bbtn)
-
-        cbtn = MemSetting("keys.kRIGHT", "C",
-                          RadioSettingValueMap(
-                              key_map, keys.kRIGHT))
-        fkeys.append(cbtn)
-
         if self.TYPE[0] == ord('M'):
-            dkey = MemSetting("keys.kSIDE1", "D",
-                              RadioSettingValueMap(key_map, keys.kSIDE1))
-            fkeys.append(dkey)
+            model_keys = mobile_keys
+        else:
+            model_keys = portable_keys
+
+        for key, name in model_keys.items():
+            rs = MemSetting("keys.k%s" % key, name,
+                            RadioSettingValueMap(
+                                key_map, getattr(keys, 'k%s' % key)))
+            fkeys.append(rs)
 
         # TODO Make the following (keypad 0-9,*,#) contingent on variant.
         # Only concerned with TK-380 for now
-        for key in '0123456789':
-            btn = MemSetting("keys.k%s" % key, "Keypad %s" % key,
+        for key in '0123456789*#':
+            xlate = {'*': 'ASTR', '#': 'POUND'}
+            name = xlate.get(key, key)
+            btn = MemSetting("keys.k%s" % name, "Keypad %s" % key,
                              RadioSettingValueMap(
-                                 key_map, getattr(keys, 'k%s' % key)))
+                                 key_map, getattr(keys, 'k%s' % name)))
             fkeys.append(btn)
-
-        starbtn = MemSetting("keys.kASTR", "Keypad *",
-                             RadioSettingValueMap(
-                                 key_map, keys.kASTR))
-        fkeys.append(starbtn)
-
-        poundbtn = MemSetting("keys.kPOUND", "Keypad #",
-                              RadioSettingValueMap(
-                                  key_map, keys.kPOUND))
-        fkeys.append(poundbtn)
 
         return top
 
