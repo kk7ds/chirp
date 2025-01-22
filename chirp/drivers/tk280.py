@@ -484,8 +484,6 @@ I must investigate further on this.
 MEM_SIZE = 0x8000  # 32,768 bytes (128 blocks of 256 bytes)
 BLOCK_SIZE = 256
 MEM_BLOCKS = range(0, MEM_SIZE // BLOCK_SIZE)
-# undefined yet...
-RO_BLOCKS = chain(range(0x10, 0x1F), range(0x59, 0x5f), range(0x4FFF, 0x50FF))
 
 # define and empty block of data, as it will be used a lot in this code
 EMPTY_BLOCK = b"\xFF" * 256
@@ -547,9 +545,6 @@ DDT = ["%s" % x for x in range(0, 300)]
 DWT = ["%s" % x for x in range(0, 300)]
 GRPSC = {0x30: "Single", 0x31: "Multi"}
 BCL_OPTS = ['Off', 'QT/DQT', 'Option Signalling', 'Carrier Only']
-
-# For debugging purposes
-debug = True
 
 KEYS = {
     0x30: "Memory(RCL/STO)",
@@ -831,7 +826,6 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         rf.valid_skips = SKIP_VALUES
         rf.valid_dtcs_codes = DTCS_CODES
         rf.valid_bands = self._range
-        # FIXME: The 280 supports finer steps
         rf.valid_tuning_steps = self._steps
         rf.valid_name_length = 10
         rf.memory_bounds = (1, self._upper)
@@ -1300,7 +1294,6 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
                                 VOL, current_index=sett.min_vol))
         optfeat2.append(minvol)
 
-        # FIXME: Not sure this is right
         tv = int(sett.tone_vol)
         if tv == 255:
             tv = 32
