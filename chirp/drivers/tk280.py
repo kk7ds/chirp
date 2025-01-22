@@ -15,11 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import collections
+import itertools
 import logging
 import struct
 import time
 
-from itertools import chain
 from chirp import chirp_common, directory, memmap, errors, util, bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
@@ -558,10 +558,10 @@ KEYS = {
     0x33: "Display character",
     0x34: "Emergency",
     0x35: "Home Channel",                   # Possible portable only, check it
+    0x36: "Function",
     0x37: "CH down",
     0x38: "CH up",
     0x39: "Key lock",
-    0x3a: "Lamp",                           # Portable only
     0x3b: "Public address",
     0x3c: "Reverse",                        # Not all firmware versions?
     0x3d: "Horn alert",
@@ -571,9 +571,7 @@ KEYS = {
     0x41: "Monitor B: Open Toggle",
     0x42: "Monitor C: Carrier Squelch Momentary",
     0x43: "Monitor D: Carrier Squelch Toggle",
-    0x44: "AUX",
     0x45: "Redial",
-    0x46: "RF Power Low",                   # portable only ?
     0x47: "Scan",
     0x48: "Scan Del/Add",
     0x4a: "GROUP down",
@@ -583,11 +581,18 @@ KEYS = {
     0x50: "VOL down",
     0x51: "VOL up",
     0x52: "Talk around",
+}
+PORTABLE_KEYS = {
+    0x3a: "Lamp",
     0x5d: "AUX",
-    0xa1: "Channel Up/Down",                 # Knob for portables only
-    0xa2: "Group Up/Down"       # Knob for portables only
-    }
-KEY_MAP = [(v, k) for k, v in KEYS.items()]
+    0xa1: "Channel Up/Down",    # Knob for portables only
+    0xa2: "Group Up/Down",      # Knob for portables only
+    0x46: "RF Power Low",
+}
+MOBILE_KEYS = {
+    0x5D: 'AUX A',  # Same as AUX on portable
+    0x44: 'AUX B',
+}
 
 
 def _close_radio(radio):
@@ -1468,50 +1473,58 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
                                                    mem_pad_char='\xFF'))
         dtmfset.append(decpc)
 
+        if self.TYPE[0] == ord("P"):
+            model_keys = PORTABLE_KEYS
+        else:
+            model_keys = MOBILE_KEYS
+        key_map = sorted([(v, k) for k, v in itertools.chain(
+            KEYS.items(),
+            model_keys.items())])
+
         # front keys
         # The Mobile only parameters are wrapped here
         if self.TYPE[0] == ord("M"):
             vu = MemSetting("keys.kVOL_UP", "VOL UP(Left Arrow Up)",
                             RadioSettingValueMap(
-                                KEY_MAP, keys.kVOL_UP))
+                                key_map, keys.kVOL_UP))
             fkeys.append(vu)
 
             vd = MemSetting("keys.kVOL_DOWN", "VOL DOWN(Left Arrow Down)",
                             RadioSettingValueMap(
-                                KEY_MAP, keys.kVOL_DOWN))
+                                key_map, keys.kVOL_DOWN))
             fkeys.append(vd)
 
             chu = MemSetting("keys.kPF1", "Group UP(Right Side Up Arrow)",
                              RadioSettingValueMap(
-                                 KEY_MAP, keys.kPF1))
+                                 key_map, keys.kPF1))
             fkeys.append(chu)
 
             chd = MemSetting("keys.kPF2",
                              "Group DOWN(Right Side Down Arrow)",
                              RadioSettingValueMap(
-                                 KEY_MAP, keys.kPF2))
+                                 key_map, keys.kPF2))
             fkeys.append(chd)
 
             foot = MemSetting("keys.kORANGE", "Foot switch",
                               RadioSettingValueMap(
-                                  KEY_MAP, keys.kORANGE))
+                                  key_map, keys.kORANGE))
             fkeys.append(foot)
 
         if self.TYPE[0] == ord("P"):
             knob = MemSetting("keys.kP_KNOB", "Knob",
                               RadioSettingValueMap(
-                                  KEY_MAP,
+                                  key_map,
                                   keys.kP_KNOB))
             fkeys.append(knob)
 
             orange = MemSetting("keys.kPF1", "Orange",
                                 RadioSettingValueMap(
-                                    KEY_MAP, keys.kPF1))
+                                    key_map, keys.kPF1))
             fkeys.append(orange)
 
             side1 = MemSetting("keys.kSIDE1", "Side 1",
                                RadioSettingValueMap(
-                                   KEY_MAP, keys.kSIDE1))
+                                   key_map, keys.kSIDE1))
             fkeys.append(side1)
 
         mon_name = "MON"
@@ -1520,32 +1533,32 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
 
         mon = MemSetting("keys.kMON", mon_name,
                          RadioSettingValueMap(
-                             KEY_MAP, keys.kMON))
+                             key_map, keys.kMON))
         fkeys.append(mon)
 
         sbtn = MemSetting("keys.kSCN", "Scan/S",
                           RadioSettingValueMap(
-                              KEY_MAP, keys.kSCN))
+                              key_map, keys.kSCN))
         fkeys.append(sbtn)
 
         abtn = MemSetting("keys.kA", "A",
                           RadioSettingValueMap(
-                              KEY_MAP, keys.kA))
+                              key_map, keys.kA))
         fkeys.append(abtn)
 
         bbtn = MemSetting("keys.kLEFT", "B",
                           RadioSettingValueMap(
-                              KEY_MAP, keys.kLEFT))
+                              key_map, keys.kLEFT))
         fkeys.append(bbtn)
 
         cbtn = MemSetting("keys.kRIGHT", "C",
                           RadioSettingValueMap(
-                              KEY_MAP, keys.kRIGHT))
+                              key_map, keys.kRIGHT))
         fkeys.append(cbtn)
 
         if self.TYPE[0] == ord('M'):
             dkey = MemSetting("keys.kSIDE1", "D",
-                              RadioSettingValueMap(KEY_MAP, keys.kSIDE1))
+                              RadioSettingValueMap(key_map, keys.kSIDE1))
             fkeys.append(dkey)
 
         # TODO Make the following (keypad 0-9,*,#) contingent on variant.
@@ -1553,17 +1566,17 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         for key in '0123456789':
             btn = MemSetting("keys.k%s" % key, "Keypad %s" % key,
                              RadioSettingValueMap(
-                                 KEY_MAP, getattr(keys, 'k%s' % key)))
+                                 key_map, getattr(keys, 'k%s' % key)))
             fkeys.append(btn)
 
         starbtn = MemSetting("keys.kASTR", "Keypad *",
                              RadioSettingValueMap(
-                                 KEY_MAP, keys.kASTR))
+                                 key_map, keys.kASTR))
         fkeys.append(starbtn)
 
         poundbtn = MemSetting("keys.kPOUND", "Keypad #",
                               RadioSettingValueMap(
-                                  KEY_MAP, keys.kPOUND))
+                                  key_map, keys.kPOUND))
         fkeys.append(poundbtn)
 
         return top
