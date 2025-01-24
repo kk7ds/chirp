@@ -50,7 +50,7 @@ struct {
      left_scan_direction:1;
   u8 left_scanning:1,
      unknown4:7;
-} state[1];
+} state;
 
 #seekto 0x0F20;
 struct {
