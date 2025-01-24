@@ -983,7 +983,7 @@ class Processor:
                     self._offset += (gen.size() // 8)
                 res.append(gen)
 
-            if count == 1:
+            if defn[1][0] != "array":
                 self._generators[name] = res[0]
             else:
                 self._generators[name] = res
@@ -1015,7 +1015,7 @@ class Processor:
             self._generators = tmp
             self._lines = tmp_lines
 
-        if count == 1:
+        if deftype[0] != "array":
             self._generators[name] = result[0]
         else:
             self._generators[name] = result
