@@ -63,9 +63,9 @@ struct {
      bw1:1,             // twin setting of bw (LCD "romb")
      bs1:1,             // twin setting of bs (LCD "S")
      warning1:1;        // twin setting of warning (LCD "Tune")
-  u8 sql[1];
+  u8 sql;
   u8 monitorval;
-  u8 tot[1];
+  u8 tot;
   u8 powerrank;
   u8 unknown23[3];
   u8 unknown24[8];

@@ -97,6 +97,13 @@ class TestBitwiseBaseIntTypes(BaseTest):
             obj.foo[i] = i * 2
         self.assertEqual(b'\x00\x02\x04\x06', data.get_packed())
 
+    def test_int_array_of_one(self):
+        data = memmap.MemoryMapBytes(bytes(b'\x00\x01\x02\x03'))
+        obj = bitwise.parse('u8 foo[1];', data)
+        self.assertEqual(0, obj.foo[0])
+        obj.foo[0] = 1
+        self.assertEqual(b'\x01\x01\x02\x03', data.get_packed())
+
     def test_int_array_set_raw(self):
         data = memmap.MemoryMapBytes(bytes(b'\x00\x01\x02\x03'))
         obj = bitwise.parse('u8 foo[4];', data)
@@ -356,6 +363,12 @@ class TestBitwiseStructTypes(BaseTest):
         self.assertRaises(AssertionError, obj.fill_raw, '1')
         self.assertRaises(AssertionError, obj.fill_raw, b'AB')
         self.assertRaises(AssertionError, obj.fill_raw, False)
+
+    def test_struct_array_of_one(self):
+        data = memmap.MemoryMapBytes(bytes(b"123"))
+        defn = "struct { u8 bar; } foo[1];"
+        obj = bitwise.parse(defn, data)
+        self.assertEqual(ord('1'), obj.foo[0].bar)
 
 
 class TestBitwisePrintoffset(BaseTest):

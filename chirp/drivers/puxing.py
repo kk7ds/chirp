@@ -106,7 +106,7 @@ struct {
 struct {
   u8 limits;
   u8 model;
-} model[1];
+} model;
 
 #seekto 0x0850;
 struct {
