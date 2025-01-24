@@ -679,7 +679,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             mem_format += '\n\n' + (
                 SYSTEM_MEM_FORMAT % {
                     'addr': addr,
-                    'count': max(count, 2),   # bitwise bug, one-element array
+                    'count': max(count, 1),  # Never allow array of zero
                     'index': index})
 
         self._memobj = bitwise.parse(mem_format, self._mmap)
@@ -698,7 +698,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         for index, count in enumerate(zone_sizes):
             new_format += SYSTEM_MEM_FORMAT % {
                 'addr': addr,
-                'count': max(count, 2),  # bitwise bug
+                'count': max(count, 1),  # Never allow array of zero
                 'index': index}
             self._zones.append((addr, count))
             addr += 0x20 + (count * 0x30)
