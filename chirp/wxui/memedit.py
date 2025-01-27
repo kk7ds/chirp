@@ -760,6 +760,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                                                     style=wx.TE_PROCESS_ENTER)
             self._filter_query.Bind(wx.EVT_TEXT_ENTER, self._do_filter_query)
             sizer.Add(self._filter_query, 0, wx.EXPAND | wx.ALL, border=5)
+        else:
+            self._filter_query = None
         sizer.Add(self._grid, 1, wx.EXPAND)
         self.SetSizer(sizer)
 
@@ -801,6 +803,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
     @common.error_proof()
     def _do_filter_query(self, event=None):
+        if not self._filter_query:
+            return
         filter_str = self._filter_query.GetValue()
 
         if filter_str:
