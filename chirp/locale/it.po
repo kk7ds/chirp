@@ -475,7 +475,6 @@ msgstr ""
 "4. Premere il pulsante [RECEIVE] sullo schermo\n"
 "     (sul LCD della radio apparirà \"WAIT\").\n"
 "5, Infine, premere il pulsante OK in basso.\n"
-"\n"
 
 #: ../drivers/ft1d.py:891
 msgid ""
