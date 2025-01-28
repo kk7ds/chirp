@@ -1,4 +1,4 @@
-# Latest update: April, 2021 Add hasattr test at line 564
+# Latest update: Jan, 2025 add IC7410 support
 import struct
 import logging
 from chirp.drivers import icf
@@ -239,6 +239,34 @@ bbcd dtcs_tx[2];
 char name[8];
 """
 
+MEM_IC7410_FORMAT = """
+bbcd number[2];
+u8   duplex:4,                // 3 split and select memory settings
+     select:4;
+lbcd freq[5];
+u8   mode;
+u8   filter;
+u8   unknown2:7,
+     dig:1;
+u8   unknown3:6,
+     tmode:2;
+bbcd rtone[3];
+bbcd ctone[3];
+// As with IC-7300 it seems the following are duplicated parameters save for
+// `dig` which seem to be zeroed in unknown5
+lbcd duplexOffset[5];
+u8   mode_tx;
+u8   filter_tx;
+u8   unknown5:7,
+     dig_tx:1;
+u8   unknown6:6,
+     skip:2;
+bbcd rtone_tx[3];
+bbcd ctone_tx[3];
+// End TX duplicate block
+char name[9];
+"""
+
 MEM_IC7610_FORMAT = """
 bbcd number[2];            // 1,2
 u8   spl:4,                // 3 split and select memory settings
@@ -408,6 +436,12 @@ class IC7400MemFrame(MemFrame):
     def get_obj(self):
         self._data = MemoryMapBytes(bytes(self._data))
         return bitwise.parse(MEM_IC7400_FORMAT, self._data)
+
+
+class IC7410MemFrame(MemFrame):
+    def get_obj(self):
+        self._data = MemoryMapBytes(bytes(self._data))
+        return bitwise.parse(MEM_IC7410_FORMAT, self._data)
 
 
 class IC7300MemFrame(MemFrame):
@@ -1056,6 +1090,68 @@ class Icom7400Radio(IcomCIVRadio):
             "abcdefghijklmnopqrstuvwxyz" \
             "{|}~"
         self._rf.memory_bounds = (1, 99)
+
+
+@directory.register
+class Icom7410Radio(IcomCIVRadio):
+    """Icom IC-7410"""
+    MODEL = "IC-7410"
+    BAUD_RATE = 9600
+    _model = "\x80"
+    _template = 99
+
+    _num_banks = 1        # Banks not supported
+
+    _SPECIAL_CHANNELS = {
+        "P1": 100,
+        "P2": 101,
+    }
+    _SPECIAL_CHANNELS_REV = dict(zip(_SPECIAL_CHANNELS.values(),
+                                     _SPECIAL_CHANNELS.keys()))
+
+    def _is_special(self, number):
+        return isinstance(number, str) or number > 99
+
+    def _get_special_info(self, number):
+        info = SpecialChannel()
+        if isinstance(number, str):
+            info.name = number
+            info.channel = self._SPECIAL_CHANNELS[number]
+            info.location = info.channel
+        else:
+            info.location = number
+            info.name = self._SPECIAL_CHANNELS_REV[number]
+            info.channel = info.location
+        return info
+
+    def _initialize(self):
+        self._classes["mem"] = IC7410MemFrame
+        self._rf.has_bank = False
+        self._rf.has_dtcs_polarity = False
+        self._rf.has_dtcs = False
+        self._rf.has_ctone = True
+        self._rf.has_offset = False
+        self._rf.has_name = True
+        self._rf.has_tuning_step = False
+        self._rf.valid_modes = [
+            "LSB", "USB", "AM", "CW", "RTTY", "FM", "CWR", "RTTYR",
+            "Data+LSB", "Data+USB", "Data+AM", "N/A", "N/A", "Data+FM"
+        ]
+        self._rf.valid_tmodes = ["", "Tone", "TSQL"]
+        self._rf.valid_duplexes = ["", "split"]
+        self._rf.valid_bands = [(30000, 60000000)]
+        self._rf.valid_tuning_steps = []
+        self._rf.valid_skips = []
+        self._rf.valid_name_length = 9
+        self._rf.valid_characters = " !#$%&'()*+,-./" \
+            "0123456789" \
+            ":;<=>?" \
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
+            "[\\]^_" \
+            "abcdefghijklmnopqrstuvwxyz" \
+            "{|}~"
+        self._rf.memory_bounds = (1, 99)
+        self._rf.valid_special_chans = sorted(self._SPECIAL_CHANNELS.keys())
 
 
 @directory.register
