@@ -1725,13 +1725,14 @@ class ChirpMain(wx.Frame):
         # successfully
         last_editor = self.current_editorset.current_editor_index
         self.current_editorset.close()
-        self._editors.DeletePage(self._editors.GetSelection())
+        current_index = self._editors.GetSelection()
+        self._editors.DeletePage(current_index)
         self._update_window_for_editor()
 
         # Mimic the File->Open process to get a new editorset based
         # on our franken-radio
         editorset = ChirpEditorSet(new_radio, filename, self._editors)
-        self.add_editorset(editorset, select=True)
+        self.add_editorset(editorset, select=True, atindex=current_index)
         editorset.select_editor(index=last_editor)
         editorset.current_editor.set_scroll_pos(editor_pos)
 
