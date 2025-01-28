@@ -147,7 +147,7 @@ struct {
      bcl:1,            // Busy Lock  OFF=0 ON=1
      unknown2:3;       //
   u8 reserved[3];      // Reserved               D-F
-} memory[30];
+} memory[%(memcnt)d];
 
 #seekto 0x002D;
 struct {
@@ -179,7 +179,7 @@ struct {
   u8 tailmode;         // QT/DQT Tail Mode       007F
 } settings;
 
-#seekto 0x01F0;
+#seekto %(settings_offset)s;
 u8 skipflags[4];       // Scan Add
 
 #seekto 0x029F;
@@ -1950,13 +1950,39 @@ class RB26Radio(RT21Radio):
     _memsize = 0x0320
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT_RB26, self._mmap)
+        mem_params = {'memcnt': self._upper, 'settings_offset': '0x01F0'}
+        self._memobj = bitwise.parse(MEM_FORMAT_RB26 % mem_params, self._mmap)
 
 
 @directory.register
-class RB626(RB26Radio):
-    MODEL = 'RB626'
+class RB626(RT21Radio):
+    """RETEVIS RB626"""
+    VENDOR = "Retevis"
+    MODEL = "RB626"
+    BAUD_RATE = 9600
+    BLOCK_SIZE = 0x20
+    BLOCK_SIZE_UP = 0x10
+
+    DTCS_CODES = DTCS_EXTRA
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=3.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    _magic = b"PHOGR" + b"\x01" + b"0"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
+    _upper = 32
+    _ack_1st_block = False
+    _skipflags = True
+    _reserved = True
     _gmrs = False
+
+    _ranges = [
+               (0x0000, 0x0320),
+              ]
+    _memsize = 0x0320
+
+    def process_mmap(self):
+        mem_params = {'memcnt': self._upper, 'settings_offset': '0x0200'}
+        self._memobj = bitwise.parse(MEM_FORMAT_RB26 % mem_params, self._mmap)
 
 
 @directory.register
@@ -2067,7 +2093,8 @@ class RB23Radio(RT21Radio):
     _memsize = 0x0320
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT_RB26, self._mmap)
+        mem_params = {'memcnt': self._upper, 'settings_offset': '0x01F0'}
+        self._memobj = bitwise.parse(MEM_FORMAT_RB26 % mem_params, self._mmap)
 
 
 @directory.register
@@ -2292,4 +2319,5 @@ class RB89Radio(RT21Radio):
     _memsize = 0x0340
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT_RB26, self._mmap)
+        mem_params = {'memcnt': self._upper, 'settings_offset': '0x01F0'}
+        self._memobj = bitwise.parse(MEM_FORMAT_RB26 % mem_params, self._mmap)
