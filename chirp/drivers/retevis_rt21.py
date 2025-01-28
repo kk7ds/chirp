@@ -196,6 +196,69 @@ struct {
 } settings3;
 """
 
+MEM_FORMAT_RB626 = """
+#seekto 0x0000;
+struct {
+  lbcd rxfreq[4];      // RX Frequency           0-3
+  lbcd txfreq[4];      // TX Frequency           4-7
+  ul16 rx_tone;        // PL/DPL Decode          8-9
+  ul16 tx_tone;        // PL/DPL Encode          A-B
+  u8 compander:1,      // Compander              C
+     unknown1:1,       //
+     highpower:1,      // Power Level
+     wide:1,           // Bandwidth
+     bcl:1,            // Busy Lock  OFF=0 ON=1
+     unknown2:3;       //
+  u8 reserved[3];      // Reserved               D-F
+} memory[32];
+
+#seekto 0x002D;
+struct {
+  u8 unknown_1:1,      //                        002D
+     chnumberd:1,      // Channel Number Disable
+     gain:1,           // MIC Gain
+     savem:1,          // Battery Save Mode
+     save:1,           // Battery Save
+     beep:1,           // Beep
+     voice:1,          // Voice Prompts
+     unknown_2:1;      //
+  u8 squelch;          // Squelch                002E
+  u8 tot;              // Time-out Timer         002F
+  u8 channel_4[13];    //                        0030-003C
+  u8 unknown_3[3];     //                        003D-003F
+  u8 channel_5[13];    //                        0040-004C
+  u8 unknown_4;        //                        004D
+  u8 unknown_5[2];     //                        004E-004F
+  u8 channel_6[13];    //                        0050-005C
+  u8 unknown_6;        //                        005D
+  u8 unknown_7[2];     //                        005E-005F
+  u8 channel_7[13];    //                        0060-006C
+  u8 warn;             // Warn Mode              006D
+  u8 pf1;              // Key Set PF1            006E
+  u8 pf2;              // Key Set PF2            006F
+  u8 channel_8[13];    //                        0070-007C
+  u8 unknown_8;        //                        007D
+  u8 tail;             // QT/DQT Tail(inverted)  007E
+  u8 tailmode;         // QT/DQT Tail Mode       007F
+} settings;
+
+#seekto 0x0200;
+u8 skipflags[4];       // Scan Add
+
+#seekto 0x029F;
+struct {
+  u8 chnumber;         // Channel Number         029F
+} settings2;
+
+#seekto 0x031D;
+struct {
+  u8 unused:7,         //                        031D
+     vox:1;            // Vox
+  u8 voxl;             // Vox Level              031E
+  u8 voxd;             // Vox Delay              031F
+} settings3;
+"""
+
 MEM_FORMAT_RT76 = """
 #seekto 0x0000;
 struct {
@@ -1954,9 +2017,33 @@ class RB26Radio(RT21Radio):
 
 
 @directory.register
-class RB626(RB26Radio):
-    MODEL = 'RB626'
+class RB626(RT21Radio):
+    """RETEVIS RB626"""
+    VENDOR = "Retevis"
+    MODEL = "RB626"
+    BAUD_RATE = 9600
+    BLOCK_SIZE = 0x20
+    BLOCK_SIZE_UP = 0x10
+    
+    DTCS_CODES = DTCS_EXTRA
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=3.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    _magic = b"PHOGR" + b"\x01" + b"0"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
+    _upper = 32
+    _ack_1st_block = False
+    _skipflags = True
+    _reserved = True
     _gmrs = False
+
+    _ranges = [
+               (0x0000, 0x0320),
+              ]
+    _memsize = 0x0320
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT_RB626, self._mmap)
 
 
 @directory.register
