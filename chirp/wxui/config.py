@@ -31,7 +31,7 @@ class ChirpConfig:
 
         self._default_section = "global"
 
-        self.__config = ConfigParser(interpolation=None)
+        self.__config = ConfigParser(interpolation=None, delimiters='=')
 
         cfg = os.path.join(basepath, name)
         if os.path.exists(cfg):
