@@ -104,6 +104,14 @@ class TestBitwiseBaseIntTypes(BaseTest):
         obj.foo[0] = 1
         self.assertEqual(b'\x01\x01\x02\x03', data.get_packed())
 
+    def test_int_array_of_zero(self):
+        data = memmap.MemoryMapBytes(bytes(b'\x00\x01\x02\x03'))
+        obj = bitwise.parse('u8 foo[0x0]; u8 bar;', data)
+        # Make sure we can't access any elements of zero-length foo
+        self.assertRaises(IndexError, lambda: obj.foo[0])
+        # Make sure bar is still at the front, unaffected by zero-length foo
+        self.assertEqual(0, obj.bar)
+
     def test_int_array_set_raw(self):
         data = memmap.MemoryMapBytes(bytes(b'\x00\x01\x02\x03'))
         obj = bitwise.parse('u8 foo[4];', data)
