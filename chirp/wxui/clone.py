@@ -461,6 +461,14 @@ class ChirpCloneDialog(wx.Dialog):
         LOG.warning('Did not find device for selected port %s' % selected)
         return selected
 
+    def set_selected_port(self, devname):
+        for device, name in self.ports:
+            if device == devname:
+                self._port.SetStringSelection(name)
+                return True
+        else:
+            LOG.debug('Port %s not in current list', devname)
+
     def _port_assist(self, event):
         r = wx.MessageBox(
             _('Unplug your cable (if needed) and then click OK'),
@@ -616,14 +624,35 @@ class ChirpCloneDialog(wx.Dialog):
     def _selected_vendor(self, event):
         self._select_vendor(event.GetString())
         self._persist_choices()
+        self._select_port_for_model()
 
     def _selected_model(self, event):
         self._persist_choices()
+        self._select_port_for_model()
 
     def select_vendor_model(self, vendor, model):
         self._vendor.SetSelection(self._vendor.GetItems().index(vendor))
         self._select_vendor(vendor)
         self._model.SetSelection(self._model_choices.index(model))
+        self._select_port_for_model()
+
+    def _select_port_for_model(self):
+        vendor = self._vendor.GetStringSelection()
+        model = self._model.GetStringSelection()
+        modelstr = '%s:%s' % (vendor, model)
+        last_port = CONF.get(modelstr, 'port_recall')
+        if last_port and self.set_selected_port(last_port):
+            LOG.debug('Automatically chose port %s as it is last-used for %s',
+                      last_port, modelstr)
+        else:
+            LOG.debug('No recent/available port for %s', modelstr)
+
+    def _remember_port_for_selected(self):
+        modelstr = '%s:%s' % (self._vendor.GetStringSelection(),
+                              self._model.GetStringSelection())
+        port = self.get_selected_port()
+        CONF.set(modelstr, port, 'port_recall')
+        LOG.debug('Recorded last-used port %s for %s', port, modelstr)
 
     def _status(self, status):
         def _safe_status():
@@ -778,6 +807,8 @@ class ChirpDownloadDialog(ChirpCloneDialog):
         self.model_msg.SetLabel('%s %s %s' % (
             rclass.VENDOR, rclass.MODEL, rclass.VARIANT))
 
+        self._remember_port_for_selected()
+
         try:
             self._radio = rclass(serial)
         except Exception as e:
@@ -871,6 +902,8 @@ class ChirpUploadDialog(ChirpCloneDialog):
         if s is None:
             LOG.debug('Opening serial %r after upload prompt' % port)
             s = open_serial(port, self._radio)
+
+        self._remember_port_for_selected()
 
         try:
             self._radio.set_pipe(s)
