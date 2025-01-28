@@ -854,6 +854,13 @@ class structDataElement(DataElement):
             yield key, self._generators[key]
 
 
+def parse_count(string):
+    if string.startswith('0x'):
+        return int(string, 16)
+    else:
+        return int(string)
+
+
 class Processor:
     _types = {
         "u8":    u8DataElement,
@@ -956,7 +963,7 @@ class Processor:
         else:
             if defn[1][0] == "array":
                 sym = defn[1][1][0]
-                count = int(defn[1][1][1][1])
+                count = parse_count(defn[1][1][1][1])
             else:
                 count = 1
                 sym = defn[1]
@@ -997,7 +1004,7 @@ class Processor:
         deftype = struct[-1]
         if deftype[0] == "array":
             name = deftype[1][0][1]
-            count = int(deftype[1][1][1])
+            count = parse_count(deftype[1][1][1])
         elif deftype[0] == "symbol":
             name = deftype[1]
             count = 1
