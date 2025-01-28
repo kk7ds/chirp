@@ -1423,6 +1423,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if defaults.mode and defaults.mode in features.valid_modes:
             if 'mode' in only:
                 mem.mode = defaults.mode
+        elif mem.mode not in features.valid_modes:
+            LOG.debug('Chose mode %s because default %s is unsupported',
+                      features.valid_modes[0], defaults.mode or mem.mode)
+            mem.mode = features.valid_modes[0]
 
         if defaults.tones and defaults.tones[0] in features.valid_tones:
             if 'rtone' in only:
