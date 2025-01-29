@@ -55,9 +55,8 @@ LOG = logging.getLogger(__name__)
 #
 #
 
-MEM_FORMAT = """
-//#seekto 0x0000;
-struct {
+CONVENTIONAL_DEFS = """
+struct conv_settings {
   // x00-x01, Edit>>Model Information>>Radio Format,
   // '03 00':Conventional Format, '00 03':Trunked Format
   u8 format[2];
@@ -108,6 +107,12 @@ struct {
      busy_led:1,            // Busy LED, '0'=enable, '1'=disable
      disp_char:1;           // Opt 1, Display Character (1=ChName, 0=Grp#/Ch#)
   u8 unknown14;
+};
+// Conventional ends here?
+"""
+
+DEFS = """
+struct settings {
   u8 unknown15:3,
      self_prog:1,           // Self programming enabled: 1-on
      clone:1,               // clone enabled: 1-on
@@ -171,12 +176,8 @@ struct {
      d_kp_auto_ptt:1,       // DTMF Keypad Auto-PTT, '0'=enable, '1'=disable
      ptt_id_when:2,         // PTT ID, '10'=BOT, '01'=EOT, '00'=Both
      signalling_type:1;     //Signalling, '1'=OR, '0'=AND
-} settings;
-
-//These are ALL the keys on TK-380 keypad version. These locations are assigned
-// functions from values in KEYS below
-#seekto 0x0110;
-struct {
+};
+struct keys {
   u8 kA;            // A button
   u8 kLEFT;         // Triangle to Left on portable, B
   u8 kRIGHT;        // Triangle to Right on portable, C
@@ -207,7 +208,44 @@ struct {
   u8 unknown130[4]; // Unknown
   u8 kASTR;         // Numkey *
   u8 kPOUND;        // Numkey #
-} keys;
+};
+struct misc {
+  u8 d_enc_hold_time; // DTMF Encode Hold Time [sec], Off, 0.5-2.0, .1 incr
+  u8 unknown120;      // unknown
+  u8 ptt_id_type;     // PTT ID Type, '00'=DTMF, '01'=FleetSync, NOT emergency
+  u8 unknown112;      // unknown
+  // Com 0(Accessory Connector), FF=none, 33=rem, 30=Data,
+  // 35=Data+GPS NOT related to emergency
+  u8 com_0;
+  // Com 1(Internal Port), FF=none, 33=rem, 36=man down in, 31=GPS,
+  // NOT related to emergency but convenient to put here
+  u8 com_1;
+  // Com 2(Internal Port), FF=none, 33=rem, 36=man down in, 31=GPS,
+  // 32=AUX Hook/PTT, 34=Data PTT, 35=Data+GPS
+  u8 com_2;
+  u8 em_group;        // Emergency Group
+  u8 em_chan;         // Emergency Channel
+  ul16 em_key_delay;  // Emergency Key Delay Time [sec] Off, .1-5.0 in .1 incr
+  u8 em_active_time;  // Emergency Active time [sec], 1-60
+  u8 unknown_105;     // unknown
+  u8 em_int_time;     // Emergency Interval Time [sec], 30-180
+  u8 unknown107;      // unknown
+  char em_text[10];   // Emergency Text
+  char line1[32];     // Embedded Message Line 1
+  char line2[32];     // Embedded Message Line 2
+  u8 em_dtmf_id[16];  // x240-x24F, 16 bytes, Emergency DTMF ID
+};
+"""
+
+MEM_FORMAT = DEFS + CONVENTIONAL_DEFS + """
+  // #seekto 0x0000;
+  struct conv_settings conv;
+  // #seekto 0x0082;
+  struct settings settings;
+//These are ALL the keys on TK-380 keypad version. These locations are assigned
+// functions from values in KEYS below
+#seekto 0x0110;
+struct keys keys;
 
 //#seekto 0x0140;
 struct {
@@ -278,32 +316,7 @@ struct {
 } test_freq;
 
 #seekto 0x1E7;
-struct {
-  u8 d_enc_hold_time; // DTMF Encode Hold Time [sec], Off, 0.5-2.0, .1 incr
-  u8 unknown120;      // unknown
-  u8 ptt_id_type;     // PTT ID Type, '00'=DTMF, '01'=FleetSync, NOT emergency
-  u8 unknown112;      // unknown
-  // Com 0(Accessory Connector), FF=none, 33=rem, 30=Data,
-  // 35=Data+GPS NOT related to emergency
-  u8 com_0;
-  // Com 1(Internal Port), FF=none, 33=rem, 36=man down in, 31=GPS,
-  // NOT related to emergency but convenient to put here
-  u8 com_1;
-  // Com 2(Internal Port), FF=none, 33=rem, 36=man down in, 31=GPS,
-  // 32=AUX Hook/PTT, 34=Data PTT, 35=Data+GPS
-  u8 com_2;
-  u8 em_group;        // Emergency Group
-  u8 em_chan;         // Emergency Channel
-  ul16 em_key_delay;  // Emergency Key Delay Time [sec] Off, .1-5.0 in .1 incr
-  u8 em_active_time;  // Emergency Active time [sec], 1-60
-  u8 unknown_105;     // unknown
-  u8 em_int_time;     // Emergency Interval Time [sec], 30-180
-  u8 unknown107;      // unknown
-  char em_text[10];   // Emergency Text
-  char line1[32];     // Embedded Message Line 1
-  char line2[32];     // Embedded Message Line 2
-  u8 em_dtmf_id[16];  // x240-x24F, 16 bytes, Emergency DTMF ID
-} misc;
+struct misc misc;
 
 #seekto 0x0300;
 struct {
@@ -492,8 +505,6 @@ ACK_CMD = b"\x06"
 NAK_CMD = b"\x15"
 
 # TK-280:1,5 TK-380:1,4 TK-780:25 TK-880:5,25
-POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
-                chirp_common.PowerLevel("High", watts=4)]
 
 MODES = ["NFM", "FM"]  # 12.5 / 25 Khz
 VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + "_-*()/\\-+=)."
@@ -819,7 +830,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
             "DTCS->Tone",
             "->Tone",
             "DTCS->DTCS"]
-        rf.valid_power_levels = POWER_LEVELS
+        rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_characters = VALID_CHARS
         rf.valid_skips = SKIP_VALUES
         rf.valid_dtcs_codes = DTCS_CODES
@@ -905,7 +916,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         result = "S"
         byte = int(chan/8)
         bit = chan % 8
-        res = self._memobj.settings.add[byte] & (pow(2, bit))
+        res = self._memobj.conv.add[byte] & (pow(2, bit))
         if res > 0:
             result = ""
 
@@ -920,9 +931,9 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         actual = self._get_scan(chan)
         if actual != value:
             # I have to flip the value
-            rbyte = self._memobj.settings.add[byte]
+            rbyte = self._memobj.conv.add[byte]
             rbyte = rbyte ^ pow(2, bit)
-            self._memobj.settings.add[byte] = rbyte
+            self._memobj.conv.add[byte] = rbyte
 
     def _get_memory_mapping(self, group, number, allocate=False):
         """Find a virtual memory mapping in the group's index.
@@ -1038,11 +1049,11 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
                 self._memobj.groups[i].channels = group_counts[group]
 
         # Radio-wide group and memory counts need to be updated
-        self._memobj.settings.groups = len(groups)
-        self._memobj.settings.channels = memories
+        self._memobj.conv.groups = len(groups)
+        self._memobj.conv.channels = memories
         LOG.info('%i groups, %i memories',
-                 self._memobj.settings.groups,
-                 self._memobj.settings.channels)
+                 self._memobj.conv.groups,
+                 self._memobj.conv.channels)
 
     @classmethod
     def match_model(cls, filedata, filename):
@@ -1127,15 +1138,15 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
             return ''
 
     def _get_settings_ost(self, ost):
-        rs = MemSetting('settings.ost_backup', 'OST Backup',
+        rs = MemSetting('conv.ost_backup', 'OST Backup',
                         RadioSettingValueInvertedBoolean(
-                            not self._memobj.settings.ost_backup))
+                            not self._memobj.conv.ost_backup))
         rs.set_doc('Store OST on channel even if dialed away')
         ost.append(rs)
 
-        rs = MemSetting('settings.ost_direct', 'OST Direct',
+        rs = MemSetting('conv.ost_direct', 'OST Direct',
                         RadioSettingValueInvertedBoolean(
-                            not self._memobj.settings.ost_direct))
+                            not self._memobj.conv.ost_direct))
         ost.append(rs)
 
         def apply_ost(setting, index, which):
@@ -1174,197 +1185,90 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
             sg.append(txt)
             ost.append(sg)
 
-    def get_settings(self):
-        """Translate the bit in the mem_struct into settings in the UI"""
-        sett = self._memobj.settings
-        msc = self._memobj.misc
-        keys = self._memobj.keys
-        passwd = self._memobj.settings.passwords
-        fsync = self._memobj.fleetsync
-
-        optfeat1 = RadioSettingSubGroup("optfeat1", "Optional Features 1")
-        optfeat2 = RadioSettingSubGroup("optfeat2", "Optional Features 2")
-        optfeat = RadioSettingGroup("optfeat", "Optional Features",
-                                    optfeat1, optfeat2)
-        dealer = RadioSettingGroup("dealer", "Dealer Settings")
-        fkeys = RadioSettingGroup("keys", "Keys")
-        scaninf = RadioSettingGroup("scaninf", "Scan Information")
-        dtmfset = RadioSettingGroup("dtmfset", "DTMF")
-        ost = RadioSettingGroup("ost", "OST")
-        groups = RadioSettingGroup("groups", "Groups")
-
-        top = RadioSettings(optfeat, dealer, fkeys, scaninf,
-                            dtmfset, ost, groups)
-
-        self._get_settings_groups(groups)
-        self._get_settings_ost(ost)
-        # If user changes passwords to blank, which is actually x20 not xFF,
-        # that sets impossible password.
-        # Read-only to view unknown passwords only
-        radiop = RadioSetting(
-            "passwords.radio", "Radio Password",
-            RadioSettingValueString(0, 6,
-                                    str(passwd.radio).strip('\xFF')))
-        radiop.value.set_mutable(False)
-        optfeat1.append(radiop)
-
-        datap = RadioSetting(
-            "passwords.data", "Data Password",
-            RadioSettingValueString(0, 6, str(passwd.data).strip('\xFF')))
-        datap.value.set_mutable(False)
-        optfeat1.append(datap)
-
-        pom = MemSetting(
-            "settings.poweronmesg", "Power on message",
-            RadioSettingValueString(0, 12,
-                                    str(sett.poweronmesg).strip('\xFF'),
-                                    mem_pad_char='\xFF'))
-        optfeat1.append(pom)
-
-        sigtyp = MemSetting(
-            "settings.signalling_type", "Signalling Type",
-            RadioSettingValueList(SIG_TYPE,
-                                  current_index=int(sett.signalling_type)))
-        optfeat1.append(sigtyp)
+    def _get_settings_format(self, optfeat1, optfeat2, scaninf):
+        conv = self._memobj.conv
 
         if self.TYPE[0:1] == b"P":
             bsav = MemSetting(
-                "settings.battery_save", "Battery Save",
+                "conv.battery_save", "Battery Save",
                 RadioSettingValueMap([(v, k) for k, v in BSAVE.items()],
-                                     sett.battery_save))
+                                     conv.battery_save))
             optfeat1.append(bsav)
 
-        tot = MemSetting("settings.tot", "Time Out Timer (TOT)",
+        tot = MemSetting("conv.tot", "Time Out Timer (TOT)",
                          RadioSettingValueMap(
-                             TOT, sett.tot))
+                             TOT, conv.tot))
         optfeat1.append(tot)
 
-        totalert = MemSetting("settings.tot_alert", "TOT pre alert",
+        totalert = MemSetting("conv.tot_alert", "TOT pre alert",
                               RadioSettingValueList(
                                   TOT_PRE,
-                                  current_index=sett.tot_alert))
+                                  current_index=conv.tot_alert))
         optfeat1.append(totalert)
 
-        totrekey = MemSetting("settings.tot_rekey", "TOT re-key time",
+        totrekey = MemSetting("conv.tot_rekey", "TOT re-key time",
                               RadioSettingValueList(
                                   TOT_REKEY,
-                                  current_index=sett.tot_rekey))
+                                  current_index=conv.tot_rekey))
         optfeat1.append(totrekey)
 
-        totreset = MemSetting("settings.tot_reset", "TOT reset time",
+        totreset = MemSetting("conv.tot_reset", "TOT reset time",
                               RadioSettingValueList(
                                   TOT_RESET,
-                                  current_index=sett.tot_reset))
+                                  current_index=conv.tot_reset))
         optfeat1.append(totreset)
 
-        c2t = MemSetting("settings.c2t", "Clear to Transpond",
-                         RadioSettingValueInvertedBoolean(not sett.c2t))
+        c2t = MemSetting("conv.c2t", "Clear to Transpond",
+                         RadioSettingValueInvertedBoolean(not conv.c2t))
         optfeat1.append(c2t)
 
-        if self.TYPE[0] == "P":
-            bw = MemSetting("settings.battery_warn", "Battery Warning",
-                            RadioSettingValueInvertedBoolean(
-                                sett.battery_warn))
-            optfeat1.append(bw)
-
-        if self.TYPE[0] == "M":
-            ohd = MemSetting("settings.off_hook_decode", "Off Hook Decode",
-                             RadioSettingValueInvertedBoolean(
-                                 sett.off_hook_decode))
-            optfeat1.append(ohd)
-
-            ohha = MemSetting("settings.off_hook_horn_alert",
-                              "Off Hook Horn Alert",
-                              RadioSettingValueInvertedBoolean(
-                                  sett.off_hook_horn_alert))
-            optfeat1.append(ohha)
-
-        bled = MemSetting('settings.busy_led', 'Busy LED',
+        bled = MemSetting('conv.busy_led', 'Busy LED',
                           RadioSettingValueInvertedBoolean(
-                              not bool(sett.busy_led)))
+                              not bool(conv.busy_led)))
         optfeat1.append(bled)
 
-        scled = MemSetting("settings.sel_call_alert_led",
+        scled = MemSetting("conv.sel_call_alert_led",
                            "Selective Call Alert LED",
-                           RadioSettingValueBoolean(sett.sel_call_alert_led))
+                           RadioSettingValueBoolean(conv.sel_call_alert_led))
         optfeat1.append(scled)
 
-        minvol = MemSetting("settings.min_vol", "Minimum Volume",
-                            RadioSettingValueList(
-                                VOL, current_index=sett.min_vol))
-        optfeat2.append(minvol)
-
-        tv = int(sett.tone_vol)
-        if tv == 255:
-            tv = 32
-        tvol = MemSetting("settings.tone_vol", "Tone Volume",
-                          RadioSettingValueList(TVOL, current_index=tv))
-        optfeat2.append(tvol)
-
-        """sql = RadioSetting("settings.sql_level", "SQL Ref Level",
-                           RadioSettingValueList(
-                           SQL, SQL[int(sett.sql_level)]))
-        optfeat1.append(sql)"""
-
-        # Tone Volume Section
-        ptone = MemSetting("settings.poweron_tone", "Power On Tone",
-                           RadioSettingValueBoolean(sett.poweron_tone))
-        optfeat2.append(ptone)
-
-        wtone = MemSetting("settings.warn_tone", "Warning Tone",
-                           RadioSettingValueBoolean(sett.warn_tone))
-        optfeat2.append(wtone)
-
-        ctone = MemSetting("settings.control_tone", "Control (Key) Tone",
-                           RadioSettingValueBoolean(sett.control_tone))
-        optfeat2.append(ctone)
-
-        pttr = MemSetting("settings.ptt_release_tone", "PTT Release Tone",
+        pttr = MemSetting("conv.ptt_release_tone", "PTT Release Tone",
                           RadioSettingValueInvertedBoolean(
-                              not sett.ptt_release_tone))
+                              not conv.ptt_release_tone))
         optfeat2.append(pttr)
 
+        inhta = MemSetting("conv.ptt_inhib_ta",
+                           "PTT Inhibit ID in TA(TalkAround)",
+                           RadioSettingValueInvertedBoolean(
+                               not conv.ptt_inhib_ta))
+        optfeat2.append(inhta)
+
+        drdt = MemSetting("conv.sc_nfo_ddtime",
+                          "Dropout Delay Time[sec]",
+                          RadioSettingValueList(
+                              DDT, current_index=conv.sc_nfo_ddtime))
+        scaninf.append(drdt)
+
+        dwet = MemSetting("conv.sc_nfo_dwell", "Dwell Time[sec]",
+                          RadioSettingValueList(
+                              DWT,
+                              current_index=conv.sc_nfo_dwell))
+        scaninf.append(dwet)
+
+        rchd = MemSetting("conv.sc_nfo_rev_disp",
+                          "Revert Channel Display",
+                          RadioSettingValueInvertedBoolean(
+                              not bool(conv.sc_nfo_rev_disp)))
+        scaninf.append(rchd)
+
+    def _get_settings_misc(self, optfeat2, dealer):
+        msc = self._memobj.misc
         # PTT ID Section
         pdt = MemSetting("misc.ptt_id_type", "PTT ID Type",
                          RadioSettingValueList(
                              PIDT.values(),
                              current_index=msc.ptt_id_type))
         optfeat2.append(pdt)
-
-        bot = str(sett.ptt_id_bot).strip("\xFF")
-        pttbot = MemSetting("settings.ptt_id_bot", "PTT Begin of TX",
-                            RadioSettingValueString(0, 16, bot,
-                                                    mem_pad_char='\xFF'))
-        optfeat2.append(pttbot)
-
-        eot = str(sett.ptt_id_eot).strip("\xFF")
-        ptteot = MemSetting("settings.ptt_id_eot", "PTT End of TX",
-                            RadioSettingValueString(0, 16, eot,
-                                                    mem_pad_char='\xFF'))
-        optfeat2.append(ptteot)
-
-        inhta = MemSetting("settings.ptt_inhib_ta",
-                           "PTT Inhibit ID in TA(TalkAround)",
-                           RadioSettingValueInvertedBoolean(
-                               not sett.ptt_inhib_ta))
-        optfeat2.append(inhta)
-
-        svp = str(sett.lastsoftversion).strip("\xFF")
-        sver = RadioSetting("not.softver", "Last Used Software Version",
-                            RadioSettingValueString(0, 5, svp,
-                                                    mem_pad_char='\xFF'))
-        sver.value.set_mutable(False)
-        dealer.append(sver)
-
-        try:
-            vtmp = str(self.metadata.get('tkx80_ver', '(unknown)'))
-        except AttributeError:
-            vtmp = ''
-        frev = RadioSetting("not.ver", "Radio Version",
-                            RadioSettingValueString(0, 10, vtmp))
-        frev.set_doc('Radio version (as downloaded)')
-        frev.value.set_mutable(False)
-        dealer.append(frev)
 
         l1 = str(msc.line1).strip("\xFF")
         line1 = MemSetting("misc.line1", "Comment 1",
@@ -1378,93 +1282,8 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
                                                    mem_pad_char='\xFF'))
         dealer.append(line2)
 
-        panel = MemSetting("settings.panel_test", "Panel Test",
-                           RadioSettingValueBoolean(sett.panel_test))
-        optfeat2.append(panel)
-
-        ptun = MemSetting("settings.panel_tuning", "Panel Tuning",
-                          RadioSettingValueBoolean(sett.panel_tuning))
-        optfeat2.append(ptun)
-
-        fmw = MemSetting("settings.firmware_prog", "Firmware Programming",
-                         RadioSettingValueBoolean(sett.firmware_prog))
-        optfeat2.append(fmw)
-
-        clone = MemSetting("settings.clone", "Allow clone",
-                           RadioSettingValueBoolean(sett.clone))
-        optfeat2.append(clone)
-
-        sprog = MemSetting("settings.self_prog", "Self Programming",
-                           RadioSettingValueBoolean(sett.self_prog))
-        optfeat2.append(sprog)
-
-        # Logic Signal Section
-        sqlt = MemSetting("settings.sq_logic_type", "Squelch Logic Type",
-                          RadioSettingValueList(
-                              SLT.values(),
-                              current_index=sett.sq_logic_type))
-        optfeat2.append(sqlt)
-
-        sqls = MemSetting("settings.sq_logic_sig", "Squelch Logic Signal",
-                          RadioSettingValueList(
-                              SLS.values(),
-                              current_index=sett.sq_logic_sig))
-        optfeat2.append(sqls)
-
-        aclt = MemSetting("settings.access_log_type", "Access Logic Type",
-                          RadioSettingValueList(
-                              ALT.values(),
-                              current_index=sett.access_log_type))
-        optfeat2.append(aclt)
-
-        acls = MemSetting("settings.access_log_sig", "Access Logic Signal",
-                          RadioSettingValueList(
-                              ALS.values(),
-                              current_index=sett.access_log_sig))
-        optfeat2.append(acls)
-
-        # Extended Function Section
-        dtxqt = MemSetting("fleetsync.data_tx_qt", "Data TX with QT/DQT",
-                           RadioSettingValueInvertedBoolean(
-                               not fsync.data_tx_qt))
-        optfeat2.append(dtxqt)
-
-        drdt = MemSetting("settings.sc_nfo_ddtime",
-                          "Dropout Delay Time[sec]",
-                          RadioSettingValueList(
-                              DDT, current_index=sett.sc_nfo_ddtime))
-        scaninf.append(drdt)
-
-        dwet = MemSetting("settings.sc_nfo_dwell", "Dwell Time[sec]",
-                          RadioSettingValueList(
-                              DWT,
-                              current_index=sett.sc_nfo_dwell))
-        scaninf.append(dwet)
-
-        rchd = MemSetting("settings.sc_nfo_rev_disp",
-                          "Revert Channel Display",
-                          RadioSettingValueInvertedBoolean(
-                              not bool(sett.sc_nfo_rev_disp)))
-        scaninf.append(rchd)
-
-        # DTMF Settings
-        # Decode Section
-        deccode = str(sett.dtmf_prim_code).strip("\xFF")
-        decpc = MemSetting("settings.dtmf_prim_code", "Decode Primary Code",
-                           RadioSettingValueString(0, 7, deccode))
-        dtmfset.append(decpc)
-
-        deccode = str(sett.dtmf_sec_code).strip("\xFF")
-        decpc = MemSetting("settings.dtmf_sec_code", "Decode Secondary Code",
-                           RadioSettingValueString(0, 7, deccode))
-        dtmfset.append(decpc)
-
-        deccode = str(sett.dtmf_DBD_code).strip("\xFF")
-        decpc = MemSetting("settings.dtmf_DBD_code",
-                           "Decode Dead Beat Disable Code",
-                           RadioSettingValueString(0, 7, deccode,
-                                                   mem_pad_char='\xFF'))
-        dtmfset.append(decpc)
+    def _get_settings_keys(self, fkeys):
+        keys = self._memobj.keys
 
         if self.TYPE[0] == ord("P"):
             model_keys = PORTABLE_KEYS
@@ -1527,6 +1346,210 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
                                  key_map, getattr(keys, 'k%s' % name)))
             fkeys.append(btn)
 
+    def _get_settings_fsync(self, optfeat2):
+        fsync = self._memobj.fleetsync
+
+        # Extended Function Section
+        dtxqt = MemSetting("fleetsync.data_tx_qt", "Data TX with QT/DQT",
+                           RadioSettingValueInvertedBoolean(
+                               not fsync.data_tx_qt))
+        optfeat2.append(dtxqt)
+
+    def get_settings(self):
+        """Translate the bit in the mem_struct into settings in the UI"""
+        sett = self._memobj.settings
+        passwd = self._memobj.settings.passwords
+
+        optfeat1 = RadioSettingSubGroup("optfeat1", "Optional Features 1")
+        optfeat2 = RadioSettingSubGroup("optfeat2", "Optional Features 2")
+        optfeat = RadioSettingGroup("optfeat", "Optional Features",
+                                    optfeat1, optfeat2)
+        dealer = RadioSettingGroup("dealer", "Dealer Settings")
+        fkeys = RadioSettingGroup("keys", "Keys")
+        scaninf = RadioSettingGroup("scaninf", "Scan Information")
+        dtmfset = RadioSettingGroup("dtmfset", "DTMF")
+        ost = RadioSettingGroup("ost", "OST")
+        groups = RadioSettingGroup("groups", "Groups")
+
+        top = RadioSettings(optfeat, dealer, fkeys, scaninf,
+                            dtmfset, ost, groups)
+
+        self._get_settings_groups(groups)
+        self._get_settings_format(optfeat1, optfeat2, scaninf)
+        self._get_settings_ost(ost)
+        self._get_settings_misc(optfeat2, dealer)
+        self._get_settings_keys(fkeys)
+        self._get_settings_fsync(optfeat2)
+        # If user changes passwords to blank, which is actually x20 not xFF,
+        # that sets impossible password.
+        # Read-only to view unknown passwords only
+        radiop = RadioSetting(
+            "passwords.radio", "Radio Password",
+            RadioSettingValueString(0, 6,
+                                    str(passwd.radio).strip('\xFF')))
+        radiop.value.set_mutable(False)
+        optfeat1.append(radiop)
+
+        datap = RadioSetting(
+            "passwords.data", "Data Password",
+            RadioSettingValueString(0, 6, str(passwd.data).strip('\xFF')))
+        datap.value.set_mutable(False)
+        optfeat1.append(datap)
+
+        pom = MemSetting(
+            "settings.poweronmesg", "Power on message",
+            RadioSettingValueString(0, 12,
+                                    str(sett.poweronmesg).strip('\xFF'),
+                                    mem_pad_char='\xFF'))
+        optfeat1.append(pom)
+
+        sigtyp = MemSetting(
+            "settings.signalling_type", "Signalling Type",
+            RadioSettingValueList(SIG_TYPE,
+                                  current_index=int(sett.signalling_type)))
+        optfeat1.append(sigtyp)
+
+        if self.TYPE[0] == "P":
+            bw = MemSetting("settings.battery_warn", "Battery Warning",
+                            RadioSettingValueInvertedBoolean(
+                                sett.battery_warn))
+            optfeat1.append(bw)
+
+        if self.TYPE[0] == "M":
+            ohd = MemSetting("settings.off_hook_decode", "Off Hook Decode",
+                             RadioSettingValueInvertedBoolean(
+                                 sett.off_hook_decode))
+            optfeat1.append(ohd)
+
+            ohha = MemSetting("settings.off_hook_horn_alert",
+                              "Off Hook Horn Alert",
+                              RadioSettingValueInvertedBoolean(
+                                  sett.off_hook_horn_alert))
+            optfeat1.append(ohha)
+
+        minvol = MemSetting("settings.min_vol", "Minimum Volume",
+                            RadioSettingValueList(
+                                VOL, current_index=sett.min_vol))
+        optfeat2.append(minvol)
+
+        tv = int(sett.tone_vol)
+        if tv == 255:
+            tv = 32
+        tvol = MemSetting("settings.tone_vol", "Tone Volume",
+                          RadioSettingValueList(TVOL, current_index=tv))
+        optfeat2.append(tvol)
+
+        """sql = RadioSetting("settings.sql_level", "SQL Ref Level",
+                           RadioSettingValueList(
+                           SQL, SQL[int(sett.sql_level)]))
+        optfeat1.append(sql)"""
+
+        # Tone Volume Section
+        ptone = MemSetting("settings.poweron_tone", "Power On Tone",
+                           RadioSettingValueBoolean(sett.poweron_tone))
+        optfeat2.append(ptone)
+
+        wtone = MemSetting("settings.warn_tone", "Warning Tone",
+                           RadioSettingValueBoolean(sett.warn_tone))
+        optfeat2.append(wtone)
+
+        ctone = MemSetting("settings.control_tone", "Control (Key) Tone",
+                           RadioSettingValueBoolean(sett.control_tone))
+        optfeat2.append(ctone)
+
+        bot = str(sett.ptt_id_bot).strip("\xFF")
+        pttbot = MemSetting("settings.ptt_id_bot", "PTT Begin of TX",
+                            RadioSettingValueString(0, 16, bot,
+                                                    mem_pad_char='\xFF'))
+        optfeat2.append(pttbot)
+
+        eot = str(sett.ptt_id_eot).strip("\xFF")
+        ptteot = MemSetting("settings.ptt_id_eot", "PTT End of TX",
+                            RadioSettingValueString(0, 16, eot,
+                                                    mem_pad_char='\xFF'))
+        optfeat2.append(ptteot)
+
+        svp = str(sett.lastsoftversion).strip("\xFF")
+        sver = RadioSetting("not.softver", "Last Used Software Version",
+                            RadioSettingValueString(0, 5, svp,
+                                                    mem_pad_char='\xFF'))
+        sver.value.set_mutable(False)
+        dealer.append(sver)
+
+        try:
+            vtmp = str(self.metadata.get('tkx80_ver', '(unknown)'))
+        except AttributeError:
+            vtmp = ''
+        frev = RadioSetting("not.ver", "Radio Version",
+                            RadioSettingValueString(0, 10, vtmp))
+        frev.set_doc('Radio version (as downloaded)')
+        frev.value.set_mutable(False)
+        dealer.append(frev)
+
+        panel = MemSetting("settings.panel_test", "Panel Test",
+                           RadioSettingValueBoolean(sett.panel_test))
+        optfeat2.append(panel)
+
+        ptun = MemSetting("settings.panel_tuning", "Panel Tuning",
+                          RadioSettingValueBoolean(sett.panel_tuning))
+        optfeat2.append(ptun)
+
+        fmw = MemSetting("settings.firmware_prog", "Firmware Programming",
+                         RadioSettingValueBoolean(sett.firmware_prog))
+        optfeat2.append(fmw)
+
+        clone = MemSetting("settings.clone", "Allow clone",
+                           RadioSettingValueBoolean(sett.clone))
+        optfeat2.append(clone)
+
+        sprog = MemSetting("settings.self_prog", "Self Programming",
+                           RadioSettingValueBoolean(sett.self_prog))
+        optfeat2.append(sprog)
+
+        # Logic Signal Section
+        sqlt = MemSetting("settings.sq_logic_type", "Squelch Logic Type",
+                          RadioSettingValueList(
+                              SLT.values(),
+                              current_index=sett.sq_logic_type))
+        optfeat2.append(sqlt)
+
+        sqls = MemSetting("settings.sq_logic_sig", "Squelch Logic Signal",
+                          RadioSettingValueList(
+                              SLS.values(),
+                              current_index=sett.sq_logic_sig))
+        optfeat2.append(sqls)
+
+        aclt = MemSetting("settings.access_log_type", "Access Logic Type",
+                          RadioSettingValueList(
+                              ALT.values(),
+                              current_index=sett.access_log_type))
+        optfeat2.append(aclt)
+
+        acls = MemSetting("settings.access_log_sig", "Access Logic Signal",
+                          RadioSettingValueList(
+                              ALS.values(),
+                              current_index=sett.access_log_sig))
+        optfeat2.append(acls)
+
+        # DTMF Settings
+        # Decode Section
+        deccode = str(sett.dtmf_prim_code).strip("\xFF")
+        decpc = MemSetting("settings.dtmf_prim_code", "Decode Primary Code",
+                           RadioSettingValueString(0, 7, deccode))
+        dtmfset.append(decpc)
+
+        deccode = str(sett.dtmf_sec_code).strip("\xFF")
+        decpc = MemSetting("settings.dtmf_sec_code", "Decode Secondary Code",
+                           RadioSettingValueString(0, 7, deccode))
+        dtmfset.append(decpc)
+
+        deccode = str(sett.dtmf_DBD_code).strip("\xFF")
+        decpc = MemSetting("settings.dtmf_DBD_code",
+                           "Decode Dead Beat Disable Code",
+                           RadioSettingValueString(0, 7, deccode,
+                                                   mem_pad_char='\xFF'))
+        dtmfset.append(decpc)
+
         return top
 
     def _set_settings_groups(self, settings):
@@ -1580,6 +1603,73 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
             if setting.has_apply_callback():
                 setting.run_apply_callback()
 
+    def _get_memory_base(self, mem, _mem):
+        mem.number = int(_mem.number)
+        mem.freq = int(_mem.rxfreq) * 10
+        if _mem.txfreq.get_raw()[0] == 0xFF:
+            mem.offset = 0
+            mem.duplex = "off"
+        else:
+            chirp_common.split_to_offset(mem, mem.freq, int(_mem.txfreq) * 10)
+
+        mem.name = str(_mem.name).rstrip()
+
+        txtone = self._decode_tone(_mem.tx_tone)
+        rxtone = self._decode_tone(_mem.rx_tone)
+        chirp_common.split_tone_decode(mem, txtone, rxtone)
+        mem.power = self.POWER_LEVELS[_mem.power]
+
+    def _set_memory_base(self, mem, _mem):
+        _mem.number = mem.number
+
+        _mem.rxfreq = mem.freq // 10
+
+        _mem.unknown_rx = 0x3
+        _mem.unknown_tx = 0x3
+
+        if mem.duplex == "+":
+            _mem.txfreq = (mem.freq + mem.offset) // 10
+        elif mem.duplex == "-":
+            _mem.txfreq = (mem.freq - mem.offset) // 10
+        elif mem.duplex == "off":
+            _mem.txfreq.fill_raw(b'\xFF')
+        elif mem.duplex == 'split':
+            _mem.txfreq = mem.offset // 10
+        else:
+            _mem.txfreq = mem.freq // 10
+
+        step_lookup = {
+            2.5: 0x0,
+            6.25: 0x2,
+            12.5: 0x5,
+            5.0: 0x1,
+        }
+        try:
+            _mem.rx_step = step_lookup[chirp_common.required_step(
+                int(_mem.rxfreq) * 10)]
+        except errors.InvalidDataError:
+            LOG.warning('Unknown step for rx freq, defaulting to 5kHz')
+            _mem.rx_step = 0x1
+        try:
+            _mem.tx_step = step_lookup[chirp_common.required_step(
+                int(_mem.txfreq) * 10)]
+        except errors.InvalidDataError:
+            LOG.warning('Unknown step for tx freq, defaulting to 5kHz')
+            _mem.tx_step = 0x1
+
+        ((txmode, txtone, txpol), (rxmode, rxtone, rxpol)) = \
+            chirp_common.split_tone_encode(mem)
+        self._encode_tone(_mem.tx_tone, txmode, txtone, txpol)
+        self._encode_tone(_mem.rx_tone, rxmode, rxtone, rxpol)
+
+        _namelength = self.get_features().valid_name_length
+        _mem.name = mem.name.ljust(_namelength)
+
+        try:
+            _mem.power = self.POWER_LEVELS.index(mem.power)
+        except ValueError:
+            _mem.power = self.POWER_LEVELS[0]
+
 
 class TKx80Group(KenwoodTKx80):
     def __init__(self, parent, group, name):
@@ -1587,6 +1677,7 @@ class TKx80Group(KenwoodTKx80):
         self._group = int(group)
         self.VARIANT = name
         self.TYPE = parent.TYPE
+        self.POWER_LEVELS = parent.POWER_LEVELS
 
     @property
     def group(self):
@@ -1631,21 +1722,9 @@ class TKx80Group(KenwoodTKx80):
 
         _mem = self._memobj.memory[mapping.index]
 
-        mem.freq = int(_mem.rxfreq) * 10
-        if _mem.txfreq.get_raw()[0] == 0xFF:
-            mem.offset = 0
-            mem.duplex = "off"
-        else:
-            chirp_common.split_to_offset(mem, mem.freq, int(_mem.txfreq) * 10)
-
-        mem.name = str(_mem.name).rstrip()
-        mem.power = POWER_LEVELS[_mem.power]
+        self._get_memory_base(mem, _mem)
         mem.mode = MODES[_mem.wide]
         mem.skip = self._get_scan(number - 1)
-
-        txtone = self._decode_tone(_mem.tx_tone)
-        rxtone = self._decode_tone(_mem.rx_tone)
-        chirp_common.split_tone_decode(mem, txtone, rxtone)
 
         mem.extra = RadioSettingGroup("extra", "Extra")
 
@@ -1692,53 +1771,7 @@ class TKx80Group(KenwoodTKx80):
             self._delete_memory_mapping(self.group, mem.number)
             return
 
-        _mem.rxfreq = mem.freq // 10
-
-        _mem.unknown_rx = 0x3
-        _mem.unknown_tx = 0x3
-
-        if mem.duplex == "+":
-            _mem.txfreq = (mem.freq + mem.offset) // 10
-        elif mem.duplex == "-":
-            _mem.txfreq = (mem.freq - mem.offset) // 10
-        elif mem.duplex == "off":
-            _mem.txfreq.fill_raw(b'\xFF')
-        elif mem.duplex == 'split':
-            _mem.txfreq = mem.offset // 10
-        else:
-            _mem.txfreq = mem.freq // 10
-
-        step_lookup = {
-            2.5: 0x0,
-            6.25: 0x2,
-            12.5: 0x5,
-            5.0: 0x1,
-        }
-        try:
-            _mem.rx_step = step_lookup[chirp_common.required_step(
-                int(_mem.rxfreq) * 10)]
-        except errors.InvalidDataError:
-            LOG.warning('Unknown step for rx freq, defaulting to 5kHz')
-            _mem.rx_step = 0x1
-        try:
-            _mem.tx_step = step_lookup[chirp_common.required_step(
-                int(_mem.txfreq) * 10)]
-        except errors.InvalidDataError:
-            LOG.warning('Unknown step for tx freq, defaulting to 5kHz')
-            _mem.tx_step = 0x1
-
-        ((txmode, txtone, txpol), (rxmode, rxtone, rxpol)) = \
-            chirp_common.split_tone_encode(mem)
-        self._encode_tone(_mem.tx_tone, txmode, txtone, txpol)
-        self._encode_tone(_mem.rx_tone, rxmode, rxtone, rxpol)
-
-        _namelength = self.get_features().valid_name_length
-        _mem.name = mem.name.ljust(_namelength)
-
-        try:
-            _mem.power = POWER_LEVELS.index(mem.power)
-        except ValueError:
-            _mem.power = POWER_LEVELS[0]
+        self._set_memory_base(mem, _mem)
 
         _mem.wide = MODES.index(mem.mode)
         self._set_scan(mem.number - 1, mem.skip)
@@ -1774,6 +1807,8 @@ class TK280_Radios(KenwoodTKx80):
     """Kenwood TK-280 Radio"""
     MODEL = "TK-280"
     TYPE = b"P0280"
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
+                    chirp_common.PowerLevel("High", watts=5)]
     # VARIANTS = {
     #    # VERIFIED variant. Range expanded for ham bands. Orig: 146, 174
     #    b"P0280\x04\xFF":    (250, 144, 174, "K Non-Keypad Model"),
@@ -1791,6 +1826,8 @@ class TK380_Radios(KenwoodTKx80):
     """Kenwood TK-380 Radio """
     MODEL = "TK-380"
     TYPE = b"P0380"
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
+                    chirp_common.PowerLevel("High", watts=4)]
     # VARIANTS = {
     #    # Range expanded for ham bands. Orig: 450, 490
     #    b"P0380\x06\xFF":    (250, 420, 490, "K Non-Keypad Model"),
@@ -1814,6 +1851,8 @@ class TK780_Radios(KenwoodTKx80):
     """Kenwood TK-780 Radio """
     MODEL = "TK-780"
     TYPE = b"M0780"
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5),
+                    chirp_common.PowerLevel("High", watts=25)]
     # VARIANTS = {
     #    # VERIFIED variant. #Range expanded for ham bands. Orig: 146, 174
     #    b"M0780\x04\xFF":    (250, 144, 174, "K"),
@@ -1838,3 +1877,5 @@ class TK880_Radios(KenwoodTKx80):
     #     }
     _range = [(400000000, 520000000)]
     _steps = chirp_common.COMMON_TUNING_STEPS + (6.25, 12.5)
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5),
+                    chirp_common.PowerLevel("High", watts=25)]
