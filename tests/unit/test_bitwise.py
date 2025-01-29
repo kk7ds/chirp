@@ -404,6 +404,17 @@ class TestBitwiseErrors(BaseTest):
     def test_missing_semicolon(self):
         self.assertRaises(SyntaxError, bitwise.parse, "u8 foo", "")
 
+    def test_missing_element(self):
+        obj = bitwise.parse('u8 foo; struct { u8 bar; } baz;', b'12')
+        self.assertRaisesRegex(AttributeError,
+                               'No attribute does_not_exist',
+                               getattr, obj, 'does_not_exist')
+        self.assertRaisesRegex(AttributeError,
+                               'No attribute this_either',
+                               getattr, obj.baz, 'this_either')
+        self.assertTrue('foo' in obj)
+        self.assertFalse('does_not_exist' in obj)
+
 
 class TestBitwiseComments(BaseTest):
     def test_comment_inline_cppstyle(self):
