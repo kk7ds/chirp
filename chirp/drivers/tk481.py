@@ -92,14 +92,7 @@ LOG = logging.getLogger(__name__)
 SystemDef = namedtuple('SystemDef', ('index', 'number'))
 
 
-@directory.register
-class TK481_Radios(tk280.KenwoodTKx80):
-    MODEL = 'TK-481'
-    TYPE = b'PG481'
-    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
-                    chirp_common.PowerLevel("High", watts=2.5)]
-    _range = [(896000000, 941000000)]
-    _steps = chirp_common.COMMON_TUNING_STEPS + (6.25, 12.5)
+class TKx80_Trunked(tk280.KenwoodTKx80):
     _system = 0
 
     def process_mmap(self):
@@ -244,10 +237,17 @@ class TK481_Radios(tk280.KenwoodTKx80):
     def get_sub_devices(self):
         # For the uninitialized case of just surveying the features
         if not self._memobj:
-            return [TK481System(1, self)]
-        return [TK481System(i + 1, self)
-                for i in range(32)
-                if self._memobj.trunk.sys_start[i] != 0xFFFF]
+            return [TKx80System(self, 1)]
+        to_copy = ('MODEL', 'TYPE', 'POWER_LEVELS', '_range', '_steps')
+        return [
+            tk280.TKx80SubdevMeta.make_subdev(
+                self, TKx80System, i,
+                to_copy,
+                VARIANT=str(getattr(self._memobj,
+                                    'system%i' % i).sys.name).strip())(
+                    self, i + 1)
+            for i in range(32)
+            if self._memobj.trunk.sys_start[i] != 0xFFFF]
 
     def _get_memory(self, number):
         system = getattr(self._memobj, 'system%i' % (self._system - 1))
@@ -350,16 +350,30 @@ class TK481_Radios(tk280.KenwoodTKx80):
         return
 
 
-class TK481System(TK481_Radios):
-    def __init__(self, system, parent):
+class TKx80System(TKx80_Trunked):
+    def __init__(self, parent, system):
         self._system = system
         self._parent = parent
-        if self._memobj:
-            self.VARIANT = str(
-                getattr(self._memobj,
-                        'system%i' % (system - 1)).sys.name).strip()
-        self.TYPE = parent.TYPE
 
     @property
     def _memobj(self):
         return self._parent._memobj
+
+
+@directory.register
+class TK481(TKx80_Trunked):
+    MODEL = 'TK-481'
+    TYPE = b'PG481'
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
+                    chirp_common.PowerLevel("High", watts=2.5)]
+    _range = [(896000000, 941000000)]
+    _steps = chirp_common.COMMON_TUNING_STEPS + (6.25, 12.5)
+
+
+@directory.register
+class TK981(TKx80_Trunked):
+    MODEL = 'TK-981'
+    TYPE = b'M0981'
+    POWER_LEVELS = []
+    _range = [(896000000, 941000000)]
+    _steps = chirp_common.COMMON_TUNING_STEPS + (6.25, 12.5)
