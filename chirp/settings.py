@@ -504,6 +504,9 @@ class RadioSettingGroup(object):
         """Returns the short group identifier"""
         return self._shortname
 
+    def set_shortname(self, new_name):
+        self._shortname = new_name
+
     def set_doc(self, doc):
         """Sets the docstring for the group"""
         self.__doc__ = doc
