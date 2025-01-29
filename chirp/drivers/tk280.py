@@ -1399,8 +1399,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         pom = MemSetting(
             "settings.poweronmesg", "Power on message",
             RadioSettingValueString(0, 12,
-                                    str(sett.poweronmesg).strip('\xFF'),
-                                    mem_pad_char='\xFF'))
+                                    str(sett.poweronmesg).strip('\xFF')))
         optfeat1.append(pom)
 
         sigtyp = MemSetting(
