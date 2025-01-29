@@ -761,6 +761,25 @@ def do_upload(radio):
         radio.status_fn(status)
 
 
+class TKx80SubdevMeta(type):
+    """Metaclass for generating subdevice subclasses"""
+    def __new__(cls, name, parent, dct):
+        return super(TKx80SubdevMeta, cls).__new__(cls, name, (parent,), dct)
+
+    @staticmethod
+    def make_subdev(parent_dev, child_cls, key, to_copy, **args):
+        """parent_dev: An instance of the parent class
+           child_cls: The class of the child device
+           key: Some class-name-suitable value to set this off from others
+           to_copy: Class variables tp copy from the parent
+           args: Class variables to set on the new class
+        """
+        return TKx80SubdevMeta('%s_%s' % (child_cls.__name__, key),
+                               child_cls,
+                               dict({k: getattr(parent_dev, k)
+                                     for k in to_copy}, **args))
+
+
 class KenwoodTKx80(chirp_common.CloneModeRadio):
     """Kenwood Series 80 Radios base class"""
     VENDOR = "Kenwood"
@@ -773,6 +792,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
     VARIANT = ""
     MODEL = ""
     FORMATS = [directory.register_format('Kenwood KPG-49D', '.dat')]
+    POWER_LEVELS = []
 
     def load_mmap(self, filename):
         if filename.lower().endswith('.dat'):
@@ -845,13 +865,16 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
 
     def get_sub_devices(self):
         if not self._memobj:
-            return [TKx80Group(self, 1, 'Group 1')]
-        return sorted([TKx80Group(self,
-                                  self._memobj.groups[i].number,
-                                  str(self._memobj.groups[i].name).strip())
-                       for i in range(250)
-                       if self._memobj.groups[i].number <= 250],
-                      key=lambda z: z.group)
+            return [TKx80Group(self, 1)]
+        to_copy = ('MODEL', 'TYPE', 'POWER_LEVELS', '_range', '_steps')
+        return sorted([
+            TKx80SubdevMeta.make_subdev(
+                self, TKx80Group, i,
+                to_copy, VARIANT=str(self._memobj.groups[i].name).strip())(
+                    self, self._memobj.groups[i].number)
+            for i in range(250)
+            if self._memobj.groups[i].number <= 250],
+            key=lambda z: z.group)
 
     def sync_in(self):
         """Do a download of the radio eeprom"""
@@ -1616,7 +1639,8 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         txtone = self._decode_tone(_mem.tx_tone)
         rxtone = self._decode_tone(_mem.rx_tone)
         chirp_common.split_tone_decode(mem, txtone, rxtone)
-        mem.power = self.POWER_LEVELS[_mem.power]
+        if self.POWER_LEVELS:
+            mem.power = self.POWER_LEVELS[_mem.power]
 
     def _set_memory_base(self, mem, _mem):
         _mem.number = mem.number
@@ -1664,19 +1688,17 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         _namelength = self.get_features().valid_name_length
         _mem.name = mem.name.ljust(_namelength)
 
-        try:
-            _mem.power = self.POWER_LEVELS.index(mem.power)
-        except ValueError:
-            _mem.power = self.POWER_LEVELS[0]
+        if self.POWER_LEVELS:
+            try:
+                _mem.power = self.POWER_LEVELS.index(mem.power)
+            except ValueError:
+                _mem.power = self.POWER_LEVELS[0]
 
 
 class TKx80Group(KenwoodTKx80):
-    def __init__(self, parent, group, name):
+    def __init__(self, parent, group):
         self._parent = parent
         self._group = int(group)
-        self.VARIANT = name
-        self.TYPE = parent.TYPE
-        self.POWER_LEVELS = parent.POWER_LEVELS
 
     @property
     def group(self):
