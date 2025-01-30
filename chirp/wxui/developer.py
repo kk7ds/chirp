@@ -197,22 +197,62 @@ class ChirpEditor(wx.Panel):
 class ChirpStringEditor(ChirpEditor):
     def set_up(self):
         sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self._entry = wx.TextCtrl(self, value=str(self._obj),
-                                  style=wx.TE_PROCESS_ENTER)
-        self._entry.SetMaxLength(len(self._obj))
-        self.SetSizer(sizer)
-        sizer.Add(self._entry, 1, wx.EXPAND)
+        self._len = len(self._obj)
 
-        self._entry.Bind(wx.EVT_TEXT, self._edited)
-        self._entry.Bind(wx.EVT_TEXT_ENTER, self._changed)
-        self._entry.SetEditable(not FROZEN)
+        self._strentry = wx.TextCtrl(self, value=str(self._obj),
+                                     style=wx.TE_PROCESS_ENTER)
+        self._strentry.SetMaxLength(self._len)
+
+        # Each char becomes two hex digits, plus one space between each
+        self._hexentry = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
+        self._hexentry.SetMaxLength(self._len * 2 + self._len - 1)
+        self._hexentry.Bind(wx.EVT_KEY_DOWN, self._hex_key)
+        self.hex_from_str()
+
+        self.SetSizer(sizer)
+        sizer.Add(self._strentry, 1, border=5, flag=wx.EXPAND | wx.LEFT)
+        sizer.Add(self._hexentry, 1, border=5, flag=wx.EXPAND | wx.LEFT)
+
+        self.Bind(wx.EVT_TEXT, self._edited)
+        self.Bind(wx.EVT_TEXT_ENTER, self._changed)
+        self._strentry.SetEditable(not FROZEN)
+        self._hexentry.SetEditable(not FROZEN)
+
+    def _hex_key(self, event):
+        key = event.GetKeyCode()
+        pos = self._hexentry.GetInsertionPoint()
+        cur = self._hexentry.GetRange(pos, pos + 1)
+        if key in (wx.WXK_DELETE, wx.WXK_BACK):
+            # Don't allow delete or backspace to actually remove anything
+            return
+        elif chr(key) in 'ABCDEF0123456789' and cur != ' ':
+            # Hex characters do the edit in place/overwrite
+            self._hexentry.Replace(pos, pos + 1, chr(key))
+            self.str_from_hex()
+            return
+        elif key in (wx.WXK_LEFT, wx.WXK_RIGHT, wx.WXK_RETURN,
+                     wx.WXK_NUMPAD_ENTER):
+            # Allow cursor movement
+            event.Skip()
+
+    def hex_from_str(self):
+        value = self._strentry.GetValue().ljust(self._len)[:self._len]
+        self._hexentry.ChangeValue(' '.join('%02X' % ord(x) for x in value))
+
+    def str_from_hex(self):
+        chars = ''.join(chr(int(x, 16))
+                        for x in self._hexentry.GetValue().split(' '))
+        self._strentry.ChangeValue(chars)
 
     def refresh(self):
-        self._entry.SetValue(str(self._obj))
-        self._mark_unchanged(self._entry, mem_changed=False)
+        self._strentry.SetValue(str(self._obj))
+        self.hex_from_str()
+        self._mark_unchanged(self._strentry, mem_changed=False)
 
     def _edited(self, event):
-        entry = event.GetEventObject()
+        entry = self._strentry
+        if event.GetEventObject() == entry:
+            self.hex_from_str()
         value = entry.GetValue()
         if len(value) == len(self._obj):
             self._mark_changed(entry)
@@ -221,7 +261,7 @@ class ChirpStringEditor(ChirpEditor):
 
     @common.error_proof()
     def _changed(self, event):
-        entry = event.GetEventObject()
+        entry = self._strentry
         value = entry.GetValue()
         self._obj.set_value(value)
         self._mark_unchanged(entry)
