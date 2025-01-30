@@ -41,6 +41,7 @@ CONF = config.get()
 CHIRP_DATA_MEMORY = wx.DataFormat('x-chirp/memory-channel')
 EditorChanged, EVT_EDITOR_CHANGED = wx.lib.newevent.NewCommandEvent()
 StatusMessage, EVT_STATUS_MESSAGE = wx.lib.newevent.NewCommandEvent()
+EditorRefresh, EVT_EDITOR_REFRESH = wx.lib.newevent.NewCommandEvent()
 CrossEditorAction, EVT_CROSS_EDITOR_ACTION = wx.lib.newevent.NewCommandEvent()
 INDEX_CHAR = settings.BANNED_NAME_CHARACTERS[0]
 
