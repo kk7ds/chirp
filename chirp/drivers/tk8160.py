@@ -308,6 +308,7 @@ class TKx160Radio(chirp_common.CloneModeRadio):
         rf.has_cross = True
         rf.has_bank = False
         rf.has_sub_devices = not self.VARIANT
+        rf.has_dynamic_subdevices = rf.has_sub_devices
         rf.has_tuning_step = False
         rf.has_rx_dtcs = True
         rf.has_settings = True
@@ -603,9 +604,9 @@ class TKx160Radio(chirp_common.CloneModeRadio):
             'zonecount', 'Number of Zones',
             settings.RadioSettingValueInteger(1, 128, num_zones))
         zone_count.set_doc('Number of zones in the radio. '
-                           'Requires a save and re-load of the file to take '
-                           'effect. Reducing this number will DELETE '
+                           'Reducing this number will DELETE '
                            'memories in the affected zones!')
+        zone_count.set_volatile(True)
         zones.append(zone_count)
         keys = self.make_key_group(self._memobj.keys,
                                    KEY_NAMES,

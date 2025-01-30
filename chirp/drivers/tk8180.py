@@ -790,6 +790,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         rf.has_settings = True
         rf.has_bank = False
         rf.has_sub_devices = True
+        rf.has_dynamic_subdevices = True
         rf.has_rx_dtcs = True
         rf.can_odd_split = True
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
@@ -1285,9 +1286,9 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
                                   RadioSettingValueInteger(
                                       1, 128, len(self._zones)))
         zone_count.set_doc('Number of zones in the radio. '
-                           'Requires a save and re-load of the '
-                           'file to take effect. Reducing this number '
+                           'Reducing this number '
                            'will DELETE memories in affected zones!')
+        zone_count.set_volatile(True)
         zones.append(zone_count)
 
         for i in range(len(self._zones)):

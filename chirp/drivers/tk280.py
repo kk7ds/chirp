@@ -839,6 +839,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         rf.has_dtcs_polarity = True
         rf.has_ctone = True
         rf.has_cross = True
+        rf.has_dynamic_subdevices = True
         rf.valid_modes = MODES
         rf.valid_duplexes = ["", "-", "+", "off", "split"]
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
@@ -1114,8 +1115,6 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
             enable = RadioSetting('group-%i-enable' % group_number, 'Enabled',
                                   RadioSettingValueBoolean(enabled))
             enable.set_volatile(True)
-            enable.set_doc(
-                'Changing this requires a save and re-load of the file!')
             count = RadioSetting('group-%i-count' % group_number,
                                  'Active Memories',
                                  RadioSettingValueInteger(0, 250, group_count))

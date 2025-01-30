@@ -919,6 +919,7 @@ class RadioFeatures:
         "has_comment":          BOOLEAN,
         "has_settings":         BOOLEAN,
         "has_variable_power":   BOOLEAN,
+        "has_dynamic_subdevices": BOOLEAN,
 
         # Attributes
         "valid_modes":          LIST,
@@ -1018,6 +1019,8 @@ class RadioFeatures:
         self.init("has_variable_power", False,
                   "Indicates the radio supports any power level between the "
                   "min and max in valid_power_levels")
+        self.init("has_dynamic_subdevices", False,
+                  "Indicates the radio has a non-static list of subdevices")
 
         self.init("valid_modes", list(MODES),
                   "Supported emission (or receive) modes")
