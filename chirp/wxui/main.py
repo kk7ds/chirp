@@ -605,6 +605,8 @@ class ChirpMain(wx.Frame):
                                      select=select)
         self.Bind(EVT_EDITORSET_CHANGED, self._editor_changed, editorset)
         self.Bind(common.EVT_STATUS_MESSAGE, self._editor_status, editorset)
+        editorset.Bind(common.EVT_EDITOR_REFRESH,
+                       lambda e: self._reload_editorset(e, editorset))
         self._update_editorset_title(editorset)
         editorset.selected()
 
@@ -1117,6 +1119,42 @@ class ChirpMain(wx.Frame):
     def _editor_status(self, event):
         # FIXME: Should probably only do this for the current editorset
         self.statusbar.SetStatusText(event.message)
+
+    @common.error_proof()
+    def _reload_editorset(self, event, editorset):
+        # Rebuild a ChirpEditorSet for a radio who has undergone some
+        # fundamental change
+        LOG.info('Editor %s set %s needs refresh' % (
+            event.GetEventObject(), editorset))
+
+        # Capture the index of the current editorset, the editor within, its
+        # class, and scroll position
+        index = self._editors.GetSelection()
+        selected_editor_idx = editorset.current_editor_index
+        selected_editor_cls = editorset.current_editor.__class__
+        selected_editor_pos = editorset.current_editor.get_scroll_pos()
+
+        # Build the new editorset from the previous radio and filename
+        new_eset = ChirpEditorSet(editorset.radio, editorset.filename,
+                                  self._editors)
+        new_eset._modified = editorset.modified
+
+        # Remove the current one and replace with the new one
+        self._editors.DeletePage(index)
+        self.add_editorset(new_eset, atindex=index)
+        self._update_window_for_editor()
+
+        # Try to find the equivalent editor we were on. Must be at least the
+        # same index, and same class. This is likely to be a SettingsEdit
+        # change that adds a MemEdit. However, if this ever removes one, it
+        # won't work.
+        for i, (name, editor) in enumerate(new_eset.iter_editors()):
+            if i >= selected_editor_idx and isinstance(editor,
+                                                       selected_editor_cls):
+                LOG.debug('Selecting editor %i type %s name %r',
+                          i, selected_editor_cls.__name__, name)
+                new_eset.select_editor(i)
+                new_eset.current_editor.set_scroll_pos(selected_editor_pos)
 
     def _editor_cross_action(self, event):
         tabs = {}

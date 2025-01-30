@@ -201,7 +201,12 @@ class ChirpSettingsEdit(common.ChirpEditor):
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
         if event.reload:
             LOG.warning('Settings grid needs a reload')
-            wx.CallAfter(self._reload)
+            if self.radio.get_features().has_dynamic_subdevices:
+                event = common.EditorRefresh(self.GetId())
+                event.SetEventObject(self)
+                wx.PostEvent(self, event)
+            else:
+                wx.CallAfter(self._reload)
 
     def saved(self):
         for i in range(self._group_control.GetPageCount()):
