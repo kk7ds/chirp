@@ -182,7 +182,7 @@ class ChirpEditorSet(wx.Panel):
             radios = [radio]
             format = '%(type)s'
 
-        if len(radios) > 2:
+        if len(radios) > 2 or features.has_dynamic_subdevices:
             LOG.info('Using TreeBook because radio has %i devices',
                      len(radios))
             self._editors = wx.Treebook(self, style=wx.NB_RIGHT)
@@ -1734,7 +1734,12 @@ class ChirpMain(wx.Frame):
         editorset = ChirpEditorSet(new_radio, filename, self._editors)
         self.add_editorset(editorset, select=True, atindex=current_index)
         editorset.select_editor(index=last_editor)
-        editorset.current_editor.set_scroll_pos(editor_pos)
+        try:
+            editorset.current_editor.set_scroll_pos(editor_pos)
+        except TypeError:
+            # Likely the editor at our old index is no longer the same type,
+            # so don't freak out
+            pass
 
         LOG.info('Reloaded radio driver%s in place; good luck!' % (
             andfile and ' (and file)' or ''))
