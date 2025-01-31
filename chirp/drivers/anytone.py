@@ -132,6 +132,13 @@ struct {
   char welcome[8];
 } settings;
 
+#seekto 0x0400;
+struct {
+    u8 code[12];
+    u8 len;
+    u8 unknown2[3];
+} dtmf_codes[16];
+
 #seekto 0x0540;
 struct memory memblk1[12];
 
@@ -707,11 +714,33 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
                                                 current_index=_settings.mute))
         basic.append(rs)
 
+        dtmf = RadioSettingGroup('dtmf', 'DTMF')
+        for i in range(16):
+            length = int(self._memobj.dtmf_codes[i].len)
+            val = bitwise.bcd_to_numeric_str(self._memobj.dtmf_codes[i].code)
+            val = val[:length]
+            val = val.replace('E', '*').replace('F', '#')
+            rs = RadioSetting('dtmf%i' % i, 'DTMF M%i' % (i + 1),
+                              RadioSettingValueString(
+                                  0, 24,
+                                  val, autopad=False,
+                                  charset='01234567890*#abcdABCD'))
+            dtmf.append(rs)
+
+        settings.append(dtmf)
         return settings
 
     def set_settings(self, settings):
         _settings = self._memobj.settings
         for element in settings:
+            if element.get_name() == 'dtmf':
+                for i in range(16):
+                    val = str(element['dtmf%i' % i].value).strip()
+                    val = val.replace('*', 'E').replace('#', 'F')
+                    self._memobj.dtmf_codes[i].len = len(val)
+                    bitwise.numeric_str_to_bcd(
+                        self._memobj.dtmf_codes[i].code, val)
+                continue
             if not isinstance(element, RadioSetting):
                 self.set_settings(element)
                 continue
