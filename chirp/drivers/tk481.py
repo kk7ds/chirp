@@ -20,8 +20,10 @@ from chirp import bitwise
 from chirp import chirp_common
 from chirp import directory
 from chirp.drivers import tk280
-from chirp.settings import RadioSetting, RadioSettingSubGroup
+from chirp.settings import RadioSetting, RadioSettingSubGroup, MemSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettingValueString
+from chirp.settings import RadioSettingValueInvertedBoolean
+from chirp.settings import RadioSettingGroup
 
 TRUNK_DEFS = """
 struct trunk_settings {
@@ -270,6 +272,12 @@ class TKx80_Trunked(tk280.KenwoodTKx80):
         self._get_memory_base(mem, _mem)
         mem.mode = 'NFM'
         mem.skip = '' if bool(_mem.grouplockout) else 'S'
+
+        mem.extra = RadioSettingGroup('extra', 'Extra')
+        rs = MemSetting('call', 'Call',
+                        RadioSettingValueInvertedBoolean(not _mem.call))
+        mem.extra.append(rs)
+
         return mem
 
     def set_memory(self, mem):
@@ -287,6 +295,9 @@ class TKx80_Trunked(tk280.KenwoodTKx80):
 
         _mem.talkaround = 0 if not mem.duplex else 1
         _mem.grouplockout = 1 if mem.skip == '' else 0
+
+        if mem.extra:
+            mem.extra['call'].apply_to_memobj(_mem)
 
     def _set_settings_groups(self, settings):
         for i in range(32):
