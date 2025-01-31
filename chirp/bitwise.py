@@ -161,7 +161,29 @@ def int_to_bcd(bcd_array, value):
     """Convert an int like 1234 into bcdDataElements like "\x12\x34" """
     for i in reversed(range(0, len(bcd_array))):
         bcd_array[i].set_value(value % 100)
-        value /= 100
+        value //= 100
+
+
+def numeric_str_to_bcd(bcdel, string, pad='0'):
+    """Convert a string of digits into BCD-like bytes.
+
+    This should only be used for the quasi-BCD encodings of DTMF characters
+    that some radios use (i.e. 0x12 == "12" and 0x1D == "1D")
+    """
+    string = string.ljust(2 * bcdel.size() // 8, pad)
+    for i in range(0, bcdel.size() // 8):
+        bcdel[i] = int(string[i*2:i*2+2], 16)
+
+
+def bcd_to_numeric_str(bcdel, pad='0'):
+    """Convert a list of BCD-like bytes into a string.
+
+    See numeric_str_to_bcd above.
+    """
+    string = ''
+    for i in range(0, bcdel.size() // 8):
+        string += '%02X' % bcdel[i]
+    return string.ljust(2 * bcdel.size() // 8, pad)
 
 
 def get_string(char_array):
