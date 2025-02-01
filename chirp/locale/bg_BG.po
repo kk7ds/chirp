@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-19 07:25-0800\n"
+"POT-Creation-Date: 2025-02-04 15:52-0800\n"
 "PO-Revision-Date: 2025-01-17 10:00+0200\n"
 "Last-Translator: Стоян <stoyanster от гмаил>\n"
 "Language-Team: Bulgarian <dict@ludost.net>\n"
@@ -31,28 +31,28 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s трябва да бъде между %(min)i и %(max)i"
 
-#: ../wxui/memedit.py:1810
+#: ../wxui/memedit.py:1818
 #, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
 msgstr[0] "%i запис и преместване всички нагоре"
 msgstr[1] "%i записа и преместване всички нагоре"
 
-#: ../wxui/memedit.py:1801
+#: ../wxui/memedit.py:1809
 #, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
 msgstr[0] "%i запис"
 msgstr[1] "%i записа"
 
-#: ../wxui/memedit.py:1805
+#: ../wxui/memedit.py:1813
 #, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
 msgstr[0] "%i запис и преместване блока нагоре"
 msgstr[1] "%i записа и преместване блока нагоре"
 
-#: ../wxui/main.py:1453
+#: ../wxui/main.py:1498
 #, python-format
 msgid "%s has not been saved. Save before closing?"
 msgstr ""
@@ -60,19 +60,19 @@ msgstr ""
 "\n"
 "Да бъдат ли запазени преди затваряне?"
 
-#: ../wxui/bugreport.py:474
+#: ../wxui/bugreport.py:459
 msgid "(Describe what actually happened instead)"
 msgstr "(Опишете какво се случи вместо това)"
 
-#: ../wxui/bugreport.py:472
+#: ../wxui/bugreport.py:457
 msgid "(Describe what you expected to happen)"
 msgstr "(Опишете какво очаквахте да се случи)"
 
-#: ../wxui/bugreport.py:470
+#: ../wxui/bugreport.py:455
 msgid "(Describe what you were doing)"
 msgstr "(Опишете какво направихте)"
 
-#: ../wxui/bugreport.py:476
+#: ../wxui/bugreport.py:461
 msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr "(Работило ли е това устройство някога преди? Нова станция? Работи ли с фабричния софтуер?)"
 
@@ -80,7 +80,7 @@ msgstr "(Работило ли е това устройство някога п�
 msgid "(none)"
 msgstr "(няма)"
 
-#: ../wxui/memedit.py:2180
+#: ../wxui/memedit.py:2188
 #, python-format
 msgid "...and %i more"
 msgstr "...и още %i"
@@ -671,7 +671,7 @@ msgid ""
 "It will may not work if you turn on the radio with the cable already attached"
 msgstr ""
 
-#: ../wxui/main.py:2021
+#: ../wxui/main.py:2072
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "Налично е ново издание на CHIRP. За да го изтеглите възможно най-бързо посетете страницата!"
 
@@ -679,40 +679,40 @@ msgstr "Налично е ново издание на CHIRP. За да го и�
 msgid "AM mode does not allow duplex or tone"
 msgstr "Режимът на АМ не поддържа дуплекс или тон"
 
-#: ../wxui/main.py:951
+#: ../wxui/main.py:954
 msgid "About"
 msgstr "Относно"
 
-#: ../wxui/main.py:1809
+#: ../wxui/main.py:1860
 msgid "About CHIRP"
 msgstr "Относно CHIRP"
 
-#: ../wxui/main.py:1859
+#: ../wxui/main.py:1910
 msgid "Agree"
 msgstr "Съгласяване"
 
-#: ../wxui/query_sources.py:406
+#: ../wxui/query_sources.py:450
 msgid "All"
 msgstr "Всички"
 
-#: ../wxui/main.py:1282
+#: ../wxui/main.py:1327
 msgid "All Files"
 msgstr "Всички файлове"
 
-#: ../wxui/main.py:1293
+#: ../wxui/main.py:1338
 msgid "All supported formats|"
 msgstr "Всички поддържани формати|"
 
-#: ../wxui/clone.py:596
+#: ../wxui/clone.py:606
 msgid "Always start with recent list"
 msgstr "Отваряне на списъка при свързване"
 
-#: ../wxui/query_sources.py:323 ../wxui/query_sources.py:398
+#: ../wxui/query_sources.py:352 ../wxui/query_sources.py:442
 msgid "Amateur"
 msgstr "Любителски"
 
-#: ../wxui/bugreport.py:328 ../wxui/bugreport.py:437 ../wxui/common.py:616
-#: ../wxui/common.py:643
+#: ../wxui/bugreport.py:328 ../wxui/bugreport.py:437 ../wxui/common.py:617
+#: ../wxui/common.py:644
 msgid "An error has occurred"
 msgstr "Възникна грешка"
 
@@ -720,20 +720,20 @@ msgstr "Възникна грешка"
 msgid "Applying settings"
 msgstr "Прилагане на настройки"
 
-#: ../wxui/main.py:1550
+#: ../wxui/main.py:1595
 msgid "Automatic from system"
 msgstr "Автоматично от системата"
 
-#: ../wxui/developer.py:570
+#: ../wxui/developer.py:640
 msgid "Available modules"
 msgstr "Достъпни модули"
 
-#: ../wxui/main.py:1960
+#: ../wxui/main.py:2011
 msgid "Bandplan"
 msgstr "Разпределение на честотни ленти"
 
-#: ../wxui/query_sources.py:428 ../wxui/query_sources.py:645
-#: ../wxui/query_sources.py:803
+#: ../wxui/query_sources.py:478 ../wxui/query_sources.py:697
+#: ../wxui/query_sources.py:855
 msgid "Bands"
 msgstr "Честотни ленти"
 
@@ -741,7 +741,7 @@ msgstr "Честотни ленти"
 msgid "Banks"
 msgstr "Банки"
 
-#: ../wxui/developer.py:233
+#: ../wxui/developer.py:281
 msgid "Bin"
 msgstr "Bin"
 
@@ -761,28 +761,33 @@ msgstr "Доклад за дефект номер:"
 msgid "Bug subject:"
 msgstr "Доклад относно:"
 
-#: ../wxui/developer.py:424
+#: ../wxui/developer.py:494
 msgid "Building Radio Browser"
 msgstr "Попълване на екрана за разглеждане"
 
-#: ../wxui/main.py:1579
+#: ../wxui/main.py:1624
 msgid "CHIRP must be restarted for the new selection to take effect"
 msgstr "За да влязат сила избраното, CHIRP трябва да рестартира"
 
-#: ../wxui/query_sources.py:929
+#: ../wxui/query_sources.py:176
+#, python-format
+msgid "Cached results can only be included for a proximity query with Latitude, Longitude, and Distance set. Please uncheck \"%s\""
+msgstr ""
+
+#: ../wxui/query_sources.py:981
 msgid "Canada"
 msgstr "Канада"
 
-#: ../wxui/common.py:487
+#: ../wxui/common.py:488
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "Промяната на тази настройка изисква презареждане на настройките от образа, което ще се случи сега."
 
-#: ../wxui/memedit.py:1459
+#: ../wxui/memedit.py:1467
 #, python-format
 msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr "Канали с еднакви TX и RX %s са представени с режим на тона „%s“."
 
-#: ../wxui/main.py:1281
+#: ../wxui/main.py:1326
 msgid "Chirp Image Files"
 msgstr "Файлове с образи на Chirp"
 
@@ -790,42 +795,42 @@ msgstr "Файлове с образи на Chirp"
 msgid "Choice Required"
 msgstr "Необходим е избор"
 
-#: ../wxui/memedit.py:1438
+#: ../wxui/memedit.py:1446
 #, python-format
 msgid "Choose %s DTCS Code"
 msgstr "Изберете код на DTSC за %s"
 
-#: ../wxui/memedit.py:1435
+#: ../wxui/memedit.py:1443
 #, python-format
 msgid "Choose %s Tone"
 msgstr "Изберете тон за %s"
 
-#: ../wxui/memedit.py:1469
+#: ../wxui/memedit.py:1477
 msgid "Choose Cross Mode"
 msgstr "Изберете режим на прекръстосване"
 
-#: ../wxui/main.py:1130
+#: ../wxui/main.py:1169
 msgid "Choose Diff Target"
 msgstr "Изберете какво ще сравнявате"
 
-#: ../wxui/clone.py:577
+#: ../wxui/clone.py:587
 msgid "Choose a recent model"
 msgstr "Изберете модел последно използваните станции"
 
-#: ../wxui/memedit.py:1499
+#: ../wxui/memedit.py:1507
 msgid "Choose duplex"
 msgstr "Изберете дуплекс"
 
-#: ../wxui/developer.py:569
+#: ../wxui/developer.py:639
 #, python-format
 msgid "Choose the module to load from issue %i:"
 msgstr "Зареждане на модул от докладван дефект %i:"
 
-#: ../wxui/query_sources.py:508
+#: ../wxui/query_sources.py:560
 msgid "City"
 msgstr "Град"
 
-#: ../wxui/main.py:1829
+#: ../wxui/main.py:1880
 msgid "Click here for full license text"
 msgstr "Прочетете тук целия текст на лиценза"
 
@@ -843,7 +848,7 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr "Записването завърши, проверка за паразитни байтове"
 
-#: ../wxui/common.py:122
+#: ../wxui/common.py:123
 msgid "Cloning"
 msgstr "Записване"
 
@@ -857,7 +862,7 @@ msgstr "Зареждане от станция…"
 msgid "Cloning to radio"
 msgstr "Записване в станция…"
 
-#: ../wxui/main.py:1043 ../wxui/main.py:1860
+#: ../wxui/main.py:1046 ../wxui/main.py:1911
 msgid "Close"
 msgstr "Затваряне"
 
@@ -865,7 +870,7 @@ msgstr "Затваряне"
 msgid "Close String"
 msgstr "Завършване на низ"
 
-#: ../wxui/main.py:1044
+#: ../wxui/main.py:1047
 msgid "Close file"
 msgstr "Затваряне на файла"
 
@@ -873,7 +878,7 @@ msgstr "Затваряне на файла"
 msgid "Close string value with double-quote (\")"
 msgstr "Завършете низа с права двойна кавичка (\")"
 
-#: ../wxui/memedit.py:1869
+#: ../wxui/memedit.py:1877
 #, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
@@ -904,16 +909,16 @@ msgstr ""
 "Свършете кабела към „PC Port“ на гърба на „TX/RX“\n"
 "модула, а НЕ към „Com Port“ на предния панел.\n"
 
-#: ../wxui/query_sources.py:376
+#: ../wxui/query_sources.py:405
 msgid "Convert to FM"
 msgstr "Превръщане в ЧМ"
 
-#: ../wxui/memedit.py:1786
+#: ../wxui/memedit.py:1794
 msgid "Copy"
 msgstr "Копиране"
 
-#: ../wxui/query_sources.py:321 ../wxui/query_sources.py:514
-#: ../wxui/query_sources.py:604
+#: ../wxui/query_sources.py:350 ../wxui/query_sources.py:566
+#: ../wxui/query_sources.py:656
 msgid "Country"
 msgstr "Държава"
 
@@ -921,7 +926,7 @@ msgstr "Държава"
 msgid "Cross Mode"
 msgstr "Режим на прекръстосване"
 
-#: ../wxui/clone.py:538
+#: ../wxui/clone.py:548
 msgid "Custom Port"
 msgstr "Порт по избор"
 
@@ -929,7 +934,7 @@ msgstr "Порт по избор"
 msgid "Custom..."
 msgstr "По избор…"
 
-#: ../wxui/memedit.py:1782
+#: ../wxui/memedit.py:1790
 msgid "Cut"
 msgstr "Изрязване"
 
@@ -947,19 +952,19 @@ msgstr "Полярност на DTCS"
 msgid "DTMF decode"
 msgstr "Декодиране на DTMF"
 
-#: ../wxui/memedit.py:2458
+#: ../wxui/memedit.py:2466
 msgid "DV Memory"
 msgstr "Записи за цифрови разговори"
 
-#: ../wxui/main.py:1881
+#: ../wxui/main.py:1932
 msgid "Danger Ahead"
 msgstr "Напред е опасно"
 
-#: ../wxui/developer.py:232
+#: ../wxui/developer.py:280
 msgid "Dec"
 msgstr "Dec"
 
-#: ../wxui/memedit.py:1795
+#: ../wxui/memedit.py:1803
 msgid "Delete"
 msgstr "Премахване"
 
@@ -967,32 +972,32 @@ msgstr "Премахване"
 msgid "Detailed information"
 msgstr "Подробна информация"
 
-#: ../wxui/main.py:956
+#: ../wxui/main.py:959
 msgid "Developer Mode"
 msgstr "Режим за разработчик"
 
-#: ../wxui/main.py:1887
+#: ../wxui/main.py:1938
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "Режимът на разработчик е %s. Приложението трябва да бъде рестартирано"
 
-#: ../wxui/memedit.py:1906 ../wxui/developer.py:97
+#: ../wxui/memedit.py:1914 ../wxui/developer.py:97
 msgid "Diff Raw Memories"
 msgstr "Разлики в необработеното съдържание на записите"
 
-#: ../wxui/memedit.py:1914
+#: ../wxui/memedit.py:1922
 msgid "Diff against another editor"
 msgstr "Сравняване с друг редактор"
 
-#: ../wxui/memedit.py:2375
+#: ../wxui/memedit.py:2383
 msgid "Digital Code"
 msgstr "Цифров код"
 
-#: ../wxui/query_sources.py:380
+#: ../wxui/query_sources.py:409
 msgid "Digital Modes"
 msgstr "Цифрови режими"
 
-#: ../wxui/main.py:1899
+#: ../wxui/main.py:1950
 msgid "Disable reporting"
 msgstr "Изключване на докладването"
 
@@ -1000,8 +1005,8 @@ msgstr "Изключване на докладването"
 msgid "Disabled"
 msgstr "Изключено"
 
-#: ../wxui/query_sources.py:102 ../wxui/query_sources.py:352
-#: ../wxui/query_sources.py:627 ../wxui/query_sources.py:785
+#: ../wxui/query_sources.py:102 ../wxui/query_sources.py:381
+#: ../wxui/query_sources.py:679 ../wxui/query_sources.py:837
 msgid "Distance"
 msgstr "Разстояние"
 
@@ -1018,19 +1023,19 @@ msgstr "Приемате ли риска?"
 msgid "Double-click to change bank name"
 msgstr "Името на банката може да бъде променено след двойно щракване"
 
-#: ../wxui/main.py:1045
+#: ../wxui/main.py:1048
 msgid "Download"
 msgstr "Изтегляне"
 
-#: ../wxui/main.py:1046
+#: ../wxui/main.py:1049
 msgid "Download from radio"
 msgstr "Изтегляне от станция"
 
-#: ../wxui/main.py:858
+#: ../wxui/main.py:860
 msgid "Download from radio..."
 msgstr "Изтегляне от станция…"
 
-#: ../wxui/clone.py:751
+#: ../wxui/clone.py:782
 msgid "Download instructions"
 msgstr "Инструкции за изтегляне"
 
@@ -1046,7 +1051,7 @@ msgstr "Сведения за управляващия софтуер"
 msgid "Driver messages"
 msgstr "Съобщения от управляващия софтуер"
 
-#: ../wxui/query_sources.py:378
+#: ../wxui/query_sources.py:407
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
 msgstr "Цифровите ретранслатори, поддържащи и аналогов режим ще бъдат показани като ЧМ"
 
@@ -1054,17 +1059,17 @@ msgstr "Цифровите ретранслатори, поддържащи и �
 msgid "Duplex"
 msgstr "Дуплекс"
 
-#: ../wxui/memedit.py:2405
+#: ../wxui/memedit.py:2413
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Промяна стойностите на %i записа"
 
-#: ../wxui/memedit.py:2403
+#: ../wxui/memedit.py:2411
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Промяна на запис № %i"
 
-#: ../wxui/main.py:900
+#: ../wxui/main.py:903
 msgid "Enable Automatic Edits"
 msgstr "Автоматични промени"
 
@@ -1076,11 +1081,11 @@ msgstr "Включено"
 msgid "Enter Frequency"
 msgstr "Въведете честота"
 
-#: ../wxui/memedit.py:1486
+#: ../wxui/memedit.py:1494
 msgid "Enter Offset (MHz)"
 msgstr "Въведете отместване (МХц)"
 
-#: ../wxui/memedit.py:1478
+#: ../wxui/memedit.py:1486
 msgid "Enter TX Frequency (MHz)"
 msgstr "Въведете честота на предаване (МХц)"
 
@@ -1089,7 +1094,7 @@ msgstr "Въведете честота на предаване (МХц)"
 msgid "Enter a new name for bank %s:"
 msgstr "Въведете ново име за банка %s:"
 
-#: ../wxui/clone.py:537
+#: ../wxui/clone.py:547
 msgid "Enter custom port:"
 msgstr "Въведете порт по избор:"
 
@@ -1101,7 +1106,7 @@ msgstr ""
 msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem."
 msgstr ""
 
-#: ../wxui/bugreport.py:459
+#: ../wxui/bugreport.py:470
 msgid "Enter information to add to the bug here"
 msgstr ""
 
@@ -1113,7 +1118,7 @@ msgstr ""
 msgid "Enter your username and password for chirpmyradio.com. If you do not have an account click below to create one before proceeding."
 msgstr ""
 
-#: ../wxui/common.py:330
+#: ../wxui/common.py:331
 #, python-format
 msgid "Erased memory %s"
 msgstr "Премахнат е запис № %s"
@@ -1126,7 +1131,7 @@ msgstr "Грешка при прилагане на филтър"
 msgid "Error applying settings"
 msgstr "Грешка при прилагане на настройките"
 
-#: ../wxui/clone.py:652
+#: ../wxui/clone.py:683
 msgid "Error communicating with radio"
 msgstr "Грешка при връзката със станцията"
 
@@ -1162,27 +1167,27 @@ msgstr "Пример: name=\"ретранслатор"
 msgid "Example: name~\"myrepea\""
 msgstr "Пример: name~\"ретрансл\""
 
-#: ../wxui/query_sources.py:373
+#: ../wxui/query_sources.py:402
 msgid "Exclude private and closed repeaters"
 msgstr "Изключване на частните и затворени ретранслатори"
 
-#: ../wxui/clone.py:710
+#: ../wxui/clone.py:741
 msgid "Experimental driver"
 msgstr "Изпитателен управляващ софтуер"
 
-#: ../wxui/memedit.py:2328
+#: ../wxui/memedit.py:2336
 msgid "Export can only write CSV files"
 msgstr "При изнасяне могат да бъдат запазвани само файлове на CSV"
 
-#: ../wxui/main.py:1438
+#: ../wxui/main.py:1483
 msgid "Export to CSV"
 msgstr "Изнасяне в CSV"
 
-#: ../wxui/main.py:733
+#: ../wxui/main.py:735
 msgid "Export to CSV..."
 msgstr "Изнасяне в CSV…"
 
-#: ../wxui/memedit.py:2447
+#: ../wxui/memedit.py:2455
 msgid "Extra"
 msgstr "Допълнителни"
 
@@ -1190,7 +1195,7 @@ msgstr "Допълнителни"
 msgid "FM Radio"
 msgstr "Радио ЧМ"
 
-#: ../wxui/query_sources.py:659
+#: ../wxui/query_sources.py:711
 msgid ""
 "FREE repeater database, which provides most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
@@ -1199,7 +1204,7 @@ msgstr ""
 "Безплатен списък с най-новата информация за\n"
 "Европейските ретранслатори. Не е необходим профил."
 
-#: ../wxui/developer.py:432
+#: ../wxui/developer.py:502
 msgid "Failed to load radio browser"
 msgstr "Грешка при попълване на екрана за разглеждане"
 
@@ -1224,8 +1229,8 @@ msgstr "Докладване на дефект"
 msgid "File does not exist: %s"
 msgstr "Файлът „%s“ не съществува"
 
-#: ../wxui/main.py:1285 ../wxui/main.py:1365 ../wxui/main.py:1375
-#: ../wxui/main.py:1434 ../wxui/main.py:1779 ../wxui/main.py:1780
+#: ../wxui/main.py:1330 ../wxui/main.py:1410 ../wxui/main.py:1420
+#: ../wxui/main.py:1479 ../wxui/main.py:1830 ../wxui/main.py:1831
 msgid "Files"
 msgstr "файлове"
 
@@ -1233,11 +1238,11 @@ msgstr "файлове"
 msgid "Files:"
 msgstr "Файлове:"
 
-#: ../wxui/query_sources.py:358
+#: ../wxui/query_sources.py:387
 msgid "Filter"
 msgstr "Филтър"
 
-#: ../wxui/query_sources.py:356
+#: ../wxui/query_sources.py:385
 msgid "Filter results with location matching this string"
 msgstr "Филтриране на резултатите, чието местоположение съдържат низа"
 
@@ -1245,15 +1250,15 @@ msgstr "Филтриране на резултатите, чието место�
 msgid "Filter..."
 msgstr "Филтър…"
 
-#: ../wxui/main.py:1508
+#: ../wxui/main.py:1553
 msgid "Find"
 msgstr "Търсене"
 
-#: ../wxui/main.py:801
+#: ../wxui/main.py:803
 msgid "Find Next"
 msgstr "Следващо съвпадение"
 
-#: ../wxui/main.py:787
+#: ../wxui/main.py:789
 msgid "Find..."
 msgstr "Търсене…"
 
@@ -1265,7 +1270,7 @@ msgstr "Довършете стойност с плаваща запетая"
 msgid "Finish float value like: 146.52"
 msgstr "Довършете стойността с плаваща запетая например 146.52"
 
-#: ../wxui/common.py:332
+#: ../wxui/common.py:333
 #, python-format
 msgid "Finished radio job %s"
 msgstr "Със станцията е завършено е действието „%s“"
@@ -1326,7 +1331,7 @@ msgstr ""
 "3 - Включете радиото\n"
 "4 - Изтеглете информацията\n"
 
-#: ../drivers/tk690.py:569 ../drivers/tk760g.py:683
+#: ../drivers/tk690.py:574 ../drivers/tk760g.py:683
 msgid ""
 "Follow these instructions to download your radio:\n"
 "1 - Turn off your radio\n"
@@ -1397,7 +1402,7 @@ msgstr ""
 "3 - Включете радиото\n"
 "4 - Изпратете информацията\n"
 
-#: ../drivers/tk690.py:575 ../drivers/tk760g.py:689
+#: ../drivers/tk690.py:580 ../drivers/tk760g.py:689
 msgid ""
 "Follow these instructions to upload your radio:\n"
 "1 - Turn off your radio\n"
@@ -1497,8 +1502,8 @@ msgstr "Честотата в този обхват изисква режим н
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr "Честотата извън обхватите на предаване трябва да бъде 'duplex=off'"
 
-#: ../wxui/query_sources.py:324 ../wxui/query_sources.py:389
-#: ../wxui/query_sources.py:482
+#: ../wxui/query_sources.py:353 ../wxui/query_sources.py:433
+#: ../wxui/query_sources.py:533
 msgid "GMRS"
 msgstr "GMRS"
 
@@ -1506,19 +1511,19 @@ msgstr "GMRS"
 msgid "Getting settings"
 msgstr "Получаване на настройки"
 
-#: ../wxui/memedit.py:1034
+#: ../wxui/memedit.py:1038
 msgid "Goto Memory"
 msgstr "Към запис"
 
-#: ../wxui/memedit.py:1033
+#: ../wxui/memedit.py:1037
 msgid "Goto Memory:"
 msgstr "Към запис:"
 
-#: ../wxui/memedit.py:1002
+#: ../wxui/memedit.py:1006
 msgid "Goto..."
 msgstr "Към…"
 
-#: ../wxui/main.py:1011
+#: ../wxui/main.py:1014
 msgid "Help"
 msgstr "Помощ"
 
@@ -1526,11 +1531,11 @@ msgstr "Помощ"
 msgid "Help Me..."
 msgstr "Искам помощ…"
 
-#: ../wxui/developer.py:231
+#: ../wxui/developer.py:279
 msgid "Hex"
 msgstr "Hex"
 
-#: ../wxui/memedit.py:1011
+#: ../wxui/memedit.py:1015
 msgid "Hide empty memories"
 msgstr "Скриване на празни зиписи"
 
@@ -1542,27 +1547,31 @@ msgstr ""
 msgid "Human-readable comment (not stored in radio)"
 msgstr "Коментар за справка (не се пази в станцията)"
 
-#: ../wxui/query_sources.py:335 ../wxui/query_sources.py:341
-#: ../wxui/query_sources.py:611 ../wxui/query_sources.py:617
-#: ../wxui/query_sources.py:763 ../wxui/query_sources.py:769
+#: ../wxui/query_sources.py:364 ../wxui/query_sources.py:370
+#: ../wxui/query_sources.py:663 ../wxui/query_sources.py:669
+#: ../wxui/query_sources.py:815 ../wxui/query_sources.py:821
 msgid "If set, sort results by distance from these coordinates"
 msgstr "Ако е зададено, сортира резултатите по отдалеченост от тези координати"
 
-#: ../wxui/main.py:1420
+#: ../wxui/main.py:1465
 msgid "Import"
 msgstr "Внасяне"
 
-#: ../wxui/main.py:727
+#: ../wxui/main.py:729
 msgid "Import from file..."
 msgstr "Внасяне от файл…"
 
-#: ../wxui/main.py:1424
+#: ../wxui/main.py:1469
 msgid "Import messages"
 msgstr "Съобщения при внасяне"
 
-#: ../wxui/main.py:1418
+#: ../wxui/main.py:1463
 msgid "Import not recommended"
 msgstr "Не се препоръчва внасяне"
+
+#: ../wxui/query_sources.py:422
+msgid "Include Cached"
+msgstr ""
 
 #: ../wxui/bankedit.py:62
 msgid "Index"
@@ -1572,11 +1581,11 @@ msgstr "Пореден номер"
 msgid "Info"
 msgstr "Сведения"
 
-#: ../wxui/memedit.py:1461
+#: ../wxui/memedit.py:1469
 msgid "Information"
 msgstr "Сведения"
 
-#: ../wxui/memedit.py:1776
+#: ../wxui/memedit.py:1784
 msgid "Insert Row Above"
 msgstr "Вмъкване на ред отгоре"
 
@@ -1584,11 +1593,11 @@ msgstr "Вмъкване на ред отгоре"
 msgid "Install desktop icon?"
 msgstr "Добавяне на пикограма към работния плот?"
 
-#: ../wxui/main.py:940
+#: ../wxui/main.py:943
 msgid "Interact with driver"
 msgstr "Взаимодействие с управляващия софтуер"
 
-#: ../wxui/clone.py:773
+#: ../wxui/clone.py:804
 msgid "Internal driver error"
 msgstr "Вътрешна грешка на управляващия софтуер"
 
@@ -1598,7 +1607,7 @@ msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Неприемлива стойност „%(value)s“ (използвайте десетични градуси)"
 
 #: ../wxui/query_sources.py:68 ../wxui/query_sources.py:122
-#: ../wxui/memedit.py:1624
+#: ../wxui/memedit.py:1632
 msgid "Invalid Entry"
 msgstr "Недействителен запис"
 
@@ -1606,7 +1615,7 @@ msgstr "Недействителен запис"
 msgid "Invalid ZIP code"
 msgstr "Неприемлив пощенски код"
 
-#: ../wxui/memedit.py:1623 ../wxui/memedit.py:2538
+#: ../wxui/memedit.py:1631 ../wxui/memedit.py:2546
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Неприемлива промяна: %s"
@@ -1615,7 +1624,7 @@ msgstr "Неприемлива промяна: %s"
 msgid "Invalid locator"
 msgstr ""
 
-#: ../wxui/main.py:1776
+#: ../wxui/main.py:1827
 msgid "Invalid or unsupported module file"
 msgstr "Недействителен или неподдържан файл на модул"
 
@@ -1624,7 +1633,7 @@ msgstr "Недействителен или неподдържан файл на
 msgid "Invalid value: %r"
 msgstr "Недействителна стойност: %r"
 
-#: ../wxui/developer.py:591
+#: ../wxui/developer.py:661
 msgid "Issue number:"
 msgstr "Номер на дефект:"
 
@@ -1632,67 +1641,67 @@ msgstr "Номер на дефект:"
 msgid "LIVE"
 msgstr "НА ЖИВО"
 
-#: ../drivers/radtel_rt490.py:1026 ../wxui/main.py:844 ../wxui/main.py:1564
+#: ../drivers/radtel_rt490.py:1026 ../wxui/main.py:846 ../wxui/main.py:1609
 msgid "Language"
 msgstr "Език"
 
-#: ../wxui/query_sources.py:90 ../wxui/query_sources.py:343
-#: ../wxui/query_sources.py:619 ../wxui/query_sources.py:771
+#: ../wxui/query_sources.py:90 ../wxui/query_sources.py:372
+#: ../wxui/query_sources.py:671 ../wxui/query_sources.py:823
 msgid "Latitude"
 msgstr "Географска ширина"
 
-#: ../wxui/developer.py:212
+#: ../wxui/developer.py:260
 #, python-format
 msgid "Length must be %i"
 msgstr "Дължината трябва да бъде %i"
 
-#: ../wxui/query_sources.py:364 ../wxui/query_sources.py:579
-#: ../wxui/query_sources.py:732
+#: ../wxui/query_sources.py:393 ../wxui/query_sources.py:631
+#: ../wxui/query_sources.py:784
 msgid "Limit Bands"
 msgstr "Ограничение по производител"
 
-#: ../wxui/query_sources.py:369
+#: ../wxui/query_sources.py:398
 msgid "Limit Modes"
 msgstr "Ограничение по модел"
 
-#: ../wxui/query_sources.py:594 ../wxui/query_sources.py:747
+#: ../wxui/query_sources.py:646 ../wxui/query_sources.py:799
 msgid "Limit Status"
 msgstr "Ограничение по състояние"
 
-#: ../wxui/query_sources.py:756
+#: ../wxui/query_sources.py:808
 msgid "Limit prefixes"
 msgstr "Ограничение по наставка"
 
-#: ../wxui/query_sources.py:350 ../wxui/query_sources.py:625
-#: ../wxui/query_sources.py:783
+#: ../wxui/query_sources.py:379 ../wxui/query_sources.py:677
+#: ../wxui/query_sources.py:835
 msgid "Limit results to this distance (km) from coordinates"
 msgstr "Ограничаване на резултатите до това разстояние (км) от координатите"
 
-#: ../wxui/query_sources.py:374
+#: ../wxui/query_sources.py:403
 msgid "Limit use"
 msgstr "Ограничаване на използването"
 
-#: ../wxui/main.py:1651
+#: ../wxui/main.py:1696
 msgid "Live Radio"
 msgstr "Радио на живо"
 
-#: ../wxui/main.py:739
+#: ../wxui/main.py:741
 msgid "Load Module..."
 msgstr "Зареждане на модул…"
 
-#: ../wxui/developer.py:592
+#: ../wxui/developer.py:662
 msgid "Load module from issue"
 msgstr "Зареждане на модул от докладван дефект"
 
-#: ../wxui/main.py:993
+#: ../wxui/main.py:996
 msgid "Load module from issue..."
 msgstr "Зареждане на модул от докладван дефект…"
 
-#: ../wxui/main.py:1935
+#: ../wxui/main.py:1986
 msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
 msgstr "Зареждането на модул няма да повлияе на отворените раздели. Препоръчва се (освен ако не е указано друго) да затворите всички раздели, преди да зареждате модули."
 
-#: ../wxui/main.py:1783
+#: ../wxui/main.py:1834
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr "Зареждането на модул може да бъде изключително опасно и да доведе до повреда на компютърa, радиостанцията или и двете. НИКОГА не зареждайте модули от източници, на който нямате доверие и особено от място, различно от основната страница на CHIRP (chirpmyradio.com). Зареждането на модули от други източници е равносилно на това да им дадете пълен достъп до компютъра и всичко в него! Желаете ли да продължите, въпреки риска?"
 
@@ -1716,8 +1725,8 @@ msgstr "Логотип низ 1 (12 знака)"
 msgid "Logo string 2 (12 characters)"
 msgstr "Логотип низ 2 (12 знака)"
 
-#: ../wxui/query_sources.py:96 ../wxui/query_sources.py:344
-#: ../wxui/query_sources.py:620 ../wxui/query_sources.py:772
+#: ../wxui/query_sources.py:96 ../wxui/query_sources.py:373
+#: ../wxui/query_sources.py:672 ../wxui/query_sources.py:824
 msgid "Longitude"
 msgstr "Географска дължина"
 
@@ -1729,7 +1738,7 @@ msgstr "Записи"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Записите не могат да бъдат променяни поради неподдържана версия на управляващия софтуер"
 
-#: ../wxui/memedit.py:1663
+#: ../wxui/memedit.py:1671
 #, python-format
 msgid "Memory %i is not deletable"
 msgstr "Запис № %i не може да бъде премахван"
@@ -1752,7 +1761,7 @@ msgstr "За да бъде променян, записът трябва да п
 msgid "Memory {num} not in bank {bank}"
 msgstr "Записът {num} не е в банката {bank}"
 
-#: ../wxui/query_sources.py:571 ../wxui/query_sources.py:724
+#: ../wxui/query_sources.py:623 ../wxui/query_sources.py:776
 #: ../wxui/memedit.py:593
 msgid "Mode"
 msgstr "Режим"
@@ -1761,52 +1770,52 @@ msgstr "Режим"
 msgid "Model"
 msgstr "Модел"
 
-#: ../wxui/query_sources.py:449
+#: ../wxui/query_sources.py:499
 msgid "Modes"
 msgstr "Режими"
 
-#: ../wxui/main.py:1780
+#: ../wxui/main.py:1831
 msgid "Module"
 msgstr "Модул"
 
-#: ../wxui/main.py:1752
+#: ../wxui/main.py:1803
 msgid "Module Loaded"
 msgstr "Зареден е модул"
 
-#: ../wxui/main.py:1946
+#: ../wxui/main.py:1997
 msgid "Module loaded successfully"
 msgstr "Модулът е зареден"
 
-#: ../wxui/clone.py:655
+#: ../wxui/clone.py:686
 msgid "More Info"
 msgstr "Сведения"
 
-#: ../wxui/clone.py:494
+#: ../wxui/clone.py:504
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Намерен е повече от един порт: %s"
 
-#: ../wxui/memedit.py:998
+#: ../wxui/memedit.py:1002
 msgid "Move Down"
 msgstr "Преместване надолу"
 
-#: ../wxui/memedit.py:988
+#: ../wxui/memedit.py:992
 msgid "Move Up"
 msgstr "Преместване нагоре"
 
-#: ../wxui/memedit.py:2240
+#: ../wxui/memedit.py:2248
 msgid "Move operations are disabled while the view is sorted"
 msgstr "Действията за преместване са забранени при сортиран изглед"
 
-#: ../wxui/main.py:685
+#: ../wxui/main.py:687
 msgid "New Window"
 msgstr "Нов прозорец"
 
-#: ../wxui/main.py:2023
+#: ../wxui/main.py:2074
 msgid "New version available"
 msgstr "Налично е ново издание"
 
-#: ../wxui/memedit.py:1951
+#: ../wxui/memedit.py:1959
 msgid "No empty rows below!"
 msgstr "Отдолу липсват празни редове!"
 
@@ -1815,16 +1824,16 @@ msgstr "Отдолу липсват празни редове!"
 msgid "No example for %s"
 msgstr "Липсва пример за %s"
 
-#: ../wxui/developer.py:607
+#: ../wxui/developer.py:677
 msgid "No modules found"
 msgstr "Не са намерени модули"
 
-#: ../wxui/developer.py:606
+#: ../wxui/developer.py:676
 #, python-format
 msgid "No modules found in issue %i"
 msgstr "Не са намерени модули в доклад за дефект %i"
 
-#: ../wxui/memedit.py:2118
+#: ../wxui/memedit.py:2126
 msgid "No more space available; some memories were not applied"
 msgstr "Няма достатъчно място; някои записи не са приложени"
 
@@ -1832,11 +1841,11 @@ msgstr "Няма достатъчно място; някои записи не �
 msgid "No results"
 msgstr "Няма резултати"
 
-#: ../sources/repeaterbook.py:306
+#: ../sources/repeaterbook.py:329
 msgid "No results!"
 msgstr "Няма резултати!"
 
-#: ../wxui/query_sources.py:43 ../wxui/memedit.py:1033
+#: ../wxui/query_sources.py:43 ../wxui/memedit.py:1037
 msgid "Number"
 msgstr "Число"
 
@@ -1857,16 +1866,16 @@ msgstr ""
 msgid "One of: %s"
 msgstr "Едно от: %s"
 
-#: ../wxui/query_sources.py:362 ../wxui/query_sources.py:577
-#: ../wxui/query_sources.py:730
+#: ../wxui/query_sources.py:391 ../wxui/query_sources.py:629
+#: ../wxui/query_sources.py:782
 msgid "Only certain bands"
 msgstr "Само определени производители"
 
-#: ../wxui/query_sources.py:367
+#: ../wxui/query_sources.py:396
 msgid "Only certain modes"
 msgstr "Само определени модели"
 
-#: ../wxui/query_sources.py:754
+#: ../wxui/query_sources.py:806
 msgid "Only certain prefixes"
 msgstr "Само определени наставвки"
 
@@ -1874,31 +1883,31 @@ msgstr "Само определени наставвки"
 msgid "Only memory tabs may be exported"
 msgstr "Само разделите съдържащи записи могат да бъдат изнасяни"
 
-#: ../wxui/query_sources.py:588 ../wxui/query_sources.py:741
+#: ../wxui/query_sources.py:640 ../wxui/query_sources.py:793
 msgid "Only working repeaters"
 msgstr "Само работещи ретранслатори"
 
-#: ../wxui/main.py:1039 ../wxui/main.py:1420
+#: ../wxui/main.py:1042 ../wxui/main.py:1465
 msgid "Open"
 msgstr "Отваряне"
 
-#: ../wxui/main.py:714
+#: ../wxui/main.py:716
 msgid "Open Recent"
 msgstr "Отваряне на предишни"
 
-#: ../wxui/main.py:696
+#: ../wxui/main.py:698
 msgid "Open Stock Config"
 msgstr "Стандартни настройки"
 
-#: ../wxui/main.py:1040 ../wxui/main.py:1296
+#: ../wxui/main.py:1043 ../wxui/main.py:1341
 msgid "Open a file"
 msgstr "Отваряне на файл"
 
-#: ../wxui/main.py:1798
+#: ../wxui/main.py:1849
 msgid "Open a module"
 msgstr "Отваряне на модул"
 
-#: ../wxui/main.py:977
+#: ../wxui/main.py:980
 msgid "Open debug log"
 msgstr "Отваряне на дневник"
 
@@ -1906,11 +1915,11 @@ msgstr "Отваряне на дневник"
 msgid "Open in new window"
 msgstr "Отваряне в нов прозорец"
 
-#: ../wxui/query_sources.py:371
+#: ../wxui/query_sources.py:400
 msgid "Open repeaters only"
 msgstr "Отваряне само на ретранслатори"
 
-#: ../wxui/main.py:643
+#: ../wxui/main.py:645
 msgid "Open stock config directory"
 msgstr "Папка със стандартни настройки"
 
@@ -1918,36 +1927,36 @@ msgstr "Папка със стандартни настройки"
 msgid "Operator"
 msgstr "Оператор"
 
-#: ../wxui/query_sources.py:340 ../wxui/query_sources.py:616
+#: ../wxui/query_sources.py:369 ../wxui/query_sources.py:668
 msgid "Optional: -122.0000"
 msgstr "По желание: -122.0000"
 
-#: ../wxui/query_sources.py:349 ../wxui/query_sources.py:624
-#: ../wxui/query_sources.py:782
+#: ../wxui/query_sources.py:378 ../wxui/query_sources.py:676
+#: ../wxui/query_sources.py:834
 msgid "Optional: 100"
 msgstr "По желание: 100"
 
-#: ../wxui/query_sources.py:768
+#: ../wxui/query_sources.py:820
 msgid "Optional: 20.0000"
 msgstr "По желание: 20.0000"
 
-#: ../wxui/query_sources.py:334 ../wxui/query_sources.py:610
+#: ../wxui/query_sources.py:363 ../wxui/query_sources.py:662
 msgid "Optional: 45.0000"
 msgstr "По желание: 45.0000"
 
-#: ../wxui/query_sources.py:762
+#: ../wxui/query_sources.py:814
 msgid "Optional: 52.0000"
 msgstr "По желание: 52.0000"
 
-#: ../wxui/query_sources.py:776
+#: ../wxui/query_sources.py:828
 msgid "Optional: AA00 - AA00aa11"
 msgstr "По желание: AA00 - AA00aa11"
 
-#: ../wxui/query_sources.py:355
+#: ../wxui/query_sources.py:384
 msgid "Optional: County, Hospital, etc."
 msgstr "По желание: държава, сграда и т.н."
 
-#: ../wxui/memedit.py:2098
+#: ../wxui/memedit.py:2106
 msgid "Overwrite memories?"
 msgstr "Презаписване на записи?"
 
@@ -1969,31 +1978,31 @@ msgstr "Разбор"
 msgid "Password"
 msgstr "Парола"
 
-#: ../wxui/memedit.py:1790
+#: ../wxui/memedit.py:1798
 msgid "Paste"
 msgstr "Поставяне"
 
-#: ../wxui/memedit.py:2092
+#: ../wxui/memedit.py:2100
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr "Поставените записи ще презапишат %s съществуващи записа"
 
-#: ../wxui/memedit.py:2095
+#: ../wxui/memedit.py:2103
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "Поставените записи ще презапишат записи %s"
 
-#: ../wxui/memedit.py:2089
+#: ../wxui/memedit.py:2097
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr "Поставените записи ще презапишат запис № %s"
 
-#: ../wxui/memedit.py:2086
+#: ../wxui/memedit.py:2094
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr "Поставеният запис ще презапише запис № %s"
 
-#: ../wxui/main.py:2027
+#: ../wxui/main.py:2078
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Излезте от CHIRP преди да инсталирате ново издание!"
 
@@ -2023,19 +2032,19 @@ msgid ""
 "    (At the end radio will beep)\n"
 msgstr ""
 
-#: ../wxui/main.py:1875
+#: ../wxui/main.py:1926
 msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
 msgstr "Внимание! Режимът за разработчици е предназначен за употреба от разработчиците на проекта CHIRP или под ръководството на такъв разработчик. Режимът включва възможности и действия, които могат да повредят компютъра и радиостанцията ви, ако не ги използвате с ИЗКЛЮЧИТЕЛНА предпазливост. Желаете ли да продължите?"
 
-#: ../wxui/common.py:195
+#: ../wxui/common.py:196
 msgid "Please wait"
 msgstr "Изчакайте"
 
-#: ../wxui/clone.py:471
+#: ../wxui/clone.py:481
 msgid "Plug in your cable and then click OK"
 msgstr "Включете кабела и натиснете „Добре“"
 
-#: ../wxui/query_sources.py:834
+#: ../wxui/query_sources.py:886
 msgid "Polish repeaters database"
 msgstr "Ретранслатори в Полша"
 
@@ -2047,15 +2056,15 @@ msgstr "Порт"
 msgid "Power"
 msgstr "Мощност"
 
-#: ../wxui/query_sources.py:822
+#: ../wxui/query_sources.py:874
 msgid "Prefixes"
 msgstr "Представки"
 
-#: ../wxui/developer.py:149
+#: ../wxui/developer.py:157
 msgid "Press enter to set this in memory"
 msgstr "За да зададете тази стойност на записа, натиснете бутона Enter"
 
-#: ../wxui/main.py:750
+#: ../wxui/main.py:752
 msgid "Print Preview"
 msgstr "Преглед за отпечатване"
 
@@ -2063,11 +2072,11 @@ msgstr "Преглед за отпечатване"
 msgid "Printing"
 msgstr "Отпечатване"
 
-#: ../wxui/clone.py:505
+#: ../wxui/clone.py:515
 msgid "Prolific USB device"
 msgstr "USB устройство на Prolific"
 
-#: ../wxui/memedit.py:1769
+#: ../wxui/memedit.py:1777
 msgid "Properties"
 msgstr "Свойства"
 
@@ -2079,16 +2088,16 @@ msgstr "Име на свойство"
 msgid "Property Value"
 msgstr "Стойност на свойство"
 
-#: ../wxui/query_sources.py:778
+#: ../wxui/query_sources.py:830
 msgid "QTH Locator"
 msgstr ""
 
-#: ../wxui/main.py:1975
+#: ../wxui/main.py:2026
 #, python-format
 msgid "Query %s"
 msgstr "Заявка към %s"
 
-#: ../wxui/main.py:872
+#: ../wxui/main.py:874
 msgid "Query Source"
 msgstr "Заявки"
 
@@ -2112,7 +2121,7 @@ msgstr "Търсене"
 msgid "RX DTCS"
 msgstr "RX DTCS"
 
-#: ../wxui/main.py:1010
+#: ../wxui/main.py:1013
 msgid "Radio"
 msgstr "Станция"
 
@@ -2121,7 +2130,7 @@ msgstr "Станция"
 msgid "Radio did not ack block %i"
 msgstr "Станцията не е приела блок %i"
 
-#: ../wxui/clone.py:743 ../wxui/clone.py:841
+#: ../wxui/clone.py:774 ../wxui/clone.py:874
 msgid "Radio information"
 msgstr "Сведения за станцията"
 
@@ -2133,11 +2142,11 @@ msgstr "Модел на станция:"
 msgid "Radio sent data after the last awaited block, this happens when the selected model is a non-US but the radio is a US one. Please choose the correct model and try again."
 msgstr "Станцията изпрати данни след последния очакван блок. Това се случва, когато избраният модел не е предназначен за употреба в САЩ, но станцията е. Изберете правилния модел и опитайте отново."
 
-#: ../wxui/query_sources.py:1076
+#: ../wxui/query_sources.py:1128
 msgid "RadioReference Canada requires a login before you can query"
 msgstr "RadioReference Canada изисква да влезете преди на правите заявки"
 
-#: ../wxui/query_sources.py:887
+#: ../wxui/query_sources.py:939
 msgid ""
 "RadioReference.com is the world's largest\n"
 "radio communications data provider\n"
@@ -2155,7 +2164,7 @@ msgstr "Код на DTCS на приемане"
 msgid "Receive frequency"
 msgstr "Честота на приемане"
 
-#: ../wxui/clone.py:578
+#: ../wxui/clone.py:588
 msgid "Recent"
 msgstr "Последно използвани станции"
 
@@ -2167,28 +2176,28 @@ msgstr "Последни…"
 msgid "Recommend using 55.2"
 msgstr "Препоръчваме ви да използвате 55.2"
 
-#: ../wxui/common.py:489
+#: ../wxui/common.py:490
 msgid "Refresh required"
 msgstr "Необходимо е презареждане"
 
-#: ../wxui/common.py:322
+#: ../wxui/common.py:323
 #, python-format
 msgid "Refreshed memory %s"
 msgstr "Презареден е запис № %s"
 
-#: ../wxui/main.py:917
+#: ../wxui/main.py:920
 msgid "Reload Driver"
 msgstr "Презареждане на управляващия софтуер"
 
-#: ../wxui/main.py:926
+#: ../wxui/main.py:929
 msgid "Reload Driver and File"
 msgstr "Презареждане на управляващия софтуер и файлове"
 
-#: ../wxui/clone.py:598
+#: ../wxui/clone.py:608
 msgid "Remove"
 msgstr "Премахване"
 
-#: ../wxui/clone.py:599
+#: ../wxui/clone.py:609
 msgid "Remove selected model from list"
 msgstr "Премахване на избрания модел от списъка"
 
@@ -2196,13 +2205,13 @@ msgstr "Премахване на избрания модел от списък�
 msgid "Rename bank"
 msgstr "Преименуване на банка"
 
-#: ../wxui/query_sources.py:298
+#: ../wxui/query_sources.py:327
 msgid ""
 "RepeaterBook is Amateur Radio's most comprehensive,\n"
 "worldwide, FREE repeater directory."
 msgstr "RepeaterBook е най-изчерпателният, безплатен справочник за радиолюбителски ретранслатори в света."
 
-#: ../wxui/main.py:999
+#: ../wxui/main.py:1002
 msgid "Report or update a bug..."
 msgstr "Доклад или промняна на дефект…"
 
@@ -2211,46 +2220,50 @@ msgstr "Доклад или промняна на дефект…"
 msgid "Reporting a new bug: %r"
 msgstr "Доклад на нов дефект: %r"
 
-#: ../wxui/main.py:965
+#: ../wxui/main.py:968
 msgid "Reporting enabled"
 msgstr "Докладването е включено"
 
-#: ../wxui/main.py:1895
+#: ../wxui/main.py:1946
 msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
 msgstr "Докладването помага на проекта CHIRP да разполага с данните за кои модели радиостанции и операционни системи да насочи ограничените си ресурси. Високо бихме оценили ако оставите стойността включена. Желаете ли докладването да бъде изключено?"
 
-#: ../wxui/main.py:1581 ../wxui/main.py:1889
+#: ../wxui/main.py:1626 ../wxui/main.py:1940
 msgid "Restart Required"
 msgstr "Необходим е рестарт"
 
-#: ../wxui/main.py:708
+#: ../wxui/main.py:710
 #, python-format
 msgid "Restore %i tab"
 msgid_plural "Restore %i tabs"
 msgstr[0] "Възстановен е %i раздел"
 msgstr[1] "Възстановени са %i раздела"
 
-#: ../wxui/main.py:837
+#: ../wxui/main.py:839
 msgid "Restore tabs on start"
 msgstr "Възстановяване разделите при стартиране"
 
-#: ../wxui/common.py:326
+#: ../wxui/query_sources.py:413
+msgid "Results from other areas"
+msgstr ""
+
+#: ../wxui/common.py:327
 msgid "Retrieved settings"
 msgstr "Получени настройки"
 
-#: ../wxui/main.py:1041
+#: ../wxui/main.py:1044
 msgid "Save"
 msgstr "Запазване"
 
-#: ../wxui/main.py:1455
+#: ../wxui/main.py:1500
 msgid "Save before closing?"
 msgstr "Запазване преди затваряне?"
 
-#: ../wxui/main.py:1042 ../wxui/main.py:1379
+#: ../wxui/main.py:1045 ../wxui/main.py:1424
 msgid "Save file"
 msgstr "Запазване на файл"
 
-#: ../wxui/common.py:328
+#: ../wxui/common.py:329
 msgid "Saved settings"
 msgstr "Запазени настройки"
 
@@ -2266,40 +2279,40 @@ msgstr "Списъци за сканиране"
 msgid "Scrambler"
 msgstr "Шифроване"
 
-#: ../wxui/developer.py:582
+#: ../wxui/developer.py:652
 msgid "Security Risk"
 msgstr "Риск за сигурността"
 
-#: ../wxui/main.py:907
+#: ../wxui/main.py:910
 msgid "Select Bandplan..."
 msgstr "Разпределение на честотните ленти…"
 
-#: ../wxui/query_sources.py:428 ../wxui/query_sources.py:645
-#: ../wxui/query_sources.py:803
+#: ../wxui/query_sources.py:478 ../wxui/query_sources.py:697
+#: ../wxui/query_sources.py:855
 msgid "Select Bands"
 msgstr "Избор на честотни ленти"
 
-#: ../wxui/main.py:1564
+#: ../wxui/main.py:1609
 msgid "Select Language"
 msgstr "Избор на език"
 
-#: ../wxui/query_sources.py:449
+#: ../wxui/query_sources.py:499
 msgid "Select Modes"
 msgstr "Избор на режими"
 
-#: ../wxui/main.py:1959
+#: ../wxui/main.py:2010
 msgid "Select a bandplan"
 msgstr "Изберете разпределението на честотните ленти"
 
-#: ../wxui/main.py:1134
+#: ../wxui/main.py:1173
 msgid "Select a tab and memory to diff"
 msgstr "Изберете раздел и запис от паметта, които да бъдат сравнени"
 
-#: ../wxui/query_sources.py:822
+#: ../wxui/query_sources.py:874
 msgid "Select prefixes"
 msgstr "Избор на представка"
 
-#: ../wxui/query_sources.py:326
+#: ../wxui/query_sources.py:355
 msgid "Service"
 msgstr "Услуга"
 
@@ -2315,19 +2328,19 @@ msgstr "Настройките не могат да бъдат променян�
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "Отместване (или честота на предаване) управлявано от дуплекса"
 
-#: ../wxui/memedit.py:1898 ../wxui/developer.py:100
+#: ../wxui/memedit.py:1906 ../wxui/developer.py:100
 msgid "Show Raw Memory"
 msgstr "Показване на необработеното съдържание на записа"
 
-#: ../wxui/main.py:983
+#: ../wxui/main.py:986
 msgid "Show debug log location"
 msgstr "Папка с дневник"
 
-#: ../wxui/memedit.py:1007
+#: ../wxui/memedit.py:1011
 msgid "Show extra fields"
 msgstr "Допълнителни полета"
 
-#: ../wxui/main.py:988
+#: ../wxui/main.py:991
 msgid "Show image backup location"
 msgstr "Папка с резервни копия"
 
@@ -2335,40 +2348,40 @@ msgstr "Папка с резервни копия"
 msgid "Skip"
 msgstr "Пропускане"
 
-#: ../wxui/memedit.py:2184
+#: ../wxui/memedit.py:2192
 msgid "Some memories are incompatible with this radio"
 msgstr "Някои от записите са несъвместими със станцията"
 
-#: ../wxui/memedit.py:2031
+#: ../wxui/memedit.py:2039
 msgid "Some memories are not deletable"
 msgstr "Някои от записите не могат да бъдат премахвани"
 
-#: ../wxui/memedit.py:1854
+#: ../wxui/memedit.py:1862
 #, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
 msgstr[0] "Сортиране на %i запис"
 msgstr[1] "Сортиране на %i записа"
 
-#: ../wxui/memedit.py:1858
+#: ../wxui/memedit.py:1866
 #, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
 msgstr[0] "Сортиране на %i запис възходящо"
 msgstr[1] "Сортиране на %i записа възходящо"
 
-#: ../wxui/memedit.py:1880
+#: ../wxui/memedit.py:1888
 #, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
 msgstr[0] "Сортиране на %i запис низходящо"
 msgstr[1] "Сортиране на %i записа низходящо"
 
-#: ../wxui/memedit.py:1746
+#: ../wxui/memedit.py:1754
 msgid "Sort by column:"
 msgstr "Сортиране по колона:"
 
-#: ../wxui/memedit.py:1745
+#: ../wxui/memedit.py:1753
 msgid "Sort memories"
 msgstr "Сортиране на записи"
 
@@ -2376,15 +2389,15 @@ msgstr "Сортиране на записи"
 msgid "Sorting"
 msgstr "Сортиране"
 
-#: ../wxui/query_sources.py:511
+#: ../wxui/query_sources.py:563
 msgid "State"
 msgstr "Състояние"
 
-#: ../wxui/query_sources.py:329
+#: ../wxui/query_sources.py:358
 msgid "State/Province"
 msgstr "Щат или провинция"
 
-#: ../wxui/main.py:1947
+#: ../wxui/main.py:1998
 msgid "Success"
 msgstr "Успех"
 
@@ -2409,7 +2422,7 @@ msgstr ""
 "Продължете на свой риск и ако се натъкнете\n"
 "на проблеми ни уведомете!"
 
-#: ../wxui/query_sources.py:519
+#: ../wxui/query_sources.py:571
 msgid "The DMR-MARC Worldwide Network"
 msgstr "Глобална мрежа на DMR-MARC"
 
@@ -2438,7 +2451,7 @@ msgid ""
 "download to a CHIRP Radio Images (*.img) file.\n"
 msgstr ""
 
-#: ../wxui/developer.py:579
+#: ../wxui/developer.py:649
 msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
 msgstr "Авторът на този модул не е признат разработчик на CHIRP. Препоръчително е да не зареждате модула, тъй като може да представлява риск за сигурността. Желаете ли да продължите въпреки риска?"
 
@@ -2450,12 +2463,12 @@ msgstr ""
 msgid "The following information will be submitted:"
 msgstr "Следните сведения ще бъдат изпратени:"
 
-#: ../wxui/main.py:1411
+#: ../wxui/main.py:1456
 #, python-format
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr "Препоръчителната процедура за внасяне на записи е да отворите изходния файл и да копирате/поставите записите от него в таблицата. Ако продължите от тук, CHIRP ще замени всички текущи записи с тези от %(file)s. Желаете ли да отворите този файл, за да копирате/поставите записите ръчно, или да продължите с внасянето?"
 
-#: ../wxui/memedit.py:1815
+#: ../wxui/memedit.py:1823
 msgid "This Memory"
 msgstr "Този запис"
 
@@ -2472,11 +2485,11 @@ msgstr "Управляващият софтуер е в процес на раз
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr ""
 
-#: ../wxui/main.py:1648
+#: ../wxui/main.py:1693
 msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"
 msgstr ""
 
-#: ../wxui/main.py:1654
+#: ../wxui/main.py:1699
 msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
 msgstr ""
 
@@ -2509,11 +2522,11 @@ msgstr ""
 msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
 msgstr ""
 
-#: ../wxui/memedit.py:1819
+#: ../wxui/memedit.py:1827
 msgid "This memory and shift all up"
 msgstr "Този запис преместване всички нагоре"
 
-#: ../wxui/memedit.py:1817
+#: ../wxui/memedit.py:1825
 msgid "This memory and shift block up"
 msgstr "Този запис преместване блока нагоре"
 
@@ -2538,7 +2551,7 @@ msgstr ""
 msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
 msgstr ""
 
-#: ../wxui/developer.py:589
+#: ../wxui/developer.py:659
 msgid "This will load a module from a website issue"
 msgstr "От тук се зарежда модул от докладван дефект"
 
@@ -2546,7 +2559,7 @@ msgstr "От тук се зарежда модул от докладван де�
 msgid "Tone"
 msgstr "Тон"
 
-#: ../wxui/memedit.py:1068
+#: ../wxui/memedit.py:1072
 msgid "Tone Mode"
 msgstr "Режим на тона"
 
@@ -2582,7 +2595,7 @@ msgstr "Модулация на приемане или предаване (ЧМ
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
 msgstr "В режим TSQL тон на приемане или предаване, в противен случай тон на приемане"
 
-#: ../wxui/memedit.py:387 ../wxui/memedit.py:1082
+#: ../wxui/memedit.py:387 ../wxui/memedit.py:1086
 msgid "Tuning Step"
 msgstr "Стъпка"
 
@@ -2590,29 +2603,29 @@ msgstr "Стъпка"
 msgid "Type a simple search string or a formatted query and press enter"
 msgstr "Въведете обикновено търсене или добре форматирана заявка и натиснете Enter"
 
-#: ../wxui/clone.py:465 ../wxui/clone.py:472 ../wxui/clone.py:483
-#: ../wxui/clone.py:491 ../wxui/clone.py:495
+#: ../wxui/clone.py:475 ../wxui/clone.py:482 ../wxui/clone.py:493
+#: ../wxui/clone.py:501 ../wxui/clone.py:505
 msgid "USB Port Finder"
 msgstr "Търсене на порт на USB"
 
-#: ../wxui/clone.py:481
+#: ../wxui/clone.py:491
 msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr "Грешка при определяне на порта на кабела. Проверете управляващия софтуер и куплунгите."
 
-#: ../wxui/memedit.py:1544
+#: ../wxui/memedit.py:1552
 msgid "Unable to edit memory before radio is loaded"
 msgstr "Грешка при промяна на запис преди да е зареден от станцията"
 
-#: ../wxui/main.py:1337
+#: ../wxui/main.py:1382
 #, python-format
 msgid "Unable to find stock config %r"
 msgstr "Грешка при намиране на стандартните настройки %r"
 
-#: ../wxui/memedit.py:2045
+#: ../wxui/memedit.py:2053
 msgid "Unable to import while the view is sorted"
 msgstr "Грешка при внасяне при сортиран изглед"
 
-#: ../wxui/common.py:228
+#: ../wxui/common.py:229
 msgid "Unable to open the clipboard"
 msgstr "Грешка при отваряне на междинната памет"
 
@@ -2624,7 +2637,7 @@ msgstr "Грешка при заявка"
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "Последният блок не е прочетен. Това се случва, когато избраният модел e предназначен за употреба в САЩ, но станцията не е (или e с разширен обхват). Изберете правилния модел и опитайте отново."
 
-#: ../wxui/common.py:694
+#: ../wxui/common.py:695
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Грешка при намиране на %s на системата"
@@ -2634,15 +2647,15 @@ msgstr "Грешка при намиране на %s на системата"
 msgid "Unable to set %s on this memory"
 msgstr "Грешка при задаване на %s в записа"
 
-#: ../wxui/main.py:1658
+#: ../wxui/main.py:1703
 msgid "Unable to upload this file"
 msgstr "Грешка при качване на файла"
 
-#: ../wxui/query_sources.py:928
+#: ../wxui/query_sources.py:980
 msgid "United States"
 msgstr "САЩ"
 
-#: ../wxui/clone.py:464
+#: ../wxui/clone.py:474
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Изключете кабела (ако е необходимо) и натиснете бутона„Добре“"
 
@@ -2660,7 +2673,7 @@ msgstr "Промяна на съществуващ дефект"
 msgid "Updating bug %s"
 msgstr "Промяна на дефект %s"
 
-#: ../wxui/clone.py:856
+#: ../wxui/clone.py:889
 msgid "Upload instructions"
 msgstr "Инструкции за изпращане"
 
@@ -2668,24 +2681,24 @@ msgstr "Инструкции за изпращане"
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "Не може да бъде изпращано към станцията поради неподдържана версия на управляващия софтуер"
 
-#: ../wxui/main.py:1048
+#: ../wxui/main.py:1051
 msgid "Upload to radio"
 msgstr "Изпращане към станция"
 
-#: ../wxui/main.py:866
+#: ../wxui/main.py:868
 msgid "Upload to radio..."
 msgstr "Изпращане към станция…"
 
-#: ../wxui/common.py:324
+#: ../wxui/common.py:325
 #, python-format
 msgid "Uploaded memory %s"
 msgstr "Изпратен е запис № %s"
 
-#: ../wxui/main.py:822
+#: ../wxui/main.py:824
 msgid "Use fixed-width font"
 msgstr "Равноширок шрифт"
 
-#: ../wxui/main.py:830
+#: ../wxui/main.py:832
 msgid "Use larger font"
 msgstr "По-едър шрифт"
 
@@ -2693,27 +2706,27 @@ msgstr "По-едър шрифт"
 msgid "Username"
 msgstr "Потребител"
 
-#: ../wxui/developer.py:265
+#: ../wxui/developer.py:313
 #, python-format
 msgid "Value does not fit in %i bits"
 msgstr "Стойността не се побира в %i бита"
 
-#: ../wxui/common.py:526
+#: ../wxui/common.py:527
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Стойността трябва да бъде най-малко %.4f"
 
-#: ../wxui/common.py:530
+#: ../wxui/common.py:531
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Стойността трябва да бъде най-много %.4f"
 
-#: ../wxui/developer.py:309
+#: ../wxui/developer.py:357
 #, python-format
 msgid "Value must be exactly %i decimal digits"
 msgstr "Стойността трябва да бъде точно %i цифри"
 
-#: ../wxui/developer.py:263 ../wxui/developer.py:307
+#: ../wxui/developer.py:311 ../wxui/developer.py:355
 msgid "Value must be zero or greater"
 msgstr "Стойността трябва да бъде нула или повече"
 
@@ -2721,7 +2734,7 @@ msgstr "Стойността трябва да бъде нула или пове
 msgid "Value to search memory field for"
 msgstr "Стойност, която търсите в запис в паметта"
 
-#: ../wxui/memedit.py:2438
+#: ../wxui/memedit.py:2446
 msgid "Values"
 msgstr "Стойности"
 
@@ -2729,19 +2742,19 @@ msgstr "Стойности"
 msgid "Vendor"
 msgstr "Производител"
 
-#: ../wxui/main.py:1009
+#: ../wxui/main.py:1012
 msgid "View"
 msgstr "Изглед"
 
-#: ../wxui/common.py:474
+#: ../wxui/common.py:475
 msgid "WARNING!"
 msgstr "ВНИМАНИЕ!"
 
-#: ../wxui/bugreport.py:218 ../wxui/memedit.py:1630 ../wxui/main.py:1939
+#: ../wxui/bugreport.py:218 ../wxui/memedit.py:1638 ../wxui/main.py:1990
 msgid "Warning"
 msgstr "Внимание"
 
-#: ../wxui/memedit.py:1629
+#: ../wxui/memedit.py:1637
 #, python-format
 msgid "Warning: %s"
 msgstr "Внимание: %s"
@@ -2749,6 +2762,10 @@ msgstr "Внимание: %s"
 #: ../wxui/main.py:460
 msgid "Welcome"
 msgstr "Добре дошли"
+
+#: ../wxui/query_sources.py:416
+msgid "With this option checked, a proximity search will include cached results from other localities if they are in range, match other filter parameters, and have been downloaded before."
+msgstr ""
 
 #: ../wxui/__init__.py:58
 msgid "Would you like CHIRP to install a desktop icon for you?"
@@ -2758,35 +2775,35 @@ msgstr "Желаете ли пряк път към CHIRP на работния �
 msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
 msgstr "През изминалите седем дена сте докладвали няколко дефекта. С цел предотвратяване на злоупотреби CHIRP ограничава броя на докладите през приложението. Ако трябва да докладвате нов дефект го направете през страницата."
 
-#: ../wxui/clone.py:502
+#: ../wxui/clone.py:512
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
 msgstr "USB устройството от Prolific няма да работи преди да върнете по-предно издание на управляващия софтуер. Посещаване страницата на CHIRP, за да прочетете как да решите този проблем?"
 
-#: ../wxui/query_sources.py:777
+#: ../wxui/query_sources.py:829
 msgid "Your QTH Locator"
 msgstr ""
 
-#: ../wxui/clone.py:489
+#: ../wxui/clone.py:499
 msgid "Your cable appears to be on port:"
 msgstr "Изглежда кабелът е включен в порт:"
 
-#: ../wxui/developer.py:185
+#: ../wxui/developer.py:193
 msgid "bits"
 msgstr "бита"
 
-#: ../wxui/developer.py:181
+#: ../wxui/developer.py:189
 msgid "bytes"
 msgstr "байта"
 
-#: ../wxui/developer.py:176
+#: ../wxui/developer.py:184
 msgid "bytes each"
 msgstr "байта всеки"
 
-#: ../wxui/main.py:1872
+#: ../wxui/main.py:1923
 msgid "disabled"
 msgstr "изключен"
 
-#: ../wxui/main.py:1872
+#: ../wxui/main.py:1923
 msgid "enabled"
 msgstr "включен"
 

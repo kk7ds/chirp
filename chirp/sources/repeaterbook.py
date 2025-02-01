@@ -1,4 +1,5 @@
 import datetime
+import glob
 import json
 import logging
 import math
@@ -167,6 +168,22 @@ class RepeaterBook(base.NetworkResultRadio):
         status.send_status('Download complete', 50)
         return data_file
 
+    def _merge_cached(self, service, country, data, exclude_file):
+        db_dir = chirp_platform.get_platform().config_file('repeaterbook')
+        fn_pat = 'rb%s-%s-%s.json' % (service,
+                                      country.lower().replace(' ', '_'),
+                                      '*')
+        other_files = glob.glob(os.path.join(db_dir, fn_pat))
+        for fn in other_files:
+            if fn == exclude_file:
+                continue
+            with open(fn, 'rb') as f:
+                d = json.loads(f.read())
+                data['results'].extend(d['results'])
+                data['count'] += d['count']
+            LOG.debug('Loading %i cached entries from %s for proximity search',
+                      d['count'], os.path.basename(fn))
+
     def item_to_memory(self, item):
         if item.get('D-Star') == 'Yes':
             m = chirp_common.DVMemory()
@@ -222,6 +239,7 @@ class RepeaterBook(base.NetworkResultRadio):
         modes = params.pop('modes', [])
         fmconv = params.pop('fmconv', False)
         openonly = params.pop('openonly')
+        cached = params.pop('cached')
 
         data_file = self.get_data(status,
                                   params.get('country'),
@@ -229,6 +247,12 @@ class RepeaterBook(base.NetworkResultRadio):
                                   params.get('service', ''))
         if not data_file:
             return
+
+        data = json.loads(open(data_file, 'rb').read())
+        if lat and lon and dist and cached:
+            self._merge_cached(params.get('service', ''),
+                               params.get('country'),
+                               data, data_file)
 
         status.send_status('Parsing', 50)
 
@@ -263,8 +287,7 @@ class RepeaterBook(base.NetworkResultRadio):
             return False
 
         i = 0
-        for item in sorted(json.loads(open(data_file, 'rb').read())['results'],
-                           key=sorter):
+        for item in sorted(data['results'], key=sorter):
             if not item:
                 continue
             if openonly and not open_repeater(item):
