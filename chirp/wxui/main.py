@@ -879,6 +879,7 @@ class ChirpMain(wx.Frame):
         source_menu.Append(query_rr_item)
 
         query_rb_item = wx.MenuItem(source_menu, wx.NewId(), 'RepeaterBook')
+        query_rb_item.SetAccel(wx.AcceleratorEntry(updownmod, ord('B')))
         self.Bind(wx.EVT_MENU, self._menu_query_rb, query_rb_item)
         source_menu.Append(query_rb_item)
 
