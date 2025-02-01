@@ -156,6 +156,35 @@ class ZipValidator(wx.Validator):
         return True
 
 
+class CachedValidator(wx.Validator):
+    def __init__(self, rbquery):
+        super().__init__()
+        self._rbquery = rbquery
+
+    def Validate(self, window):
+        checkbox = self.GetWindow()
+        checked = checkbox.IsChecked()
+        is_proximity = all(getattr(self._rbquery, x).GetValue()
+                           for x in ('_lat', '_lon', '_dist'))
+        if is_proximity:
+            valid = True
+        else:
+            valid = not checked
+
+        if not valid:
+            wx.MessageBox(
+                _('Cached results can only be included for a '
+                  'proximity query with Latitude, Longitude, and '
+                  'Distance set. Please uncheck "%s"') % checkbox.GetLabel())
+        return valid
+
+    def Clone(self):
+        return self.__class__(self._rbquery)
+
+    def TransferToWindow(self):
+        return True
+
+
 class QueryThread(threading.Thread, base.QueryStatus):
     END_SENTINEL = object()
 
@@ -379,6 +408,21 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
                                   'analog will be shown as FM'))
         self._add_grid(grid, _('Digital Modes'), self._fmconv)
 
+        self._cached = wx.CheckBox(
+            panel,
+            label=_('Results from other areas'),
+            validator=CachedValidator(self))
+        self._cached.SetValue(CONF.get_bool('cached', 'repeaterbook'))
+        self._cached.SetToolTip(_('With this option checked, a proximity '
+                                  'search will include cached results from '
+                                  'other localities if they are in range, '
+                                  'match other filter parameters, and have '
+                                  'been downloaded before.'))
+        self._add_grid(
+            grid, _('Include Cached'), self._cached,
+            url=('https://www.chirpmyradio.com/projects/chirp/'
+                 'wiki/ExternalDatabases#Including-multi-state-results'))
+
         self._state_selected(None)
         self._service_selected(None)
 
@@ -405,18 +449,24 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         except KeyError:
             self._state.SetItems([_('All')])
             self._state.Enable(False)
+            self._cached.Enable(False)
             return
         self._state.SetItems(states)
         self._state.Enable(True)
+        self._cached.Enable(True)
         prev = CONF.get('state', 'repeaterbook')
         if prev and prev in states:
             self._state.SetStringSelection(prev)
         else:
             self._state.SetStringSelection(states[0])
 
-    def _add_grid(self, grid, label, widget):
-        grid.Add(wx.StaticText(widget.GetParent(), label=label),
-                 border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
+    def _add_grid(self, grid, label, widget, url=None):
+        if url is None:
+            label = wx.StaticText(widget.GetParent(), label=label)
+        else:
+            label = wx.adv.HyperlinkCtrl(widget.GetParent(), label=label,
+                                         url=url)
+        grid.Add(label, border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
         grid.Add(widget, 1, border=20, flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
 
     def _select_bands(self, event):
@@ -465,6 +515,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
         CONF.set('service', self._service.GetStringSelection(), 'repeaterbook')
         CONF.set_bool('fmconv', self._fmconv.IsChecked(), 'repeaterbook')
         CONF.set_bool('openonly', self._openonly.IsChecked(), 'repeaterbook')
+        CONF.set_bool('cached', self._cached.IsChecked(), 'repeaterbook')
         self.result_radio = repeaterbook.RepeaterBook()
         super().do_query()
 
@@ -483,6 +534,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
             'service_display': self._service.GetStringSelection(),
             'fmconv': self._fmconv.IsChecked(),
             'openonly': self._openonly.IsChecked(),
+            'cached': self._cached.IsChecked(),
         }
 
 
