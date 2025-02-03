@@ -197,7 +197,7 @@ class TYTTHUVF1Radio(chirp_common.CloneModeRadio):
         rf.can_odd_split = True
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
-        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "-"
+        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC + "-/"
         rf.valid_bands = [(136000000, 174000000),
                           (420000000, 470000000)]
         rf.valid_skips = ["", "S"]
