@@ -1,5 +1,7 @@
 import logging
 
+import pytest
+
 from chirp import chirp_common
 from chirp import errors
 from tests import base
@@ -190,3 +192,29 @@ class TestCaseBruteForce(base.DriverTest):
             # in some radios
             self.set_and_compare(tmp, ignore=['tuning_step'])
             successes += 1
+
+    def test_validate_all(self):
+        lo, hi = self.rf.memory_bounds
+        for i in range(lo, hi + 1):
+            m1 = self.radio.get_memory(i)
+            errs, warns = chirp_common.split_validation_msgs(
+                self.radio.validate_memory(m1))
+            self.assertEqual([], errs,
+                             ('Radio has validation errors for memory %i '
+                              'stored in sample image') % i)
+
+    @pytest.mark.skip(reason='not ready yet')
+    def test_validate_all_steps(self):
+        lo, hi = self.rf.memory_bounds
+        for i in range(lo, hi + 1):
+            m1 = self.radio.get_memory(i)
+            chirp_common.required_step(m1.freq, self.rf.valid_tuning_steps)
+
+    @pytest.mark.skip(reason='not ready yet')
+    def test_get_set_all(self):
+        lo, hi = self.rf.memory_bounds
+        for i in range(lo, hi + 1):
+            m1 = self.radio.get_memory(i)
+            self.radio.set_memory(m1)
+            m2 = self.radio.get_memory(i)
+            self.assertEqualMem(m1, m2)

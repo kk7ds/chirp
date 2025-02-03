@@ -188,6 +188,7 @@ class IC2100Radio(icf.IcomCloneModeRadio):
         rf.valid_bands = [(118000000, 174000000)]
         rf.valid_skips = ["", "S"]
         rf.valid_special_chans = sorted(_get_special().keys())
+        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + '-/'
         return rf
 
     def process_mmap(self):

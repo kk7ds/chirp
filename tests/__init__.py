@@ -1,9 +1,12 @@
+import functools
 import glob
 import logging
 import os
+from types import FunctionType
 import unittest
 
 import pytest
+import yaml
 
 from chirp import directory
 
@@ -20,7 +23,28 @@ LOG = logging.getLogger('testadapter')
 
 
 class TestAdapterMeta(type):
+    """Generate a subclass of a TestCase for our radio.
+
+    This wraps each of the test functions so they can be marked by pytest
+    independently.
+
+    Only works with a single parent!
+    """
     def __new__(cls, name, parents, dct):
+        for attrname, attr in list(parents[0].__dict__.items()):
+            if (isinstance(attr, FunctionType) and
+                    attrname.startswith('test') and
+                    not hasattr(attr, 'pytestmark')):
+                # This is our wrapper, just so it can be independently marked
+                # by pytest without affecting the parent class
+                @functools.wraps(attr)
+                def wrapper(self, name, *a, **k):
+                    # This is a hacky super() replacement
+                    return getattr(parents[0], name)(self, *a, **k)
+
+                # Make this an override in the child class
+                dct[attrname] = functools.partialmethod(wrapper, attrname)
+
         return super(TestAdapterMeta, cls).__new__(cls, name, parents, dct)
 
 
@@ -73,6 +97,10 @@ def _load_tests(loader, tests, pattern, suite=None):
                          test_features.TestCaseFeatures,
                          test_copy_all.TestCaseCopyAll)
 
+    # Load our list of dynamic XFAIL tests
+    with open('tests/driver_xfails.yaml') as xflist:
+        xfail_list = yaml.load(xflist, Loader=yaml.SafeLoader)
+
     for image, test in tests.items():
         rclass = directory.get_radio(test)
         if hasattr(rclass, '_orig_rclass'):
@@ -83,16 +111,27 @@ def _load_tests(loader, tests, pattern, suite=None):
         for index, device in enumerate(subdevs):
             if not isinstance(device, type):
                 device = device.__class__
+            rclassid = directory.radio_class_id(device)
+            xfails = xfail_list.get(rclassid, [])
             for case in driver_test_cases:
                 tc = TestAdapterMeta(
-                    "%s_%s" % (case.__name__,
-                               directory.radio_class_id(device)),
+                    "%s_%s" % (case.__name__, rclassid),
                     (case,),
                     {'RADIO_CLASS': rclass,
                      'SUB_DEVICE': index if has_subdevs else None,
                      'TEST_IMAGE': image})
 
+                # Mark the class with the driver module name
                 tc = getattr(pytest.mark, module)(tc)
+
+                # Look for any XFAILs and mark those test functions
+                for xfail in xfails:
+                    if xfail['class'] == case.__name__:
+                        # This is like decorating it.
+                        setattr(tc, xfail['test'],
+                                pytest.mark.xfail(reason=xfail['reason'])(
+                                    getattr(tc, xfail['test'])))
+
                 suite.addTests(loader.loadTestsFromTestCase(tc))
 
     return suite

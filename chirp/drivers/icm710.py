@@ -90,6 +90,7 @@ class IcomM710Radio(icf.IcomCloneModeRadio):
         rf.can_odd_split = True
         rf.valid_modes = MODULATION_MODES
         rf.valid_power_levels = POWER_LEVELS
+        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + '/-'
         rf.valid_tones = []
         rf.valid_tmodes = []
         rf.valid_skips = []

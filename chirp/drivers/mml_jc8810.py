@@ -553,7 +553,7 @@ class JC8810base(chirp_common.CloneModeRadio):
             if str(char) == "\xFF":
                 char = " "  # may have 0xFF mid-name
             mem.name += str(char)
-        mem.name = mem.name.rstrip()
+        mem.name = mem.name.rstrip().replace('\x00', '')
 
         dtcs_pol = ["N", "N"]
 

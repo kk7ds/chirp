@@ -243,6 +243,7 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
             mem.freq = int(_mem.frequency)
             mem.name = "".join([CHARSET[_mem.name[i]]
                                for i in range(6)]).strip()
+            mem.name = mem.name.replace('\x00', '')
 
             mem.tmode = self.TONE_MODE_MAP[int(_mem.subtone_selection)]
             mem.duplex = self.SHIFT_DIR_MAP[_mem.shift_direction]
