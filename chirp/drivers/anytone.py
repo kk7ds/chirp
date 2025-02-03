@@ -423,7 +423,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
         rf.valid_tones = TONES
         rf.valid_dtcs_codes = chirp_common.ALL_DTCS_CODES
         rf.valid_bands = [(108000000, 500000000)]
-        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "-"
+        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC + "-*#"
         rf.valid_name_length = 7
         rf.valid_power_levels = POWER_LEVELS
         rf.memory_bounds = (1, NUMBER_OF_MEMORY_LOCATIONS)
@@ -478,7 +478,7 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
             mem.freq += 50
 
         mem.offset = int(_mem.offset) * 100
-        mem.name = str(_mem.name).rstrip()
+        mem.name = str(_mem.name).rstrip().replace('\x00', '')
         mem.duplex = DUPLEXES[_mem.duplex]
         mem.mode = _mem.is_am and "AM" or MODES[_mem.channel_width]
         mem.tuning_step = TUNING_STEPS[_mem.tune_step]

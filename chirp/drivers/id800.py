@@ -230,6 +230,7 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
         rf.valid_bands = [(118000000, 173995000), (230000000, 549995000),
                           (810000000, 999990000)]
         rf.valid_skips = ["", "S", "P"]
+        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + '*'
         rf.valid_name_length = 6
         rf.valid_special_chans = sorted(ID800_SPECIAL.keys())
         rf.valid_power_levels = list(POWER_LEVELS)

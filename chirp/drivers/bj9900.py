@@ -44,7 +44,7 @@ class BJ9900Radio(chirp_common.CloneModeRadio,
     VALID_BANDS = [(109000000, 136000000), (136000000, 174000000),
                    (400000000, 470000000)]
 
-    CHARSET = list(chirp_common.CHARSET_ALPHANUMERIC)
+    CHARSET = list(chirp_common.CHARSET_ALPHANUMERIC + '-')
     CHARSET.remove(" ")
 
     POWER_LEVELS = [

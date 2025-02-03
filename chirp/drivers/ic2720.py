@@ -63,9 +63,6 @@ DUPLEX = ["", "", "-", "+"]
 POWER_LEVELS_VHF = [chirp_common.PowerLevel("High", watts=50),
                     chirp_common.PowerLevel("Low", watts=5),
                     chirp_common.PowerLevel("Mid", watts=15)]
-POWER_LEVELS_UHF = [chirp_common.PowerLevel("High", watts=35),
-                    chirp_common.PowerLevel("Low", watts=5),
-                    chirp_common.PowerLevel("Mid", watts=15)]
 
 
 @directory.register
@@ -148,10 +145,7 @@ class IC2720Radio(icf.IcomCloneModeRadio):
 
         mem.skip = (_skp & bitpos) and "S" or ""
 
-        if int(mem.freq / 100000000) == 1:
-            mem.power = POWER_LEVELS_VHF[_mem.power]
-        else:
-            mem.power = POWER_LEVELS_UHF[_mem.power]
+        mem.power = POWER_LEVELS_VHF[_mem.power]
 
         return mem
 
