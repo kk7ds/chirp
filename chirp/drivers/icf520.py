@@ -232,9 +232,9 @@ struct {
 } dtmf_autodial[10];
 struct {
   char  name[10];
-  u32   inhibit:1,
+  u32   disp_inhibit:1,
         freq_rx:31;
-  u32   inhibit_tx:1,
+  u32   tx_inhibit:1,
         freq_tx:31;
   u16   rx_tone_off:1,
         rx_tone_digital:1,
@@ -305,11 +305,11 @@ char  opening_text[10];
 
 APPEAR_CHOICE = ["Appear", "Inhibit"]
 ENABLE_CHOICE = ["Disable", "Enable"]
-INH_CHOICE = ["", "Inhibit"]
 INVERSE_CHOICE = ["Normal", "Inverse"]
 NO_YES_CHOICE = ["No", "Yes"]
 ON_CHOICE = ["", "On"]          # ["OFF", "ON"]
 ON_OFF_CHOICE = ["Off", "On"]
+YES_CHOICE = ["", "Yes"]
 
 MODES = ["FM", "NFM"]           # Supported emission (or receive) modes
 
@@ -739,7 +739,7 @@ class ICF621_2Radio(icf.IcomCloneModeRadio):
         # Frequency: Low level format is frequency in Hz
         memory.freq = int(_mem.freq_rx)
 
-        if _mem.inhibit_tx:
+        if _mem.tx_inhibit:
             memory.duplex = "off"
             memory.offset = 0
         elif int(_mem.freq_rx) == int(_mem.freq_tx):
@@ -795,13 +795,17 @@ class ICF621_2Radio(icf.IcomCloneModeRadio):
 
         memory.extra = RadioSettingGroup('extra', 'Extra')
 
-        # Inhibit (Don't display channel on radio)
-        _inhibit = RadioSetting(
-            "inhibit", "Inhibit",
+        # Mask (Don't display) channel on radio.
+        # This is refered as Inhibit in the CS-F500 software.
+        _disp_inhibit = RadioSetting(
+            "disp_inhibit", "Mask",
             RadioSettingValueList(
-                INH_CHOICE, current_index=int(_mem.inhibit)))
-        _inhibit.set_doc("Inhibit")
-        memory.extra.append(_inhibit)
+                YES_CHOICE, current_index=int(_mem.disp_inhibit)))
+        _disp_inhibit.set_doc(
+            "Prevent the radio from displaying the channel.  This "
+            "prevents use of the channel but CHIRP will still download "
+            "the channel information.")
+        memory.extra.append(_disp_inhibit)
 
         _compander_on = RadioSetting(
             "compander_on", "Compander",
@@ -852,11 +856,12 @@ class ICF621_2Radio(icf.IcomCloneModeRadio):
         # Any memory with a frequency of 0 MHz is treated as empty.
         #
         # When CS-F500 inserts a blank memory, it sets Tx and Rx frequency
-        # to 0 MHz and leaves the inhibit bit unset.  When the inhibit
-        # bit is set, the memory is displayed in CS-F500 with an "i" in
-        # the inhibit column.
+        # to 0 MHz and leaves the disp_inhibit bit unset.  When the
+        # disp_inhibit bit is set, the memory is displayed in CS-F500
+        # with an "i" in the inhibit column.
         #
-        # The radio does not display inhibited memory channels.
+        # The radio does not display inhibited (masked) memory
+        # channels.
         if memory.freq == 0:
             memory.empty = True
 
@@ -874,10 +879,10 @@ class ICF621_2Radio(icf.IcomCloneModeRadio):
 
         # Frequency: Low level format is frequency in Hz
         _mem.freq_rx = memory.freq
-        _mem.inhibit_tx = 0
+        _mem.tx_inhibit = 0
         if memory.duplex == "off":
             _mem.freq_tx = memory.freq
-            _mem.inhibit_tx = 1
+            _mem.tx_inhibit = 1
         elif memory.duplex == "split":
             _mem.freq_tx = memory.offset
         elif memory.duplex == "-":
@@ -933,7 +938,7 @@ class ICF621_2Radio(icf.IcomCloneModeRadio):
         else:
             _mem.power_rf = 1
 
-        _mem.inhibit = 0
+        _mem.disp_inhibit = 0
         _mem.compander_on = 0
         _mem.tot_on = 0
         _mem.auto_reset = 0
@@ -943,7 +948,7 @@ class ICF621_2Radio(icf.IcomCloneModeRadio):
         _mem.log_out = 0
 
         if memory.extra:
-            _mem.inhibit = memory.extra['inhibit'].value
+            _mem.disp_inhibit = memory.extra['disp_inhibit'].value
             _mem.compander_on = memory.extra['compander_on'].value
             _mem.tot_on = memory.extra['tot_on'].value
             _mem.auto_reset = memory.extra['auto_reset_timer'].value
