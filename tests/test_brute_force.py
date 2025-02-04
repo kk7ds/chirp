@@ -203,12 +203,15 @@ class TestCaseBruteForce(base.DriverTest):
                              ('Radio has validation errors for memory %i '
                               'stored in sample image') % i)
 
-    @pytest.mark.skip(reason='not ready yet')
+    @base.requires_feature('has_nostep_tuning', equal=False)
     def test_validate_all_steps(self):
         lo, hi = self.rf.memory_bounds
         for i in range(lo, hi + 1):
             m1 = self.radio.get_memory(i)
-            chirp_common.required_step(m1.freq, self.rf.valid_tuning_steps)
+            try:
+                chirp_common.required_step(m1.freq, self.rf.valid_tuning_steps)
+            except Exception as e:
+                self.fail('Memory %i: %s' % (i, e))
 
     @pytest.mark.skip(reason='not ready yet')
     def test_get_set_all(self):

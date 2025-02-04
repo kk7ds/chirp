@@ -214,11 +214,12 @@ class DriverTest(unittest.TestCase):
                              'Memories have different mem.extra keys')
 
 
-def requires_feature(flag):
+def requires_feature(flag, equal=None):
     def inner(fn):
         @functools.wraps(fn)
         def wraps(self, *a, **k):
-            if getattr(self.rf, flag):
+            val = getattr(self.rf, flag)
+            if (val == equal if equal is not None else val):
                 fn(self, *a, **k)
             else:
                 self.skipTest('Feature %s not supported' % flag)
