@@ -26,9 +26,9 @@ LOG = logging.getLogger(__name__)
 
 def _identify(radio):
     try:
-        radio.pipe.write("PGM2015")
+        radio.pipe.write(b"PGM2015")
         ack = radio.pipe.read(2)
-        if ack != "\x06\x30":
+        if ack != b"\x06\x30":
             raise errors.RadioError("Radio did not ACK first command: %r" %
                                     ack)
     except:
@@ -40,7 +40,7 @@ def _download(radio):
     _identify(radio)
     data = []
     for i in range(0, 0x2000, 0x40):
-        msg = struct.pack('>cHb', 'R', i, 0x40)
+        msg = struct.pack('>cHb', b'R', i, 0x40)
         radio.pipe.write(msg)
         block = radio.pipe.read(0x40 + 4)
         if len(block) != (0x40 + 4):
@@ -55,20 +55,20 @@ def _download(radio):
             status.msg = "Cloning from radio"
             radio.status_fn(status)
 
-    radio.pipe.write("E")
-    data += 'PGM2015'
+    data = bytes(data)
+    data += b'PGM2015'
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def _upload(radio):
     _identify(radio)
     for i in range(0, 0x2000, 0x40):
-        msg = struct.pack('>cHb', 'W', i, 0x40)
+        msg = struct.pack('>cHb', b'W', i, 0x40)
         msg += radio._mmap[i:(i + 0x40)]
         radio.pipe.write(msg)
         ack = radio.pipe.read(1)
-        if ack != '\x06':
+        if ack != b'\x06':
             raise errors.RadioError('Radio did not ACK block %i (0x%04x)' % (
                 i, i))
 
@@ -78,8 +78,6 @@ def _upload(radio):
             status.max = 0x2000
             status.msg = "Cloning from radio"
             radio.status_fn(status)
-
-    radio.pipe.write("E")
 
 
 MEM_FORMAT = """
@@ -126,7 +124,6 @@ class TYTTHUVF8_V2(chirp_common.CloneModeRadio):
     MODEL = "TH-UVF8F"
     BAUD_RATE = 9600
     _FILEID = b'OEMOEM \\XFF'
-    NEEDS_COMPAT_SERIAL = True
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -153,11 +150,24 @@ class TYTTHUVF8_V2(chirp_common.CloneModeRadio):
         return rf
 
     def sync_in(self):
-        self._mmap = _download(self)
+        try:
+            self._mmap = _download(self)
+        finally:
+            try:
+                self.pipe.write(b"E")
+            except Exception:
+                pass
+
         self.process_mmap()
 
     def sync_out(self):
-        _upload(self)
+        try:
+            _upload(self)
+        finally:
+            try:
+                self.pipe.write(b"E")
+            except Exception:
+                pass
 
     @classmethod
     def match_model(cls, filedata, filename):
@@ -221,7 +231,7 @@ class TYTTHUVF8_V2(chirp_common.CloneModeRadio):
         else:
             mem.number = number
 
-        if _mem.get_raw(asbytes=False).startswith("\xFF\xFF\xFF\xFF"):
+        if _mem.get_raw().startswith(b"\xFF\xFF\xFF\xFF"):
             mem.empty = True
             return mem
 
@@ -254,10 +264,10 @@ class TYTTHUVF8_V2(chirp_common.CloneModeRadio):
     def set_memory(self, mem):
         _mem, _name = self._get_memobjs(mem.number)
         if mem.empty:
-            _mem.set_raw('\xFF' * 16)
-            _name.set_raw('\xFF' * 7)
+            _mem.set_raw(b'\xFF' * 16)
+            _name.set_raw(b'\xFF' * 7)
             return
-        _mem.set_raw('\x00' * 16)
+        _mem.set_raw(b'\x00' * 16)
 
         _mem.rx_freq = mem.freq / 10
         if mem.duplex == '-':
