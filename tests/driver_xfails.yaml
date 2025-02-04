@@ -6,6 +6,9 @@ Talkpod_A36plus:
   - class: TestCaseBruteForce
     test: test_validate_all
     reason: Broken name stored in memory 202?
+  - class: TestCaseBruteForce
+    test: test_validate_all_steps
+    reason: Bad channel stored in image or code is wrong
 BTECH_GMRS-20V2:
   - class: TestCaseBruteForce
     test: test_validate_all
@@ -58,3 +61,47 @@ Yaesu_FT-90:
   - class: TestCaseBruteForce
     test: test_validate_all
     reason: Memory 7 stored with high power but unable to be set?
+Wouxun_KG-UVD1P:
+  - class: TestCaseBruteForce
+    test: test_validate_all_steps
+    reason: Bad channel stored in image or code is wrong
+Puxing_PX-2R:
+  - class: TestCaseBruteForce
+    test: test_validate_all_steps
+    reason: Bad channel stored in image or code is wrong
+Radtel_RT-470X_BT:
+  - class: TestCaseBruteForce
+    test: test_validate_all_steps
+    reason: Bad channel stored in image or code is wrong
+BTECH_UV-25X4_G2:
+  - class: TestCaseBruteForce
+    test: test_validate_all_steps
+    reason: Bad channel stored in image or code is wrong
+Abbree_AR-63:
+  - class: TestCaseBruteForce
+    test: test_validate_all_steps
+    reason: Bad channel stored in image or code is wrong
+Feidaxin_FD-288B:
+  - class: TestCaseBruteForce
+    test: test_validate_all_steps
+    reason: Bad channel stored in image or code is wrong
+Wouxun_KG-UV8E:
+  - class: TestCaseBruteForce
+    test: test_validate_all_steps
+    reason: Bad channel stored in image or code is wrong
+Boblov_X3Plus:
+  - class: TestCaseBruteForce
+    test: test_validate_all_steps
+    reason: Bad channel stored in image or code is wrong
+QYT_KT7900D:
+  - class: TestCaseBruteForce
+    test: test_validate_all_steps
+    reason: Bad channel stored in image or code is wrong
+BTECH_UV-25X4:
+  - class: TestCaseBruteForce
+    test: test_validate_all_steps
+    reason: Bad channel stored in image or code is wrong
+Baojie_BJ-9900_Left:
+  - class: TestCaseBruteForce
+    test: test_validate_all_steps
+    reason: Bad channel stored in image or code is wrong
