@@ -769,7 +769,7 @@ class ICx90Radio_tv(ICx90Radio):
         rf.valid_modes = list(TV_MODE)
         rf.valid_tmodes = []
         rf.valid_duplexes = [""]
-        rf.valid_tuning_steps = []
+        rf.valid_tuning_steps = [5.0]
         rf.valid_bands = [(46750000, 957750000)]
         rf.valid_skips = ["", "S"]
         rf.valid_name_length = TV_NAME_LENGTH
