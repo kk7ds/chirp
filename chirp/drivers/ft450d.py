@@ -611,6 +611,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_ctone = True
         rf.has_settings = True
         rf.has_cross = True
+        rf.has_nostep_tuning = True
         return rf
 
     def get_raw_memory(self, number):
