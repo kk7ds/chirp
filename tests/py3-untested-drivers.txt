@@ -35,7 +35,6 @@ Kenwood_TS-590S_SG_LiveMode
 Kenwood_TS-850
 Puxing_PX-2R
 RT_Systems_CSV
-Rugged_RH5R-V2
 Sainsonic_AP510
 TYT_TH-350
 TYT_TH-7800_File
