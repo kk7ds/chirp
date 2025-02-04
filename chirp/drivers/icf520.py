@@ -687,6 +687,7 @@ class ICF621_2Radio(icf.IcomCloneModeRadio):
         rf.valid_modes = list(MODES)
         rf.has_offset = True
         rf.has_tuning_step = False
+        rf.valid_tuning_steps = chirp_common.TUNING_STEPS
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_bands = list(self._valid_bands)
         rf.can_odd_split = True
