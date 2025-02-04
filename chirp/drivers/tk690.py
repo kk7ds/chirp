@@ -552,6 +552,7 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=110),
                     chirp_common.PowerLevel("Low", watts=45)]
     MODES = ["NFM", "FM"]  # 12.5 / 25 Khz
+    STEPS = [5.0]
     _name_chars = 8
     _group_name_chars = 8
 
@@ -615,6 +616,7 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         rf.valid_dtcs_codes = DTCS_CODES
         rf.valid_bands = [self._range]
         rf.valid_name_length = self._name_chars
+        rf.valid_tuning_steps = self.STEPS
         rf.memory_bounds = (1, self._upper)
         return rf
 
@@ -1183,6 +1185,7 @@ class TK790Radio(Kenwoodx90):
         b"M0790\x04": (160, 144, 174, "K"),  # see note below
         b"M0790\x05": (160, 136, 156, "K2")
     }
+    STEPS = [5.0, 6.25, 7.5, 12.5]
 
 
 @directory.register
@@ -1196,6 +1199,7 @@ class TK890Radio(Kenwoodx90):
         b"M0890\x08": (160, 403, 430, "K3"),
         b"M0890\x09": (160, 450, 480, "K(H)")
     }
+    STEPS = [5.0, 6.25, 12.5]
 
     # Note:
     # These radios originally are constrained to certain band segments but the
