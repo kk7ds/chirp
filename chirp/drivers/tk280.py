@@ -671,6 +671,8 @@ def _open_radio(radio, status):
     exchange_ack(radio.pipe)
     # the radio that was processed returned this:
     # v2.00k.. [76 32 2e 30 30 6b ef ff]
+    # version 1 TK-280:
+    # v1.04.. 76 31 2e 30 34 20 ff ff
 
     # now the OEM writes simply "O" and gets no answer...
     # after that we are ready to receive the radio image or to write to it
@@ -788,6 +790,8 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
     _range = []
     _upper = 250
     _steps = chirp_common.COMMON_TUNING_STEPS
+    # Ver1 and Ver2 radios use a different multiplier for in-memory frequency
+    _freqmult = 10
     VARIANT = ""
     MODEL = ""
     FORMATS = [directory.register_format('Kenwood KPG-49D', '.dat')]
@@ -803,15 +807,17 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         else:
             return super().load_mmap(filename)
 
-    def save_mmap(self, filename):
-        dat_header = (b'KPG49D\xFF\xFF\xFF\xFFV4.02P0' +
-                      self.MODEL[3:].encode() +
-                      b'\x04\xFF\xF1\xFF' +
-                      b'\xFF' * 26)
+    @property
+    def dat_header(self):
+        return (b'KPG49D\xFF\xFF\xFF\xFFV4.02P0' +
+                self.MODEL[3:].encode() +
+                b'\x04\xFF\xF1\xFF' +
+                b'\xFF' * 26)
 
+    def save_mmap(self, filename):
         if filename.lower().endswith('.dat'):
             with open(filename, 'wb') as f:
-                f.write(dat_header)
+                f.write(self.dat_header)
                 f.write(self._mmap.get_packed())
                 LOG.info('Write DAT file')
         else:
@@ -866,7 +872,8 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
     def get_sub_devices(self):
         if not self._memobj:
             return [TKx80Group(self, 1)]
-        to_copy = ('MODEL', 'TYPE', 'POWER_LEVELS', '_range', '_steps')
+        to_copy = ('MODEL', 'TYPE', 'POWER_LEVELS', '_range', '_steps',
+                   '_freqmult')
         return sorted([
             TKx80SubdevMeta.make_subdev(
                 self, TKx80Group, i,
@@ -1609,12 +1616,13 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
 
     def _get_memory_base(self, mem, _mem):
         mem.number = int(_mem.number)
-        mem.freq = int(_mem.rxfreq) * 10
+        mem.freq = int(_mem.rxfreq) * self._freqmult
         if _mem.txfreq.get_raw()[0] == 0xFF:
             mem.offset = 0
             mem.duplex = "off"
         else:
-            chirp_common.split_to_offset(mem, mem.freq, int(_mem.txfreq) * 10)
+            chirp_common.split_to_offset(
+                mem, mem.freq, int(_mem.txfreq) * self._freqmult)
 
         mem.name = str(_mem.name).rstrip()
 
@@ -1627,21 +1635,21 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
     def _set_memory_base(self, mem, _mem):
         _mem.number = mem.number
 
-        _mem.rxfreq = mem.freq // 10
+        _mem.rxfreq = mem.freq // self._freqmult
 
         _mem.unknown_rx = 0x3
         _mem.unknown_tx = 0x3
 
         if mem.duplex == "+":
-            _mem.txfreq = (mem.freq + mem.offset) // 10
+            _mem.txfreq = (mem.freq + mem.offset) // self._freqmult
         elif mem.duplex == "-":
-            _mem.txfreq = (mem.freq - mem.offset) // 10
+            _mem.txfreq = (mem.freq - mem.offset) // self._freqmult
         elif mem.duplex == "off":
             _mem.txfreq.fill_raw(b'\xFF')
         elif mem.duplex == 'split':
-            _mem.txfreq = mem.offset // 10
+            _mem.txfreq = mem.offset // self._freqmult
         else:
-            _mem.txfreq = mem.freq // 10
+            _mem.txfreq = mem.freq // self._freqmult
 
         step_lookup = {
             2.5: 0x0,
