@@ -96,8 +96,7 @@ struct conv_settings {
   u8 unknown8[4];
   u8 unknown9[16];
   u8 unknown10[16];
-  u8 add[16];               //corresponding chan add/skip values, UNCONFIRMED
-  u8 unknown11[16];
+  lbit add[256];            //corresponding chan add/skip values, UNCONFIRMED
   u8 unknown12:1,
      ptt_inhib_ta:1,        // Inhibit PTT ID in TA(TalkAround), 1=off
      sel_call_alert_led:1,  // Sel Call Alert LED, '1'=enable, '0'=disable
@@ -937,27 +936,11 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
     def _get_scan(self, chan):
         """Get the channel scan status from the 16 bytes array on the eeprom
         then from the bits on the byte, return '' or 'S' as needed"""
-        result = "S"
-        byte = int(chan/8)
-        bit = chan % 8
-        res = self._memobj.conv.add[byte] & (pow(2, bit))
-        if res > 0:
-            result = ""
-
-        return result
+        return '' if bool(self._memobj.conv.add[chan]) else 'S'
 
     def _set_scan(self, chan, value):
         """Set the channel scan status from UI to the mem_map"""
-        byte = int(chan/8)
-        bit = chan % 8
-
-        # get the actual value to see if I need to change anything
-        actual = self._get_scan(chan)
-        if actual != value:
-            # I have to flip the value
-            rbyte = self._memobj.conv.add[byte]
-            rbyte = rbyte ^ pow(2, bit)
-            self._memobj.conv.add[byte] = rbyte
+        self._memobj.conv.add[chan] = value == ''
 
     def _get_memory_mapping(self, group, number, allocate=False):
         """Find a virtual memory mapping in the group's index.
@@ -1744,7 +1727,7 @@ class TKx80Group(KenwoodTKx80):
 
         self._get_memory_base(mem, _mem)
         mem.mode = MODES[_mem.wide]
-        mem.skip = self._get_scan(number - 1)
+        mem.skip = self._get_scan(mapping.index)
 
         mem.extra = RadioSettingGroup("extra", "Extra")
 
@@ -1794,7 +1777,7 @@ class TKx80Group(KenwoodTKx80):
         self._set_memory_base(mem, _mem)
 
         _mem.wide = MODES.index(mem.mode)
-        self._set_scan(mem.number - 1, mem.skip)
+        self._set_scan(mapping.index, mem.skip)
 
         _mem.number = mem.number
         _mem.group = self.group
