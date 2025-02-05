@@ -240,7 +240,8 @@ class TKx80_Trunked(tk280.KenwoodTKx80):
         # For the uninitialized case of just surveying the features
         if not self._memobj:
             return [TKx80System(self, 1)]
-        to_copy = ('MODEL', 'TYPE', 'POWER_LEVELS', '_range', '_steps')
+        to_copy = ('MODEL', 'TYPE', 'POWER_LEVELS', '_range', '_steps',
+                   '_freqmult')
         return [
             tk280.TKx80SubdevMeta.make_subdev(
                 self, TKx80System, i,
