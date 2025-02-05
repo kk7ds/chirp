@@ -1082,7 +1082,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
     @classmethod
     def match_model(cls, filedata, filename):
         model = cls.MODEL[3:].encode()
-        if (filename.endswith('.dat') and
+        if (filename.lower().endswith('.dat') and
                 b'KPG49D' in filedata and model in filedata[:0x32]):
             return True
         return False
