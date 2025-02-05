@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-04 15:52-0800\n"
-"PO-Revision-Date: 2025-01-28 22:34-0300\n"
+"PO-Revision-Date: 2025-02-05 01:25-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1110,7 +1110,7 @@ msgstr "CHIRP debe ser reiniciado para que la nueva selección tome efecto"
 #: ../wxui/query_sources.py:176
 #, python-format
 msgid "Cached results can only be included for a proximity query with Latitude, Longitude, and Distance set. Please uncheck \"%s\""
-msgstr ""
+msgstr "Los resultados en caché solo pueden ser incluidos para una consulta de proximidad con latitud, longitud y distancia establecidas. Por favor desmarca \"%s\""
 
 #: ../wxui/query_sources.py:981
 msgid "Canada"
@@ -1993,7 +1993,7 @@ msgstr "Importación no recomendada"
 
 #: ../wxui/query_sources.py:422
 msgid "Include Cached"
-msgstr ""
+msgstr "Incluir en caché"
 
 #: ../wxui/bankedit.py:62
 msgid "Index"
@@ -2687,7 +2687,7 @@ msgstr "Restaurar pestañas al iniciar"
 
 #: ../wxui/query_sources.py:413
 msgid "Results from other areas"
-msgstr ""
+msgstr "Resultados de otras áreas"
 
 #: ../wxui/common.py:327
 msgid "Retrieved settings"
@@ -3236,7 +3236,7 @@ msgstr "Bienvenido"
 
 #: ../wxui/query_sources.py:416
 msgid "With this option checked, a proximity search will include cached results from other localities if they are in range, match other filter parameters, and have been downloaded before."
-msgstr ""
+msgstr "Con esta opción marcada, una búsqueda de proximidad incluirá resultados en caché desde otras localidades si ellas están en rango, coinciden con otros parámetros de filtro, y han sido descargadas antes."
 
 #: ../wxui/__init__.py:58
 msgid "Would you like CHIRP to install a desktop icon for you?"
