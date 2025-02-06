@@ -45,19 +45,19 @@ msgstr[0] "%i 个存储并上移区块"
 msgid "%s has not been saved. Save before closing?"
 msgstr "%s 还没有被保存。要在关闭程序前保存吗？"
 
-#: ../wxui/bugreport.py:459
+#: ../wxui/bugreport.py:469
 msgid "(Describe what actually happened instead)"
 msgstr "（描述实际发生的情况）"
 
-#: ../wxui/bugreport.py:457
+#: ../wxui/bugreport.py:467
 msgid "(Describe what you expected to happen)"
 msgstr "（描述期望发生的情况）"
 
-#: ../wxui/bugreport.py:455
+#: ../wxui/bugreport.py:465
 msgid "(Describe what you were doing)"
 msgstr "（描述你做了什么）"
 
-#: ../wxui/bugreport.py:461
+#: ../wxui/bugreport.py:471
 msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr "（这之前曾经奏效过吗？是新电台吗？使用原厂软件能正常工作吗？）"
 
@@ -1036,6 +1036,11 @@ msgstr "条目"
 msgid "Browser"
 msgstr "数据浏览器"
 
+#: ../wxui/bugreport.py:447
+#, python-format
+msgid "Bug number %s is closed"
+msgstr ""
+
 #: ../wxui/bugreport.py:436
 msgid "Bug number not found"
 msgstr "Bug 编号未找到"
@@ -1270,7 +1275,7 @@ msgstr "删除"
 msgid "Delete memories"
 msgstr ""
 
-#: ../wxui/bugreport.py:517
+#: ../wxui/bugreport.py:527
 msgid "Detailed information"
 msgstr "详细信息"
 
@@ -1405,7 +1410,7 @@ msgstr "输入存储区 %s 的新名称："
 msgid "Enter custom port:"
 msgstr "输入自定义端口："
 
-#: ../wxui/bugreport.py:451
+#: ../wxui/bugreport.py:461
 msgid "Enter details about this update. Be descriptive about what you were doing, what you expected to happen, and what actually happened."
 msgstr "输入有关此更新的详细信息。描述您正在做什么，您期望发生什么以及实际发生了什么。"
 
@@ -1413,7 +1418,7 @@ msgstr "输入有关此更新的详细信息。描述您正在做什么，您期
 msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem."
 msgstr "输入有关 Bug 的信息，包括一个简短但有意义的主题以及有关所讨论的无线电型号的信息（如果适用）。在下一步中，您将有机会添加有关问题的更多详细信息。"
 
-#: ../wxui/bugreport.py:470
+#: ../wxui/bugreport.py:480
 msgid "Enter information to add to the bug here"
 msgstr "在此处输入要添加到 Bug 的信息"
 
@@ -1518,7 +1523,7 @@ msgstr "无法加载电台浏览器"
 msgid "Failed to parse result"
 msgstr "无法解析结果"
 
-#: ../wxui/bugreport.py:655
+#: ../wxui/bugreport.py:665
 msgid "Failed to send bug report:"
 msgstr "无法发送 Bug 报告："
 
@@ -1540,7 +1545,7 @@ msgstr "文件不存在：%s"
 msgid "Files"
 msgstr "文件"
 
-#: ../wxui/bugreport.py:515
+#: ../wxui/bugreport.py:525
 msgid "Files:"
 msgstr "文件："
 
@@ -2404,6 +2409,10 @@ msgstr "粘贴的存储将覆盖存储 %s"
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "请确保在安装新版本之前退出 CHIRP！"
 
+#: ../wxui/bugreport.py:444
+msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
+msgstr ""
+
 #: ../drivers/ftlx011.py:301
 msgid ""
 "Please follow this steps carefully:\n"
@@ -2636,7 +2645,7 @@ msgstr "RepeaterBook 是业余无线电最全面的、全球范围内的、免�
 msgid "Report or update a bug..."
 msgstr "报告或更新 Bug..."
 
-#: ../wxui/bugreport.py:512
+#: ../wxui/bugreport.py:522
 #, python-format
 msgid "Reporting a new bug: %r"
 msgstr "正在报告新 Bug：%r"
@@ -2824,7 +2833,7 @@ msgstr "州/省"
 msgid "Success"
 msgstr "成功"
 
-#: ../wxui/bugreport.py:658
+#: ../wxui/bugreport.py:668
 msgid "Successfully sent bug report:"
 msgstr "成功发送错误报告："
 
@@ -2885,7 +2894,7 @@ msgstr "此模块的作者不是 CHIRP 开发人员。建议您不要加载此�
 msgid "The debug log file is not available when CHIRP is run interactively from the command-line. Thus, this tool will not upload what you expect. It is recommended that you quit now and run CHIRP non-interactively (or with stdin redirected to /dev/null)"
 msgstr "当从命令行交互式运行 CHIRP 时，调试日志文件不可用。因此，此工具不会上传您期望的内容。建议您现在退出并以非交互方式运行 CHIRP（或将 stdin 重定向到 /dev/null）"
 
-#: ../wxui/bugreport.py:497
+#: ../wxui/bugreport.py:507
 msgid "The following information will be submitted:"
 msgstr "将提交以下信息："
 
@@ -3111,7 +3120,7 @@ msgstr "不支持的型号 %r"
 msgid "Update an existing bug"
 msgstr "更新现有 Bug"
 
-#: ../wxui/bugreport.py:514
+#: ../wxui/bugreport.py:524
 #, python-format
 msgid "Updating bug %s"
 msgstr "正在更新 Bug %s"

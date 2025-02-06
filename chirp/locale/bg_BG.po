@@ -60,19 +60,19 @@ msgstr ""
 "\n"
 "Да бъдат ли запазени преди затваряне?"
 
-#: ../wxui/bugreport.py:459
+#: ../wxui/bugreport.py:469
 msgid "(Describe what actually happened instead)"
 msgstr "(Опишете какво се случи вместо това)"
 
-#: ../wxui/bugreport.py:457
+#: ../wxui/bugreport.py:467
 msgid "(Describe what you expected to happen)"
 msgstr "(Опишете какво очаквахте да се случи)"
 
-#: ../wxui/bugreport.py:455
+#: ../wxui/bugreport.py:465
 msgid "(Describe what you were doing)"
 msgstr "(Опишете какво направихте)"
 
-#: ../wxui/bugreport.py:461
+#: ../wxui/bugreport.py:471
 msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr "(Работило ли е това устройство някога преди? Нова станция? Работи ли с фабричния софтуер?)"
 
@@ -749,6 +749,11 @@ msgstr "Bin"
 msgid "Browser"
 msgstr "Разглеждане"
 
+#: ../wxui/bugreport.py:447
+#, python-format
+msgid "Bug number %s is closed"
+msgstr ""
+
 #: ../wxui/bugreport.py:436
 msgid "Bug number not found"
 msgstr "Доклад за дефект с този номер не е намерен"
@@ -977,7 +982,7 @@ msgstr "Премахване"
 msgid "Delete memories"
 msgstr ""
 
-#: ../wxui/bugreport.py:517
+#: ../wxui/bugreport.py:527
 msgid "Detailed information"
 msgstr "Подробна информация"
 
@@ -1112,7 +1117,7 @@ msgstr "Въведете ново име за банка %s:"
 msgid "Enter custom port:"
 msgstr "Въведете порт по избор:"
 
-#: ../wxui/bugreport.py:451
+#: ../wxui/bugreport.py:461
 msgid "Enter details about this update. Be descriptive about what you were doing, what you expected to happen, and what actually happened."
 msgstr ""
 
@@ -1120,7 +1125,7 @@ msgstr ""
 msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem."
 msgstr ""
 
-#: ../wxui/bugreport.py:470
+#: ../wxui/bugreport.py:480
 msgid "Enter information to add to the bug here"
 msgstr ""
 
@@ -1226,7 +1231,7 @@ msgstr "Грешка при попълване на екрана за разгл
 msgid "Failed to parse result"
 msgstr "Грешка при разбора на резултата"
 
-#: ../wxui/bugreport.py:655
+#: ../wxui/bugreport.py:665
 msgid "Failed to send bug report:"
 msgstr "Грешка при изпращане на доклад за дефект:"
 
@@ -1248,7 +1253,7 @@ msgstr "Файлът „%s“ не съществува"
 msgid "Files"
 msgstr "файлове"
 
-#: ../wxui/bugreport.py:515
+#: ../wxui/bugreport.py:525
 msgid "Files:"
 msgstr "Файлове:"
 
@@ -2039,6 +2044,10 @@ msgstr "Поставеният запис ще презапише запис №
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Излезте от CHIRP преди да инсталирате ново издание!"
 
+#: ../wxui/bugreport.py:444
+msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
+msgstr ""
+
 #: ../drivers/ftlx011.py:301
 msgid ""
 "Please follow this steps carefully:\n"
@@ -2252,7 +2261,7 @@ msgstr "RepeaterBook е най-изчерпателният, безплатен 
 msgid "Report or update a bug..."
 msgstr "Доклад или промняна на дефект…"
 
-#: ../wxui/bugreport.py:512
+#: ../wxui/bugreport.py:522
 #, python-format
 msgid "Reporting a new bug: %r"
 msgstr "Доклад на нов дефект: %r"
@@ -2443,7 +2452,7 @@ msgstr "Щат или провинция"
 msgid "Success"
 msgstr "Успех"
 
-#: ../wxui/bugreport.py:658
+#: ../wxui/bugreport.py:668
 msgid "Successfully sent bug report:"
 msgstr "Докладът за дефект е изпратен:"
 
@@ -2501,7 +2510,7 @@ msgstr "Авторът на този модул не е признат разр�
 msgid "The debug log file is not available when CHIRP is run interactively from the command-line. Thus, this tool will not upload what you expect. It is recommended that you quit now and run CHIRP non-interactively (or with stdin redirected to /dev/null)"
 msgstr ""
 
-#: ../wxui/bugreport.py:497
+#: ../wxui/bugreport.py:507
 msgid "The following information will be submitted:"
 msgstr "Следните сведения ще бъдат изпратени:"
 
@@ -2714,7 +2723,7 @@ msgstr "Моделът %r не е поддържан"
 msgid "Update an existing bug"
 msgstr "Промяна на съществуващ дефект"
 
-#: ../wxui/bugreport.py:514
+#: ../wxui/bugreport.py:524
 #, python-format
 msgid "Updating bug %s"
 msgstr "Промяна на дефект %s"

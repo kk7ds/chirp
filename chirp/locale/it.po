@@ -51,19 +51,19 @@ msgstr[1] "%i memorie e sposta il blocco su"
 msgid "%s has not been saved. Save before closing?"
 msgstr "%s non è stato salvato. Salvarlo prima di chiudere?"
 
-#: ../wxui/bugreport.py:459
+#: ../wxui/bugreport.py:469
 msgid "(Describe what actually happened instead)"
 msgstr "(Descrivi ciò che è realmente accaduto)"
 
-#: ../wxui/bugreport.py:457
+#: ../wxui/bugreport.py:467
 msgid "(Describe what you expected to happen)"
 msgstr "(Descrivi cosa ti aspettavi che accadesse)"
 
-#: ../wxui/bugreport.py:455
+#: ../wxui/bugreport.py:465
 msgid "(Describe what you were doing)"
 msgstr "(Descrivi cosa stavi facendo)"
 
-#: ../wxui/bugreport.py:461
+#: ../wxui/bugreport.py:471
 msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr "(Ha mai funzionato prima? Radio nuova? Funziona con il software OEM?)"
 
@@ -1087,6 +1087,11 @@ msgstr "Bin"
 msgid "Browser"
 msgstr "Browser"
 
+#: ../wxui/bugreport.py:447
+#, python-format
+msgid "Bug number %s is closed"
+msgstr ""
+
 #: ../wxui/bugreport.py:436
 msgid "Bug number not found"
 msgstr "Il numero del bug non esiste"
@@ -1323,7 +1328,7 @@ msgstr "Elimina"
 msgid "Delete memories"
 msgstr ""
 
-#: ../wxui/bugreport.py:517
+#: ../wxui/bugreport.py:527
 msgid "Detailed information"
 msgstr "Informazioni dettagliate"
 
@@ -1458,7 +1463,7 @@ msgstr "Inserire un nuovo nome per il banco %s:"
 msgid "Enter custom port:"
 msgstr "Inserire la porta personalizzata:"
 
-#: ../wxui/bugreport.py:451
+#: ../wxui/bugreport.py:461
 msgid "Enter details about this update. Be descriptive about what you were doing, what you expected to happen, and what actually happened."
 msgstr "Inserisci i dettagli di questo aggiornamento. Sii descrittivo su ciò che stavi facendo, su ciò che ti aspettavi accadesse e su ciò che è effettivamente accaduto."
 
@@ -1466,7 +1471,7 @@ msgstr "Inserisci i dettagli di questo aggiornamento. Sii descrittivo su ciò ch
 msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem."
 msgstr "Immetti le informazioni sul bug, compreso un oggetto breve ma significativo e le informazioni sul modello della radio (se applicabile) in questione. Nella fase successiva sarà possibile aggiungere ulteriori dettagli sul problema."
 
-#: ../wxui/bugreport.py:470
+#: ../wxui/bugreport.py:480
 msgid "Enter information to add to the bug here"
 msgstr "Inserisci qui le informazioni da aggiungere al bug"
 
@@ -1573,7 +1578,7 @@ msgstr "Impossibile caricare il browser della radio"
 msgid "Failed to parse result"
 msgstr "Impossibile elaborare il risultato"
 
-#: ../wxui/bugreport.py:655
+#: ../wxui/bugreport.py:665
 msgid "Failed to send bug report:"
 msgstr "Impossibile inviare la segnalazione del bug:"
 
@@ -1595,7 +1600,7 @@ msgstr "Il file non esiste: %s"
 msgid "Files"
 msgstr "File"
 
-#: ../wxui/bugreport.py:515
+#: ../wxui/bugreport.py:525
 msgid "Files:"
 msgstr "File:"
 
@@ -2461,6 +2466,10 @@ msgstr "La memoria incollata sovrascriverà la memoria %s"
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Chiudere CHIRP prima di installare la nuova versione!"
 
+#: ../wxui/bugreport.py:444
+msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
+msgstr ""
+
 #: ../drivers/ftlx011.py:301
 msgid ""
 "Please follow this steps carefully:\n"
@@ -2694,7 +2703,7 @@ msgstr ""
 msgid "Report or update a bug..."
 msgstr "Segnala o aggiorna un bug..."
 
-#: ../wxui/bugreport.py:512
+#: ../wxui/bugreport.py:522
 #, python-format
 msgid "Reporting a new bug: %r"
 msgstr "Segnalazione di un nuovo bug: %r"
@@ -2885,7 +2894,7 @@ msgstr "Stato/Provincia"
 msgid "Success"
 msgstr "Successo"
 
-#: ../wxui/bugreport.py:658
+#: ../wxui/bugreport.py:668
 msgid "Successfully sent bug report:"
 msgstr "Segnalazione del bug inviata con successo:"
 
@@ -2957,7 +2966,7 @@ msgstr "L'autore di questo modulo non è uno sviluppatore CHIRP riconosciuto. Si
 msgid "The debug log file is not available when CHIRP is run interactively from the command-line. Thus, this tool will not upload what you expect. It is recommended that you quit now and run CHIRP non-interactively (or with stdin redirected to /dev/null)"
 msgstr "Il file di log di debug non è disponibile quando CHIRP viene eseguito interattivamente dalla riga di comando. Pertanto, questo strumento non caricherà ciò che ci si aspetterebbe. Si consiglia di uscire ora ed eseguire CHIRP in modalità non interattiva (oppure con lo stdin reindirizzato a /dev/null)"
 
-#: ../wxui/bugreport.py:497
+#: ../wxui/bugreport.py:507
 msgid "The following information will be submitted:"
 msgstr "Saranno trasmesse le seguenti informazioni:"
 
@@ -3184,7 +3193,7 @@ msgstr "Modello non supportato %r"
 msgid "Update an existing bug"
 msgstr "Aggiorna un bug esistente"
 
-#: ../wxui/bugreport.py:514
+#: ../wxui/bugreport.py:524
 #, python-format
 msgid "Updating bug %s"
 msgstr "Aggiornamento del bug %s"
