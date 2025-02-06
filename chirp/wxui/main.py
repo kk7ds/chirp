@@ -628,6 +628,9 @@ class ChirpMain(wx.Frame):
         )
 
         def add_stock(fn):
+            if fn.startswith('.') or fn.endswith('~'):
+                LOG.debug('Ignoring stock file %s', fn)
+                return
             submenu_item = stock.Append(wx.ID_ANY, fn)
             self.Bind(wx.EVT_MENU,
                       self._menu_open_stock_config, submenu_item)
