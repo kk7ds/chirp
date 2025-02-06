@@ -136,7 +136,9 @@ class EditorMenuItem(wx.MenuItem):
     ITEMS = {}
 
     def __init__(self, cls, callback_name, *a, **k):
-        self._wx_id = wx.NewId()
+        self._wx_id = k.pop('id', None)
+        if not self._wx_id:
+            self._wx_id = wx.NewId()
         super().__init__(None, self._wx_id, *a, **k)
         self._cls = cls
         self._callback_name = callback_name
