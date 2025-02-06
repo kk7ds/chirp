@@ -811,7 +811,10 @@ class ChirpMain(wx.Frame):
         edit_menu.Append(wx.MenuItem(edit_menu, wx.ID_SEPARATOR))
 
         for item in memedit_items[common.EditorMenuItem.MENU_EDIT]:
-            edit_menu.Append(item)
+            if item.GetId() in (wx.ID_UNDO, wx.ID_REDO):
+                edit_menu.Insert(0, item)
+            else:
+                edit_menu.Append(item)
             self.Bind(wx.EVT_MENU, self.do_editor_callback, item)
             item.add_menu_callback()
 
@@ -1273,6 +1276,9 @@ class ChirpMain(wx.Frame):
 
         for menu, items in self.editor_menu_items.items():
             for item in items:
+                if item.GetId() in (wx.ID_UNDO, wx.ID_REDO):
+                    # These are managed by the editor always
+                    continue
                 editor_match = (
                     eset and
                     isinstance(eset.current_editor, item.editor_class) or
