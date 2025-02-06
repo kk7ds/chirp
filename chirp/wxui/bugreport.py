@@ -437,6 +437,16 @@ class ExistingBugInfo(BugReportPage):
                              _('An error has occurred'),
                              style=wx.OK | wx.ICON_ERROR).ShowModal()
             event.Veto()
+        elif r.json()['issue']['status']['is_closed']:
+            LOG.error('Issue %s is closed', self.context.bugnum)
+            wx.MessageDialog(
+                self,
+                _('Please check the bug number and try again. If you do '
+                  'actually want to report against this bug, please comment '
+                  'on it via the website and ask for it to be re-opened.'),
+                _('Bug number %s is closed') % self.context.bugnum
+                ).ShowModal()
+            event.Veto()
         else:
             LOG.debug('Validated issue %s', self.context.bugnum)
 
