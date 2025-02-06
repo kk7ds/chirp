@@ -50,19 +50,19 @@ msgstr[1] "%i Kaydı ve bloğu yukarı kaydır"
 msgid "%s has not been saved. Save before closing?"
 msgstr "%s kaydedilmedi. Kapanmadan önce kaydedilsin mi?"
 
-#: ../wxui/bugreport.py:459
+#: ../wxui/bugreport.py:469
 msgid "(Describe what actually happened instead)"
 msgstr "(Bunun yerine gerçekte ne olduğunu açıklayın)"
 
-#: ../wxui/bugreport.py:457
+#: ../wxui/bugreport.py:467
 msgid "(Describe what you expected to happen)"
 msgstr "(Ne olacağını beklediğinizi açıklayın)"
 
-#: ../wxui/bugreport.py:455
+#: ../wxui/bugreport.py:465
 msgid "(Describe what you were doing)"
 msgstr "(Ne yaptığınızı anlatın)"
 
-#: ../wxui/bugreport.py:461
+#: ../wxui/bugreport.py:471
 msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr "(Bu daha önce işe yaradı mı? Yeni telsiz? OEM yazılımıyla çalışıyor mu?)"
 
@@ -1037,6 +1037,11 @@ msgstr "Bin"
 msgid "Browser"
 msgstr "Tarayıcı"
 
+#: ../wxui/bugreport.py:447
+#, python-format
+msgid "Bug number %s is closed"
+msgstr ""
+
 #: ../wxui/bugreport.py:436
 msgid "Bug number not found"
 msgstr "Hata numarası bulunamadı"
@@ -1273,7 +1278,7 @@ msgstr "Sil"
 msgid "Delete memories"
 msgstr ""
 
-#: ../wxui/bugreport.py:517
+#: ../wxui/bugreport.py:527
 msgid "Detailed information"
 msgstr "Detaylı bilgi"
 
@@ -1408,7 +1413,7 @@ msgstr "Banka %s için yeni bir ad girin:"
 msgid "Enter custom port:"
 msgstr "Özel bağlantı noktasını girin:"
 
-#: ../wxui/bugreport.py:451
+#: ../wxui/bugreport.py:461
 msgid "Enter details about this update. Be descriptive about what you were doing, what you expected to happen, and what actually happened."
 msgstr "Bu güncelleme hakkında ayrıntıları girin. Ne yaptığınızı, ne olmasını beklediğinizi ve gerçekte ne olduğunu açıklayıcı olun."
 
@@ -1416,7 +1421,7 @@ msgstr "Bu güncelleme hakkında ayrıntıları girin. Ne yaptığınızı, ne o
 msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem."
 msgstr "Hata hakkında kısa ama anlamlı bir bilgi ve söz konusu telsiz modeli (varsa) hakkında bilgi girin. Bir sonraki adımda sorun hakkında daha fazla ayrıntı ekleme şansınız olacak."
 
-#: ../wxui/bugreport.py:470
+#: ../wxui/bugreport.py:480
 msgid "Enter information to add to the bug here"
 msgstr "Hataya eklenecek bilgileri buraya girin"
 
@@ -1523,7 +1528,7 @@ msgstr "Telsiz tarayıcısı yüklenemedi"
 msgid "Failed to parse result"
 msgstr "Sonuç ayrıştırılamadı"
 
-#: ../wxui/bugreport.py:655
+#: ../wxui/bugreport.py:665
 msgid "Failed to send bug report:"
 msgstr "Hata raporu gönderilemedi:"
 
@@ -1545,7 +1550,7 @@ msgstr "Dosya mevcut değil: %s"
 msgid "Files"
 msgstr "Dosyalar"
 
-#: ../wxui/bugreport.py:515
+#: ../wxui/bugreport.py:525
 msgid "Files:"
 msgstr "Dosyalar:"
 
@@ -2404,6 +2409,10 @@ msgstr "Yapıştırılan kayıt, %s kaydının üzerine yazacak"
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Lütfen yeni sürümü yüklemeden önce CHIRP'den çıktığınızdan emin olun!"
 
+#: ../wxui/bugreport.py:444
+msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
+msgstr ""
+
 #: ../drivers/ftlx011.py:301
 msgid ""
 "Please follow this steps carefully:\n"
@@ -2634,7 +2643,7 @@ msgstr ""
 msgid "Report or update a bug..."
 msgstr "Bir hatayı bildirin veya güncelleyin..."
 
-#: ../wxui/bugreport.py:512
+#: ../wxui/bugreport.py:522
 #, python-format
 msgid "Reporting a new bug: %r"
 msgstr "Yeni hata bildiriliyor: %r"
@@ -2825,7 +2834,7 @@ msgstr "Eyalet/İl"
 msgid "Success"
 msgstr "Başarılı"
 
-#: ../wxui/bugreport.py:658
+#: ../wxui/bugreport.py:668
 msgid "Successfully sent bug report:"
 msgstr "Hata raporu başarıyla gönderildi:"
 
@@ -2892,7 +2901,7 @@ msgstr "Bu modülün yazarı tanınmış bir CHIRP geliştiricisi değildir. Gü
 msgid "The debug log file is not available when CHIRP is run interactively from the command-line. Thus, this tool will not upload what you expect. It is recommended that you quit now and run CHIRP non-interactively (or with stdin redirected to /dev/null)"
 msgstr "CHIRP komut satırından etkileşimli olarak çalıştırıldığında hata ayıklama günlük dosyası kullanılamaz. Bu nedenle, bu araç beklediğiniz şeyi yüklemeyecektir. Şimdi çıkıp CHIRP'i etkileşimsiz olarak (veya stdin /dev/null'a yönlendirilmiş olarak) çalıştırmanız önerilir"
 
-#: ../wxui/bugreport.py:497
+#: ../wxui/bugreport.py:507
 msgid "The following information will be submitted:"
 msgstr "Aşağıdaki bilgiler sunulacaktır:"
 
@@ -3119,7 +3128,7 @@ msgstr "Desteklenmeyen model %r"
 msgid "Update an existing bug"
 msgstr "Mevcut bir hatayı güncelle"
 
-#: ../wxui/bugreport.py:514
+#: ../wxui/bugreport.py:524
 #, python-format
 msgid "Updating bug %s"
 msgstr "%s hatası güncelleniyor"

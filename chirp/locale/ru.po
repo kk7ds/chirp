@@ -48,19 +48,19 @@ msgstr[2] "Ячейки памяти (%i) и сдвинуть блок ввер�
 msgid "%s has not been saved. Save before closing?"
 msgstr "Сохранение %s не было выполнено. Сохранить перед закрытием?"
 
-#: ../wxui/bugreport.py:459
+#: ../wxui/bugreport.py:469
 msgid "(Describe what actually happened instead)"
 msgstr ""
 
-#: ../wxui/bugreport.py:457
+#: ../wxui/bugreport.py:467
 msgid "(Describe what you expected to happen)"
 msgstr ""
 
-#: ../wxui/bugreport.py:455
+#: ../wxui/bugreport.py:465
 msgid "(Describe what you were doing)"
 msgstr ""
 
-#: ../wxui/bugreport.py:461
+#: ../wxui/bugreport.py:471
 msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr ""
 
@@ -1073,6 +1073,11 @@ msgstr "Бинарный"
 msgid "Browser"
 msgstr "Браузер"
 
+#: ../wxui/bugreport.py:447
+#, python-format
+msgid "Bug number %s is closed"
+msgstr ""
+
 #: ../wxui/bugreport.py:436
 #, fuzzy
 msgid "Bug number not found"
@@ -1316,7 +1321,7 @@ msgstr "Удалить"
 msgid "Delete memories"
 msgstr ""
 
-#: ../wxui/bugreport.py:517
+#: ../wxui/bugreport.py:527
 #, fuzzy
 msgid "Detailed information"
 msgstr "Информация о станции"
@@ -1454,7 +1459,7 @@ msgstr "Введите новое имя банка %s:"
 msgid "Enter custom port:"
 msgstr "Введите пользовательский порт:"
 
-#: ../wxui/bugreport.py:451
+#: ../wxui/bugreport.py:461
 msgid "Enter details about this update. Be descriptive about what you were doing, what you expected to happen, and what actually happened."
 msgstr ""
 
@@ -1462,7 +1467,7 @@ msgstr ""
 msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem."
 msgstr ""
 
-#: ../wxui/bugreport.py:470
+#: ../wxui/bugreport.py:480
 msgid "Enter information to add to the bug here"
 msgstr ""
 
@@ -1570,7 +1575,7 @@ msgstr "Не удалось загрузить браузер станций"
 msgid "Failed to parse result"
 msgstr "Не удалось проанализировать результат"
 
-#: ../wxui/bugreport.py:655
+#: ../wxui/bugreport.py:665
 #, fuzzy
 msgid "Failed to send bug report:"
 msgstr "Не удалось проанализировать результат"
@@ -1593,7 +1598,7 @@ msgstr "Файл не существует: %s"
 msgid "Files"
 msgstr "Файлы"
 
-#: ../wxui/bugreport.py:515
+#: ../wxui/bugreport.py:525
 #, fuzzy
 msgid "Files:"
 msgstr "Файлы"
@@ -2473,6 +2478,10 @@ msgstr "Вставленная ячейка памяти перезапишет 
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Обязательно выйдите из программы CHIRP перед установкой новой версии!"
 
+#: ../wxui/bugreport.py:444
+msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
+msgstr ""
+
 #: ../drivers/ftlx011.py:301
 msgid ""
 "Please follow this steps carefully:\n"
@@ -2708,7 +2717,7 @@ msgstr ""
 msgid "Report or update a bug..."
 msgstr ""
 
-#: ../wxui/bugreport.py:512
+#: ../wxui/bugreport.py:522
 #, fuzzy, python-format
 msgid "Reporting a new bug: %r"
 msgstr "Отправка отчётов включена"
@@ -2907,7 +2916,7 @@ msgstr "Область/регион"
 msgid "Success"
 msgstr "Успешно"
 
-#: ../wxui/bugreport.py:658
+#: ../wxui/bugreport.py:668
 msgid "Successfully sent bug report:"
 msgstr ""
 
@@ -2974,7 +2983,7 @@ msgstr "Автора этого модуля нет среди разработ�
 msgid "The debug log file is not available when CHIRP is run interactively from the command-line. Thus, this tool will not upload what you expect. It is recommended that you quit now and run CHIRP non-interactively (or with stdin redirected to /dev/null)"
 msgstr ""
 
-#: ../wxui/bugreport.py:497
+#: ../wxui/bugreport.py:507
 msgid "The following information will be submitted:"
 msgstr ""
 
@@ -3199,7 +3208,7 @@ msgstr "Неподдерживаемый тип файла"
 msgid "Update an existing bug"
 msgstr ""
 
-#: ../wxui/bugreport.py:514
+#: ../wxui/bugreport.py:524
 #, fuzzy, python-format
 msgid "Updating bug %s"
 msgstr "Обновление URCALL"
