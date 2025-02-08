@@ -131,7 +131,7 @@ class RadioStream:
                 end = self.data.index(b'\xFD')
                 frame = IcfFrame.parse(self.data[:end + 1])
                 self.data = self.data[end + 1:]
-                if frame.src == 0xEE and frame.dst == 0xEF:
+                if frame.src == ADDR_PC and frame.dst == ADDR_RADIO:
                     # PC echo, ignore
                     if self.iecho is None:
                         LOG.info('Detected an echoing cable')
@@ -181,7 +181,7 @@ class RadioStream:
             if len(f) != 0:
                 LOG.warning('Expected to read one echo frame, found %i',
                             len(f))
-            if f and f[0].src == 0xEF:
+            if f and f[0].src == ADDR_RADIO:
                 LOG.warning('Expected PC echo but found radio frame!')
 
 
@@ -207,7 +207,7 @@ def decode_model(data):
 
 def get_model_data(radio, mdata=b"\x00\x00\x00\x00", stream=None):
     """Query the @radio for its model data"""
-    send_clone_frame(radio, 0xe0, mdata, raw=True)
+    send_clone_frame(radio, CMD_CLONE_ID, mdata, raw=True)
 
     if stream is None:
         stream = RadioStream(radio.pipe)
@@ -255,7 +255,7 @@ def send_clone_frame(radio, cmd, data, raw=False, checksum=False):
     if TRACE_ICF:
         LOG.debug('Sending:\n%s' % frame)
 
-    if cmd == 0xe4:
+    if cmd == CMD_CLONE_DAT:
         # Uncomment to avoid cloning to the radio
         # return frame
         pass
