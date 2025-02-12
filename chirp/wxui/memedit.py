@@ -2277,7 +2277,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                     _('Some memories are not deletable'))
             with self.undo_context(_('Cut %i memories') % len(mems)):
                 for mem in mems:
-                    self.erase_memory(mem.number)
+                    # No need to delete empty memories
+                    if not mem.empty:
+                        self.erase_memory(mem.number)
 
         if cut:
             wx.PostEvent(self, common.EditorChanged(self.GetId()))
@@ -2387,7 +2389,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             mem.immutable = immutable
             row += 1
             try:
-                if mem.empty:
+                if mem.empty and existing.empty:
+                    # No need to delete this
+                    LOG.debug('Skipping re-deleting empty memory %i',
+                              existing.number)
+                elif mem.empty:
                     self.erase_memory(mem.number)
                     self._radio.check_set_memory_immutable_policy(existing,
                                                                   mem)
