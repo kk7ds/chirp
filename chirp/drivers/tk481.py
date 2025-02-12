@@ -287,6 +287,9 @@ class TKx80_Trunked(tk280.KenwoodTKx80):
         except IndexError:
             system = self._parent._expand_system(self._system)
             _mem = system.channels[system.sys.channels - 1]
+            # Immediately set the channel number on the new memory in case
+            # fail to do anything below (or delete it immediately)
+            _mem.number = mem.number
 
         if mem.empty:
             self._parent._reduce_system(self._system, mem.number)
