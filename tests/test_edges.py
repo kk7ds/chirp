@@ -107,6 +107,22 @@ class TestCaseEdges(base.DriverTest):
                                 'to delete location %i' % loc)
                 break
 
+    def test_redelete_memory(self):
+        m = self.get_mem()
+        if 'empty' in m.immutable:
+            self.skipTest('Test memory is not deletable')
+
+        # Delete this memory
+        m.empty = True
+        self.radio.set_memory(m)
+
+        # Try to delete it again
+        self.radio.set_memory(m)
+
+        # Make sure it appears deleted
+        m2 = self.radio.get_memory(m.number)
+        self.assertTrue(m2.empty)
+
     def test_get_set_specials(self):
         if not self.rf.valid_special_chans:
             self.skipTest('Radio has no specials')
