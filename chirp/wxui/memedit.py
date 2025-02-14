@@ -2184,6 +2184,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     @common.error_proof()
+    @undoable('Insert row')
     def _mem_insert(self, row, event):
         # Traverse memories downward until we find a hole
         for i in range(row, self.mem2row(self._features.memory_bounds[1]) + 1):
@@ -2198,7 +2199,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         mems_to_refresh = []
         # Move memories down in reverse order
         for target_row in range(empty_row, row, -1):
-            mem = self._memory_cache[target_row - 1]
+            mem = self._memory_cache[target_row - 1].dupe()
             LOG.debug('Moving memory %i -> %i', mem.number,
                       self.row2mem(target_row))
             mem.number = self.row2mem(target_row)
