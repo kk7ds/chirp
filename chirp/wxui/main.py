@@ -903,8 +903,7 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_query_przeu, query_przeu_item)
         source_menu.Append(query_przeu_item)
 
-        query_mapy73pl_item = wx.MenuItem(source_menu, wx.NewId(),
-                                       'mapy73.pl')
+        query_mapy73pl_item = wx.MenuItem(source_menu, wx.NewId(), 'mapy73.pl')
         self.Bind(wx.EVT_MENU, self._menu_query_mapy73pl, query_mapy73pl_item)
         source_menu.Append(query_mapy73pl_item)
 

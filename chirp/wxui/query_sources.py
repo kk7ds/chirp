@@ -931,26 +931,27 @@ class PrzemiennikiEuQueryDialog(QuerySourceDialog):
 
         return params
 
+
 class Mapy73PlQueryDialog(QuerySourceDialog):
     NAME = 'mapy73.pl'
     _section = 'mapy73pl'
     _api_option = [
-        'pl-fmpoland', #'FM-Poland'
-        'pl-fmlink', #'Poland FM-LINK'
-        'pl-dmr', #'Poland DMR'
-        'pl-c4fm', #'Poland C4FM'
-        'pl-dstar', #'Poland DSTAR'
-        'pl-fm', #'Poland FM'
-        'cz-fm', #'Czechia FM'
-        'sk-fm', #'Slovakia FM'
-        'fi-fm', #'Finland FM'
-        'se-fm', #'Sweden FM'
-        'no-fm', #'Norway FM'
-        'bg-fm', #'Bulgaria FM'
-        'dk-fm', #'Denmark FM'
-        'de-fm', #'Germany FM'
-        'si-fm', #'Slovenia FM'
-        'is-fm' #'Iceland FM'
+        'pl-fmpoland',  # 'FM-Poland'
+        'pl-fmlink',  # 'Poland FM-LINK'
+        'pl-dmr',  # 'Poland DMR'
+        'pl-c4fm',  # 'Poland C4FM'
+        'pl-dstar',  # 'Poland DSTAR'
+        'pl-fm',  # 'Poland FM'
+        'cz-fm',  # 'Czechia FM'
+        'sk-fm',  # 'Slovakia FM'
+        'fi-fm',  # 'Finland FM'
+        'se-fm',  # 'Sweden FM'
+        'no-fm',  # 'Norway FM'
+        'bg-fm',  # 'Bulgaria FM'
+        'dk-fm',  # 'Denmark FM'
+        'de-fm',  # 'Germany FM'
+        'si-fm',  # 'Slovenia FM'
+        'is-fm'  # 'Iceland FM'
     ]
     _options_text = [
         'FM-Poland',
@@ -991,7 +992,6 @@ class Mapy73PlQueryDialog(QuerySourceDialog):
         self._add_grid(grid, _('Option'), self._option_text)
         return vbox
 
-
     def get_info(self):
         return _('FREE repeater database, which provides information\n'
                  'about repeaters in Europe. No account is required.')
@@ -1000,7 +1000,9 @@ class Mapy73PlQueryDialog(QuerySourceDialog):
         return 'https://mapy73.pl'
 
     def do_query(self):
-        CONF.set('api_option', self._api_option[self._option_text.GetSelection()], self._section)
+        CONF.set('api_option',
+                 self._api_option[self._option_text.GetSelection()],
+                 self._section)
         self.result_radio = mapy73pl.Mapy73Pl()
         super().do_query()
 

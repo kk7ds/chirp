@@ -40,9 +40,10 @@ class Mapy73Pl(base.NetworkResultRadio):
         else:
             export = ''
 
+        base_url = 'https://cache.mapy73.pl/snapshot/repeaters/export/chirp/'
+        request_url = base_url + export
         try:
-            r = requests.get('https://cache.mapy73.pl/snapshot/repeaters/export/chirp/%s' % export,
-                             headers=base.HEADERS)
+            r = requests.get(request_url, headers=base.HEADERS)
             r.raise_for_status()
         except requests.exceptions.RequestException as e:
             LOG.error('Failed to query mapy73.pl: %s' % e)
