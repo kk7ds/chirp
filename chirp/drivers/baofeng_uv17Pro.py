@@ -500,7 +500,11 @@ class UV17Pro(bfc.BaofengCommonHT):
             if ord(str(char)) in [0, 255]:
                 break
             fname += int(char).to_bytes(1, 'big')
-        return fname.decode('gb2312').strip()
+        try:
+            return fname.decode('gb2312').strip()
+        except UnicodeDecodeError:
+            LOG.warning('Unable to decode code name %r' % name)
+            return ''
 
     def apply_codename(self, setting, obj):
         codename = (str(setting.value).encode('gb2312')[:10].ljust(10,
