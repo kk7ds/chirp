@@ -30,6 +30,7 @@ from chirp.sources import radioreference
 from chirp.sources import repeaterbook
 from chirp.sources import przemienniki_net
 from chirp.sources import przemienniki_eu
+from chirp.sources import mapy73pl
 from chirp.wxui import common
 from chirp.wxui import config
 
@@ -928,6 +929,89 @@ class PrzemiennikiEuQueryDialog(QuerySourceDialog):
         if (params.get('coordinates') or params.get('locator')) and dist:
             params['distance'] = dist
 
+        return params
+
+
+class Mapy73PlQueryDialog(QuerySourceDialog):
+    NAME = 'mapy73.pl'
+    _section = 'mapy73pl'
+    _api_option = [
+        'pl-fmpoland',  # 'FM-Poland network'
+        'pl-fmlink',  # 'Poland FM-LINK'
+        'pl-dmr',  # 'Poland DMR'
+        'pl-c4fm',  # 'Poland C4FM'
+        'pl-dstar',  # 'Poland DSTAR'
+        'pl-fm',  # 'Poland FM'
+        'cz-fm',  # 'Czechia FM'
+        'sk-fm',  # 'Slovakia FM'
+        'fi-fm',  # 'Finland FM'
+        'se-fm',  # 'Sweden FM'
+        'no-fm',  # 'Norway FM'
+        'bg-fm',  # 'Bulgaria FM'
+        'dk-fm',  # 'Denmark FM'
+        'de-fm',  # 'Germany FM'
+        'si-fm',  # 'Slovenia FM'
+        'is-fm'  # 'Iceland FM'
+    ]
+    _options_text = [
+        'FM-Poland network',
+        'Poland FM-LINK',
+        'Poland DMR',
+        'Poland C4FM',
+        'Poland DSTAR',
+        'Poland FM',
+        'Czechia FM',
+        'Slovakia FM',
+        'Finland FM',
+        'Sweden FM',
+        'Norway FM',
+        'Bulgaria FM',
+        'Denmark FM',
+        'Germany FM',
+        'Slovenia FM',
+        'Iceland FM'
+    ]
+
+    def _add_grid(self, grid, label, widget):
+        grid.Add(wx.StaticText(widget.GetParent(), label=label),
+                 border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
+        grid.Add(widget, 1, border=20, flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
+
+    def build(self):
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(vbox)
+        panel = wx.Panel(self)
+        vbox.Add(panel, 1, flag=wx.EXPAND | wx.ALL, border=20)
+        grid = wx.FlexGridSizer(2, 5, 0)
+        grid.AddGrowableCol(1)
+        panel.SetSizer(grid)
+
+        # Option
+        self._option_text = wx.Choice(panel, choices=self._options_text)
+        self._option_text.SetStringSelection(self._options_text[0])
+        self._add_grid(grid, _('Option'), self._option_text)
+        return vbox
+
+    def get_info(self):
+        return _('FREE repeater database, which provides information\n'
+                 'about repeaters in Europe. No account is required.')
+
+    def get_link(self):
+        return 'https://mapy73.pl'
+
+    def do_query(self):
+        CONF.set('api_option',
+                 self._api_option[self._option_text.GetSelection()],
+                 self._section)
+        self.result_radio = mapy73pl.Mapy73Pl()
+        super().do_query()
+
+    def get_params(self):
+        params = {}
+        params['api_option'] = ''
+        api_option = CONF.get('api_option', self._section)
+        if api_option:
+            params['api_option'] = api_option
         return params
 
 
