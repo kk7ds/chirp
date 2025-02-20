@@ -763,7 +763,8 @@ class MemeditUndoContext(MemeditActionContext):
         super().__init__(memedit, name)
         LOG.info('[%s] Creating undo item %r', self._id, self.name)
         self._pre_selection = self._memedit._grid.GetSelectedRows()
-        self._pre_pos = self._memedit._grid.GetGridCursorCoords()
+        self._pre_pos = (self._memedit._grid.GetGridCursorRow(),
+                         self._memedit._grid.GetGridCursorCol())
         self._post_selection = self._post_pos = None
 
     @property
@@ -796,7 +797,8 @@ class MemeditUndoContext(MemeditActionContext):
         LOG.debug('[%s] Recorded changes made to %i memories',
                   self._id, len(self._mem_before))
         self._post_selection = self._memedit._grid.GetSelectedRows()
-        self._post_pos = self._memedit._grid.GetGridCursorCoords()
+        self._post_pos = (self._memedit._grid.GetGridCursorRow(),
+                          self._memedit._grid.GetGridCursorCol())
 
     def _restore_selection(self, pos, selection):
         self._memedit._grid.SetGridCursor(pos)
@@ -2537,7 +2539,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             for mem in to_set:
                 self.set_memory(mem)
 
-            cursor_r, cursor_c = self._grid.GetGridCursorCoords()
+            cursor_r, cursor_c = (self._grid.GetGridCursorRow(),
+                                  self._grid.GetGridCursorCol())
             cursor_r += direction
             if 0 <= cursor_r <= last_row:
                 # Avoid pushing the cursor past the edges
