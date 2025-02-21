@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-20 14:55+0100\n"
+"POT-Creation-Date: 2025-02-21 13:53-0800\n"
 "PO-Revision-Date: 2025-02-05 01:25-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
@@ -71,7 +71,7 @@ msgstr "(¿Ha funcionado esto antes? ¿Radio nueva? ¿Funciona con el software O
 msgid "(none)"
 msgstr "(nada)"
 
-#: ../wxui/memedit.py:2437
+#: ../wxui/memedit.py:2443
 #, python-format
 msgid "...and %i more"
 msgstr "...y %i más"
@@ -829,7 +829,7 @@ msgstr ""
 "5. Asegúrate de que la radio esté sintonizada a un canal sin actividad.\n"
 "6. Cliquea Aceptar para cargar la imagen al dispositivo.\n"
 
-#: ../drivers/tg_uv2p.py:232 ../drivers/uvb5.py:288 ../drivers/wouxun.py:213
+#: ../drivers/uvb5.py:288 ../drivers/wouxun.py:213 ../drivers/tg_uv2p.py:232
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -845,7 +845,7 @@ msgstr ""
 "5. Asegúrate de que la radio esté sintonizada a un canal sin actividad.\n"
 "6. Cliquea Aceptar para descargar la imagen desde dispositivo.\n"
 
-#: ../drivers/tg_uv2p.py:240 ../drivers/uvb5.py:296 ../drivers/wouxun.py:221
+#: ../drivers/uvb5.py:296 ../drivers/wouxun.py:221 ../drivers/tg_uv2p.py:240
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1201,13 +1201,13 @@ msgstr "Clonado completado, comprobando por bytes espurios"
 msgid "Cloning"
 msgstr "Clonando"
 
-#: ../drivers/ft4.py:317 ../drivers/bj9900.py:133 ../drivers/ft817.py:341
-#: ../drivers/ft450d.py:507
+#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft4.py:317
+#: ../drivers/ft817.py:341
 msgid "Cloning from radio"
 msgstr "Clonando desde radio"
 
-#: ../drivers/ft4.py:318 ../drivers/bj9900.py:165 ../drivers/ft817.py:379
-#: ../drivers/ft450d.py:536
+#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft4.py:318
+#: ../drivers/ft817.py:379
 msgid "Cloning to radio"
 msgstr "Clonando a radio"
 
@@ -1287,7 +1287,7 @@ msgstr "Personalizado..."
 msgid "Cut"
 msgstr "Cortar"
 
-#: ../wxui/memedit.py:2281
+#: ../wxui/memedit.py:2287
 #, python-format
 msgid "Cut %i memories"
 msgstr ""
@@ -1308,7 +1308,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr "Decodificación DTMF"
 
-#: ../wxui/memedit.py:2720
+#: ../wxui/memedit.py:2735
 msgid "DV Memory"
 msgstr "Memoria DV"
 
@@ -1349,7 +1349,7 @@ msgstr "Diferenciar memorias en bruto"
 msgid "Diff against another editor"
 msgstr "Diferenciar contra otro editor"
 
-#: ../wxui/memedit.py:2637
+#: ../wxui/memedit.py:2652
 msgid "Digital Code"
 msgstr "Código digital"
 
@@ -1424,12 +1424,12 @@ msgstr "Dúplex"
 msgid "Edit %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2667
+#: ../wxui/memedit.py:2682
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Editar detalles para %i memorias"
 
-#: ../wxui/memedit.py:2665
+#: ../wxui/memedit.py:2680
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Editar detalles para memoria %i"
@@ -1540,7 +1540,7 @@ msgstr "Excluir repetidores privados y cerrados"
 msgid "Experimental driver"
 msgstr "Controlador experimental"
 
-#: ../wxui/memedit.py:2590
+#: ../wxui/memedit.py:2605
 msgid "Export can only write CSV files"
 msgstr "Exportar sólo puede escribir archivos CSV"
 
@@ -1552,7 +1552,7 @@ msgstr "Exportar a CSV"
 msgid "Export to CSV..."
 msgstr "Exportar a CSV..."
 
-#: ../wxui/memedit.py:2709
+#: ../wxui/memedit.py:2724
 msgid "Extra"
 msgstr "Extra"
 
@@ -1582,8 +1582,8 @@ msgstr ""
 msgid "Failed to load radio browser"
 msgstr "Fallo al cargar navegador de radio"
 
-#: ../sources/przemienniki_net.py:59 ../sources/mapy73pl.py:61
-#: ../sources/przemienniki_eu.py:57
+#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
+#: ../sources/mapy73pl.py:61
 msgid "Failed to parse result"
 msgstr "Fallo al analizar el resultado"
 
@@ -1710,11 +1710,11 @@ msgstr ""
 "5 - ¡Desconecta el cable de interfaz! ¡De lo contrario no habrá\n"
 "    audio del lado derecho!\n"
 
-#: ../drivers/baofeng_uv17Pro.py:468 ../drivers/mursv1.py:341
-#: ../drivers/baofeng_wp970i.py:327 ../drivers/gmrsv2.py:363
-#: ../drivers/btech.py:693 ../drivers/uv5x3.py:417 ../drivers/uv6r.py:339
-#: ../drivers/gmrsuv1.py:391 ../drivers/bf_t1.py:482
-#: ../drivers/tdxone_tdq8a.py:456
+#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/btech.py:693 ../drivers/gmrsuv1.py:391
+#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
+#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
+#: ../drivers/baofeng_uv17Pro.py:468 ../drivers/bf_t1.py:482
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1728,7 +1728,7 @@ msgstr ""
 "3 - Enciende tu radio\n"
 "4 - Haz la descarga de tus datos de radio\n"
 
-#: ../drivers/tk760g.py:683 ../drivers/tk690.py:575
+#: ../drivers/tk690.py:575 ../drivers/tk760g.py:683
 msgid ""
 "Follow these instructions to download your radio:\n"
 "1 - Turn off your radio\n"
@@ -1832,7 +1832,7 @@ msgstr ""
 "3 - Enciende tu radio\n"
 "4 - Haz la carga de tus datos de radio\n"
 
-#: ../drivers/tk760g.py:689 ../drivers/tk690.py:581
+#: ../drivers/tk690.py:581 ../drivers/tk760g.py:689
 msgid ""
 "Follow these instructions to upload your radio:\n"
 "1 - Turn off your radio\n"
@@ -1888,11 +1888,11 @@ msgstr ""
 "3 - Enciende tu radio\n"
 "4 - Haz la descarga de tus datos de radio\n"
 
-#: ../drivers/baofeng_uv17Pro.py:474 ../drivers/mursv1.py:347
-#: ../drivers/vgc.py:604 ../drivers/baofeng_wp970i.py:333
-#: ../drivers/lt725uv.py:502 ../drivers/gmrsv2.py:369 ../drivers/uv5x3.py:423
-#: ../drivers/uv6r.py:345 ../drivers/gmrsuv1.py:397
-#: ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
+#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
+#: ../drivers/baofeng_uv17Pro.py:474
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1938,13 +1938,13 @@ msgstr "La frecuencia %s está fuera del rango soportado"
 msgid "Frequency granularity in kHz"
 msgstr "Granularidad de frecuencia en kHz"
 
-#: ../drivers/baofeng_uv17Pro.py:1197 ../drivers/mml_jc8810.py:1378
-#: ../drivers/ga510.py:1072 ../drivers/tdh8.py:2608
+#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1378
+#: ../drivers/tdh8.py:2608 ../drivers/baofeng_uv17Pro.py:1197
 msgid "Frequency in this range must not be AM mode"
 msgstr "La frecuencia en este rango no debe ser modo AM"
 
-#: ../drivers/baofeng_uv17Pro.py:1193 ../drivers/mml_jc8810.py:1375
-#: ../drivers/ga510.py:1065 ../drivers/tdh8.py:2605
+#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1375
+#: ../drivers/tdh8.py:2605 ../drivers/baofeng_uv17Pro.py:1193
 msgid "Frequency in this range requires AM mode"
 msgstr "La frecuencia en este rango requiere modo AM"
 
@@ -2007,7 +2007,7 @@ msgstr "Si se establece, ordenar los resultados por distancia desde estas coorde
 msgid "Import"
 msgstr "Importar"
 
-#: ../wxui/memedit.py:2317
+#: ../wxui/memedit.py:2323
 #, python-format
 msgid "Import %i memories"
 msgstr ""
@@ -2061,8 +2061,8 @@ msgstr "Error interno del controlador"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "%(value)s inválido (usa grados decimales)"
 
-#: ../wxui/memedit.py:1865 ../wxui/query_sources.py:69
-#: ../wxui/query_sources.py:123
+#: ../wxui/query_sources.py:69 ../wxui/query_sources.py:123
+#: ../wxui/memedit.py:1865
 msgid "Invalid Entry"
 msgstr "Entrada inválida"
 
@@ -2070,7 +2070,7 @@ msgstr "Entrada inválida"
 msgid "Invalid ZIP code"
 msgstr "Código postal inválido"
 
-#: ../wxui/memedit.py:1864 ../wxui/memedit.py:2800
+#: ../wxui/memedit.py:1864 ../wxui/memedit.py:2815
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Edición inválida: %s"
@@ -2096,7 +2096,7 @@ msgstr "Número de problema:"
 msgid "LIVE"
 msgstr "EN VIVO"
 
-#: ../wxui/main.py:852 ../wxui/main.py:1622 ../drivers/radtel_rt490.py:1026
+#: ../drivers/radtel_rt490.py:1026 ../wxui/main.py:852 ../wxui/main.py:1622
 msgid "Language"
 msgstr "Lenguaje"
 
@@ -2221,8 +2221,8 @@ msgstr "La memoria debe estar en un banco para ser editada"
 msgid "Memory {num} not in bank {bank}"
 msgstr "La memoria {num} no está en banco {bank}"
 
-#: ../wxui/memedit.py:595 ../wxui/query_sources.py:624
-#: ../wxui/query_sources.py:777
+#: ../wxui/query_sources.py:624 ../wxui/query_sources.py:777
+#: ../wxui/memedit.py:595
 msgid "Mode"
 msgstr "Modo"
 
@@ -2255,7 +2255,7 @@ msgstr "Más información"
 msgid "More than one port found: %s"
 msgstr "Más de un puerto encontrado: %s"
 
-#: ../wxui/memedit.py:2528
+#: ../wxui/memedit.py:2543
 #, python-format
 msgid "Move %i memories"
 msgstr ""
@@ -2268,7 +2268,7 @@ msgstr "Mover abajo"
 msgid "Move Up"
 msgstr "Mover arriba"
 
-#: ../wxui/memedit.py:2498
+#: ../wxui/memedit.py:2513
 msgid "Move operations are disabled while the view is sorted"
 msgstr "Las operaciones de movimiento están deshabilitadas mientras la vista es ordenada"
 
@@ -2298,12 +2298,12 @@ msgstr "No se encontraron módulos"
 msgid "No modules found in issue %i"
 msgstr "No se encontraron módulos en problema %i"
 
-#: ../wxui/memedit.py:2371
+#: ../wxui/memedit.py:2377
 msgid "No more space available; some memories were not applied"
 msgstr "No hay más espacio disponible; algunas memorias no fueron aplicadas"
 
-#: ../sources/przemienniki_net.py:55 ../sources/mapy73pl.py:57
-#: ../sources/przemienniki_eu.py:53
+#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
+#: ../sources/mapy73pl.py:57
 msgid "No results"
 msgstr "No hay resultados"
 
@@ -2311,7 +2311,7 @@ msgstr "No hay resultados"
 msgid "No results!"
 msgstr "¡No hay resultados!"
 
-#: ../wxui/memedit.py:1264 ../wxui/query_sources.py:44
+#: ../wxui/query_sources.py:44 ../wxui/memedit.py:1264
 msgid "Number"
 msgstr "Numero"
 
@@ -2426,7 +2426,7 @@ msgstr "Opcional: AA00 - AA00aa11"
 msgid "Optional: County, Hospital, etc."
 msgstr "Opcional: Condado, Hospital, etc."
 
-#: ../wxui/memedit.py:2351
+#: ../wxui/memedit.py:2357
 msgid "Overwrite memories?"
 msgstr "¿Sobrescribir memorias?"
 
@@ -2440,8 +2440,8 @@ msgstr ""
 "Sólo un subconjunto de las más de 130 ajustes de radio disponibles\n"
 "están soportados en este lanzamiento.\n"
 
-#: ../sources/przemienniki_net.py:50 ../sources/mapy73pl.py:52
-#: ../sources/przemienniki_eu.py:48
+#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
+#: ../sources/mapy73pl.py:52
 msgid "Parsing"
 msgstr "Analizando"
 
@@ -2453,26 +2453,30 @@ msgstr "Contraseña"
 msgid "Paste"
 msgstr "Pegar"
 
-#: ../wxui/memedit.py:2450
+#: ../wxui/common.py:800
+msgid "Paste external memories"
+msgstr ""
+
+#: ../wxui/memedit.py:2456
 msgid "Paste memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2345
+#: ../wxui/memedit.py:2351
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr "Las memorias pegadas sobrescribirán %s memorias existentes"
 
-#: ../wxui/memedit.py:2348
+#: ../wxui/memedit.py:2354
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "Las memorias pegadas sobrescribirán memorias %s"
 
-#: ../wxui/memedit.py:2342
+#: ../wxui/memedit.py:2348
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr "Las memorias pegadas sobrescribirán la memoria %s"
 
-#: ../wxui/memedit.py:2339
+#: ../wxui/memedit.py:2345
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr "La memoria pegada sobrescribirá la memoria %s"
@@ -2610,8 +2614,8 @@ msgstr "Sintaxis de consulta OK"
 msgid "Query syntax help"
 msgstr "Ayuda de la sintaxis de consulta"
 
-#: ../sources/przemienniki_net.py:36 ../sources/mapy73pl.py:36
-#: ../sources/przemienniki_eu.py:36
+#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
+#: ../sources/mapy73pl.py:36
 msgid "Querying"
 msgstr "Consultando"
 
@@ -2623,7 +2627,7 @@ msgstr "RX DTCS"
 msgid "Radio"
 msgstr "Radio"
 
-#: ../drivers/ft817.py:406 ../drivers/ft450d.py:568 ../drivers/ft60.py:85
+#: ../drivers/ft60.py:85 ../drivers/ft450d.py:568 ../drivers/ft817.py:406
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "La radio no reconoció el bloque %i"
@@ -2852,11 +2856,11 @@ msgstr "Mostrar ubicación de la copia de respaldo de la imagen"
 msgid "Skip"
 msgstr "Omitir"
 
-#: ../wxui/memedit.py:2441
+#: ../wxui/memedit.py:2447
 msgid "Some memories are incompatible with this radio"
 msgstr "Algunas memorias son incompatibles con esta radio"
 
-#: ../wxui/memedit.py:2280
+#: ../wxui/memedit.py:2286
 msgid "Some memories are not deletable"
 msgstr "Algunas memorias no son borrables"
 
@@ -2894,8 +2898,8 @@ msgstr "Ordenar por columna:"
 msgid "Sort memories"
 msgstr "Ordenar memorias"
 
-#: ../sources/przemienniki_net.py:62 ../sources/mapy73pl.py:64
-#: ../sources/przemienniki_eu.py:60
+#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
+#: ../sources/mapy73pl.py:64
 msgid "Sorting"
 msgstr "Ordenando"
 
@@ -3160,7 +3164,7 @@ msgstr "No se puede editar memoria antes de que la radio este cargada"
 msgid "Unable to find stock config %r"
 msgstr "No se puede buscar la configuración original %r"
 
-#: ../wxui/memedit.py:2297
+#: ../wxui/memedit.py:2303
 msgid "Unable to import while the view is sorted"
 msgstr "No se puede importar mientras la vista es ordenada"
 
@@ -3168,8 +3172,8 @@ msgstr "No se puede importar mientras la vista es ordenada"
 msgid "Unable to open the clipboard"
 msgstr "No se puede abrir el portapapeles"
 
-#: ../sources/przemienniki_net.py:48 ../sources/mapy73pl.py:50
-#: ../sources/przemienniki_eu.py:46
+#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
+#: ../sources/mapy73pl.py:50
 msgid "Unable to query"
 msgstr "No se puede consultar"
 
@@ -3278,7 +3282,7 @@ msgstr "Valor debe ser cero o superior"
 msgid "Value to search memory field for"
 msgstr "Valor a buscar en el campo de memoria"
 
-#: ../wxui/memedit.py:2700
+#: ../wxui/memedit.py:2715
 msgid "Values"
 msgstr "Valores"
 
@@ -3294,7 +3298,7 @@ msgstr "Ver"
 msgid "WARNING!"
 msgstr "¡ADVERTENCIA!"
 
-#: ../wxui/memedit.py:1871 ../wxui/bugreport.py:218 ../wxui/main.py:2003
+#: ../wxui/bugreport.py:218 ../wxui/memedit.py:1871 ../wxui/main.py:2003
 msgid "Warning"
 msgstr "Advertencia"
 

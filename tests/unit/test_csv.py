@@ -28,6 +28,16 @@ CHIRP_CSV_MODERN_QUOTED_HEADER = (
 0,Nat Simplex,146.520000,,0.600000,TSQL,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,50W,This is the national calling frequency on 2m,,,,
 1,"National Simp",446.000000,-,5.000000,DTCS,88.5,88.5,023,NN,023,Tone->Tone,FM,5.00,,5.0W,This is NOT the UHF calling frequency,,,,
 """)  # noqa
+CHIRP_TSV = (
+    """Location	Name	Frequency	Duplex	Offset	Tone	rToneFreq	cToneFreq	DtcsCode	DtcsPolarity	RxDtcsCode	CrossMode	Mode	TStep	Skip	Power	Comment	URCALL	RPT1CALL	RPT2CALL	DVCODE
+8	Mt Scott	147.280000	+	0.600000	TSQL	88.5	167.9	023	NN	023	Tone->Tone	FM	5.00		50W	TayDan Emergency Step #2\t\t\t\t
+9	Mt Tabor	145.390000	-	0.600000	TSQL	88.5	100.0	023	NN	023	Tone->Tone	FM	5.00		50W	TayDan Emergency Step #1\t\t\t\t
+10	Timberline V	147.120000	+	0.600000	TSQL	103.5	100.0	023	NN	023	Tone->Tone	FM	5.00		50W	TayDan Emergency Step #4\t\t\t\t
+11	Timberline U	444.225000	+	5.000000	TSQL	88.5	100.0	023	NN	023	Tone->Tone	FM	5.00		50W	K7RPT Timberline, Linked to VHF side, AC7QE-R echolink\t\t\t\t
+12	GovtCamp	443.875000	+	5.000000	TSQL	88.5	103.5	023	NN	023	Tone->Tone	FM	5.00		50W\t\t\t\t
+13	GoatMtn	443.700000	+	5.000000	TSQL	88.5	103.5	023	NN	023	Tone->Tone	FM	5.00		50W	SW Corner of Clackamas, Co.\t\t\t\t
+14	TyghRdge	147.260000	+	0.600000	TSQL	103.5	82.5	023	NN	023	Tone->Tone	FM	5.00		50W\t\t\t\t
+""")  # noqa
 
 
 class TestCSV(unittest.TestCase):
@@ -182,6 +192,7 @@ class TestCSV(unittest.TestCase):
 
     def test_escaped_string_chars(self):
         m = chirp_common.Memory()
+        m.freq = 146520000
         m.number = 1
         m.name = 'This is "The one"'
         m.comment = 'Wow, a \nMulti-line comment!'
@@ -191,6 +202,7 @@ class TestCSV(unittest.TestCase):
 
     def test_unicode_comment_chars(self):
         m = chirp_common.Memory()
+        m.freq = 146520000
         m.number = 1
         m.name = 'This is "The one"'
         m.comment = b'This is b\xc9\x90d news'.decode()
@@ -200,6 +212,7 @@ class TestCSV(unittest.TestCase):
 
     def test_cross_dtcs(self):
         m = chirp_common.Memory()
+        m.freq = 146520000
         m.number = 1
         m.tmode = 'Cross'
         m.cross_mode = 'DTCS->DTCS'
@@ -231,3 +244,11 @@ class RTCSV(unittest.TestCase):
     @ddt.data('ft3d', 'ftm400', 'ftm500')
     def test_sample_file(self, arg):
         self._test_open('rtcsv_%s.csv' % arg)
+
+
+class TestTSV(unittest.TestCase):
+    def test_parse_tsv(self):
+        radio = generic_csv.TSVRadio(None)
+        radio.load_from(CHIRP_TSV)
+        m = radio.get_memory(8)
+        self.assertEqual('Mt Scott', m.name)
