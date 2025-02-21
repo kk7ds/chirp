@@ -78,6 +78,11 @@ class TestUtilityFunctions(base.BaseTest):
         self.assertEqual(140, chirp_common.from_MHz(14000001))
         self.assertEqual(140, chirp_common.from_kHz(14001))
 
+    def test_mem_to_from_csv(self):
+        mem1 = chirp_common.Memory()
+        mem2 = chirp_common.Memory._from_csv(','.join(mem1.to_csv()))
+        self.assertEqual(str(mem1), str(mem2))
+
     def test_mem_from_text_rb1(self):
         text = '145.2500 	-0.6 MHz 	97.4 	OPEN'
         mem = chirp_common.mem_from_text(text)
@@ -226,6 +231,24 @@ class TestUtilityFunctions(base.BaseTest):
         self.assertEqual(450000000, mem.freq)
         self.assertEqual(150000000, mem.offset)
         self.assertEqual('split', mem.duplex)
+
+    def test_mem_from_text_tsv(self):
+        from_lo = """8	Mt Scott	147.28	+	0.6	TSQL	88.5	167.9	23	NN	23	Tone->Tone	FM	5		50W	TayDan Emergency Step #2
+9	Mt Tabor	145.39	-	0.6	TSQL	88.5	100	23	NN	23	Tone->Tone	FM	5		50W	TayDan Emergency Step #1
+10	Timberline V	147.12	+	0.6	TSQL	103.5	100	23	NN	23	Tone->Tone	FM	5		50W	TayDan Emergency Step #4
+11	Timberline U	444.225	+	5	TSQL	88.5	100	23	NN	23	Tone->Tone	FM	5		50W	K7RPT Timberline, Linked to VHF side, AC7QE-R echolink
+12	GovtCamp	443.875	+	5	TSQL	88.5	103.5	23	NN	23	Tone->Tone	FM	5		50W"""  # noqa
+
+        lines = from_lo.split('\n')
+        mem = chirp_common.mem_from_text(lines[0])
+        self.assertEqual('Mt Scott', mem.name)
+        self.assertEqual('TSQL', mem.tmode)
+        self.assertEqual('+', mem.duplex)
+        self.assertEqual(600000, mem.offset)
+        self.assertEqual(147280000, mem.freq)
+        self.assertEqual(8, mem.number)
+        for line in from_lo.split('\n'):
+            chirp_common.mem_from_text(line)
 
     def test_mem_to_text1(self):
         mem = chirp_common.Memory()

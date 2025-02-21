@@ -2456,19 +2456,21 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             self._cb_paste_memories(payload)
         elif wx.DF_UNICODETEXT in data.GetAllFormats():
             try:
-                mem = chirp_common.mem_from_text(
-                    data.GetText())
+                mems = [chirp_common.mem_from_text(line)
+                        for line in data.GetText().split('\n')
+                        if line.strip()]
             except Exception as e:
                 LOG.warning('Failed to parse pasted data %r: %s' % (
                     data.GetText(), e))
                 return
             # Since matching the offset is kinda iffy, set our band plan
             # set the offset, if a rule exists.
-            if mem.duplex in ('-', '+'):
-                self._set_memory_defaults(mem, 'offset')
+            for mem in mems:
+                if mem.duplex in ('-', '+'):
+                    self._set_memory_defaults(mem, 'offset')
             LOG.debug('Generic text paste %r: %s' % (
-                data.GetText(), mem))
-            self._cb_paste_memories({'mems': [mem],
+                data.GetText(), mems))
+            self._cb_paste_memories({'mems': mems,
                                      'features': self._features})
         else:
             LOG.warning('Unknown data format %s paste' % (

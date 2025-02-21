@@ -523,7 +523,7 @@ class Memory:
         self.name = vals[1]
 
         try:
-            self.freq = float(vals[2])
+            self.freq = to_MHz(float(vals[2]))
         except Exception:
             raise errors.InvalidDataError("Frequency is not a valid number")
 
@@ -533,7 +533,7 @@ class Memory:
             raise errors.InvalidDataError("Duplex is not +,-, or empty")
 
         try:
-            self.offset = float(vals[4])
+            self.offset = to_MHz(float(vals[4]))
         except Exception:
             raise errors.InvalidDataError("Offset is not a valid number")
 
@@ -563,30 +563,32 @@ class Memory:
         if self.dtcs not in DTCS_CODES:
             raise errors.InvalidDataError("DTCS code is not valid")
 
-        try:
-            self.rx_dtcs = int(vals[8], 10)
-        except Exception:
-            raise errors.InvalidDataError("DTCS Rx code is not a valid number")
-        if self.rx_dtcs not in DTCS_CODES:
-            raise errors.InvalidDataError("DTCS Rx code is not valid")
-
         if vals[9] in ["NN", "NR", "RN", "RR"]:
             self.dtcs_polarity = vals[9]
         else:
             raise errors.InvalidDataError("DtcsPolarity is not valid")
 
-        if vals[10] in MODES:
-            self.mode = vals[10]
+        try:
+            self.rx_dtcs = int(vals[10], 10)
+        except Exception:
+            raise errors.InvalidDataError("DTCS Rx code is not a valid number")
+        if self.rx_dtcs not in DTCS_CODES:
+            raise errors.InvalidDataError("DTCS Rx code is not valid")
+
+        self.cross_mode = vals[11]
+
+        if vals[12] in MODES:
+            self.mode = vals[12]
         else:
-            raise errors.InvalidDataError("Mode is not valid")
+            raise errors.InvalidDataError("Mode %r is not valid" % vals[10])
 
         try:
-            self.tuning_step = float(vals[11])
+            self.tuning_step = float(vals[13])
         except Exception:
             raise errors.InvalidDataError("Tuning step is invalid")
 
         try:
-            self.skip = vals[12]
+            self.skip = vals[14]
         except Exception:
             raise errors.InvalidDataError("Skip value is not valid")
 
@@ -2092,7 +2094,23 @@ def urlretrieve(url, fn):
         f.write(resp.read())
 
 
+def mem_from_tsv(tsv_text):
+    fields = tsv_text.split('\t')
+    if len(fields) < 13:
+        raise ValueError('Not enough fields to be a memory')
+    mem = Memory()
+    mem.really_from_csv(fields)
+    print('Parsed %s from tsv' % mem)
+    return mem
+
+
 def mem_from_text(text):
+    if text.count('\t') > 10:
+        # Seems like plausible TSV, return if it parses
+        try:
+            return mem_from_tsv(text)
+        except Exception:
+            pass
     m = Memory()
     freqs = re.findall(r'\b(\d{1,3}\.\d{2,6})\b', text)
     if not freqs:
