@@ -2271,9 +2271,15 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         memdata = wx.CustomDataObject(common.CHIRP_DATA_MEMORY)
         data.Add(memdata)
         memdata.SetData(pickle.dumps(payload))
-        strfmt = chirp_common.mem_to_text(mems[0])
-        textdata = wx.TextDataObject(strfmt)
-        data.Add(textdata)
+        try:
+            r = generic_csv.TSVRadio(None)
+            r.clear()
+            for m in mems:
+                r.set_memory(m.dupe())
+            textdata = wx.TextDataObject(r.as_string())
+            data.Add(textdata)
+        except Exception as e:
+            LOG.exception('Failed to get TSV format for paste: %s', e)
         if cut:
             if any('empty' in mem.immutable for mem in mems):
                 raise errors.InvalidMemoryLocation(
@@ -2456,18 +2462,25 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             self._cb_paste_memories(payload)
         elif wx.DF_UNICODETEXT in data.GetAllFormats():
             try:
-                mems = [chirp_common.mem_from_text(line)
-                        for line in data.GetText().split('\n')
-                        if line.strip()]
+                if data.GetText().count('\t') > 10:
+                    # This looks plausibly like a TSV paste from a spreadsheet
+                    mems = common.mems_from_clipboard(data.GetText(),
+                                                      parent=self)
+                    if not mems:
+                        raise ValueError('No channels extracted from paste')
+                else:
+                    mems = [chirp_common.mem_from_text(line)
+                            for line in data.GetText().split('\n')
+                            if line.strip()]
+                    # Since matching the offset is kinda iffy, set our band
+                    # plan set the offset, if a rule exists.
+                    for mem in mems:
+                        if mem.duplex in ('-', '+') and not mem.offset:
+                            self._set_memory_defaults(mem, 'offset')
             except Exception as e:
                 LOG.warning('Failed to parse pasted data %r: %s' % (
                     data.GetText(), e))
                 return
-            # Since matching the offset is kinda iffy, set our band plan
-            # set the offset, if a rule exists.
-            for mem in mems:
-                if mem.duplex in ('-', '+'):
-                    self._set_memory_defaults(mem, 'offset')
             LOG.debug('Generic text paste %r: %s' % (
                 data.GetText(), mems))
             self._cb_paste_memories({'mems': mems,
