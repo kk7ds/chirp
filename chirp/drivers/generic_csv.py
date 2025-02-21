@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import io
 import os
 import csv
 import logging
@@ -61,6 +62,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
     NEEDS_COMPAT_SERIAL = True
     FILE_EXTENSION = "csv"
     FORMATS = [directory.register_format('CSV', '*.csv')]
+    SEPCHAR = ','
 
     ATTR_MAP = {
         "Location":      (int,   "number"),
@@ -90,6 +92,9 @@ class CSVRadio(chirp_common.FileBackedRadio):
             self.memories[0].freq = 146010000
             # Default to 50W
             self.memories[0].power = DEFAULT_POWER_LEVEL
+
+    def clear(self):
+        self.memories = []
 
     def __init__(self, pipe):
         chirp_common.FileBackedRadio.__init__(self, None)
@@ -191,6 +196,9 @@ class CSVRadio(chirp_common.FileBackedRadio):
 
         return self._clean(headers, line, mem)
 
+    def load_from(self, string):
+        self._load(io.StringIO(string, newline=''))
+
     def load(self, filename=None):
         if filename is None and self._filename is None:
             raise errors.RadioError("Need a location to load from")
@@ -204,7 +212,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
             return self._load(f)
 
     def _load(self, f):
-        reader = csv.reader(f, delimiter=chirp_common.SEPCHAR, quotechar='"')
+        reader = csv.reader(f, delimiter=self.SEPCHAR, quotechar='"')
 
         self._comments = []
         good = 0
@@ -226,7 +234,8 @@ class CSVRadio(chirp_common.FileBackedRadio):
                 self.file_has_cTone = "cToneFreq" in header
                 continue
 
-            if len(header) > len(line):
+            # Spreadsheets like to omit trailing empty columns in TSV
+            if len(header) > len(line) and not self.SEPCHAR.isspace():
                 LOG.error("Line %i has %i columns, expected %i",
                           lineno, len(line), len(header))
                 self.errors.append("Column number mismatch on line %i" %
@@ -235,7 +244,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
 
             try:
                 mem = self._parse_csv_data_line(header, line)
-                if mem is None:
+                if mem is None or mem.freq == 0:
                     LOG.debug('Line %i did not contain a valid memory',
                               lineno)
                     continue
@@ -262,24 +271,32 @@ class CSVRadio(chirp_common.FileBackedRadio):
             self._filename = filename
 
         with open(self._filename, "w", newline='', encoding='utf-8') as f:
-            comments = list(self._comments)
-            writer = csv.writer(f, delimiter=chirp_common.SEPCHAR)
+            self._write_to(f)
 
+    def _write_to(self, f):
+        comments = list(self._comments)
+        writer = csv.writer(f, delimiter=self.SEPCHAR)
+
+        for index, comment in comments[:]:
+            if index >= 0:
+                break
+            writer.writerow([comment])
+            comments.pop(0)
+
+        writer.writerow(chirp_common.Memory.CSV_FORMAT)
+
+        for mem in self.memories:
             for index, comment in comments[:]:
-                if index >= 0:
+                if index >= mem.number:
                     break
                 writer.writerow([comment])
                 comments.pop(0)
+            write_memory(writer, mem)
 
-            writer.writerow(chirp_common.Memory.CSV_FORMAT)
-
-            for mem in self.memories:
-                for index, comment in comments[:]:
-                    if index >= mem.number:
-                        break
-                    writer.writerow([comment])
-                    comments.pop(0)
-                write_memory(writer, mem)
+    def as_string(self):
+        string = io.StringIO(newline='')
+        self._write_to(string)
+        return string.getvalue()
 
     # MMAP compatibility
     def save_mmap(self, filename):
@@ -332,7 +349,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
     def get_raw_memory(self, number):
         return ",".join(chirp_common.Memory.CSV_FORMAT) + \
             os.linesep + \
-            ",".join(self.memories[number].to_csv())
+            self.SEPCHAR.join(self.memories[number].to_csv())
 
     @classmethod
     def match_model(cls, filedata, filename):
@@ -566,3 +583,7 @@ class RTCSVRadio(CSVRadio):
 
         return filename.lower().endswith("." + cls.FILE_EXTENSION) and \
             'Receive Frequency' in firstline_fields
+
+
+class TSVRadio(CSVRadio):
+    SEPCHAR = '\t'
