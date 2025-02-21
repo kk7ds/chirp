@@ -764,20 +764,56 @@ class MultiErrorDialog(wx.Dialog):
 
 
 @contextlib.contextmanager
-def expose_logs(level, root, label, maxlen=128, parent=None):
+def expose_logs(level, root, label, maxlen=128, parent=None,
+                show_on_raise=True):
     if not isinstance(root, tuple):
         root = (root,)
+
+    error = None
 
     mgrs = (logger.log_history(level, x) for x in root)
     with contextlib.ExitStack() as stack:
         histories = [stack.enter_context(m) for m in mgrs]
         try:
             yield
+        except Exception as e:
+            LOG.warning('Failure while capturing logs (showing=%s): %s',
+                        show_on_raise, e)
+            error = e
         finally:
             lines = list(itertools.chain.from_iterable(x.get_history()
                                                        for x in histories))
-            if lines:
+            if lines and (show_on_raise or not error):
+                LOG.warning('Showing %i lines of logs', len(lines))
                 d = MultiErrorDialog(parent)
                 d.SetTitle(label)
                 d.set_errors(lines)
                 d.ShowModal()
+            else:
+                LOG.warning('Not showing %i lines of logs (error=%s,show=%s)',
+                            len(lines), bool(error), show_on_raise)
+            if error:
+                raise error
+
+
+def mems_from_clipboard(string, maxlen=128, parent=None):
+    label = _('Paste external memories')
+    radio = generic_csv.TSVRadio(None)
+    # Try to load the whole thing as a full TSV with header row
+    try:
+        with expose_logs(logging.WARNING, 'chirp.drivers', label,
+                         parent=parent, show_on_raise=False):
+            radio.load_from(string)
+            return [x for x in radio.get_memories() if not x.empty]
+    except errors.InvalidDataError:
+        LOG.debug('No header information found in TSV paste')
+    except RuntimeError:
+        pass
+
+    # If we got no memories, try prefixing the default header row and repeat
+    header = generic_csv.TSVRadio.SEPCHAR.join(chirp_common.Memory.CSV_FORMAT)
+    string = os.linesep.join([header, string])
+    with expose_logs(logging.WARNING, 'chirp.drivers', label, parent=parent):
+        radio.load_from(string)
+
+    return [x for x in radio.get_memories() if not x.empty]
