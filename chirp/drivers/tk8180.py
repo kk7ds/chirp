@@ -259,7 +259,7 @@ BATTWARN_SETTINGS = {
 # The buttons in memory are not logically arranged for display and sorting
 # would do weird things, so map them manually here
 BUTTONS = {
-    'Side 1': 0,
+    'Side 1 / Triangle': 0,
     'Side 2': 5,
     'S': 1,
     'A': 2,
@@ -308,6 +308,7 @@ BUTTON_FUNCTIONS = {
     'Display Character': 0x1E,
     'Fixed Volume': 0x20,
     'Function': 0x21,
+    'LCD Brightness': 0x27,
     'Monitor': 0x2A,
     'Monitor Momentary': 0x2B,
     'Transceiver Password': 0x32,
@@ -328,6 +329,7 @@ PORTABLE_BUTTON_FUNCTIONS = {
 }
 # These are only available on the mobile transceiver
 MOBILE_BUTTON_FUNCTIONS = {
+    'Zone Down': 0x4A,  # Different on mobile?
 }
 KNOB_MODE = {
     'None': 0xFF,
@@ -1412,7 +1414,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         else:
             model_functions = PORTABLE_BUTTON_FUNCTIONS
 
-        pri_functions = model_functions | BUTTON_FUNCTIONS
+        pri_functions = BUTTON_FUNCTIONS | model_functions
         sec_functions = (
             {k: v for k, v in (model_functions | BUTTON_FUNCTIONS).items()
              if v not in PRIMARY_ONLY})
