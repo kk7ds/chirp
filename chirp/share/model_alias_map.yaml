@@ -171,6 +171,8 @@ Baofeng/Pofung:
   model: UV-82T
 - alt: Radioddity UV-82X3
   model: UV-82X3
+- alt: BF-888
+  model: TH-888S
 - alt: UV-5R
   model: UV-860
 - alt: UV-5R
