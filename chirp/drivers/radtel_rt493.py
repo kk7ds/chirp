@@ -595,9 +595,9 @@ class Radtel493Radio(chirp_common.CloneModeRadio):
             ))
         mem.extra.append(rs)
 
-        LOG.debug("WN Mode: %i, Compander: %i, Scramble: %i, Special QT/DQT: %i" % (
-            int(_mem.wn_mode), int(_mem.compander), int(_mem.scramble),
-            int(_mem.special_qt_dqt)))
+        LOG.debug("WN Mode: %i, Compander: %i, Scramble: %i, Special QT/DQT: \
+                  %i" % (int(_mem.wn_mode), int(_mem.compander),
+                         int(_mem.scramble), int(_mem.special_qt_dqt)))
 
         learn_code = self.get_learn_code_status(mem.number)
         rs = RadioSetting(
