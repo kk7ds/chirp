@@ -687,7 +687,7 @@ class Radtel493Radio(chirp_common.CloneModeRadio):
             elif setting.get_name() == "Special Code":
                 special_code = str(setting.value)
 
-        _mem.wn_mode = 1 if mem.mode == "Wide" else 0
+        _mem.wn_mode = 1 if mem.mode == "WFM" else 0
 
         _mem.global1.set_raw(global1)
         _mem.global2.set_raw(global2)
