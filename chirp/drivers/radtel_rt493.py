@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
 import struct
 import logging
 from chirp import bitwise, chirp_common, directory, errors, memmap, util
@@ -35,10 +34,6 @@ CHARSET_HEX = "0123456789ABCDEFabcdef"
 
 
 def _clean_buffer(radio):
-    radio.pipe.reset_input_buffer()
-    radio.pipe.reset_output_buffer()
-    time.sleep(0.002)
-
     radio.pipe.timeout = 0.005
     junk = radio.pipe.read(256)
     radio.pipe.timeout = 1  # 1000ms
@@ -47,42 +42,14 @@ def _clean_buffer(radio):
         LOG.debug("Got %i bytes of junk before starting" % len(junk))
 
 
-def _rawrecv(radio, amount):
-    """Raw read from the radio device"""
-    data = bytearray()
-    try:
-        while len(data) < amount:
-            chunk = radio.pipe.read(amount - len(data))
-            if not chunk:
-                LOG.debug("No response from radio")
-                raise errors.RadioNoContactLikelyK1()
-            data.extend(chunk)
-            time.sleep(0.002)  # 2ms delay
-    except Exception:
-        msg = "Generic error reading data from radio; \
-            restart radio and check your cable."
-        raise errors.RadioError(msg)
-
-    if len(data) != amount:
-        LOG.error("Expected %i bytes, got %i" % (amount, len(data)))
-        raise errors.RadioError("Invalid response from the radio")
-
-    return bytes(data)
-
-
-def _rawsend(radio, data):
-    """Raw send to the radio device"""
-    try:
-        radio.pipe.write(data)
-        time.sleep(0.002)
-    except Exception:
-        raise errors.RadioError("Error sending data to radio")
-
-
 def _recv(radio, addr, length):
     """Get data from the radio """
-    hdr = _rawrecv(radio, 4)  # Read 4 byte header
-    data = _rawrecv(radio, length)  # Read data
+    hdr = radio.pipe.read(4)  # Read 4 byte header
+    if not hdr:
+        raise errors.RadioNoContactLikelyK1()
+    data = radio.pipe.read(length)  # Read the data
+    if not data:
+        raise errors.RadioNoContactLikelyK1()
 
     # DEBUG
     LOG.info("Response:")
@@ -101,9 +68,11 @@ def _recv(radio, addr, length):
 def _enter_programming_mode(radio):
     _clean_buffer(radio)
 
-    _rawsend(radio, radio._magic)
+    radio.pipe.write(radio._magic)
     LOG.debug("Sent magic sequence")
-    ack = _rawrecv(radio, 2)
+    ack = radio.pipe.read(2)
+    if not ack:
+        raise errors.RadioNoContactLikelyK1()
     LOG.debug("Received magic sequence response")
     if len(ack) != 2 or ack[1:2] != COMMAND_ACCEPT:
         if ack:
@@ -111,19 +80,21 @@ def _enter_programming_mode(radio):
                       % (len(ack), util.hexprint(ack)))
         raise errors.RadioError("Radio refused to enter programming mode")
 
-    radio.pipe.reset_input_buffer()
-    _rawsend(radio, b"\x02")
-    ident = _rawrecv(radio, radio._magic_response_length)
-
-    if not ident.startswith(radio._fingerprint):
+    radio.pipe.write(b"\x02")
+    ident = radio.pipe.read(radio._magic_response_length)
+    if not ident:
+        raise errors.RadioNoContactLikelyK1()
+    elif not ident.startswith(radio._fingerprint):
         raise errors.RadioError("Radio returned unknown identification string")
 
     LOG.info("Radio entered programming mode")
     LOG.debug("Radio identification: %s" % util.hexprint(ident))
 
-    _rawsend(radio, COMMAND_ACCEPT)
-    ack = _rawrecv(radio, 1)
-    if ack != COMMAND_ACCEPT:
+    radio.pipe.write(COMMAND_ACCEPT)
+    ack = radio.pipe.read(1)
+    if not ack:
+        raise errors.RadioNoContactLikelyK1()
+    elif ack != COMMAND_ACCEPT:
         if ack:
             LOG.error("Got %s" % util.hexprint(ack))
         raise errors.RadioError("Radio refused to enter programming mode")
@@ -147,138 +118,44 @@ def _get_memory_address(channel_id):
 
 def _read_block(radio, channel_id):
     address = bytes(_get_memory_address(channel_id))
+    # 52=read | 20 = hex(32 bytes) = length of 2 channels
+    # + settings without header
+    cmd = struct.pack(">BBBB", 0x52, address[0], address[1], 0x20)
 
-    try:
-        # 52=read | 20 = hex(32 bytes) = length of 2 channels
-        # + settings without header
-        cmd = b"\x52" + address + b"\x20"
-        _rawsend(radio, cmd)
-        data = _recv(radio, address, 32)
+    radio.pipe.write(cmd)
+    data = _recv(radio, address, 32)
 
-        if address != b"\x00\x00":
-            _rawsend(radio, COMMAND_ACCEPT)
-            response = _rawrecv(radio, 1)
-            if response != COMMAND_ACCEPT:
-                raise errors.RadioError("Radio refused to read block at %04s"
-                                        % util.hexprint(address))
+    # Sending an accept after reading the first line will crash
+    # the communication. The accept is sent when entering programming
+    # mdoe, so before reading the first block
+    if address != b"\x00\x00":
+        radio.pipe.write(COMMAND_ACCEPT)
+        response = radio.pipe.read(1)
+        if not response:
+            raise errors.RadioNoContactLikelyK1()
+        elif response != COMMAND_ACCEPT:
+            raise errors.RadioError("Radio refused to read block at %04s"
+                                    % util.hexprint(address))
 
-        return data
-    except Exception:
-        raise errors.RadioError("Failed to read block from radio at %04s"
-                                % util.hexprint(address))
+    return data
 
 
 def _write_block(radio, channel_id, data):
     address = bytes(_get_memory_address(channel_id))
+    cmd = struct.pack(">BBBB", 0x57, address[0], address[1], 0x10) + data
 
-    try:
-        cmd = b"\x57" + address + b"\x10" + data
-        _rawsend(radio, cmd)
-
-        response = _rawrecv(radio, 1)
-        if response != COMMAND_ACCEPT:
-            raise errors.RadioError("Radio refused to write block at %04s"
-                                    % util.hexprint(address))
-    except Exception:
-        raise errors.RadioError("Failed to write block to radio at %04s"
+    radio.pipe.write(cmd)
+    response = radio.pipe.read(1)
+    if not response:
+        raise errors.RadioNoContactLikelyK1()
+    elif response != COMMAND_ACCEPT:
+        raise errors.RadioError("Radio refused to write block at %04s"
                                 % util.hexprint(address))
 
 
-def _encode_frequency(freq_mhz):
-    """
-    Encodes a frequency in MHz into 4 bytes.
-    Converts from:
-        MHz → Byte3 Byte2 . Byte1 Byte0
-    Example:
-        431.350 → 00 50 13 43
-    """
-    # TODO: make limitation dynamic based on location
-    if freq_mhz == 0.0:
-        return b'\xff\xff\xff\xff'
-
-    freq = int(freq_mhz / 10)
-
-    hex_str = str(freq)
-    if len(hex_str) % 2 != 0:
-        hex_str += "0"
-    while len(hex_str) < 8:
-        hex_str = "00" + hex_str
-    return bytes.fromhex(hex_str)[::-1]
-
-
-def _decode_freq(hex_bytes):
-    """
-    Decodes a 4-byte frequency representation into MHz.
-    The bytes must be read **right to left** in HEX format (LBCD):
-        Byte3 Byte2 . Byte1 Byte0
-    Example:
-        00 50 13 43  ->  431.350 MHz
-    """
-    b0, b1, b2, b3 = hex_bytes
-
-    if b0 == 0xFF and b1 == 0xFF and b2 == 0xFF and b3 == 0xFF:
-        return 0.0
-
-    # Extract the high and low nibbles (hex digits) of b2
-    b2_high = (b2 >> 4) & 0xF  # Get the first hex digit (upper nibble)
-    b2_low = b2 & 0xF          # Get the second hex digit (lower nibble)
-
-    form = f'{b3:02X}{b2_high:X}{b2_low:X}{b1:02X}{b0:02X}'
-    return int(form)
-
-
-def _decode_channel_settings(byte):
-    """
-    Decodes the main channel settings byte into a structured dictionary.
-
-    :param byte: The byte to decode (integer)
-    :return: Dictionary with settings
-    """
-    return {
-        # (1=Wide, 0=Narrow)
-        "W/N Mode": "Wide" if ord(byte) & 0x10 else "Narrow",
-        "Compander": bool(ord(byte) & 0x80),  # (1=ON, 0=OFF)
-        "Scramble Mode": ord(byte) & 0x07,  # (0=OFF, 1-7=Scramble levels)
-        "Special QT/DQT": "A" if ord(byte) & 0x20 else
-        ("B" if ord(byte) & 0x40 else "OFF"),
-    }
-
-
-def _encode_channel_settings(wn, scramble, compander, special_qt_dqt):
-    """
-    Encodes the main channel settings into a single byte.
-
-    :param wn: "wide" or "narrow"
-    :param scramble: Scramble mode (0 = OFF, 1-8 = Scramble levels)
-    :param compander: Boolean, True = ON, False = OFF
-    :param special_qt_dqt: "off", "A", "B"
-
-    :return: Encoded settings byte (integer)
-    """
-    settings_byte = 0x00  # Start with 0000 0000
-
-    # Wide/Narrow: 1 = Wide, 0 = Narrow
-    if wn.lower() == "wide":
-        settings_byte |= 0x10
-
-    # Compander: 1 = ON, 0 = OFF
-    if compander:
-        settings_byte |= 0x80
-
-    # Scramble Mode
-    if scramble > 0:
-        settings_byte |= (scramble & 0x07)
-
-    # Special QT/DQT: 0 = OFF, A = 1, B = 2
-    if special_qt_dqt.upper() == "A":
-        settings_byte |= 0x02
-    elif special_qt_dqt.upper() == "B":
-        settings_byte |= 0x06
-
-    return settings_byte.to_bytes(1, "big")
-
-
 def do_download(radio):
+    """Expects caller to exit programming mode"""
+
     LOG.debug("Downloading data from radio")
 
     status = chirp_common.Status()
@@ -295,15 +172,10 @@ def do_download(radio):
         status.cur = i
         radio.status_fn(status)
 
-        # block = radio._cache_block(i, in_prog_mode=True)
         result = _read_block(radio, i)
-        # block1, block2 = result[:16], result[16:]
         data.extend(result)
 
         LOG.debug("Downloaded memory channel %i" % i)
-        # LOG.debug(block)
-
-    _exit_programming_mode(radio)
 
     LOG.debug("Downloaded %i bytes of data" % len(data))
 
@@ -311,6 +183,8 @@ def do_download(radio):
 
 
 def do_upload(radio):
+    """Expects caller to exit programming mode"""
+
     LOG.debug("Uploading data to radio")
     _enter_programming_mode(radio)
 
@@ -322,19 +196,15 @@ def do_upload(radio):
     radio.status_fn(status)
 
     radio_mem = radio.get_mmap()
-    for i in range(1, radio._upper, 1):
+    for i in range(1, radio.MEM_ROWS, 1):
         status.cur = i
         radio.status_fn(status)
 
-        # block = radio._memcache[i]
-        # _write_block(radio, block.channel_id, block.pack())
         block_offset = (i - 1) * radio.BLOCK_SIZE
         block = radio_mem[block_offset:block_offset + radio.BLOCK_SIZE]
         _write_block(radio, i, block)
 
         LOG.debug("Uploaded memory channel %i" % i)
-
-    _exit_programming_mode(radio)
 
 
 DTCS_BYTE_LOOKUP_LOW = {
@@ -430,7 +300,11 @@ class Radtel493Radio(chirp_common.CloneModeRadio):
         lbcd txfreq[4];         // TX Frequency (BCD format)
         ul16 rxtone;            // RX Tone (CTCSS/DCS) - 0xFFFF if OFF
         ul16 txtone;            // TX Tone (CTCSS/DCS) - 0xFFFF if OFF
-        u8 settings;            // Bitmask (Wide/Narrow, Scramble, etc.)
+        u8 compander:1,         // Compander (1=ON, 0=OFF)
+           special_qt_dqt:2,    // Special QT/DQT (00=OFF, 01=A, 10=B)
+           wn_mode:1,           // Wide/Narrow mode (1=Wide, 0=Narrow)
+           unknown1:1,          // Unknown bit
+           scramble:3;          // Scramble mode (0-7, 0 = OFF)
         u8 global1;             // Global settings byte 1 (varies per channel)
         u8 global2;             // Global settings byte 2
         u8 global3;             // Global settings byte 3
@@ -680,23 +554,20 @@ class Radtel493Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return
 
-        rxfreq = _decode_freq(_mem.rxfreq.get_raw())
-        txfreq = _decode_freq(_mem.txfreq.get_raw())
-        mem.freq = rxfreq * 10
-        chirp_common.split_to_offset(mem, rxfreq, txfreq)
+        mem.freq = int(_mem.rxfreq) * 10
+        chirp_common.split_to_offset(mem, int(_mem.rxfreq), int(_mem.txfreq))
         txtone = self._decode_qt_dqt(_mem.txtone.get_raw())
         rxtone = self._decode_qt_dqt(_mem.rxtone.get_raw())
         chirp_common.split_tone_decode(mem, txtone, rxtone)
 
-        main_settings_byte = _mem.settings.get_raw()
-        main_settings = _decode_channel_settings(main_settings_byte)
-        mem.mode = "WFM" if main_settings["W/N Mode"] == "Wide" else "NFM"
+        # main_settings_byte = _mem.settings.get_raw()
+        # main_settings = _decode_channel_settings(main_settings_byte)
+        mem.mode = "WFM" if int(_mem.wn_mode) else "NFM"
 
         power_level = self.get_power_level(mem.number)
         mem.power = self.POWER_LEVELS[0 if power_level else 1]
 
         scan_add = self.get_scan_add_status(mem.number)
-
         if not scan_add:
             mem.skip = "S"
 
@@ -704,14 +575,14 @@ class Radtel493Radio(chirp_common.CloneModeRadio):
 
         rs = RadioSetting(
             "Compander", "Compander",
-            RadioSettingValueBoolean(main_settings["Compander"]))
+            RadioSettingValueBoolean(_mem.compander))
         mem.extra.append(rs)
 
         rs = RadioSetting(
             "Scramble Mode", "Scramble Mode",
             RadioSettingValueList(
                 ["OFF", "1", "2", "3", "4", "5", "6", "7"],
-                current_index=main_settings["Scramble Mode"]
+                current_index=_mem.scramble
             ))
         mem.extra.append(rs)
 
@@ -719,10 +590,14 @@ class Radtel493Radio(chirp_common.CloneModeRadio):
             "Special QT/DQT", "Special QT/DQT",
             RadioSettingValueList(
                 ["OFF", "A", "B"],
-                current_index=0 if main_settings["Special QT/DQT"] == "OFF"
-                else (1 if main_settings["Special QT/DQT"] == "A" else 2)
+                current_index=0 if _mem.special_qt_dqt == 0x00
+                else (1 if _mem.special_qt_dqt == 0x01 else 2)
             ))
         mem.extra.append(rs)
+
+        LOG.debug("WN Mode: %i, Compander: %i, Scramble: %i, Special QT/DQT: %i" % (
+            int(_mem.wn_mode), int(_mem.compander), int(_mem.scramble),
+            int(_mem.special_qt_dqt)))
 
         learn_code = self.get_learn_code_status(mem.number)
         rs = RadioSetting(
@@ -736,9 +611,6 @@ class Radtel493Radio(chirp_common.CloneModeRadio):
             RadioSettingValueString(
                 8, 8, special_code, True, CHARSET_HEX, "0"))
         mem.extra.append(rs)
-
-    # Extract a high-level memory object from the low-level memory map
-    # This is called to populate a memory in the UI
 
     def get_memory(self, number):
         if number <= 0 or number > self._upper:
@@ -774,15 +646,14 @@ class Radtel493Radio(chirp_common.CloneModeRadio):
             return b"\xFF\xFF"
 
     def encode_mem_blob(self, mem, _mem):
-        _mem.rxfreq.set_raw(_encode_frequency(mem.freq))
+        _mem.rxfreq = mem.freq / 10
 
         if mem.duplex == "split":
-            print("Split mode with offset %i" % mem.offset)
-            _mem.txfreq.set_raw(_encode_frequency(mem.offset))
+            _mem.txfreq = mem.offset / 10
         elif mem.duplex == "+":
-            _mem.txfreq.set_raw(_encode_frequency(mem.freq + mem.offset))
+            _mem.txfreq = (mem.freq + mem.offset) / 10
         elif mem.duplex == "-":
-            _mem.txfreq.set_raw(_encode_frequency(mem.freq - mem.offset))
+            _mem.txfreq = (mem.freq - mem.offset) / 10
         else:
             _mem.txfreq = _mem.rxfreq
 
@@ -801,30 +672,22 @@ class Radtel493Radio(chirp_common.CloneModeRadio):
         global2 = memraw.global2.get_raw()
         global3 = memraw.global3.get_raw()
 
-        compander = False
-        scramble = 0
-        special_qt_dqt = "OFF"
         learn_code = False
         special_code = "FF" * 4
         for setting in mem.extra:
             if setting.get_name() == "Compander":
-                compander = bool(setting.value)
+                _mem.compander = int(setting.value)
             elif setting.get_name() == "Scramble Mode":
-                scramble = int(setting.value) if str(
+                _mem.scramble = int(setting.value) if str(
                     setting.value) != "OFF" else 0
             elif setting.get_name() == "Special QT/DQT":
-                special_qt_dqt = str(setting.value)
+                _mem.special_qt_dqt = [0x00, 0x01, 0x10][int(setting.value)]
             elif setting.get_name() == "Learn Code":
                 learn_code = bool(setting.value)
             elif setting.get_name() == "Special Code":
                 special_code = str(setting.value)
 
-        _mem.settings.set_raw(_encode_channel_settings(
-            str("Narrow" if mem.mode == "NFM" else "Wide"),
-            scramble,
-            compander,
-            special_qt_dqt
-        ))
+        _mem.wn_mode = 1 if mem.mode == "Wide" else 0
 
         _mem.global1.set_raw(global1)
         _mem.global2.set_raw(global2)
@@ -1136,6 +999,8 @@ class Radtel493Radio(chirp_common.CloneModeRadio):
         except Exception:
             LOG.exception("Failed to download data to radio")
             raise errors.RadioError("Failed to download data from radio")
+        finally:
+            _exit_programming_mode(self)
         self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
@@ -1150,3 +1015,5 @@ class Radtel493Radio(chirp_common.CloneModeRadio):
         except Exception:
             LOG.exception("Failed to upload data from radio")
             raise errors.RadioError("Failed to upload data to radio")
+        finally:
+            _exit_programming_mode(self)
