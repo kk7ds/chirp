@@ -17,6 +17,7 @@ import base64
 import binascii
 import logging
 
+from chirp import directory
 from chirp import platform
 from configparser import ConfigParser
 import os
@@ -76,6 +77,10 @@ class ChirpConfigProxy:
     def __init__(self, config, section="global"):
         self._config = config
         self._section = section
+
+    @property
+    def section(self):
+        return self._section
 
     def get(self, key, section=None, raw=False):
         return self._config.get(key, section or self._section,
@@ -177,3 +182,8 @@ def get(section="global"):
         _CONFIG = ChirpConfig(p.config_dir())
 
     return ChirpConfigProxy(_CONFIG, section)
+
+
+def get_for_radio(radio):
+    registered_id = directory.registered_class(radio.__class__)
+    return get(section='radio_%s' % registered_id)
