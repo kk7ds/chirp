@@ -20,6 +20,7 @@ from collections import OrderedDict
 
 from chirp import chirp_common, directory, memmap, errors, util
 from chirp import bitwise
+from chirp.drivers import tk280
 from chirp.settings import MemSetting, RadioSettingValueInvertedBoolean
 from chirp.settings import RadioSettingGroup, RadioSetting
 from chirp.settings import RadioSettingValueBoolean, RadioSettingValueList
@@ -1488,22 +1489,20 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
 
     def get_sub_devices(self):
         zones = []
+        to_copy = ('VENDOR', 'MODEL', 'VALID_BANDS', '_model')
         for i, _ in enumerate(self._zones):
             zone = getattr(self._memobj, 'zone%i' % i)
 
-            class _Zone(KenwoodTKx180RadioZone):
-                VENDOR = self.VENDOR
-                MODEL = self.MODEL
-                VALID_BANDS = self.VALID_BANDS
-                VARIANT = 'Zone %s' % (
-                    str(zone.zoneinfo.name).rstrip('\x00').rstrip())
-                _model = self._model
+            zone_cls = tk280.TKx80SubdevMeta.make_subdev(
+                self, KenwoodTKx180RadioZone, zone, to_copy,
+                VARIANT='Zone %s' % (
+                    str(zone.zoneinfo.name).rstrip('\x00').rstrip()))
 
-            zones.append(_Zone(self, i))
+            zones.append(zone_cls(self, i))
         return zones
 
 
-class KenwoodTKx180RadioZone(KenwoodTKx180Radio):
+class KenwoodTKx180RadioZone:
     _zone = None
 
     def __init__(self, parent, zone=0):
