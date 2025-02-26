@@ -163,10 +163,15 @@ class EditorMenuItem(wx.MenuItem):
         self.SetAccel(accel)
 
 
-class EditorMenuItemToggle(EditorMenuItem):
+class EditorMenuItemToggleStateless(EditorMenuItem):
+    def __init__(self, cls, callback_name, *a, **k):
+        k['kind'] = wx.ITEM_CHECK
+        super().__init__(cls, callback_name, *a, **k)
+
+
+class EditorMenuItemToggle(EditorMenuItemToggleStateless):
     """An EditorMenuItem that manages boolean/check state in CONF"""
     def __init__(self, cls, callback_name, conf_tuple, *a, **k):
-        k['kind'] = wx.ITEM_CHECK
         super().__init__(cls, callback_name, *a, **k)
         self._conf_key, self._conf_section = conf_tuple
 
