@@ -1,0 +1,3492 @@
+# Romanian translations for CHIRP package.
+# Copyright (C) 2011 Dan Smith <dsmith@danplanet.com>
+# This file is distributed under the same license as the CHIRP package.
+# Romanian Translation by ThatSINEWAVE 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CHIRP\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-02-27 17:16-0800\n"
+"PO-Revision-Date: 2025-02-27 08:00+0200\n"
+"Last-Translator: ThatSINEWAVE\n"
+"Language-Team: Romanian\n"
+"Language: ro_RO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../wxui/query_sources.py:63
+#, python-format
+msgid "%(value)s must be between %(min)i and %(max)i"
+msgstr "%(value)s trebuie să fie între %(min)i și %(max)i"
+
+#: ../wxui/memedit.py:2129
+#, python-format
+msgid "%i Memories and shift all up"
+msgid_plural "%i Memories and shift all up"
+msgstr[0] "%i Memorie și deplasare sus toate"
+msgstr[1] "%i Memorii și deplasare sus toate"
+
+#: ../wxui/memedit.py:2120
+#, python-format
+msgid "%i Memory"
+msgid_plural "%i Memories"
+msgstr[0] "%i Memorie"
+msgstr[1] "%i Memorii"
+
+#: ../wxui/memedit.py:2124
+#, python-format
+msgid "%i Memory and shift block up"
+msgid_plural "%i Memories and shift block up"
+msgstr[0] "%i Memorie și bloc de schimb sus"
+msgstr[1] "%i Memorie și blocuri de schimb sus"
+
+#: ../wxui/main.py:1511
+#, python-format
+msgid "%s has not been saved. Save before closing?"
+msgstr "%s nu a fost salvat. Vrei să salvezi înainte de a închide?"
+
+#: ../wxui/bugreport.py:469
+msgid "(Describe what actually happened instead)"
+msgstr "(Descrie ce s-a întâmplat de fapt)"
+
+#: ../wxui/bugreport.py:467
+msgid "(Describe what you expected to happen)"
+msgstr "(Descrie ce te așteptai să se întâmple)"
+
+#: ../wxui/bugreport.py:465
+msgid "(Describe what you were doing)"
+msgstr "(Descrie ce făceai)"
+
+#: ../wxui/bugreport.py:471
+msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
+msgstr "(A funcționat vreodată acest lucru înainte? Este un radio nou? Funcționează cu software-ul OEM?)"
+
+#: ../wxui/radioinfo.py:50
+msgid "(none)"
+msgstr "(niciunul)"
+
+#: ../wxui/memedit.py:2516
+#, python-format
+msgid "...and %i more"
+msgstr "...și încă %i mai multe"
+
+#: ../drivers/ft4.py:726
+msgid ""
+"1. Connect programming cable to MIC jack.\n"
+"2. Press OK."
+msgstr ""
+"1. Conectează cablul de programare la jack-ul MIC.\n"
+"2. Apasă OK."
+
+#: ../drivers/alinco.py:605 ../drivers/alinco.py:614
+msgid ""
+"1. Ensure your firmware version is 4_10 or higher\n"
+"2. Turn radio off\n"
+"3. Connect your interface cable\n"
+"4. Turn radio on\n"
+"5. Press and release PTT 3 times while holding MONI key\n"
+"6. Supported baud rates: 57600 (default) and 19200\n"
+"   (rotate dial while holding MONI to change)\n"
+"7. Click OK\n"
+msgstr ""
+"1. Asigură-te că versiunea ta de firmware este 4_10 sau mai mare\n"
+"2. Oprește stația\n"
+"3. Conectează cablul de interfață\n"
+"4. Pornește stația\n"
+"5. Apasă și eliberează PTT de 3 ori ținând apăsat butonul MONI\n"
+"6. Vitezele de baud suportate: 57600 (implicit) și 19200\n"
+"   (roteste butonul pentru a schimba, ținând apăsat MONI)\n"
+"7. Apasă OK\n"
+
+#: ../drivers/ft2900.py:1253
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"A/N LOW\" button, turn radio on.\n"
+"4. <b>After clicking OK</b>, press \"SET MHz\" to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul de date.\n"
+"3. În timp ce ții apăsat butonul \"A/N LOW\", pornește stația.\n"
+"4. <b>După ce apesi OK</b>, apasă \"SET MHz\" pentru a trimite imaginea.\n"
+
+#: ../drivers/ft2900.py:1258
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"A/N LOW\" button, turn radio on.\n"
+"4. Press \"MW D/MR\" to receive image.\n"
+"5. Make sure display says \"-WAIT-\" (see note below if not)\n"
+"6. Click OK to dismiss this dialog and start transfer.\n"
+"Note: if you don't see \"-WAIT-\" at step 5, try cycling\n"
+"      power and pressing and holding red \"*L\" button to unlock\n"
+"      radio, then start back at step 1.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul de date.\n"
+"3. În timp ce ții apăsat butonul \"A/N LOW\", pornește stația.\n"
+"4. Apasă \"MW D/MR\" pentru a primi imaginea.\n"
+"5. Asigură-te că pe display apare \"-WAIT-\" (vezi nota de mai jos dacă nu apare)\n"
+"6. Apasă OK pentru a închide acest dialog și a începe transferul.\n"
+"Notă: dacă nu vezi \"-WAIT-\" la pasul 5, încearcă să repornești\n"
+"      stația și să ții apăsat butonul roșu \"*L\" pentru a debloca\n"
+"      stația, apoi începe din nou cu pasul 1.\n"
+
+#: ../drivers/ft8100.py:94
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"F/W\" button, turn radio on.\n"
+"4. <b>After clicking OK</b>, press \"RPT\" to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul de date.\n"
+"3. În timp ce ții apăsat butonul \"F/W\", pornește stația.\n"
+"4. <b>După ce apesi OK</b>, apasă \"RPT\" pentru a trimite imaginea.\n"
+
+#: ../drivers/ft8100.py:99
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"F/W\" button, turn radio on.\n"
+"4. Press \"REV\" to receive image.\n"
+"5. Click OK to start transfer.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul de date.\n"
+"3. În timp ce ții apăsat butonul \"F/W\", pornește stația.\n"
+"4. Apasă \"REV\" pentru a primi imaginea.\n"
+"5. Apasă OK pentru a începe transferul.\n"
+
+#: ../drivers/ft7100.py:1130
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"TONE\" and \"REV\" buttons, turn radio on.\n"
+"4. <b>After clicking OK</b>, press \"TONE\" to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul de date.\n"
+"3. În timp ce ții apăsate butoanele \"TONE\" și \"REV\", pornește stația.\n"
+"4. <b>După ce apesi OK</b>, apasă \"TONE\" pentru a trimite imaginea.\n"
+
+#: ../drivers/ft7100.py:1135
+msgid ""
+"1. Turn Radio off.\n"
+"2. Connect data cable.\n"
+"3. While holding \"TONE\" and \"REV\" buttons, turn radio on.\n"
+"4. Press \"REV\" to receive image.\n"
+"5. Make sure display says \"CLONE RX\" and green led is blinking\n"
+"6. Click OK to start transfer.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul de date.\n"
+"3. În timp ce ții apăsate butoanele \"TONE\" și \"REV\", pornește stația.\n"
+"4. Apasă \"REV\" pentru a primi imaginea.\n"
+"5. Asigură-te că ecranul afișează \"CLONE RX\" și LED-ul verde clipește\n"
+"6. Apasă OK pentru a începe transferul.\n"
+
+#: ../drivers/ft2800.py:206
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable\n"
+"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning it on\n"
+"4. Radio is in clone mode when TX/RX is flashing\n"
+"5. <b>After clicking OK</b>, press the MHz key on the radio to send image.\n"
+"    (\"TX\" will appear on the LCD). \n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul\n"
+"3. Apasă și ține apăsate tastele MHz, Low și D/MR pe stație în timp ce o pornești\n"
+"4. Stația este în modul clonă când TX/RX clipește\n"
+"5. <b>După ce apesi OK</b>, apasă tasta MHz pe stație pentru a trimite imaginea.\n"
+"    (va apărea \"TX\" pe LCD). \n"
+
+#: ../drivers/ft2800.py:216
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable\n"
+"3. Press and hold in the MHz, Low, and D/MR keys on the radio while turning it on\n"
+"4. Radio is in clone mode when TX/RX is flashing\n"
+"5. Press the Low key on the radio (\"RX\" will appear on the LCD).\n"
+"6. Click OK."
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul\n"
+"3. Apasă și ține apăsate tastele MHz, Low și D/MR pe stație în timp ce o pornești\n"
+"4. Stația este în modul clonă când TX/RX clipește\n"
+"5. Apasă tasta Low pe stație (va apărea \"RX\" pe LCD).\n"
+"6. Apasă OK."
+
+#: ../drivers/ft450d.py:430
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. <b>After clicking OK</b> here, press the [C.S.] key to\n"
+"    send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul ACC.\n"
+"3. Apasă și ține apăsate tastele [MODE &lt;] și [MODE &gt;] în timp ce\n"
+"     pornești stația (va apărea \"CLONE MODE\" pe ecran).\n"
+"4. <b>După ce apasăți OK</b> aici, apăsați tasta [C.S.] pentru\n"
+"    a trimite imaginea.\n"
+
+#: ../drivers/ft817.py:281
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. <b>After clicking OK</b>, press the [A] key to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul ACC.\n"
+"3. Apasă și ține apăsate tastele [MODE &lt;] și [MODE &gt;] în timp ce\n"
+"     pornești stația (va apărea \"CLONE MODE\" pe ecran).\n"
+"4. <b>După ce apasăți OK</b>, apăsați tasta [A] pentru a trimite imaginea.\n"
+
+#: ../drivers/ft450d.py:439
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Click OK here.\n"
+"    (\"Receiving\" will appear on the LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul ACC.\n"
+"3. Apasă și ține apăsate tastele [MODE &lt;] și [MODE &gt;] în timp ce\n"
+"     pornești stația (va apărea \"CLONE MODE\" pe ecran).\n"
+"4. Apasă OK aici.\n"
+"    (va apărea \"Receiving\" pe ecranul LCD).\n"
+
+#: ../drivers/ft857.py:450
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Press the [A](RCV) key (\"receiving\" will appear on the LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul ACC.\n"
+"3. Apasă și ține apăsate tastele [MODE &lt;] și [MODE &gt;] în timp ce\n"
+"     pornești stația (va apărea \"CLONE MODE\" pe ecran).\n"
+"4. Apasă tasta [A](RCV) (va apărea \"receiving\" pe ecranul LCD).\n"
+
+#: ../drivers/ft817.py:289
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to ACC jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Press the [C] key (\"RX\" will appear on the LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul ACC.\n"
+"3. Apasă și ține apăsate tastele [MODE &lt;] și [MODE &gt;] în timp ce\n"
+"     pornești stația (va apărea \"CLONE MODE\" pe ecran).\n"
+"4. Apasă tasta [C] (va apărea \"RX\" pe ecranul LCD).\n"
+
+#: ../drivers/ft857.py:441
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to CAT/LINEAR jack.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. <b>After clicking OK</b>,\n"
+"     press the [C](SEND) key to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul CAT/LINEAR.\n"
+"3. Apasă și ține apăsate tastele [MODE &lt;] și [MODE &gt;] în timp ce\n"
+"     pornești stația (va apărea \"CLONE MODE\" pe ecran).\n"
+"4. <b>După ce ai dat click pe OK</b>,\n"
+"     apasă tasta [C](SEND) pentru a trimite imaginea.\n"
+
+#: ../drivers/ft7800.py:857
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the \"left\" [V/M] key while turning the\n"
+"     radio on.\n"
+"4. Rotate the \"right\" DIAL knob to select \"CLONE START\".\n"
+"5. Press the [SET] key. The display will disappear\n"
+"     for a moment, then the \"CLONE\" notation will appear.\n"
+"6. <b>After clicking OK</b>, press the \"left\" [V/M] key to\n"
+"     send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul DATA.\n"
+"3. Apasă și ține apăsată tasta [V/M] \"stânga\" în timp ce pornești\n"
+"     stația.\n"
+"4. Rotește butonul DIAL \"dreapta\" pentru a selecta \"CLONE START\".\n"
+"5. Apasă tasta [SET]. Ecranul va dispărea\n"
+"     pentru o secundă, apoi va apărea notiția \"CLONE\".\n"
+"6. <b>După ce ai dat click pe OK</b>, apasă tasta [V/M] \"stânga\" pentru\n"
+"     a trimite imaginea.\n"
+
+#: ../drivers/ft7800.py:867
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the \"left\" [V/M] key while turning the\n"
+"     radio on.\n"
+"4. Rotate the \"right\" DIAL knob to select \"CLONE START\".\n"
+"5. Press the [SET] key. The display will disappear\n"
+"     for a moment, then the \"CLONE\" notation will appear.\n"
+"6. Press the \"left\" [LOW] key (\"CLONE -RX-\" will appear on\n"
+"     the display).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul DATA.\n"
+"3. Apasă și ține apăsată tasta [V/M] \"stânga\" în timp ce pornești\n"
+"     stația.\n"
+"4. Rotește butonul DIAL \"dreapta\" pentru a selecta \"CLONE START\".\n"
+"5. Apasă tasta [SET]. Ecranul va dispărea\n"
+"     pentru o secundă, apoi va apărea notiția \"CLONE\".\n"
+"6. Apasă tasta [LOW] \"stânga\" (\"CLONE -RX-\" va apărea pe\n"
+"     ecran).\n"
+
+#: ../drivers/vx8.py:584
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the [FW] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul DATA.\n"
+"3. Apasă și ține apăsată tasta [FW] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe ecran).\n"
+"4. <b>După ce ai dat click pe OK</b>, apasă tasta [BAND] pentru a trimite imaginea.\n"
+
+#: ../drivers/vx8.py:591
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the [FW] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul DATA.\n"
+"3. Apasă și ține apăsată tasta [FW] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe ecran).\n"
+"4. Apasă tasta [MODE] (\"-WAIT-\" va apărea pe LCD).\n"
+
+#: ../drivers/ft7800.py:282
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the [MHz(PRI)] key while turning the\n"
+"     radio on.\n"
+"4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
+"5. Press and hold in the [BAND(SET)] key. The display\n"
+"     will disappear for a moment, then the \"CLONE\" notation\n"
+"     will appear.\n"
+"6. Press the [LOW(ACC)] key (\"--RX--\" will appear on the display).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul DATA.\n"
+"3. Apasă și ține apăsată tasta [MHz(PRI)] în timp ce pornești\n"
+"     stația.\n"
+"4. Rotește butonul DIAL pentru a selecta \"F-7 CLONE\".\n"
+"5. Apasă și ține apăsată tasta [BAND(SET)]. Ecranul\n"
+"     va dispărea pentru o clipă, apoi va apărea notiunea \"CLONE\".\n"
+"6. Apasă tasta [LOW(ACC)] (\"--RX--\" va apărea pe ecran).\n"
+
+#: ../drivers/ft7800.py:271
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA jack.\n"
+"3. Press and hold in the [MHz(PRI)] key while turning the\n"
+" radio on.\n"
+"4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
+"5. Press and hold in the [BAND(SET)] key. The display\n"
+" will disappear for a moment, then the \"CLONE\" notation\n"
+" will appear.\n"
+"6. <b>After clicking OK</b>, press the [V/M(MW)] key to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul DATA.\n"
+"3. Apasă și ține apăsată tasta [MHz(PRI)] în timp ce pornești\n"
+"     stația.\n"
+"4. Rotește butonul DIAL pentru a selecta \"F-7 CLONE\".\n"
+"5. Apasă și ține apăsată tasta [BAND(SET)]. Ecranul\n"
+"     va dispărea pentru o clipă, apoi va apărea notiunea \"CLONE\".\n"
+"6. <b>După ce dai click pe OK</b>, apasă tasta [V/M(MW)] pentru a trimite imaginea.\n"
+
+#: ../drivers/ft2d.py:90
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold [DISP] key while turning on radio\n"
+"     (\"CLONE\" will appear on radio LCD).\n"
+"4. <b>After clicking OK here in Chirp</b>,\n"
+"     press the [Send] screen button.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la terminalul DATA.\n"
+"3. Apasă și ține apăsată tasta [DISP] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe ecranul LCD al stației).\n"
+"4. <b>După ce dai click pe OK aici în Chirp</b>,\n"
+"     apasă butonul [Send] de pe ecran.\n"
+
+#: ../drivers/ft2d.py:97
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold in [DISP] key while turning on radio\n"
+"     (\"CLONE\" will appear on radio LCD).\n"
+"4. Press [RECEIVE] screen button\n"
+"     (\"-WAIT-\" will appear on radio LCD).\n"
+"5. Finally, press OK button below.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la terminalul DATA.\n"
+"3. Apasă și ține apăsată tasta [DISP] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe ecranul LCD al stației).\n"
+"4. Apasă butonul [RECEIVE] de pe ecran\n"
+"     (\"-WAIT-\" va apărea pe ecranul LCD al stației).\n"
+"5. În cele din urmă, apasă butonul OK de mai jos.\n"
+
+#: ../drivers/ft1d.py:891
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold in the [F] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la terminalul DATA.\n"
+"3. Apasă și ține apăsată tasta [F] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe ecran).\n"
+"4. <b>După ce dai click pe OK</b>, apasă tasta [BAND] pentru a trimite imaginea.\n"
+
+#: ../drivers/ft1d.py:898
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold in the [F] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [Dx] key (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la terminalul DATA.\n"
+"3. Apasă și ține apăsată tasta [F] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe ecran).\n"
+"4. Apasă tasta [Dx] (\"-WAIT-\" va apărea pe ecran).\n"
+
+#: ../drivers/ftm3200d.py:84
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [REV(DW)] key\n"
+"     to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la terminalul DATA.\n"
+"3. Apasă și ține apăsată tasta [MHz(SETUP)] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe ecran).\n"
+"4. <b>După ce dai click pe OK</b>, apasă tasta [REV(DW)]\n"
+"     pentru a trimite imaginea.\n"
+
+#: ../drivers/ftm3200d.py:92
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. Press the [MHz(SETUP)] key\n"
+"     (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la terminalul DATA.\n"
+"3. Apasă și ține apăsată tasta [MHz(SETUP)] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe ecran).\n"
+"4. Apasă tasta [MHz(SETUP)]\n"
+"     (\"-WAIT-\" va apărea pe LCD).\n"
+
+#: ../drivers/ftm7250d.py:84
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC Jack.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [GM(AMS)] key\n"
+"     to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul MIC.\n"
+"3. Apasă și ține apăsată tasta [MHz(SETUP)] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe ecran).\n"
+"4. <b>După ce apesi OK</b>, apasă tasta [GM(AMS)]\n"
+"     pentru a trimite imaginea.\n"
+
+#: ../drivers/ftm7250d.py:92
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC Jack.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. Press the [MHz(SETUP)] key\n"
+"     (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul MIC.\n"
+"3. Apasă și ține apăsată tasta [MHz(SETUP)] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe ecran).\n"
+"4. Apasă tasta [MHz(SETUP)]\n"
+"     (\"-WAIT-\" va apărea pe LCD).\n"
+
+#: ../drivers/vx5.py:317
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/EAR jack.\n"
+"3. Press and hold in the [F/W] key while turning the radio on\n"
+"    (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [VFO(DW)SC] key to receive\n"
+"    the image from the radio.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul MIC/EAR.\n"
+"3. Apasă și ține apăsată tasta [F/W] în timp ce pornești stația\n"
+"    (\"CLONE\" va apărea pe ecran).\n"
+"4. <b>După ce apesi OK</b>, apasă tasta [VFO(DW)SC] pentru a primi\n"
+"    imaginea de la stație.\n"
+
+#: ../drivers/vx5.py:325
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/EAR jack.\n"
+"3. Press and hold in the [F/W] key while turning the radio on\n"
+"    (\"CLONE\" will appear on the display).\n"
+"4. Press the [MR(SKP)SC] key (\"CLONE WAIT\" will appear\n"
+"    on the LCD).\n"
+"5. Click OK to send image to radio.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul MIC/EAR.\n"
+"3. Apasă și ține apăsată tasta [F/W] în timp ce pornești stația\n"
+"    (\"CLONE\" va apărea pe ecran).\n"
+"4. Apasă tasta [MR(SKP)SC] (\"CLONE WAIT\" va apărea\n"
+"    pe LCD).\n"
+"5. Apasă OK pentru a trimite imaginea la stație.\n"
+
+#: ../drivers/ft50.py:195
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold [PTT] &amp; Knob while turning the\n"
+"     radio on.\n"
+"4. <b>After clicking OK</b>, press the [PTT] switch to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul MIC/SP.\n"
+"3. Apasă și ține apăsate [PTT] și Butonul în timp ce pornești stația.\n"
+"4. <b>După ce apeși OK</b>, apasă tasta [PTT] pentru a trimite imaginea.\n"
+
+#: ../drivers/ft50.py:202
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold [PTT] &amp; Knob while turning the\n"
+"     radio on.\n"
+"4. Press the [MONI] switch (\"WAIT\" will appear on the LCD).\n"
+"5. Press OK.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul MIC/SP.\n"
+"3. Apasă și ține apăsate [PTT] și Butonul în timp ce pornești stația.\n"
+"4. Apasă tasta [MONI] (\"WAIT\" va apărea pe display).\n"
+"5. Apasă OK.\n"
+
+#: ../drivers/vx6.py:370 ../drivers/vx3.py:373
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [F/W] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul MIC/SP.\n"
+"3. Apasă și ține apăsată tasta [F/W] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe display).\n"
+"4. <b>După ce dai click pe OK</b>, apasă tasta [BAND] pentru a trimite imaginea.\n"
+
+#: ../drivers/vx6.py:377 ../drivers/vx3.py:380
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [F/W] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [V/M] key (\"-WAIT-\" will appear on the LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul MIC/SP.\n"
+"3. Apasă și ține apăsată tasta [F/W] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe display).\n"
+"4. Apasă tasta [V/M] (\"-WAIT-\" va apărea pe LCD).\n"
+
+#: ../drivers/vx7.py:192
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [MON-F] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul MIC/SP.\n"
+"3. Apasă și ține apăsată tasta [MON-F] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe display).\n"
+"4. <b>După ce apesi OK</b>, apasă tasta [BAND] pentru a trimite imaginea.\n"
+
+#: ../drivers/vx7.py:200
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [MON-F] key while turning the radio on\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [V/M] key (\"CLONE WAIT\" will appear on the LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul MIC/SP.\n"
+"3. Apasă și ține apăsată tasta [MON-F] în timp ce pornești stația\n"
+"     (\"CLONE\" va apărea pe display).\n"
+"4. Apasă tasta [V/M] (\"CLONE WAIT\" va apărea pe LCD).\n"
+
+#: ../drivers/ft60.py:354
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [MONI] switch while turning the\n"
+"     radio on.\n"
+"4. Rotate the DIAL job to select \"F8 CLONE\".\n"
+"5. Press the [F/W] key momentarily.\n"
+"6. <b>After clicking OK</b>, hold the [PTT] switch\n"
+"     for one second to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul MIC/SP.\n"
+"3. Apasă și ține apăsată tasta [MONI] în timp ce pornești stația.\n"
+"4. Rotește butonul DIAL pentru a selecta \"F8 CLONE\".\n"
+"5. Apasă scurt tasta [F/W].\n"
+"6. <b>După ce ai dat click pe OK</b>, ține apăsată tasta [PTT]\n"
+"     timp de un secund pentru a trimite imaginea.\n"
+
+#: ../drivers/ft60.py:363
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [MONI] switch while turning the\n"
+"     radio on.\n"
+"4. Rotate the DIAL job to select \"F8 CLONE\".\n"
+"5. Press the [F/W] key momentarily.\n"
+"6. Press the [MONI] switch (\"--RX--\" will appear on the LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul MIC/SP.\n"
+"3. Apasă și ține apăsată tasta [MONI] în timp ce pornești stația.\n"
+"4. Rotește butonul DIAL pentru a selecta \"F8 CLONE\".\n"
+"5. Apasă scurt tasta [F/W].\n"
+"6. Apasă tasta [MONI] (\"--RX--\" va apărea pe LCD).\n"
+
+#: ../drivers/vx170.py:105
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold in the [moni] key while turning the radio on.\n"
+"4. Select CLONE in menu, then press F. Radio restarts in clone mode.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"5. <b>After clicking OK</b>, briefly hold [PTT] key to send image.\n"
+"    (\"-TX-\" will appear on the LCD). \n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul MIC/SP.\n"
+"3. Apasă și ține apăsată tasta [moni] în timp ce pornești stația.\n"
+"4. Selectează CLONE în meniu, apoi apasă F. Stația se va reporni în modul clone.\n"
+"     (\"CLONE\" va apărea pe display).\n"
+"5. <b>După ce apesi OK</b>, ține scurt apăsată tasta [PTT] pentru a trimite imaginea.\n"
+"    (\"-TX-\" va apărea pe LCD).\n"
+
+#: ../drivers/ft1802.py:96
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic jack.\n"
+"3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
+"4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul mic.\n"
+"3. Apasă și ține apăsată tasta [LOW(A/N)] în timp ce pornești stația.\n"
+"4. <b>După ce apesi OK</b>, apasă tasta [MHz(SET)] pentru a trimite imaginea.\n"
+
+#: ../drivers/ft1802.py:103
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic jack.\n"
+"3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
+"4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul mic.\n"
+"3. Apasă și ține apăsată tasta [LOW(A/N)] în timp ce pornești stația.\n"
+"4. Apasă tasta [D/MR(MW)] (\"--WAIT--\" va apărea pe LCD).\n"
+
+#: ../drivers/ft1500m.py:96
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic jack.\n"
+"3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
+"   while turning the radio on.\n"
+"4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul mic.\n"
+"3. Apasă și ține apăsate tastele [MHz], [LOW], și [D/MR]\n"
+"   în timp ce pornești stația.\n"
+"4. <b>După ce apesi OK</b>, apasă tasta [MHz(SET)] pentru a trimite imaginea.\n"
+
+#: ../drivers/ft1500m.py:103
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic jack.\n"
+"3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
+"   while turning the radio on.\n"
+"4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la jack-ul mic.\n"
+"3. Apasă și ține apăsate tastele [MHz], [LOW], și [D/MR]\n"
+"   în timp ce pornești stația.\n"
+"4. Apasă tasta [D/MR(MW)] (\"--WAIT--\" va apărea pe LCD).\n"
+
+#: ../drivers/uv5r.py:834
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Turn radio on (volume may need to be set at 100%).\n"
+"5. Ensure that the radio is tuned to channel with no activity.\n"
+"6. Click OK to download image from device.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la conectorul mic/spkr.\n"
+"3. Asigură-te că cablul este bine conectat.\n"
+"4. Pornește stația (volumul poate trebui setat la 100%).\n"
+"5. Asigură-te că stația este setată pe un canal fără activitate.\n"
+"6. Apasă OK pentru a descărca imaginea din dispozitiv.\n"
+
+#: ../drivers/uv5r.py:842
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Turn radio on (volume may need to be set at 100%).\n"
+"5. Ensure that the radio is tuned to channel with no activity.\n"
+"6. Click OK to upload image to device.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la conectorul mic/spkr.\n"
+"3. Asigură-te că cablul este bine conectat.\n"
+"4. Pornește stația (volumul poate trebui setat la 100%).\n"
+"5. Asigură-te că stația este setată pe un canal fără activitate.\n"
+"6. Apasă OK pentru a încărca imaginea în dispozitiv.\n"
+
+#: ../drivers/uvb5.py:288 ../drivers/wouxun.py:213 ../drivers/tg_uv2p.py:232
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Turn radio on.\n"
+"5. Ensure that the radio is tuned to channel with no activity.\n"
+"6. Click OK to download image from device.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la conectorul mic/spkr.\n"
+"3. Asigură-te că cablul este bine conectat.\n"
+"4. Pornește stația.\n"
+"5. Asigură-te că stația este setată pe un canal fără activitate.\n"
+"6. Apasă OK pentru a descărca imaginea din dispozitiv.\n"
+
+#: ../drivers/uvb5.py:296 ../drivers/wouxun.py:221 ../drivers/tg_uv2p.py:240
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Turn radio on.\n"
+"5. Ensure that the radio is tuned to channel with no activity.\n"
+"6. Click OK to upload image to device.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul la conectorul mic/spkr.\n"
+"3. Asigură-te că cablul este bine conectat.\n"
+"4. Pornește stația.\n"
+"5. Asigură-te că stația este setată pe un canal fără activitate.\n"
+"6. Apasă OK pentru a încărca imaginea în dispozitiv.\n"
+
+#: ../drivers/yaesu_clone.py:241
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect data cable.\n"
+"3. Prepare radio for clone.\n"
+"4. <b>After clicking OK</b>, press the key to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul de date.\n"
+"3. Pregătește stația pentru clonare.\n"
+"4. <b>După ce apesi OK</b>, apasă tasta pentru a trimite imaginea.\n"
+
+#: ../drivers/yaesu_clone.py:246
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect data cable.\n"
+"3. Prepare radio for clone.\n"
+"4. Press the key to receive the image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează cablul de date.\n"
+"3. Pregătește stația pentru clonare.\n"
+"4. Apasă tasta pentru a primi imaginea.\n"
+
+#: ../drivers/ft90.py:194
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect mic and hold [ACC] on mic while powering on.\n"
+"    (\"CLONE\" will appear on the display)\n"
+"3. Replace mic with PC programming cable.\n"
+"4. <b>After clicking OK</b>, press the [SET] key to send image.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează microfonul și ține apăsat [ACC] pe microfon în timp ce pornești stația.\n"
+"    (\"CLONE\" va apărea pe ecran)\n"
+"3. Înlocuiește microfonul cu cablul de programare PC.\n"
+"4. <b>După ce dai clic pe OK</b>, apasă tasta [SET] pentru a trimite imaginea.\n"
+
+#: ../drivers/ft90.py:201
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect mic and hold [ACC] on mic while powering on.\n"
+"    (\"CLONE\" will appear on the display)\n"
+"3. Replace mic with PC programming cable.\n"
+"4. Press the [DISP/SS] key\n"
+"    (\"R\" will appear on the lower left of LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Conectează microfonul și ține apăsat [ACC] pe microfon în timp ce pornești stația.\n"
+"    (\"CLONE\" va apărea pe ecran)\n"
+"3. Înlocuiește microfonul cu cablul de programare PC.\n"
+"4. Apasă tasta [DISP/SS]\n"
+"    (\"R\" va apărea în colțul din stânga jos al LCD-ului).\n"
+
+#: ../drivers/bj9900.py:102
+msgid ""
+"1. Turn radio off.\n"
+"2. Remove front head.\n"
+"3. Connect data cable to radio, use the same connector where\n"
+"     head was connected to, <b>not the mic connector</b>.\n"
+"4. Click OK.\n"
+msgstr ""
+"1. Oprește stația.\n"
+"2. Îndepărtează capul frontal.\n"
+"3. Conectează cablul de date la stație, folosind același conector unde\n"
+"     era conectat capul, <b>nu conectorul de microfon</b>.\n"
+"4. Apasă OK.\n"
+
+#: ../drivers/vx170.py:116
+msgid ""
+"1. Turn radio off.\n"
+"3. Press and hold in the [moni] key while turning the radio on.\n"
+"4. Select CLONE in menu, then press F. Radio restarts in clone mode.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"5. Press the [moni] key (\"-RX-\" will appear on the LCD).\n"
+msgstr ""
+"1. Oprește stația.\n"
+"3. Apasă și ține apăsată tasta [moni] în timp ce pornești stația.\n"
+"4. Selectează CLONE din meniu, apoi apasă F. Stația se repornește în modul clonare.\n"
+"     (\"CLONE\" va apărea pe display).\n"
+"5. Apasă tasta [moni] (\"-RX-\" va apărea pe ecranul LCD).\n"
+
+#: ../drivers/ft70.py:573
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Unclip battery.\n"
+"4. Press and hold in the [AMS] key and power key while clipping \n"
+" in back battery the (\"ADMS\" will appear on the display).\n"
+"5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
+"<b>Then click OK</b>"
+msgstr ""
+"1. Pornește stația.\n"
+"2. Conectează cablul la terminalul DATA.\n"
+"3. Scoate bateria.\n"
+"4. Apasă și ține apăsate tastele [AMS] și tasta de pornire în timp ce atașezi bateria din spate (\"ADMS\" va apărea pe display).\n"
+"5. Apasă tasta [MODE] (\"-WAIT-\" va apărea pe ecranul LCD).\n"
+"<b>Apoi apasă OK</b>"
+
+#: ../drivers/ft70.py:565
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to DATA terminal.\n"
+"3. Unclip battery.\n"
+"4. Press and hold in the [AMS] key and power key while clipping \n"
+" in back battery the(\"ADMS\" will appear on the display).\n"
+"5. <b>After clicking OK</b>, press the [BAND] key.\n"
+msgstr ""
+"1. Pornește stația.\n"
+"2. Conectează cablul la terminalul DATA.\n"
+"3. Scoate bateria.\n"
+"4. Apasă și ține apăsate tastele [AMS] și tasta de pornire în timp ce atașezi bateria din spate (\"ADMS\" va apărea pe display).\n"
+"5. <b>După ce apesi OK</b>, apasă tasta [BAND].\n"
+
+#: ../drivers/uvk5.py:656
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Click OK to download image from device.\n"
+"\n"
+"It will may not work if you turn on the radio with the cable already attached\n"
+msgstr ""
+"1. Pornește stația.\n"
+"2. Conectează cablul la conectorul mic/spkr.\n"
+"3. Asigură-te că conectorul este bine conectat.\n"
+"4. Apasă OK pentru a descărca imaginea din dispozitiv.\n"
+"\n"
+"Poate să nu funcționeze dacă pornești stația cu cablul deja conectat.\n"
+
+#: ../drivers/uvk5.py:663
+msgid ""
+"1. Turn radio on.\n"
+"2. Connect cable to mic/spkr connector.\n"
+"3. Make sure connector is firmly connected.\n"
+"4. Click OK to upload the image to device.\n"
+"\n"
+"It will may not work if you turn on the radio with the cable already attached"
+msgstr ""
+"1. Pornește stația.\n"
+"2. Conectează cablul la conectorul mic/spkr.\n"
+"3. Asigură-te că conectorul este bine conectat.\n"
+"4. Apasă OK pentru a încărca imaginea în dispozitiv.\n"
+"\n"
+"Poate să nu funcționeze dacă pornești stația cu cablul deja conectat."
+
+#: ../wxui/main.py:2088
+msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
+msgstr "O nouă versiune CHIRP este disponibilă. Vă rugăm să vizitați site-ul cât mai curând posibil pentru a o descărca!"
+
+#: ../drivers/ga510.py:1068
+msgid "AM mode does not allow duplex or tone"
+msgstr "Modul AM nu permite duplexul sau tonul"
+
+#: ../wxui/main.py:964
+msgid "About"
+msgstr "Despre"
+
+#: ../wxui/main.py:1873
+msgid "About CHIRP"
+msgstr "Despre CHIRP"
+
+#: ../wxui/main.py:1923
+msgid "Agree"
+msgstr "Sunt de acord"
+
+#: ../wxui/query_sources.py:451
+msgid "All"
+msgstr "Toate"
+
+#: ../wxui/main.py:1340
+msgid "All Files"
+msgstr "Toate fișierele"
+
+#: ../wxui/main.py:1351
+msgid "All supported formats|"
+msgstr "Toate formatele acceptate|"
+
+#: ../wxui/clone.py:614
+msgid "Always start with recent list"
+msgstr "Începe întotdeauna cu lista recentă"
+
+#: ../wxui/query_sources.py:353 ../wxui/query_sources.py:443
+msgid "Amateur"
+msgstr "Amator"
+
+#: ../wxui/bugreport.py:328 ../wxui/bugreport.py:437 ../wxui/common.py:624
+#: ../wxui/common.py:651
+msgid "An error has occurred"
+msgstr "A apărut o eroare"
+
+#: ../wxui/clone.py:143
+msgid "Applying settings"
+msgstr "Aplicarea setărilor"
+
+#: ../wxui/main.py:1608
+msgid "Automatic from system"
+msgstr "Automat din sistem"
+
+#: ../wxui/developer.py:640
+msgid "Available modules"
+msgstr "Module disponibile"
+
+#: ../wxui/main.py:2024
+msgid "Bandplan"
+msgstr "Plan de benzi"
+
+#: ../wxui/query_sources.py:479 ../wxui/query_sources.py:698
+#: ../wxui/query_sources.py:856
+msgid "Bands"
+msgstr "Benzi"
+
+#: ../wxui/main.py:210
+msgid "Banks"
+msgstr "Bănci"
+
+#: ../wxui/developer.py:281
+msgid "Bin"
+msgstr "Bin"
+
+#: ../wxui/main.py:221
+msgid "Browser"
+msgstr "Browser"
+
+#: ../wxui/bugreport.py:447
+#, python-format
+msgid "Bug number %s is closed"
+msgstr "Numărul erorii %s este închis"
+
+#: ../wxui/bugreport.py:436
+msgid "Bug number not found"
+msgstr "Numărul erorii nu a fost găsit"
+
+#: ../wxui/bugreport.py:413
+msgid "Bug number:"
+msgstr "Numărul erorii:"
+
+#: ../wxui/bugreport.py:368
+msgid "Bug subject:"
+msgstr "Subiectul erorii:"
+
+#: ../wxui/developer.py:494
+msgid "Building Radio Browser"
+msgstr "Se construiește browserul radio"
+
+#: ../wxui/main.py:1637
+msgid "CHIRP must be restarted for the new selection to take effect"
+msgstr "CHIRP trebuie repornit pentru ca noua selecție să aibă efect."
+
+#: ../wxui/query_sources.py:177
+#, python-format
+msgid "Cached results can only be included for a proximity query with Latitude, Longitude, and Distance set. Please uncheck \"%s\""
+msgstr "Rezultatele cache pot fi incluse doar pentru o interogare de proximitate cu Lățime, Lungime și Distanță setate. Vă rugăm să debifați \"%s\""
+
+#: ../wxui/query_sources.py:1065
+msgid "Canada"
+msgstr "Canada"
+
+#: ../wxui/common.py:495
+msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
+msgstr "Schimbarea acestei setări necesită reîmprospătarea setărilor din imagine, ceea ce va avea loc acum."
+
+#: ../wxui/memedit.py:1773
+#, python-format
+msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
+msgstr "Canalele cu TX și RX echivalente %s sunt reprezentate de modul de ton \"%s\""
+
+#: ../wxui/main.py:1339
+msgid "Chirp Image Files"
+msgstr "Fișiere Imagine Chirp"
+
+#: ../wxui/memedit.py:460
+msgid "Choice Required"
+msgstr "Alegere necesară"
+
+#: ../wxui/memedit.py:1752
+#, python-format
+msgid "Choose %s DTCS Code"
+msgstr "Alege Codul DTCS %s"
+
+#: ../wxui/memedit.py:1749
+#, python-format
+msgid "Choose %s Tone"
+msgstr "Alege Tonul %s"
+
+#: ../wxui/memedit.py:1783
+msgid "Choose Cross Mode"
+msgstr "Alege Modul Cross"
+
+#: ../wxui/main.py:1179
+msgid "Choose Diff Target"
+msgstr "Alege Ținta Diferenței"
+
+#: ../wxui/clone.py:595
+msgid "Choose a recent model"
+msgstr "Alege un model recent"
+
+#: ../wxui/memedit.py:1813
+msgid "Choose duplex"
+msgstr "Alege duplex"
+
+#: ../wxui/developer.py:639
+#, python-format
+msgid "Choose the module to load from issue %i:"
+msgstr "Alege modulul de încărcat din problema %i:"
+
+#: ../wxui/query_sources.py:561
+msgid "City"
+msgstr "Oraș"
+
+#: ../wxui/main.py:1893
+msgid "Click here for full license text"
+msgstr "Click aici pentru textul complet al licenței"
+
+#: ../drivers/ts590.py:671
+msgid ""
+"Click on the \"Special Channels\" toggle-button of the memory\n"
+"editor to see/set the EXT channels. P-VFO channels 100-109\n"
+"are considered Settings.\n"
+"Only a subset of the over 200 available radio settings\n"
+"are supported in this release.\n"
+"Ignore the beeps from the radio on upload and download.\n"
+msgstr ""
+"Apasă pe butonul de comutare \"Canale Speciale\" din editorul\n"
+"de memorii pentru a vizualiza/seta canalele EXT. Canalele P-VFO 100-109\n"
+"se consideră Setări.\n"
+"Doar un subset din cele peste 200 de setări disponibile\n"
+"pentru stație sunt acceptate în această versiune.\n"
+"Ignorează sunetele de la stație la încărcare și descărcare.\n"
+
+#: ../drivers/ft817.py:358
+msgid "Clone completed, checking for spurious bytes"
+msgstr "Clonare finalizată, verificare pentru octeți spurii"
+
+#: ../wxui/common.py:123
+msgid "Cloning"
+msgstr "Clonare"
+
+#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft4.py:317
+#: ../drivers/ft817.py:341
+msgid "Cloning from radio"
+msgstr "Clonare din stație"
+
+#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft4.py:318
+#: ../drivers/ft817.py:379
+msgid "Cloning to radio"
+msgstr "Clonare către stație"
+
+#: ../wxui/main.py:1056 ../wxui/main.py:1924
+msgid "Close"
+msgstr "Închide"
+
+#: ../wxui/memquery.py:151
+msgid "Close String"
+msgstr "Închide șirul"
+
+#: ../wxui/main.py:1057
+msgid "Close file"
+msgstr "Închide fișierul"
+
+#: ../wxui/memquery.py:209
+msgid "Close string value with double-quote (\")"
+msgstr "Închide valoarea șirului cu ghilimea (\")"
+
+#: ../wxui/memedit.py:2188
+#, python-format
+msgid "Cluster %i memory"
+msgid_plural "Cluster %i memories"
+msgstr[0] "Memorie cluster %i"
+msgstr[1] "Memorii cluster %i"
+
+#: ../wxui/memedit.py:659
+msgid "Comment"
+msgstr "Comentariu"
+
+#: ../wxui/clone.py:316
+msgid "Communicate with radio"
+msgstr "Comunică cu stația"
+
+#: ../wxui/clone.py:151
+msgid "Complete"
+msgstr "Complet"
+
+#: ../wxui/memedit.py:141
+msgid "Complex or non-standard tone squelch mode (starts the tone mode selection wizard)"
+msgstr "Mod de squelch cu ton complex sau non-standard (pornește asistentul de selecție a modului de ton)"
+
+#: ../drivers/tmd710.py:185 ../drivers/tmd710.py:188
+msgid ""
+"Connect your interface cable to the PC Port on the\n"
+"back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
+msgstr ""
+"Conectează cablul de interfață la portul PC de pe\n"
+"spatele unității 'TX/RX'. NU la portul COM de pe cap.\n"
+
+#: ../wxui/query_sources.py:406
+msgid "Convert to FM"
+msgstr "Convertește la FM"
+
+#: ../wxui/memedit.py:2105
+msgid "Copy"
+msgstr "Copiază"
+
+#: ../wxui/query_sources.py:351 ../wxui/query_sources.py:567
+#: ../wxui/query_sources.py:657
+msgid "Country"
+msgstr "Țară"
+
+#: ../wxui/memedit.py:642
+msgid "Cross Mode"
+msgstr "Mod Cross"
+
+#: ../wxui/clone.py:556
+msgid "Custom Port"
+msgstr "Port personalizat"
+
+#: ../wxui/clone.py:41
+msgid "Custom..."
+msgstr "Personalizat..."
+
+#: ../wxui/memedit.py:2101
+msgid "Cut"
+msgstr "Taie"
+
+#: ../wxui/memedit.py:2360
+#, python-format
+msgid "Cut %i memories"
+msgstr "Taie %i memorii"
+
+#: ../wxui/memedit.py:573
+msgid "DTCS"
+msgstr "DTCS"
+
+#: ../wxui/memedit.py:619
+msgid ""
+"DTCS\n"
+"Polarity"
+msgstr ""
+"Polaritate\n"
+"DTCS"
+
+#: ../drivers/uvk5.py:879
+msgid "DTMF decode"
+msgstr "Decodare DTMF"
+
+#: ../wxui/memedit.py:2808
+msgid "DV Memory"
+msgstr "Memorie DV"
+
+#: ../wxui/main.py:1945
+msgid "Danger Ahead"
+msgstr "Pericol în față"
+
+#: ../wxui/developer.py:280
+msgid "Dec"
+msgstr "Dec"
+
+#: ../wxui/memedit.py:2114
+msgid "Delete"
+msgstr "Șterge"
+
+#: ../wxui/memedit.py:1984
+msgid "Delete memories"
+msgstr "Șterge memorii"
+
+#: ../wxui/bugreport.py:527
+msgid "Detailed information"
+msgstr "Informații detaliate"
+
+#: ../wxui/main.py:969
+msgid "Developer Mode"
+msgstr "Mod dezvoltator"
+
+#: ../wxui/main.py:1951
+#, python-format
+msgid "Developer state is now %s. CHIRP must be restarted to take effect"
+msgstr "Starea dezvoltatorului este acum %s. CHIRP trebuie repornit pentru a intra în vigoare"
+
+#: ../wxui/memedit.py:2225 ../wxui/developer.py:97
+msgid "Diff Raw Memories"
+msgstr "Diferență memorii brute"
+
+#: ../wxui/memedit.py:2233
+msgid "Diff against another editor"
+msgstr "Diferență față de un alt editor"
+
+#: ../wxui/memedit.py:2725
+msgid "Digital Code"
+msgstr "Cod digital"
+
+#: ../wxui/query_sources.py:410
+msgid "Digital Modes"
+msgstr "Moduri digitale"
+
+#: ../wxui/main.py:1963
+msgid "Disable reporting"
+msgstr "Dezactivează raportarea"
+
+#: ../wxui/memedit.py:549
+msgid "Disabled"
+msgstr "Dezactivat"
+
+#: ../wxui/query_sources.py:103 ../wxui/query_sources.py:382
+#: ../wxui/query_sources.py:680 ../wxui/query_sources.py:838
+msgid "Distance"
+msgstr "Distanță"
+
+#: ../wxui/clone.py:204
+#, python-format
+msgid "Do not prompt again for %s"
+msgstr "Nu întreba din nou pentru %s"
+
+#: ../wxui/clone.py:201
+msgid "Do you accept the risk?"
+msgstr "Acceptați riscul?"
+
+#: ../wxui/bankedit.py:190
+msgid "Double-click to change bank name"
+msgstr "Dublu clic pentru a schimba numele băncii"
+
+#: ../wxui/main.py:1058
+msgid "Download"
+msgstr "Descarcă"
+
+#: ../wxui/main.py:1059
+msgid "Download from radio"
+msgstr "Descarcă din stație"
+
+#: ../wxui/main.py:866
+msgid "Download from radio..."
+msgstr "Descarcă din stație..."
+
+#: ../wxui/clone.py:795
+msgid "Download instructions"
+msgstr "Instrucțiuni pentru descărcare"
+
+#: ../wxui/radioinfo.py:62
+msgid "Driver"
+msgstr "Driver"
+
+#: ../drivers/uvk5.py:1297
+msgid "Driver information"
+msgstr "Informații despre driver"
+
+#: ../wxui/main.py:572
+msgid "Driver messages"
+msgstr "Mesaje ale driver-ului"
+
+#: ../wxui/query_sources.py:408
+msgid "Dual-mode digital repeaters that support analog will be shown as FM"
+msgstr "Repetoarele digitale cu mod dublu care suportă analog vor fi afișate ca FM"
+
+#: ../wxui/memedit.py:512
+msgid "Duplex"
+msgstr "Duplex"
+
+#: ../wxui/memedit.py:2255
+#, python-format
+msgid "Edit %i memories"
+msgstr "Editați %i memorii"
+
+#: ../wxui/memedit.py:2755
+#, python-format
+msgid "Edit details for %i memories"
+msgstr "Editați detaliile pentru %i memorii"
+
+#: ../wxui/memedit.py:2753
+#, python-format
+msgid "Edit details for memory %i"
+msgstr "Editați detaliile pentru memoria %i"
+
+#: ../wxui/main.py:913
+msgid "Enable Automatic Edits"
+msgstr "Activați modificările automate"
+
+#: ../wxui/memedit.py:549
+msgid "Enabled"
+msgstr "Activat"
+
+#: ../wxui/memedit.py:371
+msgid "Enter Frequency"
+msgstr "Introduceți frecvența"
+
+#: ../wxui/memedit.py:1800
+msgid "Enter Offset (MHz)"
+msgstr "Introduceți offset-ul (MHz)"
+
+#: ../wxui/memedit.py:1792
+msgid "Enter TX Frequency (MHz)"
+msgstr "Introduceți frecvența TX (MHz)"
+
+#: ../wxui/bankedit.py:203
+#, python-format
+msgid "Enter a new name for bank %s:"
+msgstr "Introduceți un nume nou pentru banca %s:"
+
+#: ../wxui/clone.py:555
+msgid "Enter custom port:"
+msgstr "Introduceți portul personalizat:"
+
+#: ../wxui/bugreport.py:461
+msgid "Enter details about this update. Be descriptive about what you were doing, what you expected to happen, and what actually happened."
+msgstr "Introduceți detalii despre această actualizare. Fii descriptiv despre ce făceați, ce vă așteptați să se întâmple și ce s-a întâmplat de fapt."
+
+#: ../wxui/bugreport.py:354
+msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem."
+msgstr "Introduceți informații despre bug, inclusiv un subiect scurt, dar semnificativ, și informații despre modelul stației (dacă este cazul). În pasul următor veți avea ocazia să adăugați mai multe detalii despre problemă."
+
+#: ../wxui/bugreport.py:480
+msgid "Enter information to add to the bug here"
+msgstr "Introduceți informațiile de adăugat la bug aici"
+
+#: ../wxui/bugreport.py:404
+msgid "Enter the bug number that should be updated"
+msgstr "Introduceți numărul bug-ului care trebuie actualizat"
+
+#: ../wxui/bugreport.py:232
+msgid "Enter your username and password for chirpmyradio.com. If you do not have an account click below to create one before proceeding."
+msgstr "Introduceți numele de utilizator și parola pentru chirpmyradio.com. Dacă nu aveți un cont, faceți clic mai jos pentru a crea unul înainte de a continua."
+
+#: ../wxui/common.py:338
+#, python-format
+msgid "Erased memory %s"
+msgstr "Memoria ștearsă %s"
+
+#: ../wxui/memquery.py:336
+msgid "Error applying filter"
+msgstr "Eroare la aplicarea filtrului"
+
+#: ../wxui/settingsedit.py:156
+msgid "Error applying settings"
+msgstr "Eroare la aplicarea setărilor"
+
+#: ../wxui/clone.py:694
+msgid "Error communicating with radio"
+msgstr "Eroare la comunicarea cu stația"
+
+#: ../wxui/memquery.py:236
+msgid "Example: \"foo\""
+msgstr "Exemplu: \"foo\""
+
+#: ../wxui/memquery.py:244
+msgid "Example: ( expression )"
+msgstr "Exemplu: ( expresie )"
+
+#: ../wxui/memquery.py:238
+msgid "Example: 123"
+msgstr "Exemplu: 123"
+
+#: ../wxui/memquery.py:240
+msgid "Example: 146.52"
+msgstr "Exemplu: 146.52"
+
+#: ../wxui/memquery.py:242
+msgid "Example: AND, OR"
+msgstr "Exemplu: AND, OR"
+
+#: ../wxui/memquery.py:250
+msgid "Example: freq<146.0,148.0>"
+msgstr "Exemplu: freq<146.0,148.0>"
+
+#: ../wxui/memquery.py:248
+msgid "Example: name=\"myrepeater"
+msgstr "Exemplu: name=\"myrepeater\""
+
+#: ../wxui/memquery.py:246
+msgid "Example: name~\"myrepea\""
+msgstr "Exemplu: name~\"myrepea\""
+
+#: ../wxui/query_sources.py:403
+msgid "Exclude private and closed repeaters"
+msgstr "Exclude repetoarele private și închise"
+
+#: ../wxui/clone.py:754
+msgid "Experimental driver"
+msgstr "Driver experimental"
+
+#: ../wxui/memedit.py:2678
+msgid "Export can only write CSV files"
+msgstr "Exportul poate scrie doar fișiere CSV"
+
+#: ../wxui/main.py:1496
+msgid "Export to CSV"
+msgstr "Exportă în CSV"
+
+#: ../wxui/main.py:738
+msgid "Export to CSV..."
+msgstr "Exportă în CSV..."
+
+#: ../wxui/memedit.py:2797
+msgid "Extra"
+msgstr "Extra"
+
+#: ../drivers/uvk5.py:1295
+msgid "FM Radio"
+msgstr "Radio FM"
+
+#: ../wxui/query_sources.py:996
+msgid ""
+"FREE repeater database, which provides information\n"
+"about repeaters in Europe. No account is required."
+msgstr ""
+"Bază de date GRATUITĂ pentru repetoare, care oferă informații\n"
+"despre repetoarele din Europa. Nu este necesar un cont."
+
+#: ../wxui/query_sources.py:712
+msgid ""
+"FREE repeater database, which provides most up-to-date\n"
+"information about repeaters in Europe. No account is\n"
+"required."
+msgstr ""
+"Bază de date GRATUITĂ pentru repetoare, care oferă cele mai recente\n"
+"informații despre repetoarele din Europa. Nu este necesar un cont."
+
+#: ../wxui/developer.py:502
+msgid "Failed to load radio browser"
+msgstr "Nu s-a reușit încărcarea browserului radio"
+
+#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
+#: ../sources/mapy73pl.py:61
+msgid "Failed to parse result"
+msgstr "Nu s-a reușit analizarea rezultatului"
+
+#: ../wxui/bugreport.py:665
+msgid "Failed to send bug report:"
+msgstr "Nu s-a reușit trimiterea raportului de bug:"
+
+#: ../wxui/radioinfo.py:45
+msgid "Features"
+msgstr "Caracteristici"
+
+#: ../wxui/bugreport.py:196
+msgid "File a new bug"
+msgstr "Raportează un nou bug"
+
+#: ../wxui/main.py:579
+#, python-format
+msgid "File does not exist: %s"
+msgstr "Fișierul nu există: %s"
+
+#: ../wxui/main.py:1343 ../wxui/main.py:1423 ../wxui/main.py:1433
+#: ../wxui/main.py:1492 ../wxui/main.py:1843 ../wxui/main.py:1844
+msgid "Files"
+msgstr "Fișiere"
+
+#: ../wxui/bugreport.py:525
+msgid "Files:"
+msgstr "Fișiere:"
+
+#: ../wxui/query_sources.py:388
+msgid "Filter"
+msgstr "Filtrează"
+
+#: ../wxui/query_sources.py:386
+msgid "Filter results with location matching this string"
+msgstr "Filtrează rezultatele cu locația care se potrivește cu acest șir"
+
+#: ../wxui/memquery.py:270
+msgid "Filter..."
+msgstr "Filtrează..."
+
+#: ../wxui/main.py:1566
+msgid "Find"
+msgstr "Caută"
+
+#: ../wxui/main.py:806
+msgid "Find Next"
+msgstr "Caută următorul"
+
+#: ../wxui/main.py:792
+msgid "Find..."
+msgstr "Caută..."
+
+#: ../wxui/memquery.py:155
+msgid "Finish Float"
+msgstr "Termină Float"
+
+#: ../wxui/memquery.py:211
+msgid "Finish float value like: 146.52"
+msgstr "Termină valoarea float ca: 146.52"
+
+#: ../wxui/common.py:340
+#, python-format
+msgid "Finished radio job %s"
+msgstr "Job-ul stației %s s-a terminat"
+
+#: ../drivers/ts590.py:678
+msgid ""
+"Follow these instructions to download the radio memory:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Download from radio: DO NOT mess with the radio\n"
+"during download!\n"
+"3 - Disconnect your interface cable\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a descărca memoria stației:\n"
+"1 - Conectează cablul de interfață\n"
+"2 - Radio > Descarcă din stație: NU modifica stația\n"
+"durând descărcarea!\n"
+"3 - Deconectează cablul de interfață\n"
+
+#: ../drivers/ts480.py:517
+msgid ""
+"Follow these instructions to download the radio memory:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Download from radio: Don't adjust any settings\n"
+"on the radio head!\n"
+"3 - Disconnect your interface cable\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a descărca memoria stației:\n"
+"1 - Conectează cablul de interfață\n"
+"2 - Radio > Descarcă din stație: Nu ajusta nicio setare\n"
+"pe capul stației!\n"
+"3 - Deconectează cablul de interfață\n"
+
+#: ../drivers/th_uv8000.py:517
+msgid ""
+"Follow these instructions to download the radio memory:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio, volume @ 50%\n"
+"4 - CHIRP Menu - Radio - Download from radio\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a descărca memoria stației:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață\n"
+"3 - Pornește stația, volumul la 50%\n"
+"4 - Meniu CHIRP - Radio - Descarcă din stație\n"
+
+#: ../drivers/ic2730.py:306
+msgid ""
+"Follow these instructions to download your config:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable to the Speaker-2 jack\n"
+"3 - Turn on your radio\n"
+"4 - Radio > Download from radio\n"
+"5 - Disconnect the interface cable! Otherwise there will be\n"
+"    no right-side audio!\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a descărca configurația ta:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață la jack-ul Speaker-2\n"
+"3 - Pornește stația\n"
+"4 - Radio > Descarcă din stație\n"
+"5 - Deconectează cablul de interfață! Altfel nu va exista\n"
+"    audio pe partea dreaptă!\n"
+
+#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/btech.py:693 ../drivers/gmrsuv1.py:391
+#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
+#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
+#: ../drivers/baofeng_uv17Pro.py:468 ../drivers/bf_t1.py:482
+msgid ""
+"Follow these instructions to download your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the download of your radio data\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a descărca informațiile stației tale:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață\n"
+"3 - Pornește stația\n"
+"4 - Fă descărcarea datelor stației tale\n"
+
+#: ../drivers/tk690.py:575 ../drivers/tk760g.py:683
+msgid ""
+"Follow these instructions to download your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio (unlock it if password protected)\n"
+"4 - Click OK to start\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a descărca stația ta:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață\n"
+"3 - Pornește stația (deblochează-o dacă este protejată cu parolă)\n"
+"4 - Apasă OK pentru a începe\n"
+
+#: ../drivers/tk760.py:341
+msgid ""
+"Follow these instructions to read your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Click OK to start\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a citi stația ta:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață\n"
+"3 - Pornește stația\n"
+"4 - Apasă OK pentru a începe\n"
+
+#: ../drivers/ts590.py:684
+msgid ""
+"Follow these instructions to upload the radio memory:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Upload to radio: DO NOT mess with the radio\n"
+"during upload!\n"
+"3 - Disconnect your interface cable\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a încărca memoria stației:\n"
+"1 - Conectează cablul de interfață\n"
+"2 - Radio > Încărcare în stație: NU modifica stația\n"
+"durând încărcarea!\n"
+"3 - Deconectează cablul de interfață\n"
+
+#: ../drivers/ts480.py:523
+msgid ""
+"Follow these instructions to upload the radio memory:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Upload to radio: Don't adjust any settings\n"
+"on the radio head!\n"
+"3 - Disconnect your interface cable\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a încărca memoria stației:\n"
+"1 - Conectează cablul de interfață\n"
+"2 - Radio > Încărcare în stație: Nu ajusta nicio setare\n"
+"pe capul stației!\n"
+"3 - Deconectează cablul de interfață\n"
+
+#: ../drivers/th_uv8000.py:523
+msgid ""
+"Follow these instructions to upload the radio memory:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio, volume @ 50%\n"
+"4 - CHIRP Menu - Radio - Upload to radio\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a încărca memoria stației:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață\n"
+"3 - Pornește stația, volumul la 50%\n"
+"4 - Meniu CHIRP - Radio - Încărcare în stație\n"
+
+#: ../drivers/ic2730.py:314
+msgid ""
+"Follow these instructions to upload your config:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable to the Speaker-2 jack\n"
+"3 - Turn on your radio\n"
+"4 - Radio > Upload to radio\n"
+"5 - Disconnect the interface cable, otherwise there will be\n"
+"    no right-side audio!\n"
+"6 - Cycle power on the radio to exit clone mode\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a încărca configurația ta:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață la jack-ul Speaker-2\n"
+"3 - Pornește stația\n"
+"4 - Radio > Încărcare în stație\n"
+"5 - Deconectează cablul de interfață, altfel nu va exista\n"
+"    audio pe partea dreaptă!\n"
+"6 - Oprește și pornește din nou stația pentru a ieși din modul de clonare\n"
+
+#: ../drivers/btech.py:699 ../drivers/bf_t1.py:488
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the upload of your radio data\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a încărca informațiile stației tale:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață\n"
+"3 - Pornește stația\n"
+"4 - Fă încărcarea datelor stației tale\n"
+
+#: ../drivers/tk690.py:581 ../drivers/tk760g.py:689
+msgid ""
+"Follow these instructions to upload your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio (unlock it if password protected)\n"
+"4 - Click OK to start\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a încărca stația ta:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață\n"
+"3 - Pornește stația (deblochează-o dacă este protejată cu parolă)\n"
+"4 - Apasă OK pentru a începe\n"
+
+#: ../drivers/tk760.py:347
+msgid ""
+"Follow these instructions to write your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Click OK to start\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a scrie în stația ta:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață\n"
+"3 - Pornește stația\n"
+"4 - Apasă OK pentru a începe\n"
+
+#: ../drivers/vgc.py:598 ../drivers/lt725uv.py:496
+msgid ""
+"Follow this instructions to download your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the download of your radio data\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a descărca informațiile:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață\n"
+"3 - Pornește stația\n"
+"4 - Fă descărcarea datelor stației tale\n"
+
+#: ../drivers/tk270.py:340
+msgid ""
+"Follow this instructions to read your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the download of your radio data\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a citi stația ta:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață\n"
+"3 - Pornește stația\n"
+"4 - Fă descărcarea datelor stației tale\n"
+
+#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
+#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
+#: ../drivers/baofeng_uv17Pro.py:474
+msgid ""
+"Follow this instructions to upload your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the upload of your radio data\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a încărca informațiile:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață\n"
+"3 - Pornește stația\n"
+"4 - Fă încărcarea datelor stației tale\n"
+
+#: ../drivers/tk270.py:346
+msgid ""
+"Follow this instructions to write your radio:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Do the upload of your radio data\n"
+msgstr ""
+"Urmărește aceste instrucțiuni pentru a scrie în stația ta:\n"
+"1 - Oprește stația\n"
+"2 - Conectează cablul de interfață\n"
+"3 - Pornește stația\n"
+"4 - Fă încărcarea datelor stației tale\n"
+
+#: ../wxui/memedit.py:212
+#, python-format
+msgid "Found empty list value for %(name)s: %(value)r"
+msgstr "Sa găsit o valoare de listă goală pentru %(name)s: %(value)r"
+
+#: ../wxui/memedit.py:317
+msgid "Frequency"
+msgstr "Frecvență"
+
+#: ../import_logic.py:76
+#, python-format
+msgid "Frequency %s is out of supported range"
+msgstr "Frecvența %s este în afara intervalului acceptat"
+
+#: ../wxui/memedit.py:145
+msgid "Frequency granularity in kHz"
+msgstr "Granularitatea frecvenței în kHz"
+
+#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1378
+#: ../drivers/tdh8.py:2608 ../drivers/baofeng_uv17Pro.py:1197
+msgid "Frequency in this range must not be AM mode"
+msgstr "Frecvența din acest interval nu trebuie să fie în modul AM"
+
+#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1375
+#: ../drivers/tdh8.py:2605 ../drivers/baofeng_uv17Pro.py:1193
+msgid "Frequency in this range requires AM mode"
+msgstr "Frecvența din acest interval necesită modul AM"
+
+#: ../drivers/tdh8.py:2612
+msgid "Frequency outside TX bands must be duplex=off"
+msgstr "Frecvența este în afacerea benzilor TX și trebuie să fie duplex=OFF"
+
+#: ../wxui/query_sources.py:354 ../wxui/query_sources.py:434
+#: ../wxui/query_sources.py:534
+msgid "GMRS"
+msgstr "GMRS"
+
+#: ../wxui/settingsedit.py:77
+msgid "Getting settings"
+msgstr "Obțin setările"
+
+#: ../wxui/memedit.py:1323
+msgid "Goto Memory"
+msgstr "Mergi la Memorie"
+
+#: ../wxui/memedit.py:1322
+msgid "Goto Memory:"
+msgstr "Mergi la Memorie:"
+
+#: ../wxui/memedit.py:1269
+msgid "Goto..."
+msgstr "Mergi la..."
+
+#: ../wxui/main.py:1024
+msgid "Help"
+msgstr "Ajutor"
+
+#: ../wxui/clone.py:40
+msgid "Help Me..."
+msgstr "Ajută-mă..."
+
+#: ../wxui/developer.py:279
+msgid "Hex"
+msgstr "Hex"
+
+#: ../wxui/memedit.py:1278
+msgid "Hide empty memories"
+msgstr "Ascunde memoriile goale"
+
+#: ../drivers/retevis_rt98.py:1003
+msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
+msgstr "Respectă configurația de squelch pentru primire CTCSS/DCS când este activată, altfel doar squelch pentru purtător"
+
+#: ../wxui/memedit.py:148
+msgid "Human-readable comment (not stored in radio)"
+msgstr "Comentariu lizibil de om (nu este stocat în stație)"
+
+#: ../wxui/query_sources.py:365 ../wxui/query_sources.py:371
+#: ../wxui/query_sources.py:664 ../wxui/query_sources.py:670
+#: ../wxui/query_sources.py:816 ../wxui/query_sources.py:822
+msgid "If set, sort results by distance from these coordinates"
+msgstr "Dacă este setat, sortează rezultatele după distanța față de aceste coordonate"
+
+#: ../wxui/main.py:1478
+msgid "Import"
+msgstr "Importă"
+
+#: ../wxui/memedit.py:2396
+#, python-format
+msgid "Import %i memories"
+msgstr "Importă %i memorii"
+
+#: ../wxui/main.py:732
+msgid "Import from file..."
+msgstr "Importă din fișier..."
+
+#: ../wxui/main.py:1482
+msgid "Import messages"
+msgstr "Mesaje de import"
+
+#: ../wxui/main.py:1476
+msgid "Import not recommended"
+msgstr "Importul nu este recomandat"
+
+#: ../wxui/query_sources.py:423
+msgid "Include Cached"
+msgstr "Include din cache"
+
+#: ../wxui/bankedit.py:62
+msgid "Index"
+msgstr "Index"
+
+#: ../wxui/main.py:223
+msgid "Info"
+msgstr "Info"
+
+#: ../wxui/memedit.py:1775
+msgid "Information"
+msgstr "Informații"
+
+#: ../wxui/memedit.py:2095
+msgid "Insert Row Above"
+msgstr "Inserare linie deasupra"
+
+#: ../wxui/__init__.py:59
+msgid "Install desktop icon?"
+msgstr "Instalare iconiță pe desktop?"
+
+#: ../wxui/main.py:953
+msgid "Interact with driver"
+msgstr "Interacționează cu driverul"
+
+#: ../wxui/clone.py:817
+msgid "Internal driver error"
+msgstr "Eroare internă a driverului"
+
+#: ../wxui/query_sources.py:61
+#, python-format
+msgid "Invalid %(value)s (use decimal degrees)"
+msgstr "%(value)s invalid (folosiți grade zecimale)"
+
+#: ../wxui/query_sources.py:69 ../wxui/query_sources.py:123
+#: ../wxui/memedit.py:1938
+msgid "Invalid Entry"
+msgstr "Intrare invalidă"
+
+#: ../wxui/query_sources.py:150
+msgid "Invalid ZIP code"
+msgstr "Cod poștal invalid"
+
+#: ../wxui/memedit.py:1937 ../wxui/memedit.py:2888
+#, python-format
+msgid "Invalid edit: %s"
+msgstr "Editare invalidă: %s"
+
+#: ../wxui/query_sources.py:123
+msgid "Invalid locator"
+msgstr "Locator invalid"
+
+#: ../wxui/main.py:1840
+msgid "Invalid or unsupported module file"
+msgstr "Fișier modul invalid sau nesuportat"
+
+#: ../wxui/memedit.py:270 ../wxui/memedit.py:276
+#, python-format
+msgid "Invalid value: %r"
+msgstr "Valoare invalidă: %r"
+
+#: ../wxui/developer.py:661
+msgid "Issue number:"
+msgstr "Număr problemă:"
+
+#: ../wxui/main.py:351
+msgid "LIVE"
+msgstr "LIVE"
+
+#: ../drivers/radtel_rt490.py:1026 ../wxui/main.py:852 ../wxui/main.py:1622
+msgid "Language"
+msgstr "Limbă"
+
+#: ../wxui/query_sources.py:91 ../wxui/query_sources.py:373
+#: ../wxui/query_sources.py:672 ../wxui/query_sources.py:824
+msgid "Latitude"
+msgstr "Latitudine"
+
+#: ../wxui/developer.py:260
+#, python-format
+msgid "Length must be %i"
+msgstr "Lungimea trebuie să fie %i"
+
+#: ../wxui/query_sources.py:394 ../wxui/query_sources.py:632
+#: ../wxui/query_sources.py:785
+msgid "Limit Bands"
+msgstr "Limitează benzile"
+
+#: ../wxui/query_sources.py:399
+msgid "Limit Modes"
+msgstr "Limitează modurile"
+
+#: ../wxui/query_sources.py:647 ../wxui/query_sources.py:800
+msgid "Limit Status"
+msgstr "Stare limitată"
+
+#: ../wxui/query_sources.py:809
+msgid "Limit prefixes"
+msgstr "Limitează prefixele"
+
+#: ../wxui/query_sources.py:380 ../wxui/query_sources.py:678
+#: ../wxui/query_sources.py:836
+msgid "Limit results to this distance (km) from coordinates"
+msgstr "Limitează rezultatele la această distanță (km) de la coordonate"
+
+#: ../wxui/query_sources.py:404
+msgid "Limit use"
+msgstr "Limitare utilizare"
+
+#: ../wxui/main.py:1709
+msgid "Live Radio"
+msgstr "Radio direct"
+
+#: ../wxui/main.py:744
+msgid "Load Module..."
+msgstr "Încarcă modul..."
+
+#: ../wxui/developer.py:662
+msgid "Load module from issue"
+msgstr "Încarcă modul din numărul de problemă..."
+
+#: ../wxui/main.py:1006
+msgid "Load module from issue..."
+msgstr "Încarcă modul din numărul de problemă..."
+
+#: ../wxui/main.py:1999
+msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
+msgstr "Încărcarea unui modul nu va afecta tab-urile deschise. Se recomandă (cu excepția cazului în care vi se spune altfel) să închideți toate tab-urile înainte de a încărca un modul."
+
+#: ../wxui/main.py:1847
+msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
+msgstr "Încărcarea modulelor poate fi extrem de periculoasă, ducând la deteriorarea computerului, radio-ului sau amândurora. NU încărcați un modul dintr-o sursă de încredere îndoielnică, și mai ales nu din orice alt loc decât site-ul principal CHIRP (chirpmyradio.com). Încărcarea unui modul din altă sursă este echivalentă cu a le oferi acces direct la computerul dumneavoastră și tot ce se află pe el! Continuați în ciuda acestui risc?"
+
+#: ../wxui/clone.py:145
+msgid "Loading settings"
+msgstr "Se încarcă setările"
+
+#: ../wxui/query_sources.py:109
+msgid "Locator"
+msgstr "Locator"
+
+#: ../wxui/bugreport.py:326
+msgid "Login failed: Check your username and password"
+msgstr "Autentificare eșuată: Verificați numele de utilizator și parola"
+
+#: ../drivers/uvk5.py:1799
+msgid "Logo string 1 (12 characters)"
+msgstr "Șir logo 1 (12 caractere)"
+
+#: ../drivers/uvk5.py:1806
+msgid "Logo string 2 (12 characters)"
+msgstr "Șir logo 2 (12 caractere)"
+
+#: ../wxui/query_sources.py:97 ../wxui/query_sources.py:374
+#: ../wxui/query_sources.py:673 ../wxui/query_sources.py:825
+msgid "Longitude"
+msgstr "Longitudine"
+
+#: ../wxui/memedit.py:1950
+#, python-format
+msgid "Manual edit of memory %i"
+msgstr "Editare manuală a memoriei %i"
+
+#: ../wxui/main.py:202
+msgid "Memories"
+msgstr "Memorii"
+
+#: ../drivers/uvk5.py:2118
+msgid "Memories are read-only due to unsupported firmware version"
+msgstr "Memoriile sunt doar citire din cauza versiunii de firmware neacceptate"
+
+#: ../wxui/memedit.py:1979
+#, python-format
+msgid "Memory %i is not deletable"
+msgstr "Memoria %i nu poate fi ștearsă"
+
+#: ../wxui/memquery.py:203
+#, python-format
+msgid "Memory field name (one of %s)"
+msgstr "Numele câmpului memoriei (unul dintre %s)"
+
+#: ../wxui/memedit.py:133
+msgid "Memory label (stored in radio)"
+msgstr "Eticheta memoriei (stocată în statie)"
+
+#: ../wxui/bankedit.py:242
+msgid "Memory must be in a bank to be edited"
+msgstr "Memoria trebuie să fie într-o bancă pentru a fi editată"
+
+#: ../drivers/vx5.py:133
+#, python-brace-format
+msgid "Memory {num} not in bank {bank}"
+msgstr "Memoria {num} nu este în banca {bank}"
+
+#: ../wxui/query_sources.py:624 ../wxui/query_sources.py:777
+#: ../wxui/memedit.py:628
+msgid "Mode"
+msgstr "Mod"
+
+#: ../wxui/clone.py:354
+msgid "Model"
+msgstr "Model"
+
+#: ../wxui/query_sources.py:500
+msgid "Modes"
+msgstr "Moduri"
+
+#: ../wxui/main.py:1844
+msgid "Module"
+msgstr "Modul"
+
+#: ../wxui/main.py:1816
+msgid "Module Loaded"
+msgstr "Modul încărcat"
+
+#: ../wxui/main.py:2010
+msgid "Module loaded successfully"
+msgstr "Modul încărcat cu succes"
+
+#: ../wxui/clone.py:697
+msgid "More Info"
+msgstr "Mai multe informații"
+
+#: ../wxui/clone.py:512
+#, python-format
+msgid "More than one port found: %s"
+msgstr "Mai multe porturi găsite: %s"
+
+#: ../wxui/memedit.py:2616
+#, python-format
+msgid "Move %i memories"
+msgstr "Mută %i memorii"
+
+#: ../wxui/memedit.py:1265
+msgid "Move Down"
+msgstr "Mută în jos"
+
+#: ../wxui/memedit.py:1255
+msgid "Move Up"
+msgstr "Mută în sus"
+
+#: ../wxui/memedit.py:2586
+msgid "Move operations are disabled while the view is sorted"
+msgstr "Operațiile de mutare sunt dezactivate în timp ce vizualizarea este sortată"
+
+#: ../wxui/main.py:690
+msgid "New Window"
+msgstr "Fereastră nouă"
+
+#: ../wxui/main.py:2090
+msgid "New version available"
+msgstr "Versiune nouă disponibilă"
+
+#: ../wxui/memedit.py:2272
+msgid "No empty rows below!"
+msgstr "Nu există rânduri goale sub!"
+
+#: ../wxui/memquery.py:254
+#, python-format
+msgid "No example for %s"
+msgstr "Nu există exemplu pentru %s"
+
+#: ../wxui/developer.py:677
+msgid "No modules found"
+msgstr "Nu au fost găsite module"
+
+#: ../wxui/developer.py:676
+#, python-format
+msgid "No modules found in issue %i"
+msgstr "Nu au fost găsite module în problema %"
+
+#: ../wxui/memedit.py:2450
+msgid "No more space available; some memories were not applied"
+msgstr "Nu mai este spațiu disponibil; unele memorii nu au fost aplicate"
+
+#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
+#: ../sources/mapy73pl.py:57
+msgid "No results"
+msgstr "Niciun rezultat"
+
+#: ../sources/repeaterbook.py:329
+msgid "No results!"
+msgstr "Niciun rezultat!"
+
+#: ../wxui/query_sources.py:44 ../wxui/memedit.py:1322
+msgid "Number"
+msgstr "Număr"
+
+#: ../wxui/memedit.py:313
+msgid "Offset"
+msgstr "Offset"
+
+#: ../wxui/memedit.py:311
+msgid ""
+"Offset/\n"
+"TX Freq"
+msgstr ""
+"Offset/\n"
+"Frecvență TX"
+
+#: ../wxui/memquery.py:252
+#, python-format
+msgid "One of: %s"
+msgstr "Unul dintre: %s"
+
+#: ../wxui/query_sources.py:392 ../wxui/query_sources.py:630
+#: ../wxui/query_sources.py:783
+msgid "Only certain bands"
+msgstr "Doar anumite benzi"
+
+#: ../wxui/query_sources.py:397
+msgid "Only certain modes"
+msgstr "Doar anumite moduri"
+
+#: ../wxui/query_sources.py:807
+msgid "Only certain prefixes"
+msgstr "Doar anumite prefixe"
+
+#: ../wxui/main.py:332
+msgid "Only memory tabs may be exported"
+msgstr "Doar tab-urile de memorie pot fi exportate"
+
+#: ../wxui/query_sources.py:641 ../wxui/query_sources.py:794
+msgid "Only working repeaters"
+msgstr "Doar repetoare funcționale"
+
+#: ../wxui/main.py:1052 ../wxui/main.py:1478
+msgid "Open"
+msgstr "Deschide"
+
+#: ../wxui/main.py:719
+msgid "Open Recent"
+msgstr "Deschide Recentele"
+
+#: ../wxui/main.py:701
+msgid "Open Stock Config"
+msgstr "Deschide Configurația Stoc"
+
+#: ../wxui/main.py:1053 ../wxui/main.py:1354
+msgid "Open a file"
+msgstr "Deschide un fișier"
+
+#: ../wxui/main.py:1862
+msgid "Open a module"
+msgstr "Deschide un modul"
+
+#: ../wxui/main.py:990
+msgid "Open debug log"
+msgstr "Deschide jurnalul de depanare"
+
+#: ../wxui/main.py:543
+msgid "Open in new window"
+msgstr "Deschide într-o fereastră nouă"
+
+#: ../wxui/query_sources.py:401
+msgid "Open repeaters only"
+msgstr "Deschide doar repetoare"
+
+#: ../wxui/main.py:648
+msgid "Open stock config directory"
+msgstr "Deschide directorul de configurare stoc"
+
+#: ../wxui/memquery.py:143
+msgid "Operator"
+msgstr "Operator"
+
+#: ../wxui/query_sources.py:992
+msgid "Option"
+msgstr "Opțiune"
+
+#: ../wxui/query_sources.py:370 ../wxui/query_sources.py:669
+msgid "Optional: -122.0000"
+msgstr "Opțional: -122.0000"
+
+#: ../wxui/query_sources.py:379 ../wxui/query_sources.py:677
+#: ../wxui/query_sources.py:835
+msgid "Optional: 100"
+msgstr "Opțional: 100"
+
+#: ../wxui/query_sources.py:821
+msgid "Optional: 20.0000"
+msgstr "Opțional: 20.0000"
+
+#: ../wxui/query_sources.py:364 ../wxui/query_sources.py:663
+msgid "Optional: 45.0000"
+msgstr "Opțional: 45.0000"
+
+#: ../wxui/query_sources.py:815
+msgid "Optional: 52.0000"
+msgstr "Opțional: 52.0000"
+
+#: ../wxui/query_sources.py:829
+msgid "Optional: AA00 - AA00aa11"
+msgstr "Opțional: AA00 - AA00aa11"
+
+#: ../wxui/query_sources.py:385
+msgid "Optional: County, Hospital, etc."
+msgstr "Opțional: Județ, Spital, etc."
+
+#: ../wxui/memedit.py:2430
+msgid "Overwrite memories?"
+msgstr "Diff raw memories"
+
+#: ../drivers/ts480.py:513
+msgid ""
+"P-VFO channels 100-109 are considered Settings.\n"
+"Only a subset of the over 130 available radio settings\n"
+"are supported in this release.\n"
+msgstr ""
+"Canalele P-VFO 100-109 sunt considerate Setări.\n"
+"Doar un subset din cele peste 130 de setări radio disponibile\n"
+"sunt suportate în această versiune.\n"
+
+#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
+#: ../sources/mapy73pl.py:52
+msgid "Parsing"
+msgstr "Analizare"
+
+#: ../wxui/bugreport.py:259
+msgid "Password"
+msgstr "Parolă"
+
+#: ../wxui/memedit.py:2109
+msgid "Paste"
+msgstr "Lipește"
+
+#: ../wxui/common.py:805
+msgid "Paste external memories"
+msgstr "Lipește memoriile externe"
+
+#: ../wxui/memedit.py:2529
+msgid "Paste memories"
+msgstr "Lipește memoriile"
+
+#: ../wxui/memedit.py:2424
+#, python-format
+msgid "Pasted memories will overwrite %s existing memories"
+msgstr "Memoriile lipite vor suprascrie %s dintre memoriile existente"
+
+#: ../wxui/memedit.py:2427
+#, python-format
+msgid "Pasted memories will overwrite memories %s"
+msgstr "Memoriile lipite vor suprascrie memoriile %s"
+
+#: ../wxui/memedit.py:2421
+#, python-format
+msgid "Pasted memories will overwrite memory %s"
+msgstr "Memoriile lipite vor suprascrie memoria %s"
+
+#: ../wxui/memedit.py:2418
+#, python-format
+msgid "Pasted memory will overwrite memory %s"
+msgstr "Memoria lipită va suprascrie memoria %s"
+
+#: ../wxui/main.py:2094
+msgid "Please be sure to quit CHIRP before installing the new version!"
+msgstr "Te rugăm să te asiguri că închizi CHIRP înainte de a instala noua versiune!"
+
+#: ../wxui/bugreport.py:444
+msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
+msgstr "Te rugăm să verifici numărul bug-ului și să încerci din nou. Dacă vrei într-adevăr să raportezi acest bug, te rugăm să comentezi pe site și să ceri redeschiderea acestuia."
+
+#: ../drivers/ftlx011.py:301
+msgid ""
+"Please follow this steps carefully:\n"
+"1 - Turn on your radio\n"
+"2 - Connect the interface cable to your radio\n"
+"3 - Click the button on this window to start download\n"
+"    (you may see another dialog, click ok)\n"
+"4 - Radio will beep and led will flash\n"
+"5 - You will get a 10 seconds timeout to press \"MON\" before\n"
+"    data upload start\n"
+"6 - If all goes right radio will beep at end.\n"
+"After cloning remove the cable and power cycle your radio to\n"
+"get into normal mode.\n"
+msgstr ""
+"Te rugăm să urmezi cu atenție acești pași:\n"
+"1 - Pornește stația ta\n"
+"2 - Conectează cablul de interfață la stația ta\n"
+"3 - Apasă butonul din această fereastră pentru a începe descărcarea\n"
+"    (poți vedea un alt dialog, apasă OK)\n"
+"4 - Stația va emite un bip și led-ul va clipește\n"
+"5 - Vei avea un timp de 10 secunde pentru a apăsa \"MON\" înainte\n"
+"    ca încărcarea datelor să înceapă\n"
+"6 - Dacă totul decurge corect, stația va emite un bip la final.\n"
+"După clonare, scoate cablul și oprește/repornește stația pentru a\n"
+"ajunge în modul normal.\n"
+
+#: ../drivers/ftlx011.py:292
+msgid ""
+"Please follow this steps carefully:\n"
+"1 - Turn on your radio\n"
+"2 - Connect the interface cable to your radio.\n"
+"3 - Click the button on this window to start download\n"
+"    (Radio will beep and led will flash)\n"
+"4 - Then press the \"A\" button in your radio to start cloning.\n"
+"    (At the end radio will beep)\n"
+msgstr ""
+"Te rugăm să urmezi cu atenție acești pași:\n"
+"1 - Pornește stația ta\n"
+"2 - Conectează cablul de interfață la stația ta.\n"
+"3 - Apasă butonul din această fereastră pentru a începe descărcarea\n"
+"    (Stația va emite un bip și led-ul va clipește)\n"
+"4 - Apoi apasă butonul \"A\" de pe stația ta pentru a începe clonarea.\n"
+"    (La final, stația va emite un bip)\n"
+
+#: ../wxui/main.py:1939
+msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
+msgstr "Te rugăm să reții că modul de dezvoltator este destinat utilizării de către dezvoltatorii proiectului CHIRP sau sub direcția unui dezvoltator. Aceasta activează comportamente și funcții care pot deteriora computerul tău și stația ta dacă nu sunt folosite cu EXTREMĂ prudență. Ai fost avertizat! Continuă oricum?"
+
+#: ../wxui/common.py:203
+msgid "Please wait"
+msgstr "Te rugăm să aștepți"
+
+#: ../wxui/clone.py:489
+msgid "Plug in your cable and then click OK"
+msgstr "Conectează-ți cablul și apasă OK"
+
+#: ../wxui/query_sources.py:887
+msgid "Polish repeaters database"
+msgstr "Baza de date repetoare Polonia"
+
+#: ../wxui/clone.py:339
+msgid "Port"
+msgstr "Port"
+
+#: ../wxui/memedit.py:392
+msgid "Power"
+msgstr "Putere"
+
+#: ../wxui/query_sources.py:875
+msgid "Prefixes"
+msgstr "Prefixuri"
+
+#: ../wxui/developer.py:157
+msgid "Press enter to set this in memory"
+msgstr "Apasă Enter pentru a seta aceasta în memorie"
+
+#: ../wxui/main.py:755
+msgid "Print Preview"
+msgstr "Previzualizare tipărire"
+
+#: ../wxui/printing.py:29
+msgid "Printing"
+msgstr "Tipărire"
+
+#: ../wxui/clone.py:523
+msgid "Prolific USB device"
+msgstr "Dispozitiv USB Prolific"
+
+#: ../wxui/memedit.py:2088
+msgid "Properties"
+msgstr "Proprietăți"
+
+#: ../wxui/memquery.py:139
+msgid "Property Name"
+msgstr "Nume proprietate"
+
+#: ../wxui/memquery.py:147
+msgid "Property Value"
+msgstr "Valoare proprietate"
+
+#: ../wxui/query_sources.py:831
+msgid "QTH Locator"
+msgstr "Locator QTH"
+
+#: ../wxui/main.py:2039
+#, python-format
+msgid "Query %s"
+msgstr "Interogare %s"
+
+#: ../wxui/main.py:880
+msgid "Query Source"
+msgstr "Sursa interogării"
+
+#: ../wxui/memquery.py:330
+msgid "Query string is invalid"
+msgstr "Șirul de interogare este invalid"
+
+#: ../wxui/memquery.py:186
+msgid "Query syntax OK"
+msgstr "Sintaxă interogare OK"
+
+#: ../wxui/memquery.py:170
+msgid "Query syntax help"
+msgstr "Ajutor sintaxă interogare"
+
+#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
+#: ../sources/mapy73pl.py:36
+msgid "Querying"
+msgstr "Interogare"
+
+#: ../wxui/memedit.py:575
+msgid "RX DTCS"
+msgstr "RX DTCS"
+
+#: ../wxui/main.py:1023
+msgid "Radio"
+msgstr "Statie"
+
+#: ../drivers/ft60.py:85 ../drivers/ft450d.py:568 ../drivers/ft817.py:406
+#, python-format
+msgid "Radio did not ack block %i"
+msgstr "Stația nu a confirmat blocul %i"
+
+#: ../wxui/clone.py:787 ../wxui/clone.py:887
+msgid "Radio information"
+msgstr "Informații stație"
+
+#: ../wxui/bugreport.py:377
+msgid "Radio model:"
+msgstr "Model stație:"
+
+#: ../drivers/ft817.py:363
+msgid "Radio sent data after the last awaited block, this happens when the selected model is a non-US but the radio is a US one. Please choose the correct model and try again."
+msgstr "Stația a trimis date după ultimul bloc așteptat, acest lucru se întâmplă atunci când modelul selectat nu este din SUA, dar stația este din SUA. Te rugăm să alegi modelul corect și să încerci din nou."
+
+#: ../wxui/query_sources.py:1212
+msgid "RadioReference Canada requires a login before you can query"
+msgstr "RadioReference Canada necesită un login înainte de a putea efectua interogarea"
+
+#: ../wxui/query_sources.py:1023
+msgid ""
+"RadioReference.com is the world's largest\n"
+"radio communications data provider\n"
+"<small>Premium account required</small>"
+msgstr ""
+"RadioReference.com este cel mai mare furnizor de date\n"
+"pentru comunicații radio din lume\n"
+"<small>Cont premium necesar</small>"
+
+#: ../wxui/memedit.py:139
+msgid "Receive DTCS code"
+msgstr "Cod DTCS de recepție"
+
+#: ../wxui/memedit.py:132
+msgid "Receive frequency"
+msgstr "Frecvență de recepție"
+
+#: ../wxui/clone.py:596
+msgid "Recent"
+msgstr "Recent"
+
+#: ../wxui/clone.py:346
+msgid "Recent..."
+msgstr "Recent..."
+
+#: ../drivers/retevis_rt98.py:1219
+msgid "Recommend using 55.2"
+msgstr "Se recomandă utilizarea versiunii 55.2"
+
+#: ../wxui/memedit.py:983
+msgid "Redo"
+msgstr "Refă"
+
+#: ../wxui/common.py:497
+msgid "Refresh required"
+msgstr "Reîmprospătare necesară"
+
+#: ../wxui/common.py:330
+#, python-format
+msgid "Refreshed memory %s"
+msgstr "Memoria %s actualizată"
+
+#: ../wxui/main.py:930
+msgid "Reload Driver"
+msgstr "Reîncarcă driverul"
+
+#: ../wxui/main.py:939
+msgid "Reload Driver and File"
+msgstr "Reîncarcă driverul și fișierul"
+
+#: ../wxui/memedit.py:1310
+msgid "Reload required"
+msgstr ""
+
+#: ../wxui/clone.py:616
+msgid "Remove"
+msgstr "Șterge"
+
+#: ../wxui/clone.py:617
+msgid "Remove selected model from list"
+msgstr "Șterge modelul selectat din listă"
+
+#: ../wxui/bankedit.py:205
+msgid "Rename bank"
+msgstr "Redenumește banca"
+
+#: ../wxui/query_sources.py:328
+msgid ""
+"RepeaterBook is Amateur Radio's most comprehensive,\n"
+"worldwide, FREE repeater directory."
+msgstr ""
+"RepeaterBook este cel mai cuprinzător director de repetoare al Radioamatorismului,\n"
+"global, GRATUIT."
+
+#: ../wxui/main.py:1012
+msgid "Report or update a bug..."
+msgstr "Raportează sau actualizează un bug..."
+
+#: ../wxui/bugreport.py:522
+#, python-format
+msgid "Reporting a new bug: %r"
+msgstr "Raportarea unui bug nou: %r"
+
+#: ../wxui/main.py:978
+msgid "Reporting enabled"
+msgstr "Raportarea activată"
+
+#: ../wxui/main.py:1959
+msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
+msgstr "Raportarea ajută proiectul CHIRP să știe pe ce modele de stații și platforme OS să aloce eforturile noastre limitate. Am aprecia foarte mult dacă ați lăsa-o activată. Doriți să dezactivați raportarea?"
+
+#: ../wxui/main.py:1639 ../wxui/main.py:1953
+msgid "Restart Required"
+msgstr "Repornire necesară"
+
+#: ../wxui/main.py:713
+#, python-format
+msgid "Restore %i tab"
+msgid_plural "Restore %i tabs"
+msgstr[0] "Restabilește tab-ul %i"
+msgstr[1] "Restabilește tab-urile %i"
+
+#: ../wxui/main.py:845
+msgid "Restore tabs on start"
+msgstr "Restabilește tab-urile la început"
+
+#: ../wxui/query_sources.py:414
+msgid "Results from other areas"
+msgstr "Rezultate din alte zone"
+
+#: ../wxui/common.py:334
+msgid "Retrieved settings"
+msgstr "Setări recuperate"
+
+#: ../wxui/main.py:1054
+msgid "Save"
+msgstr "Salvează"
+
+#: ../wxui/main.py:1513
+msgid "Save before closing?"
+msgstr "Vrei să salvezi înainte de a închide?"
+
+#: ../wxui/main.py:1055 ../wxui/main.py:1437
+msgid "Save file"
+msgstr "Salvează fișierul"
+
+#: ../wxui/common.py:336
+msgid "Saved settings"
+msgstr "Setări salvate"
+
+#: ../wxui/memedit.py:146
+msgid "Scan control (skip, include, priority, etc)"
+msgstr "Control scanare (skip, include, prioritate, etc.)"
+
+#: ../drivers/uvk5.py:893
+msgid "Scanlists"
+msgstr "Liste de scanare"
+
+#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:889
+msgid "Scrambler"
+msgstr "Scrambler"
+
+#: ../wxui/developer.py:652
+msgid "Security Risk"
+msgstr "Risc de securitate"
+
+#: ../wxui/main.py:920
+msgid "Select Bandplan..."
+msgstr "Selectați coloanele"
+
+#: ../wxui/query_sources.py:479 ../wxui/query_sources.py:698
+#: ../wxui/query_sources.py:856
+msgid "Select Bands"
+msgstr "Selectați coloanele"
+
+#: ../wxui/main.py:1622
+msgid "Select Language"
+msgstr "Selectați coloanele"
+
+#: ../wxui/query_sources.py:500
+msgid "Select Modes"
+msgstr "Selectați coloanele"
+
+#: ../wxui/main.py:2023
+msgid "Select a bandplan"
+msgstr "Selectează un plan de bandă"
+
+#: ../wxui/main.py:1183
+msgid "Select a tab and memory to diff"
+msgstr "Selectează un tab și o memorie pentru comparare"
+
+#: ../wxui/query_sources.py:875
+msgid "Select prefixes"
+msgstr "Selectați coloanele"
+
+#: ../wxui/query_sources.py:356
+msgid "Service"
+msgstr "Serviciu"
+
+#: ../wxui/main.py:215
+msgid "Settings"
+msgstr "Setări"
+
+#: ../drivers/uvk5.py:2122
+msgid "Settings are read-only due to unsupported firmware version"
+msgstr "Setările sunt doar în citire din cauza versiunii de firmware neacceptate"
+
+#: ../wxui/memedit.py:144
+msgid "Shift amount (or transmit frequency) controlled by duplex"
+msgstr "Cantitatea de deplasare (sau frecvența de transmisie) controlată de duplex"
+
+#: ../wxui/memedit.py:2217 ../wxui/developer.py:100
+msgid "Show Raw Memory"
+msgstr "Afișează memoria brută"
+
+#: ../wxui/main.py:996
+msgid "Show debug log location"
+msgstr "Afișează locația jurnalului de depanare"
+
+#: ../wxui/memedit.py:1274
+msgid "Show extra fields"
+msgstr "Afișează câmpuri suplimentare"
+
+#: ../wxui/main.py:1001
+msgid "Show image backup location"
+msgstr "Afișează locația de backup a imaginii"
+
+#: ../wxui/memedit.py:650
+msgid "Skip"
+msgstr "Skip"
+
+#: ../wxui/memedit.py:2520
+msgid "Some memories are incompatible with this radio"
+msgstr "Unele memorii sunt incompatibile cu această stație"
+
+#: ../wxui/memedit.py:2359
+msgid "Some memories are not deletable"
+msgstr "Unele memorii nu pot fi șterse"
+
+#: ../wxui/memedit.py:2050
+#, python-format
+msgid "Sort %i memories"
+msgstr "Sortează %i memorii"
+
+#: ../wxui/memedit.py:2173
+#, python-format
+msgid "Sort %i memory"
+msgid_plural "Sort %i memories"
+msgstr[0] "Sortează %i memorie"
+msgstr[1] "Sortează %i memorii"
+
+#: ../wxui/memedit.py:2177
+#, python-format
+msgid "Sort %i memory ascending"
+msgid_plural "Sort %i memories ascending"
+msgstr[0] "Sortează %i memorie ascendent"
+msgstr[1] "Sortează %i memorii ascendente"
+
+#: ../wxui/memedit.py:2199
+#, python-format
+msgid "Sort %i memory descending"
+msgid_plural "Sort %i memories descending"
+msgstr[0] "Sortează %i memorie ascendent"
+msgstr[1] "Sortează %i memorii ascendente"
+
+#: ../wxui/memedit.py:2065
+msgid "Sort by column:"
+msgstr "Sortare după coloană:"
+
+#: ../wxui/memedit.py:2064
+msgid "Sort memories"
+msgstr "Diferențierea memoriilor brute"
+
+#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
+#: ../sources/mapy73pl.py:64
+msgid "Sorting"
+msgstr "Sortare"
+
+#: ../wxui/query_sources.py:564
+msgid "State"
+msgstr "Stat"
+
+#: ../wxui/query_sources.py:359
+msgid "State/Province"
+msgstr "Județ/Provincie"
+
+#: ../wxui/main.py:2011
+msgid "Success"
+msgstr "Succes"
+
+#: ../wxui/bugreport.py:668
+msgid "Successfully sent bug report:"
+msgstr "Raport de bug trimis cu succes:"
+
+#: ../wxui/memedit.py:315
+msgid "TX Frequency"
+msgstr ""
+
+#: ../wxui/memedit.py:140
+msgid "TX-RX DTCS polarity (normal or reversed)"
+msgstr "Polaritatea DTCS TX-RX (normală sau inversată)"
+
+#: ../drivers/ft4.py:720
+msgid ""
+"Tested and mostly works, but may give you issues\n"
+"when using lesser common radio variants.\n"
+"Proceed at your own risk, and let us know about issues!"
+msgstr ""
+"Testat și funcționează în mare parte, dar poate provoca probleme\n"
+"când folosești variante de stație mai puțin comune.\n"
+"Continuă pe propria răspundere și anunță-ne despre eventualele probleme!"
+
+#: ../wxui/query_sources.py:572
+msgid "The DMR-MARC Worldwide Network"
+msgstr "Rețeaua mondială DMR-MARC"
+
+#: ../drivers/ft450d.py:416
+msgid ""
+"The FT-450D radio driver loads the 'Special Channels' tab\n"
+"with the PMS scanning range memories (group 11), 60meter\n"
+"channels (group 12), the QMB (STO/RCL) memory, the HF and\n"
+"50m HOME memories and all the A and B VFO memories.\n"
+"There are VFO memories for the last frequency dialed in\n"
+"each band. The last mem-tune config is also stored.\n"
+"These Special Channels allow limited field editing.\n"
+"This driver also populates the 'Other' tab in the channel\n"
+"memory Properties window. This tab contains values for\n"
+"those channel memory settings that don't fall under the\n"
+"standard Chirp display columns. With FT450 support, the gui now\n"
+"uses the mode 'DIG' to represent data modes and a new column\n"
+"'DATA MODE' to select USER-U, USER-L and RTTY \n"
+msgstr ""
+"Driverul stației FT-450D încarcă tab-ul 'Canale speciale'\n"
+"cu memoriile intervalului de scanare PMS (grupa 11), canalele de 60m\n"
+"(grupa 12), memoria QMB (STO/RCL), memoriile HF și\n"
+"50m HOME și toate memoriile VFO A și B.\n"
+"Există memorii VFO pentru ultima frecvență apelată în\n"
+"fiecare bandă. Configurația ultimei mem-tune este, de asemenea, salvată.\n"
+"Aceste Canale Speciale permit editarea limitată în teren.\n"
+"Acest driver umple și tab-ul 'Altele' în fereastra Proprietăți\n"
+"a memoriei canalului. Acest tab conține valori pentru\n"
+"setările de memorie ale canalului care nu se încadrează în\n"
+"coloanele standard de afișare CHIRP. Cu suport pentru FT450, gui-ul acum\n"
+"folosește modul 'DIG' pentru a reprezenta modurile de date și o nouă coloană\n"
+"'MODUL DE DATE' pentru a selecta USER-U, USER-L și RTTY\n"
+
+#: ../drivers/boblov_x3plus.py:119
+msgid ""
+"The X3Plus driver is currently experimental.\n"
+"There are no known issues but you should proceed with caution.\n"
+"Please save an unedited copy of your first successful\n"
+"download to a CHIRP Radio Images (*.img) file.\n"
+msgstr ""
+"Driverul X3Plus este în prezent experimental.\n"
+"Nu există probleme cunoscute, dar ar trebui să procedezi cu prudență.\n"
+"Te rugăm să salvezi o copie needitată a primei descărcări reușite\n"
+"într-un fișier CHIRP Radio Images (*.img).\n"
+
+#: ../wxui/developer.py:649
+msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
+msgstr "Autorul acestui modul nu este un dezvoltator CHIRP recunoscut. Se recomandă să nu încarci acest modul, deoarece ar putea reprezenta un risc de securitate. Vrei să continui oricum?"
+
+#: ../wxui/bugreport.py:213
+msgid "The debug log file is not available when CHIRP is run interactively from the command-line. Thus, this tool will not upload what you expect. It is recommended that you quit now and run CHIRP non-interactively (or with stdin redirected to /dev/null)"
+msgstr "Fișierul jurnal de depanare nu este disponibil atunci când CHIRP este rulat interactiv din linia de comandă. Prin urmare, acest instrument nu va încărca ceea ce te aștepți. Se recomandă să ieși acum și să rulezi CHIRP non-interactiv (sau cu stdin redirecționat către /dev/null)."
+
+#: ../wxui/bugreport.py:507
+msgid "The following information will be submitted:"
+msgstr "Următoarele informații vor fi trimise:"
+
+#: ../wxui/memedit.py:1306
+msgid "The memory editor requires a reload in order to change the workflow. That will happen now. Any other open tabs will be updated the next time they are loaded."
+msgstr ""
+
+#: ../wxui/main.py:1469
+#, python-format
+msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
+msgstr "Procedura recomandată pentru importarea memoriilor este să deschizi fișierul sursă și să copiezi/lipiți memoriile din acesta în imaginea țintă. Dacă continui cu această funcție de import, CHIRP va înlocui toate memoriile din fișierul deschis în prezent cu cele din %(file)s. Ai dori să deschizi acest fișier pentru a copia/lipi memoriile sau să continui cu importul?"
+
+#: ../wxui/memedit.py:2134
+msgid "This Memory"
+msgstr "Această memorie"
+
+#: ../drivers/id5100.py:332
+msgid "This driver has been tested with v3 of the ID-5100. If your radio is not fully updated please help by opening a bug report with a debug log so we can add support for the other revisions."
+msgstr "Acest driver a fost testat cu versiunea 3 a ID-5100. Dacă stația ta nu este complet actualizată, te rugăm să ajuți prin deschiderea unui raport de bug cu un jurnal de depanare, astfel încât să putem adăuga suport pentru celelalte revizii."
+
+#: ../drivers/radtel_rt490.py:1358 ../drivers/radtel_rt490.py:1360
+#: ../drivers/radtel_rt490.py:1362
+msgid "This driver is in development and should be considered as experimental."
+msgstr "Acest driver este în dezvoltare și ar trebui considerat experimental."
+
+#: ../drivers/uvk5.py:721
+msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
+msgstr "Această imagine nu conține informații despre firmware. Este posibil să fi fost generată cu o versiune veche sau modificată a CHIRP. Se recomandă să descărcați o imagine nouă dintr-o stație și să o utilizați pe aceasta pentru o siguranță și compatibilitate mai bună."
+
+#: ../wxui/main.py:1706
+msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"
+msgstr "Acesta este o stație în modul live, ceea ce înseamnă că modificările sunt trimise în timp real către radio pe măsură ce le faceți. Încărcarea nu este necesară!"
+
+#: ../wxui/main.py:1712
+msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
+msgstr "Acesta este un fișier independent de radio și nu poate fi încărcat direct într-o stație. Deschideți o imagine de radio (sau descărcați una dintr-o stație) și apoi copiați/lipiți elementele din acest tab în celălalt pentru a le încărca."
+
+#: ../drivers/th_uv88.py:560
+msgid "This is an early stage beta driver\n"
+msgstr "Acesta este un driver beta în stadiu incipient\n"
+
+#: ../drivers/th_uv88.py:562
+msgid "This is an early stage beta driver - upload at your own risk\n"
+msgstr "Acesta este un driver beta în stadiu incipient - încărcați pe propriul risc\n"
+
+#: ../drivers/uvk5.py:648
+msgid ""
+"This is an experimental driver for the Quansheng UV-K5. It may harm your radio, or worse. Use at your own risk.\n"
+"\n"
+"Before attempting to do any changes please download the memory image from the radio with chirp and keep it. This can be later used to recover the original settings. \n"
+"\n"
+"some details are not yet implemented"
+msgstr ""
+"Acesta este un driver experimental pentru Quansheng UV-K5. Poate deteriora radioul dvs. sau chiar mai rău. Utilizați pe propriul risc.\n"
+"\n"
+"Înainte de a face orice modificări, descărcați imaginea memoriei din stație cu CHIRP și păstrați-o. Aceasta poate fi folosită ulterior pentru a recupera setările originale.\n"
+"\n"
+"Unele detalii nu sunt încă implementate."
+
+#: ../drivers/bj9900.py:108
+msgid ""
+"This is experimental support for BJ-9900 which is still under development.\n"
+"Please ensure you have a good backup with OEM software.\n"
+"Also please send in bug and enhancement requests!\n"
+"You have been warned. Proceed at your own risk!"
+msgstr ""
+"Aceasta este o funcție experimentală pentru BJ-9900, care este încă în dezvoltare.\n"
+"Asigurați-vă că aveți un backup bun realizat cu software-ul OEM.\n"
+"De asemenea, vă rugăm să trimiteți rapoarte despre erori și sugestii de îmbunătățire!\n"
+"Ați fost avertizat. Continuați pe propriul risc!"
+
+#: ../wxui/bugreport.py:418
+msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
+msgstr "Acesta este numărul tichetului pentru o problemă deja creată pe site-ul chirpmyradio.com"
+
+#: ../wxui/memedit.py:2138
+msgid "This memory and shift all up"
+msgstr "Această memorie și blocul de schimbare în sus"
+
+#: ../wxui/memedit.py:2136
+msgid "This memory and shift block up"
+msgstr "Această memorie și toate schimbările în sus"
+
+#: ../drivers/uvk5_egzumer.py:1468
+msgid "This option may break your radio! Each radio has a unique set of calibration data and uploading the data from the image will cause physical harm to the radio if it is from a different piece of hardware. Do not use this unless you know what you are doing and accept the risk of destroying your radio!"
+msgstr "Această opțiune poate defecta radioul dvs.! Fiecare radio are un set unic de date de calibrare, iar încărcarea datelor din imagine va provoca daune fizice radioului dacă provine de la un alt dispozitiv. Nu folosiți această opțiune decât dacă știți exact ce faceți și acceptați riscul de a vă distruge radioul!"
+
+#: ../drivers/fd268.py:303 ../drivers/fd268.py:309
+msgid ""
+"This radio has a tricky way of enter into program mode,\n"
+"even the original software has a few tries to get inside.\n"
+"I will try 8 times (most of the time ~3 will doit) and this\n"
+"can take a few seconds, if don't work, try again a few times.\n"
+"If you can get into it, please check the radio and cable.\n"
+msgstr ""
+"Acest radio are un mod complicat de a intra în modul de programare,\n"
+"chiar și software-ul original necesită câteva încercări pentru a reuși.\n"
+"Voi încerca de 8 ori (de obicei, ~3 încercări sunt suficiente) și acest\n"
+"proces poate dura câteva secunde. Dacă nu funcționează, încercați din nou de câteva ori.\n"
+"Dacă nu reușiți să intrați, verificați radioul și cablul.\n"
+
+#: ../drivers/uvk5.py:1884
+msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
+msgstr "Această opțiune ar trebui activată doar dacă utilizați un firmware modificat care suportă acoperire de frecvență mai largă. Activarea acestei opțiuni va face ca CHIRP să nu mai impună restricțiile OEM și poate duce la un comportament nedefinit sau nereglementat. Utilizați pe propriul risc!"
+
+#: ../wxui/bugreport.py:181
+msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
+msgstr "Acest instrument va încărca detalii despre sistemul dvs. într-o problemă existentă pe tracker-ul CHIRP. Necesită numele de utilizator și parola dvs. pentru chirpmyradio.com pentru a funcționa. Informații despre sistemul dvs., inclusiv jurnalul de depanare, fișierul de configurare și orice fișiere imagine deschise, vor fi încărcate. Se va încerca eliminarea oricăror informații personale înainte ca acestea să părăsească sistemul dvs."
+
+#: ../wxui/developer.py:659
+msgid "This will load a module from a website issue"
+msgstr "Aceasta va încărca un modul dintr-o problemă de pe site-ul web"
+
+#: ../wxui/memedit.py:478
+msgid "Tone"
+msgstr "Ton"
+
+#: ../wxui/memedit.py:1367
+msgid "Tone Mode"
+msgstr "Mod ton"
+
+#: ../wxui/memedit.py:480
+msgid "Tone Squelch"
+msgstr "Ton Squelch"
+
+#: ../wxui/memedit.py:134
+msgid "Tone squelch mode"
+msgstr "Modul de squelch cu ton"
+
+#: ../wxui/memedit.py:147
+msgid "Transmit Power"
+msgstr "Putere de transmisie"
+
+#: ../wxui/memedit.py:143
+msgid "Transmit shift, split mode, or transmit inhibit"
+msgstr "Shift de transmisie, modul split sau inhibare transmisie"
+
+#: ../wxui/memedit.py:135
+msgid "Transmit tone"
+msgstr "Ton de transmisie"
+
+#: ../wxui/memedit.py:138
+msgid "Transmit/receive DTCS code for DTCS mode, else transmit code"
+msgstr "Cod DTCS de transmisie/recepție pentru modul DTCS, altfel cod de transmisie"
+
+#: ../wxui/memedit.py:137
+msgid "Transmit/receive modulation (FM, AM, SSB, etc)"
+msgstr "Modulație de transmisie/recepție (FM, AM, SSB etc.)"
+
+#: ../wxui/memedit.py:136
+msgid "Transmit/receive tone for TSQL mode, else receive tone"
+msgstr "Ton de transmisie/recepție pentru modul TSQL, altfel ton de recepție"
+
+#: ../wxui/memedit.py:422 ../wxui/memedit.py:1379
+msgid "Tuning Step"
+msgstr "Pas"
+
+#: ../wxui/memquery.py:188
+msgid "Type a simple search string or a formatted query and press enter"
+msgstr "Tastați un șir de căutare simplu sau o interogare formatată și apăsați enter"
+
+#: ../wxui/clone.py:483 ../wxui/clone.py:490 ../wxui/clone.py:501
+#: ../wxui/clone.py:509 ../wxui/clone.py:513
+msgid "USB Port Finder"
+msgstr "Găsitor de porturi USB"
+
+#: ../wxui/clone.py:499
+msgid "Unable to determine port for your cable. Check your drivers and connections."
+msgstr "Nu s-a putut determina portul pentru cablul dvs. Verificați driverele și conexiunile."
+
+#: ../wxui/memedit.py:1858
+msgid "Unable to edit memory before radio is loaded"
+msgstr "Nu se poate edita memoria înainte de a încărca radioul"
+
+#: ../wxui/main.py:1395
+#, python-format
+msgid "Unable to find stock config %r"
+msgstr "Nu s-a putut găsi configurația implicită %r"
+
+#: ../wxui/memedit.py:2376
+msgid "Unable to import while the view is sorted"
+msgstr "Nu se poate importa cât timp vizualizarea este sortată"
+
+#: ../wxui/common.py:236
+msgid "Unable to open the clipboard"
+msgstr "Nu se poate deschide clipboard-ul"
+
+#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
+#: ../sources/mapy73pl.py:50
+msgid "Unable to query"
+msgstr "Nu se poate interoga"
+
+#: ../drivers/ft817.py:320
+msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
+msgstr "Nu s-a putut citi ultimul bloc. Acest lucru se întâmplă adesea când modelul selectat este US, dar radioul este unul non-US (sau deblocat pentru frecvențe extinse). Vă rugăm să alegeți modelul corect și să încercați din nou."
+
+#: ../wxui/common.py:702
+#, python-format
+msgid "Unable to reveal %s on this system"
+msgstr "Nu se poate afișa %s pe acest sistem"
+
+#: ../wxui/memedit.py:248
+#, python-format
+msgid "Unable to set %s on this memory"
+msgstr "Nu se poate seta %s pe această memorie"
+
+#: ../wxui/main.py:1716
+msgid "Unable to upload this file"
+msgstr "Nu s-a putut încărca acest fișier"
+
+#: ../wxui/memedit.py:982
+msgid "Undo"
+msgstr "Anulează"
+
+#: ../wxui/query_sources.py:1064
+msgid "United States"
+msgstr "Statele Unite"
+
+#: ../wxui/clone.py:482
+msgid "Unplug your cable (if needed) and then click OK"
+msgstr "Deconectați cablul (dacă este necesar), apoi faceți clic pe OK"
+
+#: ../drivers/thd74.py:327
+#, python-format
+msgid "Unsupported model %r"
+msgstr "Model neacceptat %r"
+
+#: ../wxui/bugreport.py:202
+msgid "Update an existing bug"
+msgstr "Actualizează o eroare existentă"
+
+#: ../wxui/bugreport.py:524
+#, python-format
+msgid "Updating bug %s"
+msgstr "Actualizarea erorii %s"
+
+#: ../wxui/clone.py:902
+msgid "Upload instructions"
+msgstr "Instrucțiuni pentru încărcare"
+
+#: ../drivers/uvk5.py:2109
+msgid "Upload is disabled due to unsupported firmware version"
+msgstr "Încărcarea este dezactivată din cauza unei versiuni de firmware neacceptate"
+
+#: ../wxui/main.py:1061
+msgid "Upload to radio"
+msgstr "Încarcă în stație"
+
+#: ../wxui/main.py:874
+msgid "Upload to radio..."
+msgstr "Încarcă în stație"
+
+#: ../wxui/common.py:332
+#, python-format
+msgid "Uploaded memory %s"
+msgstr "Memorie încărcată %s"
+
+#: ../wxui/memedit.py:1282
+msgid "Use TX Frequency Workflow"
+msgstr ""
+
+#: ../wxui/main.py:830
+msgid "Use fixed-width font"
+msgstr "Folosește font cu lățime fixă"
+
+#: ../wxui/main.py:838
+msgid "Use larger font"
+msgstr "Folosește font mai mare"
+
+#: ../wxui/bugreport.py:249
+msgid "Username"
+msgstr "Nume utilizator"
+
+#: ../wxui/developer.py:313
+#, python-format
+msgid "Value does not fit in %i bits"
+msgstr "Valoarea nu se încadrează în %i biți"
+
+#: ../wxui/common.py:534
+#, python-format
+msgid "Value must be at least %.4f"
+msgstr "Valoarea trebuie să fie cel puțin %.4f"
+
+#: ../wxui/common.py:538
+#, python-format
+msgid "Value must be at most %.4f"
+msgstr "Valoarea trebuie să fie cel mult %.4f"
+
+#: ../wxui/developer.py:357
+#, python-format
+msgid "Value must be exactly %i decimal digits"
+msgstr "Valoarea trebuie să aibă exact %i cifre zecimale"
+
+#: ../wxui/developer.py:311 ../wxui/developer.py:355
+msgid "Value must be zero or greater"
+msgstr "Valoarea trebuie să fie zero sau mai mare"
+
+#: ../wxui/memquery.py:206
+msgid "Value to search memory field for"
+msgstr "Valoare pentru căutarea câmpului de memorie"
+
+#: ../wxui/memedit.py:2788
+msgid "Values"
+msgstr "Valori"
+
+#: ../wxui/clone.py:350
+msgid "Vendor"
+msgstr "Furnizor"
+
+#: ../wxui/main.py:1022
+msgid "View"
+msgstr "Vizualizează"
+
+#: ../wxui/common.py:482
+msgid "WARNING!"
+msgstr "ATENȚIE!"
+
+#: ../wxui/bugreport.py:218 ../wxui/memedit.py:1944 ../wxui/main.py:2003
+msgid "Warning"
+msgstr "Atenție"
+
+#: ../wxui/memedit.py:1943
+#, python-format
+msgid "Warning: %s"
+msgstr "Atenție: %s"
+
+#: ../wxui/main.py:460
+msgid "Welcome"
+msgstr "Bine ați venit"
+
+#: ../wxui/query_sources.py:417
+msgid "With this option checked, a proximity search will include cached results from other localities if they are in range, match other filter parameters, and have been downloaded before."
+msgstr "Cu această opțiune bifată, o căutare pe bază de proximitate va include rezultate din alte localități, dacă acestea sunt în intervalul de căutare, se potrivesc altor parametri de filtrare și au fost descărcate anterior."
+
+#: ../wxui/__init__.py:58
+msgid "Would you like CHIRP to install a desktop icon for you?"
+msgstr "Doriți ca CHIRP să instaleze un icon pe desktop pentru dvs.?"
+
+#: ../wxui/bugreport.py:309
+msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
+msgstr "Ați deschis mai multe probleme în ultima săptămână. CHIRP limitează numărul de probleme pe care le puteți deschide pentru a evita abuzurile. Dacă chiar trebuie să deschideți încă una, vă rugăm să o faceți prin intermediul site-ului."
+
+#: ../wxui/clone.py:520
+msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
+msgstr "Dispozitivul dvs. USB bazat pe Prolific nu va funcționa fără a reveni la o versiune mai veche a driverului. Vizitaţi site-ul CHIRP pentru a citi mai multe despre cum să rezolvați această problemă?"
+
+#: ../wxui/query_sources.py:830
+msgid "Your QTH Locator"
+msgstr "Locatorul dvs. QTH"
+
+#: ../wxui/clone.py:507
+msgid "Your cable appears to be on port:"
+msgstr "Se pare că cablul dvs. este pe portul:"
+
+#: ../wxui/developer.py:193
+msgid "bits"
+msgstr "bits"
+
+#: ../wxui/developer.py:189
+msgid "bytes"
+msgstr "bytes"
+
+#: ../wxui/developer.py:184
+msgid "bytes each"
+msgstr "bytes fiecare"
+
+#: ../wxui/main.py:1936
+msgid "disabled"
+msgstr "Dezactivat"
+
+#: ../wxui/main.py:1936
+msgid "enabled"
+msgstr "Activat"
+
+#: ../drivers/vx5.py:116
+#, python-brace-format
+msgid "{bank} is full"
+msgstr "{bank} este plin"
+
+#~ msgid "%i errors during open, check the debug log for details"
+#~ msgstr "%i erori la deschidere, verificați jurnalul de depanare pentru detalii"
+
+#~ msgid "CHIRP Files"
+#~ msgstr "Fișiere CHIRP"
+
+#~ msgid "CHIRP Native File"
+#~ msgstr "Fișier nativ CHIRP"
+
+#~ msgid "CHIRP Radio Images"
+#~ msgstr "Imagini radio CHIRP"
+
+#~ msgid "CSV File"
+#~ msgstr "Fișier CSV"
+
+#~ msgid "Columns"
+#~ msgstr "Coloane"
+
+#~ msgid "Discard Changes?"
+#~ msgstr "Renunțați la modificări?"
+
+#~ msgid "Don't show this again"
+#~ msgstr "Nu mai arăta acest mesaj"
+
+#~ msgid "E_xchange"
+#~ msgstr "Schimbă"
+
+#~ msgid "Enable Developer Functions"
+#~ msgstr "Activează funcțiile de dezvoltator"
+
+#~ msgid "Error importing memories:"
+#~ msgstr "Raportarea erorilor este activată"
+
+#~ msgid "Error reporting is enabled"
+#~ msgstr "Raportarea erorilor este activată"
+
+#~ msgid "Export"
+#~ msgstr "Exportează"
+
+#~ msgid "Hide Unused Fields"
+#~ msgstr "Ascunde câmpurile nefolosite"
+
+#~ msgid "ICF Files"
+#~ msgstr "Fișier ICF"
+
+#~ msgid "ICF files cannot be edited, only displayed or imported into another file. Open in read-only mode?"
+#~ msgstr "Fișierele ICF nu pot fi editate, doar afișate sau importate într-un alt fișier. Doriți să deschideți în mod doar pentru citire?"
+
+#~ msgid "If you wish to disable this feature you may do so in the <u>Help</u> menu"
+#~ msgstr "Dacă doriți să dezactivaţi această funcție, o puteți face din meniul <u>Ajutor</u>"
+
+#~ msgid "Import from RepeaterBook"
+#~ msgstr "Importă din RepeaterBook"
+
+#~ msgid "Import from stock config"
+#~ msgstr "Importă din RepeaterBook"
+
+#~ msgid "Move down"
+#~ msgstr "Mută Jos"
+
+#~ msgid "Move up"
+#~ msgstr "Mută Sus"
+
+#~ msgid "Notes"
+#~ msgstr "Notă:"
+
+#~ msgid "Open recent file {name}"
+#~ msgstr "Deschide fişierul recent {name}"
+
+#~ msgid "Report statistics"
+#~ msgstr "Raportează statistici"
+
+#~ msgid "Select"
+#~ msgstr "Selectează coloanele"
+
+#~ msgid "Show raw memory"
+#~ msgstr "Arată memoria brută"
+
+#~ msgid ""
+#~ "The reporting feature of CHIRP is designed to help <u>improve quality</u> by allowing the authors to focus on the radio drivers used most often and errors experienced by the users. The reports contain no identifying information and are used only for statistical purposes by the authors. Your privacy is extremely important, but <u>please consider leaving this feature enabled to help make CHIRP better!</u>\n"
+#~ "\n"
+#~ "<b>Are you sure you want to disable this feature?</b>"
+#~ msgstr ""
+#~ "Funcția de raportare a CHIRP este concepută pentru a ajuta la <u>îmbunătățirea calității</u> prin permiterea autorilor de a se concentra pe driverele radio utilizate cel mai frecvent și pe erorile întâmpinate de utilizatori. Rapoartele nu conțin informații de identificare și sunt folosite doar în scopuri statistice de către autori. Confidenţialitatea dumneavoastră este extrem de importantă, dar <u>vă rugăm să luați în considerare posibilitatea de a lăsa această funcție activată pentru a ajuta la îmbunătăţirea CHIRP!</u>\n"
+#~ "\n"
+#~ "<b>Sunteți sigur că doriți să dezactivaţi această funcție?</b>"
+
+#~ msgid "The {vendor} {model} operates in <b>live mode</b>. This means that any changes you make are immediately sent to the radio. Because of this, you cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to edit the contents offline, please <u>Export</u> to a CSV file, using the <b>File menu</b>."
+#~ msgstr "{vendor} {model} funcționează în <b>mod live</b>. Aceasta înseamnă că orice modificare pe care o faceți este trimisă imediat către radio. Din acest motiv, nu puteți efectua operațiile de <u>Salvare</u> sau <u>Încărcare</u>. Dacă doriți să editați conținutul offline, vă rugăm să <u>Exportați</u> într-un fișier CSV, folosind <b>Meniul Fișier</b>."
+
+#~ msgid "There was an error during export: {error}"
+#~ msgstr "A apărut o eroare în timpul exportului: {error}"
+
+#~ msgid "There was an error during import: {error}"
+#~ msgstr "A apărut o eroare în timpul importului: {error}"
+
+#~ msgid "There was an error opening {fname}: {error}"
+#~ msgstr "A apărut o eroare la deschiderea fișierului {fname}: {error}"
+
+#~ msgid "Untitled"
+#~ msgstr "Fără titlu"
+
+#~ msgid "VX7 Commander"
+#~ msgstr "VX7 Commander"
+
+#~ msgid "VX7 Commander Files"
+#~ msgstr "Fișiere pentru VX7 Commander"
+
+#~ msgid "Visible columns for {radio}"
+#~ msgstr "Coloane vizible pentru {radio}"
+
+#~ msgid "_Copy"
+#~ msgstr "Copiează"
+
+#~ msgid "_Cut"
+#~ msgstr "Taie"
+
+#~ msgid "_Delete"
+#~ msgstr "Șterge"
+
+#~ msgid "_Edit"
+#~ msgstr "Editează"
+
+#~ msgid "_Paste"
+#~ msgstr "Lipește"
+
+#~ msgid "_Radio"
+#~ msgstr "Radio"
+
+#~ msgid "{vendor} {model} image file"
+#~ msgstr "Fișier imagine pentru {vendor} {model} image file"
+
+#~ msgid "{vendor} {model} on {port}"
+#~ msgstr "Fișier imagine pentru {vendor} {model}"
