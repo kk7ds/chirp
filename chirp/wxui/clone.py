@@ -178,6 +178,7 @@ def open_serial(port, rclass):
 class ChirpRadioPromptDialog(wx.Dialog):
     def __init__(self, *a, **k):
         self.radio = k.pop('radio')
+        self.rconfig = config.get_for_radio(self.radio)
         self.prompt = k.pop('prompt')
         buttons = k.pop('buttons', wx.OK | wx.CANCEL)
         super().__init__(*a, **k)
@@ -208,12 +209,19 @@ class ChirpRadioPromptDialog(wx.Dialog):
         self.Centre()
 
     def persist_flag(self, radio, flag):
-        key = '%s_%s' % (flag, directory.radio_class_id(radio))
-        CONF.set_bool(key.lower(), not self.cb.IsChecked(), 'clone_prompts')
+        key = 'prompt_%s' % flag.lower()
+        self.rconfig.set_bool(key, not self.cb.IsChecked())
+        oldkey = '%s_%s' % (flag, directory.radio_class_id(radio))
+        if CONF.is_defined(oldkey, 'clone_prompts'):
+            CONF.remove_option(oldkey, 'clone_prompts')
 
     def check_flag(self, radio, flag):
-        key = '%s_%s' % (flag, directory.radio_class_id(radio))
-        return CONF.get_bool(key.lower(), 'clone_prompts', True)
+        key = 'prompt_%s' % flag.lower()
+        if not self.rconfig.is_defined(key):
+            # FIXME: Remove this compatibility at some point
+            oldkey = '%s_%s' % (flag, directory.radio_class_id(radio))
+            return CONF.get_bool(oldkey.lower(), 'clone_prompts', True)
+        self.rconfig.get_bool(key, default=True)
 
     def ShowModal(self):
         if not self.message:
@@ -224,7 +232,7 @@ class ChirpRadioPromptDialog(wx.Dialog):
             return wx.ID_OK
         LOG.debug('Showing %s prompt' % self.prompt)
         status = super().ShowModal()
-        if status == wx.ID_OK:
+        if status in (wx.ID_OK, wx.ID_YES):
             LOG.debug('Setting flag for prompt %s' % self.prompt)
             self.persist_flag(self.radio, self.prompt)
         else:
@@ -639,20 +647,23 @@ class ChirpCloneDialog(wx.Dialog):
     def _select_port_for_model(self):
         vendor = self._vendor.GetStringSelection()
         model = self._model.GetStringSelection()
-        modelstr = '%s:%s' % (vendor, model)
-        last_port = CONF.get(modelstr, 'port_recall')
+
+        rclass = self.get_selected_rclass()
+        rconfig = config.get_for_radio(rclass)
+        last_port = rconfig.get('last_port')
         if last_port and self.set_selected_port(last_port):
-            LOG.debug('Automatically chose port %s as it is last-used for %s',
-                      last_port, modelstr)
+            LOG.debug('Automatically chose last-used port %s for %s %s',
+                      last_port, vendor, model)
         else:
-            LOG.debug('No recent/available port for %s', modelstr)
+            LOG.debug('No recent/available port for %s %s', vendor, model)
 
     def _remember_port_for_selected(self):
-        modelstr = '%s:%s' % (self._vendor.GetStringSelection(),
-                              self._model.GetStringSelection())
+        rclass = self.get_selected_rclass()
+        rconfig = config.get_for_radio(rclass)
         port = self.get_selected_port()
-        CONF.set(modelstr, port, 'port_recall')
-        LOG.debug('Recorded last-used port %s for %s', port, modelstr)
+        rconfig.set('last_port', port)
+        LOG.debug('Recorded last-used port %s for %s %s',
+                  port, rclass.VENDOR, rclass.MODEL)
 
     def _status(self, status):
         def _safe_status():
@@ -729,6 +740,8 @@ class ChirpDownloadDialog(ChirpCloneDialog):
         if (CONF.get_bool('always_start_recent', 'state') and
                 CONF.get('recent_models', 'state')):
             self._do_recent()
+        # Clean up old-style port recall
+        CONF.remove_section('port_recall')
 
     def _selected_model(self, event):
         super(ChirpDownloadDialog, self)._selected_model(event)
