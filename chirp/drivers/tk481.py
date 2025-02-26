@@ -366,7 +366,7 @@ class TKx80_Trunked(tk280.KenwoodTKx80):
         return
 
 
-class TKx80System(TKx80_Trunked):
+class TKx80System:
     def __init__(self, parent, system):
         self._system = system
         self._parent = parent
@@ -374,6 +374,14 @@ class TKx80System(TKx80_Trunked):
     @property
     def _memobj(self):
         return self._parent._memobj
+
+    def get_sub_devices(self):
+        return []
+
+    def get_features(self):
+        rf = self._parent.get_features()
+        rf.has_sub_devices = False
+        return rf
 
 
 @directory.register
