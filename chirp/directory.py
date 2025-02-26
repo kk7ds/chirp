@@ -16,6 +16,7 @@
 
 import glob
 import os
+import inspect
 import logging
 import sys
 
@@ -34,6 +35,18 @@ def radio_class_id(cls):
     ident = ident.replace("(", "")
     ident = ident.replace(")", "")
     return ident
+
+
+def registered_class(cls):
+    """Find the first parent of @cls that is registered"""
+    bases = inspect.getmro(cls)
+    for base in bases:
+        try:
+            return get_driver(base)
+        except Exception:
+            pass
+    else:
+        raise KeyError('No parent radio class of %s is registered' % cls)
 
 
 ALLOW_DUPS = False
