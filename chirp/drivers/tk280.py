@@ -764,8 +764,8 @@ def do_upload(radio):
 
 class TKx80SubdevMeta(type):
     """Metaclass for generating subdevice subclasses"""
-    def __new__(cls, name, parent, dct):
-        return super(TKx80SubdevMeta, cls).__new__(cls, name, (parent,), dct)
+    def __new__(cls, name, bases, dct):
+        return super(TKx80SubdevMeta, cls).__new__(cls, name, bases, dct)
 
     @staticmethod
     def make_subdev(parent_dev, child_cls, key, to_copy, **args):
@@ -776,7 +776,7 @@ class TKx80SubdevMeta(type):
            args: Class variables to set on the new class
         """
         return TKx80SubdevMeta('%s_%s' % (child_cls.__name__, key),
-                               child_cls,
+                               (child_cls, parent_dev.__class__),
                                dict({k: getattr(parent_dev, k)
                                      for k in to_copy}, **args))
 
@@ -870,10 +870,11 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
         return rf
 
     def get_sub_devices(self):
-        if not self._memobj:
-            return [TKx80Group(self, 1)]
         to_copy = ('MODEL', 'TYPE', 'POWER_LEVELS', '_range', '_steps',
                    '_freqmult')
+        if not self._memobj:
+            return [TKx80SubdevMeta.make_subdev(
+                self, TKx80Group, 1, to_copy)(self, 1)]
         return sorted([
             TKx80SubdevMeta.make_subdev(
                 self, TKx80Group, i,
@@ -1685,7 +1686,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
                 _mem.power = self.POWER_LEVELS[0]
 
 
-class TKx80Group(KenwoodTKx80):
+class TKx80Group:
     def __init__(self, parent, group):
         self._parent = parent
         self._group = int(group)
