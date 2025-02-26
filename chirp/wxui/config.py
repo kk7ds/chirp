@@ -72,6 +72,9 @@ class ChirpConfig:
         if not self.__config.items(section):
             self.__config.remove_section(section)
 
+    def remove_section(self, section):
+        return self.__config.remove_section(section)
+
 
 class ChirpConfigProxy:
     def __init__(self, config, section="global"):
@@ -166,8 +169,11 @@ class ChirpConfigProxy:
     def is_defined(self, key, section=None):
         return self._config.is_defined(key, section or self._section)
 
-    def remove_option(self, key, section):
-        self._config.remove_option(section, key)
+    def remove_option(self, key, section=None):
+        self._config.remove_option(section or self._section, key)
+
+    def remove_section(self, section=None):
+        return self._config.remove_section(section or self._section)
 
 
 _CONFIG = None
@@ -185,5 +191,9 @@ def get(section="global"):
 
 
 def get_for_radio(radio):
-    registered_id = directory.registered_class(radio.__class__)
+    if isinstance(radio, type):
+        rclass = radio
+    else:
+        rclass = radio.__class__
+    registered_id = directory.registered_class(rclass)
     return get(section='radio_%s' % registered_id)
