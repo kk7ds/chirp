@@ -3430,10 +3430,10 @@ msgstr "{bank} este plin"
 #~ msgstr "{vendor} {model} funcționează în <b>mod live</b>. Aceasta înseamnă că orice modificare pe care o faceți este trimisă imediat către radio. Din acest motiv, nu puteți efectua operațiile de <u>Salvare</u> sau <u>Încărcare</u>. Dacă doriți să editați conținutul offline, vă rugăm să <u>Exportați</u> într-un fișier CSV, folosind <b>Meniul Fișier</b>."
 
 #~ msgid "There was an error during export: {error}"
-#~ msgstr "A apărut o eroare în timpul exportului {fname}: {error}"
+#~ msgstr "A apărut o eroare în timpul exportului: {error}"
 
 #~ msgid "There was an error during import: {error}"
-#~ msgstr "A apărut o eroare în timpul importului {fname}: {error}"
+#~ msgstr "A apărut o eroare în timpul importului: {error}"
 
 #~ msgid "There was an error opening {fname}: {error}"
 #~ msgstr "A apărut o eroare la deschiderea fișierului {fname}: {error}"
