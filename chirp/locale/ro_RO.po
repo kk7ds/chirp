@@ -3304,7 +3304,7 @@ msgstr "Ați deschis mai multe probleme în ultima săptămână. CHIRP limiteaz
 
 #: ../wxui/clone.py:512
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
-msgstr "Dispozitivul dvs. USB bazat pe Prolific nu va funcționa fără a reveni la o versiune mai veche a driverului. Vizitați site-ul CHIRP pentru a citi mai multe despre cum să rezolvați această problemă?"
+msgstr "Dispozitivul dvs. USB bazat pe Prolific nu va funcționa fără a reveni la o versiune mai veche a driverului. Vizitaţi site-ul CHIRP pentru a citi mai multe despre cum să rezolvați această problemă?"
 
 #: ../wxui/query_sources.py:830
 msgid "Your QTH Locator"
@@ -3388,7 +3388,7 @@ msgstr "{bank} este plin"
 #~ msgstr "Fișierele ICF nu pot fi editate, doar afișate sau importate într-un alt fișier. Doriți să deschideți în mod doar pentru citire?"
 
 #~ msgid "If you wish to disable this feature you may do so in the <u>Help</u> menu"
-#~ msgstr "Dacă doriți să dezactivați această funcție, o puteți face din meniul <u>Ajutor</u>"
+#~ msgstr "Dacă doriți să dezactivaţi această funcție, o puteți face din meniul <u>Ajutor</u>"
 
 #~ msgid "Import from RepeaterBook"
 #~ msgstr "Importă din RepeaterBook"
@@ -3406,7 +3406,7 @@ msgstr "{bank} este plin"
 #~ msgstr "Notă:"
 
 #~ msgid "Open recent file {name}"
-#~ msgstr "Deschide fișierul recent {name}"
+#~ msgstr "Deschide fişierul recent {name}"
 
 #~ msgid "Report statistics"
 #~ msgstr "Raportează statistici"
@@ -3422,9 +3422,9 @@ msgstr "{bank} este plin"
 #~ "\n"
 #~ "<b>Are you sure you want to disable this feature?</b>"
 #~ msgstr ""
-#~ "Funcția de raportare a CHIRP este concepută pentru a ajuta la <u>îmbunătățirea calității</u> prin permiterea autorilor de a se concentra pe driverele radio utilizate cel mai frecvent și pe erorile întâmpinate de utilizatori. Rapoartele nu conțin informații de identificare și sunt folosite doar în scopuri statistice de către autori. Confidențialitatea dumneavoastră este extrem de importantă, dar <u>vă rugăm să luați în considerare posibilitatea de a lăsa această funcție activată pentru a ajuta la îmbunătățirea CHIRP!</u>\n"
+#~ "Funcția de raportare a CHIRP este concepută pentru a ajuta la <u>îmbunătățirea calității</u> prin permiterea autorilor de a se concentra pe driverele radio utilizate cel mai frecvent și pe erorile întâmpinate de utilizatori. Rapoartele nu conțin informații de identificare și sunt folosite doar în scopuri statistice de către autori. Confidenţialitatea dumneavoastră este extrem de importantă, dar <u>vă rugăm să luați în considerare posibilitatea de a lăsa această funcție activată pentru a ajuta la îmbunătăţirea CHIRP!</u>\n"
 #~ "\n"
-#~ "<b>Sunteți sigur că doriți să dezactivați această funcție?</b>"
+#~ "<b>Sunteți sigur că doriți să dezactivaţi această funcție?</b>"
 
 #~ msgid "The {vendor} {model} operates in <b>live mode</b>. This means that any changes you make are immediately sent to the radio. Because of this, you cannot perform the <u>Save</u> or <u>Upload</u> operations. If you wish to edit the contents offline, please <u>Export</u> to a CSV file, using the <b>File menu</b>."
 #~ msgstr "{vendor} {model} funcționează în <b>mod live</b>. Aceasta înseamnă că orice modificare pe care o faceți este trimisă imediat către radio. Din acest motiv, nu puteți efectua operațiile de <u>Salvare</u> sau <u>Încărcare</u>. Dacă doriți să editați conținutul offline, vă rugăm să <u>Exportați</u> într-un fișier CSV, folosind <b>Meniul Fișier</b>."
