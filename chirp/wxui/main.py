@@ -2034,6 +2034,7 @@ GNU General Public License for more details."""
             for shortname, name in plans:
                 CONF.set_bool(shortname, shortname == selected, 'bandplan')
 
+    @common.error_proof()
     def _do_network_query(self, query_cls):
         self.enable_bugreport()
         d = query_cls(self, title=_('Query %s') % query_cls.NAME)
