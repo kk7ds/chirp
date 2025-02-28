@@ -195,5 +195,15 @@ def get_for_radio(radio):
         rclass = radio
     else:
         rclass = radio.__class__
-    registered_id = directory.registered_class(rclass)
+    try:
+        registered_id = directory.registered_class(rclass)
+    except KeyError:
+        # Network sources and any other special cases where a radio is not
+        # registered. Try to get a driver id if possible, otherwise combine
+        # into a single config blob
+        try:
+            registered_id = directory.radio_class_id(rclass)
+        except Exception:
+            LOG.warning('Unable to get radio-specific config for %s', rclass)
+            registered_id = 'other'
     return get(section='radio_%s' % registered_id)
