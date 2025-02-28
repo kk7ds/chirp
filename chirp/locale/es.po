@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-26 20:03-0800\n"
-"PO-Revision-Date: 2025-02-05 01:25-0300\n"
+"PO-Revision-Date: 2025-02-28 00:09-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1090,7 +1090,7 @@ msgstr "Navegador"
 #: ../wxui/bugreport.py:447
 #, python-format
 msgid "Bug number %s is closed"
-msgstr ""
+msgstr "El error numero %s está cerrado"
 
 #: ../wxui/bugreport.py:436
 msgid "Bug number not found"
@@ -1290,7 +1290,7 @@ msgstr "Cortar"
 #: ../wxui/memedit.py:2360
 #, python-format
 msgid "Cut %i memories"
-msgstr ""
+msgstr "Cortar %i memorias"
 
 #: ../wxui/memedit.py:573
 msgid "DTCS"
@@ -1326,7 +1326,7 @@ msgstr "Borrar"
 
 #: ../wxui/memedit.py:1984
 msgid "Delete memories"
-msgstr ""
+msgstr "Borrar memorias"
 
 #: ../wxui/bugreport.py:527
 msgid "Detailed information"
@@ -1422,7 +1422,7 @@ msgstr "Dúplex"
 #: ../wxui/memedit.py:2255
 #, python-format
 msgid "Edit %i memories"
-msgstr ""
+msgstr "Editar %i memorias"
 
 #: ../wxui/memedit.py:2755
 #, python-format
@@ -2010,7 +2010,7 @@ msgstr "Importar"
 #: ../wxui/memedit.py:2396
 #, python-format
 msgid "Import %i memories"
-msgstr ""
+msgstr "Importar %i memorias"
 
 #: ../wxui/main.py:732
 msgid "Import from file..."
@@ -2188,7 +2188,7 @@ msgstr "Longitud"
 #: ../wxui/memedit.py:1950
 #, python-format
 msgid "Manual edit of memory %i"
-msgstr ""
+msgstr "Edición manual de la memoria %i"
 
 #: ../wxui/main.py:202
 msgid "Memories"
@@ -2258,7 +2258,7 @@ msgstr "Más de un puerto encontrado: %s"
 #: ../wxui/memedit.py:2616
 #, python-format
 msgid "Move %i memories"
-msgstr ""
+msgstr "Mover %i memorias"
 
 #: ../wxui/memedit.py:1265
 msgid "Move Down"
@@ -2455,11 +2455,11 @@ msgstr "Pegar"
 
 #: ../wxui/common.py:805
 msgid "Paste external memories"
-msgstr ""
+msgstr "Pegar memorias externas"
 
 #: ../wxui/memedit.py:2529
 msgid "Paste memories"
-msgstr ""
+msgstr "Pegar memorias"
 
 #: ../wxui/memedit.py:2424
 #, python-format
@@ -2487,7 +2487,7 @@ msgstr "¡Por favor asegúrate de salir de CHIRP antes de instalar la nueva vers
 
 #: ../wxui/bugreport.py:444
 msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
-msgstr ""
+msgstr "Por favor comprueba el número de error e intenta de nuevo. Si realmente quieres reportar sobre este error, por favor coméntalo vía sitio web y pregunta por este para que se reabra."
 
 #: ../drivers/ftlx011.py:301
 msgid ""
@@ -2680,7 +2680,7 @@ msgstr "Se recomienda usar 55.2"
 
 #: ../wxui/memedit.py:983
 msgid "Redo"
-msgstr ""
+msgstr "Rehacer"
 
 #: ../wxui/common.py:497
 msgid "Refresh required"
@@ -2701,7 +2701,7 @@ msgstr "Recargar controlador y archivo"
 
 #: ../wxui/memedit.py:1310
 msgid "Reload required"
-msgstr ""
+msgstr "Recarga requerida"
 
 #: ../wxui/clone.py:616
 msgid "Remove"
@@ -2871,7 +2871,7 @@ msgstr "Algunas memorias no son borrables"
 #: ../wxui/memedit.py:2050
 #, python-format
 msgid "Sort %i memories"
-msgstr ""
+msgstr "Ordenar %i memorias"
 
 #: ../wxui/memedit.py:2173
 #, python-format
@@ -2925,7 +2925,7 @@ msgstr "Reporte de error enviado exitosamente:"
 
 #: ../wxui/memedit.py:315
 msgid "TX Frequency"
-msgstr ""
+msgstr "Frecuencia TX"
 
 #: ../wxui/memedit.py:140
 msgid "TX-RX DTCS polarity (normal or reversed)"
@@ -3002,7 +3002,7 @@ msgstr "La siguiente información será enviada:"
 
 #: ../wxui/memedit.py:1306
 msgid "The memory editor requires a reload in order to change the workflow. That will happen now. Any other open tabs will be updated the next time they are loaded."
-msgstr ""
+msgstr "El editor de memoria requiere una recarga para cambiar el flujo de trabajo. Eso ocurrirá ahora. Cualquier otras pestañas abierta se actualizarán la próxima vez que se carguen."
 
 #: ../wxui/main.py:1469
 #, python-format
@@ -3209,7 +3209,7 @@ msgstr "No se puede cargar este archivo"
 
 #: ../wxui/memedit.py:982
 msgid "Undo"
-msgstr ""
+msgstr "Deshacer"
 
 #: ../wxui/query_sources.py:1064
 msgid "United States"
@@ -3256,7 +3256,7 @@ msgstr "Memoria cargada %s"
 
 #: ../wxui/memedit.py:1282
 msgid "Use TX Frequency Workflow"
-msgstr ""
+msgstr "Usar el flujo de trabajo de frecuencia TX"
 
 #: ../wxui/main.py:830
 msgid "Use fixed-width font"
