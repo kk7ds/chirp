@@ -2101,6 +2101,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         cut_item = wx.MenuItem(menu, wx.NewId(), _('Cut'))
         self.Bind(wx.EVT_MENU, lambda e: self.cb_copy(cut=True), cut_item)
         menu.Append(cut_item)
+        cut_item.Enable(self.editable)
 
         copy_item = wx.MenuItem(menu, wx.NewId(), _('Copy'))
         self.Bind(wx.EVT_MENU, lambda e: self.cb_copy(cut=False), copy_item)
@@ -2109,6 +2110,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         paste_item = wx.MenuItem(menu, wx.NewId(), _('Paste'))
         self.Bind(wx.EVT_MENU, lambda e: self.cb_paste(), paste_item)
         menu.Append(paste_item)
+        paste_item.Enable(self.editable)
 
         delete_menu = wx.Menu()
         delete_menu_item = menu.AppendSubMenu(delete_menu, _('Delete'))
