@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-26 20:03-0800\n"
+"POT-Creation-Date: 2025-03-07 15:41-0800\n"
 "PO-Revision-Date: 2013-03-30 22:04-0300\n"
 "Last-Translator: Crezivando <crezivando@gmail.com>\n"
 "Language-Team: Language pt-BR\n"
@@ -22,21 +22,21 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr ""
 
-#: ../wxui/memedit.py:2129
+#: ../wxui/memedit.py:2136
 #, fuzzy, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
 msgstr[0] "Apagar (e deslocar)"
 msgstr[1] "Apagar (e deslocar)"
 
-#: ../wxui/memedit.py:2120
+#: ../wxui/memedit.py:2127
 #, fuzzy, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
 msgstr[0] "Mem�rias"
 msgstr[1] "Mem�rias"
 
-#: ../wxui/memedit.py:2124
+#: ../wxui/memedit.py:2131
 #, fuzzy, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
@@ -68,7 +68,7 @@ msgstr ""
 msgid "(none)"
 msgstr ""
 
-#: ../wxui/memedit.py:2516
+#: ../wxui/memedit.py:2528
 #, python-format
 msgid "...and %i more"
 msgstr ""
@@ -657,7 +657,7 @@ msgid ""
 "It will may not work if you turn on the radio with the cable already attached"
 msgstr ""
 
-#: ../wxui/main.py:2088
+#: ../wxui/main.py:2089
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr ""
 
@@ -712,7 +712,7 @@ msgstr ""
 msgid "Automatic from system"
 msgstr "Offset Autom�tico Repetidoras"
 
-#: ../wxui/developer.py:640
+#: ../wxui/developer.py:637
 msgid "Available modules"
 msgstr ""
 
@@ -754,7 +754,7 @@ msgstr ""
 msgid "Bug subject:"
 msgstr ""
 
-#: ../wxui/developer.py:494
+#: ../wxui/developer.py:491
 msgid "Building Radio Browser"
 msgstr ""
 
@@ -816,7 +816,7 @@ msgstr "Modo Cross"
 msgid "Choose duplex"
 msgstr ""
 
-#: ../wxui/developer.py:639
+#: ../wxui/developer.py:636
 #, fuzzy, python-format
 msgid "Choose the module to load from issue %i:"
 msgstr "Selecionar um para importar de:"
@@ -875,7 +875,7 @@ msgstr ""
 msgid "Close string value with double-quote (\")"
 msgstr ""
 
-#: ../wxui/memedit.py:2188
+#: ../wxui/memedit.py:2195
 #, fuzzy, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
@@ -909,9 +909,13 @@ msgstr ""
 msgid "Convert to FM"
 msgstr ""
 
-#: ../wxui/memedit.py:2105
+#: ../wxui/memedit.py:2106
 msgid "Copy"
 msgstr "Copiar"
+
+#: ../wxui/memedit.py:2110
+msgid "Copy portable"
+msgstr ""
 
 #: ../wxui/query_sources.py:351 ../wxui/query_sources.py:567
 #: ../wxui/query_sources.py:657
@@ -935,7 +939,7 @@ msgstr ""
 msgid "Cut"
 msgstr "Cortar"
 
-#: ../wxui/memedit.py:2360
+#: ../wxui/memedit.py:2372
 #, python-format
 msgid "Cut %i memories"
 msgstr ""
@@ -956,7 +960,7 @@ msgstr "DTCS Pol"
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2808
+#: ../wxui/memedit.py:2820
 msgid "DV Memory"
 msgstr ""
 
@@ -969,7 +973,7 @@ msgstr ""
 msgid "Dec"
 msgstr "Detectar"
 
-#: ../wxui/memedit.py:2114
+#: ../wxui/memedit.py:2121
 msgid "Delete"
 msgstr "Apagar"
 
@@ -992,15 +996,15 @@ msgstr "Desenvolvedor"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 
-#: ../wxui/memedit.py:2225 ../wxui/developer.py:97
+#: ../wxui/memedit.py:2232 ../wxui/developer.py:97
 msgid "Diff Raw Memories"
 msgstr "Diff Mem�rias Raw"
 
-#: ../wxui/memedit.py:2233
+#: ../wxui/memedit.py:2240
 msgid "Diff against another editor"
 msgstr ""
 
-#: ../wxui/memedit.py:2725
+#: ../wxui/memedit.py:2737
 msgid "Digital Code"
 msgstr "C�digo Digital"
 
@@ -1074,17 +1078,17 @@ msgstr ""
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2255
+#: ../wxui/memedit.py:2262
 #, python-format
 msgid "Edit %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2755
+#: ../wxui/memedit.py:2767
 #, python-format
 msgid "Edit details for %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2753
+#: ../wxui/memedit.py:2765
 #, python-format
 msgid "Edit details for memory %i"
 msgstr ""
@@ -1198,7 +1202,7 @@ msgstr ""
 msgid "Experimental driver"
 msgstr ""
 
-#: ../wxui/memedit.py:2678
+#: ../wxui/memedit.py:2690
 msgid "Export can only write CSV files"
 msgstr ""
 
@@ -1212,7 +1216,7 @@ msgstr "Exportar Para Arquivo"
 msgid "Export to CSV..."
 msgstr "Exportar Para Arquivo"
 
-#: ../wxui/memedit.py:2797
+#: ../wxui/memedit.py:2809
 msgid "Extra"
 msgstr ""
 
@@ -1235,7 +1239,7 @@ msgid ""
 "required."
 msgstr ""
 
-#: ../wxui/developer.py:502
+#: ../wxui/developer.py:499
 msgid "Failed to load radio browser"
 msgstr ""
 
@@ -1573,7 +1577,7 @@ msgstr ""
 msgid "Import"
 msgstr "Importar"
 
-#: ../wxui/memedit.py:2396
+#: ../wxui/memedit.py:2408
 #, python-format
 msgid "Import %i memories"
 msgstr ""
@@ -1641,7 +1645,7 @@ msgstr "Valor Inv�lido para este campo"
 msgid "Invalid ZIP code"
 msgstr ""
 
-#: ../wxui/memedit.py:1937 ../wxui/memedit.py:2888
+#: ../wxui/memedit.py:1937 ../wxui/memedit.py:2900
 #, python-format
 msgid "Invalid edit: %s"
 msgstr ""
@@ -1660,7 +1664,7 @@ msgstr ""
 msgid "Invalid value: %r"
 msgstr "Valor Inv�lido para este campo"
 
-#: ../wxui/developer.py:661
+#: ../wxui/developer.py:658
 msgid "Issue number:"
 msgstr ""
 
@@ -1719,7 +1723,7 @@ msgstr "R�dio"
 msgid "Load Module..."
 msgstr "Modo Tom"
 
-#: ../wxui/developer.py:662
+#: ../wxui/developer.py:659
 #, fuzzy
 msgid "Load module from issue"
 msgstr "Modo Tom"
@@ -1834,7 +1838,7 @@ msgstr ""
 msgid "More than one port found: %s"
 msgstr ""
 
-#: ../wxui/memedit.py:2616
+#: ../wxui/memedit.py:2628
 #, python-format
 msgid "Move %i memories"
 msgstr ""
@@ -1849,7 +1853,7 @@ msgstr "Mover Abaix_o"
 msgid "Move Up"
 msgstr "Mover _Acima"
 
-#: ../wxui/memedit.py:2586
+#: ../wxui/memedit.py:2598
 msgid "Move operations are disabled while the view is sorted"
 msgstr ""
 
@@ -1857,11 +1861,11 @@ msgstr ""
 msgid "New Window"
 msgstr ""
 
-#: ../wxui/main.py:2090
+#: ../wxui/main.py:2091
 msgid "New version available"
 msgstr ""
 
-#: ../wxui/memedit.py:2272
+#: ../wxui/memedit.py:2279
 #, fuzzy
 msgid "No empty rows below!"
 msgstr "Inserir row abaixo"
@@ -1871,16 +1875,16 @@ msgstr "Inserir row abaixo"
 msgid "No example for %s"
 msgstr ""
 
-#: ../wxui/developer.py:677
+#: ../wxui/developer.py:674
 msgid "No modules found"
 msgstr ""
 
-#: ../wxui/developer.py:676
+#: ../wxui/developer.py:673
 #, python-format
 msgid "No modules found in issue %i"
 msgstr ""
 
-#: ../wxui/memedit.py:2450
+#: ../wxui/memedit.py:2462
 msgid "No more space available; some memories were not applied"
 msgstr ""
 
@@ -2013,7 +2017,7 @@ msgstr "Op��es"
 msgid "Optional: County, Hospital, etc."
 msgstr ""
 
-#: ../wxui/memedit.py:2430
+#: ../wxui/memedit.py:2442
 #, fuzzy
 msgid "Overwrite memories?"
 msgstr "Sobrescrever?"
@@ -2034,7 +2038,7 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: ../wxui/memedit.py:2109
+#: ../wxui/memedit.py:2115
 msgid "Paste"
 msgstr "Colar"
 
@@ -2042,31 +2046,31 @@ msgstr "Colar"
 msgid "Paste external memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2529
+#: ../wxui/memedit.py:2541
 msgid "Paste memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2424
+#: ../wxui/memedit.py:2436
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2427
+#: ../wxui/memedit.py:2439
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr ""
 
-#: ../wxui/memedit.py:2421
+#: ../wxui/memedit.py:2433
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/memedit.py:2418
+#: ../wxui/memedit.py:2430
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/main.py:2094
+#: ../wxui/main.py:2095
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr ""
 
@@ -2161,7 +2165,7 @@ msgstr ""
 msgid "QTH Locator"
 msgstr ""
 
-#: ../wxui/main.py:2039
+#: ../wxui/main.py:2040
 #, python-format
 msgid "Query %s"
 msgstr ""
@@ -2360,7 +2364,7 @@ msgstr ""
 msgid "Scrambler"
 msgstr ""
 
-#: ../wxui/developer.py:652
+#: ../wxui/developer.py:649
 msgid "Security Risk"
 msgstr ""
 
@@ -2414,7 +2418,7 @@ msgstr ""
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr ""
 
-#: ../wxui/memedit.py:2217 ../wxui/developer.py:100
+#: ../wxui/memedit.py:2224 ../wxui/developer.py:100
 msgid "Show Raw Memory"
 msgstr "Mostrar Mem�ria Raw"
 
@@ -2434,12 +2438,12 @@ msgstr ""
 msgid "Skip"
 msgstr "Skip"
 
-#: ../wxui/memedit.py:2520
+#: ../wxui/memedit.py:2532
 #, fuzzy
 msgid "Some memories are incompatible with this radio"
 msgstr "Mem�ria colada {number} n�o � compat�vel com este r�dio porque:"
 
-#: ../wxui/memedit.py:2359
+#: ../wxui/memedit.py:2371
 msgid "Some memories are not deletable"
 msgstr ""
 
@@ -2448,21 +2452,21 @@ msgstr ""
 msgid "Sort %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2173
+#: ../wxui/memedit.py:2180
 #, fuzzy, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
 msgstr[0] "Diff Mem�rias Raw"
 msgstr[1] "Diff Mem�rias Raw"
 
-#: ../wxui/memedit.py:2177
+#: ../wxui/memedit.py:2184
 #, fuzzy, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
 msgstr[0] "Diff Mem�rias Raw"
 msgstr[1] "Diff Mem�rias Raw"
 
-#: ../wxui/memedit.py:2199
+#: ../wxui/memedit.py:2206
 #, fuzzy, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
@@ -2543,7 +2547,7 @@ msgid ""
 "download to a CHIRP Radio Images (*.img) file.\n"
 msgstr ""
 
-#: ../wxui/developer.py:649
+#: ../wxui/developer.py:646
 msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
 msgstr ""
 
@@ -2564,7 +2568,7 @@ msgstr ""
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr ""
 
-#: ../wxui/memedit.py:2134
+#: ../wxui/memedit.py:2141
 #, fuzzy
 msgid "This Memory"
 msgstr "Mostrar Mem�ria Raw"
@@ -2619,12 +2623,12 @@ msgstr ""
 msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
 msgstr ""
 
-#: ../wxui/memedit.py:2138
+#: ../wxui/memedit.py:2145
 #, fuzzy
 msgid "This memory and shift all up"
 msgstr "Apagar (e deslocar)"
 
-#: ../wxui/memedit.py:2136
+#: ../wxui/memedit.py:2143
 #, fuzzy
 msgid "This memory and shift block up"
 msgstr "Apagar (e deslocar)"
@@ -2650,7 +2654,7 @@ msgstr ""
 msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
 msgstr ""
 
-#: ../wxui/developer.py:659
+#: ../wxui/developer.py:656
 msgid "This will load a module from a website issue"
 msgstr ""
 
@@ -2723,7 +2727,7 @@ msgstr ""
 msgid "Unable to find stock config %r"
 msgstr "Abrir config do estoque"
 
-#: ../wxui/memedit.py:2376
+#: ../wxui/memedit.py:2388
 #, fuzzy
 msgid "Unable to import while the view is sorted"
 msgstr "Incapaz de detectar r�dio na {port}"
@@ -2850,7 +2854,7 @@ msgstr ""
 msgid "Value to search memory field for"
 msgstr ""
 
-#: ../wxui/memedit.py:2788
+#: ../wxui/memedit.py:2800
 msgid "Values"
 msgstr ""
 
