@@ -24,7 +24,7 @@ from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettingValueFloat, RadioSettings, RadioSettingValueMap
+    RadioSettingValueFloat, RadioSettings
 
 LOG = logging.getLogger(__name__)
 
@@ -214,15 +214,7 @@ struct {
      sideKey1:4;          //        side key 1
   u8 sideKey2_long:4,     // 0x1161 side key 2 Long
      sideKey1_long:4;     //        side key 1 Long
-  u8 unknown1;
-  u8 dwchan;
-  u8 unknown3;
-  u8 unknown4;
-  u8 unknown5;
-  u8 unknown6;
-  u8 unknown7;
-  u8 unknown8;
-  u8 unknown9;
+  u8 unknownBytes[9];     // 0x1162 - 0x116A
   u8 manDownTm:4,         // 0x116B manDown Tm
      unk15:3,             //
      manDownSw:1;         //        manDown Sw
@@ -878,12 +870,13 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         group = RadioSettings(basic)
 
         # Menu 02 - TX Channel Select
-        options = ["Last Channel", "Main Channel"]
-        rx = RadioSettingValueList(
-            options, current_index=_settings.txChSelect)
-        rset = RadioSetting("basicsettings.txChSelect",
-                            "Priority Transmit", rx)
-        basic.append(rset)
+        if self._hasLCD:
+            options = ["Last Channel", "Main Channel"]
+            rx = RadioSettingValueList(
+                options, current_index=_settings.txChSelect)
+            rset = RadioSetting("basicsettings.txChSelect",
+                                "Priority Transmit", rx)
+            basic.append(rset)
 
         # Menu 03 - VOX Level
         rx = RadioSettingValueInteger(1, 7, _settings.voxLevel + 1)
@@ -897,16 +890,11 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         # Menu 06 - Dual Wait
-        rx = RadioSettingValueBoolean(_settings.dualWait)
-        rset = RadioSetting("basicsettings.dualWait",
-                            "Dual Wait/Standby", rx)
-        basic.append(rset)
-
-        if 'dwchan' in _settings:
-            rsv = RadioSettingValueMap([(str(x + 1), x) for x in range(200)],
-                                       _settings.dwchan)
-            rs = RadioSetting('basicsettings.dwchan', 'Dual Wait Channel', rsv)
-            basic.append(rs)
+        if self._hasLCD:
+            rx = RadioSettingValueBoolean(_settings.dualWait)
+            rset = RadioSetting("basicsettings.dualWait",
+                                "Dual Wait/Standby", rx)
+            basic.append(rset)
 
         # Menu 07 - LED Mode
         if self._hasLCD:
