@@ -804,6 +804,7 @@ def expose_logs(level, root, label, maxlen=128, parent=None,
 def mems_from_clipboard(string, maxlen=128, parent=None):
     label = _('Paste external memories')
     radio = generic_csv.TSVRadio(None)
+    radio.clear()
     # Try to load the whole thing as a full TSV with header row
     try:
         with expose_logs(logging.WARNING, 'chirp.drivers', label,
