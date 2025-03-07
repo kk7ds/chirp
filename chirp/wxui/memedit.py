@@ -2107,6 +2107,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self.Bind(wx.EVT_MENU, lambda e: self.cb_copy(cut=False), copy_item)
         menu.Append(copy_item)
 
+        copy_item = wx.MenuItem(menu, wx.NewId(), _('Copy portable'))
+        self.Bind(wx.EVT_MENU, lambda e: self.cb_copy(
+            cut=False, portable=True), copy_item)
+        menu.Append(copy_item)
+
         paste_item = wx.MenuItem(menu, wx.NewId(), _('Paste'))
         self.Bind(wx.EVT_MENU, lambda e: self.cb_paste(), paste_item)
         menu.Append(paste_item)
@@ -2331,7 +2336,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._grid.SetFocus()
         self._update_menu()
 
-    def cb_copy_getdata(self, cut=False):
+    def cb_copy_getdata(self, cut=False, portable=False):
         rows = self.get_selected_rows_safe()
         mems = []
         for row in rows:
@@ -2346,15 +2351,20 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         memdata = wx.CustomDataObject(common.CHIRP_DATA_MEMORY)
         data.Add(memdata)
         memdata.SetData(pickle.dumps(payload))
-        try:
-            r = generic_csv.TSVRadio(None)
-            r.clear()
-            for m in mems:
-                r.set_memory(m.dupe())
-            textdata = wx.TextDataObject(r.as_string())
+        if portable:
+            strfmt = chirp_common.mem_to_text(mems[0])
+            textdata = wx.TextDataObject(strfmt)
             data.Add(textdata)
-        except Exception as e:
-            LOG.exception('Failed to get TSV format for paste: %s', e)
+        else:
+            try:
+                r = generic_csv.TSVRadio(None)
+                r.clear()
+                for m in mems:
+                    r.set_memory(m.dupe())
+                textdata = wx.TextDataObject(r.as_string())
+                data.Add(textdata)
+            except Exception as e:
+                LOG.exception('Failed to get TSV format for paste: %s', e)
         if cut:
             if any('empty' in mem.immutable for mem in mems):
                 raise errors.InvalidMemoryLocation(
@@ -2370,8 +2380,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         return data
 
-    def cb_copy(self, cut=False):
-        self.cb_copy_data(self.cb_copy_getdata(cut=cut))
+    def cb_copy(self, cut=False, portable=False):
+        self.cb_copy_data(self.cb_copy_getdata(cut=cut, portable=portable))
 
     def memedit_import_all(self, source_radio):
         if self.is_sorted:
