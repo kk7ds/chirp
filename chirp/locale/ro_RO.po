@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-27 17:16-0800\n"
+"POT-Creation-Date: 2025-03-07 15:41-0800\n"
 "PO-Revision-Date: 2025-02-27 08:00+0200\n"
 "Last-Translator: ThatSINEWAVE\n"
 "Language-Team: Romanian\n"
@@ -22,21 +22,21 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s trebuie să fie între %(min)i și %(max)i"
 
-#: ../wxui/memedit.py:2129
+#: ../wxui/memedit.py:2136
 #, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
 msgstr[0] "%i Memorie și deplasare sus toate"
 msgstr[1] "%i Memorii și deplasare sus toate"
 
-#: ../wxui/memedit.py:2120
+#: ../wxui/memedit.py:2127
 #, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
 msgstr[0] "%i Memorie"
 msgstr[1] "%i Memorii"
 
-#: ../wxui/memedit.py:2124
+#: ../wxui/memedit.py:2131
 #, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
@@ -68,7 +68,7 @@ msgstr "(A funcționat vreodată acest lucru înainte? Este un radio nou? Funcț
 msgid "(none)"
 msgstr "(niciunul)"
 
-#: ../wxui/memedit.py:2516
+#: ../wxui/memedit.py:2528
 #, python-format
 msgid "...and %i more"
 msgstr "...și încă %i mai multe"
@@ -991,7 +991,7 @@ msgstr ""
 "\n"
 "Poate să nu funcționeze dacă pornești stația cu cablul deja conectat."
 
-#: ../wxui/main.py:2088
+#: ../wxui/main.py:2089
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "O nouă versiune CHIRP este disponibilă. Vă rugăm să vizitați site-ul cât mai curând posibil pentru a o descărca!"
 
@@ -1044,7 +1044,7 @@ msgstr "Aplicarea setărilor"
 msgid "Automatic from system"
 msgstr "Automat din sistem"
 
-#: ../wxui/developer.py:640
+#: ../wxui/developer.py:637
 msgid "Available modules"
 msgstr "Module disponibile"
 
@@ -1086,7 +1086,7 @@ msgstr "Numărul erorii:"
 msgid "Bug subject:"
 msgstr "Subiectul erorii:"
 
-#: ../wxui/developer.py:494
+#: ../wxui/developer.py:491
 msgid "Building Radio Browser"
 msgstr "Se construiește browserul radio"
 
@@ -1146,7 +1146,7 @@ msgstr "Alege un model recent"
 msgid "Choose duplex"
 msgstr "Alege duplex"
 
-#: ../wxui/developer.py:639
+#: ../wxui/developer.py:636
 #, python-format
 msgid "Choose the module to load from issue %i:"
 msgstr "Alege modulul de încărcat din problema %i:"
@@ -1209,7 +1209,7 @@ msgstr "Închide fișierul"
 msgid "Close string value with double-quote (\")"
 msgstr "Închide valoarea șirului cu ghilimea (\")"
 
-#: ../wxui/memedit.py:2188
+#: ../wxui/memedit.py:2195
 #, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
@@ -1244,9 +1244,13 @@ msgstr ""
 msgid "Convert to FM"
 msgstr "Convertește la FM"
 
-#: ../wxui/memedit.py:2105
+#: ../wxui/memedit.py:2106
 msgid "Copy"
 msgstr "Copiază"
+
+#: ../wxui/memedit.py:2110
+msgid "Copy portable"
+msgstr ""
 
 #: ../wxui/query_sources.py:351 ../wxui/query_sources.py:567
 #: ../wxui/query_sources.py:657
@@ -1269,7 +1273,7 @@ msgstr "Personalizat..."
 msgid "Cut"
 msgstr "Taie"
 
-#: ../wxui/memedit.py:2360
+#: ../wxui/memedit.py:2372
 #, python-format
 msgid "Cut %i memories"
 msgstr "Taie %i memorii"
@@ -1290,7 +1294,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr "Decodare DTMF"
 
-#: ../wxui/memedit.py:2808
+#: ../wxui/memedit.py:2820
 msgid "DV Memory"
 msgstr "Memorie DV"
 
@@ -1302,7 +1306,7 @@ msgstr "Pericol în față"
 msgid "Dec"
 msgstr "Dec"
 
-#: ../wxui/memedit.py:2114
+#: ../wxui/memedit.py:2121
 msgid "Delete"
 msgstr "Șterge"
 
@@ -1323,15 +1327,15 @@ msgstr "Mod dezvoltator"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "Starea dezvoltatorului este acum %s. CHIRP trebuie repornit pentru a intra în vigoare"
 
-#: ../wxui/memedit.py:2225 ../wxui/developer.py:97
+#: ../wxui/memedit.py:2232 ../wxui/developer.py:97
 msgid "Diff Raw Memories"
 msgstr "Diferență memorii brute"
 
-#: ../wxui/memedit.py:2233
+#: ../wxui/memedit.py:2240
 msgid "Diff against another editor"
 msgstr "Diferență față de un alt editor"
 
-#: ../wxui/memedit.py:2725
+#: ../wxui/memedit.py:2737
 msgid "Digital Code"
 msgstr "Cod digital"
 
@@ -1401,17 +1405,17 @@ msgstr "Repetoarele digitale cu mod dublu care suportă analog vor fi afișate c
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2255
+#: ../wxui/memedit.py:2262
 #, python-format
 msgid "Edit %i memories"
 msgstr "Editați %i memorii"
 
-#: ../wxui/memedit.py:2755
+#: ../wxui/memedit.py:2767
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Editați detaliile pentru %i memorii"
 
-#: ../wxui/memedit.py:2753
+#: ../wxui/memedit.py:2765
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Editați detaliile pentru memoria %i"
@@ -1522,7 +1526,7 @@ msgstr "Exclude repetoarele private și închise"
 msgid "Experimental driver"
 msgstr "Driver experimental"
 
-#: ../wxui/memedit.py:2678
+#: ../wxui/memedit.py:2690
 msgid "Export can only write CSV files"
 msgstr "Exportul poate scrie doar fișiere CSV"
 
@@ -1534,7 +1538,7 @@ msgstr "Exportă în CSV"
 msgid "Export to CSV..."
 msgstr "Exportă în CSV..."
 
-#: ../wxui/memedit.py:2797
+#: ../wxui/memedit.py:2809
 msgid "Extra"
 msgstr "Extra"
 
@@ -1559,7 +1563,7 @@ msgstr ""
 "Bază de date GRATUITĂ pentru repetoare, care oferă cele mai recente\n"
 "informații despre repetoarele din Europa. Nu este necesar un cont."
 
-#: ../wxui/developer.py:502
+#: ../wxui/developer.py:499
 msgid "Failed to load radio browser"
 msgstr "Nu s-a reușit încărcarea browserului radio"
 
@@ -1988,7 +1992,7 @@ msgstr "Dacă este setat, sortează rezultatele după distanța față de aceste
 msgid "Import"
 msgstr "Importă"
 
-#: ../wxui/memedit.py:2396
+#: ../wxui/memedit.py:2408
 #, python-format
 msgid "Import %i memories"
 msgstr "Importă %i memorii"
@@ -2051,7 +2055,7 @@ msgstr "Intrare invalidă"
 msgid "Invalid ZIP code"
 msgstr "Cod poștal invalid"
 
-#: ../wxui/memedit.py:1937 ../wxui/memedit.py:2888
+#: ../wxui/memedit.py:1937 ../wxui/memedit.py:2900
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Editare invalidă: %s"
@@ -2069,7 +2073,7 @@ msgstr "Fișier modul invalid sau nesuportat"
 msgid "Invalid value: %r"
 msgstr "Valoare invalidă: %r"
 
-#: ../wxui/developer.py:661
+#: ../wxui/developer.py:658
 msgid "Issue number:"
 msgstr "Număr problemă:"
 
@@ -2125,7 +2129,7 @@ msgstr "Radio direct"
 msgid "Load Module..."
 msgstr "Încarcă modul..."
 
-#: ../wxui/developer.py:662
+#: ../wxui/developer.py:659
 msgid "Load module from issue"
 msgstr "Încarcă modul din numărul de problemă..."
 
@@ -2236,7 +2240,7 @@ msgstr "Mai multe informații"
 msgid "More than one port found: %s"
 msgstr "Mai multe porturi găsite: %s"
 
-#: ../wxui/memedit.py:2616
+#: ../wxui/memedit.py:2628
 #, python-format
 msgid "Move %i memories"
 msgstr "Mută %i memorii"
@@ -2249,7 +2253,7 @@ msgstr "Mută în jos"
 msgid "Move Up"
 msgstr "Mută în sus"
 
-#: ../wxui/memedit.py:2586
+#: ../wxui/memedit.py:2598
 msgid "Move operations are disabled while the view is sorted"
 msgstr "Operațiile de mutare sunt dezactivate în timp ce vizualizarea este sortată"
 
@@ -2257,11 +2261,11 @@ msgstr "Operațiile de mutare sunt dezactivate în timp ce vizualizarea este sor
 msgid "New Window"
 msgstr "Fereastră nouă"
 
-#: ../wxui/main.py:2090
+#: ../wxui/main.py:2091
 msgid "New version available"
 msgstr "Versiune nouă disponibilă"
 
-#: ../wxui/memedit.py:2272
+#: ../wxui/memedit.py:2279
 msgid "No empty rows below!"
 msgstr "Nu există rânduri goale sub!"
 
@@ -2270,16 +2274,16 @@ msgstr "Nu există rânduri goale sub!"
 msgid "No example for %s"
 msgstr "Nu există exemplu pentru %s"
 
-#: ../wxui/developer.py:677
+#: ../wxui/developer.py:674
 msgid "No modules found"
 msgstr "Nu au fost găsite module"
 
-#: ../wxui/developer.py:676
+#: ../wxui/developer.py:673
 #, python-format
 msgid "No modules found in issue %i"
 msgstr "Nu au fost găsite module în problema %"
 
-#: ../wxui/memedit.py:2450
+#: ../wxui/memedit.py:2462
 msgid "No more space available; some memories were not applied"
 msgstr "Nu mai este spațiu disponibil; unele memorii nu au fost aplicate"
 
@@ -2407,7 +2411,7 @@ msgstr "Opțional: AA00 - AA00aa11"
 msgid "Optional: County, Hospital, etc."
 msgstr "Opțional: Județ, Spital, etc."
 
-#: ../wxui/memedit.py:2430
+#: ../wxui/memedit.py:2442
 msgid "Overwrite memories?"
 msgstr "Diff raw memories"
 
@@ -2430,7 +2434,7 @@ msgstr "Analizare"
 msgid "Password"
 msgstr "Parolă"
 
-#: ../wxui/memedit.py:2109
+#: ../wxui/memedit.py:2115
 msgid "Paste"
 msgstr "Lipește"
 
@@ -2438,31 +2442,31 @@ msgstr "Lipește"
 msgid "Paste external memories"
 msgstr "Lipește memoriile externe"
 
-#: ../wxui/memedit.py:2529
+#: ../wxui/memedit.py:2541
 msgid "Paste memories"
 msgstr "Lipește memoriile"
 
-#: ../wxui/memedit.py:2424
+#: ../wxui/memedit.py:2436
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr "Memoriile lipite vor suprascrie %s dintre memoriile existente"
 
-#: ../wxui/memedit.py:2427
+#: ../wxui/memedit.py:2439
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "Memoriile lipite vor suprascrie memoriile %s"
 
-#: ../wxui/memedit.py:2421
+#: ../wxui/memedit.py:2433
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr "Memoriile lipite vor suprascrie memoria %s"
 
-#: ../wxui/memedit.py:2418
+#: ../wxui/memedit.py:2430
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr "Memoria lipită va suprascrie memoria %s"
 
-#: ../wxui/main.py:2094
+#: ../wxui/main.py:2095
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Te rugăm să te asiguri că închizi CHIRP înainte de a instala noua versiune!"
 
@@ -2574,7 +2578,7 @@ msgstr "Valoare proprietate"
 msgid "QTH Locator"
 msgstr "Locator QTH"
 
-#: ../wxui/main.py:2039
+#: ../wxui/main.py:2040
 #, python-format
 msgid "Query %s"
 msgstr "Interogare %s"
@@ -2772,7 +2776,7 @@ msgstr "Liste de scanare"
 msgid "Scrambler"
 msgstr "Scrambler"
 
-#: ../wxui/developer.py:652
+#: ../wxui/developer.py:649
 msgid "Security Risk"
 msgstr "Risc de securitate"
 
@@ -2821,7 +2825,7 @@ msgstr "Setările sunt doar în citire din cauza versiunii de firmware neaccepta
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "Cantitatea de deplasare (sau frecvența de transmisie) controlată de duplex"
 
-#: ../wxui/memedit.py:2217 ../wxui/developer.py:100
+#: ../wxui/memedit.py:2224 ../wxui/developer.py:100
 msgid "Show Raw Memory"
 msgstr "Afișează memoria brută"
 
@@ -2841,11 +2845,11 @@ msgstr "Afișează locația de backup a imaginii"
 msgid "Skip"
 msgstr "Skip"
 
-#: ../wxui/memedit.py:2520
+#: ../wxui/memedit.py:2532
 msgid "Some memories are incompatible with this radio"
 msgstr "Unele memorii sunt incompatibile cu această stație"
 
-#: ../wxui/memedit.py:2359
+#: ../wxui/memedit.py:2371
 msgid "Some memories are not deletable"
 msgstr "Unele memorii nu pot fi șterse"
 
@@ -2854,21 +2858,21 @@ msgstr "Unele memorii nu pot fi șterse"
 msgid "Sort %i memories"
 msgstr "Sortează %i memorii"
 
-#: ../wxui/memedit.py:2173
+#: ../wxui/memedit.py:2180
 #, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
 msgstr[0] "Sortează %i memorie"
 msgstr[1] "Sortează %i memorii"
 
-#: ../wxui/memedit.py:2177
+#: ../wxui/memedit.py:2184
 #, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
 msgstr[0] "Sortează %i memorie ascendent"
 msgstr[1] "Sortează %i memorii ascendente"
 
-#: ../wxui/memedit.py:2199
+#: ../wxui/memedit.py:2206
 #, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
@@ -2968,7 +2972,7 @@ msgstr ""
 "Te rugăm să salvezi o copie needitată a primei descărcări reușite\n"
 "într-un fișier CHIRP Radio Images (*.img).\n"
 
-#: ../wxui/developer.py:649
+#: ../wxui/developer.py:646
 msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
 msgstr "Autorul acestui modul nu este un dezvoltator CHIRP recunoscut. Se recomandă să nu încarci acest modul, deoarece ar putea reprezenta un risc de securitate. Vrei să continui oricum?"
 
@@ -2989,7 +2993,7 @@ msgstr ""
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr "Procedura recomandată pentru importarea memoriilor este să deschizi fișierul sursă și să copiezi/lipiți memoriile din acesta în imaginea țintă. Dacă continui cu această funcție de import, CHIRP va înlocui toate memoriile din fișierul deschis în prezent cu cele din %(file)s. Ai dori să deschizi acest fișier pentru a copia/lipi memoriile sau să continui cu importul?"
 
-#: ../wxui/memedit.py:2134
+#: ../wxui/memedit.py:2141
 msgid "This Memory"
 msgstr "Această memorie"
 
@@ -3052,11 +3056,11 @@ msgstr ""
 msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
 msgstr "Acesta este numărul tichetului pentru o problemă deja creată pe site-ul chirpmyradio.com"
 
-#: ../wxui/memedit.py:2138
+#: ../wxui/memedit.py:2145
 msgid "This memory and shift all up"
 msgstr "Această memorie și blocul de schimbare în sus"
 
-#: ../wxui/memedit.py:2136
+#: ../wxui/memedit.py:2143
 msgid "This memory and shift block up"
 msgstr "Această memorie și toate schimbările în sus"
 
@@ -3086,7 +3090,7 @@ msgstr "Această opțiune ar trebui activată doar dacă utilizați un firmware 
 msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
 msgstr "Acest instrument va încărca detalii despre sistemul dvs. într-o problemă existentă pe tracker-ul CHIRP. Necesită numele de utilizator și parola dvs. pentru chirpmyradio.com pentru a funcționa. Informații despre sistemul dvs., inclusiv jurnalul de depanare, fișierul de configurare și orice fișiere imagine deschise, vor fi încărcate. Se va încerca eliminarea oricăror informații personale înainte ca acestea să părăsească sistemul dvs."
 
-#: ../wxui/developer.py:659
+#: ../wxui/developer.py:656
 msgid "This will load a module from a website issue"
 msgstr "Aceasta va încărca un modul dintr-o problemă de pe site-ul web"
 
@@ -3156,7 +3160,7 @@ msgstr "Nu se poate edita memoria înainte de a încărca radioul"
 msgid "Unable to find stock config %r"
 msgstr "Nu s-a putut găsi configurația implicită %r"
 
-#: ../wxui/memedit.py:2376
+#: ../wxui/memedit.py:2388
 msgid "Unable to import while the view is sorted"
 msgstr "Nu se poate importa cât timp vizualizarea este sortată"
 
@@ -3278,7 +3282,7 @@ msgstr "Valoarea trebuie să fie zero sau mai mare"
 msgid "Value to search memory field for"
 msgstr "Valoare pentru căutarea câmpului de memorie"
 
-#: ../wxui/memedit.py:2788
+#: ../wxui/memedit.py:2800
 msgid "Values"
 msgstr "Valori"
 
