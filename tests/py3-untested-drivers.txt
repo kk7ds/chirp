@@ -36,7 +36,6 @@ Kenwood_TS-850
 Puxing_PX-2R
 RT_Systems_CSV
 Sainsonic_AP510
-TYT_TH-350
 TYT_TH-7800_File
 TYT_TH-9800_File
 TYT_TH-UV3R
