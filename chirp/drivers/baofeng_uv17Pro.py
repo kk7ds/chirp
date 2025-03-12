@@ -1546,13 +1546,13 @@ class F8HPPro(UV17Pro):
         rs = RadioSetting("ani.separatecode", "Separate Code",
                           RadioSettingValueList(
                             self.LIST_SEPARATE_CODE,
-                            self.LIST_SEPARATE_CODE[_mem.ani.separatecode]))
+                            current_index=_mem.ani.separatecode))
         dtmfe.append(rs)
 
         rs = RadioSetting("ani.groupcallcode", "Group Call Code",
                           RadioSettingValueList(
                             self.LIST_GROUP_CALL_CODE,
-                            self.LIST_GROUP_CALL_CODE[_mem.ani.groupcallcode]))
+                            current_index=_mem.ani.groupcallcode))
         dtmfe.append(rs)
 
         _codeobj = self._memobj.upcode.code
@@ -1581,13 +1581,13 @@ class F8HPPro(UV17Pro):
         rs = RadioSetting("settings.pontime", "Power on Time",
                           RadioSettingValueList(
                             self.LIST_POWER_ON_TIME,
-                            self.LIST_POWER_ON_TIME[_mem.settings.pontime]))
+                            current_index=_mem.settings.pontime))
         basic.append(rs)
 
         rs = RadioSetting("settings.gpsunits", "GPS Speed Units",
                           RadioSettingValueList(
                             self.LIST_GPS_UNITS,
-                            self.LIST_GPS_UNITS[_mem.settings.gpsunits]))
+                            current_index=_mem.settings.gpsunits))
         basic.append(rs)
 
         rs = RadioSetting("settings.inputdtmf", "Input DTMF",
