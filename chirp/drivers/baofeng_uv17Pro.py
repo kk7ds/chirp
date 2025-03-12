@@ -247,7 +247,7 @@ class UV17Pro(bfc.BaofengCommonHT):
     _scode_offset = 0
     _encrsym = 1
     _has_voice = True
-    _mem_positions = (0x8080, 0x80A0, 0x8280)
+    _mem_positions = (0x80A0, 0x8280)
 
     MODES = ["NFM", "FM"]
     VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
@@ -403,10 +403,8 @@ class UV17Pro(bfc.BaofengCommonHT):
       u8 inputdtmf;
       u8 gpsunits;
       u8 pontime;
-      char stationid[8];
     } settings;
 
-    #seekto 0x%04X;
     struct {
       u8 code[5];
       u8 unknown[1];
@@ -1539,6 +1537,152 @@ class F8HPPro(UV17Pro):
 
     MEM_TOTAL = 0x8440
     _mem_positions = (0x80C0, 0x80E0, 0x8380)
+
+    MEM_FORMAT = """
+    struct {
+      lbcd rxfreq[4];
+      lbcd txfreq[4];
+      ul16 rxtone;
+      ul16 txtone;
+      u8 scode;
+      u8 pttid;
+      u8 lowpower;
+      u8 unknown1:1,
+         wide:1,
+         sqmode:2,
+         bcl:1,
+         scan:1,
+         unknown2:1,
+         fhss:1;
+      u8 unknown3;
+      u8 unknown4;
+      u8 unknown5;
+      u8 unknown6;
+      char name[12];
+    } memory[1000];
+
+    struct vfo_entry {
+      u8 freq[8];
+      ul16 rxtone;
+      ul16 txtone;
+      u8 unknown0;
+      u8 bcl;
+      u8 sftd:3,
+         scode:5;
+      u8 unknown1;
+      u8 lowpower;
+      u8 unknown2:1,
+         wide:1,
+         unknown3:5,
+         fhss:1;
+      u8 unknown4;
+      u8 step;
+      u8 offset[6];
+      u8 unknown5[2];
+      u8 sqmode;
+      u8 unknown6[3];
+      };
+
+    #seekto 0x8000;
+    struct {
+      struct vfo_entry a;
+      struct vfo_entry b;
+    } vfo;
+
+    struct {
+      u8 squelch;
+      u8 savemode;
+      u8 vox;
+      u8 backlight;
+      u8 dualstandby;
+      u8 tot;
+      u8 beep;
+      u8 voicesw;
+      u8 voice;
+      u8 sidetone;
+      u8 scanmode;
+      u8 pttid;
+      u8 pttdly;
+      u8 chadistype;
+      u8 chbdistype;
+      u8 bcl;
+      u8 autolock;
+      u8 alarmmode;
+      u8 alarmtone;
+      u8 unknown1;
+      u8 tailclear;
+      u8 rpttailclear;
+      u8 rpttaildet;
+      u8 roger;
+      u8 a_or_b_selected; // a=0, b=1
+      u8 fmenable;
+      u8 chbworkmode:4,
+         chaworkmode:4;
+      u8 keylock;
+      u8 powerondistype;
+      u8 tone;
+      u8 unknown4[2];
+      u8 voxdlytime;
+      u8 menuquittime;
+      u8 unknown5[2];
+      u8 dispani;
+      u8 unknown11[3];
+      u8 totalarm;
+      u8 unknown6[2];
+      u8 ctsdcsscantype;
+      ul16 vfoscanmin;
+      ul16 vfoscanmax;
+      u8 gpsw;
+      u8 gpsmode;
+      u8 key1short;
+      u8 unknown7;
+      u8 key2short;
+      u8 unknown8[2];
+      u8 rstmenu;
+      u8 singlewatch;
+      u8 hangup;
+      u8 voxsw;
+      u8 gpstimezone;
+      u8 unknown10;
+      u8 inputdtmf;
+      u8 gpsunits;
+      u8 pontime;
+      char stationid[8];
+    } settings;
+
+    #seekto 0x%04X;
+    struct {
+      u8 code[5];
+      u8 unknown[1];
+      u8 unused1:6,
+         aniid:2;
+      u8 dtmfon;
+      u8 dtmfoff;
+      u8 separatecode;
+      u8 groupcallcode;
+    } ani;
+
+    #seekto 0x%04X;
+    struct {
+      u8 code[5];
+      char name[10];
+      u8 unused;
+    } pttid[20];
+
+    struct {
+      u8 unknown32[32];
+      u8 code[16];
+    } upcode;
+
+    struct {
+      u8 code[16];
+    } downcode;
+
+    #seekto 0x%04X;
+    struct {
+      char name[16];
+    } bank_name[10];
+    """
 
     def get_settings_pro_dtmf(self, dtmfe, _mem):
         super().get_settings_pro_dtmf(dtmfe, _mem)
