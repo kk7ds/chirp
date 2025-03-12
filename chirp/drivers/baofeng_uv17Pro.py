@@ -35,14 +35,16 @@ MSTRING_UV17PROGPS = b"PROGRAMCOLORPROU"
 MSTRING_GM5RH = b"PROGRAMBFGMRS05U"
 # BTECH BF-F8HP Pro magic string
 MSTRING_BFF8HPPRO = b"PROGRAMBF5RTECHU"
+# Baofeng BF-K6 magic string
+MSTRING_BFK6 = b"PROGRAMBF-K6PROU"
 
 DTMF_CHARS = list("0123456789ABCD*#")
+NUMERIC_CHARS = list("0123456789")
 
 LIST_AB = ["A", "B"]
 LIST_BANDWIDTH = ["Wide", "Narrow"]
-LIST_DTMFSPEED = ["%s ms" % x for x in [50, 100, 200, 300, 500]]
 LIST_HANGUPTIME = ["%s s" % x for x in [3, 4, 5, 6, 7, 8, 9, 10]]
-LIST_SIDE_TONE = ["Off", "Side Key", "ID", "Side + ID"]
+LIST_SIDE_TONE = ["Off", "KB Side Tone", "ANI Side Tone", "KB + ANI Side Tone"]
 LIST_PTTID = ["Off", "BOT", "EOT", "Both"]
 LIST_TIMEOUT_ALARM = ["Off"] + ["%s sec" % x for x in range(1, 11)]
 LIST_PILOT_TONE = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
@@ -58,6 +60,12 @@ LIST_VOX_LEVEL_ALT = ["%s" % x for x in range(1, 10, 1)]
 LIST_GPS_MODE = ["GPS", "Beidou", "GPS + Beidou"]
 LIST_GPS_TIMEZONE = ["%s" % x for x in range(-12, 13, 1)]
 LIST_SHIFTS = ["Off", "+", "-"]
+LIST_OFF_AB = ["Off"] + LIST_AB
+LIST_POWERON_TONE = ["Off", "Tone", "Voice"]
+LIST_LCD_CONTRAST = ["%s" % x for x in range(1, 6, 1)]
+LIST_MODES = ["Factory mode", "FCC amateur", "IC amateur", "CE amateur",
+              "Indonesian amateur", "Chinese amateur"]
+
 CHARSET_GB2312 = chirp_common.CHARSET_ASCII
 for x in range(0xB0, 0xD7):
     for y in range(0xA1, 0xFF):
@@ -147,7 +155,10 @@ def _download(radio):
             d = bfc._rawrecv(radio, radio.BLOCK_SIZE + 4)
 
             LOG.debug("Response Data= " + util.hexprint(d))
-            d = _crypt(radio._encrsym, d[4:])
+            if radio._uses_encr:
+                d = _crypt(radio._encrsym, d[4:])
+            else:
+                d = d[4:]
 
             # Aggregate the data
             data += d
@@ -179,7 +190,8 @@ def _upload(radio):
         for addr in range(MEM_START, MEM_START + MEM_SIZE,
                           radio.BLOCK_SIZE):
             data = radio_mem[data_addr:data_addr + radio.BLOCK_SIZE]
-            data = _crypt(radio._encrsym, data)
+            if radio._uses_encr:
+                data = _crypt(radio._encrsym, data)
             data_addr += radio.BLOCK_SIZE
 
             frame = radio._make_frame(b"W", addr, radio.BLOCK_SIZE, data)
@@ -247,6 +259,7 @@ class UV17Pro(bfc.BaofengCommonHT):
     _scode_offset = 0
     _encrsym = 1
     _has_voice = True
+    _uses_encr = True
     _mem_positions = (0x80A0, 0x8280)
 
     MODES = ["NFM", "FM"]
@@ -279,6 +292,7 @@ class UV17Pro(bfc.BaofengCommonHT):
     PTTID_LIST = LIST_PTTID
     SCODE_LIST = ["%s" % x for x in range(1, 21)]
     SQUELCH_LIST = ["Off"] + list("12345")
+    SCRAMBLE_LIST = ["Off"] + ["SCR%s" % x for x in list("123")]
     LIST_POWERON_DISPLAY_TYPE = ["LOGO", "BATT voltage"]
     LIST_TIMEOUT = ["Off"] + ["%s sec" % x for x in range(15, 195, 15)]
     LIST_VOICE = ["English", "Chinese"]
@@ -291,6 +305,8 @@ class UV17Pro(bfc.BaofengCommonHT):
     LIST_SEPARATE_CODE = ["A", "B", "C", "D", "*", "#"]
     LIST_GROUP_CALL_CODE = ["Off"] + LIST_SEPARATE_CODE
     LIST_SKEY2_SHORT = ["FM", "Scan", "Search", "Vox"]
+    LIST_DTMFSPEED = ["%s ms" % x for x in [50, 100, 200, 300, 500]]
+    LIST_DUAL_WATCH = ["Off", "On"]
 
     CHANNELS = 1000
 
@@ -302,7 +318,10 @@ class UV17Pro(bfc.BaofengCommonHT):
       ul16 txtone;
       u8 scode;
       u8 pttid;
-      u8 lowpower;
+      u8 unknown7:2,
+         scramble:2,
+         unknown8:2,
+         lowpower:2;
       u8 unknown1:1,
          wide:1,
          sqmode:2,
@@ -554,7 +573,7 @@ class UV17Pro(bfc.BaofengCommonHT):
         else:
             val = _mem.ani.dtmfon
         rs = RadioSetting("ani.dtmfon", "DTMF Speed (on)",
-                          RadioSettingValueList(LIST_DTMFSPEED,
+                          RadioSettingValueList(self.LIST_DTMFSPEED,
                                                 current_index=val))
         dtmfe.append(rs)
 
@@ -563,7 +582,7 @@ class UV17Pro(bfc.BaofengCommonHT):
         else:
             val = _mem.ani.dtmfoff
         rs = RadioSetting("ani.dtmfoff", "DTMF Speed (off)",
-                          RadioSettingValueList(LIST_DTMFSPEED,
+                          RadioSettingValueList(self.LIST_DTMFSPEED,
                                                 current_index=val))
         dtmfe.append(rs)
 
@@ -602,8 +621,13 @@ class UV17Pro(bfc.BaofengCommonHT):
                               self.LIST_TIMEOUT, current_index=val))
         basic.append(rs)
 
+        if _mem.settings.dualstandby >= len(self.LIST_DUAL_WATCH):
+            val = 0x01
+        else:
+            val = _mem.settings.dualstandby
         rs = RadioSetting("settings.dualstandby", "Dual Watch",
-                          RadioSettingValueBoolean(_mem.settings.dualstandby))
+                          RadioSettingValueList(
+                              self.LIST_DUAL_WATCH, current_index=val))
         basic.append(rs)
 
         if _mem.settings.powerondistype >= len(self.LIST_POWERON_DISPLAY_TYPE):
@@ -644,6 +668,10 @@ class UV17Pro(bfc.BaofengCommonHT):
                           RadioSettingValueBoolean(_mem.settings.autolock))
         basic.append(rs)
 
+        if _mem.settings.beep >= len(self.LIST_BEEP):
+            val = 0x01
+        else:
+            val = _mem.settings.beep
         rs = RadioSetting("settings.beep", "Beep",
                           RadioSettingValueList(
                               self.LIST_BEEP,
@@ -1104,6 +1132,9 @@ class UV17Pro(bfc.BaofengCommonHT):
                     if element.has_apply_callback():
                         LOG.debug("Using apply callback")
                         element.run_apply_callback()
+                    elif setting == "pwronpwd":
+                        numstr = self._num2bbcd(element.value)
+                        setattr(self._memobj.settings, setting, numstr)
                     elif element.value.get_mutable():
                         LOG.debug("Setting %s = %s" % (setting, element.value))
                         setattr(obj, setting, element.value)
@@ -1296,13 +1327,20 @@ class UV17Pro(bfc.BaofengCommonHT):
                                                 current_index=scode))
         mem.extra.append(rs)
 
-        if self.MODEL == "BF-F8HP-PRO":
+        if self.MODEL in ["BF-F8HP-PRO", "K6"]:
             rs = RadioSetting("sqmode", "RX DTMF",
                               RadioSettingValueBoolean(_mem.sqmode))
             mem.extra.append(rs)
 
             rs = RadioSetting("fhss", "FHSS",
                               RadioSettingValueBoolean(_mem.fhss))
+            mem.extra.append(rs)
+
+        if self.MODEL == "K6":
+            rs = RadioSetting("scramble", "Scramble",
+                              RadioSettingValueList(
+                                  self.SCRAMBLE_LIST,
+                                  current_index=_mem.scramble))
             mem.extra.append(rs)
 
         mem.name = str(name).replace('\xFF', ' ').replace('\x00', ' ').rstrip()
@@ -1788,3 +1826,371 @@ class UV5RH(UV17Pro):
     LIST_PW_SAVEMODE = ["Off", "1:1", "1:2", "1:4"]
     MODES = UV17Pro.MODES + ['AM']
     _has_workmode_support = True
+
+
+@directory.register
+class BFK6(UV17Pro):
+    VENDOR = "Baofeng"
+    MODEL = "K6"
+
+    _magic = MSTRING_BFK6
+    _magics = [(b"\x46", 16),
+               ]
+    _uses_encr = False
+
+    LIST_DTMFSPEED = ["%s ms" % x for x in [50, 100, 200, 300, 400, 500]]
+
+    _uhf_range = (400000000, 600000000)
+
+    VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, (UV17Pro._vhf2_range),
+                   _uhf_range, UV17Pro._uhf2_range]
+    MODES = UV17Pro.MODES + ['AM']
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=5.00),
+                    chirp_common.PowerLevel("Low",  watts=1.00)]
+    LIST_PW_SAVEMODE = ["Off", "1:1", "1:2", "1:4"]
+    LIST_POWERON_DISPLAY_TYPE = ["LOGO", "Message", "BATT voltage"]
+    LIST_BEEP = ["Off", "On"]
+    LIST_ID_DELAY = ["Off", "100 ms", "200 ms"] + ["%s ms" % x for x in range(
+                                                   400, 1200, 200)]
+    LIST_SKEYS = ["Off", "Flashlight", "TX Power", "Scan", "VOX", "SOS",
+                  "FM Radio"]
+    LIST_DUAL_WATCH = ["Single Display", "Dual Display, Dual Watch",
+                       "Dual Display, Single Watch"]
+
+    _has_voxsw = True
+    _has_pilot_tone = True
+    _has_send_id_delay = True
+    _has_when_to_send_aniid = False
+
+    MEM_STARTS = [0x0000, 0x9000, 0xA000, 0xC000, 0xD000]
+    MEM_SIZES = [0x8040, 0x0080, 0x02C0, 0x0040, 0x0040]
+
+    MEM_TOTAL = 0x8400
+    _mem_positions = (0x80C0, 0x80E0)
+
+    CHANNELS = 999
+
+    MEM_FORMAT = """
+    struct {
+      lbcd rxfreq[4];
+      lbcd txfreq[4];
+      ul16 rxtone;
+      ul16 txtone;
+      u8 scode;
+      u8 pttid;
+      u8 unknown7:2,
+         scramble:2,
+         unknown8:2,
+         lowpower:2;
+      u8 unknown1:1,
+         wide:1,
+         sqmode:2,
+         bcl:1,
+         scan:1,
+         unknown2:1,
+         fhss:1;
+      u8 unknown3;
+      u8 unknown4;
+      u8 unknown5;
+      u8 unknown6;
+      char name[12];
+    } memory[999];
+
+    struct vfo_entry {
+      u8 freq[8];
+      ul16 rxtone;
+      ul16 txtone;
+      u8 unknown0;
+      u8 bcl;
+      u8 sftd:3,
+         scode:5;
+      u8 unknown1;
+      u8 lowpower;
+      u8 unknown2:1,
+         wide:1,
+         unknown3:5,
+         fhss:1;
+      u8 unknown4;
+      u8 step;
+      u8 offset[6];
+      u8 unknown5[2];
+      u8 sqmode;
+      u8 unknown6[3];
+      };
+
+    #seekto 0x8000;
+    struct {
+      struct vfo_entry a;
+      struct vfo_entry b;
+    } vfo;
+
+    struct {
+      u8 squelch;
+      u8 savemode;
+      u8 vox;
+      u8 backlight;
+      u8 dualstandby;
+      u8 tot;
+      u8 beep;
+      u8 voicesw;
+      u8 voice;
+      u8 sidetone;
+      u8 scanmode;
+      u8 pttid;
+      u8 pttdly;
+      u8 chadistype;
+      u8 chbdistype;
+      u8 bcl;
+      u8 autolock;
+      u8 alarmmode;
+      u8 alarmtone;
+      u8 tdr_tx;
+      u8 tailclear;
+      u8 rpttailclear;
+      u8 rpttaildet;
+      u8 roger;
+      u8 a_or_b_selected; // a=0, b=1
+      u8 fmenable;
+      u8 chbworkmode:4,
+         chaworkmode:4;
+      u8 keylock;
+      u8 unknown2:4,
+         powerontone:2,
+         powerondistype:2;
+      u8 tone;
+      u8 unknown4[2];
+      u8 voxdlytime;
+      u8 menuquittime;
+      u8 unknown5[2];
+      u8 dispani;
+      u8 unknown11[3];
+      u8 totalarm;
+      u8 lcdcontrast;
+      u8 invertlcd;
+      u8 ctsdcsscantype;
+      ul16 vfoscanmin;
+      ul16 vfoscanmax;
+      u8 fminterrupt;
+      u8 txdisable;
+      u8 key1short;
+      u8 key1long;
+      u8 key2short;
+      u8 unknown8[2];
+      u8 rstmenu;
+      u8 singlewatch;
+      u8 hangup;
+      u8 voxsw;
+      u8 gpstimezone;
+      u8 pwronpwdsw;
+      u8 pwronpwd[3];
+      char stationid[16];
+    } settings;
+
+    #seekto 0x%04X;
+    struct {
+      u8 code[5];
+      u8 unknown[1];
+      u8 unused1:6,
+         aniid:2;
+      u8 dtmfon;
+      u8 dtmfoff;
+      u8 separatecode;
+      u8 groupcallcode;
+    } ani;
+
+    #seekto 0x%04X;
+    struct {
+      u8 code[5];
+      char name[10];
+      u8 unused;
+    } pttid[20];
+
+    struct {
+      u8 unknown32[32];
+      u8 code[16];
+    } upcode;
+
+    struct {
+      u8 code[16];
+    } downcode;
+
+    #seekto 0x83C0;
+    struct {
+      u8 unknown1:4,
+         modetype:4;
+      u8 tx_220mhz;
+      u8 unknown2;
+      u8 tx_520mhz;
+      u8 rx_am;
+    } modes;
+    """
+
+    def _bbcd2num(self, bcdarr, strlen=6):
+        # doing bbcd
+        LOG.debug(bcdarr.get_value())
+        string = ''.join("%02X" % b for b in bcdarr)
+        LOG.debug("@_bbcd2num, received: %s" % string)
+        if strlen <= 6:
+            string = string[:strlen]
+        return string
+
+    def _num2bbcd(self, value):
+        numstr = value.get_value()
+        numstr = str.ljust(numstr.strip(), 6, "F")
+        bcdarr = list(bytearray.fromhex(numstr))
+        LOG.debug("@_num2bbcd, sending: %s" % bcdarr)
+        return bcdarr
+
+    def get_settings_pro_basic(self, basic, _mem):
+        super().get_settings_pro_basic(basic, _mem)
+
+        if _mem.settings.tdr_tx >= len(LIST_OFF_AB):
+            val = 0x00
+        else:
+            val = _mem.settings.tdr_tx
+        rs = RadioSetting("settings.tdr_tx", "TDR TX",
+                          RadioSettingValueList(
+                              LIST_OFF_AB, current_index=val))
+        basic.append(rs)
+
+        if _mem.settings.powerontone >= len(LIST_POWERON_TONE):
+            val = 0x00
+        else:
+            val = _mem.settings.powerontone
+        rs = RadioSetting("settings.powerontone", "Power On Tone",
+                          RadioSettingValueList(
+                              LIST_POWERON_TONE, current_index=val))
+        basic.append(rs)
+
+        if _mem.settings.lcdcontrast >= len(LIST_LCD_CONTRAST):
+            val = 0x03
+        else:
+            val = _mem.settings.lcdcontrast
+        rs = RadioSetting("settings.lcdcontrast", "LCD Contrast",
+                          RadioSettingValueList(
+                              LIST_LCD_CONTRAST, current_index=val))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.invertlcd", "Invert LCD",
+                          RadioSettingValueBoolean(_mem.settings.invertlcd))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.key1short", "PF1",
+                          RadioSettingValueList(
+                              self.LIST_SKEYS,
+                              current_index=_mem.settings.key1short))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.key1long", "PF1 Long",
+                          RadioSettingValueList(
+                              self.LIST_SKEYS,
+                              current_index=_mem.settings.key1long))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.key2short", "PF2",
+                          RadioSettingValueList(
+                              self.LIST_SKEYS,
+                              current_index=_mem.settings.key2short))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.fminterrupt", "FM Interrupt",
+                          RadioSettingValueBoolean(_mem.settings.fminterrupt))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.txdisable", "Disable TX",
+                          RadioSettingValueBoolean(_mem.settings.txdisable))
+        basic.append(rs)
+
+        rs = RadioSetting("settings.pwronpwdsw", "Power On Password Switch",
+                          RadioSettingValueBoolean(_mem.settings.pwronpwdsw))
+        basic.append(rs)
+
+        def _filter(name):
+            filtered = ""
+            for char in str(name):
+                if char in NUMERIC_CHARS:
+                    filtered += char
+                else:
+                    filtered += " "
+            return filtered
+
+        # setup power on password entry
+        codesetting = getattr(_mem.settings, "pwronpwd")
+        codestr = self._bbcd2num(codesetting, 6)
+        code = RadioSettingValueString(0, 6, _filter(codestr))
+        code.set_charset(NUMERIC_CHARS + list(" "))
+        rs = RadioSetting("settings.pwronpwd", "Power On Password", code)
+        basic.append(rs)
+
+        def _filterStationID(name):
+            fname = b""
+            for char in name:
+                if ord(str(char)) in [0, 255]:
+                    break
+                fname += int(char).to_bytes(1, 'big')
+            return fname.decode('gb2312').strip()
+
+        def apply_stationid(setting, obj):
+            stationid = (str(setting.value).encode('gb2312')[:16].ljust(16,
+                         b"\xFF"))
+            obj.stationid = stationid
+
+        _nameobj = self._memobj.settings
+        rs = RadioSetting("settings.stationid",
+                          "StationID",
+                          RadioSettingValueString(
+                              0, 16, _filterStationID(_nameobj.stationid),
+                              False, CHARSET_GB2312))
+        rs.set_apply_callback(apply_stationid, _nameobj)
+        basic.append(rs)
+
+        rs = RadioSetting("modes.modetype", "Factory Modes",
+                          RadioSettingValueList(
+                              LIST_MODES,
+                              current_index=_mem.modes.modetype))
+        basic.append(rs)
+
+        rs = RadioSetting("modes.tx_220mhz", "220M TX",
+                          RadioSettingValueBoolean(_mem.modes.tx_220mhz))
+        basic.append(rs)
+
+        rs = RadioSetting("modes.tx_520mhz", "520M TX",
+                          RadioSettingValueBoolean(_mem.modes.tx_520mhz))
+        basic.append(rs)
+
+        rs = RadioSetting("modes.rx_am", "AM RX",
+                          RadioSettingValueBoolean(_mem.modes.rx_am))
+        basic.append(rs)
+
+    def get_settings_pro_dtmf(self, dtmfe, _mem):
+        super().get_settings_pro_dtmf(dtmfe, _mem)
+
+        rs = RadioSetting("ani.separatecode", "Separate Code",
+                          RadioSettingValueList(
+                            self.LIST_SEPARATE_CODE,
+                            current_index=_mem.ani.separatecode))
+        dtmfe.append(rs)
+
+        rs = RadioSetting("ani.groupcallcode", "Group Call Code",
+                          RadioSettingValueList(
+                            self.LIST_GROUP_CALL_CODE,
+                            current_index=_mem.ani.groupcallcode))
+        dtmfe.append(rs)
+
+        _codeobj = self._memobj.upcode.code
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x)
+                        < 0x1F])
+        val = RadioSettingValueString(0, 16, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("upcode.code", "Up Code", val)
+        rs.set_apply_callback(self.apply_code, self._memobj.upcode, 16)
+        dtmfe.append(rs)
+
+        _codeobj = self._memobj.downcode.code
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x)
+                        < 0x1F])
+        val = RadioSettingValueString(0, 16, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("downcode.code", "Down Code", val)
+        rs.set_apply_callback(self.apply_code, self._memobj.downcode, 16)
+        dtmfe.append(rs)
