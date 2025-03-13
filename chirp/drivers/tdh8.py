@@ -703,6 +703,7 @@ HOP_LIST = ["A", "B", "C", "D"]
 SYNC_LIST = ["ON", "OFF"]
 LANG_LIST = ["Chinese", "English"]
 BTV_SAVER_LIST = ["OFF", "1:1", "1:2", "1:3", "1:4"]
+H3_BTV_SAVER_LIST = ["OFF", "1:1", "1:2", "1:3", "1:4", "1:8"]
 SCAN_MODE_LIST = ["TO", "CO", "SE"]
 PRIO_LIST = ["Edit", "Busy"]
 SHORT_KEY_LIST = ["None", "FM Radio", "Lamp", "Monitor",
@@ -1477,12 +1478,17 @@ class TDH8(chirp_common.CloneModeRadio):
                               RadioSettingValueList(
                                   SYNC_LIST,
                                   current_index=_settings.sync))
+
             basic.append(rs)
 
-            rs = RadioSetting("save", "Battery Save",
+            rs = RadioSetting("save",
+                              "Power Save" if self.MODEL in H3_LIST
+                              else "Battery Save",
                               RadioSettingValueList(
-                                  BTV_SAVER_LIST,
+                                  H3_BTV_SAVER_LIST if self.MODEL in H3_LIST
+                                  else BTV_SAVER_LIST,
                                   current_index=_settings.save))
+
             basic.append(rs)
 
         rs = RadioSetting("dbrx", "Double Rx",
