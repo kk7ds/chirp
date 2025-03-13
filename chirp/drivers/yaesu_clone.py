@@ -148,14 +148,12 @@ def __clone_out(radio):
     for block in radio._block_lengths:
         blocks += 1
         if blocks != len(radio._block_lengths):
+            LOG.debug("Sending %i-%i" % (pos, pos+block))
             pipe.write(mmap[pos:pos+block])
-            echo = pipe.read(block)
-            if len(echo) != block:
-                LOG.error('Expected %i bytes of echo, got %i', block,
-                          len(echo))
             buf = pipe.read(1)
-            if not buf or buf[0] != CMD_ACK:
-                LOG.error('Expected ack but got %r', buf)
+            if buf and buf[0] != CMD_ACK:
+                buf = pipe.read(block)
+            if not buf or buf[-1] != CMD_ACK:
                 raise Exception("Radio did not ack block %i" % blocks)
         else:
             _chunk_write(pipe, mmap[pos:],
