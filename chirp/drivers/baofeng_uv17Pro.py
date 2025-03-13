@@ -260,7 +260,12 @@ class UV17Pro(bfc.BaofengCommonHT):
     _encrsym = 1
     _has_voice = True
     _uses_encr = True
-    _mem_positions = (0x80A0, 0x8280)
+    _mem_params = {
+        'mems': 1000,
+        'ani': 0x8080,
+        'pttid': 0x80A0,
+        'names': 0x8280,
+    }
 
     MODES = ["NFM", "FM"]
     VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
@@ -310,8 +315,8 @@ class UV17Pro(bfc.BaofengCommonHT):
 
     CHANNELS = 1000
 
-    MEM_FORMAT = """
-    struct {
+    _mem_format = """
+    struct memory_obj {
       lbcd rxfreq[4];
       lbcd txfreq[4];
       ul16 rxtone;
@@ -334,8 +339,9 @@ class UV17Pro(bfc.BaofengCommonHT):
       u8 unknown5;
       u8 unknown6;
       char name[12];
-    } memory[1000];
-
+      };
+    """
+    _common_defns = """
     struct vfo_entry {
       u8 freq[8];
       ul16 rxtone;
@@ -357,14 +363,19 @@ class UV17Pro(bfc.BaofengCommonHT):
       u8 sqmode;
       u8 unknown6[3];
       };
-
-    #seekto 0x8000;
-    struct {
-      struct vfo_entry a;
-      struct vfo_entry b;
-    } vfo;
-
-    struct {
+    struct ani_obj {
+      u8 code[5];
+      u8 unknown[1];
+      u8 unused1:6,
+         aniid:2;
+      u8 dtmfon;
+      u8 dtmfoff;
+      u8 separatecode;
+      u8 groupcallcode;
+    };
+    """
+    _settings_format = """
+    struct settings_obj {
       u8 squelch;
       u8 savemode;
       u8 vox;
@@ -422,20 +433,23 @@ class UV17Pro(bfc.BaofengCommonHT):
       u8 inputdtmf;
       u8 gpsunits;
       u8 pontime;
-    } settings;
+    };
+    """
 
+    MEM_FORMAT = """
+    struct memory_obj memory[%(mems)i];
+
+    #seekto 0x8000;
     struct {
-      u8 code[5];
-      u8 unknown[1];
-      u8 unused1:6,
-         aniid:2;
-      u8 dtmfon;
-      u8 dtmfoff;
-      u8 separatecode;
-      u8 groupcallcode;
-    } ani;
+      struct vfo_entry a;
+      struct vfo_entry b;
+    } vfo;
 
-    #seekto 0x%04X;
+    struct settings_obj settings;
+    #seekto 0x%(ani)X;
+    struct ani_obj ani;
+
+    #seekto 0x%(pttid)04X;
     struct {
       u8 code[5];
       char name[10];
@@ -450,8 +464,10 @@ class UV17Pro(bfc.BaofengCommonHT):
     struct {
       u8 code[16];
     } downcode;
+    """
 
-    #seekto 0x%04X;
+    _end_fmt = """
+    #seekto 0x%(names)04X;
     struct {
       char name[16];
     } bank_name[10];
@@ -498,7 +514,9 @@ class UV17Pro(bfc.BaofengCommonHT):
     def process_mmap(self):
         """Process the mem map into the mem object"""
         # make lines shorter for style check.
-        fmt = self.MEM_FORMAT % self._mem_positions
+        fmt = (self._mem_format + self._common_defns +
+               self._settings_format + self.MEM_FORMAT +
+               self._end_fmt) % self._mem_params
         self._memobj = bitwise.parse(fmt, self._mmap)
 
     # DTMF settings
@@ -1574,60 +1592,15 @@ class F8HPPro(UV17Pro):
     MEM_SIZES = [0x8040, 0x0080, 0x02C0, 0x00C0]
 
     MEM_TOTAL = 0x8440
-    _mem_positions = (0x80C0, 0x80E0, 0x8380)
+    _mem_params = {
+        'mems': 1000,
+        'ani': 0x80C0,
+        'pttid': 0x80E0,
+        'names': 0x8380,
+    }
 
-    MEM_FORMAT = """
-    struct {
-      lbcd rxfreq[4];
-      lbcd txfreq[4];
-      ul16 rxtone;
-      ul16 txtone;
-      u8 scode;
-      u8 pttid;
-      u8 lowpower;
-      u8 unknown1:1,
-         wide:1,
-         sqmode:2,
-         bcl:1,
-         scan:1,
-         unknown2:1,
-         fhss:1;
-      u8 unknown3;
-      u8 unknown4;
-      u8 unknown5;
-      u8 unknown6;
-      char name[12];
-    } memory[1000];
-
-    struct vfo_entry {
-      u8 freq[8];
-      ul16 rxtone;
-      ul16 txtone;
-      u8 unknown0;
-      u8 bcl;
-      u8 sftd:3,
-         scode:5;
-      u8 unknown1;
-      u8 lowpower;
-      u8 unknown2:1,
-         wide:1,
-         unknown3:5,
-         fhss:1;
-      u8 unknown4;
-      u8 step;
-      u8 offset[6];
-      u8 unknown5[2];
-      u8 sqmode;
-      u8 unknown6[3];
-      };
-
-    #seekto 0x8000;
-    struct {
-      struct vfo_entry a;
-      struct vfo_entry b;
-    } vfo;
-
-    struct {
+    _settings_format = """
+    struct settings_obj {
       u8 squelch;
       u8 savemode;
       u8 vox;
@@ -1686,40 +1659,7 @@ class F8HPPro(UV17Pro):
       u8 gpsunits;
       u8 pontime;
       char stationid[8];
-    } settings;
-
-    #seekto 0x%04X;
-    struct {
-      u8 code[5];
-      u8 unknown[1];
-      u8 unused1:6,
-         aniid:2;
-      u8 dtmfon;
-      u8 dtmfoff;
-      u8 separatecode;
-      u8 groupcallcode;
-    } ani;
-
-    #seekto 0x%04X;
-    struct {
-      u8 code[5];
-      char name[10];
-      u8 unused;
-    } pttid[20];
-
-    struct {
-      u8 unknown32[32];
-      u8 code[16];
-    } upcode;
-
-    struct {
-      u8 code[16];
-    } downcode;
-
-    #seekto 0x%04X;
-    struct {
-      char name[16];
-    } bank_name[10];
+    };
     """
 
     def get_settings_pro_dtmf(self, dtmfe, _mem):
@@ -1866,65 +1806,15 @@ class BFK6(UV17Pro):
     MEM_SIZES = [0x8040, 0x0080, 0x02C0, 0x0040, 0x0040]
 
     MEM_TOTAL = 0x8400
-    _mem_positions = (0x80C0, 0x80E0)
-
+    _mem_params = {
+        'mems': 999,
+        'ani': 0x80C0,
+        'pttid': 0x80E0,
+    }
     CHANNELS = 999
 
-    MEM_FORMAT = """
-    struct {
-      lbcd rxfreq[4];
-      lbcd txfreq[4];
-      ul16 rxtone;
-      ul16 txtone;
-      u8 scode;
-      u8 pttid;
-      u8 unknown7:2,
-         scramble:2,
-         unknown8:2,
-         lowpower:2;
-      u8 unknown1:1,
-         wide:1,
-         sqmode:2,
-         bcl:1,
-         scan:1,
-         unknown2:1,
-         fhss:1;
-      u8 unknown3;
-      u8 unknown4;
-      u8 unknown5;
-      u8 unknown6;
-      char name[12];
-    } memory[999];
-
-    struct vfo_entry {
-      u8 freq[8];
-      ul16 rxtone;
-      ul16 txtone;
-      u8 unknown0;
-      u8 bcl;
-      u8 sftd:3,
-         scode:5;
-      u8 unknown1;
-      u8 lowpower;
-      u8 unknown2:1,
-         wide:1,
-         unknown3:5,
-         fhss:1;
-      u8 unknown4;
-      u8 step;
-      u8 offset[6];
-      u8 unknown5[2];
-      u8 sqmode;
-      u8 unknown6[3];
-      };
-
-    #seekto 0x8000;
-    struct {
-      struct vfo_entry a;
-      struct vfo_entry b;
-    } vfo;
-
-    struct {
+    _settings_format = """
+    struct settings_obj {
       u8 squelch;
       u8 savemode;
       u8 vox;
@@ -1984,36 +1874,10 @@ class BFK6(UV17Pro):
       u8 pwronpwdsw;
       u8 pwronpwd[3];
       char stationid[16];
-    } settings;
+    };
+    """
 
-    #seekto 0x%04X;
-    struct {
-      u8 code[5];
-      u8 unknown[1];
-      u8 unused1:6,
-         aniid:2;
-      u8 dtmfon;
-      u8 dtmfoff;
-      u8 separatecode;
-      u8 groupcallcode;
-    } ani;
-
-    #seekto 0x%04X;
-    struct {
-      u8 code[5];
-      char name[10];
-      u8 unused;
-    } pttid[20];
-
-    struct {
-      u8 unknown32[32];
-      u8 code[16];
-    } upcode;
-
-    struct {
-      u8 code[16];
-    } downcode;
-
+    _end_fmt = """
     #seekto 0x83C0;
     struct {
       u8 unknown1:4,
