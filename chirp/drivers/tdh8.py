@@ -826,7 +826,7 @@ MIC_GAIN_LIST_H8 = ['%s' % x for x in range(0, 33)]
 H8_LIST = ["TD-H8", "TD-H8-HAM", "TD-H8-GMRS"]
 H3_LIST = ["TD-H3", "TD-H3-HAM", "TD-H3-GMRS"]
 
-GMRS_FREQS = bandplan_na.GMRS_HIRPT
+GMRS_FREQS = bandplan_na.ALL_GMRS_FREQS
 
 NOAA_FREQS = [162550000, 162400000, 162475000, 162425000, 162450000,
               162500000, 162525000, 161650000, 161775000, 161750000,
@@ -1247,8 +1247,6 @@ class TDH8(chirp_common.CloneModeRadio):
                     mem.immutable = ['freq', 'mode', 'power',
                                      'duplex', 'offset']
             elif mem.number >= 31 and mem.number <= 54:
-                # mem.immutable = ['duplex', 'offset']
-                mem.duplex = '+'
                 mem.offset = 5000000
             elif mem.number >= 189 and mem.number <= 199:
                 ham_freqs = NOAA_FREQS[mem.number - 189]
@@ -2640,10 +2638,16 @@ class TDH8_GMRS(TDH8):
 
     def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
-        if 31 <= mem.number <= 54 and mem.freq not in GMRS_FREQS:
-            msgs.append(chirp_common.ValidationError(
-                "The frequency in channels 31-54 must be between"
-                "462.55000-462.72500 in 0.025 increments."))
+        if 31 <= mem.number <= 54:
+            if mem.freq not in GMRS_FREQS:
+                msgs.append(chirp_common.ValidationError(
+                    "The frequency in channels 31-54 must be between"
+                    "462.55000-462.72500 in 0.025 increments."))
+            if mem.duplex not in ('', '+', 'off') or (
+                    mem.duplex == '+' and mem.offset != 5000000):
+                msgs.append(chirp_common.ValidationError(
+                    "Channels in this range must be GMRS frequencies and "
+                    "either simplex or +5MHz offset"))
         return msgs
 
 
