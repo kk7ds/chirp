@@ -702,8 +702,6 @@ MDFB_LIST = ["Frequency", "Name"]
 HOP_LIST = ["A", "B", "C", "D"]
 SYNC_LIST = ["ON", "OFF"]
 LANG_LIST = ["Chinese", "English"]
-BTV_SAVER_LIST = ["OFF", "1:1", "1:2", "1:3", "1:4"]
-H3_BTV_SAVER_LIST = ["OFF", "1:1", "1:2", "1:3", "1:4", "1:8"]
 SCAN_MODE_LIST = ["TO", "CO", "SE"]
 PRIO_LIST = ["Edit", "Busy"]
 SHORT_KEY_LIST = ["None", "FM Radio", "Lamp", "Monitor",
@@ -807,7 +805,6 @@ RTONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
 RESUME_LIST = ["TO", "CO", "SE"]
 ROGERRX_LIST = ["Off"] + AB_LIST
 RPSTE_LIST = ["OFF"] + ["%s" % x for x in range(1, 11)]
-SAVE_LIST = ["Off", "1:1", "1:2", "1:3", "1:4"]
 SCODE_LIST = ["%s" % x for x in range(1, 16)]
 SHIFTD_LIST = ["Off", "+", "-"]
 STEDELAY_LIST = ["OFF"] + ["%s ms" % x for x in range(100, 1100, 100)]
@@ -1050,6 +1047,8 @@ class TDH8(chirp_common.CloneModeRadio):
                  chirp_common.PowerLevel("Mid",  watts=4.00),
                  chirp_common.PowerLevel("High", watts=8.00)]
     _ponmsg_list = ["Full", "Message", "Icon"]
+    _save_list = ["Off", "1:1", "1:2", "1:3", "1:4"]
+    _save_shortname = "Battery Save"
 
     @classmethod
     def detect_from_serial(cls, pipe):
@@ -1481,12 +1480,9 @@ class TDH8(chirp_common.CloneModeRadio):
 
             basic.append(rs)
 
-            rs = RadioSetting("save",
-                              "Power Save" if self.MODEL in H3_LIST
-                              else "Battery Save",
+            rs = RadioSetting("save", self._save_shortname,
                               RadioSettingValueList(
-                                  H3_BTV_SAVER_LIST if self.MODEL in H3_LIST
-                                  else BTV_SAVER_LIST,
+                                  self._save_list,
                                   current_index=_settings.save))
 
             basic.append(rs)
@@ -2674,6 +2670,8 @@ class TDH3(TDH8):
     _tx_power = [chirp_common.PowerLevel("Low",  watts=2.00),
                  chirp_common.PowerLevel("High",  watts=5.00)]
     _ponmsg_list = ["Off", "Message", "Icon"]
+    _save_list = ["Off", "1:1", "1:2", "1:3", "1:4", "1:8"]
+    _save_shortname = "Power Save"
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)
