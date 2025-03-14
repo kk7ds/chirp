@@ -2641,7 +2641,7 @@ class TDH8_GMRS(TDH8):
         if 31 <= mem.number <= 54:
             if mem.freq not in GMRS_FREQS:
                 msgs.append(chirp_common.ValidationError(
-                    "The frequency in channels 31-54 must be between"
+                    "The frequency in channels 31-54 must be between "
                     "462.55000-462.72500 in 0.025 increments."))
             if mem.duplex not in ('', '+', 'off') or (
                     mem.duplex == '+' and mem.offset != 5000000):

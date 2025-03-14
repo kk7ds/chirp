@@ -69,7 +69,7 @@ class Band(object):
             return self
         limits = (self.limits[0] + self.offset, self.limits[1] + self.offset)
         offset = -1 * self.offset
-        if self.duplex in '+-':
+        if self.duplex and self.duplex in '+-':
             duplex = '+' if self.duplex == '-' else '-'
             return Band(limits, self.name, self.mode, self.step_khz,
                         input_offset=offset, tones=self.tones, duplex=duplex)
