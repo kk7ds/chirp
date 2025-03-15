@@ -74,6 +74,22 @@ config_map_935G = (     # map address, write size, write count
     (0x4780, 32, 375),  # Memory Names 0-999
     (0x7670, 8, 125),   # Ch Valid bytes 0-999
     )
+config_map_935H = (     # map address, write size, write count
+    # (0x00,   64, 512),  #- Use for full upload testing
+    (0x14,   1,  1),    # Tx Range Lock
+    (0x44,   32, 1),    # Freq Limits
+    (0x440,  8,  1),     # Area Message
+    (0x480,  8, 5),    # Scan Groups
+    (0x500,  8, 15),    # Call Codes
+    (0x580,  8, 15),    # Call Names
+    (0x600,  8, 5),    # FM Presets
+    (0x800,  64, 2),    # settings
+    (0x880,  16, 1),    # VFO A
+    (0x8C0,  16, 1),    # VFO B
+    (0x900,  64, 250),  # Channel Memory 0-999
+    (0x4780, 32, 375),  # Memory Names 0-999
+    (0x7670, 8, 125),   # Ch Valid bytes 0-999
+    )
 
 AB_LIST = ["A", "B"]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
@@ -969,6 +985,283 @@ _MEM_FORMAT_UV8H = """
     u8          valid[1000];
     """
 
+_MEM_FORMAT_935H = """
+    #seekto 0x0014;
+    struct {
+        u8    txlocked;
+    } lock;
+
+    #seekto 0x0044;
+    struct {
+        u32    rx_start;
+        u32    rx_stop;
+        u32    tx_start;
+        u32    tx_stop;
+    } uhf_limits;
+
+    #seekto 0x0054;
+    struct {
+        u32    rx_start;
+        u32    rx_stop;
+        u32    tx_start;
+        u32    tx_stop;
+    } vhf_limits;
+
+    #seekto 0x0400;
+    struct {
+        char     oem1[8];
+        char     unknown[2];
+        u8     unknown2[10];
+        u8     unknown3[10];
+        u8     unknown4[8];
+        char     oem2[10];
+        u8     version[6];
+        char     date[8];
+        u8     unknown5[2];
+        char     model[8];
+    } oem_info;
+
+    #seekto 0x0480;
+    struct {
+        u16    Group_lower1;
+        u16    Group_upper1;
+        u16    Group_lower2;
+        u16    Group_upper2;
+        u16    Group_lower3;
+        u16    Group_upper3;
+        u16    Group_lower4;
+        u16    Group_upper4;
+        u16    Group_lower5;
+        u16    Group_upper5;
+        u16    Group_lower6;
+        u16    Group_upper6;
+        u16    Group_lower7;
+        u16    Group_upper7;
+        u16    Group_lower8;
+        u16    Group_upper8;
+        u16    Group_lower9;
+        u16    Group_upper9;
+        u16    Group_lower10;
+        u16    Group_upper10;
+    } scan_groups;
+
+    #seekto 0x0500;
+    struct {
+        u8 cid[6];
+    } call_ids[20];
+
+    #seekto 0x0580;
+    struct {
+        char    call_name1[6];
+        char    call_name2[6];
+        char    call_name3[6];
+        char    call_name4[6];
+        char    call_name5[6];
+        char    call_name6[6];
+        char    call_name7[6];
+        char    call_name8[6];
+        char    call_name9[6];
+        char    call_name10[6];
+        char    call_name11[6];
+        char    call_name12[6];
+        char    call_name13[6];
+        char    call_name14[6];
+        char    call_name15[6];
+        char    call_name16[6];
+        char    call_name17[6];
+        char    call_name18[6];
+        char    call_name19[6];
+        char    call_name20[6];
+    } call_names;
+
+
+    #seekto 0x0600;
+    struct {
+        u16    FM_radio1;
+        u16    FM_radio2;
+        u16    FM_radio3;
+        u16    FM_radio4;
+        u16    FM_radio5;
+        u16    FM_radio6;
+        u16    FM_radio7;
+        u16    FM_radio8;
+        u16    FM_radio9;
+        u16    FM_radio10;
+        u16    FM_radio11;
+        u16    FM_radio12;
+        u16    FM_radio13;
+        u16    FM_radio14;
+        u16    FM_radio15;
+        u16    FM_radio16;
+        u16    FM_radio17;
+        u16    FM_radio18;
+        u16    FM_radio19;
+        u16    FM_radio20;
+        u16 unknown_pad_x0640[235];
+        u8 unknown07fe;
+        u8 unknown07ff;
+        u8      ponmsg;
+        char    dispstr[15];
+        u8 unknown0810;
+        u8 unknown0811;
+        u8 unknown0812;
+        u8 unknown0813;
+        u8 unknown0814;
+        u8      voice;
+        u8      timeout;
+        u8      toalarm;
+        u8      channel_menu;
+        u8      power_save;
+        u8      autolock;
+        u8      keylock;
+        u8      beep;
+        u8      stopwatch;
+        u8      vox;
+        u8      scan_rev;
+        u8      backlight;
+        u8      roger_beep;
+        char      mode_sw_pwd[6];
+        char      reset_pwd[6];
+        u16     pri_ch;
+        u8      ani_sw;
+        u8      ptt_delay;
+        u8      ani_code[6];
+        u8      dtmf_st;
+        u8      BCL_A;
+        u8      BCL_B;
+        u8      ptt_id;
+        u8      prich_sw;
+        u8      rpttype;
+        u8      rptspk;
+        u8      rptptt;
+        u8      alert;
+        u8      pf1_shrt;
+        u8      pf1_long;
+        u8      pf2_shrt;
+        u8      pf2_long;
+        u8 unknown0845;
+        u8      work_mode_a;
+        u8      work_mode_b;
+        u8      dtmf_tx_time;
+        u8      dtmf_interval;
+        u8      main_band;
+        u16      work_ch_a;
+        u16      work_ch_b;
+        u8 unknown084f;
+        u8 unknown0850;
+        u8 unknown0851;
+        u8 unknown0852;
+        u8 unknown0853;
+        u8 unknown0854;
+        u8 unknown0855;
+        u8 unknown0856;
+        u8 unknown0857;
+        u8 unknown0858;
+        u8 unknown0859;
+        u8 unknown085a;
+        u8 unknown085b;
+        u8 unknown085c;
+        u8 unknown085d;
+        u8 unknown085e;
+        u8 unknown085f;
+        u8 unknown0860;
+        u8      TDR_single_mode;
+        u8      ring_time;
+        u8      ScnGrpA_Act;
+        u8      ScnGrpB_Act;
+        u8 unknown0865;
+        u8      rpt_tone;
+        u8 unknown0867;
+        u8      scan_det;
+        u8      ToneScnSave;
+        u8 unknown086a;
+        u8      smuteset;
+        u8      cur_call_grp;
+        u8      DspBrtAct;
+        u8      DspBrtSby;
+        u8 unknown086f;
+        u8      theme;
+        u8      batt_ind;
+        u8      wxalert;
+        u8      wxalert_type;
+        u8 VFO_repeater_a;
+        u8 VFO_repeater_b;
+        u8 sim_rec;
+        u8 unknown0877;
+        u8 unknown0878;
+        u8 unknown0879;
+        u8 unknown087a;
+        u8 unknown087b;
+        u8 unknown087c;
+        u8 unknown087d;
+        u8 unknown087e;
+        u8 unknown087f;
+    } settings;
+
+    #seekto 0x0880;
+    struct {
+        u32     rxfreq;
+        u32     unknown0;
+        u16     rxtone;
+        u16     txtone;
+        u8      scrambler:4,
+                power:4;
+        u8      unknown3:1,
+                unknown5:2,
+                unknown4:1,
+                cmpndr:1,
+                mute_mode:2,
+                iswide:1;
+        u8      step;
+        u8      squelch;
+      } vfoa;
+
+    #seekto 0x08c0;
+    struct {
+        u32     rxfreq;
+        u32     unknown0;
+        u16     rxtone;
+        u16     txtone;
+        u8      scrambler:4,
+                power:4;
+        u8      unknown3:1,
+                unknown5:2,
+                unknown4:1,
+                cmpndr:1,
+                mute_mode:2,
+                iswide:1;
+        u8      step;
+        u8      squelch;
+    } vfob;
+
+    #seekto 0x0900;
+    struct {
+        u32     rxfreq;
+        u32     txfreq;
+        u16     rxtone;
+        u16     txtone;
+        u8      scrambler:4,
+                power:4;
+        u8      unknown3:2,
+                scan_add:1,
+                unknown4:1,
+                compander:1,
+                mute_mode:2,
+                iswide:1;
+        u8      unknown5;
+        u8      unknown6;
+    } memory[1000];
+
+    #seekto 0x4780;
+    struct {
+        u8    name[8];
+                u8    unknown[4];
+    } names[1000];
+
+    #seekto 0x7670;
+    u8          valid[1000];
+    """
+
 
 # Support for the Wouxun KG-935G radio
 # Serial coms are at 19200 baud
@@ -1035,6 +1328,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                     chirp_common.PowerLevel("M", watts=4.5),
                     chirp_common.PowerLevel("H", watts=5.5)]
     _record_start = 0x7C
+    config_map = config_map_935G
 
     def _checksum(self, data):
         cs = 0
@@ -1178,7 +1472,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         return
 
     def _do_upload(self):
-        cfgmap = config_map_935G
+        cfgmap = self.config_map
 
         for start, blocksize, count in cfgmap:
             end = start + (blocksize * count)
@@ -1466,6 +1760,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
 
     def _get_settings(self):
         _settings = self._memobj.settings
+        # _txlock = self._memobj.lock
         _vfoa = self._memobj.vfoa
         _vfob = self._memobj.vfob
         _scan = self._memobj.scan_groups
@@ -1497,7 +1792,8 @@ class KG935GRadio(chirp_common.CloneModeRadio,
             ani_msg = "ANI-ID Switch (ANI-SW)"
             pttdly_msg = "PTT-DLY"
             idtx_msg = "PTT-ID"
-        elif self.MODEL == "KG-935G Plus":
+        elif (self.MODEL == "KG-935G Plus" or
+              self.MODEL == "KG-935H"):
             themelist = THEME_LIST_935GPLUS
             vfoa_grp_label = "Freq Mode A Settings"
             vfob_grp_label = "Freq Mode B Settings"
@@ -1578,7 +1874,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueBoolean(_settings.wxalert))
         cfg_grp.append(rs)
 
-        if self.MODEL == "KG-935G Plus":
+        if (self.MODEL == "KG-935G Plus" or self.MODEL == "KG-935H"):
             rs = RadioSetting("wxalert_type", "Weather Alert Notification",
                               RadioSettingValueList(WX_TYPE,
                                                     current_index=_settings.
@@ -1705,6 +2001,18 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                     HOLD_TIMES, current_index=_settings.rpt_hold))
             cfg_grp.append(rs)
 
+        if self.MODEL == "KG-935H":
+            rs = RadioSetting("rpttype", "Repeater Type",
+                              RadioSettingValueMap(RPTTYPE_MAP,
+                                                   _settings.rpttype))
+            cfg_grp.append(rs)
+            rs = RadioSetting("rptspk", "Repeater Speaker",
+                              RadioSettingValueBoolean(_settings.rptspk))
+            cfg_grp.append(rs)
+            rs = RadioSetting("rptptt", "Repeater PTT",
+                              RadioSettingValueBoolean(_settings.rptptt))
+            cfg_grp.append(rs)
+
         rs = RadioSetting("rpt_tone", "Repeater Tone",
                           RadioSettingValueBoolean(_settings.rpt_tone))
         cfg_grp.append(rs)
@@ -1730,7 +2038,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                                                _settings.dtmf_interval))
         cfg_grp.append(rs)
 
-        if self.MODEL == "KG-935G Plus":
+        if (self.MODEL == "KG-935G Plus" or self.MODEL == "KG-935H"):
             rs = RadioSetting("batt_ind", "Battery Indicator",
                               RadioSettingValueList(
                                   BATT_DISP_LIST,
@@ -2062,6 +2370,12 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                               (self._memobj.uhf_limits.tx_stop / 100000.0),
                               0.000001, 6))
         lmt_grp.append(rs)
+        if self.MODEL == "KG-935H":
+            val = self._memobj.lock.txlocked
+            rs = RadioSetting("lock.txlocked",
+                              "Locked - Limits Tx to Factory Range",
+                              RadioSettingValueBoolean(val))
+            lmt_grp.append(rs)
 
         # OEM info
         def _decode(lst):
@@ -2209,3 +2523,18 @@ class KGUV8HRadio(KG935GRadio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(_MEM_FORMAT_UV8H, self._mmap)
+
+
+@directory.register
+class KG935HRadio(KG935GRadio):
+
+    """Wouxun KG-935H"""
+    VENDOR = "Wouxun"
+    MODEL = "KG-935H"
+    POWER_LEVELS = [chirp_common.PowerLevel("L", watts=2.0),
+                    chirp_common.PowerLevel("M", watts=5.0),
+                    chirp_common.PowerLevel("H", watts=8.0)]
+    config_map = config_map_935H
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(_MEM_FORMAT_935H, self._mmap)
