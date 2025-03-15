@@ -1519,12 +1519,20 @@ class TDH8(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         if self.MODEL != "RT-730":
-            rs = RadioSetting("rogerprompt", "Roger",
-                              RadioSettingValueBoolean(_settings.rogerprompt))
+            if self.MODEL in H3_LIST:
+                # H3 uses roger-beep list
+                rs = RadioSetting("rogerprompt", "Roger",
+                                  RadioSettingValueList(
+                                      self._roger_list,
+                                      current_index=_settings.rogerprompt))
+            else:
+                # H8 uses roger-beep bool
+                rs = RadioSetting("rogerprompt", "Roger",
+                                  RadioSettingValueBoolean(
+                                      _settings.rogerprompt))
             basic.append(rs)
 
         rs = RadioSetting("txled", "Disp Lcd(TX)",
-
                           RadioSettingValueBoolean(_settings.txled))
         basic.append(rs)
 
@@ -2674,6 +2682,7 @@ class TDH3(TDH8):
     _tx_power = [chirp_common.PowerLevel("Low",  watts=2.00),
                  chirp_common.PowerLevel("High",  watts=5.00)]
     _ponmsg_list = ["Off", "Message", "Icon"]
+    _roger_list = ["Off", "TONE1", "TONE2"]
     _save_list = ["Off", "1:1", "1:2", "1:3", "1:4", "1:8"]
     _save_shortname = "Power Save"
 
