@@ -184,8 +184,11 @@ class RepeaterBook(base.NetworkResultRadio):
             LOG.debug('Loading %i cached entries from %s for proximity search',
                       d['count'], os.path.basename(fn))
 
-    def item_to_memory(self, item):
-        if item.get('D-Star') == 'Yes':
+    def item_to_memory(self, item, fmconv):
+        should_dstar = (
+            item.get('D-Star') == 'Yes' and not (
+                item.get('FM Analog') == 'Yes' and fmconv))
+        if should_dstar:
             m = chirp_common.DVMemory()
             m.dv_urcall = 'CQCQCQ'.ljust(8)
             m.dv_rpt1call = item.get('Callsign')[:8].ljust(8)
@@ -304,7 +307,7 @@ class RepeaterBook(base.NetworkResultRadio):
             if not included_band(item):
                 continue
             try:
-                m = self.item_to_memory(item)
+                m = self.item_to_memory(item, fmconv)
             except Exception as e:
                 LOG.warning('Unable to convert repeater %s: %s',
                             item['Rptr ID'], e)
