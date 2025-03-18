@@ -1441,6 +1441,27 @@ class UV17Pro(bfc.BaofengCommonHT):
 
 
 @directory.register
+class UV21ProV2(UV17Pro):
+    VENDOR = "Baofeng"
+    MODEL = "UV-21ProV2"
+
+    _airband_rx = (108000000, 135999999)
+    _vhf_range = (136000000, 174000000)
+    _vhf2_range = (220000000, 260000000)
+    _uhf_rx1_range = (350000000, 390000000)
+    _uhf_range = (400000000, 479999999)
+    _uhf_rx2_range = (480000000, 520000000)
+
+    VALID_BANDS = [_airband_rx,
+                   _vhf_range,
+                   _vhf2_range,
+                   _uhf_rx1_range,
+                   _uhf_range,
+                   _uhf_rx2_range]
+    MODES = UV17Pro.MODES + ['AM']
+
+
+@directory.register
 class UV25(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "UV-25"
@@ -1477,6 +1498,15 @@ class UV17ProGPS(UV17Pro):
         rf = super().get_features()
         rf.has_bank = True
         return rf
+
+
+@directory.register
+class UV21ProGPS(UV17ProGPS):
+    VENDOR = "Baofeng"
+    MODEL = "UV-21ProGPS"
+
+    VALID_BANDS = UV21ProV2.VALID_BANDS
+    MODES = UV21ProV2.MODES
 
 
 @directory.register
