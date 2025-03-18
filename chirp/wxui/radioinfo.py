@@ -59,6 +59,7 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
     def _add_driver(self):
         pg = wx.propgrid.PropertyGrid(
             self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER)
+        pg.EnableScrolling(True, True)
         self._group_control.AddPage(pg, _('Driver'))
 
         try:
@@ -84,6 +85,7 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
 
         pg = wx.propgrid.PropertyGrid(
             self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER)
+        pg.EnableScrolling(True, True)
         self._group_control.AddPage(pg, 'Icom')
 
         attrs = dict(self._radio._icf_data)
@@ -110,6 +112,7 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
 
         pg = wx.propgrid.PropertyGrid(
             self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER)
+        pg.EnableScrolling(True, True)
         self._group_control.AddPage(pg, 'Image Metadata')
         # Don't show the icom fields which are displayed elsewhere, and
         # don't dump the whole mem_extra blob in here
