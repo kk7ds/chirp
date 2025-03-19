@@ -32,6 +32,7 @@ from chirp.settings import (
     RadioSettingValueInteger,
     RadioSettingValueList,
     RadioSettingValueString,
+    RadioSettingValueMap,
 )
 
 LOG = logging.getLogger(__name__)
@@ -46,7 +47,7 @@ struct {
      scode:4;         //     Signaling
   u8 unknown2:6,      // D
      pttid:2;         //     PTT-ID
-  u8 unknown3:6,      // E
+  u8 scramble:6,      //     Scramble
      txpower:2;       //     Power Level  0 = H, 1 = L, 2 = M
   u8 unknown4:1,      // F
      narrow:1,        //     Bandwidth  0 = Wide, 1 = Narrow
@@ -268,6 +269,8 @@ ALL_SKEY_VALUES = [0xFF,
                    0x2A,
                    0x2D,
                    0x23]
+
+SCRAMBLE_VALUEMAP = [("Off", 0x00), ("SCRAM1", 0x04), ("SCRAM2", 0x08)]
 
 
 def _enter_programming_mode(radio):
@@ -627,6 +630,16 @@ class JC8810base(chirp_common.CloneModeRadio):
         mem.mode = _mem.narrow and "NFM" or "FM"
 
         mem.extra = RadioSettingGroup("Extra", "extra")
+
+        # Encryption
+        rs = RadioSettingValueList(ENCRYPT_LIST, current_index=_mem.encrypt)
+        rset = RadioSetting("encrypt", "Encryption", rs)
+        mem.extra.append(rset)
+
+        # Scramble
+        rs = RadioSettingValueMap(SCRAMBLE_VALUEMAP, _mem.scramble)
+        rset = RadioSetting("scramble", "Scramble", rs)
+        mem.extra.append(rset)
 
         # BCL (Busy Channel Lockout)
         rs = RadioSettingValueBoolean(_mem.bcl)
