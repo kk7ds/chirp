@@ -13,6 +13,8 @@ Baiston:
 - alt: Baofeng BF-888
   model: BST-2100
 Baofeng/Pofung:
+- alt: K6
+  model: K61
 - alt: 5RM
   model: Baofeng AR-5RM
 - alt: BF-1901
