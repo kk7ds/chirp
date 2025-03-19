@@ -1377,24 +1377,27 @@ class RT470XRadio(RT470LRadio):
     def get_features(self):
         rf = super().get_features()
         rf.valid_modes.append('AM')
+        rf.valid_modes.append('NAM')
         rf.valid_bands = [(18000000, 1000000000)]
         return rf
 
     def validate_memory(self, mem):
         msgs = []
         in_range = chirp_common.in_range
-        if in_range(mem.freq, [self._AIRBAND]) and not mem.mode == 'AM':
+        AM_mode = mem.mode == 'AM' or mem.mode == "NAM"
+        if in_range(mem.freq, [self._AIRBAND]) and not AM_mode:
             msgs.append(chirp_common.ValidationWarning(
                 _('Frequency in this range requires AM mode')))
-        if not in_range(mem.freq, [self._AIRBAND]) and mem.mode == 'AM':
+        if not in_range(mem.freq, [self._AIRBAND]) and AM_mode:
             msgs.append(chirp_common.ValidationWarning(
                 _('Frequency in this range must not be AM mode')))
         return msgs + super().validate_memory(mem)
 
     def get_memory(self, number):
         mem = super().get_memory(number)
+        _mem = self._memobj.memory[mem.number - 1]
         if chirp_common.in_range(mem.freq, [self._AIRBAND]):
-            mem.mode = 'AM'
+            mem.mode = _mem.narrow and "NAM" or "AM"
         return mem
 
 
