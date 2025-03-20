@@ -221,7 +221,7 @@ class ChirpRadioPromptDialog(wx.Dialog):
             # FIXME: Remove this compatibility at some point
             oldkey = '%s_%s' % (flag, directory.radio_class_id(radio))
             return CONF.get_bool(oldkey.lower(), 'clone_prompts', True)
-        self.rconfig.get_bool(key, default=True)
+        return self.rconfig.get_bool(key, default=True)
 
     def ShowModal(self):
         if not self.message:
