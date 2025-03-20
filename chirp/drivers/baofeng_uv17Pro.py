@@ -179,7 +179,7 @@ def _upload(radio):
     status = chirp_common.Status()
     status.cur = 0
     status.max = radio.MEM_TOTAL // radio.BLOCK_SIZE
-    status.msg = "Cloning from radio..."
+    status.msg = "Cloning to radio..."
     radio.status_fn(status)
 
     data_addr = 0x00
