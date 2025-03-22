@@ -13,9 +13,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import struct
 import logging
-from chirp import bitwise, chirp_common, directory, errors, memmap, util
+from chirp import bitwise, chirp_common, directory, errors, memmap
+from chirp.drivers.radtel_common import (
+    CHARSET_HEX,
+    rt_do_download,
+    rt_do_upload,
+    rt_exit_programming_mode
+)
 from chirp.settings import (
     RadioSetting,
     RadioSettings,
@@ -25,274 +30,9 @@ from chirp.settings import (
     RadioSettingValueInteger,
     RadioSettingValueString
 )
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 LOG = logging.getLogger(__name__)
-
-CMD_ACCEPT = b"\x06"
-CHARSET_HEX = "0123456789ABCDEFabcdef"
-
-
-def _clean_buffer(radio):
-    radio.pipe.timeout = 0.005
-    junk = radio.pipe.read(256)
-    radio.pipe.timeout = 5  # 5000ms
-
-    if junk:
-        LOG.debug("Got %i bytes of junk before starting" % len(junk))
-
-
-def _enter_programming_mode(radio) -> bytes:
-    _clean_buffer(radio)
-
-    radio.pipe.write(radio._magic)
-    LOG.debug("Sent magic sequence")
-    ack = radio.pipe.read(1)
-    if not ack:
-        raise errors.RadioNoContactLikelyK1()
-    LOG.debug("Received magic sequence response")
-    if len(ack) != 1 or ack != CMD_ACCEPT:
-        if ack:
-            LOG.error("Received: Len=%i Data=%s"
-                      % (len(ack), util.hexprint(ack)))
-        raise errors.RadioError("Radio refused to enter programming mode")
-
-    radio.pipe.write(b"\x02")
-    ident = radio.pipe.read(8)
-    if not ident:
-        raise errors.RadioNoContactLikelyK1()
-    elif not ident.startswith(radio._fingerprint):
-        raise errors.RadioError("Radio returned unknown identification string")
-
-    LOG.info("Radio entered programming mode")
-    LOG.debug("Radio identification: %s" % util.hexprint(ident))
-
-    radio.pipe.write(CMD_ACCEPT)
-    ack = radio.pipe.read(1)
-    if not ack:
-        raise errors.RadioNoContactLikelyK1()
-    elif ack != CMD_ACCEPT:
-        if ack:
-            LOG.error("Got %s" % util.hexprint(ack))
-        raise errors.RadioError("Radio refused to enter programming mode")
-
-    return ident
-
-
-def _exit_programming_mode(radio):
-    try:
-        radio.pipe.write(b"\x45")
-        ack = radio.pipe.read(1)
-        if not ack:
-            LOG.debug("No response to exit programming mode")
-        radio.pipe.write(b"\x02")  # Probably reboot signal
-    except Exception:
-        raise errors.RadioError("Radio refused to exit programming mode")
-
-
-def _get_memory_address(channel_id: int) -> Tuple[int, int]:
-    """Calculates the memory address for a given channel_id"""
-    block = (channel_id - 1) // 16           # Determines high byte
-    offset = ((channel_id - 1) % 16) * 0x10  # Determines low byte
-
-    return (block, offset)
-
-
-def _read_block(radio, channel_id: int) -> bytes:
-    """Reads two memory channels from the radio starting at channel_id
-    + one extra byte"""
-
-    address = bytes(_get_memory_address(channel_id))
-    # 52=read | 20 = hex(32 bytes) = length of 2 channels
-    # + settings without header
-    cmd = struct.pack(">BBBB", 0x52, address[0], address[1], 0x20)
-
-    radio.pipe.write(cmd)
-    hdr = radio.pipe.read(4)  # Read 4 byte header
-    if not hdr:
-        raise errors.RadioNoContactLikelyK1()
-    data = radio.pipe.read(32)  # Read the data (0x20)
-    if not data:
-        raise errors.RadioNoContactLikelyK1()
-    checksum = radio.pipe.read(1)  # Read the checksum
-    if not checksum:
-        raise errors.RadioNoContactLikelyK1()
-
-    # Verify checksum
-    if checksum[0] != calculate_checksum(data):
-        LOG.error("Checksum mismatch for block 0x%04s:" %
-                  util.hexprint(address))
-        raise errors.RadioError("Checksum mismatch")
-
-    mode, a, resp_length = struct.unpack(">BHB", hdr)
-    if a != int.from_bytes(address, byteorder="big") \
-            or resp_length != 32 or mode != ord("W"):
-        LOG.error("Invalid answer for block 0x%04s:" % util.hexprint(address))
-        LOG.debug("CMD: %s  ADDR: %04x  SIZE: %02x" % (mode, a, resp_length))
-        raise errors.RadioError("Unknown response from the radio")
-
-    return data
-
-
-def _write_blocks(radio, channel_id: int, data: bytes):
-    assert len(data) == 0x20, "Data must be 32 bytes long"
-
-    address = bytes(_get_memory_address(channel_id))
-    cmd = struct.pack(">BBBB", 0x57, address[0], address[1], 0x20) + data
-
-    # Calculate checksum
-    checksum = calculate_checksum(data)
-    cmd += struct.pack(">B", checksum)
-
-    radio.pipe.write(cmd)
-    response = radio.pipe.read(1)
-    if not response:
-        raise errors.RadioNoContactLikelyK1()
-    elif response != CMD_ACCEPT:
-        raise errors.RadioError("Radio refused to write blocks at %04s"
-                                % util.hexprint(address))
-
-
-def do_download(radio) -> bytes:
-    """Expects caller to exit programming mode"""
-
-    LOG.debug("Downloading data from radio")
-
-    status = chirp_common.Status()
-    status.msg = "Downloading from radio"
-
-    status.cur = 0
-    status.max = radio._upper
-    radio.status_fn(status)
-
-    data = bytearray()
-
-    _enter_programming_mode(radio)
-    for i in range(1, radio.MEM_ROWS, 2):
-        status.cur = i
-        radio.status_fn(status)
-
-        result = _read_block(radio, i)
-        data.extend(result)
-
-        LOG.debug("Downloaded memory channel %i" % i)
-
-    LOG.debug("Downloaded %i bytes of data" % len(data))
-
-    return bytes(data)
-
-
-def do_upload(radio):
-    """Expects caller to exit programming mode"""
-
-    LOG.debug("Uploading data to radio")
-    _enter_programming_mode(radio)
-
-    status = chirp_common.Status()
-    status.msg = "Uploading to radio"
-
-    status.cur = 0
-    status.max = radio._upper
-    radio.status_fn(status)
-
-    radio_mem = radio.get_mmap()
-    for i in range(1, radio.MEM_ROWS, 2):
-        status.cur = i
-        radio.status_fn(status)
-
-        block_offset = (i - 1) * radio.BLOCK_SIZE
-        blocks = radio_mem[block_offset:block_offset + (radio.BLOCK_SIZE * 2)]
-        _write_blocks(radio, i, blocks)
-
-        LOG.debug("Uploaded memory channel %i" % i)
-
-
-DTCS_BYTE_LOOKUP_LOW = {
-    0x13: 0, 0x15: 1, 0x16: 2, 0x19: 3, 0x1A: 4, 0x1E: 5,
-    0x23: 6, 0x27: 7, 0x29: 8, 0x2B: 9, 0x2C: 10, 0x35: 11,
-    0x39: 12, 0x3A: 13, 0x3B: 14, 0x3C: 15, 0x4C: 16, 0x4D: 17,
-    0x4E: 18, 0x52: 19, 0x55: 20, 0x59: 21, 0x5A: 22, 0x5C: 23,
-    0x63: 24, 0x65: 25, 0x6A: 26, 0x6D: 27, 0x6E: 28, 0x72: 29,
-    0x75: 30, 0x7A: 31, 0x7C: 32, 0x85: 33, 0x8A: 34, 0x93: 35,
-    0x95: 36, 0x96: 37, 0xA3: 38, 0xA4: 39, 0xA5: 40, 0xA6: 41,
-    0xA9: 42, 0xAA: 43, 0xAD: 44, 0xB1: 45, 0xB3: 46, 0xB5: 47,
-    0xB6: 48, 0xB9: 49, 0xBC: 50, 0xC6: 51, 0xC9: 52, 0xCD: 53,
-    0xD5: 54, 0xD9: 55, 0xDA: 56, 0xE3: 57, 0xE6: 58, 0xE9: 59,
-    0xEE: 60, 0xF4: 61, 0xF5: 62, 0xF9: 63
-}
-
-DTCS_BYTE_LOOKUP_HIGH = {
-    0x09: 64, 0x0A: 65, 0x0B: 66, 0x13: 67, 0x19: 68, 0x1A: 69,
-    0x25: 70, 0x26: 71, 0x2A: 72, 0x2C: 73, 0x2D: 74, 0x32: 75,
-    0x34: 76, 0x35: 77, 0x36: 78, 0x43: 79, 0x46: 80, 0x4E: 81,
-    0x53: 82, 0x56: 83, 0x5A: 84, 0x66: 85, 0x75: 86, 0x86: 87,
-    0x8A: 88, 0x94: 89, 0x97: 90, 0x99: 91, 0x9A: 92, 0xA5: 93,
-    0xAC: 94, 0xB2: 95, 0xB4: 96, 0xC3: 97, 0xCA: 98, 0xD3: 99,
-    0xD9: 100, 0xDA: 101, 0xDC: 102, 0xE3: 103, 0xEC: 104,
-}
-
-
-# Reverse lookup for encoding
-INDEX_TO_DTCS_BYTE_LOW = {v: k for k, v in DTCS_BYTE_LOOKUP_LOW.items()}
-INDEX_TO_DTCS_BYTE_HIGH = {v: k for k, v in DTCS_BYTE_LOOKUP_HIGH.items()}
-
-
-def _decode_dtcs_byte(byte: int, level: int) -> int:
-    """
-    Translates a DTCS byte to an index (starting from 0).
-
-    :param byte: The first byte of the DTCS value.
-    :param level: The DTCS level / second byte (0x28 or 0x29).
-    :return: The corresponding index (0-based) or -1 if not found.
-    """
-    if level == 0x80 or level == 0xA8:
-        return int(format(byte, "x"))
-    elif level == 0x29 or level == 0xA9:
-        return DTCS_BYTE_LOOKUP_HIGH.get(byte, -1)
-    else:
-        return -1
-
-
-def _encode_dtcs_byte(index: int) -> int:
-    """
-    Translates an index back to a DTCS first byte.
-
-    :param index: The index to look up.
-    :return: The corresponding DTCS first byte, or 0xFF if not found.
-    """
-    if index <= 63:
-        return INDEX_TO_DTCS_BYTE_LOW.get(index, 0xFF)
-    elif index <= 104:
-        return INDEX_TO_DTCS_BYTE_HIGH.get(index, 0xFF)
-    else:
-        return 0xFF
-
-
-def calculate_checksum(data: bytes) -> int:
-    """
-    Calculate the checksum for a 32-byte data block.
-
-    (The checksum is computed as the sum of two 16-byte blocks modulo 256.)
-    """
-    if len(data) != 32:
-        raise ValueError("Data must be exactly 32 bytes long.")
-
-    first_block_sum = sum(data[:16]) % 256
-    second_block_sum = sum(data[16:]) % 256
-
-    return (first_block_sum + second_block_sum) % 256
-
-
-def verify_checksum(data: bytes) -> bool:
-    """
-    Verify data integrity by checking the checksum.
-    """
-    if len(data) != 32 + 1:
-        raise ValueError("Data must be exactly 32 bytes long.")
-
-    # Replace last byte with 0 for calculation
-    calculated_checksum = calculate_checksum(data[:-1])
-    return calculated_checksum == data[-1]
 
 
 @directory.register
@@ -450,6 +190,7 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
         rf.has_ctone = True
         rf.has_dtcs_polarity = True
         rf.has_name = True
+        rf.has_comment = False
         rf.can_odd_split = True
         rf.has_cross = True
         rf.has_tuning_step = False
@@ -481,14 +222,19 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
 
     def sync_in(self):
         try:
-            data = do_download(self)
+            data = rt_do_download(
+                self,
+                LOG,
+                first_ack_length=1,
+                with_chksum=True,
+                send_acpt=False)
         except errors.RadioError:
             raise
         except Exception:
             LOG.exception("Failed to download data to radio")
             raise errors.RadioError("Failed to download data from radio")
         finally:
-            _exit_programming_mode(self)
+            rt_exit_programming_mode(self, LOG, with_ack=True)
         self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
@@ -497,16 +243,18 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
 
     def sync_out(self):
         try:
-            do_upload(self)
+            rt_do_upload(self, LOG, 2, first_ack_length=1, with_chksum=True)
         except errors.RadioError:
             raise
         except Exception:
             LOG.exception("Failed to upload data from radio")
             raise errors.RadioError("Failed to upload data to radio")
         finally:
-            _exit_programming_mode(self)
+            rt_exit_programming_mode(self, LOG, with_ack=True)
 
-    def _decode_qt_dqt(self, raw: bytes) -> Tuple[str, int, str]:
+    def _decode_qt_dqt(self, raw: bytes) -> Tuple[Optional[str],
+                                                  Optional[Union[float, int]],
+                                                  Optional[str]]:
         assert len(raw) == 2, "QT/DQT value must be 2 bytes long"
 
         if raw == b"\xFF\xFF":
@@ -556,6 +304,8 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
                 ((bcd_high // 10) << 4) | (bcd_high % 10)])
 
         elif tone_type == "DTCS":
+            assert value is not None, "DTCS value must be provided"
+
             # LBCD Encoding + Polarity
             hundreds = (value // 100) % 10
             tens = (value // 10) % 10
@@ -1091,7 +841,8 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
         for setting, group, name, length in strings:
             value = self._get_string(setting)
             rs = RadioSetting(setting, name,
-                              RadioSettingValueString(0, length, value, False))
+                              RadioSettingValueString(
+                                  0, length, value, False))
             group.append(rs)
 
         return radio_settings
