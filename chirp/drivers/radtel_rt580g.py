@@ -414,8 +414,10 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
     } settings2; // 0c a0 - and 32 bytes long
 
     struct {
-        ul32 unsuded[4];         // 4 unused bytes
+        ul32 unused[4];         // 4 unused bytes
     } unused1[8];
+
+    u8 unknown23[2];            // Unknown bytes 14
 
     struct {
         char channel_name[8];    // 8 bytes of channel name
@@ -725,7 +727,7 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
 
         mem.name = self.get_channel_name(mem.number)
 
-        mem.extra = RadioSettingGroup("Extra", "extra")
+        mem.extra = RadioSettingGroup("Extra", "rt-extra")
 
         rs = RadioSetting(
             "SPEC", "SPEC",
@@ -758,11 +760,9 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
                 8, 8, special_code, True, CHARSET_HEX, "0"))
         mem.extra.append(rs)
 
-        # TODO: can't edit name on AM channels because field
-        # edit is immutable
         if mem.mode == "AM":
             mem.immutable = [
-                "extra",
+                "rt-extra",
                 "power",
                 "tmode",
                 "skip",
