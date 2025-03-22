@@ -1486,13 +1486,18 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         self._memory_cache[row] = memory
 
+        # Build a list of coldef names that are immutable extras for this
+        # memory
+        immutable_extras = ['extra.%s' % setting.get_name()
+                            for setting in memory.extra
+                            if not setting.value.get_mutable()]
         with wx.grid.GridUpdateLocker(self._grid):
             self.set_row_finished(row)
 
             for col, col_def in enumerate(self._col_defs):
                 self._grid.SetCellValue(row, col, col_def.render_value(memory))
-                immutable = col_def.name in memory.immutable or (
-                    'extra' in col_def.name and 'extra' in memory.immutable)
+                immutable = (col_def.name in memory.immutable or
+                             col_def.name in immutable_extras)
                 self._grid.SetReadOnly(row, col,
                                        immutable or not self.editable)
                 if immutable:
