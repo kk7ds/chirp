@@ -653,7 +653,8 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
         """
         if not 1 <= channel <= 199:
             raise ValueError("Channel number must be between 1 and 199")
-        assert name is None or len(name) <= self.get_features().valid_name_length, \
+        assert name is None or \
+            len(name) <= self.get_features().valid_name_length, \
             "Channel name must be 8 or less characters long"
 
         name_data = self._memobj.channel_names[channel - 1]
@@ -727,7 +728,7 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
 
         mem.name = self.get_channel_name(mem.number)
 
-        mem.extra = RadioSettingGroup("Extra", "rt-extra")
+        mem.extra = RadioSettingGroup("Extra", "extra")
 
         rs = RadioSetting(
             "SPEC", "SPEC",
@@ -762,7 +763,7 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
 
         if mem.mode == "AM":
             mem.immutable = [
-                "rt-extra",
+                "extra",
                 "power",
                 "tmode",
                 "skip",
