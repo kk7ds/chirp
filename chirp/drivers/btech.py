@@ -302,6 +302,9 @@ KTWP12_fp = b"WP3094"
 # Anysecu WP-9900
 WP9900_fp = b"WP3094"
 
+# QYT KT-5000
+KT5000_fp = b"WP9114"
+
 
 # ### MAGICS
 # for the Waccom Mini-8900
@@ -327,6 +330,8 @@ MSTRING_GMRS20V2 = b"\x55\x20\x21\x03\x27\xFF\xDC\x02"
 MSTRING_KT8R = b"\x55\x20\x17\x07\x03\xFF\xDC\x02"
 # for the QYT KT-WP12, KT-9900 and Anysecu WP-9900
 MSTRING_KTWP12 = b"\x55\x20\x18\x11\x02\xFF\xDC\x02"
+# for the QYT KT-5000
+MSTRING_KT5000 = b"\x55\x20\x21\x01\x23\xFF\xDC\x02"
 
 
 def _clean_buffer(radio):
@@ -5751,6 +5756,37 @@ class WP9900(BTechColorWP):
 
         # load specific parameters from the radio image
         self.set_options()
+
+
+@directory.register
+class KT5000(BTechColorWP):
+    """QYT KT-5000"""
+    # TODO: memory map is not EXACTLY the same as in WP12. E.g. setting
+    #       "C display mode" overwrites VOX setting
+    VENDOR = "QYT"
+    MODEL = "KT-5000"
+    BANDS = 2
+    UPLOAD_MEM_SIZE = 0X3100
+    _power_levels = [chirp_common.PowerLevel("High", watts=25),
+                     chirp_common.PowerLevel("Low", watts=5)]
+    _upper = 199
+    _magic = MSTRING_KT5000
+    _fileid = [KT5000_fp]
+    _gmrs = False
+
+    def process_mmap(self):
+        """Process the mem map into the mem object"""
+
+        # Get it
+        self._memobj = bitwise.parse(COLOR9900_MEM_FORMAT, self._mmap)
+
+        # load specific parameters from the radio image
+        self.set_options()
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.has_settings = False
+        return rf
 
 
 @directory.register
