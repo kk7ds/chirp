@@ -480,40 +480,51 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
 
         mem.extra = RadioSettingGroup("Extra", "extra")
 
+        is_mode_am = mem.mode == "AM"
+
+        val = RadioSettingValueBoolean(int(_mem.spec))
+        val.set_mutable(not is_mode_am)
         rs = RadioSetting(
             "SPEC", "SPEC",
-            RadioSettingValueBoolean(int(_mem.spec)))
+            val)
         mem.extra.append(rs)
 
+        val = RadioSettingValueBoolean(int(_mem.busy_lock))
+        val.set_mutable(not is_mode_am)
         rs = RadioSetting(
             "Busy Lock", "Busy Lock",
-            RadioSettingValueBoolean(int(_mem.busy_lock)))
+            val)
         mem.extra.append(rs)
 
+        val = RadioSettingValueBoolean(bool(_mem.scramble))
+        val.set_mutable(not is_mode_am)
         rs = RadioSetting(
             "Scramble Mode", "Scramble Mode",
-            RadioSettingValueBoolean(bool(_mem.scramble)))
+            val)
         mem.extra.append(rs)
 
+        val = RadioSettingValueList(
+            ["OFF", "Normal", "Special"],
+            current_index=0 if int(_mem.spec_qt_dqt) == 0
+            else (1 if int(_mem.spec_qt_dqt_mode) == 0 else 2)
+        )
+        val.set_mutable(not is_mode_am)
         rs = RadioSetting(
             "SPEC QT/DQT", "SPEC QT/DQT",
-            RadioSettingValueList(
-                ["OFF", "Normal", "Special"],
-                current_index=0 if int(_mem.spec_qt_dqt) == 0
-                else (1 if int(_mem.spec_qt_dqt_mode) == 0 else 2)
-            ))
+            val)
         mem.extra.append(rs)
 
         special_code = self.get_special_code(mem.number)
+        val = RadioSettingValueString(
+            8, 8, special_code, True, CHARSET_HEX, "0")
+        val.set_mutable(not is_mode_am)
         rs = RadioSetting(
             "Code", "Code",
-            RadioSettingValueString(
-                8, 8, special_code, True, CHARSET_HEX, "0"))
+            val)
         mem.extra.append(rs)
 
-        if mem.mode == "AM":
+        if is_mode_am:
             mem.immutable = [
-                "extra",
                 "power",
                 "tmode",
                 "skip",
