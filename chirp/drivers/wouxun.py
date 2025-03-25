@@ -60,7 +60,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     MODEL = "KG-UVD1P"
     _model = b"KG669V"
 
-    _querymodel = (b"HiWOUXUN\x02", b"PROGUV6X\x02")
+    _querymodels = (b"HiWOUXUN\x02", b"PROGUV6X\x02")
 
     CHARSET = list("0123456789") + \
         [chr(x + ord("A")) for x in range(0, 26)] + list("?+-")
@@ -227,22 +227,11 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
             "6. Click OK to upload image to device.\n")
         return rp
 
-    @classmethod
-    def _get_querymodel(cls):
-        if isinstance(cls._querymodel, str):
-            while True:
-                yield cls._querymodel
-        else:
-            i = 0
-            while True:
-                yield cls._querymodel[i % len(cls._querymodel)]
-                i += 1
-
     def _identify(self):
         """Do the original Wouxun identification dance"""
-        query = self._get_querymodel()
         for _i in range(0, 10):
-            self.pipe.write(next(query))
+            model = self._querymodels[_i % len(self._querymodels)]
+            self.pipe.write(model)
             resp = self.pipe.read(9)
             if len(resp) != 9:
                 LOG.debug("Got:\n%s" % util.hexprint(resp))
@@ -909,7 +898,7 @@ class KGUV6DRadio(KGUVD1PRadio):
     """Wouxun KG-UV6 (D and X variants)"""
     MODEL = "KG-UV6"
 
-    _querymodel = (b"HiWXUVD1\x02", b"HiKGUVD1\x02")
+    _querymodels = (b"HiWXUVD1\x02", b"HiKGUVD1\x02")
 
     _MEM_FORMAT = """
         #seekto 0x0010;
@@ -1436,7 +1425,7 @@ class KG816Radio(KGUVD1PRadio, chirp_common.ExperimentalRadio):
     """Wouxun KG-816"""
     MODEL = "KG-816"
 
-    _querymodel = b"HiWOUXUN\x02"
+    _querymodels = (b"HiWOUXUN\x02", )
 
     _MEM_FORMAT = """
         #seekto 0x0010;
