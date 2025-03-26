@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-07 15:41-0800\n"
-"PO-Revision-Date: 2025-02-28 00:09-0300\n"
+"PO-Revision-Date: 2025-03-26 13:21-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1268,7 +1268,7 @@ msgstr "Copiar"
 
 #: ../wxui/memedit.py:2110
 msgid "Copy portable"
-msgstr ""
+msgstr "Copiar portátil"
 
 #: ../wxui/query_sources.py:351 ../wxui/query_sources.py:567
 #: ../wxui/query_sources.py:657
