@@ -1555,3 +1555,58 @@ class KG818Radio(KG816Radio):
     @classmethod
     def match_model(cls, filedata, filename):
         return False
+
+
+@directory.register
+class KG805GRadio(KGUVD1PRadio):
+    """Wouxun KG-805G"""
+    MODEL = "KG-805G"
+
+    _querymodels = (b"HiWOUXUN\x02", )
+    valid_freq = [(400000000, 470987500)]
+
+    _MEM_FORMAT = """
+        #seekto 0x0010;
+        struct {
+          lbcd rx_freq[4];
+          lbcd tx_freq[4];
+          ul16 rx_tone;
+          ul16 tx_tone;
+          u8 _3_unknown_1:4,
+             bcl:1,
+             _3_unknown_2:3;
+          u8 splitdup:1,
+             skip:1,
+             power_high:1,
+             iswide:1,
+             _2_unknown_2:4;
+          u8 unknown;
+          u8 _0_unknown_1:3,
+             iswidex:1,
+             _0_unknown_2:4;
+        } memory[128];
+
+        #seekto 0x1010;
+        struct {
+            u8 name[6];
+            u8 pad[10];
+        } names[128];
+    """
+
+    def get_features(self):
+        rf = KGUVD1PRadio.get_features(self)
+        rf.has_settings = False
+        return rf
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(self._MEM_FORMAT, self._mmap)
+        # This sets our frequency ranges, so run it once after we process the
+        # mmap to make sure they're set for later
+        self.get_settings()
+
+    def get_settings(self):
+        pass
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return False
