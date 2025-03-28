@@ -1575,8 +1575,8 @@ class KG805GRadio(KGUVD1PRadio):
           u8 _3_unknown_1:4,
              bcl:1,
              _3_unknown_2:3;
-          u8 splitdup:1,
-             skip:1,
+          u8 _2_unknown_1:1,
+             scan_add:1,
              power_high:1,
              iswide:1,
              _2_unknown_2:4;
@@ -1606,6 +1606,89 @@ class KG805GRadio(KGUVD1PRadio):
 
     def get_settings(self):
         pass
+
+    def get_memory(self, number):
+        _mem = self._memobj.memory[number - 1]
+        _nam = self._memobj.names[number - 1]
+
+        mem = chirp_common.Memory()
+        mem.number = number
+
+        if _mem.get_raw() == (b"\xff" * 16):
+            mem.empty = True
+            return mem
+
+        mem.freq = int(_mem.rx_freq) * 10
+
+        if self._is_txinh(_mem):
+            # TX freq not set
+            mem.duplex = "off"
+            mem.offset = 0
+        elif int(_mem.rx_freq) == int(_mem.tx_freq):
+            mem.duplex = ""
+            mem.offset = 0
+        elif abs(int(_mem.rx_freq) * 10 - int(_mem.tx_freq) * 10) > 70000000:
+            mem.duplex = "split"
+            mem.offset = int(_mem.tx_freq) * 10
+        else:
+            mem.duplex = int(_mem.rx_freq) > int(_mem.tx_freq) and "-" or "+"
+            mem.offset = abs(int(_mem.rx_freq) - int(_mem.tx_freq)) * 10
+
+        self._get_tone(_mem, mem)
+
+        mem.skip = "" if bool(_mem.scan_add) else "S"
+        mem.power = self.POWER_LEVELS[not _mem.power_high]
+        mem.mode = _mem.iswide and "FM" or "NFM"
+
+        for i in _nam.name:
+            if i == 0xFF:
+                break
+            mem.name += self.CHARSET[i]
+
+        return mem
+
+    def set_memory(self, mem):
+        _mem = self._memobj.memory[mem.number - 1]
+        _nam = self._memobj.names[mem.number - 1]
+
+        if mem.empty:
+            wipe_memory(_mem, "\xFF")
+            return
+
+        if _mem.get_raw() == (b"\xFF" * 16):
+            wipe_memory(_mem, "\x00")
+
+        _mem.rx_freq = int(mem.freq / 10)
+        if mem.duplex == "off":
+            _mem.tx_freq.fill_raw(b"\xFF")
+        elif mem.duplex == "split":
+            _mem.tx_freq = int(mem.offset / 10)
+        elif mem.duplex == "+":
+            _mem.tx_freq = int(mem.freq / 10) + int(mem.offset / 10)
+        elif mem.duplex == "-":
+            _mem.tx_freq = int(mem.freq / 10) - int(mem.offset / 10)
+        else:
+            _mem.tx_freq = int(mem.freq / 10)
+
+        _mem.scan_add = int(mem.skip != "S")
+        _mem.iswide = int(mem.mode == "FM")
+
+        self._set_tone(mem, _mem)
+
+        if mem.power:
+            _mem.power_high = not self.POWER_LEVELS.index(mem.power)
+        else:
+            _mem.power_high = True
+
+        _nam.name = [0xFF] * 6
+        for i in range(0, len(mem.name)):
+            try:
+                _nam.name[i] = self.CHARSET.index(mem.name[i])
+            except IndexError:
+                raise Exception("Character `%s' not supported")
+
+        for setting in mem.extra:
+            setattr(_mem, setting.get_name(), setting.value)
 
     @classmethod
     def match_model(cls, filedata, filename):
