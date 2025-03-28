@@ -417,7 +417,7 @@ class Memory:
             if callable(valid):
                 if not valid(val):
                     raise ValueError("`%s' is not a valid value for `%s'" % (
-                                         val, name))
+                        val, name))
             elif val not in self._valid_map[name]:
                 raise ValueError("`%s' is not in valid list: %s" %
                                  (val, self._valid_map[name]))
@@ -769,6 +769,7 @@ class StaticBankModel(BankModel):
     channelAlwaysHasBank = True
 
     """A BankModel that shows a static mapping but does not allow changes."""
+
     def __init__(self, radio, name='Banks', banks=10):
         super().__init__(radio, name=name)
         self._num_banks = banks
@@ -1930,8 +1931,9 @@ def split_to_offset(mem, rxfreq, txfreq):
     """Set the freq, offset, and duplex fields of a memory based on
     a separate rx/tx frequency.
     """
+    mem.freq = rxfreq
+
     if abs(txfreq - rxfreq) > to_MHz(70):
-        mem.freq = rxfreq
         mem.offset = txfreq
         mem.duplex = 'split'
     else:
