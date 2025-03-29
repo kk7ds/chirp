@@ -655,6 +655,10 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             loc = "number %i" % ch
         self._send_frame(f)
         f.read(self.pipe)
+        try:
+            self.get_memory(number)
+        except Exception as e:
+            LOG.exception('Failed to get/parse test memory: %s', e)
         if f.get_data() and f.get_data()[-1] == "\xFF":
             return "Memory " + loc + " empty."
         else:
@@ -757,7 +761,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             mem.name = str(memobj.name).rstrip()
 
         if self._rf.valid_tmodes:
-            mem.tmode = self._rf.valid_tmodes[memobj.tmode]
+            self._decode_tmode(mem, memobj)
 
         if self._rf.has_dtcs_polarity:
             if memobj.dtcs_polarity == 0x11:
@@ -883,7 +887,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             memobj.name = mem.name.ljust(name_length)[:name_length]
 
         if self._rf.valid_tmodes:
-            memobj.tmode = self._rf.valid_tmodes.index(mem.tmode)
+            self._encode_tmode(mem, memobj)
 
         if self._rf.has_ctone:
             memobj.ctone = int(mem.ctone * 10)
@@ -929,6 +933,12 @@ class IcomCIVRadio(icf.IcomLiveRadio):
 
         f = self._recv_frame()
         LOG.debug("Result:\n%s" % util.hexprint(bytes(f.get_data())))
+
+    def _encode_tmode(self, mem, memobj):
+        memobj.tmode = self._rf.valid_tmodes.index(mem.tmode)
+
+    def _decode_tmode(self, mem, memobj):
+        mem.tmode = self._rf.valid_tmodes[memobj.tmode]
 
 
 @directory.register
@@ -1338,6 +1348,12 @@ class Icom9700Radio(IcomCIVRadio):
         "RTTY-R", None, None, None, None, None, None, None, None, None,
         "DV", None, None, None, None, "DD", None, None, None, None, None,
     ]
+    _CROSS_MODES = {
+        4: 'DTCS->',
+        5: 'Tone->DTCS',
+        6: 'DTCS->Tone',
+        7: 'Tone->Tone',
+    }
 
     def get_sub_devices(self):
         return [Icom9700RadioBand(self, 1),
@@ -1350,6 +1366,21 @@ class Icom9700Radio(IcomCIVRadio):
         self._rf.has_sub_devices = True
         self._rf.memory_bounds = (1, 99)
         self._classes['mem'] = IC9700MemFrame
+
+    def _decode_tmode(self, mem, memobj):
+        if int(memobj.tmode) in self._CROSS_MODES:
+            mem.tmode = 'Cross'
+            mem.cross_mode = self._CROSS_MODES[int(memobj.tmode)]
+        else:
+            return super()._decode_tmode(mem, memobj)
+
+    def _encode_tmode(self, mem, memobj):
+        cmr = {v: k for k, v in self._CROSS_MODES.items()}
+        if mem.tmode == 'Cross':
+            memobj.tmode = cmr[mem.cross_mode]
+            print('Setting tmode to %s for %s' % (memobj.tmode, mem.tmode))
+        else:
+            return super()._encode_tmode(mem, memobj)
 
 
 class Icom9700RadioBand(Icom9700Radio):
@@ -1397,7 +1428,8 @@ class Icom9700RadioBand(Icom9700Radio):
     def _initialize(self):
         super()._initialize()
         self._rf.has_name = True
-        self._rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS']
+        self._rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
+        self._rf.valid_cross_modes = list(self._CROSS_MODES.values())
         self._rf.has_dtcs = True
         self._rf.has_dtcs_polarity = True
         self._rf.has_bank = True
@@ -1433,6 +1465,7 @@ class Icom9700SatelliteBand(Icom9700Radio):
         super()._initialize()
         self._rf.has_name = True
         self._rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS']
+        self._rf.has_ctone = True
         self._rf.has_dtcs = True
         self._rf.has_dtcs_polarity = True
         self._rf.has_bank = False
