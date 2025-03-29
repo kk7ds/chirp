@@ -1003,7 +1003,8 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         step_lookup = {
             2.5: 0x1,
             6.25: 0x3,
-            12.5: 0x3,
+            12.5: 0x6,
+            10.0: 0x5,
             5: 0x2,
         }
         # Default to 5kHz if we don't know any better
