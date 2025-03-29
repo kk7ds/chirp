@@ -736,17 +736,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     def _is_txinh(self, _mem):
         return _mem.tx_freq.get_raw() == b"\xFF\xFF\xFF\xFF"
 
-    def get_memory(self, number):
-        _mem = self._memobj.memory[number - 1]
-        _nam = self._memobj.names[number - 1]
-
-        mem = chirp_common.Memory()
-        mem.number = number
-
-        if _mem.get_raw() == (b"\xff" * 16):
-            mem.empty = True
-            return mem
-
+    def _set_duplex_offset_freq(self, _mem, mem):
         mem.freq = int(_mem.rx_freq) * 10
         if _mem.splitdup:
             mem.duplex = "split"
@@ -763,6 +753,19 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
             mem.offset = int(_mem.tx_freq) * 10
         else:
             mem.offset = abs(int(_mem.tx_freq) - int(_mem.rx_freq)) * 10
+
+    def get_memory(self, number):
+        _mem = self._memobj.memory[number - 1]
+        _nam = self._memobj.names[number - 1]
+
+        mem = chirp_common.Memory()
+        mem.number = number
+
+        if _mem.get_raw() == (b"\xff" * 16):
+            mem.empty = True
+            return mem
+
+        self._set_duplex_offset_freq(_mem, mem)
 
         if not _mem.skip:
             mem.skip = "S"
@@ -831,6 +834,9 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         LOG.debug("Set TX %s (%i) RX %s (%i)" %
                   (tx_mode, _mem.tx_tone, rx_mode, _mem.rx_tone))
 
+    def _set_split_duplex(self, _mem, mem):
+        _mem.splitdup = mem.duplex == "split"
+
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
         _nam = self._memobj.names[mem.number - 1]
@@ -853,7 +859,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
             _mem.tx_freq = int(mem.freq / 10) - int(mem.offset / 10)
         else:
             _mem.tx_freq = int(mem.freq / 10)
-        _mem.splitdup = mem.duplex == "split"
+
+        self._set_split_duplex(_mem, mem)
         _mem.skip = mem.skip != "S"
         _mem.iswide = mem.mode != "NFM"
 
@@ -1575,7 +1582,7 @@ class KG805GRadio(KGUVD1PRadio):
           u8 _3_unknown_1:4,
              bcl:1,
              _3_unknown_2:3;
-          u8 splitdup:1,
+          u8 _2_unknown_1:1,
              skip:1,
              power_high:1,
              iswide:1,
@@ -1605,6 +1612,19 @@ class KG805GRadio(KGUVD1PRadio):
         self.get_settings()
 
     def get_settings(self):
+        pass
+
+    def _set_duplex_offset_freq(self, _mem, mem):
+        if self._is_txinh(_mem):
+            # TX freq not set
+            mem.duplex = "off"
+            mem.offset = 0
+            mem.freq = int(_mem.rx_freq) * 10
+        else:
+            chirp_common.split_to_offset(
+                mem, int(_mem.rx_freq) * 10, int(_mem.tx_freq) * 10)
+
+    def _set_split_duplex(self, _mem, mem):
         pass
 
     @classmethod
