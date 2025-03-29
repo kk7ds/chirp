@@ -1769,7 +1769,7 @@ def make_is(stephz):
     return validator
 
 
-def required_step(freq, allowed=None):
+def required_step(freq, allowed=None, max=False):
     """Returns the simplest tuning step that is required to reach @freq"""
     if allowed is None:
         allowed = [5.0, 10.0, 12.5, 6.25, 2.5, 8.33]
@@ -1786,6 +1786,9 @@ def required_step(freq, allowed=None):
         0.25: make_is(250),
         8.33: is_8_33,
     }
+
+    if max:
+        steps = {k: steps[k] for k in reversed(sorted(steps.keys()))}
 
     # Try the above "standard" steps first in order
     required_step = None
