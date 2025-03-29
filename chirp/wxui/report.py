@@ -81,8 +81,6 @@ def with_session(fn):
 
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
-        global DISABLED
-
         if DISABLED:
             return
 
