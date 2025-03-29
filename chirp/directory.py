@@ -64,7 +64,6 @@ def enable_reregistrations():
 
 def register(cls):
     """Register radio @cls with the directory"""
-    global DRV_TO_RADIO
     ident = radio_class_id(cls)
     if ident in list(DRV_TO_RADIO.keys()):
         if ALLOW_DUPS:
