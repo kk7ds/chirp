@@ -991,15 +991,6 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         else:
             raise errors.RadioError('Unsupported duplex mode %r' % mem.duplex)
 
-        try:
-            tx_step = chirp_common.required_step(int(_mem.tx_freq) * 10)
-        except errors.InvalidDataError:
-            tx_step = 5
-        try:
-            rx_step = chirp_common.required_step(int(_mem.rx_freq) * 10)
-        except errors.InvalidDataError:
-            rx_step = 5
-
         step_lookup = {
             2.5: 0x1,
             6.25: 0x3,
@@ -1007,6 +998,19 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             10.0: 0x5,
             5: 0x2,
         }
+        try:
+            tx_step = chirp_common.required_step(int(_mem.tx_freq) * 10,
+                                                 allowed=step_lookup.keys(),
+                                                 max=True)
+        except errors.InvalidDataError:
+            tx_step = 5
+        try:
+            rx_step = chirp_common.required_step(int(_mem.rx_freq) * 10,
+                                                 allowed=step_lookup.keys(),
+                                                 max=True)
+        except errors.InvalidDataError:
+            rx_step = 5
+
         # Default to 5kHz if we don't know any better
         _mem.rx_step = step_lookup.get(rx_step, 0x2)
         _mem.tx_step = step_lookup.get(tx_step, 0x2)
