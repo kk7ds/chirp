@@ -504,7 +504,7 @@ class TestStepFunctions(base.BaseTest):
                  6.25: self._625,
                  12.5: self._125,
                  }
-        allowed = [6.25, 12.5]
+        allowed = [12.5, 6.25]
         for step, freqs in list(steps.items()):
             for freq in freqs:
                 # We don't support 5.0, so any of the frequencies in that
@@ -520,7 +520,7 @@ class TestStepFunctions(base.BaseTest):
     def test_required_step_finds_suitable(self):
         # If we support 5.0, we should get it as the step for those
         self.assertEqual(5.0, chirp_common.required_step(self._005[0],
-                                                         allowed=[2.5, 5.0]))
+                                                         allowed=[5.0, 2.5]))
         # If we support 2.5 and not 5.0, then we should find 2.5 as a suitable
         # alternative
         self.assertEqual(2.5, chirp_common.required_step(self._005[0],
@@ -534,7 +534,7 @@ class TestStepFunctions(base.BaseTest):
     def test_required_step_fail(self):
         self.assertRaises(errors.InvalidDataError,
                           chirp_common.required_step,
-                          146520500)
+                          146520500, allowed=[5.0, 10.0, 12.5])
 
     def test_fix_rounded_step_250(self):
         self.assertEqual(146106250,
@@ -547,6 +547,10 @@ class TestStepFunctions(base.BaseTest):
     def test_fix_rounded_step_750(self):
         self.assertEqual(146118750,
                          chirp_common.fix_rounded_step(146118000))
+
+    def test_fix_rounded_step_no_change(self):
+        self.assertEqual(146520000,
+                         chirp_common.fix_rounded_step(146520000))
 
 
 class TestImageMetadata(base.BaseTest):
