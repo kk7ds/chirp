@@ -58,6 +58,12 @@ TIMEOUT_LIST = ["Off"] + ["%s min" % x for x in range(1, 30)]
 TXPWR_LIST = ["60W", "25W"]  # maximum power for Hi setting
 TBSTFREQ_LIST = ["1750 Hz", "2100 Hz", "1000 Hz", "1450 Hz"]
 BEEP_LIST = ["Off", "On"]
+VFO_LIST = ["VFO", "MEM"]
+BUTTONS_LIST = ["Off", "Call", "VFO/MEM", "CTCSS/DCS", "MHz Step", "Squelch",
+                "Transmit Power", "Repeater Shift", "Scan", "Lock", "Monitor",
+                "Copy Channel", "Delete Channel", "Reverse",
+                "Display Brightness", "Compander", "Priority",
+                "DTMF Autodialer", "Show Voltage", "Clone"]
 
 MEM_FORMAT = """
 #seekto 0x0000;
@@ -77,7 +83,7 @@ struct {
 #        1 Channel Set Flag        0100  011F   20
 #        2 Channel Skip Flag       0120  013F   20
 #        3 Blank/Unknown           0140  01EF   B0
-#        4 Unknown                 01F0  01FF   10
+#        4 Button Functions        01F0  01FF   10
 #        5 TX/RX Range             0200  020F   10
 #        6 Bootup Passwd           0210  021F   10
 #        7 Options, Radio          0220  023F   20
@@ -128,6 +134,57 @@ struct {
 struct {
    u8 unknown0120[7];
 } ropt0120;
+"""
+#  TH9000  memory map
+#  section: 4  Programmable Buttons
+#       used to configure the functions of the programmable buttons
+#
+#  bytes:bit   type                 description
+#  ---------------------------------------------------------------------------
+#  1           u8 btn_p3;           Function for P3 press, range 0-19
+#  1           u8 btn_p4;           Function for P4 press, range 0-19
+#  1           u8 btn_p5;           Function for P5 press, range 0-19
+#  1           u8 btn_p1;           Function for P1 press, range 0-19
+#  1           u8 btn_p2;           Function for P2 press, range 0-19
+#  1           u8 btn_p3_long;      Function for P3 long press, range 0-19
+#  1           u8 btn_p4_long;      Function for P4 long press, range 0-19
+#  1           u8 btn_p5_long;      Function for P5 long press, range 0-19
+#  1           u8 btn_p1_long;      Function for P1 long press, range 0-19
+#  1           u8 btn_p2_long;      Function for P2 long press, range 0-19
+#  1           u8 btn_p3_func;      Function for F + P3 press, range 0-19
+#  1           u8 btn_p4_func;      Function for F + P4 press, range 0-19
+#  1           u8 btn_p5_func;      Function for F + P5 press, range 0-19
+#  1           u8 btn_p1_func;      Function for F + P1 press, range 0-19
+#  1           u8 btn_p2_func;      Function for F + P2 press, range 0-19
+#  1           u8 unknown01FF;
+#
+#  Button Functions:
+#   0=Off, 1=Call, 2=VFO/MEM, 3=CTCSS/DCS
+#   4=MHz Step, 5=Squelch, 6=TX Power, 7=Repeater Shift
+#   8=Scan, 9=Lock, 10=Monitor, 11=Copy CH
+#   12=Delete CH, 13=Reverse, 14=Brightness, 15=Compander
+#   16=Priority, 17=DTMF Dialer, 18=Show Voltage, 19=Clone
+#
+MEM_FORMAT = MEM_FORMAT + """
+#seekto 0x01F0;
+struct {
+   u8 btn_p3;
+   u8 btn_p4;
+   u8 btn_p5;
+   u8 btn_p1;
+   u8 btn_p2;
+   u8 btn_p3_long;
+   u8 btn_p4_long;
+   u8 btn_p5_long;
+   u8 btn_p1_long;
+   u8 btn_p2_long;
+   u8 btn_p3_func;
+   u8 btn_p4_func;
+   u8 btn_p5_func;
+   u8 btn_p1_func;
+   u8 btn_p2_func;
+   u8 unknown01FF;
+} buttons;
 """
 #  TH9000  memory map
 #  section: 5  TX/RX Range
@@ -711,10 +768,13 @@ class Th9000Radio(chirp_common.CloneModeRadio,
         _settings = self._memobj.settings
         _freqrange = self._memobj.freqrange
         _slabel = self._memobj.slabel
+        _buttons = self._memobj.buttons
 
         basic = RadioSettingGroup("basic", "Global Settings")
         freqrange = RadioSettingGroup("freqrange", "Frequency Ranges")
-        top = RadioSettingGroup("top", "All Settings", basic, freqrange)
+        buttons = RadioSettingGroup("buttons", "Programmable Buttons")
+        top = RadioSettingGroup("top", "All Settings", basic, freqrange,
+                                buttons)
         settings = RadioSettings(top)
 
         def _filter(name):
@@ -807,6 +867,96 @@ class Th9000Radio(chirp_common.CloneModeRadio,
                               int(_freqrange.rxrangehi) / 10))
         freqrange.append(rs)
 
+        rs = RadioSetting(
+            "btn_p1", "P1 Short Press",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p1))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p2", "P2 Short Press",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p2))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p3", "P3 Short Press",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p3))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p4", "P4 Short Press",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p4))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p5", "P5 Short Press",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p5))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p1_long", "P1 Long Press",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p1_long))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p2_long", "P2 Long Press",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p2_long))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p3_long", "P3 Long Press",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p3_long))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p4_long", "P4 Long Press",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p4_long))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p5_long", "P5 Long Press",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p5_long))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p1_func", "Function + P1",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p1_func))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p2_func", "Function + P2",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p2_func))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p3_func", "Function + P3",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p3_func))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p4_func", "Function + P4",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p4_func))
+        buttons.append(rs)
+
+        rs = RadioSetting(
+            "btn_p5_func", "Function + P5",
+            RadioSettingValueList(
+                BUTTONS_LIST, current_index=_buttons.btn_p5_func))
+        buttons.append(rs)
+
         return settings
 
     def get_settings(self):
@@ -839,6 +989,15 @@ class Th9000Radio(chirp_common.CloneModeRadio,
                     if name in ["startname"]:
                         LOG.debug("setting %s = %s" % (name, element.value))
                         setattr(self._memobj.slabel, name, element.value)
+                        continue
+
+                    if name in ["btn_p3", "btn_p4", "btn_p5", "btn_p1",
+                                "btn_p2", "btn_p3_long", "btn_p4_long",
+                                "btn_p5_long", "btn_p1_long", "btn_p2_long",
+                                "btn_p3_func", "btn_p4_func", "btn_p5_func",
+                                "btn_p1_func", "btn_p2_func"]:
+                        LOG.debug("setting %s = %s" % (name, element.value))
+                        setattr(self._memobj.buttons, name, element.value)
                         continue
 
                     obj = _settings
