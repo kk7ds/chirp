@@ -1653,20 +1653,20 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
             _mem.txfreq = mem.freq // self._freqmult
 
         step_lookup = {
-            2.5: 0x0,
-            6.25: 0x2,
             12.5: 0x5,
+            6.25: 0x2,
             5.0: 0x1,
+            2.5: 0x0,
         }
         try:
             _mem.rx_step = step_lookup[chirp_common.required_step(
-                int(_mem.rxfreq) * 10)]
+                int(_mem.rxfreq) * 10, allowed=step_lookup.keys())]
         except errors.InvalidDataError:
             LOG.warning('Unknown step for rx freq, defaulting to 5kHz')
             _mem.rx_step = 0x1
         try:
             _mem.tx_step = step_lookup[chirp_common.required_step(
-                int(_mem.txfreq) * 10)]
+                int(_mem.txfreq) * 10, allowed=step_lookup.keys())]
         except errors.InvalidDataError:
             LOG.warning('Unknown step for tx freq, defaulting to 5kHz')
             _mem.tx_step = 0x1
