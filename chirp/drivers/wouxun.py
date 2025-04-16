@@ -330,6 +330,64 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         rf.can_odd_split = True
         return rf
 
+    @property
+    def transmit_time_out_setting(self):
+        options = ["%s" % x for x in range(15, 615, 15)]
+        rs = RadioSetting(
+            "transmit_time_out",
+            "TX Time-out Timer",
+            RadioSettingValueList(
+                options,
+                current_index=self._memobj.settings.transmit_time_out))
+        return rs
+
+    @property
+    def transmit_time_out_alert_setting(self):
+        options = ["OFF"] + ["%s" % x for x in range(1, 11)]
+        rs = RadioSetting(
+            "tx_time_out_alert",
+            "TX Time-out Alert",
+            RadioSettingValueList(
+                options,
+                current_index=self._memobj.settings.tx_time_out_alert))
+        return rs
+
+    @property
+    def roger_beep_setting(self):
+        options = ["Off", "Begin", "End", "Both"]
+        rs = RadioSetting(
+            "roger_beep",
+            "Roger beep select",
+            RadioSettingValueList(
+                options,
+                current_index=self._memobj.settings.roger_beep))
+        return rs
+
+    @property
+    def power_save_setting(self):
+        rs = RadioSetting("power_save", "Power save",
+                          RadioSettingValueBoolean(
+                              self._memobj.settings.power_save))
+        return rs
+
+    @property
+    def vox_setting(self):
+        options = ["OFF"] + ["%s" % x for x in range(1, 11)]
+        rs = RadioSetting(
+            "vox",
+            "Vox",
+            RadioSettingValueList(
+                options,
+                current_index=self._memobj.settings.vox))
+        return rs
+
+    @property
+    def beep_setting(self):
+        rs = RadioSetting("beep", "Beep",
+                          RadioSettingValueBoolean(
+                              self._memobj.settings.beep))
+        return rs
+
     def get_settings(self):
         freq_ranges = RadioSettingGroup("freq_ranges", "Freq Ranges")
         fm_preset = RadioSettingGroup("fm_preset", "FM Presets")
@@ -458,10 +516,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueInteger(
                               0, 199, self._memobj.settings.priority_chan))
         cfg_s.append(rs)
-        rs = RadioSetting("power_save", "Power save",
-                          RadioSettingValueBoolean(
-                              self._memobj.settings.power_save))
-        cfg_s.append(rs)
+        cfg_s.append(self.power_save_setting)
         options = ["Off", "Scan", "Lamp", "SOS", "Radio"]
         rs = RadioSetting(
             "pf1_function", "PF1 Function select",
@@ -469,34 +524,15 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                 options,
                 current_index=self._memobj.settings.pf1_function))
         cfg_s.append(rs)
-        options = ["Off", "Begin", "End", "Both"]
-        rs = RadioSetting("roger_beep", "Roger beep select",
-                          RadioSettingValueList(
-                              options,
-                              current_index=self._memobj.settings.roger_beep))
-        cfg_s.append(rs)
-        options = ["%s" % x for x in range(15, 615, 15)]
-        transmit_time_out = options[self._memobj.settings.transmit_time_out]
-        rs = RadioSetting("transmit_time_out", "TX Time-out Timer",
-                          RadioSettingValueList(
-                              options, transmit_time_out))
-        cfg_s.append(rs)
-        rs = RadioSetting("tx_time_out_alert", "TX Time-out Alert",
-                          RadioSettingValueInteger(
-                              0, 10, self._memobj.settings.tx_time_out_alert))
-        cfg_s.append(rs)
-        rs = RadioSetting("vox", "Vox",
-                          RadioSettingValueInteger(
-                              0, 10, self._memobj.settings.vox))
-        cfg_s.append(rs)
+        cfg_s.append(self.roger_beep_setting)
+        cfg_s.append(self.transmit_time_out_setting)
+        cfg_s.append(self.transmit_time_out_alert_setting)
+        cfg_s.append(self.vox_setting)
         options = ["Off", "Chinese", "English"]
         rs = RadioSetting("voice", "Voice", RadioSettingValueList(
             options, current_index=self._memobj.settings.voice))
         cfg_s.append(rs)
-        rs = RadioSetting("beep", "Beep",
-                          RadioSettingValueBoolean(
-                              self._memobj.settings.beep))
-        cfg_s.append(rs)
+        cfg_s.append(self.beep_setting)
         rs = RadioSetting("ani_id_enable", "ANI id enable",
                           RadioSettingValueBoolean(
                               self._memobj.settings.ani_id_enable))
@@ -1593,17 +1629,39 @@ class KG805GRadio(KGUVD1PRadio):
              _0_unknown_2:4;
         } memory[128];
 
+        #seekto 0x0E20;
+        struct {
+          u8 unknown_setting_01[2];
+          u8 unknown_setting_02:4,
+             squelch:4;
+          u8 unknown_setting_03:7,
+             power_save:1;
+          u8 unknown_setting_04;
+          u8 unknown_setting_05:6,
+             roger_beep:2;
+          u8 unknown_setting_06:2,
+             transmit_time_out:6;
+          u8 unknown_setting_07:4,
+             vox:4;
+          u8 unknown_setting_08[5];
+          u8 unknown_setting_09:7,
+             beep:1;
+          u8 unknown_setting_10[8];
+          u8 unknown_setting_11:4,
+             tx_time_out_alert:4;
+          u8 unknown_setting_12[9];
+          u8 unknown_setting_13;
+          u8 unknown_setting_14:7,
+             auto_lock:1;
+        } settings;
+
+
         #seekto 0x1010;
         struct {
             u8 name[6];
             u8 pad[10];
         } names[128];
     """
-
-    def get_features(self):
-        rf = KGUVD1PRadio.get_features(self)
-        rf.has_settings = False
-        return rf
 
     def process_mmap(self):
         self._memobj = bitwise.parse(self._MEM_FORMAT, self._mmap)
@@ -1612,7 +1670,32 @@ class KG805GRadio(KGUVD1PRadio):
         self.get_settings()
 
     def get_settings(self):
-        pass
+        cfg_s = RadioSettingGroup("cfg_settings", "Configuration Settings")
+        group = RadioSettings(cfg_s)
+
+        cfg_s.append(self.power_save_setting)
+
+        options = ["%s" % x for x in range(0, 10)]
+        rs = RadioSetting(
+            "squelch",
+            "Squelch",
+            RadioSettingValueList(
+                options,
+                current_index=self._memobj.settings.squelch))
+        cfg_s.append(rs)
+
+        cfg_s.append(self.roger_beep_setting)
+        cfg_s.append(self.transmit_time_out_setting)
+        cfg_s.append(self.transmit_time_out_alert_setting)
+        cfg_s.append(self.vox_setting)
+        cfg_s.append(self.beep_setting)
+
+        rs = RadioSetting("auto_lock", "Auto lock",
+                          RadioSettingValueBoolean(
+                              self._memobj.settings.auto_lock))
+        cfg_s.append(rs)
+
+        return group
 
     def _set_duplex_offset_freq(self, _mem, mem):
         if self._is_txinh(_mem):
