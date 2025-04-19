@@ -678,20 +678,23 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         rs.set_apply_callback(apply_limit, self._memobj.limits)
         basic.append(rs)
 
-        fm_preset = RadioSettingGroup("fm_preset", "FM Radio Presets")
-        group.append(fm_preset)
+        if 'fm_presets' in self._memobj:
+            fm_preset = RadioSettingGroup("fm_preset", "FM Radio Presets")
+            group.append(fm_preset)
 
-        for i in range(0, 16):
-            if self._memobj.fm_presets[i] < 0x01AF:
-                used = True
-                preset = self._memobj.fm_presets[i] / 10.0 + 65
-            else:
-                used = False
-                preset = 65
-            rs = RadioSetting("fm_presets_%1i" % i, "FM Preset %i" % (i + 1),
-                              RadioSettingValueBoolean(used),
-                              RadioSettingValueFloat(65, 108, preset, 0.1, 1))
-            fm_preset.append(rs)
+            for i in range(0, 16):
+                if self._memobj.fm_presets[i] < 0x01AF:
+                    used = True
+                    preset = self._memobj.fm_presets[i] / 10.0 + 65
+                else:
+                    used = False
+                    preset = 65
+                rs = RadioSetting("fm_presets_%1i" % i,
+                                  "FM Preset %i" % (i + 1),
+                                  RadioSettingValueBoolean(used),
+                                  RadioSettingValueFloat(65, 108, preset,
+                                                         0.1, 1))
+                fm_preset.append(rs)
 
         testmode = RadioSettingGroup("testmode", "Test Mode Settings")
         group.append(testmode)
