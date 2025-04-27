@@ -18,6 +18,7 @@ import enum
 
 class Reasons(enum.Enum):
     NO_CONNECTION_K1 = "No response from radio. Check connector and cabling!"
+    FIXED_BANKS = "This radio has fixed banks and does not allow reassignment"
 
 
 class InvalidDataError(Exception):
@@ -73,3 +74,8 @@ class SpecificRadioError(RadioError):
 class RadioNoContactLikelyK1(SpecificRadioError):
     """A radio that uses a K1 connector likely to have fitment issues."""
     CODE = Reasons.NO_CONNECTION_K1
+
+
+class RadioFixedBanks(SpecificRadioError):
+    """A radio that has fixed banks and cannot be changed."""
+    CODE = Reasons.FIXED_BANKS

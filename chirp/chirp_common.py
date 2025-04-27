@@ -797,10 +797,10 @@ class StaticBankModel(BankModel):
         return [self._banks[(memory.number - lo) // count]]
 
     def remove_memory_from_mapping(self, memory, mapping):
-        raise NotImplementedError(self.MSG)
+        raise errors.RadioFixedBanks()
 
     def add_memory_to_mapping(self, memory, mapping):
-        raise NotImplementedError(self.MSG)
+        raise errors.RadioFixedBanks()
 
 
 class MappingModelIndexInterface:
