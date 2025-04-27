@@ -678,28 +678,10 @@ class ChirpCloneDialog(wx.Dialog):
         wx.CallAfter(self.EndModal, wx.ID_OK)
 
     def fail(self, error):
-        if isinstance(error, errors.SpecificRadioError):
-            link = error.get_link()
-            message = str(error)
-        else:
-            link = None
-            message = str(error)
-
         def safe_fail():
-            if link:
-                buttons = wx.YES_NO | wx.NO_DEFAULT
-            else:
-                buttons = wx.OK
-            d = wx.MessageDialog(self, message,
-                                 _('Error communicating with radio'),
-                                 wx.ICON_ERROR | buttons)
-            if link:
-                d.SetYesNoLabels(_('More Info'), wx.ID_OK)
-            r = d.ShowModal()
-            if r == wx.ID_YES:
-                webbrowser.open(link)
-
-            self.cancel_action()
+            common.error_proof.show_error(
+                error, parent=self,
+                title=_('Error communicating with radio'))
         wx.CallAfter(safe_fail)
 
     def cancel_action(self):
