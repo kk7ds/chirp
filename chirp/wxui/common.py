@@ -23,6 +23,7 @@ import platform
 import shutil
 import tempfile
 import threading
+import webbrowser
 
 import wx
 
@@ -613,54 +614,44 @@ class ChirpSettingGrid(wx.Panel):
             prop.SetModifiedStatus(False)
 
 
-def _error_proof(*expected_errors):
-    """Decorate a method and display an error if it raises.
-
-    If the method raises something in expected_errors, then
-    log an error, otherwise log exception.
-    """
-
-    def show_error(msg):
-        d = wx.MessageDialog(None, str(msg), _('An error has occurred'),
-                             style=wx.OK | wx.ICON_ERROR)
-        d.ShowModal()
-
-    def wrap(fn):
-        @functools.wraps(fn)
-        def inner(*args, **kwargs):
-            try:
-                return fn(*args, **kwargs)
-            except expected_errors as e:
-                LOG.error('%s: %s' % (fn, e))
-                show_error(e)
-            except Exception as e:
-                LOG.exception('%s raised unexpected exception' % fn)
-                show_error(e)
-
-        return inner
-    return wrap
-
-
 class error_proof(object):
-    def __init__(self, *expected_exceptions):
+    def __init__(self, *expected_exceptions, title=None):
         self._expected = expected_exceptions
         self.fn = None
+        self.title = title
 
     @staticmethod
-    def show_error(msg):
-        d = wx.MessageDialog(None, str(msg), _('An error has occurred'),
-                             style=wx.OK | wx.ICON_ERROR)
-        d.ShowModal()
+    def show_error(error, parent=None, title=None):
+        title = title or _('An error has occurred')
+
+        if isinstance(error, errors.SpecificRadioError):
+            link = error.get_link()
+            message = str(error)
+        else:
+            link = None
+            message = str(error)
+
+        if link:
+            buttons = wx.YES_NO | wx.NO_DEFAULT
+        else:
+            buttons = wx.OK
+        d = wx.MessageDialog(parent, message, title,
+                             wx.ICON_ERROR | buttons)
+        if link:
+            d.SetYesNoLabels(_('More Info'), wx.ID_OK)
+        r = d.ShowModal()
+        if r == wx.ID_YES:
+            webbrowser.open(link)
 
     def run_safe(self, fn, args, kwargs):
         try:
             return fn(*args, **kwargs)
         except self._expected as e:
             LOG.error('%s: %s' % (fn, e))
-            self.show_error(e)
+            self.show_error(e, title=self.title)
         except Exception as e:
             LOG.exception('%s raised unexpected exception' % fn)
-            self.show_error(e)
+            self.show_error(e, title=self.title)
 
     def __call__(self, fn):
         self.fn = fn
