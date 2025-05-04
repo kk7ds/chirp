@@ -199,7 +199,7 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
         rf.has_mode = False
 
         rf.valid_modes = ["NFM", "WFM", "AM"]
-        rf.valid_duplexes = ["", "-", "+"]
+        rf.valid_duplexes = ["", "-", "+", "split"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_skips = ["", "S"]
         rf.valid_power_levels = self.POWER_LEVELS
