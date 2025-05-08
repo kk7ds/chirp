@@ -1889,11 +1889,10 @@ class ChirpMain(wx.Frame):
                      border=10,
                      flag=wx.ALIGN_CENTER)
 
-        license_link = wx.adv.HyperlinkCtrl(
-            d, label=_('Click here for full license text'),
-            url=('https://www.chirpmyradio.com/projects/chirp/repository/'
-                 'github/revisions/master/entry/COPYING'))
-        vbox.Add(license_link, border=10, flag=wx.ALL | wx.ALIGN_CENTER)
+        documentation_link = wx.adv.HyperlinkCtrl(
+            d, label=_('Click here for online documentation'),
+            url=('https://chirpmyradio.com/projects/chirp/wiki/Documentation'))
+        vbox.Add(documentation_link, border=10, flag=wx.ALL | wx.ALIGN_CENTER)
 
         licheader = """
 This program is free software: you can redistribute it and/or modify
@@ -1910,6 +1909,12 @@ GNU General Public License for more details."""
             d, value=licheader.strip(),
             style=wx.TE_WORDWRAP | wx.TE_MULTILINE | wx.TE_READONLY)
         vbox.Add(lic, border=10, flag=wx.ALL | wx.EXPAND, proportion=1)
+
+        license_link = wx.adv.HyperlinkCtrl(
+            d, label=_('Click here for full license text'),
+            url=('https://www.chirpmyradio.com/projects/chirp/repository/'
+                 'github/revisions/master/entry/COPYING'))
+        vbox.Add(license_link, border=10, flag=wx.ALL | wx.ALIGN_CENTER)
 
         license_approved = CONF.get_bool('agreed_to_license', 'state')
 
