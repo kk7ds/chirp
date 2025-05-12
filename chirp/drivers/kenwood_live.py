@@ -1046,6 +1046,7 @@ THK2_CHARS = chirp_common.CHARSET_UPPER_NUMERIC + "-/"
 class THK2Radio(KenwoodLiveRadio):
     """Kenwood TH-K2"""
     MODEL = "TH-K2"
+    HARDWARE_FLOW = False
 
     _kenwood_valid_tones = list(KENWOOD_TONES)
 
