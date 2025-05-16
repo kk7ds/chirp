@@ -76,11 +76,12 @@ def _load_tests(loader, tests, pattern, suite=None):
         images = os.environ['CHIRP_TESTIMG'].split()
     else:
         images = glob.glob("tests/images/*.img")
+        images = [os.path.basename(img) for img in images]
     tests = [os.path.splitext(os.path.basename(img))[0] for img in images]
 
     base = os.path.dirname(os.path.abspath(__file__))
     base = os.path.join(base, 'images')
-    images = glob.glob(os.path.join(base, "*"))
+    images = [os.path.join(base, img) for img in images]
     tests = {img: os.path.splitext(os.path.basename(img))[0] for img in images}
 
     if pattern == 'test*.py':
