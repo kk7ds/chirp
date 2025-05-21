@@ -779,7 +779,7 @@ B_BAND = ["Wide", "Narrow"]
 B_WORKMODE = ["VFO", "VFO+CH", "CH Mode"]
 
 # FM
-FM_WORKMODE = ["CH", "VFO"]
+FM_WORKMODE = ["VFO", "CH"]
 FM_CHANNEL = ['%s' % x for x in range(0, 26)]
 
 # DTMF
