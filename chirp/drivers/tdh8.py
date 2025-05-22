@@ -1912,7 +1912,7 @@ class TDH8(chirp_common.CloneModeRadio):
                               current_index=_settings.fmroad))
         fmmode.append(rs)
 
-        rs = RadioSetting("fmrec", "Forbid Receive",
+        rs = RadioSetting("fmrec", "Allow Receive",
                           RadioSettingValueBoolean(_settings.fmrec))
         fmmode.append(rs)
 
