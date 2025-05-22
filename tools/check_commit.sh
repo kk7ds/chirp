@@ -88,6 +88,13 @@ if echo $added_py | grep -q chirp.drivers && ! echo $added_files | grep -q tests
     fail All new drivers should include a test image
 fi
 
+modified_files=$(git diff --name-only --diff-filter=M ${BASE}..)
+modified_img=$(echo "$modified_files" | grep 'tests.images')
+modified_py=$(echo "$modified_files" | grep '\.py$')
+if [ "$modified_img" -a "$modified_py" ]; then
+    fail "Change modifies an image and (potentially) a driver for a possible upgrade breakage"
+fi
+
 existing_drivers=$(git ls-tree --name-only $BASE chirp/drivers/)
 limit=51
 for nf in $added_py; do
