@@ -1297,6 +1297,7 @@ class RT470Radio(JC8810base):
                          b"\x00\x00\x00\x42\x00\x20\xF0\x04",
                          b"\x00\x00\x00\x4A\x00\x20\xF8\x04",
                          b"\x00\x00\x00\x3A\x00\x20\xE8\x04",  # fw 1.25A
+                         b"\x00\x00\x00\x42\x00\x20\xec\x04",  # fw 1.27A
                          ]
 
     # pcb 2
