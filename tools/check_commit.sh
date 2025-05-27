@@ -73,6 +73,10 @@ done
 #    fail 'New drivers should not have match_model() implemented as it is not needed'
 #fi
 
+if grep -E '\Wprint\(' added_lines; then
+    fail 'Do not use print()'
+fi
+
 if git log ${BASE}.. --merges | grep .; then
     fail Please do not include merge commits in your PR
 fi
