@@ -16,7 +16,7 @@ echo -e "${GREEN}Checking from $(git rev-parse --short ${BASE}):${NC}"
 git log --pretty=oneline --no-merges --abbrev-commit ${BASE}..
 echo
 
-git diff ${BASE}.. '*.py' | grep '^+' > added_lines
+git diff ${BASE}.. -- '*.py' | grep '^+' > added_lines
 
 if grep -E '(from|import).*six' added_lines; then
     fail No new uses of future
@@ -50,11 +50,11 @@ if grep -E "eval\(" added_lines; then
     fail 'Use of eval() is dangerous and not permitted!'
 fi
 
-if git diff ${BASE}.. 'tools/cpep8.manifest' | tail -n +5 | grep -q '^+'; then
+if git diff ${BASE}.. -- 'tools/cpep8.manifest' | tail -n +5 | grep -q '^+'; then
     fail 'Do not add new files to cpep8.manifest; no longer needed'
 fi
 
-if git diff ${BASE}.. 'tools/cpep8.blacklist' | tail -n +5 | grep -q '^+'; then
+if git diff ${BASE}.. -- 'tools/cpep8.blacklist' | tail -n +5 | grep -q '^+'; then
     fail 'Do not add new files to cpep8.blacklist; fix the code'
 fi
 
@@ -82,7 +82,7 @@ if git log ${BASE}.. --merges | grep .; then
 fi
 
 make -C chirp/locale clean all >/dev/null 2>&1
-if git diff chirp/locale | grep '^+[^#+]' | grep -v POT-Creation; then
+if git diff -- chirp/locale | grep '^+[^#+]' | grep -v POT-Creation; then
     fail Locale files need updating
 fi
 
@@ -99,7 +99,7 @@ if [ "$modified_img" -a "$modified_py" ]; then
     fail "Change modifies an image and (potentially) a driver for a possible upgrade breakage"
 fi
 
-existing_drivers=$(git ls-tree --name-only $BASE chirp/drivers/)
+existing_drivers=$(git ls-tree --name-only $BASE -- chirp/drivers/)
 limit=51
 for nf in $added_py; do
     for of in $existing_drivers; do
