@@ -1533,6 +1533,11 @@ class MaxTalkerP15(BF5RM):
 
 
 @directory.register
+class MaxTalkerMT5RM(MaxTalkerP15):
+    MODEL = 'MT-5RM'
+
+
+@directory.register
 class BFK5Plus(BF5RM):
     VENDOR = "Baofeng"
     MODEL = "K5-Plus"
