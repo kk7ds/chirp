@@ -701,6 +701,10 @@ class charDataElement(DataElement):
 
 
 class bcdDataElement(DataElement):
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        self._ignoremask = 0x00
+
     def __int__(self):
         tens, ones = self.get_value()
         return (tens * 10) + ones
@@ -713,6 +717,9 @@ class bcdDataElement(DataElement):
 
     def get_bits(self, mask):
         return ord(self._data[self._offset]) & int(mask)
+
+    def ignore_bits(self, mask):
+        self._ignoremask = mask
 
     def set_raw(self, data):
         if isinstance(data, int):
@@ -728,11 +735,14 @@ class bcdDataElement(DataElement):
                             type(data))
 
     def set_value(self, value):
-        self._data[self._offset] = int("%02i" % value, 16)
+        preserve = self._data[self._offset][0] & self._ignoremask
+        self._data[self._offset] = (
+            int("%02i" % value, 16) & ~self._ignoremask) | preserve
 
     def _get_value(self, data):
-        a = (ord(data) & 0xF0) >> 4
-        b = ord(data) & 0x0F
+        data = data[0] & ~self._ignoremask
+        a = (data & 0xF0) >> 4
+        b = data & 0x0F
         return (a, b)
 
 
