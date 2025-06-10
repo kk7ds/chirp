@@ -248,6 +248,22 @@ class TestBitwiseBCDTypes(BaseTest):
     def test_lbcd_array(self):
         self._test_def("lbcd foo[2];", "foo", b"\x12\x34", 3412)
 
+    def test_bbcd_array_leading_bits(self):
+        data = memmap.MemoryMapBytes(bytes(b"\xc7\x54"))
+        obj = bitwise.parse("bbcd foo[2];", data)
+        # This is what we interpret a leading 0xC000 as
+        self.assertEqual(int(obj.foo), 754 + 12000)
+
+        # Ignore the top nibble and we expect just the bottom three
+        obj.foo[0].ignore_bits(0xF0)
+        self.assertEqual(int(obj.foo), 754)
+
+        # If wet try to set something in the ignored nibble it should be
+        # ignored but preserved
+        obj.foo = 1754
+        self.assertEqual(int(obj.foo), 754)
+        self.assertEqual(data[0][0], 0xC7)
+
 
 class TestBitwiseCharTypes(BaseTest):
     def test_char(self):
