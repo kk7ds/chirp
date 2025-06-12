@@ -98,6 +98,8 @@ TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
                      "120 seconds", "150 seconds", "180 seconds",
                      "210 seconds", "240 seconds", "270 seconds",
                      "300 seconds"]
+DTCS_FLAG = 0x80
+DTCS_REV_FLAG = 0x40
 
 
 def _h777_enter_programming_mode(radio):
@@ -371,27 +373,31 @@ class H777Radio(chirp_common.CloneModeRadio):
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
 
-    def _decode_tone(self, val):
-        val = int(val)
-        if val == 16665:
+    def _decode_tone(self, memval):
+        memval[1].ignore_bits(DTCS_FLAG | DTCS_REV_FLAG)
+        is_dtcs = memval[1].get_bits(DTCS_FLAG)
+        is_rev = memval[1].get_bits(DTCS_REV_FLAG)
+        if memval.get_raw() == b"\xFF\xFF":
             return '', None, None
-        elif val >= 12000:
-            return 'DTCS', val - 12000, 'R'
-        elif val >= 8000:
-            return 'DTCS', val - 8000, 'N'
+        elif is_dtcs:
+            return 'DTCS', int(memval), 'R' if is_rev else 'N'
         else:
-            return 'Tone', val / 10.0, None
+            return 'Tone', int(memval) / 10.0, None
 
     def _encode_tone(self, memval, mode, value, pol):
+        memval[1].ignore_bits(DTCS_FLAG | DTCS_REV_FLAG)
         if mode == '':
-            memval[0].set_raw(0xFF)
-            memval[1].set_raw(0xFF)
+            memval.fill_raw(b'\xFF')
         elif mode == 'Tone':
+            memval[1].clr_bits(DTCS_FLAG | DTCS_REV_FLAG)
             memval.set_value(int(value * 10))
         elif mode == 'DTCS':
-            flag = 0x80 if pol == 'N' else 0xC0
+            memval[1].set_bits(DTCS_FLAG)
+            if pol == 'R':
+                memval[1].set_bits(DTCS_REV_FLAG)
+            else:
+                memval[1].clr_bits(DTCS_REV_FLAG)
             memval.set_value(value)
-            memval[1].set_bits(flag)
         else:
             raise Exception("Internal error: invalid mode `%s'" % mode)
 
