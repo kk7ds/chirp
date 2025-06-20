@@ -1649,7 +1649,9 @@ class TK272G_Radios(Kenwood_Serie_60G):
     MODEL = "TK-272G"
     TYPE = b"P2720"
     VARIANTS = {
-        b"P2720\x05\xfb": (32, 136, 150, "K1"),
+        # NOTE: This is technically 136-150 MHz, but the radio supports
+        # the full range for RX at least
+        b"P2720\x05\xfb": (32, 136, 174, "K1"),
         b"P2720\x04\xfb": (32, 150, 174, "K")
         }
 
