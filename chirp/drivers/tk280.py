@@ -55,6 +55,25 @@ LOG = logging.getLogger(__name__)
 #
 #
 
+
+def choose_step(step_map, freq, default=5.0):
+    """Choose the proper step index for a given frequency.
+
+    @step_map should be a dict of step (in kHz) to index, in order of
+              preference.
+    @freq should be a frequency in Hz.
+    Returns the step index from step_map to use.
+    """
+    try:
+        step = chirp_common.required_step(freq, step_map.keys())
+    except errors.InvalidDataError:
+        step = default
+        LOG.warning('Frequency %s requires step not in availble map, '
+                    'using %s kHz by default',
+                    chirp_common.format_freq(freq), step)
+    return step_map[step]
+
+
 CONVENTIONAL_DEFS = """
 struct conv_settings {
   // x00-x01, Edit>>Model Information>>Radio Format,
@@ -1658,18 +1677,8 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
             5.0: 0x1,
             2.5: 0x0,
         }
-        try:
-            _mem.rx_step = step_lookup[chirp_common.required_step(
-                int(_mem.rxfreq) * 10, allowed=step_lookup.keys())]
-        except errors.InvalidDataError:
-            LOG.warning('Unknown step for rx freq, defaulting to 5kHz')
-            _mem.rx_step = 0x1
-        try:
-            _mem.tx_step = step_lookup[chirp_common.required_step(
-                int(_mem.txfreq) * 10, allowed=step_lookup.keys())]
-        except errors.InvalidDataError:
-            LOG.warning('Unknown step for tx freq, defaulting to 5kHz')
-            _mem.tx_step = 0x1
+        _mem.rx_step = choose_step(step_lookup, int(_mem.rxfreq) * 10)
+        _mem.tx_step = choose_step(step_lookup, int(_mem.txfreq) * 10)
 
         ((txmode, txtone, txpol), (rxmode, rxtone, rxpol)) = \
             chirp_common.split_tone_encode(mem)

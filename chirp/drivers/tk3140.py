@@ -20,6 +20,7 @@ import struct
 from chirp import chirp_common
 from chirp import bitwise
 from chirp import directory
+from chirp.drivers import tk280
 from chirp.drivers import tk8160
 from chirp.drivers import tk8180
 from chirp import errors
@@ -235,15 +236,6 @@ BATTSAVE = {
     0x30: 'Short',
     0x31: 'Medium',
     0x32: 'Long',
-}
-
-STEPS = {
-    2.5: 0x00,
-    5.0: 0x01,
-    6.25: 0x02,
-    10.0: 0x04,
-    12.5: 0x05,
-    7.5: 0x06,  # maybe?
 }
 
 mem_format = """
@@ -575,18 +567,16 @@ class KenwoodTKx140Radio(chirp_common.CloneModeRadio):
         else:
             raise errors.RadioError('Unsupported duplex mode %r' % mem.duplex)
 
-        try:
-            _mem.rxstep = STEPS[chirp_common.required_step(
-                int(_mem.rx_freq) * 10, allowed=STEPS.keys())]
-        except errors.InvalidDataError:
-            LOG.warning('Unknown step for rx freq, defaulting to 5kHz')
-            _mem.rxstep = 0x01  # 5kHz
-        try:
-            _mem.txstep = STEPS[chirp_common.required_step(
-                int(_mem.tx_freq) * 10, allowed=STEPS.keys())]
-        except errors.InvalidDataError:
-            LOG.warning('Unknown step for tx freq, defaulting to 5kHz')
-            _mem.txstep = 0x01  # 5kHz
+        step_lookup = {
+            6.25: 0x02,
+            12.5: 0x05,
+            5.0: 0x01,
+            2.5: 0x00,
+            10.0: 0x04,
+            7.5: 0x06,  # maybe?
+        }
+        _mem.rxstep = tk280.choose_step(step_lookup, int(_mem.rx_freq) * 10)
+        _mem.txstep = tk280.choose_step(step_lookup, int(_mem.tx_freq) * 10)
 
         txtone, rxtone = chirp_common.split_tone_encode(mem)
         _mem.rxtone = tk8180.KenwoodTKx180Radio._encode_tone(*rxtone)

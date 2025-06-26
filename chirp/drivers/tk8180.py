@@ -998,20 +998,8 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             5: 0x2,
             2.5: 0x1,
         }
-        try:
-            tx_step = chirp_common.required_step(int(_mem.tx_freq) * 10,
-                                                 allowed=step_lookup.keys())
-        except errors.InvalidDataError:
-            tx_step = 5
-        try:
-            rx_step = chirp_common.required_step(int(_mem.rx_freq) * 10,
-                                                 allowed=step_lookup.keys())
-        except errors.InvalidDataError:
-            rx_step = 5
-
-        # Default to 5kHz if we don't know any better
-        _mem.rx_step = step_lookup.get(rx_step, 0x2)
-        _mem.tx_step = step_lookup.get(tx_step, 0x2)
+        _mem.rx_step = tk280.choose_step(step_lookup, int(_mem.rx_freq) * 10)
+        _mem.tx_step = tk280.choose_step(step_lookup, int(_mem.tx_freq) * 10)
 
         skipbyte = self._memobj.skipflags[(mem.number - 1) // 8]
         if mem.skip == 'S':
