@@ -1199,6 +1199,12 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
                            RadioSettingValueString(0, 8, ponm, False))
         basic.append(pom)
 
+        offhook = RadioSetting('settings.off_hook_decode', 'Off-hook decode',
+                               RadioSettingValueBoolean(
+                                   not sett.off_hook_decode))
+        offhook.set_doc('Squelch mode active when mic is off-hook')
+        basic.append(offhook)
+
         # dealer
         valid_chars = ",-/:[]" + chirp_common.CHARSET_ALPHANUMERIC
         mstr = "".join([c for c in self._VARIANT if c in valid_chars])
@@ -1383,11 +1389,11 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
                 # Bool types + inverted
                 if setting in ["c2t", "poweron_tone", "control_tone",
                                "warn_tone", "battery_save", "self_prog",
-                               "clone", "panel_test"]:
+                               "clone", "panel_test", "off_hook_decode"]:
                     value = bool(value)
 
                     # this cases are inverted
-                    if setting == "c2t":
+                    if setting in ["c2t", "off_hook_decode"]:
                         value = not value
 
                     # case battery save is special
