@@ -137,6 +137,7 @@ class BugReportContext:
         self.session = requests.Session()
         self.session.headers = {
             'User-Agent': 'CHIRP/%s' % CHIRP_VERSION,
+            'Referer': 'https://chirpmyradio.com/projects/chirp/issues/new',
         }
 
     def get_page(self, name, cls):
