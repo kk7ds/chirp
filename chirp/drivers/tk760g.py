@@ -21,7 +21,7 @@ from chirp import chirp_common, directory, memmap, errors, util, bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettings
+    RadioSettings, RadioSettingValueMap
 
 LOG = logging.getLogger(__name__)
 
@@ -327,6 +327,7 @@ KEYS = {
     0x5d: "AUX",
     0xa1: "Channel Up/Down"                 # Knob for portables only
     }
+KEY_MAP = [(v, k) for k, v in KEYS.items()]
 
 
 def _raw_recv(radio, amount):
@@ -1134,7 +1135,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
 
         # Basic
         tot = RadioSetting("settings.tot", "Time Out Timer (TOT)",
-                           RadioSettingValueList(TOT, '%i' % sett.tot))
+                           RadioSettingValueList(
+                               TOT, current_index=TOT.index('%i' % sett.tot)))
         basic.append(tot)
 
         totalert = RadioSetting("settings.tot_alert", "TOT pre alert",
@@ -1256,28 +1258,28 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
         # The Mobile only parameters are wrapped here
         if self.TYPE[0] == "M":
             vu = RadioSetting("keys.kVOL_UP", "VOL UP",
-                              RadioSettingValueList(KEYS.values(),
-                                                    KEYS[int(keys.kVOL_UP)]))
+                              RadioSettingValueMap(KEY_MAP,
+                                                   int(keys.kVOL_UP)))
             fkeys.append(vu)
 
             vd = RadioSetting("keys.kVOL_DOWN", "VOL DOWN",
-                              RadioSettingValueList(KEYS.values(),
-                                                    KEYS[int(keys.kVOL_DOWN)]))
+                              RadioSettingValueMap(KEY_MAP,
+                                                   int(keys.kVOL_DOWN)))
             fkeys.append(vd)
 
             chu = RadioSetting("keys.kCH_UP", "CH UP",
-                               RadioSettingValueList(KEYS.values(),
-                                                     KEYS[int(keys.kCH_UP)]))
+                               RadioSettingValueMap(KEY_MAP,
+                                                    int(keys.kCH_UP)))
             fkeys.append(chu)
 
             chd = RadioSetting("keys.kCH_DOWN", "CH DOWN",
-                               RadioSettingValueList(KEYS.values(),
-                                                     KEYS[int(keys.kCH_DOWN)]))
+                               RadioSettingValueMap(KEY_MAP,
+                                                    int(keys.kCH_DOWN)))
             fkeys.append(chd)
 
             foot = RadioSetting("keys.kFOOT", "Foot switch",
-                                RadioSettingValueList(KEYS.values(),
-                                                      KEYS[int(keys.kFOOT)]))
+                                RadioSettingValueMap(KEY_MAP,
+                                                     int(keys.kFOOT)))
             fkeys.append(foot)
 
         # this is the common buttons for all
@@ -1289,8 +1291,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
                 scn_name = "Open Circle"
 
             scn = RadioSetting("keys.kSCN", scn_name,
-                               RadioSettingValueList(KEYS.values(),
-                                                     KEYS[int(keys.kSCN)]))
+                               RadioSettingValueMap(KEY_MAP,
+                                                    int(keys.kSCN)))
             fkeys.append(scn)
 
             a_name = "A"
@@ -1298,8 +1300,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
                 a_name = "Closed circle"
 
             a = RadioSetting("keys.kA", a_name,
-                             RadioSettingValueList(KEYS.values(),
-                                                   KEYS[int(keys.kA)]))
+                             RadioSettingValueMap(KEY_MAP,
+                                                  int(keys.kA)))
             fkeys.append(a)
 
             da_name = "D/A"
@@ -1307,8 +1309,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
                 da_name = "< key"
 
             da = RadioSetting("keys.kDA", da_name,
-                              RadioSettingValueList(KEYS.values(),
-                                                    KEYS[int(keys.kDA)]))
+                              RadioSettingValueMap(KEY_MAP,
+                                                   int(keys.kDA)))
             fkeys.append(da)
 
             gu_name = "Triangle up"
@@ -1316,8 +1318,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
                 gu_name = "Side 1"
 
             gu = RadioSetting("keys.kGROUP_UP", gu_name,
-                              RadioSettingValueList(KEYS.values(),
-                                                    KEYS[int(keys.kGROUP_UP)]))
+                              RadioSettingValueMap(KEY_MAP,
+                                                   int(keys.kGROUP_UP)))
             fkeys.append(gu)
 
         # Side keys on portables
@@ -1326,8 +1328,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
             gd_name = "> key"
 
         gd = RadioSetting("keys.kGROUP_DOWN", gd_name,
-                          RadioSettingValueList(KEYS.values(),
-                                                KEYS[int(keys.kGROUP_DOWN)]))
+                          RadioSettingValueMap(KEY_MAP,
+                                               int(keys.kGROUP_DOWN)))
         fkeys.append(gd)
 
         mon_name = "MON"
@@ -1335,8 +1337,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
             mon_name = "Side 2"
 
         mon = RadioSetting("keys.kMON", mon_name,
-                           RadioSettingValueList(KEYS.values(),
-                                                 KEYS[int(keys.kMON)]))
+                           RadioSettingValueMap(KEY_MAP,
+                                                int(keys.kMON)))
         fkeys.append(mon)
 
         return top
