@@ -542,9 +542,18 @@ class ChirpCloneDialog(wx.Dialog):
         self._model.Disable()
         self._recent.Disable()
 
+    def enable_model_select(self):
+        self._vendor.Enable()
+        self._model.Enable()
+        self._recent.Enable()
+
     def disable_running(self):
         self._port.Disable()
         self.FindWindowById(wx.ID_OK).Disable()
+
+    def enable_running(self):
+        self._port.Enable()
+        self.FindWindowById(wx.ID_OK).Enable()
 
     def _persist_choices(self):
         raise NotImplementedError()
@@ -682,12 +691,14 @@ class ChirpCloneDialog(wx.Dialog):
             common.error_proof.show_error(
                 error, parent=self,
                 title=_('Error communicating with radio'))
+            if isinstance(self, ChirpDownloadDialog):
+                self.enable_model_select()
+            self.enable_running()
         wx.CallAfter(safe_fail)
 
     def cancel_action(self):
         if isinstance(self, ChirpDownloadDialog):
-            self._vendor.Enable()
-            self._model.Enable()
+            self.enable_model_select()
         self._port.Enable()
         s = chirp_common.Status()
         s.cur = 0
