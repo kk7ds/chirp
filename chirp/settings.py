@@ -310,12 +310,13 @@ class RadioSettingValueString(RadioSettingValue):
 
     def set_value(self, value):
         if len(value) < self._minlength or len(value) > self._maxlength:
-            raise InvalidValueError("Value must be between %i and %i chars" %
-                                    (self._minlength, self._maxlength))
+            raise InvalidValueError(
+                "Value %r must be between %i and %i chars" % (
+                    value, self._minlength, self._maxlength))
         for char in value:
             if char not in self._charset:
-                raise InvalidValueError("Value contains invalid " +
-                                        "character `%s'" % char)
+                raise InvalidValueError(("Value %r contains invalid "
+                                         "character `%s'") % (value, char))
         if self._autopad:
             value = value.ljust(self._maxlength)
         RadioSettingValue.set_value(self, value)
