@@ -127,6 +127,9 @@ class ID51Radio(id31.ID31Radio):
     def get_features(self):
         rf = super(ID51Radio, self).get_features()
         rf.valid_bands = [(108000000, 174000000), (400000000, 479000000)]
+        # The ID-51 D-STAR support seems broken, so disable getting settings
+        # that will contain the base-class call list support.
+        rf.has_settings = False
         return rf
 
     def process_mmap(self):
