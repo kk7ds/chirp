@@ -949,7 +949,9 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
         nice_name = listname.split('_', 1)[0].upper()
         group = RadioSettingGroup('%s_list' % listname,
                                   '%s List' % nice_name)
+        charset = chirp_common.CHARSET_UPPER_NUMERIC + '-'
         for i, cs in enumerate(current):
+            cs = ''.join(filter(lambda c: c in charset, cs))
             group.append(RadioSetting('%03i' % i, '%i' % i,
                                       RadioSettingValueString(0, 8, cs)))
         return group
