@@ -766,7 +766,12 @@ class IcomBankModel(chirp_common.BankModel):
         if index is None:
             return []
         else:
-            return [self.get_mappings()[index]]
+            try:
+                return [self.get_mappings()[index]]
+            except IndexError:
+                LOG.error('Invalid bank index %i for memory %i' % (
+                          index, memory.number))
+                return []
 
 
 class IcomIndexedBankModel(IcomBankModel,
