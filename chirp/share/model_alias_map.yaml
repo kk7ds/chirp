@@ -113,8 +113,6 @@ Baofeng/Pofung:
   model: UV-5G Plus
 - alt: BF-F8HP
   model: UV-5R HTQ
-- alt: UV-5R
-  model: UV-5R8W
 - alt: BF-F8HP
   model: UV-5R MK4, MK5
 - alt: UV-5R
@@ -124,7 +122,7 @@ Baofeng/Pofung:
 - alt: UV-5R
   model: UV-5R++
 - alt: BF-F8HP
-  model: UV-5R7W
+  model: UV-5R7W, UV-5R8W
 - alt: UV-5R
   model: UV-5RA, UV-5RA+, UV-5RAX, UV-5RAX+
 - alt: Radioddity UV-5RX3
