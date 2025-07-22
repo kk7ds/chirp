@@ -2034,7 +2034,8 @@ class RT29UHFRadio(RT21Radio):
                     chirp_common.PowerLevel("Low", watts=1.00)]
 
     _magic = b"PROHRAM"
-    _fingerprint = [b"P3207" + b"\x13\xF8\xFF", ]  # UHF model
+    _fingerprint = [b"P3207" + b"\x13\xF8\xFF",
+                    b"P3207s\xF8\xFF"]  # UHF model
     _upper = 16
     _skipflags = True
     _reserved = False
