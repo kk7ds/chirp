@@ -1902,6 +1902,46 @@ class BaofengUV5RGeneric(BaofengUV5R):
 
 
 @directory.register
+class BaofengUV5GPro(BaofengUV5R):
+    MODEL = "UV-5G Pro"
+    _airband = (108000000, 136000000)
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_bands = [(108000000, 174000000),
+                          (220000000, 260000000),
+                          (350000000, 390000000),
+                          (400000000, 520000000)]
+        rf.valid_modes.append('AM')
+        return rf
+
+    @classmethod
+    def match_model(cls, filename, filedata):
+        return False
+
+    def get_memory(self, number):
+        mem = super().get_memory(number)
+        if chirp_common.in_range(mem.freq, [self._airband]):
+            # UV-5G Pro is AM in 108-136 MHz range
+            mem.mode = 'AM'
+        elif mem.mode == 'AM':
+            mem.mode = 'FM'
+        return mem
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+        if (chirp_common.in_range(mem.freq, [self._airband]) and
+                not mem.mode == 'AM'):
+            msgs.append(chirp_common.ValidationWarning(
+                _('Frequency in this range requires AM mode')))
+        if (not chirp_common.in_range(mem.freq, [self._airband]) and
+                mem.mode == 'AM'):
+            msgs.append(chirp_common.ValidationWarning(
+                _('Frequency in this range must not be AM mode')))
+        return msgs
+
+
+@directory.register
 class BaofengF11Radio(BaofengUV5R):
     VENDOR = "Baofeng"
     MODEL = "F-11"
