@@ -662,7 +662,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
     """BTECH's UV-5001 and alike radios"""
     VENDOR = "BTECH"
     MODEL = ""
-    _block_size = 0x20  # Bug 11851 BLOCKSIZE fix for KT-8900D
+    _block_size = BLOCK_SIZE  # Bug 11851 should default to BLOCK_SIZE
     IDENT = ""
     BANDS = 2
     COLOR_LCD = False
