@@ -24,6 +24,7 @@ from chirp import (
     memmap,
     util,
 )
+from chirp.drivers import h777
 from chirp.settings import (
     MemSetting,
     RadioSettingGroup,
@@ -85,38 +86,6 @@ VOICE_LIST = ["Off", "English"]
 VOXD_LIST = ["0.5", "1.0", "1.5", "2.0", "2.5", "3.0"]
 
 
-def _enter_programming_mode(radio):
-    serial = radio.pipe
-
-    exito = False
-    for i in range(0, 5):
-        serial.write(radio._magic)
-        ack = serial.read(1)
-
-        try:
-            if ack == CMD_ACK:
-                exito = True
-                break
-        except Exception:
-            LOG.debug("Attempt #%s, failed, trying again" % i)
-            pass
-
-    # check if we had EXITO
-    if exito is False:
-        msg = "The radio did not accept program mode after five tries.\n"
-        msg += "Check you interface cable and power cycle your radio."
-        raise errors.RadioError(msg)
-
-    try:
-        serial.write(b"\x02")
-        serial.read(8)
-    except Exception:
-        raise errors.RadioError("Error communicating with radio")
-
-    serial.write(b"\x06")
-    serial.read(1)
-
-
 def _read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
@@ -157,7 +126,6 @@ def _write_block(radio, block_addr, block_size):
 
 def do_download(radio):
     LOG.debug("download")
-    _enter_programming_mode(radio)
 
     data = b""
 
@@ -184,7 +152,7 @@ def do_upload(radio):
     status = chirp_common.Status()
     status.msg = "Uploading to radio"
 
-    _enter_programming_mode(radio)
+    h777._h777_enter_single_programming_mode(radio)
 
     status.cur = 0
     status.max = radio._memsize
@@ -208,7 +176,7 @@ class H777V4BaseRadio(chirp_common.CloneModeRadio):
                     chirp_common.PowerLevel("High", watts=2.00)
                     ]
 
-    _magic = b"\x02" + b"C777HAM"
+    PROGRAM_CMD = b"C777HAM"
     _ranges = [
                (0x0000, 0x00EA),
               ]
@@ -260,6 +228,8 @@ class H777V4BaseRadio(chirp_common.CloneModeRadio):
         """Upload to radio"""
         try:
             do_upload(self)
+        except errors.RadioError:
+            raise
         except Exception:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
@@ -514,11 +484,13 @@ class H777V4BaseRadio(chirp_common.CloneModeRadio):
 
 
 @directory.register
+@directory.detected_by(h777.RetevisH777)
 class H777V4(H777V4BaseRadio):
     """RETEVIS H777V4"""
     VENDOR = "Retevis"
     MODEL = "H777"
     VARIANT = 'V4'
+    IDENT = [b'\x00' * 6, b'\xFF' * 6]
 
     # SKU #: A9294A (sold as FRS radio but supports full band TX/RX)
     # Serial #: 2412R777XXXXXXX
