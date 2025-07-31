@@ -25,10 +25,11 @@ from chirp import (
     util,
 )
 from chirp.settings import (
-    RadioSetting,
+    MemSetting,
     RadioSettingGroup,
     RadioSettings,
     RadioSettingValueBoolean,
+    RadioSettingValueInvertedBoolean,
     RadioSettingValueInteger,
     RadioSettingValueList,
 )
@@ -363,14 +364,14 @@ class H777V4BaseRadio(chirp_common.CloneModeRadio):
         mem.extra = RadioSettingGroup("Extra", "extra")
 
         # BCL (Busy Channel Lockout)
-        rs = RadioSettingValueBoolean(not bool(_mem.bcl))
-        rset = RadioSetting("bcl", "BCL", rs)
+        rs = RadioSettingValueInvertedBoolean(not bool(_mem.bcl))
+        rset = MemSetting("bcl", "BCL", rs)
         rset.set_doc("Busy Channel Lockout")
         mem.extra.append(rset)
 
         # Scramble
-        rs = RadioSettingValueBoolean(not bool(_mem.scramb))
-        rset = RadioSetting("scramb", "Scramble", rs)
+        rs = RadioSettingValueInvertedBoolean(not bool(_mem.scramb))
+        rset = MemSetting("scramb", "Scramble", rs)
         rset.set_doc("Frequency inversion Scramble")
         mem.extra.append(rset)
 
@@ -412,10 +413,8 @@ class H777V4BaseRadio(chirp_common.CloneModeRadio):
         _mem.unknown0 = 3
         _mem.unknown1 = 1
 
-        # extra settings are unfortunately inverted
         for setting in mem.extra:
-            LOG.debug("@set_mem: %s %s", setting.get_name(), setting.value)
-            setattr(_mem, setting.get_name(), not setting.value)
+            setting.apply_to_memobj(_mem)
 
     def get_settings(self):
         _settings = self._memobj.settings
@@ -424,116 +423,87 @@ class H777V4BaseRadio(chirp_common.CloneModeRadio):
 
         # Squelch
         rs = RadioSettingValueInteger(0, 9, _settings.squelch)
-        rset = RadioSetting("squelch", "Squelch", rs)
+        rset = MemSetting("squelch", "Squelch", rs)
         rset.set_doc("Squelch Level: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9")
         basic.append(rset)
 
         # Time Out Timer
         rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
                                    current_index=_settings.tot)
-        rset = RadioSetting("tot", "Time-out Timer", rs)
+        rset = MemSetting("tot", "Time-out Timer", rs)
         rset.set_doc("TX Time-out Timer: Off, 30, 60, 90, 120, 150," +
                      " 180 seconds")
         basic.append(rset)
 
         # Vox Level
         rs = RadioSettingValueList(OFF1TO9_LIST, current_index=_settings.vox)
-        rset = RadioSetting("vox", "VOX Level", rs)
+        rset = MemSetting("vox", "VOX Level", rs)
         rset.set_doc("VOX Level: Off, 1, 2, 3, 4, 5, 6, 7, 8, 9")
         basic.append(rset)
 
         # Vox Delay
         rs = RadioSettingValueList(VOXD_LIST,
                                    current_index=_settings.voxd)
-        rset = RadioSetting("voxd", "Vox Delay", rs)
+        rset = MemSetting("voxd", "Vox Delay", rs)
         rset.set_doc("VOX Delay: 0.5, 1.0, 1.5, 2.0, 2.5, 3.0 seconds")
         basic.append(rset)
 
         # Scan Mode
         rs = RadioSettingValueList(SCANM_LIST, current_index=_settings.scanm)
-        rset = RadioSetting("scanm", "Scan Mode", rs)
+        rset = MemSetting("scanm", "Scan Mode", rs)
         rset.set_doc("Scan Mode: Carrier, Time")
         basic.append(rset)
 
         # Voice Annunciation
         rs = RadioSettingValueList(VOICE_LIST,
                                    current_index=_settings.voice)
-        rset = RadioSetting("voice", "Voice", rs)
+        rset = MemSetting("voice", "Voice", rs)
         rset.set_doc("Voice Prompts: Off, English")
         basic.append(rset)
 
         # Side Key 2 (long)
         rs = RadioSettingValueList(SKEY2_LIST,
                                    current_index=_settings.skey2)
-        rset = RadioSetting("skey2", "Side Key 2", rs)
+        rset = MemSetting("skey2", "Side Key 2", rs)
         rset.set_doc("Side Key 2 (long press): Off, VOX, Power, Scan")
         basic.append(rset)
 
         # Code Switch
         rs = RadioSettingValueBoolean(_settings.codesw)
-        rset = RadioSetting("codesw", "Code Switch", rs)
+        rset = MemSetting("codesw", "Code Switch", rs)
         rset.set_doc("Code Switch: Off, Enabled")
         basic.append(rset)
 
         # Battery Save
         rs = RadioSettingValueBoolean(_settings.save)
-        rset = RadioSetting("save", "Battery Save", rs)
+        rset = MemSetting("save", "Battery Save", rs)
         rset.set_doc("Battery Save: Off, Enabled")
         basic.append(rset)
 
         # Beep Tone
         rs = RadioSettingValueBoolean(_settings.beep)
-        rset = RadioSetting("beep", "Beep", rs)
+        rset = MemSetting("beep", "Beep", rs)
         rset.set_doc("Beep Prompt: Off, Enabled")
         basic.append(rset)
 
         # VOX Switch
         rs = RadioSettingValueBoolean(_settings.voxs)
-        rset = RadioSetting("voxs", "VOX Switch", rs)
+        rset = MemSetting("voxs", "VOX Switch", rs)
         rset.set_doc("VOX Switch: Off, Enabled")
         basic.append(rset)
 
         # Roger
         rs = RadioSettingValueBoolean(_settings.roger)
-        rset = RadioSetting("roger", "Roger", rs)
+        rset = MemSetting("roger", "Roger", rs)
         rset.set_doc("Roger: Off, Enabled")
         basic.append(rset)
 
         return group
 
     def set_settings(self, settings):
-        _settings = self._memobj.settings
-        for element in settings:
-            if not isinstance(element, RadioSetting):
-                self.set_settings(element)
-                continue
-            else:
-                try:
-                    name = element.get_name()
-                    if "." in name:
-                        bits = name.split(".")
-                        obj = self._memobj
-                        for bit in bits[:-1]:
-                            if "/" in bit:
-                                bit, index = bit.split("/", 1)
-                                index = int(index)
-                                obj = getattr(obj, bit)[index]
-                            else:
-                                obj = getattr(obj, bit)
-                        setting = bits[-1]
-                    else:
-                        obj = _settings
-                        setting = element.get_name()
-
-                    if element.has_apply_callback():
-                        LOG.debug("Using apply callback")
-                        element.run_apply_callback()
-                    elif element.value.get_mutable():
-                        LOG.debug("Setting %s = %s" % (setting, element.value))
-                        setattr(obj, setting, element.value)
-                except Exception:
-                    LOG.debug(element.get_name())
-                    raise
+        others = settings.apply_to(self._memobj.settings)
+        if others:
+            LOG.error('Did not apply %s' % others)
 
     @classmethod
     def match_model(cls, filedata, filename):
