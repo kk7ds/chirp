@@ -320,6 +320,9 @@ class H777V4BaseRadio(chirp_common.CloneModeRadio):
         _toneval[0].set_raw(toneval & 0xFF)
         _toneval[1].set_raw((toneval >> 8) & 0xFF)
 
+    def get_raw_memory(self, number):
+        return repr(self._memobj.memory[number - 1])
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
 
