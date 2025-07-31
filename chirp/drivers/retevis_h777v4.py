@@ -380,11 +380,9 @@ class H777V4BaseRadio(chirp_common.CloneModeRadio):
     def set_memory(self, mem):
         _mem = self._memobj.memory[mem.number - 1]
 
+        _mem.set_raw(b"\xff" * 13)
         if mem.empty:
-            _mem.set_raw("\xff" * 13)
             return
-
-        _mem.set_raw("\xff" * 13)
 
         _mem.rxfreq = mem.freq / 10
         if mem.duplex == "off":
