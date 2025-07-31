@@ -24,6 +24,7 @@ from chirp import (
     memmap,
     util,
 )
+from chirp.drivers import h777
 from chirp.settings import (
     MemSetting,
     RadioSettingGroup,
@@ -157,7 +158,6 @@ def _write_block(radio, block_addr, block_size):
 
 def do_download(radio):
     LOG.debug("download")
-    _enter_programming_mode(radio)
 
     data = b""
 
@@ -208,7 +208,7 @@ class H777V4BaseRadio(chirp_common.CloneModeRadio):
                     chirp_common.PowerLevel("High", watts=2.00)
                     ]
 
-    _magic = b"\x02" + b"C777HAM"
+    PROGRAM_CMD = b"C777HAM"
     _ranges = [
                (0x0000, 0x00EA),
               ]
@@ -514,10 +514,12 @@ class H777V4BaseRadio(chirp_common.CloneModeRadio):
 
 
 @directory.register
+@directory.detected_by(h777.RetevisH777)
 class H777V4(H777V4BaseRadio):
     """RETEVIS H777V4"""
     VENDOR = "Retevis"
     MODEL = "H777-V4"
+    IDENT = [b'\x00' * 6, b'\xFF' * 6]
 
     # SKU #: A9294A (sold as FRS radio but supports full band TX/RX)
     # Serial #: 2412R777XXXXXXX
