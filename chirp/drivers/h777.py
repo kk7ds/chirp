@@ -102,15 +102,14 @@ DTCS_FLAG = 0x80
 DTCS_REV_FLAG = 0x40
 
 
-def _h777_enter_programming_mode(radio):
-    serial = radio.pipe
+def _h777_enter_programming_mode(serial, radio_cls):
     # increase default timeout from .25 to .5 for all serial communications
     serial.timeout = 0.5
 
     try:
         serial.write(b"\x02")
         time.sleep(0.1)
-        serial.write(radio.PROGRAM_CMD)
+        serial.write(radio_cls.PROGRAM_CMD)
         ack = serial.read(1)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -132,7 +131,7 @@ def _h777_enter_programming_mode(radio):
 
     # check if ident is OK
     itis = False
-    for fp in radio.IDENT:
+    for fp in radio_cls.IDENT:
         if fp in ident:
             # got it!
             itis = True
@@ -210,7 +209,6 @@ def _h777_write_block(radio, block_addr, block_size):
 
 def do_download(radio):
     LOG.debug("download")
-    _h777_enter_programming_mode(radio)
 
     data = b""
 
@@ -239,7 +237,7 @@ def do_upload(radio):
     status = chirp_common.Status()
     status.msg = "Uploading to radio"
 
-    _h777_enter_programming_mode(radio)
+    _h777_enter_programming_mode(radio.pipe, radio.__class__)
 
     status.cur = 0
     status.max = radio._memsize
@@ -283,11 +281,6 @@ class TenwayTW325Alias(chirp_common.Alias):
     MODEL = 'TW-325'
 
 
-class RetevisH777Alias(chirp_common.Alias):
-    VENDOR = 'Retevis'
-    MODEL = 'H777'
-
-
 @directory.register
 class H777Radio(chirp_common.CloneModeRadio):
     """HST H-777"""
@@ -305,7 +298,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     VALID_BANDS = (400000000, 490000000)
     MAX_VOXLEVEL = 5
     ALIASES = [ArcshellAR5, ArcshellAR6, GV8SAlias, GV9SAlias, A8SAlias,
-               TenwayTW325Alias, RetevisH777Alias]
+               TenwayTW325Alias]
     SIDEKEYFUNCTION_LIST = ["Off", "Monitor", "Transmit Power", "Alarm"]
     SCANMODE_LIST = ["Carrier", "Time"]
 
@@ -618,6 +611,31 @@ class H777Radio(chirp_common.CloneModeRadio):
                 except Exception:
                     LOG.debug(element.get_name())
                     raise
+
+
+@directory.register
+class RetevisH777(H777Radio):
+    VENDOR = 'Retevis'
+    MODEL = 'H777'
+    ALIASES = []
+
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        for rclass in cls.detected_models():
+            try:
+                _h777_enter_programming_mode(pipe, cls)
+                LOG.debug('Detected %s', rclass.__name__)
+                return rclass
+            except errors.RadioError as e:
+                LOG.warning('Failed to enter programming mode as %s',
+                            rclass.__name__)
+                time.sleep(1)
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This radio has always been post-metadata, so never do
+        # old-school detection
+        return False
 
 
 class H777TestCase(unittest.TestCase):
