@@ -1518,16 +1518,16 @@ msgstr ""
 #: ../drivers/ga510.py:1072 ../drivers/baofeng_uv17Pro.py:1244
 #: ../drivers/tdh8.py:2609 ../drivers/mml_jc8810.py:1393
 msgid "Frequency in this range must not be AM mode"
-msgstr ""
+msgstr "Częstotliwość w tym zakresie nie może używać trybu AM"
 
 #: ../drivers/ga510.py:1065 ../drivers/baofeng_uv17Pro.py:1240
 #: ../drivers/tdh8.py:2606 ../drivers/mml_jc8810.py:1390
 msgid "Frequency in this range requires AM mode"
-msgstr ""
+msgstr "Częstotliwość w tym zakresie musi używać trybu AM"
 
 #: ../drivers/tdh8.py:2613
 msgid "Frequency outside TX bands must be duplex=off"
-msgstr ""
+msgstr "Częstotliwość poza pasmami TX musi używać duplex=off"
 
 #: ../wxui/query_sources.py:354 ../wxui/query_sources.py:434
 #: ../wxui/query_sources.py:534
@@ -1595,7 +1595,7 @@ msgstr "Importuj z pliku..."
 
 #: ../wxui/main.py:1482
 msgid "Import messages"
-msgstr ""
+msgstr "Importuj wiadomości"
 
 #: ../wxui/main.py:1476
 msgid "Import not recommended"
@@ -1749,15 +1749,15 @@ msgstr "Lokator"
 
 #: ../wxui/bugreport.py:326
 msgid "Login failed: Check your username and password"
-msgstr ""
+msgstr "Błąd logowania: Sprawdź nazwę użytkownika i hasło"
 
 #: ../drivers/uvk5.py:1799
 msgid "Logo string 1 (12 characters)"
-msgstr ""
+msgstr "Napis powitalny 1 (12 znaków)"
 
 #: ../drivers/uvk5.py:1806
 msgid "Logo string 2 (12 characters)"
-msgstr ""
+msgstr "Napis powitalny 2 (12 znaków)"
 
 #: ../wxui/query_sources.py:97 ../wxui/query_sources.py:374
 #: ../wxui/query_sources.py:673 ../wxui/query_sources.py:825
@@ -1767,7 +1767,7 @@ msgstr "Długość geograficzna"
 #: ../wxui/memedit.py:1955
 #, python-format
 msgid "Manual edit of memory %i"
-msgstr ""
+msgstr "Ręczna edycja pamięci %i"
 
 #: ../wxui/main.py:202
 msgid "Memories"
@@ -1775,7 +1775,7 @@ msgstr "Pamięci"
 
 #: ../drivers/uvk5.py:2118
 msgid "Memories are read-only due to unsupported firmware version"
-msgstr ""
+msgstr "Pamięć tylko do odczytu z powodu nie wspieranej wersji firmware"
 
 #: ../wxui/memedit.py:1984
 #, python-format
@@ -1960,7 +1960,7 @@ msgstr "Otwórz w nowym oknie"
 
 #: ../wxui/query_sources.py:401
 msgid "Open repeaters only"
-msgstr ""
+msgstr "Otórz tylko przemienniki"
 
 #: ../wxui/main.py:648
 msgid "Open stock config directory"
@@ -2021,7 +2021,7 @@ msgstr "Parsowanie"
 
 #: ../wxui/bugreport.py:259
 msgid "Password"
-msgstr ""
+msgstr "Hasło"
 
 #: ../wxui/memedit.py:2120
 msgid "Paste"
@@ -2140,12 +2140,12 @@ msgstr "Właściwości"
 #: ../wxui/memquery.py:139
 #, fuzzy
 msgid "Property Name"
-msgstr "Właściwości"
+msgstr "Nazwa"
 
 #: ../wxui/memquery.py:147
 #, fuzzy
 msgid "Property Value"
-msgstr "Właściwości"
+msgstr "Wartość"
 
 #: ../wxui/query_sources.py:831
 msgid "QTH Locator"
@@ -2162,7 +2162,7 @@ msgstr "Źródło zapytań"
 
 #: ../wxui/memquery.py:330
 msgid "Query string is invalid"
-msgstr ""
+msgstr "Błędne zapytanie"
 
 #: ../wxui/memquery.py:186
 #, fuzzy
@@ -2261,11 +2261,11 @@ msgstr ""
 
 #: ../wxui/clone.py:616
 msgid "Remove"
-msgstr ""
+msgstr "Usuń"
 
 #: ../wxui/clone.py:617
 msgid "Remove selected model from list"
-msgstr ""
+msgstr "Usuń wybrany model z listy"
 
 #: ../wxui/bankedit.py:205
 msgid "Rename bank"
@@ -2340,7 +2340,7 @@ msgstr ""
 
 #: ../drivers/uvk5.py:893
 msgid "Scanlists"
-msgstr ""
+msgstr "Lista skanowania"
 
 #: ../drivers/uvk5.py:889 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
@@ -2548,7 +2548,7 @@ msgstr "Rekomendowaną procedurą do importowania pamięci jest otworzenie pliku
 
 #: ../wxui/memedit.py:2146
 msgid "This Memory"
-msgstr "Tą pamięć"
+msgstr "Tę pamięć"
 
 #: ../drivers/id5100.py:332
 msgid "This driver has been tested with v3 of the ID-5100. If your radio is not fully updated please help by opening a bug report with a debug log so we can add support for the other revisions."
@@ -2602,11 +2602,11 @@ msgstr ""
 
 #: ../wxui/memedit.py:2150
 msgid "This memory and shift all up"
-msgstr "Tą pamięć i przeusń wszystkie wyżej"
+msgstr "Tę pamięć i przeusń wszystkie wyżej"
 
 #: ../wxui/memedit.py:2148
 msgid "This memory and shift block up"
-msgstr "Tą pamięć i przesuń blok wyżej"
+msgstr "Tę pamięć i przesuń blok wyżej"
 
 #: ../drivers/uvk5_egzumer.py:1468
 msgid "This option may break your radio! Each radio has a unique set of calibration data and uploading the data from the image will cause physical harm to the radio if it is from a different piece of hardware. Do not use this unless you know what you are doing and accept the risk of destroying your radio!"
@@ -3068,7 +3068,7 @@ msgstr "{bank} jest pełny"
 #~ msgstr "Plik ICF nie może być edytowany, może być wyświetlany oraz importowany do innego pliku.Otworzyć w trybie do odczytu?"
 
 #~ msgid "If you wish to disable this feature you may do so in the <u>Help</u> menu"
-#~ msgstr "Jeśli chcesz wyłączyć tą funkcję możesz to zrobić w menu <u>Pomoc</>"
+#~ msgstr "Jeśli chcesz wyłączyć tę funkcję możesz to zrobić w menu <u>Pomoc</>"
 
 #~ msgid "Import from RepeaterBook"
 #~ msgstr "Importuj z RepeaterBook"
