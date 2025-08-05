@@ -295,9 +295,9 @@ FMMAX = 108.0
 # bands supported by the UV-K5
 BANDS = {
         0: [50.0, 76.0],
-        1: [108.0, 135.9999],
-        2: [136.0, 199.9990],
-        3: [200.0, 299.9999],
+        1: [108.0, 136.9999],
+        2: [137.0, 173.9999],
+        3: [174.0, 349.9999],
         4: [350.0, 399.9999],
         5: [400.0, 469.9999],
         6: [470.0, 600.0]
@@ -306,9 +306,9 @@ BANDS = {
 # for radios with modified firmware:
 BANDS_NOLIMITS = {
         0: [18.0, 76.0],
-        1: [108.0, 135.9999],
-        2: [136.0, 199.9990],
-        3: [200.0, 299.9999],
+        1: [108.0, 136.9999],
+        2: [137.0, 173.9999],
+        3: [174.0, 349.9999],
         4: [350.0, 399.9999],
         5: [400.0, 469.9999],
         6: [470.0, 1300.0]
@@ -737,7 +737,8 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
     # Return a raw representation of the memory object, which
     # is very helpful for development
     def get_raw_memory(self, number):
-        return repr(self._memobj.channel[number-1])
+        return '\n'.join([repr(self._memobj.channel[number-1]),
+                          repr(self._memobj.channel_attributes[number-1])])
 
     def _find_band(self, hz):
         return _find_band(self._expanded_limits, hz)
