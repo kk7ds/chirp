@@ -597,7 +597,7 @@ class RA25UVRadio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         mem.extra.append(rs)
 
         rstype = RadioSettingValueBoolean(_mem.nc)
-        rs = RadioSetting("nc", "Noise Cancelation", rstype)
+        rs = RadioSetting("nc", "Noise Cancellation", rstype)
         mem.extra.append(rs)
 
         tid_options = ['Off', 'Begin', 'End', "Both"]
