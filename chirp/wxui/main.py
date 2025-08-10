@@ -1718,14 +1718,15 @@ class ChirpMain(wx.Frame):
         else:
             d = clone.ChirpUploadDialog(radio, self)
 
-        d.Centre()
-        r = d.ShowModal()
-        if r != wx.ID_OK:
-            LOG.info('Removing un-uploaded backup %s', fn)
-            try:
-                os.remove(fn)
-            except Exception:
-                pass
+        with d:
+            d.Centre()
+            r = d.ShowModal()
+            if r != wx.ID_OK:
+                LOG.info('Removing un-uploaded backup %s', fn)
+                try:
+                    os.remove(fn)
+                except Exception:
+                    pass
 
     @common.error_proof()
     def _menu_reload_driver(self, event, andfile=False):
