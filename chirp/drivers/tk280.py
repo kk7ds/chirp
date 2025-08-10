@@ -68,7 +68,7 @@ def choose_step(step_map, freq, default=5.0):
         step = chirp_common.required_step(freq, step_map.keys())
     except errors.InvalidDataError:
         step = default
-        LOG.warning('Frequency %s requires step not in availble map, '
+        LOG.warning('Frequency %s requires step not in available map, '
                     'using %s kHz by default',
                     chirp_common.format_freq(freq), step)
     return step_map[step]

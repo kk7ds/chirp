@@ -337,8 +337,8 @@ TONES = [
 
 DUPLEX = ["", "+", "-", "split", "off"]
 
-# Valid values for programable keys.
-# Hex numbers are used for unkown functions.
+# Valid values for programmable keys.
+# Hex numbers are used for unknown functions.
 KEY_FUNC = [
     "Null",
     "CH Up",
@@ -493,7 +493,7 @@ AUDIO_FILTER_VALUES = [
     ]
 
 # Valid values for Mic Gain.
-# Hex numbers are used for unkown functions.
+# Hex numbers are used for unknown functions.
 MIC_GAIN_FUNC = [
     "0x00",
     "1 Min",
@@ -544,7 +544,7 @@ SCRAMBLER_GCODE_VALUES = [
     ]
 
 # Valid values for Scrambler Synchronous Capture.
-# Hex numbers are used for unkown functions.
+# Hex numbers are used for unknown functions.
 SYN_CAPTURE_FUNC = [
     "Standard",
     "0x01",
@@ -797,7 +797,7 @@ class ICF621_2Radio(icf.IcomCloneModeRadio):
         memory.extra = RadioSettingGroup('extra', 'Extra')
 
         # Mask (Don't display) channel on radio.
-        # This is refered as Inhibit in the CS-F500 software.
+        # This is referred as Inhibit in the CS-F500 software.
         _disp_inhibit = RadioSetting(
             "disp_inhibit", "Mask",
             RadioSettingValueList(
