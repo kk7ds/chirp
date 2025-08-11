@@ -676,7 +676,7 @@ class H777TestCase(unittest.TestCase):
     def setUp(self):
         self.driver = H777Radio(None)
         self.testdata = bitwise.parse("lbcd foo[2];",
-                                      memmap.MemoryMap("\x00\x00"))
+                                      memmap.MemoryMapBytes("\x00\x00"))
 
     def test_decode_tone_dtcs_normal(self):
         mode, value, pol = self.driver._decode_tone(8023)
