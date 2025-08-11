@@ -78,9 +78,9 @@ BF1900_SETTINGS2 = """
 #seekto 0x0250;
 struct {
     u8 stun_code[7];
-    u8 unused[1];
+    u8 unused1[1];
     u8 kill_code[7];
-    u8 unused[1];
+    u8 unused2[1];
 } stunkillsettings;
 
 #seekto 0x03C0;
@@ -527,7 +527,7 @@ class H777Radio(chirp_common.CloneModeRadio):
                               current_index=_settings.voicelanguage))
         basic.append(rs)
 
-        if self._has_scan:
+        if self.PROGRAM_CMD == b'PROGRAM':
             rs = RadioSetting("scan", "Scan",
                               RadioSettingValueBoolean(_settings.scan))
             basic.append(rs)
@@ -787,7 +787,6 @@ class BF1901Radio(H777Radio):
 
     _has_fm = True
     _has_sidekey = False
-    _has_scan = False
     _has_scanmodes = True
     _has_scramble = False
 
