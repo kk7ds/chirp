@@ -278,8 +278,6 @@ struct {
      unk17:4;             //        Has flags to do with logging - factory
                           //        enabled (bits 16,64,128)
   u8 unk18;               // 0x1173
-                          //        No Ctc/Dcs Signaling' checkbox
-  u8 unk9;                // 0x1173
   u8 swAudio : 1,         // 0x1174 [19] *OFF, On
      radioMoni : 1,       //        [34] *OFF, On
      keylock : 1,         //        [18] *OFF, On
