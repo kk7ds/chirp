@@ -1125,7 +1125,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                    'Unknown 7', 'Unknown 8', 'Unknown 9', 'Unknown 10',
                    'Unknown 11', 'Unknown 12', 'Factory']
         # log unknown region codes greater than 4 and less than 15
-        # codes for Canada and Malaysia (?) exist, need to be determined
+        # codes for Canada and Taiwan exist, need to be determined
         if _settings2.region > 4 and _settings2.region < 15:
             LOG.debug("Unknown region code: {value}".
                       format(value=_settings2.region))
