@@ -232,67 +232,70 @@ struct {
      sideKey1:4;          //        side key 1
   u8 sideKey2_long:4,     // 0x1161 side key 2 Long
      sideKey1_long:4;     //        side key 1 Long
-  u8 unknown1;            //
+  u8 unk1;                //
   u8 dwchan;              // 0x1163 Dual Wait channel select, P2/62 only
-  u8 unk16:4,             //
+  u8 unk2:4,              //
      hndTm:4;             // 0x1164 Hand Time seconds, P2/62 only
-  u8 unknown4;            // 0x1165
-  u8 unknown5;            // 0x1166
-  u8 unknown6;            // 0x1167
-  u8 unknown7;            // 0x1168
-  u8 unknown8;            // 0x1169
-  u8 unk17:4,             //
+  u8 unk3;                // 0x1165
+  u8 unk4;                // 0x1166
+  u8 unk5;                // 0x1167
+  u8 unk6;                // 0x1168
+  u8 unk7;                // 0x1169
+  u8 unk8:4,              //
      micLev:4;            // 0x116A Mic Gain, 1-8, RA89 only
   u8 manDownTm:4,         // 0x116B manDown Tm
-     unk15:3,             //
+     unk9:3,              //
      manDownSw:1;         //        manDown Sw
   u8 offFreqVoltage : 3,  // 0x116C unknown referred to in code but not on
                           //        screen
-     unk1:1,              //
+     unk10:1,             //
      sqlLevel : 4;        //        [05] *OFF, 1-9
   u8 beep : 1,            // 0x116D [09] *OFF, On
      callKind : 2,        //        code says 1750,2100,1000,1450 as options
                           //        not on screen
      introScreen: 2,      //        [20] *OFF, Voltage, Char String
-     unk2:1,              //
+     unk11:1,             //
      txChSelect : 2;      //        [02] *Main CH, Last CH, Active CH+Hand Time
                           //        (P2/P62 only)
   u8 autoPowOff : 3,      // 0x116E not on screen? OFF, 30Min, 1HR, 2HR
-     unk3:1,              //
+     unk12:1,             //
      tot : 4;             //        [11] *OFF, 30 Second, 60 Second, 90 Second,
                           //              ... , 270 Second
-  u8 unk4:1,              // 0x116F
+  u8 unk13:1,             // 0x116F
      roger:1,             //        [14] *OFF, On
      dailDef:1,           //        Unknown - 'Volume, Frequency'
      language:1,          //        English only
      endToneElim:2,       //        *Frequency, 120, 180, 240 (RA89)
-     unk5:1,              //
-     unk6:1;              //
+     unk14:1,             //
+     unk15:1;             //
   u8 scanType: 2,         // 0x1170 [17] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
      disMode : 2,         //        [33] *Frequency, Channel, Name
      ledMode: 4;          //        [07] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
-  u8 unk7;                // 0x1171
-  u8 unk8;                // 0x1172 Has flags to do with logging - factory
+  u8 unk16;               // 0x1171
+  u8 elimTailnoSq:4,      // 0x1172 *OFF, On 'Eliminate Squelch Tail When
+                          //        No Ctc/Dcs Signaling' checkbox
+                          //        Toggles between 0x0 and 0x4
+     unk17:4;             //        Has flags to do with logging - factory
                           //        enabled (bits 16,64,128)
-                          //        *OFF, On 'Eliminate Squelch Tail When
+  u8 unk18;               // 0x1173
                           //        No Ctc/Dcs Signaling' checkbox
   u8 unk9;                // 0x1173
   u8 swAudio : 1,         // 0x1174 [19] *OFF, On
      radioMoni : 1,       //        [34] *OFF, On
      keylock : 1,         //        [18] *OFF, On
      dualWait : 1,        //        [06] *OFF, On
-     unk10:1,             //
+     unk19:1,             //
      light : 3;           //        [08] *1, 2, 3, 4, 5, 6, 7
   u8 voxSw : 1,           // 0x1175 [13] *OFF, On
      voxDelay: 4,         //        *0.5S, 1.0S, 1.5S, 2.0S, 2.5S, 3.0S, 3.5S,
                           //         4.0S, 4.5S, 5.0S
      voxLevel : 3;        //        [03] *1, 2, 3, 4, 5, 6, 7
-  u8 unk11:4,             // 0x1176
+  u8 unk20:4,             // 0x1176
      saveMode : 2,        //        [16] *OFF, 1:1, 1:2, 1:4
      keyMode : 2;         //        [32] *ALL, PTT, KEY, Key & Side Key
-  u8 unk12;               // 0x1177
-  u8 unk13;               // 0x1178
-  u8 unk14;               // 0x1179
+  u8 unk21;               // 0x1177
+  u8 unk22;               // 0x1178
+  u8 unk23;               // 0x1179
   u8 name2[6];            // 0x117A unused
 } basicsettings;
 """
