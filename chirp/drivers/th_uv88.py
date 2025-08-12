@@ -234,14 +234,15 @@ struct {
      sideKey1_long:4;     //        side key 1 Long
   u8 unknown1;            //
   u8 dwchan;              // 0x1163 Dual Wait channel select, P2/62 only
-  u8 unk1:4,              //
+  u8 unk16:4,             //
      hndTm:4;             // 0x1164 Hand Time seconds, P2/62 only
   u8 unknown4;            // 0x1165
   u8 unknown5;            // 0x1166
   u8 unknown6;            // 0x1167
   u8 unknown7;            // 0x1168
   u8 unknown8;            // 0x1169
-  u8 micLev;              // 0x116A Mic Gain, 1-8, RA89 only
+  u8 unk17:4,             //
+     micLev:4;            // 0x116A Mic Gain, 1-8, RA89 only
   u8 manDownTm:4,         // 0x116B manDown Tm
      unk15:3,             //
      manDownSw:1;         //        manDown Sw
