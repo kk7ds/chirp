@@ -410,7 +410,7 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
         if mem.extd_number == "":
             mem.name = str(_mem.name).rstrip()
             mem.skip = (_skip & bit) and "S" or ""
-        if _mem.tx_inhibit:
+        if not _mem.tx_inhibit:
             mem.duplex = 'off'
         else:
             mem.duplex = DUPLEXES[_mem.duplex]
@@ -497,6 +497,7 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
             _mem.duplex = DUPLEXES.index(mem.duplex)
         except ValueError:
             _mem.duplex = 0
+        _mem.tx_inhibit = mem.duplex != 'off'
         power = mem.power or POWER_LEVELS[0]
         _mem.power = POWER_LEVELS.index(power)
         _mem.tuning_step = TUNING_STEPS.index(mem.tuning_step)
@@ -506,7 +507,6 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
         _mem.ctone = chirp_common.TONES.index(mem.ctone)
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.dtcs_polarity = DTCS_POLARITY.index(mem.dtcs_polarity)
-        _mem.tx_inhibit = mem.duplex == 'off'
 
         # Set used
         _unused &= ~bit
