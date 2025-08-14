@@ -256,6 +256,8 @@ class UV17Pro(bfc.BaofengCommonHT):
     _has_send_id_delay = False
     _has_skey1_short = False
     _has_skey2_short = False
+    _has_skey_disable = False
+    _has_zone_linking = False
     _scode_offset = 0
     _encrsym = 1
     _has_voice = True
@@ -295,6 +297,7 @@ class UV17Pro(bfc.BaofengCommonHT):
     VALID_BANDS = [_vhf_range, _vhf2_range,
                    _uhf_range]
     PTTID_LIST = LIST_PTTID
+    RXDTMF_LIST = ["CTCSS/DTS", "CTCSS/DCS + DTMF"]
     SCODE_LIST = ["%s" % x for x in range(1, 21)]
     SQUELCH_LIST = ["Off"] + list("12345")
     SCRAMBLE_LIST = ["Off"] + ["SCR%s" % x for x in list("123")]
@@ -791,7 +794,8 @@ class UV17Pro(bfc.BaofengCommonHT):
                             0x1D: 2,
                             0x2D: 3,
                             0x0A: 4,
-                            0x0C: 5}
+                            0x0C: 5,
+                            0x34: 6}
             return key_to_index.get(int(value), 0)
 
         def apply_Key1short(setting, obj):
@@ -801,7 +805,8 @@ class UV17Pro(bfc.BaofengCommonHT):
                             'Search': 0x1D,
                             'Vox': 0x2D,
                             'TX Power': 0x0A,
-                            'NOAA': 0x0C}
+                            'NOAA': 0x0C,
+                            'Zone Select': 0x34}
             obj.key1short = key_to_index.get(val, 0x07)
 
         def getKey2shortIndex(value):
@@ -810,7 +815,8 @@ class UV17Pro(bfc.BaofengCommonHT):
                             0x1D: 2,
                             0x2D: 3,
                             0x0A: 4,
-                            0x0C: 5}
+                            0x0C: 5,
+                            0x34: 6}
             return key_to_index.get(int(value), 0)
 
         def apply_Key2short(setting, obj):
@@ -820,7 +826,8 @@ class UV17Pro(bfc.BaofengCommonHT):
                             'Search': 0x1D,
                             'Vox': 0x2D,
                             'TX Power': 0x0A,
-                            'NOAA': 0x0C}
+                            'NOAA': 0x0C,
+                            'Zone Select': 0x34}
             obj.key2short = key_to_index.get(val, 0x07)
 
         if self._has_skey1_short:
@@ -839,6 +846,13 @@ class UV17Pro(bfc.BaofengCommonHT):
                                 current_index=getKey2shortIndex(
                                         _mem.settings.key2short)))
             rs.set_apply_callback(apply_Key2short, _mem.settings)
+            basic.append(rs)
+
+        if self._has_skey_disable:
+            rs = RadioSetting("settings.skdisable", "Side Key Disable",
+                              RadioSettingValueList(
+                                  self.LIST_SKEY_DISABLE,
+                                  current_index=_mem.settings.skdisable))
             basic.append(rs)
 
         rs = RadioSetting("settings.chaworkmode", "Channel A work mode",
@@ -912,6 +926,18 @@ class UV17Pro(bfc.BaofengCommonHT):
         rs = RadioSetting("settings.fmenable", "Disable FM radio",
                           RadioSettingValueBoolean(_mem.settings.fmenable))
         basic.append(rs)
+
+        if self._has_zone_linking:
+            for i in range(1, 11):
+                rs = RadioSetting(f"settings.zn{i}linkd",
+                                  f"Scan Link Zone {i}",
+                                  RadioSettingValueBoolean(getattr(
+                                      _mem.settings, f"zn{i}linkd")))
+                basic.append(rs)
+
+            rs = RadioSetting("settings.lnkzones", "Scan Zone Linking",
+                              RadioSettingValueBoolean(_mem.settings.lnkzones))
+            basic.append(rs)
 
     def get_settings_common_workmode(self, workmode, _mem):
 
@@ -1345,7 +1371,18 @@ class UV17Pro(bfc.BaofengCommonHT):
                                                 current_index=scode))
         mem.extra.append(rs)
 
-        if self.MODEL in ["BF-F8HP-PRO", "K6"]:
+        if self.MODEL in ["BF-F8HP-PRO"]:
+            rs = RadioSetting("sqmode", "RX DTMF",
+                              RadioSettingValueList(
+                                  self.RXDTMF_LIST,
+                                  current_index=_mem.sqmode))
+            mem.extra.append(rs)
+
+            rs = RadioSetting("fhss", "Encryption",
+                              RadioSettingValueBoolean(_mem.fhss))
+            mem.extra.append(rs)
+
+        if self.MODEL == "K6":
             rs = RadioSetting("sqmode", "RX DTMF",
                               RadioSettingValueBoolean(_mem.sqmode))
             mem.extra.append(rs)
@@ -1354,7 +1391,6 @@ class UV17Pro(bfc.BaofengCommonHT):
                               RadioSettingValueBoolean(_mem.fhss))
             mem.extra.append(rs)
 
-        if self.MODEL == "K6":
             rs = RadioSetting("scramble", "Scramble",
                               RadioSettingValueList(
                                   self.SCRAMBLE_LIST,
@@ -1581,7 +1617,7 @@ class F8HPPro(UV17Pro):
 
     # ==========
     # Notice to developers:
-    # The BF-F8HP-PRO support in this driver is currently based upon v0.33
+    # The BF-F8HP-PRO support in this driver is currently based upon v0.44
     # firmware.
     # ==========
 
@@ -1592,11 +1628,14 @@ class F8HPPro(UV17Pro):
                 b"\x12\x0A\x11\x06\x04\x0E\x02\x09\x0D\x00\x00", 1)]
     _encrsym = 3
 
-    STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0, 100.0]
+    STEPS = [2.5, 5.0, 6.25, 8.33, 10.0, 12.5, 20.0, 25.0, 50.0, 100.0]
     LIST_STEPS = ["2.5", "5.0", "6.25", "10.0", "12.5", "20.0", "25.0", "50.0",
                   "100.0"]
 
-    VALID_BANDS = [UV17Pro._airband, UV17Pro._vhf_range, UV17Pro._vhf2_range,
+    _airband = (108000000, 136999999)
+    _vhf_range = (137000000, 174000000)
+
+    VALID_BANDS = [_airband, _vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=8.00),
                     chirp_common.PowerLevel("Low",  watts=1.00),
@@ -1609,8 +1648,11 @@ class F8HPPro(UV17Pro):
     LIST_BACKLIGHT_TIMER = ["Always On", "5 sec", "10 sec", "15 sec",
                             "20 sec", "30 sec", "60 sec"]
     LIST_ID_DELAY = ["%s ms" % x for x in range(100, 3100, 100)]
-    LIST_SKEY2_SHORT = ["FM", "Scan", "Search", "Vox", "TX Power", "NOAA"]
+    LIST_SKEY2_SHORT = ["FM", "Scan", "Search", "Vox", "TX Power", "NOAA",
+                        "Zone Select"]
     MODES = UV17Pro.MODES + ['AM']
+    SQUELCH_LIST = ["Off"] + list("12345678")
+    LIST_SKEY_DISABLE = ["Off", "SK Only", "PTT Only", "SK + PTT"]
 
     _has_support_for_banknames = True
     _vfoscan = True
@@ -1620,8 +1662,10 @@ class F8HPPro(UV17Pro):
     _has_send_id_delay = True
     _has_skey1_short = True
     _has_skey2_short = True
+    _has_skey_disable = True
     _has_voice = False
     _has_when_to_send_aniid = False
+    _has_zone_linking = True
 
     MEM_STARTS = [0x0000, 0x9000, 0xA000, 0xD000]
     MEM_SIZES = [0x8040, 0x0080, 0x02C0, 0x00C0]
@@ -1672,9 +1716,20 @@ class F8HPPro(UV17Pro):
       u8 menuquittime;
       u8 unknown5[2];
       u8 dispani;
-      u8 unknown11[3];
+      u8 unknown11[2];
+      u8 skdisable;
       u8 totalarm;
-      u8 unknown6[2];
+      u8 zn8linkd:1,
+         zn7linkd:1,
+         zn6linkd:1,
+         zn5linkd:1,
+         zn4linkd:1,
+         zn3linkd:1,
+         zn2linkd:1,
+         zn1linkd:1;
+      u8 unknown6:6,
+         zn10linkd:1,
+         zn9linkd:1;
       u8 ctsdcsscantype;
       ul16 vfoscanmin;
       ul16 vfoscanmax;
@@ -1689,7 +1744,7 @@ class F8HPPro(UV17Pro):
       u8 hangup;
       u8 voxsw;
       u8 gpstimezone;
-      u8 unknown10;
+      u8 lnkzones;
       u8 inputdtmf;
       u8 gpsunits;
       u8 pontime;
