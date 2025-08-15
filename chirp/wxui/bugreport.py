@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
+import gzip
 import logging
 import os
 import platform
@@ -32,6 +33,7 @@ from chirp import logger
 from chirp import platform as chirp_platform
 from chirp.wxui import common
 from chirp.wxui import config
+from chirp.wxui import serialtrace
 
 _ = wx.GetTranslation
 CONF = config.get()
@@ -125,6 +127,15 @@ def prepare_report(chirpmain):
         with open(tmp, 'rb') as f:
             manifest['files']['debug_log.txt'] = f.read()
         tmpf = tempfile.mktemp('.config', 'chirp')
+
+    # Grab any trace files
+    for tracefile in serialtrace.TRACEFILES:
+        if os.path.exists(tracefile):
+            LOG.debug('Capturing serial trace file %s', tracefile)
+            with open(tracefile, 'rb') as f:
+                manifest['files'][os.path.basename(tracefile)] = f.read()
+        else:
+            LOG.debug('Serial trace file %s does not exist', tracefile)
 
     return manifest
 
@@ -631,16 +642,28 @@ class ResultPage(BugReportPage):
         if 'issue' not in manifest:
             self._create_bug(manifest)
 
+        for fn in list(manifest['files'].keys()):
+            fdata = manifest['files'][fn]
+            if len(fdata) > 1024 * 1024:
+                LOG.warning('File %s is larger than 1MB, compressing', fn)
+                fdata = gzip.compress(fdata)
+                manifest['files'].pop(fn)
+                fn += '.gz'
+                manifest['files'][fn] = fdata
+
         tokens = []
         for fn in manifest['files']:
             token = self._upload_file(manifest, fn)
-            if fn.lower().endswith('.img'):
-                ct = 'application/octet-stream'
-            else:
+            ext = os.path.splitext(fn)[1].lower()
+            if ext in ('.log', '.txt'):
                 ct = 'text/plain'
-            tokens.append({'token': token,
-                           'filename': fn,
-                           'content_type': ct})
+            else:
+                ct = 'application/octet-stream'
+            token_info = {'token': token,
+                          'filename': fn,
+                          'content_type': ct}
+            tokens.append(token_info)
+
         LOG.debug('File tokens: %s', tokens)
 
         notes = '[Uploaded from CHIRP %s]\n\n' % CHIRP_VERSION
