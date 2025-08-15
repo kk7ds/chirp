@@ -383,8 +383,8 @@ def calculate_crc16_xmodem(data: bytes):
 
 def _send_command(serport, data: bytes):
     """Send a command to UV-K5 radio"""
-    LOG.debug("Sending command (unobfuscated) len=0x%4.4x:\n%s",
-              len(data), util.hexprint(data))
+    serport.log("Sending command (unobfuscated) len=0x%4.4x:\n%s" % (
+              len(data), util.hexprint(data)))
 
     crc = calculate_crc16_xmodem(data)
     data2 = data + struct.pack("<H", crc)
@@ -392,8 +392,6 @@ def _send_command(serport, data: bytes):
     command = struct.pack(">HBB", 0xabcd, len(data), 0) + \
         xorarr(data2) + \
         struct.pack(">H", 0xdcba)
-    if DEBUG_SHOW_OBFUSCATED_COMMANDS:
-        LOG.debug("Sending command (obfuscated):\n%s", util.hexprint(command))
     try:
         result = serport.write(command)
     except Exception as e:
@@ -434,14 +432,7 @@ def _receive_reply(serport):
                     util.hexprint(footer), len(footer))
         raise errors.RadioError("Bad response footer")
 
-    if DEBUG_SHOW_OBFUSCATED_COMMANDS:
-        LOG.debug("Received reply (obfuscated) len=0x%4.4x:\n%s",
-                  len(cmd), util.hexprint(cmd))
-
     cmd2 = xorarr(cmd)
-
-    LOG.debug("Received reply (unobfuscated) len=0x%4.4x:\n%s",
-              len(cmd2), util.hexprint(cmd2))
 
     return cmd2
 
@@ -480,37 +471,26 @@ def _sayhello(serport):
 
 
 def _readmem(serport, offset, length):
-    LOG.debug("Sending readmem offset=0x%4.4x len=0x%4.4x", offset, length)
+    serport.log("Sending readmem offset=0x%4.4x len=0x%4.4x" % (
+        offset, length))
 
     readmem = b"\x1b\x05\x08\x00" + \
         struct.pack("<HBB", offset, length, 0) + \
         b"\x6a\x39\x57\x64"
     _send_command(serport, readmem)
     rep = _receive_reply(serport)
-    if DEBUG_SHOW_MEMORY_ACTIONS:
-        LOG.debug("readmem Received data len=0x%4.4x:\n%s",
-                  len(rep), util.hexprint(rep))
     return rep[8:]
 
 
 def _writemem(serport, data, offset):
-    LOG.debug("Sending writemem offset=0x%4.4x len=0x%4.4x",
-              offset, len(data))
-
-    if DEBUG_SHOW_MEMORY_ACTIONS:
-        LOG.debug("writemem sent data offset=0x%4.4x len=0x%4.4x:\n%s",
-                  offset, len(data), util.hexprint(data))
-
     dlen = len(data)
     writemem = b"\x1d\x05" + \
         struct.pack("<BBHBB", dlen+8, 0, offset, dlen, 1) + \
         b"\x6a\x39\x57\x64"+data
 
+    serport.log('Writemem at offset %04x len %04x' % (offset, dlen))
     _send_command(serport, writemem)
     rep = _receive_reply(serport)
-
-    LOG.debug("writemem Received data: %s len=%i",
-              util.hexprint(rep), len(rep))
 
     if (rep[0] == 0x1e and
        rep[4] == (offset & 0xff) and
