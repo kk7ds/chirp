@@ -5,6 +5,7 @@ from unittest import mock
 
 from chirp import chirp_common
 from chirp import errors
+from chirp.wxui import serialtrace
 from tests import base
 
 LOG = logging.getLogger(__name__)
@@ -14,7 +15,7 @@ class SerialException(Exception):
     pass
 
 
-class SerialNone:
+class SerialNone(serialtrace.SerialTrace):
     def flush(self):
         pass
 
