@@ -189,8 +189,7 @@ def _h777_write_block(radio, block_addr, block_size):
     cmd = struct.pack(">cHb", b'W', block_addr, BLOCK_SIZE)
     data = radio.get_mmap().get_byte_compatible()[block_addr:block_addr + 8]
 
-    LOG.debug("Writing Data:")
-    LOG.debug(util.hexprint(cmd + data))
+    radio.pipe.log('Writing %i block at %04x' % (BLOCK_SIZE, block_addr))
 
     try:
         serial.write(cmd + data)
@@ -237,11 +236,9 @@ def do_download(radio):
         status.cur = addr + BLOCK_SIZE
         radio.status_fn(status)
 
+        radio.pipe.log('Reading %i block at %04x' % (BLOCK_SIZE, addr))
         block = _h777_read_block(radio, addr, BLOCK_SIZE)
         data += block
-
-        LOG.debug("Address: %04x" % addr)
-        LOG.debug(util.hexprint(block))
 
     _h777_exit_programming_mode(radio.pipe)
 
