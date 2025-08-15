@@ -634,7 +634,7 @@ class ResultPage(BugReportPage):
             elif r.status_code != 201:
                 LOG.error('Failed to upload %s: %s %s',
                           fn, r.status_code, r.reason)
-                raise Exception('Failed to upload file')
+                raise Exception('Failed to upload file: %s' % r.reason)
             return r.json()['upload']['token']
         raise Exception('Failed to upload %s after multiple attempts', fn)
 
@@ -651,9 +651,15 @@ class ResultPage(BugReportPage):
                 fn += '.gz'
                 manifest['files'][fn] = fdata
 
+        notes = '[Uploaded from CHIRP %s]\n\n' % CHIRP_VERSION
         tokens = []
         for fn in manifest['files']:
-            token = self._upload_file(manifest, fn)
+            try:
+                token = self._upload_file(manifest, fn)
+            except Exception as e:
+                LOG.error('Failed to upload file %s: %s', fn, e)
+                notes += '[Failed to upload file %s: %s]\n\n' % (fn, e)
+                continue
             ext = os.path.splitext(fn)[1].lower()
             if ext in ('.log', '.txt'):
                 ct = 'text/plain'
@@ -666,7 +672,6 @@ class ResultPage(BugReportPage):
 
         LOG.debug('File tokens: %s', tokens)
 
-        notes = '[Uploaded from CHIRP %s]\n\n' % CHIRP_VERSION
         if not self.context.is_new:
             notes += manifest['desc']
         r = self.context.session.put(
