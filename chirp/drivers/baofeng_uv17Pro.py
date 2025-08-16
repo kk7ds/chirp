@@ -1343,7 +1343,6 @@ class UV17Pro(bfc.BaofengCommonHT):
 
         mem.mode = _mem.wide and self.MODES[0] or self.MODES[1]
         if chirp_common.in_range(mem.freq, [self._airband]):
-            print('freq %i means am' % mem.freq)
             mem.mode = "AM"
 
         mem.extra = RadioSettingGroup("Extra", "extra")
