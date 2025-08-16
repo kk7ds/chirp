@@ -877,7 +877,7 @@ def get_common_setting(self,common):
             RadioSettingValueList(opts, current_index=_settings.stunmode)))
     opts_dict=[{"name": "%s" % (x+1), "id": x} for x in range(0, 10, 1)]
     common.append(get_radiosetting_by_key(self,_settings,"calltone","Call Tone",_settings.calltone,opts_dict))
-    common.append(get_radiosetting_by_key(self,_settings,"frestep","Frequency Step",int.from_bytes(struct.pack('<H', _settings.frestep)),Fre_Step_List,set_item_twobytes_callback))
+    common.append(get_radiosetting_by_key(self,_settings,"frestep","Frequency Step",int.from_bytes(struct.pack('<H', _settings.frestep), byteorder='big'),Fre_Step_List,set_item_twobytes_callback))
     opts=["OFF","1:1","1:2","1:4"]
     common.append(
         RadioSetting(
@@ -936,10 +936,10 @@ def get_common_setting(self,common):
     home_poweron_zone_2=(_settings.homepoweronzone_2_height<<8)|_settings.homepoweronzone_2
     ch_dict=get_ch_items(self)
     # zone_dict=[{"name":"All Channel","id":0x0FFF,"chs":ch_dict}]
-    # zone_num=int.from_bytes(struct.pack('<H', _zonedata.zonenum))
+    # zone_num=int.from_bytes(struct.pack('<H', _zonedata.zonenum), byteorder='big')
     # if(zone_num>0):
     #     for i in range(0, zone_num):
-    #         zone_index=int.from_bytes(struct.pack('<H', _zonedata.zoneindex[i]))
+    #         zone_index=int.from_bytes(struct.pack('<H', _zonedata.zoneindex[i]), byteorder='big')
     #         if(zone_index<64):
     #              zone_item=_zones[zone_index]
     #              zonename=''.join(filter(zone_item.name,NAMECHATSET,12))
@@ -956,9 +956,9 @@ def get_common_setting(self,common):
     #   if zone_item is not None:
     #       print(zone_item)
     #       ch_dict_2=get_ch_items_by_index(ch_dict,zone_item["chs"])      
-    # ch_value_1=int.from_bytes(struct.pack('<H',_settings.homepoweronch_1))             
+    # ch_value_1=int.from_bytes(struct.pack('<H',_settings.homepoweronch_1), byteorder='big')             
     # common.append(get_radiosetting_by_key(self,_settings,"homepoweronch_1","Specify Channel A",ch_value_1,ch_dict_1,set_item_twobytes_callback))
-    # ch_value_2=int.from_bytes(struct.pack('<H',_settings.homepoweronch_2))     
+    # ch_value_2=int.from_bytes(struct.pack('<H',_settings.homepoweronch_2), byteorder='big')     
     # common.append(get_radiosetting_by_key(self,_settings,"homepoweronch_2","Specify Channel B",ch_value_2,ch_dict_2,set_item_twobytes_callback))
     
     opts_dict=get_scan_item_list(self)
@@ -1060,7 +1060,7 @@ def get_dtmf_setting(self,dtmf):
 def get_dtmf_list(self,dtmf_list):
     _dtmf_data=self._memobj.dtmfdata
     _dtmf_list=self._memobj.dtmfs
-    dtmf_count=int.from_bytes(struct.pack('<H', _dtmf_data.dtmfnum))
+    dtmf_count=int.from_bytes(struct.pack('<H', _dtmf_data.dtmfnum), byteorder='big')
     dtmf_count=4 if dtmf_count>4 else dtmf_count
     print("_dtmf_data.dtmfnum : %d"  % dtmf_count)
     if(dtmf_count<=0):
@@ -1109,7 +1109,7 @@ def get_dtmf_list(self,dtmf_list):
 def get_scan_list(self,scan_list):
     _scan_list=self._memobj.scans
     _scan_data=self._memobj.scandata
-    scan_count=int.from_bytes(struct.pack('<H', _scan_data.scannum))
+    scan_count=int.from_bytes(struct.pack('<H', _scan_data.scannum), byteorder='big')
     scan_count= 16 if scan_count>16 else scan_count
     print("_scan_data.scannum : %d"  % scan_count)
     if(scan_count<=0):
@@ -1225,7 +1225,7 @@ def get_vfo_scan(self,vfoscan):
 def get_alarm_list(self,alarm_list):
     _alarm_list=self._memobj.alarms
     _alarm_data=self._memobj.alarmdata
-    alarm_count=int.from_bytes(struct.pack('<H', _alarm_data.alarmnum))
+    alarm_count=int.from_bytes(struct.pack('<H', _alarm_data.alarmnum), byteorder='big')
     alarm_count= 8 if alarm_count>8 else alarm_count
     print("_alarm_data.alarmnum : %d"  % alarm_count)
     if(alarm_count<=0):
@@ -1427,10 +1427,10 @@ def get_ch_items(self):
     ch_dict=[]
     _chdata=self._memobj.channeldata
     _chs=self._memobj.channels
-    ch_num=int.from_bytes(struct.pack('<H', _chdata.chnum))
+    ch_num=int.from_bytes(struct.pack('<H', _chdata.chnum), byteorder='big')
     if(ch_num>3):
          for i in range(3, ch_num):
-            ch_index=int.from_bytes(struct.pack('<H', _chdata.chindex[i]))
+            ch_index=int.from_bytes(struct.pack('<H', _chdata.chindex[i]), byteorder='big')
             if(ch_index<259):
                  chname=bytes(_chs[ch_index].alias).decode('utf-8').replace("\x00","")
                  ch_dict.append({"name":chname,"id":ch_index})
@@ -1448,9 +1448,9 @@ def get_ch_items_by_index(ch_items,ch_index_dict):
 def get_ch_index(self):
     ch_dict=[]
     ch_data = self._memobj.channeldata
-    ch_num =int.from_bytes(struct.pack('<H', ch_data.chnum))
+    ch_num =int.from_bytes(struct.pack('<H', ch_data.chnum), byteorder='big')
     for i in range(0, ch_num):
-        ch_dict.append(int.from_bytes(struct.pack('<H', ch_data.chindex[i])))  
+        ch_dict.append(int.from_bytes(struct.pack('<H', ch_data.chindex[i]), byteorder='big'))  
     return ch_dict
 
 def set_ch_index(self,ch_index):
@@ -1469,7 +1469,7 @@ def set_ch_index(self,ch_index):
             _ch_data.chindex[i]=0xFFFF 
    
 def get_ch_index_by_bytes(ch_bytes):
-    return int.from_bytes(struct.pack('<H', ch_bytes))
+    return int.from_bytes(struct.pack('<H', ch_bytes), byteorder='big')
 
 def get_ch_rxfreq(freq):
     ch_freq=(freq // 10) *10
@@ -1491,10 +1491,10 @@ def get_alarm_item_list(self):
     _alarms=self._memobj.alarms
     ALARM_LIST.clear()
     ALARM_LIST.append({"name":"OFF","id":255})
-    alarm_num=int.from_bytes(struct.pack('<H', _alarmdata.alarmnum))
+    alarm_num=int.from_bytes(struct.pack('<H', _alarmdata.alarmnum), byteorder='big')
     if(alarm_num>0):
         for i in range(0, alarm_num):
-            alarm_index=int.from_bytes(struct.pack('<H', _alarmdata.alarmindex[i]))
+            alarm_index=int.from_bytes(struct.pack('<H', _alarmdata.alarmindex[i]), byteorder='big')
             if(alarm_index<8):
                  alarm_item=_alarms[alarm_index]
                  alarm_item.alarmstatus=1
@@ -1509,10 +1509,10 @@ def get_dtmf_item_list(self):
     DTMFSYSTEM_LIST.append({"name":"OFF","id":15})
     print("DTMF:")
     print(_dtmfdata.dtmfnum)
-    dtmf_num=int.from_bytes(struct.pack('<H', _dtmfdata.dtmfnum))
+    dtmf_num=int.from_bytes(struct.pack('<H', _dtmfdata.dtmfnum), byteorder='big')
     if(dtmf_num>0):
         for i in range(0, dtmf_num):
-            dtmf_index=int.from_bytes(struct.pack('<H', _dtmfdata.dtmfindex[i]))
+            dtmf_index=int.from_bytes(struct.pack('<H', _dtmfdata.dtmfindex[i]), byteorder='big')
             if(dtmf_index<8):
                  dtmf_item=_dtmfs[dtmf_index]
                  dtmf_item.dtmfstatus=1
@@ -1524,10 +1524,10 @@ def get_scan_item_list(self):
     _scandata=self._memobj.scandata
     _scans=self._memobj.scans
     scan_dict=[]
-    scan_num=int.from_bytes(struct.pack('<H', _scandata.scannum))
+    scan_num=int.from_bytes(struct.pack('<H', _scandata.scannum), byteorder='big')
     if(scan_num>0):
         for i in range(0, scan_num):
-            scan_index=int.from_bytes(struct.pack('<H', _scandata.scanindex[i]))
+            scan_index=int.from_bytes(struct.pack('<H', _scandata.scanindex[i]), byteorder='big')
             if(scan_index<16):
                  scan_item=_scans[scan_index]
                  scanname=''.join(filter(scan_item.name,NAMECHATSET,12))
@@ -1537,10 +1537,10 @@ def get_scan_item_list(self):
 def get_alarm_index_list(self):
     _alarmdata=self._memobj.alarmdata
     alarm_index_dict=[]
-    alarm_num=int.from_bytes(struct.pack('<H', _alarmdata.alarmnum))
+    alarm_num=int.from_bytes(struct.pack('<H', _alarmdata.alarmnum), byteorder='big')
     if(alarm_num>0):
         for i in range(0, alarm_num):
-            alarm_index=int.from_bytes(struct.pack('<H', _alarmdata.alarmindex[i]))
+            alarm_index=int.from_bytes(struct.pack('<H', _alarmdata.alarmindex[i]), byteorder='big')
             if(alarm_index<8):
                  alarm_index_dict.append(alarm_index)
     return alarm_index_dict
@@ -1548,10 +1548,10 @@ def get_alarm_index_list(self):
 def get_dtmf_index_list(self):
     _dtmfdata=self._memobj.dtmfdata
     dtmf_index_dict=[]
-    dtmf_num=int.from_bytes(struct.pack('<H', _dtmfdata.dtmfnum))
+    dtmf_num=int.from_bytes(struct.pack('<H', _dtmfdata.dtmfnum), byteorder='big')
     if(dtmf_num>0):
         for i in range(0, dtmf_num):
-            dtmf_index=int.from_bytes(struct.pack('<H', _dtmfdata.dtmfindex[i]))
+            dtmf_index=int.from_bytes(struct.pack('<H', _dtmfdata.dtmfindex[i]), byteorder='big')
             if(dtmf_index<4):
                  dtmf_index_dict.append(dtmf_index)
     return dtmf_index_dict
@@ -1559,10 +1559,10 @@ def get_dtmf_index_list(self):
 def get_scan_index_list(self):
     _scandata=self._memobj.scandata
     scan_index_dict=[]
-    scan_num=int.from_bytes(struct.pack('<H', _scandata.scannum))
+    scan_num=int.from_bytes(struct.pack('<H', _scandata.scannum), byteorder='big')
     if(scan_num>0):
         for i in range(0, scan_num):
-            scan_index=int.from_bytes(struct.pack('<H', _scandata.scanindex[i]))
+            scan_index=int.from_bytes(struct.pack('<H', _scandata.scanindex[i]), byteorder='big')
             if(scan_index<16):
                  scan_index_dict.append(scan_index)
     return scan_index_dict
@@ -1570,10 +1570,10 @@ def get_scan_index_list(self):
 def get_zone_index_list(self):
     _zonedata=self._memobj.zonedata
     zone_index_dict=[]
-    zone_num=int.from_bytes(struct.pack('<H', _zonedata.zonenum))
+    zone_num=int.from_bytes(struct.pack('<H', _zonedata.zonenum), byteorder='big')
     if(zone_num>0):
         for i in range(0, zone_num):
-            zone_index=int.from_bytes(struct.pack('<H', _zonedata.zoneindex[i]))
+            zone_index=int.from_bytes(struct.pack('<H', _zonedata.zoneindex[i]), byteorder='big')
             if(zone_index<64):
                  zone_index_dict.append(zone_index)
     return zone_index_dict
@@ -1964,6 +1964,4 @@ class HA1UV(HA1G):
             ch_index=number+2    
             mem.number = number 
         _mem = self._memobj.channels[ch_index]
-        return _get_memory(self,mem,_mem,ch_index)
-    
-
+        return _get_memory(self, mem, _mem, ch_index)
