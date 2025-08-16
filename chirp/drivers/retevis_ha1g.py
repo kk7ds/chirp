@@ -517,23 +517,20 @@ def ReadItems(self,serial):
     status.max = self._memsize
     for item in Clone_TypeEnum:
         try:
-            print(item)
             item_bytes = get_read_current_page_bytes(self,item.value, serial,status)
             if item_bytes:                    
                all_bytes= read_item_handle_connect_event(all_bytes,item_bytes,item)               
         except Exception as e:
-            print(f"读取项目 {item.name} 时出错: {e}")
+            LOG.error(f"读取项目 {item.name} 时出错: {e}")
             continue   
     return all_bytes       
 
 def write_items(self, serial):
-     print("开始写频")
      status = chirp_common.Status()
      status.msg = "Uploading to radio"
      status.cur = 0
      status.max = self._memsize
      data_bytes=self.get_mmap()
-     print("数据")
      for item in Clone_TypeEnum:
          if item==Clone_TypeEnum.radioHead or item==Clone_TypeEnum.radioInfo or item==Clone_TypeEnum.radioVer or item==Clone_TypeEnum.zoneData or item ==Clone_TypeEnum.outFactoryData:
             continue
@@ -564,9 +561,7 @@ def handle_connect_ver(current_page_byte: bytes, serial_conn, max_retries=5, chu
         chunk = serial_conn.read(chunk_size)   
         if not chunk:  
             return False,new_bytes   
-        new_bytes += chunk   
-     print("校验未通过") 
-     print(new_bytes)     
+        new_bytes += chunk     
      return False,new_bytes  
 
 def RDTP_PageDataCrc16Ver( current_Page_Byte:bytes):
@@ -615,8 +610,6 @@ def get_read_current_page_bytes(self,item:int,serial,status):
                 if(newdatabytes[14]!=item):
                    num +=1
                    time.sleep(0.05) 
-                   print("读取数据错误，重新尝试")
-                   print(newdatabytes)
                    continue
                 if(pageindex==0):
                    pagecount= newdatabytes[18] | (newdatabytes[19] << 8)
@@ -628,7 +621,6 @@ def get_read_current_page_bytes(self,item:int,serial,status):
                 success=True
                 break
             success=False
-            print("读取数据错误，重新尝试")
             num +=1
             time.sleep(0.05) 
         if not success:
@@ -638,10 +630,8 @@ def get_read_current_page_bytes(self,item:int,serial,status):
 
 def write_item_current_page_bytes(self,serial,itemBytes:bytes,item:int,status):
     pagecount = math.ceil(len(itemBytes) / self.page_len)
-    print(f"写频长度{len(itemBytes)}包数{pagecount}")
     for i in range(0,pagecount):
         num = 0
-        print(i)
         while(num <= 5): 
             current_page_bytes=Get_WriteItemBytes(item, i, pagecount, itemBytes[i * self.page_len:(i + 1) * self.page_len])
             serial.write(current_page_bytes)   
@@ -651,14 +641,11 @@ def write_item_current_page_bytes(self,serial,itemBytes:bytes,item:int,status):
                 if(newdatabytes[14]!=item):
                    num +=1
                    time.sleep(0.05) 
-                   print("写入数据错误，重新尝试")
-                   print(newdatabytes)
                    continue
                 status.cur +=len(current_page_bytes)
                 
                 self.status_fn(status)
                 break
-            print("写入数据错误，重新尝试")
             num+=1
             time.sleep(0.05) 
                        
@@ -815,8 +802,7 @@ def _get_memory(self,mem, _mem,ch_index):
     elif(_mem.rxctcvaluetype==2 or _mem.rxctcvaluetype==3):  
         rxtone=int("%03o" % ((_mem.rxctchight & 0x0F) <<8|_mem.rxctclowvalue& 0xFF))
         # oct_value=int(oct((_mem.rxctchight & 0x0F) <<8|_mem.rxctclowvalue& 0xFF)[2:])  
-        # if oct_value in chirp_common.DTCS_CODES:
-        #    print("rxtone")  
+        # if oct_value in chirp_common.DTCS_CODES: 
         #    rxtone=oct_value  
     if(_mem.txctcvaluetype==1):     
         tone_value=(_mem.txctchight<<8|_mem.txctclowvalue)/10.0
@@ -825,13 +811,10 @@ def _get_memory(self,mem, _mem,ch_index):
     elif(_mem.txctcvaluetype==2 or _mem.txctcvaluetype==3):
          txtone=int("%03o" % ((_mem.txctchight & 0x0F) <<8|_mem.txctclowvalue& 0xFF))
         # oct_value=int(oct((_mem.txctchight & 0x0F) <<8|_mem.txctclowvalue& 0xFF)[2:])  
-        # if oct_value in chirp_common.DTCS_CODES:
-        #     print("txtone")  
+        # if oct_value in chirp_common.DTCS_CODES: 
         #     txtone=oct_value         
     rx_tone=("" if _mem.rxctcvaluetype==0 else "Tone" if _mem.rxctcvaluetype==1 else "DTCS", rxtone,(_mem.rxctcvaluetype == 0x3) and "R" or "N"  )  
     tx_tone=(("" if _mem.txctcvaluetype==0 else "Tone" if _mem.txctcvaluetype==1 else "DTCS"), txtone, (_mem.txctcvaluetype == 0x3) and "R" or "N")
-    print(rx_tone)
-    print(tx_tone)
     chirp_common.split_tone_decode(mem, tx_tone, rx_tone)
     
     mem.power =POWER_LEVELS[(1 if _mem.power ==2  else 0)]  
@@ -860,7 +843,6 @@ def get_model_info(self,model_info):
     # model_info.append(rs)
 
 def get_common_setting(self,common):
-    print("获取公共设置")
     _settings = self._memobj.settings
     _zonedata=self._memobj.zonedata
     _zones=self._memobj.zones
@@ -954,7 +936,6 @@ def get_common_setting(self,common):
     # if home_poweron_zone_2 != 0x0FFF:
     #   zone_item = next((zone for zone in zone_dict if zone["id"] == home_poweron_zone_1), None)
     #   if zone_item is not None:
-    #       print(zone_item)
     #       ch_dict_2=get_ch_items_by_index(ch_dict,zone_item["chs"])      
     # ch_value_1=int.from_bytes(struct.pack('<H',_settings.homepoweronch_1), byteorder='big')             
     # common.append(get_radiosetting_by_key(self,_settings,"homepoweronch_1","Specify Channel A",ch_value_1,ch_dict_1,set_item_twobytes_callback))
@@ -975,7 +956,6 @@ def get_common_setting(self,common):
         RadioSetting(
             "settings.tailsoundeliminationsfre", "CTC Tail Elimination",
             RadioSettingValueList(opts, current_index=_settings.tailsoundeliminationsfre)))
-    print("settings.salezone:%d"% _settings.salezone)
     if(_settings.salezone!=2):
         opts=["NOAA-%s" % x for x in range(1, 13, 1)]
         common.append(
@@ -1062,7 +1042,6 @@ def get_dtmf_list(self,dtmf_list):
     _dtmf_list=self._memobj.dtmfs
     dtmf_count=int.from_bytes(struct.pack('<H', _dtmf_data.dtmfnum), byteorder='big')
     dtmf_count=4 if dtmf_count>4 else dtmf_count
-    print("_dtmf_data.dtmfnum : %d"  % dtmf_count)
     if(dtmf_count<=0):
         return  
     dtmf_list.set_shortname("dtmf list")
@@ -1111,7 +1090,6 @@ def get_scan_list(self,scan_list):
     _scan_data=self._memobj.scandata
     scan_count=int.from_bytes(struct.pack('<H', _scan_data.scannum), byteorder='big')
     scan_count= 16 if scan_count>16 else scan_count
-    print("_scan_data.scannum : %d"  % scan_count)
     if(scan_count<=0):
         return
     for i in range(0,scan_count):
@@ -1227,7 +1205,6 @@ def get_alarm_list(self,alarm_list):
     _alarm_data=self._memobj.alarmdata
     alarm_count=int.from_bytes(struct.pack('<H', _alarm_data.alarmnum), byteorder='big')
     alarm_count= 8 if alarm_count>8 else alarm_count
-    print("_alarm_data.alarmnum : %d"  % alarm_count)
     if(alarm_count<=0):
         return
     for i in range(0,alarm_count):
@@ -1312,7 +1289,6 @@ def get_zone_list(self,zone_list):
         zone_list.append(rsg)
 
 def _set_memory(self, mem, _mem,ch_index):
-    print("当前信道信息")
     ch_index_dict=get_ch_index(self)
     rx_freq=get_ch_rxfreq(mem.freq)
     if ch_index not in ch_index_dict and (rx_freq!=0 and rx_freq!=0xFFFFFFFF):
@@ -1442,7 +1418,6 @@ def get_ch_items_by_index(ch_items,ch_index_dict):
         ch_item= next((item for item in ch_items if item["id"] == ch_index), None)
         if(ch_item is not None):
             items.append({"name": ch_item["name"], "id": i})
-    print(items)
     return items
 
 def get_ch_index(self):
@@ -1502,13 +1477,10 @@ def get_alarm_item_list(self):
                  ALARM_LIST.append({"name":alarmname,"id":alarm_index}) 
 
 def get_dtmf_item_list(self):
-    print("get_dtmf_item_list")
     _dtmfdata=self._memobj.dtmfdata
     _dtmfs=self._memobj.dtmfs
     DTMFSYSTEM_LIST.clear()
     DTMFSYSTEM_LIST.append({"name":"OFF","id":15})
-    print("DTMF:")
-    print(_dtmfdata.dtmfnum)
     dtmf_num=int.from_bytes(struct.pack('<H', _dtmfdata.dtmfnum), byteorder='big')
     if(dtmf_num>0):
         for i in range(0, dtmf_num):
@@ -1518,7 +1490,6 @@ def get_dtmf_item_list(self):
                  dtmf_item.dtmfstatus=1
                  dtmfname=''.join(filter(dtmf_item.name,NAMECHATSET,12))
                  DTMFSYSTEM_LIST.append({"name":dtmfname,"id":dtmf_index}) 
-    print(DTMFSYSTEM_LIST)
 
 def get_scan_item_list(self):
     _scandata=self._memobj.scandata
@@ -1616,7 +1587,6 @@ def set_zone_ch_list(self,zone_index,zone_ch_dict):
                 zone_item.chindex[i]=0xFFFF                   
 
 def set_dtmf_index_list(self,dtmf_index_dict):
-    print("DTMF index list")
     _dtmfdata=self._memobj.dtmfdata
     dtmf_count=len(dtmf_index_dict)
     _dtmfdata.dtmfnum=((dtmf_count & 0xFF) << 8) | ((dtmf_count >> 8) & 0xFF)
@@ -1640,11 +1610,7 @@ def set_scan_index_list(self,scan_index_dict):
                 raise ValueError("Not enough space in scanindex array")
 
 def set_dtmf_list_callback(set_item,self,index,name):
-    print(set_item)
-    print(index)
-    print(name)
     _dtmf_list=self._memobj.dtmfs
-    print(_dtmf_list[index][name])
     value=set_item.value
     if(index<len(_dtmf_list)): 
         if(name=="dtmfstatus"):
@@ -1663,7 +1629,6 @@ def set_dtmf_list_callback(set_item,self,index,name):
         setattr(_dtmf_list[index], name, value)
 
 def set_scan_list_callback(set_item,self,index,name,items=None):
-    print(set_item)
     _scan_list=self._memobj.scans
     value=set_item.value
     if(index<len(_scan_list)):
@@ -1683,7 +1648,6 @@ def set_scan_list_callback(set_item,self,index,name,items=None):
         setattr(_scan_list[index], name, value)               
 
 def set_alarm_list_callback(set_item,self,index,name,items=None):
-    print(set_item)
     _alarm_list=self._memobj.alarms
     value=set_item.value
     if(index<len(_alarm_list)):
@@ -1703,7 +1667,6 @@ def set_alarm_list_callback(set_item,self,index,name,items=None):
         setattr(_alarm_list[index], name, value)              
 
 def set_zone_list_callback(set_item,self,index,name,items=None):
-    print(set_item)
     _zone_list=self._memobj.zones
     value=set_item.value
     if(index<len(_zone_list)):
@@ -1786,7 +1749,6 @@ class HA1G(chirp_common.CloneModeRadio):
         get_alarm_item_list(self)
     
     def sync_in(self):
-        print("sync_in")
         try:
             self._mmap = do_download(self)   
             self.process_mmap()
@@ -1809,7 +1771,6 @@ class HA1G(chirp_common.CloneModeRadio):
                                     'with the radio')
 
     def get_memory(self, number): 
-        print("get_memory：% s" % number)
         mem = chirp_common.Memory()
         ch_index= 0
         if isinstance(number, str) :
@@ -1830,7 +1791,6 @@ class HA1G(chirp_common.CloneModeRadio):
         return mem
     
     def set_memory(self, mem):
-        print("set_memory")
         ch_index=0
         if mem.number>len(self._memobj.channels):
             ch_index= 0 if mem.extd_number=="VFOA" else 1  
@@ -1841,7 +1801,6 @@ class HA1G(chirp_common.CloneModeRadio):
         LOG.debug("Setting %i(%s)" % (mem.number, mem.extd_number))
     
     def get_raw_memory(self, number):
-        print(number)
         if isinstance(number, str):
             ch_index=0 if number=="VFOA" else 1
         else:
@@ -1851,8 +1810,6 @@ class HA1G(chirp_common.CloneModeRadio):
         return repr(_mem)
     
     def validate_memory(self, mem):
-        print("validate_memory")
-        print(mem.number)
         ch_number= (0 if mem.extd_number=="VFOA" else 1 ) if mem.number>len(self._memobj.channels)  else mem.number+2
         msgs=super().validate_memory(mem)
         if(self.current_model=="HA1G"):
@@ -1893,7 +1850,6 @@ class HA1G(chirp_common.CloneModeRadio):
         return setmode
         
     def set_settings(self, uisettings):
-        print("setting 赋值")
         for element in uisettings:
             if not isinstance(element, RadioSetting):
                 self.set_settings(element)
@@ -1930,7 +1886,6 @@ class HA1G(chirp_common.CloneModeRadio):
                         setattr(_vfo_scan, name, value)  
                     LOG.debug("Setting %s: %s", name, value)
             except Exception:
-                print("报错")
                 LOG.debug(element.get_name())
                 raise    
     
