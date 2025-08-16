@@ -72,7 +72,7 @@ def do_download(radio):
     data = bytes()
     for addr in range(0, 0x1C40, 0x40):
         cmd = struct.pack('>cHB', b'R', addr, 0x40)
-        LOG.debug('Reading block at %04x: %r' % (addr, cmd))
+        radio.pipe.log('Reading block at %04x' % addr)
         radio.pipe.write(cmd)
 
         block = radio.pipe.read(0x44)
@@ -106,7 +106,7 @@ def do_upload(radio):
     # here.
     for addr in range(0, 0x1C20, 0x20):
         cmd = struct.pack('>cHB', b'W', addr, 0x20)
-        LOG.debug('Writing block at %04x: %r' % (addr, cmd))
+        radio.pipe.log('Writing block at %04x' % addr)
         block = radio._mmap[addr:addr + 0x20]
         radio.pipe.write(cmd)
         radio.pipe.write(block)
