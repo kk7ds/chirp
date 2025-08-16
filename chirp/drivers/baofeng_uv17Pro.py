@@ -24,7 +24,7 @@ from chirp.settings import RadioSetting, \
     RadioSettingValueString, \
     RadioSettings, RadioSettingGroup
 import struct
-from chirp import errors, util
+from chirp import errors
 
 LOG = logging.getLogger(__name__)
 
@@ -145,16 +145,12 @@ def _download(radio):
         for addr in range(MEM_START, MEM_START + MEM_SIZE,
                           radio.BLOCK_SIZE):
             frame = radio._make_read_frame(addr, radio.BLOCK_SIZE)
-            # DEBUG
-            LOG.debug("Frame=" + util.hexprint(frame))
 
-            # Sending the read request
+            radio.pipe.log('Sending request for %04x' % addr)
             bfc._rawsend(radio, frame)
 
-            # Now we read data
             d = bfc._rawrecv(radio, radio.BLOCK_SIZE + 4)
 
-            LOG.debug("Response Data= " + util.hexprint(d))
             if radio._uses_encr:
                 d = _crypt(radio._encrsym, d[4:])
             else:
@@ -195,13 +191,9 @@ def _upload(radio):
             data_addr += radio.BLOCK_SIZE
 
             frame = radio._make_frame(b"W", addr, radio.BLOCK_SIZE, data)
-            # DEBUG
-            LOG.debug("Frame=" + util.hexprint(frame))
-
-            # Sending the read request
+            radio.pipe.log('Sending address %04x' % addr)
             bfc._rawsend(radio, frame)
 
-            # receiving the response
             ack = bfc._rawrecv(radio, 1)
             if ack != b"\x06":
                 msg = "Bad ack writing block 0x%04x" % addr
