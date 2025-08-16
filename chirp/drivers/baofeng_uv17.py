@@ -22,7 +22,7 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettings, RadioSettingValueString
 import struct
 from chirp.drivers import baofeng_common, baofeng_uv17Pro
-from chirp import errors, util
+from chirp import errors
 
 LOG = logging.getLogger(__name__)
 LIST_DTMFST = ["Off", "DT-ST", "ANI-ST", "DT+ANI"]
@@ -88,14 +88,10 @@ def _download(radio):
         for addr in range(start_addr, start_addr + 0x1000,
                           radio.BLOCK_SIZE):
             frame = radio._make_read_frame(addr, radio.BLOCK_SIZE)
-            # DEBUG
-            LOG.debug("Frame=" + util.hexprint(frame))
-
+            radio.pipe.log('Reading addr %04x' % addr)
             baofeng_common._rawsend(radio, frame)
 
             d = baofeng_common._rawrecv(radio, radio.BLOCK_SIZE + 5)
-
-            LOG.debug("Response Data= " + util.hexprint(d))
 
             data += d[5:]
 
@@ -133,6 +129,7 @@ def _upload(radio):
             data_addr = data_start_addr + addr - start_addr
             data = radio.get_mmap()[data_addr:data_addr + radio.BLOCK_SIZE]
             frame = radio._make_frame(b"W", addr, radio.BLOCK_SIZE, data)
+            radio.pipe.log('Sending addr %04x' % addr)
             baofeng_common._rawsend(radio, frame)
 
             # receiving the response
