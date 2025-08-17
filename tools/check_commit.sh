@@ -115,4 +115,18 @@ done
 
 rm -f added_lines license_lines
 
+commits=$(git log --pretty=format:%h ${BASE}..)
+for commit in $commits; do
+    git log -n1 $commit --pretty=format:%B > commit_msg
+    if [[ `sed -n '1p' commit_msg | wc -c` > 99 ]]; then
+        fail "First line of commit message of $commit must be <99 chars"
+    fi
+    if [[ `wc -l < commit_msg` > 1 ]]; then
+        if ! sed -n '2p' commit_msg | grep '^$'; then
+            fail "Second line of commit message of $commit must be blank for proper formatting in the notification emails"
+        fi
+    fi
+    rm -f commit_msg
+done
+
 exit $RETCODE
