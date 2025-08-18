@@ -2469,7 +2469,7 @@ def get_ch_items(self):
     ch_num = _chdata.chnum
     if ch_num > 3:
         for i in range(3, ch_num):
-            ch_index = _chdata.chindex[i]
+            ch_index =  _chdata.chindex[i]
             if ch_index < 259:
                 chname = "".join(filter(_chs[ch_index].alias, NAMECHATSET, 12))
                 ch_dict.append({"name": chname, "id": ch_index})
@@ -2504,14 +2504,14 @@ def set_ch_index(self, ch_index):
     if len(_ch_data.chindex) < ch_num:
         raise ValueError("Not enough space in chindex array")
     # _ch_data.chnum = ((ch_num & 0xFF) << 8) | ((ch_num >> 8) & 0xFF)
-    _ch_data.chnum = ch_num
+    _ch_data.chnum =ch_num
     ch_index.sort()
     for i in range(0, 1027):
         if i < ch_num:
             # _ch_data.chindex[i] = ((ch_index[i] & 0xFF) << 8) | (
             #     (ch_index[i] >> 8) & 0xFF
             # )
-            _ch_data.chindex[i] = ch_index[i]
+            _ch_data.chindex[i] =ch_index[i]
         else:
             _ch_data.chindex[i] = 0xFFFF
 
