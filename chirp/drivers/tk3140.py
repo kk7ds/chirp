@@ -36,13 +36,11 @@ EMPTY_INDEX_ENTRY = IndexEntry(0xFF, 0xFF, 0xFF, 0xFF)
 
 
 def send(radio, frame):
-    LOG.debug("%04i P>R:\n%s" % (len(frame), util.hexprint(frame)))
     radio.pipe.write(frame)
 
 
 def recv(radio, count):
     buf = radio.pipe.read(count)
-    LOG.debug('%04i: R>P:\n%s' % (len(buf), util.hexprint(buf)))
     return buf
 
 
@@ -144,7 +142,6 @@ def do_upload(radio):
     data = radio._mmap.get_packed()
     for block in range(0x80):
         if 0x54 <= block < 0x60:
-            LOG.debug('Skipping block 0x%02x' % block)
             continue
         addr = block * 256
         chunk = data[addr:addr + 256]

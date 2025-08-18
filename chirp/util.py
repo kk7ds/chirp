@@ -37,12 +37,11 @@ def int_to_byte(i):
         return i
 
 
-def hexprint(data, addrfmt=None):
+def hexprint(data, addrfmt=None, block_size=8):
     """Return a hexdump-like encoding of @data"""
     if addrfmt is None:
         addrfmt = '%(addr)03i'
 
-    block_size = 8
     out = ""
 
     blocks = len(data) // block_size
