@@ -2911,7 +2911,6 @@ class HA1G(chirp_common.CloneModeRadio):
         try:
             logging.debug("come in sync_out")
             do_upload(self)
-
         except Exception as e:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
