@@ -2762,7 +2762,7 @@ class HA1G(chirp_common.CloneModeRadio):
             logging.debug("come in sync_out")
             do_upload(self)
 
-        except:
+        except Exception as e:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
             LOG.exception("Unexpected error during upload")
@@ -2844,7 +2844,6 @@ class HA1G(chirp_common.CloneModeRadio):
         return msgs
 
     def erase_memory(self, memid_or_index):
-        print(memid_or_index)
         ch_number = 0
         if isinstance(memid_or_index, str):
             ch_number = 0 if memid_or_index == "VFOA" else 1
