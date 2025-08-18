@@ -51,6 +51,7 @@ from chirp.wxui import query_sources
 from chirp.wxui import radioinfo
 from chirp.wxui import radiothread
 from chirp.wxui import report
+from chirp.wxui import serialtrace
 from chirp.wxui import settingsedit
 from chirp import CHIRP_VERSION
 
@@ -1321,6 +1322,9 @@ class ChirpMain(wx.Frame):
                           for fn in open_files if fn),
                  'state')
         config._CONFIG.save()
+
+        # Clean up any trace files we left
+        serialtrace.purge_trace_files(0)
 
         ALL_MAIN_WINDOWS.remove(self)
         self.Destroy()
