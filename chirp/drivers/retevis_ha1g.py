@@ -1795,9 +1795,9 @@ class HA1G(chirp_common.CloneModeRadio):
         if mem.number>len(self._memobj.channels):
             ch_index= 0 if mem.extd_number=="VFOA" else 1  
         else:
-            ch_index=mem.number+2
+            ch_index=mem.number+2  
         _mem = self._memobj.channels[ch_index]
-        _set_memory(self,mem, _mem,ch_index)          
+        _set_memory(self,mem, _mem,ch_index)    
         LOG.debug("Setting %i(%s)" % (mem.number, mem.extd_number))
     
     def get_raw_memory(self, number):
@@ -1814,7 +1814,7 @@ class HA1G(chirp_common.CloneModeRadio):
         msgs=super().validate_memory(mem)
         if(self.current_model=="HA1G"):
             _mem = self._memobj.channels[ch_number]
-            rx_freq=int.from_bytes(_mem.rxfreq, byteorder='little')
+            rx_freq=int.from_bytes(_mem.rxfreq, byteorder='little')   
             if(mem.number<=30 and mem.freq !=rx_freq ):
                 msgs.append(chirp_common.ValidationWarning('GMRS channels 1-30 freq cannot be modified'))
             if(mem.number<=30 and( mem.offset !=0  or mem.duplex != "")):
@@ -1824,7 +1824,19 @@ class HA1G(chirp_common.CloneModeRadio):
             if((mem.number>=7 and mem.number<14) and mem.power !=POWER_LEVELS[0]):
                 msgs.append(chirp_common.ValidationWarning('GMRS channels 8-14 power cannot be modified'))    
         return msgs
-                   
+    
+    def erase_memory(self, memid_or_index):
+        print(memid_or_index)  
+        ch_number=0 
+        if isinstance(memid_or_index, str) :
+            ch_number= (0 if memid_or_index=="VFOA" else 1 ) 
+        else:
+            ch_number=memid_or_index+2
+        if ch_number<=2 or (self.current_model=="HA1G" and ch_number<33): 
+            raise errors.RadioError("The radio refuses to delete VFO channels and channels 1-30")
+        else:
+            super().erase_memory(memid_or_index)
+                
     def get_settings(self):
         
         ModelInfo = RadioSettingGroup("info", "Model Information")
