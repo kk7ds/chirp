@@ -524,8 +524,8 @@ struct {
        rev_1:4;
     u8 alarmtime:4,
        alarmcycle:4;
-    u8 txinterval:4,
-       mictime:4;  
+    u8 mictime:4,
+       txinterval:4;  
     u8 alarmid[8];
     u8 alarmstatus;
     u8 rev_3[1];         
@@ -741,13 +741,12 @@ class HA1GBankModel(chirp_common.BankModel):
 def do_download(self):
     serial = self.pipe
     all_bytes = bytearray(self._memsize)
-    handShake_Result = Handshake(self, serial)
-    if handShake_Result == HandShakeStuts.Normal:
-        all_bytes = ReadItems(self, serial)
-
-    elif handShake_Result == HandShakeStuts.RadioWrong:
+    handshake_result = handshake(self, serial)
+    if handshake_result == HandShakeStuts.Normal:
+        all_bytes = read_items(self, serial)
+    elif handshake_result == HandShakeStuts.RadioWrong:
         raise errors.RadioError("Radio not match")
-    elif handShake_Result == HandShakeStuts.PwdWrong:
+    elif handshake_result == HandShakeStuts.PwdWrong:
         raise errors.RadioError("download redio password Wrong")
     else:
         raise errors.RadioError("connect Wrong")
@@ -757,7 +756,7 @@ def do_download(self):
 
 def do_upload(self):
     serial = self.pipe
-    handShake_Result = Handshake(self, serial)
+    handShake_Result = handshake(self, serial)
     if handShake_Result == HandShakeStuts.Normal:
         write_items(self, serial)
     elif handShake_Result == HandShakeStuts.RadioWrong:
@@ -769,20 +768,20 @@ def do_upload(self):
     exit_programming_mode(self)
 
 
-def Handshake(self, serial):
+def handshake(self, serial):
     databytes = b""
     num = 0
     while num <= 5:
-        serial.write(Get_HandshakeBytes(self.MODEL + " "))
+        serial.write(get_handshake_bytes(self.MODEL + " "))
         databytes = serial.read(self.page_len)
         flag, databytes = handle_connect_ver(databytes, serial)
         if flag == True:
             break
         num += 1
-    return HandshakeHandleConnectEvent(self, databytes)
+    return handshake_handle_connect_event(self, databytes)
 
 
-def ReadItems(self, serial):
+def read_items(self, serial):
     all_bytes = bytearray(self._memsize)
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -818,7 +817,7 @@ def write_items(self, serial):
         write_item_current_page_bytes(self, serial, item_bytes, item.value, status)
 
 
-def HandshakeHandleConnectEvent(self, dataByte: bytes):
+def handshake_handle_connect_event(self, dataByte: bytes):
     if dataByte[14:16] == b"\x00\x01":
         if dataByte[20] != 1:
             model_str = (
@@ -844,7 +843,7 @@ def handle_connect_ver(
     if not new_bytes:
         return False, new_bytes
     for _ in range(max_retries):
-        if RDTP_PageDataCrc16Ver(new_bytes):
+        if rdtp_page_data_crc16_ver(new_bytes):
             return True, new_bytes
         chunk = serial_conn.read(chunk_size)
         if not chunk:
@@ -853,7 +852,7 @@ def handle_connect_ver(
     return False, new_bytes
 
 
-def RDTP_PageDataCrc16Ver(current_Page_Byte: bytes):
+def rdtp_page_data_crc16_ver(current_Page_Byte: bytes):
     byteLen = len(current_Page_Byte)
     if byteLen <= 13:
         return False
@@ -869,7 +868,7 @@ def RDTP_PageDataCrc16Ver(current_Page_Byte: bytes):
     return crcBytes == crcStr
 
 
-def Get_HandshakeBytes(currentModel):
+def get_handshake_bytes(currentModel):
     model_str = (
         currentModel.decode("ascii")
         if isinstance(currentModel, bytes)
@@ -894,28 +893,28 @@ def Get_HandshakeBytes(currentModel):
 
 
 def get_read_current_page_bytes(self, item: int, serial, status):
-    pagecount = 1
-    pageindex = 0
+    page_count = 1
+    page_index = 0
     item_bytes = b""
-    while pageindex < pagecount:
+    while page_index < page_count:
         num = 0
         success = False
         while num <= 5:
-            serial.write(Get_ReadItemBytes(item, pageindex))
-            databytes = serial.read(self.page_len)
-            flag, newdatabytes = handle_connect_ver(databytes, serial)
+            serial.write(Get_ReadItemBytes(item, page_index))
+            data_bytes = serial.read(self.page_len)
+            flag, new_data_bytes = handle_connect_ver(data_bytes, serial)
             if flag == True:
-                if newdatabytes[14] != item:
+                if new_data_bytes[14] != item:
                     num += 1
                     time.sleep(0.05)
                     continue
-                if pageindex == 0:
-                    pagecount = newdatabytes[18] | (newdatabytes[19] << 8)
-                status.cur += len(newdatabytes)
+                if page_index == 0:
+                    page_count = new_data_bytes[18] | (new_data_bytes[19] << 8)
+                status.cur += len(new_data_bytes)
                 self.status_fn(status)
                 num = 0
-                pageindex += 1
-                item_bytes += newdatabytes[20:-3]
+                page_index += 1
+                item_bytes += new_data_bytes[20:-3]
                 success = True
                 break
             success = False
@@ -927,22 +926,22 @@ def get_read_current_page_bytes(self, item: int, serial, status):
     return item_bytes
 
 
-def write_item_current_page_bytes(self, serial, itemBytes: bytes, item: int, status):
-    pagecount = math.ceil(len(itemBytes) / self.page_len)
-    for i in range(0, pagecount):
+def write_item_current_page_bytes(self, serial, item_Bytes: bytes, item: int, status):
+    page_count = math.ceil(len(item_Bytes) / self.page_len)
+    for i in range(0, page_count):
         num = 0
         while num <= 5:
-            current_page_bytes = Get_WriteItemBytes(
+            current_page_bytes = get_write_item_send_bytes(
                 item,
                 i,
-                pagecount,
-                itemBytes[i * self.page_len : (i + 1) * self.page_len],
+                page_count,
+                item_Bytes[i * self.page_len : (i + 1) * self.page_len],
             )
             serial.write(current_page_bytes)
             return_bytes = serial.read(self.page_len)
-            flag, newdatabytes = handle_connect_ver(return_bytes, serial)
+            flag, new_data_bytes = handle_connect_ver(return_bytes, serial)
             if flag == True:
-                if newdatabytes[14] != item:
+                if new_data_bytes[14] != item:
                     num += 1
                     time.sleep(0.05)
                     continue
@@ -954,114 +953,114 @@ def write_item_current_page_bytes(self, serial, itemBytes: bytes, item: int, sta
             time.sleep(0.05)
 
 
-def get_write_item_bytes(allbytes: bytearray, item):
+def get_write_item_bytes(all_bytes: bytearray, item):
     item_bytes = b""
     if item == Clone_TypeEnum.radioHead:
-        item_bytes = allbytes[
+        item_bytes = all_bytes[
             File_AddrEnum.radioHead.value : File_AddrEnum.radioHead.value + 14
         ]
     elif item == Clone_TypeEnum.radioInfo:
-        item_bytes = allbytes[
+        item_bytes = all_bytes[
             File_AddrEnum.radioHead.value : File_AddrEnum.radioInfo.value + 68
         ]
     elif item == Clone_TypeEnum.radioVer:
-        item_bytes = allbytes[
+        item_bytes = all_bytes[
             File_AddrEnum.radioVer.value : File_AddrEnum.radioVer.value + 10
         ]
     elif item == Clone_TypeEnum.settingData:
-        item_bytes = allbytes[
+        item_bytes = all_bytes[
             File_AddrEnum.settingData.value : File_AddrEnum.settingData.value + 100
         ]
     elif item == Clone_TypeEnum.zoneData:
-        item_bytes = allbytes[
+        item_bytes = all_bytes[
             File_AddrEnum.zoneData.value : File_AddrEnum.zoneData.value + 3202
         ]
     elif item == Clone_TypeEnum.channelData:
-        item_bytes = allbytes[
+        item_bytes = all_bytes[
             File_AddrEnum.channelData.value : File_AddrEnum.channelData.value + 43136
         ]
     elif item == Clone_TypeEnum.scanData:
-        item_bytes = allbytes[
+        item_bytes = all_bytes[
             File_AddrEnum.scanData.value : File_AddrEnum.scanData.value + 3618
         ]
     elif item == Clone_TypeEnum.alarmData:
-        item_bytes = allbytes[
+        item_bytes = all_bytes[
             File_AddrEnum.alarmData.value : File_AddrEnum.alarmData.value + 258
         ]
     elif item == Clone_TypeEnum.dTMFData:
-        item_bytes = allbytes[
+        item_bytes = all_bytes[
             File_AddrEnum.dTMFData.value : File_AddrEnum.dTMFData.value + 842
         ]
     elif item == Clone_TypeEnum.outFactoryData:
-        item_bytes = allbytes[
+        item_bytes = all_bytes[
             File_AddrEnum.outFactoryData.value : File_AddrEnum.outFactoryData.value
             + 2688
         ]
     elif item == Clone_TypeEnum.vfoScanData:
-        item_bytes = allbytes[
+        item_bytes = all_bytes[
             File_AddrEnum.vfoScanData.value : File_AddrEnum.vfoScanData.value + 68
         ]
     return item_bytes
 
 
-def read_item_handle_connect_event(allbytes: bytearray, itemBytes: bytes, item):
+def read_item_handle_connect_event(all_bytes: bytearray, item_Bytes: bytes, item):
     if item == Clone_TypeEnum.radioHead:
-        itemlen = min(len(itemBytes), 14)
-        allbytes[
-            File_AddrEnum.radioHead.value : File_AddrEnum.radioHead.value + itemlen
-        ] = itemBytes[:itemlen]
+        item_len = min(len(item_Bytes), 14)
+        all_bytes[
+            File_AddrEnum.radioHead.value : File_AddrEnum.radioHead.value + item_len
+        ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.radioInfo:
-        itemlen = min(len(itemBytes), 68)
-        allbytes[
-            File_AddrEnum.radioInfo.value : File_AddrEnum.radioInfo.value + itemlen
-        ] = itemBytes[:itemlen]
+        item_len = min(len(item_Bytes), 68)
+        all_bytes[
+            File_AddrEnum.radioInfo.value : File_AddrEnum.radioInfo.value + item_len
+        ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.radioVer:
-        itemlen = min(len(itemBytes), 10)
-        allbytes[
-            File_AddrEnum.radioVer.value : File_AddrEnum.radioVer.value + itemlen
-        ] = itemBytes[:itemlen]
+        item_len = min(len(item_Bytes), 10)
+        all_bytes[
+            File_AddrEnum.radioVer.value : File_AddrEnum.radioVer.value + item_len
+        ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.settingData:
-        itemlen = min(len(itemBytes), 100)
-        allbytes[
-            File_AddrEnum.settingData.value : File_AddrEnum.settingData.value + itemlen
-        ] = itemBytes[:itemlen]
+        item_len = min(len(item_Bytes), 100)
+        all_bytes[
+            File_AddrEnum.settingData.value : File_AddrEnum.settingData.value + item_len
+        ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.zoneData:
-        itemlen = min(len(itemBytes), 3202)
-        allbytes[
-            File_AddrEnum.zoneData.value : File_AddrEnum.zoneData.value + itemlen
-        ] = itemBytes[:itemlen]
+        item_len = min(len(item_Bytes), 3202)
+        all_bytes[
+            File_AddrEnum.zoneData.value : File_AddrEnum.zoneData.value + item_len
+        ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.channelData:
-        itemlen = min(len(itemBytes), 43136)
-        allbytes[
-            File_AddrEnum.channelData.value : File_AddrEnum.channelData.value + itemlen
-        ] = itemBytes[:itemlen]
+        item_len = min(len(item_Bytes), 43136)
+        all_bytes[
+            File_AddrEnum.channelData.value : File_AddrEnum.channelData.value + item_len
+        ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.scanData:
-        itemlen = min(len(itemBytes), 3618)
-        allbytes[
-            File_AddrEnum.scanData.value : File_AddrEnum.scanData.value + itemlen
-        ] = itemBytes[:itemlen]
+        item_len = min(len(item_Bytes), 3618)
+        all_bytes[
+            File_AddrEnum.scanData.value : File_AddrEnum.scanData.value + item_len
+        ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.alarmData:
-        itemlen = min(len(itemBytes), 258)
-        allbytes[
-            File_AddrEnum.alarmData.value : File_AddrEnum.alarmData.value + itemlen
-        ] = itemBytes[:itemlen]
+        item_len = min(len(item_Bytes), 258)
+        all_bytes[
+            File_AddrEnum.alarmData.value : File_AddrEnum.alarmData.value + item_len
+        ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.dTMFData:
-        itemlen = min(len(itemBytes), 842)
-        allbytes[
-            File_AddrEnum.dTMFData.value : File_AddrEnum.dTMFData.value + itemlen
-        ] = itemBytes[:itemlen]
+        item_len = min(len(item_Bytes), 842)
+        all_bytes[
+            File_AddrEnum.dTMFData.value : File_AddrEnum.dTMFData.value + item_len
+        ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.outFactoryData:
-        itemlen = min(len(itemBytes), 2688)
-        allbytes[
+        item_len = min(len(item_Bytes), 2688)
+        all_bytes[
             File_AddrEnum.outFactoryData.value : File_AddrEnum.outFactoryData.value
-            + itemlen
-        ] = itemBytes[:itemlen]
+            + item_len
+        ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.vfoScanData:
-        itemlen = min(len(itemBytes), 68)
-        allbytes[
-            File_AddrEnum.vfoScanData.value : File_AddrEnum.vfoScanData.value + itemlen
-        ] = itemBytes[:itemlen]
-    return allbytes
+        item_len = min(len(item_Bytes), 68)
+        all_bytes[
+            File_AddrEnum.vfoScanData.value : File_AddrEnum.vfoScanData.value + item_len
+        ] = item_Bytes[:item_len]
+    return all_bytes
 
 
 def exit_programming_mode(self):
@@ -1072,29 +1071,29 @@ def exit_programming_mode(self):
         raise errors.RadioError("Radio refused to exit programming mode")
 
 
-def Get_ReadItemBytes(dataType: int, pageIndex: int, dataCode: int = 2):
+def Get_ReadItemBytes(data_type: int, page_index: int, data_code: int = 2):
     data_part = (
         b"RDTP\x01\x00\x00\x00\x00\x00\x00\x00\x08\x00"
-        + dataType.to_bytes(1, "little")
-        + dataCode.to_bytes(1, "little")
+        + data_type.to_bytes(1, "little")
+        + data_code.to_bytes(1, "little")
         + b"\x00\x00\x01\x00"
-        + pageIndex.to_bytes(2, "little")
+        + page_index.to_bytes(2, "little")
     )
     crc = calculate_crc16(data_part, 2)
     return data_part + crc + b"\xff"
 
 
-def Get_WriteItemBytes(
-    dataType: int, pageIndex: int, pageCount: int, dataBuffer: bytes
+def get_write_item_send_bytes(
+    data_type: int, page_index: int, page_count: int, data_buffer: bytes
 ):
     data_part = (
         b"RDTP\x01\x00\x00\x00\x00\x00\x00\x00"
-        + (len(dataBuffer) + 6).to_bytes(2, "little")
-        + dataType.to_bytes(1, "little")
+        + (len(data_buffer) + 6).to_bytes(2, "little")
+        + data_type.to_bytes(1, "little")
         + b"\x00"
-        + pageIndex.to_bytes(2, "little")
-        + pageCount.to_bytes(2, "little")
-        + dataBuffer
+        + page_index.to_bytes(2, "little")
+        + page_count.to_bytes(2, "little")
+        + data_buffer
     )
     return data_part + calculate_crc16(data_part, 2) + b"\xff"
 
@@ -1110,12 +1109,12 @@ def get_crc_bytes(buf, start, length):
 
 
 def calculate_crc16(byte_array, result_length) -> int:
-    checksum = 0xFFFF
-    checksum = get_crc_bytes(byte_array, 0, len(byte_array))
+    check_sum = 0xFFFF
+    check_sum = get_crc_bytes(byte_array, 0, len(byte_array))
 
     # tem = checksum % 256
     # result = ((checksum // 256) + tem * 256)&0xFFFF
-    crc_bytes = struct.pack("<H", checksum)
+    crc_bytes = struct.pack("<H", check_sum)
     return crc_bytes
 
 
@@ -2324,7 +2323,7 @@ def get_ch_items(self):
                 struct.pack("<H", _chdata.chindex[i]), byteorder="big"
             )
             if ch_index < 259:
-                chname = bytes(_chs[ch_index].alias).decode("utf-8").replace("\x00", "")
+                chname ="".join(filter(_chs[ch_index].alias, NAMECHATSET, 12)) 
                 ch_dict.append({"name": chname, "id": ch_index})
     return ch_dict
 
@@ -2694,7 +2693,7 @@ class HA1G(chirp_common.CloneModeRadio):
     _memsize = 0xD868
     page_len = 1024
     current_model = "HA1G"
-    handshakeBytes = Get_HandshakeBytes(MODEL)
+    hand_shake_bytes = get_handshake_bytes(MODEL)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
