@@ -2172,7 +2172,9 @@ def _set_memory(self, mem, _mem, ch_index):
         mem.name = "CH-%d" % mem.number
     alias = mem.name.rstrip()
     alias_encoded = alias.encode("utf-8")
-    alias_bytes = (alias_encoded[:12] if len(alias_encoded) >= 12 else alias_encoded).ljust(14, b"\x00")
+    alias_bytes = (
+        alias_encoded[:12] if len(alias_encoded) >= 12 else alias_encoded
+    ).ljust(14, b"\x00")
     # alias_bytes = mem.name.rstrip().encode("utf-8")[:12].ljust(14, b"\x00")
     setattr(_mem, "alias", alias_bytes)
     txfrq = (
@@ -2326,7 +2328,7 @@ def get_ch_items(self):
                 struct.pack("<H", _chdata.chindex[i]), byteorder="big"
             )
             if ch_index < 259:
-                chname ="".join(filter(_chs[ch_index].alias, NAMECHATSET, 12)) 
+                chname = "".join(filter(_chs[ch_index].alias, NAMECHATSET, 12))
                 ch_dict.append({"name": chname, "id": ch_index})
     return ch_dict
 
@@ -2767,8 +2769,10 @@ class HA1G(chirp_common.CloneModeRadio):
         except Exception as e:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
-            LOG.exception("Unexpected error during upload")
-            raise errors.RadioError("Unexpected error communicating with the radio")
+            LOG.exception("Unexpected error during upload: %s" % e)
+            raise errors.RadioError(
+                "Unexpected error communicating with the radio"
+                )
 
     def get_memory(self, number):
         mem = chirp_common.Memory()
@@ -2785,7 +2789,7 @@ class HA1G(chirp_common.CloneModeRadio):
         _mem = self._memobj.channels[ch_index]
         mem = _get_memory(self, mem, _mem, ch_index)
         if ch_index > 2 and ch_index < 33:
-            mem.immutable = ["freq", "duplex", "offset"]
+            mem.immutable = ["empty","freq", "duplex", "offset"]
         if ch_index >= 10 and ch_index < 17:
             mem.immutable += ["mode", "power"]
         return mem
@@ -2831,32 +2835,19 @@ class HA1G(chirp_common.CloneModeRadio):
                         "GMRS channels 1-30 freq cannot be modified"
                     )
                 )
-            if (mem.number >= 7 and mem.number < 14) and mem.mode != "NFM":
+            if mem.number >= 7 and mem.number < 14 and mem.mode != "NFM":
                 msgs.append(
                     chirp_common.ValidationWarning(
                         "GMRS channels 8-14 Mode cannot be modified"
                     )
                 )
-            if (mem.number >= 7 and mem.number < 14) and mem.power != POWER_LEVELS[0]:
+            if mem.number >= 7 and mem.number < 14 and mem.power != POWER_LEVELS[0]:
                 msgs.append(
                     chirp_common.ValidationWarning(
                         "GMRS channels 8-14 power cannot be modified"
                     )
                 )
         return msgs
-
-    def erase_memory(self, memid_or_index):
-        ch_number = 0
-        if isinstance(memid_or_index, str):
-            ch_number = 0 if memid_or_index == "VFOA" else 1
-        else:
-            ch_number = memid_or_index + 2
-        if ch_number <= 2 or (self.current_model == "HA1G" and ch_number < 33):
-            raise errors.RadioError(
-                "The radio refuses to delete VFO channels and channels 1-30"
-            )
-        else:
-            super().erase_memory(memid_or_index)
 
     def get_settings(self):
 
