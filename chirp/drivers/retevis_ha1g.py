@@ -2168,9 +2168,12 @@ def _set_memory(self, mem, _mem, ch_index):
         ch_index_dict.remove(ch_index)
         set_ch_index(self, ch_index_dict)
     _mem.rxfreq = rx_freq.to_bytes(4, byteorder="little", signed=False)
-    if not mem.name.strip():
+    if not mem.name.rstrip():
         mem.name = "CH-%d" % mem.number
-    alias_bytes = mem.name.encode("utf-8")[:12].ljust(14, b"\x00")
+    alias = mem.name.rstrip()
+    alias_encoded = alias.encode("utf-8")
+    alias_bytes = (alias_encoded[:12] if len(alias_encoded) >= 12 else alias_encoded).ljust(14, b"\x00")
+    # alias_bytes = mem.name.rstrip().encode("utf-8")[:12].ljust(14, b"\x00")
     setattr(_mem, "alias", alias_bytes)
     txfrq = (
         rx_freq - mem.offset
@@ -2765,7 +2768,7 @@ class HA1G(chirp_common.CloneModeRadio):
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
             LOG.exception("Unexpected error during upload")
-            raise errors.RadioError("Unexpected error communicating " "with the radio")
+            raise errors.RadioError("Unexpected error communicating with the radio")
 
     def get_memory(self, number):
         mem = chirp_common.Memory()
