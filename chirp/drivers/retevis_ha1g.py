@@ -1131,6 +1131,9 @@ def is_int_in_u16_bytes(data: bytes, target: int) -> bool:
 
 def _get_memory(self, mem, _mem, ch_index):
     ch_index_dict = get_ch_index(self)
+    if ch_index not in ch_index_dict:
+       mem.freq = 0
+       mem.empty = True  
     mem.extra = RadioSettingGroup("Extra", "extra")
     mem.extra.append(
         RadioSetting(
@@ -1203,10 +1206,7 @@ def _get_memory(self, mem, _mem, ch_index):
     mem.extra.append(
         RadioSetting("scramble", "scramble", RadioSettingValueBoolean(_mem.scramble))
     )
-
-    if ch_index not in ch_index_dict:
-        mem.freq = 0
-        mem.empty = True
+    if mem.empty:
         return mem
     mem.freq = int.from_bytes(_mem.rxfreq, byteorder="little")
     mem.name = "".join(filter(_mem.alias, NAMECHATSET, 12))
@@ -2160,23 +2160,21 @@ def get_zone_list(self, zone_list):
 
 def _set_memory(self, mem, _mem, ch_index):
     ch_index_dict = get_ch_index(self)
-    rx_freq = get_ch_rxfreq(mem.freq)
+    rx_freq = get_ch_rxfreq(mem)
     if ch_index not in ch_index_dict and (rx_freq != 0 and rx_freq != 0xFFFFFFFF):
         ch_index_dict.append(ch_index)
         set_ch_index(self, ch_index_dict)
     elif ch_index in ch_index_dict and rx_freq <= 0:
         ch_index_dict.remove(ch_index)
         set_ch_index(self, ch_index_dict)
+    _mem.set_raw(b"\x00" * 40)
+    if mem.empty: 
+        return
     _mem.rxfreq = rx_freq.to_bytes(4, byteorder="little", signed=False)
-    if not mem.name.rstrip():
-        mem.name = "CH-%d" % mem.number
-    alias = mem.name.rstrip()
-    alias_encoded = alias.encode("utf-8")
-    alias_bytes = (
-        alias_encoded[:12] if len(alias_encoded) >= 12 else alias_encoded
-    ).ljust(14, b"\x00")
-    # alias_bytes = mem.name.rstrip().encode("utf-8")[:12].ljust(14, b"\x00")
-    setattr(_mem, "alias", alias_bytes)
+    channel_name =mem.name.strip()
+    if not channel_name:  
+        channel_name = f"CH-{mem.number}"
+    _mem.alias =channel_name.ljust(14, chr(00))
     txfrq = (
         rx_freq - mem.offset
         if mem.duplex == "-" and mem.offset > 0
@@ -2190,6 +2188,7 @@ def _set_memory(self, mem, _mem, ch_index):
         _mem.power = POWER_LEVELS.index(mem.power)
     else:
         _mem.power = 0
+   
     ((txmode, txtone, txpol), (rxmode, rxtone, rxpol)) = chirp_common.split_tone_encode(
         mem
     )
@@ -2375,15 +2374,17 @@ def get_ch_index_by_bytes(ch_bytes):
     return int.from_bytes(struct.pack("<H", ch_bytes), byteorder="big")
 
 
-def get_ch_rxfreq(freq):
-    ch_freq = (freq // 10) * 10
-    if freq == 0:
-        return freq
-    elif freq < 134000000:
+def get_ch_rxfreq(mem):
+    if mem.empty:
+        return 0
+    ch_freq = (mem.freq // 10) * 10
+    if mem.freq == 0:
+        return mem.freq
+    elif mem.freq < 134000000:
         ch_freq = 134000000
-    elif freq > 174000000 and freq < 400000000:
+    elif mem.freq > 174000000 and mem.freq < 400000000:
         ch_freq = 174000000
-    elif freq > 480000000:
+    elif mem.freq > 480000000:
         ch_freq = 480000000
     return ch_freq
 
