@@ -3002,9 +3002,6 @@ class HA1G(chirp_common.CloneModeRadio):
         _mem = self._memobj.channels[ch_index]
         return repr(_mem)
 
-    def validate_memory(self, mem):
-        msgs = super().validate_memory(mem)
-        return msgs
 
     def get_settings(self):
 
