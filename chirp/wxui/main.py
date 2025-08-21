@@ -1017,6 +1017,12 @@ class ChirpMain(wx.Frame):
         help_menu.Append(self.bug_report_item)
         self.bug_report_item.Enable(False)
 
+        if developer.developer_mode():
+            trace_item = wx.MenuItem(help_menu, wx.NewId(),
+                                     'Open last serial trace')
+            self.Bind(wx.EVT_MENU, self._menu_last_trace, trace_item)
+            help_menu.Append(trace_item)
+
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, wx.GetStockLabel(wx.ID_FILE))
         menu_bar.Append(edit_menu, wx.GetStockLabel(wx.ID_EDIT))
@@ -2020,6 +2026,13 @@ GNU General Public License for more details."""
                 wx.MessageBox(_('Module loaded successfully'),
                               _('Success'),
                               wx.ICON_INFORMATION)
+
+    def _menu_last_trace(self, event):
+        try:
+            fn = serialtrace.TRACEFILES[-1]
+            wx.LaunchDefaultApplication(fn)
+        except IndexError:
+            common.error_proof.show_error('No traces stored', parent=self)
 
     def _menu_auto_edits(self, event):
         CONF.set_bool('auto_edits', event.IsChecked(), 'state')
