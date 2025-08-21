@@ -61,7 +61,7 @@ struct {
      ham:1,
      gmrs:1,
      unused14:1,
-     unused15:1,
+     dtmfst:1,
      pritx:1;
   u8 scanmode:2,
      unused16:1,
@@ -100,7 +100,8 @@ struct {
   u8 ligcon;
   u8 voxdelay;
   u8 onlychmode:1,
-     unused:6,
+     breathled:3,
+     unused:3,
      alarm:1;
 } settings;
 
@@ -309,7 +310,7 @@ struct {
      dtmfspeed:3;
   u8 unknown25:4,
      scanband:4;
-  u8 unknown26:8;
+  u8 brightness:8;
   u8 unknown27:8;
   u8 unknown28:8;
   u8 txled:1,
@@ -696,11 +697,9 @@ struct{
 SQUELCH = ['%s' % x for x in range(0, 10)]
 LIGHT_LIST = ["CONT", "5s", "10s", "15s", "30s"]
 LIGHT730_LIST = ["CONT", "10s", "20s", "30s"]
-TIME_OUT_LIST = ["OFF", "60s", "120s", "180s"]
 MDFA_LIST = ["Frequency", "Name"]
 MDFB_LIST = ["Frequency", "Name"]
 HOP_LIST = ["A", "B", "C", "D"]
-SYNC_LIST = ["ON", "OFF"]
 LANG_LIST = ["Chinese", "English"]
 SCAN_MODE_LIST = ["TO", "CO", "SE"]
 PRIO_LIST = ["Edit", "Busy"]
@@ -711,7 +710,6 @@ LONG_KEY_LIST = ["None", "FM Radio", "Lamp",
 SHORT_KEY730_LIST = ["None", "Scan", "FM", "Warn", "TONE", "Weather",
                      "Copy CH"]
 LONG_KEY730_LIST = SHORT_KEY730_LIST + ["Monitor"]
-BUSYLOCK_LIST = ["Off", "On"]
 PRESS_NAME = ["stopkey1", "ssidekey1", "ssidekey2",
               "ltopkey2", "lsidekey3", "lsidekey4"]
 
@@ -737,10 +735,10 @@ VFOB_NAME = ["rxfreqb",
              "wideb",
              "offsetb"]
 
-TOT_LIST = ["OFF", "30S", "60S", "90S", "120S", "150S", "180S", "210S"]
+TOT_LIST = ["Off", "30S", "60S", "90S", "120S", "150S", "180S", "210S"]
 ALARM_LIST = ["On site", "Alarm"]
 
-DTMF_AUTO_RESET_LIST = ["OFF", "5S", "10S", "15S"]
+DTMF_AUTO_RESET_LIST = ["Off", "5S", "10S", "15S"]
 DTMF_DECODING_RESPONSE_LIST = ["NULL", "RING", "REPLY", "BOTH"]
 DTMF_SPEED_LIST = ["80ms",
                    "90ms",
@@ -763,66 +761,41 @@ SCAN_BAND_LIST = ["All",
                   "5.0M"]
 
 # KEY
-VOX_GAIN = ["OFF", "1", "2", "3", "4", "5"]
+VOX_GAIN = ["Off", "1", "2", "3", "4", "5"]
 VOX_DELAY = ["1.05s", "2.0s", "3.0s"]
-VOX_GAIN730 = ["OFF", "1", "2", "3"]
+VOX_GAIN730 = ["Off", "1", "2", "3"]
 VOX_DELAY730 = ["0.5s", "1.0s", "2.0s", "3.0s"]
 PTTID_VALUES = ["Off", "BOT", "EOT", "BOTH"]
 BCLOCK_VALUES = ["Off", "On"]
 FREQHOP_VALUES = ["Off", "On"]
-SCAN_VALUES = ["Del", "Add"]
 
 # AB CHANNEL
 A_OFFSET = ["Off", "-", "+"]
 A_BAND = ["Wide", "Narrow"]
-A_BUSYLOCK = ["Off", "On"]
-A_SPEC_QTDQT = ["Off", "On"]
 A_WORKMODE = ["VFO", "VFO+CH", "CH Mode"]
 
 B_OFFSET = ["Off", "-", "+"]
 B_BAND = ["Wide", "Narrow"]
-B_BUSYLOCK = ["Off", "On"]
-B_SPEC_QTDQT = ["Off", "On"]
 B_WORKMODE = ["VFO", "VFO+CH", "CH Mode"]
 
 # FM
-FM_WORKMODE = ["CH", "VFO"]
+FM_WORKMODE = ["VFO", "CH"]
 FM_CHANNEL = ['%s' % x for x in range(0, 26)]
 
 # DTMF
 GROUPCODE = ["", "Off", "*", "#", "A", "B", "C", "D"]
 
 AB_LIST = ["A", "B"]
-ALMOD_LIST = ["Site", "Tone", "Code"]
 BANDWIDTH_LIST = ["Wide", "Narrow"]
-COLOR_LIST = ["Off", "Blue", "Orange", "Purple"]
-DTMFSPEED_LIST = ["%s ms" % x for x in range(50, 2010, 10)]
-DTMFST_LIST = ["OFF", "DT-ST", "ANI-ST", "DT+ANI"]
-MODE_LIST = ["Channel", "Name", "Frequency"]
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
-PTTIDCODE_LIST = ["%s" % x for x in range(1, 16)]
 RTONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
-RESUME_LIST = ["TO", "CO", "SE"]
-ROGERRX_LIST = ["Off"] + AB_LIST
-RPSTE_LIST = ["OFF"] + ["%s" % x for x in range(1, 11)]
 SCODE_LIST = ["%s" % x for x in range(1, 16)]
-SHIFTD_LIST = ["Off", "+", "-"]
-STEDELAY_LIST = ["OFF"] + ["%s ms" % x for x in range(100, 1100, 100)]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
 STEP_LIST = [str(x) for x in STEPS]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
-STEP291_LIST = [str(x) for x in STEPS]
-TDRAB_LIST = ["Off"] + AB_LIST
-TDRCH_LIST = ["CH%s" % x for x in range(1, 129)]
-TIMEOUT_LIST = ["%s sec" % x for x in range(15, 615, 15)] + \
-    ["Off (if supported by radio)"]
 TIMEOUT730_LIST = ["Off"] + ["%s sec" % x for x in range(30, 240, 30)]
-VOICE_LIST = ["Off", "English", "Chinese"]
-VOX_LIST = ["OFF"] + ["%s" % x for x in range(1, 11)]
-WORKMODE_LIST = ["Frequency", "Channel"]
 # mic
 MIC_GAIN_LIST = ['%s' % x for x in range(0, 10)]
-MIC_GAIN_LIST_H8 = ['%s' % x for x in range(0, 33)]
 H8_LIST = ["TD-H8", "TD-H8-HAM", "TD-H8-GMRS"]
 H3_LIST = ["TD-H3", "TD-H3-HAM", "TD-H3-GMRS"]
 
@@ -835,8 +808,7 @@ NOAA_FREQS = [162550000, 162400000, 162475000, 162425000, 162450000,
 HAM_GMRS_NAME = ["NOAA 1", "NOAA 2", "NOAA 3", "NOAA 4", "NOAA 5", "NOAA 6",
                  "NOAA 7", "NOAA 8", "NOAA 9", "NOAA 10", "NOAA 11"]
 
-ALL_MODEL = ["TD-H8", "TD-H8-HAM", "TD-H8-GMRS", "TD-H3",
-             "TD-H3-HAM", "TD-H3-GMRS", "RT-730"]
+ALL_MODEL = H8_LIST + H3_LIST + ["RT-730"]
 
 TD_H8 = b"\x50\x56\x4F\x4A\x48\x1C\x14"
 TD_H3 = b"\x50\x56\x4F\x4A\x48\x5C\x14"
@@ -1046,9 +1018,10 @@ class TDH8(chirp_common.CloneModeRadio):
     _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
                  chirp_common.PowerLevel("Mid",  watts=4.00),
                  chirp_common.PowerLevel("High", watts=8.00)]
-    _ponmsg_list = ["Full", "Message", "Icon"]
-    _save_list = ["Off", "1:1", "1:2", "1:3", "1:4"]
-    _save_shortname = "Battery Save"
+    _ponmsg_list = ["Off", "Msg", "Icon"]
+    _breath_led_list = ["Off", "5S", "10S", "15S", "30S"]
+    _save_list = ["Off", "1:1", "1:2", "1:3", "1:4", "1:8"]
+    _save_shortname = "Power Save"
 
     @classmethod
     def detect_from_serial(cls, pipe):
@@ -1472,17 +1445,14 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(rs)
 
             rs = RadioSetting("sync", "SYNC",
-                              RadioSettingValueList(
-                                  SYNC_LIST,
-                                  current_index=_settings.sync))
-
+                              RadioSettingValueBoolean(
+                                  not _settings.sync))
             basic.append(rs)
 
             rs = RadioSetting("save", self._save_shortname,
                               RadioSettingValueList(
                                   self._save_list,
                                   current_index=_settings.save))
-
             basic.append(rs)
 
         rs = RadioSetting("dbrx", "Double Rx",
@@ -1519,18 +1489,32 @@ class TDH8(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         if self.MODEL != "RT-730":
+            if self.MODEL in H8_LIST:
+                # H8 uses roger-beep bool
+                rs = RadioSetting("rogerprompt", "Roger",
+                                  RadioSettingValueBoolean(
+                                    _settings.rogerprompt))
+                basic.append(rs)
+
             if self.MODEL in H3_LIST:
                 # H3 uses roger-beep list
                 rs = RadioSetting("rogerprompt", "Roger",
                                   RadioSettingValueList(
                                       self._roger_list,
                                       current_index=_settings.rogerprompt))
-            else:
-                # H8 uses roger-beep bool
-                rs = RadioSetting("rogerprompt", "Roger",
-                                  RadioSettingValueBoolean(
-                                      _settings.rogerprompt))
-            basic.append(rs)
+                basic.append(rs)
+
+                if _settings.brightness not in range(0, 5):
+                    LOG.warning(
+                        "brightness out of range 1 to 5. Actual value: %X. "
+                        "Screen may not be visible",
+                        _settings.brightness)
+
+                rs = RadioSetting("brightness", "Brightness",
+                                  RadioSettingValueList(
+                                      self._brightness_list,
+                                      current_index=4 - _settings.brightness))
+                basic.append(rs)
 
         rs = RadioSetting("txled", "Disp Lcd(TX)",
                           RadioSettingValueBoolean(_settings.txled))
@@ -1557,8 +1541,9 @@ class TDH8(chirp_common.CloneModeRadio):
 
         if self.MODEL in H8_LIST:
             rs = RadioSetting("stopkey1", "SHORT_KEY_TOP",
-                              RadioSettingValueList(SHORT_KEY_LIST,
-                                                    current_index=0))
+                              RadioSettingValueList(
+                                  SHORT_KEY_LIST,
+                                  current_index=_press.stopkey1))
             basic.append(rs)
 
             rs = RadioSetting("ltopkey2", "LONG_KEY_TOP",
@@ -1649,6 +1634,12 @@ class TDH8(chirp_common.CloneModeRadio):
                               RadioSettingValueList(
                                   VOX_DELAY,
                                   current_index=_settings.voxdelay))
+            basic.append(rs)
+
+            rs = RadioSetting("breathled", "Breath Led",
+                              RadioSettingValueList(
+                                  self._breath_led_list,
+                                  current_index=_settings.breathled))
             basic.append(rs)
 
             rs = RadioSetting("ponmsg", "Power-On Message",
@@ -1819,8 +1810,8 @@ class TDH8(chirp_common.CloneModeRadio):
                 cur_a_power = 0
             rs = RadioSetting("lowpower", "A TX Power",
                               RadioSettingValueList(
-                                  [str(x) for x in self._tx_power],
-                                  str(self._tx_power[cur_a_power])))
+                                [str(x) for x in self._tx_power],
+                                current_index=cur_a_power))
             abblock.append(rs)
 
             rs = RadioSetting("wide", "A Band",
@@ -1829,14 +1820,11 @@ class TDH8(chirp_common.CloneModeRadio):
             abblock.append(rs)
 
             rs = RadioSetting("bcl", "A Busy Lock",
-                              RadioSettingValueList(
-                                  A_BUSYLOCK, current_index=_vfoa.bcl))
+                              RadioSettingValueBoolean(_settings.ablock))
             abblock.append(rs)
 
             rs = RadioSetting("specialqta", "A Special QT/DQT",
-                              RadioSettingValueList(
-                                  A_SPEC_QTDQT,
-                                  current_index=_vfoa.specialqta))
+                              RadioSettingValueBoolean(_vfoa.specialqta))
             abblock.append(rs)
 
             rs = RadioSetting(
@@ -1888,8 +1876,8 @@ class TDH8(chirp_common.CloneModeRadio):
                 cur_b_power = 0
             rs = RadioSetting("lowpowerb", "B TX Power",
                               RadioSettingValueList(
-                                  [str(x) for x in self._tx_power],
-                                  str(self._tx_power[cur_b_power])))
+                                [str(x) for x in self._tx_power],
+                                current_index=cur_b_power))
             abblock.append(rs)
 
             rs = RadioSetting("wideb", "B Band",
@@ -1898,14 +1886,11 @@ class TDH8(chirp_common.CloneModeRadio):
             abblock.append(rs)
 
             rs = RadioSetting("bclb", "B Busy Lock",
-                              RadioSettingValueList(
-                                  B_BUSYLOCK, current_index=_vfob.bclb))
+                              RadioSettingValueBoolean(_settings.bblock))
             abblock.append(rs)
 
             rs = RadioSetting("specialqtb", "B Special QT/DQT",
-                              RadioSettingValueList(
-                                  B_SPEC_QTDQT,
-                                  current_index=_vfob.specialqtb))
+                              RadioSettingValueBoolean(_vfob.specialqtb))
             abblock.append(rs)
 
             rs = RadioSetting(
@@ -1928,7 +1913,7 @@ class TDH8(chirp_common.CloneModeRadio):
                               current_index=_settings.fmroad))
         fmmode.append(rs)
 
-        rs = RadioSetting("fmrec", "Forbid Receive",
+        rs = RadioSetting("fmrec", "Allow Receive",
                           RadioSettingValueBoolean(_settings.fmrec))
         fmmode.append(rs)
 
@@ -1978,9 +1963,11 @@ class TDH8(chirp_common.CloneModeRadio):
                 gcode_val = ""
             else:
                 gcode_val = gcode_val[1]
-            rs = RadioSetting("gcode", "Group Code",
-                              RadioSettingValueList(GROUPCODE,
-                                                    gcode_val))
+            rs = RadioSetting(
+                    "gcode", "Group Code",
+                    RadioSettingValueList(
+                        GROUPCODE,
+                        current_index=GROUPCODE.index(gcode_val)))
             dtmf.append(rs)
 
             icode_list = self._memobj.icode.idcode
@@ -2103,6 +2090,11 @@ class TDH8(chirp_common.CloneModeRadio):
             ecode_val = RadioSettingValueString(0, 7, used_ecode)
             rs = RadioSetting("ecode", "PTT ID Ending(BOT)", ecode_val)
             dtmf.append(rs)
+            if self.MODEL in H8_LIST:
+                rs = RadioSetting("dtmfst", "DTMF Side Tones",
+                                  RadioSettingValueBoolean(_settings.dtmfst))
+                dtmf.append(rs)
+
             # H3
             if self.MODEL not in H8_LIST:
                 # stuncode
@@ -2204,7 +2196,6 @@ class TDH8(chirp_common.CloneModeRadio):
                     elif name in PRESS_NAME:
                         obj = _press
                         setting = element.get_name()
-
                     elif name in VFOA_NAME:
                         obj = _vfoa
                         setting = element.get_name()
@@ -2232,7 +2223,7 @@ class TDH8(chirp_common.CloneModeRadio):
                     elif "scode" in name:
                         obj = self._memobj.startcode.scode
                         setting = element.get_name()
-                    elif "ecode" in name:
+                    elif "ecode" == name:
                         obj = self._memobj.endcode.ecode
                         setting = element.get_name()
                     elif "group1" in name:
@@ -2274,9 +2265,12 @@ class TDH8(chirp_common.CloneModeRadio):
                     if element.has_apply_callback():
                         LOG.debug("Using apply callback")
                         element.run_apply_callback()
-
+                    elif "brightness" == name:
+                        _settings.brightness = 4 - int(element.value)
+                    elif "sync" == name:
+                        _settings.sync = not int(element.value)
                     # Channel A
-                    elif setting == "rxfreqa" and element.value.get_mutable():
+                    elif "rxfreqa" == setting and element.value.get_mutable():
                         val = int(str(element.value).replace(
                             '.', '').ljust(8, '0'))
                         if (val >= 13600000 and val <= 17400000) or \
@@ -2291,7 +2285,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                 "or enabled in settings")
                             raise InvalidValueError(msg)
 
-                    elif setting == "ofseta" and element.value.get_mutable():
+                    elif "ofseta" == setting and element.value.get_mutable():
                         if '.' in str(element.value):
                             val = str(element.value).replace(' ', '')
                             if len(
@@ -2325,7 +2319,7 @@ class TDH8(chirp_common.CloneModeRadio):
                             raise InvalidValueError(msg)
 
                     # B channel
-                    elif setting == "rxfreqb" and element.value.get_mutable():
+                    elif "rxfreqb" == setting and element.value.get_mutable():
                         val = 0
                         val = int(str(element.value).replace(
                             '.', '').ljust(8, '0'))
@@ -2342,7 +2336,7 @@ class TDH8(chirp_common.CloneModeRadio):
                             raise InvalidValueError(msg)
                         # setattr(obj, setting, val)
 
-                    elif setting == "ofsetb" and element.value.get_mutable():
+                    elif "ofsetb" == setting and element.value.get_mutable():
                         if '.' in str(element.value):
                             val = str(element.value).replace(' ', '')
                             if len(val[val.index(".") + 1:]
@@ -2391,10 +2385,10 @@ class TDH8(chirp_common.CloneModeRadio):
                         self._memobj.fmmode[num].fmblock = val
                         self._memobj.fmusedflags[num] = bool(val)
 
-                    elif setting == 'fmvfo' and element.value.get_mutable():
+                    elif 'fmvfo' == setting and element.value.get_mutable():
                         self._memobj.fmvfo = int(element.value * 10)
 
-                    elif setting == 'gcode' and element.value.get_mutable():
+                    elif 'gcode' == setting and element.value.get_mutable():
                         val = str(element.value)
                         if val == 'Off':
                             gcode_used = 0xFF
@@ -2414,7 +2408,7 @@ class TDH8(chirp_common.CloneModeRadio):
                             gcode_used = 0x00
                         self._memobj.groupcode.gcode = gcode_used
 
-                    elif setting == 'icode' and element.value.get_mutable():
+                    elif 'icode' == setting and element.value.get_mutable():
                         val = str(element.value)
                         list_val = []
                         lenth_val = 0
@@ -2427,7 +2421,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                 lenth_val += 1
                         self._memobj.icode.idcode = list_val
 
-                    elif setting == 'scode' and element.value.get_mutable():
+                    elif 'scode' == setting and element.value.get_mutable():
                         val = str(element.value)
                         list_val = []
                         lenth_val = 0
@@ -2440,7 +2434,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                 lenth_val += 1
                         self._memobj.startcode.scode = list_val
 
-                    elif setting == 'ecode' and element.value.get_mutable():
+                    elif 'ecode' == setting and element.value.get_mutable():
                         val = str(element.value)
                         list_val = []
                         lenth_val = 0
@@ -2453,7 +2447,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                 lenth_val += 1
                         self._memobj.endcode.ecode = list_val
 
-                    elif setting == 'group1' and element.value.get_mutable():
+                    elif 'group1' == setting and element.value.get_mutable():
                         val = str(element.value)
                         list_val = []
                         lenth_val = 0
@@ -2466,7 +2460,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                 lenth_val += 1
                         self._memobj.group1.group1 = list_val
 
-                    elif setting == 'group2' and element.value.get_mutable():
+                    elif 'group2' == setting and element.value.get_mutable():
                         val = str(element.value)
                         list_val = []
                         lenth_val = 0
@@ -2479,7 +2473,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                 lenth_val += 1
                         self._memobj.group2.group2 = list_val
 
-                    elif setting == 'group3' and element.value.get_mutable():
+                    elif 'group3' == setting and element.value.get_mutable():
                         val = str(element.value)
                         list_val = []
                         lenth_val = 0
@@ -2492,7 +2486,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                 lenth_val += 1
                         self._memobj.group3.group3 = list_val
 
-                    elif setting == 'group4' and element.value.get_mutable():
+                    elif 'group4' == setting and element.value.get_mutable():
                         val = str(element.value)
                         list_val = []
                         lenth_val = 0
@@ -2505,7 +2499,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                 lenth_val += 1
                         self._memobj.group4.group4 = list_val
 
-                    elif setting == 'group5' and element.value.get_mutable():
+                    elif 'group5' == setting and element.value.get_mutable():
                         val = str(element.value)
                         list_val = []
                         lenth_val = 0
@@ -2518,7 +2512,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                 lenth_val += 1
                         self._memobj.group5.group5 = list_val
 
-                    elif setting == 'group6' and element.value.get_mutable():
+                    elif 'group6' == setting and element.value.get_mutable():
                         val = str(element.value)
                         list_val = []
                         lenth_val = 0
@@ -2531,7 +2525,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                 lenth_val += 1
                         self._memobj.group6.group6 = list_val
 
-                    elif setting == 'group7' and element.value.get_mutable():
+                    elif 'group7' == setting and element.value.get_mutable():
                         val = str(element.value)
                         list_val = []
                         lenth_val = 0
@@ -2544,7 +2538,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                 lenth_val += 1
                         self._memobj.group7.group7 = list_val
 
-                    elif setting == 'group8' and element.value.get_mutable():
+                    elif 'group8' == setting and element.value.get_mutable():
                         val = str(element.value)
                         list_val = []
                         lenth_val = 0
@@ -2559,7 +2553,7 @@ class TDH8(chirp_common.CloneModeRadio):
                     elif setting == 'micgain':
                         self._memobj.mic.micgain = (
                             str(element.value))
-                    elif setting == 'stuncode' and element.value.get_mutable():
+                    elif 'stuncode' == setting and element.value.get_mutable():
                         val = str(element.value)
                         list_val = []
                         lenth_val = 0
@@ -2571,7 +2565,7 @@ class TDH8(chirp_common.CloneModeRadio):
                                 list_val.append(0xFF)
                                 lenth_val += 1
                         self._memobj.skcode.stuncode = list_val
-                    elif setting == 'killcode' and element.value.get_mutable():
+                    elif 'killcode' == setting and element.value.get_mutable():
                         val = str(element.value)
                         list_val = []
                         lenth_val = 0
@@ -2681,10 +2675,8 @@ class TDH3(TDH8):
     _mem_params = (0x1F2F)
     _tx_power = [chirp_common.PowerLevel("Low",  watts=2.00),
                  chirp_common.PowerLevel("High",  watts=5.00)]
-    _ponmsg_list = ["Off", "Message", "Icon"]
     _roger_list = ["Off", "TONE1", "TONE2"]
-    _save_list = ["Off", "1:1", "1:2", "1:3", "1:4", "1:8"]
-    _save_shortname = "Power Save"
+    _brightness_list = ["1", "2", "3", "4", "5"]
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)

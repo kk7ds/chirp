@@ -419,11 +419,11 @@ def _recv(radio, addr):
     # Get the full 69 bytes at a time to reduce load
     # 1 byte ACK + 4 bytes header + 64 bytes of data (BLOCK_SIZE)
 
-    # get the whole block
-    block = _rawrecv(radio, BLOCK_SIZE + 5)
+    # get the whole block Bug #11851 BLOCKSIZE fix for KT-8900D
+    block = _rawrecv(radio, radio._block_size + 5)
 
-    # basic check
-    if len(block) < (BLOCK_SIZE + 5):
+    # basic check Bug #11851 BLOCKSIZE fix for KT-8900D
+    if len(block) < (radio._block_size + 5):
         raise errors.RadioError("Short read of the block 0x%04x" % addr)
 
     # checking for the ack
@@ -432,7 +432,7 @@ def _recv(radio, addr):
 
     # header validation
     c, a, l = struct.unpack(">BHB", block[1:5])
-    if a != addr or l != BLOCK_SIZE or c != ord("X"):
+    if a != addr or l != radio._block_size or c != ord("X"):
         LOG.debug("Invalid header for block 0x%04x" % addr)
         LOG.debug("CMD: %s  ADDR: %04x  SIZE: %02x" % (c, a, l))
         raise errors.RadioError("Invalid header for block 0x%04x:" % addr)
@@ -542,16 +542,16 @@ def _download(radio):
     # put radio in program mode and identify it
     _do_ident(radio, status)
 
-    # reset the progress bar in the UI
-    status.max = MEM_SIZE // BLOCK_SIZE
+    # reset the progress bar in the UI Bug #11851 BLOCKSIZE fix for KT-8900D
+    status.max = MEM_SIZE // radio._block_size
     status.msg = "Cloning from radio..."
     status.cur = 0
     radio.status_fn(status)
 
     data = b""
-    for addr in range(0, MEM_SIZE, BLOCK_SIZE):
+    for addr in range(0, MEM_SIZE, radio._block_size):
         # sending the read request
-        _send(radio, _make_frame("S", addr, BLOCK_SIZE))
+        _send(radio, _make_frame("S", addr, radio._block_size))
 
         # read
         d = _recv(radio, addr)
@@ -662,6 +662,7 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
     """BTECH's UV-5001 and alike radios"""
     VENDOR = "BTECH"
     MODEL = ""
+    _block_size = BLOCK_SIZE  # Bug 11851 should default to BLOCK_SIZE
     IDENT = ""
     BANDS = 2
     COLOR_LCD = False
@@ -4091,6 +4092,7 @@ class KT8900D(BTechColor):
     """QYT KT8900D"""
     VENDOR = "QYT"
     MODEL = "KT8900D"
+    _block_size = 0x10   # Bug 11851 BLOCKSIZE fix for KT-8900D
     BANDS = 2
     LIST_TMR = LIST_TMR15
     _vhf_range = (136000000, 175000000)

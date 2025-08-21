@@ -1297,6 +1297,7 @@ class RT470Radio(JC8810base):
                          b"\x00\x00\x00\x42\x00\x20\xF0\x04",
                          b"\x00\x00\x00\x4A\x00\x20\xF8\x04",
                          b"\x00\x00\x00\x3A\x00\x20\xE8\x04",  # fw 1.25A
+
                          b"\x00\x00\x00\x42\x00\x20\xEC\x04",  # fw 1.27A
                          ]
 
@@ -1581,6 +1582,7 @@ class RT630Radio(JC8810base):
     # ==========
 
     _fingerprint = [b"\x00\x00\x00\x32\x00\x20\xD8\x04",  # fw 0.07
+                    b"\x00\x00\x00\x36\x00\x20\xDC\x04",  # fw V0.09 20250703
                     ]
 
     POWER_LEVELS = [chirp_common.PowerLevel("H", watts=5.00),

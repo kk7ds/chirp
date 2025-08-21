@@ -29,15 +29,12 @@ def _safe_read(pipe, count):
     first = True
     for _i in range(0, 60):
         buf += pipe.read(count - len(buf))
-        # LOG.debug("safe_read: %i/%i\n" % (len(buf), count))
         if buf:
             if first and buf[0] == CMD_ACK:
-                # LOG.debug("Chewed an ack")
                 buf = buf[1:]  # Chew an echo'd ack if using a 2-pin cable
             first = False
         if len(buf) == count:
             break
-    LOG.debug(util.hexprint(buf))
     return buf
 
 
@@ -55,7 +52,6 @@ def _chunk_read(pipe, count, status_fn):
             data += chunk
             if data[0] == CMD_ACK:
                 data = data[1:]  # Chew an echo'd ack if using a 2-pin cable
-        # LOG.debug("Chewed an ack")
         if time.time() - timer > 2:
             # It's been two seconds since we last saw data from the radio,
             # so it's time to give up.
@@ -118,7 +114,6 @@ def _chunk_write(pipe, data, status_fn, block):
         chunk = data[i:i+block]
         pipe.write(chunk)
         count += len(chunk)
-        LOG.debug("@_chunk_write, count: %i, blocksize: %i" % (count, block))
         time.sleep(delay)
 
         status = chirp_common.Status()

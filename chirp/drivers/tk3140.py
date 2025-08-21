@@ -20,6 +20,7 @@ import struct
 from chirp import chirp_common
 from chirp import bitwise
 from chirp import directory
+from chirp.drivers import tk280
 from chirp.drivers import tk8160
 from chirp.drivers import tk8180
 from chirp import errors
@@ -35,13 +36,11 @@ EMPTY_INDEX_ENTRY = IndexEntry(0xFF, 0xFF, 0xFF, 0xFF)
 
 
 def send(radio, frame):
-    LOG.debug("%04i P>R:\n%s" % (len(frame), util.hexprint(frame)))
     radio.pipe.write(frame)
 
 
 def recv(radio, count):
     buf = radio.pipe.read(count)
-    LOG.debug('%04i: R>P:\n%s' % (len(buf), util.hexprint(buf)))
     return buf
 
 
@@ -143,7 +142,6 @@ def do_upload(radio):
     data = radio._mmap.get_packed()
     for block in range(0x80):
         if 0x54 <= block < 0x60:
-            LOG.debug('Skipping block 0x%02x' % block)
             continue
         addr = block * 256
         chunk = data[addr:addr + 256]
@@ -290,8 +288,10 @@ struct {
     char name[10];
     lbcd rx_freq[4];
     lbcd tx_freq[4];
-    u8 rxsomething;
-    u8 txsomething;
+    u8 rxsomething:4,
+       rxstep:4;
+    u8 txsomething:4,
+       txstep:4;
     ul16 rxtone;
     ul16 txtone;
     u8 unknown2[5];
@@ -547,8 +547,8 @@ class KenwoodTKx140Radio(chirp_common.CloneModeRadio):
         _mem.memory = mem.number
         _mem.zone = self._zone
         self.sort_index()
-        _mem.rxsomething = 0x35
-        _mem.txsomething = 0x35
+        _mem.rxsomething = 0x3
+        _mem.txsomething = 0x3
 
         _mem.rx_freq = mem.freq // 10
         if mem.duplex == '':
@@ -563,6 +563,17 @@ class KenwoodTKx140Radio(chirp_common.CloneModeRadio):
             _mem.tx_freq = (mem.freq + mem.offset) // 10
         else:
             raise errors.RadioError('Unsupported duplex mode %r' % mem.duplex)
+
+        step_lookup = {
+            6.25: 0x02,
+            12.5: 0x05,
+            5.0: 0x01,
+            2.5: 0x00,
+            10.0: 0x04,
+            7.5: 0x06,  # maybe?
+        }
+        _mem.rxstep = tk280.choose_step(step_lookup, int(_mem.rx_freq) * 10)
+        _mem.txstep = tk280.choose_step(step_lookup, int(_mem.tx_freq) * 10)
 
         txtone, rxtone = chirp_common.split_tone_encode(mem)
         _mem.rxtone = tk8180.KenwoodTKx180Radio._encode_tone(*rxtone)

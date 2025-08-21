@@ -51,6 +51,7 @@ from chirp.wxui import query_sources
 from chirp.wxui import radioinfo
 from chirp.wxui import radiothread
 from chirp.wxui import report
+from chirp.wxui import serialtrace
 from chirp.wxui import settingsedit
 from chirp import CHIRP_VERSION
 
@@ -1016,6 +1017,12 @@ class ChirpMain(wx.Frame):
         help_menu.Append(self.bug_report_item)
         self.bug_report_item.Enable(False)
 
+        if developer.developer_mode():
+            trace_item = wx.MenuItem(help_menu, wx.NewId(),
+                                     'Open last serial trace')
+            self.Bind(wx.EVT_MENU, self._menu_last_trace, trace_item)
+            help_menu.Append(trace_item)
+
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, wx.GetStockLabel(wx.ID_FILE))
         menu_bar.Append(edit_menu, wx.GetStockLabel(wx.ID_EDIT))
@@ -1321,6 +1328,9 @@ class ChirpMain(wx.Frame):
                           for fn in open_files if fn),
                  'state')
         config._CONFIG.save()
+
+        # Clean up any trace files we left
+        serialtrace.purge_trace_files(0)
 
         ALL_MAIN_WINDOWS.remove(self)
         self.Destroy()
@@ -1718,14 +1728,15 @@ class ChirpMain(wx.Frame):
         else:
             d = clone.ChirpUploadDialog(radio, self)
 
-        d.Centre()
-        r = d.ShowModal()
-        if r != wx.ID_OK:
-            LOG.info('Removing un-uploaded backup %s', fn)
-            try:
-                os.remove(fn)
-            except Exception:
-                pass
+        with d:
+            d.Centre()
+            r = d.ShowModal()
+            if r != wx.ID_OK:
+                LOG.info('Removing un-uploaded backup %s', fn)
+                try:
+                    os.remove(fn)
+                except Exception:
+                    pass
 
     @common.error_proof()
     def _menu_reload_driver(self, event, andfile=False):
@@ -1889,11 +1900,10 @@ class ChirpMain(wx.Frame):
                      border=10,
                      flag=wx.ALIGN_CENTER)
 
-        license_link = wx.adv.HyperlinkCtrl(
-            d, label=_('Click here for full license text'),
-            url=('https://www.chirpmyradio.com/projects/chirp/repository/'
-                 'github/revisions/master/entry/COPYING'))
-        vbox.Add(license_link, border=10, flag=wx.ALL | wx.ALIGN_CENTER)
+        documentation_link = wx.adv.HyperlinkCtrl(
+            d, label=_('Click here for online documentation'),
+            url=('https://chirpmyradio.com/projects/chirp/wiki/Documentation'))
+        vbox.Add(documentation_link, border=10, flag=wx.ALL | wx.ALIGN_CENTER)
 
         licheader = """
 This program is free software: you can redistribute it and/or modify
@@ -1910,6 +1920,12 @@ GNU General Public License for more details."""
             d, value=licheader.strip(),
             style=wx.TE_WORDWRAP | wx.TE_MULTILINE | wx.TE_READONLY)
         vbox.Add(lic, border=10, flag=wx.ALL | wx.EXPAND, proportion=1)
+
+        license_link = wx.adv.HyperlinkCtrl(
+            d, label=_('Click here for full license text'),
+            url=('https://www.chirpmyradio.com/projects/chirp/repository/'
+                 'github/revisions/master/entry/COPYING'))
+        vbox.Add(license_link, border=10, flag=wx.ALL | wx.ALIGN_CENTER)
 
         license_approved = CONF.get_bool('agreed_to_license', 'state')
 
@@ -2010,6 +2026,13 @@ GNU General Public License for more details."""
                 wx.MessageBox(_('Module loaded successfully'),
                               _('Success'),
                               wx.ICON_INFORMATION)
+
+    def _menu_last_trace(self, event):
+        try:
+            fn = serialtrace.TRACEFILES[-1]
+            wx.LaunchDefaultApplication(fn)
+        except IndexError:
+            common.error_proof.show_error('No traces stored', parent=self)
 
     def _menu_auto_edits(self, event):
         CONF.set_bool('auto_edits', event.IsChecked(), 'state')

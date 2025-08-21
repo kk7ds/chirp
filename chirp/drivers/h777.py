@@ -98,24 +98,28 @@ TIMEOUTTIMER_LIST = ["Off", "30 seconds", "60 seconds", "90 seconds",
                      "120 seconds", "150 seconds", "180 seconds",
                      "210 seconds", "240 seconds", "270 seconds",
                      "300 seconds"]
+DTCS_FLAG = 0x80
+DTCS_REV_FLAG = 0x40
 
 
-def _h777_enter_programming_mode(radio):
-    serial = radio.pipe
+def _h777_enter_programming_mode(serial, radio_cls):
     # increase default timeout from .25 to .5 for all serial communications
     serial.timeout = 0.5
 
     try:
         serial.write(b"\x02")
         time.sleep(0.1)
-        serial.write(radio.PROGRAM_CMD)
+        serial.write(radio_cls.PROGRAM_CMD)
         ack = serial.read(1)
-    except:
+    except Exception as e:
+        LOG.warning('Failed to send program command: %s', e)
         raise errors.RadioError("Error communicating with radio")
 
     if not ack:
-        raise errors.RadioError("No response from radio")
+        raise errors.RadioError("No response from radio to program command")
     elif ack != CMD_ACK:
+        LOG.warning('Ack from program command was %r, expected %r',
+                    ack, CMD_ACK)
         raise errors.RadioError("Radio refused to enter programming mode")
 
     try:
@@ -125,37 +129,29 @@ def _h777_enter_programming_mode(radio):
         # version data and the last three bytes. We need to raise the
         # timeout so that the read doesn't finish early.
         ident = serial.read(8)
-    except:
+    except Exception as e:
+        LOG.warning('Failed to read ident: %s', e)
         raise errors.RadioError("Error communicating with radio")
 
-    # check if ident is OK
-    itis = False
-    for fp in radio.IDENT:
-        if fp in ident:
-            # got it!
-            itis = True
+    if ident:
+        LOG.info('Radio identified with:\n%s', util.hexprint(ident))
+        try:
+            serial.write(CMD_ACK)
+            ack = serial.read(1)
+            if ack != CMD_ACK:
+                raise errors.RadioError("Bad ACK after reading ident")
+        except:
+            raise errors.RadioError('No ACK after reading ident')
+        return ident
 
-            break
-
-    if itis is False:
-        LOG.debug("Incorrect model ID, got this:\n\n" + util.hexprint(ident))
-        raise errors.RadioError("Radio identification failed.")
-
-    try:
-        serial.write(CMD_ACK)
-        ack = serial.read(1)
-    except:
-        raise errors.RadioError("Error communicating with radio")
-
-    if ack != CMD_ACK:
-        raise errors.RadioError("Radio refused to enter programming mode")
+    raise errors.RadioError('No identification received from radio')
 
 
-def _h777_exit_programming_mode(radio):
-    serial = radio.pipe
+def _h777_exit_programming_mode(serial):
     try:
         serial.write(b"E")
-    except:
+    except Exception as e:
+        LOG.warning('Failed to send exit command: %s', e)
         raise errors.RadioError("Radio refused to exit programming mode")
 
 
@@ -170,6 +166,8 @@ def _h777_read_block(radio, block_addr, block_size):
         serial.write(cmd)
         response = serial.read(4 + BLOCK_SIZE)
         if response[:4] != expectedresponse:
+            LOG.warning('Got %r expected %r' % (response[:4],
+                                                expectedresponse))
             raise Exception("Error reading block %04x." % (block_addr))
 
         block_data = response[4:]
@@ -191,8 +189,7 @@ def _h777_write_block(radio, block_addr, block_size):
     cmd = struct.pack(">cHb", b'W', block_addr, BLOCK_SIZE)
     data = radio.get_mmap().get_byte_compatible()[block_addr:block_addr + 8]
 
-    LOG.debug("Writing Data:")
-    LOG.debug(util.hexprint(cmd + data))
+    radio.pipe.log('Writing %i block at %04x' % (BLOCK_SIZE, block_addr))
 
     try:
         serial.write(cmd + data)
@@ -206,9 +203,26 @@ def _h777_write_block(radio, block_addr, block_size):
                                 "to radio at %04x" % block_addr)
 
 
+def _h777_enter_single_programming_mode(radio):
+    ident = _h777_enter_programming_mode(radio.pipe, radio.__class__)
+    if not ident:
+        raise errors.RadioError('Radio did not identify')
+    if not any(rc_ident in ident for rc_ident in radio.IDENT):
+        LOG.warning('Expected %s for %s but got:\n%s',
+                    radio.IDENT, radio.__class__.__name__,
+                    util.hexprint(ident))
+        raise errors.RadioError('Incorrect model')
+
+
 def do_download(radio):
     LOG.debug("download")
-    _h777_enter_programming_mode(radio)
+
+    if len(radio.detected_models()) <= 1:
+        LOG.debug('Entering programming mode for %s', radio.__class__.__name__)
+        _h777_enter_single_programming_mode(radio)
+    else:
+        LOG.debug('Already in programming mode for %s',
+                  radio.__class__.__name__)
 
     data = b""
 
@@ -222,13 +236,11 @@ def do_download(radio):
         status.cur = addr + BLOCK_SIZE
         radio.status_fn(status)
 
+        radio.pipe.log('Reading %i block at %04x' % (BLOCK_SIZE, addr))
         block = _h777_read_block(radio, addr, BLOCK_SIZE)
         data += block
 
-        LOG.debug("Address: %04x" % addr)
-        LOG.debug(util.hexprint(block))
-
-    _h777_exit_programming_mode(radio)
+    _h777_exit_programming_mode(radio.pipe)
 
     return memmap.MemoryMapBytes(data)
 
@@ -237,7 +249,7 @@ def do_upload(radio):
     status = chirp_common.Status()
     status.msg = "Uploading to radio"
 
-    _h777_enter_programming_mode(radio)
+    _h777_enter_single_programming_mode(radio)
 
     status.cur = 0
     status.max = radio._memsize
@@ -248,7 +260,7 @@ def do_upload(radio):
             radio.status_fn(status)
             _h777_write_block(radio, addr, BLOCK_SIZE)
 
-    _h777_exit_programming_mode(radio)
+    _h777_exit_programming_mode(radio.pipe)
 
 
 class ArcshellAR5(chirp_common.Alias):
@@ -281,11 +293,6 @@ class TenwayTW325Alias(chirp_common.Alias):
     MODEL = 'TW-325'
 
 
-class RetevisH777Alias(chirp_common.Alias):
-    VENDOR = 'Retevis'
-    MODEL = 'H777'
-
-
 @directory.register
 class H777Radio(chirp_common.CloneModeRadio):
     """HST H-777"""
@@ -303,7 +310,7 @@ class H777Radio(chirp_common.CloneModeRadio):
     VALID_BANDS = (400000000, 490000000)
     MAX_VOXLEVEL = 5
     ALIASES = [ArcshellAR5, ArcshellAR6, GV8SAlias, GV9SAlias, A8SAlias,
-               TenwayTW325Alias, RetevisH777Alias]
+               TenwayTW325Alias]
     SIDEKEYFUNCTION_LIST = ["Off", "Monitor", "Transmit Power", "Alarm"]
     SCANMODE_LIST = ["Carrier", "Time"]
 
@@ -371,27 +378,31 @@ class H777Radio(chirp_common.CloneModeRadio):
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
 
-    def _decode_tone(self, val):
-        val = int(val)
-        if val == 16665:
+    def _decode_tone(self, memval):
+        memval[1].ignore_bits(DTCS_FLAG | DTCS_REV_FLAG)
+        is_dtcs = memval[1].get_bits(DTCS_FLAG)
+        is_rev = memval[1].get_bits(DTCS_REV_FLAG)
+        if memval.get_raw() == b"\xFF\xFF":
             return '', None, None
-        elif val >= 12000:
-            return 'DTCS', val - 12000, 'R'
-        elif val >= 8000:
-            return 'DTCS', val - 8000, 'N'
+        elif is_dtcs:
+            return 'DTCS', int(memval), 'R' if is_rev else 'N'
         else:
-            return 'Tone', val / 10.0, None
+            return 'Tone', int(memval) / 10.0, None
 
     def _encode_tone(self, memval, mode, value, pol):
+        memval[1].ignore_bits(DTCS_FLAG | DTCS_REV_FLAG)
         if mode == '':
-            memval[0].set_raw(0xFF)
-            memval[1].set_raw(0xFF)
+            memval.fill_raw(b'\xFF')
         elif mode == 'Tone':
+            memval[1].clr_bits(DTCS_FLAG | DTCS_REV_FLAG)
             memval.set_value(int(value * 10))
         elif mode == 'DTCS':
-            flag = 0x80 if pol == 'N' else 0xC0
+            memval[1].set_bits(DTCS_FLAG)
+            if pol == 'R':
+                memval[1].set_bits(DTCS_REV_FLAG)
+            else:
+                memval[1].clr_bits(DTCS_REV_FLAG)
             memval.set_value(value)
-            memval[1].set_bits(flag)
         else:
             raise Exception("Internal error: invalid mode `%s'" % mode)
 
@@ -612,6 +623,37 @@ class H777Radio(chirp_common.CloneModeRadio):
                 except Exception:
                     LOG.debug(element.get_name())
                     raise
+
+
+@directory.register
+class RetevisH777(H777Radio):
+    VENDOR = 'Retevis'
+    MODEL = 'H777'
+    ALIASES = []
+
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        cls_to_ident = {rc: rc.IDENT for rc in cls.detected_models()}
+        for ident_rclass in reversed(cls.detected_models()):
+            ident = _h777_enter_programming_mode(pipe, ident_rclass)
+            for rclass, idents in cls_to_ident.items():
+                if any(rc_ident in ident for rc_ident in idents):
+                    LOG.debug('Detected %s', rclass.__name__)
+                    return rclass
+                LOG.debug('Ident was %r, idents were %r', ident, idents)
+
+            LOG.info('Did not identify radio as %s', rclass.__name__)
+            time.sleep(0.5)
+            _h777_exit_programming_mode(pipe)
+            time.sleep(1)
+
+        raise errors.RadioError('Failed to identify with radio.')
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This radio has always been post-metadata, so never do
+        # old-school detection
+        return False
 
 
 class H777TestCase(unittest.TestCase):

@@ -16,7 +16,7 @@ echo -e "${GREEN}Checking from $(git rev-parse --short ${BASE}):${NC}"
 git log --pretty=oneline --no-merges --abbrev-commit ${BASE}..
 echo
 
-git diff ${BASE}.. '*.py' | grep '^+' > added_lines
+git diff ${BASE}.. -- '*.py' | grep '^+' > added_lines
 
 if grep -E '(from|import).*six' added_lines; then
     fail No new uses of future
@@ -50,11 +50,11 @@ if grep -E "eval\(" added_lines; then
     fail 'Use of eval() is dangerous and not permitted!'
 fi
 
-if git diff ${BASE}.. 'tools/cpep8.manifest' | tail -n +5 | grep -q '^+'; then
+if git diff ${BASE}.. -- 'tools/cpep8.manifest' | tail -n +5 | grep -q '^+'; then
     fail 'Do not add new files to cpep8.manifest; no longer needed'
 fi
 
-if git diff ${BASE}.. 'tools/cpep8.blacklist' | tail -n +5 | grep -q '^+'; then
+if git diff ${BASE}.. -- 'tools/cpep8.blacklist' | tail -n +5 | grep -q '^+'; then
     fail 'Do not add new files to cpep8.blacklist; fix the code'
 fi
 
@@ -73,12 +73,16 @@ done
 #    fail 'New drivers should not have match_model() implemented as it is not needed'
 #fi
 
+if grep -E '\Wprint\(' added_lines; then
+    fail 'Do not use print()'
+fi
+
 if git log ${BASE}.. --merges | grep .; then
     fail Please do not include merge commits in your PR
 fi
 
 make -C chirp/locale clean all >/dev/null 2>&1
-if git diff chirp/locale | grep '^+[^#+]' | grep -v POT-Creation; then
+if git diff -- chirp/locale | grep '^+[^#+]' | grep -v POT-Creation; then
     fail Locale files need updating
 fi
 
@@ -88,7 +92,14 @@ if echo $added_py | grep -q chirp.drivers && ! echo $added_files | grep -q tests
     fail All new drivers should include a test image
 fi
 
-existing_drivers=$(git ls-tree --name-only $BASE chirp/drivers/)
+modified_files=$(git diff --name-only --diff-filter=M ${BASE}..)
+modified_img=$(echo "$modified_files" | grep 'tests.images')
+modified_py=$(echo "$modified_files" | grep '\.py$')
+if [ "$modified_img" -a "$modified_py" ]; then
+    fail "Change modifies an image and (potentially) a driver for a possible upgrade breakage"
+fi
+
+existing_drivers=$(git ls-tree --name-only $BASE -- chirp/drivers/)
 limit=51
 for nf in $added_py; do
     for of in $existing_drivers; do
@@ -103,5 +114,19 @@ for nf in $added_py; do
 done
 
 rm -f added_lines license_lines
+
+commits=$(git log --pretty=format:%h ${BASE}..)
+for commit in $commits; do
+    git log -n1 $commit --pretty=format:%B > commit_msg
+    if [[ `sed -n '1p' commit_msg | wc -c` > 99 ]]; then
+        fail "First line of commit message of $commit must be <99 chars"
+    fi
+    if [[ `wc -l < commit_msg` > 1 ]]; then
+        if ! sed -n '2p' commit_msg | grep '^$'; then
+            fail "Second line of commit message of $commit must be blank for proper formatting in the notification emails"
+        fi
+    fi
+    rm -f commit_msg
+done
 
 exit $RETCODE

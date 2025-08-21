@@ -766,7 +766,12 @@ class IcomBankModel(chirp_common.BankModel):
         if index is None:
             return []
         else:
-            return [self.get_mappings()[index]]
+            try:
+                return [self.get_mappings()[index]]
+            except IndexError:
+                LOG.error('Invalid bank index %i for memory %i' % (
+                          index, memory.number))
+                return []
 
 
 class IcomIndexedBankModel(IcomBankModel,
@@ -944,7 +949,9 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
         nice_name = listname.split('_', 1)[0].upper()
         group = RadioSettingGroup('%s_list' % listname,
                                   '%s List' % nice_name)
+        charset = chirp_common.CHARSET_UPPER_NUMERIC + '-'
         for i, cs in enumerate(current):
+            cs = ''.join(filter(lambda c: c in charset, cs))
             group.append(RadioSetting('%03i' % i, '%i' % i,
                                       RadioSettingValueString(0, 8, cs)))
         return group

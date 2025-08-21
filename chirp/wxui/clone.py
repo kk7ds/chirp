@@ -33,6 +33,7 @@ from chirp import errors
 from chirp.wxui import config
 from chirp.wxui import common
 from chirp.wxui import developer
+from chirp.wxui import serialtrace
 
 _ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
@@ -163,8 +164,9 @@ def open_serial(port, rclass):
         pipe.open()
         pipe.baudrate = rclass.BAUD_RATE
     else:
-        pipe = serial.Serial(baudrate=rclass.BAUD_RATE,
-                             rtscts=rclass.HARDWARE_FLOW, timeout=0.25)
+        pipe = serialtrace.SerialTrace(
+            baudrate=rclass.BAUD_RATE,
+            rtscts=rclass.HARDWARE_FLOW, timeout=0.25)
         pipe.rts = rclass.WANTS_RTS
         pipe.dtr = rclass.WANTS_DTR
         pipe.port = port
@@ -542,9 +544,18 @@ class ChirpCloneDialog(wx.Dialog):
         self._model.Disable()
         self._recent.Disable()
 
+    def enable_model_select(self):
+        self._vendor.Enable()
+        self._model.Enable()
+        self._recent.Enable()
+
     def disable_running(self):
         self._port.Disable()
         self.FindWindowById(wx.ID_OK).Disable()
+
+    def enable_running(self):
+        self._port.Enable()
+        self.FindWindowById(wx.ID_OK).Enable()
 
     def _persist_choices(self):
         raise NotImplementedError()
@@ -678,34 +689,18 @@ class ChirpCloneDialog(wx.Dialog):
         wx.CallAfter(self.EndModal, wx.ID_OK)
 
     def fail(self, error):
-        if isinstance(error, errors.SpecificRadioError):
-            link = error.get_link()
-            message = str(error)
-        else:
-            link = None
-            message = str(error)
-
         def safe_fail():
-            if link:
-                buttons = wx.YES_NO | wx.NO_DEFAULT
-            else:
-                buttons = wx.OK
-            d = wx.MessageDialog(self, message,
-                                 _('Error communicating with radio'),
-                                 wx.ICON_ERROR | buttons)
-            if link:
-                d.SetYesNoLabels(_('More Info'), wx.ID_OK)
-            r = d.ShowModal()
-            if r == wx.ID_YES:
-                webbrowser.open(link)
-
-            self.cancel_action()
+            common.error_proof.show_error(
+                error, parent=self,
+                title=_('Error communicating with radio'))
+            if isinstance(self, ChirpDownloadDialog):
+                self.enable_model_select()
+            self.enable_running()
         wx.CallAfter(safe_fail)
 
     def cancel_action(self):
         if isinstance(self, ChirpDownloadDialog):
-            self._vendor.Enable()
-            self._model.Enable()
+            self.enable_model_select()
         self._port.Enable()
         s = chirp_common.Status()
         s.cur = 0

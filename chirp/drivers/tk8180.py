@@ -445,16 +445,15 @@ def do_download(radio):
         status.max = radio._memsize
         status.msg = "Cloning from radio"
         radio.status_fn(status)
-        LOG.debug('Radio address 0x%04x' % len(data))
 
     # Addresses 0x0000-0xBF00 pulled by block number (divide by 0x100)
     for block in range(0, 0xBF + 1):
+        radio.pipe.log('Read block index %02x' % block)
         send(radio, make_frame('R', block))
         cmd = radio.pipe.read(1)
         chunk = b''
         if cmd == b'Z':
             data += bytes(b'\xff' * 256)
-            LOG.debug('Radio reports empty block %02x' % block)
         elif cmd == b'W':
             chunk = bytes(radio.pipe.read(256))
             if len(chunk) != 256:
@@ -466,7 +465,6 @@ def do_download(radio):
                                                                   chr(cmd)))
             raise errors.RadioError('Radio sent unexpected response')
 
-        LOG.debug('Read block index %02x' % block)
         status()
 
         chksum = radio.pipe.read(1)
@@ -488,6 +486,7 @@ def do_download(radio):
 
     # Addresses 0xC000 - 0xD1F0 pulled by address
     for block in range(0x0100, 0x1200, 0x40):
+        radio.pipe.log('Read memory address %04x' % block)
         send(radio, make_frame('S', block, b'\x40'))
         x = radio.pipe.read(1)
         if x != b'X':
@@ -495,7 +494,6 @@ def do_download(radio):
         chunk = radio.pipe.read(0x40)
         data += chunk
 
-        LOG.debug('Read memory address %04x' % block)
         status()
 
         radio.pipe.write(b'\x06')
@@ -524,9 +522,9 @@ def do_upload(radio):
         addr = block * 0x100
         chunk = bytes(radio._mmap[addr:addr + 0x100])
         if all(byte == b'\xff' for byte in chunk):
-            LOG.debug('Sending zero block %i, range 0x%04x' % (block, addr))
             send(radio, make_frame('Z', block, b'\xFF'))
         else:
+            radio.pipe.log('Sending block %i' % block)
             checksum = checksum_data(chunk)
             send(radio, make_frame('W', block, chunk + bytes([checksum])))
 
@@ -998,20 +996,8 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             5: 0x2,
             2.5: 0x1,
         }
-        try:
-            tx_step = chirp_common.required_step(int(_mem.tx_freq) * 10,
-                                                 allowed=step_lookup.keys())
-        except errors.InvalidDataError:
-            tx_step = 5
-        try:
-            rx_step = chirp_common.required_step(int(_mem.rx_freq) * 10,
-                                                 allowed=step_lookup.keys())
-        except errors.InvalidDataError:
-            rx_step = 5
-
-        # Default to 5kHz if we don't know any better
-        _mem.rx_step = step_lookup.get(rx_step, 0x2)
-        _mem.tx_step = step_lookup.get(tx_step, 0x2)
+        _mem.rx_step = tk280.choose_step(step_lookup, int(_mem.rx_freq) * 10)
+        _mem.tx_step = tk280.choose_step(step_lookup, int(_mem.tx_freq) * 10)
 
         skipbyte = self._memobj.skipflags[(mem.number - 1) // 8]
         if mem.skip == 'S':

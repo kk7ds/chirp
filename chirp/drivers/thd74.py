@@ -189,6 +189,7 @@ class THD74Radio(chirp_common.CloneModeRadio,
     _memsize = 0x7A300
 
     def read_block(self, block, count=256):
+        self.pipe.log('Reading block %i' % block)
         hdr = struct.pack(">cHH", b"R", block, 0)
         self.pipe.write(hdr)
         r = self.pipe.read(5)
@@ -210,6 +211,7 @@ class THD74Radio(chirp_common.CloneModeRadio,
         return data
 
     def write_block(self, block, map, size=256):
+        self.pipe.log('Writing block %i' % block)
         hdr = struct.pack(">cHH", b"W", block, size < 256 and size or 0)
         base = block * size
         data = map[base:base + size]

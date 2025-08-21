@@ -23,7 +23,7 @@ Baofeng/Pofung:
   model: Baofeng BF-1903
 - alt: Baofeng BF-888
   model: Baofeng BF-777S
-- alt: UV-17Pro
+- alt: UV-13Pro
   model: P15UV
 - alt: UV-5R
   model: 997-S (Foscam Digital Technologies)
@@ -122,7 +122,7 @@ Baofeng/Pofung:
 - alt: UV-5R
   model: UV-5R++
 - alt: BF-F8HP
-  model: UV-5R7W
+  model: UV-5R7W, UV-5R8W
 - alt: UV-5R
   model: UV-5RA, UV-5RA+, UV-5RAX, UV-5RAX+
 - alt: Radioddity UV-5RX3
