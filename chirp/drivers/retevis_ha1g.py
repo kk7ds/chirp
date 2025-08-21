@@ -20,8 +20,7 @@ import math
 import time
 from enum import Enum
 
-from chirp import util, memmap, chirp_common, bitwise, directory, errors
-from chirp import bitwise, errors, util
+from chirp import memmap, chirp_common, bitwise, directory, errors
 from chirp.settings import (
     RadioSetting,
     RadioSettingGroup,
@@ -29,7 +28,6 @@ from chirp.settings import (
     RadioSettingValueList,
     RadioSettingValueString,
     RadioSettings,
-    RadioSettingValueInteger,
     RadioSettingValueBoolean,
     RadioSettingValueFloat,
 )
@@ -296,19 +294,19 @@ crc16_tab = [
 ]
 
 MEM_FORMAT = """
-   
+
 #seekto 0x0E;
 struct{
-   u8 modelnumber[32];
-   u8 hardwareversion[2];
-   u8 serialn0[16];
-   u8 freqmin[4];
-   u8 freqmax[4];
-   u8 rev_1;
-   u8 saleterr;
-   u8 radiomode;
-   u8 rev[7];
-    } radioinfo;
+    u8 modelnumber[32];
+    u8 hardwareversion[2];
+    u8 serialn0[16];
+    u8 freqmin[4];
+    u8 freqmax[4];
+    u8 rev_1;
+    u8 saleterr;
+    u8 radiomode;
+    u8 rev[7];
+} radioinfo;
 
 #seekto 0x52;
 struct{
@@ -319,11 +317,11 @@ struct{
 
 #seekto 0x5C;
 struct {
-  u8 readpwd[8];          
+  u8 readpwd[8];
   u8 writepwd[8];
   u8 poweronpwd[8];
   u8 squelch:4,
-     rev_1:4;           
+     rev_1:4;
   u8 powersavingdelaytime:4,
      powersavingmode:4;
   u8 tk1_short;
@@ -368,7 +366,7 @@ struct {
   u8 menuouttime;
   u8 voxthreshold:4,
      voxdelaytime:4;
-  u8 rev_4:1,     
+  u8 rev_4:1,
      homeselect:3,
      homeindex:2,
      chdisplay:2;
@@ -384,7 +382,7 @@ struct {
      backlighttime:4;
   u8 wxch;
   u8 calltone;
-  u8 rev_5:5,    
+  u8 rev_5:5,
      homechtype_3:1,
      homechtype_2:1,
      homechtype_1:1;
@@ -400,8 +398,8 @@ struct {
 #seekto 0xc0;
 struct  {
     u16 zonenum;
-    u16 zoneindex[64]; 
-} zonedata; 
+    u16 zoneindex[64];
+} zonedata;
 
 #seekto 0x142;
 struct {
@@ -418,7 +416,7 @@ struct  {
 
 #seekto 0x154a;
 struct  {
-  char alias[14];  
+  char alias[14];
   u8 chmode:4,
      chpro:4;
   u8 fixedpower:1,
@@ -430,7 +428,7 @@ struct  {
   u8 txfreq[4];
   u8 rxctcvaluetype:2,
      rxctctypecode:1,
-     rev_1:1,  
+     rev_1:1,
      rxctchight:4;
   u8 rxctclowvalue;
   u8 rxsqlmode;
@@ -455,16 +453,14 @@ struct  {
      pttidtype:2,
      rev_4:2;
   u16 dtmfcllid;
-  u8 reserve[3] ;
+  u8 reserve[3];
 } channels[1027];
 
 #seekto 0xb5c2;
 struct  {
     u16 scannum;
-    u16 scanindex[16];   
+    u16 scanindex[16];
 } scandata;
-
-
 
 #seekto 0xb5e4;
 struct {
@@ -510,8 +506,6 @@ struct  {
     u16 alarmindex[8];
 } alarmdata;
 
-
-
 #seekto 0xc456;
 struct {
     char name[14];
@@ -525,11 +519,11 @@ struct {
     u8 alarmtime:4,
        alarmcycle:4;
     u8 mictime:4,
-       txinterval:4;  
+       txinterval:4;
     u8 alarmid[8];
     u8 alarmstatus;
-    u8 rev_3[1];         
-} alarms[8];
+    u8 rev_3[1];
+    } alarms[8];
 
 #seekto 0xc848;
 struct  {
@@ -551,8 +545,7 @@ struct {
     char revive[10];
     char bot[16];
     char eot[16];
-    char rev_2[8];    
-    
+    char rev_2[8];
 } dtmfcomm;
 
 #seekto 0xc89a;
@@ -577,8 +570,7 @@ struct {
         EncodingEnable:1;
      u8 dtmfstatus;
      u8 rev_2[12];
-} dtmfs[4]; 
-
+} dtmfs[4];
 """
 
 
@@ -625,8 +617,10 @@ POWER_LEVELS = [
     chirp_common.PowerLevel("Low", watts=0),
     chirp_common.PowerLevel("High", watts=2),
 ]
-TIMEOUTTIMER_LIST = [{"name": "%ss" % (x * 5), "id": x} for x in range(1, 64, 1)]
-TOTPERSMISSION_LIST = ["Always", "CTCSS/DCS Match", "Channel Free", "Receive Only"]
+TIMEOUTTIMER_LIST = [{"name": "%ss" % (x * 5), "id": x}
+                     for x in range(1, 64, 1)]
+TOTPERSMISSION_LIST = ["Always", "CTCSS/DCS Match",
+                       "Channel Free", "Receive Only"]
 SQUELCHLEVEL_LIST = ["AlwaysOpen", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 AUTOSCAN_LIST = ["OFF", "Auto Scan System"]
 OFFLINE_REVERSAL_LIST = ["OFF", "Freq Reversql", "Talk Around"]
@@ -665,7 +659,9 @@ class HA1GBank(chirp_common.NamedBank):
         _zone_data = get_zone_index_list(self._model._radio)
         _zone_list = self._model._radio._memobj.zones
         if self.index in _zone_data:
-            zone_name = "".join(filter(_zone_list[self.index].name, NAMECHATSET, 12))
+            zone_name = "".join(
+                filter(_zone_list[self.index].name, NAMECHATSET, 12)
+                )
             return zone_name
         else:
             return ""
@@ -675,7 +671,10 @@ class HA1GBank(chirp_common.NamedBank):
         _zone_list = self._model._radio._memobj.zones
         if self.index in _zone_data:
             _zone = _zone_list[self.index]
-            _zone["name"] = filter(name, NAMECHATSET, 12, True).ljust(14, "\x00")
+            _zone["name"] = (
+                filter(name, NAMECHATSET, 12, True)
+                .ljust(14, "\x00")
+                )
 
 
 class HA1GBankModel(chirp_common.BankModel):
@@ -699,7 +698,9 @@ class HA1GBankModel(chirp_common.BankModel):
     def add_memory_to_mapping(self, memory, bank):
         channels_in_bank = self._channel_numbers_in_bank(bank)
         if memory.freq == 0:
-            raise errors.RadioError("Cannot select a channel with empty frequency")
+            raise errors.RadioError(
+                "Cannot select a channel with empty frequency"
+                )
         else:
             ch_num = memory.number
             if len(channels_in_bank) < 16:
@@ -707,8 +708,14 @@ class HA1GBankModel(chirp_common.BankModel):
                     channels_in_bank.add(ch_num)
                     zone_ch_list = [
                         x + 2 for x in channels_in_bank
-                    ]  # Adjusting channel numbers to match the radio's format
-                    set_zone_ch_list(self._radio, bank.index, sorted(zone_ch_list))
+                    ]
+                    # Adjusting channel numbers
+                    # to match the radio's format
+                    set_zone_ch_list(
+                        self._radio,
+                        bank.index,
+                        sorted(zone_ch_list)
+                        )
             else:
                 raise Exception("Bank is full, cannot add more channels")
 
@@ -774,8 +781,10 @@ def handshake(self, serial):
     while num <= 5:
         serial.write(get_handshake_bytes(self.MODEL + " "))
         databytes = serial.read(self.page_len)
-        flag, databytes = handle_connect_ver(databytes, serial)
-        if flag == True:
+        flag, databytes = handle_connect_ver(
+            databytes, serial
+            )
+        if flag:
             break
         num += 1
     return handshake_handle_connect_event(self, databytes)
@@ -789,11 +798,17 @@ def read_items(self, serial):
     status.max = self._memsize
     for item in Clone_TypeEnum:
         try:
-            item_bytes = get_read_current_page_bytes(self, item.value, serial, status)
+            item_bytes = get_read_current_page_bytes(
+                self, item.value, serial, status
+                )
             if item_bytes:
-                all_bytes = read_item_handle_connect_event(all_bytes, item_bytes, item)
+                all_bytes = read_item_handle_connect_event(
+                    all_bytes, item_bytes, item
+                    )
         except Exception as e:
-            LOG.error(f"read item_data error: {item.name} error_msg: {e}")
+            LOG.error(
+                f"read item_data error: {item.name} error_msg: {e}"
+                )
             continue
     return all_bytes
 
@@ -814,7 +829,9 @@ def write_items(self, serial):
         ):
             continue
         item_bytes = get_write_item_bytes(data_bytes, item)
-        write_item_current_page_bytes(self, serial, item_bytes, item.value, status)
+        write_item_current_page_bytes(
+            self, serial, item_bytes, item.value, status
+            )
 
 
 def handshake_handle_connect_event(self, dataByte: bytes):
@@ -825,7 +842,7 @@ def handshake_handle_connect_event(self, dataByte: bytes):
                 if isinstance(self.MODEL, bytes)
                 else str(self.MODEL)
             )
-            radioType = radioType = dataByte[20 : 20 + len(model_str)]
+            radioType = radioType = dataByte[20: 20 + len(model_str)]
             if radioType == f"{model_str}".encode("ascii"):
                 return HandShakeStuts.Normal
             else:
@@ -903,7 +920,7 @@ def get_read_current_page_bytes(self, item: int, serial, status):
             serial.write(Get_ReadItemBytes(item, page_index))
             data_bytes = serial.read(self.page_len)
             flag, new_data_bytes = handle_connect_ver(data_bytes, serial)
-            if flag == True:
+            if flag:
                 if new_data_bytes[14] != item:
                     num += 1
                     time.sleep(0.05)
@@ -926,7 +943,8 @@ def get_read_current_page_bytes(self, item: int, serial, status):
     return item_bytes
 
 
-def write_item_current_page_bytes(self, serial, item_Bytes: bytes, item: int, status):
+def write_item_current_page_bytes(self, serial, item_Bytes: bytes,
+                                  item: int, status):
     page_count = math.ceil(len(item_Bytes) / self.page_len)
     for i in range(0, page_count):
         num = 0
@@ -935,12 +953,12 @@ def write_item_current_page_bytes(self, serial, item_Bytes: bytes, item: int, st
                 item,
                 i,
                 page_count,
-                item_Bytes[i * self.page_len : (i + 1) * self.page_len],
+                item_Bytes[i * self.page_len: (i + 1) * self.page_len],
             )
             serial.write(current_page_bytes)
             return_bytes = serial.read(self.page_len)
             flag, new_data_bytes = handle_connect_ver(return_bytes, serial)
-            if flag == True:
+            if flag:
                 if new_data_bytes[14] != item:
                     num += 1
                     time.sleep(0.05)
@@ -957,108 +975,128 @@ def get_write_item_bytes(all_bytes: bytearray, item):
     item_bytes = b""
     if item == Clone_TypeEnum.radioHead:
         item_bytes = all_bytes[
-            File_AddrEnum.radioHead.value : File_AddrEnum.radioHead.value + 14
+            File_AddrEnum.radioHead.value: File_AddrEnum.radioHead.value + 14
         ]
     elif item == Clone_TypeEnum.radioInfo:
         item_bytes = all_bytes[
-            File_AddrEnum.radioHead.value : File_AddrEnum.radioInfo.value + 68
+            File_AddrEnum.radioHead.value: File_AddrEnum.radioInfo.value + 68
         ]
     elif item == Clone_TypeEnum.radioVer:
         item_bytes = all_bytes[
-            File_AddrEnum.radioVer.value : File_AddrEnum.radioVer.value + 10
+            File_AddrEnum.radioVer.value: File_AddrEnum.radioVer.value + 10
         ]
     elif item == Clone_TypeEnum.settingData:
         item_bytes = all_bytes[
-            File_AddrEnum.settingData.value : File_AddrEnum.settingData.value + 100
+            File_AddrEnum.settingData.value:
+                File_AddrEnum.settingData.value + 100
         ]
     elif item == Clone_TypeEnum.zoneData:
         item_bytes = all_bytes[
-            File_AddrEnum.zoneData.value : File_AddrEnum.zoneData.value + 3202
+            File_AddrEnum.zoneData.value:
+                File_AddrEnum.zoneData.value + 3202
         ]
     elif item == Clone_TypeEnum.channelData:
         item_bytes = all_bytes[
-            File_AddrEnum.channelData.value : File_AddrEnum.channelData.value + 43136
+            File_AddrEnum.channelData.value:
+                File_AddrEnum.channelData.value + 43136
         ]
     elif item == Clone_TypeEnum.scanData:
         item_bytes = all_bytes[
-            File_AddrEnum.scanData.value : File_AddrEnum.scanData.value + 3618
+            File_AddrEnum.scanData.value:
+                File_AddrEnum.scanData.value + 3618
         ]
     elif item == Clone_TypeEnum.alarmData:
         item_bytes = all_bytes[
-            File_AddrEnum.alarmData.value : File_AddrEnum.alarmData.value + 258
+            File_AddrEnum.alarmData.value:
+                File_AddrEnum.alarmData.value + 258
         ]
     elif item == Clone_TypeEnum.dTMFData:
         item_bytes = all_bytes[
-            File_AddrEnum.dTMFData.value : File_AddrEnum.dTMFData.value + 842
+            File_AddrEnum.dTMFData.value:
+                File_AddrEnum.dTMFData.value + 842
         ]
     elif item == Clone_TypeEnum.outFactoryData:
         item_bytes = all_bytes[
-            File_AddrEnum.outFactoryData.value : File_AddrEnum.outFactoryData.value
+            File_AddrEnum.outFactoryData.value:
+                File_AddrEnum.outFactoryData.value
             + 2688
         ]
     elif item == Clone_TypeEnum.vfoScanData:
         item_bytes = all_bytes[
-            File_AddrEnum.vfoScanData.value : File_AddrEnum.vfoScanData.value + 68
+            File_AddrEnum.vfoScanData.value:
+                File_AddrEnum.vfoScanData.value + 68
         ]
     return item_bytes
 
 
-def read_item_handle_connect_event(all_bytes: bytearray, item_Bytes: bytes, item):
+def read_item_handle_connect_event(all_bytes: bytearray,
+                                   item_Bytes: bytes, item):
     if item == Clone_TypeEnum.radioHead:
         item_len = min(len(item_Bytes), 14)
         all_bytes[
-            File_AddrEnum.radioHead.value : File_AddrEnum.radioHead.value + item_len
+            File_AddrEnum.radioHead.value:
+                File_AddrEnum.radioHead.value + item_len
         ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.radioInfo:
         item_len = min(len(item_Bytes), 68)
         all_bytes[
-            File_AddrEnum.radioInfo.value : File_AddrEnum.radioInfo.value + item_len
+            File_AddrEnum.radioInfo.value:
+                File_AddrEnum.radioInfo.value + item_len
         ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.radioVer:
         item_len = min(len(item_Bytes), 10)
         all_bytes[
-            File_AddrEnum.radioVer.value : File_AddrEnum.radioVer.value + item_len
+            File_AddrEnum.radioVer.value:
+                File_AddrEnum.radioVer.value + item_len
         ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.settingData:
         item_len = min(len(item_Bytes), 100)
         all_bytes[
-            File_AddrEnum.settingData.value : File_AddrEnum.settingData.value + item_len
+            File_AddrEnum.settingData.value:
+                File_AddrEnum.settingData.value + item_len
         ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.zoneData:
         item_len = min(len(item_Bytes), 3202)
         all_bytes[
-            File_AddrEnum.zoneData.value : File_AddrEnum.zoneData.value + item_len
+            File_AddrEnum.zoneData.value:
+                File_AddrEnum.zoneData.value + item_len
         ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.channelData:
         item_len = min(len(item_Bytes), 43136)
         all_bytes[
-            File_AddrEnum.channelData.value : File_AddrEnum.channelData.value + item_len
+            File_AddrEnum.channelData.value:
+                File_AddrEnum.channelData.value + item_len
         ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.scanData:
         item_len = min(len(item_Bytes), 3618)
         all_bytes[
-            File_AddrEnum.scanData.value : File_AddrEnum.scanData.value + item_len
+            File_AddrEnum.scanData.value:
+                File_AddrEnum.scanData.value + item_len
         ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.alarmData:
         item_len = min(len(item_Bytes), 258)
         all_bytes[
-            File_AddrEnum.alarmData.value : File_AddrEnum.alarmData.value + item_len
+            File_AddrEnum.alarmData.value:
+                File_AddrEnum.alarmData.value + item_len
         ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.dTMFData:
         item_len = min(len(item_Bytes), 842)
         all_bytes[
-            File_AddrEnum.dTMFData.value : File_AddrEnum.dTMFData.value + item_len
+            File_AddrEnum.dTMFData.value:
+                File_AddrEnum.dTMFData.value + item_len
         ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.outFactoryData:
         item_len = min(len(item_Bytes), 2688)
         all_bytes[
-            File_AddrEnum.outFactoryData.value : File_AddrEnum.outFactoryData.value
+            File_AddrEnum.outFactoryData.value:
+                File_AddrEnum.outFactoryData.value
             + item_len
         ] = item_Bytes[:item_len]
     elif item == Clone_TypeEnum.vfoScanData:
         item_len = min(len(item_Bytes), 68)
         all_bytes[
-            File_AddrEnum.vfoScanData.value : File_AddrEnum.vfoScanData.value + item_len
+            File_AddrEnum.vfoScanData.value:
+                File_AddrEnum.vfoScanData.value + item_len
         ] = item_Bytes[:item_len]
     return all_bytes
 
@@ -1067,11 +1105,17 @@ def exit_programming_mode(self):
     serial = self.pipe
     try:
         serial.write(Get_ReadItemBytes(111, 0, 0))
-    except:
-        raise errors.RadioError("Radio refused to exit programming mode")
+    except Exception as e:
+        LOG.debug(
+            f"Radio refused to exit programming mode:{e}"
+        )
+        raise errors.RadioError(
+            "Radio refused to exit programming mode"
+            )
 
 
-def Get_ReadItemBytes(data_type: int, page_index: int, data_code: int = 2):
+def Get_ReadItemBytes(data_type: int, page_index: int,
+                      data_code: int = 2):
     data_part = (
         b"RDTP\x01\x00\x00\x00\x00\x00\x00\x00\x08\x00"
         + data_type.to_bytes(1, "little")
@@ -1083,9 +1127,10 @@ def Get_ReadItemBytes(data_type: int, page_index: int, data_code: int = 2):
     return data_part + crc + b"\xff"
 
 
-def get_write_item_send_bytes(
-    data_type: int, page_index: int, page_count: int, data_buffer: bytes
-):
+def get_write_item_send_bytes(data_type: int,
+                              page_index: int,
+                              page_count: int,
+                              data_buffer: bytes):
     data_part = (
         b"RDTP\x01\x00\x00\x00\x00\x00\x00\x00"
         + (len(data_buffer) + 6).to_bytes(2, "little")
@@ -1108,7 +1153,7 @@ def get_crc_bytes(buf, start, length):
     return cksum
 
 
-def calculate_crc16(byte_array, result_length) -> int:
+def calculate_crc16(byte_array, result_length) -> bytes:
     check_sum = 0xFFFF
     check_sum = get_crc_bytes(byte_array, 0, len(byte_array))
 
@@ -1122,18 +1167,17 @@ def is_int_in_u16_bytes(data: bytes, target: int) -> bool:
     if not 0 < target < 0xFFFF:
         return False
     mv = memoryview(data)
-    return any(
-        int.from_bytes(mv[i], "little", signed=False) == target
-        for i in range(0, len(data))
-        if i <= len(data)
-    )
+    for i in range(0, len(data) - 1, 2):
+        if struct.unpack_from("<H", mv, i)[0] == target:
+            return True
+    return False
 
 
 def _get_memory(self, mem, _mem, ch_index):
     ch_index_dict = get_ch_index(self)
     if ch_index not in ch_index_dict:
-       mem.freq = 0
-       mem.empty = True  
+        mem.freq = 0
+        mem.empty = True
     mem.extra = RadioSettingGroup("Extra", "extra")
     mem.extra.append(
         RadioSetting(
@@ -1149,23 +1193,24 @@ def _get_memory(self, mem, _mem, ch_index):
         RadioSetting(
             "totPermissions",
             "TX Permissions",
-            RadioSettingValueList(
-                TOTPERSMISSION_LIST, current_index=_mem.totPermissions
-            ),
+            RadioSettingValueList(TOTPERSMISSION_LIST,
+                                  current_index=_mem.totPermissions),
         )
     )
     mem.extra.append(
         RadioSetting(
             "rxsqlmode",
             "Squelch Level",
-            RadioSettingValueList(SQUELCHLEVEL_LIST, current_index=_mem.rxsqlmode),
+            RadioSettingValueList(SQUELCHLEVEL_LIST,
+                                  current_index=_mem.rxsqlmode),
         )
     )
     mem.extra.append(
         RadioSetting(
             "autoscan",
             "Auto Scan System",
-            RadioSettingValueList(AUTOSCAN_LIST, current_index=_mem.autoscan),
+            RadioSettingValueList(AUTOSCAN_LIST,
+                                  current_index=_mem.autoscan),
         )
     )
     mem.extra.append(
@@ -1174,7 +1219,8 @@ def _get_memory(self, mem, _mem, ch_index):
             "Alarm Sytem",
             RadioSettingValueList(
                 get_namedict_by_items(ALARM_LIST),
-                current_index=get_item_by_id(ALARM_LIST, _mem.alarmlist),
+                current_index=get_item_by_id(ALARM_LIST,
+                                             _mem.alarmlist),
             ),
         )
     )
@@ -1184,7 +1230,8 @@ def _get_memory(self, mem, _mem, ch_index):
             "DTMF System",
             RadioSettingValueList(
                 get_namedict_by_items(DTMFSYSTEM_LIST),
-                current_index=get_item_by_id(DTMFSYSTEM_LIST, _mem.dtmfsignalinglist),
+                current_index=get_item_by_id(DTMFSYSTEM_LIST,
+                                             _mem.dtmfsignalinglist),
             ),
         )
     )
@@ -1192,24 +1239,28 @@ def _get_memory(self, mem, _mem, ch_index):
         RadioSetting(
             "offlineorreversal",
             "Talkaround & Reversal",
-            RadioSettingValueList(
-                OFFLINE_REVERSAL_LIST, current_index=_mem.offlineorreversal
-            ),
+            RadioSettingValueList(OFFLINE_REVERSAL_LIST,
+                                  current_index=_mem.offlineorreversal),
         )
     )
-    mem.extra.append(RadioSetting("vox", "vox", RadioSettingValueBoolean(_mem.vox)))
     mem.extra.append(
         RadioSetting(
-            "companding", "compander", RadioSettingValueBoolean(_mem.companding)
+            "vox", "vox",
+            RadioSettingValueBoolean(_mem.vox))
         )
+    mem.extra.append(
+        RadioSetting(
+            "companding", "compander",
+            RadioSettingValueBoolean(_mem.companding))
     )
     mem.extra.append(
-        RadioSetting("scramble", "scramble", RadioSettingValueBoolean(_mem.scramble))
+        RadioSetting("scramble", "scramble",
+                     RadioSettingValueBoolean(_mem.scramble))
     )
     if mem.empty:
         return mem
     mem.freq = int.from_bytes(_mem.rxfreq, byteorder="little")
-    mem.name = "".join(filter(_mem.alias, NAMECHATSET, 12))
+    mem.name = self.filter_name(str(_mem.alias).rstrip())
     tx_freq = int.from_bytes(_mem.txfreq, byteorder="little")
     if mem.freq == 0:
         mem.empty = True
@@ -1222,7 +1273,8 @@ def _get_memory(self, mem, _mem, ch_index):
         mem.duplex = ""
         mem.offset = 0
     elif tx_freq == 0xFFFFFFFF:
-        mem.duplex = "off"
+        mem.duplex = ""
+        mem.offset = 0
     else:
         mem.duplex = mem.freq > tx_freq and "-" or "+"
         mem.offset = abs(mem.freq - tx_freq)
@@ -1234,9 +1286,13 @@ def _get_memory(self, mem, _mem, ch_index):
             rxtone = tone_value
     elif _mem.rxctcvaluetype == 2 or _mem.rxctcvaluetype == 3:
         rxtone = int(
-            "%03o" % ((_mem.rxctchight & 0x0F) << 8 | _mem.rxctclowvalue & 0xFF)
+            "%03o" % (
+                (_mem.rxctchight & 0x0F) << 8 | _mem.rxctclowvalue & 0xFF
+                )
         )
-        # oct_value=int(oct((_mem.rxctchight & 0x0F) <<8|_mem.rxctclowvalue& 0xFF)[2:])
+        # oct_value=int(oct(
+        # (_mem.rxctchight & 0x0F) <<8|_mem.rxctclowvalue& 0xFF)[2:]
+        # )
         # if oct_value in chirp_common.DTCS_CODES:
         #    rxtone=oct_value
     if _mem.txctcvaluetype == 1:
@@ -1245,9 +1301,13 @@ def _get_memory(self, mem, _mem, ch_index):
             txtone = tone_value
     elif _mem.txctcvaluetype == 2 or _mem.txctcvaluetype == 3:
         txtone = int(
-            "%03o" % ((_mem.txctchight & 0x0F) << 8 | _mem.txctclowvalue & 0xFF)
+            "%03o" % (
+                (_mem.txctchight & 0x0F) << 8 | _mem.txctclowvalue & 0xFF
+                )
         )
-    # oct_value=int(oct((_mem.txctchight & 0x0F) <<8|_mem.txctclowvalue& 0xFF)[2:])
+    # oct_value=int(oct(
+    # (_mem.txctchight & 0x0F) <<8|_mem.txctclowvalue& 0xFF)[2:]
+    # )
     # if oct_value in chirp_common.DTCS_CODES:
     #     txtone=oct_value
     rx_tone = (
@@ -1297,9 +1357,9 @@ def get_model_info(self, model_info):
 
 def get_common_setting(self, common):
     _settings = self._memobj.settings
-    _zonedata = self._memobj.zonedata
-    _zones = self._memobj.zones
-    _radioinfo = self._memobj.radioinfo
+    # _zonedata = self._memobj.zonedata
+    # _zones = self._memobj.zones
+    # _radioinfo = self._memobj.radioinfo
     opts = ["Low", "Normal", "Strengthen"]
     common.append(
         RadioSetting(
@@ -1319,7 +1379,8 @@ def get_common_setting(self, common):
     opts_dict = [{"name": "%s" % (x + 1), "id": x} for x in range(0, 10, 1)]
     common.append(
         get_radiosetting_by_key(
-            self, _settings, "calltone", "Call Tone", _settings.calltone, opts_dict
+            self, _settings, "calltone",
+            "Call Tone", _settings.calltone, opts_dict
         )
     )
     common.append(
@@ -1328,7 +1389,9 @@ def get_common_setting(self, common):
             _settings,
             "frestep",
             "Frequency Step",
-            int.from_bytes(struct.pack("<H", _settings.frestep), byteorder="big"),
+            int.from_bytes(
+                struct.pack("<H", _settings.frestep),
+                byteorder="big"),
             Fre_Step_List,
             set_item_twobytes_callback,
         )
@@ -1338,10 +1401,13 @@ def get_common_setting(self, common):
         RadioSetting(
             "settings.powersavingmode",
             "Battery Mode",
-            RadioSettingValueList(opts, current_index=_settings.powersavingmode),
+            RadioSettingValueList(opts,
+                                  current_index=_settings.powersavingmode),
         )
     )
-    opts_dict = [{"name": "%ss" % ((x + 1) * 5), "id": x} for x in range(0, 16, 1)]
+    opts_dict = [
+        {"name": "%ss" % ((x + 1) * 5), "id": x} for x in range(0, 16, 1)
+        ]
     common.append(
         get_radiosetting_by_key(
             self,
@@ -1400,7 +1466,9 @@ def get_common_setting(self, common):
             opts_dict,
         )
     )
-    opts_dict = [{"name": "%sms" % ((x) * 500), "id": x} for x in range(1, 5, 1)]
+    opts_dict = [
+        {"name": "%sms" % ((x) * 500), "id": x} for x in range(1, 5, 1)
+        ]
     common.append(
         get_radiosetting_by_key(
             self,
@@ -1430,7 +1498,8 @@ def get_common_setting(self, common):
         RadioSetting(
             "settings.autoormanuallock",
             "KeyLock Mode",
-            RadioSettingValueList(opts, current_index=_settings.autoormanuallock),
+            RadioSettingValueList(opts,
+                                  current_index=_settings.autoormanuallock),
         )
     )
     opts = ["Frequency", "Name", "Channel"]
@@ -1447,7 +1516,8 @@ def get_common_setting(self, common):
         "Band Selection",
         RadioSettingValueList(
             opts,
-            current_index=get_band_selection(_settings.homeselect, _settings.homeindex),
+            current_index=get_band_selection(
+                _settings.homeselect, _settings.homeindex),
         ),
     )
     rs.set_apply_callback(
@@ -1474,47 +1544,82 @@ def get_common_setting(self, common):
         RadioSetting(
             "settings.poweron_type_1",
             "Power On A",
-            RadioSettingValueList(opts, current_index=_settings.poweron_type_1),
+            RadioSettingValueList(opts,
+                                  current_index=_settings.poweron_type_1),
         )
     )
     common.append(
         RadioSetting(
             "settings.poweron_type_2",
             "Power On B",
-            RadioSettingValueList(opts, current_index=_settings.poweron_type_2),
+            RadioSettingValueList(opts,
+                                  current_index=_settings.poweron_type_2),
         )
     )
-    home_poweron_zone_1 = (
-        _settings.homepoweronzone_1_height << 8
-    ) | _settings.homepoweronzone_1
-    home_poweron_zone_2 = (
-        _settings.homepoweronzone_2_height << 8
-    ) | _settings.homepoweronzone_2
-    ch_dict = get_ch_items(self)
-    # zone_dict=[{"name":"All Channel","id":0x0FFF,"chs":ch_dict}]
-    # zone_num=int.from_bytes(struct.pack('<H', _zonedata.zonenum), byteorder='big')
+    # home_poweron_zone_1 = (
+    #     _settings.homepoweronzone_1_height << 8
+    # ) | _settings.homepoweronzone_1
+    # home_poweron_zone_2 = (
+    #     _settings.homepoweronzone_2_height << 8
+    # ) | _settings.homepoweronzone_2
+    # ch_dict = get_ch_items(self)
+    # zone_dict=[
+    #     {"name":"All Channel","id":0x0FFF,"chs":ch_dict}
+    #     ]
+    # zone_num=int.from_bytes(
+    #     struct.pack('<H', _zonedata.zonenum),
+    #     byteorder='big')
     # if(zone_num>0):
     #     for i in range(0, zone_num):
-    #         zone_index=int.from_bytes(struct.pack('<H', _zonedata.zoneindex[i]), byteorder='big')
+    #         zone_index=int.from_bytes(
+    #             struct.pack('<H', _zonedata.zoneindex[i]),
+    #             byteorder='big')
     #         if(zone_index<64):
     #              zone_item=_zones[zone_index]
-    #              zonename=''.join(filter(zone_item.name,NAMECHATSET,12))
-    #              zone_dict.append({"name":zonename,"id":zone_index,"chs":[get_ch_index_by_bytes(x) for x in zone_item.chindex]})
-    # common.append(get_zoneitem_by_key(self,_settings,"homepoweronzone_1","Specify Zone A",home_poweron_zone_1,zone_dict))
-    # common.append(get_zoneitem_by_key(self,_settings,"homepoweronzone_2","Specify Zone B",home_poweron_zone_2,zone_dict))
-    # ch_dict_1=ch_dict_2=[{"name": item["name"], "id": i} for i, item in enumerate(ch_dict)]
+    #              zonename=''.join(
+    #                  filter(zone_item.name,NAMECHATSET,12)
+    #                  )
+    #              zone_dict.append(
+    #                  {"name":zonename, "id":zone_index,
+    #                   "chs":[get_ch_index_by_bytes(x)
+    #                          for x in zone_item.chindex]}
+    #                  )
+    # common.append(
+    #     get_zoneitem_by_key(self,_settings,"homepoweronzone_1",
+    #                         "Specify Zone A",home_poweron_zone_1,zone_dict)
+    #     )
+    # common.append(
+    #     get_zoneitem_by_key(self,_settings,"homepoweronzone_2",
+    #                         "Specify Zone B",home_poweron_zone_2,zone_dict))
+    # ch_dict_1=ch_dict_2=[
+    #     {"name": item["name"], "id": i} for i, item in enumerate(ch_dict)
+    #     ]
     # if home_poweron_zone_1 != 0x0FFF:
-    #     zone_item = next((zone for zone in zone_dict if zone["id"] == home_poweron_zone_1), None)
+    #     zone_item = next(
+    #         (zone for zone in zone_dict
+    #          if zone["id"] == home_poweron_zone_1), None)
     #     if zone_item is not None:
     #         ch_dict_1=get_ch_items_by_index(ch_dict,zone_item["chs"])
     # if home_poweron_zone_2 != 0x0FFF:
-    #   zone_item = next((zone for zone in zone_dict if zone["id"] == home_poweron_zone_1), None)
+    #   zone_item = next(
+    #       (zone for zone in zone_dict
+    #        if zone["id"] == home_poweron_zone_1), None)
     #   if zone_item is not None:
     #       ch_dict_2=get_ch_items_by_index(ch_dict,zone_item["chs"])
-    # ch_value_1=int.from_bytes(struct.pack('<H',_settings.homepoweronch_1), byteorder='big')
-    # common.append(get_radiosetting_by_key(self,_settings,"homepoweronch_1","Specify Channel A",ch_value_1,ch_dict_1,set_item_twobytes_callback))
-    # ch_value_2=int.from_bytes(struct.pack('<H',_settings.homepoweronch_2), byteorder='big')
-    # common.append(get_radiosetting_by_key(self,_settings,"homepoweronch_2","Specify Channel B",ch_value_2,ch_dict_2,set_item_twobytes_callback))
+    # ch_value_1=int.from_bytes(
+    #     struct.pack('<H',_settings.homepoweronch_1),
+    #     byteorder='big')
+    # common.append(
+    #     get_radiosetting_by_key(self,_settings,
+    #                             "homepoweronch_1","Specify Channel A",
+    #                             ch_value_1,ch_dict_1,set_item_twobytes_callback))
+    # ch_value_2=int.from_bytes(
+    #     struct.pack('<H',_settings.homepoweronch_2), byteorder='big')
+    # common.append(
+    #     get_radiosetting_by_key(self,_settings,
+    #                             "homepoweronch_2",
+    #                             "Specify Channel B",ch_value_2,ch_dict_2,
+    #                             set_item_twobytes_callback))
 
     opts_dict = get_scan_item_list(self)
     common.append(
@@ -1540,7 +1645,12 @@ def get_common_setting(self, common):
     )
     common.append(
         get_radiosetting_by_key(
-            self, _settings, "tk1_long", "TK Long Press", _settings.tk1_long, short_dict
+            self,
+            _settings,
+            "tk1_long",
+            "TK Long Press",
+            _settings.tk1_long,
+            short_dict
         )
     )
     common.append(
@@ -1676,13 +1786,15 @@ def get_dtmf_setting(self, dtmf):
         RadioSetting(
             "dtmfsetting.autoresettime",
             "Auto Reset Time",
-            RadioSettingValueList(opts, current_index=_dtmf_comm.autoresettime),
+            RadioSettingValueList(opts,
+                                  current_index=_dtmf_comm.autoresettime),
         )
     )
     opts = [{"name": "Stun Tx", "id": 1}, {"name": "Stun TX/RX", "id": 2}]
     dtmf.append(
         get_radiosetting_by_key(
-            self, _dtmf_comm, "stunmode", "Stun Type", _dtmf_comm.stunmode - 1, opts
+            self, _dtmf_comm, "stunmode",
+            "Stun Type", _dtmf_comm.stunmode - 1, opts
         )
     )
     # RadioSetting(
@@ -1693,7 +1805,8 @@ def get_dtmf_setting(self, dtmf):
         RadioSetting(
             "dtmfsetting.codedelaytime",
             "Digit Delay",
-            RadioSettingValueList(opts, current_index=_dtmf_comm.codedelaytime),
+            RadioSettingValueList(opts,
+                                  current_index=_dtmf_comm.codedelaytime),
         )
     )
     opts = ["OFF", "BOT", "EOT", "Both"]
@@ -1701,7 +1814,8 @@ def get_dtmf_setting(self, dtmf):
         RadioSetting(
             "dtmfsetting.pttidtype",
             "PTT ID Type",
-            RadioSettingValueList(opts, current_index=_dtmf_comm.pttidtype),
+            RadioSettingValueList(opts,
+                                  current_index=_dtmf_comm.pttidtype),
         )
     )
     dtmf.append(
@@ -1788,7 +1902,8 @@ def get_dtmf_setting(self, dtmf):
 def get_dtmf_list(self, dtmf_list):
     _dtmf_data = self._memobj.dtmfdata
     _dtmf_list = self._memobj.dtmfs
-    dtmf_count = int.from_bytes(struct.pack("<H", _dtmf_data.dtmfnum), byteorder="big")
+    dtmf_count = int.from_bytes(
+        struct.pack("<H", _dtmf_data.dtmfnum), byteorder="big")
     dtmf_count = 4 if dtmf_count > 4 else dtmf_count
     if dtmf_count <= 0:
         return
@@ -1796,7 +1911,8 @@ def get_dtmf_list(self, dtmf_list):
     for i in range(0, dtmf_count):
         index = i + 1
         dtmf_item = _dtmf_list[i]
-        rsg = RadioSettingSubGroup("dtmf_list-%i" % i, "dtmf_list %i" % (i + 1))
+        rsg = RadioSettingSubGroup("dtmf_list-%i" % i,
+                                   "dtmf_list %i" % (i + 1))
         # rs=RadioSetting(
         #     "dtmfstatus_%s" % index, "Enable",
         #     RadioSettingValueBoolean(1 if dtmf_item.dtmfstatus==1 else 0))
@@ -1836,14 +1952,16 @@ def get_dtmf_list(self, dtmf_list):
             "IsEncodingEnable",
             RadioSettingValueBoolean(dtmf_item.EncodingEnable),
         )
-        rs.set_apply_callback(set_dtmf_list_callback, self, i, "EncodingEnable")
+        rs.set_apply_callback(set_dtmf_list_callback,
+                              self, i, "EncodingEnable")
         rsg.append(rs)
         rs = RadioSetting(
             "DecodingEnable_%s" % index,
             "IsDecodingEnable",
             RadioSettingValueBoolean(dtmf_item.DecodingEnable),
         )
-        rs.set_apply_callback(set_dtmf_list_callback, self, i, "DecodingEnable")
+        rs.set_apply_callback(set_dtmf_list_callback,
+                              self, i, "DecodingEnable")
         rsg.append(rs)
         for j in range(1, 11):
             rs = RadioSetting(
@@ -1852,12 +1970,14 @@ def get_dtmf_list(self, dtmf_list):
                 RadioSettingValueString(
                     0,
                     16,
-                    "".join(filter(dtmf_item["fastcall%d" % j], DTMFCHARSET, 16)),
+                    "".join(filter(dtmf_item["fastcall%d" % j],
+                                   DTMFCHARSET, 16)),
                     False,
                     DTMFCHARSET,
                 ),
             )
-            rs.set_apply_callback(set_dtmf_list_callback, self, i, "fastcall%s" % j)
+            rs.set_apply_callback(set_dtmf_list_callback,
+                                  self, i, "fastcall%s" % j)
             rsg.append(rs)
         dtmf_list.append(rsg)
 
@@ -1865,21 +1985,23 @@ def get_dtmf_list(self, dtmf_list):
 def get_scan_list(self, scan_list):
     _scan_list = self._memobj.scans
     _scan_data = self._memobj.scandata
-    scan_count = int.from_bytes(struct.pack("<H", _scan_data.scannum), byteorder="big")
+    scan_count = int.from_bytes(
+        struct.pack("<H", _scan_data.scannum), byteorder="big")
     scan_count = 16 if scan_count > 16 else scan_count
     if scan_count <= 0:
         return
     for i in range(0, scan_count):
         index = i + 1
-        rsg = RadioSettingSubGroup("scan_list-%i" % i, "scan_list %i" % index)
+        rsg = RadioSettingSubGroup("scan_list-%i" % i,
+                                   "scan_list %i" % index)
         _scan_item = _scan_list[i]
-        rs = RadioSetting(
-            "scanlist.status_%s" % index,
-            "Enable",
-            RadioSettingValueBoolean(_scan_item.scanstatus),
-        )
-        rs.set_apply_callback(set_scan_list_callback, self, i, "scanstatus")
-        rsg.append(rs)
+        # rs = RadioSetting(
+        #     "scanlist.status_%s" % index,
+        #     "Enable",
+        #     RadioSettingValueBoolean(_scan_item.scanstatus),
+        # )
+        # rs.set_apply_callback(set_scan_list_callback, self, i, "scanstatus")
+        # rsg.append(rs)
         rs = RadioSetting(
             "scanlist.name_%s" % index,
             "Scan Name",
@@ -1891,7 +2013,8 @@ def get_scan_list(self, scan_list):
                 NAMECHATSET,
             ),
         )
-        rs.set_apply_callback(set_scan_list_callback, self, i, "name")
+        rs.set_apply_callback(set_scan_list_callback,
+                              self, i, "name")
         rsg.append(rs)
         opts = ["Carrier", "Time", "Search"]
         rs = RadioSetting(
@@ -1905,9 +2028,11 @@ def get_scan_list(self, scan_list):
         rs = RadioSetting(
             "scanlist.scancondition_%s" % index,
             "Scan Condition",
-            RadioSettingValueList(opts, current_index=_scan_item.scancondition),
+            RadioSettingValueList(opts,
+                                  current_index=_scan_item.scancondition),
         )
-        rs.set_apply_callback(set_scan_list_callback, self, i, "scancondition")
+        rs.set_apply_callback(set_scan_list_callback,
+                              self, i, "scancondition")
         rsg.append(rs)
         opts = ["Selected", "Last Active Channel", "Designated Channel"]
         rs = RadioSetting(
@@ -1915,32 +2040,46 @@ def get_scan_list(self, scan_list):
             "Designated Transmission Channel",
             RadioSettingValueList(opts, current_index=_scan_item.scantxch),
         )
-        rs.set_apply_callback(set_scan_list_callback, self, i, "scantxch")
+        rs.set_apply_callback(set_scan_list_callback,
+                              self, i, "scantxch")
         rsg.append(rs)
         # filtered_ch_list = get_ch_items(self)
         # rs=RadioSetting(
         #     "scanlist.specifych_%s" % index, "Transmit Channel",
-        #     RadioSettingValueList(get_namedict_by_items(filtered_ch_list), current_index=get_ch_index_by_bytes(_scan_item.specifych)-3))
-        # rs.set_apply_callback(set_scan_list_callback,self,i,"specifych",filtered_ch_list)
+        #     RadioSettingValueList(
+        #         get_namedict_by_items(filtered_ch_list),
+        #         current_index=get_ch_index_by_bytes(_scan_item.specifych)-3))
+        # rs.set_apply_callback(set_scan_list_callback,
+        #                       self, i, "specifych", filtered_ch_list)
         # rsg.append(rs)
-        # priority_ch_list = [{"name":"None","id":0xFFFF}]+filtered_ch_list
+        # priority_ch_list = [
+        #     {"name":"None","id":0xFFFF}
+        #     ]+filtered_ch_list
         # PriorityCh1_value=_scan_item.PriorityCh1
         # if(PriorityCh1_value==0xFFFF):
         #     PriorityCh1_value=0
         # rs=RadioSetting(
         #     "scanlist.PriorityCh1_%s" % index, "Priority Channel1",
-        #     RadioSettingValueList(get_namedict_by_items(priority_ch_list), current_index=get_ch_index_by_bytes(PriorityCh1_value)-2))
-        # rs.set_apply_callback(set_scan_list_callback,self,i,"PriorityCh1",priority_ch_list)
+        #     RadioSettingValueList(
+        #         get_namedict_by_items(priority_ch_list),
+        #         current_index=get_ch_index_by_bytes(PriorityCh1_value)-2))
+        # rs.set_apply_callback(
+        #     set_scan_list_callback,
+        #     self, i, "PriorityCh1", priority_ch_list)
         # rsg.append(rs)
         # PriorityCh2_value=_scan_item.PriorityCh2
         # if(PriorityCh2_value==0xFFFF):
         #     PriorityCh2_value=0
         # rs=RadioSetting(
-        #     "scanlist.PriorityCh2_%s" % index, "Priority Channel2",
-        #     RadioSettingValueList(get_namedict_by_items(priority_ch_list), current_index=get_ch_index_by_bytes(PriorityCh2_value)-2))
-        # rs.set_apply_callback(set_scan_list_callback,self,i,"PriorityCh2",priority_ch_list)
+        #     "scanlist.PriorityCh2_%s" % index,
+        #     "Priority Channel2",
+        #     RadioSettingValueList(
+        #         get_namedict_by_items(priority_ch_list),
+        #         current_index=get_ch_index_by_bytes(PriorityCh2_value)-2))
+        # rs.set_apply_callback(
+        #     set_scan_list_callback,
+        #     self, i, "PriorityCh2", priority_ch_list)
         # rsg.append(rs)
-
         opts = ["%ss" % (x + 1) for x in range(0, 16, 1)]
         rs = RadioSetting(
             "scanlist.hangtime_%s" % index,
@@ -1999,11 +2138,14 @@ def get_vfo_scan(self, vfoscan):
         RadioSetting(
             "vfoscan.startcondition",
             "Start Condition",
-            RadioSettingValueList(opts, current_index=_vfo_scan.startcondition),
+            RadioSettingValueList(opts,
+                                  current_index=_vfo_scan.startcondition),
         )
     )
 
-    freq_start = int.from_bytes(_vfo_scan.vhffreq_start, byteorder="little") / 1000000
+    freq_start = int.from_bytes(
+        _vfo_scan.vhffreq_start, byteorder="little"
+        ) / 1000000
     vfoscan.append(
         RadioSetting(
             "vfoscan.vhffreq_start",
@@ -2012,7 +2154,9 @@ def get_vfo_scan(self, vfoscan):
         )
     )
 
-    freq_end = int.from_bytes(_vfo_scan.vhffreq_end, byteorder="little") / 1000000
+    freq_end = int.from_bytes(
+        _vfo_scan.vhffreq_end, byteorder="little"
+        ) / 1000000
     vfoscan.append(
         RadioSetting(
             "vfoscan.vhffreq_end",
@@ -2033,7 +2177,8 @@ def get_alarm_list(self, alarm_list):
         return
     for i in range(0, alarm_count):
         index = i + 1
-        rsg = RadioSettingSubGroup("alarm_list-%i" % i, "alarm_list %i" % index)
+        rsg = RadioSettingSubGroup("alarm_list-%i" % i,
+                                   "alarm_list %i" % index)
         _alarm_item = _alarm_list[i]
         # rs=RadioSetting(
         #     "alarmlist.status_%s" % index, "Enable",
@@ -2075,8 +2220,10 @@ def get_alarm_list(self, alarm_list):
         #     jumpch_value=0
         # rs=RadioSetting(
         #     "scanlist.jumpch_%s" % index, "Alarm Revert Channel",
-        #     RadioSettingValueList(get_namedict_by_items(filtered_ch_list), current_index=get_ch_index_by_bytes(jumpch_value)-2))
-        # rs.set_apply_callback(set_alarm_list_callback,self,i,"jumpch",filtered_ch_list)
+        #     RadioSettingValueList(get_namedict_by_items(filtered_ch_list),
+        #                           current_index=get_ch_index_by_bytes(jumpch_value)-2))
+        # rs.set_apply_callback(set_alarm_list_callback,
+        #                       self,i,"jumpch",filtered_ch_list)
         # rsg.append(rs)
         rs = RadioSetting(
             "scanlist.localalarm_%s" % index,
@@ -2161,35 +2308,43 @@ def get_zone_list(self, zone_list):
 def _set_memory(self, mem, _mem, ch_index):
     ch_index_dict = get_ch_index(self)
     rx_freq = get_ch_rxfreq(mem)
-    if ch_index not in ch_index_dict and (rx_freq != 0 and rx_freq != 0xFFFFFFFF):
+    if (
+        ch_index not in ch_index_dict and
+        rx_freq != 0
+    ) and rx_freq != 0xFFFFFFFF:
         ch_index_dict.append(ch_index)
         set_ch_index(self, ch_index_dict)
     elif ch_index in ch_index_dict and rx_freq <= 0:
         ch_index_dict.remove(ch_index)
         set_ch_index(self, ch_index_dict)
     _mem.set_raw(b"\x00" * 40)
-    if mem.empty: 
+    if mem.empty:
         return
     _mem.rxfreq = rx_freq.to_bytes(4, byteorder="little", signed=False)
-    channel_name =mem.name.strip()
-    if not channel_name:  
-        channel_name = f"CH-{mem.number}"
-    _mem.alias =channel_name.ljust(14, chr(00))
+    channel_name = mem.name
+    # if not channel_name:
+    #     channel_name = f"CH-{mem.number}"
+    #     mem.name=channel_name
+    _mem.alias = channel_name.ljust(14)
+
     txfrq = (
-        rx_freq - mem.offset
+        int(rx_freq - mem.offset)
         if mem.duplex == "-" and mem.offset > 0
-        else rx_freq + mem.offset if mem.duplex == "+" and mem.offset > 0 else rx_freq
+        else (
+            int(rx_freq + mem.offset)
+            if mem.duplex == "+" and mem.offset > 0
+            else rx_freq
+        )
     )
-    _mem.txfreq = get_ch_txfreq(rx_freq, txfrq).to_bytes(
-        4, byteorder="little", signed=False
-    )
+    _mem.txfreq = txfrq.to_bytes(4, byteorder="little", signed=False)
     _mem.bandwidth = 3 if mem.mode == "FM" else 1
     if mem.power in POWER_LEVELS:
         _mem.power = POWER_LEVELS.index(mem.power)
     else:
         _mem.power = 0
-   
-    ((txmode, txtone, txpol), (rxmode, rxtone, rxpol)) = chirp_common.split_tone_encode(
+
+    ((txmode, txtone, txpol),
+     (rxmode, rxtone, rxpol)) = chirp_common.split_tone_encode(
         mem
     )
     if rxmode == "Tone":
@@ -2218,19 +2373,25 @@ def _set_memory(self, mem, _mem, ch_index):
         _mem.txctcvaluetype = 0
     for setting in mem.extra:
         if setting.get_name() == "tottime":
-            _mem.tottime = get_item_by_name(TIMEOUTTIMER_LIST, str(setting.value))
+            _mem.tottime = get_item_by_name(
+                TIMEOUTTIMER_LIST, str(setting.value)
+                )
         elif setting.get_name() == "alarmlist":
-            _mem.alarmlist = get_item_by_name(ALARM_LIST, setting.value)
+            _mem.alarmlist = get_item_by_name(
+                ALARM_LIST, setting.value
+                )
         elif setting.get_name() == "dtmfsignalinglist":
-            _mem.dtmfsignalinglist = get_item_by_name(DTMFSYSTEM_LIST, setting.value)
+            _mem.dtmfsignalinglist = get_item_by_name(
+                DTMFSYSTEM_LIST, setting.value
+                )
         else:
             setattr(_mem, setting.get_name(), setting.value)
     return _mem
 
 
-def get_radiosetting_by_key(
-    self, _setting, item_key, item_display_name, item_value, opts_dict, callback=None
-):
+def get_radiosetting_by_key(self, _setting, item_key,
+                            item_display_name, item_value,
+                            opts_dict, callback=None):
     opts = get_namedict_by_items(opts_dict)
     item = RadioSetting(
         item_key,
@@ -2249,9 +2410,9 @@ def get_radiosetting_by_key(
     return item
 
 
-def get_zoneitem_by_key(
-    self, _setting, item_key, item_display_name, item_value, opts_dict, callback=None
-):
+def get_zoneitem_by_key(self, _setting, item_key,
+                        item_display_name, item_value,
+                        opts_dict, callback=None):
     opts = get_namedict_by_items(opts_dict)
     item = RadioSetting(
         item_key,
@@ -2293,7 +2454,8 @@ def set_poweron_zone_callback(set_item, self, obj, name, items):
 
 def set_item_twobytes_callback(setting, obj, item_key, opts, self):
     item_value = get_item_by_name(opts, setting.value)
-    setattr(obj, item_key, (((item_value & 0xFF) << 8) | ((item_value >> 8) & 0xFF)))
+    setattr(obj, item_key,
+            (((item_value & 0xFF) << 8) | ((item_value >> 8) & 0xFF)))
 
 
 def set_item_callback(set_item, obj, name, items, self):
@@ -2335,7 +2497,9 @@ def get_ch_items(self):
 def get_ch_items_by_index(ch_items, ch_index_dict):
     items = []
     for i, ch_index in enumerate(ch_index_dict):
-        ch_item = next((item for item in ch_items if item["id"] == ch_index), None)
+        ch_item = next(
+            (item for item in ch_items
+             if item["id"] == ch_index), None)
         if ch_item is not None:
             items.append({"name": ch_item["name"], "id": i})
     return items
@@ -2344,10 +2508,12 @@ def get_ch_items_by_index(ch_items, ch_index_dict):
 def get_ch_index(self):
     ch_dict = []
     ch_data = self._memobj.channeldata
-    ch_num = int.from_bytes(struct.pack("<H", ch_data.chnum), byteorder="big")
+    ch_num = int.from_bytes(
+        struct.pack("<H", ch_data.chnum), byteorder="big")
     for i in range(0, ch_num):
         ch_dict.append(
-            int.from_bytes(struct.pack("<H", ch_data.chindex[i]), byteorder="big")
+            int.from_bytes(
+                struct.pack("<H", ch_data.chindex[i]), byteorder="big")
         )
     return ch_dict
 
@@ -2392,7 +2558,9 @@ def get_ch_rxfreq(mem):
 def get_ch_txfreq(rx_freq, tx_freq):
     return (
         rx_freq
-        if (tx_freq < 134 or (tx_freq > 174 and tx_freq < 400) or tx_freq > 480)
+        if (tx_freq < 134 or
+            (tx_freq > 174 and tx_freq < 400) or
+            tx_freq > 480)
         else tx_freq
     )
 
@@ -2402,7 +2570,8 @@ def get_alarm_item_list(self):
     _alarms = self._memobj.alarms
     ALARM_LIST.clear()
     ALARM_LIST.append({"name": "OFF", "id": 255})
-    alarm_num = int.from_bytes(struct.pack("<H", _alarmdata.alarmnum), byteorder="big")
+    alarm_num = int.from_bytes(
+        struct.pack("<H", _alarmdata.alarmnum), byteorder="big")
     if alarm_num > 0:
         for i in range(0, alarm_num):
             alarm_index = int.from_bytes(
@@ -2420,7 +2589,8 @@ def get_dtmf_item_list(self):
     _dtmfs = self._memobj.dtmfs
     DTMFSYSTEM_LIST.clear()
     DTMFSYSTEM_LIST.append({"name": "OFF", "id": 15})
-    dtmf_num = int.from_bytes(struct.pack("<H", _dtmfdata.dtmfnum), byteorder="big")
+    dtmf_num = int.from_bytes(
+        struct.pack("<H", _dtmfdata.dtmfnum), byteorder="big")
     if dtmf_num > 0:
         for i in range(0, dtmf_num):
             dtmf_index = int.from_bytes(
@@ -2437,7 +2607,8 @@ def get_scan_item_list(self):
     _scandata = self._memobj.scandata
     _scans = self._memobj.scans
     scan_dict = []
-    scan_num = int.from_bytes(struct.pack("<H", _scandata.scannum), byteorder="big")
+    scan_num = int.from_bytes(
+        struct.pack("<H", _scandata.scannum), byteorder="big")
     if scan_num > 0:
         for i in range(0, scan_num):
             scan_index = int.from_bytes(
@@ -2453,7 +2624,8 @@ def get_scan_item_list(self):
 def get_alarm_index_list(self):
     _alarmdata = self._memobj.alarmdata
     alarm_index_dict = []
-    alarm_num = int.from_bytes(struct.pack("<H", _alarmdata.alarmnum), byteorder="big")
+    alarm_num = int.from_bytes(
+        struct.pack("<H", _alarmdata.alarmnum), byteorder="big")
     if alarm_num > 0:
         for i in range(0, alarm_num):
             alarm_index = int.from_bytes(
@@ -2467,7 +2639,8 @@ def get_alarm_index_list(self):
 def get_dtmf_index_list(self):
     _dtmfdata = self._memobj.dtmfdata
     dtmf_index_dict = []
-    dtmf_num = int.from_bytes(struct.pack("<H", _dtmfdata.dtmfnum), byteorder="big")
+    dtmf_num = int.from_bytes(
+        struct.pack("<H", _dtmfdata.dtmfnum), byteorder="big")
     if dtmf_num > 0:
         for i in range(0, dtmf_num):
             dtmf_index = int.from_bytes(
@@ -2481,7 +2654,8 @@ def get_dtmf_index_list(self):
 def get_scan_index_list(self):
     _scandata = self._memobj.scandata
     scan_index_dict = []
-    scan_num = int.from_bytes(struct.pack("<H", _scandata.scannum), byteorder="big")
+    scan_num = int.from_bytes(
+        struct.pack("<H", _scandata.scannum), byteorder="big")
     if scan_num > 0:
         for i in range(0, scan_num):
             scan_index = int.from_bytes(
@@ -2495,7 +2669,8 @@ def get_scan_index_list(self):
 def get_zone_index_list(self):
     _zonedata = self._memobj.zonedata
     zone_index_dict = []
-    zone_num = int.from_bytes(struct.pack("<H", _zonedata.zonenum), byteorder="big")
+    zone_num = int.from_bytes(
+        struct.pack("<H", _zonedata.zonenum), byteorder="big")
     if zone_num > 0:
         for i in range(0, zone_num):
             zone_index = int.from_bytes(
@@ -2509,13 +2684,14 @@ def get_zone_index_list(self):
 def set_alarm_index_list(self, alarm_index_dict):
     _alarmdata = self._memobj.alarmdata
     alarm_count = len(alarm_index_dict)
-    _alarmdata.alarmnum = ((alarm_count & 0xFF) << 8) | ((alarm_count >> 8) & 0xFF)
+    _alarmdata.alarmnum = (
+        (alarm_count & 0xFF) << 8) | ((alarm_count >> 8) & 0xFF)
     if alarm_count > 0:
         for i in range(0, 8):
             if i < alarm_count:
-                _alarmdata.alarmindex[i] = ((alarm_index_dict[i] & 0xFF) << 8) | (
-                    (alarm_index_dict[i] >> 8) & 0xFF
-                )
+                _alarmdata.alarmindex[i] = (
+                    (alarm_index_dict[i] & 0xFF) << 8) | (
+                        (alarm_index_dict[i] >> 8) & 0xFF)
             else:
                 _alarmdata.alarmindex[i] = 0xFFFF
     get_alarm_item_list(self)  # update ALARM_LIST
@@ -2524,13 +2700,14 @@ def set_alarm_index_list(self, alarm_index_dict):
 def set_zone_index_list(self, zone_index_dict):
     _zonedata = self._memobj.zonedata
     zone_count = len(zone_index_dict)
-    _zonedata.zonenum = ((zone_count & 0xFF) << 8) | ((zone_count >> 8) & 0xFF)
+    _zonedata.zonenum = (
+        (zone_count & 0xFF) << 8) | ((zone_count >> 8) & 0xFF)
     if zone_count > 0:
         for i in range(0, 64):
             if i < zone_count:
-                _zonedata.zoneindex[i] = ((zone_index_dict[i] & 0xFF) << 8) | (
-                    (zone_index_dict[i] >> 8) & 0xFF
-                )
+                _zonedata.zoneindex[i] = (
+                    (zone_index_dict[i] & 0xFF) << 8) | (
+                        (zone_index_dict[i] >> 8) & 0xFF)
             else:
                 _zonedata.zoneindex[i] = 0xFFFF
 
@@ -2541,13 +2718,15 @@ def set_zone_ch_list(self, zone_index, zone_ch_dict):
         raise Exception("Zone index out of range")
     zone_item = _zone_list[zone_index]
     zone_ch_count = len(zone_ch_dict)
-    zone_item.chnum = ((zone_ch_count & 0xFF) << 8) | ((zone_ch_count >> 8) & 0xFF)
+    zone_item.chnum = (
+        (zone_ch_count & 0xFF) << 8) | ((zone_ch_count >> 8) & 0xFF
+                                        )
     if zone_ch_count > 0:
         for i in range(0, 16):
             if i < zone_ch_count:
-                zone_item.chindex[i] = ((zone_ch_dict[i] & 0xFF) << 8) | (
-                    (zone_ch_dict[i] >> 8) & 0xFF
-                )
+                zone_item.chindex[i] = (
+                    (zone_ch_dict[i] & 0xFF) << 8) | (
+                        (zone_ch_dict[i] >> 8) & 0xFF)
             else:
                 zone_item.chindex[i] = 0xFFFF
 
@@ -2555,13 +2734,14 @@ def set_zone_ch_list(self, zone_index, zone_ch_dict):
 def set_dtmf_index_list(self, dtmf_index_dict):
     _dtmfdata = self._memobj.dtmfdata
     dtmf_count = len(dtmf_index_dict)
-    _dtmfdata.dtmfnum = ((dtmf_count & 0xFF) << 8) | ((dtmf_count >> 8) & 0xFF)
+    _dtmfdata.dtmfnum = (
+        (dtmf_count & 0xFF) << 8) | ((dtmf_count >> 8) & 0xFF)
     if dtmf_count > 0:
         for i in range(0, dtmf_count):
             if i < 4:
-                _dtmfdata.dtmfindex[i] = ((dtmf_index_dict[i] & 0xFF) << 8) | (
-                    (dtmf_index_dict[i] >> 8) & 0xFF
-                )
+                _dtmfdata.dtmfindex[i] = (
+                    (dtmf_index_dict[i] & 0xFF) << 8) | (
+                        (dtmf_index_dict[i] >> 8) & 0xFF)
             else:
                 raise ValueError("Not enough space in alarmindex array")
     get_dtmf_item_list(self)  # update DTMFSYSTEM_LIST
@@ -2570,7 +2750,7 @@ def set_dtmf_index_list(self, dtmf_index_dict):
 def set_scan_index_list(self, scan_index_dict):
     _scandata = self._memobj.scandata
     scan_count = len(scan_index_dict)
-    scan_num = ((scan_count & 0xFF) << 8) | ((scan_count >> 8) & 0xFF)
+    # scan_num = ((scan_count & 0xFF) << 8) | ((scan_count >> 8) & 0xFF)
     if scan_count > 0:
         for i in range(0, scan_count):
             if i < 16:
@@ -2616,14 +2796,17 @@ def set_scan_list_callback(set_item, self, index, name, items=None):
             value = filter(value, NAMECHATSET, 12, True)
             value = value.ljust(14, "\x00")
         elif (
-            name == "specifych" or name == "PriorityCh1" or name == "PriorityCh2"
+            name == "specifych" or
+            name == "PriorityCh1" or
+            name == "PriorityCh2"
         ) and items is not None:
             ch_value = get_item_by_name(items, value)
             value = ((ch_value & 0xFF) << 8) | ((ch_value >> 8) & 0xFF)
         setattr(_scan_list[index], name, value)
 
 
-def set_alarm_list_callback(set_item, self, index, name, items=None):
+def set_alarm_list_callback(set_item, self,
+                            index, name, items=None):
     _alarm_list = self._memobj.alarms
     value = set_item.value
     if index < len(_alarm_list):
@@ -2714,6 +2897,7 @@ class HA1G(chirp_common.CloneModeRadio):
         rf.has_tuning_step = False
         rf.has_nostep_tuning = True
         rf.valid_name_length = 12
+        rf.valid_skips = []
         rf.valid_tuning_steps = [
             2.5,
             5.0,
@@ -2759,7 +2943,9 @@ class HA1G(chirp_common.CloneModeRadio):
         except errors.RadioError:
             raise
         except Exception as e:
-            raise errors.RadioError("Failed to communicate with radio: %s" % e)
+            raise errors.RadioError(
+                "Failed to communicate with radio: %s" % e
+                )
 
     def sync_out(self):
         """Upload to radio"""
@@ -2770,7 +2956,9 @@ class HA1G(chirp_common.CloneModeRadio):
         except Exception as e:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
-            LOG.exception("Unexpected error during upload: %s" % e)
+            LOG.exception(
+                "Unexpected error during upload: %s" % e
+                )
             raise errors.RadioError(
                 "Unexpected error communicating with the radio"
                 )
@@ -2790,7 +2978,7 @@ class HA1G(chirp_common.CloneModeRadio):
         _mem = self._memobj.channels[ch_index]
         mem = _get_memory(self, mem, _mem, ch_index)
         if ch_index > 2 and ch_index < 33:
-            mem.immutable = ["empty","freq", "duplex", "offset"]
+            mem.immutable = ["empty", "freq", "duplex", "offset"]
         if ch_index >= 10 and ch_index < 17:
             mem.immutable += ["mode", "power"]
         return mem
@@ -2815,39 +3003,7 @@ class HA1G(chirp_common.CloneModeRadio):
         return repr(_mem)
 
     def validate_memory(self, mem):
-        ch_number = (
-            (0 if mem.extd_number == "VFOA" else 1)
-            if mem.number > len(self._memobj.channels)
-            else mem.number + 2
-        )
         msgs = super().validate_memory(mem)
-        if self.current_model == "HA1G":
-            _mem = self._memobj.channels[ch_number]
-            rx_freq = int.from_bytes(_mem.rxfreq, byteorder="little")
-            if mem.number <= 30 and mem.freq != rx_freq:
-                msgs.append(
-                    chirp_common.ValidationWarning(
-                        "GMRS channels 1-30 freq cannot be modified"
-                    )
-                )
-            if mem.number <= 30 and (mem.offset != 0 or mem.duplex != ""):
-                msgs.append(
-                    chirp_common.ValidationWarning(
-                        "GMRS channels 1-30 freq cannot be modified"
-                    )
-                )
-            if mem.number >= 7 and mem.number < 14 and mem.mode != "NFM":
-                msgs.append(
-                    chirp_common.ValidationWarning(
-                        "GMRS channels 8-14 Mode cannot be modified"
-                    )
-                )
-            if mem.number >= 7 and mem.number < 14 and mem.power != POWER_LEVELS[0]:
-                msgs.append(
-                    chirp_common.ValidationWarning(
-                        "GMRS channels 8-14 power cannot be modified"
-                    )
-                )
         return msgs
 
     def get_settings(self):
@@ -2896,7 +3052,11 @@ class HA1G(chirp_common.CloneModeRadio):
                     elif name.startswith("dtmfsetting."):
                         name = name[12:]
                         _dtmfcomm = self._memobj.dtmfcomm
-                        if name == "callid" or name == "stunid" or name == "revive":
+                        if (
+                            name == "callid" or
+                            name == "stunid" or
+                            name == "revive"
+                        ):
                             value = filter(value, DTMFCHARSET, 10, True)
                             value = value.ljust(10, "\x00")
                         elif name == "bot" or name == "eot":
