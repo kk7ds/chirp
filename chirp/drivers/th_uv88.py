@@ -588,9 +588,9 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         rp.info = \
             (cls.VENDOR + ' ' + cls.MODEL + '\n')
 
-        rp.pre_download = (
+        rp.pre_download = _(
             "This is an early stage beta driver\n")
-        rp.pre_upload = (
+        rp.pre_upload = _(
             "This is an early stage beta driver - upload at your own risk\n")
         return rp
 
