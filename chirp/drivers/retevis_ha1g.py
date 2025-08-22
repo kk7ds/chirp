@@ -3002,9 +3002,7 @@ class HA1G(chirp_common.CloneModeRadio):
         _mem = self._memobj.channels[ch_index]
         return repr(_mem)
 
-
     def get_settings(self):
-
         ModelInfo = RadioSettingGroup("info", "Model Information")
         common = RadioSettingGroup("basic", "Common Settings")
         scan = RadioSettingGroup("scan", "Scan List")
@@ -3024,7 +3022,6 @@ class HA1G(chirp_common.CloneModeRadio):
             # get_zone_list(self,zone)
         except Exception as e:
             LOG.exception("Error getting settings: %s", e)
-
         return setmode
 
     def set_settings(self, uisettings):
