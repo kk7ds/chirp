@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-05 15:28-0700\n"
+"POT-Creation-Date: 2025-09-08 18:10-0700\n"
 "PO-Revision-Date: 2012-10-02 22:11+0100\n"
 "Last-Translator: Benjamin, HB9EUK <hb9euk@hb9d.org>\n"
 "Language-Team: German\n"
@@ -24,21 +24,21 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr ""
 
-#: ../wxui/memedit.py:2146
+#: ../wxui/memedit.py:2179
 #, fuzzy, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
 msgstr[0] "Löschen (und nach oben verschieben)"
 msgstr[1] "Löschen (und nach oben verschieben)"
 
-#: ../wxui/memedit.py:2137
+#: ../wxui/memedit.py:2170
 #, fuzzy, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
 msgstr[0] "Speicher"
 msgstr[1] "Speicher"
 
-#: ../wxui/memedit.py:2141
+#: ../wxui/memedit.py:2174
 #, fuzzy, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
@@ -70,7 +70,7 @@ msgstr ""
 msgid "(none)"
 msgstr ""
 
-#: ../wxui/memedit.py:2538
+#: ../wxui/memedit.py:2571
 #, python-format
 msgid "...and %i more"
 msgstr ""
@@ -776,7 +776,7 @@ msgstr ""
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr ""
 
-#: ../wxui/memedit.py:1783
+#: ../wxui/memedit.py:1816
 #, python-format
 msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr ""
@@ -785,21 +785,21 @@ msgstr ""
 msgid "Chirp Image Files"
 msgstr ""
 
-#: ../wxui/memedit.py:460
+#: ../wxui/memedit.py:486
 msgid "Choice Required"
 msgstr ""
 
-#: ../wxui/memedit.py:1762
+#: ../wxui/memedit.py:1795
 #, fuzzy, python-format
 msgid "Choose %s DTCS Code"
 msgstr "DTCS Code"
 
-#: ../wxui/memedit.py:1759
+#: ../wxui/memedit.py:1792
 #, python-format
 msgid "Choose %s Tone"
 msgstr ""
 
-#: ../wxui/memedit.py:1793
+#: ../wxui/memedit.py:1826
 #, fuzzy
 msgid "Choose Cross Mode"
 msgstr "Cross Mode"
@@ -813,7 +813,7 @@ msgstr ""
 msgid "Choose a recent model"
 msgstr "Cross Mode"
 
-#: ../wxui/memedit.py:1823
+#: ../wxui/memedit.py:1856
 msgid "Choose duplex"
 msgstr ""
 
@@ -880,14 +880,14 @@ msgstr ""
 msgid "Close string value with double-quote (\")"
 msgstr ""
 
-#: ../wxui/memedit.py:2205
+#: ../wxui/memedit.py:2238
 #, fuzzy, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
 msgstr[0] "Vergleiche Rohspeicher"
 msgstr[1] "Vergleiche Rohspeicher"
 
-#: ../wxui/memedit.py:659
+#: ../wxui/memedit.py:692
 msgid "Comment"
 msgstr "Kommentar"
 
@@ -900,7 +900,7 @@ msgstr ""
 msgid "Complete"
 msgstr "Beendet"
 
-#: ../wxui/memedit.py:141
+#: ../wxui/memedit.py:147
 msgid "Complex or non-standard tone squelch mode (starts the tone mode selection wizard)"
 msgstr ""
 
@@ -914,11 +914,11 @@ msgstr ""
 msgid "Convert to FM"
 msgstr ""
 
-#: ../wxui/memedit.py:2116
+#: ../wxui/memedit.py:2149
 msgid "Copy"
 msgstr "Kopieren"
 
-#: ../wxui/memedit.py:2120
+#: ../wxui/memedit.py:2153
 msgid "Copy portable"
 msgstr ""
 
@@ -927,7 +927,7 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
-#: ../wxui/memedit.py:642
+#: ../wxui/memedit.py:675
 #, fuzzy
 msgid "Cross Mode"
 msgstr "Cross Mode"
@@ -940,21 +940,21 @@ msgstr ""
 msgid "Custom..."
 msgstr ""
 
-#: ../wxui/memedit.py:2111
+#: ../wxui/memedit.py:2144
 msgid "Cut"
 msgstr "Ausschneiden"
 
-#: ../wxui/memedit.py:2382
+#: ../wxui/memedit.py:2415
 #, python-format
 msgid "Cut %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:573
+#: ../wxui/memedit.py:606
 #, fuzzy
 msgid "DTCS"
 msgstr "DTCS Pol"
 
-#: ../wxui/memedit.py:619
+#: ../wxui/memedit.py:652
 #, fuzzy
 msgid ""
 "DTCS\n"
@@ -965,7 +965,7 @@ msgstr "DTCS Pol"
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2830
+#: ../wxui/memedit.py:2863
 msgid "DV Memory"
 msgstr ""
 
@@ -978,11 +978,11 @@ msgstr ""
 msgid "Dec"
 msgstr "Erkennung"
 
-#: ../wxui/memedit.py:2131
+#: ../wxui/memedit.py:2164
 msgid "Delete"
 msgstr "Löschen"
 
-#: ../wxui/memedit.py:1994
+#: ../wxui/memedit.py:2027
 msgid "Delete memories"
 msgstr ""
 
@@ -1001,15 +1001,15 @@ msgstr "Entwickler"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 
-#: ../wxui/memedit.py:2242 ../wxui/developer.py:97
+#: ../wxui/memedit.py:2275 ../wxui/developer.py:97
 msgid "Diff Raw Memories"
 msgstr "Vergleiche Rohspeicher"
 
-#: ../wxui/memedit.py:2250
+#: ../wxui/memedit.py:2283
 msgid "Diff against another editor"
 msgstr ""
 
-#: ../wxui/memedit.py:2747
+#: ../wxui/memedit.py:2780
 msgid "Digital Code"
 msgstr "Digital Code"
 
@@ -1022,7 +1022,7 @@ msgstr "Digital Code"
 msgid "Disable reporting"
 msgstr ""
 
-#: ../wxui/memedit.py:549
+#: ../wxui/memedit.py:582
 #, fuzzy
 msgid "Disabled"
 msgstr "Aktiviert"
@@ -1080,21 +1080,21 @@ msgstr ""
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
 msgstr ""
 
-#: ../wxui/memedit.py:512
+#: ../wxui/memedit.py:545
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2272
+#: ../wxui/memedit.py:2305
 #, python-format
 msgid "Edit %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2777
+#: ../wxui/memedit.py:2810
 #, python-format
 msgid "Edit details for %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2775
+#: ../wxui/memedit.py:2808
 #, python-format
 msgid "Edit details for memory %i"
 msgstr ""
@@ -1103,21 +1103,21 @@ msgstr ""
 msgid "Enable Automatic Edits"
 msgstr ""
 
-#: ../wxui/memedit.py:549
+#: ../wxui/memedit.py:582
 #, fuzzy
 msgid "Enabled"
 msgstr "Aktiviert"
 
-#: ../wxui/memedit.py:371
+#: ../wxui/memedit.py:390
 #, fuzzy
 msgid "Enter Frequency"
 msgstr "Frequenz"
 
-#: ../wxui/memedit.py:1810
+#: ../wxui/memedit.py:1843
 msgid "Enter Offset (MHz)"
 msgstr ""
 
-#: ../wxui/memedit.py:1802
+#: ../wxui/memedit.py:1835
 msgid "Enter TX Frequency (MHz)"
 msgstr ""
 
@@ -1210,7 +1210,7 @@ msgstr ""
 msgid "Experimental driver"
 msgstr "Weiter mit dem experimentellen Treiber?"
 
-#: ../wxui/memedit.py:2700
+#: ../wxui/memedit.py:2733
 msgid "Export can only write CSV files"
 msgstr ""
 
@@ -1224,7 +1224,7 @@ msgstr "In Datei exportieren"
 msgid "Export to CSV..."
 msgstr "In Datei exportieren"
 
-#: ../wxui/memedit.py:2819
+#: ../wxui/memedit.py:2852
 msgid "Extra"
 msgstr ""
 
@@ -1499,12 +1499,12 @@ msgid ""
 "4 - Do the upload of your radio data\n"
 msgstr ""
 
-#: ../wxui/memedit.py:212
+#: ../wxui/memedit.py:224
 #, python-format
 msgid "Found empty list value for %(name)s: %(value)r"
 msgstr ""
 
-#: ../wxui/memedit.py:317
+#: ../wxui/memedit.py:336
 msgid "Frequency"
 msgstr "Frequenz"
 
@@ -1513,7 +1513,7 @@ msgstr "Frequenz"
 msgid "Frequency %s is out of supported range"
 msgstr ""
 
-#: ../wxui/memedit.py:145
+#: ../wxui/memedit.py:151
 msgid "Frequency granularity in kHz"
 msgstr ""
 
@@ -1542,16 +1542,16 @@ msgstr ""
 msgid "Getting settings"
 msgstr ""
 
-#: ../wxui/memedit.py:1323
+#: ../wxui/memedit.py:1356
 #, fuzzy
 msgid "Goto Memory"
 msgstr "Zeige RAW Speicher"
 
-#: ../wxui/memedit.py:1322
+#: ../wxui/memedit.py:1355
 msgid "Goto Memory:"
 msgstr ""
 
-#: ../wxui/memedit.py:1269
+#: ../wxui/memedit.py:1302
 msgid "Goto..."
 msgstr ""
 
@@ -1567,7 +1567,7 @@ msgstr ""
 msgid "Hex"
 msgstr ""
 
-#: ../wxui/memedit.py:1278
+#: ../wxui/memedit.py:1311
 #, fuzzy
 msgid "Hide empty memories"
 msgstr "Überschreiben?"
@@ -1576,7 +1576,7 @@ msgstr "Überschreiben?"
 msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
 msgstr ""
 
-#: ../wxui/memedit.py:148
+#: ../wxui/memedit.py:154
 msgid "Human-readable comment (not stored in radio)"
 msgstr ""
 
@@ -1590,7 +1590,7 @@ msgstr ""
 msgid "Import"
 msgstr "Importieren"
 
-#: ../wxui/memedit.py:2418
+#: ../wxui/memedit.py:2451
 #, python-format
 msgid "Import %i memories"
 msgstr ""
@@ -1620,11 +1620,11 @@ msgstr "Index"
 msgid "Info"
 msgstr ""
 
-#: ../wxui/memedit.py:1785
+#: ../wxui/memedit.py:1818
 msgid "Information"
 msgstr ""
 
-#: ../wxui/memedit.py:2105
+#: ../wxui/memedit.py:2138
 #, fuzzy
 msgid "Insert Row Above"
 msgstr "Zeile oben einfügen"
@@ -1648,7 +1648,7 @@ msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Ungültiger Wert. Muss eine ganze Zahl sein."
 
 #: ../wxui/query_sources.py:69 ../wxui/query_sources.py:123
-#: ../wxui/memedit.py:1948
+#: ../wxui/memedit.py:1981
 #, fuzzy
 msgid "Invalid Entry"
 msgstr "Ungültiger Wert für dieses Feld"
@@ -1657,7 +1657,7 @@ msgstr "Ungültiger Wert für dieses Feld"
 msgid "Invalid ZIP code"
 msgstr ""
 
-#: ../wxui/memedit.py:1947 ../wxui/memedit.py:2910
+#: ../wxui/memedit.py:1980 ../wxui/memedit.py:2943
 #, python-format
 msgid "Invalid edit: %s"
 msgstr ""
@@ -1671,7 +1671,7 @@ msgstr "Ungültiger Wert für dieses Feld"
 msgid "Invalid or unsupported module file"
 msgstr ""
 
-#: ../wxui/memedit.py:270 ../wxui/memedit.py:276
+#: ../wxui/memedit.py:282 ../wxui/memedit.py:288
 #, fuzzy, python-format
 msgid "Invalid value: %r"
 msgstr "Ungültiger Wert für dieses Feld"
@@ -1783,7 +1783,7 @@ msgstr ""
 msgid "Longitude"
 msgstr ""
 
-#: ../wxui/memedit.py:1960
+#: ../wxui/memedit.py:1993
 #, python-format
 msgid "Manual edit of memory %i"
 msgstr ""
@@ -1796,7 +1796,7 @@ msgstr "Speicher"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
 
-#: ../wxui/memedit.py:1989
+#: ../wxui/memedit.py:2022
 #, python-format
 msgid "Memory %i is not deletable"
 msgstr ""
@@ -1806,7 +1806,7 @@ msgstr ""
 msgid "Memory field name (one of %s)"
 msgstr ""
 
-#: ../wxui/memedit.py:133
+#: ../wxui/memedit.py:139
 msgid "Memory label (stored in radio)"
 msgstr ""
 
@@ -1820,7 +1820,7 @@ msgid "Memory {num} not in bank {bank}"
 msgstr ""
 
 #: ../wxui/query_sources.py:624 ../wxui/query_sources.py:777
-#: ../wxui/memedit.py:628
+#: ../wxui/memedit.py:661
 #, fuzzy
 msgid "Mode"
 msgstr "Mode"
@@ -1857,22 +1857,22 @@ msgstr ""
 msgid "More than one port found: %s"
 msgstr ""
 
-#: ../wxui/memedit.py:2638
+#: ../wxui/memedit.py:2671
 #, python-format
 msgid "Move %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:1265
+#: ../wxui/memedit.py:1298
 #, fuzzy
 msgid "Move Down"
 msgstr "Nach _Unten"
 
-#: ../wxui/memedit.py:1255
+#: ../wxui/memedit.py:1288
 #, fuzzy
 msgid "Move Up"
 msgstr "Nach _Oben"
 
-#: ../wxui/memedit.py:2608
+#: ../wxui/memedit.py:2641
 msgid "Move operations are disabled while the view is sorted"
 msgstr ""
 
@@ -1885,7 +1885,7 @@ msgstr ""
 msgid "New version available"
 msgstr "Eine neue Version von CHIRP ist verfügbar:"
 
-#: ../wxui/memedit.py:2289
+#: ../wxui/memedit.py:2322
 #, fuzzy
 msgid "No empty rows below!"
 msgstr "Zeile unten einfügen"
@@ -1904,7 +1904,7 @@ msgstr ""
 msgid "No modules found in issue %i"
 msgstr ""
 
-#: ../wxui/memedit.py:2472
+#: ../wxui/memedit.py:2505
 msgid "No more space available; some memories were not applied"
 msgstr ""
 
@@ -1921,15 +1921,15 @@ msgstr ""
 msgid "No traces stored"
 msgstr ""
 
-#: ../wxui/query_sources.py:44 ../wxui/memedit.py:1322
+#: ../wxui/query_sources.py:44 ../wxui/memedit.py:1355
 msgid "Number"
 msgstr ""
 
-#: ../wxui/memedit.py:313
+#: ../wxui/memedit.py:332
 msgid "Offset"
 msgstr "Offset"
 
-#: ../wxui/memedit.py:311
+#: ../wxui/memedit.py:330
 msgid ""
 "Offset/\n"
 "TX Freq"
@@ -2045,7 +2045,7 @@ msgstr "Optionen"
 msgid "Optional: County, Hospital, etc."
 msgstr ""
 
-#: ../wxui/memedit.py:2452
+#: ../wxui/memedit.py:2485
 #, fuzzy
 msgid "Overwrite memories?"
 msgstr "Überschreiben?"
@@ -2066,7 +2066,7 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: ../wxui/memedit.py:2125
+#: ../wxui/memedit.py:2158
 msgid "Paste"
 msgstr "Einfügen"
 
@@ -2074,26 +2074,26 @@ msgstr "Einfügen"
 msgid "Paste external memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2551
+#: ../wxui/memedit.py:2584
 msgid "Paste memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2446
+#: ../wxui/memedit.py:2479
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2449
+#: ../wxui/memedit.py:2482
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr ""
 
-#: ../wxui/memedit.py:2443
+#: ../wxui/memedit.py:2476
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/memedit.py:2440
+#: ../wxui/memedit.py:2473
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
@@ -2152,7 +2152,7 @@ msgstr ""
 msgid "Port"
 msgstr "Port"
 
-#: ../wxui/memedit.py:392
+#: ../wxui/memedit.py:411
 msgid "Power"
 msgstr "Leistung"
 
@@ -2177,7 +2177,7 @@ msgstr ""
 msgid "Prolific USB device"
 msgstr ""
 
-#: ../wxui/memedit.py:2098
+#: ../wxui/memedit.py:2131
 msgid "Properties"
 msgstr ""
 
@@ -2220,7 +2220,7 @@ msgstr ""
 msgid "Querying"
 msgstr ""
 
-#: ../wxui/memedit.py:575
+#: ../wxui/memedit.py:608
 msgid "RX DTCS"
 msgstr ""
 
@@ -2257,11 +2257,11 @@ msgid ""
 "<small>Premium account required</small>"
 msgstr ""
 
-#: ../wxui/memedit.py:139
+#: ../wxui/memedit.py:145
 msgid "Receive DTCS code"
 msgstr ""
 
-#: ../wxui/memedit.py:132
+#: ../wxui/memedit.py:138
 #, fuzzy
 msgid "Receive frequency"
 msgstr "Frequenz"
@@ -2280,7 +2280,7 @@ msgstr "_Aktuell"
 msgid "Recommend using 55.2"
 msgstr ""
 
-#: ../wxui/memedit.py:983
+#: ../wxui/memedit.py:1016
 msgid "Redo"
 msgstr ""
 
@@ -2301,7 +2301,7 @@ msgstr ""
 msgid "Reload Driver and File"
 msgstr ""
 
-#: ../wxui/memedit.py:1310
+#: ../wxui/memedit.py:1343
 msgid "Reload required"
 msgstr ""
 
@@ -2382,7 +2382,7 @@ msgstr ""
 msgid "Saved settings"
 msgstr "Einstellungen"
 
-#: ../wxui/memedit.py:146
+#: ../wxui/memedit.py:152
 msgid "Scan control (skip, include, priority, etc)"
 msgstr ""
 
@@ -2444,11 +2444,11 @@ msgstr "Einstellungen"
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr ""
 
-#: ../wxui/memedit.py:144
+#: ../wxui/memedit.py:150
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr ""
 
-#: ../wxui/memedit.py:2234 ../wxui/developer.py:100
+#: ../wxui/memedit.py:2267 ../wxui/developer.py:100
 msgid "Show Raw Memory"
 msgstr "Zeige RAW Speicher"
 
@@ -2456,7 +2456,7 @@ msgstr "Zeige RAW Speicher"
 msgid "Show debug log location"
 msgstr ""
 
-#: ../wxui/memedit.py:1274
+#: ../wxui/memedit.py:1307
 msgid "Show extra fields"
 msgstr ""
 
@@ -2464,50 +2464,50 @@ msgstr ""
 msgid "Show image backup location"
 msgstr ""
 
-#: ../wxui/memedit.py:650
+#: ../wxui/memedit.py:683
 msgid "Skip"
 msgstr "Überspringen"
 
-#: ../wxui/memedit.py:2542
+#: ../wxui/memedit.py:2575
 #, fuzzy
 msgid "Some memories are incompatible with this radio"
 msgstr "Eingefügter Speicher {number} ist nicht mit diesem Gerät kompatibel weil:"
 
-#: ../wxui/memedit.py:2381
+#: ../wxui/memedit.py:2414
 msgid "Some memories are not deletable"
 msgstr ""
 
-#: ../wxui/memedit.py:2060
+#: ../wxui/memedit.py:2093
 #, python-format
 msgid "Sort %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2190
+#: ../wxui/memedit.py:2223
 #, fuzzy, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
 msgstr[0] "Vergleiche Rohspeicher"
 msgstr[1] "Vergleiche Rohspeicher"
 
-#: ../wxui/memedit.py:2194
+#: ../wxui/memedit.py:2227
 #, fuzzy, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
 msgstr[0] "Vergleiche Rohspeicher"
 msgstr[1] "Vergleiche Rohspeicher"
 
-#: ../wxui/memedit.py:2216
+#: ../wxui/memedit.py:2249
 #, fuzzy, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
 msgstr[0] "Vergleiche Rohspeicher"
 msgstr[1] "Vergleiche Rohspeicher"
 
-#: ../wxui/memedit.py:2075
+#: ../wxui/memedit.py:2108
 msgid "Sort by column:"
 msgstr ""
 
-#: ../wxui/memedit.py:2074
+#: ../wxui/memedit.py:2107
 #, fuzzy
 msgid "Sort memories"
 msgstr "Überschreiben?"
@@ -2534,11 +2534,11 @@ msgstr ""
 msgid "Successfully sent bug report:"
 msgstr ""
 
-#: ../wxui/memedit.py:315
+#: ../wxui/memedit.py:334
 msgid "TX Frequency"
 msgstr ""
 
-#: ../wxui/memedit.py:140
+#: ../wxui/memedit.py:146
 msgid "TX-RX DTCS polarity (normal or reversed)"
 msgstr ""
 
@@ -2590,7 +2590,7 @@ msgstr ""
 msgid "The following information will be submitted:"
 msgstr ""
 
-#: ../wxui/memedit.py:1306
+#: ../wxui/memedit.py:1339
 msgid "The memory editor requires a reload in order to change the workflow. That will happen now. Any other open tabs will be updated the next time they are loaded."
 msgstr ""
 
@@ -2599,7 +2599,7 @@ msgstr ""
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr ""
 
-#: ../wxui/memedit.py:2151
+#: ../wxui/memedit.py:2184
 #, fuzzy
 msgid "This Memory"
 msgstr "Zeige RAW Speicher"
@@ -2654,12 +2654,12 @@ msgstr ""
 msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
 msgstr ""
 
-#: ../wxui/memedit.py:2155
+#: ../wxui/memedit.py:2188
 #, fuzzy
 msgid "This memory and shift all up"
 msgstr "Löschen (und nach oben verschieben)"
 
-#: ../wxui/memedit.py:2153
+#: ../wxui/memedit.py:2186
 #, fuzzy
 msgid "This memory and shift block up"
 msgstr "Löschen (und nach oben verschieben)"
@@ -2689,49 +2689,49 @@ msgstr ""
 msgid "This will load a module from a website issue"
 msgstr ""
 
-#: ../wxui/memedit.py:478
+#: ../wxui/memedit.py:511
 msgid "Tone"
 msgstr "Tone"
 
-#: ../wxui/memedit.py:1367
+#: ../wxui/memedit.py:1400
 msgid "Tone Mode"
 msgstr "Tone Mode"
 
-#: ../wxui/memedit.py:480
+#: ../wxui/memedit.py:513
 #, fuzzy
 msgid "Tone Squelch"
 msgstr "ToneSql"
 
-#: ../wxui/memedit.py:134
+#: ../wxui/memedit.py:140
 #, fuzzy
 msgid "Tone squelch mode"
 msgstr "ToneSql"
 
-#: ../wxui/memedit.py:147
+#: ../wxui/memedit.py:153
 msgid "Transmit Power"
 msgstr ""
 
-#: ../wxui/memedit.py:143
+#: ../wxui/memedit.py:149
 msgid "Transmit shift, split mode, or transmit inhibit"
 msgstr ""
 
-#: ../wxui/memedit.py:135
+#: ../wxui/memedit.py:141
 msgid "Transmit tone"
 msgstr ""
 
-#: ../wxui/memedit.py:138
+#: ../wxui/memedit.py:144
 msgid "Transmit/receive DTCS code for DTCS mode, else transmit code"
 msgstr ""
 
-#: ../wxui/memedit.py:137
+#: ../wxui/memedit.py:143
 msgid "Transmit/receive modulation (FM, AM, SSB, etc)"
 msgstr ""
 
-#: ../wxui/memedit.py:136
+#: ../wxui/memedit.py:142
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
 msgstr ""
 
-#: ../wxui/memedit.py:422 ../wxui/memedit.py:1379
+#: ../wxui/memedit.py:448 ../wxui/memedit.py:1412
 #, fuzzy
 msgid "Tuning Step"
 msgstr "Abstimmungsschritt"
@@ -2749,7 +2749,7 @@ msgstr ""
 msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
 
-#: ../wxui/memedit.py:1868
+#: ../wxui/memedit.py:1901
 msgid "Unable to edit memory before radio is loaded"
 msgstr ""
 
@@ -2758,7 +2758,7 @@ msgstr ""
 msgid "Unable to find stock config %r"
 msgstr "Speichervorgaben öffnen"
 
-#: ../wxui/memedit.py:2398
+#: ../wxui/memedit.py:2431
 #, fuzzy
 msgid "Unable to import while the view is sorted"
 msgstr "Kann Gerät auf {port} nicht erkennen"
@@ -2782,7 +2782,7 @@ msgstr ""
 msgid "Unable to reveal %s on this system"
 msgstr "Keine Änderungen bei diesem Modell möglich"
 
-#: ../wxui/memedit.py:248
+#: ../wxui/memedit.py:260
 #, fuzzy, python-format
 msgid "Unable to set %s on this memory"
 msgstr "Keine Änderungen bei diesem Modell möglich"
@@ -2792,7 +2792,7 @@ msgstr "Keine Änderungen bei diesem Modell möglich"
 msgid "Unable to upload this file"
 msgstr "Keine Änderungen bei diesem Modell möglich"
 
-#: ../wxui/memedit.py:982
+#: ../wxui/memedit.py:1015
 msgid "Undo"
 msgstr ""
 
@@ -2804,7 +2804,7 @@ msgstr ""
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
 
-#: ../drivers/thd74.py:329
+#: ../drivers/thd74.py:330
 #, fuzzy, python-format
 msgid "Unsupported model %r"
 msgstr "Nicht unterstuetzter Dateityp"
@@ -2841,7 +2841,7 @@ msgstr "Upload zum Gerät"
 msgid "Uploaded memory %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1282
+#: ../wxui/memedit.py:1315
 msgid "Use TX Frequency Workflow"
 msgstr ""
 
@@ -2885,7 +2885,7 @@ msgstr ""
 msgid "Value to search memory field for"
 msgstr ""
 
-#: ../wxui/memedit.py:2810
+#: ../wxui/memedit.py:2843
 msgid "Values"
 msgstr ""
 
@@ -2902,11 +2902,12 @@ msgstr "_Ansicht"
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/bugreport.py:230 ../wxui/memedit.py:1954 ../wxui/main.py:2032
+#: ../wxui/bugreport.py:230 ../wxui/memedit.py:1987 ../wxui/main.py:1880
+#: ../wxui/main.py:2032
 msgid "Warning"
 msgstr ""
 
-#: ../wxui/memedit.py:1953
+#: ../wxui/memedit.py:1986
 #, python-format
 msgid "Warning: %s"
 msgstr ""
