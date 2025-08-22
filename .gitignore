@@ -12,6 +12,7 @@ ignored/
 patch_queue/
 archived_builds/
 .tox/
+.venv/
 **.mo
 **.pot
 locale/.files
@@ -34,3 +35,6 @@ chirpwx.spec
 chirp/locale/.files
 # for pycharm IDE
 .idea
+# nix
+.direnv
+result/
