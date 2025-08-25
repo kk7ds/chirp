@@ -1809,14 +1809,27 @@ class ChirpMain(wx.Frame):
 
     def _menu_interact_driver(self, event):
         LOG.warning('Going to interact with radio at the console')
+
+        main = self
         radio = self.current_editorset.current_editor.radio
-        import code
-        locals = {'main': self,
+        locals = {'main': main,
                   'radio': radio}
+
         if self.current_editorset.radio != radio:
-            locals['parent_radio'] = self.current_editorset.radio
-        code.interact(banner='Locals are: %s' % (', '.join(locals.keys())),
-                      local=locals)
+            parent_radio = self.current_editorset.radio
+            locals['parent_radio'] = parent_radio
+
+        banner = 'Locals are: %s' % (', '.join(locals.keys()))
+
+        # Use ipython if it's installed which gives tab complete and some other
+        # nice features over the built in REPL.
+        try:
+            import IPython
+            IPython.embed(header=banner)
+
+        except ModuleNotFoundError:
+            import code
+            code.interact(banner=banner, local=locals)
 
     @common.error_proof()
     def load_module(self, filename):

@@ -34,3 +34,5 @@ chirpwx.spec
 chirp/locale/.files
 # for pycharm IDE
 .idea
+# for nvim editor
+.nvim.lua
