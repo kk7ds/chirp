@@ -38,3 +38,5 @@ chirp/locale/.files
 # nix
 .direnv
 result/
+# for nvim editor
+.nvim.lua
