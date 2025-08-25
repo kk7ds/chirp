@@ -1827,10 +1827,9 @@ class ChirpMain(wx.Frame):
             import IPython
             IPython.embed(header=banner)
 
-        except:
+        except ModuleNotFoundError:
             import code
             code.interact(banner=banner, local=locals)
-
 
     @common.error_proof()
     def load_module(self, filename):
