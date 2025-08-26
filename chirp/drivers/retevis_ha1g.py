@@ -1101,7 +1101,6 @@ def read_item_handle_connect_event(all_bytes: bytearray,
     return all_bytes
 
 
-
 def exit_programming_mode(self):
     serial = self.pipe
     try:
