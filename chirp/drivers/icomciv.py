@@ -1018,7 +1018,7 @@ class Icom7100Radio(IcomCIVRadio):
         self._rf.has_dtcs_polarity = False
         self._rf.has_dtcs = False
         self._rf.has_ctone = True
-        self._rf.has_offset = False
+        self._rf.has_offset = True
         self._rf.has_name = True
         self._rf.has_tuning_step = False
         self._rf.valid_modes = [
