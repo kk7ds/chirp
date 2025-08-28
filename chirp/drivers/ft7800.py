@@ -21,7 +21,7 @@ from chirp.drivers import yaesu_clone
 from chirp import chirp_common, memmap, directory, bitwise, errors
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueList, RadioSettingValueBoolean, \
-    RadioSettingValueString, RadioSettings
+    RadioSettingValueString, RadioSettings, RadioSettingValueFloat
 
 from collections import defaultdict
 
@@ -246,6 +246,30 @@ def set_freq(freq, obj, field):
         obj[field][0].set_bits(0x80)
 
     return freq
+
+
+def _decode_chars(inarr):
+    LOG.debug("@_decode_chars, type: %s" % type(inarr))
+    LOG.debug(inarr)
+    outstr = ""
+    for i in inarr:
+        if i == 0xFF:
+            break
+        outstr += CHARSET[i & 0x7F]
+    return outstr.rstrip()
+
+
+def _encode_chars(instr, length=16):
+    LOG.debug("@_encode_chars, type: %s" % type(instr))
+    LOG.debug(instr)
+    outarr = []
+    instr = str(instr)
+    for i in range(length):
+        if i < len(instr):
+            outarr.append(CHARSET.index(instr[i]))
+        else:
+            outarr.append(0xFF)
+    return outarr
 
 
 class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
@@ -557,28 +581,6 @@ class FT7800Radio(FTx800Radio):
             self._wipe_memory_banks(memory)
         FTx800Radio.set_memory(self, memory)
 
-    def _decode_chars(self, inarr):
-        LOG.debug("@_decode_chars, type: %s" % type(inarr))
-        LOG.debug(inarr)
-        outstr = ""
-        for i in inarr:
-            if i == 0xFF:
-                break
-            outstr += CHARSET[i & 0x7F]
-        return outstr.rstrip()
-
-    def _encode_chars(self, instr, length=16):
-        LOG.debug("@_encode_chars, type: %s" % type(instr))
-        LOG.debug(instr)
-        outarr = []
-        instr = str(instr)
-        for i in range(length):
-            if i < len(instr):
-                outarr.append(CHARSET.index(instr[i]))
-            else:
-                outarr.append(0xFF)
-        return outarr
-
     def get_settings(self):
         _settings = self._memobj.settings
         basic = RadioSettingGroup("basic", "Basic")
@@ -722,7 +724,7 @@ class FT7800Radio(FTx800Radio):
 
         _arts_cwid = self._memobj.arts_cwid
         cwid = RadioSettingValueString(
-                0, 16, self._decode_chars(_arts_cwid.get_value()))
+                0, 16, _decode_chars(_arts_cwid.get_value()))
         cwid.set_charset(CHARSET)
         arts.append(RadioSetting("arts_cwid", "CW ID", cwid))
 
@@ -791,7 +793,7 @@ class FT7800Radio(FTx800Radio):
                     continue
                 if setting == "arts_cwid":
                     oldval = self._memobj.arts_cwid
-                    newval = self._encode_chars(newval.get_value(), 6)
+                    newval = _encode_chars(newval.get_value(), 6)
                     self._memobj.arts_cwid = newval
                     continue
                 # normal settings
@@ -803,6 +805,60 @@ class FT7800Radio(FTx800Radio):
                 LOG.debug(element.get_name())
                 raise
 
+
+MEM_FORMAT_8800_COMMON = """
+#seekto 0x0009;
+struct {
+    bbcd  vfo_left[3];
+} current_state;
+
+#seekto 0x0032;
+struct {
+    u8  ukn32;
+    u8  main:1,
+        ukn33_a:1,
+        ars:1,
+        ukn33_b:2,
+        vfo_band_edge:1,
+        ukn33_c:2;
+    u8  ukn34;
+    u8  ukn35;
+    u8  ukn36;
+    u8  ukn37;
+    u8  ukn38;
+    u8  ukn39;
+    u8  apo;
+    u8  ukn3b;
+    u8  ukn3c_a:3,
+        arts_mode:1,
+        ukn3c_b:2,
+        lockt:2;
+    u8  prog_p1;
+    u8  prog_p2;
+    u8  prog_p3;
+    u8  prog_p4;
+    u8  ukn41;
+    u8  ukn42;
+    u8  arts_cwid_enable:1,
+        lock:1,
+        ukn43:4,
+        backlight:2;
+    u8  ukn44a:2,
+        beep:1,
+        ukn44b:1,
+        key_mod:1,
+        ukn44c:3;
+    u8  ukn45a:3,
+        mute:2,
+        ukn45b:3;
+    u8  ukn46a:3,
+        mic:1,
+        ukn56b:4;
+    u8  ukn47;
+    u8  arts_cwid[6];
+
+} settings;
+"""
 
 MEM_FORMAT_8800 = """
 #seekto 0x%X;
@@ -896,6 +952,7 @@ class FT8800Radio(FTx800Radio):
         rf.has_sub_devices = self.VARIANT == ""
         rf.has_bank = True
         rf.memory_bounds = (1, 512)
+        rf.has_settings = True
         return rf
 
     def get_sub_devices(self):
@@ -911,8 +968,10 @@ class FT8800Radio(FTx800Radio):
 
     def process_mmap(self):
         if not self._memstart:
+            self._memobj = bitwise.parse(MEM_FORMAT_8800_COMMON, self._mmap)
             return
 
+        # Memory format for the sub devices
         self._memobj = bitwise.parse(MEM_FORMAT_8800 % (self._memstart,
                                                         self._bankstart),
                                      self._mmap)
@@ -926,7 +985,7 @@ class FT8800Radio(FTx800Radio):
         val = 0
         for i in _mem.name[2:6]:
             val <<= 2
-            val |= ((i & 0xC0) >> 6)
+            val |= (i & 0xC0) >> 6
 
         return (val * 5) * 10000
 
@@ -970,12 +1029,158 @@ class FT8800Radio(FTx800Radio):
             _mem.am = False
             _mem.wid_nar = mem.mode == "NFM"
 
+    def get_settings(self):
+        _settings = self._memobj.settings
+        _cs = self._memobj.current_state
+        basic = RadioSettingGroup("basic", "Basic")
+        dtmf = RadioSettingGroup("dtmf", "DTMF")
+        arts = RadioSettingGroup("arts", "ARTS")
+        prog = RadioSettingGroup("prog", "Programmable Buttons")
+
+        top = RadioSettings(basic, dtmf, arts, prog)
+
+        basic.append(RadioSetting(
+            "apo", "APO time (hrs)",
+            RadioSettingValueList(
+                ["off"] + ["%0.1f" % (t / 60.0)
+                           for t in range(30, 750, 30)],
+                current_index=_settings.apo)))
+
+        basic.append(RadioSetting("beep", "Beep: Key",
+                                  RadioSettingValueBoolean(_settings.beep)))
+        basic.append(RadioSetting("main", "Main: active device",
+                                  RadioSettingValueList(
+                                      ["Right", "Left"],
+                                      current_index=_settings.main)))
+        basic.append(RadioSetting("backlight", "Backlight",
+                                  RadioSettingValueList(
+                                      ["off", "dim 1", "dim 2", "dim 3"],
+                                      current_index=_settings.backlight)))
+        basic.append(RadioSetting("vfo_band_edge",
+                                  "BAND: VFO remain within band",
+                                  RadioSettingValueList(
+                                      ["BND. ON", "BND. OFF"],
+                                      current_index=_settings.vfo_band_edge)))
+        # 123.455  -> 0812345
+        # 999.9875 -> 1299998
+        # 155.2875 -> 1215528
+        # 108.0000 -> 0010800
+        basic.append(RadioSetting("vfo_left", "VFO: left",
+                                  RadioSettingValueFloat(
+                                      0, 9**20, int(_cs.vfo_left) / 100)))
+        basic.append(RadioSetting("key_mod",
+                                  ("key functions for “right” band function "
+                                   "switches"),
+                                  RadioSettingValueList(
+                                      ["KEY1", "KEY2"],
+                                      current_index=_settings.key_mod)))
+        basic.append(RadioSetting("lock", "Lock: key/button",
+                                  RadioSettingValueBoolean(_settings.lock)))
+        basic.append(RadioSetting("lockt", "Lock: PTT",
+                                  RadioSettingValueList(
+                                      ["OFF", "BAND_R", "BAND_L", "BOTH"],
+                                      current_index=_settings.lockt)))
+        basic.append(RadioSetting("mute", "Audio Mute",
+                                  RadioSettingValueList(
+                                      ["OFF", "TX", "RX", "TX/RX"],
+                                      current_index=_settings.mute)))
+        basic.append(RadioSetting("mic", "Mic: type",
+                                  RadioSettingValueList(
+                                      ["MH-42", "MH-48"],
+                                      current_index=_settings.mic)))
+
+        # arts tab
+        arts.append(RadioSetting("arts_mode", "ARTS beep",
+                                 RadioSettingValueList(
+                                    ["off", "in range", "always"],
+                                    current_index=_settings.arts_mode)))
+        arts.append(RadioSetting("arts_cwid_enable", "CW ID Enable",
+                                 RadioSettingValueBoolean(
+                                     _settings.arts_cwid_enable)))
+        cwid = RadioSettingValueString(0, 16,
+                                       _decode_chars(
+                                           _settings.arts_cwid.get_value()))
+        cwid.set_charset(CHARSET)
+        arts.append(RadioSetting("arts_cwid", "CW ID", cwid))
+
+        # Prog buttons
+        opts = [
+            "Repeater",
+            "Priority",
+            "Low",
+            "Tone",
+            "MHz",
+            "Reverse",
+            "Home",
+            "Band",
+            "VFO/MR",
+            "Scan",
+            "Sql Off",
+            "TCall (1750Hz)",
+        ]
+
+        for n in range(1, 5):
+            prog.append(
+                RadioSetting(
+                    f"prog_p{n}", f"P{n}",
+                    RadioSettingValueList(
+                        opts,
+                        current_index=getattr(_settings, f"prog_p{n}") - 26)))
+
+        return top
+
+    def set_settings(self, uisettings):
+        for element in uisettings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+
+            if not element.changed():
+                continue
+
+            try:
+                _settings = self._memobj.settings
+                _cs = self._memobj.current_state
+                setting = element.get_name()
+                newval = element.value
+
+                if setting.startswith("vfo_"):
+                    setattr(_cs, setting, newval * 100)
+                    continue
+
+                if setting == "arts_cwid":
+                    oldval = _settings.arts_cwid
+                    newval = _encode_chars(newval.get_value(), 6)
+                    _settings.arts_cwid = newval
+                    continue
+
+                if setting.startswith("prog_p"):
+                    setattr(_settings, setting, newval + 26)
+                    continue
+
+                # normal settings
+                oldval = getattr(_settings, setting)
+
+                LOG.debug("Setting %s(%s) <= %s" % (setting, oldval, newval))
+
+                setattr(_settings, setting, newval)
+
+            except Exception:
+                LOG.debug(element.get_name())
+                raise
+
 
 class FT8800RadioLeft(FT8800Radio):
     """Yaesu FT-8800 Left VFO subdevice"""
+
     VARIANT = "Left"
     _memstart = 0x0948
     _bankstart = 0x4BC8
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.has_settings = False
+        return rf
 
 
 class FT8800RadioRight(FT8800Radio):
@@ -983,6 +1188,11 @@ class FT8800RadioRight(FT8800Radio):
     VARIANT = "Right"
     _memstart = 0x2948
     _bankstart = 0x4BC8
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.has_settings = False
+        return rf
 
 
 MEM_FORMAT_8900 = """
