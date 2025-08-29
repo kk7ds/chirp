@@ -1507,7 +1507,7 @@ class TDH8(chirp_common.CloneModeRadio):
                 if _settings.brightness not in range(0, 5):
                     LOG.warning(
                         "brightness out of range 1 to 5. Actual value: %X. "
-                        "Screen may not be visable",
+                        "Screen may not be visible",
                         _settings.brightness)
 
                 rs = RadioSetting("brightness", "Brightness",

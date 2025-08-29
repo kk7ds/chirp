@@ -51,6 +51,7 @@ from chirp.wxui import query_sources
 from chirp.wxui import radioinfo
 from chirp.wxui import radiothread
 from chirp.wxui import report
+from chirp.wxui import serialtrace
 from chirp.wxui import settingsedit
 from chirp import CHIRP_VERSION
 
@@ -1016,6 +1017,12 @@ class ChirpMain(wx.Frame):
         help_menu.Append(self.bug_report_item)
         self.bug_report_item.Enable(False)
 
+        if developer.developer_mode():
+            trace_item = wx.MenuItem(help_menu, wx.NewId(),
+                                     'Open last serial trace')
+            self.Bind(wx.EVT_MENU, self._menu_last_trace, trace_item)
+            help_menu.Append(trace_item)
+
         menu_bar = wx.MenuBar()
         menu_bar.Append(file_menu, wx.GetStockLabel(wx.ID_FILE))
         menu_bar.Append(edit_menu, wx.GetStockLabel(wx.ID_EDIT))
@@ -1321,6 +1328,9 @@ class ChirpMain(wx.Frame):
                           for fn in open_files if fn),
                  'state')
         config._CONFIG.save()
+
+        # Clean up any trace files we left
+        serialtrace.purge_trace_files(0)
 
         ALL_MAIN_WINDOWS.remove(self)
         self.Destroy()
@@ -1799,14 +1809,27 @@ class ChirpMain(wx.Frame):
 
     def _menu_interact_driver(self, event):
         LOG.warning('Going to interact with radio at the console')
+
         radio = self.current_editorset.current_editor.radio
-        import code
         locals = {'main': self,
                   'radio': radio}
+
         if self.current_editorset.radio != radio:
             locals['parent_radio'] = self.current_editorset.radio
-        code.interact(banner='Locals are: %s' % (', '.join(locals.keys())),
-                      local=locals)
+
+        banner = 'Locals are: %s' % (', '.join(locals.keys()))
+
+        # Use ipython if it's installed which gives tab complete and some other
+        # nice features over the built in REPL.
+        try:
+            from IPython.terminal.embed import InteractiveShellEmbed
+
+            shell = InteractiveShellEmbed()
+            shell(header=banner, local_ns=locals)
+
+        except ModuleNotFoundError:
+            import code
+            code.interact(banner=banner, local=locals)
 
     @common.error_proof()
     def load_module(self, filename):
@@ -2016,6 +2039,13 @@ GNU General Public License for more details."""
                 wx.MessageBox(_('Module loaded successfully'),
                               _('Success'),
                               wx.ICON_INFORMATION)
+
+    def _menu_last_trace(self, event):
+        try:
+            fn = serialtrace.TRACEFILES[-1]
+            wx.LaunchDefaultApplication(fn)
+        except IndexError:
+            common.error_proof.show_error('No traces stored', parent=self)
 
     def _menu_auto_edits(self, event):
         CONF.set_bool('auto_edits', event.IsChecked(), 'state')
