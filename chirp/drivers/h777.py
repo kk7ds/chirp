@@ -78,9 +78,9 @@ BF1900_SETTINGS2 = """
 #seekto 0x0250;
 struct {
     u8 stun_code[7];
-    u8 unused1[1];
+    u8 unused1;
     u8 kill_code[7];
-    u8 unused2[1];
+    u8 unused2;
 } stunkillsettings;
 
 #seekto 0x03C0;
