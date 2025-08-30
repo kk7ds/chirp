@@ -144,7 +144,8 @@ u8 checksum;
 
 MODES = ["FM", "AM", "NFM"]
 DUPLEX = ["", "", "-", "+", "split"]
-STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
+STEPS = (5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0)
+STEPS_8800 = (5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0)
 SKIPS = ["", "S", "P", ""]
 
 CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
@@ -251,7 +252,9 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
     """Base class for FT-7800,7900,8800,8900 radios"""
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
-    MODES = list(MODES)
+    MODES = MODES
+    STEPS = STEPS
+
     _block_size = 64
 
     POWER_LEVELS_VHF = [chirp_common.PowerLevel("Hi", watts=50),
@@ -297,10 +300,10 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_bank = False
         rf.has_ctone = False
         rf.has_dtcs_polarity = False
-        rf.valid_modes = MODES
+        rf.valid_modes = self.MODES
         rf.valid_tmodes = self.TMODES
         rf.valid_duplexes = ["", "-", "+", "split"]
-        rf.valid_tuning_steps = STEPS
+        rf.valid_tuning_steps = self.STEPS
         rf.valid_bands = [(108000000, 520000000), (700000000, 990000000)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_power_levels = self.POWER_LEVELS_VHF
@@ -385,6 +388,12 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         flgidx = (mem.number - 1) % 4
         _flg["skip%i" % flgidx] = SKIPS.index(mem.skip)
 
+    def _get_mem_mode(self, mem, _mem):
+        mem.mode = self.MODES[_mem.mode]
+
+    def _set_mem_mode(self, mem, _mem):
+        _mem.mode = self.MODES.index(mem.mode)
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
 
@@ -397,10 +406,12 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.freq = get_freq(int(_mem.freq) * 10000)
         mem.rtone = chirp_common.TONES[_mem.tone]
         mem.tmode = self.TMODES[_mem.tmode]
-        mem.mode = self.MODES[_mem.mode]
+
+        self._get_mem_mode(mem, _mem)
+
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
         if self.get_features().has_tuning_step:
-            mem.tuning_step = STEPS[_mem.tune_step]
+            mem.tuning_step = self.STEPS[_mem.tune_step]
         mem.duplex = DUPLEX[_mem.duplex]
         mem.offset = self._get_mem_offset(mem, _mem)
         mem.name = self._get_mem_name(mem, _mem)
@@ -424,10 +435,12 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         set_freq(mem.freq, _mem, "freq")
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.tmode = self.TMODES.index(mem.tmode)
-        _mem.mode = self.MODES.index(mem.mode)
+
+        self._set_mem_mode(mem, _mem)
+
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         if self.get_features().has_tuning_step:
-            _mem.tune_step = STEPS.index(mem.tuning_step)
+            _mem.tune_step = self.STEPS.index(mem.tuning_step)
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.split = mem.duplex == "split" and int(mem.offset / 10000) or 0
         if mem.power:
@@ -796,7 +809,8 @@ MEM_FORMAT_8800 = """
 struct {
   u8 used:1,
      unknown1:1,
-     mode:2,
+     wid_nar:1,
+     am:1,
      unknown2:1,
      duplex:3;
   bbcd freq[3];
@@ -811,7 +825,7 @@ struct {
   u8 namevalid:1,
      dtcs:7;
   u8 name[6];
-} memory[500];
+} memory[512];
 
 #seekto 0x%X;
 struct {
@@ -824,7 +838,7 @@ struct {
      skip1:2,
      skip2:2,
      skip3:2;
-} flags[250];
+} flags[256];
 
 #seekto 0x7B48;
 u8 checksum;
@@ -849,6 +863,7 @@ class FT8800Radio(FTx800Radio):
     _memstart = 0x0000
 
     TMODES = ["", "Tone", "TSQL", "DTCS"]
+    STEPS = STEPS_8800
 
     @classmethod
     def get_prompts(cls):
@@ -880,7 +895,7 @@ class FT8800Radio(FTx800Radio):
         rf = FTx800Radio.get_features(self)
         rf.has_sub_devices = self.VARIANT == ""
         rf.has_bank = True
-        rf.memory_bounds = (1, 500)
+        rf.memory_bounds = (1, 512)
         return rf
 
     def get_sub_devices(self):
@@ -940,6 +955,21 @@ class FT8800Radio(FTx800Radio):
         _mem.namevalid = 1
         _mem.nameused = bool(mem.name.rstrip())
 
+    def _get_mem_mode(self, mem, _mem):
+        if _mem.am:
+            mem.mode = "AM"
+        else:
+            mem.mode = "NFM" if _mem.wid_nar else "FM"
+
+    def _set_mem_mode(self, mem, _mem):
+        if mem.mode == "AM":
+            _mem.am = True
+            _mem.wid_nar = False
+
+        else:
+            _mem.am = False
+            _mem.wid_nar = mem.mode == "NFM"
+
 
 class FT8800RadioLeft(FT8800Radio):
     """Yaesu FT-8800 Left VFO subdevice"""
@@ -991,7 +1021,7 @@ u8 checksum;
 
 
 @directory.register
-class FT8900Radio(FT8800Radio):
+class FT8900Radio(FTx800Radio):
     """Yaesu FT-8900"""
     MODEL = "FT-8900"
 
@@ -1000,17 +1030,40 @@ class FT8900Radio(FT8800Radio):
     _block_lengths = [8, 14784, 1]
 
     MODES = ["FM", "NFM", "AM"]
+    TMODES = ["", "Tone", "TSQL", "DTCS"]
+    STEPS = STEPS
 
-    def get_bank_model(self):
-        return
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to DATA jack.\n"
+            "3. Press and hold in the \"left\" [V/M] key while turning the\n"
+            "     radio on.\n"
+            "4. Rotate the \"right\" DIAL knob to select \"CLONE START\".\n"
+            "5. Press the [SET] key. The display will disappear\n"
+            "     for a moment, then the \"CLONE\" notation will appear.\n"
+            "6. <b>After clicking OK</b>, press the \"left\" [V/M] key to\n"
+            "     send image.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to DATA jack.\n"
+            "3. Press and hold in the \"left\" [V/M] key while turning the\n"
+            "     radio on.\n"
+            "4. Rotate the \"right\" DIAL knob to select \"CLONE START\".\n"
+            "5. Press the [SET] key. The display will disappear\n"
+            "     for a moment, then the \"CLONE\" notation will appear.\n"
+            "6. Press the \"left\" [LOW] key (\"CLONE -RX-\" will appear"
+            " on\n"
+            "     the display).\n")
+        return rp
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_8900, self._mmap)
 
     def get_features(self):
-        rf = FT8800Radio.get_features(self)
-        rf.has_sub_devices = False
-        rf.has_bank = False
+        rf = FTx800Radio.get_features(self)
         rf.valid_modes = self.MODES
         rf.valid_bands = [(28000000,  29700000),
                           (50000000,  54000000),
@@ -1025,18 +1078,49 @@ class FT8900Radio(FT8800Radio):
     def _checksums(self):
         return [yaesu_clone.YaesuChecksum(0x0000, 0x39C7)]
 
+    def _get_mem_offset(self, mem, _mem):
+        if mem.duplex == "split":
+            return get_freq(int(_mem.split) * 10000)
+
+        # The offset is packed into the upper two bits of the last four
+        # bytes of the name (?!)
+        val = 0
+        for i in _mem.name[2:6]:
+            val <<= 2
+            val |= ((i & 0xC0) >> 6)
+
+        return (val * 5) * 10000
+
+    def _set_mem_offset(self, mem, _mem):
+        if mem.duplex == "split":
+            set_freq(mem.offset, _mem, "split")
+            return
+
+        val = int(mem.offset / 10000) // 5
+        for i in reversed(list(range(2, 6))):
+            _mem.name[i] = (_mem.name[i] & 0x3F) | ((val & 0x03) << 6)
+            val >>= 2
+
+    def _get_mem_name(self, mem, _mem):
+        name = ""
+        if _mem.namevalid:
+            for i in _mem.name:
+                index = int(i) & 0x3F
+                if index < len(CHARSET):
+                    name += CHARSET[index]
+
+        return name.rstrip()
+
+    def _set_mem_name(self, mem, _mem):
+        _mem.name = [CHARSET.index(x) for x in mem.name.ljust(6)[:6]]
+        _mem.namevalid = 1
+        _mem.nameused = bool(mem.name.rstrip())
+
     def _get_mem_skip(self, mem, _mem):
         return SKIPS[_mem.skip]
 
     def _set_mem_skip(self, mem, _mem):
         _mem.skip = SKIPS.index(mem.skip)
-
-    def get_memory(self, number):
-        mem = super().get_memory(number)
-
-        _mem = self._memobj.memory[number - 1]
-
-        return mem
 
     def set_memory(self, mem):
         FT8800Radio.set_memory(self, mem)
