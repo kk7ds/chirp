@@ -144,7 +144,8 @@ u8 checksum;
 
 MODES = ["FM", "AM", "NFM"]
 DUPLEX = ["", "", "-", "+", "split"]
-STEPS = [5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
+STEPS = (5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0)
+STEPS_8800 = (5.0, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0)
 SKIPS = ["", "S", "P", ""]
 
 CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
@@ -275,7 +276,9 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
     """Base class for FT-7800,7900,8800,8900 radios"""
     BAUD_RATE = 9600
     VENDOR = "Yaesu"
-    MODES = list(MODES)
+    MODES = MODES
+    STEPS = STEPS
+
     _block_size = 64
 
     POWER_LEVELS_VHF = [chirp_common.PowerLevel("Hi", watts=50),
@@ -321,10 +324,10 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.has_bank = False
         rf.has_ctone = False
         rf.has_dtcs_polarity = False
-        rf.valid_modes = MODES
+        rf.valid_modes = self.MODES
         rf.valid_tmodes = self.TMODES
         rf.valid_duplexes = ["", "-", "+", "split"]
-        rf.valid_tuning_steps = STEPS
+        rf.valid_tuning_steps = self.STEPS
         rf.valid_bands = [(108000000, 520000000), (700000000, 990000000)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_power_levels = self.POWER_LEVELS_VHF
@@ -421,10 +424,15 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.freq = get_freq(int(_mem.freq) * 10000)
         mem.rtone = chirp_common.TONES[_mem.tone]
         mem.tmode = self.TMODES[_mem.tmode]
-        mem.mode = self.MODES[_mem.mode]
+
+        if _mem.am:
+            mem.mode = "AM"
+        else:
+            mem.mode = "NFM" if _mem.wid_nar else "FM"
+
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs]
         if self.get_features().has_tuning_step:
-            mem.tuning_step = STEPS[_mem.tune_step]
+            mem.tuning_step = self.STEPS[_mem.tune_step]
         mem.duplex = DUPLEX[_mem.duplex]
         mem.offset = self._get_mem_offset(mem, _mem)
         mem.name = self._get_mem_name(mem, _mem)
@@ -448,10 +456,18 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
         set_freq(mem.freq, _mem, "freq")
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.tmode = self.TMODES.index(mem.tmode)
-        _mem.mode = self.MODES.index(mem.mode)
+
+        if mem.mode == "AM":
+          _mem.am = True
+          _mem.wid_nar = False
+
+        else:
+          _mem.am = False
+          _mem.wid_nar = mem.mode == "NFM"
+
         _mem.dtcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         if self.get_features().has_tuning_step:
-            _mem.tune_step = STEPS.index(mem.tuning_step)
+            _mem.tune_step = self.STEPS.index(mem.tuning_step)
         _mem.duplex = DUPLEX.index(mem.duplex)
         _mem.split = mem.duplex == "split" and int(mem.offset / 10000) or 0
         if mem.power:
@@ -844,7 +860,8 @@ MEM_FORMAT_8800 = """
 struct {
   u8 used:1,
      unknown1:1,
-     mode:2,
+     wid_nar:1,
+     am:1,
      unknown2:1,
      duplex:3;
   bbcd freq[3];
@@ -859,7 +876,7 @@ struct {
   u8 namevalid:1,
      dtcs:7;
   u8 name[6];
-} memory[500];
+} memory[512];
 
 #seekto 0x%X;
 struct {
@@ -872,7 +889,7 @@ struct {
      skip1:2,
      skip2:2,
      skip3:2;
-} flags[250];
+} flags[256];
 
 #seekto 0x7B48;
 u8 checksum;
@@ -897,6 +914,7 @@ class FT8800Radio(FTx800Radio):
     _memstart = 0x0000
 
     TMODES = ["", "Tone", "TSQL", "DTCS"]
+    STEPS = STEPS_8800
 
     @classmethod
     def get_prompts(cls):
@@ -929,7 +947,7 @@ class FT8800Radio(FTx800Radio):
         rf.has_sub_devices = self.VARIANT == ""
         rf.has_bank = True
         rf.has_settings = True
-        rf.memory_bounds = (1, 500)
+        rf.memory_bounds = (1, 512)
         return rf
 
     def get_sub_devices(self):
