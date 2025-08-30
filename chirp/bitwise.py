@@ -836,12 +836,13 @@ class structDataElement(DataElement):
             self._generators[key] = value
             self._keys.append(key)
 
+    def __dir__(self):
+        return list(super().__dir__()) + list(self._generators.keys())
+
     def __getattr__(self, name):
         try:
             return self._generators[name]
         except KeyError:
-            LOG.error('Request for struct element %s not in %s' % (
-                name, self._generators.keys()))
             raise AttributeError("No attribute %s in struct %s" % (
                 name, self._name))
 
