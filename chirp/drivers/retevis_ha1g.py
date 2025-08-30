@@ -597,12 +597,13 @@ def handle_connect_ver(
     return False, new_bytes
 
 
-def rdtp_page_data_crc16_ver(current_Page_Byte: bytes):
+def rdtp_page_data_crc16_ver(current_Page_Byte: bytes, chunk_size=1024):
     byteLen = len(current_Page_Byte)
     if byteLen <= 13:
         return False
+    page_count = 255 if chunk_size > 255 else chunk_size
     pageLen = current_Page_Byte[12] - 6 if current_Page_Byte[12] > 6 else 0
-    pageLen += current_Page_Byte[13]
+    pageLen += current_Page_Byte[13] * page_count
     if byteLen - 23 < pageLen:
         return False
     crcBytes = current_Page_Byte[-3:-1]
