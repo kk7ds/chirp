@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-08-28 16:10-0700\n"
-"PO-Revision-Date: 2025-05-09 01:28-0400\n"
+"PO-Revision-Date: 2025-08-29 21:56-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -2100,7 +2100,7 @@ msgstr "Valor inválido: %r"
 #: ../wxui/developer.py:617
 #, python-format
 msgid "Issue %i is not in a valid state to load modules. It is highly recommended that you not attempt to manually load modules from this issue as it is likely to cause problems."
-msgstr ""
+msgstr "El problema %i no está en un estado válido para cargar módulos. Se recomienda encarecidamente que no intentes cargar módulos manualmente desde este problema ya que es probable que cause problemas."
 
 #: ../wxui/developer.py:672
 msgid "Issue number:"
