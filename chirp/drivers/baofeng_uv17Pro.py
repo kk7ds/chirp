@@ -1633,7 +1633,7 @@ class F8HPPro(UV17Pro):
 
     VALID_BANDS = [_airband, _vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
-    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=8.00),
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
                     chirp_common.PowerLevel("Low",  watts=1.00),
                     chirp_common.PowerLevel('Mid', watts=3.00)]
     LIST_POWER_ON_TIME = ['3 Seconds', '5 Seconds', '10 Seconds']
