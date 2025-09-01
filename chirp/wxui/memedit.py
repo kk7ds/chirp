@@ -1458,6 +1458,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 self._grid.GetRowLabelValue(row)))
             return
 
+        if not isinstance(memory.number, int):
+            LOG.error('Memory for row %i (lookup number %r) '
+                      'has non-integer number field: %r',
+                      row, number, memory.number)
+
         if row in self._memory_errors:
             del self._memory_errors[row]
 
