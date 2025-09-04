@@ -334,7 +334,8 @@ def _raw_recv(radio, amount):
     """Raw read from the radio device"""
     try:
         data = radio.pipe.read(amount)
-    except:
+    except Exception as e:
+        LOG.exception('Failed read: %s', e)
         raise errors.RadioError("Error reading data from radio")
 
     # DEBUG
@@ -348,7 +349,8 @@ def _raw_send(radio, data):
     """Raw send to the radio device"""
     try:
         radio.pipe.write(data)
-    except:
+    except Exception as e:
+        LOG.exception('Failed write: %s', e)
         raise errors.RadioError("Error sending data to radio")
 
     # DEBUG
@@ -419,7 +421,7 @@ def _recv(radio):
         raise errors.RadioError('No response from radio')
     elif cmd == b'Z':
         # Empty "zero" block
-        ff = _raw_recv(radio, 1)
+        _raw_recv(radio, 1)
         _handshake(radio, "after zero block")
         return b'\xff' * 256
     elif cmd != b'W':
@@ -749,7 +751,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
             if bnumb != 255 and (bank != 255 and bank != 0):
                 try:
                     data[bank].append(ch)
-                except:
+                except Exception:
                     data[bank] = list()
                     data[bank].append(ch)
                 data[bank].sort()
@@ -1118,7 +1120,6 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
         mess = self._memobj.message
         keys = self._memobj.keys
         idm = self._memobj.id
-        passwd = self._memobj.passwords
 
         # basic features of the radio
         basic = RadioSettingGroup("basic", "Basic Settings")
@@ -1372,7 +1373,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
                     # catching the "off" values as zero
                     try:
                         value = int(value)
-                    except:
+                    except ValueError:
                         value = 0
 
                     # tot case step 15
@@ -1455,7 +1456,8 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
                 b = 0
             mem = self._memobj.memory[loc - 1]
             mem.bank = b + 1
-        except:
+        except Exception as e:
+            LOG.warning('Failed to set bank: %s', e)
             msg = "You can't have a channel without a bank, click another bank"
             raise errors.InvalidDataError(msg)
 
