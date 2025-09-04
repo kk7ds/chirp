@@ -478,38 +478,41 @@ class HA1GBankModel(chirp_common.BankModel):
 
 
 def do_download(self):
+    error_map = {
+        HandshakeStatuses.RadioWrong: "Radio model mismatch",
+        HandshakeStatuses.PwdWrong: "Radio is password protected",
+    }
     try:
-        serial = self.pipe
-        all_bytes = bytearray(self._memsize)
-        handshake_result = handshake(self, serial)
+        handshake_result = handshake(self, self.pipe)
         if handshake_result == HandshakeStatuses.Normal:
-            all_bytes = read_items(self, serial)
-        elif handshake_result == HandshakeStatuses.RadioWrong:
-            raise errors.RadioError("Radio model mismatch")
-        elif handshake_result == HandshakeStatuses.PwdWrong:
-            raise errors.RadioError("Radio is password protected")
-        else:
-            raise errors.RadioError("Unknown error communicating with radio")
+            all_bytes = read_items(self, self.pipe)
+            return memmap.MemoryMapBytes(bytes(all_bytes))
+        raise errors.RadioError(error_map.get(
+            handshake_result, "Unknown error communicating with radio"
+        ))
+    except errors.RadioError:
+        raise
     except Exception as e:
         LOG.error(f"download error: {e}")
         raise errors.RadioError("Unknown error communicating with radio")
     finally:
         exit_programming_mode(self)
-    return memmap.MemoryMapBytes(bytes(all_bytes))
 
 
 def do_upload(self):
+    error_map = {
+        HandshakeStatuses.RadioWrong: "Radio model mismatch",
+        HandshakeStatuses.PwdWrong: "Radio is password protected",
+    }
     try:
-        serial = self.pipe
-        handShake_Result = handshake(self, serial)
-        if handShake_Result == HandshakeStatuses.Normal:
-            write_items(self, serial)
-        elif handShake_Result == HandshakeStatuses.RadioWrong:
-            raise errors.RadioError("Radio model mismatch")
-        elif handShake_Result == HandshakeStatuses.PwdWrong:
-            raise errors.RadioError("Radio is password protected")
-        else:
-            raise errors.RadioError("Unknown error communicating with radio")
+        handshake_result = handshake(self, self.pipe)
+        if handshake_result == HandshakeStatuses.Normal:
+            write_items(self, self.pipe)
+        raise errors.RadioError(error_map.get(
+            handshake_result, "Unknown error communicating with radio"
+        ))
+    except errors.RadioError:
+        raise    
     except Exception as e:
         LOG.error(f"upload error: {e}")
         raise errors.RadioError("Unknown error communicating with radio")
