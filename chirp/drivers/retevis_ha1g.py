@@ -512,7 +512,7 @@ def do_upload(self):
             handshake_result, "Unknown error communicating with radio"
         ))
     except errors.RadioError:
-        raise    
+        raise
     except Exception as e:
         LOG.error(f"upload error: {e}")
         raise errors.RadioError("Unknown error communicating with radio")
