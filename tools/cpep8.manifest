@@ -53,7 +53,6 @@
 ./chirp/drivers/th_uv88.py
 ./chirp/drivers/thd72.py
 ./chirp/drivers/tk760.py
-./chirp/drivers/tk8180.py
 ./chirp/drivers/tmd710.py
 ./chirp/drivers/ts480.py
 ./chirp/drivers/ts590.py
