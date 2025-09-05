@@ -787,7 +787,9 @@ class UV17Pro(bfc.BaofengCommonHT):
                             0x2D: 3,
                             0x0A: 4,
                             0x0C: 5,
-                            0x34: 6}
+                            0x34: 6,
+                            0x08: 4,
+                            0x03: 5}
             return key_to_index.get(int(value), 0)
 
         def apply_Key1short(setting, obj):
@@ -798,7 +800,9 @@ class UV17Pro(bfc.BaofengCommonHT):
                             'Vox': 0x2D,
                             'TX Power': 0x0A,
                             'NOAA': 0x0C,
-                            'Zone Select': 0x34}
+                            'Zone Select': 0x34,
+                            'Flashlight': 0x08,
+                            'SOS': 0x03}
             obj.key1short = key_to_index.get(val, 0x07)
 
         def getKey2shortIndex(value):
@@ -1373,7 +1377,7 @@ class UV17Pro(bfc.BaofengCommonHT):
                               RadioSettingValueBoolean(_mem.fhss))
             mem.extra.append(rs)
 
-        if self.MODEL == "K6":
+        if self.MODEL in ["K6", "UV-5R Mini"]:
             rs = RadioSetting("sqmode", "RX DTMF",
                               RadioSettingValueBoolean(_mem.sqmode))
             mem.extra.append(rs)
@@ -1382,11 +1386,12 @@ class UV17Pro(bfc.BaofengCommonHT):
                               RadioSettingValueBoolean(_mem.fhss))
             mem.extra.append(rs)
 
-            rs = RadioSetting("scramble", "Scramble",
-                              RadioSettingValueList(
-                                  self.SCRAMBLE_LIST,
-                                  current_index=_mem.scramble))
-            mem.extra.append(rs)
+            if self.MODEL == "K6":
+                rs = RadioSetting("scramble", "Scramble",
+                                  RadioSettingValueList(
+                                      self.SCRAMBLE_LIST,
+                                      current_index=_mem.scramble))
+                mem.extra.append(rs)
 
         mem.name = str(name).replace('\xFF', ' ').replace('\x00', ' ').rstrip()
 
@@ -1628,7 +1633,7 @@ class F8HPPro(UV17Pro):
 
     VALID_BANDS = [_airband, _vhf_range, UV17Pro._vhf2_range,
                    UV17Pro._uhf_range, UV17Pro._uhf2_range]
-    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=8.00),
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
                     chirp_common.PowerLevel("Low",  watts=1.00),
                     chirp_common.PowerLevel('Mid', watts=3.00)]
     LIST_POWER_ON_TIME = ['3 Seconds', '5 Seconds', '10 Seconds']
@@ -2106,6 +2111,90 @@ class BFK6(UV17Pro):
         rs = RadioSetting("modes.rx_am", "AM RX",
                           RadioSettingValueBoolean(_mem.modes.rx_am))
         basic.append(rs)
+
+    def get_settings_pro_dtmf(self, dtmfe, _mem):
+        super().get_settings_pro_dtmf(dtmfe, _mem)
+
+        rs = RadioSetting("ani.separatecode", "Separate Code",
+                          RadioSettingValueList(
+                            self.LIST_SEPARATE_CODE,
+                            current_index=_mem.ani.separatecode))
+        dtmfe.append(rs)
+
+        rs = RadioSetting("ani.groupcallcode", "Group Call Code",
+                          RadioSettingValueList(
+                            self.LIST_GROUP_CALL_CODE,
+                            current_index=_mem.ani.groupcallcode))
+        dtmfe.append(rs)
+
+        _codeobj = self._memobj.upcode.code
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x)
+                        < 0x1F])
+        val = RadioSettingValueString(0, 16, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("upcode.code", "Up Code", val)
+        rs.set_apply_callback(self.apply_code, self._memobj.upcode, 16)
+        dtmfe.append(rs)
+
+        _codeobj = self._memobj.downcode.code
+        _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x)
+                        < 0x1F])
+        val = RadioSettingValueString(0, 16, _code, False)
+        val.set_charset(DTMF_CHARS)
+        rs = RadioSetting("downcode.code", "Down Code", val)
+        rs.set_apply_callback(self.apply_code, self._memobj.downcode, 16)
+        dtmfe.append(rs)
+
+
+@directory.register
+class UV5RMini(UV17Pro):
+    """Baofeng UV-5R Mini"""
+    VENDOR = "Baofeng"
+    MODEL = "UV-5R Mini"
+
+    LIST_BEEP = ["Off", "On"]
+    LIST_DTMFSPEED = ["%s ms" % x for x in [50, 100, 200, 300, 400, 500]]
+    LIST_SKEY2_SHORT = ["FM Radio", "Scan", "Search", "VOX", "Flashlight",
+                        "SOS"]
+
+    MEM_STARTS = [0x0000, 0x9000, 0xA000]
+    MEM_SIZES = [0x8040, 0x0040, 0x01C0]
+
+    MEM_TOTAL = 0x8240
+
+    _has_support_for_banknames = False
+
+    _magic = MSTRING_UV17PROGPS
+    _mem_size = MEM_TOTAL
+    _has_voxsw = True
+    _has_pilot_tone = True
+    _has_send_id_delay = True
+    _has_skey1_short = True
+    _mem_params = {
+        'mems': 999,
+        'ani': 0x8080,
+        'pttid': 0x80A0,
+    }
+    CHANNELS = 999
+
+    STEPS = [2.5, 5.0, 6.25, 8.33, 10.0, 12.5, 20.0, 25.0, 50.0]
+
+    _uhf_rx1_range = (350000000, 390000000)
+    _uhf_range = (400000000, 480000000)
+    _uhf_rx2_range = (480000000, 520000000)
+    VALID_BANDS = [UV17Pro._airband,
+                   UV17Pro._vhf_range,
+                   _uhf_rx1_range,
+                   _uhf_range,
+                   _uhf_rx2_range]
+    MODES = UV17Pro.MODES + ['AM']
+
+    _end_fmt = """
+    // #seekto 0x8220;
+    struct {
+      u8 unknown1[32];
+    } modes;
+    """
 
     def get_settings_pro_dtmf(self, dtmfe, _mem):
         super().get_settings_pro_dtmf(dtmfe, _mem)

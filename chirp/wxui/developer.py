@@ -590,21 +590,35 @@ class FakeErrorOpenSerial(FakeSerial):
         raise Exception('Failed open')
 
 
+class IsssueModuleLoadError(Exception):
+    pass
+
+
 class IssueModuleLoader:
     def __init__(self, parent):
         self._parent = parent
         report.ensure_session()
         self.session = report.SESSION
 
-    def get_attachments_from_issue(self, issue):
+    def get_attachments_from_issue(self, issue_num):
         r = self.session.get(
-            'https://chirpmyradio.com/issues/%i.json' % issue,
+            'https://chirpmyradio.com/issues/%i.json' % issue_num,
             params={'include': 'attachments'})
         LOG.debug('Fetched attachments for issue %i (status %s)' % (
-            issue, r.status_code))
+            issue_num, r.status_code))
         r.raise_for_status()
-        data = r.json()['issue']['attachments']
-        return [a for a in data if
+        issue = r.json()['issue']
+        allowed_states = ['New', 'In Progress', 'Resolved']
+        valid = (issue['status']['name'] in allowed_states
+                 and not issue['status']['is_closed'])
+        if not valid:
+            LOG.warning('Issue %i is in state %s', issue_num, issue['status'])
+            raise IsssueModuleLoadError(
+                _('Issue %i is not in a valid state to load '
+                  'modules. It is highly recommended that you not '
+                  'attempt to manually load modules from this '
+                  'issue as it is likely to cause problems.') % issue_num)
+        return [a for a in issue['attachments'] if
                 a['filename'].endswith('.py') and
                 a.get('content_type', '').startswith('text/') and
                 a['filesize'] < (256 * 1024)]
@@ -663,6 +677,10 @@ class IssueModuleLoader:
 
         try:
             attachments = self.get_attachments_from_issue(issue)
+        except IsssueModuleLoadError as e:
+            LOG.exception('Failed to load module from issue %i: %s' % (
+                issue, e))
+            raise
         except Exception as e:
             LOG.exception('Failed to load attachments from %i: %s' % (
                 issue, e))

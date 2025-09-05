@@ -142,6 +142,11 @@ class TestCaseEdges(base.DriverTest):
             # radios have empty in the immutable set.
             if m1.empty:
                 m1.empty = False
+
+            self.assertIsInstance(m1.number, int,
+                                  ('Special memory %s number %r is not an '
+                                   'integer') % (name, m1.number))
+
             try:
                 del m1.extra
             except AttributeError:
@@ -174,6 +179,9 @@ class TestCaseEdges(base.DriverTest):
             self.assertEqual('', m.extd_number,
                              'Non-special memory %i should not have '
                              'extd_number set to %r' % (i, m.extd_number))
+            self.assertIsInstance(m.number, int,
+                                  'Memory number %r is not an integer' %
+                                  m.number)
 
     def test_get_memory_name_trailing_whitespace(self):
         if self.radio.MODEL == 'KG-UV8E':
