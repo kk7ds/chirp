@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-05 15:28-0700\n"
-"PO-Revision-Date: 2025-08-29 21:56-0400\n"
+"PO-Revision-Date: 2025-09-05 19:57-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -2327,7 +2327,7 @@ msgstr "¡No hay resultados!"
 
 #: ../wxui/main.py:2049
 msgid "No traces stored"
-msgstr ""
+msgstr "No hay trazas almacenadas"
 
 #: ../wxui/query_sources.py:44 ../wxui/memedit.py:1322
 msgid "Number"
@@ -2401,7 +2401,7 @@ msgstr "Abrir en nueva ventana"
 
 #: ../wxui/main.py:1022
 msgid "Open last serial trace"
-msgstr ""
+msgstr "Abrir la última traza serial"
 
 #: ../wxui/query_sources.py:401
 msgid "Open repeaters only"
