@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-28 16:10-0700\n"
+"POT-Creation-Date: 2025-09-05 15:28-0700\n"
 "PO-Revision-Date: 2025-02-27 08:00+0200\n"
 "Last-Translator: ThatSINEWAVE\n"
 "Language-Team: Romanian\n"
@@ -22,21 +22,21 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s trebuie să fie între %(min)i și %(max)i"
 
-#: ../wxui/memedit.py:2141
+#: ../wxui/memedit.py:2146
 #, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
 msgstr[0] "%i Memorie și deplasare sus toate"
 msgstr[1] "%i Memorii și deplasare sus toate"
 
-#: ../wxui/memedit.py:2132
+#: ../wxui/memedit.py:2137
 #, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
 msgstr[0] "%i Memorie"
 msgstr[1] "%i Memorii"
 
-#: ../wxui/memedit.py:2136
+#: ../wxui/memedit.py:2141
 #, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
@@ -68,7 +68,7 @@ msgstr "(A funcționat vreodată acest lucru înainte? Este un radio nou? Funcț
 msgid "(none)"
 msgstr "(niciunul)"
 
-#: ../wxui/memedit.py:2533
+#: ../wxui/memedit.py:2538
 #, python-format
 msgid "...and %i more"
 msgstr "...și încă %i mai multe"
@@ -317,7 +317,7 @@ msgstr ""
 "4. <b>După ce ai dat click pe OK</b>,\n"
 "     apasă tasta [C](SEND) pentru a trimite imaginea.\n"
 
-#: ../drivers/ft7800.py:857
+#: ../drivers/ft7800.py:872 ../drivers/ft7800.py:1040
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -339,7 +339,7 @@ msgstr ""
 "6. <b>După ce ai dat click pe OK</b>, apasă tasta [V/M] \"stânga\" pentru\n"
 "     a trimite imaginea.\n"
 
-#: ../drivers/ft7800.py:867
+#: ../drivers/ft7800.py:882 ../drivers/ft7800.py:1050
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -389,7 +389,7 @@ msgstr ""
 "     (\"CLONE\" va apărea pe ecran).\n"
 "4. Apasă tasta [MODE] (\"-WAIT-\" va apărea pe LCD).\n"
 
-#: ../drivers/ft7800.py:282
+#: ../drivers/ft7800.py:285
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -410,7 +410,7 @@ msgstr ""
 "     va dispărea pentru o clipă, apoi va apărea notiunea \"CLONE\".\n"
 "6. Apasă tasta [LOW(ACC)] (\"--RX--\" va apărea pe ecran).\n"
 
-#: ../drivers/ft7800.py:271
+#: ../drivers/ft7800.py:274
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -991,7 +991,7 @@ msgstr ""
 "\n"
 "Poate să nu funcționeze dacă pornești stația cu cablul deja conectat."
 
-#: ../wxui/main.py:2125
+#: ../wxui/main.py:2126
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "O nouă versiune CHIRP este disponibilă. Vă rugăm să vizitați site-ul cât mai curând posibil pentru a o descărca!"
 
@@ -1047,7 +1047,7 @@ msgstr "Automat din sistem"
 msgid "Available modules"
 msgstr "Module disponibile"
 
-#: ../wxui/main.py:2060
+#: ../wxui/main.py:2061
 msgid "Bandplan"
 msgstr "Plan de benzi"
 
@@ -1106,7 +1106,7 @@ msgstr "Canada"
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "Schimbarea acestei setări necesită reîmprospătarea setărilor din imagine, ceea ce va avea loc acum."
 
-#: ../wxui/memedit.py:1778
+#: ../wxui/memedit.py:1783
 #, python-format
 msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr "Canalele cu TX și RX echivalente %s sunt reprezentate de modul de ton \"%s\""
@@ -1119,17 +1119,17 @@ msgstr "Fișiere Imagine Chirp"
 msgid "Choice Required"
 msgstr "Alegere necesară"
 
-#: ../wxui/memedit.py:1757
+#: ../wxui/memedit.py:1762
 #, python-format
 msgid "Choose %s DTCS Code"
 msgstr "Alege Codul DTCS %s"
 
-#: ../wxui/memedit.py:1754
+#: ../wxui/memedit.py:1759
 #, python-format
 msgid "Choose %s Tone"
 msgstr "Alege Tonul %s"
 
-#: ../wxui/memedit.py:1788
+#: ../wxui/memedit.py:1793
 msgid "Choose Cross Mode"
 msgstr "Alege Modul Cross"
 
@@ -1141,7 +1141,7 @@ msgstr "Alege Ținta Diferenței"
 msgid "Choose a recent model"
 msgstr "Alege un model recent"
 
-#: ../wxui/memedit.py:1818
+#: ../wxui/memedit.py:1823
 msgid "Choose duplex"
 msgstr "Alege duplex"
 
@@ -1212,7 +1212,7 @@ msgstr "Închide fișierul"
 msgid "Close string value with double-quote (\")"
 msgstr "Închide valoarea șirului cu ghilimea (\")"
 
-#: ../wxui/memedit.py:2200
+#: ../wxui/memedit.py:2205
 #, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
@@ -1247,11 +1247,11 @@ msgstr ""
 msgid "Convert to FM"
 msgstr "Convertește la FM"
 
-#: ../wxui/memedit.py:2111
+#: ../wxui/memedit.py:2116
 msgid "Copy"
 msgstr "Copiază"
 
-#: ../wxui/memedit.py:2115
+#: ../wxui/memedit.py:2120
 msgid "Copy portable"
 msgstr ""
 
@@ -1272,11 +1272,11 @@ msgstr "Port personalizat"
 msgid "Custom..."
 msgstr "Personalizat..."
 
-#: ../wxui/memedit.py:2106
+#: ../wxui/memedit.py:2111
 msgid "Cut"
 msgstr "Taie"
 
-#: ../wxui/memedit.py:2377
+#: ../wxui/memedit.py:2382
 #, python-format
 msgid "Cut %i memories"
 msgstr "Taie %i memorii"
@@ -1297,7 +1297,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr "Decodare DTMF"
 
-#: ../wxui/memedit.py:2825
+#: ../wxui/memedit.py:2830
 msgid "DV Memory"
 msgstr "Memorie DV"
 
@@ -1309,11 +1309,11 @@ msgstr "Pericol în față"
 msgid "Dec"
 msgstr "Dec"
 
-#: ../wxui/memedit.py:2126
+#: ../wxui/memedit.py:2131
 msgid "Delete"
 msgstr "Șterge"
 
-#: ../wxui/memedit.py:1989
+#: ../wxui/memedit.py:1994
 msgid "Delete memories"
 msgstr "Șterge memorii"
 
@@ -1330,15 +1330,15 @@ msgstr "Mod dezvoltator"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "Starea dezvoltatorului este acum %s. CHIRP trebuie repornit pentru a intra în vigoare"
 
-#: ../wxui/memedit.py:2237 ../wxui/developer.py:97
+#: ../wxui/memedit.py:2242 ../wxui/developer.py:97
 msgid "Diff Raw Memories"
 msgstr "Diferență memorii brute"
 
-#: ../wxui/memedit.py:2245
+#: ../wxui/memedit.py:2250
 msgid "Diff against another editor"
 msgstr "Diferență față de un alt editor"
 
-#: ../wxui/memedit.py:2742
+#: ../wxui/memedit.py:2747
 msgid "Digital Code"
 msgstr "Cod digital"
 
@@ -1408,17 +1408,17 @@ msgstr "Repetoarele digitale cu mod dublu care suportă analog vor fi afișate c
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2267
+#: ../wxui/memedit.py:2272
 #, python-format
 msgid "Edit %i memories"
 msgstr "Editați %i memorii"
 
-#: ../wxui/memedit.py:2772
+#: ../wxui/memedit.py:2777
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Editați detaliile pentru %i memorii"
 
-#: ../wxui/memedit.py:2770
+#: ../wxui/memedit.py:2775
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Editați detaliile pentru memoria %i"
@@ -1435,11 +1435,11 @@ msgstr "Activat"
 msgid "Enter Frequency"
 msgstr "Introduceți frecvența"
 
-#: ../wxui/memedit.py:1805
+#: ../wxui/memedit.py:1810
 msgid "Enter Offset (MHz)"
 msgstr "Introduceți offset-ul (MHz)"
 
-#: ../wxui/memedit.py:1797
+#: ../wxui/memedit.py:1802
 msgid "Enter TX Frequency (MHz)"
 msgstr "Introduceți frecvența TX (MHz)"
 
@@ -1529,7 +1529,7 @@ msgstr "Exclude repetoarele private și închise"
 msgid "Experimental driver"
 msgstr "Driver experimental"
 
-#: ../wxui/memedit.py:2695
+#: ../wxui/memedit.py:2700
 msgid "Export can only write CSV files"
 msgstr "Exportul poate scrie doar fișiere CSV"
 
@@ -1541,7 +1541,7 @@ msgstr "Exportă în CSV"
 msgid "Export to CSV..."
 msgstr "Exportă în CSV..."
 
-#: ../wxui/memedit.py:2814
+#: ../wxui/memedit.py:2819
 msgid "Extra"
 msgstr "Extra"
 
@@ -1716,7 +1716,7 @@ msgstr ""
 "3 - Pornește stația\n"
 "4 - Fă descărcarea datelor stației tale\n"
 
-#: ../drivers/tk690.py:575 ../drivers/tk760g.py:684
+#: ../drivers/tk690.py:575 ../drivers/tk760g.py:686
 msgid ""
 "Follow these instructions to download your radio:\n"
 "1 - Turn off your radio\n"
@@ -1820,7 +1820,7 @@ msgstr ""
 "3 - Pornește stația\n"
 "4 - Fă încărcarea datelor stației tale\n"
 
-#: ../drivers/tk690.py:581 ../drivers/tk760g.py:690
+#: ../drivers/tk690.py:581 ../drivers/tk760g.py:692
 msgid ""
 "Follow these instructions to upload your radio:\n"
 "1 - Turn off your radio\n"
@@ -1862,7 +1862,7 @@ msgstr ""
 "3 - Pornește stația\n"
 "4 - Fă descărcarea datelor stației tale\n"
 
-#: ../drivers/tk270.py:340
+#: ../drivers/tk270.py:321
 msgid ""
 "Follow this instructions to read your radio:\n"
 "1 - Turn off your radio\n"
@@ -1894,7 +1894,7 @@ msgstr ""
 "3 - Pornește stația\n"
 "4 - Fă încărcarea datelor stației tale\n"
 
-#: ../drivers/tk270.py:346
+#: ../drivers/tk270.py:327
 msgid ""
 "Follow this instructions to write your radio:\n"
 "1 - Turn off your radio\n"
@@ -1928,13 +1928,13 @@ msgstr "Granularitatea frecvenței în kHz"
 
 #: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1394
 #: ../drivers/tdh8.py:2610 ../drivers/uv5r.py:1940
-#: ../drivers/baofeng_uv17Pro.py:1262
+#: ../drivers/baofeng_uv17Pro.py:1266
 msgid "Frequency in this range must not be AM mode"
 msgstr "Frecvența din acest interval nu trebuie să fie în modul AM"
 
 #: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1391
 #: ../drivers/tdh8.py:2607 ../drivers/uv5r.py:1936
-#: ../drivers/baofeng_uv17Pro.py:1258
+#: ../drivers/baofeng_uv17Pro.py:1262
 msgid "Frequency in this range requires AM mode"
 msgstr "Frecvența din acest interval necesită modul AM"
 
@@ -1997,7 +1997,7 @@ msgstr "Dacă este setat, sortează rezultatele după distanța față de aceste
 msgid "Import"
 msgstr "Importă"
 
-#: ../wxui/memedit.py:2413
+#: ../wxui/memedit.py:2418
 #, python-format
 msgid "Import %i memories"
 msgstr "Importă %i memorii"
@@ -2026,11 +2026,11 @@ msgstr "Index"
 msgid "Info"
 msgstr "Info"
 
-#: ../wxui/memedit.py:1780
+#: ../wxui/memedit.py:1785
 msgid "Information"
 msgstr "Informații"
 
-#: ../wxui/memedit.py:2100
+#: ../wxui/memedit.py:2105
 msgid "Insert Row Above"
 msgstr "Inserare linie deasupra"
 
@@ -2052,7 +2052,7 @@ msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "%(value)s invalid (folosiți grade zecimale)"
 
 #: ../wxui/query_sources.py:69 ../wxui/query_sources.py:123
-#: ../wxui/memedit.py:1943
+#: ../wxui/memedit.py:1948
 msgid "Invalid Entry"
 msgstr "Intrare invalidă"
 
@@ -2060,7 +2060,7 @@ msgstr "Intrare invalidă"
 msgid "Invalid ZIP code"
 msgstr "Cod poștal invalid"
 
-#: ../wxui/memedit.py:1942 ../wxui/memedit.py:2905
+#: ../wxui/memedit.py:1947 ../wxui/memedit.py:2910
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Editare invalidă: %s"
@@ -2180,7 +2180,7 @@ msgstr "Șir logo 2 (12 caractere)"
 msgid "Longitude"
 msgstr "Longitudine"
 
-#: ../wxui/memedit.py:1955
+#: ../wxui/memedit.py:1960
 #, python-format
 msgid "Manual edit of memory %i"
 msgstr "Editare manuală a memoriei %i"
@@ -2193,7 +2193,7 @@ msgstr "Memorii"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Memoriile sunt doar citire din cauza versiunii de firmware neacceptate"
 
-#: ../wxui/memedit.py:1984
+#: ../wxui/memedit.py:1989
 #, python-format
 msgid "Memory %i is not deletable"
 msgstr "Memoria %i nu poate fi ștearsă"
@@ -2250,7 +2250,7 @@ msgstr "Mai multe informații"
 msgid "More than one port found: %s"
 msgstr "Mai multe porturi găsite: %s"
 
-#: ../wxui/memedit.py:2633
+#: ../wxui/memedit.py:2638
 #, python-format
 msgid "Move %i memories"
 msgstr "Mută %i memorii"
@@ -2263,7 +2263,7 @@ msgstr "Mută în jos"
 msgid "Move Up"
 msgstr "Mută în sus"
 
-#: ../wxui/memedit.py:2603
+#: ../wxui/memedit.py:2608
 msgid "Move operations are disabled while the view is sorted"
 msgstr "Operațiile de mutare sunt dezactivate în timp ce vizualizarea este sortată"
 
@@ -2271,11 +2271,11 @@ msgstr "Operațiile de mutare sunt dezactivate în timp ce vizualizarea este sor
 msgid "New Window"
 msgstr "Fereastră nouă"
 
-#: ../wxui/main.py:2127
+#: ../wxui/main.py:2128
 msgid "New version available"
 msgstr "Versiune nouă disponibilă"
 
-#: ../wxui/memedit.py:2284
+#: ../wxui/memedit.py:2289
 msgid "No empty rows below!"
 msgstr "Nu există rânduri goale sub!"
 
@@ -2293,7 +2293,7 @@ msgstr "Nu au fost găsite module"
 msgid "No modules found in issue %i"
 msgstr "Nu au fost găsite module în problema %"
 
-#: ../wxui/memedit.py:2467
+#: ../wxui/memedit.py:2472
 msgid "No more space available; some memories were not applied"
 msgstr "Nu mai este spațiu disponibil; unele memorii nu au fost aplicate"
 
@@ -2305,6 +2305,10 @@ msgstr "Niciun rezultat"
 #: ../sources/repeaterbook.py:332
 msgid "No results!"
 msgstr "Niciun rezultat!"
+
+#: ../wxui/main.py:2049
+msgid "No traces stored"
+msgstr ""
 
 #: ../wxui/query_sources.py:44 ../wxui/memedit.py:1322
 msgid "Number"
@@ -2376,6 +2380,10 @@ msgstr "Deschide jurnalul de depanare"
 msgid "Open in new window"
 msgstr "Deschide într-o fereastră nouă"
 
+#: ../wxui/main.py:1022
+msgid "Open last serial trace"
+msgstr ""
+
 #: ../wxui/query_sources.py:401
 msgid "Open repeaters only"
 msgstr "Deschide doar repetoare"
@@ -2421,7 +2429,7 @@ msgstr "Opțional: AA00 - AA00aa11"
 msgid "Optional: County, Hospital, etc."
 msgstr "Opțional: Județ, Spital, etc."
 
-#: ../wxui/memedit.py:2447
+#: ../wxui/memedit.py:2452
 msgid "Overwrite memories?"
 msgstr "Diff raw memories"
 
@@ -2444,7 +2452,7 @@ msgstr "Analizare"
 msgid "Password"
 msgstr "Parolă"
 
-#: ../wxui/memedit.py:2120
+#: ../wxui/memedit.py:2125
 msgid "Paste"
 msgstr "Lipește"
 
@@ -2452,31 +2460,31 @@ msgstr "Lipește"
 msgid "Paste external memories"
 msgstr "Lipește memoriile externe"
 
-#: ../wxui/memedit.py:2546
+#: ../wxui/memedit.py:2551
 msgid "Paste memories"
 msgstr "Lipește memoriile"
 
-#: ../wxui/memedit.py:2441
+#: ../wxui/memedit.py:2446
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr "Memoriile lipite vor suprascrie %s dintre memoriile existente"
 
-#: ../wxui/memedit.py:2444
+#: ../wxui/memedit.py:2449
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "Memoriile lipite vor suprascrie memoriile %s"
 
-#: ../wxui/memedit.py:2438
+#: ../wxui/memedit.py:2443
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr "Memoriile lipite vor suprascrie memoria %s"
 
-#: ../wxui/memedit.py:2435
+#: ../wxui/memedit.py:2440
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr "Memoria lipită va suprascrie memoria %s"
 
-#: ../wxui/main.py:2131
+#: ../wxui/main.py:2132
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Te rugăm să te asiguri că închizi CHIRP înainte de a instala noua versiune!"
 
@@ -2572,7 +2580,7 @@ msgstr "Tipărire"
 msgid "Prolific USB device"
 msgstr "Dispozitiv USB Prolific"
 
-#: ../wxui/memedit.py:2093
+#: ../wxui/memedit.py:2098
 msgid "Properties"
 msgstr "Proprietăți"
 
@@ -2588,7 +2596,7 @@ msgstr "Valoare proprietate"
 msgid "QTH Locator"
 msgstr "Locator QTH"
 
-#: ../wxui/main.py:2076
+#: ../wxui/main.py:2077
 #, python-format
 msgid "Query %s"
 msgstr "Interogare %s"
@@ -2807,7 +2815,7 @@ msgstr "Selectați coloanele"
 msgid "Select Modes"
 msgstr "Selectați coloanele"
 
-#: ../wxui/main.py:2059
+#: ../wxui/main.py:2060
 msgid "Select a bandplan"
 msgstr "Selectează un plan de bandă"
 
@@ -2835,7 +2843,7 @@ msgstr "Setările sunt doar în citire din cauza versiunii de firmware neaccepta
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "Cantitatea de deplasare (sau frecvența de transmisie) controlată de duplex"
 
-#: ../wxui/memedit.py:2229 ../wxui/developer.py:100
+#: ../wxui/memedit.py:2234 ../wxui/developer.py:100
 msgid "Show Raw Memory"
 msgstr "Afișează memoria brută"
 
@@ -2855,45 +2863,45 @@ msgstr "Afișează locația de backup a imaginii"
 msgid "Skip"
 msgstr "Skip"
 
-#: ../wxui/memedit.py:2537
+#: ../wxui/memedit.py:2542
 msgid "Some memories are incompatible with this radio"
 msgstr "Unele memorii sunt incompatibile cu această stație"
 
-#: ../wxui/memedit.py:2376
+#: ../wxui/memedit.py:2381
 msgid "Some memories are not deletable"
 msgstr "Unele memorii nu pot fi șterse"
 
-#: ../wxui/memedit.py:2055
+#: ../wxui/memedit.py:2060
 #, python-format
 msgid "Sort %i memories"
 msgstr "Sortează %i memorii"
 
-#: ../wxui/memedit.py:2185
+#: ../wxui/memedit.py:2190
 #, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
 msgstr[0] "Sortează %i memorie"
 msgstr[1] "Sortează %i memorii"
 
-#: ../wxui/memedit.py:2189
+#: ../wxui/memedit.py:2194
 #, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
 msgstr[0] "Sortează %i memorie ascendent"
 msgstr[1] "Sortează %i memorii ascendente"
 
-#: ../wxui/memedit.py:2211
+#: ../wxui/memedit.py:2216
 #, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
 msgstr[0] "Sortează %i memorie ascendent"
 msgstr[1] "Sortează %i memorii ascendente"
 
-#: ../wxui/memedit.py:2070
+#: ../wxui/memedit.py:2075
 msgid "Sort by column:"
 msgstr "Sortare după coloană:"
 
-#: ../wxui/memedit.py:2069
+#: ../wxui/memedit.py:2074
 msgid "Sort memories"
 msgstr "Diferențierea memoriilor brute"
 
@@ -3003,7 +3011,7 @@ msgstr ""
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr "Procedura recomandată pentru importarea memoriilor este să deschizi fișierul sursă și să copiezi/lipiți memoriile din acesta în imaginea țintă. Dacă continui cu această funcție de import, CHIRP va înlocui toate memoriile din fișierul deschis în prezent cu cele din %(file)s. Ai dori să deschizi acest fișier pentru a copia/lipi memoriile sau să continui cu importul?"
 
-#: ../wxui/memedit.py:2146
+#: ../wxui/memedit.py:2151
 msgid "This Memory"
 msgstr "Această memorie"
 
@@ -3066,11 +3074,11 @@ msgstr ""
 msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
 msgstr "Acesta este numărul tichetului pentru o problemă deja creată pe site-ul chirpmyradio.com"
 
-#: ../wxui/memedit.py:2150
+#: ../wxui/memedit.py:2155
 msgid "This memory and shift all up"
 msgstr "Această memorie și blocul de schimbare în sus"
 
-#: ../wxui/memedit.py:2148
+#: ../wxui/memedit.py:2153
 msgid "This memory and shift block up"
 msgstr "Această memorie și toate schimbările în sus"
 
@@ -3161,7 +3169,7 @@ msgstr "Găsitor de porturi USB"
 msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr "Nu s-a putut determina portul pentru cablul dvs. Verificați driverele și conexiunile."
 
-#: ../wxui/memedit.py:1863
+#: ../wxui/memedit.py:1868
 msgid "Unable to edit memory before radio is loaded"
 msgstr "Nu se poate edita memoria înainte de a încărca radioul"
 
@@ -3170,7 +3178,7 @@ msgstr "Nu se poate edita memoria înainte de a încărca radioul"
 msgid "Unable to find stock config %r"
 msgstr "Nu s-a putut găsi configurația implicită %r"
 
-#: ../wxui/memedit.py:2393
+#: ../wxui/memedit.py:2398
 msgid "Unable to import while the view is sorted"
 msgstr "Nu se poate importa cât timp vizualizarea este sortată"
 
@@ -3292,7 +3300,7 @@ msgstr "Valoarea trebuie să fie zero sau mai mare"
 msgid "Value to search memory field for"
 msgstr "Valoare pentru căutarea câmpului de memorie"
 
-#: ../wxui/memedit.py:2805
+#: ../wxui/memedit.py:2810
 msgid "Values"
 msgstr "Valori"
 
@@ -3308,11 +3316,11 @@ msgstr "Vizualizează"
 msgid "WARNING!"
 msgstr "ATENȚIE!"
 
-#: ../wxui/bugreport.py:230 ../wxui/memedit.py:1949 ../wxui/main.py:2032
+#: ../wxui/bugreport.py:230 ../wxui/memedit.py:1954 ../wxui/main.py:2032
 msgid "Warning"
 msgstr "Atenție"
 
-#: ../wxui/memedit.py:1948
+#: ../wxui/memedit.py:1953
 #, python-format
 msgid "Warning: %s"
 msgstr "Atenție: %s"
