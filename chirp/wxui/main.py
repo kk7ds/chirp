@@ -1877,7 +1877,7 @@ class ChirpMain(wx.Frame):
                                'another source is akin to giving them direct '
                                'access to your computer and everything on '
                                'it! Proceed despite this risk?'),
-                             'Warning',
+                             _('Warning'),
                              wx.ICON_WARNING | wx.YES_NO)
         if r.ShowModal() != wx.ID_YES:
             return
