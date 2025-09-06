@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 16:03+0200\n"
-"PO-Revision-Date: 2025-09-06 16:03+0200\n"
+"PO-Revision-Date: 2025-09-06 17:42+0200\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
 "Language: it\n"
@@ -1451,24 +1451,24 @@ msgstr "Abilitato"
 
 #: ../wxui/memedit.py:390
 msgid "Enter Frequency"
-msgstr "Inserire la frequenza"
+msgstr "Inserisci una frequenza"
 
 #: ../wxui/memedit.py:1843
 msgid "Enter Offset (MHz)"
-msgstr "Inserire l'offset (MHz)"
+msgstr "Inserisci un offset (MHz)"
 
 #: ../wxui/memedit.py:1835
 msgid "Enter TX Frequency (MHz)"
-msgstr "Inserire la frequenza TX (MHz)"
+msgstr "Inserisci una frequenza TX (MHz)"
 
 #: ../wxui/bankedit.py:203
 #, python-format
 msgid "Enter a new name for bank %s:"
-msgstr "Inserire un nuovo nome per il banco %s:"
+msgstr "Inserisci un nuovo nome per il banco %s:"
 
 #: ../wxui/clone.py:566
 msgid "Enter custom port:"
-msgstr "Inserire la porta personalizzata:"
+msgstr "Inserisci una porta personalizzata:"
 
 #: ../wxui/bugreport.py:473
 msgid "Enter details about this update. Be descriptive about what you were doing, what you expected to happen, and what actually happened."
@@ -1476,7 +1476,7 @@ msgstr "Inserisci i dettagli di questo aggiornamento. Sii descrittivo su ciò ch
 
 #: ../wxui/bugreport.py:366
 msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem."
-msgstr "Immetti le informazioni sul bug, compreso un oggetto breve ma significativo e le informazioni sul modello della radio (se applicabile) in questione. Nella fase successiva sarà possibile aggiungere ulteriori dettagli sul problema."
+msgstr "Inserisci le informazioni sul bug, compreso un oggetto breve ma significativo e le informazioni sul modello della radio (se applicabile) in questione. Nella fase successiva sarà possibile aggiungere ulteriori dettagli sul problema."
 
 #: ../wxui/bugreport.py:492
 msgid "Enter information to add to the bug here"
@@ -1484,7 +1484,7 @@ msgstr "Inserisci qui le informazioni da aggiungere al bug"
 
 #: ../wxui/bugreport.py:416
 msgid "Enter the bug number that should be updated"
-msgstr "Digita il numero del bug da aggiornare"
+msgstr "Inserisci il numero del bug da aggiornare"
 
 #: ../wxui/bugreport.py:244
 msgid "Enter your username and password for chirpmyradio.com. If you do not have an account click below to create one before proceeding."
@@ -1665,7 +1665,7 @@ msgid ""
 "during download!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
-"Segui le seguenti istruzioni per scaricare la memoria della radio:\n"
+"Segui queste istruzioni per scaricare la memoria della radio:\n"
 "1 - Collega il cavo dati dell'interfaccia\n"
 "2 - Radio > Scarica dalla radio: NON intervenire sulla radio\n"
 "durante il download!\n"
@@ -1679,7 +1679,7 @@ msgid ""
 "on the radio head!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
-"Segui le seguenti istruzioni per scaricare la memoria della radio:\n"
+"Segui queste istruzioni per scaricare la memoria della radio:\n"
 "1 - Collega il cavo dati dell'interfaccia\n"
 "2 - Radio > Scarica dalla radio: non regolare le impostazioni\n"
 "della radio!\n"
@@ -1693,7 +1693,7 @@ msgid ""
 "3 - Turn on your radio, volume @ 50%\n"
 "4 - CHIRP Menu - Radio - Download from radio\n"
 msgstr ""
-"Segui le seguenti istruzioni per scaricare la memoria della radio:\n"
+"Segui queste istruzioni per scaricare la memoria della radio:\n"
 "1 - Spegni la radio\n"
 "2 - Collega il cavo dati dell'interfaccia\n"
 "3 - Accendi la radio, volume al 50%.\n"
@@ -1709,7 +1709,7 @@ msgid ""
 "5 - Disconnect the interface cable! Otherwise there will be\n"
 "    no right-side audio!\n"
 msgstr ""
-"Segui le seguenti istruzioni per scaricare la configurazione:\n"
+"Segui queste istruzioni per scaricare la configurazione:\n"
 "1 - Spegni la radio\n"
 "2 - Collega il cavo dati dell'interfaccia alla presa Speaker-2\n"
 "3 - Accendi la radio\n"
@@ -1729,7 +1729,7 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the download of your radio data\n"
 msgstr ""
-"Segui le seguenti istruzioni per scaricare le informazioni:\n"
+"Segui queste istruzioni per scaricare le informazioni:\n"
 "1 - Spegni la radio\n"
 "2 - Collega il cavo dati dell'interfaccia\n"
 "3 - Accendi la radio\n"
@@ -1743,7 +1743,7 @@ msgid ""
 "3 - Turn on your radio (unlock it if password protected)\n"
 "4 - Click OK to start\n"
 msgstr ""
-"Segui le seguenti istruzioni per scaricare dalla radio:\n"
+"Segui queste istruzioni per scaricare dalla radio:\n"
 "1 - Spegni la radio\n"
 "2 - Collega il cavo dati dell'interfaccia\n"
 "3 - Accendi la radio (sbloccala se è protetta da password)\n"
@@ -1757,7 +1757,7 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Click OK to start\n"
 msgstr ""
-"Segui le seguenti istruzioni per leggere la radio:\n"
+"Segui queste istruzioni per leggere la tua radio:\n"
 "1 - Spegni la radio\n"
 "2 - Collega il cavo dati dell'interfaccia\n"
 "3 - Accendi la radio\n"
@@ -1771,7 +1771,7 @@ msgid ""
 "during upload!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
-"Segui le seguenti istruzioni per caricare la memoria della radio:\n"
+"Segui queste istruzioni per caricare la memoria della radio:\n"
 "1 - Collega il cavo dati dell'interfaccia\n"
 "2 - Radio > Carica sulla radio: NON intervenire sulla radio\n"
 "durante il caricamento!\n"
@@ -1785,9 +1785,9 @@ msgid ""
 "on the radio head!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
-"Segui le seguenti istruzioni per caricare la memoria della radio:\n"
+"Segui queste istruzioni per caricare la memoria della radio:\n"
 "1 - Collega il cavo dati dell'interfaccia\n"
-"2 - Radio > Carica sulla radio: Non modificare le impostazioni\n"
+"2 - Radio > Carica sulla radio: non modificare le impostazioni\n"
 "sulla radio!\n"
 "3 - Scollega il cavo dati dell'interfaccia\n"
 
@@ -1799,7 +1799,7 @@ msgid ""
 "3 - Turn on your radio, volume @ 50%\n"
 "4 - CHIRP Menu - Radio - Upload to radio\n"
 msgstr ""
-"Segui le seguenti istruzioni per caricare la memoria della radio:\n"
+"Segui queste istruzioni per caricare la memoria della radio:\n"
 "1 - Spegni la radio\n"
 "2 - Collega il cavo dati dell'interfaccia\n"
 "3 - Accendi la radio, volume al 50%.\n"
@@ -1847,7 +1847,7 @@ msgid ""
 "3 - Turn on your radio (unlock it if password protected)\n"
 "4 - Click OK to start\n"
 msgstr ""
-"Segui le seguenti istruzioni per caricare i dati sulla radio:\n"
+"Segui queste istruzioni per caricare i dati sulla radio:\n"
 "1 - Spegni la radio\n"
 "2 - Collega il cavo dati dell'interfaccia\n"
 "3 - Accendi la radio (sbloccarla se protetta da password)\n"
@@ -1861,7 +1861,7 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Click OK to start\n"
 msgstr ""
-"Segui le seguenti istruzioni per scrivere sulla radio:\n"
+"Segui queste istruzioni per scrivere sulla radio:\n"
 "1 - Spegni la radio\n"
 "2 - Collega il cavo dati dell'interfaccia\n"
 "3 - Accendi la radio\n"
@@ -1968,7 +1968,7 @@ msgstr "GMRS"
 
 #: ../wxui/settingsedit.py:77
 msgid "Getting settings"
-msgstr "Acquisire le impostazioni"
+msgstr "Acquisisci le impostazioni"
 
 #: ../wxui/memedit.py:1356
 msgid "Goto Memory"
@@ -2055,7 +2055,7 @@ msgstr "Inserisci riga sopra"
 
 #: ../wxui/__init__.py:59
 msgid "Install desktop icon?"
-msgstr "Installare l'icona sul desktop?"
+msgstr "Vuoi installare un'icona sul desktop?"
 
 #: ../wxui/main.py:954
 msgid "Interact with driver"
@@ -2450,7 +2450,7 @@ msgstr "Opzionale: contea, ospedale, ecc."
 
 #: ../wxui/memedit.py:2485
 msgid "Overwrite memories?"
-msgstr "Sovrascrivere le memorie?"
+msgstr "Vuoi sovrascrivere le memorie?"
 
 #: ../drivers/ts480.py:513
 msgid ""
@@ -2791,7 +2791,7 @@ msgstr "Salva"
 
 #: ../wxui/main.py:1523
 msgid "Save before closing?"
-msgstr "Salvare prima di chiudere?"
+msgstr "Vuoi salvare prima di chiudere?"
 
 #: ../wxui/main.py:1062 ../wxui/main.py:1447
 msgid "Save file"
@@ -3113,11 +3113,11 @@ msgid ""
 "can take a few seconds, if don't work, try again a few times.\n"
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
-"Questa radio ha un modo complesso per entrare in modalità programma,\n"
+"Questa radio ha un modo complesso per entrare in modalità programmazione,\n"
 "anche il software originale richiede alcuni tentativi per entrare.\n"
 "Proverò 8 volte (la maggior parte delle volte ne bastano circa 3) e questo\n"
 "può richiedere alcuni secondi, se non funziona, riprovare più volte.\n"
-"Se riesci ad entrare, controlla la radio ed il cavo.\n"
+"Se non riesci ad entrare, controlla la radio ed il cavo.\n"
 
 #: ../drivers/uvk5.py:1865
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
@@ -3177,7 +3177,7 @@ msgstr "Passo della sintonia"
 
 #: ../wxui/memquery.py:188
 msgid "Type a simple search string or a formatted query and press enter"
-msgstr "Digita una semplice stringa di ricerca o una query formattata e premi invio"
+msgstr "Inserisci una semplice stringa di ricerca o una query formattata e premi invio"
 
 #: ../wxui/clone.py:485 ../wxui/clone.py:492 ../wxui/clone.py:503
 #: ../wxui/clone.py:511 ../wxui/clone.py:515
@@ -3186,7 +3186,7 @@ msgstr "Trova porta USB"
 
 #: ../wxui/clone.py:501
 msgid "Unable to determine port for your cable. Check your drivers and connections."
-msgstr "Impossibile determinare la porta per il cavo. Controllare i driver e i collegamenti."
+msgstr "Impossibile determinare la porta del tuo cavo. Controlla i driver e i collegamenti."
 
 #: ../wxui/memedit.py:1901
 msgid "Unable to edit memory before radio is loaded"
@@ -3212,7 +3212,7 @@ msgstr "Impossibile eseguire la ricerca"
 
 #: ../drivers/ft817.py:320
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
-msgstr "Impossibile leggere l'ultimo blocco. Questo accade spesso, quando il modello selezionato è US, ma la radio è un modello non US (o widebanded). Scegliere il modello corretto e riprovare."
+msgstr "Impossibile leggere l'ultimo blocco. Questo accade spesso, quando il modello selezionato è US, ma la radio è un modello non US (o widebanded). Scegli il modello corretto e riprova."
 
 #: ../wxui/common.py:693
 #, python-format
@@ -3238,7 +3238,7 @@ msgstr "Stati Uniti"
 
 #: ../wxui/clone.py:484
 msgid "Unplug your cable (if needed) and then click OK"
-msgstr "Scollegare il cavo (se necessario) e quindi fare clic su OK"
+msgstr "Scollega il cavo (se necessario) e quindi fai clic su OK"
 
 #: ../drivers/thd74.py:329
 #, python-format
@@ -3309,7 +3309,7 @@ msgstr "Il valore deve essere al massimo %.4f"
 #: ../wxui/developer.py:357
 #, python-format
 msgid "Value must be exactly %i decimal digits"
-msgstr "Il valore deve essere di esattamente %i cifre decimali"
+msgstr "Il valore deve essere esattamente di %i cifre decimali"
 
 #: ../wxui/developer.py:311 ../wxui/developer.py:355
 msgid "Value must be zero or greater"
