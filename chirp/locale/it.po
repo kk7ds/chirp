@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-06 09:30+0200\n"
-"PO-Revision-Date: 2025-09-06 09:29+0200\n"
+"POT-Creation-Date: 2025-09-06 16:03+0200\n"
+"PO-Revision-Date: 2025-09-06 16:03+0200\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
 "Language: it\n"
@@ -1027,7 +1027,7 @@ msgstr "Informazioni su CHIRP"
 
 #: ../wxui/main.py:1952
 msgid "Agree"
-msgstr "Sono d'accordo"
+msgstr "Accetta"
 
 #: ../wxui/query_sources.py:451
 msgid "All"
@@ -1178,7 +1178,7 @@ msgstr "Fai clic qui per leggere il testo completo della licenza"
 
 #: ../wxui/main.py:1917
 msgid "Click here for online documentation"
-msgstr "Clicca qui per la documentazione online"
+msgstr "Fai clic qui per leggere la documentazione online"
 
 #: ../drivers/ts590.py:671
 msgid ""
@@ -2992,8 +2992,8 @@ msgstr ""
 "Questi canali speciali consentono una modifica limitata del campo.\n"
 "Questo driver popola anche la scheda \"Altro\" nella finestra\n"
 "delle proprietà della memoria del canale. Questa scheda contiene i valori\n"
-"di memoria del canale che non rientrano nelle colonne di visualizzazione\n"
-"standard del display Chirp. Con il supporto dell'FT450, la gui adesso\n"
+"delle impostazioni di memoria dei canali che non rientrano nelle colonne\n"
+"standard del display di Chirp. Con il supporto dell'FT450, la gui adesso\n"
 "utilizza la modalità 'DIG' per rappresentare i modi di trasmissione dati e una\n"
 "nuova colonna 'DATA MODE' per selezionare USER-U, USER-L e RTTY. \n"
 
@@ -3195,7 +3195,7 @@ msgstr "Impossibile modificare la memoria prima di averla caricata dalla radio"
 #: ../wxui/main.py:1405
 #, python-format
 msgid "Unable to find stock config %r"
-msgstr "Impossibile trovare la configurazione standard %r"
+msgstr "Impossibile trovare la configurazione predefinita %r"
 
 #: ../wxui/memedit.py:2431
 msgid "Unable to import while the view is sorted"
@@ -3335,7 +3335,8 @@ msgstr "Visualizza"
 msgid "WARNING!"
 msgstr "ATTENZIONE!"
 
-#: ../wxui/bugreport.py:230 ../wxui/memedit.py:1987 ../wxui/main.py:2032
+#: ../wxui/bugreport.py:230 ../wxui/memedit.py:1987 ../wxui/main.py:1880
+#: ../wxui/main.py:2032
 msgid "Warning"
 msgstr "Attenzione"
 
