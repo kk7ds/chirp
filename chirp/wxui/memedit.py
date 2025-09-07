@@ -46,12 +46,13 @@ TX_WORKFLOW_ID = wx.NewId()
 
 
 class ChirpGridTable(wx.grid.GridStringTable):
-    def __init__(self, features, num_cols):
+    def __init__(self, features, col_defs):
         self._features = features
+        self._col_defs = col_defs
         num_rows = (self._features.memory_bounds[1] -
                     self._features.memory_bounds[0] +
                     len(self._features.valid_special_chans) + 1)
-        super().__init__(num_rows, num_cols)
+        super().__init__(num_rows, len(col_defs))
         self._rowmap = {x: x for x in range(0, self.GetRowsCount())}
         self._rowmap_rev = {v: k for k, v in self._rowmap.items()}
 
@@ -74,6 +75,10 @@ class ChirpGridTable(wx.grid.GridStringTable):
         # order. That convoluted scheme makes us always sort empty values at
         # the bottom instead of the top of the list, which is what a human
         # will want.
+
+        def sortable_value(val):
+            return self._col_defs[col].get_sortable_value(val)
+
         if col < 0:
             self._rowmap = {x: x for x in range(0, self.GetRowsCount())}
         else:
@@ -81,7 +86,8 @@ class ChirpGridTable(wx.grid.GridStringTable):
                 (asc != bool(
                     super(ChirpGridTable, self).GetValue(
                         realrow, col).strip()),
-                 super(ChirpGridTable, self).GetValue(realrow, col),
+                 sortable_value(
+                     super(ChirpGridTable, self).GetValue(realrow, col)),
                  realrow)
                 for realrow in range(0, self.GetRowsCount())),
                 reverse=not asc)
@@ -162,6 +168,12 @@ class ChirpMemoryColumn(object):
         self._radio = radio
         self._features = radio.get_features()
         self._doc = None
+
+    @staticmethod
+    def get_sortable_value(value):
+        """Convert a rendered value into the type/format we should use for
+        sorting"""
+        return value
 
     @property
     def name(self):
@@ -293,6 +305,13 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
         super().__init__(*a, **k)
         self._wants_split = set()
 
+    @staticmethod
+    def get_sortable_value(value):
+        try:
+            return float(value)
+        except ValueError:
+            return 0
+
     def value(self, memory):
         if self._name == 'txfreq':
             if memory.duplex == 'split':
@@ -394,6 +413,13 @@ class ChirpVariablePowerColumn(ChirpMemoryColumn):
     def _digest_value(self, memory, value):
         return chirp_common.parse_power(value)
 
+    @staticmethod
+    def get_sortable_value(value):
+        try:
+            return int(chirp_common.parse_power(value))
+        except ValueError:
+            return 0
+
 
 class ChirpChoiceEditor(wx.grid.GridCellChoiceEditor):
     """A locking GridCellChoiceEditor.
@@ -471,6 +497,13 @@ class ChirpToneColumn(ChirpChoiceColumn):
         tones = [str(x) for x in sorted(tones)]
         super(ChirpToneColumn, self).__init__(name, radio,
                                               tones)
+
+    @staticmethod
+    def get_sortable_value(value):
+        try:
+            return float(value)
+        except ValueError:
+            return 0
 
     @property
     def label(self):
@@ -921,7 +954,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self.bandplan = bandplan.BandPlans(CONF)
 
         self._grid = ChirpMemoryGrid(self)
-        self._table = ChirpGridTable(self._features, len(self._col_defs))
+        self._table = ChirpGridTable(self._features, self._col_defs)
         # AssignTable added in wxPython 4.1, so use the older interface for
         # earlier version support (i.e. Ubuntu Jammy)
         self._grid.SetTable(self._table, takeOwnership=True,
@@ -1457,6 +1490,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             self._grid.SetRowLabelValue(row, '!%s' % (
                 self._grid.GetRowLabelValue(row)))
             return
+
+        if not isinstance(memory.number, int):
+            LOG.error('Memory for row %i (lookup number %r) '
+                      'has non-integer number field: %r',
+                      row, number, memory.number)
 
         if row in self._memory_errors:
             del self._memory_errors[row]

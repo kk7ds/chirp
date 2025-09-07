@@ -48,11 +48,11 @@ struct {
 #seekto 0x0338;
 u8 scan[4];             //  4 bytes / bit LSBF for the channel
 
-#seekto 0x033C;
+// #seekto 0x033C;
 u8 active[4];           //  4 bytes / bit LSBF for the active cha
                         // active = 0
 
-#seekto 0x0340;
+// #seekto 0x0340;
 struct {
   u8 kMoni;             // monitor key function
   u8 kScan;             // scan key function
@@ -95,8 +95,8 @@ struct {
 MEM_SIZE = 0x400
 BLOCK_SIZE = 8
 MEM_BLOCKS = list(range(0, (MEM_SIZE // BLOCK_SIZE)))
-ACK_CMD = "\x06"
-TIMEOUT = 0.05  # from 0.03 up it' s safe, we set in 0.05 for a margin
+ACK_CMD = b"\x06"
+TIMEOUT = 1
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                 chirp_common.PowerLevel("High", watts=5)]
@@ -146,10 +146,10 @@ def send(radio, frame):
     rawsend(radio, frame)
 
 
-def make_frame(cmd, addr, data=""):
+def make_frame(cmd, addr, data=b""):
     """Pack the info in the format it likes"""
     ts = struct.pack(">BHB", ord(cmd), addr, 8)
-    if data == "":
+    if not data:
         return ts
     else:
         if len(data) == 8:
@@ -200,33 +200,15 @@ def open_radio(radio):
         raise errors.RadioError(msg)
 
     # we will try to open the radio 5 times, this is an improved mechanism
-    magic = "PROGRAM"
-    exito = False
-    for i in range(0, 5):
-        for i in range(0, len(magic)):
-            ack = rawrecv(radio, 1)
-            time.sleep(0.05)
-            send(radio, magic[i])
+    magic = b"PROGRAM"
+    radio.pipe.write(magic)
+    handshake(radio, 'Radio did not respond to program command')
 
-        try:
-            handshake(radio, "Radio not entering Program mode")
-            exito = True
-            break
-        except:
-            LOG.debug("Attempt #%s, failed, trying again" % i)
-            pass
-
-    # check if we had EXITO
-    if exito is False:
-        msg = "The radio did not accept program mode after five tries.\n"
-        msg += "Check you interface cable and power cycle your radio."
-        raise errors.RadioError(msg)
-
-    rawsend(radio, "\x02")
+    rawsend(radio, b"\x02")
     ident = rawrecv(radio, 8)
     handshake(radio, "Comm error after ident", True)
 
-    if not (radio.TYPE in ident):
+    if not (radio.TYPE.encode() in ident):
         LOG.debug("Incorrect model ID, got %s" % util.hexprint(ident))
         msg = "Incorrect model ID, got %s, it not contains %s" % \
             (ident[0:5], radio.TYPE)
@@ -240,11 +222,11 @@ def do_download(radio):
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = MEM_SIZE / BLOCK_SIZE
+    status.max = MEM_SIZE // BLOCK_SIZE
     status.msg = "Cloning from radio..."
     radio.status_fn(status)
 
-    data = ""
+    data = b""
     for addr in MEM_BLOCKS:
         send(radio, make_frame("R", addr * BLOCK_SIZE))
         data += recv(radio)
@@ -257,7 +239,7 @@ def do_download(radio):
         status.msg = "Cloning from radio..."
         radio.status_fn(status)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
@@ -267,7 +249,7 @@ def do_upload(radio):
     # UI progress
     status = chirp_common.Status()
     status.cur = 0
-    status.max = MEM_SIZE / BLOCK_SIZE
+    status.max = MEM_SIZE // BLOCK_SIZE
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
     count = 0
@@ -319,7 +301,6 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
     VARIANT = ""
     MODEL = ""
     _kind = ""
-    NEEDS_COMPAT_SERIAL = True
 
     @classmethod
     def get_prompts(cls):
@@ -384,7 +365,13 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
 
     def sync_in(self):
         """Download from radio"""
-        self._mmap = do_download(self)
+        try:
+            self._mmap = do_download(self)
+        except errors.RadioError:
+            raise
+        except Exception as e:
+            LOG.exception('Error downloading: %s', e)
+            raise errors.RadioError("Error downloading data from radio")
         self.process_mmap()
 
     def sync_out(self):
@@ -392,13 +379,17 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         # Get the data ready for upload
         try:
             self._prep_data()
-        except:
+        except Exception as e:
+            LOG.exception('Failed to prepare data for upload: %s', e)
             raise errors.RadioError("Error processing the radio data")
 
         # do the upload
         try:
             do_upload(self)
-        except:
+        except errors.RadioError:
+            raise
+        except Exception as e:
+            LOG.exception('Error uploading: %s', e)
             raise errors.RadioError("Error uploading data to radio")
 
     def set_variant(self):
@@ -446,13 +437,13 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         # fldata = "\x00\xf0\xff\xff\xff" * achs + \
             # "\xff" * (5 * (self._upper - achs))
 
-        fldata = "\xFF" * 5 * self._upper
+        fldata = b"\xFF" * 5 * self._upper
         self._fill(0x0280, fldata)
 
     def _fill(self, offset, data):
         """Fill an specified area of the memmap with the passed data"""
         for addr in range(0, len(data)):
-            self._mmap[offset + addr] = data[addr]
+            self._mmap[offset + addr] = bytes([data[addr]])
 
     def process_mmap(self):
         """Process the mem map into the mem object"""
@@ -494,7 +485,7 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
     def decode_tone(self, val):
         """Parse the tone data to decode from mem, it returns:
         Mode (''|DTCS|Tone), Value (None|###), Polarity (None,N,R)"""
-        if val.get_raw(asbytes=False) == "\xFF\xFF":
+        if val.get_raw() == b"\xFF\xFF":
             return '', None, None
 
         val = int(val)
@@ -557,11 +548,11 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         # Memory number
         mem.number = number
 
-        if _mem.get_raw(asbytes=False)[0] == "\xFF":
+        if _mem.get_raw()[0] == 0xFF:
             mem.empty = True
             # but is not enough, you have to clear the memory in the mmap
             # to get it ready for the sync_out process, just in case
-            _mem.set_raw("\xFF" * 16)
+            _mem.set_raw(b"\xFF" * 16)
             # set the channel to inactive state
             self.set_active(number - 1, False)
             return mem
@@ -569,7 +560,7 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         # Freq and offset
         mem.freq = int(_mem.rxfreq) * 10
         # tx freq can be blank
-        if _mem.get_raw(asbytes=False)[4] == "\xFF" or int(_mem.txen) == 255:
+        if _mem.get_raw()[4] == 0xFF or int(_mem.txen) == 255:
             # TX freq not set
             mem.offset = 0
             mem.duplex = "off"
