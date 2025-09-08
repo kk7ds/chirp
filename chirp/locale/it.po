@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 16:03+0200\n"
-"PO-Revision-Date: 2025-09-06 17:42+0200\n"
+"PO-Revision-Date: 2025-09-08 11:18+0200\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
 "Language: it\n"
@@ -1149,7 +1149,7 @@ msgstr "Scegli il tono %s"
 
 #: ../wxui/memedit.py:1826
 msgid "Choose Cross Mode"
-msgstr "Scegli la modalità cross"
+msgstr "Scegli la modalità incrociata"
 
 #: ../wxui/main.py:1186
 msgid "Choose Diff Target"
@@ -1280,7 +1280,7 @@ msgstr "Nazione"
 
 #: ../wxui/memedit.py:675
 msgid "Cross Mode"
-msgstr "Modalità cross"
+msgstr "Modalità incrociata"
 
 #: ../wxui/clone.py:567
 msgid "Custom Port"
@@ -1308,8 +1308,8 @@ msgid ""
 "DTCS\n"
 "Polarity"
 msgstr ""
-"DTCS\n"
-"Polarità"
+"Polarità\n"
+"DTCS"
 
 #: ../drivers/uvk5.py:860
 msgid "DTMF decode"
@@ -1346,7 +1346,7 @@ msgstr "Modalità sviluppatore"
 #: ../wxui/main.py:1980
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
-msgstr "Lo stato di sviluppatore è ora impostato su %s. Per avere effetto, CHIRP deve essere riavviato"
+msgstr "La modalità sviluppatore ora è %s. Per rendere effettiva questa modifica, CHIRP deve essere riavviato"
 
 #: ../wxui/memedit.py:2275 ../wxui/developer.py:97
 msgid "Diff Raw Memories"
@@ -2238,7 +2238,7 @@ msgstr "La memoria {num} non è presente nel banco {bank}"
 #: ../wxui/memedit.py:661 ../wxui/query_sources.py:624
 #: ../wxui/query_sources.py:777
 msgid "Mode"
-msgstr "Modalità"
+msgstr "Modo"
 
 #: ../wxui/clone.py:356
 msgid "Model"
@@ -2832,7 +2832,7 @@ msgstr "Seleziona la lingua"
 
 #: ../wxui/query_sources.py:500
 msgid "Select Modes"
-msgstr "Seleziona le modalità"
+msgstr "Seleziona modi"
 
 #: ../wxui/main.py:2060
 msgid "Select a bandplan"
@@ -3141,11 +3141,11 @@ msgstr "Modalità tono"
 
 #: ../wxui/memedit.py:513
 msgid "Tone Squelch"
-msgstr "Squelch del tono"
+msgstr "Squelch a tono"
 
 #: ../wxui/memedit.py:140
 msgid "Tone squelch mode"
-msgstr "Modalità squelch del tono"
+msgstr "Modalità squelch a tono"
 
 #: ../wxui/memedit.py:153
 msgid "Transmit Power"
@@ -3173,7 +3173,7 @@ msgstr "Tono di trasmissione/ricezione per la modalità TSQL, altrimenti tono di
 
 #: ../wxui/memedit.py:448 ../wxui/memedit.py:1412
 msgid "Tuning Step"
-msgstr "Passo della sintonia"
+msgstr "Passo sintonia"
 
 #: ../wxui/memquery.py:188
 msgid "Type a simple search string or a formatted query and press enter"
@@ -3387,11 +3387,11 @@ msgstr "byte ciascuno"
 
 #: ../wxui/main.py:1965
 msgid "disabled"
-msgstr "disabilitato"
+msgstr "disabilitata"
 
 #: ../wxui/main.py:1965
 msgid "enabled"
-msgstr "abilitato"
+msgstr "abilitata"
 
 #: ../drivers/vx5.py:116
 #, python-brace-format
