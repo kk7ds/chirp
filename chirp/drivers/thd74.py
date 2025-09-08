@@ -483,6 +483,7 @@ class THD74Radio(chirp_common.CloneModeRadio,
         _flg = self._memobj.flags[mem.number]
         _nam = self._memobj.names[mem.number + name_index_adj]
 
+        was_empty = int(_flg.used) == 0xFF
         _flg.used = get_used_flag(mem)
 
         if mem.empty:
@@ -494,7 +495,9 @@ class THD74Radio(chirp_common.CloneModeRadio,
 
         _mem.set_raw(b'\x00' * 40)
 
-        _flg.group = 0  # FIXME
+        if was_empty:
+            # New memories go to group 0 in case it wasn't cleared on delete
+            _flg.group = 0
 
         _mem.freq = mem.freq
         _nam.name = mem.name.ljust(16)
