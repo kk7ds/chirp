@@ -3387,7 +3387,7 @@ msgstr "byte ciascuno"
 
 #: ../wxui/main.py:1965
 msgid "disabled"
-msgstr "disabilitato"
+msgstr "disabilitata"
 
 #: ../wxui/main.py:1965
 msgid "enabled"
