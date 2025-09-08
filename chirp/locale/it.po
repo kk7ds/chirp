@@ -1346,7 +1346,7 @@ msgstr "Modalità sviluppatore"
 #: ../wxui/main.py:1980
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
-msgstr "Lo stato di sviluppatore è ora impostato su %s. Per avere effetto, CHIRP deve essere riavviato"
+msgstr "La modalità sviluppatore ora è %s. Per rendere effettiva questa modifica, CHIRP deve essere riavviato"
 
 #: ../wxui/memedit.py:2275 ../wxui/developer.py:97
 msgid "Diff Raw Memories"
@@ -3391,7 +3391,7 @@ msgstr "disabilitato"
 
 #: ../wxui/main.py:1965
 msgid "enabled"
-msgstr "abilitato"
+msgstr "abilitata"
 
 #: ../drivers/vx5.py:116
 #, python-brace-format
