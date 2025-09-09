@@ -9,6 +9,7 @@ from chirp import chirp_common
 from chirp import directory
 from chirp import errors
 from chirp import memmap
+from chirp import settings
 
 LOG = logging.getLogger(__name__)
 
@@ -425,9 +426,10 @@ class THD74Radio(chirp_common.CloneModeRadio,
             mem.duplex = DUPLEX[_mem.duplex]
         mem.tuning_step = TUNE_STEPS[_mem.tuning_step]
         mem.mode = MODES[_mem.mode]
-        mem.rtone = chirp_common.TONES[_mem.rtone]
-        mem.ctone = chirp_common.TONES[_mem.ctone]
-        mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs_code]
+        if mem.mode != 'DV':
+            mem.rtone = chirp_common.TONES[_mem.rtone]
+            mem.ctone = chirp_common.TONES[_mem.ctone]
+            mem.dtcs = chirp_common.DTCS_CODES[_mem.dtcs_code]
 
         if _mem.tone_mode:
             mem.tmode = 'Tone'
@@ -461,6 +463,13 @@ class THD74Radio(chirp_common.CloneModeRadio,
         if 'Call' in mem.extd_number and mem.mode == 'DV':
             mem.immutable.append('mode')
 
+        mem.extra = settings.RadioSettingGroup('extra', 'Extra')
+        rs = settings.RadioSetting(
+            'rptmode', 'DV Repeater Mode',
+            settings.RadioSettingValueBoolean(_mem.mode == 7))
+        if mem.mode != 'DV':
+            rs.value.set_mutable(False)
+        mem.extra.append(rs)
         return mem
 
     def set_memory(self, mem):
@@ -474,6 +483,7 @@ class THD74Radio(chirp_common.CloneModeRadio,
         _flg = self._memobj.flags[mem.number]
         _nam = self._memobj.names[mem.number + name_index_adj]
 
+        was_empty = int(_flg.used) == 0xFF
         _flg.used = get_used_flag(mem)
 
         if mem.empty:
@@ -485,7 +495,9 @@ class THD74Radio(chirp_common.CloneModeRadio,
 
         _mem.set_raw(b'\x00' * 40)
 
-        _flg.group = 0  # FIXME
+        if was_empty:
+            # New memories go to group 0 in case it wasn't cleared on delete
+            _flg.group = 0
 
         _mem.freq = mem.freq
         _nam.name = mem.name.ljust(16)
@@ -519,6 +531,15 @@ class THD74Radio(chirp_common.CloneModeRadio,
             _mem.dv_rpt1call = encode_call(mem.dv_rpt1call)
             _mem.dv_rpt2call = encode_call(mem.dv_rpt2call)
             _mem.dv_code = mem.dv_code
+            if mem.extra and 'rptmode' in mem.extra:
+                rptmode = bool(mem.extra['rptmode'].value)
+            else:
+                # Pasting a DV memory from another radio means we will
+                # not have the extra.rptmode flag. So, assume repeater mode
+                # if the rpt1call has a module in the last character
+                rptmode = mem.dv_rpt1call.ljust(8)[7] != ' '
+            if mem.mode == 'DV' and rptmode:
+                _mem.mode = 7
 
     def get_raw_memory(self, number):
         return (repr(self._get_raw_memory(number)) +

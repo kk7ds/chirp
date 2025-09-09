@@ -1019,7 +1019,7 @@ class ChirpMain(wx.Frame):
 
         if developer.developer_mode():
             trace_item = wx.MenuItem(help_menu, wx.NewId(),
-                                     'Open last serial trace')
+                                     _('Open last serial trace'))
             self.Bind(wx.EVT_MENU, self._menu_last_trace, trace_item)
             help_menu.Append(trace_item)
 
@@ -1877,7 +1877,7 @@ class ChirpMain(wx.Frame):
                                'another source is akin to giving them direct '
                                'access to your computer and everything on '
                                'it! Proceed despite this risk?'),
-                             'Warning',
+                             _('Warning'),
                              wx.ICON_WARNING | wx.YES_NO)
         if r.ShowModal() != wx.ID_YES:
             return
@@ -2045,7 +2045,8 @@ GNU General Public License for more details."""
             fn = serialtrace.TRACEFILES[-1]
             wx.LaunchDefaultApplication(fn)
         except IndexError:
-            common.error_proof.show_error('No traces stored', parent=self)
+            common.error_proof.show_error(
+                _('No traces stored'), parent=self)
 
     def _menu_auto_edits(self, event):
         CONF.set_bool('auto_edits', event.IsChecked(), 'state')
