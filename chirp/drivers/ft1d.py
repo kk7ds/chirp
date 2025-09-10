@@ -1,6 +1,6 @@
 # Copyright 2010 Dan Smith <dsmith@danplanet.com>
 # Copyright 2014 Angus Ainslie <angus@akkea.ca>
-# Copyright 2023 Declan Rieb <WD5EQY@arrl.net>
+# Copyright 2023,2025 Declan Rieb <WD5EQY@arrl.net>
 # Sections of digital settings applied from ft70.py, thus
 # Copyright 2017 Nicolas Pike <nick@zbm2.com>
 #
@@ -27,7 +27,7 @@ from chirp import memmap
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
             RadioSettingValueInteger, RadioSettingValueString, \
             RadioSettingValueList, RadioSettingValueBoolean, \
-            InvalidValueError
+            InvalidValueError, RadioSettingSubGroup
 from chirp import util
 
 LOG = logging.getLogger(__name__)
@@ -1045,10 +1045,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.offset = int(_mem.offset) * 1000
             mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
             self._get_tmode(mem, _mem)
-            if mem.duplex is None:
-                mem.duplex = DUPLEX[""]
-            else:
-                mem.duplex = DUPLEX[_mem.duplex]
+            mem.duplex = DUPLEX[_mem.duplex] if _mem.duplex else ""
             if mem.duplex == "split":
                 mem.offset = chirp_common.fix_rounded_step(mem.offset)
             mem.mode = self._decode_mode(_mem)
@@ -1907,65 +1904,38 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         # WiresX settings
         wxc = self._memobj.WiresX_settings
-        for i in range(0, 5):
-            cname = "WiresX_settings.Category[%d].name" % (i + 1)
-            c = ''
-            for j in range(0, 16):
-                s = wxc.Category[i].name[j]
-                if int(s) != 0xff:
-                    c = c + str(s)
+        for i in range(5):
+            cname = f"WiresX_settings.Category[{i}].name"
+            c = str(wxc.Category[i].name).rstrip('\xff').ljust(16)
             val = RadioSettingValueString(0, 16, c)
-            rs = RadioSetting(cname, "Category %d" % (i+1), val)
-            rs.set_apply_callback(self.apply_WiresX_category,
-                                  wxc.Category[i].name)
+            rs = RadioSetting(cname, f"Category {i+1: 2d}", val)
             WXmenu.append(rs)
 
+            WXCmenu = RadioSettingSubGroup(
+                        f"WiresX_settings.Category[{i}]."
+                        f"RoomsPerCategory",
+                        f"*** Category{i + 1} Rooms ***")
+            WXmenu.append(WXCmenu)
+
             r = wxc.RoomsPerCategory[i]
-            rn = False
-            for j in range(0, 20):
-                idn = "0"
-                if int(r.Rooms[j].ID[1]) != 0xff:
-                    idn = r.Rooms[j].ID
-                    rn = False
-                elif rn:
-                    break
-                elif j > 0:
-                    rn = True
-                val = RadioSettingValueInteger(0, 99999, int(str(idn)))
-                vname = "WiresX_settings.RoomsperCategory%s" \
-                        "Rooms[%d].ID" % (i, j)
-                rs = RadioSetting(vname, "   Room ID%2s (5 numerals)" %
-                                  (j+1), val)
-                rs.set_apply_callback(self.apply_WiresX_roomid,
-                                      r.Rooms[j])
-                WXmenu.append(rs)
-                cn = ''
-                for l in range(0, 16):
-                    s = r.Rooms[j].name[l]
-                    if int(s) != 0xff:
-                        cn = cn + str(s)
-                val = RadioSettingValueString(0, 16, str(cn))
-                cname = "WiresX_settings.RoomsperCategory%s" \
-                        "Rooms[%d].name" % (i, j)
-                rs = RadioSetting(cname, "   Room Name%2s (16 chars)" %
-                                  (j+1), val)
-                rs.set_apply_callback(self.apply_WiresX_roomname,
-                                      r.Rooms[j])
-                WXmenu.append(rs)
+            for j in range(20):
+                cn = str(r.Rooms[j].name).strip('\xff').ljust(16)
+                val = RadioSettingValueString(0, 16, cn)
+                cname = f"WiresX_settings.RoomsPerCategory[{i}]."\
+                    f"Rooms[{j}].name"
+                dname = f"Category {i + 1} Room{j + 1: 02d}"
+                rs = RadioSetting(cname, dname, val)
+
+                WXCmenu.append(rs)
+                idn = str(r.Rooms[j].ID).strip('\xff').ljust(5)
+                val = RadioSettingValueString(0, 5, idn)
+                vname = f"WiresX_settings.RoomsPerCategory[{i}]."\
+                    f"Rooms[{j}].ID"
+                rs = RadioSetting(vname, f"        YSF ID{j + 1} (5 digits)",
+                                  val)
+                WXCmenu.append(rs)
             pass
         return topmenu
-
-    def apply_WiresX_category(cls, setting, obj):
-        val = setting.value.get_value()
-        setattr(obj, "name", val)
-
-    def apply_WiresX_roomid(self, setting, obj):
-        val = setting.value.get_value()
-        obj.ID = self.zero_pad(val, 5)
-
-    def apply_WiresX_roomname(cls, setting, obj):
-        val = setting.value.get_value()
-        obj.name = str(val)
 
     def _get_dtmf_settings(self):
         menu = RadioSettingGroup("dtmf_settings", "DTMF")
