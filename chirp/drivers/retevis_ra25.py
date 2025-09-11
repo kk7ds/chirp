@@ -630,7 +630,6 @@ class RA25UVRadio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                 _mem.txpower = 2
                 _mem.freq = mem.freq // 10
                 _mem.tx_off = 0 if self.is_tx_allowed(mem.freq) else 1
-                return
 
             _mem.name = mem.name.ljust(8)[:8]
             # scan when set(1) skip when off(0)
