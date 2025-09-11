@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-05 15:28-0700\n"
+"POT-Creation-Date: 2025-09-08 18:10-0700\n"
 "PO-Revision-Date: 2024-11-11 02:28+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language-Team: \n"
@@ -22,19 +22,19 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s 必须在 %(min)i 和 %(max)i 之间"
 
-#: ../wxui/memedit.py:2146
+#: ../wxui/memedit.py:2179
 #, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
 msgstr[0] "%i 个存储并将所有上移"
 
-#: ../wxui/memedit.py:2137
+#: ../wxui/memedit.py:2170
 #, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
 msgstr[0] "%i 个存储"
 
-#: ../wxui/memedit.py:2141
+#: ../wxui/memedit.py:2174
 #, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
@@ -65,7 +65,7 @@ msgstr "（这之前曾经奏效过吗？是新电台吗？使用原厂软件能
 msgid "(none)"
 msgstr "（无）"
 
-#: ../wxui/memedit.py:2538
+#: ../wxui/memedit.py:2571
 #, python-format
 msgid "...and %i more"
 msgstr "...以及其他 %i 个"
@@ -1073,7 +1073,7 @@ msgstr "加拿大"
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "更改此设置需要从映像中刷新设置，这将立即发生。"
 
-#: ../wxui/memedit.py:1783
+#: ../wxui/memedit.py:1816
 #, python-format
 msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr "收发一致的 %s 频道使用 \"%s\" 亚音频模式表示"
@@ -1082,21 +1082,21 @@ msgstr "收发一致的 %s 频道使用 \"%s\" 亚音频模式表示"
 msgid "Chirp Image Files"
 msgstr "CHIRP 映像文件"
 
-#: ../wxui/memedit.py:460
+#: ../wxui/memedit.py:486
 msgid "Choice Required"
 msgstr "需要选择"
 
-#: ../wxui/memedit.py:1762
+#: ../wxui/memedit.py:1795
 #, python-format
 msgid "Choose %s DTCS Code"
 msgstr "选择 %s DTCS 接收代码"
 
-#: ../wxui/memedit.py:1759
+#: ../wxui/memedit.py:1792
 #, python-format
 msgid "Choose %s Tone"
 msgstr "选择 %s 亚音频"
 
-#: ../wxui/memedit.py:1793
+#: ../wxui/memedit.py:1826
 msgid "Choose Cross Mode"
 msgstr "收发使用不同亚音频"
 
@@ -1108,7 +1108,7 @@ msgstr ""
 msgid "Choose a recent model"
 msgstr "选择一个最近的型号"
 
-#: ../wxui/memedit.py:1823
+#: ../wxui/memedit.py:1856
 msgid "Choose duplex"
 msgstr "选择双工"
 
@@ -1178,13 +1178,13 @@ msgstr "关闭文件"
 msgid "Close string value with double-quote (\")"
 msgstr ""
 
-#: ../wxui/memedit.py:2205
+#: ../wxui/memedit.py:2238
 #, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
 msgstr[0] "Cluster %i 个记忆"
 
-#: ../wxui/memedit.py:659
+#: ../wxui/memedit.py:692
 msgid "Comment"
 msgstr "备注"
 
@@ -1196,7 +1196,7 @@ msgstr "与电台通信"
 msgid "Complete"
 msgstr "已完成"
 
-#: ../wxui/memedit.py:141
+#: ../wxui/memedit.py:147
 msgid "Complex or non-standard tone squelch mode (starts the tone mode selection wizard)"
 msgstr "复杂或非标准的亚音频静噪模式（启动亚音频模式选择向导）"
 
@@ -1212,11 +1212,11 @@ msgstr ""
 msgid "Convert to FM"
 msgstr "转换到 FM"
 
-#: ../wxui/memedit.py:2116
+#: ../wxui/memedit.py:2149
 msgid "Copy"
 msgstr "复制"
 
-#: ../wxui/memedit.py:2120
+#: ../wxui/memedit.py:2153
 msgid "Copy portable"
 msgstr ""
 
@@ -1225,7 +1225,7 @@ msgstr ""
 msgid "Country"
 msgstr "国家或地区"
 
-#: ../wxui/memedit.py:642
+#: ../wxui/memedit.py:675
 msgid "Cross Mode"
 msgstr "收发使用不同亚音频"
 
@@ -1237,20 +1237,20 @@ msgstr "自定义端口"
 msgid "Custom..."
 msgstr "自定义..."
 
-#: ../wxui/memedit.py:2111
+#: ../wxui/memedit.py:2144
 msgid "Cut"
 msgstr "剪切"
 
-#: ../wxui/memedit.py:2382
+#: ../wxui/memedit.py:2415
 #, python-format
 msgid "Cut %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:573
+#: ../wxui/memedit.py:606
 msgid "DTCS"
 msgstr "DTCS"
 
-#: ../wxui/memedit.py:619
+#: ../wxui/memedit.py:652
 msgid ""
 "DTCS\n"
 "Polarity"
@@ -1262,7 +1262,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr "DTMF 解码"
 
-#: ../wxui/memedit.py:2830
+#: ../wxui/memedit.py:2863
 msgid "DV Memory"
 msgstr "该存储"
 
@@ -1274,11 +1274,11 @@ msgstr "前方危险"
 msgid "Dec"
 msgstr "探测"
 
-#: ../wxui/memedit.py:2131
+#: ../wxui/memedit.py:2164
 msgid "Delete"
 msgstr "删除"
 
-#: ../wxui/memedit.py:1994
+#: ../wxui/memedit.py:2027
 msgid "Delete memories"
 msgstr ""
 
@@ -1295,15 +1295,15 @@ msgstr "开发者模式"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "开发者状态现在是 %s。CHIRP 必须重新启动才能生效"
 
-#: ../wxui/memedit.py:2242 ../wxui/developer.py:97
+#: ../wxui/memedit.py:2275 ../wxui/developer.py:97
 msgid "Diff Raw Memories"
 msgstr "对比原始存储"
 
-#: ../wxui/memedit.py:2250
+#: ../wxui/memedit.py:2283
 msgid "Diff against another editor"
 msgstr ""
 
-#: ../wxui/memedit.py:2747
+#: ../wxui/memedit.py:2780
 msgid "Digital Code"
 msgstr "数字代码"
 
@@ -1315,7 +1315,7 @@ msgstr "数字模式"
 msgid "Disable reporting"
 msgstr "禁用报告"
 
-#: ../wxui/memedit.py:549
+#: ../wxui/memedit.py:582
 msgid "Disabled"
 msgstr "已禁用"
 
@@ -1369,21 +1369,21 @@ msgstr "驱动程序消息"
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
 msgstr "支持模拟的双模数字中继将显示为 FM"
 
-#: ../wxui/memedit.py:512
+#: ../wxui/memedit.py:545
 msgid "Duplex"
 msgstr "双工"
 
-#: ../wxui/memedit.py:2272
+#: ../wxui/memedit.py:2305
 #, python-format
 msgid "Edit %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2777
+#: ../wxui/memedit.py:2810
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "修改 %i 个存储的详细信息"
 
-#: ../wxui/memedit.py:2775
+#: ../wxui/memedit.py:2808
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "修改存储 %i 的详细信息"
@@ -1392,19 +1392,19 @@ msgstr "修改存储 %i 的详细信息"
 msgid "Enable Automatic Edits"
 msgstr "启用自动编辑"
 
-#: ../wxui/memedit.py:549
+#: ../wxui/memedit.py:582
 msgid "Enabled"
 msgstr "已启用"
 
-#: ../wxui/memedit.py:371
+#: ../wxui/memedit.py:390
 msgid "Enter Frequency"
 msgstr "频率"
 
-#: ../wxui/memedit.py:1810
+#: ../wxui/memedit.py:1843
 msgid "Enter Offset (MHz)"
 msgstr "输入频差（MHz）"
 
-#: ../wxui/memedit.py:1802
+#: ../wxui/memedit.py:1835
 msgid "Enter TX Frequency (MHz)"
 msgstr "输入发射频率（MHz）"
 
@@ -1495,7 +1495,7 @@ msgstr "排除私有和已关闭的中继"
 msgid "Experimental driver"
 msgstr "实验性的驱动程序"
 
-#: ../wxui/memedit.py:2700
+#: ../wxui/memedit.py:2733
 msgid "Export can only write CSV files"
 msgstr "只能导出CSV文件"
 
@@ -1507,7 +1507,7 @@ msgstr "以CSV文件格式导出"
 msgid "Export to CSV..."
 msgstr "以CSV文件格式导出……"
 
-#: ../wxui/memedit.py:2819
+#: ../wxui/memedit.py:2852
 msgid "Extra"
 msgstr "更多"
 
@@ -1867,12 +1867,12 @@ msgstr ""
 "3 - 打开电台\n"
 "4 - 上传电台数据\n"
 
-#: ../wxui/memedit.py:212
+#: ../wxui/memedit.py:224
 #, python-format
 msgid "Found empty list value for %(name)s: %(value)r"
 msgstr "发现 %(name)s 的空列表值：%(value)r"
 
-#: ../wxui/memedit.py:317
+#: ../wxui/memedit.py:336
 msgid "Frequency"
 msgstr "频率"
 
@@ -1881,7 +1881,7 @@ msgstr "频率"
 msgid "Frequency %s is out of supported range"
 msgstr "频率 %s 超出支持范围"
 
-#: ../wxui/memedit.py:145
+#: ../wxui/memedit.py:151
 msgid "Frequency granularity in kHz"
 msgstr "频率粒度（kHz）"
 
@@ -1910,15 +1910,15 @@ msgstr "GMRS"
 msgid "Getting settings"
 msgstr "正在获取设置"
 
-#: ../wxui/memedit.py:1323
+#: ../wxui/memedit.py:1356
 msgid "Goto Memory"
 msgstr "前往存储"
 
-#: ../wxui/memedit.py:1322
+#: ../wxui/memedit.py:1355
 msgid "Goto Memory:"
 msgstr "前往存储："
 
-#: ../wxui/memedit.py:1269
+#: ../wxui/memedit.py:1302
 msgid "Goto..."
 msgstr "前往..."
 
@@ -1934,7 +1934,7 @@ msgstr "帮助我..."
 msgid "Hex"
 msgstr "十六进制"
 
-#: ../wxui/memedit.py:1278
+#: ../wxui/memedit.py:1311
 msgid "Hide empty memories"
 msgstr "隐藏无数据的内容"
 
@@ -1942,7 +1942,7 @@ msgstr "隐藏无数据的内容"
 msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
 msgstr "当启用时，遵守CTCSS/DCS接收静噪配置，否则只有载波静噪"
 
-#: ../wxui/memedit.py:148
+#: ../wxui/memedit.py:154
 msgid "Human-readable comment (not stored in radio)"
 msgstr "人类可读的注释（不存储在电台中）"
 
@@ -1956,7 +1956,7 @@ msgstr "设置后按距离排序"
 msgid "Import"
 msgstr "导入"
 
-#: ../wxui/memedit.py:2418
+#: ../wxui/memedit.py:2451
 #, python-format
 msgid "Import %i memories"
 msgstr ""
@@ -1985,11 +1985,11 @@ msgstr "索引"
 msgid "Info"
 msgstr "信息"
 
-#: ../wxui/memedit.py:1785
+#: ../wxui/memedit.py:1818
 msgid "Information"
 msgstr "信息"
 
-#: ../wxui/memedit.py:2105
+#: ../wxui/memedit.py:2138
 msgid "Insert Row Above"
 msgstr "上方插入一行"
 
@@ -2011,7 +2011,7 @@ msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "无效的 %(value)s（请使用十进制度数）"
 
 #: ../wxui/query_sources.py:69 ../wxui/query_sources.py:123
-#: ../wxui/memedit.py:1948
+#: ../wxui/memedit.py:1981
 msgid "Invalid Entry"
 msgstr "无效项目"
 
@@ -2019,7 +2019,7 @@ msgstr "无效项目"
 msgid "Invalid ZIP code"
 msgstr "无效的邮政编码"
 
-#: ../wxui/memedit.py:1947 ../wxui/memedit.py:2910
+#: ../wxui/memedit.py:1980 ../wxui/memedit.py:2943
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "编辑无效：%s"
@@ -2033,7 +2033,7 @@ msgstr "无效项目"
 msgid "Invalid or unsupported module file"
 msgstr "无效或不支持的模块文件"
 
-#: ../wxui/memedit.py:270 ../wxui/memedit.py:276
+#: ../wxui/memedit.py:282 ../wxui/memedit.py:288
 #, python-format
 msgid "Invalid value: %r"
 msgstr "%r 值无效"
@@ -2141,7 +2141,7 @@ msgstr "Logo 字符串 2（12 个字符）"
 msgid "Longitude"
 msgstr "经度"
 
-#: ../wxui/memedit.py:1960
+#: ../wxui/memedit.py:1993
 #, python-format
 msgid "Manual edit of memory %i"
 msgstr ""
@@ -2154,7 +2154,7 @@ msgstr "存储"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "由于不支持的固件版本，存储是只读的"
 
-#: ../wxui/memedit.py:1989
+#: ../wxui/memedit.py:2022
 #, python-format
 msgid "Memory %i is not deletable"
 msgstr "存储 %i 不能删除"
@@ -2164,7 +2164,7 @@ msgstr "存储 %i 不能删除"
 msgid "Memory field name (one of %s)"
 msgstr ""
 
-#: ../wxui/memedit.py:133
+#: ../wxui/memedit.py:139
 msgid "Memory label (stored in radio)"
 msgstr "存储标签（存储在电台中）"
 
@@ -2178,7 +2178,7 @@ msgid "Memory {num} not in bank {bank}"
 msgstr "存储 {num} 不在存储区 {bank}"
 
 #: ../wxui/query_sources.py:624 ../wxui/query_sources.py:777
-#: ../wxui/memedit.py:628
+#: ../wxui/memedit.py:661
 msgid "Mode"
 msgstr "制式"
 
@@ -2211,20 +2211,20 @@ msgstr "更多信息"
 msgid "More than one port found: %s"
 msgstr "找到多个端口：%s"
 
-#: ../wxui/memedit.py:2638
+#: ../wxui/memedit.py:2671
 #, python-format
 msgid "Move %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:1265
+#: ../wxui/memedit.py:1298
 msgid "Move Down"
 msgstr "下移"
 
-#: ../wxui/memedit.py:1255
+#: ../wxui/memedit.py:1288
 msgid "Move Up"
 msgstr "上移"
 
-#: ../wxui/memedit.py:2608
+#: ../wxui/memedit.py:2641
 msgid "Move operations are disabled while the view is sorted"
 msgstr "排序启用时不能移动"
 
@@ -2236,7 +2236,7 @@ msgstr "创建一个新的窗口"
 msgid "New version available"
 msgstr "有新版本"
 
-#: ../wxui/memedit.py:2289
+#: ../wxui/memedit.py:2322
 msgid "No empty rows below!"
 msgstr "下方已无空行！"
 
@@ -2254,7 +2254,7 @@ msgstr "未找到模块"
 msgid "No modules found in issue %i"
 msgstr "在 issue %i 中未找到模块"
 
-#: ../wxui/memedit.py:2472
+#: ../wxui/memedit.py:2505
 msgid "No more space available; some memories were not applied"
 msgstr "没有更多空间可用；一些存储未应用"
 
@@ -2271,15 +2271,15 @@ msgstr "无结果！"
 msgid "No traces stored"
 msgstr ""
 
-#: ../wxui/query_sources.py:44 ../wxui/memedit.py:1322
+#: ../wxui/query_sources.py:44 ../wxui/memedit.py:1355
 msgid "Number"
 msgstr "编号"
 
-#: ../wxui/memedit.py:313
+#: ../wxui/memedit.py:332
 msgid "Offset"
 msgstr "频差"
 
-#: ../wxui/memedit.py:311
+#: ../wxui/memedit.py:330
 msgid ""
 "Offset/\n"
 "TX Freq"
@@ -2392,7 +2392,7 @@ msgstr "可选：-122.0000"
 msgid "Optional: County, Hospital, etc."
 msgstr "可选：县，医院，等等."
 
-#: ../wxui/memedit.py:2452
+#: ../wxui/memedit.py:2485
 msgid "Overwrite memories?"
 msgstr "要覆盖存储吗？"
 
@@ -2414,7 +2414,7 @@ msgstr "解析"
 msgid "Password"
 msgstr "密码"
 
-#: ../wxui/memedit.py:2125
+#: ../wxui/memedit.py:2158
 msgid "Paste"
 msgstr "粘贴"
 
@@ -2422,26 +2422,26 @@ msgstr "粘贴"
 msgid "Paste external memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2551
+#: ../wxui/memedit.py:2584
 msgid "Paste memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2446
+#: ../wxui/memedit.py:2479
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr "粘贴的存储将覆盖 %s 个现有存储"
 
-#: ../wxui/memedit.py:2449
+#: ../wxui/memedit.py:2482
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr "粘贴的存储将覆盖存储 %s"
 
-#: ../wxui/memedit.py:2443
+#: ../wxui/memedit.py:2476
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr "粘贴的存储将覆盖存储 %s"
 
-#: ../wxui/memedit.py:2440
+#: ../wxui/memedit.py:2473
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr "粘贴的存储将覆盖存储 %s"
@@ -2516,7 +2516,7 @@ msgstr ""
 msgid "Port"
 msgstr "端口"
 
-#: ../wxui/memedit.py:392
+#: ../wxui/memedit.py:411
 msgid "Power"
 msgstr "功率"
 
@@ -2540,7 +2540,7 @@ msgstr "正在打印"
 msgid "Prolific USB device"
 msgstr "Prolific USB 设备"
 
-#: ../wxui/memedit.py:2098
+#: ../wxui/memedit.py:2131
 msgid "Properties"
 msgstr "属性"
 
@@ -2586,7 +2586,7 @@ msgstr ""
 msgid "Querying"
 msgstr "查询 %s"
 
-#: ../wxui/memedit.py:575
+#: ../wxui/memedit.py:608
 msgid "RX DTCS"
 msgstr "DTCS 接收代码"
 
@@ -2624,11 +2624,11 @@ msgstr ""
 "RadioReference.com 是世界上最大的无线电通信数据提供商\n"
 "<small>需要高级账户</small>"
 
-#: ../wxui/memedit.py:139
+#: ../wxui/memedit.py:145
 msgid "Receive DTCS code"
 msgstr "接收 DTCS 代码"
 
-#: ../wxui/memedit.py:132
+#: ../wxui/memedit.py:138
 msgid "Receive frequency"
 msgstr "接收频率"
 
@@ -2644,7 +2644,7 @@ msgstr "最近..."
 msgid "Recommend using 55.2"
 msgstr "建议使用 55.2"
 
-#: ../wxui/memedit.py:983
+#: ../wxui/memedit.py:1016
 msgid "Redo"
 msgstr ""
 
@@ -2665,7 +2665,7 @@ msgstr "重新加载驱动程序"
 msgid "Reload Driver and File"
 msgstr "重新加载驱动程序和文件"
 
-#: ../wxui/memedit.py:1310
+#: ../wxui/memedit.py:1343
 msgid "Reload required"
 msgstr ""
 
@@ -2742,7 +2742,7 @@ msgstr "保存文件"
 msgid "Saved settings"
 msgstr "已保存设置"
 
-#: ../wxui/memedit.py:146
+#: ../wxui/memedit.py:152
 msgid "Scan control (skip, include, priority, etc)"
 msgstr "扫描控制（跳过、包含、优先级等）"
 
@@ -2800,11 +2800,11 @@ msgstr "设置"
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr "由于不支持的固件版本，设置是只读的"
 
-#: ../wxui/memedit.py:144
+#: ../wxui/memedit.py:150
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "由双工控制的移动量（或发射频率）"
 
-#: ../wxui/memedit.py:2234 ../wxui/developer.py:100
+#: ../wxui/memedit.py:2267 ../wxui/developer.py:100
 msgid "Show Raw Memory"
 msgstr "显示原始存储"
 
@@ -2812,7 +2812,7 @@ msgstr "显示原始存储"
 msgid "Show debug log location"
 msgstr "打开调试日志所在文件夹"
 
-#: ../wxui/memedit.py:1274
+#: ../wxui/memedit.py:1307
 msgid "Show extra fields"
 msgstr "显示更多其他内容"
 
@@ -2820,46 +2820,46 @@ msgstr "显示更多其他内容"
 msgid "Show image backup location"
 msgstr "打开镜像备份所在文件夹"
 
-#: ../wxui/memedit.py:650
+#: ../wxui/memedit.py:683
 msgid "Skip"
 msgstr "跳过"
 
-#: ../wxui/memedit.py:2542
+#: ../wxui/memedit.py:2575
 msgid "Some memories are incompatible with this radio"
 msgstr "某些内容与此电台不兼容"
 
-#: ../wxui/memedit.py:2381
+#: ../wxui/memedit.py:2414
 msgid "Some memories are not deletable"
 msgstr "某些内容不可被删除"
 
-#: ../wxui/memedit.py:2060
+#: ../wxui/memedit.py:2093
 #, python-format
 msgid "Sort %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2190
+#: ../wxui/memedit.py:2223
 #, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
 msgstr[0] "将 %i 个存储排序"
 
-#: ../wxui/memedit.py:2194
+#: ../wxui/memedit.py:2227
 #, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
 msgstr[0] "将 %i 个存储升序排列"
 
-#: ../wxui/memedit.py:2216
+#: ../wxui/memedit.py:2249
 #, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
 msgstr[0] "将 %i 个存储降序排列"
 
-#: ../wxui/memedit.py:2075
+#: ../wxui/memedit.py:2108
 msgid "Sort by column:"
 msgstr "排序列："
 
-#: ../wxui/memedit.py:2074
+#: ../wxui/memedit.py:2107
 msgid "Sort memories"
 msgstr "排序存储"
 
@@ -2884,11 +2884,11 @@ msgstr "成功"
 msgid "Successfully sent bug report:"
 msgstr "成功发送错误报告："
 
-#: ../wxui/memedit.py:315
+#: ../wxui/memedit.py:334
 msgid "TX Frequency"
 msgstr ""
 
-#: ../wxui/memedit.py:140
+#: ../wxui/memedit.py:146
 msgid "TX-RX DTCS polarity (normal or reversed)"
 msgstr "发射-接收 DTCS 极性（正常或反转）"
 
@@ -2949,7 +2949,7 @@ msgstr "当从命令行交互式运行 CHIRP 时，调试日志文件不可用�
 msgid "The following information will be submitted:"
 msgstr "将提交以下信息："
 
-#: ../wxui/memedit.py:1306
+#: ../wxui/memedit.py:1339
 msgid "The memory editor requires a reload in order to change the workflow. That will happen now. Any other open tabs will be updated the next time they are loaded."
 msgstr ""
 
@@ -2958,7 +2958,7 @@ msgstr ""
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr "导入存储的推荐方法是打开源文件，然后将存储从源文件复制/粘贴到目标镜像中。如果继续使用此导入功能，CHIRP 将使用 %(file)s 中的存储替换当前打开文件中的所有存储。您想要打开此文件以复制/粘贴记忆，还是继续导入？"
 
-#: ../wxui/memedit.py:2151
+#: ../wxui/memedit.py:2184
 msgid "This Memory"
 msgstr "该内容"
 
@@ -3021,11 +3021,11 @@ msgstr ""
 msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
 msgstr "这是 chirpmyradio.com 网站上已创建问题的票号"
 
-#: ../wxui/memedit.py:2155
+#: ../wxui/memedit.py:2188
 msgid "This memory and shift all up"
 msgstr "此存储并上移所有"
 
-#: ../wxui/memedit.py:2153
+#: ../wxui/memedit.py:2186
 msgid "This memory and shift block up"
 msgstr "此存储并上移区块"
 
@@ -3058,47 +3058,47 @@ msgstr "此工具将向 CHIRP 跟踪器上的现有问题上传有关您的系�
 msgid "This will load a module from a website issue"
 msgstr "这将从网站 issue 中加载一个模块"
 
-#: ../wxui/memedit.py:478
+#: ../wxui/memedit.py:511
 msgid "Tone"
 msgstr "亚音频"
 
-#: ../wxui/memedit.py:1367
+#: ../wxui/memedit.py:1400
 msgid "Tone Mode"
 msgstr "亚音频制式"
 
-#: ../wxui/memedit.py:480
+#: ../wxui/memedit.py:513
 msgid "Tone Squelch"
 msgstr "亚音频静噪"
 
-#: ../wxui/memedit.py:134
+#: ../wxui/memedit.py:140
 msgid "Tone squelch mode"
 msgstr "亚音频静噪模式"
 
-#: ../wxui/memedit.py:147
+#: ../wxui/memedit.py:153
 msgid "Transmit Power"
 msgstr "发射功率"
 
-#: ../wxui/memedit.py:143
+#: ../wxui/memedit.py:149
 msgid "Transmit shift, split mode, or transmit inhibit"
 msgstr "频差发射、分频模式或发射禁止"
 
-#: ../wxui/memedit.py:135
+#: ../wxui/memedit.py:141
 msgid "Transmit tone"
 msgstr "发射亚音频"
 
-#: ../wxui/memedit.py:138
+#: ../wxui/memedit.py:144
 msgid "Transmit/receive DTCS code for DTCS mode, else transmit code"
 msgstr "DTCS 模式下的发射/接收 DTCS 代码，否则为发射代码"
 
-#: ../wxui/memedit.py:137
+#: ../wxui/memedit.py:143
 msgid "Transmit/receive modulation (FM, AM, SSB, etc)"
 msgstr "发射/接收调制方式（FM、AM、SSB 等）"
 
-#: ../wxui/memedit.py:136
+#: ../wxui/memedit.py:142
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
 msgstr "TSQL 模式下的发射/接收亚音频，否则为接收亚音频"
 
-#: ../wxui/memedit.py:422 ../wxui/memedit.py:1379
+#: ../wxui/memedit.py:448 ../wxui/memedit.py:1412
 msgid "Tuning Step"
 msgstr "调谐间隔"
 
@@ -3115,7 +3115,7 @@ msgstr "USB 端口查找器"
 msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr "无法确定您的电缆端口。检查您的驱动程序和连接。"
 
-#: ../wxui/memedit.py:1868
+#: ../wxui/memedit.py:1901
 msgid "Unable to edit memory before radio is loaded"
 msgstr "无法在加载电台之前编辑存储器"
 
@@ -3124,7 +3124,7 @@ msgstr "无法在加载电台之前编辑存储器"
 msgid "Unable to find stock config %r"
 msgstr "无法找到预设配置 %r"
 
-#: ../wxui/memedit.py:2398
+#: ../wxui/memedit.py:2431
 msgid "Unable to import while the view is sorted"
 msgstr "无法在视图排序时导入"
 
@@ -3146,7 +3146,7 @@ msgstr "无法读取最后一个块。这通常发生在所选模型为美国，
 msgid "Unable to reveal %s on this system"
 msgstr "无法在此系统上显示 %s"
 
-#: ../wxui/memedit.py:248
+#: ../wxui/memedit.py:260
 #, python-format
 msgid "Unable to set %s on this memory"
 msgstr "无法在此内容上设置 %s"
@@ -3155,7 +3155,7 @@ msgstr "无法在此内容上设置 %s"
 msgid "Unable to upload this file"
 msgstr "无法上传此文件"
 
-#: ../wxui/memedit.py:982
+#: ../wxui/memedit.py:1015
 msgid "Undo"
 msgstr ""
 
@@ -3167,7 +3167,7 @@ msgstr "美国"
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "拔掉您的电缆（如果需要）然后点击确定"
 
-#: ../drivers/thd74.py:329
+#: ../drivers/thd74.py:330
 #, python-format
 msgid "Unsupported model %r"
 msgstr "不支持的型号 %r"
@@ -3202,7 +3202,7 @@ msgstr "上传到电台……"
 msgid "Uploaded memory %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1282
+#: ../wxui/memedit.py:1315
 msgid "Use TX Frequency Workflow"
 msgstr ""
 
@@ -3246,7 +3246,7 @@ msgstr "数值必须为零或更大"
 msgid "Value to search memory field for"
 msgstr ""
 
-#: ../wxui/memedit.py:2810
+#: ../wxui/memedit.py:2843
 msgid "Values"
 msgstr "数值"
 
@@ -3262,11 +3262,12 @@ msgstr "查看"
 msgid "WARNING!"
 msgstr "警告！"
 
-#: ../wxui/bugreport.py:230 ../wxui/memedit.py:1954 ../wxui/main.py:2032
+#: ../wxui/bugreport.py:230 ../wxui/memedit.py:1987 ../wxui/main.py:1880
+#: ../wxui/main.py:2032
 msgid "Warning"
 msgstr "警告"
 
-#: ../wxui/memedit.py:1953
+#: ../wxui/memedit.py:1986
 #, python-format
 msgid "Warning: %s"
 msgstr "警告：%s"
