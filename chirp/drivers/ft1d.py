@@ -1,4 +1,4 @@
-# Copyright 2010 Dan Smith <dsmith@danplanet.com>
+#Copyright 2010 Dan Smith <dsmith@danplanet.com>
 # Copyright 2014 Angus Ainslie <angus@akkea.ca>
 # Copyright 2023,2025 Declan Rieb <WD5EQY@arrl.net>
 # Sections of digital settings applied from ft70.py, thus
@@ -1908,13 +1908,12 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             cname = f"WiresX_settings.Category[{i}].name"
             c = str(wxc.Category[i].name).rstrip('\xff').ljust(16)
             val = RadioSettingValueString(0, 16, c)
-            rs = RadioSetting(cname, f"Category {i+1: 2d}", val)
+            rs = RadioSetting(cname, f"Category {i+1: 2d} Name", val)
             WXmenu.append(rs)
 
             WXCmenu = RadioSettingSubGroup(
-                        f"WiresX_settings.Category[{i}]."
-                        f"RoomsPerCategory",
-                        f"*** Category{i + 1} Rooms ***")
+                        f"WiresX_settings.Category[{i}].RoomsPerCategory",
+                        f"*** Category {i + 1} Rooms ***")
             WXmenu.append(WXCmenu)
 
             r = wxc.RoomsPerCategory[i]
@@ -1924,14 +1923,14 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 cname = f"WiresX_settings.RoomsPerCategory[{i}]."\
                     f"Rooms[{j}].name"
                 dname = f"Category {i + 1} Room{j + 1: 02d}"
-                rs = RadioSetting(cname, dname, val)
-
+                rs = RadioSetting(cname, dname + ' Description', val)
                 WXCmenu.append(rs)
+
                 idn = str(r.Rooms[j].ID).strip('\xff').ljust(5)
                 val = RadioSettingValueString(0, 5, idn)
                 vname = f"WiresX_settings.RoomsPerCategory[{i}]."\
                     f"Rooms[{j}].ID"
-                rs = RadioSetting(vname, f"        YSF ID{j + 1} (5 digits)",
+                rs = RadioSetting(vname, dname + ' YSF Number (5 digits)',
                                   val)
                 WXCmenu.append(rs)
             pass
