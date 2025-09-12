@@ -1908,12 +1908,11 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             cname = f"WiresX_settings.Category[{i}].name"
             c = str(wxc.Category[i].name).rstrip('\xff').ljust(16)
             val = RadioSettingValueString(0, 16, c)
-            rs = RadioSetting(cname, f"Category {i+1: 2d}", val)
+            rs = RadioSetting(cname, f"Category {i+1: 2d} Name", val)
             WXmenu.append(rs)
 
             WXCmenu = RadioSettingSubGroup(
-                        f"WiresX_settings.Category[{i}]."
-                        f"RoomsPerCategory",
+                        f"WiresX_settings.Category[{i}].RoomsPerCategory",
                         f"*** Category{i + 1} Rooms ***")
             WXmenu.append(WXCmenu)
 
@@ -1924,14 +1923,13 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 cname = f"WiresX_settings.RoomsPerCategory[{i}]."\
                     f"Rooms[{j}].name"
                 dname = f"Category {i + 1} Room{j + 1: 02d}"
-                rs = RadioSetting(cname, dname, val)
+                rs = RadioSetting(cname, dname + ' Designation', val)
 
                 WXCmenu.append(rs)
                 idn = str(r.Rooms[j].ID).strip('\xff').ljust(5)
                 val = RadioSettingValueString(0, 5, idn)
-                vname = f"WiresX_settings.RoomsPerCategory[{i}]."\
-                    f"Rooms[{j}].ID"
-                rs = RadioSetting(vname, f"        YSF ID{j + 1} (5 digits)",
+                vname = f"WiresX_settings.RoomsPerCategory[{i}].Rooms[{j}].ID"
+                rs = RadioSetting(vname, dname + " YSF Number (5 digits)",
                                   val)
                 WXCmenu.append(rs)
             pass
