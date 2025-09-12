@@ -812,51 +812,6 @@ class FT1BankModel(chirp_common.BankModel,
         _members = self._radio._memobj.bank_members[bank.index]
         return set([int(ch) + 1 for ch in _members.channel if ch != 0xFFFF])
 
-    def update_vfo(self):
-        chosen_bank = [None, None]
-        chosen_mr = [None, None]
-
-        flags = self._radio._memobj.flag
-
-        # Find a suitable bank and MR for VFO A and B.
-        for bank in self.get_mappings():
-            for channel in self._channel_numbers_in_bank(bank):
-                chosen_bank[0] = bank.index
-                chosen_mr[0] = channel
-                if channel & 0x7000 != 0:
-                    # Ignore preset channels without comment DAR
-                    break
-                if not flags[channel].nosubvfo:
-                    chosen_bank[1] = bank.index
-                    chosen_mr[1] = channel
-                    break
-            if chosen_bank[1]:
-                break
-
-        for vfo_index in (0, 1):
-            # 3 VFO info structs are stored as 3 pairs of (master, backup)
-            vfo = self._radio._memobj.vfo_info[vfo_index * 2]
-            vfo_bak = self._radio._memobj.vfo_info[(vfo_index * 2) + 1]
-
-            if vfo.checksum != vfo_bak.checksum:
-                LOG.warn("VFO settings are inconsistent with backup")
-            else:
-                if ((chosen_bank[vfo_index] is None) and (vfo.bank_index !=
-                                                          0xFFFF)):
-                    LOG.info("Disabling banks for VFO %d" % vfo_index)
-                    vfo.bank_index = 0xFFFF
-                    vfo.mr_index = 0xFFFF
-                    vfo.bank_enable = 0xFFFF
-                elif ((chosen_bank[vfo_index] is not None) and
-                      (vfo.bank_index == 0xFFFF)):
-                    LOG.info("Enabling banks for VFO %d" % vfo_index)
-                    vfo.bank_index = chosen_bank[vfo_index]
-                    vfo.mr_index = chosen_mr[vfo_index]
-                    vfo.bank_enable = 0x0000
-                vfo_bak.bank_index = vfo.bank_index
-                vfo_bak.mr_index = vfo.mr_index
-                vfo_bak.bank_enable = vfo.bank_enable
-
     def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
         _members = self._radio._memobj.bank_members[bank.index]
         if len(channels_in_bank) > len(_members.channel):
@@ -866,14 +821,16 @@ class FT1BankModel(chirp_common.BankModel,
         for index, channel_number in enumerate(sorted(channels_in_bank)):
             _members.channel[index] = channel_number - 1
             if channel_number & 0x7000 != 0:
-                LOG.warn("Bank %d uses Yaesu preset frequency id=%04X. "
+                LOG.warning("Bank %d uses Yaesu preset frequency id=%04X. "
                          "Chirp cannot see or change that entry." % (
                              bank.index, channel_number))
             empty = index + 1
         for index in range(empty, len(_members.channel)):
             _members.channel[index] = 0xFFFF
 
-    def add_memory_to_mapping(self, memory, bank):
+    def add_memory_to_mapping(self,
+                               memory: chirp_common.Memory,
+                               bank) -> None:
         channels_in_bank = self._channel_numbers_in_bank(bank)
         channels_in_bank.add(memory.number)
         self._update_bank_with_channel_numbers(bank, channels_in_bank)
@@ -881,9 +838,9 @@ class FT1BankModel(chirp_common.BankModel,
         _bank_used = self._radio._memobj.bank_used[bank.index]
         _bank_used.in_use = 0x06
 
-        self.update_vfo()
-
-    def remove_memory_from_mapping(self, memory, bank):
+    def remove_memory_from_mapping(self,
+                                   memory: chirp_common.Memory,
+                                   bank) -> None:
         channels_in_bank = self._channel_numbers_in_bank(bank)
         try:
             channels_in_bank.remove(memory.number)
@@ -895,8 +852,6 @@ class FT1BankModel(chirp_common.BankModel,
         if not channels_in_bank:
             _bank_used = self._radio._memobj.bank_used[bank.index]
             _bank_used.in_use = 0xFFFF
-
-        self.update_vfo()
 
     def get_mapping_memories(self, bank):
         memories = []
@@ -928,6 +883,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     _memsize = 130507
     _block_lengths = [10, 130497]
     _block_size = 32
+    _first_preset = None
     MAX_MEM_SLOT = 900
     _mem_params = {
          "memnum": 900,            # size of memories array
@@ -1240,6 +1196,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.immutable += ["empty", "number", "extd_number", "skip"]
         elif array == "Presets":
             # read data from specific YAESU_PRESETS (returned as _mem)
+            if not self._first_preset:
+                self._first_preset = mem.number
             mem.empty = False
             mem.extd_number = ename
             mem.name = _mem[1]
@@ -1248,13 +1206,9 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.duplex = _mem[4]
             mem.offset = _mem[5]
             mem.comment = _mem[6]
-            # DAR mem.immutable += ["empty", "number", "extd_number", "freq",
-            # DAR                   "mode", "duplex", "offset", "comment"]
-            # Must define extra fields, even if not used here
-            mem.extra = RadioSettingGroup('Extra', 'extra')
-            rs = RadioSetting('ysf_ams', 'AMS mode',
-                              RadioSettingValueBoolean(False))
-            mem.extra.append(rs)
+            mem.immutable += ["empty", "number", "extd_number", "freq",
+                              "mode", "duplex", "offset", "comment"]
+            self._get_mem_extra(mem, False)
             # No further processing needed for presets
             return mem
         elif array != "memory":
@@ -1295,10 +1249,10 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             self._get_mem_extra(mem, _mem)
         return mem
 
-    def _get_mem_extra(self, mem, _mem):
+    def _get_mem_extra(self, mem: chirp_common.Memory, _mem: object | bool):
         mem.extra = RadioSettingGroup('Extra', 'extra')
 
-        ams = _mem.digmode == 1
+        ams = _mem if isinstance(_mem, bool) else _mem.digmode == 1
         rs = RadioSetting('ysf_ams', 'AMS mode',
                           RadioSettingValueBoolean(ams))
         mem.extra.append(rs)
