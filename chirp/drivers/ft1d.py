@@ -32,8 +32,9 @@ from chirp import util
 
 LOG = logging.getLogger(__name__)
 
-MEM_SETTINGS_FORMAT = """
-#seekto 0x047e;
+SETTINGS_FORMAT = """
+// Settings
+#seekto 0x047E;
 struct {
   u8 unknown1;
   u8 flag;
@@ -43,18 +44,41 @@ struct {
   } message;
 } opening_message;
 
-#seekto 0x049a;
+// Settings
+#seekto 0x049A;
 struct {
   u8 vfo_a;
   u8 vfo_b;
 } squelch;
 
-#seekto 0x04c1;
+// GM / Digital
+#seekto 0x04BA;
 struct {
-  u8 beep;
-} beep_select;
+    u8 unknown:3,
+        scan_resume:5;          // 52 SCN.RSM
+    u8 unknown1:3,
+       dw_resume_interval:5;       // 22 DW RSM
+    u8 unknown2;
+    u8 unknown3:3,
+        apo:5;                  // 02 APO
+    u8 unknown4:6,
+        gm_ring:2;              // 24 GM RNG
+    u8 temp_cf;               // Placeholder as not found
+    } first_settings;
 
-#seekto 0x04ce;
+// GM / Digital
+// already at 0x04c0;
+// Caution: overloaded at 04c1! Code change necessary
+// Old = beep_select.beep, new is beep_settings.beep_select.
+struct {
+    u8 unknown1:5,
+        beep_level:3;           // 05 BEP.LVL
+    u8 unknown2:6,
+        beep_select:2;          // 04 BEEP
+    } beep_settings;
+
+// Settings
+#seekto 0x04CE;
 struct {
   u8 lcd_dimmer;        // 14 DIMMER
   u8 dtmf_delay;        // 18 DT DLY
@@ -102,12 +126,14 @@ struct {
      dw_rt:1;           // 23 DW RVT;
 } scan_settings;
 
-#seekto 0x54a;
+// Settings
+#seekto 0x054A;
 struct {
     u16 in_use;
 } bank_used[24];
 
-#seekto 0x064a;
+// Settings
+#seekto 0x064A;
 struct {
   u8 unknown0[4];
   u8 frequency_band;
@@ -151,33 +177,34 @@ struct {
   u8 checksum;
 } vfo_info[6];
 
+// Settings
 #seekto 0x%(dtmadd)04X; // FT-1D:0e4a, FT2D:094a
 struct {
   u8 memory[16];
 } dtmf[10];
 
+// Settings
 #seekto 0x0EFE;
 struct {
   u8 unknown[2];
   u8 name[16];
 } bank_info[24];
-
-#seekto 0x154a;
-// These "channels" seem to actually be a structure:
-//  first five bits are flags
-//      0   Unused (1=entry is unused)
-//      1   SW Broadcast
-//      2   VHF Marine
-//      3   WX (weather)
-//      4   ? a mode? ?
-//  11 bits of index into frequency tables
-//
-struct {
-    u16 channel[100];
-} bank_members[24];
 """
 
 MEM_FORMAT = """
+// This FORMAT is used in FT-xD, FTM-3200D and FTM-7250D
+// It relies on defined integer for memnum (number of memories)
+// Memory: memory-flags structure used in Yaesu FT-xD, et. al.
+struct flagslot {
+  u8 nosubvfo:1,
+     unknown:3,
+     pskip:1,
+     skip:1,
+     used:1,
+     valid:1;
+};
+
+// Memory: memory structure used in FT-xD
 struct memslot {
   u8 unknown0:2,
      mode_alt:1,  // mode for FTM-3200D
@@ -204,29 +231,42 @@ struct memslot {
      automode:1,
      unknown9:3;
 };
+
+// Memory       n.b., Unneeded for FTM-3200 and FTM-7250, but needs memslot
+#seekto 0x10CA;
+struct memslot Home[11];
+
+// Settings     n.b., these are unused in FTM-3200 and FTM-7250,
+//              But are needed for spacing!
+#seekto 0x154A;
+// These "channels" seem to actually be a structure:
+//  first five bits are flags
+//      0   Unused (1=entry is unused)
+//      1   SW Broadcast
+//      2   VHF Marine
+//      3   WX (weather)
+//      4   ? a mode? ?
+//  11 bits of index into frequency tables
+//
+struct {
+    u16 channel[100];
+} bank_members[24];
+
+// Memory: had unneeded 0x280A
+struct flagslot flag[%(memnum)d];
+struct flagslot flagskp[99];
+struct flagslot flagPMS[100];
+
+// Memory
 #seekto 0x2D4A;
 struct memslot memory[%(memnum)d];
 struct memslot Skip[99];
 struct memslot PMS[100];
-#seekto 0x10ca;
-struct memslot Home[11];
-
-struct flagslot {
-  u8 nosubvfo:1,
-     unknown:3,
-     pskip:1,
-     skip:1,
-     used:1,
-     valid:1;
-};
-#seekto 0x280A;
-struct flagslot flag[%(memnum)d];
-struct flagslot flagskp[99];
-struct flagslot flagPMS[100];
 """
 
-MEM_APRS_FORMAT = """
-#seekto 0xbeca;
+DIGITAL_FORMAT = """
+// APRS
+#seekto 0xBECA;
 struct {
   u8 rx_baud;
   u8 custom_symbol;
@@ -344,11 +384,75 @@ struct {
      vibrate_bln:6;
 } aprs;
 
-#seekto 0xc26a;
+// APRS
+#seekto 0xC26A;
 struct {
   char padded_string[60];
 } aprs_beacon_status_txt[5];
 
+// GM / Digital
+#seekto 0xCED0;
+struct {
+    char callsign[10];              // 63 MYCALL
+    u16 charset;                    // character set ID
+    } my_call;
+
+// GM / Digital
+#seekto 0xCF30;
+struct {
+    u8 unknown0;
+    u8 unknown1;
+    u8 unknown2;
+    u8 unknown3;
+    u8 unknown4;
+    u8 unknown5;
+    u8 unknown6;
+    u8 digital_popup;              // 15 DIG.POP
+    } digital_settings_more;
+
+// GM / Digital
+#seekto 0xCF7C;
+struct {
+    u8 unknown0:6,
+       ams_tx_mode:2;              // AMS TX Mode
+    u8 unknown1;
+    u8 unknown2:7,
+       standby_beep:1;             // 07 BEP.STB
+    u8 unknown3;
+    u8 unknown4:6,
+       gm_ring:2;                  // 24 GM RNG
+    u8 unknown5;
+    u8 rx_dg_id;                   // RX DG-ID
+    u8 tx_dg_id;                   // TX DG-ID
+    u8 unknown6:7,
+       vw_mode:1;                  // 16 DIG VW
+    u8 unknown7;
+    } digital_settings;
+
+// Backtrack
+#seekto 0xDF06;
+struct {
+  u8 status; // 01 full 08 empty
+  u8 reserved0; // 00
+  bbcd year; // 17
+  bbcd mon; // 06
+  bbcd day; // 01
+  u8 reserved1; // 06
+  bbcd hour; // 21
+  bbcd min; // xx
+  u8 reserved2; // 00
+  u8 reserved3; // 00
+  char NShemi[1];
+  char lat[3];
+  char lat_min[2];
+  char lat_dec_sec[4];
+  char WEhemi[1];
+  char lon[3];
+  char lon_min[2];
+  char lon_dec_sec[4];
+} backtrack[3];
+
+// APRS
 #seekto 0xFECA;
 struct {
   bbcd date[3];
@@ -371,7 +475,7 @@ struct {
   u16 unknown10;
 } aprs_beacon_meta[60];
 
-#seekto 0x1064A;
+// APRS Had unneeded 0x10641
 struct {
   char dst_callsign[9];
   char path[30];
@@ -380,7 +484,8 @@ struct {
   char body[134];
 } aprs_beacon_pkt[60];
 
-#seekto 0x137c4;
+// APRS
+#seekto 0x137C4;
 struct {
   u8 flag;
   char dst_callsign[6];
@@ -388,110 +493,15 @@ struct {
   char path_and_body[66];
   u8 unknown[70];
 } aprs_message_pkt[60];
-"""
 
-MEM_BACKTRACK_FORMAT = """
-#seekto 0xdf06;
-struct {
-  u8 status; // 01 full 08 empty
-  u8 reserved0; // 00
-  bbcd year; // 17
-  bbcd mon; // 06
-  bbcd day; // 01
-  u8 reserved1; // 06
-  bbcd hour; // 21
-  bbcd min; // xx
-  u8 reserved2; // 00
-  u8 reserved3; // 00
-  char NShemi[1];
-  char lat[3];
-  char lat_min[2];
-  char lat_dec_sec[4];
-  char WEhemi[1];
-  char lon[3];
-  char lon_min[2];
-  char lon_dec_sec[4];
-} backtrack[3];
-
-"""
-
-MEM_GM_FORMAT = """
-#seekto 0x04ba;
-struct {
-    u8 unknown:3,
-        scan_resume:5;          // 52 SCN.RSM
-    u8 unknown1:3,
-       dw_resume_interval:5;       // 22 DW RSM
-    u8 unknown2;
-    u8 unknown3:3,
-        apo:5;                  // 02 APO
-    u8 unknown4:6,
-        gm_ring:2;              // 24 GM RNG
-    u8 temp_cf;               // Placeholder as not found
-    } first_settings;
-
-#seekto 0x04c0;
-struct {
-    u8 unknown1:5,
-        beep_level:3;           // 05 BEP.LVL
-    u8 unknown2:6,
-        beep_select:2;          // 04 BEEP
-    } beep_settings;
-
-#seekto 0x04ed;
-struct {
-    u8 unknown1:1,
-       unknown2:1,
-       unknown3:1,
-       unknown4:1,
-       unknown5:1,
-       unknown6:1,
-       unknown7:1,
-       unknown8:1;
-     } test_bit_field;
-
-#seekto 0x0ced0;
-struct {
-    char callsign[10];              // 63 MYCALL
-    u16 charset;                    // character set ID
-    } my_call;
-
-#seekto 0xCF30;
-struct {
-    u8 unknown0;
-    u8 unknown1;
-    u8 unknown2;
-    u8 unknown3;
-    u8 unknown4;
-    u8 unknown5;
-    u8 unknown6;
-    u8 digital_popup;              // 15 DIG.POP
-    } digital_settings_more;
-
-#seekto 0xCF7C;
-struct {
-    u8 unknown0:6,
-       ams_tx_mode:2;              // AMS TX Mode
-    u8 unknown1;
-    u8 unknown2:7,
-       standby_beep:1;             // 07 BEP.STB
-    u8 unknown3;
-    u8 unknown4:6,
-       gm_ring:2;                  // 24 GM RNG
-    u8 unknown5;
-    u8 rx_dg_id;                   // RX DG-ID
-    u8 tx_dg_id;                   // TX DG-ID
-    u8 unknown6:7,
-       vw_mode:1;                  // 16 DIG VW
-    u8 unknown7;
-    } digital_settings;
-
-#seekto 0x1d6d3;
+// GM / Digital
+#seekto 0x1D6D3;
 struct {
     char message[32];
     } GM[10];
 
-#seekto 0x1ddca;
+// GM / Digital
+#seekto 0x1DDCA;
 struct {
     struct {
         char name[16];
@@ -506,7 +516,8 @@ struct {
 } WiresX_settings;
 """
 
-MEM_CHECKSUM_FORMAT = """
+CHECKSUM_FORMAT = """
+// Checksum
 #seekto 0x1FDC9;
 u8 checksum;
 """
@@ -903,9 +914,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return rp
 
     def process_mmap(self):
-        mem_format = MEM_SETTINGS_FORMAT + MEM_FORMAT + MEM_APRS_FORMAT + \
-                MEM_GM_FORMAT + MEM_BACKTRACK_FORMAT + MEM_CHECKSUM_FORMAT
-        self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
+        _mf = SETTINGS_FORMAT + MEM_FORMAT + DIGITAL_FORMAT + CHECKSUM_FORMAT
+        self._memobj = bitwise.parse(_mf % self._mem_params, self._mmap)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -2032,12 +2042,12 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("scan_settings.lamp", "Lamp", val)
         menu.append(rs)
 
-        beep_select = self._memobj.beep_select
+        beep_select = self._memobj.beep_settings.beep_select
 
         val = RadioSettingValueList(
             self._BEEP_SELECT,
-            current_index=beep_select.beep)
-        rs = RadioSetting("beep_select.beep", "Beep Select", val)
+            current_index=beep_select)
+        rs = RadioSetting("beep_settings.beep_select", "Beep Select", val)
         menu.append(rs)
 
         opening_message = self._memobj.opening_message
