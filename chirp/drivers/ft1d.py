@@ -949,8 +949,9 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 yaesu_clone.YaesuChecksum(0x0000, 0x1FDC9)]
 
     @staticmethod
-    def _add_ff_pad(val, length):
-        return val.ljust(length, b"\xFF")[:length]
+    def _add_ff_pad(val: str, length: int) -> str:
+        _fill = b'\xff' if isinstance(val, bytes | bytearray) else '\xff'
+        return val.ljust(length, _fill)[:length]
 
     @classmethod
     def _strip_ff_pads(cls, messages):
@@ -2064,7 +2065,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return menu
 
-    def _decode_opening_message(self, opening_message):
+    def _decode_opening_message(self, opening_message) -> RadioSetting:
         msg = ""
         for i in opening_message.message.padded_yaesu:
             if i == 0xFF:
@@ -2072,7 +2073,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             msg += CHARSET[i & 0x7F]
         val = RadioSettingValueString(0, 16, msg)
         rs = RadioSetting("opening_message.message.padded_yaesu",
-                          "Opening Message", val)
+                          "Opening Message (16 chars)", val)
         rs.set_apply_callback(self.apply_ff_padded_yaesu,
                               opening_message.message)
         return rs
@@ -2419,7 +2420,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     def apply_ff_padded_string(cls, setting, obj):
         # FF pad.
         val = setting.value.get_value()
-        max_len = getattr(obj, "padded_string").size() / 8
+        max_len = getattr(obj, "padded_string").size() // 8
         val = str(val).rstrip()
         setattr(obj, "padded_string", cls._add_ff_pad(val, max_len))
 
@@ -2473,13 +2474,13 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                     LOG.error("Setting %s is not in the memory map: %s" %
                               (element.get_name(), e))
             except Exception:
-                LOG.debug(element.get_name())
+                LOG.debug(f'Trouble setting "{element.get_name()}"')
                 raise
 
     def apply_ff_padded_yaesu(cls, setting, obj):
         # FF pad yaesus custom string format.
         rawval = setting.value.get_value()
-        max_len = getattr(obj, "padded_yaesu").size() / 8
+        max_len = getattr(obj, "padded_yaesu").size() // 8
         rawval = str(rawval).rstrip()
         val = [CHARSET.index(x) for x in rawval]
         for x in range(len(val), max_len):
