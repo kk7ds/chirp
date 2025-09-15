@@ -2529,37 +2529,37 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def apply_bt_lat(cls, setting, obj):
         val = setting.value.get_value()
-        val = cls.backtrack_zero_pad(val, 3)
+        val = cls.zero_pad(val, 3)
 
         setattr(obj, "lat", val)
 
     def apply_bt_lat_min(cls, setting, obj):
         val = setting.value.get_value()
-        val = cls.backtrack_zero_pad(val, 2)
+        val = cls.zero_pad(val, 2)
 
         setattr(obj, "lat_min", val)
 
     def apply_bt_lat_dec_sec(cls, setting, obj):
         val = setting.value.get_value()
-        val = cls.backtrack_zero_pad(val, 4)
+        val = cls.zero_pad(val, 4)
 
         setattr(obj, "lat_dec_sec", val)
 
     def apply_bt_lon(cls, setting, obj):
         val = setting.value.get_value()
-        val = cls.backtrack_zero_pad(val, 3)
+        val = cls.zero_pad(val, 3)
 
         setattr(obj, "lon", val)
 
     def apply_bt_lon_min(cls, setting, obj):
         val = setting.value.get_value()
-        val = cls.backtrack_zero_pad(val, 2)
+        val = cls.zero_pad(val, 2)
 
         setattr(obj, "lon_min", val)
 
     def apply_bt_lon_dec_sec(cls, setting, obj):
         val = setting.value.get_value()
-        val = cls.backtrack_zero_pad(val, 4)
+        val = cls.zero_pad(val, 4)
 
         setattr(obj, "lon_dec_sec", val)
 
