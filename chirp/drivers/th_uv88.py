@@ -24,7 +24,7 @@ from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettingValueFloat, RadioSettings
+    RadioSettingValueFloat, RadioSettings, RadioSettingValueMap
 
 LOG = logging.getLogger(__name__)
 
@@ -113,15 +113,33 @@ struct {
   u8 bitmap[26];    // one bit for each channel skipped
 } chan_skip;
 
+#seekto 0x1680;
+struct {
+  ul32 vhfRxLo;
+  ul32 vhfRxUp;
+  ul32 vhfTxLo;
+  ul32 vhfTxUp;
+  ul32 200RxLo;
+  ul32 200RxUp;
+  ul32 200TxLo;
+  ul32 200TxUp;
+  ul32 uhfRxLo;
+  ul32 uhfRxUp;
+  ul32 uhfTxLo;
+  ul32 uhfTxUp;
+} RxTxLimits;
+
+
 #seekto 0x191E;
 struct {
   u8 unk1:4,              //
      region:4;            // 0x191E Radio Region (read only)
                           // 0 = Unlocked  TX: 136-174 MHz / 400-480 MHz
-                          // 2-3 = Unknown
+                          // 1-2 = Unknown
                           // 3 = EU        TX: 144-146 MHz / 430-440 MHz
                           // 4 = US        TX: 144-148 MHz / 420-450 MHz
-                          // 5-15 = Unknown
+                          // 5-14 = Unknown
+                          // 15 = Factory unlocked state 0xFF
 } settings2;
 
 #seekto 0x1940;
@@ -140,7 +158,7 @@ struct chname chan_name[200]; // CHAN_NUM
 #seekto 0x2180;
 struct fm_chn fm_stations[24];
 
-// #seekto 0x021E0;
+// #seekto 0x21E0;
 struct {
   u8  fmset[4];
 } fmmap;
@@ -214,54 +232,68 @@ struct {
      sideKey1:4;          //        side key 1
   u8 sideKey2_long:4,     // 0x1161 side key 2 Long
      sideKey1_long:4;     //        side key 1 Long
-  u8 unknownBytes[9];     // 0x1162 - 0x116A
+  u8 unk1;                //
+  u8 dwchan;              // 0x1163 Dual Wait channel select, P2/62 only
+  u8 unk2:4,              //
+     hndTm:4;             // 0x1164 Hand Time seconds, P2/62 only
+  u8 unk3;                // 0x1165
+  u8 unk4;                // 0x1166
+  u8 unk5;                // 0x1167
+  u8 unk6;                // 0x1168
+  u8 unk7;                // 0x1169
+  u8 unk8:4,              //
+     micLev:4;            // 0x116A Mic Gain, 1-8, RA89 only
   u8 manDownTm:4,         // 0x116B manDown Tm
-     unk15:3,             //
+     unk9:3,              //
      manDownSw:1;         //        manDown Sw
   u8 offFreqVoltage : 3,  // 0x116C unknown referred to in code but not on
                           //        screen
-     unk1:1,              //
+     unk10:1,             //
      sqlLevel : 4;        //        [05] *OFF, 1-9
-  u8 beep : 1,             // 0x116D [09] *OFF, On
+  u8 beep : 1,            // 0x116D [09] *OFF, On
      callKind : 2,        //        code says 1750,2100,1000,1450 as options
                           //        not on screen
      introScreen: 2,      //        [20] *OFF, Voltage, Char String
-     unk2:2,              //
-     txChSelect : 1;      //        [02] *Last CH, Main CH
+     unk11:1,             //
+     txChSelect : 2;      //        [02] *Main CH, Last CH, Active CH+Hand Time
+                          //        (P2/P62 only)
   u8 autoPowOff : 3,      // 0x116E not on screen? OFF, 30Min, 1HR, 2HR
-     unk3:1,              //
+     unk12:1,             //
      tot : 4;             //        [11] *OFF, 30 Second, 60 Second, 90 Second,
                           //              ... , 270 Second
-  u8 unk4:1,              // 0x116F
+  u8 unk13:1,             // 0x116F
      roger:1,             //        [14] *OFF, On
      dailDef:1,           //        Unknown - 'Volume, Frequency'
      language:1,          //        English only
      endToneElim:2,       //        *Frequency, 120, 180, 240 (RA89)
-     unk5:1,              //
-     unk6:1;              //
+     unk14:1,             //
+     unk15:1;             //
   u8 scanType: 2,         // 0x1170 [17] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
      disMode : 2,         //        [33] *Frequency, Channel, Name
      ledMode: 4;          //        [07] *Off, On, 5s, 10s, 15s, 20s, 25s, 30s
-  u8 unk7;                // 0x1171
-  u8 unk8;                // 0x1172 Has flags to do with logging - factory
-                          // enabled (bits 16,64,128)
-  u8 unk9;                // 0x1173
+  u8 unk16;               // 0x1171
+  u8 elimTailnoSq:4,      // 0x1172 *OFF, On 'Eliminate Squelch Tail When
+                          //        No Ctc/Dcs Signaling' checkbox
+                          //        Toggles between 0x0 and 0x4
+     unk17:4;             //        Has flags to do with logging - factory
+                          //        enabled (bits 16,64,128)
+  u8 unk18;               // 0x1173
   u8 swAudio : 1,         // 0x1174 [19] *OFF, On
      radioMoni : 1,       //        [34] *OFF, On
      keylock : 1,         //        [18] *OFF, On
      dualWait : 1,        //        [06] *OFF, On
-     unk10:1,             //
+     unk19:1,             //
      light : 3;           //        [08] *1, 2, 3, 4, 5, 6, 7
   u8 voxSw : 1,           // 0x1175 [13] *OFF, On
      voxDelay: 4,         //        *0.5S, 1.0S, 1.5S, 2.0S, 2.5S, 3.0S, 3.5S,
                           //         4.0S, 4.5S, 5.0S
      voxLevel : 3;        //        [03] *1, 2, 3, 4, 5, 6, 7
-  u8 unk11:4,             // 0x1176
+  u8 unk20:4,             // 0x1176
      saveMode : 2,        //        [16] *OFF, 1:1, 1:2, 1:4
      keyMode : 2;         //        [32] *ALL, PTT, KEY, Key & Side Key
-  u8 unk12;               // 0x1177
-  u8 unk13;               // 0x1178
-  u8 unk14;               // 0x1179
+  u8 unk21;               // 0x1177
+  u8 unk22;               // 0x1178
+  u8 unk23;               // 0x1179
   u8 name2[6];            // 0x117A unused
 } basicsettings;
 """
@@ -871,16 +903,32 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 
         # Menu 02 - TX Channel Select
         if self._hasLCD:
-            options = ["Last Channel", "Main Channel"]
-            rx = RadioSettingValueList(
-                options, current_index=_settings.txChSelect)
-            rset = RadioSetting("basicsettings.txChSelect",
-                                "Priority Transmit", rx)
-            basic.append(rset)
+            options = ["Main Channel", "Last Channel"]
+        else:
+            options = ["Main Channel", "Last Channel",
+                       "Active Channel with Lockout Time"]
+        rx = RadioSettingValueList(options, current_index=_settings.txChSelect)
+        rset = RadioSetting("basicsettings.txChSelect",
+                            "Priority Transmit", rx)
+        basic.append(rset)
+
+        if self.MODEL in ["P2", "P62"]:
+            if 'hndTm' in _settings:
+                rsv = RadioSettingValueMap(
+                    [(str(x), x) for x in range(16)], _settings.hndTm)
+                rs = RadioSetting('basicsettings.hndTm',
+                                  'Lockout Time (seconds)', rsv)
+                basic.append(rs)
 
         # Menu 03 - VOX Level
         rx = RadioSettingValueInteger(1, 7, _settings.voxLevel + 1)
         rset = RadioSetting("basicsettings.voxLevel", "Vox Level", rx)
+        basic.append(rset)
+
+        options = ['0.5S', '1.0S', '1.5S', '2.0S', '2.5S', '3.0S', '3.5S',
+                   '4.0S', '4.5S', '5.0S']
+        rx = RadioSettingValueList(options, current_index=_settings.voxDelay)
+        rset = RadioSetting("basicsettings.voxDelay", "VOX Delay", rx)
         basic.append(rset)
 
         # Menu 05 - Squelch Level
@@ -890,11 +938,18 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         # Menu 06 - Dual Wait
-        if self._hasLCD:
-            rx = RadioSettingValueBoolean(_settings.dualWait)
-            rset = RadioSetting("basicsettings.dualWait",
-                                "Dual Wait/Standby", rx)
-            basic.append(rset)
+        rx = RadioSettingValueBoolean(_settings.dualWait)
+        rset = RadioSetting("basicsettings.dualWait",
+                            "Dual Wait/Standby", rx)
+        basic.append(rset)
+
+        if self.MODEL in ["P2", "P62"]:
+            if 'dwchan' in _settings:
+                rsv = RadioSettingValueMap(
+                    [(str(x + 1), x) for x in range(200)], _settings.dwchan)
+                rs = RadioSetting('basicsettings.dwchan',
+                                  'Dual Wait Channel', rsv)
+                basic.append(rs)
 
         # Menu 07 - LED Mode
         if self._hasLCD:
@@ -1003,6 +1058,13 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         advanced = RadioSettingGroup("advanced", "Advanced Settings")
         group.append(advanced)
 
+        # Menu 38 - Mic Level
+        if self.MODEL == "RA89":
+            rsv = RadioSettingValueMap(
+                [(str(x + 1), x) for x in range(8)], _settings.micLev)
+            rs = RadioSetting('basicsettings.micLev', 'Mic Level', rsv)
+            basic.append(rs)
+
         # software only
         if self.MODEL in ["RA89", "P2", "P62"]:
             options = ['Frequency', '120', '180', '240']
@@ -1059,19 +1121,13 @@ class THUV88Radio(chirp_common.CloneModeRadio):
             advanced.append(rset)
 
         # software only
-        options = ['0.5S', '1.0S', '1.5S', '2.0S', '2.5S', '3.0S', '3.5S',
-                   '4.0S', '4.5S', '5.0S']
-        rx = RadioSettingValueList(options, current_index=_settings.voxDelay)
-        rset = RadioSetting("basicsettings.voxDelay", "VOX Delay", rx)
-        advanced.append(rset)
-
-        options = ['Unlocked', 'Unknown 1', 'Unknown 2', 'EU', 'US']
-        # extend option list with unknown description for values 5 - 15.
-        for ix in range(len(options), _settings2.region + 1):
-            item_to_add = 'Unknown {region_code}'.format(region_code=ix)
-            options.append(item_to_add)
-        # log unknown region codes greater than 4
-        if _settings2.region > 4:
+        options = ['Unlocked', 'Unknown 1', 'Unknown 2', 'EU', 'US',
+                   'Unknown 3', 'Unknown 4', 'Unknown 5', 'Unknown 6',
+                   'Unknown 7', 'Unknown 8', 'Unknown 9', 'Unknown 10',
+                   'Unknown 11', 'Unknown 12', 'Factory']
+        # log unknown region codes greater than 4 and less than 15
+        # codes for Canada and Taiwan exist, need to be determined
+        if _settings2.region > 4 and _settings2.region < 15:
             LOG.debug("Unknown region code: {value}".
                       format(value=_settings2.region))
         rx = RadioSettingValueList(options, current_index=_settings2.region)
@@ -1229,7 +1285,6 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 
     def set_settings(self, settings):
         _settings = self._memobj.basicsettings
-        _mem = self._memobj
         for element in settings:
             if not isinstance(element, RadioSetting):
                 self.set_settings(element)
