@@ -1308,8 +1308,8 @@ class UV17Pro(bfc.BaofengCommonHT):
         else:
             offset = (int(_mem.txfreq) * 10) - freq
             if offset != 0:
-                if bfc._split(self.get_features(), freq, int(
-                          _mem.txfreq) * 10):
+                if chirp_common.is_split(self.get_features().valid_bands,
+                                         freq, int(_mem.txfreq) * 10):
                     duplex = "split"
                     offset = int(_mem.txfreq) * 10
                 elif offset < 0:
