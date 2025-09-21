@@ -302,21 +302,6 @@ def do_upload(radio):
     _exit_programming_mode(radio)
 
 
-def _split(rf, f1, f2):
-    """Returns False if the two freqs are in the same band (no split)
-    or True otherwise"""
-
-    # determine if the two freqs are in the same band
-    for low, high in rf.valid_bands:
-        if f1 >= low and f1 <= high and \
-                f2 >= low and f2 <= high:
-            # if the two freqs are on the same Band this is not a split
-            return False
-
-    # if you get here is because the freq pairs are split
-    return True
-
-
 class IradioUV5118(chirp_common.CloneModeRadio):
     """IRADIO UV5118"""
     VENDOR = "Iradio"
@@ -469,8 +454,8 @@ class IradioUV5118(chirp_common.CloneModeRadio):
         # TX freq set
         offset = (int(_mem.txfreq) * 10) - mem.freq
         if offset != 0:
-            if _split(self.get_features(), mem.freq, int(
-                      _mem.txfreq) * 10):
+            if chirp_common.is_split(self.get_features().valid_bands,
+                                     mem.freq, int(_mem.txfreq) * 10):
                 mem.duplex = "split"
                 mem.offset = int(_mem.txfreq) * 10
             elif offset < 0:

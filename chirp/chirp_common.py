@@ -2137,3 +2137,19 @@ def in_range(freq, ranges):
         if lo <= freq <= hi:
             return True
     return False
+
+
+def is_split(bands, freq1, freq2):
+    """Check if two freqs are in the same band from a list of bands
+    Returns False if the two freqs are in the same band (not split)
+    or True if they are in separate bands (split)"""
+
+    # determine if the two freqs are in the same band
+    for low, high in bands:
+        if freq1 >= low and freq1 <= high and \
+                freq2 >= low and freq2 <= high:
+            # if the two freqs are on the same Band this is not a split
+            return False
+
+    # if you get here is because the freq pairs are split
+    return True
