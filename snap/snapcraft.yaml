@@ -17,12 +17,12 @@ architectures:
 
 environment:
   # WORKAROUND: Add python modules in Snap to search path
-  PYTHONPATH: ${SNAP}/lib/python3.10/site-packages:${SNAP}/usr/lib/python3/dist-packages
+  PYTHONPATH: ${SNAP}/usr/local/lib/python3.10/dist-packages:${SNAP}/lib/python3.10/site-packages:${SNAP}/usr/lib/python3/dist-packages
 
 apps:
   chirp:
-    command: bin/chirp
-    desktop: lib/python3.10/site-packages/chirp/share/chirp.desktop
+    command: usr/local/bin/chirp
+    desktop: usr/local/lib/python3.10/dist-packages/chirp/share/chirp.desktop
     extensions:
       # WARNING: gnome extension is incompatible with python apps.
       - gnome
@@ -42,18 +42,19 @@ parts:
       - PATH: ${CRAFT_PART_INSTALL}/bin:${PATH}
       - PYTHONPATH: ""
     override-pull: |
-      sudo apt install -y curl
+      apt install -y curl
       ver_with_next=$(basename $(curl -H "User-Agent: goldstar611" -Ls -o/dev/null -w '%{url_effective}' https://archive.chirpmyradio.com/download?stream=next))
       ver_without_next=${ver_with_next//next-/}
-      curl -H "User-Agent: goldstar611" -o ${SNAPCRAFT_PART_SRC}/chirp.whl https://archive.chirpmyradio.com/chirp_next/${ver_with_next}/chirp-${ver_without_next}-py3-none-any.whl
-      pip install --no-input ${SNAPCRAFT_PART_SRC}/chirp.whl
+      curl -H "User-Agent: goldstar611" -o ${SNAPCRAFT_PART_SRC}/chirp-${ver_without_next}-py3-none-any.whl https://archive.chirpmyradio.com/chirp_next/${ver_with_next}/chirp-${ver_without_next}-py3-none-any.whl
+      pip install --no-input --verbose --force-reinstall --prefix=${SNAPCRAFT_PART_INSTALL}/usr ${SNAPCRAFT_PART_SRC}/chirp-${ver_without_next}-py3-none-any.whl
       # Fix icon
-      sed -i 's,Icon=chirp,Icon=${SNAP}/lib/python3.10/site-packages/chirp/share/chirp.svg,g' ${SNAPCRAFT_PART_SRC}/chirp/share/chirp.desktop
+      sed -i 's,Icon=chirp,Icon=${SNAP}/usr/local/lib/python3.10/dist-packages/chirp/share/chirp.svg,g' ${SNAPCRAFT_PART_INSTALL}/usr/local/lib/python3.10/dist-packages/chirp/share/chirp.desktop
       # snap version cannot be longer than 32 characters
-      TARBALL_SHA_SHORT=$(sha1sum ${SNAPCRAFT_PART_SRC}/chirp-src.tar.gz | head -c 8)
-      SNAP_VERSION="snap-$(date +%Y%m%d)+${TARBALL_SHA_SHORT}"
+      TARBALL_SHA_SHORT=$(sha1sum ${SNAPCRAFT_PART_SRC}/chirp-${ver_without_next}-py3-none-any.whl | head -c 8)
+      SNAP_VERSION="snap-${ver_with_next}+${TARBALL_SHA_SHORT}"
       craftctl set version="$SNAP_VERSION"
     stage-packages:
+      - python3
       - python3-wxgtk4.0
     stage:
       # WORKAROUND: Skip venv from python plugin
