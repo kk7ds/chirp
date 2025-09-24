@@ -813,6 +813,7 @@ ALL_MODEL = H8_LIST + H3_LIST + ["RT-730"]
 TD_H8 = b"\x50\x56\x4F\x4A\x48\x1C\x14"
 TD_H3 = b"\x50\x56\x4F\x4A\x48\x5C\x14"
 RT_730 = b"\x50\x47\x4F\x4A\x48\xC3\x44"
+TD_H8_G3 = b"\x50\x56\x4F\x4A\x48\x3C\x14"
 
 
 def _do_status(radio, block):
@@ -1025,12 +1026,25 @@ class TDH8(chirp_common.CloneModeRadio):
 
     @classmethod
     def detect_from_serial(cls, pipe):
-        ident = _do_ident(pipe, cls._idents[0])
-        for rclass in cls.detected_models():
-            if rclass.ident_mode == ident:
-                return rclass
-        LOG.error('No model match found for %r', ident)
-        raise errors.RadioError('Unsupported model')
+        # Build a list of unique idents and the classes that go with each
+        uniq_idents = {}
+        for cls in cls.detected_models():
+            uniq_idents.setdefault(cls._idents[0], [])
+            uniq_idents[cls._idents[0]].append(cls)
+
+        # Try each ident and if one matches then determine the appropriate
+        # class to use
+        for ident, classes in uniq_idents.items():
+            try:
+                radio_ident = _do_ident(pipe, ident)
+            except errors.RadioError:
+                continue
+            for rclass in classes:
+                if rclass.ident_mode == radio_ident:
+                    return rclass
+            LOG.error('No model match found for ident: %r', ident)
+            raise errors.RadioError('Unsupported model')
+        raise errors.RadioError('No response from radio')
 
     @classmethod
     def get_prompts(cls):
@@ -2720,7 +2734,7 @@ class TDH3_GMRS(TDH3):
         msgs = super().validate_memory(mem)
         if 31 <= mem.number <= 54 and mem.freq not in GMRS_FREQS:
             msgs.append(chirp_common.ValidationError(
-                "The frequency in channels 31-54 must be between"
+                "The frequency in channels 31-54 must be between "
                 "462.55000-462.72500 in 0.025 increments."))
         return msgs
 
@@ -2742,3 +2756,76 @@ class RT730(TDH8):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_RT730, self._mmap)
+
+
+@directory.register
+@directory.detected_by(TDH8)
+class TDH8_3rd_Gen(TDH8):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H8"
+    VARIANT = 'G3'
+    _memsize = 0x1fef
+    _ranges_main = [(0x0000, 0x1fef)]
+    _idents = [TD_H8_G3]
+    _txbands = [(136000000, 600000000)]
+    _rxbands = [(18000000, 107999000), (108000000, 136000000)]
+    _aux_block = True
+    _tri_power = True
+    _gmrs = False
+    _ham = False
+    _mem_params = (0x1F2F)
+    _tx_power = [chirp_common.PowerLevel("Low",  watts=2.00),
+                 chirp_common.PowerLevel("High",  watts=5.00)]
+    _roger_list = ["Off", "TONE1", "TONE2"]
+    _brightness_list = ["1", "2", "3", "4", "5"]
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)
+
+
+@directory.register
+@directory.detected_by(TDH8)
+class TDH8_3rd_Gen_HAM(TDH8_3rd_Gen):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H8-HAM"
+    ident_mode = b'P31185\xff\xff'
+    _ham = True
+    _txbands = [(144000000, 149000000), (420000000, 451000000)]
+    _rxbands = [(18000000, 107999000), (108000000, 136000000),
+                (149990000, 419990000), (451000000, 600000000)]
+    _tx220 = [(222000000, 225000000)]
+    # leave out 219-220 sub-band because this radio doesn't do
+    # fixed digital message forwarding
+    # tx350 and tx500 bands unknown; add them if you are in a
+    # legal locale and know their correct range
+
+    def get_tx_bands(self):
+        _settings = self._memobj.settings
+        bands = []
+        bands.extend(self._txbands)
+        if _settings.tx220:
+            bands.extend(self._tx220)
+        return bands
+
+
+@directory.register
+@directory.detected_by(TDH8_3rd_Gen)
+class TDH8_3rd_Gen_GMRS(TDH8_3rd_Gen):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H8-GMRS"
+    ident_mode = b'P31184\xff\xff'
+    _gmrs = True
+    _txbands = [(136000000, 175000000), (400000000, 521000000)]
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+        if 31 <= mem.number <= 54 and mem.freq not in GMRS_FREQS:
+            msgs.append(chirp_common.ValidationError(
+                "The frequency in channels 31-54 must be between "
+                "462.55000-462.72500 in 0.025 increments."))
+        if mem.duplex not in ('', '+', 'off') or (
+                mem.duplex == '+' and mem.offset != 5000000):
+            msgs.append(chirp_common.ValidationError(
+                "Channels in this range must be GMRS frequencies and "
+                "either simplex or +5MHz offset"))
+        return msgs
