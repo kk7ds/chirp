@@ -48,9 +48,9 @@ def is_prolific_warning(string):
 
 
 def get_model_label(rclass):
-    detected = ','.join(
+    detected = ','.join(set([
         detected_value(rclass, m)
-        for m in rclass.detected_models(include_self=False))
+        for m in rclass.detected_models(include_self=False)]))
     if len(detected) > (32 - 5):
         detected = 'others'
     return detected
