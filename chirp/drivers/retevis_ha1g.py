@@ -167,17 +167,15 @@ struct  {
      bandwidth:2;
   ul32 rxfreq;
   ul32 txfreq;
-  u8 rxctcvaluetype:2,
-     rxctctypecode:1,
-     rev_1:1,
-     rxctchight:4;
-  u8 rxctclowvalue;
+  u16 rxctcvaluetype:2,
+      rxctctypecode:1,
+      rev_1:1,
+      rxctc:12;
   u8 rxsqlmode;
-  u8 txctcvaluetype:2,
-     txctctypecode:1,
-     rev_2:1,
-     txctchight:4;
-  u8 txctclowvalue;
+  u16 txctcvaluetype:2,
+      txctctypecode:1,
+      rev_2:1,
+      txctc:12;
   u8 totPermissions:2,
      tottime:6;
   u8 vox:1,
@@ -607,10 +605,10 @@ def validate_packet(current_packet_Byte: bytes, chunk_size=1024):
      before it even gets to the CRC calculation - should give us a nice
      performance boost!
     """
-    packet_len = (current_packet_Byte[12] - 6
-                  if current_packet_Byte[12] > 6 else 0)
-    packet_len += current_packet_Byte[13] * packet_count
-    if byteLen - 17 < packet_len:
+    data_len = (current_packet_Byte[12] - 6
+                if current_packet_Byte[12] > 6 else 0)
+    data_len += current_packet_Byte[13] * packet_count
+    if byteLen - 17 < data_len:
         LOG.debug(f"Packet too short: {byteLen} bytes")
         return False
     crcBytes = current_packet_Byte[-3:-1]
@@ -644,33 +642,24 @@ def get_read_current_packet_bytes(self, item: int, serial, status):
     packet_count = 1
     packet_index = 0
     item_bytes = b""
-    # When receiving feedback from the radio,
-    # packets might get lost, so we added a retry mechanism.
-    max_retries = 5
-    # If a packet gets lost, each retry waits 50 ms,
-    # which helps lower the chance of losing it again.
-    retry_delay = 0.05
+    send_packet_index = 0
+    send_packet_count = 1
+    data_code = 2   # 0-write 2-read
     while packet_index < packet_count:
-        success = False
-        for attempt in range(max_retries):
-            flag, new_data_bytes = exchange_block_with_radio(
-                get_send_packet_bytes(item, 0, 2, 1,
+        flag, new_data_bytes = exchange_block_with_radio(
+                get_send_packet_bytes(item, send_packet_index,
+                                      data_code, send_packet_count,
                                       packet_index.to_bytes(2, "little")),
                 serial, self.read_packet_len)
-            if (not flag
-               or (len(new_data_bytes) > 14 and new_data_bytes[14] != item)):
-                time.sleep(retry_delay)
-                continue
-            if packet_index == 0:
-                packet_count = new_data_bytes[18] | (new_data_bytes[19] << 8)
-            status.cur += len(new_data_bytes)
-            self.status_fn(status)
-            item_bytes += new_data_bytes[20:-3]
-            packet_index += 1
-            success = True
-            break
-        if not success:
+        if (not flag
+           or (len(new_data_bytes) > 14 and new_data_bytes[14] != item)):
             raise errors.RadioError("radio reported failure")
+        if packet_index == 0:
+            packet_count, = struct.unpack("<H", new_data_bytes[18:20])
+        status.cur += len(new_data_bytes)
+        self.status_fn(status)
+        item_bytes += new_data_bytes[20:-3]
+        packet_index += 1
     return item_bytes
 
 
@@ -678,31 +667,23 @@ def write_item_current_page_bytes(self, serial, item_Bytes: bytes,
                                   item: int, status):
     if not item_Bytes:
         raise ValueError("item_bytes cannot be empty")
-    # When receiving feedback from the radio,
-    # packets might get lost, so we added a retry mechanism.
-    max_retries = 5
-    # If a packet gets lost, each retry waits 50 ms,
-    # which helps lower the chance of losing it again.
-    retry_delay = 0.05
-    picket_len = self.write_page_len
-    packet_count = math.ceil(len(item_Bytes) / picket_len)
+    packet_len = self.write_page_len
+    packet_count = math.ceil(len(item_Bytes) / packet_len)
+    data_code = 0   # 0-write 2-read
     if packet_count == 0:
         return True
     for i in range(0, packet_count):
-        for attempt in range(max_retries):
-            current_packet_bytes = get_send_packet_bytes(
-                item, i, 0, packet_count,
-                item_Bytes[i * picket_len: (i + 1) * picket_len])
-            flag, new_data_bytes = exchange_block_with_radio(
-                current_packet_bytes,
-                serial, self.read_packet_len)
-            if (not flag
-               or (len(new_data_bytes) > 14 and new_data_bytes[14] != item)):
-                time.sleep(retry_delay)
-                continue
-            status.cur += len(current_packet_bytes)
-            self.status_fn(status)
-            break
+        current_packet_bytes = get_send_packet_bytes(
+                item, i, data_code, packet_count,
+                item_Bytes[i * packet_len: (i + 1) * packet_len])
+        flag, new_data_bytes = exchange_block_with_radio(
+            current_packet_bytes,
+            serial, self.read_packet_len)
+        if (not flag
+           or (len(new_data_bytes) > 14 and new_data_bytes[14] != item)):
+            raise errors.RadioError("radio reported failure")
+        status.cur += len(current_packet_bytes)
+        self.status_fn(status)
 
 
 def get_write_item_bytes(all_bytes: bytearray, item):
@@ -737,8 +718,14 @@ def exit_programming_mode(self):
     exiting read/write mode and reboot radio
     """
     reboot_sign = 111
+    packet_index = 0
+    data_code = 0   # 0-write 2-read
+    packet_count = 1
+    data_buffer = b'\x00'
     try:
-        serial.write(get_send_packet_bytes(reboot_sign, 0, 0, 1, b'\x00'))
+        serial.write(get_send_packet_bytes(reboot_sign,
+                                           packet_index, data_code,
+                                           packet_count, data_buffer))
     except Exception as e:
         LOG.debug(
             f"Radio refused to exit programming mode:{e}")
@@ -861,21 +848,17 @@ def _get_memory(self, mem, _mem, ch_index):
     mem.mode = BANDWIDEH_LIST[(1 if _mem.bandwidth >= 3 else 0)]
     rxtone = txtone = None
     if _mem.rxctcvaluetype == 1:
-        tone_value = (_mem.rxctchight << 8 | _mem.rxctclowvalue) / 10.0
+        tone_value = _mem.rxctc / 10.0
         if tone_value in chirp_common.TONES:
             rxtone = tone_value
     elif _mem.rxctcvaluetype in [2, 3]:
-        rxtone = int(
-            "%03o" % (
-                (_mem.rxctchight & 0x0F) << 8 | _mem.rxctclowvalue & 0xFF))
+        rxtone = int("%03o" % _mem.rxctc)
     if _mem.txctcvaluetype == 1:
-        tone_value = (_mem.txctchight << 8 | _mem.txctclowvalue) / 10.0
+        tone_value = _mem.txctc / 10.0
         if tone_value in chirp_common.TONES:
             txtone = tone_value
     elif _mem.txctcvaluetype in [2, 3]:
-        txtone = int(
-            "%03o" % (
-                (_mem.txctchight & 0x0F) << 8 | _mem.txctclowvalue & 0xFF))
+        txtone = int("%03o" % _mem.txctc)
     rx_tone = (("" if _mem.rxctcvaluetype == 0
                 else "Tone" if _mem.rxctcvaluetype == 1 else "DTCS"),
                rxtone, (_mem.rxctcvaluetype == 0x3) and "R" or "N")
@@ -1452,25 +1435,21 @@ def _set_memory(self, mem, _mem, ch_index):
     if rxmode == "Tone":
         _mem.rxctcvaluetype = 1
         rxtone_value = int(rxtone * 10)
-        _mem.rxctchight = (rxtone_value >> 8) & 0x0F
-        _mem.rxctclowvalue = rxtone_value & 0xFF
+        _mem.rxctc = rxtone_value
     elif rxmode == "DTCS":
         _mem.rxctcvaluetype = rxpol == "R" and 3 or 2
         oct_value = int(str(rxtone), 8)
-        _mem.rxctchight = (oct_value >> 8) & 0x0F
-        _mem.rxctclowvalue = oct_value & 0xFF
+        _mem.rxctc = oct_value
     else:
         _mem.rxctcvaluetype = 0
     if txmode == "Tone":
         _mem.txctcvaluetype = 1
         txtone_value = int(txtone * 10)
-        _mem.txctchight = (txtone_value >> 8) & 0x0F
-        _mem.txctclowvalue = txtone_value & 0xFF
+        _mem.txctc = txtone_value
     elif txmode == "DTCS":
         _mem.txctcvaluetype = txpol == "R" and 3 or 2
         oct_value = int(str(txtone), 8)
-        _mem.txctchight = (oct_value >> 8) & 0x0F
-        _mem.txctclowvalue = oct_value & 0xFF
+        _mem.txctc = oct_value
     else:
         _mem.txctcvaluetype = 0
     for setting in mem.extra:
@@ -1538,9 +1517,14 @@ def set_poweron_zone_callback(set_item, self, obj, name, items):
 
 
 def set_item_twobytes_callback(setting, obj, item_key, opts, self):
-    item_value = get_item_by_name(opts, setting.value)
-    setattr(obj, item_key,
-            (((item_value & 0xFF) << 8) | ((item_value >> 8) & 0xFF)))
+    item_value, = swap_high_low_bytes_16bit_int(
+        get_item_by_name(opts, setting.value))
+    setattr(obj, item_key, item_value)
+
+
+def swap_high_low_bytes_16bit_int(value: int) -> int:
+    swapped, = struct.unpack(">H", struct.pack("<H", value))
+    return swapped
 
 
 def set_item_callback(set_item, obj, name, items, self):
@@ -1731,15 +1715,12 @@ def get_zone_index_list(self):
 
 def set_alarm_index_list(self, alarm_index_dict):
     _alarmdata = self._memobj.alarmdata
-    alarm_count = len(alarm_index_dict)
-    _alarmdata.alarmnum = (
-        (alarm_count & 0xFF) << 8) | ((alarm_count >> 8) & 0xFF)
+    alarm_count, = len(alarm_index_dict)
+    _alarmdata.alarmnum = alarm_count
     if alarm_count > 0:
         for i in range(0, 8):
             if i < alarm_count:
-                _alarmdata.alarmindex[i] = (
-                    (alarm_index_dict[i] & 0xFF) << 8) | (
-                        (alarm_index_dict[i] >> 8) & 0xFF)
+                _alarmdata.alarmindex[i] = alarm_index_dict[i]
             else:
                 _alarmdata.alarmindex[i] = 0xFFFF
     get_alarm_item_list(self)  # update ALARM_LIST
@@ -1748,14 +1729,11 @@ def set_alarm_index_list(self, alarm_index_dict):
 def set_zone_index_list(self, zone_index_dict):
     _zonedata = self._memobj.zonedata
     zone_count = len(zone_index_dict)
-    _zonedata.zonenum = (
-        (zone_count & 0xFF) << 8) | ((zone_count >> 8) & 0xFF)
+    _zonedata.zonenum = zone_count
     if zone_count > 0:
         for i in range(0, 64):
             if i < zone_count:
-                _zonedata.zoneindex[i] = (
-                    (zone_index_dict[i] & 0xFF) << 8) | (
-                        (zone_index_dict[i] >> 8) & 0xFF)
+                _zonedata.zoneindex[i] = zone_index_dict
             else:
                 _zonedata.zoneindex[i] = 0xFFFF
 
@@ -1766,14 +1744,11 @@ def set_zone_ch_list(self, zone_index, zone_ch_dict):
         raise Exception("Zone index out of range")
     zone_item = _zone_list[zone_index]
     zone_ch_count = len(zone_ch_dict)
-    zone_item.chnum = (
-        (zone_ch_count & 0xFF) << 8) | ((zone_ch_count >> 8) & 0xFF)
+    zone_item.chnum = zone_ch_count
     if zone_ch_count > 0:
         for i in range(0, 16):
             if i < zone_ch_count:
-                zone_item.chindex[i] = (
-                    (zone_ch_dict[i] & 0xFF) << 8) | (
-                        (zone_ch_dict[i] >> 8) & 0xFF)
+                zone_item.chindex[i] = zone_ch_dict[i]
             else:
                 zone_item.chindex[i] = 0xFFFF
 
@@ -1781,14 +1756,11 @@ def set_zone_ch_list(self, zone_index, zone_ch_dict):
 def set_dtmf_index_list(self, dtmf_index_dict):
     _dtmfdata = self._memobj.dtmfdata
     dtmf_count = len(dtmf_index_dict)
-    _dtmfdata.dtmfnum = (
-        (dtmf_count & 0xFF) << 8) | ((dtmf_count >> 8) & 0xFF)
+    _dtmfdata.dtmfnum = dtmf_count
     if dtmf_count > 0:
         for i in range(0, dtmf_count):
             if i < 4:
-                _dtmfdata.dtmfindex[i] = (
-                    (dtmf_index_dict[i] & 0xFF) << 8) | (
-                        (dtmf_index_dict[i] >> 8) & 0xFF)
+                _dtmfdata.dtmfindex[i] = dtmf_index_dict[i]
             else:
                 raise ValueError("Not enough space in alarmindex array")
     get_dtmf_item_list(self)  # update DTMFSYSTEM_LIST
@@ -1797,12 +1769,10 @@ def set_dtmf_index_list(self, dtmf_index_dict):
 def set_scan_index_list(self, scan_index_dict):
     _scandata = self._memobj.scandata
     scan_count = len(scan_index_dict)
-    # scan_num = ((scan_count & 0xFF) << 8) | ((scan_count >> 8) & 0xFF)
     if scan_count > 0:
         for i in range(0, scan_count):
             if i < 16:
-                _scandata.scanindex[i] = ((scan_index_dict[i] & 0xFF) << 8) | (
-                    (scan_index_dict[i] >> 8) & 0xFF)
+                _scandata.scanindex[i] = scan_index_dict
             else:
                 raise ValueError("Not enough space in scanindex array")
 
@@ -1844,7 +1814,7 @@ def set_scan_list_callback(set_item, self, index, name, items=None):
         elif (name in ["specifych", "PriorityCh1", "PriorityCh2"]
               and items is not None):
             ch_value = get_item_by_name(items, value)
-            value = ((ch_value & 0xFF) << 8) | ((ch_value >> 8) & 0xFF)
+            value = ch_value
         setattr(_scan_list[index], name, value)
 
 
@@ -1865,7 +1835,7 @@ def set_alarm_list_callback(set_item, self,
             value = value.ljust(14, "\x00")
         elif (name == "jumpch") and items is not None:
             ch_value = get_item_by_name(items, value)
-            value = ((ch_value & 0xFF) << 8) | ((ch_value >> 8) & 0xFF)
+            value = ch_value
         setattr(_alarm_list[index], name, value)
 
 
@@ -2054,7 +2024,6 @@ class HA1G(chirp_common.CloneModeRadio):
                 continue
             if not element.changed():
                 continue
-
             try:
                 if element.has_apply_callback():
                     LOG.debug("Using apply callback")
