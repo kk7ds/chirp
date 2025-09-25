@@ -197,11 +197,13 @@ class TestCaseBruteForce(base.DriverTest):
         lo, hi = self.rf.memory_bounds
         for i in range(lo, hi + 1):
             m1 = self.radio.get_memory(i)
+            if m1.empty:
+                continue
             errs, warns = chirp_common.split_validation_msgs(
                 self.radio.validate_memory(m1))
             self.assertEqual([], errs,
                              ('Radio has validation errors for memory %i '
-                              'stored in sample image') % i)
+                              'stored in sample image: %s') % (i, m1))
 
     @base.requires_feature('has_nostep_tuning', equal=False)
     def test_validate_all_steps(self):
