@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.satisflux.chirp</id>
+  
+  <name>CHIRP</name>
+  <summary>A free, open-source tool for programming your radio.</summary>
+  
+  <metadata_license>MIT</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  
+  <description>
+    <p>
+      CHIRP is a free, open-source tool for programming your radio. It supports a large number of manufacturers and models, as well as provides a way to interface with multiple data sources and formats.
+    </p>
+    <p>
+      NOTE: For the app to fully function, adding your Linux user to the dialout group will be required in order for CHIRP to access serial ports.
+    </p>
+    <p>
+      This is usually done like this: <code>sudo usermod -aG dialout yourname</code>
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">io.github.satisflux.chirp.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/Satisflux-Laboratories/chirp-flatpak/refs/heads/main/screenshots/chirp-main.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/Satisflux-Laboratories/chirp-flatpak/refs/heads/main/screenshots/chirp-example.png</image>
+    </screenshot>
+  </screenshots>
+</component>
