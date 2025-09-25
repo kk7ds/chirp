@@ -13,19 +13,7 @@ BTECH_GMRS-20V2:
   - class: TestCaseBruteForce
     test: test_validate_all
     reason: Improper application of the duplex policy
-BTECH_GMRS-V2:
-  - class: TestCaseBruteForce
-    test: test_validate_all
-    reason: Improper application of the duplex policy
-BTECH_GMRS-50X1:
-  - class: TestCaseBruteForce
-    test: test_validate_all
-    reason: Improper application of the duplex policy
 BTECH_GMRS-50V2:
-  - class: TestCaseBruteForce
-    test: test_validate_all
-    reason: Improper application of the duplex policy
-BTECH_MURS-V2:
   - class: TestCaseBruteForce
     test: test_validate_all
     reason: Improper application of the duplex policy
@@ -33,30 +21,6 @@ Abbree_AR-730:
   - class: TestCaseBruteForce
     test: test_validate_all
     reason: Broken name stored in memory 256?
-Radtel_RT-730:
-  - class: TestCaseBruteForce
-    test: test_validate_all
-    reason: Improper application of the duplex policy
-Retevis_RB17P:
-  - class: TestCaseBruteForce
-    test: test_validate_all
-    reason: Improper application of the duplex policy
-TIDRADIO_TD-H3:
-  - class: TestCaseBruteForce
-    test: test_validate_all
-    reason: Memory 3 stored with TX outside TX range
-TIDRADIO_TD-H8:
-  - class: TestCaseBruteForce
-    test: test_validate_all
-    reason: Memory 6 stored with TX outside TX range
-TIDRADIO_TD-H8-GMRS:
-  - class: TestCaseBruteForce
-    test: test_validate_all
-    reason: Memory 31 stored with TX outside gmrs bands
-TIDRADIO_TD-H8-HAM:
-  - class: TestCaseBruteForce
-    test: test_validate_all
-    reason: Memory 31 stored with TX outside ham bands
 Yaesu_FT-90:
   - class: TestCaseBruteForce
     test: test_validate_all
