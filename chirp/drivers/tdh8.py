@@ -106,14 +106,8 @@ struct {
 } settings;
 
 //#seekto 0x0CB8;
-struct {
-    u8 ofseta[4];
-} aoffset;
-
-//#seekto 0x0CBC;
-struct {
-    u8 ofsetb[4];
-} boffset;
+lbcd offseta[4];
+lbcd offsetb[4];
 
 #seekto 0x0CD8;
 struct{
@@ -371,14 +365,8 @@ struct {
 } settings;
 
 //#seekto 0x0CB8;
-struct {
-    u8 ofseta[4];
-} aoffset;
-
-//#seekto 0x0CBC;
-struct {
-    u8 ofsetb[4];
-} boffset;
+lbcd offseta[4];
+lbcd offsetb[4];
 
 #seekto 0x0CD8;
 struct{
@@ -601,14 +589,8 @@ struct {
 } settings;
 
 //#seekto 0x0CB8;
-struct {
-    u8 ofseta[4];
-} aoffset;
-
-//#seekto 0x0CBC;
-struct {
-    u8 ofsetb[4];
-} boffset;
+lbcd offseta[4];
+lbcd offsetb[4];
 
 #seekto 0x0CD8;
 struct{
@@ -1411,8 +1393,6 @@ class TDH8(chirp_common.CloneModeRadio):
     def _get_settings(self):
         _settings = self._memobj.settings
         _press = self._memobj.press
-        _aoffset = self._memobj.aoffset
-        _boffset = self._memobj.boffset
         _vfoa = self._memobj.vfoa
         _vfob = self._memobj.vfob
         if self.MODEL != "RT-730":
@@ -1795,27 +1775,28 @@ class TDH8(chirp_common.CloneModeRadio):
             # Offset
             # If the offset is 12.345
             # Then the data obtained is [0x45, 0x23, 0x01, 0x00]
-            a_set_val = _aoffset.ofseta
-            a_set_list = len(_aoffset.ofseta) - 1
-            real_val = ''
-            for i in range(a_set_list, -1, -1):
-                real_val += str(a_set_val[i])[2:]
-            if real_val == "FFFFFFFF":
-                rs = RadioSetting("ofseta", "A Offset Frequency",
-                                  RadioSettingValueString(0, 7, ""))
+            offsets = {}
+            for i in ('a', 'b'):
+                value = getattr(self._memobj, 'offset%s' % i)
+                if value.get_raw() == b'\xff\xff\xff\xff':
+                    offset = 0
+                else:
+                    offset = int(value) / 100000
 
-            else:
-                real_val = int(real_val)
-                real_val = "%i.%05i" % (real_val / 100000, real_val % 100000)
-                rs = RadioSetting("ofseta", "A Offset Frequency",
+                def _apply(setting):
+                    value = getattr(self._memobj, setting.get_name())
+                    if float(setting.value) == 0:
+                        value.fill_raw(b'\xff')
+                    else:
+                        value.set_value(int(setting.value * 100000))
+
+                rs = RadioSetting("offset%s" % i,
+                                  "%s Offset Frequency" % i.upper(),
                                   RadioSettingValueFloat(
-                                      0.00000, 59.99750, real_val, 0.00001, 5))
-            abblock.append(rs)
-
-            rs = RadioSetting("offset", "A Offset",
-                              RadioSettingValueList(
-                                  A_OFFSET, current_index=_vfoa.offset))
-            abblock.append(rs)
+                                      0.00000, 59.99750, offset, 0.00001, 5))
+                rs.set_apply_callback(_apply)
+                offsets[i] = rs
+            abblock.append(offsets['a'])
 
             try:
                 self._tx_power[_vfoa.lowpower]
@@ -1858,30 +1839,7 @@ class TDH8(chirp_common.CloneModeRadio):
             rs = RadioSetting("rxfreqb", "B Channel - Frequency", val1a)
             abblock.append(rs)
 
-            # Offset frequency
-            # If the offset is 12.345
-            # Then the data obtained is [0x45, 0x23, 0x01, 0x00]
-            # Need to use the following anonymous function to process data
-            b_set_val = _boffset.ofsetb
-            b_set_list = len(_boffset.ofsetb) - 1
-            real_val = ''
-            for i in range(b_set_list, -1, -1):
-                real_val += str(b_set_val[i])[2:]
-            if real_val == "FFFFFFFF":
-                rs = RadioSetting("ofsetb", "B Offset Frequency",
-                                  RadioSettingValueString(0, 7, " "))
-            else:
-                real_val = int(real_val)
-                real_val = "%i.%05i" % (real_val / 100000, real_val % 100000)
-                rs = RadioSetting("ofsetb", "B Offset Frequency",
-                                  RadioSettingValueFloat(
-                                      0.00000, 59.99750, real_val, 0.00001, 5))
-            abblock.append(rs)
-
-            rs = RadioSetting("offsetb", "B Offset",
-                              RadioSettingValueList(
-                                  B_OFFSET, current_index=_vfob.offsetb))
-            abblock.append(rs)
+            abblock.append(offsets['b'])
 
             try:
                 self._tx_power[_vfob.lowpowerb]
@@ -2180,8 +2138,6 @@ class TDH8(chirp_common.CloneModeRadio):
 
         _settings = self._memobj.settings
         _press = self._memobj.press
-        _aoffset = self._memobj.aoffset
-        _boffset = self._memobj.boffset
         _vfoa = self._memobj.vfoa
         _vfob = self._memobj.vfob
         _fmmode = self._memobj.fmmode
@@ -2213,14 +2169,8 @@ class TDH8(chirp_common.CloneModeRadio):
                     elif name in VFOA_NAME:
                         obj = _vfoa
                         setting = element.get_name()
-                    elif name == "ofseta":
-                        obj = _aoffset
-                        setting = element.get_name()
                     elif name in VFOB_NAME:
                         obj = _vfob
-                        setting = element.get_name()
-                    elif name == "ofsetb":
-                        obj = _boffset
                         setting = element.get_name()
                     elif "block" in name:
                         obj = _fmmode
@@ -2298,40 +2248,6 @@ class TDH8(chirp_common.CloneModeRadio):
                                 "136.00000-174.00000 or 400.00000-520.00000 "
                                 "or enabled in settings")
                             raise InvalidValueError(msg)
-
-                    elif "ofseta" == setting and element.value.get_mutable():
-                        if '.' in str(element.value):
-                            val = str(element.value).replace(' ', '')
-                            if len(
-                                val[val.index(".") + 1:]
-                                ) >= 1 and int(val[val.index(".") + 1:]
-                                               ) != 0:
-                                val = '00' + val.replace('.', '')
-                            else:
-                                val = '0' + val.replace('.', '')
-                            val = val.ljust(8, '0')
-                            lenth_val = 0
-                            list_val = []
-                        else:
-                            val = '0' + str(element.value).replace(' ', '')
-                            val = val.ljust(8, '0')
-                            lenth_val = 0
-                            list_val = []
-                        if (int(val) >= 0 and int(val) <= 5999750):
-                            if int(val) == 0:
-                                _aoffset.ofseta = [0xFF, 0xFF, 0xFF, 0xFF]
-                            else:
-                                while lenth_val < (len(val)):
-                                    list_val.insert(
-                                        0, val[lenth_val:lenth_val + 2])
-                                    lenth_val += 2
-                                for i in range(len(list_val)):
-                                    list_val[i] = int(list_val[i], 16)
-                                _aoffset.ofseta = list_val
-                        else:
-                            msg = ("Offset must be between 0.00000-59.99750")
-                            raise InvalidValueError(msg)
-
                     # B channel
                     elif "rxfreqb" == setting and element.value.get_mutable():
                         val = 0
@@ -2349,40 +2265,6 @@ class TDH8(chirp_common.CloneModeRadio):
                                 "or enabled in settings")
                             raise InvalidValueError(msg)
                         # setattr(obj, setting, val)
-
-                    elif "ofsetb" == setting and element.value.get_mutable():
-                        if '.' in str(element.value):
-                            val = str(element.value).replace(' ', '')
-                            if len(val[val.index(".") + 1:]
-                                   ) >= 1 and int(val[val.index(".") + 1:]
-                                                  ) != 0:
-                                val = '00' + \
-                                    str(element.value).replace('.', '')
-                            else:
-                                val = '0' + str(element.value).replace('.', '')
-                            val = val.ljust(8, '0')
-                            lenth_val = 0
-                            list_val = []
-                        else:
-                            val = '0' + str(element.value).replace(' ', '')
-                            val = val.ljust(8, '0')
-                            lenth_val = 0
-                            list_val = []
-                        if (int(val) >= 0 and int(val) <= 5999750):
-                            if int(val) == 0:
-                                _boffset.ofsetb = [0xFF, 0xFF, 0xFF, 0xFF]
-                            else:
-                                while lenth_val < (len(val)):
-                                    list_val.insert(
-                                        0, val[lenth_val:lenth_val + 2])
-                                    lenth_val += 2
-                                for i in range(len(list_val)):
-                                    list_val[i] = int(list_val[i], 16)
-                                _boffset.ofsetb = list_val
-                        else:
-                            msg = ("Offset must be between 0.00000-59.99750")
-                            raise InvalidValueError(msg)
-
                     # FM
                     elif "block" in name:
                         num = int(name[-2:], 10)
