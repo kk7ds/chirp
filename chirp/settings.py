@@ -304,6 +304,10 @@ class RadioSettingValueString(RadioSettingValue):
     def maxlength(self):
         return self._maxlength
 
+    @property
+    def minlength(self):
+        return self._minlength
+
     def set_charset(self, charset):
         """Sets the set of allowed characters"""
         self._charset = charset
@@ -608,6 +612,8 @@ class RadioSetting(RadioSettingGroup):
         self._warning_text = None
         self._safe_value = None
         self._volatile = False
+        if self.__doc__ == self.get_name():
+            self.__doc__ = None
 
     @property
     def volatile(self):

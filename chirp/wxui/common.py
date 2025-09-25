@@ -403,12 +403,16 @@ class ChirpSettingGrid(wx.Panel):
         tip = None
         if prop:
             setting = self.get_setting_by_name(prop.GetName())
-            tip = setting.__doc__ or None
-            if tip and tip == setting.get_name():
-                # This is the default, which makes no sense, but it's been
-                # that way for ages, so just avoid exposing it here if it's
-                # set to the default.
-                tip = None
+            if isinstance(setting.value, settings.RadioSettingValueString):
+                tip = setting.__doc__ or ''
+                if setting.value.maxlength == setting.value._minlength:
+                    extra = '%i characters' % setting.value.maxlength
+                else:
+                    extra = '%i-%i characters' % (setting.value.minlength,
+                                                  setting.value.maxlength)
+                tip = (tip + ' (%s)' % extra).strip()
+            else:
+                tip = setting.__doc__ or None
 
         event.GetEventObject().SetToolTip(tip)
 
