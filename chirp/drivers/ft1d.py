@@ -68,7 +68,7 @@ struct {
 
 // GM / Digital
 // already at 0x04c0;
-// Caution: overloaded at 04c1! Code change necessary
+// Caution: overloaded at 04c1! only location in FORMATs.
 // Old = beep_select.beep, new is beep_settings.beep_select.
 struct {
     u8 unknown1:5,
@@ -1827,7 +1827,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         mycalle = RadioSettingValueString(0, 10, mycallstr, False,
                                           charset=self._MYCALL_CHR_SET)
         rs = RadioSetting('mycall.callsign',
-                          'MYCALL (10 uppercase chars)', mycalle)
+                          'MYCALL', mycalle)
         rs.set_apply_callback(self.apply_mycall, mycall)
         menu.append(rs)
 
@@ -1940,7 +1940,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 idn = str(r.Rooms[j].ID).strip('\xff').ljust(5)
                 val = RadioSettingValueString(0, 5, idn)
                 vname = f"WiresX_settings.RoomsPerCategory[{i}].Rooms[{j}].ID"
-                rs = RadioSetting(vname, dname + " YSF Number (5 digits)",
+                rs = RadioSetting(vname, dname + " YSF Number",
                                   val)
                 WXCmenu.append(rs)
             pass
@@ -2041,7 +2041,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             msg += CHARSET[i & 0x7F]
         val = RadioSettingValueString(0, 16, msg)
         rs = RadioSetting("opening_message.message.padded_yaesu",
-                          "Opening Message (16 chars)", val)
+                          "Opening Message", val)
         rs.set_apply_callback(self.apply_ff_padded_yaesu,
                               opening_message.message)
         return rs
