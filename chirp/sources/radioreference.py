@@ -71,7 +71,7 @@ class RadioReferenceRadio(base.NetworkResultRadio):
     """RadioReference.com data source"""
     VENDOR = "RadioReference"
 
-    URL = "http://api.radioreference.com/soap2/?wsdl"
+    URL = "https://api.radioreference.com/soap2/?wsdl"
     APPKEY = "46785108"
 
     def __init__(self):
