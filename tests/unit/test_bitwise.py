@@ -395,6 +395,120 @@ class TestBitwiseStructTypes(BaseTest):
         self.assertEqual(ord('1'), obj.foo[0].bar)
 
 
+class TestBitwiseUnionTypes(BaseTest):
+    def test_union_one_element(self):
+        defn = 'union { u8 bar; } foo;'
+        data = memmap.MemoryMapBytes(bytes(b'\x80'))
+        obj = bitwise.parse(defn, data)
+        self.assertEqual(128, obj.foo.bar)
+
+    def test_union_two_elements(self):
+        defn = 'union { u8 bar; u8 baz; } foo;'
+        data = memmap.MemoryMapBytes(bytes(b'\x80'))
+        obj = bitwise.parse(defn, data)
+        self.assertEqual(128, obj.foo.bar)
+        self.assertEqual(128, obj.foo.baz)
+        obj.foo.baz = 1
+        self.assertEqual(1, obj.foo.baz)
+        self.assertEqual(1, obj.foo.bar)
+        obj.foo.bar = 2
+        self.assertEqual(2, obj.foo.baz)
+        self.assertEqual(2, obj.foo.bar)
+
+    def test_empty_union(self):
+        defn = 'union { } foo;'
+        data = memmap.MemoryMapBytes(bytes(b'\x80'))
+        self.assertRaises(SyntaxError, bitwise.parse, defn, data)
+
+    def test_union_size_mismatch(self):
+        defn = 'union { u16 bar; u8 baz; } foo;'
+        data = memmap.MemoryMapBytes(bytes(b'\x80'))
+        self.assertRaises(bitwise.ParseError, bitwise.parse, defn, data)
+
+    def test_union_adjacent(self):
+        # Make sure that unions don't mess up adjacent fields
+        defn = 'u8 pre; union { u8 bar; u8 baz; } foo; u8 post;'
+        data = memmap.MemoryMapBytes(bytes(b'\x01\x02\x03'))
+        obj = bitwise.parse(defn, data)
+        self.assertEqual(1, obj.pre)
+        self.assertEqual(2, obj.foo.bar)
+        self.assertEqual(2, obj.foo.baz)
+        self.assertEqual(3, obj.post)
+        obj.pre = 4
+        obj.foo.baz = 5
+        obj.post = 6
+        self.assertEqual(4, obj.pre)
+        self.assertEqual(5, obj.foo.bar)
+        self.assertEqual(5, obj.foo.baz)
+        self.assertEqual(6, obj.post)
+
+    def test_complex_union(self):
+        defn = """u8 pre;
+                  union {
+                      u16 whole;
+                      struct { u8 lo; u8 hi; } bytes;
+                      union { u16 big; ul16 little; } endian;
+                      bbcd digits[2];
+                  } foo;
+                  u8 post;
+                  """
+        data = memmap.MemoryMapBytes(bytes(b'\x01\x02\x03\x04'))
+        obj = bitwise.parse(defn, data)
+
+        self.assertEqual(1, obj.pre)
+        self.assertEqual(4, obj.post)
+        self.assertEqual(0x0203, obj.foo.whole)
+        self.assertEqual(2, obj.foo.bytes.lo)
+        self.assertEqual(3, obj.foo.bytes.hi)
+        self.assertEqual(0x0203, obj.foo.endian.big)
+        self.assertEqual(0x0302, obj.foo.endian.little)
+        self.assertEqual(2, int(obj.foo.digits[0]))
+        self.assertEqual(3, int(obj.foo.digits[1]))
+
+        obj.foo.bytes.lo = 5
+        self.assertEqual(1, obj.pre)
+        self.assertEqual(4, obj.post)
+        self.assertEqual(0x0503, obj.foo.whole)
+        self.assertEqual(5, obj.foo.bytes.lo)
+        self.assertEqual(3, obj.foo.bytes.hi)
+        self.assertEqual(0x0503, obj.foo.endian.big)
+        self.assertEqual(0x0305, obj.foo.endian.little)
+        self.assertEqual(5, int(obj.foo.digits[0]))
+        self.assertEqual(3, int(obj.foo.digits[1]))
+
+    def test_union_array(self):
+        defn = 'union { u8 bar; u8 baz; } foo[2];'
+        data = memmap.MemoryMapBytes(bytes(b'\x01\x02'))
+        obj = bitwise.parse(defn, data)
+        self.assertEqual(1, obj.foo[0].bar)
+        self.assertEqual(1, obj.foo[0].baz)
+        self.assertEqual(2, obj.foo[1].bar)
+        self.assertEqual(2, obj.foo[1].baz)
+        obj.foo[0].bar = 3
+        obj.foo[1].baz = 4
+        self.assertEqual(3, obj.foo[0].bar)
+        self.assertEqual(3, obj.foo[0].baz)
+        self.assertEqual(4, obj.foo[1].bar)
+        self.assertEqual(4, obj.foo[1].baz)
+
+    def test_struct_size_with_union(self):
+        # Make sure to include a bitfield at the start of the union to
+        # confirm that we properly account for the union size separately.
+        defn = ('struct { u8 pre; union { u8 bar1:4, bar2:4; u8 baz; } foo; '
+                'u8 post; } st;')
+        data = memmap.MemoryMapBytes(bytes(b'\x01\x02\x03'))
+        obj = bitwise.parse(defn, data)
+        # Make sure the union is counted as a single byte
+        self.assertEqual(8 * 3, obj.st.size())
+
+        # Make sure raw operations work across unions
+        obj.st.set_raw(b'\x00' * 3)
+        self.assertEqual(0, obj.st.foo.bar1)
+        obj.st.fill_raw(b'\xFF')
+        self.assertEqual(0x0F, obj.st.foo.bar1)
+        self.assertEqual(b'\xFF\xFF\xFF', obj.st.get_raw())
+
+
 class TestBitwisePrintoffset(BaseTest):
     @mock.patch.object(bitwise.LOG, 'debug')
     def test_printoffset(self, mock_log):
