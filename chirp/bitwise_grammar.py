@@ -75,7 +75,7 @@ def directive():
 
 
 def _block_inner():
-    return -2, [definition, struct, directive]
+    return -2, [definition, struct, union, directive]
 
 
 def _block():
@@ -92,6 +92,10 @@ def struct_decl():
 
 def struct():
     return keyword("struct"), [struct_defn, struct_decl], ";"
+
+
+def union():
+    return keyword("union"), _block, [array, symbol], ";"
 
 
 def _language():
