@@ -742,11 +742,11 @@ YAESU_PRESETS = {
 # list of (array name, (list of memories in that array))
 # array names must match names of memories defined for radio
 SPECIALS = [
+    ("Presets", list(YAESU_PRESETS.keys())),
     ("Skip", SKIPNAMES),
     ("PMS", PMSNAMES),
     ("Home", HOMENAMES),
-    ("Presets", list(YAESU_PRESETS.keys()))
-]
+    ]
 # Band edges are integer Hz.
 VALID_BANDS = [
     (510000, 1790000),
@@ -784,35 +784,51 @@ class FT1Bank(chirp_common.NamedBank):
 class FT1BankModel(chirp_common.BankModel,
                    chirp_common.SpecialBankModelInterface):
     """A FT1D bank model"""
+
     def __init__(self, radio, name='Banks'):
         super(FT1BankModel, self).__init__(radio, name)
-
         _banks = self._radio._memobj.bank_info
         self._bank_mappings = []
         for index, _bank in enumerate(_banks):
             bank = FT1Bank(self, "%i" % index, "BANK-%i" % index)
             bank.index = index
             self._bank_mappings.append(bank)
+        # _rn are the radio's predefined (read-only)  channel numbers    
+        _rn = list(YAESU_PRESETS[i][0] for i in YAESU_PRESETS.keys())
+        # _cn are CHIRP's predefined-special channel numbers    
+        _cn = list(self._radio._first_preset + i
+                   for i in range(len(YAESU_PRESETS)))
+        # these 2 dictionaries covert _cn to _rn and vice-versa
+        self._c2r = dict(zip(_cn, _rn))
+        self._r2c = dict(zip(_rn, _cn))
 
-    def get_bankable_specials(self):
-        """ tell banks to handle PRESETS (last of the SPECIALS """
+    def get_bankable_specials(self) -> list:
+        """ tell banks to handle PRESETS (CHIRP handles these as SPECIALS) """
         return list(YAESU_PRESETS.keys())
 
-    def get_num_mappings(self):
+    def get_num_mappings(self) -> int:
+        ''' Return number of CHIRP's bank objects, 
+            presumably = number of radio banks '''
+        print(f'get_num_mappings: {len(self._bank_mappings)}')
         return len(self._bank_mappings)
 
-    def get_mappings(self):
+    def get_mappings(self) -> list:
+        ''' Return list of all defined bank objects '''
         return self._bank_mappings
 
-    def _channel_numbers_in_bank(self, bank):
+    def _channel_numbers_in_bank(self, bank: chirp_common.Bank) -> set:
+        ''' Returns set of defined channels in specific bank object '''
         _bank_used = self._radio._memobj.bank_used[bank.index]
         if _bank_used.in_use == 0xFFFF:
             return set()
-
         _members = self._radio._memobj.bank_members[bank.index]
-        return set([int(ch) + 1 for ch in _members.channel if ch != 0xFFFF])
+        _chans = set([int(ch) + 1 for ch in _members.channel if ch != 0xFFFF])
+        print(f'_channel_numbers_in_bank: "{bank}[{bank.index}]={_chans}')
+        return _chans
 
-    def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
+    def _update_bank_with_channel_numbers(self,
+             bank: chirp_common.Bank, channels_in_bank: set) -> None:
+        ''' Put identifiers (channels_in_bank)  into specific bank object '''
         _members = self._radio._memobj.bank_members[bank.index]
         if len(channels_in_bank) > len(_members.channel):
             raise Exception("Too many entries in bank %d" % bank.index)
@@ -824,13 +840,15 @@ class FT1BankModel(chirp_common.BankModel,
                 LOG.warning("Bank %d uses Yaesu preset frequency id=%04X. "
                          "Chirp cannot see or change that entry." % (
                              bank.index, channel_number))
+                _members.channel[index] = self.r2c[channel_number]
             empty = index + 1
         for index in range(empty, len(_members.channel)):
             _members.channel[index] = 0xFFFF
 
     def add_memory_to_mapping(self,
                                memory: chirp_common.Memory,
-                               bank) -> None:
+                               bank: chirp_common.Bank) -> None:
+        ''' Add identified CHIRP Memory to specific bank object '''
         channels_in_bank = self._channel_numbers_in_bank(bank)
         channels_in_bank.add(memory.number)
         self._update_bank_with_channel_numbers(bank, channels_in_bank)
@@ -840,7 +858,8 @@ class FT1BankModel(chirp_common.BankModel,
 
     def remove_memory_from_mapping(self,
                                    memory: chirp_common.Memory,
-                                   bank) -> None:
+                                   bank: chirp_common.Bank) -> None:
+        ''' Remove specific CHIRP memory from specific bank object '''
         channels_in_bank = self._channel_numbers_in_bank(bank)
         try:
             channels_in_bank.remove(memory.number)
@@ -853,19 +872,22 @@ class FT1BankModel(chirp_common.BankModel,
             _bank_used = self._radio._memobj.bank_used[bank.index]
             _bank_used.in_use = 0xFFFF
 
-    def get_mapping_memories(self, bank):
+    def get_mapping_memories(self, bank: chirp_common.Bank) -> list:
+        ''' Return list of CHIRP memories in specific bank object '''
         memories = []
+        print(f'get_mapping_memories: {bank}'
+              f'{self._channel_numbers_in_bank(bank)}')
         for channel in self._channel_numbers_in_bank(bank):
             memories.append(self._radio.get_memory(channel))
-
         return memories
 
-    def get_memory_mappings(self, memory):
+    def get_memory_mappings(self, memory: chirp_common.Bank) -> list:
+        ''' Return list of bank objects that refer to specific CHIRP memory '''
         banks = []
         for bank in self.get_mappings():
             if memory.number in self._channel_numbers_in_bank(bank):
                 banks.append(bank)
-
+        print(f'get_memory_mapping: {memory.number}, {banks}')
         return banks
 
 
@@ -884,6 +906,9 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     _block_lengths = [10, 130497]
     _block_size = 32
     _first_preset = None
+    _first_PMS = None
+    _first_Home = None
+    _first_Skip = None
     MAX_MEM_SLOT = 900
     _mem_params = {
          "memnum": 900,            # size of memories array
@@ -1118,16 +1143,19 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             result.append(str(msg_text).rstrip("\xFF"))
         return result
 
-#   Called with a "memref" index to CHIRP memory (int or str)
-#   and optionally with a "extref" extended name.
-#   Find and return the corresponding memobj
-#   Returns:
-#       Corresponding radio memory object
-#       Corresponding radio alag structure (if any)
-#       index into the specific memory object structure (int) ndx
-#       overall index into memory & specials (int) num
-#       an indicator of the specific radio object structure (str)
     def slotloc(self, memref, extref=None):
+        '''
+        Determine Radio memory location based upon CHIRP memory referenc
+        Called with a "memref" index to CHIRP memory (int or str)
+        and optionally with a "extref" extended name.
+        Find and return the corresponding memobj
+        Returns a set, with::
+           Corresponding radio memory object
+           Corresponding radio flag structure (if any)
+           Index into the specific memory object structure (int) ndx
+           Overall index into memory & specials (int) num
+           Specifier for the radio object structure (str)
+        '''
         array = None
         num = memref
         ename = ""
@@ -1194,6 +1222,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.extd_number = ename
             mem.name = self._decode_label(_mem)
             mem.immutable += ["empty", "number", "extd_number", "skip"]
+            if not self._first_Home:
+                self._first_Home = mem.number
         elif array == "Presets":
             # read data from specific YAESU_PRESETS (returned as _mem)
             if not self._first_preset:
@@ -1214,6 +1244,10 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         elif array != "memory":
             mem.extd_number = ename
             mem.immutable += ["name", "extd_number"]
+            if array == "PMS" and not self._first_PMS:
+                self._first_PMS = mem.number
+            if array == "Skip" and not self._first_Skip:
+                self._first_Skip = mem.number
         else:
             mem.name = self._decode_label(_mem)
 
