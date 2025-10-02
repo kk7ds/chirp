@@ -613,7 +613,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
     _expanded_limits = False
     _upload_calibration = False
     _pttid_list = ["off", "BOT", "EOT", "BOTH"]
-    _steps = [1.0, 2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 8.33]
+    _steps = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
     _langs = ["Chinese", "English"]
     _backlight = ["Off"] + ['%is' % (i + 1) for i in range(5)]
 
