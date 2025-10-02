@@ -92,9 +92,8 @@ struct {
      screenlight:1,
      rogerbeep:1,
      rev_3:2;
-  u8 homepoweronzone_1;
-  u8 poweron_type_1:4,
-     homepoweronzone_1_height:4;
+  ul16 poweron_type_1:4,
+       homepoweronzone_1:12;
   ul16 homepoweronch_1;
   u8 relaytaildelay;
   u8 radioid[10];
@@ -111,9 +110,8 @@ struct {
      homeselect:3,
      homeindex:2,
      chdisplay:2;
-  u8 homepoweronzone_2;
-  u8 poweron_type_2:4,
-     homepoweronzone_2_height:4;
+  ul16 poweron_type_2:4,
+     homepoweronzone_2:12;
   ul16 homepoweronch_2;
   ul16 homepoweronzone_3;
   ul16 homepoweronch_3;
@@ -305,8 +303,8 @@ struct {
      char fastcall9[16];
      char fastcall10[16];
      u8 rev_1:6,
-        DecodingEnable:1,
-        EncodingEnable:1;
+        EncodingEnable:1,
+        DecodingEnable:1;
      u8 dtmfstatus;
      u8 rev_2[12];
 } dtmfs[4];
@@ -867,6 +865,8 @@ def _get_memory(self, mem, _mem, ch_index):
                txtone, (_mem.txctcvaluetype == 0x3) and "R" or "N")
     chirp_common.split_tone_decode(mem, tx_tone, rx_tone)
     mem.power = POWER_LEVELS[(1 if _mem.power == 2 else 0)]
+    if ch_index < 2:
+        mem.immutable += ["name"]
     return mem
 
 
@@ -980,12 +980,15 @@ def get_common_setting(self, common):
             "Channel Type B",
             RadioSettingValueList(opts, current_index=_settings.homechtype_2)))
     opts = ["Last Active Channel", "Designated Channel"]
+    print(_settings)
+    print(_settings.poweron_type_1)
     common.append(
         RadioSetting(
             "settings.poweron_type_1",
             "Power On A",
             RadioSettingValueList(opts,
                                   current_index=_settings.poweron_type_1)))
+    print(_settings.poweron_type_2)
     common.append(
         RadioSetting(
             "settings.poweron_type_2",
@@ -1088,7 +1091,7 @@ def get_dtmf_setting(self, dtmf):
     dtmf.append(
         get_radiosetting_by_key(
             self, _dtmf_comm, "stunmode",
-            "Stun Type", _dtmf_comm.stunmode - 1, opts))
+            "Stun Type", _dtmf_comm.stunmode, opts))
     opts = ["300ms", "550ms", "800ms", "1050ms"]
     dtmf.append(
         RadioSetting(
@@ -1250,7 +1253,7 @@ def get_scan_list(self, scan_list):
         rs.set_apply_callback(set_scan_list_callback,
                               self, i, "scantxch")
         rsg.append(rs)
-        opts = ["%ss" % (x + 1) for x in range(0, 16, 1)]
+        opts = ["%ss" % (x + 1) for x in range(0, 17, 1)]
         rs = RadioSetting(
             "scanlist.hangtime_%s" % index,
             "Scan Hang Time",
@@ -1416,8 +1419,7 @@ def _set_memory(self, mem, _mem, ch_index):
     if mem.empty:
         return
     _mem.rxfreq = rx_freq
-    channel_name = mem.name
-    _mem.alias = channel_name.ljust(14)
+    _mem.alias = mem.name.ljust(14)
     txfrq = (int(rx_freq - mem.offset)
              if mem.duplex == "-" and mem.offset > 0
              else (int(rx_freq + mem.offset)
@@ -1426,7 +1428,7 @@ def _set_memory(self, mem, _mem, ch_index):
     _mem.txfreq = txfrq
     _mem.bandwidth = 3 if mem.mode == "FM" else 1
     if mem.power in POWER_LEVELS:
-        _mem.power = POWER_LEVELS.index(mem.power)
+        _mem.power = 2 if POWER_LEVELS.index(mem.power) == 1 else 0
     else:
         _mem.power = 0
     ((txmode, txtone, txpol),
@@ -1571,28 +1573,30 @@ def get_ch_items_by_index(ch_items, ch_index_dict):
 
 
 def get_ch_index(self):
-    ch_dict = []
-    ch_data = self._memobj.channeldata
-    ch_num = ch_data.chnum
-    for i in range(0, ch_num):
-        ch_dict.append(ch_data.chindex[i])
-    return ch_dict
+    if self._ch_cache is None:
+        ch_data = self._memobj.channeldata
+        self._ch_cache = []
+        seen = set()
+        for i in range(ch_data.chnum):
+            ch_index = int(ch_data.chindex[i])
+            if ch_index != 0xFFFF and ch_index not in seen:
+                seen.add(ch_index)
+                self._ch_cache.append(ch_index)
+    return self._ch_cache
 
 
-def set_ch_index(self, ch_index):
-    if not isinstance(ch_index, list):
+def set_ch_index(self, ch_index_list):
+    if not isinstance(ch_index_list, list):
         raise TypeError("ch_index must be a list")
     _ch_data = self._memobj.channeldata
-    ch_num = len(ch_index)
+    ch_num = len(ch_index_list)
     if len(_ch_data.chindex) < ch_num:
         raise ValueError("Not enough space in chindex array")
     _ch_data.chnum = ch_num
-    ch_index.sort()
-    for i in range(0, 1027):
-        if i < ch_num:
-            _ch_data.chindex[i] = ch_index[i]
-        else:
-            _ch_data.chindex[i] = 0xFFFF
+    for i in range(1027):
+        _ch_data.chindex[i] = (
+            ch_index_list[i] if i < ch_num else 0xFFFF)
+    self._ch_cache = ch_index_list.copy()
 
 
 def get_ch_rxfreq(mem):
@@ -1897,6 +1901,7 @@ class HA1G(chirp_common.CloneModeRadio):
     write_page_len = 1024
     current_model = "HA1G"
     hand_shake_bytes = get_handshake_bytes(MODEL)
+    _ch_cache = None
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -1907,13 +1912,12 @@ class HA1G(chirp_common.CloneModeRadio):
         rf.has_dtcs = True
         rf.has_cross = True
         rf.has_bank = False
-        rf.valid_bands = [(134000000, 174000000), (400000000, 480000000)]
+        rf.valid_bands = [(134000000, 174000010), (400000000, 480000010)]
         rf.has_tuning_step = False
         rf.has_nostep_tuning = True
         rf.valid_name_length = 12
         rf.valid_skips = []
-        rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0,
-                                 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
+        rf.valid_tuning_steps = []
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "".join(
             c for c in "-/;,._!? *#@$%&+=/<>~(){}]'"
             if c not in chirp_common.CHARSET_UPPER_NUMERIC)
@@ -1952,7 +1956,6 @@ class HA1G(chirp_common.CloneModeRadio):
         try:
             logging.debug("come in sync_out")
             do_upload(self)
-
         except Exception as e:
             LOG.exception(
                 "Unexpected error during upload: %s" % e)
@@ -1967,6 +1970,9 @@ class HA1G(chirp_common.CloneModeRadio):
             ch_index = 0 if number == "VFOA" else 1
             mem.number = len(self._memobj.channels) + ch_index + 1
         elif number > len(self._memobj.channels):
+            mem.extd_number = (
+                number - len(self._memobj.channels) == 1 and "VFOA" or "VFOB")
+            number = mem.extd_number
             ch_index = 0 if number == "VFOA" else 1
         else:
             ch_index = number + 2
@@ -1986,8 +1992,9 @@ class HA1G(chirp_common.CloneModeRadio):
         else:
             ch_index = mem.number + 2
         _mem = self._memobj.channels[ch_index]
+        if ch_index < 33 and mem.freq == 0:
+            return
         _set_memory(self, mem, _mem, ch_index)
-        LOG.debug("Setting %i(%s)" % (mem.number, mem.extd_number))
 
     def get_raw_memory(self, number):
         if isinstance(number, str):
@@ -2053,7 +2060,7 @@ class HA1G(chirp_common.CloneModeRadio):
                         setattr(_vfo_scan, name, value)
                     LOG.debug("Setting %s: %s", name, value)
             except Exception:
-                LOG.debug(element.get_name())
+                LOG.exception(element.get_name())
                 raise
 
     def _debank(self, mem):
@@ -2089,3 +2096,14 @@ class HA1UV(HA1G):
             mem.number = number
         _mem = self._memobj.channels[ch_index]
         return _get_memory(self, mem, _mem, ch_index)
+
+
+def set_memory(self, mem):
+    ch_index = 0
+    if mem.number > len(self._memobj.channels):
+        ch_index = 0 if mem.extd_number == "VFOA" else 1
+    else:
+        ch_index = mem.number + 2
+    _mem = self._memobj.channels[ch_index]
+    _set_memory(self, mem, _mem, ch_index)
+    LOG.debug("Setting %i(%s)" % (mem.number, mem.extd_number))
