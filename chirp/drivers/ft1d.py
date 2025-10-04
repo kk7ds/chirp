@@ -1,6 +1,6 @@
 # Copyright 2010 Dan Smith <dsmith@danplanet.com>
 # Copyright 2014 Angus Ainslie <angus@akkea.ca>
-# Copyright 2023 Declan Rieb <WD5EQY@arrl.net>
+# Copyright 2023,2025 Declan Rieb <WD5EQY@arrl.net>
 # Sections of digital settings applied from ft70.py, thus
 # Copyright 2017 Nicolas Pike <nick@zbm2.com>
 #
@@ -27,13 +27,14 @@ from chirp import memmap
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
             RadioSettingValueInteger, RadioSettingValueString, \
             RadioSettingValueList, RadioSettingValueBoolean, \
-            InvalidValueError
+            InvalidValueError, RadioSettingSubGroup
 from chirp import util
 
 LOG = logging.getLogger(__name__)
 
-MEM_SETTINGS_FORMAT = """
-#seekto 0x047e;
+SETTINGS_FORMAT = """
+// Settings
+#seekto 0x047E;
 struct {
   u8 unknown1;
   u8 flag;
@@ -43,18 +44,41 @@ struct {
   } message;
 } opening_message;
 
-#seekto 0x049a;
+// Settings
+#seekto 0x049A;
 struct {
   u8 vfo_a;
   u8 vfo_b;
 } squelch;
 
-#seekto 0x04c1;
+// GM / Digital
+#seekto 0x04BA;
 struct {
-  u8 beep;
-} beep_select;
+    u8 unknown:3,
+        scan_resume:5;          // 52 SCN.RSM
+    u8 unknown1:3,
+       dw_resume_interval:5;       // 22 DW RSM
+    u8 unknown2;
+    u8 unknown3:3,
+        apo:5;                  // 02 APO
+    u8 unknown4:6,
+        gm_ring:2;              // 24 GM RNG
+    u8 temp_cf;               // Placeholder as not found
+    } first_settings;
 
-#seekto 0x04ce;
+// GM / Digital
+// already at 0x04c0;
+// Caution: overloaded at 04c1! only location in FORMATs.
+// Old = beep_select.beep, new is beep_settings.beep_select.
+struct {
+    u8 unknown1:5,
+        beep_level:3;           // 05 BEP.LVL
+    u8 unknown2:6,
+        beep_select:2;          // 04 BEEP
+    } beep_settings;
+
+// Settings
+#seekto 0x04CE;
 struct {
   u8 lcd_dimmer;        // 14 DIMMER
   u8 dtmf_delay;        // 18 DT DLY
@@ -102,12 +126,14 @@ struct {
      dw_rt:1;           // 23 DW RVT;
 } scan_settings;
 
-#seekto 0x54a;
+// Settings
+#seekto 0x054A;
 struct {
     u16 in_use;
 } bank_used[24];
 
-#seekto 0x064a;
+// Settings
+#seekto 0x064A;
 struct {
   u8 unknown0[4];
   u8 frequency_band;
@@ -151,33 +177,34 @@ struct {
   u8 checksum;
 } vfo_info[6];
 
+// Settings
 #seekto 0x%(dtmadd)04X; // FT-1D:0e4a, FT2D:094a
 struct {
   u8 memory[16];
 } dtmf[10];
 
+// Settings
 #seekto 0x0EFE;
 struct {
   u8 unknown[2];
   u8 name[16];
 } bank_info[24];
-
-#seekto 0x154a;
-// These "channels" seem to actually be a structure:
-//  first five bits are flags
-//      0   Unused (1=entry is unused)
-//      1   SW Broadcast
-//      2   VHF Marine
-//      3   WX (weather)
-//      4   ? a mode? ?
-//  11 bits of index into frequency tables
-//
-struct {
-    u16 channel[100];
-} bank_members[24];
 """
 
 MEM_FORMAT = """
+// This FORMAT is used in FT-xD, FTM-3200D and FTM-7250D
+// It relies on defined integer for memnum (number of memories)
+// Memory: memory-flags structure used in Yaesu FT-xD, et. al.
+struct flagslot {
+  u8 nosubvfo:1,
+     unknown:3,
+     pskip:1,
+     skip:1,
+     used:1,
+     valid:1;
+};
+
+// Memory: memory structure used in FT-xD
 struct memslot {
   u8 unknown0:2,
      mode_alt:1,  // mode for FTM-3200D
@@ -204,29 +231,42 @@ struct memslot {
      automode:1,
      unknown9:3;
 };
+
+// Memory       n.b., Unneeded for FTM-3200 and FTM-7250, but needs memslot
+#seekto 0x10CA;
+struct memslot Home[11];
+
+// Settings     n.b., these are unused in FTM-3200 and FTM-7250,
+//              But are needed for spacing!
+#seekto 0x154A;
+// These "channels" seem to actually be a structure:
+//  first five bits are flags
+//      0   Unused (1=entry is unused)
+//      1   SW Broadcast
+//      2   VHF Marine
+//      3   WX (weather)
+//      4   ? a mode? ?
+//  11 bits of index into frequency tables
+//
+struct {
+    u16 channel[100];
+} bank_members[24];
+
+// Memory: had unneeded 0x280A
+struct flagslot flag[%(memnum)d];
+struct flagslot flagskp[99];
+struct flagslot flagPMS[100];
+
+// Memory
 #seekto 0x2D4A;
 struct memslot memory[%(memnum)d];
 struct memslot Skip[99];
 struct memslot PMS[100];
-#seekto 0x10ca;
-struct memslot Home[11];
-
-struct flagslot {
-  u8 nosubvfo:1,
-     unknown:3,
-     pskip:1,
-     skip:1,
-     used:1,
-     valid:1;
-};
-#seekto 0x280A;
-struct flagslot flag[%(memnum)d];
-struct flagslot flagskp[99];
-struct flagslot flagPMS[100];
 """
 
-MEM_APRS_FORMAT = """
-#seekto 0xbeca;
+DIGITAL_FORMAT = """
+// APRS
+#seekto 0xBECA;
 struct {
   u8 rx_baud;
   u8 custom_symbol;
@@ -344,11 +384,75 @@ struct {
      vibrate_bln:6;
 } aprs;
 
-#seekto 0xc26a;
+// APRS
+#seekto 0xC26A;
 struct {
   char padded_string[60];
 } aprs_beacon_status_txt[5];
 
+// GM / Digital
+#seekto 0xCED0;
+struct {
+    char callsign[10];              // 63 MYCALL
+    u16 charset;                    // character set ID
+    } my_call;
+
+// GM / Digital
+#seekto 0xCF30;
+struct {
+    u8 unknown0;
+    u8 unknown1;
+    u8 unknown2;
+    u8 unknown3;
+    u8 unknown4;
+    u8 unknown5;
+    u8 unknown6;
+    u8 digital_popup;              // 15 DIG.POP
+    } digital_settings_more;
+
+// GM / Digital
+#seekto 0xCF7C;
+struct {
+    u8 unknown0:6,
+       ams_tx_mode:2;              // AMS TX Mode
+    u8 unknown1;
+    u8 unknown2:7,
+       standby_beep:1;             // 07 BEP.STB
+    u8 unknown3;
+    u8 unknown4:6,
+       gm_ring:2;                  // 24 GM RNG
+    u8 unknown5;
+    u8 rx_dg_id;                   // RX DG-ID
+    u8 tx_dg_id;                   // TX DG-ID
+    u8 unknown6:7,
+       vw_mode:1;                  // 16 DIG VW
+    u8 unknown7;
+    } digital_settings;
+
+// Backtrack
+#seekto 0xDF06;
+struct {
+  u8 status; // 01 full 08 empty
+  u8 reserved0; // 00
+  bbcd year; // 17
+  bbcd mon; // 06
+  bbcd day; // 01
+  u8 reserved1; // 06
+  bbcd hour; // 21
+  bbcd min; // xx
+  u8 reserved2; // 00
+  u8 reserved3; // 00
+  char NShemi[1];
+  char lat[3];
+  char lat_min[2];
+  char lat_dec_sec[4];
+  char WEhemi[1];
+  char lon[3];
+  char lon_min[2];
+  char lon_dec_sec[4];
+} backtrack[3];
+
+// APRS
 #seekto 0xFECA;
 struct {
   bbcd date[3];
@@ -371,7 +475,7 @@ struct {
   u16 unknown10;
 } aprs_beacon_meta[60];
 
-#seekto 0x1064A;
+// APRS Had unneeded 0x10641
 struct {
   char dst_callsign[9];
   char path[30];
@@ -380,7 +484,8 @@ struct {
   char body[134];
 } aprs_beacon_pkt[60];
 
-#seekto 0x137c4;
+// APRS
+#seekto 0x137C4;
 struct {
   u8 flag;
   char dst_callsign[6];
@@ -388,110 +493,15 @@ struct {
   char path_and_body[66];
   u8 unknown[70];
 } aprs_message_pkt[60];
-"""
 
-MEM_BACKTRACK_FORMAT = """
-#seekto 0xdf06;
-struct {
-  u8 status; // 01 full 08 empty
-  u8 reserved0; // 00
-  bbcd year; // 17
-  bbcd mon; // 06
-  bbcd day; // 01
-  u8 reserved1; // 06
-  bbcd hour; // 21
-  bbcd min; // xx
-  u8 reserved2; // 00
-  u8 reserved3; // 00
-  char NShemi[1];
-  char lat[3];
-  char lat_min[2];
-  char lat_dec_sec[4];
-  char WEhemi[1];
-  char lon[3];
-  char lon_min[2];
-  char lon_dec_sec[4];
-} backtrack[3];
-
-"""
-
-MEM_GM_FORMAT = """
-#seekto 0x04ba;
-struct {
-    u8 unknown:3,
-        scan_resume:5;          // 52 SCN.RSM
-    u8 unknown1:3,
-       dw_resume_interval:5;       // 22 DW RSM
-    u8 unknown2;
-    u8 unknown3:3,
-        apo:5;                  // 02 APO
-    u8 unknown4:6,
-        gm_ring:2;              // 24 GM RNG
-    u8 temp_cf;               // Placeholder as not found
-    } first_settings;
-
-#seekto 0x04c0;
-struct {
-    u8 unknown1:5,
-        beep_level:3;           // 05 BEP.LVL
-    u8 unknown2:6,
-        beep_select:2;          // 04 BEEP
-    } beep_settings;
-
-#seekto 0x04ed;
-struct {
-    u8 unknown1:1,
-       unknown2:1,
-       unknown3:1,
-       unknown4:1,
-       unknown5:1,
-       unknown6:1,
-       unknown7:1,
-       unknown8:1;
-     } test_bit_field;
-
-#seekto 0x0ced0;
-struct {
-    char callsign[10];              // 63 MYCALL
-    u16 charset;                    // character set ID
-    } my_call;
-
-#seekto 0xCF30;
-struct {
-    u8 unknown0;
-    u8 unknown1;
-    u8 unknown2;
-    u8 unknown3;
-    u8 unknown4;
-    u8 unknown5;
-    u8 unknown6;
-    u8 digital_popup;              // 15 DIG.POP
-    } digital_settings_more;
-
-#seekto 0xCF7C;
-struct {
-    u8 unknown0:6,
-       ams_tx_mode:2;              // AMS TX Mode
-    u8 unknown1;
-    u8 unknown2:7,
-       standby_beep:1;             // 07 BEP.STB
-    u8 unknown3;
-    u8 unknown4:6,
-       gm_ring:2;                  // 24 GM RNG
-    u8 unknown5;
-    u8 rx_dg_id;                   // RX DG-ID
-    u8 tx_dg_id;                   // TX DG-ID
-    u8 unknown6:7,
-       vw_mode:1;                  // 16 DIG VW
-    u8 unknown7;
-    } digital_settings;
-
-#seekto 0x1d6d3;
+// GM / Digital
+#seekto 0x1D6D3;
 struct {
     char message[32];
     } GM[10];
 
-#seekto 0x1ddca;
+// GM / Digital
+#seekto 0x1DDCA;
 struct {
     struct {
         char name[16];
@@ -506,7 +516,8 @@ struct {
 } WiresX_settings;
 """
 
-MEM_CHECKSUM_FORMAT = """
+CHECKSUM_FORMAT = """
+// Checksum
 #seekto 0x1FDC9;
 u8 checksum;
 """
@@ -903,9 +914,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         return rp
 
     def process_mmap(self):
-        mem_format = MEM_SETTINGS_FORMAT + MEM_FORMAT + MEM_APRS_FORMAT + \
-                MEM_GM_FORMAT + MEM_BACKTRACK_FORMAT + MEM_CHECKSUM_FORMAT
-        self._memobj = bitwise.parse(mem_format % self._mem_params, self._mmap)
+        _mf = SETTINGS_FORMAT + MEM_FORMAT + DIGITAL_FORMAT + CHECKSUM_FORMAT
+        self._memobj = bitwise.parse(_mf % self._mem_params, self._mmap)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -939,8 +949,9 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 yaesu_clone.YaesuChecksum(0x0000, 0x1FDC9)]
 
     @staticmethod
-    def _add_ff_pad(val, length):
-        return val.ljust(length, b"\xFF")[:length]
+    def _add_ff_pad(val: str, length: int) -> str:
+        _fill = b'\xff' if isinstance(val, bytes | bytearray) else '\xff'
+        return val.ljust(length, _fill)[:length]
 
     @classmethod
     def _strip_ff_pads(cls, messages):
@@ -1045,10 +1056,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.offset = int(_mem.offset) * 1000
             mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
             self._get_tmode(mem, _mem)
-            if mem.duplex is None:
-                mem.duplex = DUPLEX[""]
-            else:
-                mem.duplex = DUPLEX[_mem.duplex]
+            mem.duplex = DUPLEX[_mem.duplex] if _mem.duplex else ""
             if mem.duplex == "split":
                 mem.offset = chirp_common.fix_rounded_step(mem.offset)
             mem.mode = self._decode_mode(_mem)
@@ -1819,7 +1827,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         mycalle = RadioSettingValueString(0, 10, mycallstr, False,
                                           charset=self._MYCALL_CHR_SET)
         rs = RadioSetting('mycall.callsign',
-                          'MYCALL (10 uppercase chars)', mycalle)
+                          'MYCALL', mycalle)
         rs.set_apply_callback(self.apply_mycall, mycall)
         menu.append(rs)
 
@@ -1907,65 +1915,36 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         # WiresX settings
         wxc = self._memobj.WiresX_settings
-        for i in range(0, 5):
-            cname = "WiresX_settings.Category[%d].name" % (i + 1)
-            c = ''
-            for j in range(0, 16):
-                s = wxc.Category[i].name[j]
-                if int(s) != 0xff:
-                    c = c + str(s)
+        for i in range(5):
+            WXCmenu = RadioSettingSubGroup(
+                        f"WiresX_settings.Category[{i}].RoomsPerCategory",
+                        f"Category{i + 1} Rooms")
+            WXmenu.append(WXCmenu)
+
+            cname = f"WiresX_settings.Category[{i}].name"
+            c = str(wxc.Category[i].name).rstrip('\xff').ljust(16)
             val = RadioSettingValueString(0, 16, c)
-            rs = RadioSetting(cname, "Category %d" % (i+1), val)
-            rs.set_apply_callback(self.apply_WiresX_category,
-                                  wxc.Category[i].name)
-            WXmenu.append(rs)
+            rs = RadioSetting(cname, f"Category {i+1: 2d} Name", val)
+            WXCmenu.append(rs)
 
             r = wxc.RoomsPerCategory[i]
-            rn = False
-            for j in range(0, 20):
-                idn = "0"
-                if int(r.Rooms[j].ID[1]) != 0xff:
-                    idn = r.Rooms[j].ID
-                    rn = False
-                elif rn:
-                    break
-                elif j > 0:
-                    rn = True
-                val = RadioSettingValueInteger(0, 99999, int(str(idn)))
-                vname = "WiresX_settings.RoomsperCategory%s" \
-                        "Rooms[%d].ID" % (i, j)
-                rs = RadioSetting(vname, "   Room ID%2s (5 numerals)" %
-                                  (j+1), val)
-                rs.set_apply_callback(self.apply_WiresX_roomid,
-                                      r.Rooms[j])
-                WXmenu.append(rs)
-                cn = ''
-                for l in range(0, 16):
-                    s = r.Rooms[j].name[l]
-                    if int(s) != 0xff:
-                        cn = cn + str(s)
-                val = RadioSettingValueString(0, 16, str(cn))
-                cname = "WiresX_settings.RoomsperCategory%s" \
-                        "Rooms[%d].name" % (i, j)
-                rs = RadioSetting(cname, "   Room Name%2s (16 chars)" %
-                                  (j+1), val)
-                rs.set_apply_callback(self.apply_WiresX_roomname,
-                                      r.Rooms[j])
-                WXmenu.append(rs)
+            for j in range(20):
+                cn = str(r.Rooms[j].name).strip('\xff').ljust(16)
+                val = RadioSettingValueString(0, 16, cn)
+                cname = f"WiresX_settings.RoomsPerCategory[{i}]."\
+                    f"Rooms[{j}].name"
+                dname = f"Category {i + 1} Room{j + 1: 02d}"
+                rs = RadioSetting(cname, dname + ' Designation', val)
+
+                WXCmenu.append(rs)
+                idn = str(r.Rooms[j].ID).strip('\xff').ljust(5)
+                val = RadioSettingValueString(0, 5, idn)
+                vname = f"WiresX_settings.RoomsPerCategory[{i}].Rooms[{j}].ID"
+                rs = RadioSetting(vname, dname + " YSF Number",
+                                  val)
+                WXCmenu.append(rs)
             pass
         return topmenu
-
-    def apply_WiresX_category(cls, setting, obj):
-        val = setting.value.get_value()
-        setattr(obj, "name", val)
-
-    def apply_WiresX_roomid(self, setting, obj):
-        val = setting.value.get_value()
-        obj.ID = self.zero_pad(val, 5)
-
-    def apply_WiresX_roomname(cls, setting, obj):
-        val = setting.value.get_value()
-        obj.name = str(val)
 
     def _get_dtmf_settings(self):
         menu = RadioSettingGroup("dtmf_settings", "DTMF")
@@ -2032,12 +2011,12 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("scan_settings.lamp", "Lamp", val)
         menu.append(rs)
 
-        beep_select = self._memobj.beep_select
+        beep_select = self._memobj.beep_settings.beep_select
 
         val = RadioSettingValueList(
             self._BEEP_SELECT,
-            current_index=beep_select.beep)
-        rs = RadioSetting("beep_select.beep", "Beep Select", val)
+            current_index=beep_select)
+        rs = RadioSetting("beep_settings.beep_select", "Beep Select", val)
         menu.append(rs)
 
         opening_message = self._memobj.opening_message
@@ -2054,7 +2033,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return menu
 
-    def _decode_opening_message(self, opening_message):
+    def _decode_opening_message(self, opening_message) -> RadioSetting:
         msg = ""
         for i in opening_message.message.padded_yaesu:
             if i == 0xFF:
@@ -2409,7 +2388,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     def apply_ff_padded_string(cls, setting, obj):
         # FF pad.
         val = setting.value.get_value()
-        max_len = getattr(obj, "padded_string").size() / 8
+        max_len = getattr(obj, "padded_string").size() // 8
         val = str(val).rstrip()
         setattr(obj, "padded_string", cls._add_ff_pad(val, max_len))
 
@@ -2463,13 +2442,13 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                     LOG.error("Setting %s is not in the memory map: %s" %
                               (element.get_name(), e))
             except Exception:
-                LOG.debug(element.get_name())
+                LOG.debug(f'Trouble setting "{element.get_name()}"')
                 raise
 
     def apply_ff_padded_yaesu(cls, setting, obj):
         # FF pad yaesus custom string format.
         rawval = setting.value.get_value()
-        max_len = getattr(obj, "padded_yaesu").size() / 8
+        max_len = getattr(obj, "padded_yaesu").size() // 8
         rawval = str(rawval).rstrip()
         val = [CHARSET.index(x) for x in rawval]
         for x in range(len(val), max_len):
@@ -2518,37 +2497,37 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def apply_bt_lat(cls, setting, obj):
         val = setting.value.get_value()
-        val = cls.backtrack_zero_pad(val, 3)
+        val = cls.zero_pad(val, 3)
 
         setattr(obj, "lat", val)
 
     def apply_bt_lat_min(cls, setting, obj):
         val = setting.value.get_value()
-        val = cls.backtrack_zero_pad(val, 2)
+        val = cls.zero_pad(val, 2)
 
         setattr(obj, "lat_min", val)
 
     def apply_bt_lat_dec_sec(cls, setting, obj):
         val = setting.value.get_value()
-        val = cls.backtrack_zero_pad(val, 4)
+        val = cls.zero_pad(val, 4)
 
         setattr(obj, "lat_dec_sec", val)
 
     def apply_bt_lon(cls, setting, obj):
         val = setting.value.get_value()
-        val = cls.backtrack_zero_pad(val, 3)
+        val = cls.zero_pad(val, 3)
 
         setattr(obj, "lon", val)
 
     def apply_bt_lon_min(cls, setting, obj):
         val = setting.value.get_value()
-        val = cls.backtrack_zero_pad(val, 2)
+        val = cls.zero_pad(val, 2)
 
         setattr(obj, "lon_min", val)
 
     def apply_bt_lon_dec_sec(cls, setting, obj):
         val = setting.value.get_value()
-        val = cls.backtrack_zero_pad(val, 4)
+        val = cls.zero_pad(val, 4)
 
         setattr(obj, "lon_dec_sec", val)
 
