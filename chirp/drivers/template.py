@@ -15,6 +15,7 @@
 
 from chirp import chirp_common, memmap
 from chirp import bitwise
+from chirp import directory
 
 # Here is where we define the memory map for the radio. Since
 # We often just know small bits of it, we can use #seekto to skip
@@ -67,7 +68,7 @@ def do_upload(radio):
 
 
 # Uncomment this to actually register this radio in CHIRP
-# @directory.register
+@directory.register
 class TemplateRadio(chirp_common.CloneModeRadio):
     """Acme Template"""
     VENDOR = "Acme"     # Replace this with your vendor
