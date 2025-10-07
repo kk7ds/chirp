@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-08 18:10-0700\n"
+"POT-Creation-Date: 2025-10-08 15:51-0700\n"
 "PO-Revision-Date: 2024-11-11 02:28+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language-Team: \n"
@@ -998,7 +998,7 @@ msgstr "总是以最近的列表启动"
 msgid "Amateur"
 msgstr "业余"
 
-#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:625
+#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:629
 msgid "An error has occurred"
 msgstr "发生错误"
 
@@ -1069,7 +1069,7 @@ msgstr ""
 msgid "Canada"
 msgstr "加拿大"
 
-#: ../wxui/common.py:496
+#: ../wxui/common.py:500
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "更改此设置需要从映像中刷新设置，这将立即发生。"
 
@@ -1262,7 +1262,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr "DTMF 解码"
 
-#: ../wxui/memedit.py:2863
+#: ../wxui/memedit.py:2873
 msgid "DV Memory"
 msgstr "该存储"
 
@@ -1303,7 +1303,7 @@ msgstr "对比原始存储"
 msgid "Diff against another editor"
 msgstr ""
 
-#: ../wxui/memedit.py:2780
+#: ../wxui/memedit.py:2790
 msgid "Digital Code"
 msgstr "数字代码"
 
@@ -1378,12 +1378,12 @@ msgstr "双工"
 msgid "Edit %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2810
+#: ../wxui/memedit.py:2820
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "修改 %i 个存储的详细信息"
 
-#: ../wxui/memedit.py:2808
+#: ../wxui/memedit.py:2818
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "修改存储 %i 的详细信息"
@@ -1507,7 +1507,7 @@ msgstr "以CSV文件格式导出"
 msgid "Export to CSV..."
 msgstr "以CSV文件格式导出……"
 
-#: ../wxui/memedit.py:2852
+#: ../wxui/memedit.py:2862
 msgid "Extra"
 msgstr "更多"
 
@@ -1529,6 +1529,10 @@ msgid ""
 "information about repeaters in Europe. No account is\n"
 "required."
 msgstr "免费中继数据库，提供欧洲中继的最新信息。不需要帐户。"
+
+#: ../wxui/memedit.py:2771
+msgid "Failed to export some memories"
+msgstr ""
 
 #: ../wxui/developer.py:499
 msgid "Failed to load radio browser"
@@ -1661,8 +1665,8 @@ msgstr ""
 "5 - 断开接口电缆！否则将没有右侧音频！\n"
 
 #: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:699 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
+#: ../drivers/btech.py:684 ../drivers/gmrsuv1.py:391
+#: ../drivers/tdxone_tdq8a.py:441 ../drivers/uv6r.py:339
 #: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
 #: ../drivers/baofeng_uv17Pro.py:496 ../drivers/bf_t1.py:482
 msgid ""
@@ -1765,7 +1769,7 @@ msgstr ""
 "5 - 断开接口电缆，否则将没有右侧音频！\n"
 "6 - 重启电台以退出克隆模式\n"
 
-#: ../drivers/btech.py:705 ../drivers/bf_t1.py:488
+#: ../drivers/btech.py:690 ../drivers/bf_t1.py:488
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1807,7 +1811,7 @@ msgstr ""
 "3 - 打开电台\n"
 "4 - 单击 \"确定 \"开始\n"
 
-#: ../drivers/vgc.py:598 ../drivers/lt725uv.py:496
+#: ../drivers/vgc.py:583 ../drivers/lt725uv.py:481
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1835,9 +1839,9 @@ msgstr ""
 "3 - 打开电台\n"
 "4 - 下载电台数据\n"
 
-#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
+#: ../drivers/vgc.py:589 ../drivers/mursv1.py:347
 #: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/lt725uv.py:487 ../drivers/tdxone_tdq8a.py:447
 #: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
 #: ../drivers/baofeng_uv17Pro.py:502
 msgid ""
@@ -1885,19 +1889,19 @@ msgstr "频率 %s 超出支持范围"
 msgid "Frequency granularity in kHz"
 msgstr "频率粒度（kHz）"
 
-#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1394
-#: ../drivers/tdh8.py:2610 ../drivers/uv5r.py:1940
+#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1379
+#: ../drivers/tdh8.py:2506 ../drivers/uv5r.py:1940
 #: ../drivers/baofeng_uv17Pro.py:1266
 msgid "Frequency in this range must not be AM mode"
 msgstr "此范围内的频率不能是AM模式"
 
-#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1391
-#: ../drivers/tdh8.py:2607 ../drivers/uv5r.py:1936
-#: ../drivers/baofeng_uv17Pro.py:1262
+#: ../drivers/ga510.py:1065 ../drivers/radtel_rt900.py:1360
+#: ../drivers/mml_jc8810.py:1376 ../drivers/tdh8.py:2503
+#: ../drivers/uv5r.py:1936 ../drivers/baofeng_uv17Pro.py:1262
 msgid "Frequency in this range requires AM mode"
 msgstr "此范围内的频率需要是AM模式"
 
-#: ../drivers/tdh8.py:2614
+#: ../drivers/tdh8.py:2510
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr "超出发射频段的频率必须是双工=关闭"
 
@@ -2019,7 +2023,7 @@ msgstr "无效项目"
 msgid "Invalid ZIP code"
 msgstr "无效的邮政编码"
 
-#: ../wxui/memedit.py:1980 ../wxui/memedit.py:2943
+#: ../wxui/memedit.py:1980 ../wxui/memedit.py:2953
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "编辑无效：%s"
@@ -2202,7 +2206,7 @@ msgstr "模块已加载"
 msgid "Module loaded successfully"
 msgstr "模块加载成功"
 
-#: ../wxui/common.py:641
+#: ../wxui/common.py:645
 msgid "More Info"
 msgstr "更多信息"
 
@@ -2418,7 +2422,7 @@ msgstr "密码"
 msgid "Paste"
 msgstr "粘贴"
 
-#: ../wxui/common.py:796
+#: ../wxui/common.py:800
 msgid "Paste external memories"
 msgstr ""
 
@@ -2648,7 +2652,7 @@ msgstr "建议使用 55.2"
 msgid "Redo"
 msgstr ""
 
-#: ../wxui/common.py:498
+#: ../wxui/common.py:502
 msgid "Refresh required"
 msgstr "需要刷新"
 
@@ -3141,7 +3145,7 @@ msgstr "无法查询"
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "无法读取最后一个块。这通常发生在所选模型为美国，但电台是非美国的（或扩频的）情况下。请选择正确的模型并重试。"
 
-#: ../wxui/common.py:693
+#: ../wxui/common.py:697
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "无法在此系统上显示 %s"
@@ -3223,12 +3227,12 @@ msgstr "用户名"
 msgid "Value does not fit in %i bits"
 msgstr "数值无法用 %i 位表示"
 
-#: ../wxui/common.py:535
+#: ../wxui/common.py:539
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "数值必须至少为 %.4f"
 
-#: ../wxui/common.py:539
+#: ../wxui/common.py:543
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "数值必须至多为 %.4f"
@@ -3246,7 +3250,7 @@ msgstr "数值必须为零或更大"
 msgid "Value to search memory field for"
 msgstr ""
 
-#: ../wxui/memedit.py:2843
+#: ../wxui/memedit.py:2853
 msgid "Values"
 msgstr "数值"
 
@@ -3258,7 +3262,7 @@ msgstr "厂商"
 msgid "View"
 msgstr "查看"
 
-#: ../wxui/common.py:483
+#: ../wxui/common.py:487
 msgid "WARNING!"
 msgstr "警告！"
 

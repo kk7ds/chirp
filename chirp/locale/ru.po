@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-08 18:10-0700\n"
+"POT-Creation-Date: 2025-10-08 15:51-0700\n"
 "PO-Revision-Date: 2025-08-22 15:43+0300\n"
 "Last-Translator: Olesya Gerasimenko <goa@altlinux.org>\n"
 "Language-Team: Basealt Translation Team\n"
@@ -1046,7 +1046,7 @@ msgstr "Всегда использовать список недавних"
 msgid "Amateur"
 msgstr "Любительская радиосвязь"
 
-#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:625
+#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:629
 msgid "An error has occurred"
 msgstr "Ошибка"
 
@@ -1117,7 +1117,7 @@ msgstr "Когда выполняется запрос с учётом расп�
 msgid "Canada"
 msgstr "Канада"
 
-#: ../wxui/common.py:496
+#: ../wxui/common.py:500
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "Для изменения этого параметра требуется обновить параметры из образа, что и будет сейчас выполнено."
 
@@ -1313,7 +1313,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr "Расшифровка DTMF"
 
-#: ../wxui/memedit.py:2863
+#: ../wxui/memedit.py:2873
 msgid "DV Memory"
 msgstr "DV-память"
 
@@ -1354,7 +1354,7 @@ msgstr "Сравнить необработанные ячейки памяти"
 msgid "Diff against another editor"
 msgstr "Сравнить с другим редактором"
 
-#: ../wxui/memedit.py:2780
+#: ../wxui/memedit.py:2790
 msgid "Digital Code"
 msgstr "Цифровой код"
 
@@ -1429,12 +1429,12 @@ msgstr "Дуплекс"
 msgid "Edit %i memories"
 msgstr "Изменить ячейки памяти (%i)"
 
-#: ../wxui/memedit.py:2810
+#: ../wxui/memedit.py:2820
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Редактировать сведения о ячейках памяти (%i)"
 
-#: ../wxui/memedit.py:2808
+#: ../wxui/memedit.py:2818
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Редактировать сведения о ячейке памяти %i"
@@ -1557,7 +1557,7 @@ msgstr "Экспорт в CSV"
 msgid "Export to CSV..."
 msgstr "Экспорт в CSV..."
 
-#: ../wxui/memedit.py:2852
+#: ../wxui/memedit.py:2862
 msgid "Extra"
 msgstr "Дополнительно"
 
@@ -1582,6 +1582,10 @@ msgstr ""
 "БЕСПЛАТНАЯ база данных репитеров, содержащая самые\n"
 "актуальные сведения о репитерах в Европе. Учётная запись\n"
 "не требуется."
+
+#: ../wxui/memedit.py:2771
+msgid "Failed to export some memories"
+msgstr ""
 
 #: ../wxui/developer.py:499
 msgid "Failed to load radio browser"
@@ -1716,8 +1720,8 @@ msgstr ""
 "    не будет звука!\n"
 
 #: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:699 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
+#: ../drivers/btech.py:684 ../drivers/gmrsuv1.py:391
+#: ../drivers/tdxone_tdq8a.py:441 ../drivers/uv6r.py:339
 #: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
 #: ../drivers/baofeng_uv17Pro.py:496 ../drivers/bf_t1.py:482
 msgid ""
@@ -1824,7 +1828,7 @@ msgstr ""
 "6 - Выключите и снова включите питание станции, чтобы выйти\n"
 "    из режима клонирования\n"
 
-#: ../drivers/btech.py:705 ../drivers/bf_t1.py:488
+#: ../drivers/btech.py:690 ../drivers/bf_t1.py:488
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1866,7 +1870,7 @@ msgstr ""
 "3 - Включите вашу станцию\n"
 "4 - Чтобы начать, нажмите «ОК»\n"
 
-#: ../drivers/vgc.py:598 ../drivers/lt725uv.py:496
+#: ../drivers/vgc.py:583 ../drivers/lt725uv.py:481
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1894,9 +1898,9 @@ msgstr ""
 "3 - Включите вашу станцию\n"
 "4 - Выполните загрузку ваших радиоданных\n"
 
-#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
+#: ../drivers/vgc.py:589 ../drivers/mursv1.py:347
 #: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/lt725uv.py:487 ../drivers/tdxone_tdq8a.py:447
 #: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
 #: ../drivers/baofeng_uv17Pro.py:502
 msgid ""
@@ -1944,19 +1948,19 @@ msgstr "Частота %s находится за пределами подде�
 msgid "Frequency granularity in kHz"
 msgstr "Гранулярность по частоте (кГц)"
 
-#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1394
-#: ../drivers/tdh8.py:2610 ../drivers/uv5r.py:1940
+#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1379
+#: ../drivers/tdh8.py:2506 ../drivers/uv5r.py:1940
 #: ../drivers/baofeng_uv17Pro.py:1266
 msgid "Frequency in this range must not be AM mode"
 msgstr "Для частоты в этом диапазоне не должен использоваться AM-режим"
 
-#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1391
-#: ../drivers/tdh8.py:2607 ../drivers/uv5r.py:1936
-#: ../drivers/baofeng_uv17Pro.py:1262
+#: ../drivers/ga510.py:1065 ../drivers/radtel_rt900.py:1360
+#: ../drivers/mml_jc8810.py:1376 ../drivers/tdh8.py:2503
+#: ../drivers/uv5r.py:1936 ../drivers/baofeng_uv17Pro.py:1262
 msgid "Frequency in this range requires AM mode"
 msgstr "Для частоты в этом диапазоне должен использоваться AM-режим"
 
-#: ../drivers/tdh8.py:2614
+#: ../drivers/tdh8.py:2510
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr "Для частоты вне полос частот TX должно использоваться duplex=off"
 
@@ -2078,7 +2082,7 @@ msgstr "Некорректная запись"
 msgid "Invalid ZIP code"
 msgstr "Неверный почтовый индекс"
 
-#: ../wxui/memedit.py:1980 ../wxui/memedit.py:2943
+#: ../wxui/memedit.py:1980 ../wxui/memedit.py:2953
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Некорректное изменение: %s"
@@ -2259,7 +2263,7 @@ msgstr "Модуль загружен"
 msgid "Module loaded successfully"
 msgstr "Модуль успешно загружен"
 
-#: ../wxui/common.py:641
+#: ../wxui/common.py:645
 msgid "More Info"
 msgstr "Подробности"
 
@@ -2474,7 +2478,7 @@ msgstr "Пароль"
 msgid "Paste"
 msgstr "Вставить"
 
-#: ../wxui/common.py:796
+#: ../wxui/common.py:800
 msgid "Paste external memories"
 msgstr "Вставить внешние ячейки памяти"
 
@@ -2703,7 +2707,7 @@ msgstr "Рекомендуется использовать 55.2"
 msgid "Redo"
 msgstr "Вернуть"
 
-#: ../wxui/common.py:498
+#: ../wxui/common.py:502
 msgid "Refresh required"
 msgstr "Требуется обновление"
 
@@ -3217,7 +3221,7 @@ msgstr "Не удалось выполнить запрос"
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "Невозможно прочитать последний блок. Это часто случается, когда выбрана американская модель, но станция не является американской (или широкополосной). Выберите правильную модель и повторите попытку."
 
-#: ../wxui/common.py:693
+#: ../wxui/common.py:697
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Невозможно обнаружить %s в этой системе"
@@ -3299,12 +3303,12 @@ msgstr "Имя пользователя"
 msgid "Value does not fit in %i bits"
 msgstr "Значение не помещается в %i бит"
 
-#: ../wxui/common.py:535
+#: ../wxui/common.py:539
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Значение не должно быть меньше %.4f"
 
-#: ../wxui/common.py:539
+#: ../wxui/common.py:543
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Значение не должно превышать %.4f"
@@ -3322,7 +3326,7 @@ msgstr "Значение должно быть больше или равно н
 msgid "Value to search memory field for"
 msgstr "Значение, которое следует найти в поле памяти"
 
-#: ../wxui/memedit.py:2843
+#: ../wxui/memedit.py:2853
 msgid "Values"
 msgstr "Значения"
 
@@ -3334,7 +3338,7 @@ msgstr "Изготовитель"
 msgid "View"
 msgstr "Вид"
 
-#: ../wxui/common.py:483
+#: ../wxui/common.py:487
 msgid "WARNING!"
 msgstr "ПРЕДУПРЕЖДЕНИЕ!"
 
