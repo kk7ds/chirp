@@ -2728,14 +2728,20 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     def set_scroll_pos(self, pos):
         self._grid.Scroll(*pos)
 
-    def export_to_file(self, filename):
+    def _export_to_file(self, filename):
         if not filename.lower().endswith('.csv'):
             raise Exception(_('Export can only write CSV files'))
         selected = self._grid.GetSelectedRows()
         if len(selected) <= 1:
             selected = range(0, self._grid.GetNumberRows())
 
-        r = generic_csv.CSVRadio(None)
+        max_memory = 999
+        for row in reversed(selected):
+            m = self._memory_cache[row]
+            if not m.extd_number:
+                max_memory = m.number
+                break
+        r = generic_csv.CSVRadio(None, max_memory=max_memory)
         # The CSV driver defaults to a single non-empty memory at location
         # zero, so delete it before we go to export.
         r.erase_memory(0)
@@ -2749,9 +2755,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                     m = import_logic.import_mem(r, self._features, m,
                                                 mem_cls=chirp_common.Memory)
                 except import_logic.ImportError as e:
-                    LOG.error('Failed to export %r: %s', m, e)
-                    raise common.ExportFailed(
-                        'Failed to export memory %i: %s' % (m.number, e))
+                    LOG.error('Failed to export memory %i: %s', m.number, e)
             r.set_memory(m)
         r.save(filename)
         LOG.info('Wrote exported CSV to %s' % filename)
@@ -2761,6 +2765,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if len(rows) <= 1 and or_all:
             rows = list(range(self._grid.GetNumberRows()))
         return [self._memory_cache[r] for r in rows]
+
+    def export_to_file(self, filename):
+        with common.expose_logs(logging.WARNING, 'chirp',
+                                _('Failed to export some memories'),
+                                parent=self):
+            self._export_to_file(filename)
 
 
 class ChirpLiveMemEdit(ChirpMemEdit, common.ChirpAsyncEditor):

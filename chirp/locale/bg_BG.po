@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-08 18:10-0700\n"
+"POT-Creation-Date: 2025-10-08 15:51-0700\n"
 "PO-Revision-Date: 2025-04-17 10:00+0200\n"
 "Last-Translator: Стоян <stoyanster от гмаил>\n"
 "Language-Team: Bulgarian <dict@ludost.net>\n"
@@ -711,7 +711,7 @@ msgstr "Отваряне на списъка при свързване"
 msgid "Amateur"
 msgstr "Любителски"
 
-#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:625
+#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:629
 msgid "An error has occurred"
 msgstr "Възникна грешка"
 
@@ -782,7 +782,7 @@ msgstr ""
 msgid "Canada"
 msgstr "Канада"
 
-#: ../wxui/common.py:496
+#: ../wxui/common.py:500
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "Промяната на тази настройка изисква презареждане на настройките от образа, което ще се случи сега."
 
@@ -969,7 +969,7 @@ msgstr "Полярност на DTCS"
 msgid "DTMF decode"
 msgstr "Декодиране на DTMF"
 
-#: ../wxui/memedit.py:2863
+#: ../wxui/memedit.py:2873
 msgid "DV Memory"
 msgstr "Записи за цифрови разговори"
 
@@ -1010,7 +1010,7 @@ msgstr "Разлики в необработеното съдържание на
 msgid "Diff against another editor"
 msgstr "Сравняване с друг редактор"
 
-#: ../wxui/memedit.py:2780
+#: ../wxui/memedit.py:2790
 msgid "Digital Code"
 msgstr "Цифров код"
 
@@ -1085,12 +1085,12 @@ msgstr "Дуплекс"
 msgid "Edit %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2810
+#: ../wxui/memedit.py:2820
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Промяна стойностите на %i записа"
 
-#: ../wxui/memedit.py:2808
+#: ../wxui/memedit.py:2818
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Промяна на запис № %i"
@@ -1213,7 +1213,7 @@ msgstr "Изнасяне в CSV"
 msgid "Export to CSV..."
 msgstr "Изнасяне в CSV…"
 
-#: ../wxui/memedit.py:2852
+#: ../wxui/memedit.py:2862
 msgid "Extra"
 msgstr "Допълнителни"
 
@@ -1237,6 +1237,10 @@ msgid ""
 msgstr ""
 "Безплатен списък с най-новата информация за\n"
 "европейските ретранслатори. Не е необходим профил."
+
+#: ../wxui/memedit.py:2771
+msgid "Failed to export some memories"
+msgstr ""
 
 #: ../wxui/developer.py:499
 msgid "Failed to load radio browser"
@@ -1349,8 +1353,8 @@ msgid ""
 msgstr ""
 
 #: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:699 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
+#: ../drivers/btech.py:684 ../drivers/gmrsuv1.py:391
+#: ../drivers/tdxone_tdq8a.py:441 ../drivers/uv6r.py:339
 #: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
 #: ../drivers/baofeng_uv17Pro.py:496 ../drivers/bf_t1.py:482
 msgid ""
@@ -1423,7 +1427,7 @@ msgid ""
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
 
-#: ../drivers/btech.py:705 ../drivers/bf_t1.py:488
+#: ../drivers/btech.py:690 ../drivers/bf_t1.py:488
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1465,7 +1469,7 @@ msgstr ""
 "3 - Включете радиото\n"
 "4 - Изберете „Добре“\n"
 
-#: ../drivers/vgc.py:598 ../drivers/lt725uv.py:496
+#: ../drivers/vgc.py:583 ../drivers/lt725uv.py:481
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1483,9 +1487,9 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
+#: ../drivers/vgc.py:589 ../drivers/mursv1.py:347
 #: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/lt725uv.py:487 ../drivers/tdxone_tdq8a.py:447
 #: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
 #: ../drivers/baofeng_uv17Pro.py:502
 msgid ""
@@ -1523,19 +1527,19 @@ msgstr "Честотата %s е извън поддържания обхват"
 msgid "Frequency granularity in kHz"
 msgstr "Стъпка на честотата в кХз"
 
-#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1394
-#: ../drivers/tdh8.py:2610 ../drivers/uv5r.py:1940
+#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1379
+#: ../drivers/tdh8.py:2506 ../drivers/uv5r.py:1940
 #: ../drivers/baofeng_uv17Pro.py:1266
 msgid "Frequency in this range must not be AM mode"
 msgstr "Честотата в този обхват не трябва да бъде в режим на АМ"
 
-#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1391
-#: ../drivers/tdh8.py:2607 ../drivers/uv5r.py:1936
-#: ../drivers/baofeng_uv17Pro.py:1262
+#: ../drivers/ga510.py:1065 ../drivers/radtel_rt900.py:1360
+#: ../drivers/mml_jc8810.py:1376 ../drivers/tdh8.py:2503
+#: ../drivers/uv5r.py:1936 ../drivers/baofeng_uv17Pro.py:1262
 msgid "Frequency in this range requires AM mode"
 msgstr "Честотата в този обхват изисква режим на АМ"
 
-#: ../drivers/tdh8.py:2614
+#: ../drivers/tdh8.py:2510
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr "Честотата извън обхватите на предаване трябва да бъде 'duplex=off'"
 
@@ -1657,7 +1661,7 @@ msgstr "Недействителен запис"
 msgid "Invalid ZIP code"
 msgstr "Неприемлив пощенски код"
 
-#: ../wxui/memedit.py:1980 ../wxui/memedit.py:2943
+#: ../wxui/memedit.py:1980 ../wxui/memedit.py:2953
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Неприемлива промяна: %s"
@@ -1838,7 +1842,7 @@ msgstr "Зареден е модул"
 msgid "Module loaded successfully"
 msgstr "Модулът е зареден"
 
-#: ../wxui/common.py:641
+#: ../wxui/common.py:645
 msgid "More Info"
 msgstr "Сведения"
 
@@ -2053,7 +2057,7 @@ msgstr "Парола"
 msgid "Paste"
 msgstr "Поставяне"
 
-#: ../wxui/common.py:796
+#: ../wxui/common.py:800
 msgid "Paste external memories"
 msgstr ""
 
@@ -2264,7 +2268,7 @@ msgstr "Препоръчваме ви да използвате 55.2"
 msgid "Redo"
 msgstr "Повтаряне"
 
-#: ../wxui/common.py:498
+#: ../wxui/common.py:502
 msgid "Refresh required"
 msgstr "Необходимо е презареждане"
 
@@ -2744,7 +2748,7 @@ msgstr "Грешка при заявка"
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "Последният блок не е прочетен. Това се случва, когато избраният модел e предназначен за употреба в САЩ, но станцията не е (или e с разширен обхват). Изберете правилния модел и опитайте отново."
 
-#: ../wxui/common.py:693
+#: ../wxui/common.py:697
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Грешка при намиране на %s на системата"
@@ -2826,12 +2830,12 @@ msgstr "Потребител"
 msgid "Value does not fit in %i bits"
 msgstr "Стойността не се побира в %i бита"
 
-#: ../wxui/common.py:535
+#: ../wxui/common.py:539
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Стойността трябва да бъде най-малко %.4f"
 
-#: ../wxui/common.py:539
+#: ../wxui/common.py:543
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Стойността трябва да бъде най-много %.4f"
@@ -2849,7 +2853,7 @@ msgstr "Стойността трябва да бъде нула или пове
 msgid "Value to search memory field for"
 msgstr "Стойност, която търсите в запис в паметта"
 
-#: ../wxui/memedit.py:2843
+#: ../wxui/memedit.py:2853
 msgid "Values"
 msgstr "Стойности"
 
@@ -2861,7 +2865,7 @@ msgstr "Производител"
 msgid "View"
 msgstr "Изглед"
 
-#: ../wxui/common.py:483
+#: ../wxui/common.py:487
 msgid "WARNING!"
 msgstr "ВНИМАНИЕ!"
 
