@@ -1253,7 +1253,7 @@ def get_scan_list(self, scan_list):
         rs.set_apply_callback(set_scan_list_callback,
                               self, i, "scantxch")
         rsg.append(rs)
-        opts = ["%ss" % (x + 1) for x in range(0, 17, 1)]
+        opts = ["%ss" % (x + 1) for x in range(0, 16, 1)]
         rs = RadioSetting(
             "scanlist.hangtime_%s" % index,
             "Scan Hang Time",
@@ -1283,7 +1283,7 @@ def get_vfo_scan(self, vfoscan):
             RadioSettingValueList(opts,
                                   current_index=_vfo_scan.scancondition)))
 
-    opts = ["%s" % x for x in range(1, 16, 1)]
+    opts = ["%s" % (x + 1) for x in range(0, 16, 1)]
     vfoscan.append(
         RadioSetting(
             "vfoscan.hangtime", "Scan Hang Time[s]",
