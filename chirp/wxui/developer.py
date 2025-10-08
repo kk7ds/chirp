@@ -608,7 +608,8 @@ class IssueModuleLoader:
             issue_num, r.status_code))
         r.raise_for_status()
         issue = r.json()['issue']
-        allowed_states = ['New', 'In Progress', 'Resolved']
+        allowed_states = ['New', 'In Progress', 'Resolved', 'Incomplete',
+                          'Blocked']
         valid = (issue['status']['name'] in allowed_states
                  and not issue['status']['is_closed'])
         if not valid:
