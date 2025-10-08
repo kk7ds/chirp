@@ -783,13 +783,6 @@ H3_LIST = ["TD-H3", "TD-H3-HAM", "TD-H3-GMRS"]
 
 GMRS_FREQS = bandplan_na.ALL_GMRS_FREQS
 
-NOAA_FREQS = [162550000, 162400000, 162475000, 162425000, 162450000,
-              162500000, 162525000, 161650000, 161775000, 161750000,
-              162000000]
-
-HAM_GMRS_NAME = ["NOAA 1", "NOAA 2", "NOAA 3", "NOAA 4", "NOAA 5", "NOAA 6",
-                 "NOAA 7", "NOAA 8", "NOAA 9", "NOAA 10", "NOAA 11"]
-
 ALL_MODEL = H8_LIST + H3_LIST + ["RT-730"]
 
 TD_H8 = b'PVOJH\x1c\x14'
@@ -1170,9 +1163,6 @@ class TDH8(chirp_common.CloneModeRadio):
             mem.name += str(char)
 
         mem.name = mem.name.rstrip()
-        if self.ident_mode != b'P31183\xff\xff' and \
-                (mem.number >= 189 and mem.number <= 199):
-            mem.name = HAM_GMRS_NAME[mem.number - 200]
 
         # tmode
         lin2 = int(_mem.rxtone)
@@ -1218,20 +1208,6 @@ class TDH8(chirp_common.CloneModeRadio):
                                      'duplex', 'offset']
             elif mem.number >= 31 and mem.number <= 54:
                 mem.offset = 5000000
-            elif mem.number >= 189 and mem.number <= 199:
-                ham_freqs = NOAA_FREQS[mem.number - 189]
-                mem.freq = ham_freqs
-                mem.immutable = ['name', 'power', 'duplex', 'freq',
-                                 'rx_dtcs', 'vfo', 'tmode', 'empty',
-                                 'offset', 'rtone', 'ctone', 'dtcs',
-                                 'dtcs_polarity', 'cross_mode']
-        elif self._ham:
-            if mem.number >= 189 and mem.number <= 199:
-                ham_freqs = NOAA_FREQS[mem.number - 189]
-                mem.freq = ham_freqs
-                mem.immutable = ['name', 'power', 'freq', 'rx_dtcs', 'vfo',
-                                 'tmode', 'empty', 'offset', 'rtone', 'ctone',
-                                 'dtcs', 'dtcs_polarity', 'cross_mode']
 
         # other function
         # pttid
@@ -1359,18 +1335,14 @@ class TDH8(chirp_common.CloneModeRadio):
         self._memobj.scanadd[mem.number - 1] = mem.skip != 'S'
 
         for setting in mem.extra:
-            if (self.ident_mode == b'P31185\xff\xff' or
-                self.ident_mode == b'P31184\xff\xff') and \
+            if self.ident_mode == b'P31184\xff\xff' and \
                     mem.number >= 189 and mem.number <= 199:
                 if setting.get_name() == 'pttid':
-                    setting.value = 'Off'
-                    setattr(_mem, setting.get_name(), setting.value)
+                    setattr(_mem, setting.get_name(), 0)
                 elif setting.get_name() == 'bcl':
-                    setting.value = 'Off'
-                    setattr(_mem, setting.get_name(), setting.value)
+                    setattr(_mem, setting.get_name(), 0)
                 elif setting.get_name() == 'freqhop':
-                    setting.value = 'Off'
-                    setattr(_mem, setting.get_name(), setting.value)
+                    setattr(_mem, setting.get_name(), 0)
             else:
                 setattr(_mem, setting.get_name(), setting.value)
 
