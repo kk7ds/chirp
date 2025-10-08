@@ -792,10 +792,10 @@ HAM_GMRS_NAME = ["NOAA 1", "NOAA 2", "NOAA 3", "NOAA 4", "NOAA 5", "NOAA 6",
 
 ALL_MODEL = H8_LIST + H3_LIST + ["RT-730"]
 
-TD_H8 = b"\x50\x56\x4F\x4A\x48\x1C\x14"
-TD_H3 = b"\x50\x56\x4F\x4A\x48\x5C\x14"
-RT_730 = b"\x50\x47\x4F\x4A\x48\xC3\x44"
-TD_H8_G3 = b"\x50\x56\x4F\x4A\x48\x3C\x14"
+TD_H8 = b'PVOJH\x1c\x14'
+TD_H3 = b'PVOJH\x5c\x14'
+RT_730 = b'PGOJH\xc3D'
+TD_H8_G3 = b'PVOJH<\x14'
 
 
 def _do_status(radio, block):
@@ -1024,7 +1024,8 @@ class TDH8(chirp_common.CloneModeRadio):
             for rclass in classes:
                 if rclass.ident_mode == radio_ident:
                     return rclass
-            LOG.error('No model match found for ident: %r', ident)
+            LOG.error('No model match found for ident query %r response %r',
+                      ident, radio_ident)
             raise errors.RadioError('Unsupported model')
         raise errors.RadioError('No response from radio')
 
@@ -2691,7 +2692,7 @@ class TDH8_3rd_Gen_HAM(TDH8_3rd_Gen):
 
 
 @directory.register
-@directory.detected_by(TDH8_3rd_Gen)
+@directory.detected_by(TDH8)
 class TDH8_3rd_Gen_GMRS(TDH8_3rd_Gen):
     VENDOR = "TIDRADIO"
     MODEL = "TD-H8-GMRS"
