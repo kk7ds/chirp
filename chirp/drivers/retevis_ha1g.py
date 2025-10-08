@@ -1408,10 +1408,9 @@ def _set_memory(self, mem, _mem, ch_index):
     flag = ch_index not in ch_index_dict and rx_freq != 0
     if rx_freq != 0xFFFFFFFF and flag:
         ch_index_dict.append(ch_index)
-        set_ch_index(self, ch_index_dict)
     elif ch_index in ch_index_dict and rx_freq <= 0:
         ch_index_dict.remove(ch_index)
-        set_ch_index(self, ch_index_dict)
+    set_ch_index(self, ch_index_dict)
     _mem.set_raw(b"\x00" * 40)
     if mem.empty:
         return
@@ -1585,6 +1584,7 @@ def get_ch_index(self):
 def set_ch_index(self, ch_index_list):
     if not isinstance(ch_index_list, list):
         raise TypeError("ch_index must be a list")
+    ch_index_list = sorted(int(x) for x in ch_index_list)
     _ch_data = self._memobj.channeldata
     ch_num = len(ch_index_list)
     if len(_ch_data.chindex) < ch_num:
@@ -1602,8 +1602,8 @@ def get_ch_rxfreq(mem):
     ch_freq = (mem.freq // 10) * 10
     if mem.freq == 0:
         return mem.freq
-    elif mem.freq < 134000000:
-        ch_freq = 134000000
+    elif mem.freq < 136000000:
+        ch_freq = 136000000
     elif mem.freq > 174000000 and mem.freq < 400000000:
         ch_freq = 174000000
     elif mem.freq > 480000000:
@@ -1613,7 +1613,7 @@ def get_ch_rxfreq(mem):
 
 def get_ch_txfreq(rx_freq, tx_freq):
     return (rx_freq
-            if (tx_freq < 134
+            if (tx_freq < 136
                 or (tx_freq > 174 and tx_freq < 400)
                 or tx_freq > 480)
             else tx_freq)
@@ -1909,7 +1909,7 @@ class HA1G(chirp_common.CloneModeRadio):
         rf.has_dtcs = True
         rf.has_cross = True
         rf.has_bank = False
-        rf.valid_bands = [(134000000, 174000010), (400000000, 480000010)]
+        rf.valid_bands = [(136000000, 174000010), (400000000, 480000010)]
         rf.has_tuning_step = False
         rf.has_nostep_tuning = True
         rf.valid_name_length = 12
@@ -2087,6 +2087,9 @@ class HA1UV(HA1G):
             ch_index = 0 if number == "VFOA" else 1
             mem.number = len(self._memobj.channels) + ch_index + 1
         elif number > len(self._memobj.channels):
+            mem.extd_number = (
+                number - len(self._memobj.channels) == 1 and "VFOA" or "VFOB")
+            number = mem.extd_number
             ch_index = 0 if number == "VFOA" else 1
         else:
             ch_index = number + 2
@@ -2102,5 +2105,7 @@ def set_memory(self, mem):
     else:
         ch_index = mem.number + 2
     _mem = self._memobj.channels[ch_index]
+    if ch_index < 2 and mem.freq == 0:
+        return
     _set_memory(self, mem, _mem, ch_index)
     LOG.debug("Setting %i(%s)" % (mem.number, mem.extd_number))
