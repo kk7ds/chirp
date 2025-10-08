@@ -980,15 +980,12 @@ def get_common_setting(self, common):
             "Channel Type B",
             RadioSettingValueList(opts, current_index=_settings.homechtype_2)))
     opts = ["Last Active Channel", "Designated Channel"]
-    print(_settings)
-    print(_settings.poweron_type_1)
     common.append(
         RadioSetting(
             "settings.poweron_type_1",
             "Power On A",
             RadioSettingValueList(opts,
                                   current_index=_settings.poweron_type_1)))
-    print(_settings.poweron_type_2)
     common.append(
         RadioSetting(
             "settings.poweron_type_2",
