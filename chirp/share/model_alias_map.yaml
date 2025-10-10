@@ -324,6 +324,12 @@ Wouxun:
   model: KG-UV9P
 - alt: Wouxun KG-UV9D Plus
   model: KG-UV9D Mate
+- alt: Wouxun KG-UV9PX
+  model: KG-UV9PX Plus
+- alt: Wouxun KG-UV9PX
+  model: KG-UV9DX
+- alt: Wouxun KG-UV9GX
+  model: KG-UV9GX Plus
 Wurui:
 - alt: Abbree AR-63
   model: G63
