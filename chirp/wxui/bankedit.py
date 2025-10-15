@@ -189,7 +189,7 @@ class ChirpBankEdit(common.ChirpEditor):
             return self._memory_cache[number]
         except KeyError:
             special = self._specials[row -
-                                     self._features.memory_bounds[1] -
+                                     self._features.memory_bounds[1] +
                                      self._features.memory_bounds[0] - 1]
             return self._memory_cache[special]
 
