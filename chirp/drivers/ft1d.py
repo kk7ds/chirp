@@ -540,204 +540,207 @@ ALLNAMES = SKIPNAMES + PMSNAMES + HOMENAMES
 # get_memory is called can only be referenced by CHIRP in the banks.
 # index: ('Addr', 'Name', Frequency, 'Mode', 'Duplex', Offset, 'Comment'),
 YAESU_PRESETS = {
-     'SWL1': (0x1000, 'VOA', 6030000, 'AM', '', 0, 'USA'),
-     'SWL2': (0x1001, 'VOA', 6160000, 'AM', '', 0, 'USA'),
-     'SWL3': (0x1002, 'VOA', 9760000, 'AM', '', 0, 'USA'),
-     'SWL4': (0x1003, 'VOA', 11965000, 'AM', '', 0, 'USA'),
-     'SWL5': (0x1004, 'Canada', 9555000, 'AM', '', 0, ''),
-     'SWL6': (0x1005, 'Canada', 9660000, 'AM', '', 0, ''),
-     'SWL7': (0x1006, 'Canada', 11715000, 'AM', '', 0, ''),
-     'SWL8': (0x1007, 'Canada', 11955000, 'AM', '', 0, ''),
-     'SWL9': (0x1008, 'BBC', 6195000, 'AM', '', 0, 'UK'),
-     'SWL10': (0x1009, 'BBC', 9410000, 'AM', '', 0, 'UK'),
-     'SWL11': (0x100a, 'BBC', 12095000, 'AM', '', 0, 'UK'),
-     'SWL12': (0x100b, 'BBC', 15310000, 'AM', '', 0, 'UK'),
-     'SWL13': (0x100c, 'France', 6090000, 'AM', '', 0, ''),
-     'SWL14': (0x100d, 'France', 97899999, 'AM', '', 0, ''),
-     'SWL15': (0x100e, 'France', 11670000, 'AM', '', 0, ''),
-     'SWL16': (0x100f, 'France', 15195000, 'AM', '', 0, ''),
-     'SWL17': (0x1010, 'DW', 6000000, 'AM', '', 0, 'Germany'),
-     'SWL18': (0x1011, 'DW', 6075000, 'AM', '', 0, 'Germany'),
-     'SWL19': (0x1012, 'DW', 9650000, 'AM', '', 0, 'Germany'),
-     'SWL20': (0x1013, 'DW', 9735000, 'AM', '', 0, 'Germany'),
-     'SWL21': (0x1014, 'Italy', 5990000, 'AM', '', 0, ''),
-     'SWL22': (0x1015, 'Italy', 9575000, 'AM', '', 0, ''),
-     'SWL23': (0x1016, 'Italy', 9675000, 'AM', '', 0, ''),
-     'SWL24': (0x1017, 'Italy', 17780000, 'AM', '', 0, ''),
-     'SWL25': (0x1018, 'Turkey', 7170000, 'AM', '', 0, ''),
-     'SWL26': (0x1019, 'Turkey', 7270000, 'AM', '', 0, ''),
-     'SWL27': (0x101a, 'Turkey', 9560000, 'AM', '', 0, ''),
-     'SWL28': (0x101b, 'Turkey', 11690000, 'AM', '', 0, ''),
-     'SWL29': (0x101c, 'Vatican', 9660000, 'AM', '', 0, ''),
-     'SWL30': (0x101d, 'Vatican', 11625000, 'AM', '', 0, ''),
-     'SWL31': (0x101e, 'Vatican', 11830000, 'AM', '', 0, ''),
-     'SWL32': (0x101f, 'Vatican', 15235000, 'AM', '', 0, ''),
-     'SWL33': (0x1020, 'Nederland', 5955000, 'AM', '', 0, ''),
-     'SWL34': (0x1021, 'Nederland', 60199999, 'AM', '', 0, ''),
-     'SWL35': (0x1022, 'Nederland', 9895000, 'AM', '', 0, ''),
-     'SWL36': (0x1023, 'Nederland', 11655000, 'AM', '', 0, ''),
-     'SWL37': (0x1024, 'Czech', 5985000, 'AM', '', 0, ''),
-     'SWL38': (0x1025, 'Czech', 6105000, 'AM', '', 0, ''),
-     'SWL39': (0x1026, 'Czech', 9455000, 'AM', '', 0, ''),
-     'SWL40': (0x1027, 'Czech', 11860000, 'AM', '', 0, ''),
-     'SWL41': (0x1028, 'Portugal', 9780000, 'AM', '', 0, ''),
-     'SWL42': (0x1029, 'Portugal', 11630000, 'AM', '', 0, ''),
-     'SWL43': (0x102a, 'Portugal', 15550000, 'AM', '', 0, ''),
-     'SWL44': (0x102b, 'Portugal', 21655000, 'AM', '', 0, ''),
-     'SWL45': (0x102c, 'Spain', 9650000, 'AM', '', 0, ''),
-     'SWL46': (0x102d, 'Spain', 11880000, 'AM', '', 0, ''),
-     'SWL47': (0x102e, 'Spain', 11910000, 'AM', '', 0, ''),
-     'SWL48': (0x102f, 'Spain', 15290000, 'AM', '', 0, ''),
-     'SWL49': (0x1030, 'NIKKEI', 6055000, 'AM', '', 0, 'Japan'),
-     'SWL50': (0x1031, 'Norway', 7315000, 'AM', '', 0, ''),
-     'SWL51': (0x1032, 'Norway', 9590000, 'AM', '', 0, ''),
-     'SWL52': (0x1033, 'Norway', 9925000, 'AM', '', 0, ''),
-     'SWL53': (0x1034, 'Norway', 9985000, 'AM', '', 0, ''),
-     'SWL54': (0x1035, 'Sweden', 6065000, 'AM', '', 0, ''),
-     'SWL55': (0x1036, 'Sweden', 9490000, 'AM', '', 0, ''),
-     'SWL56': (0x1037, 'Sweden', 15240000, 'AM', '', 0, ''),
-     'SWL57': (0x1038, 'Sweden', 17505000, 'AM', '', 0, ''),
-     'SWL58': (0x1039, 'Finland', 6120000, 'AM', '', 0, ''),
-     'SWL59': (0x103a, 'Finland', 9560000, 'AM', '', 0, ''),
-     'SWL60': (0x103b, 'Finland', 11755000, 'AM', '', 0, ''),
-     'SWL61': (0x103c, 'Finland', 15400000, 'AM', '', 0, ''),
-     'SWL62': (0x103d, 'Russia', 5920000, 'AM', '', 0, ''),
-     'SWL63': (0x103e, 'Russia', 5940000, 'AM', '', 0, ''),
-     'SWL64': (0x103f, 'Russia', 7200000, 'AM', '', 0, ''),
-     'SWL65': (0x1040, 'Russia', 12030000, 'AM', '', 0, ''),
-     'SWL66': (0x1041, 'Israel', 7465000, 'AM', '', 0, ''),
-     'SWL67': (0x1042, 'Israel', 11585000, 'AM', '', 0, ''),
-     'SWL68': (0x1043, 'Israel', 15615000, 'AM', '', 0, ''),
-     'SWL69': (0x1044, 'Israel', 17535000, 'AM', '', 0, ''),
-     'SWL70': (0x1045, 'India', 6045000, 'AM', '', 0, ''),
-     'SWL71': (0x1046, 'India', 9595000, 'AM', '', 0, ''),
-     'SWL72': (0x1047, 'India', 116199999, 'AM', '', 0, ''),
-     'SWL73': (0x1048, 'India', 15020000, 'AM', '', 0, ''),
-     'SWL74': (0x1049, 'China', 7190000, 'AM', '', 0, ''),
-     'SWL75': (0x104a, 'China', 7405000, 'AM', '', 0, ''),
-     'SWL76': (0x104b, 'China', 9785000, 'AM', '', 0, ''),
-     'SWL77': (0x104c, 'China', 11685000, 'AM', '', 0, ''),
-     'SWL78': (0x104d, 'Korea', 6135000, 'AM', '', 0, ''),
-     'SWL79': (0x104e, 'Korea', 7275000, 'AM', '', 0, ''),
-     'SWL80': (0x104f, 'Korea', 9570000, 'AM', '', 0, ''),
-     'SWL81': (0x1050, 'Korea', 13670000, 'AM', '', 0, ''),
-     'SWL82': (0x1051, 'Japan', 6165000, 'AM', '', 0, ''),
-     'SWL83': (0x1052, 'Japan', 7200000, 'AM', '', 0, ''),
-     'SWL84': (0x1053, 'Japan', 9750000, 'AM', '', 0, ''),
-     'SWL85': (0x1054, 'Japan', 11860000, 'AM', '', 0, ''),
-     'SWL86': (0x1055, 'Australia', 5995000, 'AM', '', 0, ''),
-     'SWL87': (0x1056, 'Australia', 9580000, 'AM', '', 0, ''),
-     'SWL88': (0x1057, 'Australia', 9660000, 'AM', '', 0, ''),
-     'SWL89': (0x1058, 'Australia', 12080000, 'AM', '', 0, ''),
-     'Marine1': (0x2001,  'SEA 01', 156050000, 'FM', '-', 4600000,
-                 'Port Operations and Comm'),
-     'Marine2': (0x2002,  'VHF 2', 156100000, 'FM', '-', 4600000, ''),
-     'Marine3': (0x2003,  'VHF 3', 156150000, 'FM', '-', 4600000, ''),
-     'Marine4': (0x2004,  'VHF 4', 156200000, 'FM', '-', 4600000, ''),
-     'Marine5': (0x2005,  'SEA 05', 156250000, 'FM', '-', 4600000,
-                 'Port Operations.  VTS in'),
-     'Marine6': (0x2006,  'SEA 06', 156300000, 'FM', '', 0,
-                 'Intership Safety'),
-     'Marine7': (0x2007,  'SEA 07', 156350000, 'FM', '-', 4600000,
-                 'Commercial'),
-     'Marine8': (0x2008,  'SEA 08', 156400000, 'FM', '', 0,
-                 'Commercial (Intership on'),
-     'Marine9': (0x2009,  'SEA 09', 156450000, 'FM', '', 0,
-                 'Boater Calling.  Commerc'),
-     'Marine10': (0x200a,  'SEA 10', 156500000, 'FM', '', 0, 'Commercial'),
-     'Marine11': (0x200b,  'SEA 11', 156550000, 'FM', '', 0,
-                  'Commercial.  VTS in sele'),
-     'Marine12': (0x200c,  'SEA 12', 156600000, 'FM', '', 0,
+     'SWL01': (0x4000, 'VOA', 6030000, 'AM', '', 0, 'USA'),
+     'SWL02': (0x4001, 'VOA', 6160000, 'AM', '', 0, 'USA'),
+     'SWL03': (0x4002, 'VOA', 9760000, 'AM', '', 0, 'USA'),
+     'SWL04': (0x4003, 'VOA', 11965000, 'AM', '', 0, 'USA'),
+     'SWL05': (0x4004, 'Canada', 9555000, 'AM', '', 0, ''),
+     'SWL06': (0x4005, 'Canada', 9660000, 'AM', '', 0, ''),
+     'SWL07': (0x4006, 'Canada', 11715000, 'AM', '', 0, ''),
+     'SWL08': (0x4007, 'Canada', 11955000, 'AM', '', 0, ''),
+     'SWL09': (0x4008, 'BBC', 6195000, 'AM', '', 0, 'UK'),
+     'SWL10': (0x4009, 'BBC', 9410000, 'AM', '', 0, 'UK'),
+     'SWL11': (0x400a, 'BBC', 12095000, 'AM', '', 0, 'UK'),
+     'SWL12': (0x400b, 'BBC', 15310000, 'AM', '', 0, 'UK'),
+     'SWL13': (0x400c, 'France', 6090000, 'AM', '', 0, ''),
+     'SWL14': (0x400d, 'France', 9790000, 'AM', '', 0, ''),
+     'SWL15': (0x400e, 'France', 11670000, 'AM', '', 0, ''),
+     'SWL16': (0x400f, 'France', 15195000, 'AM', '', 0, ''),
+     'SWL17': (0x4010, 'DW', 6000000, 'AM', '', 0, 'Germany'),
+     'SWL18': (0x4011, 'DW', 6075000, 'AM', '', 0, 'Germany'),
+     'SWL19': (0x4012, 'DW', 9650000, 'AM', '', 0, 'Germany'),
+     'SWL20': (0x4013, 'DW', 9735000, 'AM', '', 0, 'Germany'),
+     'SWL21': (0x4014, 'Italy', 5990000, 'AM', '', 0, ''),
+     'SWL22': (0x4015, 'Italy', 9575000, 'AM', '', 0, ''),
+     'SWL23': (0x4016, 'Italy', 9675000, 'AM', '', 0, ''),
+     'SWL24': (0x4017, 'Italy', 17780000, 'AM', '', 0, ''),
+     'SWL25': (0x4018, 'Turkey', 7170000, 'AM', '', 0, ''),
+     'SWL26': (0x4019, 'Turkey', 7270000, 'AM', '', 0, ''),
+     'SWL27': (0x401a, 'Turkey', 9560000, 'AM', '', 0, ''),
+     'SWL28': (0x401b, 'Turkey', 11690000, 'AM', '', 0, ''),
+     'SWL29': (0x401c, 'Vatican', 9660000, 'AM', '', 0, ''),
+     'SWL30': (0x401d, 'Vatican', 11625000, 'AM', '', 0, ''),
+     'SWL31': (0x401e, 'Vatican', 11830000, 'AM', '', 0, ''),
+     'SWL32': (0x401f, 'Vatican', 15235000, 'AM', '', 0, ''),
+     'SWL33': (0x4020, 'Nederland', 5955000, 'AM', '', 0, ''),
+     'SWL34': (0x4021, 'Nederland', 6020000, 'AM', '', 0, ''),
+     'SWL35': (0x4022, 'Nederland', 9895000, 'AM', '', 0, ''),
+     'SWL36': (0x4023, 'Nederland', 11655000, 'AM', '', 0, ''),
+     'SWL37': (0x4024, 'Czech', 5985000, 'AM', '', 0, ''),
+     'SWL38': (0x4025, 'Czech', 6105000, 'AM', '', 0, ''),
+     'SWL39': (0x4026, 'Czech', 9455000, 'AM', '', 0, ''),
+     'SWL40': (0x4027, 'Czech', 11860000, 'AM', '', 0, ''),
+     'SWL41': (0x4028, 'Portugal', 9780000, 'AM', '', 0, ''),
+     'SWL42': (0x4029, 'Portugal', 11630000, 'AM', '', 0, ''),
+     'SWL43': (0x402a, 'Portugal', 15550000, 'AM', '', 0, ''),
+     'SWL44': (0x402b, 'Portugal', 21655000, 'AM', '', 0, ''),
+     'SWL45': (0x402c, 'Spain', 9650000, 'AM', '', 0, ''),
+     'SWL46': (0x402d, 'Spain', 11880000, 'AM', '', 0, ''),
+     'SWL47': (0x402e, 'Spain', 11910000, 'AM', '', 0, ''),
+     'SWL48': (0x402f, 'Spain', 15290000, 'AM', '', 0, ''),
+     'SWL49': (0x4030, 'NIKKEI', 6055000, 'AM', '', 0, 'Japan'),
+     'SWL50': (0x4031, 'Norway', 7315000, 'AM', '', 0, ''),
+     'SWL51': (0x4032, 'Norway', 9590000, 'AM', '', 0, ''),
+     'SWL52': (0x4033, 'Norway', 9925000, 'AM', '', 0, ''),
+     'SWL53': (0x4034, 'Norway', 9985000, 'AM', '', 0, ''),
+     'SWL54': (0x4035, 'Sweden', 6065000, 'AM', '', 0, ''),
+     'SWL55': (0x4036, 'Sweden', 9490000, 'AM', '', 0, ''),
+     'SWL56': (0x4037, 'Sweden', 15240000, 'AM', '', 0, ''),
+     'SWL57': (0x4038, 'Sweden', 17505000, 'AM', '', 0, ''),
+     'SWL58': (0x4039, 'Finland', 6120000, 'AM', '', 0, ''),
+     'SWL59': (0x403a, 'Finland', 9560000, 'AM', '', 0, ''),
+     'SWL60': (0x403b, 'Finland', 11755000, 'AM', '', 0, ''),
+     'SWL61': (0x403c, 'Finland', 15400000, 'AM', '', 0, ''),
+     'SWL62': (0x403d, 'Russia', 5920000, 'AM', '', 0, ''),
+     'SWL63': (0x403e, 'Russia', 5940000, 'AM', '', 0, ''),
+     'SWL64': (0x403f, 'Russia', 7200000, 'AM', '', 0, ''),
+     'SWL65': (0x4040, 'Russia', 12030000, 'AM', '', 0, ''),
+     'SWL66': (0x4041, 'Israel', 7465000, 'AM', '', 0, ''),
+     'SWL67': (0x4042, 'Israel', 11585000, 'AM', '', 0, ''),
+     'SWL68': (0x4043, 'Israel', 15615000, 'AM', '', 0, ''),
+     'SWL69': (0x4044, 'Israel', 17535000, 'AM', '', 0, ''),
+     'SWL70': (0x4045, 'India', 6045000, 'AM', '', 0, ''),
+     'SWL71': (0x4046, 'India', 9595000, 'AM', '', 0, ''),
+     'SWL72': (0x4047, 'India', 11620000, 'AM', '', 0, ''),
+     'SWL73': (0x4048, 'India', 15020000, 'AM', '', 0, ''),
+     'SWL74': (0x4049, 'China', 7190000, 'AM', '', 0, ''),
+     'SWL75': (0x404a, 'China', 7405000, 'AM', '', 0, ''),
+     'SWL76': (0x404b, 'China', 9785000, 'AM', '', 0, ''),
+     'SWL77': (0x404c, 'China', 11685000, 'AM', '', 0, ''),
+     'SWL78': (0x404d, 'Korea', 6135000, 'AM', '', 0, ''),
+     'SWL79': (0x404e, 'Korea', 7275000, 'AM', '', 0, ''),
+     'SWL80': (0x404f, 'Korea', 9570000, 'AM', '', 0, ''),
+     'SWL81': (0x4050, 'Korea', 13670000, 'AM', '', 0, ''),
+     'SWL82': (0x4051, 'Japan', 6165000, 'AM', '', 0, ''),
+     'SWL83': (0x4052, 'Japan', 7200000, 'AM', '', 0, ''),
+     'SWL84': (0x4053, 'Japan', 9750000, 'AM', '', 0, ''),
+     'SWL85': (0x4054, 'Japan', 11860000, 'AM', '', 0, ''),
+     'SWL86': (0x4055, 'Australia', 5995000, 'AM', '', 0, ''),
+     'SWL87': (0x4056, 'Australia', 9580000, 'AM', '', 0, ''),
+     'SWL88': (0x4057, 'Australia', 9660000, 'AM', '', 0, ''),
+     'SWL89': (0x4058, 'Australia', 12080000, 'AM', '', 0, ''),
+     'Marine01': (0x2800,  'SEA 01', 160650000, 'FM', '-', 4600000,
+                  'Port Operations and Comm'),
+     'Marine02': (0x2801,  'VHF 2',  160700000, 'FM', '-', 4600000, ''),
+     'Marine03': (0x2802,  'VHF 3',  160750000, 'FM', '-', 4600000, ''),
+     'Marine04': (0x2803,  'VHF 4',  160800000, 'FM', '-', 4600000, ''),
+     'Marine05': (0x2804,  'SEA 05', 160850000, 'FM', '-', 4600000,
+                  'Port Operations.'),
+     'Marine06': (0x2805,  'SEA 06', 156300000, 'FM', '', 0,
+                  'Intership Safety'),
+     'Marine07': (0x2806,  'SEA 07', 160950000, 'FM', '-', 4600000,
+                  'Commercial'),
+     'Marine08': (0x2807,  'SEA 08', 156400000, 'FM', '', 0,
+                  'Commercial (Intership'),
+     'Marine09': (0x2808,  'SEA 09', 156450000, 'FM', '', 0,
+                  'Boater Calling'),
+     'Marine10': (0x2809,  'SEA 10', 156500000, 'FM', '', 0, 'Commercial'),
+     'Marine11': (0x280a,  'SEA 11', 156550000, 'FM', '', 0,
+                  'Commercial.'),
+     'Marine12': (0x280b,  'SEA 12', 156600000, 'FM', '', 0,
+                  'Port Operations.'),
+     'Marine13': (0x280c,  'SEA 13 Guard', 156650000, 'FM', '', 0,
+                  'Intership Nav Safety'),
+     'Marine14': (0x280d,  'SEA 14', 156700000, 'FM', '', 0,
                   'Port Operations.  VTS in'),
-     'Marine13': (0x200d,  'SEA 13 Guard', 156650000, 'FM', '', 0,
-                  'Intership Navigation Saf'),
-     'Marine14': (0x200e,  'SEA 14', 156700000, 'FM', '', 0,
-                  'Port Operations.  VTS in'),
-     'Marine15': (0x200f,  'SEA 15', 156750000, 'FM', '', 0,
-                  'Environmental (Receive o'),
-     'Marine16': (0x2010,  'SEA 16 Distress', 156800000, 'FM', '', 0,
-                  'International Distress, '),
-     'Marine17': (0x2011,  'SEA 17', 156850000, 'FM', '', 0,
+     'Marine15': (0x280e,  'SEA 15', 156750000, 'FM', '', 0,
+                  'Environmental'),
+     'Marine16': (0x280f,  'SEA 16 Distress', 156800000, 'FM', '', 0,
+                  'International Distress'),
+     'Marine17': (0x2810,  'SEA 17', 156850000, 'FM', '', 0,
                   'State Control'),
-     'Marine18': (0x2012,  'SEA 18', 156900000, 'FM', '-', 0, 'Commercial'),
-     'Marine19': (0x2013,  'SEA 19', 156950000, 'FM', '-', 0, 'Commercial'),
-     'Marine20': (0x2014,  'SEA 20', 157000000, 'FM', '-', 0,
-                  'Port Operations (duplex)'),
-     'Marine21': (0x2015,  'SEA 21', 157050000, 'FM', '-', 0,
+     'Marine18': (0x2811,  'SEA 18', 161500000, 'FM', '-', 4600000,
+                  'Commercial'),
+     'Marine19': (0x2812,  'SEA 19', 161550000, 'FM', '-', 4600000,
+                  'Commercial'),
+     'Marine20': (0x2813,  'SEA 20', 161600000, 'FM', '-', 4600000, ''),
+     'Marine21': (0x2814,  'SEA 21', 161650000, 'FM', '-', 4600000,
                   'Port Operations'),
-     'Marine22': (0x2016,  'SEA 22', 157100000, 'FM', '-', 0,
-                  'Coast Guard Liaison and '),
-     'Marine23': (0x2017,  'SEA 23', 157150000, 'FM', '-', 0,
+     'Marine22': (0x2815,  'SEA 22', 161700000, 'FM', '-', 4600000,
+                  'Coast Guard Liaison'),
+     'Marine23': (0x2816,  'SEA 23', 161750000, 'FM', '-', 4600000,
                   'U.S. Government only'),
-     'Marine24': (0x2018,  'SEA 24', 157200000, 'FM', '-', 4600000,
-                  'Public Correspondence (M'),
-     'Marine25': (0x2019,  'SEA 25', 157250000, 'FM', '-', 4600000,
-                  'Public Correspondence (M'),
-     'Marine26': (0x201a,  'SEA 26', 157300000, 'FM', '-', 4600000,
-                  'Public Correspondence (M'),
-     'Marine27': (0x201b,  'SEA 27', 157350000, 'FM', '-', 4600000,
-                  'Public Correspondence (M'),
-     'Marine28': (0x201c,  'SEA 28', 157400000, 'FM', '-', 4600000,
-                  'Public Correspondence (M'),
-     'Marine60': (0x201d,  'VHF 60', 156025000, 'FM', '-', 4600000, ''),
-     'Marine61': (0x201e,  'VHF 61', 156075000, 'FM', '-', 4600000, ''),
-     'Marine62': (0x201f,  'VHF 62', 156125000, 'FM', '-', 4600000, ''),
-     'Marine63': (0x2020,  'VHF 63', 156175000, 'FM', '-', 4600000, ''),
-     'Marine64': (0x2021,  'VHF 64', 156225000, 'FM', '-', 4600000, ''),
-     'Marine65': (0x2022,  'SEA 65', 156275000, 'FM', '-', 0,
+     'Marine24': (0x2817,  'SEA 24', 161800000, 'FM', '-', 4600000,
+                  'Public Correspondence'),
+     'Marine25': (0x2818,  'SEA 25', 161850000, 'FM', '-', 4600000,
+                  'Public Correspondence'),
+     'Marine26': (0x2819,  'SEA 26', 161900000, 'FM', '-', 4600000,
+                  'Public Correspondence'),
+     'Marine27': (0x281a,  'SEA 27', 161950000, 'FM', '-', 4600000,
+                  'Public Correspondence'),
+     'Marine28': (0x281b,  'SEA 28', 162000000, 'FM', '-', 4600000,
+                  'Public Correspondence'),
+     'Marine60': (0x281c,  'VHF 60', 160625000, 'FM', '-', 4600000, ''),
+     'Marine61': (0x281d,  'VHF 61', 160675000, 'FM', '-', 4600000, ''),
+     'Marine62': (0x281e,  'VHF 62', 160725000, 'FM', '-', 4600000, ''),
+     'Marine63': (0x281f,  'VHF 63', 160775000, 'FM', '-', 4600000, ''),
+     'Marine64': (0x2820,  'VHF 64', 160825000, 'FM', '-', 4600000, ''),
+     'Marine65': (0x2821,  'SEA 65', 160875000, 'FM', '-', 4600000,
                   'Port Operations'),
-     'Marine66': (0x2023,  'SEA 66', 156325000, 'FM', '-', 0,
+     'Marine66': (0x2822,  'SEA 66', 160925000, 'FM', '-', 4600000,
                   'Port Operations'),
-     'Marine67': (0x2024,  'SEA 67', 156375000, 'FM', '', 0,
-                  'Commercial.  Used for Br'),
-     'Marine68': (0x2025,  'SEA 68', 156425000, 'FM', '', 0,
-                  'Non-Commercial-Working C'),
-     'Marine69': (0x2026,  'SEA 69', 156475000, 'FM', '', 0,
+     'Marine67': (0x2823,  'SEA 67', 156375000, 'FM', '', 0,
+                  'Commercial'),
+     'Marine68': (0x2824,  'SEA 68', 156425000, 'FM', '', 0,
+                  'Non-Commercial-Working'),
+     'Marine69': (0x2825,  'SEA 69', 156475000, 'FM', '', 0,
                   'Non-Commercial'),
-     'Marine70': (0x2027,  'DSC 70', 156525000, 'FM', '', 0,
+     'Marine70': (0x2826,  'DSC 70', 156525000, 'FM', '', 0,
                   'Digital Selective Callin'),
-     'Marine71': (0x2028,  'SEA 71', 156575000, 'FM', '', 0,
+     'Marine71': (0x2827,  'SEA 71', 156575000, 'FM', '', 0,
                   'Non-Commercial'),
-     'Marine72': (0x2029,  'SEA 72', 156625000, 'FM', '', 0,
+     'Marine72': (0x2828,  'SEA 72', 156625000, 'FM', '', 0,
                   'Non-Commercial (Intershi'),
-     'Marine73': (0x202a,  'SEA 73', 156675000, 'FM', '', 0,
+     'Marine73': (0x2829,  'SEA 73', 156675000, 'FM', '', 0,
                   'Port Operations'),
-     'Marine74': (0x202b,  'SEA 74', 156725000, 'FM', '', 0,
+     'Marine74': (0x282a,  'SEA 74', 156725000, 'FM', '', 0,
                   'Port Operations'),
-     'Marine75': (0x202c,  'VHF 75', 156775000, 'FM', '', 0, ''),
-     'Marine76': (0x202d,  'VHF 76', 156825000, 'FM', '', 0, ''),
-     'Marine77': (0x202e,  'SEA 77', 156875000, 'FM', '', 0,
+     'Marine75': (0x282b,  'VHF 75', 156775000, 'FM', '', 0, ''),
+     'Marine76': (0x282c,  'VHF 76', 156825000, 'FM', '', 0, ''),
+     'Marine77': (0x282d,  'SEA 77', 156875000, 'FM', '', 0,
                   'Port Operations'),
-     'Marine78': (0x202f,  'SEA 78', 156925000, 'FM', '-', 0,
+     'Marine78': (0x282e,  'SEA 78', 161550000, 'FM', '-', 4600000,
                   'Non-Commercial'),
-     'Marine79': (0x2030,  'SEA 79', 156975000, 'FM', '-', 0, 'Commercial'),
-     'Marine80': (0x2031,  'SEA 80', 157025000, 'FM', '-', 0, 'Commercial'),
-     'Marine81': (0x2032,  'SEA 81', 157075000, 'FM', '-', 0,
-                  'U.S. Government only - E'),
-     'Marine82': (0x2033,  'SEA 82', 157125000, 'FM', '-', 0,
+     'Marine79': (0x282f,  'SEA 79', 161575000, 'FM', '-', 4600000,
+                  'Commercial'),
+     'Marine80': (0x2830,  'SEA 80', 161625000, 'FM', '-', 4600000,
+                  'Commercial'),
+     'Marine81': (0x2831,  'SEA 81', 161675000, 'FM', '-', 4600000,
                   'U.S. Government only'),
-     'Marine83': (0x2034,  'SEA 83', 157175000, 'FM', '-', 0,
+     'Marine82': (0x2832,  'SEA 82', 161725000, 'FM', '-', 4600000,
                   'U.S. Government only'),
-     'Marine84': (0x2035,  'SEA 84', 157225000, 'FM', '-', 4600000,
-                  'Public Correspondence (M'),
-     'Marine85': (0x2036,  'SEA 85', 157275000, 'FM', '-', 4600000,
-                  'Public Correspondence (M'),
-     'Marine86': (0x2037,  'SEA 86', 157325000, 'FM', '-', 4600000,
-                  'Public Correspondence (M'),
-     'Marine87': (0x2038,  'SEA 87', 157375000, 'FM', '-', 0,
-                  'Public Correspondence (M'),
-     'Marine88': (0x2039,  'SEA 88', 157425000, 'FM', '-', 0,
-                  'Public Correspondence in'),
-     'WX1': (0x4000, 'WX1PA7', 162550000, 'FM', '', 0, ''),
-     'WX3': (0x4001, 'WX2PA1', 162400000, 'FM', '', 0, ''),
-     'WX5': (0x4002, 'WX3PA4', 162475000, 'FM', '', 0, ''),
-     'WX7': (0x4003, 'WX4PA2', 162425000, 'FM', '', 0, ''),
-     'WX9': (0x4004, 'WX5PA3', 162450000, 'FM', '', 0, ''),
-     'WX11': (0x4005, 'WX6PA5', 162500000, 'FM', '', 0, ''),
-     'WX13': (0x4006, 'WX7PA6', 162525000, 'FM', '', 0, ''),
-     'WX15': (0x4007, 'WX8', 161650000, 'FM', '', 0, ''),
-     'WX17': (0x4008, 'WX9', 161775000, 'FM', '', 0, ''),
-     'WX19': (0x4009, 'WX10', 163275000, 'FM', '', 0, ''),
+     'Marine83': (0x2833,  'SEA 83', 161775000, 'FM', '-', 4600000,
+                  'U.S. Government only'),
+     'Marine84': (0x2834,  'SEA 84', 161825000, 'FM', '-', 4600000,
+                  'Public Correspondence'),
+     'Marine85': (0x2835,  'SEA 85', 161875000, 'FM', '-', 4600000,
+                  'Public Correspondence'),
+     'Marine86': (0x2836,  'SEA 86', 161925000, 'FM', '-', 4600000,
+                  'Public Correspondence'),
+     'Marine87': (0x2837,  'SEA 87', 161975000, 'FM', '-', 4600000,
+                  'Public Correspondence'),
+     'Marine88': (0x2838,  'SEA 88', 162025000, 'FM', '-', 4600000,
+                  'Public Correspondence'),
+     'WX01': (0x1800, 'WX1PA7', 162550000, 'FM', '', 0, ''),
+     'WX02': (0x1801, 'WX2PA1', 162400000, 'FM', '', 0, ''),
+     'WX03': (0x1802, 'WX3PA4', 162475000, 'FM', '', 0, ''),
+     'WX04': (0x1803, 'WX4PA2', 162425000, 'FM', '', 0, ''),
+     'WX05': (0x1804, 'WX5PA3', 162450000, 'FM', '', 0, ''),
+     'WX06': (0x1805, 'WX6PA5', 162500000, 'FM', '', 0, ''),
+     'WX07': (0x1806, 'WX7PA6', 162525000, 'FM', '', 0, ''),
+     'Wx18': (0x0807, 'WX8',    161650000, 'FM', '', 0, ''),
+     'WX09': (0x1808, 'WX9',    161775000, 'FM', '', 0, ''),
+     'WX10': (0x1809, 'unused', 163275000, 'FM', '', 0, ''),
     }
 # list of (array name, (list of memories in that array))
 # array names must match names of memories defined for radio
@@ -783,36 +786,95 @@ class FT1Bank(chirp_common.NamedBank):
 
 class FT1BankModel(chirp_common.BankModel,
                    chirp_common.SpecialBankModelInterface):
-    ''' Copied from fake.py driver, in the FakeBankModel object.
-        This implementation requires NO interaction with radio data.
-        '''
-    NBANKS = 24
-
-    def get_bankable_specials(self) -> list:
-        return SKIPNAMES + PMSNAMES + list(YAESU_PRESETS.keys())
+    """A FT1D bank model"""
 
     def __init__(self, radio, name='Banks'):
-        super().__init__(radio, name)
-        self._banks = {i: set() for i in range(self.NBANKS)}
+        super(FT1BankModel, self).__init__(radio, name)
+        _banks = self._radio._memobj.bank_info
+        self._bank_mappings = []
+        for index, _bank in enumerate(_banks):
+            bank = FT1Bank(self, "%i" % index, "BANK-%i" % index)
+            bank.index = index
+            self._bank_mappings.append(bank)
 
-    def get_num_mappings(self):
-        return len(self._banks)
+    def get_bankable_specials(self) -> list:
+        """ tell banks to handle PRESETS (CHIRP handles these as SPECIALS) """
+        return SKIPNAMES + PMSNAMES + list(YAESU_PRESETS.keys())
 
-    def get_mappings(self):
-        return [chirp_common.Bank(self, i, f'Bank {i}') for i in \
-                range(self.NBANKS)]
+    def get_num_mappings(self) -> int:
+        ''' Return number of CHIRP's bank objects,
+            presumably = number of radio banks '''
+        return len(self._bank_mappings)
 
-    def get_memory_mappings(self, memory):
-        banks = self.get_mappings()
-        in_banks = [i for i in range(self.NBANKS) \
-                    if memory.number in self._banks[i]]
-        return [bank for bank in banks if bank.get_index() in in_banks]
+    def get_mappings(self) -> list:
+        ''' Return list of all defined bank objects '''
+        return self._bank_mappings
 
-    def add_memory_to_mapping(self, memory, mapping):
-        self._banks[mapping.get_index()].add(memory.number)
+    def _channel_numbers_in_bank(self, bank: chirp_common.Bank) -> set:
+        ''' Returns set of defined channels in specific bank object '''
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+        if _bank_used.in_use == 0xFFFF:
+            return set()
+        _members = self._radio._memobj.bank_members[bank.index]
+        _chans = set([int(ch) + 1 for ch in _members.channel if ch != 0xFFFF])
+        return _chans
 
-    def remove_memory_from_mapping(self, memory, mapping):
-        self._banks[mapping.get_index()].remove(memory.number)
+    def _update_bank_with_channel_numbers(self,
+                                          bank: chirp_common.Bank,
+                                          channels_in_bank: set) -> None:
+        ''' Put identifiers (channels_in_bank) into specific bank object '''
+        _members = self._radio._memobj.bank_members[bank.index]
+        if len(channels_in_bank) > len(_members.channel):
+            raise Exception("Too many entries in bank %d" % bank.index)
+
+        empty = 0
+        for index, channel_number in enumerate(sorted(channels_in_bank)):
+            _members.channel[index] = channel_number - 1
+            empty = index + 1
+        for index in range(empty, len(_members.channel)):
+            _members.channel[index] = 0xFFFF
+
+    def add_memory_to_mapping(self,
+                              memory: chirp_common.Memory,
+                              bank: chirp_common.Bank) -> None:
+        ''' Add identified CHIRP Memory to specific bank object '''
+        channels_in_bank = self._channel_numbers_in_bank(bank)
+        channels_in_bank.add(memory.number)
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
+
+        _bank_used = self._radio._memobj.bank_used[bank.index]
+        _bank_used.in_use = 0x06
+
+    def remove_memory_from_mapping(self,
+                                   memory: chirp_common.Memory,
+                                   bank: chirp_common.Bank) -> None:
+        ''' Remove specific CHIRP memory from specific bank object '''
+        channels_in_bank = self._channel_numbers_in_bank(bank)
+        try:
+            channels_in_bank.remove(memory.number)
+        except KeyError:
+            LOG.warning("Memory {memory.number} is not in {bank}. Ignored.")
+            return
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
+
+        if not channels_in_bank:
+            _bank_used = self._radio._memobj.bank_used[bank.index]
+            _bank_used.in_use = 0xFFFF
+
+    def get_mapping_memories(self, bank: chirp_common.Bank) -> list:
+        ''' Return list of CHIRP memories in specific bank object '''
+        memories = []
+        for channel in self._channel_numbers_in_bank(bank):
+            memories.append(self._radio.get_memory(channel))
+        return memories
+
+    def get_memory_mappings(self, memory: chirp_common.Bank) -> list:
+        ''' Return list of bank objects that refer to specific CHIRP memory '''
+        banks = []
+        for bank in self.get_mappings():
+            if memory.number in self._channel_numbers_in_bank(bank):
+                banks.append(bank)
+        return banks
 
 
 # Note: other radios like FTM3200Radio subclass this radio
@@ -1143,7 +1205,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.name = self._decode_label(_mem)
             mem.immutable += ["empty", "number", "extd_number", "skip"]
         elif array == "Presets":
-            # read data from specific YAESU_PRESETS (returned as _mem)
+            # read data from specific YAESU_PRESETS (from slotloc as _mem)
             mem.empty = False
             mem.extd_number = ename
             mem.number = _mem[0]
