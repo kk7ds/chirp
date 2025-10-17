@@ -1764,7 +1764,7 @@ def is_2_5(freq):
 
 def is_8_33(freq):
     """Returns True if @freq is reachable by a 8.33 kHz step"""
-    return (freq % 25000) in [0, 8330, 16660]
+    return (freq % 25000) in [8330, 8333, 16660, 16666]
 
 
 def is_1_0(freq):
@@ -1802,10 +1802,27 @@ def required_step(freq, allowed=None):
                                   "tuning step for %s" % format_freq(freq))
 
 
+def is_airband(freq):
+    """Returns True if @freq is in the airband range"""
+    return in_range(freq, [(to_MHz(108), to_MHz(137))])
+
+
 def fix_rounded_step(freq):
     """Some radios imply the last bit of 12.5 kHz and 6.25 kHz step
     frequencies. Take the base @freq and return the corrected one"""
     allowed = [12.5, 6.25]
+
+    if is_airband(freq):
+        # Airband can be 25kHz or 8.33kHz (25k / 3) steps
+        if freq % 25000:
+            # This must be 8.33kHz - find the closest 8.33k-aligned channel
+            # and return that
+            base = freq // 25000 * 25000
+            channels = [base + (25000 // 3) * i for i in range(1, 4)]
+            best = min(channels, key=lambda x: abs(x - freq))
+            return best
+        else:
+            return freq
 
     try:
         required_step(freq + 500, allowed=allowed)
@@ -1873,17 +1890,17 @@ def name16(name, just_upper=False):
 
 def to_GHz(val):
     """Convert @val in GHz to Hz"""
-    return val * 1000000000
+    return int(val * 1000000000)
 
 
 def to_MHz(val):
     """Convert @val in MHz to Hz"""
-    return val * 1000000
+    return int(val * 1000000)
 
 
 def to_kHz(val):
     """Convert @val in kHz to Hz"""
-    return val * 1000
+    return int(val * 1000)
 
 
 def from_GHz(val):
