@@ -169,7 +169,7 @@ struct {
 //      1   SW Broadcast
 //      2   VHF Marine
 //      3   WX (weather)
-//      4   ? a mode? ?
+//      4   1 = FM, 0 = AM 
 //  11 bits of index into frequency tables
 //
 struct {
