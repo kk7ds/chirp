@@ -79,6 +79,16 @@ class DriverTest(unittest.TestCase):
         attempt = 0
         for band_lo, band_hi in self.rf.valid_bands:
             m.freq = band_lo
+            if chirp_common.is_airband(m.freq):
+                # Air band requires special step handling.
+                # First see if we can pick a 2m frequency to avoid airband
+                # details.
+                if chirp_common.in_range(146520000, self.rf.valid_bands):
+                    m.freq = 146520000
+                else:
+                    # Nope, so go 25kHz up from the bottom of the band to
+                    # avoid 8.33kHz issues
+                    m.freq += 25000
             if self.rf.valid_tuning_steps:
                 # If we have valid tuning steps, go one step above the
                 # bottom of the band. Select a different tuning_step each
