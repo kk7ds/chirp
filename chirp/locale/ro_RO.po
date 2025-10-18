@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-08 18:10-0700\n"
+"POT-Creation-Date: 2025-10-08 15:51-0700\n"
 "PO-Revision-Date: 2025-02-27 08:00+0200\n"
 "Last-Translator: ThatSINEWAVE\n"
 "Language-Team: Romanian\n"
@@ -1031,7 +1031,7 @@ msgstr "Începe întotdeauna cu lista recentă"
 msgid "Amateur"
 msgstr "Amator"
 
-#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:625
+#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:629
 msgid "An error has occurred"
 msgstr "A apărut o eroare"
 
@@ -1102,7 +1102,7 @@ msgstr "Rezultatele cache pot fi incluse doar pentru o interogare de proximitate
 msgid "Canada"
 msgstr "Canada"
 
-#: ../wxui/common.py:496
+#: ../wxui/common.py:500
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "Schimbarea acestei setări necesită reîmprospătarea setărilor din imagine, ceea ce va avea loc acum."
 
@@ -1297,7 +1297,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr "Decodare DTMF"
 
-#: ../wxui/memedit.py:2863
+#: ../wxui/memedit.py:2873
 msgid "DV Memory"
 msgstr "Memorie DV"
 
@@ -1338,7 +1338,7 @@ msgstr "Diferență memorii brute"
 msgid "Diff against another editor"
 msgstr "Diferență față de un alt editor"
 
-#: ../wxui/memedit.py:2780
+#: ../wxui/memedit.py:2790
 msgid "Digital Code"
 msgstr "Cod digital"
 
@@ -1413,12 +1413,12 @@ msgstr "Duplex"
 msgid "Edit %i memories"
 msgstr "Editați %i memorii"
 
-#: ../wxui/memedit.py:2810
+#: ../wxui/memedit.py:2820
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Editați detaliile pentru %i memorii"
 
-#: ../wxui/memedit.py:2808
+#: ../wxui/memedit.py:2818
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Editați detaliile pentru memoria %i"
@@ -1541,7 +1541,7 @@ msgstr "Exportă în CSV"
 msgid "Export to CSV..."
 msgstr "Exportă în CSV..."
 
-#: ../wxui/memedit.py:2852
+#: ../wxui/memedit.py:2862
 msgid "Extra"
 msgstr "Extra"
 
@@ -1565,6 +1565,10 @@ msgid ""
 msgstr ""
 "Bază de date GRATUITĂ pentru repetoare, care oferă cele mai recente\n"
 "informații despre repetoarele din Europa. Nu este necesar un cont."
+
+#: ../wxui/memedit.py:2771
+msgid "Failed to export some memories"
+msgstr ""
 
 #: ../wxui/developer.py:499
 msgid "Failed to load radio browser"
@@ -1699,8 +1703,8 @@ msgstr ""
 "    audio pe partea dreaptă!\n"
 
 #: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:699 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:456 ../drivers/uv6r.py:339
+#: ../drivers/btech.py:684 ../drivers/gmrsuv1.py:391
+#: ../drivers/tdxone_tdq8a.py:441 ../drivers/uv6r.py:339
 #: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
 #: ../drivers/baofeng_uv17Pro.py:496 ../drivers/bf_t1.py:482
 msgid ""
@@ -1806,7 +1810,7 @@ msgstr ""
 "    audio pe partea dreaptă!\n"
 "6 - Oprește și pornește din nou stația pentru a ieși din modul de clonare\n"
 
-#: ../drivers/btech.py:705 ../drivers/bf_t1.py:488
+#: ../drivers/btech.py:690 ../drivers/bf_t1.py:488
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1848,7 +1852,7 @@ msgstr ""
 "3 - Pornește stația\n"
 "4 - Apasă OK pentru a începe\n"
 
-#: ../drivers/vgc.py:598 ../drivers/lt725uv.py:496
+#: ../drivers/vgc.py:583 ../drivers/lt725uv.py:481
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1876,9 +1880,9 @@ msgstr ""
 "3 - Pornește stația\n"
 "4 - Fă descărcarea datelor stației tale\n"
 
-#: ../drivers/vgc.py:604 ../drivers/mursv1.py:347
+#: ../drivers/vgc.py:589 ../drivers/mursv1.py:347
 #: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:502 ../drivers/tdxone_tdq8a.py:462
+#: ../drivers/lt725uv.py:487 ../drivers/tdxone_tdq8a.py:447
 #: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
 #: ../drivers/baofeng_uv17Pro.py:502
 msgid ""
@@ -1926,19 +1930,19 @@ msgstr "Frecvența %s este în afara intervalului acceptat"
 msgid "Frequency granularity in kHz"
 msgstr "Granularitatea frecvenței în kHz"
 
-#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1394
-#: ../drivers/tdh8.py:2610 ../drivers/uv5r.py:1940
+#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1379
+#: ../drivers/tdh8.py:2506 ../drivers/uv5r.py:1940
 #: ../drivers/baofeng_uv17Pro.py:1266
 msgid "Frequency in this range must not be AM mode"
 msgstr "Frecvența din acest interval nu trebuie să fie în modul AM"
 
-#: ../drivers/ga510.py:1065 ../drivers/mml_jc8810.py:1391
-#: ../drivers/tdh8.py:2607 ../drivers/uv5r.py:1936
-#: ../drivers/baofeng_uv17Pro.py:1262
+#: ../drivers/ga510.py:1065 ../drivers/radtel_rt900.py:1360
+#: ../drivers/mml_jc8810.py:1376 ../drivers/tdh8.py:2503
+#: ../drivers/uv5r.py:1936 ../drivers/baofeng_uv17Pro.py:1262
 msgid "Frequency in this range requires AM mode"
 msgstr "Frecvența din acest interval necesită modul AM"
 
-#: ../drivers/tdh8.py:2614
+#: ../drivers/tdh8.py:2510
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr "Frecvența este în afacerea benzilor TX și trebuie să fie duplex=OFF"
 
@@ -2060,7 +2064,7 @@ msgstr "Intrare invalidă"
 msgid "Invalid ZIP code"
 msgstr "Cod poștal invalid"
 
-#: ../wxui/memedit.py:1980 ../wxui/memedit.py:2943
+#: ../wxui/memedit.py:1980 ../wxui/memedit.py:2953
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Editare invalidă: %s"
@@ -2241,7 +2245,7 @@ msgstr "Modul încărcat"
 msgid "Module loaded successfully"
 msgstr "Modul încărcat cu succes"
 
-#: ../wxui/common.py:641
+#: ../wxui/common.py:645
 msgid "More Info"
 msgstr "Mai multe informații"
 
@@ -2456,7 +2460,7 @@ msgstr "Parolă"
 msgid "Paste"
 msgstr "Lipește"
 
-#: ../wxui/common.py:796
+#: ../wxui/common.py:800
 msgid "Paste external memories"
 msgstr "Lipește memoriile externe"
 
@@ -2685,7 +2689,7 @@ msgstr "Se recomandă utilizarea versiunii 55.2"
 msgid "Redo"
 msgstr "Refă"
 
-#: ../wxui/common.py:498
+#: ../wxui/common.py:502
 msgid "Refresh required"
 msgstr "Reîmprospătare necesară"
 
@@ -3195,7 +3199,7 @@ msgstr "Nu se poate interoga"
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "Nu s-a putut citi ultimul bloc. Acest lucru se întâmplă adesea când modelul selectat este US, dar radioul este unul non-US (sau deblocat pentru frecvențe extinse). Vă rugăm să alegeți modelul corect și să încercați din nou."
 
-#: ../wxui/common.py:693
+#: ../wxui/common.py:697
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Nu se poate afișa %s pe acest sistem"
@@ -3277,12 +3281,12 @@ msgstr "Nume utilizator"
 msgid "Value does not fit in %i bits"
 msgstr "Valoarea nu se încadrează în %i biți"
 
-#: ../wxui/common.py:535
+#: ../wxui/common.py:539
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Valoarea trebuie să fie cel puțin %.4f"
 
-#: ../wxui/common.py:539
+#: ../wxui/common.py:543
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Valoarea trebuie să fie cel mult %.4f"
@@ -3300,7 +3304,7 @@ msgstr "Valoarea trebuie să fie zero sau mai mare"
 msgid "Value to search memory field for"
 msgstr "Valoare pentru căutarea câmpului de memorie"
 
-#: ../wxui/memedit.py:2843
+#: ../wxui/memedit.py:2853
 msgid "Values"
 msgstr "Valori"
 
@@ -3312,7 +3316,7 @@ msgstr "Furnizor"
 msgid "View"
 msgstr "Vizualizează"
 
-#: ../wxui/common.py:483
+#: ../wxui/common.py:487
 msgid "WARNING!"
 msgstr "ATENȚIE!"
 

@@ -106,14 +106,8 @@ struct {
 } settings;
 
 //#seekto 0x0CB8;
-struct {
-    u8 ofseta[4];
-} aoffset;
-
-//#seekto 0x0CBC;
-struct {
-    u8 ofsetb[4];
-} boffset;
+lbcd offseta[4];
+lbcd offsetb[4];
 
 #seekto 0x0CD8;
 struct{
@@ -371,14 +365,8 @@ struct {
 } settings;
 
 //#seekto 0x0CB8;
-struct {
-    u8 ofseta[4];
-} aoffset;
-
-//#seekto 0x0CBC;
-struct {
-    u8 ofsetb[4];
-} boffset;
+lbcd offseta[4];
+lbcd offsetb[4];
 
 #seekto 0x0CD8;
 struct{
@@ -601,14 +589,8 @@ struct {
 } settings;
 
 //#seekto 0x0CB8;
-struct {
-    u8 ofseta[4];
-} aoffset;
-
-//#seekto 0x0CBC;
-struct {
-    u8 ofsetb[4];
-} boffset;
+lbcd offseta[4];
+lbcd offsetb[4];
 
 #seekto 0x0CD8;
 struct{
@@ -801,18 +783,12 @@ H3_LIST = ["TD-H3", "TD-H3-HAM", "TD-H3-GMRS"]
 
 GMRS_FREQS = bandplan_na.ALL_GMRS_FREQS
 
-NOAA_FREQS = [162550000, 162400000, 162475000, 162425000, 162450000,
-              162500000, 162525000, 161650000, 161775000, 161750000,
-              162000000]
-
-HAM_GMRS_NAME = ["NOAA 1", "NOAA 2", "NOAA 3", "NOAA 4", "NOAA 5", "NOAA 6",
-                 "NOAA 7", "NOAA 8", "NOAA 9", "NOAA 10", "NOAA 11"]
-
 ALL_MODEL = H8_LIST + H3_LIST + ["RT-730"]
 
-TD_H8 = b"\x50\x56\x4F\x4A\x48\x1C\x14"
-TD_H3 = b"\x50\x56\x4F\x4A\x48\x5C\x14"
-RT_730 = b"\x50\x47\x4F\x4A\x48\xC3\x44"
+TD_H8 = b'PVOJH\x1c\x14'
+TD_H3 = b'PVOJH\x5c\x14'
+RT_730 = b'PGOJH\xc3D'
+TD_H8_G3 = b'PVOJH<\x14'
 
 
 def _do_status(radio, block):
@@ -1025,12 +1001,26 @@ class TDH8(chirp_common.CloneModeRadio):
 
     @classmethod
     def detect_from_serial(cls, pipe):
-        ident = _do_ident(pipe, cls._idents[0])
-        for rclass in cls.detected_models():
-            if rclass.ident_mode == ident:
-                return rclass
-        LOG.error('No model match found for %r', ident)
-        raise errors.RadioError('Unsupported model')
+        # Build a list of unique idents and the classes that go with each
+        uniq_idents = {}
+        for cls in cls.detected_models():
+            uniq_idents.setdefault(cls._idents[0], [])
+            uniq_idents[cls._idents[0]].append(cls)
+
+        # Try each ident and if one matches then determine the appropriate
+        # class to use
+        for ident, classes in uniq_idents.items():
+            try:
+                radio_ident = _do_ident(pipe, ident)
+            except errors.RadioError:
+                continue
+            for rclass in classes:
+                if rclass.ident_mode == radio_ident:
+                    return rclass
+            LOG.error('No model match found for ident query %r response %r',
+                      ident, radio_ident)
+            raise errors.RadioError('Unsupported model')
+        raise errors.RadioError('No response from radio')
 
     @classmethod
     def get_prompts(cls):
@@ -1173,9 +1163,6 @@ class TDH8(chirp_common.CloneModeRadio):
             mem.name += str(char)
 
         mem.name = mem.name.rstrip()
-        if self.ident_mode != b'P31183\xff\xff' and \
-                (mem.number >= 189 and mem.number <= 199):
-            mem.name = HAM_GMRS_NAME[mem.number - 200]
 
         # tmode
         lin2 = int(_mem.rxtone)
@@ -1221,20 +1208,6 @@ class TDH8(chirp_common.CloneModeRadio):
                                      'duplex', 'offset']
             elif mem.number >= 31 and mem.number <= 54:
                 mem.offset = 5000000
-            elif mem.number >= 189 and mem.number <= 199:
-                ham_freqs = NOAA_FREQS[mem.number - 189]
-                mem.freq = ham_freqs
-                mem.immutable = ['name', 'power', 'duplex', 'freq',
-                                 'rx_dtcs', 'vfo', 'tmode', 'empty',
-                                 'offset', 'rtone', 'ctone', 'dtcs',
-                                 'dtcs_polarity', 'cross_mode']
-        elif self._ham:
-            if mem.number >= 189 and mem.number <= 199:
-                ham_freqs = NOAA_FREQS[mem.number - 189]
-                mem.freq = ham_freqs
-                mem.immutable = ['name', 'power', 'freq', 'rx_dtcs', 'vfo',
-                                 'tmode', 'empty', 'offset', 'rtone', 'ctone',
-                                 'dtcs', 'dtcs_polarity', 'cross_mode']
 
         # other function
         # pttid
@@ -1362,18 +1335,14 @@ class TDH8(chirp_common.CloneModeRadio):
         self._memobj.scanadd[mem.number - 1] = mem.skip != 'S'
 
         for setting in mem.extra:
-            if (self.ident_mode == b'P31185\xff\xff' or
-                self.ident_mode == b'P31184\xff\xff') and \
+            if self.ident_mode == b'P31184\xff\xff' and \
                     mem.number >= 189 and mem.number <= 199:
                 if setting.get_name() == 'pttid':
-                    setting.value = 'Off'
-                    setattr(_mem, setting.get_name(), setting.value)
+                    setattr(_mem, setting.get_name(), 0)
                 elif setting.get_name() == 'bcl':
-                    setting.value = 'Off'
-                    setattr(_mem, setting.get_name(), setting.value)
+                    setattr(_mem, setting.get_name(), 0)
                 elif setting.get_name() == 'freqhop':
-                    setting.value = 'Off'
-                    setattr(_mem, setting.get_name(), setting.value)
+                    setattr(_mem, setting.get_name(), 0)
             else:
                 setattr(_mem, setting.get_name(), setting.value)
 
@@ -1397,8 +1366,6 @@ class TDH8(chirp_common.CloneModeRadio):
     def _get_settings(self):
         _settings = self._memobj.settings
         _press = self._memobj.press
-        _aoffset = self._memobj.aoffset
-        _boffset = self._memobj.boffset
         _vfoa = self._memobj.vfoa
         _vfob = self._memobj.vfob
         if self.MODEL != "RT-730":
@@ -1781,27 +1748,28 @@ class TDH8(chirp_common.CloneModeRadio):
             # Offset
             # If the offset is 12.345
             # Then the data obtained is [0x45, 0x23, 0x01, 0x00]
-            a_set_val = _aoffset.ofseta
-            a_set_list = len(_aoffset.ofseta) - 1
-            real_val = ''
-            for i in range(a_set_list, -1, -1):
-                real_val += str(a_set_val[i])[2:]
-            if real_val == "FFFFFFFF":
-                rs = RadioSetting("ofseta", "A Offset Frequency",
-                                  RadioSettingValueString(0, 7, ""))
+            offsets = {}
+            for i in ('a', 'b'):
+                value = getattr(self._memobj, 'offset%s' % i)
+                if value.get_raw() == b'\xff\xff\xff\xff':
+                    offset = 0
+                else:
+                    offset = int(value) / 100000
 
-            else:
-                real_val = int(real_val)
-                real_val = "%i.%05i" % (real_val / 100000, real_val % 100000)
-                rs = RadioSetting("ofseta", "A Offset Frequency",
+                def _apply(setting):
+                    value = getattr(self._memobj, setting.get_name())
+                    if float(setting.value) == 0:
+                        value.fill_raw(b'\xff')
+                    else:
+                        value.set_value(int(setting.value * 100000))
+
+                rs = RadioSetting("offset%s" % i,
+                                  "%s Offset Frequency" % i.upper(),
                                   RadioSettingValueFloat(
-                                      0.00000, 59.99750, real_val, 0.00001, 5))
-            abblock.append(rs)
-
-            rs = RadioSetting("offset", "A Offset",
-                              RadioSettingValueList(
-                                  A_OFFSET, current_index=_vfoa.offset))
-            abblock.append(rs)
+                                      0.00000, 59.99750, offset, 0.00001, 5))
+                rs.set_apply_callback(_apply)
+                offsets[i] = rs
+            abblock.append(offsets['a'])
 
             try:
                 self._tx_power[_vfoa.lowpower]
@@ -1844,30 +1812,7 @@ class TDH8(chirp_common.CloneModeRadio):
             rs = RadioSetting("rxfreqb", "B Channel - Frequency", val1a)
             abblock.append(rs)
 
-            # Offset frequency
-            # If the offset is 12.345
-            # Then the data obtained is [0x45, 0x23, 0x01, 0x00]
-            # Need to use the following anonymous function to process data
-            b_set_val = _boffset.ofsetb
-            b_set_list = len(_boffset.ofsetb) - 1
-            real_val = ''
-            for i in range(b_set_list, -1, -1):
-                real_val += str(b_set_val[i])[2:]
-            if real_val == "FFFFFFFF":
-                rs = RadioSetting("ofsetb", "B Offset Frequency",
-                                  RadioSettingValueString(0, 7, " "))
-            else:
-                real_val = int(real_val)
-                real_val = "%i.%05i" % (real_val / 100000, real_val % 100000)
-                rs = RadioSetting("ofsetb", "B Offset Frequency",
-                                  RadioSettingValueFloat(
-                                      0.00000, 59.99750, real_val, 0.00001, 5))
-            abblock.append(rs)
-
-            rs = RadioSetting("offsetb", "B Offset",
-                              RadioSettingValueList(
-                                  B_OFFSET, current_index=_vfob.offsetb))
-            abblock.append(rs)
+            abblock.append(offsets['b'])
 
             try:
                 self._tx_power[_vfob.lowpowerb]
@@ -2166,8 +2111,6 @@ class TDH8(chirp_common.CloneModeRadio):
 
         _settings = self._memobj.settings
         _press = self._memobj.press
-        _aoffset = self._memobj.aoffset
-        _boffset = self._memobj.boffset
         _vfoa = self._memobj.vfoa
         _vfob = self._memobj.vfob
         _fmmode = self._memobj.fmmode
@@ -2199,14 +2142,8 @@ class TDH8(chirp_common.CloneModeRadio):
                     elif name in VFOA_NAME:
                         obj = _vfoa
                         setting = element.get_name()
-                    elif name == "ofseta":
-                        obj = _aoffset
-                        setting = element.get_name()
                     elif name in VFOB_NAME:
                         obj = _vfob
-                        setting = element.get_name()
-                    elif name == "ofsetb":
-                        obj = _boffset
                         setting = element.get_name()
                     elif "block" in name:
                         obj = _fmmode
@@ -2284,40 +2221,6 @@ class TDH8(chirp_common.CloneModeRadio):
                                 "136.00000-174.00000 or 400.00000-520.00000 "
                                 "or enabled in settings")
                             raise InvalidValueError(msg)
-
-                    elif "ofseta" == setting and element.value.get_mutable():
-                        if '.' in str(element.value):
-                            val = str(element.value).replace(' ', '')
-                            if len(
-                                val[val.index(".") + 1:]
-                                ) >= 1 and int(val[val.index(".") + 1:]
-                                               ) != 0:
-                                val = '00' + val.replace('.', '')
-                            else:
-                                val = '0' + val.replace('.', '')
-                            val = val.ljust(8, '0')
-                            lenth_val = 0
-                            list_val = []
-                        else:
-                            val = '0' + str(element.value).replace(' ', '')
-                            val = val.ljust(8, '0')
-                            lenth_val = 0
-                            list_val = []
-                        if (int(val) >= 0 and int(val) <= 5999750):
-                            if int(val) == 0:
-                                _aoffset.ofseta = [0xFF, 0xFF, 0xFF, 0xFF]
-                            else:
-                                while lenth_val < (len(val)):
-                                    list_val.insert(
-                                        0, val[lenth_val:lenth_val + 2])
-                                    lenth_val += 2
-                                for i in range(len(list_val)):
-                                    list_val[i] = int(list_val[i], 16)
-                                _aoffset.ofseta = list_val
-                        else:
-                            msg = ("Offset must be between 0.00000-59.99750")
-                            raise InvalidValueError(msg)
-
                     # B channel
                     elif "rxfreqb" == setting and element.value.get_mutable():
                         val = 0
@@ -2335,40 +2238,6 @@ class TDH8(chirp_common.CloneModeRadio):
                                 "or enabled in settings")
                             raise InvalidValueError(msg)
                         # setattr(obj, setting, val)
-
-                    elif "ofsetb" == setting and element.value.get_mutable():
-                        if '.' in str(element.value):
-                            val = str(element.value).replace(' ', '')
-                            if len(val[val.index(".") + 1:]
-                                   ) >= 1 and int(val[val.index(".") + 1:]
-                                                  ) != 0:
-                                val = '00' + \
-                                    str(element.value).replace('.', '')
-                            else:
-                                val = '0' + str(element.value).replace('.', '')
-                            val = val.ljust(8, '0')
-                            lenth_val = 0
-                            list_val = []
-                        else:
-                            val = '0' + str(element.value).replace(' ', '')
-                            val = val.ljust(8, '0')
-                            lenth_val = 0
-                            list_val = []
-                        if (int(val) >= 0 and int(val) <= 5999750):
-                            if int(val) == 0:
-                                _boffset.ofsetb = [0xFF, 0xFF, 0xFF, 0xFF]
-                            else:
-                                while lenth_val < (len(val)):
-                                    list_val.insert(
-                                        0, val[lenth_val:lenth_val + 2])
-                                    lenth_val += 2
-                                for i in range(len(list_val)):
-                                    list_val[i] = int(list_val[i], 16)
-                                _boffset.ofsetb = list_val
-                        else:
-                            msg = ("Offset must be between 0.00000-59.99750")
-                            raise InvalidValueError(msg)
-
                     # FM
                     elif "block" in name:
                         num = int(name[-2:], 10)
@@ -2720,7 +2589,7 @@ class TDH3_GMRS(TDH3):
         msgs = super().validate_memory(mem)
         if 31 <= mem.number <= 54 and mem.freq not in GMRS_FREQS:
             msgs.append(chirp_common.ValidationError(
-                "The frequency in channels 31-54 must be between"
+                "The frequency in channels 31-54 must be between "
                 "462.55000-462.72500 in 0.025 increments."))
         return msgs
 
@@ -2742,3 +2611,76 @@ class RT730(TDH8):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_RT730, self._mmap)
+
+
+@directory.register
+@directory.detected_by(TDH8)
+class TDH8_3rd_Gen(TDH8):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H8"
+    VARIANT = 'G3'
+    _memsize = 0x1fef
+    _ranges_main = [(0x0000, 0x1fef)]
+    _idents = [TD_H8_G3]
+    _txbands = [(136000000, 600000000)]
+    _rxbands = [(18000000, 107999000), (108000000, 136000000)]
+    _aux_block = True
+    _tri_power = True
+    _gmrs = False
+    _ham = False
+    _mem_params = (0x1F2F)
+    _tx_power = [chirp_common.PowerLevel("Low",  watts=2.00),
+                 chirp_common.PowerLevel("High",  watts=5.00)]
+    _roger_list = ["Off", "TONE1", "TONE2"]
+    _brightness_list = ["1", "2", "3", "4", "5"]
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)
+
+
+@directory.register
+@directory.detected_by(TDH8)
+class TDH8_3rd_Gen_HAM(TDH8_3rd_Gen):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H8-HAM"
+    ident_mode = b'P31185\xff\xff'
+    _ham = True
+    _txbands = [(144000000, 149000000), (420000000, 451000000)]
+    _rxbands = [(18000000, 107999000), (108000000, 136000000),
+                (149990000, 419990000), (451000000, 600000000)]
+    _tx220 = [(222000000, 225000000)]
+    # leave out 219-220 sub-band because this radio doesn't do
+    # fixed digital message forwarding
+    # tx350 and tx500 bands unknown; add them if you are in a
+    # legal locale and know their correct range
+
+    def get_tx_bands(self):
+        _settings = self._memobj.settings
+        bands = []
+        bands.extend(self._txbands)
+        if _settings.tx220:
+            bands.extend(self._tx220)
+        return bands
+
+
+@directory.register
+@directory.detected_by(TDH8)
+class TDH8_3rd_Gen_GMRS(TDH8_3rd_Gen):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H8-GMRS"
+    ident_mode = b'P31184\xff\xff'
+    _gmrs = True
+    _txbands = [(136000000, 175000000), (400000000, 521000000)]
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+        if 31 <= mem.number <= 54 and mem.freq not in GMRS_FREQS:
+            msgs.append(chirp_common.ValidationError(
+                "The frequency in channels 31-54 must be between "
+                "462.55000-462.72500 in 0.025 increments."))
+        if mem.duplex not in ('', '+', 'off') or (
+                mem.duplex == '+' and mem.offset != 5000000):
+            msgs.append(chirp_common.ValidationError(
+                "Channels in this range must be GMRS frequencies and "
+                "either simplex or +5MHz offset"))
+        return msgs

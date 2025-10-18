@@ -41,6 +41,10 @@
 #   u8 foo;
 #   u16 bar;
 #  } baz;        /* Structure with u8 and u16               */
+#  union {
+#   u16 whole;
+#   bbcd digits[2];
+# }; /* Union where all elements occupy the same memory     */
 #
 # Example directives:
 #
@@ -785,7 +789,10 @@ class bitDataElement(intDataElement):
 
 class structDataElement(DataElement):
     def __repr__(self):
-        s = "struct {" + os.linesep
+        return self._make_repr('struct')
+
+    def _make_repr(self, typename):
+        s = typename + " {" + os.linesep
         for prop in self._keys:
             s += "  %15s: %s%s" % (prop, repr(self._generators[prop]),
                                    os.linesep)
@@ -885,6 +892,20 @@ class structDataElement(DataElement):
     def items(self):
         for key in self._keys:
             yield key, self._generators[key]
+
+
+class unionDataElement(structDataElement):
+    def __repr__(self):
+        return self._make_repr('union')
+
+    def set_union_size(self, size):
+        # We don't know the size of the union until we have processed the first
+        # member, so allow this to be set after creation.
+        assert (size % 8 == 0)
+        self.__dict__['_size'] = size
+
+    def size(self):
+        return self._size
 
 
 def parse_count(string):
@@ -1073,6 +1094,51 @@ class Processor:
         else:
             raise Exception("Internal error: What is `%s'?" % struct[0][0])
 
+    def parse_union(self, union):
+        deftype = union[-1]
+        block = union[:-1]
+        union_size = 0
+        tmp = self._generators
+
+        if deftype[0] == "array":
+            name = deftype[1][0][1]
+            count = parse_count(deftype[1][1][1])
+        elif deftype[0] == "symbol":
+            name = deftype[1]
+            count = 1
+
+        result = arrayDataElement(self._offset)
+        for i in range(0, count):
+            start_of_union_offset = self._offset
+            self._generators = element = unionDataElement(
+                self._data,
+                start_of_union_offset,
+                name=name)
+            for t, d in block:
+                self._offset = start_of_union_offset
+                if t not in ("definition", "struct", "union"):
+                    raise ParseError("Not supported in union: %s" % t)
+                self.parse_statement(t, d)
+                size = self._offset - start_of_union_offset
+                if union_size == 0:
+                    union_size = size
+                elif union_size != size:
+                    LOG.error('Union member size mismatch parsing %s', name)
+                    raise ParseError('Union members must be the same size '
+                                     '(found %i, expected %i)' % (size,
+                                                                  union_size))
+                element.set_union_size(union_size * 8)
+            if union_size == 0:
+                raise ParseError('Empty union %r is not valid' % name)
+            # Increment the offset only past the end of the union
+            self._offset = start_of_union_offset + union_size
+            result.append(element)
+
+        self._generators = tmp
+        if count == 1:
+            result = result[0]
+        self._generators[name] = result
+
     def assert_negative_seek(self, message):
         warnings.warn(message, DeprecationWarning, stacklevel=6)
 
@@ -1097,14 +1163,19 @@ class Processor:
             LOG.debug("%s: %i (0x%08X)" %
                       (value[1:-1], self._offset, self._offset))
 
+    def parse_statement(self, type_, data):
+        if type_ == "struct":
+            self.parse_struct(data)
+        elif type_ == "definition":
+            self.parse_defn(data)
+        elif type_ == "directive":
+            self.parse_directive(data)
+        elif type_ == "union":
+            self.parse_union(data)
+
     def parse_block(self, lang):
         for t, d in lang:
-            if t == "struct":
-                self.parse_struct(d)
-            elif t == "definition":
-                self.parse_defn(d)
-            elif t == "directive":
-                self.parse_directive(d)
+            self.parse_statement(t, d)
 
     def parse(self, lang):
         self._lines = {}
