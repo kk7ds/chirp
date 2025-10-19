@@ -371,6 +371,7 @@ class Radtel493Radio(chirp_common.CloneModeRadio):
         rf.memory_bounds = (1, 199)
         # TODO: maybe limit to EU version (430000000, 440000000)
         rf.valid_bands = [(400000000, 470000000)]
+        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC + "-"
         return rf
 
     def _decode_qt_dqt(self, qt_bytes):
@@ -555,7 +556,8 @@ class Radtel493Radio(chirp_common.CloneModeRadio):
             return
 
         mem.freq = int(_mem.rxfreq) * 10
-        chirp_common.split_to_offset(mem, int(_mem.rxfreq), int(_mem.txfreq))
+        chirp_common.split_to_offset(mem, int(_mem.rxfreq) * 10,
+                                     int(_mem.txfreq) * 10)
         txtone = self._decode_qt_dqt(_mem.txtone.get_raw())
         rxtone = self._decode_qt_dqt(_mem.rxtone.get_raw())
         chirp_common.split_tone_decode(mem, txtone, rxtone)

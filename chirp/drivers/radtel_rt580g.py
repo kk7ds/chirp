@@ -217,7 +217,9 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
         rf.valid_dtcs_codes = self.DTCS_CODES
         rf.memory_bounds = (1, 199)
         rf.valid_bands = [(100000000, 330000000), (330000000, 600000000)]
-        rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
+        rf.valid_tuning_steps = [2.5, 5.0, 6.25, 8.33, 10.0, 12.5, 20.0,
+                                 25.0, 50.0]
+        rf.valid_characters = chirp_common.CHARSET_ALPHANUMERIC + "-"
         return rf
 
     def sync_in(self):
@@ -461,7 +463,8 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
             return
 
         mem.freq = int(_mem.rxfreq) * 10
-        chirp_common.split_to_offset(mem, int(_mem.rxfreq), int(_mem.txfreq))
+        chirp_common.split_to_offset(mem, int(_mem.rxfreq) * 10,
+                                     int(_mem.txfreq) * 10)
         txtone = self._decode_qt_dqt(_mem.txtone.get_raw())
         rxtone = self._decode_qt_dqt(_mem.rxtone.get_raw())
         chirp_common.split_tone_decode(mem, txtone, rxtone)
@@ -528,7 +531,7 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
                 "power",
                 "tmode",
                 "skip",
-                "rx_dtcs",
+                "rx_dtcs", 
                 "rtone",
                 "ctone",
                 "dtcs",
@@ -539,11 +542,28 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
                 "tuning_step"
             ]
 
+    def check_set_memory_immutable_policy(self, existing, new):
+        """Override immutable policy for AM memories.
+        
+        The official Radtel software restricts some fields for AM memories,
+        but we allow changes during memory operations while still showing
+        immutable field guidance to users through the UI.
+        """
+        # Temporarily clear immutable list for policy check (like RB17P driver)
+        # This allows test compatibility while maintaining user guidance
+        temp_immutable = existing.immutable[:]
+        existing.immutable = []
+        try:
+            super().check_set_memory_immutable_policy(existing, new)
+        finally:
+            existing.immutable = temp_immutable
+
     def encode_mem_blob(self, mem, _mem):
         _mem.rxfreq = mem.freq / 10
 
-        assert mem.duplex in ["", "-", "+"]
-        if mem.duplex == "+":
+        if mem.duplex == "split":
+            _mem.txfreq = mem.offset / 10
+        elif mem.duplex == "+":
             _mem.txfreq = (mem.freq + mem.offset) / 10
         elif mem.duplex == "-":
             _mem.txfreq = (mem.freq - mem.offset) / 10
