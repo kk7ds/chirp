@@ -2022,8 +2022,17 @@ class UVK5Radio(UVK5RadioBase):
     @classmethod
     def k5_approve_firmware(cls, firmware):
         approved_prefixes = (
+            # These are the original OEM firmware versions
             'k5_2.01.', 'app_2.01.', '2.01.', '3.00.',
-            '1o11', '4.00.', 'k5_4.00.', '5.00.')
+            '4.00.', 'k5_4.00.', '5.00.',
+            # This "oneofeeleven" prefix really covers a wide range of
+            # firmwares that are user-built, but people report them working
+            # fine with the base driver.
+            '1o11',
+            # These are reportendly OEM and newer than the original firmwares,
+            # as of late 2025
+            '1.02.',
+            )
         return any(firmware.startswith(x) for x in approved_prefixes)
 
     @classmethod
