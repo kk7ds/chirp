@@ -526,40 +526,45 @@ class Radtel580GRadio(chirp_common.CloneModeRadio):
             val)
         mem.extra.append(rs)
 
-        if is_mode_am:
-            mem.immutable = [
-                "power",
-                "tmode",
-                "skip",
-                "rx_dtcs", 
-                "rtone",
-                "ctone",
-                "dtcs",
-                "cross_mode",
-                "dtcs_polarity",
-                "duplex",
-                "offset",
-                "tuning_step"
-            ]
+        # No location-based immutable fields for this radio
+        # Content-based restrictions (like AM mode limitations) are handled
+        # in validate_memory() with ValidationWarnings
 
-    def check_set_memory_immutable_policy(self, existing, new):
-        """Override immutable policy for AM memories.
-        
-        The official Radtel software restricts some fields for AM memories,
-        but we allow changes during memory operations while still showing
-        immutable field guidance to users through the UI.
-        """
-        # Temporarily clear immutable list for policy check (like RB17P driver)
-        # This allows test compatibility while maintaining user guidance
-        temp_immutable = existing.immutable[:]
-        existing.immutable = []
-        try:
-            super().check_set_memory_immutable_policy(existing, new)
-        finally:
-            existing.immutable = temp_immutable
+    def validate_memory(self, mem):
+        """Validate memory and return warnings for AM mode restrictions."""
+        # Get parent validation messages
+        msgs = super().validate_memory(mem)
+
+        # Check AM mode restrictions
+        if mem.mode == "AM":
+            # For AM mode, certain values are forced by the hardware
+            if mem.tmode != "":
+                msgs.append(chirp_common.ValidationWarning(
+                    "Tone mode forced to None for AM memories"))
+            if mem.duplex not in ["", "split"]:
+                msgs.append(chirp_common.ValidationWarning(
+                    "Duplex mode restricted for AM memories"))
+            # Power level restrictions are handled automatically by the radio
+
+        return msgs
 
     def encode_mem_blob(self, mem, _mem):
         _mem.rxfreq = mem.freq / 10
+
+        # Coerce values for AM mode restrictions
+        if mem.mode == "AM":
+            # Force tone mode to None for AM memories
+            mem.tmode = ""
+            mem.rtone = 88.5
+            mem.ctone = 88.5
+            mem.dtcs = 23
+            mem.rx_dtcs = 23
+            mem.cross_mode = "Tone->Tone"
+            mem.dtcs_polarity = "NN"
+            # Restrict duplex options
+            if mem.duplex not in ["", "split"]:
+                mem.duplex = ""
+                mem.offset = 0
 
         if mem.duplex == "split":
             _mem.txfreq = mem.offset / 10
