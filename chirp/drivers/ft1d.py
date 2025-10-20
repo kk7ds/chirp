@@ -1256,10 +1256,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.offset = int(_mem.offset) * 1000
             mem.rtone = mem.ctone = chirp_common.TONES[_mem.tone]
             self._get_tmode(mem, _mem)
-            if mem.duplex is None:
-                mem.duplex = DUPLEX[""]
-            else:
-                mem.duplex = DUPLEX[_mem.duplex]
+            mem.duplex = DUPLEX[_mem.duplex] if _mem.duplex else ""
             if mem.duplex == "split":
                 mem.offset = chirp_common.fix_rounded_step(mem.offset)
             mem.mode = self._decode_mode(_mem)
