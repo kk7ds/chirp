@@ -620,17 +620,23 @@ class ResultPage(BugReportPage):
     def _upload_file(self, manifest, fn):
         for i in range(3):
             LOG.debug('Uploading %s attempt %i', fn, i + 1)
-            r = self.context.session.post(
-                BASE + '/uploads.json',
-                params={'filename': fn},
-                data=manifest['files'][fn],
-                headers={
-                    'Content-Type': 'application/octet-stream'},
-                auth=self.context.auth)
-            if r.status_code >= 500:
+            try:
+                r = self.context.session.post(
+                    BASE + '/uploads.json',
+                    params={'filename': fn},
+                    data=manifest['files'][fn],
+                    headers={
+                        'Content-Type': 'application/octet-stream'},
+                    auth=self.context.auth)
+            except Exception as e:
+                LOG.error('Exception uploading %s: %s', fn, e)
+                time.sleep(2 + (2 * i))
+                continue
+            if r.status_code >= 400:
                 LOG.error('Failed to upload %s: %s %s',
                           fn, r.status_code, r.reason)
                 time.sleep(2 + (2 * i))
+                continue
             elif r.status_code != 201:
                 LOG.error('Failed to upload %s: %s %s',
                           fn, r.status_code, r.reason)
