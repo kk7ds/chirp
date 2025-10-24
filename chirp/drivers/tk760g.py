@@ -267,7 +267,6 @@ MEM_BLOCKS = list(range(0, BLOCKS))
 # define and empty block of data, as it will be used a lot in this code
 EMPTY_BLOCK = b"\xFF" * 256
 
-RO_BLOCKS = list(range(0x10, 0x1F)) + list(range(0x59, 0x5f))
 ACK_CMD = b"\x06"
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
@@ -474,7 +473,11 @@ def _open_radio(radio, status):
     _raw_send(radio, b"\x02")
     rid = _raw_recv(radio, 8)
 
-    if not (radio.TYPE in rid):
+    # See issue #12227 and associated ones. Some strange (potentially
+    # pre-release) models seem to identify with a lowercase form factor
+    # character. Allow these and let the variant check sort out the
+    # differences).
+    if not (radio.TYPE in rid.upper()):
         # bad response, properly close the radio before exception
         _close_radio(radio)
 
@@ -563,7 +566,7 @@ def do_upload(radio):
 
         # The blocks from x59-x5F are NOT programmable
         # The blocks from x11-x1F are written only if not empty
-        if addr in RO_BLOCKS:
+        if addr in radio.RO_BLOCKS:
             # checking if in the range of optional blocks
             if addr >= 0x10 and addr <= 0x1F:
                 # block is empty ?
@@ -676,6 +679,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
     _kind = ""
     VARIANT = ""
     MODEL = ""
+    RO_BLOCKS = list(range(0x10, 0x1F)) + list(range(0x59, 0x5f))
 
     @classmethod
     def get_prompts(cls):
@@ -1686,11 +1690,14 @@ class TK260G_Radios(Kenwood_Serie_60G):
     MODEL = "TK-260G"
     _hasbanks = False
     TYPE = b"P2600"
+    RO_BLOCKS = list(range(0x10, 0x1F)) + list(range(0x52, 0x5f))
     VARIANTS = {
         b"P2600U\xff":    (8, 136, 150, "N1"),
         b"P2600T\xff":    (8, 146, 174, "N"),
         b"P2600$\xff":    (8, 150, 174, "E"),
         b"P2600\x14\xff": (8, 150, 174, "M"),
         b"P2600\x05\xff": (8, 136, 150, "K1"),
-        b"P2600\x04\xff": (8, 150, 174, "K")
+        b"P2600\x04\xff": (8, 150, 174, "K"),
+        # See issue #12227 for discussion of this odd variant
+        b"p2600\x24\xfb": (8, 150, 174, "E?"),
         }
