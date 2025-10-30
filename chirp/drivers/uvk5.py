@@ -2032,8 +2032,8 @@ class UVK5Radio(UVK5RadioBase):
             # These are reportendly OEM and newer than the original firmwares,
             # as of late 2025
             '1.02.',
-            # UV-K5 Loaner Firmware (channel-only build used by the project)
-            'UV-K5 Loaner Firmware',
+            # UV-K5 Loaner firmware uses OEFW-LNRxx (e.g. OEFW-LNR24B1)
+            'OEFW-LNR',
             )
         return any(firmware.startswith(x) for x in approved_prefixes)
 
