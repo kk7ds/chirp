@@ -423,6 +423,13 @@ class RadioSettings(list):
         items = [str(self[i]) for i in range(0, len(self))]
         return "\n".join(items)
 
+    def __getitem__(self, name):
+        for element in self:
+            if element.get_name() == name:
+                return element
+
+        raise KeyError(f"Invalid key {name}")
+
     def walk(self):
         """Iterate over all the RadioSettings in this tree
 
