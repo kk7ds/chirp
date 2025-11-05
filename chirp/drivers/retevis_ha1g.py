@@ -381,8 +381,6 @@ FREQ_STEP_List = [
     {"name": "10kHz", "id": 10000},
     {"name": "12.5kHz", "id": 12500},
     {"name": "25kHz", "id": 25000}]
-ALARM_LIST = [{"name": "OFF", "id": 255}]
-DTMFSYSTEM_LIST = [{"name": "OFF", "id": 15}]
 
 
 def do_download(self):
@@ -692,22 +690,6 @@ def _get_memory(self, mem, _mem, ch_index):
             "Auto Scan System",
             RadioSettingValueList(AUTOSCAN_LIST,
                                   current_index=_mem.autoscan)))
-    mem.extra.append(
-        RadioSetting(
-            "alarmlist",
-            "Alarm System",
-            RadioSettingValueList(
-                get_namedict_by_items(ALARM_LIST),
-                current_index=get_item_by_id(ALARM_LIST,
-                                             _mem.alarmlist))))
-    mem.extra.append(
-        RadioSetting(
-            "dtmfsignalinglist",
-            "DTMF System",
-            RadioSettingValueList(
-                get_namedict_by_items(DTMFSYSTEM_LIST),
-                current_index=get_item_by_id(DTMFSYSTEM_LIST,
-                                             _mem.dtmfsignalinglist))))
     mem.extra.append(
         RadioSetting(
             "offlineorreversal",
@@ -1147,12 +1129,6 @@ def _set_memory(self, mem, _mem, ch_index):
         if setting.get_name() == "tottime":
             _mem.tottime = get_item_by_name(
                 TIMEOUTTIMER_LIST, str(setting.value))
-        elif setting.get_name() == "alarmlist":
-            _mem.alarmlist = get_item_by_name(
-                ALARM_LIST, setting.value)
-        elif setting.get_name() == "dtmfsignalinglist":
-            _mem.dtmfsignalinglist = get_item_by_name(
-                DTMFSYSTEM_LIST, setting.value)
         else:
             setattr(_mem, setting.get_name(), setting.value)
     return _mem
@@ -1241,38 +1217,6 @@ def get_ch_rxfreq(mem):
     return ch_freq
 
 
-def get_alarm_item_list(self):
-    _alarmdata = self._memobj.alarmdata
-    _alarms = self._memobj.alarms
-    ALARM_LIST.clear()
-    ALARM_LIST.append({"name": "OFF", "id": 255})
-    alarm_num = _alarmdata.alarmnum
-    if alarm_num > 0:
-        for i in range(0, alarm_num):
-            alarm_index = _alarmdata.alarmindex[i]
-            if alarm_index < 8:
-                alarm_item = _alarms[alarm_index]
-                alarm_item.alarmstatus = 1
-                alarmname = "".join(filter(alarm_item.name, NAMECHARSET, 12))
-                ALARM_LIST.append({"name": alarmname, "id": alarm_index})
-
-
-def get_dtmf_item_list(self):
-    _dtmfdata = self._memobj.dtmfdata
-    _dtmfs = self._memobj.dtmfs
-    DTMFSYSTEM_LIST.clear()
-    DTMFSYSTEM_LIST.append({"name": "OFF", "id": 15})
-    dtmf_num = _dtmfdata.dtmfnum
-    if dtmf_num > 0:
-        for i in range(0, dtmf_num):
-            dtmf_index = _dtmfdata.dtmfindex[i]
-            if dtmf_index < 8:
-                dtmf_item = _dtmfs[dtmf_index]
-                dtmf_item.dtmfstatus = 1
-                dtmfname = "".join(filter(dtmf_item.name, NAMECHARSET, 12))
-                DTMFSYSTEM_LIST.append({"name": dtmfname, "id": dtmf_index})
-
-
 def get_scan_item_list(self):
     _scandata = self._memobj.scandata
     _scans = self._memobj.scans
@@ -1357,8 +1301,6 @@ class HA1G(chirp_common.CloneModeRadio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
-        get_dtmf_item_list(self)
-        get_alarm_item_list(self)
 
     def sync_in(self):
         try:
