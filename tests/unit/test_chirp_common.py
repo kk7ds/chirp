@@ -310,6 +310,15 @@ class TestUtilityFunctions(base.BaseTest):
         for s in invalid:
             self.assertRaises(ValueError, chirp_common.parse_power, s)
 
+    def test_airband(self):
+        self.assertTrue(chirp_common.is_airband(108000000))
+        self.assertTrue(chirp_common.is_airband(108000000 + 25000))
+        self.assertTrue(chirp_common.is_airband(136000000 - 25000))
+        self.assertTrue(chirp_common.is_airband(136000000))
+
+        self.assertFalse(chirp_common.is_airband(108000000 - 1))
+        self.assertFalse(chirp_common.is_airband(137000000 + 1))
+
 
 class TestSplitTone(base.BaseTest):
     def _test_split_tone_decode(self, tx, rx, **vals):
@@ -551,6 +560,35 @@ class TestStepFunctions(base.BaseTest):
     def test_fix_rounded_step_no_change(self):
         self.assertEqual(146520000,
                          chirp_common.fix_rounded_step(146520000))
+
+    def test_fix_rounded_step_833(self):
+        # 108.008 should be aligned to 8.33kHz step
+        self.assertEqual(
+            int(108000000 + (25000 / 3)),
+            chirp_common.fix_rounded_step(chirp_common.to_MHz(108.008)))
+
+        # 108.0 MHz should be left unchanged as it is 25kHz-aligned
+        self.assertFalse(chirp_common.is_8_33(
+            chirp_common.to_MHz(108)))
+        self.assertEqual(chirp_common.to_MHz(108),
+                         chirp_common.fix_rounded_step(
+                             chirp_common.to_MHz(108)))
+
+        # 108.025 MHz should be left unchanged
+        self.assertFalse(chirp_common.is_8_33(
+            chirp_common.to_MHz(108.025)))
+        self.assertEqual(chirp_common.to_MHz(108.025),
+                         chirp_common.fix_rounded_step(
+                             chirp_common.to_MHz(108.025)))
+
+        # Even though 146.008333 is a valid 8.33kHz step, we should
+        # not align it as such since it is not in airband
+        self.assertTrue(chirp_common.is_8_33(
+            chirp_common.to_MHz(146.008333)))
+        self.assertRaisesRegex(errors.InvalidDataError,
+                               'Unable to correct.*',
+                               chirp_common.fix_rounded_step,
+                               chirp_common.to_MHz(146.008333))
 
 
 class TestImageMetadata(base.BaseTest):

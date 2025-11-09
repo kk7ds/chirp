@@ -267,7 +267,6 @@ MEM_BLOCKS = list(range(0, BLOCKS))
 # define and empty block of data, as it will be used a lot in this code
 EMPTY_BLOCK = b"\xFF" * 256
 
-RO_BLOCKS = list(range(0x10, 0x1F)) + list(range(0x59, 0x5f))
 ACK_CMD = b"\x06"
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
@@ -474,7 +473,11 @@ def _open_radio(radio, status):
     _raw_send(radio, b"\x02")
     rid = _raw_recv(radio, 8)
 
-    if not (radio.TYPE in rid):
+    # See issue #12227 and associated ones. Some strange (potentially
+    # pre-release) models seem to identify with a lowercase form factor
+    # character. Allow these and let the variant check sort out the
+    # differences).
+    if not (radio.TYPE in rid.upper()):
         # bad response, properly close the radio before exception
         _close_radio(radio)
 
@@ -563,7 +566,7 @@ def do_upload(radio):
 
         # The blocks from x59-x5F are NOT programmable
         # The blocks from x11-x1F are written only if not empty
-        if addr in RO_BLOCKS:
+        if addr in radio.RO_BLOCKS:
             # checking if in the range of optional blocks
             if addr >= 0x10 and addr <= 0x1F:
                 # block is empty ?
@@ -661,8 +664,8 @@ class memBank(chirp_common.Bank):
     index = 0
 
 
-class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
-                        chirp_common.ExperimentalRadio):
+class Kenwood_Series_60G(chirp_common.CloneModeRadio,
+                         chirp_common.ExperimentalRadio):
     """Kenwood Series 60G Radios base class"""
     VENDOR = "Kenwood"
     BAUD_RATE = 9600
@@ -676,6 +679,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
     _kind = ""
     VARIANT = ""
     MODEL = ""
+    RO_BLOCKS = list(range(0x10, 0x1F)) + list(range(0x59, 0x5f))
 
     @classmethod
     def get_prompts(cls):
@@ -1483,7 +1487,7 @@ class Kenwood_Serie_60G(chirp_common.CloneModeRadio,
 
 
 @directory.register
-class TK868G_Radios(Kenwood_Serie_60G):
+class TK868G_Radios(Kenwood_Series_60G):
     """Kenwood TK-868G Radio M/C"""
     MODEL = "TK-868G"
     TYPE = b"M8680"
@@ -1496,7 +1500,7 @@ class TK868G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK862G_Radios(Kenwood_Serie_60G):
+class TK862G_Radios(Kenwood_Series_60G):
     """Kenwood TK-862G Radio K/E/(N)E"""
     MODEL = "TK-862G"
     TYPE = b"M8620"
@@ -1509,7 +1513,7 @@ class TK862G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK860G_Radios(Kenwood_Serie_60G):
+class TK860G_Radios(Kenwood_Series_60G):
     """Kenwood TK-860G Radio K"""
     MODEL = "TK-860G"
     TYPE = b"M8600"
@@ -1524,7 +1528,7 @@ class TK860G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK768G_Radios(Kenwood_Serie_60G):
+class TK768G_Radios(Kenwood_Series_60G):
     """Kenwood TK-768G Radios [M/C]"""
     MODEL = "TK-768G"
     TYPE = b"M7680"
@@ -1538,7 +1542,7 @@ class TK768G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK762G_Radios(Kenwood_Serie_60G):
+class TK762G_Radios(Kenwood_Series_60G):
     """Kenwood TK-762G Radios [K/E/NE]"""
     MODEL = "TK-762G"
     TYPE = b"M7620"
@@ -1552,7 +1556,7 @@ class TK762G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK760G_Radios(Kenwood_Serie_60G):
+class TK760G_Radios(Kenwood_Series_60G):
     """Kenwood TK-760G Radios [K/M/(N)E]"""
     MODEL = "TK-760G"
     TYPE = b"M7600"
@@ -1565,7 +1569,7 @@ class TK760G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK388G_Radios(Kenwood_Serie_60G):
+class TK388G_Radios(Kenwood_Series_60G):
     """Kenwood TK-388 Radio [K/E/M/NE]"""
     MODEL = "TK-388G"
     TYPE = b"P3880"
@@ -1575,7 +1579,7 @@ class TK388G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK378G_Radios(Kenwood_Serie_60G):
+class TK378G_Radios(Kenwood_Series_60G):
     """Kenwood TK-378 Radio [K/E/M/NE]"""
     MODEL = "TK-378G"
     TYPE = b"P3780"
@@ -1588,7 +1592,7 @@ class TK378G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK372G_Radios(Kenwood_Serie_60G):
+class TK372G_Radios(Kenwood_Series_60G):
     """Kenwood TK-372 Radio [K/E/M/NE]"""
     MODEL = "TK-372G"
     TYPE = b"P3720"
@@ -1601,7 +1605,7 @@ class TK372G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK370G_Radios(Kenwood_Serie_60G):
+class TK370G_Radios(Kenwood_Series_60G):
     """Kenwood TK-370 Radio [K/E/M/NE]"""
     MODEL = "TK-370G"
     TYPE = b"P3700"
@@ -1620,7 +1624,7 @@ class TK370G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK360G_Radios(Kenwood_Serie_60G):
+class TK360G_Radios(Kenwood_Series_60G):
     """Kenwood TK-360 Radio [K/E/M/NE]"""
     MODEL = "TK-360G"
     TYPE = b"P3600"
@@ -1640,7 +1644,7 @@ class TK360G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK278G_Radios(Kenwood_Serie_60G):
+class TK278G_Radios(Kenwood_Series_60G):
     """Kenwood TK-278G Radio C/C1/M/M1"""
     MODEL = "TK-278G"
     TYPE = b"P2780"
@@ -1654,7 +1658,7 @@ class TK278G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK272G_Radios(Kenwood_Serie_60G):
+class TK272G_Radios(Kenwood_Series_60G):
     """Kenwood TK-272G Radio K/K1"""
     MODEL = "TK-272G"
     TYPE = b"P2720"
@@ -1667,7 +1671,7 @@ class TK272G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK270G_Radios(Kenwood_Serie_60G):
+class TK270G_Radios(Kenwood_Series_60G):
     """Kenwood TK-270G Radio K/K1/M/E/NE/NT"""
     MODEL = "TK-270G"
     TYPE = b"P2700"
@@ -1681,16 +1685,19 @@ class TK270G_Radios(Kenwood_Serie_60G):
 
 
 @directory.register
-class TK260G_Radios(Kenwood_Serie_60G):
+class TK260G_Radios(Kenwood_Series_60G):
     """Kenwood TK-260G Radio K/K1/M/E/NE/NT"""
     MODEL = "TK-260G"
     _hasbanks = False
     TYPE = b"P2600"
+    RO_BLOCKS = list(range(0x10, 0x1F)) + list(range(0x52, 0x5f))
     VARIANTS = {
         b"P2600U\xff":    (8, 136, 150, "N1"),
         b"P2600T\xff":    (8, 146, 174, "N"),
         b"P2600$\xff":    (8, 150, 174, "E"),
         b"P2600\x14\xff": (8, 150, 174, "M"),
         b"P2600\x05\xff": (8, 136, 150, "K1"),
-        b"P2600\x04\xff": (8, 150, 174, "K")
+        b"P2600\x04\xff": (8, 150, 174, "K"),
+        # See issue #12227 for discussion of this odd variant
+        b"p2600\x24\xfb": (8, 150, 174, "E?"),
         }

@@ -1714,6 +1714,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             return
         if not only:
             only = ['offset', 'duplex', 'tuning_step', 'mode', 'rtone']
+        else:
+            only = list(only)
         for prop in mem.immutable:
             if prop in only:
                 only.remove(prop)

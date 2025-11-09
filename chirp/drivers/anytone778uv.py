@@ -966,6 +966,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                 _mem.name = mem.name.ljust(self.NAME_LENGTH)[:self.NAME_LENGTH]
 
             # Set duplex bitfields
+            _mem.tx_off = 0
             if mem.duplex == '+':
                 _mem.duplex = DUPLEX_POSSPLIT
             elif mem.duplex == '-':
@@ -975,14 +976,12 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
             elif mem.duplex == 'split':
                 # TODO: this is an unverified punt!
                 _mem.duplex = DUPLEX_ODDSPLIT
+            elif mem.duplex == 'off':
+                # handle tx off
+                _mem.tx_off = 1
             else:
                 LOG.error('%s: set_mem: unhandled duplex: %s' %
                           (mem.name, mem.duplex))
-
-            # handle tx off
-            _mem.tx_off = 0
-            if mem.duplex == 'off':
-                _mem.tx_off = 1
 
             # Set the channel width - remember we promote 20 kHz channels to FM
             # on import
@@ -1075,7 +1074,7 @@ class AnyTone778UVBase(chirp_common.CloneModeRadio,
                 else:
                     LOG.error('%s: unhandled cross RX mode: %s' % (
                         mem.name, mem.cross_mode))
-            else:
+            elif mem.tmode:
                 LOG.error('%s: Unhandled tmode/cross %s/%s.' %
                           (mem.name, mem.tmode, mem.cross_mode))
             LOG.debug('%s: tmode=%s, cross=%s, rtone=%f, ctone=%f' % (
