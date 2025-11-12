@@ -426,7 +426,7 @@ class DR135Radio(DRx35Radio):
 
     _model = b"DR135"
     _memsize = 4096
-    _range = [(118000000, 173000000)]
+    _range = [(118000000, 174000000)]
 
     @classmethod
     def match_model(cls, filedata, filename):
