@@ -212,81 +212,8 @@ class FakeUV17ProSerial(FakeUV17Serial):
         self.rclass = baofeng_uv17Pro.UV17Pro
 
 
-class FakeBankModel(chirp_common.BankModel,
-                    chirp_common.SpecialBankModelInterface):
-    def __init__(self, radio, name='Banks'):
-        super().__init__(radio, name)
-        self._banks = {i: set() for i in range(5)}
-
-    def get_bankable_specials(self):
-        return self._radio.get_features().valid_special_chans[:-1]
-
-    def get_num_mappings(self):
-        return len(self._banks)
-
-    def get_mappings(self):
-        return [chirp_common.Bank(self, i, 'Bank %i' % i) for i in range(5)]
-
-    def get_memory_mappings(self, memory):
-        banks = self.get_mappings()
-        in_banks = [i for i in range(5) if memory.number in self._banks[i]]
-        return [bank for bank in banks if bank.get_index() in in_banks]
-
-    def add_memory_to_mapping(self, memory, mapping):
-        self._banks[mapping.get_index()].add(memory.number)
-
-    def remove_memory_from_mapping(self, memory, mapping):
-        self._banks[mapping.get_index()].remove(memory.number)
-
-
-class FakeClone(chirp_common.CloneModeRadio):
-    VENDOR = 'CHIRP'
-    MODEL = 'Fake Clone'
-
-    def __init__(self, pipe):
-        super().__init__(pipe)
-        self._memories = [chirp_common.Memory(i) for i in range(10)]
-        # Make sure these are not contiguous with main memory so that there
-        # are no edge cases
-        self._specials = [chirp_common.Memory(100 + i) for i in range(3)]
-        for i, mem in enumerate(self._memories + self._specials):
-            mem.freq = 146000000 + (i * 100000)
-            mem.empty = i < 5
-            if mem in self._specials:
-                mem.extd_number = 'Special %i' % mem.number
-        self._special_names = [x.extd_number for x in self._specials]
-
-    def get_features(self) -> chirp_common.RadioFeatures:
-        rf = chirp_common.RadioFeatures()
-        rf.valid_special_chans = self._special_names
-        rf.valid_bands = [(144000000, 148000000)]
-        rf.memory_bounds = (0, 9)
-        rf.has_bank = True
-        return rf
-
-    def get_bank_model(self):
-        return FakeBankModel(self)
-
-    def get_memory(self, number):
-        if isinstance(number, str):
-            return self._specials[self._special_names.index(number)]
-        else:
-            try:
-                return self._memories[number]
-            except IndexError:
-                return self._specials[number - 100]
-
-    def set_memory(self, memory):
-        if memory.extd_number:
-            self._specials[self._special_names.index(memory.extd_number)] = (
-                memory)
-        else:
-            self._memories[memory.number] = memory
-
-
 def register_fakes():
     directory.register(FakeLiveRadio)
     directory.register(FakeLiveSlowRadio)
     directory.register(FakeLiveRadioWithErrors)
     directory.register(FakeCloneFail)
-    directory.register(FakeClone)
