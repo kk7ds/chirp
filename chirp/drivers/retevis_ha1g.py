@@ -33,6 +33,9 @@ from chirp.settings import (
 
 LOG = logging.getLogger(__name__)
 
+# This is the minimum required firmare version supported by this driver
+REQUIRED_VER = (1, 1, 11, 6)
+
 MEM_FORMAT = """
 
 #seekto 0x0E;
@@ -447,8 +450,12 @@ def read_items(self, serial):
         try:
             item_bytes = get_read_current_packet_bytes(
                 self, item.value, serial, status)
+            if item == MemoryRegions.radioVer and item_bytes:
+                fmver_validate(item_bytes[2:6])
             if item_bytes:
                 write_memory_region(all_bytes, item_bytes, item)
+        except errors.RadioError:
+            raise
         except Exception as e:
             LOG.error(
                 f"read item_data error: {item.name} error_msg: {e}")
@@ -458,10 +465,14 @@ def read_items(self, serial):
 
 def write_items(self, serial):
     status = chirp_common.Status()
+    status.max = self._memsize
     status.msg = "Uploading to radio"
     status.cur = 0
-    status.max = self._memsize
     data_bytes = self.get_mmap()
+    item_bytes = get_read_current_packet_bytes(
+                self, MemoryRegions.radioVer.value, serial, status)
+    if item_bytes:
+        fmver_validate(item_bytes[2:6])
     EXCLUDED_REGIONS = {MemoryRegions.radioHead,
                         MemoryRegions.radioInfo,
                         MemoryRegions.radioVer,
@@ -649,6 +660,19 @@ def get_send_packet_bytes(data_type: int, packet_index: int,
                             packet_count & 0xFFFF,
                             data_buffer)
     return data_part + calculate_crc16(data_part) + b"\xff"
+
+
+def format_version(ver):
+    return 'v%02i.%02i.%02i.%03i' % ver
+
+
+def fmver_validate(raw_bytes):
+    current_ver = struct.unpack("BBBB", raw_bytes)
+    if REQUIRED_VER > current_ver:
+        raise errors.RadioError(
+            ("Firmware is %s; You must update to %s or higher "
+             "to be compatible with CHIRP") % (format_version(current_ver),
+                                               format_version(REQUIRED_VER)))
 
 
 def calculate_crc16(buf):
@@ -1317,6 +1341,8 @@ class HA1G(chirp_common.CloneModeRadio):
         try:
             logging.debug("come in sync_out")
             do_upload(self)
+        except errors.RadioError:
+            raise
         except Exception as e:
             LOG.exception(
                 "Unexpected error during upload: %s" % e)
