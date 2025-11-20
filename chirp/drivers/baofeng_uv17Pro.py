@@ -1531,6 +1531,7 @@ class UV17ProGPS(UV17Pro):
         rf.has_bank = True
         return rf
 
+
 @directory.register
 class UV32(UV17ProGPS):
     VENDOR = "Baofeng"
@@ -1539,6 +1540,7 @@ class UV32(UV17ProGPS):
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
                     chirp_common.PowerLevel("Low", watts=2.00),
                     chirp_common.PowerLevel("Medium", watts=5.00)]
+
 
 @directory.register
 class UV21ProGPS(UV17ProGPS):
