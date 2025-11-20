@@ -403,7 +403,11 @@ class ChirpSettingGrid(wx.Panel):
         tip = None
         if prop:
             setting = self.get_setting_by_name(prop.GetName())
-            if isinstance(setting.value, settings.RadioSettingValueString):
+            # FIXME: Indexed properties will have their INDEX_CHAR replaced
+            # here and thus won't match the actual setting name, so we'll
+            # get None here. Avoid a trace for now, but this needs fixing.
+            if setting and isinstance(setting.value,
+                                      settings.RadioSettingValueString):
                 tip = setting.__doc__ or ''
                 if setting.value.maxlength == setting.value._minlength:
                     extra = '%i characters' % setting.value.maxlength
