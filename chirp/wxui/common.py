@@ -403,7 +403,10 @@ class ChirpSettingGrid(wx.Panel):
         tip = None
         if prop:
             setting = self.get_setting_by_name(prop.GetName())
-            if isinstance(setting.value, settings.RadioSettingValueString):
+            if (
+                setting is not None
+                and isinstance(setting.value, settings.RadioSettingValueString)
+            ):
                 tip = setting.__doc__ or ''
                 if setting.value.maxlength == setting.value._minlength:
                     extra = '%i characters' % setting.value.maxlength
