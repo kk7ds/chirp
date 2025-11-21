@@ -446,7 +446,9 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
     VALID_BANDS = [(400000000, 480000000)]
 
     _magic = b"PROGRAM"
-    _fingerprint = [b"\xFF\xFF\xFF\xFF\xFF\xA5\x2C\xFF"]
+    _fingerprint = [b"\xFF\xFF\xFF\xFF\xFF\xA5\x2C\xFF",
+                    b"\xFF\xFF\xFF\xFF\xFF\xA5\x26\xFF",
+                    ]
     _upper = 99
     _gmrs = True
     _echo = True
