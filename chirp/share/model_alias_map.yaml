@@ -15,6 +15,10 @@ Baiston:
 Baofeng/Pofung:
 - alt: K6
   model: K61
+- alt: K6
+  model: K63
+- alt: K6
+  model: K6A
 - alt: 5RM
   model: Baofeng AR-5RM
 - alt: BF-1901
