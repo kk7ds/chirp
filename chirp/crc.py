@@ -15,31 +15,34 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# This is commonly called "xmodem CRC16"
+CRC_POLY_CCITT = 0x1021
+CRC_POLY_IBM_REV = 0xA001
 
-def crc16_xmodem(data: bytes):
-    """
-    if this crc was used for communication to AND from the radio, then it
-    would be a measure to increase reliability.
-    but it's only used towards the radio, so it's for further obfuscation
-    """
-    poly = 0x1021
+
+def crc16(data, poly, reverse=False):
     crc = 0x0
     for byte in data:
-        crc = crc ^ (byte << 8)
+        if reverse:
+            crc ^= byte
+        else:
+            crc ^= (byte << 8)
         for _ in range(8):
-            crc = crc << 1
-            if crc & 0x10000:
-                crc = (crc ^ poly) & 0xFFFF
+            if reverse:
+                if crc & 0x0001:
+                    crc = (crc >> 1) ^ poly
+                else:
+                    crc >>= 1
+            else:
+                crc = crc << 1
+                if crc & 0x10000:
+                    crc = (crc ^ poly) & 0xFFFF
     return crc & 0xFFFF
 
 
-def calculate_crc16(buf):
-    crc = 0x0000
-    for b in buf:
-        crc ^= b
-        for _ in range(8):
-            if crc & 0x0001:
-                crc = (crc >> 1) ^ 0xA001
-            else:
-                crc >>= 1
-    return crc
+def crc16_xmodem(data: bytes):
+    return crc16(data, CRC_POLY_CCITT)
+
+
+def crc16_ibm_rev(data):
+    return crc16(data, CRC_POLY_IBM_REV, reverse=True)
