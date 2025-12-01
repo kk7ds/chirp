@@ -677,7 +677,7 @@ def fmver_validate(raw_bytes):
 
 
 def calculate_crc16(data):
-    return struct.pack('<H', crc.calculate_crc16(data))
+    return struct.pack('<H', crc.crc16_ibm_rev(data))
 
 
 def _get_memory(self, mem, _mem, ch_index):
