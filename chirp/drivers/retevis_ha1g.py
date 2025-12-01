@@ -21,6 +21,7 @@ import time
 from enum import Enum
 
 from chirp import memmap, chirp_common, bitwise, directory, errors
+from chirp import crc
 from chirp.settings import (
     RadioSetting,
     RadioSettingGroup,
@@ -675,16 +676,8 @@ def fmver_validate(raw_bytes):
                                                format_version(REQUIRED_VER)))
 
 
-def calculate_crc16(buf):
-    crc = 0x0000
-    for b in buf:
-        crc ^= b
-        for _ in range(8):
-            if crc & 0x0001:
-                crc = (crc >> 1) ^ 0xA001
-            else:
-                crc >>= 1
-    return struct.pack("<H", crc)
+def calculate_crc16(data):
+    return struct.pack('<H', crc.calculate_crc16(data))
 
 
 def _get_memory(self, mem, _mem, ch_index):
