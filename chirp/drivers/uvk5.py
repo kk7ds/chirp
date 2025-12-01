@@ -28,7 +28,7 @@
 import struct
 import logging
 
-from chirp import chirp_common, directory, bitwise, memmap, errors, util
+from chirp import chirp_common, directory, bitwise, memmap, errors, util, crc
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueInteger, RadioSettingValueString, \
@@ -364,30 +364,13 @@ def xorarr(data: bytes):
     return ret
 
 
-def calculate_crc16_xmodem(data: bytes):
-    """
-    if this crc was used for communication to AND from the radio, then it
-    would be a measure to increase reliability.
-    but it's only used towards the radio, so it's for further obfuscation
-    """
-    poly = 0x1021
-    crc = 0x0
-    for byte in data:
-        crc = crc ^ (byte << 8)
-        for _ in range(8):
-            crc = crc << 1
-            if crc & 0x10000:
-                crc = (crc ^ poly) & 0xFFFF
-    return crc & 0xFFFF
-
-
 def _send_command(serport, data: bytes):
     """Send a command to UV-K5 radio"""
     serport.log("Sending command (unobfuscated) len=0x%4.4x:\n%s" % (
               len(data), util.hexprint(data)))
 
-    crc = calculate_crc16_xmodem(data)
-    data2 = data + struct.pack("<H", crc)
+    crc_data = crc.crc16_xmodem(data)
+    data2 = data + struct.pack("<H", crc_data)
 
     command = struct.pack(">HBB", 0xabcd, len(data), 0) + \
         xorarr(data2) + \
