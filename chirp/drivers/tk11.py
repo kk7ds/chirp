@@ -722,7 +722,7 @@ def do_download(radio):
     memory = bytearray()
 
     for i in range(0, MEMORY_LIMIT, MAX_CHUNK_SIZE):
-        percent = (i // MEMORY_LIMIT) * 100
+        percent = i * 100 // MEMORY_LIMIT
         status.msg = f"Reading data from radio {percent}%"
         status.cur = percent
         radio.status_fn(status)
@@ -745,7 +745,7 @@ def do_upload(radio):
 
     try:
         for i in range(0, memory_size, MAX_CHUNK_SIZE):
-            percent = (i // memory_size) * 100
+            percent = i * 100 // memory_size
             status.msg = f"Writing data from radio {percent}%"
             status.cur = percent
             radio.status_fn(status)
