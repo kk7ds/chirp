@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 21:16-0800\n"
-"PO-Revision-Date: 2025-11-26 01:33-0300\n"
-"Last-Translator: Crezivando <crezivando@gmail.com>\n"
+"POT-Creation-Date: 2025-12-07 08:11-0800\n"
+"PO-Revision-Date: 2025-11-26 22:39-0300\n"
+"Last-Translator: Luiz Ricardo Prado <luizrcsprado@outlook.com>\n"
 "Language-Team: Language pt-BR\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -972,7 +972,7 @@ msgstr ""
 "A mensagem \"ADMS\" aparecerá no visor.\n"
 "5. Após clicar em OK, pressione a tecla [BAND].\n"
 
-#: ../drivers/uvk5.py:636
+#: ../drivers/uvk5.py:619
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -987,7 +987,7 @@ msgstr ""
 "4. Clique em OK para baixar a imagem do dispositivo.\n"
 "Pode não funcionar se você ligar o rádio com o cabo já conectado.\n"
 
-#: ../drivers/uvk5.py:643
+#: ../drivers/uvk5.py:626
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1042,7 +1042,7 @@ msgstr "Comece sempre pela lista mais recente."
 msgid "Amateur"
 msgstr "Amador"
 
-#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:629
+#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr "Ocorreu um erro"
 
@@ -1113,7 +1113,7 @@ msgstr "Os resultados em cache só podem ser incluídos em consultas de proximid
 msgid "Canada"
 msgstr "Canadá"
 
-#: ../wxui/common.py:500
+#: ../wxui/common.py:504
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "Alterar essa configuração requer atualizar as configurações da imagem, o que acontecerá agora."
 
@@ -1297,7 +1297,7 @@ msgid ""
 "Polarity"
 msgstr "Polaridade DTCS"
 
-#: ../drivers/uvk5.py:860
+#: ../drivers/uvk5.py:843
 msgid "DTMF decode"
 msgstr "Decodificado DTMF"
 
@@ -1396,7 +1396,7 @@ msgstr "Instruções de download"
 msgid "Driver"
 msgstr ""
 
-#: ../drivers/uvk5.py:1278
+#: ../drivers/uvk5.py:1261
 msgid "Driver information"
 msgstr "Informações do driver"
 
@@ -1549,7 +1549,7 @@ msgstr "Exportar para CSV..."
 msgid "Extra"
 msgstr "Extra"
 
-#: ../drivers/uvk5.py:1276
+#: ../drivers/uvk5.py:1259
 msgid "FM Radio"
 msgstr "Rádio FM"
 
@@ -2102,7 +2102,7 @@ msgstr "AO VIVO"
 
 #: ../drivers/radtel_rt490.py:1026 ../wxui/main.py:853 ../wxui/main.py:1632
 msgid "Language"
-msgstr "Linguagem"
+msgstr "Idioma"
 
 #: ../wxui/query_sources.py:91 ../wxui/query_sources.py:373
 #: ../wxui/query_sources.py:672 ../wxui/query_sources.py:824
@@ -2176,11 +2176,11 @@ msgstr "Localizador"
 msgid "Login failed: Check your username and password"
 msgstr "Falha no login: verifique seu nome de usuário e senha"
 
-#: ../drivers/uvk5.py:1780
+#: ../drivers/uvk5.py:1763
 msgid "Logo string 1 (12 characters)"
 msgstr "Logotipo em formato de string 1 (12 caracteres)"
 
-#: ../drivers/uvk5.py:1787
+#: ../drivers/uvk5.py:1770
 msgid "Logo string 2 (12 characters)"
 msgstr "Texto do logotipo 2 (12 caracteres)"
 
@@ -2198,7 +2198,7 @@ msgstr "Edição manual da memória %i"
 msgid "Memories"
 msgstr "Memórias"
 
-#: ../drivers/uvk5.py:2108
+#: ../drivers/uvk5.py:2091
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "As memórias são somente leitura devido à versão de firmware não suportada"
 
@@ -2250,7 +2250,7 @@ msgstr "Módulo carregado"
 msgid "Module loaded successfully"
 msgstr "Módulo carregado com sucesso"
 
-#: ../wxui/common.py:645
+#: ../wxui/common.py:649
 msgid "More Info"
 msgstr "Mais informações"
 
@@ -2465,7 +2465,7 @@ msgstr "Senha"
 msgid "Paste"
 msgstr "Colar"
 
-#: ../wxui/common.py:800
+#: ../wxui/common.py:804
 msgid "Paste external memories"
 msgstr "Colar memórias externas"
 
@@ -2511,7 +2511,7 @@ msgstr "Por favor, aguarde"
 
 #: ../wxui/clone.py:491
 msgid "Plug in your cable and then click OK"
-msgstr "Conecte o cabo e clique em OK."
+msgstr "Conecte o cabo e clique em OK"
 
 #: ../wxui/query_sources.py:887
 msgid "Polish repeaters database"
@@ -2531,7 +2531,7 @@ msgstr "Prefixos"
 
 #: ../wxui/developer.py:157
 msgid "Press enter to set this in memory"
-msgstr "Pressione Enter para salvar esta informação na memória."
+msgstr "Pressione Enter para salvar esta informação na memória"
 
 #: ../wxui/main.py:756
 msgid "Print Preview"
@@ -2572,7 +2572,7 @@ msgstr "Fonte da consulta"
 
 #: ../wxui/memquery.py:330
 msgid "Query string is invalid"
-msgstr "A string de consulta é inválida."
+msgstr "A string de consulta é inválida"
 
 #: ../wxui/memquery.py:186
 msgid "Query syntax OK"
@@ -2614,7 +2614,7 @@ msgstr "O rádio enviou dados após o último bloco esperado. Isso ocorre quando
 
 #: ../wxui/query_sources.py:1212
 msgid "RadioReference Canada requires a login before you can query"
-msgstr "O RadioReference Canada exige login para que você possa fazer uma consulta."
+msgstr "O RadioReference Canada exige login para que você possa fazer uma consulta"
 
 #: ../wxui/query_sources.py:1023
 msgid ""
@@ -2623,7 +2623,7 @@ msgid ""
 "<small>Premium account required</small>"
 msgstr ""
 "RadioReference.com é o maior provedor de dados de radiocomunicações do mundo.\n"
-"Conta Premium necessária."
+"Conta Premium necessária"
 
 #: ../wxui/memedit.py:145
 msgid "Receive DTCS code"
@@ -2639,19 +2639,19 @@ msgstr "Recente"
 
 #: ../wxui/clone.py:348
 msgid "Recent..."
-msgstr "Recente"
+msgstr "Recente."
 
 #: ../drivers/retevis_rt98.py:1219
 msgid "Recommend using 55.2"
-msgstr "Recomenda-se o uso de 55,2."
+msgstr "Recomenda-se o uso de 55,2"
 
 #: ../wxui/memedit.py:1016
 msgid "Redo"
 msgstr "Refazer"
 
-#: ../wxui/common.py:502
+#: ../wxui/common.py:506
 msgid "Refresh required"
-msgstr "É necessário atualizar."
+msgstr "É necessário atualizar"
 
 #: ../wxui/common.py:331
 #, python-format
@@ -2748,11 +2748,11 @@ msgstr "Configurações salvas"
 msgid "Scan control (skip, include, priority, etc)"
 msgstr "Controle de varredura (ignorar, incluir, prioridade, etc.)"
 
-#: ../drivers/uvk5.py:874
+#: ../drivers/uvk5.py:857
 msgid "Scanlists"
 msgstr "Lista de escaneamento"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:870
+#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:853
 msgid "Scrambler"
 msgstr "Modo Scrambler"
 
@@ -2783,7 +2783,7 @@ msgstr "Selecione Bandplan"
 
 #: ../wxui/main.py:1190
 msgid "Select a tab and memory to diff"
-msgstr "Selecione uma aba e a memória para comparar."
+msgstr "Selecione uma aba e a memória para comparar"
 
 #: ../wxui/query_sources.py:875
 msgid "Select prefixes"
@@ -2797,13 +2797,13 @@ msgstr "Serviço"
 msgid "Settings"
 msgstr "Configurações"
 
-#: ../drivers/uvk5.py:2112
+#: ../drivers/uvk5.py:2095
 msgid "Settings are read-only due to unsupported firmware version"
-msgstr "As configurações são somente leitura devido à versão de firmware não compatível."
+msgstr "As configurações são somente leitura devido à versão de firmware não compatível"
 
 #: ../wxui/memedit.py:150
 msgid "Shift amount (or transmit frequency) controlled by duplex"
-msgstr "A quantidade de deslocamento (ou frequência de transmissão) é controlada pelo modo duplex."
+msgstr "A quantidade de deslocamento (ou frequência de transmissão) é controlada pelo modo duplex"
 
 #: ../wxui/memedit.py:2269 ../wxui/developer.py:100
 msgid "Show Raw Memory"
@@ -2827,11 +2827,11 @@ msgstr "Pular"
 
 #: ../wxui/memedit.py:2577
 msgid "Some memories are incompatible with this radio"
-msgstr "Algumas memórias são incompatíveis com este rádio."
+msgstr "Algumas memórias são incompatíveis com este rádio"
 
 #: ../wxui/memedit.py:2416
 msgid "Some memories are not deletable"
-msgstr "Algumas memórias não podem ser apagadas."
+msgstr "Algumas memórias não podem ser apagadas"
 
 #: ../wxui/memedit.py:2095
 #, python-format
@@ -2984,7 +2984,7 @@ msgstr "Este driver foi testado com a versão 3 do ID-5100. Se o seu rádio não
 msgid "This driver is in development and should be considered as experimental."
 msgstr "Este driver está em desenvolvimento e deve ser considerado experimental."
 
-#: ../drivers/uvk5.py:701
+#: ../drivers/uvk5.py:684
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr "Esta imagem não contém informações de firmware. Ela pode ter sido gerada com uma versão antiga ou modificada do CHIRP. Recomenda-se que você baixe uma imagem atualizada do seu rádio e a utilize daqui para frente para garantir maior segurança e compatibilidade."
 
@@ -2994,7 +2994,7 @@ msgstr "Este é um rádio em modo ao vivo, o que significa que as alterações s
 
 #: ../wxui/main.py:1722
 msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
-msgstr "Este é um arquivo independente de rádio e não pode ser carregado diretamente em uma rádio. Abra uma imagem de rádio (ou baixe uma de uma rádio) e copie/cole os itens desta aba para a imagem da rádio para poder carregá-la."
+msgstr "Este é um arquivo independente de rádio e não pode ser carregado diretamente em uma rádio. Abra uma imagem de rádio (ou baixe uma de uma rádio) e copie/cole os itens desta aba para a imagem da rádio para poder carregá-la"
 
 #: ../drivers/th_uv88.py:560
 msgid "This is an early stage beta driver\n"
@@ -3004,7 +3004,7 @@ msgstr "Este é um driver beta em estágio inicial.\n"
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr "Este é um driver beta em fase inicial - faça o upload por sua conta e risco.\n"
 
-#: ../drivers/uvk5.py:628
+#: ../drivers/uvk5.py:611
 msgid ""
 "This is an experimental driver for the Quansheng UV-K5. It may harm your radio, or worse. Use at your own risk.\n"
 "\n"
@@ -3014,7 +3014,7 @@ msgid ""
 msgstr ""
 "Este é um driver experimental para o Quansheng UV-K5. Ele pode danificar seu rádio, ou pior. Use por sua conta e risco.\n"
 "Antes de tentar qualquer alteração, faça o download da imagem de memória do rádio com o Chirp e guarde-a. Ela poderá ser usada posteriormente para restaurar as configurações originais.\n"
-"Alguns detalhes ainda não foram implementados."
+"Alguns detalhes ainda não foram implementados"
 
 #: ../drivers/bj9900.py:108
 msgid ""
@@ -3031,7 +3031,7 @@ msgstr ""
 
 #: ../wxui/bugreport.py:430
 msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
-msgstr "Este é o número do ticket para um problema já criado no site chirpmyradio.com."
+msgstr "Este é o número do ticket para um problema já criado no site chirpmyradio.com"
 
 #: ../wxui/memedit.py:2190
 msgid "This memory and shift all up"
@@ -3059,7 +3059,7 @@ msgstr ""
 "pode levar alguns segundos. Se não funcionar, tente novamente algumas vezes.\n"
 "Se você conseguir acessar, verifique o rádio e o cabo.\n"
 
-#: ../drivers/uvk5.py:1865
+#: ../drivers/uvk5.py:1848
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
 msgstr "Esta opção só deve ser ativada se você estiver usando um firmware modificado que suporte uma cobertura de frequência mais ampla. Ativá-la fará com que o CHIRP não aplique as restrições do fabricante do equipamento original (OEM) e poderá levar a comportamentos indefinidos ou não regulamentados. Use por sua conta e risco!"
 
@@ -3069,7 +3069,7 @@ msgstr "Esta ferramenta enviará detalhes sobre o seu sistema para um problema e
 
 #: ../wxui/developer.py:671
 msgid "This will load a module from a website issue"
-msgstr "Isso carregará um módulo de um problema do site."
+msgstr "Isso carregará um módulo de um problema do site"
 
 #: ../wxui/memedit.py:511
 msgid "Tone"
@@ -3093,7 +3093,7 @@ msgstr "Potência de transmissão"
 
 #: ../wxui/memedit.py:149
 msgid "Transmit shift, split mode, or transmit inhibit"
-msgstr "Transmissão com mudança de modo, modo dividido ou inibição de transmissão."
+msgstr "Transmissão com mudança de modo, modo dividido ou inibição de transmissão"
 
 #: ../wxui/memedit.py:141
 msgid "Transmit tone"
@@ -3101,7 +3101,7 @@ msgstr "Tom de transmissão"
 
 #: ../wxui/memedit.py:144
 msgid "Transmit/receive DTCS code for DTCS mode, else transmit code"
-msgstr "Transmita/receba o código DTCS para o modo DTCS; caso contrário, transmita o código."
+msgstr "Transmita/receba o código DTCS para o modo DTCS; caso contrário, transmita o código"
 
 #: ../wxui/memedit.py:143
 msgid "Transmit/receive modulation (FM, AM, SSB, etc)"
@@ -3109,7 +3109,7 @@ msgstr "Modulação de transmissão/recepção (FM, AM, SSB, etc.)"
 
 #: ../wxui/memedit.py:142
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
-msgstr "Transmitir/receber tom para o modo TSQL, caso contrário, receber tom."
+msgstr "Transmitir/receber tom para o modo TSQL, caso contrário, receber tom"
 
 #: ../wxui/memedit.py:448 ../wxui/memedit.py:1412
 msgid "Tuning Step"
@@ -3117,7 +3117,7 @@ msgstr "Passo da frequência"
 
 #: ../wxui/memquery.py:188
 msgid "Type a simple search string or a formatted query and press enter"
-msgstr "Digite uma sequência de pesquisa simples ou uma consulta formatada e pressione Enter."
+msgstr "Digite uma sequência de pesquisa simples ou uma consulta formatada e pressione Enter"
 
 #: ../wxui/clone.py:485 ../wxui/clone.py:492 ../wxui/clone.py:503
 #: ../wxui/clone.py:511 ../wxui/clone.py:515
@@ -3130,7 +3130,7 @@ msgstr "Não foi possível determinar a porta do seu cabo. Verifique seus driver
 
 #: ../wxui/memedit.py:1903
 msgid "Unable to edit memory before radio is loaded"
-msgstr "Não é possível editar a memória antes do rádio ser carregado."
+msgstr "Não é possível editar a memória antes do rádio ser carregado"
 
 #: ../wxui/main.py:1405
 #, python-format
@@ -3139,34 +3139,34 @@ msgstr "Não foi possível encontrar a configuração padrão %r"
 
 #: ../wxui/memedit.py:2433
 msgid "Unable to import while the view is sorted"
-msgstr "Não é possível importar enquanto a visualização estiver ordenada."
+msgstr "Não é possível importar enquanto a visualização estiver ordenada"
 
 #: ../wxui/common.py:237
 msgid "Unable to open the clipboard"
-msgstr "Não foi possível abrir a área de transferência."
+msgstr "Não foi possível abrir a área de transferência"
 
 #: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
 #: ../sources/mapy73pl.py:50
 msgid "Unable to query"
-msgstr "Não foi possível realizar a consulta."
+msgstr "Não foi possível realizar a consulta"
 
 #: ../drivers/ft817.py:320
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "Não foi possível ler o último bloco. Isso geralmente ocorre quando o modelo selecionado é dos EUA, mas o rádio não é dos EUA (ou é de banda larga). Selecione o modelo correto e tente novamente."
 
-#: ../wxui/common.py:697
+#: ../wxui/common.py:701
 #, python-format
 msgid "Unable to reveal %s on this system"
-msgstr "Não foi possível revelar %s neste sistema."
+msgstr "Não foi possível revelar %s neste sistema"
 
 #: ../wxui/memedit.py:260
 #, python-format
 msgid "Unable to set %s on this memory"
-msgstr "Não foi possível definir %s nesta memória."
+msgstr "Não foi possível definir %s nesta memória"
 
 #: ../wxui/main.py:1726
 msgid "Unable to upload this file"
-msgstr "Não foi possível carregar este arquivo."
+msgstr "Não foi possível carregar este arquivo"
 
 #: ../wxui/memedit.py:1015
 msgid "Undo"
@@ -3178,7 +3178,7 @@ msgstr "Estados Unidos"
 
 #: ../wxui/clone.py:484
 msgid "Unplug your cable (if needed) and then click OK"
-msgstr "Desconecte o cabo (se necessário) e clique em OK."
+msgstr "Desconecte o cabo (se necessário) e clique em OK"
 
 #: ../drivers/thd74.py:330
 #, python-format
@@ -3198,9 +3198,9 @@ msgstr "Atualizando o bug %s"
 msgid "Upload instructions"
 msgstr "Instruções de upload"
 
-#: ../drivers/uvk5.py:2099
+#: ../drivers/uvk5.py:2082
 msgid "Upload is disabled due to unsupported firmware version"
-msgstr "O upload está desativado devido à versão de firmware não ser compatível."
+msgstr "O upload está desativado devido à versão de firmware não ser compatível"
 
 #: ../wxui/main.py:1068
 msgid "Upload to radio"
@@ -3208,7 +3208,7 @@ msgstr "Enviar para a rádio"
 
 #: ../wxui/main.py:875
 msgid "Upload to radio..."
-msgstr "Enviar para a rádio"
+msgstr "Enviar para a rádio."
 
 #: ../wxui/common.py:333
 #, python-format
@@ -3221,11 +3221,11 @@ msgstr "Use o fluxo de trabalho de frequência TX"
 
 #: ../wxui/main.py:831
 msgid "Use fixed-width font"
-msgstr "Use fontes de largura fixa."
+msgstr "Use fontes de largura fixa"
 
 #: ../wxui/main.py:839
 msgid "Use larger font"
-msgstr "Use uma fonte maior."
+msgstr "Use uma fonte maior"
 
 #: ../wxui/bugreport.py:261
 msgid "Username"
@@ -3236,12 +3236,12 @@ msgstr "Nome de usuário"
 msgid "Value does not fit in %i bits"
 msgstr "O valor não cabe em %i bits"
 
-#: ../wxui/common.py:539
+#: ../wxui/common.py:543
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "O valor deve ser de pelo menos %.4f"
 
-#: ../wxui/common.py:543
+#: ../wxui/common.py:547
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "O valor deve ser no máximo %.4f"
@@ -3249,11 +3249,11 @@ msgstr "O valor deve ser no máximo %.4f"
 #: ../wxui/developer.py:357
 #, python-format
 msgid "Value must be exactly %i decimal digits"
-msgstr "O valor deve ter exatamente %i dígitos decimais."
+msgstr "O valor deve ter exatamente %i dígitos decimais"
 
 #: ../wxui/developer.py:311 ../wxui/developer.py:355
 msgid "Value must be zero or greater"
-msgstr "O valor deve ser zero ou maior."
+msgstr "O valor deve ser zero ou maior"
 
 #: ../wxui/memquery.py:206
 msgid "Value to search memory field for"
@@ -3271,7 +3271,7 @@ msgstr "Fornecedor"
 msgid "View"
 msgstr "Visualizar"
 
-#: ../wxui/common.py:487
+#: ../wxui/common.py:491
 msgid "WARNING!"
 msgstr "AVISO!"
 
@@ -3303,7 +3303,7 @@ msgstr "Você abriu vários chamados na última semana. O CHIRP limita o número
 
 #: ../wxui/clone.py:522
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
-msgstr "Seu dispositivo USB baseado em Prolific não funcionará sem que você retorne a uma versão anterior do driver. Visite o site da CHIRP para saber mais sobre como resolver esse problema."
+msgstr "Seu dispositivo USB baseado em Prolific não funcionará sem que você retorne a uma versão anterior do driver. Visite o site da CHIRP para saber mais sobre como resolver esse problema"
 
 #: ../wxui/query_sources.py:830
 msgid "Your QTH Locator"

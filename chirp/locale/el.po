@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 21:16-0800\n"
+"POT-Creation-Date: 2025-12-07 08:11-0800\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -641,7 +641,7 @@ msgid ""
 "5. <b>After clicking OK</b>, press the [BAND] key.\n"
 msgstr ""
 
-#: ../drivers/uvk5.py:636
+#: ../drivers/uvk5.py:619
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -651,7 +651,7 @@ msgid ""
 "It will may not work if you turn on the radio with the cable already attached\n"
 msgstr ""
 
-#: ../drivers/uvk5.py:643
+#: ../drivers/uvk5.py:626
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -701,7 +701,7 @@ msgstr ""
 msgid "Amateur"
 msgstr "Ραδιοερασιτέχνη"
 
-#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:629
+#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr "Παρουσιάστηκε ένα σφάλμα"
 
@@ -774,7 +774,7 @@ msgstr ""
 msgid "Canada"
 msgstr "Καναδάς"
 
-#: ../wxui/common.py:500
+#: ../wxui/common.py:504
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr ""
 
@@ -963,7 +963,7 @@ msgstr ""
 "Πολικότητα\n"
 "DTCS"
 
-#: ../drivers/uvk5.py:860
+#: ../drivers/uvk5.py:843
 msgid "DTMF decode"
 msgstr ""
 
@@ -1068,7 +1068,7 @@ msgstr "Οδηγίες λήψης"
 msgid "Driver"
 msgstr "Επαναφόρτωση Οδηγού"
 
-#: ../drivers/uvk5.py:1278
+#: ../drivers/uvk5.py:1261
 msgid "Driver information"
 msgstr ""
 
@@ -1224,7 +1224,7 @@ msgstr "Εξαγωγή σε αρχείο μορφής .CSV"
 msgid "Extra"
 msgstr "Περισσότερα"
 
-#: ../drivers/uvk5.py:1276
+#: ../drivers/uvk5.py:1259
 msgid "FM Radio"
 msgstr ""
 
@@ -1772,11 +1772,11 @@ msgstr ""
 msgid "Login failed: Check your username and password"
 msgstr ""
 
-#: ../drivers/uvk5.py:1780
+#: ../drivers/uvk5.py:1763
 msgid "Logo string 1 (12 characters)"
 msgstr ""
 
-#: ../drivers/uvk5.py:1787
+#: ../drivers/uvk5.py:1770
 msgid "Logo string 2 (12 characters)"
 msgstr ""
 
@@ -1794,7 +1794,7 @@ msgstr ""
 msgid "Memories"
 msgstr "Μνήμες"
 
-#: ../drivers/uvk5.py:2108
+#: ../drivers/uvk5.py:2091
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -1848,7 +1848,7 @@ msgstr "Module"
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/common.py:645
+#: ../wxui/common.py:649
 #, fuzzy
 msgid "More Info"
 msgstr "Πληροφορίες"
@@ -2066,7 +2066,7 @@ msgstr ""
 msgid "Paste"
 msgstr ""
 
-#: ../wxui/common.py:800
+#: ../wxui/common.py:804
 msgid "Paste external memories"
 msgstr ""
 
@@ -2255,7 +2255,7 @@ msgstr ""
 msgid "Redo"
 msgstr ""
 
-#: ../wxui/common.py:502
+#: ../wxui/common.py:506
 #, fuzzy
 msgid "Refresh required"
 msgstr "Απαιτείται επανεκκίνηση"
@@ -2357,11 +2357,11 @@ msgstr "Ρυθμίσεις αποθηκεύθηκαν"
 msgid "Scan control (skip, include, priority, etc)"
 msgstr ""
 
-#: ../drivers/uvk5.py:874
+#: ../drivers/uvk5.py:857
 msgid "Scanlists"
 msgstr ""
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:870
+#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:853
 msgid "Scrambler"
 msgstr ""
 
@@ -2408,7 +2408,7 @@ msgstr "Υπηρεσία"
 msgid "Settings"
 msgstr "Ρυθμίσεις"
 
-#: ../drivers/uvk5.py:2112
+#: ../drivers/uvk5.py:2095
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -2581,7 +2581,7 @@ msgstr ""
 msgid "This driver is in development and should be considered as experimental."
 msgstr ""
 
-#: ../drivers/uvk5.py:701
+#: ../drivers/uvk5.py:684
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr ""
 
@@ -2601,7 +2601,7 @@ msgstr ""
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr ""
 
-#: ../drivers/uvk5.py:628
+#: ../drivers/uvk5.py:611
 msgid ""
 "This is an experimental driver for the Quansheng UV-K5. It may harm your radio, or worse. Use at your own risk.\n"
 "\n"
@@ -2649,7 +2649,7 @@ msgid ""
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
 
-#: ../drivers/uvk5.py:1865
+#: ../drivers/uvk5.py:1848
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
 msgstr ""
 
@@ -2746,7 +2746,7 @@ msgstr ""
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr ""
 
-#: ../wxui/common.py:697
+#: ../wxui/common.py:701
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr ""
@@ -2791,7 +2791,7 @@ msgstr ""
 msgid "Upload instructions"
 msgstr "Οδηγίες αποστολής"
 
-#: ../drivers/uvk5.py:2099
+#: ../drivers/uvk5.py:2082
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr ""
 
@@ -2830,12 +2830,12 @@ msgstr ""
 msgid "Value does not fit in %i bits"
 msgstr "Η τιμή δεν χωράει σε %i bits"
 
-#: ../wxui/common.py:539
+#: ../wxui/common.py:543
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Η τιμή πρέπει να είναι τουλάχιστον %.4f"
 
-#: ../wxui/common.py:543
+#: ../wxui/common.py:547
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Η τιμή πρέπει να είναι το πολύ  %.4f"
@@ -2865,7 +2865,7 @@ msgstr "Προμηθευτής"
 msgid "View"
 msgstr "Εμφάνιση"
 
-#: ../wxui/common.py:487
+#: ../wxui/common.py:491
 msgid "WARNING!"
 msgstr ""
 

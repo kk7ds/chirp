@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 21:16-0800\n"
+"POT-Creation-Date: 2025-12-07 08:11-0800\n"
 "PO-Revision-Date: 2024-11-11 02:28+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language-Team: \n"
@@ -926,7 +926,7 @@ msgstr ""
 "4. 同时按住 [AMS] 键和电源键，然后插上电池（显示屏上会显示 \"ADMS\"）。\n"
 "5. <b>点击 OK 后</b>，按 [BAND] 键。\n"
 
-#: ../drivers/uvk5.py:636
+#: ../drivers/uvk5.py:619
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -942,7 +942,7 @@ msgstr ""
 "\n"
 "如果在已连接数据线的情况下打开电台，则可能无法进行\n"
 
-#: ../drivers/uvk5.py:643
+#: ../drivers/uvk5.py:626
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -998,7 +998,7 @@ msgstr "总是以最近的列表启动"
 msgid "Amateur"
 msgstr "业余"
 
-#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:629
+#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr "发生错误"
 
@@ -1069,7 +1069,7 @@ msgstr ""
 msgid "Canada"
 msgstr "加拿大"
 
-#: ../wxui/common.py:500
+#: ../wxui/common.py:504
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "更改此设置需要从映像中刷新设置，这将立即发生。"
 
@@ -1258,7 +1258,7 @@ msgstr ""
 "DTCS\n"
 "极性"
 
-#: ../drivers/uvk5.py:860
+#: ../drivers/uvk5.py:843
 msgid "DTMF decode"
 msgstr "DTMF 解码"
 
@@ -1357,7 +1357,7 @@ msgstr "显示指引"
 msgid "Driver"
 msgstr "驱动程序"
 
-#: ../drivers/uvk5.py:1278
+#: ../drivers/uvk5.py:1261
 msgid "Driver information"
 msgstr "驱动程序信息"
 
@@ -1511,7 +1511,7 @@ msgstr "以CSV文件格式导出……"
 msgid "Extra"
 msgstr "更多"
 
-#: ../drivers/uvk5.py:1276
+#: ../drivers/uvk5.py:1259
 msgid "FM Radio"
 msgstr "FM电台"
 
@@ -2132,11 +2132,11 @@ msgstr ""
 msgid "Login failed: Check your username and password"
 msgstr "登录失败：请检查您的用户名和密码"
 
-#: ../drivers/uvk5.py:1780
+#: ../drivers/uvk5.py:1763
 msgid "Logo string 1 (12 characters)"
 msgstr "Logo 字符串 1（12 个字符）"
 
-#: ../drivers/uvk5.py:1787
+#: ../drivers/uvk5.py:1770
 msgid "Logo string 2 (12 characters)"
 msgstr "Logo 字符串 2（12 个字符）"
 
@@ -2154,7 +2154,7 @@ msgstr ""
 msgid "Memories"
 msgstr "存储"
 
-#: ../drivers/uvk5.py:2108
+#: ../drivers/uvk5.py:2091
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "由于不支持的固件版本，存储是只读的"
 
@@ -2206,7 +2206,7 @@ msgstr "模块已加载"
 msgid "Module loaded successfully"
 msgstr "模块加载成功"
 
-#: ../wxui/common.py:645
+#: ../wxui/common.py:649
 msgid "More Info"
 msgstr "更多信息"
 
@@ -2422,7 +2422,7 @@ msgstr "密码"
 msgid "Paste"
 msgstr "粘贴"
 
-#: ../wxui/common.py:800
+#: ../wxui/common.py:804
 msgid "Paste external memories"
 msgstr ""
 
@@ -2610,7 +2610,7 @@ msgstr "建议使用 55.2"
 msgid "Redo"
 msgstr ""
 
-#: ../wxui/common.py:502
+#: ../wxui/common.py:506
 msgid "Refresh required"
 msgstr "需要刷新"
 
@@ -2708,11 +2708,11 @@ msgstr "已保存设置"
 msgid "Scan control (skip, include, priority, etc)"
 msgstr "扫描控制（跳过、包含、优先级等）"
 
-#: ../drivers/uvk5.py:874
+#: ../drivers/uvk5.py:857
 msgid "Scanlists"
 msgstr "扫描列表"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:870
+#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:853
 msgid "Scrambler"
 msgstr "加密器"
 
@@ -2758,7 +2758,7 @@ msgstr "服务"
 msgid "Settings"
 msgstr "设置"
 
-#: ../drivers/uvk5.py:2112
+#: ../drivers/uvk5.py:2095
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr "由于不支持的固件版本，设置是只读的"
 
@@ -2933,7 +2933,7 @@ msgstr "此驱动程序已经与 ID-5100 的 v3 版本进行了测试。如果�
 msgid "This driver is in development and should be considered as experimental."
 msgstr "此驱动程序正在开发中，应被视为实验性的。"
 
-#: ../drivers/uvk5.py:701
+#: ../drivers/uvk5.py:684
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr "此镜像缺少固件信息。可能是使用旧版或修改版的 CHIRP 生成的。建议您从电台下载一个新镜像，并将其用于以后的最佳安全性和兼容性。"
 
@@ -2953,7 +2953,7 @@ msgstr "这是一个早期测试版驱动程序\n"
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr "这是一个早期测试版驱动程序 - 上传风险自负\n"
 
-#: ../drivers/uvk5.py:628
+#: ../drivers/uvk5.py:611
 msgid ""
 "This is an experimental driver for the Quansheng UV-K5. It may harm your radio, or worse. Use at your own risk.\n"
 "\n"
@@ -3008,7 +3008,7 @@ msgstr ""
 "我将尝试 8 次（大多数情况下 ~3 次就可以），这可能需要几秒钟，如果不起作用，请再试几次。\n"
 "如果还是无法进入，请检查电台和电缆。\n"
 
-#: ../drivers/uvk5.py:1865
+#: ../drivers/uvk5.py:1848
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
 msgstr "只有当您使用了扩频的修改固件时才应启用此选项。启用此选项将导致 CHIRP 不强制执行 OEM 限制，并可能导致未定义或不受监管的行为。使用风险自负！"
 
@@ -3103,7 +3103,7 @@ msgstr "无法查询"
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "无法读取最后一个块。这通常发生在所选模型为美国，但电台是非美国的（或扩频的）情况下。请选择正确的模型并重试。"
 
-#: ../wxui/common.py:697
+#: ../wxui/common.py:701
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "无法在此系统上显示 %s"
@@ -3147,7 +3147,7 @@ msgstr "正在更新 Bug %s"
 msgid "Upload instructions"
 msgstr "上传说明"
 
-#: ../drivers/uvk5.py:2099
+#: ../drivers/uvk5.py:2082
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "由于不支持的固件版本，上传被禁用"
 
@@ -3185,12 +3185,12 @@ msgstr "用户名"
 msgid "Value does not fit in %i bits"
 msgstr "数值无法用 %i 位表示"
 
-#: ../wxui/common.py:539
+#: ../wxui/common.py:543
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "数值必须至少为 %.4f"
 
-#: ../wxui/common.py:543
+#: ../wxui/common.py:547
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "数值必须至多为 %.4f"
@@ -3220,7 +3220,7 @@ msgstr "厂商"
 msgid "View"
 msgstr "查看"
 
-#: ../wxui/common.py:487
+#: ../wxui/common.py:491
 msgid "WARNING!"
 msgstr "警告！"
 
