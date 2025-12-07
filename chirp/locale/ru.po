@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 21:16-0800\n"
+"POT-Creation-Date: 2025-12-07 08:11-0800\n"
 "PO-Revision-Date: 2025-08-22 15:43+0300\n"
 "Last-Translator: Olesya Gerasimenko <goa@altlinux.org>\n"
 "Language-Team: Basealt Translation Team\n"
@@ -974,7 +974,7 @@ msgstr ""
 " установки батареи обратно (на экране появится «ADMS»).\n"
 "5. <b>После нажатия «ОК»</b> нажмите клавишу [BAND].\n"
 
-#: ../drivers/uvk5.py:636
+#: ../drivers/uvk5.py:619
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -990,7 +990,7 @@ msgstr ""
 "\n"
 "Загрузка может не получиться, если вы включите станцию, когда кабель уже подключён\n"
 
-#: ../drivers/uvk5.py:643
+#: ../drivers/uvk5.py:626
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1046,7 +1046,7 @@ msgstr "Всегда использовать список недавних"
 msgid "Amateur"
 msgstr "Любительская радиосвязь"
 
-#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:629
+#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr "Ошибка"
 
@@ -1117,7 +1117,7 @@ msgstr "Когда выполняется запрос с учётом расп�
 msgid "Canada"
 msgstr "Канада"
 
-#: ../wxui/common.py:500
+#: ../wxui/common.py:504
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "Для изменения этого параметра требуется обновить параметры из образа, что и будет сейчас выполнено."
 
@@ -1309,7 +1309,7 @@ msgstr ""
 "Полярность\n"
 "DTCS"
 
-#: ../drivers/uvk5.py:860
+#: ../drivers/uvk5.py:843
 msgid "DTMF decode"
 msgstr "Расшифровка DTMF"
 
@@ -1408,7 +1408,7 @@ msgstr "Инструкции по загрузке"
 msgid "Driver"
 msgstr "Драйвер"
 
-#: ../drivers/uvk5.py:1278
+#: ../drivers/uvk5.py:1261
 msgid "Driver information"
 msgstr "Сведения о драйвере"
 
@@ -1561,7 +1561,7 @@ msgstr "Экспорт в CSV..."
 msgid "Extra"
 msgstr "Дополнительно"
 
-#: ../drivers/uvk5.py:1276
+#: ../drivers/uvk5.py:1259
 msgid "FM Radio"
 msgstr "FM-приёмник"
 
@@ -2189,11 +2189,11 @@ msgstr "Локатор"
 msgid "Login failed: Check your username and password"
 msgstr "Не удалось войти: проверьте правильность ваших имени пользователя и пароля"
 
-#: ../drivers/uvk5.py:1780
+#: ../drivers/uvk5.py:1763
 msgid "Logo string 1 (12 characters)"
 msgstr "Строка логотипа 1 (12 символов)"
 
-#: ../drivers/uvk5.py:1787
+#: ../drivers/uvk5.py:1770
 msgid "Logo string 2 (12 characters)"
 msgstr "Строка логотипа 2 (12 символов)"
 
@@ -2211,7 +2211,7 @@ msgstr "Изменение ячейки памяти %i вручную"
 msgid "Memories"
 msgstr "Ячейки памяти"
 
-#: ../drivers/uvk5.py:2108
+#: ../drivers/uvk5.py:2091
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Ячейки памяти доступны только для чтения из-за неподдерживаемой версии микропрограммы"
 
@@ -2263,7 +2263,7 @@ msgstr "Модуль загружен"
 msgid "Module loaded successfully"
 msgstr "Модуль успешно загружен"
 
-#: ../wxui/common.py:645
+#: ../wxui/common.py:649
 msgid "More Info"
 msgstr "Подробности"
 
@@ -2478,7 +2478,7 @@ msgstr "Пароль"
 msgid "Paste"
 msgstr "Вставить"
 
-#: ../wxui/common.py:800
+#: ../wxui/common.py:804
 msgid "Paste external memories"
 msgstr "Вставить внешние ячейки памяти"
 
@@ -2663,7 +2663,7 @@ msgstr "Рекомендуется использовать 55.2"
 msgid "Redo"
 msgstr "Вернуть"
 
-#: ../wxui/common.py:502
+#: ../wxui/common.py:506
 msgid "Refresh required"
 msgstr "Требуется обновление"
 
@@ -2765,11 +2765,11 @@ msgstr "Сохранённые параметры"
 msgid "Scan control (skip, include, priority, etc)"
 msgstr "Управление сканированием (пропуск, включение, приоритет и т.д.)"
 
-#: ../drivers/uvk5.py:874
+#: ../drivers/uvk5.py:857
 msgid "Scanlists"
 msgstr "Списки сканирования"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:870
+#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:853
 msgid "Scrambler"
 msgstr "Скремблер"
 
@@ -2814,7 +2814,7 @@ msgstr "Служба"
 msgid "Settings"
 msgstr "Параметры"
 
-#: ../drivers/uvk5.py:2112
+#: ../drivers/uvk5.py:2095
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr "Параметры доступны только для чтения из-за неподдерживаемой версии микропрограммы"
 
@@ -3006,7 +3006,7 @@ msgstr "Этот драйвер был протестирован с ID-5100 v3.
 msgid "This driver is in development and should be considered as experimental."
 msgstr "Этот драйвер находится в разработке, он считается экспериментальным."
 
-#: ../drivers/uvk5.py:701
+#: ../drivers/uvk5.py:684
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr "В этом образе отсутствует информация о микропрограмме. Возможно, он был создан с помощью устаревшей или модифицированной версии CHIRP. Рекомендуется загрузить свежий образ с вашей станции и в дальнейшем использовать его (это обеспечит максимальный уровень безопасности и совместимости)."
 
@@ -3026,7 +3026,7 @@ msgstr "Это ранняя бета-версия драйвера\n"
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr "Это ранняя бета-версия драйвера — отправляйте на свой страх и риск\n"
 
-#: ../drivers/uvk5.py:628
+#: ../drivers/uvk5.py:611
 msgid ""
 "This is an experimental driver for the Quansheng UV-K5. It may harm your radio, or worse. Use at your own risk.\n"
 "\n"
@@ -3082,7 +3082,7 @@ msgstr ""
 "может занять несколько секунд. Если не получается, сделайте ещё\n"
 "несколько попыток. Если удалось войти, проверьте станцию и кабель.\n"
 
-#: ../drivers/uvk5.py:1865
+#: ../drivers/uvk5.py:1848
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
 msgstr "Эту опцию следует включать только в том случае, если вы используете модифицированную микропрограмму, которая поддерживает более широкий диапазон частот. Если включить эту опцию, CHIRP не будет применять OEM-ограничения, что может привести к неопределённому или нерегулируемому поведению. Используйте на свой страх и риск!"
 
@@ -3177,7 +3177,7 @@ msgstr "Не удалось выполнить запрос"
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "Невозможно прочитать последний блок. Это часто случается, когда выбрана американская модель, но станция не является американской (или широкополосной). Выберите правильную модель и повторите попытку."
 
-#: ../wxui/common.py:697
+#: ../wxui/common.py:701
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Невозможно обнаружить %s в этой системе"
@@ -3221,7 +3221,7 @@ msgstr "Обновление ошибки %s"
 msgid "Upload instructions"
 msgstr "Отправка инструкций"
 
-#: ../drivers/uvk5.py:2099
+#: ../drivers/uvk5.py:2082
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "Отправка отключена из-за неподдерживаемой версии микропрограммы"
 
@@ -3259,12 +3259,12 @@ msgstr "Имя пользователя"
 msgid "Value does not fit in %i bits"
 msgstr "Значение не помещается в %i бит"
 
-#: ../wxui/common.py:539
+#: ../wxui/common.py:543
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Значение не должно быть меньше %.4f"
 
-#: ../wxui/common.py:543
+#: ../wxui/common.py:547
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Значение не должно превышать %.4f"
@@ -3294,7 +3294,7 @@ msgstr "Изготовитель"
 msgid "View"
 msgstr "Вид"
 
-#: ../wxui/common.py:487
+#: ../wxui/common.py:491
 msgid "WARNING!"
 msgstr "ПРЕДУПРЕЖДЕНИЕ!"
 

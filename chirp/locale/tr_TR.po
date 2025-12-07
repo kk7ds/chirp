@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 21:16-0800\n"
+"POT-Creation-Date: 2025-12-07 08:11-0800\n"
 "PO-Revision-Date: 2025-01-19 16:11+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -927,7 +927,7 @@ msgstr ""
 "4. Bataryayı takarken [AMS] tuşuna ve güç tuşuna basılı tutun (\"ADMS\" ekranda görünecektir).\n"
 "5. <b>Tamam'a tıkladıktan sonra</b>, [BAND] tuşuna basın.\n"
 
-#: ../drivers/uvk5.py:636
+#: ../drivers/uvk5.py:619
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -943,7 +943,7 @@ msgstr ""
 "\n"
 "Kablo takılıyken telsizi açarsanız çalışmayabilir\n"
 
-#: ../drivers/uvk5.py:643
+#: ../drivers/uvk5.py:626
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -999,7 +999,7 @@ msgstr "Her zaman son listeyle başla"
 msgid "Amateur"
 msgstr "Amatör"
 
-#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:629
+#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr "Bir hata oluştu"
 
@@ -1070,7 +1070,7 @@ msgstr ""
 msgid "Canada"
 msgstr "Kanada"
 
-#: ../wxui/common.py:500
+#: ../wxui/common.py:504
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "Bu ayarın değiştirilmesi, imajdaki ayarların yenilenmesini gerektirir, bu işlem şimdi gerçekleşecektir."
 
@@ -1261,7 +1261,7 @@ msgstr ""
 "DTCS\n"
 "Polarite"
 
-#: ../drivers/uvk5.py:860
+#: ../drivers/uvk5.py:843
 msgid "DTMF decode"
 msgstr "DTMF kod çöz"
 
@@ -1360,7 +1360,7 @@ msgstr "İndirme talimatları"
 msgid "Driver"
 msgstr "Sürücü"
 
-#: ../drivers/uvk5.py:1278
+#: ../drivers/uvk5.py:1261
 msgid "Driver information"
 msgstr "Sürücü bilgileri"
 
@@ -1513,7 +1513,7 @@ msgstr "CSV'ye aktar..."
 msgid "Extra"
 msgstr "Ekstra"
 
-#: ../drivers/uvk5.py:1276
+#: ../drivers/uvk5.py:1259
 msgid "FM Radio"
 msgstr "FM Radyo"
 
@@ -2134,11 +2134,11 @@ msgstr "Konum Belirleyici"
 msgid "Login failed: Check your username and password"
 msgstr "Giriş başarısız: Kullanıcı adınızı ve şifrenizi kontrol edin"
 
-#: ../drivers/uvk5.py:1780
+#: ../drivers/uvk5.py:1763
 msgid "Logo string 1 (12 characters)"
 msgstr "Logo dizesi 1 (12 karakter)"
 
-#: ../drivers/uvk5.py:1787
+#: ../drivers/uvk5.py:1770
 msgid "Logo string 2 (12 characters)"
 msgstr "Logo dizesi 2 (12 karakter)"
 
@@ -2156,7 +2156,7 @@ msgstr ""
 msgid "Memories"
 msgstr "Kayıtlar"
 
-#: ../drivers/uvk5.py:2108
+#: ../drivers/uvk5.py:2091
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Desteklenmeyen aygıt yazılımı sürümü nedeniyle kayıtlar salt okunurdur"
 
@@ -2208,7 +2208,7 @@ msgstr "Modül Yüklendi"
 msgid "Module loaded successfully"
 msgstr "Modül başarıyla yüklendi"
 
-#: ../wxui/common.py:645
+#: ../wxui/common.py:649
 msgid "More Info"
 msgstr "Daha Fazla Bilgi"
 
@@ -2422,7 +2422,7 @@ msgstr "Şifre"
 msgid "Paste"
 msgstr "Yapıştır"
 
-#: ../wxui/common.py:800
+#: ../wxui/common.py:804
 msgid "Paste external memories"
 msgstr ""
 
@@ -2607,7 +2607,7 @@ msgstr "55.2'yi kullanmanızı öneririz"
 msgid "Redo"
 msgstr ""
 
-#: ../wxui/common.py:502
+#: ../wxui/common.py:506
 msgid "Refresh required"
 msgstr "Yeniden Başlatma Gerekli"
 
@@ -2708,11 +2708,11 @@ msgstr "Kaydedilmiş ayarlar"
 msgid "Scan control (skip, include, priority, etc)"
 msgstr "Tarama kontrolü (atlama, dahil etme, öncelik vb.)"
 
-#: ../drivers/uvk5.py:874
+#: ../drivers/uvk5.py:857
 msgid "Scanlists"
 msgstr "Tarama listeleri"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:870
+#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:853
 msgid "Scrambler"
 msgstr "Karıştırıcı"
 
@@ -2757,7 +2757,7 @@ msgstr "Servis"
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: ../drivers/uvk5.py:2112
+#: ../drivers/uvk5.py:2095
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr "Desteklenmeyen aygıt yazılımı sürümü nedeniyle ayarlar salt okunurdur"
 
@@ -2941,7 +2941,7 @@ msgstr "Bu sürücü, ID-5100'ün v3'ü ile test edilmiştir. Telsiziniz tam ola
 msgid "This driver is in development and should be considered as experimental."
 msgstr "Bu sürücü geliştirme aşamasındadır ve deneysel olarak değerlendirilmelidir."
 
-#: ../drivers/uvk5.py:701
+#: ../drivers/uvk5.py:684
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr "Bu imajda donanım yazılımı bilgileri eksik. CHIRP'in eski veya değiştirilmiş bir sürümüyle oluşturulmuş olabilir. En iyi güvenlik ve uyumluluk için telsizinizden yeni bir imaj indirmeniz ve bunu ileriye doğru kullanmanız önerilir."
 
@@ -2961,7 +2961,7 @@ msgstr "Bu erken aşama beta sürücüsüdür\n"
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr "Bu, erken aşamadaki bir beta sürücüsüdür - yükleme riski size aittir\n"
 
-#: ../drivers/uvk5.py:628
+#: ../drivers/uvk5.py:611
 msgid ""
 "This is an experimental driver for the Quansheng UV-K5. It may harm your radio, or worse. Use at your own risk.\n"
 "\n"
@@ -3017,7 +3017,7 @@ msgstr ""
 "birkaç saniye sürebilir, işe yaramazsa birkaç kez tekrar deneyin.\n"
 "İşe yaramazsa, lütfen telsizi ve kabloyu kontrol edin.\n"
 
-#: ../drivers/uvk5.py:1865
+#: ../drivers/uvk5.py:1848
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
 msgstr "Bu yalnızca daha geniş frekans kapsamını destekleyen değiştirilmiş ürün yazılımı kullanıyorsanız etkinleştirilmelidir. Bunun etkinleştirilmesi, CHIRP'in OEM kısıtlamalarını uygulamamasına neden olur ve tanımlanmamış veya düzenlenmemiş davranışlara yol açabilir. Riski size ait olmak üzere kullanın!"
 
@@ -3112,7 +3112,7 @@ msgstr "Sorgulanamıyor"
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "Son blok okunamıyor. Bu genellikle seçilen model ABD olduğunda olur ama telsiz ABD dışı bir telsizdir (veya geniş bantlıdır). Lütfen doğru modeli seçin ve tekrar deneyin."
 
-#: ../wxui/common.py:697
+#: ../wxui/common.py:701
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "%s bu sistemde gösterilemiyor"
@@ -3156,7 +3156,7 @@ msgstr "%s hatası güncelleniyor"
 msgid "Upload instructions"
 msgstr "Yükleme talimatları"
 
-#: ../drivers/uvk5.py:2099
+#: ../drivers/uvk5.py:2082
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "Desteklenmeyen aygıt yazılımı sürümü nedeniyle yükleme devre dışı bırakıldı"
 
@@ -3194,12 +3194,12 @@ msgstr "Kullanıcı adı"
 msgid "Value does not fit in %i bits"
 msgstr "Değer %i bit'e sığmıyor"
 
-#: ../wxui/common.py:539
+#: ../wxui/common.py:543
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Değer en az %.4f olmalıdır"
 
-#: ../wxui/common.py:543
+#: ../wxui/common.py:547
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Değer en fazla %.4f olmalıdır"
@@ -3229,7 +3229,7 @@ msgstr "Tedarikçi"
 msgid "View"
 msgstr "Göster"
 
-#: ../wxui/common.py:487
+#: ../wxui/common.py:491
 msgid "WARNING!"
 msgstr "UYARI!"
 

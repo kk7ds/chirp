@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 21:16-0800\n"
+"POT-Creation-Date: 2025-12-07 08:11-0800\n"
 "PO-Revision-Date: 2025-02-27 08:00+0200\n"
 "Last-Translator: ThatSINEWAVE\n"
 "Language-Team: Romanian\n"
@@ -959,7 +959,7 @@ msgstr ""
 "4. Apasă și ține apăsate tastele [AMS] și tasta de pornire în timp ce atașezi bateria din spate (\"ADMS\" va apărea pe display).\n"
 "5. <b>După ce apesi OK</b>, apasă tasta [BAND].\n"
 
-#: ../drivers/uvk5.py:636
+#: ../drivers/uvk5.py:619
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -975,7 +975,7 @@ msgstr ""
 "\n"
 "Poate să nu funcționeze dacă pornești stația cu cablul deja conectat.\n"
 
-#: ../drivers/uvk5.py:643
+#: ../drivers/uvk5.py:626
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1031,7 +1031,7 @@ msgstr "Începe întotdeauna cu lista recentă"
 msgid "Amateur"
 msgstr "Amator"
 
-#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:629
+#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr "A apărut o eroare"
 
@@ -1102,7 +1102,7 @@ msgstr "Rezultatele cache pot fi incluse doar pentru o interogare de proximitate
 msgid "Canada"
 msgstr "Canada"
 
-#: ../wxui/common.py:500
+#: ../wxui/common.py:504
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "Schimbarea acestei setări necesită reîmprospătarea setărilor din imagine, ceea ce va avea loc acum."
 
@@ -1293,7 +1293,7 @@ msgstr ""
 "Polaritate\n"
 "DTCS"
 
-#: ../drivers/uvk5.py:860
+#: ../drivers/uvk5.py:843
 msgid "DTMF decode"
 msgstr "Decodare DTMF"
 
@@ -1392,7 +1392,7 @@ msgstr "Instrucțiuni pentru descărcare"
 msgid "Driver"
 msgstr "Driver"
 
-#: ../drivers/uvk5.py:1278
+#: ../drivers/uvk5.py:1261
 msgid "Driver information"
 msgstr "Informații despre driver"
 
@@ -1545,7 +1545,7 @@ msgstr "Exportă în CSV..."
 msgid "Extra"
 msgstr "Extra"
 
-#: ../drivers/uvk5.py:1276
+#: ../drivers/uvk5.py:1259
 msgid "FM Radio"
 msgstr "Radio FM"
 
@@ -2171,11 +2171,11 @@ msgstr "Locator"
 msgid "Login failed: Check your username and password"
 msgstr "Autentificare eșuată: Verificați numele de utilizator și parola"
 
-#: ../drivers/uvk5.py:1780
+#: ../drivers/uvk5.py:1763
 msgid "Logo string 1 (12 characters)"
 msgstr "Șir logo 1 (12 caractere)"
 
-#: ../drivers/uvk5.py:1787
+#: ../drivers/uvk5.py:1770
 msgid "Logo string 2 (12 characters)"
 msgstr "Șir logo 2 (12 caractere)"
 
@@ -2193,7 +2193,7 @@ msgstr "Editare manuală a memoriei %i"
 msgid "Memories"
 msgstr "Memorii"
 
-#: ../drivers/uvk5.py:2108
+#: ../drivers/uvk5.py:2091
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Memoriile sunt doar citire din cauza versiunii de firmware neacceptate"
 
@@ -2245,7 +2245,7 @@ msgstr "Modul încărcat"
 msgid "Module loaded successfully"
 msgstr "Modul încărcat cu succes"
 
-#: ../wxui/common.py:645
+#: ../wxui/common.py:649
 msgid "More Info"
 msgstr "Mai multe informații"
 
@@ -2460,7 +2460,7 @@ msgstr "Parolă"
 msgid "Paste"
 msgstr "Lipește"
 
-#: ../wxui/common.py:800
+#: ../wxui/common.py:804
 msgid "Paste external memories"
 msgstr "Lipește memoriile externe"
 
@@ -2645,7 +2645,7 @@ msgstr "Se recomandă utilizarea versiunii 55.2"
 msgid "Redo"
 msgstr "Refă"
 
-#: ../wxui/common.py:502
+#: ../wxui/common.py:506
 msgid "Refresh required"
 msgstr "Reîmprospătare necesară"
 
@@ -2746,11 +2746,11 @@ msgstr "Setări salvate"
 msgid "Scan control (skip, include, priority, etc)"
 msgstr "Control scanare (skip, include, prioritate, etc.)"
 
-#: ../drivers/uvk5.py:874
+#: ../drivers/uvk5.py:857
 msgid "Scanlists"
 msgstr "Liste de scanare"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:870
+#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:853
 msgid "Scrambler"
 msgstr "Scrambler"
 
@@ -2795,7 +2795,7 @@ msgstr "Serviciu"
 msgid "Settings"
 msgstr "Setări"
 
-#: ../drivers/uvk5.py:2112
+#: ../drivers/uvk5.py:2095
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr "Setările sunt doar în citire din cauza versiunii de firmware neacceptate"
 
@@ -2984,7 +2984,7 @@ msgstr "Acest driver a fost testat cu versiunea 3 a ID-5100. Dacă stația ta nu
 msgid "This driver is in development and should be considered as experimental."
 msgstr "Acest driver este în dezvoltare și ar trebui considerat experimental."
 
-#: ../drivers/uvk5.py:701
+#: ../drivers/uvk5.py:684
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr "Această imagine nu conține informații despre firmware. Este posibil să fi fost generată cu o versiune veche sau modificată a CHIRP. Se recomandă să descărcați o imagine nouă dintr-o stație și să o utilizați pe aceasta pentru o siguranță și compatibilitate mai bună."
 
@@ -3004,7 +3004,7 @@ msgstr "Acesta este un driver beta în stadiu incipient\n"
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr "Acesta este un driver beta în stadiu incipient - încărcați pe propriul risc\n"
 
-#: ../drivers/uvk5.py:628
+#: ../drivers/uvk5.py:611
 msgid ""
 "This is an experimental driver for the Quansheng UV-K5. It may harm your radio, or worse. Use at your own risk.\n"
 "\n"
@@ -3060,7 +3060,7 @@ msgstr ""
 "proces poate dura câteva secunde. Dacă nu funcționează, încercați din nou de câteva ori.\n"
 "Dacă nu reușiți să intrați, verificați radioul și cablul.\n"
 
-#: ../drivers/uvk5.py:1865
+#: ../drivers/uvk5.py:1848
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
 msgstr "Această opțiune ar trebui activată doar dacă utilizați un firmware modificat care suportă acoperire de frecvență mai largă. Activarea acestei opțiuni va face ca CHIRP să nu mai impună restricțiile OEM și poate duce la un comportament nedefinit sau nereglementat. Utilizați pe propriul risc!"
 
@@ -3155,7 +3155,7 @@ msgstr "Nu se poate interoga"
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "Nu s-a putut citi ultimul bloc. Acest lucru se întâmplă adesea când modelul selectat este US, dar radioul este unul non-US (sau deblocat pentru frecvențe extinse). Vă rugăm să alegeți modelul corect și să încercați din nou."
 
-#: ../wxui/common.py:697
+#: ../wxui/common.py:701
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Nu se poate afișa %s pe acest sistem"
@@ -3199,7 +3199,7 @@ msgstr "Actualizarea erorii %s"
 msgid "Upload instructions"
 msgstr "Instrucțiuni pentru încărcare"
 
-#: ../drivers/uvk5.py:2099
+#: ../drivers/uvk5.py:2082
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "Încărcarea este dezactivată din cauza unei versiuni de firmware neacceptate"
 
@@ -3237,12 +3237,12 @@ msgstr "Nume utilizator"
 msgid "Value does not fit in %i bits"
 msgstr "Valoarea nu se încadrează în %i biți"
 
-#: ../wxui/common.py:539
+#: ../wxui/common.py:543
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "Valoarea trebuie să fie cel puțin %.4f"
 
-#: ../wxui/common.py:543
+#: ../wxui/common.py:547
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "Valoarea trebuie să fie cel mult %.4f"
@@ -3272,7 +3272,7 @@ msgstr "Furnizor"
 msgid "View"
 msgstr "Vizualizează"
 
-#: ../wxui/common.py:487
+#: ../wxui/common.py:491
 msgid "WARNING!"
 msgstr "ATENȚIE!"
 
