@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-07 08:11-0800\n"
+"POT-Creation-Date: 2025-12-08 20:03-0500\n"
 "PO-Revision-Date: 2024-11-11 02:28+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language-Team: \n"
@@ -558,6 +558,24 @@ msgstr ""
 "4. 按 [MR(SKP)SC] 键（LCD 上会显示 \"CLONE WAIT\"）。\n"
 "5. 点击 OK 发送镜像到电台。\n"
 
+#: ../drivers/vx1r.py:995
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold [FW] while turning radio on to put into CLONE mode.\n"
+"4. Press OK on chirp prompt.\n"
+"5. <b>After clicking OK</b>, press the [DWN] button on radio to send image. The radio will say CLN OUT while downloading.\n"
+msgstr ""
+
+#: ../drivers/vx1r.py:1003
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold [FW] while turning radio on to put into CLONE mode.\n"
+"4. Press [UP] button on radio. The radio will say CLN IN.\n"
+"5. <b>After radio says CLN IN</b>, press OK on chirp prompt to upload.\n"
+msgstr ""
+
 #: ../drivers/ft50.py:195
 msgid ""
 "1. Turn radio off.\n"
@@ -586,7 +604,7 @@ msgstr ""
 "4. 按 [MONI] 键（LCD 上会显示 \"WAIT\"）。\n"
 "5. 点击 OK。\n"
 
-#: ../drivers/vx6.py:370 ../drivers/vx3.py:373
+#: ../drivers/vx3.py:373 ../drivers/vx6.py:370
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -601,7 +619,7 @@ msgstr ""
 "4. <b>点击 OK 后</b>，按 [BAND] 键\n"
 "    发送镜像。\n"
 
-#: ../drivers/vx6.py:377 ../drivers/vx3.py:380
+#: ../drivers/vx3.py:380 ../drivers/vx6.py:377
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -781,7 +799,7 @@ msgstr ""
 "5. 确保电台调到没有活动的频道。\n"
 "6. 点击 OK 上传镜像到设备。\n"
 
-#: ../drivers/uvb5.py:288 ../drivers/wouxun.py:213 ../drivers/tg_uv2p.py:232
+#: ../drivers/uvb5.py:288 ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:213
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -797,7 +815,7 @@ msgstr ""
 "5. 确保电台调到没有活动的频道。\n"
 "6. 点击 OK 下载设备中的镜像。\n"
 
-#: ../drivers/uvb5.py:296 ../drivers/wouxun.py:221 ../drivers/tg_uv2p.py:240
+#: ../drivers/uvb5.py:296 ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:221
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1151,12 +1169,12 @@ msgstr "下载完成，正在检查是否有多余的字节"
 msgid "Cloning"
 msgstr "正在下载"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft4.py:317
+#: ../drivers/ft450d.py:507 ../drivers/bj9900.py:133 ../drivers/ft4.py:317
 #: ../drivers/ft817.py:341
 msgid "Cloning from radio"
 msgstr "从电台下载"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft4.py:318
+#: ../drivers/ft450d.py:536 ../drivers/bj9900.py:165 ../drivers/ft4.py:318
 #: ../drivers/ft817.py:379
 msgid "Cloning to radio"
 msgstr "上传到电台"
@@ -1538,8 +1556,8 @@ msgstr ""
 msgid "Failed to load radio browser"
 msgstr "无法加载电台浏览器"
 
-#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
-#: ../sources/mapy73pl.py:61
+#: ../sources/przemienniki_eu.py:57 ../sources/mapy73pl.py:61
+#: ../sources/przemienniki_net.py:59
 msgid "Failed to parse result"
 msgstr "无法解析结果"
 
@@ -1664,11 +1682,10 @@ msgstr ""
 "4 - 电台 > 从电台下载\n"
 "5 - 断开接口电缆！否则将没有右侧音频！\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:684 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:441 ../drivers/uv6r.py:339
-#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:496 ../drivers/bf_t1.py:482
+#: ../drivers/gmrsuv1.py:391 ../drivers/uv6r.py:339 ../drivers/uv5x3.py:417
+#: ../drivers/bf_t1.py:482 ../drivers/tdxone_tdq8a.py:441
+#: ../drivers/btech.py:684 ../drivers/gmrsv2.py:363 ../drivers/mursv1.py:341
+#: ../drivers/baofeng_uv17Pro.py:496 ../drivers/baofeng_wp970i.py:327
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1769,7 +1786,7 @@ msgstr ""
 "5 - 断开接口电缆，否则将没有右侧音频！\n"
 "6 - 重启电台以退出克隆模式\n"
 
-#: ../drivers/btech.py:690 ../drivers/bf_t1.py:488
+#: ../drivers/bf_t1.py:488 ../drivers/btech.py:690
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1811,7 +1828,7 @@ msgstr ""
 "3 - 打开电台\n"
 "4 - 单击 \"确定 \"开始\n"
 
-#: ../drivers/vgc.py:583 ../drivers/lt725uv.py:481
+#: ../drivers/lt725uv.py:481 ../drivers/vgc.py:583
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1839,11 +1856,10 @@ msgstr ""
 "3 - 打开电台\n"
 "4 - 下载电台数据\n"
 
-#: ../drivers/vgc.py:589 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
+#: ../drivers/gmrsuv1.py:397 ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423
 #: ../drivers/lt725uv.py:487 ../drivers/tdxone_tdq8a.py:447
-#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:502
+#: ../drivers/vgc.py:589 ../drivers/gmrsv2.py:369 ../drivers/mursv1.py:347
+#: ../drivers/baofeng_uv17Pro.py:502 ../drivers/baofeng_wp970i.py:333
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1889,15 +1905,15 @@ msgstr "频率 %s 超出支持范围"
 msgid "Frequency granularity in kHz"
 msgstr "频率粒度（kHz）"
 
-#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1379
 #: ../drivers/tdh8.py:2479 ../drivers/uv5r.py:1940
-#: ../drivers/baofeng_uv17Pro.py:1266
+#: ../drivers/mml_jc8810.py:1379 ../drivers/baofeng_uv17Pro.py:1266
+#: ../drivers/ga510.py:1072
 msgid "Frequency in this range must not be AM mode"
 msgstr "此范围内的频率不能是AM模式"
 
-#: ../drivers/ga510.py:1065 ../drivers/radtel_rt900.py:1360
-#: ../drivers/mml_jc8810.py:1376 ../drivers/tdh8.py:2476
-#: ../drivers/uv5r.py:1936 ../drivers/baofeng_uv17Pro.py:1262
+#: ../drivers/tdh8.py:2476 ../drivers/uv5r.py:1936
+#: ../drivers/mml_jc8810.py:1376 ../drivers/baofeng_uv17Pro.py:1262
+#: ../drivers/radtel_rt900.py:1360 ../drivers/ga510.py:1065
 msgid "Frequency in this range requires AM mode"
 msgstr "此范围内的频率需要是AM模式"
 
@@ -2014,8 +2030,8 @@ msgstr "内部驱动程序错误"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "无效的 %(value)s（请使用十进制度数）"
 
-#: ../wxui/query_sources.py:69 ../wxui/query_sources.py:123
-#: ../wxui/memedit.py:1983
+#: ../wxui/memedit.py:1983 ../wxui/query_sources.py:69
+#: ../wxui/query_sources.py:123
 msgid "Invalid Entry"
 msgstr "无效项目"
 
@@ -2055,7 +2071,7 @@ msgstr "问题编号："
 msgid "LIVE"
 msgstr "实时"
 
-#: ../drivers/radtel_rt490.py:1026 ../wxui/main.py:853 ../wxui/main.py:1632
+#: ../wxui/main.py:853 ../wxui/main.py:1632 ../drivers/radtel_rt490.py:1026
 msgid "Language"
 msgstr "更改语言 (Change Language)"
 
@@ -2181,8 +2197,8 @@ msgstr "存储必须在一个存储区中才能编辑"
 msgid "Memory {num} not in bank {bank}"
 msgstr "存储 {num} 不在存储区 {bank}"
 
-#: ../wxui/query_sources.py:624 ../wxui/query_sources.py:777
-#: ../wxui/memedit.py:661
+#: ../wxui/memedit.py:661 ../wxui/query_sources.py:624
+#: ../wxui/query_sources.py:777
 msgid "Mode"
 msgstr "制式"
 
@@ -2262,8 +2278,8 @@ msgstr "在 issue %i 中未找到模块"
 msgid "No more space available; some memories were not applied"
 msgstr "没有更多空间可用；一些存储未应用"
 
-#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
-#: ../sources/mapy73pl.py:57
+#: ../sources/przemienniki_eu.py:53 ../sources/mapy73pl.py:57
+#: ../sources/przemienniki_net.py:55
 msgid "No results"
 msgstr "无结果"
 
@@ -2275,7 +2291,7 @@ msgstr "无结果！"
 msgid "No traces stored"
 msgstr ""
 
-#: ../wxui/query_sources.py:44 ../wxui/memedit.py:1355
+#: ../wxui/memedit.py:1355 ../wxui/query_sources.py:44
 msgid "Number"
 msgstr "编号"
 
@@ -2409,8 +2425,8 @@ msgstr ""
 "P-VFO 频道 100-109 被认为是设置。\n"
 "在这个版本中，仅支持超过 130 个可用的电台设置中的一部分。\n"
 
-#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
-#: ../sources/mapy73pl.py:52
+#: ../sources/przemienniki_eu.py:48 ../sources/mapy73pl.py:52
+#: ../sources/przemienniki_net.py:50
 msgid "Parsing"
 msgstr "解析"
 
@@ -2542,8 +2558,8 @@ msgstr "查询 %s"
 msgid "Query syntax help"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
-#: ../sources/mapy73pl.py:36
+#: ../sources/przemienniki_eu.py:36 ../sources/mapy73pl.py:36
+#: ../sources/przemienniki_net.py:36
 #, fuzzy
 msgid "Querying"
 msgstr "查询 %s"
@@ -2556,7 +2572,7 @@ msgstr "DTCS 接收代码"
 msgid "Radio"
 msgstr "电台"
 
-#: ../drivers/ft60.py:85 ../drivers/ft450d.py:568 ../drivers/ft817.py:406
+#: ../drivers/ft450d.py:568 ../drivers/ft60.py:85 ../drivers/ft817.py:406
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "电台未确认块 %i"
@@ -2712,7 +2728,7 @@ msgstr "扫描控制（跳过、包含、优先级等）"
 msgid "Scanlists"
 msgstr "扫描列表"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:853
+#: ../drivers/uvk5.py:853 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr "加密器"
 
@@ -2825,8 +2841,8 @@ msgstr "排序列："
 msgid "Sort memories"
 msgstr "排序存储"
 
-#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
-#: ../sources/mapy73pl.py:64
+#: ../sources/przemienniki_eu.py:60 ../sources/mapy73pl.py:64
+#: ../sources/przemienniki_net.py:62
 msgid "Sorting"
 msgstr "排序"
 
@@ -3094,8 +3110,8 @@ msgstr "无法在视图排序时导入"
 msgid "Unable to open the clipboard"
 msgstr "无法打开剪贴板"
 
-#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
-#: ../sources/mapy73pl.py:50
+#: ../sources/przemienniki_eu.py:46 ../sources/mapy73pl.py:50
+#: ../sources/przemienniki_net.py:48
 msgid "Unable to query"
 msgstr "无法查询"
 
@@ -3224,7 +3240,7 @@ msgstr "查看"
 msgid "WARNING!"
 msgstr "警告！"
 
-#: ../wxui/bugreport.py:230 ../wxui/memedit.py:1989 ../wxui/main.py:1880
+#: ../wxui/memedit.py:1989 ../wxui/bugreport.py:230 ../wxui/main.py:1880
 #: ../wxui/main.py:2032
 msgid "Warning"
 msgstr "警告"
