@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-07 08:11-0800\n"
+"POT-Creation-Date: 2025-12-08 20:03-0500\n"
 "PO-Revision-Date: 2023-12-03 11:04+0900\n"
 "Last-Translator: weboo <weboo@users.noreply.github.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -400,6 +400,24 @@ msgid ""
 "5. Click OK to send image to radio.\n"
 msgstr ""
 
+#: ../drivers/vx1r.py:995
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold [FW] while turning radio on to put into CLONE mode.\n"
+"4. Press OK on chirp prompt.\n"
+"5. <b>After clicking OK</b>, press the [DWN] button on radio to send image. The radio will say CLN OUT while downloading.\n"
+msgstr ""
+
+#: ../drivers/vx1r.py:1003
+msgid ""
+"1. Turn radio off.\n"
+"2. Connect cable to MIC/SP jack.\n"
+"3. Press and hold [FW] while turning radio on to put into CLONE mode.\n"
+"4. Press [UP] button on radio. The radio will say CLN IN.\n"
+"5. <b>After radio says CLN IN</b>, press OK on chirp prompt to upload.\n"
+msgstr ""
+
 #: ../drivers/ft50.py:195
 msgid ""
 "1. Turn radio off.\n"
@@ -419,7 +437,7 @@ msgid ""
 "5. Press OK.\n"
 msgstr ""
 
-#: ../drivers/vx6.py:370 ../drivers/vx3.py:373
+#: ../drivers/vx3.py:373 ../drivers/vx6.py:370
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -428,7 +446,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
 
-#: ../drivers/vx6.py:377 ../drivers/vx3.py:380
+#: ../drivers/vx3.py:380 ../drivers/vx6.py:377
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -543,7 +561,7 @@ msgid ""
 "6. Click OK to upload image to device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:288 ../drivers/wouxun.py:213 ../drivers/tg_uv2p.py:232
+#: ../drivers/uvb5.py:288 ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:213
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -553,7 +571,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:296 ../drivers/wouxun.py:221 ../drivers/tg_uv2p.py:240
+#: ../drivers/uvb5.py:296 ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:221
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -860,12 +878,12 @@ msgstr ""
 msgid "Cloning"
 msgstr ""
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft4.py:317
+#: ../drivers/ft450d.py:507 ../drivers/bj9900.py:133 ../drivers/ft4.py:317
 #: ../drivers/ft817.py:341
 msgid "Cloning from radio"
 msgstr ""
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft4.py:318
+#: ../drivers/ft450d.py:536 ../drivers/bj9900.py:165 ../drivers/ft4.py:318
 #: ../drivers/ft817.py:379
 msgid "Cloning to radio"
 msgstr ""
@@ -1245,8 +1263,8 @@ msgstr ""
 msgid "Failed to load radio browser"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
-#: ../sources/mapy73pl.py:61
+#: ../sources/przemienniki_eu.py:57 ../sources/mapy73pl.py:61
+#: ../sources/przemienniki_net.py:59
 msgid "Failed to parse result"
 msgstr ""
 
@@ -1352,11 +1370,10 @@ msgid ""
 "    no right-side audio!\n"
 msgstr ""
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:684 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:441 ../drivers/uv6r.py:339
-#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:496 ../drivers/bf_t1.py:482
+#: ../drivers/gmrsuv1.py:391 ../drivers/uv6r.py:339 ../drivers/uv5x3.py:417
+#: ../drivers/bf_t1.py:482 ../drivers/tdxone_tdq8a.py:441
+#: ../drivers/btech.py:684 ../drivers/gmrsv2.py:363 ../drivers/mursv1.py:341
+#: ../drivers/baofeng_uv17Pro.py:496 ../drivers/baofeng_wp970i.py:327
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1422,7 +1439,7 @@ msgid ""
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
 
-#: ../drivers/btech.py:690 ../drivers/bf_t1.py:488
+#: ../drivers/bf_t1.py:488 ../drivers/btech.py:690
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1449,7 +1466,7 @@ msgid ""
 "4 - Click OK to start\n"
 msgstr ""
 
-#: ../drivers/vgc.py:583 ../drivers/lt725uv.py:481
+#: ../drivers/lt725uv.py:481 ../drivers/vgc.py:583
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1467,11 +1484,10 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/vgc.py:589 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
+#: ../drivers/gmrsuv1.py:397 ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423
 #: ../drivers/lt725uv.py:487 ../drivers/tdxone_tdq8a.py:447
-#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:502
+#: ../drivers/vgc.py:589 ../drivers/gmrsv2.py:369 ../drivers/mursv1.py:347
+#: ../drivers/baofeng_uv17Pro.py:502 ../drivers/baofeng_wp970i.py:333
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1507,15 +1523,15 @@ msgstr ""
 msgid "Frequency granularity in kHz"
 msgstr ""
 
-#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1379
 #: ../drivers/tdh8.py:2479 ../drivers/uv5r.py:1940
-#: ../drivers/baofeng_uv17Pro.py:1266
+#: ../drivers/mml_jc8810.py:1379 ../drivers/baofeng_uv17Pro.py:1266
+#: ../drivers/ga510.py:1072
 msgid "Frequency in this range must not be AM mode"
 msgstr ""
 
-#: ../drivers/ga510.py:1065 ../drivers/radtel_rt900.py:1360
-#: ../drivers/mml_jc8810.py:1376 ../drivers/tdh8.py:2476
-#: ../drivers/uv5r.py:1936 ../drivers/baofeng_uv17Pro.py:1262
+#: ../drivers/tdh8.py:2476 ../drivers/uv5r.py:1936
+#: ../drivers/mml_jc8810.py:1376 ../drivers/baofeng_uv17Pro.py:1262
+#: ../drivers/radtel_rt900.py:1360 ../drivers/ga510.py:1065
 msgid "Frequency in this range requires AM mode"
 msgstr ""
 
@@ -1632,8 +1648,8 @@ msgstr "内部ドライバーエラー"
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr ""
 
-#: ../wxui/query_sources.py:69 ../wxui/query_sources.py:123
-#: ../wxui/memedit.py:1983
+#: ../wxui/memedit.py:1983 ../wxui/query_sources.py:69
+#: ../wxui/query_sources.py:123
 msgid "Invalid Entry"
 msgstr ""
 
@@ -1672,7 +1688,7 @@ msgstr ""
 msgid "LIVE"
 msgstr ""
 
-#: ../drivers/radtel_rt490.py:1026 ../wxui/main.py:853 ../wxui/main.py:1632
+#: ../wxui/main.py:853 ../wxui/main.py:1632 ../drivers/radtel_rt490.py:1026
 msgid "Language"
 msgstr ""
 
@@ -1798,8 +1814,8 @@ msgstr ""
 msgid "Memory {num} not in bank {bank}"
 msgstr ""
 
-#: ../wxui/query_sources.py:624 ../wxui/query_sources.py:777
-#: ../wxui/memedit.py:661
+#: ../wxui/memedit.py:661 ../wxui/query_sources.py:624
+#: ../wxui/query_sources.py:777
 msgid "Mode"
 msgstr "受信モード"
 
@@ -1879,8 +1895,8 @@ msgstr ""
 msgid "No more space available; some memories were not applied"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
-#: ../sources/mapy73pl.py:57
+#: ../sources/przemienniki_eu.py:53 ../sources/mapy73pl.py:57
+#: ../sources/przemienniki_net.py:55
 msgid "No results"
 msgstr ""
 
@@ -1892,7 +1908,7 @@ msgstr ""
 msgid "No traces stored"
 msgstr ""
 
-#: ../wxui/query_sources.py:44 ../wxui/memedit.py:1355
+#: ../wxui/memedit.py:1355 ../wxui/query_sources.py:44
 msgid "Number"
 msgstr "行"
 
@@ -2020,8 +2036,8 @@ msgid ""
 "are supported in this release.\n"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
-#: ../sources/mapy73pl.py:52
+#: ../sources/przemienniki_eu.py:48 ../sources/mapy73pl.py:52
+#: ../sources/przemienniki_net.py:50
 msgid "Parsing"
 msgstr ""
 
@@ -2152,8 +2168,8 @@ msgstr ""
 msgid "Query syntax help"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
-#: ../sources/mapy73pl.py:36
+#: ../sources/przemienniki_eu.py:36 ../sources/mapy73pl.py:36
+#: ../sources/przemienniki_net.py:36
 msgid "Querying"
 msgstr ""
 
@@ -2165,7 +2181,7 @@ msgstr ""
 msgid "Radio"
 msgstr "無線機"
 
-#: ../drivers/ft60.py:85 ../drivers/ft450d.py:568 ../drivers/ft817.py:406
+#: ../drivers/ft450d.py:568 ../drivers/ft60.py:85 ../drivers/ft817.py:406
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr ""
@@ -2323,7 +2339,7 @@ msgstr ""
 msgid "Scanlists"
 msgstr "スキャンリスト"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:853
+#: ../drivers/uvk5.py:853 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr "スクランブル"
 
@@ -2439,8 +2455,8 @@ msgstr "カラムを選択"
 msgid "Sort memories"
 msgstr "並び替え"
 
-#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
-#: ../sources/mapy73pl.py:64
+#: ../sources/przemienniki_eu.py:60 ../sources/mapy73pl.py:64
+#: ../sources/przemienniki_net.py:62
 msgid "Sorting"
 msgstr "並び替え中"
 
@@ -2693,8 +2709,8 @@ msgstr ""
 msgid "Unable to open the clipboard"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
-#: ../sources/mapy73pl.py:50
+#: ../sources/przemienniki_eu.py:46 ../sources/mapy73pl.py:50
+#: ../sources/przemienniki_net.py:48
 msgid "Unable to query"
 msgstr ""
 
@@ -2823,7 +2839,7 @@ msgstr "表示"
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/bugreport.py:230 ../wxui/memedit.py:1989 ../wxui/main.py:1880
+#: ../wxui/memedit.py:1989 ../wxui/bugreport.py:230 ../wxui/main.py:1880
 #: ../wxui/main.py:2032
 msgid "Warning"
 msgstr ""

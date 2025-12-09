@@ -69,3 +69,13 @@ Baojie_BJ-9900_Left:
   - class: TestCaseBruteForce
     test: test_validate_all_steps
     reason: Bad channel stored in image or code is wrong
+Yaesu_VX-1R:
+  - class: TestCaseClone
+    test: test_clone_serial_none
+    reason: tests/test_clone.py line 84 fake_time() multiplies by 1000, breaking timeout logic for single-block radios
+  - class: TestCaseClone
+    test: test_clone_serial_garbage
+    reason: tests/test_clone.py line 84 fake_time() multiplies by 1000, breaking timeout logic for single-block radios
+  - class: TestCaseClone
+    test: test_clone_serial_short_garbage
+    reason: tests/test_clone.py line 84 fake_time() multiplies by 1000, breaking timeout logic for single-block radios
