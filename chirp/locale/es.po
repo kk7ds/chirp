@@ -6,13 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-<<<<<<< HEAD
 "POT-Creation-Date: 2025-11-25 21:16-0800\n"
 "PO-Revision-Date: 2025-12-03 22:15-0300\n"
-=======
-"POT-Creation-Date: 2025-12-07 08:11-0800\n"
-"PO-Revision-Date: 2025-09-05 19:57-0400\n"
->>>>>>> 29f4ff47 (Update pt_BR translation from Luiz Ricardo Prado)
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
