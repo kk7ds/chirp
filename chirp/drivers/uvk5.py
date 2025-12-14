@@ -1,4 +1,5 @@
 # Quansheng UV-K5 driver (c) 2023 Jacek Lipkowski <sq5bpf@lipkowski.org>
+# Quansheng UV-K1 driver (c) 2025 Thibaut Berg <thibaut.berg@hotmail.com>
 #
 # based on template.py Copyright 2012 Dan Smith <dsmith@danplanet.com>
 #
@@ -2093,3 +2094,31 @@ class UVK5RestrictedRadio(UVK5RadioBase):
     def set_settings(self, settings):
         raise errors.InvalidValueError(
             _('Settings are read-only due to unsupported firmware version'))
+
+
+@directory.register
+class UVK1Radio(UVK5RadioBase):
+    VENDOR = "Quansheng"
+    MODEL = "UV-K1"
+
+    @classmethod
+    def k5_approve_firmware(cls, firmware):
+        # The first released OEM firmware version is 7.03.01
+        # For the moment, the driver version is limited 7.03.XX
+        # No information is available about the future firmware releases,
+        # so for safety, the versions are limited.
+        # Version management is supposed to be standardized, and only minor
+        # changes may occur in the firmware which should not break this driver.
+
+        return firmware.startswith("7.03.")
+
+    def get_features(self):
+        # The first driver version includes only memory programming,
+        # settings provided by uv-k5 base implementation are disabled
+        features = super().get_features()
+        features.has_settings = False
+
+        return features
+
+    def get_settings(self):
+        return []
