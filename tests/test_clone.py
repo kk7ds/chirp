@@ -108,12 +108,12 @@ class TestCaseClone(base.DriverTest):
         self.radio._mmap = orig_mmap
         self.radio.status_fn = lambda s: True
 
-        msg = ('Clone should have failed and raised an exception '
+        msg = ('Clone in should have failed and raised an exception '
                'that inherits from RadioError')
         with self.assertRaises(errors.RadioError, msg=msg):
             self.radio.sync_in()
 
-        msg = ('Clone should have failed and raised an exception '
+        msg = ('Clone out should have failed and raised an exception '
                'that inherits from RadioError')
         with self.assertRaises(errors.RadioError, msg=msg):
             self.radio.sync_out()
