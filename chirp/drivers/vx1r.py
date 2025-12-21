@@ -394,6 +394,27 @@ class VX1Radio(yaesu_clone.YaesuCloneModeRadio):
                 VX1Checksum(0x0001, 0x12d0, 0x12d1)]
 
     @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.pre_download = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to MIC/SP jack.\n"
+            "3. Press and hold [FW] while turning radio on to put into "
+            "CLONE mode.\n"
+            "4. Press OK on chirp prompt.\n"
+            "5. <b>After clicking OK</b>, press the [DWN] button on radio "
+            "to send image. The radio will say CLN OUT while downloading.\n")
+        rp.pre_upload = _(
+            "1. Turn radio off.\n"
+            "2. Connect cable to MIC/SP jack.\n"
+            "3. Press and hold [FW] while turning radio on to put into "
+            "CLONE mode.\n"
+            "4. Press [UP] button on radio. The radio will say CLN IN.\n"
+            "5. <b>After radio says CLN IN</b>, press OK on chirp prompt "
+            "to upload.\n")
+        return rp
+
+    @classmethod
     def match_model(cls, filedata, filename):
         return (len(filedata) == cls._memsize and
                 filedata[0xE6:0xEB] == b"YAESU")
