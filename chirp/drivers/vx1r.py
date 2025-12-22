@@ -1031,6 +1031,15 @@ class VX1RadioCG1(VX1Radio):
         offset = 0x0bd1 + cg1_idx * 16
         self._mmap[offset] = 0xff
 
+        # Clear band mask for CG1 memory (skip home channels)
+        mem_idx = base_number - 171
+        if mem_idx >= 8:  # Only clear band mask for non-home channels
+            base_offset = 176 + 8
+            adjusted_idx = mem_idx - 8
+            for b in range(8):
+                bit_idx = base_offset + b * 256 + adjusted_idx
+                self._memobj.band_mask[bit_idx] = 0
+
 
 class VX1RadioCG2(VX1Radio):
     """VX-1R Configuration Group 2"""
@@ -1220,6 +1229,26 @@ class VX1RadioCG2(VX1Radio):
                         self._memobj.band_mask[bit_idx] = 1
                     else:
                         self._memobj.band_mask[bit_idx] = 0
+
+    def erase_memory(self, number):
+        # Map CG2 subdevice number to base device number
+        if number <= 162:
+            base_number = number + 8
+        else:
+            base_number = number - 162
+
+        cg2_idx = base_number - 1
+        offset = 0x03d1 + cg2_idx * 12
+        self._mmap[offset] = 0xff
+
+        # Clear band mask for CG2 memory (skip home channels)
+        mem_idx = base_number - 1
+        if mem_idx >= 8:  # Only clear band mask for non-home channels
+            base_offset = 8
+            adjusted_idx = mem_idx - 8
+            for b in range(8):
+                bit_idx = base_offset + b * 256 + adjusted_idx
+                self._memobj.band_mask[bit_idx] = 0
 
     def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
