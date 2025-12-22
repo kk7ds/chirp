@@ -869,7 +869,7 @@ class VX1RadioCG1(VX1Radio):
         if is_string:
             # Special channel by name - convert to number
             number = self.SPECIAL_MEMORIES[number]
-        
+
         if number <= 72:
             # Regular and L/U memories: 1-72 map to cg1_idx 8-79
             cg1_idx = number + 7
@@ -1064,7 +1064,7 @@ class VX1RadioCG2(VX1Radio):
         if is_string:
             # Special channel by name - convert to number
             number = self.SPECIAL_MEMORIES[number]
-        
+
         if number <= 162:
             # Regular and L/U memories: 1-162 map to cg2_idx 8-169
             cg2_idx = number + 7
