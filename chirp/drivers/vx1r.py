@@ -865,38 +865,24 @@ class VX1RadioCG1(VX1Radio):
         return rf
 
     def get_memory(self, number):
-        if isinstance(number, str):
-            # Special channel by name
-            mem_number = self.SPECIAL_MEMORIES[number]
-            if mem_number <= 72:
-                # L/U memories: 53-72 map to base device 231-250
-                base_number = mem_number + 178
-            else:
-                # Home channels: 73-80 map to base device 171-178
-                base_number = mem_number + 98  # 73->171, 80->178
-        elif number > 52:
-            # Special channel by number
-            mem_number = number
-            if mem_number <= 72:
-                # L/U memories: 53-72 map to base device 231-250
-                base_number = number + 178
-            else:
-                # Home channels: 73-80 map to base device 171-178
-                base_number = number + 98  # 73->171, 80->178
+        is_string = isinstance(number, str)
+        if is_string:
+            # Special channel by name - convert to number
+            number = self.SPECIAL_MEMORIES[number]
+        
+        if number <= 72:
+            # Regular and L/U memories: 1-72 map to cg1_idx 8-79
+            cg1_idx = number + 7
         else:
-            # Regular memory: 1-52 maps to base device 179-230
-            mem_number = number
-            base_number = number + 178
+            # Home channels: 73-80 map to cg1_idx 0-7
+            cg1_idx = number - 73
 
         # Handle CG1 memory structure directly
-        cg1_idx = base_number - 171
         _mem = self._memobj.cg1_memory[cg1_idx]
 
         mem = chirp_common.Memory()
-        mem.number = mem_number
-        if isinstance(number, str):
-            mem.extd_number = number
-        elif number > 52:
+        mem.number = number
+        if is_string or number > 52:
             mem.extd_number = self.SPECIAL_MEMORIES_REV[number]
 
         # Check if memory is empty
@@ -947,16 +933,15 @@ class VX1RadioCG1(VX1Radio):
             # Convert string to number
             mem.number = self.SPECIAL_MEMORIES[mem.number]
 
-        # Map CG1 subdevice number to base device number
+        # Map CG1 subdevice number to cg1_idx
         if mem.number <= 72:
-            # Regular and L/U memories: 1-72 map to base device 179-250
-            base_number = mem.number + 178
+            # Regular and L/U memories: 1-72 map to cg1_idx 8-79
+            cg1_idx = mem.number + 7
         else:
-            # Home channels: 73-80 map to base device 171-178
-            base_number = mem.number + 98
+            # Home channels: 73-80 map to cg1_idx 0-7
+            cg1_idx = mem.number - 73
 
         # Handle CG1 memory structure directly
-        cg1_idx = base_number - 171
         _mem = self._memobj.cg1_memory[cg1_idx]
 
         if mem.empty:
@@ -972,24 +957,12 @@ class VX1RadioCG1(VX1Radio):
         _mem.power = POWER_LEVELS.index(mem.power) if mem.power else 1
         _mem.step = STEPS.index(mem.tuning_step)
 
-        # Set clk_shift default to disabled (0) only if not already set
-        if hasattr(_mem, 'clk_shift'):
-            # Only set default if no clk_shift value provided in mem.extra
-            if not (mem.extra and any(
-                    s.get_name() == 'clk_shift' for s in mem.extra
-                    if hasattr(s, 'get_name'))):
-                _mem.clk_shift = 0
+        # Set defaults
+        _mem.clk_shift = 0
+        _mem.name_flag = 1 if mem.name else 0
 
-        # Set extra fields first (may include name_flag override)
+        # Set extra fields (may override defaults)
         self._set_extra(_mem, mem)
-
-        # Set name_flag based on name presence if not overridden by extra
-        if not (
-                mem.extra and any(
-                    s.get_name() == 'name_flag' for s in mem.extra if hasattr(
-                s,
-                'get_name'))):
-            _mem.name_flag = 1 if mem.name else 0
 
         # CG1 has offset/tone fields
         _mem.shift = DUPLEX.index(mem.duplex)
@@ -1005,14 +978,13 @@ class VX1RadioCG1(VX1Radio):
             _mem.dcs = 0
 
         # Update band mask for CG1 memory (skip home channels)
-        mem_idx = base_number - 171
-        if mem_idx >= 8:  # Only update band mask for non-home channels
+        if cg1_idx >= 8:  # Only update band mask for non-home channels
             band_idx = self._get_band_index(mem.freq)
             if band_idx is not None:
                 # CG1 band mask: offset by 176 bits (22 bytes) from CG2,
                 # +8 to skip band byte
                 base_offset = 176 + 8
-                adjusted_idx = mem_idx - 8
+                adjusted_idx = cg1_idx - 8
                 for b in range(8):
                     bit_idx = base_offset + b * 256 + adjusted_idx
                     if b == band_idx:
@@ -1021,21 +993,19 @@ class VX1RadioCG1(VX1Radio):
                         self._memobj.band_mask[bit_idx] = 0
 
     def erase_memory(self, number):
-        # Map CG1 subdevice number to base device number
+        # Map CG1 subdevice number to cg1_idx
         if number <= 72:
-            base_number = number + 178
+            cg1_idx = number + 7
         else:
-            base_number = number + 98
+            cg1_idx = number - 73
 
-        cg1_idx = base_number - 171
         offset = 0x0bd1 + cg1_idx * 16
         self._mmap[offset] = 0xff
 
         # Clear band mask for CG1 memory (skip home channels)
-        mem_idx = base_number - 171
-        if mem_idx >= 8:  # Only clear band mask for non-home channels
+        if cg1_idx >= 8:  # Only clear band mask for non-home channels
             base_offset = 176 + 8
-            adjusted_idx = mem_idx - 8
+            adjusted_idx = cg1_idx - 8
             for b in range(8):
                 bit_idx = base_offset + b * 256 + adjusted_idx
                 self._memobj.band_mask[bit_idx] = 0
@@ -1090,38 +1060,24 @@ class VX1RadioCG2(VX1Radio):
         return rf
 
     def get_memory(self, number):
-        if isinstance(number, str):
-            # Special channel by name
-            mem_number = self.SPECIAL_MEMORIES[number]
-            if mem_number <= 162:
-                # L/U memories: 143-162 map to base device 151-170
-                base_number = mem_number + 8
-            else:
-                # Home channels: 163-170 map to base device 1-8
-                base_number = mem_number - 162  # 163->1, 170->8
-        elif number > 142:
-            # Special channel by number
-            mem_number = number
-            if number <= 162:
-                # L/U memories: 143-162 map to base device 151-170
-                base_number = number + 8
-            else:
-                # Home channels: 163-170 map to base device 1-8
-                base_number = number - 162  # 163->1, 170->8
+        is_string = isinstance(number, str)
+        if is_string:
+            # Special channel by name - convert to number
+            number = self.SPECIAL_MEMORIES[number]
+        
+        if number <= 162:
+            # Regular and L/U memories: 1-162 map to cg2_idx 8-169
+            cg2_idx = number + 7
         else:
-            # Regular memory: 1-142 maps to base device 9-150
-            mem_number = number
-            base_number = number + 8
+            # Home channels: 163-170 map to cg2_idx 0-7
+            cg2_idx = number - 163
 
         # Handle CG2 memory structure directly
-        cg2_idx = base_number - 1
         _mem = self._memobj.cg2_memory[cg2_idx]
 
         mem = chirp_common.Memory()
-        mem.number = mem_number
-        if isinstance(number, str):
-            mem.extd_number = number
-        elif number > 142:
+        mem.number = number
+        if is_string or number > 142:
             mem.extd_number = self.SPECIAL_MEMORIES_REV[number]
 
         # Check if memory is empty
@@ -1169,16 +1125,15 @@ class VX1RadioCG2(VX1Radio):
             # Convert string to number
             mem.number = self.SPECIAL_MEMORIES[mem.number]
 
-        # Map CG2 subdevice number to base device number
+        # Map CG2 subdevice number to cg2_idx
         if mem.number <= 162:
-            # Regular and L/U memories: 1-162 map to base device 9-170
-            base_number = mem.number + 8
+            # Regular and L/U memories: 1-162 map to cg2_idx 8-169
+            cg2_idx = mem.number + 7
         else:
-            # Home channels: 163-170 map to base device 1-8
-            base_number = mem.number - 162
+            # Home channels: 163-170 map to cg2_idx 0-7
+            cg2_idx = mem.number - 163
 
         # Handle CG2 memory structure directly
-        cg2_idx = base_number - 1
         _mem = self._memobj.cg2_memory[cg2_idx]
 
         if mem.empty:
@@ -1194,35 +1149,24 @@ class VX1RadioCG2(VX1Radio):
         _mem.power = POWER_LEVELS.index(mem.power) if mem.power else 1
         _mem.step = STEPS.index(mem.tuning_step)
 
-        # Set clk_shift default to disabled (0) only if not already set
-        if hasattr(_mem, 'clk_shift'):
-            # Only set default if no clk_shift value provided in mem.extra
-            if not (mem.extra and any(
-                    s.get_name() == 'clk_shift' for s in mem.extra
-                    if hasattr(s, 'get_name'))):
-                _mem.clk_shift = 0
+        # Set defaults
+        _mem.clk_shift = 0
+        _mem.name_flag = 1 if mem.name else 0
 
-        # Set extra fields first (may include name_flag override)
+        # Set extra fields (may override defaults)
         self._set_extra(_mem, mem)
-
-        # Set name_flag based on name presence if not overridden by extra
-        if not (mem.extra and any(
-                s.get_name() == 'name_flag' for s in mem.extra
-                if hasattr(s, 'get_name'))):
-            _mem.name_flag = 1 if mem.name else 0
 
         # CG2 supports standard repeater shifts
         _mem.shift = DUPLEX.index(mem.duplex) if mem.duplex in DUPLEX else 0
         _mem.selcal = TMODES.index(mem.tmode) if mem.tmode in TMODES else 0
 
         # Update band mask for CG2 memory (skip home channels)
-        mem_idx = base_number - 1
-        if mem_idx >= 8:  # Only update band mask for non-home channels
+        if cg2_idx >= 8:  # Only update band mask for non-home channels
             band_idx = self._get_band_index(mem.freq)
             if band_idx is not None:
                 # CG2 band mask: base offset +8 to skip band byte
                 base_offset = 8
-                adjusted_idx = mem_idx - 8
+                adjusted_idx = cg2_idx - 8
                 for b in range(8):
                     bit_idx = base_offset + b * 256 + adjusted_idx
                     if b == band_idx:
@@ -1231,21 +1175,19 @@ class VX1RadioCG2(VX1Radio):
                         self._memobj.band_mask[bit_idx] = 0
 
     def erase_memory(self, number):
-        # Map CG2 subdevice number to base device number
+        # Map CG2 subdevice number to cg2_idx
         if number <= 162:
-            base_number = number + 8
+            cg2_idx = number + 7
         else:
-            base_number = number - 162
+            cg2_idx = number - 163
 
-        cg2_idx = base_number - 1
         offset = 0x03d1 + cg2_idx * 12
         self._mmap[offset] = 0xff
 
         # Clear band mask for CG2 memory (skip home channels)
-        mem_idx = base_number - 1
-        if mem_idx >= 8:  # Only clear band mask for non-home channels
+        if cg2_idx >= 8:  # Only clear band mask for non-home channels
             base_offset = 8
-            adjusted_idx = mem_idx - 8
+            adjusted_idx = cg2_idx - 8
             for b in range(8):
                 bit_idx = base_offset + b * 256 + adjusted_idx
                 self._memobj.band_mask[bit_idx] = 0
