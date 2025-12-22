@@ -2245,3 +2245,43 @@ class UV5RMini(UV17Pro):
         rs = RadioSetting("downcode.code", "Down Code", val)
         rs.set_apply_callback(self.apply_code, self._memobj.downcode, 16)
         dtmfe.append(rs)
+
+
+@directory.register
+class UV5GMini(UV5RMini):
+    # ==========
+    # Notice to developers:
+    # The UV-5G Mini support in this driver is
+    # currently based upon v0.05 firmware.
+    #
+    # This driver will also work with the UV-5G Mini with v0.01 firmware.
+    # For the UV-5G Mini with Fw 0.01 it is not necessary to use
+    #  the UV-5R Mini driver
+    # ==========
+    """Baofeng UV-5G Mini"""
+    VENDOR = "Baofeng"
+    MODEL = "UV-5G Mini"
+
+    _idents = [
+        b'PROGRAMGMRS5RMIU',  # magic for Fw v0.05
+        MSTRING_UV17PROGPS,   # magic for Fw v0.01
+    ]
+
+    _low_power_index = 1
+
+    def get_memory(self, number):
+        mem = super().get_memory(number)
+
+        # inhibit changing freq, duplex and offset for GMRS channels 1-30
+        if mem.number >= 1 and mem.number <= 30:
+            mem.immutable = ['freq', 'duplex', 'offset']
+            # channels 8 - 14 have to be Narrow FM and Low power
+            if mem.number >= 8 and mem.number <= 14:
+                mem.mode = 'NFM'
+                # force low power
+                mem.power = self.POWER_LEVELS[self._low_power_index]
+                # inhibit changing freq, bandwidth, TX power, duplex and offset
+                mem.immutable = ['freq', 'mode', 'power',
+                                 'duplex', 'offset']
+
+        return mem
