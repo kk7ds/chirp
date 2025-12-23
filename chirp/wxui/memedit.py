@@ -2740,7 +2740,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         max_memory = 999
         for row in reversed(selected):
             m = self._memory_cache[row]
-            if not m.extd_number:
+            if isinstance(m.number, int) and m.number >= 0:
                 max_memory = m.number
                 break
         r = generic_csv.CSVRadio(None, max_memory=max_memory)
@@ -2749,7 +2749,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         r.erase_memory(0)
         for row in selected:
             m = self._memory_cache[row]
-            if m.extd_number:
+            if not isinstance(m.number, int) or m.number < 0:
                 # We don't export specials
                 continue
             if not m.empty:

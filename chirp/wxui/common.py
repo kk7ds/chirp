@@ -781,8 +781,8 @@ def expose_logs(level, root, label, maxlen=128, parent=None,
         try:
             yield
         except Exception as e:
-            LOG.warning('Failure while capturing logs (showing=%s): %s',
-                        show_on_raise, e)
+            LOG.exception('Failure while capturing logs (showing=%s): %s',
+                          show_on_raise, e)
             error = e
         finally:
             lines = list(itertools.chain.from_iterable(x.get_history()
