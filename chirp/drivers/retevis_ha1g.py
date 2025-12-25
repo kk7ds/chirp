@@ -35,7 +35,7 @@ from chirp.settings import (
 LOG = logging.getLogger(__name__)
 
 # This is the minimum required firmare version supported by this driver
-REQUIRED_VER = (1, 1, 11, 6)
+REQUIRED_VER = (1, 1, 12, 5)
 
 MEM_FORMAT = """
 
@@ -352,7 +352,7 @@ MEMORY_REGIONS_RANGES = {
 DTMFCHARSET = "0123456789ABCDabcd#*"
 NAMECHARSET = chirp_common.CHARSET_ALPHANUMERIC + "-/;,._!? *#@$%&+=/<>~(){}]'"
 SPECIAL_MEMORIES = {"VFOA": -2, "VFOB": -1}
-BANDWIDEH_LIST = ["NFM", "FM"]
+MODES = ["NFM", "FM", "AM"]
 POWER_LEVELS = [
     chirp_common.PowerLevel("Low", watts=5),
     chirp_common.PowerLevel("High", watts=50)]
@@ -764,7 +764,11 @@ def _get_memory(self, mem, _mem, ch_index):
     else:
         mem.duplex = mem.freq > tx_freq and "-" or "+"
         mem.offset = abs(mem.freq - tx_freq)
-    mem.mode = BANDWIDEH_LIST[(1 if _mem.bandwidth >= 3 else 0)]
+
+    mem.mode = MODES[(1 if _mem.bandwidth >= 3 else 0)]
+    if chirp_common.in_range(mem.freq, [self._airband]):
+        mem.mode = "AM"
+
     rxtone = txtone = None
     if _mem.rxctcvaluetype == 1:
         tone_value = _mem.rxctc / 10.0
@@ -1101,13 +1105,13 @@ def get_vfo_scan(self, vfoscan):
     vfoscan.append(
         RadioSetting(
             "vfoscan.vhffreq_start", "Start Frequency",
-            RadioSettingValueFloat(136, 480, freq_start, 0.00001, 5)))
+            RadioSettingValueFloat(108, 480, freq_start, 0.00001, 5)))
 
     freq_end = _vfo_scan.vhffreq_end / 1000000
     vfoscan.append(
         RadioSetting(
             "vfoscan.vhffreq_end", "End Frequency",
-            RadioSettingValueFloat(136, 480, freq_end, 0.00001, 5)))
+            RadioSettingValueFloat(108, 480, freq_end, 0.00001, 5)))
 
 
 def _set_memory(self, mem, _mem, ch_index):
@@ -1247,8 +1251,8 @@ def get_ch_rxfreq(mem):
     ch_freq = (mem.freq // 10) * 10
     if mem.freq == 0:
         return mem.freq
-    elif mem.freq < 136000000:
-        ch_freq = 136000000
+    elif mem.freq < 108000000:
+        ch_freq = 108000000
     elif mem.freq > 174000000 and mem.freq < 400000000:
         ch_freq = 174000000
     elif mem.freq > 480000000:
@@ -1292,6 +1296,10 @@ class HA1G(chirp_common.CloneModeRadio):
     _dtmf_list = [{"name": "OFF", "id": 15}]
     _alarm_list = [{"name": "OFF", "id": 255}]
 
+    _airband = (108000000, 135999999)
+    _vhf = (136000000, 174000010)
+    _uhf = (400000000, 480000010)
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.valid_special_chans = sorted(SPECIAL_MEMORIES.keys())
@@ -1301,7 +1309,7 @@ class HA1G(chirp_common.CloneModeRadio):
         rf.has_dtcs = True
         rf.has_cross = True
         rf.has_bank = False
-        rf.valid_bands = [(136000000, 174000010), (400000000, 480000010)]
+        rf.valid_bands = [self._airband, self._vhf, self._uhf]
         rf.has_tuning_step = False
         rf.has_nostep_tuning = True
         rf.valid_name_length = 12
@@ -1311,7 +1319,7 @@ class HA1G(chirp_common.CloneModeRadio):
             c for c in "-/;,._!? *#@$%&+=/<>~(){}]'"
             if c not in chirp_common.CHARSET_UPPER_NUMERIC)
         rf.has_settings = True
-        rf.valid_modes = BANDWIDEH_LIST
+        rf.valid_modes = MODES
         rf.valid_power_levels = POWER_LEVELS
         rf.has_comment = True
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
@@ -1324,6 +1332,20 @@ class HA1G(chirp_common.CloneModeRadio):
             "DTCS->",
             "DTCS->DTCS"]
         return rf
+
+    def validate_memory(self, mem):
+        msgs = []
+        if 'AM' in MODES:
+            if chirp_common.in_range(mem.freq,
+                                     [self._airband]) and mem.mode != 'AM':
+                msgs.append(chirp_common.ValidationWarning(
+                    _('Frequency in this range requires AM mode')))
+            if not chirp_common.in_range(mem.freq,
+                                         [self._airband]) and mem.mode == 'AM':
+                msgs.append(chirp_common.ValidationWarning(
+                    _('Frequency in this range must not be AM mode')))
+
+        return msgs + super().validate_memory(mem)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
