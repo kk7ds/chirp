@@ -108,21 +108,28 @@ def _sendmagic(radio, magic, response_len):
 
 
 def _do_ident(radio):
-    # Flush input buffer
-    bfc._clean_buffer(radio)
+    for ident in radio._idents:
+        # Flush input buffer
+        bfc._clean_buffer(radio)
 
-    # Ident radio
-    ack = _sendmagic(radio, radio._magic, len(radio._fingerprint))
+        # Ident radio
+        LOG.debug('Sending ident magic: %r', ident)
+        try:
+            ack = _sendmagic(radio, ident, len(radio._fingerprint))
+            if not ack.startswith(radio._fingerprint):
+                LOG.debug('Ack %r did not match fingerprint: %r', ack,
+                          radio._fingerprint)
+                continue
+        except errors.RadioError:
+            # This is the timeout or invalid response length case
+            LOG.debug('Radio did not respond to ident magic: %r', ident)
+            continue
 
-    if not ack.startswith(radio._fingerprint):
-        if ack:
-            LOG.debug(repr(ack))
-        raise errors.RadioError("Radio did not respond as expected (A)")
+        for magic, resplen in radio._magics:
+            _sendmagic(radio, magic, resplen)
+        return True
 
-    for magic, resplen in radio._magics:
-        _sendmagic(radio, magic, resplen)
-
-    return True
+    raise errors.RadioError("Radio did not respond as expected (A)")
 
 
 def _download(radio):
@@ -230,7 +237,7 @@ class UV17Pro(bfc.BaofengCommonHT):
 
     _tri_band = True
     _fileid = []
-    _magic = MSTRING_UV17L
+    _idents = [MSTRING_UV17L]
     _fingerprint = b"\x06"
     _magics = [(b"\x46", 16),
                (b"\x4d", 15),
@@ -1506,7 +1513,7 @@ class UV17ProGPS(UV17Pro):
 
     _has_support_for_banknames = True
     _has_workmode_support = True
-    _magic = MSTRING_UV17PROGPS
+    _idents = [MSTRING_UV17PROGPS]
     _magics = [(b"\x46", 16),
                (b"\x4d", 7),
                (b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01" +
@@ -1598,7 +1605,7 @@ class GM5RH(UV17Pro):
     LIST_PW_SAVEMODE = ["Off", "1:1", "2:1", "3:1", "4:1"]
     _has_workmode_support = True
 
-    _magic = MSTRING_GM5RH
+    _idents = [MSTRING_GM5RH]
 
 
 @directory.register
@@ -1627,7 +1634,7 @@ class F8HPPro(UV17Pro):
     # firmware.
     # ==========
 
-    _magic = MSTRING_BFF8HPPRO
+    _idents = [MSTRING_BFF8HPPRO]
     _magics = [(b"\x46", 16),
                (b"\x4d", 6),
                (b"\x53\x45\x4E\x44\x12\x0D\x0A\x0A\x10\x03\x0D\x02\x11\x0C" +
@@ -1869,7 +1876,7 @@ class BFK6(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "K6"
 
-    _magic = MSTRING_BFK6
+    _idents = [MSTRING_BFK6]
     _magics = [(b"\x46", 16),
                ]
     _uses_encr = False
@@ -2174,7 +2181,7 @@ class UV5RMini(UV17Pro):
 
     _has_support_for_banknames = False
 
-    _magic = MSTRING_UV17PROGPS
+    _idents = [MSTRING_UV17PROGPS]
     _mem_size = MEM_TOTAL
     _has_voxsw = True
     _has_pilot_tone = True
