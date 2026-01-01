@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-07 08:11-0800\n"
+"POT-Creation-Date: 2025-12-30 11:54-0500\n"
 "PO-Revision-Date: 2025-10-25 16:50+0200\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
@@ -633,7 +633,7 @@ msgstr ""
 "4. Premi l'interruttore [MONI] (sul display apparirà la scritta \"WAIT\").\n"
 "5. Premi OK.\n"
 
-#: ../drivers/vx6.py:370 ../drivers/vx3.py:373
+#: ../drivers/vx3.py:373 ../drivers/vx6.py:370
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -647,7 +647,7 @@ msgstr ""
 "     (sul display apparirà la scritta \"CLONE\").\n"
 "4. <b>Dopo aver fatto clic su OK</b>, premi il tasto [BAND] per inviare l'immagine.\n"
 
-#: ../drivers/vx6.py:377 ../drivers/vx3.py:380
+#: ../drivers/vx3.py:380 ../drivers/vx6.py:377
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -829,7 +829,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per caricare l'immagine sul dispositivo.\n"
 
-#: ../drivers/uvb5.py:288 ../drivers/wouxun.py:213 ../drivers/tg_uv2p.py:232
+#: ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:213 ../drivers/uvb5.py:288
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -845,7 +845,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per scaricare l'immagine dal dispositivo.\n"
 
-#: ../drivers/uvb5.py:296 ../drivers/wouxun.py:221 ../drivers/tg_uv2p.py:240
+#: ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:221 ../drivers/uvb5.py:296
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -977,7 +977,7 @@ msgstr ""
 " la batteria posteriore (sul display apparirà la scritta \"ADMS\").\n"
 "5. <b>Dopo aver fatto clic su OK</b>, premi il tasto [BAND].\n"
 
-#: ../drivers/uvk5.py:619
+#: ../drivers/uvk5.py:620
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -993,7 +993,7 @@ msgstr ""
 "\n"
 "Potrebbe non funzionare, se accendi la radio con il cavo già collegato\n"
 
-#: ../drivers/uvk5.py:626
+#: ../drivers/uvk5.py:627
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1049,7 +1049,7 @@ msgstr "Inizia sempre con un elenco recente"
 msgid "Amateur"
 msgstr "Radioamatore"
 
-#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:449 ../wxui/common.py:633
+#: ../wxui/common.py:633 ../wxui/bugreport.py:340 ../wxui/bugreport.py:449
 msgid "An error has occurred"
 msgstr "Si è verificato un errore"
 
@@ -1204,13 +1204,13 @@ msgstr "Clonazione completata, controllo dei byte spuri"
 msgid "Cloning"
 msgstr "Clonazione"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:507 ../drivers/ft4.py:317
-#: ../drivers/ft817.py:341
+#: ../drivers/ft450d.py:507 ../drivers/bj9900.py:133 ../drivers/ft817.py:341
+#: ../drivers/ft4.py:317
 msgid "Cloning from radio"
 msgstr "Clonazione dalla radio"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:536 ../drivers/ft4.py:318
-#: ../drivers/ft817.py:379
+#: ../drivers/ft450d.py:536 ../drivers/bj9900.py:165 ../drivers/ft817.py:379
+#: ../drivers/ft4.py:318
 msgid "Cloning to radio"
 msgstr "Clonazione verso la radio"
 
@@ -1253,7 +1253,7 @@ msgstr "Completo"
 msgid "Complex or non-standard tone squelch mode (starts the tone mode selection wizard)"
 msgstr "Modalità squelch toni complessi o non standard (avvia la procedura guidata di selezione della modalità toni)"
 
-#: ../drivers/tmd710.py:185 ../drivers/tmd710.py:188
+#: ../drivers/tmd710.py:182 ../drivers/tmd710.py:185
 msgid ""
 "Connect your interface cable to the PC Port on the\n"
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
@@ -1311,7 +1311,7 @@ msgstr ""
 "Polarità\n"
 "DTCS"
 
-#: ../drivers/uvk5.py:843
+#: ../drivers/uvk5.py:844
 msgid "DTMF decode"
 msgstr "Decodifica DTMF"
 
@@ -1348,7 +1348,7 @@ msgstr "Modalità sviluppatore"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "La modalità sviluppatore ora è %s. Per rendere effettiva questa modifica, CHIRP deve essere riavviato"
 
-#: ../wxui/memedit.py:2277 ../wxui/developer.py:97
+#: ../wxui/developer.py:97 ../wxui/memedit.py:2277
 msgid "Diff Raw Memories"
 msgstr "Diff memorie raw"
 
@@ -1410,7 +1410,7 @@ msgstr "Istruzioni per il download"
 msgid "Driver"
 msgstr "Driver"
 
-#: ../drivers/uvk5.py:1261
+#: ../drivers/uvk5.py:1262
 msgid "Driver information"
 msgstr "Informazioni sul driver"
 
@@ -1563,7 +1563,7 @@ msgstr "Esporta in CSV..."
 msgid "Extra"
 msgstr "Extra"
 
-#: ../drivers/uvk5.py:1259
+#: ../drivers/uvk5.py:1260
 msgid "FM Radio"
 msgstr "Radio FM"
 
@@ -1593,8 +1593,8 @@ msgstr "Impossibile esportare alcune memorie"
 msgid "Failed to load radio browser"
 msgstr "Impossibile caricare il browser della radio"
 
-#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
-#: ../sources/mapy73pl.py:61
+#: ../sources/mapy73pl.py:61 ../sources/przemienniki_net.py:59
+#: ../sources/przemienniki_eu.py:57
 msgid "Failed to parse result"
 msgstr "Impossibile elaborare il risultato"
 
@@ -1721,11 +1721,11 @@ msgstr ""
 "5 - Scollega il cavo dati dell'interfaccia! In caso contrario, non ci sarà\n"
 "    l'audio del lato destro!\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:684 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:441 ../drivers/uv6r.py:339
-#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:496 ../drivers/bf_t1.py:482
+#: ../drivers/bf_t1.py:482 ../drivers/gmrsv2.py:363
+#: ../drivers/baofeng_wp970i.py:327 ../drivers/gmrsuv1.py:391
+#: ../drivers/uv6r.py:339 ../drivers/uv5x3.py:417
+#: ../drivers/tdxone_tdq8a.py:441 ../drivers/baofeng_uv17Pro.py:496
+#: ../drivers/mursv1.py:341 ../drivers/btech.py:684
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1829,7 +1829,7 @@ msgstr ""
 "    l'audio del lato destro!\n"
 "6 - Accendi la radio per uscire dalla modalità clone.\n"
 
-#: ../drivers/btech.py:690 ../drivers/bf_t1.py:488
+#: ../drivers/bf_t1.py:488 ../drivers/btech.py:690
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1899,11 +1899,11 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Effettua il download dei dati dalla radio\n"
 
-#: ../drivers/vgc.py:589 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:487 ../drivers/tdxone_tdq8a.py:447
-#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:502
+#: ../drivers/gmrsv2.py:369 ../drivers/baofeng_wp970i.py:333
+#: ../drivers/vgc.py:589 ../drivers/gmrsuv1.py:397 ../drivers/uv6r.py:345
+#: ../drivers/lt725uv.py:487 ../drivers/uv5x3.py:423
+#: ../drivers/tdxone_tdq8a.py:447 ../drivers/baofeng_uv17Pro.py:502
+#: ../drivers/mursv1.py:347
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1949,15 +1949,20 @@ msgstr "La frequenza %s non rientra nel range supportato"
 msgid "Frequency granularity in kHz"
 msgstr "Granularità della frequenza in kHz"
 
-#: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1379
-#: ../drivers/tdh8.py:2479 ../drivers/uv5r.py:1940
-#: ../drivers/baofeng_uv17Pro.py:1266
+#: ../drivers/ga510.py:1072 ../drivers/retevis_ha1g.py:1381
+#: ../drivers/uv5r.py:1940 ../drivers/mml_jc8810.py:1379
+#: ../drivers/baofeng_uv17Pro.py:1266 ../drivers/tdh8.py:2479
 msgid "Frequency in this range must not be AM mode"
 msgstr "La frequenza in questo intervallo non deve essere in modalità AM"
 
-#: ../drivers/ga510.py:1065 ../drivers/radtel_rt900.py:1360
-#: ../drivers/mml_jc8810.py:1376 ../drivers/tdh8.py:2476
-#: ../drivers/uv5r.py:1936 ../drivers/baofeng_uv17Pro.py:1262
+#: ../drivers/retevis_ha1g.py:1371
+msgid "Frequency in this range not supported by firmware"
+msgstr ""
+
+#: ../drivers/ga510.py:1065 ../drivers/retevis_ha1g.py:1377
+#: ../drivers/uv5r.py:1936 ../drivers/radtel_rt900.py:1360
+#: ../drivers/mml_jc8810.py:1376 ../drivers/baofeng_uv17Pro.py:1262
+#: ../drivers/tdh8.py:2476
 msgid "Frequency in this range requires AM mode"
 msgstr "La frequenza in questo intervallo richiede la modalità AM"
 
@@ -2114,7 +2119,7 @@ msgstr "Numero:"
 msgid "LIVE"
 msgstr "In diretta live"
 
-#: ../drivers/radtel_rt490.py:1026 ../wxui/main.py:853 ../wxui/main.py:1632
+#: ../wxui/main.py:853 ../wxui/main.py:1632 ../drivers/radtel_rt490.py:1026
 msgid "Language"
 msgstr "Lingua"
 
@@ -2190,11 +2195,11 @@ msgstr "Locator"
 msgid "Login failed: Check your username and password"
 msgstr "Accesso non riuscito: controlla il nome utente e la password"
 
-#: ../drivers/uvk5.py:1763
+#: ../drivers/uvk5.py:1764
 msgid "Logo string 1 (12 characters)"
 msgstr "Stringa del logo 1 (12 caratteri)"
 
-#: ../drivers/uvk5.py:1770
+#: ../drivers/uvk5.py:1771
 msgid "Logo string 2 (12 characters)"
 msgstr "Stringa del logo 2 (12 caratteri)"
 
@@ -2212,7 +2217,7 @@ msgstr "modifica manuale della memoria %i"
 msgid "Memories"
 msgstr "Memorie"
 
-#: ../drivers/uvk5.py:2091
+#: ../drivers/uvk5.py:2092
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Le memorie sono di sola lettura a causa della versione del firmware non supportata"
 
@@ -2320,8 +2325,8 @@ msgstr "Nessun modulo trovato nel sito %i"
 msgid "No more space available; some memories were not applied"
 msgstr "Non c'è più spazio disponibile; alcune memorie non sono state inserite"
 
-#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
-#: ../sources/mapy73pl.py:57
+#: ../sources/mapy73pl.py:57 ../sources/przemienniki_net.py:55
+#: ../sources/przemienniki_eu.py:53
 msgid "No results"
 msgstr "Nessun risultato"
 
@@ -2466,8 +2471,8 @@ msgstr ""
 "In questa versione, è supportato solo un sottoinsieme\n"
 "delle oltre 130 impostazioni radio disponibili.\n"
 
-#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
-#: ../sources/mapy73pl.py:52
+#: ../sources/mapy73pl.py:52 ../sources/przemienniki_net.py:50
+#: ../sources/przemienniki_eu.py:48
 msgid "Parsing"
 msgstr "Elaborazione"
 
@@ -2596,8 +2601,8 @@ msgstr "La sintassi della query è OK"
 msgid "Query syntax help"
 msgstr "Aiuto per la sintassi delle query"
 
-#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
-#: ../sources/mapy73pl.py:36
+#: ../sources/mapy73pl.py:36 ../sources/przemienniki_net.py:36
+#: ../sources/przemienniki_eu.py:36
 msgid "Querying"
 msgstr "Interrogazione"
 
@@ -2609,7 +2614,7 @@ msgstr "DTCS RX"
 msgid "Radio"
 msgstr "Radio"
 
-#: ../drivers/ft60.py:85 ../drivers/ft450d.py:568 ../drivers/ft817.py:406
+#: ../drivers/ft450d.py:568 ../drivers/ft817.py:406 ../drivers/ft60.py:85
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "La radio non ha accettato il blocco %i"
@@ -2765,11 +2770,11 @@ msgstr "Impostazioni salvate"
 msgid "Scan control (skip, include, priority, etc)"
 msgstr "Controllo della scansione (salto, inclusione, priorità, ecc.)"
 
-#: ../drivers/uvk5.py:857
+#: ../drivers/uvk5.py:858
 msgid "Scanlists"
 msgstr "Elenco delle scansioni"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:853
+#: ../drivers/uvk5.py:854 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr "Scrambler"
 
@@ -2814,7 +2819,7 @@ msgstr "Servizio"
 msgid "Settings"
 msgstr "Impostazioni"
 
-#: ../drivers/uvk5.py:2095
+#: ../drivers/uvk5.py:2096
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr "Le impostazioni sono di sola lettura a causa della versione del firmware non supportata"
 
@@ -2822,7 +2827,7 @@ msgstr "Le impostazioni sono di sola lettura a causa della versione del firmware
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "Shift (o frequenza di trasmissione) controllato dal duplex"
 
-#: ../wxui/memedit.py:2269 ../wxui/developer.py:100
+#: ../wxui/developer.py:100 ../wxui/memedit.py:2269
 msgid "Show Raw Memory"
 msgstr "Mostra memoria raw"
 
@@ -2884,8 +2889,8 @@ msgstr "Ordina per colonna:"
 msgid "Sort memories"
 msgstr "Ordina memorie"
 
-#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
-#: ../sources/mapy73pl.py:64
+#: ../sources/mapy73pl.py:64 ../sources/przemienniki_net.py:62
+#: ../sources/przemienniki_eu.py:60
 msgid "Sorting"
 msgstr "Ordinamento"
 
@@ -3003,7 +3008,7 @@ msgstr "Questo driver è stato testato con la versione 3 dell'ID-5100. Se la tua
 msgid "This driver is in development and should be considered as experimental."
 msgstr "Questo driver è in fase di sviluppo e deve essere considerato sperimentale."
 
-#: ../drivers/uvk5.py:684
+#: ../drivers/uvk5.py:685
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr "Questa immagine manca di informazioni sul firmware. Potrebbe essere stata generata con una versione vecchia o modificata di CHIRP. Si consiglia di scaricare una nuova immagine dalla radio e di utilizzarla in futuro, per garantire la massima sicurezza e compatibilità."
 
@@ -3023,7 +3028,7 @@ msgstr "Questo è un driver beta in fase iniziale\n"
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr "Si tratta di un driver beta in fase iniziale: caricalo a tuo rischio e pericolo.\n"
 
-#: ../drivers/uvk5.py:611
+#: ../drivers/uvk5.py:612
 msgid ""
 "This is an experimental driver for the Quansheng UV-K5. It may harm your radio, or worse. Use at your own risk.\n"
 "\n"
@@ -3079,7 +3084,7 @@ msgstr ""
 "può richiedere alcuni secondi, se non funziona, riprovare più volte.\n"
 "Se non riesci ad entrare, controlla la radio ed il cavo.\n"
 
-#: ../drivers/uvk5.py:1848
+#: ../drivers/uvk5.py:1849
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
 msgstr "Questa opzione deve essere attivata solo se si utilizza un firmware modificato che supporta una copertura di frequenza più ampia. L'attivazione di questa opzione fa sì che CHIRP non applichi le restrizioni OEM e può portare ad un comportamento non definito o non regolamentato. Utilizzala a tuo rischio e pericolo!"
 
@@ -3165,8 +3170,8 @@ msgstr "Impossibile importare mentre la visualizzazione è ordinata"
 msgid "Unable to open the clipboard"
 msgstr "Impossibile aprire gli appunti"
 
-#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
-#: ../sources/mapy73pl.py:50
+#: ../sources/mapy73pl.py:50 ../sources/przemienniki_net.py:48
+#: ../sources/przemienniki_eu.py:46
 msgid "Unable to query"
 msgstr "Impossibile eseguire la ricerca"
 
@@ -3218,7 +3223,7 @@ msgstr "Aggiornamento del bug %s"
 msgid "Upload instructions"
 msgstr "Istruzioni per il caricamento"
 
-#: ../drivers/uvk5.py:2082
+#: ../drivers/uvk5.py:2083
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "Il caricamento è disabilitato a causa di una versione del firmware non supportata"
 

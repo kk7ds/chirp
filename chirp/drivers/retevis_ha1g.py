@@ -35,7 +35,7 @@ from chirp.settings import (
 LOG = logging.getLogger(__name__)
 
 # This is the minimum required firmare version supported by this driver
-REQUIRED_VER = (1, 1, 11, 6)
+REQUIRED_VER = "v1.1.11.6"
 
 MEM_FORMAT = """
 
@@ -352,7 +352,7 @@ MEMORY_REGIONS_RANGES = {
 DTMFCHARSET = "0123456789ABCDabcd#*"
 NAMECHARSET = chirp_common.CHARSET_ALPHANUMERIC + "-/;,._!? *#@$%&+=/<>~(){}]'"
 SPECIAL_MEMORIES = {"VFOA": -2, "VFOB": -1}
-BANDWIDEH_LIST = ["NFM", "FM"]
+MODES = ["NFM", "FM", "AM"]
 POWER_LEVELS = [
     chirp_common.PowerLevel("Low", watts=5),
     chirp_common.PowerLevel("High", watts=50)]
@@ -452,7 +452,9 @@ def read_items(self, serial):
             item_bytes = get_read_current_packet_bytes(
                 self, item.value, serial, status)
             if item == MemoryRegions.radioVer and item_bytes:
-                fmver_validate(item_bytes[2:6])
+                firmware_version = unpack_version(item_bytes[2:6])
+                validate_version(firmware_version)
+                self.metadata = {'ha1g_firmware': firmware_version}
             if item_bytes:
                 write_memory_region(all_bytes, item_bytes, item)
         except errors.RadioError:
@@ -473,7 +475,8 @@ def write_items(self, serial):
     item_bytes = get_read_current_packet_bytes(
                 self, MemoryRegions.radioVer.value, serial, status)
     if item_bytes:
-        fmver_validate(item_bytes[2:6])
+        firmware_version = unpack_version(item_bytes[2:6])
+        validate_version(firmware_version)
     EXCLUDED_REGIONS = {MemoryRegions.radioHead,
                         MemoryRegions.radioInfo,
                         MemoryRegions.radioVer,
@@ -667,13 +670,28 @@ def format_version(ver):
     return 'v%02i.%02i.%02i.%03i' % ver
 
 
-def fmver_validate(raw_bytes):
+def unpack_version(raw_bytes):
     current_ver = struct.unpack("BBBB", raw_bytes)
-    if REQUIRED_VER > current_ver:
+    return format_version(current_ver)
+
+
+def validate_version(ver):
+    if compare_version(ver, REQUIRED_VER) < 1:
         raise errors.RadioError(
             ("Firmware is %s; You must update to %s or higher "
-             "to be compatible with CHIRP") % (format_version(current_ver),
-                                               format_version(REQUIRED_VER)))
+             "to be compatible with CHIRP") % (ver, REQUIRED_VER))
+
+
+def compare_version(a, b):
+    version1 = tuple(map(int, a.lstrip('v').split('.')) if a else [])
+    version2 = tuple(map(int, b.lstrip('v').split('.')) if b else [])
+
+    if version1 > version2:
+        return 1
+    if version2 > version1:
+        return -1
+
+    return 0
 
 
 def calculate_crc16(data):
@@ -764,7 +782,11 @@ def _get_memory(self, mem, _mem, ch_index):
     else:
         mem.duplex = mem.freq > tx_freq and "-" or "+"
         mem.offset = abs(mem.freq - tx_freq)
-    mem.mode = BANDWIDEH_LIST[(1 if _mem.bandwidth >= 3 else 0)]
+
+    mem.mode = MODES[(1 if _mem.bandwidth >= 3 else 0)]
+    if chirp_common.in_range(mem.freq, [self._airband]):
+        mem.mode = "AM"
+
     rxtone = txtone = None
     if _mem.rxctcvaluetype == 1:
         tone_value = _mem.rxctc / 10.0
@@ -802,6 +824,11 @@ def get_model_info(self, model_info):
     rs_value.set_mutable(False)
     rs = RadioSetting("modelinfo.freqrange", "Frequency Range[MHz]", rs_value)
     model_info.append(rs)
+
+    firmware_version = self.metadata.get('ha1g_firmware', 'UNKNOWN')
+    val = RadioSettingValueString(0, 128, firmware_version)
+    val.set_mutable(False)
+    model_info.append(RadioSetting("fw_ver", "Firmware Version", val))
 
 
 def get_common_setting(self, common):
@@ -1101,13 +1128,13 @@ def get_vfo_scan(self, vfoscan):
     vfoscan.append(
         RadioSetting(
             "vfoscan.vhffreq_start", "Start Frequency",
-            RadioSettingValueFloat(136, 480, freq_start, 0.00001, 5)))
+            RadioSettingValueFloat(108, 480, freq_start, 0.00001, 5)))
 
     freq_end = _vfo_scan.vhffreq_end / 1000000
     vfoscan.append(
         RadioSetting(
             "vfoscan.vhffreq_end", "End Frequency",
-            RadioSettingValueFloat(136, 480, freq_end, 0.00001, 5)))
+            RadioSettingValueFloat(108, 480, freq_end, 0.00001, 5)))
 
 
 def _set_memory(self, mem, _mem, ch_index):
@@ -1247,8 +1274,8 @@ def get_ch_rxfreq(mem):
     ch_freq = (mem.freq // 10) * 10
     if mem.freq == 0:
         return mem.freq
-    elif mem.freq < 136000000:
-        ch_freq = 136000000
+    elif mem.freq < 108000000:
+        ch_freq = 108000000
     elif mem.freq > 174000000 and mem.freq < 400000000:
         ch_freq = 174000000
     elif mem.freq > 480000000:
@@ -1292,6 +1319,10 @@ class HA1G(chirp_common.CloneModeRadio):
     _dtmf_list = [{"name": "OFF", "id": 15}]
     _alarm_list = [{"name": "OFF", "id": 255}]
 
+    _airband = (108000000, 135999999)
+    _vhf = (136000000, 174000010)
+    _uhf = (400000000, 480000010)
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.valid_special_chans = sorted(SPECIAL_MEMORIES.keys())
@@ -1301,7 +1332,7 @@ class HA1G(chirp_common.CloneModeRadio):
         rf.has_dtcs = True
         rf.has_cross = True
         rf.has_bank = False
-        rf.valid_bands = [(136000000, 174000010), (400000000, 480000010)]
+        rf.valid_bands = [self._airband, self._vhf, self._uhf]
         rf.has_tuning_step = False
         rf.has_nostep_tuning = True
         rf.valid_name_length = 12
@@ -1311,7 +1342,7 @@ class HA1G(chirp_common.CloneModeRadio):
             c for c in "-/;,._!? *#@$%&+=/<>~(){}]'"
             if c not in chirp_common.CHARSET_UPPER_NUMERIC)
         rf.has_settings = True
-        rf.valid_modes = BANDWIDEH_LIST
+        rf.valid_modes = MODES
         rf.valid_power_levels = POWER_LEVELS
         rf.has_comment = True
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
@@ -1324,6 +1355,25 @@ class HA1G(chirp_common.CloneModeRadio):
             "DTCS->",
             "DTCS->DTCS"]
         return rf
+
+    def validate_memory(self, mem):
+        msgs = []
+
+        if (chirp_common.in_range(mem.freq, [self._airband])
+                and not self.supports_airband()):
+            msgs.append(chirp_common.ValidationError(
+                    _('Frequency in this range not supported by firmware')))
+
+        if (chirp_common.in_range(mem.freq, [self._airband])
+                and mem.mode != 'AM'):
+            msgs.append(chirp_common.ValidationWarning(
+                _('Frequency in this range requires AM mode')))
+        if (not chirp_common.in_range(mem.freq, [self._airband])
+                and mem.mode == 'AM'):
+            msgs.append(chirp_common.ValidationWarning(
+                _('Frequency in this range must not be AM mode')))
+
+        return msgs + super().validate_memory(mem)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
@@ -1492,6 +1542,10 @@ class HA1G(chirp_common.CloneModeRadio):
                 scanname = "".join(filter(scan_item.name, NAMECHARSET, 12))
                 scan_dict.append({"name": scanname, "id": scan_index})
         return scan_dict
+
+    def supports_airband(self):
+        return compare_version(self.metadata.get(
+            'ha1g_firmware', '0.0.0.0'), '1.1.12.5') > 0
 
 
 @directory.register
