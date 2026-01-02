@@ -160,6 +160,60 @@ class RadioSettingValueInteger(RadioSettingValue):
         return self._step
 
 
+class RadioSettingValueRGB(RadioSettingValue):
+    """A color setting, stored as (r, g, b)"""
+    def __init__(self, current):
+        super().__init__()
+        self.set_value(current)
+
+    @staticmethod
+    def from_bits(value, rbits, gbits, bbits):
+        outvals = []
+        for bits in [rbits, gbits, bbits]:
+            outval = value & (2 ** bits - 1)
+            # Map into 8-bpc space
+            outvals.insert(0, round(outval / (2 ** bits - 1) * 255))
+            value >>= bits
+        return RadioSettingValueRGB(tuple(outvals))
+
+    @staticmethod
+    def from_rgb24(value):
+        """Return a RadioSettingValueRGB initialized from an rgb24 value"""
+        return RadioSettingValueRGB.from_bits(value, 8, 8, 8)
+
+    @staticmethod
+    def from_rgb16(value):
+        """Return a RadioSettingValueRGB initialized from an rgb16 value"""
+        return RadioSettingValueRGB.from_bits(value, 5, 6, 5)
+
+    def set_value(self, value):
+        self._r, self._g, self._b = value
+
+    def get_value(self):
+        """Returns (r, g, b)"""
+        return self._r, self._g, self._b
+
+    def get_bits(self, rbits, gbits, bbits):
+        """Return color as a bitpacked integer.
+
+        Pass the  number of bits for the r, g, and b channels packed
+        sequentially into an integer to be returned.
+        """
+        outval = 0
+        for bits, val in zip([rbits, gbits, bbits],
+                             [self._r, self._g, self._b]):
+            outval = (outval << bits) | round((2 ** bits - 1) * val / 255)
+        return outval
+
+    def get_rgb24(self):
+        """Return an integer value for 24-bit color"""
+        return self.get_bits(8, 8, 8)
+
+    def get_rgb16(self):
+        """Return an integer value for 16-bit color"""
+        return self.get_bits(5, 6, 5)
+
+
 class RadioSettingValueFloat(RadioSettingValue):
 
     """A floating-point setting"""
