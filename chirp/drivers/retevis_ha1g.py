@@ -140,15 +140,15 @@ struct {
 #seekto 0xc0;
 struct  {
     ul16 zonenum;
-    ul16 zoneindex[64];
+    ul16 zoneindex[16];
 } zonedata;
 
-#seekto 0x142;
+#seekto 0xe2;
 struct {
     char name[14];
     ul16 chnum;
-    ul16 chindex[16];
-} zones[64];
+    ul16 chindex[64];
+} zones[16];
 
 #seekto 0x0D42;
 struct  {
@@ -387,6 +387,106 @@ FREQ_STEP_List = [
     {"name": "25kHz", "id": 25000}]
 
 
+class HA1GBank(chirp_common.NamedBank):
+
+    def get_name(self):
+        _bank = self._model._radio._memobj.zones[self.index]
+        name = "".join(filter(_bank.name, NAMECHARSET, 14))
+        return name.rstrip()
+
+    def set_name(self, name):
+        _bank = self._model._radio._memobj.zones[self.index]
+        _bank.name = str(name).ljust(14)[:14]
+
+
+class HA1GBankModel(chirp_common.BankModel):
+
+    def get_num_mappings(self):
+        return len(self.get_mappings())
+
+    def get_mappings(self):
+        banks = self._radio._memobj.zones
+        bank_mappings = []
+        for index, _bank in enumerate(banks):
+            bank = HA1GBank(self, "%i" % index, "b%i" % (index + 1))
+            bank.index = index
+            bank_mappings.append(bank)
+
+        return bank_mappings
+
+    def _get_channel_numbers_in_bank(self, bank):
+        _bank_used = self._radio._memobj.zonedata.zoneindex[bank.index]
+        if _bank_used == 0xFFFF:
+            return set()
+
+        _members = self._radio._memobj.zones[bank.index]
+        return set([int(ch) - 1 for ch in _members.chindex if ch != 0xFFFF])
+
+    def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
+        _members = self._radio._memobj.zones[bank.index]
+        if len(channels_in_bank) > len(_members.chindex):
+            raise Exception("Too many entries in bank %d" % bank.index)
+
+        empty = 0
+        for index, channel_number in enumerate(sorted(channels_in_bank)):
+            _members.chindex[index] = channel_number + 1
+            empty = index + 1
+        for index in range(empty, len(_members.chindex)):
+            _members.chindex[index] = 0xFFFF
+
+        _members.chnum = len(channels_in_bank)
+
+    def _update_banknum(self):
+        # Simple approach to keep the number of banks synced to the actual
+        # bank data. Only drop trailing banks that have no channels.
+        _zonedata = self._radio._memobj.zonedata
+        _banknum = 0
+        for index, _bank in enumerate(reversed(_zonedata.zoneindex)):
+            if not _bank == 0xFFFF:
+                _banknum = len(_zonedata.zoneindex) - index
+                break
+
+        _zonedata.zonenum = _banknum
+
+    def add_memory_to_mapping(self, memory, bank):
+        channels_in_bank = self._get_channel_numbers_in_bank(bank)
+        channels_in_bank.add(memory.number)
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
+
+        # enable bank
+        self._radio._memobj.zonedata.zoneindex[bank.index] = bank.index
+        self._update_banknum()
+
+    def remove_memory_from_mapping(self, memory, bank):
+        channels_in_bank = self._get_channel_numbers_in_bank(bank)
+        try:
+            channels_in_bank.remove(memory.number)
+        except KeyError:
+            raise Exception("Memory %i is not in bank %s. Cannot remove" %
+                            (memory.number, bank))
+        self._update_bank_with_channel_numbers(bank, channels_in_bank)
+
+        if not channels_in_bank:
+            # disable bank
+            self._radio._memobj.zonedata.zoneindex[bank.index] = 0xFFFF
+            self._update_banknum()
+
+    def get_mapping_memories(self, bank):
+        memories = []
+        for channel in self._get_channel_numbers_in_bank(bank):
+            memories.append(self._radio.get_memory(channel))
+
+        return memories
+
+    def get_memory_mappings(self, memory):
+        banks = []
+        for bank in self.get_mappings():
+            if memory.number in self._get_channel_numbers_in_bank(bank):
+                banks.append(bank)
+
+        return banks
+
+
 def do_download(self):
     error_map = {
         HandshakeStatuses.RadioWrong: "Radio model mismatch",
@@ -480,7 +580,6 @@ def write_items(self, serial):
     EXCLUDED_REGIONS = {MemoryRegions.radioHead,
                         MemoryRegions.radioInfo,
                         MemoryRegions.radioVer,
-                        MemoryRegions.zoneData,
                         MemoryRegions.scanData,
                         MemoryRegions.alarmData}
     for item in MemoryRegions:
@@ -1331,7 +1430,8 @@ class HA1G(chirp_common.CloneModeRadio):
         rf.has_rx_dtcs = True
         rf.has_dtcs = True
         rf.has_cross = True
-        rf.has_bank = False
+        rf.has_bank = self.supports_banks()
+        rf.has_bank_names = True
         rf.valid_bands = [self._airband, self._vhf, self._uhf]
         rf.has_tuning_step = False
         rf.has_nostep_tuning = True
@@ -1374,6 +1474,9 @@ class HA1G(chirp_common.CloneModeRadio):
                 _('Frequency in this range must not be AM mode')))
 
         return msgs + super().validate_memory(mem)
+
+    def get_bank_model(self):
+        return HA1GBankModel(self)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
@@ -1545,7 +1648,11 @@ class HA1G(chirp_common.CloneModeRadio):
 
     def supports_airband(self):
         return compare_version(self.metadata.get(
-            'ha1g_firmware', '0.0.0.0'), '1.1.12.5') > 0
+            'ha1g_firmware', '0.0.0.0'), '1.1.12.5') >= 0
+
+    def supports_banks(self):
+        return compare_version(self.metadata.get(
+            'ha1g_firmware', '0.0.0.0'), '1.1.13.1') >= 0
 
 
 @directory.register
