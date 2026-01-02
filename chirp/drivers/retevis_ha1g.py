@@ -676,7 +676,7 @@ def unpack_version(raw_bytes):
 
 
 def validate_version(ver):
-    if compare_version(ver, REQUIRED_VER) < 1:
+    if compare_version(ver, REQUIRED_VER) < 0:
         raise errors.RadioError(
             ("Firmware is %s; You must update to %s or higher "
              "to be compatible with CHIRP") % (ver, REQUIRED_VER))
