@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-01 12:58-0800\n"
-"PO-Revision-Date: 2025-12-03 22:15-0300\n"
+"PO-Revision-Date: 2026-01-02 22:01-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -611,6 +611,11 @@ msgid ""
 "4. Press OK on chirp prompt.\n"
 "5. <b>After clicking OK</b>, press the [DWN] button on radio to send image. The radio will say CLN OUT while downloading.\n"
 msgstr ""
+"1. Apaga la radio.\n"
+"2. Conecta el cable a la clavija MIC/SP.\n"
+"3. Presiona y mantén [FW] mientras enciendes la radio para ponerla en modo CLONE.\n"
+"4. Presiona OK cuando chirp pregunte.\n"
+"5. <b>Después de cliquear OK</b>, presiona el botón [DWN] en la radio para enviar la imagen. La radio dirá CLN OUT mientras descarga.\n"
 
 #: ../drivers/vx1.py:408
 msgid ""
@@ -620,6 +625,11 @@ msgid ""
 "4. Press [UP] button on radio. The radio will say CLN IN.\n"
 "5. <b>After radio says CLN IN</b>, press OK on chirp prompt to upload.\n"
 msgstr ""
+"1. Apaga la radio.\n"
+"2. Conecta el cable a la clavija MIC/SP.\n"
+"3. Presiona y mantén [FW] mientras enciendes la radio para ponerla en modo CLONE.\n"
+"4. Presiona el botón [UP] en la radio. La radio dirá CLN IN.\n"
+"5. <b>Después de que la radio diga CLN IN</b>, presiona OK cuando chirp pregunte para cargar.\n"
 
 #: ../drivers/ft50.py:195
 msgid ""
@@ -1975,7 +1985,7 @@ msgstr "La frecuencia en este rango no debe ser modo AM"
 
 #: ../drivers/retevis_ha1g.py:1365
 msgid "Frequency in this range not supported by firmware"
-msgstr ""
+msgstr "La frecuencia en este rango no es soportada por el firmware"
 
 #: ../drivers/ga510.py:1065 ../drivers/radtel_rt900.py:1360
 #: ../drivers/mml_jc8810.py:1376 ../drivers/tdh8.py:2476
