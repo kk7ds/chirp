@@ -562,10 +562,10 @@ class TestStepFunctions(base.BaseTest):
                          chirp_common.fix_rounded_step(146520000))
 
     def test_fix_rounded_step_833(self):
-        # 108.008 should be aligned to 8.33kHz step
+        # 118.008 should be aligned to 8.33kHz step
         self.assertEqual(
-            int(108000000 + (25000 / 3)),
-            chirp_common.fix_rounded_step(chirp_common.to_MHz(108.008)))
+            int(118000000 + (25000 / 3)),
+            chirp_common.fix_rounded_step(chirp_common.to_MHz(118.008)))
 
         # 108.0 MHz should be left unchanged as it is 25kHz-aligned
         self.assertFalse(chirp_common.is_8_33(
@@ -589,6 +589,45 @@ class TestStepFunctions(base.BaseTest):
                                'Unable to correct.*',
                                chirp_common.fix_rounded_step,
                                chirp_common.to_MHz(146.008333))
+
+        # Using a channel name should be aligned to the actual frequency
+        self.assertEqual(
+            int(132050000),
+            chirp_common.fix_rounded_step(chirp_common.to_MHz(132.055)))
+        self.assertEqual(
+            int(132050000) + (25000 // 3),
+            chirp_common.fix_rounded_step(chirp_common.to_MHz(132.060)))
+        self.assertEqual(
+            int(132050000) + (25000 // 3) * 2,
+            chirp_common.fix_rounded_step(chirp_common.to_MHz(132.065)))
+        self.assertEqual(
+            int(132075000),
+            chirp_common.fix_rounded_step(chirp_common.to_MHz(132.080)))
+
+        # This is not valid
+        self.assertRaisesRegex(errors.InvalidDataError,
+                               'Aircraft frequencies must be aligned.*',
+                               chirp_common.fix_rounded_step,
+                               chirp_common.to_MHz(132.070))
+
+    def test_fix_rounded_step_833_examples(self):
+        # https://ukradiotransmissions.wordpress.com/2019/02/06/new-8-33khz-airband-channel-spacing-frequencies-a-conversion-chart-and-explanation/
+        cases = [
+            (132005000, 132000000),
+            (132010000, 132008300),
+            (132015000, 132016600),
+            (132030000, 132025000),
+            (132035000, 132033300),
+            (132040000, 132041600),
+            (132055000, 132050000),
+            (132060000, 132058300),
+            (132065000, 132066600),
+            (132080000, 132075000),
+            (132085000, 132083300),
+            (132090000, 132091600),
+        ]
+        for channel, freq in cases:
+            pass
 
 
 class TestImageMetadata(base.BaseTest):
