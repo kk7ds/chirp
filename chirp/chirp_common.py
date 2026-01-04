@@ -1188,6 +1188,13 @@ class RadioFeatures:
                                                   " not supported"))
                     break
 
+        if is_airband(mem.freq):
+            try:
+                fix_rounded_step(mem.freq)
+            except errors.InvalidDataError as e:
+                msgs.append(ValidationError(
+                    '%s: %s' % (format_freq(mem.freq), e)))
+
         return msgs
 
 
@@ -1801,12 +1808,51 @@ def fix_rounded_step(freq):
 
     if is_airband(freq):
         # Airband can be 25kHz or 8.33kHz (25k / 3) steps
+        # https://en.wikipedia.org/wiki/Airband
         if freq % 25000:
-            # This must be 8.33kHz - find the closest 8.33k-aligned channel
-            # and return that
+            # This must be 8.33kHz. The goal here is to find the closest
+            # 8.33k-aligned channel and return that.
+            # In the 8.33kHz channel scheme, there are "channel names" that
+            # look like 5kHz-aligned frequencies within the 25kHz regular
+            # channels, which don't match the actual frequency being used
+            # (which is 8.33kHz-aligned). We need to be able to detect those
+            # and return the correct actual frequency, as well as allow
+            # matching the actual frequencies themselves.
+
+            # The "base frequency" is the 25kHz-aligned channel frequency that
+            # has been divided into three 8.33kHz channels.
             base = freq // 25000 * 25000
-            channels = [base + (25000 // 3) * i for i in range(1, 4)]
+            orig = freq
+
+            # This is a channel name if it is 5kHz-aligned and equal-or-above
+            # the base frequency. Adjust down for the lower channel and up for
+            # the upper (no adjustment for the middle one) so that the channel
+            # matching below will find the right closest option.
+            ch_index = (freq - base) / 5000
+            if ch_index == 1.0:
+                # Lower of the three, bump down
+                freq -= (25000 // 3)
+            elif ch_index == 3.0:
+                # Upper of the three, bump up
+                freq += (25000 // 3)
+            elif ch_index >= 4.0 and ch_index == int(ch_index):
+                # This is 5kHz-aligned but not one of the three sub-channels,
+                # thus this is one of the gaps in the channel numbers. Refuse
+                # it so that it's clear to the user.
+                raise errors.InvalidDataError(
+                    _('Aircraft frequencies must be aligned to 25kHz, 8.33kHz'
+                      ', be or a valid channel'))
+
+            # These are the three possible 8.33kHz-aligned channels within
+            # this 25kHz block.
+            channels = [base + (25000 // 3) * i for i in range(0, 3)]
+
+            # Find the closest one to the original frequency
             best = min(channels, key=lambda x: abs(x - freq))
+            LOG.debug('833: Orig %s Channels %s best %s adjusted %s diffs %s '
+                      'chindex %s' % (
+                          orig, channels, best, freq,
+                          [x - freq for x in channels], ch_index))
             return best
         else:
             return freq
