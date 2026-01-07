@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-01 12:58-0800\n"
+"POT-Creation-Date: 2026-01-07 14:53-0800\n"
 "PO-Revision-Date: 2024-11-11 02:28+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language-Team: \n"
@@ -995,6 +995,10 @@ msgstr "关于CHIRP"
 #: ../wxui/main.py:1952
 msgid "Agree"
 msgstr "同意"
+
+#: ../chirp_common.py:1843
+msgid "Aircraft frequencies must be aligned to 25kHz, 8.33kHz, be or a valid channel"
+msgstr ""
 
 #: ../wxui/query_sources.py:451
 msgid "All"
