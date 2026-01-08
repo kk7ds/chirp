@@ -2603,7 +2603,8 @@ class RT86SRadio(RT21Radio):
     VALID_BANDS = [(400000000, 520000000)]
 
     _magic = b"PHOGR" + b"\xA7\xB8"
-    _fingerprint = [b"P32073" + b"\x00\xFF", ]
+    _fingerprint = [b"P32073" + b"\x00\xFF",
+                    b"P32073" + b"\x03\xFF", ]
     _upper = 30
     _ack_1st_block = False
     _skipflags = True
