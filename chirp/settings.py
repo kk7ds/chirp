@@ -52,6 +52,9 @@ class RadioSettingValue:
 
     def initialize(self):
         """Initialize this value to the stashed value"""
+        if isinstance(self._preinit_current, Exception):
+            # This was communicated as an error during loading
+            return
         assert self._current is None and self._preinit_current is not None
         self.set_value(self._preinit_current)
         self._preinit_current = None
