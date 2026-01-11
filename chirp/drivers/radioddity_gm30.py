@@ -60,15 +60,16 @@ struct{
     u8      tail_revert;
     u8      tail_delay;
     u8      tbst;
+    u8      unk_sett[6];
     u8      unk_bits_5:6,
-            a_ch_disp:1,
-            b_ch_disp:1;
-    u8      unk_sett[30];
+            b_ch_disp:1,
+            a_ch_disp:1;
+    u8      unk_sett_2[24];
     u8      passw_w_ena;
     u8      passw_r_ena;
     u8      passw_w_val[8];
     u8      passw_r_val[8];
-    u8      unk_sett_2[5];
+    u8      unk_sett_3[5];
 } settings;
 struct{
     u8     unusedsettings[32];
