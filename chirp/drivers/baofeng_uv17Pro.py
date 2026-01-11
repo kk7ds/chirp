@@ -254,7 +254,9 @@ class UV17Pro(bfc.BaofengCommonHT):
     _has_pilot_tone = False
     _has_send_id_delay = False
     _has_skey1_short = False
+    _has_skey1_long = False
     _has_skey2_short = False
+    _has_skey2_long = False
     _has_skey_disable = False
     _has_zone_linking = False
     _scode_offset = 0
@@ -289,6 +291,7 @@ class UV17Pro(bfc.BaofengCommonHT):
     _vhf2_range = (200000000, 260000000)
     _uhf_range = (400000000, 520000000)
     _uhf2_range = (350000000, 390000000)
+    AIRBANDS = [_airband]
 
     STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
     LIST_STEPS = ["2.5", "5.0", "6.25", "10.0", "12.5", "20.0", "25.0", "50.0"]
@@ -795,61 +798,67 @@ class UV17Pro(bfc.BaofengCommonHT):
                             0x0A: 4,
                             0x0C: 5,
                             0x34: 6,
-                            0x08: 4,
-                            0x03: 5}
+                            0x05: 7,
+                            0x03: 8,
+                            0x35: 9}
             return key_to_index.get(int(value), 0)
 
-        def apply_Key1short(setting, obj):
-            val = str(setting.value)
-            key_to_index = {'FM': 0x07,
-                            'Scan': 0x1C,
-                            'Search': 0x1D,
-                            'Vox': 0x2D,
-                            'TX Power': 0x0A,
-                            'NOAA': 0x0C,
-                            'Zone Select': 0x34,
-                            'Flashlight': 0x08,
-                            'SOS': 0x03}
-            obj.key1short = key_to_index.get(val, 0x07)
+        KEY_NAME_TO_CODE = {
+            'FM': 0x07,
+            'Scan': 0x1C,
+            'Search': 0x1D,
+            'Vox': 0x2D,
+            'TX Power': 0x0A,
+            'NOAA': 0x0C,
+            'Zone Select': 0x34,
+            'Monitor': 0x05,
+            'Alarm': 0x03,
+            'Scan Edit': 0x35,
+        }
 
-        def getKey2shortIndex(value):
-            key_to_index = {0x07: 0,
-                            0x1C: 1,
-                            0x1D: 2,
-                            0x2D: 3,
-                            0x0A: 4,
-                            0x0C: 5,
-                            0x34: 6}
-            return key_to_index.get(int(value), 0)
+        KEY_CODE_TO_INDEX = {
+            code: idx for idx, code in enumerate(KEY_NAME_TO_CODE.values())
+        }
 
-        def apply_Key2short(setting, obj):
-            val = str(setting.value)
-            key_to_index = {'FM': 0x07,
-                            'Scan': 0x1C,
-                            'Search': 0x1D,
-                            'Vox': 0x2D,
-                            'TX Power': 0x0A,
-                            'NOAA': 0x0C,
-                            'Zone Select': 0x34}
-            obj.key2short = key_to_index.get(val, 0x07)
+        def make_apply_key(attr_name):
+            def apply(setting, obj):
+                val = str(setting.value)
+                setattr(obj, attr_name,
+                        KEY_NAME_TO_CODE.get(val, 0x07))
+            return apply
 
-        if self._has_skey1_short:
-            rs = RadioSetting("settings.key1short", "Skey1 Short",
-                              RadioSettingValueList(
-                                self.LIST_SKEY2_SHORT,
-                                current_index=getKey1shortIndex(
-                                        _mem.settings.key1short)))
-            rs.set_apply_callback(apply_Key1short, _mem.settings)
-            basic.append(rs)
+        apply_key1short = make_apply_key("key1short")
+        apply_key1long = make_apply_key("key1long")
+        apply_key2short = make_apply_key("key2short")
+        apply_key2long = make_apply_key("key2long")
 
-        if self._has_skey2_short:
-            rs = RadioSetting("settings.key2short", "Skey2 Short",
-                              RadioSettingValueList(
-                                self.LIST_SKEY2_SHORT,
-                                current_index=getKey2shortIndex(
-                                        _mem.settings.key2short)))
-            rs.set_apply_callback(apply_Key2short, _mem.settings)
-            basic.append(rs)
+        def get_key_index(value):
+            return KEY_CODE_TO_INDEX.get(int(value), 0)
+
+        KEY_SETTINGS = [
+            ("_has_skey1_short", "settings.key1short", "Skey1 Short",
+             "key1short", apply_key1short),
+            ("_has_skey1_long", "settings.key1long", "Skey1 Long",
+             "key1long", apply_key1long),
+            ("_has_skey2_short", "settings.key2short", "Skey2 Short",
+             "key2short", apply_key2short),
+            ("_has_skey2_long", "settings.key2long", "Skey2 Long",
+             "key2long", apply_key2long),
+        ]
+
+        for flag, path, label, attr, apply_cb in KEY_SETTINGS:
+            if getattr(self, flag):
+                rs = RadioSetting(
+                    path,
+                    label,
+                    RadioSettingValueList(
+                        self.LIST_SKEY2_SHORT,
+                        current_index=get_key_index(
+                            getattr(_mem.settings, attr))
+                    )
+                )
+                rs.set_apply_callback(apply_cb, _mem.settings)
+                basic.append(rs)
 
         if self._has_skey_disable:
             rs = RadioSetting("settings.skdisable", "Side Key Disable",
@@ -1263,14 +1272,16 @@ class UV17Pro(bfc.BaofengCommonHT):
     def validate_memory(self, mem):
         msgs = []
         if 'AM' in self.MODES:
-            if chirp_common.in_range(mem.freq,
-                                     [self._airband]) and mem.mode != 'AM':
-                msgs.append(chirp_common.ValidationWarning(
-                    _('Frequency in this range requires AM mode')))
-            if not chirp_common.in_range(mem.freq,
-                                         [self._airband]) and mem.mode == 'AM':
-                msgs.append(chirp_common.ValidationWarning(
-                    _('Frequency in this range must not be AM mode')))
+            in_range = chirp_common.in_range
+            airbands = self.AIRBANDS
+
+            for band in airbands:
+                if in_range(mem.freq, [band]) and mem.mode != 'AM':
+                    msgs.append(chirp_common.ValidationWarning(
+                        _('Frequency in this range requires AM mode')))
+                if not in_range(mem.freq, [band]) and mem.mode == 'AM':
+                    msgs.append(chirp_common.ValidationWarning(
+                        _('Frequency in this range must not be AM mode')))
 
         return msgs + super().validate_memory(mem)
 
@@ -1353,7 +1364,7 @@ class UV17Pro(bfc.BaofengCommonHT):
             mem.power = levels[0]
 
         mem.mode = _mem.wide and self.MODES[0] or self.MODES[1]
-        if chirp_common.in_range(mem.freq, [self._airband]):
+        if chirp_common.in_range(mem.freq, self.AIRBANDS):
             mem.mode = "AM"
 
         mem.extra = RadioSettingGroup("Extra", "extra")
@@ -1630,7 +1641,7 @@ class F8HPPro(UV17Pro):
 
     # ==========
     # Notice to developers:
-    # The BF-F8HP-PRO support in this driver is currently based upon v0.44
+    # The BF-F8HP-PRO support in this driver is currently based upon v0.52
     # firmware.
     # ==========
 
@@ -1646,10 +1657,14 @@ class F8HPPro(UV17Pro):
                   "100.0"]
 
     _airband = (108000000, 136999999)
-    _vhf_range = (137000000, 174000000)
+    _vhf_range = (137000000, 173999999)
+    _airband2 = (174000000, 218999999)
+    _vhf2_range = (219000000, 224999999)
+    _airband3 = (225000000, 399999999)
+    AIRBANDS = [_airband, _airband2, _airband3]
 
-    VALID_BANDS = [_airband, _vhf_range, UV17Pro._vhf2_range,
-                   UV17Pro._uhf_range, UV17Pro._uhf2_range]
+    VALID_BANDS = [_airband, _vhf_range, _airband2, _vhf2_range, _airband3,
+                   UV17Pro._uhf_range]
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
                     chirp_common.PowerLevel("Low",  watts=1.00),
                     chirp_common.PowerLevel('Mid', watts=3.00)]
@@ -1662,10 +1677,11 @@ class F8HPPro(UV17Pro):
                             "20 sec", "30 sec", "60 sec"]
     LIST_ID_DELAY = ["%s ms" % x for x in range(100, 3100, 100)]
     LIST_SKEY2_SHORT = ["FM", "Scan", "Search", "Vox", "TX Power", "NOAA",
-                        "Zone Select"]
+                        "Zone Select", "Monitor", "Alarm", "Scan Edit"]
     MODES = UV17Pro.MODES + ['AM']
     SQUELCH_LIST = ["Off"] + list("12345678")
     LIST_SKEY_DISABLE = ["Off", "SK Only", "PTT Only", "SK + PTT"]
+    LIST_MODE = ["Name", "Frequency", "Channel Number", "Name + Frequency"]
 
     _has_support_for_banknames = True
     _vfoscan = True
@@ -1674,7 +1690,9 @@ class F8HPPro(UV17Pro):
     _has_pilot_tone = True
     _has_send_id_delay = True
     _has_skey1_short = True
+    _has_skey1_long = True
     _has_skey2_short = True
+    _has_skey2_long = True
     _has_skey_disable = True
     _has_voice = False
     _has_when_to_send_aniid = False
@@ -1749,9 +1767,10 @@ class F8HPPro(UV17Pro):
       u8 gpsw;
       u8 gpsmode;
       u8 key1short;
-      u8 unknown7;
+      u8 key1long;
       u8 key2short;
-      u8 unknown8[2];
+      u8 key2long;
+      u8 unknown8;
       u8 rstmenu;
       u8 singlewatch;
       u8 hangup;
