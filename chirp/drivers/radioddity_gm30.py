@@ -950,3 +950,147 @@ class RadioddityGM30(chirp_common.CloneModeRadio):
                 except Exception:
                     LOG.debug(element.get_name())
                     raise
+
+
+@directory.register
+class RadioddityMU5(RadioddityGM30):
+    """Radioddity MU-5 (MURS)
+
+    Identical to Radioddity GM-30 except for the following:
+
+    MURS channels 1-20 are fixed to the 5 MURS frequencies in a repeating
+    pattern. Frequency in EEPROM is ignored for 1-20. Channels 21-250 are
+    user-programmable RX-only channels. Changing power level is not allowed
+    on 1-20. It is possible to set power level on 21-250, but it is not used
+    (radio forces RX-only).
+    """
+    VENDOR = "Radioddity"
+    MODEL = "MU-5"
+
+    # MU-5 does not actually support variable power levels
+    # MURS channels are fixed to "Low" power which is presumably 2W
+    POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=2.00),
+                    chirp_common.PowerLevel("High", watts=2.00)]
+
+    MURS_FREQS = [151820000, 151880000, 151940000, 154570000, 154600000]
+
+    def _get_murs_freq(self, channel):
+        return self.MURS_FREQS[(channel - 1) % 5]
+
+    def _is_murs_narrowband(self, channel):
+        return ((channel - 1) % 5) < 3
+
+    def get_memory(self, number):
+        mem = chirp_common.Memory()
+        mem.number = number
+        _mem = self._memobj.memory[number-1]
+        _name = self._memobj.memnames[number-1]["name"]
+        str_name = self.get_str_name(_name)
+        mem.name = str_name.rstrip()
+
+        # 1-20 always exist and may have 0xFFFFFFFF for freq
+        # other channels with 0xFFFFFFFF for freq are empty
+        if _mem.rx_freq.get_raw() == b'\xff\xff\xff\xff':
+            if not (1 <= number <= 20):
+                mem.empty = True
+                return mem
+
+        mem.freq = int(_mem.rx_freq) * 10
+
+        if _mem.tx_freq.get_raw() == b'\xff\xff\xff\xff':
+            mem.duplex = 'off'
+        elif int(_mem.tx_freq) - int(_mem.rx_freq) > 0:
+            mem.duplex = '+'
+            mem.offset = (int(_mem.tx_freq) - int(_mem.rx_freq)) * 10
+        elif int(_mem.tx_freq) - int(_mem.rx_freq) < 0:
+            mem.duplex = '-'
+            mem.offset = (int(_mem.rx_freq) - int(_mem.tx_freq)) * 10
+
+        mem.mode = self.val_or_def(_mem.mode, self.VALID_MODES)
+        mem.power = self.val_or_def(_mem.power, self.POWER_LEVELS)
+        mem.skip = "" if _mem.scan else "S"
+
+        # MURS channels 1-20: fixed freq, simplex, fixed power
+        if 1 <= mem.number <= 20:
+            mem.freq = self._get_murs_freq(mem.number)
+            mem.duplex = ""
+            mem.offset = 0
+            mem.immutable = ['freq', 'duplex', 'offset', 'power', 'empty']
+            # Narrowband channels have fixed mode
+            if self._is_murs_narrowband(mem.number):
+                mem.mode = "NFM"
+                mem.immutable = mem.immutable + ['mode']
+        # Channels 21-250: RX-only user channels
+        elif mem.number > 20:
+            mem.duplex = "off"
+            mem.immutable = ['duplex', 'offset']
+
+        txtone = self.get_tone(_mem.tx_tone)
+        rxtone = self.get_tone(_mem.rx_tone)
+        chirp_common.split_tone_decode(mem, txtone, rxtone)
+
+        mem.extra = RadioSettingGroup("Extra", "extra")
+
+        rs = RadioSettingValueBoolean(_mem.busy_lock)
+        rset = RadioSetting("busy_lock", "Busy Lock", rs)
+        mem.extra.append(rset)
+
+        rs = RadioSettingValueBoolean(_mem.freq_hop)
+        rset = RadioSetting("freq_hop", "Freq. Hop", rs)
+        mem.extra.append(rset)
+
+        _current = _mem.signal if _mem.signal else 1
+        rs = RadioSettingValueInteger(1, 15, current=_current)
+        rset = RadioSetting("signal", "DTMF ID", rs)
+        mem.extra.append(rset)
+
+        options = ['Off', 'BOT', 'EOT', 'BOTH']
+        rs = RadioSettingValueList(options, current_index=_mem.ptt_id)
+        rset = RadioSetting("ptt_id", "PTT ID", rs)
+        mem.extra.append(rset)
+
+        return mem
+
+    def validate_memory(self, mem):
+        if 1 <= mem.number <= 20:
+            expected_freq = self._get_murs_freq(mem.number)
+            if mem.freq != expected_freq:
+                return [chirp_common.ValidationError(
+                    f'MURS Channel {mem.number} must be '
+                    f'{expected_freq / 1000000:.3f} MHz')]
+            if self._is_murs_narrowband(mem.number) and mem.mode != "NFM":
+                return [chirp_common.ValidationError(
+                    f'MURS Channel {mem.number} must be narrowband (NFM)')]
+        return chirp_common.CloneModeRadio.validate_memory(self, mem)
+
+    def set_memory(self, mem):
+        # For MURS channels 1-20, write 0xFFFFFFFF for rx/tx freq
+        # The radio firmware hardcodes the actual MURS frequency
+        # This is what the official CPS does
+        if 1 <= mem.number <= 20:
+            number = mem.number
+            _mem = self._memobj.memory[number-1]
+            _name = self._memobj.memnames[number-1]
+            newname = [str(c) for c in mem.name]
+            _name.name = "".join(newname).ljust(6, '\x00')
+
+            if mem.empty:
+                _mem.set_raw(b'\xff' * 13 + b'\x06\x11\x00')
+                return
+
+            _mem.rx_freq.fill_raw(b'\xff')
+            _mem.tx_freq.fill_raw(b'\xff')
+
+            _mem.mode = self.idx_or_def(mem.mode, self.VALID_MODES)
+            _mem.power = self.idx_or_def(mem.power, self.POWER_LEVELS)
+            _mem.scan = False if mem.skip == "S" else True
+
+            ((txmode, txval, txpol),
+             (rxmode, rxval, rxpol)) = chirp_common.split_tone_encode(mem)
+            self.set_tone(_mem.tx_tone, txmode, txval, txpol)
+            self.set_tone(_mem.rx_tone, rxmode, rxval, rxpol)
+
+            for setting in mem.extra:
+                setattr(_mem, setting.get_name(), setting.value)
+        else:
+            super().set_memory(mem)
