@@ -381,11 +381,17 @@ def do_upload(radio):
         exit_prog(serial)
 
 
+class GM15ProAlias(chirp_common.Alias):
+    VENDOR = "Baofeng"
+    MODEL = "GM-15Pro"
+
+
 @directory.register
 class RadioddityGM30(chirp_common.CloneModeRadio):
     """Radioddity GM-30"""
     VENDOR = "Radioddity"
     MODEL = "GM-30"
+    ALIASES = [GM15ProAlias]
     BAUD_RATE = 57600
     POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=0.50),
                     chirp_common.PowerLevel("High", watts=3.00)]
@@ -966,6 +972,7 @@ class RadioddityMU5(RadioddityGM30):
     """
     VENDOR = "Radioddity"
     MODEL = "MU-5"
+    ALIASES = []
 
     # MU-5 does not actually support variable power levels
     # MURS channels are fixed to "Low" power which is presumably 2W
