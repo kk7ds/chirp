@@ -953,6 +953,13 @@ class RadioddityGM30(chirp_common.CloneModeRadio):
 
 
 @directory.register
+class BaofengGM15Pro(RadioddityGM30):
+    """Baofeng GM-15Pro"""
+    VENDOR = "Baofeng"
+    MODEL = "GM-15Pro"
+
+
+@directory.register
 class RadioddityMU5(RadioddityGM30):
     """Radioddity MU-5 (MURS)
 
