@@ -1,4 +1,4 @@
-# Copyright 2016-2023:
+# Copyright 2016-2026:
 # * Pavel Milanes CO7WT, <pavelmc@gmail.com>
 # * Jim Unroe KC9HI, <rock.unroe@gmail.com>
 #
@@ -541,6 +541,9 @@ def _download(radio):
 
     # put radio in program mode and identify it
     _do_ident(radio, status)
+
+    # lengthen timeout here as some radios are slow causing CHIRP to time out
+    radio.pipe.timeout = 0.75
 
     # reset the progress bar in the UI Bug #11851 BLOCKSIZE fix for KT-8900D
     status.max = MEM_SIZE // radio._block_size
