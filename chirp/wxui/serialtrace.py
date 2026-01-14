@@ -14,11 +14,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
+import functools
 import logging
 import os
 import serial
 import tempfile
 import time
+import warnings
 
 from chirp import util
 from chirp.wxui import config
@@ -57,6 +59,26 @@ def purge_trace_files(keep=10):
             LOG.error('Failed to remove old trace file %s: %s', fn, e)
 
 
+def warn_timeout(f):
+    @functools.wraps(f)
+    def wrapper(self, *a, **k):
+        try:
+            size = a[0]
+        except IndexError:
+            size = k.get('size', 1)
+        cps = self.baudrate / (self.stopbits +
+                               self.bytesize +
+                               (self.parity and 1 or 0))
+        required_time = size / cps
+        if self.timeout is not None and required_time > self.timeout:
+            warnings.warn(
+                ('Read of %i bytes requires %.3f seconds at %i baud, '
+                 'but timeout is %.3fs') % (
+                    size, required_time, self.baudrate, self.timeout))
+        return f(self, *a, **k)
+    return wrapper
+
+
 class SerialTrace(serial.Serial):
     def __init__(self, *a, **k):
         self.__tracef = None
@@ -90,6 +112,7 @@ class SerialTrace(serial.Serial):
                 LOG.error('Failed to write to serial trace file: %s' % e)
                 self.__tracef = None
 
+    @warn_timeout
     def read(self, size=1):
         data = super().read(size)
         if self.__tracef:
