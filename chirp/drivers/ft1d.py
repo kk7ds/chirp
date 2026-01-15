@@ -534,7 +534,6 @@ CHARSET = ["%i" % int(x) for x in range(0, 10)] + \
     [" ", ] + \
     [chr(x) for x in range(ord("a"), ord("z") + 1)] + \
     list(".,:;*#_-/&()@!?^ ") + list("\x00" * 100)
-A2R = ''.join(CHARSET).ljust(256, '.')
 
 POWER_LEVELS = [chirp_common.PowerLevel("Hi", watts=5.00),
                 chirp_common.PowerLevel("L3", watts=2.50),
