@@ -1293,13 +1293,11 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
             mem.tuning_step = STEPS[_mem.tune_step]
             mem.power = self._decode_power_level(_mem)
-            _b = _mem.digmode == 1
-            self._get_mem_extra(mem, _b)
+            self._get_mem_extra(mem, _mem.digmode == 1)
         return mem
 
-    def _get_mem_extra(self, mem: chirp_common.Memory, _d: bool):
+    def _get_mem_extra(self, mem: chirp_common.Memory, ams: bool):
         mem.extra = RadioSettingGroup('Extra', 'extra')
-        ams = _d
         rs = RadioSetting('ysf_ams', 'AMS mode',
                           RadioSettingValueBoolean(ams))
         mem.extra.append(rs)
