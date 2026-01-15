@@ -1253,9 +1253,11 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             mem.duplex = _mem[4]
             mem.offset = _mem[5]
             mem.comment = _mem[6]
-            # Can't make freq immutable, because tests try to change it
-            mem.immutable += ["empty", "number", "extd_number",
-                              'skip', "mode", "duplex", "offset", "comment"]
+            mem.tuning_step = 5.0
+            mem.immutable += ["freq", "empty", "number", 'name', "extd_number",
+                              'skip', "mode", "duplex", "offset", "comment",
+                              'cross_mode', 'ctone', 'dtcs', 'dtcs_polarity'
+                              'power', 'rtone', 'tmode', 'tuning_step', 'vfo']
             self._get_mem_extra(mem, False)
             # No further processing needed for presets
             return mem
