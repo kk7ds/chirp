@@ -1397,48 +1397,47 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                             (ndx + 1)))
         return msgs
 
-    def set_memory(self, memory: chirp_common.Memory) -> None:
-        ''' Modify radio's memory (_mem) corresponding to CHIRP at "memory" '''
+    def set_memory(self, mem):
         _mem, flag, num, regtype, ename = \
-            self.slotloc(memory.number, memory.extd_number)
+            self.slotloc(mem.number, mem.extd_number)
         # Enforce no-changes-allowed to Presets specials
         if regtype == 'Presets':
             raise errors.RadioError('Cannot change presets.')
-        if memory.empty:
+        if mem.empty:
             self._wipe_memory(_mem)
             if flag is not None:
                 flag.used = False
             return
-        _mem.power = self._encode_power_level(memory)
-        _mem.tone = chirp_common.TONES.index(memory.rtone)
-        self._set_tmode(_mem, memory)
-        _mem.dcs = chirp_common.DTCS_CODES.index(memory.dtcs)
-        _mem.tune_step = STEPS.index(memory.tuning_step)
+        _mem.power = self._encode_power_level(mem)
+        _mem.tone = chirp_common.TONES.index(mem.rtone)
+        self._set_tmode(_mem, mem)
+        _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
+        _mem.tune_step = STEPS.index(mem.tuning_step)
         # duplex "off" is equivalent to "" and may show up in tox test.
-        if memory.duplex is None:
+        if mem.duplex is None:
             _mem.duplex = DUPLEX.index("")
         else:
-            _mem.duplex = DUPLEX.index(memory.duplex)
-        self._set_mode(_mem, memory)
+            _mem.duplex = DUPLEX.index(mem.duplex)
+        self._set_mode(_mem, mem)
         if flag is not None:
-            if memory.freq < 30000000 or \
-                    (memory.freq > 88000000 and memory.freq < 108000000) or \
-                    memory.freq > 580000000:
+            if mem.freq < 30000000 or \
+                    (mem.freq > 88000000 and mem.freq < 108000000) or \
+                    mem.freq > 580000000:
                 flag.nosubvfo = True     # Masked from VFO B
             else:
                 flag.nosubvfo = False    # Available in both VFOs
         if regtype != "Home":
-            self._debank(memory)
-            flag.used = not memory.empty
+            self._debank(mem)
+            flag.used = not mem.empty
             flag.valid = True
-            flag.skip = memory.skip == "S"
-            flag.pskip = memory.skip == "P"
-        freq = memory.freq
+            flag.skip = mem.skip == "S"
+            flag.pskip = mem.skip == "P"
+        freq = mem.freq
         _mem.freq = int(freq / 1000)
-        _mem.offset = int(memory.offset / 1000)
-        _mem.label = self._encode_label(memory)
-        _mem.charsetbits = self._encode_charsetbits(memory)
-        self._set_mem_extra(memory, _mem)
+        _mem.offset = int(mem.offset / 1000)
+        _mem.label = self._encode_label(mem)
+        _mem.charsetbits = self._encode_charsetbits(mem)
+        self._set_mem_extra(mem, _mem)
         return
 
     @classmethod
