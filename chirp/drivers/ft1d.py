@@ -1153,20 +1153,19 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             result.append(str(msg_text).rstrip("\xFF"))
         return result
 
-    def _get_special_indices(self, name: str):
-        '''  Find type of  special memory "name" and index into that memory '''
-        _n = self.MAX_MEM_SLOT
-        for _x in SPECIALS:
+    def _get_special_indices(self, name: str) -> tuple[str, int, int]:
+        '''  Find type of special memory "name" and offset into that memory
+            as well as index to all CHIRP memories. '''
+        absolute_min = self.MAX_MEM_SLOT
+        for memtype, channels in SPECIALS:
             try:
-                ndx = _x[1].index(name)
-                array = _x[0]
-                break
-            except Exception:
-                _n += len(_x[1])
-        if array is None:
-            raise IndexError(f"Unknown special '{name}'")
-        _n += ndx
-        return (array, ndx, _n)
+                offset = channels.index(name)
+                return (memtype, offset, absolute_min + offset)
+            except ValueError:
+                absolute_min += len(channels)
+                continue
+        # If here, no special was found in driver's lists.
+        raise IndexError(f"Unknown special '{name}'")
 
     def slotloc(self, memref, extref=None) -> tuple:
         '''
@@ -1387,9 +1386,6 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
     def set_memory(self, mem):
         _mem, flag, num, regtype, ename = \
             self.slotloc(mem.number, mem.extd_number)
-        # Enforce no-changes-allowed to Presets specials
-        if regtype == 'Presets':
-            raise errors.RadioError('Cannot change presets.')
         if mem.empty:
             self._wipe_memory(_mem)
             if flag is not None:
