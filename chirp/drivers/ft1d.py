@@ -780,7 +780,7 @@ class FT1Bank(chirp_common.NamedBank):
     """A FT1D bank"""
 
     def get_name(self):
-        _bank = self._model._radio._memobj.bank_info[self.get_index()]
+        _bank = self._model._radio._memobj.bank_info[self.index]
 
         name = ""
         for i in _bank.name:
@@ -804,27 +804,25 @@ class FT1BankModel(chirp_common.BankModel,
         self._bank_mappings = []
         for index, _bank in enumerate(_banks):
             bank = FT1Bank(self, "%i" % index, "BANK-%i" % index)
+            bank.index = index
             self._bank_mappings.append(bank)
 
-    def get_bankable_specials(self) -> list:
+    def get_bankable_specials(self):
         """ tell banks to handle PRESETS (CHIRP handles these as SPECIALS) """
         return SKIPNAMES + PMSNAMES + list(YAESU_PRESETS.keys())
 
-    def get_num_mappings(self) -> int:
-        ''' Return number of CHIRP's bank objects,
-            presumably = number of radio banks '''
+    def get_num_mappings(self):
         return len(self._bank_mappings)
 
-    def get_mappings(self) -> list:
+    def get_mappings(self):
         ''' Return list of all defined bank objects '''
         return self._bank_mappings
 
-    def _channel_numbers_in_bank(self, bank: chirp_common.Bank) -> set:
-        ''' Returns set of CHIRP channels in radio bank object '''
-        _bank_used = self._radio._memobj.bank_used[bank.get_index()]
+    def _channel_numbers_in_bank(self, bank):
+        _bank_used = self._radio._memobj.bank_used[bank.index]
         if _bank_used.in_use == 0xFFFF:
             return set()
-        _members = self._radio._memobj.bank_members[bank.get_index()]
+        _members = self._radio._memobj.bank_members[bank.index]
         _chans = []
         for ch in _members.channel:
             if ch == 0xFFFF:
@@ -842,13 +840,10 @@ class FT1BankModel(chirp_common.BankModel,
                 _chans += [int(ch) + 1]
         return set(_chans)
 
-    def _update_bank_with_channel_numbers(self,
-                                          bank: chirp_common.Bank,
-                                          channels_in_bank: set) -> None:
-        ''' Put identifiers (channels_in_bank) into Radio's bank mapping '''
-        _members = self._radio._memobj.bank_members[bank.get_index()]
+    def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
+        _members = self._radio._memobj.bank_members[bank.index]
         if len(channels_in_bank) > len(_members.channel):
-            raise Exception("Too many entries in bank %d" % bank.get_index())
+            raise Exception("Too many entries in bank %d" % bank.index)
 
         empty = 0
         preset0 = 0xFFFF if not self._radio.bank_preset_dict else \
@@ -872,20 +867,14 @@ class FT1BankModel(chirp_common.BankModel,
         for index in range(empty, len(_members.channel)):
             _members.channel[index] = 0xFFFF
 
-    def add_memory_to_mapping(self,
-                              memory: chirp_common.Memory,
-                              bank: chirp_common.Bank) -> None:
-        ''' Add identified CHIRP Memory to specific bank mapping '''
+    def add_memory_to_mapping(self, memory, bank):
         channels_in_bank = self._channel_numbers_in_bank(bank)
         channels_in_bank.add(memory.number)
         self._update_bank_with_channel_numbers(bank, channels_in_bank)
-        _bank_used = self._radio._memobj.bank_used[bank.get_index()]
+        _bank_used = self._radio._memobj.bank_used[bank.index]
         _bank_used.in_use = 0x06
 
-    def remove_memory_from_mapping(self,
-                                   memory: chirp_common.Memory,
-                                   bank: chirp_common.Bank) -> None:
-        ''' Remove specific CHIRP memory from specific bank object '''
+    def remove_memory_from_mapping(self, memory, bank):
         channels_in_bank = self._channel_numbers_in_bank(bank)
         try:
             channels_in_bank.remove(memory.number)
@@ -898,15 +887,13 @@ class FT1BankModel(chirp_common.BankModel,
             _bank_used = self._radio._memobj.bank_used[bank.get_index()]
             _bank_used.in_use = 0xFFFF
 
-    def get_mapping_memories(self, bank: chirp_common.Bank) -> list:
-        ''' Return list of CHIRP memories in specific bank object '''
+    def get_mapping_memories(self, bank):
         memories = []
         for channel in self._channel_numbers_in_bank(bank):
             memories.append(self._radio.get_memory(channel))
         return memories
 
-    def get_memory_mappings(self, memory: chirp_common.Memory) -> list:
-        ''' Return list of bank objects that refer to specific CHIRP memory '''
+    def get_memory_mappings(self, memory):
         banks = []
         for bank in self.get_mappings():
             if memory.number in self._channel_numbers_in_bank(bank):
