@@ -66,7 +66,8 @@ def warn_timeout(f):
             size = a[0]
         except IndexError:
             size = k.get('size', 1)
-        cps = self.baudrate / (self.stopbits +
+        cps = self.baudrate / (1 +  # start bit
+                               self.stopbits +
                                self.bytesize +
                                (self.parity and 1 or 0))
         required_time = size / cps
