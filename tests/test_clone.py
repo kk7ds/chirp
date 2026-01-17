@@ -19,6 +19,12 @@ class SerialNone(serialtrace.SerialTrace):
     def flush(self):
         pass
 
+    def reset_input_buffer(self):
+        pass
+
+    def reset_output_buffer(self):
+        pass
+
     def inWaiting(self):
         return len(self.read(256))
 
