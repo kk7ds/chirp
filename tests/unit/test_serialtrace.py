@@ -106,3 +106,19 @@ class TestSerialTrace(unittest.TestCase):
             # 1000 bytes takes about 1s, so 2s timeout should yield no warning
             trace.read(1000)
             self.assertTrue(len(w) == 0)
+
+    @mock.patch('tempfile.NamedTemporaryFile')
+    @mock.patch('serial.Serial.open')
+    @mock.patch('serial.Serial.write')
+    @mock.patch('serial.Serial.read')
+    def test_timeout_write_read_warning(self, mock_read, mock_write, mock_open,
+                                        mock_tf):
+        mock_tf.return_value.writelines.side_effect = [None]
+        trace = serialtrace.SerialTrace(timeout=2, baudrate=9600)
+        trace.open()
+        with warnings.catch_warnings(record=True) as w:
+            # If we do a write before the read, the time to complete the write
+            # should be accounted for in the read timeout calculation
+            trace.write(b'f' * 1000)
+            trace.read(1000)
+            self.assertIn('1000 written bytes in 1145ms', str(w[0].message))
