@@ -140,7 +140,7 @@ LIST_2TONE_DEC = ["A-B", "A-C", "A-D",
 LIST_2TONE_RESPONSE = ["None", "Alert", "Transpond", "Alert+Transpond"]
 
 # This is a general serial timeout for all serial read functions.
-STIMEOUT = 0.25
+STIMEOUT = 1.5
 
 # this var controls the verbosity in the debug and by default it's low (False)
 # make it True and you will to get a very verbose debug.log
@@ -380,8 +380,8 @@ def _rawrecv(radio, amount):
 
         # notice on the logs if short
         if len(data) < amount:
-            LOG.warn("Short reading %d bytes from the %d requested." %
-                     (len(data), amount))
+            LOG.warning("Short reading %d bytes from the %d requested." %
+                        (len(data), amount))
 
     except:
         raise errors.RadioError("Error reading data from radio")
@@ -447,8 +447,10 @@ def _do_ident(radio, status, upload=False):
     radio.pipe.baudrate = 9600
     radio.pipe.parity = "N"
 
-    # lengthen the timeout here as these radios are resetting due to timeout
-    radio.pipe.timeout = 0.75
+    # set timeout for download
+    radio.pipe.timeout = STIMEOUT
+
+    _clean_buffer(radio)
 
     # send the magic word
     _send(radio, radio._magic)
@@ -491,9 +493,6 @@ def _do_ident(radio, status, upload=False):
     _send(radio, frame)
     id2 = _rawrecv(radio, 21)
 
-    # restore the default serial timeout
-    radio.pipe.timeout = STIMEOUT
-
     # checking for the ack
     if id2[:1] not in b"\x06\x05":
         raise errors.RadioError("Bad ack from radio")
@@ -508,6 +507,12 @@ def _do_ident(radio, status, upload=False):
     # also the first block of TX must no have the ACK at the beginning
     # see _upload for this.
     if upload is True:
+        # set timeout for upload
+        radio.pipe.timeout = 0.5
+
+        # pause here for the radio to catch up
+        sleep(0.3)
+
         # send an ACK
         _send(radio, b"\x06")
 
@@ -542,8 +547,7 @@ def _download(radio):
     # put radio in program mode and identify it
     _do_ident(radio, status)
 
-    # lengthen timeout here as some radios are slow causing CHIRP to time out
-    radio.pipe.timeout = 0.75
+    _clean_buffer(radio)
 
     # reset the progress bar in the UI Bug #11851 BLOCKSIZE fix for KT-8900D
     status.max = MEM_SIZE // radio._block_size
