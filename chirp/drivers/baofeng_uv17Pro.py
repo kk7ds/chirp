@@ -1275,13 +1275,12 @@ class UV17Pro(bfc.BaofengCommonHT):
             in_range = chirp_common.in_range
             airbands = self.AIRBANDS
 
-            for band in airbands:
-                if in_range(mem.freq, [band]) and mem.mode != 'AM':
-                    msgs.append(chirp_common.ValidationWarning(
-                        _('Frequency in this range requires AM mode')))
-                if not in_range(mem.freq, [band]) and mem.mode == 'AM':
-                    msgs.append(chirp_common.ValidationWarning(
-                        _('Frequency in this range must not be AM mode')))
+            if in_range(mem.freq, airbands) and mem.mode != 'AM':
+                msgs.append(chirp_common.ValidationWarning(
+                    _('Frequency in this range requires AM mode')))
+            if not in_range(mem.freq, airbands) and mem.mode == 'AM':
+                msgs.append(chirp_common.ValidationWarning(
+                    _('Frequency in this range must not be AM mode')))
 
         return msgs + super().validate_memory(mem)
 
