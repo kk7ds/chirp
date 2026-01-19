@@ -35,7 +35,8 @@ from chirp.settings import (
 LOG = logging.getLogger(__name__)
 
 # This is the minimum required firmare version supported by this driver
-REQUIRED_VER = "v1.1.11.6"
+REQUIRED_VER = (1, 1, 11, 6)
+SERIAL_TIMEOUT = 1.0
 
 MEM_FORMAT = """
 
@@ -140,15 +141,15 @@ struct {
 #seekto 0xc0;
 struct  {
     ul16 zonenum;
-    ul16 zoneindex[16];
+    ul16 zoneindex[64];
 } zonedata;
 
-#seekto 0xe2;
+#seekto 0x142;
 struct {
     char name[14];
     ul16 chnum;
-    ul16 chindex[64];
-} zones[16];
+    ul16 chindex[16];
+} zones[64];
 
 #seekto 0x0D42;
 struct  {
@@ -337,22 +338,19 @@ class MemoryRegions(Enum):
     dTMFData = 15
 
 
-MEMORY_REGIONS_RANGES = {
-    MemoryRegions.radioHead: (0, 14),   # (Start addr, len)
-    MemoryRegions.radioInfo: (14, 68),
-    MemoryRegions.radioVer: (82, 10),
-    MemoryRegions.settingData: (92, 100),
-    MemoryRegions.zoneData: (192, 3202),
-    MemoryRegions.channelData: (3394, 43136),
-    MemoryRegions.scanData: (46530, 3618),
-    MemoryRegions.vfoScanData: (50148, 68),
-    MemoryRegions.alarmData: (50244, 258),
-    MemoryRegions.dTMFData: (51272, 842)}
+EXCLUDED_REGIONS = {
+    MemoryRegions.radioHead,
+    MemoryRegions.radioInfo,
+    MemoryRegions.radioVer,
+    MemoryRegions.zoneData,
+    MemoryRegions.scanData,
+    MemoryRegions.alarmData}
+
 
 DTMFCHARSET = "0123456789ABCDabcd#*"
 NAMECHARSET = chirp_common.CHARSET_ALPHANUMERIC + "-/;,._!? *#@$%&+=/<>~(){}]'"
 SPECIAL_MEMORIES = {"VFOA": -2, "VFOB": -1}
-MODES = ["NFM", "FM", "AM"]
+BANDWIDEH_LIST = ["NFM", "FM"]
 POWER_LEVELS = [
     chirp_common.PowerLevel("Low", watts=5),
     chirp_common.PowerLevel("High", watts=50)]
@@ -387,147 +385,8 @@ FREQ_STEP_List = [
     {"name": "25kHz", "id": 25000}]
 
 
-class HA1GBank(chirp_common.NamedBank):
-
-    def get_name(self):
-        _bank = self._model._radio._memobj.zones[self.index]
-        name = "".join(filter(_bank.name, NAMECHARSET, 14))
-        return name.rstrip()
-
-    def set_name(self, name):
-        _bank = self._model._radio._memobj.zones[self.index]
-        _bank.name = str(name).ljust(14)[:14]
-
-
-class HA1GBankModel(chirp_common.BankModel):
-
-    def get_num_mappings(self):
-        return len(self.get_mappings())
-
-    def get_mappings(self):
-        banks = self._radio._memobj.zones
-        bank_mappings = []
-        for index, _bank in enumerate(banks):
-            bank = HA1GBank(self, "%i" % index, "b%i" % (index + 1))
-            bank.index = index
-            bank_mappings.append(bank)
-
-        return bank_mappings
-
-    def _get_channel_numbers_in_bank(self, bank):
-        _bank_used = self._radio._memobj.zonedata.zoneindex[bank.index]
-        if _bank_used == 0xFFFF:
-            return set()
-
-        _members = self._radio._memobj.zones[bank.index]
-        return set([int(ch) - 1 for ch in _members.chindex if ch != 0xFFFF])
-
-    def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
-        _members = self._radio._memobj.zones[bank.index]
-        if len(channels_in_bank) > len(_members.chindex):
-            raise Exception("Too many entries in bank %d" % bank.index)
-
-        empty = 0
-        for index, channel_number in enumerate(sorted(channels_in_bank)):
-            _members.chindex[index] = channel_number + 1
-            empty = index + 1
-        for index in range(empty, len(_members.chindex)):
-            _members.chindex[index] = 0xFFFF
-
-        _members.chnum = len(channels_in_bank)
-
-    def _update_banknum(self):
-        # Simple approach to keep the number of banks synced to the actual
-        # bank data. Only drop trailing banks that have no channels.
-        _zonedata = self._radio._memobj.zonedata
-        _banknum = 0
-        for index, _bank in enumerate(reversed(_zonedata.zoneindex)):
-            if not _bank == 0xFFFF:
-                _banknum = len(_zonedata.zoneindex) - index
-                break
-
-        _zonedata.zonenum = _banknum
-
-    def add_memory_to_mapping(self, memory, bank):
-        channels_in_bank = self._get_channel_numbers_in_bank(bank)
-        channels_in_bank.add(memory.number)
-        self._update_bank_with_channel_numbers(bank, channels_in_bank)
-
-        # enable bank
-        self._radio._memobj.zonedata.zoneindex[bank.index] = bank.index
-        self._update_banknum()
-
-    def remove_memory_from_mapping(self, memory, bank):
-        channels_in_bank = self._get_channel_numbers_in_bank(bank)
-        try:
-            channels_in_bank.remove(memory.number)
-        except KeyError:
-            raise Exception("Memory %i is not in bank %s. Cannot remove" %
-                            (memory.number, bank))
-        self._update_bank_with_channel_numbers(bank, channels_in_bank)
-
-        if not channels_in_bank:
-            # disable bank
-            self._radio._memobj.zonedata.zoneindex[bank.index] = 0xFFFF
-            self._update_banknum()
-
-    def get_mapping_memories(self, bank):
-        memories = []
-        for channel in self._get_channel_numbers_in_bank(bank):
-            memories.append(self._radio.get_memory(channel))
-
-        return memories
-
-    def get_memory_mappings(self, memory):
-        banks = []
-        for bank in self.get_mappings():
-            if memory.number in self._get_channel_numbers_in_bank(bank):
-                banks.append(bank)
-
-        return banks
-
-
-def do_download(self):
-    error_map = {
-        HandshakeStatuses.RadioWrong: "Radio model mismatch",
-        HandshakeStatuses.PwdWrong: "Radio is password protected"}
-    try:
-        handshake_result = handshake(self, self.pipe)
-        if handshake_result == HandshakeStatuses.Normal:
-            all_bytes = read_items(self, self.pipe)
-            return memmap.MemoryMapBytes(bytes(all_bytes))
-        raise errors.RadioError(error_map.get(
-            handshake_result, "Unknown error communicating with radio"))
-    except errors.RadioError:
-        raise
-    except Exception as e:
-        LOG.error(f"download error: {e}")
-        raise errors.RadioError("Unknown error communicating with radio")
-    finally:
-        exit_programming_mode(self)
-
-
-def do_upload(self):
-    error_map = {
-        HandshakeStatuses.RadioWrong: "Radio model mismatch",
-        HandshakeStatuses.PwdWrong: "Radio is password protected"}
-    try:
-        handshake_result = handshake(self, self.pipe)
-        if handshake_result == HandshakeStatuses.Normal:
-            write_items(self, self.pipe)
-        else:
-            raise errors.RadioError(error_map.get(
-                handshake_result, "Unknown error communicating with radio"))
-    except errors.RadioError:
-        raise
-    except Exception as e:
-        LOG.error(f"upload error: {e}")
-        raise errors.RadioError("Unknown error communicating with radio")
-    finally:
-        exit_programming_mode(self)
-
-
 def handshake(self, serial):
+    serial.timeout = SERIAL_TIMEOUT
     databytes = b""
     max_retries = 15
     retry_delay = 0.05
@@ -539,55 +398,6 @@ def handshake(self, serial):
         if flag:
             break
     return validate_connection_handshake(self, databytes)
-
-
-def read_items(self, serial):
-    all_bytes = bytearray(self._memsize)
-    status = chirp_common.Status()
-    status.msg = "Cloning from radio"
-    status.cur = 0
-    status.max = self._memsize
-    for item in MemoryRegions:
-        try:
-            item_bytes = get_read_current_packet_bytes(
-                self, item.value, serial, status)
-            if item == MemoryRegions.radioVer and item_bytes:
-                firmware_version = unpack_version(item_bytes[2:6])
-                validate_version(firmware_version)
-                self.metadata = {'ha1g_firmware': firmware_version}
-            if item_bytes:
-                write_memory_region(all_bytes, item_bytes, item)
-        except errors.RadioError:
-            raise
-        except Exception as e:
-            LOG.error(
-                f"read item_data error: {item.name} error_msg: {e}")
-            continue
-    return all_bytes
-
-
-def write_items(self, serial):
-    status = chirp_common.Status()
-    status.max = self._memsize
-    status.msg = "Uploading to radio"
-    status.cur = 0
-    data_bytes = self.get_mmap()
-    item_bytes = get_read_current_packet_bytes(
-                self, MemoryRegions.radioVer.value, serial, status)
-    if item_bytes:
-        firmware_version = unpack_version(item_bytes[2:6])
-        validate_version(firmware_version)
-    EXCLUDED_REGIONS = {MemoryRegions.radioHead,
-                        MemoryRegions.radioInfo,
-                        MemoryRegions.radioVer,
-                        MemoryRegions.scanData,
-                        MemoryRegions.alarmData}
-    for item in MemoryRegions:
-        if item in EXCLUDED_REGIONS:
-            continue
-        item_bytes = get_write_item_bytes(data_bytes, item)
-        write_item_current_page_bytes(
-            self, serial, item_bytes, item.value, status)
 
 
 def validate_connection_handshake(self, dataByte: bytes):
@@ -703,28 +513,28 @@ def write_item_current_page_bytes(self, serial, item_Bytes: bytes,
         self.status_fn(status)
 
 
-def get_write_item_bytes(all_bytes: bytearray, item):
+def get_write_item_bytes(self, all_bytes: bytearray, item):
     """
        Get the bytes for a specific memory region
        - Uses MEMORY_REGIONS_RANGES to find start and length
     """
-    if item not in MEMORY_REGIONS_RANGES:
+    if item not in self.MEMORY_REGIONS_RANGES:
         LOG.debug(f"Unknown memory Range:{item}")
         return b""
-    start, length = MEMORY_REGIONS_RANGES[item]
+    start, length = self.MEMORY_REGIONS_RANGES[item]
     return all_bytes[start:start+length]
 
 
-def write_memory_region(all_bytes: bytearray,
+def write_memory_region(self, all_bytes: bytearray,
                         item_bytes: bytes, item):
     """
     Put the given region bytes into the main memory array
     - Uses MEMORY_REGIONS_RANGES to find start and length
     """
-    if item not in MEMORY_REGIONS_RANGES:
+    if item not in self.MEMORY_REGIONS_RANGES:
         LOG.debug(f"Unknown memory Range:{item}")
         return
-    start, length = MEMORY_REGIONS_RANGES[item]
+    start, length = self.MEMORY_REGIONS_RANGES[item]
     item_len = min(len(item_bytes), length)
     all_bytes[start:start + item_len] = item_bytes[:item_len]
 
@@ -769,28 +579,13 @@ def format_version(ver):
     return 'v%02i.%02i.%02i.%03i' % ver
 
 
-def unpack_version(raw_bytes):
+def fmver_validate(raw_bytes):
     current_ver = struct.unpack("BBBB", raw_bytes)
-    return format_version(current_ver)
-
-
-def validate_version(ver):
-    if compare_version(ver, REQUIRED_VER) < 0:
+    if REQUIRED_VER > current_ver:
         raise errors.RadioError(
             ("Firmware is %s; You must update to %s or higher "
-             "to be compatible with CHIRP") % (ver, REQUIRED_VER))
-
-
-def compare_version(a, b):
-    version1 = tuple(map(int, a.lstrip('v').split('.')) if a else [])
-    version2 = tuple(map(int, b.lstrip('v').split('.')) if b else [])
-
-    if version1 > version2:
-        return 1
-    if version2 > version1:
-        return -1
-
-    return 0
+             "to be compatible with CHIRP") % (format_version(current_ver),
+                                               format_version(REQUIRED_VER)))
 
 
 def calculate_crc16(data):
@@ -881,11 +676,7 @@ def _get_memory(self, mem, _mem, ch_index):
     else:
         mem.duplex = mem.freq > tx_freq and "-" or "+"
         mem.offset = abs(mem.freq - tx_freq)
-
-    mem.mode = MODES[(1 if _mem.bandwidth >= 3 else 0)]
-    if chirp_common.in_range(mem.freq, [self._airband]):
-        mem.mode = "AM"
-
+    mem.mode = BANDWIDEH_LIST[(1 if _mem.bandwidth >= 3 else 0)]
     rxtone = txtone = None
     if _mem.rxctcvaluetype == 1:
         tone_value = _mem.rxctc / 10.0
@@ -923,11 +714,6 @@ def get_model_info(self, model_info):
     rs_value.set_mutable(False)
     rs = RadioSetting("modelinfo.freqrange", "Frequency Range[MHz]", rs_value)
     model_info.append(rs)
-
-    firmware_version = self.metadata.get('ha1g_firmware', 'UNKNOWN')
-    val = RadioSettingValueString(0, 128, firmware_version)
-    val.set_mutable(False)
-    model_info.append(RadioSetting("fw_ver", "Firmware Version", val))
 
 
 def get_common_setting(self, common):
@@ -1227,13 +1013,13 @@ def get_vfo_scan(self, vfoscan):
     vfoscan.append(
         RadioSetting(
             "vfoscan.vhffreq_start", "Start Frequency",
-            RadioSettingValueFloat(108, 480, freq_start, 0.00001, 5)))
+            RadioSettingValueFloat(136, 480, freq_start, 0.00001, 5)))
 
     freq_end = _vfo_scan.vhffreq_end / 1000000
     vfoscan.append(
         RadioSetting(
             "vfoscan.vhffreq_end", "End Frequency",
-            RadioSettingValueFloat(108, 480, freq_end, 0.00001, 5)))
+            RadioSettingValueFloat(136, 480, freq_end, 0.00001, 5)))
 
 
 def _set_memory(self, mem, _mem, ch_index):
@@ -1361,7 +1147,7 @@ def set_ch_index(self, ch_index_list):
     if len(_ch_data.chindex) < ch_num:
         raise ValueError("Not enough space in chindex array")
     _ch_data.chnum = ch_num
-    for i in range(1027):
+    for i in range(len(_ch_data.chindex)):
         _ch_data.chindex[i] = (
             ch_index_list[i] if i < ch_num else 0xFFFF)
     self._ch_cache = ch_index_list.copy()
@@ -1373,8 +1159,8 @@ def get_ch_rxfreq(mem):
     ch_freq = (mem.freq // 10) * 10
     if mem.freq == 0:
         return mem.freq
-    elif mem.freq < 108000000:
-        ch_freq = 108000000
+    elif mem.freq < 136000000:
+        ch_freq = 136000000
     elif mem.freq > 174000000 and mem.freq < 400000000:
         ch_freq = 174000000
     elif mem.freq > 480000000:
@@ -1417,10 +1203,18 @@ class HA1G(chirp_common.CloneModeRadio):
     _ch_cache = None
     _dtmf_list = [{"name": "OFF", "id": 15}]
     _alarm_list = [{"name": "OFF", "id": 255}]
-
-    _airband = (108000000, 135999999)
-    _vhf = (136000000, 174000010)
-    _uhf = (400000000, 480000010)
+    NEEDS_VER_CHECK = True
+    MEMORY_REGIONS_RANGES = {
+        MemoryRegions.radioHead: (0, 14),   # (Start addr, len)
+        MemoryRegions.radioInfo: (14, 68),
+        MemoryRegions.radioVer: (82, 10),
+        MemoryRegions.settingData: (92, 100),
+        MemoryRegions.zoneData: (192, 3202),
+        MemoryRegions.channelData: (3394, 43136),
+        MemoryRegions.scanData: (46530, 3618),
+        MemoryRegions.vfoScanData: (50148, 68),
+        MemoryRegions.alarmData: (50244, 258),
+        MemoryRegions.dTMFData: (51272, 842)}
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -1430,9 +1224,8 @@ class HA1G(chirp_common.CloneModeRadio):
         rf.has_rx_dtcs = True
         rf.has_dtcs = True
         rf.has_cross = True
-        rf.has_bank = self.supports_banks()
-        rf.has_bank_names = True
-        rf.valid_bands = [self._airband, self._vhf, self._uhf]
+        rf.has_bank = False
+        rf.valid_bands = [(136000000, 174000010), (400000000, 480000010)]
         rf.has_tuning_step = False
         rf.has_nostep_tuning = True
         rf.valid_name_length = 12
@@ -1442,7 +1235,7 @@ class HA1G(chirp_common.CloneModeRadio):
             c for c in "-/;,._!? *#@$%&+=/<>~(){}]'"
             if c not in chirp_common.CHARSET_UPPER_NUMERIC)
         rf.has_settings = True
-        rf.valid_modes = MODES
+        rf.valid_modes = BANDWIDEH_LIST
         rf.valid_power_levels = POWER_LEVELS
         rf.has_comment = True
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
@@ -1456,28 +1249,6 @@ class HA1G(chirp_common.CloneModeRadio):
             "DTCS->DTCS"]
         return rf
 
-    def validate_memory(self, mem):
-        msgs = []
-
-        if (chirp_common.in_range(mem.freq, [self._airband])
-                and not self.supports_airband()):
-            msgs.append(chirp_common.ValidationError(
-                    _('Frequency in this range not supported by firmware')))
-
-        if (chirp_common.in_range(mem.freq, [self._airband])
-                and mem.mode != 'AM'):
-            msgs.append(chirp_common.ValidationWarning(
-                _('Frequency in this range requires AM mode')))
-        if (not chirp_common.in_range(mem.freq, [self._airband])
-                and mem.mode == 'AM'):
-            msgs.append(chirp_common.ValidationWarning(
-                _('Frequency in this range must not be AM mode')))
-
-        return msgs + super().validate_memory(mem)
-
-    def get_bank_model(self):
-        return HA1GBankModel(self)
-
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
         self._dtmf_list = self.get_dtmf_item_list()
@@ -1485,7 +1256,7 @@ class HA1G(chirp_common.CloneModeRadio):
 
     def sync_in(self):
         try:
-            self._mmap = do_download(self)
+            self._mmap = self.do_download()
             self.process_mmap()
         except errors.RadioError:
             raise
@@ -1497,7 +1268,7 @@ class HA1G(chirp_common.CloneModeRadio):
         """Upload to radio"""
         try:
             logging.debug("come in sync_out")
-            do_upload(self)
+            self.do_upload()
         except errors.RadioError:
             raise
         except Exception as e:
@@ -1505,6 +1276,88 @@ class HA1G(chirp_common.CloneModeRadio):
                 "Unexpected error during upload: %s" % e)
             raise errors.RadioError(
                 "Unexpected error communicating with the radio")
+
+    def do_download(self):
+        error_map = {
+            HandshakeStatuses.RadioWrong: "Radio model mismatch",
+            HandshakeStatuses.PwdWrong: "Radio is password protected"}
+        try:
+            handshake_result = handshake(self, self.pipe)
+            if handshake_result == HandshakeStatuses.Normal:
+                all_bytes = self.read_items(self.pipe)
+                return memmap.MemoryMapBytes(bytes(all_bytes))
+            raise errors.RadioError(error_map.get(
+                handshake_result, "Unknown error communicating with radio"))
+        except errors.RadioError:
+            raise
+        except Exception as e:
+            LOG.error(f"download error: {e}")
+            raise errors.RadioError("Unknown error communicating with radio")
+        finally:
+            exit_programming_mode(self)
+
+    def do_upload(self):
+        error_map = {
+            HandshakeStatuses.RadioWrong: "Radio model mismatch",
+            HandshakeStatuses.PwdWrong: "Radio is password protected"}
+        try:
+            handshake_result = handshake(self, self.pipe)
+            if handshake_result == HandshakeStatuses.Normal:
+                self.write_items(self.pipe)
+            else:
+                raise errors.RadioError(error_map.get(
+                    handshake_result,
+                    "Unknown error communicating with radio"))
+        except errors.RadioError:
+            raise
+        except Exception as e:
+            LOG.error(f"upload error: {e}")
+            raise errors.RadioError("Unknown error communicating with radio")
+        finally:
+            exit_programming_mode(self)
+
+    def read_items(self, serial):
+        serial.timeout = SERIAL_TIMEOUT
+        all_bytes = bytearray(self._memsize)
+        status = chirp_common.Status()
+        status.msg = "Cloning from radio"
+        status.cur = 0
+        status.max = self._memsize
+        for item in MemoryRegions:
+            try:
+                item_bytes = get_read_current_packet_bytes(
+                    self, item.value, serial, status)
+                radioVer_flag = item == MemoryRegions.radioVer
+                if (self.NEEDS_VER_CHECK and radioVer_flag and item_bytes):
+                    fmver_validate(item_bytes[2:6])
+                if item_bytes:
+                    write_memory_region(self, all_bytes, item_bytes, item)
+            except errors.RadioError:
+                raise
+            except Exception as e:
+                LOG.error(
+                    f"read item_data error: {item.name} error_msg: {e}")
+                continue
+        return all_bytes
+
+    def write_items(self, serial):
+        serial.timeout = SERIAL_TIMEOUT
+        status = chirp_common.Status()
+        status.max = self._memsize
+        status.msg = "Uploading to radio"
+        status.cur = 0
+        data_bytes = self.get_mmap()
+        if self.NEEDS_VER_CHECK:
+            item_bytes = get_read_current_packet_bytes(
+                        self, MemoryRegions.radioVer.value, serial, status)
+            if item_bytes:
+                fmver_validate(item_bytes[2:6])
+        for item in MemoryRegions:
+            if item in EXCLUDED_REGIONS:
+                continue
+            item_bytes = get_write_item_bytes(self, data_bytes, item)
+            write_item_current_page_bytes(
+                self, serial, item_bytes, item.value, status)
 
     def get_memory(self, number):
         mem = chirp_common.Memory()
@@ -1645,14 +1498,6 @@ class HA1G(chirp_common.CloneModeRadio):
                 scanname = "".join(filter(scan_item.name, NAMECHARSET, 12))
                 scan_dict.append({"name": scanname, "id": scan_index})
         return scan_dict
-
-    def supports_airband(self):
-        return compare_version(self.metadata.get(
-            'ha1g_firmware', '0.0.0.0'), '1.1.12.5') >= 0
-
-    def supports_banks(self):
-        return compare_version(self.metadata.get(
-            'ha1g_firmware', '0.0.0.0'), '1.1.13.1') >= 0
 
 
 @directory.register
