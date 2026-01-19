@@ -1292,7 +1292,7 @@ class HA2(retevis_ha1g.HA1G):
     current_model = "Ailunce HA2"
     NEEDS_VER_CHECK = False
 
-    MEMORY_REGIONS_RANGES = {
+    MEMORY_REGIONS_RANGES: dict[HA2MemoryRegions, tuple[int, int]] = {
         HA2MemoryRegions.radioHead: (0, 14),
         HA2MemoryRegions.radioInfo: (14, 68),
         HA2MemoryRegions.radioVer: (82, 10),
