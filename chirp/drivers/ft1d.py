@@ -1371,7 +1371,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         for bank in bm.get_memory_mappings(mem):
             bm.remove_memory_from_mapping(mem, bank)
 
-    def validate_memory(self, mem: chirp_common.Memory) -> list:
+    def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
         # Only check the home registers for appropriate bands
         ndx = mem.number - ALLNAMES.index("Home1") - self.MAX_MEM_SLOT
@@ -1391,6 +1391,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             if flag is not None:
                 flag.used = False
             return
+        if regtype == 'Presets':
+            raise errors.RadioError('Cannot change preset')
         _mem.power = self._encode_power_level(mem)
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         self._set_tmode(_mem, mem)
