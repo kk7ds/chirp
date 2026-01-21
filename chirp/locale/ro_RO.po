@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-07 14:53-0800\n"
+"POT-Creation-Date: 2026-01-20 20:34-0800\n"
 "PO-Revision-Date: 2025-02-27 08:00+0200\n"
 "Last-Translator: ThatSINEWAVE\n"
 "Language-Team: Romanian\n"
@@ -1029,7 +1029,7 @@ msgstr "Despre CHIRP"
 msgid "Agree"
 msgstr "Sunt de acord"
 
-#: ../chirp_common.py:1843
+#: ../chirp_common.py:1855
 msgid "Aircraft frequencies must be aligned to 25kHz, 8.33kHz, be or a valid channel"
 msgstr ""
 
@@ -1725,10 +1725,10 @@ msgstr ""
 "    audio pe partea dreaptă!\n"
 
 #: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:684 ../drivers/gmrsuv1.py:391
+#: ../drivers/btech.py:664 ../drivers/gmrsuv1.py:391
 #: ../drivers/tdxone_tdq8a.py:441 ../drivers/uv6r.py:339
 #: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:503 ../drivers/bf_t1.py:482
+#: ../drivers/baofeng_uv17Pro.py:506 ../drivers/bf_t1.py:482
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1832,7 +1832,7 @@ msgstr ""
 "    audio pe partea dreaptă!\n"
 "6 - Oprește și pornește din nou stația pentru a ieși din modul de clonare\n"
 
-#: ../drivers/btech.py:690 ../drivers/bf_t1.py:488
+#: ../drivers/btech.py:670 ../drivers/bf_t1.py:488
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1906,7 +1906,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
 #: ../drivers/lt725uv.py:487 ../drivers/tdxone_tdq8a.py:447
 #: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:509
+#: ../drivers/baofeng_uv17Pro.py:512
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1943,29 +1943,29 @@ msgstr "Sa găsit o valoare de listă goală pentru %(name)s: %(value)r"
 msgid "Frequency"
 msgstr "Frecvență"
 
-#: ../import_logic.py:76
+#: ../import_logic.py:77
 #, python-format
-msgid "Frequency %s is out of supported range"
-msgstr "Frecvența %s este în afara intervalului acceptat"
+msgid "Frequency %s is out of supported ranges %s"
+msgstr ""
 
 #: ../wxui/memedit.py:151
 msgid "Frequency granularity in kHz"
 msgstr "Granularitatea frecvenței în kHz"
 
 #: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1379
-#: ../drivers/tdh8.py:2479 ../drivers/retevis_ha1g.py:1374
-#: ../drivers/uv5r.py:1940 ../drivers/baofeng_uv17Pro.py:1273
+#: ../drivers/tdh8.py:2479 ../drivers/retevis_ha1g.py:1474
+#: ../drivers/uv5r.py:1949 ../drivers/baofeng_uv17Pro.py:1283
 msgid "Frequency in this range must not be AM mode"
 msgstr "Frecvența din acest interval nu trebuie să fie în modul AM"
 
-#: ../drivers/retevis_ha1g.py:1365
+#: ../drivers/retevis_ha1g.py:1465
 msgid "Frequency in this range not supported by firmware"
 msgstr ""
 
 #: ../drivers/ga510.py:1065 ../drivers/radtel_rt900.py:1360
 #: ../drivers/mml_jc8810.py:1376 ../drivers/tdh8.py:2476
-#: ../drivers/retevis_ha1g.py:1370 ../drivers/uv5r.py:1936
-#: ../drivers/baofeng_uv17Pro.py:1269
+#: ../drivers/retevis_ha1g.py:1470 ../drivers/uv5r.py:1945
+#: ../drivers/baofeng_uv17Pro.py:1280
 msgid "Frequency in this range requires AM mode"
 msgstr "Frecvența din acest interval necesită modul AM"
 
@@ -2065,7 +2065,7 @@ msgstr "Informații"
 msgid "Insert Row Above"
 msgstr "Inserare linie deasupra"
 
-#: ../wxui/__init__.py:59
+#: ../wxui/__init__.py:60
 msgid "Install desktop icon?"
 msgstr "Instalare iconiță pe desktop?"
 
@@ -3321,7 +3321,7 @@ msgstr "Bine ați venit"
 msgid "With this option checked, a proximity search will include cached results from other localities if they are in range, match other filter parameters, and have been downloaded before."
 msgstr "Cu această opțiune bifată, o căutare pe bază de proximitate va include rezultate din alte localități, dacă acestea sunt în intervalul de căutare, se potrivesc altor parametri de filtrare și au fost descărcate anterior."
 
-#: ../wxui/__init__.py:58
+#: ../wxui/__init__.py:59
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "Doriți ca CHIRP să instaleze un icon pe desktop pentru dvs.?"
 
@@ -3404,6 +3404,10 @@ msgstr "{bank} este plin"
 
 #~ msgid "Export"
 #~ msgstr "Exportează"
+
+#, python-format
+#~ msgid "Frequency %s is out of supported range"
+#~ msgstr "Frecvența %s este în afara intervalului acceptat"
 
 #~ msgid "Hide Unused Fields"
 #~ msgstr "Ascunde câmpurile nefolosite"

@@ -70,11 +70,13 @@ def ensure_has_calls(radio, memory):
 
 
 def _import_freq(dst_radio, _srcrf, mem):
-    dst_bands = dst_radio.get_features().valid_bands
+    dst_rf = dst_radio.get_features()
+    dst_bands = dst_rf.valid_bands
     if not any(lo <= mem.freq <= hi for (lo, hi) in dst_bands):
         raise DestNotCompatible(
-            _('Frequency %s is out of supported range') % (
-                chirp_common.format_freq(mem.freq)))
+            _('Frequency %s is out of supported ranges %s') % (
+                chirp_common.format_freq(mem.freq),
+                dst_rf.concise_bands))
 
 
 # Filter the name according to the destination's rules

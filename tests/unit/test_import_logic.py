@@ -24,7 +24,7 @@ class FakeRadio(chirp_common.Radio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.valid_bands = [(100000000, 500000000)]
+        rf.valid_bands = [(100000000, 500000000), (601150000, 800050000)]
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_tmodes = self.TMODES
         rf.valid_modes = self.MODES
@@ -159,9 +159,11 @@ class ImportFieldTests(base.BaseTest):
     def test_import_freq(self):
         mem = chirp_common.Memory()
         mem.freq = 10
-        self.assertRaises(import_logic.DestNotCompatible,
-                          import_logic._import_freq,
-                          FakeRadio(None), None, mem)
+        self.assertRaisesRegex(
+            import_logic.DestNotCompatible,
+            '.*supported ranges 100-500MHz, 601.15-800.05MHz',
+            import_logic._import_freq,
+            FakeRadio(None), None, mem)
 
     def test_import_name(self):
         mem = chirp_common.Memory()
