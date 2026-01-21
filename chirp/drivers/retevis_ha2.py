@@ -570,6 +570,8 @@ def _get_memory(self, mem, _mem, ch_index, isvfo=False):
 
     mem.freq = int(_mem.rxfreq)
     mem.name = self.filter_name(str(_mem.alias).rstrip())
+    if isvfo:
+        mem.immutable += ["name"]
     tx_freq = int(_mem.txfreq)
 
     if mem.freq == 0 or mem.freq == 0xFFFFFFFF:
@@ -587,7 +589,9 @@ def _get_memory(self, mem, _mem, ch_index, isvfo=False):
         mem.duplex = mem.freq > tx_freq and "-" or "+"
         mem.offset = abs(mem.freq - tx_freq)
 
-    mem.mode = retevis_ha1g.BANDWIDEH_LIST[(1 if _mem.bandwidth >= 3 else 0)]
+    mem.mode = retevis_ha1g.MODES[(1 if _mem.bandwidth >= 3 else 0)]
+    if chirp_common.in_range(mem.freq, [self._airband]):
+        mem.mode = "AM"
 
     rxtone = txtone = None
     if _mem.rxctcvaluetype == 1:
@@ -1311,12 +1315,27 @@ class HA2(retevis_ha1g.HA1G):
     }
     _memsize = max(start + size for start,
                    size in MEMORY_REGIONS_RANGES.values())
+    _airband = (108000000, 135999999)
+    _vhf_uhf = (136000000, 600000001)
 
     def get_features(self):
         rf = super().get_features()
         rf.memory_bounds = (1, 1024)
-        rf.valid_bands = [(108000000, 600000001)]
+        rf.valid_bands = [self._airband, self._vhf_uhf]
         return rf
+
+    def validate_memory(self, mem):
+        msgs = []
+        if (chirp_common.in_range(mem.freq, [self._airband])
+                and mem.mode != 'AM'):
+            msgs.append(chirp_common.ValidationWarning(
+                _('Frequency in this range requires AM mode')))
+        if (not chirp_common.in_range(mem.freq, [self._airband])
+                and mem.mode == 'AM'):
+            msgs.append(chirp_common.ValidationWarning(
+                _('Frequency in this range must not be AM mode')))
+
+        return msgs +  super(retevis_ha1g.HA1G, self).validate_memory(mem)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
