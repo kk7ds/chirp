@@ -1067,6 +1067,16 @@ class RadioFeatures:
     def __getitem__(self, name):
         return self.__dict__[name]
 
+    @property
+    def concise_bands(self):
+        pp_range_strings = [
+            format_freq(lo).rstrip('0').rstrip('.') +
+            '-' +
+            format_freq(hi).rstrip('0').rstrip('.') +
+            'MHz'
+            for lo, hi in self.valid_bands]
+        return ', '.join(pp_range_strings)
+
     def validate_memory(self, mem):
         """Return a list of warnings and errors that will be encountered
         if trying to set @mem on the current radio"""
@@ -1138,7 +1148,9 @@ class RadioFeatures:
             if not valid:
                 msg = ValidationError(
                     ("Frequency {freq} is out "
-                     "of supported range").format(freq=format_freq(mem.freq)))
+                     "of supported ranges {ranges}").format(
+                         freq=format_freq(mem.freq),
+                         ranges=self.concise_bands))
                 msgs.append(msg)
 
         if self.valid_bands and \

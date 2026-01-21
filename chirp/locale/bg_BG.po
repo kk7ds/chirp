@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-07 14:53-0800\n"
+"POT-Creation-Date: 2026-01-20 20:34-0800\n"
 "PO-Revision-Date: 2025-04-17 10:00+0200\n"
 "Last-Translator: Стоян <stoyanster от гмаил>\n"
 "Language-Team: Bulgarian <dict@ludost.net>\n"
@@ -709,7 +709,7 @@ msgstr "Относно CHIRP"
 msgid "Agree"
 msgstr "Съгласяване"
 
-#: ../chirp_common.py:1843
+#: ../chirp_common.py:1855
 msgid "Aircraft frequencies must be aligned to 25kHz, 8.33kHz, be or a valid channel"
 msgstr ""
 
@@ -1375,10 +1375,10 @@ msgid ""
 msgstr ""
 
 #: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:684 ../drivers/gmrsuv1.py:391
+#: ../drivers/btech.py:664 ../drivers/gmrsuv1.py:391
 #: ../drivers/tdxone_tdq8a.py:441 ../drivers/uv6r.py:339
 #: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:503 ../drivers/bf_t1.py:482
+#: ../drivers/baofeng_uv17Pro.py:506 ../drivers/bf_t1.py:482
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1449,7 +1449,7 @@ msgid ""
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
 
-#: ../drivers/btech.py:690 ../drivers/bf_t1.py:488
+#: ../drivers/btech.py:670 ../drivers/bf_t1.py:488
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1513,7 +1513,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
 #: ../drivers/lt725uv.py:487 ../drivers/tdxone_tdq8a.py:447
 #: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:509
+#: ../drivers/baofeng_uv17Pro.py:512
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1540,29 +1540,29 @@ msgstr "Намерена е стойност „празен списък“ з�
 msgid "Frequency"
 msgstr "Честота"
 
-#: ../import_logic.py:76
+#: ../import_logic.py:77
 #, python-format
-msgid "Frequency %s is out of supported range"
-msgstr "Честотата %s е извън поддържания обхват"
+msgid "Frequency %s is out of supported ranges %s"
+msgstr ""
 
 #: ../wxui/memedit.py:151
 msgid "Frequency granularity in kHz"
 msgstr "Стъпка на честотата в кХз"
 
 #: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1379
-#: ../drivers/tdh8.py:2479 ../drivers/retevis_ha1g.py:1374
-#: ../drivers/uv5r.py:1940 ../drivers/baofeng_uv17Pro.py:1273
+#: ../drivers/tdh8.py:2479 ../drivers/retevis_ha1g.py:1474
+#: ../drivers/uv5r.py:1949 ../drivers/baofeng_uv17Pro.py:1283
 msgid "Frequency in this range must not be AM mode"
 msgstr "Честотата в този обхват не трябва да бъде в режим на АМ"
 
-#: ../drivers/retevis_ha1g.py:1365
+#: ../drivers/retevis_ha1g.py:1465
 msgid "Frequency in this range not supported by firmware"
 msgstr ""
 
 #: ../drivers/ga510.py:1065 ../drivers/radtel_rt900.py:1360
 #: ../drivers/mml_jc8810.py:1376 ../drivers/tdh8.py:2476
-#: ../drivers/retevis_ha1g.py:1370 ../drivers/uv5r.py:1936
-#: ../drivers/baofeng_uv17Pro.py:1269
+#: ../drivers/retevis_ha1g.py:1470 ../drivers/uv5r.py:1945
+#: ../drivers/baofeng_uv17Pro.py:1280
 msgid "Frequency in this range requires AM mode"
 msgstr "Честотата в този обхват изисква режим на АМ"
 
@@ -1662,7 +1662,7 @@ msgstr "Сведения"
 msgid "Insert Row Above"
 msgstr "Вмъкване на ред отгоре"
 
-#: ../wxui/__init__.py:59
+#: ../wxui/__init__.py:60
 msgid "Install desktop icon?"
 msgstr "Добавяне на пикограма към работния плот?"
 
@@ -2888,7 +2888,7 @@ msgstr "Добре дошли"
 msgid "With this option checked, a proximity search will include cached results from other localities if they are in range, match other filter parameters, and have been downloaded before."
 msgstr ""
 
-#: ../wxui/__init__.py:58
+#: ../wxui/__init__.py:59
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "Желаете ли пряк път към CHIRP на работния плот?"
 
@@ -3002,6 +3002,10 @@ msgstr "{bank} е пълна"
 
 #~ msgid "Cu&t"
 #~ msgstr "&Изрязване"
+
+#, python-format
+#~ msgid "Frequency %s is out of supported range"
+#~ msgstr "Честотата %s е извън поддържания обхват"
 
 #~ msgid "Name"
 #~ msgstr "Име"

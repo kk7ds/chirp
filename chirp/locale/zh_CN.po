@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-07 14:53-0800\n"
+"POT-Creation-Date: 2026-01-20 20:34-0800\n"
 "PO-Revision-Date: 2024-11-11 02:28+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language-Team: \n"
@@ -996,7 +996,7 @@ msgstr "关于CHIRP"
 msgid "Agree"
 msgstr "同意"
 
-#: ../chirp_common.py:1843
+#: ../chirp_common.py:1855
 msgid "Aircraft frequencies must be aligned to 25kHz, 8.33kHz, be or a valid channel"
 msgstr ""
 
@@ -1687,10 +1687,10 @@ msgstr ""
 "5 - 断开接口电缆！否则将没有右侧音频！\n"
 
 #: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:684 ../drivers/gmrsuv1.py:391
+#: ../drivers/btech.py:664 ../drivers/gmrsuv1.py:391
 #: ../drivers/tdxone_tdq8a.py:441 ../drivers/uv6r.py:339
 #: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:503 ../drivers/bf_t1.py:482
+#: ../drivers/baofeng_uv17Pro.py:506 ../drivers/bf_t1.py:482
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1791,7 +1791,7 @@ msgstr ""
 "5 - 断开接口电缆，否则将没有右侧音频！\n"
 "6 - 重启电台以退出克隆模式\n"
 
-#: ../drivers/btech.py:690 ../drivers/bf_t1.py:488
+#: ../drivers/btech.py:670 ../drivers/bf_t1.py:488
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1865,7 +1865,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
 #: ../drivers/lt725uv.py:487 ../drivers/tdxone_tdq8a.py:447
 #: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:509
+#: ../drivers/baofeng_uv17Pro.py:512
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1902,29 +1902,29 @@ msgstr "发现 %(name)s 的空列表值：%(value)r"
 msgid "Frequency"
 msgstr "频率"
 
-#: ../import_logic.py:76
+#: ../import_logic.py:77
 #, python-format
-msgid "Frequency %s is out of supported range"
-msgstr "频率 %s 超出支持范围"
+msgid "Frequency %s is out of supported ranges %s"
+msgstr ""
 
 #: ../wxui/memedit.py:151
 msgid "Frequency granularity in kHz"
 msgstr "频率粒度（kHz）"
 
 #: ../drivers/ga510.py:1072 ../drivers/mml_jc8810.py:1379
-#: ../drivers/tdh8.py:2479 ../drivers/retevis_ha1g.py:1374
-#: ../drivers/uv5r.py:1940 ../drivers/baofeng_uv17Pro.py:1273
+#: ../drivers/tdh8.py:2479 ../drivers/retevis_ha1g.py:1474
+#: ../drivers/uv5r.py:1949 ../drivers/baofeng_uv17Pro.py:1283
 msgid "Frequency in this range must not be AM mode"
 msgstr "此范围内的频率不能是AM模式"
 
-#: ../drivers/retevis_ha1g.py:1365
+#: ../drivers/retevis_ha1g.py:1465
 msgid "Frequency in this range not supported by firmware"
 msgstr ""
 
 #: ../drivers/ga510.py:1065 ../drivers/radtel_rt900.py:1360
 #: ../drivers/mml_jc8810.py:1376 ../drivers/tdh8.py:2476
-#: ../drivers/retevis_ha1g.py:1370 ../drivers/uv5r.py:1936
-#: ../drivers/baofeng_uv17Pro.py:1269
+#: ../drivers/retevis_ha1g.py:1470 ../drivers/uv5r.py:1945
+#: ../drivers/baofeng_uv17Pro.py:1280
 msgid "Frequency in this range requires AM mode"
 msgstr "此范围内的频率需要是AM模式"
 
@@ -2024,7 +2024,7 @@ msgstr "信息"
 msgid "Insert Row Above"
 msgstr "上方插入一行"
 
-#: ../wxui/__init__.py:59
+#: ../wxui/__init__.py:60
 msgid "Install desktop icon?"
 msgstr "要安装桌面图标吗？"
 
@@ -3269,7 +3269,7 @@ msgstr "欢迎"
 msgid "With this option checked, a proximity search will include cached results from other localities if they are in range, match other filter parameters, and have been downloaded before."
 msgstr ""
 
-#: ../wxui/__init__.py:58
+#: ../wxui/__init__.py:59
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "您是否希望 CHIRP 为您安装一个桌面图标？"
 
@@ -3489,6 +3489,10 @@ msgstr "{bank} 已满"
 
 #~ msgid "File Exists"
 #~ msgstr "文件已存在"
+
+#, python-format
+#~ msgid "Frequency %s is out of supported range"
+#~ msgstr "频率 %s 超出支持范围"
 
 #~ msgid "From"
 #~ msgstr "从"
