@@ -1335,7 +1335,7 @@ class HA2(retevis_ha1g.HA1G):
             msgs.append(chirp_common.ValidationWarning(
                 _('Frequency in this range must not be AM mode')))
 
-        return msgs +  super(retevis_ha1g.HA1G, self).validate_memory(mem)
+        return msgs + super(retevis_ha1g.HA1G, self).validate_memory(mem)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
