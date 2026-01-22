@@ -17,7 +17,7 @@
 import logging
 
 from chirp.drivers import baofeng_common as bfc
-from chirp import chirp_common, directory, memmap
+from chirp import chirp_common, directory, memmap, bandplan_na
 from chirp import bitwise
 from chirp.settings import RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
@@ -1547,6 +1547,90 @@ class UV17ProGPS(UV17Pro):
         rf = super().get_features()
         rf.has_bank = True
         return rf
+
+
+@directory.register
+class RadioddityGM30Plus(UV17ProGPS):
+    """Radioddity GM-30 Plus"""
+    VENDOR = "Radioddity"
+    MODEL = "GM-30 Plus"
+    MODEL_ID = "GM-30P"
+    _gmrs = True
+    _low_power_index = 1
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_duplexes = ["", "-", "+", "split", "off"]
+        return rf
+
+    def _apply_gmrs_limits(self, mem):
+        if mem.duplex == "off":
+            return mem
+
+        if mem.duplex == "split":
+            tx_freq = mem.offset
+        elif mem.duplex == "+":
+            tx_freq = mem.freq + mem.offset
+        elif mem.duplex == "-":
+            tx_freq = mem.freq - mem.offset
+        else:
+            tx_freq = mem.freq
+
+        if tx_freq in bandplan_na.GMRS_HHONLY:
+            mem.mode = "NFM"
+            mem.power = self.POWER_LEVELS[self._low_power_index]
+
+        return mem
+
+    def get_memory(self, number):
+        mem = super().get_memory(number)
+        if mem.empty:
+            return mem
+        return self._apply_gmrs_limits(mem)
+
+    def set_memory(self, mem):
+        if not mem.empty:
+            mem = self._apply_gmrs_limits(mem)
+        super().set_memory(mem)
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+        if mem.empty:
+            return msgs
+
+        msg_tx = "TX frequency must be a GMRS frequency"
+        msg_low_power = (
+            "GMRS 467 MHz interstitial frequencies require low power"
+        )
+        msg_nfm = (
+            "GMRS 467 MHz interstitial frequencies require narrowband (NFM)"
+        )
+
+        gmrs_tx_freqs = set(bandplan_na.ALL_GMRS_FREQS)
+        gmrs_tx_freqs.update(
+            freq + 5000000 for freq in bandplan_na.GMRS_HIRPT
+        )
+
+        if mem.duplex == "off":
+            tx_freq = None
+        elif mem.duplex == "split":
+            tx_freq = mem.offset
+        elif mem.duplex == "+":
+            tx_freq = mem.freq + mem.offset
+        elif mem.duplex == "-":
+            tx_freq = mem.freq - mem.offset
+        else:
+            tx_freq = mem.freq
+
+        if tx_freq is not None and tx_freq not in gmrs_tx_freqs:
+            msgs.append(chirp_common.ValidationWarning(msg_tx))
+        if tx_freq in bandplan_na.GMRS_HHONLY:
+            if mem.power != self.POWER_LEVELS[self._low_power_index]:
+                msgs.append(chirp_common.ValidationWarning(msg_low_power))
+            if mem.mode != "NFM":
+                msgs.append(chirp_common.ValidationWarning(msg_nfm))
+
+        return msgs
 
 
 @directory.register
