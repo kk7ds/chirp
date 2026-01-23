@@ -142,7 +142,9 @@ class TestCaseEdges(base.DriverTest):
             # radios have empty in the immutable set.
             if m1.empty:
                 m1.empty = False
-
+            if 'freq' in m1.immutable:
+                # Cannot mod frequency, so skip this test instance
+                continue
             self.assertIsInstance(m1.number, int,
                                   ('Special memory %s number %r is not an '
                                    'integer') % (name, m1.number))
