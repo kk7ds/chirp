@@ -1282,7 +1282,8 @@ class RT470Radio(JC8810base):
                          b"\x00\x00\x00\x42\x00\x20\xF0\x04",
                          b"\x00\x00\x00\x4A\x00\x20\xF8\x04",
                          b"\x00\x00\x00\x3A\x00\x20\xE8\x04",  # fw 1.25A
-                         b"\x00\x00\x00\x42\x00\x20\xec\x04",  # fw 1.27A
+
+                         b"\x00\x00\x00\x42\x00\x20\xEC\x04",  # fw 1.27A
                          ]
 
     # pcb 2
@@ -1395,7 +1396,8 @@ class RT470XPlusRadio(RT470XRadio):
     RT470X_ORIG = False  # BT fingerprint will fall automatically here
 
     # BT version
-    _fingerprint_bt = [b"\x01\x36\x01\x80\x04\x00\x05\x20"  # fw v0.15
+    _fingerprint_bt = [b"\x01\x36\x01\x80\x04\x00\x05\x20",  # fw v0.15
+                       b"\x01\x30\x01\x80\x04\x00\x05\x20",  # there is such a print
                        ]
     _fingerprint = _fingerprint_bt
 
