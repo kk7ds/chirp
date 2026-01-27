@@ -2008,7 +2008,7 @@ class UVK5Radio(UVK5RadioBase):
         approved_prefixes = (
             # These are the original OEM firmware versions
             'k5_2.01.', 'app_2.01.', '2.01.', '3.00.',
-            '4.00.', 'k5_4.00.', '5.00.',
+            '4.00.', 'k5_4.00.', '5.00.', '7.00.',
             # This "oneofeeleven" prefix really covers a wide range of
             # firmwares that are user-built, but people report them working
             # fine with the base driver.
