@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-20 20:34-0800\n"
+"POT-Creation-Date: 2026-01-29 14:51-0800\n"
 "PO-Revision-Date: 2025-01-19 16:11+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -560,7 +560,7 @@ msgstr ""
 "4. [MR(SKP)SC] tuşuna basın (ekranda \"CLONE WAIT\" görünecektir).\n"
 "5. İmajı telsize göndermek için TAMAM'a tıklayın.\n"
 
-#: ../drivers/vx1.py:400
+#: ../drivers/vx1.py:399
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -569,7 +569,7 @@ msgid ""
 "5. <b>After clicking OK</b>, press the [DWN] button on radio to send image. The radio will say CLN OUT while downloading.\n"
 msgstr ""
 
-#: ../drivers/vx1.py:408
+#: ../drivers/vx1.py:407
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -2183,7 +2183,7 @@ msgstr ""
 msgid "Memories"
 msgstr "Kayıtlar"
 
-#: ../drivers/uvk5.py:2092
+#: ../drivers/uvk5.py:2087
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Desteklenmeyen aygıt yazılımı sürümü nedeniyle kayıtlar salt okunurdur"
 
@@ -2784,7 +2784,7 @@ msgstr "Servis"
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: ../drivers/uvk5.py:2096
+#: ../drivers/uvk5.py:2091
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr "Desteklenmeyen aygıt yazılımı sürümü nedeniyle ayarlar salt okunurdur"
 
@@ -2971,6 +2971,10 @@ msgstr "Bu sürücü geliştirme aşamasındadır ve deneysel olarak değerlendi
 #: ../drivers/uvk5.py:685
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr "Bu imajda donanım yazılımı bilgileri eksik. CHIRP'in eski veya değiştirilmiş bir sürümüyle oluşturulmuş olabilir. En iyi güvenlik ve uyumluluk için telsizinizden yeni bir imaj indirmeniz ve bunu ileriye doğru kullanmanız önerilir."
+
+#: ../drivers/uvk5.py:2095
+msgid "This image is read-only due to being from a radio with unsupported firmware"
+msgstr ""
 
 #: ../wxui/main.py:1716
 msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"

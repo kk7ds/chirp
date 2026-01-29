@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-20 20:34-0800\n"
+"POT-Creation-Date: 2026-01-29 14:51-0800\n"
 "PO-Revision-Date: 2011-11-29 16:07-0800\n"
 "Last-Translator: Dan Smith <dan@theine>\n"
 "Language-Team: English\n"
@@ -400,7 +400,7 @@ msgid ""
 "5. Click OK to send image to radio.\n"
 msgstr ""
 
-#: ../drivers/vx1.py:400
+#: ../drivers/vx1.py:399
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -409,7 +409,7 @@ msgid ""
 "5. <b>After clicking OK</b>, press the [DWN] button on radio to send image. The radio will say CLN OUT while downloading.\n"
 msgstr ""
 
-#: ../drivers/vx1.py:408
+#: ../drivers/vx1.py:407
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -1801,7 +1801,7 @@ msgstr ""
 msgid "Memories"
 msgstr "Diff raw memories"
 
-#: ../drivers/uvk5.py:2092
+#: ../drivers/uvk5.py:2087
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -2407,7 +2407,7 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: ../drivers/uvk5.py:2096
+#: ../drivers/uvk5.py:2091
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -2581,6 +2581,10 @@ msgstr ""
 
 #: ../drivers/uvk5.py:685
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
+msgstr ""
+
+#: ../drivers/uvk5.py:2095
+msgid "This image is read-only due to being from a radio with unsupported firmware"
 msgstr ""
 
 #: ../wxui/main.py:1716
