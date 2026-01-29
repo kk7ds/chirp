@@ -34,8 +34,6 @@ from chirp.settings import (
 
 LOG = logging.getLogger(__name__)
 
-# This is the minimum required firmare version supported by this driver
-REQUIRED_VER = "v1.1.11.6"
 SERIAL_TIMEOUT = 1.0
 
 MEM_FORMAT = """
@@ -320,22 +318,6 @@ class HandshakeStatuses(Enum):
     Wrong = 1
     PwdWrong = 3
     RadioWrong = 4
-
-
-class MemoryRegions(Enum):
-    """
-    Defines the logical memory regions for this radio model.
-    """
-    radioHead = 2
-    radioInfo = 3
-    radioVer = 4
-    settingData = 6
-    zoneData = 7
-    channelData = 8
-    scanData = 11
-    vfoScanData = 12
-    alarmData = 13
-    dTMFData = 15
 
 
 DTMFCHARSET = "0123456789ABCDabcd#*"
@@ -643,30 +625,22 @@ def write_item_current_page_bytes(self, serial, item_Bytes: bytes,
         self.status_fn(status)
 
 
-def get_write_item_bytes(self, all_bytes: bytearray, item):
+def get_write_item_bytes(all_bytes: bytearray, start_addr: int, item_len: int):
     """
        Get the bytes for a specific memory region
        - Uses MEMORY_REGIONS_RANGES to find start and length
     """
-    if item not in self.MEMORY_REGIONS_RANGES:
-        LOG.debug(f"Unknown memory Range:{item}")
-        return b""
-    start, length = self.MEMORY_REGIONS_RANGES[item]
-    return all_bytes[start:start+length]
+    return all_bytes[start_addr:start_addr+item_len]
 
 
-def write_memory_region(self, all_bytes: bytearray,
-                        item_bytes: bytes, item):
+def write_memory_region(all_bytes: bytearray,
+                        item_bytes: bytes, start_addr: int, item_len: int):
     """
     Put the given region bytes into the main memory array
     - Uses MEMORY_REGIONS_RANGES to find start and length
     """
-    if item not in self.MEMORY_REGIONS_RANGES:
-        LOG.debug(f"Unknown memory Range:{item}")
-        return
-    start, length = self.MEMORY_REGIONS_RANGES[item]
-    item_len = min(len(item_bytes), length)
-    all_bytes[start:start + item_len] = item_bytes[:item_len]
+    item_len = min(len(item_bytes), item_len)
+    all_bytes[start_addr:start_addr + item_len] = item_bytes[:item_len]
 
 
 def exit_programming_mode(self):
@@ -714,11 +688,11 @@ def unpack_version(raw_bytes):
     return format_version(current_ver)
 
 
-def validate_version(ver):
-    if compare_version(ver, REQUIRED_VER) < 0:
+def validate_version(self, ver):
+    if compare_version(ver, self.REQUIRED_VER) < 0:
         raise errors.RadioError(
             ("Firmware is %s; You must update to %s or higher "
-             "to be compatible with CHIRP") % (ver, REQUIRED_VER))
+             "to be compatible with CHIRP") % (ver, self.REQUIRED_VER))
 
 
 def compare_version(a, b):
@@ -1358,21 +1332,33 @@ class HA1G(chirp_common.CloneModeRadio):
     _dtmf_list = [{"name": "OFF", "id": 15}]
     _alarm_list = [{"name": "OFF", "id": 255}]
 
+    # This is the minimum required firmare version supported by this driver
+    REQUIRED_VER = "v1.1.11.6"
+
     _airband = (108000000, 135999999)
     _vhf = (136000000, 174000010)
     _uhf = (400000000, 480000010)
 
+    """
+    Defines the logical memory regions for this radio model.
+    """
     MEMORY_REGIONS_RANGES = {
-        MemoryRegions.radioHead: (0, 14),   # (Start addr, len)
-        MemoryRegions.radioInfo: (14, 68),
-        MemoryRegions.radioVer: (82, 10),
-        MemoryRegions.settingData: (92, 100),
-        MemoryRegions.zoneData: (192, 3202),
-        MemoryRegions.channelData: (3394, 43136),
-        MemoryRegions.scanData: (46530, 3618),
-        MemoryRegions.vfoScanData: (50148, 68),
-        MemoryRegions.alarmData: (50244, 258),
-        MemoryRegions.dTMFData: (51272, 842)}
+        "radioHead": (2, 0, 14),   # (Region Id, Start addr, len)
+        "radioInfo": (3, 14, 68),
+        "radioVer": (4, 82, 10),
+        "settingData": (6, 92, 100),
+        "zoneData": (7, 192, 3202),
+        "channelData": (8, 3394, 43136),
+        "scanData": (11, 46530, 3618),
+        "vfoScanData": (12, 50148, 68),
+        "alarmData": (13, 50244, 258),
+        "dTMFData": (15, 51272, 842)}
+
+    EXCLUDED_REGIONS = {"radioHead",
+                        "radioInfo",
+                        "radioVer",
+                        "scanData",
+                        "alarmData"}
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -1465,21 +1451,23 @@ class HA1G(chirp_common.CloneModeRadio):
         status.msg = "Cloning from radio"
         status.cur = 0
         status.max = self._memsize
-        for item in MemoryRegions:
+        items = self.MEMORY_REGIONS_RANGES.items()
+        for item_name, (region_id, start_addr, length) in items:
             try:
                 item_bytes = get_read_current_packet_bytes(
-                    self, item.value, serial, status)
-                if item == MemoryRegions.radioVer and item_bytes:
+                    self, region_id, serial, status)
+                if item_name == "radioVer" and item_bytes:
                     firmware_version = unpack_version(item_bytes[2:6])
-                    validate_version(firmware_version)
+                    validate_version(self, firmware_version)
                     self.metadata = {'ha1g_firmware': firmware_version}
                 if item_bytes:
-                    write_memory_region(self, all_bytes, item_bytes, item)
+                    write_memory_region(all_bytes, item_bytes,
+                                        start_addr, length)
             except errors.RadioError:
                 raise
             except Exception as e:
                 LOG.error(
-                    f"read item_data error: {item.name} error_msg: {e}")
+                    f"read item_data error: {item_name} error_msg: {e}")
                 continue
         return all_bytes
 
@@ -1490,24 +1478,21 @@ class HA1G(chirp_common.CloneModeRadio):
         status.msg = "Uploading to radio"
         status.cur = 0
         data_bytes = self.get_mmap()
+        radiover_id, _, _ = self.MEMORY_REGIONS_RANGES["radioVer"]
         item_bytes = get_read_current_packet_bytes(
-                    self, MemoryRegions.radioVer.value, serial, status)
+                    self, radiover_id, serial, status)
         if item_bytes:
             firmware_version = unpack_version(item_bytes[2:6])
-            validate_version(firmware_version)
-        EXCLUDED_REGIONS = {MemoryRegions.radioHead,
-                            MemoryRegions.radioInfo,
-                            MemoryRegions.radioVer,
-                            MemoryRegions.scanData,
-                            MemoryRegions.alarmData}
-        for item in MemoryRegions:
-            if item in EXCLUDED_REGIONS:
+            validate_version(self, firmware_version)
+        items = self.MEMORY_REGIONS_RANGES.items()
+        for item_name, (region_id, start_addr, length) in items:
+            if item_name in self.EXCLUDED_REGIONS:
                 continue
-            if not self.supports_banks() and item == MemoryRegions.zoneData:
+            if not self.supports_banks() and item_name == "zoneData":
                 continue
-            item_bytes = get_write_item_bytes(self, data_bytes, item)
+            item_bytes = get_write_item_bytes(data_bytes, start_addr, length)
             write_item_current_page_bytes(
-                self, serial, item_bytes, item.value, status)
+                self, serial, item_bytes, region_id, status)
 
     def get_memory(self, number):
         mem = chirp_common.Memory()
