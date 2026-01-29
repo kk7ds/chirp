@@ -14,8 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from enum import Enum
-from chirp import chirp_common, bitwise, directory, errors
+from chirp import chirp_common, bitwise, directory
 from chirp.settings import (
     RadioSetting,
     RadioSettingGroup,
@@ -189,7 +188,7 @@ struct {
     char name[14];
     ul16 chnum;
     ul16 chindex[64];
-} zones[64];
+} zones[16];
 
 #seekto 0x0a16;
 struct {
@@ -432,37 +431,9 @@ struct {
 } aliaslist;
 """
 
-
-class HA2MemoryRegions(Enum):
-    """
-    Defines the logical memory regions for this radio model.
-    """
-    radioHead = 2
-    radioInfo = 3
-    radioVer = 4
-    settingData = 6
-    zoneData = 7
-    channelData = 8
-    vfoChannelData = 9
-    scanData = 11
-    vfoScanData = 12
-    alarmData = 13
-    fmdata = 14
-    dTMFData = 15
-    aprsData = 38
-    gnssData = 51
-    aliasData = 53
-
-
 FREQ_STEP_MHZ = 1000000
 
 FREQ_STEP_KHZ = 100000
-
-CMD_WRITE = 0
-
-CMD_READ = 2
-
-SERIAL_TIMEOUT = 1.0
 
 COMPANDER_LIST = ["OFF", "Tx/Rx", "Rx", "Tx"]
 
@@ -1240,6 +1211,17 @@ def _get_radio_alias_setting(self, radioalias):
         radioalias.append(rs)
 
 
+def _get_model_info(self, model_info):
+    rs_value = RadioSettingValueString(0, 20, self.current_model)
+    rs_value.set_mutable(False)
+    rs = RadioSetting("modelinfo.Machinecode", "Machine Code", rs_value)
+    model_info.append(rs)
+    rs_value = RadioSettingValueString(0, 100, "108.00000-600.00000")
+    rs_value.set_mutable(False)
+    rs = RadioSetting("modelinfo.freqrange", "Frequency Range[MHz]", rs_value)
+    model_info.append(rs)
+
+
 def _get_callsign_setting(rsg, item, name):
     callsign_len = 8
     opts = ["-%d" % x for x in range(0, 16, 1)]
@@ -1295,25 +1277,28 @@ class HA2(retevis_ha1g.HA1G):
     MODEL = "Ailunce HA2"
     current_model = "Ailunce HA2"
     NEEDS_VER_CHECK = False
+    REQUIRED_VER = "v1.0.0.0"
+    CH_SKIP_INDEX = 0
 
-    MEMORY_REGIONS_RANGES: dict[HA2MemoryRegions, tuple[int, int]] = {
-        HA2MemoryRegions.radioHead: (0, 14),
-        HA2MemoryRegions.radioInfo: (14, 68),
-        HA2MemoryRegions.radioVer: (82, 10),
-        HA2MemoryRegions.settingData: (92, 152),
-        HA2MemoryRegions.zoneData: (244, 2338),
-        HA2MemoryRegions.channelData: (2582, 43010),
-        HA2MemoryRegions.vfoChannelData: (45592, 128),
-        HA2MemoryRegions.scanData: (45720, 3618),
-        HA2MemoryRegions.vfoScanData: (49338, 68),
-        HA2MemoryRegions.alarmData: (49406, 258),
-        HA2MemoryRegions.fmdata: (49664, 1538),
-        HA2MemoryRegions.dTMFData: (51202, 842),
-        HA2MemoryRegions.aprsData: (52334, 19364),
-        HA2MemoryRegions.gnssData: (71698, 76),
-        HA2MemoryRegions.aliasData: (71774, 302)
+    MEMORY_REGIONS_RANGES = {
+        "radioHead": (2, 0, 14),
+        "radioInfo": (3, 14, 68),
+        "radioVer": (4, 82, 10),
+        "settingData": (6, 92, 152),
+        "zoneData": (7, 244, 2338),
+        "channelData": (8, 2582, 43010),
+        "vfoChannelData": (9, 45592, 128),
+        "scanData": (11, 45720, 3618),
+        "vfoScanData": (12, 49338, 68),
+        "alarmData": (13, 49406, 258),
+        "fmdata": (14, 49664, 1538),
+        "dTMFData": (15, 51202, 842),
+        "aprsData": (38, 52334, 19364),
+        "gnssData": (51, 71698, 76),
+        "aliasData": (53, 71774, 302)
     }
-    _memsize = max(start + size for start,
+
+    _memsize = max(start + size for _, start,
                    size in MEMORY_REGIONS_RANGES.values())
     _airband = (108000000, 135999999)
     _vhf_uhf = (136000000, 600000001)
@@ -1324,70 +1309,10 @@ class HA2(retevis_ha1g.HA1G):
         rf.valid_bands = [self._airband, self._vhf_uhf]
         return rf
 
-    def validate_memory(self, mem):
-        msgs = []
-        if (chirp_common.in_range(mem.freq, [self._airband])
-                and mem.mode != 'AM'):
-            msgs.append(chirp_common.ValidationWarning(
-                _('Frequency in this range requires AM mode')))
-        if (not chirp_common.in_range(mem.freq, [self._airband])
-                and mem.mode == 'AM'):
-            msgs.append(chirp_common.ValidationWarning(
-                _('Frequency in this range must not be AM mode')))
-
-        return msgs + super(retevis_ha1g.HA1G, self).validate_memory(mem)
-
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
         self._dtmf_list = self.get_dtmf_item_list()
         self._alarm_list = self.get_alarm_item_list()
-
-    def read_items(self, serial):
-        all_bytes = bytearray(self._memsize)
-        status = chirp_common.Status()
-        status.msg = "Cloning from radio"
-        status.cur = 0
-        status.max = self._memsize
-        serial.timeout = SERIAL_TIMEOUT
-        for item in HA2MemoryRegions:
-            try:
-                LOG.info(f"Reading item_data: {item.name}")
-                item_bytes = retevis_ha1g.get_read_current_packet_bytes(
-                    self, item.value, serial, status)
-                if item_bytes:
-                    retevis_ha1g.write_memory_region(self, all_bytes,
-                                                     item_bytes, item)
-            except errors.RadioError:
-                raise
-            except Exception as e:
-                LOG.error(
-                    f"read item_data error: {item.name} error_msg: {e}")
-                continue
-        return all_bytes
-
-    def write_items(self, serial):
-        status = chirp_common.Status()
-        status.max = self._memsize
-        status.msg = "Uploading to radio"
-        status.cur = 0
-        serial.timeout = SERIAL_TIMEOUT
-        data_bytes = self.get_mmap()
-        excluded_regions = {
-            HA2MemoryRegions.radioHead,
-            HA2MemoryRegions.radioInfo,
-            HA2MemoryRegions.radioVer,
-            HA2MemoryRegions.zoneData,
-            HA2MemoryRegions.scanData,
-            HA2MemoryRegions.alarmData
-        }
-        for item in HA2MemoryRegions:
-            if item in excluded_regions:
-                continue
-            LOG.debug(f"Writing item_data: {item.name}")
-            item_bytes = retevis_ha1g.get_write_item_bytes(self,
-                                                           data_bytes, item)
-            retevis_ha1g.write_item_current_page_bytes(
-                self, serial, item_bytes, item.value, status)
 
     def get_memory(self, number):
         mem = chirp_common.Memory()
@@ -1433,7 +1358,7 @@ class HA2(retevis_ha1g.HA1G):
         setmode = RadioSettings(model_info, common, dtmf,
                                 vfoscan, aprs, ana_aprs, gnss, fm, radioalias)
         try:
-            retevis_ha1g.get_model_info(self, model_info)
+            _get_model_info(self, model_info)
             _get_common_setting(self, common)
             retevis_ha1g.get_dtmf_setting(self, dtmf)
             _get_vfo_scan(self, vfoscan)
@@ -1498,3 +1423,9 @@ class HA2(retevis_ha1g.HA1G):
             except Exception:
                 LOG.exception(element.get_name())
                 raise
+
+    def supports_airband(self):
+        return True
+
+    def supports_banks(self):
+        return False
