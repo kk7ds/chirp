@@ -2082,11 +2082,6 @@ class UVK5RestrictedRadio(UVK5RadioBase):
         raise errors.RadioError(
             _('Upload is disabled due to unsupported firmware version'))
 
-    def get_memory(self, n):
-        mem = super().get_memory(n)
-        mem.immutable = dir(mem)
-        return mem
-
     def set_memory(self, m):
         raise errors.InvalidValueError(
             _('Memories are read-only due to unsupported firmware version'))
@@ -2094,6 +2089,11 @@ class UVK5RestrictedRadio(UVK5RadioBase):
     def set_settings(self, settings):
         raise errors.InvalidValueError(
             _('Settings are read-only due to unsupported firmware version'))
+
+    def validate_memory(self, mem):
+        return [chirp_common.ValidationError(
+            _('This image is read-only due to being from a radio with '
+              'unsupported firmware'))]
 
 
 @directory.register
