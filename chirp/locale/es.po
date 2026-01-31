@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-29 14:51-0800\n"
-"PO-Revision-Date: 2026-01-23 16:14-0300\n"
+"PO-Revision-Date: 2026-01-30 23:45-0300\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -3047,7 +3047,7 @@ msgstr "A esta imagen le falta la información de firmware. Esta puede haber sid
 
 #: ../drivers/uvk5.py:2095
 msgid "This image is read-only due to being from a radio with unsupported firmware"
-msgstr ""
+msgstr "Esta imagen es de solo lectura debido a que proviene de una radio con firmware no soportado"
 
 #: ../wxui/main.py:1716
 msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"
