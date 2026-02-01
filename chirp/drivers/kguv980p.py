@@ -1184,8 +1184,7 @@ class KG980PRadio(chirp_common.CloneModeRadio,
             _mem.scrambler = 0
             _mem.compander = 0
             # set the power
-            # Updated to resolve "Illegal set on attribute power" Warning
-            if str(mem.power) == "None":
+            if mem.power is None:
                 _mem.power = 0  # Default to Low power
             else:
                 index = self.POWER_LEVELS.index(mem.power)
