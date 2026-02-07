@@ -1220,6 +1220,11 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
                 store_bit(self._memobj.enable, ndx, False)
                 return
 
+        # Clear unknowns
+        _mem.unused = 0
+        _mem.unknown1 = 0
+        _mem.unknown2 = 0
+
         txfreq = mem.freq / 10     # really. RX freq is used for TX base
         _mem.freq = txfreq
         self.encode_sql(mem, _mem)
