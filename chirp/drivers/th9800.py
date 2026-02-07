@@ -249,6 +249,9 @@ class TYTTH9800Base(chirp_common.Radio):
         return rf
 
     def process_mmap(self):
+        LOG.debug('Ident info from image:\n%s',
+                  util.hexprint(self._mmap[0:self._mmap_offset]))
+
         fmt = (self.TH9800_MEM_FORMAT + MEM_FORMAT)
         self._memobj = bitwise.parse(
             fmt % (self._mmap_offset,
@@ -1048,7 +1051,7 @@ def _upload(radio, memsize=0xF400, blocksize=0x80):
         raise errors.RadioError(
             "Model mismatch: \n%s\n%s" %
             (util.hexprint(data),
-             util.hexprint(radio._mmap[:radio._mmap_offset])))
+             util.hexprint(radio._mmap[0:radio._mmap_offset])))
     # in the factory software they update the last program date when
     # they upload, So let's do the same
     today = date.today()
