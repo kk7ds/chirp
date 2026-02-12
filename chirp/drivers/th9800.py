@@ -1003,6 +1003,11 @@ def _identify(radio):
 
     radio.pipe.write(b"M\x02")
     ident = radio.pipe.read(16)
+    if len(ident) == 15:
+        # Newer (?) firmware doesn't send the last byte of the model string,
+        # but it's always a 0x00, so add it back for consistency.
+        ident += b'\x00'
+        LOG.debug('Radio sent 15 byte model string; padding for consistency')
     radio.pipe.write(b"A")
     r = radio.pipe.read(1)
     if r != b"A":
