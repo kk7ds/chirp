@@ -15,6 +15,7 @@
 
 import contextlib
 import functools
+import itertools
 import logging
 import pickle
 import secrets
@@ -71,10 +72,10 @@ class ChirpGridTable(wx.grid.GridStringTable):
         # underlying data store.
         # The list of values we actually sort is a tuple of:
         #   (empty, value, location)
-        # Where the empty flag is conditionally negated based on our sort
-        # order. That convoluted scheme makes us always sort empty values at
-        # the bottom instead of the top of the list, which is what a human
-        # will want.
+        # We do that to iterate the whole grid once, collecting the data we
+        # need, and then enter it into a mapping in order putting the non-
+        # empty values first, followed by the empties so that the sorted non-
+        # empty rows are always bunched at the top of the grid.
 
         def sortable_value(val):
             return self._col_defs[col].get_sortable_value(val)
@@ -83,16 +84,19 @@ class ChirpGridTable(wx.grid.GridStringTable):
             self._rowmap = {x: x for x in range(0, self.GetRowsCount())}
         else:
             sorted_values = sorted((
-                (asc != bool(
-                    super(ChirpGridTable, self).GetValue(
-                        realrow, col).strip()),
+                (bool(super(ChirpGridTable, self).GetValue(realrow, 0)),
                  sortable_value(
                      super(ChirpGridTable, self).GetValue(realrow, col)),
                  realrow)
                 for realrow in range(0, self.GetRowsCount())),
-                reverse=not asc)
-            self._rowmap = dict((i, mapping[-1])
-                                for i, mapping in enumerate(sorted_values))
+                                   reverse=not asc)
+
+            self._rowmap = dict(
+                (i, mapping[-1])
+                for i, mapping in enumerate(
+                    itertools.chain(
+                        [x for x in sorted_values if x[0]],
+                        [x for x in sorted_values if not x[0]])))
         self._rowmap_rev = {v: k for k, v in self._rowmap.items()}
 
     def GetValue(self, row, col):
