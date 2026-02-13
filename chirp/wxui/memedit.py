@@ -2303,7 +2303,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             for row in rows]
         with ChirpMemPropDialog(self, memories) as d:
             if d.ShowModal() == wx.ID_OK:
-                memories = d._memories
+                memories = d.memories
             else:
                 return
 
@@ -2954,6 +2954,8 @@ class ChirpMemPropDialog(wx.Dialog):
 
     def _validate_memories(self):
         for mem in self._memories:
+            if mem.empty:
+                continue
             msgs = self._radio.validate_memory(mem)
             if msgs:
                 wx.MessageBox(_('Invalid edit: %s') % '; '.join(msgs),
@@ -2970,3 +2972,7 @@ class ChirpMemPropDialog(wx.Dialog):
                 return
 
         self.EndModal(button_id)
+
+    @property
+    def memories(self):
+        return [x for x in self._memories if not x.empty]
