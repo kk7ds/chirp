@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import re
 
 from chirp.drivers import baofeng_common as bfc
 from chirp import chirp_common, directory, memmap, bandplan_na
@@ -107,6 +108,35 @@ def _sendmagic(radio, magic, response_len):
     return bfc._rawrecv(radio, response_len)
 
 
+def _is_ble_port(radio):
+    """Heuristic to detect BLE serial bridges (ble-serial/com0com)"""
+    if not (hasattr(radio, "pipe") and hasattr(radio.pipe, "port")):
+        return False
+    port = str(radio.pipe.port).lower()
+    if "ble" in port or "/tmp/ttyble" in port or "/dev/ttyble" in port:
+        return True
+    match = re.match(r"com(\d+)", port)
+    return bool(match and int(match.group(1)) >= 10)
+
+
+def _do_ident_ble(radio, timeout=5.0):
+    """BLE identification with relaxed timeout"""
+    radio.pipe.timeout = timeout
+    for ident in radio._idents:
+        bfc._clean_buffer(radio)
+        radio.pipe.timeout = timeout
+        try:
+            ack = _sendmagic(radio, ident, len(radio._fingerprint))
+            if not ack.startswith(radio._fingerprint):
+                continue
+        except errors.RadioError:
+            continue
+        for magic, resplen in radio._magics:
+            _sendmagic(radio, magic, resplen)
+        return True
+    raise errors.RadioError("Radio did not respond as expected (BLE)")
+
+
 def _do_ident(radio):
     for ident in radio._idents:
         # Flush input buffer
@@ -169,6 +199,44 @@ def _download(radio):
             # UI Update
             status.cur = len(data) // radio.BLOCK_SIZE
             status.msg = "Cloning from radio..."
+            radio.status_fn(status)
+    return data
+
+
+def _upload_ble(radio):
+    """BLE-specific upload using 128-byte blocks and segment-aware offsets"""
+    block_size = getattr(radio, "BLE_BLOCK_SIZE", 0x80)
+    _do_ident_ble(radio)
+    data = b""
+    status = chirp_common.Status()
+    status.cur = 0
+    status.max = radio.MEM_TOTAL // block_size
+    status.msg = "Cloning to radio..."
+    radio.status_fn(status)
+    data_addr = 0x00
+    radio_mem = radio.get_mmap()
+    for i in range(len(radio.MEM_SIZES)):
+        mem_size = radio.MEM_SIZES[i]
+        mem_start = radio.MEM_STARTS[i]
+        for addr in range(mem_start, mem_start + mem_size, block_size):
+            bytes_remaining = (mem_start + mem_size) - addr
+            bytes_to_read = min(block_size, bytes_remaining)
+            chunk = radio_mem[data_addr:data_addr + bytes_to_read]
+            if len(chunk) < block_size:
+                chunk = chunk + (b'\xff' * (block_size - len(chunk)))
+            if radio._uses_encr:
+                chunk = _crypt(radio._encrsym, chunk)
+            data_addr += bytes_to_read
+            frame = radio._make_frame(b"W", addr, block_size, chunk)
+            fmt = 'Sending address %04x (BLE block size: %d)'
+            radio.pipe.log(fmt % (addr, block_size))
+            bfc._rawsend(radio, frame)
+            ack = bfc._rawrecv(radio, 1)
+            if ack != b"\x06":
+                msg = "Bad ack writing block 0x%04x" % addr
+                raise errors.RadioError(msg)
+            status.cur = data_addr // block_size
+            status.msg = "Cloning to radio..."
             radio.status_fn(status)
     return data
 
@@ -486,7 +554,7 @@ class UV17Pro(bfc.BaofengCommonHT):
 
     def _make_frame(self, cmd, addr, length, data=""):
         """Pack the info in the header format"""
-        frame = cmd + struct.pack(">i", addr)[2:] + struct.pack("b", length)
+        frame = cmd + struct.pack(">i", addr)[2:] + struct.pack("B", length)
         # add the data if set
         if len(data) != 0:
             frame += data
@@ -2271,6 +2339,9 @@ class UV5RMini(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "UV-5R Mini"
 
+    # BLE transport uses 128-byte blocks
+    BLE_BLOCK_SIZE = 0x80
+
     LIST_BEEP = ["Off", "On"]
     LIST_DTMFSPEED = ["%s ms" % x for x in [50, 100, 200, 300, 400, 500]]
     LIST_SKEY2_SHORT = ["FM Radio", "Scan", "Search", "VOX", "Flashlight",
@@ -2307,6 +2378,22 @@ class UV5RMini(UV17Pro):
                    _uhf_range,
                    _uhf_rx2_range]
     MODES = UV17Pro.MODES + ['AM']
+
+    def sync_out(self):
+        """Upload to radio (auto-switch BLE vs USB)"""
+        use_ble = _is_ble_port(self)
+        port = (getattr(self, 'pipe', None) and
+                getattr(self.pipe, 'port', None))
+        LOG.info('sync_out: port=%s ble=%s', port, use_ble)
+        upload_fn = _upload_ble if use_ble else _upload
+        try:
+            upload_fn(self)
+        except errors.RadioError:
+            raise
+        except Exception:
+            LOG.exception('Unexpected error during upload')
+            raise errors.RadioError(
+                'Unexpected error communicating with the radio')
 
     _end_fmt = """
     // #seekto 0x8220;
