@@ -259,6 +259,8 @@ class UV17Pro(bfc.BaofengCommonHT):
     _has_skey2_long = False
     _has_skey_disable = False
     _has_zone_linking = False
+    _has_bt = False
+    _has_scramble = False
     _scode_offset = 0
     _encrsym = 1
     _has_voice = True
@@ -415,7 +417,8 @@ class UV17Pro(bfc.BaofengCommonHT):
       u8 unknown4[2];
       u8 voxdlytime;
       u8 menuquittime;
-      u8 unknown5[2];
+      u8 bluetooth;
+      u8 unknown5;
       u8 dispani;
       u8 unknown11[3];
       u8 totalarm;
@@ -935,6 +938,12 @@ class UV17Pro(bfc.BaofengCommonHT):
                                 current_index=_mem.settings.gpstimezone))
             basic.append(rs)
 
+        if self._has_bt:
+            rs = RadioSetting("settings.bluetooth", "Bluetooth",
+                              RadioSettingValueBoolean(
+                                  _mem.settings.bluetooth))
+            basic.append(rs)
+
         rs = RadioSetting("settings.fmenable", "Disable FM radio",
                           RadioSettingValueBoolean(_mem.settings.fmenable))
         basic.append(rs)
@@ -1383,6 +1392,13 @@ class UV17Pro(bfc.BaofengCommonHT):
                                                 current_index=scode))
         mem.extra.append(rs)
 
+        if self._has_scramble:
+            rs = RadioSetting("scramble", "Scramble",
+                              RadioSettingValueList(
+                                  self.SCRAMBLE_LIST,
+                                  current_index=_mem.scramble))
+            mem.extra.append(rs)
+
         if self.MODEL in ["BF-F8HP-PRO"]:
             rs = RadioSetting("sqmode", "RX DTMF",
                               RadioSettingValueList(
@@ -1402,13 +1418,6 @@ class UV17Pro(bfc.BaofengCommonHT):
             rs = RadioSetting("fhss", "FHSS",
                               RadioSettingValueBoolean(_mem.fhss))
             mem.extra.append(rs)
-
-            if self.MODEL == "K6":
-                rs = RadioSetting("scramble", "Scramble",
-                                  RadioSettingValueList(
-                                      self.SCRAMBLE_LIST,
-                                      current_index=_mem.scramble))
-                mem.extra.append(rs)
 
         mem.name = str(name).replace('\xFF', ' ').replace('\x00', ' ').rstrip()
 
@@ -1549,12 +1558,12 @@ class UV17ProGPS(UV17Pro):
         return rf
 
 
-@directory.register
-class RadioddityGM30Plus(UV17ProGPS):
-    """Radioddity GM-30 Plus"""
-    VENDOR = "Radioddity"
-    MODEL = "GM-30 Plus"
-    MODEL_ID = "GM-30P"
+class UV17ProGPSGMRS(UV17ProGPS):
+    """UV-17Pro GPS variant with GMRS frequency-based enforcement.
+
+    Shared base for GMRS radios in the UV-17Pro GPS family that use
+    frequency-based TX restrictions with implied modes.
+    """
     _gmrs = True
     _low_power_index = 1
 
@@ -1631,6 +1640,32 @@ class RadioddityGM30Plus(UV17ProGPS):
                 msgs.append(chirp_common.ValidationWarning(msg_nfm))
 
         return msgs
+
+
+@directory.register
+class RadioddityGM30Plus(UV17ProGPSGMRS):
+    """Radioddity GM-30 Plus"""
+    VENDOR = "Radioddity"
+    MODEL = "GM-30 Plus"
+
+
+@directory.register
+class RadioddityGM30Pro(UV17ProGPSGMRS):
+    """Radioddity GM-30 Pro"""
+    VENDOR = "Radioddity"
+    MODEL = "GM-30 Pro"
+    _has_gps = False
+    _has_bt = True
+    _has_scramble = True
+
+
+@directory.register
+class BaofengGM21(UV17ProGPSGMRS):
+    """Baofeng GM-21"""
+    VENDOR = "Baofeng"
+    MODEL = "GM-21"
+    _has_gps = False
+    _has_bt = True
 
 
 @directory.register
@@ -1978,6 +2013,7 @@ class BFK6(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "K6"
 
+    _has_scramble = True
     _idents = [MSTRING_BFK6]
     _magics = [(b"\x46", 16),
                ]
