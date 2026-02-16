@@ -609,8 +609,6 @@ class IssueModuleLoader:
             issue_num, r.status_code))
         r.raise_for_status()
         issue = r.json()['issue']
-        import pprint
-        pprint.pprint(issue)
         allowed_states = ['New', 'In Progress', 'Resolved', 'Incomplete',
                           'Blocked']
         if issue['status']['is_closed']:
