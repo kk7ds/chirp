@@ -1494,6 +1494,10 @@ class DetectableInterface:
             setattr(cls, detected_attr, [])
         getattr(cls, detected_attr).append(detected_cls)
 
+    @classmethod
+    def is_minor_variant(cls):
+        return getattr(cls, '_MINOR_VARIANT', False)
+
 
 class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties,
                      DetectableInterface):
