@@ -278,7 +278,19 @@ class H777V4BaseRadio(chirp_common.CloneModeRadio):
     def _encode_tone(self, _toneval, mode, val, pol):
         toneval = 0
         if mode == "Tone":
-            toneval = int("%i" % (val * 10), 16)
+            v = int(round(val * 10))
+
+            thousands = (v // 1000) % 10
+            hundreds = (v // 100) % 10
+            tens = (v // 10) % 10
+            ones = v % 10
+
+            toneval = (
+                (thousands << 12)
+                | (hundreds << 8)
+                | (tens << 4)
+                | ones
+            )
         elif mode == "DTCS":
             toneval = int('%i' % val, 8)
             toneval |= 0x8000
