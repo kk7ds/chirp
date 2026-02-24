@@ -49,7 +49,7 @@ struct {
      ishighpower:1,   //     Power Level  0 = Low, 1 = High
      narrow:1,        //     Bandwidth  0 = Wide, 1 = Narrow
      unknown1:1,      //
-     bcl:1;           //     Busy Channel Locklut  0 = On, 1 = Off
+     bcl:1;           //     Busy Channel Lockout  0 = On, 1 = Off
 } memory[16];
 
 struct {
