@@ -17,7 +17,7 @@ import logging
 
 from chirp.drivers import icf
 from chirp import chirp_common, directory, bitwise
-from chirp.chirp_common import to_GHz, from_GHz
+from chirp.chirp_common import to_GHz
 from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettings
@@ -189,7 +189,8 @@ class ICQ7Radio(icf.IcomCloneModeRadio):
 
         if mem.freq > to_GHz(1):
             _mem.freq = (mem.freq // 1000) - to_GHz(1)
-            upper = from_GHz(mem.freq) << 4
+            # For 1300MHz, but 13 in these bits
+            upper = (mem.freq // 100000000) << 4
             _mem.freq[0].clr_bits(0xF0)
             _mem.freq[0].set_bits(upper)
         else:

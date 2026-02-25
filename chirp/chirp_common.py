@@ -1954,17 +1954,17 @@ def to_kHz(val):
 
 def from_GHz(val):
     """Convert @val in Hz to GHz"""
-    return val // 100000000
+    return val // 1000000000
 
 
 def from_MHz(val):
     """Convert @val in Hz to MHz"""
-    return val // 100000
+    return val // 1000000
 
 
 def from_kHz(val):
     """Convert @val in Hz to kHz"""
-    return val // 100
+    return val // 1000
 
 
 def split_to_offset(mem, rxfreq, txfreq):

@@ -72,11 +72,9 @@ class TestUtilityFunctions(base.BaseTest):
         self.assertTrue(chirp_common.is_version_newer('daily-20180101'))
 
     def test_from_Hz(self):
-        # FIXME: These are wrong! Adding them here purely to test the
-        # python3 conversion, but they should be fixed.
-        self.assertEqual(140, chirp_common.from_GHz(14000000001))
-        self.assertEqual(140, chirp_common.from_MHz(14000001))
-        self.assertEqual(140, chirp_common.from_kHz(14001))
+        self.assertEqual(140, chirp_common.from_GHz(140000000001))
+        self.assertEqual(140, chirp_common.from_MHz(140000001))
+        self.assertEqual(140, chirp_common.from_kHz(140001))
 
     def test_mem_to_from_csv(self):
         mem1 = chirp_common.Memory()
