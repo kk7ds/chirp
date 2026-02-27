@@ -48,17 +48,7 @@ STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
 
 AIRBAND = (108000000, 136000000)
 
-# Upload map: (radio_start, chirp_start, block_size, count)
-#
-# Each entry writes block_size * count bytes from CHIRP linear memory
-# (at chirp_start) to the radio (at radio_start). Every group of 4
-# entries covers one 0x400-byte region with blocks in reversed order
-# (the rearrangement pattern).
-#
-# Radio addresses are in rearranged (radio) space; chirp addresses
-# are in linear (CHIRP) space.
-#
-# CHIRP linear memory map (all offsets in rearranged/linear space):
+# CHIRP linear memory map (all offsets in linear space):
 #   0x0000-0x02C2  Unknown / unused
 #   0x02C2-0x0340  Frequency limits (RX/TX band edges)
 #   0x0340-0x0440  OEM info (model, firmware, date, lock flag)
@@ -77,180 +67,6 @@ AIRBAND = (108000000, 136000000)
 #   0x78E0-0x7B38  Call IDs (100 x 6 bytes)
 #   0x7B38-0x7B40  Unknown
 #   0x7B40-0x8000  Call names (100 x 12 bytes)
-
-config_map_Q10H = (
-    # --- 0x0000-0x0400: Unknown | Freq limits | OEM info ---
-    (0x0300, 0x0000, 64, 4),
-    (0x0200, 0x0100, 64, 4),
-    (0x0100, 0x0200, 64, 4),
-    (0x0000, 0x0300, 64, 4),
-
-    # --- 0x0400-0x0800: OEM info (tail) | Settings | VFO A/B | Ch memory ---
-    (0x0700, 0x0400, 64, 4),
-    (0x0600, 0x0500, 64, 4),
-    (0x0500, 0x0600, 64, 4),
-    (0x0400, 0x0700, 64, 4),
-
-    # --- 0x0800-0x4400: Channel memory (continued) ---
-    # 1000 channels x 16 bytes = 0x3E80 bytes, from 0x05E0 to 0x4460
-    (0x0b00, 0x0800, 64, 4),
-    (0x0a00, 0x0900, 64, 4),
-    (0x0900, 0x0a00, 64, 4),
-    (0x0800, 0x0b00, 64, 4),
-
-    (0x0f00, 0x0c00, 64, 4),
-    (0x0e00, 0x0d00, 64, 4),
-    (0x0d00, 0x0e00, 64, 4),
-    (0x0c00, 0x0f00, 64, 4),
-
-    (0x1300, 0x1000, 64, 4),
-    (0x1200, 0x1100, 64, 4),
-    (0x1100, 0x1200, 64, 4),
-    (0x1000, 0x1300, 64, 4),
-
-    (0x1700, 0x1400, 64, 4),
-    (0x1600, 0x1500, 64, 4),
-    (0x1500, 0x1600, 64, 4),
-    (0x1400, 0x1700, 64, 4),
-
-    (0x1b00, 0x1800, 64, 4),
-    (0x1a00, 0x1900, 64, 4),
-    (0x1900, 0x1a00, 64, 4),
-    (0x1800, 0x1b00, 64, 4),
-
-    (0x1f00, 0x1c00, 64, 4),
-    (0x1e00, 0x1d00, 64, 4),
-    (0x1d00, 0x1e00, 64, 4),
-    (0x1c00, 0x1f00, 64, 4),
-
-    (0x2300, 0x2000, 64, 4),
-    (0x2200, 0x2100, 64, 4),
-    (0x2100, 0x2200, 64, 4),
-    (0x2000, 0x2300, 64, 4),
-
-    (0x2700, 0x2400, 64, 4),
-    (0x2600, 0x2500, 64, 4),
-    (0x2500, 0x2600, 64, 4),
-    (0x2400, 0x2700, 64, 4),
-
-    (0x2b00, 0x2800, 64, 4),
-    (0x2a00, 0x2900, 64, 4),
-    (0x2900, 0x2a00, 64, 4),
-    (0x2800, 0x2b00, 64, 4),
-
-    (0x2f00, 0x2c00, 64, 4),
-    (0x2e00, 0x2d00, 64, 4),
-    (0x2d00, 0x2e00, 64, 4),
-    (0x2c00, 0x2f00, 64, 4),
-
-    (0x3300, 0x3000, 64, 4),
-    (0x3200, 0x3100, 64, 4),
-    (0x3100, 0x3200, 64, 4),
-    (0x3000, 0x3300, 64, 4),
-
-    (0x3700, 0x3400, 64, 4),
-    (0x3600, 0x3500, 64, 4),
-    (0x3500, 0x3600, 64, 4),
-    (0x3400, 0x3700, 64, 4),
-
-    (0x3b00, 0x3800, 64, 4),
-    (0x3a00, 0x3900, 64, 4),
-    (0x3900, 0x3a00, 64, 4),
-    (0x3800, 0x3b00, 64, 4),
-
-    (0x3f00, 0x3c00, 64, 4),
-    (0x3e00, 0x3d00, 64, 4),
-    (0x3d00, 0x3e00, 64, 4),
-    (0x3c00, 0x3f00, 64, 4),
-
-    (0x4300, 0x4000, 64, 4),
-    (0x4200, 0x4100, 64, 4),
-    (0x4100, 0x4200, 64, 4),
-    (0x4000, 0x4300, 64, 4),
-
-    # --- 0x4400-0x4800: Ch memory (tail, ends at 0x4460) | Ch names ---
-    (0x4700, 0x4400, 64, 4),
-    (0x4600, 0x4500, 64, 4),
-    (0x4500, 0x4600, 64, 4),
-    (0x4400, 0x4700, 64, 4),
-
-    # --- 0x4800-0x7000: Channel names (continued) ---
-    # 1000 names x 12 bytes = 0x2EE0 bytes, from 0x4460 to 0x7340
-    (0x4b00, 0x4800, 64, 4),
-    (0x4a00, 0x4900, 64, 4),
-    (0x4900, 0x4a00, 64, 4),
-    (0x4800, 0x4b00, 64, 4),
-
-    (0x4f00, 0x4c00, 64, 4),
-    (0x4e00, 0x4d00, 64, 4),
-    (0x4d00, 0x4e00, 64, 4),
-    (0x4c00, 0x4f00, 64, 4),
-
-    (0x5300, 0x5000, 64, 4),
-    (0x5200, 0x5100, 64, 4),
-    (0x5100, 0x5200, 64, 4),
-    (0x5000, 0x5300, 64, 4),
-
-    (0x5700, 0x5400, 64, 4),
-    (0x5600, 0x5500, 64, 4),
-    (0x5500, 0x5600, 64, 4),
-    (0x5400, 0x5700, 64, 4),
-
-    (0x5b00, 0x5800, 64, 4),
-    (0x5a00, 0x5900, 64, 4),
-    (0x5900, 0x5a00, 64, 4),
-    (0x5800, 0x5b00, 64, 4),
-
-    (0x5f00, 0x5c00, 64, 4),
-    (0x5e00, 0x5d00, 64, 4),
-    (0x5d00, 0x5e00, 64, 4),
-    (0x5c00, 0x5f00, 64, 4),
-
-    (0x6300, 0x6000, 64, 4),
-    (0x6200, 0x6100, 64, 4),
-    (0x6100, 0x6200, 64, 4),
-    (0x6000, 0x6300, 64, 4),
-
-    (0x6700, 0x6400, 64, 4),
-    (0x6600, 0x6500, 64, 4),
-    (0x6500, 0x6600, 64, 4),
-    (0x6400, 0x6700, 64, 4),
-
-    (0x6b00, 0x6800, 64, 4),
-    (0x6a00, 0x6900, 64, 4),
-    (0x6900, 0x6a00, 64, 4),
-    (0x6800, 0x6b00, 64, 4),
-
-    (0x6f00, 0x6c00, 64, 4),
-    (0x6e00, 0x6d00, 64, 4),
-    (0x6d00, 0x6e00, 64, 4),
-    (0x6c00, 0x6f00, 64, 4),
-
-    # --- 0x7000-0x7400: Ch names (tail, ends at 0x7340) | Valid flags ---
-    (0x7300, 0x7000, 64, 4),
-    (0x7200, 0x7100, 64, 4),
-    (0x7100, 0x7200, 64, 4),
-    (0x7000, 0x7300, 64, 4),
-
-    # --- 0x7400-0x7800: Valid flags (tail) | Unknown | Scan groups |
-    #     VFO scan ranges | Unknown ---
-    (0x7700, 0x7400, 64, 4),
-    (0x7600, 0x7500, 64, 4),
-    (0x7500, 0x7600, 64, 4),
-    (0x7400, 0x7700, 64, 4),
-
-    # --- 0x7800-0x7C00: Unknown | FM presets | Call IDs | Call names ---
-    (0x7b00, 0x7800, 64, 4),
-    (0x7a00, 0x7900, 64, 4),
-    (0x7900, 0x7a00, 64, 4),
-    (0x7800, 0x7b00, 64, 4),
-
-    # --- 0x7C00-0x8000: Call names (continued to end of memory) ---
-    (0x7f00, 0x7c00, 64, 4),
-    (0x7e00, 0x7d00, 64, 4),
-    (0x7d00, 0x7e00, 64, 4),
-    (0x7c00, 0x7f00, 64, 4),
-)
 
 MEM_FORMAT = """
 #seekto 0x05e0;
@@ -313,7 +129,6 @@ class KGQ10HRadio(WouxunKGBase):
     _model = b"KG-Q10H"
     _cryptbyte = 0x54
     _download_delay = 0.005
-    config_map = config_map_Q10H
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
@@ -368,26 +183,23 @@ class KGQ10HRadio(WouxunKGBase):
                 "Failed to communicate with radio: %s" % e)
 
     def _do_upload(self):
-        for radio_start, chirp_start, blocksize, count in self.config_map:
-            end = chirp_start + (blocksize * count)
-            radio_addr = radio_start
-
-            for addr in range(chirp_start, end, blocksize):
-                req = struct.pack('>H', radio_addr)
-                chunk = self.get_mmap()[addr:addr + blocksize]
-                self._write_record(CMD_WR, req + chunk)
-                cserr, ack = self._read_record()
-                ack_addr = struct.unpack('>H', ack)[0]
-                if cserr or ack_addr != radio_addr:
-                    raise Exception(
-                        "Radio did not ack block %i" % radio_addr)
-                radio_addr += blocksize
-                if self.status_fn:
-                    status = chirp_common.Status()
-                    status.cur = addr
-                    status.max = 0x8000
-                    status.msg = "Cloning to radio"
-                    self.status_fn(status)
+        blocksize = 64
+        for addr in range(0, 0x8000, blocksize):
+            radio_addr = _addr_rearrange(addr)
+            req = struct.pack('>H', radio_addr)
+            chunk = self.get_mmap()[addr:addr + blocksize]
+            self._write_record(CMD_WR, req + chunk)
+            cserr, ack = self._read_record()
+            ack_addr = struct.unpack('>H', ack)[0]
+            if cserr or ack_addr != radio_addr:
+                raise Exception(
+                    "Radio did not ack block %i" % radio_addr)
+            if self.status_fn:
+                status = chirp_common.Status()
+                status.cur = addr
+                status.max = 0x8000
+                status.msg = "Cloning to radio"
+                self.status_fn(status)
 
         self._finish()
 
