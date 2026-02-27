@@ -27,12 +27,12 @@ import time
 import logging
 
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
+from chirp.drivers.wouxun_kg_common import WouxunKGBase, strxor
 
 LOG = logging.getLogger(__name__)
 
 CMD_ID = 0x80
 CMD_END = 0x81
-CMD_RD = 0x82
 CMD_WR = 0x83
 
 MEM_VALID = 158
@@ -302,8 +302,7 @@ def _addr_rearrange(addr):
 
 
 @directory.register
-class KGQ10HRadio(chirp_common.CloneModeRadio,
-                  chirp_common.ExperimentalRadio):
+class KGQ10HRadio(WouxunKGBase):
 
     """Wouxun KG-Q10H"""
     VENDOR = "Wouxun"
@@ -313,6 +312,7 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
     _record_start = 0x7C
     _model = b"KG-Q10H"
     _cryptbyte = 0x54
+    _download_delay = 0.005
     config_map = config_map_Q10H
 
     def process_mmap(self):
@@ -356,26 +356,6 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
             image[_addr_rearrange(addr)] = raw_bytes[addr]
         return memmap.MemoryMapBytes(bytes(image))
 
-    def _do_download(self, start, end, blocksize):
-        image = b""
-        for i in range(start, end, blocksize):
-            time.sleep(0.005)  # brief delay for radio stability
-            req = struct.pack('>HB', i, blocksize)
-            self._write_record(CMD_RD, req)
-            cs_error, resp = self._read_record()
-            if cs_error:
-                LOG.debug(util.hexprint(resp))
-                raise Exception("Checksum error on read")
-            image += resp[2:]
-            if self.status_fn:
-                status = chirp_common.Status()
-                status.cur = i
-                status.max = end
-                status.msg = "Cloning from radio"
-                self.status_fn(status)
-        self._finish()
-        return memmap.MemoryMapBytes(image)
-
     def _upload(self):
         """Upload memory to the radio with address rearrangement."""
         try:
@@ -412,32 +392,6 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
         self._finish()
 
     # --- Serial protocol ---
-
-    def strxor(self, xora, xorb):
-        """XOR two byte values and return as a single-byte bytes object."""
-        return bytes([xora ^ xorb])
-
-    def encrypt(self, data):
-        """Encrypt data using chained XOR with _cryptbyte as the seed."""
-        result = self.strxor(self._cryptbyte, data[0])
-        for i in range(1, len(data)):
-            result += self.strxor(result[i - 1], data[i])
-        return result
-
-    def decrypt(self, data):
-        """Decrypt data by reversing the chained XOR."""
-        result = b''
-        for i in range(len(data) - 1, 0, -1):
-            result += self.strxor(data[i], data[i - 1])
-        result += self.strxor(data[0], self._cryptbyte)
-        return result[::-1]
-
-    def _checksum(self, data):
-        """Simple checksum: sum of bytes mod 256."""
-        cs = 0
-        for byte in data:
-            cs += byte
-        return cs % 256
 
     def _checksum_adjust(self, byte_val):
         """Compute the Q10H checksum adjustment.
@@ -484,7 +438,7 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
         _cs += self._checksum(_packet)
         _cs += self._checksum_adjust(_packet[0])
         _cs &= 0xFF
-        _rcs = self.strxor(self.pipe.read(1)[0], _rcs_xor)[0]
+        _rcs = strxor(self.pipe.read(1)[0], _rcs_xor)[0]
         return (_rcs != _cs, _packet)
 
     def _identify(self):
@@ -589,98 +543,6 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
     def match_model(cls, filedata, filename):
         return False
 
-    # --- Tone handling ---
-
-    def _get_tone(self, _mem, mem):
-        """Decode TX/RX tones from radio memory into CHIRP memory.
-
-        Wouxun radios store separate TX/RX tones in every channel.
-        We detect simple modes (Tone, TSQL, DTCS) and only fall
-        back to Cross when the configuration doesn't fit.
-
-        Tone encoding:
-          0xFFFF or 0x0000 = no tone
-          0x8000 flag = CTCSS tone (value / 10.0 Hz)
-          0x4000 flag = DCS code (octal in lower bits)
-          0x2000 flag = inverted DCS polarity
-        """
-        def _get_dcs(val):
-            code = int("%03o" % (val & 0x07FF))
-            pol = (val & 0x2000) and "R" or "N"
-            return code, pol
-
-        # Decode TX tone
-        tpol = False
-        if _mem.txtone != 0xFFFF and (_mem.txtone & 0x4000) == 0x4000:
-            tcode, tpol = _get_dcs(_mem.txtone)
-            mem.dtcs = tcode
-            txmode = "DTCS"
-        elif _mem.txtone != 0xFFFF and _mem.txtone != 0x0:
-            mem.rtone = (_mem.txtone & 0x7FFF) / 10.0
-            txmode = "Tone"
-        else:
-            txmode = ""
-
-        # Decode RX tone
-        rpol = False
-        if _mem.rxtone != 0xFFFF and (_mem.rxtone & 0x4000) == 0x4000:
-            rcode, rpol = _get_dcs(_mem.rxtone)
-            mem.rx_dtcs = rcode
-            rxmode = "DTCS"
-        elif _mem.rxtone != 0xFFFF and _mem.rxtone != 0x0:
-            mem.ctone = (_mem.rxtone & 0x7FFF) / 10.0
-            rxmode = "Tone"
-        else:
-            rxmode = ""
-
-        # Detect simple modes before falling back to Cross
-        if txmode == "Tone" and not rxmode:
-            mem.tmode = "Tone"
-        elif (txmode == rxmode == "Tone" and mem.rtone == mem.ctone):
-            mem.tmode = "TSQL"
-        elif (txmode == rxmode == "DTCS"
-              and mem.dtcs == mem.rx_dtcs):
-            mem.tmode = "DTCS"
-        elif rxmode or txmode:
-            mem.tmode = "Cross"
-            mem.cross_mode = "%s->%s" % (txmode, rxmode)
-
-        mem.dtcs_polarity = "%s%s" % (tpol or "N", rpol or "N")
-
-    def _set_tone(self, mem, _mem):
-        """Encode CHIRP tone settings into radio memory format."""
-        def _set_dcs(code, pol):
-            val = int("%i" % code, 8) | 0x4000
-            if pol == "R":
-                val |= 0x2000
-            return val
-
-        rxtone = txtone = 0x0000
-
-        if mem.tmode == "Tone":
-            txtone = int(mem.rtone * 10) | 0x8000
-        elif mem.tmode == "TSQL":
-            rxtone = txtone = int(mem.ctone * 10) | 0x8000
-        elif mem.tmode == "DTCS":
-            txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-            rxtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[1])
-        elif mem.tmode == "Cross":
-            tx_mode, rx_mode = mem.cross_mode.split("->")
-            if tx_mode == "DTCS":
-                txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-            elif tx_mode == "Tone":
-                txtone = int(mem.rtone * 10) | 0x8000
-            if rx_mode == "DTCS":
-                rxtone = _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[1])
-            elif rx_mode == "Tone":
-                rxtone = int(mem.ctone * 10) | 0x8000
-
-        _mem.rxtone = rxtone
-        _mem.txtone = txtone
-
-        LOG.debug("Set TX tone %04x RX tone %04x (mode %s)" %
-                  (_mem.txtone, _mem.rxtone, mem.tmode))
-
     # --- Memory read/write ---
 
     def get_memory(self, number):
@@ -701,24 +563,10 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
         mem.freq = int(_mem.rxfreq) * 10
 
         # duplex and offset
-        if _mem.txfreq == 0xFFFFFFFF:
-            mem.duplex = "off"
-            mem.offset = 0
-        elif int(_mem.rxfreq) == int(_mem.txfreq):
-            mem.duplex = ""
-            mem.offset = 0
-        elif abs(int(_mem.rxfreq) * 10 - int(_mem.txfreq) * 10) > 70000000:
-            mem.duplex = "split"
-            mem.offset = int(_mem.txfreq) * 10
-        else:
-            mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
-            mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
+        self._decode_duplex_offset(mem, _mem)
 
-        # name (12 chars)
-        for char in _nam.name:
-            if char != 0:
-                mem.name += chr(char)
-        mem.name = mem.name.rstrip()
+        # name
+        self._decode_name(mem, _nam)
 
         # tones
         self._get_tone(_mem, mem)
