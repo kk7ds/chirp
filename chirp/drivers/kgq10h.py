@@ -30,10 +30,10 @@ from chirp import util, chirp_common, bitwise, memmap, errors, directory
 
 LOG = logging.getLogger(__name__)
 
-CMD_ID = 128    # 0x80
-CMD_END = 129   # 0x81
-CMD_RD = 130    # 0x82
-CMD_WR = 131    # 0x83
+CMD_ID = 0x80
+CMD_END = 0x81
+CMD_RD = 0x82
+CMD_WR = 0x83
 
 MEM_VALID = 158
 
@@ -359,7 +359,7 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
     def _do_download(self, start, end, blocksize):
         image = b""
         for i in range(start, end, blocksize):
-            time.sleep(0.005)
+            time.sleep(0.005)  # brief delay for radio stability
             req = struct.pack('>HB', i, blocksize)
             self._write_record(CMD_RD, req)
             cs_error, resp = self._read_record()
@@ -388,9 +388,7 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
                 "Failed to communicate with radio: %s" % e)
 
     def _do_upload(self):
-        cfgmap = self.config_map
-
-        for radio_start, chirp_start, blocksize, count in cfgmap:
+        for radio_start, chirp_start, blocksize, count in self.config_map:
             end = chirp_start + (blocksize * count)
             radio_addr = radio_start
 
@@ -399,8 +397,8 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
                 chunk = self.get_mmap()[addr:addr + blocksize]
                 self._write_record(CMD_WR, req + chunk)
                 cserr, ack = self._read_record()
-                j = struct.unpack('>H', ack)[0]
-                if cserr or j != radio_addr:
+                ack_addr = struct.unpack('>H', ack)[0]
+                if cserr or ack_addr != radio_addr:
                     raise Exception(
                         "Radio did not ack block %i" % radio_addr)
                 radio_addr += blocksize
@@ -416,15 +414,18 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
     # --- Serial protocol ---
 
     def strxor(self, xora, xorb):
+        """XOR two byte values and return as a single-byte bytes object."""
         return bytes([xora ^ xorb])
 
     def encrypt(self, data):
+        """Encrypt data using chained XOR with _cryptbyte as the seed."""
         result = self.strxor(self._cryptbyte, data[0])
         for i in range(1, len(data)):
             result += self.strxor(result[i - 1], data[i])
         return result
 
     def decrypt(self, data):
+        """Decrypt data by reversing the chained XOR."""
         result = b''
         for i in range(len(data) - 1, 0, -1):
             result += self.strxor(data[i], data[i - 1])
@@ -499,6 +500,7 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
         self.pipe.reset_input_buffer()
         time.sleep(0.1)
 
+        # Pre-encrypted read command for address 0x0000, length 3
         ident = struct.pack(
             'BBBBBBBB', 0x7c, 0x82, 0xff, 0x03,
             0x54, 0x14, 0x54, 0x53)
@@ -525,7 +527,7 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
                    self._model.decode('utf-8')))
 
     def _finish(self):
-        # Encrypted finish/reboot command
+        # Pre-encrypted finish/reboot command
         finish = struct.pack('BBBBB', 0x7c, 0x81, 0xff, 0x00, 0xd7)
         self.pipe.write(finish)
 
@@ -676,8 +678,8 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
         _mem.rxtone = rxtone
         _mem.txtone = txtone
 
-        LOG.debug("Set TX %s (%i) RX %s (%i)" %
-                  (mem.tmode, _mem.txtone, mem.tmode, _mem.rxtone))
+        LOG.debug("Set TX tone %04x RX tone %04x (mode %s)" %
+                  (_mem.txtone, _mem.rxtone, mem.tmode))
 
     # --- Memory read/write ---
 
@@ -786,7 +788,7 @@ class KGQ10HRadio(chirp_common.CloneModeRadio,
         else:
             _mem.power = 0
 
-        # defaults for extras (Phase 2 will handle these properly)
+        # clear optional fields
         _mem.scrambler = 0
         _mem.compander = 0
         _mem.mute_mode = 0
