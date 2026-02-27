@@ -412,6 +412,7 @@ class KGQ10HRadio(WouxunKGBase):
             return -3
 
     def _write_record(self, cmd, payload=b''):
+        """Build, encrypt, and send a framed record to the radio."""
         _packet = struct.pack('BBBB', self._record_start, cmd, 0xFF,
                               len(payload))
         # Checksum covers header bytes [1:] + unencrypted payload
@@ -426,6 +427,10 @@ class KGQ10HRadio(WouxunKGBase):
         self.pipe.write(_packet)
 
     def _read_record(self):
+        """Read and decrypt a record from the radio.
+
+        Returns (checksum_error, decrypted_payload).
+        """
         _header = self.pipe.read(4)
         if len(_header) != 4:
             raise errors.RadioError(
@@ -481,6 +486,7 @@ class KGQ10HRadio(WouxunKGBase):
                    self._model.decode('utf-8')))
 
     def _finish(self):
+        """Send the finish/reboot command to end communication."""
         # Pre-encrypted finish/reboot command
         finish = struct.pack('BBBBB', 0x7c, 0x81, 0xff, 0x00, 0xd7)
         self.pipe.write(finish)
@@ -571,7 +577,7 @@ class KGQ10HRadio(WouxunKGBase):
         # tones
         self._get_tone(_mem, mem)
 
-        # skip
+        # skip (scan_add=1 means scan enabled, i.e. not skipped)
         mem.skip = "" if bool(_mem.scan_add) else "S"
 
         # power (4 levels, clamp to valid range)
@@ -613,7 +619,7 @@ class KGQ10HRadio(WouxunKGBase):
         else:
             _mem.txfreq = int(mem.freq / 10)
 
-        # skip
+        # skip (scan_add=1 means scan enabled, i.e. not skipped)
         _mem.scan_add = int(mem.skip != "S")
 
         # mode

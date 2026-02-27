@@ -68,12 +68,18 @@ class WouxunKGBase(chirp_common.CloneModeRadio,
     # --- Encryption ---
 
     def encrypt(self, data):
+        """Encrypt data using chained XOR with _cryptbyte as the seed.
+
+        Each output byte is XORed with the previous output byte,
+        creating a chain where every byte depends on all prior bytes.
+        """
         result = strxor(self._cryptbyte, data[0])
         for i in range(1, len(data)):
             result += strxor(result[i - 1], data[i])
         return result
 
     def decrypt(self, data):
+        """Decrypt data by reversing the chained XOR."""
         result = b''
         for i in range(len(data) - 1, 0, -1):
             result += strxor(data[i], data[i - 1])
@@ -95,8 +101,8 @@ class WouxunKGBase(chirp_common.CloneModeRadio,
         """Download a contiguous region of radio memory.
 
         Reads blocksize-byte chunks from start to end, calling
-        _write_record / _read_record (which subclasses must provide)
-        and returning the assembled memory image.
+        _write_record / _read_record / _finish (which subclasses must
+        provide) and returning the assembled memory image.
         """
         image = b""
         for i in range(start, end, blocksize):
@@ -223,6 +229,7 @@ class WouxunKGBase(chirp_common.CloneModeRadio,
         elif int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
             mem.offset = 0
+        # > 70 MHz difference = too large for standard duplex offset
         elif abs(int(_mem.rxfreq) * 10 - int(_mem.txfreq) * 10) > 70000000:
             mem.duplex = "split"
             mem.offset = int(_mem.txfreq) * 10
