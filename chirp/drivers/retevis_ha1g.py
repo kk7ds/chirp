@@ -37,10 +37,8 @@ LOG = logging.getLogger(__name__)
 # This is the minimum required firmare version supported by this driver
 REQUIRED_VER = "v1.1.11.6"
 
-MEM_FORMAT = """
-
-#seekto 0x0E;
-struct{
+MEM_DEFINITIONS = """
+struct radioinfo {
     u8 modelnumber[32];
     u8 hardwareversion[2];
     u8 serialno[16];
@@ -50,14 +48,117 @@ struct{
     u8 saleterr;
     u8 radiomode;
     u8 rev[7];
-} radioinfo;
+};
 
-#seekto 0x52;
-struct{
+struct dataver {
     u8 dataver[2];
     u8 softver[4];
     u8 rev[4];
-    }dataver;
+};
+
+struct zoneinfo {
+    ul16 zonenum;
+    ul16 zoneindex[16];
+    u8 pad[2];
+    struct {
+        char name[14];
+        ul16 chnum;
+        ul16 chindex[64];
+    } zones[16];
+};
+
+struct scaninfo {
+    ul16 scannum;
+    ul16 scanindex[16];
+    u8 pad[34];
+    struct  {
+       char name[14];
+       u8 scantxch:4,
+          scancondition:4;
+       u8 hangtime:4,
+          talkback:1,
+          scanstatus:3;
+       u8 chnum;
+       ul16 specifych;
+       ul16 PriorityCh1;
+       ul16 PriorityCh2;
+       u8 scanmode;
+       ul16 chindex[100];
+    } scans[16];
+};
+
+struct vfoscaninfo {
+    ul16 vfoscannum;
+    ul16 vfoscanindex[3];
+    u8 pad[8];
+    struct {
+       u8 scantxch:4,
+          scancondition:4;
+       u8 hangtime:4,
+          talkback:1,
+          startcondition:1,
+          rev_1:2;
+       u8 scanmode;
+       ul32 vhffreq_start;
+       ul32 vhffreq_end;
+       ul32 uhffreq_start;
+       ul32 uhffreq_end;
+       u8 rev;
+    } vfoscans[3];
+};
+
+struct alarminfo {
+    ul16 alarmnum;
+    ul16 alarmindex[8];
+    u8 pad[18];
+    struct {
+        char name[14];
+        u8 alarmtype:4,
+           alarmmode:4;
+        ul16 jumpch;
+        u8 localalarm:1,
+           txbackground:1,
+           ctcmode:2,
+           rev_1:4;
+        u8 alarmtime:4,
+           alarmcycle:4;
+        u8 mictime:4,
+           txinterval:4;
+        u8 alarmid[8];
+        u8 alarmstatus;
+        u8 rev_3[1];
+    } alarms[8];
+};
+
+struct dtmfinfo {
+    ul16 dtmfnum;
+    ul16 dtmfindex[4];
+    u8 pad[10];
+    struct {
+        u8 autoresettime:4,
+           codedelaytime:4;
+        u8 stunmode:2,
+           showani:1,
+           sidetone:1,
+           pttidtype:2,
+           rev_1:2;
+        char callid[10];
+        char stunid[10];
+        char revive[10];
+        char bot[16];
+        char eot[16];
+        char rev_2[8];
+    } dtmfcomm;
+};
+"""
+
+MEM_FORMAT = """
+
+#seekto 0x0E;
+struct radioinfo radioinfo;
+
+#seekto 0x52;
+struct dataver dataver;
 
 #seekto 0x5C;
 struct {
@@ -138,17 +239,7 @@ struct {
 } settings;
 
 #seekto 0xc0;
-struct  {
-    ul16 zonenum;
-    ul16 zoneindex[16];
-} zonedata;
-
-#seekto 0xe2;
-struct {
-    char name[14];
-    ul16 chnum;
-    ul16 chindex[64];
-} zones[16];
+struct zoneinfo zoneinfo;
 
 #seekto 0x0D42;
 struct  {
@@ -197,96 +288,16 @@ struct  {
 } channels[1027];
 
 #seekto 0xb5c2;
-struct  {
-    ul16 scannum;
-    ul16 scanindex[16];
-} scandata;
-
-#seekto 0xb5e4;
-struct {
-   char name[14];
-   u8 scantxch:4,
-      scancondition:4;
-   u8 hangtime:4,
-      talkback:1,
-      scanstatus:3;
-   u8 chnum;
-   ul16 specifych;
-   ul16 PriorityCh1;
-   ul16 PriorityCh2;
-   u8 scanmode;
-   ul16 chindex[100];
-} scans[16];
+struct scaninfo scans;
 
 #seekto 0xc3e4;
-struct  {
-    ul16 vfoscannum;
-    ul16 vfoscanindex[3];
-} vfoscandata;
-
-#seekto 0xc3ec;
-struct {
-   u8 scantxch:4,
-      scancondition:4;
-   u8 hangtime:4,
-      talkback:1,
-      startcondition:1,
-      rev_1:2;
-   u8 scanmode;
-   ul32 vhffreq_start;
-   ul32 vhffreq_end;
-   ul32 uhffreq_start;
-   ul32 uhffreq_end;
-   u8 rev;
-} vfoscans[3];
+struct vfoscaninfo vfoscans;
 
 #seekto 0xc444;
-struct  {
-    ul16 alarmnum;
-    ul16 alarmindex[8];
-} alarmdata;
-
-#seekto 0xc456;
-struct {
-    char name[14];
-    u8 alarmtype:4,
-       alarmmode:4;
-    ul16 jumpch;
-    u8 localalarm:1,
-       txbackground:1,
-       ctcmode:2,
-       rev_1:4;
-    u8 alarmtime:4,
-       alarmcycle:4;
-    u8 mictime:4,
-       txinterval:4;
-    u8 alarmid[8];
-    u8 alarmstatus;
-    u8 rev_3[1];
-    } alarms[8];
+struct alarminfo alarms;
 
 #seekto 0xc848;
-struct  {
-    ul16 dtmfnum;
-    ul16 dtmfindex[4];
-} dtmfdata;
-
-#seekto 0xc852;
-struct {
-    u8 autoresettime:4,
-       codedelaytime:4;
-    u8 stunmode:2,
-       showani:1,
-       sidetone:1,
-       pttidtype:2,
-       rev_1:2;
-    char callid[10];
-    char stunid[10];
-    char revive[10];
-    char bot[16];
-    char eot[16];
-    char rev_2[8];
-} dtmfcomm;
+struct dtmfinfo dtmfinfos;
 
 #seekto 0xc89a;
 struct {
@@ -390,12 +401,12 @@ FREQ_STEP_List = [
 class HA1GBank(chirp_common.NamedBank):
 
     def get_name(self):
-        _bank = self._model._radio._memobj.zones[self.index]
+        _bank = self._model._radio._memobj.zoneinfo.zones[self.index]
         name = "".join(filter(_bank.name, NAMECHARSET, 14))
         return name.rstrip()
 
     def set_name(self, name):
-        _bank = self._model._radio._memobj.zones[self.index]
+        _bank = self._model._radio._memobj.zoneinfo.zones[self.index]
         _bank.name = str(name).ljust(14)[:14]
 
 
@@ -405,7 +416,7 @@ class HA1GBankModel(chirp_common.BankModel):
         return len(self.get_mappings())
 
     def get_mappings(self):
-        banks = self._radio._memobj.zones
+        banks = self._radio._memobj.zoneinfo.zones
         bank_mappings = []
         for index, _bank in enumerate(banks):
             bank = HA1GBank(self, "%i" % index, "b%i" % (index + 1))
@@ -415,15 +426,15 @@ class HA1GBankModel(chirp_common.BankModel):
         return bank_mappings
 
     def _get_channel_numbers_in_bank(self, bank):
-        _bank_used = self._radio._memobj.zonedata.zoneindex[bank.index]
+        _bank_used = self._radio._memobj.zoneinfo.zoneindex[bank.index]
         if _bank_used == 0xFFFF:
             return set()
 
-        _members = self._radio._memobj.zones[bank.index]
+        _members = self._radio._memobj.zoneinfo.zones[bank.index]
         return set([int(ch) - 1 for ch in _members.chindex if ch != 0xFFFF])
 
     def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
-        _members = self._radio._memobj.zones[bank.index]
+        _members = self._radio._memobj.zoneinfo.zones[bank.index]
         if len(channels_in_bank) > len(_members.chindex):
             raise Exception("Too many entries in bank %d" % bank.index)
 
@@ -1123,7 +1134,7 @@ def get_common_setting(self, common):
 
 
 def get_dtmf_setting(self, dtmf):
-    _dtmf_comm = self._memobj.dtmfcomm
+    _dtmf_comm = self._memobj.dtmfinfos.dtmfcomm
     opts = ["OFF"] + ["%ss" % x for x in range(1, 16, 1)]
     dtmf.append(
         RadioSetting(
@@ -1194,7 +1205,7 @@ def get_dtmf_setting(self, dtmf):
 
 
 def get_vfo_scan(self, vfoscan):
-    _vfo_scan = self._memobj.vfoscans[0]
+    _vfo_scan = self._memobj.vfoscans.vfoscans[0]
     opts = ["Carrier", "Time", "Search"]
     vfoscan.append(
         RadioSetting(
@@ -1479,7 +1490,7 @@ class HA1G(chirp_common.CloneModeRadio):
         return HA1GBankModel(self)
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(MEM_DEFINITIONS + MEM_FORMAT, self._mmap)
         self._dtmf_list = self.get_dtmf_item_list()
         self._alarm_list = self.get_alarm_item_list()
 
@@ -1593,7 +1604,7 @@ class HA1G(chirp_common.CloneModeRadio):
                         setattr(_dtmfcomm, name, value)
                     elif name.startswith("vfoscan."):
                         name = name[8:]
-                        _vfo_scan = self._memobj.vfoscans[0]
+                        _vfo_scan = self._memobj.vfoscans.vfoscans[0]
                         if name in ["vhffreq_start", "vhffreq_end"]:
                             value = int(value * 1000000)
                         setattr(_vfo_scan, name, value)
@@ -1603,22 +1614,21 @@ class HA1G(chirp_common.CloneModeRadio):
                 raise
 
     def get_alarm_item_list(self):
-        _alarmdata = self._memobj.alarmdata
-        _alarms = self._memobj.alarms
+        _alarmdata = self._memobj.alarms
         alarm_list = [{"name": "OFF", "id": 255}]
         max_count = 8
         alarm_num = min(_alarmdata.alarmnum, max_count)
         if alarm_num > 0:
             for i in range(alarm_num):
                 alarm_index = min(_alarmdata.alarmindex[i], max_count - 1)
-                alarm_item = _alarms[alarm_index]
+                alarm_item = _alarmdata.alarms[alarm_index]
                 alarm_item.alarmstatus = 1
                 alarmname = "".join(filter(alarm_item.name, NAMECHARSET, 12))
                 alarm_list.append({"name": alarmname, "id": alarm_index})
         return alarm_list
 
     def get_dtmf_item_list(self):
-        _dtmfdata = self._memobj.dtmfdata
+        _dtmfdata = self._memobj.dtmfinfos
         _dtmfs = self._memobj.dtmfs
         dtmf_list = [{"name": "OFF", "id": 15}]
         max_count = 4
@@ -1633,15 +1643,14 @@ class HA1G(chirp_common.CloneModeRadio):
         return dtmf_list
 
     def get_scan_item_list(self):
-        _scandata = self._memobj.scandata
-        _scans = self._memobj.scans
+        _scandata = self._memobj.scans
         scan_dict = []
         max_count = 16
         scan_num = min(_scandata.scannum, max_count)
         if scan_num > 0:
             for i in range(0, scan_num):
                 scan_index = min(_scandata.scanindex[i], max_count)
-                scan_item = _scans[scan_index]
+                scan_item = _scandata.scans[scan_index]
                 scanname = "".join(filter(scan_item.name, NAMECHARSET, 12))
                 scan_dict.append({"name": scanname, "id": scan_index})
         return scan_dict
