@@ -1528,6 +1528,15 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         self._memory_cache[row] = memory
 
+        darkmode = wx.SystemSettings.GetAppearance().IsDark()
+        if darkmode:
+            immutable_color = wx.SystemSettings.GetColour(
+                wx.SYS_COLOUR_GRAYTEXT)
+        else:
+            # This is a very light gray that looks good in light mode, but
+            # makes dark mode (light font) very hard to read.
+            immutable_color = (0xF5, 0xF5, 0xF5, 0xFF)
+
         # Build a list of coldef names that are immutable extras for this
         # memory
         immutable_extras = ['extra.%s' % setting.get_name()
@@ -1543,7 +1552,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 self._grid.SetReadOnly(row, col,
                                        immutable or not self.editable)
                 if immutable:
-                    color = (0xF5, 0xF5, 0xF5, 0xFF)
+                    color = immutable_color
                 else:
                     color = self._default_cell_bg_color
                 self._grid.SetCellBackgroundColour(row, col, color)
