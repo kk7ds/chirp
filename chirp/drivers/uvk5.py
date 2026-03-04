@@ -2006,6 +2006,8 @@ class UVK5Radio(UVK5RadioBase):
     @classmethod
     def k5_approve_firmware(cls, firmware):
         approved_prefixes = (
+            '1.02.', 'k5_2.01.', 'app_2.01.', '2.01.', '3.00.',
+            '1o11', '4.00.', 'k5_4.00.', '5.00.')
             # These are the original OEM firmware versions
             'k5_2.01.', 'app_2.01.', '2.01.', '3.00.',
             '4.00.', 'k5_4.00.', '5.00.', '7.00.',
