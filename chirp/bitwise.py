@@ -115,12 +115,11 @@ def string_straight_decode(string):
     return ''.join(chr(b) for b in string)
 
 
-def format_binary(nbits, value, pad=8):
-    s = ""
-    for i in range(0, nbits):
-        s = "%i%s" % (value & 0x01, s)
-        value >>= 1
-    return "%s%s" % ((pad - len(s)) * ".", s)
+def format_binary(nbits, value, width=8, shift=0, padchar='.'):
+    padleft = width - shift
+    padright = width - padleft - nbits
+    bits = f'{value << shift:0{nbits}b}'[:nbits]
+    return f'{padleft * padchar}{bits}{padright * padchar}'
 
 
 def bits_between(start, end):
@@ -784,8 +783,10 @@ class bitDataElement(intDataElement):
     _subgen = u8DataElement  # Default to a byte
 
     def __repr__(self):
-        fmt = "0x%%0%iX (%%sb)" % (self._size * 2)
-        return fmt % (int(self), format_binary(self._nbits, self.get_value()))
+        size = self._subgen._size * 8
+        hex_len = size // 4
+        bits = format_binary(self._nbits, self.get_value(), size, self._shift)
+        return f'0x{int(self):0{hex_len}X} ({bits}b)'
 
     def get_value(self):
         data = self._subgen(self._data, self._offset).get_value()
