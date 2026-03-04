@@ -404,6 +404,8 @@ class ChirpBrowserPanel(wx.lib.scrolledpanel.ScrolledPanel):
                 editor = ChirpIntegerEditor(self, obj, labelfmt=labelfmt)
             elif isinstance(obj, bitwise.structDataElement):
                 self._parent.add_sub_panel(name, obj, self)
+            elif isinstance(obj, bitwise.bcdDataElement):
+                editor = ChirpBCDEditor(self, obj)
             if editor:
                 self.add_editor(name, editor)
         self._initialized = True
