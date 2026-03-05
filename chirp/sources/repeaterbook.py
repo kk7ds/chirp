@@ -80,13 +80,17 @@ class RepeaterBook(base.NetworkResultRadio):
     def get_label(self):
         return 'RepeaterBook'
 
+    @staticmethod
+    def get_resource_name(service, country, state):
+        return 'rb%s-%s-%s.json' % (service,
+                                    country.lower().replace(' ', '_'),
+                                    state.lower().replace(' ', '_'))
+
     def get_data(self, status, country, state, service):
         # Ideally we would be able to pull the whole database, but right
         # now this is limited to 3500 results, so we need to filter and
         # cache by state to stay under that limit.
-        fn = 'rb%s-%s-%s.json' % (service,
-                                  country.lower().replace(' ', '_'),
-                                  state.lower().replace(' ', '_'))
+        fn = self.get_resource_name(service, country, state)
         db_dir = chirp_platform.get_platform().config_file('repeaterbook')
         try:
             os.mkdir(db_dir)
@@ -394,7 +398,6 @@ ROW_COUNTRIES = [
     "Liechtenstein",
     "Lithuania",
     "Luxembourg",
-    "Macedonia",
     "Malaysia",
     "Malta",
     "Moldova",
@@ -404,6 +407,7 @@ ROW_COUNTRIES = [
     "Netherlands",
     "New Zealand",
     "Nicaragua",
+    "North Macedonia",
     "Norway",
     "Oman",
     "Panama",
@@ -413,7 +417,7 @@ ROW_COUNTRIES = [
     "Poland",
     "Portugal",
     "Romania",
-    "Russian Federation",
+    "Russia",
     "Saint Kitts and Nevis",
     "Saint Vincent and the Grenadines",
     "San Marino",
