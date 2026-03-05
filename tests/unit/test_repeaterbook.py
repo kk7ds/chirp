@@ -1,5 +1,6 @@
 import datetime
 import json
+import lzma
 import os
 import shutil
 import tempfile
@@ -184,11 +185,13 @@ class TestRepeaterbook(unittest.TestCase):
             status.send_fail.assert_called()
 
     def test_get_data_no_results(self):
+        comp = lzma.LZMACompressor(format=lzma.FORMAT_XZ)
+        fake_data = comp.compress(json.dumps({'count': 0}).encode())
+        fake_data += comp.flush()
         rb = repeaterbook.RepeaterBook()
         with mock.patch('requests.get') as mock_get:
             mock_get.return_value.status_code = 200
-            mock_get.return_value.iter_content.return_value = [json.dumps(
-                {'count': 0}).encode()]
+            mock_get.return_value.iter_content.return_value = [fake_data]
             status = mock.MagicMock()
             r = rb.get_data(status, 'US', 'OR', '')
             self.assertIsNone(r)
@@ -202,11 +205,13 @@ class TestRepeaterbook(unittest.TestCase):
         files = os.listdir(self.tempdir)
         # Make sure we started with no data files
         self.assertEqual(0, len(files))
+        comp = lzma.LZMACompressor(format=lzma.FORMAT_XZ)
+        fake_data = comp.compress(json.dumps({'count': 1}).encode())
+        fake_data += comp.flush()
         rb = repeaterbook.RepeaterBook()
         with mock.patch('requests.get') as mock_get:
             mock_get.return_value.status_code = 200
-            mock_get.return_value.iter_content.return_value = [json.dumps(
-                {'count': 1}).encode()]
+            mock_get.return_value.iter_content.return_value = [fake_data]
             status = mock.MagicMock()
             r = rb.get_data(status, 'US', 'OR', '')
             self.assertIsNotNone(r)
