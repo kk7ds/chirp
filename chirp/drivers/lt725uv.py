@@ -568,10 +568,10 @@ class LT725UV(chirp_common.CloneModeRadio):
         return getattr(self._memobj, "%s_memory%s" % (self._vfo, suffix))
 
     def _get_dcs(self, val):
-        return int(str(val)[2:-18])
+        return val.get_bbcd()
 
     def _set_dcs(self, val):
-        return int(str(val), 16)
+        return bitwise.dec_to_bbcd(val)
 
     def get_memory(self, number):
         _mem = self._memory_obj()[number - 1]
