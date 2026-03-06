@@ -11,7 +11,7 @@ from chirp import chirp_common
 from chirp import errors
 from chirp import platform as chirp_platform
 from chirp.sources import base
-from chirp.wxui import fips
+from chirp.sources import fips
 
 LOG = logging.getLogger(__name__)
 
