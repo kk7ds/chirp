@@ -59,7 +59,6 @@ struct dataver {
 struct zoneinfo {
     ul16 zonenum;
     ul16 zoneindex[16];
-    u8 pad[2];
     struct {
         char name[14];
         ul16 chnum;
@@ -70,7 +69,6 @@ struct zoneinfo {
 struct scaninfo {
     ul16 scannum;
     ul16 scanindex[16];
-    u8 pad[34];
     struct  {
        char name[14];
        u8 scantxch:4,
@@ -90,7 +88,6 @@ struct scaninfo {
 struct vfoscaninfo {
     ul16 vfoscannum;
     ul16 vfoscanindex[3];
-    u8 pad[8];
     struct {
        u8 scantxch:4,
           scancondition:4;
@@ -110,7 +107,6 @@ struct vfoscaninfo {
 struct alarminfo {
     ul16 alarmnum;
     ul16 alarmindex[8];
-    u8 pad[18];
     struct {
         char name[14];
         u8 alarmtype:4,
@@ -133,7 +129,6 @@ struct alarminfo {
 struct dtmfinfo {
     ul16 dtmfnum;
     ul16 dtmfindex[4];
-    u8 pad[10];
     struct {
         u8 autoresettime:4,
            codedelaytime:4;
@@ -1594,7 +1589,7 @@ class HA1G(chirp_common.CloneModeRadio):
                         setattr(_settings, name, value)
                     elif name.startswith("dtmfsetting."):
                         name = name[12:]
-                        _dtmfcomm = self._memobj.dtmfcomm
+                        _dtmfcomm = self._memobj.dtmfinfos.dtmfcomm
                         if (name in ["callid", "stunid", "revive"]):
                             value = filter(value, DTMFCHARSET, 10, True)
                             value = value.ljust(10, "\x00")
