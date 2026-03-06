@@ -502,7 +502,7 @@ class FT50Radio(yaesu_clone.YaesuCloneModeRadio):
                 RadioSettingValueBoolean(_settings.code_dec_c_en))
         dtmf.append(rs)
 
-        _str = str(bitwise.bcd_to_int(_settings.pagingcodec_ro))
+        _str = str(_settings.pagingcodec_ro)
         code = RadioSettingValueString(0, 3, _str)
         code.set_charset(NUMERIC_CHARSET + list(" "))
         code.set_mutable(False)
@@ -514,7 +514,7 @@ class FT50Radio(yaesu_clone.YaesuCloneModeRadio):
                 RadioSettingValueBoolean(_settings.code_dec_p_en))
         dtmf.append(rs)
 
-        _str = str(bitwise.bcd_to_int(_settings.pagingcodep))
+        _str = str(_settings.pagingcodep)
         code = RadioSettingValueString(0, 3, _str)
         code.set_charset(NUMERIC_CHARSET + list(" "))
         rs = RadioSetting("pagingcodep", "Paging Code P", code)
@@ -528,7 +528,7 @@ class FT50Radio(yaesu_clone.YaesuCloneModeRadio):
                     RadioSettingValueBoolean(getattr(_settings, name)))
             dtmf.append(rs)
 
-            _str = str(bitwise.bcd_to_int(_settings.pagingcode[i].digits))
+            _str = str(_settings.pagingcode[i].digits)
             code = RadioSettingValueString(0, 3, _str)
             code.set_charset(NUMERIC_CHARSET + list(" "))
             rs = RadioSetting("pagingcode" + num, "Paging Code " + num, code)
@@ -561,13 +561,11 @@ class FT50Radio(yaesu_clone.YaesuCloneModeRadio):
                     _settings.digits = newval
                     continue
                 if (setting == "pagingcodep"):
-                    bitwise.int_to_bcd(_settings.pagingcodep,
-                                       int(element.value))
+                    _settings.pagingcodep = int(element.value)
                     continue
                 if re.match(r'pagingcode\d', setting):
                     idx = int(setting[-1:]) - 1
-                    bitwise.int_to_bcd(_settings.pagingcode[idx].digits,
-                                       int(element.value))
+                    _settings.pagingcode[idx].digits = int(element.value)
                     continue
                 newval = element.value
                 oldval = getattr(_settings, setting)
