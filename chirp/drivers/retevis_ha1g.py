@@ -420,13 +420,18 @@ class HA1GBankModel(chirp_common.BankModel):
 
         return bank_mappings
 
+    def get_used_zone_index(self):
+        _zone_data = self._radio._memobj.zoneinfo
+        return [x for x in
+                _zone_data.zoneindex[0:_zone_data.zonenum] if x != 0xFFFF]
+
     def _get_channel_numbers_in_bank(self, bank):
-        _bank_used = self._radio._memobj.zoneinfo.zoneindex[bank.index]
-        if _bank_used == 0xFFFF:
+        if bank.index not in self.get_used_zone_index():
             return set()
 
         _members = self._radio._memobj.zoneinfo.zones[bank.index]
-        return set([int(ch) - 1 for ch in _members.chindex if ch != 0xFFFF])
+        return set([int(ch) - 2 for ch in _members.chindex
+                    if (ch != 0xFFFF and ch > 0)])
 
     def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
         _members = self._radio._memobj.zoneinfo.zones[bank.index]
@@ -435,24 +440,12 @@ class HA1GBankModel(chirp_common.BankModel):
 
         empty = 0
         for index, channel_number in enumerate(sorted(channels_in_bank)):
-            _members.chindex[index] = channel_number + 1
+            _members.chindex[index] = channel_number + 2
             empty = index + 1
         for index in range(empty, len(_members.chindex)):
             _members.chindex[index] = 0xFFFF
 
         _members.chnum = len(channels_in_bank)
-
-    def _update_banknum(self):
-        # Simple approach to keep the number of banks synced to the actual
-        # bank data. Only drop trailing banks that have no channels.
-        _zonedata = self._radio._memobj.zonedata
-        _banknum = 0
-        for index, _bank in enumerate(reversed(_zonedata.zoneindex)):
-            if not _bank == 0xFFFF:
-                _banknum = len(_zonedata.zoneindex) - index
-                break
-
-        _zonedata.zonenum = _banknum
 
     def add_memory_to_mapping(self, memory, bank):
         channels_in_bank = self._get_channel_numbers_in_bank(bank)
@@ -460,8 +453,10 @@ class HA1GBankModel(chirp_common.BankModel):
         self._update_bank_with_channel_numbers(bank, channels_in_bank)
 
         # enable bank
-        self._radio._memobj.zonedata.zoneindex[bank.index] = bank.index
-        self._update_banknum()
+        if bank.index not in self.get_used_zone_index():
+            _zone_data = self._radio._memobj.zoneinfo
+            _zone_data.zoneindex[_zone_data.zonenum] = bank.index
+            _zone_data.zonenum += 1
 
     def remove_memory_from_mapping(self, memory, bank):
         channels_in_bank = self._get_channel_numbers_in_bank(bank)
@@ -472,10 +467,15 @@ class HA1GBankModel(chirp_common.BankModel):
                             (memory.number, bank))
         self._update_bank_with_channel_numbers(bank, channels_in_bank)
 
-        if not channels_in_bank:
+        if not channels_in_bank and bank.index in self.get_used_zone_index():
             # disable bank
-            self._radio._memobj.zonedata.zoneindex[bank.index] = 0xFFFF
-            self._update_banknum()
+            _zone_index = [x for x in self.get_used_zone_index()
+                           if x != bank.index]
+            _zone_data = self._radio._memobj.zoneinfo
+            _zone_data.zoneindex = (
+                _zone_index + [0xFFFF] * (
+                    len(_zone_data.zoneindex) - len(_zone_index)))
+            _zone_data.zonenum -= 1
 
     def get_mapping_memories(self, bank):
         memories = []
