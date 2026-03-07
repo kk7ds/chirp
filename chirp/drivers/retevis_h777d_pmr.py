@@ -9,9 +9,9 @@
 # (at your option) any later version.
 
 import logging
-import time
+import struct
 
-from chirp import bitwise, chirp_common, directory, errors, memmap, util
+from chirp import bitwise, chirp_common, directory, errors, memmap
 from chirp.settings import (
     RadioSetting,
     RadioSettingGroup,
@@ -34,6 +34,87 @@ struct {
     u8 flags14;
     u8 flags15;
 } memory[16];
+
+#seekto 0x0E20;
+struct {
+    u8 squelch;
+    u8 sidekey1_short;
+    u8 sidekey1_long;
+    u8 save;
+    u8 vox_level;
+    u8 vox_switch;
+    u8 abr;
+    u8 dual_watch;
+    u8 beep;
+    u8 tot;
+    u8 unknown0A;
+    u8 unknown0B;
+    u8 unknown0C;
+    u8 unknown0D;
+    u8 voice;
+    u8 unknown0F;
+} settings226;
+
+#seekto 0x0E30;
+struct {
+    u8 dtmf_side_tone;
+    u8 unknown01;
+    u8 scan;
+    u8 sidekey2_short;
+    u8 sidekey2_long;
+    u8 a_channel_display;
+    u8 b_channel_display;
+    u8 global_bcl;
+    u8 autolock;
+    u8 unknown09;
+    u8 unknown0A;
+    u8 unknown0B;
+    u8 lcd_contrast;
+    u8 wait_backlight;
+    u8 rx_backlight;
+    u8 tx_backlight;
+} settings227;
+
+#seekto 0x0E40;
+struct {
+    u8 alarm_mode;
+    u8 unknown01;
+    u8 dual_watch_tx_select;
+    u8 noise_reduction;
+    u8 repeater_tail_clear;
+    u8 repeater_tail_detect;
+    u8 noaa_channel;
+    u8 roger;
+    u8 reset_operation;
+    u8 unknown09;
+    u8 menu_setting:1,
+       unknown0A_1:2,
+       alarm_sound:1,
+       fm_radio_allowed:1,
+       unknown0A_5:3;
+    u8 unknown0B;
+    u8 unknown0C;
+    u8 keypad_lock;
+    u8 unknown0E;
+    u8 unknown0F;
+} settings228;
+
+#seekto 0x0E50;
+struct {
+    u8 unknown00;
+    u8 noaa_switch;
+    u8 unknown02[14];
+} settings229;
+
+#seekto 0x0F20;
+struct {
+    u8 unknown00[10];
+    u8 sidekey3_short;
+    u8 sidekey4_short;
+    u8 unknown0C[2];
+    u8 sidekey3_long;
+    u8 sidekey4_long;
+} settings242;
 
 #seekto 0x1000;
 struct {
@@ -99,59 +180,6 @@ SCAN_ADD_MASK = 0x04
 BCL_MASK = 0x08
 WIDE_MASK = 0x40
 
-SETTINGS_226_BASE = 0x0E20
-SETTINGS_227_BASE = 0x0E30
-SETTINGS_228_BASE = 0x0E40
-SETTINGS_229_BASE = 0x0E50
-SETTINGS_242_BASE = 0x0F20
-
-ADDR_SQUELCH = SETTINGS_226_BASE + 0
-ADDR_SIDEKEY1_SHORT = SETTINGS_226_BASE + 1
-ADDR_SIDEKEY1_LONG = SETTINGS_226_BASE + 2
-ADDR_SAVE = SETTINGS_226_BASE + 3
-ADDR_VOX_LEVEL = SETTINGS_226_BASE + 4
-ADDR_VOX_SWITCH = SETTINGS_226_BASE + 5
-ADDR_ABR = SETTINGS_226_BASE + 6
-ADDR_DUAL_WATCH = SETTINGS_226_BASE + 7
-ADDR_BEEP = SETTINGS_226_BASE + 8
-ADDR_TOT = SETTINGS_226_BASE + 9
-ADDR_VOICE = SETTINGS_226_BASE + 14
-
-ADDR_DTMF_SIDE_TONE = SETTINGS_227_BASE + 0
-ADDR_SCAN = SETTINGS_227_BASE + 2
-ADDR_SIDEKEY2_SHORT = SETTINGS_227_BASE + 3
-ADDR_SIDEKEY2_LONG = SETTINGS_227_BASE + 4
-ADDR_A_CHANNEL_DISPLAY = SETTINGS_227_BASE + 5
-ADDR_B_CHANNEL_DISPLAY = SETTINGS_227_BASE + 6
-ADDR_GLOBAL_BCL = SETTINGS_227_BASE + 7
-ADDR_AUTOLOCK = SETTINGS_227_BASE + 8
-ADDR_LCD_CONTRAST = SETTINGS_227_BASE + 12
-ADDR_WAIT_BACKLIGHT = SETTINGS_227_BASE + 13
-ADDR_RX_BACKLIGHT = SETTINGS_227_BASE + 14
-ADDR_TX_BACKLIGHT = SETTINGS_227_BASE + 15
-
-ADDR_ALARM_MODE = SETTINGS_228_BASE + 0
-ADDR_DUAL_WATCH_TX_SELECT = SETTINGS_228_BASE + 2
-ADDR_NOISE_REDUCTION = SETTINGS_228_BASE + 3
-ADDR_REPEATER_TAIL_CLEAR = SETTINGS_228_BASE + 4
-ADDR_REPEATER_TAIL_DETECT = SETTINGS_228_BASE + 5
-ADDR_NOAA_CHANNEL = SETTINGS_228_BASE + 6
-ADDR_ROGER = SETTINGS_228_BASE + 7
-ADDR_RESET_OPERATION = SETTINGS_228_BASE + 8
-ADDR_MENU_FLAGS = SETTINGS_228_BASE + 10
-ADDR_KEYPAD_LOCK = SETTINGS_228_BASE + 13
-
-ADDR_NOAA_SWITCH = SETTINGS_229_BASE + 1
-
-ADDR_SIDEKEY3_SHORT = SETTINGS_242_BASE + 10
-ADDR_SIDEKEY4_SHORT = SETTINGS_242_BASE + 11
-ADDR_SIDEKEY3_LONG = SETTINGS_242_BASE + 14
-ADDR_SIDEKEY4_LONG = SETTINGS_242_BASE + 15
-
-MENU_SETTING_MASK = 0x01
-ALARM_SOUND_MASK = 0x08
-FM_RADIO_ALLOWED_MASK = 0x10
-
 SQUELCH_LIST = [str(i) for i in range(10)]
 VOX_LEVEL_LIST = [str(i) for i in range(1, 11)]
 
@@ -171,87 +199,57 @@ DTMF_SIDE_TONE_LIST = [
 BACKLIGHT_LIST = ["Off", "Blue", "Orange", "Purple"]
 ALARM_MODE_LIST = ["Site", "Tone", "Code"]
 DUAL_WATCH_TX_LIST = ["Off", "A Band", "B Band"]
+LCD_CONTRAST_LIST = [str(i) for i in range(1, 10)]
 NOAA_CHANNEL_LIST = [str(i) for i in range(1, 11)]
 REPEATER_TAIL_LIST = ["Off"] + [f"{i * 100} ms" for i in range(1, 11)]
-SIDEKEY_LIST = [
-    "Off",
-    "Monitor",
-    "Scan",
-    "VOX",
-    "Flashlight",
-    "Emergency Alarm",
-    "Channel Lock",
-]
-SIDEKEY_CODES = [0, 1, 2, 3, 5, 11, 12]
-HIDDEN_SIDEKEY_LIST = [
+SIDEKEY_VALUE_LIST = [
     "Off",
     "Monitor",
     "Scan",
     "VOX",
     "High/Low Power",
     "Flashlight",
+    "Unknown 6",
+    "Unknown 7",
+    "Unknown 8",
+    "Unknown 9",
+    "Unknown 10",
+    "Emergency Alarm",
+    "Channel Lock",
 ]
 
 
-def _set_rts_dtr(serial, rts=True, dtr=True):
-    """Try to assert RTS/DTR across different serial backends."""
-    try:
-        serial.rts = rts
-    except Exception:
-        try:
-            serial.setRTS(rts)
-        except Exception:
-            pass
-    try:
-        serial.dtr = dtr
-    except Exception:
-        try:
-            serial.setDTR(dtr)
-        except Exception:
-            pass
-
-
-def _discard_buffers(serial):
-    """Best-effort flush of serial buffers across pyserial variants."""
-    try:
-        serial.reset_output_buffer()
-    except Exception:
-        try:
-            serial.flushOutput()
-        except Exception:
-            pass
-    try:
-        serial.reset_input_buffer()
-    except Exception:
-        try:
-            serial.flushInput()
-        except Exception:
-            pass
-
-
 def _enter_programming_mode(serial):
-    """Enter BF480 clone mode: TX1, ident request, then ACK the ident."""
-    serial.timeout = 0.6
-    _set_rts_dtr(serial, True, True)
+    serial.timeout = 1
+    try:
+        serial.rts = True
+        serial.dtr = True
+    except Exception:
+        pass
 
-    serial.write(TX1)
-    time.sleep(0.08)
-    ack = serial.read(1)
-    if ack != CMD_ACK:
-        raise errors.RadioError(f"Bad ACK after TX1: {ack!r}")
+    last_error = "Bad ACK after TX1: b''"
+    for _ in range(4):
+        serial.write(TX1)
+        ack = serial.read(1)
+        if ack != CMD_ACK:
+            last_error = f"Bad ACK after TX1: {ack!r}"
+            continue
 
-    serial.write(b"\x02")
-    ident = serial.read(8)
-    if len(ident) != 8:
-        raise errors.RadioError(f"Short ident: {len(ident)} bytes")
-    LOG.info("Ident:\n%s", util.hexprint(ident))
+        serial.write(b"\x02")
+        ident = serial.read(8)
+        if len(ident) != 8:
+            last_error = f"Short ident: {len(ident)} bytes"
+            continue
 
-    serial.write(CMD_ACK)
-    ack = serial.read(1)
-    if ack != CMD_ACK:
-        raise errors.RadioError(f"Bad ACK after ident ACK: {ack!r}")
+        serial.write(CMD_ACK)
+        ack = serial.read(1)
+        if ack != CMD_ACK:
+            last_error = f"Bad ACK after ident ACK: {ack!r}"
+            continue
 
-    return ident
+        return ident
+
+    raise errors.RadioError(last_error)
 
 
 def _exit_programming_mode(serial):
@@ -274,16 +272,8 @@ def _ranges_size(ranges):
 def _read_block(radio, addr):
     """Read one 64-byte block using the BF480 sparse-read protocol."""
     ser = radio.pipe
-    hi = (addr >> 8) & 0xFF
-    lo = addr & 0xFF
-
-    if addr == 0:
-        cmd = bytes([0x53, 0x00, 0x00, READ_BLOCK_SIZE])
-    else:
-        cmd = bytes([0x06, 0x53, hi, lo, READ_BLOCK_SIZE])
-
-    expected = bytes([0x57, hi, lo, READ_BLOCK_SIZE])
-    LOG.debug("READ @%04X cmd=%s", addr, util.hexprint(cmd))
+    cmd = struct.pack(">cHB", b"S", addr, READ_BLOCK_SIZE)
+    expected_tail = cmd[1:]
     ser.write(cmd)
 
     resp = ser.read(1 + 4 + READ_BLOCK_SIZE)
@@ -294,50 +284,39 @@ def _read_block(radio, addr):
         resp = resp[1:]
 
     hdr = resp[:4]
-    if hdr[0] not in (0x57, 0x58):
-        raise errors.RadioError(f"Bad header type @ {addr:04X}: {hdr!r}")
-    if hdr[1:] != expected[1:]:
+    if hdr[:1] not in (b"W", b"X"):
+        raise errors.RadioError(f"Bad response header @ {addr:04X}: {hdr!r}")
+    if hdr[1:] != expected_tail:
         raise errors.RadioError(f"Bad response header @ {addr:04X}: {hdr!r}")
 
     data = resp[4:4 + READ_BLOCK_SIZE]
-
     ser.write(CMD_ACK)
-    ack = ser.read(1)
-    if ack not in (b"", CMD_ACK):
-        raise errors.RadioError(f"Bad post-read ACK @ {addr:04X}: {ack!r}")
-
     return data
 
 
-def _write_block(radio, addr, size):
+def _write_block(radio, addr, data):
     """Write one block. The vendor uses 16-byte writes plus one final byte."""
     ser = radio.pipe
-    hi = (addr >> 8) & 0xFF
-    lo = addr & 0xFF
-    data = radio.get_mmap().get_byte_compatible()[addr:addr + size]
-
+    size = len(data)
     if len(data) != size:
         raise errors.RadioError(f"Short data slice for write @ {addr:04X}")
 
-    cmd = bytes([0x58, hi, lo, size]) + data
-    LOG.debug("WRITE @%04X cmd=%s", addr, util.hexprint(cmd[:8]))
-
-    _discard_buffers(ser)
-    time.sleep(0.001)
+    cmd = struct.pack(">cHB", b"X", addr, size) + data
     ser.write(cmd)
-
-    # Wait before checking for the ACK. Without that pacing,
-    # some radios accept the first write then stop acknowledging subsequent
-    # blocks (commonly failing at 0x0010).
-    time.sleep(0.035 if size > 1 else 0.02)
-    ack = ser.read(1)
-    if ack != CMD_ACK:
-        raise errors.RadioError(f"No ACK after write @ {addr:04X}: {ack!r}")
+    ack = b""
+    for _ in range(4):
+        ack = ser.read(1)
+        if ack == CMD_ACK:
+            return
+        # Some units occasionally emit a stray NUL byte between write ACKs.
+        if ack == b"\x00":
+            continue
+        break
+    raise errors.RadioError(f"No ACK after write @ {addr:04X}: {ack!r}")
 
 
 def do_download(radio):
     _enter_programming_mode(radio.pipe)
-    radio.pipe.timeout = 1.0
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -351,38 +330,35 @@ def do_download(radio):
         for addr in _iter_blocks(DOWNLOAD_RANGES, READ_BLOCK_SIZE):
             block = _read_block(radio, addr)
             data[addr:addr + READ_BLOCK_SIZE] = block
-
             done += READ_BLOCK_SIZE
-            status.cur = done
+            status.cur = min(done, status.max)
             radio.status_fn(status)
     finally:
         _exit_programming_mode(radio.pipe)
 
-    # The CPS always writes a literal 0xFF here.
-    data[TAIL_BYTE_ADDR] = 0xFF
     return memmap.MemoryMapBytes(bytes(data))
 
 
 def do_upload(radio):
     _enter_programming_mode(radio.pipe)
-    radio.pipe.timeout = 1.0
 
     status = chirp_common.Status()
     status.msg = "Uploading to radio"
     status.cur = 0
     status.max = _ranges_size(UPLOAD_RANGES) + 1
 
+    image = radio.get_mmap().get_byte_compatible()
     done = 0
 
     try:
         for addr in _iter_blocks(UPLOAD_RANGES, WRITE_BLOCK_SIZE):
-            _write_block(radio, addr, WRITE_BLOCK_SIZE)
-
+            _write_block(radio, addr, image[addr:addr + WRITE_BLOCK_SIZE])
             done += WRITE_BLOCK_SIZE
-            status.cur = done
+            status.cur = min(done, status.max)
             radio.status_fn(status)
 
-        _write_block(radio, TAIL_BYTE_ADDR, 1)
+        _write_block(radio, TAIL_BYTE_ADDR, image[TAIL_BYTE_ADDR:TAIL_BYTE_ADDR
+                                                  + 1])
         status.cur = status.max
         radio.status_fn(status)
     finally:
@@ -460,9 +436,6 @@ class RetevisH777D(chirp_common.CloneModeRadio):
         self.process_mmap()
 
     def sync_out(self):
-        # The vendor CPS always writes 0xFF at 0x1800.
-        self.get_mmap()[TAIL_BYTE_ADDR] = 0xFF
-
         try:
             do_upload(self)
         except errors.RadioError:
@@ -475,47 +448,19 @@ class RetevisH777D(chirp_common.CloneModeRadio):
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
 
-    def _get_setting_byte(self, addr):
-        value = self.get_mmap()[addr]
-        if isinstance(value, int):
-            return value
-        return value[0]
-
-    def _set_setting_byte(self, addr, value):
-        self.get_mmap()[addr] = int(value) & 0xFF
-
-    def _get_setting_index(self, addr, choices):
-        value = self._get_setting_byte(addr)
-        if value >= len(choices):
-            LOG.warning(
-                "Out-of-range setting byte @%04X = 0x%02X", addr, value)
+    @staticmethod
+    def _setting_index(value, choices):
+        value = int(value)
+        if value < 0 or value >= len(choices):
             return 0
         return value
 
-    def _get_optional_setting_index(self, addr, choices):
-        value = self._get_setting_byte(addr)
-        if value >= len(choices):
+    @staticmethod
+    def _optional_setting_index(value, choices):
+        value = int(value)
+        if value < 0 or value >= len(choices):
             return None
         return value
-
-    def _get_setting_flag(self, addr, mask):
-        return bool(self._get_setting_byte(addr) & mask)
-
-    def _set_setting_flag(self, addr, mask, enabled):
-        value = self._get_setting_byte(addr)
-        if enabled:
-            value |= mask
-        else:
-            value &= ~mask
-        self._set_setting_byte(addr, value)
-
-    def _get_sidekey_index(self, addr):
-        value = self._get_setting_byte(addr)
-        try:
-            return SIDEKEY_CODES.index(value)
-        except ValueError:
-            LOG.warning("Unknown side key code @%04X = 0x%02X", addr, value)
-            return 0
 
     def _decode_tone(self, memval):
         raw = int.from_bytes(memval.get_raw(), "little")
@@ -644,6 +589,12 @@ class RetevisH777D(chirp_common.CloneModeRadio):
         return mem
 
     def get_settings(self):
+        _s226 = self._memobj.settings226
+        _s227 = self._memobj.settings227
+        _s228 = self._memobj.settings228
+        _s229 = self._memobj.settings229
+        _s242 = self._memobj.settings242
+
         basic = RadioSettingGroup("basic", "Basic Settings")
         display = RadioSettingGroup("display", "Display")
         sidekeys = RadioSettingGroup("sidekeys", "Side Key Functions")
@@ -655,8 +606,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "Squelch",
                 RadioSettingValueList(
                     SQUELCH_LIST,
-                    current_index=self._get_setting_index(ADDR_SQUELCH,
-                                                          SQUELCH_LIST),
+                    current_index=self._setting_index(_s226.squelch,
+                                                      SQUELCH_LIST),
                 ),
             )
         )
@@ -664,8 +615,7 @@ class RetevisH777D(chirp_common.CloneModeRadio):
             RadioSetting(
                 "vox_switch",
                 "VOX Switch",
-                RadioSettingValueBoolean(bool(self._get_setting_byte(
-                    ADDR_VOX_SWITCH))),
+                RadioSettingValueBoolean(bool(_s226.vox_switch)),
             )
         )
         basic.append(
@@ -674,8 +624,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "VOX Level",
                 RadioSettingValueList(
                     VOX_LEVEL_LIST,
-                    current_index=self._get_setting_index(ADDR_VOX_LEVEL,
-                                                          VOX_LEVEL_LIST),
+                    current_index=self._setting_index(_s226.vox_level,
+                                                      VOX_LEVEL_LIST),
                 ),
             )
         )
@@ -685,8 +635,7 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "Voice Language",
                 RadioSettingValueList(
                     VOICE_LIST,
-                    current_index=self._get_setting_index(ADDR_VOICE,
-                                                          VOICE_LIST),
+                    current_index=self._setting_index(_s226.voice, VOICE_LIST),
                 ),
             )
         )
@@ -696,7 +645,7 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "Time Out Timer (TOT)",
                 RadioSettingValueList(
                     TOT_LIST,
-                    current_index=self._get_setting_index(ADDR_TOT, TOT_LIST),
+                    current_index=self._setting_index(_s226.tot, TOT_LIST),
                 ),
             )
         )
@@ -704,16 +653,14 @@ class RetevisH777D(chirp_common.CloneModeRadio):
             RadioSetting(
                 "roger",
                 "Roger",
-                RadioSettingValueBoolean(bool(self._get_setting_byte(
-                    ADDR_ROGER))),
+                RadioSettingValueBoolean(bool(_s228.roger)),
             )
         )
         basic.append(
             RadioSetting(
                 "beep",
                 "Beep",
-                RadioSettingValueBoolean(bool(self._get_setting_byte(
-                    ADDR_BEEP))),
+                RadioSettingValueBoolean(bool(_s226.beep)),
             )
         )
         basic.append(
@@ -722,8 +669,7 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "Save Battery",
                 RadioSettingValueList(
                     SAVE_LIST,
-                    current_index=self._get_setting_index(ADDR_SAVE,
-                                                          SAVE_LIST),
+                    current_index=self._setting_index(_s226.save, SAVE_LIST),
                 ),
             )
         )
@@ -733,8 +679,7 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "Scan",
                 RadioSettingValueList(
                     SCAN_LIST,
-                    current_index=self._get_setting_index(ADDR_SCAN,
-                                                          SCAN_LIST),
+                    current_index=self._setting_index(_s227.scan, SCAN_LIST),
                 ),
             )
         )
@@ -742,8 +687,7 @@ class RetevisH777D(chirp_common.CloneModeRadio):
             RadioSetting(
                 "autolock",
                 "Auto Lock",
-                RadioSettingValueBoolean(bool(self._get_setting_byte(
-                    ADDR_AUTOLOCK))),
+                RadioSettingValueBoolean(bool(_s227.autolock)),
             )
         )
         basic.append(
@@ -752,8 +696,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "Alarm Mode",
                 RadioSettingValueList(
                     ALARM_MODE_LIST,
-                    current_index=self._get_setting_index(ADDR_ALARM_MODE,
-                                                          ALARM_MODE_LIST),
+                    current_index=self._setting_index(_s228.alarm_mode,
+                                                      ALARM_MODE_LIST),
                 ),
             )
         )
@@ -764,7 +708,7 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "Backlight Timeout",
                 RadioSettingValueList(
                     ABR_LIST,
-                    current_index=self._get_setting_index(ADDR_ABR, ABR_LIST),
+                    current_index=self._setting_index(_s226.abr, ABR_LIST),
                 ),
             )
         )
@@ -773,9 +717,9 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "lcd_contrast",
                 "LCD Contrast",
                 RadioSettingValueList(
-                    [str(i) for i in range(1, 10)],
-                    current_index=self._get_setting_index(ADDR_LCD_CONTRAST,
-                                                          list(range(9))),
+                    LCD_CONTRAST_LIST,
+                    current_index=self._setting_index(_s227.lcd_contrast,
+                                                      LCD_CONTRAST_LIST),
                 ),
             )
         )
@@ -785,8 +729,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "Wait Backlight",
                 RadioSettingValueList(
                     BACKLIGHT_LIST,
-                    current_index=self._get_setting_index(ADDR_WAIT_BACKLIGHT,
-                                                          BACKLIGHT_LIST),
+                    current_index=self._setting_index(_s227.wait_backlight,
+                                                      BACKLIGHT_LIST),
                 ),
             )
         )
@@ -796,8 +740,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "RX Backlight",
                 RadioSettingValueList(
                     BACKLIGHT_LIST,
-                    current_index=self._get_setting_index(ADDR_RX_BACKLIGHT,
-                                                          BACKLIGHT_LIST),
+                    current_index=self._setting_index(_s227.rx_backlight,
+                                                      BACKLIGHT_LIST),
                 ),
             )
         )
@@ -807,8 +751,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "TX Backlight",
                 RadioSettingValueList(
                     BACKLIGHT_LIST,
-                    current_index=self._get_setting_index(ADDR_TX_BACKLIGHT,
-                                                          BACKLIGHT_LIST),
+                    current_index=self._setting_index(_s227.tx_backlight,
+                                                      BACKLIGHT_LIST),
                 ),
             )
         )
@@ -818,8 +762,9 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "sidekey1_short",
                 "Side Key 1 Short Press",
                 RadioSettingValueList(
-                    SIDEKEY_LIST,
-                    current_index=self._get_sidekey_index(ADDR_SIDEKEY1_SHORT),
+                    SIDEKEY_VALUE_LIST,
+                    current_index=self._setting_index(_s226.sidekey1_short,
+                                                      SIDEKEY_VALUE_LIST),
                 ),
             )
         )
@@ -828,8 +773,9 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "sidekey1_long",
                 "Side Key 1 Long Press",
                 RadioSettingValueList(
-                    SIDEKEY_LIST,
-                    current_index=self._get_sidekey_index(ADDR_SIDEKEY1_LONG),
+                    SIDEKEY_VALUE_LIST,
+                    current_index=self._setting_index(_s226.sidekey1_long,
+                                                      SIDEKEY_VALUE_LIST),
                 ),
             )
         )
@@ -838,8 +784,9 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "sidekey2_short",
                 "Side Key 2 Short Press",
                 RadioSettingValueList(
-                    SIDEKEY_LIST,
-                    current_index=self._get_sidekey_index(ADDR_SIDEKEY2_SHORT),
+                    SIDEKEY_VALUE_LIST,
+                    current_index=self._setting_index(_s227.sidekey2_short,
+                                                      SIDEKEY_VALUE_LIST),
                 ),
             )
         )
@@ -848,8 +795,9 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "sidekey2_long",
                 "Side Key 2 Long Press",
                 RadioSettingValueList(
-                    SIDEKEY_LIST,
-                    current_index=self._get_sidekey_index(ADDR_SIDEKEY2_LONG),
+                    SIDEKEY_VALUE_LIST,
+                    current_index=self._setting_index(_s227.sidekey2_long,
+                                                      SIDEKEY_VALUE_LIST),
                 ),
             )
         )
@@ -858,17 +806,14 @@ class RetevisH777D(chirp_common.CloneModeRadio):
             RadioSetting(
                 "menu_setting",
                 "Menu Setting",
-                RadioSettingValueBoolean(
-                    self._get_setting_flag(
-                        ADDR_MENU_FLAGS, MENU_SETTING_MASK)),
+                RadioSettingValueBoolean(bool(_s228.menu_setting)),
             )
         )
         hidden.append(
             RadioSetting(
                 "reset_operation",
                 "Reset Operation",
-                RadioSettingValueBoolean(bool(self._get_setting_byte(
-                    ADDR_RESET_OPERATION))),
+                RadioSettingValueBoolean(bool(_s228.reset_operation)),
             )
         )
         hidden.append(
@@ -877,8 +822,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "A Channel Display Mode",
                 RadioSettingValueList(
                     CHANNEL_DISPLAY_LIST,
-                    current_index=self._get_setting_index(
-                        ADDR_A_CHANNEL_DISPLAY, CHANNEL_DISPLAY_LIST),
+                    current_index=self._setting_index(_s227.a_channel_display,
+                                                      CHANNEL_DISPLAY_LIST),
                 ),
             )
         )
@@ -888,8 +833,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "B Channel Display Mode",
                 RadioSettingValueList(
                     CHANNEL_DISPLAY_LIST,
-                    current_index=self._get_setting_index(
-                        ADDR_B_CHANNEL_DISPLAY, CHANNEL_DISPLAY_LIST),
+                    current_index=self._setting_index(_s227.b_channel_display,
+                                                      CHANNEL_DISPLAY_LIST),
                 ),
             )
         )
@@ -899,8 +844,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "DTMF Side Tone",
                 RadioSettingValueList(
                     DTMF_SIDE_TONE_LIST,
-                    current_index=self._get_setting_index(
-                        ADDR_DTMF_SIDE_TONE, DTMF_SIDE_TONE_LIST),
+                    current_index=self._setting_index(_s227.dtmf_side_tone,
+                                                      DTMF_SIDE_TONE_LIST),
                 ),
             )
         )
@@ -908,49 +853,42 @@ class RetevisH777D(chirp_common.CloneModeRadio):
             RadioSetting(
                 "global_bcl",
                 "Busy Channel Lockout (Global)",
-                RadioSettingValueBoolean(bool(self._get_setting_byte(
-                    ADDR_GLOBAL_BCL))),
+                RadioSettingValueBoolean(bool(_s227.global_bcl)),
             )
         )
         hidden.append(
             RadioSetting(
                 "keypad_lock",
                 "Keypad Lock",
-                RadioSettingValueBoolean(bool(self._get_setting_byte(
-                    ADDR_KEYPAD_LOCK))),
+                RadioSettingValueBoolean(bool(_s228.keypad_lock)),
             )
         )
         hidden.append(
             RadioSetting(
                 "noise_reduction",
                 "Noise Reduction",
-                RadioSettingValueBoolean(bool(self._get_setting_byte(
-                    ADDR_NOISE_REDUCTION))),
+                RadioSettingValueBoolean(bool(_s228.noise_reduction)),
             )
         )
         hidden.append(
             RadioSetting(
                 "fm_radio_allowed",
                 "FM Radio Allowed",
-                RadioSettingValueBoolean(
-                    self._get_setting_flag(ADDR_MENU_FLAGS,
-                                           FM_RADIO_ALLOWED_MASK)),
+                RadioSettingValueBoolean(bool(_s228.fm_radio_allowed)),
             )
         )
         hidden.append(
             RadioSetting(
                 "alarm_sound",
                 "Alarm Sound",
-                RadioSettingValueBoolean(
-                    self._get_setting_flag(ADDR_MENU_FLAGS, ALARM_SOUND_MASK)),
+                RadioSettingValueBoolean(bool(_s228.alarm_sound)),
             )
         )
         hidden.append(
             RadioSetting(
                 "dual_watch",
                 "Dual Watch",
-                RadioSettingValueBoolean(bool(self._get_setting_byte(
-                    ADDR_DUAL_WATCH))),
+                RadioSettingValueBoolean(bool(_s226.dual_watch)),
             )
         )
         hidden.append(
@@ -959,8 +897,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "Dual Watch TX Select",
                 RadioSettingValueList(
                     DUAL_WATCH_TX_LIST,
-                    current_index=self._get_setting_index(
-                        ADDR_DUAL_WATCH_TX_SELECT, DUAL_WATCH_TX_LIST),
+                    current_index=self._setting_index(
+                        _s228.dual_watch_tx_select, DUAL_WATCH_TX_LIST),
                 ),
             )
         )
@@ -970,8 +908,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "NOAA Channel",
                 RadioSettingValueList(
                     NOAA_CHANNEL_LIST,
-                    current_index=self._get_setting_index(
-                        ADDR_NOAA_CHANNEL, NOAA_CHANNEL_LIST),
+                    current_index=self._setting_index(_s228.noaa_channel,
+                                                      NOAA_CHANNEL_LIST),
                 ),
             )
         )
@@ -979,8 +917,7 @@ class RetevisH777D(chirp_common.CloneModeRadio):
             RadioSetting(
                 "noaa_switch",
                 "NOAA Switch",
-                RadioSettingValueBoolean(bool(self._get_setting_byte(
-                    ADDR_NOAA_SWITCH))),
+                RadioSettingValueBoolean(bool(_s229.noaa_switch)),
             )
         )
         hidden.append(
@@ -989,8 +926,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "Repeater Tail Clear",
                 RadioSettingValueList(
                     REPEATER_TAIL_LIST,
-                    current_index=self._get_setting_index(
-                        ADDR_REPEATER_TAIL_CLEAR, REPEATER_TAIL_LIST),
+                    current_index=self._setting_index(
+                        _s228.repeater_tail_clear, REPEATER_TAIL_LIST),
                 ),
             )
         )
@@ -1000,62 +937,62 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                 "Repeater Tail Detect",
                 RadioSettingValueList(
                     REPEATER_TAIL_LIST,
-                    current_index=self._get_setting_index(
-                        ADDR_REPEATER_TAIL_DETECT, REPEATER_TAIL_LIST),
+                    current_index=self._setting_index(
+                        _s228.repeater_tail_detect, REPEATER_TAIL_LIST),
                 ),
             )
         )
-        sidekey3_short_idx = self._get_optional_setting_index(
-            ADDR_SIDEKEY3_SHORT, HIDDEN_SIDEKEY_LIST)
+        sidekey3_short_idx = self._optional_setting_index(
+            _s242.sidekey3_short, SIDEKEY_VALUE_LIST)
         if sidekey3_short_idx is not None:
             hidden.append(
                 RadioSetting(
                     "sidekey3_short",
                     "Side Key 3 Short Press",
                     RadioSettingValueList(
-                        HIDDEN_SIDEKEY_LIST,
+                        SIDEKEY_VALUE_LIST,
                         current_index=sidekey3_short_idx,
                     ),
                 )
             )
 
-        sidekey4_short_idx = self._get_optional_setting_index(
-            ADDR_SIDEKEY4_SHORT, HIDDEN_SIDEKEY_LIST)
+        sidekey4_short_idx = self._optional_setting_index(
+            _s242.sidekey4_short, SIDEKEY_VALUE_LIST)
         if sidekey4_short_idx is not None:
             hidden.append(
                 RadioSetting(
                     "sidekey4_short",
                     "Side Key 4 Short Press",
                     RadioSettingValueList(
-                        HIDDEN_SIDEKEY_LIST,
+                        SIDEKEY_VALUE_LIST,
                         current_index=sidekey4_short_idx,
                     ),
                 )
             )
 
-        sidekey3_long_idx = self._get_optional_setting_index(
-            ADDR_SIDEKEY3_LONG, HIDDEN_SIDEKEY_LIST)
+        sidekey3_long_idx = self._optional_setting_index(
+            _s242.sidekey3_long, SIDEKEY_VALUE_LIST)
         if sidekey3_long_idx is not None:
             hidden.append(
                 RadioSetting(
                     "sidekey3_long",
                     "Side Key 3 Long Press",
                     RadioSettingValueList(
-                        HIDDEN_SIDEKEY_LIST,
+                        SIDEKEY_VALUE_LIST,
                         current_index=sidekey3_long_idx,
                     ),
                 )
             )
 
-        sidekey4_long_idx = self._get_optional_setting_index(
-            ADDR_SIDEKEY4_LONG, HIDDEN_SIDEKEY_LIST)
+        sidekey4_long_idx = self._optional_setting_index(
+            _s242.sidekey4_long, SIDEKEY_VALUE_LIST)
         if sidekey4_long_idx is not None:
             hidden.append(
                 RadioSetting(
                     "sidekey4_long",
                     "Side Key 4 Long Press",
                     RadioSettingValueList(
-                        HIDDEN_SIDEKEY_LIST,
+                        SIDEKEY_VALUE_LIST,
                         current_index=sidekey4_long_idx,
                     ),
                 )
@@ -1132,6 +1069,12 @@ class RetevisH777D(chirp_common.CloneModeRadio):
                     _mem.flags14 |= HOP_OFF_MASK
 
     def set_settings(self, settings):
+        _s226 = self._memobj.settings226
+        _s227 = self._memobj.settings227
+        _s228 = self._memobj.settings228
+        _s229 = self._memobj.settings229
+        _s242 = self._memobj.settings242
+
         for element in settings:
             if not isinstance(element, RadioSetting):
                 self.set_settings(element)
@@ -1140,135 +1083,101 @@ class RetevisH777D(chirp_common.CloneModeRadio):
             name = element.get_name()
 
             if name == "squelch":
-                self._set_setting_byte(
-                    ADDR_SQUELCH, SQUELCH_LIST.index(str(element.value)))
+                _s226.squelch = SQUELCH_LIST.index(str(element.value))
             elif name == "vox_switch":
-                self._set_setting_byte(ADDR_VOX_SWITCH, int(element.value))
+                _s226.vox_switch = int(element.value)
             elif name == "vox_level":
-                self._set_setting_byte(
-                    ADDR_VOX_LEVEL, VOX_LEVEL_LIST.index(str(element.value)))
+                _s226.vox_level = VOX_LEVEL_LIST.index(str(element.value))
             elif name == "voice":
-                self._set_setting_byte(
-                    ADDR_VOICE, VOICE_LIST.index(str(element.value)))
+                _s226.voice = VOICE_LIST.index(str(element.value))
             elif name == "abr":
-                self._set_setting_byte(
-                    ADDR_ABR, ABR_LIST.index(str(element.value)))
+                _s226.abr = ABR_LIST.index(str(element.value))
             elif name == "tot":
-                self._set_setting_byte(
-                    ADDR_TOT, TOT_LIST.index(str(element.value)))
+                _s226.tot = TOT_LIST.index(str(element.value))
             elif name == "roger":
-                self._set_setting_byte(ADDR_ROGER, int(element.value))
+                _s228.roger = int(element.value)
             elif name == "beep":
-                self._set_setting_byte(ADDR_BEEP, int(element.value))
+                _s226.beep = int(element.value)
             elif name == "save":
-                self._set_setting_byte(
-                    ADDR_SAVE, SAVE_LIST.index(str(element.value)))
+                _s226.save = SAVE_LIST.index(str(element.value))
             elif name == "scan":
-                self._set_setting_byte(
-                    ADDR_SCAN, SCAN_LIST.index(str(element.value)))
+                _s227.scan = SCAN_LIST.index(str(element.value))
             elif name == "autolock":
-                self._set_setting_byte(ADDR_AUTOLOCK, int(element.value))
+                _s227.autolock = int(element.value)
             elif name == "alarm_mode":
-                self._set_setting_byte(
-                    ADDR_ALARM_MODE, ALARM_MODE_LIST.index(str(element.value)))
+                _s228.alarm_mode = ALARM_MODE_LIST.index(str(element.value))
             elif name == "lcd_contrast":
-                self._set_setting_byte(ADDR_LCD_CONTRAST,
-                                       int(str(element.value)) - 1)
+                _s227.lcd_contrast = LCD_CONTRAST_LIST.index(
+                    str(element.value))
             elif name == "wait_backlight":
-                self._set_setting_byte(
-                    ADDR_WAIT_BACKLIGHT,
-                    BACKLIGHT_LIST.index(str(element.value)))
+                _s227.wait_backlight = BACKLIGHT_LIST.index(str(element.value))
             elif name == "rx_backlight":
-                self._set_setting_byte(
-                    ADDR_RX_BACKLIGHT,
-                    BACKLIGHT_LIST.index(str(element.value)))
+                _s227.rx_backlight = BACKLIGHT_LIST.index(str(element.value))
             elif name == "tx_backlight":
-                self._set_setting_byte(
-                    ADDR_TX_BACKLIGHT,
-                    BACKLIGHT_LIST.index(str(element.value)))
+                _s227.tx_backlight = BACKLIGHT_LIST.index(str(element.value))
             elif name == "sidekey1_short":
-                self._set_setting_byte(
-                    ADDR_SIDEKEY1_SHORT,
-                    SIDEKEY_CODES[SIDEKEY_LIST.index(str(element.value))])
+                _s226.sidekey1_short = SIDEKEY_VALUE_LIST.index(
+                    str(element.value))
             elif name == "sidekey1_long":
-                self._set_setting_byte(
-                    ADDR_SIDEKEY1_LONG,
-                    SIDEKEY_CODES[SIDEKEY_LIST.index(str(element.value))])
+                _s226.sidekey1_long = SIDEKEY_VALUE_LIST.index(
+                    str(element.value))
             elif name == "sidekey2_short":
-                self._set_setting_byte(
-                    ADDR_SIDEKEY2_SHORT,
-                    SIDEKEY_CODES[SIDEKEY_LIST.index(str(element.value))])
+                _s227.sidekey2_short = SIDEKEY_VALUE_LIST.index(
+                    str(element.value))
             elif name == "sidekey2_long":
-                self._set_setting_byte(
-                    ADDR_SIDEKEY2_LONG,
-                    SIDEKEY_CODES[SIDEKEY_LIST.index(str(element.value))])
+                _s227.sidekey2_long = SIDEKEY_VALUE_LIST.index(
+                    str(element.value))
             elif name == "menu_setting":
-                self._set_setting_flag(ADDR_MENU_FLAGS, MENU_SETTING_MASK,
-                                       bool(element.value))
+                _s228.menu_setting = int(bool(element.value))
             elif name == "reset_operation":
-                self._set_setting_byte(
-                    ADDR_RESET_OPERATION, int(element.value))
+                _s228.reset_operation = int(element.value)
             elif name == "a_channel_display":
-                self._set_setting_byte(
-                    ADDR_A_CHANNEL_DISPLAY,
-                    CHANNEL_DISPLAY_LIST.index(str(element.value)))
+                _s227.a_channel_display = CHANNEL_DISPLAY_LIST.index(
+                    str(element.value))
             elif name == "b_channel_display":
-                self._set_setting_byte(
-                    ADDR_B_CHANNEL_DISPLAY,
-                    CHANNEL_DISPLAY_LIST.index(str(element.value)))
+                _s227.b_channel_display = CHANNEL_DISPLAY_LIST.index(
+                    str(element.value))
             elif name == "dtmf_side_tone":
-                self._set_setting_byte(
-                    ADDR_DTMF_SIDE_TONE,
-                    DTMF_SIDE_TONE_LIST.index(str(element.value)))
+                _s227.dtmf_side_tone = DTMF_SIDE_TONE_LIST.index(
+                    str(element.value))
             elif name == "global_bcl":
-                self._set_setting_byte(ADDR_GLOBAL_BCL, int(element.value))
+                _s227.global_bcl = int(element.value)
             elif name == "keypad_lock":
-                self._set_setting_byte(ADDR_KEYPAD_LOCK, int(element.value))
+                _s228.keypad_lock = int(element.value)
             elif name == "noise_reduction":
-                self._set_setting_byte(
-                    ADDR_NOISE_REDUCTION, int(element.value))
+                _s228.noise_reduction = int(element.value)
             elif name == "fm_radio_allowed":
-                self._set_setting_flag(ADDR_MENU_FLAGS, FM_RADIO_ALLOWED_MASK,
-                                       bool(element.value))
+                _s228.fm_radio_allowed = int(bool(element.value))
             elif name == "alarm_sound":
-                self._set_setting_flag(ADDR_MENU_FLAGS, ALARM_SOUND_MASK,
-                                       bool(element.value))
+                _s228.alarm_sound = int(bool(element.value))
             elif name == "dual_watch":
-                self._set_setting_byte(ADDR_DUAL_WATCH, int(element.value))
+                _s226.dual_watch = int(element.value)
             elif name == "dual_watch_tx_select":
-                self._set_setting_byte(
-                    ADDR_DUAL_WATCH_TX_SELECT,
-                    DUAL_WATCH_TX_LIST.index(str(element.value)))
+                _s228.dual_watch_tx_select = DUAL_WATCH_TX_LIST.index(
+                    str(element.value))
             elif name == "noaa_channel":
-                self._set_setting_byte(
-                    ADDR_NOAA_CHANNEL,
-                    NOAA_CHANNEL_LIST.index(str(element.value)))
+                _s228.noaa_channel = NOAA_CHANNEL_LIST.index(
+                    str(element.value))
             elif name == "noaa_switch":
-                self._set_setting_byte(ADDR_NOAA_SWITCH, int(element.value))
+                _s229.noaa_switch = int(element.value)
             elif name == "repeater_tail_clear":
-                self._set_setting_byte(
-                    ADDR_REPEATER_TAIL_CLEAR,
-                    REPEATER_TAIL_LIST.index(str(element.value)))
+                _s228.repeater_tail_clear = REPEATER_TAIL_LIST.index(
+                    str(element.value))
             elif name == "repeater_tail_detect":
-                self._set_setting_byte(
-                    ADDR_REPEATER_TAIL_DETECT,
-                    REPEATER_TAIL_LIST.index(str(element.value)))
+                _s228.repeater_tail_detect = REPEATER_TAIL_LIST.index(
+                    str(element.value))
             elif name == "sidekey3_short":
-                self._set_setting_byte(
-                    ADDR_SIDEKEY3_SHORT,
-                    HIDDEN_SIDEKEY_LIST.index(str(element.value)))
+                _s242.sidekey3_short = SIDEKEY_VALUE_LIST.index(
+                    str(element.value))
             elif name == "sidekey4_short":
-                self._set_setting_byte(
-                    ADDR_SIDEKEY4_SHORT,
-                    HIDDEN_SIDEKEY_LIST.index(str(element.value)))
+                _s242.sidekey4_short = SIDEKEY_VALUE_LIST.index(
+                    str(element.value))
             elif name == "sidekey3_long":
-                self._set_setting_byte(
-                    ADDR_SIDEKEY3_LONG,
-                    HIDDEN_SIDEKEY_LIST.index(str(element.value)))
+                _s242.sidekey3_long = SIDEKEY_VALUE_LIST.index(
+                    str(element.value))
             elif name == "sidekey4_long":
-                self._set_setting_byte(
-                    ADDR_SIDEKEY4_LONG,
-                    HIDDEN_SIDEKEY_LIST.index(str(element.value)))
+                _s242.sidekey4_long = SIDEKEY_VALUE_LIST.index(
+                    str(element.value))
 
     @classmethod
     def match_model(cls, filedata, filename):
