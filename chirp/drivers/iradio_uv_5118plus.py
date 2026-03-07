@@ -23,6 +23,9 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, RadioSettings
 
+from chirp.drivers.iradio_common import checksum, enter_programming_mode, \
+    exit_programming_mode
+
 LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
@@ -189,50 +192,12 @@ VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
 DTMF_CHARS = list("0123456789ABCD*#")
 
 
-def _checksum(data):
-    cs = 0
-    for byte in data:
-        cs += byte
-    return cs % 256
-
-
-def _enter_programming_mode(radio):
-    serial = radio.pipe
-
-    exito = False
-    for i in range(0, 5):
-        serial.write(radio.magic)
-        ack = serial.read(1)
-
-        try:
-            if ack == CMD_ACK:
-                exito = True
-                break
-        except Exception:
-            LOG.debug("Attempt #%s, failed, trying again" % i)
-            pass
-
-    # check if we had EXITO
-    if exito is False:
-        msg = "The radio did not accept program mode after five tries.\n"
-        msg += "Check you interface cable and power cycle your radio."
-        raise errors.RadioError(msg)
-
-
-def _exit_programming_mode(radio):
-    serial = radio.pipe
-    try:
-        serial.write(b"58" + b"\x05\xEE\x60")
-    except Exception:
-        raise errors.RadioError("Radio refused to exit programming mode")
-
-
 def _read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
     cmd = struct.pack(">BH", ord(b'R'), block_addr + radio.READ_OFFSET)
 
-    ccs = bytes([_checksum(cmd)])
+    ccs = bytes([checksum(cmd)])
 
     expectedresponse = b"R" + cmd[1:]
 
@@ -244,7 +209,7 @@ def _read_block(radio, block_addr, block_size):
         serial.write(cmd)
         response = serial.read(3 + block_size + 1)
 
-        cs = _checksum(response[:-1])
+        cs = checksum(response[:-1])
 
         if response[:3] != expectedresponse:
             raise Exception("Error reading block %04x." % block_addr)
@@ -272,7 +237,7 @@ def _write_block(radio, block_addr, block_size):
 
     cmd = struct.pack(">BH", ord(b'I'), block_addr)
 
-    cs = bytes([_checksum(cmd + data)])
+    cs = bytes([checksum(cmd + data)])
     data += cs
 
     LOG.debug("Writing Data:")
@@ -289,7 +254,7 @@ def _write_block(radio, block_addr, block_size):
 
 def do_download(radio):
     LOG.debug("download")
-    _enter_programming_mode(radio)
+    enter_programming_mode(radio.pipe, radio.magic_enter)
 
     data = b""
 
@@ -309,7 +274,7 @@ def do_download(radio):
         LOG.debug("Address: %04x" % addr)
         LOG.debug(util.hexprint(block))
 
-    _exit_programming_mode(radio)
+    exit_programming_mode(radio.pipe, radio.magic_exit)
 
     return memmap.MemoryMapBytes(data)
 
@@ -318,7 +283,7 @@ def do_upload(radio):
     status = chirp_common.Status()
     status.msg = "Uploading to radio"
 
-    _enter_programming_mode(radio)
+    enter_programming_mode(radio.pipe, radio.magic_enter)
 
     status.cur = 0
     status.max = radio._memsize
@@ -333,7 +298,7 @@ def do_upload(radio):
             radio.status_fn(status)
             _write_block(radio, addr, radio.BLOCK_SIZE)
 
-    _exit_programming_mode(radio)
+    exit_programming_mode(radio.pipe, radio.magic_exit)
 
 
 class IradioUV5118plus(chirp_common.CloneModeRadio):
@@ -344,7 +309,8 @@ class IradioUV5118plus(chirp_common.CloneModeRadio):
     BAUD_RATE = 115200
 
     BLOCK_SIZE = 0x80
-    magic = b"58" + b"\x05\x10\x82"
+    magic_enter = b"58" + b"\x05\x10\x82"
+    magic_exit = b"58" + b"\x05\xEE\x60"
 
     VALID_BANDS = [(108000000, 136000000),  # RX only (Air Band)
                    (136000000, 174000000),  # TX/RX (VHF)
