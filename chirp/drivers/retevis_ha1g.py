@@ -454,7 +454,7 @@ class HA1GBankModel(chirp_common.BankModel):
 
         # enable bank
         if bank.index not in self.get_used_zone_index():
-            _zone_data = self._radio._memobj.zonedata
+            _zone_data = self._radio._memobj.zoneinfo
             _zone_data.zoneindex[_zone_data.zonenum] = bank.index
             _zone_data.zonenum += 1
 
@@ -471,7 +471,7 @@ class HA1GBankModel(chirp_common.BankModel):
             # disable bank
             _zone_index = [x for x in self.get_used_zone_index()
                            if x != bank.index]
-            _zone_data = self._radio._memobj.zonedata
+            _zone_data = self._radio._memobj.zoneinfo
             _zone_data.zoneindex = (
                 _zone_index + [0xFFFF] * (
                     len(_zone_data.zoneindex) - len(_zone_index)))
@@ -1589,7 +1589,7 @@ class HA1G(chirp_common.CloneModeRadio):
                         setattr(_settings, name, value)
                     elif name.startswith("dtmfsetting."):
                         name = name[12:]
-                        _dtmfcomm = self._memobj.dtmfcomm
+                        _dtmfcomm = self._memobj.dtmfinfos.dtmfcomm
                         if (name in ["callid", "stunid", "revive"]):
                             value = filter(value, DTMFCHARSET, 10, True)
                             value = value.ljust(10, "\x00")
