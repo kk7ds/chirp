@@ -55,7 +55,6 @@ struct {
     u8 unknown0F;
 } settings226;
 
-#seekto 0x0E30;
 struct {
     u8 dtmf_side_tone;
     u8 unknown01;
@@ -75,7 +74,6 @@ struct {
     u8 tx_backlight;
 } settings227;
 
-#seekto 0x0E40;
 struct {
     u8 alarm_mode;
     u8 unknown01;
@@ -99,7 +97,6 @@ struct {
     u8 unknown0F;
 } settings228;
 
-#seekto 0x0E50;
 struct {
     u8 unknown00;
     u8 noaa_switch;
