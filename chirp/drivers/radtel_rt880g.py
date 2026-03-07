@@ -24,6 +24,9 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, RadioSettings
 
+from chirp.drivers.iradio_common import checksum, enter_programming_mode, \
+    exit_programming_mode
+
 LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
@@ -159,15 +162,24 @@ struct {
   u8 denoise;                         // 0108
 } settings;
 
+struct tone {
+  ul16 unknown:2,
+       is_dtcs:1,
+       // when is_dtcs is false, tone_or_inverted specifies if mode is tone
+       // when is_dtcs is true, tone_or_inverted specifies if dtcs is inverted
+       tone_or_inverted:1,
+       tone_val:12;
+};
+
 struct memory {
   u8 rx_mode;                         //   00
   u8 limit_rx_tx;                     //   01
   u8 enabled;                         //   02
   u8 isnarrow;                        //   03
-  ul16 rx_tone;                       //   04-05
+  struct tone rx_tone;                //   04-05
   ul32 rxfreq;                        //   06-0a
   ul32 txfreq;                        //   0b-0e
-  ul16 tx_tone;                       //   0f-10
+  struct tone tx_tone;                //   0f-10
   u8 power;                           //   11
   u8 bcl;                             //   12
   u8 dcs_encrypt:3,                   //   13
@@ -439,49 +451,11 @@ MEMORY_REGIONS_RANGES = {
 }
 
 
-def _checksum(data):
-    cs = 0
-    for byte in data:
-        cs += byte
-    return cs % 256
-
-
-def _enter_programming_mode(radio):
-    serial = radio.pipe
-
-    exito = False
-    for i in range(0, 5):
-        serial.write(radio.magic)
-        ack = serial.read(1)
-
-        try:
-            if ack == CMD_ACK:
-                exito = True
-                break
-        except Exception:
-            LOG.debug("Attempt #%s, failed, trying again" % i)
-            pass
-
-    # check if we had EXITO
-    if exito is False:
-        msg = "The radio did not accept program mode after five tries.\n"
-        msg += "Check you interface cable and power cycle your radio."
-        raise errors.RadioError(msg)
-
-
-def _exit_programming_mode(radio):
-    serial = radio.pipe
-    try:
-        serial.write(b"4R" + b"\x05\xEE\x79")
-    except Exception:
-        raise errors.RadioError("Radio refused to exit programming mode")
-
-
 def _read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
     cmd = struct.pack(">BH", ord(b'R'), block_addr)
-    ccs = bytes([_checksum(cmd)])
+    ccs = bytes([checksum(cmd)])
 
     expectedresponse = b"R" + cmd[1:]
 
@@ -493,7 +467,7 @@ def _read_block(radio, block_addr, block_size):
         serial.write(cmd)
         response = serial.read(3 + block_size + 1)
 
-        cs = _checksum(response[:-1])
+        cs = checksum(response[:-1])
 
         if response[:3] != expectedresponse:
             raise Exception("Error reading block %04x." % block_addr)
@@ -521,7 +495,7 @@ def _write_block(radio, block_number, block_size, region, data):
 
     cmd = struct.pack(">BH", region, block_number)
 
-    cs = bytes([_checksum(cmd + block_data)])
+    cs = bytes([checksum(cmd + block_data)])
     block_data += cs
 
     LOG.debug("Writing Data:")
@@ -538,7 +512,6 @@ def _write_block(radio, block_number, block_size, region, data):
 
 def do_download(radio):
     LOG.debug("download")
-    _enter_programming_mode(radio)
 
     data = b""
 
@@ -558,16 +531,12 @@ def do_download(radio):
         LOG.debug("Address: %04x" % addr)
         LOG.debug(util.hexprint(block))
 
-    _exit_programming_mode(radio)
-
     return memmap.MemoryMapBytes(data)
 
 
 def do_upload(radio):
     status = chirp_common.Status()
     status.msg = "Uploading to radio"
-
-    _enter_programming_mode(radio)
 
     status.cur = 0
     status.max = get_total_upload_blocks()
@@ -586,8 +555,6 @@ def do_upload(radio):
             status.cur += 1
             radio.status_fn(status)
             _write_block(radio, block, radio.BLOCK_SIZE, regionId, item_bytes)
-
-    _exit_programming_mode(radio)
 
 
 def get_bytes_for_region(all_bytes: bytearray, item, blockSize):
@@ -706,7 +673,8 @@ class RT880G(chirp_common.CloneModeRadio):
     }
 
     BLOCK_SIZE = 0x400
-    magic = b"4R" + b"\x05\x10\x9b"
+    magic_enter = b"4R" + b"\x05\x10\x9b"
+    magic_exit = b"4R" + b"\x05\xEE\x79"
 
     POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1),
                     chirp_common.PowerLevel("Medium", watts=5),
@@ -757,7 +725,7 @@ class RT880G(chirp_common.CloneModeRadio):
     def sync_in(self):
         """Download from radio"""
         try:
-            self.pipe.timeout = 0.25
+            enter_programming_mode(self.pipe, self.magic_enter)
             data = do_download(self)
         except errors.RadioError:
             # Pass through any real errors we raise
@@ -768,12 +736,16 @@ class RT880G(chirp_common.CloneModeRadio):
             LOG.exception('Unexpected error during download')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
+        finally:
+            exit_programming_mode(self.pipe, self.magic_exit)
+
         self._mmap = data
         self.process_mmap()
 
     def sync_out(self):
         """Upload to radio"""
         try:
+            enter_programming_mode(self.pipe, self.magic_enter)
             self.pipe.timeout = 1
             do_upload(self)
         except Exception:
@@ -782,6 +754,9 @@ class RT880G(chirp_common.CloneModeRadio):
             LOG.exception('Unexpected error during upload')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
+        finally:
+            self.pipe.timeout = 0.25
+            exit_programming_mode(self.pipe, self.magic_exit)
 
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
@@ -790,45 +765,33 @@ class RT880G(chirp_common.CloneModeRadio):
         return RT880GBankModel(self)
 
     @staticmethod
-    def _decode_tone(toneval):
-        # DCS examples:
-        # D023N - 1013 - 0010 0000 0001 0011
-        #                  ^-DCS
-        # D023I - 2013 - 0011 0000 0001 0100
-        #                   ^-DCS inverted
-        # D754I - 21EC - 0010 0001 1110 1100
-        #    code in octal-------^^^^^^^^^^^
-
-        if toneval == 0x0000:
+    def _decode_tone(tone: bitwise.structDataElement):
+        if not tone.is_dtcs and not tone.tone_or_inverted:
             return '', None, None
-        elif toneval & 0x3000 == 0x3000:
-            # DTCS R
-            code = int('%o' % (toneval & 0x1FF))
+        elif tone.is_dtcs and tone.tone_or_inverted:
+            code = int('%o' % tone.tone_val)
             return 'DTCS', code, 'R'
-        elif toneval & 0x2000:
-            # DTCS N
-            code = int('%o' % (toneval & 0x1FF))
+        elif tone.is_dtcs and not tone.tone_or_inverted:
+            code = int('%o' % tone.tone_val)
             return 'DTCS', code, 'N'
-        elif toneval & 0x1000:
-            return 'Tone', ((toneval & 0xFFF) / 10.0), None
+        elif not tone.is_dtcs and tone.tone_or_inverted:
+            return 'Tone', (tone.tone_val / 10.0), None
         else:
             raise errors.RadioError('Unsupported tone value')
 
     @staticmethod
     def _encode_tone(mode, val, pol):
         if not mode:
-            return 0x0000
+            return 0, 0, 0
         elif mode == 'Tone':
             code = int(val * 10)
-            code |= 0x1000
-            return code
+            return 0, 1, code
         elif mode == 'DTCS':
             code = int('%i' % val, 8)
-            if pol == 'N':
-                code |= 0x2000
+            inverted = 0
             if pol == 'R':
-                code |= 0x3000
-            return code
+                inverted = 1
+            return 1, inverted, code
         else:
             raise errors.RadioError('Unsupported tone mode %r' % mode)
 
@@ -1005,10 +968,20 @@ class RT880G(chirp_common.CloneModeRadio):
         else:
             _mem.power = 0x00
 
+        # tones
         txtone, rxtone = chirp_common.split_tone_encode(mem)
-        _mem.tx_tone = self._encode_tone(*txtone)
-        _mem.rx_tone = self._encode_tone(*rxtone)
 
+        is_dtcs, tone_or_inverted, tone_val = self._encode_tone(*txtone)
+        _mem.tx_tone.is_dtcs = is_dtcs
+        _mem.tx_tone.tone_or_inverted = tone_or_inverted
+        _mem.tx_tone.tone_val = tone_val
+
+        is_dtcs, tone_or_inverted, tone_val = self._encode_tone(*rxtone)
+        _mem.rx_tone.is_dtcs = is_dtcs
+        _mem.rx_tone.tone_or_inverted = tone_or_inverted
+        _mem.rx_tone.tone_val = tone_val
+
+        # extras
         for setting in mem.extra:
             if setting.get_name() == "mutecode":
                 setattr(_mem, setting.get_name(), int(str(setting.value), 16))
