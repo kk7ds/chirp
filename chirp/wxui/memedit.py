@@ -1528,7 +1528,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         self._memory_cache[row] = memory
 
-        darkmode = wx.SystemSettings.GetAppearance().IsDark()
+        try:
+            darkmode = wx.SystemSettings.GetAppearance().IsDark()
+        except AttributeError:
+            # Older wxPython doesn't have GetAppearance(), so just assume light
+            darkmode = False
         if darkmode:
             immutable_color = wx.SystemSettings.GetColour(
                 wx.SYS_COLOUR_GRAYTEXT)
