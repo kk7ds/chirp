@@ -1,4 +1,4 @@
-# Copyright 2025 Fred Trimble <chirpdriver@gmail.com>
+# Copyright 2025, 2026 Fred Trimble <chirpdriver@gmail.com>
 # Derived from prior copyrighted work:
 # Copyright 2024 Pavel Moravec, OK2MOP <moravecp.cz@gmail.com>
 # Copyright 2023 Jim Unroe <rock.unroe@gmail.com>
@@ -1488,21 +1488,21 @@ class RT910BT(RT900BT):
 class RT910(RT910BT):
     # ==========
     # Notice to developers:
-    # The RT-910 support in this driver is currently based upon V0.09P
-    # firmware with 15 banks/zones of 64 channels steps.
+    # The RT-910 support in this driver is currently based upon V0.11
+    # firmware with 15 banks/zones of 64 channel steps.
     # ==========
-    """Radtel RT-910 512 (without Bluetooth)"""
+    """Radtel RT-910 960 (without Bluetooth)"""
     VENDOR = "Radtel"
     MODEL = "RT-910"
 
-    _upper = 512  # fw V0.09P supports 512 channels
+    _upper = 960  # fw V0.11 supports 960 channels
 
     _mem_params = (_upper,  # number of channels
                    )
     _ranges = [
-        (0x0000, 0x4000),  # 8 zones of 64 frequencies,
-                           # equals 512 channels of 32 bytes each
-                           # 8 * 64 * 32 = 0x4000
+        (0x0000, 0x7800),  # 15 zones of 64 frequencies,
+                           # equals 960 channels of 32 bytes each
+                           # 15 * 64 * 32 = 0x7800
         (0x8000, 0x8040),
         (0x9000, 0x9040),
         (0xA000, 0xA140),
@@ -1512,17 +1512,17 @@ class RT910(RT910BT):
     _has_bt_denoise = False
     _has_am_per_channel = True
     _has_am_switch = not _has_am_per_channel
-    _has_single_mode = False
+    _has_single_mode = True
 
     def get_bank_model(self):
-        return chirp_common.StaticBankModel(self, banks=8)
+        return chirp_common.StaticBankModel(self, banks=15)
 
     @classmethod
     def get_prompts(cls):
         rp = super().get_prompts()
         rp.experimental = \
             ('This driver is a beta version for the RT-910'
-             ' Non Bluetooth running Firmware V0.09\n'
+             ' Non Bluetooth running Firmware V0.11\n'
              '\n'
              'Please save an unedited copy of your first successful\n'
              'download to a CHIRP Radio Images(*.img) file.\n\n'
