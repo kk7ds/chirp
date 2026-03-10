@@ -31,6 +31,7 @@ from chirp.sources import repeaterbook
 from chirp.sources import przemienniki_net
 from chirp.sources import przemienniki_eu
 from chirp.sources import mapy73pl
+from chirp.sources import oevsv
 from chirp.wxui import common
 from chirp.wxui import config
 
@@ -1223,3 +1224,88 @@ class RRQueryDialog(QuerySourceDialog):
             # CA
             return {'zipcounty': '%s' % self._ca_county_id,
                     'country': 'CA'}
+
+
+class OESVVQueryDialog(QuerySourceDialog):
+    NAME = "OEVSV Austria"
+
+    BANDS = [
+        ("10m (28 MHz)", "10m"),
+        ("6m (50 MHz)", "6m"),
+        ("2m (144 MHz)", "2m"),
+        ("70cm (430 MHz)", "70cm"),
+        ("23cm (1296 MHz)", "23cm"),
+    ]
+
+    STATION_TYPES = [
+        (_("Voice Repeaters"), "repeater_voice"),
+        (_("Digital Repeaters"), "repeater_digi"),
+        (_("Beacons"), "beacon"),
+        (_("APRS Digipeaters"), "digipeater"),
+    ]
+
+    def _add_grid(self, grid, label, widget):
+        grid.Add(wx.StaticText(widget.GetParent(), label=label),
+                 border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
+        grid.Add(widget, 1, border=20, flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
+
+    def build(self):
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(vbox)
+        panel = wx.Panel(self)
+        vbox.Add(panel, 1, flag=wx.EXPAND | wx.ALL, border=20)
+        grid = wx.FlexGridSizer(2, 5, 0)
+        grid.AddGrowableCol(1)
+        panel.SetSizer(grid)
+
+        # Bands selection (checkboxes)
+        bands_panel = wx.Panel(panel)
+        bands_sizer = wx.BoxSizer(wx.VERTICAL)
+        self._band_checks = {}
+        for display_name, band_id in self.BANDS:
+            cb = wx.CheckBox(bands_panel, label=display_name)
+            self._band_checks[band_id] = cb
+            bands_sizer.Add(cb, 0, wx.ALL, 2)
+        bands_panel.SetSizer(bands_sizer)
+        self._add_grid(grid, _('Bands'), bands_panel)
+
+        # Set default bands (2m and 70cm)
+        self._band_checks["2m"].SetValue(True)
+        self._band_checks["70cm"].SetValue(True)
+
+        # Station type dropdown
+        self._type_choice = wx.Choice(panel)
+        for display_name, type_id in self.STATION_TYPES:
+            self._type_choice.Append(display_name, type_id)
+        self._type_choice.SetSelection(0)
+        self._add_grid(grid, _('Station Type'), self._type_choice)
+
+        # Active Only checkbox
+        self._active_only = wx.CheckBox(panel,
+                                        label=_("Active repeaters only"))
+        self._active_only.SetValue(True)
+        self._add_grid(grid, '', self._active_only)
+
+        return vbox
+
+    def get_info(self):
+        return _('OEVSV Austrian Repeater Database')
+
+    def get_link(self):
+        return 'https://repeater.oevsv.at/'
+
+    def do_query(self):
+        self.result_radio = oevsv.OESVVData()
+        super().do_query()
+
+    def get_params(self):
+        bands = [band_id for band_id, cb in self._band_checks.items()
+                 if cb.GetValue()]
+        selection = self._type_choice.GetSelection()
+        station_type = (self._type_choice.GetClientData(selection)
+                        if selection >= 0 else 'repeater_voice')
+        return {
+            'bands': bands,
+            'station_type': station_type,
+            'active_only': self._active_only.GetValue(),
+        }
