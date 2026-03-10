@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-10 20:53-0700\n"
+"POT-Creation-Date: 2026-03-15 16:59-0700\n"
 "PO-Revision-Date: 2025-01-19 16:11+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.5\n"
 
-#: ../wxui/query_sources.py:63
+#: ../wxui/query_sources.py:64
 #, python-format
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr "%(value)s, %(min)i ile %(max)i arasında olmalıdır"
@@ -45,24 +45,24 @@ msgid_plural "%i Memories and shift block up"
 msgstr[0] "%i Kaydı ve bloğu yukarı kaydır"
 msgstr[1] "%i Kaydı ve bloğu yukarı kaydır"
 
-#: ../wxui/main.py:1521
+#: ../wxui/main.py:1532
 #, python-format
 msgid "%s has not been saved. Save before closing?"
 msgstr "%s kaydedilmedi. Kapanmadan önce kaydedilsin mi?"
 
-#: ../wxui/bugreport.py:507
+#: ../wxui/bugreport.py:506
 msgid "(Describe what actually happened instead)"
 msgstr "(Bunun yerine gerçekte ne olduğunu açıklayın)"
 
-#: ../wxui/bugreport.py:505
+#: ../wxui/bugreport.py:504
 msgid "(Describe what you expected to happen)"
 msgstr "(Ne olacağını beklediğinizi açıklayın)"
 
-#: ../wxui/bugreport.py:503
+#: ../wxui/bugreport.py:502
 msgid "(Describe what you were doing)"
 msgstr "(Ne yaptığınızı anlatın)"
 
-#: ../wxui/bugreport.py:509
+#: ../wxui/bugreport.py:508
 msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr "(Bu daha önce işe yaradı mı? Yeni telsiz? OEM yazılımıyla çalışıyor mu?)"
 
@@ -977,7 +977,7 @@ msgstr ""
 "\n"
 "Kablo takılıyken telsizi açarsanız çalışmayabilir"
 
-#: ../wxui/main.py:2126
+#: ../wxui/main.py:2143
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "Yeni bir CHIRP sürümü mevcut. İndirmek için lütfen en kısa zamanda web sitesini ziyaret edin!"
 
@@ -985,15 +985,15 @@ msgstr "Yeni bir CHIRP sürümü mevcut. İndirmek için lütfen en kısa zamand
 msgid "AM mode does not allow duplex or tone"
 msgstr "AM modu, çift yönlü veya tonlu sese izin vermez"
 
-#: ../wxui/main.py:965
+#: ../wxui/main.py:976
 msgid "About"
 msgstr "Hakkında"
 
-#: ../wxui/main.py:1897
+#: ../wxui/main.py:1908
 msgid "About CHIRP"
 msgstr "CHIRP Hakkında"
 
-#: ../wxui/main.py:1952
+#: ../wxui/main.py:1963
 msgid "Agree"
 msgstr "Kabul ediyorum"
 
@@ -1001,15 +1001,15 @@ msgstr "Kabul ediyorum"
 msgid "Aircraft frequencies must be aligned to 25kHz, 8.33kHz, be or a valid channel"
 msgstr ""
 
-#: ../wxui/query_sources.py:451
+#: ../wxui/query_sources.py:452
 msgid "All"
 msgstr "Tümü"
 
-#: ../wxui/main.py:1350
+#: ../wxui/main.py:1361
 msgid "All Files"
 msgstr "Tüm Dosyalar"
 
-#: ../wxui/main.py:1361
+#: ../wxui/main.py:1372
 msgid "All supported formats|"
 msgstr "Desteklenen tüm biçimler|"
 
@@ -1017,11 +1017,11 @@ msgstr "Desteklenen tüm biçimler|"
 msgid "Always start with recent list"
 msgstr "Her zaman son listeyle başla"
 
-#: ../wxui/query_sources.py:353 ../wxui/query_sources.py:443
+#: ../wxui/query_sources.py:354 ../wxui/query_sources.py:444
 msgid "Amateur"
 msgstr "Amatör"
 
-#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:475 ../wxui/common.py:633
+#: ../wxui/bugreport.py:340 ../wxui/bugreport.py:474 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr "Bir hata oluştu"
 
@@ -1029,7 +1029,7 @@ msgstr "Bir hata oluştu"
 msgid "Applying settings"
 msgstr "Ayarlar uygulanıyor"
 
-#: ../wxui/main.py:1618
+#: ../wxui/main.py:1629
 msgid "Automatic from system"
 msgstr "Sistemden otomatik"
 
@@ -1037,12 +1037,12 @@ msgstr "Sistemden otomatik"
 msgid "Available modules"
 msgstr "Mevcut modüller"
 
-#: ../wxui/main.py:2061
+#: ../wxui/main.py:2072
 msgid "Bandplan"
 msgstr "Bant planı"
 
-#: ../wxui/query_sources.py:479 ../wxui/query_sources.py:698
-#: ../wxui/query_sources.py:856
+#: ../wxui/query_sources.py:480 ../wxui/query_sources.py:699
+#: ../wxui/query_sources.py:857
 msgid "Bands"
 msgstr "Bantlar"
 
@@ -1058,16 +1058,16 @@ msgstr "Bin"
 msgid "Browser"
 msgstr "Tarayıcı"
 
-#: ../wxui/bugreport.py:485
+#: ../wxui/bugreport.py:484
 #, python-format
 msgid "Bug number %s is closed"
 msgstr ""
 
-#: ../wxui/bugreport.py:474
+#: ../wxui/bugreport.py:473
 msgid "Bug number not found"
 msgstr "Hata numarası bulunamadı"
 
-#: ../wxui/bugreport.py:451
+#: ../wxui/bugreport.py:450
 msgid "Bug number:"
 msgstr "Hata numarası:"
 
@@ -1079,16 +1079,16 @@ msgstr "Hata konusu:"
 msgid "Building Radio Browser"
 msgstr "Telsiz Tarayıcısı oluşturuluyor"
 
-#: ../wxui/main.py:1647
+#: ../wxui/main.py:1658
 msgid "CHIRP must be restarted for the new selection to take effect"
 msgstr "Yeni seçimin etkili olması için CHIRP'in yeniden başlatılması gerekir"
 
-#: ../wxui/query_sources.py:177
+#: ../wxui/query_sources.py:178
 #, python-format
 msgid "Cached results can only be included for a proximity query with Latitude, Longitude, and Distance set. Please uncheck \"%s\""
 msgstr ""
 
-#: ../wxui/query_sources.py:1065
+#: ../wxui/query_sources.py:1066
 msgid "Canada"
 msgstr "Kanada"
 
@@ -1101,7 +1101,7 @@ msgstr "Bu ayarın değiştirilmesi, imajdaki ayarların yenilenmesini gerektiri
 msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr "Eşdeğer TX ve RX %s'ye sahip kanallar, \"%s\" ton modu ile temsil edilir"
 
-#: ../wxui/main.py:1349
+#: ../wxui/main.py:1360
 msgid "Chirp Image Files"
 msgstr "Chirp İmaj Dosyaları"
 
@@ -1123,7 +1123,7 @@ msgstr "%s Tonunu Seç"
 msgid "Choose Cross Mode"
 msgstr "Çapraz Modu Seç"
 
-#: ../wxui/main.py:1186
+#: ../wxui/main.py:1197
 msgid "Choose Diff Target"
 msgstr "Farklı Hedef Seçin"
 
@@ -1140,15 +1140,15 @@ msgstr "Dubleks seç"
 msgid "Choose the module to load from issue %i:"
 msgstr "Sorun %i'den yüklenecek modülü seçin:"
 
-#: ../wxui/query_sources.py:561
+#: ../wxui/query_sources.py:562
 msgid "City"
 msgstr "Şehir"
 
-#: ../wxui/main.py:1938
+#: ../wxui/main.py:1949
 msgid "Click here for full license text"
 msgstr "Tam lisans metni için buraya tıklayın"
 
-#: ../wxui/main.py:1917
+#: ../wxui/main.py:1928
 msgid "Click here for online documentation"
 msgstr ""
 
@@ -1186,7 +1186,7 @@ msgstr "Telsizden klonlanıyor"
 msgid "Cloning to radio"
 msgstr "Telsize klonlanıyor"
 
-#: ../wxui/main.py:1063 ../wxui/main.py:1953
+#: ../wxui/main.py:1074 ../wxui/main.py:1964
 msgid "Close"
 msgstr "Kapat"
 
@@ -1194,7 +1194,7 @@ msgstr "Kapat"
 msgid "Close String"
 msgstr "Dizeyi Kapat"
 
-#: ../wxui/main.py:1064
+#: ../wxui/main.py:1075
 msgid "Close file"
 msgstr "Dosyayı kapat"
 
@@ -1233,7 +1233,7 @@ msgstr ""
 "Arayüz kablonuzu 'TX/RX' ünitesinin arkasındaki\n"
 "PC Bağlantı Noktasına bağlayın. Kafadaki Com Portu DEĞİL.\n"
 
-#: ../wxui/query_sources.py:406
+#: ../wxui/query_sources.py:407
 msgid "Convert to FM"
 msgstr "FM'e dönüştür"
 
@@ -1245,8 +1245,8 @@ msgstr "Kopyala"
 msgid "Copy portable"
 msgstr ""
 
-#: ../wxui/query_sources.py:351 ../wxui/query_sources.py:567
-#: ../wxui/query_sources.py:657
+#: ../wxui/query_sources.py:352 ../wxui/query_sources.py:568
+#: ../wxui/query_sources.py:658
 msgid "Country"
 msgstr "Ülke"
 
@@ -1291,7 +1291,7 @@ msgstr "DTMF kod çöz"
 msgid "DV Memory"
 msgstr "DV Kaydı"
 
-#: ../wxui/main.py:1974
+#: ../wxui/main.py:1985
 msgid "Danger Ahead"
 msgstr "İleride Tehlike"
 
@@ -1307,15 +1307,15 @@ msgstr "Sil"
 msgid "Delete memories"
 msgstr ""
 
-#: ../wxui/bugreport.py:565
+#: ../wxui/bugreport.py:564
 msgid "Detailed information"
 msgstr "Detaylı bilgi"
 
-#: ../wxui/main.py:970
+#: ../wxui/main.py:981
 msgid "Developer Mode"
 msgstr "Geliştirici Modu"
 
-#: ../wxui/main.py:1980
+#: ../wxui/main.py:1991
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "Geliştirici durumu artık %s. Etkili olması için CHIRP yeniden başlatılmalıdır"
@@ -1332,11 +1332,11 @@ msgstr "Başka bir editöre göre fark"
 msgid "Digital Code"
 msgstr "Dijital Kod"
 
-#: ../wxui/query_sources.py:410
+#: ../wxui/query_sources.py:411
 msgid "Digital Modes"
 msgstr "Dijital Modlar"
 
-#: ../wxui/main.py:1992
+#: ../wxui/main.py:2003
 msgid "Disable reporting"
 msgstr "Raporlamayı devre dışı bırak"
 
@@ -1344,8 +1344,8 @@ msgstr "Raporlamayı devre dışı bırak"
 msgid "Disabled"
 msgstr "Devre dışı"
 
-#: ../wxui/query_sources.py:103 ../wxui/query_sources.py:382
-#: ../wxui/query_sources.py:680 ../wxui/query_sources.py:838
+#: ../wxui/query_sources.py:104 ../wxui/query_sources.py:383
+#: ../wxui/query_sources.py:681 ../wxui/query_sources.py:839
 msgid "Distance"
 msgstr "Mesafe"
 
@@ -1362,11 +1362,11 @@ msgstr "Riski kabul ediyor musun?"
 msgid "Double-click to change bank name"
 msgstr "Banka adını değiştirmek için çift tıklayın"
 
-#: ../wxui/main.py:1065
+#: ../wxui/main.py:1076
 msgid "Download"
 msgstr "İndir"
 
-#: ../wxui/main.py:1066
+#: ../wxui/main.py:1077
 msgid "Download from radio"
 msgstr "Telsizden indir"
 
@@ -1390,7 +1390,7 @@ msgstr "Sürücü bilgileri"
 msgid "Driver messages"
 msgstr "Sürücü mesajları"
 
-#: ../wxui/query_sources.py:408
+#: ../wxui/query_sources.py:409
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
 msgstr "Analogu destekleyen çift modlu dijital tekrarlayıcılar(röleler) FM olarak gösterilecek"
 
@@ -1413,7 +1413,7 @@ msgstr "%i kaydı için ayrıntıları düzenle"
 msgid "Edit details for memory %i"
 msgstr "%i kaydı için ayrıntıları düzenle"
 
-#: ../wxui/main.py:914
+#: ../wxui/main.py:925
 msgid "Enable Automatic Edits"
 msgstr "Otomatik Düzenlemeleri Etkinleştir"
 
@@ -1442,7 +1442,7 @@ msgstr "Banka %s için yeni bir ad girin:"
 msgid "Enter custom port:"
 msgstr "Özel bağlantı noktasını girin:"
 
-#: ../wxui/bugreport.py:499
+#: ../wxui/bugreport.py:498
 msgid "Enter details about this update. Be descriptive about what you were doing, what you expected to happen, and what actually happened."
 msgstr "Bu güncelleme hakkında ayrıntıları girin. Ne yaptığınızı, ne olmasını beklediğinizi ve gerçekte ne olduğunu açıklayıcı olun."
 
@@ -1450,11 +1450,11 @@ msgstr "Bu güncelleme hakkında ayrıntıları girin. Ne yaptığınızı, ne o
 msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem. Before proceeding, please search for duplicate issues!"
 msgstr ""
 
-#: ../wxui/bugreport.py:518
+#: ../wxui/bugreport.py:517
 msgid "Enter information to add to the bug here"
 msgstr "Hataya eklenecek bilgileri buraya girin"
 
-#: ../wxui/bugreport.py:442
+#: ../wxui/bugreport.py:441
 msgid "Enter the bug number that should be updated"
 msgstr "Güncellenmesi gereken hata numarasını girin"
 
@@ -1511,7 +1511,7 @@ msgstr "Örnek: name=\"myrepeater"
 msgid "Example: name~\"myrepea\""
 msgstr "Örnek: name~\"myrepea\""
 
-#: ../wxui/query_sources.py:403
+#: ../wxui/query_sources.py:404
 msgid "Exclude private and closed repeaters"
 msgstr "Özel ve kapalı röleleri hariç tut"
 
@@ -1523,7 +1523,7 @@ msgstr "Deneysel sürücü"
 msgid "Export can only write CSV files"
 msgstr "Dışa aktarma yalnızca CSV dosyalarını yazabilir"
 
-#: ../wxui/main.py:1506
+#: ../wxui/main.py:1517
 msgid "Export to CSV"
 msgstr "CSV'ye aktar"
 
@@ -1539,7 +1539,7 @@ msgstr "Ekstra"
 msgid "FM Radio"
 msgstr "FM Radyo"
 
-#: ../wxui/query_sources.py:996
+#: ../wxui/query_sources.py:997
 msgid ""
 "FREE repeater database, which provides information\n"
 "about repeaters in Europe. No account is required."
@@ -1547,7 +1547,7 @@ msgstr ""
 "Avrupa'daki tekrarlayıcılar hakkında bilgi\n"
 "sağlayan ÜCRETSİZ tekrarlayıcı veritabanı. Hesap gerekmez."
 
-#: ../wxui/query_sources.py:712
+#: ../wxui/query_sources.py:713
 msgid ""
 "FREE repeater database, which provides most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
@@ -1570,7 +1570,7 @@ msgstr "Telsiz tarayıcısı yüklenemedi"
 msgid "Failed to parse result"
 msgstr "Sonuç ayrıştırılamadı"
 
-#: ../wxui/bugreport.py:726
+#: ../wxui/bugreport.py:725
 msgid "Failed to send bug report:"
 msgstr "Hata raporu gönderilemedi:"
 
@@ -1587,20 +1587,20 @@ msgstr "Yeni bir hata bildirin"
 msgid "File does not exist: %s"
 msgstr "Dosya mevcut değil: %s"
 
-#: ../wxui/main.py:1353 ../wxui/main.py:1433 ../wxui/main.py:1443
-#: ../wxui/main.py:1502 ../wxui/main.py:1867 ../wxui/main.py:1868
+#: ../wxui/main.py:1364 ../wxui/main.py:1444 ../wxui/main.py:1454
+#: ../wxui/main.py:1513 ../wxui/main.py:1878 ../wxui/main.py:1879
 msgid "Files"
 msgstr "Dosyalar"
 
-#: ../wxui/bugreport.py:563
+#: ../wxui/bugreport.py:562
 msgid "Files:"
 msgstr "Dosyalar:"
 
-#: ../wxui/query_sources.py:388
+#: ../wxui/query_sources.py:389
 msgid "Filter"
 msgstr "Filtre"
 
-#: ../wxui/query_sources.py:386
+#: ../wxui/query_sources.py:387
 msgid "Filter results with location matching this string"
 msgstr "Bu dizeyle eşleşen konuma sahip sonuçları filtrele"
 
@@ -1608,7 +1608,7 @@ msgstr "Bu dizeyle eşleşen konuma sahip sonuçları filtrele"
 msgid "Filter..."
 msgstr "Filtre..."
 
-#: ../wxui/main.py:1576
+#: ../wxui/main.py:1587
 msgid "Find"
 msgstr "Bul"
 
@@ -1936,8 +1936,8 @@ msgstr "Bu aralıktaki frekans AM modunu gerektirir"
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr "TX bantları dışındaki frekanslar dupleks=kapalı olmalıdır"
 
-#: ../wxui/query_sources.py:354 ../wxui/query_sources.py:434
-#: ../wxui/query_sources.py:534
+#: ../wxui/query_sources.py:355 ../wxui/query_sources.py:435
+#: ../wxui/query_sources.py:535
 msgid "GMRS"
 msgstr "GMRS"
 
@@ -1957,7 +1957,7 @@ msgstr "Kayda Git:"
 msgid "Goto..."
 msgstr "Git..."
 
-#: ../wxui/main.py:1031
+#: ../wxui/main.py:1042
 msgid "Help"
 msgstr "Yardım"
 
@@ -1985,13 +1985,13 @@ msgstr "İnsan tarafından okunabilen yorum (telsizde saklanmaz)"
 msgid "I have"
 msgstr ""
 
-#: ../wxui/query_sources.py:365 ../wxui/query_sources.py:371
-#: ../wxui/query_sources.py:664 ../wxui/query_sources.py:670
-#: ../wxui/query_sources.py:816 ../wxui/query_sources.py:822
+#: ../wxui/query_sources.py:366 ../wxui/query_sources.py:372
+#: ../wxui/query_sources.py:665 ../wxui/query_sources.py:671
+#: ../wxui/query_sources.py:817 ../wxui/query_sources.py:823
 msgid "If set, sort results by distance from these coordinates"
 msgstr "Ayarlanırsa, sonuçları bu koordinatlardan uzaklığa göre sırala"
 
-#: ../wxui/main.py:1488
+#: ../wxui/main.py:1499
 msgid "Import"
 msgstr "İçe Aktar"
 
@@ -2004,15 +2004,15 @@ msgstr ""
 msgid "Import from file..."
 msgstr "Dosyadan İçe Aktar..."
 
-#: ../wxui/main.py:1492
+#: ../wxui/main.py:1503
 msgid "Import messages"
 msgstr "Mesajları içe aktar"
 
-#: ../wxui/main.py:1486
+#: ../wxui/main.py:1497
 msgid "Import not recommended"
 msgstr "İçe aktarma önerilmez"
 
-#: ../wxui/query_sources.py:423
+#: ../wxui/query_sources.py:424
 msgid "Include Cached"
 msgstr ""
 
@@ -2036,7 +2036,7 @@ msgstr "Yukarıya Satır Ekle"
 msgid "Install desktop icon?"
 msgstr "Masaüstü simgesi yüklensin mi?"
 
-#: ../wxui/main.py:954
+#: ../wxui/main.py:965
 msgid "Interact with driver"
 msgstr "Sürücü ile etkileşim"
 
@@ -2044,17 +2044,17 @@ msgstr "Sürücü ile etkileşim"
 msgid "Internal driver error"
 msgstr "Dahili sürücü hatası"
 
-#: ../wxui/query_sources.py:61
+#: ../wxui/query_sources.py:62
 #, python-format
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Geçersiz %(value)s (ondalık basamak kullanın)"
 
-#: ../wxui/query_sources.py:69 ../wxui/query_sources.py:123
+#: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
 #: ../wxui/memedit.py:2000
 msgid "Invalid Entry"
 msgstr "Geçersiz Girdi"
 
-#: ../wxui/query_sources.py:150
+#: ../wxui/query_sources.py:151
 msgid "Invalid ZIP code"
 msgstr "Geçersiz Posta kodu"
 
@@ -2063,11 +2063,11 @@ msgstr "Geçersiz Posta kodu"
 msgid "Invalid edit: %s"
 msgstr "Geçersiz düzenleme: %s"
 
-#: ../wxui/query_sources.py:123
+#: ../wxui/query_sources.py:124
 msgid "Invalid locator"
 msgstr "Geçersiz konum belirleyici"
 
-#: ../wxui/main.py:1864
+#: ../wxui/main.py:1875
 msgid "Invalid or unsupported module file"
 msgstr "Geçersiz veya desteklenmeyen modül dosyası"
 
@@ -2089,12 +2089,12 @@ msgstr "Kayıt numarası:"
 msgid "LIVE"
 msgstr "CANLI"
 
-#: ../drivers/radtel_rt490.py:1026 ../wxui/main.py:853 ../wxui/main.py:1632
+#: ../drivers/radtel_rt490.py:1026 ../wxui/main.py:853 ../wxui/main.py:1643
 msgid "Language"
 msgstr "Dil"
 
-#: ../wxui/query_sources.py:91 ../wxui/query_sources.py:373
-#: ../wxui/query_sources.py:672 ../wxui/query_sources.py:824
+#: ../wxui/query_sources.py:92 ../wxui/query_sources.py:374
+#: ../wxui/query_sources.py:673 ../wxui/query_sources.py:825
 msgid "Latitude"
 msgstr "Enlem"
 
@@ -2103,33 +2103,33 @@ msgstr "Enlem"
 msgid "Length must be %i"
 msgstr "Uzunluk %i olmalıdır"
 
-#: ../wxui/query_sources.py:394 ../wxui/query_sources.py:632
-#: ../wxui/query_sources.py:785
+#: ../wxui/query_sources.py:395 ../wxui/query_sources.py:633
+#: ../wxui/query_sources.py:786
 msgid "Limit Bands"
 msgstr "Bantları Sınırla"
 
-#: ../wxui/query_sources.py:399
+#: ../wxui/query_sources.py:400 ../wxui/query_sources.py:1286
 msgid "Limit Modes"
 msgstr "Modları Sınırla"
 
-#: ../wxui/query_sources.py:647 ../wxui/query_sources.py:800
+#: ../wxui/query_sources.py:648 ../wxui/query_sources.py:801
 msgid "Limit Status"
 msgstr "Durum Sınırla"
 
-#: ../wxui/query_sources.py:809
+#: ../wxui/query_sources.py:810
 msgid "Limit prefixes"
 msgstr "Önekleri sınırla"
 
-#: ../wxui/query_sources.py:380 ../wxui/query_sources.py:678
-#: ../wxui/query_sources.py:836
+#: ../wxui/query_sources.py:381 ../wxui/query_sources.py:679
+#: ../wxui/query_sources.py:837
 msgid "Limit results to this distance (km) from coordinates"
 msgstr "Sonuçları koordinatlardan bu mesafeye (km) sınırla"
 
-#: ../wxui/query_sources.py:404
+#: ../wxui/query_sources.py:405
 msgid "Limit use"
 msgstr "Kullanım sınırlaması"
 
-#: ../wxui/main.py:1719
+#: ../wxui/main.py:1730
 msgid "Live Radio"
 msgstr "Canlı Radyo"
 
@@ -2141,15 +2141,15 @@ msgstr "Modül Yükle..."
 msgid "Load module from issue"
 msgstr "Kayıttan modül yükle"
 
-#: ../wxui/main.py:1007
+#: ../wxui/main.py:1018
 msgid "Load module from issue..."
 msgstr "Kayıttan modül yükle..."
 
-#: ../wxui/main.py:2028
+#: ../wxui/main.py:2039
 msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
 msgstr "Bir modülün yüklenmesi açık sekmeleri etkilemeyecektir. Bir modülü yüklemeden önce (aksi belirtilmediği sürece) tüm sekmeleri kapatmanız önerilir."
 
-#: ../wxui/main.py:1871
+#: ../wxui/main.py:1882
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr "Modülleri yüklemek son derece tehlikeli olabilir ve bilgisayarınıza, telsizinize veya her ikisine birden zarar verebilir. ASLA güvenmediğiniz bir kaynaktan ve özellikle ana CHIRP web sitesi (chirpmyradio.com) dışında herhangi bir yerden modül yüklemeyin. Başka bir kaynaktan bir modül yüklemek, kaynak sahiplerinin bilgisayarınıza ve üzerindeki her şeye doğrudan erişim sağlamasına olanak sağlayabilir! Bu riske rağmen devam edilsin mi?"
 
@@ -2157,7 +2157,7 @@ msgstr "Modülleri yüklemek son derece tehlikeli olabilir ve bilgisayarınıza,
 msgid "Loading settings"
 msgstr "Ayarlar yükleniyor"
 
-#: ../wxui/query_sources.py:109
+#: ../wxui/query_sources.py:110
 msgid "Locator"
 msgstr "Konum Belirleyici"
 
@@ -2173,8 +2173,8 @@ msgstr "Logo dizesi 1 (12 karakter)"
 msgid "Logo string 2 (12 characters)"
 msgstr "Logo dizesi 2 (12 karakter)"
 
-#: ../wxui/query_sources.py:97 ../wxui/query_sources.py:374
-#: ../wxui/query_sources.py:673 ../wxui/query_sources.py:825
+#: ../wxui/query_sources.py:98 ../wxui/query_sources.py:375
+#: ../wxui/query_sources.py:674 ../wxui/query_sources.py:826
 msgid "Longitude"
 msgstr "Boylam"
 
@@ -2214,7 +2214,7 @@ msgstr "Hafızanın düzenlenebilmesi için bir bankada olması gerekir"
 msgid "Memory {num} not in bank {bank}"
 msgstr "{num} kaydı {bank} bankasında değil"
 
-#: ../wxui/query_sources.py:624 ../wxui/query_sources.py:777
+#: ../wxui/query_sources.py:625 ../wxui/query_sources.py:778
 #: ../wxui/memedit.py:665
 msgid "Mode"
 msgstr "Mod"
@@ -2223,19 +2223,19 @@ msgstr "Mod"
 msgid "Model"
 msgstr "Model"
 
-#: ../wxui/query_sources.py:500
+#: ../wxui/query_sources.py:501 ../wxui/query_sources.py:1299
 msgid "Modes"
 msgstr "Modlar"
 
-#: ../wxui/main.py:1868
+#: ../wxui/main.py:1879
 msgid "Module"
 msgstr "Modül"
 
-#: ../wxui/main.py:1840
+#: ../wxui/main.py:1851
 msgid "Module Loaded"
 msgstr "Modül Yüklendi"
 
-#: ../wxui/main.py:2039
+#: ../wxui/main.py:2050
 msgid "Module loaded successfully"
 msgstr "Modül başarıyla yüklendi"
 
@@ -2269,7 +2269,7 @@ msgstr "Görünüm sıralanırken taşıma işlemleri devre dışıdır"
 msgid "New Window"
 msgstr "Yeni Pencere"
 
-#: ../wxui/main.py:2128
+#: ../wxui/main.py:2145
 msgid "New version available"
 msgstr "Yeni sürüm mevcut"
 
@@ -2300,15 +2300,15 @@ msgstr "Daha fazla alan yok; bazı kayıtlar uygulanmadı"
 msgid "No results"
 msgstr "Sonuç yok"
 
-#: ../sources/repeaterbook.py:336
+#: ../sources/repeaterbook.py:329
 msgid "No results!"
 msgstr "Sonuç yok!"
 
-#: ../wxui/main.py:2049
+#: ../wxui/main.py:2060
 msgid "No traces stored"
 msgstr ""
 
-#: ../wxui/query_sources.py:44 ../wxui/memedit.py:1359
+#: ../wxui/query_sources.py:45 ../wxui/memedit.py:1359
 msgid "Number"
 msgstr "Numara"
 
@@ -2329,16 +2329,16 @@ msgstr ""
 msgid "One of: %s"
 msgstr "Şunlardan biri: %s"
 
-#: ../wxui/query_sources.py:392 ../wxui/query_sources.py:630
-#: ../wxui/query_sources.py:783
+#: ../wxui/query_sources.py:393 ../wxui/query_sources.py:631
+#: ../wxui/query_sources.py:784
 msgid "Only certain bands"
 msgstr "Sadece belirli gruplar"
 
-#: ../wxui/query_sources.py:397
+#: ../wxui/query_sources.py:398 ../wxui/query_sources.py:1282
 msgid "Only certain modes"
 msgstr "Yalnızca belirli modlar"
 
-#: ../wxui/query_sources.py:807
+#: ../wxui/query_sources.py:808
 msgid "Only certain prefixes"
 msgstr "Sadece belirli ön ekler"
 
@@ -2346,11 +2346,11 @@ msgstr "Sadece belirli ön ekler"
 msgid "Only memory tabs may be exported"
 msgstr "Yalnızca kayıt sekmeleri dışa aktarılabilir"
 
-#: ../wxui/query_sources.py:641 ../wxui/query_sources.py:794
+#: ../wxui/query_sources.py:642 ../wxui/query_sources.py:795
 msgid "Only working repeaters"
 msgstr "Yalnızca çalışan tekrarlayıcılar (röleler)"
 
-#: ../wxui/main.py:1059 ../wxui/main.py:1488
+#: ../wxui/main.py:1070 ../wxui/main.py:1499
 msgid "Open"
 msgstr "Aç"
 
@@ -2362,15 +2362,15 @@ msgstr "Son Kullanılanları Aç"
 msgid "Open Stock Config"
 msgstr "Hazır Yapılandırma Aç"
 
-#: ../wxui/main.py:1060 ../wxui/main.py:1364
+#: ../wxui/main.py:1071 ../wxui/main.py:1375
 msgid "Open a file"
 msgstr "Bir dosya aç"
 
-#: ../wxui/main.py:1886
+#: ../wxui/main.py:1897
 msgid "Open a module"
 msgstr "Bir modül aç"
 
-#: ../wxui/main.py:991
+#: ../wxui/main.py:1002
 msgid "Open debug log"
 msgstr "Hata ayıklama günlüğünü aç"
 
@@ -2378,11 +2378,11 @@ msgstr "Hata ayıklama günlüğünü aç"
 msgid "Open in new window"
 msgstr "Yeni pencerede aç"
 
-#: ../wxui/main.py:1022
+#: ../wxui/main.py:1033
 msgid "Open last serial trace"
 msgstr ""
 
-#: ../wxui/query_sources.py:401
+#: ../wxui/query_sources.py:402
 msgid "Open repeaters only"
 msgstr "Yalnızca açık röleler"
 
@@ -2394,36 +2394,36 @@ msgstr "Hazır yapılandırma dizinini aç"
 msgid "Operator"
 msgstr "Operatör"
 
-#: ../wxui/query_sources.py:992
+#: ../wxui/query_sources.py:993
 msgid "Option"
 msgstr "Seçenek"
 
-#: ../wxui/query_sources.py:370 ../wxui/query_sources.py:669
+#: ../wxui/query_sources.py:371 ../wxui/query_sources.py:670
 msgid "Optional: -122.0000"
 msgstr "İsteğe bağlı: -122.0000"
 
-#: ../wxui/query_sources.py:379 ../wxui/query_sources.py:677
-#: ../wxui/query_sources.py:835
+#: ../wxui/query_sources.py:380 ../wxui/query_sources.py:678
+#: ../wxui/query_sources.py:836
 msgid "Optional: 100"
 msgstr "İsteğe bağlı: 100"
 
-#: ../wxui/query_sources.py:821
+#: ../wxui/query_sources.py:822
 msgid "Optional: 20.0000"
 msgstr "İsteğe bağlı: 20.0000"
 
-#: ../wxui/query_sources.py:364 ../wxui/query_sources.py:663
+#: ../wxui/query_sources.py:365 ../wxui/query_sources.py:664
 msgid "Optional: 45.0000"
 msgstr "İsteğe bağlı: 45.0000"
 
-#: ../wxui/query_sources.py:815
+#: ../wxui/query_sources.py:816
 msgid "Optional: 52.0000"
 msgstr "Opsiyonel: 52.0000"
 
-#: ../wxui/query_sources.py:829
+#: ../wxui/query_sources.py:830
 msgid "Optional: AA00 - AA00aa11"
 msgstr "İsteğe bağlı: AA00 - AA00aa11"
 
-#: ../wxui/query_sources.py:385
+#: ../wxui/query_sources.py:386
 msgid "Optional: County, Hospital, etc."
 msgstr "İsteğe bağlı: bölge, Hastane vb."
 
@@ -2481,15 +2481,15 @@ msgstr "Yapıştırılan kayıtlar, %s kaydının üzerine yazılacak"
 msgid "Pasted memory will overwrite memory %s"
 msgstr "Yapıştırılan kayıt, %s kaydının üzerine yazacak"
 
-#: ../wxui/main.py:2132
+#: ../wxui/main.py:2149
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Lütfen yeni sürümü yüklemeden önce CHIRP'den çıktığınızdan emin olun!"
 
-#: ../wxui/bugreport.py:482
+#: ../wxui/bugreport.py:481
 msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
 msgstr ""
 
-#: ../wxui/main.py:1968
+#: ../wxui/main.py:1979
 msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
 msgstr "Lütfen geliştirici modunun CHIRP projesinin geliştiricileri tarafından veya bir geliştiricinin yönetimi altında kullanılması için tasarlandığını unutmayın. ÇOK DİKKATLİ kullanılmadığı takdirde bilgisayarınıza ve telsizinize zarar verebilecek davranış ve işlevleri mümkün kılar. Uyarıldın! Yine de devam edilsin mi?"
 
@@ -2501,7 +2501,7 @@ msgstr "Lütfen bekleyin"
 msgid "Plug in your cable and then click OK"
 msgstr "Kablonuzu takın ve ardından Tamam'a tıklayın"
 
-#: ../wxui/query_sources.py:887
+#: ../wxui/query_sources.py:888
 msgid "Polish repeaters database"
 msgstr "Polonya tekrarlayıcılar veritabanı"
 
@@ -2513,7 +2513,7 @@ msgstr "Port"
 msgid "Power"
 msgstr "Güç"
 
-#: ../wxui/query_sources.py:875
+#: ../wxui/query_sources.py:876
 msgid "Prefixes"
 msgstr "Ön ekler"
 
@@ -2545,11 +2545,11 @@ msgstr "Özellik Adı"
 msgid "Property Value"
 msgstr "Özellik Değeri"
 
-#: ../wxui/query_sources.py:831
+#: ../wxui/query_sources.py:832
 msgid "QTH Locator"
 msgstr "QTH Bulucu"
 
-#: ../wxui/main.py:2077
+#: ../wxui/main.py:2088
 #, python-format
 msgid "Query %s"
 msgstr "%s sorgusu"
@@ -2579,7 +2579,7 @@ msgstr "Sorgulama"
 msgid "RX DTCS"
 msgstr "RX DTCS"
 
-#: ../wxui/main.py:1030
+#: ../wxui/main.py:1041
 msgid "Radio"
 msgstr "Telsiz"
 
@@ -2600,11 +2600,11 @@ msgstr "Telsiz modeli:"
 msgid "Radio sent data after the last awaited block, this happens when the selected model is a non-US but the radio is a US one. Please choose the correct model and try again."
 msgstr "Telsiz, beklenen son bloktan sonra veri gönderdi, bu, seçilen model ABD dışındaysa gerçekleşir ama telsiz bir ABD telsizi. Lütfen doğru modeli seçin ve tekrar deneyin."
 
-#: ../wxui/query_sources.py:1212
+#: ../wxui/query_sources.py:1213
 msgid "RadioReference Canada requires a login before you can query"
 msgstr "RadioReference Kanada, sorgulayabilmeniz için önce oturum açmanız gerekir"
 
-#: ../wxui/query_sources.py:1023
+#: ../wxui/query_sources.py:1024
 msgid ""
 "RadioReference.com is the world's largest\n"
 "radio communications data provider\n"
@@ -2647,11 +2647,11 @@ msgstr "Yeniden Başlatma Gerekli"
 msgid "Refreshed memory %s"
 msgstr "Yenilenmiş %s kaydı"
 
-#: ../wxui/main.py:931
+#: ../wxui/main.py:942
 msgid "Reload Driver"
 msgstr "Sürücüyü Yeniden Yükle"
 
-#: ../wxui/main.py:940
+#: ../wxui/main.py:951
 msgid "Reload Driver and File"
 msgstr "Sürücüyü ve Dosyayı Yeniden Yükle"
 
@@ -2671,7 +2671,7 @@ msgstr "Seçili modeli listeden kaldır"
 msgid "Rename bank"
 msgstr "Bankayı yeniden adlandır"
 
-#: ../wxui/query_sources.py:328
+#: ../wxui/query_sources.py:329
 msgid ""
 "RepeaterBook is Amateur Radio's most comprehensive,\n"
 "worldwide, FREE repeater directory."
@@ -2679,24 +2679,24 @@ msgstr ""
 "RepeaterBook, Amatör Telsiz için dünya çapında en kapsamlı \n"
 "ÜCRETSİZ röle rehberidir."
 
-#: ../wxui/main.py:1013
+#: ../wxui/main.py:1024
 msgid "Report or update a bug..."
 msgstr "Bir hatayı bildirin veya güncelleyin..."
 
-#: ../wxui/bugreport.py:560
+#: ../wxui/bugreport.py:559
 #, python-format
 msgid "Reporting a new bug: %r"
 msgstr "Yeni hata bildiriliyor: %r"
 
-#: ../wxui/main.py:979
+#: ../wxui/main.py:990
 msgid "Reporting enabled"
 msgstr "Raporlama etkinleştirildi"
 
-#: ../wxui/main.py:1988
+#: ../wxui/main.py:1999
 msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
 msgstr "Raporlama, CHIRP projesinin sınırlı çabalarımızı hangi telsiz modellerine ve işletim sistemi platformlarına harcayacağını bilmesine yardımcı olur. Etkin bırakırsanız gerçekten minnettar oluruz. Raporlama gerçekten devre dışı bırakılsın mı?"
 
-#: ../wxui/main.py:1649 ../wxui/main.py:1982
+#: ../wxui/main.py:1660 ../wxui/main.py:1993
 msgid "Restart Required"
 msgstr "Yeniden Başlatma Gerekiyor"
 
@@ -2711,7 +2711,7 @@ msgstr[1] "%i sekmeyi geri yükle"
 msgid "Restore tabs on start"
 msgstr "Başlangıçta sekmeleri geri yükle"
 
-#: ../wxui/query_sources.py:414
+#: ../wxui/query_sources.py:415
 msgid "Results from other areas"
 msgstr ""
 
@@ -2719,15 +2719,23 @@ msgstr ""
 msgid "Retrieved settings"
 msgstr "Alınan ayarlar"
 
-#: ../wxui/main.py:1061
+#: ../wxui/query_sources.py:1262
+msgid ""
+"SatNOGS DB provides a live, community-maintained database\n"
+"of satellite transmitter information. This source queries\n"
+"the SatNOGS API directly for the most granular and\n"
+"up-to-date transmitter data."
+msgstr ""
+
+#: ../wxui/main.py:1072
 msgid "Save"
 msgstr "Kaydet"
 
-#: ../wxui/main.py:1523
+#: ../wxui/main.py:1534
 msgid "Save before closing?"
 msgstr "Kapanmadan önce kaydedilsin mi?"
 
-#: ../wxui/main.py:1062 ../wxui/main.py:1447
+#: ../wxui/main.py:1073 ../wxui/main.py:1458
 msgid "Save file"
 msgstr "Dosyayı kaydet"
 
@@ -2751,36 +2759,40 @@ msgstr "Karıştırıcı"
 msgid "Security Risk"
 msgstr "Güvenlik Riski"
 
-#: ../wxui/main.py:921
+#: ../wxui/main.py:932
 msgid "Select Bandplan..."
 msgstr "Bant Planı Seç..."
 
-#: ../wxui/query_sources.py:479 ../wxui/query_sources.py:698
-#: ../wxui/query_sources.py:856
+#: ../wxui/query_sources.py:480 ../wxui/query_sources.py:699
+#: ../wxui/query_sources.py:857
 msgid "Select Bands"
 msgstr "Bantları Seç"
 
-#: ../wxui/main.py:1632
+#: ../wxui/main.py:1643
 msgid "Select Language"
 msgstr "Dil Seçin"
 
-#: ../wxui/query_sources.py:500
+#: ../wxui/query_sources.py:501
 msgid "Select Modes"
 msgstr "Modları Seç"
 
-#: ../wxui/main.py:2060
+#: ../wxui/query_sources.py:1299
+msgid "Select Modes to Import"
+msgstr ""
+
+#: ../wxui/main.py:2071
 msgid "Select a bandplan"
 msgstr "Bir bant planı seçin"
 
-#: ../wxui/main.py:1190
+#: ../wxui/main.py:1201
 msgid "Select a tab and memory to diff"
 msgstr "Farklılaştırmak için bir sekme ve kayıt seçin"
 
-#: ../wxui/query_sources.py:875
+#: ../wxui/query_sources.py:876
 msgid "Select prefixes"
 msgstr "Ön ekleri seç"
 
-#: ../wxui/query_sources.py:356
+#: ../wxui/query_sources.py:357
 msgid "Service"
 msgstr "Servis"
 
@@ -2800,7 +2812,7 @@ msgstr "Çift yönlü tarafından kontrol edilen kaydırma miktarı (veya iletim
 msgid "Show Raw Memory"
 msgstr "Ham Kaydı Göster"
 
-#: ../wxui/main.py:997
+#: ../wxui/main.py:1008
 msgid "Show debug log location"
 msgstr "Hata ayıklama günlüğü konumunu göster"
 
@@ -2808,7 +2820,7 @@ msgstr "Hata ayıklama günlüğü konumunu göster"
 msgid "Show extra fields"
 msgstr "Ekstra alanları göster"
 
-#: ../wxui/main.py:1002
+#: ../wxui/main.py:1013
 msgid "Show image backup location"
 msgstr "İmaj yedekleme konumunu göster"
 
@@ -2863,19 +2875,19 @@ msgstr "Kayıtları sırala"
 msgid "Sorting"
 msgstr "Sıralama"
 
-#: ../wxui/query_sources.py:564
+#: ../wxui/query_sources.py:565
 msgid "State"
 msgstr "Devlet"
 
-#: ../wxui/query_sources.py:359
+#: ../wxui/query_sources.py:360
 msgid "State/Province"
 msgstr "Eyalet/İl"
 
-#: ../wxui/main.py:2040
+#: ../wxui/main.py:2051
 msgid "Success"
 msgstr "Başarılı"
 
-#: ../wxui/bugreport.py:729
+#: ../wxui/bugreport.py:728
 msgid "Successfully sent bug report:"
 msgstr "Hata raporu başarıyla gönderildi:"
 
@@ -2897,7 +2909,7 @@ msgstr ""
 "sorunlar çıkarabilir.\n"
 "Kendi riskinizle devam edin ve sorunları bize bildirin!"
 
-#: ../wxui/query_sources.py:572
+#: ../wxui/query_sources.py:573
 msgid "The DMR-MARC Worldwide Network"
 msgstr "DMR-MARC Dünya Çapında iletişim Ağı"
 
@@ -2946,7 +2958,7 @@ msgstr "Bu modülün yazarı tanınmış bir CHIRP geliştiricisi değildir. Gü
 msgid "The debug log file is not available when CHIRP is run interactively from the command-line. Thus, this tool will not upload what you expect. It is recommended that you quit now and run CHIRP non-interactively (or with stdin redirected to /dev/null)"
 msgstr "CHIRP komut satırından etkileşimli olarak çalıştırıldığında hata ayıklama günlük dosyası kullanılamaz. Bu nedenle, bu araç beklediğiniz şeyi yüklemeyecektir. Şimdi çıkıp CHIRP'i etkileşimsiz olarak (veya stdin /dev/null'a yönlendirilmiş olarak) çalıştırmanız önerilir"
 
-#: ../wxui/bugreport.py:545
+#: ../wxui/bugreport.py:544
 msgid "The following information will be submitted:"
 msgstr "Aşağıdaki bilgiler sunulacaktır:"
 
@@ -2954,7 +2966,7 @@ msgstr "Aşağıdaki bilgiler sunulacaktır:"
 msgid "The memory editor requires a reload in order to change the workflow. That will happen now. Any other open tabs will be updated the next time they are loaded."
 msgstr ""
 
-#: ../wxui/main.py:1479
+#: ../wxui/main.py:1490
 #, python-format
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr "Kayıtları içe aktarmak için önerilen prosedür, kaynak dosyayı açmak ve kayıtları bu dosyadan hedef görüntünüze kopyalamak/yapıştırmaktır. Bu içe aktarma işlevine devam ederseniz CHIRP, şu anda açık olan dosyanızdaki tüm kayıtları %(file)s içindekilerle değiştirecektir. Kayıtları kopyalamak/yapıştırmak için bu dosyayı açmak mı yoksa içe aktarma işlemine devam etmek mi istiyorsunuz?"
@@ -2980,11 +2992,11 @@ msgstr "Bu imajda donanım yazılımı bilgileri eksik. CHIRP'in eski veya deği
 msgid "This image is read-only due to being from a radio with unsupported firmware"
 msgstr ""
 
-#: ../wxui/main.py:1716
+#: ../wxui/main.py:1727
 msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"
 msgstr "Bu, canlı modlu bir telsizdir; bu, değişiklik yaptığınızda gerçek zamanlı olarak radyoya gönderildiği anlamına gelir. Yükleme gerekli değildir!"
 
-#: ../wxui/main.py:1722
+#: ../wxui/main.py:1733
 msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
 msgstr "Bu, telsizden bağımsız bir dosyadır ve doğrudan bir telsize yüklenemez. Bir telsiz imajı açın (veya bir telsizden indirin) ve ardından yüklemek için öğeleri bu sekmeden diğerine kopyalayıp yapıştırın"
 
@@ -3022,7 +3034,7 @@ msgstr ""
 "Ayrıca lütfen hata raporu ve geliştirme istekleri gönderin!\n"
 "Uyarıldınız. Kendi sorumluluğunuzda ilerleyin!"
 
-#: ../wxui/bugreport.py:456
+#: ../wxui/bugreport.py:455
 msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
 msgstr "Bu, chirpmyradio.com web sitesinde önceden oluşturulmuş bir sorun için bilet numarasıdır"
 
@@ -3055,6 +3067,13 @@ msgstr ""
 #: ../drivers/uvk5.py:1849
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
 msgstr "Bu yalnızca daha geniş frekans kapsamını destekleyen değiştirilmiş ürün yazılımı kullanıyorsanız etkinleştirilmelidir. Bunun etkinleştirilmesi, CHIRP'in OEM kısıtlamalarını uygulamamasına neden olur ve tanımlanmamış veya düzenlenmemiş davranışlara yol açabilir. Riski size ait olmak üzere kullanın!"
+
+#: ../wxui/query_sources.py:1234
+msgid ""
+"This source provides a curated list of active amateur radio\n"
+"satellites, mirrored from the JE9PEL database via GitHub.\n"
+"It is a stable, simplified list of popular frequencies."
+msgstr ""
 
 #: ../wxui/bugreport.py:193
 msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
@@ -3125,7 +3144,7 @@ msgstr "Kablonuz için bağlantı noktası belirlenemiyor. Sürücülerinizi ve 
 msgid "Unable to edit memory before radio is loaded"
 msgstr "Radyo yüklenmeden önce kayıt düzenlenemiyor"
 
-#: ../wxui/main.py:1405
+#: ../wxui/main.py:1416
 #, python-format
 msgid "Unable to find stock config %r"
 msgstr "%r stok yapılandırması bulunamadı"
@@ -3157,7 +3176,7 @@ msgstr "%s bu sistemde gösterilemiyor"
 msgid "Unable to set %s on this memory"
 msgstr "Bu kayıtta %s ayarlanamıyor"
 
-#: ../wxui/main.py:1726
+#: ../wxui/main.py:1737
 msgid "Unable to upload this file"
 msgstr "Bu dosya yüklenemiyor"
 
@@ -3165,7 +3184,7 @@ msgstr "Bu dosya yüklenemiyor"
 msgid "Undo"
 msgstr ""
 
-#: ../wxui/query_sources.py:1064
+#: ../wxui/query_sources.py:1065
 msgid "United States"
 msgstr "Amerika Birleşik Devletleri"
 
@@ -3182,7 +3201,7 @@ msgstr "Desteklenmeyen model %r"
 msgid "Update an existing bug"
 msgstr "Mevcut bir hatayı güncelle"
 
-#: ../wxui/bugreport.py:562
+#: ../wxui/bugreport.py:561
 #, python-format
 msgid "Updating bug %s"
 msgstr "%s hatası güncelleniyor"
@@ -3195,7 +3214,7 @@ msgstr "Yükleme talimatları"
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "Desteklenmeyen aygıt yazılımı sürümü nedeniyle yükleme devre dışı bırakıldı"
 
-#: ../wxui/main.py:1068
+#: ../wxui/main.py:1079
 msgid "Upload to radio"
 msgstr "Telsize yükle"
 
@@ -3260,7 +3279,7 @@ msgstr "Değerler"
 msgid "Vendor"
 msgstr "Tedarikçi"
 
-#: ../wxui/main.py:1029
+#: ../wxui/main.py:1040
 msgid "View"
 msgstr "Göster"
 
@@ -3268,8 +3287,8 @@ msgstr "Göster"
 msgid "WARNING!"
 msgstr "UYARI!"
 
-#: ../wxui/bugreport.py:230 ../wxui/memedit.py:2006 ../wxui/main.py:1880
-#: ../wxui/main.py:2032
+#: ../wxui/bugreport.py:230 ../wxui/memedit.py:2006 ../wxui/main.py:1891
+#: ../wxui/main.py:2043
 msgid "Warning"
 msgstr "Uyarı"
 
@@ -3282,7 +3301,7 @@ msgstr "Uyarı: %s"
 msgid "Welcome"
 msgstr "Hoşgeldiniz"
 
-#: ../wxui/query_sources.py:417
+#: ../wxui/query_sources.py:418
 msgid "With this option checked, a proximity search will include cached results from other localities if they are in range, match other filter parameters, and have been downloaded before."
 msgstr ""
 
@@ -3298,7 +3317,7 @@ msgstr "Geçtiğimiz hafta içinde birden fazla konu açtınız. CHIRP, kötüye
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
 msgstr "Prolific tabanlı USB aygıtınız, sürücünün eski bir sürümüne geri dönmeden çalışmayacaktır. Bunu nasıl çözeceğiniz hakkında daha fazla bilgi edinmek için CHIRP web sitesini ziyaret edin?"
 
-#: ../wxui/query_sources.py:830
+#: ../wxui/query_sources.py:831
 msgid "Your QTH Locator"
 msgstr "QTH Bulucunuz"
 
@@ -3318,11 +3337,11 @@ msgstr "bytes"
 msgid "bytes each"
 msgstr "her biri bayt"
 
-#: ../wxui/main.py:1965
+#: ../wxui/main.py:1976
 msgid "disabled"
 msgstr "devre dışı bırakıldı"
 
-#: ../wxui/main.py:1965
+#: ../wxui/main.py:1976
 msgid "enabled"
 msgstr "etkinleştirildi"
 

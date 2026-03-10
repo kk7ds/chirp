@@ -31,6 +31,7 @@ from chirp.sources import repeaterbook
 from chirp.sources import przemienniki_net
 from chirp.sources import przemienniki_eu
 from chirp.sources import mapy73pl
+from chirp.sources import amsats
 from chirp.wxui import common
 from chirp.wxui import config
 
@@ -1223,3 +1224,95 @@ class RRQueryDialog(QuerySourceDialog):
             # CA
             return {'zipcounty': '%s' % self._ca_county_id,
                     'country': 'CA'}
+
+
+class RadioAmateurSatellitesQueryDialog(QuerySourceDialog):
+    NAME = 'Radio Amateur Satellites (GitHub Mirror)'
+
+    def get_info(self):
+        return _(
+            "This source provides a curated list of active amateur radio\n"
+            "satellites, mirrored from the JE9PEL database via GitHub.\n"
+            "It is a stable, simplified list of popular frequencies.")
+
+    def get_link(self):
+        return 'https://db.satnogs.org'
+
+    def build(self):
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(vbox)
+        return vbox
+
+    def do_query(self):
+        self.result_radio = amsats.RadioAmateurSatellites()
+        super().do_query()
+
+    def get_params(self):
+        return {}
+
+
+class SatNOGSQueryDialog(QuerySourceDialog):
+    NAME = 'SatNOGS DB (Direct API)'
+    _modes = ['FM', 'FMN', 'USB', 'LSB', 'CW', 'AM', 'DSB', 'BPSK', 'QPSK',
+              'GMSK', 'GFSK', 'FSK', 'AFSK', 'MSK', 'LoRa', 'APT', 'SSTV',
+              'DVB', 'AHRPT']
+
+    def get_info(self):
+        return _(
+            "SatNOGS DB provides a live, community-maintained database\n"
+            "of satellite transmitter information. This source queries\n"
+            "the SatNOGS API directly for the most granular and\n"
+            "up-to-date transmitter data.")
+
+    def get_link(self):
+        return 'https://db.satnogs.org'
+
+    def build(self):
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(vbox)
+
+        panel = wx.Panel(self)
+        vbox.Add(panel, 1, flag=wx.EXPAND | wx.ALL, border=10)
+        grid = wx.FlexGridSizer(2, 5, 0)
+        grid.AddGrowableCol(1)
+        panel.SetSizer(grid)
+
+        self._limit_modes = CONF.get('modes', 'satnogs').split(',') if \
+            CONF.get('modes', 'satnogs') else []
+        self._modefilter = wx.CheckBox(panel, label=_('Only certain modes'))
+        self._modefilter.SetValue(bool(self._limit_modes))
+        self.Bind(wx.EVT_CHECKBOX, self._select_modes, self._modefilter)
+
+        label = wx.StaticText(panel, label=_('Limit Modes'))
+        grid.Add(label, border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
+        grid.Add(self._modefilter, 1, border=20,
+                 flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
+
+        return vbox
+
+    def _select_modes(self, event):
+        if not self._modefilter.IsChecked():
+            self._limit_modes = []
+            CONF.set('modes', '', 'satnogs')
+            return
+
+        d = wx.MultiChoiceDialog(self, _('Select Modes to Import'), _('Modes'),
+                                 choices=self._modes)
+
+        # Pre-select based on current config
+        d.SetSelections([i for i, mode in enumerate(self._modes)
+                         if mode in self._limit_modes])
+
+        r = d.ShowModal()
+        if r == wx.ID_CANCEL or not d.GetSelections():
+            self._modefilter.SetValue(bool(self._limit_modes))
+        else:
+            self._limit_modes = [self._modes[i] for i in d.GetSelections()]
+            CONF.set('modes', ','.join(self._limit_modes), 'satnogs')
+
+    def do_query(self):
+        self.result_radio = amsats.SatNOGS()
+        super().do_query()
+
+    def get_params(self):
+        return {'modes': self._limit_modes}
