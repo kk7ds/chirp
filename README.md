@@ -5,3 +5,7 @@ __[CHIRP](https://www.chirpmyradio.com)__ project.
 
 When submitting PRs, please see [this file](.github/pull_request_template.md)
 for rules and guidelines.
+
+## Chat
+
+- WhatsApp: https://wa.me/13127235816
