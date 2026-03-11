@@ -40,3 +40,4 @@ chirp/locale/.files
 result/
 # for nvim editor
 .nvim.lua
+build/

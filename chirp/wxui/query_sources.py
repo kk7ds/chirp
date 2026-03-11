@@ -1253,6 +1253,9 @@ class RadioAmateurSatellitesQueryDialog(QuerySourceDialog):
 
 class SatNOGSQueryDialog(QuerySourceDialog):
     NAME = 'SatNOGS DB (Direct API)'
+    _modes = ['FM', 'FMN', 'USB', 'LSB', 'CW', 'AM', 'DSB', 'BPSK', 'QPSK',
+              'GMSK', 'GFSK', 'FSK', 'AFSK', 'MSK', 'LoRa', 'APT', 'SSTV',
+              'DVB', 'AHRPT']
 
     def get_info(self):
         return _(
@@ -1267,11 +1270,49 @@ class SatNOGSQueryDialog(QuerySourceDialog):
     def build(self):
         vbox = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(vbox)
+
+        panel = wx.Panel(self)
+        vbox.Add(panel, 1, flag=wx.EXPAND | wx.ALL, border=10)
+        grid = wx.FlexGridSizer(2, 5, 0)
+        grid.AddGrowableCol(1)
+        panel.SetSizer(grid)
+
+        self._limit_modes = CONF.get('modes', 'satnogs').split(',') if \
+            CONF.get('modes', 'satnogs') else []
+        self._modefilter = wx.CheckBox(panel, label=_('Only certain modes'))
+        self._modefilter.SetValue(bool(self._limit_modes))
+        self.Bind(wx.EVT_CHECKBOX, self._select_modes, self._modefilter)
+
+        label = wx.StaticText(panel, label=_('Limit Modes'))
+        grid.Add(label, border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
+        grid.Add(self._modefilter, 1, border=20,
+                 flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
+
         return vbox
+
+    def _select_modes(self, event):
+        if not self._modefilter.IsChecked():
+            self._limit_modes = []
+            CONF.set('modes', '', 'satnogs')
+            return
+
+        d = wx.MultiChoiceDialog(self, _('Select Modes to Import'), _('Modes'),
+                                 choices=self._modes)
+
+        # Pre-select based on current config
+        d.SetSelections([i for i, mode in enumerate(self._modes)
+                         if mode in self._limit_modes])
+
+        r = d.ShowModal()
+        if r == wx.ID_CANCEL or not d.GetSelections():
+            self._modefilter.SetValue(bool(self._limit_modes))
+        else:
+            self._limit_modes = [self._modes[i] for i in d.GetSelections()]
+            CONF.set('modes', ','.join(self._limit_modes), 'satnogs')
 
     def do_query(self):
         self.result_radio = amsats.SatNOGS()
         super().do_query()
 
     def get_params(self):
-        return {}
+        return {'modes': self._limit_modes}

@@ -93,10 +93,10 @@ class RadioAmateurSatellites(base.NetworkResultRadio):
                 mem.tmode = 'Tone'
 
         # Comment field with relevant info
-        mem.comment = 'NORAD:%s Mode:%s' % (norad_id,
-                                            item.get('mode', 'Unknown'))
+        # Remove NORAD:<id> as it is not useful info for most users
+        mem.comment = 'Mode:%s' % item.get('mode', 'Unknown')
         if item.get('satnogs_id'):
-            mem.comment += ' Info: https://db.satnogs.org/satellites/%s' % \
+            mem.comment += ' Info: https://db.satnogs.org/satellite/%s' % \
                 norad_id
 
         mem.comment = mem.comment.strip()
@@ -173,25 +173,35 @@ class SatNOGS(base.NetworkResultRadio):
                 chirp_common.split_to_offset(mem, mem.freq, tx_freq)
 
         # Mode mapping
-        mode_str = (item.get('mode') or '').upper()
+        orig_mode = (item.get('mode') or '').upper()
         mem.mode = 'FM'  # Default
-        if mode_str == 'FMN':
+        if orig_mode == 'FMN':
             mem.mode = 'NFM'
-        elif mode_str in chirp_common.MODES:
-            mem.mode = mode_str
-        elif 'FM' in mode_str:
+        elif orig_mode == 'DSB':
+            mem.mode = 'AM'  # DSB is a form of AM
+        elif orig_mode in chirp_common.MODES:
+            mem.mode = orig_mode
+        elif 'FM' in orig_mode:
             mem.mode = 'FM'
-        elif 'USB' in mode_str or 'LINEAR' in mode_str:
+        elif 'USB' in orig_mode or 'LINEAR' in orig_mode:
             mem.mode = 'USB'
-        elif 'LSB' in mode_str:
+        elif 'LSB' in orig_mode:
             mem.mode = 'LSB'
-        elif 'CW' in mode_str:
+        elif 'CW' in orig_mode:
             mem.mode = 'CW'
+        elif any(m in orig_mode for m in ['PSK', 'FSK', 'MSK', 'GMSK', 'GFSK', 'LORA',
+                                          'AFSK', 'APT', 'SSTV', 'DVB', 'AHRPT']):
+            mem.mode = 'DIG'
 
         # Comment
         norad_id = sat.get('norad_cat_id', 'Unknown')
-        mem.comment = 'NORAD:%s Mode:%s Type:%s' % (
-            norad_id, item.get('mode', 'Unknown'), item.get('type', 'Unknown'))
+        # Only include mode if it's not natively handled or if it's specialized
+        if mem.mode in ['DIG', 'AM'] and orig_mode != mem.mode:
+            mem.comment = 'Mode:%s Type:%s' % (
+                item.get('mode', 'Unknown'), item.get('type', 'Unknown'))
+        else:
+            mem.comment = 'Type:%s' % item.get('type', 'Unknown')
+
         mem.comment += ' Info: https://db.satnogs.org/satellite/%s' % norad_id
 
         return mem
@@ -224,6 +234,8 @@ class SatNOGS(base.NetworkResultRadio):
         return results
 
     def do_fetch(self, status, params):
+        filter_modes = params.get('modes', [])
+
         status.send_status('Downloading SatNOGS satellites...', 5)
         satellites = self._fetch_all(status, SATNOGS_SATS_URL, 'satellites')
 
@@ -243,6 +255,13 @@ class SatNOGS(base.NetworkResultRadio):
                 continue
 
             trans['_satellite'] = sat_map[sat_id]
+
+            # Filter by mode if requested
+            if filter_modes:
+                mode = (trans.get('mode') or '').upper()
+                if not any(fm in mode for fm in filter_modes):
+                    continue
+
             try:
                 mem = self.item_to_memory(trans)
                 if mem:
