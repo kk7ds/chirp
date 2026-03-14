@@ -275,9 +275,9 @@ struct  {
   u8 autoscan:1,
      scanlist:7;
   u8 alarmlist;
-  u8 dtmfsignalinglist:4,
+  u8 rev_4:2,
      pttidtype:2,
-     rev_4:2;
+     dtmfsignalinglist:4;
   ul16 dtmfcallid;
   u8 reserve[3];
 } channels[1027];
