@@ -882,7 +882,7 @@ def _get_memory(self, mem, _mem, ch_index):
         mem.duplex = ""
         mem.offset = 0
     elif tx_freq == 0xFFFFFFFF:
-        mem.duplex = ""
+        mem.duplex = "off"
         mem.offset = 0
     else:
         mem.duplex = mem.freq > tx_freq and "-" or "+"
