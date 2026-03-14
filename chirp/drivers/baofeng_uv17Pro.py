@@ -1688,6 +1688,19 @@ class UV21ProGPS(UV17ProGPS):
 
 
 @directory.register
+class UV28Plus(UV17ProGPS):
+    VENDOR = "Baofeng"
+    MODEL = "UV-28Plus"
+
+    VALID_BANDS = UV21ProV2.VALID_BANDS
+    MODES = UV21ProV2.MODES
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
+                    chirp_common.PowerLevel("Low", watts=2.00),
+                    chirp_common.PowerLevel("Medium", watts=5.00)]
+    _has_bt = True
+
+
+@directory.register
 class BF5RM(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "5RM"
