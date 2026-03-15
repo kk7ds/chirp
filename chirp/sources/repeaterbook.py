@@ -2,6 +2,7 @@ import datetime
 import glob
 import json
 import logging
+import lzma
 import math
 import os
 
@@ -115,18 +116,8 @@ class RepeaterBook(base.NetworkResultRadio):
             LOG.debug('RepeaterBook database %s too old: %s',
                       fn, modified_dt)
 
-        params = {'country': country,
-                  'stype': service}
-        if country in NA_COUNTRIES:
-            export = 'export.php'
-        else:
-            export = 'exportROW.php'
-        if country in STATES:
-            params['state'] = state
-
-        r = requests.get('https://www.repeaterbook.com/api/%s' % export,
+        r = requests.get('https://data.chirpmyradio.com/rb/%s.xz' % fn,
                          headers=base.HEADERS,
-                         params=params,
                          stream=True)
         if r.status_code != 200:
             if modified:
@@ -141,8 +132,10 @@ class RepeaterBook(base.NetworkResultRadio):
         probable_end = 3 << 20
         counter = 0
         data = b''
+        decomp = lzma.LZMADecompressor(format=lzma.FORMAT_XZ)
         with open(tmp, 'wb') as f:
             for chunk in r.iter_content(chunk_size=chunk_size):
+                chunk = decomp.decompress(chunk)
                 f.write(chunk)
                 data += chunk
                 counter += len(chunk)
