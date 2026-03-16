@@ -37,6 +37,10 @@ class TestCaseEdges(base.DriverTest):
             n = self.radio.get_memory(m.number)
             self.assertEqualMem(m, n)
 
+    def test_set_does_not_modify_input(self):
+        m = self.get_mem()
+        self.radio.set_memory(chirp_common.FrozenMemory(m))
+
     def test_bandedges(self):
         m = self.get_mem()
         min_step = min(self.rf.has_tuning_step and

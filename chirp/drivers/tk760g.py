@@ -1073,12 +1073,7 @@ class Kenwood_Series_60G(chirp_common.CloneModeRadio,
             except IndexError:
                 _mem.name[i] = "\x20"
 
-        # power
-        # default power is low
-        if mem.power is None:
-            mem.power = POWER_LEVELS[0]
-
-        _mem.power = POWER_LEVELS.index(mem.power)
+        _mem.power = POWER_LEVELS.index(mem.power or POWER_LEVELS[0])
 
         # wide/marrow
         _mem.wide = MODES.index(mem.mode)
