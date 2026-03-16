@@ -645,11 +645,7 @@ class Kenwood_P60_Radio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRa
         self.encode_tone(_mem.tx_tone, txmode, txtone, txpol)
         self.encode_tone(_mem.rx_tone, rxmode, rxtone, rxpol)
 
-        # power, default power is high, as the low is configurable via a key
-        if mem.power is None:
-            mem.power = POWER_LEVELS[1]
-
-        _mem.power = POWER_LEVELS.index(mem.power)
+        _mem.power = POWER_LEVELS.index(mem.power or POWER_LEVELS[1])
 
         # skip
         self.set_scan(mem.number - 1, mem.skip)

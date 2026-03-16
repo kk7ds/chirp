@@ -866,17 +866,18 @@ class VX1RadioCG1(VX1Radio):
         return mem
 
     def set_memory(self, mem):
-        if isinstance(mem.number, str):
+        number = mem.number
+        if isinstance(number, str):
             # Convert string to number
-            mem.number = self.SPECIAL_MEMORIES[mem.number]
+            number = self.SPECIAL_MEMORIES[mem.number]
 
         # Map CG1 subdevice number to cg1_idx
-        if mem.number <= 72:
+        if number <= 72:
             # Regular and L/U memories: 1-72 map to cg1_idx 8-79
-            cg1_idx = mem.number + 7
+            cg1_idx = number + 7
         else:
             # Home channels: 73-80 map to cg1_idx 0-7
-            cg1_idx = mem.number - 73
+            cg1_idx = number - 73
 
         # Handle CG1 memory structure directly
         _mem = self._memobj.cg1_memory[cg1_idx]
