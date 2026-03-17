@@ -288,7 +288,11 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}, mem_cls=None):
         cur_mem = dst_radio.get_memory(dst_mem.number)
         dst_radio.check_set_memory_immutable_policy(cur_mem, dst_mem)
 
-    msgs = dst_radio.validate_memory(dst_mem)
+    try:
+        msgs = dst_radio.validate_memory(chirp_common.FrozenMemory(dst_mem))
+    except errors.FrozenMemoryError as e:
+        raise DestNotCompatible(str(e))
+
     errs = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
     if errs:
         raise DestNotCompatible(", ".join(errs))

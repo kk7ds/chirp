@@ -360,6 +360,7 @@ class ImportFieldTests(base.BaseTest):
         import_logic._import_duplex(radio, None, mem)
         self.assertEqual('', mem.duplex)
 
+    @mock.patch('chirp.chirp_common.FrozenMemory')
     @mock.patch('chirp.import_logic._import_name')
     @mock.patch('chirp.import_logic._import_power')
     @mock.patch('chirp.import_logic._import_tone')
@@ -368,7 +369,7 @@ class ImportFieldTests(base.BaseTest):
     @mock.patch('chirp.import_logic._import_duplex')
     def _test_import_mem(self, errors,
                          mock_duplex, mock_mode, mock_dtcs, mock_tone,
-                         mock_power, mock_name):
+                         mock_power, mock_name, mock_frozen):
         radio = FakeRadio(None)
         src_rf = chirp_common.RadioFeatures()
         mem = chirp_common.Memory()
@@ -379,7 +380,8 @@ class ImportFieldTests(base.BaseTest):
             with mock.patch.object(radio, 'validate_memory') as mock_val:
                 mock_val.return_value = errors
                 import_logic.import_mem(radio, src_rf, mem)
-                mock_val.assert_called_once_with(mem)
+                mock_val.assert_called_once_with(mock_frozen.return_value)
+                mock_frozen.assert_called_once_with(mem)
             mock_dupe.assert_called_once_with()
 
         mock_duplex.assert_called_once_with(radio, src_rf, mem)
