@@ -143,6 +143,14 @@ def _import_tone(dst_radio, srcrf, mem):
     if srcrf.has_ctone and not dstrf.has_ctone:
         # If copying from a radio with separate rtone/ctone to a radio
         # without, and the tmode is TSQL, then use the ctone value
+        if mem.rtone not in dstrf.valid_tones:
+            raise DestNotCompatible(
+                "Destination does not support tone frequency %s" %
+                mem.rtone)
+        if mem.ctone not in dstrf.valid_tones:
+            raise DestNotCompatible(
+                "Destination does not support tone frequency %s" %
+                mem.ctone)
         if mem.tmode == "TSQL":
             mem.rtone = mem.ctone
     elif not srcrf.has_ctone and dstrf.has_ctone:
