@@ -79,3 +79,8 @@ class RadioNoContactLikelyK1(SpecificRadioError):
 class RadioFixedBanks(SpecificRadioError):
     """A radio that has fixed banks and cannot be changed."""
     CODE = Reasons.FIXED_BANKS
+
+
+class FrozenMemoryError(TypeError):
+    """An attempt was made to modify a frozen memory."""
+    pass

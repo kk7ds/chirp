@@ -1002,10 +1002,8 @@ class RT880G(chirp_common.CloneModeRadio):
             _, work_range = self.SPECIALS[mem.extd_number]
 
             if not chirp_common.in_range(mem.freq, [work_range]):
-                low, high = work_range
-                mem.freq = max(low, min(high - 1, mem.freq))
-                msgs.append(chirp_common.ValidationWarning(
-                    'Frequency adjusted to valid range'))
+                msgs.append(chirp_common.ValidationError(
+                    'Frequency out of valid range'))
 
         return msgs + super().validate_memory(mem)
 

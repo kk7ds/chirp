@@ -1135,15 +1135,11 @@ class VX1RadioCG2(VX1Radio):
         # CG2 supports tone modes but not custom tone frequencies
         if mem.tmode in ("Tone", "TSQL"):
             if mem.rtone != 88.5:
-                mem.rtone = 88.5
                 msgs.append(chirp_common.ValidationWarning(
-                    "CG2 does not support custom tone frequencies, "
-                    "using default"))
+                    "CG2 does not support custom tone frequencies"))
             if mem.ctone != 88.5:
-                mem.ctone = 88.5
                 msgs.append(chirp_common.ValidationWarning(
-                    "CG2 does not support custom tone frequencies, "
-                    "using default"))
+                    "CG2 does not support custom tone frequencies"))
 
         return msgs
 
