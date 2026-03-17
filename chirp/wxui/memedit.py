@@ -206,7 +206,7 @@ class ChirpMemoryColumn(object):
 
     @property
     def valid(self):
-        if self._name in ['freq', 'rtone', 'txfreq']:
+        if self._name in ['freq', 'txfreq']:
             return True
         to_try = ['has_%s', 'valid_%ss', 'valid_%ses', 'valid_%s_levels']
         for thing in to_try:
@@ -214,6 +214,9 @@ class ChirpMemoryColumn(object):
                 return bool(self._features[thing % self._name])
             except KeyError:
                 pass
+
+        if self._name in ('rtone', 'ctone') and not self._features.valid_tones:
+            return False
 
         if '.' in self._name:
             # Assume extra fields are always valid

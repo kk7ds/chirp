@@ -304,7 +304,6 @@ class HF90StyleRadio(chirp_common.CloneModeRadio,
         rf.valid_skips = []
         rf.valid_tmodes = []
         rf.valid_tones = []
-        # TODO how does one make the Tone column go away?
         return rf
 
     def apply_txpower(self, setting, obj):
