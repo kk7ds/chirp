@@ -1025,69 +1025,74 @@ class Rt98BaseRadio(chirp_common.CloneModeRadio,
 
         _mem.set_raw("\x00" * 32)
 
+        mode = mem.mode
+        offset = mem.offset
+        freq = mem.freq
+        duplex = mem.duplex
+
         # FreeNet and PMR radio types
         if _embedded.mode == 0:  # PMR or FreeNet
 
-            mem.mode = 'NFM'
-            mem.offset = 0
+            mode = 'NFM'
+            offset = 0
 
             # FreeNet
             if str(_embedded.radio_type).rstrip("\00") == "RT98V":
                 if mem.number >= 1 and mem.number <= 6:
                     FREENET_FREQ = FREENET_FREQS[mem.number - 1]
-                    mem.freq = FREENET_FREQ
+                    freq = FREENET_FREQ
                 else:
                     _mem.tx_off = 1
-                    mem.duplex = 'off'
+                    duplex = 'off'
 
             # PMR
             if str(_embedded.radio_type).rstrip("\00") == "RT98U":
                 if mem.number >= 1 and mem.number <= 16:
                     PMR_FREQ = PMR_FREQS[mem.number - 1]
-                    mem.freq = PMR_FREQ
+                    freq = PMR_FREQ
                 else:
                     _mem.tx_off = 1
-                    mem.duplex = 'off'
+                    duplex = 'off'
 
         # set the occupied bitfield
         self._memobj.csetflag[cbyte].c[cbit] = 1
         # set the scan add bitfield
         self._memobj.cskipflag[cbyte].c[cbit] = 0 if (mem.skip == "S") else 1
 
-        _mem.freq = mem.freq / 10             # Convert to low-level frequency
-        _mem.offset = mem.offset / 10         # Convert to low-level frequency
+        _mem.freq = freq / 10             # Convert to low-level frequency
+        _mem.offset = offset / 10         # Convert to low-level frequency
 
         # Store the alpha tag
         _mem.name = mem.name.ljust(6)[:6]  # Store the alpha tag
 
         # Set duplex bitfields
         _mem.tx_off = 0
-        if mem.duplex == 'off':  # handle tx off
+        if duplex == 'off':  # handle tx off
             _mem.tx_off = 1
-        elif mem.duplex == '+':
+        elif duplex == '+':
             _mem.duplex = DUPLEX_POSSPLIT
-        elif mem.duplex == '-':
+        elif duplex == '-':
             _mem.duplex = DUPLEX_NEGSPLIT
-        elif mem.duplex == '':
+        elif duplex == '':
             _mem.duplex = DUPLEX_NOSPLIT
-        elif mem.duplex == 'split':
-            diff = mem.offset - mem.freq
+        elif duplex == 'split':
+            diff = offset - freq
             _mem.duplex = DUPLEXES.index("-") \
                 if diff < 0 else DUPLEXES.index("+")
             _mem.offset = abs(diff) / 10
         else:
             LOG.error('%s: set_mem: unhandled duplex: %s' %
-                      (mem.name, mem.duplex))
+                      (mem.name, duplex))
 
         # Set the channel width - remember we promote 20 kHz channels to FM
         # on import, so don't handle them here
-        if mem.mode == 'FM':
+        if mode == 'FM':
             _mem.channel_width = CHANNEL_WIDTH_25kHz
-        elif mem.mode == 'NFM':
+        elif mode == 'NFM':
             _mem.channel_width = CHANNEL_WIDTH_12d5kHz
         else:
             LOG.error('%s: set_mem: unhandled mode: %s' % (
-                mem.name, mem.mode))
+                mem.name, mode))
 
         # CTCSS Tones and DTCS Codes
         ((txmode, txtone, txpol),

@@ -1127,7 +1127,7 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
         _mem.offset = mem.offset / 100
 
         if is_hyper_chan:
-            mem.name = SEVEN_SPACES
+            _mem.name = SEVEN_SPACES
         else:
             _mem.name = mem.name.ljust(7)
 
