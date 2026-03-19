@@ -640,13 +640,6 @@ def write_item_current_page_bytes(self, serial, item_Bytes: bytes,
         self.status_fn(status)
 
 
-def get_write_item_bytes(all_bytes: bytearray, start_addr: int, item_len: int):
-    """
-       Get the bytes for a specific memory region
-    """
-    return all_bytes[start_addr:start_addr+item_len]
-
-
 def copy_to_memory(all_bytes: bytearray,
                    item_bytes: bytes, start_addr: int, item_len: int):
     """
@@ -1509,7 +1502,7 @@ class HA1G(chirp_common.CloneModeRadio):
                 continue
             if not self.supports_banks() and item_name == "zoneData":
                 continue
-            item_bytes = get_write_item_bytes(data_bytes, start_addr, length)
+            item_bytes = data_bytes[start_addr:start_addr+length]
             write_item_current_page_bytes(
                 self, serial, item_bytes, region_id, status)
 
