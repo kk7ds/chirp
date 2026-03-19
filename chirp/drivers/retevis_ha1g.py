@@ -21,7 +21,7 @@ import time
 from enum import Enum
 
 from chirp import memmap, chirp_common, bitwise, directory, errors
-from chirp import crc
+from chirp import checksum
 from chirp.settings import (
     RadioSetting,
     RadioSettingGroup,
@@ -714,7 +714,7 @@ def compare_version(a, b):
 
 
 def calculate_crc16(data):
-    return struct.pack('<H', crc.crc16_ibm_rev(data))
+    return struct.pack('<H', checksum.crc16_ibm_rev(data))
 
 
 def _get_memory(self, mem, _mem, ch_index):

@@ -18,6 +18,7 @@ import struct
 import time
 
 from chirp import chirp_common, directory, memmap, errors, util, bitwise
+from chirp import checksum
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
@@ -362,14 +363,6 @@ def _close_radio(radio):
     _raw_send(radio, b"E")
 
 
-def _checksum(data):
-    """the radio block checksum algorithm"""
-    cs = 0
-    for byte in data:
-        cs += byte
-    return cs % 256
-
-
 def _make_frame(cmd, addr):
     """Pack the info in the format it likes"""
     return struct.pack(">BH", ord(cmd), addr)
@@ -432,7 +425,7 @@ def _recv(radio):
         rxdata = _raw_recv(radio, BLOCK_SIZE + 1)
         rcs = rxdata[-1]
         data = rxdata[:-1]
-        ccs = _checksum(data)
+        ccs = checksum.checksum_8bit(data)
 
         if rcs != ccs:
             _close_radio(radio)
@@ -584,7 +577,7 @@ def do_upload(radio):
         if data == EMPTY_BLOCK:
             frame = _make_frame(b"Z", addr) + b"\xFF"
         else:
-            cs = _checksum(data)
+            cs = checksum.checksum_8bit(data)
             frame = _make_frame(b"W", addr) + data + bytes([cs])
 
         _raw_send(radio, frame)

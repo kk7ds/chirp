@@ -17,7 +17,7 @@ import enum
 import logging
 import struct
 
-from chirp import bitwise, crc
+from chirp import bitwise, checksum
 from chirp import chirp_common, memmap, directory, errors
 from chirp.bitwise import arrayDataElement
 from chirp.chirp_common import CloneModeRadio
@@ -543,7 +543,7 @@ def encapsulate_message(buf: bytes) -> bytes:
         length
     )
 
-    crc_data = crc.crc16_xmodem(buf)
+    crc_data = checksum.crc16_xmodem(buf)
     end_flag_1, end_flag_2 = END_MESSAGE_FLAG
     ender_bytes = struct.pack("<HBB", crc_data, end_flag_1, end_flag_2)
 

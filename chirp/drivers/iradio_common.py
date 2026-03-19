@@ -23,13 +23,6 @@ LOG = logging.getLogger(__name__)
 CMD_ACK = b"\x06"
 
 
-def checksum(data):
-    cs = 0
-    for byte in data:
-        cs += byte
-    return cs % 256
-
-
 def enter_programming_mode(serial, magic, timeout=0.25):
     previous_timeout = serial.timeout
     serial.timeout = timeout

@@ -21,6 +21,7 @@ import struct
 import time
 
 from chirp import chirp_common, directory, memmap, errors, util, bitwise
+from chirp import checksum
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, RadioSettingValueInteger, \
@@ -625,14 +626,6 @@ def _close_radio(radio):
         LOG.error('Failed to close radio: %s' % e)
 
 
-def _checksum(data):
-    """the radio block checksum algorithm"""
-    cs = 0
-    for byte in data:
-        cs += byte
-    return cs % 256
-
-
 def _make_frame(cmd, addr):
     """Pack the info in the format it likes"""
     return struct.pack(">BH", cmd[0], addr)
@@ -719,10 +712,10 @@ def read_block(pipe):
         block = b'\xFF' * BLOCK_SIZE
     else:
         block = pipe.read(BLOCK_SIZE)
-    checksum = pipe.read(1)
-    calc = _checksum(block)
-    if calc != checksum[0] and cmd != b'Z':
-        LOG.debug('Checksum %i does not match %i', calc, checksum[0])
+    cs = pipe.read(1)
+    calc = checksum.checksum_8bit(block)
+    if calc != cs[0] and cmd != b'Z':
+        LOG.debug('Checksum %i does not match %i', calc, cs[0])
         raise errors.RadioError('Checksum reading block from radio')
     exchange_ack(pipe)
     return block
@@ -769,7 +762,7 @@ def do_upload(radio):
         if data == EMPTY_BLOCK:
             frame = _make_frame(b'Z', block) + b'\xFF'
         else:
-            cs = _checksum(data)
+            cs = checksum.checksum_8bit(data)
             frame = _make_frame(b'W', block) + data + bytes([cs])
         radio.pipe.write(frame)
         try:

@@ -16,7 +16,7 @@
 import struct
 import logging
 
-from chirp import chirp_common, directory, memmap
+from chirp import chirp_common, directory, memmap, checksum
 from chirp import bitwise, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
@@ -103,13 +103,6 @@ TOT_VALUES = [0x00, 0x0F, 0x1E, 0x2D, 0x3C, 0x4B, 0x5A, 0x69, 0x78,
               ]
 
 
-def _checksum(data):
-    cs = 0
-    for byte in data:
-        cs += byte
-    return cs % 256
-
-
 def tone2short(t):
     """Convert a string tone or DCS to an encoded u16
     """
@@ -185,7 +178,7 @@ def _rb15_read_block(radio, block_addr, block_size):
 
     cmd = struct.pack(">BH", ord(b'R'), block_addr)
 
-    ccs = bytes([_checksum(cmd)])
+    ccs = bytes([checksum.checksum_8bit(cmd)])
 
     expectedresponse = b"R" + cmd[1:]
 
@@ -197,7 +190,7 @@ def _rb15_read_block(radio, block_addr, block_size):
         serial.write(cmd)
         response = serial.read(3 + block_size + 1)
 
-        cs = bytes([_checksum(response[:-1])])
+        cs = bytes([checksum.checksum_8bit(response[:-1])])
 
         if response[:3] != expectedresponse:
             raise Exception("Error reading block %04x." % (block_addr))
@@ -220,7 +213,7 @@ def _rb15_write_block(radio, block_addr, block_size):
     cmd = struct.pack(">BH", ord(b'W'), block_addr)
     data = radio.get_mmap()[block_addr:block_addr + block_size]
 
-    cs = bytes([_checksum(cmd + data)])
+    cs = bytes([checksum.checksum_8bit(cmd + data)])
     data += cs
 
     LOG.debug("Writing Data:")

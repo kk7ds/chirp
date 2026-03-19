@@ -29,7 +29,8 @@
 import struct
 import logging
 
-from chirp import chirp_common, directory, bitwise, memmap, errors, util, crc
+from chirp import chirp_common, directory, bitwise, memmap, errors, util
+from chirp import checksum
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueInteger, RadioSettingValueString, \
@@ -370,7 +371,7 @@ def _send_command(serport, data: bytes):
     serport.log("Sending command (unobfuscated) len=0x%4.4x:\n%s" % (
               len(data), util.hexprint(data)))
 
-    crc_data = crc.crc16_xmodem(data)
+    crc_data = checksum.crc16_xmodem(data)
     data2 = data + struct.pack("<H", crc_data)
 
     command = struct.pack(">HBB", 0xabcd, len(data), 0) + \

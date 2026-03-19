@@ -22,6 +22,7 @@ import logging
 import struct
 
 from chirp import chirp_common, directory, memmap, errors, util, bitwise
+from chirp import checksum
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings, \
     RadioSettingValueBoolean, RadioSettingValueList, RadioSettingValueString, \
     RadioSettingValueMap, RadioSettingValueInteger
@@ -211,14 +212,6 @@ def _close_radio(radio):
         raise errors.RadioError("Serial Connection Error while closing radio")
 
 
-def _checksum(data):
-    """the radio block checksum algorithm"""
-    cs = 0
-    for byte in data:
-        cs += byte
-    return cs % 256
-
-
 def _make_framel(cmd, addr):
     """Pack the info in the format it likes"""
     # x52 x0F (x0380-x0400)
@@ -262,7 +255,7 @@ def _recvl(radio):
         # Data block is W + Data(128) + CS
         rcs = rxdata[-1]
         data = rxdata[1:-1]
-        ccs = _checksum(data)
+        ccs = checksum.checksum_8bit(data)
 
         if rcs != ccs:
             msg = "Block Checksum Error! real %02x, calculated %02x" % \
@@ -422,7 +415,7 @@ def do_upload(radio):
             short = True
         else:
             # normal
-            cs = _checksum(data)
+            cs = checksum.checksum_8bit(data)
             sdata = _make_framel(b"W", addr) + data + bytes([cs])
 
         radio.pipe.write(sdata)
