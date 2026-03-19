@@ -379,7 +379,7 @@ class HA1GBank(chirp_common.NamedBank):
 class HA1GBankModel(chirp_common.BankModel):
 
     @property
-    def _zd(self):
+    def zinfo(self):
         return self._radio._memobj.zoneinfo
 
     channelAlwaysHasBank = True
@@ -388,7 +388,7 @@ class HA1GBankModel(chirp_common.BankModel):
         return len(self.get_mappings())
 
     def get_mappings(self):
-        banks = self._zd.zones
+        banks = self.zinfo.zones
         bank_mappings = []
         for index, _bank in enumerate(banks):
             bank = HA1GBank(self, "%i" % index, "b%i" % (index + 1))
@@ -399,19 +399,19 @@ class HA1GBankModel(chirp_common.BankModel):
 
     def get_used_zone_index(self):
         return [x for x in
-                self._zd.zoneindex[0:self._zd.zonenum] if x != 0xFFFF]
+                self.zinfo.zoneindex[0:self.zinfo.zonenum] if x != 0xFFFF]
 
     def _get_channel_numbers_in_bank(self, bank):
         if bank.index not in self.get_used_zone_index():
             return set()
 
-        _members = self._zd.zones[bank.index]
+        _members = self.zinfo.zones[bank.index]
         return set([int(ch) - self._radio._skip_vfoch_count + 1
                     for ch in _members.chindex if ch != 0xFFFF
                     and int(ch) - self._radio._skip_vfoch_count + 1 > 0])
 
     def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
-        _members = self._zd.zones[bank.index]
+        _members = self.zinfo.zones[bank.index]
         if len(channels_in_bank) > len(_members.chindex):
             raise Exception("Too many entries in bank %d" % bank.index)
 
@@ -432,8 +432,8 @@ class HA1GBankModel(chirp_common.BankModel):
 
         # enable bank
         if bank.index not in self.get_used_zone_index():
-            self._zd.zoneindex[self._zd.zonenum] = bank.index
-            self._zd.zonenum += 1
+            self.zinfo.zoneindex[self.zinfo.zonenum] = bank.index
+            self.zinfo.zonenum += 1
 
     def remove_memory_from_mapping(self, memory, bank):
         channels_in_bank = self._get_channel_numbers_in_bank(bank)
@@ -448,10 +448,10 @@ class HA1GBankModel(chirp_common.BankModel):
             # disable bank
             _zone_index = [x for x in self.get_used_zone_index()
                            if x != bank.index]
-            self._zd.zoneindex = (
+            self.zinfo.zoneindex = (
                 _zone_index + [0xFFFF] * (
-                    len(self._zd.zoneindex) - len(_zone_index)))
-            self._zd.zonenum -= 1
+                    len(self.zinfo.zoneindex) - len(_zone_index)))
+            self.zinfo.zonenum -= 1
 
     def get_mapping_memories(self, bank):
         memories = []
