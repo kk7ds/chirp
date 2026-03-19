@@ -17,14 +17,14 @@ import struct
 import logging
 from enum import Enum
 
-from chirp import chirp_common, directory, memmap
+from chirp import chirp_common, directory, memmap, checksum
 from chirp import bitwise, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueString, \
     RadioSettingValueFloat, RadioSettings
 
-from chirp.drivers.iradio_common import checksum, enter_programming_mode, \
+from chirp.drivers.iradio_common import enter_programming_mode, \
     exit_programming_mode
 
 LOG = logging.getLogger(__name__)
@@ -455,7 +455,7 @@ def _read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
     cmd = struct.pack(">BH", ord(b'R'), block_addr)
-    ccs = bytes([checksum(cmd)])
+    ccs = bytes([checksum.checksum_8bit(cmd)])
 
     expectedresponse = b"R" + cmd[1:]
 
@@ -467,7 +467,7 @@ def _read_block(radio, block_addr, block_size):
         serial.write(cmd)
         response = serial.read(3 + block_size + 1)
 
-        cs = checksum(response[:-1])
+        cs = checksum.checksum_8bit(response[:-1])
 
         if response[:3] != expectedresponse:
             raise Exception("Error reading block %04x." % block_addr)
@@ -495,7 +495,7 @@ def _write_block(radio, block_number, block_size, region, data):
 
     cmd = struct.pack(">BH", region, block_number)
 
-    cs = bytes([checksum(cmd + block_data)])
+    cs = bytes([checksum.checksum_8bit(cmd + block_data)])
     block_data += cs
 
     LOG.debug("Writing Data:")

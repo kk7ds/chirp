@@ -46,3 +46,19 @@ def crc16_xmodem(data: bytes):
 
 def crc16_ibm_rev(data):
     return crc16(data, CRC_POLY_IBM_REV, reverse=True)
+
+
+def checksum_8bit(data, modulo=256):
+    """Calculate 8-bit checksum as sum of all bytes"""
+    cs = 0
+    for byte in data:
+        cs += byte
+    return cs % modulo
+
+
+def checksum_xor(data):
+    """Calculate checksum using XOR of all bytes"""
+    cs = 0
+    for byte in data:
+        cs ^= byte
+    return cs & 0xFF

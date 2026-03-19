@@ -22,7 +22,7 @@
 import struct
 import time
 import logging
-from chirp import util, chirp_common, bitwise, memmap, errors, directory
+from chirp import checksum, util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueInteger, RadioSettingValueString, \
@@ -309,17 +309,12 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
                     chirp_common.PowerLevel("H", watts=5)]
     _record_start = 0x7B
 
-    def _checksum(self, data):
-        cs = 0
-        for byte in data:
-            cs += byte
-        return cs % 256
 
     def _write_record(self, cmd, payload=b''):
         _packet = struct.pack('BBBB', self._record_start, cmd, 0xFF,
                               len(payload))
-        checksum = bytes([self._checksum(_packet[1:] + payload)])
-        _packet += self.encrypt(payload + checksum)
+        cs = bytes([checksum.checksum_8bit(_packet[1:] + payload)])
+        _packet += self.encrypt(payload + cs)
         LOG.debug("Sent:\n%s" % util.hexprint(_packet))
         self.pipe.write(_packet)
 
@@ -332,8 +327,8 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
         _packet = self.pipe.read(_length)
         _rcs_xor = _packet[-1]
         _packet = self.decrypt(_packet)
-        _cs = self._checksum(_header[1:])
-        _cs += self._checksum(_packet)
+        _cs = checksum.checksum_8bit(_header[1:])
+        _cs += checksum.checksum_8bit(_packet)
         _cs %= 256
         _rcs = self.strxor(self.pipe.read(1)[0], _rcs_xor)[0]
         LOG.debug("_cs =%x", _cs)

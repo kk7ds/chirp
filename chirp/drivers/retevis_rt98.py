@@ -16,7 +16,7 @@
 import struct
 import logging
 
-from chirp import bitwise
+from chirp import bitwise, checksum
 from chirp import chirp_common
 from chirp import directory
 from chirp import errors
@@ -536,13 +536,6 @@ def _echo_write(radio, data):
         raise errors.RadioError("Unable to write to radio")
 
 
-def _checksum(data):
-    cs = 0
-    for byte in data:
-        cs += byte
-    return cs % 256
-
-
 def _read(radio, length):
     try:
         data = radio.pipe.read(length)
@@ -624,7 +617,7 @@ def _send(radio, cmd, addr, length, data=None):
     frame = struct.pack(">cHb", cmd, addr, length)
     if data:
         frame += data
-        frame += bytes([_checksum(frame[1:])])
+        frame += bytes([checksum.checksum_8bit(frame[1:])])
         frame += b"\x06"
     _echo_write(radio, frame)
     LOG.debug("Sent:\n%s" % util.hexprint(frame))
@@ -652,7 +645,7 @@ def _send(radio, cmd, addr, length, data=None):
         LOG.debug(" Length: %02x/%02x" % (length, _length))
         LOG.debug(" Addr: %04x/%04x" % (addr, _addr))
         raise errors.RadioError("Radio send unexpected block")
-    cs = _checksum(result[1:-2])
+    cs = checksum.checksum_8bit(result[1:-2])
     if cs != result[-2]:
         _finish(radio)
         LOG.debug("Calculated: %02x" % cs)

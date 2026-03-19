@@ -18,7 +18,7 @@ import time
 import logging
 from collections import OrderedDict
 
-from chirp import chirp_common, directory, memmap, errors, util
+from chirp import chirp_common, directory, memmap, errors, util, checksum
 from chirp import bitwise
 from chirp.drivers import tk280
 from chirp.settings import MemSetting, RadioSettingValueInvertedBoolean
@@ -427,13 +427,6 @@ def do_ident(radio):
         raise errors.RadioError('Unsupported radio model %s' % model)
 
 
-def checksum_data(data):
-    _chksum = 0
-    for byte in data:
-        _chksum = (_chksum + byte) & 0xFF
-    return _chksum
-
-
 def do_download(radio):
     do_ident(radio)
 
@@ -471,7 +464,7 @@ def do_download(radio):
         if len(chksum) != 1:
             LOG.error('Checksum was %r' % chksum)
             raise errors.RadioError('Radio sent invalid checksum')
-        _chksum = checksum_data(chunk)
+        _chksum = checksum.checksum_8bit(chunk)
 
         if chunk and _chksum != ord(chksum):
             LOG.error(
@@ -525,8 +518,8 @@ def do_upload(radio):
             send(radio, make_frame('Z', block, b'\xFF'))
         else:
             radio.pipe.log('Sending block %i' % block)
-            checksum = checksum_data(chunk)
-            send(radio, make_frame('W', block, chunk + bytes([checksum])))
+            cs = checksum.checksum_8bit(chunk)
+            send(radio, make_frame('W', block, chunk + bytes([cs])))
 
         ack = radio.pipe.read(1)
         if ack != b'\x06':
