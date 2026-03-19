@@ -1083,7 +1083,20 @@ class RadioFeatures:
 
     def validate_memory(self, mem):
         """Return a list of warnings and errors that will be encountered
-        if trying to set @mem on the current radio"""
+        if trying to set @mem on the current radio.
+
+        An Error will abort the edit, while a Warning will allow it. Both
+        will show a message to the user. Use Errors to reject things that
+        need to be. A Warning is useful to alert the user that something
+        will be fixed/changed/coerced by the driver and that they should
+        expect it to look different than what they entered. Use these
+        sparingly as they can be very annoying to the user if they happen
+        on every edit.
+
+        NOTE: This method MAY NOT modify @mem in any way. It is not a hook
+        to make changes, it is for _validation_ of the memory before it is
+        sent to the driver's set_memory() method.
+        """
         msgs = []
 
         lo, hi = self.memory_bounds
