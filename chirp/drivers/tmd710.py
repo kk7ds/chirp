@@ -390,8 +390,6 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
                 _mem.tmode = 0x0a
             if mem.tmode == "DTCS":
                 _mem.tmode = 0x09
-        if mem.duplex == "n/a":     # Not valid
-            mem.duplex = ""
         _mem.duplex = TMD710_DUPLEX.index(mem.duplex)
         _mem.offset = mem.offset
         _mem.tstep = TMD710_STEPS.index(mem.tuning_step)
