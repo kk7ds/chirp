@@ -215,8 +215,8 @@ class ChirpMemoryColumn(object):
             except KeyError:
                 pass
 
-        if self._name in ('rtone', 'ctone') and not self._features.valid_tones:
-            return False
+        if self._name in ('rtone', 'ctone'):
+            return bool(self._features.valid_tones)
 
         if '.' in self._name:
             # Assume extra fields are always valid
