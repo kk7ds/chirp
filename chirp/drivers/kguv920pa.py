@@ -24,6 +24,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueString, \
     RadioSettingValueMap, RadioSettingValueFloat, RadioSettings
 import struct
+from chirp.kenwood_tone import KenwoodToneModel
 
 LOG = logging.getLogger(__name__)
 
@@ -403,90 +404,6 @@ def _roger_encode(in_roger):
     return roger_str
 
 
-def _get_tone(_mem, mem):
-    def _get_dcs(val):
-        code = (val & 0x3FF)
-        pol = (val & 0x4000) and "R" or "N"
-        return code, pol
-
-    tpol = False
-    if _mem.txtone != 0xFFFF and (_mem.txtone & 0x8000) == 0x8000:
-        tcode, tpol = _get_dcs(_mem.txtone)
-        mem.dtcs = tcode
-        txmode = "DTCS"
-    elif _mem.txtone != 0xFFFF and _mem.txtone != 0x0:
-        mem.rtone = (_mem.txtone & 0xFff) / 10.0
-        txmode = "Tone"
-    else:
-        txmode = ""
-
-    rpol = False
-    if _mem.rxtone != 0xFFFF and (_mem.rxtone & 0x8000) == 0x8000:
-        rcode, rpol = _get_dcs(_mem.rxtone)
-        mem.rx_dtcs = rcode
-        rxmode = "DTCS"
-    elif _mem.rxtone != 0xFFFF and _mem.rxtone != 0x0:
-        mem.ctone = (_mem.rxtone & 0xFff) / 10.0
-        rxmode = "Tone"
-    else:
-        rxmode = ""
-
-    if txmode == "Tone" and not rxmode:
-        mem.tmode = "Tone"
-    elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
-        mem.tmode = "TSQL"
-    elif txmode == rxmode and txmode == "DTCS" and mem.dtcs == mem.rx_dtcs:
-        mem.tmode = "DTCS"
-    elif rxmode or txmode:
-        mem.tmode = "Cross"
-        mem.cross_mode = "%s->%s" % (txmode, rxmode)
-
-    # always set it even if no dtcs is used
-    mem.dtcs_polarity = "%s%s" % (tpol or "N", rpol or "N")
-
-    LOG.debug("Got TX %s (%i) RX %s (%i)" %
-              (txmode, _mem.txtone, rxmode, _mem.rxtone))
-
-
-def _set_tone(mem, _mem):
-    def _set_dcs(code, pol):
-        val = (code & 0x3FF) + 0x8000
-        if pol == "R":
-            val += 0x4000
-        return val
-
-    rx_mode = tx_mode = None
-    rxtone = txtone = 0
-
-    if mem.tmode == "Tone":
-        tx_mode = "Tone"
-        rx_mode = None
-        txtone = int(mem.rtone * 10)
-    elif mem.tmode == "TSQL":
-        rx_mode = tx_mode = "Tone"
-        rxtone = txtone = int(mem.ctone * 10)
-    elif mem.tmode == "DTCS":
-        tx_mode = rx_mode = "DTCS"
-        txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-        rxtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[1])
-    elif mem.tmode == "Cross":
-        tx_mode, rx_mode = mem.cross_mode.split("->")
-        if tx_mode == "DTCS":
-            txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-        elif tx_mode == "Tone":
-            txtone = int(mem.rtone * 10)
-        if rx_mode == "DTCS":
-            rxtone = _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[1])
-        elif rx_mode == "Tone":
-            rxtone = int(mem.ctone * 10)
-
-    _mem.rxtone = rxtone
-    _mem.txtone = txtone
-
-    LOG.debug("Set TX %s (%i) RX %s (%i)" %
-              (tx_mode, _mem.txtone, rx_mode, _mem.rxtone))
-
-
 # Support for the Wouxun KG-UV920P-A radio
 # Serial coms are at 19200 baud
 # The data is passed in variable length records
@@ -519,6 +436,15 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=5),
                     chirp_common.PowerLevel("M", watts=20),
                     chirp_common.PowerLevel("H", watts=50)]
+
+    def __init__(self, pipe):
+        super().__init__(pipe)
+        self.tone_model = KenwoodToneModel(
+            dcs_base=0x8000,
+            pol_mask=0x4000,
+            tone_init=0x0000,
+            tone_flag=0x0000,
+            dcs_enc_base=10)
 
     def _write_record(self, cmd, payload=None):
         _length = 0
@@ -739,7 +665,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         else:
             mem.name = ''
 
-        _get_tone(_mem, mem)
+        self.tone_model.get_tone(_mem, mem)
 
         mem.skip = "" if bool(_mem.scan_add) else "S"
 
@@ -805,7 +731,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         _mem.isnarrow = 0b11 * int(mem.mode == "NFM")
 
         # set the tone
-        _set_tone(mem, _mem)
+        self.tone_model.set_tone(mem, _mem)
 
         # set the power
         if mem.power:
