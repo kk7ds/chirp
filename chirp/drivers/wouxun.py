@@ -22,7 +22,9 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
                 RadioSettingValueBoolean, RadioSettingValueList, \
                 RadioSettingValueInteger, RadioSettingValueString, \
                 RadioSettingValueFloat, RadioSettings
+from chirp.drivers import wouxun_common
 from chirp.drivers.wouxun_common import wipe_memory, do_download, do_upload
+from chirp import kenwood_tone
 
 LOG = logging.getLogger(__name__)
 
@@ -70,13 +72,20 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
 
     valid_freq = [(136000000, 175000000), (216000000, 520000000)]
 
+    _tone_model = kenwood_tone.KenwoodToneModel(
+        dcs_base=0x2800,
+        pol_mask=0x8000,
+        tone_init=0xFFFF,
+        tone_flag=0x0000,
+        dcs_enc_base=8)
+
     _MEM_FORMAT = """
         #seekto 0x0010;
         struct {
           lbcd rx_freq[4];
           lbcd tx_freq[4];
-          ul16 rx_tone;
-          ul16 tx_tone;
+          ul16 rxtone;
+          ul16 txtone;
           u8 _3_unknown_1:4,
              bcl:1,
              _3_unknown_2:3;
@@ -725,50 +734,6 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
 
-    def _get_tone(self, _mem, mem):
-        def _get_dcs(val):
-            code = int("%03o" % (val & 0x07FF))
-            pol = (val & 0x8000) and "R" or "N"
-            return code, pol
-
-        tpol = False
-        if _mem.tx_tone != 0xFFFF and _mem.tx_tone > 0x2800:
-            tcode, tpol = _get_dcs(_mem.tx_tone)
-            mem.dtcs = tcode
-            txmode = "DTCS"
-        elif _mem.tx_tone != 0xFFFF:
-            mem.rtone = _mem.tx_tone / 10.0
-            txmode = "Tone"
-        else:
-            txmode = ""
-
-        rpol = False
-        if _mem.rx_tone != 0xFFFF and _mem.rx_tone > 0x2800:
-            rcode, rpol = _get_dcs(_mem.rx_tone)
-            mem.rx_dtcs = rcode
-            rxmode = "DTCS"
-        elif _mem.rx_tone != 0xFFFF:
-            mem.ctone = _mem.rx_tone / 10.0
-            rxmode = "Tone"
-        else:
-            rxmode = ""
-
-        if txmode == "Tone" and not rxmode:
-            mem.tmode = "Tone"
-        elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
-            mem.tmode = "TSQL"
-        elif txmode == rxmode and txmode == "DTCS" and mem.dtcs == mem.rx_dtcs:
-            mem.tmode = "DTCS"
-        elif rxmode or txmode:
-            mem.tmode = "Cross"
-            mem.cross_mode = "%s->%s" % (txmode, rxmode)
-
-        # always set it even if no dtcs is used
-        mem.dtcs_polarity = "%s%s" % (tpol or "N", rpol or "N")
-
-        LOG.debug("Got TX %s (%i) RX %s (%i)" %
-                  (txmode, _mem.tx_tone, rxmode, _mem.rx_tone))
-
     def _is_txinh(self, _mem):
         return _mem.tx_freq.get_raw() == b"\xFF\xFF\xFF\xFF"
 
@@ -808,7 +773,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         if not _mem.iswide:
             mem.mode = "NFM"
 
-        self._get_tone(_mem, mem)
+        self._tone_model.get_tone(_mem, mem)
 
         mem.power = self.POWER_LEVELS[not _mem.power_high]
 
@@ -831,44 +796,6 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         mem.extra.append(iswidex)
 
         return mem
-
-    def _set_tone(self, mem, _mem):
-        def _set_dcs(code, pol):
-            val = int("%i" % code, 8) + 0x2800
-            if pol == "R":
-                val += 0x8000
-            return val
-
-        rx_mode = tx_mode = None
-        rx_tone = tx_tone = 0xFFFF
-
-        if mem.tmode == "Tone":
-            tx_mode = "Tone"
-            rx_mode = None
-            tx_tone = int(mem.rtone * 10)
-        elif mem.tmode == "TSQL":
-            rx_mode = tx_mode = "Tone"
-            rx_tone = tx_tone = int(mem.ctone * 10)
-        elif mem.tmode == "DTCS":
-            tx_mode = rx_mode = "DTCS"
-            tx_tone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-            rx_tone = _set_dcs(mem.dtcs, mem.dtcs_polarity[1])
-        elif mem.tmode == "Cross":
-            tx_mode, rx_mode = mem.cross_mode.split("->")
-            if tx_mode == "DTCS":
-                tx_tone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-            elif tx_mode == "Tone":
-                tx_tone = int(mem.rtone * 10)
-            if rx_mode == "DTCS":
-                rx_tone = _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[1])
-            elif rx_mode == "Tone":
-                rx_tone = int(mem.ctone * 10)
-
-        _mem.rx_tone = rx_tone
-        _mem.tx_tone = tx_tone
-
-        LOG.debug("Set TX %s (%i) RX %s (%i)" %
-                  (tx_mode, _mem.tx_tone, rx_mode, _mem.rx_tone))
 
     def _set_split_duplex(self, _mem, mem):
         _mem.splitdup = mem.duplex == "split"
@@ -900,7 +827,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
         _mem.skip = mem.skip != "S"
         _mem.iswide = mem.mode != "NFM"
 
-        self._set_tone(mem, _mem)
+        self._tone_model.set_tone(mem, _mem)
 
         if mem.power:
             _mem.power_high = not self.POWER_LEVELS.index(mem.power)
@@ -948,8 +875,8 @@ class KGUV6DRadio(KGUVD1PRadio):
         struct {
           lbcd rx_freq[4];
           lbcd tx_freq[4];
-          ul16 rx_tone;
-          ul16 tx_tone;
+          ul16 rxtone;
+          ul16 txtone;
           u8 _3_unknown_1:4,
              bcl:1,
              _3_unknown_2:3;
@@ -1051,8 +978,8 @@ class KGUV6DRadio(KGUVD1PRadio):
         struct {
           lbcd rx_freq[4];
           lbcd tx_freq[4];
-          ul16 rx_tone;
-          ul16 tx_tone;
+          ul16 rxtone;
+          ul16 txtone;
           u8 _3_unknown_3:4,
              bcl:1,
              _3_unknown_4:3;
@@ -1475,8 +1402,8 @@ class KG816Radio(KGUVD1PRadio, chirp_common.ExperimentalRadio):
         struct {
           lbcd rx_freq[4];
           lbcd tx_freq[4];
-          ul16 rx_tone;
-          ul16 tx_tone;
+          ul16 rxtone;
+          ul16 txtone;
           u8 _3_unknown_1:4,
              bcl:1,
              _3_unknown_2:3;
@@ -1613,8 +1540,8 @@ class KG805GRadio(KGUVD1PRadio):
         struct {
           lbcd rx_freq[4];
           lbcd tx_freq[4];
-          ul16 rx_tone;
-          ul16 tx_tone;
+          ul16 rxtone;
+          ul16 txtone;
           u8 _3_unknown_1:4,
              bcl:1,
              _3_unknown_2:3;
