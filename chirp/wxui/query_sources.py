@@ -450,6 +450,7 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
             states = repeaterbook.STATES[country]
         except KeyError:
             self._state.SetItems([_('All')])
+            self._state.SetStringSelection(_('All'))
             self._state.Enable(False)
             self._cached.Enable(False)
             return
