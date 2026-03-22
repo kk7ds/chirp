@@ -1597,3 +1597,43 @@ class RT920(RT900BT):
              'PROCEED AT YOUR OWN RISK!'
              )
         return rp
+
+
+@directory.register
+class RadioddityGS10B(RT900BT):
+    # ==========
+    # Radioddity GS-10B: RT-900 BT variant with 256 channels.
+    # Same magic (PROGRAMBT80U), fingerprints, and protocol as the
+    # RT-900 BT. Memory layout is identical but with fewer channels.
+    # Based on firmware V0.03.
+    # ==========
+    """Radioddity GS-10B"""
+    VENDOR = "Radioddity"
+    MODEL = "GS-10B"
+
+    _upper = 256  # 256 channels
+    _has_single_mode = False
+
+    _mem_params = (_upper,  # number of channels
+                   )
+
+    _ranges = [
+        (0x0000, 0x2000),  # 256 channels of 32 bytes each
+                           # 256 * 32 = 0x2000
+        (0x8000, 0x8040),
+        (0x9000, 0x9040),
+        (0xA000, 0xA140),
+        (0xD000, 0xD040),  # Radio mode hidden setting
+    ]
+
+    @classmethod
+    def get_prompts(cls):
+        rp = super().get_prompts()
+        rp.experimental = \
+            ('This driver is a beta version for the Radioddity GS-10B\n'
+             '\n'
+             'Please save an unedited copy of your first successful\n'
+             'download to a CHIRP Radio Images(*.img) file.\n\n'
+             'PROCEED AT YOUR OWN RISK!'
+             )
+        return rp
