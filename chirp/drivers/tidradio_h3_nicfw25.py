@@ -19,9 +19,8 @@
 import logging
 import re
 import struct
-import time
 
-from chirp import chirp_common, directory, bitwise, memmap, errors, util
+from chirp import chirp_common, directory, bitwise, memmap, errors
 from chirp.settings import (
     RadioSetting,
     RadioSettingGroup,
@@ -34,7 +33,8 @@ from chirp.settings import (
 
 LOG = logging.getLogger(__name__)
 
-# V2.5 EEPROM layout (big-endian). See nicfw2docs eeprom.md, channelInfo.md, settingsBlock.md.
+# V2.5 EEPROM layout (big-endian). See nicfw2docs eeprom.md,
+# channelInfo.md, settingsBlock.md.
 MEM_FORMAT = """
 // V2.5X: multi-byte values are BIG-endian (u16, u32)
 // 0x0000 vfoA, 0x0020 vfoB, 0x0040 memoryChannels[198]
@@ -46,9 +46,9 @@ struct {
     u16 txSubTone;
     u8 txPower;
     u16 groups;      // g0:4, g1:4, g2:4, g3:4
-    // CHIRP bitwise packs first-declared bitfield at the MSB of the byte (bit 7),
-    // last at LSB (bit 0). nicFW wire order is bit0=bandwidth, bit7=busyLock,
-    // bits1-2=modulation, bit3=position, bits4-5=pttID, bit6=reversed — so declare MSB→LSB.
+    // CHIRP bitwise: first-declared bitfield is MSB (bit 7).
+    // nicFW wire: bit0=bandwidth, bit7=busyLock, bits1-2=modulation,
+    // bit3=position, bits4-5=pttID, bit6=reversed. Declare MSB to LSB.
     u8 busyLock:1,
        reversed:1,
        pttID:2,
@@ -110,7 +110,8 @@ struct {
     u8 txModMeter;
     u8 micGain;
     u8 txDeviation;
-    i8 xtal671_DEFUNCT;  // V2.5: no longer used; live XTAL at 0x1DFB (eeprom.md)
+    // V2.5: unused here; live XTAL at 0x1DFB (eeprom.md)
+    i8 xtal671_DEFUNCT;
     u8 battStyle;
     u16 scanRange;
     u16 scanPersist;
@@ -159,7 +160,8 @@ struct {
     u8 vfoLockActive;
     u8 dualWatchDelay;
     u8 subToneDeviation;
-    u8 filler1967[13];   // 0x1967-0x1973: showXmitCurrent, AGC 0-3, RFi Comp, etc.
+    // 0x1967-0x1973: showXmitCurrent, AGC 0-3, RFi Comp, etc.
+    u8 filler1967[13];
     u8 amAgcFix;         // 0x1974  AM AGC Fix (0=Off, 1=On)  ✓ confirmed
     u8 filler1975[11];   // 0x1975-0x197F
 } settings;
@@ -172,9 +174,9 @@ struct {
     u32 startFreq;
     u32 endFreq;
     u8 maxPower;
-    // CHIRP bitwise assigns fields MSB-first (first declared = highest bit).
-    // Radio stores: bit0=txAllowed, bit1=wrap, bits2-4=modulation, bits5-7=bandwidth.
-    // Declaring in reverse order makes CHIRP read them correctly (last declared → bit 0).
+    // CHIRP bitwise: first declared = MSB.
+    // Radio: bit0=txAllowed, bit1=wrap, bits2-4=modulation, bits5-7=bandwidth.
+    // Reverse declaration order maps last field to bit 0.
     u8 bandwidth:3,
        modulation:3,
        wrap:1,
@@ -189,16 +191,17 @@ struct {
     u16 step;
     u8 resume;
     u8 persist;
-    // CHIRP bitwise assigns fields MSB-first (first declared = highest bit).
-    // Radio stores: bits[1:0]=modulation (0=FM,1=AM,2=USB,3=Auto), bits[4:2]=ultrascan(0-7), bits[7:5]=unused.
-    // ultrascan declared as 6 bits to cover bits[7:2] (includes the 3 unused upper bits).
-    // Declaring in reverse order makes CHIRP map modulation correctly to bits[1:0].
+    // CHIRP bitwise: first declared = MSB.
+    // Radio: bits[1:0]=modulation (FM/AM/USB/Auto), bits[4:2]=ultrascan.
+    // ultrascan is 6 bits covering bits[7:2] (incl. unused upper bits).
+    // Reverse declaration maps modulation to bits[1:0].
     u8 ultrascan:6,
        modulation:2;
     char label[9];
 } scanPresets[20];
 
-// 0x1C90 group labels (A-O = 15; index 0=Group A .. 14=Group O, 15=unused). 6 chars, null terminated.
+// 0x1C90 group labels: 15 groups A-O; idx 0-14 used, 15 unused.
+// Six chars per label plus a null terminator.
 #seekto 0x1C90;
 struct {
     char label[6];
@@ -207,7 +210,8 @@ struct {
 // 0x1DFB calibration (per-radio; clone from another radio copies these)
 #seekto 0x1DFB;
 struct {
-    i8 xtal671;              // Crystal calibration (live in V2.5; also in Advanced Menu)
+    // Crystal calibration (V2.5; Advanced Menu)
+    i8 xtal671;
     u8 maxPowerWattsUHF;      // 0.1W units
     u8 maxPowerSettingUHF;
     u8 maxPowerWattsVHF;      // 0.1W units
@@ -231,16 +235,18 @@ NUM_BLOCKS = EEPROM_SIZE // BLOCK_SIZE  # 256
 
 # Channel/settings constants
 MODULATION_LIST = ["Auto", "FM", "AM", "USB"]
-# chirp_common.MODES-style labels for FM/AM + narrow (EEPROM still stores modulation + bandwidth bit).
+# chirp_common.MODES-style labels for FM/AM + narrow (EEPROM still stores
+# modulation + bandwidth bit).
 NFM = "NFM"
 NAM = "NAM"
-# Memory editor / validate_memory: includes NFM/NAM alongside EEPROM modulation names.
+# Memory editor / validate_memory: includes NFM/NAM alongside EEPROM
+# modulation names.
 VALID_MODES = ["Auto", "FM", NFM, "AM", NAM, "USB"]
 BANDWIDTH_LIST = ["Wide", "Narrow"]
 
 
 def _extra_bandwidth_value_str(mem):
-    """Return the Bandwidth extra list value as a string, or None if unset/missing."""
+    """Return Bandwidth extra value as a string, or None if unset/missing."""
     extra = getattr(mem, "extra", None)
     if not extra:
         return None
@@ -309,12 +315,12 @@ def _chirp_mode_to_fw_channel(mem):
 
 
 def _channel_memory_wants_narrow(mem):
-    """True if mem should encode narrow bandwidth bit (single source for set_memory / mmap patch)."""
+    """True if mem should encode narrow bandwidth (set_memory / mmap)."""
     return _chirp_mode_to_fw_channel(mem)[1]
 
 
 def _apply_channel_bandwidth_bit0_to_mmap(mmap, index, want_narrow):
-    """Ensure byte 15 bit0 matches narrow (0=Wide, 1=Narrow); preserves other flag bits."""
+    """Set byte 15 bit0 for narrow (0=Wide, 1=Narrow); keep other bits."""
     if mmap is None or index < 0:
         return
     off = 0x40 + index * 32 + 15
@@ -325,15 +331,33 @@ def _apply_channel_bandwidth_bit0_to_mmap(mmap, index, want_narrow):
     mmap[off] = (cur_b & 0xFE) | (1 if want_narrow else 0)
 
 
-GROUPS_LIST = ["None", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"]
-# txPower: 0 = N/T (No Transmit); 1..255 = level; nicFW max ≈ cal maxPowerSetting* /
-# maxPowerWatts* (0.1 W steps) at 0x1DFB — same idea as group label strings in UI.
+GROUPS_LIST = [
+    "None",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O"]
+# txPower: 0 = N/T; 1..255 = level; max from cal maxPowerSetting* /
+# maxPowerWatts* (0.1 W steps) at 0x1DFB — same idea as group label
+# strings in UI.
 TXPower_NT = 0  # 0 = No Transmit
 DEFAULT_MAX_POWER_WATTS_TENTHS = 50  # 5.0 W when EEPROM cal is blank
 DEFAULT_MAX_POWER_SETTING = 130
 # Distinct negative dBm so import_logic int(mem.power) works for N/T.
 NT_TX_DBM = -127
-# Tiny per-raw bias so saturated max-power steps stay distinguishable (__eq__ / import).
+# Tiny per-raw bias so saturated max-power steps stay distinguishable
+# (__eq__ / import).
 _RAW_DBM_EPSILON = 1.0e-6
 
 
@@ -371,7 +395,7 @@ def _watts_for_raw_scaled(raw, max_w_tenths, max_set):
 
 
 def power_levels_for_memobj(memobj):
-    """PowerLevel list for CHIRP + import_logic (dBm from PowerLevel.__int__)."""
+    """PowerLevel list for CHIRP import_logic (see PowerLevel.__int__)."""
     mv, sv, mu, su = _calibration_power_params(memobj)
     levels = [chirp_common.PowerLevel("N/T", dBm=NT_TX_DBM)]
     for raw in range(1, 256):
@@ -416,38 +440,69 @@ def _tx_power_u8_from_memory(memobj, mem_power):
 # Settings block option lists (per settingsBlock.md and nicFW behaviour)
 SQUELCH_LIST = [str(x) for x in range(10)]  # 0-9
 ACTIVEVFO_LIST = ["VFO-A", "VFO-B"]
-# nicFW step: 2.5, 5, 6.25, 12.5, 25, 50 kHz. Stored in radio as Hz. CHIRP dropdown shows Hz (2500=2.5 kHz).
+# nicFW step: 2.5, 5, 6.25, 12.5, 25, 50 kHz. Stored in radio as Hz. CHIRP
+# dropdown shows Hz (2500=2.5 kHz).
 STEP_LIST = ["2.5 kHz", "5.0 kHz", "6.25 kHz", "12.5 kHz", "25 kHz", "50 kHz"]
-STEP_VALUES = [2500, 5000, 6250, 12500, 25000, 50000]  # Hz, for settings block u16 step
-# Per-memory tuning step: free entry in CHIRP (empty list); default when not on a supported step grid
+# Hz, for settings block u16 step
+STEP_VALUES = [2500, 5000, 6250, 12500, 25000, 50000]
+# Per-memory tuning step: free entry in CHIRP (empty list); default when
+# not on a supported step grid
 DEFAULT_TUNING_STEP_HZ = 12500  # 12.5 kHz
-VALID_TUNING_STEPS_HZ = [2500, 5000, 6250, 12500, 25000, 50000]  # Hz; used only for inferring step from freq
+# Hz; used only for inferring step from freq
+VALID_TUNING_STEPS_HZ = [2500, 5000, 6250, 12500, 25000, 50000]
 BATTSTYLE_LIST = ["Off", "Icon", "Percentage", "Voltage"]
 SCANRESUME_LIST = ["Time", "Hold", "Seek"]  # typical
 TONEMONITOR_LIST = ["Off", "On", "Clone"]
 LCDTIMEOUT_LIST = ["Off"] + [str(x) for x in range(1, 201)]
-AF_FILTERS_LIST = ["All", "Band Pass Only", "De-Emphasis + High Pass", "High Pass Only",
-                   "De-Emphasis + Low Pass", "Low Pass Only", "De-Emphasis Only", "None"]
+AF_FILTERS_LIST = [
+    "All",
+    "Band Pass Only",
+    "De-Emphasis + High Pass",
+    "High Pass Only",
+    "De-Emphasis + Low Pass",
+    "Low Pass Only",
+    "De-Emphasis Only",
+    "None"]
 RFGAIN_LIST = ["AGC"] + [str(x) for x in range(1, 43)]
 VOX_LIST = ["Off"] + [str(x) for x in range(1, 16)]
 PIN_ACTION_LIST = ["Off", "Lock", "Unlock"]  # typical; extend if doc specifies
-OP_MODE_LIST = ["VFO", "Channel/Group"]  # vfoState.mode 0 = VFO, 1 = Channel/Group
-# Band Plan (matches nicFW Programmer Band Plan tab; verified from live EEPROM dump, March 2026)
-# Modulation: 3 bits (raw 0-7). Raw value IS the list index — no remapping needed.
-#   Confirmed from EEPROM dump: raw 0=Ignore, raw 1=FM, raw 2=AM.
-#   raw 3-7 unconfirmed; labels are best-effort based on nicFW firmware source patterns.
-MODULATION_BP_LIST = ["Ignore", "FM", "AM", "USB", "Auto", "Enforce FM", "Enforce AM", "Enforce USB"]
-# Bandwidth: 3 bits (raw 0-7). Raw value IS the list index — no remapping needed.
-#   Confirmed from EEPROM dump: raw 0=Ignore, raw 1=Wide, raw 2=Narrow, raw 5=FM Tuner.
-#   raw 3/4/6/7 unconfirmed; labelled BW(n) as placeholders.
-BANDWIDTH_BP_LIST = ["Ignore", "Wide", "Narrow", "BW(3)", "BW(4)", "FM Tuner", "BW(6)", "BW(7)"]
+# vfoState.mode 0 = VFO, 1 = Channel/Group
+OP_MODE_LIST = ["VFO", "Channel/Group"]
+# Band plan (nicFW Programmer; EEPROM verified Mar 2026).
+# Modulation: 3 bits. Raw value = list index.
+# EEPROM: raw 0=Ignore, 1=FM, 2=AM; raw 3-7 = best-effort labels.
+MODULATION_BP_LIST = [
+    "Ignore",
+    "FM",
+    "AM",
+    "USB",
+    "Auto",
+    "Enforce FM",
+    "Enforce AM",
+    "Enforce USB",
+]
+# Bandwidth: 3 bits. Raw value = list index.
+# EEPROM: raw 0=Ignore, 1=Wide, 2=Narrow, 5=FM Tuner; 3/4/6/7 = placeholders.
+BANDWIDTH_BP_LIST = [
+    "Ignore",
+    "Wide",
+    "Narrow",
+    "BW(3)",
+    "BW(4)",
+    "FM Tuner",
+    "BW(6)",
+    "BW(7)",
+]
 MAXPOWER_BP_LIST = ["Ignore"] + [str(x) for x in range(1, 256)]
-# Scan Preset (0x1B00) modulation: 2 bits at bits[1:0]. 0=FM, 1=AM, 2=USB, 3=Auto.
-# Verified from live EEPROM dump (March 2026). Different ordering from channel modulation (Auto/FM/AM/USB).
+# Scan preset 0x1B00: modulation bits[1:0] (ordering differs from channels).
+# Verified live EEPROM Mar 2026.
 MODULATION_SP_LIST = ["FM", "AM", "USB", "Auto"]
-# Scan Preset ultrascan level: 3 bits at bits[4:2] of flags byte. Displayed as "0"-"7".
+# Ultrascan: 3 bits at bits[4:2]; displayed 0-7.
 ULTRASCAN_SP_LIST = [str(x) for x in range(8)]
-GROUP_LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"]  # 15 groups in programmer
+# 15 groups A-O in programmer UI
+GROUP_LETTERS = [
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+]
 
 
 def _do_status(radio, block_num, total=NUM_BLOCKS):
@@ -508,7 +563,9 @@ def _write_block(radio, block_num, data):
     serial.write(bytes([_checksum(data)]))
     ack = serial.read(1)
     if ack != bytes([CMD_WRITE_EEPROM]):
-        raise errors.RadioError("Radio did not acknowledge write block %d" % block_num)
+        raise errors.RadioError(
+            "Radio did not acknowledge write block %d" %
+            block_num)
 
 
 def _reboot_radio(radio):
@@ -553,7 +610,7 @@ def _decode_tone(tone_word):
     if tone_word & 0x8000:
         dcs_code = tone_word & 0x01FF
         polarity = "R" if (tone_word & 0x4000) else "N"
-        # 9-bit field is a linear index into ALL_DTCS_CODES (0..511), not the CHIRP
+        # 9-bit payload indexes ALL_DTCS_CODES (0..511), not the CHIRP code
         # integer (e.g. index 21 -> DCS 025 -> Memory value 25). Allow 0..511.
         if 0 <= dcs_code <= 511:
             return "DTCS", dcs_code, polarity
@@ -581,7 +638,7 @@ def _chirp_dtcs_from_firmware_raw(dcs_code):
 
 
 def _dtcs_chirp_value_to_firmware_index(value):
-    """CHIRP Memory dtcs/rx_dtcs integer -> 9-bit EEPROM index for _encode_tone."""
+    """Map CHIRP dtcs/rx_dtcs integer to EEPROM index for _encode_tone."""
     if value is None:
         return 0
     codes = chirp_common.ALL_DTCS_CODES
@@ -594,7 +651,7 @@ def _dtcs_chirp_value_to_firmware_index(value):
 
 
 def _encode_tone(mode, value, polarity=None):
-    """Encode (mode, value, polarity) to 16-bit tone word (big-endian stored by bitwise)."""
+    """Build 16-bit tone word; bitwise stores it big-endian."""
     if mode == "Tone" and value is not None:
         tone_word = int(round(value * 10.0))
         if 0 <= tone_word <= 3000:
@@ -609,7 +666,7 @@ def _encode_tone(mode, value, polarity=None):
 
 
 def _get_channel_info(memobj, index):
-    """Return raw channel struct: vfoA (index -2), vfoB (-1), or memory[0..197] (0..197)."""
+    """Return vfoA (-2), vfoB (-1), or memory[0..197] Bitwise struct."""
     if index == -2:
         return memobj.vfoA
     if index == -1:
@@ -620,18 +677,18 @@ def _get_channel_info(memobj, index):
 
 
 def _build_groups_display(memobj):
-    """Return a group-slot spinner list that decorates each letter with its EEPROM label.
+    """Build group-slot spinner labels from EEPROM group names.
 
-    Index 0 → "None", index 1 → "A" or "A: <label>", …, index 15 → "O" or "O: <label>".
-    Positions are stable so the numeric EEPROM value equals the list index.
-    Falls back to bare letter when no custom label is stored or memobj is unavailable.
+    Slot 0 is "None". Slots 1-15 use GROUP_LETTERS; custom labels show as
+    "L: name". Order matches the numeric value stored in EEPROM.
     """
     display = ["None"]
     for i, letter in enumerate(GROUP_LETTERS):
         try:
             gl = memobj.groupLabels[i]
             raw = gl.get_raw()
-            lbl = raw.decode("ascii", "replace").rstrip("\x00 \xff").strip() if raw and len(raw) >= 6 else ""
+            lbl = raw.decode("ascii", "replace").rstrip(
+                "\x00 \xff").strip() if raw and len(raw) >= 6 else ""
         except Exception:
             lbl = ""
         display.append("%s: %s" % (letter, lbl) if lbl else letter)
@@ -662,11 +719,13 @@ def _channel_to_memory(memobj, number, mem):
         mem.power = _pwr_lv[0]
     else:
         mem.power = _pwr_lv[_tx]
-    # Decode name from raw channel bytes (name is last 12 bytes of 32-byte channelInfo)
+    # Decode name from raw channel bytes (name is last 12 bytes of 32-byte
+    # channelInfo)
     raw = _mem.get_raw()
     if raw and len(raw) >= 32:
         name_bytes = bytes(raw[20:32])
-        mem.name = name_bytes.decode("ascii", "replace").rstrip("\x00 \xff").strip() or ""
+        mem.name = name_bytes.decode(
+            "ascii", "replace").rstrip("\x00 \xff").strip() or ""
     else:
         name_parts = []
         for b in _mem.name:
@@ -677,7 +736,9 @@ def _channel_to_memory(memobj, number, mem):
             else:
                 name_parts.append("")
         mem.name = "".join(name_parts).rstrip() or ""
-    mod_idx = int(_mem.modulation) if int(_mem.modulation) < len(MODULATION_LIST) else 1
+    mod_idx = int(
+        _mem.modulation) if int(
+        _mem.modulation) < len(MODULATION_LIST) else 1
     is_narrow = bool(int(_mem.bandwidth))
     mem.mode = _fw_channel_mode_to_chirp(mod_idx, is_narrow)
     txmode, txval, txpol = _decode_tone(_mem.txSubTone)
@@ -686,25 +747,43 @@ def _channel_to_memory(memobj, number, mem):
         txval = _chirp_dtcs_from_firmware_raw(txval)
     if rxmode == "DTCS" and rxval is not None:
         rxval = _chirp_dtcs_from_firmware_raw(rxval)
-    chirp_common.split_tone_decode(mem, (txmode, txval, txpol), (rxmode, rxval, rxpol))
-    # Everything beyond chirp_common.Memory's universal fields (freq, name, mode, duplex,
-    # offset, power, tones, tuning_step, skip, comment, empty, …) belongs in mem.extra only:
-    # per-slot groups, bandwidth (firmware bit distinct from mode label), and busyLock (BCL).
-    # See https://github.com/kk7ds/chirp/blob/master/chirp/chirp_common.py — class Memory.
+    chirp_common.split_tone_decode(
+        mem, (txmode, txval, txpol), (rxmode, rxval, rxpol))
+    # Beyond chirp_common.Memory (freq, name, mode, duplex, offset, power,
+    # tones, tuning_step, skip, comment, empty, ...) use mem.extra only:
+    # group slots, bandwidth (firmware bit), and busyLock (BCL).
+    # See chirp/chirp_common.py (class Memory).
     mem.extra = RadioSettingGroup("extra", "Extra")
     g = int(_mem.groups)
-    g0, g1, g2, g3 = (g >> 0) & 0xF, (g >> 4) & 0xF, (g >> 8) & 0xF, (g >> 12) & 0xF
+    g0, g1, g2, g3 = (g >> 0) & 0xF, (g >> 4) & 0xF, (g >>
+                                                      8) & 0xF, (g >> 12) & 0xF
     mem.comment = ""
     groups_display = _build_groups_display(memobj)
-    for slot, val in [("group1", g0), ("group2", g1), ("group3", g2), ("group4", g3)]:
-        rs = RadioSetting(slot, "Groups slot %s (letter)" % slot[-1], RadioSettingValueList(groups_display, groups_display[val]))
+    for slot, val in [("group1", g0), ("group2", g1),
+                      ("group3", g2), ("group4", g3)]:
+        rs = RadioSetting(slot,
+                          "Groups slot %s (letter)" % slot[-1],
+                          RadioSettingValueList(groups_display,
+                                                groups_display[val]))
         mem.extra.append(rs)
-    # Bandwidth is bit 0 of flags byte. 0=Wide, 1=Narrow — extra mirrors mem.mode (NFM/NAM ↔ Narrow).
+    # Bandwidth is bit 0 of flags byte. 0=Wide, 1=Narrow — extra mirrors
+    # mem.mode (NFM/NAM ↔ Narrow).
     bw = "Narrow" if is_narrow else "Wide"
-    mem.extra.append(RadioSetting("bandwidth", "Bandwidth", RadioSettingValueList(BANDWIDTH_LIST, bw)))
-    # Busy Lock is bit 7 of flags byte (matches MEM_FORMAT after MSB→LSB field order).
+    mem.extra.append(
+        RadioSetting(
+            "bandwidth",
+            "Bandwidth",
+            RadioSettingValueList(
+                BANDWIDTH_LIST,
+                bw)))
+    # Busy Lock is bit 7 of flags byte (matches MEM_FORMAT after MSB→LSB field
+    # order).
     busy_lock = bool(int(_mem.busyLock))
-    mem.extra.append(RadioSetting("busyLock", "Busy Lock", RadioSettingValueBoolean(busy_lock)))
+    mem.extra.append(
+        RadioSetting(
+            "busyLock",
+            "Busy Lock",
+            RadioSettingValueBoolean(busy_lock)))
     # Step is global in the radio (Settings only). Memory.tuning_step is kHz
     # (chirp_common); pick a grid step from nicFW Hz list or default 12.5 kHz.
     _step_hz = next(
@@ -754,9 +833,15 @@ def _memory_to_channel(memobj, number, mem):
         _mem.modulation = 0
         _mem.bandwidth = 1 if _extra_bandwidth_is_narrow(mem) else 0
     # Busy Lock is incompatible with repeater/split operation (radio rule).
-    _busy_requested = bool(mem.extra and any(e.get_name() == "busyLock" and bool(e.value) for e in mem.extra))
-    _mem.busyLock  = 1 if (_busy_requested and mem.duplex not in ("+", "-", "split")) else 0
-    (txmode, txval, txpol), (rxmode, rxval, rxpol) = chirp_common.split_tone_encode(mem)
+    _busy_requested = bool(
+        mem.extra and any(
+            e.get_name() == "busyLock" and bool(
+                e.value) for e in mem.extra))
+    _mem.busyLock = 1 if (
+        _busy_requested and mem.duplex not in (
+            "+", "-", "split")) else 0
+    (txmode, txval, txpol), (rxmode, rxval,
+                             rxpol) = chirp_common.split_tone_encode(mem)
     _mem.txSubTone = _encode_tone(txmode, txval, txpol)
     _mem.rxSubTone = _encode_tone(rxmode, rxval, rxpol)
     if mem.extra:
@@ -764,11 +849,16 @@ def _memory_to_channel(memobj, number, mem):
         groups_display = _build_groups_display(memobj)
         for e in mem.extra:
             n = e.get_name()
-            v = e.value.get_value() if hasattr(e.value, "get_value") else str(e.value)
+            v = (
+                e.value.get_value()
+                if hasattr(e.value, "get_value")
+                else str(e.value)
+            )
             if v in groups_display:
                 idx = groups_display.index(v)
             elif v in GROUPS_LIST:
-                idx = GROUPS_LIST.index(v)  # fallback: bare letter from old image
+                # fallback: bare letter from old image
+                idx = GROUPS_LIST.index(v)
             else:
                 idx = 0
             if n == "group1":
@@ -781,8 +871,10 @@ def _memory_to_channel(memobj, number, mem):
                 g3 = idx
         _mem.groups = g0 | (g1 << 4) | (g2 << 8) | (g3 << 12)
     elif getattr(mem, "comment", None) and isinstance(mem.comment, str):
-        # Parse Comment column (e.g. "AG") into group slots when edited in main table
-        letters = [c.upper() for c in mem.comment.strip() if c.upper() in GROUP_LETTERS][:4]
+        # Parse Comment column (e.g. "AG") into group slots when edited in main
+        # table
+        letters = [c.upper() for c in mem.comment.strip()
+                   if c.upper() in GROUP_LETTERS][:4]
         g0 = g1 = g2 = g3 = 0
         for i, letter in enumerate(letters):
             idx = GROUP_LETTERS.index(letter) + 1  # A=1, B=2, ... O=15
@@ -820,16 +912,24 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
         rf.has_rx_dtcs = True
         rf.has_ctone = True
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
-        rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone", "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
+        rf.valid_cross_modes = [
+            "Tone->Tone",
+            "Tone->DTCS",
+            "DTCS->Tone",
+            "->Tone",
+            "->DTCS",
+            "DTCS->",
+            "DTCS->DTCS"]
         rf.valid_characters = chirp_common.CHARSET_ASCII
-        # Hardware RX span per nicFW Programmer / band plan (TX still limited by firmware plan).
-        # CHIRP uses lo <= freq < hi; hi = 600_000_001 Hz so 600.0 MHz is included.
+        # RX span per nicFW Programmer / band plan; TX still follows firmware.
+        # CHIRP uses lo <= freq < hi; hi = 600_000_001 Hz so 600.0 MHz is
+        # included.
         rf.valid_bands = [
             (50_000_000, 600_000_001),
         ]
-        # Finer nicFW Programmer reference (RX-only sub-ranges; single band above unless we split):
+        # Finer RX sub-ranges (reference only; single band above unless split):
         #   (50_000_000, 76_000_000),      # Low VHF / FM
-        #   (108_000_000, 136_000_000),    # AM airband (8.33 kHz steps, AM demod)
+        #   (108_000_000, 136_000_000),    # AM airband; 8.33 kHz; AM demod
         #   (174_000_000, 350_000_000),    # Extended VHF
         #   (350_000_000, 400_000_000),    # UHF / emergency / military
         #   (470_000_000, 600_000_001),    # Extended UHF
@@ -839,7 +939,8 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
         rf.valid_name_length = 12
         rf.valid_power_levels = power_levels_for_memobj(
             getattr(self, "_memobj", None))
-        rf.memory_bounds = (1, 198)  # Radio shows "Channel Bank 1".."198"; CHIRP 1-198 = memory[0]..[197]
+        # Radio shows "Channel Bank 1".."198"; CHIRP 1-198 = memory[0]..[197]
+        rf.memory_bounds = (1, 198)
         rf.has_comment = True
         # nicFW steps in kHz; required for chirp_common.required_step (e.g. CI
         # test_validate_all_steps at 462.5625 MHz on 6.25 kHz grid).
@@ -866,7 +967,10 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
         magic = int(self._memobj.settings.magic)
         if magic != MAGIC_SETTINGS_V25:
-            LOG.warning("Settings magic 0x%04X is not V2.5 0xD82F; image may be wrong firmware", magic)
+            LOG.warning(
+                "Settings magic 0x%04X is not V2.5 0xD82F; "
+                "image may be wrong firmware",
+                magic)
 
     def get_memory(self, number):
         mem = chirp_common.Memory()
@@ -889,7 +993,7 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
                 self._mmap, index, _channel_memory_wants_narrow(mem))
 
     def validate_memory(self, mem):
-        """Cross-check NFM/NAM vs Memory.extra bandwidth (RadioDroid / mmap path)."""
+        """Check NFM/NAM vs Memory.extra bandwidth (RadioDroid mmap)."""
         msgs = super().validate_memory(mem)
         if getattr(mem, "empty", True):
             return msgs
@@ -898,8 +1002,9 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
             if bw is not None and "Narrow" not in bw:
                 msgs.append(
                     chirp_common.ValidationError(
-                        "Mode %s requires narrow bandwidth in Radio Specific settings; "
-                        "set Bandwidth to Narrow or use FM/AM for wideband." % mem.mode))
+                        "Mode %s needs narrow bandwidth under Radio Specific; "
+                        "set Bandwidth to Narrow or use FM/AM wideband." %
+                        mem.mode))
         return msgs
 
     def get_settings(self):
@@ -908,126 +1013,484 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
 
         # Basic
         basic = RadioSettingGroup("basic", "Basic Settings")
-        basic.append(RadioSetting("squelch", "Squelch", RadioSettingValueInteger(0, 9, int(s.squelch))))
-        basic.append(RadioSetting("dualWatch", "Dual Watch", RadioSettingValueBoolean(bool(s.dualWatch))))
-        basic.append(RadioSetting("activeVfo", "Active VFO", RadioSettingValueList(ACTIVEVFO_LIST, ACTIVEVFO_LIST[min(int(s.activeVfo), 1)])))
+        basic.append(
+            RadioSetting(
+                "squelch", "Squelch", RadioSettingValueInteger(
+                    0, 9, int(
+                        s.squelch))))
+        basic.append(
+            RadioSetting(
+                "dualWatch",
+                "Dual Watch",
+                RadioSettingValueBoolean(
+                    bool(
+                        s.dualWatch))))
+        basic.append(
+            RadioSetting(
+                "activeVfo",
+                "Active VFO",
+                RadioSettingValueList(
+                    ACTIVEVFO_LIST,
+                    ACTIVEVFO_LIST[min(int(s.activeVfo), 1)],
+                ),
+            )
+        )
         step_val = int(s.step)
-        step_idx = STEP_VALUES.index(step_val) if step_val in STEP_VALUES else 0
-        basic.append(RadioSetting("step", "Tuning Step (10 Hz)", RadioSettingValueList(STEP_LIST, STEP_LIST[step_idx])))
-        basic.append(RadioSetting("rxSplit", "RX Split (10 Hz)", RadioSettingValueInteger(0, 65535, int(s.rxSplit))))
-        basic.append(RadioSetting("txSplit", "TX Split (10 Hz)", RadioSettingValueInteger(0, 65535, int(s.txSplit))))
-        basic.append(RadioSetting("pttMode", "PTT Mode", RadioSettingValueInteger(0, 255, int(s.pttMode))))
-        basic.append(RadioSetting("txModMeter", "TX Modulation Meter", RadioSettingValueBoolean(bool(s.txModMeter))))
-        basic.append(RadioSetting("micGain", "Mic Gain", RadioSettingValueInteger(0, 31, int(s.micGain))))
-        basic.append(RadioSetting("txDeviation", "TX Deviation", RadioSettingValueInteger(0, 255, int(s.txDeviation))))
-        basic.append(RadioSetting("battStyle", "Battery Style", RadioSettingValueList(BATTSTYLE_LIST, BATTSTYLE_LIST[min(int(s.battStyle), 3)])))
+        step_idx = STEP_VALUES.index(
+            step_val) if step_val in STEP_VALUES else 0
+        basic.append(
+            RadioSetting(
+                "step",
+                "Tuning Step (10 Hz)",
+                RadioSettingValueList(
+                    STEP_LIST,
+                    STEP_LIST[step_idx])))
+        basic.append(
+            RadioSetting(
+                "rxSplit", "RX Split (10 Hz)", RadioSettingValueInteger(
+                    0, 65535, int(
+                        s.rxSplit))))
+        basic.append(
+            RadioSetting(
+                "txSplit", "TX Split (10 Hz)", RadioSettingValueInteger(
+                    0, 65535, int(
+                        s.txSplit))))
+        basic.append(
+            RadioSetting(
+                "pttMode", "PTT Mode", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.pttMode))))
+        basic.append(
+            RadioSetting(
+                "txModMeter",
+                "TX Modulation Meter",
+                RadioSettingValueBoolean(
+                    bool(
+                        s.txModMeter))))
+        basic.append(
+            RadioSetting(
+                "micGain", "Mic Gain", RadioSettingValueInteger(
+                    0, 31, int(
+                        s.micGain))))
+        basic.append(
+            RadioSetting(
+                "txDeviation", "TX Deviation", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.txDeviation))))
+        basic.append(
+            RadioSetting(
+                "battStyle",
+                "Battery Style",
+                RadioSettingValueList(
+                    BATTSTYLE_LIST,
+                    BATTSTYLE_LIST[min(int(s.battStyle), 3)],
+                ),
+            )
+        )
         top.append(basic)
 
         # Scan
         scan = RadioSettingGroup("scan", "Scan")
-        scan.append(RadioSetting("scanRange", "Scan Range (10 Hz)", RadioSettingValueInteger(0, 65535, int(s.scanRange))))
-        scan.append(RadioSetting("scanPersist", "Scan Persist", RadioSettingValueInteger(0, 65535, int(s.scanPersist))))
-        scan.append(RadioSetting("scanResume", "Scan Resume", RadioSettingValueInteger(0, 255, int(s.scanResume))))
-        scan.append(RadioSetting("ultraScan", "Ultra Scan", RadioSettingValueInteger(0, 255, int(s.ultraScan))))
-        scan.append(RadioSetting("scanUpdate", "Scan Update", RadioSettingValueInteger(0, 255, int(s.scanUpdate))))
+        scan.append(
+            RadioSetting(
+                "scanRange", "Scan Range (10 Hz)", RadioSettingValueInteger(
+                    0, 65535, int(
+                        s.scanRange))))
+        scan.append(
+            RadioSetting(
+                "scanPersist", "Scan Persist", RadioSettingValueInteger(
+                    0, 65535, int(
+                        s.scanPersist))))
+        scan.append(
+            RadioSetting(
+                "scanResume", "Scan Resume", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.scanResume))))
+        scan.append(
+            RadioSetting(
+                "ultraScan", "Ultra Scan", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.ultraScan))))
+        scan.append(
+            RadioSetting(
+                "scanUpdate", "Scan Update", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.scanUpdate))))
         top.append(scan)
 
         # Display / Audio
         disp = RadioSettingGroup("display", "Display & Audio")
-        disp.append(RadioSetting("toneMonitor", "Tone Monitor", RadioSettingValueList(TONEMONITOR_LIST, TONEMONITOR_LIST[min(int(s.toneMonitor), 2)])))
-        disp.append(RadioSetting("lcdBrightness", "LCD Brightness", RadioSettingValueInteger(0, 28, int(s.lcdBrightness))))
-        disp.append(RadioSetting("lcdTimeout", "LCD Timeout", RadioSettingValueInteger(0, 200, int(s.lcdTimeout))))
-        disp.append(RadioSetting("breathe", "Breathe", RadioSettingValueInteger(0, 255, int(s.breathe))))
-        disp.append(RadioSetting("dimmer", "Dimmer", RadioSettingValueInteger(0, 255, int(s.dimmer))))
-        disp.append(RadioSetting("lcdInverted", "LCD Inverted", RadioSettingValueBoolean(bool(s.lcdInverted))))
-        disp.append(RadioSetting("repeaterTone", "Repeater Tone (Hz)", RadioSettingValueInteger(0, 65535, int(s.repeaterTone))))
-        disp.append(RadioSetting("dtmfDev", "DTMF Deviation", RadioSettingValueInteger(0, 255, int(s.dtmfDev))))
-        disp.append(RadioSetting("gamma", "Gamma", RadioSettingValueInteger(0, 255, int(s.gamma))))
-        disp.append(RadioSetting("sBarStyle", "Signal Bar Style", RadioSettingValueInteger(0, 255, int(s.sBarStyle))))
-        disp.append(RadioSetting("sqNoiseLev", "Squelch Noise Level", RadioSettingValueInteger(0, 255, int(s.sqNoiseLev))))
-        disp.append(RadioSetting("sBarAlwaysOn", "Signal Bar Always On", RadioSettingValueBoolean(bool(s.sBarAlwaysOn))))
-        disp.append(RadioSetting("afFilters", "AF Filters", RadioSettingValueList(AF_FILTERS_LIST, AF_FILTERS_LIST[min(int(s.afFilters), len(AF_FILTERS_LIST) - 1)])))
-        disp.append(RadioSetting("ifFreq", "IF Freq", RadioSettingValueInteger(0, 255, int(s.ifFreq))))
+        disp.append(
+            RadioSetting(
+                "toneMonitor",
+                "Tone Monitor",
+                RadioSettingValueList(
+                    TONEMONITOR_LIST,
+                    TONEMONITOR_LIST[min(int(s.toneMonitor), 2)],
+                ),
+            )
+        )
+        disp.append(
+            RadioSetting(
+                "lcdBrightness", "LCD Brightness", RadioSettingValueInteger(
+                    0, 28, int(
+                        s.lcdBrightness))))
+        disp.append(
+            RadioSetting(
+                "lcdTimeout", "LCD Timeout", RadioSettingValueInteger(
+                    0, 200, int(
+                        s.lcdTimeout))))
+        disp.append(
+            RadioSetting(
+                "breathe", "Breathe", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.breathe))))
+        disp.append(
+            RadioSetting(
+                "dimmer", "Dimmer", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.dimmer))))
+        disp.append(
+            RadioSetting(
+                "lcdInverted",
+                "LCD Inverted",
+                RadioSettingValueBoolean(
+                    bool(
+                        s.lcdInverted))))
+        disp.append(
+            RadioSetting(
+                "repeaterTone", "Repeater Tone (Hz)", RadioSettingValueInteger(
+                    0, 65535, int(
+                        s.repeaterTone))))
+        disp.append(
+            RadioSetting(
+                "dtmfDev", "DTMF Deviation", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.dtmfDev))))
+        disp.append(
+            RadioSetting(
+                "gamma", "Gamma", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.gamma))))
+        disp.append(
+            RadioSetting(
+                "sBarStyle", "Signal Bar Style", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.sBarStyle))))
+        disp.append(
+            RadioSetting(
+                "sqNoiseLev", "Squelch Noise Level", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.sqNoiseLev))))
+        disp.append(
+            RadioSetting(
+                "sBarAlwaysOn",
+                "Signal Bar Always On",
+                RadioSettingValueBoolean(
+                    bool(
+                        s.sBarAlwaysOn))))
+        disp.append(
+            RadioSetting(
+                "afFilters",
+                "AF Filters",
+                RadioSettingValueList(
+                    AF_FILTERS_LIST,
+                    AF_FILTERS_LIST[
+                        min(int(s.afFilters), len(AF_FILTERS_LIST) - 1)
+                    ],
+                ),
+            )
+        )
+        disp.append(
+            RadioSetting(
+                "ifFreq", "IF Freq", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.ifFreq))))
         top.append(disp)
 
         # VFO State A
         vfo_a = RadioSettingGroup("vfoStateA", "VFO A State")
-        vfo_a.append(RadioSetting("vfoState_group0", "Group (0=channel mode)", RadioSettingValueInteger(0, 15, int(s.vfoState_group0))))
-        vfo_a.append(RadioSetting("vfoState_lastGroup0", "Last Group", RadioSettingValueInteger(0, 15, int(s.vfoState_lastGroup0))))
+        vfo_a.append(
+            RadioSetting(
+                "vfoState_group0",
+                "Group (0=channel mode)",
+                RadioSettingValueInteger(
+                    0, 15, int(s.vfoState_group0))))
+        vfo_a.append(
+            RadioSetting(
+                "vfoState_lastGroup0", "Last Group", RadioSettingValueInteger(
+                    0, 15, int(
+                        s.vfoState_lastGroup0))))
         for i in range(16):
-            v = min(max(int(s.vfoState_groupModeChannels0[i]), 0), 197)  # clamp so UI always shows a value (0-197)
-            vfo_a.append(RadioSetting("vfoState_groupModeChannels0_%d" % i, "Group Channel %d" % i, RadioSettingValueInteger(0, 197, v)))
-        vfo_a.append(RadioSetting("vfoState_mode0", "Mode (0=VFO, 1=Channel/Group)", RadioSettingValueList(OP_MODE_LIST, OP_MODE_LIST[min(int(s.vfoState_mode0), 1)])))
+            # clamp so UI always shows a value (0-197)
+            v = min(max(int(s.vfoState_groupModeChannels0[i]), 0), 197)
+            vfo_a.append(
+                RadioSetting(
+                    "vfoState_groupModeChannels0_%d" %
+                    i,
+                    "Group Channel %d" %
+                    i,
+                    RadioSettingValueInteger(
+                        0,
+                        197,
+                        v)))
+        _m0 = min(int(s.vfoState_mode0), 1)
+        vfo_a.append(
+            RadioSetting(
+                "vfoState_mode0",
+                "Mode (0=VFO, 1=Channel/Group)",
+                RadioSettingValueList(OP_MODE_LIST, OP_MODE_LIST[_m0]),
+            )
+        )
         top.append(vfo_a)
 
         # VFO State B
         vfo_b = RadioSettingGroup("vfoStateB", "VFO B State")
-        vfo_b.append(RadioSetting("vfoState_group1", "Group (0=channel mode)", RadioSettingValueInteger(0, 15, int(s.vfoState_group1))))
-        vfo_b.append(RadioSetting("vfoState_lastGroup1", "Last Group", RadioSettingValueInteger(0, 15, int(s.vfoState_lastGroup1))))
+        vfo_b.append(
+            RadioSetting(
+                "vfoState_group1",
+                "Group (0=channel mode)",
+                RadioSettingValueInteger(
+                    0, 15, int(s.vfoState_group1))))
+        vfo_b.append(
+            RadioSetting(
+                "vfoState_lastGroup1", "Last Group", RadioSettingValueInteger(
+                    0, 15, int(
+                        s.vfoState_lastGroup1))))
         for i in range(16):
-            v = min(max(int(s.vfoState_groupModeChannels1[i]), 0), 197)  # clamp so UI always shows a value (0-197)
-            vfo_b.append(RadioSetting("vfoState_groupModeChannels1_%d" % i, "Group Channel %d" % i, RadioSettingValueInteger(0, 197, v)))
-        vfo_b.append(RadioSetting("vfoState_mode1", "Mode (0=VFO, 1=Channel/Group)", RadioSettingValueList(OP_MODE_LIST, OP_MODE_LIST[min(int(s.vfoState_mode1), 1)])))
+            # clamp so UI always shows a value (0-197)
+            v = min(max(int(s.vfoState_groupModeChannels1[i]), 0), 197)
+            vfo_b.append(
+                RadioSetting(
+                    "vfoState_groupModeChannels1_%d" %
+                    i,
+                    "Group Channel %d" %
+                    i,
+                    RadioSettingValueInteger(
+                        0,
+                        197,
+                        v)))
+        _m1 = min(int(s.vfoState_mode1), 1)
+        vfo_b.append(
+            RadioSetting(
+                "vfoState_mode1",
+                "Mode (0=VFO, 1=Channel/Group)",
+                RadioSettingValueList(OP_MODE_LIST, OP_MODE_LIST[_m1]),
+            )
+        )
         top.append(vfo_b)
 
         # Misc
         misc = RadioSettingGroup("misc", "Misc")
-        misc.append(RadioSetting("keyLock", "Key Lock", RadioSettingValueBoolean(bool(s.keyLock))))
-        misc.append(RadioSetting("bluetooth", "Bluetooth", RadioSettingValueBoolean(bool(s.bluetooth))))
-        misc.append(RadioSetting("powerSave", "Power Save", RadioSettingValueBoolean(bool(s.powerSave))))
-        misc.append(RadioSetting("keyTones", "Key Tones", RadioSettingValueBoolean(bool(s.keyTones))))
-        misc.append(RadioSetting("ste", "STE (Squelch Tail Elim)", RadioSettingValueInteger(0, 255, int(s.ste))))
-        misc.append(RadioSetting("rfGain", "RF Gain", RadioSettingValueList(RFGAIN_LIST, RFGAIN_LIST[min(int(s.rfGain), len(RFGAIN_LIST) - 1)])))
-        misc.append(RadioSetting("lastFmtFreq", "Last FM Tuner Freq", RadioSettingValueInteger(0, 0xFFFFFFFF, int(s.lastFmtFreq))))
-        misc.append(RadioSetting("vox", "VOX", RadioSettingValueList(VOX_LIST, VOX_LIST[min(int(s.vox), len(VOX_LIST) - 1)])))
-        misc.append(RadioSetting("voxTail", "VOX Tail", RadioSettingValueInteger(0, 65535, int(s.voxTail))))
-        misc.append(RadioSetting("txTimeout", "TX Timeout (s)", RadioSettingValueInteger(0, 255, int(s.txTimeout))))
-        misc.append(RadioSetting("dtmfSpeed", "DTMF Speed", RadioSettingValueInteger(0, 255, int(s.dtmfSpeed))))
-        misc.append(RadioSetting("noiseGate", "Noise Gate", RadioSettingValueInteger(0, 255, int(s.noiseGate))))
-        misc.append(RadioSetting("asl", "ASL", RadioSettingValueInteger(0, 255, int(s.asl))))
-        misc.append(RadioSetting("disableFmt", "Disable FM Tuner", RadioSettingValueBoolean(bool(s.disableFmt))))
-        misc.append(RadioSetting("dualWatchDelay", "Dual Watch Delay", RadioSettingValueInteger(0, 255, int(s.dualWatchDelay))))
-        misc.append(RadioSetting("subToneDeviation", "Sub Tone Deviation", RadioSettingValueInteger(0, 127, int(s.subToneDeviation))))
-        misc.append(RadioSetting("amAgcFix", "AM AGC Fix", RadioSettingValueBoolean(bool(s.amAgcFix))))
+        misc.append(
+            RadioSetting(
+                "keyLock",
+                "Key Lock",
+                RadioSettingValueBoolean(
+                    bool(
+                        s.keyLock))))
+        misc.append(
+            RadioSetting(
+                "bluetooth",
+                "Bluetooth",
+                RadioSettingValueBoolean(
+                    bool(
+                        s.bluetooth))))
+        misc.append(
+            RadioSetting(
+                "powerSave",
+                "Power Save",
+                RadioSettingValueBoolean(
+                    bool(
+                        s.powerSave))))
+        misc.append(
+            RadioSetting(
+                "keyTones",
+                "Key Tones",
+                RadioSettingValueBoolean(
+                    bool(
+                        s.keyTones))))
+        misc.append(
+            RadioSetting(
+                "ste", "STE (Squelch Tail Elim)", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.ste))))
+        _rfg = min(int(s.rfGain), len(RFGAIN_LIST) - 1)
+        misc.append(
+            RadioSetting(
+                "rfGain",
+                "RF Gain",
+                RadioSettingValueList(RFGAIN_LIST, RFGAIN_LIST[_rfg]),
+            )
+        )
+        misc.append(
+            RadioSetting(
+                "lastFmtFreq", "Last FM Tuner Freq", RadioSettingValueInteger(
+                    0, 0xFFFFFFFF, int(
+                        s.lastFmtFreq))))
+        misc.append(RadioSetting("vox", "VOX", RadioSettingValueList(
+            VOX_LIST, VOX_LIST[min(int(s.vox), len(VOX_LIST) - 1)])))
+        misc.append(
+            RadioSetting(
+                "voxTail", "VOX Tail", RadioSettingValueInteger(
+                    0, 65535, int(
+                        s.voxTail))))
+        misc.append(
+            RadioSetting(
+                "txTimeout", "TX Timeout (s)", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.txTimeout))))
+        misc.append(
+            RadioSetting(
+                "dtmfSpeed", "DTMF Speed", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.dtmfSpeed))))
+        misc.append(
+            RadioSetting(
+                "noiseGate", "Noise Gate", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.noiseGate))))
+        misc.append(
+            RadioSetting(
+                "asl", "ASL", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.asl))))
+        misc.append(
+            RadioSetting(
+                "disableFmt",
+                "Disable FM Tuner",
+                RadioSettingValueBoolean(
+                    bool(
+                        s.disableFmt))))
+        misc.append(
+            RadioSetting(
+                "dualWatchDelay", "Dual Watch Delay", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.dualWatchDelay))))
+        misc.append(
+            RadioSetting(
+                "subToneDeviation",
+                "Sub Tone Deviation",
+                RadioSettingValueInteger(
+                    0, 127, int(s.subToneDeviation))))
+        misc.append(
+            RadioSetting(
+                "amAgcFix",
+                "AM AGC Fix",
+                RadioSettingValueBoolean(
+                    bool(
+                        s.amAgcFix))))
         top.append(misc)
 
         # Security
         sec = RadioSettingGroup("security", "Security")
-        sec.append(RadioSetting("pin", "PIN", RadioSettingValueInteger(0, 65535, int(s.pin))))
-        sec.append(RadioSetting("pinAction", "PIN Action", RadioSettingValueInteger(0, 255, int(s.pinAction))))
-        sec.append(RadioSetting("lockedVfo", "Locked VFO", RadioSettingValueInteger(0, 255, int(s.lockedVfo))))
-        sec.append(RadioSetting("vfoLockActive", "VFO Lock Active", RadioSettingValueBoolean(bool(s.vfoLockActive))))
+        sec.append(
+            RadioSetting(
+                "pin", "PIN", RadioSettingValueInteger(
+                    0, 65535, int(
+                        s.pin))))
+        sec.append(
+            RadioSetting(
+                "pinAction", "PIN Action", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.pinAction))))
+        sec.append(
+            RadioSetting(
+                "lockedVfo", "Locked VFO", RadioSettingValueInteger(
+                    0, 255, int(
+                        s.lockedVfo))))
+        sec.append(
+            RadioSetting(
+                "vfoLockActive",
+                "VFO Lock Active",
+                RadioSettingValueBoolean(
+                    bool(
+                        s.vfoLockActive))))
         top.append(sec)
 
-        # Band Plan (20 plans at 0x1A02; match nicFW Programmer: freq in 10 Hz, display MHz)
+        # Band Plan (20 plans at 0x1A02; match nicFW Programmer: freq in 10 Hz,
+        # display MHz)
         bandplan_grp = RadioSettingGroup("bandplan", "Band Plan")
         for i in range(20):
             bp = self._memobj.bandPlans[i]
             start_mhz = int(bp.startFreq) * 10 / 1e6
             end_mhz = int(bp.endFreq) * 10 / 1e6
-            # txAllowed bit=1 means TX is allowed; wrap bit=1 means scan wrap is enabled.
+            # txAllowed bit=1 means TX is allowed; wrap bit=1 means scan wrap
+            # is enabled.
             _tx_allow = bool(bp.txAllowed)
             _wrap = bool(bp.wrap)
-            # Raw value IS the list index for both modulation and bandwidth (no remapping).
+            # Raw value IS the list index for both modulation and bandwidth (no
+            # remapping).
             _mod_raw = int(bp.modulation) & 7
             _mod_idx = min(_mod_raw, len(MODULATION_BP_LIST) - 1)
             _bw_raw = int(bp.bandwidth) & 7
             _bw_idx = min(_bw_raw, len(BANDWIDTH_BP_LIST) - 1)
             plan = RadioSettingGroup("bandPlan_%d" % i, "Plan %d" % (i + 1))
-            plan.append(RadioSetting("bandPlan_%d_startFreq" % i, "Start (MHz)", RadioSettingValueFloat(0, 1500, start_mhz, 0.00001)))
-            plan.append(RadioSetting("bandPlan_%d_endFreq" % i, "End (MHz)", RadioSettingValueFloat(0, 1500, end_mhz, 0.00001)))
-            plan.append(RadioSetting("bandPlan_%d_maxPower" % i, "Max Power", RadioSettingValueList(MAXPOWER_BP_LIST, MAXPOWER_BP_LIST[min(int(bp.maxPower), len(MAXPOWER_BP_LIST) - 1)])))
-            plan.append(RadioSetting("bandPlan_%d_txAllowed" % i, "TX Allowed", RadioSettingValueBoolean(_tx_allow)))
-            plan.append(RadioSetting("bandPlan_%d_wrap" % i, "Wrap", RadioSettingValueBoolean(_wrap)))
-            plan.append(RadioSetting("bandPlan_%d_modulation" % i, "Modulation", RadioSettingValueList(MODULATION_BP_LIST, MODULATION_BP_LIST[_mod_idx])))
-            plan.append(RadioSetting("bandPlan_%d_bandwidth" % i, "Bandwidth", RadioSettingValueList(BANDWIDTH_BP_LIST, BANDWIDTH_BP_LIST[_bw_idx])))
+            plan.append(
+                RadioSetting(
+                    "bandPlan_%d_startFreq" %
+                    i,
+                    "Start (MHz)",
+                    RadioSettingValueFloat(
+                        0,
+                        1500,
+                        start_mhz,
+                        0.00001)))
+            plan.append(
+                RadioSetting(
+                    "bandPlan_%d_endFreq" %
+                    i,
+                    "End (MHz)",
+                    RadioSettingValueFloat(
+                        0,
+                        1500,
+                        end_mhz,
+                        0.00001)))
+            _mp = min(int(bp.maxPower), len(MAXPOWER_BP_LIST) - 1)
+            plan.append(
+                RadioSetting(
+                    "bandPlan_%d_maxPower" % i,
+                    "Max Power",
+                    RadioSettingValueList(
+                        MAXPOWER_BP_LIST, MAXPOWER_BP_LIST[_mp],
+                    ),
+                )
+            )
+            plan.append(
+                RadioSetting(
+                    "bandPlan_%d_txAllowed" %
+                    i,
+                    "TX Allowed",
+                    RadioSettingValueBoolean(_tx_allow)))
+            plan.append(
+                RadioSetting(
+                    "bandPlan_%d_wrap" %
+                    i,
+                    "Wrap",
+                    RadioSettingValueBoolean(_wrap)))
+            plan.append(
+                RadioSetting(
+                    "bandPlan_%d_modulation" %
+                    i,
+                    "Modulation",
+                    RadioSettingValueList(
+                        MODULATION_BP_LIST,
+                        MODULATION_BP_LIST[_mod_idx])))
+            plan.append(
+                RadioSetting(
+                    "bandPlan_%d_bandwidth" %
+                    i,
+                    "Bandwidth",
+                    RadioSettingValueList(
+                        BANDWIDTH_BP_LIST,
+                        BANDWIDTH_BP_LIST[_bw_idx])))
             bandplan_grp.append(plan)
         top.append(bandplan_grp)
 
-        # Scan Presets (20 entries at 0x1B00; no magic header; entry is empty when startFreq == 0)
-        # Modulation: 0=FM, 1=AM, 2=USB, 3=Auto (verified from live EEPROM dump, March 2026).
+        # Scan Presets: 20 @ 0x1B00; no magic; empty when startFreq==0.
+        # Modulation: 0=FM, 1=AM, 2=USB, 3=Auto (EEPROM dump verify Mar 2026).
         # Ultrascan: 3 bits at bits[4:2] of flags byte; range 0-7.
-        # Range stored as 10 kHz units; displayed as End Freq = Start Freq + Range.
+        # Range is 10 kHz units; End Freq = Start Freq + Range.
         # Step stored as 10 Hz units; displayed in kHz.
         # Label: 8 ASCII chars (+ null terminator byte) at struct offset 11.
         scanpreset_grp = RadioSettingGroup("scanPresets", "Scan Presets")
@@ -1036,8 +1499,8 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
             start_raw = int(sp.startFreq)
             start_hz = start_raw * 10                          # Hz
             start_mhz = start_hz / 1e6
-            # Empty slots have startFreq == 0; nicFW Programmer shows nothing for end/step on empty
-            # entries even though the EEPROM bytes may contain non-zero default values.
+            # Empty: startFreq==0; Programmer hides end/step even if
+            # EEPROM holds non-zero defaults.
             if start_raw == 0:
                 end_mhz = 0.0
                 step_khz = 0.0
@@ -1046,20 +1509,28 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
                 end_hz = start_hz + range_raw * 10000          # Hz
                 end_mhz = end_hz / 1e6
                 step_raw = int(sp.step)
-                step_khz = step_raw * 10 / 1000.0             # 10 Hz units -> kHz
+                # 10 Hz units -> kHz
+                step_khz = step_raw * 10 / 1000.0
             _resume = int(sp.resume)
             _persist = int(sp.persist)
-            # ultrascan is a 6-bit struct field covering bits[7:2]; only lower 3 bits (0-7) are used
+            # ultrascan is a 6-bit struct field covering bits[7:2]; only lower
+            # 3 bits (0-7) are used
             _ultrascan = int(sp.ultrascan) & 0x07
             _mod_raw = int(sp.modulation) & 0x03
             try:
                 raw = sp.get_raw()
-                # label starts at struct offset 11; 8 content bytes (offset 19 is null terminator)
-                label_bytes = bytes(raw[11:19]) if raw and len(raw) >= 19 else b""
-                label_str = label_bytes.decode("ascii", "replace").rstrip("\x00 \xff").strip()
+                # label starts at struct offset 11; 8 content bytes (offset 19
+                # is null terminator)
+                label_bytes = bytes(raw[11:19]) if raw and len(
+                    raw) >= 19 else b""
+                label_str = label_bytes.decode(
+                    "ascii", "replace").rstrip("\x00 \xff").strip()
             except Exception:
                 label_str = ""
-            preset = RadioSettingGroup("scanPreset_%d" % i, "Preset %d" % (i + 1))
+            preset = RadioSettingGroup(
+                "scanPreset_%d" %
+                i, "Preset %d" %
+                (i + 1))
             preset.append(RadioSetting(
                 "scanPreset_%d_startFreq" % i, "Start (MHz)",
                 RadioSettingValueFloat(0, 1500, start_mhz, 0.00001)))
@@ -1075,38 +1546,95 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
             preset.append(RadioSetting(
                 "scanPreset_%d_persist" % i, "Scan Persist",
                 RadioSettingValueInteger(0, 255, _persist)))
-            preset.append(RadioSetting(
-                "scanPreset_%d_modulation" % i, "Modulation",
-                RadioSettingValueList(MODULATION_SP_LIST, MODULATION_SP_LIST[_mod_raw])))
-            preset.append(RadioSetting(
-                "scanPreset_%d_ultrascan" % i, "Ultrascan (0-7)",
-                RadioSettingValueList(ULTRASCAN_SP_LIST, ULTRASCAN_SP_LIST[_ultrascan])))
+            preset.append(
+                RadioSetting(
+                    "scanPreset_%d_modulation" %
+                    i,
+                    "Modulation",
+                    RadioSettingValueList(
+                        MODULATION_SP_LIST,
+                        MODULATION_SP_LIST[_mod_raw])))
+            preset.append(
+                RadioSetting(
+                    "scanPreset_%d_ultrascan" %
+                    i,
+                    "Ultrascan (0-7)",
+                    RadioSettingValueList(
+                        ULTRASCAN_SP_LIST,
+                        ULTRASCAN_SP_LIST[_ultrascan])))
             preset.append(RadioSetting(
                 "scanPreset_%d_label" % i, "Label (8 chars)",
                 RadioSettingValueString(0, 8, label_str)))
             scanpreset_grp.append(preset)
         top.append(scanpreset_grp)
 
-        # Group Labels (0x1C90; Group A-O = 15 labels, 6 chars each; match nicFW Programmer Group Labels tab)
+        # Group Labels (0x1C90; Group A-O = 15 labels, 6 chars each; match
+        # nicFW Programmer Group Labels tab)
         gl_grp = RadioSettingGroup("groupLabels", "Group Labels")
         for i in range(15):
             gl = self._memobj.groupLabels[i]
             try:
                 raw = gl.get_raw()
-                label_str = raw.decode("ascii", "replace").rstrip("\x00 \xff").strip() if raw and len(raw) >= 6 else ""
+                label_str = raw.decode("ascii", "replace").rstrip(
+                    "\x00 \xff").strip() if raw and len(raw) >= 6 else ""
             except Exception:
-                label_str = "".join(chr(ord(c)) if isinstance(c, str) and len(c) == 1 and 32 <= ord(c) < 127 else (chr(c) if isinstance(c, int) and 32 <= c < 127 else "") for c in gl.label).rstrip()
-            gl_grp.append(RadioSetting("groupLabel_%d" % i, "Group %s" % GROUP_LETTERS[i], RadioSettingValueString(0, 6, label_str)))
+
+                def _group_label_chr(c):
+                    if (
+                        isinstance(c, str)
+                        and len(c) == 1
+                        and 32 <= ord(c) < 127
+                    ):
+                        return chr(ord(c))
+                    if isinstance(c, int) and 32 <= c < 127:
+                        return chr(c)
+                    return ""
+
+                label_str = "".join(
+                    _group_label_chr(c) for c in gl.label
+                ).rstrip()
+            gl_grp.append(
+                RadioSetting(
+                    "groupLabel_%d" %
+                    i,
+                    "Group %s" %
+                    GROUP_LETTERS[i],
+                    RadioSettingValueString(
+                        0,
+                        6,
+                        label_str)))
         top.append(gl_grp)
 
-        # Calibration (per-radio; at 0x1DFB. Cloning from another radio copies these.)
+        # Calibration (per-radio; at 0x1DFB. Cloning from another radio copies
+        # these.)
         cal = self._memobj.calibration
         adv = RadioSettingGroup("calibration", "Calibration (per-radio)")
-        adv.append(RadioSetting("xtal671", "XTAL (Crystal) calibration", RadioSettingValueInteger(-128, 127, int(cal.xtal671))))
-        adv.append(RadioSetting("maxPowerWattsUHF", "Max Power Watts UHF (0.1W)", RadioSettingValueInteger(0, 255, int(cal.maxPowerWattsUHF))))
-        adv.append(RadioSetting("maxPowerSettingUHF", "Max Power Setting UHF", RadioSettingValueInteger(0, 255, int(cal.maxPowerSettingUHF))))
-        adv.append(RadioSetting("maxPowerWattsVHF", "Max Power Watts VHF (0.1W)", RadioSettingValueInteger(0, 255, int(cal.maxPowerWattsVHF))))
-        adv.append(RadioSetting("maxPowerSettingVHF", "Max Power Setting VHF", RadioSettingValueInteger(0, 255, int(cal.maxPowerSettingVHF))))
+        adv.append(RadioSetting("xtal671", "XTAL (Crystal) calibration",
+                   RadioSettingValueInteger(-128, 127, int(cal.xtal671))))
+        adv.append(
+            RadioSetting(
+                "maxPowerWattsUHF",
+                "Max Power Watts UHF (0.1W)",
+                RadioSettingValueInteger(
+                    0, 255, int(cal.maxPowerWattsUHF))))
+        adv.append(
+            RadioSetting(
+                "maxPowerSettingUHF",
+                "Max Power Setting UHF",
+                RadioSettingValueInteger(
+                    0, 255, int(cal.maxPowerSettingUHF))))
+        adv.append(
+            RadioSetting(
+                "maxPowerWattsVHF",
+                "Max Power Watts VHF (0.1W)",
+                RadioSettingValueInteger(
+                    0, 255, int(cal.maxPowerWattsVHF))))
+        adv.append(
+            RadioSetting(
+                "maxPowerSettingVHF",
+                "Max Power Setting VHF",
+                RadioSettingValueInteger(
+                    0, 255, int(cal.maxPowerSettingVHF))))
         top.append(adv)
 
         return top
@@ -1120,7 +1648,8 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
             if not isinstance(element, RadioSetting):
                 return
             name = element.get_name()
-            val = element.value.get_value() if hasattr(element.value, "get_value") else element.value
+            val = element.value.get_value() if hasattr(
+                element.value, "get_value") else element.value
             self._apply_one_setting(name, val)
 
         for el in ui:
