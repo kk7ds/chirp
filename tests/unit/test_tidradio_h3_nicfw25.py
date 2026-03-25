@@ -1,4 +1,5 @@
-# Copyright 2026 RadioDroid — unit tests for TD-H3 nicFW 2.5 mode/bandwidth mapping
+# Copyright 2026 RadioDroid — unit tests for TD-H3 nicFW 2.5
+# mode/bandwidth mapping
 import unittest
 
 from chirp import chirp_common, memmap
@@ -33,7 +34,7 @@ class TestH3FwChirpModeMap(unittest.TestCase):
 
 
 class TestH3DcsFirmwareIndex(unittest.TestCase):
-    """nicFW stores DTCS as ALL_DTCS_CODES index in 9 bits, not CHIRP literal."""
+    """DTCS is stored as ALL_DTCS_CODES index (9 bits), not CHIRP literal."""
 
     def test_index_21_is_dcs_025_chirp_25(self):
         self.assertEqual(h3._chirp_dtcs_from_firmware_raw(21), 25)
@@ -42,7 +43,9 @@ class TestH3DcsFirmwareIndex(unittest.TestCase):
         self.assertEqual(h3._encode_tone("DTCS", 25, "N"), 0x8000 | 21)
 
     def test_chirp_25_encodes_reverse_polarity_bit(self):
-        self.assertEqual(h3._encode_tone("DTCS", 25, "R"), 0x8000 | 0x4000 | 21)
+        self.assertEqual(
+            h3._encode_tone("DTCS", 25, "R"), 0x8000 | 0x4000 | 21
+        )
 
     def test_decode_tone_dcs_uses_index_payload(self):
         mode, val, pol = h3._decode_tone(0x8000 | 21)
@@ -69,7 +72,9 @@ class TestH3ValidateMemoryBandwidth(unittest.TestCase):
         mem = r.get_memory(1)
         mem.mode = h3.NFM
         for item in mem.extra:
-            if item.get_name() == "bandwidth" and hasattr(item.value, "set_value"):
+            if item.get_name() == "bandwidth" and hasattr(
+                item.value, "set_value"
+            ):
                 item.value.set_value("Wide")
         msgs = r.validate_memory(mem)
         kinds = [type(m).__name__ for m in msgs]
@@ -80,18 +85,24 @@ class TestH3ValidateMemoryBandwidth(unittest.TestCase):
         mem = r.get_memory(1)
         mem.mode = h3.NFM
         for item in mem.extra:
-            if item.get_name() == "bandwidth" and hasattr(item.value, "set_value"):
+            if item.get_name() == "bandwidth" and hasattr(
+                item.value, "set_value"
+            ):
                 item.value.set_value("Narrow")
         msgs = r.validate_memory(mem)
-        self.assertFalse(any(type(m).__name__ == "ValidationError" for m in msgs))
+        self.assertFalse(
+            any(type(m).__name__ == "ValidationError" for m in msgs)
+        )
 
     def test_nfm_leaves_eeprom_wide_in_extra_errors(self):
-        """Wide FM slot; mode-only NFM leaves bandwidth RadioSetting as Wide — invalid."""
+        """Wide FM slot; NFM-only keeps Bandwidth Wide in extra (invalid)."""
         r = self._radio_slot1()
         mem = r.get_memory(1)
         mem.mode = h3.NFM
         msgs = r.validate_memory(mem)
-        self.assertTrue(any(type(m).__name__ == "ValidationError" for m in msgs))
+        self.assertTrue(
+            any(type(m).__name__ == "ValidationError" for m in msgs)
+        )
 
 
 class TestH3EepromRoundTrip(unittest.TestCase):
@@ -99,7 +110,8 @@ class TestH3EepromRoundTrip(unittest.TestCase):
         data = bytearray(8192)
         data[0x1900] = 0xD8
         data[0x1901] = 0x2F
-        # Slot 1 @ 0x40: non-zero RX/TX so get_memory builds mem.extra (not early-empty).
+        # Slot 1 @ 0x40: non-zero RX/TX so get_memory builds mem.extra (not
+        # early-empty).
         f10 = 14652000  # 146.520 MHz in 10 Hz units
         data[0x40:0x44] = f10.to_bytes(4, "big")
         data[0x44:0x48] = f10.to_bytes(4, "big")
@@ -133,21 +145,24 @@ class TestH3EepromRoundTrip(unittest.TestCase):
         mem.name = "X"
         mem.tmode = ""
         for item in mem.extra:
-            if item.get_name() == "bandwidth" and hasattr(item.value, "set_value"):
+            if item.get_name() == "bandwidth" and hasattr(
+                item.value, "set_value"
+            ):
                 item.value.set_value("Narrow")
         r.set_memory(mem)
         out = r.get_memory(1)
         self.assertEqual(out.mode, h3.NFM)
 
     def test_raw_flags_byte_bit0_is_narrow_fm(self):
-        """nicFW stores narrow in bit0; modulation FM=1 in bits 1–2 (see MEM_FORMAT bit order)."""
+        """Narrow is bit0; FM modulation is bits 1–2 (MEM_FORMAT order)."""
         data = bytearray(8192)
         data[0x1900] = 0xD8
         data[0x1901] = 0x2F
         f10 = 14652000
         data[0x40:0x44] = f10.to_bytes(4, "big")
         data[0x44:0x48] = f10.to_bytes(4, "big")
-        # FM (index 1) + narrow: bit0=1, bits1-2=01 → value 3; wide FM would be 2.
+        # FM (index 1) + narrow: bit0=1, bits1-2=01 → value 3; wide FM would be
+        # 2.
         data[0x40 + 15] = 3
         r = h3.TH3NicFw25(memmap.MemoryMapBytes(bytes(data)))
         r.process_mmap()
