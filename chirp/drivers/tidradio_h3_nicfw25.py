@@ -1213,7 +1213,10 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
             try:
                 i = int(name.split("_")[-1])
                 if 0 <= i < 16:
-                    s.vfoState_groupModeChannels1[i] = min(max(int(val), 0), 197)
+                    s.vfoState_groupModeChannels1[i] = min(
+                        max(int(val), 0),
+                        197,
+                    )
             except (ValueError, IndexError):
                 pass
         elif name == "keyLock":
@@ -1271,13 +1274,19 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
                         elif field == "endFreq":
                             bp.endFreq = int(round(float(val) * 100000))
                         elif field == "maxPower":
-                            bp.maxPower = MAXPOWER_BP_LIST.index(val) if val in MAXPOWER_BP_LIST else 0
+                            if val in MAXPOWER_BP_LIST:
+                                bp.maxPower = MAXPOWER_BP_LIST.index(val)
+                            else:
+                                bp.maxPower = 0
                         elif field == "txAllowed":
                             bp.txAllowed = 1 if val else 0
                         elif field == "wrap":
                             bp.wrap = 1 if val else 0
                         elif field == "modulation":
-                            bp.modulation = MODULATION_BP_LIST.index(val) if val in MODULATION_BP_LIST else 0
+                            if val in MODULATION_BP_LIST:
+                                bp.modulation = MODULATION_BP_LIST.index(val)
+                            else:
+                                bp.modulation = 0
                         elif field == "bandwidth":
                             if val in BANDWIDTH_BP_LIST:
                                 bp.bandwidth = BANDWIDTH_BP_LIST.index(val)
@@ -1352,5 +1361,8 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
         self._apply_one_setting(name, val)
 
     def apply_setting_to_settings(self, name, val):
-        """Legacy alias for apply_setting; prefer apply_setting for new code."""
+        """Legacy alias for apply_setting.
+
+        Prefer `apply_setting` for new code.
+        """
         self.apply_setting(name, val)
