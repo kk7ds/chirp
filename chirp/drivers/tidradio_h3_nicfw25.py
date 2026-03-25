@@ -1187,7 +1187,10 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
         elif name == "sBarAlwaysOn":
             s.sBarAlwaysOn = 1 if val else 0
         elif name == "afFilters":
-            s.afFilters = min(AF_FILTERS_LIST.index(val), 255) if val in AF_FILTERS_LIST else 0
+            if val in AF_FILTERS_LIST:
+                s.afFilters = min(AF_FILTERS_LIST.index(val), 255)
+            else:
+                s.afFilters = 0
         elif name == "ifFreq":
             s.ifFreq = int(val) & 0xFF
         elif name == "vfoState_group0":
@@ -1195,12 +1198,16 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
         elif name == "vfoState_lastGroup0":
             s.vfoState_lastGroup0 = int(val) & 0x0F
         elif name == "vfoState_mode0":
-            s.vfoState_mode0 = OP_MODE_LIST.index(val) if val in OP_MODE_LIST else 0
+            if val in OP_MODE_LIST:
+                s.vfoState_mode0 = OP_MODE_LIST.index(val)
+            else:
+                s.vfoState_mode0 = 0
         elif name and name.startswith("vfoState_groupModeChannels0_"):
             try:
                 i = int(name.split("_")[-1])
                 if 0 <= i < 16:
-                    s.vfoState_groupModeChannels0[i] = min(max(int(val), 0), 197)
+                    s.vfoState_groupModeChannels0[i] = min(
+                        max(int(val), 0), 197)
             except (ValueError, IndexError):
                 pass
         elif name == "vfoState_group1":
@@ -1208,7 +1215,10 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
         elif name == "vfoState_lastGroup1":
             s.vfoState_lastGroup1 = int(val) & 0x0F
         elif name == "vfoState_mode1":
-            s.vfoState_mode1 = OP_MODE_LIST.index(val) if val in OP_MODE_LIST else 0
+            if val in OP_MODE_LIST:
+                s.vfoState_mode1 = OP_MODE_LIST.index(val)
+            else:
+                s.vfoState_mode1 = 0
         elif name and name.startswith("vfoState_groupModeChannels1_"):
             try:
                 i = int(name.split("_")[-1])
