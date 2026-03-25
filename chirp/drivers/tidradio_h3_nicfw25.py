@@ -1279,7 +1279,10 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
                         elif field == "modulation":
                             bp.modulation = MODULATION_BP_LIST.index(val) if val in MODULATION_BP_LIST else 0
                         elif field == "bandwidth":
-                            bp.bandwidth = BANDWIDTH_BP_LIST.index(val) if val in BANDWIDTH_BP_LIST else 0
+                            if val in BANDWIDTH_BP_LIST:
+                                bp.bandwidth = BANDWIDTH_BP_LIST.index(val)
+                            else:
+                                bp.bandwidth = 0
                 except (ValueError, IndexError, TypeError):
                     pass
         elif name and name.startswith("scanPreset_") and "_" in name[11:]:
@@ -1304,7 +1307,10 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
                         elif field == "persist":
                             sp.persist = int(val) & 0xFF
                         elif field == "modulation":
-                            sp.modulation = MODULATION_SP_LIST.index(val) if val in MODULATION_SP_LIST else 0
+                            if val in MODULATION_SP_LIST:
+                                sp.modulation = MODULATION_SP_LIST.index(val)
+                            else:
+                                sp.modulation = 0
                         elif field == "ultrascan":
                             sp.ultrascan = int(val) & 0x07
                         elif field == "label":
@@ -1339,7 +1345,10 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
                 cal.maxPowerSettingVHF = int(val) & 0xFF
 
     def apply_setting(self, name, val):
-        """Apply a single (name, value) to the memory struct. Used when tree->struct does not persist (e.g. Android)."""
+        """Apply a single (name, value) to the memory struct.
+
+        Used when tree->struct does not persist (e.g. Android).
+        """
         self._apply_one_setting(name, val)
 
     def apply_setting_to_settings(self, name, val):
