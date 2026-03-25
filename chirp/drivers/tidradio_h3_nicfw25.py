@@ -17,6 +17,7 @@
 # V2.5X codeplugs use BIG-Endian for all multi-byte values.
 
 import logging
+import struct
 import time
 
 from chirp import chirp_common, directory, bitwise, memmap, errors, util
@@ -709,6 +710,15 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
     VENDOR = "TIDRADIO"
     MODEL = "TD-H3 nicFW 2.5"
     BAUD_RATE = 38400
+    # nicFW V2.5 settings block magic at 0x1900 (big-endian); 8192-byte EEPROM.
+    _memsize = 8192
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if len(filedata) != cls._memsize:
+            return False
+        magic = struct.unpack_from(">H", filedata, 0x1900)[0]
+        return magic == 0xD82F
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
