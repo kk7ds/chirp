@@ -1127,14 +1127,20 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
             apply_el(el)
 
     def _apply_one_setting(self, name, val):
-        """Apply a single (name, value) to memory struct. Used by set_settings and by apply_setting_to_settings."""
+        """Apply a single (name, value) to memory struct.
+
+        Used by set_settings and by apply_setting_to_settings.
+        """
         s = self._memobj.settings
         if name == "squelch":
             s.squelch = int(val) & 0xFF
         elif name == "dualWatch":
             s.dualWatch = 1 if val else 0
         elif name == "activeVfo":
-            s.activeVfo = ACTIVEVFO_LIST.index(val) if val in ACTIVEVFO_LIST else 0
+            if val in ACTIVEVFO_LIST:
+                s.activeVfo = ACTIVEVFO_LIST.index(val)
+            else:
+                s.activeVfo = 0
         elif name == "step":
             idx = STEP_LIST.index(val) if val in STEP_LIST else 0
             s.step = STEP_VALUES[idx]
@@ -1151,7 +1157,10 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
         elif name == "txDeviation":
             s.txDeviation = int(val) & 0xFF
         elif name == "battStyle":
-            s.battStyle = BATTSTYLE_LIST.index(val) if val in BATTSTYLE_LIST else 0
+            if val in BATTSTYLE_LIST:
+                s.battStyle = BATTSTYLE_LIST.index(val)
+            else:
+                s.battStyle = 0
         elif name == "scanRange":
             s.scanRange = int(val) & 0xFFFF
         elif name == "scanPersist":
@@ -1163,7 +1172,10 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
         elif name == "scanUpdate":
             s.scanUpdate = int(val) & 0xFF
         elif name == "toneMonitor":
-            s.toneMonitor = TONEMONITOR_LIST.index(val) if val in TONEMONITOR_LIST else 0
+            if val in TONEMONITOR_LIST:
+                s.toneMonitor = TONEMONITOR_LIST.index(val)
+            else:
+                s.toneMonitor = 0
         elif name == "lcdBrightness":
             s.lcdBrightness = int(val) & 0xFF
         elif name == "lcdTimeout":
