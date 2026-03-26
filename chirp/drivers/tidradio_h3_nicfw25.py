@@ -732,8 +732,10 @@ def _channel_to_memory(memobj, number, mem):
     raw = _mem.get_raw()
     if raw and len(raw) >= 32:
         name_bytes = bytes(raw[20:32])
-        mem.name = name_bytes.decode(
-            "ascii", "replace").rstrip("\x00 \xff").strip() or ""
+        # Preserve leading spaces (CHARSET_ASCII / filter_name); trim only
+        # EEPROM padding (NUL/ERASE) then ASCII whitespace padding from ljust.
+        _n = name_bytes.decode("ascii", "replace")
+        mem.name = _n.rstrip("\x00\xff").rstrip() or ""
     else:
         name_parts = []
         for b in _mem.name:
@@ -948,6 +950,8 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
         #   (470_000_000, 600_000_001),    # Extended UHF
         rf.valid_modes = list(VALID_MODES)
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
+        # Odd split: TX frequency is stored absolutely in txFreq (10 Hz units).
+        rf.can_odd_split = True
         rf.valid_skips = ["", "S"]
         rf.valid_name_length = 12
         rf.valid_power_levels = power_levels_for_memobj(
