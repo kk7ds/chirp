@@ -959,9 +959,11 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
         # Radio shows "Channel Bank 1".."198"; CHIRP 1-198 = memory[0]..[197]
         rf.memory_bounds = (1, 198)
         rf.has_comment = True
-        # nicFW steps in kHz; required for chirp_common.required_step (e.g. CI
-        # test_validate_all_steps at 462.5625 MHz on 6.25 kHz grid).
-        rf.has_tuning_step = True
+        # Per-channel tuning step is not in channel EEPROM (global step only in
+        # settings). Keep valid_tuning_steps for required_step / CI
+        # test_validate_all_steps; has_tuning_step False so test_copy ignores
+        # tuning_step in assertEqualMem (tests/base.py).
+        rf.has_tuning_step = False
         rf.valid_tuning_steps = [hz / 1000.0 for hz in VALID_TUNING_STEPS_HZ]
         return rf
 
