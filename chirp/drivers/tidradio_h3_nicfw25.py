@@ -29,6 +29,7 @@ from chirp.settings import (
     RadioSettingValueInteger,
     RadioSettingValueString,
     RadioSettingValueFloat,
+    RadioSettings,
 )
 
 LOG = logging.getLogger(__name__)
@@ -55,7 +56,8 @@ struct {
        position:1,
        modulation:2,
        bandwidth:1;
-    char reserved[4];
+    u8 skip;
+    char reserved[3];
     char name[12];
 } vfoA;
 
@@ -73,7 +75,8 @@ struct {
        position:1,
        modulation:2,
        bandwidth:1;
-    char reserved[4];
+    u8 skip;
+    char reserved[3];
     char name[12];
 } vfoB;
 
@@ -91,7 +94,8 @@ struct {
        position:1,
        modulation:2,
        bandwidth:1;
-    char reserved[4];
+    u8 skip;
+    char reserved[3];
     char name[12];
 } memory[198];
 
@@ -707,12 +711,16 @@ def _channel_to_memory(memobj, number, mem):
         mem.empty = True
         return mem
     mem.empty = False
-    if rxf == txf:
+    if txf == 0:
+        mem.duplex = "off"
+        mem.offset = 0
+    elif rxf == txf:
         mem.duplex = ""
         mem.offset = 0
     else:
         mem.duplex = "+" if txf > rxf else "-"
         mem.offset = abs(rxf - txf) * 10
+    mem.skip = "S" if int(_mem.skip) else ""
     _tx = int(_mem.txPower)
     _pwr_lv = power_levels_for_memobj(memobj)
     if _tx == TXPower_NT or _tx < 0 or _tx >= len(_pwr_lv):
@@ -806,9 +814,12 @@ def _memory_to_channel(memobj, number, mem):
         _mem.groups = 0
         for i in range(12):
             _mem.name[i] = 0xFF
+        _mem.skip = 0
         return
     _mem.rxFreq = mem.freq // 10
-    if mem.duplex == "split":
+    if mem.duplex == "off":
+        _mem.txFreq = 0
+    elif mem.duplex == "split":
         _mem.txFreq = mem.offset // 10
     elif mem.duplex == "+":
         _mem.txFreq = (mem.freq + mem.offset) // 10
@@ -819,7 +830,8 @@ def _memory_to_channel(memobj, number, mem):
     _mem.txPower = _tx_power_u8_from_memory(memobj, mem.power)
     name = (mem.name or "")[:12].ljust(12)
     for i, c in enumerate(name):
-        _mem.name[i] = ord(c) if ord(c) < 256 else 0x20
+        o = ord(c)
+        _mem.name[i] = o if 32 <= o < 127 else 0x20
     if mem.mode == NFM:
         _mem.modulation = MODULATION_LIST.index("FM")
         _mem.bandwidth = 1
@@ -887,6 +899,7 @@ def _memory_to_channel(memobj, number, mem):
             else:
                 g3 = idx
         _mem.groups = g0 | (g1 << 4) | (g2 << 8) | (g3 << 12)
+    _mem.skip = 1 if mem.skip == "S" else 0
 
 
 @directory.register
@@ -1637,7 +1650,7 @@ class TH3NicFw25(chirp_common.CloneModeRadio):
                     0, 255, int(cal.maxPowerSettingVHF))))
         top.append(adv)
 
-        return top
+        return RadioSettings(top)
 
     def set_settings(self, ui):
         def apply_el(element):
