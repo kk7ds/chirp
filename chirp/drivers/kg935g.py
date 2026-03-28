@@ -91,6 +91,21 @@ config_map_935H = (     # map address, write size, write count
     (0x4780, 32, 375),  # Memory Names 0-999
     (0x7670, 8, 125),   # Ch Valid bytes 0-999
     )
+config_map_x20h = (     # map address, write size, write count
+    # (0x00,   64, 512),  #- Use for full upload testing
+    # (0x44,   32, 1),    # Freq Limits
+    # (0x440,  8,  1),     # Area Message
+    # (0x480,  8, 5),    # Scan Groups
+    # (0x500,  8, 15),    # Call Codes
+    # (0x580,  8, 15),    # Call Names
+    # (0x600,  8, 5),    # FM Presets
+    # (0x800,  64, 2),    # settings
+    # (0x880,  16, 1),    # VFO A
+    # (0x8C0,  16, 1),    # VFO B
+    (0x900,  64, 250),  # Channel Memory 0-999
+    (0x4780, 32, 375),  # Memory Names 0-999
+    (0x7670, 8, 125),   # Ch Valid bytes 0-999
+    )
 
 AB_LIST = ["A", "B"]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
@@ -696,7 +711,7 @@ _MEM_FORMAT_935GPLUS = """
                 power:4;
         u8      unknown3:2,
                 scan_add:1,
-                unknown4:1,
+                favorite:1,
                 compander:1,
                 mute_mode:2,
                 iswide:1;
@@ -1245,7 +1260,7 @@ _MEM_FORMAT_935H = """
                 power:4;
         u8      unknown3:2,
                 scan_add:1,
-                unknown4:1,
+                favorite:1,
                 compander:1,
                 mute_mode:2,
                 iswide:1;
@@ -1330,6 +1345,23 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                     chirp_common.PowerLevel("H", watts=5.5)]
     _record_start = 0x7C
     config_map = config_map_935G
+
+    def get_extra(self, _mem, mem):
+        mem.extra = RadioSettingGroup("Extra", "Extra")
+        _mem.mute_mode = 2 if _mem.mute_mode >2 else _mem.mute_mode
+        rs = RadioSetting("mute_mode", "Mute Mode",
+                          RadioSettingValueList(
+                              SPMUTE_LIST, current_index=_mem.mute_mode))
+        mem.extra.append(rs)
+        rs = RadioSetting("scrambler", "Scramble Descramble",
+                          RadioSettingValueList(
+                              SCRAMBLE_LIST, current_index=_mem.scrambler))
+        mem.extra.append(rs)
+        rs = RadioSetting("compander", "Compander",
+                          RadioSettingValueList(
+                             ONOFF_LIST, current_index=_mem.compander))
+        mem.extra.append(rs)
+        return
 
     def _write_record(self, cmd, payload=b''):
         _packet = struct.pack('BBBB', self._record_start, cmd, 0xFF,
@@ -1600,6 +1632,18 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         # always set it even if no dtcs is used
         mem.dtcs_polarity = "%s%s" % (tpol or "N", rpol or "N")
 
+    def _get_power(self, _mem, mem):
+        _mem.power = _mem.power & 0x3
+        if _mem.power > 2:
+            _mem.power = 2
+        mem.power = self.POWER_LEVELS[_mem.power]
+
+    def _set_power(self, _mem, mem):
+            if _mem.power > 2:
+                _mem.power = 2
+            _mem.power = self.POWER_LEVELS.index(mem.power)
+            return _mem.power
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _nam = self._memobj.names[number]
@@ -1634,13 +1678,11 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                 mem.name += chr(char)
         mem.name = mem.name.rstrip()
 
+        self.get_extra(_mem, mem)
         self._get_tone(_mem, mem)
 
         mem.skip = "" if bool(_mem.scan_add) else "S"
-        _mem.power = _mem.power & 0x3
-        if _mem.power > 2:
-            _mem.power = 2
-        mem.power = self.POWER_LEVELS[_mem.power]
+        self._get_power(_mem, mem)
         mem.mode = _mem.iswide and "FM" or "NFM"
         return mem
 
@@ -1716,21 +1758,15 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         _mem.iswide = int(mem.mode == "FM")
         # set the tone
         self._set_tone(mem, _mem)
-        # MRT set the scrambler and compander to off by default
-        # MRT This changes them in the channel memory
-        _mem.scrambler = 0
-        _mem.compander = 0
         # set the power
         _mem.power = _mem.power & 0x3
-        if mem.power:
-            if _mem.power > 2:
-                _mem.power = 2
-            _mem.power = self.POWER_LEVELS.index(mem.power)
+        if mem.power is not None:
+            _mem.power = self._set_power(_mem, mem)
         else:
-            _mem.power = True
-        # MRT set to mute mode to QT (not QT+DTMF or QT*DTMF) by default
-        # MRT This changes them in the channel memory
-        _mem.mute_mode = 0
+            _mem.power = 0
+
+        for setting in mem.extra:
+            setattr(_mem, setting.get_name(), setting.value)
 
         # MRT it is unknown what impact these values have
         # MRT This changes them in the channel memory to match what
@@ -1741,7 +1777,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         # MRT Set to 3 to TO MATCH CPS VALUES
         _mem.unknown3 = 3
         # MRT Set to 1 to TO MATCH CPS VALUES
-        _mem.unknown4 = 1
+        # _mem.unknown4 = 1
         # MRT set unknown5 to 1 and unknown6 to 0
         _mem.unknown5 = 1
         _mem.unknown6 = 255
@@ -2508,6 +2544,25 @@ class KG935GPlusRadio(KG935GRadio):
     def process_mmap(self):
         self._memobj = bitwise.parse(_MEM_FORMAT_935GPLUS, self._mmap)
 
+    def get_extra(self, _mem, mem):
+        mem.extra = RadioSettingGroup("Extra", "Extra")
+        rs = RadioSetting("mute_mode", "Mute Mode",
+                          RadioSettingValueList(
+                              SPMUTE_LIST, current_index=_mem.mute_mode))
+        mem.extra.append(rs)
+        rs = RadioSetting("scrambler", "Scramble Descramble",
+                          RadioSettingValueList(
+                              SCRAMBLE_LIST, current_index=_mem.scrambler))
+        mem.extra.append(rs)
+        rs = RadioSetting("compander", "Compander",
+                          RadioSettingValueList(
+                             ONOFF_LIST, current_index=_mem.compander))
+        mem.extra.append(rs)
+        rs = RadioSetting("favorite", "Favorite",
+                          RadioSettingValueList(
+                             ONOFF_LIST, current_index=_mem.favorite))
+        mem.extra.append(rs)
+        return
 
 @directory.register
 class KGUV8HRadio(KG935GRadio):
@@ -2533,3 +2588,24 @@ class KG935HRadio(KG935GRadio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(_MEM_FORMAT_935H, self._mmap)
+
+    def get_extra(self, _mem, mem):
+        mem.extra = RadioSettingGroup("Extra", "Extra")
+        rs = RadioSetting("mute_mode", "Mute Mode",
+                          RadioSettingValueList(
+                              SPMUTE_LIST, current_index=_mem.mute_mode))
+        mem.extra.append(rs)
+        rs = RadioSetting("scrambler", "Scramble Descramble",
+                          RadioSettingValueList(
+                              SCRAMBLE_LIST, current_index=_mem.scrambler))
+        mem.extra.append(rs)
+        rs = RadioSetting("compander", "Compander",
+                          RadioSettingValueList(
+                             ONOFF_LIST, current_index=_mem.compander))
+        mem.extra.append(rs)
+        rs = RadioSetting("favorite", "Favorite",
+                          RadioSettingValueList(
+                             ONOFF_LIST, current_index=_mem.favorite))
+        mem.extra.append(rs)
+        return
+
