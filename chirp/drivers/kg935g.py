@@ -1348,7 +1348,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
 
     def get_extra(self, _mem, mem):
         mem.extra = RadioSettingGroup("Extra", "Extra")
-        _mem.mute_mode = 2 if _mem.mute_mode >2 else _mem.mute_mode
+        _mem.mute_mode = 2 if _mem.mute_mode > 2 else _mem.mute_mode
         rs = RadioSetting("mute_mode", "Mute Mode",
                           RadioSettingValueList(
                               SPMUTE_LIST, current_index=_mem.mute_mode))
@@ -2564,6 +2564,7 @@ class KG935GPlusRadio(KG935GRadio):
         mem.extra.append(rs)
         return
 
+
 @directory.register
 class KGUV8HRadio(KG935GRadio):
 
@@ -2609,6 +2610,7 @@ class KG935HRadio(KG935GRadio):
         mem.extra.append(rs)
         return
 
+
 @directory.register
 class KGXS20HRadio(KG935GRadio):
 
@@ -2619,8 +2621,9 @@ class KGXS20HRadio(KG935GRadio):
 
     _record_start = 0x79
     config_map = config_map_x20h
-    POWER_LEVELS = [ chirp_common.PowerLevel("L", watts=0.5),
-                     chirp_common.PowerLevel("H", watts=5.5) ]
+    POWER_LEVELS = [chirp_common.PowerLevel("L", watts=0.5),
+                    chirp_common.PowerLevel("H", watts=5.5)]
+
     def process_mmap(self):
         self._memobj = bitwise.parse(_MEM_FORMAT_935GPLUS, self._mmap)
 
@@ -2631,7 +2634,7 @@ class KGXS20HRadio(KG935GRadio):
 
     def _get_power(self, _mem, mem):
         if _mem.power == 0:
-            mem.power = self.POWER_LEVELS[0]  
+            mem.power = self.POWER_LEVELS[0]
         else:
             mem.power = self.POWER_LEVELS[1]
 
@@ -2651,7 +2654,7 @@ class KGXS20HRadio(KG935GRadio):
         mem.extra.append(rs)
         rs = RadioSetting("compander", "Compander",
                           RadioSettingValueList(
-                             ONOFF_LIST,current_index=_mem.compander))
+                             ONOFF_LIST, current_index=_mem.compander))
         mem.extra.append(rs)
         return
 
@@ -2679,14 +2682,14 @@ class KGXS20GPlusRadio(KG935GRadio):
 
     def _get_power(self, _mem, mem):
         if _mem.power == 0:
-            mem.power = self.POWER_LEVELS[0]  
+            mem.power = self.POWER_LEVELS[0]
         else:
             mem.power = self.POWER_LEVELS[1]
 
     def _set_power(self, _mem, mem):
         temp_val = 0 if mem.power == self.POWER_LEVELS[0] else 2
         return temp_val
-   
+
     def get_extra(self, _mem, mem):
         mem.extra = RadioSettingGroup("Extra", "Extra")
         rs = RadioSetting("mute_mode", "Mute Mode",
@@ -2723,14 +2726,14 @@ class KGXS20GRadio(KG935GRadio):
 
     def _get_power(self, _mem, mem):
         if _mem.power == 0:
-            mem.power = self.POWER_LEVELS[0]  
+            mem.power = self.POWER_LEVELS[0]
         else:
             mem.power = self.POWER_LEVELS[1]
 
     def _set_power(self, _mem, mem):
         temp_val = 0 if mem.power == self.POWER_LEVELS[0] else 2
         return temp_val
-    
+
     def get_extra(self, _mem, mem):
         mem.extra = RadioSettingGroup("Extra", "Extra")
         rs = RadioSetting("mute_mode", "Mute Mode",
