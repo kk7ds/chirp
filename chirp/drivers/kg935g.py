@@ -92,6 +92,21 @@ config_map_935H = (     # map address, write size, write count
     (0x4780, 32, 375),  # Memory Names 0-999
     (0x7670, 8, 125),   # Ch Valid bytes 0-999
     )
+config_map_x20h = (     # map address, write size, write count
+    # (0x00,   64, 512),  #- Use for full upload testing
+    # (0x44,   32, 1),    # Freq Limits
+    # (0x440,  8,  1),     # Area Message
+    # (0x480,  8, 5),    # Scan Groups
+    # (0x500,  8, 15),    # Call Codes
+    # (0x580,  8, 15),    # Call Names
+    # (0x600,  8, 5),    # FM Presets
+    # (0x800,  64, 2),    # settings
+    # (0x880,  16, 1),    # VFO A
+    # (0x8C0,  16, 1),    # VFO B
+    (0x900,  64, 250),  # Channel Memory 0-999
+    (0x4780, 32, 375),  # Memory Names 0-999
+    (0x7670, 8, 125),   # Ch Valid bytes 0-999
+    )
 
 AB_LIST = ["A", "B"]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
@@ -2505,5 +2520,141 @@ class KG935HRadio(KG935GRadio):
         rs = RadioSetting("favorite", "Favorite",
                           RadioSettingValueList(
                              ONOFF_LIST, current_index=_mem.favorite))
+        mem.extra.append(rs)
+        return
+
+
+@directory.register
+class KGXS20HRadio(KG935GRadio):
+
+    """Wouxun KG-XS20H"""
+    VENDOR = "Wouxun"
+    MODEL = "KG-XS20H"
+    _model = b"KG-UV8D-A"
+
+    _record_start = 0x79
+    config_map = config_map_x20h
+    POWER_LEVELS = [chirp_common.PowerLevel("L", watts=0.5),
+                    chirp_common.PowerLevel("H", watts=5.5)]
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(_MEM_FORMAT_935GPLUS, self._mmap)
+
+    def _get_settings(self):
+        test_grp = RadioSettingGroup("test_grp", "Settings to come later")
+        group = RadioSettings(test_grp)
+        return group
+
+    def _get_power(self, _mem, mem):
+        if _mem.power == 0:
+            mem.power = self.POWER_LEVELS[0]
+        else:
+            mem.power = self.POWER_LEVELS[1]
+
+    def _set_power(self, _mem, mem):
+        temp_val = 0 if mem.power == self.POWER_LEVELS[0] else 2
+        return temp_val
+
+    def get_extra(self, _mem, mem):
+        mem.extra = RadioSettingGroup("Extra", "Extra")
+        rs = RadioSetting("mute_mode", "Mute Mode",
+                          RadioSettingValueList(
+                              SPMUTE_LIST, current_index=_mem.mute_mode))
+        mem.extra.append(rs)
+        rs = RadioSetting("scrambler", "Scramble Descramble",
+                          RadioSettingValueList(
+                              SCRAMBLE_LIST, current_index=_mem.scrambler))
+        mem.extra.append(rs)
+        rs = RadioSetting("compander", "Compander",
+                          RadioSettingValueList(
+                             ONOFF_LIST, current_index=_mem.compander))
+        mem.extra.append(rs)
+        return
+
+
+@directory.register
+class KGXS20GPlusRadio(KG935GRadio):
+
+    """Wouxun KG-XS20G Plus"""
+    VENDOR = "Wouxun"
+    MODEL = "KG-XS20G Plus"
+    _model = b"KG-UV8D-A"
+
+    _record_start = 0x79
+    config_map = config_map_x20h
+    POWER_LEVELS = [chirp_common.PowerLevel("L", watts=0.5),
+                    chirp_common.PowerLevel("H", watts=5.5)]
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(_MEM_FORMAT_935GPLUS, self._mmap)
+
+    def _get_settings(self):
+        test_grp = RadioSettingGroup("test_grp", "Settings to come later")
+        group = RadioSettings(test_grp)
+        return group
+
+    def _get_power(self, _mem, mem):
+        if _mem.power == 0:
+            mem.power = self.POWER_LEVELS[0]
+        else:
+            mem.power = self.POWER_LEVELS[1]
+
+    def _set_power(self, _mem, mem):
+        temp_val = 0 if mem.power == self.POWER_LEVELS[0] else 2
+        return temp_val
+
+    def get_extra(self, _mem, mem):
+        mem.extra = RadioSettingGroup("Extra", "Extra")
+        rs = RadioSetting("mute_mode", "Mute Mode",
+                          RadioSettingValueList(
+                              SPMUTE_LIST, current_index=_mem.mute_mode))
+        mem.extra.append(rs)
+        rs = RadioSetting("compander", "Compander",
+                          RadioSettingValueList(
+                             ONOFF_LIST, current_index=_mem.compander))
+        mem.extra.append(rs)
+        return
+
+
+@directory.register
+class KGXS20GRadio(KG935GRadio):
+
+    """Wouxun KG-XS20G"""
+    VENDOR = "Wouxun"
+    MODEL = "KG-XS20G"
+    _model = b"KG-UV8D-A"
+
+    _record_start = 0x79
+    config_map = config_map_x20h
+    POWER_LEVELS = [chirp_common.PowerLevel("L", watts=0.5),
+                    chirp_common.PowerLevel("H", watts=5.5)]
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(_MEM_FORMAT_935GPLUS, self._mmap)
+
+    def _get_settings(self):
+        test_grp = RadioSettingGroup("test_grp", "Settings to come later")
+        group = RadioSettings(test_grp)
+        return group
+
+    def _get_power(self, _mem, mem):
+        if _mem.power == 0:
+            mem.power = self.POWER_LEVELS[0]
+        else:
+            mem.power = self.POWER_LEVELS[1]
+
+    def _set_power(self, _mem, mem):
+        temp_val = 0 if mem.power == self.POWER_LEVELS[0] else 2
+        return temp_val
+
+    def get_extra(self, _mem, mem):
+        mem.extra = RadioSettingGroup("Extra", "Extra")
+        rs = RadioSetting("mute_mode", "Mute Mode",
+                          RadioSettingValueList(
+                              SPMUTE_LIST, current_index=_mem.mute_mode))
+        mem.extra.append(rs)
+        rs = RadioSetting("compander", "Compander",
+                          RadioSettingValueList(
+                             ONOFF_LIST, current_index=_mem.compander))
         mem.extra.append(rs)
         return
