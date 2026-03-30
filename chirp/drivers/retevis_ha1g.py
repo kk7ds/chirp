@@ -21,7 +21,7 @@ import time
 from enum import Enum
 
 from chirp import memmap, chirp_common, bitwise, directory, errors
-from chirp import crc
+from chirp import checksum
 from chirp.settings import (
     RadioSetting,
     RadioSettingGroup,
@@ -34,13 +34,11 @@ from chirp.settings import (
 
 LOG = logging.getLogger(__name__)
 
-# This is the minimum required firmare version supported by this driver
-REQUIRED_VER = "v1.1.11.6"
+SERIAL_TIMEOUT = 1.0
 
-MEM_FORMAT = """
 
-#seekto 0x0E;
-struct{
+MEM_DEFINITIONS = """
+struct radioinfo {
     u8 modelnumber[32];
     u8 hardwareversion[2];
     u8 serialno[16];
@@ -50,14 +48,134 @@ struct{
     u8 saleterr;
     u8 radiomode;
     u8 rev[7];
-} radioinfo;
+};
 
-#seekto 0x52;
-struct{
+struct dataver {
     u8 dataver[2];
     u8 softver[4];
     u8 rev[4];
-    }dataver;
+};
+
+struct zoneinfo {
+    ul16 zonenum;
+    ul16 zoneindex[16];
+    struct {
+        char name[14];
+        ul16 chnum;
+        ul16 chindex[64];
+    } zones[16];
+};
+
+struct scaninfo {
+    ul16 scannum;
+    ul16 scanindex[16];
+    struct  {
+       char name[14];
+       u8 scantxch:4,
+          scancondition:4;
+       u8 hangtime:4,
+          talkback:1,
+          scanstatus:3;
+       u8 chnum;
+       ul16 specifych;
+       ul16 PriorityCh1;
+       ul16 PriorityCh2;
+       u8 scanmode;
+       ul16 chindex[100];
+    } scans[16];
+};
+
+struct vfoscaninfo {
+    ul16 vfoscannum;
+    ul16 vfoscanindex[3];
+    struct {
+       u8 scantxch:4,
+          scancondition:4;
+       u8 hangtime:4,
+          talkback:1,
+          startcondition:1,
+          rev_1:2;
+       u8 scanmode;
+       ul32 vhffreq_start;
+       ul32 vhffreq_end;
+       ul32 uhffreq_start;
+       ul32 uhffreq_end;
+       u8 rev;
+    } vfoscans[3];
+};
+
+struct alarminfo {
+    ul16 alarmnum;
+    ul16 alarmindex[8];
+    struct {
+        char name[14];
+        u8 alarmtype:4,
+           alarmmode:4;
+        ul16 jumpch;
+        u8 localalarm:1,
+           txbackground:1,
+           ctcmode:2,
+           rev_1:4;
+        u8 alarmtime:4,
+           alarmcycle:4;
+        u8 mictime:4,
+           txinterval:4;
+        u8 alarmid[8];
+        u8 alarmstatus;
+        u8 rev_3[1];
+    } alarms[8];
+};
+
+struct dtmfinfo {
+    ul16 dtmfnum;
+    ul16 dtmfindex[4];
+    struct {
+        u8 autoresettime:4,
+           codedelaytime:4;
+        u8 stunmode:2,
+           showani:1,
+           sidetone:1,
+           pttidtype:2,
+           rev_1:2;
+        char callid[10];
+        char stunid[10];
+        char revive[10];
+        char bot[16];
+        char eot[16];
+        char rev_2[8];
+    } dtmfcomm;
+    struct {
+        char name[14];
+        u8 codelen:4,
+           signaling:4;
+        u8 groupcode:4,
+           intermediatecode:4;
+        char fastcall1[16];
+        char fastcall2[16];
+        char fastcall3[16];
+        char fastcall4[16];
+        char fastcall5[16];
+        char fastcall6[16];
+        char fastcall7[16];
+        char fastcall8[16];
+        char fastcall9[16];
+        char fastcall10[16];
+        u8 rev_1:6,
+           EncodingEnable:1,
+           DecodingEnable:1;
+        u8 dtmfstatus;
+        u8 rev_2[12];
+    } dtmfs[4];
+};
+"""
+
+MEM_FORMAT = """
+
+#seekto 0x0E;
+struct radioinfo radioinfo;
+
+#seekto 0x52;
+struct dataver dataver;
 
 #seekto 0x5C;
 struct {
@@ -138,17 +256,7 @@ struct {
 } settings;
 
 #seekto 0xc0;
-struct  {
-    ul16 zonenum;
-    ul16 zoneindex[16];
-} zonedata;
-
-#seekto 0xe2;
-struct {
-    char name[14];
-    ul16 chnum;
-    ul16 chindex[64];
-} zones[16];
+struct zoneinfo zoneinfo;
 
 #seekto 0x0D42;
 struct  {
@@ -189,128 +297,25 @@ struct  {
   u8 autoscan:1,
      scanlist:7;
   u8 alarmlist;
-  u8 dtmfsignalinglist:4,
+  u8 rev_4:2,
      pttidtype:2,
-     rev_4:2;
+     dtmfsignalinglist:4;
   ul16 dtmfcallid;
   u8 reserve[3];
 } channels[1027];
 
 #seekto 0xb5c2;
-struct  {
-    ul16 scannum;
-    ul16 scanindex[16];
-} scandata;
-
-#seekto 0xb5e4;
-struct {
-   char name[14];
-   u8 scantxch:4,
-      scancondition:4;
-   u8 hangtime:4,
-      talkback:1,
-      scanstatus:3;
-   u8 chnum;
-   ul16 specifych;
-   ul16 PriorityCh1;
-   ul16 PriorityCh2;
-   u8 scanmode;
-   ul16 chindex[100];
-} scans[16];
+struct scaninfo scans;
 
 #seekto 0xc3e4;
-struct  {
-    ul16 vfoscannum;
-    ul16 vfoscanindex[3];
-} vfoscandata;
-
-#seekto 0xc3ec;
-struct {
-   u8 scantxch:4,
-      scancondition:4;
-   u8 hangtime:4,
-      talkback:1,
-      startcondition:1,
-      rev_1:2;
-   u8 scanmode;
-   ul32 vhffreq_start;
-   ul32 vhffreq_end;
-   ul32 uhffreq_start;
-   ul32 uhffreq_end;
-   u8 rev;
-} vfoscans[3];
+struct vfoscaninfo vfoscans;
 
 #seekto 0xc444;
-struct  {
-    ul16 alarmnum;
-    ul16 alarmindex[8];
-} alarmdata;
-
-#seekto 0xc456;
-struct {
-    char name[14];
-    u8 alarmtype:4,
-       alarmmode:4;
-    ul16 jumpch;
-    u8 localalarm:1,
-       txbackground:1,
-       ctcmode:2,
-       rev_1:4;
-    u8 alarmtime:4,
-       alarmcycle:4;
-    u8 mictime:4,
-       txinterval:4;
-    u8 alarmid[8];
-    u8 alarmstatus;
-    u8 rev_3[1];
-    } alarms[8];
+struct alarminfo alarms;
 
 #seekto 0xc848;
-struct  {
-    ul16 dtmfnum;
-    ul16 dtmfindex[4];
-} dtmfdata;
+struct dtmfinfo dtmfinfos;
 
-#seekto 0xc852;
-struct {
-    u8 autoresettime:4,
-       codedelaytime:4;
-    u8 stunmode:2,
-       showani:1,
-       sidetone:1,
-       pttidtype:2,
-       rev_1:2;
-    char callid[10];
-    char stunid[10];
-    char revive[10];
-    char bot[16];
-    char eot[16];
-    char rev_2[8];
-} dtmfcomm;
-
-#seekto 0xc89a;
-struct {
-     char name[14];
-     u8 codelen:4,
-        signaling:4;
-     u8 groupcode:4,
-        intermediatecode:4;
-     char fastcall1[16];
-     char fastcall2[16];
-     char fastcall3[16];
-     char fastcall4[16];
-     char fastcall5[16];
-     char fastcall6[16];
-     char fastcall7[16];
-     char fastcall8[16];
-     char fastcall9[16];
-     char fastcall10[16];
-     u8 rev_1:6,
-        EncodingEnable:1,
-        DecodingEnable:1;
-     u8 dtmfstatus;
-     u8 rev_2[12];
-} dtmfs[4];
 """
 
 
@@ -320,34 +325,6 @@ class HandshakeStatuses(Enum):
     PwdWrong = 3
     RadioWrong = 4
 
-
-class MemoryRegions(Enum):
-    """
-    Defines the logical memory regions for this radio model.
-    """
-    radioHead = 2
-    radioInfo = 3
-    radioVer = 4
-    settingData = 6
-    zoneData = 7
-    channelData = 8
-    scanData = 11
-    vfoScanData = 12
-    alarmData = 13
-    dTMFData = 15
-
-
-MEMORY_REGIONS_RANGES = {
-    MemoryRegions.radioHead: (0, 14),   # (Start addr, len)
-    MemoryRegions.radioInfo: (14, 68),
-    MemoryRegions.radioVer: (82, 10),
-    MemoryRegions.settingData: (92, 100),
-    MemoryRegions.zoneData: (192, 3202),
-    MemoryRegions.channelData: (3394, 43136),
-    MemoryRegions.scanData: (46530, 3618),
-    MemoryRegions.vfoScanData: (50148, 68),
-    MemoryRegions.alarmData: (50244, 258),
-    MemoryRegions.dTMFData: (51272, 842)}
 
 DTMFCHARSET = "0123456789ABCDabcd#*"
 NAMECHARSET = chirp_common.CHARSET_ALPHANUMERIC + "-/;,._!? *#@$%&+=/<>~(){}]'"
@@ -390,22 +367,28 @@ FREQ_STEP_List = [
 class HA1GBank(chirp_common.NamedBank):
 
     def get_name(self):
-        _bank = self._model._radio._memobj.zones[self.index]
+        _bank = self._model._radio._memobj.zoneinfo.zones[self.index]
         name = "".join(filter(_bank.name, NAMECHARSET, 14))
         return name.rstrip()
 
     def set_name(self, name):
-        _bank = self._model._radio._memobj.zones[self.index]
+        _bank = self._model._radio._memobj.zoneinfo.zones[self.index]
         _bank.name = str(name).ljust(14)[:14]
 
 
 class HA1GBankModel(chirp_common.BankModel):
 
+    @property
+    def zinfo(self):
+        return self._radio._memobj.zoneinfo
+
+    channelAlwaysHasBank = True
+
     def get_num_mappings(self):
         return len(self.get_mappings())
 
     def get_mappings(self):
-        banks = self._radio._memobj.zones
+        banks = self.zinfo.zones
         bank_mappings = []
         for index, _bank in enumerate(banks):
             bank = HA1GBank(self, "%i" % index, "b%i" % (index + 1))
@@ -414,39 +397,33 @@ class HA1GBankModel(chirp_common.BankModel):
 
         return bank_mappings
 
+    def get_used_zone_index(self):
+        return [x for x in
+                self.zinfo.zoneindex[0:self.zinfo.zonenum] if x != 0xFFFF]
+
     def _get_channel_numbers_in_bank(self, bank):
-        _bank_used = self._radio._memobj.zonedata.zoneindex[bank.index]
-        if _bank_used == 0xFFFF:
+        if bank.index not in self.get_used_zone_index():
             return set()
 
-        _members = self._radio._memobj.zones[bank.index]
-        return set([int(ch) - 1 for ch in _members.chindex if ch != 0xFFFF])
+        _members = self.zinfo.zones[bank.index]
+        return set([int(ch) - self._radio._skip_vfoch_count + 1
+                    for ch in _members.chindex if ch != 0xFFFF
+                    and int(ch) - self._radio._skip_vfoch_count + 1 > 0])
 
     def _update_bank_with_channel_numbers(self, bank, channels_in_bank):
-        _members = self._radio._memobj.zones[bank.index]
+        _members = self.zinfo.zones[bank.index]
         if len(channels_in_bank) > len(_members.chindex):
             raise Exception("Too many entries in bank %d" % bank.index)
 
         empty = 0
         for index, channel_number in enumerate(sorted(channels_in_bank)):
-            _members.chindex[index] = channel_number + 1
+            _members.chindex[index] = (
+                channel_number + self._radio._skip_vfoch_count - 1)
             empty = index + 1
         for index in range(empty, len(_members.chindex)):
             _members.chindex[index] = 0xFFFF
 
         _members.chnum = len(channels_in_bank)
-
-    def _update_banknum(self):
-        # Simple approach to keep the number of banks synced to the actual
-        # bank data. Only drop trailing banks that have no channels.
-        _zonedata = self._radio._memobj.zonedata
-        _banknum = 0
-        for index, _bank in enumerate(reversed(_zonedata.zoneindex)):
-            if not _bank == 0xFFFF:
-                _banknum = len(_zonedata.zoneindex) - index
-                break
-
-        _zonedata.zonenum = _banknum
 
     def add_memory_to_mapping(self, memory, bank):
         channels_in_bank = self._get_channel_numbers_in_bank(bank)
@@ -454,8 +431,9 @@ class HA1GBankModel(chirp_common.BankModel):
         self._update_bank_with_channel_numbers(bank, channels_in_bank)
 
         # enable bank
-        self._radio._memobj.zonedata.zoneindex[bank.index] = bank.index
-        self._update_banknum()
+        if bank.index not in self.get_used_zone_index():
+            self.zinfo.zoneindex[self.zinfo.zonenum] = bank.index
+            self.zinfo.zonenum += 1
 
     def remove_memory_from_mapping(self, memory, bank):
         channels_in_bank = self._get_channel_numbers_in_bank(bank)
@@ -466,10 +444,14 @@ class HA1GBankModel(chirp_common.BankModel):
                             (memory.number, bank))
         self._update_bank_with_channel_numbers(bank, channels_in_bank)
 
-        if not channels_in_bank:
+        if not channels_in_bank and bank.index in self.get_used_zone_index():
             # disable bank
-            self._radio._memobj.zonedata.zoneindex[bank.index] = 0xFFFF
-            self._update_banknum()
+            _zone_index = [x for x in self.get_used_zone_index()
+                           if x != bank.index]
+            self.zinfo.zoneindex = (
+                _zone_index + [0xFFFF] * (
+                    len(self.zinfo.zoneindex) - len(_zone_index)))
+            self.zinfo.zonenum -= 1
 
     def get_mapping_memories(self, bank):
         memories = []
@@ -492,9 +474,11 @@ def do_download(self):
         HandshakeStatuses.RadioWrong: "Radio model mismatch",
         HandshakeStatuses.PwdWrong: "Radio is password protected"}
     try:
-        handshake_result = handshake(self, self.pipe)
+        serial = self.pipe
+        serial.timeout = SERIAL_TIMEOUT
+        handshake_result = handshake(self, serial)
         if handshake_result == HandshakeStatuses.Normal:
-            all_bytes = read_items(self, self.pipe)
+            all_bytes = self.read_items(serial)
             return memmap.MemoryMapBytes(bytes(all_bytes))
         raise errors.RadioError(error_map.get(
             handshake_result, "Unknown error communicating with radio"))
@@ -512,9 +496,11 @@ def do_upload(self):
         HandshakeStatuses.RadioWrong: "Radio model mismatch",
         HandshakeStatuses.PwdWrong: "Radio is password protected"}
     try:
-        handshake_result = handshake(self, self.pipe)
+        serial = self.pipe
+        serial.timeout = SERIAL_TIMEOUT
+        handshake_result = handshake(self, serial)
         if handshake_result == HandshakeStatuses.Normal:
-            write_items(self, self.pipe)
+            self.write_items(serial)
         else:
             raise errors.RadioError(error_map.get(
                 handshake_result, "Unknown error communicating with radio"))
@@ -533,61 +519,12 @@ def handshake(self, serial):
     retry_delay = 0.05
     for num in range(max_retries):
         flag, databytes = exchange_block_with_radio(
-            get_handshake_bytes(self.MODEL + " "),
+            get_handshake_bytes(self.current_model + " "),
             serial, self.read_packet_len)
         time.sleep(retry_delay)
         if flag:
             break
     return validate_connection_handshake(self, databytes)
-
-
-def read_items(self, serial):
-    all_bytes = bytearray(self._memsize)
-    status = chirp_common.Status()
-    status.msg = "Cloning from radio"
-    status.cur = 0
-    status.max = self._memsize
-    for item in MemoryRegions:
-        try:
-            item_bytes = get_read_current_packet_bytes(
-                self, item.value, serial, status)
-            if item == MemoryRegions.radioVer and item_bytes:
-                firmware_version = unpack_version(item_bytes[2:6])
-                validate_version(firmware_version)
-                self.metadata = {'ha1g_firmware': firmware_version}
-            if item_bytes:
-                write_memory_region(all_bytes, item_bytes, item)
-        except errors.RadioError:
-            raise
-        except Exception as e:
-            LOG.error(
-                f"read item_data error: {item.name} error_msg: {e}")
-            continue
-    return all_bytes
-
-
-def write_items(self, serial):
-    status = chirp_common.Status()
-    status.max = self._memsize
-    status.msg = "Uploading to radio"
-    status.cur = 0
-    data_bytes = self.get_mmap()
-    item_bytes = get_read_current_packet_bytes(
-                self, MemoryRegions.radioVer.value, serial, status)
-    if item_bytes:
-        firmware_version = unpack_version(item_bytes[2:6])
-        validate_version(firmware_version)
-    EXCLUDED_REGIONS = {MemoryRegions.radioHead,
-                        MemoryRegions.radioInfo,
-                        MemoryRegions.radioVer,
-                        MemoryRegions.scanData,
-                        MemoryRegions.alarmData}
-    for item in MemoryRegions:
-        if item in EXCLUDED_REGIONS:
-            continue
-        item_bytes = get_write_item_bytes(data_bytes, item)
-        write_item_current_page_bytes(
-            self, serial, item_bytes, item.value, status)
 
 
 def validate_connection_handshake(self, dataByte: bytes):
@@ -597,8 +534,8 @@ def validate_connection_handshake(self, dataByte: bytes):
         return HandshakeStatuses.Wrong
     if dataByte[20] == pwd_faild_flag:
         return HandshakeStatuses.PwdWrong
-    radioType = dataByte[20: 20 + len(self.MODEL)]
-    model_bytes = self.MODEL.encode("ascii")
+    radioType = dataByte[20: 20 + len(self.current_model)]
+    model_bytes = self.current_model.encode("ascii")
     if radioType == model_bytes:
         return HandshakeStatuses.Normal
     else:
@@ -703,30 +640,13 @@ def write_item_current_page_bytes(self, serial, item_Bytes: bytes,
         self.status_fn(status)
 
 
-def get_write_item_bytes(all_bytes: bytearray, item):
-    """
-       Get the bytes for a specific memory region
-       - Uses MEMORY_REGIONS_RANGES to find start and length
-    """
-    if item not in MEMORY_REGIONS_RANGES:
-        LOG.debug(f"Unknown memory Range:{item}")
-        return b""
-    start, length = MEMORY_REGIONS_RANGES[item]
-    return all_bytes[start:start+length]
-
-
-def write_memory_region(all_bytes: bytearray,
-                        item_bytes: bytes, item):
+def copy_to_memory(all_bytes: bytearray,
+                   item_bytes: bytes, start_addr: int, item_len: int):
     """
     Put the given region bytes into the main memory array
-    - Uses MEMORY_REGIONS_RANGES to find start and length
     """
-    if item not in MEMORY_REGIONS_RANGES:
-        LOG.debug(f"Unknown memory Range:{item}")
-        return
-    start, length = MEMORY_REGIONS_RANGES[item]
-    item_len = min(len(item_bytes), length)
-    all_bytes[start:start + item_len] = item_bytes[:item_len]
+    item_len = min(len(item_bytes), item_len)
+    all_bytes[start_addr:start_addr + item_len] = item_bytes[:item_len]
 
 
 def exit_programming_mode(self):
@@ -774,11 +694,11 @@ def unpack_version(raw_bytes):
     return format_version(current_ver)
 
 
-def validate_version(ver):
-    if compare_version(ver, REQUIRED_VER) < 0:
+def validate_version(self, ver):
+    if compare_version(ver, self.REQUIRED_VER) < 0:
         raise errors.RadioError(
             ("Firmware is %s; You must update to %s or higher "
-             "to be compatible with CHIRP") % (ver, REQUIRED_VER))
+             "to be compatible with CHIRP") % (ver, self.REQUIRED_VER))
 
 
 def compare_version(a, b):
@@ -794,7 +714,7 @@ def compare_version(a, b):
 
 
 def calculate_crc16(data):
-    return struct.pack('<H', crc.crc16_ibm_rev(data))
+    return struct.pack('<H', checksum.crc16_ibm_rev(data))
 
 
 def _get_memory(self, mem, _mem, ch_index):
@@ -876,7 +796,7 @@ def _get_memory(self, mem, _mem, ch_index):
         mem.duplex = ""
         mem.offset = 0
     elif tx_freq == 0xFFFFFFFF:
-        mem.duplex = ""
+        mem.duplex = "off"
         mem.offset = 0
     else:
         mem.duplex = mem.freq > tx_freq and "-" or "+"
@@ -1123,7 +1043,7 @@ def get_common_setting(self, common):
 
 
 def get_dtmf_setting(self, dtmf):
-    _dtmf_comm = self._memobj.dtmfcomm
+    _dtmf_comm = self._memobj.dtmfinfos.dtmfcomm
     opts = ["OFF"] + ["%ss" % x for x in range(1, 16, 1)]
     dtmf.append(
         RadioSetting(
@@ -1194,7 +1114,7 @@ def get_dtmf_setting(self, dtmf):
 
 
 def get_vfo_scan(self, vfoscan):
-    _vfo_scan = self._memobj.vfoscans[0]
+    _vfo_scan = self._memobj.vfoscans.vfoscans[0]
     opts = ["Carrier", "Time", "Search"]
     vfoscan.append(
         RadioSetting(
@@ -1223,13 +1143,13 @@ def get_vfo_scan(self, vfoscan):
             RadioSettingValueList(opts,
                                   current_index=_vfo_scan.startcondition)))
 
-    freq_start = _vfo_scan.vhffreq_start / 1000000
+    freq_start = from_MHz(_vfo_scan.vhffreq_start)
     vfoscan.append(
         RadioSetting(
             "vfoscan.vhffreq_start", "Start Frequency",
             RadioSettingValueFloat(108, 480, freq_start, 0.00001, 5)))
 
-    freq_end = _vfo_scan.vhffreq_end / 1000000
+    freq_end = from_MHz(_vfo_scan.vhffreq_end)
     vfoscan.append(
         RadioSetting(
             "vfoscan.vhffreq_end", "End Frequency",
@@ -1309,7 +1229,7 @@ def get_radiosetting_by_key(self, _setting, item_key,
             opts, current_index=get_item_by_id(opts_dict, item_value)))
     item.set_apply_callback(
         set_item_callback if callback is None else callback,
-        _setting, item_key, opts_dict, self)
+        _setting, item_key, opts_dict)
     return item
 
 
@@ -1321,7 +1241,7 @@ def get_item_by_id(items, value):
     return next((i for i, item in enumerate(items) if item["id"] == value), 0)
 
 
-def set_item_callback(set_item, obj, name, items, self):
+def set_item_callback(set_item, obj, name, items):
     item_value = get_item_by_name(items, set_item.value)
     setattr(obj, name, item_value)
 
@@ -1361,7 +1281,7 @@ def set_ch_index(self, ch_index_list):
     if len(_ch_data.chindex) < ch_num:
         raise ValueError("Not enough space in chindex array")
     _ch_data.chnum = ch_num
-    for i in range(1027):
+    for i in range(len(_ch_data.chindex)):
         _ch_data.chindex[i] = (
             ch_index_list[i] if i < ch_num else 0xFFFF)
     self._ch_cache = ch_index_list.copy()
@@ -1403,6 +1323,11 @@ def filter(s, char_set, max_length=10, is_upper=False):
     return s_
 
 
+def from_MHz(freq):
+    """Like chirp_common.from_MHz but returns a float"""
+    return freq / 1000000
+
+
 @directory.register
 class HA1G(chirp_common.CloneModeRadio):
     """Retevis HA1G"""
@@ -1410,17 +1335,44 @@ class HA1G(chirp_common.CloneModeRadio):
     VENDOR = "Retevis"
     MODEL = "HA1G"
     BAUD_RATE = 115200
-    _memsize = 0xD868
     read_packet_len = 1047
     write_page_len = 1024
     current_model = "HA1G"
+    _skip_vfoch_count = 3
     _ch_cache = None
     _dtmf_list = [{"name": "OFF", "id": 15}]
     _alarm_list = [{"name": "OFF", "id": 255}]
 
+    # This is the minimum required firmare version supported by this driver
+    REQUIRED_VER = "v1.1.11.6"
+
     _airband = (108000000, 135999999)
     _vhf = (136000000, 174000010)
     _uhf = (400000000, 480000010)
+
+    """
+    Defines the logical memory regions for this radio model.
+    """
+    MEMORY_REGIONS_RANGES = {
+        "radioHead": (2, 0, 14),   # (Region Id, Start addr, len)
+        "radioInfo": (3, 14, 68),
+        "radioVer": (4, 82, 10),
+        "settingData": (6, 92, 100),
+        "zoneData": (7, 192, 3202),
+        "channelData": (8, 3394, 43136),
+        "scanData": (11, 46530, 3618),
+        "vfoScanData": (12, 50148, 68),
+        "alarmData": (13, 50244, 258),
+        "dTMFData": (15, 51272, 842)}
+
+    EXCLUDED_REGIONS = {"radioHead",
+                        "radioInfo",
+                        "radioVer",
+                        "scanData",
+                        "alarmData"}
+
+    _memsize = max(start + size for _, start,
+                   size in MEMORY_REGIONS_RANGES.values())
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -1479,7 +1431,7 @@ class HA1G(chirp_common.CloneModeRadio):
         return HA1GBankModel(self)
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(MEM_DEFINITIONS + MEM_FORMAT, self._mmap)
         self._dtmf_list = self.get_dtmf_item_list()
         self._alarm_list = self.get_alarm_item_list()
 
@@ -1505,6 +1457,54 @@ class HA1G(chirp_common.CloneModeRadio):
                 "Unexpected error during upload: %s" % e)
             raise errors.RadioError(
                 "Unexpected error communicating with the radio")
+
+    def read_items(self, serial):
+        all_bytes = bytearray(self._memsize)
+        status = chirp_common.Status()
+        status.msg = "Cloning from radio"
+        status.cur = 0
+        status.max = self._memsize
+        items = self.MEMORY_REGIONS_RANGES.items()
+        for item_name, (region_id, start_addr, length) in items:
+            try:
+                item_bytes = get_read_current_packet_bytes(
+                    self, region_id, serial, status)
+                if item_name == "radioVer" and item_bytes:
+                    firmware_version = unpack_version(item_bytes[2:6])
+                    validate_version(self, firmware_version)
+                    self.metadata = {'ha1g_firmware': firmware_version}
+                if item_bytes:
+                    copy_to_memory(all_bytes, item_bytes,
+                                   start_addr, length)
+            except errors.RadioError:
+                raise
+            except Exception as e:
+                LOG.error(
+                    f"read item_data error: {item_name} error_msg: {e}")
+                continue
+        return all_bytes
+
+    def write_items(self, serial):
+        status = chirp_common.Status()
+        status.max = self._memsize
+        status.msg = "Uploading to radio"
+        status.cur = 0
+        data_bytes = self.get_mmap()
+        radiover_id, _, _ = self.MEMORY_REGIONS_RANGES["radioVer"]
+        item_bytes = get_read_current_packet_bytes(
+                    self, radiover_id, serial, status)
+        if item_bytes:
+            firmware_version = unpack_version(item_bytes[2:6])
+            validate_version(self, firmware_version)
+        items = self.MEMORY_REGIONS_RANGES.items()
+        for item_name, (region_id, start_addr, length) in items:
+            if item_name in self.EXCLUDED_REGIONS:
+                continue
+            if not self.supports_banks() and item_name == "zoneData":
+                continue
+            item_bytes = data_bytes[start_addr:start_addr+length]
+            write_item_current_page_bytes(
+                self, serial, item_bytes, region_id, status)
 
     def get_memory(self, number):
         mem = chirp_common.Memory()
@@ -1583,7 +1583,7 @@ class HA1G(chirp_common.CloneModeRadio):
                         setattr(_settings, name, value)
                     elif name.startswith("dtmfsetting."):
                         name = name[12:]
-                        _dtmfcomm = self._memobj.dtmfcomm
+                        _dtmfcomm = self._memobj.dtmfinfos.dtmfcomm
                         if (name in ["callid", "stunid", "revive"]):
                             value = filter(value, DTMFCHARSET, 10, True)
                             value = value.ljust(10, "\x00")
@@ -1593,9 +1593,9 @@ class HA1G(chirp_common.CloneModeRadio):
                         setattr(_dtmfcomm, name, value)
                     elif name.startswith("vfoscan."):
                         name = name[8:]
-                        _vfo_scan = self._memobj.vfoscans[0]
+                        _vfo_scan = self._memobj.vfoscans.vfoscans[0]
                         if name in ["vhffreq_start", "vhffreq_end"]:
-                            value = int(value * 1000000)
+                            value = chirp_common.to_MHz(value)
                         setattr(_vfo_scan, name, value)
                     LOG.debug("Setting %s: %s", name, value)
             except Exception:
@@ -1603,45 +1603,42 @@ class HA1G(chirp_common.CloneModeRadio):
                 raise
 
     def get_alarm_item_list(self):
-        _alarmdata = self._memobj.alarmdata
-        _alarms = self._memobj.alarms
+        _alarmdata = self._memobj.alarms
         alarm_list = [{"name": "OFF", "id": 255}]
         max_count = 8
         alarm_num = min(_alarmdata.alarmnum, max_count)
         if alarm_num > 0:
             for i in range(alarm_num):
                 alarm_index = min(_alarmdata.alarmindex[i], max_count - 1)
-                alarm_item = _alarms[alarm_index]
+                alarm_item = _alarmdata.alarms[alarm_index]
                 alarm_item.alarmstatus = 1
                 alarmname = "".join(filter(alarm_item.name, NAMECHARSET, 12))
                 alarm_list.append({"name": alarmname, "id": alarm_index})
         return alarm_list
 
     def get_dtmf_item_list(self):
-        _dtmfdata = self._memobj.dtmfdata
-        _dtmfs = self._memobj.dtmfs
+        _dtmfdata = self._memobj.dtmfinfos
         dtmf_list = [{"name": "OFF", "id": 15}]
         max_count = 4
         dtmf_num = min(_dtmfdata.dtmfnum, max_count)
         if dtmf_num > 0:
             for i in range(dtmf_num):
                 dtmf_index = min(_dtmfdata.dtmfindex[i], max_count - 1)
-                dtmf_item = _dtmfs[dtmf_index]
+                dtmf_item = _dtmfdata.dtmfs[dtmf_index]
                 dtmf_item.dtmfstatus = 1
                 dtmfname = "".join(filter(dtmf_item.name, NAMECHARSET, 12))
                 dtmf_list.append({"name": dtmfname, "id": dtmf_index})
         return dtmf_list
 
     def get_scan_item_list(self):
-        _scandata = self._memobj.scandata
-        _scans = self._memobj.scans
+        _scandata = self._memobj.scans
         scan_dict = []
         max_count = 16
         scan_num = min(_scandata.scannum, max_count)
         if scan_num > 0:
             for i in range(0, scan_num):
                 scan_index = min(_scandata.scanindex[i], max_count)
-                scan_item = _scans[scan_index]
+                scan_item = _scandata.scans[scan_index]
                 scanname = "".join(filter(scan_item.name, NAMECHARSET, 12))
                 scan_dict.append({"name": scanname, "id": scan_index})
         return scan_dict

@@ -16,7 +16,7 @@
 import struct
 import logging
 
-from chirp import chirp_common, directory, memmap, errors, util
+from chirp import chirp_common, directory, memmap, errors, util, checksum
 from chirp import bitwise
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
@@ -238,18 +238,11 @@ def _image_ident_from_image(radio):
     return _image_ident_from_data(radio.get_mmap())
 
 
-def checksum(frame):
-    x = 0
-    for b in frame:
-        x ^= b
-    return x & 0xFF
-
-
 def make_frame(cmd, addr, data=b""):
     payload = struct.pack(">H", addr) + data
     header = struct.pack(">cB", cmd, len(payload))
     frame = header + payload
-    return frame + bytes([checksum(frame)])
+    return frame + bytes([checksum.checksum_xor(frame)])
 
 
 def send(radio, frame):

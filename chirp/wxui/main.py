@@ -908,6 +908,17 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_query_mapy73pl, query_mapy73pl_item)
         source_menu.Append(query_mapy73pl_item)
 
+        query_amsat_item = wx.MenuItem(
+            source_menu, wx.NewId(),
+            'Radio Amateur Satellites (GitHub Mirror)')
+        self.Bind(wx.EVT_MENU, self._menu_query_amsats, query_amsat_item)
+        source_menu.Append(query_amsat_item)
+
+        query_satnogs_item = wx.MenuItem(source_menu, wx.NewId(),
+                                         'SatNOGS DB (Direct API)')
+        self.Bind(wx.EVT_MENU, self._menu_query_satnogs, query_satnogs_item)
+        source_menu.Append(query_satnogs_item)
+
         radio_menu.Append(wx.MenuItem(radio_menu, wx.ID_SEPARATOR))
 
         auto_edits = wx.MenuItem(radio_menu, wx.NewId(),
@@ -2099,6 +2110,12 @@ GNU General Public License for more details."""
 
     def _menu_query_mapy73pl(self, event):
         self._do_network_query(query_sources.Mapy73PlQueryDialog)
+
+    def _menu_query_amsats(self, event):
+        self._do_network_query(query_sources.RadioAmateurSatellitesQueryDialog)
+
+    def _menu_query_satnogs(self, event):
+        self._do_network_query(query_sources.SatNOGSQueryDialog)
 
 
 def display_update_notice(version):

@@ -206,7 +206,7 @@ class ChirpMemoryColumn(object):
 
     @property
     def valid(self):
-        if self._name in ['freq', 'rtone', 'txfreq']:
+        if self._name in ['freq', 'txfreq']:
             return True
         to_try = ['has_%s', 'valid_%ss', 'valid_%ses', 'valid_%s_levels']
         for thing in to_try:
@@ -214,6 +214,9 @@ class ChirpMemoryColumn(object):
                 return bool(self._features[thing % self._name])
             except KeyError:
                 pass
+
+        if self._name in ('rtone', 'ctone'):
+            return bool(self._features.valid_tones)
 
         if '.' in self._name:
             # Assume extra fields are always valid
@@ -1528,7 +1531,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         self._memory_cache[row] = memory
 
-        darkmode = wx.SystemSettings.GetAppearance().IsDark()
+        try:
+            darkmode = wx.SystemSettings.GetAppearance().IsDark()
+        except AttributeError:
+            # Older wxPython doesn't have GetAppearance(), so just assume light
+            darkmode = False
         if darkmode:
             immutable_color = wx.SystemSettings.GetColour(
                 wx.SYS_COLOUR_GRAYTEXT)
@@ -1643,7 +1650,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         # Use a FrozenMemory for the actual set to catch potential attempts
         # to modify the memory during set_memory().
-        self.do_radio(set_cb, 'set_memory', chirp_common.FrozenMemory(mem))
+        self.do_radio(set_cb, 'set_memory',
+                      chirp_common.FrozenMemory(mem, strict=False))
 
     def erase_memory(self, number, refresh=True):
         """Erase a memory in the radio and refresh our view on success"""
@@ -1989,7 +1997,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # Try to validate these changes with the radio before we go to store
         # them, as now is the best time to present an error to the user.
         warnings, errors = chirp_common.split_validation_msgs(
-            self._radio.validate_memory(mem))
+            self._radio.validate_memory(chirp_common.FrozenMemory(mem)))
         if errors:
             LOG.warning('Memory failed validation: %r', mem)
             wx.MessageBox(_('Invalid edit: %s') % '; '.join(errors),
@@ -2552,7 +2560,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 else:
                     mem = import_logic.import_mem(self._radio, srcrf, mem)
                     warns, errs = chirp_common.split_validation_msgs(
-                        self._radio.validate_memory(mem))
+                        self._radio.validate_memory(
+                            chirp_common.FrozenMemory(mem)))
                     errormsgs.extend([(mem, e) for e in errs])
                     errormsgs.extend([(mem, w) for w in warns])
 

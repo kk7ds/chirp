@@ -19,6 +19,7 @@ import string
 
 from chirp import bitwise
 from chirp import chirp_common
+from chirp import checksum
 from chirp import directory
 from chirp import errors
 from chirp import memmap
@@ -567,18 +568,11 @@ def _finish(radio):
         raise errors.RadioError("Radio did not finish cleanly")
 
 
-def _checksum(data):
-    cs = 0
-    for byte in data:
-        cs += byte
-    return cs % 256
-
-
 def _send(radio, cmd, addr, length, data=None):
     frame = struct.pack(">cHb", cmd, addr, length)
     if data:
         frame += data
-        frame += bytes([_checksum(frame[1:])])
+        frame += bytes([checksum.checksum_8bit(frame[1:])])
         frame += b"\x06"
     _echo_write(radio, frame)
     LOG.debug("Sent:\n%s" % util.hexprint(frame))
@@ -603,7 +597,7 @@ def _send(radio, cmd, addr, length, data=None):
         LOG.debug(" Length: %02x/%02x" % (length, _length))
         LOG.debug(" Addr: %04x/%04x" % (addr, _addr))
         raise errors.RadioError("Radio send unexpected block")
-    cs = _checksum(result[1:-2])
+    cs = checksum.checksum_8bit(result[1:-2])
     if cs != result[-2]:
         LOG.debug("Calculated: %02x" % cs)
         LOG.debug("Actual:     %02x" % result[-2])
@@ -1127,7 +1121,7 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
         _mem.offset = mem.offset / 100
 
         if is_hyper_chan:
-            mem.name = SEVEN_SPACES
+            _mem.name = SEVEN_SPACES
         else:
             _mem.name = mem.name.ljust(7)
 

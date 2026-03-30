@@ -521,10 +521,10 @@ class RA87StyleRadio(chirp_common.CloneModeRadio):
             _exit_programming_mode(self)
 
     def _get_dcs(self, val):
-        return int(str(val)[2:-16])
+        return val.get_bbcd()
 
     def _set_dcs(self, val):
-        return int(str(val), 16)
+        return bitwise.dec_to_bbcd(val)
 
     def _memory_obj(self, suffix=""):
         return getattr(self._memobj, "%s_memory%s" % (self._vfo, suffix))

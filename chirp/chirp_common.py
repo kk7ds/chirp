@@ -644,7 +644,7 @@ class DVMemory(Memory):
             self.dv_code = 0
 
 
-def FrozenMemory(source):
+def FrozenMemory(source, strict=True):
     class _FrozenMemory(source.__class__):
         def __init__(self, source):
             self.__dict__['_frozen'] = False
@@ -660,13 +660,17 @@ def FrozenMemory(source):
         def __setattr__(self, k, v):
             if self._frozen:
                 # This should really be an error, but we have a number of
-                # drivers that make modifications during set_memory(). So this
-                # just has to be a warning for now. Later it could turn into
-                # a TypeError.
+                # drivers that make modifications during set_memory(). If we
+                # are not being strict, then we just log a warning.
                 caller = inspect.getframeinfo(inspect.stack()[1][0])
                 LOG.warning(
                     '%s@%i: Illegal set on attribute %s - Fix this driver!' % (
                         caller.filename, caller.lineno, k))
+                if strict:
+                    raise errors.FrozenMemoryError(
+                        _('Internal driver error: Attempt to modify '
+                          'frozen memory; Please report this as a bug using '
+                          '"Report or update a bug" in the Help menu'))
             super().__setattr__(k, v)
 
         def dupe(self):
@@ -1079,7 +1083,20 @@ class RadioFeatures:
 
     def validate_memory(self, mem):
         """Return a list of warnings and errors that will be encountered
-        if trying to set @mem on the current radio"""
+        if trying to set @mem on the current radio.
+
+        An Error will abort the edit, while a Warning will allow it. Both
+        will show a message to the user. Use Errors to reject things that
+        need to be. A Warning is useful to alert the user that something
+        will be fixed/changed/coerced by the driver and that they should
+        expect it to look different than what they entered. Use these
+        sparingly as they can be very annoying to the user if they happen
+        on every edit.
+
+        NOTE: This method MAY NOT modify @mem in any way. It is not a hook
+        to make changes, it is for _validation_ of the memory before it is
+        sent to the driver's set_memory() method.
+        """
         msgs = []
 
         lo, hi = self.memory_bounds

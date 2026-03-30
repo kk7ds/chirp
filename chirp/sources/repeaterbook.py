@@ -2,6 +2,7 @@ import datetime
 import glob
 import json
 import logging
+import lzma
 import math
 import os
 
@@ -11,7 +12,7 @@ from chirp import chirp_common
 from chirp import errors
 from chirp import platform as chirp_platform
 from chirp.sources import base
-from chirp.wxui import fips
+from chirp.sources import fips
 
 LOG = logging.getLogger(__name__)
 
@@ -80,13 +81,17 @@ class RepeaterBook(base.NetworkResultRadio):
     def get_label(self):
         return 'RepeaterBook'
 
+    @staticmethod
+    def get_resource_name(service, country, state):
+        return 'rb%s-%s-%s.json' % (service,
+                                    country.lower().replace(' ', '_'),
+                                    state.lower().replace(' ', '_'))
+
     def get_data(self, status, country, state, service):
         # Ideally we would be able to pull the whole database, but right
         # now this is limited to 3500 results, so we need to filter and
         # cache by state to stay under that limit.
-        fn = 'rb%s-%s-%s.json' % (service,
-                                  country.lower().replace(' ', '_'),
-                                  state.lower().replace(' ', '_'))
+        fn = self.get_resource_name(service, country, state)
         db_dir = chirp_platform.get_platform().config_file('repeaterbook')
         try:
             os.mkdir(db_dir)
@@ -111,18 +116,8 @@ class RepeaterBook(base.NetworkResultRadio):
             LOG.debug('RepeaterBook database %s too old: %s',
                       fn, modified_dt)
 
-        params = {'country': country,
-                  'stype': service}
-        if country in NA_COUNTRIES:
-            export = 'export.php'
-        else:
-            export = 'exportROW.php'
-        if country in STATES:
-            params['state'] = state
-
-        r = requests.get('https://www.repeaterbook.com/api/%s' % export,
+        r = requests.get('https://data.chirpmyradio.com/rb/%s.xz' % fn,
                          headers=base.HEADERS,
-                         params=params,
                          stream=True)
         if r.status_code != 200:
             if modified:
@@ -137,8 +132,10 @@ class RepeaterBook(base.NetworkResultRadio):
         probable_end = 3 << 20
         counter = 0
         data = b''
+        decomp = lzma.LZMADecompressor(format=lzma.FORMAT_XZ)
         with open(tmp, 'wb') as f:
             for chunk in r.iter_content(chunk_size=chunk_size):
+                chunk = decomp.decompress(chunk)
                 f.write(chunk)
                 data += chunk
                 counter += len(chunk)
@@ -394,7 +391,6 @@ ROW_COUNTRIES = [
     "Liechtenstein",
     "Lithuania",
     "Luxembourg",
-    "Macedonia",
     "Malaysia",
     "Malta",
     "Moldova",
@@ -404,6 +400,7 @@ ROW_COUNTRIES = [
     "Netherlands",
     "New Zealand",
     "Nicaragua",
+    "North Macedonia",
     "Norway",
     "Oman",
     "Panama",
@@ -413,7 +410,7 @@ ROW_COUNTRIES = [
     "Poland",
     "Portugal",
     "Romania",
-    "Russian Federation",
+    "Russia",
     "Saint Kitts and Nevis",
     "Saint Vincent and the Grenadines",
     "San Marino",

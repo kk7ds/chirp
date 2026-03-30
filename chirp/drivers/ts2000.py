@@ -192,6 +192,7 @@ class TS2000Radio(KenwoodLiveRadio):
         r1 = self.command(self.pipe,
                           *self._cmd_set_memory(memory.number, spec))
         if not iserr(r1):
+            memory = memory.dupe()
             memory.name = memory.name.rstrip()
             self._memcache[memory.number] = memory
 

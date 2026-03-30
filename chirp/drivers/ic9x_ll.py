@@ -345,13 +345,15 @@ class IC92MemoryFrame(IC92Frame):
         """Take Memory object @mem and configure the frame accordingly"""
         if mem.number < 0:
             self.set_iscall(True)
-            mem.number = abs(mem.number) - 1
+            number = abs(mem.number) - 1
             LOG.debug("Memory is %i (call %s)" %
                       (mem.number, self.get_iscall()))
+        else:
+            number = mem.number
 
         _mem = bitwise.parse(MEMORY_FRAME_FORMAT, self).mem
 
-        _mem.number = mem.number
+        _mem.number = number
 
         _mem.freq = mem.freq
         _mem.offset = mem.offset

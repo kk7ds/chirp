@@ -18,6 +18,7 @@
 import time
 import logging
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
+from chirp import checksum
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueInteger, RadioSettingValueString, \
@@ -329,13 +330,6 @@ _MEM_FORMAT = """
     """
 
 
-def _checksum(data):
-    cs = 0
-    for byte in data:
-        cs += byte
-    return cs % 16
-
-
 def _str_decode(in_str):
     out_str = ''
     for c in in_str:
@@ -535,7 +529,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             # add the chars to the packet
             _packet += payload
         # calculate and add the checksum to the packet
-        _packet += bytes([_checksum(_packet[1:])])
+        _packet += bytes([checksum.checksum_8bit(_packet[1:])])
         LOG.debug("Sent:\n%s" % util.hexprint(_packet))
         self.pipe.write(_packet)
 
@@ -546,8 +540,8 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             raise errors.RadioError('Radio did not respond')
         _length = _header[3]
         _packet = self.pipe.read(_length)
-        _cs = _checksum(_header[1:])
-        _cs += _checksum(_packet)
+        _cs = checksum.checksum_8bit(_header[1:])
+        _cs += checksum.checksum_8bit(_packet)
         _cs %= 16
         try:
             _rcs = self.pipe.read(1)[0]

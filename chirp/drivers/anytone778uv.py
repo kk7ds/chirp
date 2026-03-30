@@ -39,7 +39,7 @@
 # * probably other things too - like things encoded by the unknown bits in the
 #   memory struct
 
-from chirp import chirp_common, directory, memmap, errors, util
+from chirp import chirp_common, directory, memmap, errors, util, checksum
 from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
@@ -328,12 +328,6 @@ def get_band_limits_Hz(limit_value):
 
 
 # Calculate the checksum used in serial packets
-def checksum(message_bytes):
-    mask = 0xFF
-    checksum = 0
-    for b in message_bytes:
-        checksum = (checksum + b) & mask
-    return checksum
 
 
 # Send a command to the radio, return any reply stripping the echo of the
@@ -436,7 +430,7 @@ def exit_program_mode(serial):
 def parse_read_response(resp):
     addr = resp[:4]
     data = bytes(resp[4:-2])
-    cs = checksum(d for d in resp[1:-2])
+    cs = checksum.checksum_8bit(d for d in resp[1:-2])
     valid = cs == resp[-2]
     if not valid:
         LOG.error('checksumfail: %02x, expected %02x' % (cs, resp[-2]))
@@ -498,7 +492,7 @@ def do_download(radio):
 def make_write_data_cmd(addr, data, datalen):
     cmd = struct.pack('>BHB', 0x57, addr, datalen)
     cmd += data
-    cs = checksum(c for c in cmd[1:])
+    cs = checksum.checksum_8bit(c for c in cmd[1:])
     cmd += struct.pack('>BB', cs, 0x06)
     return cmd
 

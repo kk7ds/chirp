@@ -774,7 +774,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
                 mem.dtcs_polarity = "NN"
 
         if self._rf.has_dtcs:
-            mem.dtcs = bitwise.bcd_to_int(memobj.dtcs)
+            mem.dtcs = int(memobj.dtcs)
 
         if "Tone" in self._rf.valid_tmodes:
             mem.rtone = int(memobj.rtone) / 10.0
@@ -904,7 +904,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
                 memobj.dtcs_polarity = 0x00
 
         if self._rf.has_dtcs:
-            bitwise.int_to_bcd(memobj.dtcs, mem.dtcs)
+            memobj.dtcs = mem.dtcs
 
         if self._rf.can_odd_split and mem.duplex == "split":
             memobj.spl = 1
@@ -1524,7 +1524,7 @@ class Icom9700SatelliteBand(Icom9700Radio):
         else:
             mem.dtcs_polarity = "NN"
 
-        mem.dtcs = bitwise.bcd_to_int(memobj.dtcs)
+        mem.dtcs = int(memobj.dtcs)
         mem.rtone = int(memobj.rtone) / 10.0
         mem.ctone = int(memobj.ctone) / 10.0
         mem.duplex = 'split'
@@ -1589,7 +1589,7 @@ class Icom9700SatelliteBand(Icom9700Radio):
         else:
             memobj.dtcs_polarity = 0x00
 
-        bitwise.int_to_bcd(memobj.dtcs, mem.dtcs)
+        memobj.dtcs = mem.dtcs
 
         memobj.tx.freq = int(mem.offset)
         memobj.tx.tmode = memobj.tmode

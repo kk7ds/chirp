@@ -23,6 +23,7 @@ jobs:
         uses: ./.github/actions/py3-tox
         with:
           tox_target: unit
+          tox_args: -k "not network"
       - name: Archive results
         uses: actions/upload-artifact@v4
         with:
