@@ -790,8 +790,8 @@ TD_H8 = b'PVOJH\x1c\x14'
 TD_H3 = b'PVOJH\x5c\x14'
 RT_730 = b'PGOJH\xc3D'
 TD_H8_G3 = b'PVOJH<\x14'
-# TD-H9 ident captured from real hardware (2024-04-04 via PL2303 programming cable)
-# Radio responds to TD_H8 magic with 8-byte ident: TDH9\xff\xff\xffN
+# TD-H9 ident captured from real hardware via PL2303 cable
+# Responds to TD_H8 magic, returns TDH9\xff\xff\xffN
 TD_H9 = b'TDH9\xff\xff\xffN'
 
 
