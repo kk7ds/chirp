@@ -92,6 +92,21 @@ config_map_935H = (     # map address, write size, write count
     (0x4780, 32, 375),  # Memory Names 0-999
     (0x7670, 8, 125),   # Ch Valid bytes 0-999
     )
+config_map_x20h = (     # map address, write size, write count
+    # (0x00,   64, 512),  #- Use for full upload testing
+    # (0x44,   32, 1),    # Freq Limits
+    # (0x440,  8,  1),     # Area Message
+    # (0x480,  8, 5),    # Scan Groups
+    # (0x500,  8, 15),    # Call Codes
+    # (0x580,  8, 15),    # Call Names
+    # (0x600,  8, 5),    # FM Presets
+    # (0x800,  64, 2),    # settings
+    # (0x880,  16, 1),    # VFO A
+    # (0x8C0,  16, 1),    # VFO B
+    (0x900,  64, 250),  # Channel Memory 0-999
+    (0x4780, 32, 375),  # Memory Names 0-999
+    (0x7670, 8, 125),   # Ch Valid bytes 0-999
+    )
 
 AB_LIST = ["A", "B"]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
@@ -1582,6 +1597,17 @@ class KG935GRadio(chirp_common.CloneModeRadio,
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
 
+    def _get_power(self, _mem, mem):
+        _mem.power = _mem.power & 0x3
+        try:
+            mem.power = self.POWER_LEVELS[_mem.power]
+        except IndexError:
+            mem.power = self.POWER_LEVELS[-1]
+
+    def _set_power(self, mem):
+        temp_val = self.POWER_LEVELS.index(mem.power)
+        return temp_val
+
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _nam = self._memobj.names[number]
@@ -1620,10 +1646,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         self.tone_model.get_tone(_mem, mem)
 
         mem.skip = "" if bool(_mem.scan_add) else "S"
-        _mem.power = _mem.power & 0x3
-        if _mem.power > 2:
-            _mem.power = 2
-        mem.power = self.POWER_LEVELS[_mem.power]
+        self._get_power(_mem, mem)
         mem.mode = _mem.iswide and "FM" or "NFM"
         return mem
 
@@ -1659,10 +1682,8 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         self.tone_model.set_tone(mem, _mem)
         # set the power
         _mem.power = _mem.power & 0x3
-        if mem.power:
-            if _mem.power > 2:
-                _mem.power = 2
-            _mem.power = self.POWER_LEVELS.index(mem.power)
+        if mem.power is not None:
+            _mem.power = self._set_power(mem)
         else:
             _mem.power = True
 
@@ -2472,3 +2493,53 @@ class KG935HRadio(KG935GRadio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(_MEM_FORMAT_935H, self._mmap)
+
+
+@directory.register
+class KGXS20G(KG935GRadio):
+
+    """Wouxun KG-XS20G"""
+    VENDOR = "Wouxun"
+    MODEL = "KG-XS20G"
+    _model = b"KG-UV8D-A"
+    _record_start = 0x79
+    config_map = config_map_x20h
+    POWER_LEVELS = [chirp_common.PowerLevel("L", watts=0.5),
+                    chirp_common.PowerLevel("H", watts=5.5)]
+    HAS_SCRAMBLER = False
+    HAS_FAVORITE = False
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.has_settings = False  # Set to False until settings are mapped
+        return rf
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(_MEM_FORMAT_935GPLUS, self._mmap)
+
+    def _get_power(self, _mem, mem):
+        if _mem.power == 0:
+            mem.power = self.POWER_LEVELS[0]
+        else:
+            mem.power = self.POWER_LEVELS[1]
+
+    def _set_power(self, mem):
+        temp_val = 0 if mem.power == self.POWER_LEVELS[0] else 2
+        return temp_val
+
+
+@directory.register
+class KGXS20HRadio(KGXS20G):
+
+    """Wouxun KG-XS20H"""
+    VENDOR = "Wouxun"
+    MODEL = "KG-XS20H"
+    HAS_SCRAMBLER = True
+
+
+@directory.register
+class KGXS20GPlusRadio(KGXS20G):
+
+    """Wouxun KG-XS20G Plus"""
+    VENDOR = "Wouxun"
+    MODEL = "KG-XS20G Plus"
