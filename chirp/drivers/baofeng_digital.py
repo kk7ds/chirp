@@ -178,7 +178,6 @@ class BaofengDigital(chirp_common.CloneModeRadio,
 
     def _enter_programming(self, write):
         radio_id = self._get_radio_id()
-        LOG.debug('Radio ID: %s', radio_id.hex())
         if radio_id[1] != self._serial_id:
             raise errors.RadioError('Detected a different radio model')
 
@@ -509,8 +508,8 @@ class BaofengBFV12D(BaofengDigital):
                 # Send unlock command
                 self.pipe.write(b'\x02ucbfpwd')
                 resp = self.pipe.read(1)
-                print('DEBUG: ucbfpwd response: %s'
-                      % (resp.hex() if resp else 'empty'))
+                LOG.debug('ucbfpwd response: %s',
+                          resp.hex() if resp else 'empty')
                 if resp != CMD_ACK:
                     raise errors.RadioError(
                         'No ACK on unlock command (got %s)'
@@ -520,17 +519,18 @@ class BaofengBFV12D(BaofengDigital):
                 # (observed from factory software captures)
                 self.pipe.write(b'\x10\xc5\xea\x35')
                 resp = self.pipe.read(1)
-                print('DEBUG: unlock data response: %s'
-                      % (resp.hex() if resp else 'empty'))
+                LOG.debug('unlock data response: %s',
+                          resp.hex() if resp else 'empty')
                 if resp != CMD_ACK:
                     raise errors.RadioError(
                         'No ACK on unlock data')
 
+                # Base64-encoded model identifier from factory software
                 self.pipe.write(
                     b'Q041OTUwMA==\x00\x00\x00\x00')
                 resp = self.pipe.read(1)
-                print('DEBUG: model id response: %s'
-                      % (resp.hex() if resp else 'empty'))
+                LOG.debug('model id response: %s',
+                          resp.hex() if resp else 'empty')
                 if resp != CMD_ACK:
                     raise errors.RadioError(
                         'No ACK on model identifier')
@@ -538,8 +538,8 @@ class BaofengBFV12D(BaofengDigital):
                 # Now request radio ID
                 self.pipe.write(b'\x02prOGRAM')
                 resp = self.pipe.read(4)
-                print('DEBUG: radio ID: %s'
-                      % (resp.hex() if resp else 'empty'))
+                LOG.debug('radio ID: %s',
+                          resp.hex() if resp else 'empty')
                 if len(resp) != 4:
                     raise errors.RadioError(
                         'Radio did not send identification')
