@@ -790,15 +790,9 @@ TD_H8 = b'PVOJH\x1c\x14'
 TD_H3 = b'PVOJH\x5c\x14'
 RT_730 = b'PGOJH\xc3D'
 TD_H8_G3 = b'PVOJH<\x14'
-# TODO: TD_H9 ident bytes are unknown — must be captured from a real radio.
-# The H9 uses USB-C for programming. The ident below is a placeholder
-# based on the H8 family pattern (PVOJH + 2 variant bytes).
-# To capture the real ident:
-#   1. Enable CHIRP debug logging (chirp --debug)
-#   2. Connect the H9 via USB-C in programming mode (PTT+3, power on)
-#   3. Attempt to download — the log will show the raw ident response
-#   4. Replace this placeholder with the actual bytes
-TD_H9 = b'PVOJH\x00\x00'  # PLACEHOLDER — replace with real ident
+# TD-H9 ident captured from real hardware (2024-04-04 via PL2303 programming cable)
+# Radio responds to TD_H8 magic with 8-byte ident: TDH9\xff\xff\xffN
+TD_H9 = b'TDH9\xff\xff\xffN'
 
 
 def _do_status(radio, block):
@@ -2735,7 +2729,8 @@ class TDH9(TDH8):
     MODES = ["FM", "NFM", "AM"]
     _memsize = 0x1fef
     _ranges_main = [(0x0000, 0x1fef)]
-    _idents = [TD_H9]
+    _idents = [TD_H8]
+    ident_mode = TD_H9  # Radio responds to H8 magic, returns H9 ident
     # H9 TX bands: VHF + UHF (standard version, unlocked)
     _txbands = [(136000000, 600000000)]
     # H9 RX-only bands: HF/VHF below TX range, Airband
@@ -2756,14 +2751,6 @@ class TDH9(TDH8):
         rp = chirp_common.RadioPrompts()
         rp.experimental = (dedent("""\
             This driver is EXPERIMENTAL for the TIDRADIO TD-H9.
-
-            The TD-H9 ident bytes have not yet been captured from a
-            real radio. If you have a TD-H9, please:
-
-            1. Run CHIRP with --debug flag
-            2. Attempt to download from the radio
-            3. Report the ident bytes from the debug log to the
-               CHIRP project so this driver can be completed.
 
             GPS, APRS, and Bluetooth settings are NOT yet supported.
 
