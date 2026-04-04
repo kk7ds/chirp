@@ -697,7 +697,7 @@ _MEM_FORMAT_935GPLUS = """
                 power:4;
         u8      unknown3:2,
                 scan_add:1,
-                unknown4:1,
+                favorite:1,
                 compander:1,
                 mute_mode:2,
                 iswide:1;
@@ -1246,7 +1246,7 @@ _MEM_FORMAT_935H = """
                 power:4;
         u8      unknown3:2,
                 scan_add:1,
-                unknown4:1,
+                favorite:1,
                 compander:1,
                 mute_mode:2,
                 iswide:1;
@@ -1331,6 +1331,8 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                     chirp_common.PowerLevel("H", watts=5.5)]
     _record_start = 0x7C
     config_map = config_map_935G
+    HAS_SCRAMBLER = True
+    HAS_FAVORITE = False
 
     def __init__(self, pipe):
         super().__init__(pipe)
@@ -1338,6 +1340,29 @@ class KG935GRadio(chirp_common.CloneModeRadio,
             dcs_base=0x4000,
             pol_mask=0x2000,
             tone_init=0x0000)
+
+    def get_extra(self, _mem, mem):
+        mem.extra = RadioSettingGroup("Extra", "Extra")
+        _mem.mute_mode = 2 if _mem.mute_mode > 2 else _mem.mute_mode
+        rs = RadioSetting("mute_mode", "Mute Mode",
+                          RadioSettingValueList(
+                              SPMUTE_LIST, current_index=_mem.mute_mode))
+        mem.extra.append(rs)
+        if self.HAS_SCRAMBLER:
+            rs = RadioSetting("scrambler", "Scramble Descramble",
+                              RadioSettingValueList(
+                                 SCRAMBLE_LIST, current_index=_mem.scrambler))
+            mem.extra.append(rs)
+        rs = RadioSetting("compander", "Compander",
+                          RadioSettingValueList(
+                             ONOFF_LIST, current_index=_mem.compander))
+        mem.extra.append(rs)
+        if self.HAS_FAVORITE:
+            rs = RadioSetting("favorite", "Favorite",
+                              RadioSettingValueList(
+                                 ONOFF_LIST, current_index=_mem.favorite))
+            mem.extra.append(rs)
+        return
 
     def _write_record(self, cmd, payload=b''):
         _packet = struct.pack('BBBB', self._record_start, cmd, 0xFF,
@@ -1591,6 +1616,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                 mem.name += chr(char)
         mem.name = mem.name.rstrip()
 
+        self.get_extra(_mem, mem)
         self.tone_model.get_tone(_mem, mem)
 
         mem.skip = "" if bool(_mem.scan_add) else "S"
@@ -1631,10 +1657,6 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         _mem.iswide = int(mem.mode == "FM")
         # set the tone
         self.tone_model.set_tone(mem, _mem)
-        # MRT set the scrambler and compander to off by default
-        # MRT This changes them in the channel memory
-        _mem.scrambler = 0
-        _mem.compander = 0
         # set the power
         _mem.power = _mem.power & 0x3
         if mem.power:
@@ -1643,9 +1665,9 @@ class KG935GRadio(chirp_common.CloneModeRadio,
             _mem.power = self.POWER_LEVELS.index(mem.power)
         else:
             _mem.power = True
-        # MRT set to mute mode to QT (not QT+DTMF or QT*DTMF) by default
-        # MRT This changes them in the channel memory
-        _mem.mute_mode = 0
+
+        for setting in mem.extra:
+            setattr(_mem, setting.get_name(), setting.value)
 
         # MRT it is unknown what impact these values have
         # MRT This changes them in the channel memory to match what
@@ -1655,8 +1677,6 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         # _mem.unknown1 = 0
         # MRT Set to 3 to TO MATCH CPS VALUES
         _mem.unknown3 = 3
-        # MRT Set to 1 to TO MATCH CPS VALUES
-        _mem.unknown4 = 1
         # MRT set unknown5 to 1 and unknown6 to 0
         _mem.unknown5 = 1
         _mem.unknown6 = 255
@@ -2419,6 +2439,8 @@ class KG935GPlusRadio(KG935GRadio):
     """Wouxun KG-935G Plus"""
     VENDOR = "Wouxun"
     MODEL = "KG-935G Plus"
+    HAS_SCRAMBLER = True
+    HAS_FAVORITE = True
 
     def process_mmap(self):
         self._memobj = bitwise.parse(_MEM_FORMAT_935GPLUS, self._mmap)
@@ -2445,6 +2467,8 @@ class KG935HRadio(KG935GRadio):
                     chirp_common.PowerLevel("M", watts=5.0),
                     chirp_common.PowerLevel("H", watts=8.0)]
     config_map = config_map_935H
+    HAS_SCRAMBLER = True
+    HAS_FAVORITE = True
 
     def process_mmap(self):
         self._memobj = bitwise.parse(_MEM_FORMAT_935H, self._mmap)
