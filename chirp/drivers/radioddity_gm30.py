@@ -481,6 +481,10 @@ class RadioddityGM30(chirp_common.CloneModeRadio):
                        (lambda x: x in self.VALID_CHARSET,
                         str(_name)))
 
+    def get_raw_memory(self, number):
+        return repr(self._memobj.memory[number - 1]) + \
+               repr(self._memobj.memnames[number - 1])
+
     def get_memory(self, number):
         mem = chirp_common.Memory()
         mem.number = number
