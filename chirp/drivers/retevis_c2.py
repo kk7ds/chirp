@@ -416,8 +416,8 @@ def _read_frame(pipe, timeout=5.0):
     """
     data = bytearray()
     in_escape = False
-    start = time.time()
-    while time.time() - start < timeout:
+    start = time.monotonic()
+    while time.monotonic() - start < timeout:
         try:
             b = pipe.read(1)
         except Exception as e:
@@ -700,6 +700,9 @@ class RetevisC2(chirp_common.CloneModeRadio):
 
     def sync_out(self):
         do_upload(self)
+
+    def get_raw_memory(self, number):
+        return repr(self._memobj.memory[number - 1])
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
