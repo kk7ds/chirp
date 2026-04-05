@@ -1174,6 +1174,9 @@ class RT900BT(chirp_common.CloneModeRadio):
         rf.valid_tuning_steps = self._steps
         return rf
 
+    def get_raw_memory(self, number):
+        return repr(self._memobj.memory[number - 1])
+
     def get_memory(self, number):
         """Get the mem representation from the radio image"""
         _mem = self._memobj.memory[number - 1]
