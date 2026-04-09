@@ -183,7 +183,7 @@ struct {
      tailcode:1;      //      Tail Code (RT-470L)
   u8 unknown_9023;    // 9023
   u8 single_mode ;    // 9024 Single Mode (RT-900 BT)
-  u8 unknown_9025;    // 9025
+  u8 unknown_9025;    // 9025 Always 0x01 on all RT-900 variants
   u8 unknown_9026;    // 9026
   u8 unknown_9027;    // 9027
   u8 unknown_9028;    // 9028
@@ -243,10 +243,10 @@ TXPOWER_LOW = 0x02
 
 ABR_LIST = ["On", "5 seconds", "10 seconds", "15 seconds", "20 seconds",
             "30 seconds", "1 minute", "2 minutes", "3 minutes"]
-ALMODE_LIST = ["Site", "Tone", "Code"]
+ALMODE_LIST = ["On Site", "Send Sound", "Send Code"]
 AUTOLK_LIST = ["Off"] + ABR_LIST[1:4]
 DTMFSPEED_LIST = ["50 ms", "100 ms", "200 ms", "300 ms", "500 ms"]
-DTMFST_LIST = ["Off", "KeyBoard Side Tone", "ANI Side Tone", "KB ST + ANI ST"]
+DTMFST_LIST = ["Off", "DT-ST", "ANI-ST", "DT+ANI"]
 DUALTX_LIST = ["Off", "A", "B"]
 LANGUAGE_LIST = ["English", "Chinese"]
 MDF_LIST = ["Name", "Frequency", "Channel"]
@@ -660,11 +660,6 @@ class RT900BT(chirp_common.CloneModeRadio):
         rset = MemSetting("settings.alarmsound", "Alarm Sound", rs)
         basic.append(rset)
 
-        # Menu 44: TDR
-        rs = RadioSettingValueBoolean(_settings.tdr)
-        rset = MemSetting("settings.tdr", "TDR", rs)
-        basic.append(rset)
-
         rs = RadioSettingValueInvertedBoolean(not _settings.fmradio)
         rset = MemSetting("settings.fmradio", "FM Radio", rs)
         basic.append(rset)
@@ -793,15 +788,6 @@ class RT900BT(chirp_common.CloneModeRadio):
         # Menu 21: VFO A/B BCL (Busy lock)
         rs = RadioSettingValueBoolean(_settings.busy_lock)
         rset = MemSetting("settings.busy_lock", "BCL", rs)
-        abblock.append(rset)
-
-        # Menu 30 VFO DTMF code
-        rs = RadioSettingValueList(
-            PTTID_LIST,
-            current_index=_settings.pttid
-            # current_index=self._memobj.vfodtmf.code
-        )
-        rset = MemSetting("settings.pttid", "DTMF Code", rs)
         abblock.append(rset)
 
         # Menu 42: TX-A/B
@@ -1100,26 +1086,10 @@ class RT900BT(chirp_common.CloneModeRadio):
                     else:
                         index += 0x6A
                     memval.set_value(index)
-                except IndexError:
+                except ValueError:
                     msg = "DTCS Code '%d' is not supported" % value
                     LOG.error(msg)
                     raise errors.RadioError(msg)
-            case "Cross":
-                txmode, rxmode = mem.cross_mode.split("->", 1)
-
-                if txmode == "Tone":
-                    memval.set_value(int(mem.rtone * 10))
-                elif txmode == "DTCS":
-                    memval.set_value(DTCS.index(mem.dtcs) + 1)
-                else:
-                    memval.set_value(0)
-
-                if rxmode == "Tone":
-                    memval.set_value(int(mem.ctone * 10))
-                elif rxmode == "DTCS":
-                    memval.set_value(DTCS.index(mem.rx_dtcs) + 1)
-                else:
-                    memval.set_value(0)
             case _:
                 raise Exception("Internal error: invalid mode '%s'" % mode)
 
@@ -1160,7 +1130,7 @@ class RT900BT(chirp_common.CloneModeRadio):
                     code = index + 0x6a
                 elif tone.endswith('N'):  # normal
                     code = index + 1
-        except IndexError:
+        except (IndexError, ValueError):
             msg = "Unknown CTCSS/DTC tone: %s" % tone
             LOG.exception(msg)
             raise InvalidValueError(msg)
