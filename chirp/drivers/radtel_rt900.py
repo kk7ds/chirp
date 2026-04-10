@@ -1240,6 +1240,13 @@ class RT900BT(chirp_common.CloneModeRadio):
         rset = RadioSetting("bcl", "BCL", rs)
         mem.extra.append(rset)
 
+        # LearnFHSS (per-channel learn / FHSS flag). The OEM CPS labels
+        # this column "LearnFHSS"; the open-source firmware reads the
+        # same bit as chFlag3.b0 / fhssFlag (Core/Radio.c).
+        rs = RadioSettingValueBoolean(_mem.learning)
+        rset = RadioSetting("learning", "LearnFHSS", rs)
+        mem.extra.append(rset)
+
         # PTT-ID
         rs = RadioSettingValueList(PTTID_LIST, current_index=_mem.pttid)
         rset = RadioSetting("pttid", "PTT ID", rs)
