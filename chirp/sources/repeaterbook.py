@@ -83,6 +83,9 @@ class RepeaterBook(base.NetworkResultRadio):
 
     @staticmethod
     def get_resource_name(service, country, state):
+        if country not in STATES:
+            # Hack around the translated "All" string in the UI
+            state = 'all'
         return 'rb%s-%s-%s.json' % (service,
                                     country.lower().replace(' ', '_'),
                                     state.lower().replace(' ', '_'))
