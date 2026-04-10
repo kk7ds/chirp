@@ -267,6 +267,37 @@ class ImportFieldTests(base.BaseTest):
         import_logic._import_tone(radio, src_rf, mem)
         self.assertEqual(mem.rtone, 100.0)
 
+    def test_import_tone_invalid_none(self):
+        radio = FakeRadio(None)
+        radio.HAS_CTONE = False
+        src_rf = chirp_common.RadioFeatures()
+        mem = chirp_common.Memory()
+        mem.tmode = ''
+        mem.rtone = 99.9
+        import_logic._import_tone(radio, src_rf, mem)
+        # test passes if there is no exception
+        self.assertTrue(True)
+
+    def test_import_tone_invalid_rtone(self):
+        radio = FakeRadio(None)
+        radio.HAS_CTONE = False
+        src_rf = chirp_common.RadioFeatures()
+        mem = chirp_common.Memory()
+        mem.tmode = 'TSQL'
+        mem.rtone = 99.9
+        self.assertRaises(import_logic.DestNotCompatible,
+                          import_logic._import_tone, radio, src_rf, mem)
+
+    def test_import_tone_invalid_ctone(self):
+        radio = FakeRadio(None)
+        radio.HAS_CTONE = False
+        src_rf = chirp_common.RadioFeatures()
+        mem = chirp_common.Memory()
+        mem.tmode = 'TSQL'
+        mem.ctone = 99.9
+        self.assertRaises(import_logic.DestNotCompatible,
+                          import_logic._import_tone, radio, src_rf, mem)
+
     def test_import_dtcs_diffA_dtcs(self):
         radio = FakeRadio(None)
         src_rf = chirp_common.RadioFeatures()
