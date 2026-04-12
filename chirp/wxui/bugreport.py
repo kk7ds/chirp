@@ -34,10 +34,13 @@ from chirp import platform as chirp_platform
 from chirp.wxui import common
 from chirp.wxui import config
 from chirp.wxui import serialtrace
+from chirp.wxui import report
+
 
 _ = wx.GetTranslation
 CONF = config.get()
-BASE = CONF.get('baseurl', 'chirpmyradio') or 'https://www.chirpmyradio.com'
+BASE = (CONF.get('baseurl', 'chirpmyradio') or
+        'https://data.chirpmyradio.com/redmine')
 LOG = logging.getLogger(__name__)
 ReportThreadEvent, EVT_REPORT_THREAD = wx.lib.newevent.NewCommandEvent()
 
@@ -146,10 +149,11 @@ class BugReportContext:
         self.chirpmain = chirpmain
         self.editor = chirpmain.current_editorset
         self.session = requests.Session()
-        self.session.headers = {
-            'User-Agent': 'CHIRP/%s' % CHIRP_VERSION,
+        report.ensure_session()
+        self.session.headers = dict(report.SESSION.headers)
+        self.session.headers.update({
             'Referer': 'https://chirpmyradio.com/projects/chirp/issues/new',
-        }
+        })
 
     def get_page(self, name, cls):
         if not hasattr(self, 'page_%s' % name):
