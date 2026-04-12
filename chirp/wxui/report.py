@@ -26,6 +26,7 @@ except ImportError:
     wx = None
 
 from chirp import CHIRP_VERSION
+from chirp.sources import base
 from chirp.wxui import config
 
 CONF = config.get()
@@ -75,6 +76,8 @@ def ensure_session():
             'X-CHIRP-UUID': CONF.get('seat', 'state'),
             'X-CHIRP-Environment': get_environment(),
         }
+        for k, v in SESSION.headers.items():
+            base.HEADERS[k] = v
 
 
 def with_session(fn):
