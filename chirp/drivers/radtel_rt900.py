@@ -71,8 +71,8 @@ struct {
      bcl:1,           //     BCL
      scan:1,          //     Scan  0 = Skip, 1 = Scan
      am_modulation:1, //     Per chan AM modulation
-     learning:1;      //     Learning
-  lbcd code[3];       // 0-2 Code
+     learning:1;      //     FHSS Learning
+  ul24 code;          // 0-2 FHSS Code (little-endian, 0-0x7FFFFF)
   u8 unknown6;        // 3
   char name[12];      // 4-F 12-character Alpha Tag
 } memory[%d];
@@ -1247,6 +1247,25 @@ class RT900BT(chirp_common.CloneModeRadio):
         rset = RadioSetting("learning", "LearnFHSS", rs)
         mem.extra.append(rset)
 
+        # FHSS Code (24-bit little-endian, range 0x000000-0x7FFFFF).
+        # Displayed and accepted as a 6-digit uppercase hex string to
+        # match the OEM CPS convention.
+        def validate_fhss_code(value):
+            try:
+                v = int(str(value).strip(), 16)
+            except ValueError:
+                raise InvalidValueError(
+                    "FHSS Code must be a hex value (e.g. 1A2B3C)")
+            if not (0 <= v <= 0x7FFFFF):
+                raise InvalidValueError(
+                    "FHSS Code must be between 000000 and 7FFFFF")
+            return value
+
+        rs = RadioSettingValueString(0, 6, "%06X" % int(_mem.code))
+        rs.set_validate_callback(validate_fhss_code)
+        rset = RadioSetting("fhss_code", "FHSS Code (hex)", rs)
+        mem.extra.append(rset)
+
         # PTT-ID
         rs = RadioSettingValueList(PTTID_LIST, current_index=_mem.pttid)
         rset = RadioSetting("pttid", "PTT ID", rs)
@@ -1328,7 +1347,10 @@ class RT900BT(chirp_common.CloneModeRadio):
                 _mem.narrow = 0b1
 
         for setting in mem.extra:
-            setattr(_mem, setting.get_name(), setting.value)
+            if setting.get_name() == 'fhss_code':
+                _mem.code = int(str(setting.value).strip(), 16)
+            else:
+                setattr(_mem, setting.get_name(), setting.value)
 
     def validate_memory(self, mem):
         msgs = []
