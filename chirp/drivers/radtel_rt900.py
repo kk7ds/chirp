@@ -1261,7 +1261,8 @@ class RT900BT(chirp_common.CloneModeRadio):
                     "FHSS Code must be between 000000 and 7FFFFF")
             return value
 
-        rs = RadioSettingValueString(0, 6, "%06X" % (int(_mem.code) & 0x7FFFFF))
+        rs = RadioSettingValueString(
+            0, 6, "%06X" % (int(_mem.code) & 0x7FFFFF))
         rs.set_validate_callback(validate_fhss_code)
         rset = RadioSetting("fhss_code", "FHSS Code (hex)", rs)
         mem.extra.append(rset)
