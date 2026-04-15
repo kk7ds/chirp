@@ -1581,20 +1581,20 @@ class TK378G_Radios(Kenwood_Series_60G):
 
 @directory.register
 class TK372G_Radios(Kenwood_Series_60G):
-    """Kenwood TK-372 Radio [K/E/M/NE]"""
+    """Kenwood TK-372G Radio [K/K2/K3/K4]"""
     MODEL = "TK-372G"
     TYPE = b"P3720"
     VARIANTS = {
-        b"P3720\x06\xff": (32, 450, 470, "K"),
-        b"P3720\x07\xff": (32, 470, 490, "K1"),
-        b"P3720\x08\xff": (32, 490, 512, "K2"),
-        b"P3720\x09\xff": (32, 403, 430, "K3")
+        b"P3720\x06\xfb": (32, 450, 470, "K"),
+        b"P3720\x07\xfb": (32, 470, 490, "K2"),
+        b"P3720\x08\xfb": (32, 490, 512, "K3"),
+        b"P3720\x09\xfb": (32, 403, 430, "K4")
         }
 
 
 @directory.register
 class TK370G_Radios(Kenwood_Series_60G):
-    """Kenwood TK-370 Radio [K/E/M/NE]"""
+    """Kenwood TK-370G Radio [K/E/M/NE]"""
     MODEL = "TK-370G"
     TYPE = b"P3700"
     VARIANTS = {
