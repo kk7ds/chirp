@@ -1,5 +1,6 @@
 import datetime
 import json
+import lzma
 import os
 import shutil
 import tempfile
@@ -9,6 +10,7 @@ from unittest import mock
 import pytest
 
 from chirp import chirp_common
+from chirp.sources import base
 from chirp.sources import repeaterbook
 
 
@@ -172,23 +174,25 @@ class TestRepeaterbook(unittest.TestCase):
         with mock.patch('requests.get') as mock_get:
             mock_get.return_value.status_code = 200
             mock_get.return_value.iter_content.return_value = [b'foo']
+            mock_get.return_value.headers = {'ETag': 'foo'}
             status = mock.MagicMock()
             r = rb.get_data(status, 'US', 'OR', '')
             self.assertIsNone(r)
             files = os.listdir(os.path.join(self.tempdir,
                                             'repeaterbook'))
-            # Make sure we only wrote one file and that it is a tempfile
-            # not one we will find as a data file later
-            self.assertEqual(1, len(files))
-            self.assertTrue(files[0].endswith('tmp'))
+            # Make sure we never wrote the bad data to file
+            self.assertEqual(0, len(files))
             status.send_fail.assert_called()
 
     def test_get_data_no_results(self):
+        comp = lzma.LZMACompressor(format=lzma.FORMAT_XZ)
+        fake_data = comp.compress(json.dumps({'count': 0}).encode())
+        fake_data += comp.flush()
         rb = repeaterbook.RepeaterBook()
         with mock.patch('requests.get') as mock_get:
             mock_get.return_value.status_code = 200
-            mock_get.return_value.iter_content.return_value = [json.dumps(
-                {'count': 0}).encode()]
+            mock_get.return_value.iter_content.return_value = [fake_data]
+            mock_get.return_value.headers = {'ETag': 'foo'}
             status = mock.MagicMock()
             r = rb.get_data(status, 'US', 'OR', '')
             self.assertIsNone(r)
@@ -202,11 +206,14 @@ class TestRepeaterbook(unittest.TestCase):
         files = os.listdir(self.tempdir)
         # Make sure we started with no data files
         self.assertEqual(0, len(files))
+        comp = lzma.LZMACompressor(format=lzma.FORMAT_XZ)
+        fake_data = comp.compress(json.dumps({'count': 1}).encode())
+        fake_data += comp.flush()
         rb = repeaterbook.RepeaterBook()
         with mock.patch('requests.get') as mock_get:
             mock_get.return_value.status_code = 200
-            mock_get.return_value.iter_content.return_value = [json.dumps(
-                {'count': 1}).encode()]
+            mock_get.return_value.iter_content.return_value = [fake_data]
+            mock_get.return_value.headers = {'ETag': 'foo'}
             status = mock.MagicMock()
             r = rb.get_data(status, 'US', 'OR', '')
             self.assertIsNotNone(r)
@@ -254,3 +261,34 @@ class TestRepeaterbook(unittest.TestCase):
                                 'United States', 'Oregon', '')
                 # Cache file is 45 days old, we should re-fetch
                 mock_get.assert_called()
+
+    def test_get_data_honors_etag(self):
+        os.mkdir(os.path.join(self.tempdir, 'repeaterbook'))
+        cache_file = os.path.join(self.tempdir,
+                                  'repeaterbook',
+                                  os.path.basename(self.testfile))
+        with open(cache_file, 'w') as f:
+            f.write(json.dumps({'ETag': 'foo'}))
+        rb = repeaterbook.RepeaterBook()
+        with mock.patch('requests.get') as mock_get:
+            mock_get.return_value.status_code = 304
+            real_timedelta = datetime.timedelta
+            real_datetime = datetime.datetime
+
+            future = datetime.datetime.now() + datetime.timedelta(days=45)
+            with mock.patch.object(repeaterbook, 'datetime') as mock_dt:
+                mock_dt.datetime.fromtimestamp = real_datetime.fromtimestamp
+                mock_dt.timedelta = real_timedelta
+                mock_dt.datetime.now.return_value = future
+                r = rb.get_data(mock.MagicMock(),
+                                'United States', 'Oregon', '')
+                # Cache file is 45 days old, we should re-fetch, but the server
+                # said it was unchanged, so we should use the cache
+                mock_get.assert_called()
+                self.assertEqual(cache_file, r)
+                expected_headers = dict(base.HEADERS)
+                expected_headers['If-None-Match'] = 'foo'
+                mock_get.assert_called_once_with(
+                    mock.ANY,
+                    headers=expected_headers,
+                    stream=True)

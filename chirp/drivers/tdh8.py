@@ -2629,8 +2629,9 @@ class TDH8_3rd_Gen(TDH8):
     _gmrs = False
     _ham = False
     _mem_params = (0x1F2F)
-    _tx_power = [chirp_common.PowerLevel("Low",  watts=2.00),
-                 chirp_common.PowerLevel("High",  watts=5.00)]
+    _tx_power = [chirp_common.PowerLevel("Low",  watts=2.0),
+                 chirp_common.PowerLevel("Mid",  watts=6.0),
+                 chirp_common.PowerLevel("High", watts=10.0)]
     _roger_list = ["Off", "TONE1", "TONE2"]
     _brightness_list = ["1", "2", "3", "4", "5"]
 

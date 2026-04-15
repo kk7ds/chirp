@@ -1,3 +1,10 @@
+# These are the requirements for the versions of wxPython (and others)
+# that match the binary builds. They're specific to the versions of the base
+# platforms that we build on. They may be older than what you want for building
+# from source on a later version. Since we focus on those binary builds,
+# please do not propose changes to this that would take them out of sync with
+# the build system or file bugs about these being wrong for your specific
+# situation.
 wxPython>=4.0,<4.2.0 ; platform_system=="Linux" # See https://github.com/wxWidgets/Phoenix/issues/2225
 wxPython==4.2.0 ; platform_system!="Linux"
 pyserial

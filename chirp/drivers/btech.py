@@ -1,4 +1,4 @@
-# Copyright 2016-2023:
+# Copyright 2016-2026:
 # * Pavel Milanes CO7WT, <pavelmc@gmail.com>
 # * Jim Unroe KC9HI, <rock.unroe@gmail.com>
 #
@@ -140,7 +140,7 @@ LIST_2TONE_DEC = ["A-B", "A-C", "A-D",
 LIST_2TONE_RESPONSE = ["None", "Alert", "Transpond", "Alert+Transpond"]
 
 # This is a general serial timeout for all serial read functions.
-STIMEOUT = 0.25
+STIMEOUT = 1.5
 
 # this var controls the verbosity in the debug and by default it's low (False)
 # make it True and you will to get a very verbose debug.log
@@ -334,33 +334,6 @@ MSTRING_KTWP12 = b"\x55\x20\x18\x11\x02\xFF\xDC\x02"
 MSTRING_KT5000 = b"\x55\x20\x21\x01\x23\xFF\xDC\x02"
 
 
-def _clean_buffer(radio):
-    """Cleaning the read serial buffer, hard timeout to survive an infinite
-    data stream"""
-
-    # touching the serial timeout to optimize the flushing
-    # restored at the end to the default value
-    radio.pipe.timeout = 0.1
-    dump = b"1"
-    datacount = 0
-
-    try:
-        while len(dump) > 0:
-            dump = radio.pipe.read(100)
-            datacount += len(dump)
-            # hard limit to survive a infinite serial data stream
-            # 5 times bigger than a normal rx block (69 bytes)
-            if datacount > 345:
-                seriale = "Please check your serial port selection."
-                raise errors.RadioError(seriale)
-
-        # restore the default serial timeout
-        radio.pipe.timeout = STIMEOUT
-
-    except Exception:
-        raise errors.RadioError("Unknown error cleaning the serial buffer")
-
-
 def _rawrecv(radio, amount):
     """Raw read from the radio device, less intensive way"""
 
@@ -380,8 +353,8 @@ def _rawrecv(radio, amount):
 
         # notice on the logs if short
         if len(data) < amount:
-            LOG.warn("Short reading %d bytes from the %d requested." %
-                     (len(data), amount))
+            LOG.warning("Short reading %d bytes from the %d requested." %
+                        (len(data), amount))
 
     except:
         raise errors.RadioError("Error reading data from radio")
@@ -447,8 +420,10 @@ def _do_ident(radio, status, upload=False):
     radio.pipe.baudrate = 9600
     radio.pipe.parity = "N"
 
-    # lengthen the timeout here as these radios are resetting due to timeout
-    radio.pipe.timeout = 0.75
+    # set timeout for download
+    radio.pipe.timeout = STIMEOUT
+
+    radio.pipe.reset_input_buffer()
 
     # send the magic word
     _send(radio, radio._magic)
@@ -491,9 +466,6 @@ def _do_ident(radio, status, upload=False):
     _send(radio, frame)
     id2 = _rawrecv(radio, 21)
 
-    # restore the default serial timeout
-    radio.pipe.timeout = STIMEOUT
-
     # checking for the ack
     if id2[:1] not in b"\x06\x05":
         raise errors.RadioError("Bad ack from radio")
@@ -508,6 +480,12 @@ def _do_ident(radio, status, upload=False):
     # also the first block of TX must no have the ACK at the beginning
     # see _upload for this.
     if upload is True:
+        # set timeout for upload
+        radio.pipe.timeout = 0.5
+
+        # pause here for the radio to catch up
+        sleep(0.3)
+
         # send an ACK
         _send(radio, b"\x06")
 
@@ -541,6 +519,8 @@ def _download(radio):
 
     # put radio in program mode and identify it
     _do_ident(radio, status)
+
+    radio.pipe.reset_input_buffer()
 
     # reset the progress bar in the UI Bug #11851 BLOCKSIZE fix for KT-8900D
     status.max = MEM_SIZE // radio._block_size

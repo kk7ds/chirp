@@ -1473,15 +1473,24 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                     obj.freq[i] = value % 10
                     value /= 10
 
-            val1a = RadioSettingValueString(0, 10,
-                                            bfc.bcd_decode_freq(_vfoa.freq))
+            try:
+                vafreq = bfc.bcd_decode_freq(_vfoa.freq)
+            except Exception as e:
+                LOG.exception('Failed to decode VFO A frequency: %s', e)
+                vafreq = e
+
+            val1a = RadioSettingValueString(0, 10, vafreq)
             val1a.set_validate_callback(my_validate)
             rs = RadioSetting("vfoa.freq", "VFO A Frequency", val1a)
             rs.set_apply_callback(apply_freq, _vfoa)
             workmode.append(rs)
 
-            val1b = RadioSettingValueString(0, 10,
-                                            bfc.bcd_decode_freq(_vfob.freq))
+            try:
+                vbfreq = bfc.bcd_decode_freq(_vfob.freq)
+            except Exception as e:
+                LOG.exception('Failed to decode VFO B frequency: %s', e)
+                vbfreq = e
+            val1b = RadioSettingValueString(0, 10, vbfreq)
             val1b.set_validate_callback(my_validate)
             rs = RadioSetting("vfob.freq", "VFO B Frequency", val1b)
             rs.set_apply_callback(apply_freq, _vfob)

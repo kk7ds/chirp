@@ -152,7 +152,7 @@ struct {
 struct {
   u8 unknown1a:2,
      half_deviation:1, // This is not really right, maybe auto?
-     unknown1b:5;
+     unknown1b:5; // Something related to 6.25kHz?
   u8 mode:2,
      duplex:2,
      tune_step:4;
@@ -696,6 +696,16 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
             flag.nosubvfo = True   # Masked from VFO B
         else:
             flag.nosubvfo = False  # Available in both VFOs
+
+        # This seems to be something the radio requires to properly resolve
+        # 6.25kHz channels. The radio sets this when you store such a channel
+        # and if it's not set this way the radio is actually way off on
+        # frequency, even though the display shows the proper thing.
+        if (chirp_common.is_6_25(mem.freq) and
+                not chirp_common.is_5_0(mem.freq)):
+            _mem.unknown1b = 0x05
+        else:
+            _mem.unknown1b = 0x00
 
         _mem.freq = int(mem.freq / 1000)
         _mem.offset = int(mem.offset / 1000)

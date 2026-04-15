@@ -644,11 +644,7 @@ class Kenwood_M60_Radio(chirp_common.CloneModeRadio,
         self.encode_tone(_tone.tx_tone, txmode, txtone, txpol)
         self.encode_tone(_tone.rx_tone, rxmode, rxtone, rxpol)
 
-        # power, default power is low
-        if mem.power is None:
-            mem.power = POWER_LEVELS[0]
-
-        _ch.power = POWER_LEVELS.index(mem.power)
+        _ch.power = POWER_LEVELS.index(mem.power or POWER_LEVELS[0])
 
         # wide/marrow
         _ch.wide = MODES.index(mem.mode)

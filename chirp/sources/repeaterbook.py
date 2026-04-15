@@ -2,6 +2,7 @@ import datetime
 import glob
 import json
 import logging
+import lzma
 import math
 import os
 
@@ -11,7 +12,7 @@ from chirp import chirp_common
 from chirp import errors
 from chirp import platform as chirp_platform
 from chirp.sources import base
-from chirp.wxui import fips
+from chirp.sources import fips
 
 LOG = logging.getLogger(__name__)
 
@@ -80,13 +81,20 @@ class RepeaterBook(base.NetworkResultRadio):
     def get_label(self):
         return 'RepeaterBook'
 
+    @staticmethod
+    def get_resource_name(service, country, state):
+        if country not in STATES:
+            # Hack around the translated "All" string in the UI
+            state = 'all'
+        return 'rb%s-%s-%s.json' % (service,
+                                    country.lower().replace(' ', '_'),
+                                    state.lower().replace(' ', '_'))
+
     def get_data(self, status, country, state, service):
         # Ideally we would be able to pull the whole database, but right
         # now this is limited to 3500 results, so we need to filter and
         # cache by state to stay under that limit.
-        fn = 'rb%s-%s-%s.json' % (service,
-                                  country.lower().replace(' ', '_'),
-                                  state.lower().replace(' ', '_'))
+        fn = self.get_resource_name(service, country, state)
         db_dir = chirp_platform.get_platform().config_file('repeaterbook')
         try:
             os.mkdir(db_dir)
@@ -111,38 +119,59 @@ class RepeaterBook(base.NetworkResultRadio):
             LOG.debug('RepeaterBook database %s too old: %s',
                       fn, modified_dt)
 
-        params = {'country': country,
-                  'stype': service}
-        if country in NA_COUNTRIES:
-            export = 'export.php'
-        else:
-            export = 'exportROW.php'
-        if country in STATES:
-            params['state'] = state
+        try:
+            with open(data_file, 'rb') as f:
+                data = json.loads(f.read())
+                etag = data.get('ETag')
+        except Exception as e:
+            LOG.warning('Failed to load cached data from %s: %s',
+                        data_file, e)
+            etag = None
 
-        r = requests.get('https://www.repeaterbook.com/api/%s' % export,
-                         headers=base.HEADERS,
-                         params=params,
-                         stream=True)
-        if r.status_code != 200:
+        headers = dict(base.HEADERS)
+        if etag:
+            headers['If-None-Match'] = etag
+        try:
+            r = requests.get('https://data.chirpmyradio.com/rb/%s.xz' % fn,
+                             headers=headers,
+                             stream=True)
+        except requests.exceptions.RequestException as e:
+            LOG.warning('Failed to fetch data from RepeaterBook: %s' % e)
             if modified:
+                # If we have a cached file, it's better than nothing so use
+                # it since the server was not contactable
                 status.send_status('Using cached data', 50)
+                return data_file
+        if r.status_code == 304:
+            status.send_status('Using cached data', 50)
+            LOG.debug('Server reports no changes so marking our cache '
+                      'as current')
+            os.utime(data_file, None)
+            status.send_status('Complete', 50)
+            return data_file
+        elif r.status_code != 200:
+            if modified:
+                # If we have a cached file, it's better than nothing, so use
+                # it since the server refused.
+                status.send_status('Using cached data', 50)
+                return data_file
             status.send_fail('Got error code %i (%s) from server' % (
                 r.status_code, r.reason))
             LOG.error('Repeaterbook query %r returned %i (%s)',
                       r.url, r.status_code, r.reason)
             return
-        tmp = data_file + '.tmp'
+
         chunk_size = 8192
         probable_end = 3 << 20
         counter = 0
         data = b''
-        with open(tmp, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=chunk_size):
-                f.write(chunk)
-                data += chunk
-                counter += len(chunk)
-                status.send_status('Downloading', counter / probable_end * 50)
+        decomp = lzma.LZMADecompressor(format=lzma.FORMAT_XZ)
+        for chunk in r.iter_content(chunk_size=chunk_size):
+            chunk = decomp.decompress(chunk)
+            data += chunk
+            counter += len(chunk)
+            status.send_status('Downloading', counter / probable_end * 50)
+
         try:
             results = json.loads(data)
         except Exception as e:
@@ -151,6 +180,16 @@ class RepeaterBook(base.NetworkResultRadio):
                       r.url, r.status_code)
             LOG.error('Start of data:%s%s', os.linesep, data[:256])
             status.send_fail('RepeaterBook returned invalid response')
+            return
+
+        try:
+            results['ETag'] = r.headers.get('ETag')
+            tmp = data_file + '.tmp'
+            with open(tmp, 'wb') as f:
+                f.write(json.dumps(results).encode('utf-8'))
+        except Exception as e:
+            LOG.exception('Failed to write data to %s: %s' % (tmp, e))
+            status.send_fail('Failed to write RepeaterBook data to disk')
             return
 
         if results['count']:
@@ -394,7 +433,6 @@ ROW_COUNTRIES = [
     "Liechtenstein",
     "Lithuania",
     "Luxembourg",
-    "Macedonia",
     "Malaysia",
     "Malta",
     "Moldova",
@@ -404,6 +442,7 @@ ROW_COUNTRIES = [
     "Netherlands",
     "New Zealand",
     "Nicaragua",
+    "North Macedonia",
     "Norway",
     "Oman",
     "Panama",
@@ -413,7 +452,7 @@ ROW_COUNTRIES = [
     "Poland",
     "Portugal",
     "Romania",
-    "Russian Federation",
+    "Russia",
     "Saint Kitts and Nevis",
     "Saint Vincent and the Grenadines",
     "San Marino",

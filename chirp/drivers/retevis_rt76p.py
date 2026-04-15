@@ -540,35 +540,40 @@ class RT76PRadio(chirp_common.CloneModeRadio):
 
         _mem.set_raw("\x00" * 16)
 
+        duplex = mem.duplex
+        offset = mem.offset
+        mode = mem.mode
+        power = mem.power
+
         if mem.freq in GMRS_FREQS1:
-            mem.duplex == ''
-            mem.offset = 0
+            duplex = ''
+            offset = 0
         elif mem.freq in GMRS_FREQS2:
-            mem.duplex == ''
-            mem.offset = 0
-            mem.mode = "NFM"
-            mem.power = self.RT76P_POWER_LEVELS[1]
+            duplex = ''
+            offset = 0
+            mode = "NFM"
+            power = self.RT76P_POWER_LEVELS[1]
         elif mem.freq in GMRS_FREQS3:
             if mem.duplex == '+':
-                mem.offset = 5000000
+                offset = 5000000
             else:
-                mem.duplex == ''
-                mem.offset = 0
+                duplex = ''
+                offset = 0
         else:
-            mem.duplex = 'off'
-            mem.offset = 0
+            duplex = 'off'
+            offset = 0
 
         _mem.rxfreq = mem.freq / 10
 
-        if mem.duplex == "off":
+        if duplex == "off":
             for i in range(0, 4):
                 _mem.txfreq[i].set_raw("\xFF")
-        elif mem.duplex == "split":
-            _mem.txfreq = mem.offset / 10
-        elif mem.duplex == "+":
-            _mem.txfreq = (mem.freq + mem.offset) / 10
-        elif mem.duplex == "-":
-            _mem.txfreq = (mem.freq - mem.offset) / 10
+        elif duplex == "split":
+            _mem.txfreq = offset / 10
+        elif duplex == "+":
+            _mem.txfreq = (mem.freq + offset) / 10
+        elif duplex == "-":
+            _mem.txfreq = (mem.freq - offset) / 10
         else:
             _mem.txfreq = mem.freq / 10
 
@@ -614,9 +619,8 @@ class RT76PRadio(chirp_common.CloneModeRadio):
             _mem.rxtone += 0x69
 
         _mem.scan = mem.skip != "S"
-        _mem.narrow = mem.mode == "NFM"
-
-        _mem.lowpower = mem.power == self.RT76P_POWER_LEVELS[1]
+        _mem.narrow = mode == "NFM"
+        _mem.lowpower = power == self.RT76P_POWER_LEVELS[1]
 
         for setting in mem.extra:
             if setting.get_name() == "scramble_type":

@@ -17,7 +17,7 @@
 import logging
 
 from chirp.drivers import baofeng_common as bfc
-from chirp import chirp_common, directory, memmap
+from chirp import chirp_common, directory, memmap, bandplan_na
 from chirp import bitwise
 from chirp.settings import RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
@@ -108,21 +108,28 @@ def _sendmagic(radio, magic, response_len):
 
 
 def _do_ident(radio):
-    # Flush input buffer
-    bfc._clean_buffer(radio)
+    for ident in radio._idents:
+        # Flush input buffer
+        bfc._clean_buffer(radio)
 
-    # Ident radio
-    ack = _sendmagic(radio, radio._magic, len(radio._fingerprint))
+        # Ident radio
+        LOG.debug('Sending ident magic: %r', ident)
+        try:
+            ack = _sendmagic(radio, ident, len(radio._fingerprint))
+            if not ack.startswith(radio._fingerprint):
+                LOG.debug('Ack %r did not match fingerprint: %r', ack,
+                          radio._fingerprint)
+                continue
+        except errors.RadioError:
+            # This is the timeout or invalid response length case
+            LOG.debug('Radio did not respond to ident magic: %r', ident)
+            continue
 
-    if not ack.startswith(radio._fingerprint):
-        if ack:
-            LOG.debug(repr(ack))
-        raise errors.RadioError("Radio did not respond as expected (A)")
+        for magic, resplen in radio._magics:
+            _sendmagic(radio, magic, resplen)
+        return True
 
-    for magic, resplen in radio._magics:
-        _sendmagic(radio, magic, resplen)
-
-    return True
+    raise errors.RadioError("Radio did not respond as expected (A)")
 
 
 def _download(radio):
@@ -230,7 +237,7 @@ class UV17Pro(bfc.BaofengCommonHT):
 
     _tri_band = True
     _fileid = []
-    _magic = MSTRING_UV17L
+    _idents = [MSTRING_UV17L]
     _fingerprint = b"\x06"
     _magics = [(b"\x46", 16),
                (b"\x4d", 15),
@@ -247,9 +254,13 @@ class UV17Pro(bfc.BaofengCommonHT):
     _has_pilot_tone = False
     _has_send_id_delay = False
     _has_skey1_short = False
+    _has_skey1_long = False
     _has_skey2_short = False
+    _has_skey2_long = False
     _has_skey_disable = False
     _has_zone_linking = False
+    _has_bt = False
+    _has_scramble = False
     _scode_offset = 0
     _encrsym = 1
     _has_voice = True
@@ -282,6 +293,7 @@ class UV17Pro(bfc.BaofengCommonHT):
     _vhf2_range = (200000000, 260000000)
     _uhf_range = (400000000, 520000000)
     _uhf2_range = (350000000, 390000000)
+    AIRBANDS = [_airband]
 
     STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
     LIST_STEPS = ["2.5", "5.0", "6.25", "10.0", "12.5", "20.0", "25.0", "50.0"]
@@ -405,7 +417,8 @@ class UV17Pro(bfc.BaofengCommonHT):
       u8 unknown4[2];
       u8 voxdlytime;
       u8 menuquittime;
-      u8 unknown5[2];
+      u8 bluetooth;
+      u8 unknown5;
       u8 dispani;
       u8 unknown11[3];
       u8 totalarm;
@@ -788,61 +801,67 @@ class UV17Pro(bfc.BaofengCommonHT):
                             0x0A: 4,
                             0x0C: 5,
                             0x34: 6,
-                            0x08: 4,
-                            0x03: 5}
+                            0x05: 7,
+                            0x03: 8,
+                            0x35: 9}
             return key_to_index.get(int(value), 0)
 
-        def apply_Key1short(setting, obj):
-            val = str(setting.value)
-            key_to_index = {'FM': 0x07,
-                            'Scan': 0x1C,
-                            'Search': 0x1D,
-                            'Vox': 0x2D,
-                            'TX Power': 0x0A,
-                            'NOAA': 0x0C,
-                            'Zone Select': 0x34,
-                            'Flashlight': 0x08,
-                            'SOS': 0x03}
-            obj.key1short = key_to_index.get(val, 0x07)
+        KEY_NAME_TO_CODE = {
+            'FM': 0x07,
+            'Scan': 0x1C,
+            'Search': 0x1D,
+            'Vox': 0x2D,
+            'TX Power': 0x0A,
+            'NOAA': 0x0C,
+            'Zone Select': 0x34,
+            'Monitor': 0x05,
+            'Alarm': 0x03,
+            'Scan Edit': 0x35,
+        }
 
-        def getKey2shortIndex(value):
-            key_to_index = {0x07: 0,
-                            0x1C: 1,
-                            0x1D: 2,
-                            0x2D: 3,
-                            0x0A: 4,
-                            0x0C: 5,
-                            0x34: 6}
-            return key_to_index.get(int(value), 0)
+        KEY_CODE_TO_INDEX = {
+            code: idx for idx, code in enumerate(KEY_NAME_TO_CODE.values())
+        }
 
-        def apply_Key2short(setting, obj):
-            val = str(setting.value)
-            key_to_index = {'FM': 0x07,
-                            'Scan': 0x1C,
-                            'Search': 0x1D,
-                            'Vox': 0x2D,
-                            'TX Power': 0x0A,
-                            'NOAA': 0x0C,
-                            'Zone Select': 0x34}
-            obj.key2short = key_to_index.get(val, 0x07)
+        def make_apply_key(attr_name):
+            def apply(setting, obj):
+                val = str(setting.value)
+                setattr(obj, attr_name,
+                        KEY_NAME_TO_CODE.get(val, 0x07))
+            return apply
 
-        if self._has_skey1_short:
-            rs = RadioSetting("settings.key1short", "Skey1 Short",
-                              RadioSettingValueList(
-                                self.LIST_SKEY2_SHORT,
-                                current_index=getKey1shortIndex(
-                                        _mem.settings.key1short)))
-            rs.set_apply_callback(apply_Key1short, _mem.settings)
-            basic.append(rs)
+        apply_key1short = make_apply_key("key1short")
+        apply_key1long = make_apply_key("key1long")
+        apply_key2short = make_apply_key("key2short")
+        apply_key2long = make_apply_key("key2long")
 
-        if self._has_skey2_short:
-            rs = RadioSetting("settings.key2short", "Skey2 Short",
-                              RadioSettingValueList(
-                                self.LIST_SKEY2_SHORT,
-                                current_index=getKey2shortIndex(
-                                        _mem.settings.key2short)))
-            rs.set_apply_callback(apply_Key2short, _mem.settings)
-            basic.append(rs)
+        def get_key_index(value):
+            return KEY_CODE_TO_INDEX.get(int(value), 0)
+
+        KEY_SETTINGS = [
+            ("_has_skey1_short", "settings.key1short", "Skey1 Short",
+             "key1short", apply_key1short),
+            ("_has_skey1_long", "settings.key1long", "Skey1 Long",
+             "key1long", apply_key1long),
+            ("_has_skey2_short", "settings.key2short", "Skey2 Short",
+             "key2short", apply_key2short),
+            ("_has_skey2_long", "settings.key2long", "Skey2 Long",
+             "key2long", apply_key2long),
+        ]
+
+        for flag, path, label, attr, apply_cb in KEY_SETTINGS:
+            if getattr(self, flag):
+                rs = RadioSetting(
+                    path,
+                    label,
+                    RadioSettingValueList(
+                        self.LIST_SKEY2_SHORT,
+                        current_index=get_key_index(
+                            getattr(_mem.settings, attr))
+                    )
+                )
+                rs.set_apply_callback(apply_cb, _mem.settings)
+                basic.append(rs)
 
         if self._has_skey_disable:
             rs = RadioSetting("settings.skdisable", "Side Key Disable",
@@ -917,6 +936,12 @@ class UV17Pro(bfc.BaofengCommonHT):
                               RadioSettingValueList(
                                 LIST_GPS_TIMEZONE,
                                 current_index=_mem.settings.gpstimezone))
+            basic.append(rs)
+
+        if self._has_bt:
+            rs = RadioSetting("settings.bluetooth", "Bluetooth",
+                              RadioSettingValueBoolean(
+                                  _mem.settings.bluetooth))
             basic.append(rs)
 
         rs = RadioSetting("settings.fmenable", "Disable FM radio",
@@ -1256,12 +1281,13 @@ class UV17Pro(bfc.BaofengCommonHT):
     def validate_memory(self, mem):
         msgs = []
         if 'AM' in self.MODES:
-            if chirp_common.in_range(mem.freq,
-                                     [self._airband]) and mem.mode != 'AM':
+            in_range = chirp_common.in_range
+            airbands = self.AIRBANDS
+
+            if in_range(mem.freq, airbands) and mem.mode != 'AM':
                 msgs.append(chirp_common.ValidationWarning(
                     _('Frequency in this range requires AM mode')))
-            if not chirp_common.in_range(mem.freq,
-                                         [self._airband]) and mem.mode == 'AM':
+            if not in_range(mem.freq, airbands) and mem.mode == 'AM':
                 msgs.append(chirp_common.ValidationWarning(
                     _('Frequency in this range must not be AM mode')))
 
@@ -1346,7 +1372,7 @@ class UV17Pro(bfc.BaofengCommonHT):
             mem.power = levels[0]
 
         mem.mode = _mem.wide and self.MODES[0] or self.MODES[1]
-        if chirp_common.in_range(mem.freq, [self._airband]):
+        if chirp_common.in_range(mem.freq, self.AIRBANDS):
             mem.mode = "AM"
 
         mem.extra = RadioSettingGroup("Extra", "extra")
@@ -1365,6 +1391,13 @@ class UV17Pro(bfc.BaofengCommonHT):
                           RadioSettingValueList(self.SCODE_LIST,
                                                 current_index=scode))
         mem.extra.append(rs)
+
+        if self._has_scramble:
+            rs = RadioSetting("scramble", "Scramble",
+                              RadioSettingValueList(
+                                  self.SCRAMBLE_LIST,
+                                  current_index=_mem.scramble))
+            mem.extra.append(rs)
 
         if self.MODEL in ["BF-F8HP-PRO"]:
             rs = RadioSetting("sqmode", "RX DTMF",
@@ -1385,13 +1418,6 @@ class UV17Pro(bfc.BaofengCommonHT):
             rs = RadioSetting("fhss", "FHSS",
                               RadioSettingValueBoolean(_mem.fhss))
             mem.extra.append(rs)
-
-            if self.MODEL == "K6":
-                rs = RadioSetting("scramble", "Scramble",
-                                  RadioSettingValueList(
-                                      self.SCRAMBLE_LIST,
-                                      current_index=_mem.scramble))
-                mem.extra.append(rs)
 
         mem.name = str(name).replace('\xFF', ' ').replace('\x00', ' ').rstrip()
 
@@ -1506,7 +1532,7 @@ class UV17ProGPS(UV17Pro):
 
     _has_support_for_banknames = True
     _has_workmode_support = True
-    _magic = MSTRING_UV17PROGPS
+    _idents = [MSTRING_UV17PROGPS]
     _magics = [(b"\x46", 16),
                (b"\x4d", 7),
                (b"\x53\x45\x4E\x44\x21\x05\x0D\x01\x01" +
@@ -1532,6 +1558,134 @@ class UV17ProGPS(UV17Pro):
         return rf
 
 
+class UV17ProGPSGMRS(UV17ProGPS):
+    """UV-17Pro GPS variant with GMRS frequency-based enforcement.
+
+    Shared base for GMRS radios in the UV-17Pro GPS family that use
+    frequency-based TX restrictions with implied modes.
+    """
+    _gmrs = True
+    _low_power_index = 1
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_duplexes = ["", "-", "+", "split", "off"]
+        return rf
+
+    def _apply_gmrs_limits(self, mem):
+        if mem.duplex == "off":
+            return mem.mode, mem.power
+
+        if mem.duplex == "split":
+            tx_freq = mem.offset
+        elif mem.duplex == "+":
+            tx_freq = mem.freq + mem.offset
+        elif mem.duplex == "-":
+            tx_freq = mem.freq - mem.offset
+        else:
+            tx_freq = mem.freq
+
+        if tx_freq in bandplan_na.GMRS_HHONLY:
+            mode = "NFM"
+            power = self.POWER_LEVELS[self._low_power_index]
+        else:
+            mode = mem.mode
+            power = mem.power
+
+        return mode, power
+
+    def get_memory(self, number):
+        mem = super().get_memory(number)
+        if mem.empty:
+            return mem
+        mem.mode, mem.power = self._apply_gmrs_limits(mem)
+        return mem
+
+    def set_memory(self, mem):
+        super().set_memory(mem)
+        mode, power = self._apply_gmrs_limits(mem)
+        _mem = self._get_raw_memory(mem.number)
+        if power is not None:
+            _mem.lowpower = self.POWER_LEVELS.index(power)
+        if mode is not None:
+            _mem.wide = mode == self.MODES[0]
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+        if mem.empty:
+            return msgs
+
+        msg_tx = "TX frequency must be a GMRS frequency"
+        msg_low_power = (
+            "GMRS 467 MHz interstitial frequencies require low power"
+        )
+        msg_nfm = (
+            "GMRS 467 MHz interstitial frequencies require narrowband (NFM)"
+        )
+
+        gmrs_tx_freqs = set(bandplan_na.ALL_GMRS_FREQS)
+        gmrs_tx_freqs.update(
+            freq + 5000000 for freq in bandplan_na.GMRS_HIRPT
+        )
+
+        if mem.duplex == "off":
+            tx_freq = None
+        elif mem.duplex == "split":
+            tx_freq = mem.offset
+        elif mem.duplex == "+":
+            tx_freq = mem.freq + mem.offset
+        elif mem.duplex == "-":
+            tx_freq = mem.freq - mem.offset
+        else:
+            tx_freq = mem.freq
+
+        if tx_freq is not None and tx_freq not in gmrs_tx_freqs:
+            msgs.append(chirp_common.ValidationWarning(msg_tx))
+        if tx_freq in bandplan_na.GMRS_HHONLY:
+            if mem.power != self.POWER_LEVELS[self._low_power_index]:
+                msgs.append(chirp_common.ValidationWarning(msg_low_power))
+            if mem.mode != "NFM":
+                msgs.append(chirp_common.ValidationWarning(msg_nfm))
+
+        return msgs
+
+
+@directory.register
+class RadioddityGM30Plus(UV17ProGPSGMRS):
+    """Radioddity GM-30 Plus"""
+    VENDOR = "Radioddity"
+    MODEL = "GM-30 Plus"
+
+
+@directory.register
+class RadioddityGM30Pro(UV17ProGPSGMRS):
+    """Radioddity GM-30 Pro"""
+    VENDOR = "Radioddity"
+    MODEL = "GM-30 Pro"
+    _has_gps = False
+    _has_bt = True
+    _has_scramble = True
+
+
+@directory.register
+class BaofengGM21(UV17ProGPSGMRS):
+    """Baofeng GM-21"""
+    VENDOR = "Baofeng"
+    MODEL = "GM-21"
+    _has_gps = False
+    _has_bt = True
+
+
+@directory.register
+class UV32(UV17ProGPS):
+    VENDOR = "Baofeng"
+    MODEL = "UV-32"
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
+                    chirp_common.PowerLevel("Low", watts=2.00),
+                    chirp_common.PowerLevel("Medium", watts=5.00)]
+
+
 @directory.register
 class UV21ProGPS(UV17ProGPS):
     VENDOR = "Baofeng"
@@ -1539,6 +1693,19 @@ class UV21ProGPS(UV17ProGPS):
 
     VALID_BANDS = UV21ProV2.VALID_BANDS
     MODES = UV21ProV2.MODES
+
+
+@directory.register
+class UV28Plus(UV17ProGPS):
+    VENDOR = "Baofeng"
+    MODEL = "UV-28Plus"
+
+    VALID_BANDS = UV21ProV2.VALID_BANDS
+    MODES = UV21ProV2.MODES
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
+                    chirp_common.PowerLevel("Low", watts=2.00),
+                    chirp_common.PowerLevel("Medium", watts=5.00)]
+    _has_bt = True
 
 
 @directory.register
@@ -1576,6 +1743,21 @@ class BFK5Plus(BF5RM):
 
 
 @directory.register
+class BaofengUV5RMPlus(BF5RM):
+    VENDOR = "Baofeng"
+    MODEL = "UV-5RM Plus"
+
+    _magics = [(b"\x46", 16),
+               (b"\x4d", 15),
+               (b"\x53\x45\x4E\x44\x13\x0F\x0D\x13\x0E\x0E\x0E\x0D\x0A" +
+                b"\x0E\x0E\x02\x0F\x08\x04\x11\x0C\x00\x0D\x0E\x00", 1)]
+    _encrsym = 13
+    _has_pilot_tone = True
+    _has_send_id_delay = True
+    _has_scramble = True
+
+
+@directory.register
 class GM5RH(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "GM-5RH"
@@ -1588,7 +1770,7 @@ class GM5RH(UV17Pro):
     LIST_PW_SAVEMODE = ["Off", "1:1", "2:1", "3:1", "4:1"]
     _has_workmode_support = True
 
-    _magic = MSTRING_GM5RH
+    _idents = [MSTRING_GM5RH]
 
 
 @directory.register
@@ -1613,11 +1795,11 @@ class F8HPPro(UV17Pro):
 
     # ==========
     # Notice to developers:
-    # The BF-F8HP-PRO support in this driver is currently based upon v0.44
+    # The BF-F8HP-PRO support in this driver is currently based upon v0.52
     # firmware.
     # ==========
 
-    _magic = MSTRING_BFF8HPPRO
+    _idents = [MSTRING_BFF8HPPRO]
     _magics = [(b"\x46", 16),
                (b"\x4d", 6),
                (b"\x53\x45\x4E\x44\x12\x0D\x0A\x0A\x10\x03\x0D\x02\x11\x0C" +
@@ -1629,10 +1811,14 @@ class F8HPPro(UV17Pro):
                   "100.0"]
 
     _airband = (108000000, 136999999)
-    _vhf_range = (137000000, 174000000)
+    _vhf_range = (137000000, 173999999)
+    _airband2 = (174000000, 218999999)
+    _vhf2_range = (219000000, 224999999)
+    _airband3 = (225000000, 399999999)
+    AIRBANDS = [_airband, _airband2, _airband3]
 
-    VALID_BANDS = [_airband, _vhf_range, UV17Pro._vhf2_range,
-                   UV17Pro._uhf_range, UV17Pro._uhf2_range]
+    VALID_BANDS = [_airband, _vhf_range, _airband2, _vhf2_range, _airband3,
+                   UV17Pro._uhf_range]
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=10.00),
                     chirp_common.PowerLevel("Low",  watts=1.00),
                     chirp_common.PowerLevel('Mid', watts=3.00)]
@@ -1645,10 +1831,11 @@ class F8HPPro(UV17Pro):
                             "20 sec", "30 sec", "60 sec"]
     LIST_ID_DELAY = ["%s ms" % x for x in range(100, 3100, 100)]
     LIST_SKEY2_SHORT = ["FM", "Scan", "Search", "Vox", "TX Power", "NOAA",
-                        "Zone Select"]
+                        "Zone Select", "Monitor", "Alarm", "Scan Edit"]
     MODES = UV17Pro.MODES + ['AM']
     SQUELCH_LIST = ["Off"] + list("12345678")
     LIST_SKEY_DISABLE = ["Off", "SK Only", "PTT Only", "SK + PTT"]
+    LIST_MODE = ["Name", "Frequency", "Channel Number", "Name + Frequency"]
 
     _has_support_for_banknames = True
     _vfoscan = True
@@ -1657,7 +1844,9 @@ class F8HPPro(UV17Pro):
     _has_pilot_tone = True
     _has_send_id_delay = True
     _has_skey1_short = True
+    _has_skey1_long = True
     _has_skey2_short = True
+    _has_skey2_long = True
     _has_skey_disable = True
     _has_voice = False
     _has_when_to_send_aniid = False
@@ -1732,9 +1921,10 @@ class F8HPPro(UV17Pro):
       u8 gpsw;
       u8 gpsmode;
       u8 key1short;
-      u8 unknown7;
+      u8 key1long;
       u8 key2short;
-      u8 unknown8[2];
+      u8 key2long;
+      u8 unknown8;
       u8 rstmenu;
       u8 singlewatch;
       u8 hangup;
@@ -1859,7 +2049,8 @@ class BFK6(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "K6"
 
-    _magic = MSTRING_BFK6
+    _has_scramble = True
+    _idents = [MSTRING_BFK6]
     _magics = [(b"\x46", 16),
                ]
     _uses_encr = False
@@ -2164,7 +2355,7 @@ class UV5RMini(UV17Pro):
 
     _has_support_for_banknames = False
 
-    _magic = MSTRING_UV17PROGPS
+    _idents = [MSTRING_UV17PROGPS]
     _mem_size = MEM_TOTAL
     _has_voxsw = True
     _has_pilot_tone = True
@@ -2228,3 +2419,43 @@ class UV5RMini(UV17Pro):
         rs = RadioSetting("downcode.code", "Down Code", val)
         rs.set_apply_callback(self.apply_code, self._memobj.downcode, 16)
         dtmfe.append(rs)
+
+
+@directory.register
+class UV5GMini(UV5RMini):
+    # ==========
+    # Notice to developers:
+    # The UV-5G Mini support in this driver is
+    # currently based upon v0.05 firmware.
+    #
+    # This driver will also work with the UV-5G Mini with v0.01 firmware.
+    # For the UV-5G Mini with Fw 0.01 it is not necessary to use
+    #  the UV-5R Mini driver
+    # ==========
+    """Baofeng UV-5G Mini"""
+    VENDOR = "Baofeng"
+    MODEL = "UV-5G Mini"
+
+    _idents = [
+        b'PROGRAMGMRS5RMIU',  # magic for Fw v0.05
+        MSTRING_UV17PROGPS,   # magic for Fw v0.01
+    ]
+
+    _low_power_index = 1
+
+    def get_memory(self, number):
+        mem = super().get_memory(number)
+
+        # inhibit changing freq, duplex and offset for GMRS channels 1-30
+        if mem.number >= 1 and mem.number <= 30:
+            mem.immutable = ['freq', 'duplex', 'offset']
+            # channels 8 - 14 have to be Narrow FM and Low power
+            if mem.number >= 8 and mem.number <= 14:
+                mem.mode = 'NFM'
+                # force low power
+                mem.power = self.POWER_LEVELS[self._low_power_index]
+                # inhibit changing freq, bandwidth, TX power, duplex and offset
+                mem.immutable = ['freq', 'mode', 'power',
+                                 'duplex', 'offset']
+
+        return mem

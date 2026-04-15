@@ -163,7 +163,7 @@ class UV17(baofeng_uv17Pro.UV17Pro):
     WRITE_MEM_TOTAL = 0x9000
     BLOCK_SIZE = 0x40
     BAUD_RATE = 57600
-    _magic = b"PSEARCH"
+    _idents = [b"PSEARCH"]
     _magics = [(b"PASSSTA", 3),
                (b"SYSINFO", 1),
                (b"\x56\x00\x00\x0A\x0D", 13),

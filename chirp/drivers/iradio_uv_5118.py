@@ -16,12 +16,15 @@
 import struct
 import logging
 
-from chirp import chirp_common, directory, memmap
+from chirp import chirp_common, directory, memmap, checksum
 from chirp import bitwise, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
     RadioSettingValueBoolean, RadioSettingValueFloat, \
     RadioSettings
+
+from chirp.drivers.iradio_common import enter_programming_mode, \
+    exit_programming_mode
 
 LOG = logging.getLogger(__name__)
 
@@ -155,56 +158,12 @@ TXALLOW_CHOICES = ["RX Only", "TX/RX"]
 TXALLOW_VALUES = [0xFF, 0x00]
 
 
-def _checksum(data):
-    cs = 0
-    for byte in data:
-        cs += byte
-    return cs % 256
-
-
-def _enter_programming_mode(radio):
-    serial = radio.pipe
-
-    # lengthen the timeout here as these radios are resetting due to timeout
-    radio.pipe.timeout = 0.75
-
-    exito = False
-    for i in range(0, 5):
-        serial.write(radio.magic)
-        ack = serial.read(1)
-
-        try:
-            if ack == CMD_ACK:
-                exito = True
-                break
-        except:
-            LOG.debug("Attempt #%s, failed, trying again" % i)
-            pass
-
-    # return timeout to default value
-    radio.pipe.timeout = 0.25
-
-    # check if we had EXITO
-    if exito is False:
-        msg = "The radio did not accept program mode after five tries.\n"
-        msg += "Check you interface cable and power cycle your radio."
-        raise errors.RadioError(msg)
-
-
-def _exit_programming_mode(radio):
-    serial = radio.pipe
-    try:
-        serial.write(b"93" + b"\x05\xEE\x5F")
-    except:
-        raise errors.RadioError("Radio refused to exit programming mode")
-
-
 def _read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
     cmd = struct.pack(">BH", ord(b'R'), block_addr + 0x0340)
 
-    ccs = bytes([_checksum(cmd)])
+    ccs = bytes([checksum.checksum_8bit(cmd)])
 
     expectedresponse = b"R" + cmd[1:]
 
@@ -216,7 +175,7 @@ def _read_block(radio, block_addr, block_size):
         serial.write(cmd)
         response = serial.read(3 + block_size + 1)
 
-        cs = _checksum(response[:-1])
+        cs = checksum.checksum_8bit(response[:-1])
 
         if response[:3] != expectedresponse:
             raise Exception("Error reading block %04x." % (block_addr +
@@ -242,7 +201,7 @@ def _write_block(radio, block_addr, block_size):
 
     cmd = struct.pack(">BH", ord(b'W'), block_addr + 0x0340)
 
-    cs = bytes([_checksum(cmd + data)])
+    cs = bytes([checksum.checksum_8bit(cmd + data)])
     data += cs
 
     LOG.debug("Writing Data:")
@@ -259,7 +218,8 @@ def _write_block(radio, block_addr, block_size):
 
 def do_download(radio):
     LOG.debug("download")
-    _enter_programming_mode(radio)
+    enter_programming_mode(radio.pipe, radio.magic_enter,
+                           radio.program_timeout)
 
     data = b""
 
@@ -279,7 +239,7 @@ def do_download(radio):
         LOG.debug("Address: %04x" % addr)
         LOG.debug(util.hexprint(block))
 
-    _exit_programming_mode(radio)
+    exit_programming_mode(radio.pipe, radio.magic_exit)
 
     return memmap.MemoryMapBytes(data)
 
@@ -288,7 +248,8 @@ def do_upload(radio):
     status = chirp_common.Status()
     status.msg = "Uploading to radio"
 
-    _enter_programming_mode(radio)
+    enter_programming_mode(radio.pipe, radio.magic_enter,
+                           radio.program_timeout)
 
     status.cur = 0
     status.max = radio._memsize
@@ -299,7 +260,7 @@ def do_upload(radio):
             radio.status_fn(status)
             _write_block(radio, addr, radio.BLOCK_SIZE)
 
-    _exit_programming_mode(radio)
+    exit_programming_mode(radio.pipe, radio.magic_exit)
 
 
 class IradioUV5118(chirp_common.CloneModeRadio):
@@ -309,7 +270,9 @@ class IradioUV5118(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600
 
     BLOCK_SIZE = 0x10
-    magic = b"93" + b"\x05\x10\x81"
+    magic_enter = b"93" + b"\x05\x10\x81"
+    magic_exit = b"93" + b"\x05\xEE\x5F"
+    program_timeout = 0.75
 
     VALID_BANDS = [(20000000, 64000000),  # RX only
                    (108000000, 136000000),  # RX only (Air Band)

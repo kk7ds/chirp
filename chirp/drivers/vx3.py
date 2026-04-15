@@ -398,7 +398,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         rf.valid_modes = list(set(MODES))
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
-        rf.valid_tuning_steps = list(STEPS)
+        rf.valid_tuning_steps = list(STEPS + [8.33])
         rf.valid_bands = [(500000, 999000000)]
         rf.valid_skips = ["", "S", "P"]
         rf.valid_power_levels = POWER_LEVELS
@@ -411,7 +411,7 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
         return rf
 
     def get_raw_memory(self, number):
-        return repr(self._memobj.memory[number])
+        return repr(self._memobj.memory[number-1])
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number-1]
@@ -491,7 +491,10 @@ class VX3Radio(yaesu_clone.YaesuCloneModeRadio):
             _mem.mode = MODES.index(mem.mode)
             _mem.txnarrow = False
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
-        _mem.tune_step = STEPS.index(mem.tuning_step)
+        try:
+            _mem.tune_step = STEPS.index(mem.tuning_step)
+        except ValueError:
+            _mem.tune_step = 0
         if mem.power == POWER_LEVELS[1]:  # Low
             _mem.power = 0x00
         else:  # Default to High

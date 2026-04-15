@@ -1,4 +1,5 @@
 # Quansheng UV-K5 driver (c) 2023 Jacek Lipkowski <sq5bpf@lipkowski.org>
+# Quansheng UV-K1 driver (c) 2025 Thibaut Berg <thibaut.berg@hotmail.com>
 #
 # based on template.py Copyright 2012 Dan Smith <dsmith@danplanet.com>
 #
@@ -29,6 +30,7 @@ import struct
 import logging
 
 from chirp import chirp_common, directory, bitwise, memmap, errors, util
+from chirp import checksum
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueInteger, RadioSettingValueString, \
@@ -364,30 +366,13 @@ def xorarr(data: bytes):
     return ret
 
 
-def calculate_crc16_xmodem(data: bytes):
-    """
-    if this crc was used for communication to AND from the radio, then it
-    would be a measure to increase reliability.
-    but it's only used towards the radio, so it's for further obfuscation
-    """
-    poly = 0x1021
-    crc = 0x0
-    for byte in data:
-        crc = crc ^ (byte << 8)
-        for _ in range(8):
-            crc = crc << 1
-            if crc & 0x10000:
-                crc = (crc ^ poly) & 0xFFFF
-    return crc & 0xFFFF
-
-
 def _send_command(serport, data: bytes):
     """Send a command to UV-K5 radio"""
     serport.log("Sending command (unobfuscated) len=0x%4.4x:\n%s" % (
               len(data), util.hexprint(data)))
 
-    crc = calculate_crc16_xmodem(data)
-    data2 = data + struct.pack("<H", crc)
+    crc_data = checksum.crc16_xmodem(data)
+    data2 = data + struct.pack("<H", crc_data)
 
     command = struct.pack(">HBB", 0xabcd, len(data), 0) + \
         xorarr(data2) + \
@@ -2026,7 +2011,7 @@ class UVK5Radio(UVK5RadioBase):
             '1o11', '4.00.', 'k5_4.00.', '5.00.')
             # These are the original OEM firmware versions
             'k5_2.01.', 'app_2.01.', '2.01.', '3.00.',
-            '4.00.', 'k5_4.00.', '5.00.',
+            '4.00.', 'k5_4.00.', '5.00.', '7.00.',
             # This "oneofeeleven" prefix really covers a wide range of
             # firmwares that are user-built, but people report them working
             # fine with the base driver.
@@ -2100,11 +2085,6 @@ class UVK5RestrictedRadio(UVK5RadioBase):
         raise errors.RadioError(
             _('Upload is disabled due to unsupported firmware version'))
 
-    def get_memory(self, n):
-        mem = super().get_memory(n)
-        mem.immutable = dir(mem)
-        return mem
-
     def set_memory(self, m):
         raise errors.InvalidValueError(
             _('Memories are read-only due to unsupported firmware version'))
@@ -2112,3 +2092,36 @@ class UVK5RestrictedRadio(UVK5RadioBase):
     def set_settings(self, settings):
         raise errors.InvalidValueError(
             _('Settings are read-only due to unsupported firmware version'))
+
+    def validate_memory(self, mem):
+        return [chirp_common.ValidationError(
+            _('This image is read-only due to being from a radio with '
+              'unsupported firmware'))]
+
+
+@directory.register
+class UVK1Radio(UVK5RadioBase):
+    VENDOR = "Quansheng"
+    MODEL = "UV-K1"
+
+    @classmethod
+    def k5_approve_firmware(cls, firmware):
+        # The first released OEM firmware version is 7.03.01
+        # For the moment, the driver version is limited 7.03.XX
+        # No information is available about the future firmware releases,
+        # so for safety, the versions are limited.
+        # Version management is supposed to be standardized, and only minor
+        # changes may occur in the firmware which should not break this driver.
+
+        return firmware.startswith("7.03.")
+
+    def get_features(self):
+        # The first driver version includes only memory programming,
+        # settings provided by uv-k5 base implementation are disabled
+        features = super().get_features()
+        features.has_settings = False
+
+        return features
+
+    def get_settings(self):
+        return []

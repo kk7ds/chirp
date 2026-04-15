@@ -1144,7 +1144,7 @@ class RadioddityGA510v2(baofeng_uv17.UV17):
     BLOCK_SIZE = 0x40
     BAUD_RATE = 57600
 
-    _magic = b"PSEARCH"
+    _idents = [b"PSEARCH"]
     _magic_response_length = 8
     _magics = [(b"PASSSTA", 3), (b"SYSINFO", 1),
                (b"\x56\x00\x00\x0A\x0D", 13), (b"\x06", 1),

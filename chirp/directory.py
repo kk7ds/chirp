@@ -77,6 +77,8 @@ def register(cls):
 
     if not hasattr(cls, '_DETECTED_BY'):
         cls._DETECTED_BY = None
+    if not hasattr(cls, '_MINOR_VARIANT'):
+        cls._MINOR_VARIANT = False
 
     return cls
 
@@ -98,6 +100,19 @@ def detected_by(manager_class):
         return cls
 
     return wrapper
+
+
+def minorvariant(cls):
+    """Mark a class as too minor to distinguish from its parent.
+
+    Use this on registered classes that are very minor and used for
+    organization, but need not be exposed to the user as a separate offering.
+    Minor version differences of the same model, for example.
+    """
+    assert issubclass(cls, chirp_common.CloneModeRadio)
+
+    cls._MINOR_VARIANT = True
+    return cls
 
 
 DRV_TO_RADIO = {}

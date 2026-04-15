@@ -143,9 +143,40 @@ BANDS_10M = (
   bandplan.Band((29520000, 29700000), "Wide band", step_khz=10, mode="NFM"),
 )
 
+BANDS_6M = (
+  bandplan.Band((50000000, 54000000), "6 Meter Band"),
+  bandplan.Band((50000000, 50300000), "SSB", mode="USB"),
+  bandplan.Band((50300000, 50500000), "Narrow band modes, beacons"),
+  bandplan.Band((50500000, 52000000), "All modes"),
+  bandplan.Band((50500000, 50700000), "Digital communications", mode="DV"),
+  bandplan.Band((50700000, 50900000), "FM/DV repeater outputs",
+                input_offset=+500000, mode="FM"),
+  bandplan.Band((52000000, 54000000), "All modes"),
+)
+
+BANDS_4M = (
+  bandplan.Band((70000000, 70500000), "4 Meter Band"),
+)
+
+BANDS_2M = (
+  bandplan.Band((144000000, 146000000), "2 Meter Band"),
+  bandplan.Band((144100000, 144150000), "CW", mode="CW"),
+  bandplan.Band((144150000, 144400000), "SSB", mode="USB"),
+  bandplan.Band((144975000, 145806000), "FM", mode="FM"),
+  bandplan.Band((144975000, 145194000), "Repeater inputs", mode="FM"),
+  bandplan.Band((144575000, 145793500), "Repeater outputs", mode="FM",
+                input_offset=-600000),
+  )
+
+BANDS_70CM = (
+  bandplan.Band((430000000, 440000000), "70 Centimeter Band"),
+  bandplan.Band((434594000, 434981000), "Repeater outputs", mode="FM",
+                input_offset=-16000000),
+  )
+
 BANDS = BANDS_2100M + BANDS_160M + BANDS_80M + BANDS_40M + BANDS_30M + \
         BANDS_20M + BANDS_17M + BANDS_15M + BANDS_12M + BANDS_10M + \
-        bandplan.BANDS_AIR
+        BANDS_6M + BANDS_4M + BANDS_2M + BANDS_70CM + bandplan.BANDS_AIR
 
 
 # EU Analogue/DMR PMR446 Frequencies

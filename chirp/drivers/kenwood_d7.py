@@ -920,7 +920,13 @@ class KenwoodD7Family(chirp_common.LiveRadio):
     def _refresh_settings(self):
         for entry in self._setcache.values():
             if not entry.kenwood_d7_loaded:
-                self._refresh_setting(entry)
+                try:
+                    self._refresh_setting(entry)
+                except errors.RadioError as e:
+                    # Don't fail if we can't read a setting. Some radios
+                    # refuse to return MCL (perhaps v1 radios?)
+                    LOG.error("Error refreshing setting %s: %s"
+                              % (entry.get_name(), str(e)))
 
     def _validate_memid(self, memid_or_index):
         if isinstance(memid_or_index, int):

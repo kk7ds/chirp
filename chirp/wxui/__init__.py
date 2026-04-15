@@ -11,6 +11,7 @@ from chirp import logger
 
 LOG = logging.getLogger(__name__)
 CONF = None
+logging.captureWarnings(True)
 
 
 def developer_mode(enabled=None):

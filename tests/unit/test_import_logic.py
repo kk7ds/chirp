@@ -24,7 +24,7 @@ class FakeRadio(chirp_common.Radio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.valid_bands = [(100000000, 500000000)]
+        rf.valid_bands = [(100000000, 500000000), (601150000, 800050000)]
         rf.valid_power_levels = self.POWER_LEVELS
         rf.valid_tmodes = self.TMODES
         rf.valid_modes = self.MODES
@@ -159,9 +159,11 @@ class ImportFieldTests(base.BaseTest):
     def test_import_freq(self):
         mem = chirp_common.Memory()
         mem.freq = 10
-        self.assertRaises(import_logic.DestNotCompatible,
-                          import_logic._import_freq,
-                          FakeRadio(None), None, mem)
+        self.assertRaisesRegex(
+            import_logic.DestNotCompatible,
+            '.*supported ranges 100-500MHz, 601.15-800.05MHz',
+            import_logic._import_freq,
+            FakeRadio(None), None, mem)
 
     def test_import_name(self):
         mem = chirp_common.Memory()
@@ -358,6 +360,7 @@ class ImportFieldTests(base.BaseTest):
         import_logic._import_duplex(radio, None, mem)
         self.assertEqual('', mem.duplex)
 
+    @mock.patch('chirp.chirp_common.FrozenMemory')
     @mock.patch('chirp.import_logic._import_name')
     @mock.patch('chirp.import_logic._import_power')
     @mock.patch('chirp.import_logic._import_tone')
@@ -366,7 +369,7 @@ class ImportFieldTests(base.BaseTest):
     @mock.patch('chirp.import_logic._import_duplex')
     def _test_import_mem(self, errors,
                          mock_duplex, mock_mode, mock_dtcs, mock_tone,
-                         mock_power, mock_name):
+                         mock_power, mock_name, mock_frozen):
         radio = FakeRadio(None)
         src_rf = chirp_common.RadioFeatures()
         mem = chirp_common.Memory()
@@ -377,7 +380,8 @@ class ImportFieldTests(base.BaseTest):
             with mock.patch.object(radio, 'validate_memory') as mock_val:
                 mock_val.return_value = errors
                 import_logic.import_mem(radio, src_rf, mem)
-                mock_val.assert_called_once_with(mem)
+                mock_val.assert_called_once_with(mock_frozen.return_value)
+                mock_frozen.assert_called_once_with(mem)
             mock_dupe.assert_called_once_with()
 
         mock_duplex.assert_called_once_with(radio, src_rf, mem)

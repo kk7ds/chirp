@@ -641,8 +641,8 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         # since the special memories have string tags on the GUI and not
         # numbers. Convert these back to the int for the specials
         if isinstance(memory.number, str):
-            memory.number = self.SPECIAL_MEMORIES[memory.number]
-            return self._set_special(memory)
+            numeric_number = self.SPECIAL_MEMORIES[memory.number]
+            return self._set_special(memory, mem_number=numeric_number)
         if memory.number < 0:
             return self._set_special(memory)
         else:
@@ -716,33 +716,35 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
 
         return mem
 
-    def _set_special(self, mem):
-        if mem.empty and mem.number not in self.SPECIAL_PMS.values():
+    def _set_special(self, mem, mem_number=None):
+        number = mem_number if mem_number is not None else mem.number
+
+        if mem.empty and number not in self.SPECIAL_PMS.values():
             # can't delete special memories! But can delete PMS mems
             raise errors.RadioError("Sorry, special memory can't be deleted")
 
-        cur_mem = self._get_special(self.SPECIAL_MEMORIES_REV[mem.number])
+        cur_mem = self._get_special(self.SPECIAL_MEMORIES_REV[number])
 
-        if mem.number in range(self.FIRST_VFOA_INDEX,
-                               self.LAST_VFOA_INDEX - 1, -1):
-            _mem = self._memobj.vfoa[-self.LAST_VFOA_INDEX + mem.number]
-        elif mem.number in range(self.FIRST_VFOB_INDEX,
-                                 self.LAST_VFOB_INDEX - 1, -1):
-            _mem = self._memobj.vfob[-self.LAST_VFOB_INDEX + mem.number]
-        elif mem.number in range(-4, -6, -1):
-            _mem = self._memobj.home[5 + mem.number]
-        elif mem.number == -3:
+        if number in range(self.FIRST_VFOA_INDEX,
+                                self.LAST_VFOA_INDEX - 1, -1):
+            _mem = self._memobj.vfoa[-self.LAST_VFOA_INDEX + number]
+        elif number in range(self.FIRST_VFOB_INDEX,
+                                  self.LAST_VFOB_INDEX - 1, -1):
+            _mem = self._memobj.vfob[-self.LAST_VFOB_INDEX + number]
+        elif number in range(-4, -6, -1):
+            _mem = self._memobj.home[5 + number]
+        elif number == -3:
             _mem = self._memobj.qmb
-        elif mem.number == -2:
+        elif number == -2:
             _mem = self._memobj.mtqmb
-        elif mem.number == -1:
+        elif number == -1:
             _mem = self._memobj.mtune
-        elif mem.number in self.SPECIAL_PMS.values():
+        elif number in self.SPECIAL_PMS.values():
             # ft450 does NOT use the pmsvisible or pmsfilled fields,
             # it uses the next 4 bits after the 500 normal memories
             # in the main visible and filled settings area.
             if self.FT450:
-                pmsnum = 501 + (-self.LAST_PMS_INDEX) + mem.number
+                pmsnum = 501 + (-self.LAST_PMS_INDEX) + number
                 wasused = (self._memobj.visible[(pmsnum - 1) // 8] >>
                    (pmsnum - 1) % 8) & 0x01
                 wasvalid = (self._memobj.filled[(pmsnum - 1) // 8] >>
@@ -758,9 +760,9 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                         % 8
                 self._memobj.filled[(pmsnum - 1) // 8] |= 1 << (pmsnum - 1) \
                         % 8
-                _mem = self._memobj.pms[-self.LAST_PMS_INDEX + mem.number]
+                _mem = self._memobj.pms[-self.LAST_PMS_INDEX + number]
             else:      #self.FT450
-                bitindex = (-self.LAST_PMS_INDEX) + mem.number
+                bitindex = (-self.LAST_PMS_INDEX) + number
                 wasused = (self._memobj.pmsvisible >> bitindex) & 0x01
                 wasvalid = (self._memobj.pmsfilled >> bitindex) & 0x01
                 if mem.empty:
@@ -775,7 +777,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 # pylint get confused by |= operator
                 self._memobj.pmsvisible = self._memobj.pmsvisible | 1 << bitindex
                 self._memobj.pmsfilled = self._memobj.pmsfilled | 1 << bitindex
-                _mem = self._memobj.pms[-self.LAST_PMS_INDEX + mem.number]
+                _mem = self._memobj.pms[-self.LAST_PMS_INDEX + number]
         else:
             raise errors.RadioError("Sorry, you can't edit"
                                     " that special memory.")

@@ -25,6 +25,7 @@ import time
 import logging
 import struct
 from chirp import chirp_common, bitwise, memmap, errors, directory
+from chirp.kenwood_tone import KenwoodToneModel
 from chirp.settings import RadioSetting, RadioSettingGroup, \
      RadioSettingValueBoolean, \
      RadioSettingValueList, RadioSettingValueInteger, \
@@ -350,8 +351,8 @@ struct {
 struct {
     u32 rxfreq;
     u32 txfreq;
-    u16 encQT;
-    u16 decQT;
+    u16 txtone;
+    u16 rxtone;
     u8  bit7_5:3,  // all ones
         qt:3,
         bit1_0:2;
@@ -614,8 +615,8 @@ struct {
 struct {
     u32 rxfreq;
     u32 txfreq;
-    u16 encQT;
-    u16 decQT;
+    u16 txtone;
+    u16 rxtone;
     u8  bit7_5:3,  // all ones
         qt:3,
         bit1_0:2;
@@ -1098,6 +1099,9 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
     _step_list = STEP_LIST
     _valid_steps = STEPS
     _mmap = ""
+    _tone_model = KenwoodToneModel(
+        dcs_base=0x8000, pol_mask=0x4000, tone_init=0x0000,
+        tone_flag=0x0000, dcs_enc_base=8)
 
     def _read_record(self):
         """ Read and validate the header of a radio reply.
@@ -1380,55 +1384,6 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
     def get_raw_memory(self, number):
         return repr(self._memobj.chan_blk[number - 1])
 
-    def _get_tone(self, _mem, mem):
-        """Decode both the encode and decode CTSS/DCS codes from
-        the memory channel and stuff them into the UI
-        memory channel row.
-        """
-        txtone = short2tone(_mem.encQT)
-        rxtone = short2tone(_mem.decQT)
-        pt = "N"
-        pr = "N"
-
-        if txtone == "----":
-            txmode = ""
-        elif txtone[0] == "D":
-            mem.dtcs = int(txtone[1:4])
-            if txtone[4] == "I":
-                pt = "R"
-            txmode = "DTCS"
-        else:
-            mem.rtone = float(txtone)
-            txmode = "Tone"
-
-        if rxtone == "----":
-            rxmode = ""
-        elif rxtone[0] == "D":
-            mem.rx_dtcs = int(rxtone[1:4])
-            if rxtone[4] == "I":
-                pr = "R"
-            rxmode = "DTCS"
-        else:
-            mem.ctone = float(rxtone)
-            rxmode = "Tone"
-
-        if txmode == "Tone" and len(rxmode) == 0:
-            mem.tmode = "Tone"
-        elif (txmode == rxmode and txmode == "Tone" and
-              mem.rtone == mem.ctone):
-            mem.tmode = "TSQL"
-        elif (txmode == rxmode and txmode == "DTCS" and
-              mem.dtcs == mem.rx_dtcs):
-            mem.tmode = "DTCS"
-        elif (len(rxmode) + len(txmode)) > 0:
-            mem.tmode = "Cross"
-            mem.cross_mode = "%s->%s" % (txmode, rxmode)
-
-        mem.dtcs_polarity = pt + pr
-
-        LOG.debug("_get_tone: Got TX %s (%i) RX %s (%i)" %
-                  (txmode, _mem.encQT, rxmode, _mem.decQT))
-
     def get_memory(self, number):
         """ Public get_memory
             Return the channel memory referenced by number to the UI.
@@ -1505,7 +1460,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
 
         mem.name = name2str(_nam.name)
 
-        self._get_tone(_mem, mem)
+        self._tone_model.get_tone(_mem, mem)
 
         mem.skip = "" if bool(_mem.scan) else "S"
 
@@ -1518,46 +1473,6 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             mem.mode = "NFM"
         #  qt has no home in the UI
         return mem
-
-    def _set_tone(self, mem, _mem):
-        """Update the memory channel block CTCC/DCS tones
-        from the UI fields
-        """
-        def _set_dcs(code, pol):
-            val = int("%i" % code, 8) | 0x8000
-            if pol == "R":
-                val |= 0x4000
-            return val
-
-        rx_mode = tx_mode = None
-        rxtone = txtone = 0x0000
-
-        if mem.tmode == "Tone":
-            tx_mode = "Tone"
-            txtone = int(mem.rtone * 10)
-        elif mem.tmode == "TSQL":
-            rx_mode = tx_mode = "Tone"
-            rxtone = txtone = int(mem.ctone * 10)
-        elif mem.tmode == "DTCS":
-            tx_mode = rx_mode = "DTCS"
-            txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-            rxtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[1])
-        elif mem.tmode == "Cross":
-            tx_mode, rx_mode = mem.cross_mode.split("->")
-            if tx_mode == "DTCS":
-                txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-            elif tx_mode == "Tone":
-                txtone = int(mem.rtone * 10)
-            if rx_mode == "DTCS":
-                rxtone = _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[1])
-            elif rx_mode == "Tone":
-                rxtone = int(mem.ctone * 10)
-
-        _mem.decQT = rxtone
-        _mem.encQT = txtone
-
-        LOG.debug("Set TX %s (%i) RX %s (%i)" %
-                  (tx_mode, _mem.encQT, rx_mode, _mem.decQT))
 
     def set_memory(self, mem):
         """ Public set_memory
@@ -1613,7 +1528,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             _mem.mod = 0
             _mem.fm_dev = 0  # Catchall default is FM
         # set the tone
-        self._set_tone(mem, _mem)
+        self._tone_model.set_tone(mem, _mem)
         # set the power
         if mem.power:
             _mem.pwr = self.POWER_LEVELS.index(mem.power)

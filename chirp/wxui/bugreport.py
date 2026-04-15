@@ -34,10 +34,13 @@ from chirp import platform as chirp_platform
 from chirp.wxui import common
 from chirp.wxui import config
 from chirp.wxui import serialtrace
+from chirp.wxui import report
+
 
 _ = wx.GetTranslation
 CONF = config.get()
-BASE = CONF.get('baseurl', 'chirpmyradio') or 'https://www.chirpmyradio.com'
+BASE = (CONF.get('baseurl', 'chirpmyradio') or
+        'https://data.chirpmyradio.com/redmine')
 LOG = logging.getLogger(__name__)
 ReportThreadEvent, EVT_REPORT_THREAD = wx.lib.newevent.NewCommandEvent()
 
@@ -146,10 +149,11 @@ class BugReportContext:
         self.chirpmain = chirpmain
         self.editor = chirpmain.current_editorset
         self.session = requests.Session()
-        self.session.headers = {
-            'User-Agent': 'CHIRP/%s' % CHIRP_VERSION,
+        report.ensure_session()
+        self.session.headers = dict(report.SESSION.headers)
+        self.session.headers.update({
             'Referer': 'https://chirpmyradio.com/projects/chirp/issues/new',
-        }
+        })
 
     def get_page(self, name, cls):
         if not hasattr(self, 'page_%s' % name):
@@ -366,12 +370,15 @@ class NewBugInfo(BugReportPage):
     INST = _('Enter information about the bug including a short but '
              'meaningful subject and information about the radio model '
              '(if applicable) in question. In the next step you will have '
-             'a chance to add more details about the problem.')
+             'a chance to add more details about the problem. '
+             'Before proceeding, please search for duplicate issues!')
 
     def _build(self, vbox):
         self.context.bugsubj = self.context.bugmodel = None
+        self.searched_dupes = None
+
         panel = wx.Panel(self)
-        vbox.Add(panel, 1, border=20, flag=wx.EXPAND)
+        vbox.Add(panel, 0, border=20, flag=wx.EXPAND | wx.BOTTOM)
         grid = wx.FlexGridSizer(2, 5, 0)
         grid.AddGrowableCol(1)
         panel.SetSizer(grid)
@@ -382,6 +389,7 @@ class NewBugInfo(BugReportPage):
         self.subj = wx.TextCtrl(panel)
         self.subj.SetMaxLength(100)
         self.subj.Bind(wx.EVT_TEXT, self.validate_next)
+        self.subj.SetFocus()
         grid.Add(self.subj, 1, border=20,
                  flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
 
@@ -398,8 +406,29 @@ class NewBugInfo(BugReportPage):
                 self.context.editor._radio.VENDOR,
                 self.context.editor._radio.MODEL))
 
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+        panel = wx.Panel(self)
+        panel.SetSizer(hbox)
+        self.searched_dupes = wx.CheckBox(
+            panel, label=_('I have'))
+        self.searched_dupes.Bind(wx.EVT_CHECKBOX, self.validate_next)
+        hbox.AddStretchSpacer(1)
+        hbox.Add(self.searched_dupes, 0)
+        hbox.Add(
+            wx.adv.HyperlinkCtrl(
+                panel,
+                label=_('searched for duplicate issues'),
+                url=BASE + ('/projects/chirp/search?utf8=%E2%9C%93&'
+                            'q=&scope=&all_words=&all_words=1&titles_only=&'
+                            'issues=1&attachments=0&options=0&commit=Search')),
+            0)
+        hbox.AddStretchSpacer(1)
+
+        vbox.Add(panel, 0, border=20, flag=wx.EXPAND | wx.BOTTOM)
+
     def _validate_next(self):
-        return len(self.subj.GetValue()) > 10
+        return (len(self.subj.GetValue()) > 10 and
+                self.searched_dupes.GetValue())
 
     def validate_success(self, *a):
         self.context.bugsubj = self.subj.GetValue()

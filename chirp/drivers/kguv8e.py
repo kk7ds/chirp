@@ -22,11 +22,12 @@
 import struct
 import time
 import logging
-from chirp import util, chirp_common, bitwise, memmap, errors, directory
+from chirp import checksum, util, chirp_common, bitwise, memmap, errors, directory
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueInteger, RadioSettingValueString, \
     RadioSettings
+from chirp.kenwood_tone import KenwoodToneModel
 
 LOG = logging.getLogger(__name__)
 
@@ -302,6 +303,14 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
     """Wouxun KG-UV8E"""
     VENDOR = "Wouxun"
     MODEL = "KG-UV8E"
+
+    def __init__(self, pipe):
+        super().__init__(pipe)
+        self.tone_model = KenwoodToneModel(
+            dcs_base=0x2800,
+            pol_mask=0x8000,
+            tone_init=0x0000
+        )
     _model = b"KG-UV8D-A"
     _file_ident = b"kguv8e"  # lowercase
     BAUD_RATE = 19200
@@ -309,17 +318,12 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
                     chirp_common.PowerLevel("H", watts=5)]
     _record_start = 0x7B
 
-    def _checksum(self, data):
-        cs = 0
-        for byte in data:
-            cs += byte
-        return cs % 256
 
     def _write_record(self, cmd, payload=b''):
         _packet = struct.pack('BBBB', self._record_start, cmd, 0xFF,
                               len(payload))
-        checksum = bytes([self._checksum(_packet[1:] + payload)])
-        _packet += self.encrypt(payload + checksum)
+        cs = bytes([checksum.checksum_8bit(_packet[1:] + payload)])
+        _packet += self.encrypt(payload + cs)
         LOG.debug("Sent:\n%s" % util.hexprint(_packet))
         self.pipe.write(_packet)
 
@@ -332,8 +336,8 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
         _packet = self.pipe.read(_length)
         _rcs_xor = _packet[-1]
         _packet = self.decrypt(_packet)
-        _cs = self._checksum(_header[1:])
-        _cs += self._checksum(_packet)
+        _cs = checksum.checksum_8bit(_header[1:])
+        _cs += checksum.checksum_8bit(_packet)
         _cs %= 256
         _rcs = self.strxor(self.pipe.read(1)[0], _rcs_xor)[0]
         LOG.debug("_cs =%x", _cs)
@@ -531,50 +535,6 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
 
-    def _get_tone(self, _mem, mem):
-        def _get_dcs(val):
-            code = int("%03o" % (val & 0x07FF))
-            pol = (val & 0x8000) and "R" or "N"
-            return code, pol
-
-        tpol = False
-        if _mem.txtone != 0xFFFF and (_mem.txtone & 0x2800) == 0x2800:
-            tcode, tpol = _get_dcs(_mem.txtone)
-            mem.dtcs = tcode
-            txmode = "DTCS"
-        elif _mem.txtone != 0xFFFF and _mem.txtone != 0x0:
-            mem.rtone = (_mem.txtone & 0x7fff) / 10.0
-            txmode = "Tone"
-        else:
-            txmode = ""
-
-        rpol = False
-        if _mem.rxtone != 0xFFFF and (_mem.rxtone & 0x2800) == 0x2800:
-            rcode, rpol = _get_dcs(_mem.rxtone)
-            mem.rx_dtcs = rcode
-            rxmode = "DTCS"
-        elif _mem.rxtone != 0xFFFF and _mem.rxtone != 0x0:
-            mem.ctone = (_mem.rxtone & 0x7fff) / 10.0
-            rxmode = "Tone"
-        else:
-            rxmode = ""
-
-        if txmode == "Tone" and not rxmode:
-            mem.tmode = "Tone"
-        elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
-            mem.tmode = "TSQL"
-        elif txmode == rxmode and txmode == "DTCS" and mem.dtcs == mem.rx_dtcs:
-            mem.tmode = "DTCS"
-        elif rxmode or txmode:
-            mem.tmode = "Cross"
-            mem.cross_mode = "%s->%s" % (txmode, rxmode)
-
-        # always set it even if no dtcs is used
-        mem.dtcs_polarity = "%s%s" % (tpol or "N", rpol or "N")
-
-        LOG.debug("Got TX %s (%i) RX %s (%i)" %
-                  (txmode, _mem.txtone, rxmode, _mem.rxtone))
-
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _nam = self._memobj.names[number]
@@ -610,51 +570,13 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
                 mem.name += chr(char)
         mem.name = mem.name.rstrip()
 
-        self._get_tone(_mem, mem)
+        self.tone_model.get_tone(_mem, mem)
 
         mem.skip = "" if bool(_mem.scan_add) else "S"
 
         mem.power = self.POWER_LEVELS[_mem.power]
         mem.mode = _mem.iswide and "FM" or "NFM"
         return mem
-
-    def _set_tone(self, mem, _mem):
-        def _set_dcs(code, pol):
-            val = int("%i" % code, 8) + 0x2800
-            if pol == "R":
-                val += 0x8000
-            return val
-
-        rx_mode = tx_mode = None
-        rxtone = txtone = 0x0000
-
-        if mem.tmode == "Tone":
-            tx_mode = "Tone"
-            rx_mode = None
-            txtone = int(mem.rtone * 10) + 0x8000
-        elif mem.tmode == "TSQL":
-            rx_mode = tx_mode = "Tone"
-            rxtone = txtone = int(mem.ctone * 10) + 0x8000
-        elif mem.tmode == "DTCS":
-            tx_mode = rx_mode = "DTCS"
-            txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-            rxtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[1])
-        elif mem.tmode == "Cross":
-            tx_mode, rx_mode = mem.cross_mode.split("->")
-            if tx_mode == "DTCS":
-                txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-            elif tx_mode == "Tone":
-                txtone = int(mem.rtone * 10) + 0x8000
-            if rx_mode == "DTCS":
-                rxtone = _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[1])
-            elif rx_mode == "Tone":
-                rxtone = int(mem.ctone * 10) + 0x8000
-
-        _mem.rxtone = rxtone
-        _mem.txtone = txtone
-
-        LOG.debug("Set TX %s (%i) RX %s (%i)" %
-                  (tx_mode, _mem.txtone, rx_mode, _mem.rxtone))
 
     def set_memory(self, mem):
         number = mem.number
@@ -685,7 +607,7 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
         _mem.scan_add = int(mem.skip != "S")
         _mem.iswide = int(mem.mode == "FM")
         # set the tone
-        self._set_tone(mem, _mem)
+        self.tone_model.set_tone(mem, _mem)
         # set the scrambler and compander to off by default
         _mem.scrambler = 0
         _mem.compander = 0

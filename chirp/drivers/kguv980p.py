@@ -27,6 +27,7 @@ import logging
 import struct
 
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
+from chirp.kenwood_tone import KenwoodToneModel
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueInteger, RadioSettingValueString, \
@@ -721,6 +722,15 @@ class KG980PRadio(chirp_common.CloneModeRadio,
                     chirp_common.PowerLevel("M", watts=20.0),
                     chirp_common.PowerLevel("H", watts=50.0)]
 
+    def __init__(self, pipe):
+        super().__init__(pipe)
+        self.tone_model = KenwoodToneModel(
+            dcs_base=0x8000,
+            pol_mask=0x4000,
+            tone_init=0x0000,
+            tone_flag=0x0000,
+            dcs_enc_base=10)
+
     def _checksum(self, data):
         cs = 0
         for byte in data:
@@ -948,58 +958,6 @@ class KG980PRadio(chirp_common.CloneModeRadio,
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
 
-    def _get_tone(self, _mem, mem):
-        #  - corrected the Polarity decoding to match 980P implementation
-        # use 0x4000 bit mask for R
-        #  - 0x4000 appears to be the bit mask for Inverted DCS tones
-        #  - n DCS Tone will be 0x8xxx values - i DCS Tones will
-        # be 0xCxxx values.
-        #  - Chirp Uses N for n DCS Tones and R for i DCS Tones
-        #  - 980P encodes DCS tone # in decimal -  NOT OCTAL
-        def _get_dcs(val):
-            code = int("%03d" % (val & 0x07FF))
-            pol = (val & 0x4000) and "R" or "N"
-            return code, pol
-        #  - Modified the function below to bitwise AND with 0x4000
-        # to check for 980P DCS Tone decoding
-        #  0x8000 appears to be the bit mask for DCS tones
-        tpol = False
-        #  Beta 1.1 - Fix the txtone compare to 0x8000 - was rxtone.
-        if _mem.txtone != 0xFFFF and (_mem.txtone & 0x8000) == 0x8000:
-            tcode, tpol = _get_dcs(_mem.txtone)
-            mem.dtcs = tcode
-            txmode = "DTCS"
-        elif _mem.txtone != 0xFFFF and _mem.txtone != 0x0:
-            mem.rtone = (_mem.txtone & 0x7fff) / 10.0
-            txmode = "Tone"
-        else:
-            txmode = ""
-        #  - Modified the function below to bitwise AND with 0x4000
-        # to check for 980P DCS Tone decoding
-        rpol = False
-        if _mem.rxtone != 0xFFFF and (_mem.rxtone & 0x8000) == 0x8000:
-            rcode, rpol = _get_dcs(_mem.rxtone)
-            mem.rx_dtcs = rcode
-            rxmode = "DTCS"
-        elif _mem.rxtone != 0xFFFF and _mem.rxtone != 0x0:
-            mem.ctone = (_mem.rxtone & 0x7fff) / 10.0
-            rxmode = "Tone"
-        else:
-            rxmode = ""
-
-        if txmode == "Tone" and not rxmode:
-            mem.tmode = "Tone"
-        elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
-            mem.tmode = "TSQL"
-        elif txmode == rxmode and txmode == "DTCS" and mem.dtcs == mem.rx_dtcs:
-            mem.tmode = "DTCS"
-        elif rxmode or txmode:
-            mem.tmode = "Cross"
-            mem.cross_mode = "%s->%s" % (txmode, rxmode)
-
-        # always set it even if no dtcs is used
-        mem.dtcs_polarity = "%s%s" % (tpol or "N", rpol or "N")
-
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
 
@@ -1059,7 +1017,7 @@ class KG980PRadio(chirp_common.CloneModeRadio,
         else:
             mem.name = ''
 
-        self._get_tone(_mem, mem)
+        self.tone_model.get_tone(_mem, mem)
 
         mem.skip = "" if bool(_mem.scan_add) else "S"
 
@@ -1086,49 +1044,6 @@ class KG980PRadio(chirp_common.CloneModeRadio,
             _mem.scrambler = 0
 
         return mem
-
-    def _set_tone(self, mem, _mem):
-        def _set_dcs(code, pol):
-            #  Change to 0x8000 to
-            # set the bit for DCS- code is a decimal version
-            # of the code # - NOT OCTAL
-            val = code | 0x8000
-            if pol == "R":
-                #  Change to 0x4000 to set the bit for
-                # i/R polarity
-                val += 0x4000
-            return val
-
-        rx_mode = tx_mode = None
-        rxtone = txtone = 0x0000
-
-        if mem.tmode == "Tone":
-            tx_mode = "Tone"
-            rx_mode = None
-            txtone = int(mem.rtone * 10)
-        elif mem.tmode == "TSQL":
-            rx_mode = tx_mode = "Tone"
-            rxtone = txtone = int(mem.ctone * 10)
-        elif mem.tmode == "DTCS":
-            tx_mode = rx_mode = "DTCS"
-            txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-            rxtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[1])
-        elif mem.tmode == "Cross":
-            tx_mode, rx_mode = mem.cross_mode.split("->")
-            if tx_mode == "DTCS":
-                txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-            elif tx_mode == "Tone":
-                txtone = int(mem.rtone * 10)
-            if rx_mode == "DTCS":
-                rxtone = _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[1])
-            elif rx_mode == "Tone":
-                rxtone = int(mem.ctone * 10)
-
-        _mem.rxtone = rxtone
-        _mem.txtone = txtone
-
-        LOG.debug("Set TX %s (%i) RX %s (%i)" %
-                  (tx_mode, _mem.txtone, rx_mode, _mem.rxtone))
 
     def set_memory(self, mem):
         # _mem = Stored Memory value
@@ -1178,14 +1093,13 @@ class KG980PRadio(chirp_common.CloneModeRadio,
                     _mem.isnarrow = False
 
             # set the tone
-            self._set_tone(mem, _mem)
+            self.tone_model.set_tone(mem, _mem)
             #  set the scrambler and compander to off by default
             #  This changes them in the channel memory
             _mem.scrambler = 0
             _mem.compander = 0
             # set the power
-            # Updated to resolve "Illegal set on attribute power" Warning
-            if str(mem.power) == "None":
+            if mem.power is None:
                 _mem.power = 0  # Default to Low power
             else:
                 index = self.POWER_LEVELS.index(mem.power)

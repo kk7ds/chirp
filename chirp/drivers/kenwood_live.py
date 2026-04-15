@@ -281,9 +281,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
             r2 = self.command(
                 self.pipe,
                 *self._cmd_set_memory_name(memory.number, memory.name))
-            if not iserr(r2):
-                memory.name = memory.name.rstrip()
-            else:
+            if iserr(r2):
                 raise errors.InvalidDataError("Radio refused name %i: %s" %
                                               (memory.number,
                                                repr(memory.name)))

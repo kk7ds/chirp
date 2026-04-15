@@ -1,5 +1,6 @@
 import unittest
 from unittest import mock
+import warnings
 
 from chirp.wxui import serialtrace
 
@@ -77,3 +78,47 @@ class TestSerialTrace(unittest.TestCase):
 
         # Before we are closed, the trace file should have been abandoned
         self.assertIsNone(trace._SerialTrace__tracef)
+
+    @mock.patch('tempfile.NamedTemporaryFile')
+    @mock.patch('serial.Serial.open')
+    @mock.patch('serial.Serial.write')
+    @mock.patch('serial.Serial.read')
+    def test_timeout_warning(self, mock_read, mock_write, mock_open, mock_tf):
+        mock_tf.return_value.writelines.side_effect = [None]
+        trace = serialtrace.SerialTrace(timeout=0.01, baudrate=9600)
+        trace.open()
+        with self.assertWarns(Warning) as cm:
+            # 2000 bytes takes about 2s, so 0.01s timeout should warn
+            trace.read(2000)
+        self.assertIn('requires', str(cm.warning))
+
+    @mock.patch('tempfile.NamedTemporaryFile')
+    @mock.patch('serial.Serial.open')
+    @mock.patch('serial.Serial.write')
+    @mock.patch('serial.Serial.read')
+    def test_timeout_no_warning(self, mock_read, mock_write, mock_open,
+                                mock_tf):
+        mock_tf.return_value.writelines.side_effect = [None]
+        trace = serialtrace.SerialTrace(timeout=2, baudrate=9600)
+        trace.open()
+        warnings.resetwarnings()
+        with warnings.catch_warnings(record=True) as w:
+            # 1000 bytes takes about 1s, so 2s timeout should yield no warning
+            trace.read(1000)
+            self.assertTrue(len(w) == 0)
+
+    @mock.patch('tempfile.NamedTemporaryFile')
+    @mock.patch('serial.Serial.open')
+    @mock.patch('serial.Serial.write')
+    @mock.patch('serial.Serial.read')
+    def test_timeout_write_read_warning(self, mock_read, mock_write, mock_open,
+                                        mock_tf):
+        mock_tf.return_value.writelines.side_effect = [None]
+        trace = serialtrace.SerialTrace(timeout=2, baudrate=9600)
+        trace.open()
+        with warnings.catch_warnings(record=True) as w:
+            # If we do a write before the read, the time to complete the write
+            # should be accounted for in the read timeout calculation
+            trace.write(b'f' * 1000)
+            trace.read(1000)
+            self.assertIn('1000 written bytes in 1145ms', str(w[0].message))

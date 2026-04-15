@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import functools
 import logging
 import os
@@ -403,6 +404,8 @@ class ChirpBrowserPanel(wx.lib.scrolledpanel.ScrolledPanel):
                 editor = ChirpIntegerEditor(self, obj, labelfmt=labelfmt)
             elif isinstance(obj, bitwise.structDataElement):
                 self._parent.add_sub_panel(name, obj, self)
+            elif isinstance(obj, bitwise.bcdDataElement):
+                editor = ChirpBCDEditor(self, obj)
             if editor:
                 self.add_editor(name, editor)
         self._initialized = True
@@ -610,8 +613,18 @@ class IssueModuleLoader:
         issue = r.json()['issue']
         allowed_states = ['New', 'In Progress', 'Resolved', 'Incomplete',
                           'Blocked']
+        if issue['status']['is_closed']:
+            # If it was closed in the last two weeks, consider the case where
+            # a user is waiting for the next build
+            recently_closed = (
+                datetime.datetime.fromisoformat(issue['closed_on'][:-1]) >
+                (datetime.datetime.now() - datetime.timedelta(days=14)))
+        else:
+            recently_closed = False
         valid = (issue['status']['name'] in allowed_states
-                 and not issue['status']['is_closed'])
+                 and not issue['status']['is_closed']) or recently_closed
+        LOG.debug('Issue valid=%s recently_closed=%s state=%s' % (
+            valid, recently_closed, issue['status']['name']))
         if not valid:
             LOG.warning('Issue %i is in state %s', issue_num, issue['status'])
             raise IsssueModuleLoadError(

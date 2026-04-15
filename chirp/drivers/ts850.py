@@ -117,6 +117,10 @@ class TS850Radio(KenwoodLiveRadio):
                 "Number must be between 0 and %i" % self._upper)
 
         if memory.number > 90:
+            # This is not a good solution here, but this driver was
+            # designed in such a way that not doing a dupe and using an
+            # actual Memory() would require quite a bit more change.
+            memory = memory.dupe()
             if memory.duplex == TS850_DUPLEX[0]:
                 memory.duplex = TS850_DUPLEX[1]
                 memory.offset = memory.freq

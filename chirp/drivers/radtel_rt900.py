@@ -1,4 +1,4 @@
-# Copyright 2025 Fred Trimble <chirpdriver@gmail.com>
+# Copyright 2025, 2026 Fred Trimble <chirpdriver@gmail.com>
 # Derived from prior copyrighted work:
 # Copyright 2024 Pavel Moravec, OK2MOP <moravecp.cz@gmail.com>
 # Copyright 2023 Jim Unroe <rock.unroe@gmail.com>
@@ -71,8 +71,8 @@ struct {
      bcl:1,           //     BCL
      scan:1,          //     Scan  0 = Skip, 1 = Scan
      am_modulation:1, //     Per chan AM modulation
-     learning:1;      //     Learning
-  lbcd code[3];       // 0-2 Code
+     learning:1;      //     FHSS Learning
+  ul24 code;          // 0-2 FHSS Code (little-endian, 0-0x7FFFFF)
   u8 unknown6;        // 3
   char name[12];      // 4-F 12-character Alpha Tag
 } memory[%d];
@@ -183,7 +183,7 @@ struct {
      tailcode:1;      //      Tail Code (RT-470L)
   u8 unknown_9023;    // 9023
   u8 single_mode ;    // 9024 Single Mode (RT-900 BT)
-  u8 unknown_9025;    // 9025
+  u8 unknown_9025;    // 9025 Always 0x01 on all RT-900 variants
   u8 unknown_9026;    // 9026
   u8 unknown_9027;    // 9027
   u8 unknown_9028;    // 9028
@@ -243,10 +243,10 @@ TXPOWER_LOW = 0x02
 
 ABR_LIST = ["On", "5 seconds", "10 seconds", "15 seconds", "20 seconds",
             "30 seconds", "1 minute", "2 minutes", "3 minutes"]
-ALMODE_LIST = ["Site", "Tone", "Code"]
+ALMODE_LIST = ["On Site", "Send Sound", "Send Code"]
 AUTOLK_LIST = ["Off"] + ABR_LIST[1:4]
 DTMFSPEED_LIST = ["50 ms", "100 ms", "200 ms", "300 ms", "500 ms"]
-DTMFST_LIST = ["Off", "KeyBoard Side Tone", "ANI Side Tone", "KB ST + ANI ST"]
+DTMFST_LIST = ["Off", "DT-ST", "ANI-ST", "DT+ANI"]
 DUALTX_LIST = ["Off", "A", "B"]
 LANGUAGE_LIST = ["English", "Chinese"]
 MDF_LIST = ["Name", "Frequency", "Channel"]
@@ -660,11 +660,6 @@ class RT900BT(chirp_common.CloneModeRadio):
         rset = MemSetting("settings.alarmsound", "Alarm Sound", rs)
         basic.append(rset)
 
-        # Menu 44: TDR
-        rs = RadioSettingValueBoolean(_settings.tdr)
-        rset = MemSetting("settings.tdr", "TDR", rs)
-        basic.append(rset)
-
         rs = RadioSettingValueInvertedBoolean(not _settings.fmradio)
         rset = MemSetting("settings.fmradio", "FM Radio", rs)
         basic.append(rset)
@@ -793,15 +788,6 @@ class RT900BT(chirp_common.CloneModeRadio):
         # Menu 21: VFO A/B BCL (Busy lock)
         rs = RadioSettingValueBoolean(_settings.busy_lock)
         rset = MemSetting("settings.busy_lock", "BCL", rs)
-        abblock.append(rset)
-
-        # Menu 30 VFO DTMF code
-        rs = RadioSettingValueList(
-            PTTID_LIST,
-            current_index=_settings.pttid
-            # current_index=self._memobj.vfodtmf.code
-        )
-        rset = MemSetting("settings.pttid", "DTMF Code", rs)
         abblock.append(rset)
 
         # Menu 42: TX-A/B
@@ -1100,26 +1086,10 @@ class RT900BT(chirp_common.CloneModeRadio):
                     else:
                         index += 0x6A
                     memval.set_value(index)
-                except IndexError:
+                except ValueError:
                     msg = "DTCS Code '%d' is not supported" % value
                     LOG.error(msg)
                     raise errors.RadioError(msg)
-            case "Cross":
-                txmode, rxmode = mem.cross_mode.split("->", 1)
-
-                if txmode == "Tone":
-                    memval.set_value(int(mem.rtone * 10))
-                elif txmode == "DTCS":
-                    memval.set_value(DTCS.index(mem.dtcs) + 1)
-                else:
-                    memval.set_value(0)
-
-                if rxmode == "Tone":
-                    memval.set_value(int(mem.ctone * 10))
-                elif rxmode == "DTCS":
-                    memval.set_value(DTCS.index(mem.rx_dtcs) + 1)
-                else:
-                    memval.set_value(0)
             case _:
                 raise Exception("Internal error: invalid mode '%s'" % mode)
 
@@ -1160,7 +1130,7 @@ class RT900BT(chirp_common.CloneModeRadio):
                     code = index + 0x6a
                 elif tone.endswith('N'):  # normal
                     code = index + 1
-        except IndexError:
+        except (IndexError, ValueError):
             msg = "Unknown CTCSS/DTC tone: %s" % tone
             LOG.exception(msg)
             raise InvalidValueError(msg)
@@ -1173,6 +1143,9 @@ class RT900BT(chirp_common.CloneModeRadio):
         rf.valid_modes = ["FM", "NFM", "AM", "NAM"]  # 25kHz, 12.5kHz, AM, NAM
         rf.valid_tuning_steps = self._steps
         return rf
+
+    def get_raw_memory(self, number):
+        return repr(self._memobj.memory[number - 1])
 
     def get_memory(self, number):
         """Get the mem representation from the radio image"""
@@ -1267,6 +1240,33 @@ class RT900BT(chirp_common.CloneModeRadio):
         rset = RadioSetting("bcl", "BCL", rs)
         mem.extra.append(rset)
 
+        # LearnFHSS (per-channel learn / FHSS flag). The OEM CPS labels
+        # this column "LearnFHSS"; the open-source firmware reads the
+        # same bit as chFlag3.b0 / fhssFlag (Core/Radio.c).
+        rs = RadioSettingValueBoolean(_mem.learning)
+        rset = RadioSetting("learning", "LearnFHSS", rs)
+        mem.extra.append(rset)
+
+        # FHSS Code (24-bit little-endian, range 0x000000-0x7FFFFF).
+        # Displayed and accepted as a 6-digit uppercase hex string to
+        # match the OEM CPS convention.
+        def validate_fhss_code(value):
+            try:
+                v = int(str(value).strip(), 16)
+            except ValueError:
+                raise InvalidValueError(
+                    "FHSS Code must be a hex value (e.g. 1A2B3C)")
+            if not (0 <= v <= 0x7FFFFF):
+                raise InvalidValueError(
+                    "FHSS Code must be between 000000 and 7FFFFF")
+            return value
+
+        rs = RadioSettingValueString(
+            0, 6, "%06X" % (int(_mem.code) & 0x7FFFFF))
+        rs.set_validate_callback(validate_fhss_code)
+        rset = RadioSetting("fhss_code", "FHSS Code (hex)", rs)
+        mem.extra.append(rset)
+
         # PTT-ID
         rs = RadioSettingValueList(PTTID_LIST, current_index=_mem.pttid)
         rset = RadioSetting("pttid", "PTT ID", rs)
@@ -1348,7 +1348,10 @@ class RT900BT(chirp_common.CloneModeRadio):
                 _mem.narrow = 0b1
 
         for setting in mem.extra:
-            setattr(_mem, setting.get_name(), setting.value)
+            if setting.get_name() == 'fhss_code':
+                _mem.code = int(str(setting.value).strip(), 16)
+            else:
+                setattr(_mem, setting.get_name(), setting.value)
 
     def validate_memory(self, mem):
         msgs = []
@@ -1488,21 +1491,21 @@ class RT910BT(RT900BT):
 class RT910(RT910BT):
     # ==========
     # Notice to developers:
-    # The RT-910 support in this driver is currently based upon V0.09P
-    # firmware with 15 banks/zones of 64 channels steps.
+    # The RT-910 support in this driver is currently based upon V0.11
+    # firmware with 15 banks/zones of 64 channel steps.
     # ==========
-    """Radtel RT-910 512 (without Bluetooth)"""
+    """Radtel RT-910 960 (without Bluetooth)"""
     VENDOR = "Radtel"
     MODEL = "RT-910"
 
-    _upper = 512  # fw V0.09P supports 512 channels
+    _upper = 960  # fw V0.11 supports 960 channels
 
     _mem_params = (_upper,  # number of channels
                    )
     _ranges = [
-        (0x0000, 0x4000),  # 8 zones of 64 frequencies,
-                           # equals 512 channels of 32 bytes each
-                           # 8 * 64 * 32 = 0x4000
+        (0x0000, 0x7800),  # 15 zones of 64 frequencies,
+                           # equals 960 channels of 32 bytes each
+                           # 15 * 64 * 32 = 0x7800
         (0x8000, 0x8040),
         (0x9000, 0x9040),
         (0xA000, 0xA140),
@@ -1512,17 +1515,17 @@ class RT910(RT910BT):
     _has_bt_denoise = False
     _has_am_per_channel = True
     _has_am_switch = not _has_am_per_channel
-    _has_single_mode = False
+    _has_single_mode = True
 
     def get_bank_model(self):
-        return chirp_common.StaticBankModel(self, banks=8)
+        return chirp_common.StaticBankModel(self, banks=15)
 
     @classmethod
     def get_prompts(cls):
         rp = super().get_prompts()
         rp.experimental = \
             ('This driver is a beta version for the RT-910'
-             ' Non Bluetooth running Firmware V0.09\n'
+             ' Non Bluetooth running Firmware V0.11\n'
              '\n'
              'Please save an unedited copy of your first successful\n'
              'download to a CHIRP Radio Images(*.img) file.\n\n'
@@ -1591,6 +1594,46 @@ class RT920(RT900BT):
         rp.experimental = \
             ('This driver is a beta version for the RT-920'
              ' running Firmware V0.14P\n'
+             '\n'
+             'Please save an unedited copy of your first successful\n'
+             'download to a CHIRP Radio Images(*.img) file.\n\n'
+             'PROCEED AT YOUR OWN RISK!'
+             )
+        return rp
+
+
+@directory.register
+class RadioddityGS10B(RT900BT):
+    # ==========
+    # Radioddity GS-10B: RT-900 BT variant with 256 channels.
+    # Same magic (PROGRAMBT80U), fingerprints, and protocol as the
+    # RT-900 BT. Memory layout is identical but with fewer channels.
+    # Based on firmware V0.03.
+    # ==========
+    """Radioddity GS-10B"""
+    VENDOR = "Radioddity"
+    MODEL = "GS-10B"
+
+    _upper = 256  # 256 channels
+    _has_single_mode = False
+
+    _mem_params = (_upper,  # number of channels
+                   )
+
+    _ranges = [
+        (0x0000, 0x2000),  # 256 channels of 32 bytes each
+                           # 256 * 32 = 0x2000
+        (0x8000, 0x8040),
+        (0x9000, 0x9040),
+        (0xA000, 0xA140),
+        (0xD000, 0xD040),  # Radio mode hidden setting
+    ]
+
+    @classmethod
+    def get_prompts(cls):
+        rp = super().get_prompts()
+        rp.experimental = \
+            ('This driver is a beta version for the Radioddity GS-10B\n'
              '\n'
              'Please save an unedited copy of your first successful\n'
              'download to a CHIRP Radio Images(*.img) file.\n\n'

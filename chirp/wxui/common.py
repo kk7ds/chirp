@@ -403,7 +403,11 @@ class ChirpSettingGrid(wx.Panel):
         tip = None
         if prop:
             setting = self.get_setting_by_name(prop.GetName())
-            if isinstance(setting.value, settings.RadioSettingValueString):
+            # FIXME: Indexed properties will have their INDEX_CHAR replaced
+            # here and thus won't match the actual setting name, so we'll
+            # get None here. Avoid a trace for now, but this needs fixing.
+            if setting and isinstance(setting.value,
+                                      settings.RadioSettingValueString):
                 tip = setting.__doc__ or ''
                 if setting.value.maxlength == setting.value._minlength:
                     extra = '%i characters' % setting.value.maxlength
@@ -777,8 +781,8 @@ def expose_logs(level, root, label, maxlen=128, parent=None,
         try:
             yield
         except Exception as e:
-            LOG.warning('Failure while capturing logs (showing=%s): %s',
-                        show_on_raise, e)
+            LOG.exception('Failure while capturing logs (showing=%s): %s',
+                          show_on_raise, e)
             error = e
         finally:
             lines = list(itertools.chain.from_iterable(x.get_history()

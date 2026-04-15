@@ -58,7 +58,8 @@ struct{
     char    name[8];
     u8      busychannellockout;
     u8      tone_id;
-    u8      unk_mem4[3];
+    u8      sql_mode;
+    u8      unk_mem4[2];
 } vfo[2];
 
 struct{
@@ -92,7 +93,8 @@ struct {
     char    name[8];
     u8      busychannellockout;
     u8      tone_id;
-    u8      unk_mem4[3];
+    u8      sql_mode;
+    u8      unk_mem4[2];
 } memory[504];
 
 struct{
@@ -645,6 +647,17 @@ class RA25UVRadio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
         _mem.channel_width = 0 if mem.mode == "FM" else 1
         self.set_tones__mem(_mem, mem)
         self.set_duplex__mem(_mem, mem)
+
+        # Set sql_mode based on tmode - CT/DCS (1) if receive tone is set,
+        # otherwise SQ (0).
+        if mem.tmode in ("TSQL", "DTCS"):
+            _mem.sql_mode = 1
+        elif mem.tmode == "Cross":
+            txmode, rxmode = mem.cross_mode.split("->", 1)
+            _mem.sql_mode = 1 if rxmode else 0
+        else:
+            _mem.sql_mode = 0
+
         _mem.tx_offset = mem.offset/10
         _mem.step = self.VALID_TUNING_STEPS.index(mem.tuning_step)
 

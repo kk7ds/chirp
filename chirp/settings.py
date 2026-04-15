@@ -52,6 +52,9 @@ class RadioSettingValue:
 
     def initialize(self):
         """Initialize this value to the stashed value"""
+        if isinstance(self._preinit_current, Exception):
+            # This was communicated as an error during loading
+            return
         assert self._current is None and self._preinit_current is not None
         self.set_value(self._preinit_current)
         self._preinit_current = None
@@ -422,6 +425,16 @@ class RadioSettings(list):
     def __str__(self):
         items = [str(self[i]) for i in range(0, len(self))]
         return "\n".join(items)
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return super().__getitem__(key)
+
+        for element in self:
+            if element.get_name() == key:
+                return element
+
+        raise KeyError(f"Invalid key {key}")
 
     def walk(self):
         """Iterate over all the RadioSettings in this tree
