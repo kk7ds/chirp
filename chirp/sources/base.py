@@ -7,7 +7,7 @@ from chirp import errors
 
 LOG = logging.getLogger(__name__)
 HEADERS = {
-    'User-Agent': 'chirp/%s Python %i.%i.%i %s' % (
+    'User-Agent': 'CHIRP/%s Python %i.%i.%i %s' % (
         CHIRP_VERSION,
         sys.version_info.major, sys.version_info.minor, sys.version_info.micro,
         sys.platform),
