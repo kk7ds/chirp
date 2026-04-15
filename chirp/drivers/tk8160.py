@@ -318,7 +318,7 @@ class TKx160Radio(chirp_common.CloneModeRadio):
 
     def sync_out(self):
         try:
-            self._mmap = do_upload(self)
+            do_upload(self)
         except errors.RadioError:
             raise
         except Exception as e:
