@@ -127,14 +127,14 @@ _KEYS = [
     'Key Lock',
     'Talk Around',
     'Scan',
-    'Scan Add',
-    '?',
+    'Scan Del/Add',
+    'Emergency',
     'AUX',
     'Horn Alert',
     'Scrambler',
     'Display Character',
     'OST',
-    '?',  # 0D
+    'Direct Ch',  # 0D
     '?',  # 0E
     '?',  # 0F
     '?',  # 10
@@ -152,7 +152,7 @@ _KEYS = [
     'Status',
     'Selcall+Status',
     '?',  # 1E
-    '?',  # 1F
+    'Channel Entry',  # 1F
     '?',  # 20
     '?',  # 21
     '?',  # 22
@@ -164,21 +164,53 @@ _KEYS = [
     'Volume Up',
     'Volume Down',
     'None',
-    ]
+]
 
-KEYS = {i: key for i, key in enumerate(_KEYS)
-        if not key.startswith('?')}
+VALID_KEY_SELECTION = [
+    'Zone Up',
+    'Zone Down',
+    'Monitor',
+    'Key Lock',
+    'Talk Around',
+    'Scan',
+    'Scan Del/Add',
+    'AUX',
+    'Horn Alert',
+    'Scrambler',
+    'Display Character',
+    'OST',
+    'Channel Up',
+    'Channel Down',
+    'Brightness',
+    '2-Tone',
+    'Call 1',
+    'Call 2',
+    'Selcall',
+    'Public Address',
+    'Squelch Level',
+    'Status',
+    'Selcall+Status',
+    'Squelch Off',
+    'Monitor Momentary',
+    'Squelch Off Momentary',
+    'Send the GPS',
+    'Volume Up',
+    'Volume Down',
+    'None',
+]
+
+KEYS = {i: key for i, key in enumerate(_KEYS) if key in VALID_KEY_SELECTION}
 
 KEY_NAMES = {
+    'Left Up': 'leftup',
+    'Left Down': 'leftdn',
+    'Right Up': 'rightup',
+    'Right Down': 'rightdn',
+    'S': 'skey',
     'A': 'akey',
     'B': 'bkey',
     'C': 'ckey',
-    'S': 'skey',
     'Triangle': 'triangle',
-    'Right Up': 'rightup',
-    'Right Down': 'rightdn',
-    'Left Up': 'leftup',
-    'Left Down': 'leftdn',
 }
 
 POWER_LEVELS = [chirp_common.PowerLevel('Low', watts=25),
