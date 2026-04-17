@@ -26,9 +26,13 @@ def tyt_uv3r_prep(radio):
     try:
         radio.pipe.write(b"PROGRAMa")
         ack = radio.pipe.read(1)
+        if not ack:
+            raise errors.RadioNoResponse()
         if ack != b"\x06":
             raise errors.RadioError("Radio did not ACK first command")
-    except:
+    except errors.RadioError:
+        raise
+    except Exception:
         raise errors.RadioError("Unable to communicate with the radio")
 
 

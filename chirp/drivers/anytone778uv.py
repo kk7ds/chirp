@@ -398,6 +398,9 @@ def enter_program_mode(serial):
     # place the radio in program mode, and confirm
     program_response = send_serial_command(serial, b'PROGRAM')
 
+    if not program_response:
+        raise errors.RadioNoResponse()
+
     if program_response != b'QX\x06':
         raise errors.RadioError('No initial response from radio.')
     LOG.debug('entered program mode')
@@ -428,6 +431,10 @@ def exit_program_mode(serial):
 # Parse a packet from the radio returning the header (R/W, address, data, and
 # checksum valid
 def parse_read_response(resp):
+    if not resp:
+        raise errors.RadioNoResponse()
+    if len(resp) < 6:
+        raise errors.RadioError('Short read response from radio')
     addr = resp[:4]
     data = bytes(resp[4:-2])
     cs = checksum.checksum_8bit(d for d in resp[1:-2])

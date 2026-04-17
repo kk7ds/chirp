@@ -126,9 +126,11 @@ def _rawrecv(radio, amount=0):
 
         # fail if no data is received
         if len(data) == 0:
-            raise errors.RadioError("No data received from radio")
+            raise errors.RadioNoResponse()
 
-    except:
+    except errors.RadioError:
+        raise
+    except Exception:
         raise errors.RadioError("Error reading data from radio")
 
     return data

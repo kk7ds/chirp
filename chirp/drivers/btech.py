@@ -349,14 +349,16 @@ def _rawrecv(radio, amount):
 
         # fail if no data is received
         if len(data) == 0:
-            raise errors.RadioError("No data received from radio")
+            raise errors.RadioNoResponse()
 
         # notice on the logs if short
         if len(data) < amount:
             LOG.warning("Short reading %d bytes from the %d requested." %
                         (len(data), amount))
 
-    except:
+    except errors.RadioError:
+        raise
+    except Exception:
         raise errors.RadioError("Error reading data from radio")
 
     return data

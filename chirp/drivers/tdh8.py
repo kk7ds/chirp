@@ -827,11 +827,11 @@ def _do_ident(serial, magic, secondack=True):
     serial.write(magic)
     ack = serial.read(1)
 
+    if not ack:
+        raise errors.RadioNoResponse()
     if ack != b"\x06":
-        if ack:
-            # LOG.debug(repr(ack))
-            pass
-        raise errors.RadioError("Radio did not respond")
+        # LOG.debug(repr(ack))
+        raise errors.RadioError("Radio refused to enter programming mode")
 
     serial.write(b"\x02")
 
@@ -880,10 +880,16 @@ def _read_block(radio, start, size):
     try:
         serial.write(cmd)
         response = serial.read(5 + size)
+        if not response:
+            if start == 0:
+                raise errors.RadioNoResponse()
+            raise errors.RadioError("Failed to read block at %04x" % start)
         if response[:4] != expectedresponse:
             raise errors.RadioError("Error reading block %04x." % (start))
         block_data = response[4:-1]
 
+    except errors.RadioError:
+        raise
     except Exception:
         raise errors.RadioError("Failed to read block at %04x" % start)
 
@@ -1020,7 +1026,7 @@ class TDH8(chirp_common.CloneModeRadio):
             LOG.error('No model match found for ident query %r response %r',
                       ident, radio_ident)
             raise errors.RadioError('Unsupported model')
-        raise errors.RadioError('No response from radio')
+        raise errors.RadioNoResponse()
 
     @classmethod
     def get_prompts(cls):
@@ -1080,6 +1086,8 @@ class TDH8(chirp_common.CloneModeRadio):
         try:
             self._mmap = _do_download(self)
             self.process_mmap()
+        except errors.RadioError:
+            raise
         except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 

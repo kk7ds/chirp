@@ -410,7 +410,7 @@ def _recv(radio):
     # when the RX block has two bytes and the first is \x5A
     # then the block is all \xFF
     if not cmd:
-        raise errors.RadioError('No response from radio')
+        raise errors.RadioNoResponse()
     elif cmd == b'Z':
         # Empty "zero" block
         _raw_recv(radio, 1)
@@ -455,6 +455,9 @@ def _open_radio(radio, status):
 
     _raw_send(radio, b"PROGRAM")
     ack = _raw_recv(radio, 1)
+    if not ack:
+        _close_radio(radio)
+        raise errors.RadioNoResponse()
     if ack != ACK_CMD:
         _close_radio(radio)
         LOG.debug("Radio did not accept PROGRAM command")
@@ -852,6 +855,8 @@ class Kenwood_Series_60G(chirp_common.CloneModeRadio,
         # chirp signature on the eprom ;-)
         sign = b"Chirp"
         self._fill(0xbb, sign)
+        if self._memobj is None:
+            self.process_mmap()
 
         try:
             self._prep_data()
