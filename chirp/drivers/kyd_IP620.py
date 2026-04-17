@@ -197,7 +197,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
         except Exception as e:
             raise errors.RadioError("Error communicating with radio: %s" % e)
         if not _ack:
-            raise errors.RadioError("No response from radio")
+            raise errors.RadioNoResponse()
         elif _ack != CMD_ACK:
             raise errors.RadioError("Radio refused to enter programming mode")
         try:

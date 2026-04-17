@@ -32,6 +32,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 LOG = logging.getLogger(__name__)
 COMM_DIRECTION_FROM = 0
 COMM_DIRECTION_TO = 1
+PROGRAM_CMD = b"PROGRAM"
 
 
 # Layout of Radio memory image.
@@ -237,6 +238,8 @@ def variable_len_resp(pipe):
     toolong = 256        # arbitrary
     while True:
         b = pipe.read(1)
+        if not b:
+            raise errors.RadioError("No response from radio")
         if b == b'\x06':
             break
         else:
@@ -262,6 +265,8 @@ def sendcmd(pipe, cmd, response_len, retry=0):
     """
     pipe.write(cmd)
     echo = pipe.read(len(cmd))
+    if not echo:
+        raise errors.RadioError("No echo from cable")
     if echo != cmd:
         msg = "Bad echo. Sent:" + util.hexprint(cmd) + ", "
         msg += "Received:" + util.hexprint(echo)
@@ -272,9 +277,17 @@ def sendcmd(pipe, cmd, response_len, retry=0):
         return variable_len_resp(pipe)
     if response_len > 0:
         response = pipe.read(response_len)
+        if not response:
+            if cmd == PROGRAM_CMD:
+                raise errors.RadioNoResponse()
+            raise errors.RadioError("No response from radio")
+        if len(response) != response_len:
+            raise errors.RadioError("Incomplete response from radio")
     else:
         response = b""
     ack = pipe.read(1)
+    if not ack:
+        raise errors.RadioError("No response from radio")
     if ack != b'\x06':
         if retry < 5:
             LOG.debug("retry: " + str(retry))
@@ -295,8 +308,10 @@ def enter_clonemode(radio):
     for use_end in range(0, 3):
         for i in range(0, 3):
             try:
-                if b"QX" == sendcmd(radio.pipe, b"PROGRAM", 2):
+                if b"QX" == sendcmd(radio.pipe, PROGRAM_CMD, 2):
                     return
+            except errors.RadioNoResponse:
+                raise
             except Exception:
                 continue
         sendcmd(radio.pipe, b"END", 0)
@@ -765,6 +780,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     def sync_in(self):
         try:
             self._mmap = do_download(self)
+        except errors.RadioError:
+            raise
         except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         self.process_mmap()
@@ -773,6 +790,8 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
     def sync_out(self):
         try:
             do_upload(self)
+        except errors.RadioError:
+            raise
         except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 

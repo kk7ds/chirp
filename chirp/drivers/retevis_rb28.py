@@ -168,7 +168,7 @@ def _enter_programming_mode(radio):
         raise errors.RadioError("Error communicating with radio")
 
     if not ack:
-        raise errors.RadioError("No response from radio")
+        raise errors.RadioNoResponse()
     elif ack != CMD_ACK:
         raise errors.RadioError("Radio refused to enter programming mode")
 
@@ -377,7 +377,9 @@ class RB28Radio(chirp_common.CloneModeRadio):
         """Upload to radio"""
         try:
             do_upload(self)
-        except:
+        except errors.RadioError:
+            raise
+        except Exception:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
             LOG.exception('Unexpected error during upload')

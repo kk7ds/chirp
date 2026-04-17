@@ -377,13 +377,24 @@ def _do_ident(radio):
     # Ident radio
     magic = radio._magic0
     _rawsend(radio, magic)
-    ack = _rawrecv(radio, 36)
+    try:
+        ack = radio.pipe.read(36)
+    except Exception:
+        _exit_program_mode(radio)
+        msg = "Generic error reading data from radio; check your cable."
+        raise errors.RadioError(msg)
 
+    if not ack:
+        _exit_program_mode(radio)
+        raise errors.RadioNoResponse()
+    if len(ack) != 36:
+        _exit_program_mode(radio)
+        msg = "Error reading from radio: not the amount of data we want."
+        raise errors.RadioError(msg)
     if not ack.startswith(radio._fingerprint) or not ack.endswith(b"\xFD"):
         _exit_program_mode(radio)
-        if ack:
-            LOG.debug(repr(ack))
-        raise errors.RadioError("Radio did not respond as expected (A)")
+        LOG.debug(repr(ack))
+        raise errors.RadioError("Unexpected response from radio")
 
     return True
 
@@ -617,6 +628,8 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 
         try:
             _upload(self)
+        except errors.RadioError:
+            raise
         except Exception:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem

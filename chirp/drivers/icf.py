@@ -213,6 +213,8 @@ def get_model_data(radio, mdata=b"\x00\x00\x00\x00", stream=None):
         stream = RadioStream(radio.pipe)
     frames = stream.get_frames()
 
+    if len(frames) == 0:
+        raise errors.RadioNoResponse()
     if len(frames) != 1:
         raise errors.RadioError("Unexpected response from radio")
 
@@ -410,6 +412,8 @@ def clone_from_radio(radio):
     """Do a full clone out of the radio's memory"""
     try:
         return _clone_from_radio(radio)
+    except errors.RadioError:
+        raise
     except Exception as e:
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
 
@@ -514,7 +518,7 @@ def _clone_to_radio(radio):
         return True
 
     if len(frames) == 0:
-        raise errors.RadioError("Did not get clone result from radio")
+        raise errors.RadioNoResponse()
     elif result.cmd != CMD_CLONE_OK:
         LOG.error('Clone failed result frame:\n%s' % result)
         raise errors.RadioError('Radio rejected clone')
@@ -528,6 +532,8 @@ def clone_to_radio(radio):
     """Initiate a full memory clone out to @radio"""
     try:
         return _clone_to_radio(radio)
+    except errors.RadioError:
+        raise
     except Exception as e:
         logging.exception("Failed to communicate with the radio")
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)

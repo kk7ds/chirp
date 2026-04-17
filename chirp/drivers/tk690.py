@@ -304,9 +304,10 @@ def _open_radio(radio):
     ack = radio.pipe.read(10)
     if ack == ACK_CMD:
         pass
-    elif ack.endswith(b'\xb5\x15\xc5m\xf5\x95\x01') or ack == b'':
-        raise errors.RadioError("No response response from radio,"
-                                " Is it connected and powered on?")
+    elif ack == b'':
+        raise errors.RadioNoResponse()
+    elif ack.endswith(b'\xb5\x15\xc5m\xf5\x95\x01'):
+        raise errors.RadioError('Unexpected response from radio')
     else:
         raise errors.RadioError("Radio didn't acknowledge program mode.")
 

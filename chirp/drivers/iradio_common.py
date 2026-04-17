@@ -35,6 +35,9 @@ def enter_programming_mode(serial, magic, timeout=0.25):
             if ack == CMD_ACK:
                 return
 
+            if not ack and attempt == 4:
+                raise errors.RadioNoResponse()
+
             LOG.debug(f"Attempt #{attempt + 1} failed, trying again")
 
         # retries all failed, raise error
