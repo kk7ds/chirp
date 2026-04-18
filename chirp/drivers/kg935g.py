@@ -1694,7 +1694,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         if mem.power is not None:
             _mem.power = self._set_power(mem)
         else:
-            _mem.power = True
+            _mem.power = 0  # default to Low power if not set
 
         for setting in mem.extra:
             setattr(_mem, setting.get_name(), setting.value)
@@ -2513,8 +2513,8 @@ class KGXS20G(KG935GRadio):
     _model = b"KG-UV8D-A"
     _record_start = 0x79
     config_map = config_map_x20h
-    POWER_LEVELS = [chirp_common.PowerLevel("L", watts=0.5),
-                    chirp_common.PowerLevel("H", watts=5.5)]
+    POWER_LEVELS = [chirp_common.PowerLevel("L", watts=5.0),
+                    chirp_common.PowerLevel("H", watts=20.0)]
     HAS_SCRAMBLER = False
     HAS_FAVORITE = False
 
