@@ -1653,6 +1653,9 @@ class KG935GRadio(chirp_common.CloneModeRadio,
     def set_memory(self, mem):
         number = mem.number
 
+        # Determine if we are moving from Empty -> Not Empty
+        was_empty = (self._memobj.valid[number] != MEM_VALID)
+
         _mem = self._memobj.memory[number]
         _nam = self._memobj.names[number]
 
@@ -1661,6 +1664,12 @@ class KG935GRadio(chirp_common.CloneModeRadio,
             self._memobj.valid[number] = 0
             self._memobj.names[number].set_raw("\x00" * (_nam.size() // 8))
             return
+
+        # If it's a NEW channel, wipe it to all 0s first
+        # This prevents "ghost" data from previous radio use or factory junk
+        if was_empty:
+            _mem.set_raw("\x00" * (_mem.size() // 8))
+            _nam.set_raw("\x00" * (_nam.size() // 8))
 
         _mem.rxfreq = int(mem.freq / 10)
         if mem.duplex == "off":
