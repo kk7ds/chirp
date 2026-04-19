@@ -1743,6 +1743,21 @@ class BFK5Plus(BF5RM):
 
 
 @directory.register
+class BaofengUV5RMPlus(BF5RM):
+    VENDOR = "Baofeng"
+    MODEL = "UV-5RM Plus"
+
+    _magics = [(b"\x46", 16),
+               (b"\x4d", 15),
+               (b"\x53\x45\x4E\x44\x13\x0F\x0D\x13\x0E\x0E\x0E\x0D\x0A" +
+                b"\x0E\x0E\x02\x0F\x08\x04\x11\x0C\x00\x0D\x0E\x00", 1)]
+    _encrsym = 13
+    _has_pilot_tone = True
+    _has_send_id_delay = True
+    _has_scramble = True
+
+
+@directory.register
 class GM5RH(UV17Pro):
     VENDOR = "Baofeng"
     MODEL = "GM-5RH"

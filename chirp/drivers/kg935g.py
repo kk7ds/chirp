@@ -35,6 +35,7 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueString, \
     RadioSettingValueFloat, RadioSettingValueMap, RadioSettings, \
     InvalidValueError
+from chirp import kenwood_tone
 
 
 LOG = logging.getLogger(__name__)
@@ -1331,6 +1332,13 @@ class KG935GRadio(chirp_common.CloneModeRadio,
     _record_start = 0x7C
     config_map = config_map_935G
 
+    def __init__(self, pipe):
+        super().__init__(pipe)
+        self.tone_model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000,
+            pol_mask=0x2000,
+            tone_init=0x0000)
+
     def _write_record(self, cmd, payload=b''):
         _packet = struct.pack('BBBB', self._record_start, cmd, 0xFF,
                               len(payload))
@@ -1549,57 +1557,6 @@ class KG935GRadio(chirp_common.CloneModeRadio,
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number])
 
-    def _get_tone(self, _mem, mem):
-        # MRT - corrected the Polarity decoding to match 935G implementation
-        # use 0x2000 bit mask for R
-        # MRT - 0x2000 appears to be the bit mask for Inverted DCS tones
-        # MRT - n DCS Tone will be 0x4xxx values - i DCS Tones will
-        # be 0x6xxx values.
-        # MRT - Chirp Uses N for n DCS Tones and R for i DCS Tones
-        def _get_dcs(val):
-            code = int("%03o" % (val & 0x07FF))
-            pol = (val & 0x2000) and "R" or "N"
-            return code, pol
-        # MRT - Modified the function below to bitwise AND with 0x4000
-        # to check for 935G DCS Tone decoding
-        # MRT 0x4000 appears to be the bit mask for DCS tones
-        tpol = False
-        # MRT Beta 1.1 - Fix the txtone compare to 0x4000 - was rxtone.
-        if _mem.txtone != 0xFFFF and (_mem.txtone & 0x4000) == 0x4000:
-            tcode, tpol = _get_dcs(_mem.txtone)
-            mem.dtcs = tcode
-            txmode = "DTCS"
-        elif _mem.txtone != 0xFFFF and _mem.txtone != 0x0:
-            mem.rtone = (_mem.txtone & 0x7fff) / 10.0
-            txmode = "Tone"
-        else:
-            txmode = ""
-        # MRT - Modified the function below to bitwise AND with 0x4000
-        # to check for 935G DCS Tone decoding
-        rpol = False
-        if _mem.rxtone != 0xFFFF and (_mem.rxtone & 0x4000) == 0x4000:
-            rcode, rpol = _get_dcs(_mem.rxtone)
-            mem.rx_dtcs = rcode
-            rxmode = "DTCS"
-        elif _mem.rxtone != 0xFFFF and _mem.rxtone != 0x0:
-            mem.ctone = (_mem.rxtone & 0x7fff) / 10.0
-            rxmode = "Tone"
-        else:
-            rxmode = ""
-
-        if txmode == "Tone" and not rxmode:
-            mem.tmode = "Tone"
-        elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
-            mem.tmode = "TSQL"
-        elif txmode == rxmode and txmode == "DTCS" and mem.dtcs == mem.rx_dtcs:
-            mem.tmode = "DTCS"
-        elif rxmode or txmode:
-            mem.tmode = "Cross"
-            mem.cross_mode = "%s->%s" % (txmode, rxmode)
-
-        # always set it even if no dtcs is used
-        mem.dtcs_polarity = "%s%s" % (tpol or "N", rpol or "N")
-
     def get_memory(self, number):
         _mem = self._memobj.memory[number]
         _nam = self._memobj.names[number]
@@ -1634,7 +1591,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
                 mem.name += chr(char)
         mem.name = mem.name.rstrip()
 
-        self._get_tone(_mem, mem)
+        self.tone_model.get_tone(_mem, mem)
 
         mem.skip = "" if bool(_mem.scan_add) else "S"
         _mem.power = _mem.power & 0x3
@@ -1643,48 +1600,6 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         mem.power = self.POWER_LEVELS[_mem.power]
         mem.mode = _mem.iswide and "FM" or "NFM"
         return mem
-
-    def _set_tone(self, mem, _mem):
-        def _set_dcs(code, pol):
-            # MRT Change from + 0x2800 to bitwise OR with 0x4000 to
-            # set the bit for DCS
-            val = int("%i" % code, 8) | 0x4000
-            if pol == "R":
-                # MRT Change to 0x2000 from 0x8000 to set the bit for
-                # i/R polarity
-                val += 0x2000
-            return val
-
-        rx_mode = tx_mode = None
-        rxtone = txtone = 0x0000
-
-        if mem.tmode == "Tone":
-            tx_mode = "Tone"
-            rx_mode = None
-            txtone = int(mem.rtone * 10) + 0x8000
-        elif mem.tmode == "TSQL":
-            rx_mode = tx_mode = "Tone"
-            rxtone = txtone = int(mem.ctone * 10) + 0x8000
-        elif mem.tmode == "DTCS":
-            tx_mode = rx_mode = "DTCS"
-            txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-            rxtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[1])
-        elif mem.tmode == "Cross":
-            tx_mode, rx_mode = mem.cross_mode.split("->")
-            if tx_mode == "DTCS":
-                txtone = _set_dcs(mem.dtcs, mem.dtcs_polarity[0])
-            elif tx_mode == "Tone":
-                txtone = int(mem.rtone * 10) + 0x8000
-            if rx_mode == "DTCS":
-                rxtone = _set_dcs(mem.rx_dtcs, mem.dtcs_polarity[1])
-            elif rx_mode == "Tone":
-                rxtone = int(mem.ctone * 10) + 0x8000
-
-        _mem.rxtone = rxtone
-        _mem.txtone = txtone
-
-        LOG.debug("Set TX %s (%i) RX %s (%i)" %
-                  (tx_mode, _mem.txtone, rx_mode, _mem.rxtone))
 
     def set_memory(self, mem):
         number = mem.number
@@ -1715,7 +1630,7 @@ class KG935GRadio(chirp_common.CloneModeRadio,
         _mem.scan_add = int(mem.skip != "S")
         _mem.iswide = int(mem.mode == "FM")
         # set the tone
-        self._set_tone(mem, _mem)
+        self.tone_model.set_tone(mem, _mem)
         # MRT set the scrambler and compander to off by default
         # MRT This changes them in the channel memory
         _mem.scrambler = 0
