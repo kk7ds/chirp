@@ -453,6 +453,10 @@ class ChirpSettingGrid(wx.Panel):
                     editor = self._get_editor_bool(element, value)
                 elif isinstance(value, settings.RadioSettingValueString):
                     editor = self._get_editor_str(element, value)
+                elif isinstance(value, settings.RadioSettingValueHex):
+                    editor = self._get_editor_str(element, value)
+                elif isinstance(value, settings.RadioSettingValueDTMF):
+                    editor = self._get_editor_str(element, value)
                 else:
                     LOG.warning('Unsupported setting type %r' % value)
                     editor = None
