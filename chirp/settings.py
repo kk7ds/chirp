@@ -163,6 +163,131 @@ class RadioSettingValueInteger(RadioSettingValue):
         return self._step
 
 
+class RadioSettingValueHex(RadioSettingValue):
+
+    """A Hex value integer setting"""
+
+    def __init__(self, minlength, maxlength, minval, maxval, current, step=1):
+        RadioSettingValue.__init__(self)
+        self._minlength = minlength
+        self._maxlength = maxlength
+        self._min = minval
+        self._max = maxval
+        self._step = step
+        self.queue_current(current)
+
+    PREFIX = "0x"  # prefix to concat to hex ints
+
+    def format(self, value=None):
+        """Formats the int hex value into a uppercase Hex string"""
+        if value is None:
+            value = self._current
+        elif isinstance(value, int):
+            fmt_string = "%%0%iX" % self._maxlength
+            return ("%s" + fmt_string.upper()) % (self.PREFIX, value)
+        else:
+            return ""
+
+    def set_value(self, value):
+        if value[:2].lower() == self.PREFIX:
+            value = value[2:]
+        if len(value) < self._minlength or len(value) > self._maxlength:
+            raise InvalidValueError(
+                "Hex value %r must be between %i and %i chars" % (
+                    value, self._minlength, self._maxlength))
+        for char in value:
+            if char.upper() not in chirp_common.CHARSET_HEX:
+                raise InvalidValueError(("Value %r contains invalid "
+                                         "Hex character `%s'"
+                                         "Valid chars are %s") % (
+                                             value,
+                                             char,
+                                             chirp_common.CHARSET_HEX))
+        try:
+            if str(value).strip():
+                value = int(value, 16)
+        except Exception:
+            raise InvalidValueError("A Hex value string is required (0-9,A-F)")
+        if isinstance(value, int):
+            if value > self._max or value < self._min:
+                raise InvalidValueError("Hex value 0x%s not in"
+                                        " range 0X%s-0X%s" % (
+                                            self.format(value),
+                                            self.format(self._min),
+                                            self.format(self._max)))
+            if value % self._step:
+                msg = "Hex value %s is NOT an even muliple of %i" % (
+                    self.format(value), self._step)
+                raise InvalidValueError(msg)
+
+        RadioSettingValue.set_value(self, self.format(value))
+
+    @property
+    def minlength(self):
+        return self._minlength
+
+    @property
+    def maxlenth(self):
+        return self._maxlength
+
+    @property
+    def min(self):
+        return self._min
+
+    @property
+    def max(self):
+        return self._max
+
+    @property
+    def step(self):
+        return self._step
+
+
+class RadioSettingValueDTMF(RadioSettingValue):
+
+    """A DTMF string setting"""
+
+    def __init__(self, minlength, maxlength, current):
+        RadioSettingValue.__init__(self)
+        self._minlength = minlength
+        self._maxlength = maxlength
+        self.queue_current(current)
+
+    @property
+    def maxlength(self):
+        return self._maxlength
+
+    @property
+    def minlength(self):
+        return self._minlength
+
+    def format(self, value=None):
+        """Formats the DTMF value into an uppercase string"""
+        if value is None:
+            value = self._current
+        elif isinstance(value, str):
+            fmt_string = "%s"
+            return fmt_string % value.upper()
+        else:
+            return ""
+
+    def set_value(self, value):
+        if len(value) < self._minlength or len(value) > self.maxlength:
+            raise InvalidValueError(
+                "DTMF value %r must be between %i and %i chars" % (
+                    value, self._minlength, self._maxlength))
+        for char in value:
+            if char.upper() not in chirp_common.CHARSET_DTMF:
+                raise InvalidValueError(("Value %r contains invalid "
+                                         "DTMF character `%s'. "
+                                         "Valid chars are %s") % (
+                                             value,
+                                             char,
+                                             chirp_common.CHARSET_DTMF))
+
+        RadioSettingValue.set_value(self, self.format(value))
+
+
 class RadioSettingValueFloat(RadioSettingValue):
 
     """A floating-point setting"""
