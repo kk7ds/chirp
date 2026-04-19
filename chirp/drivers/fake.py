@@ -64,7 +64,7 @@ class FakeLiveRadio(chirp_common.LiveRadio):
     def set_settings(self, rs):
         for e in rs:
             if isinstance(e, settings.RadioSetting):
-                self.settings[e.name] = e.value
+                self.settings[e.get_name()] = e.value
             else:
                 self.set_settings(e)
 
