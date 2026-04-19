@@ -26,6 +26,7 @@ import threading
 import webbrowser
 
 import wx
+import wx.propgrid
 
 from chirp import chirp_common
 from chirp.drivers import generic_csv
@@ -366,6 +367,37 @@ class ChirpAsyncEditor(ChirpSyncEditor):
         return self._radio_thread.pending != 0
 
 
+class HexText(wx.propgrid.PGTextCtrlEditor):
+    HEX_CODES = [ord(x) for x in '0123456789abcdefABCDEF']
+
+    def CreateControls(self, propgrid, property, pos, size):
+        r = super().CreateControls(propgrid, property, pos, size)
+        self._text = r.Primary
+        self._text.Bind(wx.EVT_KEY_DOWN, self._on_key)
+        return r
+
+    def _on_key(self, event):
+        key = event.GetKeyCode()
+        pos = self._text.GetInsertionPoint()
+        if key in (wx.WXK_HOME, wx.WXK_END,
+                   wx.WXK_UP, wx.WXK_DOWN, wx.WXK_LEFT, wx.WXK_RIGHT):
+            # Arrow keys and navigation allowed anywhere
+            event.Skip()
+        elif key in (wx.WXK_BACK, wx.WXK_DELETE):
+            # Backspace and delete work anywhere except the first two chars
+            if pos <= 2:
+                return
+            event.Skip()
+        elif key in self.HEX_CODES:
+            # Hex values allowed, but not in the first two chars
+            if pos < 2:
+                return
+            event.Skip()
+        else:
+            # Anything else is an invalid character
+            return
+
+
 class ChirpSettingGrid(wx.Panel):
     def __init__(self, settinggroup, *a, **k):
         super(ChirpSettingGrid, self).__init__(*a, **k)
@@ -377,6 +409,7 @@ class ChirpSettingGrid(wx.Panel):
             self,
             style=wx.propgrid.PG_SPLITTER_AUTO_CENTER |
             wx.propgrid.PG_BOLD_MODIFIED)
+        self.pg.DoRegisterEditorClass(HexText(), 'HexText')
 
         self.pg.Bind(wx.propgrid.EVT_PG_CHANGED, self._pg_changed)
         self.pg.Bind(wx.EVT_MOTION, self._mouseover)
@@ -443,7 +476,9 @@ class ChirpSettingGrid(wx.Panel):
 
             for i in element.keys():
                 value = element[i]
-                if isinstance(value, settings.RadioSettingValueInteger):
+                if isinstance(value, settings.RadioSettingValueHex):
+                    editor = self._get_editor_int_hex(element, value)
+                elif isinstance(value, settings.RadioSettingValueInteger):
                     editor = self._get_editor_int(element, value)
                 elif isinstance(value, settings.RadioSettingValueFloat):
                     editor = self._get_editor_float(element, value)
@@ -537,6 +572,39 @@ class ChirpSettingGrid(wx.Panel):
         e.SetAttribute(wx.propgrid.PG_ATTR_MIN, value.get_min())
         e.SetAttribute(wx.propgrid.PG_ATTR_MAX, value.get_max())
         e.SetAttribute(wx.propgrid.PG_ATTR_SPINCTRL_STEP, value.get_step())
+        return e
+
+    def _get_editor_int_hex(self, setting, value):
+        class HexIntProperty(wx.propgrid.PGProperty):
+            def ValidateValue(self, val, validationInfo):
+                if val < value.get_min() or val > value.get_max():
+                    validationInfo.SetFailureMessage(
+                        _('Value must be between 0x%X and 0x%X' % (
+                            value.get_min(), value.get_max())))
+                    return False
+                return super().ValidateValue(value, validationInfo)
+
+            def ValueToString(self, _value, flags=0):
+                return '0x%X' % _value
+
+            def StringToValue(self, text, _value, flags=0):
+                try:
+                    if text.startswith('0x'):
+                        text = text[2:]
+                    return True, int(text, 16)
+                except ValueError as e:
+                    # This should not happen
+                    LOG.exception(
+                        'Invalid hex value while parsing property: %s' % e)
+                    return False, None
+
+        e = HexIntProperty(setting.get_shortname(),
+                           setting.get_name())
+        e.SetEditor('HexText')
+        if value.initialized:
+            e.SetValue(int(value))
+        else:
+            e.SetValueToUnspecified()
         return e
 
     def _get_editor_float(self, setting, value):
