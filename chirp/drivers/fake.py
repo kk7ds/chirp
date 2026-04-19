@@ -59,12 +59,17 @@ class FakeLiveRadio(chirp_common.LiveRadio):
                 'knob', 'A knob',
                 settings.RadioSettingValueInteger(0, 10,
                                                   self.settings['knob'])))
+        g.append(
+            settings.RadioSetting(
+                'hexthing', 'A hex thing',
+                settings.RadioSettingValueHex(0x10, 0xffff, 0xDEAD)))
         return settings.RadioSettings(g)
 
     def set_settings(self, rs):
         for e in rs:
             if isinstance(e, settings.RadioSetting):
                 self.settings[e.get_name()] = e.value
+                LOG.debug('Set %s to %s' % (e.get_name(), e.value))
             else:
                 self.set_settings(e)
 
