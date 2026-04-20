@@ -1119,8 +1119,10 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
 
         # first get the header and validate it
         data = bytearray(self.pipe.read(4))
+        if not data:
+            raise errors.RadioNoResponse()
         if (len(data) < 4):
-            raise errors.RadioError('Radio did not respond')
+            raise errors.RadioError('Radio sent short header')
         if (data[0] != 0x7D):
             raise errors.RadioError(
                 'Radio reply garbled (%02x)' % data[0])
@@ -1176,7 +1178,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             self._write_record(CMD_IDENT)
             chksum_match, op, _resp = self._read_record()
             if len(_resp) == 0:
-                raise Exception("Radio not responding")
+                raise errors.RadioNoResponse()
             if len(_resp) != 74:
                 LOG.error(
                     "Expected and IDENT reply of 78 bytes. Got (%d)" %

@@ -259,9 +259,11 @@ def _ident(radio):
     radio.pipe.timeout = 1
     _echo_write(radio, b"PROGRAM")
     response = radio.pipe.read(3)
+    if not response:
+        raise errors.RadioNoResponse()
     if response != b"QX\x06":
         LOG.debug("Response was:\n%s" % util.hexprint(response))
-        raise errors.RadioError("Radio did not respond. Check connection.")
+        raise errors.RadioError("Unexpected response from radio")
     _echo_write(radio, b"\x02")
     response = radio.pipe.read(16)
     LOG.debug(util.hexprint(response))

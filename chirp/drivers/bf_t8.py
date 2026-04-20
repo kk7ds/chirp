@@ -173,6 +173,8 @@ def _enter_programming_mode(radio):
     # check if we had EXITO
     if exito is False:
         _exit_programming_mode(radio)
+        if not ack:
+            raise errors.RadioNoResponse()
         msg = "The radio did not accept program mode after five tries.\n"
         msg += "Check you interface cable and power cycle your radio."
         raise errors.RadioError(msg)
@@ -219,6 +221,8 @@ def _read_block(radio, block_addr, block_size):
     try:
         serial.write(cmd)
         response = serial.read(4 + block_size)
+        if not response:
+            raise errors.RadioNoResponse()
         if response[:4] != expectedresponse:
             raise Exception("Error reading block %04x." % (block_addr))
 
@@ -383,7 +387,9 @@ class BFT8Radio(chirp_common.CloneModeRadio):
         """Upload to radio"""
         try:
             do_upload(self)
-        except:
+        except errors.RadioError:
+            raise
+        except Exception:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
             LOG.exception('Unexpected error during upload')

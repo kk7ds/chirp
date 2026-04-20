@@ -328,8 +328,10 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
     def _read_record(self):
         # read 4 chars for the header
         _header = self.pipe.read(4)
+        if not _header:
+            raise errors.RadioNoResponse()
         if len(_header) != 4:
-            raise errors.RadioError('Radio did not respond')
+            raise errors.RadioError('Radio sent short header')
         _length = struct.unpack('xxxB', _header)[0]
         _packet = self.pipe.read(_length)
         _rcs_xor = _packet[-1]
@@ -397,7 +399,7 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
             if _resp[0:7] == self._model:
                 return
             if len(_resp) == 0:
-                raise Exception("Radio not responding")
+                raise errors.RadioNoResponse()
             else:
                 raise Exception("Unable to identify radio")
 
