@@ -190,6 +190,8 @@ def _rawrecv(radio, amount):
         msg = "Generic error reading data from radio; check your cable."
         raise errors.RadioError(msg)
 
+    if not data:
+        raise errors.RadioNoResponse()
     if len(data) != amount:
         msg = "Error reading data from radio: not the amount of data we want."
         raise errors.RadioError(msg)
@@ -245,10 +247,11 @@ def _do_ident(radio, magic):
     _rawsend(radio, magic)
 
     ack = _rawrecv(radio, 1)
+    if not ack:
+        raise errors.RadioNoResponse()
     if ack != "\x06":
-        if ack:
-            LOG.debug(repr(ack))
-        raise errors.RadioError("Radio did not respond")
+        LOG.debug(repr(ack))
+        raise errors.RadioError("Unexpected response from radio")
 
     _rawsend(radio, "\x02")
 
@@ -289,7 +292,7 @@ def _ident_radio(radio):
             time.sleep(2)
     if error:
         raise error
-    raise errors.RadioError("Radio did not respond")
+    raise errors.RadioNoResponse()
 
 
 def _download(radio):
@@ -507,7 +510,9 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
         """Upload to radio"""
         try:
             _upload(self)
-        except:
+        except errors.RadioError:
+            raise
+        except Exception:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
             LOG.exception('Unexpected error during upload')

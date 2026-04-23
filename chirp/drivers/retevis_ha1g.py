@@ -324,6 +324,7 @@ class HandshakeStatuses(Enum):
     Wrong = 1
     PwdWrong = 3
     RadioWrong = 4
+    NoResponse = 5
 
 
 DTMFCHARSET = "0123456789ABCDabcd#*"
@@ -477,7 +478,9 @@ def do_download(self):
         serial = self.pipe
         serial.timeout = SERIAL_TIMEOUT
         handshake_result = handshake(self, serial)
-        if handshake_result == HandshakeStatuses.Normal:
+        if handshake_result == HandshakeStatuses.NoResponse:
+            raise errors.RadioNoResponse()
+        elif handshake_result == HandshakeStatuses.Normal:
             all_bytes = self.read_items(serial)
             return memmap.MemoryMapBytes(bytes(all_bytes))
         raise errors.RadioError(error_map.get(
@@ -499,7 +502,9 @@ def do_upload(self):
         serial = self.pipe
         serial.timeout = SERIAL_TIMEOUT
         handshake_result = handshake(self, serial)
-        if handshake_result == HandshakeStatuses.Normal:
+        if handshake_result == HandshakeStatuses.NoResponse:
+            raise errors.RadioNoResponse()
+        elif handshake_result == HandshakeStatuses.Normal:
             self.write_items(serial)
         else:
             raise errors.RadioError(error_map.get(
@@ -524,6 +529,8 @@ def handshake(self, serial):
         time.sleep(retry_delay)
         if flag:
             break
+    if not databytes:
+        return HandshakeStatuses.NoResponse
     return validate_connection_handshake(self, databytes)
 
 

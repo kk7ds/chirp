@@ -162,6 +162,8 @@ def _send(ser, data):
         ser.write(bytes([i]))
         time.sleep(0.002)
     echo = ser.read(len(data))
+    if not echo:
+        raise errors.RadioError("No echo from cable")
     if echo != data:
         raise errors.RadioError("Error reading echo (Bad cable?)")
 
@@ -176,6 +178,8 @@ def _download(radio):
             break
 
     if len(chunk) != radio._block_lengths[0]:
+        if not chunk:
+            raise errors.RadioNoResponse()
         raise Exception("Failed to read header (%i)" % len(chunk))
     data += chunk
 
@@ -204,14 +208,21 @@ def _download(radio):
 def _upload(radio):
     cur = 0
     mmap = radio.get_mmap().get_byte_compatible()
+    first_exchange = True
     for block in radio._block_lengths:
         for _i in range(0, block, radio._block_size):
             length = min(radio._block_size, block)
             # LOG.debug("i=%i length=%i range: %i-%i" %
             #           (i, length, cur, cur+length))
             _send(radio.pipe, mmap[cur:cur+length])
-            if radio.pipe.read(1) != ACK:
+            ack = radio.pipe.read(1)
+            if not ack:
+                if first_exchange:
+                    raise errors.RadioNoResponse()
                 raise errors.RadioError("Radio did not ack block at %i" % cur)
+            if ack != ACK:
+                raise errors.RadioError("Radio did not ack block at %i" % cur)
+            first_exchange = False
             cur += length
             time.sleep(0.05)
 

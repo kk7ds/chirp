@@ -35,6 +35,7 @@ class TMV71ARadio(chirp_common.CloneModeRadio):
         return rf
 
     def _detect_baud(self):
+        saw_response = False
         for baud in [9600, 19200, 38400, 57600]:
             self.pipe.baudrate = baud
             self.pipe.write("\r\r")
@@ -43,10 +44,15 @@ class TMV71ARadio(chirp_common.CloneModeRadio):
                 id = tmv71_ll.get_id(self.pipe)
                 LOG.info("Radio %s at %i baud" % (id, baud))
                 return True
+            except errors.RadioNoResponse:
+                pass
             except errors.RadioError:
+                saw_response = True
                 pass
 
-        raise errors.RadioError("No response from radio")
+        if saw_response:
+            raise errors.RadioError("Unexpected response from radio")
+        raise errors.RadioNoResponse()
 
     def get_raw_memory(self, number):
         return util.hexprint(tmv71_ll.get_raw_mem(self._mmap, number))
