@@ -369,22 +369,46 @@ class ChirpAsyncEditor(ChirpSyncEditor):
 
 class HexText(wx.propgrid.PGTextCtrlEditor):
     HEX_CODES = [ord(x) for x in '0123456789abcdefABCDEF']
+    SHIFTED_TO_INGNORE = [ord(x) for x in '1234567890']
 
     def CreateControls(self, propgrid, property, pos, size):
         r = super().CreateControls(propgrid, property, pos, size)
         self._text = r.Primary
         self._text.Bind(wx.EVT_KEY_DOWN, self._on_key)
+        self._text.Bind(wx.EVT_SET_FOCUS, self._on_focus)
+        self._text.Bind(wx.EVT_LEFT_DOWN, self._on_focus)
+        self._text.Bind(wx.EVT_CHAR, self._on_char)
         return r
+
+    def _select_text(self):
+        self._text.SetSelection(2, -1)  # move beyond the "0x"
+
+    def _on_focus(self, event):
+        self._text.Enable(True)
+        wx.CallAfter(self._select_text)
+        event.Skip()
+
+    def _on_char(self, event):
+        key = event.GetKeyCode()
+        # Convert lowercase a-f to uppercase
+        if ord('a') <= key <= ord('f'):
+            self._text.WriteText(chr(key).upper())
+        else:
+            event.Skip()
 
     def _on_key(self, event):
         key = event.GetKeyCode()
-        pos = self._text.GetInsertionPoint()
-        if key in (wx.WXK_HOME, wx.WXK_END,
-                   wx.WXK_UP, wx.WXK_DOWN, wx.WXK_LEFT, wx.WXK_RIGHT):
-            # Arrow keys and navigation allowed anywhere
+        pos = self._text.GetSelection()[1]  # get the right pos
+
+        if key in self.SHIFTED_TO_INGNORE and event.ShiftDown():
+            # ignore certian shifited-keys
+            return
+        elif key in [wx.WXK_HOME, wx.WXK_END,
+                     wx.WXK_UP, wx.WXK_DOWN, wx.WXK_RIGHT]:
+            # right-arrow key and navigation allowed anywhere
             event.Skip()
-        elif key in (wx.WXK_BACK, wx.WXK_DELETE):
-            # Backspace and delete work anywhere except the first two chars
+        elif key in [wx.WXK_LEFT, wx.WXK_BACK, wx.WXK_DELETE]:
+            # Left, backspace and delete work anywhere except the 1st two chars
             if pos <= 2:
                 return
             event.Skip()
@@ -392,6 +416,38 @@ class HexText(wx.propgrid.PGTextCtrlEditor):
             # Hex values allowed, but not in the first two chars
             if pos < 2:
                 return
+            event.Skip()
+        else:
+            # Anything else is an invalid character
+            return
+
+
+class DTMFText(HexText):
+    DTMF_CODES = [ord(x) for x in '0123456789abcdABCD#*']
+    SHIFTED_TO_INGNORE = [ord(x) for x in '12456790']
+
+    def _select_text(self):
+        self._text.SetSelection(-1, -1)
+
+    def _on_focus(self, event):
+        self._text.Enable(True)
+        wx.CallAfter(self._select_text)  # select all
+        event.Skip()
+
+    def _on_key(self, event):
+        key = event.GetKeyCode()
+        if key in self.SHIFTED_TO_INGNORE and event.ShiftDown():
+            # ignore certian shifited-keys
+            return
+        elif key in [wx.WXK_HOME, wx.WXK_END,
+                     wx.WXK_UP, wx.WXK_DOWN, wx.WXK_RIGHT]:
+            # right-arrow key and navigation allowed anywhere
+            event.Skip()
+        elif key in [wx.WXK_LEFT, wx.WXK_BACK, wx.WXK_DELETE]:
+            # Left, backspace and delete work anywhere
+            event.Skip()
+        elif key in self.DTMF_CODES:
+            # DTMF values allowed only
             event.Skip()
         else:
             # Anything else is an invalid character
@@ -410,6 +466,7 @@ class ChirpSettingGrid(wx.Panel):
             style=wx.propgrid.PG_SPLITTER_AUTO_CENTER |
             wx.propgrid.PG_BOLD_MODIFIED)
         self.pg.DoRegisterEditorClass(HexText(), 'HexText')
+        self.pg.DoRegisterEditorClass(DTMFText(), 'DTMFText')
 
         self.pg.Bind(wx.propgrid.EVT_PG_CHANGED, self._pg_changed)
         self.pg.Bind(wx.EVT_MOTION, self._mouseover)
@@ -478,6 +535,8 @@ class ChirpSettingGrid(wx.Panel):
                 value = element[i]
                 if isinstance(value, settings.RadioSettingValueHex):
                     editor = self._get_editor_int_hex(element, value)
+                elif isinstance(value, settings.RadioSettingValueDTMF):
+                    editor = self._get_editor_str_dtmf(element, value)
                 elif isinstance(value, settings.RadioSettingValueInteger):
                     editor = self._get_editor_int(element, value)
                 elif isinstance(value, settings.RadioSettingValueFloat):
@@ -487,10 +546,6 @@ class ChirpSettingGrid(wx.Panel):
                 elif isinstance(value, settings.RadioSettingValueBoolean):
                     editor = self._get_editor_bool(element, value)
                 elif isinstance(value, settings.RadioSettingValueString):
-                    editor = self._get_editor_str(element, value)
-                elif isinstance(value, settings.RadioSettingValueHex):
-                    editor = self._get_editor_str(element, value)
-                elif isinstance(value, settings.RadioSettingValueDTMF):
                     editor = self._get_editor_str(element, value)
                 else:
                     LOG.warning('Unsupported setting type %r' % value)
@@ -603,6 +658,25 @@ class ChirpSettingGrid(wx.Panel):
         e.SetEditor('HexText')
         if value.initialized:
             e.SetValue(int(value))
+        else:
+            e.SetValueToUnspecified()
+        return e
+
+    def _get_editor_str_dtmf(self, setting, value):
+        class DTMFStringProperty(wx.propgrid.StringProperty):
+            def ValidateValue(self, text, info):
+                try:
+                    value.set_value(text)
+                except Exception as e:
+                    info.SetFailureMessage(str(e))
+                    return False
+                return True
+
+        e = DTMFStringProperty(setting.get_shortname(),
+                               setting.get_name())
+        e.SetEditor('DTMFText')
+        if value.initialized:
+            e.SetValue(str(value))
         else:
             e.SetValueToUnspecified()
         return e
