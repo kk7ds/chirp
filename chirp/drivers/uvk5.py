@@ -387,7 +387,7 @@ def _send_command(serport, data: bytes):
 def _receive_reply(serport):
     header = serport.read(4)
     if not header:
-        raise errors.RadioError("No response from radio")
+        raise errors.RadioNoResponse()
     elif len(header) != 4:
         LOG.warning("Header short read: [%s] len=%i",
                     util.hexprint(header), len(header))

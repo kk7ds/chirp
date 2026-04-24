@@ -748,8 +748,10 @@ class KG980PRadio(chirp_common.CloneModeRadio,
     def _read_record(self):
         # read 4 chars for the header
         _header = self.pipe.read(4)
+        if not _header:
+            raise errors.RadioNoResponse()
         if len(_header) != 4:
-            raise errors.RadioError('Radio did not respond')
+            raise errors.RadioError('Radio sent short header')
         _length = struct.unpack('xxxB', _header)[0]
         _packet = self.pipe.read(_length)
         _rcs_xor = _packet[-1]
@@ -796,7 +798,7 @@ class KG980PRadio(chirp_common.CloneModeRadio,
             self._write_record(CMD_ID)
             _chksum_err, _resp = self._read_record()
             if len(_resp) == 0:
-                raise errors.RadioError("Radio not responding")
+                raise errors.RadioNoResponse()
             else:
                 LOG.debug("Got:\n%s" % util.hexprint(_resp))
                 LOG.debug("Model received is %s" % _resp[0:10])

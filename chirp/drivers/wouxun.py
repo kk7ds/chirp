@@ -252,7 +252,7 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
                                 util.hexprint(resp))
             return
         if len(resp) == 0:
-            raise Exception("Radio not responding")
+            raise errors.RadioNoResponse()
         else:
             raise Exception("Unable to identify radio")
 

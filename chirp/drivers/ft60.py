@@ -30,6 +30,8 @@ ACK = b"\x06"
 def _send(pipe, data):
     pipe.write(data)
     echo = pipe.read(len(data))
+    if not echo:
+        raise errors.RadioError("No echo from cable")
     if echo != data:
         raise errors.RadioError("Error reading echo (Bad cable?)")
 
@@ -47,7 +49,7 @@ def _download(radio):
         LOG.info("Trying again...")
 
     if not data:
-        raise Exception("Radio is not responding")
+        raise errors.RadioNoResponse()
 
     _send(radio.pipe, ACK)
 
@@ -74,13 +76,17 @@ def _upload(radio):
     _send(radio.pipe, radio.get_mmap()[0:8])
 
     ack = radio.pipe.read(1)
+    if not ack:
+        raise errors.RadioNoResponse()
     if ack != ACK:
-        raise Exception("Radio did not respond")
+        raise Exception("Unexpected response from radio")
 
     for i in range(0, 448):
         offset = 8 + (i * 64)
         _send(radio.pipe, radio.get_mmap()[offset:offset + 64])
         ack = radio.pipe.read(1)
+        if not ack:
+            raise errors.RadioError(_("Radio did not ack block %i") % i)
         if ack != ACK:
             raise Exception(_("Radio did not ack block %i") % i)
 

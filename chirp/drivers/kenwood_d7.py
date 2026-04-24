@@ -617,6 +617,7 @@ class KenwoodD7Family(chirp_common.LiveRadio):
 
     def _get_id(self):
         """Get the ID of the radio attached to @ser"""
+        saw_response = False
 
         for i in self._BAUDS:
             LOG.info("Trying ID at baud %i" % i)
@@ -633,6 +634,9 @@ class KenwoodD7Family(chirp_common.LiveRadio):
                 # or not talking to a kenwood live radio.
                 continue
 
+            if resp:
+                saw_response = True
+
             ret = self._parse_id_response(resp)
             if ret is not None:
                 self._baud = i
@@ -648,7 +652,9 @@ class KenwoodD7Family(chirp_common.LiveRadio):
                 if ret is not None:
                     self._baud = i
                     return ret
-        raise errors.RadioError("No response from radio")
+        if saw_response:
+            raise errors.RadioError("Unexpected response from radio")
+        raise errors.RadioNoResponse()
 
     def _get_immutable(self, memid_or_index):
         if self._is_call(memid_or_index):

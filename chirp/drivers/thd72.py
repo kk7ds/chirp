@@ -283,7 +283,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
             except errors.RadioError:
                 pass
 
-        raise errors.RadioError("No response from radio")
+        raise errors.RadioNoResponse()
 
     def get_special_locations(self):
         return sorted(THD72_SPECIAL.keys())
@@ -468,8 +468,11 @@ class THD72Radio(chirp_common.CloneModeRadio):
         else:
             blocks = [b for b in blocks if b < self._memsize // 256]
 
-        if self.command("0M PROGRAM") != "0M":
-            raise errors.RadioError("No response from self")
+        resp = self.command("0M PROGRAM")
+        if not resp:
+            raise errors.RadioNoResponse()
+        if resp != "0M":
+            raise errors.RadioError("Unexpected response to program command")
 
         allblocks = range(self._memsize // 256)
         self.pipe.baudrate = 57600
@@ -507,8 +510,11 @@ class THD72Radio(chirp_common.CloneModeRadio):
         else:
             blocks = [b for b in blocks if b < self._memsize // 256]
 
-        if self.command("0M PROGRAM") != "0M":
-            raise errors.RadioError("No response from self")
+        resp = self.command("0M PROGRAM")
+        if not resp:
+            raise errors.RadioNoResponse()
+        if resp != "0M":
+            raise errors.RadioError("Unexpected response to program command")
 
         self.pipe.baudrate = 57600
         try:
@@ -550,8 +556,9 @@ class THD72Radio(chirp_common.CloneModeRadio):
         r = self.command("ID")
         if r.startswith("ID "):
             return r.split(" ")[1]
-        else:
-            raise errors.RadioError("No response to ID command")
+        if not r:
+            raise errors.RadioNoResponse()
+        raise errors.RadioError("Unexpected response to ID command")
 
     def initialize(self, mmap):
         mmap.set_raw("\x00\xc8\xb3\x08\x00\x01\x00\x08"
