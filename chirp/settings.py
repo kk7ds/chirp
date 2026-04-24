@@ -167,51 +167,6 @@ class RadioSettingValueHex(RadioSettingValueInteger):
     """A Hex value integer setting"""
 
 
-class RadioSettingValueDTMF(RadioSettingValue):
-
-    """A DTMF string setting"""
-
-    def __init__(self, minlength, maxlength, current):
-        RadioSettingValue.__init__(self)
-        self._minlength = minlength
-        self._maxlength = maxlength
-        self.queue_current(current)
-
-    @property
-    def maxlength(self):
-        return self._maxlength
-
-    @property
-    def minlength(self):
-        return self._minlength
-
-    def format(self, value=None):
-        """Formats the DTMF value into an uppercase string"""
-        if value is None:
-            value = self._current
-        elif isinstance(value, str):
-            fmt_string = "%s"
-            return fmt_string % value.upper()
-        else:
-            return ""
-
-    def set_value(self, value):
-        if len(value) < self._minlength or len(value) > self.maxlength:
-            raise InvalidValueError(
-                "DTMF value %r must be between %i and %i chars" % (
-                    value, self._minlength, self._maxlength))
-        for char in value:
-            if char.upper() not in chirp_common.CHARSET_DTMF:
-                raise InvalidValueError(("Value %r contains invalid "
-                                         "DTMF character `%s'. "
-                                         "Valid chars are %s") % (
-                                             value,
-                                             char,
-                                             chirp_common.CHARSET_DTMF))
-
-        RadioSettingValue.set_value(self, self.format(value))
-
-
 class RadioSettingValueFloat(RadioSettingValue):
 
     """A floating-point setting"""
@@ -385,6 +340,15 @@ class RadioSettingValueString(RadioSettingValue):
 
     def __getitem__(self, i):
         return self._current[i]
+
+
+class RadioSettingValueDTMF(RadioSettingValueString):
+
+    """A DTMF string setting"""
+
+    def __init__(self, minlength, maxlength, current):
+        super().__init__(minlength, maxlength, current, autopad=False,
+                         charset=chirp_common.CHARSET_DTMF)
 
 
 class RadioSettingValueMap(RadioSettingValueList):
