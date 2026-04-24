@@ -11,14 +11,14 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See <https://www.gnu.org/licenses/> for details.
 
-# Much of the following was created with the help of ChatGPT, and troubleshooting was done by me
+# Much of the following was created with the help of ChatGPT, and
+# troubleshooting was done by me.
 # WARNING: experimental. BACKUP your radio before uploading.
 # Based closely on h777.py (Andrew Morgan) with memory expanded to 38 slots
 # and memsize adjusted to match a 1385-byte dump (0x0569).
 
 import time
 import struct
-import unittest
 import logging
 
 from chirp import chirp_common, directory, memmap
@@ -32,15 +32,16 @@ LOG = logging.getLogger(__name__)
 # EEPROM memory layout parsed by bitwise.
 # Each of the 38 channel slots starts at 0x0000 and is 12 bytes wide.
 # Channel fields:
-#   rxfreq/txfreq: BCD-encoded frequency in 10 Hz units; txfreq=0xFFFFFFFF means TX-off
+#   rxfreq/txfreq: BCD-encoded frequency in 10 Hz units;
+#                  txfreq=0xFFFFFFFF means TX-off
 #   rtone/ttone:   RX/TX CTCSS (freq*10) or DCS tone; 0xFFFF = no tone
 #   skip:          1 = skip during scan
 #   highpower:     1 = high power (5 W), 0 = low (1 W)
 #   narrow:        1 = NFM (12.5 kHz), 0 = FM (25 kHz)
 #   beatshift:     beat-shift/scramble, inverted (0 = on)
 #   bcl:           busy channel lockout, inverted (0 = on)
-# The settings block at 0x02B0 holds global radio config (VOX, scan, alarm, etc.)
-#   voxlevel:      stored as 0–4 in EEPROM, displayed as 1–5
+# The settings block at 0x02B0 holds global radio config
+#   voxlevel:      stored as 0-4 in EEPROM, displayed as 1-5
 MEM_FORMAT = """
 #seekto 0x0000;
 struct {
@@ -75,9 +76,9 @@ struct {
 
 # Extended settings block shared with H777-family radios.
 # Fields at 0x026B:
-#   squelchlevel: 0 = open, 9 = tight (inverted for display: display_val = 9 - stored)
-#   timeout:      TX timeout — 0 = off, N = N*30 s in EEPROM (MP31 uses N*60 s steps in UI)
-#   scanmode:     0 = carrier, 1 = time
+#   squelchlevel: 0=open, 9=tight (inverted: display_val = 9 - stored)
+#   timeout:      TX timeout - 0=off, N=N*30s in EEPROM
+#   scanmode:     0=carrier, 1=time
 #   sidekey:      index into SIDEKEYFUNCTION_LIST
 H777_SETTINGS2 = """
 #seekto 0x026B;
@@ -114,9 +115,9 @@ CMD_ACK = b"\x06"
 # All reads and writes transfer exactly 8 bytes per transaction.
 BLOCK_SIZE = 0x08
 # Address ranges written during an upload, broken into three segments:
-#   0x0000–0x010F  channel memories
-#   0x02B0–0x02BF  main settings
-#   0x0380–0x03DF  extended settings / VFO data
+#   0x0000-0x010F  channel memories
+#   0x02B0-0x02BF  main settings
+#   0x0380-0x03DF  extended settings / VFO data
 UPLOAD_BLOCKS = [list(range(0x0000, 0x0110, 8)),
                  list(range(0x02b0, 0x02c0, 8)),
                  list(range(0x0380, 0x03e0, 8))]
@@ -134,12 +135,12 @@ DTCS_REV_FLAG = 0x40
 
 
 def _h777_enter_programming_mode(serial, radio_cls):
-    """Initiate programming mode and return the 8-byte radio identification string.
+    """Initiate programming mode and return the 8-byte ident string.
 
     Sends the two-phase handshake expected by H777-family firmware:
-      1. 0x02 wake byte + PROGRAM_CMD → radio replies with ACK
-      2. 0x02 request → radio sends 8-byte ident string → we ACK it
-    Raises RadioError on any communication failure or unexpected response.
+      1. 0x02 wake byte + PROGRAM_CMD -> radio replies with ACK
+      2. 0x02 request -> radio sends 8-byte ident -> we ACK it
+    Raises RadioError on any communication failure or bad response.
     """
     # Increase default timeout from .25 to .5 for all serial communications
     serial.timeout = 0.5
@@ -178,7 +179,7 @@ def _h777_enter_programming_mode(serial, radio_cls):
             ack = serial.read(1)
             if ack != CMD_ACK:
                 raise errors.RadioError("Bad ACK after reading ident")
-        except:
+        except Exception:
             raise errors.RadioError('No ACK after reading ident')
         return ident
 
@@ -199,7 +200,7 @@ def _h777_read_block(radio, block_addr, block_size):
 
     Sends an 'R' read command and validates the echoed header before
     returning the payload bytes.  Returns None (instead of raising) on
-    any per-block failure so the caller can decide whether to abort or skip.
+    any per-block failure so the caller can decide whether to abort.
     """
     serial = radio.pipe
 
@@ -222,7 +223,8 @@ def _h777_read_block(radio, block_addr, block_size):
         serial.write(CMD_ACK)
         ack = serial.read(1)
     except Exception as e:
-        LOG.warning("Exception reading block %04x: %s, skipping" % (block_addr, e))
+        LOG.warning("Exception reading block %04x: %s, skipping" % (
+            block_addr, e))
         return None
 
     if ack != CMD_ACK:
@@ -253,16 +255,16 @@ def _h777_write_block(radio, block_addr, block_size):
         # ~0.31s.
         if serial.read(1) != CMD_ACK:
             raise Exception("No ACK")
-    except:
+    except Exception:
         raise errors.RadioError("Failed to send block "
                                 "to radio at %04x" % block_addr)
 
 
 def _h777_enter_single_programming_mode(radio):
-    """Enter programming mode and verify the radio's ident string matches IDENT.
+    """Enter programming mode and verify the ident string matches IDENT.
 
-    Used when exactly one model is registered (i.e. no multi-model detection).
-    Raises RadioError if the ident is missing or does not match any expected value.
+    Used when exactly one model is registered (no multi-model detection).
+    Raises RadioError if the ident is missing or does not match.
     """
     ident = _h777_enter_programming_mode(radio.pipe, radio.__class__)
     if not ident:
@@ -283,7 +285,8 @@ def do_download(radio):
     LOG.debug("download")
 
     if len(radio.detected_models()) <= 1:
-        LOG.debug('Entering programming mode for %s', radio.__class__.__name__)
+        LOG.debug('Entering programming mode for %s',
+                  radio.__class__.__name__)
         _h777_enter_single_programming_mode(radio)
     else:
         LOG.debug('Already in programming mode for %s',
@@ -305,7 +308,8 @@ def do_download(radio):
             radio.pipe.log('Reading %i block at %04x' % (BLOCK_SIZE, addr))
             block = _h777_read_block(radio, addr, BLOCK_SIZE)
             if block is None:
-                raise errors.RadioError("Failed to read block at %04x" % addr)
+                raise errors.RadioError(
+                    "Failed to read block at %04x" % addr)
             data += block
 
     _h777_exit_programming_mode(radio.pipe)
@@ -341,6 +345,7 @@ class Pxtonpx999s(chirp_common.Alias):
     VENDOR = 'Pxton'
     MODEL = 'px999s'
 
+
 @directory.register
 class MP31Radio(chirp_common.CloneModeRadio):
     """Baofeng MP31"""
@@ -360,13 +365,13 @@ class MP31Radio(chirp_common.CloneModeRadio):
     SIDEKEYFUNCTION_LIST = ["Off", "Monitor", "Transmit Power", "Alarm"]
     SCANMODE_LIST = ["Carrier", "Time"]
 
-    # Only read addresses the radio actually responds to (confirmed via debug log)
+    # Only read addresses the radio actually responds to (confirmed via debug)
     _ranges = [
         (0x0000, 0x0400),
     ]
     _memsize = 0x0400
-    # The radio labels its channels 1–38 but the EEPROM stores them in reverse
-    # order.  MEMORY_ROTATION is used to map CHIRP channel numbers to EEPROM
+    # The radio labels its channels 1-38 but the EEPROM stores them in
+    # reverse order.  MEMORY_ROTATION maps CHIRP channel numbers to EEPROM
     # indices: eeprom_index = MEMORY_ROTATION - (number - 1).
     MEMORY_COUNT = 38
     MEMORY_ROTATION = 37
@@ -375,6 +380,13 @@ class MP31Radio(chirp_common.CloneModeRadio):
     _has_sidekey = True
     _has_scanmodes = True
     _has_scramble = True
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # The MP31 shares _memsize with other H777-family radios, so a
+        # size-only match would cause false positives.  Disable auto-detect
+        # and require the user to select the model manually.
+        return False
 
     def get_features(self):
         """Declare the capabilities and constraints of the MP31 to CHIRP."""
@@ -402,13 +414,13 @@ class MP31Radio(chirp_common.CloneModeRadio):
         rf.memory_bounds = (1, 38)
         rf.valid_bands = [self.VALID_BANDS]
         rf.valid_power_levels = self.POWER_LEVELS
-        rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0,
-                                 50.0, 100.0]
+        rf.valid_tuning_steps = [2.5, 5.0, 6.25, 10.0, 12.5, 15.0,
+                                 20.0, 25.0, 50.0, 100.0]
 
         return rf
 
     def process_mmap(self):
-        """Parse the raw memory map into structured objects using MEM_FORMAT."""
+        """Parse the raw memory map into structured objects."""
         self._memobj = bitwise.parse(MEM_FORMAT + H777_SETTINGS2, self._mmap)
 
     def sync_in(self):
@@ -421,16 +433,16 @@ class MP31Radio(chirp_common.CloneModeRadio):
         do_upload(self)
 
     def get_raw_memory(self, number):
-        """Return a raw hex string for channel number (1-based), for debugging."""
+        """Return a raw hex string for channel number (1-based), for debug."""
         return repr(self._memobj.memory[number - 1])
 
     def _decode_tone(self, memval):
         """Decode a raw 2-byte EEPROM tone value into (mode, value, polarity).
 
         Returns:
-            ('', None, None)        — no tone
-            ('Tone', float, None)   — CTCSS frequency in Hz (e.g. 88.5)
-            ('DTCS', int, 'N'|'R')  — DCS code and polarity
+            ('', None, None)        -- no tone
+            ('Tone', float, None)   -- CTCSS frequency in Hz (e.g. 88.5)
+            ('DTCS', int, 'N'|'R')  -- DCS code and polarity
         """
         # Tell bitwise to ignore the flag bits when converting to an integer
         memval[1].ignore_bits(DTCS_FLAG | DTCS_REV_FLAG)
@@ -456,7 +468,7 @@ class MP31Radio(chirp_common.CloneModeRadio):
         """
         memval[1].ignore_bits(DTCS_FLAG | DTCS_REV_FLAG)
         if mode == '':
-            # No tone — fill both bytes with 0xFF
+            # No tone -- fill both bytes with 0xFF
             memval.fill_raw(b'\xFF')
         elif mode == 'Tone':
             # Store CTCSS as integer tenths of Hz; clear DCS flags
@@ -473,7 +485,7 @@ class MP31Radio(chirp_common.CloneModeRadio):
             raise Exception("Internal error: invalid mode `%s'" % mode)
 
     def get_memory(self, number):
-        """Read channel number (1-based) from the image and return a Memory object."""
+        """Read channel number (1-based) from image, return a Memory object."""
         _mem = self._memobj.memory[number - 1]
 
         mem = chirp_common.Memory()
@@ -492,7 +504,7 @@ class MP31Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        # Determine duplex mode from the relationship between RX and TX frequencies
+        # Determine duplex from the relationship between RX and TX frequencies
         if _mem.txfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
             # TX disabled (simplex listen-only or monitor channel)
             mem.duplex = "off"
@@ -529,7 +541,7 @@ class MP31Radio(chirp_common.CloneModeRadio):
         return mem
 
     def set_memory(self, mem):
-        """Write a Memory object into the in-memory image at channel mem.number."""
+        """Write a Memory object into the in-memory image at channel number."""
         # Get a low-level memory object mapped to the image
         _mem = self._memobj.memory[mem.number - 1]
 
@@ -574,33 +586,38 @@ class MP31Radio(chirp_common.CloneModeRadio):
         _mem.unknown3 = 0
 
     def get_settings(self):
-        """Return all user-adjustable settings for the Baofeng MP31 (38-channel)"""
+        """Return all user-adjustable settings for the Baofeng MP31."""
         basic = RadioSettingGroup("basic", "Basic Settings")
 
         # --- SETTINGS BLOCK (10-byte) ---
         # Voice prompt
-        rs = RadioSetting("settings.voiceprompt", "Voice Prompt",
-                          RadioSettingValueBoolean(self._memobj.settings.voiceprompt))
+        rs = RadioSetting(
+            "settings.voiceprompt", "Voice Prompt",
+            RadioSettingValueBoolean(self._memobj.settings.voiceprompt))
         basic.append(rs)
 
         # Scan enable
-        rs = RadioSetting("settings.scan", "Scan Enable",
-                          RadioSettingValueBoolean(self._memobj.settings.scan))
+        rs = RadioSetting(
+            "settings.scan", "Scan Enable",
+            RadioSettingValueBoolean(self._memobj.settings.scan))
         basic.append(rs)
 
         # VOX
-        rs = RadioSetting("settings.vox", "VOX",
-                          RadioSettingValueBoolean(self._memobj.settings.vox))
+        rs = RadioSetting(
+            "settings.vox", "VOX",
+            RadioSettingValueBoolean(self._memobj.settings.vox))
         basic.append(rs)
 
-        # VOX sensitivity: EEPROM stores 0–4, UI shows 1–5
-        rs = RadioSetting("settings.voxlevel", "VOX Level",
-                          RadioSettingValueInteger(1, 5, self._memobj.settings.voxlevel + 1))
+        # VOX sensitivity: EEPROM stores 0-4, UI shows 1-5
+        rs = RadioSetting(
+            "settings.voxlevel", "VOX Level",
+            RadioSettingValueInteger(
+                1, 5, self._memobj.settings.voxlevel + 1))
         basic.append(rs)
 
         # --- SETTINGS2 BLOCK (extended) ---
         # Squelch (inverted scale: 0=open, 9=closed).
-        # Clamp stored value to 0–9 before inverting; uninitialized EEPROM
+        # Clamp stored value to 0-9 before inverting; uninitialized EEPROM
         # can contain 0xFF, which would produce a negative display value.
         stored = min(9, int(self._memobj.settings2.squelchlevel))
         display_val = 9 - stored  # invert so 0 = open squelch in the UI
@@ -609,28 +626,31 @@ class MP31Radio(chirp_common.CloneModeRadio):
         basic.append(rs)
 
         # Battery Saver
-        rs = RadioSetting("settings2.batterysaver", "Battery Saver",
-                          RadioSettingValueBoolean(self._memobj.settings2.batterysaver))
+        rs = RadioSetting(
+            "settings2.batterysaver", "Battery Saver",
+            RadioSettingValueBoolean(self._memobj.settings2.batterysaver))
         basic.append(rs)
 
-        # Timeout Timer (Off = 0, then 30s steps up to 300s)
+        # Timeout Timer (Off = 0, then 60s steps up to 600s)
         try:
             val = int(self._memobj.settings2.timeout)
         except Exception:
             val = 0
         # Convert EEPROM increment (N * 30 s) to actual seconds for display
         seconds = 0 if val == 0 else val * 30
-        options = [str(x) for x in [0,60,120,180,240,300,360,420,480,540,600]]
+        options = [str(x) for x in [0, 60, 120, 180, 240, 300,
+                                    360, 420, 480, 540, 600]]
         cur_str = str(seconds) if str(seconds) in options else "0"
-        rs = RadioSetting("settings2.timeout", "Timeout Timer (s)",
-                          RadioSettingValueList(options,
-                                               current_index=options.index(cur_str)))
+        rs = RadioSetting(
+            "settings2.timeout", "Timeout Timer (s)",
+            RadioSettingValueList(options,
+                                  current_index=options.index(cur_str)))
         basic.append(rs)
 
         return RadioSettings(basic)
 
     def set_settings(self, settings):
-        """Apply user-selected settings back into memory structure"""
+        """Apply user-selected settings back into memory structure."""
         for element in settings:
             if not isinstance(element, RadioSetting):
                 # Recurse into groups
@@ -651,19 +671,19 @@ class MP31Radio(chirp_common.CloneModeRadio):
                 self._memobj.settings.vox = bool(value)
 
             elif name == "settings.voxlevel":
-                # GUI 1–5 → EEPROM 0–4
+                # GUI 1-5 -> EEPROM 0-4
                 self._memobj.settings.voxlevel = int(value) - 1
 
             # --- SETTINGS2 BLOCK (extended) ---
             elif name == "settings2.squelchlevel":
-                # GUI 0=open, 9=closed → EEPROM inverted (9–value)
+                # GUI 0=open, 9=closed -> EEPROM inverted (9 - value)
                 self._memobj.settings2.squelchlevel = 9 - int(value)
 
             elif name == "settings2.batterysaver":
                 self._memobj.settings2.batterysaver = bool(value)
 
             elif name == "settings2.timeout":
-                # GUI shows seconds (0, 60, 120, … 600)
+                # GUI shows seconds (0, 60, 120, ... 600)
                 sec = int(value)
                 if sec == 0:
                     self._memobj.settings2.timeout = 0
