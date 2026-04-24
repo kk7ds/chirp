@@ -43,6 +43,12 @@ class FakeLiveRadio(chirp_common.LiveRadio):
         if number == 'Special':
             number = len(self.memories)
         m = self.memories[number - 1]
+        m.extra = settings.RadioSettingGroup("Extra", "extra")
+        rs = settings.RadioSettingValueHex(0x0, 0xffff, 0xdead)
+        rset = settings.RadioSetting("hex", "Hex Value", rs)
+        rset.set_doc("Enter a hex value (0-0xffff)")
+        m.extra.append(rset)
+
         if isinstance(m, chirp_common.Memory) and m.number != number:
             LOG.error('fake driver found %i instead of %i',
                       m.number, number)
@@ -63,6 +69,15 @@ class FakeLiveRadio(chirp_common.LiveRadio):
             settings.RadioSetting(
                 'hexthing', 'A hex thing',
                 settings.RadioSettingValueHex(0x10, 0xffff, 0xDEAD)))
+        g.append(
+            settings.RadioSetting(
+                'blankhexthing', 'A blank hex thing',
+                settings.RadioSettingValueHex(0x00, 0xffff, '')))
+        g.append(
+            settings.RadioSetting(
+                "dtmfthing", "A DTMF thing",
+                settings.RadioSettingValueDTMF(0, 16, '#*CADD')))
+
         return settings.RadioSettings(g)
 
     def set_settings(self, rs):
@@ -104,6 +119,12 @@ class FakeLiveRadioWithErrors(FakeLiveRadio):
 
     def get_memory(self, number):
         m = super().get_memory(number)
+        m.extra = settings.RadioSettingGroup("Extra", "extra")
+        rs = settings.RadioSettingValueHex(0x0, 0xffff, 0xdead)
+        rset = settings.RadioSetting("hex", "Hex Value", rs)
+        rset.set_doc("Enter a hex value (0-0xffff)")
+        m.extra.append(rset)
+
         if isinstance(m, type):
             raise m('Error getting %i' % number)
         else:
