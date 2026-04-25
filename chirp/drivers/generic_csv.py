@@ -23,6 +23,31 @@ from chirp import chirp_common, errors, directory
 LOG = logging.getLogger(__name__)
 DEFAULT_POWER_LEVEL = chirp_common.AutoNamedPowerLevel(50)
 
+# Handheld-typical wattages applied when a CSV's Power column contains a
+# label (e.g. "Low"/"High") instead of a numeric value. Without the source
+# radio's power table we can't know exact watts, so these are best-effort
+# defaults matching common HT (handheld transceiver) ranges.
+POWER_LABEL_DEFAULTS = {
+    'low':    ('Low', 1.0),
+    'high':   ('High', 5.0),
+    'med':    ('Med', 2.5),
+    'medium': ('Med', 2.5),
+    'mid':    ('Mid', 2.5),
+}
+
+
+def _interpret_power_label(value):
+    """If @value is a known power label (case-insensitive), return a
+    PowerLevel with HT-typical wattage. Otherwise return None."""
+    if not value:
+        return None
+    key = value.strip().lower()
+    spec = POWER_LABEL_DEFAULTS.get(key)
+    if spec is None:
+        return None
+    name, watts = spec
+    return chirp_common.PowerLevel(name, watts=watts)
+
 
 class OmittedHeaderError(Exception):
     """Internal exception to signal that a column has been omitted"""
@@ -188,6 +213,27 @@ class CSVRadio(chirp_common.FileBackedRadio):
             except OmittedHeaderError:
                 pass
             except Exception as e:
+                if attr == "power":
+                    # CHIRP exports PowerLevel labels (e.g. "Low"/"High")
+                    # that parse_power() can't decode without radio context.
+                    # Map common labels to HT-typical wattages; otherwise
+                    # fall back to the default rather than dropping the row.
+                    labelled = _interpret_power_label(val)
+                    if labelled is not None:
+                        if hasattr(mem, attr):
+                            setattr(mem, attr, labelled)
+                        LOG.info(
+                            "Power label %r mapped to %s (~%.1fW); "
+                            "actual radio wattage may differ",
+                            val, labelled,
+                            chirp_common.dBm_to_watts(float(labelled)))
+                        continue
+                    LOG.warning(
+                        "Power %r is not a wattage (e.g. '5W', '50') and "
+                        "not a recognized label (Low/Med/High); applying "
+                        "default (shown as %r in the Power column)",
+                        val, str(DEFAULT_POWER_LEVEL))
+                    continue
                 raise Exception("[%s] %s" % (attr, e))
 
         if not mem.power:

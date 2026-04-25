@@ -159,9 +159,44 @@ class TestCSV(unittest.TestCase):
             f.write('0,146.520,L1\n')
             f.write('1,146.520,5W\n')
         csv = generic_csv.CSVRadio(self.testfn)
+        # Unparseable power labels fall back to the default power level
+        # rather than dropping the row entirely (issue 11959).
+        mem0 = csv.get_memory(0)
+        self.assertEqual(0, mem0.number)
+        self.assertEqual(146520000, mem0.freq)
+        self.assertEqual(generic_csv.DEFAULT_POWER_LEVEL, mem0.power)
         mem = csv.get_memory(1)
         self.assertEqual(1, mem.number)
         self.assertEqual(146520000, mem.freq)
+
+    def test_round_trip_label_power(self):
+        # CSVs exported from radios with "Low"/"High" PowerLevel labels
+        # must re-import without rejecting every row (issue 11959), and
+        # known labels should round-trip to a PowerLevel with HT-typical
+        # wattage rather than the generic default.
+        with open(self.testfn, 'w', encoding='utf-8') as f:
+            f.write('Location,Frequency,Power\n')
+            f.write('0,146.520,Low\n')
+            f.write('1,146.520,HIGH\n')
+            f.write('2,146.520,medium\n')
+        csv = generic_csv.CSVRadio(self.testfn)
+        self.assertEqual('Low', str(csv.get_memory(0).power))
+        self.assertEqual('High', str(csv.get_memory(1).power))
+        self.assertEqual('Med', str(csv.get_memory(2).power))
+        # Sanity-check the implied wattage (handheld-typical defaults).
+        self.assertLess(float(csv.get_memory(0).power),
+                        float(csv.get_memory(1).power))
+
+    def test_unrecognized_power_falls_back_to_default(self):
+        # An unparseable, unrecognized power value should not drop the row;
+        # the default power level is applied with a clear warning.
+        with open(self.testfn, 'w', encoding='utf-8') as f:
+            f.write('Location,Frequency,Power\n')
+            f.write('0,146.520,Bogus\n')
+        csv = generic_csv.CSVRadio(self.testfn)
+        self.assertEqual(146520000, csv.get_memory(0).freq)
+        self.assertEqual(generic_csv.DEFAULT_POWER_LEVEL,
+                         csv.get_memory(0).power)
 
     def test_foreign_power(self):
         csv = generic_csv.CSVRadio(None)
