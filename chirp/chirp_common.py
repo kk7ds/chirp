@@ -1508,6 +1508,10 @@ class DetectableInterface:
         return extra + list(detected)
 
     @classmethod
+    def is_detected(cls):
+        return getattr(cls, '_DETECTED_BY', None) is not None
+
+    @classmethod
     def detect_model(cls, detected_cls):
         detected_attr = class_detected_models_attribute(cls)
         if getattr(cls, detected_attr, None) is None:
