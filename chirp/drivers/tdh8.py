@@ -106,8 +106,10 @@ struct {
 } settings;
 
 //#seekto 0x0CB8;
-lbcd offseta[4];
-lbcd offsetb[4];
+struct{
+    lbcd a[4];
+    lbcd b[4];
+}vfo_offset;
 
 #seekto 0x0CD8;
 struct{
@@ -148,7 +150,7 @@ struct {
      lowpower:2,
      wide:1,
      unused8:1,
-     offset:2;
+     dira:2;
   u8 unused10;
 } vfoa;
 
@@ -171,7 +173,7 @@ struct {
      lowpowerb:2,
      wideb:1,
      unused8:1,
-     offsetb:2;
+     dirb:2;
   u8 unused10;
 } vfob;
 
@@ -365,8 +367,10 @@ struct {
 } settings;
 
 //#seekto 0x0CB8;
-lbcd offseta[4];
-lbcd offsetb[4];
+struct{
+  lbcd a[4];
+  lbcd b[4];
+}vfo_offset;
 
 #seekto 0x0CD8;
 struct{
@@ -472,7 +476,7 @@ struct {
      lowpower:2,
      wide:1,
      unused8:1,
-     offset:2;
+     dira:2;
   u8 unused10;
 } vfoa;
 
@@ -495,7 +499,7 @@ struct {
      lowpowerb:2,
      wideb:1,
      unused8:1,
-     offsetb:2;
+     dirb:2;
   u8 unused10;
 } vfob;
 
@@ -589,8 +593,10 @@ struct {
 } settings;
 
 //#seekto 0x0CB8;
-lbcd offseta[4];
-lbcd offsetb[4];
+struct {
+lbcd a[4];
+lbcd b[4];
+}vfo_offset;
 
 #seekto 0x0CD8;
 struct{
@@ -638,7 +644,7 @@ struct {
      lowpower:2,
      wide:1,
      unused8:1,
-     offset:2;
+     dira:2;
   u8 unused9;
 } vfoa;
 
@@ -661,7 +667,7 @@ struct {
      lowpowerb:2,
      wideb:1,
      unused8:1,
-     offsetb:2;
+     dirb:2;
   u8 unused9;
 } vfob;
 
@@ -704,7 +710,9 @@ VFOA_NAME = ["rxfreqa",
              "bcl",
              "lowpower",
              "wide",
-             "offset"]
+             "a",
+             "dira",
+             ]
 
 VFOB_NAME = ["rxfreqb",
              "txfreq",
@@ -715,7 +723,9 @@ VFOB_NAME = ["rxfreqb",
              "bclb",
              "lowpowerb",
              "wideb",
-             "offsetb"]
+             "b",
+             "dirb",
+             ]
 
 TOT_LIST = ["Off", "30S", "60S", "90S", "120S", "150S", "180S", "210S"]
 ALARM_LIST = ["On site", "Alarm"]
@@ -1757,27 +1767,70 @@ class TDH8(chirp_common.CloneModeRadio):
             # If the offset is 12.345
             # Then the data obtained is [0x45, 0x23, 0x01, 0x00]
             offsets = {}
+            dirs = {}
+
+            def _calc_txfreq(rxfreq, offset, dir):
+                # calc tx freq
+                txfreq = 0
+                match dir:
+                    case 0:  # off
+                        txfreq = rxfreq
+                    case 1:  # minus
+                        txfreq = \
+                            (int(rxfreq) /
+                                100000 - int(offset) / 100000) * 100000
+                    case 2:  # plus
+                        txfreq = \
+                            (int(rxfreq) /
+                                100000 + int(offset) / 100000) * 100000
+                return int(txfreq)
+
+            def _apply_offset_dir(setting, i, obj1, obj2):
+                value = getattr(obj1, setting.get_name())
+                value.set_value(setting.value)
+                # calc tx freq and store
+                obj1.txfreq = _calc_txfreq(
+                    getattr(obj1, "rxfreq%s" % i),
+                    obj2,
+                    getattr(obj1, "dir%s" % i)
+                )
+
             for i in ('a', 'b'):
-                value = getattr(self._memobj, 'offset%s' % i)
+                value = getattr(self._memobj.vfo_offset, '%s' % i)
                 if value.get_raw() == b'\xff\xff\xff\xff':
                     offset = 0
                 else:
                     offset = int(value) / 100000
 
                 def _apply(setting):
-                    value = getattr(self._memobj, setting.get_name())
+                    value = getattr(self._memobj.vfo_offset,
+                                    setting.get_name())
                     if float(setting.value) == 0:
                         value.fill_raw(b'\xff')
                     else:
                         value.set_value(int(setting.value * 100000))
 
-                rs = RadioSetting("offset%s" % i,
+                rs = RadioSetting("%s" % i,
                                   "%s Offset Frequency" % i.upper(),
                                   RadioSettingValueFloat(
                                       0.00000, 59.99750, offset, 0.00001, 5))
                 rs.set_apply_callback(_apply)
                 offsets[i] = rs
+                _obj1 = self._memobj.vfoa if i == \
+                    'a' else self._memobj.vfob
+                _obj2 = self._memobj.vfo_offset.a if i == 'a' \
+                    else self._memobj.vfo_offset.b
+                _obj3 = self._memobj.vfoa.dira if i == 'a' \
+                    else self._memobj.vfob.dirb
+                rs = RadioSetting("dir%s" % i,
+                                  "%s Offset Direction" % i.upper(),
+                                  RadioSettingValueList(A_OFFSET,
+                                                        current_index=_obj3))
+                rs.set_apply_callback(_apply_offset_dir, i, _obj1, _obj2)
+                dirs[i] = rs
+
             abblock.append(offsets['a'])
+            abblock.append(dirs['a'])
 
             try:
                 self._tx_power[_vfoa.lowpower]
@@ -1821,6 +1874,7 @@ class TDH8(chirp_common.CloneModeRadio):
             abblock.append(rs)
 
             abblock.append(offsets['b'])
+            abblock.append(dirs['b'])
 
             try:
                 self._tx_power[_vfob.lowpowerb]
@@ -2214,7 +2268,7 @@ class TDH8(chirp_common.CloneModeRadio):
                         _settings.brightness = 4 - int(element.value)
                     elif "sync" == name:
                         _settings.sync = not int(element.value)
-                    # Channel A
+                    # Channel A RX freq
                     elif "rxfreqa" == setting and element.value.get_mutable():
                         val = int(str(element.value).replace(
                             '.', '').ljust(8, '0'))
