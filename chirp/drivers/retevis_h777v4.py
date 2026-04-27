@@ -185,7 +185,11 @@ def _write_block(radio, block_addr, block_size):
 def do_download(radio):
     LOG.debug("download")
 
-    h777._h777_enter_single_programming_mode(radio)
+    if not radio.is_detected() and not radio.detected_models():
+        # If we are a detect-ee or detect-or, don't re-initialize programming
+        # mode. But if we're one of the other subclasses of this work that
+        # would not have run through detection, we need to do so.
+        h777._h777_enter_single_programming_mode(radio)
 
     data = b""
 
