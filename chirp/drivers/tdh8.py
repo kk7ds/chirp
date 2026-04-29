@@ -761,14 +761,9 @@ PTTID_VALUES = ["Off", "BOT", "EOT", "BOTH"]
 BCLOCK_VALUES = ["Off", "On"]
 FREQHOP_VALUES = ["Off", "On"]
 
-# AB CHANNEL
-A_OFFSET = ["Off", "-", "+"]
-A_BAND = ["Wide", "Narrow"]
-A_WORKMODE = ["VFO", "VFO+CH", "CH Mode"]
-
-B_OFFSET = ["Off", "-", "+"]
-B_BAND = ["Wide", "Narrow"]
-B_WORKMODE = ["VFO", "VFO+CH", "CH Mode"]
+# AB VFO CHANNEL
+OFFSET_DIR = ["Off", "-", "+"]
+VFO_WORKMODE = ["VFO", "VFO+CH", "CH Mode"]
 
 # FM
 FM_WORKMODE = ["VFO", "CH"]
@@ -1824,7 +1819,7 @@ class TDH8(chirp_common.CloneModeRadio):
                     else self._memobj.vfob.dirb
                 rs = RadioSetting("dir%s" % i,
                                   "%s Offset Direction" % i.upper(),
-                                  RadioSettingValueList(A_OFFSET,
+                                  RadioSettingValueList(OFFSET_DIR,
                                                         current_index=_obj3))
                 rs.set_apply_callback(_apply_offset_dir, i, _obj1, _obj2)
                 dirs[i] = rs
@@ -1845,11 +1840,11 @@ class TDH8(chirp_common.CloneModeRadio):
 
             rs = RadioSetting("wide", "A Band",
                               RadioSettingValueList(
-                                  A_BAND, current_index=_vfoa.wide))
+                                  BANDWIDTH_LIST, current_index=_vfoa.wide))
             abblock.append(rs)
 
             rs = RadioSetting("bcl", "A Busy Lock",
-                              RadioSettingValueBoolean(_settings.ablock))
+                              RadioSettingValueBoolean(_vfoa.bcl))
             abblock.append(rs)
 
             rs = RadioSetting("specialqta", "A Special QT/DQT",
@@ -1859,7 +1854,7 @@ class TDH8(chirp_common.CloneModeRadio):
             rs = RadioSetting(
                 "aworkmode", "A Work Mode",
                 RadioSettingValueList(
-                    A_WORKMODE, current_index=_settings.aworkmode))
+                    VFO_WORKMODE, current_index=_settings.aworkmode))
             abblock.append(rs)
 
             # B channel
@@ -1889,11 +1884,11 @@ class TDH8(chirp_common.CloneModeRadio):
 
             rs = RadioSetting("wideb", "B Band",
                               RadioSettingValueList(
-                                  B_BAND, current_index=_vfob.wideb))
+                                  BANDWIDTH_LIST, current_index=_vfob.wideb))
             abblock.append(rs)
 
             rs = RadioSetting("bclb", "B Busy Lock",
-                              RadioSettingValueBoolean(_settings.bblock))
+                              RadioSettingValueBoolean(_vfob.bclb))
             abblock.append(rs)
 
             rs = RadioSetting("specialqtb", "B Special QT/DQT",
@@ -1903,7 +1898,7 @@ class TDH8(chirp_common.CloneModeRadio):
             rs = RadioSetting(
                 "bworkmode", "B Work Mode",
                 RadioSettingValueList(
-                    B_WORKMODE, current_index=_settings.bworkmode))
+                    VFO_WORKMODE, current_index=_settings.bworkmode))
             abblock.append(rs)
 
         group.append(fmmode)
