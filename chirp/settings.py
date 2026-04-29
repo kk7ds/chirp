@@ -163,6 +163,10 @@ class RadioSettingValueInteger(RadioSettingValue):
         return self._step
 
 
+class RadioSettingValueHex(RadioSettingValueInteger):
+    """A Hex value integer setting"""
+
+
 class RadioSettingValueFloat(RadioSettingValue):
 
     """A floating-point setting"""
@@ -336,6 +340,15 @@ class RadioSettingValueString(RadioSettingValue):
 
     def __getitem__(self, i):
         return self._current[i]
+
+
+class RadioSettingValueDTMF(RadioSettingValueString):
+
+    """A DTMF string setting"""
+
+    def __init__(self, minlength, maxlength, current):
+        super().__init__(minlength, maxlength, current, autopad=False,
+                         charset=chirp_common.CHARSET_DTMF)
 
 
 class RadioSettingValueMap(RadioSettingValueList):
