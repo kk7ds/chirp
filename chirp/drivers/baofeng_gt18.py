@@ -120,7 +120,6 @@ FRS_FREQS = [
 
 NOAA_FREQS = [
     162550000, 162400000, 162475000, 162425000, 162450000,
-    162500000, 162525000, 161650000, 161775000, 163275000,
 ]
 
 # -- Settings value lists -----------------------------------------------------
@@ -313,7 +312,7 @@ class BaofengGT18(RB18Radio):
     VALID_BANDS = [(162000000, 164000000),   # NOAA weather
                    (461000000, 468000000)]   # FRS / GMRS
 
-    _upper = 32
+    _upper = 27
     _memsize = 0x07B8
     _ranges = [(0x0000, 0x0660), (0x07B0, 0x07B8)]
     _mem_params = (99,)
@@ -494,7 +493,7 @@ class BaofengGT18(RB18Radio):
             mem.mode = 'NFM'
             return ['empty', 'freq', 'duplex', 'offset', 'mode']
 
-        if 23 <= number <= 32:
+        if 23 <= number <= 27:
             mem.freq = NOAA_FREQS[number - 23]
             mem.duplex = ''
             mem.offset = 0
@@ -509,7 +508,7 @@ class BaofengGT18(RB18Radio):
     # -- Memory write ---------------------------------------------------------
 
     def set_memory(self, mem):
-        if 23 <= mem.number <= 32:
+        if 23 <= mem.number <= 27:
             _mem = self._memobj.memory[mem.number - 1]
             _mem.flags = int(_mem.flags) | 0x04
             return
