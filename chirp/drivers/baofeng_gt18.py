@@ -658,15 +658,18 @@ class BaofengGT18(RB18Radio):
 
             if name == 'settings2.beep':
                 sf = int(s2.sysflags)
-                s2.sysflags = (sf | 0x01) if bool(element.value) else (sf & ~0x01)
+                s2.sysflags = (sf | 0x01) if bool(element.value) \
+                    else (sf & ~0x01)
                 continue
             if name == 'settings2.save':
                 sf = int(s2.sysflags)
-                s2.sysflags = (sf | 0x02) if bool(element.value) else (sf & ~0x02)
+                s2.sysflags = (sf | 0x02) if bool(element.value) \
+                    else (sf & ~0x02)
                 continue
             if name == 'settings2.txendtone':
                 sf = int(s2.sysflags)
-                s2.sysflags = (sf | 0x04) if bool(element.value) else (sf & ~0x04)
+                s2.sysflags = (sf | 0x04) if bool(element.value) \
+                    else (sf & ~0x04)
                 continue
 
             if name == 'settings2.tot':
