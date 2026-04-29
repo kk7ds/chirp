@@ -446,7 +446,11 @@ class BaofengGT18(RB18Radio):
         _mem = self._memobj.memory[number - 1]
         mem = chirp_common.Memory(number)
 
+        # NOAA channels are always populated regardless of what's in memory
         if bytes(_mem.rxfreq) == b'\xff\xff\xff\xff':
+            if 23 <= number <= 32:
+                mem.immutable = self._get_immutable(number, mem)
+                return mem
             mem.empty = True
             return mem
 
