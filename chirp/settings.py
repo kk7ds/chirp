@@ -338,6 +338,29 @@ class RadioSettingValueString(RadioSettingValue):
         return self._current[i]
 
 
+class RadioSettingValueFile(RadioSettingValueString):
+    """A file-path setting — renders as a text field with a Browse button."""
+
+    def __init__(self, current="",
+                 wildcard="All files (*.*)|*.*"):
+        # Max 512 chars — long enough for any real path
+        super().__init__(0, 512, current, autopad=False,
+                         charset=chirp_common.CHARSET_ASCII +
+                         r'/\:.-_ ()[]{}@#%^&+=,!~`')
+        self._wildcard = wildcard
+
+    @property
+    def wildcard(self):
+        return self._wildcard
+
+    def set_value(self, value):
+        # Accept any printable string as a path — skip charset validation
+        value = value.strip()
+        if len(value) > 512:
+            raise InvalidValueError("Path too long (max 512 chars)")
+        RadioSettingValue.set_value(self, value)
+
+
 class RadioSettingValueMap(RadioSettingValueList):
 
     """Map User Options to Radio Memory Values

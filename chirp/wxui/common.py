@@ -451,6 +451,8 @@ class ChirpSettingGrid(wx.Panel):
                     editor = self._get_editor_choice(element, value)
                 elif isinstance(value, settings.RadioSettingValueBoolean):
                     editor = self._get_editor_bool(element, value)
+                elif isinstance(value, settings.RadioSettingValueFile):
+                    editor = self._get_editor_file(element, value)
                 elif isinstance(value, settings.RadioSettingValueString):
                     editor = self._get_editor_str(element, value)
                 else:
@@ -577,6 +579,16 @@ class ChirpSettingGrid(wx.Panel):
                                         bool(value))
         prop.SetAttribute(wx.propgrid.PG_BOOL_USE_CHECKBOX, True)
         return prop
+
+    def _get_editor_file(self, setting, value):
+        e = wx.propgrid.FileProperty(setting.get_shortname(),
+                                     setting.get_name())
+        e.SetAttribute(wx.propgrid.PG_FILE_WILDCARD, value.wildcard)
+        e.SetAttribute(wx.propgrid.PG_FILE_SHOW_FULL_PATH, True)
+        current = str(value).strip()
+        if current:
+            e.SetValue(current)
+        return e
 
     def _get_editor_str(self, setting, value):
         class ChirpStrProperty(wx.propgrid.StringProperty):
