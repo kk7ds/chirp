@@ -118,6 +118,13 @@ FRS_FREQS = [
     462650000, 462675000, 462700000, 462725000,
 ]
 
+PMR_FREQS = [
+    446006250, 446018750, 446031250, 446043750,
+    446056250, 446068750, 446081250, 446093750,
+    446106250, 446118750, 446131250, 446143750,
+    446156250, 446168750, 446181250, 446193750,
+]
+
 NOAA_FREQS = [
     162550000, 162400000, 162475000, 162425000, 162450000,
     162500000, 162525000, 161650000, 161775000, 163275000,
@@ -701,3 +708,61 @@ class BaofengGT18(RB18Radio):
             except Exception:
                 LOG.debug('GT-18: failed to set %s', name)
                 raise
+
+
+# -- PMR446 subclass ----------------------------------------------------------
+
+@directory.register
+class BaofengGT18PMR(BaofengGT18):
+    """Baofeng GT-18 PMR446"""
+    VENDOR = 'Baofeng'
+    MODEL = 'GT-18 PMR446'
+
+    VALID_BANDS = [(446000000, 447000000)]
+
+    _upper = 16
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_bands = self.VALID_BANDS
+        rf.memory_bounds = (1, self._upper)
+        return rf
+
+    def _get_immutable(self, number, mem):
+        if 1 <= number <= 16:
+            mem.freq = PMR_FREQS[number - 1]
+            mem.duplex = ''
+            mem.offset = 0
+            mem.mode = 'NFM'
+            mem.power = self.POWER_LEVELS[1]   # Low (PMR446 max 0.5 W)
+            return ['empty', 'freq', 'duplex', 'offset', 'mode', 'power']
+        return []
+
+    def set_memory(self, mem):
+        _mem = self._memobj.memory[mem.number - 1]
+
+        if mem.empty:
+            _mem.set_raw(b'\xff' * 16)
+            return
+
+        hz = PMR_FREQS[mem.number - 1]
+        rx_bytes = _encode_freq(hz)
+        for i in range(4):
+            _mem.rxfreq[i] = rx_bytes[i]
+            _mem.txfreq[i] = rx_bytes[i]
+
+        self._set_tone(mem, _mem)
+
+        busylock = False
+        if mem.extra:
+            for setting in mem.extra:
+                if setting.get_name() == 'busylock':
+                    busylock = bool(setting.value)
+
+        flags = 0x04                            # always NFM, always Low power
+        flags |= 0x10 if mem.skip == 'S' else 0
+        flags |= 0x00 if busylock else 0x01     # busylock inverted
+        _mem.flags = flags
+
+        for i in range(3):
+            _mem.unknown[i] = 0x00
