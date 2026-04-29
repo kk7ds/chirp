@@ -13,3 +13,5 @@ pywin32; platform_system=="Windows"
 suds
 yattag
 lark
+# Needed for PNG/JPEG boot screen support on BF5RM and related models
+Pillow
