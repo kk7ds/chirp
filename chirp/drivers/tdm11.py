@@ -507,8 +507,7 @@ class TDM11_22(chirp_common.CloneModeRadio):
 
     def _encode_tone(self, memval, mode, value, pol):
         if mode == '':
-            memval[0].set_raw(0xFF)
-            memval[1].set_raw(0xFF)
+            memval.fill_raw(b'\xff')
         elif mode == 'Tone':
             memval.set_value(int(value * 10))
         elif mode == 'DTCS':
@@ -697,6 +696,9 @@ class TDM11_22(chirp_common.CloneModeRadio):
         rf.has_name = False
         return rf
 
+    def get_raw_memory(self, number):
+        return repr(self._memobj.memory[number - 1])
+
     def get_memory(self, number):
         """Get the mem representation from the radio image"""
         _mem = self._memobj.memory[number - 1]
@@ -707,7 +709,7 @@ class TDM11_22(chirp_common.CloneModeRadio):
         # Memory number
         mem.number = number
 
-        if _mem.get_raw()[:1] == b'\xFF':
+        if _mem.get_raw()[:1] == b'\xff':
             mem.empty = True
             return mem
 
@@ -716,7 +718,7 @@ class TDM11_22(chirp_common.CloneModeRadio):
         if mem.freq == 0:
             mem.empty = True
         # tx freq can be blank
-        if _mem.txfreq.get_raw() == b'\xFF\xFF\xFF\xFF':
+        if _mem.txfreq.get_raw() == b'\xff\xff\xff\xff':
             # TX freq not set
             mem.offset = 0
             mem.duplex = 'off'
@@ -759,6 +761,7 @@ class TDM11_22(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(self._bcl_list,
                                    current_index=_mem.bcl)
         rset = RadioSetting('bcl', 'BCL', rs)
+        rset.set_doc('Busy Channel Lockout')
         mem.extra.append(rset)
 
         # Jump Freq
@@ -766,6 +769,7 @@ class TDM11_22(chirp_common.CloneModeRadio):
             self._jumpfreq_list,
             current_index=_mem.jumpfreq)
         rset = RadioSetting('jumpfreq', 'Jump Freq', rs)
+        rset.set_doc('Frequency Jumping/hopping')
         mem.extra.append(rset)
 
         # Compand
@@ -773,12 +777,14 @@ class TDM11_22(chirp_common.CloneModeRadio):
             self._compand_list,
             current_index=_mem.compand)
         rset = RadioSetting('compand', 'Compand', rs)
+        rset.set_doc('Audio Compander')
         mem.extra.append(rset)
 
         # Scramble
         rs = RadioSettingValueList(self._scramble_list,
                                    current_index=_mem.scramble)
         rset = RadioSetting('scramble', 'Scramble', rs)
+        rset.set_doc('Voice Scrambler')
         mem.extra.append(rset)
 
         return mem
@@ -787,15 +793,15 @@ class TDM11_22(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw('\xff' * 16)
+            _mem.fill_raw(b'\xff')
             return
 
-        _mem.set_raw('\x00' * 16)
+        _mem.fill_raw(b'\x00')
 
         _mem.rxfreq = mem.freq / 10
 
         if mem.duplex == 'off':
-            _mem.txfreq.fill_raw(b'\xFF')
+            _mem.txfreq.fill_raw(b'\xff')
         elif mem.duplex == 'split':
             _mem.txfreq = mem.offset / 10
         elif mem.duplex == '+':
