@@ -325,8 +325,17 @@ SIDE_KEY_LIST = [
     {"name": "Prog PTT", "id": 31}
 ]
 
+DTMF_SIGNALINGLIST_DISABLED = 15
+TOTTIME_DISABLED = 36
+SQUELCHLEVEL_DISABLED = 4
+
 
 def _get_memory(radio, mem, _mem, ch_index, isvfo=False):
+    was_empty = False
+    if not isvfo:
+        ch_index_dict = retevis_ha1g.get_ch_index(radio)
+        was_empty = ch_index not in ch_index_dict
+
     mem.extra = RadioSettingGroup("Extra", "extra")
     mem.extra.append(
         RadioSetting(
@@ -335,7 +344,8 @@ def _get_memory(radio, mem, _mem, ch_index, isvfo=False):
             RadioSettingValueList(
                 retevis_ha1g.get_namedict_by_items(
                     retevis_ha1g.TIMEOUTTIMER_LIST),
-                current_index=(_mem.tottime - 1))))
+                current_index=(
+                  was_empty and TOTTIME_DISABLED - 1 or (_mem.tottime - 1)))))
     mem.extra.append(
         RadioSetting(
             "totpermissions",
@@ -346,8 +356,10 @@ def _get_memory(radio, mem, _mem, ch_index, isvfo=False):
         RadioSetting(
             "rxsqlmode",
             "Squelch Level",
-            RadioSettingValueList(retevis_ha1g.SQUELCHLEVEL_LIST,
-                                  current_index=_mem.rxsqlmode)))
+            RadioSettingValueList(
+                retevis_ha1g.SQUELCHLEVEL_LIST,
+                current_index=(
+                    was_empty and SQUELCHLEVEL_DISABLED or _mem.rxsqlmode))))
     mem.extra.append(
         RadioSetting(
             "alarmlist",
@@ -363,7 +375,9 @@ def _get_memory(radio, mem, _mem, ch_index, isvfo=False):
             RadioSettingValueList(
                 retevis_ha1g.get_namedict_by_items(radio._dtmf_list),
                 current_index=retevis_ha1g.get_item_by_id(
-                    radio._dtmf_list, _mem.dtmfsignalinglist))))
+                    radio._dtmf_list,
+                    (was_empty and DTMF_SIGNALINGLIST_DISABLED
+                     or _mem.dtmfsignalinglist)))))
     mem.extra.append(
         RadioSetting(
             "offlineorreversal",
@@ -388,25 +402,17 @@ def _get_memory(radio, mem, _mem, ch_index, isvfo=False):
         RadioSetting(
             "vox", "VOX",
             RadioSettingValueBoolean(_mem.vox)))
-
-    if not isvfo:
-        ch_index_dict = retevis_ha1g.get_ch_index(radio)
-        if ch_index not in ch_index_dict:
-            mem.freq = 0
-            mem.empty = True
-            return mem
-
     mem.freq = int(_mem.rxfreq)
     mem.name = radio.filter_name(str(_mem.alias).rstrip())
     if isvfo:
         mem.immutable += ["name"]
-    tx_freq = int(_mem.txfreq)
 
-    if mem.freq == 0 or mem.freq == 0xFFFFFFFF:
+    if was_empty or _mem.rxfreq == 0 or _mem.rxfreq == 0xFFFFFFFF:
         mem.freq = 0
         mem.empty = True
         return mem
 
+    tx_freq = int(_mem.txfreq)
     if mem.freq == tx_freq:
         mem.duplex = ""
         mem.offset = 0
@@ -459,6 +465,9 @@ def _set_memory(radio, mem, _mem, ch_index, isvfo=False):
 
     _mem.fill_raw(b"\x00")
     if mem.empty:
+        _mem.dtmfsignalinglist = DTMF_SIGNALINGLIST_DISABLED
+        _mem.tottime = TOTTIME_DISABLED
+        _mem.rxsqlmode = SQUELCHLEVEL_DISABLED
         return
 
     _mem.rxfreq = mem.freq
