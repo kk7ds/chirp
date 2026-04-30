@@ -327,6 +327,14 @@ SIDE_KEY_LIST = [
 
 
 def _get_memory(radio, mem, _mem, ch_index, isvfo=False):
+    if not isvfo:
+        ch_index_dict = retevis_ha1g.get_ch_index(radio)
+        if ch_index not in ch_index_dict:
+            _mem.dtmfsignalinglist = 15
+            _mem.tottime = 36
+            _mem.rxsqlmode = 4
+            mem.freq = 0
+
     mem.extra = RadioSettingGroup("Extra", "extra")
     mem.extra.append(
         RadioSetting(
@@ -388,25 +396,17 @@ def _get_memory(radio, mem, _mem, ch_index, isvfo=False):
         RadioSetting(
             "vox", "VOX",
             RadioSettingValueBoolean(_mem.vox)))
-
-    if not isvfo:
-        ch_index_dict = retevis_ha1g.get_ch_index(radio)
-        if ch_index not in ch_index_dict:
-            mem.freq = 0
-            mem.empty = True
-            return mem
-
     mem.freq = int(_mem.rxfreq)
     mem.name = radio.filter_name(str(_mem.alias).rstrip())
     if isvfo:
         mem.immutable += ["name"]
-    tx_freq = int(_mem.txfreq)
 
-    if mem.freq == 0 or mem.freq == 0xFFFFFFFF:
+    if mem.freq == 0 or _mem.rxfreq == 0xFFFFFFFF:
         mem.freq = 0
         mem.empty = True
         return mem
 
+    tx_freq = int(_mem.txfreq)
     if mem.freq == tx_freq:
         mem.duplex = ""
         mem.offset = 0
@@ -459,6 +459,9 @@ def _set_memory(radio, mem, _mem, ch_index, isvfo=False):
 
     _mem.fill_raw(b"\x00")
     if mem.empty:
+        _mem.dtmfsignalinglist = 15
+        _mem.tottime = 36
+        _mem.rxsqlmode = 4
         return
 
     _mem.rxfreq = mem.freq
