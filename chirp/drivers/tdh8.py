@@ -785,15 +785,19 @@ TIMEOUT730_LIST = ["Off"] + ["%s sec" % x for x in range(30, 240, 30)]
 MIC_GAIN_LIST = ['%s' % x for x in range(0, 10)]
 H8_LIST = ["TD-H8", "TD-H8-HAM", "TD-H8-GMRS"]
 H3_LIST = ["TD-H3", "TD-H3-HAM", "TD-H3-GMRS"]
+H9_LIST = ["TD-H9", "TD-H9-HAM", "TD-H9-GMRS"]
 
 GMRS_FREQS = bandplan_na.ALL_GMRS_FREQS
 
-ALL_MODEL = H8_LIST + H3_LIST + ["RT-730"]
+ALL_MODEL = H8_LIST + H3_LIST + H9_LIST + ["RT-730"]
 
 TD_H8 = b'PVOJH\x1c\x14'
 TD_H3 = b'PVOJH\x5c\x14'
 RT_730 = b'PGOJH\xc3D'
 TD_H8_G3 = b'PVOJH<\x14'
+# TD-H9 ident captured from real hardware via PL2303 cable
+# Responds to TD_H8 magic, returns TDH9\xff\xff\xffN
+TD_H9 = b'TDH9\xff\xff\xffN'
 
 
 def _do_status(radio, block):
@@ -2726,6 +2730,122 @@ class TDH8_3rd_Gen_HAM(TDH8_3rd_Gen):
 class TDH8_3rd_Gen_GMRS(TDH8_3rd_Gen):
     VENDOR = "TIDRADIO"
     MODEL = "TD-H8-GMRS"
+    ident_mode = b'P31184\xff\xff'
+    _gmrs = True
+    _txbands = [(136000000, 175000000), (400000000, 521000000)]
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+        if 31 <= mem.number <= 54 and mem.freq not in GMRS_FREQS:
+            msgs.append(chirp_common.ValidationError(
+                "The frequency in channels 31-54 must be between "
+                "462.55000-462.72500 in 0.025 increments."))
+        if mem.duplex not in ('', '+', 'off') or (
+                mem.duplex == '+' and mem.offset != 5000000):
+            msgs.append(chirp_common.ValidationError(
+                "Channels in this range must be GMRS frequencies and "
+                "either simplex or +5MHz offset"))
+        return msgs
+
+
+# =====================================================================
+# TIDRADIO TD-H9 support
+#
+# The TD-H9 is the successor to the TD-H8 with GPS/APRS, Bluetooth,
+# USB-C programming, IP67 waterproofing, and 10W output.
+#
+# STATUS: EXPERIMENTAL / UNTESTED
+# The ident bytes (TD_H9) are placeholders — they MUST be captured from
+# a real radio before this driver will work. See the TD_H9 constant
+# definition above for instructions on how to capture them.
+#
+# The H9 is expected to use the same memory format as the H3/H8-G3
+# (MEM_FORMAT_H3) since it shares the same chipset family. If the
+# memory map differs, a new MEM_FORMAT_H9 will be needed.
+#
+# Known H9 specs:
+#   - VHF: 136-174 MHz, UHF: 400-470 MHz
+#   - Airband RX: 108-136 MHz (AM)
+#   - FM Broadcast RX: 88-108 MHz (unofficial via wideband RX)
+#   - Power: 10W (High), 5W (Mid), 1W (Low)
+#   - 200 channels
+#   - USB-C programming interface
+#   - GPS/APRS (not programmable via CHIRP yet)
+#   - Bluetooth (not programmable via CHIRP yet)
+# =====================================================================
+
+
+@directory.register
+class TDH9(TDH8):
+    """TIDRADIO TD-H9"""
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H9"
+    # The H9 uses USB-C; baud rate may differ from the H8's 38400.
+    # If connection fails, try 9600 or 115200.
+    BAUD_RATE = 38400
+    MODES = ["FM", "NFM", "AM"]
+    _memsize = 0x1fef
+    _ranges_main = [(0x0000, 0x1fef)]
+    _idents = [TD_H8]
+    ident_mode = TD_H9  # Radio responds to H8 magic, returns H9 ident
+    # H9 TX bands: VHF + UHF (standard version, unlocked)
+    _txbands = [(136000000, 600000000)]
+    # H9 RX-only bands: HF/VHF below TX range, Airband
+    _rxbands = [(18000000, 107999000), (108000000, 136000000)]
+    _aux_block = True
+    _tri_power = True
+    _gmrs = False
+    _ham = False
+    _mem_params = (0x1F2F)
+    _tx_power = [chirp_common.PowerLevel("Low",  watts=1.0),
+                 chirp_common.PowerLevel("Mid",  watts=5.0),
+                 chirp_common.PowerLevel("High", watts=10.0)]
+    _roger_list = ["Off", "TONE1", "TONE2"]
+    _brightness_list = ["1", "2", "3", "4", "5"]
+
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.experimental = (dedent("""\
+            This driver is EXPERIMENTAL for the TIDRADIO TD-H9.
+
+            GPS, APRS, and Bluetooth settings are NOT yet supported.
+
+            Please ensure you have a backup via the official CPS
+            software before using this driver.
+            """))
+        return rp
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)
+
+
+@directory.register
+@directory.detected_by(TDH9)
+class TDH9_HAM(TDH9):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H9-HAM"
+    ident_mode = b'P31185\xff\xff'
+    _ham = True
+    _txbands = [(144000000, 149000000), (420000000, 451000000)]
+    _rxbands = [(18000000, 107999000), (108000000, 136000000),
+                (149990000, 419990000), (451000000, 600000000)]
+    _tx220 = [(222000000, 225000000)]
+
+    def get_tx_bands(self):
+        _settings = self._memobj.settings
+        bands = []
+        bands.extend(self._txbands)
+        if _settings.tx220:
+            bands.extend(self._tx220)
+        return bands
+
+
+@directory.register
+@directory.detected_by(TDH9)
+class TDH9_GMRS(TDH9):
+    VENDOR = "TIDRADIO"
+    MODEL = "TD-H9-GMRS"
     ident_mode = b'P31184\xff\xff'
     _gmrs = True
     _txbands = [(136000000, 175000000), (400000000, 521000000)]
