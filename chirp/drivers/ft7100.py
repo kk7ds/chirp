@@ -63,7 +63,7 @@ def _send_ack(pipe):
 def _wait_for_ack(pipe):
     echo = pipe.read(1)
     if echo == b"":
-        raise Exception("Failed to read ACK. No response from radio.")
+        raise errors.RadioNoResponse()
     if echo != ACK:
         raise Exception("Failed to read ACK.  Expected: %r, got: %r.",
                         ACK, echo)

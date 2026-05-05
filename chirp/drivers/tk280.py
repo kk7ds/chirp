@@ -657,6 +657,8 @@ def _open_radio(radio, status):
         else:
             break
 
+    if not ack:
+        raise errors.RadioNoResponse()
     if ack != ACK_CMD:
         raise errors.RadioError('Failed to put radio into programming mode')
 

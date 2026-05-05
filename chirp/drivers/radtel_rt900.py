@@ -53,6 +53,37 @@ import struct
 
 LOG = logging.getLogger(__name__)
 
+# FHSS Code is a 24-bit per-channel value. The OEM CPS represents an
+# unset code as 0xFFFFFF in raw memory and as a blank field in the UI.
+# When a code is set, the OEM also writes 0xA0 into the adjacent flag
+# byte; when the code is cleared, that flag byte is restored to 0xFF.
+FHSS_CODE_NULL = 0xFFFFFF
+FHSS_CODE_FLAG_ACTIVE = 0xA0
+FHSS_CODE_FLAG_NULL = 0xFF
+
+
+def _fhss_code_to_text(raw_code):
+    raw = int(raw_code)
+    if raw == FHSS_CODE_NULL:
+        return ""
+    return "%06X" % (raw & 0x7FFFFF)
+
+
+def _validate_fhss_code(value):
+    s = str(value).strip()
+    if s == "":
+        return value
+    try:
+        v = int(s, 16)
+    except ValueError:
+        raise InvalidValueError(
+            "FHSS Code must be a hex value (e.g. 1A2B3C) or blank")
+    if not (0 <= v <= 0x7FFFFF):
+        raise InvalidValueError(
+            "FHSS Code must be between 000000 and 7FFFFF")
+    return value
+
+
 MEM_FORMAT = """
 struct {
   lbcd rxfreq[4];     // 0-3
@@ -73,7 +104,7 @@ struct {
      am_modulation:1, //     Per chan AM modulation
      learning:1;      //     FHSS Learning
   ul24 code;          // 0-2 FHSS Code (little-endian, 0-0x7FFFFF)
-  u8 unknown6;        // 3
+  u8 code_flag;       // 3   0xA0 when Code set, 0xFF when blank
   char name[12];      // 4-F 12-character Alpha Tag
 } memory[%d];
 
@@ -519,6 +550,8 @@ class RT900BT(chirp_common.CloneModeRadio):
         """Upload to radio"""
         try:
             do_upload(self)
+        except errors.RadioError:
+            raise
         except Exception:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
@@ -1248,22 +1281,12 @@ class RT900BT(chirp_common.CloneModeRadio):
         mem.extra.append(rset)
 
         # FHSS Code (24-bit little-endian, range 0x000000-0x7FFFFF).
-        # Displayed and accepted as a 6-digit uppercase hex string to
-        # match the OEM CPS convention.
-        def validate_fhss_code(value):
-            try:
-                v = int(str(value).strip(), 16)
-            except ValueError:
-                raise InvalidValueError(
-                    "FHSS Code must be a hex value (e.g. 1A2B3C)")
-            if not (0 <= v <= 0x7FFFFF):
-                raise InvalidValueError(
-                    "FHSS Code must be between 000000 and 7FFFFF")
-            return value
-
-        rs = RadioSettingValueString(
-            0, 6, "%06X" % (int(_mem.code) & 0x7FFFFF))
-        rs.set_validate_callback(validate_fhss_code)
+        # Displayed and accepted as a 6-digit uppercase hex string, or
+        # blank to clear the code (raw 0xFFFFFF). Validation is hoisted
+        # to a module-level function so this RadioSetting stays
+        # picklable for clipboard copy.
+        rs = RadioSettingValueString(0, 6, _fhss_code_to_text(_mem.code))
+        rs.set_validate_callback(_validate_fhss_code)
         rset = RadioSetting("fhss_code", "FHSS Code (hex)", rs)
         mem.extra.append(rset)
 
@@ -1349,7 +1372,16 @@ class RT900BT(chirp_common.CloneModeRadio):
 
         for setting in mem.extra:
             if setting.get_name() == 'fhss_code':
-                _mem.code = int(str(setting.value).strip(), 16)
+                # Mirror OEM CPS: blank input clears Code (0xFFFFFF) and
+                # restores the adjacent flag byte to 0xFF; any value
+                # writes Code and sets the flag byte to 0xA0.
+                s = str(setting.value).strip()
+                if s == "":
+                    _mem.code = FHSS_CODE_NULL
+                    _mem.code_flag = FHSS_CODE_FLAG_NULL
+                else:
+                    _mem.code = int(s, 16)
+                    _mem.code_flag = FHSS_CODE_FLAG_ACTIVE
             else:
                 setattr(_mem, setting.get_name(), setting.value)
 

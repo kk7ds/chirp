@@ -444,6 +444,17 @@ def _read_frame(pipe, timeout=5.0):
     return b''
 
 
+class NoData(errors.RadioError):
+    """Internal signal that we received nothing from the radio.
+
+    Used to distinguish between no response and incorrect response. Distinct
+    from errors.RadioNoResponse, which is raised _only_ when we have not
+    receieved any response from the radio in this session (compared to just
+    a sudden lack of response to a particular command).
+    """
+    pass
+
+
 def _send_recv(radio, payload):
     """Send a command and receive the response.
 
@@ -475,7 +486,7 @@ def _send_recv(radio, payload):
         except Exception:
             pass
 
-    raise errors.RadioError(
+    raise NoData(
         "No response from radio after 3 attempts (cmd=%s)" %
         ' '.join('%02x' % b for b in payload))
 
@@ -538,7 +549,12 @@ def do_download(radio):
     offset = 0
 
     # 1. Read ident
-    data = _read_block(radio, CMD_IDENT, 0x00, 0x00)
+    try:
+        data = _read_block(radio, CMD_IDENT, 0x00, 0x00)
+    except NoData:
+        raise errors.RadioNoResponse()
+    except Exception:
+        raise
     mmap_data[offset:offset + len(data)] = data
     offset += len(data)
     status.cur = offset
@@ -601,7 +617,12 @@ def do_upload(radio):
     mmap = radio.get_mmap()
 
     # 1. Read ident (handshake)
-    _read_block(radio, CMD_IDENT, 0x00, 0x00)
+    try:
+        _read_block(radio, CMD_IDENT, 0x00, 0x00)
+    except NoData:
+        raise errors.RadioNoResponse()
+    except Exception:
+        raise
 
     # 2. Read current settings (verify communication)
     _read_block(radio, CMD_READ, TBL_SETTINGS, 0x00)

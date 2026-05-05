@@ -116,7 +116,7 @@ def _h777_enter_programming_mode(serial, radio_cls):
         raise errors.RadioError("Error communicating with radio")
 
     if not ack:
-        raise errors.RadioError("No response from radio to program command")
+        raise errors.RadioNoResponse()
     elif ack != CMD_ACK:
         LOG.warning('Ack from program command was %r, expected %r',
                     ack, CMD_ACK)
@@ -144,7 +144,7 @@ def _h777_enter_programming_mode(serial, radio_cls):
             raise errors.RadioError('No ACK after reading ident')
         return ident
 
-    raise errors.RadioError('No identification received from radio')
+    raise errors.RadioNoResponse()
 
 
 def _h777_exit_programming_mode(serial):
@@ -206,7 +206,7 @@ def _h777_write_block(radio, block_addr, block_size):
 def _h777_enter_single_programming_mode(radio):
     ident = _h777_enter_programming_mode(radio.pipe, radio.__class__)
     if not ident:
-        raise errors.RadioError('Radio did not identify')
+        raise errors.RadioNoResponse()
     if not any(rc_ident in ident for rc_ident in radio.IDENT):
         LOG.warning('Expected %s for %s but got:\n%s',
                     radio.IDENT, radio.__class__.__name__,

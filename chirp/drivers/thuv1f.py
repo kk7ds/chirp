@@ -30,8 +30,10 @@ def uvf1_identify(radio):
     """Do identify handshake with TYT TH-UVF1"""
     radio.pipe.write(b"PROG333")
     ack = radio.pipe.read(1)
+    if not ack:
+        raise errors.RadioNoResponse()
     if ack != b"\x06":
-        raise errors.RadioError("Radio did not respond")
+        raise errors.RadioError("Unexpected response from radio")
     radio.pipe.write(b"\x02")
     ident = radio.pipe.read(16)
     LOG.info("Ident:\n%s" % util.hexprint(ident))

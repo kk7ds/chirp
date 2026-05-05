@@ -993,11 +993,15 @@ def _identify(radio):
     try:
         radio.pipe.write(b"\x02PROGRA")
         ack = radio.pipe.read(1)
+        if not ack:
+            raise errors.RadioNoResponse()
         if ack != b"A":
             util.hexprint(ack)
             raise errors.RadioError("Radio did not ACK first command: %x"
                                     % ord(ack))
-    except:
+    except errors.RadioError:
+        raise
+    except Exception:
         LOG.debug(util.hexprint(ack))
         raise errors.RadioError("Unable to communicate with the radio")
 
@@ -1152,6 +1156,8 @@ class TYTTH9800Radio(TYTTH9800Base, chirp_common.CloneModeRadio,
     def sync_in(self):
         try:
             self._mmap = _download(self)
+        except errors.RadioError:
+            raise
         except Exception as e:
             raise errors.RadioError(
                     "Failed to communicate with the radio: %s" % e)
@@ -1160,6 +1166,8 @@ class TYTTH9800Radio(TYTTH9800Base, chirp_common.CloneModeRadio,
     def sync_out(self):
         try:
             _upload(self)
+        except errors.RadioError:
+            raise
         except Exception as e:
             raise errors.RadioError(
                     "Failed to communicate with the radio: %s" % e)
@@ -1263,6 +1271,8 @@ class RetevisMA1Radio(TYTTH9800Base, chirp_common.CloneModeRadio,
     def sync_in(self):
         try:
             self._mmap = _download(self)
+        except errors.RadioError:
+            raise
         except Exception as e:
             raise errors.RadioError(
                     "Failed to communicate with the radio: %s" % e)
@@ -1271,6 +1281,8 @@ class RetevisMA1Radio(TYTTH9800Base, chirp_common.CloneModeRadio,
     def sync_out(self):
         try:
             _upload(self)
+        except errors.RadioError:
+            raise
         except Exception as e:
             raise errors.RadioError(
                     "Failed to communicate with the radio: %s" % e)

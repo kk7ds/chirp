@@ -154,14 +154,19 @@ def _connect_radio(radio):
     junk = radio.pipe.read(256)
     radio.pipe.timeout = STIMEOUT
 
+    saw_response = False
     for bd in bauds:
         radio.pipe.baudrate = bd
         BAUD = bd
         radio.pipe.write(";")
         radio.pipe.write(";")
         resp = radio.pipe.read(16)
+        if resp:
+            saw_response = True
         radio.pipe.write("ID;")
         resp = radio.pipe.read(16)
+        if resp:
+            saw_response = True
         if resp.find(radio.ID) >= 0:           # Good comms
             resp = command(radio.pipe, "AI0", 0, W8L)
             return
@@ -169,7 +174,9 @@ def _connect_radio(radio):
             msg = "Radio reported as model %s, not %s!" % \
                 (RADIO_IDS[resp], radio.MODEL)
             raise errors.RadioError(msg)
-    raise errors.RadioError("No response from radio")
+    if saw_response:
+        raise errors.RadioError("Unexpected response from radio")
+    raise errors.RadioNoResponse()
 
 
 def read_str(radio, trm=";"):
@@ -553,6 +560,8 @@ class TS480_CRadio(chirp_common.CloneModeRadio):
             _connect_radio(self)
             _write_mem(self)
             _write_sets(self)
+        except errors.RadioError:
+            raise
         except Exception:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem

@@ -154,6 +154,8 @@ def _enter_programming_mode(radio, write=False):
         serial.write(NULL_PASSWORD)
         ack = serial.read(0x01)
 
+        if not ack:
+            raise errors.RadioNoResponse()
         if ack == CMD_ACK:
             LOG.info('Radio Programming function is NOT '
                      'password protected')
@@ -163,6 +165,8 @@ def _enter_programming_mode(radio, write=False):
                 'remove the password to continue.'
             raise ValueError(msg)
 
+    except errors.RadioError:
+        raise
     except ValueError as ex:
         raise errors.RadioError(ex)
     except Exception:
@@ -174,6 +178,10 @@ def _enter_programming_mode(radio, write=False):
             # ask radio for fingerprint
             serial.write(GET_RADIO_ID)
             ack = serial.read(0x11)
+            if not ack:
+                raise errors.RadioNoResponse()
+            if len(ack) != 0x11:
+                raise errors.RadioError('Error communicating with radio')
             ack2 = _get_checksum(ack[:-1], 0, 0x10)
 
             if ack[:-1] in radio._fingerprint and ack[-1] == ack2:
@@ -184,6 +192,8 @@ def _enter_programming_mode(radio, write=False):
                 msg = 'Radio Model mismatch'
                 raise ValueError(msg)
 
+        except errors.RadioError:
+            raise
         except ValueError as ex:
             raise errors.RadioError(ex)
 
@@ -204,9 +214,12 @@ def _test_magic(radio, tries=5):
     rv = False
 
     try:
+        saw_response = False
         for i in range(1, tries + 1):
             serial.write(radio._magic)
             ack = serial.read(0x01)
+            if ack:
+                saw_response = True
             if ack == CMD_ACK:
                 LOG.info('Radio ack\'ed magic %s '
                          'during detection' %
@@ -217,7 +230,11 @@ def _test_magic(radio, tries=5):
             LOG.info('Radio didn\'t ack magic %s '
                      'during detection' %
                      radio._magic)
+            if not saw_response:
+                raise errors.RadioNoResponse()
             rv = False
+    except errors.RadioError:
+        raise
     except Exception:
         raise errors.RadioError('Failed to detect radio after %d try/tries'
                                 % i)
@@ -242,6 +259,11 @@ def _read_block(radio, block_addr, size):
     try:
         serial.write(cmd)
         response = serial.read(size)
+        if not response:
+            raise errors.RadioNoResponse()
+        if len(response) != size:
+            raise errors.RadioError('Failed to read block at %04x' %
+                                    block_addr)
         expectedresponse = serial.read(1)  # read 1 byte checksum
         checksum = _get_checksum(response, 0, size)
         if checksum != expectedresponse[0]:
@@ -249,6 +271,8 @@ def _read_block(radio, block_addr, size):
                                     (block_addr))
         block_data = response
 
+    except errors.RadioError:
+        raise
     except Exception:
         raise errors.RadioError('Failed to read block at %04x' % block_addr)
 
@@ -389,17 +413,22 @@ class TDM11_22(chirp_common.CloneModeRadio):
     @classmethod
     def detect_from_serial(cls, pipe):
         # iterate potential classes and see which responds first
+        saw_response = False
         for rclass in cls.detected_models():
             try:
                 _enter_programming_mode(rclass(pipe))
                 return rclass
+            except errors.RadioNoResponse:
+                pass
             except errors.RadioError:
+                saw_response = True
                 pass
             except Exception:
                 raise
         else:  # for
-            raise errors.RadioError('No response from radio '
-                                    'or unsupported model')
+            if saw_response:
+                raise errors.RadioError('Unexpected response from radio')
+            raise errors.RadioNoResponse()
 
     def sync_in(self):
         """Download from radio"""
@@ -478,8 +507,7 @@ class TDM11_22(chirp_common.CloneModeRadio):
 
     def _encode_tone(self, memval, mode, value, pol):
         if mode == '':
-            memval[0].set_raw(0xFF)
-            memval[1].set_raw(0xFF)
+            memval.fill_raw(b'\xff')
         elif mode == 'Tone':
             memval.set_value(int(value * 10))
         elif mode == 'DTCS':
@@ -668,6 +696,9 @@ class TDM11_22(chirp_common.CloneModeRadio):
         rf.has_name = False
         return rf
 
+    def get_raw_memory(self, number):
+        return repr(self._memobj.memory[number - 1])
+
     def get_memory(self, number):
         """Get the mem representation from the radio image"""
         _mem = self._memobj.memory[number - 1]
@@ -678,7 +709,7 @@ class TDM11_22(chirp_common.CloneModeRadio):
         # Memory number
         mem.number = number
 
-        if _mem.get_raw()[:1] == b'\xFF':
+        if _mem.get_raw()[:1] == b'\xff':
             mem.empty = True
             return mem
 
@@ -687,7 +718,7 @@ class TDM11_22(chirp_common.CloneModeRadio):
         if mem.freq == 0:
             mem.empty = True
         # tx freq can be blank
-        if _mem.txfreq.get_raw() == b'\xFF\xFF\xFF\xFF':
+        if _mem.txfreq.get_raw() == b'\xff\xff\xff\xff':
             # TX freq not set
             mem.offset = 0
             mem.duplex = 'off'
@@ -730,6 +761,7 @@ class TDM11_22(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(self._bcl_list,
                                    current_index=_mem.bcl)
         rset = RadioSetting('bcl', 'BCL', rs)
+        rset.set_doc('Busy Channel Lockout')
         mem.extra.append(rset)
 
         # Jump Freq
@@ -737,6 +769,7 @@ class TDM11_22(chirp_common.CloneModeRadio):
             self._jumpfreq_list,
             current_index=_mem.jumpfreq)
         rset = RadioSetting('jumpfreq', 'Jump Freq', rs)
+        rset.set_doc('Frequency Jumping/hopping')
         mem.extra.append(rset)
 
         # Compand
@@ -744,12 +777,14 @@ class TDM11_22(chirp_common.CloneModeRadio):
             self._compand_list,
             current_index=_mem.compand)
         rset = RadioSetting('compand', 'Compand', rs)
+        rset.set_doc('Audio Compander')
         mem.extra.append(rset)
 
         # Scramble
         rs = RadioSettingValueList(self._scramble_list,
                                    current_index=_mem.scramble)
         rset = RadioSetting('scramble', 'Scramble', rs)
+        rset.set_doc('Voice Scrambler')
         mem.extra.append(rset)
 
         return mem
@@ -758,15 +793,15 @@ class TDM11_22(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw('\xff' * 16)
+            _mem.fill_raw(b'\xff')
             return
 
-        _mem.set_raw('\x00' * 16)
+        _mem.fill_raw(b'\x00')
 
         _mem.rxfreq = mem.freq / 10
 
         if mem.duplex == 'off':
-            _mem.txfreq.fill_raw(b'\xFF')
+            _mem.txfreq.fill_raw(b'\xff')
         elif mem.duplex == 'split':
             _mem.txfreq = mem.offset / 10
         elif mem.duplex == '+':

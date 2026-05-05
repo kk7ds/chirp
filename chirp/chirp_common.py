@@ -651,7 +651,10 @@ def FrozenMemory(source, strict=True):
             for k, v in source.__dict__.items():
                 if k == '_frozen':
                     continue
-                setattr(self, k, v)
+                try:
+                    setattr(self, k, v)
+                except ValueError:
+                    pass
 
             self.__dict__['_frozen'] = True
             for i in self.extra:
@@ -1503,6 +1506,10 @@ class DetectableInterface:
         else:
             extra = []
         return extra + list(detected)
+
+    @classmethod
+    def is_detected(cls):
+        return getattr(cls, '_DETECTED_BY', None) is not None
 
     @classmethod
     def detect_model(cls, detected_cls):
