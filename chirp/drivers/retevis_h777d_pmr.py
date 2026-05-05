@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright 2026 Piotr Kochanowski <tar4nis@gmail.com>
+# Copyright 2026 Dariusz Koryto <sq7dk@koryto.eu>
 #
 # CHIRP driver for the Retevis H777D-PMR.
 #
@@ -164,6 +165,12 @@ IMAGE_SIZE = TAIL_BYTE_ADDR + 1
 NAME_LENGTH = 12
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 VALID_BANDS = [(400000000, 520000000)]
+PMR_FREQS = [
+    446006250, 446018750, 446031250, 446043750,
+    446056250, 446068750, 446081250, 446093750,
+    446106250, 446118750, 446131250, 446143750,
+    446156250, 446168750, 446181250, 446193750,
+]
 VENDOR_DTCS_CODES = (
     23, 25, 26, 31, 32, 36, 43, 47, 51, 53,
     54, 65, 71, 72, 73, 74, 114, 115, 116, 122,
@@ -428,9 +435,7 @@ class RetevisH777D(chirp_common.CloneModeRadio):
             "->Tone",
             "DTCS->DTCS",
         ]
-        # Explicit RX and TX frequencies, not
-        # repeater-style +/- offsets. Use simplex or exact split TX.
-        rf.valid_duplexes = ["", "split"]
+        rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.has_rx_dtcs = True
         rf.has_ctone = True
         rf.has_cross = True
@@ -547,20 +552,12 @@ class RetevisH777D(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        raw_tx = _mem.txfreq.get_raw()
-        if raw_tx in (b"\x00\x00\x00\x00", b"\xFF\xFF\xFF\xFF"):
-            mem.duplex = ""
-            mem.offset = 0
-        else:
-            txfreq = int(_mem.txfreq) * 10
-            if txfreq == mem.freq:
-                mem.duplex = ""
-                mem.offset = 0
-            else:
-                mem.duplex = "split"
-                mem.offset = txfreq
-
-        mem.mode = "FM" if _mem.wide else "NFM"
+        # Enforce PMR446 fixed channel plan
+        mem.freq = PMR_FREQS[mem.number - 1]
+        mem.duplex = ""
+        mem.offset = 0
+        mem.mode = "NFM"
+        mem.immutable = ["empty", "freq", "duplex", "offset", "mode"]
         # The radio does not store a per-channel tuning step, but CHIRP
         # still validates the hidden field on edit. Use the channel-plan
         # spacing so existing rows do not retain the default 5.0 kHz value.
@@ -607,6 +604,18 @@ class RetevisH777D(chirp_common.CloneModeRadio):
         )
 
         return mem
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+        if mem.empty:
+            return msgs
+        if mem.freq not in PMR_FREQS:
+            msgs.append(chirp_common.ValidationWarning(
+                'Frequency does not match PMR446 channel plan'))
+        if mem.duplex:
+            msgs.append(chirp_common.ValidationWarning(
+                'PMR radio uses simplex only'))
+        return msgs
 
     def get_settings(self):
         _s226 = self._memobj.settings226
@@ -859,17 +868,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
         _mem.set_raw(b"\x00" * (_mem.size() // 8))
 
         _mem.rxfreq = memory.freq / 10
-
-        if memory.duplex == "off":
-            _mem.txfreq.fill_raw(b'\xFF')
-        elif memory.duplex == "split":
-            _mem.txfreq = memory.offset / 10
-        elif memory.duplex == "+":
-            _mem.txfreq = (memory.freq + memory.offset) / 10
-        elif memory.duplex == "-":
-            _mem.txfreq = (memory.freq - memory.offset) / 10
-        else:
-            _mem.txfreq = memory.freq / 10
+        # PMR446 is simplex only
+        _mem.txfreq = memory.freq / 10
 
         txtone, rxtone = chirp_common.split_tone_encode(memory)
         self._encode_tone(_mem.txtone, *txtone)
