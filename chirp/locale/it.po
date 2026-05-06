@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-18 13:56-0600\n"
-"PO-Revision-Date: 2026-03-24 12:07+0100\n"
+"POT-Creation-Date: 2026-05-06 17:25+0200\n"
+"PO-Revision-Date: 2026-05-06 17:23+0200\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
 "Language: it\n"
@@ -76,7 +76,7 @@ msgstr "(nessuno)"
 msgid "...and %i more"
 msgstr "...ed altre %i"
 
-#: ../drivers/ft4.py:728
+#: ../drivers/ft4.py:743
 msgid ""
 "1. Connect programming cable to MIC jack.\n"
 "2. Press OK."
@@ -326,7 +326,7 @@ msgstr ""
 "4. <b>Dopo aver fatto clic su OK</b>,\n"
 "     premi il tasto [C](SEND) per inviare l'immagine.\n"
 
-#: ../drivers/ft7800.py:928 ../drivers/ft7800.py:1250
+#: ../drivers/ft7800.py:939 ../drivers/ft7800.py:1261
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -348,7 +348,7 @@ msgstr ""
 "6. <b>Dopo aver fatto clic su OK</b>, premi il tasto \"sinistro\" [V/M] per\n"
 "     inviare l'immagine.\n"
 
-#: ../drivers/ft7800.py:938 ../drivers/ft7800.py:1260
+#: ../drivers/ft7800.py:949 ../drivers/ft7800.py:1271
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -398,7 +398,7 @@ msgstr ""
 "     (sul display apparirà la scritta \"CLONE\").\n"
 "4. Premi il tasto [MODE] (sul display apparirà la scritta \"-WAIT\").\n"
 
-#: ../drivers/ft7800.py:309
+#: ../drivers/ft7800.py:320
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -420,7 +420,7 @@ msgstr ""
 "     \"CLONE\".\n"
 "6. Premi il tasto [LOW(ACC)] (sul display apparirà la scritta \"--RX--\").\n"
 
-#: ../drivers/ft7800.py:298
+#: ../drivers/ft7800.py:309
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to DATA jack.\n"
@@ -661,7 +661,7 @@ msgstr ""
 "4. Premi l'interruttore [MONI] (sul display apparirà la scritta \"WAIT\").\n"
 "5. Premi OK.\n"
 
-#: ../drivers/vx3.py:373 ../drivers/vx6.py:370
+#: ../drivers/vx6.py:370 ../drivers/vx3.py:373
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -675,7 +675,7 @@ msgstr ""
 "     (sul display apparirà la scritta \"CLONE\").\n"
 "4. <b>Dopo aver fatto clic su OK</b>, premi il tasto [BAND] per inviare l'immagine.\n"
 
-#: ../drivers/vx3.py:380 ../drivers/vx6.py:377
+#: ../drivers/vx6.py:377 ../drivers/vx3.py:380
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -717,7 +717,7 @@ msgstr ""
 "     (sul display apparirà la scritta \"CLONE\").\n"
 "4. Premi il tasto [V/M] (sul display apparirà la scritta \"CLONE WAIT\").\n"
 
-#: ../drivers/ft60.py:354
+#: ../drivers/ft60.py:360
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -737,7 +737,7 @@ msgstr ""
 "6. <b>Dopo aver fatto clic su OK</b>, tieni premuto il tasto [PTT]\n"
 "     per un secondo per inviare l'immagine.\n"
 
-#: ../drivers/ft60.py:363
+#: ../drivers/ft60.py:369
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -857,7 +857,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per caricare l'immagine sul dispositivo.\n"
 
-#: ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:232 ../drivers/uvb5.py:288
+#: ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:222 ../drivers/uvb5.py:293
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -873,7 +873,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per scaricare l'immagine dal dispositivo.\n"
 
-#: ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:240 ../drivers/uvb5.py:296
+#: ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:230 ../drivers/uvb5.py:301
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -899,6 +899,13 @@ msgid ""
 "5. <b>After clicking OK</b>, hold [PTT] briefly to transmit.\n"
 "     (\"SENDING\" will appear on the display)\n"
 msgstr ""
+"1. Spegni la radio.\n"
+"2. Collega il cavo di clonazione alla presa MIC/SP.\n"
+"3. Tieni premuti [PTT] e [Lamp] mentre accendi la radio.\n"
+"4. Ruota la manopola per selezionare \"CLONE\", quindi premi [F].\n"
+"     (\"CLONE\" apparirà sul display)\n"
+"5. <b>Dopo aver fatto clic su OK</b>, premi brevemente [PTT] per trasmettere.\n"
+"     (\"SENDING\" apparirà sul display)\n"
 
 #: ../drivers/vx150.py:360
 msgid ""
@@ -910,8 +917,15 @@ msgid ""
 "5. Press [MONI] to receive.\n"
 "     (\"SAVING\" will appear on the display)\n"
 msgstr ""
+"1. Spegni la radio.\n"
+"2. Collega il cavo di clonazione alla presa MIC/SP.\n"
+"3. Tieni premuti [PTT] e [Lamp] mentre accendi la radio.\n"
+"4. Ruota la manopola per selezionare \"CLONE\", quindi premi [F].\n"
+"     (\"CLONE\" apparirà sul display)\n"
+"5. Premi [MONI] per ricevere.\n"
+"     (\"SAVING\" apparirà sul display)\n"
 
-#: ../drivers/yaesu_clone.py:237
+#: ../drivers/yaesu_clone.py:247
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect data cable.\n"
@@ -923,7 +937,7 @@ msgstr ""
 "3. Prepara la radio per il clone.\n"
 "4. <b>Dopo aver fatto clic su OK</b>, premi il tasto per inviare l'immagine.\n"
 
-#: ../drivers/yaesu_clone.py:242
+#: ../drivers/yaesu_clone.py:252
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect data cable.\n"
@@ -1063,7 +1077,7 @@ msgstr ""
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "È disponibile una nuova versione di CHIRP. Visita il sito per scaricarla!"
 
-#: ../drivers/ga510.py:1068
+#: ../drivers/ga510.py:1090
 msgid "AM mode does not allow duplex or tone"
 msgstr "La modalità AM non consente il duplex o il tono"
 
@@ -1079,7 +1093,7 @@ msgstr "Informazioni su CHIRP"
 msgid "Agree"
 msgstr "Accetta"
 
-#: ../chirp_common.py:1879
+#: ../chirp_common.py:1883
 msgid "Aircraft frequencies must be aligned to 25kHz, 8.33kHz, be or a valid channel"
 msgstr "Le frequenze aeronautiche devono essere allineate a 25 kHz, 8,33 kHz oppure corrispondere a un canale valido"
 
@@ -1103,7 +1117,7 @@ msgstr "Inizia sempre con un elenco recente"
 msgid "Amateur"
 msgstr "Radioamatore"
 
-#: ../wxui/bugreport.py:344 ../wxui/bugreport.py:478 ../wxui/common.py:633
+#: ../wxui/common.py:633 ../wxui/bugreport.py:344 ../wxui/bugreport.py:478
 msgid "An error has occurred"
 msgstr "Si è verificato un errore"
 
@@ -1234,7 +1248,7 @@ msgstr "Fai clic qui per leggere il testo completo della licenza"
 msgid "Click here for online documentation"
 msgstr "Fai clic qui per leggere la documentazione online"
 
-#: ../drivers/ts590.py:671
+#: ../drivers/ts590.py:678
 msgid ""
 "Click on the \"Special Channels\" toggle-button of the memory\n"
 "editor to see/set the EXT channels. P-VFO channels 100-109\n"
@@ -1250,7 +1264,7 @@ msgstr ""
 "sono supportate in questa versione.\n"
 "Ignora i segnali acustici della radio durante l'upload e il download.\n"
 
-#: ../drivers/ft817.py:358
+#: ../drivers/ft817.py:360
 msgid "Clone completed, checking for spurious bytes"
 msgstr "Clonazione completata, controllo dei byte spuri"
 
@@ -1258,13 +1272,13 @@ msgstr "Clonazione completata, controllo dei byte spuri"
 msgid "Cloning"
 msgstr "Clonazione"
 
-#: ../drivers/ft4.py:317 ../drivers/bj9900.py:133 ../drivers/ft817.py:341
-#: ../drivers/ft450d.py:507
+#: ../drivers/ft4.py:332 ../drivers/ft450d.py:511 ../drivers/bj9900.py:133
+#: ../drivers/ft817.py:343
 msgid "Cloning from radio"
 msgstr "Clonazione dalla radio"
 
-#: ../drivers/ft4.py:318 ../drivers/bj9900.py:165 ../drivers/ft817.py:379
-#: ../drivers/ft450d.py:536
+#: ../drivers/ft4.py:333 ../drivers/ft450d.py:540 ../drivers/bj9900.py:165
+#: ../drivers/ft817.py:381
 msgid "Cloning to radio"
 msgstr "Clonazione verso la radio"
 
@@ -1307,7 +1321,7 @@ msgstr "Completo"
 msgid "Complex or non-standard tone squelch mode (starts the tone mode selection wizard)"
 msgstr "Modalità squelch toni complessi o non standard (avvia la procedura guidata di selezione della modalità toni)"
 
-#: ../drivers/tmd710.py:182 ../drivers/tmd710.py:185
+#: ../drivers/tmd710.py:184 ../drivers/tmd710.py:187
 msgid ""
 "Connect your interface cable to the PC Port on the\n"
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
@@ -1647,8 +1661,8 @@ msgstr "Impossibile esportare alcune memorie"
 msgid "Failed to load radio browser"
 msgstr "Impossibile caricare il browser della radio"
 
-#: ../sources/przemienniki_net.py:59 ../sources/mapy73pl.py:61
-#: ../sources/przemienniki_eu.py:57
+#: ../sources/przemienniki_net.py:59 ../sources/przemienniki_eu.py:57
+#: ../sources/mapy73pl.py:61
 msgid "Failed to parse result"
 msgstr "Impossibile elaborare il risultato"
 
@@ -1715,7 +1729,7 @@ msgstr "Il valore finale della float è: 146.52"
 msgid "Finished radio job %s"
 msgstr "Lavoro radio completato %s"
 
-#: ../drivers/ts590.py:678
+#: ../drivers/ts590.py:685
 msgid ""
 "Follow these instructions to download the radio memory:\n"
 "1 - Connect your interface cable\n"
@@ -1729,7 +1743,7 @@ msgstr ""
 "durante il download!\n"
 "3 - Scollega il cavo dati dell'interfaccia\n"
 
-#: ../drivers/ts480.py:517
+#: ../drivers/ts480.py:524
 msgid ""
 "Follow these instructions to download the radio memory:\n"
 "1 - Connect your interface cable\n"
@@ -1743,7 +1757,7 @@ msgstr ""
 "della radio!\n"
 "3 - Scollega il cavo dati dell'interfaccia\n"
 
-#: ../drivers/th_uv8000.py:517
+#: ../drivers/th_uv8000.py:521
 msgid ""
 "Follow these instructions to download the radio memory:\n"
 "1 - Turn off your radio\n"
@@ -1775,10 +1789,10 @@ msgstr ""
 "5 - Scollega il cavo dati dell'interfaccia! In caso contrario, non ci sarà\n"
 "    l'audio del lato destro!\n"
 
-#: ../drivers/baofeng_uv17Pro.py:509 ../drivers/mursv1.py:341
-#: ../drivers/gmrsuv1.py:391 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/uv6r.py:339 ../drivers/btech.py:664 ../drivers/uv5x3.py:417
-#: ../drivers/bf_t1.py:482 ../drivers/tdxone_tdq8a.py:441
+#: ../drivers/bf_t1.py:484 ../drivers/mursv1.py:341
+#: ../drivers/baofeng_wp970i.py:327 ../drivers/baofeng_uv17Pro.py:514
+#: ../drivers/gmrsuv1.py:391 ../drivers/btech.py:666 ../drivers/uv6r.py:339
+#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv5x3.py:417
 #: ../drivers/gmrsv2.py:363
 msgid ""
 "Follow these instructions to download your info:\n"
@@ -1793,7 +1807,7 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Effettua il download dei dati della radio\n"
 
-#: ../drivers/tk690.py:568 ../drivers/tk760g.py:683
+#: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
 msgid ""
 "Follow these instructions to download your radio:\n"
 "1 - Turn off your radio\n"
@@ -1807,7 +1821,7 @@ msgstr ""
 "3 - Accendi la radio (sbloccala se è protetta da password)\n"
 "4 - Fai clic su OK per iniziare\n"
 
-#: ../drivers/tk760.py:341
+#: ../drivers/tk760.py:343
 msgid ""
 "Follow these instructions to read your radio:\n"
 "1 - Turn off your radio\n"
@@ -1821,7 +1835,7 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Fai clic su OK per iniziare\n"
 
-#: ../drivers/ts590.py:684
+#: ../drivers/ts590.py:691
 msgid ""
 "Follow these instructions to upload the radio memory:\n"
 "1 - Connect your interface cable\n"
@@ -1835,7 +1849,7 @@ msgstr ""
 "durante il caricamento!\n"
 "3 - Scollega il cavo dati dell'interfaccia\n"
 
-#: ../drivers/ts480.py:523
+#: ../drivers/ts480.py:530
 msgid ""
 "Follow these instructions to upload the radio memory:\n"
 "1 - Connect your interface cable\n"
@@ -1849,7 +1863,7 @@ msgstr ""
 "sulla radio!\n"
 "3 - Scollega il cavo dati dell'interfaccia\n"
 
-#: ../drivers/th_uv8000.py:523
+#: ../drivers/th_uv8000.py:527
 msgid ""
 "Follow these instructions to upload the radio memory:\n"
 "1 - Turn off your radio\n"
@@ -1883,7 +1897,7 @@ msgstr ""
 "    l'audio del lato destro!\n"
 "6 - Accendi la radio per uscire dalla modalità clone.\n"
 
-#: ../drivers/btech.py:670 ../drivers/bf_t1.py:488
+#: ../drivers/bf_t1.py:490 ../drivers/btech.py:672
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1897,7 +1911,7 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Effettua il caricamento dei dati sulla radio\n"
 
-#: ../drivers/tk690.py:574 ../drivers/tk760g.py:689
+#: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
 msgid ""
 "Follow these instructions to upload your radio:\n"
 "1 - Turn off your radio\n"
@@ -1911,7 +1925,7 @@ msgstr ""
 "3 - Accendi la radio (sbloccarla se protetta da password)\n"
 "4 - Fai clic su OK per iniziare\n"
 
-#: ../drivers/tk760.py:347
+#: ../drivers/tk760.py:349
 msgid ""
 "Follow these instructions to write your radio:\n"
 "1 - Turn off your radio\n"
@@ -1925,7 +1939,7 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Fai clic su OK per iniziare\n"
 
-#: ../drivers/lt725uv.py:481 ../drivers/vgc.py:583
+#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1939,7 +1953,7 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Effettua il download dei dati della radio\n"
 
-#: ../drivers/tk270.py:321
+#: ../drivers/tk270.py:323
 msgid ""
 "Follow this instructions to read your radio:\n"
 "1 - Turn off your radio\n"
@@ -1953,10 +1967,10 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Effettua il download dei dati dalla radio\n"
 
-#: ../drivers/baofeng_uv17Pro.py:515 ../drivers/mursv1.py:347
-#: ../drivers/gmrsuv1.py:397 ../drivers/lt725uv.py:487 ../drivers/vgc.py:589
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/uv6r.py:345
-#: ../drivers/uv5x3.py:423 ../drivers/tdxone_tdq8a.py:447
+#: ../drivers/mursv1.py:347 ../drivers/baofeng_wp970i.py:333
+#: ../drivers/baofeng_uv17Pro.py:520 ../drivers/gmrsuv1.py:397
+#: ../drivers/lt725uv.py:492 ../drivers/vgc.py:592 ../drivers/uv6r.py:345
+#: ../drivers/tdxone_tdq8a.py:450 ../drivers/uv5x3.py:423
 #: ../drivers/gmrsv2.py:369
 msgid ""
 "Follow this instructions to upload your info:\n"
@@ -1971,7 +1985,7 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Effettua il caricamento dei dati sulla radio\n"
 
-#: ../drivers/tk270.py:327
+#: ../drivers/tk270.py:329
 msgid ""
 "Follow this instructions to write your radio:\n"
 "1 - Turn off your radio\n"
@@ -2003,24 +2017,24 @@ msgstr "La frequenza %s è al di fuori degli intervalli supportati %s"
 msgid "Frequency granularity in kHz"
 msgstr "Granularità della frequenza in kHz"
 
-#: ../drivers/baofeng_uv17Pro.py:1292 ../drivers/retevis_ha1g.py:1426
-#: ../drivers/tdh8.py:2479 ../drivers/mml_jc8810.py:1379
-#: ../drivers/uv5r.py:1949 ../drivers/ga510.py:1072
+#: ../drivers/tdh8.py:2536 ../drivers/baofeng_uv17Pro.py:1297
+#: ../drivers/retevis_ha1g.py:1433 ../drivers/mml_jc8810.py:1383
+#: ../drivers/ga510.py:1094 ../drivers/uv5r.py:1949
 msgid "Frequency in this range must not be AM mode"
 msgstr "La frequenza in questo intervallo non deve essere in modalità AM"
 
-#: ../drivers/retevis_ha1g.py:1417
+#: ../drivers/retevis_ha1g.py:1424
 msgid "Frequency in this range not supported by firmware"
 msgstr "La frequenza in questo intervallo non è supportata dal firmware"
 
-#: ../drivers/baofeng_uv17Pro.py:1289 ../drivers/radtel_rt900.py:1393
-#: ../drivers/retevis_ha1g.py:1422 ../drivers/tdh8.py:2476
-#: ../drivers/mml_jc8810.py:1376 ../drivers/uv5r.py:1945
-#: ../drivers/ga510.py:1065
+#: ../drivers/tdh8.py:2533 ../drivers/baofeng_uv17Pro.py:1294
+#: ../drivers/retevis_ha1g.py:1429 ../drivers/radtel_rt900.py:1395
+#: ../drivers/mml_jc8810.py:1380 ../drivers/ga510.py:1087
+#: ../drivers/uv5r.py:1945
 msgid "Frequency in this range requires AM mode"
 msgstr "La frequenza in questo intervallo richiede la modalità AM"
 
-#: ../drivers/tdh8.py:2483
+#: ../drivers/tdh8.py:2540
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr "La frequenza al di fuori delle bande TX deve essere duplex=off"
 
@@ -2061,7 +2075,7 @@ msgstr "Hex"
 msgid "Hide empty memories"
 msgstr "Nascondi memorie vuote"
 
-#: ../drivers/retevis_rt98.py:996
+#: ../drivers/retevis_rt98.py:998
 msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
 msgstr "Rispetta la configurazione dello squelch di ricezione CTCSS/DCS quando è abilitata, altrimenti solo lo squelch della portante"
 
@@ -2181,7 +2195,7 @@ msgstr "Numero:"
 msgid "LIVE"
 msgstr "In diretta live"
 
-#: ../drivers/radtel_rt490.py:1026 ../wxui/main.py:853 ../wxui/main.py:1643
+#: ../wxui/main.py:853 ../wxui/main.py:1643 ../drivers/radtel_rt490.py:1028
 msgid "Language"
 msgstr "Lingua"
 
@@ -2387,8 +2401,8 @@ msgstr "Nessun modulo trovato nel sito %i"
 msgid "No more space available; some memories were not applied"
 msgstr "Non c'è più spazio disponibile; alcune memorie non sono state inserite"
 
-#: ../sources/przemienniki_net.py:55 ../sources/mapy73pl.py:57
-#: ../sources/przemienniki_eu.py:53
+#: ../sources/przemienniki_net.py:55 ../sources/przemienniki_eu.py:53
+#: ../sources/mapy73pl.py:57
 msgid "No results"
 msgstr "Nessun risultato"
 
@@ -2523,7 +2537,7 @@ msgstr "Opzionale: contea, ospedale, ecc."
 msgid "Overwrite memories?"
 msgstr "Vuoi sovrascrivere le memorie?"
 
-#: ../drivers/ts480.py:513
+#: ../drivers/ts480.py:520
 msgid ""
 "P-VFO channels 100-109 are considered Settings.\n"
 "Only a subset of the over 130 available radio settings\n"
@@ -2533,8 +2547,8 @@ msgstr ""
 "In questa versione, è supportato solo un sottoinsieme\n"
 "delle oltre 130 impostazioni radio disponibili.\n"
 
-#: ../sources/przemienniki_net.py:50 ../sources/mapy73pl.py:52
-#: ../sources/przemienniki_eu.py:48
+#: ../sources/przemienniki_net.py:50 ../sources/przemienniki_eu.py:48
+#: ../sources/mapy73pl.py:52
 msgid "Parsing"
 msgstr "Elaborazione"
 
@@ -2663,8 +2677,8 @@ msgstr "La sintassi della query è OK"
 msgid "Query syntax help"
 msgstr "Aiuto per la sintassi delle query"
 
-#: ../sources/przemienniki_net.py:36 ../sources/mapy73pl.py:36
-#: ../sources/przemienniki_eu.py:36
+#: ../sources/przemienniki_net.py:36 ../sources/przemienniki_eu.py:36
+#: ../sources/mapy73pl.py:36
 msgid "Querying"
 msgstr "Interrogazione"
 
@@ -2676,7 +2690,8 @@ msgstr "DTCS RX"
 msgid "Radio"
 msgstr "Radio"
 
-#: ../drivers/ft817.py:406 ../drivers/ft450d.py:568 ../drivers/ft60.py:85
+#: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:576
+#: ../drivers/ft817.py:410
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "La radio non ha accettato il blocco %i"
@@ -2689,7 +2704,7 @@ msgstr "Informazioni sulla radio"
 msgid "Radio model:"
 msgstr "Modello della radio:"
 
-#: ../drivers/ft817.py:363
+#: ../drivers/ft817.py:365
 msgid "Radio sent data after the last awaited block, this happens when the selected model is a non-US but the radio is a US one. Please choose the correct model and try again."
 msgstr "La radio ha inviato i dati dopo l'ultimo blocco atteso; ciò accade quando il modello selezionato non è statunitense ma la radio è statunitense. Scegli il modello corretto e riprova."
 
@@ -2723,7 +2738,7 @@ msgstr "Recente"
 msgid "Recent..."
 msgstr "Recente..."
 
-#: ../drivers/retevis_rt98.py:1217
+#: ../drivers/retevis_rt98.py:1219
 msgid "Recommend using 55.2"
 msgstr "Si consiglia di utilizzare 55.2"
 
@@ -2967,8 +2982,8 @@ msgstr "Ordina per colonna:"
 msgid "Sort memories"
 msgstr "Ordina memorie"
 
-#: ../sources/przemienniki_net.py:62 ../sources/mapy73pl.py:64
-#: ../sources/przemienniki_eu.py:60
+#: ../sources/przemienniki_net.py:62 ../sources/przemienniki_eu.py:60
+#: ../sources/mapy73pl.py:64
 msgid "Sorting"
 msgstr "Ordinamento"
 
@@ -2996,7 +3011,7 @@ msgstr "Frequenza TX"
 msgid "TX-RX DTCS polarity (normal or reversed)"
 msgstr "Polarità DTCS TX-RX (normale o invertita)"
 
-#: ../drivers/ft4.py:722
+#: ../drivers/ft4.py:737
 msgid ""
 "Tested and mostly works, but may give you issues\n"
 "when using lesser common radio variants.\n"
@@ -3081,8 +3096,8 @@ msgstr "Questa memoria"
 msgid "This driver has been tested with v3 of the ID-5100. If your radio is not fully updated please help by opening a bug report with a debug log so we can add support for the other revisions."
 msgstr "Questo driver è stato testato con la versione 3 dell'ID-5100. Se la tua radio non è completamente aggiornata, ti chiediamo di aiutarci, aprendo una segnalazione di bug con un log di debug, in modo da poter aggiungere il supporto per le altre revisioni."
 
-#: ../drivers/radtel_rt490.py:1358 ../drivers/radtel_rt490.py:1360
-#: ../drivers/radtel_rt490.py:1362
+#: ../drivers/radtel_rt490.py:1360 ../drivers/radtel_rt490.py:1362
+#: ../drivers/radtel_rt490.py:1364
 msgid "This driver is in development and should be considered as experimental."
 msgstr "Questo driver è in fase di sviluppo e deve essere considerato sperimentale."
 
@@ -3102,11 +3117,11 @@ msgstr "Questa è una radio in modalità live, il che significa che le modifiche
 msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
 msgstr "Questo è un file indipendente dalla radio e non può essere caricato direttamente su una radio. Aprire un'immagine della radio (o scaricarne una da una radio) e quindi copiare/incollare gli elementi di questa scheda in quella per caricarla"
 
-#: ../drivers/th_uv88.py:560
+#: ../drivers/th_uv88.py:571
 msgid "This is an early stage beta driver\n"
 msgstr "Questo è un driver beta in fase iniziale\n"
 
-#: ../drivers/th_uv88.py:562
+#: ../drivers/th_uv88.py:573
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr "Si tratta di un driver beta in fase iniziale: caricalo a tuo rischio e pericolo.\n"
 
@@ -3262,12 +3277,12 @@ msgstr "Impossibile importare mentre la visualizzazione è ordinata"
 msgid "Unable to open the clipboard"
 msgstr "Impossibile aprire gli appunti"
 
-#: ../sources/przemienniki_net.py:48 ../sources/mapy73pl.py:50
-#: ../sources/przemienniki_eu.py:46
+#: ../sources/przemienniki_net.py:48 ../sources/przemienniki_eu.py:46
+#: ../sources/mapy73pl.py:50
 msgid "Unable to query"
 msgstr "Impossibile eseguire la ricerca"
 
-#: ../drivers/ft817.py:320
+#: ../drivers/ft817.py:322
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "Impossibile leggere l'ultimo blocco. Questo accade spesso, quando il modello selezionato è US, ma la radio è un modello non US (o widebanded). Scegli il modello corretto e riprova."
 
@@ -3297,7 +3312,7 @@ msgstr "Stati Uniti"
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Scollega il cavo (se necessario) e quindi fai clic su OK"
 
-#: ../drivers/thd74.py:330
+#: ../drivers/thd74.py:337
 #, python-format
 msgid "Unsupported model %r"
 msgstr "Modello non supportato %r"
@@ -3392,7 +3407,7 @@ msgstr "Visualizza"
 msgid "WARNING!"
 msgstr "ATTENZIONE!"
 
-#: ../wxui/memedit.py:2010 ../wxui/bugreport.py:234 ../wxui/main.py:1891
+#: ../wxui/bugreport.py:234 ../wxui/memedit.py:2010 ../wxui/main.py:1891
 #: ../wxui/main.py:2043
 msgid "Warning"
 msgstr "Attenzione"
