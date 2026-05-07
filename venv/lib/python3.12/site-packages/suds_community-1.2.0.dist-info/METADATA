@@ -1,0 +1,42 @@
+Metadata-Version: 2.1
+Name: suds-community
+Version: 1.2.0
+Summary: Lightweight SOAP client (community fork)
+Home-page: https://github.com/suds-community/suds
+Download-URL: https://github.com/suds-community/suds/archive/release-1.2.0.tar.gz
+Author: Jeff Ortel
+Author-email: jortel@redhat.com
+Maintainer: Jurko Gospodnetić
+Maintainer-email: jurko.gospodnetic@pke.hr
+License: (specified using classifiers)
+Keywords: SOAP,web,service,client
+Platform: (specified using classifiers)
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Topic :: Internet
+Obsoletes: suds
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+
+
+---------------------------------------
+Lightweight SOAP client (Community fork).
+---------------------------------------
+
+  Based on the original 'suds' project by Jeff Ortel (jortel at redhat
+dot com) hosted at 'http://fedorahosted.org/suds'.
+
+  'Suds' is a lightweight SOAP-based web service client for Python
+licensed under LGPL (see the LICENSE.txt file included in the
+distribution).

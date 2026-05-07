@@ -1,0 +1,74 @@
+Metadata-Version: 2.4
+Name: wxPython
+Version: 4.2.5
+Summary: Cross platform GUI toolkit for Python, "Phoenix" version
+Author-email: Robin Dunn <robin@alldunn.com>, Scott Talbert <swt@techie.net>
+License: wxWindows Library License (https://opensource.org/licenses/wxwindows.php)
+Project-URL: Documentation, https://docs.wxpython.org/
+Project-URL: Download, https://pypi.org/project/wxPython
+Project-URL: Homepage, https://wxPython.org/
+Project-URL: Source, https://github.com/wxWidgets/Phoenix
+Project-URL: Repository, https://github.com/wxWidgets/Phoenix.git
+Project-URL: Issues, https://github.com/wxWidgets/Phoenix/issues
+Project-URL: Discuss, https://discuss.wxpython.org/
+Keywords: GUI,awesome,cross-platform,user-interface,wx,wxWidgets,wxWindows
+Platform: WIN32
+Platform: WIN64
+Platform: OSX
+Platform: POSIX
+Classifier: Development Status :: 6 - Mature
+Classifier: Environment :: MacOS X :: Cocoa
+Classifier: Environment :: Win32 (MS Windows)
+Classifier: Environment :: X11 Applications :: GTK
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: Microsoft :: Windows :: Windows 7
+Classifier: Operating System :: Microsoft :: Windows :: Windows 10
+Classifier: Operating System :: Microsoft :: Windows :: Windows 11
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Topic :: Software Development :: User Interfaces
+Requires-Python: >=3.10
+Description-Content-Type: text/x-rst
+License-File: LICENSE.txt
+Requires-Dist: numpy; python_version >= "3.0" and python_version < "3.12"
+Requires-Dist: typing-extensions; python_version < "3.11"
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: license
+Dynamic: license-file
+Dynamic: platform
+Dynamic: requires-dist
+
+Welcome to wxPython's Project Phoenix! Phoenix is the improved next-generation
+wxPython, "better, stronger, faster than he was before." This new
+implementation is focused on improving speed, maintainability and
+extensibility. Just like "Classic" wxPython, Phoenix wraps the wxWidgets C++
+toolkit and provides access to the user interface portions of the wxWidgets
+API, enabling Python applications to have a native GUI on Windows, Macs or
+Unix systems, with a native look and feel and requiring very little (if any)
+platform specific code.
+
+For more information please refer to the
+`README file <https://github.com/wxWidgets/Phoenix/blob/wxPython-4.2.5/README.rst>`_,
+the `Migration Guide <http://docs.wxPython.org/MigrationGuide.html>`_,
+or the `wxPython API documentation <http://docs.wxPython.org/index.html>`_.
+
+Archive files containing a copy of the wxPython documentation, the demo and
+samples, and also a set of MSVC .pdb files for Windows are available
+`here <https://extras.wxPython.org/wxPython4/extras/>`_.
+
+The utility tools wxdocs and wxdemo will download the appropriate files with wxget,
+(if necessary), unpack them, (if necessary) and launch the appropriate version of
+the respective items. (Documents are launched in the default browser and demo is started
+with python).
