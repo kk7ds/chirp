@@ -12,7 +12,6 @@ ignored/
 patch_queue/
 archived_builds/
 .tox/
-.venv/
 **.mo
 **.pot
 locale/.files

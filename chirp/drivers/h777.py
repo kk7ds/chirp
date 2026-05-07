@@ -693,17 +693,11 @@ struct {
 """
 
 
-class Pxtonpx999s(chirp_common.Alias):
-    VENDOR = 'Pxton'
-    MODEL = 'px999s'
-
-
 @directory.register
 class MP31Radio(H777Radio):
     """Baofeng MP31"""
     VENDOR = "Baofeng"
     MODEL = "MP31"
-    ALIASES = [Pxtonpx999s]
     IDENT = [b"P3107\xf7\x00\x00"]
     _ranges = [(0x0000, 0x0400)]
     _memsize = 0x0400
@@ -712,14 +706,22 @@ class MP31Radio(H777Radio):
     def process_mmap(self):
         self._memobj = bitwise.parse(
             MP31_MEM_FORMAT + MP31_SETTINGS2 + MEM_FORMAT_SETTINGS, self._mmap)
-        # Clamp settings2 fields that may be 0xFF in uninitialized images
+
+    def get_settings(self):
         s2 = self._memobj.settings2
-        if int(s2.squelchlevel) > 9:
-            s2.squelchlevel = 0
-        if int(s2.timeouttimer) >= len(TIMEOUTTIMER_LIST):
-            s2.timeouttimer = 0
-        if int(s2.scanmode) >= len(self.SCANMODE_LIST):
-            s2.scanmode = 0
+        # Temporarily clamp out-of-range values for display without
+        # modifying radio memory
+        real_squelch = int(s2.squelchlevel)
+        real_timeout = int(s2.timeouttimer)
+        real_scanmode = int(s2.scanmode)
+        s2.squelchlevel = min(9, real_squelch)
+        s2.timeouttimer = min(len(TIMEOUTTIMER_LIST) - 1, real_timeout)
+        s2.scanmode = min(len(self.SCANMODE_LIST) - 1, real_scanmode)
+        result = super().get_settings()
+        s2.squelchlevel = real_squelch
+        s2.timeouttimer = real_timeout
+        s2.scanmode = real_scanmode
+        return result
 
     def get_features(self):
         rf = super().get_features()
@@ -794,11 +796,6 @@ class H777TestCase(unittest.TestCase):
     def test_mp31_ident(self):
         radio = MP31Radio(None)
         self.assertIn(b"P3107\xf7\x00\x00", radio.IDENT)
-
-    def test_mp31_alias(self):
-        radio = MP31Radio(None)
-        vendors = [a.VENDOR for a in radio.ALIASES]
-        self.assertIn('Pxton', vendors)
 
 
 @directory.register
