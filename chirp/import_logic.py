@@ -140,7 +140,9 @@ def _import_tone(dst_radio, srcrf, mem):
     # ctone). If we're importing to or from radios with differing models,
     # do the conversion here.
 
-    if srcrf.has_ctone and not dstrf.has_ctone:
+    if mem.tmode == "":
+        pass
+    elif srcrf.has_ctone and not dstrf.has_ctone:
         # If copying from a radio with separate rtone/ctone to a radio
         # without, and the tmode is TSQL, then use the ctone value
         if mem.rtone not in dstrf.valid_tones:
