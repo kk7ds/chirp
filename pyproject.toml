@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chirp"
+version = "0"
+description = "A cross-platform cross-radio programming tool"
+readme = "README.md"
+license = { file = "COPYING" }
+requires-python = ">=3.10,<4"
+dependencies = [
+  "pyserial",
+  "requests",
+  "yattag",
+  "suds",
+  "lark",
+]
+
+[project.optional-dependencies]
+test = ["tox"]
+wx = ["wxPython"]
+
+[project.scripts]
+chirp = "chirp.wxui:chirpmain"
+chirpc = "chirp.cli.main:main"
+experttune = "chirp.cli.experttune:main"
+
+[project.urls]
+Homepage = "https://chirp.danplanet.com"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["chirp*"]
