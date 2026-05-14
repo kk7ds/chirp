@@ -1352,3 +1352,29 @@ class IC2730Radio(icf.IcomCloneModeRadio):
                 except Exception:
                     LOG.debug(element.get_name())
                     raise
+
+
+@directory.register
+class IC2730ERadio(IC2730Radio):
+    """Icom IC-2730E (European variant)"""
+    MODEL = "IC-2730E"
+
+    # The IC-2730E speaks the initial clone handshake at 19200 baud
+    # (not 9600 like the IC-2730A) and requires the radio's model code
+    # in the CLONE_ID query payload instead of all zeros. After the
+    # handshake the standard hispeed transition to 38400 still applies.
+    BAUD_RATE = 19200
+    _id_query_with_model = True
+
+    # The IC-2730E ends a clone-out with "Icom Inc.4D" rather than the
+    # "Icom Inc.4E" sent by the A variant.
+    _endframe = "Icom Inc\x2e4D"
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # The IC-2730A and IC-2730E are byte-indistinguishable in
+        # legacy raw-image dumps (same _model and _memsize). Files
+        # saved by modern CHIRP carry an explicit driver-class tag in
+        # the .img metadata trailer and route there directly, so this
+        # variant only needs to abstain from blind auto-detection.
+        return False

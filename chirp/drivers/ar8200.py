@@ -474,10 +474,7 @@ class AR8200Radio(chirp_common.LiveRadio):
         else:
             return 100 - self._scan_bank_sizes[bank.upper()]
 
-    def _get_ol_list(self):
-        if self._OL_LIST:
-            return self._OL_LIST
-
+    def _get_ol_list_uncached(self):
         self._OL_LIST = [0]
         for n in range(1, 48):
             res = self._command_cached('OL{:02d}'.format(n),
@@ -491,6 +488,16 @@ class AR8200Radio(chirp_common.LiveRadio):
             LOG.info("Offset frequency {} is {}".format(n, res[2]))
 
         return self._OL_LIST
+
+    def _get_ol_list(self, locked=False):
+        if self._OL_LIST:
+            return self._OL_LIST
+
+        if locked:
+            with self.LOCK:
+                return self._get_ol_list_uncached()
+        else:
+            return self._get_ol_list_uncached()
 
     def _set_pp(self, number):
         (region, bank, chan) = self._decode_number(number)
@@ -892,13 +899,9 @@ class AR8200Radio(chirp_common.LiveRadio):
         return mem
 
     def validate_memory(self, memory):
-        with self.LOCK:
-            return self._validate_memory_unlocked(memory)
-
-    def _validate_memory_unlocked(self, memory):
         msgs = []
 
-        ol_list = self._get_ol_list()
+        ol_list = self._get_ol_list(True)
         (region, bank, chan) = self._decode_number(memory.number)
 
         if region in ('scan', 'search'):
