@@ -75,6 +75,14 @@ struct {
 """
 
 BF1900_SETTINGS2 = """
+#seekto 0x0250;
+struct {
+    u8 stun_code[7];
+    u8 unused1;
+    u8 kill_code[7];
+    u8 unused2;
+} stunkillsettings;
+
 #seekto 0x03C0;
 struct {
     u8 unused:6,
@@ -83,7 +91,10 @@ struct {
     u8 squelchlevel;
     u8 scanmode;
     u8 timeouttimer;
-    u8 unused2[4];
+    u8 stunFunc;
+    u8 radioInhibitFunc;
+    u8 stun;
+    u8 radioInhibit;
 } settings2;
 """
 
@@ -140,7 +151,7 @@ def _h777_enter_programming_mode(serial, radio_cls):
             ack = serial.read(1)
             if ack != CMD_ACK:
                 raise errors.RadioError("Bad ACK after reading ident")
-        except:
+        except Exception:
             raise errors.RadioError('No ACK after reading ident')
         return ident
 
@@ -174,7 +185,7 @@ def _h777_read_block(radio, block_addr, block_size):
 
         serial.write(CMD_ACK)
         ack = serial.read(1)
-    except:
+    except Exception:
         raise errors.RadioError("Failed to read block at %04x" % block_addr)
 
     if ack != CMD_ACK:
@@ -198,7 +209,7 @@ def _h777_write_block(radio, block_addr, block_size):
         # ~0.31s.
         if serial.read(1) != CMD_ACK:
             raise Exception("No ACK")
-    except:
+    except Exception:
         raise errors.RadioError("Failed to send block "
                                 "to radio at %04x" % block_addr)
 
@@ -513,9 +524,10 @@ class H777Radio(chirp_common.CloneModeRadio):
                               current_index=_settings.voicelanguage))
         basic.append(rs)
 
-        rs = RadioSetting("scan", "Scan",
-                          RadioSettingValueBoolean(_settings.scan))
-        basic.append(rs)
+        if self.PROGRAM_CMD == b'PROGRAM':
+            rs = RadioSetting("scan", "Scan",
+                              RadioSettingValueBoolean(_settings.scan))
+            basic.append(rs)
 
         if self._has_scanmodes:
             rs = RadioSetting("settings2.scanmode", "Scan mode",
@@ -661,7 +673,7 @@ class H777TestCase(unittest.TestCase):
     def setUp(self):
         self.driver = H777Radio(None)
         self.testdata = bitwise.parse("lbcd foo[2];",
-                                      memmap.MemoryMap("\x00\x00"))
+                                      memmap.MemoryMapBytes("\x00\x00"))
 
     def test_decode_tone_dtcs_normal(self):
         mode, value, pol = self.driver._decode_tone(8023)
@@ -815,6 +827,32 @@ class BF1909Radio(BF1901Radio):
         (0x03C0, 0x03E0),
     ]
     _memsize = 0x03F0
+
+    # TODO: Is it 1 watt?
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
+                    chirp_common.PowerLevel("High", watts=10.00)]
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
+
+
+@directory.register
+class BF9700Radio(BF1901Radio):
+    VENDOR = "Baofeng"
+    MODEL = "BF-9700"
+    ALIASES = []
+    IDENT = [b"P320h",
+             b"P3107" + b"\xF4" + b"AM",
+             ]
+    _ranges = [
+        (0x0000, 0x0110),
+        (0x0250, 0x0260),
+        (0x02B0, 0x02C0),
+        (0x03C0, 0x03E0),
+    ]
+    _memsize = 0x0400
 
     # TODO: Is it 1 watt?
     POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.00),
