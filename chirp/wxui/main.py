@@ -743,7 +743,8 @@ class ChirpMain(wx.Frame):
         if developer.developer_mode():
             loadmod_item = file_menu.Append(wx.MenuItem(file_menu, wx.NewId(),
                                                         _('Load Module...')))
-            loadmod_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('L')))
+            loadmod_item.SetAccel(
+                            wx.AcceleratorEntry(wx.MOD_CONTROL, ord('L')))
             self.Bind(wx.EVT_MENU, self._menu_load_module, loadmod_item)
 
         file_menu.Append(wx.MenuItem(file_menu, wx.ID_SEPARATOR))
