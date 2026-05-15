@@ -264,7 +264,7 @@ def _t18_enter_programming_mode(radio):
         raise errors.RadioError("Error communicating with radio")
 
     if not ack:
-        raise errors.RadioError("No response from radio")
+        raise errors.RadioNoResponse()
     elif ack != CMD_ACK:
         raise errors.RadioError("Radio refused to enter programming mode")
 

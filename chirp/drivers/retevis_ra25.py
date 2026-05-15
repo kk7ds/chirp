@@ -296,6 +296,8 @@ def send_cmd(serial, cmd, length):
             err = (f'Data send expected {length} got {len(resp)}')
             LOG.error(err)
             raise errors.RadioError(err)
+    except errors.RadioError:
+        raise
     except Exception as e:
         raise errors.RadioError(f'Error sending to serial {e}')
     return resp
@@ -303,12 +305,18 @@ def send_cmd(serial, cmd, length):
 
 def start_programming(serial):
     try:
-        r = send_cmd(serial, b'PROGRAM', 1)
+        serial.write(b'PROGRAM')
+        serial.flush()
+        r = serial.read(1)
+        if not r:
+            raise errors.RadioNoResponse()
         if r != b'\x06':
             err = (f'Enter Programming failed '
                    f'expected 0x06 got {hex(r[0])}')
             LOG.error(err)
             raise errors.RadioError(err)
+    except errors.RadioError:
+        raise
     except Exception as e:
         raise errors.RadioError(f'Error Entering Program Mode {e}')
     return True
@@ -319,6 +327,8 @@ def end_programming(serial):
         r = send_cmd(serial, b'END', 1)
         if r != b'\x06':
             LOG.error(f'Error {hex(r[0])}')
+    except errors.RadioError:
+        raise
     except Exception as e:
         raise errors.RadioError(f"Error {e}")
 
@@ -342,6 +352,8 @@ def get_ident(radio):
             err = f'ERROR: Model: {model} Ver: {ver} is not supported!'
             LOG.error(err)
             raise errors.RadioError(err)
+    except errors.RadioError:
+        raise
     except Exception as e:
         raise errors.RadioError(e)
 
@@ -366,9 +378,9 @@ def sum_map(MAP):
 
 
 def do_download(radio):
+    serial = radio.pipe
     try:
         data = b''
-        serial = radio.pipe
         serial.timeout = SERIAL_TIMEOUT
         status = chirp_common.Status()
         status.msg = "Connecting to Radio..."
@@ -392,10 +404,15 @@ def do_download(radio):
                 data += parse_response(r)
                 status.cur += btr
                 radio.status_fn(status)
+    except errors.RadioError:
+        raise
     except Exception as e:
         raise errors.RadioError(f'Exception During Download: {e}')
     finally:
-        end_programming(serial)
+        try:
+            end_programming(serial)
+        except errors.RadioError:
+            pass
     return memmap.MemoryMapBytes(data)
 
 
@@ -414,8 +431,8 @@ def write_data(serial, addr, data):
 
 
 def do_upload(radio):
+    serial = radio.pipe
     try:
-        serial = radio.pipe
         serial.timeout = SERIAL_TIMEOUT
         status = chirp_common.Status()
         r = start_programming(serial)
@@ -439,10 +456,15 @@ def do_upload(radio):
                 status.cur += btw
                 radio.status_fn(status)
                 i += 1
+    except errors.RadioError:
+        raise
     except Exception as e:
         raise errors.RadioError(f"Exception During Upload: {e}")
     finally:
-        end_programming(serial)
+        try:
+            end_programming(serial)
+        except errors.RadioError:
+            pass
     return
 
 

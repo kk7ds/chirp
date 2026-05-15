@@ -2,10 +2,14 @@
 <component type="desktop-application">
   <id>com.chirpmyradio.chirp</id>
   <name>CHIRP</name>
-  <summary>A free, open-source tool for programming your radio.</summary>
+  <summary>A free, open-source tool for programming your radio</summary>
 
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-only</project_license>
+
+  <developer id="com.chirpmyradio.chirp">
+    <name>CHIRP Developers</name>
+  </developer>
 
   <description>
     <p>
@@ -20,15 +24,18 @@
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/kk7ds/chirp/refs/heads/master/flathub/screenshots/main.png</image>
+      <caption>Application window showing the default screen</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/kk7ds/chirp/refs/heads/master/flathub/screenshots/example.png</image>
+      <caption>Application window showing a spreasheet holding data for radio channels</caption>
     </screenshot>
   </screenshots>
 
   <url type="homepage">https://chirpmyradio.com</url>
   <url type="bugtracker">https://chirpmyradio.com/projects/chirp/issues</url>
   <url type="help">https://chirpmyradio.com/projects/chirp/wiki/Documentation</url>
+  <url type="vcs-browser">https://github.com/kk7ds/chirp</url>
 
   <content_rating type="oars-1.1"/>
 

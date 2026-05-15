@@ -288,6 +288,8 @@ def _enter_programming_mode(radio):
 
     # check if we had EXITO
     if exito is False:
+        if not ack:
+            raise errors.RadioNoResponse()
         msg = "The radio did not accept program mode after five tries.\n"
         msg += "Check you interface cable and power cycle your radio."
         raise errors.RadioError(msg)

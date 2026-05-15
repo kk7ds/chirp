@@ -92,7 +92,9 @@ def _connect_radio(radio):
         else:
             stx = "Radio responded as %s, not %s." % (resp, xid)
             raise errors.RadioError(stx)
-    raise errors.RadioError("No response from radio")
+    if resp:
+        raise errors.RadioError("Unexpected response from radio")
+    raise errors.RadioNoResponse()
 
 
 def _update_status(self, status, step=1):
@@ -208,6 +210,8 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
         try:
             _connect_radio(self)
             self._write_mem()
+        except errors.RadioError:
+            raise
         except Exception:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem

@@ -136,6 +136,8 @@ def _r2_enter_programming_mode(radio):
 
     # check if we had EXITO
     if exito is False:
+        if not ack:
+            raise errors.RadioNoResponse()
         msg = "The radio did not accept program mode after five tries.\n"
         msg += "Check your interface cable and power cycle your radio."
         raise errors.RadioError(msg)
@@ -391,7 +393,9 @@ class RadioddityR2(chirp_common.CloneModeRadio):
         """Upload to radio"""
         try:
             do_upload(self)
-        except:
+        except errors.RadioError:
+            raise
+        except Exception:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem
             LOG.exception('Unexpected error during upload')

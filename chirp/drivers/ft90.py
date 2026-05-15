@@ -238,6 +238,11 @@ struct  {
 
     def _read(self, blocksize, blocknum):
         data = self.pipe.read(blocksize+2)
+        if not data:
+            if blocknum == 0:
+                raise errors.RadioNoResponse()
+            raise errors.RadioError(
+                "No response reading block %02X" % blocknum)
 
         # chew echo'd ack
         self.pipe.write(CMD_ACK)
@@ -319,6 +324,11 @@ struct  {
             buf = self.pipe.read(1)
             LOG.debug("ack recd:")
             LOG.debug(util.hexprint(buf))
+            if not buf:
+                if blocknum == 0:
+                    raise errors.RadioNoResponse()
+                raise errors.RadioError(
+                    "Radio did not ack block %i" % blocknum)
             if buf != CMD_ACK:
                 raise Exception("Radio did not ack block %i" % blocknum)
             pos += blocksize

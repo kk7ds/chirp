@@ -373,6 +373,9 @@ def _rawrecv(radio, amount):
         msg = "Generic error reading data from radio; check your cable."
         raise errors.RadioError(msg)
 
+    if not data:
+        _exit_program_mode(radio)
+        raise errors.RadioNoResponse()
     if len(data) != amount:
         _exit_program_mode(radio)
         msg = "Error reading data from radio: not the amount of data we want."

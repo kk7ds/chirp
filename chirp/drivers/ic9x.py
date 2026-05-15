@@ -163,7 +163,7 @@ class IC9xRadio(icf.IcomLiveRadio):
                 return
             time.sleep(1)
         LOG.warning('Made %i attempts to wake radio', i + 1)
-        raise errors.RadioError('Radio not responding')
+        raise errors.RadioNoResponse()
 
     def __init__(self, *args, **kwargs):
         if 'lock' in kwargs:

@@ -213,6 +213,8 @@ def get_model_data(radio, mdata=b"\x00\x00\x00\x00", stream=None):
         stream = RadioStream(radio.pipe)
     frames = stream.get_frames()
 
+    if len(frames) == 0:
+        raise errors.RadioNoResponse()
     if len(frames) != 1:
         raise errors.RadioError("Unexpected response from radio")
 
@@ -333,8 +335,22 @@ def start_hispeed_clone(radio, cmd):
     radio.pipe.flush()
 
 
+def _id_query_payload(radio):
+    """Build the payload for the initial CLONE_ID query.
+
+    Most Icom clone-mode radios reply to a query with all-zero payload.
+    A few (e.g. IC-2730E) only respond when the query carries the radio's
+    own model code with the last byte zeroed; those drivers set the
+    `_id_query_with_model` flag (defined on IcomCloneModeRadio).
+    """
+    if radio._id_query_with_model:
+        model = radio.get_model().ljust(4, b"\x00")[:4]
+        return model[:3] + b"\x00"
+    return b"\x00\x00\x00\x00"
+
+
 def _clone_from_radio(radio):
-    md = get_model_data(radio)
+    md = get_model_data(radio, mdata=_id_query_payload(radio))
 
     try:
         radio_rev = decode_model(md)
@@ -410,6 +426,8 @@ def clone_from_radio(radio):
     """Do a full clone out of the radio's memory"""
     try:
         return _clone_from_radio(radio)
+    except errors.RadioError:
+        raise
     except Exception as e:
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
 
@@ -457,10 +475,12 @@ def _clone_to_radio(radio):
     # Uncomment to save out a capture of what we actually write to the radio
     # SAVE_PIPE = file("pipe_capture.log", "w", 0)
 
+    mdata = _id_query_payload(radio)
+
     stream = RadioStream(radio.pipe)
-    md = get_model_data(radio, stream=stream)
+    md = get_model_data(radio, mdata=mdata, stream=stream)
     if radio._double_ident:
-        md = get_model_data(radio, stream=stream)
+        md = get_model_data(radio, mdata=mdata, stream=stream)
 
     if md[0:4] != radio.get_model():
         raise errors.RadioError("I can't talk to this model")
@@ -514,7 +534,7 @@ def _clone_to_radio(radio):
         return True
 
     if len(frames) == 0:
-        raise errors.RadioError("Did not get clone result from radio")
+        raise errors.RadioNoResponse()
     elif result.cmd != CMD_CLONE_OK:
         LOG.error('Clone failed result frame:\n%s' % result)
         raise errors.RadioError('Radio rejected clone')
@@ -528,6 +548,8 @@ def clone_to_radio(radio):
     """Initiate a full memory clone out to @radio"""
     try:
         return _clone_to_radio(radio)
+    except errors.RadioError:
+        raise
     except Exception as e:
         logging.exception("Failed to communicate with the radio")
         raise errors.RadioError("Failed to communicate with the radio: %s" % e)
@@ -828,6 +850,11 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     _can_hispeed = False
     _double_ident = False  # A couple radios require double ident before upload
 
+    # If True, the initial CLONE_ID query payload carries the radio's
+    # own model code (with the last byte zeroed) instead of all zeros.
+    # Required by IC-2730E; most clone-mode Icoms answer to all-zeros.
+    _id_query_with_model = False
+
     # Newer radios (ID51Plus2, ID5100, IC2730) use a slightly
     # different CLONE_DAT format
     _raw_frames = False
@@ -918,10 +945,12 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
             return self._mmap
 
     def sync_out(self):
-        # We always start at 9600 baud. The UI may have handed us the same
-        # rate we ended with last time (for radios which have variable but
-        # unchanging speeds) but we always have to start in low-speed mode.
-        self.pipe.baudrate = 9600
+        # We always have to start in low-speed mode. The UI may have
+        # handed us a different rate left over from a prior hispeed run,
+        # so reset to the driver's configured rate here. For most Icom
+        # clone-mode radios that's 9600 (the default inherited from
+        # chirp_common.Radio); a few (e.g. IC-2730E) override it.
+        self.pipe.baudrate = self.BAUD_RATE
         clone_to_radio(self)
 
     def get_bank_model(self):

@@ -127,14 +127,14 @@ _KEYS = [
     'Key Lock',
     'Talk Around',
     'Scan',
-    'Scan Add',
-    '?',
+    'Scan Del/Add',
+    'Emergency',
     'AUX',
     'Horn Alert',
     'Scrambler',
     'Display Character',
     'OST',
-    '?',  # 0D
+    'Direct Ch',  # 0D
     '?',  # 0E
     '?',  # 0F
     '?',  # 10
@@ -152,7 +152,7 @@ _KEYS = [
     'Status',
     'Selcall+Status',
     '?',  # 1E
-    '?',  # 1F
+    'Channel Entry',  # 1F
     '?',  # 20
     '?',  # 21
     '?',  # 22
@@ -164,21 +164,53 @@ _KEYS = [
     'Volume Up',
     'Volume Down',
     'None',
-    ]
+]
 
-KEYS = {i: key for i, key in enumerate(_KEYS)
-        if not key.startswith('?')}
+VALID_KEY_SELECTION = [
+    'Zone Up',
+    'Zone Down',
+    'Monitor',
+    'Key Lock',
+    'Talk Around',
+    'Scan',
+    'Scan Del/Add',
+    'AUX',
+    'Horn Alert',
+    'Scrambler',
+    'Display Character',
+    'OST',
+    'Channel Up',
+    'Channel Down',
+    'Brightness',
+    '2-Tone',
+    'Call 1',
+    'Call 2',
+    'Selcall',
+    'Public Address',
+    'Squelch Level',
+    'Status',
+    'Selcall+Status',
+    'Squelch Off',
+    'Monitor Momentary',
+    'Squelch Off Momentary',
+    'Send the GPS',
+    'Volume Up',
+    'Volume Down',
+    'None',
+]
+
+KEYS = {i: key for i, key in enumerate(_KEYS) if key in VALID_KEY_SELECTION}
 
 KEY_NAMES = {
+    'Left Up': 'leftup',
+    'Left Down': 'leftdn',
+    'Right Up': 'rightup',
+    'Right Down': 'rightdn',
+    'S': 'skey',
     'A': 'akey',
     'B': 'bkey',
     'C': 'ckey',
-    'S': 'skey',
     'Triangle': 'triangle',
-    'Right Up': 'rightup',
-    'Right Down': 'rightdn',
-    'Left Up': 'leftup',
-    'Left Down': 'leftdn',
 }
 
 POWER_LEVELS = [chirp_common.PowerLevel('Low', watts=25),
@@ -273,6 +305,10 @@ class TKx160Radio(chirp_common.CloneModeRadio):
     VENDOR = 'Kenwood'
     FORMATS = [directory.register_format('Kenwood KPG-99D', '*.dat')]
     _memsize = 0x4000
+    _channels = 128
+    _power_levels = POWER_LEVELS
+    _has_zones = True
+    _mem_format = mem_format
 
     def sync_in(self):
         try:
@@ -286,7 +322,7 @@ class TKx160Radio(chirp_common.CloneModeRadio):
 
     def sync_out(self):
         try:
-            self._mmap = do_upload(self)
+            do_upload(self)
         except errors.RadioError:
             raise
         except Exception as e:
@@ -294,7 +330,10 @@ class TKx160Radio(chirp_common.CloneModeRadio):
             raise errors.RadioError('Failed to communicate with radio')
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(mem_format, self._mmap)
+        self._memobj = bitwise.parse(self._mem_format, self._mmap)
+
+        if not self._has_zones:
+            self._zone = 1
 
     @classmethod
     def match_model(cls, filedata, filename):
@@ -303,11 +342,11 @@ class TKx160Radio(chirp_common.CloneModeRadio):
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.memory_bounds = (1, 128)
+        rf.memory_bounds = (1, self._channels)
         rf.has_ctone = True
         rf.has_cross = True
         rf.has_bank = False
-        rf.has_sub_devices = not self.VARIANT
+        rf.has_sub_devices = not self.VARIANT and self._has_zones
         rf.has_dynamic_subdevices = rf.has_sub_devices
         rf.has_tuning_step = False
         rf.has_rx_dtcs = True
@@ -323,7 +362,7 @@ class TKx160Radio(chirp_common.CloneModeRadio):
         rf.valid_bands = self.VALID_BANDS
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC
         rf.valid_name_length = 8
-        rf.valid_power_levels = list(reversed(POWER_LEVELS))
+        rf.valid_power_levels = list(reversed(self._power_levels))
         rf.valid_skips = ['', 'S']
         return rf
 
@@ -511,7 +550,7 @@ class TKx160Radio(chirp_common.CloneModeRadio):
         chirp_common.split_tone_decode(m, txtone, rxtone)
 
         m.name = str(_mem.name).rstrip()
-        m.power = POWER_LEVELS[int(_mem.highpower)]
+        m.power = self._power_levels[int(_mem.highpower)]
         m.mode = 'FM' if _mem.wide else 'NFM'
         m.skip = '' if _mem.scanadd else 'S'
 
@@ -667,3 +706,131 @@ class TK8160RadioM(TKx160Radio):
     MODEL = 'TK-8160M'
     VALID_BANDS = [(400000000, 520000000)]
     _model = b'M67- D'
+
+
+mem_format_7162 = mem_format + """
+
+#seekto 0x17e5;
+struct {
+    u8 tot;
+    u8 tot_pre;
+    u8 tot_rekey;
+    u8 tot_reset;
+    u8 sql;
+} settings;
+"""
+
+_POWER_LEVELS_7162 = [
+    chirp_common.PowerLevel('Low', watts=5),
+    chirp_common.PowerLevel('High', watts=25),
+]
+VALID_KEY_SELECTION_7162 = [
+    'None', 'Monitor', 'Key Lock', 'Talk Around', 'Scan', 'Scan Del/Add',
+    'AUX', 'Horn Alert', 'Scrambler', 'Direct Ch', 'Channel Up',
+    'Channel Down', 'Call 1', 'Call 2', 'Loan Worker', 'Squelch Level',
+    'Channel Entry', 'Squelch Off', 'Monitor Momentary',
+    'Squelch Off Momentary', 'Volume Up', 'Volume Down',
+]
+VALID_KEY_SELECTION_7162_TRIANGLE = VALID_KEY_SELECTION_7162 + ['Emergency']
+KEYS_7162 = {
+    i: key
+    for i, key in enumerate(_KEYS)
+    if key in VALID_KEY_SELECTION_7162_TRIANGLE
+}
+
+
+@directory.register
+class TK7162Radio(TKx160Radio):
+    FORMATS = [directory.register_format('Kenwood KPG-99D(E)', '*.dat')]
+    MODEL = 'TK-7162'
+    VALID_BANDS = [(136000000, 174000000)]
+    _model = b'M7162\x00'
+    _channels = 16
+    _power_levels = _POWER_LEVELS_7162
+    _has_zones = False
+    _mem_format = mem_format_7162
+
+    def get_settings(self) -> settings.RadioSettings:
+        _settings = self._memobj.settings
+        _keys = self._memobj.keys
+
+        keys = settings.RadioSettingGroup('keys', 'Keys')
+
+        SEL_ID_LOOKUP = {
+            n: i for i, n in enumerate(VALID_KEY_SELECTION_7162_TRIANGLE)}
+
+        for desc, name in KEY_NAMES.items():
+            # radio_idx -> key_name -> sel_idx
+            options = (VALID_KEY_SELECTION_7162_TRIANGLE if name == "triangle"
+                       else VALID_KEY_SELECTION_7162)
+
+            keys.append(settings.RadioSetting(
+                name, desc, settings.RadioSettingValueList(
+                    options=options,
+                    current_index=SEL_ID_LOOKUP[
+                        KEYS_7162[int(getattr(_keys, name))]])))
+
+        # General settings
+        gen = settings.RadioSettingGroup('general', 'General Settings')
+
+        gen.append(settings.RadioSetting(
+            'tot', 'Time Out Timer (s)',
+            settings.RadioSettingValueList(
+                options=[str(t * 15) for t in range(1, 41)]
+                + [str(600 + t * 60) for t in range(1, 11)],
+                current_index=_settings.tot)))
+
+        gen.append(settings.RadioSetting(
+            'tot_pre', 'TOT Pre-alert (s)',
+            settings.RadioSettingValueList(
+                options=['OFF'] + [str(t) for t in range(1, 11)],
+                current_index=_settings.tot_pre)))
+
+        gen.append(settings.RadioSetting(
+            'tot_rekey', 'TOT Rekey Time (s)',
+            settings.RadioSettingValueList(
+                options=['OFF'] + [str(t) for t in range(1, 61)],
+                current_index=_settings.tot_rekey)))
+
+        gen.append(settings.RadioSetting(
+                'tot_reset',
+                'TOT Reset Time (s)',
+                settings.RadioSettingValueList(
+                    options=['OFF'] + [str(t) for t in range(1, 16)],
+                    current_index=_settings.tot_reset)))
+
+        gen.append(settings.RadioSetting(
+                'sql',
+                'Squelch Level',
+                settings.RadioSettingValueInteger(
+                    minval=0,
+                    maxval=9,
+                    current=_settings.sql)))
+
+        return settings.RadioSettings(gen, keys)
+
+    def set_settings(self, _settings):
+        settings_map = {
+            "general": self._memobj.settings,
+            "keys": self._memobj.keys,
+        }
+
+        SEL_ID = {
+            i: n for i, n in enumerate(VALID_KEY_SELECTION_7162_TRIANGLE)
+        }
+        KEYS_7162_LOOKUP = {
+            n: i for i, n in KEYS_7162.items()
+        }
+
+        for group in _settings:
+            group_name = group.get_name()
+            _mem = settings_map[group_name]
+
+            if group_name == "keys":
+                for element in group:
+                    # sel_idx -> key_name -> radio_idx
+                    setattr(_mem, element.get_name(),
+                            KEYS_7162_LOOKUP[SEL_ID[int(element.value)]])
+            else:
+                for element in group:
+                    setattr(_mem, element.get_name(), int(element.value))

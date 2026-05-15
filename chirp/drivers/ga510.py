@@ -50,13 +50,19 @@ def start_program(radio):
     radio.pipe.read(256)
     radio.pipe.write(radio._magic)
     ack = radio.pipe.read(256)
+    if not ack:
+        raise errors.RadioNoResponse()
     if not ack.endswith(b'\x06'):
         LOG.debug('Ack was %r' % ack)
-        raise errors.RadioError('Radio did not respond to clone request')
+        raise errors.RadioError('Unexpected response to clone request')
 
     radio.pipe.write(b'F')
 
     ident = radio.pipe.read(8)
+    if not ident:
+        raise errors.RadioNoResponse()
+    if len(ident) != 8:
+        raise errors.RadioError('Radio sent short ident response')
     LOG.debug('Radio ident string is %r' % ident)
 
     return ident
@@ -76,6 +82,10 @@ def do_download(radio):
         radio.pipe.write(cmd)
 
         block = radio.pipe.read(0x44)
+        if not block:
+            raise errors.RadioNoResponse()
+        if len(block) < 4:
+            raise errors.RadioError('Radio sent short block header')
         header = block[:4]
         rcmd, raddr, rlen = struct.unpack('>BHB', header)
         block = block[4:]
@@ -112,6 +122,8 @@ def do_upload(radio):
         radio.pipe.write(block)
 
         ack = radio.pipe.read(1)
+        if not ack:
+            raise errors.RadioNoResponse()
         if ack != b'\x06':
             raise errors.RadioError('Radio refused block at addr %04x' % addr)
 
@@ -360,6 +372,7 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
 
     @classmethod
     def detect_from_serial(cls, pipe):
+        saw_data = False
         for rcls in reversed(cls.detected_models()):
             pipe.baudrate = rcls.BAUD_RATE
             radio = rcls(pipe)
@@ -368,13 +381,22 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
                     ident = baofeng_uv17Pro._do_ident(radio)
                 else:
                     ident = start_program(radio)
-            except errors.RadioError:
+            except errors.RadioNoResponse:
                 LOG.debug('No response from radio with %s', rcls)
                 pipe.read(256)
                 continue
+            except errors.RadioError:
+                saw_data = True
+                LOG.debug('Unexpected response from radio with %s', rcls)
+                pipe.read(256)
+                continue
             if ident:
+                saw_data = True
                 return rcls
-        raise errors.RadioError('No response from radio')
+            saw_data = True
+        if saw_data:
+            raise errors.RadioError('Unexpected response from radio')
+        raise errors.RadioNoResponse()
 
     def sync_in(self):
         try:

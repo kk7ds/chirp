@@ -250,7 +250,7 @@ def _enter_programming_mode_download(radio):
         raise errors.RadioError("Error communicating with radio")
 
     if not ack:
-        raise errors.RadioError("No response from radio")
+        raise errors.RadioNoResponse()
     elif ack != CMD_ACK:
         raise errors.RadioError("Radio refused to enter programming mode")
 
@@ -311,7 +311,7 @@ def _enter_programming_mode_upload(radio):
         raise errors.RadioError("Error communicating with radio")
 
     if not ack:
-        raise errors.RadioError("No response from radio")
+        raise errors.RadioNoResponse()
     elif ack != CMD_ACK:
         raise errors.RadioError("Radio refused to enter programming mode")
 

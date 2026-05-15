@@ -65,8 +65,9 @@ def get_id(s):
     r = command(s, "ID")
     if r.startswith("ID "):
         return r.split(" ")[1]
-    else:
-        raise errors.RadioError("No response to ID command")
+    if not r:
+        raise errors.RadioNoResponse()
+    raise errors.RadioError("Unexpected response to ID command")
 
 
 EXCH_R = "R\x00\x00\x00"
@@ -105,8 +106,11 @@ def write_block(s, block, map):
 
 
 def download(radio):
-    if command(radio.pipe, "0M PROGRAM") != "0M":
-        raise errors.RadioError("No response from radio")
+    resp = command(radio.pipe, "0M PROGRAM")
+    if not resp:
+        raise errors.RadioNoResponse()
+    if resp != "0M":
+        raise errors.RadioError("Unexpected response to program command")
 
     data = ""
     for i in range(0, 0x7F):
@@ -124,8 +128,11 @@ def download(radio):
 
 
 def upload(radio):
-    if command(radio.pipe, "0M PROGRAM") != "0M":
-        raise errors.RadioError("No response from radio")
+    resp = command(radio.pipe, "0M PROGRAM")
+    if not resp:
+        raise errors.RadioNoResponse()
+    if resp != "0M":
+        raise errors.RadioError("Unexpected response to program command")
 
     for i in range(0, 0x7F):
         r = write_block(radio.pipe, i, radio._mmap)

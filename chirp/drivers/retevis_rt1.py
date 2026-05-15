@@ -140,7 +140,7 @@ def _rt1_enter_programming_mode(radio):
 
         if not ack:
             _rt1_exit_programming_mode(radio)
-            raise errors.RadioError("No response from radio")
+            raise errors.RadioNoResponse()
         elif ack != CMD_ACK:
             LOG.debug("Incorrect response, got this:\n\n" + util.hexprint(ack))
             _rt1_exit_programming_mode(radio)

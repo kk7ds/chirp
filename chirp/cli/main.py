@@ -24,6 +24,8 @@ import logging
 from chirp import logger
 from chirp import chirp_common, errors, directory, util
 
+sys.modules['builtins']._ = lambda x: x  # type: ignore[attr-defined]
+
 directory.import_drivers()
 
 LOG = logging.getLogger("chirpc")

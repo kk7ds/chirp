@@ -2415,8 +2415,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                    'source': self.GetId()}
         data = wx.DataObjectComposite()
         memdata = wx.CustomDataObject(common.CHIRP_DATA_MEMORY)
-        data.Add(memdata)
-        memdata.SetData(pickle.dumps(payload))
+        try:
+            memdata.SetData(pickle.dumps(payload))
+            data.Add(memdata)
+        except Exception as e:
+            LOG.exception('Failed to get native memory for paste: %s', e)
         if portable:
             strfmt = chirp_common.mem_to_text(mems[0])
             textdata = wx.TextDataObject(strfmt)

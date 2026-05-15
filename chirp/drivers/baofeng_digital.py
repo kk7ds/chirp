@@ -484,3 +484,68 @@ class BaofengBFT20D(BaofengDigital):
     ]
     _serial_id = 0x05
     _proto = PROTO_D
+
+
+@directory.register
+class BaofengBFV12D(BaofengDigital):
+    """Baofeng BF-V12D"""
+    MODEL = 'BF-V12D'
+    VALID_BANDS = [(400000000, 480000000)]
+    POWER_LEVELS = [
+        chirp_common.PowerLevel("Low", watts=0.5),
+        chirp_common.PowerLevel("High", watts=2.00),
+    ]
+    _serial_id = 0x0a
+    _proto = PROTO_A
+
+    def _get_radio_id(self):
+        # The V12D requires a ucbfpwd unlock sequence before entering
+        # programming mode, observed from factory software captures.
+        for attempt in range(5):
+            try:
+                baofeng_common._clean_buffer(self)
+
+                # Send unlock command
+                self.pipe.write(b'\x02ucbfpwd')
+                resp = self.pipe.read(1)
+                LOG.debug('ucbfpwd response: %s',
+                          resp.hex() if resp else 'empty')
+                if resp != CMD_ACK:
+                    raise errors.RadioError(
+                        'No ACK on unlock command (got %s)'
+                        % (resp.hex() if resp else 'empty'))
+
+                # Send unlock data and model identifier
+                # (observed from factory software captures)
+                self.pipe.write(b'\x10\xc5\xea\x35')
+                resp = self.pipe.read(1)
+                LOG.debug('unlock data response: %s',
+                          resp.hex() if resp else 'empty')
+                if resp != CMD_ACK:
+                    raise errors.RadioError(
+                        'No ACK on unlock data')
+
+                # Base64-encoded model identifier from factory software
+                self.pipe.write(
+                    b'Q041OTUwMA==\x00\x00\x00\x00')
+                resp = self.pipe.read(1)
+                LOG.debug('model id response: %s',
+                          resp.hex() if resp else 'empty')
+                if resp != CMD_ACK:
+                    raise errors.RadioError(
+                        'No ACK on model identifier')
+
+                # Now request radio ID
+                self.pipe.write(b'\x02prOGRAM')
+                resp = self.pipe.read(4)
+                LOG.debug('radio ID: %s',
+                          resp.hex() if resp else 'empty')
+                if len(resp) != 4:
+                    raise errors.RadioError(
+                        'Radio did not send identification')
+                return resp
+            except errors.RadioError:
+                if attempt == 4:
+                    raise
+                self._exit_programming()
+                time.sleep(1)

@@ -457,6 +457,10 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             if data:
                 break
             time.sleep(0.5)
+        if not data:
+            if blocknum == 0:
+                raise errors.RadioNoResponse()
+            raise errors.RadioError("No response reading block %02X" % blocknum)
         if len(data) == block + 2 and data[0] == blocknum:
             checksum = yaesu_clone.YaesuChecksum(1, block)
             if checksum.get_existing(data) != \
@@ -564,7 +568,11 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                 if not buf or buf[:1] != CMD_ACK:
                     time.sleep(delay)
                     buf = self.pipe.read(1)
-                if not buf or buf[:1] != CMD_ACK:
+                if not buf:
+                    if blocks == 0:
+                        raise errors.RadioNoResponse()
+                    raise errors.RadioError("Radio did not ack block %i" % blocks)
+                if buf[:1] != CMD_ACK:
                     raise Exception(_("Radio did not ack block %i") % blocks)
                 pos += block
                 blocks += 1

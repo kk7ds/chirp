@@ -319,19 +319,23 @@ def _do_ident(radio):
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 1)
     # LOG.warning("PROGa Ack:" + util.hexprint(ack))
+    if not ack:
+        _exit_program_mode(radio)
+        raise errors.RadioNoResponse()
     if ack != b"\x06":
         _exit_program_mode(radio)
-        if ack:
-            LOG.debug(repr(ack))
-        raise errors.RadioError("Radio did not respond")
+        LOG.debug(repr(ack))
+        raise errors.RadioError("Unexpected response from radio")
     magic = b"PROGRAMb"
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 1)
+    if not ack:
+        _exit_program_mode(radio)
+        raise errors.RadioNoResponse()
     if ack != b"\x06":
         _exit_program_mode(radio)
-        if ack:
-            LOG.debug(repr(ack))
-        raise errors.RadioError("Radio did not respond to B")
+        LOG.debug(repr(ack))
+        raise errors.RadioError("Unexpected response from radio")
     magic = b"\x02"
     _rawsend(radio, magic)
     ack = _rawrecv(radio, 1)    # s/b: 0x50
@@ -583,6 +587,8 @@ class THUV8000Radio(chirp_common.CloneModeRadio):
 
         try:
             _upload(self)
+        except errors.RadioError:
+            raise
         except Exception:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem

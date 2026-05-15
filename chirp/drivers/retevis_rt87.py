@@ -253,10 +253,14 @@ def _identify(radio):
                             .format(magic, echo))
 
         ack = radio.pipe.read(2)
-        if ack != b"\x06\x30":
+        if not ack:
+            raise errors.RadioNoResponse()
+        elif ack != b"\x06\x30":
             raise errors.RadioError("Radio did not ACK first command: %r" %
                                     ack)
-    except:
+    except errors.RadioError:
+        raise
+    except Exception:
         LOG.exception('')
         raise errors.RadioError("Unable to communicate with the radio")
 
@@ -370,6 +374,8 @@ class Rt87BaseRadio(chirp_common.CloneModeRadio):
         """Upload to radio"""
         try:
             _upload(self)
+        except errors.RadioError:
+            raise
         except:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem

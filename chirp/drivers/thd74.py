@@ -233,8 +233,11 @@ class THD74Radio(chirp_common.CloneModeRadio,
         else:
             blocks = [b for b in blocks if b < self._memsize // 256]
 
-        if self.command("0M PROGRAM") != "0M":
-            raise errors.RadioError("No response from self")
+        resp = self.command("0M PROGRAM")
+        if not resp:
+            raise errors.RadioNoResponse()
+        if resp != "0M":
+            raise errors.RadioError("Unexpected response to program command")
 
         allblocks = range(self._memsize // 256)
         self.pipe.baudrate = 57600
@@ -268,8 +271,11 @@ class THD74Radio(chirp_common.CloneModeRadio,
         else:
             blocks = [b for b in blocks if b < self._memsize // 256]
 
-        if self.command("0M PROGRAM") != "0M":
-            raise errors.RadioError("No response from self")
+        resp = self.command("0M PROGRAM")
+        if not resp:
+            raise errors.RadioNoResponse()
+        if resp != "0M":
+            raise errors.RadioError("Unexpected response to program command")
 
         self.pipe.baudrate = 57600
         self.pipe.read(1)
@@ -307,8 +313,9 @@ class THD74Radio(chirp_common.CloneModeRadio,
         r = self.command("ID")
         if r.startswith("ID "):
             return r.split(" ")[1]
-        else:
-            raise errors.RadioError("No response to ID command")
+        if not r:
+            raise errors.RadioNoResponse()
+        raise errors.RadioError("Unexpected response to ID command")
 
     def _detect_baud(self):
         id = None
@@ -331,7 +338,7 @@ class THD74Radio(chirp_common.CloneModeRadio,
         elif id:
             return id
         else:
-            raise errors.RadioError("No response from radio")
+            raise errors.RadioNoResponse()
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)

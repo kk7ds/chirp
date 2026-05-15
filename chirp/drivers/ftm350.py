@@ -125,12 +125,14 @@ def _clone_in(radio):
     while length < radio._memsize:
         frame = radio.pipe.read(131)
         if length and not frame:
-            raise errors.RadioError("Radio not responding")
+            raise errors.RadioError("Timed out reading from radio")
 
         if not frame:
             attempts -= 1
             if attempts <= 0:
-                raise errors.RadioError("Radio not responding")
+                if length:
+                    raise errors.RadioError("Timed out reading from radio")
+                raise errors.RadioNoResponse()
 
         if frame:
             addr, = struct.unpack(">H", frame[0:2])
@@ -186,6 +188,8 @@ def _clone_out(radio):
             frame += bytes([cs % 256])
             radio.pipe.write(frame)
             ack = radio.pipe.read(1)
+            if not ack:
+                raise errors.RadioNoResponse()
             if ack != b"\x06":
                 raise errors.RadioError("Radio refused block %i" % (i / 128))
             time.sleep(0.05)

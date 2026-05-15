@@ -361,8 +361,10 @@ def puxing_2r_prep(radio):
     radio.pipe.timeout = 0.2
     radio.pipe.write(b"PROGRAM\x02")
     ack = radio.pipe.read(1)
+    if not ack:
+        raise errors.RadioNoResponse()
     if ack != b"\x06":
-        raise Exception("Radio is not responding")
+        raise Exception("Unexpected response from radio")
 
     radio.pipe.write(ack)
     ident = radio.pipe.read(16)

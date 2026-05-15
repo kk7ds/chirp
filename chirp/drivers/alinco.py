@@ -99,7 +99,7 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
 
         resp = self._read(RLENGTH).strip()
         if len(resp) == 0:
-            raise errors.RadioError("No response from radio")
+            raise errors.RadioNoResponse()
         if b":" not in resp:
             raise errors.RadioError("Unexpected response from radio")
         addr, _data = resp.split(b":", 1)
@@ -156,7 +156,7 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
 
     def _upload(self, limit):
         if not self._identify():
-            raise Exception("I can't talk to this model")
+            raise errors.RadioError("I can't talk to this model")
 
         for addr in range(0x100, limit, 16):
             time.sleep(0.1)
@@ -541,7 +541,7 @@ class DJ175Radio(DRx35Radio):
 
         _data = self._read(34).strip()
         if len(_data) == 0:
-            raise errors.RadioError("No response from radio")
+            raise errors.RadioNoResponse()
 
         data = codecs.decode(_data, 'hex')
 
@@ -649,7 +649,7 @@ class AlincoDJG7(AlincoStyleRadio):
         # data is encoded in hex, hence we read two chars per byte
         _data = self._read(2+2*64+2).strip()
         if len(_data) == 0:
-            raise errors.RadioError("No response from radio")
+            raise errors.RadioNoResponse()
 
         data = codecs.decode(_data, "hex")
 

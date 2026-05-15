@@ -57,7 +57,7 @@ class HobbyPCBRSUV3Radio(chirp_common.LiveRadio):
         if self.pipe:
             baud = detect_baudrate(self)
             if not baud:
-                raise errors.RadioError('Radio did not respond')
+                raise errors.RadioNoResponse()
 
     def _cmd(self, command, rsize=None):
         command = command.encode()

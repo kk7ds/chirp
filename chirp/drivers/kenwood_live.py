@@ -115,6 +115,7 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
         bauds.remove(self.LAST_BAUD)
         # Make sure LAST_BAUD is last so that it is tried first below
         bauds.append(self.LAST_BAUD)
+        saw_response = False
 
         command_delimiters = [("\r", " "), (";", "")]
 
@@ -135,6 +136,9 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
                     # or not talking to a Kenwood live radio.
                     continue
 
+                if resp:
+                    saw_response = True
+
                 # most Kenwood radios
                 if " " in resp:
                     self.LAST_BAUD = i
@@ -154,7 +158,9 @@ class KenwoodLiveRadio(chirp_common.LiveRadio):
                 if resp in list(RADIO_IDS.keys()):
                     return RADIO_IDS[resp]
 
-        raise errors.RadioError("No response from radio")
+        if saw_response:
+            raise errors.RadioError("Unexpected response from radio")
+        raise errors.RadioNoResponse()
 
     def _command(self, ser, cmd, *args):
         """Send @cmd to radio via @ser"""

@@ -128,7 +128,7 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
         # expect DR735TN\r\n
         radio_id = self.pipe.read(9).strip()
         if not radio_id:
-            raise errors.RadioError("No response from radio")
+            raise errors.RadioNoResponse()
         LOG.debug('Model string is %s' % util.hexprint(radio_id))
         return radio_id in (b"DR735TN", b"DR735TE")
 
@@ -199,6 +199,8 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
     def sync_in(self):
         try:
             self._mmap = self.do_download()
+        except errors.RadioError:
+            raise
         except Exception as exc:
             raise errors.RadioError(f"Failed to download from radio: {exc}")
         self.process_mmap()
@@ -206,6 +208,8 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
     def sync_out(self):
         try:
             self.do_upload()
+        except errors.RadioError:
+            raise
         except Exception as exc:
             raise errors.RadioError(f"Failed to download from radio: {exc}")
 

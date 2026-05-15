@@ -748,6 +748,8 @@ class RT880G(chirp_common.CloneModeRadio):
             enter_programming_mode(self.pipe, self.magic_enter)
             self.pipe.timeout = 1
             do_upload(self)
+        except errors.RadioError:
+            raise
         except Exception:
             # If anything unexpected happens, make sure we raise
             # a RadioError and log the problem

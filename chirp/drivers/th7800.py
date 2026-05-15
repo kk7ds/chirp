@@ -568,11 +568,15 @@ def _identify(radio):
     try:
         radio.pipe.write(b"\x02SPECPR")
         ack = radio.pipe.read(1)
+        if not ack:
+            raise errors.RadioNoResponse()
         if ack != b"A":
             util.hexprint(ack)
             raise errors.RadioError("Radio did not ACK first command: %r"
                                     % ack)
-    except:
+    except errors.RadioError:
+        raise
+    except Exception:
         raise errors.RadioError("Unable to communicate with the radio")
 
     radio.pipe.write(b"G\x02")
@@ -718,6 +722,8 @@ class TYTTH7800Radio(TYTTH7800Base, chirp_common.CloneModeRadio,
     def sync_in(self):
         try:
             self._mmap = _download(self)
+        except errors.RadioError:
+            raise
         except Exception as e:
             raise errors.RadioError(
                     "Failed to communicate with the radio: %s" % e)
@@ -726,6 +732,8 @@ class TYTTH7800Radio(TYTTH7800Base, chirp_common.CloneModeRadio,
     def sync_out(self):
         try:
             _upload(self)
+        except errors.RadioError:
+            raise
         except Exception as e:
             raise errors.RadioError(
                     "Failed to communicate with the radio: %s" % e)

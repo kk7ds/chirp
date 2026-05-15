@@ -526,7 +526,7 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
             ack = self._read(1)
 
             if not ack:
-                raise errors.RadioError('No response from radio')
+                raise errors.RadioNoResponse()
             elif ack != self.CMD_ACK:
                 raise errors.RadioError('Radio refused to enter '
                                         'programming mode')

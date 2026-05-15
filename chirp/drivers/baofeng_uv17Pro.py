@@ -108,6 +108,7 @@ def _sendmagic(radio, magic, response_len):
 
 
 def _do_ident(radio):
+    saw_data = False
     for ident in radio._idents:
         # Flush input buffer
         bfc._clean_buffer(radio)
@@ -116,6 +117,8 @@ def _do_ident(radio):
         LOG.debug('Sending ident magic: %r', ident)
         try:
             ack = _sendmagic(radio, ident, len(radio._fingerprint))
+            if ack:
+                saw_data = True
             if not ack.startswith(radio._fingerprint):
                 LOG.debug('Ack %r did not match fingerprint: %r', ack,
                           radio._fingerprint)
@@ -129,7 +132,9 @@ def _do_ident(radio):
             _sendmagic(radio, magic, resplen)
         return True
 
-    raise errors.RadioError("Radio did not respond as expected (A)")
+    if saw_data:
+        raise errors.RadioError("Unexpected response from radio")
+    raise errors.RadioNoResponse()
 
 
 def _download(radio):

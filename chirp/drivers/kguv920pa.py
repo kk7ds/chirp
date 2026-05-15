@@ -462,8 +462,10 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
     def _read_record(self):
         # read 4 chars for the header
         _header = self.pipe.read(4)
+        if not _header:
+            raise errors.RadioNoResponse()
         if len(_header) != 4:
-            raise errors.RadioError('Radio did not respond')
+            raise errors.RadioError('Radio sent short header')
         _length = _header[3]
         _packet = self.pipe.read(_length)
         _cs = checksum.checksum_8bit(_header[1:])
@@ -472,7 +474,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         try:
             _rcs = self.pipe.read(1)[0]
         except (TypeError, IndexError):
-            raise errors.RadioError('Radio did not respond')
+            raise errors.RadioNoResponse()
         if _rcs != _cs:
             LOG.error("_cs =%x", _cs)
             LOG.error("_rcs=%x", _rcs)
@@ -495,7 +497,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
         if _chksum_err:
             raise Exception("Checksum error")
         if len(_resp) == 0:
-            raise Exception("Radio not responding")
+            raise errors.RadioNoResponse()
         reported_model = _str_decode(_resp[0:10])
         if reported_model != self._model:
             raise Exception("Unable to identify radio (Got %s, Expected)" %

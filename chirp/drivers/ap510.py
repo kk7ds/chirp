@@ -63,7 +63,7 @@ def enter_setup(pipe):
             return True
         elif s and "SETUP" in s:
             return False
-    raise errors.RadioError('Radio did not respond.')
+    raise errors.RadioNoResponse()
 
 
 def download(radio):
