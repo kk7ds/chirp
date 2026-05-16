@@ -19,6 +19,7 @@ import logging
 from chirp.drivers import baofeng_common as bfc
 from chirp import chirp_common, directory, memmap, bandplan_na
 from chirp import bitwise
+from chirp import platform
 from chirp.settings import RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
     RadioSettingValueString, \
@@ -158,7 +159,7 @@ def _download(radio):
                           radio.BLOCK_SIZE):
             frame = radio._make_read_frame(addr, radio.BLOCK_SIZE)
 
-            radio.pipe.log('Sending request for %04x' % addr)
+            radio.pipe.log('Sending request for 0x%04x' % addr)
             bfc._rawsend(radio, frame)
 
             d = bfc._rawrecv(radio, radio.BLOCK_SIZE + 4)
@@ -173,7 +174,6 @@ def _download(radio):
 
             # UI Update
             status.cur = len(data) // radio.BLOCK_SIZE
-            status.msg = "Cloning from radio..."
             radio.status_fn(status)
     return data
 
@@ -494,7 +494,7 @@ class UV17Pro(bfc.BaofengCommonHT):
 
     def _make_frame(self, cmd, addr, length, data=""):
         """Pack the info in the header format"""
-        frame = cmd + struct.pack(">i", addr)[2:] + struct.pack("b", length)
+        frame = cmd + struct.pack(">i", addr)[2:] + struct.pack("B", length)
         # add the data if set
         if len(data) != 0:
             frame += data
@@ -2358,7 +2358,10 @@ class UV5RMini(UV17Pro):
 
     MEM_TOTAL = 0x8240
 
+    _is_on_ble = False
+
     _has_support_for_banknames = False
+    _has_bt = True  # allow BT setting
 
     _idents = [MSTRING_UV17PROGPS]
     _mem_size = MEM_TOTAL
@@ -2384,6 +2387,81 @@ class UV5RMini(UV17Pro):
                    _uhf_range,
                    _uhf_rx2_range]
     MODES = UV17Pro.MODES + ['AM']
+
+    BLE_UP_BLOCK_SIZE = 0x80  # uploading to radio over BLE uses 0x80 blocksize
+
+    def sync_in(self):
+        self._is_on_ble = platform.get_platform().is_ble_serial(self.pipe)
+        LOG.debug('Detected BLE: %s' % self._is_on_ble)
+        return super().sync_in()
+
+    def sync_out(self):
+        self._is_on_ble = platform.get_platform().is_ble_serial(self.pipe)
+        LOG.debug('Detected BLE: %s' % self._is_on_ble)
+        return super().sync_out()
+
+    def _upload(radio):
+        """Upload to UV5R Mini (over BLE or USB/Serial)"""
+        # Put radio in program mode and identify it and
+        # determine if on BLE or USB/Serial connection
+        _do_ident(radio)
+
+        if radio._is_on_ble:  # BLE upload needs a diff blocksize
+            _blocksize = radio.BLE_UP_BLOCK_SIZE
+        else:
+            _blocksize = radio.BLOCK_SIZE
+
+        data = b""
+
+        # UI progress
+        status = chirp_common.Status()
+        status.cur = 0
+        status.max = radio.MEM_TOTAL // _blocksize
+        status.msg = "Cloning to radio on %s/Serial..." % \
+            ('BLE' if radio._is_on_ble else 'USB')
+        radio.status_fn(status)
+
+        data_addr = 0x00
+        radio_mem = radio.get_mmap()
+        radio.pipe.log('Uploading to radio using block size of 0x%04x'
+                       % _blocksize)
+        for i in range(len(radio.MEM_SIZES)):
+            MEM_SIZE = radio.MEM_SIZES[i]
+            MEM_START = radio.MEM_STARTS[i]
+            for addr in range(MEM_START, MEM_START + MEM_SIZE,
+                              _blocksize):
+                # calc min byte count to keep from reading too many bytes
+                byte_count = min(_blocksize, (MEM_START + MEM_SIZE) - addr)
+                data = radio_mem[data_addr:data_addr + byte_count]
+
+                if byte_count < _blocksize:  # does block need padding?
+                    radio.pipe.log('Padding partial block with \xff '
+                                   'by 0x%02x bytes' %
+                                   (_blocksize - len(data)))
+                    # pad partial block with \xff
+                    data += (b'\xff' * (_blocksize - len(data)))
+
+                if radio._uses_encr:
+                    data = _crypt(radio._encrsym, data)
+
+                data_addr += byte_count  # advance read pointer
+
+                frame = radio._make_frame(b"W", addr, _blocksize, data)
+                radio.pipe.log('Sending address %04x' % addr)
+                bfc._rawsend(radio, frame)
+
+                ack = bfc._rawrecv(radio, 1)
+                if ack != b"\x06":
+                    msg = "Bad ack writing block %04x" % addr
+                    raise errors.RadioError(msg)
+
+                # UI Update
+                status.cur = data_addr // _blocksize
+                radio.status_fn(status)
+
+        return data
+
+    upload_function = _upload
 
     _end_fmt = """
     // #seekto 0x8220;
