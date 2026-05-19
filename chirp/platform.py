@@ -182,6 +182,9 @@ class UnixPlatform(Platform):
 
         return ver
 
+    def is_ble_serial(self, serial):
+        return serial.port.startswith('/tmp/ttyBLE')
+
 
 class Win32Platform(Platform):
     """A platform module suitable for Windows systems"""
@@ -229,6 +232,48 @@ class Win32Platform(Platform):
 
         return vers.get(pform,
                         "Win32 (Unknown %i.%i:%i)" % (pform, sub, build))
+
+    def is_ble_serial(self, serial):
+        import winreg
+
+        max_ports = 255
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
+                             r'HARDWARE\DEVICEMAP\SERIALCOMM')
+        devices = {}
+        for i in range(max_ports):
+            try:
+                # device is something like \Device\com0com24
+                # name is something like COM12
+                device, name, _ = winreg.EnumValue(key, i)
+                devices[name] = device
+            except EnvironmentError:
+                break
+
+        LOG.debug('All device/name pairs: %s' % devices)
+
+        try:
+            # ble-serial names its device BLE, so find it
+            ble_device = devices.get('BLE')
+        except KeyError:
+            LOG.debug('No BLE device found')
+            sys.exit(1)
+
+        # The pair device appears to always be \Device\com0com14 if
+        # the BLE device is \Device\com0com24
+        pair_device = list(ble_device)
+        # Change 2 to 1 to get the first device of the pair
+        pair_device[-2] = '1'
+        pair_device = ''.join(pair_device)
+        LOG.debug('Found BLE device %s, guessing pair is %s' % (
+            device, pair_device))
+        try:
+            pair_name = dict(((v, k) for k, v in devices.items()))[pair_device]
+        except KeyError:
+            LOG.debug('Pair device not found!')
+        else:
+            LOG.info('BLE pair device is %s' % pair_name)
+
+        return serial.port == pair_name
 
 
 def _get_platform(basepath):

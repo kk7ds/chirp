@@ -16,6 +16,10 @@ class SerialException(Exception):
 
 
 class SerialNone(serialtrace.SerialTrace):
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k)
+        self.port = '/dev/ttyUSB0'
+
     def flush(self):
         pass
 
