@@ -253,10 +253,10 @@ class Win32Platform(Platform):
 
         try:
             # ble-serial names its device BLE, so find it
-            ble_device = devices.get('BLE')
+            ble_device = devices['BLE']
         except KeyError:
             LOG.debug('No BLE device found')
-            sys.exit(1)
+            return False
 
         # The pair device appears to always be \Device\com0com14 if
         # the BLE device is \Device\com0com24
