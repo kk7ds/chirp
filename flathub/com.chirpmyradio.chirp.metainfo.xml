@@ -32,6 +32,18 @@
     </screenshot>
   </screenshots>
 
+  <categories>
+    <category>Network</category>
+    <category>HamRadio</category>
+  </categories>
+  
+  <keywords>
+    <keyword>ham</keyword>
+    <keyword>radio</keyword>
+    <keyword>programming</keyword>
+    <keyword>transceiver</keyword>
+  </keywords>
+
   <url type="homepage">https://chirpmyradio.com</url>
   <url type="bugtracker">https://chirpmyradio.com/projects/chirp/issues</url>
   <url type="help">https://chirpmyradio.com/projects/chirp/wiki/Documentation</url>
