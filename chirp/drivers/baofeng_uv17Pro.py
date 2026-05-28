@@ -2435,7 +2435,7 @@ class UV5RMini(UV17Pro):
                 data = radio_mem[data_addr:data_addr + byte_count]
 
                 if byte_count < _blocksize:  # does block need padding?
-                    radio.pipe.log('Padding partial block with \xff '
+                    radio.pipe.log('Padding partial block with \\xff '
                                    'by 0x%02x bytes' %
                                    (_blocksize - len(data)))
                     # pad partial block with \xff
