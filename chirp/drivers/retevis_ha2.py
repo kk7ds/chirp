@@ -461,6 +461,7 @@ def _set_memory(radio, mem, _mem, ch_index, isvfo=False):
             ch_index_dict.append(ch_index)
         elif ch_index in ch_index_dict and mem.freq <= 0:
             ch_index_dict.remove(ch_index)
+            radio.update_channel_indexes(ch_index, ch_index_dict)
         retevis_ha1g.set_ch_index(radio, ch_index_dict)
 
     _mem.fill_raw(b"\x00")

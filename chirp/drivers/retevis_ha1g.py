@@ -1171,6 +1171,7 @@ def _set_memory(self, mem, _mem, ch_index):
         ch_index_dict.append(ch_index)
     elif ch_index in ch_index_dict and rx_freq <= 0:
         ch_index_dict.remove(ch_index)
+        self.update_channel_indexes(ch_index, ch_index_dict)
     set_ch_index(self, ch_index_dict)
     _mem.set_raw(b"\x00" * 40)
     if mem.empty:
@@ -1657,6 +1658,74 @@ class HA1G(chirp_common.CloneModeRadio):
     def supports_banks(self):
         return compare_version(self.metadata.get(
             'ha1g_firmware', '0.0.0.0'), '1.1.13.1') >= 0
+
+    def update_channel_indexes(self, ch_index, ch_index_list):
+        """Check if home power on channels are valid,
+        if not, the radio will keep restarting"""
+        self.update_poweron_channel_index(ch_index, ch_index_list)
+        self.update_zone_channel_index(ch_index)
+        self.update_scan_channel_index(ch_index, ch_index_list)
+        self.update_alarm_channel_index(ch_index)
+
+    def update_poweron_channel_index(self, ch_index, ch_index_list):
+        settings = self._memobj.settings
+        if settings.homepoweronch_1 == ch_index:
+            settings.homepoweronzone_1 = 0xFFF
+            settings.homepoweronch_1 = (
+                ch_index_list[self._skip_vfoch_count] if ch_index_list else 0)
+        if settings.homepoweronch_2 == ch_index:
+            settings.homepoweronzone_2 = 0xFFF
+            settings.homepoweronch_2 = (
+                ch_index_list[self._skip_vfoch_count] if ch_index_list else 0)
+
+    def update_zone_channel_index(self, ch_index):
+        zones = self._memobj.zoneinfo
+        zonenum = min(len(zones.zoneindex), zones.zonenum)
+        for i in range(zonenum):
+            idx = zones.zoneindex[i]
+            if idx == 0xFFFF or idx >= len(zones.zones):
+                break
+            zone = zones.zones[idx]
+            if ch_index in zone.chindex:
+                chidx = zone.chindex.index(ch_index)
+                for j in range(chidx, zone.chnum-1):
+                    zone.chindex[j] = zone.chindex[j+1]
+                zone.chindex[zone.chnum - 1] = 0xFFFF
+                zone.chnum -= 1
+
+    def update_scan_channel_index(self, ch_index, ch_index_list):
+        scans = self._memobj.scans
+        scannum = min(len(scans.scanindex), scans.scannum)
+        for i in range(scannum):
+            idx = scans.scanindex[i]
+            if idx == 0xFFFF or idx >= len(scans.scans):
+                break
+            scan = scans.scans[idx]
+            if scan.specifych == ch_index:
+                scan.specifych = (
+                    ch_index_list[self._skip_vfoch_count]
+                    if ch_index_list else 0)
+            if scan.PriorityCh1 == ch_index:
+                scan.PriorityCh1 = 0xFFFF
+            if scan.PriorityCh2 == ch_index:
+                scan.PriorityCh2 = 0xFFFF
+            if ch_index in scan.chindex:
+                chidx = scan.chindex.index(ch_index)
+                for j in range(chidx, scan.chnum-1):
+                    scan.chindex[j] = scan.chindex[j+1]
+                scan.chindex[scan.chnum - 1] = 0xFFFF
+                scan.chnum -= 1
+
+    def update_alarm_channel_index(self, ch_index):
+        alarms = self._memobj.alarms
+        alarnum = min(len(alarms.alarmindex), alarms.alarmnum)
+        for i in range(alarnum):
+            idx = alarms.alarmindex[i]
+            if idx == 0xFFFF or idx >= len(alarms.alarms):
+                break
+            alarm = alarms.alarms[idx]
+            if alarm.jumpch == ch_index:
+                alarm.jumpch = 0
 
 
 @directory.register
