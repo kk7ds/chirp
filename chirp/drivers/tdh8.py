@@ -1965,11 +1965,15 @@ class TDH8(chirp_common.CloneModeRadio):
                 gcode_val = ""
             else:
                 gcode_val = gcode_val[1]
+            try:
+                cur = GROUPCODE.index(gcode_val)
+            except ValueError:
+                cur = len(GROUPCODE)
             rs = RadioSetting(
                     "gcode", "Group Code",
                     RadioSettingValueList(
                         GROUPCODE,
-                        current_index=GROUPCODE.index(gcode_val)))
+                        current_index=cur))
             dtmf.append(rs)
 
             icode_list = self._memobj.icode.idcode
@@ -2156,8 +2160,8 @@ class TDH8(chirp_common.CloneModeRadio):
     def get_settings(self):
         try:
             return self._get_settings()
-        except Exception:
-            raise InvalidValueError("Setting Failed!")
+        except Exception as e:
+            raise InvalidValueError("Setting Failed!") from e
 
     def set_settings(self, settings):
 

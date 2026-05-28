@@ -823,6 +823,14 @@ class RT900BT(chirp_common.CloneModeRadio):
         rset = MemSetting("settings.busy_lock", "BCL", rs)
         abblock.append(rset)
 
+        # Menu 30 VFO DTMF code
+        rs = RadioSettingValueList(
+            PTTID_LIST,
+            current_index=_settings.pttid
+        )
+        rset = MemSetting("settings.pttid", "DTMF Code", rs)
+        abblock.append(rset)
+
         # Menu 42: TX-A/B
         rs = RadioSettingValueList(
             DUALTX_LIST, current_index=_settings.dualtx)
@@ -1413,7 +1421,7 @@ class RT900(RT900BT):
     # ==========
     # Notice to developers:
     # The RT-900 support in this driver is currently based upon stock
-    # factory firmware.
+    # factory firmware, V0.14P
     # ==========
 
     """Radtel RT-900 (without Bluetooth)"""
@@ -1423,9 +1431,10 @@ class RT900(RT900BT):
     _has_bt_denoise = False
     _has_am_per_channel = False
     _has_am_switch = not _has_am_per_channel
-    _has_single_mode = False
+    _has_single_mode = False    # Fw V0.14P has single mode, but no menu for it
+    #                             it's toggled by Menu 7, TDR
 
-    _upper = 512  # fw 1.04P expands from 256 to 512 channels
+    _upper = 999  # fw V1.14P expands from 512 to 999 channels
 
     SKEY_LIST = ["FM Radio",
                  "TX Power Level",
@@ -1447,7 +1456,8 @@ class RT900(RT900BT):
     def get_prompts(cls):
         rp = super().get_prompts()
         rp.experimental = \
-            ('This driver is a beta version for the RT-900\n'
+            ('This driver is a beta version for the RT-900'
+             ' running Firmware V0.14P\n'
              '\n'
              'Please save an unedited copy of your first successful\n'
              'download to a CHIRP Radio Images(*.img) file.\n\n'
@@ -1460,7 +1470,7 @@ class RT900(RT900BT):
 class RT910BT(RT900BT):
     # ==========
     # Notice to developers:
-    # The RT-910 BT support in this driver is currently based upon Vx.yyP
+    # The RT-910 BT support in this driver is currently based upon V0.24P
     # firmware with 15 banks/zones of 64 channels steps.
     # ==========
     """Radtel RT-910_BT 960"""
@@ -1500,7 +1510,7 @@ class RT910BT(RT900BT):
 
     def get_features(self):
         rf = super().get_features()
-        rf.has_bank = True  # Firmware Vx.yyP supports 15
+        rf.has_bank = True  # Firmware V0.24P supports 15
         #                     "static zones" of 64 frequencies
         rf.valid_tuning_steps = self._steps
         return rf
@@ -1510,7 +1520,7 @@ class RT910BT(RT900BT):
         rp = super().get_prompts()
         rp.experimental = \
             ('This driver is a beta version for the RT-910 BT'
-             ' running Firmware V0x.yy\n'
+             ' running Firmware V0.24P\n'
              '\n'
              'Please save an unedited copy of your first successful\n'
              'download to a CHIRP Radio Images(*.img) file.\n\n'
