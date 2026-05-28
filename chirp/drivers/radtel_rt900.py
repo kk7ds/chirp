@@ -217,13 +217,14 @@ struct {
   u8 unknown_9025;    // 9025 Always 0x01 on all RT-900 variants
   u8 unknown_9026;    // 9026
   u8 unknown_9027;    // 9027
-  u8 unknown_9028;    // 9028
+  u8 zone_or_channel; // 9028 Zone or Channel (RT-920 fw V0.16)
+                      //        0: Zone mode, 1: Channel mode
   u8 unused_9029:6,   // 9029
      qtsave:2;        //      QT Save Type
-  u8 skey2_sp;        // 902A Skey2 Short
-  u8 skey2_lp;        // 902B Skey2 Long
-  u8 skey3_sp;        // 902C Skey3 Short
-  u8 skey3_lp;        // 902D Skey3 Long
+  u8 skey2_sp0;       // 902A Skey2 Short RT-900BT
+  u8 skey2_sp1;       // 902B Skey2 Short, Long RT-900BT
+  u8 skey2_lp;        // 902C Skey2 Long, Skey3 Short RT-900BT
+  u8 skey3_sp;        // 902D Skey3 Short
   u8 topkey_sp;       // 902E Top Key (RT-470L)
   u8 unused_902f:6,   // 902F
      rxendtail:2;     //      RX END TAIL (RT-470)
@@ -231,7 +232,7 @@ struct {
   u8 noise_reduction; // 9031 NOISE REDUCTION
   u8 unknown_9032;    // 9032
   u8 unknown_9033;    // 9033
-  u8 unknown_9034;    // 9034
+  u8 fm_interrupt;    // 9034
   u8 unknown_9035;    // 9035
   u8 unknown_9036;    // 9036
   u8 unknown_9037;    // 9037
@@ -253,8 +254,8 @@ struct {
 
 #seekto 0xA020;
 struct {
-  u8 code[5];         //      5-character DTMF Encoder Groups
-  u8 unused[11];
+  u8 code[6];         //      6-character DTMF PTT-IDs
+  u8 unused[10];
 } pttid[15];
 
 #seekto 0xD000; // radio operationg mode
