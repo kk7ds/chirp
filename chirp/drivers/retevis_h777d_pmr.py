@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Copyright 2026 Piotr Kochanowski <tar4nis@gmail.com>
-# Copyright 2026 Dariusz Koryto <sq7dk@koryto.eu>
 #
 # CHIRP driver for the Retevis H777D-PMR.
 #
@@ -165,12 +164,6 @@ IMAGE_SIZE = TAIL_BYTE_ADDR + 1
 NAME_LENGTH = 12
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 VALID_BANDS = [(400000000, 520000000)]
-PMR_FREQS = [
-    446006250, 446018750, 446031250, 446043750,
-    446056250, 446068750, 446081250, 446093750,
-    446106250, 446118750, 446131250, 446143750,
-    446156250, 446168750, 446181250, 446193750,
-]
 VENDOR_DTCS_CODES = (
     23, 25, 26, 31, 32, 36, 43, 47, 51, 53,
     54, 65, 71, 72, 73, 74, 114, 115, 116, 122,
@@ -189,18 +182,6 @@ CTCSS_TONE_TO_RAW = {
     tone: int(round(tone * 10)) for tone in chirp_common.TONES
 }
 CTCSS_RAW_TO_TONE = {raw: tone for tone, raw in CTCSS_TONE_TO_RAW.items()}
-
-# Note: Memory structure uses bitfields defined in MEM_FORMAT above.
-# The following constants are kept for reference but should not be used
-# for manual bitmasking - use the bitfield accessors instead.
-POWER_LOW_MASK = 0x01
-HOP_OFF_MASK = 0x02
-SCRAMBLE_MASK = 0x04
-
-PTTID_MASK = 0x03
-SCAN_ADD_MASK = 0x04
-BCL_MASK = 0x08
-WIDE_MASK = 0x40
 
 SQUELCH_LIST = [str(i) for i in range(10)]
 VOX_LEVEL_LIST = [str(i) for i in range(1, 11)]
@@ -435,12 +416,11 @@ class RetevisH777D(chirp_common.CloneModeRadio):
             "->Tone",
             "DTCS->DTCS",
         ]
-        rf.valid_duplexes = ["", "-", "+", "split", "off"]
+        # PMR446 is simplex only.
+        rf.valid_duplexes = [""]
         rf.has_rx_dtcs = True
         rf.has_ctone = True
         rf.has_cross = True
-        rf.can_odd_split = True
-
         rf.memory_bounds = (1, 16)
         rf.valid_bands = VALID_BANDS
         rf.valid_power_levels = self.POWER_LEVELS
@@ -530,10 +510,6 @@ class RetevisH777D(chirp_common.CloneModeRadio):
             name += value
         return name.rstrip()
 
-    def _apply_tone_fields(self, mem, txtone, rxtone):
-        # Use CHIRP's standard tone presentation: matching TX/RX pairs
-        # collapse to TSQL/DTCS, and only mismatched pairs remain Cross.
-        chirp_common.split_tone_decode(mem, txtone, rxtone)
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
@@ -552,12 +528,9 @@ class RetevisH777D(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        # Enforce PMR446 fixed channel plan
-        mem.freq = PMR_FREQS[mem.number - 1]
         mem.duplex = ""
         mem.offset = 0
-        mem.mode = "NFM"
-        mem.immutable = ["empty", "freq", "duplex", "offset", "mode"]
+        mem.mode = "FM" if _mem.wide else "NFM"
         # The radio does not store a per-channel tuning step, but CHIRP
         # still validates the hidden field on edit. Use the channel-plan
         # spacing so existing rows do not retain the default 5.0 kHz value.
@@ -570,7 +543,7 @@ class RetevisH777D(chirp_common.CloneModeRadio):
 
         txtone = self._decode_tone(_mem.txtone)
         rxtone = self._decode_tone(_mem.rxtone)
-        self._apply_tone_fields(mem, txtone, rxtone)
+        chirp_common.split_tone_decode(mem, txtone, rxtone)
 
         mem.extra = RadioSettingGroup("extra", "Extra")
         mem.extra.append(
@@ -604,18 +577,6 @@ class RetevisH777D(chirp_common.CloneModeRadio):
         )
 
         return mem
-
-    def validate_memory(self, mem):
-        msgs = super().validate_memory(mem)
-        if mem.empty:
-            return msgs
-        if mem.freq not in PMR_FREQS:
-            msgs.append(chirp_common.ValidationWarning(
-                'Frequency does not match PMR446 channel plan'))
-        if mem.duplex:
-            msgs.append(chirp_common.ValidationWarning(
-                'PMR radio uses simplex only'))
-        return msgs
 
     def get_settings(self):
         _s226 = self._memobj.settings226
@@ -868,7 +829,8 @@ class RetevisH777D(chirp_common.CloneModeRadio):
         _mem.set_raw(b"\x00" * (_mem.size() // 8))
 
         _mem.rxfreq = memory.freq / 10
-        # PMR446 is simplex only
+
+        # PMR446 is simplex only; TX always equals RX.
         _mem.txfreq = memory.freq / 10
 
         txtone, rxtone = chirp_common.split_tone_encode(memory)
