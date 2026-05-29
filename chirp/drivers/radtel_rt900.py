@@ -507,6 +507,11 @@ class RT900BT(chirp_common.CloneModeRadio):
     _has_am_per_channel = True
     _has_am_switch = not _has_am_per_channel
     _has_single_mode = True
+    _has_zone_or_channel = False
+    _has_zone_names = False
+    _has_sp0 = True  # spkey addresses are shifted -1
+    _has_hf = False
+
     _valid_chars = chirp_common.CHARSET_ALPHANUMERIC + \
         "`~!@#$%^&*()-=_+[]\\{}|;':\",./<>?"
 
@@ -694,6 +699,13 @@ class RT900BT(chirp_common.CloneModeRadio):
         rset = MemSetting("settings.alarmsound", "Alarm Sound", rs)
         basic.append(rset)
 
+        if self._has_hf:
+            s1 = "FM/AM/SSB Radio"
+            s2 = "Allow access to FM/AM/SSB RX channels on radio."
+        else:
+            s1 = "FM Radio"
+            s2 = "Allow access to FM broadcast RX channels on radio."
+
         rs = RadioSettingValueInvertedBoolean(not _settings.fmradio)
         rset = MemSetting("settings.fmradio", "FM Radio", rs)
         basic.append(rset)
@@ -722,7 +734,7 @@ class RT900BT(chirp_common.CloneModeRadio):
         for i in range(0, 15):
             _codeobj = self._memobj.pttid[i].code
             _code = "".join([DTMF_CHARS[x] for x in _codeobj if int(x) < 0x1F])
-            rs = RadioSettingValueString(0, 5, _code, False)
+            rs = RadioSettingValueString(0, 6, _code, False)
             rs.set_charset(DTMF_CHARS)
             rset = RadioSetting("pttid/%i.code" % i,
                                 "PTT-ID Code %i" % (i + 1), rs)
@@ -778,21 +790,44 @@ class RT900BT(chirp_common.CloneModeRadio):
             spec.append(rset)
 
         # Menu 23: PF2 Short
+        if self._has_sp0:
+            skey2_sp = _settings.skey2_sp0
+            key = "settings.skey2_sp0"
+        else:
+            skey2_sp = _settings.skey2_sp1
+            key = "settings.skey2_sp1"
+
         rs = RadioSettingValueList(self.SKEY_SP_LIST,
                                    current_index=_settings.skey2_sp)
         rset = MemSetting("settings.skey2_sp", "PF2 Key (Short Press)", rs)
         spec.append(rset)
 
         # Menu 24: PF2 Long
+        if self._has_sp0:
+            skey2_lp = _settings.skey2_sp1
+            key = "settings.skey2_sp1"
+        else:
+            skey2_lp = _settings.skey2_lp
+            key = "settings.skey2_lp"
+
         rs = RadioSettingValueList(
-            self.SKEY_LIST, current_index=_settings.skey2_lp)
-        rset = MemSetting("settings.skey2_lp", "PF2 Key (Long Press)", rs)
+            self.SKEY_LIST, current_index=skey2_lp)
+        rset = MemSetting(key, "PF2 Key (Long Press)", rs)
+        rset.set_doc("Set what a Long Press on the PF2 Key will do.")
         spec.append(rset)
 
         # Menu 25: PF3 Short
+        if self._has_sp0:
+            skey3_sp = _settings.skey2_lp
+            key = "settings.skey2_lp"
+        else:
+            skey3_sp = _settings.skey3_sp
+            key = "settings.skey3_sp"
+
         rs = RadioSettingValueList(
-            self.SKEY_LIST, current_index=_settings.skey3_sp)
-        rset = MemSetting("settings.skey3_sp", "PF3 Key (Short Press)", rs)
+            self.SKEY_LIST, current_index=skey3_sp)
+        rset = MemSetting(key, "PF3 Key (Short Press)", rs)
+        rset.set_doc("Set what a Short Press on the PF3 Key will do.")
         spec.append(rset)
 
         if self.MODEL not in ["RT-900_BT", "RT-920"]:
@@ -808,9 +843,33 @@ class RT900BT(chirp_common.CloneModeRadio):
         spec.append(rset)
 
         if self._has_single_mode:
-            # Menu 51: Single Mode - Single fre channel display
+            # Menu 51: Single Mode - Single freq channel display
             rs = RadioSettingValueBoolean(_settings.single_mode)
             rset = MemSetting("settings.single_mode", "Single Mode", rs)
+            spec.append(rset)
+
+        if self.MODEL in ["RT-920"]:
+            # Menu 53: FM Interupt
+            rs = RadioSettingValueBoolean(_settings.fm_interrupt)
+            rset = MemSetting("settings.fm_interrupt", "FM Interrupt", rs)
+            rset.set_doc("While using broadcast FM, "
+                         "allow incoming RX to interrupt the FM "
+                         "broadcast audio.")
+            spec.append(rset)
+
+        if self._has_zone_or_channel:
+            # Menu 10: Zone or Channel
+            rs = RadioSettingValueList(self._zone_or_channel_list,
+                                       current_index=_settings.zone_or_channel)
+            rset = MemSetting("settings.zone_or_channel",
+                              "Zone or Channel", rs)
+            rset.set_warning(
+                 "Changing this setting requires saving the .IMG file and "
+                 "opening it back up to enable/disable the Banks (Zones) "
+                 "preview tab.")  # and the Zone Name sub-menu.")
+            rset.set_doc(
+                "Set Zone Mode (static banks) or Full Channel "
+                "(flat) memmory channel mode")
             spec.append(rset)
 
         # VFO A/B settings
@@ -1064,6 +1123,80 @@ class RT900BT(chirp_common.CloneModeRadio):
                                        current_index=vfo.b.rxmod)
             rset = MemSetting("vfo.b.rxmod", "RX Modulation", rs)
             bchannel.append(rset)
+
+        # SSB Settings, RT-920, BJ7800 Only
+        if self._has_hf:
+            ssbblock = RadioSettingGroup("ssbblock", "FM/AM/SSB Modulation")
+            spec.append(ssbblock)
+
+            # HF mode submenu
+            modes = RadioSettingSubGroup("modes", "Modes")
+            ssbblock.append(modes)
+
+            # SSB Work Mode
+            ssbwm = self._memobj.ssb_settings
+            rs = RadioSettingValueList(
+                self._ssb_workmode_list,
+                current_index=ssbwm.workmode
+            )
+            rset = MemSetting("ssb_settings.workmode", "Work Mode", rs)
+            rset.set_doc("Set HF Workmode.")
+            modes.append(rset)
+
+            # SSB Modulation Mode
+            ssb = self._memobj.ssb
+            rs = RadioSettingValueList(
+                self._ssb_modulation_list,
+                current_index=ssb.modulation
+            )
+            rset = MemSetting("ssb.modulation", "Modulation Mode", rs)
+            rset.set_doc("Set HF RX Modulation Mode.")
+            modes.append(rset)
+
+            # AM mode submenu
+            amsettings = RadioSettingSubGroup("amsettings", "AM Settings")
+            ssbblock.append(amsettings)
+
+            # AM Step Freq
+            stepfreq = self._memobj.stepfreq
+            rs = RadioSettingValueList(
+                self._am_step_freq_list,
+                current_index=stepfreq.am
+            )
+            rset = MemSetting("stepfreq.am", "Step Freq", rs)
+            rset.set_doc("Set HF AM RX Step Frequency.")
+            amsettings.append(rset)
+
+            # AM RX Gain
+            rs = RadioSettingValueList(
+                self._rx_gain_list,
+                current_index=ssb.am_rxgain
+            )
+            rset = MemSetting("ssb.am_rxgain", "RX Gain", rs)
+            rset.set_doc("Set HF AM RX Gain value.")
+            amsettings.append(rset)
+
+            # SSB mode submenu
+            ssbsettings = RadioSettingSubGroup("ssbsettings", "SSB Settings")
+            ssbblock.append(ssbsettings)
+
+            # SSB Step Freq
+            rs = RadioSettingValueList(
+                self._ssb_step_freq_list,
+                current_index=stepfreq.ssb
+            )
+            rset = MemSetting("stepfreq.ssb", "Step Freq", rs)
+            rset.set_doc("Set HF SSB RX Step Frequency.")
+            ssbsettings.append(rset)
+
+            # SSB RX Gain
+            rs = RadioSettingValueList(
+                self._rx_gain_list,
+                current_index=stepfreq.ssb_rxgain
+            )
+            rset = MemSetting("stepfreq.ssb_rxgain", "RX Gain", rs)
+            rset.set_doc("Set HF SSB RX Gain value.")
+            ssbsettings.append(rset)
 
         return group
 
@@ -1619,7 +1752,11 @@ class RT920(RT900BT):
     _has_bt_denoise = True
     _has_am_per_channel = True
     _has_am_switch = not _has_am_per_channel
-    _has_single_mode = False
+    _has_single_mode = True
+    _has_zone_or_channel = True
+    _has_zone_names = True
+    _has_sp0 = False  # spkey addresses are not shifted
+    _has_hf = True
 
     def get_bank_model(self):
         return chirp_common.StaticBankModel(self, banks=15)
