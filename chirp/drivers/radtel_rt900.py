@@ -1710,13 +1710,42 @@ class RT910(RT910BT):
         return rp
 
 
+class RT920Bank(chirp_common.NamedBank):
+    """RT-920 Bank"""
+    def get_name(self):
+        """decode bank name from char array into string"""
+        _bank = self._model._radio._memobj.zones[self._index - 1]
+        name = str(_bank.name).rstrip(" \n\t\x00\xff")  # remove filler chars
+
+        if len(name) == 0:
+            name = "ZONE %i" % self._index
+
+        return name
+
+    def set_name(self, name):
+        """encode bank name into \xff filled char array"""
+        _bank = self._model._radio._memobj.zones[self._index - 1]
+        _bank.name = name[:len(_bank.name)].rstrip()\
+            .ljust(len(_bank.name), "\xff")
+
+
+class RT920BankModel(chirp_common.StaticBankModel):
+    """RT-920 Bank Model"""
+    def __init__(self, radio, name, banks):
+        super(RT920BankModel, self).__init__(radio, name, banks)
+        self._num_banks = banks
+        self._rf = radio.get_features()
+        self._banks = []
+        for i in range(self._num_banks):
+            self._banks.append(RT920Bank(self, i + 1, "ZONE %i" % (i + 1)))
+
+
 @directory.register
 class RT920(RT900BT):
     # ==========
     # Notice to developers:
-    # The RT-920 support in this driver is currently based upon V0.14P
-    # firmware with 15 banks/zones of 64 channels steps.
-    # Also known to work on the SHJ H28Y Pro V0.07 firmware
+    # The RT-920 support in this driver is currently based upon V0.18
+    # firmware with 10 banks/zones of 99 channels.
     # ==========
     """Radtel RT-920"""
     VENDOR = "Radtel"
@@ -1759,12 +1788,15 @@ class RT920(RT900BT):
     _has_hf = True
 
     def get_bank_model(self):
-        return chirp_common.StaticBankModel(self, banks=15)
+        return RT920BankModel(self, "Zones", self._banks)
 
     def get_features(self):
         rf = super().get_features()
-        rf.has_bank = True  # Firmware V0.14P supports 15
-        #                     "static zones" of 64 frequencies
+        # Firmware V0.18 supports 10
+        # optional "static zones" of 99 frequencies
+        # or 990 flat chanels
+        rf.has_bank = not self._memobj.settings.zone_or_channel
+        rf.has_bank_names = self._has_zone_names
         rf.valid_tuning_steps = self._steps
         return rf
 
@@ -1773,7 +1805,7 @@ class RT920(RT900BT):
         rp = super().get_prompts()
         rp.experimental = \
             ('This driver is a beta version for the RT-920'
-             ' running Firmware V0.14P\n'
+             ' running Firmware V0.18\n'
              '\n'
              'Please save an unedited copy of your first successful\n'
              'download to a CHIRP Radio Images(*.img) file.\n\n'
