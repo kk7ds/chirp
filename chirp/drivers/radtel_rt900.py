@@ -2256,3 +2256,85 @@ class RadioddityGS10B(RT900BT):
              'PROCEED AT YOUR OWN RISK!'
              )
         return rp
+
+
+@directory.register
+class BJ7800(RT920):
+    # ==========
+    # Notice to developers:
+    # The BJ7800 support in this driver is currently based upon V0.15P
+    # firmware with 15 banks/zones of 64 channels.
+    # Should also work with the SHU H28Y Pro
+    # ==========
+    """Bajeton BJ7800"""
+    VENDOR = "Bajeton"
+    MODEL = "BJ7800"
+
+    _upper = 960  # fw V0.15P supports 960 channels
+    _mem_params = (_upper,  # number of channels
+                   )
+    _banks = 15
+    _ranges = [
+        (0x0000, 0x7800),  # 15 zones of 64 frequencies,
+                           # equals 960 channels of 32 bytes each
+                           # 15 * 64 * 32 = 0X7800
+        (0x8000, 0x8040),
+        (0x9000, 0x9040),
+        (0xB000, 0xB400),  # FM, AM, HF frequencies
+        (0xC000, 0xC400),  # FM, AM, HF names
+        (0xA000, 0xA140),
+        (0xD000, 0xD040),   # Radio mode hidden setting
+    ]
+
+    _has_bt_denoise = True
+    _has_am_per_channel = True
+    _has_am_switch = not _has_am_per_channel
+    _has_single_mode = False
+    _has_zone_or_channel = False
+    _has_zone_names = False  # dosen't have named zones like the RT-920
+    _has_hf = True
+
+    def get_bank_model(self):
+        return chirp_common.StaticBankModel(self, banks=self._banks)
+
+    def get_features(self):
+        rf = super().get_features()
+        # Firmware V0.15P supports 15
+        # "static zones" of 64 frequencies
+        # for 960 channels
+        rf.has_bank = True
+        rf.has_bank_names = self._has_zone_names
+        rf.valid_tuning_steps = self._steps
+        rf.has_sub_devices = self._has_hf
+        return rf
+
+    # def process_mmap(self):
+    #     mem_format = MEM_FORMAT % self._mem_params
+    #     self._memobj = bitwise.parse(mem_format, self._mmap)
+
+    @classmethod
+    def get_prompts(cls):
+        rp = super().get_prompts()
+        rp.experimental = \
+            ('This driver is a beta version for the BJ7800'
+             ' running Firmware V0.15P\n'
+             '\n'
+             'Please save an unedited copy of your first successful\n'
+             'download to a CHIRP Radio Images(*.img) file.\n\n'
+             'PROCEED AT YOUR OWN RISK!'
+             )
+        return rp
+
+    def get_sub_devices(self):
+        return [BJ7800VhfUfh(self._mmap),
+                RT920FM(self._mmap),
+                RT920AM(self._mmap),
+                RT920HF(self._mmap),
+                ]
+
+
+class BJ7800VhfUfh(BJ7800):
+    """Bajeton BJ7800 VHF/UHF subdevice"""
+    VENDOR = "Bajeton"
+    MODEL = "BJ7800"
+    VARIANT = "VHF/UHF"
