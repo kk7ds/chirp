@@ -34,6 +34,9 @@ from chirp.drivers.iradio_common import enter_programming_mode, \
 LOG = logging.getLogger(__name__)
 
 BLOCK_SIZE = 1024
+# Firmware command 0x34 sub-command 0x10 enters the "PC Programing" screen;
+# sub-command 0xEE exits it. Block reads and writes use separate 0x52/0x90+
+# frames after this handshake.
 READ_MAGIC = b"\x34\x52\x05\x10\x9B"
 END_MAGIC = b"\x34\x52\x05\xEE\x79"
 ACK = b"\x06"
@@ -64,11 +67,15 @@ SMS_RECORD_SIZE = 256
 SMS_TEXT_LEN = 160
 FM_COUNT = 80
 FM_RECORD_SIZE = 48
+FM_ALIAS_OFFSET = 30
+FM_ALIAS_LENGTH = 16
 FM_RANGE_CHOICES = ["64-108 MHz", "2-30 MHz", "520-1710 KHz", "153-279 KHz"]
 FM_DEMOD_CHOICES = ["AM", "LSB", "USB", "CW"]
 FM_STEP_CHOICES = ["1K", "5K", "9K", "10K"]
 FM_BW_CHOICES = ["0.5 K", "1.0 K", "1.2 K", "2.2 K", "3.0 K", "4.0 K"]
 FM_AGC_CHOICES = ["AGC", "0"] + ["-%d" % value for value in range(1, 38)]
+APO_SECONDS_MIN = 30
+APO_SECONDS_MAX = (9999 * 3600) + (59 * 60) + 59
 STARTUP_IMAGE_PAYLOAD_SIZE = 4096
 STARTUP_IMAGE_HEX_MAX_LEN = STARTUP_IMAGE_PAYLOAD_SIZE * 2
 GLOBAL_CONTACT_CSV_PATH_LEN = 512
@@ -100,6 +107,29 @@ FM_BFO_FIELDS = {
     "fm_mw_bfo": 16,
     "fm_lw_bfo": 25,
 }
+FM_UI_FIELDS = (
+    ("list", "fm_range", "Range"),
+    ("broadcast_freq", "fm_freq", "Frequency"),
+    ("alias", "fm_alias", "Alias"),
+    ("list", "fm_sw_demod", "SW Demod"),
+    ("freq", "fm_sw_freq", "SW Frequency MHz", 3, 8),
+    ("list", "fm_sw_step", "SW Step"),
+    ("list", "fm_sw_bw", "SW Bandwidth"),
+    ("list", "fm_sw_agc", "SW AGC"),
+    ("bfo", "fm_sw_bfo", "SW BFO"),
+    ("list", "fm_mw_demod", "MW Demod"),
+    ("freq", "fm_mw_freq", "MW Frequency kHz", 0, 6),
+    ("list", "fm_mw_step", "MW Step"),
+    ("list", "fm_mw_bw", "MW Bandwidth"),
+    ("list", "fm_mw_agc", "MW AGC"),
+    ("bfo", "fm_mw_bfo", "MW BFO"),
+    ("list", "fm_lw_demod", "LW Demod"),
+    ("freq", "fm_lw_freq", "LW Frequency kHz", 0, 6),
+    ("list", "fm_lw_step", "LW Step"),
+    ("list", "fm_lw_bw", "LW Bandwidth"),
+    ("list", "fm_lw_agc", "LW AGC"),
+    ("bfo", "fm_lw_bfo", "LW BFO"),
+)
 CONTACT_TYPES = ["Disabled", "Private", "Group", "All Call"]
 LOCAL_CONTACT_IMPORT_MODES = ["Disabled", "Replace", "Append"]
 LOCAL_CONTACT_TYPE_ALIASES = {
@@ -120,11 +150,11 @@ SIGNALING_ID_MASK = 0x00FFFFFF
 CFG2_OFFSET = 96
 CHANNEL_RXTX_CHOICES = ["RX+TX", "Only RX", "Only TX"]
 CHANNEL_ID_SELECT_CHOICES = ["Radio ID", "Channel ID"]
-CHANNEL_DMR_MODE_CHOICES = ["Off", "On"]
+CHANNEL_DMR_MODE_CHOICES = ["Dual Slot Off", "Dual Slot On"]
 CHANNEL_CALL_PRIORITY_CHOICES = ["Allow TX", "Channel Free", "Color Code Idle"]
 CHANNEL_TX_PRIORITY_CHOICES = ["Allow TX", "Channel Free", "CTC/DCS Idle"]
 CHANNEL_CTDCS_SELECT_CHOICES = [
-    "Normal", "Encrypt 1", "Encrypt 2", "Encrypt 3", "Mute Code",
+    "Standard", "Encrypt 1", "Encrypt 2", "Encrypt 3", "Mute Code",
 ]
 CHANNEL_AMFM_CHOICES = ["FM", "AM", "SSB"]
 CHANNEL_TAIL_TONE_CHOICES = [
@@ -187,16 +217,22 @@ READ_PLAN = (
     (0x03C0, "fm", 4),
 )
 
+# Upload opcodes are relative writers. The second tuple item records the
+# firmware's first 4 KiB flash sector for maintainers; the wire frame address
+# still starts at zero for each opcode.
 UPLOAD_PLAN = (
-    (0x90, 0, "cfg", 1),
-    (0x91, 0, "all", 48),
-    (0x92, 0, "vfo", 1),
-    (0x93, 0, "zone", 128),
-    (0x94, 0, "contact", 208),
-    (0x95, 0, "group", 20),
-    (0x96, 0, "encrypt", 12),
-    (0x97, 0, "sms", 4),
-    (0x98, 0, "fm", 4),
+    (0x90, 0x002, "cfg", 1),
+    (0x91, 0x004, "all", 48),
+    (0x92, 0x01C, "vfo", 1),
+    (0x93, 0x01E, "zone", 128),
+    (0x94, 0x05E, "contact", 208),
+    (0x95, 0x0C6, "group", 20),
+    (0x96, 0x0D0, "encrypt", 12),
+    # Firmware opcode 0x97 erases/writes only sector 0x0D6, so only the
+    # 16 editable preset SMS records are uploaded, not the 100-block
+    # SMS/history area read from the radio.
+    (0x97, 0x0D6, "sms", 4),
+    (0x98, 0x0F0, "fm", 4),
 )
 
 SAFE_UPLOAD_PLAN = UPLOAD_PLAN
@@ -232,22 +268,22 @@ MS100_CHOICES = ["0"] + ["%dms" % value for value in range(100, 2100, 100)]
 MS30_CHOICES = ["%dms" % value for value in range(30, 210, 10)]
 SCAN_COUNT_CHOICES = [str(value) for value in range(31)]
 LOCK_RANGE_CHOICES = ["Unlock", "RX Only", "Lock"]
-TALKAROUND_CHOICES = ["Off", "Talkaround", "Inverse"]
-MAIN_PTT_CHOICES = ["CH A", "Main CH"]
+TALKAROUND_CHOICES = ["Off", "Talkaround", "Reverse Freq"]
+MAIN_PTT_CHOICES = ["Area A", "Main Area"]
 ALARM_TYPE_CHOICES = ["Local", "Remote", "Local+Remote"]
 TX_PRIORITY_CHOICES = ["Edit", "Busy"]
 SCAN_MODE_CHOICES = ["CO", "TO", "SE"]
 SCAN_RETURN_CHOICES = ["Original CH", "Current CH"]
-ROGER_CHOICES = ["Off", "Roger 1", "Roger 2", "MDC1200", "GPS"]
+ROGER_CHOICES = ["Off", "Roger 1", "Roger 2", "MDC1200"]
 CALL_END_BEEP_CHOICES = ["Off", "Roger 1", "Roger 2"]
 DETECT_RANGE_CHOICES = [
     "18-64MHz", "64-136MHz", "136-174MHz", "174-240MHz",
     "240-320MHz", "320-400MHz", "400-480MHz", "480-560MHz",
-    "560-640MHz", "840-920MHz", "920-1000MHz",
+    "560-620MHz", "840-920MHz", "920-1000MHz",
 ]
 SMS_FORMAT_CHOICES = ["Hytera", "Motorola"]
 SMS_FONT_CHOICES = ["Unicode", "GBK"]
-GROUP_DISPLAY_CHOICES = ["Show City Info", "Show Called ID"]
+GROUP_DISPLAY_CHOICES = ["Show Caller Info", "Show Called Info"]
 DTMF_MODE_CHOICES = ["Off", "TX Begin", "TX End", "Begin And End"]
 DTMF_SELECT_CHOICES = ["DTMF-%02d" % value for value in range(1, 17)]
 LIST_BOOL_FIELDS = {
@@ -282,13 +318,16 @@ CONFIG_LIST_FIELDS = {
     234: ("display_id_digits", ["6 digits", "8 digits"]),
     267: ("tx_start_beep", LIST_ON_OFF),
     268: ("roger_beep", ROGER_CHOICES),
+    269: ("analog_vox", LIST_ON_OFF),
     272: ("detect_range", DETECT_RANGE_CHOICES),
     273: ("relay_delay", MS100_CHOICES),
     275: ("noaa_1050_alarm", LIST_ON_OFF),
+    278: ("short_tail", LIST_ON_OFF),
     388: ("dmr_remote", LIST_ON_OFF),
     397: ("call_start_beep", LIST_ON_OFF),
     398: ("call_end_beep", CALL_END_BEEP_CHOICES),
     404: ("dmr_group_display", GROUP_DISPLAY_CHOICES),
+    405: ("dmr_send_dtmf", LIST_ON_OFF),
     406: ("sms_format", SMS_FORMAT_CHOICES),
     407: ("sms_font", SMS_FONT_CHOICES),
     512: ("dtmf_send_delay", MS100_CHOICES),
@@ -305,7 +344,8 @@ CONFIG_LIST_FIELDS = {
 
 CONFIG_INT_FIELDS = {
     "save_start": (100, "Power Save Start Time (s)", 0, 200, "u8"),
-    "clock_seconds": (106, "Clock Time (seconds)", 0, 0xFFFFFFFF, "u32"),
+    "clock_seconds": (
+        106, "APO Time (seconds)", APO_SECONDS_MIN, APO_SECONDS_MAX, "u32"),
     "lock_range_1_start": (143, "Lock Range 1 Start MHz", 18, 1000, "u16"),
     "lock_range_1_end": (145, "Lock Range 1 End MHz", 18, 1000, "u16"),
     "lock_range_2_start": (148, "Lock Range 2 Start MHz", 18, 1000, "u16"),
@@ -314,11 +354,13 @@ CONFIG_INT_FIELDS = {
     "lock_range_3_end": (155, "Lock Range 3 End MHz", 18, 1000, "u16"),
     "lock_range_4_start": (158, "Lock Range 4 Start MHz", 18, 1000, "u16"),
     "lock_range_4_end": (160, "Lock Range 4 End MHz", 18, 1000, "u16"),
-    "lcd_contrast": (233, "Screen Contrast", 5, 25, "u8"),
+    "lcd_contrast": (233, "Screen Contrast", 0, 10, "u8"),
     "single_tone_hz": (256, "Single Tone Frequency Hz", 0, 20000, "u16"),
     "squelch_level": (258, "Squelch Level", 0, 10, "u8"),
     "tx_mic_gain": (261, "Analog MIC Gain", 0, 31, "u8"),
     "rx_speaker_gain": (262, "Analog SPK Gain", 0, 63, "u8"),
+    "analog_vox_threshold": (270, "VOX Threshold", 0, 245, "u8"),
+    "analog_vox_delay": (271, "VOX Delay", 0, 5, "u8"),
     "glitch_filter": (276, "Adjacent-Channel Threshold", 0, 10, "u8"),
     "single_tone_timer": (277, "Single Tone Send Timer (s)", 0, 120, "u8"),
     "dmr_radio_id": (384, "Personal ID", 1, 16776415, "bcd32"),
@@ -330,13 +372,78 @@ CONFIG_INT_FIELDS = {
         399, "DMR Group Call Hold Time (ms)", 0, 9999, "u16"),
     "dmr_private_call_time": (
         401, "DMR Private Call Hold Time (ms)", 0, 9999, "u16"),
-    "dmr_squelch_level": (403, "DMR Squelch Level", 0, 10, "u8"),
-    "dmr_called_keep": (408, "Called Screen Keep Time (s)", 0, 4, "u8"),
+    "dmr_squelch_level": (403, "DMR Squelch Level", 0, 16, "u8"),
+    "dmr_called_keep": (408, "Called Screen Keep Time (s)", 0, 60, "u8"),
     "dtmf_gain": (518, "DTMF Send Gain", 0, 127, "u8"),
     "dtmf_decode_threshold": (519, "DTMF Decode Threshold", 0, 63, "u8"),
 }
 
+CONFIG_INT_DEFAULTS = {
+    "clock_seconds": APO_SECONDS_MIN,
+    "lcd_contrast": 5,
+}
+
 LOCK_RANGE_NUMBERS = range(1, 5)
+
+PTT_MIC_SETTING_NAMES = (
+    "main_ptt",
+    "cfg2_second_ptt",
+    "tx_priority",
+    "tx_mic_gain",
+    "dmr_call_mic_gain",
+    "dmr_tx_denoise",
+    "tx_start_beep",
+    "roger_beep",
+    "call_start_beep",
+    "call_end_beep",
+)
+
+DTMF_SETTING_NAMES = (
+    "dtmf_send_delay",
+    "dtmf_send_duration",
+    "dtmf_send_interval",
+    "dtmf_send_mode",
+    "dtmf_send_select",
+    "dtmf_gain",
+    "dtmf_decode_threshold",
+    "dtmf_remote",
+)
+
+POWER_MANAGEMENT_SETTING_NAMES = (
+    "auto_power_off",
+    "clock_seconds",
+    "save_mode",
+    "save_start",
+)
+
+SCREEN_DISPLAY_SETTING_NAMES = (
+    "led_enabled",
+    "lcd_brightness",
+    "led_timer",
+    "lcd_contrast",
+    "carrier_led",
+    "cfg2_dual_display",
+    "cfg2_display_mode_a",
+    "cfg2_display_mode_b",
+    "dmr_group_display",
+    "dmr_called_keep",
+    "dtmf_decode_display",
+)
+
+SCAN_RECEIVE_SETTING_NAMES = (
+    "scan_mode",
+    "scan_return",
+    "scan_dwell",
+    "scan_interval",
+    "refresh_delay",
+    "detect_range",
+    "glitch_filter",
+    "scan_start_mhz",
+    "scan_end_mhz",
+    "noaa_1050_alarm",
+    "squelch_level",
+    "cfg2_scan_direction",
+)
 
 CONFIG_FLOAT_FIELDS = {
     "scan_start_mhz": (
@@ -358,18 +465,17 @@ VALID_TUNING_STEPS = [
 CFG2_WORK_MODES = ["Freq Mode", "CH Mode", "Zone Mode"]
 CFG2_DISPLAY_MODES = ["Channel", "Freq", "Alias"]
 CFG2_KEY_FUNCTIONS = [
-    "None", "Analog CH Monitor", "Power Switch", "Dual Standby",
-    "TX Priority", "Scanning", "Backlight", "Analog Roger Beep",
-    "FM Radio", "Talkaround", "Emergency Alarm", "Freq Detect",
-    "Remote CTC/DCS Decode", "Send Tone", "Query State", "Remote Monit",
-    "DMR Remote Stun", "DMR Remote Kill", "DMR Remote Wakeup",
-    "Online Detect", "Called Show", "AM/FM Switch(RX)",
-    "Analog Spectrum", "SQ", "Freq Step", "Analog/DMR Switch",
-    "NOAA Weather CH", "Save CH", "New SMS", "SMS Menu",
-    "LCD Brightness", "Analog VOX", "Zone Selection",
-    "Promiscuos Mode", "Dual Slot On-off", "Time Slot Switch",
-    "Color Code Switch", "DMR Encrypt On-off", "RX Group List Selection",
-    "Jump To Contacts", "Jump To DTMF Selection",
+    "None", "Monitor(Analog)", "H/L Power", "Dual Standby",
+    "TX Priority", "Scanning", "Backlight On-off", "Roger Beep",
+    "FM Radio", "Talkaround", "Alarm", "Freq Detect",
+    "CTC/DCS Scan", "Send Single Tone", "Status Query", "Remote Monitor",
+    "Remote Stun", "Remote Kill", "Remote Wake Up", "Online Check",
+    "Called Show", "RX AM/FM Switch", "Analog Spectrum", "SQ",
+    "Freq Step", "DA Switch", "NOAA Mode", "Save CH", "New SMS",
+    "Jump To SMS Menu", "Brightness", "Analog CH VOX", "Zone Select",
+    "Promiscuous Mode", "Dual Slot On-off", "Time Slot Switch",
+    "Color Code SW", "DMR Encrypt Off", "Jump To RX List",
+    "Jump To Contact", "Jump To DTMF Sel",
 ]
 CFG2_LIST_FIELDS = {
     0: ("cfg2_key_lock", "Key Lock", ["Unlock", "Lock"]),
@@ -406,10 +512,40 @@ CFG2_KEY_FIELDS = {
     46: ("cfg2_key_9", "Key 9"),
 }
 
+LIST_BOOL_OFFSETS_BY_NAME = {
+    value: offset for offset, value in LIST_BOOL_FIELDS.items()
+}
+CONFIG_LIST_FIELDS_BY_NAME = {
+    field: (offset, choices)
+    for offset, (field, choices) in CONFIG_LIST_FIELDS.items()
+}
+CFG2_LIST_FIELDS_BY_NAME = {
+    field: (offset, label, choices)
+    for offset, (field, label, choices) in CFG2_LIST_FIELDS.items()
+}
+CFG2_KEY_FIELDS_BY_NAME = {
+    field: (offset, label)
+    for offset, (field, label) in CFG2_KEY_FIELDS.items()
+}
+LOCK_RANGE_SETTING_NAMES = tuple(
+    "lock_type_%d" % number for number in LOCK_RANGE_NUMBERS)
+LOCK_RANGE_SETTING_NAMES += tuple(
+    "lock_range_%d_%s" % (number, suffix)
+    for number in LOCK_RANGE_NUMBERS
+    for suffix in ("start", "end"))
+EXPLICIT_SETTING_NAMES = frozenset(
+    ("startup_password_enabled", "dmr_radio_id") +
+    PTT_MIC_SETTING_NAMES +
+    DTMF_SETTING_NAMES +
+    POWER_MANAGEMENT_SETTING_NAMES +
+    SCREEN_DISPLAY_SETTING_NAMES +
+    SCAN_RECEIVE_SETTING_NAMES +
+    LOCK_RANGE_SETTING_NAMES)
+
 SETTING_LABELS = {
     "startup_picture": "Startup Logo",
     "startup_label": "Startup Text",
-    "auto_power_off": "Auto Sleep",
+    "auto_power_off": "APO Enabled",
     "voice_prompt": "Voice Prompt",
     "lock_timer": "Timed Key Lock",
     "led_enabled": "Backlight",
@@ -433,12 +569,20 @@ SETTING_LABELS = {
     "roger_beep": "End TX Beep",
     "detect_range": "Frequency Detect Range",
     "relay_delay": "Repeater Callback Delay",
+    "analog_vox": "Analog VOX",
+    "analog_vox_threshold": "VOX Threshold",
+    "analog_vox_delay": "VOX Delay",
+    "short_tail": "Short Tail",
+    "noaa_1050_alarm": "NOAA 1050 Alarm",
     "dmr_remote": "DMR Remote Control RX",
     "dmr_group_display": "Called Info Display",
+    "dmr_send_dtmf": "Send DTMF",
     "sms_font": "SMS Encoding",
+    "sms_tone": "SMS Prompt",
     "dtmf_send_delay": "DTMF Send Delay",
     "dtmf_send_duration": "DTMF Send Duration",
     "dtmf_send_interval": "DTMF Send Interval",
+    "dtmf_send_mode": "DTMF Send Mode",
     "dtmf_send_select": "DTMF Send Selection",
     "dtmf_decode_display": "DTMF Decode Display",
     "dtmf_remote": "DTMF Remote Control",
@@ -611,6 +755,10 @@ def _set_config_int(cfg, offset, kind, value):
 def _safe_choice_index(choices, value, default=0):
     text = str(value)
     return choices.index(text) if text in choices else default
+
+
+def _is_high_power(power):
+    return str(power) == str(POWER_LEVELS[1])
 
 
 def _segment_blocks(data):
@@ -1050,6 +1198,21 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
             return value + 1
         return 1
 
+    def _zone_has_default_settings(self, index, zone):
+        if zone["members"]:
+            return True
+        default_name = "Zone-%03d" % (index + 1)
+        placeholder_name = not zone["name"] or zone["name"] == default_name
+        placeholder_defaults = (
+            zone["channel_a"] in (0, 0xFFFF) and
+            zone["channel_b"] in (0, 0xFFFF))
+        if placeholder_name and placeholder_defaults:
+            return False
+        return (
+            bool(zone["name"]) or
+            zone["channel_a"] < CHANNEL_COUNT or
+            zone["channel_b"] < CHANNEL_COUNT)
+
     def _append_zone_default_settings(self, group):
         group.set_doc(
             "OEM zone records store separate default channel A/B fields. "
@@ -1060,9 +1223,7 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
             "page to keep the settings UI responsive; use the Zones editor "
             "to add channel membership first.")
         for index, zone in enumerate(self._parse_zones()):
-            if (not zone["name"] and not zone["members"] and
-                    zone["channel_a"] >= CHANNEL_COUNT and
-                    zone["channel_b"] >= CHANNEL_COUNT):
+            if not self._zone_has_default_settings(index, zone):
                 continue
             zone_name = zone["name"] or "Zone-%03d" % (index + 1)
             self._append_int_setting(
@@ -1714,7 +1875,7 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
             written = 0
             cfg = self._get_segment("cfg")
             upload_segments = self._build_upload_segments(radio_cfg0)
-            for opcode, base_addr, segment, blocks in SAFE_UPLOAD_PLAN:
+            for opcode, _flash_sector, segment, blocks in SAFE_UPLOAD_PLAN:
                 for block in range(blocks):
                     payload = upload_segments[segment][block]
                     self._write_frame(opcode, block, bytes(payload))
@@ -1806,8 +1967,16 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
 
     def _set_analog_memory(self, mem, raw):
         tx, rx = chirp_common.split_tone_encode(mem)
-        _set_u16le(raw, 13, _encode_tone(*rx))
-        _set_u16le(raw, 15, _encode_tone(*tx))
+        rx_blank = _u16le(raw, 13)
+        tx_blank = _u16le(raw, 15)
+        if rx_blank not in (0x0000, 0xFFFF):
+            rx_blank = 0x0000
+        if tx_blank not in (0x0000, 0xFFFF):
+            tx_blank = 0x0000
+        _set_u16le(raw, 13, _encode_tone(*rx)
+                   if rx[0] else rx_blank)
+        _set_u16le(raw, 15, _encode_tone(*tx)
+                   if tx[0] else tx_blank)
         raw[4] = (raw[4] & 0x3F) | ((1 if mem.mode == "NFM" else 0) << 6)
 
     def _apply_duplex(self, mem, rx_raw, tx_raw):
@@ -1979,12 +2148,27 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
             extra.append(setting)
         return extra
 
-    def _encode_memory_record(self, mem):
-        raw = bytearray(b"\xFF" * CHANNEL_RECORD_SIZE)
-        if mem.empty:
-            return raw
+    def _base_memory_record(self, mem):
+        if isinstance(mem.number, str) or mem.number < 0:
+            try:
+                raw = self._vfo_record(mem.number)
+            except errors.InvalidMemoryLocation:
+                raw = None
+        elif 1 <= mem.number <= CHANNEL_COUNT:
+            raw = self._channel_data(mem.number)
+        else:
+            raw = None
 
-        raw[:] = b"\x00" * CHANNEL_RECORD_SIZE
+        if raw is not None and not _is_blank(raw[5:13]):
+            return bytearray(raw)
+        return bytearray(b"\x00" * CHANNEL_RECORD_SIZE)
+
+    def _encode_memory_record(self, mem):
+        if mem.empty:
+            return bytearray(b"\xFF" * CHANNEL_RECORD_SIZE)
+
+        is_digital = mem.mode == "DMR"
+        raw = self._base_memory_record(mem)
         _set_u32le(raw, 5, mem.freq // 10)
         if mem.duplex == "":
             txfreq = mem.freq
@@ -1997,12 +2181,15 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
         else:
             raise errors.RadioError("Unsupported duplex mode %r" % mem.duplex)
         _set_u32le(raw, 9, txfreq // 10)
-        is_digital = mem.mode == "DMR"
-        raw[0] = 0x00 if is_digital else 0x40
-        raw[1] = 0x10 if is_digital else 0x00
-        raw[2] = 0x40 if mem.power == POWER_LEVELS[1] else 0x00
-        raw[3] = 0x80 if mem.skip != "S" else 0x00
-        raw[4] = 0x00
+        raw[0] = (raw[0] & 0x3F) | (0x00 if is_digital else 0x40)
+        raw[1] = 0x10 if raw[1] == 0xFF else raw[1]
+        raw[2] = (
+            (0x00 if raw[2] == 0xFF else raw[2]) & 0x3F) | (
+                0x40 if _is_high_power(mem.power) else 0x00)
+        raw[3] = (
+            (0x00 if raw[3] == 0xFF else raw[3]) & 0x7F) | (
+                0x80 if mem.skip != "S" else 0x00)
+        raw[4] = 0x00 if raw[4] == 0xFF else raw[4]
         raw[32:48] = _encode_string(self.filter_name(mem.name), 16)
 
         is_digital = mem.mode == "DMR"
@@ -2112,8 +2299,6 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
         if is_digital:
             raw[0] &= 0x3F
             raw[1] = raw[1] & 0xF0
-            _set_u16le(raw, 13, 0x0000)
-            _set_u16le(raw, 15, 0x0000)
         else:
             raw[0] = (raw[0] & 0x3F) | 0x40
             if mem.mode not in ("FM", "NFM"):
@@ -2179,14 +2364,44 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
                     choices,
                     current_index=current)))
 
+    def _append_named_setting(self, group, cfg, name):
+        if name in LIST_BOOL_OFFSETS_BY_NAME:
+            offset = LIST_BOOL_OFFSETS_BY_NAME[name]
+            self._append_bool_setting(group, name, _setting_label(name),
+                                      cfg[offset])
+        elif name in CONFIG_LIST_FIELDS_BY_NAME:
+            offset, choices = CONFIG_LIST_FIELDS_BY_NAME[name]
+            self._append_list_setting(group, name, _setting_label(name),
+                                      choices, cfg[offset])
+        elif name in CFG2_LIST_FIELDS_BY_NAME:
+            vfo = self._get_segment("vfo")
+            base = CFG2_OFFSET
+            offset, label, choices = CFG2_LIST_FIELDS_BY_NAME[name]
+            self._append_list_setting(group, name, label, choices,
+                                      vfo[base + offset])
+        elif name in CONFIG_INT_FIELDS:
+            offset, label, minimum, maximum, kind = CONFIG_INT_FIELDS[name]
+            self._append_int_setting(group, name, label,
+                                     _get_config_int(cfg, offset, kind),
+                                     minimum, maximum,
+                                     default=CONFIG_INT_DEFAULTS.get(name))
+        elif name in CONFIG_FLOAT_FIELDS:
+            offset, label, minimum, maximum, default = (
+                CONFIG_FLOAT_FIELDS[name])
+            self._append_float_setting(
+                group, name, label, _u32le(cfg, offset) / 100000.0,
+                minimum, maximum, default=default)
+        else:
+            raise errors.RadioError("Unknown setting %s" % name)
+
+    def _append_named_settings(self, group, cfg, names):
+        for name in names:
+            self._append_named_setting(group, cfg, name)
+
     def _append_frequency_limit_settings(self, group, cfg):
-        list_fields_by_name = {
-            name: (offset, choices)
-            for offset, (name, choices) in CONFIG_LIST_FIELDS.items()
-        }
         for number in LOCK_RANGE_NUMBERS:
             status_name = "lock_type_%d" % number
-            offset, choices = list_fields_by_name[status_name]
+            offset, choices = CONFIG_LIST_FIELDS_BY_NAME[status_name]
             self._append_list_setting(group, status_name,
                                       _setting_label(status_name),
                                       choices, cfg[offset])
@@ -2202,6 +2417,8 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
         vfo = self._get_segment("vfo")
         base = CFG2_OFFSET
         for offset, (name, label, choices) in sorted(CFG2_LIST_FIELDS.items()):
+            if name in EXPLICIT_SETTING_NAMES:
+                continue
             self._append_list_setting(group, name, label, choices,
                                       vfo[base + offset])
 
@@ -2216,9 +2433,6 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
         self._append_int_setting(group, "cfg2_special_rssi",
                                  "Spectrum RSSI Threshold", vfo[base + 16],
                                  0, 255, default=80)
-        self._append_int_setting(group, "cfg2_fm_channel",
-                                 "FM Radio Channel", vfo[base + 18] + 1, 1,
-                                 FM_COUNT)
         self._append_int_setting(group, "cfg2_zone_a",
                                  "A Channel Zone", vfo[base + 24] + 1, 1,
                                  ZONE_COUNT)
@@ -2232,23 +2446,61 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
                                  _u16le(vfo, base + 28) + 1, 1,
                                  CHANNEL_COUNT)
 
+    def _append_fm_radio_channel_setting(self, group):
+        vfo = self._get_segment("vfo")
+        base = CFG2_OFFSET
+        self._append_int_setting(group, "cfg2_fm_channel",
+                                 "FM Radio Channel", vfo[base + 18] + 1, 1,
+                                 FM_COUNT)
+
+    def _append_programmable_key_settings(self, group):
+        vfo = self._get_segment("vfo")
+        base = CFG2_OFFSET
         for offset, (name, label) in sorted(CFG2_KEY_FIELDS.items()):
             self._append_list_setting(group, name, label, CFG2_KEY_FUNCTIONS,
                                       vfo[base + offset])
 
+    def _append_ptt_mic_settings(self, group, cfg):
+        self._append_named_settings(group, cfg, PTT_MIC_SETTING_NAMES)
+
+    def _append_dtmf_settings(self, group, cfg):
+        self._append_named_settings(group, cfg, DTMF_SETTING_NAMES)
+
+        for index in range(20):
+            base = 522 + (index * 16)
+            length = cfg[base + 15]
+            if length > 14:
+                length = 14
+            text = _filter_ascii(_decode_string(
+                bytes(cfg[base:base + length])), 14)
+            group.append(RadioSetting(
+                "dtmf_code_%02d" % index,
+                "DTMF Code %02d" % (index + 1),
+                RadioSettingValueString(0, 14, text, autopad=False),
+            ))
+
+    def _append_power_management_settings(self, group, cfg):
+        self._append_named_settings(group, cfg, POWER_MANAGEMENT_SETTING_NAMES)
+
+    def _append_screen_display_settings(self, group, cfg):
+        self._append_named_settings(group, cfg, SCREEN_DISPLAY_SETTING_NAMES)
+
+    def _append_scan_receive_settings(self, group, cfg):
+        self._append_named_settings(group, cfg, SCAN_RECEIVE_SETTING_NAMES)
+
     def _apply_cfg2_setting(self, vfo, name, value):
         base = CFG2_OFFSET
-        for offset, (field, _label, choices) in CFG2_LIST_FIELDS.items():
-            if name == field:
-                vfo[base + offset] = (
-                    choices.index(str(value)) if str(value) in choices else 0)
-                return True
-        for offset, (field, _label) in CFG2_KEY_FIELDS.items():
-            if name == field:
-                vfo[base + offset] = (
-                    CFG2_KEY_FUNCTIONS.index(str(value))
-                    if str(value) in CFG2_KEY_FUNCTIONS else 0)
-                return True
+        if name in CFG2_LIST_FIELDS_BY_NAME:
+            offset, _label, choices = CFG2_LIST_FIELDS_BY_NAME[name]
+            vfo[base + offset] = (
+                choices.index(str(value)) if str(value) in choices else 0)
+            return True
+        if name in CFG2_KEY_FIELDS_BY_NAME:
+            offset, _label = CFG2_KEY_FIELDS_BY_NAME[name]
+            vfo[base + offset] = (
+                CFG2_KEY_FUNCTIONS.index(str(value))
+                if str(value) in CFG2_KEY_FUNCTIONS else 0)
+            return True
 
         if name == "cfg2_special_freq":
             _set_u32le(vfo, base + 8, int(round(float(value) * 100000)))
@@ -2289,7 +2541,9 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
         _set_fm_bfo(fm, base + 16, 0)
         _set_u16le(fm, base + 27, 279)
         _set_fm_bfo(fm, base + 25, 0)
-        fm[base + 30:base + 46] = b"\xFF" * 16
+        alias_start = base + FM_ALIAS_OFFSET
+        alias_end = alias_start + FM_ALIAS_LENGTH
+        fm[alias_start:alias_end] = b"\xFF" * FM_ALIAS_LENGTH
 
     def _apply_fm_setting(self, fm, name, value):
         field, idx_text = name.rsplit("_", 1)
@@ -2313,72 +2567,68 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
         elif field in FM_BFO_FIELDS:
             _set_fm_bfo(fm, base + FM_BFO_FIELDS[field], int(value))
         elif field == "fm_alias":
-            fm[base + 30:base + 46] = _encode_string(str(value).rstrip(), 16)
+            alias_start = base + FM_ALIAS_OFFSET
+            alias_end = alias_start + FM_ALIAS_LENGTH
+            fm[alias_start:alias_end] = _encode_string(
+                str(value).rstrip(), FM_ALIAS_LENGTH)
 
-    def get_settings(self):
-        cfg = self._get_segment("cfg")
-        fm = self._get_segment("fm")
-        sms = self._get_segment("sms")
-
-        identity = RadioSettingGroup("radio_identity", "Radio Identity")
-        general = RadioSettingGroup("general", "General")
-        startup = RadioSettingGroup("startup", "Startup")
-        frequency_limits = RadioSettingGroup(
-            "frequency_range_limits", "Frequency Range Limits")
-        digital = RadioSettingGroup("digital", "Digital / DTMF")
-        contacts_group = RadioSettingGroup("dmr_contacts", "DMR Contacts")
-        tg_group = RadioSettingGroup("dmr_tg_lists", "DMR TG Lists")
-        encrypt_group = RadioSettingGroup("dmr_encryption", "DMR Encryption")
-        cfg2_group = RadioSettingGroup("cfg2", "VFO / CFG2")
-        zone_defaults = RadioSettingGroup(
-            "zone_defaults", "Zone Default Channels")
-        fm_group = RadioSettingGroup("fm", "FM Broadcast")
-        poweron_group = RadioSettingGroup("poweron_image", "Power-On Image")
-        global_group = RadioSettingGroup("global_contacts", "Global Contacts")
-        sms_group = RadioSettingGroup("sms", "Preset SMS")
-
-        general.append(RadioSetting(
+    def _append_password_settings(self, group, cfg):
+        group.append(RadioSetting(
             "program_password_hex",
-            "Program Password (hex)",
+            "Program Password (hex, 6 chars max)",
             RadioSettingValueString(0, 24, cfg[:12].hex().upper(),
                                     autopad=False,
                                     charset="0123456789ABCDEF"),
         ))
-        startup.append(RadioSetting(
+        self._append_bool_setting(group, "startup_password_enabled",
+                                  _setting_label("startup_password_enabled"),
+                                  cfg[27])
+        group.append(RadioSetting(
             "startup_password",
-            "Startup Password",
+            "Startup Password (max 16 chars)",
             RadioSettingValueString(0, 16,
                                     _filter_ascii(_decode_string(
                                         bytes(cfg[28:44])), 16),
                                     autopad=False),
         ))
-        startup.append(RadioSetting(
-            "startup_text",
-            "Startup Text",
-            RadioSettingValueString(
-                0, 32, _filter_ascii(_decode_string(bytes(cfg[44:76])), 32),
-                autopad=False),
-        ))
-        identity.append(RadioSetting(
+
+    def _append_identity_settings(self, group, cfg):
+        group.append(RadioSetting(
             "radio_name",
-            "Radio Name",
+            "Radio Name (max 16 chars)",
             RadioSettingValueString(
                 0, 16, _filter_ascii(_decode_string(bytes(cfg[76:92])), 16),
                 autopad=False),
         ))
+        offset, label, minimum, maximum, kind = CONFIG_INT_FIELDS[
+            "dmr_radio_id"]
+        self._append_int_setting(group, "dmr_radio_id", label,
+                                 _get_config_int(cfg, offset, kind),
+                                 minimum, maximum)
+        group.append(RadioSetting(
+            "startup_text",
+            "Welcome Message (max 32 chars)",
+            RadioSettingValueString(
+                0, 32, _filter_ascii(_decode_string(bytes(cfg[44:76])), 32),
+                autopad=False),
+        ))
+
+    def _append_standard_config_settings(self, general, startup, digital, cfg):
         self._append_int_setting(startup, "startup_line", "Startup Line",
                                  _u16le(cfg, 23), 0, 7)
         self._append_int_setting(startup, "startup_column", "Startup Column",
                                  _u16le(cfg, 25), 0, 127)
         for offset, name in sorted(LIST_BOOL_FIELDS.items()):
+            if name in EXPLICIT_SETTING_NAMES:
+                continue
             target = startup if offset < 64 else general
             self._append_bool_setting(target, name, _setting_label(name),
                                       cfg[offset])
         for offset, (name, choices) in sorted(CONFIG_LIST_FIELDS.items()):
-            if name.startswith(("dmr_", "dtmf_", "sms_")):
-                target = digital
-            elif name.startswith("lock_type_"):
+            if name in EXPLICIT_SETTING_NAMES:
                 continue
+            if name.startswith(("dmr_", "sms_")):
+                target = digital
             else:
                 target = general
             self._append_list_setting(target, name, _setting_label(name),
@@ -2386,39 +2636,27 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
 
         for name, (offset, label, minimum, maximum, kind) in sorted(
                 CONFIG_INT_FIELDS.items()):
-            if name == "dmr_radio_id":
-                target = identity
-            elif name.startswith(("dmr_", "dtmf_")):
-                target = digital
-            elif name.startswith("lock_range_"):
+            if name in EXPLICIT_SETTING_NAMES:
                 continue
+            if name.startswith("dmr_"):
+                target = digital
             else:
                 target = general
             self._append_int_setting(target, name, label,
                                      _get_config_int(cfg, offset, kind),
-                                     minimum, maximum)
-        self._append_frequency_limit_settings(frequency_limits, cfg)
+                                     minimum, maximum,
+                                     default=CONFIG_INT_DEFAULTS.get(name))
+
         for name, (offset, label, minimum, maximum, default) in sorted(
                 CONFIG_FLOAT_FIELDS.items()):
+            if name in EXPLICIT_SETTING_NAMES:
+                continue
             self._append_float_setting(
                 general, name, label, _u32le(cfg, offset) / 100000.0,
                 minimum, maximum, default=default)
-        for index in range(20):
-            base = 522 + (index * 16)
-            length = cfg[base + 15]
-            if length > 14:
-                length = 14
-            text = _filter_ascii(_decode_string(
-                bytes(cfg[base:base + length])), 14)
-            digital.append(RadioSetting(
-                "dtmf_code_%02d" % index,
-                "DTMF Code %02d" % (index + 1),
-                RadioSettingValueString(0, 14, text, autopad=False),
-            ))
 
-        self._append_cfg2_settings(cfg2_group)
-        self._append_zone_default_settings(zone_defaults)
-        contacts_group.set_doc(
+    def _append_contact_import_settings(self, group):
+        group.set_doc(
             "Edits contact slots 1-%d plus any populated higher slots. "
             "Use the CSV import action to replace or append up to all %d "
             "normal DMR contact slots without rendering every blank slot. "
@@ -2430,36 +2668,34 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
             "contact table can make the selector index differ from the "
             "contact slot." %
             (CONTACT_UI_MIN_SLOTS, CONTACT_COUNT))
-        contacts_group.append(
+        group.append(
             RadioSetting(
                 "local_contacts_csv_import_mode",
                 "Local Contacts CSV Import Mode",
                 RadioSettingValueList(
                     LOCAL_CONTACT_IMPORT_MODES,
                     current_index=0)))
-        contacts_group.append(RadioSetting(
+        group.append(RadioSetting(
             "local_contacts_csv_import_path",
             "Local Contacts CSV Import Path",
             RadioSettingValueString(
                 0, LOCAL_CONTACT_CSV_PATH_LEN, "", autopad=False,
                 charset=chirp_common.CHARSET_ASCII)))
-        self._append_contact_settings(contacts_group)
-        self._append_group_settings(tg_group)
-        self._append_encryption_settings(encrypt_group)
 
+    def _append_poweron_image_settings(self, group):
         startup_image = self._get_segment("startup_image")
-        poweron_group.set_doc(
+        group.set_doc(
             "Advanced OEM power-on image writer. Payload is raw monochrome "
             "hex for the OEM 0x9A command: either the first 1024 image bytes "
             "or all 4096 bytes. Normal codeplug upload follows the OEM "
             "checkbox path and writes only block 0; the isolated utility "
             "writer sends all four blocks. Upload is disabled unless "
             "explicitly enabled.")
-        poweron_group.append(RadioSetting(
+        group.append(RadioSetting(
             "startup_image_upload",
             "Upload Power-On Image",
             RadioSettingValueBoolean(startup_image[0] == 0x01)))
-        poweron_group.append(RadioSetting(
+        group.append(RadioSetting(
             "startup_image_payload_hex",
             "Power-On Image Payload Hex",
             RadioSettingValueString(
@@ -2467,18 +2703,19 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
                 self._startup_image_payload_hex(), autopad=False,
                 charset=HEX_CHARSET)))
 
+    def _append_global_contact_settings(self, group):
         global_contacts = self._get_segment("global_contacts")
-        global_group.set_doc(
+        group.set_doc(
             "Advanced OEM 0xA4 global contact database writer. The source CSV "
             "path is local to this computer and is read only during upload. "
             "Rows must have at least seven comma-separated columns; the OEM "
             "format stores the first six fields. CSV rows must be sorted by "
             "DMR ID, matching the OEM CPS warning.")
-        global_group.append(RadioSetting(
+        group.append(RadioSetting(
             "global_contacts_upload",
             "Upload Global Contacts",
             RadioSettingValueBoolean(global_contacts[0] == 0x01)))
-        global_group.append(RadioSetting(
+        group.append(RadioSetting(
             "global_contacts_csv_path",
             "Global Contacts CSV Path",
             RadioSettingValueString(
@@ -2486,101 +2723,63 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
                 self._global_contacts_path(), autopad=False,
                 charset=chirp_common.CHARSET_ASCII)))
 
-        for index in range(FM_COUNT):
-            base = index * FM_RECORD_SIZE
-            record = fm[base:base + FM_RECORD_SIZE]
-            blank = _is_blank(record)
-            self._append_list_setting(fm_group, "fm_range_%02d" % index,
-                                      "FM %02d Range" % (index + 1),
-                                      FM_RANGE_CHOICES, fm[base])
-            freq = _fm_raw_to_freq(_u16le(fm, base + 1))
-            fm_group.append(RadioSetting(
-                "fm_freq_%02d" % index,
-                "FM %02d Frequency" % (index + 1),
+    def _append_fm_record_field(self, group, fm, index, blank, field):
+        base = index * FM_RECORD_SIZE
+        kind = field[0]
+        field_name = field[1]
+        name = "%s_%02d" % (field_name, index)
+        label = "FM %02d %s" % (index + 1, field[2])
+
+        if kind == "list":
+            offset, choices = FM_LIST_FIELDS[field_name]
+            self._append_list_setting(group, name, label, choices,
+                                      fm[base + offset])
+        elif kind == "broadcast_freq":
+            offset, _multiplier = FM_FREQ_FIELDS[field_name]
+            freq = _fm_raw_to_freq(_u16le(fm, base + offset))
+            group.append(RadioSetting(
+                name, label,
                 RadioSettingValueString(
                     0, 8, ("" if not freq else "%.1f" % freq),
-                    autopad=False,
-                    charset="0123456789."),
-            ))
-            fm_group.append(RadioSetting(
-                "fm_alias_%02d" % index,
-                "FM %02d Alias" % (index + 1),
+                    autopad=False, charset="0123456789.")))
+        elif kind == "freq":
+            offset, divisor = FM_FREQ_FIELDS[field_name]
+            precision, length = field[3:]
+            group.append(RadioSetting(
+                name, label,
                 RadioSettingValueString(
-                    0, 16,
+                    0, length,
+                    _fm_freq_text(_u16le(fm, base + offset),
+                                  divisor, precision),
+                    autopad=False, charset="0123456789.")))
+        elif kind == "alias":
+            offset = FM_ALIAS_OFFSET
+            group.append(RadioSetting(
+                name, label,
+                RadioSettingValueString(
+                    0, FM_ALIAS_LENGTH,
                     _filter_ascii(_decode_string(
-                        bytes(fm[base + 30:base + 46])), 16),
-                    autopad=False),
-            ))
-            self._append_list_setting(fm_group, "fm_sw_demod_%02d" % index,
-                                      "FM %02d SW Demod" % (index + 1),
-                                      FM_DEMOD_CHOICES, fm[base + 3])
-            fm_group.append(RadioSetting(
-                "fm_sw_freq_%02d" % index,
-                "FM %02d SW Frequency MHz" % (index + 1),
-                RadioSettingValueString(
-                    0, 8, _fm_freq_text(_u16le(fm, base + 9), 1000, 3),
-                    autopad=False, charset="0123456789."),
-            ))
-            self._append_list_setting(fm_group, "fm_sw_step_%02d" % index,
-                                      "FM %02d SW Step" % (index + 1),
-                                      FM_STEP_CHOICES, fm[base + 4])
-            self._append_list_setting(fm_group, "fm_sw_bw_%02d" % index,
-                                      "FM %02d SW Bandwidth" % (index + 1),
-                                      FM_BW_CHOICES, fm[base + 5])
-            self._append_list_setting(fm_group, "fm_sw_agc_%02d" % index,
-                                      "FM %02d SW AGC" % (index + 1),
-                                      FM_AGC_CHOICES, fm[base + 6])
-            self._append_int_setting(fm_group, "fm_sw_bfo_%02d" % index,
-                                     "FM %02d SW BFO" % (index + 1),
-                                     _fm_bfo(fm, base + 7, blank),
-                                     -32768, 32767)
-            self._append_list_setting(fm_group, "fm_mw_demod_%02d" % index,
-                                      "FM %02d MW Demod" % (index + 1),
-                                      FM_DEMOD_CHOICES, fm[base + 12])
-            fm_group.append(RadioSetting(
-                "fm_mw_freq_%02d" % index,
-                "FM %02d MW Frequency kHz" % (index + 1),
-                RadioSettingValueString(
-                    0, 6, _fm_freq_text(_u16le(fm, base + 18), 1, 0),
-                    autopad=False, charset="0123456789."),
-            ))
-            self._append_list_setting(fm_group, "fm_mw_step_%02d" % index,
-                                      "FM %02d MW Step" % (index + 1),
-                                      FM_STEP_CHOICES, fm[base + 13])
-            self._append_list_setting(fm_group, "fm_mw_bw_%02d" % index,
-                                      "FM %02d MW Bandwidth" % (index + 1),
-                                      FM_BW_CHOICES, fm[base + 14])
-            self._append_list_setting(fm_group, "fm_mw_agc_%02d" % index,
-                                      "FM %02d MW AGC" % (index + 1),
-                                      FM_AGC_CHOICES, fm[base + 15])
-            self._append_int_setting(fm_group, "fm_mw_bfo_%02d" % index,
-                                     "FM %02d MW BFO" % (index + 1),
-                                     _fm_bfo(fm, base + 16, blank),
-                                     -32768, 32767)
-            self._append_list_setting(fm_group, "fm_lw_demod_%02d" % index,
-                                      "FM %02d LW Demod" % (index + 1),
-                                      FM_DEMOD_CHOICES, fm[base + 21])
-            fm_group.append(RadioSetting(
-                "fm_lw_freq_%02d" % index,
-                "FM %02d LW Frequency kHz" % (index + 1),
-                RadioSettingValueString(
-                    0, 6, _fm_freq_text(_u16le(fm, base + 27), 1, 0),
-                    autopad=False, charset="0123456789."),
-            ))
-            self._append_list_setting(fm_group, "fm_lw_step_%02d" % index,
-                                      "FM %02d LW Step" % (index + 1),
-                                      FM_STEP_CHOICES, fm[base + 22])
-            self._append_list_setting(fm_group, "fm_lw_bw_%02d" % index,
-                                      "FM %02d LW Bandwidth" % (index + 1),
-                                      FM_BW_CHOICES, fm[base + 23])
-            self._append_list_setting(fm_group, "fm_lw_agc_%02d" % index,
-                                      "FM %02d LW AGC" % (index + 1),
-                                      FM_AGC_CHOICES, fm[base + 24])
-            self._append_int_setting(fm_group, "fm_lw_bfo_%02d" % index,
-                                     "FM %02d LW BFO" % (index + 1),
-                                     _fm_bfo(fm, base + 25, blank),
+                        bytes(fm[base + offset:base + offset +
+                                 FM_ALIAS_LENGTH])), FM_ALIAS_LENGTH),
+                    autopad=False)))
+        elif kind == "bfo":
+            offset = FM_BFO_FIELDS[field_name]
+            self._append_int_setting(group, name, label,
+                                     _fm_bfo(fm, base + offset, blank),
                                      -32768, 32767)
 
+    def _append_fm_record_settings(self, group, fm, index):
+        base = index * FM_RECORD_SIZE
+        blank = _is_blank(fm[base:base + FM_RECORD_SIZE])
+        for field in FM_UI_FIELDS:
+            self._append_fm_record_field(group, fm, index, blank, field)
+
+    def _append_fm_settings(self, group, fm):
+        self._append_fm_radio_channel_setting(group)
+        for index in range(FM_COUNT):
+            self._append_fm_record_settings(group, fm, index)
+
+    def _append_sms_preset_settings(self, group, sms):
         for index in range(SMS_PRESET_COUNT):
             base = index * SMS_RECORD_SIZE
             if sms[base] not in (0x00, 0xFF):
@@ -2588,19 +2787,78 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
             text = _filter_ascii(
                 _decode_string(bytes(sms[base + 56:base + 56 + SMS_TEXT_LEN])),
                 SMS_TEXT_LEN)
-            sms_group.append(RadioSetting(
+            group.append(RadioSetting(
                 "sms_preset_%02d" % index,
                 "Preset SMS %02d" % (index + 1),
                 RadioSettingValueString(0, SMS_TEXT_LEN, text, autopad=False),
             ))
 
+    def get_settings(self):
+        cfg = self._get_segment("cfg")
+        fm = self._get_segment("fm")
+        sms = self._get_segment("sms")
+
+        identity = RadioSettingGroup("radio_identity", "Radio Identity")
+        passwords = RadioSettingGroup("passwords", "Passwords")
+        general = RadioSettingGroup("general", "General")
+        power_group = RadioSettingGroup("power_management",
+                                        "Power Management")
+        screen_group = RadioSettingGroup("screen_display",
+                                         "Screen & Display")
+        ptt_mic = RadioSettingGroup("ptt_mic", "PTT & Mic Setting")
+        scan_group = RadioSettingGroup("scan_receive", "Scan & Receive")
+        startup = RadioSettingGroup("startup", "Startup")
+        frequency_limits = RadioSettingGroup(
+            "frequency_range_limits", "Frequency Range Limits")
+        digital = RadioSettingGroup("digital", "DMR / SMS")
+        dtmf_group = RadioSettingGroup("dtmf", "DTMF")
+        contacts_group = RadioSettingGroup("dmr_contacts", "DMR Contacts")
+        tg_group = RadioSettingGroup("dmr_tg_lists", "DMR TG Lists")
+        encrypt_group = RadioSettingGroup("dmr_encryption", "DMR Encryption")
+        cfg2_group = RadioSettingGroup("cfg2", "VFO / CFG2")
+        keys_group = RadioSettingGroup(
+            "programmable_keys", "Programmable Keys")
+        zone_defaults = RadioSettingGroup(
+            "zone_defaults", "Zone Default Channels")
+        fm_group = RadioSettingGroup("fm", "FM Broadcast")
+        poweron_group = RadioSettingGroup("poweron_image", "Power-On Image")
+        global_group = RadioSettingGroup("global_contacts", "Global Contacts")
+        sms_group = RadioSettingGroup("sms", "Preset SMS")
+
+        self._append_password_settings(passwords, cfg)
+        self._append_identity_settings(identity, cfg)
+        self._append_standard_config_settings(general, startup, digital, cfg)
+        self._append_power_management_settings(power_group, cfg)
+        self._append_screen_display_settings(screen_group, cfg)
+        self._append_scan_receive_settings(scan_group, cfg)
+        self._append_frequency_limit_settings(frequency_limits, cfg)
+        self._append_ptt_mic_settings(ptt_mic, cfg)
+        self._append_dtmf_settings(dtmf_group, cfg)
+        self._append_cfg2_settings(cfg2_group)
+        self._append_programmable_key_settings(keys_group)
+        self._append_zone_default_settings(zone_defaults)
+        self._append_contact_import_settings(contacts_group)
+        self._append_contact_settings(contacts_group)
+        self._append_group_settings(tg_group)
+        self._append_encryption_settings(encrypt_group)
+        self._append_poweron_image_settings(poweron_group)
+        self._append_global_contact_settings(global_group)
+        self._append_fm_settings(fm_group, fm)
+        self._append_sms_preset_settings(sms_group, sms)
+
         return RadioSettings(
             identity,
             general,
+            power_group,
+            screen_group,
+            ptt_mic,
+            scan_group,
             startup,
             frequency_limits,
             cfg2_group,
+            keys_group,
             digital,
+            dtmf_group,
             zone_defaults,
             contacts_group,
             tg_group,
@@ -2608,7 +2866,8 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
             fm_group,
             poweron_group,
             global_group,
-            sms_group)
+            sms_group,
+            passwords)
 
     def set_settings(self, settings):
         cfg = self._get_segment("cfg")
@@ -2652,17 +2911,11 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
                         _set_u16le(cfg, 23, int(value))
                     elif name == "startup_column":
                         _set_u16le(cfg, 25, int(value))
-                    elif name in LIST_BOOL_FIELDS.values():
-                        offset = next(
-                            k for k, v in LIST_BOOL_FIELDS.items()
-                            if v == name)
+                    elif name in LIST_BOOL_OFFSETS_BY_NAME:
+                        offset = LIST_BOOL_OFFSETS_BY_NAME[name]
                         cfg[offset] = 1 if bool(value) else 0
-                    elif name in [
-                            field[0] for field in
-                            CONFIG_LIST_FIELDS.values()]:
-                        offset = next(k for k, v in CONFIG_LIST_FIELDS.items()
-                                      if v[0] == name)
-                        choices = CONFIG_LIST_FIELDS[offset][1]
+                    elif name in CONFIG_LIST_FIELDS_BY_NAME:
+                        offset, choices = CONFIG_LIST_FIELDS_BY_NAME[name]
                         cfg[offset] = choices.index(
                             str(value)) if str(value) in choices else 0
                     elif name == "zone_a":

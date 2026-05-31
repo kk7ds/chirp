@@ -89,6 +89,64 @@ OEM_CFG2_SAVEALLDATA_OFFSETS = expand_ranges(
 )
 ONE_ROW_GLOBAL_CONTACTS_SHA256 = (
     "3f1315a8ff087b76d483dad73e7550c2a639898036d934a2fde8e82f555e199f")
+LIVE_VENDOR_CHANNEL_RECORDS = {
+    1: (
+        "48104801406871070168710701000000000000000001000000000000000000"
+        "56484631FFFFFFFFFFFFFFFFFFFFFFFFFF"),
+    2: (
+        "4810080140B48E0701B48E0701000000000000000000010000000000000000"
+        "56484632FFFFFFFFFFFFFFFFFFFFFFFFFF"),
+    61: (
+        "006048014098AB730298AB7302000000000100010000000100000000000000"
+        "494E4E4552FFFFFFFFFFFFFFFFFFFFFFFF"),
+    200: (
+        "50100E01505895BC005895BC00000000000000000000000100000000000000"
+        "4149522D506C617379FFFFFFFFFFFFFFFF"),
+    41: (
+        "50104801406857AC026857AC024C204C20000000000001000000000000000000"
+        "454D475F6368616E67FFFFFFFFFFFFFF"),
+    42: (
+        "4010080140A876AC02A876AC0223202320000000000001000000000000000000"
+        "55545F6368616E67FFFFFFFFFFFFFFFF"),
+    43: (
+        "4010488140C8C4AC02C8C4AC0223202320000000000001000000000000000000"
+        "5A415A454D495F6368616EFFFFFFFFFF"),
+    44: (
+        "001048014060BEA20260BEA20223202320000000000001000000000000000000"
+        "50524F4752414D5F64696769FFFFFFFF"),
+    45: (
+        "0010480140E8D1A202E8D1A20223202320000000010001000000000000000000"
+        "494E464F5F656E6372FFFFFFFFFFFFFF"),
+    46: (
+        "00F0480140ACDBA202ACDBA20223202320000000000001000000000000000000"
+        "53554243414D505F636F6C6F723135FF"),
+    47: (
+        "02104801408DD1A8028DD1A80275137513000000000001000000000000000000"
+        "464F544F5F747332FFFFFFFFFFFFFFFF"),
+    48: (
+        "04104801406FD6A8026FD6A80223202320000000000001000000000000000000"
+        "52455A455256315F647332FFFFFFFFFF"),
+    49: (
+        "001048214005BEA80205BEA80223202320000000000001000000000000000000"
+        "50524F47325F636866FFFFFFFFFFFFFF"),
+    50: (
+        "001048C140ABCCA802ABCCA80223202320000000000001000000000000000000"
+        "52455A455256325F6368666369FFFFFF"),
+    51: (
+        "0110480140C9C7A802C9C7A80200000000000000000001000000000000000000"
+        "52455A455256335F70726F6DFFFFFFFF"),
+    52: (
+        "60104801404886AC024886AC0223202320000000000001000000000000000000"
+        "55542D52455A5F74786F6E6C79FFFFFF"),
+    53: (
+        "5010480140085BAE02085BAE0223202320000000000001000000000000000000"
+        "72785F6F6E6C79FFFFFFFFFFFFFFFFFF"),
+}
+
+LIVE_VENDOR_CONTACT_RECORDS = {
+    2: (
+        "0043434300496E646976696475616C5F63616C6CFF"),
+}
 
 
 def cfg_setting_offsets():
@@ -236,6 +294,19 @@ class TestIradioDMUV4R(unittest.TestCase):
 
         self.assertEqual(4, len(radio._build_startup_image_upload()))
         self.assertEqual(1, len(radio._build_startup_image_follow_upload()))
+
+    def test_upload_plan_matches_firmware_flash_map(self):
+        self.assertEqual((
+            (0x90, 0x002, "cfg", 1),
+            (0x91, 0x004, "all", 48),
+            (0x92, 0x01C, "vfo", 1),
+            (0x93, 0x01E, "zone", 128),
+            (0x94, 0x05E, "contact", 208),
+            (0x95, 0x0C6, "group", 20),
+            (0x96, 0x0D0, "encrypt", 12),
+            (0x97, 0x0D6, "sms", 4),
+            (0x98, 0x0F0, "fm", 4),
+        ), iradio_dmuv4r.UPLOAD_PLAN)
 
     def test_utility_startup_dry_run_does_not_open_serial(self):
         utility = load_utility_module()
@@ -2275,6 +2346,131 @@ class TestIradioDMUV4R(unittest.TestCase):
         self.assertEqual(("DTCS", 245, "R"),
                          iradio_dmuv4r._decode_tone(raw))
 
+    def test_live_vendor_channel_records_roundtrip_without_edits(self):
+        radio = make_radio()
+
+        for number, raw_hex in LIVE_VENDOR_CHANNEL_RECORDS.items():
+            with self.subTest(number=number):
+                raw = bytes.fromhex(raw_hex)
+                radio._write_channel(number, raw)
+                radio.set_memory(radio.get_memory(number))
+
+                self.assertEqual(raw, bytes(radio._channel_data(number)))
+
+    def test_live_vendor_changed_channel_definitions_decode(self):
+        radio = make_radio()
+
+        for number in (41, 42, 43, 44, 45, 46):
+            radio._write_channel(
+                number, bytes.fromhex(LIVE_VENDOR_CHANNEL_RECORDS[number]))
+
+        def extras(memory):
+            return {item.get_name(): item.value for item in memory.extra}
+
+        ch41 = radio.get_memory(41)
+        self.assertEqual("EMG_chang", ch41.name)
+        self.assertEqual("Only RX", str(extras(ch41)["rx_tx"]))
+
+        ch42 = radio.get_memory(42)
+        self.assertEqual("UT_chang", ch42.name)
+        self.assertEqual(radio.get_features().valid_power_levels[0],
+                         ch42.power)
+
+        ch43 = radio.get_memory(43)
+        self.assertEqual("ZAZEMI_chan", ch43.name)
+        self.assertEqual("", ch43.skip)
+
+        ch44 = radio.get_memory(44)
+        self.assertEqual("PROGRAM_digi", ch44.name)
+        self.assertEqual("DMR", ch44.mode)
+
+        ch45 = radio.get_memory(45)
+        self.assertEqual("INFO_encr", ch45.name)
+        self.assertEqual(1, int(extras(ch45)["encryption_index"]))
+
+        ch46 = radio.get_memory(46)
+        self.assertEqual("SUBCAMP_color15", ch46.name)
+        self.assertEqual(15, int(extras(ch46)["color_code"]))
+
+    def test_live_vendor_feature_channel_definitions_decode(self):
+        radio = make_radio()
+
+        for number in (47, 48, 49, 50, 51, 52, 53):
+            radio._write_channel(
+                number, bytes.fromhex(LIVE_VENDOR_CHANNEL_RECORDS[number]))
+
+        def extras(memory):
+            return {item.get_name(): item.value for item in memory.extra}
+
+        ch47 = radio.get_memory(47)
+        self.assertEqual("FOTO_ts2", ch47.name)
+        self.assertEqual("DMR", ch47.mode)
+        self.assertEqual("2", str(extras(ch47)["time_slot"]))
+
+        ch48 = radio.get_memory(48)
+        self.assertEqual("REZERV1_ds2", ch48.name)
+        self.assertEqual("DMR", ch48.mode)
+        self.assertEqual("Dual Slot On", str(extras(ch48)["dmr_mode"]))
+
+        ch49 = radio.get_memory(49)
+        self.assertEqual("PROG2_chf", ch49.name)
+        self.assertEqual("DMR", ch49.mode)
+        self.assertEqual("Channel Free", str(extras(ch49)["call_priority"]))
+
+        ch50 = radio.get_memory(50)
+        self.assertEqual("REZERV2_chfci", ch50.name)
+        self.assertEqual("DMR", ch50.mode)
+        self.assertEqual("", ch50.skip)
+        self.assertEqual("Color Code Idle",
+                         str(extras(ch50)["call_priority"]))
+
+        ch51 = radio.get_memory(51)
+        self.assertEqual("REZERV3_prom", ch51.name)
+        self.assertEqual("DMR", ch51.mode)
+        self.assertTrue(bool(extras(ch51)["digital_monitor"]))
+
+        ch52 = radio.get_memory(52)
+        self.assertEqual("UT-REZ_txonly", ch52.name)
+        self.assertEqual("Only TX", str(extras(ch52)["rx_tx"]))
+
+        ch53 = radio.get_memory(53)
+        self.assertEqual("rx_only", ch53.name)
+        self.assertEqual("Only RX", str(extras(ch53)["rx_tx"]))
+
+    def test_live_vendor_contact_record_decode(self):
+        radio = make_radio()
+        contact = bytearray(b"\xFF" * iradio_dmuv4r.SEGMENTS["contact"][1])
+        for slot, raw_hex in LIVE_VENDOR_CONTACT_RECORDS.items():
+            base = slot * iradio_dmuv4r.CONTACT_RECORD_SIZE
+            contact[base:base + iradio_dmuv4r.CONTACT_RECORD_SIZE] = (
+                bytes.fromhex(raw_hex))
+        radio._set_segment("contact", contact)
+
+        contact = radio.get_settings()["dmr_contacts"]["contact_00002"]
+
+        self.assertEqual("Private", str(contact["contact_00002_type"].value))
+        self.assertEqual(434343, int(contact["contact_00002_id"].value))
+        self.assertEqual("Individual_call",
+                         str(contact["contact_00002_name"].value))
+
+    def test_low_power_memory_encodes_low_power_bit(self):
+        radio = make_radio()
+        mem = chirp_common.Memory()
+        mem.number = 1
+        mem.freq = 145500000
+        mem.duplex = ""
+        mem.offset = 0
+        mem.mode = "NFM"
+        mem.tmode = ""
+        mem.name = "LOWPWR"
+        mem.power = radio.get_features().valid_power_levels[0]
+        mem.skip = ""
+        mem.extra = radio.get_memory(1).extra
+
+        radio.set_memory(mem)
+
+        self.assertEqual(0x00, radio._channel_data(1)[2] & 0x40)
+
     def test_analog_memory_roundtrip(self):
         radio = make_radio()
         mem = chirp_common.Memory()
@@ -2646,7 +2842,16 @@ class TestIradioDMUV4R(unittest.TestCase):
 
     def test_ctdcs_select_label_matches_newer_oem(self):
         self.assertEqual(
-            ["Normal", "Encrypt 1", "Encrypt 2", "Encrypt 3", "Mute Code"],
+            ["RX+TX", "Only RX", "Only TX"],
+            iradio_dmuv4r.CHANNEL_RXTX_CHOICES)
+        self.assertEqual(
+            ["Allow TX", "Channel Free", "Color Code Idle"],
+            iradio_dmuv4r.CHANNEL_CALL_PRIORITY_CHOICES)
+        self.assertEqual(
+            ["Allow TX", "Channel Free", "CTC/DCS Idle"],
+            iradio_dmuv4r.CHANNEL_TX_PRIORITY_CHOICES)
+        self.assertEqual(
+            ["Standard", "Encrypt 1", "Encrypt 2", "Encrypt 3", "Mute Code"],
             iradio_dmuv4r.CHANNEL_CTDCS_SELECT_CHOICES)
 
     def test_local_contacts_csv_replace_can_program_high_slots(self):
@@ -2771,29 +2976,34 @@ class TestIradioDMUV4R(unittest.TestCase):
         radio = make_radio()
         settings = radio.get_settings()
         cfg2 = settings["cfg2"]
+        screen = settings["screen_display"]
+        scan = settings["scan_receive"]
+        fm_settings = settings["fm"]
+        ptt_mic = settings["ptt_mic"]
+        keys = settings["programmable_keys"]
 
         cfg2["cfg2_key_lock"].value = "Lock"
         cfg2["cfg2_main_range"].value = "B"
         cfg2["cfg2_dual_watch"].value = "On"
-        cfg2["cfg2_dual_display"].value = "Single"
-        cfg2["cfg2_scan_direction"].value = "Down"
+        screen["cfg2_dual_display"].value = "Single"
+        scan["cfg2_scan_direction"].value = "Down"
         cfg2["cfg2_step"].value = "12.5K"
         cfg2["cfg2_special_freq"].value = 440.125
         cfg2["cfg2_special_step"].value = 0.0125
         cfg2["cfg2_special_rssi"].value = 80
-        cfg2["cfg2_fm_channel"].value = 5
+        fm_settings["cfg2_fm_channel"].value = 5
         cfg2["cfg2_fm_standby"].value = "On"
         cfg2["cfg2_work_mode_a"].value = "Zone Mode"
         cfg2["cfg2_work_mode_b"].value = "CH Mode"
-        cfg2["cfg2_display_mode_a"].value = "Freq"
-        cfg2["cfg2_display_mode_b"].value = "Alias"
+        screen["cfg2_display_mode_a"].value = "Freq"
+        screen["cfg2_display_mode_b"].value = "Alias"
         cfg2["cfg2_zone_a"].value = 3
         cfg2["cfg2_zone_b"].value = 4
         cfg2["cfg2_channel_a"].value = 76
         cfg2["cfg2_channel_b"].value = 77
-        cfg2["cfg2_second_ptt"].value = "On"
-        cfg2["cfg2_fs1_short"].value = "Scanning"
-        cfg2["cfg2_key_0"].value = "FM Radio"
+        ptt_mic["cfg2_second_ptt"].value = "On"
+        keys["cfg2_fs1_short"].value = "Scanning"
+        keys["cfg2_key_0"].value = "FM Radio"
 
         radio.set_settings(settings)
 
@@ -2826,33 +3036,40 @@ class TestIradioDMUV4R(unittest.TestCase):
         radio = make_radio()
         settings = radio.get_settings()
 
-        settings["startup"]["startup_text"].value = "HELLO RADIO"
+        settings["radio_identity"]["startup_text"].value = "HELLO RADIO"
         settings["radio_identity"]["radio_name"].value = "DMUV4R"
-        settings["general"]["save_start"].value = 12
-        settings["general"]["clock_seconds"].value = 3661
+        settings["power_management"]["save_start"].value = 12
+        settings["power_management"]["auto_power_off"].value = True
+        settings["power_management"]["clock_seconds"].value = 3661
         settings["frequency_range_limits"]["lock_type_1"].value = "RX Only"
         settings["frequency_range_limits"]["lock_range_1_start"].value = 136
         settings["frequency_range_limits"]["lock_range_1_end"].value = 174
-        settings["general"]["lcd_contrast"].value = 7
+        settings["screen_display"]["lcd_contrast"].value = 7
         settings["general"]["single_tone_hz"].value = 1750
-        settings["general"]["squelch_level"].value = 4
-        settings["general"]["scan_start_mhz"].value = 400.125
-        settings["general"]["scan_end_mhz"].value = 439.975
-        settings["general"]["carrier_led"].value = "On"
+        settings["scan_receive"]["squelch_level"].value = 4
+        settings["general"]["analog_vox"].value = "On"
+        settings["general"]["analog_vox_threshold"].value = 25
+        settings["general"]["analog_vox_delay"].value = 3
+        settings["general"]["short_tail"].value = "On"
+        settings["scan_receive"]["scan_start_mhz"].value = 400.125
+        settings["scan_receive"]["scan_end_mhz"].value = 439.975
+        settings["screen_display"]["carrier_led"].value = "On"
         settings["radio_identity"]["dmr_radio_id"].value = 12345678
         settings["digital"]["dmr_remote"].value = "On"
-        settings["digital"]["dmr_group_display"].value = "Show Called ID"
+        settings["screen_display"]["dmr_group_display"].value = (
+            "Show Called Info")
+        settings["digital"]["dmr_send_dtmf"].value = "On"
         settings["digital"]["sms_format"].value = "Motorola"
-        settings["digital"]["dtmf_send_delay"].value = "500ms"
-        settings["digital"]["dtmf_send_duration"].value = "70ms"
-        settings["digital"]["dtmf_send_interval"].value = "80ms"
-        settings["digital"]["dtmf_send_mode"].value = "TX End"
-        settings["digital"]["dtmf_send_select"].value = "DTMF-03"
-        settings["digital"]["dtmf_decode_display"].value = "On"
-        settings["digital"]["dtmf_gain"].value = 33
-        settings["digital"]["dtmf_decode_threshold"].value = 17
-        settings["digital"]["dtmf_remote"].value = "On"
-        settings["digital"]["dtmf_code_00"].value = "123A#"
+        settings["dtmf"]["dtmf_send_delay"].value = "500ms"
+        settings["dtmf"]["dtmf_send_duration"].value = "70ms"
+        settings["dtmf"]["dtmf_send_interval"].value = "80ms"
+        settings["dtmf"]["dtmf_send_mode"].value = "TX End"
+        settings["dtmf"]["dtmf_send_select"].value = "DTMF-03"
+        settings["screen_display"]["dtmf_decode_display"].value = "On"
+        settings["dtmf"]["dtmf_gain"].value = 33
+        settings["dtmf"]["dtmf_decode_threshold"].value = 17
+        settings["dtmf"]["dtmf_remote"].value = "On"
+        settings["dtmf"]["dtmf_code_00"].value = "123A#"
 
         radio.set_settings(settings)
 
@@ -2869,6 +3086,10 @@ class TestIradioDMUV4R(unittest.TestCase):
         self.assertEqual(7, cfg[233])
         self.assertEqual(1750, iradio_dmuv4r._u16le(cfg, 256))
         self.assertEqual(4, cfg[258])
+        self.assertEqual(1, cfg[269])
+        self.assertEqual(25, cfg[270])
+        self.assertEqual(3, cfg[271])
+        self.assertEqual(1, cfg[278])
         self.assertEqual(40012500, iradio_dmuv4r._u32le(cfg, 844))
         self.assertEqual(43997500, iradio_dmuv4r._u32le(cfg, 848))
         self.assertEqual(1, cfg[852])
@@ -2877,6 +3098,7 @@ class TestIradioDMUV4R(unittest.TestCase):
                              iradio_dmuv4r._u32le(cfg, 384)))
         self.assertEqual(1, cfg[388])
         self.assertEqual(1, cfg[404])
+        self.assertEqual(1, cfg[405])
         self.assertEqual(1, cfg[406])
         self.assertEqual(5, cfg[512])
         self.assertEqual(4, cfg[513])
@@ -3129,6 +3351,44 @@ class TestIradioDMUV4R(unittest.TestCase):
         self.assertEqual(
             iradio_dmuv4r.LIST_ON_OFF,
             settings["general"]["voice_prompt"].value.get_options())
+        self.assertEqual("DMR / SMS", settings["digital"].get_shortname())
+
+    def test_firmware_menu_settings_and_bounds_are_used(self):
+        settings = make_radio().get_settings()
+
+        self.assertIn("analog_vox", settings["general"].keys())
+        self.assertIn("analog_vox_threshold", settings["general"].keys())
+        self.assertIn("analog_vox_delay", settings["general"].keys())
+        self.assertIn("short_tail", settings["general"].keys())
+        self.assertIn("dmr_send_dtmf", settings["digital"].keys())
+
+        clock = settings["power_management"]["clock_seconds"].value
+        self.assertEqual(iradio_dmuv4r.APO_SECONDS_MIN, clock.get_min())
+        self.assertEqual(iradio_dmuv4r.APO_SECONDS_MAX, clock.get_max())
+        self.assertEqual(iradio_dmuv4r.APO_SECONDS_MIN, int(clock))
+
+        contrast = settings["screen_display"]["lcd_contrast"].value
+        self.assertEqual(0, contrast.get_min())
+        self.assertEqual(10, contrast.get_max())
+        self.assertEqual(5, int(contrast))
+
+        self.assertEqual(
+            16, settings["digital"]["dmr_squelch_level"].value.get_max())
+        self.assertEqual(
+            60, settings["screen_display"]["dmr_called_keep"].value.get_max())
+        self.assertEqual(
+            245, settings["general"]["analog_vox_threshold"].value.get_max())
+        self.assertEqual(
+            5, settings["general"]["analog_vox_delay"].value.get_max())
+
+    def test_firmware_menu_choice_labels_are_used(self):
+        self.assertIn("560-620MHz", iradio_dmuv4r.DETECT_RANGE_CHOICES)
+        self.assertNotIn("560-640MHz", iradio_dmuv4r.DETECT_RANGE_CHOICES)
+        self.assertEqual(
+            ["Show Caller Info", "Show Called Info"],
+            iradio_dmuv4r.GROUP_DISPLAY_CHOICES)
+        self.assertIn("Promiscuous Mode", iradio_dmuv4r.CFG2_KEY_FUNCTIONS)
+        self.assertNotIn("Promiscuos Mode", iradio_dmuv4r.CFG2_KEY_FUNCTIONS)
 
     def test_radio_identity_settings_are_first(self):
         settings = make_radio().get_settings()
@@ -3138,7 +3398,101 @@ class TestIradioDMUV4R(unittest.TestCase):
         self.assertEqual([
             "radio_name",
             "dmr_radio_id",
+            "startup_text",
         ], settings["radio_identity"].keys())
+
+    def test_password_settings_are_last(self):
+        settings = make_radio().get_settings()
+
+        self.assertEqual("passwords", settings[-1].get_name())
+        self.assertEqual("Passwords", settings[-1].get_shortname())
+        self.assertEqual([
+            "program_password_hex",
+            "startup_password_enabled",
+            "startup_password",
+        ], settings["passwords"].keys())
+
+    def test_power_management_settings_are_grouped(self):
+        settings = make_radio().get_settings()
+
+        self.assertEqual("Power Management",
+                         settings["power_management"].get_shortname())
+        self.assertEqual([
+            "auto_power_off",
+            "clock_seconds",
+            "save_mode",
+            "save_start",
+        ], settings["power_management"].keys())
+        for name in settings["power_management"].keys():
+            self.assertNotIn(name, settings["general"].keys())
+
+    def test_screen_display_settings_are_grouped(self):
+        settings = make_radio().get_settings()
+
+        self.assertEqual("Screen & Display",
+                         settings["screen_display"].get_shortname())
+        self.assertEqual([
+            "led_enabled",
+            "lcd_brightness",
+            "led_timer",
+            "lcd_contrast",
+            "carrier_led",
+            "cfg2_dual_display",
+            "cfg2_display_mode_a",
+            "cfg2_display_mode_b",
+            "dmr_group_display",
+            "dmr_called_keep",
+            "dtmf_decode_display",
+        ], settings["screen_display"].keys())
+        for name in (
+                "led_enabled",
+                "lcd_brightness",
+                "led_timer",
+                "lcd_contrast",
+                "carrier_led"):
+            self.assertNotIn(name, settings["general"].keys())
+        for name in (
+                "cfg2_dual_display",
+                "cfg2_display_mode_a",
+                "cfg2_display_mode_b"):
+            self.assertNotIn(name, settings["cfg2"].keys())
+        for name in ("dmr_group_display", "dmr_called_keep"):
+            self.assertNotIn(name, settings["digital"].keys())
+        self.assertNotIn("dtmf_decode_display", settings["dtmf"].keys())
+
+    def test_scan_receive_settings_are_grouped(self):
+        settings = make_radio().get_settings()
+
+        self.assertEqual("Scan & Receive",
+                         settings["scan_receive"].get_shortname())
+        self.assertEqual([
+            "scan_mode",
+            "scan_return",
+            "scan_dwell",
+            "scan_interval",
+            "refresh_delay",
+            "detect_range",
+            "glitch_filter",
+            "scan_start_mhz",
+            "scan_end_mhz",
+            "noaa_1050_alarm",
+            "squelch_level",
+            "cfg2_scan_direction",
+        ], settings["scan_receive"].keys())
+        for name in (
+                "scan_mode",
+                "scan_return",
+                "scan_dwell",
+                "scan_interval",
+                "refresh_delay",
+                "detect_range",
+                "glitch_filter",
+                "scan_start_mhz",
+                "scan_end_mhz",
+                "noaa_1050_alarm",
+                "squelch_level"):
+            self.assertNotIn(name, settings["general"].keys())
+        self.assertNotIn("cfg2_scan_direction", settings["cfg2"].keys())
 
     def test_newer_oem_cfg2_settings_are_exposed(self):
         names = {item.get_name()
@@ -3160,34 +3514,146 @@ class TestIradioDMUV4R(unittest.TestCase):
 
         self.assertEqual(set(), expected - names)
 
+    def test_programmable_key_settings_are_grouped(self):
+        settings = make_radio().get_settings()
+
+        self.assertEqual("Programmable Keys",
+                         settings["programmable_keys"].get_shortname())
+        expected = [
+            name for _offset, (name, _label)
+            in sorted(iradio_dmuv4r.CFG2_KEY_FIELDS.items())
+        ]
+        self.assertEqual(expected, settings["programmable_keys"].keys())
+        for name in expected:
+            self.assertNotIn(name, settings["cfg2"].keys())
+
+    def test_fm_radio_channel_setting_is_in_fm_broadcast(self):
+        settings = make_radio().get_settings()
+
+        self.assertNotIn("cfg2_fm_channel", settings["cfg2"].keys())
+        self.assertEqual(
+            "FM Radio Channel",
+            settings["fm"]["cfg2_fm_channel"].get_shortname())
+
+    def test_ptt_mic_settings_are_grouped(self):
+        settings = make_radio().get_settings()
+
+        self.assertEqual("PTT & Mic Setting",
+                         settings["ptt_mic"].get_shortname())
+        self.assertEqual([
+            "main_ptt",
+            "cfg2_second_ptt",
+            "tx_priority",
+            "tx_mic_gain",
+            "dmr_call_mic_gain",
+            "dmr_tx_denoise",
+            "tx_start_beep",
+            "roger_beep",
+            "call_start_beep",
+            "call_end_beep",
+        ], settings["ptt_mic"].keys())
+        for name in (
+                "main_ptt",
+                "tx_priority",
+                "tx_mic_gain",
+                "tx_start_beep",
+                "roger_beep",
+                "call_start_beep",
+                "call_end_beep"):
+            self.assertNotIn(name, settings["general"].keys())
+        for name in ("dmr_call_mic_gain", "dmr_tx_denoise"):
+            self.assertNotIn(name, settings["digital"].keys())
+        self.assertNotIn("cfg2_second_ptt", settings["cfg2"].keys())
+
+    def test_dtmf_settings_are_grouped(self):
+        settings = make_radio().get_settings()
+
+        self.assertEqual("DTMF", settings["dtmf"].get_shortname())
+        self.assertEqual([
+            "dtmf_send_delay",
+            "dtmf_send_duration",
+            "dtmf_send_interval",
+            "dtmf_send_mode",
+            "dtmf_send_select",
+            "dtmf_gain",
+            "dtmf_decode_threshold",
+            "dtmf_remote",
+        ] + ["dtmf_code_%02d" % index for index in range(20)],
+            settings["dtmf"].keys())
+        for name in settings["dtmf"].keys():
+            self.assertNotIn(name, settings["digital"].keys())
+
     def test_newer_oem_nearby_ui_labels_are_used(self):
         settings = make_radio().get_settings()
 
         expected_labels = [
-            (settings["radio_identity"]["radio_name"], "Radio Name"),
+            (settings["radio_identity"]["radio_name"],
+             "Radio Name (max 16 chars)"),
             (settings["radio_identity"]["dmr_radio_id"], "Personal ID"),
+            (settings["radio_identity"]["startup_text"],
+             "Welcome Message (max 32 chars)"),
+            (settings["passwords"]["program_password_hex"],
+             "Program Password (hex, 6 chars max)"),
+            (settings["passwords"]["startup_password_enabled"],
+             "Startup Password Enabled"),
+            (settings["passwords"]["startup_password"],
+             "Startup Password (max 16 chars)"),
             (settings["startup"]["startup_picture"], "Startup Logo"),
             (settings["startup"]["startup_label"], "Startup Text"),
-            (settings["general"]["led_enabled"], "Backlight"),
-            (settings["general"]["led_timer"], "Timed Screen Off"),
+            (settings["power_management"]["auto_power_off"],
+             "APO Enabled"),
+            (settings["power_management"]["clock_seconds"],
+             "APO Time (seconds)"),
+            (settings["power_management"]["save_mode"],
+             "Power Save Mode"),
+            (settings["power_management"]["save_start"],
+             "Power Save Start Time (s)"),
+            (settings["screen_display"]["led_enabled"], "Backlight"),
+            (settings["screen_display"]["led_timer"], "Timed Screen Off"),
             (settings["general"]["display_id_digits"],
              "Frequency Input Digits"),
-            (settings["general"]["refresh_delay"], "RSSI Refresh Time"),
-            (settings["general"]["glitch_filter"],
+            (settings["scan_receive"]["refresh_delay"], "RSSI Refresh Time"),
+            (settings["scan_receive"]["glitch_filter"],
              "Adjacent-Channel Threshold"),
+            (settings["scan_receive"]["noaa_1050_alarm"],
+             "NOAA 1050 Alarm"),
             (settings["frequency_range_limits"]["lock_type_1"],
              "Lock Range 1 Status"),
-            (settings["digital"]["dmr_group_display"],
+            (settings["screen_display"]["dmr_group_display"],
              "Called Info Display"),
-            (settings["digital"]["dmr_called_keep"],
+            (settings["screen_display"]["dmr_called_keep"],
              "Called Screen Keep Time (s)"),
-            (settings["digital"]["dtmf_gain"], "DTMF Send Gain"),
-            (settings["cfg2"]["cfg2_second_ptt"], "Sub PTT Active"),
+            (settings["dtmf"]["dtmf_send_delay"], "DTMF Send Delay"),
+            (settings["dtmf"]["dtmf_send_duration"], "DTMF Send Duration"),
+            (settings["dtmf"]["dtmf_send_interval"], "DTMF Send Interval"),
+            (settings["dtmf"]["dtmf_send_mode"], "DTMF Send Mode"),
+            (settings["dtmf"]["dtmf_send_select"],
+             "DTMF Send Selection"),
+            (settings["screen_display"]["dtmf_decode_display"],
+             "DTMF Decode Display"),
+            (settings["dtmf"]["dtmf_remote"], "DTMF Remote Control"),
+            (settings["dtmf"]["dtmf_gain"], "DTMF Send Gain"),
+            (settings["ptt_mic"]["main_ptt"], "Main PTT TX Band"),
+            (settings["ptt_mic"]["cfg2_second_ptt"], "Sub PTT Active"),
+            (settings["ptt_mic"]["tx_priority"], "Priority TX"),
+            (settings["ptt_mic"]["tx_mic_gain"], "Analog MIC Gain"),
+            (settings["ptt_mic"]["dmr_call_mic_gain"], "DMR MIC Gain"),
+            (settings["ptt_mic"]["dmr_tx_denoise"], "DMR TX Denoise"),
+            (settings["ptt_mic"]["tx_start_beep"], "Tx Start Beep"),
+            (settings["ptt_mic"]["roger_beep"], "End TX Beep"),
+            (settings["ptt_mic"]["call_start_beep"], "Call Start Beep"),
+            (settings["ptt_mic"]["call_end_beep"], "Call End Beep"),
             (settings["cfg2"]["cfg2_special_freq"],
              "Spectrum Center Frequency MHz"),
             (settings["cfg2"]["cfg2_special_step"], "Spectrum Step MHz"),
             (settings["cfg2"]["cfg2_special_rssi"],
              "Spectrum RSSI Threshold"),
+            (settings["scan_receive"]["cfg2_scan_direction"],
+             "Scan Direction"),
+            (settings["programmable_keys"]["cfg2_fs1_short"],
+             "FS1 Short Key"),
+            (settings["programmable_keys"]["cfg2_key_0"], "Key 0"),
+            (settings["fm"]["cfg2_fm_channel"], "FM Radio Channel"),
         ]
         for setting, label in expected_labels:
             self.assertEqual(label, setting.get_shortname())
@@ -3199,6 +3665,17 @@ class TestIradioDMUV4R(unittest.TestCase):
         self.assertEqual(
             18, settings["frequency_range_limits"][
                 "lock_range_1_start"].value.get_min())
+        self.assertEqual(
+            1, settings["radio_identity"]["dmr_radio_id"].value.get_min())
+        self.assertEqual(
+            16776415,
+            settings["radio_identity"]["dmr_radio_id"].value.get_max())
+        self.assertEqual(
+            32,
+            settings["radio_identity"]["startup_text"].value.maxlength)
+        self.assertEqual(
+            16,
+            settings["passwords"]["startup_password"].value.maxlength)
 
     def test_frequency_range_limit_settings_are_grouped_by_range(self):
         settings = make_radio().get_settings()
@@ -3456,6 +3933,31 @@ class TestIradioDMUV4R(unittest.TestCase):
         raw = radio._zone_record(0)
         self.assertEqual(61, iradio_dmuv4r._u16le(raw, 0))
         self.assertEqual(62, iradio_dmuv4r._u16le(raw, 2))
+
+    def test_zone_defaults_skip_oem_placeholder_names(self):
+        radio = make_radio()
+        zone = radio._get_segment("zone")
+        base = iradio_dmuv4r.ZONE_TABLE_OFFSET
+        zone[base:base + iradio_dmuv4r.ZONE_RECORD_SIZE] = (
+            b"\xFF" * iradio_dmuv4r.ZONE_RECORD_SIZE)
+        iradio_dmuv4r._set_u16le(zone, base, 59)
+        iradio_dmuv4r._set_u16le(zone, base + 2, 60)
+        zone[base + 4:base + 20] = iradio_dmuv4r._encode_string("IC2026", 16)
+
+        next_base = base + iradio_dmuv4r.ZONE_RECORD_SIZE
+        zone[next_base:next_base + iradio_dmuv4r.ZONE_RECORD_SIZE] = (
+            b"\xFF" * iradio_dmuv4r.ZONE_RECORD_SIZE)
+        iradio_dmuv4r._set_u16le(zone, next_base, 0)
+        iradio_dmuv4r._set_u16le(zone, next_base + 2, 0)
+        zone[next_base + 4:next_base + 20] = (
+            iradio_dmuv4r._encode_string("Zone-002", 16))
+        radio._set_segment("zone", zone)
+
+        names = radio.get_settings()["zone_defaults"].keys()
+
+        self.assertIn("zone_default_a_000", names)
+        self.assertNotIn("zone_default_a_001", names)
+        self.assertNotIn("zone_default_b_001", names)
 
     def test_zone_bank_names_are_advertised_editable(self):
         features = make_radio().get_features()
