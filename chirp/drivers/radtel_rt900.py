@@ -2,6 +2,7 @@
 # Derived from prior copyrighted work:
 # Copyright 2024 Pavel Moravec, OK2MOP <moravecp.cz@gmail.com>
 # Copyright 2023 Jim Unroe <rock.unroe@gmail.com>
+#
 # CHIRP driver for Ratel RT-900 Series radios
 #
 # This program is free software: you can redistribute it and/or modify
@@ -40,13 +41,13 @@ from chirp.settings import (
     RadioSettingValueString,
     RadioSettingValueMap,
     MemSetting,
-    InvalidValueError
+    InvalidValueError,
 )
 from textwrap import dedent
 from chirp.drivers import (
     baofeng_uv17Pro,
     mml_jc8810,
-    baofeng_common as bfc
+    baofeng_common as bfc,
 )
 
 import struct
@@ -459,12 +460,12 @@ class RT900BT(chirp_common.CloneModeRadio):
         ("Default", 0xff), ("GMRS", 0xa5),
         ("PMR", 0x66), ("144-146/430-440", 0x55),
         ("Super", 0x56), ("Factory", 0x00),
-        ("unknown Mode 2", 0x28)
+        ("unknown Mode 2", 0x28),
     ]
     POWER_LEVELS = [
         chirp_common.PowerLevel("High", watts=8.00),
         chirp_common.PowerLevel("Middle", watts=4.00),
-        chirp_common.PowerLevel("Low", watts=1.00)
+        chirp_common.PowerLevel("Low", watts=1.00),
     ]
 
     SKEY_LIST = ["Radio",
@@ -474,7 +475,7 @@ class RT900BT(chirp_common.CloneModeRadio):
                  "NOAA",
                  "SOS",
                  "Switch AM/FM",
-                 "Bluetooth"]
+                 "Bluetooth",]
     SKEY_SP_LIST = SKEY_LIST
 
     _upper = 999  # fw 1.20 expands from 512 to 999 channels_steps,
@@ -497,7 +498,7 @@ class RT900BT(chirp_common.CloneModeRadio):
         (0x8000, 0x8040),
         (0x9000, 0x9040),
         (0xA000, 0xA140),
-        (0xD000, 0xD040)  # Radio mode hidden setting
+        (0xD000, 0xD040),  # Radio mode hidden setting
      ]
 
     _calibration = (0xF000, 0xF250)  # Calibration data
@@ -518,7 +519,7 @@ class RT900BT(chirp_common.CloneModeRadio):
     _steps = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0, 8.33]
     _step_map = [("2.5 K", 0), ("5.0 K", 1), ("6.25 K", 2), ("8.33 K", 8),
                  ("10.0 K", 3), ("12.5 K", 4), ("20.0 K", 5), ("25.0 K", 6),
-                 ("50.0 K", 7)]
+                 ("50.0 K", 7),]
     _bandwidth_list = ["Wide (25 KHz)", "Narrow (12.5 KHz)"]
     _offset_list = ["Off", "+", "-"]
     _rx_modulation_list = ["FM", "AM"]
@@ -577,126 +578,158 @@ class RT900BT(chirp_common.CloneModeRadio):
         # Menu 12: TOT
         rs = RadioSettingValueList(TOT_LIST, current_index=_settings.tot)
         rset = MemSetting("settings.tot", "Time Out Timer", rs)
+        rset.set_doc("Set the Time Out Timer for transmit (Seconds).")
         basic.append(rset)
 
         # Menu 00: SQL
         rs = RadioSettingValueInteger(0, 9, _settings.sql)
         rset = MemSetting("settings.sql", "Squelch Level", rs)
+        rset.set_doc("Set the receive squelch level. Setting to zero will "
+                     "disable the squlech.")
         basic.append(rset)
 
         # Menu 13: VOX
         rs = RadioSettingValueList(OFF1TO9_LIST, current_index=_settings.vox)
         rset = MemSetting("settings.vox", "VOX", rs)
+        rset.set_doc("Set the VOX sensitivity level.")
         basic.append(rset)
 
         # Menu 39: VOX DELAY
         rs = RadioSettingValueList(VOXD_LIST, current_index=_settings.voxd)
         rset = MemSetting("settings.voxd", "VOX Delay", rs)
+        rset.set_doc("Set the VOX delay time (Seconds).")
         basic.append(rset)
 
         # Menu 15: VOICE
         rs = RadioSettingValueBoolean(_settings.voice)
         rset = MemSetting("settings.voice", "Voice Prompts", rs)
+        rset.set_doc("Set the radio voice prompts.")
         basic.append(rset)
 
         # Menu 17: LANGUAGE
         rs = RadioSettingValueList(LANGUAGE_LIST,
                                    current_index=_settings.language)
         rset = MemSetting("settings.language", "Language", rs)
+        rset.set_doc("Set the radio menu and voice promopts language.")
         basic.append(rset)
 
         # Menu 23: ABR
         rs = RadioSettingValueList(ABR_LIST, current_index=_settings.abr)
         rset = MemSetting("settings.abr", "Auto BackLight", rs)
+        rset.set_doc("Set the radio Backlight auto switch off time (Seconds).")
         basic.append(rset)
 
         # Menu 19: SC-REV
         rs = RadioSettingValueList(SCREV_LIST, current_index=_settings.screv)
         rset = MemSetting("settings.screv", "Scan Resume Method", rs)
+        rset.set_doc("Set the Scan Resume method: TO (time scanning), "
+                     "CO (carrier detect), SE (search scanning).")
         basic.append(rset)
 
         # Menu 10: SAVE
         rs = RadioSettingValueList(SAVE_LIST,
                                    current_index=_settings.save)
         rset = MemSetting("settings.save", "Battery Save Mode", rs)
+        rset.set_doc("Set the Battery power save mode.")
         basic.append(rset)
 
         # Menu 42: MDF-A
         rs = RadioSettingValueList(MDF_LIST, current_index=_settings.mdfa)
         rset = MemSetting("settings.mdfa", "Memory Display Format A", rs)
+        rset.set_doc("Set A band display mode.")
         basic.append(rset)
 
         # Menu 43: MDF-B
         rs = RadioSettingValueList(MDF_LIST, current_index=_settings.mdfb)
         rset = MemSetting("settings.mdfb", "Memory Display Format B", rs)
+        rset.set_doc("Set B band display mode.")
         basic.append(rset)
 
         # Menu 33: DTMFST (DTMF ST)
         rs = RadioSettingValueList(DTMFST_LIST, current_index=_settings.dtmfst)
         rset = MemSetting("settings.dtmfst", "DTMF Side Tone", rs)
+        rset.set_doc("Set how DTMF tones are heard when a PTT ID DTMF Code "
+                     "is sent.")
         basic.append(rset)
 
         # Menu 37: PTT-LT
         rs = RadioSettingValueList(PTTLT_LIST, current_index=_settings.pttlt)
         rset = MemSetting("settings.pttlt", "PTT Delay", rs)
+        rset.set_doc("Set the PTT delay time.")
         basic.append(rset)
 
         # Menu 36: TONE
         rs = RadioSettingValueList(TONE_LIST, current_index=_settings.tone)
         rset = MemSetting("settings.tone", "Tone-burst Frequency", rs)
+        rset.set_doc("Set the Tone-burst Frequency.")
         basic.append(rset)
 
         # Mneu 29: POWER ON MSG
         rs = RadioSettingValueList(PONMSG_LIST, current_index=_settings.ponmsg)
         rset = MemSetting("settings.ponmsg", "Power On Message", rs)
+        rset.set_doc("Set the Power On Message.")
         basic.append(rset)
 
         # Menu 46: STE
         rs = RadioSettingValueBoolean(_settings.ste)
         rset = MemSetting("settings.ste",
                           "Squelch Tail Eliminate (HT to HT)", rs)
+        rset.set_doc("Set the Squelch Tail Eliminate for HT to HT "
+                     "communication.")
         basic.append(rset)
 
         # Menu 40: RP-STE
         rs = RadioSettingValueList(RPSTE_LIST, current_index=_settings.rpste)
         rset = MemSetting("settings.rpste",
                           "Squelch Tail Eliminate (repeater)", rs)
+        rset.set_doc("Set the Squelch Tail Eliminate time for repeater "
+                     "communication.")
         basic.append(rset)
 
         # Menu 41: RPT-RL
         rs = RadioSettingValueList(RPSTE_LIST, current_index=_settings.rptrl)
         rset = MemSetting("settings.rptrl", "STE Repeater Delay", rs)
+        rset.set_doc("Set the delay time for Squelch Tail Eliminate "
+                     "when using a repeater.")
         basic.append(rset)
 
         # Menu 38: MENU EXIT TIME
         rs = RadioSettingValueList(MENUQUIT_LIST,
                                    current_index=_settings.menuquit)
         rset = MemSetting("settings.menuquit", "Menu Auto Quit", rs)
+        rset.set_doc("Set the time for the radio to automatically exit the "
+                     "menu system.")
         basic.append(rset)
 
         # Menu 34: AUTOLOCK
         rs = RadioSettingValueList(AUTOLK_LIST, current_index=_settings.autolk)
         rset = MemSetting("settings.autolk", "Key Auto Lock", rs)
+        rset.set_doc("Set the time for the radio to automatically lock "
+                     "the keypad.")
         basic.append(rset)
 
-        # Menu 28: CDCSS SAVE MODE
+        # Menu 28: CTCSS SAVE MODE
         rs = RadioSettingValueList(QTSAVE_LIST, current_index=_settings.qtsave)
         rset = MemSetting("settings.qtsave", "QT Save Type", rs)
+        rset.set_doc("Set how the CTCSS/DCS codes are saved to a channel.")
         basic.append(rset)
 
         # Menu 47: AL-MODE
         rs = RadioSettingValueList(ALMODE_LIST, current_index=_settings.almode)
         rset = MemSetting("settings.almode", "Alarm Mode", rs)
+        rset.set_doc("Set how the radio will send an Alarm.")
         basic.append(rset)
 
         # Menu 11: ROGER
         rs = RadioSettingValueList(ROGER_LIST, current_index=_settings.roger)
         rset = MemSetting("settings.roger", "Roger", rs)
+        rset.set_doc("Set the Roger Beep mode for when the PTT is released.")
         basic.append(rset)
 
-        # Menu 44: Alarm Mode
+        # Menu 44: Alarm ON/OFF
         rs = RadioSettingValueBoolean(_settings.alarmsound)
         rset = MemSetting("settings.alarmsound", "Alarm Sound", rs)
+        rset.set_doc("Enable to allow the radio to send an alarm.")
         basic.append(rset)
 
         if self._has_hf:
@@ -713,11 +746,13 @@ class RT900BT(chirp_common.CloneModeRadio):
 
         rs = RadioSettingValueBoolean(_settings.kblock)
         rset = MemSetting("settings.kblock", "KB Lock", rs)
+        rset.set_doc("Enable radio keypad locked by default.")
         basic.append(rset)
 
         # Menu 16: BEEP PROMPT
         rs = RadioSettingValueBoolean(_settings.beep)
         rset = MemSetting("settings.beep", "Beep", rs)
+        rset.set_doc("Enable radio keypad Beep when pressing keys.")
         basic.append(rset)
 
         dtmf = RadioSettingGroup("dtmf", "DTMF Settings")
@@ -740,21 +775,26 @@ class RT900BT(chirp_common.CloneModeRadio):
             rset = RadioSetting("pttid/%i.code" % i,
                                 "PTT-ID Code %i" % (i + 1), rs)
             rset.set_apply_callback(apply_code, self._memobj.pttid[i], 6)
+            rset.set_doc("Set the PTT-ID % i Code DTMF sequence." % (i + 1))
             dtmf.append(rset)
 
         rs = RadioSettingValueList(DTMFSPEED_LIST,
                                    current_index=_dtmf.dtmfon)
         rset = MemSetting("dtmf.dtmfon", "DTMF Speed (On)", rs)
+        rset.set_doc("Set the duration for how long each DMTF tone is ON.")
         dtmf.append(rset)
 
         rs = RadioSettingValueList(DTMFSPEED_LIST,
                                    current_index=_dtmf.dtmfoff)
         rset = MemSetting("dtmf.dtmfoff", "DTMF Speed (Off)", rs)
+        rset.set_doc("Set the duration for how long the pause is between "
+                     "DTMF tones.")
         dtmf.append(rset)
 
         rs = RadioSettingValueList(
             PTTID_LIST, current_index=_settings.pttid)
         rset = MemSetting("settings.pttid", "PTT ID", rs)
+        rset.set_doc("Set when the PTT-ID is to be sent.")
         dtmf.append(rset)
 
         spec = RadioSettingGroup("spec", self.MODEL + " Specific")
@@ -776,6 +816,7 @@ class RT900BT(chirp_common.CloneModeRadio):
             'and back ON to have the MODE changes take full effect.\n'
             'DO NOT attempt to edit any settings until uploading to and '
             'downloading from the radio with the new operating MODE.')
+        rset.set_doc("Set the radio's Operating Mode.")
         spec.append(rset)
 
         if self._has_bt_denoise:
@@ -783,11 +824,15 @@ class RT900BT(chirp_common.CloneModeRadio):
             rs = RadioSettingValueBoolean(_settings.noise_reduction)
             rset = MemSetting("settings.noise_reduction",
                               "Noise reduction", rs)
+            rset.set_doc("Set the radio's automatic Noise Reduction feature.")
             spec.append(rset)
 
             # Menu 47: Bluetooth
             rs = RadioSettingValueBoolean(_settings.bluetooth)
             rset = MemSetting("settings.bluetooth", "Bluetooth", rs)
+            rset.set_doc("Enable Bluetooth (BLE). "
+                         "Bluetooth can be used to program the radio over a "
+                         "BLE connection.")
             spec.append(rset)
 
         # Menu 23: PF2 Short
@@ -801,6 +846,7 @@ class RT900BT(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(self.SKEY_SP_LIST,
                                    current_index=skey2_sp)
         rset = MemSetting(key, "PF2 Key (Short Press)", rs)
+        rset.set_doc("Set what a Short Press on the PF2 Key will do.")
         spec.append(rset)
 
         # Menu 24: PF2 Long
@@ -836,17 +882,20 @@ class RT900BT(chirp_common.CloneModeRadio):
             if self._has_am_switch:
                 rs = RadioSettingValueBoolean(_settings.am_mode)
                 rset = MemSetting("settings.am_mode", "AM Mode", rs)
+                rset.set_doc("Enable to set the RX modulation mode to AM.")
                 spec.append(rset)
 
         # Menu 7: TDR - Dual freq standby
         rs = RadioSettingValueBoolean(_settings.tdr)
         rset = MemSetting("settings.tdr", "TDR - Dual frequency standby", rs)
+        rset.set_doc("Set Dual Frequency Standby (Dual Watch).")
         spec.append(rset)
 
         if self._has_single_mode:
             # Menu 51: Single Mode - Single freq channel display
             rs = RadioSettingValueBoolean(_settings.single_mode)
             rset = MemSetting("settings.single_mode", "Single Mode", rs)
+            rset.set_doc("Set radio to display a single frequency/channel.")
             spec.append(rset)
 
         if self.MODEL in ["RT-920"]:
@@ -870,7 +919,7 @@ class RT900BT(chirp_common.CloneModeRadio):
                  "preview tab.")  # and the Zone Name sub-menu.")
             rset.set_doc(
                 "Set Zone Mode (static banks) or Full Channel "
-                "(flat) memmory channel mode")
+                "(flat) memmory channel mode.")
             spec.append(rset)
 
         # VFO A/B settings
@@ -882,6 +931,8 @@ class RT900BT(chirp_common.CloneModeRadio):
         # Menu 21: VFO A/B BCL (Busy lock)
         rs = RadioSettingValueBoolean(_settings.busy_lock)
         rset = MemSetting("settings.busy_lock", "BCL", rs)
+        rset.set_doc("Set Busy Channel Lockout. When selected, disables PTT "
+                     "when the current frequency is busy.")
         abblock.append(rset)
 
         # Menu 30 VFO DTMF code
@@ -890,12 +941,14 @@ class RT900BT(chirp_common.CloneModeRadio):
             current_index=_settings.pttid
         )
         rset = MemSetting("settings.pttid", "DTMF Code", rs)
+        rset.set_doc("Set when to send PTT-ID DTMF codes")
         abblock.append(rset)
 
         # Menu 42: TX-A/B
         rs = RadioSettingValueList(
             DUALTX_LIST, current_index=_settings.dualtx)
         rset = MemSetting("settings.dualtx", "TX-A/B", rs)
+        rset.set_doc("Set which Band will be used for TX when PTT is pressed.")
         abblock.append(rset)
 
         # VFO A channel sub menu
@@ -906,6 +959,7 @@ class RT900BT(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(WORKMODE_LIST,
                                    current_index=_settings.vfomra)
         rset = MemSetting("settings.vfomra", "Work Mode", rs)
+        rset.set_doc("Set A Band Work Mode.")
         achannel.append(rset)
 
         # VFO A Freq
@@ -948,23 +1002,27 @@ class RT900BT(chirp_common.CloneModeRadio):
         rs.set_validate_callback(freq_validate)
         rset = RadioSetting("vfo.a.freq", "Frequency", rs)
         rset.set_apply_callback(apply_freq, vfo.a)
+        rset.set_doc("Set A Band VFO frequency.")
         achannel.append(rset)
 
         # Menu 01: A Step
         rs = RadioSettingValueMap(self._step_map, vfo.a.step)
         rset = MemSetting("vfo.a.step", "Tuning Step", rs)
+        rset.set_doc("Set A Band frequency Tuning Step.")
         achannel.append(rset)
 
         # Menu 02: TX Power
         rs = RadioSettingValueList([str(x) for x in self.POWER_LEVELS],
                                    current_index=vfo.a.txpower)
         rset = MemSetting("vfo.a.txpower", "TX Power", rs)
+        rset.set_doc("Set A Band TX Power.")
         achannel.append(rset)
 
         # Menu 05: Wide/Narrow Band
         rs = RadioSettingValueList(self._bandwidth_list,
                                    current_index=vfo.a.widenarr)
         rset = MemSetting("vfo.a.widenarr", "Bandwidth", rs)
+        rset.set_doc("Set A Band Bandwidth.")
         achannel.append(rset)
 
         # Menu 12,13: RX ctcss/dtsc
@@ -974,6 +1032,7 @@ class RT900BT(chirp_common.CloneModeRadio):
         rset = RadioSetting("vfo.a.rxtone", "RX CTCSS/DCS", rs)
         rset.set_apply_callback(self.apply_vfo_tone,
                                 self._memobj.vfo.a, "rxtone")
+        rset.set_doc("Set A Band RX CTCSS or DCS code.")
         achannel.append(rset)
 
         # Menu 14,15: TX ctcss/dtsc
@@ -983,6 +1042,7 @@ class RT900BT(chirp_common.CloneModeRadio):
         rset = RadioSetting("vfo.a.txtone", "TX CTCSS/DCS", rs)
         rset.set_apply_callback(self.apply_vfo_tone,
                                 self._memobj.vfo.a, "txtone")
+        rset.set_doc("Set A Band TX CTCSS or DCS code.")
         achannel.append(rset)
 
         # Menu 16: Voice Privacy (encryption)
@@ -990,6 +1050,7 @@ class RT900BT(chirp_common.CloneModeRadio):
                                    current_index=vfo.a.voicepri)
         rset = RadioSetting("vfo.a.voicepri",
                             "Voice Privacy - Subtone Encryption", rs)
+        rset.set_doc("Set A Band Voice Privacy - subtone voice encryption.")
         achannel.append(rset)
 
         def convert_bytes_to_offset(bytes):
@@ -1009,23 +1070,27 @@ class RT900BT(chirp_common.CloneModeRadio):
                                      convert_bytes_to_offset(vfo.a.offset))
         rset = RadioSetting("vfo.a.offset", "Offset (MHz)", rs)
         rset.set_apply_callback(apply_offset, vfo.a)
+        rset.set_doc("Set A Band TX frequency offset value.")
         achannel.append(rset)
 
         # Menu 27: Offset direction
         rs = RadioSettingValueList(self._offset_list,
                                    current_index=vfo.a.sftd)
         rset = MemSetting("vfo.a.sftd", "Offset Direction", rs)
+        rset.set_doc("Set A Band TX frequency offset direction.")
         achannel.append(rset)
 
         # Menu 29: S-Code DTMF 1-15
         rs = RadioSettingValueList(self._scode_list,
                                    current_index=vfo.a.scode)
         rset = MemSetting("vfo.a.scode", "S-CODE", rs)
+        rset.set_doc("Set the A Band DTMF code ID to use for PTT ID.")
         achannel.append(rset)
 
         # Menu 45: Scramble
         rs = RadioSettingValueMap(self._scramble_map, vfo.a.scramble)
         rset = MemSetting("vfo.a.scramble", "Scramble", rs)
+        rset.set_doc("Set A Band voice Scramble.")
         achannel.append(rset)
 
         # Menu 50: RX Modulation
@@ -1033,6 +1098,7 @@ class RT900BT(chirp_common.CloneModeRadio):
             rs = RadioSettingValueList(self._rx_modulation_list,
                                        current_index=vfo.a.rxmod)
             rset = MemSetting("vfo.a.rxmod", "RX Modulation", rs)
+            rset.set_doc("Set A Band RX Modulation.")
             achannel.append(rset)
 
         # VFO B channel sub menu
@@ -1043,6 +1109,7 @@ class RT900BT(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(WORKMODE_LIST,
                                    current_index=_settings.vfomrb)
         rset = MemSetting("settings.vfomrb", "Work Mode", rs)
+        rset.set_doc("Set B Band Work Mode.")
         bchannel.append(rset)
 
         # VFO B Freq
@@ -1051,23 +1118,27 @@ class RT900BT(chirp_common.CloneModeRadio):
         rs.set_validate_callback(freq_validate)
         rset = RadioSetting("vfo.b.freq", "Frequency", rs)
         rset.set_apply_callback(apply_freq, vfo.b)
+        rset.set_doc("Set B Band VFO frequency.")
         bchannel.append(rset)
 
         # Menu 01: B Step
         rs = RadioSettingValueMap(self._step_map, vfo.b.step)
         rset = MemSetting("vfo.b.step", "Tuning Step", rs)
+        rset.set_doc("Set B Band frequency Tuning Step.")
         bchannel.append(rset)
 
         # Menu 02: TX Power
         rs = RadioSettingValueList([str(x) for x in self.POWER_LEVELS],
                                    current_index=vfo.b.txpower)
         rset = MemSetting("vfo.b.txpower", "TX Power", rs)
+        rset.set_doc("Set B Band TX Power.")
         bchannel.append(rset)
 
         # Menu 05: Wide/Narrow Band
         rs = RadioSettingValueList(self._bandwidth_list,
                                    current_index=vfo.b.widenarr)
         rset = MemSetting("vfo.b.widenarr", "Bandwidth", rs)
+        rset.set_doc("Set B Band Bandwidth.")
         bchannel.append(rset)
 
         # Menu 12,13: RX ctcss/dtsc
@@ -1077,6 +1148,7 @@ class RT900BT(chirp_common.CloneModeRadio):
         rset = RadioSetting("vfo.b.rxtone", "RX CTCSS/DCS", rs)
         rset.set_apply_callback(self.apply_vfo_tone,
                                 self._memobj.vfo.b, "rxtone")
+        rset.set_doc("Set B Band RX CTCSS or DCS code.")
         bchannel.append(rset)
 
         # Menu 14,15: TX ctcss/dtsc
@@ -1086,6 +1158,7 @@ class RT900BT(chirp_common.CloneModeRadio):
         rset = RadioSetting("vfo.b.txtone", "TX CTCSS/DCS", rs)
         rset.set_apply_callback(self.apply_vfo_tone,
                                 self._memobj.vfo.b, "txtone")
+        rset.set_doc("Set B Band TX CTCSS or DCS code.")
         bchannel.append(rset)
 
         # Menu 16: Voice Privacy (encryption)
@@ -1093,6 +1166,7 @@ class RT900BT(chirp_common.CloneModeRadio):
                                    current_index=vfo.b.voicepri)
         rset = MemSetting("vfo.b.voicepri",
                           "Voice Privacy - Subtone Encryption", rs)
+        rset.set_doc("Set B Band Voice Privacy - subtone voice encryption.")
         bchannel.append(rset)
 
         # Menu 26: Offset
@@ -1100,22 +1174,26 @@ class RT900BT(chirp_common.CloneModeRadio):
                                      convert_bytes_to_offset(vfo.b.offset))
         rset = RadioSetting("vfo.b.offset", "Offset (MHz)", rs)
         rset.set_apply_callback(apply_offset, vfo.b)
+        rset.set_doc("Set B Band TX frequency offset value.")
         bchannel.append(rset)
 
         # Menu 27: Offset direction
         rs = RadioSettingValueList(self._offset_list, current_index=vfo.b.sftd)
         rset = MemSetting("vfo.b.sftd", "Offset Direction", rs)
+        rset.set_doc("Set B Band TX frequency offset direction.")
         bchannel.append(rset)
 
         # Menu 29: S-Code DTMF 1-15
         rs = RadioSettingValueList(
             self._scode_list, current_index=vfo.b.scode)
         rset = MemSetting("vfo.b.scode", "S-CODE", rs)
+        rset.set_doc("Set the B Band DTMF code ID to use for PTT ID.")
         bchannel.append(rset)
 
         # Menu 45: Scramble
         rs = RadioSettingValueMap(self._scramble_map, vfo.b.scramble)
         rset = MemSetting("vfo.b.scramble", "Scramble", rs)
+        rset.set_doc("Set B Band voice Scramble.")
         bchannel.append(rset)
 
         # Menu 50: RX Modulation
@@ -1123,6 +1201,7 @@ class RT900BT(chirp_common.CloneModeRadio):
             rs = RadioSettingValueList(self._rx_modulation_list,
                                        current_index=vfo.b.rxmod)
             rset = MemSetting("vfo.b.rxmod", "RX Modulation", rs)
+            rset.set_doc("Set B Band RX Modulation.")
             bchannel.append(rset)
 
         # SSB Settings, RT-920, BJ7800 Only
@@ -1414,13 +1493,16 @@ class RT900BT(chirp_common.CloneModeRadio):
         # BCL (Busy Channel Lockout)
         rs = RadioSettingValueBoolean(_mem.bcl)
         rset = RadioSetting("bcl", "BCL", rs)
+        rset.set_doc("Set Busy Channel Lockout. When selected, disables PTT "
+                     "when the current channel is busy.")
         mem.extra.append(rset)
 
         # LearnFHSS (per-channel learn / FHSS flag). The OEM CPS labels
         # this column "LearnFHSS"; the open-source firmware reads the
         # same bit as chFlag3.b0 / fhssFlag (Core/Radio.c).
         rs = RadioSettingValueBoolean(_mem.learning)
-        rset = RadioSetting("learning", "LearnFHSS", rs)
+        rset = RadioSetting("learning", "Learn FHSS", rs)
+        rset.set_doc("Enable to allow automatic FHSS code selection.")
         mem.extra.append(rset)
 
         # FHSS Code (24-bit little-endian, range 0x000000-0x7FFFFF).
@@ -1431,16 +1513,19 @@ class RT900BT(chirp_common.CloneModeRadio):
         rs = RadioSettingValueString(0, 6, _fhss_code_to_text(_mem.code))
         rs.set_validate_callback(_validate_fhss_code)
         rset = RadioSetting("fhss_code", "FHSS Code (hex)", rs)
+        rset.set_doc("Enter manual FHSS Code using HEX digits.")
         mem.extra.append(rset)
 
         # PTT-ID
         rs = RadioSettingValueList(PTTID_LIST, current_index=_mem.pttid)
         rset = RadioSetting("pttid", "PTT ID", rs)
+        rset.set_doc("Set when the PTT-ID is to be sent.")
         mem.extra.append(rset)
 
         # Signal (DTMF Encoder Group #)
         rs = RadioSettingValueList(PTTIDCODE_LIST, current_index=_mem.scode)
         rset = RadioSetting("scode", "PTT ID Code", rs)
+        rset.set_doc("Set the DTMF code ID to use for PTT ID.")
         mem.extra.append(rset)
 
         return mem
@@ -1753,7 +1838,6 @@ class RT920(RT900BT):
     VENDOR = "Radtel"
     MODEL = "RT-920"
 
-    # _magic = b"PROGRAMBT80U"  # RT-900
     _magic = b"PROGRAMBT11U"  # RT-920
     #  step of 1.25 to allow UK CB Freqs
     _steps = [1.25, 2.5, 5.0, 6.25, 8.33, 10.0, 12.5, 20.0, 25.0, 50.0]
@@ -2184,13 +2268,13 @@ class RT920HF(RT920FM):
             current_index=int(_mem.bandwidth)
         )
         rset = RadioSetting("bandwidth", "Bandwidth", rs)
-        rset.set_doc("SSB Channel Bandwidth (KHz)")
+        rset.set_doc("SSB Channel Bandwidth (KHz).")
         mem.extra.append(rset)
 
         # Beat Freq
         rs = RadioSettingValueInteger(-32760, 27240, int(_mem.beatfreq), 1)
         rset = RadioSetting("beatfreq", "Beat Freq Offset (Hz)", rs)
-        rset.set_doc("SSB Beat Frequency Offset (Hz)")
+        rset.set_doc("SSB Beat Frequency Offset (Hz).")
         mem.extra.append(rset)
 
         return mem
@@ -2307,10 +2391,6 @@ class BJ7800(RT920):
         rf.valid_tuning_steps = self._steps
         rf.has_sub_devices = self._has_hf
         return rf
-
-    # def process_mmap(self):
-    #     mem_format = MEM_FORMAT % self._mem_params
-    #     self._memobj = bitwise.parse(mem_format, self._mmap)
 
     @classmethod
     def get_prompts(cls):
