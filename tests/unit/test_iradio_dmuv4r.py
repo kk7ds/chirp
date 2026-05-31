@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-from chirp import chirp_common, drivers, memmap
+from chirp import checksum, chirp_common, drivers, memmap
 from chirp import directory
 from chirp.drivers import iradio_dmuv4r
 
@@ -66,7 +66,7 @@ class UploadPipe(AckPipe):
             raise AssertionError("unexpected read address 0x%04X" % addr)
 
         reply = command[:3] + payload
-        return reply + bytes([iradio_dmuv4r._checksum(reply)])
+        return reply + bytes([checksum.checksum_8bit(reply)])
 
 
 def expand_ranges(*ranges):
@@ -4038,10 +4038,10 @@ class TestIradioDMUV4R(unittest.TestCase):
         self.assertEqual(iradio_dmuv4r.READ_MAGIC, pipe.writes[0])
         self.assertEqual(iradio_dmuv4r.END_MAGIC, pipe.writes[-1])
         self.assertEqual(bytes([0x52, 0x00, 0x00,
-                                iradio_dmuv4r._checksum(b"\x52\x00\x00")]),
+                                checksum.checksum_8bit(b"\x52\x00\x00")]),
                          pipe.writes[1])
         self.assertEqual(bytes([0x52, 0x00, 0x08,
-                                iradio_dmuv4r._checksum(b"\x52\x00\x08")]),
+                                checksum.checksum_8bit(b"\x52\x00\x08")]),
                          pipe.writes[2])
 
         frames = pipe.writes[3:-1]
@@ -4053,7 +4053,7 @@ class TestIradioDMUV4R(unittest.TestCase):
         self.assertEqual(expected, actual)
         for frame in frames:
             self.assertEqual(iradio_dmuv4r.BLOCK_SIZE + 4, len(frame))
-            self.assertEqual(iradio_dmuv4r._checksum(frame[:-1]), frame[-1])
+            self.assertEqual(checksum.checksum_8bit(frame[:-1]), frame[-1])
         self.assertEqual((0x90, 0), actual[0])
         self.assertEqual((0x93, 0), actual[50])
         self.assertEqual((0x93, 127), actual[177])
@@ -4204,7 +4204,7 @@ class TestIradioDMUV4R(unittest.TestCase):
             self.assertEqual(payload[index * iradio_dmuv4r.BLOCK_SIZE:
                                      (index + 1) * iradio_dmuv4r.BLOCK_SIZE],
                              frame[3:-1])
-            self.assertEqual(iradio_dmuv4r._checksum(frame[:-1]), frame[-1])
+            self.assertEqual(checksum.checksum_8bit(frame[:-1]), frame[-1])
         self.assertEqual([1, 1, 1, 1, 1], pipe.read_sizes)
         self.assertEqual(1, pipe.timeout)
         self.assertEqual(("Uploading power-on image", 4, 4), statuses[-1])
@@ -4248,7 +4248,7 @@ class TestIradioDMUV4R(unittest.TestCase):
             (frame[3] << 24) | (frame[4] << 16) |
             (frame[5] << 8) | frame[6])
         self.assertEqual(len(expected) + 4, declared)
-        self.assertEqual(iradio_dmuv4r._checksum(frame[:-1]), frame[-1])
+        self.assertEqual(checksum.checksum_8bit(frame[:-1]), frame[-1])
         self.assertEqual([1, 1], pipe.read_sizes)
         self.assertEqual(1, pipe.timeout)
         self.assertEqual(("Uploading global contacts", 1, 1), statuses[-1])

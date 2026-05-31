@@ -15,7 +15,7 @@ import io
 import logging
 import os
 
-from chirp import chirp_common, directory, errors, memmap
+from chirp import checksum, chirp_common, directory, errors, memmap
 from chirp.settings import (
     RadioSetting,
     RadioSettingGroup,
@@ -80,6 +80,7 @@ STARTUP_IMAGE_PAYLOAD_SIZE = 4096
 STARTUP_IMAGE_HEX_MAX_LEN = STARTUP_IMAGE_PAYLOAD_SIZE * 2
 GLOBAL_CONTACT_CSV_PATH_LEN = 512
 LOCAL_CONTACT_CSV_PATH_LEN = 512
+MAX_DMR_ID = 16777215
 GLOBAL_CONTACT_MAX_PAYLOAD = 29360124
 FM_LIST_FIELDS = {
     "fm_range": (0, FM_RANGE_CHOICES),
@@ -591,10 +592,6 @@ SETTING_LABELS = {
 }
 
 
-def _checksum(data):
-    return sum(data) & 0xFF
-
-
 def _u16le(data, offset):
     return data[offset] | (data[offset + 1] << 8)
 
@@ -641,10 +638,7 @@ def _filter_ascii(value, length):
         :length]
 
 
-def _filter_path(value, length):
-    return "".join(
-        ch for ch in value if ch in chirp_common.CHARSET_ASCII)[
-        :length]
+_filter_path = _filter_ascii
 
 
 def _is_blank(raw):
@@ -759,6 +753,11 @@ def _safe_choice_index(choices, value, default=0):
 
 def _is_high_power(power):
     return str(power) == str(POWER_LEVELS[1])
+
+
+def _clamp_index(value, max_count):
+    """Clamp a 1-based UI value to a 0-based index within [0, max_count)."""
+    return max(1, min(max_count, int(value))) - 1
 
 
 def _segment_blocks(data):
@@ -1019,20 +1018,20 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
 
     def _read_frame(self, addr):
         cmd = bytes([0x52, (addr >> 8) & 0xFF, addr & 0xFF])
-        frame = cmd + bytes([_checksum(cmd)])
+        frame = cmd + bytes([checksum.checksum_8bit(cmd)])
         self.pipe.write(frame)
         reply = self.pipe.read(1028)
         if len(reply) != 1028:
             raise errors.RadioError("Short read from radio")
         if reply[0] != 0x52 or reply[1] != frame[1] or reply[2] != frame[2]:
             raise errors.RadioError("Unexpected block reply from radio")
-        if reply[-1] != _checksum(reply[:-1]):
+        if reply[-1] != checksum.checksum_8bit(reply[:-1]):
             raise errors.RadioError("Block checksum error")
         return reply[3:-1]
 
     def _write_frame(self, opcode, addr, payload):
         frame = bytes([opcode, (addr >> 8) & 0xFF, addr & 0xFF]) + payload
-        frame += bytes([_checksum(frame)])
+        frame += bytes([checksum.checksum_8bit(frame)])
         self.pipe.write(frame)
         old_timeout = getattr(self.pipe, "timeout", None)
         try:
@@ -1271,7 +1270,7 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
             name = _filter_ascii(
                 _decode_string(bytes(contact[base + 5:base + 21])), 16)
             if index == 0:
-                contact_id = 16777215
+                contact_id = MAX_DMR_ID
                 if not name:
                     name = "All Call"
             else:
@@ -1295,7 +1294,7 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
                 "slot": 0,
                 "type": 2,
                 "name": "All Call",
-                "id": 16777215,
+                "id": MAX_DMR_ID,
             }
         for index in range(CONTACT_COUNT):
             base = index * CONTACT_RECORD_SIZE
@@ -1428,7 +1427,7 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
         rows = self._csv_contact_rows(path)
         if mode == "Replace":
             contact = bytearray(b"\xFF" * SEGMENTS["contact"][1])
-            self._write_contact_entry(contact, 0, 2, 16777215, "All Call")
+            self._write_contact_entry(contact, 0, 2, MAX_DMR_ID, "All Call")
             for slot, ctype, contact_id, name in rows:
                 if slot == 0:
                     continue
@@ -1496,13 +1495,10 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
         prefix = "contact_%05d_" % slot
         base = slot * CONTACT_RECORD_SIZE
         ctype = str(group[prefix + "type"].value)
-        if ctype == "Disabled":
-            contact[base:base + CONTACT_RECORD_SIZE] = b"\xFF" * \
-                CONTACT_RECORD_SIZE
-            return
-
         contact[base:base + CONTACT_RECORD_SIZE] = b"\xFF" * \
             CONTACT_RECORD_SIZE
+        if ctype == "Disabled":
+            return
         contact[base] = CONTACT_TYPES.index(ctype) - 1
         if slot == 0:
             contact[base + 1:base + 5] = b"\xAA\xAA\xAA\xAA"
@@ -1664,9 +1660,9 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
         slot = int(group.get_name().split("_", 1)[1])
         prefix = "encrypt_%03d_" % slot
         base = slot * ENCRYPTION_RECORD_SIZE
+        encrypt[base:base + ENCRYPTION_RECORD_SIZE] = (
+            b"\xFF" * ENCRYPTION_RECORD_SIZE)
         if not bool(group[prefix + "enabled"].value):
-            encrypt[base:base + ENCRYPTION_RECORD_SIZE] = (
-                b"\xFF" * ENCRYPTION_RECORD_SIZE)
             return
         enc_type = ENCRYPTION_TYPES.index(str(group[prefix + "type"].value))
         key_hex = str(group[prefix + "key_hex"].value).strip()
@@ -1676,8 +1672,6 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
             key = bytes.fromhex(key_hex)
         except ValueError as exc:
             raise errors.RadioError("Invalid encryption key hex: %s" % exc)
-        encrypt[base:base + ENCRYPTION_RECORD_SIZE] = b"\xFF" * \
-            ENCRYPTION_RECORD_SIZE
         encrypt[base] = (slot + 1) & 0xFF
         encrypt[base + 1] = enc_type
         encrypt[base + 2:base + 16] = _encode_string(
@@ -2192,7 +2186,6 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
         raw[4] = 0x00 if raw[4] == 0xFF else raw[4]
         raw[32:48] = _encode_string(self.filter_name(mem.name), 16)
 
-        is_digital = mem.mode == "DMR"
         if not is_digital:
             self._set_analog_memory(mem, raw)
 
@@ -2509,26 +2502,22 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
         elif name == "cfg2_special_rssi":
             vfo[base + 16] = int(value) & 0xFF
         elif name == "cfg2_fm_channel":
-            vfo[base + 18] = max(1, min(FM_COUNT, int(value))) - 1
+            vfo[base + 18] = _clamp_index(value, FM_COUNT)
         elif name == "cfg2_zone_a":
-            vfo[base + 24] = max(1, min(ZONE_COUNT, int(value))) - 1
+            vfo[base + 24] = _clamp_index(value, ZONE_COUNT)
         elif name == "cfg2_zone_b":
-            vfo[base + 25] = max(1, min(ZONE_COUNT, int(value))) - 1
+            vfo[base + 25] = _clamp_index(value, ZONE_COUNT)
         elif name == "cfg2_channel_a":
-            _set_u16le(vfo, base + 26,
-                       max(1, min(CHANNEL_COUNT, int(value))) - 1)
+            _set_u16le(vfo, base + 26, _clamp_index(value, CHANNEL_COUNT))
         elif name == "cfg2_channel_b":
-            _set_u16le(vfo, base + 28,
-                       max(1, min(CHANNEL_COUNT, int(value))) - 1)
+            _set_u16le(vfo, base + 28, _clamp_index(value, CHANNEL_COUNT))
         else:
             return False
         return True
 
     def _fm_needs_defaults(self, fm, base):
         record = fm[base:base + FM_RECORD_SIZE]
-        return all(byte == 0xFF
-                   for offset, byte in enumerate(record)
-                   if offset != 0)
+        return all(byte == 0xFF for byte in record[1:])
 
     def _init_fm_record(self, fm, base):
         current_range = fm[base] if 0 <= fm[base] < len(
@@ -2552,7 +2541,7 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
         if field == "fm_freq" and not str(value).strip():
             fm[base:base + FM_RECORD_SIZE] = b"\xFF" * FM_RECORD_SIZE
             return
-        if field != "fm_freq" and field != "fm_range" and _is_blank(
+        if field not in ("fm_freq", "fm_range") and _is_blank(
                 fm[base:base + FM_RECORD_SIZE]):
             return
 
@@ -2869,144 +2858,154 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
             sms_group,
             passwords)
 
+    def _apply_setting(self, ctx, item):
+        """Apply a single RadioSetting to the appropriate segment."""
+        name = item.get_name()
+        value = item.value
+        cfg = ctx["cfg"]
+        vfo = ctx["vfo"]
+        fm = ctx["fm"]
+        sms = ctx["sms"]
+        zone = ctx["zone"]
+
+        if name == "program_password_hex":
+            raw = bytes.fromhex(str(value).strip()[
+                                :24].ljust(24, "F"))
+            cfg[:12] = raw[:12]
+        elif name == "startup_password":
+            cfg[28:44] = _encode_string(str(value).rstrip(), 16)
+        elif name == "startup_text":
+            cfg[44:76] = _encode_string(str(value).rstrip(), 32)
+        elif name == "radio_name":
+            cfg[76:92] = _encode_string(str(value).rstrip(), 16)
+        elif name == "local_contacts_csv_import_mode":
+            ctx["local_contacts_csv_import_mode"] = str(value)
+        elif name == "local_contacts_csv_import_path":
+            ctx["local_contacts_csv_import_path"] = str(value).strip()
+        elif name == "startup_line":
+            _set_u16le(cfg, 23, int(value))
+        elif name == "startup_column":
+            _set_u16le(cfg, 25, int(value))
+        elif name in LIST_BOOL_OFFSETS_BY_NAME:
+            offset = LIST_BOOL_OFFSETS_BY_NAME[name]
+            cfg[offset] = 1 if bool(value) else 0
+        elif name in CONFIG_LIST_FIELDS_BY_NAME:
+            offset, choices = CONFIG_LIST_FIELDS_BY_NAME[name]
+            cfg[offset] = choices.index(
+                str(value)) if str(value) in choices else 0
+        elif name == "zone_a":
+            cfg[134] = int(value) & 0xFF
+        elif name == "channel_a":
+            _set_u16le(cfg, 135, int(value))
+        elif name == "zone_b":
+            cfg[139] = int(value) & 0xFF
+        elif name == "channel_b":
+            _set_u16le(cfg, 140, int(value))
+        elif name == "gps_record_count":
+            _set_u16le(cfg, 191, int(value))
+        elif name in CONFIG_INT_FIELDS:
+            offset, _label, _minimum, _maximum, kind = (
+                CONFIG_INT_FIELDS[name])
+            _set_config_int(cfg, offset, kind, int(value))
+        elif name in CONFIG_FLOAT_FIELDS:
+            offset, _label, _minimum, _maximum, _default = (
+                CONFIG_FLOAT_FIELDS[name])
+            _set_u32le(cfg, offset, int(
+                round(float(value) * 100000)))
+        elif name.startswith("cfg2_"):
+            self._apply_cfg2_setting(vfo, name, value)
+        elif name.startswith("zone_default_"):
+            self._apply_zone_default_setting(zone, name, value)
+        elif name.startswith("dtmf_code_"):
+            idx = int(name.rsplit("_", 1)[1])
+            base = 522 + (idx * 16)
+            encoded = str(value).rstrip().encode(
+                "gbk", errors="ignore")[:14]
+            cfg[base:base + 16] = b"\xFF" * 16
+            cfg[base:base + len(encoded)] = encoded
+            cfg[base + 15] = len(encoded)
+        elif name.startswith("fm_"):
+            self._apply_fm_setting(fm, name, value)
+        elif name == "startup_image_upload":
+            ctx["startup_image"][0] = 0x01 if bool(value) else 0xFF
+        elif name == "startup_image_payload_hex":
+            self._set_segment("startup_image", ctx["startup_image"])
+            self._set_startup_image_payload_hex(value)
+            ctx["startup_image"] = self._get_segment("startup_image")
+        elif name == "global_contacts_upload":
+            ctx["global_contacts"][0] = 0x01 if bool(value) else 0xFF
+        elif name == "global_contacts_csv_path":
+            self._set_segment("global_contacts", ctx["global_contacts"])
+            self._set_global_contacts_path(value)
+            ctx["global_contacts"] = self._get_segment("global_contacts")
+        elif name.startswith("sms_preset_"):
+            idx = int(name.rsplit("_", 1)[1])
+            base = idx * SMS_RECORD_SIZE
+            text = str(value).rstrip()
+            if text:
+                sms[base] = 0x00
+                sms[base + 1:base + 56] = b"\xFF" * 55
+                sms[base + 56:base + 56 + SMS_TEXT_LEN] = (
+                    _encode_string(text, SMS_TEXT_LEN))
+                sms[base +
+                    56 +
+                    SMS_TEXT_LEN:base +
+                    SMS_RECORD_SIZE] = (b"\xFF" *
+                                        (SMS_RECORD_SIZE -
+                                         56 -
+                                         SMS_TEXT_LEN))
+            else:
+                sms[base:base + SMS_RECORD_SIZE] = b"\xFF" * \
+                    SMS_RECORD_SIZE
+
+    def _apply_settings_group(self, ctx, group):
+        """Recursively apply a group of settings to the segment context."""
+        for item in group:
+            if isinstance(item, RadioSetting):
+                self._apply_setting(ctx, item)
+            else:
+                name = item.get_name()
+                if name.startswith("contact_"):
+                    self._apply_contact_settings(ctx["contact"], item)
+                elif name.startswith("tg_"):
+                    self._apply_group_settings(ctx["group_data"], item)
+                elif name.startswith("encrypt_"):
+                    self._apply_encryption_settings(ctx["encrypt"], item)
+                else:
+                    self._apply_settings_group(ctx, item)
+
     def set_settings(self, settings):
         cfg = self._get_segment("cfg")
         zone = self._get_segment("zone")
         if self._zone_table_offset(zone) != ZONE_TABLE_OFFSET:
             zone = self._build_zone_upload()
-        contact = self._get_segment("contact")
-        group_data = self._get_segment("group")
-        encrypt = self._get_segment("encrypt")
-        vfo = self._get_segment("vfo")
-        fm = self._get_segment("fm")
-        sms = self._get_segment("sms")
-        startup_image = self._get_segment("startup_image")
-        global_contacts = self._get_segment("global_contacts")
-        local_contacts_csv_import_mode = "Disabled"
-        local_contacts_csv_import_path = ""
+        ctx = {
+            "cfg": cfg,
+            "zone": zone,
+            "contact": self._get_segment("contact"),
+            "group_data": self._get_segment("group"),
+            "encrypt": self._get_segment("encrypt"),
+            "vfo": self._get_segment("vfo"),
+            "fm": self._get_segment("fm"),
+            "sms": self._get_segment("sms"),
+            "startup_image": self._get_segment("startup_image"),
+            "global_contacts": self._get_segment("global_contacts"),
+            "local_contacts_csv_import_mode": "Disabled",
+            "local_contacts_csv_import_path": "",
+        }
 
-        def apply_group(group):
-            nonlocal startup_image, global_contacts
-            nonlocal local_contacts_csv_import_mode
-            nonlocal local_contacts_csv_import_path
-            for item in group:
-                if isinstance(item, RadioSetting):
-                    name = item.get_name()
-                    value = item.value
-                    if name == "program_password_hex":
-                        raw = bytes.fromhex(str(value).strip()[
-                                            :24].ljust(24, "F"))
-                        cfg[:12] = raw[:12]
-                    elif name == "startup_password":
-                        cfg[28:44] = _encode_string(str(value).rstrip(), 16)
-                    elif name == "startup_text":
-                        cfg[44:76] = _encode_string(str(value).rstrip(), 32)
-                    elif name == "radio_name":
-                        cfg[76:92] = _encode_string(str(value).rstrip(), 16)
-                    elif name == "local_contacts_csv_import_mode":
-                        local_contacts_csv_import_mode = str(value)
-                    elif name == "local_contacts_csv_import_path":
-                        local_contacts_csv_import_path = str(value).strip()
-                    elif name == "startup_line":
-                        _set_u16le(cfg, 23, int(value))
-                    elif name == "startup_column":
-                        _set_u16le(cfg, 25, int(value))
-                    elif name in LIST_BOOL_OFFSETS_BY_NAME:
-                        offset = LIST_BOOL_OFFSETS_BY_NAME[name]
-                        cfg[offset] = 1 if bool(value) else 0
-                    elif name in CONFIG_LIST_FIELDS_BY_NAME:
-                        offset, choices = CONFIG_LIST_FIELDS_BY_NAME[name]
-                        cfg[offset] = choices.index(
-                            str(value)) if str(value) in choices else 0
-                    elif name == "zone_a":
-                        cfg[134] = int(value) & 0xFF
-                    elif name == "channel_a":
-                        _set_u16le(cfg, 135, int(value))
-                    elif name == "zone_b":
-                        cfg[139] = int(value) & 0xFF
-                    elif name == "channel_b":
-                        _set_u16le(cfg, 140, int(value))
-                    elif name == "gps_record_count":
-                        _set_u16le(cfg, 191, int(value))
-                    elif name in CONFIG_INT_FIELDS:
-                        offset, _label, _minimum, _maximum, kind = (
-                            CONFIG_INT_FIELDS[name])
-                        _set_config_int(cfg, offset, kind, int(value))
-                    elif name in CONFIG_FLOAT_FIELDS:
-                        offset, _label, _minimum, _maximum, _default = (
-                            CONFIG_FLOAT_FIELDS[name])
-                        _set_u32le(cfg, offset, int(
-                            round(float(value) * 100000)))
-                    elif name.startswith("cfg2_"):
-                        self._apply_cfg2_setting(vfo, name, value)
-                    elif name.startswith("zone_default_"):
-                        self._apply_zone_default_setting(zone, name, value)
-                    elif name.startswith("dtmf_code_"):
-                        idx = int(name.rsplit("_", 1)[1])
-                        base = 522 + (idx * 16)
-                        encoded = str(value).rstrip().encode(
-                            "gbk", errors="ignore")[:14]
-                        cfg[base:base + 16] = b"\xFF" * 16
-                        cfg[base:base + len(encoded)] = encoded
-                        cfg[base + 15] = len(encoded)
-                    elif name.startswith("fm_"):
-                        self._apply_fm_setting(fm, name, value)
-                    elif name == "startup_image_upload":
-                        startup_image[0] = 0x01 if bool(value) else 0xFF
-                    elif name == "startup_image_payload_hex":
-                        self._set_segment("startup_image", startup_image)
-                        self._set_startup_image_payload_hex(value)
-                        startup_image = self._get_segment("startup_image")
-                    elif name == "global_contacts_upload":
-                        global_contacts[0] = 0x01 if bool(value) else 0xFF
-                    elif name == "global_contacts_csv_path":
-                        self._set_segment("global_contacts", global_contacts)
-                        self._set_global_contacts_path(value)
-                        global_contacts = self._get_segment("global_contacts")
-                    elif name.startswith("sms_preset_"):
-                        idx = int(name.rsplit("_", 1)[1])
-                        base = idx * SMS_RECORD_SIZE
-                        text = str(value).rstrip()
-                        if text:
-                            sms[base] = 0x00
-                            sms[base + 1:base + 56] = b"\xFF" * 55
-                            sms[base + 56:base + 56 + SMS_TEXT_LEN] = (
-                                _encode_string(text, SMS_TEXT_LEN))
-                            sms[base +
-                                56 +
-                                SMS_TEXT_LEN:base +
-                                SMS_RECORD_SIZE] = (b"\xFF" *
-                                                    (SMS_RECORD_SIZE -
-                                                     56 -
-                                                     SMS_TEXT_LEN))
-                        else:
-                            sms[base:base + SMS_RECORD_SIZE] = b"\xFF" * \
-                                SMS_RECORD_SIZE
-                else:
-                    name = item.get_name()
-                    if name.startswith("contact_"):
-                        self._apply_contact_settings(contact, item)
-                    elif name.startswith("tg_"):
-                        self._apply_group_settings(group_data, item)
-                    elif name.startswith("encrypt_"):
-                        self._apply_encryption_settings(encrypt, item)
-                    else:
-                        apply_group(item)
+        self._apply_settings_group(ctx, settings)
 
-        apply_group(settings)
-        if (local_contacts_csv_import_path and
-                local_contacts_csv_import_mode != "Disabled"):
-            contact = self._apply_local_contacts_csv(
-                contact, local_contacts_csv_import_path,
-                local_contacts_csv_import_mode)
-        self._set_segment("cfg", cfg)
-        self._set_segment("zone", zone)
-        self._set_segment("contact", contact)
-        self._set_segment("group", group_data)
-        self._set_segment("encrypt", encrypt)
-        self._set_segment("vfo", vfo)
-        self._set_segment("fm", fm)
-        self._set_segment("sms", sms)
-        self._set_segment("startup_image", startup_image)
-        self._set_segment("global_contacts", global_contacts)
-        self._password_bytes = bytes(cfg[:12])
+        if (ctx["local_contacts_csv_import_path"] and
+                ctx["local_contacts_csv_import_mode"] != "Disabled"):
+            ctx["contact"] = self._apply_local_contacts_csv(
+                ctx["contact"], ctx["local_contacts_csv_import_path"],
+                ctx["local_contacts_csv_import_mode"])
+        segment_keys = (
+            "cfg", "zone", "contact", "group_data", "encrypt",
+            "vfo", "fm", "sms", "startup_image", "global_contacts",
+        )
+        for key in segment_keys:
+            segment_name = "group" if key == "group_data" else key
+            self._set_segment(segment_name, ctx[key])
+        self._password_bytes = bytes(ctx["cfg"][:12])
