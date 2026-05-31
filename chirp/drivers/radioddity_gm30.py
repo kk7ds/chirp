@@ -961,6 +961,7 @@ class BaofengGM15Pro(RadioddityGM30):
     """Baofeng GM-15Pro"""
     VENDOR = "Baofeng"
     MODEL = "GM-15Pro"
+    _range = [(136000000, 174000000), (400000000, 512000000)]
 
 
 @directory.register
