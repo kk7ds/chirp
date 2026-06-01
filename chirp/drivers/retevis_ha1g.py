@@ -447,6 +447,11 @@ class HA1GBankModel(chirp_common.BankModel):
 
         if not channels_in_bank and bank.index in self.get_used_zone_index():
             # disable bank
+            settings = self._radio._memobj.settings
+            if settings.homepoweronzone_1 == bank.index:
+                settings.homepoweronzone_1 = 0xFFF
+            if settings.homepoweronzone_2 == bank.index:
+                settings.homepoweronzone_2 = 0xFFF
             _zone_index = [x for x in self.get_used_zone_index()
                            if x != bank.index]
             self.zinfo.zoneindex = (
