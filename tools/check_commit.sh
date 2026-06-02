@@ -18,11 +18,11 @@ echo
 
 git diff ${BASE}.. -- '*.py' | grep '^+' > added_lines
 
-if grep -E '(from|import).*six' added_lines; then
-    fail No new uses of future
+if grep -E '(from|import).*\<six\>' added_lines; then
+    fail No new uses of six
 fi
 
-if grep -E '\wsix\w' added_lines; then
+if grep -E '\<six\>' added_lines; then
     fail No new uses of six
 fi
 
@@ -30,7 +30,7 @@ if grep -E '(from|import).*builtins' added_lines; then
     fail No new uses of future
 fi
 
-if grep -E '\wfuture\w' added_lines; then
+if grep -E '\<future\>' added_lines; then
     fail No new uses of future
 fi
 
