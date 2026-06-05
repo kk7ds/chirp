@@ -1,3 +1,20 @@
+# Copyright 2026 Dan <dannjb@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""Baofeng 5RH Chirp driver"""
+
 import time
 import logging
 import random
@@ -31,6 +48,17 @@ DATA_LEN = 49152
 CHN_SIZE = 48
 CHN_MAX = 640
 
+# Zone layout (DataProtocol.cs ConvertZone/ZoneConvert). The radio navigates
+# channels through zones: each zone holds an FFFF-terminated list of channel
+# IDs. A channel only appears on the radio if its ID is in a zone, so the zone
+# table must be rebuilt on upload to reflect newly-added channels.
+ZONE_TOTAL_OFF = 31360
+ZONE_BASE = 31376
+ZONE_SIZE = 152
+ZONE_MAX = 10
+ZONE_CHN_MAX = 67       # (152 - 2 header - 16 name) / 2
+ZONE_NAME_OFF = 136
+
 TONES = chirp_common.TONES
 DTCS = chirp_common.ALL_DTCS_CODES
 
@@ -41,6 +69,18 @@ POWER_LEVELS = [
 
 DUPLEX = ["", "-", "+", "split"]
 MODES = ["FM", "NFM"]
+
+# Frequency coverage reported by the radio (Device Information):
+#   RX: 18-200, 200-260, 350-390, 400-600 MHz
+#   TX: 136-174, 220-260, 350-390, 400-480 MHz
+# The RX ranges are a superset of the TX ranges, so they are used for
+# valid_bands (adjacent 18-200/200-260 merged). This also permits cross-band
+# memories (e.g. UHF RX with VHF TX).
+VALID_BANDS = [
+    (18000000, 260000000),
+    (350000000, 390000000),
+    (400000000, 600000000),
+]
 
 # Settings option lists (labels mirror the CPS general-settings form).
 # For these the stored byte equals the option index.
@@ -676,7 +716,7 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
         rf.has_rx_dtcs = True
         rf.has_ctone = True
 
-        rf.valid_bands = [(136000000, 174000000), (400000000, 520000000)]
+        rf.valid_bands = VALID_BANDS
         rf.valid_modes = MODES
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
@@ -696,7 +736,43 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
         self.process_mmap()
 
     def sync_out(self):
+        self._rebuild_zones()
         _upload(self, self._mmap.get_packed())
+
+    def _rebuild_zones(self):
+        """Regenerate the zone tables so every in-use channel is reachable.
+
+        The radio displays channels via each zone's FFFF-terminated ID list
+        (see DataProtocol.cs:1828). Chirp has no zone concept, so map channels
+        to zones naturally (zone z holds channels [z*67 .. z*67+67)) and write
+        the ID for each in-use channel, FFFF otherwise. Zone names are
+        preserved; an empty name on a populated zone gets a "Zone N" default.
+        """
+        mm = self._mmap
+        zones_used = 0
+        for z in range(ZONE_MAX):
+            zbase = ZONE_BASE + z * ZONE_SIZE
+            count = 0
+            for idx in range(ZONE_CHN_MAX):
+                ch_index = z * ZONE_CHN_MAX + idx
+                off = zbase + 2 + idx * 2
+                if ch_index < CHN_MAX and self._get_valid(ch_index):
+                    mm[off] = (ch_index >> 8) & 0xFF   # ID high byte
+                    mm[off + 1] = ch_index & 0xFF      # ID low byte
+                    count += 1
+                else:
+                    mm[off] = 0xFF
+                    mm[off + 1] = 0xFF
+            mm[zbase] = count
+            mm[zbase + 1] = 0xFF
+            if count:
+                zones_used += 1
+                name_off = zbase + ZONE_NAME_OFF
+                if mm[name_off] in (0x00, 0xFF):
+                    default = ("Zone %d" % (z + 1)).encode('ascii')
+                    for i in range(16):
+                        mm[name_off + i] = default[i] if i < len(default) else 0x00
+        mm[ZONE_TOTAL_OFF] = zones_used
 
     def upload_boot_image(self, path):
         """Convert and upload a boot image (24-bit BMP or raw RGB565)."""
