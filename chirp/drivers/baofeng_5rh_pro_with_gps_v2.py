@@ -56,8 +56,8 @@ ZONE_TOTAL_OFF = 31360
 ZONE_BASE = 31376
 ZONE_SIZE = 152
 ZONE_MAX = 10
-ZONE_CHN_MAX = 67       # (152 - 2 header - 16 name) / 2
-ZONE_NAME_OFF = 136
+ZONE_CHN_MAX = 64       # firmware limit (FormMain.cs:383); 10 * 64 = 640 channels
+ZONE_NAME_OFF = 136     # 64 IDs occupy bytes 2..129; 130..135 unused; name 136..151
 
 TONES = chirp_common.TONES
 DTCS = chirp_common.ALL_DTCS_CODES
@@ -768,10 +768,11 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
             if count:
                 zones_used += 1
                 name_off = zbase + ZONE_NAME_OFF
-                if mm[name_off] in (0x00, 0xFF):
-                    default = ("Zone %d" % (z + 1)).encode('ascii')
+                if mm[name_off][0] in (0x00, 0xFF):
+                    default = ("Zone %d" % (z + 1)).encode('ascii')[:16]
+                    padded = default.ljust(16, b'\x00')
                     for i in range(16):
-                        mm[name_off + i] = default[i] if i < len(default) else 0x00
+                        mm[name_off + i] = padded[i]
         mm[ZONE_TOTAL_OFF] = zones_used
 
     def upload_boot_image(self, path):
