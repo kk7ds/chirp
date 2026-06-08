@@ -1330,7 +1330,7 @@ class RT900BT(chirp_common.CloneModeRadio):
         """Parse the tone data to encode from UI to mem"""
         match mode:
             case "" | None:
-                memval.set_raw("\x00\x00")
+                memval.fill_raw(b"\x00")
             case "Tone" | "TSQL":
                 memval.set_value(int(value * 10))
             case "DTCS":
@@ -1412,7 +1412,7 @@ class RT900BT(chirp_common.CloneModeRadio):
         # Memory number
         mem.number = number
 
-        if _mem.get_raw()[:1] == b"\xFF":
+        if _mem.get_raw()[:1] == b"\xff":
             mem.empty = True
             return mem
 
@@ -1421,7 +1421,7 @@ class RT900BT(chirp_common.CloneModeRadio):
         if mem.freq == 0:
             mem.empty = True
         # tx freq can be blank
-        if _mem.txfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
+        if _mem.txfreq.get_raw() == b"\xff\xff\xff\xff":
             # TX freq not set
             mem.offset = 0
             mem.duplex = "off"
@@ -1534,15 +1534,15 @@ class RT900BT(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw("\xff" * 32)
+            _mem.fill_raw(b"\xff")
             return
 
-        _mem.set_raw("\x00" * 16 + "\xFF" * 16)
+        _mem.set_raw("\x00" * 16 + "\xff" * 16)
 
         _mem.rxfreq = mem.freq / 10
 
         if mem.duplex == "off":
-            _mem.txfreq.fill_raw(b"\xFF")
+            _mem.txfreq.fill_raw(b"\xff")
         elif mem.duplex == "split":
             _mem.txfreq = mem.offset / 10
         elif mem.duplex == "+":
@@ -1557,7 +1557,7 @@ class RT900BT(chirp_common.CloneModeRadio):
             try:
                 _mem.name[i] = mem.name[i]
             except IndexError:
-                _mem.name[i] = "\xFF"
+                _mem.name[i] = "\xff"
 
         txmode = rxmode = ''
         txval = rxval = 0
@@ -1992,7 +1992,11 @@ class RT920(RT900BT):
         # Firmware V0.18 supports 10
         # optional "static zones" of 99 frequencies
         # or 990 flat chanels
-        rf.has_bank = not self._memobj.settings.zone_or_channel
+        if self._memobj is not None and hasattr(self._memobj, "settings"):
+            rf.has_bank = not self._memobj.settings.zone_or_channel
+        else:
+            rf.has_bank = False  # default to flat mode if settings not init'ed
+
         rf.has_bank_names = self._has_zone_names
         rf.valid_tuning_steps = self._steps
         rf.has_sub_devices = self._has_hf
@@ -2117,7 +2121,7 @@ class RT920FM(RT920):
         if mem.number > self._upper:
             mem.immutable += ["name"]
         else:
-            mem.name = str(_name.name).rstrip("\xff")
+            mem.name = str(_name.name).rstrip("\xff ")
 
         mem.mode = "WFM"
 
@@ -2133,9 +2137,9 @@ class RT920FM(RT920):
             _name = self._memobj.fm_names[mem.number - 1]
 
         if mem.empty:
-            _mem.freq.set_raw(b"\x00" * 2)
+            _mem.freq.fill_raw(b"\x00")
             if mem.number <= self._upper:
-                _name.name.set_raw(b"\xff" * 12)
+                _name.name.fill_raw(b"\xff")
             return
 
         _mem.freq = int(mem.freq / 10000)
@@ -2185,7 +2189,7 @@ class RT920AM(RT920FM):
         if mem.number > self._upper:
             mem.immutable += ["name"]
         else:
-            mem.name = str(_name.name).rstrip("\xff")
+            mem.name = str(_name.name).rstrip("\xff ")
 
         mem.mode = "AM"
 
@@ -2201,9 +2205,9 @@ class RT920AM(RT920FM):
             _name = self._memobj.am_names[mem.number - 1]
 
         if mem.empty:
-            _mem.freq.set_raw(b"\x00" * 2)
+            _mem.freq.fill_raw(b"\x00")
             if mem.number <= self._upper:
-                _name.name.set_raw(b"\xff" * 12)
+                _name.name.fill_raw(b"\xff")
             return
 
         _mem.freq = int(mem.freq / 1000)
@@ -2221,7 +2225,7 @@ class RT920HF(RT920FM):
     _valid_bands = [(150000, 30000000)]  # in Mhz, 150-30000 KHz
 
     _ssb_bandwidth_list = [
-        "0.5K", "1.0K", "1.2K", "2.2K", "3.0K", "4.0K"
+        "0.5K", "1.0K", "1.2K", "2.2K", "3.0K", "4.0K",
     ]
 
     def get_raw_memory(self, number):
@@ -2254,7 +2258,7 @@ class RT920HF(RT920FM):
         if mem.number > self._upper:
             mem.immutable += ["name"]
         else:
-            mem.name = str(_name.name).rstrip("\xff")
+            mem.name = str(_name.name).rstrip("\xff ")
 
         mem.mode = "Auto"
 
@@ -2288,9 +2292,9 @@ class RT920HF(RT920FM):
             _name = self._memobj.hf_names[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw(b"\x00" * 5)
-            if mem.number <= self.upper:
-                _name.name.set_raw(b"\xff" * 12)
+            _mem.fill_raw(b"\x00")
+            if mem.number <= self._upper:
+                _name.name.fill_raw(b"\xff")
             return
 
         _mem.freq = int(mem.freq / 1000)
