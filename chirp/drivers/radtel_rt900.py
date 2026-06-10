@@ -2260,7 +2260,12 @@ class RT920HF(RT920FM):
         else:
             mem.name = str(_name.name).rstrip("\xff ")
 
-        mem.mode = "Auto"
+        # use Modulation Mode from SSB settings to determine Mode
+        #   defaut to LSB if AM or FM is selected as SSB Modulation Mode
+        _ssb_mod = self._memobj.ssb.modulation
+        mem.mode = "LSB" if self._ssb_modulation_list[_ssb_mod] \
+            in ["AM", "FM"] else \
+            self._ssb_modulation_list[_ssb_mod]
 
         mem.immutable += ["mode", "ctone", "rtone"]
 
