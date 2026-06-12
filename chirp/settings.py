@@ -338,6 +338,25 @@ class RadioSettingValueString(RadioSettingValue):
         return self._current[i]
 
 
+class RadioSettingValueFile(RadioSettingValueString):
+    """A file-path setting — renders as a text field with a Browse button."""
+
+    def __init__(self, current="",
+                 wildcard="All files (*.*)|*.*"):
+        super().__init__(0, 512, current, autopad=False)
+        self._wildcard = wildcard
+
+    @property
+    def wildcard(self):
+        return self._wildcard
+
+    def set_value(self, value):
+        value = value.strip()
+        if len(value) > 512:
+            raise InvalidValueError("Path too long (max 512 chars)")
+        RadioSettingValue.set_value(self, value)
+
+
 class RadioSettingValueMap(RadioSettingValueList):
 
     """Map User Options to Radio Memory Values
