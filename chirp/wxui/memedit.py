@@ -2147,9 +2147,35 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             # This is a right-click on a column header
             return
         menu = wx.Menu()
-        selected_rows = self._grid.GetSelectedRows()
+
+        # Get selected rows robustly (including block/cell selection)
+        selected_rows = list(self._grid.GetSelectedRows())
+        if hasattr(self._grid, "GetSelectedBlocks"):
+            for block in self._grid.GetSelectedBlocks():
+                for r in range(block.GetTopRow(), block.GetBottomRow() + 1):
+                    if r not in selected_rows:
+                        selected_rows.append(r)
+        else:
+            top_left = self._grid.GetSelectionBlockTopLeft()
+            bottom_right = self._grid.GetSelectionBlockBottomRight()
+            if top_left and bottom_right:
+                for i in range(len(top_left)):
+                    for r in range(top_left[i][0], bottom_right[i][0] + 1):
+                        if r not in selected_rows:
+                            selected_rows.append(r)
+
+        for cell in self._grid.GetSelectedCells():
+            r = cell[0] if isinstance(cell, tuple) else cell.GetRow()
+            if r not in selected_rows:
+                selected_rows.append(r)
+
         if not selected_rows:
-            selected_rows = [event.GetRow()]
+            if event.GetRow() != -1:
+                selected_rows = [event.GetRow()]
+            else:
+                selected_rows = [self._grid.GetGridCursorRow()]
+
+        selected_rows.sort()
 
         props_item = wx.MenuItem(menu, wx.NewId(), _('Properties'))
         self.Bind(wx.EVT_MENU,
@@ -2157,6 +2183,14 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                   props_item)
         menu.Append(props_item)
         props_item.Enable(self.editable)
+
+        if len(selected_rows) > 1:
+            bulk_item = wx.MenuItem(menu, wx.NewId(), _('Bulk Edit...'))
+            self.Bind(wx.EVT_MENU,
+                      functools.partial(self._mem_bulk_edit, selected_rows),
+                      bulk_item)
+            menu.Append(bulk_item)
+            bulk_item.Enable(self.editable and not self.busy)
 
         insert_item = wx.MenuItem(menu, wx.NewId(), _('Insert Row Above'))
         self.Bind(wx.EVT_MENU,
@@ -2312,6 +2346,45 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         self.PopupMenu(menu)
         menu.Destroy()
+
+    @common.error_proof()
+    def _mem_bulk_edit(self, rows, event):
+        memories = [
+            self.synchronous_get_memory(self.row2mem(row))
+            for row in rows]
+
+        # Get all editable columns
+        editable_cols = [coldef for coldef in self._col_defs if coldef.valid]
+
+        with ChirpBulkEditDialog(self, editable_cols, len(memories)) as d:
+            if d.ShowModal() != wx.ID_OK:
+                return
+            updates = d.get_updates()
+
+        if not updates:
+            return
+
+        modified_memories = []
+        for memory in memories:
+            if memory.empty:
+                continue
+            modified = False
+            for coldef, val_str in updates.items():
+                try:
+                    coldef.digest_value(memory, val_str)
+                    modified = True
+                except Exception as e:
+                    LOG.warning("Failed to update memory %i field %s: %s",
+                                memory.number, coldef.name, e)
+            if modified:
+                modified_memories.append(memory)
+
+        if modified_memories:
+            with self.undo_context(
+                    _('Bulk edit %i memories') % len(modified_memories)):
+                for memory in modified_memories:
+                    self.set_memory(memory)
+            wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     @common.error_proof()
     def _mem_properties(self, rows, event):
@@ -2837,6 +2910,90 @@ class DVMemoryAsSettings(settings.RadioSettingGroup):
 
             rs = settings.RadioSetting(field, title, rsv)
             self.append(rs)
+
+
+class ChirpBulkEditDialog(wx.Dialog):
+    def __init__(self, parent, col_defs, num_selected):
+        super().__init__(parent,
+                         title=_("Bulk Edit Selected Memories"),
+                         size=(450, 500))
+        self._col_defs = col_defs
+        self._num_selected = num_selected
+        self.editors = {}
+        self.checkboxes = {}
+
+        self.InitUI()
+        self.Center()
+
+    def InitUI(self):
+        panel = wx.Panel(self)
+        vbox = wx.BoxSizer(wx.VERTICAL)
+
+        # Header Info
+        info_txt = wx.StaticText(
+            panel,
+            label=_("Number of memories to edit: %i") % self._num_selected)
+        bold_font = info_txt.GetFont()
+        bold_font.SetWeight(wx.FONTWEIGHT_BOLD)
+        info_txt.SetFont(bold_font)
+        vbox.Add(info_txt, flag=wx.ALL, border=10)
+
+        # Scrolled window for column fields
+        scroll_win = wx.ScrolledWindow(panel, style=wx.VSCROLL)
+        scroll_win.SetScrollRate(0, 20)
+
+        # FlexGridSizer: Checkbox, Label, Control
+        fgs = wx.FlexGridSizer(0, 3, 8, 8)
+        fgs.AddGrowableCol(2, 1)
+
+        for coldef in self._col_defs:
+            # Checkbox to unlock
+            chk = wx.CheckBox(scroll_win)
+            self.checkboxes[coldef] = chk
+
+            # Label (remove newlines from multi-line labels)
+            lbl_txt = coldef.label.replace('\n', ' ')
+            lbl = wx.StaticText(scroll_win, label=lbl_txt)
+
+            # Control (ComboBox for choice columns, TextCtrl for others)
+            if isinstance(coldef, ChirpChoiceColumn):
+                ctrl = wx.ComboBox(scroll_win,
+                                   choices=coldef._str_choices,
+                                   style=wx.CB_READONLY)
+            else:
+                ctrl = wx.TextCtrl(scroll_win)
+
+            ctrl.Disable()
+            self.editors[coldef] = ctrl
+
+            # Enable/Disable control dynamically when checked
+            chk.Bind(wx.EVT_CHECKBOX,
+                     lambda e, c=ctrl: c.Enable(e.IsChecked()))
+
+            fgs.Add(chk, flag=wx.ALIGN_CENTER_VERTICAL)
+            fgs.Add(lbl, flag=wx.ALIGN_CENTER_VERTICAL)
+            fgs.Add(ctrl, flag=wx.EXPAND)
+
+        scroll_win.SetSizer(fgs)
+        vbox.Add(scroll_win, proportion=1, flag=wx.EXPAND | wx.ALL, border=10)
+
+        # OK / Cancel Buttons
+        btn_box = wx.BoxSizer(wx.HORIZONTAL)
+        ok_btn = wx.Button(panel, wx.ID_OK, label=_("Update"))
+        cancel_btn = wx.Button(panel, wx.ID_CANCEL, label=_("Cancel"))
+
+        btn_box.Add(ok_btn, flag=wx.RIGHT, border=5)
+        btn_box.Add(cancel_btn)
+        vbox.Add(btn_box, flag=wx.ALIGN_RIGHT | wx.ALL, border=10)
+
+        panel.SetSizer(vbox)
+
+    def get_updates(self):
+        updates = {}
+        for coldef, chk in self.checkboxes.items():
+            if chk.IsChecked():
+                updates[coldef] = self.editors[coldef].GetValue()
+        return updates
 
 
 class ChirpMemPropDialog(wx.Dialog):
