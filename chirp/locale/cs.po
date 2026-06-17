@@ -1,87 +1,88 @@
-# Greek translations for CHIRP package.
-# Copyright (C) 2023 Dan Smith <chirp@f.danplanet.com>
+# Czech translations for CHIRP package.
+# Copyright (C) 2026 Dan Smith <dsmith@danplanet.com>
 # This file is distributed under the same license as the CHIRP package.
-# Sokratis Alichanidis <sv2hzs@posteo.net>, 2023.
+# Martin Macko <martin.macko@email.cz>, 2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-17 17:42+0200\n"
-"PO-Revision-Date: 2023-02-11 15:12+0200\n"
-"Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
-"Language-Team: Greek\n"
-"Language: el\n"
+"PO-Revision-Date: 2026-06-17 14:30+0200\n"
+"Last-Translator: Martin Macko <martin.macko@email.cz>\n"
+"Language-Team: Czech\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2.2\n"
-"X-Poedit-SourceCharset: ISO-8859-15\n"
-"X-Poedit-Basepath: .\n"
-"X-Poedit-SearchPath-0: .\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 #: ../wxui/query_sources.py:64
 #, python-format
 msgid "%(value)s must be between %(min)i and %(max)i"
-msgstr ""
+msgstr "%(value)s musí být mezi %(min)i a %(max)i"
 
 #: ../wxui/memedit.py:2236
 #, fuzzy, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
-msgstr[0] "Διαγραφή %i μνημών και μετακίνηση όλων προς τα επάνω"
-msgstr[1] "Διαγραφή %i μνημών και μετακίνηση όλων προς τα επάνω"
+msgstr[0] "%i paměť a posunout všechny nahoru"
+msgstr[1] "%i paměti a posunout všechny nahoru"
+msgstr[2] "%i pamětí a posunout všechny nahoru"
 
 #: ../wxui/memedit.py:2227
 #, fuzzy, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
-msgstr[0] "Μνήμες"
-msgstr[1] "Μνήμες"
+msgstr[0] "%i paměť"
+msgstr[1] "%i paměti"
+msgstr[2] "%i pamětí"
 
 #: ../wxui/memedit.py:2231
 #, fuzzy, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
-msgstr[0] "Διαγραφή %i μνημών και μετακίνηση ομάδας προς τα επάνω"
-msgstr[1] "Διαγραφή %i μνημών και μετακίνηση ομάδας προς τα επάνω"
+msgstr[0] "%i paměť a posunout blok nahoru"
+msgstr[1] "%i paměti a posunout blok nahoru"
+msgstr[2] "%i pamětí a posunout blok nahoru"
 
 #: ../wxui/main.py:1532
-#, python-format
+#, fuzzy, python-format
 msgid "%s has not been saved. Save before closing?"
-msgstr ""
+msgstr "%s nebyl uložen. Uložit před zavřením?"
 
 #: ../wxui/bugreport.py:510
 msgid "(Describe what actually happened instead)"
-msgstr ""
+msgstr "(Místo toho popište, co se ve skutečnosti stalo)"
 
 #: ../wxui/bugreport.py:508
 msgid "(Describe what you expected to happen)"
-msgstr ""
+msgstr "(Popište, co jste očekávali, že se stane)"
 
 #: ../wxui/bugreport.py:506
 msgid "(Describe what you were doing)"
-msgstr ""
+msgstr "(Popište, co jste dělali)"
 
 #: ../wxui/bugreport.py:512
 msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
-msgstr ""
+msgstr "(Fungovalo to někdy dříve? Nová vysílačka? Funguje to s originálním softwarem?)"
 
 #: ../wxui/radioinfo.py:50
 msgid "(none)"
-msgstr "(καμία)"
+msgstr "(žádný)"
 
 #: ../wxui/memedit.py:2671
 #, python-format
 msgid "...and %i more"
-msgstr ""
+msgstr "...a %i dalších"
 
 #: ../drivers/ft4.py:743
 msgid ""
 "1. Connect programming cable to MIC jack.\n"
 "2. Press OK."
 msgstr ""
+"1. Připojte programovací kabel do konektoru MIC.\n"
+"2. Stiskněte OK."
 
 #: ../drivers/alinco.py:605 ../drivers/alinco.py:614
 msgid ""
@@ -94,6 +95,15 @@ msgid ""
 "   (rotate dial while holding MONI to change)\n"
 "7. Click OK\n"
 msgstr ""
+"1. Ensure your firmware version is 4_10 or higher\n"
+"2. Vypněte stanici.\n"
+"3. Connect your interface cable\n"
+"4. Zapněte stanici.\n"
+"5. Stiskněte/klikněte na OK.\n"
+"6. Supported baud rates: 57600 (default) and 19200\n"
+"   (rotate dial while holding MONI to change)\n"
+"7. Stiskněte/klikněte na OK.\n"
+"\n"
 
 #: ../drivers/ft2900.py:1253
 msgid ""
@@ -102,6 +112,11 @@ msgid ""
 "3. While holding \"A/N LOW\" button, turn radio on.\n"
 "4. <b>After clicking OK</b>, press \"SET MHz\" to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [A/N LOW] zapněte stanici.\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/ft2900.py:1258
 msgid ""
@@ -115,6 +130,16 @@ msgid ""
 "      power and pressing and holding red \"*L\" button to unlock\n"
 "      radio, then start back at step 1.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [A/N LOW] zapněte stanici.\n"
+"4. Press \"MW D/MR\" to receive image.\n"
+"5. Make sure display says \"-WAIT-\" (see note below if not)\n"
+"6. Klikněte na OK pro spuštění.\n"
+"Note: if you don't see \"-WAIT-\" at step 5, try cycling\n"
+"      power and pressing and holding red \"*L\" button to unlock\n"
+"      radio, then start back at step 1.\n"
+"\n"
 
 #: ../drivers/ft8100.py:94
 msgid ""
@@ -123,6 +148,11 @@ msgid ""
 "3. While holding \"F/W\" button, turn radio on.\n"
 "4. <b>After clicking OK</b>, press \"RPT\" to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [F/W] zapněte stanici.\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/ft8100.py:99
 msgid ""
@@ -132,6 +162,12 @@ msgid ""
 "4. Press \"REV\" to receive image.\n"
 "5. Click OK to start transfer.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [F/W] zapněte stanici.\n"
+"4. Press \"REV\" to receive image.\n"
+"5. Klikněte na OK pro spuštění.\n"
+"\n"
 
 #: ../drivers/ft7100.py:1130
 msgid ""
@@ -140,6 +176,11 @@ msgid ""
 "3. While holding \"TONE\" and \"REV\" buttons, turn radio on.\n"
 "4. <b>After clicking OK</b>, press \"TONE\" to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [TONE] a [REV] zapněte stanici.\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/ft7100.py:1135
 msgid ""
@@ -150,6 +191,13 @@ msgid ""
 "5. Make sure display says \"CLONE RX\" and green led is blinking\n"
 "6. Click OK to start transfer.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [TONE] a [REV] zapněte stanici.\n"
+"4. Press \"REV\" to receive image.\n"
+"5. Make sure display says \"CLONE RX\" and green led is blinking\n"
+"6. Klikněte na OK pro spuštění.\n"
+"\n"
 
 #: ../drivers/ft2800.py:206
 msgid ""
@@ -160,6 +208,13 @@ msgid ""
 "5. <b>After clicking OK</b>, press the MHz key on the radio to send image.\n"
 "    (\"TX\" will appear on the LCD). \n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka příslušného tlačítka zapněte stanici.\n"
+"4. Radio is in clone mode when TX/RX is flashing\n"
+"5. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"    ((\"TX\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/ft2800.py:216
 msgid ""
@@ -170,6 +225,12 @@ msgid ""
 "5. Press the Low key on the radio (\"RX\" will appear on the LCD).\n"
 "6. Click OK."
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka příslušného tlačítka zapněte stanici.\n"
+"4. Radio is in clone mode when TX/RX is flashing\n"
+"5. Press the Low key on the radio (\"RX\" will appear on the LCD).\n"
+"6. Stiskněte/klikněte na OK."
 
 #: ../drivers/ft450d.py:430
 msgid ""
@@ -181,6 +242,14 @@ msgid ""
 "4. <b>After clicking OK</b> here, press the [C.S.] key to\n"
 "    send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte kabel ke konektoru ACC.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"    send image.\n"
+"\n"
 
 #: ../drivers/ft817.py:281
 msgid ""
@@ -191,6 +260,13 @@ msgid ""
 "     display).\n"
 "4. <b>After clicking OK</b>, press the [A] key to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte kabel ke konektoru ACC.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/ft450d.py:439
 msgid ""
@@ -202,6 +278,14 @@ msgid ""
 "4. Click OK here.\n"
 "    (\"Receiving\" will appear on the LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte kabel ke konektoru ACC.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Stiskněte/klikněte na OK.\n"
+"    (\"Receiving\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/ft857.py:450
 msgid ""
@@ -212,6 +296,13 @@ msgid ""
 "     display).\n"
 "4. Press the [A](RCV) key (\"receiving\" will appear on the LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte kabel ke konektoru ACC.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Press the [A](RCV) key (\"receiving\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/ft817.py:289
 msgid ""
@@ -222,6 +313,13 @@ msgid ""
 "     display).\n"
 "4. Press the [C] key (\"RX\" will appear on the LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte kabel ke konektoru ACC.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Press the [C] key (\"RX\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/ft857.py:441
 msgid ""
@@ -233,6 +331,14 @@ msgid ""
 "4. <b>After clicking OK</b>,\n"
 "     press the [C](SEND) key to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte kabel ke konektoru CAT/LINEAR.\n"
+"3. Press and hold in the [MODE &lt;] and [MODE &gt;] keys while\n"
+"     turning the radio on (\"CLONE MODE\" will appear on the\n"
+"     display).\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"     press the [C](SEND) key to send image.\n"
+"\n"
 
 #: ../drivers/ft7800.py:939 ../drivers/ft7800.py:1261
 msgid ""
@@ -246,6 +352,16 @@ msgid ""
 "6. <b>After clicking OK</b>, press the \"left\" [V/M] key to\n"
 "     send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Press and hold in the \"left\" [V/M] key while turning the\n"
+"     radio on.\n"
+"4. Rotate the \"right\" DIAL knob to select \"CLONE START\".\n"
+"5. Press the [SET] key. The display will disappear\n"
+"     for a moment, then the \"CLONE\" notation will appear.\n"
+"6. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"     send image.\n"
+"\n"
 
 #: ../drivers/ft7800.py:949 ../drivers/ft7800.py:1271
 msgid ""
@@ -259,6 +375,16 @@ msgid ""
 "6. Press the \"left\" [LOW] key (\"CLONE -RX-\" will appear on\n"
 "     the display).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Press and hold in the \"left\" [V/M] key while turning the\n"
+"     radio on.\n"
+"4. Rotate the \"right\" DIAL knob to select \"CLONE START\".\n"
+"5. Press the [SET] key. The display will disappear\n"
+"     for a moment, then the \"CLONE\" notation will appear.\n"
+"6. Press the \"left\" [LOW] key (\"CLONE -RX-\" will appear on\n"
+"     the display).\n"
+"\n"
 
 #: ../drivers/vx8.py:584
 msgid ""
@@ -268,6 +394,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Při současném držení tlačítka [FW] zapněte stanici.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/vx8.py:591
 msgid ""
@@ -277,6 +409,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Při současném držení tlačítka [FW] zapněte stanici.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/ft7800.py:320
 msgid ""
@@ -290,6 +428,16 @@ msgid ""
 "     will appear.\n"
 "6. Press the [LOW(ACC)] key (\"--RX--\" will appear on the display).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Press and hold in the [MHz(PRI)] key while turning the\n"
+"     radio on.\n"
+"4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
+"5. Press and hold in the [BAND(SET)] key. The display\n"
+"     will disappear for a moment, then the \"CLONE\" notation\n"
+"     will appear.\n"
+"6. Press the [LOW(ACC)] key (\"--RX--\" will appear on the display).\n"
+"\n"
 
 #: ../drivers/ft7800.py:309
 msgid ""
@@ -303,6 +451,16 @@ msgid ""
 " will appear.\n"
 "6. <b>After clicking OK</b>, press the [V/M(MW)] key to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Press and hold in the [MHz(PRI)] key while turning the\n"
+" radio on.\n"
+"4. Rotate the DIAL job to select \"F-7 CLONE\".\n"
+"5. Press and hold in the [BAND(SET)] key. The display\n"
+" will disappear for a moment, then the \"CLONE\" notation\n"
+" will appear.\n"
+"6. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/ft2d.py:90
 msgid ""
@@ -313,6 +471,13 @@ msgid ""
 "4. <b>After clicking OK here in Chirp</b>,\n"
 "     press the [Send] screen button.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Press and hold [DISP] key while turning on radio\n"
+"     (\"CLONE\" will appear on radio LCD).\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"     press the [Send] screen button.\n"
+"\n"
 
 #: ../drivers/ft2d.py:97
 msgid ""
@@ -324,6 +489,14 @@ msgid ""
 "     (\"-WAIT-\" will appear on radio LCD).\n"
 "5. Finally, press OK button below.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Press and hold in [DISP] key while turning on radio\n"
+"     (\"CLONE\" will appear on radio LCD).\n"
+"4. Press [RECEIVE] screen button\n"
+"     (\"-WAIT-\" will appear on radio LCD).\n"
+"5. Finally, press OK button below.\n"
+"\n"
 
 #: ../drivers/ft1d.py:902
 msgid ""
@@ -333,6 +506,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Při současném držení tlačítka [F] zapněte stanici.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/ft1d.py:909
 msgid ""
@@ -342,6 +521,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. Press the [Dx] key (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Při současném držení tlačítka [F] zapněte stanici.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [Dx] key (\"-WAIT-\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/ftm3200d.py:84
 msgid ""
@@ -352,6 +537,13 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [REV(DW)] key\n"
 "     to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"     to send image.\n"
+"\n"
 
 #: ../drivers/ftm3200d.py:92
 msgid ""
@@ -362,6 +554,13 @@ msgid ""
 "4. Press the [MHz(SETUP)] key\n"
 "     (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. Press the [MHz(SETUP)] key\n"
+"     (\"-WAIT-\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/ftm7250d.py:84
 msgid ""
@@ -372,6 +571,13 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [GM(AMS)] key\n"
 "     to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru pro mikrofon (MIC).\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"     to send image.\n"
+"\n"
 
 #: ../drivers/ftm7250d.py:92
 msgid ""
@@ -382,6 +588,13 @@ msgid ""
 "4. Press the [MHz(SETUP)] key\n"
 "     (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru pro mikrofon (MIC).\n"
+"3. Press and hold in the [MHz(SETUP)] key while turning the radio\n"
+"     on (\"CLONE\" will appear on the display).\n"
+"4. Press the [MHz(SETUP)] key\n"
+"     (\"-WAIT-\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/vx5.py:317
 msgid ""
@@ -392,6 +605,13 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [VFO(DW)SC] key to receive\n"
 "    the image from the radio.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [F/W] zapněte stanici.\n"
+"    (\"CLONE\" will appear on the display).\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"    the image from the radio.\n"
+"\n"
 
 #: ../drivers/vx5.py:325
 msgid ""
@@ -403,6 +623,14 @@ msgid ""
 "    on the LCD).\n"
 "5. Click OK to send image to radio.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [F/W] zapněte stanici.\n"
+"    (\"CLONE\" will appear on the display).\n"
+"4. Press the [MR(SKP)SC] key (\"CLONE WAIT\" will appear\n"
+"    on the LCD).\n"
+"5. Stiskněte/klikněte na OK.\n"
+"\n"
 
 #: ../drivers/vx1.py:399
 msgid ""
@@ -412,6 +640,12 @@ msgid ""
 "4. Press OK on chirp prompt.\n"
 "5. <b>After clicking OK</b>, press the [DWN] button on radio to send image. The radio will say CLN OUT while downloading.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Press and hold [FW] while turning radio on to put into CLONE mode.\n"
+"4. Stiskněte/klikněte na OK.\n"
+"5. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/vx1.py:407
 msgid ""
@@ -421,6 +655,12 @@ msgid ""
 "4. Press [UP] button on radio. The radio will say CLN IN.\n"
 "5. <b>After radio says CLN IN</b>, press OK on chirp prompt to upload.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Press and hold [FW] while turning radio on to put into CLONE mode.\n"
+"4. Press [UP] button on radio. The radio will say CLN IN.\n"
+"5. <b>After radio says CLN IN</b>, press OK on chirp prompt to upload.\n"
+"\n"
 
 #: ../drivers/ft50.py:195
 msgid ""
@@ -430,6 +670,12 @@ msgid ""
 "     radio on.\n"
 "4. <b>After clicking OK</b>, press the [PTT] switch to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Press and hold [PTT] &amp; Knob while turning the\n"
+"     radio on.\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/ft50.py:202
 msgid ""
@@ -440,6 +686,13 @@ msgid ""
 "4. Press the [MONI] switch (\"WAIT\" will appear on the LCD).\n"
 "5. Press OK.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Press and hold [PTT] &amp; Knob while turning the\n"
+"     radio on.\n"
+"4. Press the [MONI] switch (\"WAIT\" will appear on the LCD).\n"
+"5. Stiskněte/klikněte na OK.\n"
+"\n"
 
 #: ../drivers/vx3.py:373 ../drivers/vx6.py:370
 msgid ""
@@ -449,6 +702,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [F/W] zapněte stanici.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/vx3.py:380 ../drivers/vx6.py:377
 msgid ""
@@ -458,6 +717,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. Press the [V/M] key (\"-WAIT-\" will appear on the LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [F/W] zapněte stanici.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [V/M] key (\"-WAIT-\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/vx7.py:192
 msgid ""
@@ -467,6 +732,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. <b>After clicking OK</b>, press the [BAND] key to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [MON-F] zapněte stanici.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/vx7.py:200
 msgid ""
@@ -476,6 +747,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "4. Press the [V/M] key (\"CLONE WAIT\" will appear on the LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [MON-F] zapněte stanici.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"4. Press the [V/M] key (\"CLONE WAIT\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/ft60.py:360
 msgid ""
@@ -488,6 +765,15 @@ msgid ""
 "6. <b>After clicking OK</b>, hold the [PTT] switch\n"
 "     for one second to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Press and hold in the [MONI] switch while turning the\n"
+"     radio on.\n"
+"4. Rotate the DIAL job to select \"F8 CLONE\".\n"
+"5. Press the [F/W] key momentarily.\n"
+"6. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"     for one second to send image.\n"
+"\n"
 
 #: ../drivers/ft60.py:369
 msgid ""
@@ -499,6 +785,14 @@ msgid ""
 "5. Press the [F/W] key momentarily.\n"
 "6. Press the [MONI] switch (\"--RX--\" will appear on the LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Press and hold in the [MONI] switch while turning the\n"
+"     radio on.\n"
+"4. Rotate the DIAL job to select \"F8 CLONE\".\n"
+"5. Press the [F/W] key momentarily.\n"
+"6. Press the [MONI] switch (\"--RX--\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/vx170.py:105
 msgid ""
@@ -510,6 +804,14 @@ msgid ""
 "5. <b>After clicking OK</b>, briefly hold [PTT] key to send image.\n"
 "    (\"-TX-\" will appear on the LCD). \n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [moni] zapněte stanici.\n"
+"4. Select CLONE in menu, then press F. Radio restarts in clone mode.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"5. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"    ((\"-TX-\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/ft1802.py:96
 msgid ""
@@ -518,6 +820,11 @@ msgid ""
 "3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
 "4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru pro mikrofon (MIC).\n"
+"3. Při současném držení tlačítka [LOW(A/N)] zapněte stanici.\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/ft1802.py:103
 msgid ""
@@ -526,6 +833,11 @@ msgid ""
 "3. Press and hold in the [LOW(A/N)] key while turning the radio on.\n"
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru pro mikrofon (MIC).\n"
+"3. Při současném držení tlačítka [LOW(A/N)] zapněte stanici.\n"
+"4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/ft1500m.py:96
 msgid ""
@@ -535,6 +847,12 @@ msgid ""
 "   while turning the radio on.\n"
 "4. <b>After clicking OK</b>, press the [MHz(SET)] key to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru pro mikrofon (MIC).\n"
+"3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
+"   while turning the radio on.\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/ft1500m.py:103
 msgid ""
@@ -544,6 +862,12 @@ msgid ""
 "   while turning the radio on.\n"
 "4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel do konektoru pro mikrofon (MIC).\n"
+"3. Press and hold in the [MHz], [LOW], and [D/MR] keys\n"
+"   while turning the radio on.\n"
+"4. Press the [D/MR(MW)] key (\"--WAIT--\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/uv5r.py:834
 msgid ""
@@ -554,6 +878,13 @@ msgid ""
 "5. Ensure that the radio is tuned to channel with no activity.\n"
 "6. Click OK to download image from device.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Ujistěte se, že je konektor pevně připojen.\n"
+"4. Zapněte stanici (hlasitost může být nutné nastavit na 100 %).\n"
+"5. Ujistěte se, že je stanice naladěna na kmitočet bez aktivity.\n"
+"6. Klikněte na OK ke stažení dat z vysílačky.\n"
+"\n"
 
 #: ../drivers/uv5r.py:842
 msgid ""
@@ -564,6 +895,13 @@ msgid ""
 "5. Ensure that the radio is tuned to channel with no activity.\n"
 "6. Click OK to upload image to device.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Ujistěte se, že je konektor pevně připojen.\n"
+"4. Zapněte stanici (hlasitost může být nutné nastavit na 100 %).\n"
+"5. Ujistěte se, že je stanice naladěna na kmitočet bez aktivity.\n"
+"6. Klikněte na OK k nahrání dat do vysílačky.\n"
+"\n"
 
 #: ../drivers/tg_uv2p.py:232 ../drivers/uvb5.py:293 ../drivers/wouxun.py:222
 msgid ""
@@ -574,6 +912,13 @@ msgid ""
 "5. Ensure that the radio is tuned to channel with no activity.\n"
 "6. Click OK to download image from device.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Ujistěte se, že je konektor pevně připojen.\n"
+"4. Zapněte stanici.\n"
+"5. Ujistěte se, že je stanice naladěna na kmitočet bez aktivity.\n"
+"6. Klikněte na OK ke stažení dat z vysílačky.\n"
+"\n"
 
 #: ../drivers/tg_uv2p.py:240 ../drivers/uvb5.py:301 ../drivers/wouxun.py:230
 msgid ""
@@ -584,6 +929,13 @@ msgid ""
 "5. Ensure that the radio is tuned to channel with no activity.\n"
 "6. Click OK to upload image to device.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Ujistěte se, že je konektor pevně připojen.\n"
+"4. Zapněte stanici.\n"
+"5. Ujistěte se, že je stanice naladěna na kmitočet bez aktivity.\n"
+"6. Klikněte na OK k nahrání dat do vysílačky.\n"
+"\n"
 
 #: ../drivers/vx150.py:352
 msgid ""
@@ -595,6 +947,14 @@ msgid ""
 "5. <b>After clicking OK</b>, hold [PTT] briefly to transmit.\n"
 "     (\"SENDING\" will appear on the display)\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [PTT] [PTT] a [Lamp] zapněte stanici.\n"
+"4. Rotate the dial to select \"CLONE\", then press [F].\n"
+"     (\"CLONE\" will appear on the display)\n"
+"5. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"     (\"SENDING\" will appear on the display)\n"
+"\n"
 
 #: ../drivers/vx150.py:360
 msgid ""
@@ -606,6 +966,14 @@ msgid ""
 "5. Press [MONI] to receive.\n"
 "     (\"SAVING\" will appear on the display)\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Při současném držení tlačítka [PTT] [PTT] a [Lamp] zapněte stanici.\n"
+"4. Rotate the dial to select \"CLONE\", then press [F].\n"
+"     (\"CLONE\" will appear on the display)\n"
+"5. Press [MONI] to receive.\n"
+"     (\"SAVING\" will appear on the display)\n"
+"\n"
 
 #: ../drivers/yaesu_clone.py:247
 msgid ""
@@ -614,6 +982,11 @@ msgid ""
 "3. Prepare radio for clone.\n"
 "4. <b>After clicking OK</b>, press the key to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Prepare radio for clone.\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/yaesu_clone.py:252
 msgid ""
@@ -622,6 +995,11 @@ msgid ""
 "3. Prepare radio for clone.\n"
 "4. Press the key to receive the image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Prepare radio for clone.\n"
+"4. Press the key to receive the image.\n"
+"\n"
 
 #: ../drivers/ft90.py:194
 msgid ""
@@ -631,6 +1009,12 @@ msgid ""
 "3. Replace mic with PC programming cable.\n"
 "4. <b>After clicking OK</b>, press the [SET] key to send image.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Connect mic and hold [ACC] on mic while powering on.\n"
+"    (\"CLONE\" will appear on the display)\n"
+"3. Replace mic with PC programming cable.\n"
+"4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/ft90.py:201
 msgid ""
@@ -641,6 +1025,13 @@ msgid ""
 "4. Press the [DISP/SS] key\n"
 "    (\"R\" will appear on the lower left of LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Connect mic and hold [ACC] on mic while powering on.\n"
+"    (\"CLONE\" will appear on the display)\n"
+"3. Replace mic with PC programming cable.\n"
+"4. Press the [DISP/SS] key\n"
+"    (\"R\" will appear on the lower left of LCD).\n"
+"\n"
 
 #: ../drivers/bj9900.py:102
 msgid ""
@@ -650,6 +1041,12 @@ msgid ""
 "     head was connected to, <b>not the mic connector</b>.\n"
 "4. Click OK.\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"2. Remove front head.\n"
+"3. Připojte programovací kabel.\n"
+"     head was connected to, <b>not the mic connector</b>.\n"
+"4. Stiskněte/klikněte na OK.\n"
+"\n"
 
 #: ../drivers/vx170.py:116
 msgid ""
@@ -659,6 +1056,12 @@ msgid ""
 "     (\"CLONE\" will appear on the display).\n"
 "5. Press the [moni] key (\"-RX-\" will appear on the LCD).\n"
 msgstr ""
+"1. Vypněte stanici.\n"
+"3. Při současném držení tlačítka [moni] zapněte stanici.\n"
+"4. Select CLONE in menu, then press F. Radio restarts in clone mode.\n"
+"     (\"CLONE\" will appear on the display).\n"
+"5. Press the [moni] key (\"-RX-\" will appear on the LCD).\n"
+"\n"
 
 #: ../drivers/ft70.py:573
 msgid ""
@@ -670,6 +1073,13 @@ msgid ""
 "5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
 "<b>Then click OK</b>"
 msgstr ""
+"1. Zapněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Unclip battery.\n"
+"44. Press and hold in the [AMS] key and power key while clipping\n"
+" in back battery the (\"ADMS\" will appear on the display).\n"
+"5. Press the [MODE] key (\"-WAIT-\" will appear on the LCD).\n"
+"<b>Then click OK</b>"
 
 #: ../drivers/ft70.py:565
 msgid ""
@@ -680,6 +1090,13 @@ msgid ""
 " in back battery the(\"ADMS\" will appear on the display).\n"
 "5. <b>After clicking OK</b>, press the [BAND] key.\n"
 msgstr ""
+"1. Zapněte stanici.\n"
+"2. Připojte programovací kabel do konektoru DATA.\n"
+"3. Unclip battery.\n"
+"44. Press and hold in the [AMS] key and power key while clipping\n"
+" in back battery the(\"ADMS\" will appear on the display).\n"
+"5. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
+"\n"
 
 #: ../drivers/uvk5.py:621
 msgid ""
@@ -690,6 +1107,13 @@ msgid ""
 "\n"
 "It will may not work if you turn on the radio with the cable already attached\n"
 msgstr ""
+"1. Zapněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Ujistěte se, že je konektor pevně připojen.\n"
+"4. Klikněte na OK ke stažení dat z vysílačky.\n"
+"\n"
+"It will may not work if you turn on the radio with the cable already attached\n"
+"\n"
 
 #: ../drivers/uvk5.py:628
 msgid ""
@@ -700,79 +1124,87 @@ msgid ""
 "\n"
 "It will may not work if you turn on the radio with the cable already attached"
 msgstr ""
+"1. Zapněte stanici.\n"
+"2. Připojte programovací kabel.\n"
+"3. Ujistěte se, že je konektor pevně připojen.\n"
+"4. Klikněte na OK k nahrání dat do vysílačky.\n"
+"\n"
+"It will may not work if you turn on the radio with the cable already attached"
 
 #: ../wxui/main.py:2143
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
-msgstr "Μία νέα έκδοση του CHIRP είναι διαθέσιμη. Παρακαλούμε επισκεφθείτε την ιστοσελίδα το συντομότερο δυνατό για να την κατεβάσετε!"
+msgstr "Je k dispozici nová verze CHIRP. Navštivte prosím webovou stránku co nejdříve a stáhněte si ji!"
 
 #: ../drivers/ga510.py:1090
 msgid "AM mode does not allow duplex or tone"
-msgstr ""
+msgstr "Režim AM neumožňuje duplex ani tón"
 
 #: ../wxui/main.py:976
 msgid "About"
-msgstr "Σχετικά"
+msgstr "O programu"
 
 #: ../wxui/main.py:1908
 msgid "About CHIRP"
-msgstr "Σχετικά με το CHIRP"
+msgstr "O programu CHIRP"
 
 #: ../wxui/main.py:1963
 msgid "Agree"
-msgstr ""
+msgstr "Souhlasím"
 
 #: ../chirp_common.py:1883
 msgid "Aircraft frequencies must be aligned to 25kHz, 8.33kHz, be or a valid channel"
-msgstr ""
+msgstr "Letecké frekvence musí být zarovnány na 25 kHz, 8,33 kHz nebo jít o platný kanál"
 
 #: ../wxui/query_sources.py:452 ../wxui/query_sources.py:453
 msgid "All"
-msgstr "Όλες"
+msgstr "Vše"
 
 #: ../wxui/main.py:1361
+#, fuzzy
 msgid "All Files"
-msgstr "Όλα τα αρχεία"
+msgstr "Všechny soubory"
 
 #: ../wxui/main.py:1372
 msgid "All supported formats|"
-msgstr "Όλοι οι τύποι αρχείων|"
+msgstr "Všechny podporované formáty|"
 
 #: ../wxui/clone.py:626
 msgid "Always start with recent list"
-msgstr ""
+msgstr "Vždy začít s nedávným seznamem"
 
 #: ../wxui/query_sources.py:354 ../wxui/query_sources.py:444
 msgid "Amateur"
-msgstr "Ραδιοερασιτέχνη"
+msgstr "Radioamatérské"
 
 #: ../wxui/bugreport.py:344 ../wxui/bugreport.py:478 ../wxui/common.py:633
 msgid "An error has occurred"
-msgstr "Παρουσιάστηκε ένα σφάλμα"
+msgstr "Došlo k chybě"
 
 #: ../wxui/clone.py:145
 msgid "Applying settings"
-msgstr "Εφαρμογή ρυθμίσεων"
+msgstr "Použití nastavení"
 
 #: ../wxui/main.py:1629
+#, fuzzy
 msgid "Automatic from system"
-msgstr ""
+msgstr "Automaticky ze systému"
 
 #: ../wxui/developer.py:665
 msgid "Available modules"
-msgstr ""
+msgstr "Dostupné moduly"
 
 #: ../wxui/main.py:2072
 msgid "Bandplan"
-msgstr "Χάρτης συχνοτήτων"
+msgstr "Frekvenční plán"
 
 #: ../wxui/query_sources.py:481 ../wxui/query_sources.py:700
 #: ../wxui/query_sources.py:858
 msgid "Bands"
-msgstr "Μπάντες"
+msgstr "Pásma"
 
 #: ../wxui/main.py:211
 msgid "Banks"
-msgstr "Ομάδες μνημών"
+msgstr "Banky"
 
 #: ../wxui/developer.py:282
 msgid "Bin"
@@ -780,56 +1212,54 @@ msgstr "Bin"
 
 #: ../wxui/main.py:222
 msgid "Browser"
-msgstr "Περιηγητής"
+msgstr "Prohlížeč"
 
 #: ../wxui/bugreport.py:488
 #, python-format
 msgid "Bug number %s is closed"
-msgstr ""
+msgstr "Chyba číslo %s je uzavřena"
 
 #: ../wxui/bugreport.py:477
-#, fuzzy
 msgid "Bug number not found"
-msgstr "Αριθμός"
+msgstr "Číslo chyby nebylo nalezeno"
 
 #: ../wxui/bugreport.py:454
-#, fuzzy
 msgid "Bug number:"
-msgstr "Αριθμός"
+msgstr "Číslo chyby:"
 
 #: ../wxui/bugreport.py:387
 msgid "Bug subject:"
-msgstr ""
+msgstr "Předmět chyby:"
 
 #: ../wxui/developer.py:494
 msgid "Building Radio Browser"
-msgstr "Δημιουργία Περιηγητή Πομποδεκτών"
+msgstr "Sestavování prohlížeče vysílaček"
 
 #: ../wxui/memedit.py:2918
 msgid "Bulk Edit Selected Memories"
-msgstr ""
+msgstr "Hromadná úprava vybraných pamětí"
 
 #: ../wxui/memedit.py:2188
 msgid "Bulk Edit..."
-msgstr ""
+msgstr "Hromadná změna..."
 
 #: ../wxui/memedit.py:2384
 #, python-format
 msgid "Bulk edit %i memories"
-msgstr ""
+msgstr "Hromadná úprava %i pamětí"
 
 #: ../wxui/main.py:1658
 msgid "CHIRP must be restarted for the new selection to take effect"
-msgstr ""
+msgstr "Pro projevení nové volby je nutné restartovat CHIRP"
 
 #: ../wxui/query_sources.py:178
 #, python-format
 msgid "Cached results can only be included for a proximity query with Latitude, Longitude, and Distance set. Please uncheck \"%s\""
-msgstr ""
+msgstr "Výsledky z mezipaměti lze zahrnout pouze pro dotaz na blízkost se zadanou zeměpisnou šířkou, délkou a vzdáleností. Zrušte zaškrtnutí „%s“"
 
 #: ../wxui/query_sources.py:1067
 msgid "Canada"
-msgstr "Καναδάς"
+msgstr "Kanada"
 
 #: ../wxui/memedit.py:2983
 msgid "Cancel"
@@ -837,65 +1267,63 @@ msgstr ""
 
 #: ../wxui/common.py:504
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
-msgstr ""
+msgstr "Změna tohoto nastavení vyžaduje načtení nastavení z obrazu paměti, což se nyní stane."
 
 #: ../wxui/memedit.py:1839
 #, python-format
 msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
-msgstr ""
+msgstr "Kanály s ekvivalentním TX a RX %s jsou reprezentovány tónovým režimem „%s“"
 
 #: ../wxui/main.py:1360
 msgid "Chirp Image Files"
-msgstr "Αρχεία ειδώλου CHIRP"
+msgstr "Soubory obrazů Chirp"
 
 #: ../wxui/memedit.py:493
 msgid "Choice Required"
-msgstr "Απαιτείται επιλογή"
+msgstr "Vyžadována volba"
 
 #: ../wxui/memedit.py:1818
 #, python-format
 msgid "Choose %s DTCS Code"
-msgstr "Επιλέξτε κωδικό DTCS %s"
+msgstr "Zvolte kód DTCS pro %s"
 
 #: ../wxui/memedit.py:1815
 #, python-format
 msgid "Choose %s Tone"
-msgstr "Επιλέξτε τόνο %s"
+msgstr "Zvolte tón pro %s"
 
 #: ../wxui/memedit.py:1849
 msgid "Choose Cross Mode"
-msgstr ""
+msgstr "Zvolte křížový režim (Cross Mode)"
 
 #: ../wxui/main.py:1197
 msgid "Choose Diff Target"
-msgstr ""
+msgstr "Zvolte cíl porovnání"
 
 #: ../wxui/clone.py:607
-#, fuzzy
 msgid "Choose a recent model"
-msgstr "Επιλέξτε κωδικό DTCS %s"
+msgstr "Zvolte nedávný model"
 
 #: ../wxui/memedit.py:1879
-#, fuzzy
 msgid "Choose duplex"
-msgstr "Επιλογή duplex"
+msgstr "Zvolte duplex"
 
 #: ../wxui/developer.py:664
 #, python-format
 msgid "Choose the module to load from issue %i:"
-msgstr ""
+msgstr "Zvolte modul k načtení z hlášení %i:"
 
 #: ../wxui/query_sources.py:563
 msgid "City"
-msgstr "Πόλη"
+msgstr "Město"
 
 #: ../wxui/main.py:1949
 msgid "Click here for full license text"
-msgstr ""
+msgstr "Klikněte zde pro plný text licence"
 
 #: ../wxui/main.py:1928
 msgid "Click here for online documentation"
-msgstr ""
+msgstr "Klikněte zde pro online dokumentaci"
 
 #: ../drivers/ts590.py:678
 msgid ""
@@ -906,111 +1334,118 @@ msgid ""
 "are supported in this release.\n"
 "Ignore the beeps from the radio on upload and download.\n"
 msgstr ""
+"Kliknutím na přepínač „Speciální kanály“ v editoru paměti zobrazíte/nastavíte kanály EXT. Kanály P-VFO 100-109 jsou považovány za Nastavení.\n"
+"V tomto vydání je podporována pouze část z více než 200 dostupných nastavení vysílačky.\n"
+"Při nahrávání a stahování ignorujte pípání vysílačky.\n"
+"\n"
 
 #: ../drivers/ft817.py:360
 msgid "Clone completed, checking for spurious bytes"
-msgstr ""
+msgstr "Klonování dokončeno, kontrola nežádoucích bajtů"
 
 #: ../wxui/common.py:124
 msgid "Cloning"
-msgstr "Αντιγραφή"
+msgstr "Klonování"
 
 #: ../drivers/bj9900.py:133 ../drivers/ft4.py:332 ../drivers/ft450d.py:511
 #: ../drivers/ft817.py:343
+#, fuzzy
 msgid "Cloning from radio"
-msgstr "Λήψη από πομποδέκτη"
+msgstr "Čtení (klonování) z vysílačky"
 
 #: ../drivers/bj9900.py:165 ../drivers/ft4.py:333 ../drivers/ft450d.py:540
 #: ../drivers/ft817.py:381
+#, fuzzy
 msgid "Cloning to radio"
-msgstr "Αποστολή σε πομποδέκτη"
+msgstr "Zápis (klonování) do vysílačky"
 
 #: ../wxui/main.py:1074 ../wxui/main.py:1964
 msgid "Close"
-msgstr "Κλείσιμο"
+msgstr "Zavřít"
 
 #: ../wxui/memquery.py:151
-#, fuzzy
 msgid "Close String"
-msgstr "Κλείσιμο αρχείου"
+msgstr "Uzavřít řetězec"
 
 #: ../wxui/main.py:1075
 msgid "Close file"
-msgstr "Κλείσιμο αρχείου"
+msgstr "Zavřít soubor"
 
 #: ../wxui/memquery.py:209
 msgid "Close string value with double-quote (\")"
-msgstr ""
+msgstr "Uzavřít hodnotu řetězce dvojitými uvozovkami (\")"
 
 #: ../wxui/memedit.py:2295
 #, fuzzy, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
-msgstr[0] "Διαγραφή %i Μνημών"
-msgstr[1] "Διαγραφή %i Μνημών"
+msgstr[0] "Skupina %i paměť"
+msgstr[1] "Skupina %i paměti"
+msgstr[2] "Skupina %i pamětí"
 
 #: ../wxui/memedit.py:699
 msgid "Comment"
-msgstr "Σχόλιο"
+msgstr "Komentář"
 
 #: ../wxui/clone.py:319
 msgid "Communicate with radio"
-msgstr "Επικοινωνία με πομποδέκτη"
+msgstr "Komunikovat s vysílačkou"
 
 #: ../wxui/clone.py:153
 msgid "Complete"
-msgstr "Ολοκληρωμένη"
+msgstr "Dokončeno"
 
 #: ../wxui/memedit.py:151
 msgid "Complex or non-standard tone squelch mode (starts the tone mode selection wizard)"
-msgstr ""
+msgstr "Komplexní nebo nestandardní režim tónového squelchu (spustí průvodce výběrem tónového režimu)"
 
 #: ../drivers/tmd710.py:184 ../drivers/tmd710.py:187
 msgid ""
 "Connect your interface cable to the PC Port on the\n"
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
 msgstr ""
+"Připojte programovací kabel k portu PC na zadní straně jednotky „TX/RX“. NE k portu Com na panelu (hlavě).\n"
+"\n"
 
 #: ../wxui/query_sources.py:407
 msgid "Convert to FM"
-msgstr ""
+msgstr "Převést na FM"
 
 #: ../wxui/memedit.py:2206
+#, fuzzy
 msgid "Copy"
-msgstr ""
+msgstr "Kopírovat"
 
 #: ../wxui/memedit.py:2210
 msgid "Copy portable"
-msgstr ""
+msgstr "Kopírovat přenosnou verzi"
 
 #: ../wxui/query_sources.py:352 ../wxui/query_sources.py:569
 #: ../wxui/query_sources.py:659
 msgid "Country"
-msgstr "Χώρα"
+msgstr "Země"
 
 #: ../wxui/memedit.py:682
-#, fuzzy
 msgid "Cross Mode"
-msgstr "Τύπος τόνου"
+msgstr "Křížový režim"
 
 #: ../wxui/clone.py:568
-#, fuzzy
 msgid "Custom Port"
-msgstr "Εισάγετε προσαρμοσμένη θύρα:"
+msgstr "Vlastní port"
 
 #: ../wxui/clone.py:42
 msgid "Custom..."
-msgstr "Προσαρμοσμένη..."
+msgstr "Vlastní..."
 
 #: ../wxui/memedit.py:2201
 #, fuzzy
 msgid "Cut"
-msgstr "Χώρα"
+msgstr "Vyjmout"
 
 #: ../wxui/memedit.py:2514
 #, python-format
 msgid "Cut %i memories"
-msgstr ""
+msgstr "Vyjmout %i pamětí"
 
 #: ../wxui/memedit.py:613
 msgid "DTCS"
@@ -1021,369 +1456,363 @@ msgid ""
 "DTCS\n"
 "Polarity"
 msgstr ""
-"Πολικότητα\n"
-"DTCS"
+"DTCS\n"
+"Polarita"
 
 #: ../drivers/uvk5.py:845
 msgid "DTMF decode"
-msgstr ""
+msgstr "DTMF dekódování"
 
 #: ../wxui/memedit.py:3057
 msgid "DV Memory"
-msgstr "Μνήμη DV"
+msgstr "DV paměť"
 
 #: ../wxui/main.py:1985
 msgid "Danger Ahead"
-msgstr ""
+msgstr "Nebezpečí před vámi"
 
 #: ../wxui/developer.py:281
 msgid "Dec"
-msgstr "Dec"
+msgstr "Prosinec"
 
 #: ../wxui/memedit.py:2221
+#, fuzzy
 msgid "Delete"
-msgstr "Διαγραφή"
+msgstr "Smazat"
 
 #: ../wxui/memedit.py:2050
 msgid "Delete memories"
-msgstr ""
+msgstr "Smazat paměti"
 
 #: ../wxui/bugreport.py:568
-#, fuzzy
 msgid "Detailed information"
-msgstr "Πληροφορίες πομποδέκτη"
+msgstr "Podrobné informace"
 
 #: ../wxui/main.py:981
+#, fuzzy
 msgid "Developer Mode"
-msgstr "Λειτουργία προγραμματιστή"
+msgstr "Vývojářský režim"
 
 #: ../wxui/main.py:1991
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
-msgstr ""
+msgstr "Stav vývojáře je nyní %s. Pro projevení změn je nutné restartovat CHIRP"
 
 #: ../wxui/developer.py:98 ../wxui/memedit.py:2332
+#, fuzzy
 msgid "Diff Raw Memories"
-msgstr ""
+msgstr "Porovnat surové paměti"
 
 #: ../wxui/memedit.py:2340
 msgid "Diff against another editor"
-msgstr ""
+msgstr "Porovnat s jiným editorem"
 
 #: ../wxui/memedit.py:2890
-#, fuzzy
 msgid "Digital Code"
-msgstr "Ψηφιακός Κωδικός"
+msgstr "Digitální kód"
 
 #: ../wxui/query_sources.py:411
-#, fuzzy
 msgid "Digital Modes"
-msgstr "Ψηφιακός Κωδικός"
+msgstr "Digitální režimy"
 
 #: ../wxui/main.py:2003
-#, fuzzy
 msgid "Disable reporting"
-msgstr "Αναφορές απενεργοποιημένες"
+msgstr "Zakázat hlášení"
 
 #: ../wxui/memedit.py:589
 msgid "Disabled"
-msgstr ""
+msgstr "Zakázáno"
 
 #: ../wxui/query_sources.py:104 ../wxui/query_sources.py:383
 #: ../wxui/query_sources.py:682 ../wxui/query_sources.py:840
 msgid "Distance"
-msgstr "Απόσταση"
+msgstr "Vzdálenost"
 
 #: ../wxui/clone.py:207
 #, python-format
 msgid "Do not prompt again for %s"
-msgstr "Να μην ερωτηθώ ξανά για %s"
+msgstr "Znovu se nedotazovat na %s"
 
 #: ../wxui/clone.py:204
 msgid "Do you accept the risk?"
-msgstr ""
+msgstr "Přijímáte toto riziko?"
 
 #: ../wxui/bankedit.py:190
 msgid "Double-click to change bank name"
-msgstr "Κάντε διπλό κλικ για μετονομασία της ομάδας μνημών"
+msgstr "Dvojitým kliknutím změníte název banky"
 
 #: ../wxui/main.py:1076
 msgid "Download"
-msgstr "Λήψη"
+msgstr "Stáhnout"
 
 #: ../wxui/main.py:1077
+#, fuzzy
 msgid "Download from radio"
-msgstr "Λήψη Από Πομποδέκτη"
+msgstr "Stáhnout z vysílačky"
 
 #: ../wxui/main.py:867
 #, fuzzy
 msgid "Download from radio..."
-msgstr "Λήψη Από Πομποδέκτη"
+msgstr "Stáhnout z vysílačky..."
 
 #: ../wxui/clone.py:791
+#, fuzzy
 msgid "Download instructions"
-msgstr "Οδηγίες λήψης"
+msgstr "Instrukce pro stažení"
 
 #: ../wxui/radioinfo.py:63
-#, fuzzy
 msgid "Driver"
-msgstr "Επαναφόρτωση Οδηγού"
+msgstr "Ovladač"
 
 #: ../drivers/uvk5.py:1263
 msgid "Driver information"
-msgstr ""
+msgstr "Informace o ovladači"
 
 #: ../wxui/main.py:573
 msgid "Driver messages"
-msgstr ""
+msgstr "Zprávy ovladače"
 
 #: ../wxui/query_sources.py:409
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
-msgstr ""
+msgstr "Duální digitální převaděče podporující analog se zobrazí jako FM"
 
 #: ../wxui/memedit.py:552
 msgid "Duplex"
-msgstr ""
+msgstr "Duplex"
 
 #: ../wxui/memedit.py:2401
 #, python-format
 msgid "Edit %i memories"
-msgstr ""
+msgstr "Upravit %i pamětí"
 
 #: ../wxui/memedit.py:3004
 #, python-format
 msgid "Edit details for %i memories"
-msgstr "Επεξεργασία λεπτομερειών για %i μνήμες"
+msgstr "Upravit podrobnosti pro %i pamětí"
 
 #: ../wxui/memedit.py:3002
 #, python-format
 msgid "Edit details for memory %i"
-msgstr "Επεξεργασία λεπτομερειών για τη μνήμη %i"
+msgstr "Upravit podrobnosti pro paměť %i"
 
 #: ../wxui/main.py:925
-#, fuzzy
 msgid "Enable Automatic Edits"
-msgstr "Ενεργοποίηση αυτόματης επεξεργασίας"
+msgstr "Povolit automatické úpravy"
 
 #: ../wxui/memedit.py:589
 msgid "Enabled"
-msgstr ""
+msgstr "Povoleno"
 
 #: ../wxui/memedit.py:397
 msgid "Enter Frequency"
-msgstr "Εισάγετε συχνότητα"
+msgstr "Zadejte frekvenci"
 
 #: ../wxui/memedit.py:1866
 msgid "Enter Offset (MHz)"
-msgstr ""
+msgstr "Zadejte odskok (MHz)"
 
 #: ../wxui/memedit.py:1858
 msgid "Enter TX Frequency (MHz)"
-msgstr "Εισάγετε συχνότητα εκπομπής (MHz)"
+msgstr "Zadejte vysílací (TX) frekvenci (MHz)"
 
 #: ../wxui/bankedit.py:203
 #, python-format
 msgid "Enter a new name for bank %s:"
-msgstr "Εισάγετε ένα νέο όνομα για την ομάδα μνημών %s:"
+msgstr "Zadejte nový název pro banku %s:"
 
 #: ../wxui/clone.py:567
 msgid "Enter custom port:"
-msgstr "Εισάγετε προσαρμοσμένη θύρα:"
+msgstr "Zadejte vlastní port:"
 
 #: ../wxui/bugreport.py:502
 msgid "Enter details about this update. Be descriptive about what you were doing, what you expected to happen, and what actually happened."
-msgstr ""
+msgstr "Zadejte podrobnosti o této aktualizaci. Popište, co jste dělali, co jste očekávali a co se ve skutečnosti stalo."
 
 #: ../wxui/bugreport.py:370
 msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem. Before proceeding, please search for duplicate issues!"
-msgstr ""
+msgstr "Zadejte informace o chybě včetně krátkého, ale výstižného předmětu a informací o modelu vysílačky (pokud se to týká). V dalším kroku budete moci přidat více podrobností. Před pokračováním prosím vyhledejte, zda již neexistuje duplicitní hlášení!"
 
 #: ../wxui/bugreport.py:521
 msgid "Enter information to add to the bug here"
-msgstr ""
+msgstr "Sem zadejte informace, které chcete přidat k hlášení chyby"
 
 #: ../wxui/bugreport.py:445
 msgid "Enter the bug number that should be updated"
-msgstr ""
+msgstr "Zadejte číslo chyby, která má být aktualizována"
 
 #: ../wxui/bugreport.py:248
 msgid "Enter your username and password for chirpmyradio.com. If you do not have an account click below to create one before proceeding."
-msgstr ""
+msgstr "Zadejte své uživatelské jméno a heslo pro chirpmyradio.com. Pokud nemáte účet, klikněte níže pro jeho vytvoření."
 
 #: ../wxui/common.py:339
-#, python-format
+#, fuzzy, python-format
 msgid "Erased memory %s"
-msgstr "Διεγράφη η μνήμη %s"
+msgstr "Vymazána paměť %s"
 
 #: ../wxui/memquery.py:336
-#, fuzzy
 msgid "Error applying filter"
-msgstr "Σφάλμα εφαρμογής ρυθμίσεων"
+msgstr "Chyba při použití filtru"
 
 #: ../wxui/settingsedit.py:156
 msgid "Error applying settings"
-msgstr "Σφάλμα εφαρμογής ρυθμίσεων"
+msgstr "Chyba při použití nastavení"
 
 #: ../wxui/clone.py:696
 msgid "Error communicating with radio"
-msgstr "Σφάλμα επικοινωνίας με τον πομποδέκτη"
+msgstr "Chyba při komunikaci s vysílačkou"
 
 #: ../wxui/memquery.py:236
 msgid "Example: \"foo\""
-msgstr ""
+msgstr "Příklad: „foo“"
 
 #: ../wxui/memquery.py:244
 msgid "Example: ( expression )"
-msgstr ""
+msgstr "Příklad: ( výraz )"
 
 #: ../wxui/memquery.py:238
 msgid "Example: 123"
-msgstr ""
+msgstr "Příklad: 123"
 
 #: ../wxui/memquery.py:240
 msgid "Example: 146.52"
-msgstr ""
+msgstr "Příklad: 146.52"
 
 #: ../wxui/memquery.py:242
 msgid "Example: AND, OR"
-msgstr ""
+msgstr "Příklad: AND, OR"
 
 #: ../wxui/memquery.py:250
 msgid "Example: freq<146.0,148.0>"
-msgstr ""
+msgstr "Příklad: freq<146.0,148.0>"
 
 #: ../wxui/memquery.py:248
 msgid "Example: name=\"myrepeater"
-msgstr ""
+msgstr "Příklad: name=\"myrepeater"
 
 #: ../wxui/memquery.py:246
 msgid "Example: name~\"myrepea\""
-msgstr ""
+msgstr "Příklad: name~\"myrepea\""
 
 #: ../wxui/query_sources.py:404
 msgid "Exclude private and closed repeaters"
-msgstr ""
+msgstr "Vyloučit soukromé a uzavřené převaděče"
 
 #: ../wxui/clone.py:750
 msgid "Experimental driver"
-msgstr "Πειραματικός οδηγός"
+msgstr "Experimentální ovladač"
 
 #: ../wxui/memedit.py:2833
 msgid "Export can only write CSV files"
-msgstr "Η εξαγωγή είναι δυνατή μόνο σε αρχεία CSV"
+msgstr "Export může zapisovat pouze soubory CSV"
 
 #: ../wxui/main.py:1517
+#, fuzzy
 msgid "Export to CSV"
-msgstr "Εξαγωγή σε αρχείο μορφής .CSV"
+msgstr "Exportovat do CSV"
 
 #: ../wxui/main.py:739
 #, fuzzy
 msgid "Export to CSV..."
-msgstr "Εξαγωγή σε αρχείο μορφής .CSV"
+msgstr "Exportovat do CSV..."
 
 #: ../wxui/memedit.py:3046
 msgid "Extra"
-msgstr "Περισσότερα"
+msgstr "Extra"
 
 #: ../drivers/uvk5.py:1261
 msgid "FM Radio"
-msgstr ""
+msgstr "FM rádio"
 
 #: ../wxui/query_sources.py:998
 msgid ""
 "FREE repeater database, which provides information\n"
 "about repeaters in Europe. No account is required."
-msgstr ""
-"ΔΩΡΕΑΝ βάση δεδομένων επαναλήπτη, η οποία παρέχει πληροφορίες\n"
-"για επαναλήπτες στην Ευρώπη. Δεν απαιτείται λογαριασμός."
+msgstr "BEZPLATNÁ databáze převaděčů poskytující informace o převaděčích v Evropě. Není vyžadován žádný účet."
 
 #: ../wxui/query_sources.py:714
 msgid ""
 "FREE repeater database, which provides most up-to-date\n"
 "information about repeaters in Europe. No account is\n"
 "required."
-msgstr ""
+msgstr "BEZPLATNÁ databáze převaděčů, která poskytuje nejaktuálnější informace o převaděčích v Evropě. Není vyžadován žádný účet."
 
 #: ../wxui/memedit.py:2871
 msgid "Failed to export some memories"
-msgstr ""
+msgstr "Nepodařilo se exportovat některé paměti"
 
 #: ../wxui/developer.py:502
 msgid "Failed to load radio browser"
-msgstr "Αδυναμία φόρτωσης περιηγητή πομποδεκτών"
+msgstr "Nepodařilo se načíst prohlížeč vysílaček"
 
 #: ../sources/mapy73pl.py:61 ../sources/przemienniki_eu.py:57
 #: ../sources/przemienniki_net.py:59
-#, fuzzy
 msgid "Failed to parse result"
-msgstr "Αδυναμία φόρτωσης περιηγητή πομποδεκτών"
+msgstr "Nepodařilo se zpracovat výsledek"
 
 #: ../wxui/bugreport.py:729
-#, fuzzy
 msgid "Failed to send bug report:"
-msgstr "Αδυναμία φόρτωσης περιηγητή πομποδεκτών"
+msgstr "Nepodařilo se odeslat hlášení o chybě:"
 
 #: ../wxui/radioinfo.py:45
 msgid "Features"
-msgstr "Δυνατότητες"
+msgstr "Funkce"
 
 #: ../wxui/bugreport.py:212
 msgid "File a new bug"
-msgstr ""
+msgstr "Nahlásit novou chybu"
 
 #: ../wxui/main.py:580
 #, python-format
 msgid "File does not exist: %s"
-msgstr "Το αρχείο δεν υπάρχει: %s"
+msgstr "Soubor neexistuje: %s"
 
 #: ../wxui/main.py:1364 ../wxui/main.py:1444 ../wxui/main.py:1454
 #: ../wxui/main.py:1513 ../wxui/main.py:1878 ../wxui/main.py:1879
+#, fuzzy
 msgid "Files"
-msgstr "Αρχεία"
+msgstr "Soubory"
 
 #: ../wxui/bugreport.py:566
 #, fuzzy
 msgid "Files:"
-msgstr "Αρχεία"
+msgstr "Soubory:"
 
 #: ../wxui/query_sources.py:389
 msgid "Filter"
-msgstr "Φίλτρο"
+msgstr "Filtr"
 
 #: ../wxui/query_sources.py:387
 msgid "Filter results with location matching this string"
-msgstr "Φιλτράρισμα αποτελεσμάτων με τοποθεσία σύμφωνη με αυτό το λεκτικό"
+msgstr "Filtrovat výsledky s umístěním odpovídajícím tomuto řetězci"
 
 #: ../wxui/memquery.py:270
-#, fuzzy
 msgid "Filter..."
-msgstr "Φίλτρο"
+msgstr "Filtr..."
 
 #: ../wxui/main.py:1587
 msgid "Find"
-msgstr "Εύρεση"
+msgstr "Najít"
 
 #: ../wxui/main.py:807
 msgid "Find Next"
-msgstr "Εύρεση επόμενου"
+msgstr "Najít další"
 
 #: ../wxui/main.py:793
-#, fuzzy
 msgid "Find..."
-msgstr "Εύρεση"
+msgstr "Najít..."
 
 #: ../wxui/memquery.py:155
 msgid "Finish Float"
-msgstr ""
+msgstr "Dokončit desetinné číslo"
 
 #: ../wxui/memquery.py:211
 msgid "Finish float value like: 146.52"
-msgstr ""
+msgstr "Dokončete desetinnou hodnotu jako: 146.52"
 
 #: ../wxui/common.py:341
 #, python-format
 msgid "Finished radio job %s"
-msgstr "Τελείωσε η εργασία %s"
+msgstr "Dokončena úloha vysílačky %s"
 
 #: ../drivers/ts590.py:685
 msgid ""
@@ -1393,6 +1822,12 @@ msgid ""
 "during download!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
+"Chcete-li stáhnout paměť vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Download from radio: DO NOT mess with the radio\n"
+"during download!\n"
+"3 - Disconnect your interface cable\n"
+"\n"
 
 #: ../drivers/ts480.py:524
 msgid ""
@@ -1402,6 +1837,12 @@ msgid ""
 "on the radio head!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
+"Chcete-li stáhnout paměť vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Download from radio: Don't adjust any settings\n"
+"on the radio head!\n"
+"3 - Disconnect your interface cable\n"
+"\n"
 
 #: ../drivers/th_uv8000.py:521
 msgid ""
@@ -1411,6 +1852,12 @@ msgid ""
 "3 - Turn on your radio, volume @ 50%\n"
 "4 - CHIRP Menu - Radio - Download from radio\n"
 msgstr ""
+"Chcete-li stáhnout paměť vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable\n"
+"3 - Zapněte stanici, hlasitost na cca 50 %.\n"
+"4 - CHIRP Menu - Radio - Download from radio\n"
+"\n"
 
 #: ../drivers/ic2730.py:306
 msgid ""
@@ -1422,6 +1869,14 @@ msgid ""
 "5 - Disconnect the interface cable! Otherwise there will be\n"
 "    no right-side audio!\n"
 msgstr ""
+"Chcete-li stáhnout konfiguraci vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable to the Speaker-2 jack\n"
+"3 - Zapněte stanici.\n"
+"4 - Radio > Download from radio\n"
+"5 - Disconnect the interface cable! Otherwise there will be\n"
+"    no right-side audio!\n"
+"\n"
 
 #: ../drivers/baofeng_uv17Pro.py:514 ../drivers/baofeng_wp970i.py:327
 #: ../drivers/bf_t1.py:484 ../drivers/btech.py:666 ../drivers/gmrsuv1.py:391
@@ -1435,6 +1890,12 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the download of your radio data\n"
 msgstr ""
+"Chcete-li stáhnout informace o vysílačce, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable\n"
+"3 - Zapněte stanici.\n"
+"4 - Do the download of your radio data\n"
+"\n"
 
 #: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
 msgid ""
@@ -1444,6 +1905,12 @@ msgid ""
 "3 - Turn on your radio (unlock it if password protected)\n"
 "4 - Click OK to start\n"
 msgstr ""
+"Chcete-li stáhnout data ze své vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable\n"
+"3 - Zapněte stanici.\n"
+"4 - Klikněte na OK pro spuštění.\n"
+"\n"
 
 #: ../drivers/tk760.py:343
 msgid ""
@@ -1453,6 +1920,12 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Click OK to start\n"
 msgstr ""
+"Chcete-li načíst data ze své vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable\n"
+"3 - Zapněte stanici.\n"
+"4 - Klikněte na OK pro spuštění.\n"
+"\n"
 
 #: ../drivers/ts590.py:691
 msgid ""
@@ -1462,6 +1935,12 @@ msgid ""
 "during upload!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
+"Chcete-li nahrát paměť vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Upload to radio: DO NOT mess with the radio\n"
+"during upload!\n"
+"3 - Disconnect your interface cable\n"
+"\n"
 
 #: ../drivers/ts480.py:530
 msgid ""
@@ -1471,6 +1950,12 @@ msgid ""
 "on the radio head!\n"
 "3 - Disconnect your interface cable\n"
 msgstr ""
+"Chcete-li nahrát paměť vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Connect your interface cable\n"
+"2 - Radio > Upload to radio: Don't adjust any settings\n"
+"on the radio head!\n"
+"3 - Disconnect your interface cable\n"
+"\n"
 
 #: ../drivers/th_uv8000.py:527
 msgid ""
@@ -1480,6 +1965,12 @@ msgid ""
 "3 - Turn on your radio, volume @ 50%\n"
 "4 - CHIRP Menu - Radio - Upload to radio\n"
 msgstr ""
+"Chcete-li nahrát paměť vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable\n"
+"3 - Zapněte stanici, hlasitost na cca 50 %.\n"
+"4 - CHIRP Menu - Radio - Upload to radio\n"
+"\n"
 
 #: ../drivers/ic2730.py:314
 msgid ""
@@ -1492,6 +1983,15 @@ msgid ""
 "    no right-side audio!\n"
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
+"Chcete-li nahrát konfiguraci vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable to the Speaker-2 jack\n"
+"3 - Zapněte stanici.\n"
+"4 - Radio > Upload to radio\n"
+"5 - Disconnect the interface cable, otherwise there will be\n"
+"    no right-side audio!\n"
+"6 - Cycle power on the radio to exit clone mode\n"
+"\n"
 
 #: ../drivers/bf_t1.py:490 ../drivers/btech.py:672
 msgid ""
@@ -1501,6 +2001,12 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the upload of your radio data\n"
 msgstr ""
+"Chcete-li nahrát informace o vysílačce, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable\n"
+"3 - Zapněte stanici.\n"
+"4 - Do the upload of your radio data\n"
+"\n"
 
 #: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
 msgid ""
@@ -1510,6 +2016,12 @@ msgid ""
 "3 - Turn on your radio (unlock it if password protected)\n"
 "4 - Click OK to start\n"
 msgstr ""
+"Chcete-li nahrát data do své vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable\n"
+"3 - Zapněte stanici.\n"
+"4 - Klikněte na OK pro spuštění.\n"
+"\n"
 
 #: ../drivers/tk760.py:349
 msgid ""
@@ -1519,6 +2031,12 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Click OK to start\n"
 msgstr ""
+"Chcete-li zapsat data do své vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable\n"
+"3 - Zapněte stanici.\n"
+"4 - Klikněte na OK pro spuštění.\n"
+"\n"
 
 #: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
 msgid ""
@@ -1528,6 +2046,12 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the download of your radio data\n"
 msgstr ""
+"Chcete-li stáhnout informace o vysílačce, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable\n"
+"3 - Zapněte stanici.\n"
+"4 - Do the download of your radio data\n"
+"\n"
 
 #: ../drivers/tk270.py:323
 msgid ""
@@ -1537,6 +2061,12 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the download of your radio data\n"
 msgstr ""
+"Chcete-li načíst data ze své vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable\n"
+"3 - Zapněte stanici.\n"
+"4 - Do the download of your radio data\n"
+"\n"
 
 #: ../drivers/baofeng_uv17Pro.py:520 ../drivers/baofeng_wp970i.py:333
 #: ../drivers/gmrsuv1.py:397 ../drivers/gmrsv2.py:369 ../drivers/lt725uv.py:492
@@ -1549,6 +2079,12 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the upload of your radio data\n"
 msgstr ""
+"Chcete-li nahrát informace o vysílačce, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable\n"
+"3 - Zapněte stanici.\n"
+"4 - Do the upload of your radio data\n"
+"\n"
 
 #: ../drivers/tk270.py:329
 msgid ""
@@ -1558,45 +2094,51 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the upload of your radio data\n"
 msgstr ""
+"Chcete-li zapsat data do své vysílačky, postupujte podle těchto pokynů:\n"
+"1 - Vypněte stanici.\n"
+"2 - Connect your interface cable\n"
+"3 - Zapněte stanici.\n"
+"4 - Do the upload of your radio data\n"
+"\n"
 
 #: ../wxui/memedit.py:231
 #, python-format
 msgid "Found empty list value for %(name)s: %(value)r"
-msgstr ""
+msgstr "Nalezena prázdná hodnota seznamu pro %(name)s: %(value)r"
 
 #: ../wxui/memedit.py:343
 msgid "Frequency"
-msgstr "Συχνότητα"
+msgstr "Frekvence"
 
 #: ../import_logic.py:77
 #, python-format
 msgid "Frequency %s is out of supported ranges %s"
-msgstr ""
+msgstr "Frekvence %s je mimo podporovaný rozsah %s"
 
 #: ../wxui/memedit.py:155
 msgid "Frequency granularity in kHz"
-msgstr ""
+msgstr "Krok frekvence v kHz"
 
 #: ../drivers/baofeng_uv17Pro.py:1297 ../drivers/ga510.py:1094
 #: ../drivers/mml_jc8810.py:1383 ../drivers/retevis_ha1g.py:1439
 #: ../drivers/tdh8.py:2540 ../drivers/uv5r.py:1949
 msgid "Frequency in this range must not be AM mode"
-msgstr ""
+msgstr "Frekvence v tomto rozsahu nesmí být v režimu AM"
 
 #: ../drivers/retevis_ha1g.py:1430
 msgid "Frequency in this range not supported by firmware"
-msgstr ""
+msgstr "Frekvence v tomto rozsahu není podporována firmwarem"
 
 #: ../drivers/baofeng_uv17Pro.py:1294 ../drivers/ga510.py:1087
 #: ../drivers/mml_jc8810.py:1380 ../drivers/radtel_rt900.py:1623
 #: ../drivers/retevis_ha1g.py:1435 ../drivers/tdh8.py:2537
 #: ../drivers/uv5r.py:1945
 msgid "Frequency in this range requires AM mode"
-msgstr ""
+msgstr "Frekvence v tomto rozsahu vyžaduje režim AM"
 
 #: ../drivers/tdh8.py:2544
 msgid "Frequency outside TX bands must be duplex=off"
-msgstr ""
+msgstr "Frekvence mimo vysílací pásma (TX) musí mít duplex=off"
 
 #: ../wxui/query_sources.py:355 ../wxui/query_sources.py:435
 #: ../wxui/query_sources.py:536
@@ -1605,524 +2147,512 @@ msgstr "GMRS"
 
 #: ../wxui/settingsedit.py:77
 msgid "Getting settings"
-msgstr "Λήψη ρυθμίσεων"
+msgstr "Získávání nastavení"
 
 #: ../wxui/memedit.py:1363
+#, fuzzy
 msgid "Goto Memory"
-msgstr "Μετάβαση σε Μνήμη"
+msgstr "Přejít na paměť"
 
 #: ../wxui/memedit.py:1362
 msgid "Goto Memory:"
-msgstr "Μετάβαση σε Μνήμη:"
+msgstr "Přejít na paměť:"
 
 #: ../wxui/memedit.py:1309
-#, fuzzy
 msgid "Goto..."
-msgstr "Μετάβαση σε"
+msgstr "Přejít na..."
 
 #: ../wxui/main.py:1042
 msgid "Help"
-msgstr ""
+msgstr "Nápověda"
 
 #: ../wxui/clone.py:41
 msgid "Help Me..."
-msgstr "Βοήθεια..."
+msgstr "Pomozte mi..."
 
 #: ../wxui/developer.py:280
 msgid "Hex"
-msgstr "Hex"
+msgstr "Šestnáctkově"
 
 #: ../wxui/memedit.py:1318
 #, fuzzy
 msgid "Hide empty memories"
-msgstr "Αντικατάσταση μνημών;"
+msgstr "Skrýt prázdné paměti"
 
 #: ../drivers/retevis_rt98.py:998
 msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
-msgstr ""
+msgstr "Respektovat nastavení CTCSS/DCS přijímacího squelchu, je-li povoleno, jinak pouze nosný squelch"
 
 #: ../wxui/memedit.py:158
 msgid "Human-readable comment (not stored in radio)"
-msgstr ""
+msgstr "Lidsky čitelný komentář (neukládá se do vysílačky)"
 
 #: ../wxui/bugreport.py:413
 msgid "I have"
-msgstr ""
+msgstr "Mám"
 
 #: ../wxui/query_sources.py:366 ../wxui/query_sources.py:372
 #: ../wxui/query_sources.py:666 ../wxui/query_sources.py:672
 #: ../wxui/query_sources.py:818 ../wxui/query_sources.py:824
 msgid "If set, sort results by distance from these coordinates"
-msgstr ""
+msgstr "Je-li nastaveno, seřadí výsledky podle vzdálenosti od těchto souřadnic"
 
 #: ../wxui/main.py:1499
 msgid "Import"
-msgstr ""
+msgstr "Importovat"
 
 #: ../wxui/memedit.py:2550
 #, python-format
 msgid "Import %i memories"
-msgstr ""
+msgstr "Importovat %i pamětí"
 
 #: ../wxui/main.py:733
+#, fuzzy
 msgid "Import from file..."
-msgstr ""
+msgstr "Importovat ze souboru..."
 
 #: ../wxui/main.py:1503
 msgid "Import messages"
-msgstr ""
+msgstr "Zprávy importu"
 
 #: ../wxui/main.py:1497
+#, fuzzy
 msgid "Import not recommended"
-msgstr ""
+msgstr "Import se nedoporučuje"
 
 #: ../wxui/query_sources.py:424
 msgid "Include Cached"
-msgstr ""
+msgstr "Zahrnout mezipaměť"
 
 #: ../wxui/bankedit.py:62
 msgid "Index"
-msgstr ""
+msgstr "Index"
 
 #: ../wxui/main.py:224
 msgid "Info"
-msgstr "Πληροφορίες"
+msgstr "Info"
 
 #: ../wxui/memedit.py:1841
 msgid "Information"
-msgstr "Πληροφορίες"
+msgstr "Informace"
 
 #: ../wxui/memedit.py:2195
 msgid "Insert Row Above"
-msgstr "Εισαγωγή γραμμής επάνω"
+msgstr "Vložit řádek nad"
 
 #: ../wxui/__init__.py:60
 msgid "Install desktop icon?"
-msgstr ""
+msgstr "Instalovat ikonu na plochu?"
 
 #: ../wxui/main.py:965
-#, fuzzy
 msgid "Interact with driver"
-msgstr "Αλληλεπίδραση με οδηγό"
+msgstr "Interagovat s ovladačem"
 
 #: ../wxui/clone.py:813
-#, fuzzy
 msgid "Internal driver error"
-msgstr "Αλληλεπίδραση με οδηγό"
+msgstr "Interní chyba ovladače"
 
 #: ../chirp_common.py:674
 msgid "Internal driver error: Attempt to modify frozen memory; Please report this as a bug using \"Report or update a bug\" in the Help menu"
-msgstr ""
+msgstr "Interní chyba ovladače: Pokus o změnu zmrazené paměti; Nahlaste to prosím jako chybu pomocí „Nahlásit nebo aktualizovat chybu“ v nabídce Nápověda"
 
 #: ../wxui/query_sources.py:62
 #, python-format
 msgid "Invalid %(value)s (use decimal degrees)"
-msgstr ""
+msgstr "Neplatná hodnota %(value)s (použijte desetinné stupně)"
 
 #: ../wxui/memedit.py:2004 ../wxui/query_sources.py:70
 #: ../wxui/query_sources.py:124
-#, fuzzy
 msgid "Invalid Entry"
-msgstr "Μη έγκυρη τιμή: %s"
+msgstr "Neplatný vstup"
 
 #: ../wxui/query_sources.py:151
 msgid "Invalid ZIP code"
-msgstr "Μη έγκυρος ΤΚ"
+msgstr "Neplatné PSČ"
 
 #: ../wxui/memedit.py:2003 ../wxui/memedit.py:3139
 #, python-format
 msgid "Invalid edit: %s"
-msgstr "Μη έγκυρη τιμή: %s"
+msgstr "Neplatná úprava: %s"
 
 #: ../wxui/query_sources.py:124
-#, fuzzy
 msgid "Invalid locator"
-msgstr "Μη έγκυρη τιμή: %s"
+msgstr "Neplatný lokátor"
 
 #: ../wxui/main.py:1875
 msgid "Invalid or unsupported module file"
-msgstr ""
+msgstr "Neplatný nebo nepodporovaný soubor modulu"
 
 #: ../wxui/memedit.py:289 ../wxui/memedit.py:295
 #, python-format
 msgid "Invalid value: %r"
-msgstr "Μη έγκυρη τιμή: %r"
+msgstr "Neplatná hodnota: %r"
 
 #: ../wxui/developer.py:631
 #, python-format
 msgid "Issue %i is not in a valid state to load modules. It is highly recommended that you not attempt to manually load modules from this issue as it is likely to cause problems."
-msgstr ""
+msgstr "Hlášení %i není v platném stavu pro načítání modulů. Důrazně se doporučuje nepokoušet se z něj ručně načítat moduly, protože to pravděpodobně způsobí problémy."
 
 #: ../wxui/developer.py:686
 msgid "Issue number:"
-msgstr ""
+msgstr "Číslo hlášení:"
 
 #: ../wxui/main.py:352
-#, fuzzy
 msgid "LIVE"
-msgstr "LIVE"
+msgstr "NAŽIVO"
 
 #: ../drivers/radtel_rt490.py:1028 ../wxui/main.py:853 ../wxui/main.py:1643
 msgid "Language"
-msgstr ""
+msgstr "Jazyk"
 
 #: ../wxui/query_sources.py:92 ../wxui/query_sources.py:374
 #: ../wxui/query_sources.py:674 ../wxui/query_sources.py:826
 msgid "Latitude"
-msgstr "Γεωγραφικό πλάτος"
+msgstr "Zeměpisná šířka"
 
 #: ../wxui/developer.py:261
 #, python-format
 msgid "Length must be %i"
-msgstr "Το μήκος πρέπει να είναι %i"
+msgstr "Délka musí být %i"
 
 #: ../wxui/query_sources.py:395 ../wxui/query_sources.py:634
 #: ../wxui/query_sources.py:787
 msgid "Limit Bands"
-msgstr "Περιορισμός Μπαντών"
+msgstr "Omezit pásma"
 
 #: ../wxui/query_sources.py:400 ../wxui/query_sources.py:1287
 msgid "Limit Modes"
-msgstr ""
+msgstr "Omezit režimy"
 
 #: ../wxui/query_sources.py:649 ../wxui/query_sources.py:802
-#, fuzzy
 msgid "Limit Status"
-msgstr "Περιορισμός Μπαντών"
+msgstr "Omezit stav"
 
 #: ../wxui/query_sources.py:811
-#, fuzzy
 msgid "Limit prefixes"
-msgstr "Περιορισμός Μπαντών"
+msgstr "Omezit předpony"
 
 #: ../wxui/query_sources.py:381 ../wxui/query_sources.py:680
 #: ../wxui/query_sources.py:838
 msgid "Limit results to this distance (km) from coordinates"
-msgstr ""
+msgstr "Omezit výsledky na tuto vzdálenost (km) od souřadnic"
 
 #: ../wxui/query_sources.py:405
-#, fuzzy
 msgid "Limit use"
-msgstr "Περιορισμός Μπαντών"
+msgstr "Omezit použití"
 
 #: ../wxui/main.py:1730
 #, fuzzy
 msgid "Live Radio"
-msgstr "Πομποδέκτης"
+msgstr "Živá vysílačka"
 
 #: ../wxui/main.py:745
-#, fuzzy
 msgid "Load Module..."
-msgstr "Φόρτωση Module"
+msgstr "Načíst modul..."
 
 #: ../wxui/developer.py:687
-#, fuzzy
 msgid "Load module from issue"
-msgstr "Φόρτωση Module"
+msgstr "Načíst modul z hlášení"
 
 #: ../wxui/main.py:1018
-#, fuzzy
 msgid "Load module from issue..."
-msgstr "Φόρτωση Module"
+msgstr "Načíst modul z hlášení..."
 
 #: ../wxui/main.py:2039
 msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
-msgstr ""
+msgstr "Načtení modulu neovlivní otevřené karty. Doporučuje se (pokud není instruováno jinak) před načtením modulu zavřít všechny karty."
 
 #: ../wxui/main.py:1882
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
-msgstr ""
+msgstr "Načítání modulů může být extrémně nebezpečné a může vést k poškození počítače, vysílačky nebo obojího. NIKDY nenačítejte modul ze zdroje, kterému nedůvěřujete, a zejména ne odjinud než z hlavního webu CHIRP (chirpmyradio.com). Načtení modulu z jiného zdroje je podobné jako poskytnutí přímého přístupu k vašemu počítači! Pokračovat i přes toto riziko?"
 
 #: ../wxui/clone.py:147
 msgid "Loading settings"
-msgstr "Φόρτωση ρυθμίσεων"
+msgstr "Načítání nastavení"
 
 #: ../wxui/query_sources.py:110
 msgid "Locator"
-msgstr ""
+msgstr "Lokátor"
 
 #: ../wxui/bugreport.py:342
 msgid "Login failed: Check your username and password"
-msgstr ""
+msgstr "Přihlášení se nezdařilo: Zkontrolujte uživatelské jméno a heslo"
 
 #: ../drivers/uvk5.py:1765
 msgid "Logo string 1 (12 characters)"
-msgstr ""
+msgstr "Text loga 1 (12 znaků)"
 
 #: ../drivers/uvk5.py:1772
 msgid "Logo string 2 (12 characters)"
-msgstr ""
+msgstr "Text loga 2 (12 znaků)"
 
 #: ../wxui/query_sources.py:98 ../wxui/query_sources.py:375
 #: ../wxui/query_sources.py:675 ../wxui/query_sources.py:827
 msgid "Longitude"
-msgstr "Γεωγραφικό μήκος"
+msgstr "Zeměpisná délka"
 
 #: ../wxui/memedit.py:2016
 #, python-format
 msgid "Manual edit of memory %i"
-msgstr ""
+msgstr "Ruční úprava paměti %i"
 
 #: ../wxui/main.py:203
+#, fuzzy
 msgid "Memories"
-msgstr "Μνήμες"
+msgstr "Paměti"
 
 #: ../drivers/uvk5.py:2088
 msgid "Memories are read-only due to unsupported firmware version"
-msgstr ""
+msgstr "Paměti jsou pouze pro čtení kvůli nepodporované verzi firmwaru"
 
 #: ../wxui/memedit.py:2045
 #, python-format
 msgid "Memory %i is not deletable"
-msgstr "Η μνήμη %i δεν μπορεί να διαγραφεί"
+msgstr "Paměť %i nelze smazat"
 
 #: ../wxui/memquery.py:203
 #, python-format
 msgid "Memory field name (one of %s)"
-msgstr ""
+msgstr "Název pole paměti (jedno z %s)"
 
 #: ../wxui/memedit.py:143
 msgid "Memory label (stored in radio)"
-msgstr ""
+msgstr "Název paměti (uložený ve vysílačce)"
 
 #: ../wxui/bankedit.py:242
 msgid "Memory must be in a bank to be edited"
-msgstr "Η μνήμη πρέπει να βρίσκεται σε ομάδα για να γίνει επεξεργασία"
+msgstr "Paměť must be v bance, aby ji bylo možné upravovat"
 
 #: ../drivers/vx5.py:133
 #, python-brace-format
 msgid "Memory {num} not in bank {bank}"
-msgstr "Η μνήμη {num} δεν βρίσκεται στην ομάδα μνημών {bank}"
+msgstr "Paměť {num} není v bance {bank}"
 
 #: ../wxui/memedit.py:668 ../wxui/query_sources.py:626
 #: ../wxui/query_sources.py:779
-#, fuzzy
 msgid "Mode"
-msgstr "Λειτουργία"
+msgstr "Režim"
 
 #: ../wxui/clone.py:357
 msgid "Model"
-msgstr "Μοντέλο"
+msgstr "Model"
 
 #: ../wxui/query_sources.py:502 ../wxui/query_sources.py:1300
 msgid "Modes"
-msgstr ""
+msgstr "Režimy"
 
 #: ../wxui/main.py:1879
 msgid "Module"
-msgstr "Module"
+msgstr "Modul"
 
 #: ../wxui/main.py:1851
-#, fuzzy
 msgid "Module Loaded"
-msgstr "Module"
+msgstr "Modul načten"
 
 #: ../wxui/main.py:2050
 msgid "Module loaded successfully"
-msgstr ""
+msgstr "Modul byl úspěšně načten"
 
 #: ../wxui/common.py:649
-#, fuzzy
 msgid "More Info"
-msgstr "Πληροφορίες"
+msgstr "Více informací"
 
 #: ../wxui/clone.py:515
 #, python-format
 msgid "More than one port found: %s"
-msgstr "Βρέθηκαν περισσότερες από μία θύρες: %s"
+msgstr "Nalezeno více než jedno rozhraní: %s"
 
 #: ../wxui/memedit.py:2771
 #, python-format
 msgid "Move %i memories"
-msgstr ""
+msgstr "Přesunout %i pamětí"
 
 #: ../wxui/memedit.py:1305
+#, fuzzy
 msgid "Move Down"
-msgstr ""
+msgstr "Posunout dolů"
 
 #: ../wxui/memedit.py:1295
+#, fuzzy
 msgid "Move Up"
-msgstr ""
+msgstr "Posunout nahoru"
 
 #: ../wxui/memedit.py:2741
 msgid "Move operations are disabled while the view is sorted"
-msgstr ""
+msgstr "Operace přesunu jsou zakázány, pokud je pohled seřazen"
 
 #: ../wxui/main.py:691
 msgid "New Window"
-msgstr ""
+msgstr "Nové okno"
 
 #: ../wxui/main.py:2145
 msgid "New version available"
-msgstr "Διαθέσιμη νέα έκδοση"
+msgstr "K dispozici je nová verze"
 
 #: ../wxui/memedit.py:2418
 msgid "No empty rows below!"
-msgstr "Καμία κενή σειρά από κάτω!"
+msgstr "Níže nejsou žádné prázdné řádky!"
 
 #: ../wxui/memquery.py:254
 #, python-format
 msgid "No example for %s"
-msgstr ""
+msgstr "Žádný příklad pro %s"
 
 #: ../wxui/developer.py:706
 msgid "No modules found"
-msgstr ""
+msgstr "Nebyly nalezeny žádné moduly"
 
 #: ../wxui/developer.py:705
 #, python-format
 msgid "No modules found in issue %i"
-msgstr ""
+msgstr "V hlášení %i nebyly nalezeny žádné moduly"
 
 #: ../wxui/memedit.py:2604
 msgid "No more space available; some memories were not applied"
-msgstr ""
+msgstr "Není k dispozici žádné další místo; některé paměti nebyly použity"
 
 #: ../sources/mapy73pl.py:57 ../sources/przemienniki_eu.py:53
 #: ../sources/przemienniki_net.py:55
-#, fuzzy
 msgid "No results"
-msgstr "Κανένα αποτέλεσμα!"
+msgstr "Žádné výsledky"
 
 #: ../sources/repeaterbook.py:371
 msgid "No results!"
-msgstr "Κανένα αποτέλεσμα!"
+msgstr "Žádné výsledky!"
 
 #: ../wxui/main.py:2060
 msgid "No traces stored"
-msgstr ""
+msgstr "Nejsou uloženy žádné stopy komunikace"
 
 #: ../wxui/memedit.py:1362 ../wxui/query_sources.py:45
 msgid "Number"
-msgstr "Αριθμός"
+msgstr "Číslo"
 
 #: ../wxui/memedit.py:2935
 #, python-format
 msgid "Number of memories to edit: %i"
-msgstr ""
+msgstr "Počet pamětí k úpravě: %i"
 
 #: ../wxui/memedit.py:339
 msgid "Offset"
-msgstr ""
+msgstr "Odskok"
 
 #: ../wxui/memedit.py:337
 msgid ""
 "Offset/\n"
 "TX Freq"
 msgstr ""
+"Odskok/\n"
+"TX frekvence"
 
 #: ../wxui/memquery.py:252
 #, python-format
 msgid "One of: %s"
-msgstr ""
+msgstr "Jedno z: %s"
 
 #: ../wxui/query_sources.py:393 ../wxui/query_sources.py:632
 #: ../wxui/query_sources.py:785
 msgid "Only certain bands"
-msgstr "Μόνο ορισμένες μπάντες"
+msgstr "Pouze některá pásma"
 
 #: ../wxui/query_sources.py:398 ../wxui/query_sources.py:1283
 msgid "Only certain modes"
-msgstr ""
+msgstr "Pouze některé režimy"
 
 #: ../wxui/query_sources.py:809
-#, fuzzy
 msgid "Only certain prefixes"
-msgstr "Μόνο ορισμένες μπάντες"
+msgstr "Pouze některé předpony"
 
 #: ../wxui/main.py:333
 msgid "Only memory tabs may be exported"
-msgstr "Μόνο οι καρτέλες μνημών μπορούν να εξαχθούν"
+msgstr "Exportovat lze pouze záložky s paměťmi"
 
 #: ../wxui/query_sources.py:643 ../wxui/query_sources.py:796
 msgid "Only working repeaters"
-msgstr ""
+msgstr "Pouze funkční převaděče"
 
 #: ../wxui/main.py:1070 ../wxui/main.py:1499
 msgid "Open"
-msgstr "Άνοιγμα"
+msgstr "Otevřít"
 
 #: ../wxui/main.py:720
+#, fuzzy
 msgid "Open Recent"
-msgstr "Άνοιγμα πρόσφατου"
+msgstr "Otevřít nedávné"
 
 #: ../wxui/main.py:702
 msgid "Open Stock Config"
-msgstr "Άνοιγμα προεπιλεγμένων ρυθμίσεων"
+msgstr "Otevřít výchozí konfiguraci"
 
 #: ../wxui/main.py:1071 ../wxui/main.py:1375
 msgid "Open a file"
-msgstr "Άνοιγμα αρχείου"
+msgstr "Otevřít soubor"
 
 #: ../wxui/main.py:1897
 msgid "Open a module"
-msgstr "Άνοιγμα αρθρώματος"
+msgstr "Otevřít modul"
 
 #: ../wxui/main.py:1002
 msgid "Open debug log"
-msgstr "Άνοιγμα αρχείου καταγραφής αποσφαλμάτωσης"
+msgstr "Otevřít ladicí protokol"
 
 #: ../wxui/main.py:544
 msgid "Open in new window"
-msgstr ""
+msgstr "Otevřít v novém okně"
 
 #: ../wxui/main.py:1033
 msgid "Open last serial trace"
-msgstr ""
+msgstr "Otevřít poslední stopu sériové komunikace"
 
 #: ../wxui/query_sources.py:402
 msgid "Open repeaters only"
-msgstr ""
+msgstr "Otevřít pouze převaděče"
 
 #: ../wxui/main.py:649
-#, fuzzy
 msgid "Open stock config directory"
-msgstr "Άνοιγμα προεπιλεγμένων ρυθμίσεων"
+msgstr "Otevřít adresář s výchozími konfiguracemi"
 
 #: ../wxui/memquery.py:143
 msgid "Operator"
-msgstr ""
+msgstr "Operátor"
 
 #: ../wxui/query_sources.py:994
 msgid "Option"
-msgstr "Επιλογή"
+msgstr "Volba"
 
 #: ../wxui/query_sources.py:371 ../wxui/query_sources.py:671
 msgid "Optional: -122.0000"
-msgstr "Προαιρετικό: -122.0000"
+msgstr "Volitelné: -122.0000"
 
 #: ../wxui/query_sources.py:380 ../wxui/query_sources.py:679
 #: ../wxui/query_sources.py:837
 msgid "Optional: 100"
-msgstr "Προαιρετικό: 100"
+msgstr "Volitelné: 100"
 
 #: ../wxui/query_sources.py:823
-#, fuzzy
 msgid "Optional: 20.0000"
-msgstr "Προαιρετικό: -122.0000"
+msgstr "Volitelné: 20.0000"
 
 #: ../wxui/query_sources.py:365 ../wxui/query_sources.py:665
 msgid "Optional: 45.0000"
-msgstr "Προαιρετικό: 45.0000"
+msgstr "Volitelné: 45.0000"
 
 #: ../wxui/query_sources.py:817
-#, fuzzy
 msgid "Optional: 52.0000"
-msgstr "Προαιρετικό: 45.0000"
+msgstr "Volitelné: 52.0000"
 
 #: ../wxui/query_sources.py:831
-#, fuzzy
 msgid "Optional: AA00 - AA00aa11"
-msgstr "Προαιρετικό: -122.0000"
+msgstr "Volitelné: AA00 - AA00aa11"
 
 #: ../wxui/query_sources.py:386
-#, fuzzy
 msgid "Optional: County, Hospital, etc."
-msgstr "Προαιρετικό: Επαρχία, Νοσοκομείο κλπ"
+msgstr "Volitelné: Okres, nemocnice, atd."
 
 #: ../wxui/memedit.py:2584
+#, fuzzy
 msgid "Overwrite memories?"
-msgstr "Αντικατάσταση μνημών;"
+msgstr "Přepsat paměti?"
 
 #: ../drivers/ts480.py:520
 msgid ""
@@ -2130,175 +2660,176 @@ msgid ""
 "Only a subset of the over 130 available radio settings\n"
 "are supported in this release.\n"
 msgstr ""
+"Kanály P-VFO 100-109 jsou považovány za Nastavení.\n"
+"V této verzi je podporována pouze část z více než 130 dostupných nastavení vysílačky.\n"
+"\n"
 
 #: ../sources/mapy73pl.py:52 ../sources/przemienniki_eu.py:48
 #: ../sources/przemienniki_net.py:50
 msgid "Parsing"
-msgstr ""
+msgstr "Zpracování"
 
 #: ../wxui/bugreport.py:275
 msgid "Password"
-msgstr ""
+msgstr "Heslo"
 
 #: ../wxui/memedit.py:2215
+#, fuzzy
 msgid "Paste"
-msgstr ""
+msgstr "Vložit"
 
 #: ../wxui/common.py:804
 msgid "Paste external memories"
-msgstr ""
+msgstr "Vložit externí paměti"
 
 #: ../wxui/memedit.py:2684
 msgid "Paste memories"
-msgstr ""
+msgstr "Vložit paměti"
 
 #: ../wxui/memedit.py:2578
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
-msgstr ""
+msgstr "Vložené paměti přepíší %s existujících pamětí"
 
 #: ../wxui/memedit.py:2581
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
-msgstr ""
+msgstr "Vložené paměti přepíší paměti %s"
 
 #: ../wxui/memedit.py:2575
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
-msgstr ""
+msgstr "Vložené paměti přepíší paměť %s"
 
 #: ../wxui/memedit.py:2572
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
-msgstr ""
+msgstr "Vložená paměť přepíše paměť %s"
 
 #: ../wxui/main.py:2149
 msgid "Please be sure to quit CHIRP before installing the new version!"
-msgstr "Παρακαλούμε βεβαιωθείτε ότι έχετε κλείσει το CHIRP πριν εγκαταστήσετε την νέα έκδοση!"
+msgstr "Ujistěte se prosím, že ukončíte CHIRP před instalací nové verze!"
 
 #: ../wxui/bugreport.py:485
 msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
-msgstr ""
+msgstr "Zkontrolujte prosím číslo chyby a zkuste to znovu. Pokud skutečně chcete podat hlášení k této chybě, napište komentář na web a požádejte o její znovuotevření."
 
 #: ../wxui/main.py:1979
 msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
-msgstr ""
+msgstr "Upozorňujeme, že vývojářský režim je určen pro vývojáře projektu CHIRP nebo pod jejich vedením. Povoluje chování a funkce, které mohou poškodit váš počítač nebo vysílačku, pokud se nepoužívají s MAXIMÁLNÍ opatrností. Byli jste varováni! Pokračovat přesto?"
 
 #: ../wxui/common.py:204
 msgid "Please wait"
-msgstr "Παρακαλώ περιμένετε"
+msgstr "Čekejte prosím"
 
 #: ../wxui/clone.py:492
 msgid "Plug in your cable and then click OK"
-msgstr "Συνδέστε το καλώδιο σας και πατήστε OK"
+msgstr "Zapojte kabel a poté klikněte na OK"
 
 #: ../wxui/query_sources.py:889
 msgid "Polish repeaters database"
-msgstr ""
+msgstr "Polská databáze převaděčů"
 
 #: ../wxui/clone.py:342
 msgid "Port"
-msgstr "Θύρα"
+msgstr "Port"
 
 #: ../wxui/memedit.py:418
 msgid "Power"
-msgstr "Ισχύς"
+msgstr "Výkon"
 
 #: ../wxui/query_sources.py:877
 msgid "Prefixes"
-msgstr ""
+msgstr "Předpony"
 
 #: ../wxui/developer.py:158
 msgid "Press enter to set this in memory"
-msgstr "Πατήστε enter για καταχώρηση στη μνήμη"
+msgstr "Stisknutím klávesy Enter toto uložíte do paměti"
 
 #: ../wxui/main.py:756
 msgid "Print Preview"
-msgstr "Προεπισκόπηση εκτύπωσης"
+msgstr "Náhled tisku"
 
 #: ../wxui/printing.py:29
 msgid "Printing"
-msgstr "Εκτύπωση"
+msgstr "Tisk"
 
 #: ../wxui/clone.py:526
 msgid "Prolific USB device"
-msgstr ""
+msgstr "Prolific USB zařízení"
 
 #: ../wxui/memedit.py:2180
 msgid "Properties"
-msgstr "Ιδιότητες"
+msgstr "Vlastnosti"
 
 #: ../wxui/memquery.py:139
-#, fuzzy
 msgid "Property Name"
-msgstr "Ιδιότητες"
+msgstr "Název vlastnosti"
 
 #: ../wxui/memquery.py:147
-#, fuzzy
 msgid "Property Value"
-msgstr "Ιδιότητες"
+msgstr "Hodnota vlastnosti"
 
 #: ../wxui/query_sources.py:833
 msgid "QTH Locator"
-msgstr ""
+msgstr "QTH lokátor"
 
 #: ../wxui/main.py:2088
 #, python-format
 msgid "Query %s"
-msgstr "Ερώτημα %s"
+msgstr "Dotaz %s"
 
 #: ../wxui/main.py:881
 msgid "Query Source"
-msgstr "Ερώτημα Πηγής"
+msgstr "Zdroj dotazu"
 
 #: ../wxui/memquery.py:330
 msgid "Query string is invalid"
-msgstr ""
+msgstr "Dotazovací řetězec je neplatný"
 
 #: ../wxui/memquery.py:186
-#, fuzzy
 msgid "Query syntax OK"
-msgstr "Ερώτημα %s"
+msgstr "Syntaxe dotazu v pořádku"
 
 #: ../wxui/memquery.py:170
 msgid "Query syntax help"
-msgstr ""
+msgstr "Nápověda k syntaxi dotazů"
 
 #: ../sources/mapy73pl.py:36 ../sources/przemienniki_eu.py:36
 #: ../sources/przemienniki_net.py:36
-#, fuzzy
 msgid "Querying"
-msgstr "Ερώτημα %s"
+msgstr "Dotazování"
 
 #: ../wxui/memedit.py:615
 msgid "RX DTCS"
-msgstr "DTCS Λήψης"
+msgstr "RX DTCS"
 
 #: ../wxui/main.py:1041
+#, fuzzy
 msgid "Radio"
-msgstr "Πομποδέκτης"
+msgstr "Stanice"
 
 #: ../drivers/ft450d.py:576 ../drivers/ft60.py:89 ../drivers/ft60.py:91
 #: ../drivers/ft817.py:410
 #, python-format
 msgid "Radio did not ack block %i"
-msgstr "Ο πομποδέκτης δεν επιβεβαίωσε το μπλοκ %i"
+msgstr "Vysílačka nepotvrdila příjem bloku %i"
 
 #: ../wxui/clone.py:783 ../wxui/clone.py:883
 msgid "Radio information"
-msgstr "Πληροφορίες πομποδέκτη"
+msgstr "Informace o vysílačce"
 
 #: ../wxui/bugreport.py:397
 msgid "Radio model:"
-msgstr ""
+msgstr "Model vysílačky:"
 
 #: ../drivers/ft817.py:365
 msgid "Radio sent data after the last awaited block, this happens when the selected model is a non-US but the radio is a US one. Please choose the correct model and try again."
-msgstr ""
+msgstr "Stanice odeslala data po posledním očekávaném bloku. K tomu dochází, když je vybraný model ne-US verze, ale stanice je US verze. Zvolte prosím správný model a zkuste to znovu."
 
 #: ../wxui/query_sources.py:1214
 msgid "RadioReference Canada requires a login before you can query"
-msgstr ""
+msgstr "RadioReference Kanada vyžaduje před odesláním dotazu přihlášení"
 
 #: ../wxui/query_sources.py:1025
 msgid ""
@@ -2306,115 +2837,115 @@ msgid ""
 "radio communications data provider\n"
 "<small>Premium account required</small>"
 msgstr ""
+"RadioReference.com je největším světovým poskytovatelem dat o rádiové komunikaci\n"
+"<small>Vyžaduje prémiový účet</small>"
 
 #: ../wxui/memedit.py:149
 msgid "Receive DTCS code"
-msgstr ""
+msgstr "Přijímaný DTCS kód"
 
 #: ../wxui/memedit.py:142
-#, fuzzy
 msgid "Receive frequency"
-msgstr "Εισάγετε συχνότητα"
+msgstr "Přijímaná frekvence"
 
 #: ../wxui/clone.py:608
 #, fuzzy
 msgid "Recent"
-msgstr "Άνοιγμα πρόσφατου"
+msgstr "Nedávné"
 
 #: ../wxui/clone.py:349
 #, fuzzy
 msgid "Recent..."
-msgstr "Άνοιγμα πρόσφατου"
+msgstr "Nedávné..."
 
 #: ../drivers/retevis_rt98.py:1219
 msgid "Recommend using 55.2"
-msgstr ""
+msgstr "Doporučuje se použít 55.2"
 
 #: ../wxui/memedit.py:1023
 msgid "Redo"
-msgstr ""
+msgstr "Znovu"
 
 #: ../wxui/common.py:506
-#, fuzzy
 msgid "Refresh required"
-msgstr "Απαιτείται επανεκκίνηση"
+msgstr "Je vyžadováno obnovení"
 
 #: ../wxui/common.py:331
 #, python-format
 msgid "Refreshed memory %s"
-msgstr "Ανανεώθηκε η μνήμη %s"
+msgstr "Obnovena paměť %s"
 
 #: ../wxui/main.py:942
 msgid "Reload Driver"
-msgstr "Επαναφόρτωση Οδηγού"
+msgstr "Znovu načíst ovladač"
 
 #: ../wxui/main.py:951
 msgid "Reload Driver and File"
-msgstr "Επαναφόρτωση Οδηγού και Αρχείου"
+msgstr "Znovu načíst ovladač a soubor"
 
 #: ../wxui/memedit.py:1350
 msgid "Reload required"
-msgstr ""
+msgstr "Je vyžadováno znovunačtení"
 
 #: ../wxui/clone.py:628
 msgid "Remove"
-msgstr ""
+msgstr "Odebrat"
 
 #: ../wxui/clone.py:629
 msgid "Remove selected model from list"
-msgstr ""
+msgstr "Odebrat vybraný model ze seznamu"
 
 #: ../wxui/bankedit.py:205
 msgid "Rename bank"
-msgstr "Μετονομασία ομάδας μνημών"
+msgstr "Přejmenovat banku"
 
 #: ../wxui/query_sources.py:329
 msgid ""
 "RepeaterBook is Amateur Radio's most comprehensive,\n"
 "worldwide, FREE repeater directory."
-msgstr ""
+msgstr "RepeaterBook je nejucelenější celosvětový BEZPLATNÝ adresář převaděčů pro radioamatéry."
 
 #: ../wxui/main.py:1024
 msgid "Report or update a bug..."
-msgstr ""
+msgstr "Nahlásit nebo aktualizovat chybu..."
 
 #: ../wxui/bugreport.py:563
 #, fuzzy, python-format
 msgid "Reporting a new bug: %r"
-msgstr "Αναφορές ενεργοποιημένες"
+msgstr "Hlášení nové chyby: %r"
 
 #: ../wxui/main.py:990
 #, fuzzy
 msgid "Reporting enabled"
-msgstr "Αναφορές ενεργοποιημένες"
+msgstr "Odesílání statistik povoleno"
 
 #: ../wxui/main.py:1999
 msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
-msgstr ""
+msgstr "Odesílání statistik pomáhá projektu CHIRP zjistit, na které modely vysílaček a operační systémy máme zaměřit naše omezené úsilí. Velmi bychom ocenili, kdybyste jej nechali povolené. Opravdu chcete odesílání statistik zakázat?"
 
 #: ../wxui/main.py:1660 ../wxui/main.py:1993
 msgid "Restart Required"
-msgstr "Απαιτείται επανεκκίνηση"
+msgstr "Vyžadován restart"
 
 #: ../wxui/main.py:714
-#, fuzzy, python-format
+#, python-format
 msgid "Restore %i tab"
 msgid_plural "Restore %i tabs"
-msgstr[0] "Επαναφορά %i καρτελών"
-msgstr[1] "Επαναφορά %i καρτελών"
+msgstr[0] "Obnovit %i záložku"
+msgstr[1] "Obnovit %i záložky"
+msgstr[2] "Obnovit %i záložek"
 
 #: ../wxui/main.py:846
-#, fuzzy
 msgid "Restore tabs on start"
-msgstr "Επαναφορά %i καρτελών"
+msgstr "Obnovit záložky při spuštění"
 
 #: ../wxui/query_sources.py:415
 msgid "Results from other areas"
-msgstr ""
+msgstr "Výsledky z jiných oblastí"
 
 #: ../wxui/common.py:335
 msgid "Retrieved settings"
-msgstr "Ρυθμίσεις ανακτήθηκαν"
+msgstr "Získaná nastavení"
 
 #: ../wxui/query_sources.py:1263
 msgid ""
@@ -2422,184 +2953,189 @@ msgid ""
 "of satellite transmitter information. This source queries\n"
 "the SatNOGS API directly for the most granular and\n"
 "up-to-date transmitter data."
-msgstr ""
+msgstr "SatNOGS DB poskytuje živou, komunitou udržovanou databázi informací o družicových vysílačích. Tento zdroj se dotazuje přímo rozhraní SatNOGS API pro získání nejdetailnějších a nejaktuálnějších dat o vysílačích."
 
 #: ../wxui/main.py:1072
 msgid "Save"
-msgstr "Αποθήκευση"
+msgstr "Uložit"
 
 #: ../wxui/main.py:1534
 msgid "Save before closing?"
-msgstr "Αποθήκευση πριν το κλείσιμο;"
+msgstr "Uložit před zavřením?"
 
 #: ../wxui/main.py:1073 ../wxui/main.py:1458
 msgid "Save file"
-msgstr "Αποθήκευση αρχείου"
+msgstr "Uložit soubor"
 
 #: ../wxui/common.py:337
 msgid "Saved settings"
-msgstr "Ρυθμίσεις αποθηκεύθηκαν"
+msgstr "Uložená nastavení"
 
 #: ../wxui/memedit.py:156
 msgid "Scan control (skip, include, priority, etc)"
-msgstr ""
+msgstr "Řízení skenování (přeskočit, zahrnout, priorita, atd.)"
 
 #: ../drivers/uvk5.py:859
 msgid "Scanlists"
-msgstr ""
+msgstr "Seznamy skenování"
 
 #: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:855
 msgid "Scrambler"
-msgstr ""
+msgstr "Scrambler"
 
 #: ../wxui/developer.py:677
 msgid "Security Risk"
-msgstr ""
+msgstr "Bezpečnostní riziko"
 
 #: ../wxui/main.py:932
 #, fuzzy
 msgid "Select Bandplan..."
-msgstr "Επιλογή χάρτη συχνοτήτων"
+msgstr "Vybrat frekvenční plán..."
 
 #: ../wxui/query_sources.py:481 ../wxui/query_sources.py:700
 #: ../wxui/query_sources.py:858
+#, fuzzy
 msgid "Select Bands"
-msgstr "Επιλογή Μπαντών"
+msgstr "Vybrat pásma"
 
 #: ../wxui/main.py:1643
 #, fuzzy
 msgid "Select Language"
-msgstr "Επιλογή Μπαντών"
+msgstr "Vybrat jazyk"
 
 #: ../wxui/query_sources.py:502
+#, fuzzy
 msgid "Select Modes"
-msgstr ""
+msgstr "Vybrat režimy"
 
 #: ../wxui/query_sources.py:1300
 msgid "Select Modes to Import"
-msgstr ""
+msgstr "Vyberte režimy k importu"
 
 #: ../wxui/main.py:2071
 msgid "Select a bandplan"
-msgstr "Επιλογή χάρτη συνοτήτων"
+msgstr "Vyberte frekvenční plán"
 
 #: ../wxui/main.py:1201
 msgid "Select a tab and memory to diff"
-msgstr ""
+msgstr "Vyberte kartu a paměť pro porovnání"
 
 #: ../wxui/query_sources.py:877
+#, fuzzy
 msgid "Select prefixes"
-msgstr ""
+msgstr "Vybrat předpony"
 
 #: ../wxui/query_sources.py:357
 msgid "Service"
-msgstr "Υπηρεσία"
+msgstr "Služba"
 
 #: ../wxui/main.py:216
 msgid "Settings"
-msgstr "Ρυθμίσεις"
+msgstr "Nastavení"
 
 #: ../drivers/uvk5.py:2092
 msgid "Settings are read-only due to unsupported firmware version"
-msgstr ""
+msgstr "Nastavení jsou pouze pro čtení kvůli nepodporované verzi firmwaru"
 
 #: ../wxui/memedit.py:154
 msgid "Shift amount (or transmit frequency) controlled by duplex"
-msgstr ""
+msgstr "Velikost odskoku (nebo vysílací frekvence) řízená duplexem"
 
 #: ../wxui/developer.py:101 ../wxui/memedit.py:2324
+#, fuzzy
 msgid "Show Raw Memory"
-msgstr ""
+msgstr "Zobrazit surovou paměť"
 
 #: ../wxui/main.py:1008
 msgid "Show debug log location"
-msgstr "Εμφάνιση τοποθεσίας αρχείου καταγραφής αποσφαλμάτωσης"
+msgstr "Zobrazit umístění ladicího protokolu"
 
 #: ../wxui/memedit.py:1314
 msgid "Show extra fields"
-msgstr ""
+msgstr "Zobrazit rozšiřující pole"
 
 #: ../wxui/main.py:1013
-#, fuzzy
 msgid "Show image backup location"
-msgstr "Εμφάνιση τοποθεσίας αρχείου καταγραφής αποσφαλμάτωσης"
+msgstr "Zobrazit umístění zálohy obrazu paměti"
 
 #: ../wxui/memedit.py:690
 msgid "Skip"
-msgstr ""
+msgstr "Přeskočit"
 
 #: ../wxui/memedit.py:2675
 msgid "Some memories are incompatible with this radio"
-msgstr "Κάποιες μνήμες δεν είναι συμβατές με αυτόν τον πομποδέκτη"
+msgstr "Některé paměti nejsou s touto vysílačkou kompatibilní"
 
 #: ../wxui/memedit.py:2513
 msgid "Some memories are not deletable"
-msgstr "Κάποιες μνήμες δεν είναι δυνατόν να διαγραφούν"
+msgstr "Některé paměti nelze smazat"
 
 #: ../wxui/memedit.py:2116
 #, python-format
 msgid "Sort %i memories"
-msgstr ""
+msgstr "Seřadit %i pamětí"
 
 #: ../wxui/memedit.py:2280
 #, fuzzy, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
-msgstr[0] "Διαγραφή %i Μνημών"
-msgstr[1] "Διαγραφή %i Μνημών"
+msgstr[0] "Seřadit %i paměť"
+msgstr[1] "Seřadit %i paměti"
+msgstr[2] "Seřadit %i pamětí"
 
 #: ../wxui/memedit.py:2284
 #, fuzzy, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
-msgstr[0] "Διαγραφή %i Μνημών"
-msgstr[1] "Διαγραφή %i Μνημών"
+msgstr[0] "Seřadit %i paměť vzestupně"
+msgstr[1] "Seřadit %i paměti vzestupně"
+msgstr[2] "Seřadit %i pamětí vzestupně"
 
 #: ../wxui/memedit.py:2306
 #, fuzzy, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
-msgstr[0] "Διαγραφή %i Μνημών"
-msgstr[1] "Διαγραφή %i Μνημών"
+msgstr[0] "Seřadit %i paměť sestupně"
+msgstr[1] "Seřadit %i paměti sestupně"
+msgstr[2] "Seřadit %i pamětí sestupně"
 
 #: ../wxui/memedit.py:2131
 msgid "Sort by column:"
-msgstr ""
+msgstr "Seřadit podle sloupce:"
 
 #: ../wxui/memedit.py:2130
 #, fuzzy
 msgid "Sort memories"
-msgstr "Αντικατάσταση μνημών;"
+msgstr "Seřadit paměti"
 
 #: ../sources/mapy73pl.py:64 ../sources/przemienniki_eu.py:60
 #: ../sources/przemienniki_net.py:62
-#, fuzzy
 msgid "Sorting"
-msgstr "Εκτύπωση"
+msgstr "Třídění"
 
 #: ../wxui/query_sources.py:566
 msgid "State"
-msgstr "Πολιτεία"
+msgstr "Stav"
 
 #: ../wxui/query_sources.py:360
 msgid "State/Province"
-msgstr "Πολιτεία / Επαρχία"
+msgstr "Stát/provincie"
 
 #: ../wxui/main.py:2051
 msgid "Success"
-msgstr ""
+msgstr "Úspěch"
 
 #: ../wxui/bugreport.py:732
 msgid "Successfully sent bug report:"
-msgstr ""
+msgstr "Hlášení o chybě bylo úspěšně odesláno:"
 
 #: ../wxui/memedit.py:341
 msgid "TX Frequency"
-msgstr ""
+msgstr "Vysílací frekvence (TX)"
 
 #: ../wxui/memedit.py:150
 msgid "TX-RX DTCS polarity (normal or reversed)"
-msgstr ""
+msgstr "Polarita TX-RX DTCS (normální nebo obrácená)"
 
 #: ../drivers/ft4.py:737
 msgid ""
@@ -2607,10 +3143,13 @@ msgid ""
 "when using lesser common radio variants.\n"
 "Proceed at your own risk, and let us know about issues!"
 msgstr ""
+"Testováno a většinou funguje, ale může způsobit problémy\n"
+"u méně běžných variant vysílaček.\n"
+"Pokračujte na vlastní riziko a dejte nám vědět o problémech!"
 
 #: ../wxui/query_sources.py:574
 msgid "The DMR-MARC Worldwide Network"
-msgstr ""
+msgstr "Celosvětová síť DMR-MARC"
 
 #: ../drivers/ft450d.py:416
 msgid ""
@@ -2628,6 +3167,11 @@ msgid ""
 "uses the mode 'DIG' to represent data modes and a new column\n"
 "'DATA MODE' to select USER-U, USER-L and RTTY \n"
 msgstr ""
+"Ovladač stanice FT-450D načte na kartu „Speciální kanály“ paměti rozsahu skenování PMS (skupina 11), 60m kanály (skupina 12), paměť QMB (STO/RCL), paměti HOME pro HF a 50 MHz a všechny paměti VFO A a B.\n"
+"Jsou zde paměti VFO pro poslední naladěnou frekvenci v každém pásmu. Uložena je také poslední konfigurace ladění paměti.\n"
+"Tyto speciální kanály umožňují omezené úpravy polí.\n"
+"Tento ovladač také plní kartu „Ostatní“ v okně vlastností paměti kanálu. Tato karta obsahuje hodnoty pro nastavení paměti kanálu, která nespadají pod standardní sloupce zobrazení v programu Chirp. S podporou FT450 nyní grafické rozhraní používá režim „DIG“ pro reprezentaci datových režimů a nový sloupec „DATA REŽIM“ (DATA MODE) pro výběr USER-U, USER-L a RTTY.\n"
+"\n"
 
 #: ../drivers/boblov_x3plus.py:119
 msgid ""
@@ -2636,65 +3180,73 @@ msgid ""
 "Please save an unedited copy of your first successful\n"
 "download to a CHIRP Radio Images (*.img) file.\n"
 msgstr ""
+"Ovladač pro X3Plus je momentálně experimentální.\n"
+"Nejsou známy žádné problémy, ale měli byste postupovat opatrně.\n"
+"Uložte si prosím neupravenou kopii prvního úspěšného stažení do souboru obrazu (*.img).\n"
+"\n"
 
 #: ../wxui/developer.py:674
 msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
-msgstr ""
+msgstr "Autor tohoto modulu není uznávaným vývojářem CHIRP. Doporučuje se tento modul nenačítat, protože by mohl představovat bezpečnostní riziko. Pokračovat přesto?"
 
 #: ../wxui/bugreport.py:229
 msgid "The debug log file is not available when CHIRP is run interactively from the command-line. Thus, this tool will not upload what you expect. It is recommended that you quit now and run CHIRP non-interactively (or with stdin redirected to /dev/null)"
-msgstr ""
+msgstr "Ladicí protokol není k dispozici, pokud je CHIRP spuštěn interaktivně z příkazové řádky. Tento nástroj proto neodešle to, co očekáváte. Doporučuje se nyní ukončit program a spustit CHIRP neinteraktivně."
 
 #: ../wxui/bugreport.py:548
 msgid "The following information will be submitted:"
-msgstr ""
+msgstr "Budou odeslány následující informace:"
 
 #: ../wxui/memedit.py:1346
 msgid "The memory editor requires a reload in order to change the workflow. That will happen now. Any other open tabs will be updated the next time they are loaded."
-msgstr ""
+msgstr "Editor paměti vyžaduje znovunačtení, aby se změnil postup úprav. To se nyní provede. Ostatní otevřené karty se aktualizují při jejich příštím načtení."
 
 #: ../wxui/main.py:1490
 #, python-format
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
-msgstr ""
+msgstr "Doporučený postup pro import pamětí je otevřít zdrojový soubor a zkopírovat/vložit paměti z něj do cílového obrazu. Pokud budete pokračovat v této funkci importu, CHIRP nahradí všechny paměti ve vašem aktuálně otevřeném souboru těmi z %(file)s. Přejete si otevřít tento soubor pro ruční kopírování/vkládání pamětí, nebo pokračovat s automatickým importem?"
 
 #: ../wxui/memedit.py:2241
 #, fuzzy
 msgid "This Memory"
-msgstr "Μνήμη DV"
+msgstr "Tato paměť"
 
 #: ../drivers/id5100.py:332
 msgid "This driver has been tested with v3 of the ID-5100. If your radio is not fully updated please help by opening a bug report with a debug log so we can add support for the other revisions."
-msgstr ""
+msgstr "Tento ovladač byl testován s verzí v3 stanice ID-5100. Pokud vaše stanice není plně aktualizována, pomozte nám prosím nahlášením chyby s přiloženým ladicím protokolem, abychom mohli přidat podporu pro ostatní revize."
 
 #: ../drivers/radtel_rt490.py:1360 ../drivers/radtel_rt490.py:1362
 #: ../drivers/radtel_rt490.py:1364
 msgid "This driver is in development and should be considered as experimental."
-msgstr ""
+msgstr "Tento ovladač je ve vývoji a měl by být považován za experimentální."
 
 #: ../drivers/uvk5.py:686
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
-msgstr ""
+msgstr "V tomto obrazu chybí informace o firmwaru. Mohl být vygenerován starou nebo upravenou verzí programu CHIRP. Doporučuje se stáhnout čerstvý obraz přímo z vaší stanice a nadále používat ten pro nejlepší bezpečnost a kompatibilitu."
 
 #: ../drivers/uvk5.py:2096
 msgid "This image is read-only due to being from a radio with unsupported firmware"
-msgstr ""
+msgstr "Tento obraz je pouze pro čtení, protože pochází ze stanice s nepodporovaným firmwarem"
 
 #: ../wxui/main.py:1727
 msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"
-msgstr ""
+msgstr "Toto je stanice s přímým režimem (live-mode), což znamená, že změny se do stanice posílají v reálném čase během úprav. Zápis (nahrání) do stanice není nutný!"
 
 #: ../wxui/main.py:1733
 msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
-msgstr ""
+msgstr "Toto je soubor nezávislý na typu vysílačky a nelze jej přímo nahrát do stanice. Chcete-li data nahrát, otevřete obraz vysílačky (nebo jej stáhněte z vysílačky) a poté zkopírujte/vložte položky z této karty do ní."
 
 #: ../drivers/th_uv88.py:571
 msgid "This is an early stage beta driver\n"
 msgstr ""
+"Jedná se o beta verzi ovladače v rané fázi vývoje\n"
+"\n"
 
 #: ../drivers/th_uv88.py:573
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr ""
+"Jedná se o beta verzi ovladače v rané fázi vývoje - nahrávání na vlastní nebezpečí\n"
+"\n"
 
 #: ../drivers/uvk5.py:613
 msgid ""
@@ -2704,6 +3256,11 @@ msgid ""
 "\n"
 "some details are not yet implemented"
 msgstr ""
+"Toto je experimentální ovladač pro Quansheng UV-K5. Může poškodit vaši stanici nebo hůře. Použití na vlastní nebezpečí.\n"
+"\n"
+"Před pokusem o jakékoliv změny si prosím stáhněte obraz paměti ze stanice pomocí programu CHIRP a uschovejte jej. Ten lze později použít k obnovení původního nastavení.\n"
+"\n"
+"Některé detaily ještě nejsou implementovány."
 
 #: ../drivers/bj9900.py:108
 msgid ""
@@ -2712,28 +3269,28 @@ msgid ""
 "Also please send in bug and enhancement requests!\n"
 "You have been warned. Proceed at your own risk!"
 msgstr ""
-"Αυτή είναι πειραματική υποστήριξη για το BJ-9900 η οποία είναι υπό ανάπτυξη.\n"
-"Παρακαλούμε βεβαιωθείτε πως διαθέτετε σωστό αντίγραφο ασφαλείας του εργοστασιακού προγραμματισμού.\n"
-"Επίσης παρακαλούμε να μας στείλετε αιτήσης αποσφαλμάτωσης ή νέων δυνατοτήτων!\n"
-"Σας προειδοποιήσαμε. Προχωράτε με δική σας ευθύνη!"
+"Toto je experimentální podpora pro BJ-9900, která je stále ve vývoji.\n"
+"Ujistěse prosím, že máte zálohu pořízenou originálním softwarem.\n"
+"Také nám prosím posílejte hlášení o chybách a požadavky na vylepšení!\n"
+"Byli jste varováni. Pokračujte na vlastní nebezpečí!"
 
 #: ../wxui/bugreport.py:459
 msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
-msgstr ""
+msgstr "Toto je číslo tiketu pro již vytvořený problém na webu chirpmyradio.com"
 
 #: ../wxui/memedit.py:2245
 #, fuzzy
 msgid "This memory and shift all up"
-msgstr "Διαγραφή %i μνημών και μετακίνηση όλων προς τα επάνω"
+msgstr "Tato paměť a posunout všechny nahoru"
 
 #: ../wxui/memedit.py:2243
 #, fuzzy
 msgid "This memory and shift block up"
-msgstr "Διαγραφή %i μνημών και μετακίνηση ομάδας προς τα επάνω"
+msgstr "Tato paměť a posunout blok nahoru"
 
 #: ../drivers/uvk5_egzumer.py:1468
 msgid "This option may break your radio! Each radio has a unique set of calibration data and uploading the data from the image will cause physical harm to the radio if it is from a different piece of hardware. Do not use this unless you know what you are doing and accept the risk of destroying your radio!"
-msgstr ""
+msgstr "Tato volba může poškodit vaši stanici! Každá stanice má jedinečnou sadu kalibračních dat a nahrání dat z obrazu jiné stanice způsobí fyzické poškození hardwaru, pokud se liší. Nepoužívejte to, pokud přesně nevíte, co děláte, a nepřijímáte riziko zničení stanice!"
 
 #: ../drivers/fd268.py:303 ../drivers/fd268.py:309
 msgid ""
@@ -2743,142 +3300,144 @@ msgid ""
 "can take a few seconds, if don't work, try again a few times.\n"
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
+"Tato stanice se do programovacího režimu uvádí poměrně složitě,\n"
+"i originální software potřebuje několik pokusů. Program se o to pokusí 8krát (většinou to zabere ~3 pokusy),\n"
+"což může trvat několik sekund. Pokud se to nepodaří, zkuste to znovu. Pokud se nedaří vstoupit do režimu,\n"
+"zkontrolujte prosím stanici a kabel.\n"
+"\n"
 
 #: ../drivers/uvk5.py:1850
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
-msgstr ""
+msgstr "Toto by mělo být povoleno pouze v případě, že používáte upravený firmware, který podporuje širší frekvenční pokrytí. Povolení této volby způsobí, že CHIRP nebude vyžadovat omezení výrobce, což může vést k nedefinovanému nebo nepovolenému chování. Použití na vlastní nebezpečí!"
 
 #: ../wxui/query_sources.py:1235
 msgid ""
 "This source provides a curated list of active amateur radio\n"
 "satellites, mirrored from the JE9PEL database via GitHub.\n"
 "It is a stable, simplified list of popular frequencies."
-msgstr ""
+msgstr "Tento zdroj poskytuje vybraný seznam aktivních radioamatérských družic, zrcadlený z databáze JE9PEL přes GitHub. Jedná se o stabilní, zjednodušený seznam oblíbených frekvencí."
 
 #: ../wxui/bugreport.py:197
 msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
-msgstr ""
+msgstr "Tento nastroj odešle podrobnosti o vašem systému k již existujícímu problému v systému sledování chyb CHIRP. Ke své činnosti vyžaduje vaše uživatelské jméno a heslo pro chirpmyradio.com. Budou odeslány informace o vašem systému včetně ladicího protokolu, konfiguračního souboru a jakýchkoli otevřených souborů obrazů paměti. Před odesláním se provede pokus o odstranění osobních údajů."
 
 #: ../wxui/developer.py:684
 msgid "This will load a module from a website issue"
-msgstr ""
+msgstr "Tímto načtete modul z hlášení na webu"
 
 #: ../wxui/memedit.py:518
 msgid "Tone"
-msgstr "Τόνος"
+msgstr "Tón"
 
 #: ../wxui/memedit.py:1407
 msgid "Tone Mode"
-msgstr "Τύπος τόνου"
+msgstr "Tónový režim"
 
 #: ../wxui/memedit.py:520
 msgid "Tone Squelch"
-msgstr "Τόνος Φίμωσης"
+msgstr "Tónový squelch (TSQL)"
 
 #: ../wxui/memedit.py:144
-#, fuzzy
 msgid "Tone squelch mode"
-msgstr "Τόνος Φίμωσης"
+msgstr "Režim tónového squelchu"
 
 #: ../wxui/memedit.py:157
 msgid "Transmit Power"
-msgstr ""
+msgstr "Vysílací výkon"
 
 #: ../wxui/memedit.py:153
 msgid "Transmit shift, split mode, or transmit inhibit"
-msgstr ""
+msgstr "Odskok vysílání, režim split nebo blokování vysílání"
 
 #: ../wxui/memedit.py:145
 msgid "Transmit tone"
-msgstr ""
+msgstr "Vysílací tón"
 
 #: ../wxui/memedit.py:148
 msgid "Transmit/receive DTCS code for DTCS mode, else transmit code"
-msgstr ""
+msgstr "Vysílací/přijímací DTCS kód pro režim DTCS, jinak vysílací kód"
 
 #: ../wxui/memedit.py:147
 msgid "Transmit/receive modulation (FM, AM, SSB, etc)"
-msgstr ""
+msgstr "Vysílací/přijímací modulace (FM, AM, SSB, atd.)"
 
 #: ../wxui/memedit.py:146
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
-msgstr ""
+msgstr "Vysílací/přijímací tón pro režim TSQL, jinak přijímací tón"
 
 #: ../wxui/memedit.py:455 ../wxui/memedit.py:1419
 msgid "Tuning Step"
-msgstr "Βήμα συντονισμού"
+msgstr "Krok ladění"
 
 #: ../wxui/memquery.py:188
 msgid "Type a simple search string or a formatted query and press enter"
-msgstr ""
+msgstr "Napište jednoduchý vyhledávací řetězec nebo formátovaný dotaz a stiskněte enter"
 
 #: ../wxui/clone.py:486 ../wxui/clone.py:493 ../wxui/clone.py:504
 #: ../wxui/clone.py:512 ../wxui/clone.py:516
 msgid "USB Port Finder"
-msgstr "Έυρεση θυρών USB"
+msgstr "Vyhledávač portů USB"
 
 #: ../wxui/clone.py:502
 msgid "Unable to determine port for your cable. Check your drivers and connections."
-msgstr ""
+msgstr "Nelze určit port pro váš kabel. Zkontrolujte ovladače a připojení."
 
 #: ../wxui/memedit.py:1924
 msgid "Unable to edit memory before radio is loaded"
-msgstr ""
+msgstr "Nelze upravovat paměť před načtením dat z vysílačky"
 
 #: ../wxui/main.py:1416
 #, python-format
 msgid "Unable to find stock config %r"
-msgstr ""
+msgstr "Nelze najít výchozí konfiguraci %r"
 
 #: ../wxui/memedit.py:2530
-#, fuzzy
 msgid "Unable to import while the view is sorted"
-msgstr "Αδυναμία ανοίγματος του πρόχειρου"
+msgstr "Nelze importovat, pokud je zobrazení seřazeno"
 
 #: ../wxui/common.py:237
 msgid "Unable to open the clipboard"
-msgstr "Αδυναμία ανοίγματος του πρόχειρου"
+msgstr "Nelze otevřít schránku"
 
 #: ../sources/mapy73pl.py:50 ../sources/przemienniki_eu.py:46
 #: ../sources/przemienniki_net.py:48
 msgid "Unable to query"
-msgstr ""
+msgstr "Nelze provést dotaz"
 
 #: ../drivers/ft817.py:322
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
-msgstr ""
+msgstr "Nelze přečíst poslední blok. To se často stává, když je zvolen model pro US, ale stanice je ne-US (nebo má rozšířené pásmo). Zvolte prosím správný model a zkuste to znovu."
 
 #: ../wxui/common.py:701
 #, python-format
 msgid "Unable to reveal %s on this system"
-msgstr ""
+msgstr "Nelze zobrazit %s v tomto systému"
 
 #: ../wxui/memedit.py:267
-#, fuzzy, python-format
+#, python-format
 msgid "Unable to set %s on this memory"
-msgstr "Πατήστε enter για καταχώρηση στη μνήμη"
+msgstr "Nelze nastavit %s v této paměti"
 
 #: ../wxui/main.py:1737
-#, fuzzy
 msgid "Unable to upload this file"
-msgstr "Πατήστε enter για καταχώρηση στη μνήμη"
+msgstr "Tento soubor nelze nahrát"
 
 #: ../wxui/memedit.py:1022
 msgid "Undo"
-msgstr ""
+msgstr "Zpět"
 
 #: ../wxui/query_sources.py:1066
 msgid "United States"
-msgstr "Ηνωμένες Πολιτείες"
+msgstr "Spojené státy"
 
 #: ../wxui/clone.py:485
 msgid "Unplug your cable (if needed) and then click OK"
-msgstr "Αποσυνδέστε το καλώδιο σας (αν χρειάζεται) και μετά πατήστε OK"
+msgstr "Odpojte kabel (je-li to nutné) a poté klikněte na OK"
 
 #: ../drivers/thd74.py:337
 #, python-format
 msgid "Unsupported model %r"
-msgstr ""
+msgstr "Nepodporovaný model %r"
 
 #: ../wxui/memedit.py:2982
 msgid "Update"
@@ -2886,183 +3445,160 @@ msgstr ""
 
 #: ../wxui/bugreport.py:218
 msgid "Update an existing bug"
-msgstr ""
+msgstr "Aktualizovat existující chybu"
 
 #: ../wxui/bugreport.py:565
 #, python-format
 msgid "Updating bug %s"
-msgstr ""
+msgstr "Aktualizace chyby %s"
 
 #: ../wxui/clone.py:898
 msgid "Upload instructions"
-msgstr "Οδηγίες αποστολής"
+msgstr "Instrukce k nahrání"
 
 #: ../drivers/uvk5.py:2084
 msgid "Upload is disabled due to unsupported firmware version"
-msgstr ""
+msgstr "Nahrávání je zakázáno kvůli nepodporované verzi firmwaru"
 
 #: ../wxui/main.py:1079
+#, fuzzy
 msgid "Upload to radio"
-msgstr "Αποστολή Σε Πομποδέκτη"
+msgstr "Nahrát do vysílačky"
 
 #: ../wxui/main.py:875
 #, fuzzy
 msgid "Upload to radio..."
-msgstr "Αποστολή Σε Πομποδέκτη"
+msgstr "Nahrát do vysílačky..."
 
 #: ../wxui/common.py:333
 #, python-format
 msgid "Uploaded memory %s"
-msgstr "Απεστάλη η μνήμη %s"
+msgstr "Nahraná paměť %s"
 
 #: ../wxui/memedit.py:1322
 msgid "Use TX Frequency Workflow"
-msgstr ""
+msgstr "Použít postup s TX frekvencí"
 
 #: ../wxui/main.py:831
 msgid "Use fixed-width font"
-msgstr "Χρήση γραμματοσειράς σταθερού πλάτους"
+msgstr "Použít písmo s pevnou šířkou"
 
 #: ../wxui/main.py:839
 msgid "Use larger font"
-msgstr "Χρήση μεγαλύτερης γραμματοσειράς"
+msgstr "Použít větší písmo"
 
 #: ../wxui/bugreport.py:265
 msgid "Username"
-msgstr ""
+msgstr "Uživatelské jméno"
 
 #: ../wxui/developer.py:314
 #, python-format
 msgid "Value does not fit in %i bits"
-msgstr "Η τιμή δεν χωράει σε %i bits"
+msgstr "Hodnota se nevejde do %i bitů"
 
 #: ../wxui/common.py:543
 #, python-format
 msgid "Value must be at least %.4f"
-msgstr "Η τιμή πρέπει να είναι τουλάχιστον %.4f"
+msgstr "Hodnota musí být alespoň %.4f"
 
 #: ../wxui/common.py:547
 #, python-format
 msgid "Value must be at most %.4f"
-msgstr "Η τιμή πρέπει να είναι το πολύ  %.4f"
+msgstr "Hodnota musí být nejvýše %.4f"
 
 #: ../wxui/developer.py:358
 #, python-format
 msgid "Value must be exactly %i decimal digits"
-msgstr "Η τιμή πρέπει να έιναι ακριβώς %i δεκαδικά ψηφία"
+msgstr "Hodnota musí mít přesně %i desítkových číslic"
 
 #: ../wxui/developer.py:312 ../wxui/developer.py:356
 msgid "Value must be zero or greater"
-msgstr "Η τιμή πρέπει να είναι μηδέν ή μεγαλύτερη"
+msgstr "Hodnota musí být nula nebo větší"
 
 #: ../wxui/memquery.py:206
 msgid "Value to search memory field for"
-msgstr ""
+msgstr "Hodnota pro vyhledání v poli paměti"
 
 #: ../wxui/memedit.py:3037
 msgid "Values"
-msgstr ""
+msgstr "Hodnoty"
 
 #: ../wxui/clone.py:353
 msgid "Vendor"
-msgstr "Προμηθευτής"
+msgstr "Výrobce"
 
 #: ../wxui/main.py:1040
+#, fuzzy
 msgid "View"
-msgstr "Εμφάνιση"
+msgstr "Zobrazit"
 
 #: ../wxui/common.py:491
 msgid "WARNING!"
-msgstr ""
+msgstr "VAROVÁNÍ!"
 
 #: ../wxui/bugreport.py:234 ../wxui/main.py:1891 ../wxui/main.py:2043
 #: ../wxui/memedit.py:2010
 msgid "Warning"
-msgstr "Προειδοποίηση"
+msgstr "Varování"
 
 #: ../wxui/memedit.py:2009
 #, python-format
 msgid "Warning: %s"
-msgstr "Προειδοποίηση: %s"
+msgstr "Varování: %s"
 
 #: ../wxui/main.py:461
 msgid "Welcome"
-msgstr "Καλωσήρθατε"
+msgstr "Vítejte"
 
 #: ../wxui/query_sources.py:418
 msgid "With this option checked, a proximity search will include cached results from other localities if they are in range, match other filter parameters, and have been downloaded before."
-msgstr ""
+msgstr "Je-li tato volba zaškrtnuta, vyhledávání v okolí zahrne výsledky z mezipaměti pro ostatní lokality, pokud jsou v dosahu, odpovídají ostatním parametrům filtru a byly již dříve staženy."
 
 #: ../wxui/__init__.py:59
 msgid "Would you like CHIRP to install a desktop icon for you?"
-msgstr ""
+msgstr "Přejete si, aby program CHIRP nainstaloval ikonu na plochu?"
 
 #: ../wxui/bugreport.py:325
 msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
-msgstr ""
+msgstr "Během posledního týdne jste otevřeli několik hlášení chyb. CHIRP omezuje počet otevřených hlášení, aby se předešlo zneužití. Pokud opravdu potřebujete otevřít další, učiňte tak prosím prostřednictvím webu."
 
 #: ../wxui/clone.py:523
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
-msgstr ""
+msgstr "Vaše USB zařízení s čipem Prolific nebude fungovat bez návratu ke starší verzi ovladače. Přejete si navštívit webovou stránku CHIRP, kde se dozvíte více o řešení tohoto problému?"
 
 #: ../wxui/query_sources.py:832
 msgid "Your QTH Locator"
-msgstr ""
+msgstr "Váš QTH lokátor"
 
 #: ../wxui/clone.py:510
 msgid "Your cable appears to be on port:"
-msgstr "Το καλώδιο σας φαίνεται να είανι στη θύρα:"
+msgstr "Váš kabel je zřejmě na portu:"
 
 #: ../wxui/developer.py:194
 msgid "bits"
-msgstr "bits"
+msgstr "bitů"
 
 #: ../wxui/developer.py:190
 msgid "bytes"
-msgstr "bytes"
+msgstr "bajtů"
 
 #: ../wxui/developer.py:185
 msgid "bytes each"
-msgstr "bytes το καθένα"
+msgstr "bajtů každý"
 
 #: ../wxui/main.py:1976
 msgid "disabled"
-msgstr ""
+msgstr "zakázáno"
 
 #: ../wxui/main.py:1976
 msgid "enabled"
-msgstr ""
+msgstr "povoleno"
 
 #: ../wxui/bugreport.py:420
 msgid "searched for duplicate issues"
-msgstr ""
+msgstr "vyhledány duplicitní problémy"
 
 #: ../drivers/vx5.py:116
 #, python-brace-format
 msgid "{bank} is full"
-msgstr "H {bank} είναι γεμάτη"
-
-#, fuzzy
-#~ msgid "Band"
-#~ msgstr "Μπάντες"
-
-#~ msgid "Delete and shift all up"
-#~ msgstr "Διαγραφή και μετακίνηση όλων προς τα επάνω"
-
-#~ msgid "Delete and shift block up"
-#~ msgstr "Διαγραφή και μετακίνηση ομάδας προς τα επάνω"
-
-#, fuzzy, python-format
-#~ msgid "Failed to upload details: %s"
-#~ msgstr "Αδυναμία φόρτωσης περιηγητή πομποδεκτών"
-
-#, fuzzy, python-format
-#~ msgid "Path %s does not exist"
-#~ msgstr "Το αρχείο δεν υπάρχει: %s"
-
-#, fuzzy
-#~ msgid "Status"
-#~ msgstr "Πολιτεία"
-
-#~ msgid "Upload"
-#~ msgstr "Αποστολή"
+msgstr "Banka {bank} je plná"
