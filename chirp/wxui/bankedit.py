@@ -115,6 +115,8 @@ class ChirpBankEdit(common.ChirpEditor):
         self._grid.Bind(wx.grid.EVT_GRID_LABEL_LEFT_DCLICK, self._label_click)
         self._grid.GetGridColLabelWindow().Bind(wx.EVT_MOTION,
                                                 self._colheader_mouseover)
+        self._grid.GetGridColLabelWindow().Bind(wx.EVT_RIGHT_UP,
+                                                self._colheader_right_click)
 
     def update_font(self, refresh=True):
         fixed = CONF.get_bool('font_fixed', 'state', False)
@@ -178,6 +180,37 @@ class ChirpBankEdit(common.ChirpEditor):
 
     def mem2row(self, mem):
         return mem - self._features.memory_bounds[0]
+
+    def _colheader_right_click(self, event):
+        col = self._grid.XToCol(event.GetX(), event.GetY())
+        if col < self._meta_cols:
+            return
+        if not isinstance(self._bankmodel,
+                          chirp_common.MappingModelIndexInterface):
+            return
+        bank = self._bankmodel.get_mappings()[self.col2bank(col)]
+        menu = wx.Menu()
+        item = menu.Append(wx.ID_ANY,
+                           _('Renumber indices in %s') % bank.get_name())
+        self.Bind(wx.EVT_MENU,
+                  lambda evt: self._renumber_bank_indices(bank), item)
+        self._grid.GetGridColLabelWindow().PopupMenu(menu)
+        menu.Destroy()
+
+    def _renumber_bank_indices(self, bank):
+        members = []
+        for mem in self._memory_cache.values():
+            if mem.empty:
+                continue
+            banks = self._bankmodel.get_memory_mappings(mem)
+            if bank in banks:
+                members.append(mem)
+        members.sort(key=lambda m: m.number)
+        for idx, mem in enumerate(members):
+            self._bankmodel.set_memory_index(mem, bank, idx)
+        for mem in members:
+            self._refresh_memory(mem)
+        wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     def _colheader_mouseover(self, event):
         x = event.GetX()
