@@ -42,23 +42,12 @@ from chirp.wxui import memquery
 _ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
 
-# Optional screen reader speech output via prismatoid (ethindp/prism).
-# If the package is not installed the grid still works; speech is just silent.
-try:
-    import prism as _prism
-    _prism_ctx = _prism.core.Context()
-    _sr = _prism_ctx.acquire_best()
-except Exception:
-    _sr = None
+# Shared screen reader speech helper (prismatoid-backed, no-op if the
+# optional dependency isn't installed). See chirp/wxui/common.py for
+# the implementation; it's used by both the memory grid below and the
+# wx.propgrid.PropertyGrid-based editors in common.py.
+_sr_speak = common._sr_speak
 
-
-def _sr_speak(text, interrupt=True):
-    """Speak text via the active screen reader if prismatoid is available."""
-    if _sr is not None:
-        try:
-            _sr.output(text, interrupt)
-        except Exception:
-            pass
 CONF = config.get()
 WX_GTK = 'gtk' in wx.version().lower()
 TX_WORKFLOW_ID = wx.NewId()
