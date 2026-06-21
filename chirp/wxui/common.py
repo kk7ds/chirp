@@ -63,6 +63,64 @@ def _sr_speak(text, interrupt=True):
             pass
 
 
+def _pg_property_speech(prop):
+    """Render a wx.propgrid.PGProperty's name/value/type/state as speech
+    text, independent of ChirpSettingGrid/RadioSetting.
+
+    Used to give basic screen reader feedback to any PropertyGrid in the
+    app (e.g. the read-only Features/Driver/Icom/Image Metadata pages in
+    radioinfo.py), which don't have settings.RadioSetting objects backing
+    them the way ChirpSettingGrid's pages do.
+    """
+    if prop.IsCategory():
+        return _('Group: %s') % prop.GetLabel()
+
+    label = prop.GetLabel() or prop.GetName()
+    if isinstance(prop, wx.propgrid.BoolProperty):
+        value = _('checked') if prop.GetValue() else _('unchecked')
+    else:
+        value = prop.GetValueAsString()
+
+    parts = ['%s %s' % (label, value)]
+    if isinstance(prop, wx.propgrid.BoolProperty):
+        parts.append(_('checkbox'))
+    elif isinstance(prop, wx.propgrid.EnumProperty):
+        parts.append(_('list'))
+    elif isinstance(prop, (wx.propgrid.IntProperty,
+                           wx.propgrid.FloatProperty)):
+        parts.append(_('number'))
+    elif isinstance(prop, wx.propgrid.StringProperty):
+        parts.append(_('text'))
+    if not prop.IsEnabled():
+        parts.append(_('locked'))
+    elif prop.IsValueUnspecified():
+        parts.append(_('unspecified'))
+    return ', '.join(parts)
+
+
+def enable_propgrid_a11y(pg, accessible_name):
+    """Give a wx.propgrid.PropertyGrid basic screen reader feedback.
+
+    wx.propgrid.PropertyGrid does not expose a usable per-row
+    accessibility tree under MSAA/IAccessible (confirmed via NVDA
+    developer info: the whole grid reports as a single
+    ROLE_SYSTEM_CLIENT/PANE object with all row text concatenated
+    together), so arrow-key navigation between rows is otherwise
+    completely silent. This sets a meaningful accessible name on the
+    grid and speaks each row's name/value/type/state as it receives
+    focus, via prismatoid. See ChirpSettingGrid for a more complete
+    version of this (which also speaks in-progress edits and supports
+    an F1 description lookup) for grids backed by RadioSetting objects.
+    """
+    def _on_selected(event):
+        prop = event.GetProperty()
+        if prop:
+            _sr_speak(_pg_property_speech(prop))
+
+    pg.SetName(accessible_name)
+    pg.Bind(wx.propgrid.EVT_PG_SELECTED, _on_selected)
+
+
 CHIRP_DATA_MEMORY = wx.DataFormat('x-chirp/memory-channel')
 EditorChanged, EVT_EDITOR_CHANGED = wx.lib.newevent.NewCommandEvent()
 StatusMessage, EVT_STATUS_MESSAGE = wx.lib.newevent.NewCommandEvent()
