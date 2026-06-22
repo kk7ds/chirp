@@ -41,6 +41,13 @@ from chirp.wxui import memquery
 
 _ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
+
+# Shared screen reader speech helper (prismatoid-backed, no-op if the
+# optional dependency isn't installed). See chirp/wxui/common.py for
+# the implementation; it's used by both the memory grid below and the
+# wx.propgrid.PropertyGrid-based editors in common.py.
+_sr_speak = common._sr_speak
+
 CONF = config.get()
 WX_GTK = 'gtk' in wx.version().lower()
 TX_WORKFLOW_ID = wx.NewId()
@@ -111,6 +118,9 @@ class ChirpMemoryGrid(wx.grid.Grid, glr.GridWithLabelRenderersMixin):
         wx.grid.Grid.__init__(self, *a, **k)
         self.SetColLabelSize(wx.grid.GRID_AUTOSIZE)
         glr.GridWithLabelRenderersMixin.__init__(self)
+        # Give the inner grid window an accessible name so screen readers
+        # announce something meaningful instead of the raw class name.
+        self.GetGridWindow().SetName(_('Memory List'))
 
 
 class ChirpRowLabelRenderer(glr.GridDefaultRowLabelRenderer):
@@ -1002,7 +1012,14 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._grid.Bind(wx.grid.EVT_GRID_LABEL_RIGHT_CLICK,
                         self._memory_rclick)
         self._grid.Bind(wx.grid.EVT_GRID_CELL_BEGIN_DRAG, self._memory_drag)
+        self._grid.Bind(wx.grid.EVT_GRID_SELECT_CELL,
+                        self._announce_cell)
         self.Bind(wx.EVT_KEY_DOWN, self._keyboard_overrides)
+        # Bind key events on the inner grid window so the context-menu key
+        # (WXK_WINDOWS_MENU / Apps key) and Shift+F10 reach our handler even
+        # though focus lives inside the grid widget rather than on the panel.
+        self._grid.GetGridWindow().Bind(wx.EVT_KEY_DOWN,
+                                        self._keyboard_overrides)
         row_labels = self._grid.GetGridRowLabelWindow()
         row_labels.Bind(wx.EVT_LEFT_DOWN, self._row_click)
         row_labels.Bind(wx.EVT_LEFT_UP, self._row_click)
@@ -1153,8 +1170,55 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             # wx.grid.Grid() can do it.
             # https://github.com/wxWidgets/wxWidgets/issues/22625
             self.cb_copy(cut=False)
+        elif event.GetKeyCode() == wx.WXK_WINDOWS_MENU or (
+                event.GetKeyCode() == wx.WXK_F10 and event.ShiftDown()):
+            # Apps key or Shift+F10: open the context menu at the cursor cell.
+            # EVT_GRID_CELL_RIGHT_CLICK never fires for keyboard users, so we
+            # handle it here instead.  Both the panel binding and the inner
+            # grid-window binding point here, ensuring the event is caught
+            # regardless of which sub-window holds focus.
+            self._show_context_menu_at_cursor()
         else:
             event.Skip()
+
+    def _announce_cell(self, event):
+        """Speak the current cell value and column header to screen readers.
+
+        wx.grid.Grid has no IAccessible support, so cell navigation is
+        completely silent for screen reader users.  We bridge this gap by
+        calling out to prismatoid (ethindp/prism) when it is available.
+        The announcement format mirrors what a native accessible grid would
+        say: '<column name> <cell value>, row <N>'.
+        """
+        event.Skip()
+        row = event.GetRow()
+        col = event.GetCol()
+        col_label = self._grid.GetColLabelValue(col)
+        cell_value = self._grid.GetCellValue(row, col)
+        if not cell_value:
+            cell_value = _('empty')
+        message = '%s %s, row %d' % (col_label, cell_value, row + 1)
+        _sr_speak(message)
+
+    def _show_context_menu_at_cursor(self):
+        """Open the right-click context menu at the focused grid cell.
+
+        _memory_rclick() uses event.GetRow() which is only valid for actual
+        mouse events.  This method calls the same menu-building logic but
+        substitutes the keyboard cursor position, so keyboard users (including
+        screen reader users) get full access to all context-menu actions via
+        the Apps key or Shift+F10.
+        """
+        row = self._grid.GetGridCursorRow()
+        if row < 0:
+            return
+        # Build a fake event-like object that satisfies _memory_rclick's
+        # use of GetRow(), then delegate to the shared menu builder.
+
+        class _FakeGridEvent:
+            def GetRow(self_):
+                return row
+        self._memory_rclick(_FakeGridEvent())
 
     def _row_click(self, event):
         # In order to override the drag-to-multi-select behavior of the base

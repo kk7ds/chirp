@@ -39,6 +39,88 @@ from chirp.wxui import radiothread
 LOG = logging.getLogger(__name__)
 CONF = config.get()
 
+# Optional screen reader speech output via prismatoid (ethindp/prism).
+# If the package is not installed, accessibility-related code paths that
+# call _sr_speak() simply become no-ops; normal widget behaviour is
+# unaffected. This is shared by memedit.py (memory grid) and the
+# wx.propgrid.PropertyGrid-based editors below (settings, radio info,
+# memory "Other"/"Advanced"/"Work Mode" tabs), since neither widget
+# exposes a usable accessibility tree on its own.
+try:
+    import prism as _prism
+    _prism_ctx = _prism.core.Context()
+    _sr = _prism_ctx.acquire_best()
+except Exception:
+    _sr = None
+
+
+def _sr_speak(text, interrupt=True):
+    """Speak text via the active screen reader if prismatoid is available."""
+    if _sr is not None:
+        try:
+            _sr.output(text, interrupt)
+        except Exception:
+            pass
+
+
+def _pg_property_speech(prop):
+    """Render a wx.propgrid.PGProperty's name/value/type/state as speech
+    text, independent of ChirpSettingGrid/RadioSetting.
+
+    Used to give basic screen reader feedback to any PropertyGrid in the
+    app (e.g. the read-only Features/Driver/Icom/Image Metadata pages in
+    radioinfo.py), which don't have settings.RadioSetting objects backing
+    them the way ChirpSettingGrid's pages do.
+    """
+    if prop.IsCategory():
+        return _('Group: %s') % prop.GetLabel()
+
+    label = prop.GetLabel() or prop.GetName()
+    if isinstance(prop, wx.propgrid.BoolProperty):
+        value = _('checked') if prop.GetValue() else _('unchecked')
+    else:
+        value = prop.GetValueAsString()
+
+    parts = ['%s %s' % (label, value)]
+    if isinstance(prop, wx.propgrid.BoolProperty):
+        parts.append(_('checkbox'))
+    elif isinstance(prop, wx.propgrid.EnumProperty):
+        parts.append(_('list'))
+    elif isinstance(prop, (wx.propgrid.IntProperty,
+                           wx.propgrid.FloatProperty)):
+        parts.append(_('number'))
+    elif isinstance(prop, wx.propgrid.StringProperty):
+        parts.append(_('text'))
+    if not prop.IsEnabled():
+        parts.append(_('locked'))
+    elif prop.IsValueUnspecified():
+        parts.append(_('unspecified'))
+    return ', '.join(parts)
+
+
+def enable_propgrid_a11y(pg, accessible_name):
+    """Give a wx.propgrid.PropertyGrid basic screen reader feedback.
+
+    wx.propgrid.PropertyGrid does not expose a usable per-row
+    accessibility tree under MSAA/IAccessible (confirmed via NVDA
+    developer info: the whole grid reports as a single
+    ROLE_SYSTEM_CLIENT/PANE object with all row text concatenated
+    together), so arrow-key navigation between rows is otherwise
+    completely silent. This sets a meaningful accessible name on the
+    grid and speaks each row's name/value/type/state as it receives
+    focus, via prismatoid. See ChirpSettingGrid for a more complete
+    version of this (which also speaks in-progress edits and supports
+    an F1 description lookup) for grids backed by RadioSetting objects.
+    """
+    def _on_selected(event):
+        prop = event.GetProperty()
+        if prop:
+            _sr_speak(_pg_property_speech(prop))
+
+    pg.SetName(accessible_name)
+    pg.Bind(wx.propgrid.EVT_PG_SELECTED, _on_selected)
+
+
 CHIRP_DATA_MEMORY = wx.DataFormat('x-chirp/memory-channel')
 EditorChanged, EVT_EDITOR_CHANGED = wx.lib.newevent.NewCommandEvent()
 StatusMessage, EVT_STATUS_MESSAGE = wx.lib.newevent.NewCommandEvent()
@@ -377,9 +459,21 @@ class ChirpSettingGrid(wx.Panel):
             self,
             style=wx.propgrid.PG_SPLITTER_AUTO_CENTER |
             wx.propgrid.PG_BOLD_MODIFIED)
+        # wx.propgrid.PropertyGrid does not expose a usable per-row
+        # accessibility tree (the whole grid reports as a single
+        # ROLE_SYSTEM_CLIENT/PANE object with all row text concatenated),
+        # so arrow-key navigation is otherwise silent for screen reader
+        # users. Give the grid itself a meaningful accessible name, and
+        # bridge row-to-row navigation via EVT_PG_SELECTED below, the same
+        # way ChirpMemoryGrid bridges wx.grid.Grid's missing accessibility
+        # support.
+        self.pg.SetName(
+            _('Settings: %s') % settinggroup.get_shortname())
 
         self.pg.Bind(wx.propgrid.EVT_PG_CHANGED, self._pg_changed)
         self.pg.Bind(wx.EVT_MOTION, self._mouseover)
+        self.pg.Bind(wx.propgrid.EVT_PG_SELECTED, self._announce_property)
+        self.pg.Bind(wx.EVT_KEY_DOWN, self._key_down)
 
         self.pg.DedicateKey(wx.WXK_TAB)
         self.pg.DedicateKey(wx.WXK_RETURN)
@@ -419,6 +513,138 @@ class ChirpSettingGrid(wx.Panel):
                 tip = setting.__doc__ or None
 
         event.GetEventObject().SetToolTip(tip)
+
+    def _value_as_speech(self, prop, raw_value=None):
+        """Render a property's value as something worth speaking.
+
+        If raw_value is given (a wx.propgrid 'pending' value, as found on
+        EVT_PG_CHANGING events, where for an EnumProperty this is the
+        integer index rather than display text) it is used instead of the
+        property's current committed value. This lets callers announce a
+        value the user is in the process of selecting, before they've
+        confirmed it with Enter/Tab/focus-out.
+        """
+        if isinstance(prop, wx.propgrid.BoolProperty):
+            value = prop.GetValue() if raw_value is None else raw_value
+            return _('checked') if value else _('unchecked')
+        elif isinstance(prop, wx.propgrid.EnumProperty):
+            if raw_value is None:
+                return prop.GetValueAsString()
+            setting = self.get_setting_by_name(prop.GetName())
+            choices = setting and self._choices.get(setting.get_name())
+            try:
+                return choices[raw_value] if choices else str(raw_value)
+            except (IndexError, TypeError):
+                return str(raw_value)
+        elif raw_value is not None:
+            return str(raw_value)
+        return prop.GetValueAsString()
+
+    def _property_type_label(self, prop):
+        """Return a short, translated description of a property's editor
+        type (checkbox/number/list/text), or None if not applicable.
+
+        wx.propgrid.PropertyGrid gives screen readers no indication of
+        what kind of control a row is (this information is normally
+        conveyed visually by the editor widget shown when the row is
+        focused), so we speak it explicitly as part of _announce_property.
+        """
+        if isinstance(prop, wx.propgrid.BoolProperty):
+            return _('checkbox')
+        elif isinstance(prop, wx.propgrid.EnumProperty):
+            return _('list')
+        elif isinstance(prop, (wx.propgrid.IntProperty,
+                               wx.propgrid.FloatProperty)):
+            return _('number')
+        elif isinstance(prop, wx.propgrid.StringProperty):
+            return _('text')
+        return None
+
+    def _property_state_label(self, prop, setting):
+        """Return a short, translated description of a property's state
+        (locked/unspecified), or None if there's nothing notable to say.
+
+        This mirrors the visual-only cues the grid otherwise uses (grey
+        text for disabled rows, a yellow background for unspecified
+        values), neither of which reaches a screen reader user.
+        """
+        if prop.IsValueUnspecified():
+            return _('unspecified')
+        if not prop.IsEnabled():
+            return _('locked')
+        return None
+
+    def _announce_property(self, event):
+        """Speak the focused row to screen readers on every navigation
+        step.
+
+        wx.propgrid.PropertyGrid does not expose a per-row accessibility
+        tree under MSAA/IAccessible (the whole grid is a single object
+        with all row text concatenated together), so arrow-key navigation
+        between settings is otherwise completely silent. We bridge this
+        gap via prismatoid the same way ChirpMemoryGrid bridges the
+        equivalent gap in wx.grid.Grid.
+
+        Categories are announced with just their name, since they're
+        headings rather than editable fields. Ordinary properties are
+        announced as '<name> <value>, <type>, <state>', omitting the
+        type/state segments when there's nothing notable to add so the
+        common case stays short.
+        """
+        prop = event.GetProperty()
+        if not prop:
+            return
+        if prop.IsCategory():
+            _sr_speak(_('Group: %s') % prop.GetLabel())
+            return
+
+        setting = self.get_setting_by_name(prop.GetName())
+        label = prop.GetLabel()
+        if not label:
+            # Properties belonging to a multi-value setting (RadioSetting
+            # with more than one value) have their visible label cleared
+            # in _add_items() since the shared name is shown once on the
+            # category row above them instead. Reconstruct something
+            # useful to say by falling back to the setting's name and,
+            # if there's more than one sibling value, the position within
+            # the group, e.g. 'Squelch Level 2' rather than just repeating
+            # the bare setting name for every row.
+            base = setting and setting.get_shortname() or prop.GetName()
+            if setting and len(setting.keys()) > 1:
+                index = int(prop.GetName().rsplit(INDEX_CHAR, 1)[-1])
+                label = '%s %d' % (base, index + 1)
+            else:
+                label = base
+        value = self._value_as_speech(prop)
+
+        parts = ['%s %s' % (label, value)]
+        type_label = self._property_type_label(prop)
+        if type_label:
+            parts.append(type_label)
+        state_label = self._property_state_label(prop, setting)
+        if state_label:
+            parts.append(state_label)
+        _sr_speak(', '.join(parts))
+
+    def _key_down(self, event):
+        """Handle F1 on the focused property to read its description.
+
+        Setting descriptions (setting.__doc__) are otherwise only
+        reachable via mouse-hover tooltips (_mouseover), which keyboard
+        and screen reader users can't trigger. Rather than speaking the
+        description on every navigation step (which would make ordinary
+        browsing verbose), we make it available on demand.
+        """
+        if event.GetKeyCode() != wx.WXK_F1:
+            event.Skip()
+            return
+        prop = self.pg.GetSelectedProperty()
+        if not prop or prop.IsCategory():
+            event.Skip()
+            return
+        setting = self.get_setting_by_name(prop.GetName())
+        doc = setting and (setting.__doc__ or '').strip()
+        _sr_speak(doc or _('No description available'))
 
     def _add_items(self, group, parent=None):
         def append(item):
@@ -486,6 +712,21 @@ class ChirpSettingGrid(wx.Panel):
             LOG.error('Got change event for unknown setting %s' % (
                 event.GetPropertyName()))
             return
+        # EVT_PG_CHANGING fires for every pending value the user lands on
+        # while editing (e.g. each item highlighted while arrowing through
+        # an open EnumProperty combo box, or toggling a BoolProperty's
+        # checkbox), even before the change is committed with Enter/Tab.
+        # The editor sub-widget that briefly gets focus here (an
+        # OwnerDrawnComboBox, a checkbox, ...) reports its raw wx class
+        # name to screen readers instead of the setting it belongs to, and
+        # selecting a different item inside it is otherwise silent. Speak
+        # the pending value so the user hears what they're about to
+        # choose, the same way _announce_property speaks committed values
+        # on row-to-row navigation.
+        prop = event.GetProperty()
+        spoken_value = self._value_as_speech(prop, event.GetValue())
+        _sr_speak('%s %s' % (prop.GetLabel() or setting.get_shortname(),
+                             spoken_value))
         warning = setting.get_warning(event.GetValue())
         if warning:
             r = wx.MessageBox(warning, _('WARNING!'),
