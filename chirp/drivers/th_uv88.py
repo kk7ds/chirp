@@ -282,6 +282,10 @@ OPTSIG_LIST = ["OFF", "DTMF", "2TONE", "5TONE"]
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
 LIST_STEPS = [str(x) for x in STEPS]
+SCAN_LIST = ["Allow", "Skip"]
+TONE5_PTTID_LIST = ["OFF", "Begin", "End", "Both"]
+FREQ_REVERSE_LIST = ["OFF", "Freq Reverse", "Talk Around"]
+SINGNAL_LIST = ["OFF", "DTMF", "2TONE", "5TONE"]
 
 
 def _clean_buffer(radio):
@@ -684,7 +688,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 
         return self._get_memory(mem, _mem, _name)
 
-    def _get_memory(self, mem, _mem, _name):
+    def _get_memory(self, mem, _mem, _name, is_normal=True):
         """Convert raw channel memory data into UI columns"""
         mem.extra = RadioSettingGroup("extra", "Extra")
 
@@ -707,13 +711,17 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                 and "-" or "+"
             mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
 
-        mem.name = ""
-        for i in range(6):   # 0 - 6
-            mem.name += chr(_mem.name[i])
-        for i in range(10):
-            mem.name += chr(_name.extra_name[i])
+        if is_normal:
+            mem.name = ""
+            for i in range(6):   # 0 - 6
+                mem.name += chr(_mem.name[i])
+            for i in range(10):
+                mem.name += chr(_name.extra_name[i])
 
-        mem.name = mem.name.rstrip()    # remove trailing spaces
+            mem.name = mem.name.rstrip()    # remove trailing spaces
+        else:
+            mem.name = _name
+            mem.immutable += ["name"]
 
         # ########## TONE ##########
 
@@ -764,8 +772,36 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         step = RadioSetting("step", "Step",
                             RadioSettingValueList(LIST_STEPS,
                                                   current_index=_mem.step))
+
         mem.extra.append(step)
 
+        if self.MODEL == "RA89R":
+            if chirp_common.in_range(mem.freq, [self._airband]):
+                mem.mode = "AM"
+            pttid_value = _mem.pttid
+            if pttid_value > 3:     # Looks like OFF is 0x0f ** CONFIRM
+                pttid_value = 0
+            mem.extra.append(
+                RadioSetting(
+                    "pttid", "DTMF PTT ID",
+                    RadioSettingValueList(TONE5_PTTID_LIST,
+                                          current_index=pttid_value)))
+            tone5_pttid_value = _mem.tone5pttid
+            if tone5_pttid_value > 3:     # Looks like OFF is 0x0f ** CONFIRM
+                tone5_pttid_value = 0
+            tone5_pttid = RadioSetting(
+                "tone5pttid", "5TONE PTT ID",
+                RadioSettingValueList(
+                    TONE5_PTTID_LIST, current_index=tone5_pttid_value))
+            mem.extra.append(tone5_pttid)
+            freqreverse_value = _mem.freqreverse
+            if _mem.talkaround == 1:
+                freqreverse_value = 2
+            mem.extra.append(
+                RadioSetting(
+                    "freqreverse", "Frequency Reverse",
+                    RadioSettingValueList(FREQ_REVERSE_LIST,
+                                          current_index=freqreverse_value)))
         scramble_value = _mem.scramble
         if self.MODEL == "RA89":
             if scramble_value >= 2:
@@ -782,20 +818,18 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                     SCRAMBLE_LIST, current_index=scramble_value))
             mem.extra.append(scramble)
 
-        optsig = RadioSetting("signal", "Optional signaling",
-                              RadioSettingValueList(
-                                  OPTSIG_LIST,
-                                  current_index=_mem.signal))
+        optsig = RadioSetting(
+            "signal", "Optional signaling",
+            RadioSettingValueList(OPTSIG_LIST, current_index=_mem.signal))
         mem.extra.append(optsig)
-
-        rs = RadioSetting("pttid", "PTT ID",
-                          RadioSettingValueList(PTTID_LIST,
-                                                current_index=_mem.pttid))
-        mem.extra.append(rs)
-
+        if self.MODEL != "RA89R":
+            rs = RadioSetting(
+                "pttid", "PTT ID",
+                RadioSettingValueList(PTTID_LIST, current_index=_mem.pttid))
+            mem.extra.append(rs)
         return mem
 
-    def _set_memory(self, mem, _mem, _name):
+    def _set_memory(self, mem, _mem, _name, is_normal=True):
         # """Convert UI column data (mem) into MEM_FORMAT memory (_mem)."""
 
         _mem.rxfreq = mem.freq / 10
@@ -812,15 +846,15 @@ class THUV88Radio(chirp_common.CloneModeRadio):
 
         out_name = mem.name.ljust(16)
 
-        for i in range(6):   # 0 - 6
-            _mem.name[i] = ord(out_name[i])
-        for i in range(10):
-            _name.extra_name[i] = ord(out_name[i+6])
-
-        if mem.name != "":
-            _mem.displayName = 1    # Name only displayed if this is set on
-        else:
-            _mem.displayName = 0
+        if is_normal:
+            for i in range(6):   # 0 - 6
+                _mem.name[i] = ord(out_name[i])
+            for i in range(10):
+                _name.extra_name[i] = ord(out_name[i+6])
+            if mem.name != "":
+                _mem.displayName = 1    # Name only displayed if this is set on
+            else:
+                _mem.displayName = 0
 
         rxmode = ""
         txmode = ""
@@ -864,11 +898,24 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         elif txmode == "DTCS":
             _mem.txtone = int(str(mem.dtcs), 8)
 
-        _mem.wide = self.MODES.index(mem.mode)
+        if self.MODEL == "RA89R" and mem.mode == "AM":
+            _mem.wide = 2
+        else:
+            _mem.wide = self.MODES.index(mem.mode)
+
         _mem.power = 0 if mem.power is None else POWER_LEVELS.index(mem.power)
 
         for element in mem.extra:
-            setattr(_mem, element.get_name(), element.value)
+            if self.MODEL == "RA89R" and element.get_name() == "freqreverse":
+                val = FREQ_REVERSE_LIST.index(element.value)
+                if val == 2:
+                    _mem.talkaround = 1
+                    _mem.freqreverse = 0
+                else:
+                    _mem.talkaround = 0
+                    _mem.freqreverse = val
+            else:
+                setattr(_mem, element.get_name(), element.value)
 
         return
 
