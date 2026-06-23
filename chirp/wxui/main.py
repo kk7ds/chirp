@@ -1369,7 +1369,7 @@ class ChirpMain(wx.Frame):
         else:
             i_index = len(formats)
         formats.insert(i_index,
-                       (_('All supported formats|') +
+                       (_('All supported formats') + '|' +
                         ';'.join(all_extensions)))
         wildcard = '|'.join(formats)
         with wx.FileDialog(self, _('Open a file'),

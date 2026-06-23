@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-17 17:09+0200\n"
+"POT-Creation-Date: 2026-06-23 13:53-0700\n"
 "PO-Revision-Date: 2026-06-17 14:30+0200\n"
 "Last-Translator: Martin Macko <martin.macko@email.cz>\n"
 "Language-Team: Czech\n"
@@ -694,7 +694,7 @@ msgstr ""
 "5. Stiskněte/klikněte na OK.\n"
 "\n"
 
-#: ../drivers/vx3.py:373 ../drivers/vx6.py:370
+#: ../drivers/vx6.py:370 ../drivers/vx3.py:373
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -709,7 +709,7 @@ msgstr ""
 "4. Po kliknutí na OK stiskněte tlačítko na stanici pro zahájení přenosu.\n"
 "\n"
 
-#: ../drivers/vx3.py:380 ../drivers/vx6.py:377
+#: ../drivers/vx6.py:377 ../drivers/vx3.py:380
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -903,7 +903,7 @@ msgstr ""
 "6. Klikněte na OK k nahrání dat do vysílačky.\n"
 "\n"
 
-#: ../drivers/tg_uv2p.py:232 ../drivers/uvb5.py:293 ../drivers/wouxun.py:222
+#: ../drivers/uvb5.py:293 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:232
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -920,7 +920,7 @@ msgstr ""
 "6. Klikněte na OK ke stažení dat z vysílačky.\n"
 "\n"
 
-#: ../drivers/tg_uv2p.py:240 ../drivers/uvb5.py:301 ../drivers/wouxun.py:230
+#: ../drivers/uvb5.py:301 ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:240
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1165,8 +1165,8 @@ msgid "All Files"
 msgstr "Všechny soubory"
 
 #: ../wxui/main.py:1372
-msgid "All supported formats|"
-msgstr "Všechny podporované formáty|"
+msgid "All supported formats"
+msgstr "Všechny podporované formáty"
 
 #: ../wxui/clone.py:626
 msgid "Always start with recent list"
@@ -1330,13 +1330,13 @@ msgstr "Klonování dokončeno, kontrola nežádoucích bajtů"
 msgid "Cloning"
 msgstr "Klonování"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft4.py:332 ../drivers/ft450d.py:511
+#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:511 ../drivers/ft4.py:332
 #: ../drivers/ft817.py:343
 #, fuzzy
 msgid "Cloning from radio"
 msgstr "Čtení (klonování) z vysílačky"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft4.py:333 ../drivers/ft450d.py:540
+#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:540 ../drivers/ft4.py:333
 #: ../drivers/ft817.py:381
 #, fuzzy
 msgid "Cloning to radio"
@@ -1481,7 +1481,7 @@ msgstr "Vývojářský režim"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "Stav vývojáře je nyní %s. Pro projevení změn je nutné restartovat CHIRP"
 
-#: ../wxui/developer.py:98 ../wxui/memedit.py:2298
+#: ../wxui/memedit.py:2298 ../wxui/developer.py:98
 #, fuzzy
 msgid "Diff Raw Memories"
 msgstr "Porovnat surové paměti"
@@ -1727,8 +1727,8 @@ msgstr "Nepodařilo se exportovat některé paměti"
 msgid "Failed to load radio browser"
 msgstr "Nepodařilo se načíst prohlížeč vysílaček"
 
-#: ../sources/mapy73pl.py:61 ../sources/przemienniki_eu.py:57
-#: ../sources/przemienniki_net.py:59
+#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
+#: ../sources/mapy73pl.py:61
 msgid "Failed to parse result"
 msgstr "Nepodařilo se zpracovat výsledek"
 
@@ -1861,11 +1861,11 @@ msgstr ""
 "    no right-side audio!\n"
 "\n"
 
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/bf_t1.py:484 ../drivers/btech.py:666 ../drivers/gmrsuv1.py:391
-#: ../drivers/gmrsv2.py:363 ../drivers/mursv1.py:341
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv5x3.py:417
-#: ../drivers/uv6r.py:339
+#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/btech.py:666 ../drivers/gmrsuv1.py:391
+#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:339
+#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1976,7 +1976,7 @@ msgstr ""
 "6 - Cycle power on the radio to exit clone mode\n"
 "\n"
 
-#: ../drivers/bf_t1.py:490 ../drivers/btech.py:672
+#: ../drivers/btech.py:672 ../drivers/bf_t1.py:490
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2021,7 +2021,7 @@ msgstr ""
 "4 - Klikněte na OK pro spuštění.\n"
 "\n"
 
-#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
+#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2051,10 +2051,11 @@ msgstr ""
 "4 - Do the download of your radio data\n"
 "\n"
 
-#: ../drivers/baofeng_uv17Pro.py:520 ../drivers/baofeng_wp970i.py:333
-#: ../drivers/gmrsuv1.py:397 ../drivers/gmrsv2.py:369 ../drivers/lt725uv.py:492
-#: ../drivers/mursv1.py:347 ../drivers/tdxone_tdq8a.py:450
-#: ../drivers/uv5x3.py:423 ../drivers/uv6r.py:345 ../drivers/vgc.py:592
+#: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
+#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
+#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
+#: ../drivers/baofeng_uv17Pro.py:520
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2102,9 +2103,9 @@ msgstr "Frekvence %s je mimo podporovaný rozsah %s"
 msgid "Frequency granularity in kHz"
 msgstr "Krok frekvence v kHz"
 
-#: ../drivers/baofeng_uv17Pro.py:1297 ../drivers/ga510.py:1094
-#: ../drivers/mml_jc8810.py:1383 ../drivers/retevis_ha1g.py:1439
-#: ../drivers/tdh8.py:2540 ../drivers/uv5r.py:1949
+#: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
+#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
+#: ../drivers/uv5r.py:1949 ../drivers/baofeng_uv17Pro.py:1297
 msgid "Frequency in this range must not be AM mode"
 msgstr "Frekvence v tomto rozsahu nesmí být v režimu AM"
 
@@ -2112,10 +2113,10 @@ msgstr "Frekvence v tomto rozsahu nesmí být v režimu AM"
 msgid "Frequency in this range not supported by firmware"
 msgstr "Frekvence v tomto rozsahu není podporována firmwarem"
 
-#: ../drivers/baofeng_uv17Pro.py:1294 ../drivers/ga510.py:1087
-#: ../drivers/mml_jc8810.py:1380 ../drivers/radtel_rt900.py:1623
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/tdh8.py:2537
-#: ../drivers/uv5r.py:1945
+#: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
+#: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
+#: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:1945
+#: ../drivers/baofeng_uv17Pro.py:1294
 msgid "Frequency in this range requires AM mode"
 msgstr "Frekvence v tomto rozsahu vyžaduje režim AM"
 
@@ -2244,8 +2245,8 @@ msgstr "Interní chyba ovladače: Pokus o změnu zmrazené paměti; Nahlaste to 
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Neplatná hodnota %(value)s (použijte desetinné stupně)"
 
-#: ../wxui/memedit.py:2004 ../wxui/query_sources.py:70
-#: ../wxui/query_sources.py:124
+#: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
+#: ../wxui/memedit.py:2004
 msgid "Invalid Entry"
 msgstr "Neplatný vstup"
 
@@ -2411,8 +2412,8 @@ msgstr "Paměť must be v bance, aby ji bylo možné upravovat"
 msgid "Memory {num} not in bank {bank}"
 msgstr "Paměť {num} není v bance {bank}"
 
-#: ../wxui/memedit.py:668 ../wxui/query_sources.py:626
-#: ../wxui/query_sources.py:779
+#: ../wxui/query_sources.py:626 ../wxui/query_sources.py:779
+#: ../wxui/memedit.py:668
 msgid "Mode"
 msgstr "Režim"
 
@@ -2494,8 +2495,8 @@ msgstr "V hlášení %i nebyly nalezeny žádné moduly"
 msgid "No more space available; some memories were not applied"
 msgstr "Není k dispozici žádné další místo; některé paměti nebyly použity"
 
-#: ../sources/mapy73pl.py:57 ../sources/przemienniki_eu.py:53
-#: ../sources/przemienniki_net.py:55
+#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
+#: ../sources/mapy73pl.py:57
 msgid "No results"
 msgstr "Žádné výsledky"
 
@@ -2507,7 +2508,7 @@ msgstr "Žádné výsledky!"
 msgid "No traces stored"
 msgstr "Nejsou uloženy žádné stopy komunikace"
 
-#: ../wxui/memedit.py:1362 ../wxui/query_sources.py:45
+#: ../wxui/query_sources.py:45 ../wxui/memedit.py:1362
 msgid "Number"
 msgstr "Číslo"
 
@@ -2642,8 +2643,8 @@ msgstr ""
 "V této verzi je podporována pouze část z více než 130 dostupných nastavení vysílačky.\n"
 "\n"
 
-#: ../sources/mapy73pl.py:52 ../sources/przemienniki_eu.py:48
-#: ../sources/przemienniki_net.py:50
+#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
+#: ../sources/mapy73pl.py:52
 msgid "Parsing"
 msgstr "Zpracování"
 
@@ -2773,8 +2774,8 @@ msgstr "Syntaxe dotazu v pořádku"
 msgid "Query syntax help"
 msgstr "Nápověda k syntaxi dotazů"
 
-#: ../sources/mapy73pl.py:36 ../sources/przemienniki_eu.py:36
-#: ../sources/przemienniki_net.py:36
+#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
+#: ../sources/mapy73pl.py:36
 msgid "Querying"
 msgstr "Dotazování"
 
@@ -2787,7 +2788,7 @@ msgstr "RX DTCS"
 msgid "Radio"
 msgstr "Stanice"
 
-#: ../drivers/ft450d.py:576 ../drivers/ft60.py:89 ../drivers/ft60.py:91
+#: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:576
 #: ../drivers/ft817.py:410
 #, python-format
 msgid "Radio did not ack block %i"
@@ -3019,7 +3020,7 @@ msgstr "Nastavení jsou pouze pro čtení kvůli nepodporované verzi firmwaru"
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "Velikost odskoku (nebo vysílací frekvence) řízená duplexem"
 
-#: ../wxui/developer.py:101 ../wxui/memedit.py:2290
+#: ../wxui/memedit.py:2290 ../wxui/developer.py:101
 #, fuzzy
 msgid "Show Raw Memory"
 msgstr "Zobrazit surovou paměť"
@@ -3086,8 +3087,8 @@ msgstr "Seřadit podle sloupce:"
 msgid "Sort memories"
 msgstr "Seřadit paměti"
 
-#: ../sources/mapy73pl.py:64 ../sources/przemienniki_eu.py:60
-#: ../sources/przemienniki_net.py:62
+#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
+#: ../sources/mapy73pl.py:64
 msgid "Sorting"
 msgstr "Třídění"
 
@@ -3377,8 +3378,8 @@ msgstr "Nelze importovat, pokud je zobrazení seřazeno"
 msgid "Unable to open the clipboard"
 msgstr "Nelze otevřít schránku"
 
-#: ../sources/mapy73pl.py:50 ../sources/przemienniki_eu.py:46
-#: ../sources/przemienniki_net.py:48
+#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
+#: ../sources/mapy73pl.py:50
 msgid "Unable to query"
 msgstr "Nelze provést dotaz"
 
@@ -3510,8 +3511,8 @@ msgstr "Zobrazit"
 msgid "WARNING!"
 msgstr "VAROVÁNÍ!"
 
-#: ../wxui/bugreport.py:234 ../wxui/main.py:1891 ../wxui/main.py:2043
-#: ../wxui/memedit.py:2010
+#: ../wxui/bugreport.py:234 ../wxui/memedit.py:2010 ../wxui/main.py:1891
+#: ../wxui/main.py:2043
 msgid "Warning"
 msgstr "Varování"
 

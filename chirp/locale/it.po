@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-06 17:25+0200\n"
+"POT-Creation-Date: 2026-06-23 13:53-0700\n"
 "PO-Revision-Date: 2026-05-06 17:23+0200\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
@@ -857,7 +857,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per caricare l'immagine sul dispositivo.\n"
 
-#: ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:222 ../drivers/uvb5.py:293
+#: ../drivers/uvb5.py:293 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:232
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -873,7 +873,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per scaricare l'immagine dal dispositivo.\n"
 
-#: ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:230 ../drivers/uvb5.py:301
+#: ../drivers/uvb5.py:301 ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:240
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1106,8 +1106,8 @@ msgid "All Files"
 msgstr "Tutti i file"
 
 #: ../wxui/main.py:1372
-msgid "All supported formats|"
-msgstr "Tutti i formati supportati|"
+msgid "All supported formats"
+msgstr "Tutti i formati supportati"
 
 #: ../wxui/clone.py:626
 msgid "Always start with recent list"
@@ -1117,7 +1117,7 @@ msgstr "Inizia sempre con un elenco recente"
 msgid "Amateur"
 msgstr "Radioamatore"
 
-#: ../wxui/common.py:633 ../wxui/bugreport.py:344 ../wxui/bugreport.py:478
+#: ../wxui/bugreport.py:344 ../wxui/bugreport.py:478 ../wxui/common.py:633
 msgid "An error has occurred"
 msgstr "Si è verificato un errore"
 
@@ -1272,12 +1272,12 @@ msgstr "Clonazione completata, controllo dei byte spuri"
 msgid "Cloning"
 msgstr "Clonazione"
 
-#: ../drivers/ft4.py:332 ../drivers/ft450d.py:511 ../drivers/bj9900.py:133
+#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:511 ../drivers/ft4.py:332
 #: ../drivers/ft817.py:343
 msgid "Cloning from radio"
 msgstr "Clonazione dalla radio"
 
-#: ../drivers/ft4.py:333 ../drivers/ft450d.py:540 ../drivers/bj9900.py:165
+#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:540 ../drivers/ft4.py:333
 #: ../drivers/ft817.py:381
 msgid "Cloning to radio"
 msgstr "Clonazione verso la radio"
@@ -1661,7 +1661,7 @@ msgstr "Impossibile esportare alcune memorie"
 msgid "Failed to load radio browser"
 msgstr "Impossibile caricare il browser della radio"
 
-#: ../sources/przemienniki_net.py:59 ../sources/przemienniki_eu.py:57
+#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
 #: ../sources/mapy73pl.py:61
 msgid "Failed to parse result"
 msgstr "Impossibile elaborare il risultato"
@@ -1789,11 +1789,11 @@ msgstr ""
 "5 - Scollega il cavo dati dell'interfaccia! In caso contrario, non ci sarà\n"
 "    l'audio del lato destro!\n"
 
-#: ../drivers/bf_t1.py:484 ../drivers/mursv1.py:341
-#: ../drivers/baofeng_wp970i.py:327 ../drivers/baofeng_uv17Pro.py:514
-#: ../drivers/gmrsuv1.py:391 ../drivers/btech.py:666 ../drivers/uv6r.py:339
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv5x3.py:417
-#: ../drivers/gmrsv2.py:363
+#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/btech.py:666 ../drivers/gmrsuv1.py:391
+#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:339
+#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1897,7 +1897,7 @@ msgstr ""
 "    l'audio del lato destro!\n"
 "6 - Accendi la radio per uscire dalla modalità clone.\n"
 
-#: ../drivers/bf_t1.py:490 ../drivers/btech.py:672
+#: ../drivers/btech.py:672 ../drivers/bf_t1.py:490
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1939,7 +1939,7 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Fai clic su OK per iniziare\n"
 
-#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
+#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1967,11 +1967,11 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Effettua il download dei dati dalla radio\n"
 
-#: ../drivers/mursv1.py:347 ../drivers/baofeng_wp970i.py:333
-#: ../drivers/baofeng_uv17Pro.py:520 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:492 ../drivers/vgc.py:592 ../drivers/uv6r.py:345
-#: ../drivers/tdxone_tdq8a.py:450 ../drivers/uv5x3.py:423
-#: ../drivers/gmrsv2.py:369
+#: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
+#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
+#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
+#: ../drivers/baofeng_uv17Pro.py:520
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2017,24 +2017,24 @@ msgstr "La frequenza %s è al di fuori degli intervalli supportati %s"
 msgid "Frequency granularity in kHz"
 msgstr "Granularità della frequenza in kHz"
 
-#: ../drivers/tdh8.py:2536 ../drivers/baofeng_uv17Pro.py:1297
-#: ../drivers/retevis_ha1g.py:1433 ../drivers/mml_jc8810.py:1383
-#: ../drivers/ga510.py:1094 ../drivers/uv5r.py:1949
+#: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
+#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
+#: ../drivers/uv5r.py:1949 ../drivers/baofeng_uv17Pro.py:1297
 msgid "Frequency in this range must not be AM mode"
 msgstr "La frequenza in questo intervallo non deve essere in modalità AM"
 
-#: ../drivers/retevis_ha1g.py:1424
+#: ../drivers/retevis_ha1g.py:1430
 msgid "Frequency in this range not supported by firmware"
 msgstr "La frequenza in questo intervallo non è supportata dal firmware"
 
-#: ../drivers/tdh8.py:2533 ../drivers/baofeng_uv17Pro.py:1294
-#: ../drivers/retevis_ha1g.py:1429 ../drivers/radtel_rt900.py:1395
-#: ../drivers/mml_jc8810.py:1380 ../drivers/ga510.py:1087
-#: ../drivers/uv5r.py:1945
+#: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
+#: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
+#: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:1945
+#: ../drivers/baofeng_uv17Pro.py:1294
 msgid "Frequency in this range requires AM mode"
 msgstr "La frequenza in questo intervallo richiede la modalità AM"
 
-#: ../drivers/tdh8.py:2540
+#: ../drivers/tdh8.py:2544
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr "La frequenza al di fuori delle bande TX deve essere duplex=off"
 
@@ -2155,8 +2155,8 @@ msgstr "Errore interno del driver: tentativo di modifica di memoria bloccata; se
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Il valore %(value)s non è valido (usare i gradi decimali)"
 
-#: ../wxui/memedit.py:2004 ../wxui/query_sources.py:70
-#: ../wxui/query_sources.py:124
+#: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
+#: ../wxui/memedit.py:2004
 msgid "Invalid Entry"
 msgstr "Valore non valido"
 
@@ -2195,7 +2195,7 @@ msgstr "Numero:"
 msgid "LIVE"
 msgstr "In diretta live"
 
-#: ../wxui/main.py:853 ../wxui/main.py:1643 ../drivers/radtel_rt490.py:1028
+#: ../drivers/radtel_rt490.py:1028 ../wxui/main.py:853 ../wxui/main.py:1643
 msgid "Language"
 msgstr "Lingua"
 
@@ -2320,8 +2320,8 @@ msgstr "La memoria deve trovarsi in un banco per essere modificata"
 msgid "Memory {num} not in bank {bank}"
 msgstr "La memoria {num} non è presente nel banco {bank}"
 
-#: ../wxui/memedit.py:668 ../wxui/query_sources.py:626
-#: ../wxui/query_sources.py:779
+#: ../wxui/query_sources.py:626 ../wxui/query_sources.py:779
+#: ../wxui/memedit.py:668
 msgid "Mode"
 msgstr "Modo"
 
@@ -2401,7 +2401,7 @@ msgstr "Nessun modulo trovato nel sito %i"
 msgid "No more space available; some memories were not applied"
 msgstr "Non c'è più spazio disponibile; alcune memorie non sono state inserite"
 
-#: ../sources/przemienniki_net.py:55 ../sources/przemienniki_eu.py:53
+#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
 #: ../sources/mapy73pl.py:57
 msgid "No results"
 msgstr "Nessun risultato"
@@ -2414,7 +2414,7 @@ msgstr "Nessun risultato!"
 msgid "No traces stored"
 msgstr "Nessuna traccia memorizzata"
 
-#: ../wxui/memedit.py:1362 ../wxui/query_sources.py:45
+#: ../wxui/query_sources.py:45 ../wxui/memedit.py:1362
 msgid "Number"
 msgstr "Numero"
 
@@ -2547,7 +2547,7 @@ msgstr ""
 "In questa versione, è supportato solo un sottoinsieme\n"
 "delle oltre 130 impostazioni radio disponibili.\n"
 
-#: ../sources/przemienniki_net.py:50 ../sources/przemienniki_eu.py:48
+#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
 #: ../sources/mapy73pl.py:52
 msgid "Parsing"
 msgstr "Elaborazione"
@@ -2677,7 +2677,7 @@ msgstr "La sintassi della query è OK"
 msgid "Query syntax help"
 msgstr "Aiuto per la sintassi delle query"
 
-#: ../sources/przemienniki_net.py:36 ../sources/przemienniki_eu.py:36
+#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
 #: ../sources/mapy73pl.py:36
 msgid "Querying"
 msgstr "Interrogazione"
@@ -2982,7 +2982,7 @@ msgstr "Ordina per colonna:"
 msgid "Sort memories"
 msgstr "Ordina memorie"
 
-#: ../sources/przemienniki_net.py:62 ../sources/przemienniki_eu.py:60
+#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
 #: ../sources/mapy73pl.py:64
 msgid "Sorting"
 msgstr "Ordinamento"
@@ -3277,7 +3277,7 @@ msgstr "Impossibile importare mentre la visualizzazione è ordinata"
 msgid "Unable to open the clipboard"
 msgstr "Impossibile aprire gli appunti"
 
-#: ../sources/przemienniki_net.py:48 ../sources/przemienniki_eu.py:46
+#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
 #: ../sources/mapy73pl.py:50
 msgid "Unable to query"
 msgstr "Impossibile eseguire la ricerca"
