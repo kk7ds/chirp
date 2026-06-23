@@ -1,12 +1,7 @@
 import struct
 import logging
-import math
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
-from chirp.settings import RadioSettingGroup, RadioSetting, \
-    RadioSettingValueBoolean, RadioSettingValueList, \
-    RadioSettingValueString, RadioSettingValueInteger, \
-    RadioSettingValueFloat, RadioSettings
 from chirp.drivers import th_uv88
 
 LOG = logging.getLogger(__name__)
@@ -113,7 +108,7 @@ struct {
      unk5:2;
   u8 scanpausetype: 2,
      disMode : 2,
-     backlightMode: 4;
+     ledMode: 4;
   u8 unk7;
   u8 unk8;
   u8 dtmf:4,
@@ -153,12 +148,12 @@ struct {
  #seekto 0x2500;
 struct {
   ul32 rxfreq;
-} fmfrqs[32];
+} fm_stations[32];
 
 #seekto 0x2584;
 struct  {
-  ul32 rxfreq;
-} fm_vfochn;
+  ul32 fmcur;
+} fmfrqs;
 
 """
 
@@ -189,47 +184,6 @@ def _make_write_frame(addr, length, data=""):
     return frame
 
 
-def _rawrecv(radio, amount):
-    """Raw read from the radio device"""
-    data = ""
-    try:
-        data = radio.pipe.read(amount)
-    except Exception:
-        th_uv88._exit_program_mode(radio)
-        msg = "Generic error reading data from radio; check your cable."
-        raise errors.RadioError(msg)
-    return data
-
-
-def _do_ident(radio):
-    """Put the radio in PROGRAM mode & identify it"""
-    radio.pipe.baudrate = BAUDRATE
-    radio.pipe.parity = "N"
-    radio.pipe.timeout = STIMEOUT
-    handshake_return_len = 37
-    # Ident radio
-    magic = b"\xFE\xFE\xEE\xEF\xE0"+_encode_data(b"RA89")+b"\x84\xFD"
-    th_uv88._rawsend(radio, magic)
-    try:
-        ack = radio.pipe.read(handshake_return_len)
-    except Exception:
-        th_uv88._exit_program_mode(radio)
-        msg = "Generic error reading data from radio; check your cable."
-        raise errors.RadioError(msg)
-    if not ack:
-        th_uv88._exit_program_mode(radio)
-        raise errors.RadioNoResponse()
-    if len(ack) != handshake_return_len:
-        th_uv88._exit_program_mode(radio)
-        msg = "Error reading from radio: not the amount of data we want."
-        raise errors.RadioError(msg)
-    if not ack.startswith(radio._fingerprint) or not ack.endswith(b"\xFD"):
-        th_uv88._exit_program_mode(radio)
-        LOG.debug(repr(ack))
-        raise errors.RadioError("Unexpected response from radio")
-    return True
-
-
 def _do_start(radio, send_data):
     th_uv88._rawsend(radio, send_data)
     ack = th_uv88._rawrecv(radio, 8)
@@ -243,7 +197,7 @@ def _do_start(radio, send_data):
 def _download(radio):
     """Get the memory map"""
     # Put radio in program mode and identify it
-    _do_ident(radio)
+    th_uv88._do_ident(radio)
     # Enter read mode
     magic = b"\xFE\xFE\xEE\xEF\xE2\x80\x80\x80\x80\x80\x80\xAF\x00\x2F\xFD"
     _do_start(radio, magic)
@@ -271,7 +225,7 @@ def _download(radio):
          packet length is not fixed.
          Packet length is calculated as 512*2+13 to prevent data field loss.
         """
-        d = _rawrecv(radio, BLOCK_SIZE*2 + 13)
+        d = th_uv88._rawrecv(radio, BLOCK_SIZE*2 + 13)
 
         LOG.debug("Response Data= " + util.hexprint(d))
 
@@ -293,7 +247,7 @@ def _download(radio):
 def _upload(radio):
     """Upload procedure"""
     # Put radio in program mode and identify it
-    _do_ident(radio)
+    th_uv88._do_ident(radio)
 
     magic = b"\xFE\xFE\xEE\xEF\xE3\x80\x80\x80\x80\x80\x80\xAF\x00\x2F\xFD"
     _do_start(radio, magic)
@@ -314,7 +268,7 @@ def _upload(radio):
         LOG.warning("Frame:%s:" % util.hexprint(frame))
         th_uv88._rawsend(radio, frame)
 
-        ack = _rawrecv(radio, 8)
+        ack = th_uv88._rawrecv(radio, 8)
         LOG.debug("Response Data= " + util.hexprint(ack))
 
         if not ack.startswith(b"\xFE\xFE\xEF\xEE\xE6\x80\x80\xFD"):
@@ -373,7 +327,9 @@ class RA89R(th_uv88.THUV88Radio):
     MODES = ['WFM', 'FM', 'NFM', "AM"]
     _hasSideKeys = True
     _fingerprint = b"\xFE\xFE\xEF\xEE\xE1" + _encode_data(b"RA89")
+    _magic0 = b"\xFE\xFE\xEE\xEF\xE0"+_encode_data(b"RA89")+b"\x84\xFD"
     _magic5 = b"\xFE\xFE\xEE\xEF\xE5" + _encode_data(b"RA89") + b"\x84\xFD"
+    handshake_return_len = 37
     _airband = (108000000, 135999999)
     _vhf = (136000000, 174000010)
     _uhf = (400000000, 480000010)
@@ -484,382 +440,6 @@ class RA89R(th_uv88.THUV88Radio):
             msgs.append(chirp_common.ValidationWarning(
                 _('Frequency in this range must not be AM mode')))
         return msgs + super().validate_memory(mem)
-
-    def get_settings(self):
-        """Translate the MEM_FORMAT structs into setstuf in the UI"""
-        _settings = self._memobj.basicsettings
-        _openradioname = self._memobj.openradioname
-        _scanfreq = self._memobj.scanfreq
-
-        basic = RadioSettingGroup("basic", "Basic Settings")
-        group = RadioSettings(basic)
-
-        options = ['Frequency', 'Channel #', 'Name']
-        rx = RadioSettingValueList(
-            options, current_index=_settings.disMode)
-        rset = RadioSetting("basicsettings.disMode", "Display Mode", rx)
-        basic.append(rset)
-
-        options = ["Off", "On", "5s", "10s", "15s", "20s", "25s",
-                   "30s"]
-        rx = RadioSettingValueList(
-            options, current_index=_settings.backlightMode)
-        rset = RadioSetting("basicsettings.backlightMode",
-                            "LED Display Mode", rx)
-        basic.append(rset)
-
-        options = ["OFF"] + ["%s" % x for x in range(1, 10)]
-        rx = RadioSettingValueList(options, current_index=_settings.sqlLevel)
-        rset = RadioSetting("basicsettings.sqlLevel", "Squelch Level", rx)
-        basic.append(rset)
-
-        options = ["%s" % x for x in range(1, 8)]
-        rx = RadioSettingValueList(options, current_index=_settings.light)
-        rset = RadioSetting("basicsettings.light",
-                            "Background Light Color", rx)
-        basic.append(rset)
-
-        options = ["OFF", "END"]
-        rx = RadioSettingValueList(options, current_index=_settings.roger)
-        rset = RadioSetting("basicsettings.roger", "Roger Beep", rx)
-        basic.append(rset)
-
-        rx = RadioSettingValueBoolean(_settings.swAudio)
-        rset = RadioSetting("basicsettings.swAudio", "Voice Prompts", rx)
-        basic.append(rset)
-
-        rx = RadioSettingValueBoolean(_settings.beep)
-        rset = RadioSetting("basicsettings.beep", "Keypad Beep", rx)
-        basic.append(rset)
-
-        rx = RadioSettingValueBoolean(_settings.keylock)
-        rset = RadioSetting("basicsettings.keylock", "Auto Key Lock", rx)
-        basic.append(rset)
-
-        options = ["Off"] + ["%s seconds" % x for x in range(30, 300, 30)]
-        rx = RadioSettingValueList(options, current_index=_settings.tot)
-        rset = RadioSetting("basicsettings.tot",
-                            "Transmission Time-out Timer", rx)
-        basic.append(rset)
-
-        options = ["ALL", "PTT", "KEY", "Key & Side Key"]
-        rx = RadioSettingValueList(
-            options, current_index=_settings.keyMode)
-        rset = RadioSetting("basicsettings.keyMode", "Key Lock Mode", rx)
-        basic.append(rset)
-
-        rx = RadioSettingValueBoolean(_settings.dualWait)
-        rset = RadioSetting("basicsettings.dualWait",
-                            "Dual Wait/Standby", rx)
-        basic.append(rset)
-
-        options = ["Always On", "Code On", "OFF"]
-        rx = RadioSettingValueList(
-            options, current_index=(
-                0 if _settings.rxledmode > 2 else _settings.rxledmode))
-        rset = RadioSetting("basicsettings.rxledmode", "Rx Light", rx)
-        basic.append(rset)
-
-        options = ["Off", "1:1", "1:2", "1:4"]
-        rx = RadioSettingValueList(options, current_index=_settings.saveMode)
-        rset = RadioSetting("basicsettings.saveMode", "Battery Save Mode", rx)
-        basic.append(rset)
-
-        rx = RadioSettingValueBoolean(_settings.radioMoni)
-        rset = RadioSetting("basicsettings.radioMoni", "Radio Monitor", rx)
-        basic.append(rset)
-
-        options = ['OFF', 'Frequency', '120', '180', '240']
-        rx = RadioSettingValueList(
-            options, current_index=_settings.endToneElim)
-        rset = RadioSetting("basicsettings.endToneElim", "End Tone Elim", rx)
-        basic.append(rset)
-
-        options = ['Remote Alarm', 'Local Alarm']
-        rx = RadioSettingValueList(
-            options, current_index=_settings.remote_local_alarm)
-        rset = RadioSetting("basicsettings.remote_local_alarm",
-                            "Alarm Mode", rx)
-        basic.append(rset)
-
-        options = ['OFF', '5s', '10s', '15s', '20s',
-                   '30s', '40s', '50s', '60s']
-        rx = RadioSettingValueList(
-            options, current_index=_settings.menuexittime)
-        rset = RadioSetting("basicsettings.menuexittime", "Menu Exit Time", rx)
-        basic.append(rset)
-
-        options = ["%s" % x for x in range(1, 8)]
-        rx = RadioSettingValueList(
-            options, current_index=_settings.miclevel)
-        rset = RadioSetting("basicsettings.miclevel", "Mic Gain", rx)
-        basic.append(rset)
-
-        options = ["All.Enable", "All.Disable"]
-        rx = RadioSettingValueList(
-            options, current_index=_settings.ledtype)
-        rset = RadioSetting("basicsettings.ledtype", "Led Type", rx)
-        basic.append(rset)
-
-        rx = RadioSettingValueBoolean(_settings.aliasdisplay)
-        rset = RadioSetting("basicsettings.aliasdisplay", "Alias", rx)
-        basic.append(rset)
-
-        options = ["%.1fs" % (x / 10) for x in range(10, 34, 2)]
-        rx = RadioSettingValueList(
-            options, current_index=(
-                0 if _settings.aliasPreTime > 12
-                else _settings.aliasPreTime))
-        rset = RadioSetting("basicsettings.aliasPreTime", "Pretime", rx)
-        basic.append(rset)
-
-        rx = RadioSettingValueBoolean(_settings.sendidforalias)
-        rset = RadioSetting("basicsettings.sendidforalias", "Send Own Id", rx)
-        basic.append(rset)
-
-        rx = RadioSettingValueBoolean(_settings.wxmode)
-        rset = RadioSetting("basicsettings.wxmode", "Weather Sw", rx)
-        basic.append(rset)
-
-        options = ["NOAA-%s" % x for x in range(1, 13)]
-        rx = RadioSettingValueList(
-            options, current_index=_settings.wxch)
-        rset = RadioSetting("basicsettings.wxch", "Weather CH", rx)
-        basic.append(rset)
-
-        rx = RadioSettingValueBoolean(_settings.voxSw)
-        rset = RadioSetting("basicsettings.voxSw", "Vox Switch", rx)
-        basic.append(rset)
-
-        # Menu 03 - VOX Level
-        rx = RadioSettingValueInteger(1, 7, _settings.voxLevel + 1)
-        rset = RadioSetting("basicsettings.voxLevel", "Vox Level", rx)
-        basic.append(rset)
-
-        options = ['0.5S', '1.0S', '1.5S', '2.0S', '2.5S', '3.0S', '3.5S',
-                   '4.0S', '4.5S', '5.0S']
-        rx = RadioSettingValueList(options, current_index=_settings.voxDelay)
-        rset = RadioSetting("basicsettings.voxDelay", "VOX Delay", rx)
-        basic.append(rset)
-
-        advanced = RadioSettingGroup("advanced", "Advanced Settings")
-        group.append(advanced)
-
-        options = ["Off", "Voltage", "Character String",
-                   "Startup Logo"]
-        rx = RadioSettingValueList(
-            options, current_index=_settings.introScreen)
-        rset = RadioSetting("basicsettings.introScreen",
-                            "Intro Screen", rx)
-        advanced.append(rset)
-
-        def _name_validate(value):
-            return value[:15].ljust(16)
-
-        def _char_to_name(name):
-            rname = ""
-            for i in range(16):  # 0 - 15
-                char = chr(int(name[i]))
-                if char == "\x00":
-                    char = " "  # Other software may have 0x00 mid-name
-                rname += char
-            return rname.rstrip()  # remove trailing spaces
-
-        rx = RadioSettingValueString(0, 16,
-                                     _char_to_name(_openradioname.name1))
-        rx.set_validate_callback(_name_validate)
-        rset = RadioSetting("openradioname.name1", "Intro Line 1", rx)
-        advanced.append(rset)
-
-        rx = RadioSettingValueString(0, 16,
-                                     _char_to_name(_openradioname.name2))
-        rx.set_validate_callback(_name_validate)
-        rset = RadioSetting("openradioname.name2", "Intro Line 2", rx)
-        advanced.append(rset)
-
-        options_short = ["None", "VOX", "Dual Wait",
-                         "Scan", "Moni", "1750 Tone",
-                         "Power Select", "Alarm", "FM Radio",
-                         "Talk Around", "Frequency Reverse"]
-        options_long = (
-            options_short[:8] + ["Temporarily Moni"] + options_short[8:])
-
-        def _side_key_apply(setting, obj, atrb):
-            index = options_long.index(str(setting.value))
-            setattr(obj, atrb, index)
-
-        rx = RadioSettingValueList(
-            options_short, current_index=(_settings.sideKey1-1
-                                          if _settings.sideKey1 > 8
-                                          else _settings.sideKey1))
-        rset = RadioSetting("basicsettings.sideKey1", "Side Key 1", rx)
-        rset.set_apply_callback(_side_key_apply, _settings, "sideKey1")
-        advanced.append(rset)
-
-        rx = RadioSettingValueList(options_long,
-                                   current_index=_settings.sideKey1_long)
-        rset = RadioSetting("basicsettings.sideKey1_long",
-                            "Side Key 1 Long", rx)
-        advanced.append(rset)
-
-        rx = RadioSettingValueList(options_short,
-                                   current_index=(_settings.sideKey2-1
-                                                  if _settings.sideKey2 > 8
-                                                  else _settings.sideKey2))
-        rset = RadioSetting("basicsettings.sideKey2",
-                            "Side Key 2", rx)
-        rset.set_apply_callback(_side_key_apply, _settings, "sideKey2")
-        advanced.append(rset)
-
-        rx = RadioSettingValueList(options_long,
-                                   current_index=_settings.sideKey2_long)
-        rset = RadioSetting("basicsettings.sideKey2_long",
-                            "Side Key 2 Long", rx)
-        advanced.append(rset)
-
-        scanb = RadioSettingGroup("scandioc", "Scan Settings")
-        group.append(scanb)
-
-        options = ["TO", "CO", "SE"]
-        rx = RadioSettingValueList(options,
-                                   current_index=_settings.scanpausetype)
-        rset = RadioSetting("basicsettings.scanpausetype", "Scan Type", rx)
-        scanb.append(rset)
-
-        options = ["Current CH", "Last Active CH", "Select CH"]
-        rx = RadioSettingValueList(options,
-                                   current_index=_settings.scantxchtype)
-        rset = RadioSetting("basicsettings.scantxchtype", "Scan Tx Mode", rx)
-        scanb.append(rset)
-
-        def myset_freq(setting, obj, atrb, mult):
-            """ Callback to set frequency by applying multiplier"""
-            value = int(float(str(setting.value)) * mult)
-            setattr(obj, atrb, value)
-            return
-
-        rx = RadioSettingValueFloat(108, 174,
-                                    _scanfreq.scan_v_start_freq/100000,
-                                    0.00001, 5)
-        rset = RadioSetting("scanfreq.scan_v_start_freq",
-                            "Scan Start Freq(VHF)", rx)
-        rset.set_apply_callback(myset_freq, _scanfreq,
-                                "scan_v_start_freq", 100000)
-        scanb.append(rset)
-
-        rx = RadioSettingValueFloat(108, 174,
-                                    _scanfreq.scan_v_end_freq/100000,
-                                    0.00001, 5)
-        rset = RadioSetting("scanfreq.scan_v_end_freq",
-                            "Scan End Freq(VHF)", rx)
-        rset.set_apply_callback(myset_freq, _scanfreq,
-                                "scan_v_end_freq", 100000)
-        scanb.append(rset)
-
-        rx = RadioSettingValueFloat(400, 520,
-                                    _scanfreq.scan_u_start_freq/100000,
-                                    0.00001, 5)
-        rset = RadioSetting("scanfreq.scan_u_start_freq",
-                            "Scan Start Freq(UHF)", rx)
-        rset.set_apply_callback(myset_freq, _scanfreq,
-                                "scan_u_start_freq", 100000)
-        scanb.append(rset)
-
-        rx = RadioSettingValueFloat(400, 520,
-                                    _scanfreq.scan_u_end_freq/100000,
-                                    0.00001, 5)
-        rset = RadioSetting("scanfreq.scan_u_end_freq",
-                            "Scan End Freq(UHF)", rx)
-        rset.set_apply_callback(myset_freq, _scanfreq,
-                                "scan_u_end_freq", 100000)
-        scanb.append(rset)
-
-        btb = RadioSettingGroup("btdioc", "Bluetooth Settings")
-        group.append(btb)
-
-        rx = RadioSettingValueBoolean(_settings.btswitch)
-        rset = RadioSetting("basicsettings.btswitch", "Bluetooth Switch", rx)
-        btb.append(rset)
-
-        options = ["%ss" % x for x in range(4, 16)] + ["Infinite"]
-        rx = RadioSettingValueList(options,
-                                   current_index=_settings.btsuspendtime)
-        rset = RadioSetting("basicsettings.btsuspendtime", "Hold Time", rx)
-        btb.append(rset)
-
-        options = ["%s" % x for x in range(1, 6)]
-        rx = RadioSettingValueList(options,
-                                   current_index=_settings.btvolumelevel)
-        rset = RadioSetting("basicsettings.btvolumelevel", "SpkGain", rx)
-        btb.append(rset)
-
-        options = ["%s" % x for x in range(1, 6)]
-        rx = RadioSettingValueList(options, current_index=_settings.btmiclevel)
-        rset = RadioSetting("basicsettings.btmiclevel", "Mic Gain", rx)
-        btb.append(rset)
-
-        rx = RadioSettingValueBoolean(_settings.localspkswitch)
-        rset = RadioSetting("basicsettings.localspkswitch", "Speak Switch", rx)
-        btb.append(rset)
-
-        fmb = RadioSettingGroup("fmradioc", "FM Radio Settings")
-        group.append(fmb)
-
-        def myset_mask(setting, obj, atrb, nx):
-            vx = 1 if bool(setting.value) else 0
-            th_uv88._do_map(nx + 1, vx, self._memobj.fmmap.fmset)
-            return
-
-        def myset_fmfrq(setting, obj, atrb, nx):
-            """ Callback to set xx.x FM freq in memory as xx.x * 100000"""
-            # in-valid even kHz freqs are allowed; to satisfy run_tests
-            vx = int(float(str(setting.value)) * 100000)
-            setattr(obj[nx], atrb, vx)
-            return
-
-        _fmx = self._memobj.fm_vfochn
-
-        # FM Broadcast Manual Settings
-        val = _fmx.rxfreq
-        val = val / 100000.0
-        if val < 64.0 or val > 108.0:
-            val = 100.7
-        rx = RadioSettingValueFloat(64.0, 108.0, val, 0.1, 1)
-        rset = RadioSetting("fm_vfochn.rxfreq", "Manual FM Freq (MHz)", rx)
-        rset.set_apply_callback(myset_freq, _fmx, "rxfreq", 100000)
-        fmb.append(rset)
-
-        _fmfrq = self._memobj.fmfrqs
-        _fmap = self._memobj.fmmap
-
-        # FM Broadcast Presets Settings
-        for j in range(0, 32):
-            val = _fmfrq[j].rxfreq
-            if val < 6400000 or val > 10800000:
-                val = 88.0
-                fmset = False
-            else:
-                val = (float(int(val)) / 100000)
-                # get fmmap bit value: 1 = enabled
-                ndx = int(math.floor((j) / 8))
-                bv = j % 8
-                msk = 1 << bv
-                vx = _fmap.fmset[ndx]
-                fmset = bool(vx & msk)
-            rx = RadioSettingValueBoolean(fmset)
-            rset = RadioSetting("fmmap.fmset/%d" % j,
-                                "FM Preset %02d" % (j + 1), rx)
-            rset.set_apply_callback(myset_mask, _fmap, "fmset", j)
-            fmb.append(rset)
-
-            rx = RadioSettingValueFloat(64.0, 108.0, val, 0.1, 1)
-            rset = RadioSetting("fmfrqs/%d.rxfreq" % j,
-                                "    Preset %02d Freq" % (j + 1), rx)
-            # This callback uses the array index
-            rset.set_apply_callback(myset_fmfrq, _fmfrq, "rxfreq", j)
-            fmb.append(rset)
-
-        return group       # END get_settings()
 
 
 @directory.register
