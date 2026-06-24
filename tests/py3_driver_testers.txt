@@ -358,6 +358,7 @@ WACCOM_MINI-8900,@KC9HI,11-Nov-2022
 WLN_KD-C1,+Retevis_RT22,9-Dec-2022
 Wouxun_KG-1000G,@mrtjr1,23-jan-2023
 Wouxun_KG-1000G_Plus,@mrtjr1,23-jan-2023
+Wouxun_KG-Q10H,AF7PT,26-Feb-2026
 Wouxun_KG-816,+Wouxun_KG-UV6,11-Dec-2022
 Wouxun_KG-818,+Wouxun_KG-UV6,11-Dec-2022
 Wouxun_KG-UV6,@KC9HI,11-Dec-2022
