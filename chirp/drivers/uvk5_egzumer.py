@@ -656,11 +656,11 @@ class UVK5RadioEgzumer(uvk5.UVK5RadioBase):
                 _mem.AM_fix = element.value
 
             # mic_bar
-            elif elname == "mem.mic_bar":
+            elif elname == "mic_bar":
                 _mem.mic_bar = element.value
 
             # Batterie txt
-            elif elname == "_mem.battery_text":
+            elif elname == "battery_text":
                 _mem.battery_text = element.value
 
             # Tail tone elimination
