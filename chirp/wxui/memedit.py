@@ -1309,6 +1309,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         goto = common.EditorMenuItem(cls, '_goto', _('Goto...'))
         goto.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('G')))
 
+        bulk_rename = common.EditorMenuItem(
+            cls, '_bulk_rename_from_menu',
+            _('Bulk Rename...'))
+
         expand_extra = common.EditorMenuItemToggle(
             cls, '_set_expand_extra', ('expand_extra', 'state'),
             _('Show extra fields'))
@@ -1328,6 +1332,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 goto,
                 move_up,
                 move_dn,
+                bulk_rename,
                 ],
             common.EditorMenuItem.MENU_VIEW: [
                 expand_extra,
@@ -2310,6 +2315,19 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             menu.Append(diff_across_item)
             menu.Enable(diff_across_item.GetId(), len(selected_rows) == 1)
 
+        rename_item = wx.MenuItem(
+            menu, wx.NewId(), _('Bulk Rename...'))
+        self.Bind(
+            wx.EVT_MENU,
+            functools.partial(self._bulk_rename,
+                              selected_rows),
+            rename_item)
+        menu.Append(rename_item)
+        rename_item.Enable(
+            self.editable and not self.busy
+            and used_selected >= 2
+            and self._features.has_name)
+
         self.PopupMenu(menu)
         menu.Destroy()
 
@@ -2330,6 +2348,60 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 self.set_memory(memory)
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
+    @common.error_proof()
+    def _bulk_rename(self, rows, event):
+        from chirp.wxui.bulk_rename import BulkRenameDialog
+
+        if (not self._features.has_name
+                or self.busy or not self.editable):
+            return
+
+        # Filter to visible rows in case hide-empty or
+        # search filter is active
+        rows = [r for r in rows
+                if self._grid.IsRowShown(r)]
+        memories = [
+            self.synchronous_get_memory(self.row2mem(row))
+            for row in rows]
+        memories = [m for m in memories
+                    if not m.empty
+                    and 'name' not in m.immutable]
+
+        if len(memories) < 2:
+            wx.MessageBox(
+                _('Select at least two non-empty '
+                  'memories to rename.'),
+                _('Bulk Rename'),
+                wx.OK | wx.ICON_INFORMATION)
+            return
+
+        with BulkRenameDialog(self, self._radio,
+                              memories) as d:
+            if d.ShowModal() != wx.ID_OK:
+                return
+            new_names = d.new_names
+
+        with self.undo_context(
+                _('Rename %i memories') % len(new_names)):
+            for mem, name in new_names:
+                mem = mem.dupe()
+                mem.name = name
+                self.set_memory(mem)
+
+        wx.PostEvent(self, common.EditorChanged(
+            self.GetId()))
+
+    def _bulk_rename_from_menu(self, event):
+        selected_rows = self.get_selected_rows_safe()
+        if not selected_rows:
+            wx.MessageBox(
+                _('Select at least two non-empty '
+                  'memories to rename.'),
+                _('Bulk Rename'),
+                wx.OK | wx.ICON_INFORMATION)
+            return
+        self._bulk_rename(selected_rows, event)
 
     @common.error_proof()
     @undoable('Insert row')
