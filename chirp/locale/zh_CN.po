@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-23 13:53-0700\n"
+"POT-Creation-Date: 2026-06-27 16:08+0000\n"
 "PO-Revision-Date: 2024-11-11 02:28+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language-Team: \n"
@@ -799,7 +799,7 @@ msgstr ""
 "5. 确保电台调到没有活动的频道。\n"
 "6. 点击 OK 上传镜像到设备。\n"
 
-#: ../drivers/uvb5.py:293 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:232
+#: ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:232 ../drivers/uvb5.py:293
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -815,7 +815,7 @@ msgstr ""
 "5. 确保电台调到没有活动的频道。\n"
 "6. 点击 OK 下载设备中的镜像。\n"
 
-#: ../drivers/uvb5.py:301 ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:240
+#: ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:240 ../drivers/uvb5.py:301
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1339,7 +1339,7 @@ msgstr "开发者模式"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "开发者状态现在是 %s。CHIRP 必须重新启动才能生效"
 
-#: ../wxui/memedit.py:2298 ../wxui/developer.py:98
+#: ../wxui/developer.py:98 ../wxui/memedit.py:2298
 msgid "Diff Raw Memories"
 msgstr "对比原始存储"
 
@@ -1708,11 +1708,10 @@ msgstr ""
 "4 - 电台 > 从电台下载\n"
 "5 - 断开接口电缆！否则将没有右侧音频！\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:666 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:339
-#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
+#: ../drivers/uv6r.py:339 ../drivers/gmrsv2.py:363 ../drivers/uv5x3.py:417
+#: ../drivers/btech.py:666 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/gmrsuv1.py:391 ../drivers/mursv1.py:341 ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/tdxone_tdq8a.py:444
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1726,7 +1725,7 @@ msgstr ""
 "3 - 打开您的电台\n"
 "4 - 下载您的电台数据\n"
 
-#: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
+#: ../drivers/tk760g.py:686 ../drivers/tk690.py:569
 msgid ""
 "Follow these instructions to download your radio:\n"
 "1 - Turn off your radio\n"
@@ -1827,7 +1826,7 @@ msgstr ""
 "3 - 打开您的电台\n"
 "4 - 上传您的电台数据\n"
 
-#: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
+#: ../drivers/tk760g.py:692 ../drivers/tk690.py:575
 msgid ""
 "Follow these instructions to upload your radio:\n"
 "1 - Turn off your radio\n"
@@ -1855,7 +1854,7 @@ msgstr ""
 "3 - 打开电台\n"
 "4 - 单击 \"确定 \"开始\n"
 
-#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
+#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1883,11 +1882,10 @@ msgstr ""
 "3 - 打开电台\n"
 "4 - 下载电台数据\n"
 
-#: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
-#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/uv6r.py:345 ../drivers/gmrsv2.py:369 ../drivers/uv5x3.py:423
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/lt725uv.py:492
+#: ../drivers/gmrsuv1.py:397 ../drivers/mursv1.py:347 ../drivers/vgc.py:592
+#: ../drivers/baofeng_uv17Pro.py:520 ../drivers/tdxone_tdq8a.py:450
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1933,9 +1931,10 @@ msgstr ""
 msgid "Frequency granularity in kHz"
 msgstr "频率粒度（kHz）"
 
-#: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
-#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
-#: ../drivers/uv5r.py:1949 ../drivers/baofeng_uv17Pro.py:1297
+#: ../drivers/tidradio_tdh9.py:575 ../drivers/uv5r.py:1949
+#: ../drivers/ga510.py:1094 ../drivers/retevis_ha1g.py:1439
+#: ../drivers/baofeng_uv17Pro.py:1297 ../drivers/mml_jc8810.py:1383
+#: ../drivers/tdh8.py:2540
 msgid "Frequency in this range must not be AM mode"
 msgstr "此范围内的频率不能是AM模式"
 
@@ -1943,16 +1942,20 @@ msgstr "此范围内的频率不能是AM模式"
 msgid "Frequency in this range not supported by firmware"
 msgstr ""
 
-#: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
+#: ../drivers/tidradio_tdh9.py:571 ../drivers/uv5r.py:1945
+#: ../drivers/radtel_rt900.py:1623 ../drivers/ga510.py:1087
+#: ../drivers/retevis_ha1g.py:1435 ../drivers/baofeng_uv17Pro.py:1294
 #: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:1945
-#: ../drivers/baofeng_uv17Pro.py:1294
 msgid "Frequency in this range requires AM mode"
 msgstr "此范围内的频率需要是AM模式"
 
 #: ../drivers/tdh8.py:2544
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr "超出发射频段的频率必须是双工=关闭"
+
+#: ../drivers/tidradio_tdh9.py:579
+msgid "Frequency outside TX bands; set duplex=off for RX only"
+msgstr ""
 
 #: ../wxui/query_sources.py:355 ../wxui/query_sources.py:435
 #: ../wxui/query_sources.py:536
@@ -2613,7 +2616,7 @@ msgstr "DTCS 接收代码"
 msgid "Radio"
 msgstr "电台"
 
-#: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:576
+#: ../drivers/ft450d.py:576 ../drivers/ft60.py:89 ../drivers/ft60.py:91
 #: ../drivers/ft817.py:410
 #, python-format
 msgid "Radio did not ack block %i"
@@ -2778,7 +2781,7 @@ msgstr "扫描控制（跳过、包含、优先级等）"
 msgid "Scanlists"
 msgstr "扫描列表"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:855
+#: ../drivers/uvk5.py:855 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr "加密器"
 
@@ -2836,7 +2839,7 @@ msgstr "由于不支持的固件版本，设置是只读的"
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "由双工控制的移动量（或发射频率）"
 
-#: ../wxui/memedit.py:2290 ../wxui/developer.py:101
+#: ../wxui/developer.py:101 ../wxui/memedit.py:2290
 msgid "Show Raw Memory"
 msgstr "显示原始存储"
 
@@ -3305,8 +3308,8 @@ msgstr "查看"
 msgid "WARNING!"
 msgstr "警告！"
 
-#: ../wxui/bugreport.py:234 ../wxui/memedit.py:2010 ../wxui/main.py:1891
-#: ../wxui/main.py:2043
+#: ../wxui/bugreport.py:234 ../wxui/main.py:1891 ../wxui/main.py:2043
+#: ../wxui/memedit.py:2010
 msgid "Warning"
 msgstr "警告"
 
