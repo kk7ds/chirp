@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-23 13:53-0700\n"
+"POT-Creation-Date: 2026-06-27 16:08+0000\n"
 "PO-Revision-Date: 2023-07-12 21:21+0200\n"
 "Last-Translator: szporwolik\n"
 "Language-Team: Polish\n"
@@ -565,7 +565,7 @@ msgid ""
 "6. Click OK to upload image to device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:293 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:232
+#: ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:232 ../drivers/uvb5.py:293
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -575,7 +575,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:301 ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:240
+#: ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:240 ../drivers/uvb5.py:301
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1054,7 +1054,7 @@ msgstr "Tryb dewelopera"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "Tryb developera jest teraz %s. CHIRP musi zostać ponowie uruchomiony, aby zmiany przyniosły efekt"
 
-#: ../wxui/memedit.py:2298 ../wxui/developer.py:98
+#: ../wxui/developer.py:98 ../wxui/memedit.py:2298
 msgid "Diff Raw Memories"
 msgstr "Porównaj surowe pamięci"
 
@@ -1408,11 +1408,10 @@ msgid ""
 "    no right-side audio!\n"
 msgstr ""
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:666 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:339
-#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
+#: ../drivers/uv6r.py:339 ../drivers/gmrsv2.py:363 ../drivers/uv5x3.py:417
+#: ../drivers/btech.py:666 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/gmrsuv1.py:391 ../drivers/mursv1.py:341 ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/tdxone_tdq8a.py:444
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1421,7 +1420,7 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
+#: ../drivers/tk760g.py:686 ../drivers/tk690.py:569
 msgid ""
 "Follow these instructions to download your radio:\n"
 "1 - Turn off your radio\n"
@@ -1487,7 +1486,7 @@ msgid ""
 "4 - Do the upload of your radio data\n"
 msgstr ""
 
-#: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
+#: ../drivers/tk760g.py:692 ../drivers/tk690.py:575
 msgid ""
 "Follow these instructions to upload your radio:\n"
 "1 - Turn off your radio\n"
@@ -1505,7 +1504,7 @@ msgid ""
 "4 - Click OK to start\n"
 msgstr ""
 
-#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
+#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1523,11 +1522,10 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
-#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/uv6r.py:345 ../drivers/gmrsv2.py:369 ../drivers/uv5x3.py:423
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/lt725uv.py:492
+#: ../drivers/gmrsuv1.py:397 ../drivers/mursv1.py:347 ../drivers/vgc.py:592
+#: ../drivers/baofeng_uv17Pro.py:520 ../drivers/tdxone_tdq8a.py:450
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1563,9 +1561,10 @@ msgstr ""
 msgid "Frequency granularity in kHz"
 msgstr ""
 
-#: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
-#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
-#: ../drivers/uv5r.py:1949 ../drivers/baofeng_uv17Pro.py:1297
+#: ../drivers/tidradio_tdh9.py:575 ../drivers/uv5r.py:1949
+#: ../drivers/ga510.py:1094 ../drivers/retevis_ha1g.py:1439
+#: ../drivers/baofeng_uv17Pro.py:1297 ../drivers/mml_jc8810.py:1383
+#: ../drivers/tdh8.py:2540
 msgid "Frequency in this range must not be AM mode"
 msgstr "Częstotliwość w tym zakresie nie może używać trybu AM"
 
@@ -1573,16 +1572,20 @@ msgstr "Częstotliwość w tym zakresie nie może używać trybu AM"
 msgid "Frequency in this range not supported by firmware"
 msgstr ""
 
-#: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
+#: ../drivers/tidradio_tdh9.py:571 ../drivers/uv5r.py:1945
+#: ../drivers/radtel_rt900.py:1623 ../drivers/ga510.py:1087
+#: ../drivers/retevis_ha1g.py:1435 ../drivers/baofeng_uv17Pro.py:1294
 #: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:1945
-#: ../drivers/baofeng_uv17Pro.py:1294
 msgid "Frequency in this range requires AM mode"
 msgstr "Częstotliwość w tym zakresie musi używać trybu AM"
 
 #: ../drivers/tdh8.py:2544
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr "Częstotliwość poza pasmami TX musi używać duplex=off"
+
+#: ../drivers/tidradio_tdh9.py:579
+msgid "Frequency outside TX bands; set duplex=off for RX only"
+msgstr ""
 
 #: ../wxui/query_sources.py:355 ../wxui/query_sources.py:435
 #: ../wxui/query_sources.py:536
@@ -2236,7 +2239,7 @@ msgstr "DTCS RX"
 msgid "Radio"
 msgstr "Radiostacja"
 
-#: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:576
+#: ../drivers/ft450d.py:576 ../drivers/ft60.py:89 ../drivers/ft60.py:91
 #: ../drivers/ft817.py:410
 #, python-format
 msgid "Radio did not ack block %i"
@@ -2401,7 +2404,7 @@ msgstr ""
 msgid "Scanlists"
 msgstr "Lista skanowania"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:855
+#: ../drivers/uvk5.py:855 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr ""
 
@@ -2458,7 +2461,7 @@ msgstr ""
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr ""
 
-#: ../wxui/memedit.py:2290 ../wxui/developer.py:101
+#: ../wxui/developer.py:101 ../wxui/memedit.py:2290
 msgid "Show Raw Memory"
 msgstr "Pokaż surową pamięć"
 
@@ -2913,8 +2916,8 @@ msgstr "Widok"
 msgid "WARNING!"
 msgstr "UWAGA!"
 
-#: ../wxui/bugreport.py:234 ../wxui/memedit.py:2010 ../wxui/main.py:1891
-#: ../wxui/main.py:2043
+#: ../wxui/bugreport.py:234 ../wxui/main.py:1891 ../wxui/main.py:2043
+#: ../wxui/memedit.py:2010
 msgid "Warning"
 msgstr "Uwaga"
 
