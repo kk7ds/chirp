@@ -17,6 +17,7 @@ git log --pretty=oneline --no-merges --abbrev-commit ${BASE}..
 echo
 
 git diff ${BASE}.. -- '*.py' | grep '^+' > added_lines
+git diff ${BASE}.. -- 'chirp/drivers/*.py' | grep '^+' > driver_lines
 
 if grep -E '(from|import).*\<six\>' added_lines; then
     fail No new uses of six
@@ -75,6 +76,14 @@ done
 
 if grep -E '\Wprint\(' added_lines; then
     fail 'Do not use print()'
+fi
+
+if grep -E '(from|import).*wx' driver_lines; then
+    fail 'Drivers may not import GUI components or manipulate the GUI'
+fi
+
+if grep -E '(subprocess|webbrowser)' driver_lines; then
+    fail 'Drivers may not spawn external commands'
 fi
 
 if git log ${BASE}.. --merges | grep .; then
