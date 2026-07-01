@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-23 13:53-0700\n"
+"POT-Creation-Date: 2026-06-27 16:08+0000\n"
 "PO-Revision-Date: 2026-04-05 01:36-0500\n"
 "Last-Translator: Tony Gies <tgies@tgies.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -830,7 +830,7 @@ msgstr ""
 "5. 通信のないチャンネルに合わせてあることを確認\n"
 "6. OKをクリックしてデバイスへイメージをアップロード\n"
 
-#: ../drivers/uvb5.py:293 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:232
+#: ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:232 ../drivers/uvb5.py:293
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -846,7 +846,7 @@ msgstr ""
 "5. 通信のないチャンネルに合わせてあることを確認\n"
 "6. OKをクリックしてデバイスからイメージをダウンロード\n"
 
-#: ../drivers/uvb5.py:301 ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:240
+#: ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:240 ../drivers/uvb5.py:301
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1367,7 +1367,7 @@ msgstr "開発者モード"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "開発者状態は %s になりました。有効にするにはCHIRPを再起動してください"
 
-#: ../wxui/memedit.py:2298 ../wxui/developer.py:98
+#: ../wxui/developer.py:98 ../wxui/memedit.py:2298
 msgid "Diff Raw Memories"
 msgstr "Rawメモリの差分"
 
@@ -1736,11 +1736,10 @@ msgstr ""
 "4 - 無線機 > 無線機からダウンロード\n"
 "5 - インターフェースケーブルを取り外してください！そうしないと右側のオーディオが出力されません！\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:666 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:339
-#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
+#: ../drivers/uv6r.py:339 ../drivers/gmrsv2.py:363 ../drivers/uv5x3.py:417
+#: ../drivers/btech.py:666 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/gmrsuv1.py:391 ../drivers/mursv1.py:341 ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/tdxone_tdq8a.py:444
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1754,7 +1753,7 @@ msgstr ""
 "3 - 無線機の電源をオン\n"
 "4 - 無線機データのダウンロードを実行\n"
 
-#: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
+#: ../drivers/tk760g.py:686 ../drivers/tk690.py:569
 msgid ""
 "Follow these instructions to download your radio:\n"
 "1 - Turn off your radio\n"
@@ -1855,7 +1854,7 @@ msgstr ""
 "3 - 無線機の電源をオン\n"
 "4 - 無線機データのアップロードを実行\n"
 
-#: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
+#: ../drivers/tk760g.py:692 ../drivers/tk690.py:575
 msgid ""
 "Follow these instructions to upload your radio:\n"
 "1 - Turn off your radio\n"
@@ -1883,7 +1882,7 @@ msgstr ""
 "3 - 無線機の電源をオン\n"
 "4 - OKをクリックして開始\n"
 
-#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
+#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1911,11 +1910,10 @@ msgstr ""
 "3 - 無線機の電源をオン\n"
 "4 - 無線機データのダウンロードを実行\n"
 
-#: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
-#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/uv6r.py:345 ../drivers/gmrsv2.py:369 ../drivers/uv5x3.py:423
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/lt725uv.py:492
+#: ../drivers/gmrsuv1.py:397 ../drivers/mursv1.py:347 ../drivers/vgc.py:592
+#: ../drivers/baofeng_uv17Pro.py:520 ../drivers/tdxone_tdq8a.py:450
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1961,9 +1959,10 @@ msgstr "周波数 %s はサポート範囲 %s 外です"
 msgid "Frequency granularity in kHz"
 msgstr "周波数ステップ (kHz)"
 
-#: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
-#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
-#: ../drivers/uv5r.py:1949 ../drivers/baofeng_uv17Pro.py:1297
+#: ../drivers/tidradio_tdh9.py:575 ../drivers/uv5r.py:1949
+#: ../drivers/ga510.py:1094 ../drivers/retevis_ha1g.py:1439
+#: ../drivers/baofeng_uv17Pro.py:1297 ../drivers/mml_jc8810.py:1383
+#: ../drivers/tdh8.py:2540
 msgid "Frequency in this range must not be AM mode"
 msgstr "この範囲の周波数ではAMモードは使用できません"
 
@@ -1971,16 +1970,20 @@ msgstr "この範囲の周波数ではAMモードは使用できません"
 msgid "Frequency in this range not supported by firmware"
 msgstr "この範囲の周波数はファームウェアでサポートされていません"
 
-#: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
+#: ../drivers/tidradio_tdh9.py:571 ../drivers/uv5r.py:1945
+#: ../drivers/radtel_rt900.py:1623 ../drivers/ga510.py:1087
+#: ../drivers/retevis_ha1g.py:1435 ../drivers/baofeng_uv17Pro.py:1294
 #: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:1945
-#: ../drivers/baofeng_uv17Pro.py:1294
 msgid "Frequency in this range requires AM mode"
 msgstr "この範囲の周波数ではAMモードが必要です"
 
 #: ../drivers/tdh8.py:2544
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr "送信帯域外の周波数ではデュプレックスをオフにする必要があります"
+
+#: ../drivers/tidradio_tdh9.py:579
+msgid "Frequency outside TX bands; set duplex=off for RX only"
+msgstr ""
 
 #: ../wxui/query_sources.py:355 ../wxui/query_sources.py:435
 #: ../wxui/query_sources.py:536
@@ -2633,7 +2636,7 @@ msgstr "受信DTCS"
 msgid "Radio"
 msgstr "無線機"
 
-#: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:576
+#: ../drivers/ft450d.py:576 ../drivers/ft60.py:89 ../drivers/ft60.py:91
 #: ../drivers/ft817.py:410
 #, python-format
 msgid "Radio did not ack block %i"
@@ -2804,7 +2807,7 @@ msgstr "スキャン制御 (スキップ、含める、優先など)"
 msgid "Scanlists"
 msgstr "スキャンリスト"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:855
+#: ../drivers/uvk5.py:855 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr "スクランブル"
 
@@ -2861,7 +2864,7 @@ msgstr "非対応ファームウェアバージョンのため設定は読み取
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "デュプレックスで制御されるシフト量 (または送信周波数)"
 
-#: ../wxui/memedit.py:2290 ../wxui/developer.py:101
+#: ../wxui/developer.py:101 ../wxui/memedit.py:2290
 msgid "Show Raw Memory"
 msgstr "Rawメモリを表示"
 
@@ -3336,8 +3339,8 @@ msgstr "表示"
 msgid "WARNING!"
 msgstr "警告！"
 
-#: ../wxui/bugreport.py:234 ../wxui/memedit.py:2010 ../wxui/main.py:1891
-#: ../wxui/main.py:2043
+#: ../wxui/bugreport.py:234 ../wxui/main.py:1891 ../wxui/main.py:2043
+#: ../wxui/memedit.py:2010
 msgid "Warning"
 msgstr "警告"
 
