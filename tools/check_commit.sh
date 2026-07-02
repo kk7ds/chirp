@@ -19,7 +19,7 @@ echo
 git diff ${BASE}.. -- '*.py' | grep '^+' > added_lines
 git diff ${BASE}.. -- 'chirp/drivers/*.py' | grep '^+' > driver_lines
 
-if grep -E '(from|import).*\<six\>' added_lines; then
+if grep -E '\<(from|import)\>.*\<six\>' added_lines; then
     fail No new uses of six
 fi
 
@@ -27,7 +27,7 @@ if grep -E '\<six\>' added_lines; then
     fail No new uses of six
 fi
 
-if grep -E '(from|import).*builtins' added_lines; then
+if grep -E '\<(from|import)\>.*builtins' added_lines; then
     fail No new uses of future
 fi
 
@@ -35,11 +35,11 @@ if grep -E '\<future\>' added_lines; then
     fail No new uses of future
 fi
 
-if grep -E '(from|import).*past(?!e)' added_lines; then
+if grep -E '\<(from|import)\>.*\<past\>' added_lines; then
     fail Use of past library not allowed
 fi
 
-if grep -E 'MemoryMap\(' added_lines; then
+if grep -E '\<MemoryMap\(' added_lines; then
     fail New uses of MemoryMap should be MemoryMapBytes
 fi
 
@@ -47,7 +47,7 @@ if grep -E "[^_]_\([^\"']" added_lines; then
     fail 'Translated strings must be literals!'
 fi
 
-if grep -E "eval\(" added_lines; then
+if grep -E "\<eval\(" added_lines; then
     fail 'Use of eval() is dangerous and not permitted!'
 fi
 
@@ -74,11 +74,11 @@ done
 #    fail 'New drivers should not have match_model() implemented as it is not needed'
 #fi
 
-if grep -E '\Wprint\(' added_lines; then
+if grep -E '\<print\(' added_lines; then
     fail 'Do not use print()'
 fi
 
-if grep -E '(from|import).*wx' driver_lines; then
+if grep -E '\<(from|import)\>.*wx' driver_lines; then
     fail 'Drivers may not import GUI components or manipulate the GUI'
 fi
 
