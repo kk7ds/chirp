@@ -28,14 +28,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import webbrowser
-
 import re as _re
 import logging
-try:
-    import wx
-except ImportError:
-    wx = None
 
 
 from chirp import chirp_common, directory, bitwise, memmap, errors
@@ -1208,13 +1202,7 @@ def _set_mem_path(obj, path, value):
         setattr(current, last, value)
 
 
-def _show_warning(msg):
-    if not wx:
-        return True
-    ret = wx.MessageBox(
-        msg, "Warning", wx.OK | wx.CANCEL |
-        wx.CANCEL_DEFAULT | wx.ICON_WARNING)
-    return ret == wx.OK
+# WARNING popups are not allowed in CHIRP drivers to keep them GUI-independent
 
 
 @directory.register
@@ -2168,28 +2156,13 @@ class UVK5RadioF4HWN(uvk5.UVK5RadioBase):
         radio_firmware = RadioSettingGroup("radio_firmwarebasic", ValFirm)
 # add link for mise a jour information
 
-        val = RadioSettingValueBoolean(False)
-
-        def validate_Go_Web_Firmware(value):
-            if value:
-                msg = (
-                    "To see information for the update of the "
-                    "Firmware F4HWN \n"
-                )
-                if _show_warning(msg):
-                    webbrowser.open(FIRMWARE_VERSION_UPDATE)
-                value = False
-
-            return value
-
-        val.set_validate_callback(validate_Go_Web_Firmware)
+        val = RadioSettingValueString(0, 75, FIRMWARE_VERSION_UPDATE)
+        val.set_mutable(False)
         rs = RadioSetting(
             "Update_Firmware_mise_a_jour",
-            "To see information for the update of the Firmware F4HWN , "
-            "select this box ->",
+            "Firmware Update Link (Copy-Paste) ->",
             val)
-        rs.set_doc(
-            "To see information for the update of the Firmware F4HWN !")
+        rs.set_doc("Link to check/download latest firmware updates.")
         radio_firmware.append(rs)
 
 # end add link for mise a jour information
@@ -3042,9 +3015,6 @@ class UVK5RadioF4HWN(uvk5.UVK5RadioBase):
         val = RadioSettingValueBoolean(False)
 
         def validate_upload_advanced(value):
-            if value and not self.upload_advanced:
-                msg = "This will overwrite advanced settings on the radio."
-                value = _show_warning(msg)
             self.upload_advanced = value
             return value
 
@@ -3052,6 +3022,7 @@ class UVK5RadioF4HWN(uvk5.UVK5RadioBase):
         rs = RadioSetting(
             "upload_advanced", "Upload Advanced Settings", val)
         rs.set_doc(
+            'WARNING: This will overwrite advanced settings on the radio.\n'
             'Check this box to upload the advanced settings to the radio.\n'
             'Covers: Battery Type, Navigation, S-meter corrections.\n'
             'Leave unchecked to preserve existing values on the radio.')
@@ -3168,34 +3139,11 @@ class UVK5RadioF4HWN(uvk5.UVK5RadioBase):
 
 #       message box to the web page link (firmware)
 
-        val = RadioSettingValueBoolean(False)
-
-        def validate_Go_Web_Page0(value):
-            if value:
-                msg = (
-                    "Go to the web Page of the Firmware F4HWN \n"
-                    + FIRMWARE_VERSION_UPDATE
-                )
-                if _show_warning(msg):
-                    webbrowser.open(FIRMWARE_VERSION_UPDATE)
-                value = False
-
-            return value
-
-        val.set_validate_callback(validate_Go_Web_Page0)
-        rs = RadioSetting(
-            "Update_Firmware_0",
-            "Go to the web page of Latest Firmware F4HWN select "
-            "this Box ->",
-            val)
-        rs.set_doc('Be sure you have the latest firmware available!')
-        roinfo.append(rs)
-
         val = RadioSettingValueString(0, 75, FIRMWARE_VERSION_UPDATE)
+        val.set_mutable(False)
         rs = RadioSetting(
             "Update_Firmware_1",
-            "Or copy this link (CTRL-C), paste (CTRL-V) to "
-            "your browser -> ",
+            "Firmware Update Link (Copy-Paste) ->",
             val)
         rs.set_doc('Be sure you have the latest firmware available!')
         roinfo.append(rs)
@@ -3207,36 +3155,11 @@ class UVK5RadioF4HWN(uvk5.UVK5RadioBase):
 
         append_label(roinfo, "Driver Chirp Version         ", DRIVER_VERSION)
 
-#       message box to the web page link (chirp)
-
-        val = RadioSettingValueBoolean(False)
-
-        def validate_Go_Web_Page(value):
-            if value:
-                msg = (
-                    "Go to the web Page of the Chirp Driver F4HWN \n"
-                    + CHIRP_DRIVER_VERSION_UPDATE
-                )
-                if _show_warning(msg):
-                    webbrowser.open(CHIRP_DRIVER_VERSION_UPDATE)
-                value = False
-
-            return value
-
-        val.set_validate_callback(validate_Go_Web_Page)
-        rs = RadioSetting(
-            "Update_Driver_Chirp_0",
-            "Go to the web page of Latest chirp Driver F4HWN select "
-            "this Box ->",
-            val)
-        rs.set_doc('Be sure you have the latest CHIRP driver available!')
-        roinfo.append(rs)
-
         val = RadioSettingValueString(0, 75, CHIRP_DRIVER_VERSION_UPDATE)
+        val.set_mutable(False)
         rs = RadioSetting(
             "Update_Driver_Chirp_1",
-            "Or copy this link (CTRL-C), paste (CTRL-V) to "
-            "your browser -> ",
+            "Driver Update Link (Copy-Paste) ->",
             val)
         rs.set_doc('Be sure you have the latest CHIRP driver available!')
         roinfo.append(rs)
@@ -3249,12 +3172,6 @@ class UVK5RadioF4HWN(uvk5.UVK5RadioBase):
         val = RadioSettingValueBoolean(False)
 
         def validate_upload_calibration(value):
-            if value and not self.upload_calibration:
-                msg = "This option may break your radio!!!\n" \
-                    "You are doing this at your own risk.\n" \
-                    "Make sure you have a working calibration backup.\n" \
-                    "Don't use it unless you know what you're doing."
-                value = _show_warning(msg)
             self.upload_calibration = value
             return value
 
@@ -3262,6 +3179,10 @@ class UVK5RadioF4HWN(uvk5.UVK5RadioBase):
         radio_setting = RadioSetting("upload_calibration",
                                      "Upload Calibration", val)
         radio_setting.set_doc(
+            'WARNING: This option may break your radio!!!\n'
+            'You are doing this at your own risk.\n'
+            'Make sure you have a working calibration backup.\n'
+            'Don\'t use it unless you know what you\'re doing.\n'
             'To Upload only the setting in the calibration section to '
             'the radio, you need to check this box, then upload to radio.')
         calibration.append(radio_setting)
