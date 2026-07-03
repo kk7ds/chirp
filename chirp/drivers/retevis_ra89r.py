@@ -3,7 +3,7 @@ import logging
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
 from chirp.drivers import th_uv88
-
+from chirp.settings import RadioSetting, RadioSettingValueList
 LOG = logging.getLogger(__name__)
 
 MEM_SIZE = 0x2F00
@@ -251,6 +251,15 @@ def _upload(radio):
 
 
 def _encode_data(byte_data_backup):
+    """
+    Custom byte stuffing and escaping encoding scheme.
+    Step 1: Offset each input byte by adding 0x80 and mask to 8-bit range.
+    Step 2: If the resulting value exceeds 0xF9, perform escaping:
+        - Prepend an escape byte 0xFF
+        - Store only the lower 4 bits of the value after 0xFF
+    Step 3: Values less than or equal to 0xF9 are written directly
+          without escaping.
+    """
     byte_data = []
     for item in byte_data_backup:
         data_temp = (item + 0x80) & 0xFF
@@ -262,6 +271,21 @@ def _encode_data(byte_data_backup):
 
 
 def _decode_data(byte_data):
+    """
+    Decoder matching the custom byte stuffing / escaping encoding
+    in _encode_data.
+    1. Iterate through encoded bytes sequentially.
+    2. If the current byte is NOT the escape marker 0xFF:
+        Reverse the 0x80 offset by adding 0x80 and mask to 8 bits,
+        then save the result.Move forward by 1 byte.
+    3. If the current byte IS the escape marker 0xFF:
+        Reconstruct the original escaped value: combine high nibble 0xF0
+        with the next byte (low 4 bits).
+        Then reverse the 0x80 offset and store the value.
+        Move forward by 2 bytes.
+    4. If 0xFF appears with no subsequent byte (truncated data),
+       keep the 0xFF byte as-is.
+    """
     decoded_data = []
     index = 0
     data_len = len(byte_data)
@@ -282,6 +306,12 @@ def _decode_data(byte_data):
 
 
 def lrc_cal(lrc_init_value: int, auch_msg: bytes) -> bytes:
+    """
+    Calculate LRC checksum byte for serial communication frame.
+    1. Sum all bytes.
+    2. Subtract the total sum from the initial LRC seed value.
+    3. Take modulo 256 to get an unsigned 8-bit result.
+    """
     lrc_value = (lrc_init_value - sum(auch_msg)) % 256
     return struct.pack('B', lrc_value)
 
@@ -303,6 +333,8 @@ class RA89R(th_uv88.THUV88Radio):
 
     def get_features(self):
         rf = super().get_features()
+        rf.valid_tuning_steps = []
+        rf.has_nostep_tuning = True
         rf.valid_special_chans = sorted(SPECIAL_MEMORIES.keys())
         return rf
 
@@ -310,8 +342,6 @@ class RA89R(th_uv88.THUV88Radio):
         """Download from radio"""
         try:
             data = _download(self)
-            # with open('output.bin', 'wb') as f:
-            #  f.write(data)
         except errors.RadioError:
             # Pass through any real errors we raise
             raise
@@ -342,12 +372,19 @@ class RA89R(th_uv88.THUV88Radio):
         # radio first channel is 1, mem map is base 0
         mem = chirp_common.Memory()
 
+        ch_len = len(self._memobj.chan_mem)
         if isinstance(number, str):
             mem.extd_number = number
             ch_index = 0 if number == "VFOA" else 3
-            mem.number = -2 if number == "VFOA" else -1
+            mem.number = (ch_len + (1 if number == "VFOA" else 2))
             _mem = self._memobj.chan_vfo_mem[ch_index]
-            return self._get_memory(mem, _mem, number, False)
+            mem = self._get_memory(mem, _mem, number, False)
+        elif number > ch_len:
+            mem.extd_number = (
+                number - ch_len == 1 and "VFOA" or "VFOB")
+            ch_index = 0 if mem.extd_number == "VFOA" else 3
+            _mem = self._memobj.chan_vfo_mem[ch_index]
+            mem = self._get_memory(mem, _mem, mem.extd_number, False)
         else:
             mem.number = number
             _mem = self._memobj.chan_mem[number - 1]
@@ -356,17 +393,40 @@ class RA89R(th_uv88.THUV88Radio):
             if th_uv88._do_map(number, 2, self._memobj.chan_avail.bitmap) == 0:
                 mem.empty = True
                 return mem
-
             if th_uv88._do_map(number, 2, self._memobj.chan_skip.bitmap) > 0:
                 mem.skip = ""
             else:
                 mem.skip = "S"
-            return self._get_memory(mem, _mem, _name)
+            mem = self._get_memory(mem, _mem, _name)
+
+        if chirp_common.in_range(mem.freq, [self._airband]):
+            mem.mode = "AM"
+
+        tone5_pttid_value = _mem.tone5pttid
+        if tone5_pttid_value > 3:
+            tone5_pttid_value = 0
+        tone5_pttid = RadioSetting(
+            "tone5pttid", "5TONE PTT ID",
+            RadioSettingValueList(
+                th_uv88.PTTID_LIST, current_index=tone5_pttid_value))
+        mem.extra.append(tone5_pttid)
+
+        freqreverse_value = _mem.freqreverse
+        if _mem.talkaround == 1:
+            freqreverse_value = 2
+        mem.extra.append(
+            RadioSetting(
+                "freqreverse", "Frequency Reverse",
+                RadioSettingValueList(th_uv88.FREQ_REVERSE_LIST,
+                                      current_index=freqreverse_value)))
+
+        return mem
 
     def set_memory(self, memory):
         """A value in a UI column for chan 'number' has been modified."""
         # update all raw channel memory values (_mem) from UI (mem)
-        if memory.number < 0:
+        ch_len = len(self._memobj.chan_mem)
+        if memory.number > ch_len:
             index = 0 if memory.extd_number == "VFOA" else 3
             _mem = self._memobj.chan_vfo_mem[index]
             _name = memory.extd_number
@@ -388,7 +448,21 @@ class RA89R(th_uv88.THUV88Radio):
             else:
                 th_uv88._do_map(memory.number, 0,
                                 self._memobj.chan_skip.bitmap)
-        return self._set_memory(memory, _mem, _name, memory.number > 0)
+
+        self._set_memory(memory, _mem, _name, memory.number < ch_len)
+
+        if memory.mode == "AM":
+            _mem.wide = 2
+
+        for element in memory.extra:
+            if element.get_name() == "freqreverse":
+                val = th_uv88.FREQ_REVERSE_LIST.index(element.value)
+                if val == 2:
+                    _mem.talkaround = 1
+                    _mem.freqreverse = 0
+                else:
+                    _mem.talkaround = 0
+                    _mem.freqreverse = val
 
     def process_mmap(self):
         """Process the mem map into the mem object"""
@@ -406,9 +480,3 @@ class RA89R(th_uv88.THUV88Radio):
             msgs.append(chirp_common.ValidationWarning(
                 _('Frequency in this range must not be AM mode')))
         return msgs + super().validate_memory(mem)
-
-
-@directory.register
-class RA89G(RA89R):
-    VENDOR = "Retevis"
-    MODEL = "RA89G"
