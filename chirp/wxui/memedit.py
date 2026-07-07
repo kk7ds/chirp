@@ -1309,6 +1309,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         goto = common.EditorMenuItem(cls, '_goto', _('Goto...'))
         goto.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('G')))
 
+        find_dupes = common.EditorMenuItem(
+            cls, '_find_duplicates', _('Find Duplicate Memories...'))
+
         expand_extra = common.EditorMenuItemToggle(
             cls, '_set_expand_extra', ('expand_extra', 'state'),
             _('Show extra fields'))
@@ -1328,6 +1331,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 goto,
                 move_up,
                 move_dn,
+                find_dupes,
                 ],
             common.EditorMenuItem.MENU_VIEW: [
                 expand_extra,
@@ -1370,6 +1374,108 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
     def _move_up(self, event):
         self.cb_move(-1)
+
+    #: Candidate (field, label) pairs offered when choosing which columns
+    #: define a "duplicate". Order controls display order in the dialog.
+    _DUPE_FIELD_CHOICES = (
+        ('freq', 'Frequency'),
+        ('name', 'Name'),
+        ('duplex', 'Duplex'),
+        ('offset', 'Offset/TX Freq'),
+        ('mode', 'Mode'),
+        ('tmode', 'Tone Mode'),
+        ('cross_mode', 'Cross Mode'),
+        ('rtone', 'Tone'),
+        ('ctone', 'Tone Squelch'),
+        ('dtcs', 'DTCS'),
+        ('rx_dtcs', 'RX DTCS'),
+        ('dtcs_polarity', 'DTCS Polarity'),
+        ('skip', 'Skip'),
+        ('power', 'Power'),
+        ('comment', 'Comment'),
+        )
+
+    def _choose_dupe_fields(self):
+        names = [field for field, label in self._DUPE_FIELD_CHOICES]
+        labels = [_(label) for field, label in self._DUPE_FIELD_CHOICES]
+
+        prev = CONF.get('dupe_fields', 'memedit')
+        if prev:
+            default_fields = set(prev.split(','))
+        else:
+            default_fields = set(chirp_common.DUPE_SIGNATURE_FIELDS)
+
+        d = wx.MultiChoiceDialog(
+            self,
+            _('Select the fields that must match for two memories to be '
+              'considered duplicates:'),
+            _('Find Duplicate Memories'),
+            choices=labels)
+        d.SetSelections([i for i, field in enumerate(names)
+                        if field in default_fields])
+        try:
+            if d.ShowModal() == wx.ID_CANCEL:
+                return None
+            selections = d.GetSelections()
+        finally:
+            d.Destroy()
+
+        if not selections:
+            wx.MessageBox(_('You must select at least one field.'),
+                          _('Find Duplicate Memories'), parent=self)
+            return None
+
+        fields = tuple(names[i] for i in selections)
+        CONF.set('dupe_fields', ','.join(fields), 'memedit')
+        return fields
+
+    @common.error_proof()
+    def _find_duplicates(self, event):
+        fields = self._choose_dupe_fields()
+        if fields is None:
+            return
+
+        dupe_groups = chirp_common.find_duplicate_memories(
+            self._memory_cache.values(), fields=fields)
+        if not dupe_groups:
+            wx.MessageBox(_('No duplicate memories were found.'),
+                          _('Find Duplicate Memories'), parent=self)
+            return
+
+        choices = []
+        rows_by_choice = []
+        preselect = []
+        for group in dupe_groups:
+            for i, mem in enumerate(group):
+                row = self.mem2row(mem.number)
+                choices.append('%s: %s (%s)' % (
+                    mem.number, mem.name,
+                    chirp_common.format_freq(mem.freq)))
+                rows_by_choice.append(row)
+                if i > 0:
+                    # Leave the first (lowest-numbered) memory in each
+                    # group unselected, and pre-select the rest for
+                    # removal.
+                    preselect.append(len(choices) - 1)
+
+        d = wx.MultiChoiceDialog(
+            self,
+            _('The following memories are duplicates of another memory. '
+              'Select the ones you want to delete:'),
+            _('Find Duplicate Memories'),
+            choices=choices)
+        d.SetSelections(preselect)
+        try:
+            if d.ShowModal() == wx.ID_CANCEL:
+                return
+            selections = d.GetSelections()
+        finally:
+            d.Destroy()
+        if not selections:
+            return
+
+        rows_to_delete = sorted(rows_by_choice[i] for i in selections)
+        self._delete_memories_at(rows_to_delete, event)
 
     def _setup_columns(self):
         def filter_unknowns(items):

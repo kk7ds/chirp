@@ -595,6 +595,73 @@ class Memory:
         return True
 
 
+#: Fields that define whether two memories are operational duplicates of
+#: each other. Deliberately excludes number, extd_number, name, comment,
+#: and tuning_step, since those don't affect how the channel operates.
+DUPE_SIGNATURE_FIELDS = (
+    'freq', 'duplex', 'offset', 'mode', 'tmode', 'cross_mode',
+    'rtone', 'ctone', 'dtcs', 'rx_dtcs', 'dtcs_polarity', 'skip', 'power')
+
+
+def find_duplicate_memories(memories, fields=DUPE_SIGNATURE_FIELDS):
+    """Find groups of memories that are duplicates of each other.
+
+    Empty memories and special/named channels (i.e. those with an
+    extd_number) are ignored.
+
+    :param memories: an iterable of Memory objects to search
+    :param fields: the Memory attributes that must match for two memories
+                  to be considered duplicates
+    :returns: a list of groups (each a list of Memory objects, sorted by
+             number) that are duplicates of each other, sorted by the
+             number of the first memory in each group
+    """
+    def hashable(mem, field, tone_spec):
+        value = getattr(mem, field)
+
+        if field == 'power':
+            # PowerLevel defines __eq__ but not __hash__, so compare by
+            # its underlying dBm value instead of the object itself.
+            return None if value is None else float(value)
+
+        # Several fields keep their last value (usually a default) even
+        # when they're not actually in play for the memory's current
+        # duplex/tmode/cross_mode, and are hidden in the UI in that case.
+        # Normalize those to None so leftover/default values can't cause
+        # spurious matches (or mismatches) against memories where the
+        # field is genuinely meaningful.
+        (txmode, txval, txpol), (rxmode, rxval, rxpol) = tone_spec
+        if field == 'offset':
+            return None if mem.duplex in ('', 'off') else value
+        elif field == 'cross_mode':
+            return None if mem.tmode != 'Cross' else value
+        elif field == 'rtone':
+            return value if txmode == 'Tone' else None
+        elif field == 'ctone':
+            return value if rxmode == 'Tone' else None
+        elif field == 'dtcs':
+            return value if txmode == 'DTCS' else None
+        elif field == 'rx_dtcs':
+            return value if rxmode == 'DTCS' else None
+        elif field == 'dtcs_polarity':
+            return (txpol or 'N') + (rxpol or 'N')
+
+        return value
+
+    groups = {}
+    for mem in memories:
+        if mem.empty or mem.extd_number:
+            continue
+        tone_spec = split_tone_encode(mem)
+        key = tuple(hashable(mem, field, tone_spec) for field in fields)
+        groups.setdefault(key, []).append(mem)
+
+    dupe_groups = [sorted(group, key=lambda m: m.number)
+                   for group in groups.values() if len(group) > 1]
+    dupe_groups.sort(key=lambda group: group[0].number)
+    return dupe_groups
+
+
 class DVMemory(Memory):
     """A Memory with D-STAR attributes"""
     dv_urcall: str = "CQCQCQ"

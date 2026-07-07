@@ -1043,6 +1043,135 @@ class TestMemory(base.BaseTest):
             "tmode=''/'TSQL'", m1.debug_diff(m2))
 
 
+class TestFindDuplicateMemories(base.BaseTest):
+    def _mem(self, number, freq, name=''):
+        m = chirp_common.Memory(number, name=name)
+        m.freq = freq
+        return m
+
+    def test_no_duplicates(self):
+        mems = [self._mem(1, 146520000), self._mem(2, 446000000)]
+        self.assertEqual([], chirp_common.find_duplicate_memories(mems))
+
+    def test_simple_duplicate(self):
+        mems = [self._mem(1, 146520000, 'foo'),
+                self._mem(2, 446000000),
+                self._mem(3, 146520000, 'bar')]
+        groups = chirp_common.find_duplicate_memories(mems)
+        self.assertEqual(1, len(groups))
+        self.assertEqual([1, 3], [m.number for m in groups[0]])
+
+    def test_ignores_empty_and_special(self):
+        empty = chirp_common.Memory(1, empty=True)
+        empty.freq = 146520000
+        special = chirp_common.Memory(2)
+        special.freq = 146520000
+        special.extd_number = 'Call'
+        mems = [empty, special, self._mem(3, 146520000)]
+        self.assertEqual([], chirp_common.find_duplicate_memories(mems))
+
+    def test_differs_by_tone_not_duplicate(self):
+        m1 = self._mem(1, 146520000)
+        m1.tmode = 'Tone'
+        m1.rtone = 100.0
+        m2 = self._mem(2, 146520000)
+        m2.tmode = 'Tone'
+        m2.rtone = 107.2
+        self.assertEqual([], chirp_common.find_duplicate_memories([m1, m2]))
+
+    def test_ignores_name_and_comment(self):
+        m1 = self._mem(1, 146520000, name='Repeater A')
+        m1.comment = 'one'
+        m2 = self._mem(2, 146520000, name='Repeater B')
+        m2.comment = 'two'
+        groups = chirp_common.find_duplicate_memories([m1, m2])
+        self.assertEqual(1, len(groups))
+        self.assertEqual([1, 2], [m.number for m in groups[0]])
+
+    def test_multiple_groups_sorted_by_first_number(self):
+        mems = [self._mem(5, 440000000),
+                self._mem(6, 440000000),
+                self._mem(1, 146520000),
+                self._mem(2, 146520000)]
+        groups = chirp_common.find_duplicate_memories(mems)
+        self.assertEqual([[1, 2], [5, 6]],
+                         [[m.number for m in g] for g in groups])
+
+    def test_with_power_levels(self):
+        # PowerLevel objects are not hashable, so this exercises the
+        # special-cased handling that compares them by value instead.
+        m1 = self._mem(1, 146520000)
+        m1.power = chirp_common.AutoNamedPowerLevel(5.0)
+        m2 = self._mem(2, 146520000)
+        m2.power = chirp_common.AutoNamedPowerLevel(5.0)
+        m3 = self._mem(3, 146520000)
+        m3.power = chirp_common.AutoNamedPowerLevel(50.0)
+        groups = chirp_common.find_duplicate_memories([m1, m2, m3])
+        self.assertEqual([[1, 2]], [[m.number for m in g] for g in groups])
+
+    def test_unused_offset_not_compared(self):
+        # offset retains its (often default) value even when duplex is ''
+        # or 'off', in which case it's not actually used and is hidden in
+        # the UI. Two memories shouldn't be flagged as duplicates (or
+        # non-duplicates) based on that leftover value.
+        m1 = self._mem(1, 146520000)
+        m1.duplex = ''
+        m1.offset = 600000
+        m2 = self._mem(2, 146520000)
+        m2.duplex = '+'
+        m2.offset = 600000
+        self.assertEqual(
+            [], chirp_common.find_duplicate_memories(
+                [m1, m2], fields=('freq', 'offset')))
+
+        # But if both are simplex (offset unused on both), they *are*
+        # duplicates by freq+offset even with different leftover offsets.
+        m2.duplex = ''
+        m2.offset = 500000
+        groups = chirp_common.find_duplicate_memories(
+            [m1, m2], fields=('freq', 'offset'))
+        self.assertEqual([[1, 2]], [[m.number for m in g] for g in groups])
+
+    def test_unused_tone_fields_not_compared(self):
+        # rtone/ctone/dtcs/rx_dtcs/dtcs_polarity all keep stale values when
+        # not relevant to the memory's tmode/cross_mode.
+        m1 = self._mem(1, 146520000)
+        m1.tmode = 'Tone'
+        m1.rtone = 100.0
+        m1.dtcs = 23  # unused leftover
+        m2 = self._mem(2, 146520000)
+        m2.tmode = 'Tone'
+        m2.rtone = 100.0
+        m2.dtcs = 71  # different leftover, but still unused
+
+        groups = chirp_common.find_duplicate_memories(
+            [m1, m2], fields=('freq', 'rtone', 'dtcs'))
+        self.assertEqual([[1, 2]], [[m.number for m in g] for g in groups])
+
+        # But an actual difference in the relevant field (rtone) still
+        # prevents a match.
+        m2.rtone = 107.2
+        self.assertEqual(
+            [], chirp_common.find_duplicate_memories(
+                [m1, m2], fields=('freq', 'rtone', 'dtcs')))
+
+    def test_dtcs_polarity_normalized_by_side(self):
+        m1 = self._mem(1, 146520000)
+        m1.tmode = 'Cross'
+        m1.cross_mode = 'Tone->'
+        m1.rtone = 100.0
+        m1.dtcs_polarity = 'RR'  # rx side unused, should be ignored
+        m2 = self._mem(2, 146520000)
+        m2.tmode = 'Cross'
+        m2.cross_mode = 'Tone->'
+        m2.rtone = 100.0
+        m2.dtcs_polarity = 'RN'  # rx side unused, differs but shouldn't matter
+
+        groups = chirp_common.find_duplicate_memories(
+            [m1, m2], fields=('freq', 'dtcs_polarity'))
+        self.assertEqual([[1, 2]], [[m.number for m in g] for g in groups])
+
+
 class TestRadioFeatures(base.BaseTest):
     def test_valid_tones(self):
         rf = chirp_common.RadioFeatures()
