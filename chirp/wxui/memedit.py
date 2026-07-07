@@ -957,6 +957,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._undo_ctx = None
 
         self._col_defs = self._setup_columns()
+        self._apply_persisted_column_order()
 
         self.bandplan = bandplan.BandPlans(CONF)
 
@@ -968,6 +969,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                             selmode=wx.grid.Grid.SelectRows)
         self._grid.DisableDragRowSize()
         self._grid.EnableDragCell()
+        self._grid.EnableDragColMove()
         self._grid.SetFocus()
         self._default_cell_bg_color = self._grid.GetCellBackgroundColour(0, 0)
 
@@ -1002,6 +1004,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._grid.Bind(wx.grid.EVT_GRID_LABEL_RIGHT_CLICK,
                         self._memory_rclick)
         self._grid.Bind(wx.grid.EVT_GRID_CELL_BEGIN_DRAG, self._memory_drag)
+        self._grid.Bind(wx.grid.EVT_GRID_COL_MOVE, self._column_moved)
         self.Bind(wx.EVT_KEY_DOWN, self._keyboard_overrides)
         row_labels = self._grid.GetGridRowLabelWindow()
         row_labels.Bind(wx.EVT_LEFT_DOWN, self._row_click)
@@ -1256,10 +1259,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         else:
             minwidth = 75
 
+        hidden_columns = self._hidden_columns()
         for col, col_def in enumerate(self._col_defs):
-            if not col_def.valid:
+            if not col_def.valid or col_def.name in hidden_columns:
                 self._grid.HideCol(col)
             else:
+                self._grid.ShowCol(col)
                 label = col_def.label
                 if self._grid.GetSortingColumn() == col:
                     asc = self._grid.IsSortOrderAscending()
@@ -1275,6 +1280,119 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                     # No SetFitMode() support on wxPython 4.0.7
                     pass
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
+
+    def _hidden_columns(self):
+        hidden = CONF.get('hidden_columns', 'memedit')
+        return set(hidden.split(',')) if hidden else set()
+
+    def _set_hidden_columns(self, hidden):
+        CONF.set('hidden_columns', ','.join(sorted(hidden)), 'memedit')
+        self.set_cell_attrs()
+
+    def _reorder_columns(self, name_order, refresh=True):
+        """Reorder self._col_defs (in place) to match name_order.
+
+        Columns not named in name_order keep their current relative
+        order, appended at the end. This mutates the list in place
+        (rather than rebinding self._col_defs) since self._table holds
+        a reference to the same list object.
+
+        We deliberately reorder our own column model rather than using
+        the grid's native SetColPos()/GetColAt() position mapping: that
+        API only moves the *data* columns visually and does not
+        reliably move the column header labels along with them, which
+        left the header row out of sync with the cell data after a
+        drag-reorder.
+        """
+        by_name = {col_def.name: col_def for col_def in self._col_defs}
+        new_defs = [by_name.pop(name) for name in name_order
+                    if name in by_name]
+        new_defs.extend(by_name.values())
+        self._col_defs[:] = new_defs
+        if refresh:
+            self.set_cell_attrs()
+            self.refresh()
+
+    def _apply_persisted_column_order(self):
+        order = CONF.get('column_order', 'memedit')
+        if order:
+            self._reorder_columns(order.split(','), refresh=False)
+
+    def _column_moved(self, event):
+        # Let wx perform its drag visually, then resolve the drop back
+        # into our own column model (see _reorder_columns) and reset the
+        # grid's native column positions to identity so we're always the
+        # single source of truth for column order.
+        event.Skip()
+        wx.CallAfter(self._apply_dragged_column_order)
+
+    def _apply_dragged_column_order(self):
+        order = [self._col_defs[self._grid.GetColAt(pos)].name
+                 for pos in range(self._grid.GetNumberCols())]
+        for col in range(self._grid.GetNumberCols()):
+            self._grid.SetColPos(col, col)
+        self._reorder_columns(order)
+        CONF.set('column_order', ','.join(order), 'memedit')
+
+    def _hide_column(self, name, event):
+        hidden = self._hidden_columns()
+        hidden.add(name)
+        self._set_hidden_columns(hidden)
+
+    def _show_all_columns(self, event):
+        self._set_hidden_columns(set())
+
+    @common.error_proof()
+    def _choose_columns(self, event):
+        valid_defs = [col_def for col_def in self._col_defs if col_def.valid]
+        labels = [col_def.label.replace('\n', ' ') for col_def in valid_defs]
+        hidden = self._hidden_columns()
+
+        d = wx.MultiChoiceDialog(
+            self,
+            _('Select the columns to show in the memory list:'),
+            _('Choose Columns'),
+            choices=labels)
+        d.SetSelections([i for i, col_def in enumerate(valid_defs)
+                        if col_def.name not in hidden])
+        try:
+            if d.ShowModal() == wx.ID_CANCEL:
+                return
+            selections = d.GetSelections()
+        finally:
+            d.Destroy()
+
+        shown = {valid_defs[i].name for i in selections}
+        hidden = {col_def.name for col_def in valid_defs
+                  if col_def.name not in shown}
+        self._set_hidden_columns(hidden)
+
+    def _column_header_rclick(self, event):
+        col = event.GetCol()
+        if col < 0 or col >= len(self._col_defs):
+            return
+        col_def = self._col_defs[col]
+        menu = wx.Menu()
+
+        hide_item = wx.MenuItem(
+            menu, wx.NewId(),
+            _('Hide "%s"') % col_def.label.replace('\n', ' '))
+        self.Bind(wx.EVT_MENU,
+                  functools.partial(self._hide_column, col_def.name),
+                  hide_item)
+        menu.Append(hide_item)
+
+        choose_item = wx.MenuItem(menu, wx.NewId(), _('Choose Columns...'))
+        self.Bind(wx.EVT_MENU, self._choose_columns, choose_item)
+        menu.Append(choose_item)
+
+        show_all_item = wx.MenuItem(menu, wx.NewId(), _('Show All Columns'))
+        self.Bind(wx.EVT_MENU, self._show_all_columns, show_all_item)
+        menu.Append(show_all_item)
+        show_all_item.Enable(bool(self._hidden_columns()))
+
+        self.PopupMenu(menu)
+        menu.Destroy()
 
     @classmethod
     def get_menu_items(cls):
@@ -1324,6 +1442,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             cls, '_set_use_txfreq',
             _('Use TX Frequency Workflow'), id=TX_WORKFLOW_ID)
 
+        choose_columns = common.EditorMenuItem(
+            cls, '_choose_columns', _('Choose Columns...'))
+
         return {
             common.EditorMenuItem.MENU_EDIT: [
                 redo,  # First so Undo gets inserted at zero
@@ -1337,6 +1458,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 expand_extra,
                 hide_empty,
                 use_txfreq,
+                choose_columns,
                 ]
             }
 
@@ -2251,6 +2373,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     def _memory_rclick(self, event):
         if event.GetRow() == -1:
             # This is a right-click on a column header
+            self._column_header_rclick(event)
             return
         menu = wx.Menu()
         selected_rows = self._grid.GetSelectedRows()
