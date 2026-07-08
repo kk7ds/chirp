@@ -172,9 +172,11 @@ class EditorMenuItemToggleStateless(EditorMenuItem):
 
 class EditorMenuItemToggle(EditorMenuItemToggleStateless):
     """An EditorMenuItem that manages boolean/check state in CONF"""
-    def __init__(self, cls, callback_name, conf_tuple, *a, **k):
+    def __init__(self, cls, callback_name, conf_tuple, *a, default=False,
+                 **k):
         super().__init__(cls, callback_name, *a, **k)
         self._conf_key, self._conf_section = conf_tuple
+        self._default = default
 
     def editor_callback(self, editor, event):
         menuitem = event.GetEventObject().FindItemById(event.GetId())
@@ -183,7 +185,8 @@ class EditorMenuItemToggle(EditorMenuItemToggleStateless):
 
     def add_menu_callback(self):
         super().add_menu_callback()
-        self.Check(CONF.get_bool(self._conf_key, self._conf_section, False))
+        self.Check(CONF.get_bool(self._conf_key, self._conf_section,
+                                 self._default))
 
 
 class ChirpEditor(wx.Panel):

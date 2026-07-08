@@ -26,6 +26,7 @@ import wx.lib.newevent
 import wx.grid
 import wx.propgrid
 import wx.lib.mixins.gridlabelrenderer as glr
+from wx.lib.wordwrap import wordwrap
 
 from chirp import chirp_common
 from chirp import directory
@@ -708,10 +709,14 @@ class ChirpCommentColumn(ChirpMemoryColumn):
         return str(input_value)[:256]
 
     def get_editor(self):
-        return wx.grid.GridCellAutoWrapStringEditor()
+        if CONF.get_bool('wrap_comment', 'memedit', True):
+            return wx.grid.GridCellAutoWrapStringEditor()
+        return super().get_editor()
 
     def get_renderer(self):
-        return wx.grid.GridCellAutoWrapStringRenderer()
+        if CONF.get_bool('wrap_comment', 'memedit', True):
+            return wx.grid.GridCellAutoWrapStringRenderer()
+        return super().get_renderer()
 
     def get_propeditor(self, memory):
         class ChirpLongStringProperty(wx.propgrid.LongStringProperty):
@@ -1309,7 +1314,30 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 except AttributeError:
                     # No SetFitMode() support on wxPython 4.0.7
                     pass
-        wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=False)
+        wx.CallAfter(self._autosize_columns)
+
+    #: Fixed width used for the Comment column while it's word-wrapping,
+    #: instead of auto-sizing it to fit the longest comment on one line
+    #: (which would defeat the point of wrapping, forcing horizontal
+    #: scrolling instead of taller rows).
+    _WRAP_COMMENT_WIDTH = 200
+
+    def _autosize_columns(self):
+        wrap_comment = (self._has_coldef('comment') and
+                        CONF.get_bool('wrap_comment', 'memedit', True))
+        for col, col_def in enumerate(self._col_defs):
+            if wrap_comment and col_def.name == 'comment':
+                self._grid.SetColSize(col, self._WRAP_COMMENT_WIDTH)
+                continue
+            self._grid.AutoSizeColumn(col, setAsMin=False)
+
+        if wrap_comment:
+            # Row heights were computed (in _refresh_memory) before we
+            # fixed the column's width just above; redo them now that
+            # it's settled to its final size.
+            for row, mem in self._memory_cache.items():
+                if mem.comment:
+                    self._set_comment_row_height(row, mem.comment)
 
     def _hidden_columns(self):
         hidden = CONF.get('hidden_columns', 'memedit')
@@ -1600,6 +1628,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         choose_columns = common.EditorMenuItem(
             cls, '_choose_columns', _('Choose Columns...'))
 
+        wrap_comment = common.EditorMenuItemToggle(
+            cls, '_set_wrap_comment', ('wrap_comment', 'memedit'),
+            _('Word-wrap Comment column'), default=True)
+
         return {
             common.EditorMenuItem.MENU_EDIT: [
                 redo,  # First so Undo gets inserted at zero
@@ -1614,6 +1646,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 hide_empty,
                 use_txfreq,
                 choose_columns,
+                wrap_comment,
                 ]
             }
 
@@ -1621,6 +1654,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self.refresh()
 
     def _set_hide_empty(self, event):
+        self.refresh()
+
+    def _set_wrap_comment(self, event):
+        self.set_cell_attrs()
         self.refresh()
 
     def _set_use_txfreq(self, event):
@@ -1947,10 +1984,35 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                     color = self._default_cell_bg_color
                 self._grid.SetCellBackgroundColour(row, col, color)
 
-            if memory.comment:
-                # Grow the row (only) to fit a word-wrapped comment;
-                # rows without one keep the default single-line height.
-                self._grid.AutoSizeRow(row, setAsMin=False)
+            if self._has_coldef('comment'):
+                self._set_comment_row_height(row, memory.comment)
+
+    def _set_comment_row_height(self, row, comment):
+        """Grow/shrink a row to fit a word-wrapped comment.
+
+        We compute this ourselves (rather than relying on
+        wx.grid.Grid.AutoSizeRow(), which measures inconsistently once a
+        column's renderer has been changed on an already-populated grid)
+        so that toggling word-wrap on and off reliably resizes existing
+        rows either way.
+        """
+        default_size = self._grid.GetDefaultRowSize()
+        if not comment or not CONF.get_bool('wrap_comment', 'memedit', True):
+            self._grid.SetRowSize(row, default_size)
+            return
+
+        col = self._col_defs.index(self._col_def_by_name('comment'))
+        width = self._grid.GetColSize(col) - 6
+        if width <= 0:
+            self._grid.SetRowSize(row, default_size)
+            return
+
+        dc = wx.ClientDC(self._grid)
+        dc.SetFont(self._grid.GetCellFont(row, col))
+        lines = wordwrap(comment, width, dc).count('\n') + 1
+        line_height = dc.GetTextExtent('Xg')[1]
+        self._grid.SetRowSize(row, max(default_size,
+                                       lines * line_height + 6))
 
     def synchronous_get_memory(self, number):
         """SYNCHRONOUSLY Get memory with extra properties
