@@ -378,9 +378,9 @@ class RepeaterBookQueryDialog(QuerySourceDialog):
                                  value=CONF.get('dist', 'repeaterbook') or '',
                                  validator=DistValidator())
         self._dist.SetHint(_('Optional: 100'))
-        self._dist.SetToolTip(_('Limit results to this distance (km) from '
+        self._dist.SetToolTip(_('Limit results to this distance (mi) from '
                                 'coordinates'))
-        self._add_grid(grid, _('Distance'), self._dist)
+        self._add_grid(grid, _('Distance (mi)'), self._dist)
 
         self._search = wx.TextCtrl(panel)
         self._search.SetHint(_('Optional: County, Hospital, etc.'))

@@ -39,6 +39,10 @@ STATES = {
 }
 MODES = ['FM', 'DV', 'DMR', 'DN']
 
+#: The distance filter is entered by the user in miles, but distance()
+#: below (and thus the comparisons in do_fetch()) works in kilometers.
+MILES_TO_KM = 1.609344
+
 
 def parse_tone(val):
     if val.startswith('D'):
@@ -275,7 +279,7 @@ class RepeaterBook(base.NetworkResultRadio):
     def do_fetch(self, status, params):
         lat = float(params.pop('lat') or 0)
         lon = float(params.pop('lon') or 0)
-        dist = int(params.pop('dist') or 0)
+        dist = int(params.pop('dist') or 0) * MILES_TO_KM
         search_filter = params.pop('filter', '')
         bands = params.pop('bands', [])
         modes = params.pop('modes', [])
