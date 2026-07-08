@@ -707,6 +707,28 @@ class ChirpCommentColumn(ChirpMemoryColumn):
         # Limit to 128 characters for sanity
         return str(input_value)[:256]
 
+    def get_editor(self):
+        return wx.grid.GridCellAutoWrapStringEditor()
+
+    def get_renderer(self):
+        return wx.grid.GridCellAutoWrapStringRenderer()
+
+    def get_propeditor(self, memory):
+        class ChirpLongStringProperty(wx.propgrid.LongStringProperty):
+            def ValidateValue(myself, value, validationInfo):
+                try:
+                    self._digest_value(memory, value)
+                    return True
+                except ValueError:
+                    validationInfo.SetFailureMessage(
+                        _('Invalid value: %r') % value)
+                    return False
+
+        editor = ChirpLongStringProperty(self.label.replace('\n', ' '),
+                                         self._name)
+        editor.SetValue(self.render_value(memory))
+        return editor
+
 
 def title_case_special(string):
     return ' '.join(word.title() if word.upper() != word else word
@@ -1272,10 +1294,18 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 self._grid.SetColLabelValue(col, label)
                 attr = wx.grid.GridCellAttr()
                 attr.SetEditor(col_def.get_editor())
+                renderer = col_def.get_renderer()
+                if renderer:
+                    attr.SetRenderer(renderer)
                 self._grid.SetColAttr(col, attr)
                 self._grid.SetColMinimalWidth(col, minwidth)
                 try:
-                    attr.SetFitMode(wx.grid.GridFitMode.Ellipsize())
+                    if renderer:
+                        # A custom renderer (e.g. word-wrap) knows how to
+                        # fit its own content; don't also ellipsize it.
+                        attr.SetFitMode(wx.grid.GridFitMode.Clip())
+                    else:
+                        attr.SetFitMode(wx.grid.GridFitMode.Ellipsize())
                 except AttributeError:
                     # No SetFitMode() support on wxPython 4.0.7
                     pass
@@ -1916,6 +1946,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 else:
                     color = self._default_cell_bg_color
                 self._grid.SetCellBackgroundColour(row, col, color)
+
+            if memory.comment:
+                # Grow the row (only) to fit a word-wrapped comment;
+                # rows without one keep the default single-line height.
+                self._grid.AutoSizeRow(row, setAsMin=False)
 
     def synchronous_get_memory(self, number):
         """SYNCHRONOUSLY Get memory with extra properties
