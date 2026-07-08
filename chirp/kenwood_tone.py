@@ -24,31 +24,53 @@ class KenwoodToneModel:
     other radio manufacturers.
 
     Typically CTCSS tones are stored as the frequency in Hertz, multiplied by
-    10, and sometimes with a flag bit set (tone_flag).
+    10, and sometimes with a flag bit set (tone_flag). Some radios store it as
+    a base-10 integer. For example:
+    103.5 Hz * 10 becomes 1035, which is then stored as 0x040B.
 
-    DCS codes are stored either as octal or decimal (dcs_enc_base), with one
-    or more flag bits (dcs_base) set to indicate that it's DCS. Reverse
-    polarity is indicated by another flag bit (pol_mask). Finally, a completely
-    disabled tone/code field is often indicated by 0x0000 or 0xFFFF
-    (tone_init).
+    Other radios store this as a binary-coded decimal (BCD) number, where each
+    decimal digit (0–9) is represented by a fixed 4-bit binary sequence. An
+    equivalent way of thinking of it is storing a number in hexadecimal and
+    ignoring digits A-F. For example:
+    103.5 Hz * 10 becomes 1035, which is then stored as 0x1035.
 
-    Note that this requires your radio's memory structure to have u16 fields
-    named exactly "rxtone" and "txtone".
+    The method of storage depends on numerical base (tone_enc_base) used for
+    encoding and decoding.
+
+    DCS codes are stored as either octal, decimal, or BCD (dcs_enc_base).
+    For example, DCS 031 can be stored as 0x0019 octal, 0x001F decimal, or
+    0x0031 BCD / hexadecimal.
+
+    There can be one or more flag bits (dcs_base) set to indicate that it's
+    DCS. Reverse polarity is indicated by another flag bit (pol_mask).
+    Finally, a completely disabled tone/code field is often indicated by
+    0x0000 or 0xFFFF (tone_init).
+
+    Note that this requires your radio's memory structure to have u16 or ul16
+    fields named exactly "rxtone" and "txtone".
 
     :param dcs_base: Base value for DCS tones (e.g., 0x4000, 0x2800, 0x8000)
     :param pol_mask: Bitmask for polarity (e.g., 0x2000, 0x8000, 0x4000)
     :param tone_init: Initial value for uninitialized tones (0x0000, 0xFFFF)
     :param tone_flag: Flag to indicate a CTCSS tone (0x0000 or 0x8000)
-    :param dcs_enc_base: Numerical base for DCS encoding (8 or 10)
+    :param dcs_enc_base: Numerical base for DCS encoding (8, 10, or 16)
+    :param tone_enc_base: Numerical base for Tone encoding (10 or 16)
     """
+
     def __init__(self, dcs_base, pol_mask, tone_init=0x0000, tone_flag=0x8000,
-                 dcs_enc_base=8):
-        self.dcs_base = dcs_base
-        self.pol_mask = pol_mask
-        self.tone_init = tone_init
-        self.tone_flag = tone_flag
-        assert dcs_enc_base in (8, 10), "DCS encoding base must be 8 or 10"
-        self.dcs_enc_base = dcs_enc_base
+                 dcs_enc_base=8, tone_enc_base=10):
+        self.dcs_base = int(dcs_base)
+        self.pol_mask = int(pol_mask)
+        self.tone_init = int(tone_init)
+        self.tone_flag = int(tone_flag)
+        assert dcs_enc_base in (8, 10, 16), (
+            "DCS encoding base must be 8, 10, or 16"
+        )
+        self.dcs_enc_base = int(dcs_enc_base)
+        assert tone_enc_base in (10, 16), (
+            "Tone encoding base must be 10 or 16"
+        )
+        self.tone_enc_base = int(tone_enc_base)
 
     def _get_tone_val(self, tone_val):
         """
@@ -60,15 +82,21 @@ class KenwoodToneModel:
         if tone_val == 0xFFFF or tone_val == 0x0000:
             return None, None
 
+        code = pol = None
         if (tone_val & self.dcs_base) == self.dcs_base:
             if self.dcs_enc_base == 8:
                 code = int("%03o" % (tone_val & 0x07FF))
             elif self.dcs_enc_base == 10:
                 code = int("%03i" % (tone_val & 0x07FF))
+            elif self.dcs_enc_base == 16:
+                code = int("%03x" % (tone_val & 0x07FF))
             pol = (tone_val & self.pol_mask) and "R" or "N"
-            return code, pol
-
-        return (tone_val & 0x7fff) / 10.0, None
+        else:
+            if self.tone_enc_base == 10:
+                code = (tone_val & 0x7FFF) / 10.0
+            elif self.tone_enc_base == 16:
+                code = float("%04x" % (tone_val & 0x7FFF)) / 10.0
+        return code, pol
 
     def _set_tone_val(self, code, pol):
         """

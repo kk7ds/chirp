@@ -18,41 +18,80 @@ class TestKenwoodToneModelInit(base.BaseTest):
         self.assertEqual(model.tone_init, 0x0000)
         self.assertEqual(model.tone_flag, 0x8000)
         self.assertEqual(model.dcs_enc_base, 8)
+        self.assertEqual(model.tone_enc_base, 10)
 
     def test_init_custom_params(self):
         model = kenwood_tone.KenwoodToneModel(
             dcs_base=0x2800, pol_mask=0x8000,
-            tone_init=0xFFFF, tone_flag=0x0000, dcs_enc_base=10)
+            tone_init=0xFFFF, tone_flag=0x0000,
+            dcs_enc_base=10, tone_enc_base=16)
         self.assertEqual(model.dcs_base, 0x2800)
         self.assertEqual(model.pol_mask, 0x8000)
         self.assertEqual(model.tone_init, 0xFFFF)
         self.assertEqual(model.tone_flag, 0x0000)
         self.assertEqual(model.dcs_enc_base, 10)
+        self.assertEqual(model.tone_enc_base, 16)
 
     def test_init_invalid_dcs_enc_base(self):
         with self.assertRaises(AssertionError):
             kenwood_tone.KenwoodToneModel(
-                dcs_base=0x4000, pol_mask=0x2000, dcs_enc_base=16)
+                dcs_base=0x4000, pol_mask=0x2000, dcs_enc_base=15)
+
+    def test_init_invalid_tone_enc_base(self):
+        with self.assertRaises(AssertionError):
+            kenwood_tone.KenwoodToneModel(
+                dcs_base=0x4000, pol_mask=0x2000, tone_enc_base=15)
 
 
 class TestGetToneVal(base.BaseTest):
     def setUp(self):
         super().setUp()
-        self.model = kenwood_tone.KenwoodToneModel(
+        self.model_dec = kenwood_tone.KenwoodToneModel(
             dcs_base=0x4000, pol_mask=0x2000)
+        self.model_dcs_bcd = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=16, tone_enc_base=10)
+        self.model_tone_bcd = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=8, tone_enc_base=16)
 
     def test_get_tone_val_zero(self):
-        code, pol = self.model._get_tone_val(0x0000)
+        code, pol = self.model_dec._get_tone_val(0x0000)
+        self.assertIsNone(code)
+        self.assertIsNone(pol)
+
+    def test_get_tone_val_zero_dcs_bcd(self):
+        code, pol = self.model_dcs_bcd._get_tone_val(0x0000)
+        self.assertIsNone(code)
+        self.assertIsNone(pol)
+
+    def test_get_tone_val_zero_tone_bcd(self):
+        code, pol = self.model_tone_bcd._get_tone_val(0x0000)
         self.assertIsNone(code)
         self.assertIsNone(pol)
 
     def test_get_tone_val_ffff(self):
-        code, pol = self.model._get_tone_val(0xFFFF)
+        code, pol = self.model_dec._get_tone_val(0xFFFF)
+        self.assertIsNone(code)
+        self.assertIsNone(pol)
+
+    def test_get_tone_val_ffff_dcs_bcd(self):
+        code, pol = self.model_dcs_bcd._get_tone_val(0xFFFF)
+        self.assertIsNone(code)
+        self.assertIsNone(pol)
+
+    def test_get_tone_val_ffff_tone_bcd(self):
+        code, pol = self.model_tone_bcd._get_tone_val(0xFFFF)
         self.assertIsNone(code)
         self.assertIsNone(pol)
 
     def test_get_tone_val_ctcss(self):
-        code, pol = self.model._get_tone_val(885 + 0x8000)
+        code, pol = self.model_dec._get_tone_val(885 + 0x8000)
+        self.assertEqual(code, 88.5)
+        self.assertIsNone(pol)
+
+    def test_get_tone_val_ctcss_bcd(self):
+        code, pol = self.model_tone_bcd._get_tone_val(0x0885)
         self.assertEqual(code, 88.5)
         self.assertIsNone(pol)
 
@@ -63,25 +102,72 @@ class TestGetToneVal(base.BaseTest):
         self.assertEqual(code, 88.5)
         self.assertIsNone(pol)
 
+    def test_get_tone_val_ctcss_no_flag_bcd(self):
+        model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000, tone_flag=0x0000,
+            dcs_enc_base=16, tone_enc_base=16)
+        code, pol = model._get_tone_val(0x0885)
+        self.assertEqual(code, 88.5)
+        self.assertIsNone(pol)
+
     def test_get_tone_val_dcs_normal_polarity(self):
-        code, pol = self.model._get_tone_val(0x4000 + 0o023)
+        code, pol = self.model_dec._get_tone_val(0x4000 + 0o023)
+        self.assertEqual(code, 23)
+        self.assertEqual(pol, "N")
+
+    def test_get_tone_val_dcs_normal_polarity_bcd(self):
+        code, pol = self.model_dcs_bcd._get_tone_val(0x4000 + 0x023)
         self.assertEqual(code, 23)
         self.assertEqual(pol, "N")
 
     def test_get_tone_val_dcs_reverse_polarity(self):
-        code, pol = self.model._get_tone_val(0x4000 + 0o023 + 0x2000)
+        code, pol = self.model_dec._get_tone_val(0x4000 + 0o023 + 0x2000)
+        self.assertEqual(code, 23)
+        self.assertEqual(pol, "R")
+
+    def test_get_tone_val_dcs_reverse_polarity_bcd(self):
+        code, pol = self.model_dcs_bcd._get_tone_val(
+            0x4000 + 0x023 + 0x2000)
         self.assertEqual(code, 23)
         self.assertEqual(pol, "R")
 
     def test_get_tone_val_dcs_decimal_encoding(self):
         model = kenwood_tone.KenwoodToneModel(
-            dcs_base=0x4000, pol_mask=0x2000, dcs_enc_base=10)
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=10)
         code, pol = model._get_tone_val(0x4000 + 23)
         self.assertEqual(code, 23)
         self.assertEqual(pol, "N")
 
+    def test_get_tone_val_dcs_decimal_encoding_bcd(self):
+        model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=10, tone_enc_base=16)
+        code, pol = model._get_tone_val(0x4000 + 23)
+        self.assertEqual(code, 23)
+        self.assertEqual(pol, "N")
+
+    def test_get_tone_val_dcs_bcd_encoding(self):
+        model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000, dcs_enc_base=16)
+        code, pol = model._get_tone_val(0x4023)
+        self.assertEqual(code, 23)
+        self.assertEqual(pol, "N")
+
+    def test_get_tone_val_dcs_bcd_encoding_bcd(self):
+        model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000, dcs_enc_base=16)
+        code, pol = model._get_tone_val(0x4023)
+        self.assertEqual(code, 23)
+        self.assertEqual(pol, "N")
+
     def test_get_tone_val_dcs_octal_encoding_large_code(self):
-        code, pol = self.model._get_tone_val(0x4000 + 0o125)
+        code, pol = self.model_dec._get_tone_val(0x4000 + 0o125)
+        self.assertEqual(code, 125)
+        self.assertEqual(pol, "N")
+
+    def test_get_tone_val_dcs_octal_encoding_large_code_bcd(self):
+        code, pol = self.model_tone_bcd._get_tone_val(0x4000 + 0o125)
         self.assertEqual(code, 125)
         self.assertEqual(pol, "N")
 
@@ -232,16 +318,27 @@ class TestSetTone(base.BaseTest):
 class TestGetTone(base.BaseTest):
     def setUp(self):
         super().setUp()
-        self.model = kenwood_tone.KenwoodToneModel(
-            dcs_base=0x4000, pol_mask=0x2000)
 
     def test_get_tone_empty(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000)
+        _mem = MockMemory()
+        mem = chirp_common.Memory()
+        self.model.get_tone(_mem, mem)
+        self.assertEqual(mem.tmode, "")
+
+    def test_get_tone_empty_bcd(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=16, tone_enc_base=16)
         _mem = MockMemory()
         mem = chirp_common.Memory()
         self.model.get_tone(_mem, mem)
         self.assertEqual(mem.tmode, "")
 
     def test_get_tone_tone_mode(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000)
         _mem = MockMemory()
         _mem.txtone = int(100.0 * 10) + 0x8000
         _mem.rxtone = 0x0000
@@ -250,7 +347,21 @@ class TestGetTone(base.BaseTest):
         self.assertEqual(mem.tmode, "Tone")
         self.assertEqual(mem.rtone, 100.0)
 
+    def test_get_tone_tone_mode_bcd(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=16, tone_enc_base=16)
+        _mem = MockMemory()
+        _mem.txtone = 0x9000
+        _mem.rxtone = 0x0000
+        mem = chirp_common.Memory()
+        self.model.get_tone(_mem, mem)
+        self.assertEqual(mem.tmode, "Tone")
+        self.assertEqual(mem.rtone, 100.0)
+
     def test_get_tone_tsql_mode(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000)
         _mem = MockMemory()
         _mem.txtone = int(107.2 * 10) + 0x8000
         _mem.rxtone = int(107.2 * 10) + 0x8000
@@ -259,7 +370,34 @@ class TestGetTone(base.BaseTest):
         self.assertEqual(mem.tmode, "TSQL")
         self.assertEqual(mem.ctone, 107.2)
 
+    def test_get_tone_tsql_mode_bcd(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=16, tone_enc_base=16)
+        _mem = MockMemory()
+        _mem.txtone = 0x9072
+        _mem.rxtone = 0x9072
+        mem = chirp_common.Memory()
+        self.model.get_tone(_mem, mem)
+        self.assertEqual(mem.tmode, "TSQL")
+        self.assertEqual(mem.ctone, 107.2)
+
     def test_get_tone_dtcs_mode(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000)
+        _mem = MockMemory()
+        _mem.txtone = 0x4000 + 0o023
+        _mem.rxtone = 0x4000 + 0o023
+        mem = chirp_common.Memory()
+        self.model.get_tone(_mem, mem)
+        self.assertEqual(mem.tmode, "DTCS")
+        self.assertEqual(mem.dtcs, 23)
+        self.assertEqual(mem.dtcs_polarity, "NN")
+
+    def test_get_tone_dtcs_mode_bcd(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=8, tone_enc_base=16)
         _mem = MockMemory()
         _mem.txtone = 0x4000 + 0o023
         _mem.rxtone = 0x4000 + 0o023
@@ -270,6 +408,20 @@ class TestGetTone(base.BaseTest):
         self.assertEqual(mem.dtcs_polarity, "NN")
 
     def test_get_tone_dtcs_with_polarity(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000)
+        _mem = MockMemory()
+        _mem.txtone = 0x4000 + 0o023 + 0x2000
+        _mem.rxtone = 0x4000 + 0o023
+        mem = chirp_common.Memory()
+        self.model.get_tone(_mem, mem)
+        self.assertEqual(mem.tmode, "DTCS")
+        self.assertEqual(mem.dtcs_polarity, "RN")
+
+    def test_get_tone_dtcs_with_polarity_bcd(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=16, tone_enc_base=16)
         _mem = MockMemory()
         _mem.txtone = 0x4000 + 0o023 + 0x2000
         _mem.rxtone = 0x4000 + 0o023
@@ -279,6 +431,8 @@ class TestGetTone(base.BaseTest):
         self.assertEqual(mem.dtcs_polarity, "RN")
 
     def test_get_tone_cross_tone_tone(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000)
         _mem = MockMemory()
         _mem.txtone = int(100.0 * 10) + 0x8000
         _mem.rxtone = int(107.2 * 10) + 0x8000
@@ -289,7 +443,23 @@ class TestGetTone(base.BaseTest):
         self.assertEqual(mem.rtone, 100.0)
         self.assertEqual(mem.ctone, 107.2)
 
+    def test_get_tone_cross_tone_tone_bcd(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=16, tone_enc_base=16)
+        _mem = MockMemory()
+        _mem.txtone = 0x9000
+        _mem.rxtone = 0x9072
+        mem = chirp_common.Memory()
+        self.model.get_tone(_mem, mem)
+        self.assertEqual(mem.tmode, "Cross")
+        self.assertEqual(mem.cross_mode, "Tone->Tone")
+        self.assertEqual(mem.rtone, 100.0)
+        self.assertEqual(mem.ctone, 107.2)
+
     def test_get_tone_cross_tone_dtcs(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000)
         _mem = MockMemory()
         _mem.txtone = int(100.0 * 10) + 0x8000
         _mem.rxtone = 0x4000 + 0o025
@@ -300,7 +470,23 @@ class TestGetTone(base.BaseTest):
         self.assertEqual(mem.rtone, 100.0)
         self.assertEqual(mem.rx_dtcs, 25)
 
+    def test_get_tone_cross_tone_bcd_dtcs(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=8, tone_enc_base=16)
+        _mem = MockMemory()
+        _mem.txtone = 0x9000
+        _mem.rxtone = 0x4000 + 0o025
+        mem = chirp_common.Memory()
+        self.model.get_tone(_mem, mem)
+        self.assertEqual(mem.tmode, "Cross")
+        self.assertEqual(mem.cross_mode, "Tone->DTCS")
+        self.assertEqual(mem.rtone, 100.0)
+        self.assertEqual(mem.rx_dtcs, 25)
+
     def test_get_tone_cross_dtcs_tone(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000)
         _mem = MockMemory()
         _mem.txtone = 0x4000 + 0o023
         _mem.rxtone = int(107.2 * 10) + 0x8000
@@ -311,7 +497,23 @@ class TestGetTone(base.BaseTest):
         self.assertEqual(mem.dtcs, 23)
         self.assertEqual(mem.ctone, 107.2)
 
+    def test_get_tone_cross_dtcs_tone_bcd(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=8, tone_enc_base=16)
+        _mem = MockMemory()
+        _mem.txtone = 0x4000 + 0o023
+        _mem.rxtone = 0x9072
+        mem = chirp_common.Memory()
+        self.model.get_tone(_mem, mem)
+        self.assertEqual(mem.tmode, "Cross")
+        self.assertEqual(mem.cross_mode, "DTCS->Tone")
+        self.assertEqual(mem.dtcs, 23)
+        self.assertEqual(mem.ctone, 107.2)
+
     def test_get_tone_cross_none_tone(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000)
         _mem = MockMemory()
         _mem.txtone = 0x0000
         _mem.rxtone = int(107.2 * 10) + 0x8000
@@ -321,7 +523,35 @@ class TestGetTone(base.BaseTest):
         self.assertEqual(mem.cross_mode, "->Tone")
         self.assertEqual(mem.ctone, 107.2)
 
+    def test_get_tone_cross_none_tone_bcd(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=8, tone_enc_base=16)
+        _mem = MockMemory()
+        _mem.txtone = 0x0000
+        _mem.rxtone = 0x9072
+        mem = chirp_common.Memory()
+        self.model.get_tone(_mem, mem)
+        self.assertEqual(mem.tmode, "Cross")
+        self.assertEqual(mem.cross_mode, "->Tone")
+        self.assertEqual(mem.ctone, 107.2)
+
     def test_get_tone_cross_none_dtcs(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000)
+        _mem = MockMemory()
+        _mem.txtone = 0x0000
+        _mem.rxtone = 0x4000 + 0o025
+        mem = chirp_common.Memory()
+        self.model.get_tone(_mem, mem)
+        self.assertEqual(mem.tmode, "Cross")
+        self.assertEqual(mem.cross_mode, "->DTCS")
+        self.assertEqual(mem.rx_dtcs, 25)
+
+    def test_get_tone_cross_none_bcd_dtcs(self):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=8, tone_enc_base=16)
         _mem = MockMemory()
         _mem.txtone = 0x0000
         _mem.rxtone = 0x4000 + 0o025
@@ -335,15 +565,68 @@ class TestGetTone(base.BaseTest):
 class TestRoundTrip(base.BaseTest):
     def setUp(self):
         super().setUp()
-        self.model = kenwood_tone.KenwoodToneModel(
-            dcs_base=0x4000, pol_mask=0x2000)
 
     def _round_trip(self, mem):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=8, tone_enc_base=10)
         _mem = MockMemory()
         self.model.set_tone(mem, _mem)
         result = chirp_common.Memory()
         self.model.get_tone(_mem, result)
         return result
+
+    def _round_trip_dcs_dec_tone_dec(self, mem):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=10, tone_enc_base=10)
+        _mem = MockMemory()
+        self.model.set_tone(mem, _mem)
+        result = chirp_common.Memory()
+        self.model.get_tone(_mem, result)
+        return result
+
+    def _round_trip_dcs_bcd_tone_dec(self, mem):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=16, tone_enc_base=10)
+        _mem = MockMemory()
+        self.model.set_tone(mem, _mem)
+        result = chirp_common.Memory()
+        self.model.get_tone(_mem, result)
+        return result
+
+    def _round_trip_dcs_oct_tone_bcd(self, mem):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=8, tone_enc_base=16)
+        _mem = MockMemory()
+        self.model.set_tone(mem, _mem)
+        result = chirp_common.Memory()
+        self.model.get_tone(_mem, result)
+        return result
+
+    def _round_trip_dcs_dec_tone_bcd(self, mem):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=10, tone_enc_base=16)
+        _mem = MockMemory()
+        self.model.set_tone(mem, _mem)
+        result = chirp_common.Memory()
+        self.model.get_tone(_mem, result)
+        return result
+
+    def _round_trip_dcs_bcd_tone_bcd(self, mem):
+        self.model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=16, tone_enc_base=16)
+        _mem = MockMemory()
+        self.model.set_tone(mem, _mem)
+        result = chirp_common.Memory()
+        self.model.get_tone(_mem, result)
+        return result
+
+    # More round trip tests to come when BCD is implemented in set_tone.
 
     def test_round_trip_empty(self):
         mem = chirp_common.Memory()
@@ -351,11 +634,25 @@ class TestRoundTrip(base.BaseTest):
         result = self._round_trip(mem)
         self.assertEqual(result.tmode, "")
 
+    def test_round_trip_empty_dcs_dec_tone_dec(self):
+        mem = chirp_common.Memory()
+        mem.tmode = ""
+        result = self._round_trip_dcs_dec_tone_dec(mem)
+        self.assertEqual(result.tmode, "")
+
     def test_round_trip_tone(self):
         mem = chirp_common.Memory()
         mem.tmode = "Tone"
         mem.rtone = 100.0
         result = self._round_trip(mem)
+        self.assertEqual(result.tmode, "Tone")
+        self.assertEqual(result.rtone, 100.0)
+
+    def test_round_trip_tone_dcs_dec_tone_dec(self):
+        mem = chirp_common.Memory()
+        mem.tmode = "Tone"
+        mem.rtone = 100.0
+        result = self._round_trip_dcs_dec_tone_dec(mem)
         self.assertEqual(result.tmode, "Tone")
         self.assertEqual(result.rtone, 100.0)
 
@@ -367,12 +664,30 @@ class TestRoundTrip(base.BaseTest):
         self.assertEqual(result.tmode, "TSQL")
         self.assertEqual(result.ctone, 107.2)
 
+    def test_round_trip_tsql_dcs_dec_tone_dec(self):
+        mem = chirp_common.Memory()
+        mem.tmode = "TSQL"
+        mem.ctone = 107.2
+        result = self._round_trip_dcs_dec_tone_dec(mem)
+        self.assertEqual(result.tmode, "TSQL")
+        self.assertEqual(result.ctone, 107.2)
+
     def test_round_trip_dtcs(self):
         mem = chirp_common.Memory()
         mem.tmode = "DTCS"
         mem.dtcs = 23
         mem.dtcs_polarity = "NR"
         result = self._round_trip(mem)
+        self.assertEqual(result.tmode, "DTCS")
+        self.assertEqual(result.dtcs, 23)
+        self.assertEqual(result.dtcs_polarity, "NR")
+
+    def test_round_trip_dtcs_dcs_dec_tone_dec(self):
+        mem = chirp_common.Memory()
+        mem.tmode = "DTCS"
+        mem.dtcs = 23
+        mem.dtcs_polarity = "NR"
+        result = self._round_trip_dcs_dec_tone_dec(mem)
         self.assertEqual(result.tmode, "DTCS")
         self.assertEqual(result.dtcs, 23)
         self.assertEqual(result.dtcs_polarity, "NR")
@@ -389,6 +704,18 @@ class TestRoundTrip(base.BaseTest):
         self.assertEqual(result.rtone, 100.0)
         self.assertEqual(result.ctone, 107.2)
 
+    def test_round_trip_cross_tone_tone_dcs_dec_tone_dec(self):
+        mem = chirp_common.Memory()
+        mem.tmode = "Cross"
+        mem.cross_mode = "Tone->Tone"
+        mem.rtone = 100.0
+        mem.ctone = 107.2
+        result = self._round_trip_dcs_dec_tone_dec(mem)
+        self.assertEqual(result.tmode, "Cross")
+        self.assertEqual(result.cross_mode, "Tone->Tone")
+        self.assertEqual(result.rtone, 100.0)
+        self.assertEqual(result.ctone, 107.2)
+
     def test_round_trip_cross_dtcs_dtcs(self):
         mem = chirp_common.Memory()
         mem.tmode = "Cross"
@@ -397,6 +724,20 @@ class TestRoundTrip(base.BaseTest):
         mem.rx_dtcs = 25
         mem.dtcs_polarity = "RN"
         result = self._round_trip(mem)
+        self.assertEqual(result.tmode, "Cross")
+        self.assertEqual(result.cross_mode, "DTCS->DTCS")
+        self.assertEqual(result.dtcs, 23)
+        self.assertEqual(result.rx_dtcs, 25)
+        self.assertEqual(result.dtcs_polarity, "RN")
+
+    def test_round_trip_cross_dtcs_dtcs_dcs_dec_tone_dec(self):
+        mem = chirp_common.Memory()
+        mem.tmode = "Cross"
+        mem.cross_mode = "DTCS->DTCS"
+        mem.dtcs = 23
+        mem.rx_dtcs = 25
+        mem.dtcs_polarity = "RN"
+        result = self._round_trip_dcs_dec_tone_dec(mem)
         self.assertEqual(result.tmode, "Cross")
         self.assertEqual(result.cross_mode, "DTCS->DTCS")
         self.assertEqual(result.dtcs, 23)
@@ -516,7 +857,8 @@ class TestDifferentParameterSets(base.BaseTest):
 
     def test_decimal_dcs_encoding(self):
         model = kenwood_tone.KenwoodToneModel(
-            dcs_base=0x4000, pol_mask=0x2000, dcs_enc_base=10)
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=10)
         val = model._set_tone_val(123, "N")
         self.assertEqual(val, 0x4000 + 123)
 
@@ -525,5 +867,20 @@ class TestDifferentParameterSets(base.BaseTest):
         self.assertEqual(pol, "N")
 
         code, pol = model._get_tone_val(0x4000 + 123 + 0x2000)
+        self.assertEqual(code, 123)
+        self.assertEqual(pol, "R")
+
+    def test_bcd_dcs_encoding(self):
+        model = kenwood_tone.KenwoodToneModel(
+            dcs_base=0x4000, pol_mask=0x2000,
+            dcs_enc_base=16, tone_enc_base=16)
+        val = model._set_tone_val(123, "N")
+        self.assertEqual(val, 0x4123)
+
+        code, pol = model._get_tone_val(0x4123)
+        self.assertEqual(code, 123)
+        self.assertEqual(pol, "N")
+
+        code, pol = model._get_tone_val(0x4123 + 0x2000)
         self.assertEqual(code, 123)
         self.assertEqual(pol, "R")
