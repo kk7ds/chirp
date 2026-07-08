@@ -735,6 +735,46 @@ class ChirpCommentColumn(ChirpMemoryColumn):
         return editor
 
 
+class ChirpCustomColumn(ChirpMemoryColumn):
+    """A user-defined, session-only scratch column.
+
+    This does not correspond to any attribute on the Memory object and
+    is never saved to the radio or file; its data lives only in this
+    column instance for the lifetime of the tab.
+    """
+    def __init__(self, name, radio, label, data=None):
+        super().__init__(name, radio, label=label)
+        self._data = data if data is not None else {}
+
+    @property
+    def valid(self):
+        return True
+
+    def value(self, memory):
+        return self._data.get(memory.number, '')
+
+    def render_value(self, memory):
+        if self.hidden_for(memory):
+            return ''
+        return self._render_value(memory, self.value(memory))
+
+    def _digest_value(self, memory, input_value):
+        return str(input_value)[:256]
+
+    def _set_mem_value(self, memory, value):
+        self._data[memory.number] = value
+
+    def get_propeditor(self, memory):
+        class ChirpLongStringProperty(wx.propgrid.LongStringProperty):
+            def ValidateValue(myself, value, validationInfo):
+                return True
+
+        editor = ChirpLongStringProperty(self.label.replace('\n', ' '),
+                                         self._name)
+        editor.SetValue(self.render_value(memory))
+        return editor
+
+
 def title_case_special(string):
     return ' '.join(word.title() if word.upper() != word else word
                     for word in string.split(' '))
@@ -977,6 +1017,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._extra_cols = set()
         # Memory errors by row
         self._memory_errors = {}
+        # Counter for generating unique custom column names
+        self._custom_col_counter = 0
 
         # Undo queue
         self._undo_queue = []
@@ -1470,8 +1512,49 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         menu.Append(show_all_item)
         show_all_item.Enable(bool(self._hidden_columns()))
 
+        menu.Append(wx.MenuItem(menu, wx.ID_SEPARATOR))
+
+        add_custom_item = wx.MenuItem(menu, wx.NewId(),
+                                      _('Add Custom Column...'))
+        self.Bind(wx.EVT_MENU, self._add_custom_column, add_custom_item)
+        menu.Append(add_custom_item)
+
+        if isinstance(col_def, ChirpCustomColumn):
+            remove_item = wx.MenuItem(menu, wx.NewId(),
+                                      _('Remove "%s"') % label)
+            self.Bind(wx.EVT_MENU,
+                      functools.partial(self._remove_custom_column, col_def),
+                      remove_item)
+            menu.Append(remove_item)
+
         self.PopupMenu(menu)
         menu.Destroy()
+
+    @common.error_proof()
+    def _add_custom_column(self, event):
+        label = wx.GetTextFromUser(
+            _('Enter a name for the new column. This column is for your '
+              'own use (e.g. notes or sorting); it is not saved and will '
+              'be lost when this tab is closed.'),
+            _('Add Custom Column'), parent=self)
+        if not label:
+            return
+
+        self._custom_col_counter += 1
+        name = 'customcol%i' % self._custom_col_counter
+        col = ChirpCustomColumn(name, self._radio, label)
+
+        index = len(self._col_defs)
+        self._col_defs.insert(index, col)
+        self._grid.InsertCols(index)
+        self.set_cell_attrs()
+        self.refresh()
+
+    def _remove_custom_column(self, col_def, event):
+        index = self._col_defs.index(col_def)
+        del self._col_defs[index]
+        self._grid.DeleteCols(index)
+        self.set_cell_attrs()
 
     def _eligible_rows_for_bulk_edit(self):
         """Rows suitable for a column-wide bulk edit.
@@ -1503,6 +1586,16 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         with a single clear error instead of leaving a partially-applied
         bulk edit if the value is invalid for this column.
         """
+        if isinstance(col_def, ChirpCustomColumn):
+            # Custom columns are scratch data outside the memory itself,
+            # so apply directly and skip the radio round-trip and undo
+            # tracking (there's nothing on the real memory to validate,
+            # write, or undo).
+            for row in rows:
+                apply_fn(self._memory_cache[row])
+            self.refresh()
+            return
+
         apply_fn(self._memory_cache[rows[0]].dupe())
 
         with self.undo_context(undo_name):
@@ -1560,12 +1653,15 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                           _('Clear Column'), parent=self)
             return
 
-        # Use a fresh Memory()'s own default for this field, applied
-        # directly (bypassing digest_value()'s per-radio choice-list
-        # validation), since an empty string isn't necessarily a valid
-        # choice for every column (e.g. Mode) even though it's the
-        # correct "nothing set" value for the underlying field.
-        default_value = getattr(chirp_common.Memory(), col_def.name)
+        if isinstance(col_def, ChirpCustomColumn):
+            default_value = ''
+        else:
+            # Use a fresh Memory()'s own default for this field, applied
+            # directly (bypassing digest_value()'s per-radio choice-list
+            # validation), since an empty string isn't necessarily a valid
+            # choice for every column (e.g. Mode) even though it's the
+            # correct "nothing set" value for the underlying field.
+            default_value = getattr(chirp_common.Memory(), col_def.name)
 
         label = col_def.label.replace('\n', ' ')
         undo_name = ngettext(
@@ -1632,6 +1728,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             cls, '_set_wrap_comment', ('wrap_comment', 'memedit'),
             _('Word-wrap Comment column'), default=True)
 
+        add_custom_column = common.EditorMenuItem(
+            cls, '_add_custom_column', _('Add Custom Column...'))
+
         return {
             common.EditorMenuItem.MENU_EDIT: [
                 redo,  # First so Undo gets inserted at zero
@@ -1647,6 +1746,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 use_txfreq,
                 choose_columns,
                 wrap_comment,
+                add_custom_column,
                 ]
             }
 
@@ -2366,6 +2466,19 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         col_def = self._col_defs[col]
 
+        if isinstance(col_def, ChirpCustomColumn):
+            # Custom columns are session-only scratch data, not part of
+            # the memory itself, so skip validation, radio writes, and
+            # undo tracking entirely.
+            try:
+                memory = self._memory_cache[row]
+            except KeyError:
+                event.Veto()
+                return
+            col_def.digest_value(memory, val)
+            wx.CallAfter(self._resize_col_after_edit, row, col)
+            return
+
         try:
             mem = self._memory_cache[row].dupe()
         except KeyError:
@@ -2483,6 +2596,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         Also provides the trigger to the editorset that we have changed.
         """
         row = event.GetRow()
+        col = event.GetCol()
+        if isinstance(self._col_defs[col], ChirpCustomColumn):
+            # Scratch data only; no radio-side change to pull back or
+            # report as needing a save.
+            return
         self.refresh_memory(self.row2mem(row))
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
