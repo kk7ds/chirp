@@ -1238,7 +1238,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
     @property
     def editable(self):
-        return not isinstance(self._radio, chirp_common.NetworkSourceRadio)
+        return True
 
     @property
     def comment_col(self):
@@ -1372,11 +1372,32 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if col < 0 or col >= len(self._col_defs):
             return
         col_def = self._col_defs[col]
+        label = col_def.label.replace('\n', ' ')
+
+        self._grid.ClearSelection()
+        self._grid.SelectCol(col)
+
         menu = wx.Menu()
 
-        hide_item = wx.MenuItem(
-            menu, wx.NewId(),
-            _('Hide "%s"') % col_def.label.replace('\n', ' '))
+        set_item = wx.MenuItem(menu, wx.NewId(), _('Set Column Value...'))
+        self.Bind(wx.EVT_MENU,
+                  functools.partial(self._set_column_value, col),
+                  set_item)
+        menu.Append(set_item)
+        set_item.Enable(self.editable)
+
+        if self._column_is_clearable(col_def):
+            clear_item = wx.MenuItem(menu, wx.NewId(),
+                                     _('Clear "%s"') % label)
+            self.Bind(wx.EVT_MENU,
+                      functools.partial(self._clear_column, col),
+                      clear_item)
+            menu.Append(clear_item)
+            clear_item.Enable(self.editable)
+
+        menu.Append(wx.MenuItem(menu, wx.ID_SEPARATOR))
+
+        hide_item = wx.MenuItem(menu, wx.NewId(), _('Hide "%s"') % label)
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._hide_column, col_def.name),
                   hide_item)
@@ -1393,6 +1414,110 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         self.PopupMenu(menu)
         menu.Destroy()
+
+    def _eligible_rows_for_bulk_edit(self):
+        """Rows suitable for a column-wide bulk edit.
+
+        Restricted to currently-visible (i.e. not hidden by a search
+        filter or "hide empty"), non-empty, non-special memories, since
+        there's nothing meaningful to bulk-set on an empty or special
+        (e.g. Home channel) memory.
+        """
+        return [row for row in range(self._grid.GetNumberRows())
+                if self._grid.IsRowShown(row)
+                and not self._memory_cache[row].empty
+                and not self._memory_cache[row].extd_number]
+
+    #: Column fields that can't be meaningfully bulk-cleared: freq/txfreq
+    #: because zeroing a memory's frequency effectively breaks it (that's
+    #: what Delete is for), and any dotted "extra.*" field because there's
+    #: no generic notion of a default value for radio-specific settings.
+    _UNCLEARABLE_COLUMNS = ('freq', 'txfreq')
+
+    def _column_is_clearable(self, col_def):
+        return ('.' not in col_def.name and
+                col_def.name not in self._UNCLEARABLE_COLUMNS)
+
+    def _apply_column_value(self, col_def, rows, apply_fn, undo_name):
+        """Apply apply_fn(mem) to each of rows as a single undo step.
+
+        Validates once against a throwaway copy first so we fail fast
+        with a single clear error instead of leaving a partially-applied
+        bulk edit if the value is invalid for this column.
+        """
+        apply_fn(self._memory_cache[rows[0]].dupe())
+
+        with self.undo_context(undo_name):
+            for row in rows:
+                mem = self._memory_cache[row].dupe()
+                apply_fn(mem)
+                self.set_memory(mem)
+        wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
+    @common.error_proof()
+    def _set_column_value(self, col, event):
+        col_def = self._col_defs[col]
+        rows = self._eligible_rows_for_bulk_edit()
+        if not rows:
+            wx.MessageBox(_('There are no memories to update.'),
+                          _('Set Column Value'), parent=self)
+            return
+
+        label = col_def.label.replace('\n', ' ')
+        current = col_def.render_value(self._memory_cache[rows[0]])
+        d = wx.TextEntryDialog(
+            self,
+            ngettext(
+                'Enter a value for "%(label)s" to apply to %(count)i '
+                'memory:',
+                'Enter a value for "%(label)s" to apply to %(count)i '
+                'memories:',
+                len(rows)) % {'label': label, 'count': len(rows)},
+            _('Set Column Value'),
+            value=current)
+        try:
+            if d.ShowModal() == wx.ID_CANCEL:
+                return
+            text = d.GetValue()
+        finally:
+            d.Destroy()
+
+        undo_name = ngettext(
+            'Set %(label)s on %(count)i memory',
+            'Set %(label)s on %(count)i memories',
+            len(rows)) % {'label': label, 'count': len(rows)}
+        self._apply_column_value(
+            col_def, rows,
+            lambda mem: col_def.digest_value(mem, text),
+            undo_name)
+
+    @common.error_proof()
+    def _clear_column(self, col, event):
+        col_def = self._col_defs[col]
+        if not self._column_is_clearable(col_def):
+            return
+        rows = self._eligible_rows_for_bulk_edit()
+        if not rows:
+            wx.MessageBox(_('There are no memories to update.'),
+                          _('Clear Column'), parent=self)
+            return
+
+        # Use a fresh Memory()'s own default for this field, applied
+        # directly (bypassing digest_value()'s per-radio choice-list
+        # validation), since an empty string isn't necessarily a valid
+        # choice for every column (e.g. Mode) even though it's the
+        # correct "nothing set" value for the underlying field.
+        default_value = getattr(chirp_common.Memory(), col_def.name)
+
+        label = col_def.label.replace('\n', ' ')
+        undo_name = ngettext(
+            'Clear %(label)s on %(count)i memory',
+            'Clear %(label)s on %(count)i memories',
+            len(rows)) % {'label': label, 'count': len(rows)}
+        self._apply_column_value(
+            col_def, rows,
+            lambda mem: col_def._set_mem_value(mem, default_value),
+            undo_name)
 
     @classmethod
     def get_menu_items(cls):

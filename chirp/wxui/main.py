@@ -260,8 +260,6 @@ class ChirpEditorSet(wx.Panel):
 
     @property
     def modified(self):
-        if isinstance(self._radio, base.NetworkResultRadio):
-            return False
         return self._modified
 
     @property
@@ -567,7 +565,8 @@ class ChirpMain(wx.Frame):
         self.bug_report_item.Enable(True)
 
     @common.error_proof(errors.ImageDetectFailed, FileNotFoundError)
-    def open_file(self, filename, exists=True, select=True, rclass=None):
+    def open_file(self, filename, exists=True, select=True, rclass=None,
+                  atindex=None):
         self.enable_bugreport()
         CSVRadio = directory.get_radio('Generic_CSV')
         label = _('Driver messages')
@@ -591,7 +590,7 @@ class ChirpMain(wx.Frame):
 
         self.adj_menu_open_recent(filename)
         editorset = ChirpEditorSet(radio, filename, self._editors)
-        self.add_editorset(editorset, select=select)
+        self.add_editorset(editorset, select=select, atindex=atindex)
 
     def add_editorset(self, editorset, select=True, atindex=None):
         self._remove_welcome_page()
@@ -1241,6 +1240,7 @@ class ChirpMain(wx.Frame):
         can_saveas = False
         can_upload = False
         can_edit = False
+        can_reload = False
         is_memedit = False
         is_bank = False
         if eset is not None:
@@ -1248,12 +1248,16 @@ class ChirpMain(wx.Frame):
             is_network = isinstance(eset.radio,
                                     base.NetworkResultRadio)
             can_close = True
-            can_save = eset.modified and not is_live and not is_network
-            can_saveas = not is_live and not is_network
+            can_save = eset.modified and not is_live
+            can_saveas = not is_live
             can_upload = True
             is_memedit = isinstance(eset.current_editor, memedit.ChirpMemEdit)
             is_bank = isinstance(eset.current_editor, bankedit.ChirpBankEdit)
-            can_edit = not is_network
+            can_edit = True
+            # The developer "reload driver" actions poke at file-backed
+            # radio internals (e.g. radio._mmap) that network query
+            # results don't have.
+            can_reload = can_saveas and not is_network
             self.SetTitle('CHIRP (%s)' % os.path.basename(eset.filename))
         else:
             self.SetTitle('CHIRP')
@@ -1282,8 +1286,8 @@ class ChirpMain(wx.Frame):
             (self._export_menu_item, can_close),
             (self._fixed_item, is_memedit or is_bank),
             (self._large_item, is_memedit or is_bank),
-            (self._reload_driver_item, can_saveas),
-            (self._reload_both_item, can_saveas),
+            (self._reload_driver_item, can_reload),
+            (self._reload_both_item, can_reload),
             (self._interact_driver_item, can_close),
             (self._import_menu_item, is_memedit and can_edit)
         ]
@@ -1437,6 +1441,9 @@ class ChirpMain(wx.Frame):
 
     def _menu_save_as(self, event):
         eset = self.current_editorset
+        if isinstance(eset.radio, base.NetworkResultRadio):
+            return self._save_network_result_as(eset)
+
         wildcard = (
             'CHIRP %(vendor)s %(model)s %(files)s (*.%(ext)s)|*.%(ext)s' % {
                 'vendor': eset._radio.VENDOR,
@@ -1468,6 +1475,38 @@ class ChirpMain(wx.Frame):
             self._update_editorset_title(eset)
             self._update_window_for_editor()
             return True
+
+    @common.error_proof(common.ExportFailed)
+    def _save_network_result_as(self, eset):
+        """Save a network query result (e.g. RepeaterBook) to a file.
+
+        Network sources (RepeaterBook, RadioReference, etc.) have no
+        native file format of their own to save back to, so this exports
+        the (possibly user-edited) results to CSV and then replaces this
+        tab with the newly-saved file, exactly as if the user had
+        manually exported and reopened it -- just without the manual
+        steps.
+        """
+        style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR
+        default_filename = '%s.csv' % eset.default_filename
+        with wx.FileDialog(self, _('Save file'),
+                           defaultFile=default_filename,
+                           wildcard='CSV %s (*.csv)|*.csv' % _('Files'),
+                           style=style) as fd:
+            if fd.ShowModal() == wx.ID_CANCEL:
+                return
+            filename = fd.GetPath()
+            if not filename.lower().endswith('.csv'):
+                filename += '.csv'
+            chirp_platform.get_platform().set_last_dir(fd.GetDirectory())
+
+        eset.export_to_file(filename)
+
+        index = self._editors.GetSelection()
+        self._editors.DeletePage(index)
+        self.open_file(filename, atindex=index)
+        self.adj_menu_open_recent(filename)
+        return True
 
     def _menu_save(self, event):
         editorset = self.current_editorset

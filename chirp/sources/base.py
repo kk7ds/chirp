@@ -3,7 +3,6 @@ import sys
 
 from chirp import CHIRP_VERSION
 from chirp import chirp_common
-from chirp import errors
 
 LOG = logging.getLogger(__name__)
 HEADERS = {
@@ -55,7 +54,11 @@ class NetworkResultRadio(chirp_common.NetworkSourceRadio):
         return self._memories[number]
 
     def set_memory(self, memory):
-        raise errors.RadioError('Network source is immutable')
+        self._memories[memory.number] = memory.dupe()
+
+    def erase_memory(self, number):
+        self._memories[number] = chirp_common.Memory(
+            number=number, empty=True)
 
     def validate_memory(self, memory):
-        return ['Network source is immutable']
+        return []

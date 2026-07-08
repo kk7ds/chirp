@@ -89,6 +89,10 @@ class RadioReferenceRadio(base.NetworkResultRadio):
         self._modes = None
         self._zipcounty = None
         self._country = None
+        # get_memory() normally reconstructs memories from self._freqs on
+        # every call; edits made via the UI are kept here instead, and
+        # take precedence over that reconstruction.
+        self._edits = {}
 
     def set_auth(self, username, password):
         self._auth["username"] = username
@@ -191,7 +195,16 @@ class RadioReferenceRadio(base.NetworkResultRadio):
     def get_raw_memory(self, number):
         return repr(self._freqs[number])
 
+    def set_memory(self, memory):
+        self._edits[memory.number] = memory.dupe()
+
+    def erase_memory(self, number):
+        self._edits[number] = chirp_common.Memory(number=number, empty=True)
+
     def get_memory(self, number):
+        if number in self._edits:
+            return self._edits[number]
+
         if not self._freqs:
             self.do_fetch()
 
