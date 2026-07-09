@@ -729,6 +729,10 @@ def get_column_for_extra(radio, setting):
         return ChirpFlagColumn(field, radio, label=label)
     elif isinstance(value, settings.RadioSettingValueInteger):
         return ChirpMemoryColumn(field, radio, label=label)
+    elif isinstance(value, settings.RadioSettingValueHex):
+        return ChirpMemoryColumn(field, radio, label=label)
+    elif isinstance(value, setting.RadioSettingValueDTMF):
+        return ChirpMemoryColumn(field, radio, label=label)
 
 
 class ChirpMemoryDropTarget(wx.DropTarget):
