@@ -2006,7 +2006,7 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
 
         mem.name = self.filter_name(_decode_string(bytes(raw[32:48])))
         mem.power = POWER_LEVELS[1 if (raw[2] & 0x40) else 0]
-        mem.skip = "" if (raw[3] & 0x80) else "S"
+        mem.skip = "S" if (raw[3] & 0x80) else ""
 
         if is_digital:
             mem.mode = "DMR"
@@ -2072,6 +2072,7 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
         if analog_scramble >= len(CHANNEL_SCRAMBLE_CHOICES):
             analog_scramble = 0
         signaling_id = _u32le(raw, 26) & SIGNALING_ID_MASK
+        scan_add = True if raw[3] == 0xFF else not bool(raw[3] & 0x80)
         extras = [
             RadioSetting(
                 "raw_mode", "Raw Channel Type",
@@ -2082,7 +2083,7 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
                          RadioSettingValueList(CHANNEL_RXTX_CHOICES,
                                                current_index=rx_tx)),
             RadioSetting("scan_add", "Scan Add",
-                         RadioSettingValueBoolean(bool(raw[3] & 0x80))),
+                         RadioSettingValueBoolean(scan_add)),
             RadioSetting("dmr_id_select", "DMR ID Select",
                          RadioSettingValueList(CHANNEL_ID_SELECT_CHOICES,
                                                current_index=id_select)),
@@ -2182,7 +2183,7 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
                 0x40 if _is_high_power(mem.power) else 0x00)
         raw[3] = (
             (0x00 if raw[3] == 0xFF else raw[3]) & 0x7F) | (
-                0x80 if mem.skip != "S" else 0x00)
+                0x80 if mem.skip == "S" else 0x00)
         raw[4] = 0x00 if raw[4] == 0xFF else raw[4]
         raw[32:48] = _encode_string(self.filter_name(mem.name), 16)
 
@@ -2201,7 +2202,7 @@ class IradioDMUV4RRadio(chirp_common.CloneModeRadio,
                         (raw[0] & 0xCF) |
                         (_safe_choice_index(CHANNEL_RXTX_CHOICES, value) << 4))
                 elif name == "scan_add":
-                    raw[3] = (raw[3] & 0x7F) | (0x80 if value else 0x00)
+                    raw[3] = (raw[3] & 0x7F) | (0x00 if value else 0x80)
                 elif name == "dmr_id_select":
                     if is_digital:
                         raw[0] = (

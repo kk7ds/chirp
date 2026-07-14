@@ -2378,7 +2378,7 @@ class TestIradioDMUV4R(unittest.TestCase):
 
         ch43 = radio.get_memory(43)
         self.assertEqual("ZAZEMI_chan", ch43.name)
-        self.assertEqual("", ch43.skip)
+        self.assertEqual("S", ch43.skip)
 
         ch44 = radio.get_memory(44)
         self.assertEqual("PROGRAM_digi", ch44.name)
@@ -2420,7 +2420,7 @@ class TestIradioDMUV4R(unittest.TestCase):
         ch50 = radio.get_memory(50)
         self.assertEqual("REZERV2_chfci", ch50.name)
         self.assertEqual("DMR", ch50.mode)
-        self.assertEqual("", ch50.skip)
+        self.assertEqual("S", ch50.skip)
         self.assertEqual("Color Code Idle",
                          str(extras(ch50)["call_priority"]))
 
@@ -2500,7 +2500,7 @@ class TestIradioDMUV4R(unittest.TestCase):
         raw = radio._channel_data(1)
         self.assertEqual(0x40, raw[0] & 0xC0)
         self.assertEqual(0x40, raw[2] & 0xC0)
-        self.assertEqual(0x80, raw[3] & 0x80)
+        self.assertEqual(0x00, raw[3] & 0x80)
         self.assertEqual(7, raw[2] & 0x3F)
         self.assertEqual(3, raw[1] & 0x0F)
         self.assertEqual(1, (raw[4] >> 6) & 0x03)
@@ -2513,6 +2513,29 @@ class TestIradioDMUV4R(unittest.TestCase):
         self.assertEqual(mem.cross_mode, result.cross_mode)
         self.assertEqual(mem.rtone, result.rtone)
         self.assertEqual(mem.rx_dtcs, result.rx_dtcs)
+
+    def test_scan_add_bit_matches_oem_csv_export(self):
+        radio = make_radio()
+        raw = bytearray(b"\x00" * iradio_dmuv4r.CHANNEL_RECORD_SIZE)
+        iradio_dmuv4r._set_u32le(raw, 5, 44600625)
+        iradio_dmuv4r._set_u32le(raw, 9, 44600625)
+        raw[0] = 0x40
+        raw[3] = 0x01
+        raw[4] = 0x40
+        raw[32:48] = iradio_dmuv4r._encode_string("SCANADD", 16)
+        radio._write_channel(1, raw)
+
+        mem = radio.get_memory(1)
+        extras = {item.get_name(): item.value for item in mem.extra}
+        self.assertEqual("", mem.skip)
+        self.assertTrue(bool(extras["scan_add"]))
+
+        raw[3] |= 0x80
+        radio._write_channel(1, raw)
+        mem = radio.get_memory(1)
+        extras = {item.get_name(): item.value for item in mem.extra}
+        self.assertEqual("S", mem.skip)
+        self.assertFalse(bool(extras["scan_add"]))
 
     def test_pm446_6_25khz_grid_validates(self):
         radio = make_radio()
