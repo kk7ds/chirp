@@ -515,45 +515,86 @@ class RT22Radio(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("squelch", "Squelch Level",
                           RadioSettingValueInteger(0, 9, _settings.squelch))
+        rs.set_doc(
+            "Sets how strong a received signal must be before the speaker "
+            "unmutes. 0 leaves the squelch open so you hear noise all the "
+            "time, higher values reject more weak signals and noise. Raise "
+            "this value if the radio keeps opening on interference, lower "
+            "it if distant stations are being cut off.")
         basic.append(rs)
 
         rs = RadioSetting("tot", "Time-out timer",
                           RadioSettingValueList(
                               TIMEOUTTIMER_LIST,
                               current_index=_settings.tot))
+        rs.set_doc(
+            "Limits how long a single transmission may last. When the time "
+            "runs out the radio stops transmitting until PTT is released, "
+            "which prevents overheating and stops a stuck PTT from blocking "
+            "the channel for everyone else.")
         basic.append(rs)
 
         rs = RadioSetting("voice", "Voice Prompts",
                           RadioSettingValueList(
                               VOICE_LIST, current_index=_settings.voice))
+        rs.set_doc(
+            "Announces the channel number out loud in the selected language "
+            "each time you change channel. Useful on a radio without a "
+            "display. Off silences the announcements.")
         basic.append(rs)
 
         rs = RadioSetting("pf2key", "PF2 Key",
                           RadioSettingValueList(
                               PF2KEY_LIST, current_index=_settings.pf2key))
+        rs.set_doc(
+            "Chooses what the programmable key does when held down: Scan "
+            "steps through the channels looking for activity, Local Alarm "
+            "sounds the alarm on this radio, and Remote Alarm instead sends "
+            "the alarm to the other radios on the channel without sounding "
+            "it here.")
         basic.append(rs)
 
         rs = RadioSetting("vox", "Vox",
                           RadioSettingValueBoolean(_settings.vox))
+        rs.set_doc(
+            "Voice operated transmit. The radio starts transmitting when "
+            "you speak towards the microphone, so hands-free conversation "
+            "is possible without pressing PTT.")
         basic.append(rs)
 
         rs = RadioSetting("voxgain", "VOX Level",
                           RadioSettingValueList(
                               VOX_LIST, current_index=_settings.voxgain))
+        rs.set_doc(
+            "Sets the VOX sensitivity. Too sensitive a setting keys the "
+            "transmitter on the noise around the radio, too insensitive a "
+            "setting fails to pick up your voice. OFF disables VOX.")
         basic.append(rs)
 
         rs = RadioSetting("voxdelay", "VOX Delay Time (Old | New)",
                           RadioSettingValueList(
                               VOXDELAY_LIST,
                               current_index=_settings.voxdelay))
+        rs.set_doc(
+            "How long the transmitter stays keyed after you stop speaking. "
+            "A longer delay avoids dropping the transmission during natural "
+            "pauses in speech.")
         basic.append(rs)
 
         rs = RadioSetting("save", "Battery Save",
                           RadioSettingValueBoolean(_settings.save))
+        rs.set_doc(
+            "Cuts standby power consumption by dozing the receiver once no "
+            "signal has been received for a few seconds. It considerably "
+            "extends battery life, at the cost of occasionally clipping the "
+            "first moment of an incoming transmission.")
         basic.append(rs)
 
         rs = RadioSetting("beep", "Beep",
                           RadioSettingValueBoolean(_settings.beep))
+        rs.set_doc(
+            "Sounds a short confirmation tone as you operate the radio. "
+            "Turn it off when the radio has to be used discreetly.")
         basic.append(rs)
 
         if self.MODEL != "W31E":
@@ -571,11 +612,18 @@ class RT22Radio(chirp_common.CloneModeRadio):
                 rs = RadioSetting("embedded_msg.line1", "Embedded Message 1",
                                   RadioSettingValueString(0, 32, _filter(
                                       _message.line1)))
+                rs.set_doc(
+                    "Free-form text of up to 32 characters stored in the "
+                    "radio, typically used as an owner or service note. The "
+                    "radio has no display, so it is never shown on the "
+                    "radio itself.")
                 basic.append(rs)
 
                 rs = RadioSetting("embedded_msg.line2", "Embedded Message 2",
                                   RadioSettingValueString(0, 32, _filter(
                                       _message.line2)))
+                rs.set_doc(
+                    "Second line of the free-form text stored in the radio.")
                 basic.append(rs)
 
         return top
