@@ -449,6 +449,9 @@ class H777Radio(chirp_common.CloneModeRadio):
         mem.extra = RadioSettingGroup("Extra", "extra")
         rs = RadioSetting("bcl", "Busy Channel Lockout",
                           RadioSettingValueBoolean(not _mem.bcl))
+        rs.set_doc('Prevents transmitting on a channel that is already in '
+                   'use. Pressing PTT while the channel is busy emits an '
+                   'alert tone and inhibits the transmitter')
         mem.extra.append(rs)
         if self._has_scramble:
             rs = RadioSetting("beatshift", "Beat Shift(scramble)",
@@ -508,16 +511,23 @@ class H777Radio(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("voiceprompt", "Voice prompt",
                           RadioSettingValueBoolean(_settings.voiceprompt))
+        rs.set_doc('Announces channel changes and operations by voice')
         basic.append(rs)
 
         rs = RadioSetting("voicelanguage", "Voice language",
                           RadioSettingValueList(
                               VOICE_LIST,
                               current_index=_settings.voicelanguage))
+        rs.set_doc('Language used for the voice prompts (Chinese or English)')
         basic.append(rs)
 
         rs = RadioSetting("scan", "Scan",
                           RadioSettingValueBoolean(_settings.scan))
+        rs.set_doc('Set the channel selector to channel 16 to scan '
+                   'channels 1-15. Scanning stops when a signal is '
+                   'detected and resumes once it clears. At least two '
+                   'channels are required, and scanning is unavailable '
+                   'while the FM radio function is active')
         basic.append(rs)
 
         if self._has_scanmodes:
@@ -530,11 +540,17 @@ class H777Radio(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("vox", "VOX",
                           RadioSettingValueBoolean(_settings.vox))
+        rs.set_doc('Voice Operated Transmit keys the transmitter when you '
+                   'speak into the microphone, eliminating the need to '
+                   'press PTT')
         basic.append(rs)
 
         rs = RadioSetting("voxlevel", "VOX level",
                           RadioSettingValueInteger(
                               1, self.MAX_VOXLEVEL, _settings.voxlevel + 1))
+        rs.set_doc('VOX gain sensitivity. If set too sensitive the radio '
+                   'keys up on background noise; if not sensitive enough it '
+                   'will not pick up your voice')
         basic.append(rs)
 
         rs = RadioSetting("voxinhibitonrx", "Inhibit VOX on receive",
@@ -557,6 +573,9 @@ class H777Radio(chirp_common.CloneModeRadio):
         else:
             rs = RadioSetting("alarm", "Alarm",
                               RadioSettingValueBoolean(_settings.alarm))
+        rs.set_doc('Emergency alarm triggered by the side key. Depending '
+                   'on the model this either sounds a local siren or also '
+                   'alerts other radios on the channel')
         basic.append(rs)
 
         # TODO: This should probably be called “FM Broadcast Band Radio”
@@ -564,21 +583,31 @@ class H777Radio(chirp_common.CloneModeRadio):
         if self._has_fm:
             rs = RadioSetting("fmradio", "FM function",
                               RadioSettingValueBoolean(_settings.fmradio))
+            rs.set_doc('Broadcast FM radio receiver. The radio cannot scan '
+                       'while this is active')
             basic.append(rs)
 
         rs = RadioSetting("settings2.beep", "Beep",
                           RadioSettingValueBoolean(
                               self._memobj.settings2.beep))
+        rs.set_doc('When enabled, the radio emits a short tone when you '
+                   'select a channel that has nothing programmed')
         basic.append(rs)
 
         rs = RadioSetting("settings2.batterysaver", "Battery saver",
                           RadioSettingValueBoolean(
                               self._memobj.settings2.batterysaver))
+        rs.set_doc('Reduces battery power used when no signal is being '
+                   'received. Activates automatically about 10 seconds '
+                   'after the last received signal or operation')
         basic.append(rs)
 
         rs = RadioSetting("settings2.squelchlevel", "Squelch level",
                           RadioSettingValueInteger(
                               0, 9, self._memobj.settings2.squelchlevel))
+        rs.set_doc('Mutes the speaker when no signal is present so that you '
+                   'only hear sound when a signal is received. Higher '
+                   'levels require a stronger signal to unmute')
         basic.append(rs)
 
         if self._has_sidekey:
@@ -594,6 +623,9 @@ class H777Radio(chirp_common.CloneModeRadio):
             RadioSettingValueList(
                 TIMEOUTTIMER_LIST,
                 current_index=self._memobj.settings2.timeouttimer))
+        rs.set_doc('Limits the maximum length of a single transmission to '
+                   'prevent overheating the radio. An alert sounds when the '
+                   'limit is reached')
         basic.append(rs)
 
         return top
