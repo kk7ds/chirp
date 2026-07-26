@@ -28,6 +28,7 @@ assets
 *.patch
 # for visual studio and visual studio code editors
 .vs/
+/test.csv
 .vscode/
 /CppProperties.json
 .coverage
