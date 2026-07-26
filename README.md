@@ -6,6 +6,71 @@ __[CHIRP](https://www.chirpmyradio.com)__ project.
 When submitting PRs, please see [this file](.github/pull_request_template.md)
 for rules and guidelines.
 
+## Features added in this fork
+
+On top of upstream CHIRP, this fork adds several memory-editor
+quality-of-life features, plus a convenience launcher script and Linux
+AppImage packaging (see below).
+
+### Column hiding, reordering, and custom columns
+
+Right-click any memory list column header (or use View > Choose Columns...)
+to hide columns you don't care about, or show columns that were previously
+hidden. Columns can also be reordered by dragging their headers. Both the
+hidden set and the order persist across sessions.
+
+You can also add your own scratch column (View > Add Custom Column..., or
+the header right-click menu) for personal notes, sorting, or triage — it's
+session-only: not saved to the radio or the file, not validated, and not
+part of undo. It disappears when the tab is closed.
+
+![Column context menu with Hide, Choose Columns, and Add Custom Column options](docs/screenshots/column-context-menu.png)
+
+![Custom "Priority" column added and filled in, alongside a trimmed-down column set](docs/screenshots/custom-column.png)
+
+### Word-wrapped Comment column
+
+The Comment column wraps long text across multiple lines instead of
+scrolling off as one long line, both when viewing and when editing in place
+(View > Word-wrap Comment column to toggle). Rows grow individually to fit
+their own comment.
+
+![Memory list with Comment column word-wrapped across multiple lines](docs/screenshots/columns-and-wordwrap.png)
+
+### Find Duplicate Memories
+
+Edit > Find Duplicate Memories... lets you choose which fields (frequency,
+tone, offset, etc.) define a "duplicate," then shows the matching groups so
+you can delete them — defaulting to keeping the lowest-numbered memory in
+each group.
+
+![Find Duplicate Memories results, showing two duplicate pairs with the lower-numbered one kept by default](docs/screenshots/find-duplicate-memories.png)
+
+### Editable, savable network query results
+
+Memories downloaded from a query source (RepeaterBook, RadioReference,
+DMR-MARC, przemienniki.net/eu, mapy73.pl, Radio Amateur Satellites, SatNOGS)
+used to be read-only with no way to save them — the only workaround was
+exporting to CSV and reopening that file. They're now editable directly in
+the grid, and saving an unsaved query result prompts for a CSV filename and
+transparently swaps the tab to the newly-saved file.
+
+### RepeaterBook distance in miles
+
+The RepeaterBook query dialog's Distance field is now in miles (matching
+RepeaterBook.com's own site and most of its US/Canada audience) instead of
+kilometers; it's converted internally as needed. Other query sources
+(przemienniki.net/eu) keep their km-based distance field.
+
+![RepeaterBook query dialog with a "Distance (mi)" field](docs/screenshots/repeaterbook-miles.png)
+
+### `run-chirp.sh`
+
+A convenience launcher for running CHIRP straight from a git checkout: it
+creates a local `.venv` (with access to system wxPython) on first run and
+installs CHIRP into it, then launches `chirpwx.py`. See
+[`run-chirp.sh`](run-chirp.sh).
+
 ## AppImage builds
 
 This fork can produce a self-contained Linux AppImage of CHIRP, so people
