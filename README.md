@@ -64,12 +64,19 @@ kilometers; it's converted internally as needed. Other query sources
 
 ![RepeaterBook query dialog with a "Distance (mi)" field](docs/screenshots/repeaterbook-miles.png)
 
-### `run-chirp.sh`
+### `run-chirp.sh` / `run-chirp.ps1`
 
-A convenience launcher for running CHIRP straight from a git checkout: it
-creates a local `.venv` (with access to system wxPython) on first run and
-installs CHIRP into it, then launches `chirpwx.py`. See
-[`run-chirp.sh`](run-chirp.sh).
+Convenience launchers for running CHIRP straight from a git checkout, without
+a system-wide install.
+
+- [`run-chirp.sh`](run-chirp.sh) (Linux): creates a local `.venv` (with
+  access to system wxPython) on first run and installs CHIRP into it, then
+  launches `chirpwx.py`.
+- [`run-chirp.ps1`](run-chirp.ps1) (Windows): creates a `.venv` using Python
+  3.11 (the version wxPython 4.2.x ships prebuilt wheels for), installs
+  `requirements.txt` (wxPython separately, wheel-only, so pip never tries to
+  compile it), then launches `chirpwx.py`. Supports `-Cli` to launch `chirpc`
+  instead, and `-Reinstall` to rebuild the venv from scratch.
 
 ## AppImage builds
 
