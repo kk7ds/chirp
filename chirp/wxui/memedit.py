@@ -2271,6 +2271,14 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             row += 1
             self.refresh_memory(i, lazy=True)
 
+        # Comment word-wrap resizes rows individually as they're
+        # populated above (synchronously here, but asynchronously as
+        # each memory loads for ChirpLiveMemEdit); the row label
+        # window's cached row positions can drift out of sync with the
+        # grid's when that happens row-by-row, so force both back into
+        # alignment once every row's final height is settled.
+        wx.CallAfter(self._grid.ForceRefresh)
+
     def _set_memory_defaults(self, mem, *only):
         """This is responsible for setting sane default values on memories.
 
