@@ -6,6 +6,9 @@ on:
     tags:
       - 'appimage-v*'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build AppImage
