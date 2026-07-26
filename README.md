@@ -118,6 +118,16 @@ builds the AppImage and attaches it to a matching
 [GitHub Release](../../releases) on this repo. Download the
 `CHIRP-*-x86_64.AppImage` asset from there, `chmod +x` it, and run it.
 
+**Config is isolated from other CHIRP installs:** by default CHIRP stores
+its settings in `~/.chirp`, shared by any install on the host (native
+package, source checkout, another AppImage, etc.) — so a setting like
+Help > Developer Mode enabled in one carries straight over to the others.
+This AppImage instead defaults to its own `~/.chirp-appimage`, so it always
+starts from CHIRP's real defaults (developer mode off, no "Browser"/"Info"
+tabs) regardless of what's already set elsewhere on the host. Pass
+`--config-dir /path` yourself if you want it to share state with another
+install instead.
+
 **Building one yourself:**
 
 ```

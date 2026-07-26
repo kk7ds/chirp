@@ -87,8 +87,22 @@ AppDir:
 
     cat > "$APPDIR/usr/bin/chirp-appimage-launcher" << 'PYEOF'
     #!/usr/bin/env python3.10
+    import os
     import sys
     from chirp.wxui import chirpmain
+
+    # CHIRP's default config dir (~/.chirp) is shared with any other CHIRP
+    # install on the host (native package, source checkout, etc.), so a
+    # setting enabled there (e.g. developer mode, from Help > Developer
+    # Mode) carries straight over here too. Default the AppImage to its own
+    # isolated config dir instead, so every run starts from CHIRP's real
+    # defaults unless the user explicitly asks to share state with another
+    # install via --config-dir themselves.
+    if '--config-dir' not in sys.argv:
+        default_config_dir = os.path.join(
+            os.path.expanduser('~'), '.chirp-appimage')
+        sys.argv += ['--config-dir', default_config_dir]
+
     sys.exit(chirpmain())
     PYEOF
     chmod 0755 "$APPDIR/usr/bin/chirp-appimage-launcher"
