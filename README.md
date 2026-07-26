@@ -6,6 +6,34 @@ __[CHIRP](https://www.chirpmyradio.com)__ project.
 When submitting PRs, please see [this file](.github/pull_request_template.md)
 for rules and guidelines.
 
+## Getting started
+
+### 1. Clone the repo
+
+```
+git clone https://github.com/ddavis83864/chirp.git
+cd chirp
+```
+
+### 2. Launch CHIRP
+
+Pick whichever of these is easiest for you:
+
+- **Linux, no setup required:** skip cloning entirely and just download a
+  prebuilt [AppImage release](../../releases) — see
+  [AppImage builds](#appimage-builds) below.
+- **Linux, from this checkout:** run [`./run-chirp.sh`](run-chirp.sh) from
+  the repo root. On first run it creates a local `.venv` and installs
+  everything needed; subsequent runs just launch CHIRP.
+- **Windows, from this checkout:** run
+  [`.\run-chirp.ps1`](run-chirp.ps1) from a PowerShell prompt in the repo
+  root. Same idea — first run sets up a `.venv`, later runs just launch.
+  (Needs [Python](https://www.python.org/downloads/) 3.11 installed; see
+  the script's comments for why that version specifically.)
+
+Both launcher scripts are documented in more detail under
+[`run-chirp.sh` / `run-chirp.ps1`](#run-chirpsh--run-chirpps1) below.
+
 ## Features added in this fork
 
 On top of upstream CHIRP, this fork adds several memory-editor
