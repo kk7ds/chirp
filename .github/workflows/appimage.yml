@@ -1,0 +1,35 @@
+name: AppImage
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'appimage-v*'
+
+jobs:
+  build:
+    name: Build AppImage
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build AppImage
+        run: ./appimage/build.sh
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CHIRP-AppImage
+          path: appimage/out/*.AppImage
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/appimage-v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+              --repo "${{ github.repository }}" \
+              --title "${{ github.ref_name }}" \
+              --notes "Automated AppImage build." \
+              appimage/out/*.AppImage

@@ -1,0 +1,105 @@
+# AppImage recipe for CHIRP, built with appimage-builder:
+# https://appimage-builder.readthedocs.io/
+#
+# wxPython has no portable Linux wheel, so we pull it (and the whole GTK3
+# stack it needs) from Ubuntu 22.04's apt repos via the apt recipe below,
+# and layer CHIRP plus its pure-Python deps on top in build.sh.
+#
+# Run via ./appimage/build.sh from the repo root; do not invoke
+# appimage-builder on this file directly, since build.sh substitutes the
+# __CHIRP_VERSION__ placeholder first.
+version: 1
+
+AppDir:
+  path: ./AppDir
+
+  app_info:
+    id: com.chirpmyradio.chirp
+    name: CHIRP
+    icon: chirp
+    version: "__CHIRP_VERSION__"
+    exec: usr/bin/python3.10
+    exec_args: "$APPDIR/usr/bin/chirp-appimage-launcher $@"
+
+  apt:
+    arch: amd64
+    sources:
+      - sourceline: deb [arch=amd64] http://archive.ubuntu.com/ubuntu jammy main universe
+        key_url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C
+      - sourceline: deb [arch=amd64] http://archive.ubuntu.com/ubuntu jammy-updates main universe
+        key_url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C
+      - sourceline: deb [arch=amd64] http://security.ubuntu.com/ubuntu jammy-security main universe
+        key_url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C
+    include:
+      - python3.10
+      - python3-wxgtk4.0
+      - fonts-dejavu-core
+      - hicolor-icon-theme
+      - adwaita-icon-theme
+      - librsvg2-common
+      - shared-mime-info
+      # Not pulled in automatically by the apt resolver above, but
+      # libwxgtk3.0-gtk3-0v5 links against these at runtime (Wayland cursor/
+      # client/EGL support, X11 render extension); without them, `import wx`
+      # fails even when running under plain X11.
+      - libwayland-cursor0
+      - libwayland-client0
+      - libwayland-egl1
+      - libxcb-render0
+
+  files:
+    exclude:
+      - usr/share/man
+      - usr/share/doc/*/README.*
+      - usr/share/doc/*/changelog.*
+      - usr/share/doc/*/NEWS.*
+      - usr/share/doc/*/TODO.*
+
+  after_bundle: |
+    set -e
+    APPDIR="$(readlink -f ./AppDir)"
+    SITE_PACKAGES="$APPDIR/usr/lib/python3/dist-packages"
+    mkdir -p "$SITE_PACKAGES"
+
+    # CHIRP itself plus its pure-Python deps (wxPython already came in via apt
+    # above). Installed with the *host's* python3.10/pip, targeting the
+    # AppDir's site-packages, since the bundled interpreter has no pip of its
+    # own and none of these deps need compiling.
+    python3.10 -m pip install \
+        --no-cache-dir --no-compile \
+        --target "$SITE_PACKAGES" \
+        pyserial requests yattag suds lark .
+
+    install -Dm644 chirp/share/chirp.desktop \
+        "$APPDIR/usr/share/applications/com.chirpmyradio.chirp.desktop"
+    install -Dm644 chirp/share/chirp.png \
+        "$APPDIR/usr/share/icons/hicolor/256x256/apps/chirp.png"
+
+    # `pip install --target` doesn't run chirp/locale/Makefile, so compile
+    # translations straight from the checked-in .po files (read-only; never
+    # touches the source tree) into the bundle's site-packages.
+    for po in chirp/locale/*.po; do
+        lang="$(basename "$po" .po)"
+        outdir="$SITE_PACKAGES/chirp/locale/$lang/LC_MESSAGES"
+        mkdir -p "$outdir"
+        msgfmt --output-file="$outdir/CHIRP.mo" "$po" || true
+    done
+
+    cat > "$APPDIR/usr/bin/chirp-appimage-launcher" << 'PYEOF'
+    #!/usr/bin/env python3.10
+    import sys
+    from chirp.wxui import chirpmain
+    sys.exit(chirpmain())
+    PYEOF
+    chmod 0755 "$APPDIR/usr/bin/chirp-appimage-launcher"
+
+  runtime:
+    env:
+      PYTHONPATH: "$APPDIR/usr/lib/python3/dist-packages:$APPDIR/usr/lib/python3.10/dist-packages"
+      PYTHONNOUSERSITE: "1"
+
+AppImage:
+  arch: x86_64
+  update-information: None
+  sign-key: None
+  file_name: "CHIRP-__CHIRP_VERSION__-x86_64.AppImage"

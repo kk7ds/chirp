@@ -42,3 +42,8 @@ result/
 # for nvim editor
 .nvim.lua
 .DS_Store
+# AppImage build output
+/AppDir/
+appimage/out/
+*.AppImage
+*.AppImage.zsync
