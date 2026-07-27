@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-23 13:53-0700\n"
+"POT-Creation-Date: 2026-07-27 10:15-0700\n"
 "PO-Revision-Date: 2012-03-18 12:01+0100\n"
 "Last-Translator: Michael Tel <m.tel@xs4all.nl>\n"
 "Language-Team: Dutch\n"
@@ -23,28 +23,33 @@ msgstr ""
 msgid "%(value)s must be between %(min)i and %(max)i"
 msgstr ""
 
-#: ../wxui/memedit.py:2202
+#: ../wxui/memedit.py:2929
 #, fuzzy, python-format
 msgid "%i Memories and shift all up"
 msgid_plural "%i Memories and shift all up"
 msgstr[0] "Verwijderen (en naar boven verplaatsen)"
 msgstr[1] "Verwijderen (en naar boven verplaatsen)"
 
-#: ../wxui/memedit.py:2193
+#: ../wxui/memedit.py:2920
 #, fuzzy, python-format
 msgid "%i Memory"
 msgid_plural "%i Memories"
 msgstr[0] "Kanalen"
 msgstr[1] "Kanalen"
 
-#: ../wxui/memedit.py:2197
+#: ../wxui/memedit.py:2924
 #, fuzzy, python-format
 msgid "%i Memory and shift block up"
 msgid_plural "%i Memories and shift block up"
 msgstr[0] "Verwijderen (en naar boven verplaatsen)"
 msgstr[1] "Verwijderen (en naar boven verplaatsen)"
 
-#: ../wxui/main.py:1532
+#: ../wxui/memedit.py:3423
+#, python-format
+msgid "%i memories failed validation for this radio (see details below). Add them anyway?"
+msgstr ""
+
+#: ../wxui/main.py:1644
 #, fuzzy, python-format
 msgid "%s has not been saved. Save before closing?"
 msgstr "Het bestand is aangepast. Wilt u de wijzigingen opslaan?"
@@ -65,13 +70,25 @@ msgstr ""
 msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr ""
 
+#: ../wxui/memcolordialog.py:168
+msgid "(LOW CONTRAST)"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:168
+msgid "(meets WCAG AA)"
+msgstr ""
+
 #: ../wxui/radioinfo.py:50
 msgid "(none)"
 msgstr ""
 
-#: ../wxui/memedit.py:2598
+#: ../wxui/memedit.py:3451
 #, python-format
 msgid "...and %i more"
+msgstr ""
+
+#: ../wxui/memedit.py:3420
+msgid "1 memory failed validation for this radio (see details below). Add it anyway?"
 msgstr ""
 
 #: ../drivers/ft4.py:743
@@ -562,7 +579,7 @@ msgid ""
 "6. Click OK to upload image to device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:293 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:232
+#: ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:222 ../drivers/uvb5.py:293
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -572,7 +589,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:301 ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:240
+#: ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:230 ../drivers/uvb5.py:301
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -698,7 +715,7 @@ msgid ""
 "It will may not work if you turn on the radio with the cable already attached"
 msgstr ""
 
-#: ../wxui/main.py:2143
+#: ../wxui/main.py:2283
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr ""
 
@@ -706,19 +723,52 @@ msgstr ""
 msgid "AM mode does not allow duplex or tone"
 msgstr ""
 
-#: ../wxui/main.py:976
+#: ../wxui/memcolorlegend.py:74
+msgid "APRS or other amateur data frequency."
+msgstr ""
+
+#: ../wxui/main.py:1020
 msgid "About"
 msgstr ""
 
-#: ../wxui/main.py:1908
+#: ../wxui/main.py:2020
 msgid "About CHIRP"
 msgstr ""
 
-#: ../wxui/main.py:1963
+#: ../wxui/memcolordialog.py:380 ../wxui/memcolordialog.py:388
+#: ../wxui/memcolordialog.py:398
+msgid "Add Condition"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:357
+msgid "Add Condition..."
+msgstr ""
+
+#: ../wxui/memedit.py:1569
+msgid "Add Custom Column"
+msgstr ""
+
+#: ../wxui/memedit.py:1548 ../wxui/memedit.py:1771
+msgid "Add Custom Column..."
+msgstr ""
+
+#: ../wxui/memcolordialog.py:434
+msgid "Add at least one match condition"
+msgstr ""
+
+#: ../wxui/memedit.py:3427
+msgid "Add incompatible memories?"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:467
+msgid "Add..."
+msgstr ""
+
+#: ../wxui/main.py:2075
 msgid "Agree"
 msgstr ""
 
-#: ../chirp_common.py:1883
+#: ../chirp_common.py:1950
 msgid "Aircraft frequencies must be aligned to 25kHz, 8.33kHz, be or a valid channel"
 msgstr ""
 
@@ -726,12 +776,12 @@ msgstr ""
 msgid "All"
 msgstr "Alles"
 
-#: ../wxui/main.py:1361
+#: ../wxui/main.py:1438
 #, fuzzy
 msgid "All Files"
 msgstr "Komma gescheiden bestanden"
 
-#: ../wxui/main.py:1372
+#: ../wxui/main.py:1449
 msgid "All supported formats"
 msgstr ""
 
@@ -743,15 +793,47 @@ msgstr ""
 msgid "Amateur"
 msgstr ""
 
-#: ../wxui/bugreport.py:344 ../wxui/bugreport.py:478 ../wxui/common.py:633
+#: ../wxui/memcolorlegend.py:81
+msgid "Amateur allocation, no specific subtype."
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:79
+msgid "Amateur memory with no transmit."
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:69
+msgid "Amateur repeater (duplex + offset)."
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:73
+msgid "Amateur satellite uplink/downlink band."
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:70
+msgid "Amateur simplex (no offset/split)."
+msgstr ""
+
+#: ../wxui/common.py:636 ../wxui/bugreport.py:344 ../wxui/bugreport.py:478
 msgid "An error has occurred"
 msgstr "Er is een fout opgetreden"
+
+#: ../wxui/memcolordialog.py:728
+msgid "Apply"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:682
+msgid "Apply color only to selected columns"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:680
+msgid "Apply color to entire row"
+msgstr ""
 
 #: ../wxui/clone.py:145
 msgid "Applying settings"
 msgstr ""
 
-#: ../wxui/main.py:1629
+#: ../wxui/main.py:1741
 #, fuzzy
 msgid "Automatic from system"
 msgstr "Automatische repeater offset"
@@ -760,7 +842,19 @@ msgstr "Automatische repeater offset"
 msgid "Available modules"
 msgstr ""
 
-#: ../wxui/main.py:2072
+#: ../wxui/memcolorlegend.py:48
+msgid "Aviation"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:47
+msgid "Aviation Emergency"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:115 ../wxui/memcolordialog.py:324
+msgid "Background:"
+msgstr ""
+
+#: ../wxui/main.py:2200
 msgid "Bandplan"
 msgstr ""
 
@@ -769,7 +863,7 @@ msgstr ""
 msgid "Bands"
 msgstr ""
 
-#: ../wxui/main.py:211
+#: ../wxui/main.py:212
 msgid "Banks"
 msgstr "Banken"
 
@@ -777,7 +871,19 @@ msgstr "Banken"
 msgid "Bin"
 msgstr ""
 
-#: ../wxui/main.py:222
+#: ../wxui/memcolordialog.py:334
+msgid "Bold"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:83
+msgid "Bold text"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:121
+msgid "Bold:"
+msgstr ""
+
+#: ../wxui/main.py:223
 msgid "Browser"
 msgstr ""
 
@@ -802,7 +908,19 @@ msgstr ""
 msgid "Building Radio Browser"
 msgstr ""
 
-#: ../wxui/main.py:1658
+#: ../wxui/memcolordialog.py:291
+msgid "Built-in classification"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:55
+msgid "Business/Industrial"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:91
+msgid "Business/industrial land-mobile band."
+msgstr ""
+
+#: ../wxui/main.py:1770
 msgid "CHIRP must be restarted for the new selection to take effect"
 msgstr ""
 
@@ -811,43 +929,67 @@ msgstr ""
 msgid "Cached results can only be included for a proximity query with Latitude, Longitude, and Distance set. Please uncheck \"%s\""
 msgstr ""
 
+#: ../wxui/memcolorlegend.py:36
+msgid "Calling"
+msgstr ""
+
 #: ../wxui/query_sources.py:1067
 msgid "Canada"
 msgstr ""
 
-#: ../wxui/common.py:504
+#: ../wxui/memcolordialog.py:722
+msgid "Categories"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:203
+msgid "Category"
+msgstr ""
+
+#: ../wxui/common.py:507
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr ""
 
-#: ../wxui/memedit.py:1839
+#: ../wxui/memedit.py:2538
 #, python-format
 msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr ""
 
-#: ../wxui/main.py:1360
+#: ../wxui/main.py:1032
+msgid "Check for Updates..."
+msgstr ""
+
+#: ../wxui/main.py:1437
 msgid "Chirp Image Files"
 msgstr ""
 
-#: ../wxui/memedit.py:493
+#: ../wxui/memedit.py:498
 msgid "Choice Required"
 msgstr ""
 
-#: ../wxui/memedit.py:1818
+#: ../wxui/memedit.py:2517
 #, fuzzy, python-format
 msgid "Choose %s DTCS Code"
 msgstr "DTCS code"
 
-#: ../wxui/memedit.py:1815
+#: ../wxui/memedit.py:2514
 #, python-format
 msgid "Choose %s Tone"
 msgstr ""
 
-#: ../wxui/memedit.py:1849
+#: ../wxui/memedit.py:1484
+msgid "Choose Columns"
+msgstr ""
+
+#: ../wxui/memedit.py:1536 ../wxui/memedit.py:1762
+msgid "Choose Columns..."
+msgstr ""
+
+#: ../wxui/memedit.py:2548
 #, fuzzy
 msgid "Choose Cross Mode"
 msgstr "Cross-mode"
 
-#: ../wxui/main.py:1197
+#: ../wxui/main.py:1269
 msgid "Choose Diff Target"
 msgstr ""
 
@@ -856,7 +998,7 @@ msgstr ""
 msgid "Choose a recent model"
 msgstr "Cross-mode"
 
-#: ../wxui/memedit.py:1879
+#: ../wxui/memedit.py:2578
 msgid "Choose duplex"
 msgstr ""
 
@@ -869,11 +1011,35 @@ msgstr "Kies n om vanuit te importeren:"
 msgid "City"
 msgstr ""
 
-#: ../wxui/main.py:1949
+#: ../wxui/memcolorlegend.py:84
+msgid "Civil aviation band."
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:83
+msgid "Civil/military aviation guard frequency."
+msgstr ""
+
+#: ../wxui/memedit.py:1521
+#, python-format
+msgid "Clear \"%s\""
+msgstr ""
+
+#: ../wxui/memedit.py:1698
+#, python-format
+msgid "Clear %(label)s on %(count)i memory"
+msgid_plural "Clear %(label)s on %(count)i memories"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../wxui/memedit.py:1683
+msgid "Clear Column"
+msgstr ""
+
+#: ../wxui/main.py:2061
 msgid "Click here for full license text"
 msgstr ""
 
-#: ../wxui/main.py:1928
+#: ../wxui/main.py:2040
 msgid "Click here for online documentation"
 msgstr ""
 
@@ -895,19 +1061,19 @@ msgstr ""
 msgid "Cloning"
 msgstr "Klonen"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:511 ../drivers/ft4.py:332
+#: ../drivers/bj9900.py:133 ../drivers/ft4.py:332 ../drivers/ft450d.py:511
 #: ../drivers/ft817.py:343
 #, fuzzy
 msgid "Cloning from radio"
 msgstr "Download van radio"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:540 ../drivers/ft4.py:333
+#: ../drivers/bj9900.py:165 ../drivers/ft4.py:333 ../drivers/ft450d.py:540
 #: ../drivers/ft817.py:381
 #, fuzzy
 msgid "Cloning to radio"
 msgstr "Naar radio uploaden"
 
-#: ../wxui/main.py:1074 ../wxui/main.py:1964
+#: ../wxui/main.py:1146 ../wxui/main.py:2076
 msgid "Close"
 msgstr ""
 
@@ -915,7 +1081,7 @@ msgstr ""
 msgid "Close String"
 msgstr ""
 
-#: ../wxui/main.py:1075
+#: ../wxui/main.py:1147
 msgid "Close file"
 msgstr ""
 
@@ -923,16 +1089,24 @@ msgstr ""
 msgid "Close string value with double-quote (\")"
 msgstr ""
 
-#: ../wxui/memedit.py:2261
+#: ../wxui/memedit.py:2993
 #, fuzzy, python-format
 msgid "Cluster %i memory"
 msgid_plural "Cluster %i memories"
 msgstr[0] "Verschillen ruwe kanalen"
 msgstr[1] "Verschillen ruwe kanalen"
 
-#: ../wxui/memedit.py:699
+#: ../wxui/memedit.py:3084
+msgid "Cluster memory"
+msgstr ""
+
+#: ../wxui/memedit.py:704 ../wxui/memcolordialog.py:288
 msgid "Comment"
 msgstr "Opmerking"
+
+#: ../wxui/memcolorlegend.py:66
+msgid "Commonly-used calling channel (operational aid, not exclusive or regulatory)."
+msgstr ""
 
 #: ../wxui/clone.py:319
 msgid "Communicate with radio"
@@ -943,8 +1117,12 @@ msgstr ""
 msgid "Complete"
 msgstr "Volbracht"
 
-#: ../wxui/memedit.py:151
+#: ../wxui/memedit.py:156
 msgid "Complex or non-standard tone squelch mode (starts the tone mode selection wizard)"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:457
+msgid "Conditions"
 msgstr ""
 
 #: ../drivers/tmd710.py:184 ../drivers/tmd710.py:187
@@ -953,16 +1131,25 @@ msgid ""
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
 msgstr ""
 
+#: ../wxui/memcolordialog.py:127
+msgid "Contrast:"
+msgstr ""
+
 #: ../wxui/query_sources.py:407
 msgid "Convert to FM"
 msgstr ""
 
-#: ../wxui/memedit.py:2172
+#: ../wxui/memedit.py:2895 ../wxui/memedit.py:3072
 msgid "Copy"
 msgstr "Kopiëren"
 
-#: ../wxui/memedit.py:2176
+#: ../wxui/memedit.py:2900 ../wxui/memedit.py:3073
 msgid "Copy portable"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:811
+#, python-format
+msgid "Could not import %(path)s: %(error)s"
 msgstr ""
 
 #: ../wxui/query_sources.py:352 ../wxui/query_sources.py:569
@@ -970,34 +1157,62 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
-#: ../wxui/memedit.py:682
+#: ../wxui/memedit.py:687
 #, fuzzy
 msgid "Cross Mode"
 msgstr "Cross-mode"
 
+#: ../wxui/memcolordialog.py:302
+msgid "Custom Color Rule"
+msgstr ""
+
 #: ../wxui/clone.py:568
 msgid "Custom Port"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:723
+msgid "Custom Rules"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:160
+msgid "Custom rule"
 msgstr ""
 
 #: ../wxui/clone.py:42
 msgid "Custom..."
 msgstr ""
 
-#: ../wxui/memedit.py:2167
+#: ../wxui/memedit.py:1785
+msgid "Customize Colors..."
+msgstr ""
+
+#: ../wxui/menucustomize.py:176
+msgid "Customize Menus"
+msgstr ""
+
+#: ../wxui/main.py:1027
+msgid "Customize Menus..."
+msgstr ""
+
+#: ../wxui/memedit.py:2889 ../wxui/memedit.py:3071
 msgid "Cut"
 msgstr "Knippen"
 
-#: ../wxui/memedit.py:2441
+#: ../wxui/memedit.py:3261
 #, python-format
 msgid "Cut %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:613
+#: ../wxui/memcolorlegend.py:76
+msgid "DMR/D-STAR/System Fusion/P25 mode."
+msgstr ""
+
+#: ../wxui/memedit.py:618
 #, fuzzy
 msgid "DTCS"
 msgstr "DTCS Pol"
 
-#: ../wxui/memedit.py:659
+#: ../wxui/memedit.py:664
 #, fuzzy
 msgid ""
 "DTCS\n"
@@ -1008,11 +1223,11 @@ msgstr "DTCS Pol"
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2900
+#: ../wxui/memedit.py:3753
 msgid "DV Memory"
 msgstr ""
 
-#: ../wxui/main.py:1985
+#: ../wxui/main.py:2113
 msgid "Danger Ahead"
 msgstr ""
 
@@ -1021,12 +1236,34 @@ msgstr ""
 msgid "Dec"
 msgstr "Detecteren"
 
-#: ../wxui/memedit.py:2187
+#: ../wxui/memedit.py:2913 ../wxui/memedit.py:3075
+#: ../wxui/memcolordialog.py:470
 msgid "Delete"
 msgstr "Verwijderen"
 
-#: ../wxui/memedit.py:2050
+#: ../wxui/memedit.py:3076
+msgid "Delete > This Memory"
+msgstr ""
+
+#: ../wxui/memedit.py:3080
+msgid "Delete > This memory and shift all up"
+msgstr ""
+
+#: ../wxui/memedit.py:3078
+msgid "Delete > This memory and shift block up"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:559
+msgid "Delete Rule"
+msgstr ""
+
+#: ../wxui/memedit.py:2767
 msgid "Delete memories"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:558
+#, python-format
+msgid "Delete rule \"%s\"?"
 msgstr ""
 
 #: ../wxui/bugreport.py:568
@@ -1034,25 +1271,25 @@ msgstr ""
 msgid "Detailed information"
 msgstr "Informatie van de bank ophalen"
 
-#: ../wxui/main.py:981
+#: ../wxui/main.py:1038
 #, fuzzy
 msgid "Developer Mode"
 msgstr "Ontwerper"
 
-#: ../wxui/main.py:1991
+#: ../wxui/main.py:2119
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 
-#: ../wxui/memedit.py:2298 ../wxui/developer.py:98
+#: ../wxui/memedit.py:3033 ../wxui/memedit.py:3089 ../wxui/developer.py:98
 msgid "Diff Raw Memories"
 msgstr "Verschillen ruwe kanalen"
 
-#: ../wxui/memedit.py:2306
+#: ../wxui/memedit.py:3042 ../wxui/memedit.py:3091
 msgid "Diff against another editor"
 msgstr ""
 
-#: ../wxui/memedit.py:2817
+#: ../wxui/memedit.py:3670
 msgid "Digital Code"
 msgstr "Digitale code"
 
@@ -1061,17 +1298,25 @@ msgstr "Digitale code"
 msgid "Digital Modes"
 msgstr "Digitale code"
 
-#: ../wxui/main.py:2003
+#: ../wxui/main.py:2131
 msgid "Disable reporting"
 msgstr ""
 
-#: ../wxui/memedit.py:589
+#: ../wxui/memedit.py:594
 msgid "Disabled"
 msgstr ""
 
-#: ../wxui/query_sources.py:104 ../wxui/query_sources.py:383
-#: ../wxui/query_sources.py:682 ../wxui/query_sources.py:840
+#: ../wxui/memcolorlegend.py:34
+msgid "Disabled / Skipped"
+msgstr ""
+
+#: ../wxui/query_sources.py:104 ../wxui/query_sources.py:682
+#: ../wxui/query_sources.py:840
 msgid "Distance"
+msgstr ""
+
+#: ../wxui/query_sources.py:383
+msgid "Distance (mi)"
 msgstr ""
 
 #: ../wxui/clone.py:207
@@ -1087,16 +1332,16 @@ msgstr ""
 msgid "Double-click to change bank name"
 msgstr ""
 
-#: ../wxui/main.py:1076
+#: ../wxui/main.py:1148
 msgid "Download"
 msgstr ""
 
-#: ../wxui/main.py:1077
+#: ../wxui/main.py:1149
 #, fuzzy
 msgid "Download from radio"
 msgstr "Download van radio"
 
-#: ../wxui/main.py:867
+#: ../wxui/main.py:895
 #, fuzzy
 msgid "Download from radio..."
 msgstr "Download van radio"
@@ -1106,7 +1351,7 @@ msgstr "Download van radio"
 msgid "Download instructions"
 msgstr "Download van radio"
 
-#: ../wxui/radioinfo.py:63
+#: ../wxui/radioinfo.py:64
 msgid "Driver"
 msgstr ""
 
@@ -1122,49 +1367,98 @@ msgstr ""
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
 msgstr ""
 
-#: ../wxui/memedit.py:552
+#: ../wxui/memedit.py:557 ../wxui/memcolordialog.py:283
 msgid "Duplex"
 msgstr "Duplex"
 
-#: ../wxui/memedit.py:2328
+#: ../wxui/memcolordialog.py:469
+msgid "Duplicate"
+msgstr ""
+
+#: ../wxui/memedit.py:3107
 #, python-format
 msgid "Edit %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2847
+#: ../wxui/memedit.py:3700
 #, python-format
 msgid "Edit details for %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2845
+#: ../wxui/memedit.py:3698
 #, python-format
 msgid "Edit details for memory %i"
 msgstr ""
 
-#: ../wxui/main.py:925
+#: ../wxui/memcolordialog.py:468
+msgid "Edit..."
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:35
+msgid "Emergency"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:63
+msgid "Empty or skipped memory slot."
+msgstr ""
+
+#: ../wxui/main.py:965
 msgid "Enable Automatic Edits"
 msgstr ""
 
-#: ../wxui/memedit.py:589
+#: ../wxui/memedit.py:1776
+msgid "Enable Memory Color Coding"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:673
+msgid "Enable memory color coding"
+msgstr ""
+
+#: ../wxui/memedit.py:594 ../wxui/memcolordialog.py:80
+#: ../wxui/memcolordialog.py:204 ../wxui/memcolordialog.py:317
+#: ../wxui/memcolordialog.py:456
 msgid "Enabled"
 msgstr ""
 
-#: ../wxui/memedit.py:397
+#: ../wxui/memcolordialog.py:112
+msgid "Enabled:"
+msgstr ""
+
+#: ../wxui/memedit.py:402
 #, fuzzy
 msgid "Enter Frequency"
 msgstr "Frequentie"
 
-#: ../wxui/memedit.py:1866
+#: ../wxui/memedit.py:2565
 msgid "Enter Offset (MHz)"
 msgstr ""
 
-#: ../wxui/memedit.py:1858
+#: ../wxui/memedit.py:2557
 msgid "Enter TX Frequency (MHz)"
+msgstr ""
+
+#: ../wxui/memedit.py:1566
+msgid "Enter a name for the new column. This column is for your own use (e.g. notes or sorting); it is not saved and will be lost when this tab is closed."
 msgstr ""
 
 #: ../wxui/bankedit.py:203
 #, python-format
 msgid "Enter a new name for bank %s:"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:585
+msgid "Enter a test frequency in Hz (used for any frequency condition; other conditions are ignored in this simple preview):"
+msgstr ""
+
+#: ../wxui/memedit.py:1652
+#, python-format
+msgid "Enter a value for \"%(label)s\" to apply to %(count)i memory:"
+msgid_plural "Enter a value for \"%(label)s\" to apply to %(count)i memories:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../wxui/memcolordialog.py:594
+msgid "Enter an integer frequency"
 msgstr ""
 
 #: ../wxui/clone.py:567
@@ -1191,7 +1485,7 @@ msgstr ""
 msgid "Enter your username and password for chirpmyradio.com. If you do not have an account click below to create one before proceeding."
 msgstr ""
 
-#: ../wxui/common.py:339
+#: ../wxui/common.py:342
 #, fuzzy, python-format
 msgid "Erased memory %s"
 msgstr "Wis kanaal {loc}"
@@ -1250,21 +1544,29 @@ msgstr ""
 msgid "Experimental driver"
 msgstr ""
 
-#: ../wxui/memedit.py:2760
+#: ../wxui/memcolordialog.py:783
+msgid "Export Color Profile"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:707
+msgid "Export Color Profile..."
+msgstr ""
+
+#: ../wxui/memedit.py:3613
 msgid "Export can only write CSV files"
 msgstr ""
 
-#: ../wxui/main.py:1517
+#: ../wxui/main.py:1629
 #, fuzzy
 msgid "Export to CSV"
 msgstr "Exporteren naar bestand"
 
-#: ../wxui/main.py:739
+#: ../wxui/main.py:750
 #, fuzzy
 msgid "Export to CSV..."
 msgstr "Exporteren naar bestand"
 
-#: ../wxui/memedit.py:2889
+#: ../wxui/memedit.py:3742
 msgid "Extra"
 msgstr ""
 
@@ -1287,7 +1589,11 @@ msgid ""
 "required."
 msgstr ""
 
-#: ../wxui/memedit.py:2798
+#: ../wxui/memcolorlegend.py:50
+msgid "FRS"
+msgstr ""
+
+#: ../wxui/memedit.py:3651
 msgid "Failed to export some memories"
 msgstr ""
 
@@ -1295,8 +1601,8 @@ msgstr ""
 msgid "Failed to load radio browser"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
-#: ../sources/mapy73pl.py:61
+#: ../sources/przemienniki_net.py:59 ../sources/mapy73pl.py:61
+#: ../sources/przemienniki_eu.py:57
 msgid "Failed to parse result"
 msgstr ""
 
@@ -1304,8 +1610,29 @@ msgstr ""
 msgid "Failed to send bug report:"
 msgstr ""
 
+#: ../wxui/memcolordialog.py:794
+#, python-format
+msgid "Failed to write %(path)s: %(error)s"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:62
+msgid "Fails radio validation (opt-in visual override)."
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:86
+msgid "Family Radio Service."
+msgstr ""
+
 #: ../wxui/radioinfo.py:45
 msgid "Features"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:345
+msgid "Field"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:379
+msgid "Field to match:"
 msgstr ""
 
 #: ../wxui/bugreport.py:212
@@ -1317,8 +1644,9 @@ msgstr ""
 msgid "File does not exist: %s"
 msgstr ""
 
-#: ../wxui/main.py:1364 ../wxui/main.py:1444 ../wxui/main.py:1454
-#: ../wxui/main.py:1513 ../wxui/main.py:1878 ../wxui/main.py:1879
+#: ../wxui/main.py:1441 ../wxui/main.py:1524 ../wxui/main.py:1534
+#: ../wxui/main.py:1567 ../wxui/main.py:1625 ../wxui/main.py:1990
+#: ../wxui/main.py:1991
 #, fuzzy
 msgid "Files"
 msgstr "_Bestanden"
@@ -1340,15 +1668,24 @@ msgstr ""
 msgid "Filter..."
 msgstr ""
 
-#: ../wxui/main.py:1587
+#: ../wxui/main.py:1699
 msgid "Find"
 msgstr ""
 
-#: ../wxui/main.py:807
+#: ../wxui/memedit.py:1904 ../wxui/memedit.py:1917 ../wxui/memedit.py:1934
+#: ../wxui/memedit.py:1957
+msgid "Find Duplicate Memories"
+msgstr ""
+
+#: ../wxui/memedit.py:1743
+msgid "Find Duplicate Memories..."
+msgstr ""
+
+#: ../wxui/main.py:830
 msgid "Find Next"
 msgstr ""
 
-#: ../wxui/main.py:793
+#: ../wxui/main.py:816
 msgid "Find..."
 msgstr ""
 
@@ -1360,9 +1697,13 @@ msgstr ""
 msgid "Finish float value like: 146.52"
 msgstr ""
 
-#: ../wxui/common.py:341
+#: ../wxui/common.py:344
 #, python-format
 msgid "Finished radio job %s"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:699
+msgid "Flag memories that fail radio validation"
 msgstr ""
 
 #: ../drivers/ts590.py:685
@@ -1403,11 +1744,11 @@ msgid ""
 "    no right-side audio!\n"
 msgstr ""
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:666 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:339
-#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/uv5x3.py:417 ../drivers/gmrsuv1.py:391 ../drivers/bf_t1.py:484
+#: ../drivers/btech.py:666 ../drivers/gmrsv2.py:363
+#: ../drivers/tdxone_tdq8a.py:444 ../drivers/mursv1.py:341
+#: ../drivers/uv6r.py:339
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1473,7 +1814,7 @@ msgid ""
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
 
-#: ../drivers/btech.py:672 ../drivers/bf_t1.py:490
+#: ../drivers/bf_t1.py:490 ../drivers/btech.py:672
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1500,7 +1841,7 @@ msgid ""
 "4 - Click OK to start\n"
 msgstr ""
 
-#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
+#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1518,11 +1859,10 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
+#: ../drivers/baofeng_uv17Pro.py:520 ../drivers/baofeng_wp970i.py:333
+#: ../drivers/uv5x3.py:423 ../drivers/gmrsuv1.py:397 ../drivers/gmrsv2.py:369
 #: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
-#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/mursv1.py:347 ../drivers/uv6r.py:345 ../drivers/vgc.py:592
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1540,12 +1880,12 @@ msgid ""
 "4 - Do the upload of your radio data\n"
 msgstr ""
 
-#: ../wxui/memedit.py:231
+#: ../wxui/memedit.py:236
 #, python-format
 msgid "Found empty list value for %(name)s: %(value)r"
 msgstr ""
 
-#: ../wxui/memedit.py:343
+#: ../wxui/memedit.py:348
 msgid "Frequency"
 msgstr "Frequentie"
 
@@ -1554,13 +1894,17 @@ msgstr "Frequentie"
 msgid "Frequency %s is out of supported ranges %s"
 msgstr ""
 
-#: ../wxui/memedit.py:155
+#: ../wxui/memcolordialog.py:281
+msgid "Frequency (Hz)"
+msgstr ""
+
+#: ../wxui/memedit.py:160
 msgid "Frequency granularity in kHz"
 msgstr ""
 
-#: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
-#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
-#: ../drivers/uv5r.py:1949 ../drivers/baofeng_uv17Pro.py:1297
+#: ../drivers/baofeng_uv17Pro.py:1297 ../drivers/tdh8.py:2540
+#: ../drivers/retevis_ha1g.py:1439 ../drivers/ga510.py:1094
+#: ../drivers/uv5r.py:2244 ../drivers/mml_jc8810.py:1383
 msgid "Frequency in this range must not be AM mode"
 msgstr ""
 
@@ -1568,40 +1912,84 @@ msgstr ""
 msgid "Frequency in this range not supported by firmware"
 msgstr ""
 
-#: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
-#: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:1945
-#: ../drivers/baofeng_uv17Pro.py:1294
+#: ../drivers/baofeng_uv17Pro.py:1294 ../drivers/tdh8.py:2537
+#: ../drivers/retevis_ha1g.py:1435 ../drivers/ga510.py:1087
+#: ../drivers/uv5r.py:2240 ../drivers/radtel_rt900.py:1623
+#: ../drivers/mml_jc8810.py:1380
 msgid "Frequency in this range requires AM mode"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:94
+msgid "Frequency not recognized by the current region profile."
 msgstr ""
 
 #: ../drivers/tdh8.py:2544
 msgid "Frequency outside TX bands must be duplex=off"
 msgstr ""
 
-#: ../wxui/query_sources.py:355 ../wxui/query_sources.py:435
-#: ../wxui/query_sources.py:536
+#: ../wxui/memcolorlegend.py:49 ../wxui/query_sources.py:355
+#: ../wxui/query_sources.py:435 ../wxui/query_sources.py:536
 msgid "GMRS"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:85
+msgid "General Mobile Radio Service."
 msgstr ""
 
 #: ../wxui/settingsedit.py:77
 msgid "Getting settings"
 msgstr ""
 
-#: ../wxui/memedit.py:1363
+#: ../wxui/memedit.py:1859
 #, fuzzy
 msgid "Goto Memory"
 msgstr "Toon ruw kanaal"
 
-#: ../wxui/memedit.py:1362
+#: ../wxui/memedit.py:1858
 msgid "Goto Memory:"
 msgstr ""
 
-#: ../wxui/memedit.py:1309
+#: ../wxui/memedit.py:1738
 msgid "Goto..."
 msgstr ""
 
-#: ../wxui/main.py:1042
+#: ../wxui/memcolorlegend.py:42
+msgid "Ham: APRS/Data"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:44
+msgid "Ham: Beacon/Specialty"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:40
+msgid "Ham: Calling"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:43
+msgid "Ham: Digital Voice"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:46
+msgid "Ham: General"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:45
+msgid "Ham: Receive-only"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:38
+msgid "Ham: Repeater"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:41
+msgid "Ham: Satellite"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:39
+msgid "Ham: Simplex"
+msgstr ""
+
+#: ../wxui/main.py:1107
 msgid "Help"
 msgstr "Help"
 
@@ -1613,7 +2001,12 @@ msgstr ""
 msgid "Hex"
 msgstr ""
 
-#: ../wxui/memedit.py:1318
+#: ../wxui/memedit.py:1530
+#, python-format
+msgid "Hide \"%s\""
+msgstr ""
+
+#: ../wxui/memedit.py:1753
 #, fuzzy
 msgid "Hide empty memories"
 msgstr "Overschrijven?"
@@ -1622,7 +2015,11 @@ msgstr "Overschrijven?"
 msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
 msgstr ""
 
-#: ../wxui/memedit.py:158
+#: ../wxui/memedit.py:3180
+msgid "How many rows would you like to insert above this one?"
+msgstr ""
+
+#: ../wxui/memedit.py:163
 msgid "Human-readable comment (not stored in radio)"
 msgstr ""
 
@@ -1636,25 +2033,38 @@ msgstr ""
 msgid "If set, sort results by distance from these coordinates"
 msgstr ""
 
-#: ../wxui/main.py:1499
+#: ../wxui/main.py:1611
 msgid "Import"
 msgstr "Importeren"
 
-#: ../wxui/memedit.py:2477
+#: ../wxui/memedit.py:3297
 #, python-format
 msgid "Import %i memories"
 msgstr ""
 
-#: ../wxui/main.py:733
+#: ../wxui/memcolordialog.py:799 ../wxui/memcolordialog.py:820
+msgid "Import Color Profile"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:709
+msgid "Import Color Profile..."
+msgstr ""
+
+#: ../wxui/memcolordialog.py:815
+#, python-format
+msgid "Import color profile \"%s\"?"
+msgstr ""
+
+#: ../wxui/main.py:743
 #, fuzzy
 msgid "Import from file..."
 msgstr "Importeren van bestand"
 
-#: ../wxui/main.py:1503
+#: ../wxui/main.py:1615
 msgid "Import messages"
 msgstr ""
 
-#: ../wxui/main.py:1497
+#: ../wxui/main.py:1609
 #, fuzzy
 msgid "Import not recommended"
 msgstr "Importeren uit RFinder"
@@ -1667,24 +2077,27 @@ msgstr ""
 msgid "Index"
 msgstr "Index"
 
-#: ../wxui/main.py:224
+#: ../wxui/main.py:225
 msgid "Info"
 msgstr ""
 
-#: ../wxui/memedit.py:1841
+#: ../wxui/memedit.py:2540
 msgid "Information"
 msgstr ""
 
-#: ../wxui/memedit.py:2161
-#, fuzzy
-msgid "Insert Row Above"
-msgstr "Regel hierboven invoegen"
+#: ../wxui/memedit.py:3175 ../wxui/memedit.py:3181
+msgid "Insert Rows"
+msgstr ""
+
+#: ../wxui/memedit.py:2882 ../wxui/memedit.py:3070
+msgid "Insert Rows Above..."
+msgstr ""
 
 #: ../wxui/__init__.py:60
 msgid "Install desktop icon?"
 msgstr ""
 
-#: ../wxui/main.py:965
+#: ../wxui/main.py:1008
 msgid "Interact with driver"
 msgstr ""
 
@@ -1693,8 +2106,12 @@ msgstr ""
 msgid "Internal driver error"
 msgstr "Interne fout"
 
-#: ../chirp_common.py:674
+#: ../chirp_common.py:741
 msgid "Internal driver error: Attempt to modify frozen memory; Please report this as a bug using \"Report or update a bug\" in the Help menu"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:33
+msgid "Invalid"
 msgstr ""
 
 #: ../wxui/query_sources.py:62
@@ -1702,8 +2119,8 @@ msgstr ""
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Ongeldige waarde. Het moet een integer zijn."
 
-#: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
-#: ../wxui/memedit.py:2004
+#: ../wxui/memedit.py:2716 ../wxui/query_sources.py:70
+#: ../wxui/query_sources.py:124
 #, fuzzy
 msgid "Invalid Entry"
 msgstr "Ongeldige waarde voor dit veld"
@@ -1712,7 +2129,7 @@ msgstr "Ongeldige waarde voor dit veld"
 msgid "Invalid ZIP code"
 msgstr ""
 
-#: ../wxui/memedit.py:2003 ../wxui/memedit.py:2982
+#: ../wxui/memedit.py:2715 ../wxui/memedit.py:3835
 #, python-format
 msgid "Invalid edit: %s"
 msgstr ""
@@ -1722,11 +2139,11 @@ msgstr ""
 msgid "Invalid locator"
 msgstr "Ongeldige waarde voor dit veld"
 
-#: ../wxui/main.py:1875
+#: ../wxui/main.py:1987
 msgid "Invalid or unsupported module file"
 msgstr ""
 
-#: ../wxui/memedit.py:289 ../wxui/memedit.py:295
+#: ../wxui/memedit.py:294 ../wxui/memedit.py:300 ../wxui/memedit.py:733
 #, fuzzy, python-format
 msgid "Invalid value: %r"
 msgstr "Ongeldige waarde voor dit veld"
@@ -1740,11 +2157,19 @@ msgstr ""
 msgid "Issue number:"
 msgstr ""
 
-#: ../wxui/main.py:352
+#: ../wxui/memcolordialog.py:784 ../wxui/memcolordialog.py:800
+msgid "JSON files"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:64
+msgid "Known emergency/distress frequency."
+msgstr ""
+
+#: ../wxui/main.py:351
 msgid "LIVE"
 msgstr ""
 
-#: ../drivers/radtel_rt490.py:1028 ../wxui/main.py:853 ../wxui/main.py:1643
+#: ../drivers/radtel_rt490.py:1028 ../wxui/main.py:880 ../wxui/main.py:1755
 #, fuzzy
 msgid "Language"
 msgstr "Taal wijzigen"
@@ -1752,6 +2177,10 @@ msgstr "Taal wijzigen"
 #: ../wxui/query_sources.py:92 ../wxui/query_sources.py:374
 #: ../wxui/query_sources.py:674 ../wxui/query_sources.py:826
 msgid "Latitude"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:124
+msgid "Legend priority:"
 msgstr ""
 
 #: ../wxui/developer.py:261
@@ -1776,21 +2205,24 @@ msgstr ""
 msgid "Limit prefixes"
 msgstr ""
 
-#: ../wxui/query_sources.py:381 ../wxui/query_sources.py:680
-#: ../wxui/query_sources.py:838
+#: ../wxui/query_sources.py:680 ../wxui/query_sources.py:838
 msgid "Limit results to this distance (km) from coordinates"
+msgstr ""
+
+#: ../wxui/query_sources.py:381
+msgid "Limit results to this distance (mi) from coordinates"
 msgstr ""
 
 #: ../wxui/query_sources.py:405
 msgid "Limit use"
 msgstr ""
 
-#: ../wxui/main.py:1730
+#: ../wxui/main.py:1842
 #, fuzzy
 msgid "Live Radio"
 msgstr "Radio"
 
-#: ../wxui/main.py:745
+#: ../wxui/main.py:757
 #, fuzzy
 msgid "Load Module..."
 msgstr "Toonmodus"
@@ -1800,16 +2232,16 @@ msgstr "Toonmodus"
 msgid "Load module from issue"
 msgstr "Toonmodus"
 
-#: ../wxui/main.py:1018
+#: ../wxui/main.py:1080
 #, fuzzy
 msgid "Load module from issue..."
 msgstr "Toonmodus"
 
-#: ../wxui/main.py:2039
+#: ../wxui/main.py:2167
 msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
 msgstr ""
 
-#: ../wxui/main.py:1882
+#: ../wxui/main.py:1994
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr ""
 
@@ -1838,12 +2270,28 @@ msgstr ""
 msgid "Longitude"
 msgstr ""
 
-#: ../wxui/memedit.py:2016
+#: ../wxui/memcolorlegend.py:51
+msgid "MURS"
+msgstr ""
+
+#: ../wxui/memedit.py:2728
 #, python-format
 msgid "Manual edit of memory %i"
 msgstr ""
 
-#: ../wxui/main.py:203
+#: ../wxui/memcolorlegend.py:52
+msgid "Marine"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:670
+msgid "Master Controls"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:342
+msgid "Match ALL of these conditions:"
+msgstr ""
+
+#: ../wxui/main.py:204
 msgid "Memories"
 msgstr "Kanalen"
 
@@ -1851,9 +2299,13 @@ msgstr "Kanalen"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
 
-#: ../wxui/memedit.py:2045
+#: ../wxui/memedit.py:2762
 #, python-format
 msgid "Memory %i is not deletable"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:657
+msgid "Memory Color Coding"
 msgstr ""
 
 #: ../wxui/memquery.py:203
@@ -1861,8 +2313,12 @@ msgstr ""
 msgid "Memory field name (one of %s)"
 msgstr ""
 
-#: ../wxui/memedit.py:143
+#: ../wxui/memedit.py:148
 msgid "Memory label (stored in radio)"
+msgstr ""
+
+#: ../wxui/menucustomize.py:188
+msgid "Memory list (right-click)"
 msgstr ""
 
 #: ../wxui/bankedit.py:242
@@ -1874,8 +2330,8 @@ msgstr ""
 msgid "Memory {num} not in bank {bank}"
 msgstr ""
 
+#: ../wxui/memedit.py:673 ../wxui/memcolordialog.py:285
 #: ../wxui/query_sources.py:626 ../wxui/query_sources.py:779
-#: ../wxui/memedit.py:668
 #, fuzzy
 msgid "Mode"
 msgstr "Mode"
@@ -1889,19 +2345,19 @@ msgstr "Model"
 msgid "Modes"
 msgstr "Mode"
 
-#: ../wxui/main.py:1879
+#: ../wxui/main.py:1991
 msgid "Module"
 msgstr ""
 
-#: ../wxui/main.py:1851
+#: ../wxui/main.py:1963
 msgid "Module Loaded"
 msgstr ""
 
-#: ../wxui/main.py:2050
+#: ../wxui/main.py:2178
 msgid "Module loaded successfully"
 msgstr ""
 
-#: ../wxui/common.py:649
+#: ../wxui/common.py:652
 msgid "More Info"
 msgstr ""
 
@@ -1910,34 +2366,66 @@ msgstr ""
 msgid "More than one port found: %s"
 msgstr ""
 
-#: ../wxui/memedit.py:2698
+#: ../wxui/memedit.py:3551
 #, python-format
 msgid "Move %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:1305
+#: ../wxui/memedit.py:1733 ../wxui/memcolordialog.py:472
 #, fuzzy
 msgid "Move Down"
 msgstr "Verplaats omlaa_g"
 
-#: ../wxui/memedit.py:1295
+#: ../wxui/memedit.py:1722 ../wxui/memcolordialog.py:471
 #, fuzzy
 msgid "Move Up"
 msgstr "Verplaats om_hoog"
 
-#: ../wxui/memedit.py:2668
+#: ../wxui/memedit.py:3521
 msgid "Move operations are disabled while the view is sorted"
 msgstr ""
 
-#: ../wxui/main.py:691
+#: ../wxui/memcolorlegend.py:87
+msgid "Multi-Use Radio Service."
+msgstr ""
+
+#: ../wxui/memcolordialog.py:614
+msgid "NO"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:92
+msgid "NOAA Weather Radio channel."
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:56
+msgid "NOAA/Weather"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:287 ../wxui/memcolordialog.py:455
+msgid "Name"
+msgstr "Naam"
+
+#: ../wxui/memcolordialog.py:313
+msgid "Name:"
+msgstr ""
+
+#: ../wxui/main.py:694
 msgid "New Window"
 msgstr ""
 
-#: ../wxui/main.py:2145
+#: ../wxui/main.py:2285
 msgid "New version available"
 msgstr ""
 
-#: ../wxui/memedit.py:2345
+#: ../wxui/memcolordialog.py:242 ../wxui/memcolordialog.py:487
+msgid "No"
+msgstr ""
+
+#: ../wxui/memedit.py:1933
+msgid "No duplicate memories were found."
+msgstr ""
+
+#: ../wxui/memedit.py:3135 ../wxui/memedit.py:3175
 #, fuzzy
 msgid "No empty rows below!"
 msgstr "Regel hieronder invoegen"
@@ -1956,32 +2444,53 @@ msgstr ""
 msgid "No modules found in issue %i"
 msgstr ""
 
-#: ../wxui/memedit.py:2531
+#: ../wxui/memedit.py:3352
 msgid "No more space available; some memories were not applied"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
-#: ../sources/mapy73pl.py:57
+#: ../sources/przemienniki_net.py:55 ../sources/mapy73pl.py:57
+#: ../sources/przemienniki_eu.py:53
 msgid "No results"
 msgstr ""
 
-#: ../sources/repeaterbook.py:371
+#: ../sources/repeaterbook.py:375
 msgid "No results!"
 msgstr ""
 
-#: ../wxui/main.py:2060
+#: ../wxui/main.py:2188
 msgid "No traces stored"
 msgstr ""
 
-#: ../wxui/query_sources.py:45 ../wxui/memedit.py:1362
+#: ../wxui/memcolorlegend.py:68
+msgid "No transmit frequency configured."
+msgstr ""
+
+#: ../wxui/main.py:2279
+msgid "No update available"
+msgstr ""
+
+#: ../wxui/memedit.py:3157
+#, python-format
+msgid "Not enough empty rows below (only %i available)"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:817
+msgid "Note: some entries were invalid and will use defaults:"
+msgstr ""
+
+#: ../wxui/memedit.py:1858 ../wxui/query_sources.py:45
 msgid "Number"
 msgstr ""
 
-#: ../wxui/memedit.py:339
+#: ../wxui/memedit.py:344
 msgid "Offset"
 msgstr "Offset"
 
-#: ../wxui/memedit.py:337
+#: ../wxui/memcolordialog.py:284
+msgid "Offset direction"
+msgstr ""
+
+#: ../wxui/memedit.py:342
 msgid ""
 "Offset/\n"
 "TX Freq"
@@ -2005,7 +2514,7 @@ msgstr ""
 msgid "Only certain prefixes"
 msgstr ""
 
-#: ../wxui/main.py:333
+#: ../wxui/main.py:332
 msgid "Only memory tabs may be exported"
 msgstr ""
 
@@ -2013,37 +2522,37 @@ msgstr ""
 msgid "Only working repeaters"
 msgstr ""
 
-#: ../wxui/main.py:1070 ../wxui/main.py:1499
+#: ../wxui/main.py:1142 ../wxui/main.py:1611
 msgid "Open"
 msgstr ""
 
-#: ../wxui/main.py:720
+#: ../wxui/main.py:727
 #, fuzzy
 msgid "Open Recent"
 msgstr "_Recent"
 
-#: ../wxui/main.py:702
+#: ../wxui/main.py:707
 #, fuzzy
 msgid "Open Stock Config"
 msgstr "Openen aanwezige configuratie"
 
-#: ../wxui/main.py:1071 ../wxui/main.py:1375
+#: ../wxui/main.py:1143 ../wxui/main.py:1452
 msgid "Open a file"
 msgstr ""
 
-#: ../wxui/main.py:1897
+#: ../wxui/main.py:2009
 msgid "Open a module"
 msgstr ""
 
-#: ../wxui/main.py:1002
+#: ../wxui/main.py:1061
 msgid "Open debug log"
 msgstr ""
 
-#: ../wxui/main.py:544
+#: ../wxui/main.py:543
 msgid "Open in new window"
 msgstr ""
 
-#: ../wxui/main.py:1033
+#: ../wxui/main.py:1097
 msgid "Open last serial trace"
 msgstr ""
 
@@ -2056,8 +2565,12 @@ msgstr ""
 msgid "Open stock config directory"
 msgstr "Openen van aanwezige configuratie {name}"
 
-#: ../wxui/memquery.py:143
+#: ../wxui/memquery.py:143 ../wxui/memcolordialog.py:346
 msgid "Operator"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:388
+msgid "Operator:"
 msgstr ""
 
 #: ../wxui/query_sources.py:994
@@ -2097,7 +2610,7 @@ msgstr "Opties"
 msgid "Optional: County, Hospital, etc."
 msgstr ""
 
-#: ../wxui/memedit.py:2511
+#: ../wxui/memedit.py:3331
 #, fuzzy
 msgid "Overwrite memories?"
 msgstr "Overschrijven?"
@@ -2109,8 +2622,8 @@ msgid ""
 "are supported in this release.\n"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
-#: ../sources/mapy73pl.py:52
+#: ../sources/przemienniki_net.py:50 ../sources/mapy73pl.py:52
+#: ../sources/przemienniki_eu.py:48
 msgid "Parsing"
 msgstr ""
 
@@ -2118,39 +2631,39 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: ../wxui/memedit.py:2181
+#: ../wxui/memedit.py:2906 ../wxui/memedit.py:3074
 msgid "Paste"
 msgstr "Plakken"
 
-#: ../wxui/common.py:804
+#: ../wxui/common.py:807
 msgid "Paste external memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2611
+#: ../wxui/memedit.py:3464
 msgid "Paste memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2505
+#: ../wxui/memedit.py:3325
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2508
+#: ../wxui/memedit.py:3328
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
 msgstr ""
 
-#: ../wxui/memedit.py:2502
+#: ../wxui/memedit.py:3322
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/memedit.py:2499
+#: ../wxui/memedit.py:3319
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/main.py:2149
+#: ../wxui/main.py:2289
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr ""
 
@@ -2158,11 +2671,11 @@ msgstr ""
 msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
 msgstr ""
 
-#: ../wxui/main.py:1979
+#: ../wxui/main.py:2107
 msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
 
-#: ../wxui/common.py:204
+#: ../wxui/common.py:207
 msgid "Please wait"
 msgstr ""
 
@@ -2178,7 +2691,7 @@ msgstr ""
 msgid "Port"
 msgstr "Poort"
 
-#: ../wxui/memedit.py:418
+#: ../wxui/memedit.py:423
 msgid "Power"
 msgstr "Vermogen"
 
@@ -2191,7 +2704,7 @@ msgstr ""
 msgid "Press enter to set this in memory"
 msgstr "Fout bij het instellen van het geheugen"
 
-#: ../wxui/main.py:756
+#: ../wxui/main.py:770
 msgid "Print Preview"
 msgstr ""
 
@@ -2203,7 +2716,11 @@ msgstr ""
 msgid "Prolific USB device"
 msgstr ""
 
-#: ../wxui/memedit.py:2154
+#: ../wxui/memcolorlegend.py:78
+msgid "Propagation beacon or weak-signal specialty sub-band."
+msgstr ""
+
+#: ../wxui/memedit.py:2874 ../wxui/memedit.py:3069
 msgid "Properties"
 msgstr ""
 
@@ -2215,16 +2732,24 @@ msgstr ""
 msgid "Property Value"
 msgstr ""
 
+#: ../wxui/memcolorlegend.py:54
+msgid "Public Safety"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:90
+msgid "Public safety allocation."
+msgstr ""
+
 #: ../wxui/query_sources.py:833
 msgid "QTH Locator"
 msgstr ""
 
-#: ../wxui/main.py:2088
+#: ../wxui/main.py:2216
 #, python-format
 msgid "Query %s"
 msgstr ""
 
-#: ../wxui/main.py:881
+#: ../wxui/main.py:912
 msgid "Query Source"
 msgstr ""
 
@@ -2240,20 +2765,20 @@ msgstr ""
 msgid "Query syntax help"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
-#: ../sources/mapy73pl.py:36
+#: ../sources/przemienniki_net.py:36 ../sources/mapy73pl.py:36
+#: ../sources/przemienniki_eu.py:36
 msgid "Querying"
 msgstr ""
 
-#: ../wxui/memedit.py:615
+#: ../wxui/memedit.py:620
 msgid "RX DTCS"
 msgstr ""
 
-#: ../wxui/main.py:1041
+#: ../wxui/main.py:1106
 msgid "Radio"
 msgstr "Radio"
 
-#: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:576
+#: ../drivers/ft450d.py:576 ../drivers/ft60.py:89 ../drivers/ft60.py:91
 #: ../drivers/ft817.py:410
 #, python-format
 msgid "Radio did not ack block %i"
@@ -2283,14 +2808,26 @@ msgid ""
 "<small>Premium account required</small>"
 msgstr ""
 
-#: ../wxui/memedit.py:149
+#: ../wxui/memcolorlegend.py:53
+msgid "Railroad"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:89
+msgid "Railroad operations band."
+msgstr ""
+
+#: ../wxui/memedit.py:154
 msgid "Receive DTCS code"
 msgstr ""
 
-#: ../wxui/memedit.py:142
+#: ../wxui/memedit.py:147
 #, fuzzy
 msgid "Receive frequency"
 msgstr "Frequentie"
+
+#: ../wxui/memcolorlegend.py:37 ../wxui/memcolordialog.py:290
+msgid "Receive-only"
+msgstr ""
 
 #: ../wxui/clone.py:608
 #, fuzzy
@@ -2306,33 +2843,42 @@ msgstr "_Recent"
 msgid "Recommend using 55.2"
 msgstr ""
 
-#: ../wxui/memedit.py:1023
+#: ../wxui/memedit.py:1125
 msgid "Redo"
 msgstr ""
 
-#: ../wxui/common.py:506
+#: ../wxui/common.py:509
 msgid "Refresh required"
 msgstr ""
 
-#: ../wxui/common.py:331
+#: ../wxui/common.py:334
 #, python-format
 msgid "Refreshed memory %s"
 msgstr ""
 
-#: ../wxui/main.py:942
+#: ../wxui/main.py:984
 msgid "Reload Driver"
 msgstr ""
 
-#: ../wxui/main.py:951
+#: ../wxui/main.py:994
 msgid "Reload Driver and File"
 msgstr ""
 
-#: ../wxui/memedit.py:1350
+#: ../wxui/memedit.py:1846
 msgid "Reload required"
 msgstr ""
 
 #: ../wxui/clone.py:628
 msgid "Remove"
+msgstr ""
+
+#: ../wxui/memedit.py:1554
+#, python-format
+msgid "Remove \"%s\""
+msgstr ""
+
+#: ../wxui/memcolordialog.py:359
+msgid "Remove Condition"
 msgstr ""
 
 #: ../wxui/clone.py:629
@@ -2350,7 +2896,11 @@ msgid ""
 "worldwide, FREE repeater directory."
 msgstr ""
 
-#: ../wxui/main.py:1024
+#: ../wxui/memcolordialog.py:760
+msgid "Replace ALL current color settings (including custom rules) with the built-in default profile?"
+msgstr ""
+
+#: ../wxui/main.py:1087
 msgid "Report or update a bug..."
 msgstr ""
 
@@ -2359,27 +2909,43 @@ msgstr ""
 msgid "Reporting a new bug: %r"
 msgstr "Rapportering is uitgeschakeld"
 
-#: ../wxui/main.py:990
+#: ../wxui/main.py:1048
 #, fuzzy
 msgid "Reporting enabled"
 msgstr "Rapportering is uitgeschakeld"
 
-#: ../wxui/main.py:1999
+#: ../wxui/main.py:2127
 msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
 msgstr ""
 
-#: ../wxui/main.py:1660 ../wxui/main.py:1993
+#: ../wxui/memcolordialog.py:269
+msgid "Reset All Colors"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:219
+msgid "Reset All Colors to Defaults"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:107
+msgid "Reset This Category"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:267
+msgid "Reset all built-in category colors to their defaults? Custom rules are not affected."
+msgstr ""
+
+#: ../wxui/main.py:1772 ../wxui/main.py:2121
 msgid "Restart Required"
 msgstr ""
 
-#: ../wxui/main.py:714
+#: ../wxui/main.py:720
 #, python-format
 msgid "Restore %i tab"
 msgid_plural "Restore %i tabs"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../wxui/main.py:846
+#: ../wxui/main.py:872
 msgid "Restore tabs on start"
 msgstr ""
 
@@ -2387,8 +2953,29 @@ msgstr ""
 msgid "Results from other areas"
 msgstr ""
 
-#: ../wxui/common.py:335
+#: ../wxui/common.py:338
 msgid "Retrieved settings"
+msgstr ""
+
+#: ../wxui/memedit.py:3181
+msgid "Rows"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:614
+#, python-format
+msgid "Rule matches: %s"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:430
+msgid "Rule name is required"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:100
+msgid "Sample Memory Text"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:130
+msgid "Sample:"
 msgstr ""
 
 #: ../wxui/query_sources.py:1263
@@ -2399,23 +2986,23 @@ msgid ""
 "up-to-date transmitter data."
 msgstr ""
 
-#: ../wxui/main.py:1072
+#: ../wxui/main.py:1144
 msgid "Save"
 msgstr ""
 
-#: ../wxui/main.py:1534
+#: ../wxui/main.py:1646
 msgid "Save before closing?"
 msgstr ""
 
-#: ../wxui/main.py:1073 ../wxui/main.py:1458
+#: ../wxui/main.py:1145 ../wxui/main.py:1538 ../wxui/main.py:1565
 msgid "Save file"
 msgstr ""
 
-#: ../wxui/common.py:337
+#: ../wxui/common.py:340
 msgid "Saved settings"
 msgstr ""
 
-#: ../wxui/memedit.py:156
+#: ../wxui/memedit.py:161
 msgid "Scan control (skip, include, priority, etc)"
 msgstr ""
 
@@ -2431,7 +3018,7 @@ msgstr ""
 msgid "Security Risk"
 msgstr ""
 
-#: ../wxui/main.py:932
+#: ../wxui/main.py:973
 #, fuzzy
 msgid "Select Bandplan..."
 msgstr "Kolommen selecteren"
@@ -2442,7 +3029,7 @@ msgstr "Kolommen selecteren"
 msgid "Select Bands"
 msgstr "Kolommen selecteren"
 
-#: ../wxui/main.py:1643
+#: ../wxui/main.py:1755
 #, fuzzy
 msgid "Select Language"
 msgstr "Kolommen selecteren"
@@ -2456,11 +3043,11 @@ msgstr "Kolommen selecteren"
 msgid "Select Modes to Import"
 msgstr ""
 
-#: ../wxui/main.py:2071
+#: ../wxui/main.py:2199
 msgid "Select a bandplan"
 msgstr ""
 
-#: ../wxui/main.py:1201
+#: ../wxui/main.py:1273
 msgid "Select a tab and memory to diff"
 msgstr ""
 
@@ -2469,11 +3056,38 @@ msgstr ""
 msgid "Select prefixes"
 msgstr "Kolommen selecteren"
 
-#: ../wxui/query_sources.py:357
+#: ../wxui/memedit.py:1483
+msgid "Select the columns to show in the memory list:"
+msgstr ""
+
+#: ../wxui/memedit.py:1902
+msgid "Select the fields that must match for two memories to be considered duplicates:"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:724
+msgid "Selected Columns"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:282 ../wxui/query_sources.py:357
 msgid "Service"
 msgstr ""
 
-#: ../wxui/main.py:216
+#: ../wxui/memedit.py:1667
+#, python-format
+msgid "Set %(label)s on %(count)i memory"
+msgid_plural "Set %(label)s on %(count)i memories"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../wxui/memedit.py:1644 ../wxui/memedit.py:1657
+msgid "Set Column Value"
+msgstr ""
+
+#: ../wxui/memedit.py:1512
+msgid "Set Column Value..."
+msgstr ""
+
+#: ../wxui/main.py:217
 msgid "Settings"
 msgstr ""
 
@@ -2481,76 +3095,108 @@ msgstr ""
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr ""
 
-#: ../wxui/memedit.py:154
+#: ../wxui/memedit.py:159
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr ""
 
-#: ../wxui/memedit.py:2290 ../wxui/developer.py:101
+#: ../wxui/menucustomize.py:217
+msgid "Show All"
+msgstr ""
+
+#: ../wxui/memedit.py:1540
+msgid "Show All Columns"
+msgstr ""
+
+#: ../wxui/memedit.py:1781
+msgid "Show Color Legend"
+msgstr ""
+
+#: ../wxui/memedit.py:3024 ../wxui/memedit.py:3088 ../wxui/developer.py:101
 msgid "Show Raw Memory"
 msgstr "Toon ruw kanaal"
 
-#: ../wxui/main.py:1008
+#: ../wxui/memcolordialog.py:693
+msgid "Show color legend"
+msgstr ""
+
+#: ../wxui/main.py:1068
 msgid "Show debug log location"
 msgstr ""
 
-#: ../wxui/memedit.py:1314
+#: ../wxui/memedit.py:1748
 msgid "Show extra fields"
 msgstr ""
 
-#: ../wxui/main.py:1013
+#: ../wxui/main.py:1074
 msgid "Show image backup location"
 msgstr ""
 
-#: ../wxui/memedit.py:690
+#: ../wxui/memedit.py:695
 msgid "Skip"
 msgstr "Overslaan"
 
-#: ../wxui/memedit.py:2602
+#: ../wxui/memcolordialog.py:289
+msgid "Skip state"
+msgstr ""
+
+#: ../wxui/memedit.py:3455
 #, fuzzy
 msgid "Some memories are incompatible with this radio"
 msgstr "Geplakt kanaal {number} is niet compatibel met deze radio omdat:"
 
-#: ../wxui/memedit.py:2440
+#: ../wxui/memedit.py:3260
 msgid "Some memories are not deletable"
 msgstr ""
 
-#: ../wxui/memedit.py:2116
+#: ../wxui/memedit.py:3081
+msgid "Sort"
+msgstr ""
+
+#: ../wxui/memedit.py:2833
 #, python-format
 msgid "Sort %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2246
+#: ../wxui/memedit.py:2976
 #, fuzzy, python-format
 msgid "Sort %i memory"
 msgid_plural "Sort %i memories"
 msgstr[0] "Verschillen ruwe kanalen"
 msgstr[1] "Verschillen ruwe kanalen"
 
-#: ../wxui/memedit.py:2250
+#: ../wxui/memedit.py:2981
 #, fuzzy, python-format
 msgid "Sort %i memory ascending"
 msgid_plural "Sort %i memories ascending"
 msgstr[0] "Verschillen ruwe kanalen"
 msgstr[1] "Verschillen ruwe kanalen"
 
-#: ../wxui/memedit.py:2272
+#: ../wxui/memedit.py:3005
 #, fuzzy, python-format
 msgid "Sort %i memory descending"
 msgid_plural "Sort %i memories descending"
 msgstr[0] "Verschillen ruwe kanalen"
 msgstr[1] "Verschillen ruwe kanalen"
 
-#: ../wxui/memedit.py:2131
+#: ../wxui/memedit.py:3082
+msgid "Sort > ascending"
+msgstr ""
+
+#: ../wxui/memedit.py:3083
+msgid "Sort > descending"
+msgstr ""
+
+#: ../wxui/memedit.py:2848
 msgid "Sort by column:"
 msgstr ""
 
-#: ../wxui/memedit.py:2130
+#: ../wxui/memedit.py:2847
 #, fuzzy
 msgid "Sort memories"
 msgstr "Overschrijven?"
 
-#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
-#: ../sources/mapy73pl.py:64
+#: ../sources/przemienniki_net.py:62 ../sources/mapy73pl.py:64
+#: ../sources/przemienniki_eu.py:60
 msgid "Sorting"
 msgstr ""
 
@@ -2562,7 +3208,7 @@ msgstr ""
 msgid "State/Province"
 msgstr ""
 
-#: ../wxui/main.py:2051
+#: ../wxui/main.py:2179
 msgid "Success"
 msgstr ""
 
@@ -2570,12 +3216,20 @@ msgstr ""
 msgid "Successfully sent bug report:"
 msgstr ""
 
-#: ../wxui/memedit.py:341
+#: ../wxui/memedit.py:346
 msgid "TX Frequency"
 msgstr ""
 
-#: ../wxui/memedit.py:150
+#: ../wxui/memedit.py:155
 msgid "TX-RX DTCS polarity (normal or reversed)"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:587 ../wxui/memcolordialog.py:615
+msgid "Test Rule"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:473
+msgid "Test..."
 msgstr ""
 
 #: ../drivers/ft4.py:737
@@ -2583,6 +3237,10 @@ msgid ""
 "Tested and mostly works, but may give you issues\n"
 "when using lesser common radio variants.\n"
 "Proceed at your own risk, and let us know about issues!"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:118 ../wxui/memcolordialog.py:330
+msgid "Text color:"
 msgstr ""
 
 #: ../wxui/query_sources.py:574
@@ -2626,16 +3284,28 @@ msgstr ""
 msgid "The following information will be submitted:"
 msgstr ""
 
-#: ../wxui/memedit.py:1346
+#: ../wxui/memedit.py:1955
+msgid "The following memories are duplicates of another memory. Select the ones you want to delete:"
+msgstr ""
+
+#: ../wxui/memedit.py:1842
 msgid "The memory editor requires a reload in order to change the workflow. That will happen now. Any other open tabs will be updated the next time they are loaded."
 msgstr ""
 
-#: ../wxui/main.py:1490
+#: ../wxui/main.py:1602
 #, python-format
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr ""
 
-#: ../wxui/memedit.py:2207
+#: ../wxui/memedit.py:1643 ../wxui/memedit.py:1682
+msgid "There are no memories to update."
+msgstr ""
+
+#: ../wxui/memcolordialog.py:44
+msgid "These categories are a visual convenience aid, not a legal or regulatory determination. Frequency allocations vary by country, licensing class, and local band plan, and change over time. You remain responsible for verifying your own frequencies and operating privileges."
+msgstr ""
+
+#: ../wxui/memedit.py:2934
 #, fuzzy
 msgid "This Memory"
 msgstr "Toon ruw kanaal"
@@ -2657,11 +3327,11 @@ msgstr ""
 msgid "This image is read-only due to being from a radio with unsupported firmware"
 msgstr ""
 
-#: ../wxui/main.py:1727
+#: ../wxui/main.py:1839
 msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"
 msgstr ""
 
-#: ../wxui/main.py:1733
+#: ../wxui/main.py:1845
 msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
 msgstr ""
 
@@ -2694,12 +3364,12 @@ msgstr ""
 msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
 msgstr ""
 
-#: ../wxui/memedit.py:2211
+#: ../wxui/memedit.py:2938
 #, fuzzy
 msgid "This memory and shift all up"
 msgstr "Verwijderen (en naar boven verplaatsen)"
 
-#: ../wxui/memedit.py:2209
+#: ../wxui/memedit.py:2936
 #, fuzzy
 msgid "This memory and shift block up"
 msgstr "Verwijderen (en naar boven verplaatsen)"
@@ -2736,49 +3406,53 @@ msgstr ""
 msgid "This will load a module from a website issue"
 msgstr ""
 
-#: ../wxui/memedit.py:518
+#: ../wxui/memedit.py:523
 msgid "Tone"
 msgstr "Toon"
 
-#: ../wxui/memedit.py:1407
+#: ../wxui/memedit.py:2005
 msgid "Tone Mode"
 msgstr "Toonmodus"
 
-#: ../wxui/memedit.py:520
+#: ../wxui/memedit.py:525
 #, fuzzy
 msgid "Tone Squelch"
 msgstr "Toon squelch"
 
-#: ../wxui/memedit.py:144
+#: ../wxui/memcolordialog.py:286
+msgid "Tone mode"
+msgstr ""
+
+#: ../wxui/memedit.py:149
 #, fuzzy
 msgid "Tone squelch mode"
 msgstr "Toon squelch"
 
-#: ../wxui/memedit.py:157
+#: ../wxui/memedit.py:162
 msgid "Transmit Power"
 msgstr ""
 
-#: ../wxui/memedit.py:153
+#: ../wxui/memedit.py:158
 msgid "Transmit shift, split mode, or transmit inhibit"
 msgstr ""
 
-#: ../wxui/memedit.py:145
+#: ../wxui/memedit.py:150
 msgid "Transmit tone"
 msgstr ""
 
-#: ../wxui/memedit.py:148
+#: ../wxui/memedit.py:153
 msgid "Transmit/receive DTCS code for DTCS mode, else transmit code"
 msgstr ""
 
-#: ../wxui/memedit.py:147
+#: ../wxui/memedit.py:152
 msgid "Transmit/receive modulation (FM, AM, SSB, etc)"
 msgstr ""
 
-#: ../wxui/memedit.py:146
+#: ../wxui/memedit.py:151
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
 msgstr ""
 
-#: ../wxui/memedit.py:455 ../wxui/memedit.py:1419
+#: ../wxui/memedit.py:460 ../wxui/memedit.py:2017
 #, fuzzy
 msgid "Tuning Step"
 msgstr "Kanaal-afstand"
@@ -2796,27 +3470,27 @@ msgstr ""
 msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
 
-#: ../wxui/memedit.py:1924
+#: ../wxui/memedit.py:2636
 msgid "Unable to edit memory before radio is loaded"
 msgstr ""
 
-#: ../wxui/main.py:1416
+#: ../wxui/main.py:1493
 #, fuzzy, python-format
 msgid "Unable to find stock config %r"
 msgstr "Openen aanwezige configuratie"
 
-#: ../wxui/memedit.py:2457
+#: ../wxui/memedit.py:3277
 #, fuzzy
 msgid "Unable to import while the view is sorted"
 msgstr "Niet in staat om de radio op {port} te detecteren"
 
-#: ../wxui/common.py:237
+#: ../wxui/common.py:240
 #, fuzzy
 msgid "Unable to open the clipboard"
 msgstr "Niet in staat om de radio op {port} te detecteren"
 
-#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
-#: ../sources/mapy73pl.py:50
+#: ../sources/przemienniki_net.py:48 ../sources/mapy73pl.py:50
+#: ../sources/przemienniki_eu.py:46
 msgid "Unable to query"
 msgstr ""
 
@@ -2824,27 +3498,35 @@ msgstr ""
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr ""
 
-#: ../wxui/common.py:701
+#: ../wxui/common.py:704
 #, fuzzy, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "Niet in staat om wijzigingen voor dit model te maken"
 
-#: ../wxui/memedit.py:267
+#: ../wxui/memedit.py:272
 #, fuzzy, python-format
 msgid "Unable to set %s on this memory"
 msgstr "Niet in staat om wijzigingen voor dit model te maken"
 
-#: ../wxui/main.py:1737
+#: ../wxui/main.py:1849
 #, fuzzy
 msgid "Unable to upload this file"
 msgstr "Niet in staat om wijzigingen voor dit model te maken"
 
-#: ../wxui/memedit.py:1022
+#: ../wxui/menucustomize.py:196
+msgid "Uncheck any items you want to hide from their menu. Takes effect immediately."
+msgstr ""
+
+#: ../wxui/memedit.py:1124
 msgid "Undo"
 msgstr ""
 
 #: ../wxui/query_sources.py:1066
 msgid "United States"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:57
+msgid "Unknown"
 msgstr ""
 
 #: ../wxui/clone.py:485
@@ -2873,30 +3555,34 @@ msgstr ""
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr ""
 
-#: ../wxui/main.py:1079
+#: ../wxui/main.py:1151
 #, fuzzy
 msgid "Upload to radio"
 msgstr "Naar radio uploaden"
 
-#: ../wxui/main.py:875
+#: ../wxui/main.py:904
 #, fuzzy
 msgid "Upload to radio..."
 msgstr "Naar radio uploaden"
 
-#: ../wxui/common.py:333
+#: ../wxui/common.py:336
 #, python-format
 msgid "Uploaded memory %s"
 msgstr ""
 
-#: ../wxui/memedit.py:1322
+#: ../wxui/memcolordialog.py:705 ../wxui/memcolordialog.py:762
+msgid "Use Default Color Profile"
+msgstr ""
+
+#: ../wxui/memedit.py:1758
 msgid "Use TX Frequency Workflow"
 msgstr ""
 
-#: ../wxui/main.py:831
+#: ../wxui/main.py:855
 msgid "Use fixed-width font"
 msgstr ""
 
-#: ../wxui/main.py:839
+#: ../wxui/main.py:864
 msgid "Use larger font"
 msgstr ""
 
@@ -2904,17 +3590,29 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
+#: ../wxui/memcolorlegend.py:88
+msgid "VHF marine band."
+msgstr ""
+
+#: ../wxui/memcolordialog.py:347
+msgid "Value"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:396
+msgid "Value (integer Hz for Frequency):"
+msgstr ""
+
 #: ../wxui/developer.py:314
 #, python-format
 msgid "Value does not fit in %i bits"
 msgstr ""
 
-#: ../wxui/common.py:543
+#: ../wxui/common.py:546
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr ""
 
-#: ../wxui/common.py:547
+#: ../wxui/common.py:550
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr ""
@@ -2932,7 +3630,11 @@ msgstr ""
 msgid "Value to search memory field for"
 msgstr ""
 
-#: ../wxui/memedit.py:2880
+#: ../wxui/memcolordialog.py:397
+msgid "Value:"
+msgstr ""
+
+#: ../wxui/memedit.py:3733
 msgid "Values"
 msgstr ""
 
@@ -2940,39 +3642,67 @@ msgstr ""
 msgid "Vendor"
 msgstr "Merk"
 
-#: ../wxui/main.py:1040
+#: ../wxui/main.py:1105
 #, fuzzy
 msgid "View"
 msgstr "Bee_ld"
 
-#: ../wxui/common.py:491
+#: ../wxui/common.py:494
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/bugreport.py:234 ../wxui/memedit.py:2010 ../wxui/main.py:1891
-#: ../wxui/main.py:2043
+#: ../wxui/memedit.py:2722 ../wxui/main.py:2003 ../wxui/main.py:2171
+#: ../wxui/bugreport.py:234
 msgid "Warning"
 msgstr ""
 
-#: ../wxui/memedit.py:2009
+#: ../wxui/memedit.py:2721
 #, python-format
 msgid "Warning: %s"
 msgstr ""
 
-#: ../wxui/main.py:461
+#: ../wxui/main.py:460
 msgid "Welcome"
+msgstr ""
+
+#: ../wxui/memcolorlegend.py:71
+msgid "Well-known amateur calling frequency."
+msgstr ""
+
+#: ../wxui/memcolordialog.py:629
+msgid "When \"Apply color only to selected columns\" is enabled, color coding is limited to these columns:"
 msgstr ""
 
 #: ../wxui/query_sources.py:418
 msgid "With this option checked, a proximity search will include cached results from other localities if they are in range, match other filter parameters, and have been downloaded before."
 msgstr ""
 
+#: ../wxui/memedit.py:1767
+msgid "Word-wrap Comment column"
+msgstr ""
+
 #: ../wxui/__init__.py:59
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr ""
 
+#: ../wxui/memcolordialog.py:614
+msgid "YES"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:242 ../wxui/memcolordialog.py:487
+msgid "Yes"
+msgstr ""
+
+#: ../wxui/main.py:2278
+msgid "You are running the latest version of CHIRP."
+msgstr ""
+
 #: ../wxui/bugreport.py:325
 msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
+msgstr ""
+
+#: ../wxui/memedit.py:1916
+msgid "You must select at least one field."
 msgstr ""
 
 #: ../wxui/clone.py:523
@@ -2999,16 +3729,28 @@ msgstr ""
 msgid "bytes each"
 msgstr ""
 
-#: ../wxui/main.py:1976
+#: ../wxui/memcolordialog.py:296
+msgid "contains"
+msgstr ""
+
+#: ../wxui/main.py:2104
 msgid "disabled"
 msgstr ""
 
-#: ../wxui/main.py:1976
+#: ../wxui/main.py:2104
 msgid "enabled"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:298
+msgid "ends with"
 msgstr ""
 
 #: ../wxui/bugreport.py:420
 msgid "searched for duplicate issues"
+msgstr ""
+
+#: ../wxui/memcolordialog.py:297
+msgid "starts with"
 msgstr ""
 
 #: ../drivers/vx5.py:116
@@ -3199,6 +3941,10 @@ msgstr ""
 #~ msgid "Incompatible Memory"
 #~ msgstr "Onverenigbaar kanaal"
 
+#, fuzzy
+#~ msgid "Insert Row Above"
+#~ msgstr "Regel hierboven invoegen"
+
 #~ msgid "Internal Error: Column {name} not found"
 #~ msgstr "Interne fout: Kolom {name} niet gevonden"
 
@@ -3256,9 +4002,6 @@ msgstr ""
 
 #~ msgid "My callsign"
 #~ msgstr "Mijn roepletters"
-
-#~ msgid "Name"
-#~ msgstr "Naam"
 
 #~ msgid "None"
 #~ msgstr "Geen"
