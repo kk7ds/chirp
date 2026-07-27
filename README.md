@@ -123,6 +123,18 @@ message if there's nothing new.
 
 ![Help menu with a "Check for Updates..." item below About](docs/screenshots/check-updates-menu.png)
 
+### Customize Menus
+
+Help > Customize Menus... opens a tabbed dialog — one tab per top menu
+(File, Edit, View, Radio, Help) plus a "Memory list (right-click)" tab for
+the memory grid's context menu. Uncheck anything you never use to hide it;
+changes take effect immediately, and a "Show All" button resets everything
+back. Hidden items are remembered across restarts. Undo/Redo and the
+Customize Menus item itself are always shown, since they're not worth the
+edge cases of hiding.
+
+![Customize Menus dialog showing the File tab with all items checked](docs/screenshots/customize-menus.png)
+
 ### `run-chirp.sh` / `run-chirp.ps1`
 
 Convenience launchers for running CHIRP straight from a git checkout, without

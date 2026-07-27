@@ -39,6 +39,7 @@ from chirp.wxui import config
 from chirp.wxui import common
 from chirp.wxui import developer
 from chirp.wxui import memquery
+from chirp.wxui import menucustomize
 
 _ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
@@ -1690,6 +1691,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         move_up = common.EditorMenuItem(
             cls, '_move_up', _('Move Up'))
+        menucustomize.tag(move_up, 'edit.move_up')
         # Control-Up is used by default on macOS, so require shift as well
         if sys.platform == 'darwin':
             extra_move = wx.MOD_SHIFT
@@ -1700,36 +1702,45 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         move_dn = common.EditorMenuItem(
             cls, '_move_dn', _('Move Down'))
+        menucustomize.tag(move_dn, 'edit.move_down')
         move_dn.SetAccel(wx.AcceleratorEntry(
             extra_move | wx.ACCEL_RAW_CTRL, wx.WXK_DOWN))
 
         goto = common.EditorMenuItem(cls, '_goto', _('Goto...'))
+        menucustomize.tag(goto, 'edit.goto')
         goto.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('G')))
 
         find_dupes = common.EditorMenuItem(
             cls, '_find_duplicates', _('Find Duplicate Memories...'))
+        menucustomize.tag(find_dupes, 'edit.find_duplicates')
 
         expand_extra = common.EditorMenuItemToggle(
             cls, '_set_expand_extra', ('expand_extra', 'state'),
             _('Show extra fields'))
+        menucustomize.tag(expand_extra, 'view.show_extra_fields')
 
         hide_empty = common.EditorMenuItemToggle(
             cls, '_set_hide_empty', ('hide_empty', 'memedit'),
             _('Hide empty memories'))
+        menucustomize.tag(hide_empty, 'view.hide_empty_memories')
 
         use_txfreq = common.EditorMenuItemToggleStateless(
             cls, '_set_use_txfreq',
             _('Use TX Frequency Workflow'), id=TX_WORKFLOW_ID)
+        menucustomize.tag(use_txfreq, 'view.use_txfreq_workflow')
 
         choose_columns = common.EditorMenuItem(
             cls, '_choose_columns', _('Choose Columns...'))
+        menucustomize.tag(choose_columns, 'view.choose_columns')
 
         wrap_comment = common.EditorMenuItemToggle(
             cls, '_set_wrap_comment', ('wrap_comment', 'memedit'),
             _('Word-wrap Comment column'), default=True)
+        menucustomize.tag(wrap_comment, 'view.wrap_comment')
 
         add_custom_column = common.EditorMenuItem(
             cls, '_add_custom_column', _('Add Custom Column...'))
+        menucustomize.tag(add_custom_column, 'view.add_custom_column')
 
         return {
             common.EditorMenuItem.MENU_EDIT: [
@@ -2728,7 +2739,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if not selected_rows:
             selected_rows = [event.GetRow()]
 
+        tag = menucustomize.tag
+
         props_item = wx.MenuItem(menu, wx.NewId(), _('Properties'))
+        tag(props_item, 'context.properties')
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._mem_properties, selected_rows),
                   props_item)
@@ -2736,32 +2750,38 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         props_item.Enable(self.editable)
 
         insert_item = wx.MenuItem(menu, wx.NewId(), _('Insert Rows Above...'))
+        tag(insert_item, 'context.insert_rows')
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._mem_insert, selected_rows[0]),
                   insert_item)
         menu.Append(insert_item)
 
         cut_item = wx.MenuItem(menu, wx.NewId(), _('Cut'))
+        tag(cut_item, 'context.cut')
         self.Bind(wx.EVT_MENU, lambda e: self.cb_copy(cut=True), cut_item)
         menu.Append(cut_item)
         cut_item.Enable(self.editable)
 
         copy_item = wx.MenuItem(menu, wx.NewId(), _('Copy'))
+        tag(copy_item, 'context.copy')
         self.Bind(wx.EVT_MENU, lambda e: self.cb_copy(cut=False), copy_item)
         menu.Append(copy_item)
 
         copy_item = wx.MenuItem(menu, wx.NewId(), _('Copy portable'))
+        tag(copy_item, 'context.copy_portable')
         self.Bind(wx.EVT_MENU, lambda e: self.cb_copy(
             cut=False, portable=True), copy_item)
         menu.Append(copy_item)
 
         paste_item = wx.MenuItem(menu, wx.NewId(), _('Paste'))
+        tag(paste_item, 'context.paste')
         self.Bind(wx.EVT_MENU, lambda e: self.cb_paste(), paste_item)
         menu.Append(paste_item)
         paste_item.Enable(self.editable)
 
         delete_menu = wx.Menu()
         delete_menu_item = menu.AppendSubMenu(delete_menu, _('Delete'))
+        tag(delete_menu_item, 'context.delete')
         delete_menu_item.Enable(self.editable)
 
         if len(selected_rows) > 1:
@@ -2799,6 +2819,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                                     shift_up='all'),
                   del_shift_item)
 
+        tag(del_item, 'context.delete.this')
+        tag(del_block_item, 'context.delete.shift_block')
+        tag(del_shift_item, 'context.delete.shift_all')
         delete_menu.Append(del_item)
         delete_menu.Append(del_block_item)
         delete_menu.Append(del_shift_item)
@@ -2822,11 +2845,13 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             sort_menu,
             ngettext('Sort %i memory', 'Sort %i memories',
                      len(selected_rows)) % len(selected_rows))
+        tag(sort_menu_item, 'context.sort')
         sortasc_item = wx.MenuItem(
             sort_menu, wx.NewId(),
             ngettext('Sort %i memory ascending',
                      'Sort %i memories ascending',
                      len(selected_rows)) % len(selected_rows))
+        tag(sortasc_item, 'context.sort.ascending')
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._sort_memories, selected_rows,
                                     False),
@@ -2837,6 +2862,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             menu, wx.NewId(),
             ngettext('Cluster %i memory', 'Cluster %i memories',
                      used_selected) % used_selected)
+        tag(arrange_item, 'context.cluster')
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._arrange_memories, selected_rows),
                   arrange_item)
@@ -2849,6 +2875,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             ngettext('Sort %i memory descending',
                      'Sort %i memories descending',
                      len(selected_rows)) % len(selected_rows))
+        tag(sortdesc_item, 'context.sort.descending')
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._sort_memories, selected_rows,
                                     True),
@@ -2865,6 +2892,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             menu.Append(wx.MenuItem(menu, wx.ID_SEPARATOR))
 
             raw_item = wx.MenuItem(menu, wx.NewId(), _('Show Raw Memory'))
+            tag(raw_item, 'context.dev.show_raw')
             self.Bind(wx.EVT_MENU,
                       functools.partial(self._mem_showraw, event.GetRow()),
                       raw_item)
@@ -2873,6 +2901,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
             diff_item = wx.MenuItem(menu, wx.NewId(),
                                     _('Diff Raw Memories'))
+            tag(diff_item, 'context.dev.diff_raw')
             self.Bind(wx.EVT_MENU,
                       functools.partial(self._mem_diff, selected_rows),
                       diff_item)
@@ -2881,14 +2910,57 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
             diff_across_item = wx.MenuItem(menu, wx.NewId(),
                                            _('Diff against another editor'))
+            tag(diff_across_item, 'context.dev.diff_across')
             self.Bind(wx.EVT_MENU,
                       functools.partial(self._mem_diff_across, event.GetRow()),
                       diff_across_item)
             menu.Append(diff_across_item)
             menu.Enable(diff_across_item.GetId(), len(selected_rows) == 1)
 
+        menucustomize.filter_hidden(menu)
+
         self.PopupMenu(menu)
         menu.Destroy()
+
+    @classmethod
+    def get_context_menu_registry(cls):
+        """Static (key, path, label) list matching _memory_rclick's items.
+
+        Used only by Help > Customize Menus... to list what's hideable;
+        _memory_rclick itself is only ever built live, against an actual
+        selection, so this can't be harvested the same way the top menu
+        bar's registry is. Labels here use the singular ("This Memory")
+        forms; the real menu may pluralize them based on selection, but
+        the underlying key -- what actually gets hidden -- is the same
+        either way.
+        """
+        path = ('Memory list (right-click)',)
+        entries = [
+            ('context.properties', path, _('Properties')),
+            ('context.insert_rows', path, _('Insert Rows Above...')),
+            ('context.cut', path, _('Cut')),
+            ('context.copy', path, _('Copy')),
+            ('context.copy_portable', path, _('Copy portable')),
+            ('context.paste', path, _('Paste')),
+            ('context.delete', path, _('Delete')),
+            ('context.delete.this', path, _('Delete > This Memory')),
+            ('context.delete.shift_block', path,
+             _('Delete > This memory and shift block up')),
+            ('context.delete.shift_all', path,
+             _('Delete > This memory and shift all up')),
+            ('context.sort', path, _('Sort')),
+            ('context.sort.ascending', path, _('Sort > ascending')),
+            ('context.sort.descending', path, _('Sort > descending')),
+            ('context.cluster', path, _('Cluster memory')),
+        ]
+        if developer.developer_mode():
+            entries.extend([
+                ('context.dev.show_raw', path, _('Show Raw Memory')),
+                ('context.dev.diff_raw', path, _('Diff Raw Memories')),
+                ('context.dev.diff_across', path,
+                 _('Diff against another editor')),
+            ])
+        return entries
 
     @common.error_proof()
     def _mem_properties(self, rows, event):

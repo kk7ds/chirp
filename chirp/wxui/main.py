@@ -46,6 +46,7 @@ from chirp.wxui import common
 from chirp.wxui import clone
 from chirp.wxui import developer
 from chirp.wxui import memedit
+from chirp.wxui import menucustomize
 from chirp.wxui import printing
 from chirp.wxui import query_sources
 from chirp.wxui import radioinfo
@@ -682,23 +683,29 @@ class ChirpMain(wx.Frame):
         memedit_items = memedit.ChirpMemEdit.get_menu_items()
         self.editor_menu_items.update(memedit_items)
 
+        tag = menucustomize.tag
+
         file_menu = wx.Menu()
 
         new_item = file_menu.Append(wx.ID_NEW)
+        tag(new_item, 'file.new')
         self.Bind(wx.EVT_MENU, self._menu_new, new_item)
 
         new_window = file_menu.Append(wx.ID_ANY, _('New Window'))
+        tag(new_window, 'file.new_window')
         self.Bind(wx.EVT_MENU, self._menu_new_window, new_window)
         new_window.SetAccel(
             wx.AcceleratorEntry(
                 wx.MOD_CONTROL | wx.ACCEL_SHIFT, ord('N')))
 
         open_item = file_menu.Append(wx.ID_OPEN)
+        tag(open_item, 'file.open')
         self.Bind(wx.EVT_MENU, self._menu_open, open_item)
 
         self.OPEN_STOCK_CONFIG_MENU = self.add_stock_menu()
-        file_menu.AppendSubMenu(self.OPEN_STOCK_CONFIG_MENU,
-                                _("Open Stock Config"))
+        stock_config_item = file_menu.AppendSubMenu(
+            self.OPEN_STOCK_CONFIG_MENU, _("Open Stock Config"))
+        tag(stock_config_item, 'file.open_stock_config')
 
         self.OPEN_RECENT_MENU = wx.Menu()
         self.restore_tabs_item = wx.NewId()
@@ -716,12 +723,16 @@ class ChirpMain(wx.Frame):
                 wx.MOD_CONTROL | wx.ACCEL_SHIFT, ord('T')))
             self.Bind(wx.EVT_MENU, self.restore_tabs, submenu_item)
 
-        file_menu.AppendSubMenu(self.OPEN_RECENT_MENU, _('Open Recent'))
+        open_recent_item = file_menu.AppendSubMenu(
+            self.OPEN_RECENT_MENU, _('Open Recent'))
+        tag(open_recent_item, 'file.open_recent')
 
         save_item = file_menu.Append(wx.ID_SAVE)
+        tag(save_item, 'file.save')
         self.Bind(wx.EVT_MENU, self._menu_save, save_item)
 
         saveas_item = file_menu.Append(wx.ID_SAVEAS)
+        tag(saveas_item, 'file.save_as')
         saveas_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL | wx.ACCEL_ALT,
                                                  ord('S')))
         self.Bind(wx.EVT_MENU, self._menu_save_as, saveas_item)
@@ -730,29 +741,34 @@ class ChirpMain(wx.Frame):
         import_item = file_menu.Append(wx.MenuItem(file_menu,
                                                    self._import_menu_item,
                                                    _('Import from file...')))
+        tag(import_item, 'file.import')
         self.Bind(wx.EVT_MENU, self._menu_import, import_item)
 
         self._export_menu_item = wx.NewId()
         export_item = file_menu.Append(wx.MenuItem(file_menu,
                                                    self._export_menu_item,
                                                    _('Export to CSV...')))
+        tag(export_item, 'file.export')
         export_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('E')))
         self.Bind(wx.EVT_MENU, self._menu_export, export_item)
 
         if developer.developer_mode():
             loadmod_item = file_menu.Append(wx.MenuItem(file_menu, wx.NewId(),
                                                         _('Load Module...')))
+            tag(loadmod_item, 'file.load_module')
             self.Bind(wx.EVT_MENU, self._menu_load_module, loadmod_item)
 
         file_menu.Append(wx.MenuItem(file_menu, wx.ID_SEPARATOR))
 
         print_item = file_menu.Append(wx.ID_PRINT)
+        tag(print_item, 'file.print')
         self.Bind(wx.EVT_MENU, self._menu_print, print_item)
 
         self._print_preview_item = wx.NewId()
         print_preview_item = wx.MenuItem(file_menu,
                                          self._print_preview_item,
                                          _('Print Preview'))
+        tag(print_preview_item, 'file.print_preview')
         self.Bind(wx.EVT_MENU, self._menu_print, print_preview_item)
         # Linux has integrated preview stuff, and the wx preview dialog
         # does not work well, so skip this on Linux.
@@ -760,28 +776,35 @@ class ChirpMain(wx.Frame):
             file_menu.Append(print_preview_item)
 
         close_item = file_menu.Append(wx.ID_CLOSE)
+        tag(close_item, 'file.close')
         close_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('W')))
         self.Bind(wx.EVT_MENU, self._menu_close, close_item)
 
         exit_item = file_menu.Append(wx.ID_EXIT)
+        tag(exit_item, 'file.exit')
         self.Bind(wx.EVT_MENU, self._menu_exit, exit_item)
 
         edit_menu = wx.Menu()
 
         cut_item = edit_menu.Append(wx.ID_CUT)
+        tag(cut_item, 'edit.cut')
         self.Bind(wx.EVT_MENU, functools.partial(self._menu_copy, cut=True),
                   cut_item)
 
         copy_item = edit_menu.Append(wx.ID_COPY)
+        tag(copy_item, 'edit.copy')
         self.Bind(wx.EVT_MENU, self._menu_copy, copy_item)
 
         paste_item = edit_menu.Append(wx.ID_PASTE)
+        tag(paste_item, 'edit.paste')
         self.Bind(wx.EVT_MENU, self._menu_paste, paste_item)
 
         selall_item = edit_menu.Append(wx.ID_SELECTALL)
+        tag(selall_item, 'edit.select_all')
         self.Bind(wx.EVT_MENU, self._menu_selall, selall_item)
 
         delete_item = edit_menu.Append(wx.ID_DELETE)
+        tag(delete_item, 'edit.delete')
         delete_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, wx.WXK_BACK))
         self.Bind(wx.EVT_MENU, self._menu_delete, delete_item)
 
@@ -789,6 +812,7 @@ class ChirpMain(wx.Frame):
 
         self._last_search_text = ''
         find_item = edit_menu.Append(wx.ID_FIND)
+        tag(find_item, 'edit.find')
         edit_menu.SetLabel(wx.ID_FIND, _('Find...'))
         find_item.SetAccel(wx.AcceleratorEntry(wx.MOD_CONTROL, ord('F')))
         self.Bind(wx.EVT_MENU, self._menu_find, find_item)
@@ -804,6 +828,7 @@ class ChirpMain(wx.Frame):
         find_next_item = edit_menu.Append(wx.MenuItem(edit_menu,
                                                       self._find_next_item,
                                                       _('Find Next')))
+        tag(find_next_item, 'edit.find_next')
         find_next_item.SetAccel(findnextacc)
         self.Bind(wx.EVT_MENU, self._menu_find, find_next_item,
                   self._find_next_item)
@@ -830,6 +855,7 @@ class ChirpMain(wx.Frame):
                                  _('Use fixed-width font'),
                                  kind=wx.ITEM_CHECK)
         view_menu.Append(fixed_item)
+        tag(fixed_item, 'view.fixed_font')
         self.Bind(wx.EVT_MENU, self._menu_fixed_font, fixed_item)
         fixed_item.Check(CONF.get_bool('font_fixed', 'state', False))
 
@@ -838,6 +864,7 @@ class ChirpMain(wx.Frame):
                                  _('Use larger font'),
                                  kind=wx.ITEM_CHECK)
         view_menu.Append(large_item)
+        tag(large_item, 'view.large_font')
         self.Bind(wx.EVT_MENU, self._menu_large_font, large_item)
         large_item.Check(CONF.get_bool('font_large', 'state', False))
 
@@ -845,6 +872,7 @@ class ChirpMain(wx.Frame):
                                    _('Restore tabs on start'),
                                    kind=wx.ITEM_CHECK)
         view_menu.Append(restore_tabs)
+        tag(restore_tabs, 'view.restore_tabs')
         self.Bind(wx.EVT_MENU, self._menu_restore_tabs, restore_tabs)
         restore_tabs.Check(CONF.get_bool('restore_tabs', 'prefs', False))
 
@@ -852,6 +880,7 @@ class ChirpMain(wx.Frame):
                                 _('Language') + '...')
         self.Bind(wx.EVT_MENU, self._menu_language, lang_item)
         view_menu.Append(lang_item)
+        tag(lang_item, 'view.language')
 
         radio_menu = wx.Menu()
 
@@ -864,6 +893,7 @@ class ChirpMain(wx.Frame):
         download_item = wx.MenuItem(
             radio_menu, self._download_menu_item,
             _('Download from radio...'))
+        tag(download_item, 'radio.download')
         download_item.SetAccel(wx.AcceleratorEntry(updownmod, ord('D')))
         self.Bind(wx.EVT_MENU, self._menu_download, download_item)
         radio_menu.Append(download_item)
@@ -872,49 +902,60 @@ class ChirpMain(wx.Frame):
         upload_item = wx.MenuItem(
             radio_menu, self._upload_menu_item,
             _('Upload to radio...'))
+        tag(upload_item, 'radio.upload')
         upload_item.SetAccel(wx.AcceleratorEntry(updownmod, ord('U')))
         self.Bind(wx.EVT_MENU, self._menu_upload, upload_item)
         radio_menu.Append(upload_item)
 
         source_menu = wx.Menu()
-        radio_menu.AppendSubMenu(source_menu, _('Query Source'))
+        query_source_item = radio_menu.AppendSubMenu(
+            source_menu, _('Query Source'))
+        tag(query_source_item, 'radio.query_source')
 
         query_rr_item = wx.MenuItem(source_menu,
                                     wx.NewId(), 'RadioReference.com')
+        tag(query_rr_item, 'radio.query_source.radioreference')
         self.Bind(wx.EVT_MENU, self._menu_query_rr, query_rr_item)
         source_menu.Append(query_rr_item)
 
         query_rb_item = wx.MenuItem(source_menu, wx.NewId(), 'RepeaterBook')
+        tag(query_rb_item, 'radio.query_source.repeaterbook')
         query_rb_item.SetAccel(wx.AcceleratorEntry(updownmod, ord('B')))
         self.Bind(wx.EVT_MENU, self._menu_query_rb, query_rb_item)
         source_menu.Append(query_rb_item)
 
         query_dm_item = wx.MenuItem(source_menu, wx.NewId(), 'DMR-MARC')
+        tag(query_dm_item, 'radio.query_source.dmr_marc')
         self.Bind(wx.EVT_MENU, self._menu_query_dm, query_dm_item)
         source_menu.Append(query_dm_item)
 
         query_prznet_item = wx.MenuItem(source_menu, wx.NewId(),
                                         'przemienniki.net')
+        tag(query_prznet_item, 'radio.query_source.przemienniki_net')
         self.Bind(wx.EVT_MENU, self._menu_query_prznet, query_prznet_item)
         source_menu.Append(query_prznet_item)
 
         query_przeu_item = wx.MenuItem(source_menu, wx.NewId(),
                                        'przemienniki.eu')
+        tag(query_przeu_item, 'radio.query_source.przemienniki_eu')
         self.Bind(wx.EVT_MENU, self._menu_query_przeu, query_przeu_item)
         source_menu.Append(query_przeu_item)
 
         query_mapy73pl_item = wx.MenuItem(source_menu, wx.NewId(), 'mapy73.pl')
+        tag(query_mapy73pl_item, 'radio.query_source.mapy73pl')
         self.Bind(wx.EVT_MENU, self._menu_query_mapy73pl, query_mapy73pl_item)
         source_menu.Append(query_mapy73pl_item)
 
         query_amsat_item = wx.MenuItem(
             source_menu, wx.NewId(),
             'Radio Amateur Satellites (GitHub Mirror)')
+        tag(query_amsat_item, 'radio.query_source.amsats')
         self.Bind(wx.EVT_MENU, self._menu_query_amsats, query_amsat_item)
         source_menu.Append(query_amsat_item)
 
         query_satnogs_item = wx.MenuItem(source_menu, wx.NewId(),
                                          'SatNOGS DB (Direct API)')
+        tag(query_satnogs_item, 'radio.query_source.satnogs')
         self.Bind(wx.EVT_MENU, self._menu_query_satnogs, query_satnogs_item)
         source_menu.Append(query_satnogs_item)
 
@@ -923,12 +964,14 @@ class ChirpMain(wx.Frame):
         auto_edits = wx.MenuItem(radio_menu, wx.NewId(),
                                  _('Enable Automatic Edits'),
                                  kind=wx.ITEM_CHECK)
+        tag(auto_edits, 'radio.auto_edits')
         self.Bind(wx.EVT_MENU, self._menu_auto_edits, auto_edits)
         radio_menu.Append(auto_edits)
         auto_edits.Check(CONF.get_bool('auto_edits', 'state', True))
 
         select_bandplan = wx.MenuItem(radio_menu, wx.NewId(),
                                       _('Select Bandplan...'))
+        tag(select_bandplan, 'radio.select_bandplan')
         self.Bind(wx.EVT_MENU, self._menu_select_bandplan, select_bandplan)
         radio_menu.Append(select_bandplan)
 
@@ -939,6 +982,7 @@ class ChirpMain(wx.Frame):
             reload_drv_item = wx.MenuItem(radio_menu,
                                           self._reload_driver_item,
                                           _('Reload Driver'))
+            tag(reload_drv_item, 'radio.dev.reload_driver')
             reload_drv_item.SetAccel(
                 wx.AcceleratorEntry(wx.MOD_CONTROL, ord('R')))
             self.Bind(wx.EVT_MENU, self._menu_reload_driver, reload_drv_item)
@@ -962,6 +1006,7 @@ class ChirpMain(wx.Frame):
             interact_drv_item = wx.MenuItem(radio_menu,
                                             self._interact_driver_item,
                                             _('Interact with driver'))
+            tag(interact_drv_item, 'radio.dev.interact_driver')
             self.Bind(wx.EVT_MENU, self._menu_interact_driver,
                       interact_drv_item)
             radio_menu.Append(interact_drv_item)
@@ -976,14 +1021,23 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_about, about_item)
         help_menu.Append(about_item)
 
+        # Deliberately not tagged/hideable: it's the escape hatch back to
+        # this dialog if the user hides something they didn't mean to.
+        customize_item = wx.MenuItem(help_menu, wx.NewId(),
+                                     _('Customize Menus...'))
+        self.Bind(wx.EVT_MENU, self._menu_customize_menus, customize_item)
+        help_menu.Append(customize_item)
+
         check_updates_item = wx.MenuItem(help_menu, wx.NewId(),
                                          _('Check for Updates...'))
+        tag(check_updates_item, 'help.check_updates')
         self.Bind(wx.EVT_MENU, self._menu_check_updates, check_updates_item)
         help_menu.Append(check_updates_item)
 
         developer_menu = wx.MenuItem(help_menu, wx.NewId(),
                                      _('Developer Mode'),
                                      kind=wx.ITEM_CHECK)
+        tag(developer_menu, 'help.developer_mode')
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._menu_developer, developer_menu),
                   developer_menu)
@@ -993,6 +1047,7 @@ class ChirpMain(wx.Frame):
         reporting_menu = wx.MenuItem(help_menu, wx.NewId(),
                                      _('Reporting enabled'),
                                      kind=wx.ITEM_CHECK)
+        tag(reporting_menu, 'help.reporting_enabled')
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._menu_reporting, reporting_menu),
                   reporting_menu)
@@ -1004,28 +1059,33 @@ class ChirpMain(wx.Frame):
             # a debug.log file this session.
             debug_log_menu = wx.MenuItem(help_menu, wx.NewId(),
                                          _('Open debug log'))
+            tag(debug_log_menu, 'help.open_debug_log')
             self.Bind(wx.EVT_MENU, self._menu_debug_log, debug_log_menu)
             help_menu.Append(debug_log_menu)
 
             if platform.system() in ('Windows', 'Darwin'):
                 debug_loc_menu = wx.MenuItem(help_menu, wx.NewId(),
                                              _('Show debug log location'))
+                tag(debug_loc_menu, 'help.debug_log_location')
                 self.Bind(wx.EVT_MENU, self._menu_debug_loc, debug_loc_menu)
                 help_menu.Append(debug_loc_menu)
 
         backup_loc_menu = wx.MenuItem(help_menu, wx.NewId(),
                                       _('Show image backup location'))
+        tag(backup_loc_menu, 'help.backup_location')
         self.Bind(wx.EVT_MENU, self._menu_backup_loc, backup_loc_menu)
         help_menu.Append(backup_loc_menu)
 
         lmfi_menu = wx.MenuItem(help_menu, wx.NewId(),
                                 _('Load module from issue...'))
+        tag(lmfi_menu, 'help.load_module_from_issue')
         self.Bind(wx.EVT_MENU, self._menu_load_from_issue, lmfi_menu)
         help_menu.Append(lmfi_menu)
 
         self.bug_report_item = wx.MenuItem(
             help_menu, wx.NewId(),
             _('Report or update a bug...'))
+        tag(self.bug_report_item, 'help.report_bug')
         self.Bind(wx.EVT_MENU,
                   functools.partial(bugreport.do_bugreport, self),
                   self.bug_report_item)
@@ -1035,6 +1095,7 @@ class ChirpMain(wx.Frame):
         if developer.developer_mode():
             trace_item = wx.MenuItem(help_menu, wx.NewId(),
                                      _('Open last serial trace'))
+            tag(trace_item, 'help.dev.last_serial_trace')
             self.Bind(wx.EVT_MENU, self._menu_last_trace, trace_item)
             help_menu.Append(trace_item)
 
@@ -1044,6 +1105,13 @@ class ChirpMain(wx.Frame):
         menu_bar.Append(view_menu, '&' + _('View'))
         menu_bar.Append(radio_menu, '&' + _('Radio'))
         menu_bar.Append(help_menu, _('Help'))
+
+        # Snapshot every hideable item (as plain data, not live wx objects)
+        # before filter_hidden() below destroys the currently-hidden ones,
+        # so Help > Customize Menus... can still offer to re-show them.
+        self._menu_registry = menucustomize.collect_menu_bar_items(menu_bar)
+
+        menucustomize.filter_hidden(menu_bar)
 
         return menu_bar
 
@@ -2019,6 +2087,17 @@ GNU General Public License for more details."""
         report.check_for_updates(
             lambda ver: wx.CallAfter(display_update_notice, ver,
                                      manual=True))
+
+    def _menu_customize_menus(self, event):
+        context_entries = memedit.ChirpMemEdit.get_context_menu_registry()
+        d = menucustomize.MenuCustomizeDialog(
+            self, self._menu_registry, context_entries)
+        try:
+            if d.ShowModal() == wx.ID_OK:
+                menucustomize.set_hidden_items(d.get_hidden_items())
+                self.SetMenuBar(self.make_menubar())
+        finally:
+            d.Destroy()
 
     def _menu_developer(self, menuitem, event):
         developer.developer_mode(menuitem.IsChecked())

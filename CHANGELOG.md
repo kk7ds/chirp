@@ -14,6 +14,14 @@ downloadable `CHIRP-*-x86_64.AppImage` asset, built automatically by
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-07-26
+
+### Added
+
+- Help > Customize Menus... lets you hide individual items from the top
+  menu bar and the memory list's right-click menu, tab by tab, with a
+  "Show All" button to reset. Hidden items are remembered across restarts.
+
 ## [1.8.0] - 2026-07-27
 
 ### Changed
