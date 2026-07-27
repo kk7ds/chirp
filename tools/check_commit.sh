@@ -109,8 +109,9 @@ if [ "$modified_img" -a "$modified_py" ]; then
 fi
 
 existing_drivers=$(git ls-tree --name-only $BASE -- chirp/drivers/)
+added_drivers=$(echo "$added_py" | grep '^chirp/drivers/')
 limit=51
-for nf in $added_py; do
+for nf in $added_drivers; do
     for of in $existing_drivers; do
         common=$(wdiff -s $of $nf | grep -I $nf | sed -r 's/.* ([0-9]+)% common.*/\1/')
         if [ ! "$common" ]; then

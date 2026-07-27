@@ -139,6 +139,41 @@ edge cases of hiding.
 
 ![Customize Menus dialog showing the File tab with all items checked](docs/screenshots/customize-menus.png)
 
+### Configurable memory color coding
+
+The memory list can color-code rows (or just selected columns) by what a
+memory is: amateur repeater vs. simplex vs. calling frequency, GMRS, FRS,
+MURS, marine, aviation, railroad, public safety, business/industrial,
+NOAA weather, and more, plus operational states like disabled/skipped,
+receive-only, and (optionally) invalid. It's on by default; everything
+about it lives under View > Customize Colors... and View > Enable Memory
+Color Coding / Show Color Legend.
+
+Amateur-radio memories get finer-grained categories than a single "ham"
+color: repeater, simplex, national/regional calling frequency, satellite,
+APRS/data, digital voice (DMR/D-STAR/System Fusion/P25), propagation
+beacon/weak-signal specialty, receive-only, and general/unclassified.
+Repeater vs. simplex is determined from duplex/offset, not from whether a
+tone is set, so a repeater with no tone configured still shows as a
+repeater. Classification follows a fixed precedence — invalid (opt-in) >
+disabled/skipped > your custom rules > emergency/calling >
+specialized amateur operation > plain service membership > receive-only >
+unknown — so a given memory's color is always deterministic and
+explainable.
+
+Every category's colors (background, text, bold, enabled/disabled) are
+yours to change, and you can add your own rules matching frequency,
+service, duplex, mode, tone, name, comment, skip state, and more, each
+with its own color and priority. Color profiles export/import as JSON for
+sharing or backup. Nothing about this feature is written into radio
+memories, image files, CSV exports, or uploaded to a radio — it's
+CHIRP-local display metadata only.
+
+These categories are a visual convenience aid, not a legal or regulatory
+determination — frequency allocations vary by country, licensing class, and
+local band plan, and change over time. You remain responsible for
+verifying your own frequencies and operating privileges.
+
 ### `run-chirp.sh` / `run-chirp.ps1`
 
 Convenience launchers for running CHIRP straight from a git checkout, without
