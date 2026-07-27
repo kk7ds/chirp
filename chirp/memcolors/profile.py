@@ -20,12 +20,13 @@ A ColorProfile bundles: whether color coding is on, how it's applied
 (only entries that differ from the shipped defaults are stored), and
 any user-defined rules.
 
-Serialization is plain JSON (see to_dict()/from_dict()), never eval() or
-pickle. Every loaded value is validated; anything malformed is dropped
-(with the built-in default substituted) rather than raising, so a
-corrupted or hand-edited config file degrades gracefully instead of
-crashing the app. Callers that need to distinguish "loaded cleanly" from
-"recovered from a malformed file" can check ColorProfile.load_warnings.
+Serialization is plain JSON (see to_dict()/from_dict()) -- no arbitrary
+code execution, no pickle. Every loaded value is validated; anything
+malformed is dropped (with the built-in default substituted) rather
+than raising, so a corrupted or hand-edited config file degrades
+gracefully instead of crashing the app. Callers that need to
+distinguish "loaded cleanly" from "recovered from a malformed file"
+can check ColorProfile.load_warnings.
 """
 
 import dataclasses

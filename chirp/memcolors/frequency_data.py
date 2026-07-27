@@ -16,9 +16,9 @@
 """Curated, region-scoped frequency data used by the color-code classifier.
 
 IMPORTANT: this data is a convenience aid for grouping memories visually.
-It is NOT a legal or regulatory determination of band allocation, license
+It is NOT a legal or regulatory determination of band allocation, licensing
 class, or operating privileges. Allocations vary by country, ITU region,
-license class, and local band plan, and change over time. Users remain
+licensing class, and local band plan, and change over time. Users remain
 responsible for verifying their own frequencies and operating privileges.
 
 Only a "US" region is populated today. The Region dataclass is the seam

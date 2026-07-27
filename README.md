@@ -170,7 +170,7 @@ memories, image files, CSV exports, or uploaded to a radio — it's
 CHIRP-local display metadata only.
 
 These categories are a visual convenience aid, not a legal or regulatory
-determination — frequency allocations vary by country, license class, and
+determination — frequency allocations vary by country, licensing class, and
 local band plan, and change over time. You remain responsible for
 verifying your own frequencies and operating privileges.
 

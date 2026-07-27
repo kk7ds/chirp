@@ -21,7 +21,7 @@ wx-facing rendering adapter lives in chirp.wxui.memcolors.
 
 Classifications produced here are a convenience aid for visually grouping
 memories in the editor. They are not a regulatory or legal determination
-of band allocation, license class, or operating privileges -- frequency
+of band allocation, licensing class, or operating privileges -- frequency
 allocations vary by country, ITU region, and local band plan, and change
 over time. Users remain responsible for verifying their own frequencies
 and operating privileges.

@@ -15,7 +15,7 @@
 
 """User-defined color rules: a validated, structured match schema.
 
-Deliberately NOT an expression language -- no eval(), no arbitrary code.
+Deliberately NOT an expression language -- no arbitrary code execution.
 A rule is a name/color plus a list of (field, operator, value) conditions
 that are all AND-ed together. This keeps import/export safe: a malformed
 or hostile rule file can, at worst, fail validation.
