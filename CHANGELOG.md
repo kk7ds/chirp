@@ -14,6 +14,17 @@ downloadable `CHIRP-*-x86_64.AppImage` asset, built automatically by
 
 ## [Unreleased]
 
+### Added
+
+- Configurable memory color coding: the memory list can color-code rows
+  (or just selected columns) by service and operational type, including
+  amateur-radio subcategories (repeater, simplex, calling, satellite,
+  APRS/data, digital voice, beacon/specialty, receive-only). On by
+  default; customize, disable, or reset colors via View > Customize
+  Colors..., with a hideable legend and JSON profile import/export.
+  Custom color rules can match frequency, service, duplex, mode, tone,
+  name, comment, and more.
+
 ## [1.9.0] - 2026-07-26
 
 ### Added
