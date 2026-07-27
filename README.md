@@ -65,6 +65,13 @@ their own comment.
 
 ![Memory list with Comment column word-wrapped across multiple lines](docs/screenshots/columns-and-wordwrap.png)
 
+### Insert multiple rows at once
+
+Right-click a memory row and choose Insert Rows Above... to insert more than
+one blank row in a single action — you're prompted for how many, instead of
+always getting exactly one. Inserting 5 rows is tracked as a single undo
+step, same as inserting 1.
+
 ### Find Duplicate Memories
 
 Edit > Find Duplicate Memories... lets you choose which fields (frequency,

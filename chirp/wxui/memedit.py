@@ -2735,7 +2735,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         menu.Append(props_item)
         props_item.Enable(self.editable)
 
-        insert_item = wx.MenuItem(menu, wx.NewId(), _('Insert Row Above'))
+        insert_item = wx.MenuItem(menu, wx.NewId(), _('Insert Rows Above...'))
         self.Bind(wx.EVT_MENU,
                   functools.partial(self._mem_insert, selected_rows[0]),
                   insert_item)
@@ -2908,9 +2908,20 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
-    @common.error_proof()
-    @undoable('Insert row')
-    def _mem_insert(self, row, event):
+    def _count_empty_rows_below(self, row):
+        upper_row = self.mem2row(self._features.memory_bounds[1])
+        return sum(1 for i in range(row, upper_row + 1)
+                   if self._memory_cache[i].empty)
+
+    def _do_insert_row(self, row, mems_to_refresh):
+        """Insert a single empty row above @row.
+
+        Shifts memories from @row down to the nearest empty row below
+        it (raising if there isn't one), then erases @row. Appends the
+        numbers of every memory touched to @mems_to_refresh, but does
+        not refresh them or post a changed event itself, so callers can
+        do that once after inserting multiple rows.
+        """
         # Traverse memories downward until we find a hole
         for i in range(row, self.mem2row(self._features.memory_bounds[1]) + 1):
             mem = self._memory_cache[i]
@@ -2921,7 +2932,6 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         else:
             raise Exception(_('No empty rows below!'))
 
-        mems_to_refresh = []
         # Move memories down in reverse order
         for target_row in range(empty_row, row, -1):
             mem = self._memory_cache[target_row - 1].dupe()
@@ -2936,11 +2946,42 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self.erase_memory(self.row2mem(row), refresh=False)
         mems_to_refresh.append(self.row2mem(row))
 
-        # Refresh all the memories we touched
-        for number in mems_to_refresh:
-            self.refresh_memory(number)
+    @common.error_proof()
+    @undoable('Insert rows')
+    def _mem_insert_many(self, row, count):
+        available = self._count_empty_rows_below(row)
+        if count > available:
+            raise Exception(
+                _('Not enough empty rows below (only %i available)') %
+                available)
+
+        # Each iteration reads self._memory_cache to decide what to shift
+        # where, so it must be refreshed after every single-row insert --
+        # not just once at the end -- or later iterations plan their
+        # shifts against stale (pre-shift) data and silently drop memories.
+        for i in range(count):
+            touched = []
+            self._do_insert_row(row + i, touched)
+            for number in touched:
+                self.refresh_memory(number)
 
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
+
+    def _mem_insert(self, row, event):
+        available = self._count_empty_rows_below(row)
+        if not available:
+            wx.MessageBox(_('No empty rows below!'), _('Insert Rows'),
+                          parent=self)
+            return
+
+        count = wx.GetNumberFromUser(
+            _('How many rows would you like to insert above this one?'),
+            _('Rows'), _('Insert Rows'), 1, 1, available, self)
+        if count < 1:
+            # Cancelled
+            return
+
+        self._mem_insert_many(row, count)
 
     def _mem_showraw(self, row, event):
         mem = self._radio.get_raw_memory(self.row2mem(row))
