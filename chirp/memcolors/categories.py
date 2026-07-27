@@ -17,9 +17,10 @@
 
 Category ids are stable, untranslated schema identifiers -- they are
 persisted in config and must never change once released. `label` is the
-untranslated English display string; UI code is responsible for wrapping
-it in `_()` at render time (this module has no wx/gettext-timing
-dependency of its own, so it stays trivially unit-testable).
+untranslated English display string; this module intentionally has no
+wx/gettext dependency of its own (so it stays trivially unit-testable).
+Translated display strings live in chirp.wxui.memcolorlegend, keyed by
+category id.
 
 Colors are '#RRGGBB' strings only -- no alpha. Every default pair here is
 checked for WCAG AA contrast (>=4.5:1) by tests/unit/test_memcolors_*.py.

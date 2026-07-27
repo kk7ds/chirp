@@ -25,10 +25,10 @@ _SWATCH_SIZE = (14, 14)
 
 # Translated category display names/descriptions, keyed by the stable
 # (untranslated) category id. This is the one place these literal
-# strings are passed to _() -- xgettext can only statically extract
-# literal arguments, not `_(some_variable)`, so category.label itself
-# is deliberately never passed to _() directly anywhere in the UI code;
-# everything looks them up here instead.
+# strings get translated -- the extraction tool can only find literal
+# string arguments, not ones read off an attribute at runtime, so
+# category.label is deliberately never translated directly anywhere
+# else in the UI code; everything looks it up here instead.
 CATEGORY_LABELS = {
     categories.INVALID: _('Invalid'),
     categories.DISABLED: _('Disabled / Skipped'),
