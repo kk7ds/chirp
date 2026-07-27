@@ -1,5 +1,9 @@
 # CHIRP Project
 
+<p align="center">
+  <img src="docs/CHIRP_Repo.png" alt="CHIRP">
+</p>
+
 This is the official git repository for the
 __[CHIRP](https://www.chirpmyradio.com)__ project.
 
