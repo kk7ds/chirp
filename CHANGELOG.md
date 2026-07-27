@@ -14,6 +14,8 @@ downloadable `CHIRP-*-x86_64.AppImage` asset, built automatically by
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-07-27
+
 ### Added
 
 - Configurable memory color coding: the memory list can color-code rows
