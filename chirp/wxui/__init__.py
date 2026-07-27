@@ -241,8 +241,8 @@ def chirpmain():
     if args.action:
         wx.CallAfter(getattr(mainwindow, '_menu_%s' % args.action), None)
 
-    report.check_for_updates(
-        lambda ver: wx.CallAfter(main.display_update_notice, ver))
+    # No automatic update check at startup -- use Help > Check for
+    # Updates... instead.
 
     if sys.platform == 'linux':
         try:

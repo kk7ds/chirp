@@ -14,6 +14,15 @@ downloadable `CHIRP-*-x86_64.AppImage` asset, built automatically by
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-07-27
+
+### Changed
+
+- Removed the automatic "check chirpmyradio.com for a new version" check
+  that ran at every startup. Replaced with Help > Check for Updates..., a
+  manual on-demand check that (unlike the old automatic one) always shows
+  a result, including an explicit "you're up to date" message.
+
 ## [1.7.0] - 2026-07-27
 
 ### Added

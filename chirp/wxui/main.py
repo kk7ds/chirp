@@ -976,6 +976,11 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.EVT_MENU, self._menu_about, about_item)
         help_menu.Append(about_item)
 
+        check_updates_item = wx.MenuItem(help_menu, wx.NewId(),
+                                         _('Check for Updates...'))
+        self.Bind(wx.EVT_MENU, self._menu_check_updates, check_updates_item)
+        help_menu.Append(check_updates_item)
+
         developer_menu = wx.MenuItem(help_menu, wx.NewId(),
                                      _('Developer Mode'),
                                      kind=wx.ITEM_CHECK)
@@ -2010,6 +2015,11 @@ GNU General Public License for more details."""
             LOG.debug('User did not approve license - exiting')
             self.Close()
 
+    def _menu_check_updates(self, event):
+        report.check_for_updates(
+            lambda ver: wx.CallAfter(display_update_notice, ver,
+                                     manual=True))
+
     def _menu_developer(self, menuitem, event):
         developer.developer_mode(menuitem.IsChecked())
         state = menuitem.IsChecked() and _('enabled') or _('disabled')
@@ -2157,26 +2167,38 @@ GNU General Public License for more details."""
         self._do_network_query(query_sources.SatNOGSQueryDialog)
 
 
-def display_update_notice(version):
+def display_update_notice(version, manual=False):
+    """Show an update notice if @version is newer than ours.
+
+    If @manual is True (the user explicitly asked, via Help > Check for
+    Updates...), the usual quiet-automatic-check guards (dev build,
+    once-a-week throttle, the "skip update check" preference) are
+    bypassed, and an "up to date" message is shown when there's nothing
+    new -- since silence would look like the check did nothing.
+    """
     LOG.info('Server reports %s is latest' % version)
 
+    if not manual:
+        if CONF.get_bool("skip_update_check", "state"):
+            return
+
+        if CHIRP_VERSION.endswith('dev'):
+            return
+
+        # Report new updates occasionally
+        intv = 3600 * 24 * 7
+
+        if CONF.is_defined("last_update_check", "state") and \
+           (time.time() - CONF.get_int("last_update_check", "state")) < intv:
+            return
+
+        CONF.set_int("last_update_check", int(time.time()), "state")
+
     if version == CHIRP_VERSION:
+        if manual:
+            wx.MessageBox(_('You are running the latest version of CHIRP.'),
+                          _('No update available'))
         return
-
-    if CONF.get_bool("skip_update_check", "state"):
-        return
-
-    if CHIRP_VERSION.endswith('dev'):
-        return
-
-    # Report new updates occasionally
-    intv = 3600 * 24 * 7
-
-    if CONF.is_defined("last_update_check", "state") and \
-       (time.time() - CONF.get_int("last_update_check", "state")) < intv:
-        return
-
-    CONF.set_int("last_update_check", int(time.time()), "state")
 
     url = 'https://chirpmyradio.com'
     msg = _('A new CHIRP version is available. Please visit the '

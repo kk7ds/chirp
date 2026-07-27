@@ -112,6 +112,17 @@ kilometers; it's converted internally as needed. Other query sources
 
 ![RepeaterBook query dialog with a "Distance (mi)" field](docs/screenshots/repeaterbook-miles.png)
 
+### Manual "Check for Updates" instead of automatic
+
+CHIRP used to check chirpmyradio.com for a newer version automatically at
+every startup. This fork removes that automatic check entirely — use
+Help > Check for Updates... to check on demand instead. Unlike the old
+automatic check, the manual one always tells you something: a "new version
+available" prompt, or an explicit "you're running the latest version"
+message if there's nothing new.
+
+![Help menu with a "Check for Updates..." item below About](docs/screenshots/check-updates-menu.png)
+
 ### `run-chirp.sh` / `run-chirp.ps1`
 
 Convenience launchers for running CHIRP straight from a git checkout, without
