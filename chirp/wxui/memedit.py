@@ -1216,12 +1216,17 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 # Enough motion to consider this a drag motion
                 self._dragging_rows = None
                 return self._memory_drag(event)
+        else:
+            # Required for normal header mechanics to work
+            event.Skip()
 
     def _colheader_mouseover(self, event):
         x, y = self._grid.CalcUnscrolledPosition(event.GetX(), event.GetY())
         _row, cell = self._grid.XYToCell(x, y)
         col = self._col_defs[cell]
         event.GetEventObject().SetToolTip(col.doc or None)
+        # Required for normal header mechanics to work (i.e. resize)
+        event.Skip()
 
     def _memory_drag(self, event):
         data = self.cb_copy_getdata()
