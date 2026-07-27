@@ -72,6 +72,8 @@ one blank row in a single action — you're prompted for how many, instead of
 always getting exactly one. Inserting 5 rows is tracked as a single undo
 step, same as inserting 1.
 
+![Insert Rows Above prompt asking how many rows to insert](docs/screenshots/insert-rows-prompt.png)
+
 ### Find Duplicate Memories
 
 Edit > Find Duplicate Memories... lets you choose which fields (frequency,
@@ -89,6 +91,8 @@ silently rejected, with only an after-the-fact notice listing what didn't
 make it in. You're now asked "N memories failed validation for this radio
 ... Add them anyway?" — choosing Yes pastes them in as-is despite the
 validation failure; choosing No preserves the old behavior.
+
+![Prompt asking whether to add a memory that failed validation for the destination radio](docs/screenshots/paste-incompatible-prompt.png)
 
 ### Editable, savable network query results
 
@@ -129,7 +133,7 @@ with access to this repo can run it without setting up a Python/wxPython
 build environment themselves.
 
 **Getting a build:** every push of an `appimage-vX.Y.Z` tag (e.g.
-`appimage-v1.6.0`) triggers the
+`appimage-v1.7.0`) triggers the
 [AppImage workflow](.github/workflows/appimage.yml), which builds the
 AppImage and attaches it to a matching [GitHub Release](../../releases) on
 this repo. Download the `CHIRP-*-x86_64.AppImage` asset from there,
