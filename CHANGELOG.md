@@ -14,6 +14,14 @@ downloadable `CHIRP-*-x86_64.AppImage` asset, built automatically by
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-07-27
+
+### Added
+
+- Pasting or drag-importing memories that fail the destination radio's
+  validation (out-of-band frequency, unsupported mode/tone/duplex, etc.)
+  now asks whether to add them anyway instead of silently rejecting them.
+
 ## [1.6.0] - 2026-07-27
 
 ### Changed

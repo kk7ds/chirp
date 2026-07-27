@@ -3137,6 +3137,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         LOG.debug('Paste is from identical radio class: %s', same_class)
 
         errormsgs = []
+        forceable = []
         modified = False
         for mem in mems:
             try:
@@ -3179,11 +3180,15 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                     self._radio.check_set_memory_immutable_policy(existing,
                                                                   mem)
                 else:
-                    mem = import_logic.import_mem(self._radio, srcrf, mem)
+                    # strict=False: don't let import_mem reject this outright
+                    # for failing @self._radio's validate_memory() -- we
+                    # decide further down whether to ask the user to force it
+                    # in anyway, rather than silently dropping it here.
+                    mem = import_logic.import_mem(self._radio, srcrf, mem,
+                                                  strict=False)
                     warns, errs = chirp_common.split_validation_msgs(
                         self._radio.validate_memory(
                             chirp_common.FrozenMemory(mem)))
-                    errormsgs.extend([(mem, e) for e in errs])
                     errormsgs.extend([(mem, w) for w in warns])
 
                     # If we are not pasting into a radio of the same type,
@@ -3191,10 +3196,11 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                     if not same_class:
                         mem.extra = []
 
-                    if not errs:
-                        # If we got error messages from validate, don't even
-                        # try to set the memory, just like if import_logic
-                        # was unable to make it compatible.
+                    if errs:
+                        # Don't set yet -- ask the user once, after the loop,
+                        # whether to force all such memories in anyway.
+                        forceable.append((mem, errs))
+                    else:
                         self.set_memory(mem)
                 modified = True
             except (import_logic.DestNotCompatible,
@@ -3206,6 +3212,33 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             except Exception as e:
                 LOG.exception('Failed to paste: %s' % e)
                 errormsgs.append((mem, e))
+
+        if forceable:
+            if len(forceable) == 1:
+                prompt = _('1 memory failed validation for this radio '
+                          '(see details below). Add it anyway?')
+            else:
+                prompt = _('%i memories failed validation for this radio '
+                          '(see details below). Add them anyway?') % len(
+                              forceable)
+            d = wx.MessageDialog(self, prompt,
+                                 _('Add incompatible memories?'),
+                                 wx.YES | wx.NO | wx.NO_DEFAULT)
+            d.SetExtendedMessage('\n'.join(
+                '[%s]: %s' % (mem.extd_number or mem.number, ', '.join(errs))
+                for mem, errs in forceable))
+            if d.ShowModal() == wx.ID_YES:
+                for mem, errs in forceable:
+                    try:
+                        self.set_memory(mem)
+                        modified = True
+                    except Exception as e:
+                        LOG.exception('Failed to force-paste %s: %s',
+                                      mem, e)
+                        errormsgs.append((mem, e))
+            else:
+                for mem, errs in forceable:
+                    errormsgs.extend([(mem, e) for e in errs])
 
         if modified:
             wx.PostEvent(self, common.EditorChanged(self.GetId()))

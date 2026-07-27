@@ -81,6 +81,15 @@ each group.
 
 ![Find Duplicate Memories results, showing two duplicate pairs with the lower-numbered one kept by default](docs/screenshots/find-duplicate-memories.png)
 
+### Option to paste incompatible memories anyway
+
+Pasting or drag-importing memories that don't fit the destination radio (an
+out-of-band frequency, an unsupported mode/tone/duplex, etc.) used to be
+silently rejected, with only an after-the-fact notice listing what didn't
+make it in. You're now asked "N memories failed validation for this radio
+... Add them anyway?" — choosing Yes pastes them in as-is despite the
+validation failure; choosing No preserves the old behavior.
+
 ### Editable, savable network query results
 
 Memories downloaded from a query source (RepeaterBook, RadioReference,

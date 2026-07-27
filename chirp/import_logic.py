@@ -69,10 +69,10 @@ def ensure_has_calls(radio, memory):
         radio.set_repeater_call_list(rlist)
 
 
-def _import_freq(dst_radio, _srcrf, mem):
+def _import_freq(dst_radio, _srcrf, mem, strict=True):
     dst_rf = dst_radio.get_features()
     dst_bands = dst_rf.valid_bands
-    if not any(lo <= mem.freq <= hi for (lo, hi) in dst_bands):
+    if strict and not any(lo <= mem.freq <= hi for (lo, hi) in dst_bands):
         raise DestNotCompatible(
             _('Frequency %s is out of supported ranges %s') % (
                 chirp_common.format_freq(mem.freq),
@@ -80,7 +80,7 @@ def _import_freq(dst_radio, _srcrf, mem):
 
 
 # Filter the name according to the destination's rules
-def _import_name(dst_radio, _srcrf, mem):
+def _import_name(dst_radio, _srcrf, mem, strict=True):
     mem.name = dst_radio.filter_name(mem.name)
 
 
@@ -90,7 +90,7 @@ def find_closest_power(needle_watts, levels_haystack):
     return levels_haystack[deltas.index(min(deltas))]
 
 
-def _import_power(dst_radio, _srcrf, mem):
+def _import_power(dst_radio, _srcrf, mem, strict=True):
     levels = dst_radio.get_features().valid_power_levels
     dstrf = dst_radio.get_features()
     if not levels:
@@ -133,7 +133,7 @@ def _import_power(dst_radio, _srcrf, mem):
                                    levels)
 
 
-def _import_tone(dst_radio, srcrf, mem):
+def _import_tone(dst_radio, srcrf, mem, strict=True):
     dstrf = dst_radio.get_features()
 
     # Some radios keep separate tones for Tone and TSQL modes (rtone and
@@ -145,11 +145,11 @@ def _import_tone(dst_radio, srcrf, mem):
     elif srcrf.has_ctone and not dstrf.has_ctone:
         # If copying from a radio with separate rtone/ctone to a radio
         # without, and the tmode is TSQL, then use the ctone value
-        if mem.rtone not in dstrf.valid_tones:
+        if strict and mem.rtone not in dstrf.valid_tones:
             raise DestNotCompatible(
                 "Destination does not support tone frequency %s" %
                 mem.rtone)
-        if mem.ctone not in dstrf.valid_tones:
+        if strict and mem.ctone not in dstrf.valid_tones:
             raise DestNotCompatible(
                 "Destination does not support tone frequency %s" %
                 mem.ctone)
@@ -162,7 +162,7 @@ def _import_tone(dst_radio, srcrf, mem):
             mem.ctone = mem.rtone
 
 
-def _import_dtcs(dst_radio, srcrf, mem):
+def _import_dtcs(dst_radio, srcrf, mem, strict=True):
     dstrf = dst_radio.get_features()
 
     # Some radios keep separate DTCS codes for tx and rx
@@ -195,7 +195,7 @@ def _guess_mode_by_frequency(freq):
     return "FM"
 
 
-def _import_mode(dst_radio, srcrf, mem):
+def _import_mode(dst_radio, srcrf, mem, strict=True):
     dstrf = dst_radio.get_features()
 
     # Some radios support an "Auto" mode. If we're importing from one
@@ -204,7 +204,7 @@ def _import_mode(dst_radio, srcrf, mem):
 
     if mem.mode == "Auto" and mem.mode not in dstrf.valid_modes:
         mode = _guess_mode_by_frequency(mem.freq)
-        if mode not in dstrf.valid_modes:
+        if strict and mode not in dstrf.valid_modes:
             raise DestNotCompatible("Destination does not support %s" % mode)
         mem.mode = mode
 
@@ -220,7 +220,7 @@ def _make_offset_with_split(rxfreq, txfreq):
         return "-", offset * -1
 
 
-def _import_duplex(dst_radio, srcrf, mem):
+def _import_duplex(dst_radio, srcrf, mem, strict=True):
     dstrf = dst_radio.get_features()
 
     if mem.duplex == "split" and mem.duplex not in dstrf.valid_duplexes:
@@ -234,7 +234,7 @@ def _import_duplex(dst_radio, srcrf, mem):
                   ]
         for lo, hi, limit in ranges:
             if lo < mem.freq <= hi:
-                if abs(mem.offset) > limit:
+                if strict and abs(mem.offset) > limit:
                     raise DestNotCompatible("offset is abnormally large.")
     elif mem.duplex == 'off' and mem.duplex not in dstrf.valid_duplexes:
         # If a radio does not support duplex=off, we should just convert to
@@ -242,9 +242,20 @@ def _import_duplex(dst_radio, srcrf, mem):
         mem.duplex = ''
 
 
-def import_mem(dst_radio, src_features, src_mem, overrides={}, mem_cls=None):
+def import_mem(dst_radio, src_features, src_mem, overrides={}, mem_cls=None,
+                strict=True):
     """Perform import logic to create a destination memory from
-    src_mem that will be compatible with @dst_radio"""
+    src_mem that will be compatible with @dst_radio.
+
+    If @strict is False, field-level incompatibilities with @dst_radio
+    (an out-of-band frequency, an unsupported mode/tone/duplex, an
+    abnormally large split offset, or failing @dst_radio's final
+    validate_memory() check) no longer raise DestNotCompatible -- the
+    best-effort converted memory is returned anyway, leaving the
+    accept/reject decision to the caller. More structural
+    incompatibilities (e.g. no D-STAR support on the destination) still
+    raise regardless, since there's no reasonable memory to return.
+    """
     dst_rf = dst_radio.get_features()
 
     if isinstance(src_mem, chirp_common.DVMemory):
@@ -282,7 +293,7 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}, mem_cls=None):
                ]
 
     for helper in helpers:
-        helper(dst_radio, src_features, dst_mem)
+        helper(dst_radio, src_features, dst_mem, strict=strict)
 
     # If we can, grab the current existing destination memory and check the
     # radio's immutable set_memory() policy
@@ -296,7 +307,7 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}, mem_cls=None):
         raise DestNotCompatible(str(e))
 
     errs = [x for x in msgs if isinstance(x, chirp_common.ValidationError)]
-    if errs:
+    if errs and strict:
         raise DestNotCompatible(", ".join(errs))
 
     return dst_mem
