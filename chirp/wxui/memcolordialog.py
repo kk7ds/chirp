@@ -32,6 +32,8 @@ from chirp.memcolors import contrast
 from chirp.memcolors import profile as profile_mod
 from chirp.memcolors import rules as rules_mod
 from chirp.wxui import common
+from chirp.wxui.memcolorlegend import category_description
+from chirp.wxui.memcolorlegend import category_label
 
 _ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
@@ -41,7 +43,7 @@ _SWATCH_SIZE = (16, 16)
 _REGULATORY_NOTE = _(
     'These categories are a visual convenience aid, not a legal or '
     'regulatory determination. Frequency allocations vary by country, '
-    'license class, and local band plan, and change over time. You '
+    'licensing class, and local band plan, and change over time. You '
     'remain responsible for verifying your own frequencies and '
     'operating privileges.')
 
@@ -235,7 +237,7 @@ class _CategoriesPage(wx.Panel):
             img_idx = self._image_list.Add(_make_swatch_bitmap(state.bg))
             idx = self._list.InsertItem(i, '')
             self._list.SetItemImage(idx, img_idx)
-            self._list.SetItem(idx, 1, _(cat.label))
+            self._list.SetItem(idx, 1, category_label(cat.id))
             self._list.SetItem(idx, 2,
                                _('Yes') if state.enabled else _('No'))
             self._list.SetItemData(idx, i)
@@ -247,7 +249,7 @@ class _CategoriesPage(wx.Panel):
         i = self._list.GetItemData(event.GetIndex())
         cat = categories.DEFAULT_CATEGORIES[i]
         state = self._dialog.working_profile.category_state(cat.id)
-        self._editor.load(cat.id, state, _(cat.description))
+        self._editor.load(cat.id, state, category_description(cat.id))
 
     def _on_category_changed(self, category_id, state, reset=False):
         self._dialog.working_profile.set_category_state(category_id, state)

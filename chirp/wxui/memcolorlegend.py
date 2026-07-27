@@ -23,6 +23,85 @@ _ = wx.GetTranslation
 
 _SWATCH_SIZE = (14, 14)
 
+# Translated category display names/descriptions, keyed by the stable
+# (untranslated) category id. This is the one place these literal
+# strings are passed to _() -- xgettext can only statically extract
+# literal arguments, not `_(some_variable)`, so category.label itself
+# is deliberately never passed to _() directly anywhere in the UI code;
+# everything looks them up here instead.
+CATEGORY_LABELS = {
+    categories.INVALID: _('Invalid'),
+    categories.DISABLED: _('Disabled / Skipped'),
+    categories.EMERGENCY: _('Emergency'),
+    categories.CALLING: _('Calling'),
+    categories.RECEIVE_ONLY: _('Receive-only'),
+    categories.HAM_REPEATER: _('Ham: Repeater'),
+    categories.HAM_SIMPLEX: _('Ham: Simplex'),
+    categories.HAM_CALLING: _('Ham: Calling'),
+    categories.HAM_SATELLITE: _('Ham: Satellite'),
+    categories.HAM_APRS_DATA: _('Ham: APRS/Data'),
+    categories.HAM_DIGITAL_VOICE: _('Ham: Digital Voice'),
+    categories.HAM_BEACON_SPECIALTY: _('Ham: Beacon/Specialty'),
+    categories.HAM_RECEIVE_ONLY: _('Ham: Receive-only'),
+    categories.HAM_GENERAL: _('Ham: General'),
+    categories.AVIATION_EMERGENCY: _('Aviation Emergency'),
+    categories.AVIATION: _('Aviation'),
+    categories.GMRS: _('GMRS'),
+    categories.FRS: _('FRS'),
+    categories.MURS: _('MURS'),
+    categories.MARINE: _('Marine'),
+    categories.RAILROAD: _('Railroad'),
+    categories.PUBLIC_SAFETY: _('Public Safety'),
+    categories.BUSINESS: _('Business/Industrial'),
+    categories.WEATHER: _('NOAA/Weather'),
+    categories.UNKNOWN: _('Unknown'),
+}
+
+CATEGORY_DESCRIPTIONS = {
+    categories.INVALID:
+        _('Fails radio validation (opt-in visual override).'),
+    categories.DISABLED: _('Empty or skipped memory slot.'),
+    categories.EMERGENCY: _('Known emergency/distress frequency.'),
+    categories.CALLING:
+        _('Commonly-used calling channel (operational aid, not '
+          'exclusive or regulatory).'),
+    categories.RECEIVE_ONLY: _('No transmit frequency configured.'),
+    categories.HAM_REPEATER: _('Amateur repeater (duplex + offset).'),
+    categories.HAM_SIMPLEX: _('Amateur simplex (no offset/split).'),
+    categories.HAM_CALLING: _('Well-known amateur calling frequency.'),
+    categories.HAM_SATELLITE:
+        _('Amateur satellite uplink/downlink band.'),
+    categories.HAM_APRS_DATA: _('APRS or other amateur data frequency.'),
+    categories.HAM_DIGITAL_VOICE:
+        _('DMR/D-STAR/System Fusion/P25 mode.'),
+    categories.HAM_BEACON_SPECIALTY:
+        _('Propagation beacon or weak-signal specialty sub-band.'),
+    categories.HAM_RECEIVE_ONLY: _('Amateur memory with no transmit.'),
+    categories.HAM_GENERAL:
+        _('Amateur allocation, no specific subtype.'),
+    categories.AVIATION_EMERGENCY:
+        _('Civil/military aviation guard frequency.'),
+    categories.AVIATION: _('Civil aviation band.'),
+    categories.GMRS: _('General Mobile Radio Service.'),
+    categories.FRS: _('Family Radio Service.'),
+    categories.MURS: _('Multi-Use Radio Service.'),
+    categories.MARINE: _('VHF marine band.'),
+    categories.RAILROAD: _('Railroad operations band.'),
+    categories.PUBLIC_SAFETY: _('Public safety allocation.'),
+    categories.BUSINESS: _('Business/industrial land-mobile band.'),
+    categories.WEATHER: _('NOAA Weather Radio channel.'),
+    categories.UNKNOWN:
+        _('Frequency not recognized by the current region profile.'),
+}
+
+
+def category_label(category_id):
+    return CATEGORY_LABELS.get(category_id, category_id)
+
+
+def category_description(category_id):
+    return CATEGORY_DESCRIPTIONS.get(category_id, '')
+
 
 class ColorLegendPanel(wx.Panel):
     """Shows one swatch+label per enabled category/custom rule.
@@ -44,8 +123,7 @@ class ColorLegendPanel(wx.Panel):
         profile = self._controller.profile
 
         for category_id, state in profile.enabled_categories():
-            cat = categories.default_category(category_id)
-            label = _(cat.label) if cat else category_id
+            label = category_label(category_id)
             self._sizer.Add(self._make_swatch(state.bg, label, italic=False),
                             0, wx.ALL, 3)
 
