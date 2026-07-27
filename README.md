@@ -119,11 +119,14 @@ This fork can produce a self-contained Linux AppImage of CHIRP, so people
 with access to this repo can run it without setting up a Python/wxPython
 build environment themselves.
 
-**Getting a build:** every push of an `appimage-v*` tag (e.g. `appimage-v1`)
-triggers the [AppImage workflow](.github/workflows/appimage.yml), which
-builds the AppImage and attaches it to a matching
-[GitHub Release](../../releases) on this repo. Download the
-`CHIRP-*-x86_64.AppImage` asset from there, `chmod +x` it, and run it.
+**Getting a build:** every push of an `appimage-vX.Y.Z` tag (e.g.
+`appimage-v1.6.0`) triggers the
+[AppImage workflow](.github/workflows/appimage.yml), which builds the
+AppImage and attaches it to a matching [GitHub Release](../../releases) on
+this repo. Download the `CHIRP-*-x86_64.AppImage` asset from there,
+`chmod +x` it, and run it. Releases follow semantic versioning — see
+[CHANGELOG.md](CHANGELOG.md) for what changed in each one and what the
+version numbers mean.
 
 **Config is isolated from other CHIRP installs:** by default CHIRP stores
 its settings in `~/.chirp`, shared by any install on the host (native
