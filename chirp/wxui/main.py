@@ -45,6 +45,7 @@ from chirp.wxui import bugreport
 from chirp.wxui import common
 from chirp.wxui import clone
 from chirp.wxui import developer
+from chirp.wxui import linux_launcher
 from chirp.wxui import memedit
 from chirp.wxui import menucustomize
 from chirp.wxui import printing
@@ -1075,6 +1076,18 @@ class ChirpMain(wx.Frame):
         tag(backup_loc_menu, 'help.backup_location')
         self.Bind(wx.EVT_MENU, self._menu_backup_loc, backup_loc_menu)
         help_menu.Append(backup_loc_menu)
+
+        if sys.platform == 'linux':
+            linux_launcher_menu = wx.MenuItem(
+                help_menu, wx.NewId(),
+                _('Install Linux Launcher...'))
+            tag(linux_launcher_menu, 'help.install_linux_launcher')
+            self.Bind(
+                wx.EVT_MENU,
+                functools.partial(linux_launcher.do_install_linux_launcher,
+                                  self),
+                linux_launcher_menu)
+            help_menu.Append(linux_launcher_menu)
 
         lmfi_menu = wx.MenuItem(help_menu, wx.NewId(),
                                 _('Load module from issue...'))
