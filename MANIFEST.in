@@ -8,6 +8,5 @@ include chirp/stock_configs/*
 include chirp/locale/*/LC_MESSAGES/*.mo
 exclude chirp/locale/*
 include COPYING
-include *requirements.txt
 graft tests
 graft tools
