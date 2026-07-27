@@ -39,10 +39,10 @@ import typing
 
 if typing.TYPE_CHECKING:
     # `_` is installed into builtins at wx-app startup (see
-    # chirp.wxui.builtins._ = wx.GetTranslation); declare it here only
-    # for the type checker's benefit -- this has no effect at runtime.
-    def _(text: str) -> str:
-        ...
+    # chirp.wxui.builtins._ = wx.GetTranslation); declare its type here
+    # only for the type checker's benefit -- this has no effect at
+    # runtime.
+    _: typing.Callable[[str], str]
 
 LOG = logging.getLogger(__name__)
 
