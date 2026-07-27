@@ -38,6 +38,9 @@ from chirp import settings
 from chirp.wxui import config
 from chirp.wxui import common
 from chirp.wxui import developer
+from chirp.wxui import memcolordialog
+from chirp.wxui import memcolorlegend
+from chirp.wxui import memcolors
 from chirp.wxui import memquery
 from chirp.wxui import menucustomize
 
@@ -998,6 +1001,23 @@ def undoable(name):
     return _inner
 
 
+class _ColorProfileToggleItem(common.EditorMenuItem):
+    """A checkable EditorMenuItem whose state lives on the color-coding
+    profile singleton (chirp.wxui.memcolors.get_controller().profile)
+    rather than a flat CONF key, since 'enabled'/'show_legend' are part
+    of the versioned profile JSON blob, not their own config value."""
+
+    def __init__(self, cls, callback_name, attr_name, *a, **k):
+        k['kind'] = wx.ITEM_CHECK
+        super().__init__(cls, callback_name, *a, **k)
+        self._attr_name = attr_name
+
+    def add_menu_callback(self):
+        super().add_menu_callback()
+        self.Check(getattr(memcolors.get_controller().profile,
+                           self._attr_name))
+
+
 class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
     def __init__(self, radio, *a, **k):
         super(ChirpMemEdit, self).__init__(*a, **k)
@@ -1042,6 +1062,12 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         self._grid.EnableDragColMove()
         self._grid.SetFocus()
         self._default_cell_bg_color = self._grid.GetCellBackgroundColour(0, 0)
+        self._default_cell_text_color = self._grid.GetCellTextColour(0, 0)
+
+        self._colorcoding = memcolors.get_controller()
+        self._colorcoding.add_listener(self._on_color_profile_changed)
+        self.Bind(wx.EVT_WINDOW_DESTROY, self._on_destroy)
+        self._legend = None
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         if sys.platform != 'linux':
@@ -1054,6 +1080,9 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         else:
             self._filter_query = None
         sizer.Add(self._grid, 1, wx.EXPAND)
+        self._legend = memcolorlegend.ColorLegendPanel(self, self._colorcoding)
+        sizer.Add(self._legend, 0, wx.EXPAND)
+        self._update_legend_visibility()
         self.SetSizer(sizer)
 
         self._fixed_font = wx.Font(pointSize=10,
@@ -1742,6 +1771,20 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
             cls, '_add_custom_column', _('Add Custom Column...'))
         menucustomize.tag(add_custom_column, 'view.add_custom_column')
 
+        color_coding_enabled = _ColorProfileToggleItem(
+            cls, '_set_color_coding_enabled', 'enabled',
+            _('Enable Memory Color Coding'))
+        menucustomize.tag(color_coding_enabled, 'view.color_coding_enabled')
+
+        color_coding_legend = _ColorProfileToggleItem(
+            cls, '_set_show_color_legend', 'show_legend',
+            _('Show Color Legend'))
+        menucustomize.tag(color_coding_legend, 'view.color_coding_legend')
+
+        customize_colors = common.EditorMenuItem(
+            cls, '_customize_colors', _('Customize Colors...'))
+        menucustomize.tag(customize_colors, 'view.customize_colors')
+
         return {
             common.EditorMenuItem.MENU_EDIT: [
                 redo,  # First so Undo gets inserted at zero
@@ -1758,8 +1801,32 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                 choose_columns,
                 wrap_comment,
                 add_custom_column,
+                color_coding_enabled,
+                color_coding_legend,
+                customize_colors,
                 ]
             }
+
+    def _set_color_coding_enabled(self, event):
+        menuitem = event.GetEventObject().FindItemById(event.GetId())
+        self._colorcoding.profile.enabled = menuitem.IsChecked()
+        self._colorcoding.save()
+
+    def _set_show_color_legend(self, event):
+        menuitem = event.GetEventObject().FindItemById(event.GetId())
+        self._colorcoding.profile.show_legend = menuitem.IsChecked()
+        self._colorcoding.save()
+
+    def _customize_colors(self, event):
+        available_columns = [
+            (col_def.name, col_def.label.replace('\n', ' '))
+            for col_def in self._col_defs if col_def.valid]
+        dlg = memcolordialog.ChirpColorSettingsDialog(
+            self, self._colorcoding, available_columns=available_columns)
+        try:
+            dlg.ShowModal()
+        finally:
+            dlg.Destroy()
 
     def _set_expand_extra(self, event):
         self.refresh()
@@ -2062,19 +2129,6 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         self._memory_cache[row] = memory
 
-        try:
-            darkmode = wx.SystemSettings.GetAppearance().IsDark()
-        except AttributeError:
-            # Older wxPython doesn't have GetAppearance(), so just assume light
-            darkmode = False
-        if darkmode:
-            immutable_color = wx.SystemSettings.GetColour(
-                wx.SYS_COLOUR_GRAYTEXT)
-        else:
-            # This is a very light gray that looks good in light mode, but
-            # makes dark mode (light font) very hard to read.
-            immutable_color = (0xF5, 0xF5, 0xF5, 0xFF)
-
         # Build a list of coldef names that are immutable extras for this
         # memory
         immutable_extras = ['extra.%s' % setting.get_name()
@@ -2089,11 +2143,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                              col_def.name in immutable_extras)
                 self._grid.SetReadOnly(row, col,
                                        immutable or not self.editable)
-                if immutable:
-                    color = immutable_color
-                else:
-                    color = self._default_cell_bg_color
-                self._grid.SetCellBackgroundColour(row, col, color)
+
+            self._apply_row_colors(row, memory)
 
             if self._has_coldef('comment'):
                 self._set_comment_row_height(row, memory.comment)
@@ -2252,6 +2303,85 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                       index)
             del self._col_defs[index]
             self._grid.DeleteCols(index)
+
+    def _on_destroy(self, event):
+        if event.GetEventObject() is self:
+            self._colorcoding.remove_listener(self._on_color_profile_changed)
+        event.Skip()
+
+    def _update_legend_visibility(self):
+        if not self._legend:
+            return
+        show = (self._colorcoding.profile.enabled and
+                self._colorcoding.profile.show_legend)
+        if self._legend.IsShown() != show:
+            self._legend.Show(show)
+            self.Layout()
+        if show:
+            self._legend.refresh()
+
+    def _on_color_profile_changed(self):
+        self._update_legend_visibility()
+        self._recolor_all_rows()
+
+    def _recolor_all_rows(self):
+        """Reapply per-cell colors for every cached row without a full
+        data refresh (no radio round-trip, no re-render of cell text) --
+        this is what makes Apply/Cancel/reset instant even on a large
+        memory list."""
+        if not self._memory_cache:
+            return
+        with wx.grid.GridUpdateLocker(self._grid):
+            for row, memory in self._memory_cache.items():
+                if isinstance(memory, Exception):
+                    continue
+                self._apply_row_colors(row, memory)
+
+    def _apply_row_colors(self, row, memory):
+        try:
+            darkmode = wx.SystemSettings.GetAppearance().IsDark()
+        except AttributeError:
+            darkmode = False
+        if darkmode:
+            immutable_color = wx.SystemSettings.GetColour(
+                wx.SYS_COLOUR_GRAYTEXT)
+        else:
+            immutable_color = (0xF5, 0xF5, 0xF5, 0xFF)
+
+        immutable_extras = ['extra.%s' % setting.get_name()
+                            for setting in memory.extra
+                            if not setting.value.get_mutable()]
+
+        for col, col_def in enumerate(self._col_defs):
+            immutable = (col_def.name in memory.immutable or
+                         col_def.name in immutable_extras)
+            if immutable:
+                # Immutable/locked fields keep the existing gray
+                # treatment regardless of color coding -- that
+                # communicates "you can't edit this", which color
+                # coding shouldn't obscure.
+                self._grid.SetCellBackgroundColour(row, col, immutable_color)
+                self._grid.SetCellTextColour(row, col,
+                                             self._default_cell_text_color)
+                self._grid.SetCellFont(row, col,
+                                       self._grid.GetDefaultCellFont())
+                continue
+
+            style = self._colorcoding.style_for(memory, col_def.name,
+                                                radio=self._radio)
+            if style is None:
+                bg = self._default_cell_bg_color
+                fg = self._default_cell_text_color
+                font = self._grid.GetDefaultCellFont()
+            else:
+                bg, fg, bold = style
+                font = self._grid.GetDefaultCellFont()
+                if bold:
+                    font = font.Bold()
+
+            self._grid.SetCellBackgroundColour(row, col, bg)
+            self._grid.SetCellTextColour(row, col, fg)
+            self._grid.SetCellFont(row, col, font)
 
     def refresh(self):
         if not CONF.get_bool('expand_extra', 'state'):
