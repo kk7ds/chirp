@@ -139,6 +139,16 @@ edge cases of hiding.
 
 ![Customize Menus dialog showing the File tab with all items checked](docs/screenshots/customize-menus.png)
 
+### Open Recent cleanup
+
+File > Open Recent now has "Remove from Recent Files..." and "Clear Recent
+Files" at the bottom of the list. "Remove from Recent Files..." opens a
+checklist of your current recent files so you can pick specific ones to
+drop; "Clear Recent Files" empties the whole list in one click. Both are
+only shown when the list has entries.
+
+![Open Recent submenu showing three recent files above Remove from Recent Files... and Clear Recent Files](docs/screenshots/open-recent-cleanup.png)
+
 ### Configurable memory color coding
 
 The memory list can color-code rows (or just selected columns) by what a
@@ -244,6 +254,8 @@ AppImage runtime sets) fixes that:
   `~/Desktop/chirp-appimage.desktop`; the copied icon at
   `~/.local/share/icons/hicolor/256x256/apps/chirp.png` can be removed the
   same way if no other CHIRP install needs it.
+
+![Install Linux Launcher dialog showing the detected AppImage path, its executable status, and the application-menu/desktop checkboxes](docs/screenshots/install-linux-launcher.png)
 
 **Building one yourself:**
 
