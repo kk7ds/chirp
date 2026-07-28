@@ -138,7 +138,7 @@ u8 keypad_type; // ff=none 30=12-key
 u8 keypad_op;
 u8 lsk_unknown1:5,
    list_selector_key:1,
-   lsk_unknown2:3;
+   lsk_unknown2:2;
 #seekto 0x05C0;
 // side1 primary 0x5C0
 // S 0x5C8
@@ -733,11 +733,11 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
 
                 # Copy the zone record from the source, but then update
                 # the count
-                dest_zoneinfo.set_raw(source_zoneinfo.get_raw(asbytes=False))
+                dest_zoneinfo.set_raw(source_zoneinfo.get_raw())
                 dest_zoneinfo.count = count
 
                 for dest_i in range(0, min(count, old_count)):
-                    dest[dest_i].set_raw(source[dest_i].get_raw(asbytes=False))
+                    dest[dest_i].set_raw(source[dest_i].get_raw())
             else:
                 LOG.debug('New zone %i' % zone_number)
                 dest_zone.zoneinfo.number = zone_number + 1
@@ -764,7 +764,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         if current == memories:
             LOG.debug('Shuffle not required')
             return
-        raw_data = [raw_memories[i].get_raw(asbytes=False)
+        raw_data = [raw_memories[i].get_raw()
                     for i, n in memories]
         for i, raw_mem in enumerate(raw_data):
             raw_memories[i].set_raw(raw_mem)
