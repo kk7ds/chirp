@@ -52,6 +52,7 @@ from chirp.wxui import printing
 from chirp.wxui import query_sources
 from chirp.wxui import radioinfo
 from chirp.wxui import radiothread
+from chirp.wxui import recentfiles
 from chirp.wxui import report
 from chirp.wxui import serialtrace
 from chirp.wxui import settingsedit
@@ -62,7 +63,6 @@ CONF = config.get()
 LOG = logging.getLogger(__name__)
 
 EMPTY_MENU_LABEL = '(none)'
-KEEP_RECENT = 8
 OPEN_RECENT_MENU = None
 OPEN_STOCK_CONFIG_MENU = None
 CHIRP_TAB_DF = wx.DataFormat('x-chirp/file-tab')
@@ -1184,29 +1184,10 @@ class ChirpMain(wx.Frame):
             if (stock_dir and os.path.exists(stock_dir) and
                     this_dir and os.path.samefile(stock_dir, this_dir)):
                 return
-
-        # Make a list of recent files in config
-        recent = [CONF.get('recent%i' % i, 'state')
-                  for i in range(KEEP_RECENT)
-                  if CONF.get('recent%i' % i, 'state')]
-        while filename in recent:
-            # The old algorithm could have dupes, so keep looking and
-            # cleaning until they're gone
-            LOG.debug('File exists in recent, moving to front')
-            recent.remove(filename)
-        if filename:
-            recent.insert(0, filename)
-        recent = recent[:KEEP_RECENT]
+            recent = recentfiles.add(CONF, filename)
+        else:
+            recent = recentfiles.load(CONF)
         LOG.debug('Recent is now %s' % recent)
-
-        # Update and clean config
-        for i in range(KEEP_RECENT):
-            try:
-                CONF.set('recent%i' % i, recent[i], 'state')
-            except IndexError:
-                # Clean higher-order entries if they exist
-                if CONF.is_defined('recent%i' % i, 'state'):
-                    CONF.remove_option('recent%i' % i, 'state')
         config._CONFIG.save()
 
         # Clear the menu
@@ -1218,6 +1199,18 @@ class ChirpMain(wx.Frame):
         for i, fn in enumerate(recent):
             mi = self.OPEN_RECENT_MENU.Append(wx.ID_ANY, fn.replace('&', '&&'))
             self.Bind(wx.EVT_MENU, self._menu_open_recent, mi)
+
+        if recent:
+            self.OPEN_RECENT_MENU.AppendSeparator()
+
+            remove_item = self.OPEN_RECENT_MENU.Append(
+                wx.ID_ANY, _('Remove from Recent Files...'))
+            self.Bind(wx.EVT_MENU, self._menu_open_recent_remove,
+                      remove_item)
+
+            clear_item = self.OPEN_RECENT_MENU.Append(
+                wx.ID_ANY, _('Clear Recent Files'))
+            self.Bind(wx.EVT_MENU, self._menu_open_recent_clear, clear_item)
 
     def _editor_page_changed(self, event):
         self._editors.GetPage(event.GetSelection())
@@ -1524,6 +1517,29 @@ class ChirpMain(wx.Frame):
         filename = self.OPEN_RECENT_MENU.FindItemById(
             event.GetId()).GetItemLabelText()
         self.open_file(filename)
+
+    def _menu_open_recent_remove(self, event):
+        recent = recentfiles.load(CONF)
+        if not recent:
+            return
+        d = recentfiles.RemoveRecentFilesDialog(self, recent)
+        try:
+            if d.ShowModal() != wx.ID_OK:
+                return
+            to_remove = d.get_selected()
+        finally:
+            d.Destroy()
+
+        if not to_remove:
+            return
+        recentfiles.remove(CONF, to_remove)
+        config._CONFIG.save()
+        self.adj_menu_open_recent(None)
+
+    def _menu_open_recent_clear(self, event):
+        recentfiles.clear(CONF)
+        config._CONFIG.save()
+        self.adj_menu_open_recent(None)
 
     def _menu_save_as(self, event):
         eset = self.current_editorset

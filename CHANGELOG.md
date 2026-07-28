@@ -14,6 +14,12 @@ downloadable `CHIRP-*-x86_64.AppImage` asset, built automatically by
 
 ## [Unreleased]
 
+### Added
+
+- File > Open Recent now has "Remove from Recent Files..." (pick
+  specific entries to remove) and "Clear Recent Files" (empty the
+  whole list) at the bottom of the submenu.
+
 ## [1.11.0] - 2026-07-27
 
 ### Added
