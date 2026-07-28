@@ -414,7 +414,7 @@ class ImportFieldTests(base.BaseTest):
                 mock_frozen.assert_called_once_with(mem)
             mock_dupe.assert_called_once_with()
 
-        mock_duplex.assert_called_once_with(radio, src_rf, mem)
+        mock_duplex.assert_called_once_with(radio, src_rf, mem, strict=True)
 
     def test_import_mem(self):
         self._test_import_mem([])

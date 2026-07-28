@@ -3418,10 +3418,10 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if forceable:
             if len(forceable) == 1:
                 prompt = _('1 memory failed validation for this radio '
-                          '(see details below). Add it anyway?')
+                           '(see details below). Add it anyway?')
             else:
                 prompt = _('%i memories failed validation for this radio '
-                          '(see details below). Add them anyway?') % len(
+                           '(see details below). Add them anyway?') % len(
                               forceable)
             d = wx.MessageDialog(self, prompt,
                                  _('Add incompatible memories?'),

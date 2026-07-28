@@ -243,7 +243,7 @@ def _import_duplex(dst_radio, srcrf, mem, strict=True):
 
 
 def import_mem(dst_radio, src_features, src_mem, overrides={}, mem_cls=None,
-                strict=True):
+               strict=True):
     """Perform import logic to create a destination memory from
     src_mem that will be compatible with @dst_radio.
 

@@ -14,6 +14,16 @@ downloadable `CHIRP-*-x86_64.AppImage` asset, built automatically by
 
 ## [Unreleased]
 
+### Added
+
+- Help > Install Linux Launcher... (Linux AppImage only): checks that the
+  running AppImage is executable (offering to fix it if not), then lets
+  you add CHIRP to your desktop environment's application menu, create a
+  launcher icon on your Desktop, or both. Everything is installed
+  per-user with no administrator access; re-running it after moving the
+  AppImage safely updates the existing launcher in place. See the
+  AppImage builds section of [README.md](README.md) for details.
+
 ## [1.10.0] - 2026-07-27
 
 ### Added
