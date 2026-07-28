@@ -34,6 +34,7 @@ from chirp.drivers import generic_csv
 from chirp import errors
 from chirp import import_logic
 from chirp import settings
+from chirp.wxui import accessibility
 from chirp.wxui import config
 from chirp.wxui import common
 from chirp.wxui import developer
@@ -41,6 +42,7 @@ from chirp.wxui import memquery
 
 _ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
+
 CONF = config.get()
 WX_GTK = 'gtk' in wx.version().lower()
 TX_WORKFLOW_ID = wx.NewId()
@@ -111,6 +113,11 @@ class ChirpMemoryGrid(wx.grid.Grid, glr.GridWithLabelRenderersMixin):
         wx.grid.Grid.__init__(self, *a, **k)
         self.SetColLabelSize(wx.grid.GRID_AUTOSIZE)
         glr.GridWithLabelRenderersMixin.__init__(self)
+        # Give the grid a real per-cell wx.Accessible tree (Windows only;
+        # see chirp/wxui/accessibility.py) so screen readers announce
+        # column header + cell value + row on navigation, instead of the
+        # single opaque pane wx.grid.Grid otherwise reports.
+        accessibility.attach_grid_accessible(self, _('Memory List'))
 
 
 class ChirpRowLabelRenderer(glr.GridDefaultRowLabelRenderer):
