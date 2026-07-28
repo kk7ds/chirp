@@ -14,6 +14,8 @@ downloadable `CHIRP-*-x86_64.AppImage` asset, built automatically by
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-07-27
+
 ### Added
 
 - File > Open Recent now has "Remove from Recent Files..." (pick
