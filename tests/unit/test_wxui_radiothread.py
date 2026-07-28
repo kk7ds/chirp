@@ -5,6 +5,37 @@ from unittest import mock
 
 import ddt
 
+# Snapshot sys.modules before mocking, so it can be restored exactly,
+# immediately below, once this file's own collection-time imports
+# (clone.py, radiothread.py) are done with it. See the restore block
+# after the imports, and TestStartup.setUp() further down, for why
+# this needs to be a two-part fix rather than a single restore.
+_PRE_MOCK_SYS_MODULES = dict(sys.modules)
+
+
+def _evict_chirp_wxui_modules():
+    """Remove every already-imported chirp.wxui.* submodule (and the
+    parent package's attribute reference to it) so that whatever
+    imports chirp.wxui submodules next gets a fresh import rather than
+    reusing a module cached from however wx looked the last time it
+    was genuinely imported. See test_wxui_linux_launcher.py, which
+    has the identical helper (and the identical underlying problem)
+    with a more detailed explanation of why both the sys.modules
+    removal and the parent-attribute cleanup are needed."""
+    for name in list(sys.modules):
+        if name != 'chirp.wxui' and not name.startswith('chirp.wxui.'):
+            continue
+        if name == 'chirp.wxui':
+            continue
+        del sys.modules[name]
+        parent_name, _, attr = name.rpartition('.')
+        parent = sys.modules.get(parent_name)
+        if parent is not None:
+            vars(parent).pop(attr, None)
+
+
+_evict_chirp_wxui_modules()
+
 sys.modules['wx'] = wx = mock.MagicMock()
 sys.modules['wx.lib'] = mock.MagicMock()
 sys.modules['wx.lib.scrolledpanel'] = mock.MagicMock()
@@ -21,6 +52,38 @@ from chirp import directory  # noqa
 from chirp.wxui import clone  # noqa
 from chirp.wxui import config  # noqa
 from chirp.wxui import radiothread  # noqa
+
+# Restore sys.modules immediately -- synchronously, still as part of
+# this file's own collection -- for the same reason and via the same
+# mechanism as test_wxui_linux_launcher.py: pytest fully collects
+# every test file before executing any test, so restoring only once
+# this file's own tests finish executing (e.g. via a pytest fixture)
+# is too late to stop a later-collected real-wx test file (like
+# test_wxui_programming_assistant.py) from seeing this mock during
+# *its* collection.
+#
+# clone.py and radiothread.py (the modules under test for
+# TestRadioThread/TestClone below) both only `import wx` at module
+# scope, captured once at this file's own import time, so restoring
+# immediately is safe for those two classes' own tests. TestStartup is
+# the exception -- see its setUp() below, which re-installs a scoped
+# copy of this same mock for exactly that class's own tests, instead
+# of relying on it staying installed globally for the rest of the
+# session the way this file used to leave it.
+_affected = {n for n in set(_PRE_MOCK_SYS_MODULES) | set(sys.modules)
+             if n == 'wx' or n.startswith('wx.') or
+             n.startswith('chirp.wxui.')}
+for _name in _affected:
+    _parent_name, _, _attr = _name.rpartition('.')
+    _parent = sys.modules.get(_parent_name)
+    if _name in _PRE_MOCK_SYS_MODULES:
+        sys.modules[_name] = _PRE_MOCK_SYS_MODULES[_name]
+        if _parent is not None:
+            setattr(_parent, _attr, _PRE_MOCK_SYS_MODULES[_name])
+    else:
+        sys.modules.pop(_name, None)
+        if _parent is not None:
+            vars(_parent).pop(_attr, None)
 
 
 class TestRadioThread(base.BaseTest):
@@ -177,6 +240,33 @@ class TestException(Exception):
 class TestStartup(base.BaseTest):
     def setUp(self):
         super().setUp()
+        # maybe_install_desktop() (chirp/wxui/__init__.py) does a
+        # lazy `import wx` inside its own function body, resolved
+        # fresh every call -- unlike this file's own collection-time
+        # imports (clone.py etc.), which only ever needed the
+        # module-level mock during collection, and have already been
+        # restored by the module-level cleanup above. Re-install the
+        # *same* wx mock object this file's own module-level `wx`
+        # variable refers to (so the wx.MessageBox.assert_*() calls
+        # below, which check that same object, keep working), scoped
+        # to just this test -- not left mocked globally for the rest
+        # of the session the way this file used to.
+        #
+        # Deliberately not mock.patch.dict(sys.modules, {'wx': wx}):
+        # confirmed by direct reproduction that using it here, even
+        # though it is a no-op in terms of the *value* sys.modules['wx']
+        # ends up holding, makes some later test in this class trip
+        # pytest's own assertion-rewrite import hook into calling
+        # os.path.normcase() on a real path while os.path is
+        # separately mocked below, raising
+        # "TypeError: expected string or bytes-like object, got
+        # 'MagicMock'" resolving importlib.resources.files('chirp.
+        # share') -- a mock.patch.dict-specific interaction with
+        # pytest/importlib's own caching, unrelated to wx isolation.
+        # Plain manual save/restore does not trigger it.
+        self._prior_wx = sys.modules.get('wx')
+        sys.modules['wx'] = wx
+        self.addCleanup(self._restore_wx_module)
         self.use(mock.patch('os.path'))
         self.use(mock.patch('os.makedirs'))
         self.use(mock.patch('chirp.wxui.CONF'))
@@ -186,6 +276,12 @@ class TestStartup(base.BaseTest):
         from chirp.wxui import maybe_install_desktop, CONF
         self.maybe_install_desktop = maybe_install_desktop
         self.conf = CONF
+
+    def _restore_wx_module(self):
+        if self._prior_wx is not None:
+            sys.modules['wx'] = self._prior_wx
+        else:
+            sys.modules.pop('wx', None)
 
     @ddt.data(
         # No arguments, no file, no previous, answer no
