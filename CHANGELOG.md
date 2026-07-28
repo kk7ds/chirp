@@ -14,6 +14,8 @@ downloadable `CHIRP-*-x86_64.AppImage` asset, built automatically by
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-07-27
+
 ### Added
 
 - Help > Install Linux Launcher... (Linux AppImage only): checks that the
