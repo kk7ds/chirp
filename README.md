@@ -184,6 +184,8 @@ determination — frequency allocations vary by country, licensing class, and
 local band plan, and change over time. You remain responsible for
 verifying your own frequencies and operating privileges.
 
+![Memory list color-coded by category, showing a repeater, simplex, calling frequency, satellite, APRS/data, digital voice, beacon, receive-only, aviation, GMRS, FRS, MURS, marine, weather, unknown, and disabled memory alongside the color legend](docs/screenshots/memory-color-coding.png)
+
 ### `run-chirp.sh` / `run-chirp.ps1`
 
 Convenience launchers for running CHIRP straight from a git checkout, without
