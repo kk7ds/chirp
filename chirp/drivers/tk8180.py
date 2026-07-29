@@ -520,7 +520,7 @@ def do_upload(radio):
     for block in range(0, 0xBF + 1):
         addr = block * 0x100
         chunk = bytes(radio._mmap[addr:addr + 0x100])
-        if all(byte == b'\xff' for byte in chunk):
+        if all(byte == 0xFF for byte in chunk):
             send(radio, make_frame('Z', block, b'\xFF'))
         else:
             radio.pipe.log('Sending block %i' % block)
