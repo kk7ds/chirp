@@ -168,7 +168,7 @@ ul16 zone_starts[128];
 struct zoneinfo {
   u8 number;
   u8 zonetype;
-  u8 unknown1[2];
+  ul16 flagoffset;
   u8 count;
   char name[12];
   u8 unknown2[2];
@@ -205,8 +205,8 @@ struct memory {
   u8 unknown4;
 };
 
-#seekto 0xC570;  // Fixme
-u8 skipflags[64];
+#seekto 0xC570;
+lbit skipflags[512];
 """
 
 
@@ -714,6 +714,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             except IndexError:
                 self._memobj.zone_starts[index] = 0xFFFF
 
+        scan_index = 1
         for zone_number, count in enumerate(zone_sizes):
             dest_zone = getattr(self._memobj, 'zone%i' % zone_number)
             dest = dest_zone.memories
@@ -752,6 +753,8 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
                 dest_zone.zoneinfo.tot_alert = z0info.tot_alert
                 dest_zone.zoneinfo.tot_rekey = z0info.tot_rekey
                 dest_zone.zoneinfo.tot_reset = z0info.tot_reset
+            dest_zone.zoneinfo.flagoffset = scan_index
+            scan_index += count
 
     def shuffle_zone(self):
         """Sort the memories in the zone according to logical channel number"""
@@ -827,11 +830,20 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
     def max_mem(self):
         return self.raw_memories[self.raw_zoneinfo.count].number
 
-    def _get_raw_memory(self, number):
+    def _get_index_of_memory(self, number):
+        """Return the index of memory number in this zone"""
         for i in range(0, self.raw_zoneinfo.count):
             if self.raw_memories[i].number == number:
-                return self.raw_memories[i]
-        return None
+                return i
+        raise ValueError('Memory %i not mapped' % number)
+
+    def _get_raw_memory(self, number):
+        """Get the raw memory structure of a memory by number"""
+        try:
+            index = self._get_index_of_memory(number)
+            return self.raw_memories[index]
+        except ValueError:
+            return None
 
     def get_raw_memory(self, number):
         return repr(self._get_raw_memory(number))
@@ -905,9 +917,9 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
             mem.duplex = 'split'
             mem.offset = int(_mem.tx_freq) * 10
 
-        skipbyte = self._memobj.skipflags[(mem.number - 1) // 8]
-        skipbit = skipbyte & (1 << (mem.number - 1) % 8)
-        mem.skip = skipbit and 'S' or ''
+        scan_index = (self.raw_zoneinfo.flagoffset +
+                      self._get_index_of_memory(number) - 1)
+        mem.skip = 'S' if int(self._memobj.skipflags[scan_index]) else ''
 
         mem.extra = RadioSettingGroup('extra', 'Extra')
         mem.extra.append(MemSetting(
@@ -999,11 +1011,9 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         _mem.rx_step = tk280.choose_step(step_lookup, int(_mem.rx_freq) * 10)
         _mem.tx_step = tk280.choose_step(step_lookup, int(_mem.tx_freq) * 10)
 
-        skipbyte = self._memobj.skipflags[(mem.number - 1) // 8]
-        if mem.skip == 'S':
-            skipbyte |= (1 << (mem.number - 1) % 8)
-        else:
-            skipbyte &= ~(1 << (mem.number - 1) % 8)
+        scan_index = (self.raw_zoneinfo.flagoffset +
+                      self._get_index_of_memory(mem.number) - 1)
+        self._memobj.skipflags[scan_index] = int(mem.skip == 'S')
 
         for setting in mem.extra:
             setting.apply_to_memobj(_mem)
