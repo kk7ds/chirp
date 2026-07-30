@@ -281,13 +281,13 @@ BUTTONS = {
     'DTMF 7': 18,
     'DTMF 8': 19,
     'DTMF 9': 20,
-    'Mic PF1': 26,
-    'Mic PF2': 27,
 }
 BUTTONS_PORTABLE = {
     'Side 1': 2,
     'Side 2': 7,
     'Top Aux': 10,
+    'Mic PF1': 26,
+    'Mic PF2': 27,
 }
 BUTTONS_MOBILE = {
     'Left Arrow Up': 0,
@@ -1312,20 +1312,21 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         settings = self._memobj.settings
         group = RadioSettingSubGroup('common3', 'Common 3')
 
-        rs = MemSetting('settings.battsave', 'Battery Save',
-                        RadioSettingValueMap(BATTSAVE_SETTINGS.items(),
-                                             settings.battsave))
-        group.append(rs)
+        if self.is_portable:
+            rs = MemSetting('settings.battsave', 'Battery Save',
+                            RadioSettingValueMap(BATTSAVE_SETTINGS.items(),
+                                                 settings.battsave))
+            group.append(rs)
 
-        rs = MemSetting('settings.battwarn', 'Battery Warning',
-                        RadioSettingValueMap(BATTWARN_SETTINGS.items(),
-                                             settings.battwarn))
-        group.append(rs)
+            rs = MemSetting('settings.battwarn', 'Battery Warning',
+                            RadioSettingValueMap(BATTWARN_SETTINGS.items(),
+                                                 settings.battwarn))
+            group.append(rs)
 
-        rs = MemSetting('settings.battstatus', 'Battery Status',
-                        RadioSettingValueInvertedBoolean(
-                            not settings.battstatus))
-        group.append(rs)
+            rs = MemSetting('settings.battstatus', 'Battery Status',
+                            RadioSettingValueInvertedBoolean(
+                                not settings.battstatus))
+            group.append(rs)
 
         rs = MemSetting('settings.pttid_type', 'PTTID Type',
                         RadioSettingValueMap(PTTID_TYPES.items(),
