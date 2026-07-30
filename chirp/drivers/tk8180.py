@@ -665,6 +665,20 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         self._dat_header = (b'KPG89D\xFF\xFF\xFF\xFFV1.61' + self._model +
                             (b'\xFF' * 11) + (b'\xFF' * 32))
 
+    def _action_ost_standard(self):
+        for i, t in enumerate(chirp_common.TONES[:40]):
+            self._memobj.ost_tones[i].name = ('%6.1f' % t).ljust(12)
+            self._memobj.ost_tones[i].rxtone = t * 10
+            self._memobj.ost_tones[i].txtone = t * 10
+
+    def _action_ost_gmrs(self):
+        tones = list(chirp_common.TONES[:41])
+        tones.remove(69.3)
+        for i, t in enumerate(tones):
+            self._memobj.ost_tones[i].name = '%2i   %7.1f' % (i + 1, t)
+            self._memobj.ost_tones[i].rxtone = t * 10
+            self._memobj.ost_tones[i].txtone = t * 10
+
     def sync_in(self):
         try:
             data = do_download(self)
