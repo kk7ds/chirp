@@ -114,8 +114,9 @@ class KenwoodToneModel:
             if pol == "R":
                 val += self.pol_mask
             return val
-
-        return int(code * 10) + self.tone_flag
+        else:
+            freq = int(round(code * 10))
+            return int("%i" % freq, self.tone_enc_base) + self.tone_flag
 
     def set_tone(self, mem, _mem):
         """
