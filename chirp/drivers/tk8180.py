@@ -233,7 +233,8 @@ MIN_VOL_PRESET = {'Preset': 0x30,
                   'Lowest Limit': 0x31}
 MIN_VOL_PRESET_REV = {v: k for k, v in MIN_VOL_PRESET.items()}
 
-SUBLCD = ['Zone Number', 'CH/GID Number', 'OSD List Number']
+SUBLCD = ['Zone Number', 'CH/GID Number', 'OSD List Number',
+          'Signal Strength Indicator']
 CLOCKFMT = ['12H', '24H']
 DATEFMT = ['Day/Month', 'Month/Day']
 MICSENSE = ['On']
