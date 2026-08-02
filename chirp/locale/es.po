@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-28 15:31-0700\n"
-"PO-Revision-Date: 2026-01-30 23:45-0300\n"
+"PO-Revision-Date: 2026-08-01 23:39-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Poedit 3.9\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -49,7 +49,7 @@ msgstr[1] "%i Memorias y desplazar bloque hacia arriba"
 #: ../wxui/accessibility.py:177
 #, python-format
 msgid "%s %s, row %d"
-msgstr ""
+msgstr "%s %s, fila %d"
 
 #: ../wxui/main.py:1532
 #, python-format
@@ -904,6 +904,13 @@ msgid ""
 "5. <b>After clicking OK</b>, hold [PTT] briefly to transmit.\n"
 "     (\"SENDING\" will appear on the display)\n"
 msgstr ""
+"1. Apaga la radio.\n"
+"2. Conecta el cable de clonación al conector de MIC/SP.\n"
+"3. Presiona y mantén [PTT] y [Lamp] mientras enciendes la radio.\n"
+"4. Gira el dial para seleccionar \"CLONE\", entonces presiona [F].\n"
+"     (\"CLONE\" aparecerá en la pantalla)\n"
+"5. <b>Después de cliquear OK</b>, mantén brevemente [PTT] para transmitir.\n"
+"     (\"SENDING\" aparecerá en la pantalla)\n"
 
 #: ../drivers/vx150.py:360
 msgid ""
@@ -915,6 +922,13 @@ msgid ""
 "5. Press [MONI] to receive.\n"
 "     (\"SAVING\" will appear on the display)\n"
 msgstr ""
+"1. Apaga la radio.\n"
+"2. Conecta el cable de clonación al conector de MIC/SP.\n"
+"3. Presiona y mantén [PTT] y [Lamp] mientras enciendes la radio.\n"
+"4. Gira el dial para seleccionar \"CLONE\", entonces presiona [F].\n"
+"     (\"CLONE\" aparecerá en la pantalla)\n"
+"5. Presiona [MONI] para recibir.\n"
+"     (\"SENDING\" aparecerá en la pantalla)\n"
 
 #: ../drivers/yaesu_clone.py:247
 msgid ""
@@ -1535,7 +1549,7 @@ msgstr "Ingresa detalles sobre esta actualización. Se descriptivo sobre lo que 
 
 #: ../wxui/bugreport.py:370
 msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem. Before proceeding, please search for duplicate issues!"
-msgstr ""
+msgstr "Introduce información sobre el error incluyendo un asunto breve pero significativo e información sobre el modelo de radio (si corresponde) en cuestión. En el siguiente paso podrás agregar más detalles sobre el problema. !Antes de continuar, por favor busca por problemas duplicados!"
 
 #: ../wxui/bugreport.py:521
 msgid "Enter information to add to the bug here"
@@ -1792,7 +1806,7 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the download of your radio data\n"
 msgstr ""
-"Sigue estas instrucciones para descargar tu información:\n"
+"Sigue estas instrucciones para descargar tu info:\n"
 "1 - Apaga tu radio\n"
 "2 - Conecta tu cable de interfaz\n"
 "3 - Enciende tu radio\n"
@@ -1896,7 +1910,7 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the upload of your radio data\n"
 msgstr ""
-"Sigue estas instrucciones para cargar tu información:\n"
+"Sigue estas instrucciones para cargar tu info:\n"
 "1 - Apaga tu radio\n"
 "2 - Conecta tu cable de interfaz\n"
 "3 - Enciende tu radio\n"
@@ -1938,7 +1952,7 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the download of your radio data\n"
 msgstr ""
-"Sigue estas instrucciones para descargar tu información:\n"
+"Sigue estas instrucciones para descargar tu info:\n"
 "1 - Apaga tu radio\n"
 "2 - Conecta tu cable de interfaz\n"
 "3 - Enciende tu radio\n"
@@ -1970,7 +1984,7 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the upload of your radio data\n"
 msgstr ""
-"Sigue estas instrucciones para cargar tu información:\n"
+"Sigue estas instrucciones para cargar tu info:\n"
 "1 - Apaga tu radio\n"
 "2 - Conecta cable de interfaz\n"
 "3 - Enciende tu radio\n"
@@ -2053,7 +2067,7 @@ msgstr "Ir a..."
 #: ../wxui/common.py:516 ../wxui/accessibility.py:310
 #, python-format
 msgid "Group: %s"
-msgstr ""
+msgstr "Grupo: %s"
 
 #: ../wxui/main.py:1042
 msgid "Help"
@@ -2081,7 +2095,7 @@ msgstr "Comentario legible para humanos (no almacenado en la radio)"
 
 #: ../wxui/bugreport.py:413
 msgid "I have"
-msgstr ""
+msgstr "Tengo"
 
 #: ../wxui/query_sources.py:366 ../wxui/query_sources.py:372
 #: ../wxui/query_sources.py:666 ../wxui/query_sources.py:672
@@ -2144,7 +2158,7 @@ msgstr "Error interno del controlador"
 
 #: ../chirp_common.py:674
 msgid "Internal driver error: Attempt to modify frozen memory; Please report this as a bug using \"Report or update a bug\" in the Help menu"
-msgstr ""
+msgstr "Error interno del controlador: Intento de modificar memoria congelada; Por favor reporta esto como un error usando \"Reportar o actualizar un error\" en el menú Ayuda"
 
 #: ../wxui/query_sources.py:62
 #, python-format
@@ -2300,7 +2314,7 @@ msgstr "La memoria %i no es borrable"
 
 #: ../wxui/memedit.py:120
 msgid "Memory List"
-msgstr ""
+msgstr "Lista de memoria"
 
 #: ../wxui/memquery.py:203
 #, python-format
@@ -2347,7 +2361,7 @@ msgstr "Módulo cargado exitosamente"
 
 #: ../wxui/common.py:797
 msgid "More Info"
-msgstr "Más información"
+msgstr "Más info"
 
 #: ../wxui/clone.py:515
 #, python-format
@@ -2692,19 +2706,19 @@ msgstr "Radio"
 
 #: ../wxui/radioinfo.py:65
 msgid "Radio Info: Driver"
-msgstr ""
+msgstr "Info de Radio: Controlador"
 
 #: ../wxui/radioinfo.py:46
 msgid "Radio Info: Features"
-msgstr ""
+msgstr "Info de Radio: Caracteristicas"
 
 #: ../wxui/radioinfo.py:92
 msgid "Radio Info: Icom"
-msgstr ""
+msgstr "Info de Radio: Icom"
 
 #: ../wxui/radioinfo.py:120
 msgid "Radio Info: Image Metadata"
-msgstr ""
+msgstr "Info de Radio: Metadatos de la imagen"
 
 #: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:576
 #: ../drivers/ft817.py:410
@@ -2850,6 +2864,10 @@ msgid ""
 "the SatNOGS API directly for the most granular and\n"
 "up-to-date transmitter data."
 msgstr ""
+"SatNOGS DB proporciona una base de datos en tiempo real, mantenida por la comunidad\n"
+"de información sobre transmisores satelitales. Esta fuente consulta\n"
+"directamente la API de SatNOGS para obtener los datos de transmisores\n"
+"más detallados y actualizados."
 
 #: ../wxui/main.py:1072
 msgid "Save"
@@ -2902,7 +2920,7 @@ msgstr "Seleccionar modos"
 
 #: ../wxui/query_sources.py:1300
 msgid "Select Modes to Import"
-msgstr ""
+msgstr "Seleccionar modos a importar"
 
 #: ../wxui/main.py:2071
 msgid "Select a bandplan"
@@ -2931,7 +2949,7 @@ msgstr "Los ajustes son de sólo lectura debido a una versión de firmware no so
 #: ../wxui/common.py:396
 #, python-format
 msgid "Settings: %s"
-msgstr ""
+msgstr "Ajustes: %s"
 
 #: ../wxui/memedit.py:161
 msgid "Shift amount (or transmit frequency) controlled by duplex"
@@ -3209,6 +3227,9 @@ msgid ""
 "satellites, mirrored from the JE9PEL database via GitHub.\n"
 "It is a stable, simplified list of popular frequencies."
 msgstr ""
+"Esta fuente proporciona una lista seleccionada de satélites de radioaficionados activos\n"
+"reflejada de la base de datos JE9PEL a través de GitHub.\n"
+"Es una lista estable y simplificada de frecuencias populares."
 
 #: ../wxui/bugreport.py:197
 msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
@@ -3474,11 +3495,11 @@ msgstr "bytes cada"
 
 #: ../wxui/common.py:477
 msgid "checkbox"
-msgstr ""
+msgstr "casilla de comprobación"
 
 #: ../wxui/common.py:453
 msgid "checked"
-msgstr ""
+msgstr "comprobado"
 
 #: ../wxui/main.py:1976
 msgid "disabled"
@@ -3486,7 +3507,7 @@ msgstr "deshabilitado"
 
 #: ../wxui/accessibility.py:176
 msgid "empty"
-msgstr ""
+msgstr "vacío"
 
 #: ../wxui/main.py:1976
 msgid "enabled"
@@ -3494,31 +3515,31 @@ msgstr "habilitado"
 
 #: ../wxui/common.py:479
 msgid "list"
-msgstr ""
+msgstr "lista"
 
 #: ../wxui/common.py:498
 msgid "locked"
-msgstr ""
+msgstr "cerrado"
 
 #: ../wxui/common.py:482
 msgid "number"
-msgstr ""
+msgstr "número"
 
 #: ../wxui/bugreport.py:420
 msgid "searched for duplicate issues"
-msgstr ""
+msgstr "se buscaron problemas duplicados"
 
 #: ../wxui/common.py:484
 msgid "text"
-msgstr ""
+msgstr "texto"
 
 #: ../wxui/common.py:453
 msgid "unchecked"
-msgstr ""
+msgstr "no comprobado"
 
 #: ../wxui/common.py:496
 msgid "unspecified"
-msgstr ""
+msgstr "no especificado"
 
 #: ../drivers/vx5.py:116
 #, python-brace-format
