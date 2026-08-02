@@ -1699,3 +1699,11 @@ class KenwoodTK7180ERadio(KenwoodTKx180Radio):
     MODEL = 'TK-7180E'
     VALID_BANDS = [(136000000, 174000000)]
     _model = b'M7189$'
+
+
+# E is technicallly 400-470
+@directory.register
+class KenwoodTK3180ERadio(KenwoodTKx180Radio):
+    MODEL = 'TK-3180E'
+    VALID_BANDS = [(400000000, 520000000)]
+    _model = b'P3189\x27'
