@@ -1,0 +1,12 @@
+Additional Debian / Devuan packages required:
+
+   libimagequant0
+   libraqm0
+   libwxgtk-gl3.2-1
+   python3-lark
+   python3-numpy
+   python3-pil
+   python3-serial
+   python3-suds
+   python3-wxgtk4.0
+   python3-yattag
