@@ -153,37 +153,6 @@ POWER_LEVELS = [
 ]
 
 
-class DJVX50ToneModel(kenwood_tone.KenwoodToneModel):
-    """Kenwood tone scheme with the values stored as packed BCD.
-
-    131.8 Hz is stored as 0x1318 and D023 as 0x8023, so only the two value
-    converters differ from the base class.  DCS-R is inferred from the
-    encoding, not observed on hardware.
-    """
-    _DCS_MASK = 0x0FFF   # 12 bits: a BCD code such as 754 occupies 0x754
-
-    def __init__(self):
-        super().__init__(dcs_base=0x8000, pol_mask=0x4000,
-                         tone_init=0xFFFF, tone_flag=0x0000)
-
-    def _get_tone_val(self, tone_val):
-        tone_val = int(tone_val)
-        if tone_val in (0x0000, 0xFFFF):
-            return None, None
-        if tone_val & self.dcs_base:
-            return (int("%03x" % (tone_val & self._DCS_MASK)),
-                    "R" if tone_val & self.pol_mask else "N")
-        return int("%04x" % tone_val) / 10.0, None
-
-    def _set_tone_val(self, code, pol):
-        if code is None:
-            return self.tone_init
-        if pol is not None:
-            val = self.dcs_base | int("%03i" % code, 16)
-            return val | self.pol_mask if pol == "R" else val
-        return int("%04i" % round(code * 10), 16)
-
-
 def _skipped(addr):
     return any(lo <= addr <= hi for lo, hi in WRITE_SKIP)
 
@@ -344,7 +313,10 @@ class AlincoDJVX50Radio(chirp_common.CloneModeRadio):
     # variants; the region-distinguishing 'T' sits at 0x0F86, outside the
     # compared range.  We therefore only require the 'HBE' signature.
     _model_signature = b"HBE"
-    _tone_model = DJVX50ToneModel()
+    _tone_model = kenwood_tone.KenwoodToneModel(
+        dcs_base=0x8000, pol_mask=0x4000,
+        tone_init=0xFFFF, tone_flag=0x0000,
+        tone_enc_base=16, dcs_enc_base=16)
 
     def _model_ok(self, model):
         return self._model_signature in bytes(model)
