@@ -21,7 +21,7 @@ from chirp.drivers import ft1d
 from chirp import chirp_common, directory
 from chirp import errors
 from chirp import memmap
-from chirp.settings import RadioSetting
+from chirp.settings import RadioSetting, RadioSettings
 from chirp.settings import RadioSettingValueString
 from chirp import util
 
@@ -189,3 +189,61 @@ class FT3D(FT2D):
             return True
         else:
             return super().match_model(filedata, filename)
+
+
+@directory.register
+class FT5D(FT2D):
+    """Yaesu FT-5D"""
+    MODEL = "FT5D"
+    VARIANT = "R"
+
+    _model = b"AH82M"
+    FORMATS = [directory.register_format('FT5D ADMS-14', '*.ft5d')]
+
+    def get_features(self):
+        rf = super(FT2D, self).get_features()
+        # temporary, 'til memory map understood
+        # rf.has_settings = False
+        return rf
+
+    def load_mmap(self, filename):
+        if filename.lower().endswith('.ft5d'):
+            with open(filename, 'rb') as f:
+                self._adms_header = f.read(0x18C)
+                if b'ADMS14, Version=1.0.' not in self._adms_header:
+                    raise errors.ImageDetectFailed(
+                        'Unsupported version found in ADMS file')
+                LOG.debug('ADMS Header:\n%s',
+                          util.hexprint(self._adms_header))
+                self._mmap = memmap.MemoryMapBytes(f.read())
+                LOG.info('Loaded ADMS-14 file at offset 0x18C')
+            self.process_mmap()
+        else:
+            chirp_common.CloneModeRadio.load_mmap(self, filename)
+
+    def save_mmap(self, filename):
+        if filename.lower().endswith('.ft5d'):
+            if not hasattr(self, '_adms_header'):
+                raise Exception('Unable to save .img to .ft5d')
+            with open(filename, 'wb') as f:
+                f.write(self._adms_header)
+                f.write(self._mmap.get_packed())
+                LOG.info('Wrote ADMS-14 file')
+        else:
+            chirp_common.CloneModeRadio.save_mmap(self, filename)
+
+    # Only for tests. I hope to put this back into ft1d.py
+    def _get_settings(self) -> RadioSettings:
+        top = RadioSettings(self._get_aprs_settings(),
+                            self._get_digital_settings(),
+                            self._get_dtmf_settings(),
+                            self._get_misc_settings(),
+                            self._get_scan_settings(),
+                            self._get_backtrack_settings())
+        return top
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if filename.endswith('.ft5d'):
+            return True
+        return super().match_model(filedata, filename)
