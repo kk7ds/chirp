@@ -1447,14 +1447,14 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return menu
 
-    def _get_aprs_msgs(self):
+    def _get_aprs_msgs(self) -> RadioSettingGroup:
         menu = RadioSettingGroup("aprs_msg", "APRS Messages")
         aprs_msg = self._memobj.aprs_message_pkt
 
         for index in range(0, 60):
             if aprs_msg[index].flag != 255:
-                astring = \
-                    str(aprs_msg[index].dst_callsign).partition("\xFF")[0]
+                astring = bitwise.get_string(aprs_msg[index].dst_callsign)\
+                    .partition("\xFF")[0]
 
                 val = RadioSettingValueString(
                     0, 9, chirp_common.sanitize_string(astring) +
@@ -1465,8 +1465,8 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                     "Dst Callsign %d" % index, val)
                 menu.append(rs)
 
-                astring = \
-                    str(aprs_msg[index].path_and_body).partition("\xFF")[0]
+                astring = bitwise.get_string(aprs_msg[index].path_and_body)\
+                    .partition("\xFF")[0]
                 val = RadioSettingValueString(
                     0, 66, chirp_common.sanitize_string(astring))
                 val.set_mutable(False)
@@ -1476,7 +1476,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return menu
 
-    def _get_aprs_beacons(self):
+    def _get_aprs_beacons(self) -> RadioSettingGroup:
         menu = RadioSettingGroup("aprs_beacons", "APRS Beacons")
         aprs_beacon = self._memobj.aprs_beacon_pkt
         aprs_meta = self._memobj.aprs_beacon_meta
@@ -1485,18 +1485,20 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
             # There is probably a more pythonesque way to do this
             scl = int(aprs_meta[index].sender_callsign[0])
             dcl = int(aprs_beacon[index].dst_callsign[0])
-            if scl != 255 and scl != 0:  # ignore if empty send call
-                callsign = str(aprs_meta[index].sender_callsign).rstrip("\xFF")
-                val = RadioSettingValueString(0, 9, callsign)
+            if scl not in (255, 0):  # ignore if empty send call
+                _c = chirp_common.sanitize_string(
+                    bitwise.get_string(aprs_meta[index].sender_callsign))
+                val = RadioSettingValueString(0, 9, _c)
                 val.set_mutable(False)
                 rs = RadioSetting(
                     "aprs_beacon.src_callsign%d" % index,
                     "SRC Callsign %d" % index, val)
                 menu.append(rs)
 
-                if dcl != 255 and dcl != 0:   # ignore if empty dest call
-                    val = str(aprs_beacon[index].dst_callsign)
-                    val = RadioSettingValueString(0, 9, val.rstrip("\xFF"))
+                if dcl not in (255, 0):   # ignore if empty dest call
+                    val = chirp_common.sanitize_string(
+                        bitwise.get_string(aprs_beacon[index].dst_callsign))
+                    val = RadioSettingValueString(0, 9, val)
                     val.set_mutable(False)
                     rs = RadioSetting(
                         "aprs_beacon.dst_callsign%d" % index,
@@ -1520,23 +1522,21 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
                 rs = RadioSetting("aprs_beacon.time%d" % index, "Time", val)
                 menu.append(rs)
 
-                if dcl != 255 and dcl != 0:   # ignore if empty dest call
-                    path = str(aprs_beacon[index].path).replace("\x00", " ")
-                    path = ''.join(c for c in path
-                                   if c in string.printable).strip()
-                    path = str(path).replace("\xE0", "*")
+                if dcl not in (255, 0):   # ignore if empty dest call
+                    path = bitwise.get_string(aprs_beacon[index].path)\
+                        .replace("\x00", " ")
+                    path = chirp_common.sanitize_string(str(path).strip()
+                                                        .replace("\xE0", "*"))
                     val = RadioSettingValueString(0, 32, path)
                     val.set_mutable(False)
                     rs = RadioSetting(
                      "aprs_beacon.path%d" % index, "Digipath", val)
                     menu.append(rs)
 
-                body = str(aprs_beacon[index].body).rstrip("\xFF")
-                checksum = body[-2:]
-                body = ''.join(s for s in body[:-2]
-                               if s in string.printable).translate(
-                                   str.maketrans(
-                                       "", "", "\x09\x0a\x0b\x0c\x0d"))
+                body = bitwise.get_string(aprs_beacon[index].body)\
+                    .rstrip("\xFF")
+                # checksum = body[-2:]
+                body = chirp_common.sanitize_string(body)
                 try:
                     val = RadioSettingValueString(0, 134, body.strip())
                 except Exception as e:
@@ -1823,7 +1823,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         # MYCALL
         mycall = self._memobj.my_call
-        mycallstr = str(mycall.callsign).rstrip("\xff").rstrip()
+        mycallstr = bitwise.get_string(mycall.callsign).rstrip("\xff\00 ")
         mycalle = RadioSettingValueString(0, 10, mycallstr, False,
                                           charset=self._MYCALL_CHR_SET)
         rs = RadioSetting('mycall.callsign',
@@ -2061,7 +2061,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
         """
         return str(number).rjust(length, "0")
 
-    def _get_backtrack_settings(self):
+    def _get_backtrack_settings(self) -> RadioSettingGroup:
 
         menu = RadioSettingGroup("backtrack", "Backtrack")
 
@@ -2223,7 +2223,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return menu
 
-    def _get_scan_settings(self):
+    def _get_scan_settings(self) -> RadioSettingGroup:
         menu = RadioSettingGroup("scan_settings", "Scan")
         scan_settings = self._memobj.scan_settings
 
@@ -2294,7 +2294,7 @@ class FT1Radio(yaesu_clone.YaesuCloneModeRadio):
 
         return menu
 
-    def _get_settings(self):
+    def _get_settings(self) -> RadioSettings:
         top = RadioSettings(self._get_aprs_settings(),
                             self._get_digital_settings(),
                             self._get_dtmf_settings(),

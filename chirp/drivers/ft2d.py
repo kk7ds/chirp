@@ -154,11 +154,12 @@ class FT3D(FT2D):
     MODEL = "FT3D"
     VARIANT = "R"
 
+    _adms_ext = '.ft3d'
     _model = b"AH72M"
     FORMATS = [directory.register_format('FT3D ADMS-11', '*.ft3d')]
 
     def load_mmap(self, filename):
-        if filename.lower().endswith('.ft3d'):
+        if filename.lower().endswith(self._adms_ext):
             with open(filename, 'rb') as f:
                 self._adms_header = f.read(0x18C)
                 if b'ADMS11, Version=1.0.0.0' not in self._adms_header:
@@ -173,9 +174,9 @@ class FT3D(FT2D):
             chirp_common.CloneModeRadio.load_mmap(self, filename)
 
     def save_mmap(self, filename):
-        if filename.lower().endswith('.ft3d'):
+        if filename.lower().endswith(self._adms_ext):
             if not hasattr(self, '_adms_header'):
-                raise Exception('Unable to save .img to .ft3d')
+                raise Exception(f'Unable to save .img to {self._adms_ext}')
             with open(filename, 'wb') as f:
                 f.write(self._adms_header)
                 f.write(self._mmap.get_packed())
@@ -183,9 +184,45 @@ class FT3D(FT2D):
         else:
             chirp_common.CloneModeRadio.save_mmap(self, filename)
 
-    @classmethod
-    def match_model(cls, filedata, filename):
-        if filename.endswith('.ft3d'):
-            return True
+
+@directory.register
+class FT5D(FT2D):
+    """Yaesu FT-5D"""
+    MODEL = "FT5D"
+    VARIANT = "R"
+
+    _adms_ext = '.ft5d'
+    _model = b"AH82M"
+    FORMATS = [directory.register_format('FT5D ADMS-14', '*.ft5d')]
+
+    def get_features(self):
+        rf = super(FT2D, self).get_features()
+        # temporary, 'til memory map understood
+        # rf.has_settings = False
+        return rf
+
+    def load_mmap(self, filename):
+        if filename.lower().endswith(self._adms_ext):
+            with open(filename, 'rb') as f:
+                self._adms_header = f.read(0x18C)
+                if b'ADMS14, Version=1.0.' not in self._adms_header:
+                    raise errors.ImageDetectFailed(
+                        'Unsupported version found in ADMS file')
+                LOG.debug('ADMS Header:\n%s',
+                          util.hexprint(self._adms_header))
+                self._mmap = memmap.MemoryMapBytes(f.read())
+                LOG.info('Loaded ADMS-14 file at offset 0x18C')
+            self.process_mmap()
         else:
-            return super().match_model(filedata, filename)
+            chirp_common.CloneModeRadio.load_mmap(self, filename)
+
+    def save_mmap(self, filename):
+        if filename.lower().endswith(self._adms_ext):
+            if not hasattr(self, '_adms_header'):
+                raise Exception(f'Unable to save .img to {self._adms_ext}')
+            with open(filename, 'wb') as f:
+                f.write(self._adms_header)
+                f.write(self._mmap.get_packed())
+                LOG.info('Wrote ADMS-14 file')
+        else:
+            chirp_common.CloneModeRadio.save_mmap(self, filename)
