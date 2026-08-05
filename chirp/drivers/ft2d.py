@@ -21,7 +21,7 @@ from chirp.drivers import ft1d
 from chirp import chirp_common, directory
 from chirp import errors
 from chirp import memmap
-from chirp.settings import RadioSetting, RadioSettings
+from chirp.settings import RadioSetting
 from chirp.settings import RadioSettingValueString
 from chirp import util
 
@@ -154,11 +154,12 @@ class FT3D(FT2D):
     MODEL = "FT3D"
     VARIANT = "R"
 
+    _adms_ext = '.ft3d'
     _model = b"AH72M"
     FORMATS = [directory.register_format('FT3D ADMS-11', '*.ft3d')]
 
     def load_mmap(self, filename):
-        if filename.lower().endswith('.ft3d'):
+        if filename.lower().endswith(self._adms_ext):
             with open(filename, 'rb') as f:
                 self._adms_header = f.read(0x18C)
                 if b'ADMS11, Version=1.0.0.0' not in self._adms_header:
@@ -173,22 +174,15 @@ class FT3D(FT2D):
             chirp_common.CloneModeRadio.load_mmap(self, filename)
 
     def save_mmap(self, filename):
-        if filename.lower().endswith('.ft3d'):
+        if filename.lower().endswith(self._adms_ext):
             if not hasattr(self, '_adms_header'):
-                raise Exception('Unable to save .img to .ft3d')
+                raise Exception(f'Unable to save .img to {self._adms_ext}')
             with open(filename, 'wb') as f:
                 f.write(self._adms_header)
                 f.write(self._mmap.get_packed())
                 LOG.info('Wrote ADMS-11 file')
         else:
             chirp_common.CloneModeRadio.save_mmap(self, filename)
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        if filename.endswith('.ft3d'):
-            return True
-        else:
-            return super().match_model(filedata, filename)
 
 
 @directory.register
@@ -197,6 +191,7 @@ class FT5D(FT2D):
     MODEL = "FT5D"
     VARIANT = "R"
 
+    _adms_ext = '.ft5d'
     _model = b"AH82M"
     FORMATS = [directory.register_format('FT5D ADMS-14', '*.ft5d')]
 
@@ -207,7 +202,7 @@ class FT5D(FT2D):
         return rf
 
     def load_mmap(self, filename):
-        if filename.lower().endswith('.ft5d'):
+        if filename.lower().endswith(self._adms_ext):
             with open(filename, 'rb') as f:
                 self._adms_header = f.read(0x18C)
                 if b'ADMS14, Version=1.0.' not in self._adms_header:
@@ -222,28 +217,12 @@ class FT5D(FT2D):
             chirp_common.CloneModeRadio.load_mmap(self, filename)
 
     def save_mmap(self, filename):
-        if filename.lower().endswith('.ft5d'):
+        if filename.lower().endswith(self._adms_ext):
             if not hasattr(self, '_adms_header'):
-                raise Exception('Unable to save .img to .ft5d')
+                raise Exception(f'Unable to save .img to {self._adms_ext}')
             with open(filename, 'wb') as f:
                 f.write(self._adms_header)
                 f.write(self._mmap.get_packed())
                 LOG.info('Wrote ADMS-14 file')
         else:
             chirp_common.CloneModeRadio.save_mmap(self, filename)
-
-    # Only for tests. I hope to put this back into ft1d.py
-    def _get_settings(self) -> RadioSettings:
-        top = RadioSettings(self._get_aprs_settings(),
-                            self._get_digital_settings(),
-                            self._get_dtmf_settings(),
-                            self._get_misc_settings(),
-                            self._get_scan_settings(),
-                            self._get_backtrack_settings())
-        return top
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        if filename.endswith('.ft5d'):
-            return True
-        return super().match_model(filedata, filename)
