@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chirp"
+version = "0"
+description = "A cross-platform cross-radio programming tool"
+requires-python = ">=3.10,<4"
+dependencies = [
+    "pyserial",
+    "requests",
+    "yattag",
+    "suds",
+    "lark",
+    'pywin32 ; platform_system=="Windows"',
+]
+
+[project.urls]
+Homepage = "https://chirpmyradio.com"
+
+# These wxPython pins match the versions used for the binary builds. They're
+# specific to the versions of the base platforms that we build on. They may be
+# older than what you want for building from source on a later version. Since
+# we focus on those binary builds, please do not propose changes that would
+# take them out of sync with the build system or file bugs about these being
+# wrong for your specific situation.
+[project.optional-dependencies]
+wx = [
+    'wxPython>=4.0,<4.2.0 ; platform_system=="Linux"',  # https://github.com/wxWidgets/Phoenix/issues/2225
+    'wxPython==4.2.0 ; platform_system!="Linux"',
+]
+test = [
+    "pytest==7.1.3",  # https://github.com/pytest-dev/pytest/issues/10428
+    "pytest-xdist",
+    "pytest-html",
+    "six",
+    "pep8",
+    "pyyaml",
+    "ddt",
+]
+
+[project.scripts]
+chirp = "chirp.wxui:chirpmain"
+chirpc = "chirp.cli.main:main"
+experttune = "chirp.cli.experttune:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["chirp*"]
+
+[tool.mypy]
+disable_error_code = ["import-untyped", "var-annotated", "import-not-found"]
+
+[[tool.mypy.overrides]]
+module = "chirp.drivers.*"
+disable_error_code = ["assignment"]
