@@ -402,7 +402,8 @@ def _recv(radio, addr):
         raise errors.RadioError("Short read of the block 0x%04x" % addr)
 
     # checking for the ack
-    if block[0] != ACK_CMD:
+    # occasionally the ack returned may be \x05 so support both
+    if block[0] not in b"\x06\x05":
         raise errors.RadioError("Bad ack from radio in block 0x%04x" % addr)
 
     # header validation
@@ -437,9 +438,7 @@ def _do_ident(radio, status, upload=False):
     if ident[0] != ACK_CMD:
         raise errors.RadioError("Bad ack from radio")
 
-    # basic check for the ident block
-    if len(ident) != 50:
-        raise errors.RadioError("Radio send a short ident block.")
+    # removed 'basic check' since it duplicates the check in _rawrecv()
 
     # check if ident is OK
     itis = False
@@ -460,52 +459,19 @@ def _do_ident(radio, status, upload=False):
     # pause here for the radio to catch up
     sleep(0.1)
 
-    # the OEM software reads this additional block, so we will, too
-
-    # Get the full 21 bytes at a time to reduce load
-    # 1 byte ACK + 4 bytes header + 16 bytes of data (BLOCK_SIZE)
-    frame = _make_frame("S", 0x3DF0, 16)
-    _send(radio, frame)
-    id2 = _rawrecv(radio, 21)
-
-    # checking for the ack
-    if id2[:1] not in b"\x06\x05":
-        raise errors.RadioError("Bad ack from radio")
-
-    # basic check for the additional block
-    if len(id2) < 21:
-        raise errors.RadioError("The extra ID is short, aborting.")
-
-    # this radios need a extra request/answer here on the upload
-    # the amount of data received depends of the radio type
+    # The color display models introduced what earlier versions of CHIRP
+    # called an "id2". The OEM CPS made a request to read a 16-byte block
+    # in high memory (0x3DF0). CHIRP attempted to mirror the CPS but the CPS
+    # appears to pipeline requests rather than synchronizing each transaction
+    # before issuing the next request acks. This has acks showing up further
+    # downstream in reads where it doesn't belong. When downloading, the OEM
+    # CPS actually reads the first block in an apparent attempt to clear the
+    # read buffer and then starts actual download starting with the first block
+    # again.
     #
-    # also the first block of TX must no have the ACK at the beginning
-    # see _upload for this.
-    if upload is True:
-        # set timeout for upload
-        radio.pipe.timeout = 0.5
-
-        # pause here for the radio to catch up
-        sleep(0.3)
-
-        # send an ACK
-        _send(radio, b"\x06")
-
-        # the amount of data depend on the radio, so far we have two radios
-        # reading two bytes with an ACK at the end and just ONE with just
-        # one byte (QYT KT8900)
-        # the JT-6188 appears a clone of the last, but reads TWO bytes.
-        #
-        # we will read two bytes with a custom timeout to not penalize the
-        # users for this.
-        #
-        # we just check for a response and last byte being a ACK, that is
-        # the common stone for all radios (3 so far)
-        ack = _rawrecv(radio, 2)
-
-        # checking
-        if len(ack) == 0 or ack[-1] != ACK_CMD:
-            raise errors.RadioError("Radio didn't ACK the upload")
+    # Extensive testing across supported radios showed that the response is
+    # never used by the driver and upload/download succeeds without requesting
+    # it. Removing it makes the cloning process the same for all models.
 
     # DEBUG
     LOG.info("Positive ident, this is a %s %s" % (radio.VENDOR, radio.MODEL))
@@ -521,8 +487,6 @@ def _download(radio):
 
     # put radio in program mode and identify it
     _do_ident(radio, status)
-
-    radio.pipe.reset_input_buffer()
 
     # reset the progress bar in the UI Bug #11851 BLOCKSIZE fix for KT-8900D
     status.max = MEM_SIZE // radio._block_size
@@ -545,6 +509,9 @@ def _download(radio):
         status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning from radio..."
         radio.status_fn(status)
+
+    # ACK the final block of the download
+    _send(radio, b"\x06")
 
     return data
 
@@ -579,10 +546,8 @@ def _upload(radio):
         # build the frame to send
         frame = _make_frame("X", addr, TX_BLOCK_SIZE, d)
 
-        # first block must not send the ACK at the beginning for the
-        # ones that has the extra id, since this have to do a extra step
-        if addr == 0:
-            frame = frame[1:]
+        # There is no longer a need to strip the first block ack for some
+        # models.
 
         # send the frame
         _send(radio, frame)
@@ -594,8 +559,14 @@ def _upload(radio):
         if len(ack) != 1:
             raise errors.RadioError("No ACK when writing block 0x%04x" % addr)
 
-        if ack not in bytes(b"\x06\x05"):
-            raise errors.RadioError("Bad ACK writing block 0x%04x:" % addr)
+        first = ack
+
+        if first != b"\x06":
+            second = _rawrecv(radio, 1)
+            if second != b"\x06":
+                raise errors.RadioError(
+                    "Unexpected ACK sequence: %s %s" %
+                    (util.hexprint(first), util.hexprint(second)))
 
         # UI Update
         status.cur = addr // TX_BLOCK_SIZE
@@ -647,7 +618,6 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
     _upper = 199
     _magic = MSTRING
     _fileid = []
-    _id2 = False
     btech3 = False
     _gmrs = False
 
