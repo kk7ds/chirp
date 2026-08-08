@@ -90,6 +90,21 @@ class TestSettingValues(base.BaseTest):
         self._set_and_test(value, "a", "abc", "abdef")
         self._set_and_catch(value, "", "abcdefg")
 
+    def test_radio_setting_value_rgb(self):
+        value = settings.RadioSettingValueRGB((0, 0, 0))
+        self.assertEqual((0, 0, 0), value.get_value())
+        self.assertEqual(0, value.get_rgb16())
+        self.assertEqual(0, value.get_rgb24())
+
+        # 0x9c9a2f == 0x9cc6
+        value.set_value((0x9C, 0x9A, 0x2F))
+        self.assertEqual(0x9C9A2F, value.get_rgb24())
+        self.assertEqual(0x9CC6, value.get_rgb16())
+
+        value = settings.RadioSettingValueRGB.from_rgb16(0x9CC6)
+        # Rounding error on the B value
+        self.assertEqual(0x9C9A31, value.get_rgb24())
+
     def test_validate_callback(self):
         class TestException(Exception):
             pass
