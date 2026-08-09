@@ -103,7 +103,6 @@ def _update_status(self, status, step=1):
     """ Increment status bar """
     status.cur += step
     self.status_fn(status)
-    return
 
 
 def _val_list(setting, opts, obj, atrb, fix=0, ndx=-1):
@@ -117,7 +116,6 @@ def _val_list(setting, opts, obj, atrb, fix=0, ndx=-1):
         setattr(obj[ndx], atrb, value)
     else:
         setattr(obj, atrb, value)
-    return
 
 
 class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
@@ -417,7 +415,6 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
                 setattr(_mem, "splitstep", val)
             else:
                 setattr(_mem, ext.get_name(), ext.value)
-        return
 
     def get_settings(self):
         """Translate the MEM_FORMAT structs into settings in the UI"""
@@ -459,7 +456,6 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
                 setattr(obj, atrb, value)
             else:
                 setattr(obj[ndx], atrb, value)
-            return
 
         def _mhz_val(setting, obj, atrb, ndx=-1, ndy=-1):
             """ Callback to set freq back to Hz """
@@ -473,7 +469,6 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
                     setattr(obj[ndx].progvfo[ndy], stx[1], vx)
                 else:
                     setattr(obj[ndx], atrb, vx)
-            return
 
         def _char_to_str(chrx):
             """ Remove ff pads from char array """
@@ -494,7 +489,6 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
                 raise errors.RadioError(sx)
             str2 = str1.ljust(6, chr(255))      # pad to 6 with ff's
             setattr(obj, atrb, str2)
-            return
 
         def _pad_str(setting, lenstr, padchr, obj, atrb, ndx=-1):
             """ pad string to lenstr with padchr  """
@@ -504,7 +498,6 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
                 setattr(obj, atrb, str2)
             else:
                 setattr(obj[ndx], atrb, str2)
-            return
 
         # ===== BASIC GROUP =====
         sx = _char_to_str(_com.comnt)
@@ -1235,7 +1228,6 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
                     except Exception:
                         LOG.debug(element.get_name())
                         raise
-        return
 
     @classmethod
     def match_model(cls, fdata, fyle):
@@ -1657,7 +1649,6 @@ class KenwoodTMD710Radio(KenwoodTMx710Radio):
             raise errors.RadioError(sx)
         # Write E to Exit PROG mode
         resp = _command(radio.pipe, b"E", 2, W8S)
-        return
 
 
 @directory.register
