@@ -83,6 +83,10 @@ def _connect_radio(radio):
     global BAUD
     xid = "D710" + radio.SHORT
     resp = kenwood_live.KenwoodLiveRadio(None).get_id(radio.pipe)
+    # If we are running at 9600 baud (the default), then the default
+    # timeout of 250ms is too short for some clone-mode responses. 1s should
+    # always be enough.
+    radio.pipe.timeout = 1
     BAUD = radio.pipe.baudrate      # As detected by kenwood_live
     LOG.debug("Got [%s] at %i Baud." % (resp, BAUD))
     resp = resp[3:]     # Strip "ID " prefix
