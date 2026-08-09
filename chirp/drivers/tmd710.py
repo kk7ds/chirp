@@ -205,6 +205,9 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             LOG.exception('Unexpected error during download')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
+        finally:
+            resp = _command(self.pipe, b"E", 0, W8S)
+
         self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
@@ -221,6 +224,8 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             LOG.exception('Unexpected error during upload')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
+        finally:
+            resp = _command(self.pipe, b"E", 0, W8S)
 
     def process_mmap(self):
         """Process the mem map into the mem object"""
@@ -1548,7 +1553,6 @@ class KenwoodTMD710Radio(KenwoodTMx710Radio):
                 resp0 = _command(radio.pipe, cmc, 260, W8S)
                 junk = _command(radio.pipe, ACK, 1, W8S)
                 if len(resp0) < 260:
-                    junk = _command(radio.pipe, b"E", 2, W8S)
                     sx = "Block 0x%x read error: " % bkx
                     sx += "Got %i bytes, expected 260." % len(resp0)
                     LOG.error(sx)
@@ -1571,8 +1575,6 @@ class KenwoodTMD710Radio(KenwoodTMx710Radio):
         data += resp0[4:]
         junk = _command(radio.pipe, ACK, 1, W8S)
         _update_status(radio, status)
-        # Exit Prog mode, no TERM
-        resp = _command(radio.pipe, b"E", 2, W8S)     # Rtns 06 0d
         return data
 
     def _write_mem(radio):
@@ -1650,8 +1652,6 @@ class KenwoodTMD710Radio(KenwoodTMx710Radio):
             LOG.error("Mht0 Write error at 00 00 04 , no ACK.")
             sx = "Radio failed to acknowledge upload packet!"
             raise errors.RadioError(sx)
-        # Write E to Exit PROG mode
-        resp = _command(radio.pipe, b"E", 2, W8S)
 
 
 @directory.register
@@ -1987,7 +1987,6 @@ class KenwoodTMD710GRadio(KenwoodTMx710Radio):
                                  radio._make_command(b'R', addr, 0),
                                  radio._packet_size[blkn], W8S)
                 if len(resp0) < radio._packet_size[blkn]:
-                    junk = _command(radio.pipe, b"E", 0, W8S)
                     lb = len(resp0)
                     xb = radio._packet_size[blkn]
                     sx = "Block 0x%x, 0x%x read error: " % (blkn, bkx)
@@ -2003,8 +2002,6 @@ class KenwoodTMD710GRadio(KenwoodTMx710Radio):
                 else:
                     data += resp0[5:]       # skip cmd echo
                 _update_status(radio, status)        # UI Update
-        # Exit Prog mode, no TERM
-        resp = _command(radio.pipe, b"E", 0, W8S)
         return data
 
     def _write_mem(radio):
@@ -2067,5 +2064,3 @@ class KenwoodTMD710GRadio(KenwoodTMx710Radio):
         resp0 = _command(radio.pipe, cmc, 1, W8S)
         cmc = radio._make_command(b'Z', radio._block_addr[0], 1, mht0[0:1])
         resp0 = _command(radio.pipe, cmc, 16, W8S)
-        # Write E to Exit PROG mode
-        resp = _command(radio.pipe, b"E", 0, W8S)
