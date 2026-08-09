@@ -2048,7 +2048,7 @@ class KenwoodTMD710GRadio(KenwoodTMx710Radio):
                     data = radio.get_mmap()[imgadr:imgadr + 256]
                 cmc = radio._make_command(b'W', addr, 0, data)
 
-                resp0 = _command(radio.pipe, cmc, 6, W8S)
+                resp0 = _command(radio.pipe, cmc, 1, W8S)
                 if bkx > 0 and resp0 != ACK:
                     LOG.error("Packet 0x%x Write error, no ACK!" % bkx)
                     sx = "Radio failed to acknowledge upload. "
