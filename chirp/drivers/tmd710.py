@@ -80,6 +80,9 @@ def _command(ser, cmd, rsplen, w8t=0.01):
 
 def _connect_radio(radio):
     """Determine baud rate and verify radio on-line"""
+    status = chirp_common.Status()
+    status.msg = 'Probing baud rate of radio'
+    _update_status(radio, status)
     xid = "D710" + radio.SHORT
     resp = kenwood_live.KenwoodLiveRadio(None).get_id(radio.pipe)
     # If we are running at 9600 baud (the default), then the default
