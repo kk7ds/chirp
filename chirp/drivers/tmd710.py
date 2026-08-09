@@ -80,15 +80,13 @@ def _command(ser, cmd, rsplen, w8t=0.01):
 
 def _connect_radio(radio):
     """Determine baud rate and verify radio on-line"""
-    global BAUD
     xid = "D710" + radio.SHORT
     resp = kenwood_live.KenwoodLiveRadio(None).get_id(radio.pipe)
     # If we are running at 9600 baud (the default), then the default
     # timeout of 250ms is too short for some clone-mode responses. 1s should
     # always be enough.
     radio.pipe.timeout = 1
-    BAUD = radio.pipe.baudrate      # As detected by kenwood_live
-    LOG.debug("Got [%s] at %i Baud." % (resp, BAUD))
+    LOG.debug("Got [%s] at %i Baud." % (resp, radio.pipe.baudrate))
     resp = resp[3:]     # Strip "ID " prefix
     if len(resp) > 2:   # Got something from "ID"
         if resp == xid:     # Good comms
@@ -1535,7 +1533,6 @@ class KenwoodTMD710Radio(KenwoodTMx710Radio):
 
     def _read_mem(radio):
         """ Load the memory map """
-        global BAUD
         status = chirp_common.Status()
         status.cur = 0
         val = 0
@@ -1547,7 +1544,6 @@ class KenwoodTMD710Radio(KenwoodTMx710Radio):
 
         data = ""
 
-        radio.pipe.baudrate = BAUD
         cmc = b"0M PROGRAM" + TERM
         resp0 = _command(radio.pipe, cmc, 3, W8S)
         junk = radio.pipe.read(16)       # flushit
@@ -1582,12 +1578,10 @@ class KenwoodTMD710Radio(KenwoodTMx710Radio):
         _update_status(radio, status)
         # Exit Prog mode, no TERM
         resp = _command(radio.pipe, b"E", 2, W8S)     # Rtns 06 0d
-        radio.pipe.baudrate = BAUD
         return data
 
     def _write_mem(radio):
         """ PROG MCP Blocks Send """
-        global BAUD
         # UI progress
         status = chirp_common.Status()
         status.cur = 0
@@ -1599,7 +1593,6 @@ class KenwoodTMD710Radio(KenwoodTMx710Radio):
         radio.status_fn(status)
 
         imgadr = 0
-        radio.pipe.baudrate = BAUD
         resp0 = _command(radio.pipe, b"0M PROGRAM" + TERM, 3, W8S)
         # Read block 0 magic header thingy, save it
         cmc = b"R" + bytes([0, 0, 4])
@@ -1974,7 +1967,6 @@ class KenwoodTMD710GRadio(KenwoodTMx710Radio):
 
     def _read_mem(radio):
         """ Load the memory map """
-        global BAUD
         status = chirp_common.Status()
         status.cur = 0
         val = 0
@@ -1986,7 +1978,6 @@ class KenwoodTMD710GRadio(KenwoodTMx710Radio):
 
         data = b""
 
-        radio.pipe.baudrate = BAUD
         resp0 = radio.pipe.read(16)     # flush
         cmc = b"0M PROGRAM" + TERM
         resp0 = _command(radio.pipe, cmc, 3, W8S)
@@ -2020,12 +2011,10 @@ class KenwoodTMD710GRadio(KenwoodTMx710Radio):
                 _update_status(radio, status)        # UI Update
         # Exit Prog mode, no TERM
         resp = _command(radio.pipe, b"E", 0, W8S)
-        radio.pipe.baudrate = BAUD
         return data
 
     def _write_mem(radio):
         """ PROG MCP Blocks Send """
-        global BAUD
         # UI progress
         status = chirp_common.Status()
         status.cur = 0
@@ -2037,7 +2026,6 @@ class KenwoodTMD710GRadio(KenwoodTMx710Radio):
         radio.status_fn(status)
 
         imgadr = 0
-        radio.pipe.baudrate = BAUD
         resp0 = _command(radio.pipe, b"0M PROGRAM" + TERM, 3, W8S)
         radio.pipe.baudrate = 57600
         LOG.debug("Switching to 57600 baud upload.")
@@ -2087,5 +2075,3 @@ class KenwoodTMD710GRadio(KenwoodTMx710Radio):
         resp0 = _command(radio.pipe, cmc, 16, W8S)
         # Write E to Exit PROG mode
         resp = _command(radio.pipe, b"E", 0, W8S)
-        radio.pipe.baudrate = BAUD
-        return
