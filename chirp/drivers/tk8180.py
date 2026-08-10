@@ -473,6 +473,80 @@ class ZoneMemoryMixin(abc.ABC):
         self.process_mmap()
 
 
+class KenwoodOSTMixin:
+    OST_NAME_LENGTH = 12
+
+    def _get_ost_name_path(self, index):
+        return 'ost_tones[%i].name' % index
+
+    def _get_ost_name(self, _ost):
+        return str(_ost.name).rstrip('\x00')
+
+    @staticmethod
+    def _select_tone_value(tones, raw_tone, index, which):
+        if raw_tone == 0xFFFF:
+            return 'Off'
+
+        cur = round(int(raw_tone) / 10.0, 1)
+        if cur not in tones:
+            LOG.debug('Non-standard OST %s tone %i %s', which, index, cur)
+            tones.append(cur)
+            tones.sort()
+        return str(cur)
+
+    def _get_ost(self, parent=None):
+        tones = chirp_common.TONES[:]
+
+        def apply_tone(setting, index, which):
+            if str(setting.value) == 'Off':
+                val = 0xFFFF
+            else:
+                val = int(float(str(setting.value)) * 10)
+            setattr(self._memobj.ost_tones[index], '%stone' % which, val)
+
+        def _tones():
+            return ['Off'] + [str(x) for x in tones]
+
+        ostgroup = RadioSettingGroup('ost', 'OST')
+        ostgroup.set_doc('Operator Selectable Tone')
+
+        for i in range(0, 40):
+            _ost = self._memobj.ost_tones[i]
+            ost = RadioSettingSubGroup('ost%i' % i,
+                                       'OST %i' % (i + 1))
+
+            cur = self._get_ost_name(_ost)
+            name = MemSetting(self._get_ost_name_path(i), 'Name',
+                              RadioSettingValueString(
+                                  0, self.OST_NAME_LENGTH, cur,
+                                  mem_pad_char='\x00'))
+            ost.append(name)
+
+            cur = self._select_tone_value(tones, _ost.rxtone, i, 'rx')
+            tone_values = _tones()
+            rx = RadioSetting('rxtone%i' % i, 'RX Tone',
+                              RadioSettingValueList(
+                                  tone_values,
+                                  current_index=tone_values.index(cur)))
+            rx.set_apply_callback(apply_tone, i, 'rx')
+            ost.append(rx)
+
+            cur = self._select_tone_value(tones, _ost.txtone, i, 'tx')
+            tone_values = _tones()
+            tx = RadioSetting('txtone%i' % i, 'TX Tone',
+                              RadioSettingValueList(
+                                  tone_values,
+                                  current_index=tone_values.index(cur)))
+            tx.set_apply_callback(apply_tone, i, 'tx')
+            ost.append(tx)
+
+            ostgroup.append(ost)
+
+        if parent is not None:
+            parent.append(ostgroup)
+        return ostgroup
+
+
 ButtonDisposition = enum.Enum('ButtonDisposition',
                               ['PRIMARY', 'SECONDARY', 'HOLD'])
 
@@ -738,7 +812,8 @@ def reset(self):
         LOG.error('Unable to send reset sequence')
 
 
-class KenwoodTKx180Radio(ZoneMemoryMixin, chirp_common.CloneModeRadio):
+class KenwoodTKx180Radio(ZoneMemoryMixin, KenwoodOSTMixin,
+                         chirp_common.CloneModeRadio):
     """Kenwood TK-x180"""
     VENDOR = 'Kenwood'
     MODEL = 'TK-x180'
@@ -1479,64 +1554,6 @@ class KenwoodTKx180Radio(ZoneMemoryMixin, chirp_common.CloneModeRadio):
             zones.append(zone)
 
         return zones
-
-    def _get_ost(self, parent):
-        tones = chirp_common.TONES[:]
-
-        def apply_tone(setting, index, which):
-            if str(setting.value) == 'Off':
-                val = 0xFFFF
-            else:
-                val = int(float(str(setting.value)) * 10)
-            setattr(self._memobj.ost_tones[index], '%stone' % which, val)
-
-        def _tones():
-            return ['Off'] + [str(x) for x in tones]
-
-        ostgroup = RadioSettingGroup('ost', 'OST')
-        ostgroup.set_doc('Operator Selectable Tone')
-        parent.append(ostgroup)
-
-        for i in range(0, 40):
-            _ost = self._memobj.ost_tones[i]
-            ost = RadioSettingSubGroup('ost%i' % i,
-                                       'OST %i' % (i + 1))
-
-            cur = str(_ost.name).rstrip('\x00')
-            name = MemSetting('ost_tones[%i].name' % i, 'Name',
-                              RadioSettingValueString(0, 12, cur,
-                                                      mem_pad_char='\x00'))
-            ost.append(name)
-
-            if _ost.rxtone == 0xFFFF:
-                cur = 'Off'
-            else:
-                cur = round(int(_ost.rxtone) / 10.0, 1)
-                if cur not in tones:
-                    LOG.debug('Non-standard OST rx tone %i %s' % (i, cur))
-                    tones.append(cur)
-                    tones.sort()
-            rx = RadioSetting('rxtone%i' % i, 'RX Tone',
-                              RadioSettingValueList(_tones(),
-                                                    str(cur)))
-            rx.set_apply_callback(apply_tone, i, 'rx')
-            ost.append(rx)
-
-            if _ost.txtone == 0xFFFF:
-                cur = 'Off'
-            else:
-                cur = round(int(_ost.txtone) / 10.0, 1)
-                if cur not in tones:
-                    LOG.debug('Non-standard OST tx tone %i %s' % (i, cur))
-                    tones.append(cur)
-                    tones.sort()
-            tx = RadioSetting('txtone%i' % i, 'TX Tone',
-                              RadioSettingValueList(_tones(),
-                                                    str(cur)))
-            tx.set_apply_callback(apply_tone, i, 'tx')
-            ost.append(tx)
-
-            ostgroup.append(ost)
 
     def _get_keys(self):
         if self.is_mobile:
