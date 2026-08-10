@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import enum
+import abc
 import struct
 import time
 import logging
@@ -222,6 +223,9 @@ struct {
 } zone%(index)i;
 """
 
+
+ZONE_LAYOUT_MEM_FORMAT = HEADER_FORMAT
+
 STARTUP_MODES = ['Text', 'Clock']
 
 VOLUMES = OrderedDict([(str(x), x) for x in range(0, 30)])
@@ -378,6 +382,95 @@ KEYPAD_OP = {
 
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5),
                 chirp_common.PowerLevel("High", watts=50)]
+
+
+class ZoneMemoryMixin(abc.ABC):
+
+    @property
+    def raw_zone(self):
+        return getattr(self._memobj, 'zone%i' % self._zone)
+
+    @property
+    def raw_zoneinfo(self):
+        return self.raw_zone.zoneinfo
+
+    @property
+    def raw_memories(self):
+        return self.raw_zone.memories
+
+    def shuffle_zone(self):
+        """Sort the memories in the zone according to logical channel number"""
+        raw_memories = self.raw_memories
+        memories = [(i, raw_memories[i].number)
+                    for i in range(0, self.raw_zoneinfo.count)]
+        current = memories[:]
+        memories.sort(key=lambda t: t[1])
+        if current == memories:
+            LOG.debug('Shuffle not required')
+            return
+        raw_data = [raw_memories[i].get_raw()
+                    for i, _n in memories]
+        for i, raw_mem in enumerate(raw_data):
+            raw_memories[i].set_raw(raw_mem)
+
+    @abc.abstractmethod
+    def _compute_zone_layout(self, zone_sizes):
+        pass
+
+    @abc.abstractmethod
+    def _set_zone_flagoffset(self, zoneinfo, scan_index):
+        pass
+
+    @abc.abstractmethod
+    def _init_new_zoneinfo(self, dest_zoneinfo, zone_number, count,
+                           old_memobj):
+        pass
+
+    @abc.abstractmethod
+    def _build_mem_format_from_zone_sizes(self, zone_sizes):
+        pass
+
+    def expand_mmap(self, zone_sizes):
+        old_zones = self._zones
+        old_memobj = self._memobj
+
+        self._mmap = memmap.MemoryMapBytes(bytes(self._mmap.get_packed()))
+
+        self._zones = self._compute_zone_layout(zone_sizes)
+        self._memobj = bitwise.parse(
+            self._build_mem_format_from_zone_sizes(zone_sizes), self._mmap)
+
+        for index in range(0, 128):
+            try:
+                self._memobj.zone_starts[index] = self._zones[index][0]
+            except IndexError:
+                self._memobj.zone_starts[index] = 0xFFFF
+
+        scan_index = 1
+        for zone_number, count in enumerate(zone_sizes):
+            dest_zone = getattr(self._memobj, 'zone%i' % zone_number)
+            dest = dest_zone.memories
+            dest_zoneinfo = dest_zone.zoneinfo
+
+            if zone_number < len(old_zones):
+                _, old_count = old_zones[zone_number]
+                source_zone = getattr(old_memobj, 'zone%i' % zone_number)
+                source = source_zone.memories
+                source_zoneinfo = source_zone.zoneinfo
+
+                dest_zoneinfo.set_raw(source_zoneinfo.get_raw())
+                dest_zoneinfo.count = count
+
+                for i in range(0, min(count, old_count)):
+                    dest[i].set_raw(source[i].get_raw())
+            else:
+                self._init_new_zoneinfo(dest_zoneinfo, zone_number,
+                                        count, old_memobj)
+
+            self._set_zone_flagoffset(dest_zoneinfo, scan_index)
+            scan_index += count
+
+        self.process_mmap()
 
 
 ButtonDisposition = enum.Enum('ButtonDisposition',
@@ -645,7 +738,7 @@ def reset(self):
         LOG.error('Unable to send reset sequence')
 
 
-class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
+class KenwoodTKx180Radio(ZoneMemoryMixin, chirp_common.CloneModeRadio):
     """Kenwood TK-x180"""
     VENDOR = 'Kenwood'
     MODEL = 'TK-x180'
@@ -653,7 +746,43 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
     FORMATS = [directory.register_format('Kenwood KPG-89D', '*.dat')]
 
     _system_start = 0x0B00
+    _zone_header_size = 0x20
+    _memory_size = 0x30
     _memsize = 0xD100
+
+    def _compute_zone_layout(self, zone_sizes):
+        zones = []
+        addr = self._system_start
+        for count in zone_sizes:
+            zones.append((addr, count))
+            addr += self._zone_header_size + (count * self._memory_size)
+        return zones
+
+    def _set_zone_flagoffset(self, zoneinfo, scan_index):
+        zoneinfo.flagoffset = scan_index
+
+    def _build_mem_format_from_zone_sizes(self, zone_sizes):
+        mem_format = ZONE_LAYOUT_MEM_FORMAT
+        for index, (addr, count) in enumerate(self._compute_zone_layout(
+                zone_sizes)):
+            mem_format += SYSTEM_MEM_FORMAT % {
+                'addr': addr,
+                'count': max(count, 1),
+                'index': index}
+        return mem_format
+
+    def _init_new_zoneinfo(self, dest_zoneinfo, zone_number, count,
+                           old_memobj):
+        dest_zoneinfo.number = zone_number + 1
+        dest_zoneinfo.zonetype = 0x31
+        dest_zoneinfo.count = count
+        dest_zoneinfo.name = ('Zone %i' % (zone_number + 1)).ljust(12)
+
+        z0info = getattr(old_memobj, 'zone0').zoneinfo
+        dest_zoneinfo.timeout = z0info.timeout
+        dest_zoneinfo.tot_alert = z0info.tot_alert
+        dest_zoneinfo.tot_rekey = z0info.tot_rekey
+        dest_zoneinfo.tot_reset = z0info.tot_reset
 
     @property
     def is_mobile(self):
@@ -782,90 +911,7 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
         self._memobj = bitwise.parse(mem_format, self._mmap)
 
     def expand_mmap(self, zone_sizes):
-        """Remap memory into zones of the specified sizes, copying things
-        around to keep the contents, as appropriate."""
-        old_zones = self._zones
-        old_memobj = self._memobj
-
-        self._mmap = memmap.MemoryMapBytes(bytes(self._mmap.get_packed()))
-
-        new_format = HEADER_FORMAT
-        addr = self._system_start
-        self._zones = []
-        for index, count in enumerate(zone_sizes):
-            new_format += SYSTEM_MEM_FORMAT % {
-                'addr': addr,
-                'count': max(count, 1),  # Never allow array of zero
-                'index': index}
-            self._zones.append((addr, count))
-            addr += 0x20 + (count * 0x30)
-
-        self._memobj = bitwise.parse(new_format, self._mmap)
-
-        # Set all known zone addresses and clear the rest
-        for index in range(0, 128):
-            try:
-                self._memobj.zone_starts[index] = self._zones[index][0]
-            except IndexError:
-                self._memobj.zone_starts[index] = 0xFFFF
-
-        scan_index = 1
-        for zone_number, count in enumerate(zone_sizes):
-            dest_zone = getattr(self._memobj, 'zone%i' % zone_number)
-            dest = dest_zone.memories
-            dest_zoneinfo = dest_zone.zoneinfo
-
-            if zone_number < len(old_zones):
-                LOG.debug('Copying existing zone %i' % zone_number)
-                _, old_count = old_zones[zone_number]
-                source_zone = getattr(old_memobj, 'zone%i' % zone_number)
-                source = source_zone.memories
-                source_zoneinfo = source_zone.zoneinfo
-
-                if old_count != count:
-                    LOG.debug('Zone %i going from %i to %i' % (zone_number,
-                                                               old_count,
-                                                               count))
-
-                # Copy the zone record from the source, but then update
-                # the count
-                dest_zoneinfo.set_raw(source_zoneinfo.get_raw())
-                dest_zoneinfo.count = count
-
-                for dest_i in range(0, min(count, old_count)):
-                    dest[dest_i].set_raw(source[dest_i].get_raw())
-            else:
-                LOG.debug('New zone %i' % zone_number)
-                dest_zone.zoneinfo.number = zone_number + 1
-                dest_zone.zoneinfo.zonetype = 0x31
-                dest_zone.zoneinfo.count = count
-                dest_zone.zoneinfo.name = (
-                    'Zone %i' % (zone_number + 1)).ljust(12)
-
-                # Copy the settings we care about from the first zone
-                z0info = self._memobj.zone0.zoneinfo
-                dest_zone.zoneinfo.timeout = z0info.timeout
-                dest_zone.zoneinfo.tot_alert = z0info.tot_alert
-                dest_zone.zoneinfo.tot_rekey = z0info.tot_rekey
-                dest_zone.zoneinfo.tot_reset = z0info.tot_reset
-            dest_zone.zoneinfo.flagoffset = scan_index
-            scan_index += count
-
-    def shuffle_zone(self):
-        """Sort the memories in the zone according to logical channel number"""
-        # FIXME: Move this to the zone
-        raw_memories = self.raw_memories
-        memories = [(i, raw_memories[i].number)
-                    for i in range(0, self.raw_zoneinfo.count)]
-        current = memories[:]
-        memories.sort(key=lambda t: t[1])
-        if current == memories:
-            LOG.debug('Shuffle not required')
-            return
-        raw_data = [raw_memories[i].get_raw()
-                    for i, n in memories]
-        for i, raw_mem in enumerate(raw_data):
-            raw_memories[i].set_raw(raw_mem)
+        return super().expand_mmap(zone_sizes)
 
     @classmethod
     def get_prompts(cls):
@@ -908,18 +954,6 @@ class KenwoodTKx180Radio(chirp_common.CloneModeRadio):
                                '!"#$%&\'()~+-,./:;<=>?@[\\]^`{}*| ')
         rf.memory_bounds = (1, 512)
         return rf
-
-    @property
-    def raw_zone(self):
-        return getattr(self._memobj, 'zone%i' % self._zone)
-
-    @property
-    def raw_zoneinfo(self):
-        return self.raw_zone.zoneinfo
-
-    @property
-    def raw_memories(self):
-        return self.raw_zone.memories
 
     @property
     def max_mem(self):
