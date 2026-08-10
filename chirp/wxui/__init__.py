@@ -113,8 +113,8 @@ def chirpmain():
                               'other profile data'))
     if sys.platform == 'linux':
         desktop = parser.add_mutually_exclusive_group()
-        parser.add_argument('--no-linux-gdk-backend', action='store_true',
-                            help='Do not force GDK_BACKEND=x11')
+        parser.add_argument('--compat-linux-gdk-backend', action='store_true',
+                            help='Force GDK_BACKEND=x11 for compatibility')
         desktop.add_argument('--install-desktop-app', action='store_true',
                              default=False,
                              help=('Install a desktop icon even if it was '
@@ -137,10 +137,10 @@ def chirpmain():
         config._CONFIG = config.ChirpConfig(args.config_dir)
     CONF = config.get()
 
-    # wxGTK on Wayland seems to have problems. Override GDK_BACKEND to
-    # use X11, unless we were asked not to.
-    # NOTE this needs to happen before we import wx to be effective!
-    if sys.platform == 'linux' and not args.no_linux_gdk_backend:
+    if sys.platform == 'linux' and args.compat_linux_gdk_backend:
+        # wxGTK on Wayland seems to have problems in some versions or
+        # environments. Override GDK_BACKEND to use X11, if we were asked to.
+        # NOTE this needs to happen before we import wx to be effective!
         os.putenv('GDK_BACKEND', 'x11')
 
     import wx

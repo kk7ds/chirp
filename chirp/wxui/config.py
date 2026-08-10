@@ -161,7 +161,7 @@ class ChirpConfigProxy:
         if val is None:
             return default
         else:
-            return val == "True"
+            return val.lower() == 'true'
 
     def set_bool(self, key, value, section=None):
         self.set(key, str(bool(value)), section)

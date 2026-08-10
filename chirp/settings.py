@@ -392,6 +392,10 @@ class RadioSettingValueMap(RadioSettingValueList):
         option"""
         return self._mem_vals[self._options.index(self.get_value())]
 
+    def get_selection(self):
+        """Get the user option selected"""
+        return self._current
+
     def __trunc__(self):
         """Return memory value that matches current user option"""
         index = self._options.index(self._current)
@@ -458,7 +462,6 @@ class RadioSettings(list):
         """
         non_mem_settings = []
         for setting in self.walk():
-            print("Walking %r" % setting)
             if isinstance(setting, MemSetting):
                 setting.apply_to_memobj(memobj)
             else:
@@ -764,9 +767,13 @@ class MemSetting(RadioSetting):
         if isinstance(self.value, RadioSettingValueBoolean):
             value = self.value._mem_vals[int(value)]
 
-        obj = memobj
-        elements = self._path.split('.')
-        for element in elements[:-1]:
+        self.set_by_path(memobj, self._path, value)
+
+    @staticmethod
+    def set_by_path(obj, path, value):
+        """Traverse obj according to path and set the value at the leaf"""
+        elements = path.split('.')
+        for element in elements:
             if '[' in element:
                 # foo[i] syntax
                 name, index = element.split('[', 1)
@@ -774,4 +781,4 @@ class MemSetting(RadioSetting):
                 obj = obj[int(index.replace(']', ''))]
             else:
                 obj = getattr(obj, element)
-        setattr(obj, elements[-1], value)
+        obj.set_value(value)

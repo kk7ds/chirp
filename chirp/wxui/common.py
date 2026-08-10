@@ -33,6 +33,7 @@ from chirp import errors
 from chirp import logger
 from chirp import platform as chirp_platform
 from chirp import settings
+from chirp.wxui import accessibility
 from chirp.wxui import config
 from chirp.wxui import radiothread
 
@@ -372,11 +373,28 @@ class ChirpSettingGrid(wx.Panel):
         self._group = settinggroup
         self._settings = {}
         self._needs_reload = False
+        # (prop_name, spoken text) for a value the user is in the middle
+        # of choosing (arrowing through an open EnumProperty combo box,
+        # toggling a checkbox) but hasn't committed yet. Consulted by
+        # _property_speech() so the accessible name reflects the pending
+        # value rather than the last-committed one; see _check_change().
+        self._pending_value = None
 
         self.pg = wx.propgrid.PropertyGrid(
             self,
             style=wx.propgrid.PG_SPLITTER_AUTO_CENTER |
             wx.propgrid.PG_BOLD_MODIFIED)
+        # wx.propgrid.PropertyGrid does not expose a usable per-row
+        # accessibility tree (the whole grid reports as a single
+        # ROLE_SYSTEM_CLIENT/PANE object with all row text concatenated),
+        # so arrow-key navigation is otherwise silent for screen reader
+        # users. accessibility.attach_propgrid_accessible() gives it a
+        # real wx.Accessible-backed per-row tree instead (Windows only;
+        # see chirp/wxui/accessibility.py), using self._property_speech()
+        # for each row's accessible name.
+        self._accessible = accessibility.attach_propgrid_accessible(
+            self.pg, _('Settings: %s') % settinggroup.get_shortname(),
+            speech_fn=self._property_speech)
 
         self.pg.Bind(wx.propgrid.EVT_PG_CHANGED, self._pg_changed)
         self.pg.Bind(wx.EVT_MOTION, self._mouseover)
@@ -419,6 +437,114 @@ class ChirpSettingGrid(wx.Panel):
                 tip = setting.__doc__ or None
 
         event.GetEventObject().SetToolTip(tip)
+
+    def _value_as_speech(self, prop, raw_value=None):
+        """Render a property's value as something worth speaking.
+
+        If raw_value is given (a wx.propgrid 'pending' value, as found on
+        EVT_PG_CHANGING events, where for an EnumProperty this is the
+        integer index rather than display text) it is used instead of the
+        property's current committed value. This lets callers announce a
+        value the user is in the process of selecting, before they've
+        confirmed it with Enter/Tab/focus-out.
+        """
+        if isinstance(prop, wx.propgrid.BoolProperty):
+            value = prop.GetValue() if raw_value is None else raw_value
+            return _('checked') if value else _('unchecked')
+        elif isinstance(prop, wx.propgrid.EnumProperty):
+            if raw_value is None:
+                return prop.GetValueAsString()
+            setting = self.get_setting_by_name(prop.GetName())
+            choices = setting and self._choices.get(setting.get_name())
+            try:
+                return choices[raw_value] if choices else str(raw_value)
+            except (IndexError, TypeError):
+                return str(raw_value)
+        elif raw_value is not None:
+            return str(raw_value)
+        return prop.GetValueAsString()
+
+    def _property_type_label(self, prop):
+        """Return a short, translated description of a property's editor
+        type (checkbox/number/list/text), or None if not applicable.
+
+        wx.propgrid.PropertyGrid gives screen readers no indication of
+        what kind of control a row is (this information is normally
+        conveyed visually by the editor widget shown when the row is
+        focused), so we speak it explicitly as part of _announce_property.
+        """
+        if isinstance(prop, wx.propgrid.BoolProperty):
+            return _('checkbox')
+        elif isinstance(prop, wx.propgrid.EnumProperty):
+            return _('list')
+        elif isinstance(prop, (wx.propgrid.IntProperty,
+                               wx.propgrid.FloatProperty)):
+            return _('number')
+        elif isinstance(prop, wx.propgrid.StringProperty):
+            return _('text')
+        return None
+
+    def _property_state_label(self, prop, setting):
+        """Return a short, translated description of a property's state
+        (locked/unspecified), or None if there's nothing notable to say.
+
+        This mirrors the visual-only cues the grid otherwise uses (grey
+        text for disabled rows, a yellow background for unspecified
+        values), neither of which reaches a screen reader user.
+        """
+        if prop.IsValueUnspecified():
+            return _('unspecified')
+        if not prop.IsEnabled():
+            return _('locked')
+        return None
+
+    def _property_speech(self, prop):
+        """Build the accessible name for a property row.
+
+        Used as the speech_fn for accessibility.attach_propgrid_accessible()
+        -- returned text becomes the row's wx.Accessible name, which is
+        what screen readers read on navigation, via NotifyEvent rather
+        than a manual speech call (see chirp/wxui/accessibility.py).
+
+        Categories get just their name, since they're headings rather
+        than editable fields. Ordinary properties are rendered as
+        '<name> <value>, <type>, <state>', omitting the type/state
+        segments when there's nothing notable to add so the common case
+        stays short.
+        """
+        if prop.IsCategory():
+            return _('Group: %s') % prop.GetLabel()
+
+        setting = self.get_setting_by_name(prop.GetName())
+        label = prop.GetLabel()
+        if not label:
+            # Properties belonging to a multi-value setting (RadioSetting
+            # with more than one value) have their visible label cleared
+            # in _add_items() since the shared name is shown once on the
+            # category row above them instead. Reconstruct something
+            # useful to say by falling back to the setting's name and,
+            # if there's more than one sibling value, the position within
+            # the group, e.g. 'Squelch Level 2' rather than just repeating
+            # the bare setting name for every row.
+            base = setting and setting.get_shortname() or prop.GetName()
+            if setting and len(setting.keys()) > 1:
+                index = int(prop.GetName().rsplit(INDEX_CHAR, 1)[-1])
+                label = '%s %d' % (base, index + 1)
+            else:
+                label = base
+        if self._pending_value and self._pending_value[0] == prop.GetName():
+            value = self._pending_value[1]
+        else:
+            value = self._value_as_speech(prop)
+
+        parts = ['%s %s' % (label, value)]
+        type_label = self._property_type_label(prop)
+        if type_label:
+            parts.append(type_label)
+        state_label = self._property_state_label(prop, setting)
+        if state_label:
+            parts.append(state_label)
+        return ', '.join(parts)
 
     def _add_items(self, group, parent=None):
         def append(item):
@@ -463,6 +589,11 @@ class ChirpSettingGrid(wx.Panel):
                 if len(element.keys()) > 1:
                     editor.SetLabel('')
                 editor.Enable(value.get_mutable())
+                # Native PGProperty help string, surfaced to screen
+                # readers via wx.Accessible.GetDescription() (e.g. NVDA's
+                # "report object description" command) instead of a
+                # hijacked F1 key press pushing speech directly.
+                editor.SetHelpString((element.__doc__ or '').strip())
                 append(editor)
                 self._settings[element.get_name()] = element
                 if editor.IsValueUnspecified():
@@ -486,6 +617,23 @@ class ChirpSettingGrid(wx.Panel):
             LOG.error('Got change event for unknown setting %s' % (
                 event.GetPropertyName()))
             return
+        # EVT_PG_CHANGING fires for every pending value the user lands on
+        # while editing (e.g. each item highlighted while arrowing through
+        # an open EnumProperty combo box, or toggling a BoolProperty's
+        # checkbox), even before the change is committed with Enter/Tab.
+        # The editor sub-widget that briefly gets focus here (an
+        # OwnerDrawnComboBox, a checkbox, ...) reports its raw wx class
+        # name to screen readers instead of the setting it belongs to, and
+        # selecting a different item inside it is otherwise silent.
+        # Record the pending value so _property_speech() reflects it, then
+        # notify Windows the accessible value changed -- same idea as
+        # _property_speech announcing committed values on row-to-row
+        # navigation, but via NotifyEvent instead of a direct speech call.
+        prop = event.GetProperty()
+        self._pending_value = (
+            prop.GetName(), self._value_as_speech(prop, event.GetValue()))
+        accessibility.notify_propgrid_value_change(
+            self.pg, self._accessible, prop)
         warning = setting.get_warning(event.GetValue())
         if warning:
             r = wx.MessageBox(warning, _('WARNING!'),
