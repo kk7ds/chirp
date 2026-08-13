@@ -206,7 +206,10 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
         finally:
-            resp = _command(self.pipe, b"E", 0, W8S)
+            try:
+                resp = _command(self.pipe, b"E", 0, W8S)
+            except Exception:
+                pass
 
         self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
@@ -225,7 +228,10 @@ class KenwoodTMx710Radio(chirp_common.CloneModeRadio):
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
         finally:
-            resp = _command(self.pipe, b"E", 0, W8S)
+            try:
+                resp = _command(self.pipe, b"E", 0, W8S)
+            except Exception:
+                pass
 
     def process_mmap(self):
         """Process the mem map into the mem object"""
