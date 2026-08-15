@@ -653,9 +653,14 @@ struct {
   u8 flags1;       // 16  power[7:6] wideth[5] offsetdir[3:2]
                    //     freqinvert[1] talkaround[0]
   u8 flags2;       // 17    fivetoneptt[7:6] dtmfptt[5:4] sqtype[3:0]
-  u8 unknown2[6];  // 18-23
+  u8 unknown2;     // 18
+  // Byte 19 bit 5 is "Launch banned" (receive only) in the CPS. It is not
+  // exposed as duplex "off" because the v2_0_09 firmware ignores it: a
+  // channel uploaded with the bit set still transmits, even after a power
+  // cycle, and the radio has no matching entry in its channel menu.
+  u8 unknown3[5];  // 19-23
   u8 modulation;   // 24    2 == AM, 0 == FM/NFM (see MODULATION_AM)
-  u8 unknown3[7];  // 25-31
+  u8 unknown4[7];  // 25-31
   char name[16];   // 32-47 GB2312
 } memory[640];
 
