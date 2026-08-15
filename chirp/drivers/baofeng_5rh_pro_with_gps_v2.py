@@ -68,7 +68,19 @@ POWER_LEVELS = [
 ]
 
 DUPLEX = ["", "-", "+", "split"]
-MODES = ["FM", "NFM"]
+MODES = ["FM", "NFM", "AM"]
+
+# Channel byte 24 written by the radio itself for an airband memory. flags1
+# is identical to a plain FM channel there, so this is what marks AM.
+MODULATION_AM = 2
+
+# Receive-only coverage the image header does not list. The radio reports
+# only its four main bands, but the hardware also receives the airband
+# (verified: a 133.450 memory entered on the radio comes back with
+# MODULATION_AM set).
+# Upper bound is inclusive for chirp_common.in_range(), so stop just below
+# 136 MHz where the first band from the header begins.
+AIRBAND = (108000000, 135999999)
 
 # Tuning steps offered by the CPS. Same list as the non-GPS UV-5RM Plus /
 # 5RM in baofeng_uv17Pro.py. 6.25 kHz is required for PMR446 (446.006250)
@@ -641,7 +653,9 @@ struct {
   u8 flags1;       // 16  power[7:6] wideth[5] offsetdir[3:2]
                    //     freqinvert[1] talkaround[0]
   u8 flags2;       // 17    fivetoneptt[7:6] dtmfptt[5:4] sqtype[3:0]
-  u8 unknown2[14]; // 18-31
+  u8 unknown2[6];  // 18-23
+  u8 modulation;   // 24    2 == AM, 0 == FM/NFM (see MODULATION_AM)
+  u8 unknown3[7];  // 25-31
   char name[16];   // 32-47 GB2312
 } memory[640];
 
@@ -750,14 +764,15 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
     BAUD_RATE = 19200
 
     def _bands_from_image(self):
-        """RX ranges the radio reports in the image header.
+        """RX ranges the radio reports in the image header, plus the airband.
 
-        Reading them beats hardcoding, because the same firmware ships on
-        models with different coverage. Falls back to VALID_BANDS when no
-        image is loaded or the header looks unusable.
+        Reading the header beats hardcoding, because the same firmware ships
+        on models with different coverage. It lists only the four main bands
+        though, so the receive-only airband is added back. Falls back to
+        VALID_BANDS when no image is loaded or the header looks unusable.
         """
         if self._memobj is None:
-            return VALID_BANDS
+            return [AIRBAND] + VALID_BANDS
 
         bands = []
         for band in self._memobj.rx_bands:
@@ -767,8 +782,8 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
                 bands.append((lo, hi))
         if not bands:
             LOG.warning("No usable RX ranges in image header, using defaults")
-            return VALID_BANDS
-        return bands
+            bands = list(VALID_BANDS)
+        return [AIRBAND] + bands
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -804,6 +819,17 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
         rf.valid_name_length = 16
 
         return rf
+
+    def validate_memory(self, mem):
+        msgs = []
+        in_airband = chirp_common.in_range(mem.freq, [AIRBAND])
+        if in_airband and mem.mode != "AM":
+            msgs.append(chirp_common.ValidationWarning(
+                "Frequency in this range requires AM mode"))
+        elif not in_airband and mem.mode == "AM":
+            msgs.append(chirp_common.ValidationWarning(
+                "Frequency in this range must not be AM mode"))
+        return msgs + super().validate_memory(mem)
 
     def sync_in(self):
         self._mmap = memmap.MemoryMapBytes(_download(self))
@@ -900,7 +926,10 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
         # power[7:6]: 2 == High, 0 == Low; wideth[5]: set == 25K == FM
         mem.power = POWER_LEVELS[1] if (int(_mem.flags1) >> 6) >= 2 \
             else POWER_LEVELS[0]
-        mem.mode = "FM" if (int(_mem.flags1) >> 5) & 1 else "NFM"
+        if int(_mem.modulation) == MODULATION_AM:
+            mem.mode = "AM"
+        else:
+            mem.mode = "FM" if (int(_mem.flags1) >> 5) & 1 else "NFM"
 
         # "Scan Add" in the CPS; chirp inverts the sense via skip
         scanned = self._get_flag(self._memobj.scan_flags, number - 1)
@@ -954,10 +983,13 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
 
         # flags1: power[7:6] (High == 2), wideth[5] (wide == FM),
         # offsetdir[3:2]. Bits 1:0 (freqinvert, talkaround) are kept.
+        # AM lives in its own byte; the radio leaves wideth set for it.
+        _mem.modulation = MODULATION_AM if mem.mode == "AM" else 0
+
         flags1 = int(_mem.flags1) & 0x03
         if mem.power == POWER_LEVELS[1]:
             flags1 |= 2 << 6
-        if mem.mode == "FM":
+        if mem.mode != "NFM":
             flags1 |= 0x20
         # offsetdir: 0 == simplex, 1 == TX above RX, 2 == TX below RX
         # (the CPS writes flags1 0xA4 and 0xA8 for those two cases).
