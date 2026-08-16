@@ -790,6 +790,18 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
             '\n'
             'Please save an unedited copy of your first successful download '
             'to a CHIRP Radio Images (*.img) file before making changes.')
+        rp.pre_download = (
+            "Follow these instructions to download your info:\n"
+            "1 - Turn off your radio\n"
+            "2 - Connect your interface cable\n"
+            "3 - Turn on your radio\n"
+            "4 - Do the download of your radio data\n")
+        rp.pre_upload = (
+            "Follow these instructions to upload your info:\n"
+            "1 - Turn off your radio\n"
+            "2 - Connect your interface cable\n"
+            "3 - Turn on your radio\n"
+            "4 - Do the upload of your radio data\n")
         return rp
 
     def _bands_from_image(self):
