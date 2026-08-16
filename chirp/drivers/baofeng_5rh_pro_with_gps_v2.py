@@ -761,12 +761,31 @@ def _upload(radio, data):
         raise errors.RadioError(f"Upload failed: {e}")
 
 
+class UV5RMPlusGPSAlias(chirp_common.Alias):
+    """Same hardware and clone protocol, sold under a different name."""
+    VENDOR = "Baofeng"
+    MODEL = "UV-5RM Plus GPS"
+
+
 @directory.register
 class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
     """Baofeng 5RH Pro / UV-5RM Plus with GPS, v2 firmware."""
     VENDOR = "Baofeng"
     MODEL = "5RH Pro with GPS (v2)"
     BAUD_RATE = 19200
+    ALIASES = [UV5RMPlusGPSAlias]
+
+    @classmethod
+    def get_prompts(cls):
+        rp = chirp_common.RadioPrompts()
+        rp.experimental = (
+            'This driver is new and has only been tested on radios running '
+            'v2 firmware (software version v2_0_09). Older firmware uses a '
+            'different clone protocol and is not supported.\n'
+            '\n'
+            'Please save an unedited copy of your first successful download '
+            'to a CHIRP Radio Images (*.img) file before making changes.')
+        return rp
 
     def _bands_from_image(self):
         """RX ranges the radio reports in the image header, plus the airband.
