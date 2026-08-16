@@ -70,6 +70,11 @@ POWER_LEVELS = [
 DUPLEX = ["", "-", "+", "split"]
 MODES = ["FM", "NFM", "AM"]
 
+# Same set as the non-GPS sibling (UV17Pro in baofeng_uv17Pro.py). Names are
+# stored as GB2312, which covers ASCII, and the factory radio name
+# "welcome" shows the display handles lower case.
+VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + "!@#$%^&*()+-=[]:\";'<>?,./"
+
 # Channel byte 24 written by the radio itself for an airband memory. flags1
 # is identical to a plain FM channel there, so this is what marks AM.
 MODULATION_AM = 2
@@ -841,6 +846,7 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
 
         rf.memory_bounds = (1, 640)
         rf.valid_name_length = 16
+        rf.valid_characters = VALID_CHARS
 
         return rf
 
