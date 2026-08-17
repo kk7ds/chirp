@@ -217,6 +217,8 @@ def parse_qtdqt(selcall):
         try:
             val = int(selcall[1:4])
             pol = selcall[4]
+            if pol == 'I':
+                pol = 'R'
             return 'DTCS', val, pol
         except (ValueError, IndexError):
             raise ValueError(
@@ -244,6 +246,9 @@ def format_qtdqt(mode, val, pol):
     :returns: A selcall string like '103.5' or 'D023N'
     """
     if mode == 'DTCS':
+        pol = pol.upper()
+        if pol == 'R':
+            pol = 'I'
         return 'D%03.3i%s' % (val, pol)
     elif mode == 'Tone':
         return '%3.1f' % val
