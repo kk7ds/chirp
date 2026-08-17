@@ -1,5 +1,6 @@
 import struct
 import logging
+import time
 from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
 from chirp.drivers import th_uv88
@@ -122,8 +123,48 @@ struct  {
 } fmfrqs;
 
 """
-
+MAX_FRAME_LENGTH = BLOCK_SIZE*2 + 13
+FRAME_PREAMBLE = b"\xfe\xfe"
+FRAME_END = 0xFD
 SPECIAL_MEMORIES = {"VFOA": -2, "VFOB": -1}
+
+
+def _rawrecv(radio, max_frame_length=MAX_FRAME_LENGTH, timeout=2.0) -> bytes:
+    """Reads raw serial stream
+    until an Icom-style frame (\xfe\xfe ... \xfd) is received."""
+    package_data = bytearray()
+    start_time = time.time()
+    while (time.time() - start_time) < timeout:
+        chunk = radio.pipe.read(1)
+        if not chunk:
+            # Avoid high CPU utilization on non-blocking ports
+            time.sleep(0.002)
+            continue
+
+        b = chunk[0]
+        package_data.append(b)
+
+        # Check frame size ceiling to guard against garbage stream noise
+        if len(package_data) > max_frame_length:
+            raise errors.RadioError(
+                "Error reading from radio: not the amount of data we want."
+            )
+
+        # Check for framing delimiter
+        if b == FRAME_END:
+            # Validate preamble \xfe\xfe and minimum frame size requirement
+            if len(package_data) >= 5 and package_data.startswith(FRAME_PREAMBLE):
+                return bytes(package_data)
+
+            # If 0xFD appeared in noise before \xfe\xfe,
+            # clear invalid prefix bytes up to this point
+            if FRAME_PREAMBLE in package_data:
+                idx = package_data.find(FRAME_PREAMBLE)
+                package_data = package_data[idx:]
+            else:
+                package_data.clear()
+    raise errors.RadioError(
+        "Error reading from radio: not the amount of data we want.")
 
 
 def _make_read_frame(addr, length):
@@ -152,7 +193,7 @@ def _make_write_frame(addr, length, data=""):
 
 def _do_start(radio, send_data):
     th_uv88._rawsend(radio, send_data)
-    ack = th_uv88._rawrecv(radio, 8)
+    ack = _rawrecv(radio, 8)
     if ack != b"\xFE\xFE\xEF\xEE\xE6\x80\x80\xFD":
         th_uv88._exit_program_mode(radio)
         if ack:
@@ -191,7 +232,7 @@ def _download(radio):
          packet length is not fixed.
          Packet length is calculated as 512*2+13 to prevent data field loss.
         """
-        d = th_uv88._rawrecv(radio, BLOCK_SIZE*2 + 13)
+        d = _rawrecv(radio)
 
         LOG.debug("Response Data= " + util.hexprint(d))
 
@@ -234,7 +275,7 @@ def _upload(radio):
         LOG.warning("Frame:%s:" % util.hexprint(frame))
         th_uv88._rawsend(radio, frame)
 
-        ack = th_uv88._rawrecv(radio, 8)
+        ack = _rawrecv(radio, 8)
         LOG.debug("Response Data= " + util.hexprint(ack))
 
         if not ack.startswith(b"\xFE\xFE\xEF\xEE\xE6\x80\x80\xFD"):
