@@ -2085,6 +2085,12 @@ class TestParseQtdqt(base.BaseTest):
         self.assertEqual(val, 32)
         self.assertEqual(pol, "R")
 
+    def test_parse_dcs_inverse(self):
+        mode, val, pol = kenwood_tone.parse_qtdqt("D032I")
+        self.assertEqual(mode, "DTCS")
+        self.assertEqual(val, 32)
+        self.assertEqual(pol, "R")
+
     def test_parse_dcs_lowercase(self):
         mode, val, pol = kenwood_tone.parse_qtdqt("d023n")
         self.assertEqual(mode, "DTCS")
@@ -2114,7 +2120,7 @@ class TestFormatQtdqt(base.BaseTest):
 
     def test_format_dcs_reverse(self):
         result = kenwood_tone.format_qtdqt("DTCS", 32, "R")
-        self.assertEqual(result, "D032R")
+        self.assertEqual(result, "D032I")
 
     def test_format_tone(self):
         result = kenwood_tone.format_qtdqt("Tone", 103.5, "")
