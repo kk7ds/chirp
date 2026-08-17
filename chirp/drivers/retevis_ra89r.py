@@ -153,7 +153,8 @@ def _rawrecv(radio, max_frame_length=MAX_FRAME_LENGTH, timeout=2.0) -> bytes:
         # Check for framing delimiter
         if b == FRAME_END:
             # Validate preamble \xfe\xfe and minimum frame size requirement
-            if len(package_data) >= 5 and package_data.startswith(FRAME_PREAMBLE):
+            if (len(package_data) >= 5
+               and package_data.startswith(FRAME_PREAMBLE)):
                 return bytes(package_data)
 
             # If 0xFD appeared in noise before \xfe\xfe,
