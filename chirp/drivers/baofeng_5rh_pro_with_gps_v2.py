@@ -15,9 +15,7 @@
 
 """Baofeng 5RH Chirp driver"""
 
-import time
 import logging
-import random
 
 from chirp import bitwise
 from chirp import chirp_common
@@ -31,7 +29,12 @@ from chirp.settings import (
 
 LOG = logging.getLogger(__name__)
 
-HEADER_SYNC = bytearray(b"PROGRAM\x00")
+# The radio XORs the whole session after the sync header with the key it is
+# given in the last byte of that header. It accepts any key, so use zero:
+# that keeps serial traces readable instead of obfuscating them for no gain.
+XOR_KEY = 0x00
+
+HEADER_SYNC = b"PROGRAM" + bytes([XOR_KEY])
 HEADER_SYNC_PIC = b"Picture\xff"  # boot-image handshake (no seed, no XOR)
 HEADER_INFO = b"INFORMATION"
 END_INFO = b"END\x00"
@@ -43,6 +46,7 @@ for _i in range(12, 16):
     T_INFO[_i] = 0xFF
 
 DATA_LEN = 49152
+BLOCK_SIZE = 4096
 CHN_SIZE = 48
 CHN_MAX = 640
 
@@ -220,232 +224,145 @@ def _encode_tone(memval, spec):
         memval.set_value(0)
 
 
-def _handshake(radio, is_write=False):
-    """Three-stage handshake; every byte after it is XORed with the seed."""
+def _announce(radio):
+    """Send the initial announce and get the radio onto a rate we agree on.
+
+    The radio replies with a plain "A" at the rate it wants to be talked to.
+    A reply that is not "A" only means the port is at the wrong rate: an "A"
+    sent at 115200 and sampled at 19200 decodes as 0xFF or 0xFE depending on
+    line timing, never as anything meaningful. So rather than reading the
+    byte as a protocol element, just retry at the other rate.
+
+    Radios seen so far: a 5RH Pro with GPS and a UV-5RM Plus GPS both answer
+    at 115200, another UV-5RM Plus GPS answers at 19200, so try the common
+    case first.
+    """
     port = radio.pipe
-    seed = random.randint(1, 254)
+    timeout = port.timeout
 
-    # H1: Send T_INFO
-    port.write(bytes(T_INFO))
-
-    # H2: Wait for response, potentially switch baud
-    got_h2 = False
-    for _ in range(25):
-        time.sleep(0.2)
-        if port.in_waiting <= 0:
-            continue
-        rb = port.read(1)
-        if not rb:
-            continue
-        rb = rb[0]
-
-        if rb != 0x41:
-            # Switch to 115200 - close, reopen, reset buffer
-            port.close()
-            port.baudrate = 115200
-            port.open()
+    try:
+        # The reply takes about 110ms, so a short timeout here keeps the
+        # retry cheap for the radios that need the other rate.
+        port.timeout = 1
+        for baudrate in (115200, 19200):
+            port.baudrate = baudrate
             port.reset_input_buffer()
+            port.write(bytes(T_INFO))
+            resp = port.read(1)
+            if resp == b'A':
+                LOG.info('Radio answered the announce at %i baud', baudrate)
+                return
+            LOG.info('No announce reply at %i baud (got %s)', baudrate,
+                     resp and '0x%02X' % resp[0] or 'nothing')
+    finally:
+        port.timeout = timeout
 
-        # Send PROGRAM with seed
-        HEADER_SYNC[7] = seed
-        port.write(HEADER_SYNC)
-        got_h2 = True
-        break
-
-    if not got_h2:
-        raise errors.RadioError("H2 timeout")
-
-    # H3: Receive encrypted 0x41
-    deadline = time.time() + 3.0
-    while time.time() < deadline:
-        if port.in_waiting > 0:
-            buf = port.read(1)[0]
-            result = seed ^ buf
-            if result != 0x41:
-                raise errors.RadioError(
-                    f"H3 failed: XOR result 0x{result:02X}")
-            break
-        time.sleep(0.01)
-    else:
-        raise errors.RadioError("H3 timeout")
-
-    # H4: Send password (8 bytes of seed XOR 0xFF)
-    password = bytes([seed ^ 0xFF] * 8)
-    port.write(password)
-
-    deadline = time.time() + 3.0
-    while time.time() < deadline:
-        if port.in_waiting > 0:
-            buf = port.read(1)[0]
-            result = seed ^ buf
-            if result != 0x41:
-                raise errors.RadioError(
-                    f"H4 failed: XOR result 0x{result:02X}")
-            break
-        time.sleep(0.01)
-    else:
-        raise errors.RadioError("H4 timeout")
-
-    # H5: Send encrypted HEADER_INFO
-    info_xor = bytes([seed ^ b for b in HEADER_INFO])
-    port.write(info_xor)
-
-    # Read model info
-    time.sleep(0.1)
-    if port.in_waiting > 0:
-        model_data = port.read(min(port.in_waiting, 16))
-        model_str = "".join(chr(b ^ seed) if b != 0xFF else ""
-                            for b in model_data).strip()
-        LOG.info(f"Radio model: {model_str}")
-
-    # Send direction (0x52='R' for read, 0x57='W' for write)
-    direction = 0x57 if is_write else 0x52
-    port.write(bytes([seed ^ direction]))
-
-    # H6: Receive encrypted 0x41
-    deadline = time.time() + 3.0
-    while time.time() < deadline:
-        if port.in_waiting > 0:
-            buf = port.read(1)[0]
-            result = seed ^ buf
-            if result != 0x41:
-                raise errors.RadioError(
-                    f"H6 failed: XOR result 0x{result:02X}")
-            break
-        time.sleep(0.01)
-    else:
-        raise errors.RadioError("H6 timeout")
-
-    return seed
+    raise errors.RadioNoResponse('Radio did not respond')
 
 
-def _read_blocks(radio, seed):
-    """Read 12 blocks of 4096 bytes each using XOR'd commands"""
+def _handshake(radio, is_write=False):
+    """Put the radio into clone mode.
+
+    Everything after the sync header is XORed with the key the CPS puts in
+    the last byte of HEADER_SYNC. The radio accepts any key, so XOR_KEY is
+    zero, which makes the whole session readable in a serial trace.
+    """
+    port = radio.pipe
+
+    _announce(radio)
+
+    # The last byte of the sync header is the XOR key for the rest of the
+    # session, and HEADER_SYNC already ends in XOR_KEY.
+    port.write(HEADER_SYNC)
+    if port.read(1) != bytes([XOR_KEY ^ 0x41]):
+        raise errors.RadioError('Radio did not agree to program mode')
+
+    port.write(bytes([XOR_KEY ^ 0xFF] * 8))
+    if port.read(1) != bytes([XOR_KEY ^ 0x41]):
+        raise errors.RadioError('Radio did not ACK the password')
+
+    port.write(bytes([XOR_KEY ^ b for b in HEADER_INFO]))
+    model = port.read(16)
+    if len(model) != 16:
+        raise errors.RadioError('Radio did not report its model')
+    LOG.info('Radio model: %s', _decode_name(
+        bytes(b ^ XOR_KEY for b in model)))
+
+    # 0x52 == 'R' to read from the radio, 0x57 == 'W' to write to it
+    port.write(bytes([XOR_KEY ^ (0x57 if is_write else 0x52)]))
+    if port.read(1) != bytes([XOR_KEY ^ 0x41]):
+        raise errors.RadioError('Radio refused the clone direction')
+
+
+def _read_blocks(radio):
+    """Read the image as 12 blocks of 4096 bytes."""
     port = radio.pipe
     full = bytearray(DATA_LEN)
-    rx_offset = 0
-    block_size = 4096
-    num_blocks = DATA_LEN // block_size
-
-    port.timeout = 0.5
+    offset = 0
 
     status = chirp_common.Status()
     status.cur = 0
-    status.max = num_blocks
+    status.max = DATA_LEN // BLOCK_SIZE
     status.msg = "Cloning from radio..."
     radio.status_fn(status)
 
-    for block_num in range(num_blocks):
-        # Build XOR'd command
-        cmd = bytes([
-            seed ^ 0x52,
-            seed ^ (rx_offset >> 8),
-            seed ^ (rx_offset & 0xFF),
-            seed
-        ])
+    for block_num in range(DATA_LEN // BLOCK_SIZE):
+        port.write(bytes([XOR_KEY ^ 0x52,
+                          XOR_KEY ^ (offset >> 8),
+                          XOR_KEY ^ (offset & 0xFF),
+                          XOR_KEY]))
 
-        port.write(cmd)
-
-        # Read 4100-byte response
-        resp = bytearray()
-        deadline = time.time() + 6.0
-        while len(resp) < 4100 and time.time() < deadline:
-            if port.in_waiting > 0:
-                chunk = port.read(min(port.in_waiting, 4100 - len(resp)))
-                resp.extend(chunk)
-            else:
-                time.sleep(0.01)
-
-        if len(resp) < 4100:
+        # The radio echoes the 4-byte command back ahead of the payload
+        resp = port.read(4 + BLOCK_SIZE)
+        if len(resp) != 4 + BLOCK_SIZE:
             raise errors.RadioError(
-                f"Block {block_num}: short read {len(resp)}/4100")
+                'Block %i: short read (%i of %i bytes)' % (
+                    block_num, len(resp), 4 + BLOCK_SIZE))
 
-        # Copy payload to buffer (skip 4-byte header)
-        full[rx_offset:rx_offset + block_size] = resp[4:4100]
-        rx_offset += block_size
+        full[offset:offset + BLOCK_SIZE] = bytes(
+            b ^ XOR_KEY for b in resp[4:])
+        offset += BLOCK_SIZE
 
         status.cur = block_num + 1
         radio.status_fn(status)
 
-    # Send END command
-    end_cmd = bytes([seed ^ b for b in END_INFO])
-    port.write(end_cmd)
-
-    # Wait for final ACK
-    time.sleep(0.2)
-    if port.in_waiting > 0:
-        port.read(port.in_waiting)
-
-    # XOR decrypt all data
-    for i in range(DATA_LEN):
-        full[i] ^= seed
+    port.write(bytes([XOR_KEY ^ b for b in END_INFO]))
+    port.read(1)
 
     return bytes(full)
 
 
-def _write_blocks(radio, seed, data):
-    """Write 12 blocks of 4096 bytes each using XOR'd format"""
+def _write_blocks(radio, data):
+    """Write the image as 12 blocks of 4096 bytes."""
     port = radio.pipe
-    block_size = 4096
-    num_blocks = DATA_LEN // block_size
-    tx_offset = 0
-
-    port.timeout = 0.5
+    offset = 0
 
     status = chirp_common.Status()
     status.cur = 0
-    status.max = num_blocks
+    status.max = DATA_LEN // BLOCK_SIZE
     status.msg = "Cloning to radio..."
     radio.status_fn(status)
 
-    for block_num in range(num_blocks):
-        # Build XOR'd command
-        cmd = bytes([
-            seed ^ 0x57,  # 0x57 = 'W' for write
-            seed ^ (tx_offset >> 8),
-            seed ^ (tx_offset & 0xFF),
-            seed
-        ])
+    for block_num in range(DATA_LEN // BLOCK_SIZE):
+        chunk = data[offset:offset + BLOCK_SIZE]
+        chunk = chunk.ljust(BLOCK_SIZE, b'\xff')
 
-        # Build 4100-byte payload
-        chunk = data[tx_offset:tx_offset + block_size]
-        if len(chunk) < block_size:
-            chunk = chunk + b'\xff' * (block_size - len(chunk))
+        port.write(bytes([XOR_KEY ^ 0x57,
+                          XOR_KEY ^ (offset >> 8),
+                          XOR_KEY ^ (offset & 0xFF),
+                          XOR_KEY]) +
+                   bytes([XOR_KEY ^ b for b in chunk]))
 
-        # XOR encrypt the payload
-        encrypted = bytes([seed ^ b for b in chunk])
-        payload = cmd + encrypted
+        if port.read(1) != bytes([XOR_KEY ^ 0x41]):
+            raise errors.RadioError(
+                'Block %i: radio did not ACK the write' % block_num)
 
-        port.write(payload)
-
-        # Wait for response
-        deadline = time.time() + 6.0
-        while time.time() < deadline:
-            if port.in_waiting > 0:
-                resp = port.read(1)[0]
-                if (resp ^ seed) == 0x41:
-                    break
-            else:
-                time.sleep(0.01)
-        else:
-            raise errors.RadioError(f"Block {block_num}: timeout")
-
-        tx_offset += block_size
-
+        offset += BLOCK_SIZE
         status.cur = block_num + 1
         radio.status_fn(status)
 
-    # Send END command
-    end_cmd = bytes([seed ^ b for b in END_INFO])
-    port.write(end_cmd)
-
-    # Wait for final ACK
-    deadline = time.time() + 3.0
-    while time.time() < deadline:
-        if port.in_waiting > 0:
-            port.read(1)
-            return
-        time.sleep(0.01)
+    port.write(bytes([XOR_KEY ^ b for b in END_INFO]))
+    port.read(1)
 
 
 # The boot-picture protocol is a simplified, unencrypted variant of the clone
@@ -454,44 +371,14 @@ def _write_blocks(radio, seed, data):
 # CPS writePicInfo path; the radio has no read-back for the boot image.
 
 def _handshake_boot(radio):
-    """Three-stage unencrypted handshake for the boot-image upload."""
+    """Unencrypted handshake for the boot-image upload."""
     port = radio.pipe
 
-    # H1: send T_INFO
-    port.write(bytes(T_INFO))
+    _announce(radio)
 
-    # H2: wait for a byte, switch to 115200 if it isn't an ACK, then send sync
-    got_h2 = False
-    for _ in range(25):
-        time.sleep(0.2)
-        if port.in_waiting <= 0:
-            continue
-        rb = port.read(1)
-        if not rb:
-            continue
-        if rb[0] != 0x41:
-            port.close()
-            port.baudrate = 115200
-            port.open()
-            port.reset_input_buffer()
-        port.write(HEADER_SYNC_PIC)
-        got_h2 = True
-        break
-
-    if not got_h2:
-        raise errors.RadioError("Boot handshake H2 timeout")
-
-    # H3: expect a raw 0x41 ACK
-    deadline = time.time() + 3.0
-    while time.time() < deadline:
-        if port.in_waiting > 0:
-            ack = port.read(1)[0]
-            if ack != 0x41:
-                raise errors.RadioError(
-                    "Boot handshake H3 failed: 0x%02X" % ack)
-            return
-        time.sleep(0.01)
-    raise errors.RadioError("Boot handshake H3 timeout")
+    port.write(HEADER_SYNC_PIC)
+    if port.read(1) != b'A':
+        raise errors.RadioError('Radio did not agree to boot-image mode')
 
 
 def _load_boot_image(path):
@@ -531,9 +418,7 @@ def _load_boot_image(path):
 def _write_boot_image(radio, data):
     """Send the boot image as raw, zero-padded 4096-byte blocks."""
     port = radio.pipe
-    port.timeout = 0.5
-    block_size = 4096
-    num_blocks = (len(data) + block_size - 1) // block_size
+    num_blocks = (len(data) + BLOCK_SIZE - 1) // BLOCK_SIZE
 
     status = chirp_common.Status()
     status.cur = 0
@@ -541,37 +426,19 @@ def _write_boot_image(radio, data):
     status.msg = "Uploading boot image..."
     radio.status_fn(status)
 
-    sent = 0
     for block_num in range(num_blocks):
-        chunk = data[sent:sent + block_size]
-        block = bytes(chunk) + b"\x00" * (block_size - len(chunk))
-        port.write(block)
+        chunk = data[block_num * BLOCK_SIZE:(block_num + 1) * BLOCK_SIZE]
+        port.write(bytes(chunk).ljust(BLOCK_SIZE, b'\x00'))
 
-        deadline = time.time() + 8.0
-        while True:
-            if port.in_waiting > 0:
-                ack = port.read(1)[0]
-                if ack != 0x41:
-                    raise errors.RadioError(
-                        "Boot block %d bad ACK 0x%02X" % (block_num, ack))
-                break
-            if time.time() > deadline:
-                raise errors.RadioError(
-                    "Boot block %d timeout" % block_num)
-            time.sleep(0.01)
+        if port.read(1) != b'A':
+            raise errors.RadioError(
+                'Boot block %i: radio did not ACK the write' % block_num)
 
-        sent += len(chunk)
         status.cur = block_num + 1
         radio.status_fn(status)
 
-    # END marker (raw)
     port.write(END_INFO)
-    deadline = time.time() + 3.0
-    while time.time() < deadline:
-        if port.in_waiting > 0:
-            port.read(port.in_waiting)
-            break
-        time.sleep(0.01)
+    port.read(1)
 
 
 def upload_boot_image(radio, path):
@@ -581,9 +448,7 @@ def upload_boot_image(radio, path):
     raw RGB565 data.
     """
     LOG.info("Uploading boot image from %s", path)
-    port = radio.pipe
-    port.timeout = 0.1
-    port.baudrate = 19200
+    radio.pipe.timeout = 6
 
     data = _load_boot_image(path)
     LOG.info("Boot image: %d bytes RGB565", len(data))
@@ -698,34 +563,24 @@ struct {
 def _download(radio):
     """Download from radio"""
     LOG.info("Downloading from Baofeng 5RH")
-    port = radio.pipe
-    port.timeout = 0.1
-    port.baudrate = 19200
+    # A full 4100-byte block takes 2.1s at 19200 and 0.4s at 115200, so this
+    # leaves plenty of headroom either way.
+    radio.pipe.timeout = 6
 
-    try:
-        seed = _handshake(radio, is_write=False)
-        LOG.info(f"Handshake complete, seed=0x{seed:02X}")
-        data = _read_blocks(radio, seed)
-        LOG.info(f"Downloaded {len(data)} bytes")
-        return data
-    except Exception as e:
-        raise errors.RadioError(f"Download failed: {e}")
+    _handshake(radio, is_write=False)
+    data = _read_blocks(radio)
+    LOG.info("Downloaded %i bytes", len(data))
+    return data
 
 
 def _upload(radio, data):
     """Upload to radio"""
     LOG.info("Uploading to Baofeng 5RH")
-    port = radio.pipe
-    port.timeout = 0.1
-    port.baudrate = 19200
+    radio.pipe.timeout = 6
 
-    try:
-        seed = _handshake(radio, is_write=True)
-        LOG.info(f"Handshake complete, seed=0x{seed:02X}")
-        _write_blocks(radio, seed, data)
-        LOG.info(f"Uploaded {len(data)} bytes")
-    except Exception as e:
-        raise errors.RadioError(f"Upload failed: {e}")
+    _handshake(radio, is_write=True)
+    _write_blocks(radio, data)
+    LOG.info("Uploaded %i bytes", len(data))
 
 
 class UV5RMPlusGPSAlias(chirp_common.Alias):
@@ -739,7 +594,7 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
     """Baofeng 5RH Pro / UV-5RM Plus with GPS, v2 firmware."""
     VENDOR = "Baofeng"
     MODEL = "5RH Pro with GPS (v2)"
-    BAUD_RATE = 19200
+    BAUD_RATE = 115200
     ALIASES = [UV5RMPlusGPSAlias]
 
     @classmethod
@@ -836,14 +691,25 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
         return msgs + super().validate_memory(mem)
 
     def sync_in(self):
-        self._mmap = memmap.MemoryMapBytes(_download(self))
+        try:
+            data = _download(self)
+        except errors.RadioError:
+            raise
+        except Exception as e:
+            raise errors.RadioError("Failed to download from radio: %s" % e)
+        self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
     def sync_out(self):
         if self._memobj is None:
             self.process_mmap()
         self._rebuild_zones()
-        _upload(self, self._mmap.get_packed())
+        try:
+            _upload(self, self._mmap.get_packed())
+        except errors.RadioError:
+            raise
+        except Exception as e:
+            raise errors.RadioError("Failed to upload to radio: %s" % e)
 
     def _rebuild_zones(self):
         """Regenerate the zone tables so every in-use channel is reachable.
