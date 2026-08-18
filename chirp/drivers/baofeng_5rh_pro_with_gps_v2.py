@@ -161,36 +161,6 @@ _BOOL_SETTINGS = [
 ]
 
 
-def _freq_bcd_to_hz(raw):
-    """Convert BCD-in-hex frequency to Hz.
-
-    The hex digits read as decimal give MHz*100000, i.e. Hz/10. Example:
-    0x43781000 -> "43781000" -> 43781000 -> 437.81 MHz -> 437810000 Hz
-
-    Integer math on purpose: going via float("512.00375") * 1e6 truncates
-    to 512003749 Hz.
-    """
-    if raw == 0 or raw == 0xFFFFFFFF:
-        return 0
-    try:
-        return int(f"{raw:08X}") * 10
-    except ValueError:
-        return 0
-
-
-def _freq_hz_to_bcd(freq_hz):
-    """Convert Hz to BCD-in-hex frequency value.
-
-    Reverse of _freq_bcd_to_hz, matching CPS FreqToData (DataProtocol.cs:1484):
-    strip the decimal point and parse the digit string as hex. Done with
-    integer math (freq_hz // 10 == MHz*100000) to avoid float rounding.
-    """
-    if not freq_hz:
-        return 0
-    dec = freq_hz // 10  # MHz * 100000, e.g. 437810000 -> 43781000
-    return int("%08d" % dec, 16)
-
-
 def _decode_name(raw):
     """Decode a GB2312 name field, which ends at the first 0x00 or 0xFF."""
     nb = bytearray()
@@ -213,49 +183,41 @@ def _encode_name(name, length=16):
     return nb[:length].ljust(length, b'\x00')
 
 
-def _decode_tone(dath, datl):
-    """Decode a 2-byte sub-audio field into a (mode, value, polarity) spec.
+def _decode_tone(val):
+    """Decode a sub-audio field into a (mode, value, polarity) spec.
 
-    Mirrors CPS SubVoiceConvert (DataProtocol.cs:630). The stored 16-bit value
-    is BCD-in-hex: its hex digits read as decimal give the CTCSS freq*10 or the
-    DCS code. Returns specs compatible with chirp_common.split_tone_decode:
-        (None, None, None)        - off
-        ("Tone", 123.0, None)     - CTCSS
-        ("DTCS", 23, "N"/"R")     - DCS normal/inverted
+    The field is the usual BCD encoding, with the top nibble flagging DCS:
+    0x8xxx is DCS normal, 0xCxxx DCS inverted, anything else a CTCSS
+    frequency in tenths of a Hz. Read through bbcd those become 8000+code,
+    12000+code and freq*10; 0xFFFF reads as 16665 and means "unset".
+    Matches CPS SubVoiceConvert (DataProtocol.cs:630).
     """
-    dath = int(dath)
-    datl = int(datl)
-    if dath & 0x80:
-        # DCS
-        if dath == 0xFF:
-            return (None, None, None)
-        pol = "R" if (dath & 0xC0) == 0xC0 else "N"
-        val = ((dath & 0x07) << 8) | datl
-        code = int("%X" % val)  # hex digits as decimal: 0x023 -> 23
-        return ("DTCS", code, pol)
-    if dath == 0:
+    val = int(val)
+    if val == 0 or val == 16665:
         return (None, None, None)
-    val = (dath << 8) | datl
-    freq = int("%X" % val)  # hex digits as decimal: 0x1000 -> 1000
-    return ("Tone", freq / 10.0, None)
+    elif val >= 12000:
+        return ("DTCS", val - 12000, "R")
+    elif val >= 8000:
+        return ("DTCS", val - 8000, "N")
+    else:
+        return ("Tone", val / 10.0, None)
 
 
-def _encode_tone(spec):
-    """Encode a (mode, value, polarity) spec into 2 bytes (datH, datL).
+def _encode_tone(memval, spec):
+    """Write a (mode, value, polarity) spec into a sub-audio field.
 
     Reverse of _decode_tone, matching CPS SubAudioToData
-    (DataProtocol.cs:1505).
+    (DataProtocol.cs:1505). The radio writes zero for "no tone", so do the
+    same rather than the 0xFFFF the field can also hold.
     """
-    mode, val, pol = spec
+    mode, value, pol = spec
     if mode == "Tone":
-        raw = int("%d" % int(round(val * 10)), 16)  # 100.0 -> 1000 -> 0x1000
-        return (raw >> 8) & 0xFF, raw & 0xFF
-    if mode == "DTCS":
-        raw = int("%d" % val, 16)  # 23 -> 0x023
-        high = (raw >> 8) & 0x07
-        high |= 0xC0 if pol == "R" else 0x80
-        return high, raw & 0xFF
-    return 0x00, 0x00
+        memval.set_value(int(round(value * 10)))
+    elif mode == "DTCS":
+        memval.set_value(value)
+        memval[0].set_bits(0xC0 if pol == "R" else 0x80)
+    else:
+        memval.set_value(0)
 
 
 def _handshake(radio, is_write=False):
@@ -634,26 +596,26 @@ def upload_boot_image(radio, path):
 
 
 MEM_FORMAT = """
-// Frequency ranges the radio reports for itself, in the same BCD-in-hex
-// encoding as the channel frequencies. Unused slots are zero.
+// Frequency ranges the radio reports for itself, in the same BCD encoding
+// as the channel frequencies (units of 10 Hz). Unused slots are zero.
 #seekto 0x0010;
 struct {
-  ul32 lo;
-  ul32 hi;
+  lbcd lo[4];
+  lbcd hi[4];
 } rx_bands[4];
 
 #seekto 0x0030;
 struct {
-  ul32 lo;
-  ul32 hi;
+  lbcd lo[4];
+  lbcd hi[4];
 } tx_bands[4];
 
 #seekto 0x0080;
 struct {
-  ul32 rx_freq;    // 0  (little-endian)
-  ul32 tx_freq;    // 4  (little-endian)
-  u8 rx_tone[2];   // 8-9   (decode / receive sub-audio)
-  u8 tx_tone[2];   // 10-11 (encode / transmit sub-audio)
+  lbcd rx_freq[4]; // 0-3   BCD, units of 10 Hz
+  lbcd tx_freq[4]; // 4-7
+  bbcd rx_tone[2]; // 8-9   (decode / receive sub-audio)
+  bbcd tx_tone[2]; // 10-11 (encode / transmit sub-audio)
   u8 unknown1[4];  // 12-15
   u8 flags1;       // 16  power[7:6] wideth[5] offsetdir[3:2]
                    //     freqinvert[1] talkaround[0]
@@ -817,8 +779,8 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
 
         bands = []
         for band in self._memobj.rx_bands:
-            lo = _freq_bcd_to_hz(int(band.lo))
-            hi = _freq_bcd_to_hz(int(band.hi))
+            lo = int(band.lo) * 10
+            hi = int(band.hi) * 10
             if lo and hi > lo:
                 bands.append((lo, hi))
         if not bands:
@@ -949,8 +911,8 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        mem.freq = _freq_bcd_to_hz(int(_mem.rx_freq))
-        tx_freq = _freq_bcd_to_hz(int(_mem.tx_freq))
+        mem.freq = int(_mem.rx_freq) * 10
+        tx_freq = int(_mem.tx_freq) * 10
         if tx_freq and tx_freq != mem.freq:
             mem.offset = abs(tx_freq - mem.freq)
             mem.duplex = "+" if tx_freq > mem.freq else "-"
@@ -961,8 +923,8 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
         # tx_tone is the encode (transmit) field, rx_tone the decode one
         chirp_common.split_tone_decode(
             mem,
-            _decode_tone(_mem.tx_tone[0], _mem.tx_tone[1]),
-            _decode_tone(_mem.rx_tone[0], _mem.rx_tone[1]),
+            _decode_tone(_mem.tx_tone),
+            _decode_tone(_mem.rx_tone),
         )
 
         # power[7:6]: 2 == High, 0 == Low; wideth[5]: set == 25K == FM
@@ -1001,7 +963,7 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
         self._set_flag(self._memobj.scan_flags, mem.number - 1,
                        mem.skip != "S")
 
-        _mem.rx_freq = _freq_hz_to_bcd(mem.freq)
+        _mem.rx_freq = mem.freq // 10
 
         if mem.duplex == "+":
             tx_freq = mem.freq + mem.offset
@@ -1012,11 +974,11 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
         else:
             tx_freq = mem.freq
 
-        _mem.tx_freq = _freq_hz_to_bcd(tx_freq)
+        _mem.tx_freq = tx_freq // 10
 
         txtone, rxtone = chirp_common.split_tone_encode(mem)
-        _mem.tx_tone[0], _mem.tx_tone[1] = _encode_tone(txtone)
-        _mem.rx_tone[0], _mem.rx_tone[1] = _encode_tone(rxtone)
+        _encode_tone(_mem.tx_tone, txtone)
+        _encode_tone(_mem.rx_tone, rxtone)
 
         # flags2 sqtype[3:0]: the CPS sets 1 whenever a receive sub-audio tone
         # is present, so the squelch actually opens on it (0 otherwise). The
