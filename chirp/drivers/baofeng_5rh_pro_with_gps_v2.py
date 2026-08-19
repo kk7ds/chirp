@@ -438,6 +438,12 @@ struct {
   lbcd hi[4];
 } tx_bands[4];
 
+// 0x0050: version strings, terminated with 0xFF. The firmware version is
+// what the CPS shows under "Device Information".
+char fw_version[8];
+char hw_version[8];
+char prog_date[16];
+
 #seekto 0x0080;
 struct {
   lbcd rx_freq[4]; // 0-3   BCD, units of 10 Hz
@@ -726,6 +732,10 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        LOG.info('Radio firmware %s, hardware %s, programmed %s',
+                 _decode_name(self._memobj.fw_version.get_raw(asbytes=True)),
+                 _decode_name(self._memobj.hw_version.get_raw(asbytes=True)),
+                 _decode_name(self._memobj.prog_date.get_raw(asbytes=True)))
 
     # Both per-channel bitmaps (valid_flags at 0x7A20, scan_flags at 0x81A0)
     # use a clear bit for "on", matching CPS ConvertChnValidFlg
