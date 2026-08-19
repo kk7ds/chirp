@@ -196,9 +196,9 @@ def _announce(radio):
     line timing, never as anything meaningful. So rather than reading the
     byte as a protocol element, just retry at the other rate.
 
-    Radios seen so far: a 5RH Pro with GPS and a UV-5RM Plus GPS both answer
-    at 115200, another UV-5RM Plus GPS answers at 19200, so try the common
-    case first.
+    Two of the three radios seen so far answer at 115200 and one at 19200,
+    with no relation to the name on the badge, so this is most likely a
+    firmware difference. Try the common case first and fall back.
     """
     port = radio.pipe
     timeout = port.timeout
@@ -558,17 +558,19 @@ def _upload(radio, data):
     LOG.info("Uploaded %i bytes", len(data))
 
 
-class UV5RMPlusGPSAlias(chirp_common.Alias):
-    """Same hardware and clone protocol, sold under a different name."""
-    VENDOR = "Baofeng"
-    MODEL = "UV-5RM Plus GPS"
+class Baofeng5RHPro(chirp_common.CloneModeRadio):
+    """Baofeng 5RH Pro family running v2 firmware.
 
+    The same hardware is badged several ways: a unit labelled "UV-5RM Plus"
+    carries FCC ID 2AJGM-5RHPRO, and units labelled "UV-5RH Plus", "5RH Pro"
+    and "UV-5RM Plus" all speak this clone protocol. The subclasses below
+    exist only so owners can find their radio under the name printed on it.
 
-@directory.register
-class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
-    """Baofeng 5RH Pro / UV-5RM Plus with GPS, v2 firmware."""
+    What distinguishes this driver from the "UV-5RM Plus" one in
+    baofeng_uv17Pro.py is the firmware generation, not the badge: v2
+    firmware replaced the older clone protocol entirely.
+    """
     VENDOR = "Baofeng"
-    MODEL = "5RH Pro with GPS (v2)"
     BAUD_RATE = 115200
 
     # CTCSS and DCS are stored BCD-style with 0x8000 flagging DCS and 0x4000
@@ -576,7 +578,6 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
     _tone_model = kenwood_tone.KenwoodToneModel(
         dcs_base=0x8000, pol_mask=0x4000, tone_init=0x0000, tone_flag=0x0000,
         dcs_enc_base=16, tone_enc_base=16)
-    ALIASES = [UV5RMPlusGPSAlias]
 
     @classmethod
     def get_prompts(cls):
@@ -903,3 +904,25 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
                 _s.radio_name = _encode_name(str(val).rstrip())
             else:
                 setattr(_s, key, 1 if bool(val) else 0)
+
+
+# One entry per name the hardware is sold under, so owners can find their
+# radio by what is printed on it. See Baofeng5RHPro for why these are all
+# the same device.
+
+@directory.register
+class Baofeng5RHProRadio(Baofeng5RHPro):
+    MODEL = "5RH Pro"
+
+
+@directory.register
+class BaofengUV5RHPlus(Baofeng5RHPro):
+    MODEL = "UV-5RH Plus"
+
+
+@directory.register
+class BaofengUV5RMPlusV2(Baofeng5RHPro):
+    # baofeng_uv17Pro.py already registers "UV-5RM Plus" for the older
+    # firmware, so the generation goes in VARIANT to keep the two apart.
+    MODEL = "UV-5RM Plus"
+    VARIANT = "v2"
