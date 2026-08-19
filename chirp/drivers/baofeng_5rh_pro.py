@@ -471,12 +471,13 @@ struct {
   char name[16];   // 32-47 GB2312
 } memory[640];
 
+// One bit per channel, and note the inverted sense: a *clear* bit means
+// the channel is in use, and likewise that it is included in the scan.
 #seekto 0x7A20;
-u8 valid_flags[80];
+lbit chn_unused[640];
 
-// "Scan Add" bitmap, same layout as valid_flags: bit == 0 means scanned.
 #seekto 0x81A0;
-u8 scan_flags[80];
+lbit chn_unscanned[640];
 
 #seekto 0x7980;
 struct {
@@ -711,7 +712,7 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
                 ch_index = z * ZONE_CHN_MAX + idx
                 off = zbase + 2 + idx * 2
                 if (ch_index < CHN_MAX and
-                        self._get_flag(self._memobj.valid_flags, ch_index)):
+                        not self._memobj.chn_unused[ch_index]):
                     mm[off] = (ch_index >> 8) & 0xFF
                     mm[off + 1] = ch_index & 0xFF
                     count += 1
@@ -738,27 +739,12 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
                  _decode_name(self._memobj.hw_version.get_raw(asbytes=True)),
                  _decode_name(self._memobj.prog_date.get_raw(asbytes=True)))
 
-    # Both per-channel bitmaps (valid_flags at 0x7A20, scan_flags at 0x81A0)
-    # use a clear bit for "on", matching CPS ConvertChnValidFlg
-    @staticmethod
-    def _get_flag(bitmap, index):
-        return ((int(bitmap[index // 8]) >> (index % 8)) & 1) == 0
-
-    @staticmethod
-    def _set_flag(bitmap, index, on):
-        flags = int(bitmap[index // 8])
-        if on:
-            flags &= ~(1 << (index % 8))
-        else:
-            flags |= 1 << (index % 8)
-        bitmap[index // 8] = flags
-
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
         mem = chirp_common.Memory()
         mem.number = number
 
-        if not self._get_flag(self._memobj.valid_flags, number - 1):
+        if self._memobj.chn_unused[number - 1]:
             mem.empty = True
             return mem
 
@@ -780,8 +766,7 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
             mem.mode = "FM" if _mem.wideth else "NFM"
 
         # "Scan Add" in the CPS; chirp inverts the sense via skip
-        scanned = self._get_flag(self._memobj.scan_flags, number - 1)
-        mem.skip = "" if scanned else "S"
+        mem.skip = "S" if self._memobj.chn_unscanned[number - 1] else ""
 
         mem.name = _decode_name(_mem.get_raw(asbytes=True)[32:48]).rstrip()
 
@@ -792,20 +777,19 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
 
         if mem.empty:
             _mem.fill_raw(b'\xff')
-            self._set_flag(self._memobj.valid_flags, mem.number - 1, False)
-            self._set_flag(self._memobj.scan_flags, mem.number - 1, False)
+            self._memobj.chn_unused[mem.number - 1] = 1
+            self._memobj.chn_unscanned[mem.number - 1] = 1
             return
 
         # Only a previously unused slot is cleared. An existing channel keeps
         # the bytes this driver does not decode (optional signaling, the DTMF
         # / 2-Tone / 5-Tone / MDC indexes, emergency system, ...), so editing
         # a channel in chirp does not silently reset its CPS settings.
-        if not self._get_flag(self._memobj.valid_flags, mem.number - 1):
+        if self._memobj.chn_unused[mem.number - 1]:
             _mem.fill_raw(b'\x00')
 
-        self._set_flag(self._memobj.valid_flags, mem.number - 1, True)
-        self._set_flag(self._memobj.scan_flags, mem.number - 1,
-                       mem.skip != "S")
+        self._memobj.chn_unused[mem.number - 1] = 0
+        self._memobj.chn_unscanned[mem.number - 1] = mem.skip == "S"
 
         _mem.rx_freq = mem.freq // 10
 
