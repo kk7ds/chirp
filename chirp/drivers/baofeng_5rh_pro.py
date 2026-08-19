@@ -24,8 +24,9 @@ from chirp import errors
 from chirp import kenwood_tone
 from chirp import memmap
 from chirp.settings import (
-    RadioSettings, RadioSettingGroup, RadioSetting,
+    RadioSettings, RadioSettingGroup, RadioSetting, MemSetting,
     RadioSettingValueList, RadioSettingValueBoolean, RadioSettingValueString,
+    RadioSettingValueMap,
 )
 
 LOG = logging.getLogger(__name__)
@@ -129,11 +130,11 @@ ENDTONE_LIST = ["OFF", "Mode 1", "Mode 2", "Mode 3"]
 HZ1750_LIST = ["1000Hz", "1450Hz", "1750Hz", "2100Hz"]
 TAIL_LIST = ["OFF", "55Hz", "120deg", "180deg", "240deg"]
 BLIGHTLV_LIST = [str(i) for i in range(1, 6)]        # 1..5
-# Special transforms (byte != index):
-VOXLV_LIST = [str(i) for i in range(1, 10)]          # byte == int(label)
-VOXDLY_LIST = ["%.1f" % (1.0 + 0.5 * i) for i in range(19)]  # byte == val*10
-# byte < 5 reads as "Always"
-BLIGHTTIME_LIST = ["Always"] + [str(i) for i in range(5, 31)]
+# Settings whose stored byte is not the option index, as (label, byte) maps.
+VOXLV_MAP = [(str(i), i) for i in range(1, 10)]
+VOXDLY_MAP = [("%.1f" % (1.0 + 0.5 * i), 10 + 5 * i) for i in range(19)]
+# Any byte below 5 means "always on"
+BLIGHTTIME_MAP = [("Always", 0)] + [(str(i), i) for i in range(5, 31)]
 
 # key == settings struct field, value == option list (stored byte == index)
 _INDEX_SETTINGS = [
@@ -827,67 +828,50 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
     def get_settings(self):
         _s = self._memobj.settings
         basic = RadioSettingGroup("basic", "Basic")
-        group = RadioSettings(basic)
-
-        def _list(key, name, options, idx):
-            if idx < 0 or idx >= len(options):
-                idx = 0
-            rs = RadioSetting(
-                key, name,
-                RadioSettingValueList(options, current_index=idx))
-            basic.append(rs)
 
         for key, name, options in _INDEX_SETTINGS:
-            _list(key, name, options, int(getattr(_s, key)))
+            idx = int(getattr(_s, key))
+            if idx >= len(options):
+                idx = 0
+            basic.append(MemSetting(
+                "settings.%s" % key, name,
+                RadioSettingValueList(options, current_index=idx)))
 
-        # Special transforms
-        _list("vox_lv", "VOX level", VOXLV_LIST, int(_s.vox_lv) - 1)
-
-        dly = (int(_s.vox_dly) - 10) // 5
-        _list("vox_dly", "VOX delay (s)", VOXDLY_LIST, dly)
-
-        bt = int(_s.blight_time)
-        bt_idx = 0 if bt < 5 else min(bt - 4, len(BLIGHTTIME_LIST) - 1)
-        _list("blight_time", "Backlight time (s)", BLIGHTTIME_LIST, bt_idx)
+        basic.append(MemSetting(
+            "settings.vox_lv", "VOX level",
+            RadioSettingValueMap(VOXLV_MAP, int(_s.vox_lv))))
+        basic.append(MemSetting(
+            "settings.vox_dly", "VOX delay (s)",
+            RadioSettingValueMap(VOXDLY_MAP, int(_s.vox_dly))))
+        # Anything below 5 is "always on", so normalise before the lookup
+        blight_time = int(_s.blight_time)
+        basic.append(MemSetting(
+            "settings.blight_time", "Backlight time (s)",
+            RadioSettingValueMap(BLIGHTTIME_MAP,
+                                 blight_time if blight_time >= 5 else 0)))
 
         for key, name in _BOOL_SETTINGS:
-            rs = RadioSetting(
-                key, name,
-                RadioSettingValueBoolean(bool(int(getattr(_s, key)))))
-            basic.append(rs)
+            basic.append(MemSetting(
+                "settings.%s" % key, name,
+                RadioSettingValueBoolean(bool(int(getattr(_s, key))))))
 
         cur_name = _decode_name(_s.get_raw(asbytes=True)[80:96])
-        rs = RadioSetting("radio_name", "Radio name",
-                          RadioSettingValueString(0, 16, cur_name))
-        basic.append(rs)
+        basic.append(RadioSetting("radio_name", "Radio name",
+                                  RadioSettingValueString(0, 16, cur_name)))
 
-        return group
+        return RadioSettings(basic)
 
     def set_settings(self, settings):
-        _s = self._memobj.settings
-        index_map = {k: opts for k, _, opts in _INDEX_SETTINGS}
-
         for element in settings:
-            if not isinstance(element, RadioSetting):
+            if isinstance(element, MemSetting):
+                element.apply_to_memobj(self._memobj)
+            elif not isinstance(element, RadioSetting):
                 self.set_settings(element)
-                continue
-
-            key = element.get_name()
-            val = element.value
-
-            if key in index_map:
-                setattr(_s, key, index_map[key].index(str(val)))
-            elif key == "vox_lv":
-                _s.vox_lv = int(str(val))
-            elif key == "vox_dly":
-                _s.vox_dly = int(round(float(str(val)) * 10))
-            elif key == "blight_time":
-                s = str(val)
-                _s.blight_time = 0 if s == "Always" else int(s)
-            elif key == "radio_name":
-                _s.radio_name = _encode_name(str(val).rstrip())
-            else:
-                setattr(_s, key, 1 if bool(val) else 0)
+            elif element.get_name() == "radio_name":
+                # Names are GB2312 and zero-padded, which MemSetting has no
+                # way to express.
+                self._memobj.settings.radio_name = _encode_name(
+                    str(element.value).rstrip())
 
 
 # One entry per name the hardware is sold under, so owners can find their
