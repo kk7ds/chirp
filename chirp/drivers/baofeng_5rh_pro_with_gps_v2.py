@@ -50,17 +50,16 @@ BLOCK_SIZE = 4096
 CHN_SIZE = 48
 CHN_MAX = 640
 
-# Zone layout (DataProtocol.cs ConvertZone/ZoneConvert). The radio navigates
-# channels through zones: each zone holds a fixed array of channel IDs, with
-# FFFF marking an unused slot (the CPS leaves such gaps in place rather than
-# packing the list). A channel only appears on the radio if its ID is in a
-# zone, so the zone table must be rebuilt on upload to reflect newly-added
-# channels.
+# Zone layout. The radio navigates channels through zones: each zone holds a
+# fixed array of channel IDs, with FFFF marking an unused slot (the CPS
+# leaves such gaps in place rather than packing the list). A channel only
+# appears on the radio if its ID is in a zone, so the zone table must be
+# rebuilt on upload to reflect newly-added channels.
 ZONE_TOTAL_OFF = 31360
 ZONE_BASE = 31376
 ZONE_SIZE = 152
 ZONE_MAX = 10
-ZONE_CHN_MAX = 64       # firmware limit (FormMain.cs:383): 10 * 64 == 640
+ZONE_CHN_MAX = 64       # firmware limit: 10 * 64 == 640
 ZONE_NAME_OFF = 136     # IDs occupy 2..129, 130..135 unused, name 136..151
 
 TONES = chirp_common.TONES
@@ -194,7 +193,7 @@ def _decode_tone(val):
     0x8xxx is DCS normal, 0xCxxx DCS inverted, anything else a CTCSS
     frequency in tenths of a Hz. Read through bbcd those become 8000+code,
     12000+code and freq*10; 0xFFFF reads as 16665 and means "unset".
-    Matches CPS SubVoiceConvert (DataProtocol.cs:630).
+    Matches what the CPS does.
     """
     val = int(val)
     if val == 0 or val == 16665:
@@ -210,8 +209,7 @@ def _decode_tone(val):
 def _encode_tone(memval, spec):
     """Write a (mode, value, polarity) spec into a sub-audio field.
 
-    Reverse of _decode_tone, matching CPS SubAudioToData
-    (DataProtocol.cs:1505). The radio writes zero for "no tone", so do the
+    Reverse of _decode_tone. The radio writes zero for "no tone", so do the
     same rather than the 0xFFFF the field can also hold.
     """
     mode, value, pol = spec
@@ -385,7 +383,7 @@ def _load_boot_image(path):
     """Load a boot image, converting a 24-bit BMP to big-endian RGB565.
 
     A non-.bmp file is treated as pre-converted raw RGB565 data. Mirrors CPS
-    Convert24To16Bit / ReversalHighLowByte (FormProgressBar.cs:506).
+    The radio expects big-endian RGB565.
     """
     if not str(path).lower().endswith(".bmp"):
         with open(path, "rb") as f:
@@ -714,9 +712,9 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
     def _rebuild_zones(self):
         """Regenerate the zone tables so every in-use channel is reachable.
 
-        A channel is only reachable on the radio if its ID sits in a zone
-        (DataProtocol.cs:1828). Chirp has no zone concept, so channels are
-        mapped to zones by position: zone z holds channels
+        A channel is only reachable on the radio if its ID sits in a zone.
+        Chirp has no zone concept, so channels are mapped to zones by
+        position: zone z holds channels
         [z*ZONE_CHN_MAX .. (z+1)*ZONE_CHN_MAX). Zone names are preserved; an
         unnamed but populated zone gets a "Zone N" default.
         """
@@ -754,7 +752,6 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
 
     # Both per-channel bitmaps (valid_flags at 0x7A20, scan_flags at 0x81A0)
     # use a clear bit for "on", matching CPS ConvertChnValidFlg
-    # (DataProtocol.cs:883).
     @staticmethod
     def _get_flag(bitmap, index):
         return ((int(bitmap[index // 8]) >> (index % 8)) & 1) == 0
