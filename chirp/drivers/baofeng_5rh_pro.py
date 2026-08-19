@@ -57,12 +57,12 @@ CHN_MAX = 640
 # leaves such gaps in place rather than packing the list). A channel only
 # appears on the radio if its ID is in a zone, so the zone table must be
 # rebuilt on upload to reflect newly-added channels.
-ZONE_TOTAL_OFF = 31360
-ZONE_BASE = 31376
-ZONE_SIZE = 152
 ZONE_MAX = 10
-ZONE_CHN_MAX = 64       # firmware limit: 10 * 64 == 640
-ZONE_NAME_OFF = 136     # IDs occupy 2..129, 130..135 unused, name 136..151
+# A zone record holds 128 bytes of channel IDs at 2 bytes each, and 10 zones
+# of 64 is exactly the 640 channels the radio has. The 6 bytes that follow
+# the IDs look like three more empty slots, but there is no way to fill them
+# to find out, so treat 64 as the limit.
+ZONE_CHN_MAX = 64
 
 TONES = chirp_common.TONES
 DTCS = chirp_common.ALL_DTCS_CODES
@@ -477,6 +477,18 @@ struct {
 #seekto 0x7A20;
 lbit chn_unused[640];
 
+#seekto 0x7A80;
+u8 zones_used;
+
+#seekto 0x7A90;
+struct {
+  u8 count;          // 0     channels held by this zone
+  u8 unknown0;       // 1
+  u16 channels[64];  // 2-129 channel IDs, FFFF for an unused slot
+  u8 unknown1[6];    // 130-135
+  char name[16];     // 136-151
+} zones[10];
+
 #seekto 0x81A0;
 lbit chn_unscanned[640];
 
@@ -630,6 +642,7 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_settings = True
+        rf.has_sub_devices = True
         rf.has_bank = False
         # No per-channel tuning step: neither the channel struct nor the CPS
         # channel editor has such a field. valid_tuning_steps below is still
@@ -699,36 +712,38 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
         """Regenerate the zone tables so every in-use channel is reachable.
 
         A channel is only reachable on the radio if its ID sits in a zone.
-        Chirp has no zone concept, so channels are mapped to zones by
-        position: zone z holds channels
+        Zones own a fixed slice of the channel list, matching how they are
+        presented as sub-devices: zone z holds channels
         [z*ZONE_CHN_MAX .. (z+1)*ZONE_CHN_MAX). Zone names are preserved; an
         unnamed but populated zone gets a "Zone N" default.
         """
-        mm = self._mmap
         zones_used = 0
         for z in range(ZONE_MAX):
-            zbase = ZONE_BASE + z * ZONE_SIZE
+            zone = self._memobj.zones[z]
             count = 0
             for idx in range(ZONE_CHN_MAX):
                 ch_index = z * ZONE_CHN_MAX + idx
-                off = zbase + 2 + idx * 2
                 if (ch_index < CHN_MAX and
                         not self._memobj.chn_unused[ch_index]):
-                    mm[off] = (ch_index >> 8) & 0xFF
-                    mm[off + 1] = ch_index & 0xFF
+                    zone.channels[idx] = ch_index
                     count += 1
                 else:
-                    mm[off] = 0xFF
-                    mm[off + 1] = 0xFF
-            mm[zbase] = count
-            mm[zbase + 1] = 0xFF
+                    zone.channels[idx] = 0xFFFF
+            zone.count = count
+            zone.unknown0 = 0xFF
             if count:
                 zones_used += 1
-                name_off = zbase + ZONE_NAME_OFF
-                if mm[name_off][0] in (0x00, 0xFF):
-                    for i, b in enumerate(_encode_name("Zone %d" % (z + 1))):
-                        mm[name_off + i] = b
-        mm[ZONE_TOTAL_OFF] = zones_used
+                if zone.name.get_raw(asbytes=True)[0] in (0x00, 0xFF):
+                    zone.name = _encode_name("Zone %d" % (z + 1))
+        self._memobj.zones_used = zones_used
+
+    def get_sub_devices(self):
+        # A subdevice has to inherit from a registered class, and the base
+        # class here is not one, so build a class per zone off whichever
+        # model subclass we actually are.
+        return [type('%sZone%i' % (self.__class__.__name__, z + 1),
+                     (Baofeng5RHProZone, self.__class__), {})(self, z)
+                for z in range(ZONE_MAX)]
 
     def upload_boot_image(self, path):
         upload_boot_image(self, path)
@@ -872,6 +887,55 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
                 # way to express.
                 self._memobj.settings.radio_name = _encode_name(
                     str(element.value).rstrip())
+
+
+class Baofeng5RHProZone:
+    """One zone of a Baofeng5RHPro, presented as its own sub-device.
+
+    Mixed into the parent's registered class by get_sub_devices(), so it
+    only has to override what differs from a whole radio.
+
+
+    Zones own a fixed slice of the channel list, so channel n of zone z is
+    channel z*ZONE_CHN_MAX + n of the parent. That is the same layout
+    _rebuild_zones() writes to the radio, so what the zone tabs show is what
+    the radio will navigate.
+    """
+    def __init__(self, parent, zone):
+        self._parent = parent
+        self._zone = zone
+        self.MODEL = parent.MODEL
+        name = ''
+        if parent._memobj:
+            name = _decode_name(
+                parent._memobj.zones[zone].name.get_raw(asbytes=True)).strip()
+        self.VARIANT = name or 'Zone %i' % (zone + 1)
+
+    @property
+    def _memobj(self):
+        return self._parent._memobj
+
+    def get_features(self):
+        rf = self._parent.get_features()
+        rf.has_sub_devices = False
+        rf.memory_bounds = (1, ZONE_CHN_MAX)
+        return rf
+
+    def get_sub_devices(self):
+        return []
+
+    def _parent_number(self, number):
+        return self._zone * ZONE_CHN_MAX + number
+
+    def get_memory(self, number):
+        mem = self._parent.get_memory(self._parent_number(number))
+        mem.number = number
+        return mem
+
+    def set_memory(self, mem):
+        mem = mem.dupe()
+        mem.number = self._parent_number(mem.number)
+        self._parent.set_memory(mem)
 
 
 # One entry per name the hardware is sold under, so owners can find their
