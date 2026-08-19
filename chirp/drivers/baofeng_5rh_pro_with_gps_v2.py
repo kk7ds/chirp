@@ -21,6 +21,7 @@ from chirp import bitwise
 from chirp import chirp_common
 from chirp import directory
 from chirp import errors
+from chirp import kenwood_tone
 from chirp import memmap
 from chirp.settings import (
     RadioSettings, RadioSettingGroup, RadioSetting,
@@ -184,42 +185,6 @@ def _encode_name(name, length=16):
     except UnicodeEncodeError:
         nb = name.encode('ascii', errors='ignore')
     return nb[:length].ljust(length, b'\x00')
-
-
-def _decode_tone(val):
-    """Decode a sub-audio field into a (mode, value, polarity) spec.
-
-    The field is the usual BCD encoding, with the top nibble flagging DCS:
-    0x8xxx is DCS normal, 0xCxxx DCS inverted, anything else a CTCSS
-    frequency in tenths of a Hz. Read through bbcd those become 8000+code,
-    12000+code and freq*10; 0xFFFF reads as 16665 and means "unset".
-    Matches what the CPS does.
-    """
-    val = int(val)
-    if val == 0 or val == 16665:
-        return (None, None, None)
-    elif val >= 12000:
-        return ("DTCS", val - 12000, "R")
-    elif val >= 8000:
-        return ("DTCS", val - 8000, "N")
-    else:
-        return ("Tone", val / 10.0, None)
-
-
-def _encode_tone(memval, spec):
-    """Write a (mode, value, polarity) spec into a sub-audio field.
-
-    Reverse of _decode_tone. The radio writes zero for "no tone", so do the
-    same rather than the 0xFFFF the field can also hold.
-    """
-    mode, value, pol = spec
-    if mode == "Tone":
-        memval.set_value(int(round(value * 10)))
-    elif mode == "DTCS":
-        memval.set_value(value)
-        memval[0].set_bits(0xC0 if pol == "R" else 0x80)
-    else:
-        memval.set_value(0)
 
 
 def _announce(radio):
@@ -477,12 +442,18 @@ struct {
 struct {
   lbcd rx_freq[4]; // 0-3   BCD, units of 10 Hz
   lbcd tx_freq[4]; // 4-7
-  bbcd rx_tone[2]; // 8-9   (decode / receive sub-audio)
-  bbcd tx_tone[2]; // 10-11 (encode / transmit sub-audio)
+  u16 rxtone;      // 8-9   (decode / receive sub-audio)
+  u16 txtone;      // 10-11 (encode / transmit sub-audio)
   u8 unknown1[4];  // 12-15
-  u8 flags1;       // 16  power[7:6] wideth[5] offsetdir[3:2]
-                   //     freqinvert[1] talkaround[0]
-  u8 flags2;       // 17    fivetoneptt[7:6] dtmfptt[5:4] sqtype[3:0]
+  u8 power:2,      // 16  2 == High, 0 == Low
+     wideth:1,     //     set == 25K == FM
+     unknown_f1:1,
+     offsetdir:2,  //     0 == simplex, 1 == TX above RX, 2 == TX below
+     freqinvert:1,
+     talkaround:1;
+  u8 fivetoneptt:2, // 17
+     dtmfptt:2,
+     sqtype:4;     //     1 whenever a receive sub-audio tone is present
   u8 unknown2;     // 18
   // Byte 19 bit 5 is "Launch banned" (receive only) in the CPS. It is not
   // exposed as duplex "off" because the v2_0_09 firmware ignores it: a
@@ -593,6 +564,12 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
     VENDOR = "Baofeng"
     MODEL = "5RH Pro with GPS (v2)"
     BAUD_RATE = 115200
+
+    # CTCSS and DCS are stored BCD-style with 0x8000 flagging DCS and 0x4000
+    # inverted polarity, which is the widely copied Kenwood scheme.
+    _tone_model = kenwood_tone.KenwoodToneModel(
+        dcs_base=0x8000, pol_mask=0x4000, tone_init=0x0000, tone_flag=0x0000,
+        dcs_enc_base=16, tone_enc_base=16)
     ALIASES = [UV5RMPlusGPSAlias]
 
     @classmethod
@@ -783,20 +760,13 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
             mem.duplex = ""
             mem.offset = 0
 
-        # tx_tone is the encode (transmit) field, rx_tone the decode one
-        chirp_common.split_tone_decode(
-            mem,
-            _decode_tone(_mem.tx_tone),
-            _decode_tone(_mem.rx_tone),
-        )
+        self._tone_model.get_tone(_mem, mem)
 
-        # power[7:6]: 2 == High, 0 == Low; wideth[5]: set == 25K == FM
-        mem.power = POWER_LEVELS[1] if (int(_mem.flags1) >> 6) >= 2 \
-            else POWER_LEVELS[0]
+        mem.power = POWER_LEVELS[1] if _mem.power >= 2 else POWER_LEVELS[0]
         if int(_mem.modulation) == MODULATION_AM:
             mem.mode = "AM"
         else:
-            mem.mode = "FM" if (int(_mem.flags1) >> 5) & 1 else "NFM"
+            mem.mode = "FM" if _mem.wideth else "NFM"
 
         # "Scan Add" in the CPS; chirp inverts the sense via skip
         scanned = self._get_flag(self._memobj.scan_flags, number - 1)
@@ -810,7 +780,7 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
         _mem = self._memobj.memory[mem.number - 1]
 
         if mem.empty:
-            _mem.set_raw(b'\xff' * CHN_SIZE)
+            _mem.fill_raw(b'\xff')
             self._set_flag(self._memobj.valid_flags, mem.number - 1, False)
             self._set_flag(self._memobj.scan_flags, mem.number - 1, False)
             return
@@ -820,7 +790,7 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
         # / 2-Tone / 5-Tone / MDC indexes, emergency system, ...), so editing
         # a channel in chirp does not silently reset its CPS settings.
         if not self._get_flag(self._memobj.valid_flags, mem.number - 1):
-            _mem.set_raw(b'\x00' * CHN_SIZE)
+            _mem.fill_raw(b'\x00')
 
         self._set_flag(self._memobj.valid_flags, mem.number - 1, True)
         self._set_flag(self._memobj.scan_flags, mem.number - 1,
@@ -839,32 +809,23 @@ class BaofengUV5RHRadio(chirp_common.CloneModeRadio):
 
         _mem.tx_freq = tx_freq // 10
 
-        txtone, rxtone = chirp_common.split_tone_encode(mem)
-        _encode_tone(_mem.tx_tone, txtone)
-        _encode_tone(_mem.rx_tone, rxtone)
+        self._tone_model.set_tone(mem, _mem)
 
-        # flags2 sqtype[3:0]: the CPS sets 1 whenever a receive sub-audio tone
-        # is present, so the squelch actually opens on it (0 otherwise). The
-        # upper nibble holds the DTMF / 5-Tone PTT ID and is left alone.
-        _mem.flags2 = (int(_mem.flags2) & 0xF0) | (1 if rxtone[0] else 0)
+        # The CPS sets sqtype whenever a receive sub-audio tone is present, so
+        # that the squelch actually opens on it.
+        _mem.sqtype = 1 if int(_mem.rxtone) else 0
 
-        # flags1: power[7:6] (High == 2), wideth[5] (wide == FM),
-        # offsetdir[3:2]. Bits 1:0 (freqinvert, talkaround) are kept.
         # AM lives in its own byte; the radio leaves wideth set for it.
         _mem.modulation = MODULATION_AM if mem.mode == "AM" else 0
 
-        flags1 = int(_mem.flags1) & 0x03
-        if mem.power == POWER_LEVELS[1]:
-            flags1 |= 2 << 6
-        if mem.mode != "NFM":
-            flags1 |= 0x20
-        # offsetdir: 0 == simplex, 1 == TX above RX, 2 == TX below RX
-        # (the CPS writes flags1 0xA4 and 0xA8 for those two cases).
+        _mem.power = 2 if mem.power == POWER_LEVELS[1] else 0
+        _mem.wideth = mem.mode != "NFM"
         if tx_freq > mem.freq:
-            flags1 |= 1 << 2
+            _mem.offsetdir = 1
         elif tx_freq < mem.freq:
-            flags1 |= 2 << 2
-        _mem.flags1 = flags1
+            _mem.offsetdir = 2
+        else:
+            _mem.offsetdir = 0
 
         _mem.name = _encode_name(mem.name or "")
 
