@@ -41,6 +41,7 @@ _ = wx.GetTranslation
 CONF = config.get()
 BASE = (CONF.get('baseurl', 'chirpmyradio') or
         'https://data.chirpmyradio.com/redmine')
+USER_BASE = 'https://chirpmyradio.com'
 LOG = logging.getLogger(__name__)
 ReportThreadEvent, EVT_REPORT_THREAD = wx.lib.newevent.NewCommandEvent()
 
@@ -252,8 +253,8 @@ class GetCreds(BugReportPage):
     def _build(self, vbox):
         vbox.Add(
             wx.adv.HyperlinkCtrl(
-                self, label=BASE + '/account/register',
-                url=BASE + '/account/register'),
+                self, label=USER_BASE + '/account/register',
+                url=USER_BASE + '/account/register'),
             0, border=20, flag=wx.ALIGN_CENTER)
 
         panel = wx.Panel(self)
@@ -418,9 +419,10 @@ class NewBugInfo(BugReportPage):
             wx.adv.HyperlinkCtrl(
                 panel,
                 label=_('searched for duplicate issues'),
-                url=BASE + ('/projects/chirp/search?utf8=%E2%9C%93&'
-                            'q=&scope=&all_words=&all_words=1&titles_only=&'
-                            'issues=1&attachments=0&options=0&commit=Search')),
+                url=USER_BASE + (
+                    '/projects/chirp/search?utf8=%E2%9C%93&'
+                    'q=&scope=&all_words=&all_words=1&titles_only=&'
+                    'issues=1&attachments=0&options=0&commit=Search')),
             0)
         hbox.AddStretchSpacer(1)
 
@@ -591,7 +593,7 @@ class ResultPage(BugReportPage):
                                     style=wx.TE_CENTER)
         vbox.Add(self.result, 0, border=20, flag=wx.EXPAND | wx.ALL)
 
-        self.issuelink = wx.adv.HyperlinkCtrl(self, url=BASE)
+        self.issuelink = wx.adv.HyperlinkCtrl(self, url=USER_BASE)
         self.issuelink.Hide()
         vbox.Add(self.issuelink, 0, border=20, flag=wx.EXPAND | wx.ALL)
 
@@ -731,7 +733,7 @@ class ResultPage(BugReportPage):
             self.result.SetLabel(
                 _('Successfully sent bug report:'))
             self.FindWindowById(wx.ID_BACKWARD).Enable(False)
-            link = BASE + '/issues/%s' % self.context.bugnum
+            link = USER_BASE + '/issues/%s' % self.context.bugnum
             self.issuelink.SetLabel(link)
             self.issuelink.SetURL(link)
             self.issuelink.Show()
