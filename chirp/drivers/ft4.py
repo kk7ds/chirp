@@ -280,14 +280,9 @@ def sendcmd(pipe, cmd, response_len, retry=0):
         if not response:
             if cmd == PROGRAM_CMD:
                 raise errors.RadioNoResponse()
-            raise errors.RadioError("No response from radio")
-        if len(response) != response_len:
-            raise errors.RadioError("Incomplete response from radio")
     else:
         response = b""
     ack = pipe.read(1)
-    if not ack:
-        raise errors.RadioError("No response from radio")
     if ack != b'\x06':
         if retry < 5:
             LOG.debug("retry: " + str(retry))
