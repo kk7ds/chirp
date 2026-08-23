@@ -92,11 +92,23 @@ MODULATION_AM = 2
 # 136 MHz where the first band from the header begins.
 AIRBAND = (108000000, 135999999)
 
-# Tuning steps offered by the CPS. Same list as the non-GPS UV-5RM Plus /
-# 5RM in baofeng_uv17Pro.py. 6.25 kHz is required for PMR446 (446.006250)
-# and other 12.5 kHz-offset grids; without it chirp_common.required_step()
-# rejects those frequencies during memory validation.
-STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
+# Tuning steps. Nothing in the image stores one (has_tuning_step is False
+# below), so this list is only the vocabulary memory validation is done
+# against: chirp_common.validate_memory() calls required_step() and rejects
+# the whole memory when no step in the list reaches the frequency.
+#
+# The CPS offers all of these but 8.33, the same list as the non-GPS UV-5RM
+# Plus / 5RM in baofeng_uv17Pro.py. 6.25 kHz is required for PMR446
+# (446.006250) and other 12.5 kHz-offset grids.
+#
+# 8.33 kHz is not a CPS step, and not a grid either: it is the airband's
+# thirds of a 25 kHz block, which is what chirp_common.is_8_33() matches. It
+# is listed because the radio can hold those carriers: channel frequencies
+# are stored in units of 10 Hz, so 118.233333 MHz is written as 118.233330
+# and read back as a remainder is_8_33() accepts. Without it every 8.33 kHz
+# airband channel fails validation and is dropped on import, even though the
+# hardware receives it.
+STEPS = [2.5, 5.0, 6.25, 8.33, 10.0, 12.5, 20.0, 25.0, 50.0]
 
 # Frequency coverage. The radio stores its own ranges in the image header,
 # which is what get_features() reports once an image is loaded (see
