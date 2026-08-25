@@ -1051,8 +1051,58 @@ class THK2Radio(KenwoodLiveRadio):
     """Kenwood TH-K2"""
     MODEL = "TH-K2"
     HARDWARE_FLOW = False
+    _probe_memory = 99
 
     _kenwood_valid_tones = list(KENWOOD_TONES)
+
+    def __init__(self, *a, **k):
+        self._has_name = True
+        super().__init__(*a, **k)
+        if self.pipe:
+            self._probe_layout()
+
+    def _probe_layout(self):
+        """Determine if the radio is in 100+alpha or 200 channel mode"""
+        rf = self.get_features()
+        wasempty = None
+        try:
+            LOG.debug('Getting memory %i', self._probe_memory)
+            m = self.get_memory(self._probe_memory)
+            wasempty = m.empty
+            if wasempty:
+                m.freq = rf.valid_bands[0][0]
+                m.empty = False
+                LOG.debug('Memory %i was empty using %s to probe',
+                          self._probe_memory, m)
+            else:
+                LOG.debug('Memory %i was set: %s', self._probe_memory, m)
+            # This either sets the probe memory over itself, or creates one
+            # at the lower limit frequency. Note that in order for this to
+            # work, we need _has_name=True here so that we can detect if we
+            # failed to set the memory (because 199 is out of range) or the
+            # memory name (because 199 is in range, but names are not
+            # supported).
+            self.set_memory(m)
+            LOG.error('Unexpectedly successful at setting probe memory %s', m)
+        except errors.InvalidDataError as e:
+            LOG.debug('Probe response was %s', e)
+            if 'name' in str(e):
+                # Radio is configured for max channels, refused the name
+                self._has_name = False
+                LOG.info('Radio determined to be in max-channel mode')
+            else:
+                # Radio is configured for alpha channels, as it refused the
+                # whole thing
+                self._has_name = True
+                LOG.info('Radio determined to be in channel+alpha mode')
+        finally:
+            if wasempty:
+                LOG.debug('Erasing probe memory %s', m)
+                # This needs to do the raw command because of the memory
+                # caching in set_memory()
+                self.command(self.pipe, *self._cmd_set_memory(
+                    self._probe_memory, ""))
+            LOG.debug('Done probing layout')
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -1068,7 +1118,7 @@ class THK2Radio(KenwoodLiveRadio):
         rf.valid_bands = [(136000000, 173990000)]
         rf.valid_skips = ["", "S"]
         rf.valid_tuning_steps = [5.0]
-        rf.memory_bounds = (0, 49)
+        rf.memory_bounds = (0, 49 if self._has_name else 99)
         return rf
 
     def _cmd_get_memory(self, number):
@@ -1139,6 +1189,7 @@ TM271_STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
 class TM271Radio(THK2Radio):
     """Kenwood TM-271"""
     MODEL = "TM-271"
+    _probe_memory = 199
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
@@ -1146,6 +1197,7 @@ class TM271Radio(THK2Radio):
         rf.has_dtcs_polarity = False
         rf.has_bank = False
         rf.has_tuning_step = False
+        rf.has_name = self._has_name
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
         rf.valid_modes = THK2_MODES
         rf.valid_duplexes = THK2_DUPLEX
@@ -1154,7 +1206,7 @@ class TM271Radio(THK2Radio):
         rf.valid_bands = [(137000000, 173990000)]
         rf.valid_skips = ["", "S"]
         rf.valid_tuning_steps = list(TM271_STEPS)
-        rf.memory_bounds = (0, 99)
+        rf.memory_bounds = (0, 99 if self._has_name else 199)
         return rf
 
     def _cmd_get_memory(self, number):
@@ -1178,25 +1230,13 @@ class TM281Radio(TM271Radio):
 
 
 @directory.register
-class TM471Radio(THK2Radio):
+class TM471Radio(TM271Radio):
     """Kenwood TM-471"""
     MODEL = "TM-471"
 
     def get_features(self):
-        rf = chirp_common.RadioFeatures()
-        rf.can_odd_split = False
-        rf.has_dtcs_polarity = False
-        rf.has_bank = False
-        rf.has_tuning_step = False
-        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS"]
-        rf.valid_modes = THK2_MODES
-        rf.valid_duplexes = THK2_DUPLEX
-        rf.valid_characters = THK2_CHARS
-        rf.valid_name_length = 6
+        rf = super().get_features()
         rf.valid_bands = [(444000000, 479990000)]
-        rf.valid_skips = ["", "S"]
-        rf.valid_tuning_steps = [5.0]
-        rf.memory_bounds = (0, 99)
         return rf
 
     def _cmd_get_memory(self, number):
