@@ -464,8 +464,9 @@ class RB28Radio(chirp_common.CloneModeRadio):
         mem.extra.append(rset)
 
         _obj = self._memobj.bclo
-        key = "chnl_%i" % (mem.number)
-        rs = RadioSettingValueBoolean(getattr(_obj, "chnl_%i" % (mem.number)))
+        key = "bclo"
+        rs = RadioSettingValueBoolean(
+            getattr(_obj, "chnl_%i" % mem.number))
         rset = RadioSetting(key, "Busy Channel Lockout", rs)
         mem.extra.append(rset)
 
@@ -575,8 +576,9 @@ class RB28Radio(chirp_common.CloneModeRadio):
         _mem.highpower = mem.power == self.POWER_LEVELS[0]
 
         for setting in mem.extra:
-            if setting.get_name().startswith("chnl_"):
-                setattr(self._memobj.bclo, setting.get_name(), setting.value)
+            if setting.get_name() == "bclo":
+                setattr(self._memobj.bclo,
+                        "chnl_%i" % mem.number, setting.value)
             else:
                 setattr(_mem, setting.get_name(), setting.value)
 
