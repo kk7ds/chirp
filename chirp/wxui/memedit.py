@@ -2918,8 +2918,8 @@ class ChirpMemPropDialog(wx.Dialog):
         self._pg.DedicateKey(wx.WXK_RETURN)
         self._pg.DedicateKey(wx.WXK_UP)
         self._pg.DedicateKey(wx.WXK_DOWN)
-        self._pg.AddActionTrigger(wx.propgrid.PG_ACTION_EDIT, wx.WXK_RETURN)
-        self._pg.AddActionTrigger(wx.propgrid.PG_ACTION_NEXT_PROPERTY,
+        self._pg.AddActionTrigger(common.pg_action_edit(), wx.WXK_RETURN)
+        self._pg.AddActionTrigger(common.pg_action_next_property(),
                                   wx.WXK_RETURN)
 
         self._tabs.InsertPage(0, self._pg, _('Values'))
