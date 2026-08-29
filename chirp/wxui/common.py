@@ -40,6 +40,26 @@ from chirp.wxui import radiothread
 LOG = logging.getLogger(__name__)
 CONF = config.get()
 
+
+def pg_action_edit():
+    # wxPython >= 4.3 replaced the PG_ACTION_* integer constants with
+    # the PGKeyboardAction enum. Look this up lazily (i.e. not at
+    # module import time) since by the time a settings grid is
+    # actually built, something will have already imported
+    # wx.propgrid for real; doing it ourselves at import time with an
+    # explicit `import wx.propgrid` breaks tests that stub out `wx`
+    # wholesale with a Mock.
+    if hasattr(wx.propgrid, 'PG_ACTION_EDIT'):
+        return wx.propgrid.PG_ACTION_EDIT
+    return wx.propgrid.PGKeyboardAction.Edit
+
+
+def pg_action_next_property():
+    if hasattr(wx.propgrid, 'PG_ACTION_NEXT_PROPERTY'):
+        return wx.propgrid.PG_ACTION_NEXT_PROPERTY
+    return wx.propgrid.PGKeyboardAction.NextProperty
+
+
 CHIRP_DATA_MEMORY = wx.DataFormat('x-chirp/memory-channel')
 EditorChanged, EVT_EDITOR_CHANGED = wx.lib.newevent.NewCommandEvent()
 StatusMessage, EVT_STATUS_MESSAGE = wx.lib.newevent.NewCommandEvent()
@@ -403,8 +423,8 @@ class ChirpSettingGrid(wx.Panel):
         self.pg.DedicateKey(wx.WXK_RETURN)
         self.pg.DedicateKey(wx.WXK_UP)
         self.pg.DedicateKey(wx.WXK_DOWN)
-        self.pg.AddActionTrigger(wx.propgrid.PG_ACTION_EDIT, wx.WXK_RETURN)
-        self.pg.AddActionTrigger(wx.propgrid.PG_ACTION_NEXT_PROPERTY,
+        self.pg.AddActionTrigger(pg_action_edit(), wx.WXK_RETURN)
+        self.pg.AddActionTrigger(pg_action_next_property(),
                                  wx.WXK_RETURN)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
