@@ -410,6 +410,8 @@ class TMV7Radio(KenwoodOldLiveRadio):
         rf.valid_tuning_steps = STEPS
         rf.has_sub_devices = True
         rf.memory_bounds = (1, self._upper)
+        rf.valid_bands = [(144000000, 148000000),
+                          (420000000, 450000000)]
         return rf
 
     def _make_mem_spec(self, mem):
@@ -502,7 +504,7 @@ class TMG707Radio(TMV7Radio):
     MODEL = "TM-G707"
 
     def get_features(self):
-        rf = TMV7Radio.get_features(self)
+        rf = super().get_features()
         rf.has_sub_devices = False
         rf.memory_bounds = (1, 180)
         rf.valid_bands = [(118000000, 174000000),
@@ -520,7 +522,7 @@ class THG71Radio(TMV7Radio):
     MODEL = "TH-G71"
 
     def get_features(self):
-        rf = TMV7Radio.get_features(self)
+        rf = super().get_features()
         rf.has_tuning_step = True
         rf.valid_tuning_steps = list(THG71_STEPS)
         rf.valid_name_length = 6
