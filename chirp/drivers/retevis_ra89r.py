@@ -1,8 +1,7 @@
 import struct
 import logging
-import time
 from chirp import chirp_common, directory, memmap
-from chirp import bitwise, errors, util
+from chirp import bitwise, errors
 from chirp.drivers import th_uv88
 from chirp.settings import RadioSetting, RadioSettingValueList
 LOG = logging.getLogger(__name__)
@@ -18,12 +17,12 @@ struct chns chan_vfo_mem[4]; // CHAN_NUM
 
 #seekto 0x1F00;
 struct {
-  u8 bitmap[26];    // one bit for each channel marked in use
+  lbit bitmap[208];    // one bit for each channel marked in use
 } chan_avail;
 
 #seekto 0x1F20;
 struct {
-  u8 bitmap[26];    // one bit for each channel skipped
+  lbit bitmap[208];    // one bit for each channel skipped
 } chan_skip;
 
  #seekto 0x1140;
@@ -62,37 +61,37 @@ struct {
      miclevel:3;
   u8 unk19;
   u8 unk1:4,
-     sqlLevel : 4;
-  u8 beep : 1,
-     callKind : 2,
-     introScreen: 2,
+     sqlLevel:4;
+  u8 beep:1,
+     callKind:2,
+     introScreen:2,
      unk2:2,
-     txChSelect : 1;
+     txChSelect:1;
   u8 tot;
   u8 roger:2,
      language:1,
      endToneElim:3,
      unk5:2;
-  u8 scanpausetype: 2,
-     disMode : 2,
-     ledMode: 4;
+  u8 scanType:2,
+     disMode:2,
+     ledMode:4;
   u8 unk7;
   u8 unk8;
   u8 dtmf:4,
      tone2:4;
-  u8 swAudio : 1,
-     radioMoni : 1,
-     keylock : 1,
-     dualWait : 1,
-     light : 4;
-  u8 voxSw : 1,
-     voxDelay: 4,
-     voxLevel : 3;
+  u8 swAudio:1,
+     radioMoni:1,
+     keylock:1,
+     dualWait:1,
+     light:4;
+  u8 voxSw:1,
+     voxDelay:4,
+     voxLevel:3;
   u8 unk9:1,
      remote_local_alarm:1,
      scantxchtype:2,
-     saveMode : 2,
-     keyMode : 2;
+     saveMode:2,
+     keyMode:2;
   u8 wxch:4,
      unk22:1,
      sendidforalias:1,
@@ -129,17 +128,16 @@ FRAME_END = 0xFD
 SPECIAL_MEMORIES = {"VFOA": -2, "VFOB": -1}
 
 
-def _rawrecv(radio, max_frame_length=MAX_FRAME_LENGTH, timeout=2.0) -> bytes:
+def _rawrecv(radio, max_frame_length=MAX_FRAME_LENGTH) -> bytes:
     """Reads raw serial stream
     until an Icom-style frame (\xfe\xfe ... \xfd) is received."""
     package_data = bytearray()
-    start_time = time.time()
-    while (time.time() - start_time) < timeout:
+
+    while True:
         chunk = radio.pipe.read(1)
         if not chunk:
-            # Avoid high CPU utilization on non-blocking ports
-            time.sleep(0.002)
-            continue
+            raise errors.RadioError(
+                "Error reading from radio: timeout or connection lost.")
 
         b = chunk[0]
         package_data.append(b)
@@ -147,8 +145,7 @@ def _rawrecv(radio, max_frame_length=MAX_FRAME_LENGTH, timeout=2.0) -> bytes:
         # Check frame size ceiling to guard against garbage stream noise
         if len(package_data) > max_frame_length:
             raise errors.RadioError(
-                "Error reading from radio: not the amount of data we want."
-            )
+                "Error reading from radio: not the amount of data we want.")
 
         # Check for framing delimiter
         if b == FRAME_END:
@@ -157,15 +154,8 @@ def _rawrecv(radio, max_frame_length=MAX_FRAME_LENGTH, timeout=2.0) -> bytes:
                and package_data.startswith(FRAME_PREAMBLE)):
                 return bytes(package_data)
 
-            # If 0xFD appeared in noise before \xfe\xfe,
-            # clear invalid prefix bytes up to this point
-            if FRAME_PREAMBLE in package_data:
-                idx = package_data.find(FRAME_PREAMBLE)
-                package_data = package_data[idx:]
-            else:
-                package_data.clear()
-    raise errors.RadioError(
-        "Error reading from radio: not the amount of data we want.")
+            raise errors.RadioError(
+                "Error reading from radio: invalid frame or out of sync.")
 
 
 def _make_read_frame(addr, length):
@@ -193,10 +183,9 @@ def _make_write_frame(addr, length, data=""):
 
 
 def _do_start(radio, send_data):
-    th_uv88._rawsend(radio, send_data)
+    radio.pipe.write(send_data)
     ack = _rawrecv(radio, 8)
     if ack != b"\xFE\xFE\xEF\xEE\xE6\x80\x80\xFD":
-        th_uv88._exit_program_mode(radio)
         if ack:
             LOG.debug(repr(ack))
         raise errors.RadioError("Radio did not respond to enter read mode")
@@ -220,9 +209,6 @@ def _download(radio):
         return_data_len = min(BLOCK_SIZE, MEM_SIZE - addr)
         frame = _make_read_frame(addr, return_data_len)
 
-        # DEBUG
-        LOG.debug("Frame=" + util.hexprint(frame))
-
         # Sending the read request
         th_uv88._rawsend(radio, frame)
 
@@ -234,13 +220,9 @@ def _download(radio):
          Packet length is calculated as 512*2+13 to prevent data field loss.
         """
         d = _rawrecv(radio)
-
-        LOG.debug("Response Data= " + util.hexprint(d))
-
-        if not d.startswith(b"\xFE\xFE\xEF\xEE\xE4"):
-            LOG.warning("Incorrect start")
-        if not d.endswith(b"\xFD"):
-            LOG.warning("Incorrect end")
+        if (not d.startswith(b"\xFE\xFE\xEF\xEE\xE4")
+           or not d.endswith(b"\xFD")):
+            raise errors.RadioError("Error reading from radio")
         # Aggregate the data
         decoded_data = _decode_data(d[11:-1])
         data += decoded_data[0:-1]
@@ -248,7 +230,6 @@ def _download(radio):
         status.cur = addr // BLOCK_SIZE
         status.msg = "Cloning from radio..."
         radio.status_fn(status)
-    th_uv88._exit_program_mode(radio)
     return data
 
 
@@ -273,15 +254,12 @@ def _upload(radio):
         data = write_data[addr:addr + BLOCK_SIZE]
 
         frame = _make_write_frame(addr, BLOCK_SIZE, data)
-        LOG.warning("Frame:%s:" % util.hexprint(frame))
         th_uv88._rawsend(radio, frame)
 
         ack = _rawrecv(radio, 8)
-        LOG.debug("Response Data= " + util.hexprint(ack))
 
         if not ack.startswith(b"\xFE\xFE\xEF\xEE\xE6\x80\x80\xFD"):
             LOG.warning("Unexpected response")
-            th_uv88._exit_program_mode(radio)
             msg = "Bad ack writing block 0x%04x" % addr
             raise errors.RadioError(msg)
 
@@ -289,7 +267,6 @@ def _upload(radio):
         status.cur = addr
         status.msg = "Cloning to radio..."
         radio.status_fn(status)
-    th_uv88._exit_program_mode(radio)
 
 
 def _encode_data(byte_data_backup):
@@ -347,14 +324,14 @@ def _decode_data(byte_data):
     return bytes(decoded_data)
 
 
-def lrc_cal(lrc_init_value: int, auch_msg: bytes) -> bytes:
+def lrc_cal(lrc_init_value: int, data: bytes) -> bytes:
     """
     Calculate LRC checksum byte for serial communication frame.
     1. Sum all bytes.
     2. Subtract the total sum from the initial LRC seed value.
     3. Take modulo 256 to get an unsigned 8-bit result.
     """
-    lrc_value = (lrc_init_value - sum(auch_msg)) % 256
+    lrc_value = (lrc_init_value - sum(data)) % 256
     return struct.pack('B', lrc_value)
 
 
@@ -393,6 +370,8 @@ class RA89R(th_uv88.THUV88Radio):
             LOG.exception('Unexpected error during download')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
+        finally:
+            th_uv88._exit_program_mode(self)
         self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
@@ -409,6 +388,8 @@ class RA89R(th_uv88.THUV88Radio):
             LOG.exception('Unexpected error during upload')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
+        finally:
+            th_uv88._exit_program_mode(self)
 
     def get_memory(self, number):
         # radio first channel is 1, mem map is base 0
@@ -432,10 +413,10 @@ class RA89R(th_uv88.THUV88Radio):
             _mem = self._memobj.chan_mem[number - 1]
             _name = self._memobj.chan_name[number - 1]
             # Determine if channel is empty
-            if th_uv88._do_map(number, 2, self._memobj.chan_avail.bitmap) == 0:
+            if self._memobj.chan_avail.bitmap[number - 1] == 0:
                 mem.empty = True
                 return mem
-            if th_uv88._do_map(number, 2, self._memobj.chan_skip.bitmap) > 0:
+            if self._memobj.chan_skip.bitmap[number - 1] > 0:
                 mem.skip = ""
             else:
                 mem.skip = "S"
@@ -477,19 +458,14 @@ class RA89R(th_uv88.THUV88Radio):
             _name = self._memobj.chan_name[memory.number - 1]
 
             if memory.empty:
-                th_uv88._do_map(memory.number, 0,
-                                self._memobj.chan_avail.bitmap)
+                self._memobj.chan_avail.bitmap[memory.number - 1] = 0
                 return
-
-            th_uv88._do_map(memory.number, 1,
-                            self._memobj.chan_avail.bitmap)
+            self._memobj.chan_avail.bitmap[memory.number - 1] = 1
 
             if memory.skip == "":
-                th_uv88._do_map(memory.number, 1,
-                                self._memobj.chan_skip.bitmap)
+                self._memobj.chan_skip.bitmap[memory.number - 1] = 1
             else:
-                th_uv88._do_map(memory.number, 0,
-                                self._memobj.chan_skip.bitmap)
+                self._memobj.chan_skip.bitmap[memory.number - 1] = 0
 
         self._set_memory(memory, _mem, _name, memory.number < ch_len)
 
