@@ -308,7 +308,7 @@ def _rawrecv(radio, amount):
         msg = "Generic error reading data from radio; check your cable."
         raise errors.RadioError(msg)
 
-    if radio.MODEL != "RA89R" and len(data) != amount:
+    if len(data) != amount:
         _exit_program_mode(radio)
         msg = "Error reading from radio: not the amount of data we want."
         raise errors.RadioError(msg)
@@ -880,10 +880,8 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         _mem.power = 0 if mem.power is None else POWER_LEVELS.index(mem.power)
 
         for element in mem.extra:
-            try:
-                setattr(_mem, element.get_name(), element.value)
-            except KeyError:
-                pass
+            setattr(_mem, element.get_name(), element.value)
+
         return
 
     def get_settings(self):
@@ -971,15 +969,14 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         basic.append(rset)
 
         # Menu 17 - Scan Type
-        if self.MODEL != "RA89R":
-            if self.MODEL == "QRZ-1":
-                options = ["Time", "Carrier", "Stop"]
-            else:
-                options = ["TO", "CO", "SE"]
-            rx = RadioSettingValueList(options,
-                                       current_index=_settings.scanType)
-            rset = RadioSetting("basicsettings.scanType", "Scan Type", rx)
-            basic.append(rset)
+        if self.MODEL == "QRZ-1":
+            options = ["Time", "Carrier", "Stop"]
+        else:
+            options = ["TO", "CO", "SE"]
+        rx = RadioSettingValueList(options,
+                                   current_index=_settings.scanType)
+        rset = RadioSetting("basicsettings.scanType", "Scan Type", rx)
+        basic.append(rset)
 
         # Menu 18 - Key Lock
         if self._hasLCD:
@@ -1239,12 +1236,6 @@ class THUV88Radio(chirp_common.CloneModeRadio):
             _scanfreq = self._memobj.scanfreq
             scanb = RadioSettingGroup("scandioc", "Scan Settings")
             group.append(scanb)
-
-            options = ["TO", "CO", "SE"]
-            rx = RadioSettingValueList(options,
-                                       current_index=_settings.scanpausetype)
-            rset = RadioSetting("basicsettings.scanpausetype", "Scan Type", rx)
-            scanb.append(rset)
 
             options = ["Current CH", "Last Active CH", "Select CH"]
             rx = RadioSettingValueList(options,
