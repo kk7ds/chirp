@@ -488,6 +488,11 @@ class BaofengUVB5(chirp_common.CloneModeRadio,
         _mem.scanadd = mem.skip == ""
         _mem.highpower = mem.power == POWER_LEVELS[1]
 
+        _mem.bcl = 0
+        _mem.revfreq = 0
+        _mem.compander = 0
+        _mem.pttid = 0
+
         if _nam:
             for i in range(0, self.NAME_LENGTH):
                 try:
