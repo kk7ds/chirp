@@ -985,8 +985,9 @@ class AR8200Radio(chirp_common.LiveRadio):
             if memory.mode == 'Auto':
                 mode = 0
             elif memory.mode == 'AM':
+                ammode = memory.extra['am'] if 'am' in memory.extra else 'AM'
                 mode = [mode[1] for mode in self._MODES
-                        if mode[0] == memory.extra['am']][0]
+                        if mode[0] == ammode][0]
             else:
                 mode = [mode[1] for mode in self._MODES
                         if mode[0] == memory.mode][0]
@@ -1037,8 +1038,9 @@ class AR8200Radio(chirp_common.LiveRadio):
             if memory.mode == 'Auto':
                 mode = 0
             elif memory.mode == 'AM':
+                ammode = memory.extra['am'] if 'am' in memory.extra else 'AM'
                 mode = [mode[1] for mode in self._MODES
-                        if mode[0] == memory.extra['am']][0]
+                        if mode[0] == ammode][0]
             else:
                 mode = [mode[1] for mode in self._MODES
                         if mode[0] == memory.mode][0]
@@ -1118,8 +1120,9 @@ class AR8200Radio(chirp_common.LiveRadio):
             if memory.mode == 'Auto':
                 mode = 0
             elif memory.mode == 'AM':
+                ammode = memory.extra['am'] if 'am' in memory.extra else 'AM'
                 mode = [mode[1] for mode in self._MODES
-                        if mode[0] == memory.extra['am']][0]
+                        if mode[0] == ammode][0]
             else:
                 mode = [mode[1] for mode in self._MODES
                         if mode[0] == memory.mode][0]
