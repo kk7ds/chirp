@@ -226,9 +226,19 @@ def main(args=None):
         if '://' in options.serial:
             s = serial.serial_for_url(options.serial, do_not_open=True)
             s.timeout = 0.5
+            s.rtscts = rclass.HARDWARE_FLOW
+            s.rts = rclass.WANTS_RTS
+            s.dtr = rclass.WANTS_DTR
+            s.baudrate = rclass.BAUD_RATE
             s.open()
         else:
-            s = serial.Serial(port=options.serial, timeout=0.5)
+            s = serial.Serial(
+                port=options.serial,
+                baudrate=rclass.BAUD_RATE,
+                rtscts=rclass.HARDWARE_FLOW,
+                timeout=0.5)
+            s.rts = rclass.WANTS_RTS
+            s.dtr = rclass.WANTS_DTR
 
     radio = rclass(s)
 
@@ -383,7 +393,8 @@ def main(args=None):
             radio.save_mmap(options.mmap)
         except Exception as e:
             LOG.exception(e)
-        sys.exit(1)
+            sys.exit(1)
+        sys.exit(0)
 
     if options.upload_mmap:
         if not issubclass(rclass, chirp_common.CloneModeRadio):
@@ -398,7 +409,8 @@ def main(args=None):
             print("Upload successful")
         except Exception as e:
             LOG.exception(e)
-        sys.exit(1)
+            sys.exit(1)
+        sys.exit(0)
 
     if options.mmap and isinstance(radio, chirp_common.CloneModeRadio):
         radio.save_mmap(options.mmap)
