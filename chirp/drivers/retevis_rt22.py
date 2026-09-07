@@ -519,7 +519,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
             "Sets how strong a received signal must be before the speaker "
             "unmutes. 0 leaves the squelch open so you hear noise all the "
             "time, higher values reject more weak signals and noise. Raise "
-            "this value if the radio keeps opening on interference, lower "
+            "this value if the speaker keeps unmuting on interference, lower "
             "it if distant stations are being cut off.")
         basic.append(rs)
 
@@ -538,9 +538,8 @@ class RT22Radio(chirp_common.CloneModeRadio):
                           RadioSettingValueList(
                               VOICE_LIST, current_index=_settings.voice))
         rs.set_doc(
-            "Announces the channel number out loud in the selected language "
-            "each time you change channel. Useful on a radio without a "
-            "display. Off silences the announcements.")
+            "Selects the language for spoken radio-operation prompts, or "
+            "disables those prompts.")
         basic.append(rs)
 
         rs = RadioSetting("pf2key", "PF2 Key",
@@ -568,7 +567,7 @@ class RT22Radio(chirp_common.CloneModeRadio):
         rs.set_doc(
             "Sets the VOX sensitivity. Too sensitive a setting keys the "
             "transmitter on the noise around the radio, too insensitive a "
-            "setting fails to pick up your voice. OFF disables VOX.")
+            "setting fails to pick up your voice.")
         basic.append(rs)
 
         rs = RadioSetting("voxdelay", "VOX Delay Time (Old | New)",
@@ -584,10 +583,11 @@ class RT22Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("save", "Battery Save",
                           RadioSettingValueBoolean(_settings.save))
         rs.set_doc(
-            "Cuts standby power consumption by dozing the receiver once no "
-            "signal has been received for a few seconds. It considerably "
-            "extends battery life, at the cost of occasionally clipping the "
-            "first moment of an incoming transmission.")
+            "Cuts standby power consumption by switching the receiver off and "
+            "on in a repeating cycle once no signal has been received for a "
+            "few seconds. It considerably extends battery life, at the cost "
+            "of occasionally clipping the first moment of an incoming "
+            "transmission.")
         basic.append(rs)
 
         rs = RadioSetting("beep", "Beep",
