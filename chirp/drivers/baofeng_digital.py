@@ -358,7 +358,9 @@ class BaofengDigital(chirp_common.CloneModeRadio,
 
         rs = RadioSetting("bcl", "BCL",
                           RadioSettingValueBoolean(bcl))
-        rs.set_doc('Busy channel lockout.')
+        rs.set_doc('Prevents transmitting on a channel that is already in '
+                   'use. Pressing PTT on a busy channel sounds an alert '
+                   'tone instead of keying the transmitter.')
         mem.extra.append(rs)
 
         rs = RadioSetting("encryption_key", "Encryption key",

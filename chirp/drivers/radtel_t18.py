@@ -564,9 +564,9 @@ class T18Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("bcl", "Busy Channel Lockout",
                           RadioSettingValueBoolean(not _mem.bcl))
         rs.set_doc(
-            "Prevents transmitting on this channel while another station is "
-            "already using it. Pressing PTT on a busy channel sounds an "
-            "alert tone instead of keying the transmitter.")
+            "Prevents transmitting on a channel that is already in use. "
+            "Pressing PTT on a busy channel sounds an alert tone instead of "
+            "keying the transmitter.")
         mem.extra.append(rs)
         if self.MODEL != "RB18" and self.MODEL != "RB618" and \
                 self.MODEL != "FRS-B1" and self.MODEL != "BF-V8A" and \
@@ -738,7 +738,7 @@ class T18Radio(chirp_common.CloneModeRadio):
             "Sets how strong a received signal must be before the speaker "
             "unmutes. 0 leaves the squelch open so you hear noise all the "
             "time, higher values reject more weak signals and noise. Raise "
-            "this value if the radio keeps opening on interference, lower "
+            "this value if the speaker keeps unmuting on interference, lower "
             "it if distant stations are being cut off.")
         basic.append(rs)
 
@@ -796,8 +796,8 @@ class T18Radio(chirp_common.CloneModeRadio):
                               RadioSettingValueBoolean(_settings2.voicesw))
             rs.set_doc(
                 "Announces the channel number and other operations out loud "
-                "as you use the radio. Useful on a radio without a display, "
-                "but it can be intrusive in quiet surroundings.")
+                "as you use the radio. It can be intrusive in quiet "
+                "surroundings.")
             basic.append(rs)
         elif self.MODEL == "RT15":
             rs = RadioSetting("voiceprompt", "Voice prompts",
@@ -816,10 +816,11 @@ class T18Radio(chirp_common.CloneModeRadio):
         rs = RadioSetting("batterysaver", "Battery saver",
                           RadioSettingValueBoolean(_settings.batterysaver))
         rs.set_doc(
-            "Cuts standby power consumption by dozing the receiver once no "
-            "signal has been received for a few seconds. It considerably "
-            "extends battery life, at the cost of occasionally clipping the "
-            "first moment of an incoming transmission.")
+            "Cuts standby power consumption by switching the receiver off and "
+            "on in a repeating cycle once no signal has been received for a "
+            "few seconds. It considerably extends battery life, at the cost "
+            "of occasionally clipping the first moment of an incoming "
+            "transmission.")
         basic.append(rs)
 
         if self.MODEL not in ["RB29",
@@ -1085,10 +1086,9 @@ class T18Radio(chirp_common.CloneModeRadio):
                               RadioSettingValueInteger(
                                   1, 5, _settings2.voxgain))
             rs.set_doc(
-                "Sets the VOX sensitivity, on a scale of 1 to 5. Too "
-                "sensitive a setting keys the transmitter on the noise "
-                "around the radio, too insensitive a setting fails to pick "
-                "up your voice. Only has an effect when VOX is enabled.")
+                "Sets the VOX sensitivity. Too sensitive a setting keys the "
+                "transmitter on the noise around the radio, too insensitive "
+                "a setting fails to pick up your voice.")
             basic.append(rs)
 
         if self.MODEL == "RB29" or self.MODEL == "RB629":

@@ -1028,9 +1028,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         rs = RadioSetting("bcl", "BCL",
                           RadioSettingValueBoolean(_mem.bcl))
         rs.set_doc(
-            "Busy Channel Lockout. Prevents transmitting on this channel "
-            "while the radio is receiving a signal, even when a different "
-            "CTCSS tone or DCS code keeps that signal muted.")
+            "Prevents transmitting on a channel that is already in use. "
+            "Pressing PTT on a busy channel sounds an alert tone instead of "
+            "keying the transmitter.")
         mem.extra.append(rs)
 
         rs = RadioSetting("pttid", "PTT ID",
@@ -1213,28 +1213,30 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                           RadioSettingValueInteger(0, 9, _settings.squelch))
         rs.set_doc(
             "Sets how strong a received signal must be before the speaker "
-            "unmutes. 0 leaves the squelch open; higher values reject more "
-            "weak signals and noise. The manual recommends 5 as a starting "
-            "point.")
+            "unmutes. 0 leaves the squelch open so you hear noise all the "
+            "time, higher values reject more weak signals and noise. Raise "
+            "this value if the speaker keeps unmuting on interference, lower "
+            "it if distant stations are being cut off.")
         basic.append(rs)
 
         rs = RadioSetting("save", "Battery Saver",
                           RadioSettingValueList(
                               SAVE_LIST, current_index=_settings.save))
         rs.set_doc(
-            "Reduces standby battery use by periodically putting the "
-            "receiver to sleep. Higher ratios save more power, but may "
-            "delay reception of the beginning of a transmission.")
+            "Cuts standby power consumption by switching the receiver off and "
+            "on in a repeating cycle once no signal has been received for a "
+            "few seconds. It considerably extends battery life, at the cost "
+            "of occasionally clipping the first moment of an incoming "
+            "transmission.")
         basic.append(rs)
 
         rs = RadioSetting("vox", "VOX Sensitivity",
                           RadioSettingValueList(
                               VOX_LIST, current_index=_settings.vox))
         rs.set_doc(
-            "Allows voice-operated transmission without pressing PTT. "
-            "Lower numbered levels are more sensitive; choose a level that "
-            "responds to speech without being triggered by background "
-            "noise, or select OFF to disable VOX.")
+            "Sets the VOX sensitivity. Too sensitive a setting keys the "
+            "transmitter on the noise around the radio, too insensitive a "
+            "setting fails to pick up your voice.")
         advanced.append(rs)
 
         if self.MODEL == "UV-6":
@@ -1244,9 +1246,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
             rs = RadioSetting("autolk", "Vox",
                               RadioSettingValueBoolean(_settings.autolk))
             rs.set_doc(
-                "Enables voice-operated transmission. When "
-                "enabled, speaking into the microphone can start "
-                "transmission without pressing PTT.")
+                "Voice operated transmit. The radio starts transmitting "
+                "when you speak towards the microphone, so hands-free "
+                "conversation is possible without pressing PTT.")
             advanced.append(rs)
 
         if self.MODEL != "UV-6":
@@ -1286,9 +1288,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
                               RadioSettingValueList(
                                   TDRAB_LIST, current_index=_settings.tdrab))
             rs.set_doc(
-                "Selects A or B as the transmit side while Dual Watch is "
-                "enabled. Off leaves transmit selection under the radio's "
-                "normal Dual Watch behavior.")
+                "Selects which side has transmit priority while Dual Watch "
+                "is enabled.")
             advanced.append(rs)
 
         if self.MODEL == "UV-6":
@@ -1313,16 +1314,18 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         rs = RadioSetting("beep", "Beep",
                           RadioSettingValueBoolean(_settings.beep))
         rs.set_doc(
-            "Enables the audible confirmation beep for keypad presses.")
+            "Sounds a short confirmation tone as you operate the radio. "
+            "Turn it off when the radio has to be used discreetly.")
         basic.append(rs)
 
         rs = RadioSetting("timeout", "Timeout Timer",
                           RadioSettingValueList(
                               TIMEOUT_LIST, current_index=_settings.timeout))
         rs.set_doc(
-            "Limits the length of one continuous transmission. When the "
-            "selected time expires, the radio stops transmitting to help "
-            "prevent overheating and an accidentally stuck transmitter.")
+            "Limits how long a single transmission may last. When the time "
+            "runs out the radio stops transmitting until PTT is released, "
+            "which prevents overheating and stops a stuck PTT from blocking "
+            "the channel for everyone else.")
         basic.append(rs)
 
         if ((self._is_orig() and self._my_version() < 251) or
@@ -1330,7 +1333,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
             rs = RadioSetting("voice", "Voice",
                               RadioSettingValueBoolean(_settings.voice))
             rs.set_doc(
-                "Enables or disables spoken prompts for radio operations.")
+                "Announces the channel number and other operations out loud "
+                "as you use the radio. It can be intrusive in quiet "
+                "surroundings.")
             advanced.append(rs)
         else:
             rs = RadioSetting("voice", "Voice",
@@ -1372,9 +1377,9 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         rs = RadioSetting("bcl", "Busy Channel Lockout",
                           RadioSettingValueBoolean(_settings.bcl))
         rs.set_doc(
-            "Prevents transmitting while the radio is receiving a signal. "
-            "This helps avoid interrupting other users whose signal is "
-            "muted by your selected CTCSS tone or DCS code.")
+            "Prevents transmitting on a channel that is already in use. "
+            "Pressing PTT on a busy channel sounds an alert tone instead of "
+            "keying the transmitter.")
         advanced.append(rs)
 
         if self.MODEL != "UV-6":
