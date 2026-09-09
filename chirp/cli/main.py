@@ -381,9 +381,11 @@ def main(args=None):
         try:
             radio.sync_in()
             radio.save_mmap(options.mmap)
+            LOG.info("Download successful: %s", options.mmap)
+            sys.exit(0)
         except Exception as e:
             LOG.exception(e)
-        sys.exit(1)
+            sys.exit(1)
 
     if options.upload_mmap:
         if not issubclass(rclass, chirp_common.CloneModeRadio):
@@ -396,9 +398,10 @@ def main(args=None):
             radio.load_mmap(options.mmap)
             radio.sync_out()
             print("Upload successful")
+            sys.exit(0)
         except Exception as e:
             LOG.exception(e)
-        sys.exit(1)
+            sys.exit(1)
 
     if options.mmap and isinstance(radio, chirp_common.CloneModeRadio):
         radio.save_mmap(options.mmap)
