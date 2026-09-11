@@ -34,8 +34,10 @@ from chirp.settings import RadioSetting
 from chirp.settings import RadioSettingGroup
 from chirp.settings import RadioSettings
 from chirp.settings import RadioSettingValueBoolean
+from chirp.settings import RadioSettingValueFloat
 from chirp.settings import RadioSettingValueInteger
 from chirp.settings import RadioSettingValueList
+from chirp.settings import RadioSettingValueMap
 from chirp.settings import RadioSettingValueString
 
 LOG = logging.getLogger(__name__)
@@ -247,21 +249,152 @@ MEM_FORMAT = YFREQ_FORMAT + """
 #seekto 0x0000;
 u8 ident[6];
 
+#seekto 0x0081;
+u8 unknown_81_hi:2,
+   fm_bandwidth_a:1,
+   rx_am_a:1,
+   rpt_shift_a:4;
+
+#seekto 0x0085;
+u8 vfo_tone_a:4,
+   vfo_step_a:4;
+
+#seekto 0x008C;
+u16 rpt_shift_freq_a;
+
+#seekto 0x0091;
+u8 unknown_91_hi:2,
+   fm_bandwidth_b:1,
+   rx_am_b:1,
+   rpt_shift_b:4;
+
+#seekto 0x0095;
+u8 vfo_tone_b:4,
+   vfo_step_b:4;
+
+#seekto 0x009C;
+u16 rpt_shift_freq_b;
+
+#seekto 0x009A;
+u8 clock_type_b:1,
+   unknown_9a:7;
+
 #seekto 0x00A1;
 u8 unit;
+
+#seekto 0x00A4;
+u8 apo;
 
 #seekto 0x00A8;
 u8 tz_west:1,
    tz_mag:7;
 
+#seekto 0x00AA;
+u8 tot;
+
+#seekto 0x00AD;
+u8 display_mode;
+
+#seekto 0x00AF;
+u8 gps_datum;
+
+#seekto 0x00B5;
+u8 gps_log;
+u8 vox;
+u8 vox_delay;
+u8 recording_band;
+
+#seekto 0x00E3;
+u8 unknown_e3_hi:2,
+   rx_coverage_a:1,
+   rx_auto_a:1,
+   step_auto_a:1,
+   unknown_e3_2:1,
+   rx_auto_menu_a:1,
+   unknown_e3_lo:1;
+u8 unknown_e4_hi:5,
+   rpt_ars_a:1,
+   unknown_e4_lo:2;
+
+#seekto 0x00E5;
+u8 unknown_e5_hi:2,
+   band_scope:1,
+   unknown_e5_lo:5;
+
+#seekto 0x00E8;
+u8 display_info:1,
+   unknown_e8_hi:2,
+   standby_beep_off:1,
+   unknown_e8_3:1,
+   target_location:1,
+   digital_vw:1,
+   unknown_e8_lo:1;
+u8 unknown_e9_hi:6,
+   sub_band_mute:2;
+u8 unknown_ea_hi:2,
+   unknown_ea_5:1,
+   unknown_ea_4:1,
+   recording_mic:1,
+   unknown_ea_lo:3;
+
+#seekto 0x00EB;
+u8 location_service:1,
+   unknown_eb_6:3,
+   beep_on:1,
+   unknown_eb_lo:3;
+
+#seekto 0x00EC;
+u8 gps_device:1,
+   unknown_ec:7;
+
+#seekto 0x00EE;
+u8 ams_tx_mode;
+
+#seekto 0x00F3;
+u8 unknown_f3_hi:2,
+   rx_coverage_b:1,
+   rx_auto_b:1,
+   step_auto_b:1,
+   unknown_f3_2:1,
+   rx_auto_menu_b:1,
+   unknown_f3_lo:1;
+u8 unknown_f4_hi:5,
+   rpt_ars_b:1,
+   unknown_f4_lo:2;
+
+#seekto 0x00F9;
+u8 unknown_f9_hi:2,
+   unknown_f9_5:1,
+   time_12hr:1,
+   unknown_f9_3:1,
+   date_fmt:3;
+
+#seekto 0x00FA;
+u8 unknown_fa_hi:3,
+   beep_high:1,
+   unknown_fa_lo:4;
+
 #seekto 0x028F;
 u8 lcd_brightness;
+
+#seekto 0x02D6;
+u8 compass;
+
+#seekto 0x02DB;
+u8 digital_popup;
+
+#seekto 0x02DD;
+u8 mic_gain;
 
 #seekto 0x02C8;
 u8 callsign[10];
 
 #seekto 0x0508;
 u8 aprs_call[6];
+u8 aprs_ssid;
+
+#seekto 0x0534;
+u8 aprs_modem;
 
 #seekto 0x0800;
 struct {
@@ -316,6 +449,29 @@ POWER_LEVELS = [
 ]
 
 STEPS = [5.0, 6.25, 8.33, 10.0, 12.5, 15.0, 20.0, 25.0, 50.0, 100.0]
+# CONFIG 7 STEP. Nibble at 0x85/0x95 matches STEPS[]. Auto is E3/F3 bit 3
+# with nibble 0 (same as 5.0 kHz). Proven: Auto, 5.0, 6.25, 10.0, 100.0.
+# 8.33/12.5/15/20/25/50 inferred from STEPS index.
+VFO_STEP_LABELS = [
+    "AUTO",
+    "5.0 kHz",
+    "6.25 kHz",
+    "8.33 kHz",
+    "10.0 kHz",
+    "12.5 kHz",
+    "15.0 kHz",
+    "20.0 kHz",
+    "25.0 kHz",
+    "50.0 kHz",
+    "100.0 kHz",
+]
+
+
+def vfo_step_to_fields(label):
+    if label == "AUTO":
+        return 1, 0
+    return 0, VFO_STEP_LABELS.index(label) - 1
+
 
 # Duplex nibble from dumps: 0 simplex, 2 minus, 3 plus, 4 split.
 DUPLEX_FROM_RADIO = {0: "", 2: "-", 3: "+", 4: "split"}
@@ -336,8 +492,6 @@ TZ_HALF_MAX = 28
 
 def timezone_from_fields(west, mag):
     mag = int(mag)
-    if mag > TZ_HALF_MAX:
-        mag = TZ_HALF_MAX
     if int(west):
         return -mag
     return mag
@@ -361,18 +515,200 @@ def timezone_label(half_hours):
 TIMEZONE_LABELS = [
     timezone_label(h) for h in range(TZ_HALF_MIN, TZ_HALF_MAX + 1)]
 
-# DISPLAY 4 LCD BRIGHTNESS at 0x028F. Proven MIN=3, MID=5, MAX=6.
-BRIGHTNESS_FROM_RADIO = {3: "MIN", 5: "MID", 6: "MAX"}
-BRIGHTNESS_TO_RADIO = {v: k for k, v in BRIGHTNESS_FROM_RADIO.items()}
-BRIGHTNESS_LABELS = ["MIN", "MID", "MAX"]
+# CONFIG 2 DATE&TIME FORMAT at 0x00F9: date in bits 2-0, 12-hour in bit 4.
+# Proven: MMM/DD/YYYY=2 (0x22), YYYY/MMM/DD=0 (0x20),
+# DD/MMM/YYYY=4 (0x24), YYYY/DD/MMM=1 (0x21).
+DATE_FORMAT_MAP = (
+    ("YYYY/MMM/DD", 0),
+    ("YYYY/DD/MMM", 1),
+    ("MMM/DD/YYYY", 2),
+    ("DD/MMM/YYYY", 4),
+)
+TIME_FORMAT_LABELS = ["24 HOUR", "12 HOUR"]
+# CONFIG 9 CLOCK TYPE at 0x009A bit 7. Proven A=0, B=1.
+CLOCK_TYPE_LABELS = ["A", "B"]
 
+FM_BANDWIDTH_LABELS = ["WIDE", "NARROW"]
+# MODE is per band (A=0x0081/0x00E3, B=0x0091/0x00F3). DIGITAL is global.
+# FM bandwidth = bit5 of 81/91. RX MODE Auto = bit4 of E3/F3; AM = bit4
+# of 81/91; FM = both 0. E3/F3 bit1 is "Auto listed in the radio menu"
+# (writes set it).
+RX_MODE_LABELS = ["AUTO", "FM", "AM"]
+# TX/RX DIGITAL 4 STANDBY BEEP at 0x00E8 bit4 (1=Off).
+# DIGITAL VW at 0x00E8 bit1. LOCATION SERVICE at 0x00EB bit7 (1=ON).
+STANDBY_BEEP_LABELS = ["ON", "OFF"]
+ON_Off_LABELS = ["OFF", "ON"]
+# DIGITAL POPUP at 0x02DB. Proven Off=0 .. 60sec=8, Continue=0xFF.
+# Default 10sec=5.
+DIGITAL_POPUP_MAP = (
+    ("OFF", 0),
+    ("2 SEC", 1),
+    ("4 SEC", 2),
+    ("6 SEC", 3),
+    ("8 SEC", 4),
+    ("10 SEC", 5),
+    ("20 SEC", 6),
+    ("30 SEC", 7),
+    ("60 SEC", 8),
+    ("CONTINUE", 0xFF),
+)
+# TX/RX AUDIO MIC GAIN at 0x02DD. Proven MIN=0 .. Max=4. Default NORMAL=2.
+MIC_GAIN_MAP = (
+    ("MIN", 0),
+    ("LOW", 1),
+    ("NORMAL", 2),
+    ("HIGH", 3),
+    ("MAX", 4),
+)
+# SUB BAND MUTE at 0x00E9 bits 1-0. Proven ON=0, Off=3 (global).
+SUB_BAND_MUTE_MAP = (("ON", 0), ("OFF", 3))
+# VOX at 0x00B6. Proven Off=0, LOW=1, HIGH=2.
+VOX_LABELS = ["OFF", "LOW", "HIGH"]
+# VOX DELAY at 0x00B7. Proven 1.0s=1 .. 3.0s=5. Baseline 0 inferred as 0.5s.
+VOX_DELAY_MAP = (
+    ("0.5 SEC", 0),
+    ("1.0 SEC", 1),
+    ("1.5 SEC", 2),
+    ("2.0 SEC", 3),
+    ("2.5 SEC", 4),
+    ("3.0 SEC", 5),
+)
+# RECORDING BAND at 0x00B8. Proven A=1, B=2, A+B=3.
+RECORDING_BAND_MAP = (("A", 1), ("B", 2), ("A+B", 3))
+
+# TX/RX DIGITAL AMS TX MODE at 0x00EE (global).
+# Proven: Auto=0, TX FM FIXED=1, TX DN FIXED=2.
+AMS_TX_MODE_LABELS = ["AUTO", "TX FM Fixed", "TX DN Fixed"]
+
+# CONFIG 8 BEEP: Off / LOW / HIGH as two flags.
+# Proven: enable = 0x00EB bit3, HIGH = 0x00FA bit4. Off leaves volume.
+BEEP_LABELS = ["OFF", "LOW", "HIGH"]
+
+
+def beep_from_fields(beep_on, beep_high):
+    if not int(beep_on):
+        return "OFF"
+    if int(beep_high):
+        return "HIGH"
+    return "LOW"
+
+
+def beep_to_fields(label):
+    if label == "OFF":
+        return 0, None
+    if label == "HIGH":
+        return 1, 1
+    return 1, 0
+
+
+def rx_mode_from_fields(rx_auto, rx_am):
+    if int(rx_auto):
+        return "AUTO"
+    if int(rx_am):
+        return "AM"
+    return "FM"
+
+
+def rx_mode_to_fields(label):
+    if label == "AUTO":
+        return 1, 0
+    if label == "AM":
+        return 0, 1
+    return 0, 0
+
+
+# DISPLAY 1 TARGET LOCATION at 0x00E8 bit 2. Proven Compass=0, Numeric=1.
+TARGET_LOCATION_LABELS = ["COMPASS", "NUMERIC"]
+# DISPLAY 2 COMPASS at 0x02D6. Proven North Up=0, Heading Up=1.
+COMPASS_LABELS = ["NORTH UP", "HEADING UP"]
+# DISPLAY 3 BAND SCOPE at 0x00E5 bit 5. Proven Wide=0, Narrow=1.
+BAND_SCOPE_LABELS = ["WIDE", "NARROW"]
+# GPS DATUM at 0x00AF. Proven WGS-84=0x15, Tokyo Mean=0xB2.
+GPS_DATUM_MAP = (("WGS-84", 0x15), ("TOKYO MEAN", 0xB2))
+# GPS DEVICE at 0x00EC bit 7. Proven Internal=0, External=1.
+GPS_DEVICE_LABELS = ["INTERNAL", "EXTERNAL"]
+# CONFIG 17 GPS LOG at 0x00B5.
+# Proven: Off=0, 1s=1, 2s=2, 5s=3, 10s=4, 30s=5, 60s=6. Default Off.
+GPS_LOG_MAP = (
+    ("OFF", 0),
+    ("1 SEC", 1),
+    ("2 SEC", 2),
+    ("5 SEC", 3),
+    ("10 SEC", 4),
+    ("30 SEC", 5),
+    ("60 SEC", 6),
+)
+# CONFIG 11 RX COVERAGE at 0x00E3/0x00F3 bit 5 (per band).
+# Proven: NORMAL=0, Wide=1 (factory).
+RX_COVERAGE_LABELS = ["NORMAL", "WIDE"]
+# CONFIG 14 TOT at 0x00AA. Factory 5 min.
+# Proven: Off=0, 5min=1, 10min=2, 15min=3, 20min=4, 30min=5,
+# 1min=6, 2min=7, 3min=8.
+TOT_MAP = (
+    ("OFF", 0),
+    ("1 MIN", 6),
+    ("2 MIN", 7),
+    ("3 MIN", 8),
+    ("5 MIN", 1),
+    ("10 MIN", 2),
+    ("15 MIN", 3),
+    ("20 MIN", 4),
+    ("30 MIN", 5),
+)
+# CONFIG 13 APO at 0x00A4, 0.5 hour units. Factory OFF=0.
+# Proven: OFF=0, 0.5h=1, 1.0h=2, 1.5h=3, 2.0h=4, 3.0h=6, 4.0h=8,
+# 12.0h=24. Other 0.5h steps inferred as n = hours*2.
+APO_MAP = (("OFF", 0),) + tuple(
+    ("%.1f HOUR" % (n / 2.0), n) for n in range(1, 25))
+# CONFIG RPT ARS at 0x00E4/0x00F4 bit 2 (per band). Proven ON=1, Off=0.
+# VFO RPT SHIFT is the duplex nibble of 0x81/0x91 (0=Off, 2=-, 3=+).
+# VFO SHIFT FREQ at 0x8C/0x9C, u16 BE in 50 kHz units (manual 0.00-99.95).
+# Proven: 0.75=0x000F, 1.45=0x001D, 3.10=0x003E, 5.00=0x0064,
+# 20.00=0x0190. Factory A=0.60 (0x000C), B=5.00 (0x0064).
+RPT_SHIFT_MAP = (("OFF", 0), ("-", 2), ("+", 3))
+RPT_SHIFT_FREQ_STEP = 0.05
+RPT_SHIFT_FREQ_MAX = 99.95
+RPT_SHIFT_FREQ_UNITS_MAX = 1999  # 99.95 / 0.05
+
+
+def _rpt_shift_freq_to_radio(value):
+    units = int(round(float(value) / RPT_SHIFT_FREQ_STEP))
+    if units < 0:
+        units = 0
+    if units > RPT_SHIFT_FREQ_UNITS_MAX:
+        units = RPT_SHIFT_FREQ_UNITS_MAX
+    return units
+
+
+# DISPLAY 6 DISPLAY MODE: 0x00E8 bit 7 is the info screen (0=default)
+# dual-band display). 0x00AD selects Backtrack=0, Altitude=1,
+# Timer/Clock=2, GPS Information=3 when the info screen is on.
+DISPLAY_MODE_LABELS = [
+    "DEFAULT", "BACKTRACK", "ALTITUDE", "TIMER/CLOCK", "GPS INFORMATION"]
+
+
+def display_mode_to_fields(label):
+    if label == "DEFAULT":
+        return 0, None
+    return 1, DISPLAY_MODE_LABELS.index(label) - 1
+
+
+# DISPLAY 4 LCD BRIGHTNESS at 0x028F. Proven MIN=3, MID=5, MAX=6.
+BRIGHTNESS_MAP = (("MIN", 3), ("MID", 5), ("MAX", 6))
 # F(SETUP) CALLSIGN: 10 chars at 0x02C8, 0xFF pad.
 # APRS 21 CALLSIGN: 6 chars at 0x0508, 0xCA pad (empty is all 0xCA).
+# SSID at 0x050E. Proven AAAAAA-13 -> 0x0D; empty pad 0xCA (not SSID 0).
+# APRS 4 MODEM at 0x0534. Proven Off=0, ON=1.
 # Radio CALLSIGN allows A-Z, 0-9, hyphen, and slash.
 CALLSIGN_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/"
 APRS_CALL_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 CALLSIGN_PAD = 0xFF
 APRS_CALL_PAD = 0xCA
+APRS_SSID_MAX = 15
+# Empty SSID is pad 0xCA, distinct from SSID 0.
+APRS_SSID_MAP = (("", APRS_CALL_PAD),) + tuple(
+    (str(i), i) for i in range(APRS_SSID_MAX + 1))
+APRS_MODEM_LABELS = ["OFF", "ON"]
 
 
 def _decode_padded(raw, pad):
@@ -489,6 +825,66 @@ class FTM300Radio(yaesu_clone.YaesuCloneModeRadio,
             "press the DIAL knob.\n")
         return rp
 
+    def _append_mode(self, parent, suffix, title):
+        group = RadioSettingGroup("band_%s" % suffix, title)
+        parent.append(group)
+        group.append(MemSetting(
+            "fm_bandwidth_%s" % suffix, "FM Bandwidth",
+            RadioSettingValueList(
+                FM_BANDWIDTH_LABELS,
+                current_index=int(
+                    getattr(self._memobj, "fm_bandwidth_%s" % suffix)))))
+        rx = rx_mode_from_fields(
+            getattr(self._memobj, "rx_auto_%s" % suffix),
+            getattr(self._memobj, "rx_am_%s" % suffix))
+        group.append(RadioSetting(
+            "rx_mode_%s" % suffix, "RX Mode",
+            RadioSettingValueList(
+                RX_MODE_LABELS, current_index=RX_MODE_LABELS.index(rx))))
+
+    def _append_repeater_settings(self, parent, suffix, title):
+        group = RadioSettingGroup("repeater_%s" % suffix, title)
+        parent.append(group)
+        group.append(MemSetting(
+            "rpt_ars_%s" % suffix, "ARS",
+            RadioSettingValueList(
+                ON_Off_LABELS,
+                current_index=int(
+                    getattr(self._memobj, "rpt_ars_%s" % suffix)))))
+        group.append(MemSetting(
+            "rpt_shift_%s" % suffix, "Shift",
+            RadioSettingValueMap(
+                RPT_SHIFT_MAP,
+                mem_val=int(
+                    getattr(self._memobj, "rpt_shift_%s" % suffix)))))
+        units = int(getattr(self._memobj, "rpt_shift_freq_%s" % suffix))
+        mhz = round(units * RPT_SHIFT_FREQ_STEP, 2)
+        group.append(RadioSetting(
+            "rpt_shift_freq_%s" % suffix, "Shift Freq",
+            RadioSettingValueFloat(
+                0.0, RPT_SHIFT_FREQ_MAX, mhz, RPT_SHIFT_FREQ_STEP, 2)))
+
+    def _append_step_settings(self, group, suffix, title):
+        if int(getattr(self._memobj, "step_auto_%s" % suffix)):
+            idx = 0
+        else:
+            idx = int(getattr(self._memobj, "vfo_step_%s" % suffix)) + 1
+        rs = RadioSetting(
+            "vfo_step_%s" % suffix, title,
+            RadioSettingValueList(VFO_STEP_LABELS, current_index=idx))
+        rs.set_doc(
+            "VFO mode only. In Memory mode the radio uses each "
+            "channel's Tuning Step.")
+        group.append(rs)
+
+    def _append_rx_coverage_settings(self, group, suffix, title):
+        group.append(MemSetting(
+            "rx_coverage_%s" % suffix, title,
+            RadioSettingValueList(
+                RX_COVERAGE_LABELS,
+                current_index=int(
+                    getattr(self._memobj, "rx_coverage_%s" % suffix)))))
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_bank = False
@@ -531,33 +927,192 @@ class FTM300Radio(yaesu_clone.YaesuCloneModeRadio,
         config = RadioSettingGroup("config", "Config")
         top.append(config)
 
-        unit = int(self._memobj.unit)
-        if unit not in (0, 1):
-            unit = 1
-        config.append(RadioSetting(
-            "unit", "Display Units",
-            RadioSettingValueList(UNIT_LABELS, current_index=unit)))
-
         half = timezone_from_fields(
             self._memobj.tz_west, self._memobj.tz_mag)
-        label = timezone_label(half)
-        try:
-            idx = TIMEZONE_LABELS.index(label)
-        except ValueError:
-            idx = TIMEZONE_LABELS.index(timezone_label(0))
+        tz_idx = half - TZ_HALF_MIN
+        if tz_idx < 0 or tz_idx >= len(TIMEZONE_LABELS):
+            tz_idx = len(TIMEZONE_LABELS)
+        # Two bitfields; applied as leftover in set_settings().
         config.append(RadioSetting(
             "timezone", "Time Zone",
-            RadioSettingValueList(TIMEZONE_LABELS, current_index=idx)))
+            RadioSettingValueList(
+                TIMEZONE_LABELS, current_index=tz_idx)))
+
+        date_time_format = RadioSettingGroup("date_time_format",
+                                             "Date & Time Format")
+        config.append(date_time_format)
+        date_time_format.append(MemSetting(
+            "date_fmt", "Date Format",
+            RadioSettingValueMap(
+                DATE_FORMAT_MAP, mem_val=int(self._memobj.date_fmt))))
+        date_time_format.append(MemSetting(
+            "time_12hr", "Time Format",
+            RadioSettingValueList(
+                TIME_FORMAT_LABELS,
+                current_index=int(self._memobj.time_12hr))))
+
+        repeater = RadioSettingGroup("repeater", "Repeater")
+        config.append(repeater)
+        self._append_repeater_settings(repeater, "a", "A Band")
+        self._append_repeater_settings(repeater, "b", "B Band")
+
+        vfo_step = RadioSettingGroup("vfo_step", "Step (VFO)")
+        vfo_step.set_doc(
+            "Tuning step in VFO mode. Auto follows the band plan. "
+            "Memory mode uses each channel's Tuning Step in the "
+            "memory editor.")
+        config.append(vfo_step)
+        self._append_step_settings(vfo_step, "a", "A Band")
+        self._append_step_settings(vfo_step, "b", "B Band")
+
+        rx_coverage = RadioSettingGroup("rx_coverage", "RX Coverage")
+        config.append(rx_coverage)
+        self._append_rx_coverage_settings(rx_coverage, "a", "A Band")
+        self._append_rx_coverage_settings(rx_coverage, "b", "B Band")
+
+        beep = beep_from_fields(
+            self._memobj.beep_on, self._memobj.beep_high)
+        config.append(RadioSetting(
+            "beep", "Beep",
+            RadioSettingValueList(
+                BEEP_LABELS, current_index=BEEP_LABELS.index(beep))))
+
+        config.append(MemSetting(
+            "clock_type_b", "Clock Type",
+            RadioSettingValueList(
+                CLOCK_TYPE_LABELS,
+                current_index=int(self._memobj.clock_type_b))))
+
+        config.append(MemSetting(
+            "unit", "Display Units",
+            RadioSettingValueList(
+                UNIT_LABELS, current_index=int(self._memobj.unit))))
+
+        config.append(MemSetting(
+            "apo", "APO",
+            RadioSettingValueMap(APO_MAP, mem_val=int(self._memobj.apo))))
+
+        config.append(MemSetting(
+            "tot", "TOT",
+            RadioSettingValueMap(TOT_MAP, mem_val=int(self._memobj.tot))))
+
+        config.append(MemSetting(
+            "gps_datum", "GPS Datum",
+            RadioSettingValueMap(
+                GPS_DATUM_MAP, mem_val=int(self._memobj.gps_datum))))
+        config.append(MemSetting(
+            "gps_device", "GPS Device",
+            RadioSettingValueList(
+                GPS_DEVICE_LABELS,
+                current_index=int(self._memobj.gps_device))))
+        config.append(MemSetting(
+            "gps_log", "GPS Log",
+            RadioSettingValueMap(
+                GPS_LOG_MAP, mem_val=int(self._memobj.gps_log))))
+
+        txrx = RadioSettingGroup("txrx", "TX/RX")
+        top.append(txrx)
+
+        mode = RadioSettingGroup("mode", "Mode")
+        self._append_mode(mode, "a", "A Band")
+        self._append_mode(mode, "b", "B Band")
+        txrx.append(mode)
+
+        digital = RadioSettingGroup("digital", "Digital")
+        txrx.append(digital)
+        digital.append(MemSetting(
+            "ams_tx_mode", "AMS TX Mode",
+            RadioSettingValueList(
+                AMS_TX_MODE_LABELS,
+                current_index=int(self._memobj.ams_tx_mode))))
+        digital.append(MemSetting(
+            "digital_popup", "Digital Popup",
+            RadioSettingValueMap(
+                DIGITAL_POPUP_MAP,
+                mem_val=int(self._memobj.digital_popup))))
+        digital.append(MemSetting(
+            "location_service", "Location Service",
+            RadioSettingValueList(
+                ON_Off_LABELS,
+                current_index=int(self._memobj.location_service))))
+        digital.append(MemSetting(
+            "standby_beep_off", "Standby Beep",
+            RadioSettingValueList(
+                STANDBY_BEEP_LABELS,
+                current_index=int(self._memobj.standby_beep_off))))
+        digital.append(MemSetting(
+            "digital_vw", "Digital VW",
+            RadioSettingValueList(
+                ON_Off_LABELS,
+                current_index=int(self._memobj.digital_vw))))
+
+        audio = RadioSettingGroup("audio", "Audio")
+        txrx.append(audio)
+        audio.append(MemSetting(
+            "sub_band_mute", "Sub Band Mute",
+            RadioSettingValueMap(
+                SUB_BAND_MUTE_MAP,
+                mem_val=int(self._memobj.sub_band_mute))))
+        audio.append(MemSetting(
+            "mic_gain", "Mic Gain",
+            RadioSettingValueMap(
+                MIC_GAIN_MAP, mem_val=int(self._memobj.mic_gain))))
+
+        vox = RadioSettingGroup("vox", "VOX")
+        audio.append(vox)
+
+        vox.append(MemSetting(
+            "vox", "VOX",
+            RadioSettingValueList(
+                VOX_LABELS, current_index=int(self._memobj.vox))))
+        vox.append(MemSetting(
+            "vox_delay", "VOX Delay",
+            RadioSettingValueMap(
+                VOX_DELAY_MAP, mem_val=int(self._memobj.vox_delay))))
+
+        recording = RadioSettingGroup("recording", "Recording")
+        audio.append(recording)
+
+        recording.append(MemSetting(
+            "recording_band", "Recording Band",
+            RadioSettingValueMap(
+                RECORDING_BAND_MAP,
+                mem_val=int(self._memobj.recording_band))))
+        recording.append(MemSetting(
+            "recording_mic", "Recording Mic",
+            RadioSettingValueList(
+                ON_Off_LABELS,
+                current_index=int(self._memobj.recording_mic))))
 
         display = RadioSettingGroup("display", "Display")
         top.append(display)
-        bright = BRIGHTNESS_FROM_RADIO.get(
-            int(self._memobj.lcd_brightness), "MID")
-        display.append(RadioSetting(
-            "lcd_brightness", "LCD Brightness",
+        display.append(MemSetting(
+            "target_location", "Target Location",
             RadioSettingValueList(
-                BRIGHTNESS_LABELS,
-                current_index=BRIGHTNESS_LABELS.index(bright))))
+                TARGET_LOCATION_LABELS,
+                current_index=int(self._memobj.target_location))))
+        display.append(MemSetting(
+            "compass", "COMPASS",
+            RadioSettingValueList(
+                COMPASS_LABELS, current_index=int(self._memobj.compass))))
+        display.append(MemSetting(
+            "band_scope", "Band Scope",
+            RadioSettingValueList(
+                BAND_SCOPE_LABELS,
+                current_index=int(self._memobj.band_scope))))
+        display.append(MemSetting(
+            "lcd_brightness", "LCD Brightness",
+            RadioSettingValueMap(
+                BRIGHTNESS_MAP,
+                mem_val=int(self._memobj.lcd_brightness))))
+        if int(self._memobj.display_info):
+            dmode_idx = int(self._memobj.display_mode) + 1
+        else:
+            dmode_idx = 0
+        display.append(RadioSetting(
+            "display_mode", "Display Mode",
+            RadioSettingValueList(
+                DISPLAY_MODE_LABELS, current_index=dmode_idx)))
 
         ident = RadioSettingGroup("callsign", "Callsign")
         top.append(ident)
@@ -574,24 +1129,61 @@ class FTM300Radio(yaesu_clone.YaesuCloneModeRadio,
             RadioSettingValueString(
                 0, 6, self._decode_aprs_call(),
                 autopad=False, charset=APRS_CALL_CHARSET)))
+        aprs.append(MemSetting(
+            "aprs_ssid", "APRS SSID",
+            RadioSettingValueMap(
+                APRS_SSID_MAP, mem_val=int(self._memobj.aprs_ssid))))
+        aprs.append(MemSetting(
+            "aprs_modem", "APRS Modem",
+            RadioSettingValueList(
+                APRS_MODEM_LABELS,
+                current_index=int(self._memobj.aprs_modem))))
         return top
 
     def set_settings(self, settings):
-        for element in settings:
-            if not isinstance(element, RadioSetting):
-                self.set_settings(element)
-                continue
+        leftover = settings.apply_to(self._memobj)
+        for element in leftover:
             name = element.get_name()
             value = str(element.value)
-            if name == "unit":
-                self._memobj.unit = UNIT_LABELS.index(value)
-            elif name == "timezone":
+            if name == "timezone":
                 half = TIMEZONE_LABELS.index(value) + TZ_HALF_MIN
                 west, mag = timezone_to_fields(half)
                 self._memobj.tz_west = west
                 self._memobj.tz_mag = mag
-            elif name == "lcd_brightness":
-                self._memobj.lcd_brightness = BRIGHTNESS_TO_RADIO[value]
+            elif name == "beep":
+                on, high = beep_to_fields(value)
+                self._memobj.beep_on = on
+                if high is not None:
+                    self._memobj.beep_high = high
+            elif name == "display_mode":
+                info, mode = display_mode_to_fields(value)
+                self._memobj.display_info = info
+                if mode is not None:
+                    self._memobj.display_mode = mode
+            elif name == "rpt_shift_freq_a":
+                self._memobj.rpt_shift_freq_a = _rpt_shift_freq_to_radio(
+                    value)
+            elif name == "rpt_shift_freq_b":
+                self._memobj.rpt_shift_freq_b = _rpt_shift_freq_to_radio(
+                    value)
+            elif name == "vfo_step_a":
+                auto, nibble = vfo_step_to_fields(value)
+                self._memobj.step_auto_a = auto
+                self._memobj.vfo_step_a = nibble
+            elif name == "vfo_step_b":
+                auto, nibble = vfo_step_to_fields(value)
+                self._memobj.step_auto_b = auto
+                self._memobj.vfo_step_b = nibble
+            elif name == "rx_mode_a":
+                auto, am = rx_mode_to_fields(value)
+                self._memobj.rx_auto_a = auto
+                self._memobj.rx_am_a = am
+                self._memobj.rx_auto_menu_a = 1
+            elif name == "rx_mode_b":
+                auto, am = rx_mode_to_fields(value)
+                self._memobj.rx_auto_b = auto
+                self._memobj.rx_am_b = am
+                self._memobj.rx_auto_menu_b = 1
             elif name == "callsign":
                 self._encode_callsign(value)
             elif name == "aprs_call":
