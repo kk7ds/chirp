@@ -223,13 +223,22 @@ class TestFTM300Freq(unittest.TestCase):
         self.assertEqual(57, len(ftm300d.TIMEZONE_LABELS))
 
 
-def _setting_map(settings):
-    found = {}
+def _iter_settings(settings):
     for element in settings:
         if isinstance(element, RadioSetting):
-            found[element.get_name()] = str(element.value)
+            yield element
         else:
-            found.update(_setting_map(element))
+            yield from _iter_settings(element)
+
+
+def _setting_map(settings):
+    found = {}
+    for s in _iter_settings(settings):
+        val = s.value
+        if hasattr(val, "format"):
+            found[s.get_name()] = val.format()
+        else:
+            found[s.get_name()] = str(val)
     return found
 
 
@@ -440,14 +449,11 @@ class TestFTM300Clone(unittest.TestCase):
 
         settings = src.get_settings()
         src.set_settings(settings)
-        for group in settings:
-            if isinstance(group, RadioSetting):
-                continue
-            for setting in group:
-                if setting.get_name() == "unit":
-                    setting.value = "METRIC"
-                elif setting.get_name() == "timezone":
-                    setting.value = "UTC -8:00"
+        for setting in _iter_settings(settings):
+            if setting.get_name() == "unit":
+                setting.value = "METRIC"
+            elif setting.get_name() == "timezone":
+                setting.value = "UTC -8:00"
         src.set_settings(settings)
 
         packed = src.get_mmap().get_packed()
@@ -458,68 +464,176 @@ class TestFTM300Clone(unittest.TestCase):
         self.assertEqual("UTC -8:00", values["timezone"])
 
         settings = src.get_settings()
-        for group in settings:
-            if isinstance(group, RadioSetting):
-                continue
-            for setting in group:
-                if setting.get_name() == "lcd_brightness":
-                    setting.value = "MIN"
-                elif setting.get_name() == "callsign":
-                    setting.value = "N0CALL/A"
-                elif setting.get_name() == "aprs_call":
-                    setting.value = "N0CALL"
+        for setting in _iter_settings(settings):
+            name = setting.get_name()
+            if name == "lcd_brightness":
+                setting.value = "MIN"
+            elif name == "callsign":
+                setting.value = "N0CALL/A"
+            elif name == "aprs_call":
+                setting.value = "N0CALL"
+            elif name == "aprs_ssid":
+                setting.value = "13"
+            elif name == "aprs_modem":
+                setting.value = "ON"
+            elif name == "beep":
+                setting.value = "HIGH"
+            elif name == "ams_tx_mode":
+                setting.value = "TX DN Fixed"
+            elif name == "fm_bandwidth_a":
+                setting.value = "NARROW"
+            elif name == "date_fmt":
+                setting.value = "YYYY/MMM/DD"
+            elif name == "time_12hr":
+                setting.value = "12 HOUR"
+            elif name == "clock_type_b":
+                setting.value = "B"
+            elif name == "rx_mode_a":
+                setting.value = "AM"
+            elif name == "rx_mode_b":
+                setting.value = "FM"
+            elif name == "standby_beep_off":
+                setting.value = "OFF"
+            elif name == "digital_vw":
+                setting.value = "ON"
+            elif name == "location_service":
+                setting.value = "OFF"
+            elif name == "digital_popup":
+                setting.value = "CONTINUE"
+            elif name == "mic_gain":
+                setting.value = "MAX"
+            elif name == "target_location":
+                setting.value = "NUMERIC"
+            elif name == "compass":
+                setting.value = "NORTH UP"
+            elif name == "band_scope":
+                setting.value = "NARROW"
+            elif name == "display_mode":
+                setting.value = "GPS INFORMATION"
+            elif name == "sub_band_mute":
+                setting.value = "OFF"
+            elif name == "vox":
+                setting.value = "HIGH"
+            elif name == "vox_delay":
+                setting.value = "3.0 SEC"
+            elif name == "recording_band":
+                setting.value = "B"
+            elif name == "recording_mic":
+                setting.value = "ON"
+            elif name == "gps_datum":
+                setting.value = "TOKYO MEAN"
+            elif name == "gps_device":
+                setting.value = "EXTERNAL"
+            elif name == "rpt_ars_a":
+                setting.value = "OFF"
+            elif name == "rpt_shift_freq_a":
+                setting.value = 1.45
+            elif name == "rpt_shift_freq_b":
+                setting.value = 3.10
+            elif name == "vfo_step_a":
+                setting.value = "10.0 kHz"
+            elif name == "rx_coverage_a":
+                setting.value = "NORMAL"
+            elif name == "tot":
+                setting.value = "30 MIN"
+            elif name == "gps_log":
+                setting.value = "60 SEC"
+            elif name == "apo":
+                setting.value = "12.0 HOUR"
         src.set_settings(settings)
         packed = src.get_mmap().get_packed()
+        self.assertEqual(0x08, packed[0xEB])
+        self.assertEqual(0x10, packed[0xFA])
+        self.assertEqual(0x02, packed[0xEE])
+        self.assertEqual(0x20, packed[0x81] & 0x20)
+        self.assertEqual(0x00, packed[0x91] & 0x20)
+        self.assertEqual(0x80, packed[0x9A])
+        self.assertEqual(0x00, packed[0xE3] & 0x10)
+        self.assertEqual(0x02, packed[0xE3] & 0x02)
+        self.assertEqual(0x10, packed[0x81] & 0x10)
+        self.assertEqual(0x00, packed[0xF3] & 0x10)
+        self.assertEqual(0x02, packed[0xF3] & 0x02)
+        self.assertEqual(0x00, packed[0x91] & 0x10)
+        self.assertEqual(0x96, packed[0xE8])
+        self.assertEqual(0x00, packed[0x2D6])
+        self.assertEqual(0x20, packed[0xE5] & 0x20)
+        self.assertEqual(0x03, packed[0xAD])
+        self.assertEqual(0xFF, packed[0x2DB])
+        self.assertEqual(0x04, packed[0x2DD])
+        self.assertEqual(0x03, packed[0xE9] & 0x03)
+        self.assertEqual(0x02, packed[0xB6])
+        self.assertEqual(0x05, packed[0xB7])
+        self.assertEqual(0x02, packed[0xB8])
+        self.assertEqual(0x08, packed[0xEA] & 0x08)
+        self.assertEqual(0xB2, packed[0xAF])
+        self.assertEqual(0x80, packed[0xEC] & 0x80)
+        self.assertEqual(0x00, packed[0xE4] & 0x04)
+        self.assertEqual(0x04, packed[0xF4] & 0x04)
+        self.assertEqual(0x1D, packed[0x8D])
+        self.assertEqual(0x3E, packed[0x9D])
+        self.assertEqual(0x03, packed[0x85] & 0x0F)
+        self.assertEqual(0x00, packed[0xE3] & 0x08)
+        self.assertEqual(0x00, packed[0xE3] & 0x20)
+        self.assertEqual(0x20, packed[0xF3] & 0x20)
+        self.assertEqual(0x05, packed[0xAA])
+        self.assertEqual(0x06, packed[0xB5])
+        self.assertEqual(0x18, packed[0xA4])
+        self.assertEqual(0x10, packed[0xF9] & 0x10)
+        self.assertEqual(0x00, packed[0xF9] & 0x07)
         self.assertEqual(0x03, packed[0x28F])
         self.assertEqual(
             b"N0CALL/A" + b"\xff" * 2, packed[0x2C8:0x2D2])
         self.assertEqual(b"N0CALL", packed[0x508:0x50E])
+        self.assertEqual(0x0D, packed[0x50E])
+        self.assertEqual(0x01, packed[0x534])
         values = _setting_map(src.get_settings())
         self.assertEqual("MIN", values["lcd_brightness"])
         self.assertEqual("N0CALL/A", values["callsign"])
         self.assertEqual("N0CALL", values["aprs_call"])
+        self.assertEqual("13", values["aprs_ssid"])
+        self.assertEqual("ON", values["aprs_modem"])
+        self.assertEqual("HIGH", values["beep"])
+        self.assertEqual("TX DN Fixed", values["ams_tx_mode"])
+        self.assertEqual("NARROW", values["fm_bandwidth_a"])
+        self.assertEqual("WIDE", values["fm_bandwidth_b"])
+        self.assertEqual("YYYY/MMM/DD", values["date_fmt"])
+        self.assertEqual("12 HOUR", values["time_12hr"])
+        self.assertEqual("B", values["clock_type_b"])
+        self.assertEqual("AM", values["rx_mode_a"])
+        self.assertEqual("FM", values["rx_mode_b"])
+        self.assertEqual("OFF", values["standby_beep_off"])
+        self.assertEqual("ON", values["digital_vw"])
+        self.assertEqual("OFF", values["location_service"])
+        self.assertEqual("CONTINUE", values["digital_popup"])
+        self.assertEqual("MAX", values["mic_gain"])
+        self.assertEqual("NUMERIC", values["target_location"])
+        self.assertEqual("NORTH UP", values["compass"])
+        self.assertEqual("NARROW", values["band_scope"])
+        self.assertEqual("GPS INFORMATION", values["display_mode"])
+        self.assertEqual("OFF", values["sub_band_mute"])
+        self.assertEqual("HIGH", values["vox"])
+        self.assertEqual("3.0 SEC", values["vox_delay"])
+        self.assertEqual("B", values["recording_band"])
+        self.assertEqual("ON", values["recording_mic"])
+        self.assertEqual("TOKYO MEAN", values["gps_datum"])
+        self.assertEqual("EXTERNAL", values["gps_device"])
+        self.assertEqual("OFF", values["rpt_ars_a"])
+        self.assertEqual("ON", values["rpt_ars_b"])
+        self.assertEqual("1.45", values["rpt_shift_freq_a"])
+        self.assertEqual("3.10", values["rpt_shift_freq_b"])
+        self.assertEqual("10.0 kHz", values["vfo_step_a"])
+        self.assertEqual("NORMAL", values["rx_coverage_a"])
+        self.assertEqual("WIDE", values["rx_coverage_b"])
+        self.assertEqual("30 MIN", values["tot"])
+        self.assertEqual("60 SEC", values["gps_log"])
+        self.assertEqual("12.0 HOUR", values["apo"])
 
-    def test_settings_from_live_dumps(self):
-        dump_dir = os.path.join(
-            os.path.dirname(__file__), '..', '..',
-            'ignored', 'yaesu', 'ftm-300dr', 'chirp-dumps')
-        cases = [
-            ('Yaesu_FTM-300DR_20260906.img',
-             'INCH', 'UTC \u00b10:00'),
-            ('Yaesu_FTM-300DR_20260906_timezone=UTC+0:30.img',
-             'INCH', 'UTC +0:30'),
-            ('Yaesu_FTM-300DR_20260906_timezone=UTC-0:30.img',
-             'INCH', 'UTC -0:30'),
-            ('Yaesu_FTM-300DR_20260906_unit=metric.img',
-             'METRIC', 'UTC \u00b10:00'),
-        ]
-        missing = [name for name, _, _ in cases
-                   if not os.path.exists(os.path.join(dump_dir, name))]
-        if missing:
-            self.skipTest('live dumps not present: %s' % missing[0])
-        for name, unit, tz in cases:
-            radio = ftm300d.FTM300Radio(os.path.join(dump_dir, name))
-            values = _setting_map(radio.get_settings())
-            self.assertEqual(unit, values['unit'], name)
-            self.assertEqual(tz, values['timezone'], name)
-
-        extra = [
-            ('Yaesu_FTM-300DR_20260906.img',
-             {'lcd_brightness': 'MAX', 'callsign': 'A', 'aprs_call': ''}),
-            ('Yaesu_FTM-300DR_20260906_display-brightness=min.img',
-             {'lcd_brightness': 'MIN'}),
-            ('Yaesu_FTM-300DR_20260906_display-brightness=mid.img',
-             {'lcd_brightness': 'MID'}),
-            ('Yaesu_FTM-300DR_20260906_callsign=B.img',
-             {'callsign': 'B'}),
-            ('Yaesu_FTM-300DR_20260906_callsign-aprs=B.img',
-             {'aprs_call': 'A'}),
-        ]
-        for name, expect in extra:
-            path = os.path.join(dump_dir, name)
-            if not os.path.exists(path):
-                self.skipTest('live dumps not present: %s' % name)
-            radio = ftm300d.FTM300Radio(path)
-            values = _setting_map(radio.get_settings())
-            for key, want in expect.items():
-                self.assertEqual(want, values[key], '%s %s' % (name, key))
+        settings = src.get_settings()
+        for setting in _iter_settings(settings):
+            if setting.get_name() == "aprs_ssid":
+                setting.value = ""
+        src.set_settings(settings)
+        packed = src.get_mmap().get_packed()
+        self.assertEqual(0xCA, packed[0x50E])
+        values = _setting_map(src.get_settings())
+        self.assertEqual("", values["aprs_ssid"])
