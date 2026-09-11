@@ -1162,7 +1162,7 @@ class RadioFeatures:
         if self.valid_bands:
             valid = False
             for lo, hi in self.valid_bands:
-                if lo <= mem.freq < hi:
+                if lo <= mem.freq <= hi:
                     valid = True
                     break
             if not valid:
