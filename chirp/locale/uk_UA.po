@@ -1280,19 +1280,19 @@ msgstr ""
 #: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
 #: ../sources/mapy73pl.py:61
 msgid "Failed to parse result"
-msgstr ""
+msgstr "Не вдалося розібрати результат"
 
 #: ../wxui/bugreport.py:729
 msgid "Failed to send bug report:"
-msgstr ""
+msgstr "Не вдалося надіслати звіт про помилку:"
 
 #: ../wxui/radioinfo.py:47
 msgid "Features"
-msgstr ""
+msgstr "Можливості"
 
 #: ../wxui/bugreport.py:212
 msgid "File a new bug"
-msgstr ""
+msgstr "Створити нову задачу"
 
 #: ../wxui/main.py:580
 #, python-format
@@ -1301,26 +1301,24 @@ msgstr "Файл не існує: %s"
 
 #: ../wxui/main.py:1364 ../wxui/main.py:1444 ../wxui/main.py:1454
 #: ../wxui/main.py:1513 ../wxui/main.py:1878 ../wxui/main.py:1879
-#, fuzzy
 msgid "Files"
-msgstr "_Файл"
+msgstr "Файлт"
 
 #: ../wxui/bugreport.py:566
-#, fuzzy
 msgid "Files:"
-msgstr "_Файл"
+msgstr "Файли:"
 
 #: ../wxui/query_sources.py:389
 msgid "Filter"
-msgstr ""
+msgstr "Фільтр"
 
 #: ../wxui/query_sources.py:387
 msgid "Filter results with location matching this string"
-msgstr ""
+msgstr "Фільтрувати результати за розташуванням, що відповідає цьому рядку"
 
 #: ../wxui/memquery.py:270
 msgid "Filter..."
-msgstr ""
+msgstr "Фільтр..."
 
 #: ../wxui/main.py:1587
 msgid "Find"
@@ -1336,16 +1334,16 @@ msgstr "Знайти..."
 
 #: ../wxui/memquery.py:155
 msgid "Finish Float"
-msgstr ""
+msgstr "Завершіть дробове число"
 
 #: ../wxui/memquery.py:211
 msgid "Finish float value like: 146.52"
-msgstr ""
+msgstr "Завершіть дробове значення на кшталт: 146.52"
 
 #: ../wxui/common.py:342
 #, python-format
 msgid "Finished radio job %s"
-msgstr ""
+msgstr "Завершено завдання радіостанції %s"
 
 #: ../drivers/ts590.py:685
 msgid ""
@@ -1525,7 +1523,7 @@ msgstr ""
 #: ../wxui/memedit.py:238
 #, python-format
 msgid "Found empty list value for %(name)s: %(value)r"
-msgstr ""
+msgstr "Знайдено порожнє значення списку для %(name)s: %(value)r"
 
 #: ../wxui/memedit.py:350
 msgid "Frequency"
@@ -1534,59 +1532,58 @@ msgstr "Частота"
 #: ../import_logic.py:77
 #, python-format
 msgid "Frequency %s is out of supported ranges %s"
-msgstr ""
+msgstr "Частота %s виходить за межі підтримуваних діапазонів %s"
 
 #: ../wxui/memedit.py:162
 msgid "Frequency granularity in kHz"
-msgstr ""
+msgstr "Крок частоти в кГц"
 
 #: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
 #: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
 #: ../drivers/uv5r.py:2244 ../drivers/baofeng_uv17Pro.py:1297
 msgid "Frequency in this range must not be AM mode"
-msgstr ""
+msgstr "Частота в цьому діапазоні не повинна бути в режимі AM"
 
 #: ../drivers/retevis_ha1g.py:1430
 msgid "Frequency in this range not supported by firmware"
-msgstr ""
+msgstr "Частота в цьому діапазоні не підтримується прошивкою"
 
 #: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
 #: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
 #: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:2240
 #: ../drivers/baofeng_uv17Pro.py:1294
 msgid "Frequency in this range requires AM mode"
-msgstr ""
+msgstr "Частота в цьому діапазоні вимагає режиму AM"
 
 #: ../drivers/tdh8.py:2544
 msgid "Frequency outside TX bands must be duplex=off"
-msgstr ""
+msgstr "Частота поза діапазонами передавання повинна мати дуплекс=вимкнено"
 
 #: ../wxui/query_sources.py:355 ../wxui/query_sources.py:435
 #: ../wxui/query_sources.py:536
 msgid "GMRS"
-msgstr ""
+msgstr "GMRS"
 
 #: ../wxui/settingsedit.py:77
 msgid "Getting settings"
-msgstr ""
+msgstr "Отримання налаштувань"
 
 #: ../wxui/memedit.py:1408
-#, fuzzy
 msgid "Goto Memory"
-msgstr "Показати Raw пам'ять"
+msgstr "Перейти до пам'яті"
 
 #: ../wxui/memedit.py:1407
 msgid "Goto Memory:"
-msgstr ""
+msgstr "Перейти до пам'яті:"
 
 #: ../wxui/memedit.py:1354
 msgid "Goto..."
-msgstr ""
+msgstr "Перейти до..."
 
 #: ../wxui/common.py:516 ../wxui/accessibility.py:310
 #, python-format
 msgid "Group: %s"
-msgstr ""
+msgstr "Група: %s"
 
 #: ../wxui/main.py:1042
 msgid "Help"
@@ -1594,24 +1591,23 @@ msgstr "Довідка"
 
 #: ../wxui/clone.py:41
 msgid "Help Me..."
-msgstr ""
+msgstr "Допомога..."
 
 #: ../wxui/developer.py:280
 msgid "Hex"
-msgstr ""
+msgstr "Шіст."
 
 #: ../wxui/memedit.py:1363
-#, fuzzy
 msgid "Hide empty memories"
-msgstr "Перезаписати?"
+msgstr "Приховати порожню пам'ять"
 
 #: ../drivers/retevis_rt98.py:998
 msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
-msgstr ""
+msgstr "Враховувати налаштування прийомного шумозаглушення CTCSS/DCS, якщо ввімкнено, інакше — лише шумозаглушення за несучою"
 
 #: ../wxui/memedit.py:165
 msgid "Human-readable comment (not stored in radio)"
-msgstr ""
+msgstr "Коментар у зручному для читання форматі (не зберігається в радіостанції)"
 
 #: ../wxui/bugreport.py:413
 msgid "I have"
@@ -1621,7 +1617,7 @@ msgstr ""
 #: ../wxui/query_sources.py:666 ../wxui/query_sources.py:672
 #: ../wxui/query_sources.py:818 ../wxui/query_sources.py:824
 msgid "If set, sort results by distance from these coordinates"
-msgstr ""
+msgstr "Якщо встановлено, сортувати результати за відстанню від цих координат"
 
 #: ../wxui/main.py:1499
 msgid "Import"
@@ -1630,10 +1626,9 @@ msgstr "Імпорт"
 #: ../wxui/memedit.py:2522
 #, python-format
 msgid "Import %i memories"
-msgstr ""
+msgstr "Імпортувати %i пам'яті"
 
 #: ../wxui/main.py:733
-#, fuzzy
 msgid "Import from file..."
 msgstr "Імпортувати з файлу"
 
@@ -1642,13 +1637,12 @@ msgid "Import messages"
 msgstr "Повідомлення імпорту"
 
 #: ../wxui/main.py:1497
-#, fuzzy
 msgid "Import not recommended"
-msgstr "Імпорт з RFinder"
+msgstr "Імпорт не рекомендовано"
 
 #: ../wxui/query_sources.py:424
 msgid "Include Cached"
-msgstr ""
+msgstr "Включно з кешованими"
 
 #: ../wxui/bankedit.py:62
 msgid "Index"
@@ -1660,137 +1654,128 @@ msgstr "Інформація"
 
 #: ../wxui/memedit.py:1886
 msgid "Information"
-msgstr ""
+msgstr "Інформація"
 
 #: ../wxui/memedit.py:2206
-#, fuzzy
 msgid "Insert Row Above"
 msgstr "Додати рядок зверху"
 
 #: ../wxui/__init__.py:60
 msgid "Install desktop icon?"
-msgstr ""
+msgstr "Встановити іконку на робочому столі?"
 
 #: ../wxui/main.py:965
 msgid "Interact with driver"
 msgstr "Взаємодія з драйвером"
 
 #: ../wxui/clone.py:813
-#, fuzzy
 msgid "Internal driver error"
-msgstr "Внутрішня помилка"
+msgstr "Внутрішня помилка драйвера"
 
 #: ../chirp_common.py:674
 msgid "Internal driver error: Attempt to modify frozen memory; Please report this as a bug using \"Report or update a bug\" in the Help menu"
-msgstr ""
+msgstr "Внутрішня помилка драйвера: спроба змінити заблоковану пам'ять; будь ласка, повідомте про це як про помилку за допомогою пункту \"Повідомити про помилку або оновити звіт\" у меню Довідка"
 
 #: ../wxui/query_sources.py:62
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid %(value)s (use decimal degrees)"
-msgstr "Неприпустиме значення. Повинно бути цілим числом."
+msgstr "Неприпустиме значення %(value)s (використовуйте десяткові градуси)"
 
 #: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
 #: ../wxui/memedit.py:2049
-#, fuzzy
 msgid "Invalid Entry"
-msgstr "Неприпустиме значення для цього поля"
+msgstr "Неприпустиме значення"
 
 #: ../wxui/query_sources.py:151
 msgid "Invalid ZIP code"
-msgstr ""
+msgstr "Неприпустимий поштовий індекс"
 
 #: ../wxui/memedit.py:2048 ../wxui/memedit.py:3027
 #, python-format
 msgid "Invalid edit: %s"
-msgstr ""
+msgstr "Неприпустиме редагування: %s"
 
 #: ../wxui/query_sources.py:124
-#, fuzzy
 msgid "Invalid locator"
-msgstr "Неприпустиме значення для цього поля"
+msgstr "Неприпустимий локатор"
 
 #: ../wxui/main.py:1875
 msgid "Invalid or unsupported module file"
 msgstr "Недійсний або непідтримуваний файл модуля"
 
 #: ../wxui/memedit.py:296 ../wxui/memedit.py:302
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid value: %r"
-msgstr "Неприпустиме значення для цього поля"
+msgstr "Неприпустиме значення: %r"
 
 #: ../wxui/developer.py:631
 #, python-format
 msgid "Issue %i is not in a valid state to load modules. It is highly recommended that you not attempt to manually load modules from this issue as it is likely to cause problems."
-msgstr ""
+msgstr "Задача %i не перебуває в стані, придатному для завантаження модулів. Настійно рекомендується не намагатися вручну завантажувати модулі з цієї задачі, оскільки це, ймовірно, спричинить проблеми."
 
 #: ../wxui/developer.py:686
 msgid "Issue number:"
-msgstr ""
+msgstr "Номер задачі:"
 
 #: ../wxui/main.py:352
 msgid "LIVE"
-msgstr ""
+msgstr "НАЖИВО"
 
 #: ../drivers/radtel_rt490.py:1028 ../wxui/main.py:853 ../wxui/main.py:1643
-#, fuzzy
 msgid "Language"
-msgstr "Змінити мову"
+msgstr "Мова"
 
 #: ../wxui/query_sources.py:92 ../wxui/query_sources.py:374
 #: ../wxui/query_sources.py:674 ../wxui/query_sources.py:826
 msgid "Latitude"
-msgstr ""
+msgstr "Широта"
 
 #: ../wxui/developer.py:261
 #, python-format
 msgid "Length must be %i"
-msgstr ""
+msgstr "Довжина повинна дорівнювати %i"
 
 #: ../wxui/query_sources.py:395 ../wxui/query_sources.py:634
 #: ../wxui/query_sources.py:787
 msgid "Limit Bands"
-msgstr ""
+msgstr "Обмежити діапазони"
 
 #: ../wxui/query_sources.py:400 ../wxui/query_sources.py:1287
 msgid "Limit Modes"
-msgstr ""
+msgstr "Обмежити режими"
 
 #: ../wxui/query_sources.py:649 ../wxui/query_sources.py:802
 msgid "Limit Status"
-msgstr ""
+msgstr "Обмежити статус"
 
 #: ../wxui/query_sources.py:811
 msgid "Limit prefixes"
-msgstr ""
+msgstr "Обмежити префікси"
 
 #: ../wxui/query_sources.py:381 ../wxui/query_sources.py:680
 #: ../wxui/query_sources.py:838
 msgid "Limit results to this distance (km) from coordinates"
-msgstr ""
+msgstr "Обмежити результати цією відстанню (км) від координат"
 
 #: ../wxui/query_sources.py:405
 msgid "Limit use"
-msgstr ""
+msgstr "Обмежити використання"
 
 #: ../wxui/main.py:1730
-#, fuzzy
 msgid "Live Radio"
-msgstr "Радіостанція"
+msgstr ""
 
 #: ../wxui/main.py:745
-#, fuzzy
 msgid "Load Module..."
-msgstr "Тоновий режим"
+msgstr "Завантажити модуль..."
 
 #: ../wxui/developer.py:687
-#, fuzzy
 msgid "Load module from issue"
-msgstr "Тоновий режим"
+msgstr "Завантажити модуль із задачі"
 
 #: ../wxui/main.py:1018
-#, fuzzy
 msgid "Load module from issue..."
-msgstr "Тоновий режим"
+msgstr "Завантажити модуль із задачі..."
 
 #: ../wxui/main.py:2039
 msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
