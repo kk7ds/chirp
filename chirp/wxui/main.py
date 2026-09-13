@@ -1708,15 +1708,30 @@ class ChirpMain(wx.Frame):
         self.enable_bugreport()
         with clone.ChirpDownloadDialog(self) as d:
             d.Centre()
-            if d.ShowModal() == wx.ID_OK:
-                radio = d._radio
-                self._make_backup(radio, 'download')
-                report.report_model(radio, 'download')
-                if isinstance(radio, chirp_common.LiveRadio):
-                    editorset = ChirpLiveEditorSet(radio, None, self._editors)
-                else:
-                    editorset = ChirpEditorSet(radio, None, self._editors)
-                self.add_editorset(editorset)
+            ok = d.ShowModal() == wx.ID_OK
+            radio = d._radio if ok else None
+        # `d` is destroyed by the `with` block above, *before* we build
+        # any new UI here. ChirpEditorSet immediately moves keyboard
+        # focus to its first grid (memedit.py's self._grid.SetFocus()),
+        # and on MSW under wxWidgets 3.3+ (wxPython 4.3+) a SetFocus()
+        # issued while this dialog is only hidden (ShowModal()
+        # returned, but not yet Destroy()ed) can fail outright rather
+        # than just log harmlessly -- see
+        # https://github.com/wxWidgets/wxWidgets/issues/24290, whose
+        # title is literally this: "SetFocus when selecting a notebook
+        # page while Progress is active". wx.SafeYield() gives MSW a
+        # chance to actually process the dialog's teardown before we
+        # touch focus again.
+        wx.SafeYield()
+        if not ok:
+            return
+        self._make_backup(radio, 'download')
+        report.report_model(radio, 'download')
+        if isinstance(radio, chirp_common.LiveRadio):
+            editorset = ChirpLiveEditorSet(radio, None, self._editors)
+        else:
+            editorset = ChirpEditorSet(radio, None, self._editors)
+        self.add_editorset(editorset)
 
     def _menu_upload(self, event):
         radio = self.current_editorset.radio
@@ -2086,13 +2101,18 @@ GNU General Public License for more details."""
     @common.error_proof()
     def _do_network_query(self, query_cls):
         self.enable_bugreport()
-        d = query_cls(self, title=_('Query %s') % query_cls.NAME)
-        r = d.ShowModal()
-        if r == wx.ID_OK:
-            report.report_model(d.result_radio, 'query')
-            editorset = ChirpEditorSet(d.result_radio,
-                                       None, self._editors)
-            self.add_editorset(editorset)
+        with query_cls(self, title=_('Query %s') % query_cls.NAME) as d:
+            ok = d.ShowModal() == wx.ID_OK
+            result_radio = d.result_radio if ok else None
+        # See the matching comment in _menu_download(): `d` needs to be
+        # actually destroyed (not just hidden) before ChirpEditorSet
+        # moves focus to its first grid, or SetFocus() can fail on MSW.
+        wx.SafeYield()
+        if not ok:
+            return
+        report.report_model(result_radio, 'query')
+        editorset = ChirpEditorSet(result_radio, None, self._editors)
+        self.add_editorset(editorset)
 
     def _menu_query_rr(self, event):
         self._do_network_query(query_sources.RRQueryDialog)

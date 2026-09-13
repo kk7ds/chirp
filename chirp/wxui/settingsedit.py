@@ -57,7 +57,15 @@ class ChirpSettingsEdit(common.ChirpEditor):
         event.Skip()
 
     def _initialize(self, job):
+        # Close the wait dialog and let MSW settle *before* building
+        # any Treebook pages below: wx.Treebook.AddPage() implicitly
+        # focuses the first page it adds (like wx.Notebook does), and
+        # if the "Getting settings" dialog is still alive at that
+        # moment, that focus call can fail outright -- see the long
+        # comment on ChirpEditor.stop_wait_dialog() for why.
         self.stop_wait_dialog()
+        wx.SafeYield()
+
         with common.error_proof(Exception):
             if isinstance(job.result, Exception):
                 raise job.result
@@ -67,9 +75,10 @@ class ChirpSettingsEdit(common.ChirpEditor):
                 self._group_control.SetSelection(self._restore_selection)
                 self._restore_selection = None
 
-            # Focus the selector after it loads
-            tc = self._group_control.GetTreeCtrl()
-            wx.CallAfter(tc.SetFocus)
+            # Belt and suspenders: explicitly (re)focus the selector
+            # too, once more via a real timer tick rather than a second
+            # wx.CallAfter() (same reasoning as stop_wait_dialog()).
+            wx.CallLater(50, self._group_control.GetTreeCtrl().SetFocus)
 
     def selected(self):
         if not self._initialized:
