@@ -364,7 +364,7 @@ def _t18_write_block(radio, block_addr, block_size):
 
 def do_download(radio):
     LOG.debug("download")
-    _t18_enter_programming_mode(radio)
+    radio._enter_programming_mode()
 
     data = b""
 
@@ -393,7 +393,7 @@ def do_upload(radio):
     status = chirp_common.Status()
     status.msg = "Uploading to radio"
 
-    _t18_enter_programming_mode(radio)
+    radio._enter_programming_mode()
 
     status.cur = 0
     status.max = radio._memsize
@@ -482,6 +482,9 @@ class T18Radio(chirp_common.CloneModeRadio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
+
+    def _enter_programming_mode(self):
+        _t18_enter_programming_mode(self)
 
     def sync_in(self):
         self._mmap = do_download(self)
