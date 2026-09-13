@@ -222,9 +222,20 @@ class ChirpEditor(wx.Panel):
             LOG.error('Wait dialog already in progress!')
             return
 
-        self.wait_dialog = wx.ProgressDialog(_('Please wait'), message, 100,
-                                             parent=self)
-        wx.CallAfter(self.wait_dialog.Show)
+        dlg = self.wait_dialog = wx.ProgressDialog(_('Please wait'), message,
+                                                   100, parent=self)
+
+        def _show():
+            # stop_wait_dialog() now destroys the dialog synchronously
+            # (see its docstring) instead of via wx.CallAfter(), which
+            # this Show() predates -- for a job that finishes very
+            # quickly, stop_wait_dialog() can run, and Destroy() this
+            # very dialog, before this queued call fires. Guard against
+            # showing (or touching at all) an already-destroyed dialog.
+            if self.wait_dialog is dlg:
+                dlg.Show()
+
+        wx.CallAfter(_show)
 
     def bump_wait_dialog(self, value=None, message=None):
         if value:
@@ -232,13 +243,50 @@ class ChirpEditor(wx.Panel):
         else:
             wx.CallAfter(self.wait_dialog.Pulse, message)
 
-    def stop_wait_dialog(self):
-        def cb():
-            if self.wait_dialog:
-                self.wait_dialog.Destroy()
-                self.wait_dialog = None
+    def stop_wait_dialog(self, then=None):
+        """Destroy the wait dialog now, optionally running a callback
+        after, both *synchronously* -- deliberately not via
+        wx.CallAfter().
 
-        wx.CallAfter(cb)
+        This matters a lot on MSW: wx.ProgressDialog leaves MSW's focus
+        state unsettled for a moment after being destroyed, and any
+        SetFocus() -- ours or one wx issues internally, e.g.
+        wx.Treebook.AddPage() implicitly focusing the first page it
+        adds -- issued while the dialog is still alive (even just
+        hidden, not yet Destroy()ed) can fail outright, logged as
+        'SetFocus' failed with error 0x00000057. This is a real,
+        never-fixed-upstream wxWidgets bug -- see
+        https://github.com/wxWidgets/wxWidgets/issues/24290, whose
+        title is literally "SetFocus when selecting a notebook page
+        while Progress is active".
+
+        This used to destroy the dialog via wx.CallAfter(), which
+        happened to give callers like settingsedit.py's _initialize()
+        enough separation in practice under wxWidgets 3.2 (wxPython
+        <4.3): building the settings Treebook right after calling this
+        landed in a *later* turn of the event loop than the dialog's
+        destruction, by the time it actually ran. Starting with
+        wxPython 4.3 (wxWidgets 3.3), wx.CallAfter() instead runs once
+        "the current and pending event handlers have completed", so
+        the caller's very next line -- e.g. building Treebook pages --
+        can now run *before* this dialog is actually destroyed,
+        recreating exactly the upstream race. Destroying synchronously
+        here, then letting `then` (if given) run only after an actual
+        wx.CallLater() tick, fixes this at the source instead of
+        depending on that ordering happenstance.
+
+        Callers that build new UI right after calling this (as
+        settingsedit.py does) should also add a wx.SafeYield() of
+        their own between this call and that UI construction, so MSW
+        gets a real turn to process the dialog's teardown before
+        anything -- including wx's own internal AddPage() focus calls
+        -- tries to move focus again.
+        """
+        if self.wait_dialog:
+            self.wait_dialog.Destroy()
+            self.wait_dialog = None
+        if then is not None:
+            wx.CallLater(50, then)
 
     def status_message(self, message):
         wx.PostEvent(self, StatusMessage(self.GetId(), message=message))
