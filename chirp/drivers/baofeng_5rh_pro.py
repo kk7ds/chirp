@@ -886,7 +886,19 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
         basic.append(RadioSetting("radio_name", "Radio name",
                                   RadioSettingValueString(0, 16, cur_name)))
 
-        return RadioSettings(basic)
+        zones = RadioSettingGroup("zones", "Zones")
+        for z in range(ZONE_MAX):
+            zone_name = _decode_name(
+                self._memobj.zones[z].name.get_raw(asbytes=True))
+            rs = RadioSetting("zone_name_%i" % z, "Zone %i" % (z + 1),
+                              RadioSettingValueString(0, 16, zone_name))
+            rs.set_doc("Name the radio shows for this zone. The zone tabs "
+                       "pick up a new name the next time the file is opened. "
+                       "A populated zone left unnamed gets \"Zone %i\" on "
+                       "upload." % (z + 1))
+            zones.append(rs)
+
+        return RadioSettings(basic, zones)
 
     def set_settings(self, settings):
         for element in settings:
@@ -898,6 +910,11 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
                 # Names are GB2312 and zero-padded, which MemSetting has no
                 # way to express.
                 self._memobj.settings.radio_name = _encode_name(
+                    str(element.value).rstrip())
+            elif element.get_name().startswith("zone_name_"):
+                # Zone names are encoded the same way as the radio name.
+                zone = int(element.get_name().rsplit("_", 1)[1])
+                self._memobj.zones[zone].name = _encode_name(
                     str(element.value).rstrip())
 
 
