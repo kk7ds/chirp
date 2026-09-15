@@ -15,6 +15,7 @@
 
 import logging
 import struct
+from decimal import DecimalException, Decimal
 from textwrap import dedent
 
 from chirp import bandplan_na
@@ -938,6 +939,70 @@ class VFORxFreqSetting(MemSetting):
                 "400.00000-520.00000 or enabled in settings")
 
 
+class FMVFOSetting(MemSetting):
+    """Memory setting for Commercial Radio FM mode VFO."""
+
+    def __init__(self, path: str, name: str, value):
+        try:
+            fm_freq = self.to_fm_freq(value)
+        except DecimalException:
+            LOG.warning('FM VFO is invalid')
+            fm_freq = 0
+
+        super().__init__(
+            path, name,
+            RadioSettingValueFloat(
+                Decimal('76.0'), Decimal('108.0'), fm_freq, precision=1))
+
+    def apply_to_memobj(self, memobj):
+        self.set_by_path(memobj, self._path, int(self.value * 10))
+
+    @staticmethod
+    def to_fm_freq(value) -> Decimal:
+        return (Decimal(int(value)) / 10).quantize(Decimal('0.1'))
+
+
+class FMPresetSetting(MemSetting):
+    """Memory setting for Commercial Radio FM memories."""
+
+    def __init__(self, block_id: int, mem):
+        self._block_id = block_id
+
+        fm_freq = ''
+        if mem.fmusedflags[block_id]:
+            value = int(mem.fmmode[block_id].fmblock)
+            try:
+                fm_freq = FMVFOSetting.to_fm_freq(value)
+            except DecimalException:
+                LOG.warning(f"FM channel '{block_id}' is invalid")
+
+            if isinstance(fm_freq, Decimal) and not (76 <= fm_freq <= 108):
+                LOG.warning(f"FM channel '{block_id}' not in range 76.0-108.0")
+                fm_freq = ''
+
+        super().__init__(
+            f'fmmode[{block_id}].fmblock',
+            f"Channel {block_id + 1}",
+            RadioSettingValueString(
+                0, 5, str(fm_freq), False, charset='0123456789.'))
+
+    def apply_to_memobj(self, memobj):
+        if (fm_freq := str(self.value)) and fm_freq.strip():
+            try:
+                fm_freq = int(Decimal(fm_freq) * 10)
+            except DecimalException:
+                raise InvalidValueError("Invalid FM frequency")
+
+            if isinstance(fm_freq, int) and not (760 <= fm_freq <= 1080):
+                raise InvalidValueError(
+                    'FM frequency must be between 76.0-108.0')
+        else:
+            fm_freq = 0
+
+        memobj.fmmode[self._block_id].fmblock = fm_freq
+        memobj.fmusedflags[self._block_id] = bool(fm_freq)
+
+
 class VFOOffsetSetting(MemSetting):
     """Memory setting for VFO A/B Rx frequency offsets."""
 
@@ -1151,9 +1216,6 @@ class TDH8(chirp_common.CloneModeRadio):
 
     def _get_nam(self, number):
         return self._memobj.names[number - 1]
-
-    def _get_fm(self, number):
-        return self._memobj.fmmode[number]
 
     def get_memory(self, number):
         _mem = self._get_mem(number)
@@ -1771,51 +1833,24 @@ class TDH8(chirp_common.CloneModeRadio):
         # FM radio stations
         group.append(fmmode)
 
-        rs = RadioSetting("fmworkmode", "Work Mode",
-                          RadioSettingValueList(
-                              FM_WORKMODE,
-                              current_index=_settings.fmworkmode))
-        fmmode.append(rs)
+        fmmode.append(MemSetting(
+            "settings.fmworkmode", "Work Mode",
+            RadioSettingValueList(
+                FM_WORKMODE, current_index=mem.settings.fmworkmode)))
 
-        rs = RadioSetting("fmroad", "Channel",
-                          RadioSettingValueList(
-                              FM_CHANNEL,
-                              current_index=_settings.fmroad))
-        fmmode.append(rs)
+        fmmode.append(MemSetting(
+            "settings.fmroad", "Channel",
+            RadioSettingValueList(
+                FM_CHANNEL, current_index=mem.settings.fmroad)))
 
-        rs = RadioSetting("fmrec", "Allow Receive",
-                          RadioSettingValueBoolean(_settings.fmrec))
-        fmmode.append(rs)
+        fmmode.append(MemSetting(
+            "settings.fmrec", "Allow Receive",
+            RadioSettingValueBoolean(mem.settings.fmrec)))
 
-        numeric = '0123456789.'
-        for i in range(25):
-            if self._memobj.fmusedflags[i]:
-                _fm = self._get_fm(i).fmblock
-                try:
-                    if not (760 < int(_fm) < 1080):
-                        raise ValueError()
-                    val = '%.1f' % (int(_fm) / 10)
-                except ValueError:
-                    LOG.warning('FM channel index %i is invalid', i)
-                    val = ''
-            else:
-                val = ''
-            rs = RadioSetting('block%02i' % i, "Channel %i" % (i + 1),
-                              RadioSettingValueString(0, 5,
-                                                      val,
-                                                      False, charset=numeric))
-            fmmode.append(rs)
+        for block_id in range(25):
+            fmmode.append(FMPresetSetting(block_id, mem))
 
-        try:
-            _fmv = int(self._memobj.fmvfo) / 10
-        except ValueError:
-            LOG.warning('FM VFO is invalid')
-            _fmv = 0
-
-        rs = RadioSetting(
-            "fmvfo", "VFO", RadioSettingValueFloat(
-                76.0, 108.0, _fmv, 0.1, 1))
-        fmmode.append(rs)
+        fmmode.append(FMVFOSetting("fmvfo", "VFO", mem.fmvfo))
 
         if self.MODEL != "RT-730":
             # DTMF
@@ -1903,14 +1938,8 @@ class TDH8(chirp_common.CloneModeRadio):
     def set_settings(self, settings):
         settings = settings.apply_to(self._memobj)
 
-        def fm_validate(value):
-            if 760 > value or value > 1080:
-                raise InvalidValueError(
-                    "FM Channel must be between 76.0-108.0")
-
         _settings = self._memobj.settings
         _press = self._memobj.press
-        _fmmode = self._memobj.fmmode
 
         for element in settings:
             if not isinstance(element, RadioSetting):
@@ -1932,12 +1961,6 @@ class TDH8(chirp_common.CloneModeRadio):
                     elif name in PRESS_NAME:
                         obj = _press
                         setting = element.get_name()
-                    elif "block" in name:
-                        obj = _fmmode
-                        setting = element.get_name()
-                    elif "fmvfo" in name:
-                        obj = self._memobj.fmvfo
-                        setting = element.get_name()
                     elif "micgain" in name:
                         obj = self._memobj.mic.micgain
                         setting = element.get_name()
@@ -1949,26 +1972,6 @@ class TDH8(chirp_common.CloneModeRadio):
                         _settings.brightness = 4 - int(element.value)
                     elif "sync" == name:
                         _settings.sync = not int(element.value)
-
-                    # FM radio stations
-                    elif "block" in name:
-                        num = int(name[-2:], 10)
-                        val = str(element.value)
-                        if val.strip():
-                            try:
-                                val = int(float(val) * 10)
-                            except ValueError:
-                                raise InvalidValueError(
-                                    'Value must be between 76.0-108.0')
-                            fm_validate(val)
-                        else:
-                            val = 0
-                        self._memobj.fmmode[num].fmblock = val
-                        self._memobj.fmusedflags[num] = bool(val)
-
-                    elif 'fmvfo' == setting and element.value.get_mutable():
-                        self._memobj.fmvfo = int(element.value * 10)
-
                     elif setting == 'micgain':
                         self._memobj.mic.micgain = str(element.value)
 
