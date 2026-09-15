@@ -23,7 +23,8 @@ from chirp import chirp_common, errors, util, directory, memmap
 from chirp.settings import InvalidValueError, RadioSetting, \
     RadioSettingGroup, RadioSettingValueFloat, \
     RadioSettingValueList, RadioSettingValueBoolean, \
-    RadioSettingValueString, RadioSettings, MemSetting, RadioSettingValueMap
+    RadioSettingValueString, RadioSettings, MemSetting, RadioSettingValueMap, \
+    RadioSettingSubGroup
 
 LOG = logging.getLogger(__name__)
 
@@ -132,13 +133,13 @@ lbcd fmvfo[4];
 
 #seekto 0x1B58;
 struct {
-  lbcd rxfreqa[4];
+  lbcd rxfreq[4];
   lbcd txfreq[4];
   u8 rxtone[2];
   u8 txtone[2];
   u8 unused1;
   u8 pttid:2,
-     specialqta:1,
+     specialqt:1,
      unused3:1,
      unused4:1,
      bcl:1,
@@ -149,30 +150,30 @@ struct {
      lowpower:2,
      wide:1,
      unused8:1,
-     dira:2;
+     dir:2;
   u8 unused10;
 } vfoa;
 
 //#seekto 0x1B68;
 struct {
-  lbcd rxfreqb[4];
+  lbcd rxfreq[4];
   lbcd txfreq[4];
   u8 rxtoneb[2];
   u8 txtone[2];
   u8 unused1;
   u8 pttid:2,
-     specialqtb:1,
+     specialqt:1,
      unused3:1,
      unused4:1,
-     bclb:1,
+     bcl:1,
      unused5:1,
      unused2:1;
   u8 unused6:1,
      unused7:1,
-     lowpowerb:2,
-     wideb:1,
+     lowpower:2,
+     wide:1,
      unused8:1,
-     dirb:2;
+     dir:2;
   u8 unused10;
 } vfob;
 
@@ -458,13 +459,13 @@ lbit fmusedflags[32];
 
 #seekto 0x1958;
 struct {
-  lbcd rxfreqa[4];
+  lbcd rxfreq[4];
   lbcd txfreq[4];
   u8 rxtone[2];
   u8 txtone[2];
   u8 unused1;
   u8 pttid:2,
-     specialqta:1,
+     specialqt:1,
      unused3:1,
      unused4:1,
      bcl:1,
@@ -475,30 +476,30 @@ struct {
      lowpower:2,
      wide:1,
      unused8:1,
-     dira:2;
+     dir:2;
   u8 unused10;
 } vfoa;
 
 //#seekto 0x1968;
 struct {
-  lbcd rxfreqb[4];
+  lbcd rxfreq[4];
   lbcd txfreq[4];
   u8 rxtoneb[2];
   u8 txtone[2];
   u8 unused1;
   u8 pttid:2,
-     specialqtb:1,
+     specialqt:1,
      unused3:1,
      unused4:1,
-     bclb:1,
+     bcl:1,
      unused5:1,
      unused2:1;
   u8 unused6:1,
      unused7:1,
-     lowpowerb:2,
-     wideb:1,
+     lowpower:2,
+     wide:1,
      unused8:1,
-     dirb:2;
+     dir:2;
   u8 unused10;
 } vfob;
 
@@ -626,13 +627,13 @@ lbcd fmvfo[4];
 
 #seekto 0x1B58;
 struct {
-  lbcd rxfreqa[4];
+  lbcd rxfreq[4];
   lbcd txfreq[4];
   u8 rxtone[2];
   u8 txtone[2];
   u8 unused1;
   u8 pttid:2,
-     specialqta:1,
+     specialqt:1,
      unused2:1,
      unused3:1,
      bcl:1,
@@ -643,30 +644,30 @@ struct {
      lowpower:2,
      wide:1,
      unused8:1,
-     dira:2;
+     dir:2;
   u8 unused9;
 } vfoa;
 
 //#seekto 0x1B68;
 struct {
-  lbcd rxfreqb[4];
+  lbcd rxfreq[4];
   lbcd txfreq[4];
   u8 rxtoneb[2];
   u8 txtone[2];
   u8 unused1;
   u8 pttid:2,
-     specialqtb:1,
+     specialqt:1,
      unused2:1,
      unused3:1,
-     bclb:1,
+     bcl:1,
      unused4:1,
      unused5:1;
   u8 unused6:1,
      unused7:1,
-     lowpowerb:2,
-     wideb:1,
+     lowpower:2,
+     wide:1,
      unused8:1,
-     dirb:2;
+     dir:2;
   u8 unused9;
 } vfob;
 
@@ -699,32 +700,6 @@ SHORT_KEY730_LIST = ["None", "Scan", "FM", "Warn", "TONE", "Weather",
 LONG_KEY730_LIST = SHORT_KEY730_LIST + ["Monitor"]
 PRESS_NAME = ["stopkey1", "ssidekey1", "ssidekey2",
               "ltopkey2", "lsidekey3", "lsidekey4"]
-
-VFOA_NAME = ["rxfreqa",
-             "txfreq",
-             "rxtone",
-             "txtone",
-             "pttid",
-             "specialqta",
-             "bcl",
-             "lowpower",
-             "wide",
-             "a",
-             "dira",
-             ]
-
-VFOB_NAME = ["rxfreqb",
-             "txfreq",
-             "rxtoneb",
-             "txtone",
-             "pttid",
-             "specialqtb",
-             "bclb",
-             "lowpowerb",
-             "wideb",
-             "b",
-             "dirb",
-             ]
 
 TOT_LIST = ["Off", "30S", "60S", "90S", "120S", "150S", "180S", "210S"]
 ALARM_LIST = ["On site", "Alarm"]
@@ -933,6 +908,92 @@ class DTMFSetting(MemSetting):
             0xFF if char == ' ' else self.CHARSET.index(char)
             for char in value
         ])
+
+
+class VFORxFreqSetting(MemSetting):
+    """Memory setting for VFO A/B Rx frequency."""
+
+    def __init__(self, path, name, raw_freq):
+        freq = int(raw_freq)
+        freq = "%i.%05i" % (freq / 100000, freq % 100000)
+        if freq == "0.00000":
+            value = RadioSettingValueString(0, 7, '0.00000')
+        else:
+            value = RadioSettingValueFloat(
+                136, 520, float(freq), 0.00001, 5)
+
+        super().__init__(path, name, value)
+
+    def apply_to_memobj(self, memobj):
+        val = int(str(self.value).replace('.', '').ljust(8, '0'))
+        if (
+            (13600000 <= val <= 17400000)
+            or (40000000 <= val <= 52000000)
+            or (memobj.settings.tx220 and 22000000 <= val <= 22500000)
+        ):
+            self.set_by_path(memobj, self._path, val)
+        else:
+            raise InvalidValueError(
+                "Frequency must be between 136.00000-174.00000 or "
+                "400.00000-520.00000 or enabled in settings")
+
+
+class VFOOffsetSetting(MemSetting):
+    """Memory setting for VFO A/B Rx frequency offsets."""
+
+    def __init__(self, path: str, name: str, value):
+        if value.get_raw() == b'\xff\xff\xff\xff':
+            offset = 0
+        else:
+            offset = int(value) / 100000
+
+        super().__init__(
+            path, name,
+            RadioSettingValueFloat(0.00000, 59.99750, offset, 0.00001, 5))
+
+    def apply_to_memobj(self, memobj):
+        obj = self.get_by_path(memobj, self._path)
+
+        if float(self.value) == 0:
+            obj.fill_raw(b'\xff')
+        else:
+            obj.set_value(int(self.value * 100000))
+
+
+class VFOOffsetDirSetting(MemSetting):
+    """Memory setting for VFO A/B Rx frequency offset direction."""
+
+    def __init__(self, vfo_ch: str, name: str, value):
+        self._vfo_ch = vfo_ch
+
+        super().__init__(
+            f"vfo{vfo_ch}.dir", name,
+            RadioSettingValueList(OFFSET_DIR, current_index=value))
+
+    def apply_to_memobj(self, memobj):
+        super().apply_to_memobj(memobj)
+
+        vfo = self.get_by_path(memobj, f"vfo{self._vfo_ch}")
+        offset = self.get_by_path(memobj, f"vfo_offset.{self._vfo_ch}")
+
+        vfo.txfreq = self._calc_tx_freq(
+            rx_freq=vfo.rxfreq, offset=offset, direction=self.value)
+
+    @staticmethod
+    def _calc_tx_freq(rx_freq, offset, direction):
+        tx_freq = 0
+
+        if direction == 1:  # Minus
+            tx_freq = \
+                (int(rx_freq) /
+                 100000 - int(offset) / 100000) * 100000
+
+        if direction == 2:  # Plus
+            tx_freq = \
+                (int(rx_freq) /
+                 100000 + int(offset) / 100000) * 100000
+
+        return int(tx_freq)
 
 
 TDH8_CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
@@ -1297,8 +1358,6 @@ class TDH8(chirp_common.CloneModeRadio):
         mem = self._memobj
         _settings = self._memobj.settings
         _press = self._memobj.press
-        _vfoa = self._memobj.vfoa
-        _vfob = self._memobj.vfob
         _msg = self._memobj.poweron_msg
         basic = RadioSettingGroup("basic", "Basic Settings")
         abblock = RadioSettingGroup("abblock", "A/B Channel")
@@ -1662,156 +1721,52 @@ class TDH8(chirp_common.CloneModeRadio):
         if self.MODEL != "RT-730":
             group.append(abblock)
 
-            # A channel
-            a_freq = int(_vfoa.rxfreqa)
-            freqa = "%i.%05i" % (a_freq / 100000, a_freq % 100000)
-            if freqa == "0.00000":
-                val1a = RadioSettingValueString(0, 7, '0.00000')
-            else:
-                val1a = RadioSettingValueFloat(
-                    136, 520, float(freqa), 0.00001, 5)
-            rs = RadioSetting("rxfreqa", "A Channel - Frequency", val1a)
-            abblock.append(rs)
+            for vfo_ch, vfo, offset, work_mode in (
+                ('a', mem.vfoa, mem.vfo_offset.a, mem.settings.aworkmode),
+                ('b', mem.vfob, mem.vfo_offset.b, mem.settings.bworkmode),
+            ):
+                vfo_block = RadioSettingSubGroup(
+                    f"vfo{vfo_ch}", f"{vfo_ch.upper()} Channel")
+                abblock.append(vfo_block)
 
-            offsets = {}
-            dirs = {}
+                vfo_block.append(VFORxFreqSetting(
+                    f"vfo{vfo_ch}.rxfreq", "Frequency", vfo.rxfreq))
 
-            def _calc_txfreq(rxfreq, offset, direction):
-                # calc tx freq
-                txfreq = 0
-                match direction:
-                    case 0:  # off
-                        txfreq = rxfreq
-                    case 1:  # minus
-                        txfreq = \
-                            (int(rxfreq) /
-                                100000 - int(offset) / 100000) * 100000
-                    case 2:  # plus
-                        txfreq = \
-                            (int(rxfreq) /
-                                100000 + int(offset) / 100000) * 100000
-                return int(txfreq)
+                vfo_block.append(VFOOffsetSetting(
+                    f"vfo_offset.{vfo_ch}", "Offset Frequency", offset))
 
-            def _apply_offset_dir(setting, i, obj1, obj2):
-                value = getattr(obj1, setting.get_name())
-                value.set_value(setting.value)
-                # calc tx freq and store
-                obj1.txfreq = _calc_txfreq(
-                    getattr(obj1, "rxfreq%s" % i),
-                    obj2,
-                    getattr(obj1, "dir%s" % i)
-                )
+                vfo_block.append(VFOOffsetDirSetting(
+                    vfo_ch, "Offset Direction", vfo.dir))
 
-            for i in ('a', 'b'):
-                value = getattr(self._memobj.vfo_offset, '%s' % i)
-                if value.get_raw() == b'\xff\xff\xff\xff':
-                    offset = 0
-                else:
-                    offset = int(value) / 100000
+                try:
+                    self._tx_power[vfo.lowpower]
+                    cur_power = vfo.lowpower
+                except IndexError:
+                    cur_power = 0
 
-                def _apply(setting):
-                    value = getattr(self._memobj.vfo_offset,
-                                    setting.get_name())
-                    if float(setting.value) == 0:
-                        value.fill_raw(b'\xff')
-                    else:
-                        value.set_value(int(setting.value * 100000))
+                vfo_block.append(MemSetting(
+                    f"vfo{vfo_ch}.lowpower", "TX Power",
+                    RadioSettingValueList(
+                        [str(x) for x in self._tx_power],
+                        current_index=cur_power)))
 
-                rs = RadioSetting("%s" % i,
-                                  "%s Offset Frequency" % i.upper(),
-                                  RadioSettingValueFloat(
-                                      0.00000, 59.99750, offset, 0.00001, 5))
-                rs.set_apply_callback(_apply)
-                offsets[i] = rs
-                _obj1 = self._memobj.vfoa if i == \
-                    'a' else self._memobj.vfob
-                _obj2 = self._memobj.vfo_offset.a if i == 'a' \
-                    else self._memobj.vfo_offset.b
-                _obj3 = self._memobj.vfoa.dira if i == 'a' \
-                    else self._memobj.vfob.dirb
-                rs = RadioSetting("dir%s" % i,
-                                  "%s Offset Direction" % i.upper(),
-                                  RadioSettingValueList(OFFSET_DIR,
-                                                        current_index=_obj3))
-                rs.set_apply_callback(_apply_offset_dir, i, _obj1, _obj2)
-                dirs[i] = rs
+                vfo_block.append(MemSetting(
+                    f"vfo{vfo_ch}.wide", "Band",
+                    RadioSettingValueList(
+                        BANDWIDTH_LIST, current_index=vfo.wide)))
 
-            abblock.append(offsets['a'])
-            abblock.append(dirs['a'])
+                vfo_block.append(MemSetting(
+                    f"vfo{vfo_ch}.bcl", "Busy Lock",
+                    RadioSettingValueBoolean(vfo.bcl)))
 
-            try:
-                self._tx_power[_vfoa.lowpower]
-                cur_a_power = _vfoa.lowpower
-            except IndexError:
-                cur_a_power = 0
-            rs = RadioSetting("lowpower", "A TX Power",
-                              RadioSettingValueList(
-                                [str(x) for x in self._tx_power],
-                                current_index=cur_a_power))
-            abblock.append(rs)
+                vfo_block.append(MemSetting(
+                    f"vfo{vfo_ch}.specialqt", "Special QT/DQT",
+                    RadioSettingValueBoolean(vfo.specialqt)))
 
-            rs = RadioSetting("wide", "A Band",
-                              RadioSettingValueList(
-                                  BANDWIDTH_LIST, current_index=_vfoa.wide))
-            abblock.append(rs)
-
-            rs = RadioSetting("bcl", "A Busy Lock",
-                              RadioSettingValueBoolean(_vfoa.bcl))
-            abblock.append(rs)
-
-            rs = RadioSetting("specialqta", "A Special QT/DQT",
-                              RadioSettingValueBoolean(_vfoa.specialqta))
-            abblock.append(rs)
-
-            rs = RadioSetting(
-                "aworkmode", "A Work Mode",
-                RadioSettingValueList(
-                    VFO_WORKMODE, current_index=_settings.aworkmode))
-            abblock.append(rs)
-
-            # B channel
-            b_freq = int(str(int(_vfob.rxfreqb)).ljust(8, '0'))
-            freqb = "%i.%05i" % (b_freq / 100000, b_freq % 100000)
-            if freqb == "0.00000":
-                val1a = RadioSettingValueString(0, 7, '0.00000')
-            else:
-                val1a = RadioSettingValueFloat(
-                    136, 520, float(freqb), 0.00001, 5)
-            rs = RadioSetting("rxfreqb", "B Channel - Frequency", val1a)
-            abblock.append(rs)
-
-            abblock.append(offsets['b'])
-            abblock.append(dirs['b'])
-
-            try:
-                self._tx_power[_vfob.lowpowerb]
-                cur_b_power = _vfob.lowpowerb
-            except IndexError:
-                cur_b_power = 0
-            rs = RadioSetting("lowpowerb", "B TX Power",
-                              RadioSettingValueList(
-                                [str(x) for x in self._tx_power],
-                                current_index=cur_b_power))
-            abblock.append(rs)
-
-            rs = RadioSetting("wideb", "B Band",
-                              RadioSettingValueList(
-                                  BANDWIDTH_LIST, current_index=_vfob.wideb))
-            abblock.append(rs)
-
-            rs = RadioSetting("bclb", "B Busy Lock",
-                              RadioSettingValueBoolean(_vfob.bclb))
-            abblock.append(rs)
-
-            rs = RadioSetting("specialqtb", "B Special QT/DQT",
-                              RadioSettingValueBoolean(_vfob.specialqtb))
-            abblock.append(rs)
-
-            rs = RadioSetting(
-                "bworkmode", "B Work Mode",
-                RadioSettingValueList(
-                    VFO_WORKMODE, current_index=_settings.bworkmode))
-            abblock.append(rs)
+                vfo_block.append(MemSetting(
+                    f"settings.{vfo_ch}workmode", "Work Mode",
+                    RadioSettingValueList(
+                        VFO_WORKMODE, current_index=work_mode)))
 
         # FM radio stations
         group.append(fmmode)
@@ -1955,8 +1910,6 @@ class TDH8(chirp_common.CloneModeRadio):
 
         _settings = self._memobj.settings
         _press = self._memobj.press
-        _vfoa = self._memobj.vfoa
-        _vfob = self._memobj.vfob
         _fmmode = self._memobj.fmmode
 
         for element in settings:
@@ -1979,12 +1932,6 @@ class TDH8(chirp_common.CloneModeRadio):
                     elif name in PRESS_NAME:
                         obj = _press
                         setting = element.get_name()
-                    elif name in VFOA_NAME:
-                        obj = _vfoa
-                        setting = element.get_name()
-                    elif name in VFOB_NAME:
-                        obj = _vfob
-                        setting = element.get_name()
                     elif "block" in name:
                         obj = _fmmode
                         setting = element.get_name()
@@ -1997,43 +1944,11 @@ class TDH8(chirp_common.CloneModeRadio):
                     else:
                         obj = _settings
                         setting = element.get_name()
-                    if element.has_apply_callback():
-                        LOG.debug("Using apply callback")
-                        element.run_apply_callback()
-                    elif "brightness" == name:
+
+                    if "brightness" == name:
                         _settings.brightness = 4 - int(element.value)
                     elif "sync" == name:
                         _settings.sync = not int(element.value)
-                    # Channel A RX freq
-                    elif "rxfreqa" == setting and element.value.get_mutable():
-                        val = int(str(element.value).replace(
-                            '.', '').ljust(8, '0'))
-                        if (
-                            (13600000 <= val <= 17400000) or
-                            (40000000 <= val <= 52000000) or
-                            (_settings.tx220 and 22000000 <= val <= 22500000)
-                        ):
-                            setattr(obj, setting, val)
-                        else:
-                            raise InvalidValueError(
-                                "Frequency must be between "
-                                "136.00000-174.00000 or 400.00000-520.00000 "
-                                "or enabled in settings")
-                    # B channel
-                    elif "rxfreqb" == setting and element.value.get_mutable():
-                        val = int(str(element.value).replace(
-                            '.', '').ljust(8, '0'))
-                        if (
-                            (13600000 <= val <= 17400000) or
-                            (40000000 <= val <= 52000000) or
-                            (_settings.tx220 and 22000000 <= val <= 22500000)
-                        ):
-                            setattr(obj, setting, val)
-                        else:
-                            raise InvalidValueError(
-                                "Frequency must be between "
-                                "136.00000-174.00000 or 400.00000-520.00000 "
-                                "or enabled in settings")
 
                     # FM radio stations
                     elif "block" in name:
