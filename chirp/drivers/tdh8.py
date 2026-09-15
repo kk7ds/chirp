@@ -692,15 +692,10 @@ HOP_LIST = ["A", "B", "C", "D"]
 LANG_LIST = ["Chinese", "English"]
 SCAN_MODE_LIST = ["TO", "CO", "SE"]
 PRIO_LIST = ["Edit", "Busy"]
-SHORT_KEY_LIST = ["None", "FM Radio", "Lamp", "Monitor",
-                  "TONE", "Alarm", "Weather"]
-LONG_KEY_LIST = ["None", "FM Radio", "Lamp",
-                 "Monitor", "TONE", "Alarm", "Weather"]
+KEY_LIST = ["None", "FM Radio", "Lamp", "Monitor", "TONE", "Alarm", "Weather"]
 SHORT_KEY730_LIST = ["None", "Scan", "FM", "Warn", "TONE", "Weather",
                      "Copy CH"]
 LONG_KEY730_LIST = SHORT_KEY730_LIST + ["Monitor"]
-PRESS_NAME = ["stopkey1", "ssidekey1", "ssidekey2",
-              "ltopkey2", "lsidekey3", "lsidekey4"]
 
 TOT_LIST = ["Off", "30S", "60S", "90S", "120S", "150S", "180S", "210S"]
 ALARM_LIST = ["On site", "Alarm"]
@@ -1419,7 +1414,6 @@ class TDH8(chirp_common.CloneModeRadio):
     def _get_settings(self):
         mem = self._memobj
         _settings = self._memobj.settings
-        _press = self._memobj.press
         _msg = self._memobj.poweron_msg
         basic = RadioSettingGroup("basic", "Basic Settings")
         abblock = RadioSettingGroup("abblock", "A/B Channel")
@@ -1544,41 +1538,37 @@ class TDH8(chirp_common.CloneModeRadio):
             rs = RadioSetting("onlychmode", "Only CH Mode",
                               RadioSettingValueBoolean(_settings.onlychmode))
             basic.append(rs)
-            rs = RadioSetting("ssidekey1", "SHORT_KEY_PF1",
-                              RadioSettingValueList(
-                                  SHORT_KEY_LIST,
-                                  current_index=_press.ssidekey1))
-            basic.append(rs)
-            rs = RadioSetting("lsidekey3", "LONG_KEY_PF1",
-                              RadioSettingValueList(
-                                  LONG_KEY_LIST,
-                                  current_index=_press.lsidekey3))
-            basic.append(rs)
+
+            basic.append(MemSetting(
+                "press.ssidekey1", "SHORT_KEY_PF1",
+                RadioSettingValueList(
+                    KEY_LIST, current_index=mem.press.ssidekey1)))
+
+            basic.append(MemSetting(
+                "press.lsidekey3", "LONG_KEY_PF1",
+                RadioSettingValueList(
+                    KEY_LIST, current_index=mem.press.lsidekey3)))
 
         if self.MODEL in H8_LIST:
-            rs = RadioSetting("stopkey1", "SHORT_KEY_TOP",
-                              RadioSettingValueList(
-                                  SHORT_KEY_LIST,
-                                  current_index=_press.stopkey1))
-            basic.append(rs)
+            basic.append(MemSetting(
+                "press.stopkey1", "SHORT_KEY_TOP",
+                RadioSettingValueList(
+                    KEY_LIST, current_index=mem.press.stopkey1)))
 
-            rs = RadioSetting("ltopkey2", "LONG_KEY_TOP",
-                              RadioSettingValueList(
-                                  LONG_KEY_LIST,
-                                  current_index=_press.ltopkey2))
-            basic.append(rs)
+            basic.append(MemSetting(
+                "press.ltopkey2", "LONG_KEY_TOP",
+                RadioSettingValueList(
+                    KEY_LIST, current_index=mem.press.ltopkey2)))
 
-            rs = RadioSetting("ssidekey2", "SHORT_KEY_PF2",
-                              RadioSettingValueList(
-                                  SHORT_KEY_LIST,
-                                  current_index=_press.ssidekey2))
-            basic.append(rs)
+            basic.append(MemSetting(
+                "press.ssidekey2", "SHORT_KEY_PF2",
+                RadioSettingValueList(
+                    KEY_LIST, current_index=mem.press.ssidekey2)))
 
-            rs = RadioSetting("lsidekey4", "LONG_KEY_PF2",
-                              RadioSettingValueList(
-                                LONG_KEY_LIST,
-                                current_index=_press.lsidekey4))
-            basic.append(rs)
+            basic.append(MemSetting(
+                "press.lsidekey4", "LONG_KEY_PF2",
+                RadioSettingValueList(
+                    KEY_LIST, current_index=mem.press.lsidekey4)))
 
         if self.MODEL in H3_LIST:
             rs = RadioSetting("tonevoice", "Repeater Tone",
@@ -1717,11 +1707,10 @@ class TDH8(chirp_common.CloneModeRadio):
                                   current_index=_settings.tot))
             basic.append(rs)
 
-            rs = RadioSetting("press.rogerprompt", "Roger",
-                              RadioSettingValueList(
-                                  PTTID_LIST,
-                                  current_index=_press.rogerprompt))
-            basic.append(rs)
+            basic.append(MemSetting(
+                "press.rogerprompt", "Roger",
+                RadioSettingValueList(
+                    PTTID_LIST, current_index=mem.press.rogerprompt)))
 
             rs = RadioSetting("lang", "Language",
                               RadioSettingValueList(
@@ -1747,26 +1736,25 @@ class TDH8(chirp_common.CloneModeRadio):
                               RadioSettingValueBoolean(_settings.tailclean))
             basic.append(rs)
 
-            rs = RadioSetting("press.ssidekey1", "PF1 Key(Short)",
-                              RadioSettingValueList(
-                                  SHORT_KEY730_LIST,
-                                  current_index=_press.ssidekey1))
-            basic.append(rs)
-            rs = RadioSetting("press.lsidekey1", "PF1 Key(Long)",
-                              RadioSettingValueList(
-                                  LONG_KEY730_LIST,
-                                  current_index=_press.lsidekey1))
-            basic.append(rs)
-            rs = RadioSetting("press.ssidekey2", "PF2 Key(Short)",
-                              RadioSettingValueList(
-                                  SHORT_KEY730_LIST,
-                                  current_index=_press.ssidekey2))
-            basic.append(rs)
-            rs = RadioSetting("press.lsidekey2", "PF2 Key(Long)",
-                              RadioSettingValueList(
-                                  LONG_KEY730_LIST,
-                                  current_index=_press.lsidekey2))
-            basic.append(rs)
+            basic.append(MemSetting(
+                "press.ssidekey1", "PF1 Key(Short)",
+                RadioSettingValueList(
+                    SHORT_KEY730_LIST, current_index=mem.press.ssidekey1)))
+
+            basic.append(MemSetting(
+                "press.lsidekey1", "PF1 Key(Long)",
+                RadioSettingValueList(
+                    LONG_KEY730_LIST, current_index=mem.press.lsidekey1)))
+
+            basic.append(MemSetting(
+                "press.ssidekey2", "PF2 Key(Short)",
+                RadioSettingValueList(
+                    SHORT_KEY730_LIST, current_index=mem.press.ssidekey2)))
+
+            basic.append(MemSetting(
+                "press.lsidekey2", "PF2 Key(Long)",
+                RadioSettingValueList(
+                    LONG_KEY730_LIST, current_index=mem.press.lsidekey2)))
 
             rs = RadioSetting("voxgain", "VOX Gain",
                               RadioSettingValueList(
@@ -1939,7 +1927,6 @@ class TDH8(chirp_common.CloneModeRadio):
         settings = settings.apply_to(self._memobj)
 
         _settings = self._memobj.settings
-        _press = self._memobj.press
 
         for element in settings:
             if not isinstance(element, RadioSetting):
@@ -1958,9 +1945,6 @@ class TDH8(chirp_common.CloneModeRadio):
                             else:
                                 obj = getattr(obj, bit)
                         setting = bits[-1]
-                    elif name in PRESS_NAME:
-                        obj = _press
-                        setting = element.get_name()
                     elif "micgain" in name:
                         obj = self._memobj.mic.micgain
                         setting = element.get_name()
