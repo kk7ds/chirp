@@ -768,7 +768,6 @@ GMRS_FREQS = bandplan_na.ALL_GMRS_FREQS
 
 H8_LIST = ["TD-H8", "TD-H8-HAM", "TD-H8-GMRS"]
 H3_LIST = ["TD-H3", "TD-H3-HAM", "TD-H3-GMRS"]
-ALL_MODEL = H8_LIST + H3_LIST + ["RT-730"]
 
 TD_H8 = b'PVOJH\x1c\x14'
 TD_H3 = b'PVOJH\x5c\x14'
@@ -854,13 +853,6 @@ def _read_block(radio, start, size):
     return block_data
 
 
-def _get_radio_firmware_version(radio):
-    if radio.MODEL in ALL_MODEL:
-        block = _read_block(radio, 0x1B40, 0x20)
-        version = block[0:6]
-    return version
-
-
 def _do_download(radio):
     # Radio must have already been ident'd by detect_from_serial()
     data = radio.ident_mode
@@ -902,8 +894,6 @@ def _write_block(radio, addr):
 
 def _do_upload(radio):
     data = _do_ident(radio.pipe, radio._idents[0])
-    radio_version = _get_radio_firmware_version(radio)
-    LOG.info("Radio Version is %s" % repr(radio_version))
 
     if radio.ident_mode == data:
         LOG.info("Successful match.")
@@ -938,10 +928,6 @@ class TDH8(chirp_common.CloneModeRadio):
     _txbands = [(136000000, 175000000), (400000000, 521000000)]
     _rxbands = []
     _gmrs = False
-
-    # offset of fw version in image file
-    _fw_ver_file_start = 0x1838
-    _fw_ver_file_stop = 0x1846
     _valid_chars = TDH8_CHARSET
     _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
                  chirp_common.PowerLevel("Mid",  watts=4.00),
