@@ -25,7 +25,7 @@ from chirp.settings import InvalidValueError, RadioSetting, \
     RadioSettingGroup, RadioSettingValueFloat, \
     RadioSettingValueList, RadioSettingValueBoolean, \
     RadioSettingValueString, RadioSettings, MemSetting, RadioSettingValueMap, \
-    RadioSettingSubGroup
+    RadioSettingSubGroup, RadioSettingValueInvertedBoolean
 
 LOG = logging.getLogger(__name__)
 
@@ -1431,7 +1431,6 @@ class TDH8(chirp_common.CloneModeRadio):
     def _get_settings(self):
         mem = self._memobj
         _settings = self._memobj.settings
-        _msg = self._memobj.poweron_msg
         basic = RadioSettingGroup("basic", "Basic Settings")
         abblock = RadioSettingGroup("abblock", "A/B Channel")
         fmmode = RadioSettingGroup("fmmode", "FM")
@@ -1471,10 +1470,9 @@ class TDH8(chirp_common.CloneModeRadio):
                                   current_index=_settings.mdfb))
             basic.append(rs)
 
-            rs = RadioSetting("sync", "SYNC",
-                              RadioSettingValueBoolean(
-                                  not _settings.sync))
-            basic.append(rs)
+            basic.append(MemSetting(
+                "settings.sync", "SYNC",
+                RadioSettingValueInvertedBoolean(not mem.settings.sync)))
 
             rs = RadioSetting("save", self._save_shortname,
                               RadioSettingValueList(
@@ -1663,14 +1661,11 @@ class TDH8(chirp_common.CloneModeRadio):
                                   current_index=_settings.ponmsg))
             basic.append(rs)
 
-            # mic gain
             if self.MODEL not in H8_LIST:
-                _mic = self._memobj.mic
-                rs = RadioSetting("micgain", "MIC GAIN",
-                                  RadioSettingValueList(
-                                      MIC_GAIN_LIST,
-                                      current_index=_mic.micgain))
-                basic.append(rs)
+                basic.append(MemSetting(
+                    "mic.micgain", "MIC GAIN",
+                    RadioSettingValueList(
+                        MIC_GAIN_LIST, current_index=mem.mic.micgain)))
 
             if self.MODEL not in H8_LIST:
                 rs = RadioSetting("kill", "Kill",
@@ -1689,20 +1684,22 @@ class TDH8(chirp_common.CloneModeRadio):
                     filtered += " "
             return filtered
 
-        rs = RadioSetting("poweron_msg.msg1", "Power-On Message 1",
-                          RadioSettingValueString(0, 16, _filter(_msg.msg1)))
-        basic.append(rs)
-        rs = RadioSetting("poweron_msg.msg2", "Power-On Message 2",
-                          RadioSettingValueString(0, 16, _filter(_msg.msg2)))
-        basic.append(rs)
-        rs = RadioSetting("poweron_msg.msg3", "Power-On Message 3",
-                          RadioSettingValueString(0, 16, _filter(_msg.msg3)))
-        basic.append(rs)
+        basic.append(MemSetting(
+            "poweron_msg.msg1", "Power-On Message 1",
+            RadioSettingValueString(0, 16, _filter(mem.poweron_msg.msg1))))
+
+        basic.append(MemSetting(
+            "poweron_msg.msg2", "Power-On Message 2",
+            RadioSettingValueString(0, 16, _filter(mem.poweron_msg.msg2))))
+
+        basic.append(MemSetting(
+            "poweron_msg.msg3", "Power-On Message 3",
+            RadioSettingValueString(0, 16, _filter(mem.poweron_msg.msg3))))
 
         if self.MODEL == "RT-730":
-            rsvs = RadioSettingValueString(0, 16, _filter(_msg.msg4))
-            rs = RadioSetting("poweron_msg.msg4", "Power-On Message 4", rsvs)
-            basic.append(rs)
+            basic.append(MemSetting(
+                "poweron_msg.msg4", "Power-On Message 4",
+                RadioSettingValueString(0, 16, _filter(mem.poweron_msg.msg4))))
 
             rs = RadioSetting("ligcon", "Light Control",
                               RadioSettingValueList(
@@ -1942,32 +1939,8 @@ class TDH8(chirp_common.CloneModeRadio):
                 self.set_settings(element)
             else:
                 try:
-                    name = element.get_name()
-                    if "." in name:
-                        bits = name.split(".")
-                        obj = self._memobj
-                        for bit in bits[:-1]:
-                            if "/" in bit:
-                                bit, index = bit.split("/", 1)
-                                index = int(index)
-                                obj = getattr(obj, bit)[index]
-                            else:
-                                obj = getattr(obj, bit)
-                        setting = bits[-1]
-                    elif "micgain" in name:
-                        obj = self._memobj.mic.micgain
-                        setting = element.get_name()
-                    else:
-                        obj = _settings
-                        setting = element.get_name()
-
-                    if "sync" == name:
-                        _settings.sync = not int(element.value)
-                    elif setting == 'micgain':
-                        self._memobj.mic.micgain = str(element.value)
-
-                    elif element.value.get_mutable():
-                        setattr(obj, setting, element.value)
+                    if element.value.get_mutable():
+                        setattr(_settings, element.get_name(), element.value)
 
                 except Exception:
                     LOG.debug(element.get_name())
