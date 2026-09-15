@@ -1784,25 +1784,25 @@ class TDH8(chirp_common.CloneModeRadio):
         # FM radio stations
         group.append(fmmode)
 
+        fmmode.append(FMVFOSetting("fmvfo", "VFO Frequency", mem.fmvfo))
+
         fmmode.append(MemSetting(
             "settings.fmworkmode", "Work Mode",
             RadioSettingValueList(
                 ["VFO", "CH"], current_index=mem.settings.fmworkmode)))
 
         fmmode.append(MemSetting(
-            "settings.fmroad", "Channel",
+            "settings.fmrec", "Allow Receive",
+            RadioSettingValueBoolean(mem.settings.fmrec)))
+
+        fmmode.append(MemSetting(
+            "settings.fmroad", "Selected Channel",
             RadioSettingValueList(
                 ['%s' % x for x in range(0, 26)],
                 current_index=mem.settings.fmroad)))
 
-        fmmode.append(MemSetting(
-            "settings.fmrec", "Allow Receive",
-            RadioSettingValueBoolean(mem.settings.fmrec)))
-
         for block_id in range(25):
             fmmode.append(FMPresetSetting(block_id, mem))
-
-        fmmode.append(FMVFOSetting("fmvfo", "VFO", mem.fmvfo))
 
         if self.MODEL != "RT-730":
             # DTMF
