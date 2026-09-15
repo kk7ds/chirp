@@ -769,9 +769,14 @@ class MemSetting(RadioSetting):
 
         self.set_by_path(memobj, self._path, value)
 
-    @staticmethod
-    def set_by_path(obj, path, value):
+    @classmethod
+    def set_by_path(cls, obj, path, value):
         """Traverse obj according to path and set the value at the leaf"""
+        cls.get_by_path(obj, path).set_value(value)
+
+    @staticmethod
+    def get_by_path(obj, path):
+        """Traverse obj according to path and get the value at the leaf"""
         elements = path.split('.')
         for element in elements:
             if '[' in element:
@@ -781,4 +786,5 @@ class MemSetting(RadioSetting):
                 obj = obj[int(index.replace(']', ''))]
             else:
                 obj = getattr(obj, element)
-        obj.set_value(value)
+
+        return obj

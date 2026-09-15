@@ -13,8 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from tests.unit import base
+from unittest import mock
+
 from chirp import settings
+from tests.unit import base
 
 
 class TestSettingValues(base.BaseTest):
@@ -187,3 +189,21 @@ class TestSettingContainers(base.BaseTest):
         self.assertFalse(rs.value.initialized)
         rs.value = 1
         self.assertTrue(rs.value.initialized)
+
+
+class TestMemSetting(base.BaseTest):
+    def test_get_by_path(self):
+        memory = mock.MagicMock()
+
+        result = settings.MemSetting.get_by_path(memory, "path[2].leaf")
+
+        self.assertEqual(result, memory.path[2].leaf)
+
+    def test_set_by_path(self):
+        memory = mock.MagicMock()
+
+        settings.MemSetting.set_by_path(
+            memory, "path[2].leaf", mock.sentinel.value)
+
+        memory.path[2].leaf.set_value.assert_called_once_with(
+            mock.sentinel.value)
