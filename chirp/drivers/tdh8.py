@@ -682,55 +682,21 @@ struct{
 
 """
 
-# basic settings
-SQUELCH = ['%s' % x for x in range(0, 10)]
-LIGHT_LIST = ["CONT", "5s", "10s", "15s", "30s"]
-LIGHT730_LIST = ["CONT", "10s", "20s", "30s"]
 MDF_LIST = ["Frequency", "Name"]
-HOP_LIST = ["A", "B", "C", "D"]
 LANG_LIST = ["Chinese", "English"]
-SCAN_MODE_LIST = ["TO", "CO", "SE"]
-PRIO_LIST = ["Edit", "Busy"]
 KEY_LIST = ["None", "FM Radio", "Lamp", "Monitor", "TONE", "Alarm", "Weather"]
 SHORT_KEY730_LIST = ["None", "Scan", "FM", "Warn", "TONE", "Weather",
                      "Copy CH"]
 LONG_KEY730_LIST = SHORT_KEY730_LIST + ["Monitor"]
-
-TOT_LIST = ["Off", "30S", "60S", "90S", "120S", "150S", "180S", "210S"]
-ALARM_LIST = ["On site", "Alarm"]
-
-DTMF_AUTO_RESET_LIST = ["Off", "5S", "10S", "15S"]
-DTMF_DECODING_RESPONSE_LIST = ["NULL", "RING", "REPLY", "BOTH"]
-DTMF_SPEED_LIST = [
-    "80ms", "90ms", "100ms", "110ms", "120ms", "130ms", "140ms", "150ms"]
-
 SCAN_BAND_LIST = ["All", "0.5M", "1.0M", "1.5M", "2.0M", "2.5M",
                   "3.0M", "3.5M", "4.0M", "4.5M", "5.0M"]
-
-VOX_GAIN = ["Off", "1", "2", "3", "4", "5"]
-VOX_DELAY = ["1.05s", "2.0s", "3.0s"]
-VOX_GAIN730 = ["Off", "1", "2", "3"]
-VOX_DELAY730 = ["0.5s", "1.0s", "2.0s", "3.0s"]
-PTTID_VALUES = ["Off", "BOT", "EOT", "BOTH"]
 BCLOCK_VALUES = ["Off", "On"]
 FREQHOP_VALUES = ["Off", "On"]
-
-# AB VFO CHANNEL
-OFFSET_DIR = ["Off", "-", "+"]
-VFO_WORKMODE = ["VFO", "VFO+CH", "CH Mode"]
-
-# FM
-FM_WORKMODE = ["VFO", "CH"]
-FM_CHANNEL = ['%s' % x for x in range(0, 26)]
-
 BANDWIDTH_LIST = ["Wide", "Narrow"]
-PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
-RTONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
 STEP_LIST = [str(x) for x in STEPS]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
-TIMEOUT730_LIST = ["Off"] + ["%s sec" % x for x in range(30, 240, 30)]
-MIC_GAIN_LIST = ['%s' % x for x in range(0, 10)]
+
 GMRS_FREQS = bandplan_na.ALL_GMRS_FREQS
 
 H8_LIST = ["TD-H8", "TD-H8-HAM", "TD-H8-GMRS"]
@@ -1044,7 +1010,7 @@ class VFOOffsetDirSetting(MemSetting):
 
         super().__init__(
             f"vfo{vfo_ch}.dir", name,
-            RadioSettingValueList(OFFSET_DIR, current_index=value))
+            RadioSettingValueList(["Off", "-", "+"], current_index=value))
 
     def apply_to_memobj(self, memobj):
         super().apply_to_memobj(memobj)
@@ -1094,9 +1060,6 @@ class TDH8(chirp_common.CloneModeRadio):
     _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
                  chirp_common.PowerLevel("Mid",  watts=4.00),
                  chirp_common.PowerLevel("High", watts=8.00)]
-    _ponmsg_list = ["Off", "Msg", "Icon"]
-    _breath_led_list = ["Off", "5S", "10S", "15S", "30S"]
-    _save_list = ["Off", "1:1", "1:2", "1:3", "1:4", "1:8"]
 
     @classmethod
     def detect_from_serial(cls, pipe):
@@ -1302,10 +1265,11 @@ class TDH8(chirp_common.CloneModeRadio):
         mem.extra = RadioSettingGroup("Extra", "extra")
 
         if self.MODEL != "RT-730":
-            rs = RadioSetting("pttid", "PTT ID",
-                              RadioSettingValueList(PTTID_VALUES,
-                                                    current_index=_mem.pttid))
-            mem.extra.append(rs)
+            mem.extra.append(RadioSetting(
+                "pttid", "PTT ID",
+                RadioSettingValueList(
+                    ["Off", "BOT", "EOT", "BOTH"],
+                    current_index=_mem.pttid)))
 
         rs = RadioSetting("bcl", "Busy Lock",
                           RadioSettingValueList(BCLOCK_VALUES,
@@ -1439,13 +1403,15 @@ class TDH8(chirp_common.CloneModeRadio):
         basic.append(MemSetting(
             "settings.squelch", "Squelch Level",
             RadioSettingValueList(
-                SQUELCH, current_index=mem.settings.squelch)))
+                ['%s' % x for x in range(0, 10)],
+                current_index=mem.settings.squelch)))
 
         if self.MODEL != "RT-730":
             basic.append(MemSetting(
                 "settings.ligcon", "Light Control",
                 RadioSettingValueList(
-                    LIGHT_LIST, current_index=mem.settings.ligcon)))
+                    ["CONT", "5s", "10s", "15s", "30s"],
+                    current_index=mem.settings.ligcon)))
 
         basic.append(MemSetting(
             "settings.voiceprompt", "Voice Prompt",
@@ -1473,7 +1439,8 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(MemSetting(
                 "settings.save", "Power Save",
                 RadioSettingValueList(
-                    self._save_list, current_index=mem.settings.save)))
+                    ["Off", "1:1", "1:2", "1:3", "1:4", "1:8"],
+                    current_index=mem.settings.save)))
 
         basic.append(MemSetting(
             "settings.dbrx", "Double Rx",
@@ -1493,13 +1460,13 @@ class TDH8(chirp_common.CloneModeRadio):
         basic.append(MemSetting(
             "settings.scanmode", "Scan Mode",
             RadioSettingValueList(
-                SCAN_MODE_LIST, current_index=mem.settings.scanmode)))
+                ["TO", "CO", "SE"], current_index=mem.settings.scanmode)))
 
         if self.MODEL != "RT-730":
             basic.append(MemSetting(
                 "settings.pritx", "Priority TX",
                 RadioSettingValueList(
-                    PRIO_LIST, current_index=mem.settings.pritx)))
+                    ["Edit", "Busy"], current_index=mem.settings.pritx)))
 
         basic.append(MemSetting(
             "settings.btnvoice", "Beep",
@@ -1572,7 +1539,8 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(MemSetting(
                 "settings.tonevoice", "Repeater Tone",
                 RadioSettingValueList(
-                    RTONE_LIST, current_index=mem.settings.tonevoice)))
+                    ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"],
+                    current_index=mem.settings.tonevoice)))
 
             basic.append(MemSetting(
                 "settings.tailclean", "QT/DQT Tail",
@@ -1591,7 +1559,7 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(MemSetting(
                 "settings.alarm", "Alarm Mode",
                 RadioSettingValueList(
-                    ALARM_LIST, current_index=mem.settings.alarm)))
+                    ["On site", "Alarm"], current_index=mem.settings.alarm)))
 
             basic.append(MemSetting(
                 "settings.amband", "AM BAND",
@@ -1600,7 +1568,9 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(MemSetting(
                 "settings.tot", "Time-Out Timer",
                 RadioSettingValueList(
-                    TOT_LIST, current_index=mem.settings.tot)))
+                    ["Off", "30S", "60S", "90S",
+                     "120S", "150S", "180S", "210S"],
+                    current_index=mem.settings.tot)))
 
             basic.append(MemSetting(
                 "settings.tx220", "TX 220",
@@ -1625,29 +1595,33 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(MemSetting(
                 "settings.voxgain", "VOX Gain",
                 RadioSettingValueList(
-                    VOX_GAIN, current_index=mem.settings.voxgain)))
+                    ["Off", "1", "2", "3", "4", "5"],
+                    current_index=mem.settings.voxgain)))
 
             basic.append(MemSetting(
                 "settings.voxdelay", "VOX Delay",
                 RadioSettingValueList(
-                    VOX_DELAY, current_index=mem.settings.voxdelay)))
+                    ["1.05s", "2.0s", "3.0s"],
+                    current_index=mem.settings.voxdelay)))
 
             basic.append(MemSetting(
                 "settings.breathled", "Breath Led",
                 RadioSettingValueList(
-                    self._breath_led_list,
+                    ["Off", "5S", "10S", "15S", "30S"],
                     current_index=mem.settings.breathled)))
 
             basic.append(MemSetting(
                 "settings.ponmsg", "Power-On Message",
                 RadioSettingValueList(
-                    self._ponmsg_list, current_index=mem.settings.ponmsg)))
+                    ["Off", "Msg", "Icon"],
+                    current_index=mem.settings.ponmsg)))
 
             if self.MODEL not in H8_LIST:
                 basic.append(MemSetting(
                     "mic.micgain", "MIC GAIN",
                     RadioSettingValueList(
-                        MIC_GAIN_LIST, current_index=mem.mic.micgain)))
+                        ['%s' % x for x in range(0, 10)],
+                        current_index=mem.mic.micgain)))
 
             if self.MODEL not in H8_LIST:
                 basic.append(MemSetting(
@@ -1687,17 +1661,20 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(MemSetting(
                 "settings.ligcon", "Light Control",
                 RadioSettingValueList(
-                    LIGHT730_LIST, current_index=mem.settings.ligcon)))
+                    ["CONT", "10s", "20s", "30s"],
+                    current_index=mem.settings.ligcon)))
 
             basic.append(MemSetting(
                 "settings.tot", "Time-out Timer",
                 RadioSettingValueList(
-                    TIMEOUT730_LIST, current_index=mem.settings.tot)))
+                    ["Off"] + ["%s sec" % x for x in range(30, 240, 30)],
+                    current_index=mem.settings.tot)))
 
             basic.append(MemSetting(
                 "press.rogerprompt", "Roger",
                 RadioSettingValueList(
-                    PTTID_LIST, current_index=mem.press.rogerprompt)))
+                    ["Off", "BOT", "EOT", "Both"],
+                    current_index=mem.press.rogerprompt)))
 
             basic.append(MemSetting(
                 "settings.lang", "Language",
@@ -1715,7 +1692,7 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(MemSetting(
                 "settings.hoptype", "Hop Type",
                 RadioSettingValueList(
-                    HOP_LIST, current_index=mem.settings.hoptype)))
+                    ["A", "B", "C", "D"], current_index=mem.settings.hoptype)))
 
             basic.append(MemSetting(
                 "settings.tailclean", "QT/DQT Tail",
@@ -1744,12 +1721,14 @@ class TDH8(chirp_common.CloneModeRadio):
             basic.append(MemSetting(
                 "settings.voxgain", "VOX Gain",
                 RadioSettingValueList(
-                    VOX_GAIN730, current_index=mem.settings.voxgain)))
+                    ["Off", "1", "2", "3"],
+                    current_index=mem.settings.voxgain)))
 
             basic.append(MemSetting(
                 "settings.voxdelay", "VOX Delay",
                 RadioSettingValueList(
-                    VOX_DELAY730, current_index=mem.settings.voxdelay)))
+                    ["0.5s", "1.0s", "2.0s", "3.0s"],
+                    current_index=mem.settings.voxdelay)))
 
         if self.MODEL != "RT-730":
             group.append(abblock)
@@ -1799,7 +1778,8 @@ class TDH8(chirp_common.CloneModeRadio):
                 vfo_block.append(MemSetting(
                     f"settings.{vfo_ch}workmode", "Work Mode",
                     RadioSettingValueList(
-                        VFO_WORKMODE, current_index=work_mode)))
+                        ["VFO", "VFO+CH", "CH Mode"],
+                        current_index=work_mode)))
 
         # FM radio stations
         group.append(fmmode)
@@ -1807,12 +1787,13 @@ class TDH8(chirp_common.CloneModeRadio):
         fmmode.append(MemSetting(
             "settings.fmworkmode", "Work Mode",
             RadioSettingValueList(
-                FM_WORKMODE, current_index=mem.settings.fmworkmode)))
+                ["VFO", "CH"], current_index=mem.settings.fmworkmode)))
 
         fmmode.append(MemSetting(
             "settings.fmroad", "Channel",
             RadioSettingValueList(
-                FM_CHANNEL, current_index=mem.settings.fmroad)))
+                ['%s' % x for x in range(0, 26)],
+                current_index=mem.settings.fmroad)))
 
         fmmode.append(MemSetting(
             "settings.fmrec", "Allow Receive",
@@ -1882,19 +1863,20 @@ class TDH8(chirp_common.CloneModeRadio):
                 dtmf.append(MemSetting(
                     "settings.dtmfautorst", "DTMF Auto Reset Times",
                     RadioSettingValueList(
-                        DTMF_AUTO_RESET_LIST,
+                        ["Off", "5S", "10S", "15S"],
                         current_index=mem.settings.dtmfautorst)))
 
                 dtmf.append(MemSetting(
                     "settings.dtmfdecoderesp", "DTMF Decoding Response",
                     RadioSettingValueList(
-                        DTMF_DECODING_RESPONSE_LIST,
+                        ["NULL", "RING", "REPLY", "BOTH"],
                         current_index=mem.settings.dtmfdecoderesp)))
 
                 dtmf.append(MemSetting(
                     "settings.dtmfspeed", "DTMF Speed",
                     RadioSettingValueList(
-                        DTMF_SPEED_LIST,
+                        ["80ms", "90ms", "100ms", "110ms",
+                         "120ms", "130ms", "140ms", "150ms"],
                         current_index=mem.settings.dtmfspeed)))
 
         return group
