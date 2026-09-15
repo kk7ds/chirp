@@ -878,6 +878,23 @@ def _do_upload(radio):
     LOG.debug("Upload all done.")
 
 
+class BrightnessSetting(MemSetting):
+    """Memory setting for screen brightness."""
+    OPTIONS = ["1", "2", "3", "4", "5"]
+
+    def __init__(self, path: str, name: str, value):
+        if value not in range(0, 5):
+            LOG.error(f"Invalid brightness value {value}. Defaulted to 5")
+            value = 0
+
+        super().__init__(path, name, RadioSettingValueList(
+            self.OPTIONS, current_index=4 - value))
+
+    def apply_to_memobj(self, memobj):
+        self.set_by_path(
+            memobj, self._path, 4 - int(self.value))
+
+
 class DTMFSetting(MemSetting):
     """Memory setting for DTMF codes stored as a string."""
     CHARSET = "0123456789ABCD*#"
@@ -1514,17 +1531,9 @@ class TDH8(chirp_common.CloneModeRadio):
                                       current_index=_settings.rogerprompt))
                 basic.append(rs)
 
-                if _settings.brightness not in range(0, 5):
-                    LOG.warning(
-                        "brightness out of range 1 to 5. Actual value: %X. "
-                        "Screen may not be visible",
-                        _settings.brightness)
-
-                rs = RadioSetting("brightness", "Brightness",
-                                  RadioSettingValueList(
-                                      self._brightness_list,
-                                      current_index=4 - _settings.brightness))
-                basic.append(rs)
+                basic.append(BrightnessSetting(
+                    "settings.brightness", "Brightness",
+                    mem.settings.brightness))
 
         rs = RadioSetting("txled", "Disp Lcd(TX)",
                           RadioSettingValueBoolean(_settings.txled))
@@ -1952,9 +1961,7 @@ class TDH8(chirp_common.CloneModeRadio):
                         obj = _settings
                         setting = element.get_name()
 
-                    if "brightness" == name:
-                        _settings.brightness = 4 - int(element.value)
-                    elif "sync" == name:
+                    if "sync" == name:
                         _settings.sync = not int(element.value)
                     elif setting == 'micgain':
                         self._memobj.mic.micgain = str(element.value)
@@ -2040,7 +2047,6 @@ class TDH3(TDH8):
     _tx_power = [chirp_common.PowerLevel("Low",  watts=2.00),
                  chirp_common.PowerLevel("High",  watts=5.00)]
     _roger_list = ["Off", "TONE1", "TONE2"]
-    _brightness_list = ["1", "2", "3", "4", "5"]
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)
@@ -2121,7 +2127,6 @@ class TDH8_3rd_Gen(TDH8):
                  chirp_common.PowerLevel("Mid",  watts=6.0),
                  chirp_common.PowerLevel("High", watts=10.0)]
     _roger_list = ["Off", "TONE1", "TONE2"]
-    _brightness_list = ["1", "2", "3", "4", "5"]
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)
