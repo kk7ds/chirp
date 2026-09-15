@@ -23,7 +23,7 @@ from chirp import chirp_common, errors, util, directory, memmap
 from chirp.settings import InvalidValueError, RadioSetting, \
     RadioSettingGroup, RadioSettingValueFloat, \
     RadioSettingValueList, RadioSettingValueBoolean, \
-    RadioSettingValueString, RadioSettings
+    RadioSettingValueString, RadioSettings, MemSetting, RadioSettingValueMap
 
 LOG = logging.getLogger(__name__)
 
@@ -753,9 +753,6 @@ VFO_WORKMODE = ["VFO", "VFO+CH", "CH Mode"]
 FM_WORKMODE = ["VFO", "CH"]
 FM_CHANNEL = ['%s' % x for x in range(0, 26)]
 
-# DTMF
-GROUPCODE = ["", "Off", "*", "#", "A", "B", "C", "D"]
-
 BANDWIDTH_LIST = ["Wide", "Narrow"]
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 RTONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
@@ -1269,12 +1266,11 @@ class TDH8(chirp_common.CloneModeRadio):
                 setattr(_mem, setting.get_name(), setting.value)
 
     def _get_settings(self):
+        mem = self._memobj
         _settings = self._memobj.settings
         _press = self._memobj.press
         _vfoa = self._memobj.vfoa
         _vfob = self._memobj.vfob
-        if self.MODEL != "RT-730":
-            _gcode = self._memobj.groupcode
         _msg = self._memobj.poweron_msg
         basic = RadioSettingGroup("basic", "Basic Settings")
         abblock = RadioSettingGroup("abblock", "A/B Channel")
@@ -1842,27 +1838,13 @@ class TDH8(chirp_common.CloneModeRadio):
             # DTMF
             group.append(dtmf)
 
-            gcode_val = str(_gcode.gcode)[2:]
-            if gcode_val == "FF":
-                gcode_val = "Off"
-            elif gcode_val == "0F":
-                gcode_val = "#"
-            elif gcode_val == "0E":
-                gcode_val = "*"
-            elif gcode_val == '00':
-                gcode_val = ""
-            else:
-                gcode_val = gcode_val[1]
-            try:
-                cur = GROUPCODE.index(gcode_val)
-            except ValueError:
-                cur = len(GROUPCODE)
-            rs = RadioSetting(
-                    "gcode", "Group Code",
-                    RadioSettingValueList(
-                        GROUPCODE,
-                        current_index=cur))
-            dtmf.append(rs)
+            dtmf.append(MemSetting(
+                "groupcode.gcode", "Group Code",
+                RadioSettingValueMap(
+                    (("", 0x00), ("Off", 0xFF), ("*", 0x0E), ("#", 0x0F),
+                     ("A", 0x0A), ("B", 0x0B), ("C", 0x0C), ("D", 0x0D)),
+                    mem_val=mem.groupcode.gcode
+                )))
 
             icode_list = self._memobj.icode.idcode
             used_icode = ''
@@ -2052,6 +2034,8 @@ class TDH8(chirp_common.CloneModeRadio):
             raise InvalidValueError("Setting Failed!") from e
 
     def set_settings(self, settings):
+        settings = settings.apply_to(self._memobj)
+
         def fm_validate(value):
             if 760 > value or value > 1080:
                 raise InvalidValueError(
@@ -2094,9 +2078,6 @@ class TDH8(chirp_common.CloneModeRadio):
                         setting = element.get_name()
                     elif "fmvfo" in name:
                         obj = self._memobj.fmvfo
-                        setting = element.get_name()
-                    elif "gcode" in name:
-                        obj = self._memobj.groupcode.gcode
                         setting = element.get_name()
                     elif "idcode" in name:
                         obj = self._memobj.icode.idcode
@@ -2199,26 +2180,6 @@ class TDH8(chirp_common.CloneModeRadio):
 
                     elif 'fmvfo' == setting and element.value.get_mutable():
                         self._memobj.fmvfo = int(element.value * 10)
-
-                    elif 'gcode' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        if val == 'Off':
-                            gcode_used = 0xFF
-                        elif val == 'A':
-                            gcode_used = 0x0A
-                        elif val == 'B':
-                            gcode_used = 0x0B
-                        elif val == 'C':
-                            gcode_used = 0x0C
-                        elif val == 'D':
-                            gcode_used = 0x0D
-                        elif val == '#':
-                            gcode_used = 0x0F
-                        elif val == '*':
-                            gcode_used = 0x0E
-                        elif val == '':
-                            gcode_used = 0x00
-                        self._memobj.groupcode.gcode = gcode_used
 
                     elif 'icode' == setting and element.value.get_mutable():
                         val = str(element.value)
