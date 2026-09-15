@@ -907,6 +907,34 @@ def _do_upload(radio):
     LOG.debug("Upload all done.")
 
 
+class DTMFSetting(MemSetting):
+    """Memory setting for DTMF codes stored as a string."""
+    CHARSET = "0123456789ABCD*#"
+
+    def __init__(self, path: str, name: str, value, max_len: int):
+        super().__init__(
+            path, name,
+            value=RadioSettingValueString(
+                minlength=0,
+                maxlength=max_len,
+                current=''.join([
+                    self.CHARSET[char] for char in value if char != 0xFF
+                ]),
+                # Allow trailing spaces for the auto padding
+                charset=self.CHARSET + ' ')
+        )
+
+    def apply_to_memobj(self, memobj):
+        # Remove leading spaces and re-pad
+        value = str(self.value)
+        value = value.lstrip(' ').ljust(len(value))
+
+        self.set_by_path(memobj, self._path, [
+            0xFF if char == ' ' else self.CHARSET.index(char)
+            for char in value
+        ])
+
+
 TDH8_CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
     "!@#$%^&*()+-=[]:\";'<>?,./"
 
@@ -1846,126 +1874,24 @@ class TDH8(chirp_common.CloneModeRadio):
                     mem_val=mem.groupcode.gcode
                 )))
 
-            icode_list = self._memobj.icode.idcode
-            used_icode = ''
-            for i in icode_list:
-                if i == 0xFF:
-                    continue
-                used_icode += str(i)[3]
-            dtmfcharsani = "0123456789ABCD "
-            i_val = RadioSettingValueString(0, 3, used_icode)
-            rs = RadioSetting("icode", "ID Code", i_val)
-            i_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
+            dtmf.append(DTMFSetting(
+                "icode.idcode", "ID Code", mem.icode.idcode, 3))
 
-            gcode_list_1 = self._memobj.group1.group1
-            used_group1 = ''
-            for i in gcode_list_1:
-                if i == 0xFF:
-                    continue
-                used_group1 += str(i)[3]
-            group1_val = RadioSettingValueString(0, 7, used_group1)
-            rs = RadioSetting("group1", "1", group1_val)
-            group1_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
+            for group_idx in range(1, 9):
+                group_name = f"group{group_idx}"
+                value = getattr(getattr(mem, group_name), group_name)
 
-            gcode_list_2 = self._memobj.group2.group2
-            used_group2 = ''
-            for i in gcode_list_2:
-                if i == 0xFF:
-                    continue
-                used_group2 += str(i)[3]
-            group2_val = RadioSettingValueString(0, 7, used_group2)
-            rs = RadioSetting("group2", "2", group2_val)
-            group2_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
+                dtmf.append(DTMFSetting(
+                    f"{group_name}.{group_name}",
+                    str(group_idx), value, 7))
 
-            gcode_list_3 = self._memobj.group3.group3
-            used_group3 = ''
-            for i in gcode_list_3:
-                if i == 0xFF:
-                    continue
-                used_group3 += str(i)[3]
-            group3_val = RadioSettingValueString(0, 7, used_group3)
-            rs = RadioSetting("group3", "3", group3_val)
-            group3_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
+            dtmf.append(DTMFSetting(
+                "startcode.scode", "PTT ID Starting(BOT)",
+                mem.startcode.scode, 7))
 
-            gcode_list_4 = self._memobj.group4.group4
-            used_group4 = ''
-            for i in gcode_list_4:
-                if i == 0xFF:
-                    continue
-                used_group4 += str(i)[3]
-            group4_val = RadioSettingValueString(0, 7, used_group4)
-            rs = RadioSetting("group4", "4", group4_val)
-            group4_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
+            dtmf.append(DTMFSetting(
+                "endcode.ecode", "PTT ID Ending(BOT)", mem.endcode.ecode, 7))
 
-            gcode_list_5 = self._memobj.group5.group5
-            used_group5 = ''
-            for i in gcode_list_5:
-                if i == 0xFF:
-                    continue
-                used_group5 += str(i)[3]
-            group5_val = RadioSettingValueString(0, 7, used_group5)
-            rs = RadioSetting("group5", "5", group5_val)
-            group5_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            gcode_list_6 = self._memobj.group6.group6
-            used_group6 = ''
-            for i in gcode_list_6:
-                if i == 0xFF:
-                    continue
-                used_group6 += str(i)[3]
-            group6_val = RadioSettingValueString(0, 7, used_group6)
-            rs = RadioSetting("group6", "6", group6_val)
-            group6_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            gcode_list_7 = self._memobj.group7.group7
-            used_group7 = ''
-            for i in gcode_list_7:
-                if i == 0xFF:
-                    continue
-                used_group7 += str(i)[3]
-            group7_val = RadioSettingValueString(0, 7, used_group7)
-            rs = RadioSetting("group7", "7", group7_val)
-            group7_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            gcode_list_8 = self._memobj.group8.group8
-            used_group8 = ''
-            for i in gcode_list_8:
-                if i == 0xFF:
-                    continue
-                used_group8 += str(i)[3]
-            group8_val = RadioSettingValueString(0, 7, used_group8)
-            rs = RadioSetting("group8", "8", group7_val)
-            group8_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            scode_list = self._memobj.startcode.scode
-            used_scode = ''
-            for i in scode_list:
-                if i == 0xFF:
-                    continue
-                used_scode += str(i)[3]
-            scode_val = RadioSettingValueString(0, 7, used_scode)
-            rs = RadioSetting("scode", "PTT ID Starting(BOT)", scode_val)
-            scode_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            ecode_list = self._memobj.endcode.ecode
-            used_ecode = ''
-            for i in ecode_list:
-                if i == 0xFF:
-                    continue
-                used_ecode += str(i)[3]
-            ecode_val = RadioSettingValueString(0, 7, used_ecode)
-            rs = RadioSetting("ecode", "PTT ID Ending(BOT)", ecode_val)
-            dtmf.append(rs)
             if self.MODEL in H8_LIST:
                 rs = RadioSetting("dtmfst", "DTMF Side Tones",
                                   RadioSettingValueBoolean(_settings.dtmfst))
@@ -1973,26 +1899,12 @@ class TDH8(chirp_common.CloneModeRadio):
 
             # H3
             if self.MODEL not in H8_LIST:
-                # stuncode
-                ecode_list = self._memobj.skcode.stuncode
-                used_ecode = ''
-                for i in ecode_list:
-                    if i == 0xFF:
-                        continue
-                    used_ecode += str(i)[3]
-                ecode_val = RadioSettingValueString(0, 16, used_ecode)
-                rs = RadioSetting("stuncode", "Stun Code", ecode_val)
-                dtmf.append(rs)
-                # killcode
-                ecode_list = self._memobj.skcode.killcode
-                used_ecode = ''
-                for i in ecode_list:
-                    if i == 0xFF:
-                        continue
-                    used_ecode += str(i)[3]
-                ecode_val = RadioSettingValueString(0, 16, used_ecode)
-                rs = RadioSetting("killcode", "Kill Code", ecode_val)
-                dtmf.append(rs)
+                dtmf.append(DTMFSetting(
+                    "skcode.stuncode", "Stun Code", mem.skcode.stuncode, 16))
+
+                dtmf.append(DTMFSetting(
+                    "skcode.killcode", "Kill Code", mem.skcode.killcode, 16))
+
             if self.MODEL in H3_LIST and \
                     _settings.scanband <= len(SCAN_BAND_LIST):
                 # older firmware sets 0xCA0-0xCA7 to FF
@@ -2079,47 +1991,8 @@ class TDH8(chirp_common.CloneModeRadio):
                     elif "fmvfo" in name:
                         obj = self._memobj.fmvfo
                         setting = element.get_name()
-                    elif "idcode" in name:
-                        obj = self._memobj.icode.idcode
-                        setting = element.get_name()
-                    elif "scode" in name:
-                        obj = self._memobj.startcode.scode
-                        setting = element.get_name()
-                    elif "ecode" == name:
-                        obj = self._memobj.endcode.ecode
-                        setting = element.get_name()
-                    elif "group1" in name:
-                        obj = self._memobj.group1.group1
-                        setting = element.get_name()
-                    elif "group2" in name:
-                        obj = self._memobj.group2.group2
-                        setting = element.get_name()
-                    elif "group3" in name:
-                        obj = self._memobj.group3.group3
-                        setting = element.get_name()
-                    elif "group4" in name:
-                        obj = self._memobj.group4.group4
-                        setting = element.get_name()
-                    elif "group5" in name:
-                        obj = self._memobj.group5.group5
-                        setting = element.get_name()
-                    elif "group6" in name:
-                        obj = self._memobj.group6.group6
-                        setting = element.get_name()
-                    elif "group7" in name:
-                        obj = self._memobj.group7.group7
-                        setting = element.get_name()
-                    elif "group8" in name:
-                        obj = self._memobj.group8.group8
-                        setting = element.get_name()
                     elif "micgain" in name:
                         obj = self._memobj.mic.micgain
-                        setting = element.get_name()
-                    elif "killcode" in name:
-                        obj = self._memobj.skcode.killcode
-                        setting = element.get_name()
-                    elif "stuncode" in name:
-                        obj = self._memobj.skcode.stuncode
                         setting = element.get_name()
                     else:
                         obj = _settings
@@ -2181,175 +2054,9 @@ class TDH8(chirp_common.CloneModeRadio):
                     elif 'fmvfo' == setting and element.value.get_mutable():
                         self._memobj.fmvfo = int(element.value * 10)
 
-                    elif 'icode' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.icode.idcode = list_val
-
-                    elif 'scode' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.startcode.scode = list_val
-
-                    elif 'ecode' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.endcode.ecode = list_val
-
-                    elif 'group1' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group1.group1 = list_val
-
-                    elif 'group2' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group2.group2 = list_val
-
-                    elif 'group3' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group3.group3 = list_val
-
-                    elif 'group4' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group4.group4 = list_val
-
-                    elif 'group5' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group5.group5 = list_val
-
-                    elif 'group6' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group6.group6 = list_val
-
-                    elif 'group7' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group7.group7 = list_val
-
-                    elif 'group8' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group8.group8 = list_val
                     elif setting == 'micgain':
                         self._memobj.mic.micgain = str(element.value)
 
-                    elif 'stuncode' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.skcode.stuncode = list_val
-                    elif 'killcode' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.skcode.killcode = list_val
                     elif element.value.get_mutable():
                         setattr(obj, setting, element.value)
 
