@@ -1,4 +1,27 @@
-# Copyright 2012 Dan Smith <dsmith@danplanet.com>
+# ToDo:
+
+# X1) change gt_memory(), mem.extra setting BCL to RadioSettingBoolean instead of List
+# X2) refactor get_memory(), mem.extra settings to non-nested calls
+# X3) work on mem map for RT-730
+# X3.1) work on memory chans for RT-730
+# X3.2) work on FMB mems for RT-730
+# 4) work on settings for RT-730
+# X4.0) fix am determination in get_memory and set_memory
+# X4.1) look at button_Obj for RT-730 compared to TD-H8
+# X4.2) Button settings on all
+# X5.0 work on _get_tx_bands in all sub classes TDH3, TDH3 Plus, TDH9 (see TDH8 line 671)
+# X6.0 TD-H8 Gen 3, review findings in Bug #12460 https://chirpmyradio.com/issues/12460
+# X6.1 add validate_frequency for GMRS classes
+# X6.2 fix memory_validate() for FMB classes
+
+# Copyright 2026 Fred Trimble <chirpdriver@gmail.com>
+# CHIRP driver for the TIDRADIO TD-H8 Gen 2, 3 & 4, TD-H3 & Plus
+# and TD-H9 radios
+#
+# This is a complete rewrite of the original tdh8.py to make it more
+# maintainable and to support the newer radios. It is based on the
+# original code by Fred Trimble and many previous contributors,
+# but has been significantly modified and improved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,874 +36,106 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import struct
-import logging
+from chirp import (
+    bitwise,
+    bandplan_na,
+    checksum,
+    chirp_common,
+    directory,
+    errors,
+    memmap,
+    platform,
+    util,
+)
 
+from chirp.settings import (
+    RadioSetting,
+    RadioSettings,
+    RadioSettingGroup,
+    RadioSettingSubGroup,
+    RadioSettingValueBoolean,
+    RadioSettingValueInvertedBoolean,
+    RadioSettingValueInteger,
+    RadioSettingValueList,
+    RadioSettingValueMap,
+    RadioSettingValueString,
+    MemSetting,
+)
 
-from chirp import chirp_common, errors, util, directory, memmap
-from chirp import bitwise
-from chirp.settings import InvalidValueError, RadioSetting, \
-    RadioSettingGroup, RadioSettingValueFloat, \
-    RadioSettingValueList, RadioSettingValueBoolean, \
-    RadioSettingValueString, RadioSettings
 from textwrap import dedent
-from chirp import bandplan_na
+
+import logging
+import struct
+from textwrap import dedent
+from datetime import datetime
 
 LOG = logging.getLogger(__name__)
 
-AIRBAND = (108000000, 135999999)
-MEM_FORMAT = """
-#seekto 0x0008;
-struct {
-  lbcd rxfreq[4];
-  lbcd txfreq[4];
-  lbcd rxtone[2];
-  lbcd txtone[2];
-  u8 unused1;
-  u8 pttid:2,
-     freqhop:1,
-     unused3:1,
-     unused4:1,
-     bcl:1,
-     unused5:1,
-     unused2:1;
-  u8 unused6:1,
-     unused7:1,
-     lowpower:2,
-     wide:1,
-     unused8:1,
-     offset:2;
-  u8 unused10;
-} memory[200];
-
-#seekto 0x0CA8;
-struct {
-  u8 txled:1,
-     rxled:1,
-     unused11:1,
-     ham:1,
-     gmrs:1,
-     unused14:1,
-     dtmfst:1,
-     pritx:1;
-  u8 scanmode:2,
-     unused16:1,
-     keyautolock:1,
-     unused17:1,
-     btnvoice:1,
-     unknown18:1,
-     voiceprompt:1;
-  u8 fmworkmode:1,
-     sync:1,
-     tonevoice:2,
-     fmrec:1,
-     mdfa:1,
-     aworkmode:2;
-  u8 ponmsg:2,
-     unused19:1,
-     mdfb:1,
-     unused20:1,
-     dbrx:1,
-     bworkmode:2;
-  u8 ablock;
-  u8 bblock;
-  u8 fmroad;
-  u8 unused21:1,
-     tailclean:1,
-     rogerprompt:1,
-     unused23:1,
-     unused24:1,
-     voxgain:3;
-  u8 astep:4,
-     bstep:4;
-  u8 squelch;
-  u8 tot;
-  u8 lang;
-  u8 save;
-  u8 ligcon;
-  u8 voxdelay;
-  u8 onlychmode:1,
-     breathled:3,
-     unused:3,
-     alarm:1;
-} settings;
-
-//#seekto 0x0CB8;
-struct{
-    lbcd a[4];
-    lbcd b[4];
-}vfo_offset;
-
-#seekto 0x0CD8;
-struct{
-    lbcd fmblock[4];
-}fmmode[25];
-
-#seekto 0x0D48;
-struct {
-  char name[8];
-  u8 unknown2[8];
-} names[200];
-
-#seekto 0x1A08;
-lbit usedflags[200];
-
-#seekto 0x1a28;
-lbit scanadd[200];
-
-#seekto 0x1B38;
-lbcd fmvfo[4];
-
-#seekto 0x1B58;
-struct {
-  lbcd rxfreqa[4];
-  lbcd txfreq[4];
-  u8 rxtone[2];
-  u8 txtone[2];
-  u8 unused1;
-  u8 pttid:2,
-     specialqta:1,
-     unused3:1,
-     unused4:1,
-     bcl:1,
-     unused5:1,
-     unused2:1;
-  u8 unused6:1,
-     unused7:1,
-     lowpower:2,
-     wide:1,
-     unused8:1,
-     dira:2;
-  u8 unused10;
-} vfoa;
-
-//#seekto 0x1B68;
-struct {
-  lbcd rxfreqb[4];
-  lbcd txfreq[4];
-  u8 rxtoneb[2];
-  u8 txtone[2];
-  u8 unused1;
-  u8 pttid:2,
-     specialqtb:1,
-     unused3:1,
-     unused4:1,
-     bclb:1,
-     unused5:1,
-     unused2:1;
-  u8 unused6:1,
-     unused7:1,
-     lowpowerb:2,
-     wideb:1,
-     unused8:1,
-     dirb:2;
-  u8 unused10;
-} vfob;
-
-//#seekto 0x1B78;
-lbit fmusedflags[32];
-
-#seekto 0x1c08;
-struct {
-  char msg1[16];
-  char msg2[16];
-  char msg3[16];
-} poweron_msg;
-
-
-#seekto 0x1CC8;
-struct{
-  u8 stopkey1;
-  u8 ssidekey1;
-  u8 ssidekey2;
-  u8 ltopkey2;
-  u8 lsidekey3;
-  u8 lsidekey4;
-  u8 unused25[10];
-} press;
-
-#seekto 0x1E28;
-struct{
-    u8 idcode[3];
-}icode;
-
-#seekto 0x1E31;
-struct{
-    u8 gcode;
-}groupcode;
-
-#seekto 0x1E38;
-struct{
-    u8 group1[7];
-}group1;
-
-#seekto 0x1E48;
-struct{
-    u8 group2[7];
-}group2;
-
-#seekto 0x1E58;
-struct{
-    u8 group3[7];
-}group3;
-
-#seekto 0x1E68;
-struct{
-    u8 group4[7];
-}group4;
-
-#seekto 0x1E78;
-struct{
-    u8 group5[7];
-}group5;
-
-#seekto 0x1E88;
-struct{
-    u8 group6[7];
-}group6;
-
-#seekto 0x1E98;
-struct{
-    u8 group7[7];
-}group7;
-
-#seekto 0x1EA8;
-struct{
-    u8 group8[7];
-}group8;
-
-#seekto 0x1EC8;
-struct{
-    u8 scode[7];
-}startcode;
-
-#seekto 0x1ED8;
-struct{
-    u8 ecode[7];
-}endcode;
-"""
-
-MEM_FORMAT_H3 = """
-#seekto 0x0008;
-struct {
-  lbcd rxfreq[4];
-  lbcd txfreq[4];
-  lbcd rxtone[2];
-  lbcd txtone[2];
-  u8 unused1;
-  u8 pttid:2,
-     freqhop:1,
-     unused3:1,
-     unused4:1,
-     bcl:1,
-     unused5:1,
-     unused2:1;
-  u8 unused6:1,
-     scramble:1,
-     lowpower:2,
-     wide:1,
-     unused8:1,
-     offset:2;
-  u8 unused10;
-} memory[200];
-
-#seekto 0x0C98;
-struct{
-  u8 stopkey1;
-  u8 ssidekey1;
-  u8 ssidekey2;
-  u8 ltopkey2;
-  u8 lsidekey3;
-  u8 lsidekey4;
-} press;
-
-#seekto 0x0CA0;
-struct {
-  u8 unknown21:7,
-     dtmfdecode:1;
-  u8 unknown22:6,
-     dtmfautorst:2;
-  u8 unknown23:6,
-     dtmfdecoderesp:2;
-  u8 unknown24:5,
-     dtmfspeed:3;
-  u8 unknown25:4,
-     scanband:4;
-  u8 brightness:8;
-  u8 unknown27:8;
-  u8 unknown28:8;
-  u8 txled:1,
-     rxled:1,
-     unused11:1,
-     ham:1,
-     gmrs:1,
-     unused14:1,
-     dtmfst:1,
-     pritx:1;
-  u8 scanmode:2,
-     unused16:1,
-     keyautolock:1,
-     unused17:1,
-     btnvoice:1,
-     unknown18:1,
-     voiceprompt:1;
-  u8 fmworkmode:1,
-     sync:1,
-     tonevoice:2,
-     fmrec:1,
-     mdfa:1,
-     aworkmode:2;
-  u8 ponmsg:2,
-     unused19:1,
-     mdfb:1,
-     unused20:1,
-     dbrx:1,
-     bworkmode:2;
-  u8 ablock;
-  u8 bblock;
-  u8 fmroad;
-  u8 unused21:1,
-     tailclean:1,
-     rogerprompt_:1,
-     kill:1,
-     stun:1,
-     voxgain:3;
-  u8 astep:4,
-     bstep:4;
-  u8 squelch;
-  u8 tot;
-  u8 rogerprompt:2,
-     unused11_4:1,
-     tx220:1,
-     tx350:1,
-     tx500:1,
-     lang:1,
-     unused11_1:1;
-  u8 save;
-  u8 ligcon;
-  u8 voxdelay;
-  u8 onlychmode:1,
-     breathled:3,
-     unused:2,
-     amband:1,
-     alarm:1;
-} settings;
-
-//#seekto 0x0CB8;
-struct{
-  lbcd a[4];
-  lbcd b[4];
-}vfo_offset;
-
-#seekto 0x0CD8;
-struct{
-    lbcd fmblock[4];
-}fmmode[25];
-
-#seekto 0x0D48;
-struct {
-  char name[8];
-} names[200];
-
-#seekto 0x1808;
-struct{
-    u8 stuncode[16];
-    u8 killcode[16];
-}skcode;
-
-//#seekto 0x1828;
-struct{
-    u8 idcode[3];
-}icode;
-
-#seekto 0x1837;
-struct{
-    u8 gcode;
-}groupcode;
-
-//#seekto 0x1838;
-struct{
-    u8 group1[7];
-}group1;
-
-#seekto 0x1848;
-struct{
-    u8 group2[7];
-}group2;
-
-#seekto 0x1858;
-struct{
-    u8 group3[7];
-}group3;
-
-#seekto 0x1868;
-struct{
-    u8 group4[7];
-}group4;
-
-#seekto 0x1878;
-struct{
-    u8 group5[7];
-}group5;
-
-#seekto 0x1888;
-struct{
-    u8 group6[7];
-}group6;
-
-#seekto 0x1898;
-struct{
-    u8 group7[7];
-}group7;
-
-#seekto 0x18A8;
-struct{
-    u8 group8[7];
-}group8;
-
-#seekto 0x18C8;
-struct{
-    u8 scode[7];
-}startcode;
-
-#seekto 0x18D8;
-struct{
-    u8 ecode[7];
-}endcode;
-
-#seekto 0x1908;
-lbit usedflags[200];
-
-#seekto 0x1928;
-lbit scanadd[200];
-
-#seekto 0x1948;
-lbit fmusedflags[32];
-
-#seekto 0x1958;
-struct {
-  lbcd rxfreqa[4];
-  lbcd txfreq[4];
-  u8 rxtone[2];
-  u8 txtone[2];
-  u8 unused1;
-  u8 pttid:2,
-     specialqta:1,
-     unused3:1,
-     unused4:1,
-     bcl:1,
-     unused5:1,
-     unused2:1;
-  u8 unused6:1,
-     unused7:1,
-     lowpower:2,
-     wide:1,
-     unused8:1,
-     dira:2;
-  u8 unused10;
-} vfoa;
-
-//#seekto 0x1968;
-struct {
-  lbcd rxfreqb[4];
-  lbcd txfreq[4];
-  u8 rxtoneb[2];
-  u8 txtone[2];
-  u8 unused1;
-  u8 pttid:2,
-     specialqtb:1,
-     unused3:1,
-     unused4:1,
-     bclb:1,
-     unused5:1,
-     unused2:1;
-  u8 unused6:1,
-     unused7:1,
-     lowpowerb:2,
-     wideb:1,
-     unused8:1,
-     dirb:2;
-  u8 unused10;
-} vfob;
-
-//#seekto 0x1978;
-lbcd fmvfo[4];
-
-#seekto 0x1c08;
-struct {
-  char msg1[16];
-  char msg2[16];
-  char msg3[16];
-} poweron_msg;
-
-#seekto 0x1f28;
-struct{
-  u8 micgain;
-} mic;
-
-"""
-
-MEM_FORMAT_RT730 = """
-#seekto 0x0008;
-struct {
-  lbcd rxfreq[4];
-  lbcd txfreq[4];
-  lbcd rxtone[2];
-  lbcd txtone[2];
-  u8 unused1;
-  u8 unused2:4,
-     spec:1,
-     bcl:1,
-     unused3:2;
-  u8 scramble:1,
-     freqhop:1,
-     lowpower:2,
-     wide:1,
-     unused4:3;
-  u8 unused5;
-} memory[200];
-
-#seekto 0x0C98;
-struct{
-  u8 ssidekey1;
-  u8 lsidekey1;
-  u8 ssidekey2;
-  u8 lsidekey2;
-  u8 unused1:6,
-     rogerprompt:2;
-} press;
-
-#seekto 0x0CA8;
-struct {
-  u8 txled:1,
-     rxled:1,
-     unused1:6;
-  u8 scanmode:2,
-     unused2:1,
-     keyautolock:1,
-     save:1,
-     btnvoice:1,
-     unused3:1,
-     voiceprompt:1;
-  u8 fmworkmode:1,
-     ligcon:2,
-     unused4:1,
-     fmrec:1,
-     mdfa:1,
-     aworkmode:2;
-  u8 unused5:5,
-     dbrx:1,
-     bworkmode:2;
-  u8 unused6;
-  u8 unused7;
-  u8 fmroad;
-  u8 unused8:1,
-     tailclean:1,
-     unused9:3,
-     voxgain:3;
-  u8 astep:4,
-     bstep:4;
-  u8 squelch;
-  u8 tot;
-  u8 unused10:6,
-     lang:1,
-     unused11:1;
-  u8 unused12;
-  u8 unused13;
-  u8 voxdelay;
-  u8 unused14:6,
-     hoptype:2;
-} settings;
-
-//#seekto 0x0CB8;
-struct {
-lbcd a[4];
-lbcd b[4];
-}vfo_offset;
-
-#seekto 0x0CD8;
-struct{
-    lbcd fmblock[4];
-}fmmode[25];
-
-#seekto 0x0D48;
-struct {
-  char name[8];
-} names[200];
-
-#seekto 0x1398;
-struct {
-  char msg1[16];
-  char msg2[16];
-  char msg3[16];
-  char msg4[16];
-} poweron_msg;
-
-#seekto 0x1A08;
-lbit usedflags[200];
-
-#seekto 0x1A28;
-lbit scanadd[200];
-
-#seekto 0x1B38;
-lbcd fmvfo[4];
-
-#seekto 0x1B58;
-struct {
-  lbcd rxfreqa[4];
-  lbcd txfreq[4];
-  u8 rxtone[2];
-  u8 txtone[2];
-  u8 unused1;
-  u8 pttid:2,
-     specialqta:1,
-     unused2:1,
-     unused3:1,
-     bcl:1,
-     unused4:1,
-     unused5:1;
-  u8 unused6:1,
-     unused7:1,
-     lowpower:2,
-     wide:1,
-     unused8:1,
-     dira:2;
-  u8 unused9;
-} vfoa;
-
-//#seekto 0x1B68;
-struct {
-  lbcd rxfreqb[4];
-  lbcd txfreq[4];
-  u8 rxtoneb[2];
-  u8 txtone[2];
-  u8 unused1;
-  u8 pttid:2,
-     specialqtb:1,
-     unused2:1,
-     unused3:1,
-     bclb:1,
-     unused4:1,
-     unused5:1;
-  u8 unused6:1,
-     unused7:1,
-     lowpowerb:2,
-     wideb:1,
-     unused8:1,
-     dirb:2;
-  u8 unused9;
-} vfob;
-
-//#seekto 0x1B78;
-lbit fmusedflags[32];
-
-#seekto 0x1f28;
-struct{
-  u8 micgain;
-} mic;
-
-"""
-
-# basic settings
-SQUELCH = ['%s' % x for x in range(0, 10)]
-LIGHT_LIST = ["CONT", "5s", "10s", "15s", "30s"]
-LIGHT730_LIST = ["CONT", "10s", "20s", "30s"]
-MDFA_LIST = ["Frequency", "Name"]
-MDFB_LIST = ["Frequency", "Name"]
-HOP_LIST = ["A", "B", "C", "D"]
-LANG_LIST = ["Chinese", "English"]
-SCAN_MODE_LIST = ["TO", "CO", "SE"]
-PRIO_LIST = ["Edit", "Busy"]
-SHORT_KEY_LIST = ["None", "FM Radio", "Lamp", "Monitor",
-                  "TONE", "Alarm", "Weather"]
-LONG_KEY_LIST = ["None", "FM Radio", "Lamp",
-                 "Monitor", "TONE", "Alarm", "Weather"]
-SHORT_KEY730_LIST = ["None", "Scan", "FM", "Warn", "TONE", "Weather",
-                     "Copy CH"]
-LONG_KEY730_LIST = SHORT_KEY730_LIST + ["Monitor"]
-PRESS_NAME = ["stopkey1", "ssidekey1", "ssidekey2",
-              "ltopkey2", "lsidekey3", "lsidekey4"]
-
-VFOA_NAME = ["rxfreqa",
-             "txfreq",
-             "rxtone",
-             "txtone",
-             "pttid",
-             "specialqta",
-             "bcl",
-             "lowpower",
-             "wide",
-             "a",
-             "dira",
-             ]
-
-VFOB_NAME = ["rxfreqb",
-             "txfreq",
-             "rxtoneb",
-             "txtone",
-             "pttid",
-             "specialqtb",
-             "bclb",
-             "lowpowerb",
-             "wideb",
-             "b",
-             "dirb",
-             ]
-
-TOT_LIST = ["Off", "30S", "60S", "90S", "120S", "150S", "180S", "210S"]
-ALARM_LIST = ["On site", "Alarm"]
-
-DTMF_AUTO_RESET_LIST = ["Off", "5S", "10S", "15S"]
-DTMF_DECODING_RESPONSE_LIST = ["NULL", "RING", "REPLY", "BOTH"]
-DTMF_SPEED_LIST = ["80ms",
-                   "90ms",
-                   "100ms",
-                   "110ms",
-                   "120ms",
-                   "130ms",
-                   "140ms",
-                   "150ms"]
-SCAN_BAND_LIST = ["All",
-                  "0.5M",
-                  "1.0M",
-                  "1.5M",
-                  "2.0M",
-                  "2.5M",
-                  "3.0M",
-                  "3.5M",
-                  "4.0M",
-                  "4.5M",
-                  "5.0M"]
-
-# KEY
-VOX_GAIN = ["Off", "1", "2", "3", "4", "5"]
-VOX_DELAY = ["1.05s", "2.0s", "3.0s"]
-VOX_GAIN730 = ["Off", "1", "2", "3"]
-VOX_DELAY730 = ["0.5s", "1.0s", "2.0s", "3.0s"]
-PTTID_VALUES = ["Off", "BOT", "EOT", "BOTH"]
-BCLOCK_VALUES = ["Off", "On"]
-FREQHOP_VALUES = ["Off", "On"]
-
-# AB VFO CHANNEL
-OFFSET_DIR = ["Off", "-", "+"]
-VFO_WORKMODE = ["VFO", "VFO+CH", "CH Mode"]
-
-# FM
-FM_WORKMODE = ["VFO", "CH"]
-FM_CHANNEL = ['%s' % x for x in range(0, 26)]
-
-# DTMF
-GROUPCODE = ["", "Off", "*", "#", "A", "B", "C", "D"]
-
-AB_LIST = ["A", "B"]
-BANDWIDTH_LIST = ["Wide", "Narrow"]
-PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
-RTONE_LIST = ["1000 Hz", "1450 Hz", "1750 Hz", "2100 Hz"]
-SCODE_LIST = ["%s" % x for x in range(1, 16)]
-STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
-STEP_LIST = [str(x) for x in STEPS]
-STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 20.0, 25.0, 50.0]
-TIMEOUT730_LIST = ["Off"] + ["%s sec" % x for x in range(30, 240, 30)]
-# mic
-MIC_GAIN_LIST = ['%s' % x for x in range(0, 10)]
-H8_LIST = ["TD-H8", "TD-H8-HAM", "TD-H8-GMRS"]
-H3_LIST = ["TD-H3", "TD-H3-HAM", "TD-H3-GMRS"]
-
-GMRS_FREQS = bandplan_na.ALL_GMRS_FREQS
-
-ALL_MODEL = H8_LIST + H3_LIST + ["RT-730"]
-
-TD_H8 = b'PVOJH\x1c\x14'
-TD_H3 = b'PVOJH\x5c\x14'
-RT_730 = b'PGOJH\xc3D'
+CMD_ACK = b'\x06'
+
+# magic strings used to put radio into programming mode
+TD_H8 = b'\x50\x56\x4f\x4a\x48\x1c\x14'
+TD_H3 = b'\x50\x56\x4f\x4a\x48\x5c\x14'  # used by H3, H3 Plus H8 G4 and H9
+RT_730 = b'\x50\x47\x4f\x4a\x48\xc3\x44'
 TD_H8_G3 = b'PVOJH<\x14'
 
+TDH8_CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
+    '!@#$%^&*()+-=[]:";\'<>?,./'
+DTMF_CHARS = '0123456789 *#ABCD'
+GMRS_FREQS = bandplan_na.ALL_GMRS_FREQS
 
-def _do_status(radio, block):
+def _do_status(radio, cur, max):
     status = chirp_common.Status()
-    status.msg = "Cloning"
-    status.cur = block
-    status.max = radio._memsize
+    status.msg = 'Cloning %3i%%' % (round(cur / max * 100))
+    status.cur = cur
+    status.max = max
     radio.status_fn(status)
-
-
-def _upper_band_from_data(data):
-    return data[0x03:0x04]
-
-
-def _upper_band_from_image(radio):
-    return _upper_band_from_data(radio.get_mmap())
-
-
-def _firmware_version_from_data(data, version_start, version_stop):
-    version_tag = data[version_start:version_stop]
-    return version_tag
-
-
-def _firmware_version_from_image(radio):
-    version = _firmware_version_from_data(radio.get_mmap(),
-                                          radio._fw_ver_file_start,
-                                          radio._fw_ver_file_stop)
-    # LOG.debug("_firmware_version_from_image: " + util.hexprint(version))
-    return version
-
 
 def _do_ident(serial, magic, secondack=True):
     serial.timeout = 1
 
-    LOG.info("Sending Magic: %s" % util.hexprint(magic))
+    LOG.info('Sending Magic: %s' % util.hexprint(magic))
     serial.write(magic)
     ack = serial.read(1)
 
     if not ack:
         raise errors.RadioNoResponse()
-    if ack != b"\x06":
-        # LOG.debug(repr(ack))
-        raise errors.RadioError("Radio refused to enter programming mode")
+    if ack != CMD_ACK:
+        raise errors.RadioError('Radio refused to enter programming mode')
 
-    serial.write(b"\x02")
+    serial.write(b'\x02')
 
-    response = b""
+    response = b''
     for i in range(1, 9):
         byte = serial.read(1)
         response += byte
-        if byte == b"\xDD":
+        if byte == b'\xdd':
             break
 
     if len(response) in [8, 12]:
-        # DEBUG
-        LOG.info("Valid response, got this:")
-        LOG.info(util.hexprint(response))
+        LOG.info('Valid response, got this: %s' % util.hexprint(response))
         if len(response) == 12:
             ident = response[0] + response[3] + response[5] + response[7:]
         else:
             ident = response
     else:
         # bad response
-        msg = "Unexpected response, got this:"
-        msg += util.hexprint(response)
-        LOG.debug(msg)
-        raise errors.RadioError("Unexpected response from radio.")
+        LOG.debug('Unexpected response, got this: %s' % util.hexprint(response))
+        raise errors.RadioError('Unexpected response from radio.')
 
     if secondack:
-        serial.write(b"\x06")
+        serial.write(CMD_ACK)
         ack = serial.read(1)
-        if ack != b"\x06":
-            raise errors.RadioError("Radio refused clone")
+        if ack != CMD_ACK:
+            raise errors.RadioError('Radio refused clone')
 
     return ident
-
-
-def response_mode(mode):
-    data = mode
-    return data
-
 
 def _read_block(radio, start, size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", b'R', start, size)
-    expectedresponse = b"W" + cmd[1:]
+    cmd = struct.pack('>cHb', b'R', start, size)
+    expectedresponse = b'W' + cmd[1:]
 
     try:
         serial.write(cmd)
@@ -888,154 +143,451 @@ def _read_block(radio, start, size):
         if not response:
             if start == 0:
                 raise errors.RadioNoResponse()
-            raise errors.RadioError("Failed to read block at %04x" % start)
+            raise errors.RadioError('Failed to read block at 0x%04x' % start)
         if response[:4] != expectedresponse:
-            raise errors.RadioError("Error reading block %04x." % (start))
+            raise errors.RadioError('Error reading block 0x%04x.' % (start))
         block_data = response[4:-1]
 
     except errors.RadioError:
         raise
     except Exception:
-        raise errors.RadioError("Failed to read block at %04x" % start)
+        raise errors.RadioError('Failed to read block at 0x%04x' % start)
 
     return block_data
-
-
-def _get_radio_firmware_version(radio):
-    if radio.MODEL in ALL_MODEL:
-        block = _read_block(radio, 0x1B40, 0x20)
-        version = block[0:6]
-    return version
-
-
-IDENT_BLACKLIST = {
-    b"\x50\x56\x4F\x4A\x48\x1C\x14": "Radio identifies as TIDRADIO TD-H8",
-}
-
 
 def _do_download(radio):
     # Radio must have already been ident'd by detect_from_serial()
     data = radio.ident_mode
-    # Main block
-    LOG.info("Downloading...")
+    LOG.info('Downloading...')
 
-    for i in range(0, radio._memsize, 0x20):
-        block = _read_block(radio, i, 0x20)
+    _max = int(radio._memsize / radio.BLOCKSIZE)  # number of blocks
+    _block_num = 0
+    for addr in range(0, radio._memsize, radio.BLOCKSIZE):
+        radio.pipe.log('Reading from address: 0x%04x' % addr)
+        block = _read_block(radio, addr, radio.BLOCKSIZE)
         data += block
-        _do_status(radio, i)
-    _do_status(radio, radio._memsize)
-    LOG.info("done.")
+        _do_status(radio, _block_num, _max)
+        _block_num += 1
+    _do_status(radio, _max, _max) # show 100%
+    LOG.info('Download done!')
 
     return memmap.MemoryMapBytes(data)
 
+def _write_block(radio, block_addr, size):
+    _channel_offset = 0x08  # byte offset in img file where channel data starts
+    serial = radio.pipe
+    cmd = struct.pack('>cHb', b'W', block_addr, radio.BLOCKSIZE_UP)
+    data = radio.get_mmap()[block_addr + _channel_offset:block_addr + size +
+                            _channel_offset]
+    cs = checksum.checksum_8bit(data)
+    frame = cmd + data + bytes([cs])
+    serial.write(frame)
 
-def _exit_write_block(radio):
+    ack = serial.read(1)
+    if ack != CMD_ACK:
+        raise errors.RadioError('Radio refused to accept block 0x%04x' %
+                                block_addr)
+
+def _exit_programming_mode(radio):
     serial = radio.pipe
     try:
-        serial.write(b"E")
-
+        serial.write(b'E')
     except Exception:
-        raise errors.RadioError("Radio refused to exit programming mode")
-
-
-def _write_block(radio, addr, data):
-    serial = radio.pipe
-    cmd = struct.pack(">cHb", b'W', addr, 0x20)
-    data = radio.get_mmap()[addr + 8: addr + 40]
-    # The checksum needs to be in the last
-    check_sum = bytes([sum(data) & 0xFF])
-    data += check_sum
-    used_data = cmd + data
-    serial.write(used_data)
-
-    ack = radio.pipe.read(1)
-    if ack != b"\x06":
-        raise errors.RadioError("Radio refused to accept block 0x%04x" % addr)
-
+        raise errors.RadioError('Radio refused to exit programming mode')
 
 def _do_upload(radio):
-    data = _do_ident(radio.pipe, radio._idents[0])
-    radio_version = _get_radio_firmware_version(radio)
-    LOG.info("Radio Version is %s" % repr(radio_version))
-
+    _, data = test_idents(radio, radio.pipe)
     if radio.ident_mode == data:
-        LOG.info("Successful match.")
+        LOG.info('Successful match during Upload.')
     else:
-        msg = ("Model mismatch!")
-        raise errors.RadioError(msg)
+        LOG.error('Model mismatch during Upload!')
+    LOG.info('Uploading...')
 
-    # Main block
-    LOG.debug("Uploading...")
-
+    _max = int(sum(abs(x -y) for x, y in radio._ranges_main) /
+               radio.BLOCKSIZE_UP)  # number of blocks
+    _block_num = 0
     for start_addr, end_addr in radio._ranges_main:
-        for addr in range(start_addr, end_addr, 0x20):
-            _write_block(radio, addr, 0x20)
-            _do_status(radio, addr)
-    _exit_write_block(radio)
-    LOG.debug("Upload all done.")
+        for addr in range(start_addr, end_addr, radio.BLOCKSIZE_UP):
+            radio.pipe.log('Writing to address: 0x%04x' % addr)
+            _write_block(radio, addr, radio.BLOCKSIZE_UP)
+            _do_status(radio, _block_num, _max)
+            _block_num += 1
+    _exit_programming_mode(radio)
+    _do_status(radio, _max, _max)  # show 100%
+    LOG.info('Upload done!')
 
+def validate_gmrs_memory(mem):
+    _lo = 1  # manditory GMRS channel numbers lower bound
+    _hi = 54 #                "               upper bound
+    msgs = []
+    if _lo <= mem.number <= _hi:
+        if mem.freq not in GMRS_FREQS:
+            msgs.append(chirp_common.ValidationError(
+                'The frequency in channels %d-%d must be a GMRS '
+                'frequency between %0.5f-%0.5f in 0.025 increments.'
+                % (_lo, _hi, min(GMRS_FREQS) / 1000000,
+                   max(GMRS_FREQS) / 1000000)))
+        if mem.duplex not in ('', '+', 'off') or (
+                mem.duplex == '+' and mem.offset != 5000000):
+            msgs.append(chirp_common.ValidationError(
+                'Channels %d-%d must be a GMRS frequencies and '
+                'either simplex or +5MHz offset' % (_lo, _hi)))
+    return msgs
 
-TDH8_CHARSET = chirp_common.CHARSET_ALPHANUMERIC + \
-    "!@#$%^&*()+-=[]:\";'<>?,./"
+def test_idents(cls, pipe):
+    """tests a list of idents (magics) to see if the radio responds,
+    returns the class and ident (magic) of the responding device"""
+    resp = False
+    for rclass in cls.detected_models():
+        for id in rclass._idents:  # iterate list of _idents (magics)
+            try:
+                ident = _do_ident(pipe, id)
+                if rclass.ident_mode == ident:
+                    return rclass, rclass.ident_mode
+            except errors.RadioNoResponse:
+                continue
+            except errors.RadioNoResponse:
+                resp = True
+            except Exception:
+                raise
+            LOG.error('No model match found for %r', id)
+    else:  # for
+        if resp:
+            raise errors.RadioError('Unexpected response from radio')
+        else:
+            raise errors.RadioError('Unsupported model')
 
 
 @directory.register
 class TDH8(chirp_common.CloneModeRadio):
-    """TIDRADIO TD-H8"""
-    VENDOR = "TIDRADIO"
-    MODEL = "TD-H8"
+    """TIDRADIO TD-H8 Normal"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8'
     ident_mode = b'P31183\xff\xff'
-    BAUD_RATE = 38400
-    MODES = ["FM", "NFM", "AM"]
-    _memsize = 0x1eef
-    _ranges_main = [(0x0000, 0x1eef)]
     _idents = [TD_H8]
-    _txbands = [(136000000, 175000000), (400000000, 521000000)]
-    _rxbands = []
-    _aux_block = True
-    _tri_power = True
     _gmrs = False
     _ham = False
-    _mem_params = (0x1F2F)
+    BAUD_RATE = 38400
+    BLOCKSIZE = 0x20
+    BLOCKSIZE_UP = 0x20
+    _memsize = 0x1fef  # 0x1eef
+    _ranges_main = [(0x0000, _memsize)]
+    # _mmap = bytearray(_memsize)
+    _memobj = bytearray(_memsize)
+    _mem_params = {
+        'channels': 200,
+        'fmb_channels': 25,
+        'dtmf_strings': 8,
+        'dtmf_len': 16,
+        'name_len': 8,
+    }
+    _txbands = [(136000000, 175000000), (400000000, 521000000)]
+    _airband = []
+    _rxbands = [] + _airband
+    _special_channels = ['VFO A','VFO B']
+    _modes = ['FM', 'NFM']  # TD-H8 Gen 1 & 2 don't have AM RX!
+    _has_am = False
+    _has_am_per_channel = False
+    _has_offsetdir = True
+    _has_scramble = False
+    _has_pttid = True
+    _has_bcl = True
+    _has_freqhop = True
+    _has_dtmf = True
+    _has_stored_dtmf = False
+    _has_dtmf_len = True
+    _has_dtmf_terminated = not _has_dtmf_len
+    _has_stuncode = False
+    _has_killcode = False
+    _has_dtmf_extra = False
+    _has_scan_hangtime = False
+    _has_freq_ranger = False
+    _has_pf2_button = True
+    _has_top_button = True
+    _has_def_chan = True
+    _has_bluetooth = True
+    _has_brightness = False
+    _has_pritx = True
+    _has_spec= False
 
-    # offset of fw version in image file
-    _fw_ver_file_start = 0x1838
-    _fw_ver_file_stop = 0x1846
     _valid_chars = TDH8_CHARSET
-    _tx_power = [chirp_common.PowerLevel("Low",  watts=1.00),
-                 chirp_common.PowerLevel("Mid",  watts=4.00),
-                 chirp_common.PowerLevel("High", watts=8.00)]
-    _ponmsg_list = ["Off", "Msg", "Icon"]
-    _breath_led_list = ["Off", "5S", "10S", "15S", "30S"]
-    _save_list = ["Off", "1:1", "1:2", "1:3", "1:4", "1:8"]
-    _save_shortname = "Power Save"
+    _tx_power = [chirp_common.PowerLevel('Low', watts=1.00),
+                chirp_common.PowerLevel('Mid', watts=4.00),
+                chirp_common.PowerLevel('High', watts=8.00),
+                ]
+    _steps = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0]
+    # maps DTMF chars to binary values the radio uses
+    _dtmf_code_dict = {
+        0x00: '0', 0x01: '1', 0x02: '2', 0x03: '3',
+        0x04: '4', 0x05: '5', 0x06: '6', 0x07: '7',
+        0x08: '8', 0x09: '9', 0x0a: 'A', 0x0b: 'B',
+        0x0c: 'C', 0x0d: 'D', 0x0e: '*', 0x0f: '#',
+        0xff: ' ',
+    }
+    _inverted_dtmf_code_dict = {v: k for k, v in _dtmf_code_dict.items()}
+    # maps for settings
+    _groupcode_map = [('', 0x00), ('Off', 0xff), ('*', 0x0e), ('#', 0x0f),
+                      ('A', 0x0a), ('B', 0x0b), ('C', 0x0c), ('D', 0x0d)]
+    # one-based map of FM broadcast channels
+    _fmchannels_map = [(str(x), x) for x in \
+                       range(1, _mem_params.get('fmb_channels') + 1)]
+    _lang_map = [('Chinese', 1), ('English', 3)]
+    # lists for settings
+    _operating_mode_list = ['NORMAL', 'GMRS', 'HAM']
+    _squelch_list = ['%s' % x for x in range(0, 10)]
+    _step_list = ['%2.2fK' % x for x in _steps]
+    _pttid_list = ['Off', 'BOT', 'EOT', 'BOTH']
+    _dtmf_reset_list = ['Off', '5s', '10s', '15s']
+    _dtmf_resp_list = ['NULL', 'RING', 'REPLY', 'BOTH']
+    _dtmf_speed_list = ['%ims' % x for x in range(80, 160, 10)]
+    _pritx_list = ['MAIN', 'Busy']
+    _scanmode_list = ['TO', 'CO', 'SE']
+    _vfo_workmode_list = ['VFO', 'VFO+Channel', 'Channel']
+    _fmworkmode_list = ['VFO', 'CH']
+    _short_press_list =  ['None', 'FM Radio', 'Lamp', 'Monitor',
+                          'TONE', 'Alarm', 'Weather',
+                          ]
+    _long_press_list = _short_press_list
+    _micgain_list = ['%02d' % x for x in range(0, 33)]
+    _voxgain_list = ['Off', '1', '2', '3', '4', '5']
+    _voxdelay_list = ['1.0s', '2.0s', '3.0s']
+    _tot_list = ['Off'] + ['%ds' % x for x in range(30, 240, 30)]
+    _backlight_list = ['CONT', '5s', '10s', '15s', '30s']
+    _breath_led_list = ['Off', '5s', '10s', '15s', '30s']
+    _ponmsg_list = ['Off', 'Msg', 'Icon']
+
+    _fmrec_shortname = 'Allow Receive'
+
+    _mem_format = """
+    // 16 byte memory channel
+    struct memory_obj {
+      lbcd rxfreq[4];
+      lbcd txfreq[4];
+      lbcd rxtone[2];
+      lbcd txtone[2];
+      u8 scramble;        // (not used on TD-H8 Gen 2 & 3)
+      u8 pttid:2,
+        freqhop:1,
+        deccode:1,
+        unknown1:1,
+        bcl:1,
+        unknown2:1,
+        unknown3:1;
+      u8 unknown4:1,
+        unknown5:1,
+        power:2,
+        narrow:1,
+        unknown6:1,
+        offsetdir:2;
+      u8 unknown7:7,
+        am_modulation:1; // Per chan AM modulation
+                        // (Not used on TD-H8 Gen 2 & 3 & TD-H3)
+    };
+    """
+
+    _common_format = """
+    // vfo offset obj
+    struct offset_obj {
+      lbcd offset[4];
+    };
+
+    // FM broadcast channel obj
+    struct fmb_obj {
+      lbcd rxfreq[4];
+    };
+
+    // power on message obj
+    struct poweron_msg_obj {
+      char msg1[16];
+      char msg2[16];
+      char msg3[16];
+    };
+
+    // power on message 2 obj
+    struct poweron_msg2_obj {
+      char msg1[16];
+      char msg2[16];
+      char msg3[16];
+      char msg4[16];
+    };
+    """
+
+    _button_format = """
+    // programmable button obj
+    struct button_obj {
+      u8 stopkey1;        // topkey  short press
+      u8 ssidekey1;       // pf1 short press
+      u8 ssidekey2;       // pf2 short press
+      u8 ltopkey1;        // topkey long press
+      u8 lsidekey1;       // pf1 long press
+      u8 lsidekey2;       // pf2 long press
+    };
+    """
+
+    _name_format = """
+    // channel name
+    struct name_obj {
+      char name[%(name_len)i];
+      u8 unknown1[8];
+    };
+
+    // dtmf string
+    struct dtmf_obj {
+      u8 code[%(dtmf_len)i];
+    };
+    """
+
+    _settings_format = """
+    struct settings_obj {
+      u8 txled:1,
+        rxled:1,
+        unused11:1,
+        mode:2, // Radio op mode: 0=Normal, 1=GMRS, 2=HAM, 3=unused
+        //ham:1,
+        //gmrs:1,
+        unused14:1,
+        dtmfst:1,
+        pritx:1;
+      u8 scanmode:2,
+        unused16:1,
+        keyautolock:1,
+        unused17:1,
+        beep:1,
+        unknown18:1,
+        voiceprompt:1;
+      u8 fmworkmode:1,
+        dualwatch:1,
+        tonevoice:2,
+        fmrec:1,
+        mdfa:1,
+        aworkmode:2;
+      u8 ponmsg:2,
+        unused19:1,
+        mdfb:1,
+        unused20:1,
+        dbrx:1,
+        bworkmode:2;
+      u8 adefchan;
+      u8 bdefchan;
+      u8 fmdefch;
+      u8 unused21:1,
+        tailclean:1,
+        rogerprompt:1,
+        unused23:1,
+        unused24:1,
+        voxgain:3;
+      u8 astep:4,
+        bstep:4;
+      u8 squelch;
+      u8 tot;
+      u8 lang;
+      u8 save;
+      u8 ligcon;
+      u8 voxdelay;
+      u8 onlychmode:1,
+        breathled:3,
+        unused:3,
+        alarm:1;
+    };
+    """
+
+    _end_fromat = """
+    """
+
+    #  TD-H8 Gen 2
+    _memory_format = """
+    // Memory channels
+    #seekto 0x0008;
+    struct memory_obj memory[%(channels)i];
+    // Settings
+    #seekto 0x0ca8;
+    struct settings_obj settings;
+    // freq offset for vfo a & b
+    #seekto 0x0cb8;
+    struct offset_obj vfo_offsets[2];
+    // FM broadcast channels
+    #seekto 0x0cd8;
+    struct fmb_obj fmb[%(fmb_channels)i];
+    // channel names
+    #seekto 0x0d48;
+    struct name_obj names[%(channels)i];
+    // channel used flags
+    #seekto 0x1a08;
+    struct {
+      lbit used[%(channels)i];
+    } channelflags;
+    // scan add list
+    #seekto 0x1a28;
+    lbit scanadd[%(channels)i];
+    // fmb vfo
+    #seekto 0x1b38;
+    struct fmb_obj fmbvfo;
+    // vfo a & b
+    #seekto 0x1b58;
+    struct memory_obj vfo[2];
+    // fmb used flags
+    #seekto 0x1b78;
+    struct {
+      lbit used[32];
+      } fmbflags;
+    // power on message
+    #seekto 0x1c08;
+    struct poweron_msg_obj poweron_msg;
+    // programmable buttons
+    #seekto 0x1cc8;
+    struct button_obj button;
+    // id code
+    #seekto 0x1e28;
+    struct {
+      u8 code[3];
+    } id;
+    // DTMF strings
+    #seekto 0x1e38;
+    struct dtmf_obj dtmf[%(dtmf_strings)i];
+    // Group Code
+    #seekto 0x1e31;
+    struct {
+        u8 code;
+    } group;
+    // PTT ID Code
+    #seekto 0x1ec8;
+    struct {
+        struct dtmf_obj bot;
+        struct dtmf_obj eot;
+    } pttid;
+    // Repeater ste & ttd
+    #seekto 0x1f0a;
+    struct {
+      u8 ste; // repeater squelch tail elimination
+      u8 ttd; // repeater tail tone delay
+    } repeater;
+    // mic gain
+    #seekto 0x1f28;
+    struct {
+      u8 gain;
+    } mic;
+    // bluetooth
+    #seekto 0x1f38;
+    struct {
+      u8 unused0:7,
+        on:1;
+    } bluetooth;
+    """
 
     @classmethod
     def detect_from_serial(cls, pipe):
-        # Build a list of unique idents and the classes that go with each
-        uniq_idents = {}
-        for cls in cls.detected_models():
-            uniq_idents.setdefault(cls._idents[0], [])
-            uniq_idents[cls._idents[0]].append(cls)
-
-        # Try each ident and if one matches then determine the appropriate
-        # class to use
-        for ident, classes in uniq_idents.items():
-            try:
-                radio_ident = _do_ident(pipe, ident)
-            except errors.RadioError:
-                continue
-            for rclass in classes:
-                if rclass.ident_mode == radio_ident:
-                    return rclass
-            LOG.error('No model match found for ident query %r response %r',
-                      ident, radio_ident)
-            raise errors.RadioError('Unsupported model')
-        raise errors.RadioNoResponse()
+        rclass, _ = test_idents(cls, pipe)
+        return rclass
 
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
+        rp.experimental = \
+            ('This driver is a beta version.\n'
+             '\n'
+             'Please save an unedited copy of your first successful\n'
+             'download to a CHIRP Radio Images(*.img) file.'
+             )
         rp.pre_download = (dedent("""\
             1. Turn radio off.
             2. Connect cable to mic/spkr connector.
@@ -1062,53 +614,74 @@ class TDH8(chirp_common.CloneModeRadio):
         rf.has_tuning_step = False
         rf.has_ctone = True
         rf.can_odd_split = True
-        rf.valid_name_length = 8
+        rf.valid_name_length = self._mem_params.get('name_len')
         rf.valid_characters = self._valid_chars
-        rf.valid_skips = ["", "S"]
-        rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
+        rf.valid_skips = ['', 'S']
+        rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_cross_modes = [
-            "Tone->Tone",
-            "DTCS->",
-            "->DTCS",
-            "Tone->DTCS",
-            "DTCS->Tone",
-            "->Tone",
-            "DTCS->DTCS"]
+            'Tone->Tone',
+            'DTCS->',
+            '->DTCS',
+            'Tone->DTCS',
+            'DTCS->Tone',
+            '->Tone',
+            'DTCS->DTCS']
         rf.valid_power_levels = [x for x in self._tx_power if x]
-        rf.valid_duplexes = ["", "-", "+", "split", "off"]
-        rf.valid_modes = self.MODES
-        rf.valid_tuning_steps = STEPS
+        rf.valid_duplexes = ['', '-', '+', 'split', 'off']
+        rf.valid_modes = self._modes
+        rf.valid_tuning_steps = self._steps
 
         rf.valid_bands = self._txbands + self._rxbands
         rf.valid_bands.sort()
-        rf.memory_bounds = (1, 199)
+        rf.memory_bounds = (1, self._mem_params.get('channels') - 1)
+        rf.valid_special_chans = self._special_channels
+        rf.has_sub_devices = True  # FM broadcast radio
         return rf
 
     def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        """Process the mem map into the mem object"""
+        fmt = (self._mem_format + self._common_format +
+               self._name_format + self._button_format +
+               self._settings_format + self._memory_format +
+               self._end_fromat) % self._mem_params
+        self._memobj = bitwise.parse(fmt, self._mmap)
 
     def sync_in(self):
+        """Download from radio"""
         try:
             self._mmap = _do_download(self)
             self.process_mmap()
-        except errors.RadioError:
-            raise
         except Exception as e:
-            raise errors.RadioError("Failed to communicate with radio: %s" % e)
+            raise errors.RadioError('Failed to communicate with radio: %s' % e)
+        finally:
+            _exit_programming_mode(self)
 
     def sync_out(self):
+        """Upload to radio"""
         try:
             _do_upload(self)
         except errors.RadioError:
             raise
         except Exception as e:
-            raise errors.RadioError("Failed to communicate with radio: %s" % e)
+            raise errors.RadioError('Failed to communicate with radio: %s' % e)
+        finally:
+            _exit_programming_mode(self)
 
     def get_raw_memory(self, number):
-        return repr(self._memobj.memory[number])
+        """Display raw channel and name data from the radio image"""
+        if isinstance(number, str):
+            _vfo_idx = self._special_channels.index(number)
+            return repr(self._memobj.vfo[_vfo_idx]) + \
+                        repr(self._memobj.vfo_offsets[_vfo_idx])
+        else:
+            return repr(self._memobj.memory[number]) + \
+                        repr(self._memobj.names[number - 1]) + \
+                            repr(self._memobj.scanadd[number - 1]) + \
+                                repr(self._memobj.channelflags.\
+                                    used[number - 1])
 
-    # Encoding processing
     def _decode_tone(self, val):
+        """decode CTCSS/DTCS values from the radio image"""
         if val == 16665 or val == 0:
             return '', None, None
         elif val >= 12000:
@@ -1118,1507 +691,1293 @@ class TDH8(chirp_common.CloneModeRadio):
         else:
             return 'Tone', val / 10.0, None
 
-    # Decoding processing
     def _encode_tone(self, memval, mode, value, pol):
-        if mode == "":
-            memval[0].set_raw(0xFF)
-            memval[1].set_raw(0xFF)
-        elif mode == 'Tone':
-            memval.set_value(int(value * 10))
+        """encode CTCSS/DTCS values into binary form the radio understands"""
+        match mode:
+            case '':
+                memval[0].set_raw(0xff)
+                memval[1].set_raw(0xff)
+            case 'Tone':
+                memval.set_value(int(value * 10))
+            case 'DTCS':
+                flag = 0x80 if pol == 'N' else 0xC0
+                memval.set_value(value)
+                memval[1].set_bits(flag)
+            case _:
+                raise Exception("Internal error: invalid mode `%s'" % mode)
 
-        elif mode == 'DTCS':
-            flag = 0x80 if pol == 'N' else 0xC0
-            memval.set_value(value)
-            memval[1].set_bits(flag)
-        else:
-            raise Exception("Internal error: invalid mode `%s'" % mode)
-
-    def _get_mem(self, number):
-        return self._memobj.memory[number]
-
-    def _get_nam(self, number):
-        return self._memobj.names[number - 1]
-
-    def _get_fm(self, number):
-        return self._memobj.fmmode[number]
-
-    def _get_get_scanvfo(self, number):
-        return self._memobj.fmvfo[number]
+    def _get_tx_bands(self):
+        return self._txbands
 
     def get_memory(self, number):
-        _mem = self._get_mem(number)
-        _nam = self._get_nam(number)
+        """Get the CHIRP mem representation from the radio image"""
         mem = chirp_common.Memory()
-        mem.number = number
+        _is_vfo = False
 
-        if _mem.get_raw()[0] == 0xff:
+        if isinstance(number, int) and number < 0:
+            number = self._special_channels[number + \
+                                            len(self._special_channels)]
+        if isinstance(number, str):
+            _is_vfo = True
+            mem.number = -len(self._special_channels) + \
+                self._special_channels.index(number)
+            mem.extd_number = number
+            _mem = self._memobj.vfo[self._special_channels.index(number)]
+        else:
+            mem.number = number
+            _mem = self._memobj.memory[number]
+            _name = str(self._memobj.names[number -1].name)
+
+        if _mem.get_raw()[:1] == b'\xff':
             mem.empty = True
             return mem
 
-        # narrow and wide
-        mem.mode = _mem.wide and "NFM" or "FM"
-
-        # power
-        try:
-            mem.power = self._tx_power[_mem.lowpower]
-            if mem.power is None:
-                # Gaps are basically missing power levels
-                raise IndexError()
-        except IndexError:
-            LOG.error("Radio reported invalid power level %s (in %s)" %
-                      (_mem.lowpower, self._tx_power))
-            mem.power = self._tx_power[0]
-
-        # Channel name
-        for char in _nam.name:
-            if "\x00" in str(char) or "\xFF" in str(char):
-                char = ""
-            mem.name += str(char)
-
-        mem.name = mem.name.rstrip()
-
-        # tmode
-        lin2 = int(_mem.rxtone)
-        rxtone = self._decode_tone(lin2)
-
-        lin = int(_mem.txtone)
-        txtone = self._decode_tone(lin)
-
-        if txtone[0] == "Tone" and not rxtone[0]:
-            mem.tmode = "Tone"
-        elif txtone[0] == rxtone[0] and txtone[0] == "Tone" \
-                and mem.rtone == mem.ctone:
-            mem.tmode = "TSQL"
-        elif txtone[0] == rxtone[0] and txtone[0] == "DTCS" \
-                and mem.dtcs == mem.rx_dtcs:
-            mem.tmode = "DTCS"
-        elif rxtone[0] or txtone[0]:
-            mem.tmode = "Cross"
-            mem.cross_mode = "%s->%s" % (txtone[0], rxtone[0])
-
-        chirp_common.split_tone_decode(mem, txtone, rxtone)
-
-        mem.skip = '' if self._memobj.scanadd[mem.number - 1] else 'S'
-
+        # Freq and offset
         mem.freq = int(_mem.rxfreq) * 10
+        if mem.freq == 0:
+            mem.empty = True
+        # check if tx freq is blank
         if _mem.txfreq.get_raw() == b'\xff\xff\xff\xff':
+            # TX freq is not set
             mem.offset = 0
             mem.duplex = 'off'
         else:
-            chirp_common.split_to_offset(mem,
-                                         int(_mem.rxfreq) * 10,
-                                         int(_mem.txfreq) * 10)
+            # TX freq is set
+            offset = (int(_mem.txfreq) * 10) - mem.freq
+            if offset != 0:
+                if chirp_common.is_split(self.get_features().valid_bands,
+                                         mem.freq, int(_mem.txfreq) * 10):
+                    mem.duplex = 'split'
+                    mem.offset = int(_mem.txfreq) * 10
+                elif offset < 0:
+                    mem.offset = abs(offset)
+                    mem.duplex = '-'
+                elif offset > 0:
+                    mem.offset = offset
+                    mem.duplex = '+'
+            else:
+                mem.offset = 0
 
-        if self._gmrs:
-            # mem.duplex = ""
-            # mem.offset = 0
-            if mem.number >= 1 and mem.number <= 30:
-                mem.immutable.append('freq')
-                if mem.number >= 8 and mem.number <= 14:
-                    mem.mode = 'NFM'
-                    mem.power = self._tx_power[0]
-                    mem.immutable = ['freq', 'mode', 'power',
-                                     'duplex', 'offset']
-            elif mem.number >= 31 and mem.number <= 54:
-                mem.offset = 5000000
+        # channel name
+        if not _is_vfo:
+            mem.name = _name.strip('\x00\xff').rstrip()
+        else:
+            mem.name = ''  # no name for VFO A or B
 
-        # other function
-        # pttid
-        mem.extra = RadioSettingGroup("Extra", "extra")
+        # tone
+        rxtone = self._decode_tone(int(_mem.rxtone))
+        txtone = self._decode_tone(int(_mem.txtone))
+        if txtone[0] == 'Tone' and not rxtone[0]:
+            mem.tmode = 'Tone'
+        elif txtone[0] == rxtone[0] and txtone[0] == 'Tone' \
+                and mem.rtone == mem.ctone:
+            mem.tmode = 'TSQL'
+        elif txtone[0] == rxtone[0] and txtone[0] == 'DTCS' \
+                and mem.dtcs == mem.rx_dtcs:
+            mem.tmode = 'DTCS'
+        elif rxtone[0] or txtone[0]:
+            mem.tmode = 'Cross'
+            mem.cross_mode = '%s->%s' % (txtone[0], rxtone[0])
 
-        if self.MODEL != "RT-730":
-            rs = RadioSetting("pttid", "PTT ID",
-                              RadioSettingValueList(PTTID_VALUES,
-                                                    current_index=_mem.pttid))
-            mem.extra.append(rs)
+        chirp_common.split_tone_decode(mem, txtone, rxtone)
 
-        # Busylock
-        rs = RadioSetting("bcl", "Busy Lock",
-                          RadioSettingValueList(BCLOCK_VALUES,
-                                                current_index=_mem.bcl))
-        mem.extra.append(rs)
+        # mode and wide/narrow
+        # check to see if _mem struct has am per-channel?
+        try:  # check to see if _mem struct has am per-channel?
+            _am = _mem.am_modulation
+        except AttributeError:
+            _am = False
 
-        if self.MODEL != "RT-730":
-            rs = RadioSetting(
-                "freqhop", "Frequency Hop", RadioSettingValueList(
-                    FREQHOP_VALUES, current_index=_mem.freqhop))
-            mem.extra.append(rs)
+        if (chirp_common.in_range(mem.freq, self._airband) or _am) and \
+            self._has_am:
+            if _mem.narrow:
+                mem.mode = 'NAM'
+            else:
+                mem.mode = 'AM'
+        elif _mem.narrow:
+            mem.mode = 'NFM'
+        else:
+            mem.mode = 'FM'
 
-        if chirp_common.in_range(mem.freq, self._rxbands) and \
-                not chirp_common.in_range(mem.freq, self.get_tx_bands()):
-            mem.duplex = 'off'
-        if chirp_common.in_range(mem.freq, [AIRBAND]):
-            mem.mode = 'AM'
+        # scanadd
+        if not _is_vfo:
+            mem.skip = '' if self._memobj.scanadd[mem.number - 1] else 'S'
+        else:
+            mem.skip = ''  # No Skip for VFO A or B
+
+        # power
+        try:
+            mem.power = self._tx_power[_mem.power]
+            if mem.power is None:
+                raise IndexError()
+        except IndexError:
+            LOG.error('Channel %d: Radio reported invalid power '
+                      'level %s (in %s)'
+                      % (mem.number, _mem.power, self._tx_power))
+            mem.power = self._tx_power[0]
+
+        # mem.extra
+        mem.extra = RadioSettingGroup('Extra', 'extra')
+        # spec
+        if self._has_spec:
+            rs = RadioSettingValueBoolean(_mem.spec)
+            mset = MemSetting('spec', 'Spec', rs)
+            mset.set_doc('Set if Channel \'Spec\' is enabled.')
+            mem.extra.append(mset)
+        # ptt id
+        if self._has_pttid:
+            rs = RadioSettingValueList(self._pttid_list,
+                                       current_index=_mem.pttid)
+            mset = MemSetting('pttid', 'PTT ID', rs)
+            mset.set_doc('Set when PTT-ID is to be sent during TX. '
+                         'Valid values are: ' + \
+                            ', '.join(x for x in self._pttid_list))
+            mem.extra.append(mset)
+        # busy lock
+        if self._has_bcl:
+            rs = RadioSettingValueBoolean(_mem.bcl)
+            mset = MemSetting('bcl', 'Busy Lock', rs)
+            mset.set_doc('Set if TX Busy Lock during RX is enabled.')
+            mem.extra.append(mset)
+        # hopping rx
+        if self._has_freqhop:
+            rs = RadioSettingValueBoolean(_mem.freqhop)
+            mset = MemSetting('freqhop', 'Hopping RX', rs)
+            mset.set_doc('Set if frequency hopping is enabled during TX.')
+            mem.extra.append(mset)
+        # scramble
+        if self._has_scramble:
+            rs = RadioSettingValueList(self._scramble_list,
+                                       current_index=_mem.scramble)
+            mset = MemSetting('scramble', 'Scramble', rs)
+            mset.set_doc('Enable Scramble on this frequency. '
+                         'All devices must be set to the same '
+                            'code to interoperate. '
+                                'Valid values are: ' + \
+                                    ', '.join(x for x in self._scramble_list))
+            mem.extra.append(mset)
 
         return mem
 
-    def _set_mem(self, number):
-        return self._memobj.memory[number]
-
-    def _set_nam(self, number):
-        return self._memobj.names[number - 1]
-
-    def _get_scan_list(self, scan_data):
-        # scan_val_list - Get all scans Add data 1-200 digits
-        scan_val_list = []
-        for x in range(25):
-            a = self._get_scan(x)
-            for i in range(0, 8):
-                scan_val = (getattr(a, 'scan%i' % (i+1)))
-                used_scan_val = str(scan_val)[3]
-                scan_val_list.append(used_scan_val)
-
-        # used_scan_list - 25 structures, split the scan added
-        # data into 25 groups of 8 bits each
-        used_scan_list = []
-        count_num = 1
-        for i in range(0, len(scan_val_list), 8):
-            used_scan_list.append(scan_val_list[i:i + 8])
-            count_num += 1
-        # Determine whether it is a standard number that can be divisible
-        # Which group is the scan addition located in the modified channel
-        if scan_data % 8 != 0:
-            x_list = scan_data / 8
-            y_list = scan_data % 8
-
-        else:
-            x_list = (scan_data / 8) - 1
-            y_list = 8
-
-        return ([x_list, y_list])
-
     def set_memory(self, mem):
-        _mem = self._get_mem(mem.number)
-        _nam = self._get_nam(mem.number)
+        """move the CHIRP mem representation into the radio image"""
+        _is_vfo = False
+        if mem.number < 0:
+            _is_vfo = True
+            number = self._special_channels[mem.number]
+            _special_channel_index = self._special_channels.index(number)
+            _mem = self._memobj.vfo[_special_channel_index]
+        else:
+            _mem = self._memobj.memory[mem.number]
+            _name = self._memobj.names[mem.number -1]
+            _is_vfo = False
 
-        # When the channel is empty, you need to set "usedflags" to 0,
-        # When the channel is used , you need to set "usedflags" to 1.
-        self._memobj.usedflags[mem.number - 1] = int(not mem.empty)
+        if not _is_vfo:
+            self._memobj.channelflags.used[mem.number - 1] = int(not mem.empty)
 
         if mem.empty:
-            _mem.fill_raw(b'\xFF')
+            _mem.fill_raw(b'\xff')
             return
 
         _mem.fill_raw(b'\x00')
 
-        if mem.duplex == "":
-            _mem.rxfreq = _mem.txfreq = mem.freq / 10
-        elif mem.duplex == "split":
-            _mem.txfreq = mem.offset / 10
-        elif mem.duplex == "+":
-            _mem.txfreq = (mem.freq + mem.offset) / 10
-        elif mem.duplex == "-":
-            _mem.txfreq = (mem.freq - mem.offset) / 10
-        elif mem.duplex == 'off':
-            _mem.txfreq.fill_raw(b'\xFF')
-        else:
-            _mem.txfreq = mem.freq / 10
+        # tx freq
+        match mem.duplex:
+            case '':
+                _mem.rxfreq = _mem.txfreq = mem.freq / 10
+            case 'split':
+                _mem.txfreq = mem.offset / 10
+            case '+':
+                _mem.txfreq = (mem.freq + mem.offset) / 10
+            case '-':
+                _mem.txfreq = (mem.freq - mem.offset) / 10
+            case 'off':
+                _mem.txfreq.fill_raw(b'\xff')
+            case _:
+                _mem.txfreq = mem.freq / 10
 
         if chirp_common.in_range(mem.freq, self._rxbands) and \
-                not chirp_common.in_range(mem.freq, self.get_tx_bands()):
-            _mem.txfreq.fill_raw(b'\xFF')
+                not chirp_common.in_range(mem.freq, self._get_tx_bands()):
+            _mem.txfreq.fill_raw(b'\xff')
 
+        # rx freq
         _mem.rxfreq = mem.freq / 10
-        _namelength = self.get_features().valid_name_length
 
-        for i in range(_namelength):
-            try:
-                _nam.name[i] = mem.name[i]
-            except IndexError:
-                _nam.name[i] = "\x00"
+        if _is_vfo:
+            if mem.duplex == '':
+                _offset = 0
+            else:
+                _offset = mem.offset / 10
 
+            self._memobj.vfo_offsets[_special_channel_index].offset = _offset
+
+        # offset direction
+        if self._has_offsetdir:
+            _offset_list = ['', '-', '+']  # None/OFF, Minus/Negitive, Plus/Positive
+            _mem.offsetdir = _offset_list.index(mem.duplex)
+            if mem.duplex == '':
+                _mem.offsetdir = 0
+
+        # name
+        if not _is_vfo:
+            _name_len = self._mem_params.get('name_len')
+            _name.name = \
+                mem.name[:_name_len].ljust(_name_len, '\x00')
+
+        # tone
         txtone, rxtone = chirp_common.split_tone_encode(mem)
 
         self._encode_tone(_mem.txtone, *txtone)
         self._encode_tone(_mem.rxtone, *rxtone)
 
-        if mem.mode == "FM":
-            _mem.wide = 0
-        else:
-            _mem.wide = 1
+        # modulation
+        if self._has_am_per_channel and mem.mode in ['AM', 'NAM']:
+            _mem.am_modulation = 0b1  # AM
+        elif self._has_am_per_channel:
+            _mem.am_modulation = 0b0  # FM
 
+        # bandwidth
+        if mem.mode in ['AM', 'FM']:
+            _mem.narrow = 0b0  # wide
+        else:
+            _mem.narrow = 0b1  # narrow
+
+        # scanadd
+        if not _is_vfo:
+            self._memobj.scanadd[mem.number - 1] = mem.skip != 'S'
+
+        # power
         try:
-            _mem.lowpower = self._tx_power.index(mem.power or
+            _mem.power = self._tx_power.index(mem.power or
                                                  self._tx_power[-1])
         except ValueError:
-            _mem.lowpower = 0
-            LOG.warning('Unsupported power %r', mem.power)
+            _mem.power = 0
+            LOG.warning('Unsupported power value %r', mem.power)
 
-        # Skip/Scanadd Setting
-        self._memobj.scanadd[mem.number - 1] = mem.skip != 'S'
-
+        # mem.extra
         for setting in mem.extra:
-            if self.ident_mode == b'P31184\xff\xff' and \
-                    mem.number >= 189 and mem.number <= 199:
-                if setting.get_name() == 'pttid':
-                    setattr(_mem, setting.get_name(), 0)
-                elif setting.get_name() == 'bcl':
-                    setattr(_mem, setting.get_name(), 0)
-                elif setting.get_name() == 'freqhop':
-                    setattr(_mem, setting.get_name(), 0)
-            else:
-                setattr(_mem, setting.get_name(), setting.value)
+            setting.apply_to_memobj(_mem)
 
-    def _is_orig(self):
-        version_tag = _firmware_version_from_image(self)
-        try:
-            if b'BFB' in version_tag:
-                idx = version_tag.index(b"BFB") + 3
-                version = int(version_tag[idx:idx + 3])
-                return version < 291
-            return False
-        except Exception:
-            pass
-        raise errors.RadioError("Unable to parse version string %s" %
-                                version_tag)
+    def decode_dtmf(self, val, len_byte=False):
+        """decode the binary coded DTMF value into a DTMF string"""
+        dtmf = ''
+        if len_byte:
 
-    def _my_upper_band(self):
-        band_tag = _upper_band_from_image(self)
-        return band_tag
+            if all(x == 0xff for x in val):
+                return ' ' * (len(val) - 1)
 
-    def _get_settings(self):
-        _settings = self._memobj.settings
-        _press = self._memobj.press
-        _vfoa = self._memobj.vfoa
-        _vfob = self._memobj.vfob
-        if self.MODEL != "RT-730":
-            _gcode = self._memobj.groupcode
-        _msg = self._memobj.poweron_msg
-        basic = RadioSettingGroup("basic", "Basic Settings")
-        abblock = RadioSettingGroup("abblock", "A/B Channel")
-        fmmode = RadioSettingGroup("fmmode", "FM")
-        dtmf = RadioSettingGroup("dtmf", "DTMF")
-
-        # group = RadioSettings(fmmode, dtmf)
-        group = RadioSettings(basic)
-
-        rs = RadioSetting("squelch", "Squelch Level",
-                          RadioSettingValueList(
-                              SQUELCH, current_index=_settings.squelch))
-        basic.append(rs)
-
-        if self.MODEL != "RT-730":
-            rs = RadioSetting("ligcon", "Light Control",
-                              RadioSettingValueList(
-                                  LIGHT_LIST, current_index=_settings.ligcon))
-            basic.append(rs)
-
-        rs = RadioSetting("voiceprompt", "Voice Prompt",
-                          RadioSettingValueBoolean(_settings.voiceprompt))
-        basic.append(rs)
-
-        rs = RadioSetting("keyautolock", "Auto Lock",
-                          RadioSettingValueBoolean(_settings.keyautolock))
-        basic.append(rs)
-
-        if self.MODEL != "RT-730":
-            rs = RadioSetting("mdfa", "MDF-A",
-                              RadioSettingValueList(
-                                  MDFA_LIST,
-                                  current_index=_settings.mdfa))
-            basic.append(rs)
-
-            rs = RadioSetting("mdfb", "MDF-B",
-                              RadioSettingValueList(
-                                  MDFB_LIST,
-                                  current_index=_settings.mdfb))
-            basic.append(rs)
-
-            rs = RadioSetting("sync", "SYNC",
-                              RadioSettingValueBoolean(
-                                  not _settings.sync))
-            basic.append(rs)
-
-            rs = RadioSetting("save", self._save_shortname,
-                              RadioSettingValueList(
-                                  self._save_list,
-                                  current_index=_settings.save))
-            basic.append(rs)
-
-        rs = RadioSetting("dbrx", "Double Rx",
-                          RadioSettingValueBoolean(_settings.dbrx))
-        basic.append(rs)
-
-        if self.MODEL != "RT-730":
-            rs = RadioSetting("astep", "A Step",
-                              RadioSettingValueList(
-                                  STEP_LIST,
-                                  current_index=_settings.astep))
-            basic.append(rs)
-
-            rs = RadioSetting("bstep", "B Step",
-                              RadioSettingValueList(
-                                  STEP_LIST,
-                                  current_index=_settings.bstep))
-            basic.append(rs)
-
-        rs = RadioSetting("scanmode", "Scan Mode",
-                          RadioSettingValueList(
-                              SCAN_MODE_LIST,
-                              current_index=_settings.scanmode))
-        basic.append(rs)
-
-        if self.MODEL != "RT-730":
-            rs = RadioSetting("pritx", "Priority TX",
-                              RadioSettingValueList(
-                                  PRIO_LIST, current_index=_settings.pritx))
-            basic.append(rs)
-
-        rs = RadioSetting("btnvoice", "Beep",
-                          RadioSettingValueBoolean(_settings.btnvoice))
-        basic.append(rs)
-
-        if self.MODEL != "RT-730":
-            if self.MODEL in H8_LIST:
-                # H8 uses roger-beep bool
-                rs = RadioSetting("rogerprompt", "Roger",
-                                  RadioSettingValueBoolean(
-                                    _settings.rogerprompt))
-                basic.append(rs)
-
-            if self.MODEL in H3_LIST:
-                # H3 uses roger-beep list
-                rs = RadioSetting("rogerprompt", "Roger",
-                                  RadioSettingValueList(
-                                      self._roger_list,
-                                      current_index=_settings.rogerprompt))
-                basic.append(rs)
-
-                if _settings.brightness not in range(0, 5):
-                    LOG.warning(
-                        "brightness out of range 1 to 5. Actual value: %X. "
-                        "Screen may not be visible",
-                        _settings.brightness)
-
-                rs = RadioSetting("brightness", "Brightness",
-                                  RadioSettingValueList(
-                                      self._brightness_list,
-                                      current_index=4 - _settings.brightness))
-                basic.append(rs)
-
-        rs = RadioSetting("txled", "Disp Lcd(TX)",
-                          RadioSettingValueBoolean(_settings.txled))
-        basic.append(rs)
-
-        rs = RadioSetting("rxled", "Disp Lcd(RX)",
-                          RadioSettingValueBoolean(_settings.rxled))
-        basic.append(rs)
-
-        if self.MODEL != "RT-730":
-            rs = RadioSetting("onlychmode", "Only CH Mode",
-                              RadioSettingValueBoolean(_settings.onlychmode))
-            basic.append(rs)
-            rs = RadioSetting("ssidekey1", "SHORT_KEY_PF1",
-                              RadioSettingValueList(
-                                  SHORT_KEY_LIST,
-                                  current_index=_press.ssidekey1))
-            basic.append(rs)
-            rs = RadioSetting("lsidekey3", "LONG_KEY_PF1",
-                              RadioSettingValueList(
-                                  LONG_KEY_LIST,
-                                  current_index=_press.lsidekey3))
-            basic.append(rs)
-
-        if self.MODEL in H8_LIST:
-            rs = RadioSetting("stopkey1", "SHORT_KEY_TOP",
-                              RadioSettingValueList(
-                                  SHORT_KEY_LIST,
-                                  current_index=_press.stopkey1))
-            basic.append(rs)
-
-            rs = RadioSetting("ltopkey2", "LONG_KEY_TOP",
-                              RadioSettingValueList(
-                                  LONG_KEY_LIST,
-                                  current_index=_press.ltopkey2))
-            basic.append(rs)
-
-            rs = RadioSetting("ssidekey2", "SHORT_KEY_PF2",
-                              RadioSettingValueList(
-                                  SHORT_KEY_LIST,
-                                  current_index=_press.ssidekey2))
-            basic.append(rs)
-
-            rs = RadioSetting("lsidekey4", "LONG_KEY_PF2",
-                              RadioSettingValueList(
-                                LONG_KEY_LIST,
-                                current_index=_press.lsidekey4))
-            basic.append(rs)
-
-        if self.MODEL in H3_LIST:
-            rs = RadioSetting("tonevoice", "Repeater Tone",
-                              RadioSettingValueList(
-                                  RTONE_LIST,
-                                  current_index=_settings.tonevoice))
-            basic.append(rs)
-
-            rs = RadioSetting("tailclean", "QT/DQT Tail",
-                              RadioSettingValueBoolean(_settings.tailclean))
-            basic.append(rs)
-
-            rs = RadioSetting("fmrec", "Bandwidth",
-                              RadioSettingValueList(
-                                BANDWIDTH_LIST,
-                                current_index=_settings.fmrec))
-            basic.append(rs)
-
-            rs = RadioSetting("lang", "Language",
-                              RadioSettingValueList(
-                                  LANG_LIST,
-                                  current_index=_settings.lang))
-            basic.append(rs)
-
-            rs = RadioSetting("alarm", "Alarm Mode",
-                              RadioSettingValueList(
-                                ALARM_LIST,
-                                current_index=_settings.alarm))
-            basic.append(rs)
-
-            rs = RadioSetting("amband", "AM BAND",
-                              RadioSettingValueBoolean(_settings.amband))
-            basic.append(rs)
-
-            rs = RadioSetting("tot", "Time-Out Timer",
-                              RadioSettingValueList(
-                                TOT_LIST,
-                                current_index=_settings.tot))
-            basic.append(rs)
-
-            rs = RadioSetting("tx220", "TX 220",
-                              RadioSettingValueBoolean(_settings.tx220))
-            basic.append(rs)
-
-            rs = RadioSetting("tx350", "TX 350",
-                              RadioSettingValueBoolean(_settings.tx350))
-            basic.append(rs)
-
-            rs = RadioSetting("tx500", "TX 500",
-                              RadioSettingValueBoolean(_settings.tx500))
-            basic.append(rs)
-
-            # older firmware sets 0xCA0-0xCA7 to FF
-            if _settings.scanband <= len(SCAN_BAND_LIST):
-                rs = RadioSetting("scanband", "Scan Band",
-                                  RadioSettingValueList(
-                                    SCAN_BAND_LIST,
-                                    current_index=_settings.scanband))
-                basic.append(rs)
-
-        if self.MODEL != "RT-730":
-            rs = RadioSetting("voxgain", "VOX Gain",
-                              RadioSettingValueList(
-                                  VOX_GAIN,
-                                  current_index=_settings.voxgain))
-            basic.append(rs)
-
-            rs = RadioSetting("voxdelay", "VOX Delay",
-                              RadioSettingValueList(
-                                  VOX_DELAY,
-                                  current_index=_settings.voxdelay))
-            basic.append(rs)
-
-            rs = RadioSetting("breathled", "Breath Led",
-                              RadioSettingValueList(
-                                  self._breath_led_list,
-                                  current_index=_settings.breathled))
-            basic.append(rs)
-
-            rs = RadioSetting("ponmsg", "Power-On Message",
-                              RadioSettingValueList(
-                                  self._ponmsg_list,
-                                  current_index=_settings.ponmsg))
-            basic.append(rs)
-
-            # mic gain
-            if self.MODEL not in H8_LIST:
-                _mic = self._memobj.mic
-                rs = RadioSetting("micgain", "MIC GAIN",
-                                  RadioSettingValueList(
-                                      MIC_GAIN_LIST,
-                                      current_index=_mic.micgain))
-                basic.append(rs)
-
-            if self.MODEL not in H8_LIST:
-                rs = RadioSetting("kill", "Kill",
-                                  RadioSettingValueBoolean(_settings.kill))
-                basic.append(rs)
-                rs = RadioSetting("stun", "Stun",
-                                  RadioSettingValueBoolean(_settings.stun))
-                basic.append(rs)
-
-        def _filter(name):
-            filtered = ""
-            for char in str(name):
-                if char in chirp_common.CHARSET_ASCII:
-                    filtered += char
-                else:
-                    filtered += " "
-            return filtered
-
-        rs = RadioSetting("poweron_msg.msg1", "Power-On Message 1",
-                          RadioSettingValueString(0, 16, _filter(_msg.msg1)))
-        basic.append(rs)
-        rs = RadioSetting("poweron_msg.msg2", "Power-On Message 2",
-                          RadioSettingValueString(0, 16, _filter(_msg.msg2)))
-        basic.append(rs)
-        rs = RadioSetting("poweron_msg.msg3", "Power-On Message 3",
-                          RadioSettingValueString(0, 16, _filter(_msg.msg3)))
-        basic.append(rs)
-        if self.MODEL == "RT-730":
-            rsvs = RadioSettingValueString(0, 16, _filter(_msg.msg4))
-            rs = RadioSetting("poweron_msg.msg4", "Power-On Message 4", rsvs)
-            basic.append(rs)
-
-        if self.MODEL == "RT-730":
-            rs = RadioSetting("ligcon", "Light Control",
-                              RadioSettingValueList(
-                                  LIGHT730_LIST,
-                                  current_index=_settings.ligcon))
-            basic.append(rs)
-
-            rs = RadioSetting("tot", "Time-out Timer",
-                              RadioSettingValueList(
-                                  TIMEOUT730_LIST,
-                                  current_index=_settings.tot))
-            basic.append(rs)
-
-            rs = RadioSetting("press.rogerprompt", "Roger",
-                              RadioSettingValueList(
-                                  PTTID_LIST,
-                                  current_index=_press.rogerprompt))
-            basic.append(rs)
-
-            rs = RadioSetting("lang", "Language",
-                              RadioSettingValueList(
-                                  LANG_LIST,
-                                  current_index=_settings.lang))
-            basic.append(rs)
-
-            rs = RadioSetting("save", "Battery Save",
-                              RadioSettingValueBoolean(_settings.save))
-            basic.append(rs)
-
-            rs = RadioSetting("mdfa", "Channel Names",
-                              RadioSettingValueBoolean(_settings.mdfa))
-            basic.append(rs)
-
-            rs = RadioSetting("hoptype", "Hop Type",
-                              RadioSettingValueList(
-                                  HOP_LIST,
-                                  current_index=_settings.hoptype))
-            basic.append(rs)
-
-            rs = RadioSetting("tailclean", "QT/DQT Tail",
-                              RadioSettingValueBoolean(_settings.tailclean))
-            basic.append(rs)
-
-            rs = RadioSetting("press.ssidekey1", "PF1 Key(Short)",
-                              RadioSettingValueList(
-                                  SHORT_KEY730_LIST,
-                                  current_index=_press.ssidekey1))
-            basic.append(rs)
-            rs = RadioSetting("press.lsidekey1", "PF1 Key(Long)",
-                              RadioSettingValueList(
-                                  LONG_KEY730_LIST,
-                                  current_index=_press.lsidekey1))
-            basic.append(rs)
-            rs = RadioSetting("press.ssidekey2", "PF2 Key(Short)",
-                              RadioSettingValueList(
-                                  SHORT_KEY730_LIST,
-                                  current_index=_press.ssidekey2))
-            basic.append(rs)
-            rs = RadioSetting("press.lsidekey2", "PF2 Key(Long)",
-                              RadioSettingValueList(
-                                  LONG_KEY730_LIST,
-                                  current_index=_press.lsidekey2))
-            basic.append(rs)
-
-            rs = RadioSetting("voxgain", "VOX Gain",
-                              RadioSettingValueList(
-                                  VOX_GAIN730,
-                                  current_index=_settings.voxgain))
-            basic.append(rs)
-
-            rs = RadioSetting("voxdelay", "VOX Delay",
-                              RadioSettingValueList(
-                                  VOX_DELAY730,
-                                  current_index=_settings.voxdelay))
-            basic.append(rs)
-
-        if self.MODEL != "RT-730":
-            group.append(abblock)
-
-            # A channel
-            a_freq = int(_vfoa.rxfreqa)
-            freqa = "%i.%05i" % (a_freq / 100000, a_freq % 100000)
-            if freqa == "0.00000":
-                val1a = RadioSettingValueString(0, 7, '0.00000')
-            else:
-                val1a = RadioSettingValueFloat(
-                    136, 520, float(freqa), 0.00001, 5)
-            rs = RadioSetting("rxfreqa", "A Channel - Frequency", val1a)
-            abblock.append(rs)
-
-            # Offset
-            # If the offset is 12.345
-            # Then the data obtained is [0x45, 0x23, 0x01, 0x00]
-            offsets = {}
-            dirs = {}
-
-            def _calc_txfreq(rxfreq, offset, dir):
-                # calc tx freq
-                txfreq = 0
-                match dir:
-                    case 0:  # off
-                        txfreq = rxfreq
-                    case 1:  # minus
-                        txfreq = \
-                            (int(rxfreq) /
-                                100000 - int(offset) / 100000) * 100000
-                    case 2:  # plus
-                        txfreq = \
-                            (int(rxfreq) /
-                                100000 + int(offset) / 100000) * 100000
-                return int(txfreq)
-
-            def _apply_offset_dir(setting, i, obj1, obj2):
-                value = getattr(obj1, setting.get_name())
-                value.set_value(setting.value)
-                # calc tx freq and store
-                obj1.txfreq = _calc_txfreq(
-                    getattr(obj1, "rxfreq%s" % i),
-                    obj2,
-                    getattr(obj1, "dir%s" % i)
-                )
-
-            for i in ('a', 'b'):
-                value = getattr(self._memobj.vfo_offset, '%s' % i)
-                if value.get_raw() == b'\xff\xff\xff\xff':
-                    offset = 0
-                else:
-                    offset = int(value) / 100000
-
-                def _apply(setting):
-                    value = getattr(self._memobj.vfo_offset,
-                                    setting.get_name())
-                    if float(setting.value) == 0:
-                        value.fill_raw(b'\xff')
-                    else:
-                        value.set_value(int(setting.value * 100000))
-
-                rs = RadioSetting("%s" % i,
-                                  "%s Offset Frequency" % i.upper(),
-                                  RadioSettingValueFloat(
-                                      0.00000, 59.99750, offset, 0.00001, 5))
-                rs.set_apply_callback(_apply)
-                offsets[i] = rs
-                _obj1 = self._memobj.vfoa if i == \
-                    'a' else self._memobj.vfob
-                _obj2 = self._memobj.vfo_offset.a if i == 'a' \
-                    else self._memobj.vfo_offset.b
-                _obj3 = self._memobj.vfoa.dira if i == 'a' \
-                    else self._memobj.vfob.dirb
-                rs = RadioSetting("dir%s" % i,
-                                  "%s Offset Direction" % i.upper(),
-                                  RadioSettingValueList(OFFSET_DIR,
-                                                        current_index=_obj3))
-                rs.set_apply_callback(_apply_offset_dir, i, _obj1, _obj2)
-                dirs[i] = rs
-
-            abblock.append(offsets['a'])
-            abblock.append(dirs['a'])
-
-            try:
-                self._tx_power[_vfoa.lowpower]
-                cur_a_power = _vfoa.lowpower
-            except IndexError:
-                cur_a_power = 0
-            rs = RadioSetting("lowpower", "A TX Power",
-                              RadioSettingValueList(
-                                [str(x) for x in self._tx_power],
-                                current_index=cur_a_power))
-            abblock.append(rs)
-
-            rs = RadioSetting("wide", "A Band",
-                              RadioSettingValueList(
-                                  BANDWIDTH_LIST, current_index=_vfoa.wide))
-            abblock.append(rs)
-
-            rs = RadioSetting("bcl", "A Busy Lock",
-                              RadioSettingValueBoolean(_vfoa.bcl))
-            abblock.append(rs)
-
-            rs = RadioSetting("specialqta", "A Special QT/DQT",
-                              RadioSettingValueBoolean(_vfoa.specialqta))
-            abblock.append(rs)
-
-            rs = RadioSetting(
-                "aworkmode", "A Work Mode",
-                RadioSettingValueList(
-                    VFO_WORKMODE, current_index=_settings.aworkmode))
-            abblock.append(rs)
-
-            # B channel
-            b_freq = int(str(int(_vfob.rxfreqb)).ljust(8, '0'))
-            freqb = "%i.%05i" % (b_freq / 100000, b_freq % 100000)
-            if freqb == "0.00000":
-                val1a = RadioSettingValueString(0, 7, '0.00000')
-            else:
-                val1a = RadioSettingValueFloat(
-                    136, 520, float(freqb), 0.00001, 5)
-            rs = RadioSetting("rxfreqb", "B Channel - Frequency", val1a)
-            abblock.append(rs)
-
-            abblock.append(offsets['b'])
-            abblock.append(dirs['b'])
-
-            try:
-                self._tx_power[_vfob.lowpowerb]
-                cur_b_power = _vfob.lowpowerb
-            except IndexError:
-                cur_b_power = 0
-            rs = RadioSetting("lowpowerb", "B TX Power",
-                              RadioSettingValueList(
-                                [str(x) for x in self._tx_power],
-                                current_index=cur_b_power))
-            abblock.append(rs)
-
-            rs = RadioSetting("wideb", "B Band",
-                              RadioSettingValueList(
-                                  BANDWIDTH_LIST, current_index=_vfob.wideb))
-            abblock.append(rs)
-
-            rs = RadioSetting("bclb", "B Busy Lock",
-                              RadioSettingValueBoolean(_vfob.bclb))
-            abblock.append(rs)
-
-            rs = RadioSetting("specialqtb", "B Special QT/DQT",
-                              RadioSettingValueBoolean(_vfob.specialqtb))
-            abblock.append(rs)
-
-            rs = RadioSetting(
-                "bworkmode", "B Work Mode",
-                RadioSettingValueList(
-                    VFO_WORKMODE, current_index=_settings.bworkmode))
-            abblock.append(rs)
-
-        group.append(fmmode)
-
-        rs = RadioSetting("fmworkmode", "Work Mode",
-                          RadioSettingValueList(
-                              FM_WORKMODE,
-                              current_index=_settings.fmworkmode))
-        fmmode.append(rs)
-
-        rs = RadioSetting("fmroad", "Channel",
-                          RadioSettingValueList(
-                              FM_CHANNEL,
-                              current_index=_settings.fmroad))
-        fmmode.append(rs)
-
-        rs = RadioSetting("fmrec", "Allow Receive",
-                          RadioSettingValueBoolean(_settings.fmrec))
-        fmmode.append(rs)
-
-        # FM
-        numeric = '0123456789.'
-        for i in range(25):
-            if self._memobj.fmusedflags[i]:
-                _fm = self._get_fm(i).fmblock
+            for i in range(0, val[-1]):
                 try:
-                    if not (760 < int(_fm) < 1080):
-                        raise ValueError()
-                    val = '%.1f' % (int(_fm) / 10)
-                except ValueError:
-                    LOG.warning('FM channel index %i is invalid', i)
-                    val = ''
+                    dtmf += self._dtmf_code_dict.get(int(val[i]))
+                except (ValueError, IndexError):
+                    dtmf = ''
+        else:
+            for i in range(0, len(val)):
+                if val[i] == 0xff:
+                    break
+                try:
+                    dtmf += self._dtmf_code_dict.get(int(val[i]))
+                except (ValueError, IndexError):
+                    dtmf = ''
+        return dtmf
+
+    def encode_dtmf(self, val, len_byte=True, terminated=False):
+        """encode the DTMF string into the binary value the radio expects"""
+        _dtmf_list = [0xff] * len(val)
+        x = 0
+        for i in range(0, len(val)):
+            _dtmf_list[i] = self._inverted_dtmf_code_dict.get(val[i])
+            if _dtmf_list[i] != 0xff:
+                x += 1
             else:
-                val = ''
-            rs = RadioSetting('block%02i' % i, "Channel %i" % (i + 1),
-                              RadioSettingValueString(0, 5,
-                                                      val,
-                                                      False, charset=numeric))
-            fmmode.append(rs)
+                break
 
-        try:
-            _fmv = int(self._memobj.fmvfo) / 10
-        except ValueError:
-            LOG.warning('FM VFO is invalid')
-            _fmv = 0
+        if len_byte:
+            _dtmf_list.append(x)
 
-        rs = RadioSetting(
-            "fmvfo", "VFO", RadioSettingValueFloat(
-                76.0, 108.0, _fmv, 0.1, 1))
-        fmmode.append(rs)
+        if terminated:
+            _dtmf_list.append(0xff)
 
-        if self.MODEL != "RT-730":
-            group.append(dtmf)
+        return _dtmf_list
 
-            # DTMF
-            gcode_val = str(_gcode.gcode)[2:]
-            if gcode_val == "FF":
-                gcode_val = "Off"
-            elif gcode_val == "0F":
-                gcode_val = "#"
-            elif gcode_val == "0E":
-                gcode_val = "*"
-            elif gcode_val == '00':
-                gcode_val = ""
+    def apply_dtmf_code(self, setting, obj, len_byte=True, terminated=False):
+        obj.set_value(self.encode_dtmf(setting.value, len_byte, terminated))
+
+    def get_settings_basic(self, basic_settings, settings_mem):
+        """Basic Radio Settings Items"""
+        # squelch
+        rs = RadioSettingValueList(self._squelch_list,
+                                   current_index=settings_mem.squelch)
+        mset = MemSetting('settings.squelch', 'Squelch Level', rs)
+        mset.set_doc('Set the radio squelch Level.')
+        basic_settings.append(mset)
+        # voice prompt
+        rs = RadioSettingValueBoolean(settings_mem.voiceprompt)
+        mset = MemSetting('settings.voiceprompt', 'Voice Prompt', rs)
+        mset.set_doc('Set if radio button presses and menu items '
+                     'are voice announced.')
+        basic_settings.append(mset)
+        # auto lock
+        rs = RadioSettingValueBoolean(settings_mem.keyautolock)
+        mset = MemSetting('settings.keyautolock', 'Keypad Lock', rs)
+        mset.set_doc('Set to have radio keypad automatically locked '
+                     'after a certian amount of time.')
+        basic_settings.append(mset)
+        # pri tx
+        if self._has_pritx:
+            rs = RadioSettingValueList(self._pritx_list,
+                                    current_index=settings_mem.pritx)
+            mset = MemSetting('settings.pritx', 'Priority TX', rs)
+            mset.set_doc('Set the radio priority TX mode. '
+                         'MAIN TXs on the current channel, '
+                         'Busy TXs on the channel that had the last RX.')
+            basic_settings.append(mset)
+        # key beep
+        rs = RadioSettingValueBoolean(settings_mem.beep)
+        mset = MemSetting('settings.beep', 'Beep', rs)
+        mset.set_doc('Set to have radio keypad beep with each key press.')
+        basic_settings.append(mset)
+        # vox gain
+        rs = RadioSettingValueList(self._voxgain_list,
+                                   current_index=settings_mem.voxgain)
+        mset = MemSetting('settings.voxgain', 'VOX Gain', rs)
+        mset.set_doc('Set the VOX gain level.')
+        basic_settings.append(mset)
+        # vox delay
+        rs = RadioSettingValueList(self._voxdelay_list,
+                                   current_index=settings_mem.voxdelay)
+        mset = MemSetting('settings.voxdelay', 'VOX Delay', rs)
+        mset.set_doc('Set the VOX delay time.')
+        basic_settings.append(mset)
+        # LED disp TX
+        rs = RadioSettingValueBoolean(settings_mem.txled)
+        mset = MemSetting('settings.txled', 'Screen Display-TX', rs)
+        mset.set_doc('Set to have radio screen backlight display when '\
+                     'TX is active.')
+        basic_settings.append(mset)
+        # LED disp RX
+        rs = RadioSettingValueBoolean(settings_mem.rxled)
+        mset = MemSetting('settings.rxled', 'Screen Display-RX', rs)
+        mset.set_doc('Set to have radio screen backlight display when '\
+                     'RX is active.')
+        basic_settings.append(mset)
+        # backlight control
+        rs = RadioSettingValueList(self._backlight_list,
+                                   current_index=settings_mem.ligcon)
+        mset = MemSetting('settings.ligcon', 'Backlight Timer', rs)
+        mset.set_doc('Set the how long the backlight stays on(s).')
+        basic_settings.append(mset)
+        # time-out-timer TOT
+        rs = RadioSettingValueList(self._tot_list,
+                                   current_index=settings_mem.tot)
+        mset = MemSetting('settings.tot', 'Time-Out Timer', rs)
+        mset.set_doc('Set the amount of time that TX can be continuous '\
+                     'before timing out(s).')
+        basic_settings.append(mset)
+        # roger beep
+        self.get_settings_roger(basic_settings, settings_mem)
+        # language
+        _lang_mem = self._memobj.menu.lang if hasattr(self._memobj, 'menu') \
+            else self._memobj.settings.lang
+        _lang_path = 'menu.lang' if hasattr(self._memobj, 'menu') \
+            else 'settings.lang'
+        rs = RadioSettingValueMap(self._lang_map, _lang_mem)
+        mset = MemSetting(_lang_path, 'Language', rs)
+        mset.set_doc('Set the radio language.')
+        basic_settings.append(mset)
+
+    def get_settings_fmb(self, fm_settings, settings_mem):
+        """FM Broadcast Radio Settings"""
+        # FM work mode
+        rs = RadioSettingValueList(self._fmworkmode_list,
+                                   current_index=settings_mem.fmworkmode)
+        mset = MemSetting('settings.fmworkmode', 'FM Workmode', rs)
+        mset.set_doc('Set the FM broadcast workmode.')
+        fm_settings.append(mset)
+        # default FM channel
+        rs = RadioSettingValueMap(self._fmchannels_map, settings_mem.fmdefch)
+        mset = MemSetting('settings.fmdefch', 'Default Channel', rs)
+        mset.set_doc('Set the default FM broadcast channel '
+                     'for \'CH\' workmode.')
+        fm_settings.append(mset)
+        # FM interrupt
+        rs = RadioSettingValueBoolean(settings_mem.fmrec)
+        mset = MemSetting('settings.fmrec', self._fmrec_shortname, rs)
+        mset.set_doc('Set to allow radio RX to interrupt FM broadcast RX.')
+        fm_settings.append(mset)
+
+    def get_settings_scan(self, scan_settings,settings_mem):
+        """Scan Settings Items"""
+        if self._has_freq_ranger:
+            _menu = self._memobj.menu
+        # Scan mode
+        rs = RadioSettingValueList(self._scanmode_list,
+                                   current_index=settings_mem.scanmode)
+        mset = MemSetting('settings.scanmode', 'Scan Mode', rs)
+        mset.set_doc('Set the scan resume mode.')
+        scan_settings.append(mset)
+        # Scan hangtime
+        if self._has_scan_hangtime:
+            rs = RadioSettingValueList(self._hangtime_list,
+                                    current_index=_menu.hangtime)
+            mset = MemSetting('menu.hangtime', 'Scan Hang Time', rs)
+            mset.set_doc('Set the scan resume mode timeout value(s).')
+            scan_settings.append(mset)
+        # Freq ranger
+        if self._has_freq_ranger:
+            # Freq ranger high
+            rs = RadioSettingValueInteger(0, 999, _menu.ranger_high)
+            mset = MemSetting('menu.ranger_high', 'Freq Ranger Upper Limit', rs)
+            mset.set_doc('Set the VFO scan frequency ranger upper '
+                         'limit value(MHz).')
+            scan_settings.append(mset)
+            # Freq ranger low
+            rs = RadioSettingValueInteger(0, 999, _menu.ranger_low)
+            mset = MemSetting('menu.ranger_low', 'Freq Ranger Lower Limit', rs)
+            mset.set_doc('Set the VFO scan frequency ranger lower '
+                         'limit value(Mhz).')
+            scan_settings.append(mset)
+
+    def get_settings_dtmf(self, dtmf_settings, dtmf_mem):
+        """DTMF Settings Items"""
+        _settingsobj = self._memobj.settings
+
+        # Group Code
+        _groupobj = self._memobj.group
+        rs = RadioSettingValueMap(self._groupcode_map, _groupobj.code)
+        mset = MemSetting('group.code', 'Group Code', rs)
+        mset.set_doc('Set the radio DTMF Group Code.')
+        dtmf_settings.append(mset)
+        # ID Code
+        _codeobj = self._memobj.id.code
+        _code = self.decode_dtmf(_codeobj)
+        rs = RadioSettingValueString(0, 3, _code)
+        rs.set_charset(DTMF_CHARS)
+        rset = RadioSetting('id.code', 'ID Code', rs)
+        rset.set_apply_callback(self.apply_dtmf_code,
+                                _codeobj, False)
+        rset.set_doc('Set the radio DTMF ID Code.')
+        dtmf_settings.append(rset)
+        if self._has_stored_dtmf:
+            # Stored DTMF Codes
+            for i in range(0, self._mem_params.get('dtmf_strings')):
+                _codeobj = dtmf_mem[i].code
+                _code = self.decode_dtmf(_codeobj, self._has_dtmf_len)
+                rs = RadioSettingValueString(0,
+                                            self._mem_params.get('dtmf_len') - 1,
+                                            _code, True)
+                rs.set_charset(DTMF_CHARS)
+                rset = RadioSetting('dtmf.%i.code' % i,
+                                    'DTMF-%i' % (i + 1), rs)
+                rset.set_apply_callback(self.apply_dtmf_code,
+                                        _codeobj, self._has_dtmf_len,
+                                        self._has_dtmf_terminated)
+                rset.set_doc('Set the code sequence for stored DTMF-%i '
+                            'sequence.' % (i + 1))
+                dtmf_settings.append(rset)
+        # PTT-ID BOT
+        _codeobj = self._memobj.pttid.bot.code
+        _code = self.decode_dtmf(_codeobj, True)
+        rs = RadioSettingValueString(0, self._mem_params.get('dtmf_len') - 1,
+                                     _code, True)
+        rs.set_charset(DTMF_CHARS)
+        rset = RadioSetting('pttid.bot.code',
+                            'PTT ID BOT', rs)
+        rset.set_apply_callback(self.apply_dtmf_code,
+                                _codeobj, True)
+        rset.set_doc('Set the DTMF sequence for the \'BOT\' PTT ID Code.')
+        dtmf_settings.append(rset)
+        # PTT-ID EOT
+        _codeobj = self._memobj.pttid.eot.code
+        _code = self.decode_dtmf(_codeobj, True)
+        rs = RadioSettingValueString(0, self._mem_params.get('dtmf_len') - 1,
+                                     _code, True)
+        rs.set_charset(DTMF_CHARS)
+        rset = RadioSetting('pttid.eot.code',
+                            'PTT ID EOT', rs)
+        rset.set_apply_callback(self.apply_dtmf_code,
+                                _codeobj, True)
+        rset.set_doc('Set the DTMF sequence for the \'EOT\' PTT ID Code.')
+        dtmf_settings.append(rset)
+        # Stun code
+        if self._has_stuncode:
+            _codeobj = self._memobj.remote.stun.code
+            _code = _code = self.decode_dtmf(_codeobj, True)
+            rs = RadioSettingValueString(0,
+                                         self._mem_params.get('dtmf_len') - 1,
+                                         _code, True)
+            rs.set_charset(DTMF_CHARS)
+            rset = RadioSetting('remote.stun.code',
+                                'Stun Code', rs)
+            rset.set_apply_callback(self.apply_dtmf_code,
+                                    _codeobj, True)
+            rset.set_doc('Set the DTMF sequence for the remote radio '\
+                         '\'stun\' function.')
+            dtmf_settings.append(rset)
+        # Kill code
+        if self._has_killcode:
+            _codeobj = self._memobj.remote.kill.code
+            _code = _code = self.decode_dtmf(_codeobj, True)
+            rs = RadioSettingValueString(0,
+                                         self._mem_params.get('dtmf_len') - 1,
+                                         _code, True)
+            rs.set_charset(DTMF_CHARS)
+            rset = RadioSetting('remote.kill.code',
+                                'Kill Code', rs)
+            rset.set_apply_callback(self.apply_dtmf_code,
+                                    _codeobj, True)
+            rset.set_doc('Set the DTMF sequence for the remote radio '
+                         '\'kill\' function.')
+            dtmf_settings.append(rset)
+        # DTMF side tones
+        rs =  RadioSettingValueBoolean(_settingsobj.dtmfst)
+        mset = MemSetting('settings.dtmfst', 'DTMF Side Tones', rs)
+        mset.set_doc('Set to make DTMF side tones audible.')
+        dtmf_settings.append(mset)
+        # extra DTMF setttigs
+        if self._has_dtmf_extra:
+            # DTMF decode
+            rs =  RadioSettingValueBoolean(_settingsobj.dtmfdecode)
+            mset = MemSetting('settings.dtmfdecode', 'DTMF Decode', rs)
+            mset.set_doc('Set to decode DTMF tones.')
+            dtmf_settings.append(mset)
+            # DTMF reset timer
+            rs = RadioSettingValueList(self._dtmf_reset_list,
+                                       current_index=_settingsobj.dtmfautorst)
+            mset = MemSetting('settings.dtmfautorst', 'DTMF Reset Time', rs)
+            mset.set_doc('Set the DTMF auto reset timer value(s).')
+            dtmf_settings.append(mset)
+            # DTMF decoding response
+            rs = RadioSettingValueList(self._dtmf_resp_list,
+                                       current_index=\
+                                        _settingsobj.dtmfdecoderesp)
+            mset = MemSetting('settings.dtmfdecoderesp',
+                              'DTMF Decoding Response', rs)
+            mset.set_doc('Set the response when a DTMF sequence is decoded.')
+            dtmf_settings.append(mset)
+            # DTMF speed
+            rs = RadioSettingValueList(self._dtmf_speed_list,
+                                       current_index=_settingsobj.dtmfspeed)
+            mset = MemSetting('settings.dtmfspeed', 'DTMF Speed', rs)
+            mset.set_doc('Set the time duration each DTMF '
+                         'character of a sequence is transmitted(ms).')
+            dtmf_settings.append(mset)
+
+    def get_settings_bluetooth(self, bt_settings, bt_mem):
+        """bluetooth radio settings"""
+        # bluetooth on/off
+        rs = RadioSettingValueBoolean(bt_mem.on)
+        mset = MemSetting('bluetooth.on', 'Bluetooth Serial', rs)
+        mset.set_doc('Set the Bluetooth Serial (BLE) connectivity On/Off.')
+        bt_settings.append(mset)
+
+    def get_settings_button(self, btn_settings, btn_mem):
+        """programable button settings"""
+        # pf1
+        # short press
+        rs = RadioSettingValueList(self._short_press_list,
+                                    current_index=btn_mem.ssidekey1)
+        mset = MemSetting('button.ssidekey1', 'PF1 - Short Press', rs)
+        mset.set_doc('Select the action when the PF1 button is Short pressed.')
+        btn_settings.append(mset)
+       # long press
+        rs = RadioSettingValueList(self._long_press_list,
+                                    current_index=btn_mem.lsidekey1)
+        mset = MemSetting('button.lsidekey1', 'PF1 - Long Press', rs)
+        mset.set_doc('Select the action when the PF1 button is Long pressed.')
+        btn_settings.append(mset)
+        # pf2
+        if self._has_pf2_button:
+            # short press
+            rs = RadioSettingValueList(self._short_press_list,
+                                        current_index=btn_mem.ssidekey2)
+            mset = MemSetting('button.ssidekey2', 'PF2 - Short Press', rs)
+            mset.set_doc('Select the action when the PF2 button '
+                         'is Short pressed.')
+            btn_settings.append(mset)
+            # long press
+            rs = RadioSettingValueList(self._long_press_list,
+                                        current_index=btn_mem.lsidekey2)
+            mset = MemSetting('button.lsidekey2', 'PF2 - Long Press', rs)
+            mset.set_doc('Select the action when the PF2 button '
+                         'is Long pressed.')
+            btn_settings.append(mset)
+        # top
+        if self._has_top_button:
+            # short press
+            rs = RadioSettingValueList(self._short_press_list,
+                                       current_index=btn_mem.stopkey1)
+            mset = MemSetting('button.stopkey1', 'Top Button - Short Press', rs)
+            mset.set_doc('Select the action when the Top button is Short pressed.')
+            btn_settings.append(mset)
+            # long press
+            rs = RadioSettingValueList(self._long_press_list,
+                                       current_index=btn_mem.ltopkey1)
+            mset = MemSetting('button.ltopkey1', 'Top Button - Long Press', rs)
+            mset.set_doc('Select the action when the Top button is Long pressed.')
+            btn_settings.append(mset)
+
+    def get_settings_ab(self, ab_settings, settings_mem):
+        """A/B Channel Settings"""
+        # vfo a sub menu
+        achan = RadioSettingSubGroup('achan', 'VFO A Channel')
+        ab_settings.append(achan)
+        # a work mode
+        rs = RadioSettingValueList(self._vfo_workmode_list,
+                                   current_index=settings_mem.aworkmode)
+        mset = MemSetting('settings.aworkmode', 'Work Mode', rs)
+        mset.set_doc('Set the VFO A channel Work Mode.')
+        achan.append(mset)
+        # a tuning step
+        rs = RadioSettingValueList(self._step_list,
+                                   current_index=settings_mem.astep)
+        mset = MemSetting('settings.astep', 'Tuning Step', rs)
+        mset.set_doc('Set the VFO A Tuning Step.')
+        achan.append(mset)
+        # a def channel
+        if self._has_def_chan:
+            rs = RadioSettingValueInteger(1,
+                                          self._mem_params.get('channels') - 1,
+                                        settings_mem.adefchan)
+            mset = MemSetting('settings.adefchan', 'Default Channel', rs)
+            mset.set_doc('Set the default A Channel Number.')
+            achan.append(mset)
+        # vfo b sub menu
+        bchan = RadioSettingSubGroup('bchan', 'VFO B Channel')
+        ab_settings.append(bchan)
+        # b work mode
+        rs = RadioSettingValueList(self._vfo_workmode_list,
+                                   current_index=settings_mem.bworkmode)
+        mset = MemSetting('settings.bworkmode', 'Work Mode', rs)
+        mset.set_doc('Set the VFO B channel Work Mode.')
+        bchan.append(mset)
+        # b tuning step
+        rs = RadioSettingValueList(self._step_list,
+                                   current_index=settings_mem.bstep)
+        mset = MemSetting('settings.bstep', 'Tuning Step', rs)
+        mset.set_doc('Set the VFO B Tuning Step.')
+        bchan.append(mset)
+        # b def channel
+        if self._has_def_chan:
+            rs = RadioSettingValueInteger(1,
+                                          self._mem_params.get('channels') - 1,
+                                        settings_mem.bdefchan)
+            mset = MemSetting('settings.bdefchan', 'Default Channel', rs)
+            mset.set_doc('Set the default B Channel Number.')
+            bchan.append(mset)
+
+    def get_settings_roger(self, roger_settings, settings_mem):
+        """Roger Beep Settings"""
+        # roger beep
+        rs = RadioSettingValueBoolean(settings_mem.rogerprompt)
+        mset = MemSetting('settings.rogerprompt', 'Roger Beep', rs)
+        mset.set_doc('Set to have a roger beep sound at the end of TX.')
+        roger_settings.append(mset)
+
+    def get_settings_spec(self, spec_settings, settings_mem):
+        # radio operating mode
+        self._ham = self._memobj.settings.mode == 2
+        self._gmrs = self._memobj.settings.mode == 1
+        rs = RadioSettingValueList(self._operating_mode_list,
+                                   current_index=settings_mem.mode)
+        mset = MemSetting('settings.mode', 'Operating Mode', rs)
+        mset.set_doc('Set the Operating Mode of the radio. Operating '
+            'Modes include HAM, GMRS or NORMAL (unlocked). Each mode has '
+            'different frequency ranges and capibilities.')
+        mset.set_warning(_(
+            'This should only be used to change the operating MODE of your '
+            'radio if you understand the legalities and implications of '
+            'doing so. The change may enable the radio to transmit on '
+            'frequencies it is not Type Accepted to do and my be in '
+            'violation of FCC and other governing agency regulations.\n\n'
+            'It may make your saved image files incompatible with the radio '
+            'and non-usable until you change the radio MODE back to the '
+            'MODE in effect when the image file was saved. After the '
+            'changed image is uploaded, the radio may have to turned OFF '
+            'and back ON to have the MODE changes take full effect.\n'
+            'DO NOT attempt to edit any settings until uploading to and '
+            'downloading from the radio with the new operating MODE.'))
+        spec_settings.append(mset)
+        # Bluetooth settings
+        if self._has_bluetooth:
+            self.get_settings_bluetooth(spec_settings, self._memobj.bluetooth)
+        # dual watch mode
+        rs = RadioSettingValueInvertedBoolean(not settings_mem.dualwatch)
+        mset = MemSetting('settings.dualwatch', 'Dual Watch', rs)
+        mset.set_doc('Set to put the radio in dual watch (aka \'SYNC\') mode.')
+        spec_settings.append(mset)
+        # mic gain
+        rs = RadioSettingValueList(self._micgain_list,
+                                   current_index=self._memobj.mic.gain)
+        mset = MemSetting('mic.gain', 'Mic Gain', rs)
+        mset.set_doc('Set the microphone gain level.')
+        spec_settings.append(mset)
+        # brightness
+        if self._has_brightness:
+            if settings_mem.brightness not in range(0, 5):
+                LOG.warning(
+                    'brightness out of range 1 to 5. Actual value: 0x%x. '
+                    'Screen may not be visible',
+                    settings_mem.brightness)
+            rs = RadioSettingValueMap(self._brightness_map, settings_mem.brightness)
+            mset = MemSetting('settings.brightness', 'Brightness', rs)
+            mset.set_doc('Set the radio display brightness.')
+            spec_settings.append(mset)
+        # breath LED
+        rs = RadioSettingValueList(self._breath_led_list,
+                                    current_index=settings_mem.breathled)
+        mset = MemSetting('settings.breathled', 'Breath LED', rs)
+        mset.set_doc('Set the Breath LED timing behavior.')
+        spec_settings.append(mset)
+        # poweron message
+        rs = RadioSettingValueList(self._ponmsg_list,
+                                   current_index=settings_mem.ponmsg)
+        mset = MemSetting('settings.ponmsg', 'Power-On Message', rs)
+        mset.set_doc('Set what type of power-on message will be displayed.')
+        spec_settings.append(mset)
+        # power-on message text
+        self.get_settings_pom(spec_settings, self._memobj.poweron_msg)
+        # kill/stun
+        if self._has_killcode:
+            rs = RadioSettingValueBoolean(settings_mem.kill)
+            mset = MemSetting('settings.kill', 'Kill', rs)
+            mset.set_doc('Clear to remove the radio from the \'Kill\' State.')
+            spec_settings.append(mset)
+        if self._has_stuncode:
+            rs = RadioSettingValueBoolean(settings_mem.stun)
+            mset = MemSetting('settings.stun', 'Stun', rs)
+            mset.set_doc('Clear to remove the radio from the \'Stun\' State.')
+            spec_settings.append(mset)
+        # Button settings
+        self.get_settings_button(spec_settings, self._memobj.button)
+        # DTMF Settings
+        if self._has_dtmf:
+            _dtmf_mem = self._memobj.dtmf
+            dtmf = RadioSettingGroup('dtmf', 'DTMF')
+            self.get_settings_dtmf(dtmf, _dtmf_mem)
+            spec_settings.append(dtmf)
+        # A/B Chan
+        abchan = RadioSettingGroup('abchan', 'VFO A/B Channel')
+        self.get_settings_ab(abchan,  settings_mem)
+        spec_settings.append(abchan)
+        # FM broadcast Settings
+        fmb = RadioSettingGroup('fmb', 'FM Broadcast')
+        self.get_settings_fmb(fmb, settings_mem)
+        spec_settings.append(fmb)
+
+    def _filter(self, name):  # remove invalid padding chars from the name string
+        s = ''
+        for c in str(name):
+            if c in TDH8._valid_chars:
+                s += c
             else:
-                gcode_val = gcode_val[1]
-            try:
-                cur = GROUPCODE.index(gcode_val)
-            except ValueError:
-                cur = len(GROUPCODE)
-            rs = RadioSetting(
-                    "gcode", "Group Code",
-                    RadioSettingValueList(
-                        GROUPCODE,
-                        current_index=cur))
-            dtmf.append(rs)
+                s += ' '
+        return s
 
-            icode_list = self._memobj.icode.idcode
-            used_icode = ''
-            for i in icode_list:
-                if i == 0xFF:
-                    continue
-                used_icode += str(i)[3]
-            dtmfcharsani = "0123456789ABCD "
-            i_val = RadioSettingValueString(0, 3, used_icode)
-            rs = RadioSetting("icode", "ID Code", i_val)
-            i_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            gcode_list_1 = self._memobj.group1.group1
-            used_group1 = ''
-            for i in gcode_list_1:
-                if i == 0xFF:
-                    continue
-                used_group1 += str(i)[3]
-            group1_val = RadioSettingValueString(0, 7, used_group1)
-            rs = RadioSetting("group1", "1", group1_val)
-            group1_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            gcode_list_2 = self._memobj.group2.group2
-            used_group2 = ''
-            for i in gcode_list_2:
-                if i == 0xFF:
-                    continue
-                used_group2 += str(i)[3]
-            group2_val = RadioSettingValueString(0, 7, used_group2)
-            rs = RadioSetting("group2", "2", group2_val)
-            group2_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            gcode_list_3 = self._memobj.group3.group3
-            used_group3 = ''
-            for i in gcode_list_3:
-                if i == 0xFF:
-                    continue
-                used_group3 += str(i)[3]
-            group3_val = RadioSettingValueString(0, 7, used_group3)
-            rs = RadioSetting("group3", "3", group3_val)
-            group3_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            gcode_list_4 = self._memobj.group4.group4
-            used_group4 = ''
-            for i in gcode_list_4:
-                if i == 0xFF:
-                    continue
-                used_group4 += str(i)[3]
-            group4_val = RadioSettingValueString(0, 7, used_group4)
-            rs = RadioSetting("group4", "4", group4_val)
-            group4_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            gcode_list_5 = self._memobj.group5.group5
-            used_group5 = ''
-            for i in gcode_list_5:
-                if i == 0xFF:
-                    continue
-                used_group5 += str(i)[3]
-            group5_val = RadioSettingValueString(0, 7, used_group5)
-            rs = RadioSetting("group5", "5", group5_val)
-            group5_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            gcode_list_6 = self._memobj.group6.group6
-            used_group6 = ''
-            for i in gcode_list_6:
-                if i == 0xFF:
-                    continue
-                used_group6 += str(i)[3]
-            group6_val = RadioSettingValueString(0, 7, used_group6)
-            rs = RadioSetting("group6", "6", group6_val)
-            group6_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            gcode_list_7 = self._memobj.group7.group7
-            used_group7 = ''
-            for i in gcode_list_7:
-                if i == 0xFF:
-                    continue
-                used_group7 += str(i)[3]
-            group7_val = RadioSettingValueString(0, 7, used_group7)
-            rs = RadioSetting("group7", "7", group7_val)
-            group7_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            gcode_list_8 = self._memobj.group8.group8
-            used_group8 = ''
-            for i in gcode_list_8:
-                if i == 0xFF:
-                    continue
-                used_group8 += str(i)[3]
-            group8_val = RadioSettingValueString(0, 7, used_group8)
-            rs = RadioSetting("group8", "8", group7_val)
-            group8_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            scode_list = self._memobj.startcode.scode
-            used_scode = ''
-            for i in scode_list:
-                if i == 0xFF:
-                    continue
-                used_scode += str(i)[3]
-            scode_val = RadioSettingValueString(0, 7, used_scode)
-            rs = RadioSetting("scode", "PTT ID Starting(BOT)", scode_val)
-            scode_val.set_charset(dtmfcharsani)
-            dtmf.append(rs)
-
-            ecode_list = self._memobj.endcode.ecode
-            used_ecode = ''
-            for i in ecode_list:
-                if i == 0xFF:
-                    continue
-                used_ecode += str(i)[3]
-            ecode_val = RadioSettingValueString(0, 7, used_ecode)
-            rs = RadioSetting("ecode", "PTT ID Ending(BOT)", ecode_val)
-            dtmf.append(rs)
-            if self.MODEL in H8_LIST:
-                rs = RadioSetting("dtmfst", "DTMF Side Tones",
-                                  RadioSettingValueBoolean(_settings.dtmfst))
-                dtmf.append(rs)
-
-            # H3
-            if self.MODEL not in H8_LIST:
-                # stuncode
-                ecode_list = self._memobj.skcode.stuncode
-                used_ecode = ''
-                for i in ecode_list:
-                    if i == 0xFF:
-                        continue
-                    used_ecode += str(i)[3]
-                ecode_val = RadioSettingValueString(0, 16, used_ecode)
-                rs = RadioSetting("stuncode", "Stun Code", ecode_val)
-                dtmf.append(rs)
-                # killcode
-                ecode_list = self._memobj.skcode.killcode
-                used_ecode = ''
-                for i in ecode_list:
-                    if i == 0xFF:
-                        continue
-                    used_ecode += str(i)[3]
-                ecode_val = RadioSettingValueString(0, 16, used_ecode)
-                rs = RadioSetting("killcode", "Kill Code", ecode_val)
-                dtmf.append(rs)
-            if self.MODEL in H3_LIST and \
-                    _settings.scanband <= len(SCAN_BAND_LIST):
-                # older firmware sets 0xCA0-0xCA7 to FF
-                # Scanband is not defined for FF
-                # so it's a proxy for old firmware that needs these hidden
-                rs = RadioSetting("dtmfst", "DTMF Side Tones",
-                                  RadioSettingValueBoolean(_settings.dtmfst))
-                dtmf.append(rs)
-
-                rs = RadioSetting("dtmfdecode", "DTMF Decode Enable",
-                                  RadioSettingValueBoolean(
-                                    _settings.dtmfdecode))
-                dtmf.append(rs)
-
-                rs = RadioSetting("dtmfautorst", "DTMF Auto Reset Times",
-                                  RadioSettingValueList(
-                                    DTMF_AUTO_RESET_LIST,
-                                    current_index=_settings.dtmfautorst))
-                dtmf.append(rs)
-
-                rs = RadioSetting("dtmfdecoderesp", "DTMF Decoding Response",
-                                  RadioSettingValueList(
-                                    DTMF_DECODING_RESPONSE_LIST,
-                                    current_index=_settings.dtmfdecoderesp))
-                dtmf.append(rs)
-
-                rs = RadioSetting("dtmfspeed", "DTMF Speed",
-                                  RadioSettingValueList(
-                                    DTMF_SPEED_LIST,
-                                    current_index=_settings.dtmfspeed))
-                dtmf.append(rs)
-
-        return group
+    def get_settings_pom(self, pom_settings, pom_mem):
+        """Power-On Message Text Settings"""
+        # power-on message text
+        # msg 1
+        rs = RadioSettingValueString(0, 16,
+                                     self._filter(pom_mem.msg1))
+        mset = MemSetting('poweron_msg.msg1', 'Power-On Message 1', rs)
+        mset.set_doc('Set the radio power-on message text for Line 1.')
+        pom_settings.append(mset)
+        # msg 2
+        rs = RadioSettingValueString(0, 16,
+                                     self._filter(pom_mem.msg2))
+        mset = MemSetting('poweron_msg.msg2', 'Power-On Message 2', rs)
+        mset.set_doc('Set the radio power-on message text for Line 2.')
+        pom_settings.append(mset)
+        # msg 3
+        rs = RadioSettingValueString(0, 16,
+                                     self._filter(pom_mem.msg3))
+        mset = MemSetting('poweron_msg.msg3', 'Power-On Message 3', rs)
+        mset.set_doc('Set the radio power-on message text for Line 3.')
+        pom_settings.append(mset)
 
     def get_settings(self):
-        try:
-            return self._get_settings()
-        except Exception as e:
-            raise InvalidValueError("Setting Failed!") from e
+        _settings_mem = self._memobj.settings
+
+        supported = []
+        # Basic Settings
+        basic = RadioSettingGroup('basic', 'Basic Settings')
+        self.get_settings_basic(basic, _settings_mem)
+        supported.append(basic)
+        # Scan Settings
+        scan = RadioSettingGroup('scan', 'Scan')
+        self.get_settings_scan(scan, _settings_mem)
+        supported.append(scan)
+        # model specfic
+        spec = RadioSettingGroup('spec', self.MODEL + ' ' + self.VARIANT +
+                                 ' Specific')
+        self.get_settings_spec(spec, _settings_mem)
+        supported.append(spec)
+
+        return RadioSettings(*tuple(supported))
 
     def set_settings(self, settings):
+        # apply all Memsettings
+        all_other_settings = settings.apply_to(self._memobj)
+        for setting in all_other_settings:
+            if setting.has_apply_callback():
+                # use callbacks on Radiosettings that need postprocessing
+                setting.run_apply_callback()
 
-        def fm_validate(value):
-            if 760 > value or value > 1080:
-                msg = ("FM Channel must be between 76.0-108.0")
-                raise InvalidValueError(msg)
+    def get_sub_devices(self):
+        return[TDH8VhfUhf(self._mmap),
+               TDH8FM(self._mmap),
+               ]
 
-        _settings = self._memobj.settings
-        _press = self._memobj.press
-        _vfoa = self._memobj.vfoa
-        _vfob = self._memobj.vfob
-        _fmmode = self._memobj.fmmode
 
-        for element in settings:
-            if not isinstance(element, RadioSetting):
-                if element.get_name() == "fm_preset":
-                    self._set_fm_preset(element)
-                else:
-                    self.set_settings(element)
-                    continue
+class TDH8VhfUhf(TDH8):
+    """TIDRADIO TD-H8 VHF/UHF subdevice"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8'
+    VARIANT = 'VHF/UHF'
+
+
+class TDH8FM(TDH8):
+    """TIDRADIO TD-H8 FM broadcast radio subdevice"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8'
+    VARIANT = 'FM Broadcast'
+
+    _mem_params = TDH8._mem_params
+
+    _fmband =  [(76000000, 108000000)]  # in Mhz, 76.0-108.0 MHz
+    _special_channels = ['VFO']
+
+    def get_features(self):
+        rf = chirp_common.RadioFeatures()
+        rf.valid_bands = self._fmband
+        rf.memory_bounds = (1, self._mem_params.get('fmb_channels'))
+        rf.can_delete = True
+        rf.can_odd_split = False
+        rf.has_bank = False
+        rf.has_bank_index = False
+        rf.has_bank_names = False
+        rf.has_comment = False
+        rf.has_cross = False
+        rf.has_ctone = False
+        rf.has_dtcs = False
+        rf.has_dtcs_polarity = False
+        rf.has_mode = True
+        rf.has_offset = False
+        rf.has_settings = False
+        rf.has_sub_devices = False
+        rf.has_tuning_step = False
+        rf.valid_characters = TDH8._valid_chars
+        rf.valid_cross_modes = []
+        rf.valid_dtcs_codes = []
+        rf.valid_dtcs_pols = []
+        rf.valid_duplexes = []
+        rf.valid_modes = ['WFM']  #  FM broadcast only
+        rf.has_name = False
+        rf.valid_name_length = 0
+        rf.valid_skips = []
+        rf.valid_special_chans = self._special_channels
+        rf.valid_tuning_steps = [5.0]
+        rf.valid_tmodes = []
+        rf.valid_tones = []
+        return rf
+
+    def get_raw_memory(self, number):
+        if isinstance(number, str):
+            return repr(self._memobj.fmbvfo.rxfreq)
+        else:
+            return repr(self._memobj.fmb[number - 1])
+
+    def get_memory(self, number):
+        mem = chirp_common.Memory()
+
+        if isinstance(number, int) and number < 0:
+            number = self._special_channels[number + \
+                                            len(self._special_channels)]
+        if isinstance(number, str):
+            mem.number = -len(self._special_channels) + \
+                self._special_channels.index(number)
+            mem.offset = 0
+            mem.extd_number = number
+            _mem = self._memobj.fmbvfo
+        else:
+            mem.number = number
+            _mem = self._memobj.fmb[number - 1]
+
+        if _mem.get_raw()[:1] == b'\xff':
+            mem.empty = True
+            return mem
+
+        freq = int(_mem.rxfreq) * 100000
+
+        if freq == 0:
+            mem.empty = True
+
+        mem.freq = freq
+        mem.mode = 'WFM'
+        mem.immutable += ['mode']
+
+        return mem
+
+    def set_memory(self, mem):
+        if mem.number < 0:
+            _mem = self._memobj.fmbvfo
+        else:
+            _mem = self._memobj.fmb[mem.number - 1]
+
+            _fm_flag = self._memobj.fmbflags.used[mem.number - 1]
+            if mem.freq > 0 or not mem.empty:
+                _fm_flag.set_value(0b1)  # set the FMB used flag
             else:
-                try:
-                    name = element.get_name()
-                    if "." in name:
-                        bits = name.split(".")
-                        obj = self._memobj
-                        for bit in bits[:-1]:
-                            if "/" in bit:
-                                bit, index = bit.split("/", 1)
-                                index = int(index)
-                                obj = getattr(obj, bit)[index]
-                            else:
-                                obj = getattr(obj, bit)
-                        setting = bits[-1]
-                    elif name in PRESS_NAME:
-                        obj = _press
-                        setting = element.get_name()
-                    elif name in VFOA_NAME:
-                        obj = _vfoa
-                        setting = element.get_name()
-                    elif name in VFOB_NAME:
-                        obj = _vfob
-                        setting = element.get_name()
-                    elif "block" in name:
-                        obj = _fmmode
-                        setting = element.get_name()
-                    elif "fmvfo" in name:
-                        obj = self._memobj.fmvfo
-                        setting = element.get_name()
-                    elif "gcode" in name:
-                        obj = self._memobj.groupcode.gcode
-                        setting = element.get_name()
-                    elif "idcode" in name:
-                        obj = self._memobj.icode.idcode
-                        setting = element.get_name()
-                    elif "scode" in name:
-                        obj = self._memobj.startcode.scode
-                        setting = element.get_name()
-                    elif "ecode" == name:
-                        obj = self._memobj.endcode.ecode
-                        setting = element.get_name()
-                    elif "group1" in name:
-                        obj = self._memobj.group1.group1
-                        setting = element.get_name()
-                    elif "group2" in name:
-                        obj = self._memobj.group2.group2
-                        setting = element.get_name()
-                    elif "group3" in name:
-                        obj = self._memobj.group3.group3
-                        setting = element.get_name()
-                    elif "group4" in name:
-                        obj = self._memobj.group4.group4
-                        setting = element.get_name()
-                    elif "group5" in name:
-                        obj = self._memobj.group5.group5
-                        setting = element.get_name()
-                    elif "group6" in name:
-                        obj = self._memobj.group6.group6
-                        setting = element.get_name()
-                    elif "group7" in name:
-                        obj = self._memobj.group7.group7
-                        setting = element.get_name()
-                    elif "group8" in name:
-                        obj = self._memobj.group8.group8
-                        setting = element.get_name()
-                    elif "micgain" in name:
-                        obj = self._memobj.mic.micgain
-                        setting = element.get_name()
-                    elif "killcode" in name:
-                        obj = self._memobj.skcode.killcode
-                        setting = element.get_name()
-                    elif "stuncode" in name:
-                        obj = self._memobj.skcode.stuncode
-                        setting = element.get_name()
-                    else:
-                        obj = _settings
-                        setting = element.get_name()
-                    if element.has_apply_callback():
-                        LOG.debug("Using apply callback")
-                        element.run_apply_callback()
-                    elif "brightness" == name:
-                        _settings.brightness = 4 - int(element.value)
-                    elif "sync" == name:
-                        _settings.sync = not int(element.value)
-                    # Channel A RX freq
-                    elif "rxfreqa" == setting and element.value.get_mutable():
-                        val = int(str(element.value).replace(
-                            '.', '').ljust(8, '0'))
-                        if (val >= 13600000 and val <= 17400000) or \
-                                (val >= 40000000 and val <= 52000000) or \
-                                (_settings.tx220 and val >= 22000000 and
-                                 val <= 22500000):
-                            setattr(obj, setting, val)
-                        else:
-                            msg = (
-                                "Frequency must be between "
-                                "136.00000-174.00000 or 400.00000-520.00000 "
-                                "or enabled in settings")
-                            raise InvalidValueError(msg)
-                    # B channel
-                    elif "rxfreqb" == setting and element.value.get_mutable():
-                        val = 0
-                        val = int(str(element.value).replace(
-                            '.', '').ljust(8, '0'))
-                        if (val >= 13600000 and val <= 17400000) or \
-                                (val >= 40000000 and val <= 52000000) or \
-                                (_settings.tx220 and val >= 22000000 and
-                                 val <= 22500000):
-                            setattr(obj, setting, val)
-                        else:
-                            msg = (
-                                "Frequency must be between "
-                                "136.00000-174.00000 or 400.00000-520.00000 "
-                                "or enabled in settings")
-                            raise InvalidValueError(msg)
-                        # setattr(obj, setting, val)
-                    # FM
-                    elif "block" in name:
-                        num = int(name[-2:], 10)
-                        val = str(element.value)
-                        if val.strip():
-                            try:
-                                val = int(float(val) * 10)
-                            except ValueError:
-                                raise InvalidValueError(
-                                    'Value must be between 76.0-108.0')
-                            fm_validate(val)
-                        else:
-                            val = 0
-                        self._memobj.fmmode[num].fmblock = val
-                        self._memobj.fmusedflags[num] = bool(val)
+                _fm_flag.set_value(0b0)  # clear the FMB used flag
 
-                    elif 'fmvfo' == setting and element.value.get_mutable():
-                        self._memobj.fmvfo = int(element.value * 10)
+        if mem.empty:
+            _mem.rxfreq = 0
+            return
 
-                    elif 'gcode' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        if val == 'Off':
-                            gcode_used = 0xFF
-                        elif val == 'A':
-                            gcode_used = 0x0A
-                        elif val == 'B':
-                            gcode_used = 0x0B
-                        elif val == 'C':
-                            gcode_used = 0x0C
-                        elif val == 'D':
-                            gcode_used = 0x0D
-                        elif val == '#':
-                            gcode_used = 0x0F
-                        elif val == '*':
-                            gcode_used = 0x0E
-                        elif val == '':
-                            gcode_used = 0x00
-                        self._memobj.groupcode.gcode = gcode_used
-
-                    elif 'icode' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.icode.idcode = list_val
-
-                    elif 'scode' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.startcode.scode = list_val
-
-                    elif 'ecode' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.endcode.ecode = list_val
-
-                    elif 'group1' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group1.group1 = list_val
-
-                    elif 'group2' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group2.group2 = list_val
-
-                    elif 'group3' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group3.group3 = list_val
-
-                    elif 'group4' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group4.group4 = list_val
-
-                    elif 'group5' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group5.group5 = list_val
-
-                    elif 'group6' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group6.group6 = list_val
-
-                    elif 'group7' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group7.group7 = list_val
-
-                    elif 'group8' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.group8.group8 = list_val
-                    elif setting == 'micgain':
-                        self._memobj.mic.micgain = (
-                            str(element.value))
-                    elif 'stuncode' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.skcode.stuncode = list_val
-                    elif 'killcode' == setting and element.value.get_mutable():
-                        val = str(element.value)
-                        list_val = []
-                        lenth_val = 0
-                        while lenth_val < (len(val)):
-                            if val[lenth_val] != ' ':
-                                list_val.append(int(val[lenth_val], 16))
-                                lenth_val += 1
-                            else:
-                                list_val.append(0xFF)
-                                lenth_val += 1
-                        self._memobj.skcode.killcode = list_val
-                    elif element.value.get_mutable():
-                        setattr(obj, setting, element.value)
-                except Exception:
-                    LOG.debug(element.get_name())
-                    raise
-
-    def _set_fm_preset(self, settings):
-        for element in settings:
-            try:
-                val = element.value
-                if self._memobj.fm_presets <= 108.0 * 10 - 650:
-                    value = int(val.get_value() * 10 - 650)
-                else:
-                    value = int(val.get_value() * 10)
-                LOG.debug("Setting fm_presets = %s" % (value))
-                self._memobj.fm_presets = value
-            except Exception:
-                LOG.debug(element.get_name())
-                raise
-
-    def get_tx_bands(self):
-        return self._txbands
+        _mem.rxfreq = int(mem.freq / 100000)
 
     def validate_memory(self, mem):
-        msgs = []
-        if chirp_common.in_range(mem.freq, [AIRBAND]) and not mem.mode == 'AM':
-            msgs.append(chirp_common.ValidationWarning(
-                _('Frequency in this range requires AM mode')))
-        if not chirp_common.in_range(mem.freq, [AIRBAND]) and mem.mode == 'AM':
-            msgs.append(chirp_common.ValidationWarning(
-                _('Frequency in this range must not be AM mode')))
-        if (not chirp_common.in_range(mem.freq, self.get_tx_bands()) and
-                mem.duplex != 'off'):
-            msgs.append(chirp_common.ValidationWarning(
-                _('Frequency outside TX bands must be duplex=off')))
-        return msgs + super().validate_memory(mem)
+        msgs = super().validate_memory(mem)
+        return msgs
 
 
 @directory.register
 @directory.detected_by(TDH8)
 class TDH8_HAM(TDH8):
-    VENDOR = "TIDRADIO"
-    MODEL = "TD-H8-HAM"
+    """TIDRADIO TD-H8 HAM"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8-HAM'
     ident_mode = b'P31185\xff\xff'
     _ham = True
+    _gmrs = False
+    _txbands = [(144000000, 149000000), (420000000, 451000000)]
     _rxbands = [(136000000, 143999000), (149000001, 174000000),
                 (400000000, 419999000), (451000001, 521000000)]
-    _txbands = [(144000000, 149000000), (420000000, 451000000)]
+    _tx220 = [(222000000, 225000000)]
+    # leave out 219-220 sub-band because this radio doesn't do
+    # fixed digital message forwarding
+    # tx350 and tx500 bands unknown; add them if you are in a
+    # legal locale and know their correct range
+
+    def get_tx_bands(self):
+        _settings = self._memobj.settings
+        bands = []
+        bands.extend(self._txbands)
+        if _settings.tx220:
+            bands.extend(self._tx220)
+        return bands
 
 
 @directory.register
 @directory.detected_by(TDH8)
 class TDH8_GMRS(TDH8):
-    VENDOR = "TIDRADIO"
-    MODEL = "TD-H8-GMRS"
+    """TIDRADIO TD-H8 GMRS"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8-GMRS'
     ident_mode = b'P31184\xff\xff'
     _gmrs = True
+    _ham = False
     _txbands = [(136000000, 175000000), (400000000, 521000000)]
-    _tx_power = [chirp_common.PowerLevel("Low", watts=1.00),
-                 chirp_common.PowerLevel("High", watts=8.00)]
+    _tx_power = [chirp_common.PowerLevel('Low', watts=1.00),
+                chirp_common.PowerLevel('Mid', watts=4.00),
+                chirp_common.PowerLevel('High', watts=8.00),
+                ]
 
     def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
-        if 31 <= mem.number <= 54:
-            if mem.freq not in GMRS_FREQS:
-                msgs.append(chirp_common.ValidationError(
-                    "The frequency in channels 31-54 must be between "
-                    "462.55000-467.71250 in 0.025 increments."))
-            if mem.duplex not in ('', '+', 'off') or (
-                    mem.duplex == '+' and mem.offset != 5000000):
-                msgs.append(chirp_common.ValidationError(
-                    "Channels in this range must be GMRS frequencies and "
-                    "either simplex or +5MHz offset"))
+        msgs.extend(validate_gmrs_memory(mem))
         return msgs
 
 
 @directory.register
 class UV68(TDH8):
-    VENDOR = "TID"
-    MODEL = "TD-UV68"
+    VENDOR = 'TID'
+    MODEL = 'TD-UV68'
 
 
 @directory.register
 class TDH3(TDH8):
-    VENDOR = "TIDRADIO"
-    MODEL = "TD-H3"
-    _memsize = 0x1fef
-    _ranges_main = [(0x0000, 0x1fef)]
+    """TIDRADIO H-3 Normal"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H3'
+    ident_mode = b'P31183\xff\xff'
     _idents = [TD_H3]
-    _txbands = [(136000000, 600000000)]
-    _rxbands = [(18000000, 107999000), (108000000, 136000000)]
-    _aux_block = True
-    _tri_power = True
     _gmrs = False
     _ham = False
-    _mem_params = (0x1F2F)
-    _tx_power = [chirp_common.PowerLevel("Low",  watts=2.00),
-                 chirp_common.PowerLevel("High",  watts=5.00)]
-    _roger_list = ["Off", "TONE1", "TONE2"]
-    _brightness_list = ["1", "2", "3", "4", "5"]
+    _memsize = 0x1fef
+    _ranges_main = [(0x0000, _memsize)]
+    _mmap = bytearray(_memsize)
+    _mem_params = {
+        'channels': 200,
+        'fmb_channels': 25,
+        'dtmf_strings': 8,
+        'dtmf_len': 16,
+        'name_len': 8,
+    }
+    _txbands = [(136000000, 600000000)]
+    _airband = [(108000000, 135999999)]
+    _rxbands = [(18000000, 107999000)] + _airband
+    _modes = ['FM', 'NFM', 'AM', 'NAM']  # 25 kHz,12.5kHz, AM, NAM.
+    _has_am = True
+    _has_am_per_channel = False
+    _has_scramble = True
+    _has_pttid = True
+    _has_bcl = True
+    _has_freqhop = True
+    _has_stored_dtmf = True
+    _has_dtmf_len = True
+    _has_dtmf_terminated = not _has_dtmf_len
+    _has_stuncode = True
+    _has_killcode = True
+    _has_dtmf_extra = True
+    _has_pf2_button = False
+    _has_top_button = False
+    _has_brightness = True
 
-    def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)
+    _tx_power = [chirp_common.PowerLevel('Low', watts=2.00),
+                 chirp_common.PowerLevel('High', watts=5.00),
+                 ]
+    _lang_map = [('Chinese', 0), ('English', 1)]
+    _brightness_map = [("1", 4), ("2", 3), ("3", 2), ("4", 1), ("5", 0)]
+
+    _steps = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 8.33]
+    _step_list = ['%2.2fK' % x for x in _steps]
+    _scramble_list = ['Off'] + ['%02d' % x for x in range(1, 17)]
+    _short_press_list =  ['None', 'FM Radio', 'Lamp', 'Monitor',
+                          'TONE', 'Alarm', 'Weather',
+                          ]
+    _long_press_list = _short_press_list
+    _micgain_list = ['%02d' % x for x in range(0, 10)]
+    _roger_list = ['Off', 'TONE1', 'TONE2']
+
+    _name_format = """
+    // channel name
+    struct name_obj {
+      char name[%(name_len)i];
+    };
+
+    // dtmf string
+    struct dtmf_obj {
+      u8 code[%(dtmf_len)i];
+    };
+    """
+
+    _settings_format = """
+    struct settings_obj {
+      u8 unknown21:7,
+        dtmfdecode:1;
+      u8 unknown22:6,
+        dtmfautorst:2;
+      u8 unknown23:6,
+        dtmfdecoderesp:2;
+      u8 unknown24:5,
+        dtmfspeed:3;
+      u8 unknown25:4,
+        scanband:4;
+      u8 brightness:8;
+      u8 unknown27:8;
+      u8 unknown28:8;
+      u8 txled:1,
+        rxled:1,
+        unused11:1,
+        mode:2, // Radio op mode: 0=Normal, 1=GMRS, 2=HAM, 3=unused
+        //ham:1,
+        //gmrs:1,
+        unused14:1,
+        dtmfst:1,
+        pritx:1;
+      u8 scanmode:2,
+        unused16:1,
+        keyautolock:1,
+        unused17:1,
+        beep:1,
+        unknown18:1,
+        voiceprompt:1;
+      u8 fmworkmode:1,
+        dualwatch:1,
+        tonevoice:2,
+        fmrec:1,
+        mdfa:1,
+        aworkmode:2;
+      u8 ponmsg:2,
+        unused19:1,
+        mdfb:1,
+        unused20:1,
+        dbrx:1,
+        bworkmode:2;
+      u8 adefchan;
+      u8 bdefchan;
+      u8 fmdefch;
+      u8 unused21:1,
+        tailclean:1,
+        rogerprompt_:1,
+        kill:1,
+        stun:1,
+        voxgain:3;
+      u8 astep:4,
+        bstep:4;
+      u8 squelch;
+      u8 tot;
+      u8 rogerprompt:2,
+        unused11_4:1,
+        tx220:1,
+        tx350:1,
+        tx500:1,
+        lang:1,
+        unused11_1:1;
+      u8 save;
+      u8 ligcon;
+      u8 voxdelay;
+      u8 onlychmode:1,
+        breathled:3,
+        unused:2,
+        amband:1,
+        alarm:1;
+    };
+    """
+
+    _end_fromat = """
+    // bluetooth
+    #seekto 0x1f38;
+    struct {
+      u8 unused0:7,
+        on:1;
+    } bluetooth;
+    """
+
+    #  TD-H3, H3 Plus, H9 & H8 Gen 3 & 4
+    _memory_format = """
+    // Memory channels
+    #seekto 0x0008;
+    struct memory_obj memory[%(channels)i];
+    // programmable buttons
+    #seekto 0x0c98;
+    struct button_obj button;
+    // Settings
+    #seekto 0x0ca0;
+    struct settings_obj settings;
+    // freq offset for vfo a & b
+    #seekto 0x0cb8;
+    struct offset_obj vfo_offsets[2];
+    // FM broadcast channels
+    #seekto 0x0cd8;
+    struct fmb_obj fmb[%(fmb_channels)i];
+    // channel names
+    #seekto 0x0d48;
+    struct name_obj names[%(channels)i];
+    // Remote Stun & Kill Codes
+    #seekto 0x1808;
+    struct {
+      struct dtmf_obj stun;
+      struct dtmf_obj kill;
+    } remote;
+    // id code
+    #seekto 0x1828;
+    struct {
+      u8 code[3];
+    } id;
+    // Group Code
+    #seekto 0x1831;
+    struct {
+      u8 code;
+    } group;
+    // DTMF strings
+    #seekto 0x1838;
+    struct dtmf_obj dtmf[%(dtmf_strings)i];
+    // PTT ID Code
+    #seekto 0x18c8;
+    struct {
+      struct dtmf_obj bot;
+      struct dtmf_obj eot;
+    } pttid;
+    // channel used flags
+    #seekto 0x1908;
+    struct {
+      lbit used[%(channels)i];
+    } channelflags;
+    // scanadd
+    #seekto 0x1928;
+    lbit scanadd[%(channels)i];
+    // fmb used flags
+    #seekto 0x1948;
+    struct {
+      lbit used[32];
+      } fmbflags;
+    // vfo a & b
+    #seekto 0x1958;
+    struct memory_obj vfo[2];
+    // fmb vfo
+    #seekto 0x1978;
+    struct fmb_obj fmbvfo;
+    // power on message
+    #seekto 0x1c08;
+    struct poweron_msg_obj poweron_msg;
+    // Repeater ste & ttd
+    #seekto 0x1f0a;
+    struct {
+      u8 ste; // repeater squelch tail elimination
+      u8 ttd; // repeater tail tone delay
+    } repeater;
+    // mic gain
+    #seekto 0x1f28;
+    struct {
+      u8 gain;
+    } mic;
+    """
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_power_levels = [x for x in self._tx_power if x]
+        rf.valid_modes = self._modes
+        rf.valid_tuning_steps = self._steps
+        return rf
+
+    def get_settings_roger(self, roger_settings, settings_mem):
+        """Roger Beep Settings"""
+        # roger beep
+        rs = RadioSettingValueList(self._roger_list,
+                                   current_index=settings_mem.rogerprompt)
+        mset = MemSetting('settings.rogerprompt', 'Roger Beep', rs)
+        mset.set_doc('Set to have a roger beep sound at the end of TX.')
+        roger_settings.append(mset)
+
+    def get_sub_devices(self):
+        return[TDH3VhfUhf(self._mmap),
+               TDH3FM(self._mmap),
+               ]
+
+
+class TDH3VhfUhf(TDH3):
+    """TIDRADIO TD-H3 VHF/UHF subdevice"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H3'
+    VARIANT = 'VHF/UHF'
+
+
+class TDH3FM(TDH8FM, TDH3):
+    """TIDRADIO TD-H3 FM broadcast radio subdevice"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H3'
+    VARIANT = 'FM Broadcast'
+    _fmband =  [(65000000, 108000000)]  # in Mhz, 65.0-108.0 MH
+    _mem_params = TDH3._mem_params
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_bands = self._rxbands
+        return rf
 
 
 @directory.register
 @directory.detected_by(TDH3)
 class TDH3_HAM(TDH3):
-    VENDOR = "TIDRADIO"
-    MODEL = "TD-H3-HAM"
+    """TIDRADIO H-3 Ham"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H3-HAM'
     ident_mode = b'P31185\xff\xff'
     _ham = True
+    _gmrs = False
     _txbands = [(144000000, 149000000), (420000000, 451000000)]
     _rxbands = [(18000000, 107999000), (108000000, 136000000),
                 (149990000, 419990000), (451000000, 600000000)]
@@ -2640,73 +1999,690 @@ class TDH3_HAM(TDH3):
 @directory.register
 @directory.detected_by(TDH3)
 class TDH3_GMRS(TDH3):
-    VENDOR = "TIDRADIO"
-    MODEL = "TD-H3-GMRS"
+    """TIDRADIO H-3 GMRS"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H3-GMRS'
     ident_mode = b'P31184\xff\xff'
     _gmrs = True
+    _ham = False
     _txbands = [(136000000, 175000000), (400000000, 521000000)]
 
     def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
-        if 31 <= mem.number <= 54 and mem.freq not in GMRS_FREQS:
-            msgs.append(chirp_common.ValidationError(
-                "The frequency in channels 31-54 must be between "
-                "462.55000-462.72500 in 0.025 increments."))
+        msgs.extend(validate_gmrs_memory(mem))
+        return msgs
+
+
+@directory.register
+class TDH3_Plus(TDH3):
+    """TIDRADIO H-3 Plus Normal"""
+    # This driver is based on Version 1.0.45 firmware
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H3-Plus'
+    ident_mode = TDH3.ident_mode
+    _ham = False
+    _gmrs = False
+    # _memsize = 0x1fef
+    # _memsize = 0x2000
+    _memsize = 0x3140
+    # _ranges_main = [(0x0000, _memsize)]
+    _ranges_main = [(0x0000, 0x1f80),
+                    (0x3000, 0x3140)]
+    _mmap = bytearray(_memsize)
+    FORMATS = [directory.register_format('%s %s' %
+                                         (VENDOR, MODEL), '*.td')]
+    _has_am = True
+    _has_am_per_channel = True
+    _has_scan_hangtime = True
+    _has_freq_ranger = True
+    _has_pf2_button = True
+    _has_top_button = False
+    _has_pritx = False
+    _lang_map = [
+        ('English', 0), ('中文', 1), ('Türkçe', 2), ('Pусский', 3),
+        ('Deutsch', 4), ('Española', 5), ('Italiana', 6), ('Française', 7),
+        ('แบบไทย', 8),
+        ]
+    _hangtime_list = ['%1.1fs' % (x / 2) for x in range(1, 21)]
+    _rx_modulation_list = ['FM', 'AM']
+    _dtmf_resp_list = ['None', 'Ring', 'Callback', 'Ring+Callback']
+    _vfo_workmode_list = ['VFO', 'VFO+Channel', 'Channel']
+    _short_press_list =  ['None', 'FM Radio', 'Lamp', 'None', 'Tone',
+                          'Alarm', 'Weather', 'PTT2', 'OD PTT',
+                          ]
+    _long_press_list = ['None', 'FM Radio', 'Lamp', 'Cancel Sq', 'Tone',
+                          'Alarm', 'Weather',
+                          ]
+    _ponmsg_list = ['Voltage', 'Message', 'Picture']
+    _save_list = ['Off', 'Level 1(1:1)', 'Level 2(1:2)',
+                  'Level 3(1:3)', 'Level 4(1:4)',
+                  ]
+    _steps = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 0.5, 8.33]
+    _step_list = ['%.3gK' % x for x in _steps]
+    _display_list = ['Single', 'Dual', 'Classic']
+    _menucolor_list = [
+        'Blue', 'Red', 'Green', 'Yellow', 'Purple',
+        'Orange', 'L. Blue', 'Cyan', 'Gray', 'D. Blue',
+        'L. Green', 'Brown', 'Pink', 'B. Red', 'G. Blue',
+        'L. Gray', 'LG. Blue', 'LB. Blue',
+        ]
+    _fmrec_shortname = 'FM Interrupt'
+    _txbands = [(136000000, 174000000), (200000000, 600000000)]
+    _rxbands = [(18000000, 600000000)]
+    _tx220 = [(220000000, 299995000)]
+    _tx350 = [(350000000, 350000000)]  # ???
+    _tx500 = [(500000000, 520000000)]
+    _mil_airband = [(220000000, 399998750)]
+    _airband = TDH3._airband + _mil_airband
+    _rxbands = TDH3._rxbands + _airband
+
+    _td_file_header = b'MD-760P' + (b'\xff' * 9)  # OEM .td file header
+    _td_file_offset = len(_td_file_header)  # offset of data in OEM .td file
+    _img_file_header = ident_mode + (b'\xff' * 16)  # CHIRP .img file header
+    _img_file_offset = len(_img_file_header)  # offset of data in CHIRP .img
+
+    _end_fromat = """
+    // bluetooth
+    #seekto 0x1f29;
+    struct {
+      u8 unused0:7,
+        on:1;
+    } bluetooth;
+    // H3 Plus, H9 radio menu items
+    #seekto 0x1f30;
+    struct {
+      u8 lang;      // 0x1f30 radio menu lang
+                    //  0: English, 1: Chinese, 2: Turkish, 3: Russian,
+                    //  4: German, 5: Spanish, 6: Itialian, 7: French
+                    //  8: Thai (not implemented yet)
+      u8 display;   // 0x1f31 radio display mode 0: Single, 1: Dual, 2: Classic
+      u8 color;     // 0x1f32 radio menu bg color
+      ul16 ranger_high; // 0x1f33 H3+, H9 freq ranger high limit
+      ul16 ranger_low;  // 0x1f35 H3+, H9 freq ranger low limit
+      u8 hangtime;  // 0x1f37 H9, H3+ scan hangtime
+    } menu;
+    // SMS
+    #seekto 0x3010;
+    struct {
+      u8 unknown0[13];
+      u8 unknown:7, // 0x301d sms on/off
+        on:1;
+      u8 unknown1[18];
+    } sms;
+    """
+
+    def load_mmap(self, filename):
+        """Read/import TIDRADIO OEM CPS .td file into .img map.
+        After removing .td file header and replacing with .img map header."""
+        if filename.lower().endswith(".td"):
+            with open(filename, 'rb') as f:
+                if f.read(self._td_file_offset) != self._td_file_header:
+                    raise errors.ImageDetectFailed('Unknown file header')
+
+                self._mmap = memmap.MemoryMapBytes(self._img_file_header +
+                                                   f.read(self._memsize))
+                LOG.info('Loaded TIDRADIO OEM CPS .td file %s at offset '
+                         '0x%04x for 0x%04x bytes' %
+                         (filename, self._td_file_offset, self._memsize))
+                self.process_mmap()
+        else:
+            chirp_common.CloneModeRadio.load_mmap(self, filename)
+
+    def save_mmap(self, filename):
+        """Save .img map bytes as H9 OEM CPS .td file.
+        After replacing .img header with .td header and
+        padding to full length"""
+        if filename.lower().endswith('.td'):
+            with open(filename, 'wb') as f:
+                f.write(self._td_file_header)
+                f.write(self._mmap.get_packed()[self._img_file_offset:-1])
+                # pad to OEM CPS .td file specs
+                f.write(b'\x00' * (0xea70 - f.tell()))
+                f.write(b'\xff' * (0x10000 - f.tell()))
+                LOG.info('Wrote TIDRADIO OEM CPS .td file %s for 0x%05x bytes' %
+                         (filename, (f.tell() - 1)))
+        else:
+            chirp_common.CloneModeRadio.save_mmap(self, filename)
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if filename.lower().endswith('.td') and \
+                filedata.startswith(cls._td_file_header):
+            LOG.info('Idenitified TIDRADIO OEM CPS .td file %s' % filename)
+            return True
+        else:
+            return False
+
+    def get_sub_devices(self):
+        return[TDH3_PlusVhfUhf(self._mmap),
+               TDH3_PlusFM(self._mmap),
+               ]
+
+
+class TDH3_PlusVhfUhf(TDH3_Plus):
+    """TIDRADIO TD-H3 Plus VHF/UHF subdevice"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H3-Plus'
+    VARIANT = 'VHF/UHF'
+
+
+class TDH3_PlusFM(TDH3FM):
+    """TIDRADIO TD-H3 Plus FM broadcast subdevice"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H3-Plus'
+    VARIANT = 'FM Broadcast'
+    _fmband = [(87000000, 108000000)]  # in Mhz, 87.0-108.0 MH
+
+
+@directory.register
+@directory.detected_by(TDH3_Plus)
+class TDH3_Plus_HAM(TDH3_HAM, TDH3_Plus):
+    """TIDRADIO H-3 Plus Ham"""
+    MODEL = 'TD-H3-Plus-HAM'
+    _ham = True
+    _gmrs = False
+    _txbands = [(144000000, 149000000), (420000000, 451000000)]
+    _rxbands = [(18000000, 107999000), (108000000, 136000000),
+                (149990000, 419990000), (451000000, 600000000)]
+    _tx220 = [(222000000, 225000000)]
+    # leave out 219-220 sub-band because this radio doesn't do
+    # fixed digital message forwarding
+    # tx350 and tx500 bands unknown; add them if you are in a
+    # legal locale and know their correct range
+
+    def get_tx_bands(self):
+        _settings = self._memobj.settings
+        bands = []
+        bands.extend(self._txbands)
+        if _settings.tx220:
+            bands.extend(self._tx220)
+        return bands
+
+
+@directory.register
+@directory.detected_by(TDH3_Plus)
+class TDH3_Plus_GMRS(TDH3_GMRS, TDH3_Plus):
+    """TIDRADIO H-3 Plus GMRS"""
+    MODEL = 'TD-H3-Plus-GMRS'
+    _gmrs = True
+    _ham = False
+    _txbands = [(136000000, 175000000), (400000000, 521000000)]
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+        msgs.extend(validate_gmrs_memory(mem))
+        return msgs
+
+
+@directory.register
+class TDH9(TDH3_Plus):
+    """TIDRADIO H-9 Normal"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H9'
+    ident_mode = b'TDH9\xff\xff\xff\x4e'
+    _gmrs = False
+    _ham = False
+    # _memsize = 0x2000
+    _memsize = 0x3140
+    # _ranges_main = [(0x0000, _memsize)]
+    _ranges_main = [(0x0000, 0x1f80),
+                    (0x3000, 0x3140)]
+    _mmap = bytearray(_memsize)
+    _tx_power = [chirp_common.PowerLevel('Low',  watts=1.00),
+                 chirp_common.PowerLevel('Mid',  watts=5.00),
+                 chirp_common.PowerLevel('High', watts=10.00),
+                 ]
+    _has_dtmf_len = False
+    _has_dtmf_terminated = not _has_dtmf_len
+    _has_freq_ranger = True
+    _has_pf2_button = True
+    _has_top_button = True
+    _short_press_list =  ['None', 'FM Radio', 'GNSS SW', 'None', 'Tone',
+                          'Alarm', 'Weather', 'PTT2', 'OD PTT',
+                          ]
+    _long_press_list = ['None', 'FM Radio', 'GNSS SW', 'Cancel Sq', 'Tone',
+                          'Alarm', 'Weather',
+                          ]
+
+    _end_fromat = TDH3_Plus._end_fromat + """
+    // H9 GNSS
+    #seekto 0x3066;
+    struct { // GNSS config data, 0x15 bytes
+      u8 region[1]; // 0x3066 GNSS region index
+      u8 unknown0[0x07];
+      u8 unsed0:7,  // 0x306e
+        gps_on:1; // 1 bit GPS on/off
+      u8 unknown1[0x0b];
+      u8 type[1]; // 0x307a GNSS type index
+    } gnss;
+    // H9 APRS
+    #seekto 0x307c;
+    struct { // APRS config data, 0x98 bytes
+      u8 unknown0[0x7b];
+      u8 unused0:7,   // 0x30f7
+        timed_beacon:1; // 1 bit timed beacon on/off
+      u8 timing[1];   // 0x30f8 1 byte beacon timing in seconds
+      u8 unknown1[0x1c];
+    } aprs;
+    """
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_power_levels = [x for x in self._tx_power if x]
+        rf.valid_modes = self._modes
+        rf.valid_tuning_steps = self._steps
+        return rf
+
+    def get_sub_devices(self):
+        return[TDH9VhfUhf(self._mmap),
+               TDH9FM(self._mmap),
+               ]
+
+
+class TDH9VhfUhf(TDH9):
+    """TIDRADIO H9 VHF/UHF subdevice"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H9'
+    VARIANT = 'VHF/UHF'
+
+
+class TDH9FM(TDH9, TDH8FM):
+    """TIDRADIO H9 FM broadcast radio subdevice"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H9'
+    VARIANT = 'FM Broadcast'
+    _fmband = [(87000000, 108000000)]  # in Mhz, 87.0-108.0 MH
+
+    def get_features(self):
+        rf = TDH8FM.get_features(self)
+        return rf
+
+
+@directory.register
+@directory.detected_by(TDH9)
+class TDH9_HAM(TDH9, TDH3_Plus_HAM):
+    """TIDRADIO H-9 Ham"""
+    MODEL = 'TD-H9-HAM'
+    ident_mode = b'TDH9\xff\xff\xff\x48'
+    _ham = True
+    _gmrs = False
+    _txbands = [(144000000, 149000000), (420000000, 451000000)]
+    _rxbands = [(18000000, 107999000), (108000000, 136000000),
+                (149990000, 419990000), (451000000, 600000000)]
+    _tx220 = [(222000000, 225000000)]
+    # leave out 219-220 sub-band because this radio doesn't do
+    # fixed digital message forwarding
+    # tx350 and tx500 bands unknown; add them if you are in a
+    # legal locale and know their correct range
+
+    def get_tx_bands(self):
+        _settings = self._memobj.settings
+        bands = []
+        bands.extend(self._txbands)
+        if _settings.tx220:
+            bands.extend(self._tx220)
+        return bands
+
+
+@directory.register
+@directory.detected_by(TDH9)
+class TDH9_GMRS(TDH9, TDH3_Plus_GMRS):
+    """TIDRADIO H-9 GMRS"""
+    MODEL = 'TD-H9-GMRS'
+    ident_mode = b'TDH9\xff\xff\xff\x47'
+    _gmrs = True
+    _ham = False
+    _txbands = [(136000000, 175000000), (400000000, 521000000)]
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+        msgs.extend(validate_gmrs_memory(mem))
         return msgs
 
 
 @directory.register
 class RT730(TDH8):
-    VENDOR = "Radtel"
-    MODEL = "RT-730"
-    _memsize = 0x6400
-    _ranges_main = [(0x0000, 0x6400)]
+    """Radtel RT-730"""
+    VENDOR = 'Radtel'
+    MODEL = 'RT-730'
     _idents = [RT_730]
+    _gmrs = False
+    _ham = False
+    _memsize = 0x6400
+    _ranges_main = [(0x0000, _memsize)]
+    _mmap = bytearray(_memsize)
+    _mem_params = {
+        'channels': 200,
+        'fmb_channels': 25,
+        'dtmf_strings': 0,
+        'dtmf_len': 0,
+        'name_len': 8,
+    }
     _txbands = [(136000000, 174000000), (174000000, 300000000),
                 (300000000, 400000000), (400000000, 520000000),
                 (520000000, 630000000)]
-    _rxbands = [(10000000, 108000000), (108000000, 136000000)]
-    _tri_power = True
-    _gmrs = False
-    _ham = False
+    _airband = [(108000000, 135975000)]
+    _rxbands = [(10000000, 108000000)] + _airband
+    _modes = ['FM', 'NFM', 'AM', 'NAM']  # 25 kHz,12.5kHz, AM, NAM.
+    _has_am = True
+    _has_am_per_channel = False
+    _has_offsetdir = False
+    _has_scramble = True
+    _has_dtmf = False
+    _has_pttid = False
+    _has_dtmf_len = False
+    _has_stored_dtmf = False
+    _has_dtmf_terminated = False
+    _has_stuncode = False
+    _has_killcode = False
+    _has_dtmf_extra = False
+    _has_scan_hangtime = False
+    _has_freq_ranger = False
+    _has_pf2_button = True
+    _has_top_button = False
+    _has_def_chan = False
+    _has_bluetooth = False
+    _has_brightness = False
+    _has_spec= True
 
-    def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT_RT730, self._mmap)
+    _lang_map = [('Chinese', 0), ('English', 1)]
+    _scramble_list = ['Disabled', 'Enabled']
+    _short_press_list = ['None', 'Scan', 'FM Radio', 'Warn', 'TONE',
+                         'Weather', 'Copy CH',
+                         ]
+    _long_press_list = _short_press_list + ['Monitor']
+    _voxgain_list = ['Off', '1', '2', '3']
+    _voxdelay_list = ['0.5s', '1.0s', '2.0s', '3.0s']
+    _backlight_list = ['CONT', '10s', '20s', '30s']
+    _hop_list = ['A', 'B', 'C', 'D']
+
+    _mem_format = """
+    // 16 byte memory channel
+    struct memory_obj {
+      lbcd rxfreq[4];
+      lbcd txfreq[4];
+      lbcd rxtone[2];
+      lbcd txtone[2];
+      u8 unused1;
+      u8 unused2:4,
+        spec:1,
+        bcl:1,
+        unused3:2;
+      u8 scramble:1,
+        freqhop:1,
+        power:2,
+        narrow:1,
+        unused4:3;
+      u8 unused5;
+    };
+    """
+
+    _name_format = """
+    // channel name
+    struct name_obj {
+      char name[%(name_len)i];
+    };
+    """
+
+    _button_format = """
+    // programmable button obj
+    struct button_obj {
+      u8 ssidekey1;       // pf1 short press
+      u8 lsidekey1;       // pf1 long press
+      u8 ssidekey2;       // pf2 short press
+      u8 lsidekey2;       // pf2 long press
+      u8 unused1:6,
+      rogerprompt:2;
+    };
+    """
+
+    _settings_format = """
+    struct settings_obj {
+      u8 txled:1,
+        rxled:1,
+        unused1:5,
+        pritx:1;
+      u8 scanmode:2,
+        unused2:1,
+        keyautolock:1,
+        save:1,
+        beep:1,
+        unused3:1,
+        voiceprompt:1;
+      u8 fmworkmode:1,
+        ligcon:2,
+        unused4:1,
+        fmrec:1,
+        mdfa:1,
+        aworkmode:2;
+      u8 unused5:5,
+        dbrx:1,
+        bworkmode:2;
+      u8 unused6;
+      u8 unused7;
+      u8 fmdefch;
+      u8 unused8:1,
+        tailclean:1,
+        unused9:3,
+        voxgain:3;
+      u8 astep:4,
+        bstep:4;
+      u8 squelch;
+      u8 tot;
+      u8 unused10:6,
+        lang:1,
+        unused11:1;
+      u8 unused12;
+      u8 unused13;
+      u8 voxdelay;
+      u8 unused14:6,
+        hoptype:2;
+    };
+    """
+
+    _end_fromat = """
+    """
+
+    # RT-730
+    _memory_format = """
+    // Memory channels
+    #seekto 0x0008;
+    struct memory_obj memory[%(channels)i];
+    // buttons
+    #seekto 0x0c98;
+    struct button_obj button;
+    // Settings
+    #seekto 0x0ca8;
+    struct settings_obj settings;
+    // freq offset for vfo a & b
+    #seekto 0x0cb8;
+    struct offset_obj vfo_offsets[2];
+    // FM broadcast channels
+    #seekto 0x0cd8;
+    struct fmb_obj fmb[%(fmb_channels)i];
+    // channel names
+    #seekto 0x0d48;
+    struct name_obj names[%(channels)i];
+    // power on message
+    #seekto 0x1398;
+    struct poweron_msg2_obj poweron_msg;
+    // channel used flags
+    #seekto 0x1a08;
+    struct{
+      lbit used[%(channels)i];
+    } channelflags;
+    // scan add list
+    #seekto 0x1a28;
+    lbit scanadd[%(channels)i];
+    // fmb vfo
+    #seekto 0x1b38;
+    struct fmb_obj fmbvfo;
+    // vfo a & b
+    #seekto 0x1b58;
+    struct memory_obj vfo[2];
+    // fmb used flags
+    #seekto 0x1b78;
+    struct {
+      lbit used[32];
+      } fmbflags;
+    """
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_modes = self._modes
+        rf.valid_tuning_steps = self._steps
+        return rf
+
+    def get_settings_spec(self, spec_settings, settings_mem):
+        # dual watch mode
+        rs = RadioSettingValueBoolean(settings_mem.dbrx)
+        mset = MemSetting('settings.dbrx', 'Dual Watch', rs)
+        mset.set_doc('Set to put the radio in dual watch '\
+                     '(aka \'Double RX\') mode.')
+        spec_settings.append(mset)
+        # power-on message text
+        _pom_mem = self._memobj.poweron_msg
+        TDH8.get_settings_pom(self, spec_settings, self._memobj.poweron_msg)
+        # add msg 4 for rt-730
+        rs = RadioSettingValueString(0, 16,
+                                     self._filter(_pom_mem.msg4))
+        mset = MemSetting('poweron_msg.msg4', 'Power-On Message 4', rs)
+        mset.set_doc('Set the radio power-on message text for Line 4.')
+        spec_settings.append(mset)
+        # batt save
+        rs = RadioSettingValueBoolean(settings_mem.save)
+        mset = MemSetting('settings.save', 'Battery Save', rs)
+        mset.set_doc('Set to enable battery save mode.')
+        spec_settings.append(mset)
+        # chan names
+        rs = RadioSettingValueBoolean(settings_mem.mdfa)
+        mset = MemSetting('settings.mdfa', 'Channel Names', rs)
+        mset.set_doc('Set to display channel names.')
+        spec_settings.append(mset)
+        # hop type
+        rs = RadioSettingValueList(self._hop_list,
+                                   current_index=settings_mem.hoptype)
+        mset = MemSetting('settings.hoptype', 'Hop Type', rs)
+        mset.set_doc('Set the frequency Hop Type.')
+        spec_settings.append(mset)
+        # qt/dqt tail clean
+        rs = RadioSettingValueBoolean(settings_mem.tailclean)
+        mset = MemSetting('settings.tailclean', 'QT/DQT Tail Clean', rs)
+        mset.set_doc('Set to enable Tail Clean mode.')
+        spec_settings.append(mset)
+        # button settings
+        self.get_settings_button(spec_settings, self._memobj.button)
+        # A/B Chan
+        abchan = RadioSettingGroup('abchan', 'VFO A/B Channel')
+        self.get_settings_ab(abchan,  settings_mem)
+        spec_settings.append(abchan)
+        # fm broadcast Settings
+        fmb = RadioSettingGroup('fmb', 'FM Broadcast')
+        self.get_settings_fmb(fmb, settings_mem)
+        spec_settings.append(fmb)
+
+    def get_settings_roger(self, roger_settings, settings_mem):
+        """Roger Beep Settings"""
+        _roger_mem = self._memobj.button.rogerprompt
+        # roger beep
+        rs = RadioSettingValueBoolean(_roger_mem)
+        mset = MemSetting('button.rogerprompt', 'Roger Beep', rs)
+        mset.set_doc('Set to have a roger beep sound at the end of TX.')
+        roger_settings.append(mset)
+
+
+    def get_sub_devices(self):
+        return[RT730VhfUhf(self._mmap),
+               RT730FM(self._mmap),
+               ]
+
+
+class RT730VhfUhf(RT730):
+    """Radtel RT-730 VHF/UHF subdevice"""
+    VENDOR = 'Radtel'
+    MODEL = 'RT-730'
+    VARIANT = 'VHF/UHF'
+
+
+class RT730FM(RT730, TDH8FM):
+    """Radtel RT-730 FM broadcast radio subdevice"""
+    VENDOR = 'Radtel'
+    MODEL = 'RT-730'
+    VARIANT = 'FM Broadcast'
+
+    def get_features(self):
+        rf = TDH8FM.get_features(self)
+        return rf
 
 
 @directory.register
 @directory.detected_by(TDH8)
-class TDH8_3rd_Gen(TDH8):
-    VENDOR = "TIDRADIO"
-    MODEL = "TD-H8"
+class TDH8_3rd_Gen(TDH3):
+    """TIDRADIO TD-H8 3rd Gen Normal"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8'
     VARIANT = 'G3'
-    _memsize = 0x1fef
-    _ranges_main = [(0x0000, 0x1fef)]
-    _idents = [TD_H8_G3]
-    _txbands = [(136000000, 600000000)]
-    _rxbands = [(18000000, 107999000), (108000000, 136000000)]
-    _aux_block = True
-    _tri_power = True
-    _gmrs = False
+    ident_mode = b'P31183\xff\xff'
+    _idents = [TD_H3, TD_H8_G3]  # Fw 250905 and later uses H3 magic
     _ham = False
-    _mem_params = (0x1F2F)
-    _tx_power = [chirp_common.PowerLevel("Low",  watts=2.0),
-                 chirp_common.PowerLevel("Mid",  watts=6.0),
-                 chirp_common.PowerLevel("High", watts=10.0)]
-    _roger_list = ["Off", "TONE1", "TONE2"]
-    _brightness_list = ["1", "2", "3", "4", "5"]
+    _gmrs = False
+    _has_brightness = True
+    _tx_power = [chirp_common.PowerLevel('Low',  watts=1.00),
+                 chirp_common.PowerLevel('Mid',  watts=5.00),
+                 chirp_common.PowerLevel('High', watts=10.00),
+                 ]
+    _roger_list = ['Off', 'TONE1', 'TONE2']
 
-    def process_mmap(self):
-        self._memobj = bitwise.parse(MEM_FORMAT_H3, self._mmap)
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_power_levels = [x for x in self._tx_power if x]
+        rf.valid_modes = self._modes
+        rf.valid_tuning_steps = self._steps
+        return rf
+
+    def get_settings_roger(self, roger_settings, settings_mem):
+        """Roger Beep Settings"""
+        # roger beep
+        rs = RadioSettingValueList(self._roger_list,
+                                   current_index=settings_mem.rogerprompt)
+        mset = MemSetting('settings.rogerprompt', 'Roger Beep', rs)
+        mset.set_doc('Set to have a roger beep sound at the end of TX.')
+        roger_settings.append(mset)
+
+    def get_sub_devices(self):
+        return[TDH8G3VhfUhf(self._mmap),
+               TDH8G3FM(self._mmap),
+               ]
+
+
+class TDH8G3VhfUhf(TDH8_3rd_Gen):
+    """TIDRADIO TD-H8 3rd Gen VHF/UHF subdevice"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8 G3'
+    VARIANT = 'VHF/UHF'
+
+
+class TDH8G3FM(TDH8FM, TDH8_3rd_Gen):
+    """TIDRADIO TD-H8 3rd Gen FM broadcast radio subdevice"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8 G3'
+    VARIANT = 'FM Broadcast'
+    _fmband = [(87000000, 108000000)]  # in Mhz, 87.0-108.0 MH
+
+    def get_features(self):
+        rf = TDH8FM.get_features(self)
+        return rf
 
 
 @directory.register
 @directory.detected_by(TDH8)
 class TDH8_3rd_Gen_HAM(TDH8_3rd_Gen):
-    VENDOR = "TIDRADIO"
-    MODEL = "TD-H8-HAM"
+    """TIDRADIO TD-H8 3rd Gen Ham"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8-HAM'
     ident_mode = b'P31185\xff\xff'
     _ham = True
+    _gmrs = False
     _txbands = [(144000000, 149000000), (420000000, 451000000)]
     _rxbands = [(18000000, 107999000), (108000000, 136000000),
                 (149990000, 419990000), (451000000, 600000000)]
@@ -2728,21 +2704,107 @@ class TDH8_3rd_Gen_HAM(TDH8_3rd_Gen):
 @directory.register
 @directory.detected_by(TDH8)
 class TDH8_3rd_Gen_GMRS(TDH8_3rd_Gen):
-    VENDOR = "TIDRADIO"
-    MODEL = "TD-H8-GMRS"
+    """TIDRADIO TD-H8 3rd Gen GMRS"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8-GMRS'
     ident_mode = b'P31184\xff\xff'
     _gmrs = True
-    _txbands = [(136000000, 175000000), (400000000, 521000000)]
+    _ham = False
 
     def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
-        if 31 <= mem.number <= 54 and mem.freq not in GMRS_FREQS:
-            msgs.append(chirp_common.ValidationError(
-                "The frequency in channels 31-54 must be between "
-                "462.55000-462.72500 in 0.025 increments."))
-        if mem.duplex not in ('', '+', 'off') or (
-                mem.duplex == '+' and mem.offset != 5000000):
-            msgs.append(chirp_common.ValidationError(
-                "Channels in this range must be GMRS frequencies and "
-                "either simplex or +5MHz offset"))
+        msgs.extend(validate_gmrs_memory(mem))
+        return msgs
+
+
+@directory.register
+@directory.detected_by(TDH8)
+# Appears to be similar to the TD-H3-Plus, but with a different ident_mode and some different features.
+class TDH8_4th_Gen(TDH3_Plus):
+    """TIDRADIO TD-H8 4th Gen Normal"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8 G4'
+    ident_mode = b'TDH84GEN'
+    _idents = [TD_H3]
+    _ham = False
+    _gmrs = False
+    _tx_power = [chirp_common.PowerLevel('Low',  watts=1.00),
+                 chirp_common.PowerLevel('Mid',  watts=5.00),
+                 chirp_common.PowerLevel('High', watts=10.00),
+                 ]
+    _has_pf2_button = True
+    _has_top_button = True
+
+    def get_features(self):
+        rf = super().get_features()
+        rf.valid_power_levels = [x for x in self._tx_power if x]
+        rf.valid_modes = self._modes
+        rf.valid_tuning_steps = self._steps
+        return rf
+
+    def get_sub_devices(self):
+        return[TDH8G4VhfUhf(self._mmap),
+               TDH8G4FM(self._mmap),
+               ]
+
+
+class TDH8G4VhfUhf(TDH8_4th_Gen):
+    """TIDRADIO TD-H8 4th Gen VHF/UHF subdevice"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8 G4'
+    VARIANT = 'VHF/UHF'
+
+
+class TDH8G4FM(TDH8FM, TDH8_4th_Gen):
+    """TIDRADIO TD-H8 4th Gen FM broadcast radio subdevice"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8 G4'
+    VARIANT = 'FM Broadcast'
+    _fmband = [(87000000, 108000000)]  # in Mhz, 87.0-108.0 MH
+
+    def get_features(self):
+        rf = TDH8FM.get_features(self)
+        return rf
+
+
+@directory.register
+@directory.detected_by(TDH8)
+class TDH8_4th_Gen_Ham(TDH8_4th_Gen):
+    """TIDRADIO TD-H8 4th Gen Ham"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8 G4 HAM'
+    ident_mode = b'TDH84GEH'
+    _ham = True
+    _gmrs = False
+    _txbands = [(144000000, 149000000), (420000000, 451000000)]
+    _rxbands = [(18000000, 107999000), (108000000, 136000000),
+                (149990000, 419990000), (451000000, 600000000)]
+    _tx220 = [(222000000, 225000000)]
+    # leave out 219-220 sub-band because this radio doesn't do
+    # fixed digital message forwarding
+    # tx350 and tx500 bands unknown; add them if you are in a
+    # legal locale and know their correct range
+
+    def get_tx_bands(self):
+        _settings = self._memobj.settings
+        bands = []
+        bands.extend(self._txbands)
+        if _settings.tx220:
+            bands.extend(self._tx220)
+        return bands
+
+
+@directory.register
+@directory.detected_by(TDH8)
+class TDH8_4th_Gen_GMRS(TDH8_4th_Gen):
+    """TIDRADIO TD-H8 4th Gen GMRS"""
+    VENDOR = 'TIDRADIO'
+    MODEL = 'TD-H8 G4 GMRS'
+    ident_mode = b'TDH84GEG'
+    _gmrs = True
+    _ham = False
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+        msgs.extend(validate_gmrs_memory(mem))
         return msgs
