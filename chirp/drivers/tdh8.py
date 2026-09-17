@@ -1,19 +1,3 @@
-# ToDo:
-
-# X1) change gt_memory(), mem.extra setting BCL to RadioSettingBoolean instead of List
-# X2) refactor get_memory(), mem.extra settings to non-nested calls
-# X3) work on mem map for RT-730
-# X3.1) work on memory chans for RT-730
-# X3.2) work on FMB mems for RT-730
-# 4) work on settings for RT-730
-# X4.0) fix am determination in get_memory and set_memory
-# X4.1) look at button_Obj for RT-730 compared to TD-H8
-# X4.2) Button settings on all
-# X5.0 work on _get_tx_bands in all sub classes TDH3, TDH3 Plus, TDH9 (see TDH8 line 671)
-# X6.0 TD-H8 Gen 3, review findings in Bug #12460 https://chirpmyradio.com/issues/12460
-# X6.1 add validate_frequency for GMRS classes
-# X6.2 fix memory_validate() for FMB classes
-
 # Copyright 2026 Fred Trimble <chirpdriver@gmail.com>
 # CHIRP driver for the TIDRADIO TD-H8 Gen 2, 3 & 4, TD-H3 & Plus
 # and TD-H9 radios
