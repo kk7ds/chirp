@@ -189,24 +189,23 @@ class TestStartup(base.BaseTest):
 
     @ddt.data(
         # No arguments, no file, no previous, answer no
-        [False, False, False, False, False],
+        [None, False, False, False],
         # No arguments, no file, no previous, answer yes
-        [False, False, False, False, True],
+        [None, False, False, True],
         # No arguments, no file, previous yes, no prompt
-        [False, False, False, True, None],
+        [None, False, True, None],
         # No arguments, exists, previous no, no prompt
-        [False, False, True, False, None],
+        [None, True, False, None],
         # Opt out, no file, no prompt
-        [False, True, False, None, None],
+        [False, False, None, None],
         # Opt in, no file, previous yes, still prompt
-        [True, False, False, True, True],
+        [True, False, True, True],
         # Opt in, exists, previous no, no prompt'),
-        [True, False, True, False, None],
+        [True, True, False, None],
     )
     @ddt.unpack
-    def test_linux_desktop_file(self, optin, optout, exists, last, answ):
+    def test_linux_desktop_file(self, optin, exists, last, answ):
         self.args.install_desktop_app = optin
-        self.args.no_install_desktop_app = optout
         os.path.exists.return_value = exists
         self.conf.get_bool.return_value = last
         wx.MessageBox.return_value = wx.YES if answ else wx.NO

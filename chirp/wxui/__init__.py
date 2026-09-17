@@ -40,7 +40,7 @@ def maybe_install_desktop(args, parent):
         icon_path = str(p)
 
     # If asked not to do this, always bail
-    if args.no_install_desktop_app:
+    if args.install_desktop_app is False:
         return
 
     # Already exists, don't prompt user
@@ -49,8 +49,8 @@ def maybe_install_desktop(args, parent):
         return
 
     # If already asked and not explicitly opted-in, stop nagging
-    if (CONF.get_bool('offered_desktop', 'state') and not
-            args.install_desktop_app):
+    if (CONF.get_bool('offered_desktop', 'state') and
+            args.install_desktop_app is not True):
         LOG.debug('Desktop file missing but user previously offered')
         return
 
@@ -113,15 +113,15 @@ def chirpmain():
                               'other profile data'))
     if sys.platform == 'linux':
         desktop = parser.add_mutually_exclusive_group()
-        parser.add_argument('--compat-linux-gdk-backend', action='store_true',
+        parser.add_argument('--compat-linux-gdk-backend',
+                            action=argparse.BooleanOptionalAction,
+                            default=True,
                             help='Force GDK_BACKEND=x11 for compatibility')
-        desktop.add_argument('--install-desktop-app', action='store_true',
-                             default=False,
-                             help=('Install a desktop icon even if it was '
-                                   'previously refused'))
-        desktop.add_argument('--no-install-desktop-app', action='store_true',
-                             default=False,
-                             help='Do not prompt to install a desktop icon')
+        desktop.add_argument('--install-desktop-app',
+                             action=argparse.BooleanOptionalAction,
+                             default=None,
+                             help=('Install a desktop icon (even if it was '
+                                   'previously refused)'))
     logger.add_arguments(parser)
     args = parser.parse_args()
     logger.handle_options(args)
