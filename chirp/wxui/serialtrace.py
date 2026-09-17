@@ -116,11 +116,21 @@ class SerialTrace(serial.Serial):
     def last_write(self):
         return self.__last_write
 
+    @property
+    def trace_dir(self):
+        # If CHIRP_DEBUG is set and ./traces exists, use that for trace files
+        # for easier access
+        if os.getenv('CHIRP_DEBUG') and os.path.isdir('traces'):
+            return os.path.abspath('traces')
+        else:
+            return None
+
     def open(self):
         super().open()
         try:
             self.__trace_start = time.monotonic()
             self.__tracef = tempfile.NamedTemporaryFile(mode='w',
+                                                        dir=self.trace_dir,
                                                         delete=False,
                                                         prefix='chirp-trace-',
                                                         suffix='.txt')

@@ -18,6 +18,7 @@ import csv
 import logging
 
 from chirp import chirp_common, errors, directory
+from chirp import kenwood_tone
 from chirp.drivers import generic_csv
 
 LOG = logging.getLogger(__name__)
@@ -63,17 +64,12 @@ class ITMRadio(generic_csv.CSVRadio):
         return mem
 
     def _clean_tmode(self, headers, line, mem):
-        rtone = eval(generic_csv.get_datum_by_header(headers, line, "TXSIG"))
-        ctone = eval(generic_csv.get_datum_by_header(headers, line, "RXSIG"))
+        txtone = kenwood_tone.parse_qtdqt(
+            generic_csv.get_datum_by_header(headers, line, "TXSIG"))
+        rxtone = kenwood_tone.parse_qtdqt(
+            generic_csv.get_datum_by_header(headers, line, "RXSIG"))
 
-        if rtone:
-            mem.tmode = "Tone"
-        if ctone:
-            mem.tmode = "TSQL"
-
-        mem.rtone = rtone or 88.5
-        mem.ctone = ctone or mem.rtone
-
+        chirp_common.split_tone_decode(mem, txtone, rxtone)
         return mem
 
     def load(self, filename=None):

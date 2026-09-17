@@ -233,6 +233,7 @@ class ChirpEditorSet(wx.Panel):
             if editor.GetId() != event.GetId():
                 LOG.debug('refreshing %s' % editor)
                 editor.refresh()
+        event.Skip()
 
     def _editor_changed(self, event):
         self._modified = True

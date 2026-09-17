@@ -69,6 +69,7 @@ import re
 import warnings
 
 from chirp import bitwise_grammar
+from chirp import util
 
 LOG = logging.getLogger(__name__)
 
@@ -820,16 +821,26 @@ class structDataElement(DataElement):
     def __repr__(self):
         return self._make_repr('struct')
 
-    def _make_repr(self, typename):
+    def _make_repr(self, typename, verbose=False):
         s = typename + " {" + os.linesep
+        pos = 0
         for prop in self._keys:
+            cur = self._generators[prop].get_offset()
+            if cur != pos and verbose:
+                s += os.linesep + (
+                    'Gap of %i at 0x%04x' % (cur - pos, pos)) + os.linesep
+                s += util.hexprint(self._data[pos:cur], pos) + os.linesep
             s += "  %15s: %s%s" % (prop, repr(self._generators[prop]),
                                    os.linesep)
+            pos = cur + self._generators[prop].size() // 8
         s += "} %s (%i bytes at 0x%04X)%s" % (self._name,
                                               self.size() // 8,
                                               self._offset,
                                               os.linesep)
         return s
+
+    def verbose_repr(self):
+        return self._make_repr('struct', verbose=True)
 
     def __init__(self, *args, **kwargs):
         self._generators = {}

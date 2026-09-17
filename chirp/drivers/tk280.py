@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import collections
+import abc
 import itertools
 import logging
 import struct
@@ -776,7 +777,7 @@ def do_upload(radio):
         radio.status_fn(status)
 
 
-class TKx80SubdevMeta(type):
+class TKx80SubdevMeta(abc.ABCMeta):
     """Metaclass for generating subdevice subclasses"""
     def __new__(cls, name, bases, dct):
         return super(TKx80SubdevMeta, cls).__new__(cls, name, bases, dct)

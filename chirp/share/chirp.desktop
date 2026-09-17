@@ -11,3 +11,4 @@ MimeType=x-scheme-handler/chirp
 Categories=Utility;HamRadio
 Keywords=Hamradio;Programming;Handheld;Radio;Amateur;Programmer
 StartupNotify=true
+StartupWMClass=chirpw

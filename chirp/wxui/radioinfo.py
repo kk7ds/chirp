@@ -18,6 +18,7 @@ import wx.propgrid
 
 from chirp.drivers import icf
 from chirp import util
+from chirp.wxui import accessibility
 from chirp.wxui import common
 
 
@@ -42,6 +43,7 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
     def _add_features_group(self):
         pg = wx.propgrid.PropertyGrid(
             self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER)
+        accessibility.enable_propgrid_a11y(pg, _('Radio Info: Features'))
         self._group_control.AddPage(pg, _('Features'))
 
         for key in self._features._valid_map.keys():
@@ -60,6 +62,7 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
         pg = wx.propgrid.PropertyGrid(
             self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER)
         pg.EnableScrolling(True, True)
+        accessibility.enable_propgrid_a11y(pg, _('Radio Info: Driver'))
         self._group_control.AddPage(pg, _('Driver'))
 
         try:
@@ -86,6 +89,7 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
         pg = wx.propgrid.PropertyGrid(
             self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER)
         pg.EnableScrolling(True, True)
+        accessibility.enable_propgrid_a11y(pg, _('Radio Info: Icom'))
         self._group_control.AddPage(pg, 'Icom')
 
         attrs = dict(self._radio._icf_data)
@@ -113,6 +117,7 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
         pg = wx.propgrid.PropertyGrid(
             self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER)
         pg.EnableScrolling(True, True)
+        accessibility.enable_propgrid_a11y(pg, _('Radio Info: Image Metadata'))
         self._group_control.AddPage(pg, 'Image Metadata')
         # Don't show the icom fields which are displayed elsewhere, and
         # don't dump the whole mem_extra blob in here
