@@ -513,58 +513,452 @@ class TMG707Radio(TMV7Radio):
         return rf
 
 
-THG71_STEPS = [5, 6.25, 10, 12.5, 15, 20, 25, 30, 50, 100]
+THG71_STEPS = [5.0, 6.25, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0]
+THG71_TONES = tuple(x for x in chirp_common.OLD_TONES if x != 69.3)
+THG71_SPECIALS = ["CALL-V", "CALL-U", "Pr"] + \
+                 ["L%i" % i for i in range(10)] + \
+                 ["U%i" % i for i in range(10)]
+THG71_POWER_LEVELS = ["High", "Low", "Economic Low"]
+THG71_POWER_MAP = {0: "High", 2: "Low", 3: "Economic Low"}
+THG71_POWER_MAP_REV = {"High": 0, "Low": 2, "Economic Low": 3}
+
+
+def _thg71_code_to_tone(code_str):
+    if not code_str or not code_str.isdigit():
+        return 88.5
+    idx = int(code_str) - 1
+    if 0 <= idx < len(chirp_common.OLD_TONES):
+        t = chirp_common.OLD_TONES[idx]
+        if t != 69.3:
+            return t
+    return 88.5
+
+
+def _thg71_tone_to_code(tone):
+    if tone not in chirp_common.OLD_TONES or tone == 69.3:
+        tone = 88.5
+    idx = chirp_common.OLD_TONES.index(tone)
+    return "%02i" % (idx + 1)
 
 
 @directory.register
-class THG71Radio(TMV7Radio):
+class THG71Radio(KenwoodOldLiveRadio):
     """Kenwood TH-G71"""
     MODEL = "TH-G71"
+    HARDWARE_FLOW = False
+
+    _upper = 199
+    _kenwood_split = True
+    _kenwood_valid_tones = list(chirp_common.OLD_TONES)
 
     def get_features(self):
-        rf = super().get_features()
+        rf = chirp_common.RadioFeatures()
         rf.has_tuning_step = True
-        rf.valid_tuning_steps = list(THG71_STEPS)
-        rf.valid_name_length = 6
+        rf.has_bank = False
+        rf.has_dtcs = False
+        rf.has_dtcs_polarity = False
+        rf.has_mode = False
+        rf.has_ctone = True
+        rf.has_settings = True
         rf.has_sub_devices = False
+        rf.can_odd_split = True
+        rf.valid_modes = ["FM"]
+        rf.valid_tmodes = ["", "Tone", "TSQL"]
+        rf.valid_duplexes = ["", "+", "-", "split"]
+        rf.valid_skips = ["", "S"]
+        rf.valid_tuning_steps = list(THG71_STEPS)
+        rf.valid_tones = THG71_TONES
+        rf.valid_name_length = 6
+        rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "-/ "
+        rf.memory_bounds = (0, 199)
+        rf.valid_special_chans = list(THG71_SPECIALS)
         rf.valid_bands = [(118000000, 174000000),
                           (320000000, 470000000),
-                          (800000000, 945000000)]
+                          (800000000, 949000000)]
         return rf
 
-    def _make_mem_spec(self, mem):
-        spec = (
-            "%011i" % mem.freq,
-            "%X" % THG71_STEPS.index(mem.tuning_step),
-            "%i" % util.get_dict_rev(DUPLEX, mem.duplex),
-            "0",
-            "%i" % (mem.tmode == "Tone"),
-            "%i" % (mem.tmode == "TSQL"),
-            "0",
-            "%02i" % (self._kenwood_valid_tones.index(mem.rtone) + 1),
-            "000",
-            "%02i" % (self._kenwood_valid_tones.index(mem.ctone) + 1),
-            "%09i" % mem.offset,
-            "%i" % ((mem.skip == "S") and 1 or 0))
-        return spec
+    def _cmd_get_memory(self, number):
+        chan = ("%03i" % number) if isinstance(number, int) else str(number)
+        return "MR", "0,0,%s" % chan
+
+    def _cmd_get_memory_name(self, number):
+        chan = ("%03i" % number) if isinstance(number, int) else str(number)
+        return "MNA", "0,%s" % chan
+
+    def _cmd_get_split(self, number):
+        chan = ("%03i" % number) if isinstance(number, int) else str(number)
+        return "MR", "0,1,%s" % chan
+
+    def _cmd_set_memory(self, number, spec):
+        chan = ("%03i" % number) if isinstance(number, int) else str(number)
+        if spec:
+            return "MW", "0,0,%s,%s" % (chan, spec)
+        return "MW", "0,0,%s" % chan
+
+    def _cmd_set_memory_name(self, number, name):
+        chan = ("%03i" % number) if isinstance(number, int) else str(number)
+        return "MNA", "0,%s,%s" % (chan, name)
+
+    def _cmd_set_split(self, number, spec):
+        chan = ("%03i" % number) if isinstance(number, int) else str(number)
+        return "MW", "0,1,%s,%s" % (chan, spec)
 
     def _parse_mem_spec(self, spec):
         mem = chirp_common.Memory()
-        mem.number = int(spec[2])
+        chan_str = spec[2]
+        if chan_str.isdigit():
+            mem.number = int(chan_str)
+        else:
+            mem.number = 0
+            mem.extd_number = chan_str
         mem.freq = int(spec[3])
-        mem.tuning_step = THG71_STEPS[int(spec[4], 16)]
-        mem.duplex = DUPLEX[int(spec[5])]
-        if int(spec[7]):
+        step_idx = int(spec[4], 16) if spec[4] else 0
+        if 0 <= step_idx < len(THG71_STEPS):
+            mem.tuning_step = THG71_STEPS[step_idx]
+        else:
+            mem.tuning_step = THG71_STEPS[0]
+        shift_idx = int(spec[5]) if spec[5] else 0
+        mem.duplex = DUPLEX.get(shift_idx, "")
+        if len(spec) > 7 and int(spec[7]):
             mem.tmode = "Tone"
-        elif int(spec[8]):
+        elif len(spec) > 8 and int(spec[8]):
             mem.tmode = "TSQL"
-        mem.rtone = self._kenwood_valid_tones[int(spec[10]) - 1]
-        mem.ctone = self._kenwood_valid_tones[int(spec[12]) - 1]
-        if spec[13]:
+        else:
+            mem.tmode = ""
+        mem.rtone = _thg71_code_to_tone(spec[10]) if len(spec) > 10 else 88.5
+        mem.ctone = _thg71_code_to_tone(spec[12]) if len(spec) > 12 else 88.5
+        if len(spec) > 13 and spec[13] and spec[13].isdigit():
             mem.offset = int(spec[13])
         else:
             mem.offset = 0
+        if len(spec) > 14 and spec[14] == "1":
+            mem.skip = "S"
+        else:
+            mem.skip = ""
         return mem
+
+    def _parse_call_spec(self, band, spec):
+        mem = chirp_common.Memory()
+        mem.number = 0
+        mem.extd_number = "CALL-V" if band == 0 else "CALL-U"
+        mem.freq = int(spec[2])
+        step_idx = int(spec[3], 16) if spec[3] else 0
+        if 0 <= step_idx < len(THG71_STEPS):
+            mem.tuning_step = THG71_STEPS[step_idx]
+        else:
+            mem.tuning_step = THG71_STEPS[0]
+        shift_idx = int(spec[4]) if spec[4] else 0
+        mem.duplex = DUPLEX.get(shift_idx, "")
+        if len(spec) > 6 and int(spec[6]):
+            mem.tmode = "Tone"
+        elif len(spec) > 7 and int(spec[7]):
+            mem.tmode = "TSQL"
+        else:
+            mem.tmode = ""
+        mem.rtone = _thg71_code_to_tone(spec[9]) if len(spec) > 9 else 88.5
+        mem.ctone = _thg71_code_to_tone(spec[11]) if len(spec) > 11 else 88.5
+        if len(spec) > 12 and spec[12] and spec[12].isdigit():
+            mem.offset = int(spec[12])
+        else:
+            mem.offset = 0
+        mem.skip = ""
+        return mem
+
+    def _make_mem_spec(self, mem, is_call=False):
+        if mem.tuning_step in THG71_STEPS:
+            step_idx = THG71_STEPS.index(mem.tuning_step)
+        else:
+            step_idx = 0
+        if mem.duplex in ["", "+", "-"]:
+            duplex_code = util.get_dict_rev(DUPLEX, mem.duplex)
+            offset = mem.offset
+        elif mem.duplex == "split":
+            duplex_code = 0
+            offset = 0
+        else:
+            duplex_code = 0
+            offset = 0
+
+        spec = [
+            "%011i" % mem.freq,
+            "%X" % step_idx,
+            "%i" % duplex_code,
+            "0",
+            "%i" % (mem.tmode == "Tone"),
+            "%i" % (mem.tmode == "TSQL"),
+            "",
+            _thg71_tone_to_code(mem.rtone),
+            "",
+            _thg71_tone_to_code(mem.ctone),
+            "%09i" % offset,
+        ]
+        if not is_call:
+            spec.append("%i" % (1 if mem.skip == "S" else 0))
+        return tuple(spec)
+
+    def _parse_split_spec(self, mem, spec):
+        mem.duplex = "split"
+        mem.offset = int(spec[3])
+
+    def _make_split_spec(self, mem):
+        if mem.tuning_step in THG71_STEPS:
+            step_idx = THG71_STEPS.index(mem.tuning_step)
+        else:
+            step_idx = 0
+        return ("%011i" % mem.offset, "%X" % step_idx)
+
+    def get_memory(self, number):
+        if isinstance(number, str):
+            if number not in THG71_SPECIALS:
+                raise errors.InvalidMemoryLocation(
+                    "Special channel %s is not valid" % number)
+            mem_key = number
+        else:
+            if number < 0 or number > self._upper:
+                raise errors.InvalidMemoryLocation(
+                    "Number must be between 0 and %i" % self._upper)
+            mem_key = number
+
+        if mem_key in self._memcache and not NOCACHE:
+            return self._memcache[mem_key]
+
+        is_call = False
+        call_band = 0
+        if mem_key == "CALL-V":
+            cmd = ("CR", "0,0")
+            is_call = True
+            call_band = 0
+        elif mem_key == "CALL-U":
+            cmd = ("CR", "1,0")
+            is_call = True
+            call_band = 1
+        else:
+            cmd = self._cmd_get_memory(mem_key)
+
+        result = self.command(self.pipe, *cmd)
+        if result in ["N", "E"] or result == "?" or not result:
+            mem = chirp_common.Memory()
+            if isinstance(mem_key, int):
+                mem.number = mem_key
+            else:
+                mem.number = 0
+                mem.extd_number = mem_key
+            mem.empty = True
+            self._memcache[mem_key] = mem
+            return mem
+        elif " " not in result:
+            LOG.error("Not sure what to do with this: %r" % result)
+            raise errors.RadioError("Unexpected result returned from radio")
+
+        value = result.split(" ", 1)[1]
+        spec = value.split(",")
+
+        if is_call:
+            mem = self._parse_call_spec(call_band, spec)
+        else:
+            mem = self._parse_mem_spec(spec)
+
+        self._memcache[mem_key] = mem
+
+        if not is_call and self._has_name:
+            result = self.command(self.pipe,
+                                  *self._cmd_get_memory_name(mem_key))
+            if " " in result:
+                value = result.split(" ", 1)[1]
+                parts = value.split(",")
+                if len(parts) >= 3:
+                    mem.name = parts[2].rstrip()
+                elif len(parts) == 2:
+                    mem.name = parts[1].rstrip()
+
+        if mem.duplex == "" and mem.offset == 0:
+            if is_call:
+                split_cmd = ("CR", "%i,1" % call_band)
+                result = self.command(self.pipe, *split_cmd)
+                if not iserr(result) and " " in result:
+                    value = result.split(" ", 1)[1]
+                    parts = value.split(",")
+                    if len(parts) >= 3:
+                        mem.duplex = "split"
+                        mem.offset = int(parts[2])
+            else:
+                result = self.command(self.pipe,
+                                      *self._cmd_get_split(mem_key))
+                if not iserr(result) and " " in result:
+                    value = result.split(" ", 1)[1]
+                    self._parse_split_spec(mem, value.split(","))
+
+        return mem
+
+    def set_memory(self, memory):
+        mem_key = memory.extd_number if memory.extd_number else memory.number
+        if isinstance(mem_key, str):
+            if mem_key not in THG71_SPECIALS:
+                raise errors.InvalidMemoryLocation(
+                    "Special channel %s is not valid" % mem_key)
+        else:
+            if mem_key < 0 or mem_key > self._upper:
+                raise errors.InvalidMemoryLocation(
+                    "Number must be between 0 and %i" % self._upper)
+
+        if memory.tmode == "Tone" and memory.rtone not in THG71_TONES:
+            raise errors.UnsupportedToneError("This radio does not support "
+                                              "tone %.1fHz" % memory.rtone)
+        if memory.tmode == "TSQL" and memory.ctone not in THG71_TONES:
+            raise errors.UnsupportedToneError("This radio does not support "
+                                              "tone %.1fHz" % memory.ctone)
+
+        if memory.empty:
+            self.erase_memory(mem_key)
+            return
+
+        is_call = False
+        call_band = 0
+        if mem_key == "CALL-V":
+            is_call = True
+            call_band = 0
+        elif mem_key == "CALL-U":
+            is_call = True
+            call_band = 1
+
+        spec = self._make_mem_spec(memory, is_call=is_call)
+        spec_str = ",".join(spec)
+        self._memcache.pop(mem_key, None)
+
+        if is_call:
+            r1 = self.command(self.pipe, "CW",
+                              "%i,0,%s" % (call_band, spec_str))
+        else:
+            r1 = self.command(self.pipe,
+                              *self._cmd_set_memory(mem_key, spec_str))
+
+        if iserr(r1):
+            raise errors.InvalidDataError("Radio refused channel %s" % mem_key)
+
+        if not is_call and self._has_name:
+            time.sleep(0.05)
+            clean_name = memory.name.upper()[:6]
+            r2 = self.command(self.pipe,
+                              *self._cmd_set_memory_name(mem_key, clean_name))
+            if iserr(r2):
+                raise errors.InvalidDataError("Radio refused name %s: %r" %
+                                              (mem_key, clean_name))
+
+        if memory.duplex == "split":
+            time.sleep(0.05)
+            if is_call:
+                if memory.tuning_step in THG71_STEPS:
+                    step_idx = THG71_STEPS.index(memory.tuning_step)
+                else:
+                    step_idx = 0
+                split_spec = "%011i,%X" % (memory.offset, step_idx)
+                result = self.command(self.pipe, "CW",
+                                      "%i,1,%s" % (call_band, split_spec))
+            else:
+                split_spec = ",".join(self._make_split_spec(memory))
+                result = self.command(self.pipe,
+                                      *self._cmd_set_split(mem_key,
+                                                           split_spec))
+            if iserr(result):
+                raise errors.InvalidDataError("Radio refused split on %s" %
+                                              mem_key)
+
+    def erase_memory(self, number):
+        if number in ["CALL-V", "CALL-U"]:
+            return
+        resp = self.command(self.pipe, *self._cmd_set_memory(number, ""))
+        if iserr(resp):
+            raise errors.RadioError("Radio refused delete of %s" % number)
+        self._memcache.pop(number, None)
+
+    def get_settings(self):
+        basic = RadioSettingGroup("basic", "Basic Settings")
+        dtmf = RadioSettingGroup("dtmf", "DTMF Memories")
+        top = RadioSettings(basic, dtmf)
+
+        # VHF Transmit Power
+        curr = "High"
+        try:
+            resp = self.command(self.pipe, "PC", "0")
+            if not iserr(resp) and " " in resp:
+                val = int(resp.split(" ")[1].split(",")[1])
+                curr = THG71_POWER_MAP.get(val, "High")
+        except Exception:
+            pass
+        rs = RadioSetting("pc_vhf", "VHF Transmit Power",
+                          RadioSettingValueList(
+                              THG71_POWER_LEVELS,
+                              current_index=THG71_POWER_LEVELS.index(curr)))
+        basic.append(rs)
+
+        # UHF Transmit Power
+        curr = "High"
+        try:
+            resp = self.command(self.pipe, "PC", "1")
+            if not iserr(resp) and " " in resp:
+                val = int(resp.split(" ")[1].split(",")[1])
+                curr = THG71_POWER_MAP.get(val, "High")
+        except Exception:
+            pass
+        rs = RadioSetting("pc_uhf", "UHF Transmit Power",
+                          RadioSettingValueList(
+                              THG71_POWER_LEVELS,
+                              current_index=THG71_POWER_LEVELS.index(curr)))
+        basic.append(rs)
+
+        # Squelch Level (0-5)
+        val = 2
+        try:
+            resp = self.command(self.pipe, "SQ", "0")
+            if not iserr(resp) and " " in resp:
+                val = int(resp.split(" ")[1].split(",")[1])
+        except Exception:
+            pass
+        rs = RadioSetting("squelch", "Squelch Level",
+                          RadioSettingValueInteger(0, 5, val))
+        basic.append(rs)
+
+        # DTMF Memories (DM 00 to DM 09)
+        dtmf_charset = "0123456789ABCD*#"
+        for i in range(10):
+            dtmf_val = ""
+            try:
+                resp = self.command(self.pipe, "DM", "%02i" % i)
+                if not iserr(resp) and " " in resp:
+                    parts = resp.split(" ", 1)[1].split(",")
+                    if len(parts) > 1:
+                        dtmf_val = parts[1].replace("E", "*").replace("F", "#")
+            except Exception:
+                pass
+            rs = RadioSetting("dm_%02i" % i, "DTMF Memory %i" % i,
+                              RadioSettingValueString(0, 16, dtmf_val,
+                                                      autopad=False,
+                                                      charset=dtmf_charset))
+            dtmf.append(rs)
+
+        return top
+
+    def set_settings(self, settings):
+        for element in settings:
+            if not isinstance(element, RadioSetting):
+                self.set_settings(element)
+                continue
+            if not element.changed():
+                continue
+            name = element.get_name()
+            if name == "pc_vhf":
+                code = THG71_POWER_MAP_REV.get(str(element.value), 0)
+                self.command(self.pipe, "PC", "0,%i" % code)
+            elif name == "pc_uhf":
+                code = THG71_POWER_MAP_REV.get(str(element.value), 0)
+                self.command(self.pipe, "PC", "1,%i" % code)
+            elif name == "squelch":
+                self.command(self.pipe, "SQ", "0,%02i" % int(element.value))
+            elif name.startswith("dm_"):
+                idx = int(name.split("_")[1])
+                raw = str(element.value).upper().replace("*", "E")
+                raw = raw.replace("#", "F")
+                self.command(self.pipe, "DM", "%02i,%s" % (idx, raw))
 
 
 THF6A_STEPS = [5.0, 6.25, 8.33, 9.0, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 50.0,
