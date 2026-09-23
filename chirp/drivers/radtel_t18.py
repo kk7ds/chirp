@@ -1555,7 +1555,8 @@ class RT15Radio(T18Radio):
 
     _magic = b"KAOGRAM"
     _fingerprint = [b"\x06\x00\x00\x00\x00\x00\x00\x00",
-                    b"\x06\x03\xE8\x08\xFF\xFF\xFF\xFF"]
+                    b"\x06\x03\xE8\x08\xFF\xFF\xFF\xFF",
+                    b"\x06MP558\xFF\xFF"]
     _upper = 16
     _mem_params = (_upper  # number of channels
                    )
