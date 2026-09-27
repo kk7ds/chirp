@@ -182,9 +182,11 @@ class AlincoCloneTest(unittest.TestCase):
 
     def test_all_alinco_identify(self):
         # Make sure all the alinco models have bytes for their _model
-        # and can identify properly
+        # and can identify properly. Not every Alinco radio speaks the
+        # AL~ handshake -- the DJ-VX50 uses an unrelated protocol with no
+        # _model -- so scope this to the ones that do.
         alincos = [x for x in directory.DRV_TO_RADIO.values()
-                   if x.VENDOR == 'Alinco']
+                   if x.VENDOR == 'Alinco' and hasattr(x, '_model')]
         for rclass in alincos:
             pipe = FakeAlincoSerial(__file__)
             radio = rclass(None)
