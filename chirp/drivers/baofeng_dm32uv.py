@@ -1126,6 +1126,11 @@ class DM32UV(chirp_common.CloneModeRadio):
             _mem.set_raw(b'\xFF' * 16 + b'\x00' * 8 + bytes.fromhex(
                 '0000000030000000' '00ffffffff000000' '0000000000000000'))
         if mem.number > self._count():
+            # Channels skipped over become part of 1..count: make sure they
+            # are empty, not left-over template data (factory records past
+            # the count hold e.g. 400.000 MHz and would show up).
+            for gap in range(self._count() + 1, mem.number):
+                self._chan(gap).set_raw(b'\xFF' * CH_SIZE)
             self._memobj.ch_count = mem.number
 
         _mem.name = mem.name.ljust(16, '\x00')[:16]
