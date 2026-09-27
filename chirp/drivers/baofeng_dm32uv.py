@@ -38,9 +38,10 @@ import struct
 import time
 
 from chirp import bitwise, chirp_common, directory, errors, memmap
-from chirp.settings import (RadioSetting, RadioSettingGroup,
+from chirp.settings import (RadioSetting, RadioSettingGroup, RadioSettings,
                             RadioSettingValueBoolean,
-                            RadioSettingValueInteger, RadioSettingValueList)
+                            RadioSettingValueInteger, RadioSettingValueList,
+                            RadioSettingValueString)
 
 LOG = logging.getLogger(__name__)
 
@@ -58,13 +59,26 @@ VFO_OFFSETS = (0xF9F, 0xFCF)            # in the last channel page
 ZONE_TAG0 = 0x5C
 ZONE_BASE = IMAGE_TAGS.index(ZONE_TAG0) * PAGE
 ZONE_PER_PAGE, ZONE_COUNT, ZONE_MEMBERS = 28, 250, 64
-# Name lists the DMR channel fields point into (CPS name getters in
-# brackets): tag, offset of entry 1, entry size, name length, entries.
+# Encryption key names (CPS 0x479630): tag, offset of entry 1, entry size,
+# name length, entries. Keys are chosen per channel, not edited.
 DMR_LISTS = {
-    'contact': (0x67, 0x013, 0x10, 16, 250),     # TX contacts (0x474350)
-    'rxgroup': (0x0F, 0x011, 0x6D, 11, 32),      # RX group lists (0x477da0)
-    'privacy': (0x10, 0x301, 0x2C, 10, 32),      # encryption keys (0x479630)
+    'privacy': (0x10, 0x301, 0x2C, 10, 32),
 }
+# DMR lists, from the CPS accessors (see PROTOCOL.md "DMR lists"):
+# radio IDs (tag 0x67): count at 0, entry n at 16*n = u24 LE ID + 12-char name
+RADIOID_TAG, RADIOID_MAX, RADIOID_NAME = 0x67, 250, 12
+# contacts: index page 0x0B (u16 count, counts by call type, free-slot bitmap,
+# name- and ID-sorted lists), 24-byte records on pages 0x44-0x48
+CONTACT_INDEX_TAG, CONTACT_REC_TAG0 = 0x0B, 0x44
+CONTACT_PER_PAGE, CONTACT_REC, CONTACT_MAX, CONTACT_NAME = 170, 0x18, 800, 16
+CALL_TYPES = ['Private Call', 'Group Call', 'All Call']
+# RX group lists (tag 0x0F): used-bitmap in bytes 0-3, group n at
+# 0x6D*n - 0x5C: 11-char name, 32 member IDs (u24 LE)
+RXG_TAG, RXG_MAX, RXG_NAME, RXG_MEMBERS, RXG_REC = 0x0F, 32, 11, 32, 0x6D
+# Per-channel TX contact (CPS 0x480050), outside the channel record:
+# 2 bytes per channel on tags 0x42/0x43, 12-bit contact number + digital flag
+TXC_TAGS = (0x42, 0x43)
+DMR_ID_MAX, ALL_CALL_ID = 16776415, 16777215
 
 # Received bytes sometimes have this bit set when the radio sent it clear.
 LINK_FAULT = 0x80
@@ -73,7 +87,10 @@ READ_COPIES, READ_TRIES = 3, 10
 # Upload writes channel pages only, one whole aligned page per W frame: the
 # firmware erases the sector on an aligned W and also erases the next sector
 # if a W crosses into it. Tags 0x02 and 0x69 look like calibration.
-UPLOAD_TAGS = list(range(0x12, 0x42)) + list(range(0x5C, 0x65))
+UPLOAD_TAGS = (list(range(0x12, 0x42)) + list(range(0x5C, 0x65)) +
+               [RXG_TAG, CONTACT_INDEX_TAG] + list(TXC_TAGS) +
+               list(range(CONTACT_REC_TAG0, CONTACT_REC_TAG0 + 5)) +
+               [RADIOID_TAG])
 NEVER_WRITE = (0x02, 0x69)
 WRITE_TRIES = 3
 
@@ -100,7 +117,7 @@ struct chan {
   u8 unknown28;
   u8 step:4, ptt_id:2, unknown29:2;
   u8 unknown2a;
-  u8 tx_contact;
+  u8 radio_id;
   lbcd offset[4];
 };
 
@@ -556,7 +573,7 @@ class DM32UV(chirp_common.CloneModeRadio):
         rf.has_cross = True
         rf.has_rx_dtcs = True
         rf.has_dtcs_polarity = True
-        rf.has_settings = False
+        rf.has_settings = True
         rf.can_odd_split = True
         rf.valid_modes = ['FM', 'NFM', 'DMR']
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
@@ -645,6 +662,294 @@ class DM32UV(chirp_common.CloneModeRadio):
         count = int(self._memobj.ch_count)
         return 0 if count > CH_COUNT else count
 
+    # --- raw page access (DMR lists live outside the bitwise layout) ---------
+
+    def _page(self, tag):
+        base = IMAGE_TAGS.index(tag) * PAGE
+        return base, self._mmap.get(base, PAGE)
+
+    def _put(self, tag, offset, data):
+        base = IMAGE_TAGS.index(tag) * PAGE
+        assert offset + len(data) <= PAGE - 1
+        self._mmap.set(base + offset, bytes(data))
+        self._mmap.set(base + PAGE - 1, bytes([tag]))   # the page now exists
+
+    @staticmethod
+    def _text(raw):
+        text = raw.split(b'\xFF')[0].split(b'\x00')[0]
+        return text.decode('ascii', 'replace')
+
+    # --- radio IDs -----------------------------------------------------------
+
+    def _radio_ids(self):
+        """[(dmr_id, name)] for radio IDs 1..count."""
+        _base, page = self._page(RADIOID_TAG)
+        count = page[0] if page[0] <= RADIOID_MAX else 0
+        return [(int.from_bytes(page[16 * n:16 * n + 3], 'little'),
+                 self._text(page[16 * n + 3:16 * n + 3 + RADIOID_NAME]))
+                for n in range(1, count + 1)]
+
+    def _set_radio_ids(self, entries):
+        self._put(RADIOID_TAG, 0, bytes([len(entries)]))
+        for n in range(1, RADIOID_MAX + 1):
+            if n <= len(entries):
+                dmr_id, name = entries[n - 1]
+                rec = (dmr_id.to_bytes(3, 'little') +
+                       name.encode()[:RADIOID_NAME].ljust(13, b'\x00'))
+            else:
+                rec = b'\x00' * 16
+            self._put(RADIOID_TAG, 16 * n, rec)
+
+    # --- contacts ------------------------------------------------------------
+
+    def _contact_loc(self, k):
+        return (CONTACT_REC_TAG0 + (k - 1) // CONTACT_PER_PAGE,
+                ((k - 1) % CONTACT_PER_PAGE) * CONTACT_REC)
+
+    def _contacts(self):
+        """{slot: (name, dmr_id, call_type index)} for used contact slots."""
+        _base, index = self._page(CONTACT_INDEX_TAG)
+        contacts = {}
+        for k in range(1, CONTACT_MAX + 1):
+            if index[0x10 + (k - 1) // 8] >> ((k - 1) % 8) & 1:
+                continue                                # free slot
+            tag, off = self._contact_loc(k)
+            rec = self._page(tag)[1][off:off + CONTACT_REC]
+            ctype = rec[0x16] - 3 if 3 <= rec[0x16] <= 5 else 0
+            contacts[k] = (self._text(rec[2:2 + CONTACT_NAME]),
+                           int.from_bytes(rec[0x13:0x16], 'little'), ctype)
+        return contacts
+
+    def _set_contacts(self, contacts):
+        """Write {slot: (name, id, type)} and rebuild the index page the way
+        the CPS does (0x474c00): counts, free bitmap, name- and ID-sorted
+        lists of (slot | call type code << 12)."""
+        _base, index = self._page(CONTACT_INDEX_TAG)
+        index = bytearray(index if index[0x10:0x74] != b'\xFF' * 100 or
+                          index[0:2] != b'\xFF\xFF' else b'\x00' * PAGE)
+        for k, (name, dmr_id, ctype) in contacts.items():
+            tag, off = self._contact_loc(k)
+            old = self._page(tag)[1][off:off + CONTACT_REC]
+            keep = old if old != b'\xFF' * CONTACT_REC else b'\x00' * 24
+            name_b = name.encode()[:CONTACT_NAME].ljust(16, b'\x00')
+            if self._text(keep[2:2 + CONTACT_NAME]) == name:
+                name_b = keep[2:2 + CONTACT_NAME]   # keep the radio's padding
+            rec = (keep[0:2] + name_b + b'\x00' +
+                   dmr_id.to_bytes(3, 'little') + bytes([ctype + 3]) +
+                   keep[0x17:0x18])
+            self._put(tag, off, rec)
+        bitmap = bytearray(b'\xFF' * 100)
+        for k in contacts:
+            bitmap[(k - 1) // 8] &= ~(1 << ((k - 1) % 8)) & 0xFF
+        index[0:2] = len(contacts).to_bytes(2, 'little')
+        groups = sum(1 for c in contacts.values() if c[2] == 1)
+        index[2:4] = groups.to_bytes(2, 'little')
+        index[4] = sum(1 for c in contacts.values() if c[2] == 2)
+        index[0x10:0x74] = bitmap
+        index[0x100:PAGE - 1] = b'\xFF' * (PAGE - 1 - 0x100)
+
+        def entry(k):
+            code = (contacts[k][2] + 3) << 4
+            return bytes([k & 0xFF, (k >> 8) & 0xF | code])
+        for pos, k in enumerate(sorted(contacts, key=lambda k: (
+                contacts[k][0].encode(), k))):
+            index[0x100 + 2 * pos:0x102 + 2 * pos] = entry(k)
+        for pos, k in enumerate(sorted(contacts, key=lambda k: (
+                contacts[k][1], k))):
+            index[0x740 + 2 * pos:0x742 + 2 * pos] = entry(k)
+        self._put(CONTACT_INDEX_TAG, 0, index[:PAGE - 1])
+
+    def _txc_loc(self, n):
+        if n < 0x800:
+            return TXC_TAGS[0], 2 * (n - 1)
+        if n in (CH_COUNT + 1, CH_COUNT + 2):           # VFO A, B
+            return TXC_TAGS[1], 0xFFA + 2 * (n - CH_COUNT - 1)
+        return TXC_TAGS[1], 2 * (n & 0x7FF)
+
+    def _tx_contact(self, n):
+        tag, off = self._txc_loc(n)
+        hi, lo = self._page(tag)[1][off:off + 2]
+        value = (hi >> 4) << 8 | lo
+        return 0 if value > CONTACT_MAX else value
+
+    def _set_tx_contact(self, n, contact, digital):
+        tag, off = self._txc_loc(n)
+        hi = self._page(tag)[1][off]
+        hi = 0 if hi == 0xFF else hi & 0x0E
+        self._put(tag, off, bytes([(contact >> 8) << 4 | hi | int(digital),
+                                   contact & 0xFF]))
+
+    # --- RX group lists ------------------------------------------------------
+
+    def _rx_groups(self):
+        """{n: (name, [member IDs])} for used groups."""
+        _base, page = self._page(RXG_TAG)
+        groups = {}
+        for n in range(1, RXG_MAX + 1):
+            if page[:4] == b'\xFF' * 4 or not page[(n - 1) // 8] >> (
+                    (n - 1) % 8) & 1:
+                continue
+            base = RXG_REC * n - 0x5C
+            members = [int.from_bytes(page[base + RXG_NAME + 3 * j:][:3],
+                                      'little') for j in range(RXG_MEMBERS)]
+            groups[n] = (self._text(page[base:base + RXG_NAME]),
+                         [m for m in members if 0 < m <= ALL_CALL_ID])
+        return groups
+
+    def _set_rx_groups(self, groups):
+        _base, page = self._page(RXG_TAG)
+        head = bytearray(page[:0x10] if page[:4] != b'\xFF' * 4
+                         else b'\x00' * 0x10)
+        head[0:4] = b'\x00' * 4
+        for n in groups:
+            head[(n - 1) // 8] |= 1 << ((n - 1) % 8)
+        self._put(RXG_TAG, 0, head)
+        for n in range(1, RXG_MAX + 1):
+            base = RXG_REC * n - 0x5C
+            name, members = groups.get(n, ('', []))
+            data = name.encode()[:RXG_NAME].ljust(RXG_NAME, b'\x00')
+            for j in range(RXG_MEMBERS):
+                m = members[j] if j < len(members) else 0
+                data += m.to_bytes(3, 'little')
+            self._put(RXG_TAG, base, data)
+
+    # --- Settings tab: DMR lists ---------------------------------------------
+
+    def get_settings(self):
+        dmr = RadioSettingGroup('dmr', 'DMR lists')
+        ids = RadioSettingGroup('radio_ids', 'Radio IDs')
+        entries = self._radio_ids()
+        for n in range(1, min(len(entries) + 8, RADIOID_MAX) + 1):
+            dmr_id, name = entries[n - 1] if n <= len(entries) else (0, '')
+            ids.append(RadioSetting(
+                'rid_%d_id' % n, 'Radio ID %d: DMR ID (0 = unused)' % n,
+                RadioSettingValueInteger(0, DMR_ID_MAX, dmr_id)))
+            ids.append(RadioSetting(
+                'rid_%d_name' % n, 'Radio ID %d: name' % n,
+                RadioSettingValueString(0, RADIOID_NAME, name,
+                                        autopad=False)))
+        contacts = RadioSettingGroup('contacts', 'Contacts')
+        used = self._contacts()
+        free = [k for k in range(1, CONTACT_MAX + 1) if k not in used]
+        for k in sorted(used) + free[:10]:
+            name, dmr_id, ctype = used.get(k, ('', 1, 1))
+            contacts.append(RadioSetting(
+                'con_%d_name' % k, 'Contact %d: name (empty = unused)' % k,
+                RadioSettingValueString(0, CONTACT_NAME, name,
+                                        autopad=False)))
+            contacts.append(RadioSetting(
+                'con_%d_id' % k, 'Contact %d: DMR ID' % k,
+                RadioSettingValueInteger(1, ALL_CALL_ID, max(dmr_id, 1))))
+            contacts.append(RadioSetting(
+                'con_%d_type' % k, 'Contact %d: call type' % k,
+                RadioSettingValueList(CALL_TYPES, current_index=ctype)))
+        groups = RadioSettingGroup('rx_groups', 'RX group lists')
+        by_id = {c[1]: c[0] for c in used.values()}
+        # CHIRP keeps showing this tree after later edits, so remember the
+        # names shown here: a member name stays valid after a rename.
+        self._shown_contact_ids = {c[0]: c[1] for c in used.values()}
+        existing = self._rx_groups()
+        spare = [n for n in range(1, RXG_MAX + 1) if n not in existing][:3]
+        for n in sorted(existing) + spare:
+            name, members = existing.get(n, ('', []))
+            groups.append(RadioSetting(
+                'rxg_%d_name' % n, 'RX group %d: name (empty = unused)' % n,
+                RadioSettingValueString(0, RXG_NAME, name, autopad=False)))
+            groups.append(RadioSetting(
+                'rxg_%d_members' % n,
+                'RX group %d: contacts (names or IDs, comma separated)' % n,
+                RadioSettingValueString(
+                    0, 600, ', '.join(by_id.get(m, str(m)) for m in members),
+                    autopad=False, charset=chirp_common.CHARSET_ASCII)))
+        dmr.append(ids)
+        dmr.append(contacts)
+        dmr.append(groups)
+        return RadioSettings(dmr)
+
+    def set_settings(self, settings):
+        values = {}
+
+        def walk(group):
+            for element in group:
+                if isinstance(element, RadioSetting):
+                    values[element.get_name()] = element.value
+                else:
+                    walk(element)
+        walk(settings)
+
+        # Radio IDs: keep the ones with an ID, in order; renumber channels.
+        old = self._radio_ids()
+        kept, remap = [], {}
+        for n in range(1, RADIOID_MAX + 1):
+            if 'rid_%d_id' % n not in values:
+                if n <= len(old):
+                    kept.append(old[n - 1])
+                    remap[n] = len(kept)
+                continue
+            dmr_id = int(values['rid_%d_id' % n])
+            if dmr_id:
+                kept.append((dmr_id, str(values['rid_%d_name' % n]).strip()))
+                remap[n] = len(kept)
+        if [e for e in kept] != old or any(k != v for k, v in remap.items()):
+            self._set_radio_ids(kept)
+            for number in range(1, self._count() + 1):
+                _mem = self._chan(number)
+                if int(_mem.radio_id):
+                    _mem.radio_id = remap.get(int(_mem.radio_id), 0)
+
+        # Contacts: an empty name frees the slot.
+        contacts = self._contacts()
+        # RX group members are shown by name; accept the names shown when
+        # the settings were read and those from before this edit too (a
+        # renamed contact keeps its ID).
+        by_name = dict(getattr(self, '_shown_contact_ids', {}))
+        by_name.update({c[0]: c[1] for c in contacts.values()})
+        for k in range(1, CONTACT_MAX + 1):
+            if 'con_%d_name' % k not in values:
+                continue
+            name = str(values['con_%d_name' % k]).strip()
+            if name:
+                ctype = CALL_TYPES.index(str(values['con_%d_type' % k]))
+                contacts[k] = (name, int(values['con_%d_id' % k]), ctype)
+            else:
+                contacts.pop(k, None)
+        if contacts != self._contacts():
+            self._set_contacts(contacts)
+            for number in range(1, self._count() + 1):
+                if self._tx_contact(number) and \
+                        self._tx_contact(number) not in contacts:
+                    self._set_tx_contact(number, 0,
+                                         self._chan(number).chtype in (1, 3))
+
+        # RX groups: members by contact name or number.
+        by_name.update({c[0]: c[1] for c in contacts.values()})
+        groups = self._rx_groups()
+        for n in range(1, RXG_MAX + 1):
+            if 'rxg_%d_name' % n not in values:
+                continue
+            name = str(values['rxg_%d_name' % n]).strip()
+            if not name:
+                groups.pop(n, None)
+                continue
+            members = []
+            for item in str(values['rxg_%d_members' % n]).split(','):
+                item = item.strip()
+                if not item:
+                    continue
+                if item in by_name:
+                    members.append(by_name[item])
+                elif item.isdigit() and 0 < int(item) <= ALL_CALL_ID:
+                    members.append(int(item))
+                else:
+                    raise errors.InvalidValueError(
+                        'RX group %s: unknown contact %r' % (name, item))
+            if len(members) > RXG_MEMBERS:
+                raise errors.InvalidValueError(
+                    'RX group %s: at most %d contacts' % (name, RXG_MEMBERS))
+            groups[n] = (name, members)
+        if groups != self._rx_groups():
+            self._set_rx_groups(groups)
+
     def get_raw_memory(self, number):
         return repr(self._chan(number))
 
@@ -673,7 +978,7 @@ class DM32UV(chirp_common.CloneModeRadio):
             chirp_common.split_tone_decode(
                 mem, _decode_tone(_mem.txtone), _decode_tone(_mem.rxtone))
 
-        mem.extra = self._get_extra(_mem)
+        mem.extra = self._get_extra(_mem, number)
         return mem
 
     def _dmr_names(self, kind):
@@ -691,16 +996,27 @@ class DM32UV(chirp_common.CloneModeRadio):
 
     def _dmr_choice(self, kind, value):
         """A RadioSettingValueList for a DMR list index (0 = none)."""
-        names = self._dmr_names(kind)
-        options = ['None'] + ['%d: %s' % kv for kv in sorted(names.items())]
-        current = 'None' if not value else '%d: %s' % (
+        if kind == 'radio_id':
+            names = {n: '%s (%d)' % (name, dmr_id) for n, (dmr_id, name)
+                     in enumerate(self._radio_ids(), 1)}
+            none = 'Default'
+        elif kind == 'tx_contact':
+            names = {k: c[0] for k, c in self._contacts().items()}
+            none = 'None'
+        elif kind == 'rxgroup':
+            names = {n: g[0] for n, g in self._rx_groups().items()}
+            none = 'None'
+        else:
+            names, none = self._dmr_names(kind), 'None'
+        options = [none] + ['%d: %s' % kv for kv in sorted(names.items())]
+        current = none if not value else '%d: %s' % (
             value, names.get(value, '(unnamed)'))
         if current not in options:
             options.append(current)
         return RadioSettingValueList(options,
                                      current_index=options.index(current))
 
-    def _get_extra(self, _mem):
+    def _get_extra(self, _mem, number):
         extra = RadioSettingGroup('extra', 'Extra')
         extra.append(RadioSetting(
             'chtype', 'Channel type',
@@ -715,7 +1031,10 @@ class DM32UV(chirp_common.CloneModeRadio):
                                   current_index=int(_mem.timeslot))))
         extra.append(RadioSetting(
             'tx_contact', 'TX contact (DMR)',
-            self._dmr_choice('contact', int(_mem.tx_contact))))
+            self._dmr_choice('tx_contact', self._tx_contact(number))))
+        extra.append(RadioSetting(
+            'radio_id', 'Radio ID (DMR)',
+            self._dmr_choice('radio_id', int(_mem.radio_id))))
         extra.append(RadioSetting(
             'rxgroup', 'RX group list (DMR)',
             self._dmr_choice('rxgroup', int(_mem.rxgroup))))
@@ -740,6 +1059,7 @@ class DM32UV(chirp_common.CloneModeRadio):
         _mem = self._chan(mem.number)
         if mem.empty:
             _mem.set_raw(b'\xFF' * CH_SIZE)
+            self._update_tx_contact(mem.number, 0, False)
             # Zones must not point at a channel that no longer exists.
             for z in range(1, self._zone_count() + 1):
                 members = self._zone_members(z)
@@ -788,6 +1108,7 @@ class DM32UV(chirp_common.CloneModeRadio):
         _encode_tone(_mem.txtone, *txtone)
         _encode_tone(_mem.rxtone, *rxtone)
 
+        tx_contact = self._tx_contact(mem.number)
         for setting in mem.extra:
             name = setting.get_name()
             if name == 'chtype':
@@ -797,9 +1118,23 @@ class DM32UV(chirp_common.CloneModeRadio):
                     _mem.chtype = value
             elif name == 'timeslot':
                 _mem.timeslot = int(str(setting.value)) - 1
-            elif name in ('tx_contact', 'rxgroup', 'privacy'):
+            elif name in ('tx_contact', 'radio_id', 'rxgroup', 'privacy'):
                 choice = str(setting.value)
-                setattr(_mem, name,
-                        0 if choice == 'None' else int(choice.split(':')[0]))
+                value = int(choice.split(':')[0]) if ':' in choice else 0
+                if name == 'tx_contact':
+                    tx_contact = value
+                else:
+                    setattr(_mem, name, value)
             else:
                 setattr(_mem, name, int(setting.value))
+        self._update_tx_contact(mem.number, tx_contact, _mem.chtype in (1, 3))
+
+    def _update_tx_contact(self, number, contact, digital):
+        """Write the TX contact table only if something changes, so a page
+        the radio doesn't have isn't created for nothing."""
+        tag, off = self._txc_loc(number)
+        hi, lo = self._page(tag)[1][off:off + 2]
+        if (hi, lo) == (0xFF, 0xFF) and not contact:
+            return
+        if self._tx_contact(number) != contact or (hi & 1) != int(digital):
+            self._set_tx_contact(number, contact, digital)
