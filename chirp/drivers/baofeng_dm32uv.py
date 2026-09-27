@@ -830,6 +830,36 @@ class DM32UV(chirp_common.CloneModeRadio):
         self._set_zone_members(z, [])
         self._memobj.zone_hdr.count = z
 
+    def _zone_list(self):
+        """[(name, [members])] for zones 1..count."""
+        return [(str(self._zone(z).name).split('\x00')[0].split('\xFF')[0]
+                 .strip(), self._zone_members(z))
+                for z in range(1, self._zone_count() + 1)]
+
+    def _set_zone_list(self, zones, remap):
+        """Rewrite zones 1..len(zones); remap = {old zone: new zone} for the
+        radio's current-zone pointers (a zone not in it was deleted)."""
+        old_count = self._zone_count()
+        for z, (name, members) in enumerate(zones, 1):
+            zone = self._zone(z)
+            if str(zone.name).split('\x00')[0].split('\xFF')[0] != name:
+                zone.name = name[:16].ljust(16, '\x00')
+            self._set_zone_members(z, members)
+        for z in range(len(zones) + 1, old_count + 1):
+            self._zone(z).name.set_raw(b'\xFF' * 16)
+            self._set_zone_members(z, [])
+        hdr = self._memobj.zone_hdr
+        hdr.count = len(zones)
+        for zone_f, pos_f in (('a_zone', 'a_pos'), ('b_zone', 'b_pos')):
+            new = remap.get(int(getattr(hdr, zone_f)))
+            if not new:
+                new = 1
+                setattr(hdr, pos_f, 1)
+            setattr(hdr, zone_f, new)
+            members = len(zones[new - 1][1]) if zones else 0
+            if not 1 <= int(getattr(hdr, pos_f)) <= max(members, 1):
+                setattr(hdr, pos_f, 1)
+
     def _drop_empty_last_zone(self):
         count = self._zone_count()
         if count > 1 and not self._zone_members(count):
@@ -1108,7 +1138,23 @@ class DM32UV(chirp_common.CloneModeRadio):
                 'scan_%d_tx' % n, 'Scan list %d: scan TX mode' % n,
                 RadioSettingValueList(SCAN_TX_MODES, current_index=min(
                     opts[0] >> 4, len(SCAN_TX_MODES) - 1))))
-        groups_out = [dmr, scan]
+        zones = RadioSettingGroup('zones', 'Zones')
+        zlist = self._zone_list()
+        zones.append(RadioSetting(
+            'zone_order', 'Zone order (zone numbers, comma separated; '
+            'reopen the image before using the Banks tab again)',
+            RadioSettingValueString(0, 1000, ', '.join(
+                str(z) for z in range(1, len(zlist) + 1)), autopad=False)))
+        for z, (name, members) in enumerate(zlist, 1):
+            zones.append(RadioSetting(
+                'zone_%d_name' % z, 'Zone %d: name' % z,
+                RadioSettingValueString(0, 16, name, autopad=False)))
+            zones.append(RadioSetting(
+                'zone_%d_members' % z,
+                'Zone %d: channels in order (empty = delete zone)' % z,
+                RadioSettingValueString(0, 400, ', '.join(map(str, members)),
+                                        autopad=False)))
+        groups_out = [dmr, scan, zones]
         if self._page(0x04)[1][:PAGE - 1] != b'\xFF' * (PAGE - 1):
             groups_out.insert(0, self._radio_settings())
         return RadioSettings(*groups_out)
@@ -1245,6 +1291,50 @@ class DM32UV(chirp_common.CloneModeRadio):
             groups[n] = (name, members)
         if groups != self._rx_groups():
             self._set_rx_groups(groups)
+
+        # Zones: names, member order, deletion, zone order.
+        if 'zone_order' in values:
+            old = self._zone_list()
+            edited = {}
+            for z, (name, members) in enumerate(old, 1):
+                name = str(values.get('zone_%d_name' % z, name)).strip()
+                text = values.get('zone_%d_members' % z)
+                if text is not None:
+                    members = []
+                    for item in str(text).split(','):
+                        item = item.strip()
+                        if not item:
+                            continue
+                        if not item.isdigit() or not \
+                                1 <= int(item) <= self._count():
+                            raise errors.InvalidValueError(
+                                'Zone %s: %r is not a channel in use' % (
+                                    name, item))
+                        members.append(int(item))
+                    if len(members) > ZONE_MEMBERS:
+                        raise errors.InvalidValueError(
+                            'Zone %s: at most %d channels' % (
+                                name, ZONE_MEMBERS))
+                if members:
+                    edited[z] = (name, members)
+            order = []
+            for item in str(values['zone_order']).split(','):
+                item = item.strip()
+                if not item:
+                    continue
+                if not item.isdigit() or int(item) not in range(
+                        1, len(old) + 1) or int(item) in order:
+                    raise errors.InvalidValueError(
+                        'Zone order: %r is not a zone number' % item)
+                order.append(int(item))
+            order = [z for z in order if z in edited] + [
+                z for z in edited if z not in order]
+            if not order:
+                raise errors.InvalidValueError('At least one zone must remain')
+            new = [edited[z] for z in order]
+            if new != old:
+                self._set_zone_list(new, {z: i for i, z in enumerate(
+                    order, 1)})
 
         # Scan lists: an empty name removes the list; lists stay numbered
         # 1..count, so channels pointing at a later list are renumbered.
