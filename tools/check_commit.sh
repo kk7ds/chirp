@@ -91,6 +91,9 @@ if git log ${BASE}.. --merges | grep .; then
 fi
 
 make -C chirp/locale clean all >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+    fail Locale build failed
+fi
 if git diff -- chirp/locale | grep '^+[^#+]' | grep -v POT-Creation; then
     fail Locale files need updating
 fi
