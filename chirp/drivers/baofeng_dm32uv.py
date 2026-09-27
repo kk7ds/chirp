@@ -102,7 +102,7 @@ READ_COPIES, READ_TRIES = 3, 10
 # firmware erases the sector on an aligned W and also erases the next sector
 # if a W crosses into it. Tags 0x02 and 0x69 look like calibration.
 UPLOAD_TAGS = (list(range(0x12, 0x42)) + list(range(0x5C, 0x65)) +
-               [RXG_TAG, CONTACT_INDEX_TAG] + list(TXC_TAGS) +
+               [0x04, RXG_TAG, CONTACT_INDEX_TAG] + list(TXC_TAGS) +
                list(range(CONTACT_REC_TAG0, CONTACT_REC_TAG0 + 5)) +
                [RADIOID_TAG, SCAN_TAG])
 NEVER_WRITE = (0x02, 0x69)
@@ -143,9 +143,58 @@ struct zone {
 """
 
 
+SETTINGS_FORMAT = """
+#seekto 0x%(b)x;
+struct {
+  u8 poweron_type;
+  char line1[14];
+  char line2[14];
+  u8 unknown1d:7, allow_reset:1;
+  u8 auto_power_off;
+  u8 unknown1f;
+  u8 radio_silent:1, key_tone:1, sms_alert:1, group_call_tone:1,
+     private_call_tone:1, call_end_tone:1, talk_permit_tone:1,
+     startup_sound:1;
+  u8 voice_prompt:1, battery_low:1, tx_end_tone:2, unknown21:4;
+} set_power;
+#seekto 0x%(b30)x;
+struct {
+  u8 backlight;
+  u8 auto_backlight;
+  u8 menu_exit;
+  u8 unknown33a:3, volume_prompt:1, date_format:1, unknown33b:2,
+     time_display:1;
+  u8 unknown34[2];
+  u8 tx_backlight;
+  u8 rx_backlight;
+} set_display;
+#seekto 0x%(b80)x;
+struct {
+  u8 dual_watch:2, main_line:1, b_display:1, a_display:1, b_mode:1,
+     a_mode:1, only_channel:1;
+  u8 dual_watch_hang;
+} set_work;
+#seekto 0x%(ba0)x;
+struct {
+  u8 tot;
+  u8 tot_pre;
+  u8 vox_level;
+  u8 vox_delay;
+  u8 power_save:4, unknowna4:1, weather_alarm:1, language:1,
+     disable_leds:1;
+  u8 tbst:4, unknowna5:2, tail_mode:2;
+  u8 mic_analog;
+  u8 mic_digital;
+} set_opts;
+"""
+
+
 def _mem_format():
     """Channel pages as the CPS lays them out (see channel_offset)."""
+    b = IMAGE_TAGS.index(0x04) * PAGE      # settings come first: lowest slot
     fmt = [CHAN_FORMAT,
+           SETTINGS_FORMAT % dict(b=b, b30=b + 0x30, b80=b + 0x80,
+                                  ba0=b + 0xA0),
            '#seekto 0x%x;\nul16 ch_count;' % CH_BASE,
            '#seekto 0x%x;\nstruct chan page0[84];' % (CH_BASE + 0x10)]
     for p in range(1, 48):
@@ -167,6 +216,86 @@ def _mem_format():
 
 
 MEM_FORMAT = _mem_format()
+
+# Radio settings on tag 0x04, from the CPS option dialogs (0x446770 power
+# on, 0x4388d0 tones, 0x440260 display, 0x4656a0 work mode, 0x444f60
+# options). Each entry: (struct, field, label, kind, extra). kind 'list':
+# stored value = index (+ extra[1] offset); 'bool'; 'text' (length).
+_SECONDS = ['%d s' % i for i in range(1, 31)]
+RADIO_SETTINGS = [
+    ('Power on', [
+        ('set_power', 'poweron_type', 'Power-on screen',
+         'list', (['Power On Picture', 'Custom Message', 'Battery Volt'], 0)),
+        ('set_power', 'line1', 'Power-on text line 1', 'text', 14),
+        ('set_power', 'line2', 'Power-on text line 2', 'text', 14),
+        ('set_power', 'auto_power_off', 'Auto power off',
+         'list', (['Off', '30 min', '60 min', '120 min', '240 min',
+                   '480 min'], 0)),
+        ('set_power', 'allow_reset', 'Allow reset', 'bool', None),
+    ]),
+    ('Tones', [
+        ('set_power', 'key_tone', 'Key tone', 'bool', None),
+        ('set_power', 'voice_prompt', 'Voice prompt', 'bool', None),
+        ('set_power', 'startup_sound', 'Startup sound', 'bool', None),
+        ('set_power', 'battery_low', 'Battery low alert', 'bool', None),
+        ('set_power', 'talk_permit_tone', 'Talk permit tone', 'bool', None),
+        ('set_power', 'call_end_tone', 'Call end tone', 'bool', None),
+        ('set_power', 'group_call_tone', 'Group call tone', 'bool', None),
+        ('set_power', 'private_call_tone', 'Private call tone', 'bool',
+         None),
+        ('set_power', 'sms_alert', 'SMS alert', 'bool', None),
+        ('set_power', 'radio_silent', 'Radio silent', 'bool', None),
+        ('set_power', 'tx_end_tone', 'Analog TX end tone',
+         'list', (['Off', 'Tone', 'BDC'], 0)),
+    ]),
+    ('Display', [
+        ('set_display', 'backlight', 'Backlight brightness',
+         'list', ([str(i) for i in range(1, 7)], 0)),
+        ('set_display', 'menu_exit', 'Menu exit time',
+         'list', (['Off'] + ['%d s' % i for i in range(5, 61, 5)], 0)),
+        ('set_display', 'tx_backlight', 'TX backlight delay',
+         'list', (['Off'] + _SECONDS, 0)),
+        ('set_display', 'rx_backlight', 'RX backlight delay',
+         'list', (['Always'] + _SECONDS, 0)),
+        ('set_display', 'time_display', 'Time display', 'bool', None),
+        ('set_display', 'date_format', 'Date format',
+         'list', (['yyyy/m/d', 'd/m/yyyy'], 0)),
+        ('set_display', 'volume_prompt', 'Volume change prompt', 'bool',
+         None),
+    ]),
+    ('Work mode', [
+        ('set_work', 'only_channel', 'Only channel mode', 'bool', None),
+        ('set_work', 'dual_watch', 'Dual watch',
+         'list', (['Single Mode', 'Double Wait', 'Single Wait'], 0)),
+        ('set_work', 'dual_watch_hang', 'Dual watch hang time',
+         'list', (['%d ms' % i for i in range(0, 6501, 500)], 0)),
+    ]),
+    ('Options', [
+        ('set_opts', 'tot', 'TX timeout (TOT)',
+         'list', (['Off'] + ['%d s' % i for i in range(15, 496, 5)], 0)),
+        ('set_opts', 'tot_pre', 'TOT pre-alert',
+         'list', (['Off'] + ['%d s' % i for i in range(1, 11)], 0)),
+        ('set_opts', 'vox_level', 'VOX level',
+         'list', ([str(i) for i in range(1, 6)], 0)),
+        ('set_opts', 'vox_delay', 'VOX delay',
+         'list', (['%.1f s' % (i / 10) for i in range(3, 51)], 3)),
+        ('set_opts', 'language', 'Language',
+         'list', (['Chinese', 'English'], 0)),
+        ('set_opts', 'power_save', 'Power save',
+         'list', (['None', '1:1', '1:2', '1:4'], 0)),
+        ('set_opts', 'tail_mode', 'Tail noise reduction',
+         'list', (['None', '120', '180', '55 Hz'], 0)),
+        ('set_opts', 'tbst', 'TBST (tone burst)',
+         'list', (['1000 Hz', '1450 Hz', '1750 Hz', '2100 Hz'], 0)),
+        ('set_opts', 'mic_analog', 'Analog mic level',
+         'list', ([str(i) for i in range(1, 6)], 0)),
+        ('set_opts', 'disable_leds', 'Disable all LEDs', 'bool', None),
+        ('set_opts', 'weather_alarm', 'Weather alarm', 'bool', None),
+    ]),
+]
+# Bits of 0x80 that follow the radio's current display (A/B mode, display
+# mode, main line); upload keeps the radio's own values for these.
+WORK_STATE_MASK = 0x3E
 
 
 def zone_offset(z):
@@ -461,6 +590,11 @@ def do_upload(radio):
                 current = link.read_block(addr, PAGE)
                 if tag == ZONE_TAG0:
                     want = _keep_display_state(want, current)
+                elif tag == 0x04:
+                    want = bytearray(want)
+                    want[0x80] = (want[0x80] & ~WORK_STATE_MASK & 0xFF |
+                                  current[0x80] & WORK_STATE_MASK)
+                    want = bytes(want)
                 if current == want:
                     addr = None
             elif free:
@@ -974,7 +1108,37 @@ class DM32UV(chirp_common.CloneModeRadio):
                 'scan_%d_tx' % n, 'Scan list %d: scan TX mode' % n,
                 RadioSettingValueList(SCAN_TX_MODES, current_index=min(
                     opts[0] >> 4, len(SCAN_TX_MODES) - 1))))
-        return RadioSettings(dmr, scan)
+        groups_out = [dmr, scan]
+        if self._page(0x04)[1][:PAGE - 1] != b'\xFF' * (PAGE - 1):
+            groups_out.insert(0, self._radio_settings())
+        return RadioSettings(*groups_out)
+
+    def _radio_settings(self):
+        top = RadioSettingGroup('radio', 'Radio settings')
+        for title, entries in RADIO_SETTINGS:
+            group = RadioSettingGroup('radio_%s' % title.lower().replace(
+                ' ', '_'), title)
+            for sname, field, label, kind, extra in entries:
+                obj = getattr(self._memobj, sname)
+                name = 'set_%s_%s' % (sname, field)
+                if kind == 'bool':
+                    value = RadioSettingValueBoolean(bool(getattr(obj,
+                                                                  field)))
+                elif kind == 'text':
+                    text = str(getattr(obj, field))
+                    text = text.split('\x00')[0].split('\xFF')[0]
+                    text = ''.join(c for c in text
+                                   if c in chirp_common.CHARSET_ASCII)
+                    value = RadioSettingValueString(0, extra, text,
+                                                    autopad=False)
+                else:
+                    options, offset = extra
+                    index = int(getattr(obj, field)) - offset
+                    value = RadioSettingValueList(options, current_index=(
+                        index if 0 <= index < len(options) else 0))
+                group.append(RadioSetting(name, label, value))
+            top.append(group)
+        return top
 
     def set_settings(self, settings):
         values = {}
@@ -986,6 +1150,28 @@ class DM32UV(chirp_common.CloneModeRadio):
                 else:
                     walk(element)
         walk(settings)
+
+        for title, entries in RADIO_SETTINGS:
+            for sname, field, label, kind, extra in entries:
+                name = 'set_%s_%s' % (sname, field)
+                if name not in values:
+                    continue
+                obj = getattr(self._memobj, sname)
+                if kind == 'bool':
+                    setattr(obj, field, int(bool(values[name])))
+                elif kind == 'text':
+                    text = str(values[name]).rstrip()
+                    old = str(getattr(obj, field)).split('\x00')[0]
+                    if text != old.split('\xFF')[0]:
+                        setattr(obj, field, text[:extra].ljust(extra, '\x00'))
+                else:
+                    options, offset = extra
+                    new = options.index(str(values[name]))
+                    shown = int(getattr(obj, field)) - offset
+                    if not 0 <= shown < len(options):
+                        shown = 0           # displayed as the first option
+                    if new != shown:        # don't rewrite what wasn't changed
+                        setattr(obj, field, new + offset)
 
         # Radio IDs: keep the ones with an ID, in order; renumber channels.
         old = self._radio_ids()
