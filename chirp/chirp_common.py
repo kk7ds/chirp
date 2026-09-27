@@ -178,7 +178,7 @@ def dBm_to_watts(dBm):
 class PowerLevel:
     """Represents a power level supported by a radio"""
 
-    def __init__(self, label, watts=0, dBm=0):
+    def __init__(self, label, watts=0.0, dBm=0.0):
         if watts:
             dBm = watts_to_dBm(watts)
         self._power = float(dBm)
