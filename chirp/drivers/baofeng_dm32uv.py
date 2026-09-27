@@ -117,6 +117,14 @@ NEVER_WRITE = (0x02, 0x69)
 WRITE_TRIES = 3
 
 CHAN_FORMAT = """
+// CTCSS: tenths of a Hz as 4 BCD digits (88.5 Hz = hundreds 0, tens 8,
+// low 85). DCS: dcs set, the first octal digit in tens, the other two in
+// low (D754I = dcs, inverted, tens 7, low 54). None: ff ff.
+struct tone {
+  lbcd low;
+  u8 dcs:1, inverted:1, hundreds:2, tens:4;
+};
+
 struct chan {
   char name[16];
   lbcd rxfreq[4];
@@ -131,8 +139,8 @@ struct chan {
   u8 privacy;
   u8 unknown1f:1, encrypt:1, rxgroup:6;
   u8 aprs_channel;
-  u8 rxtone[2];
-  u8 txtone[2];
+  struct tone rxtone;
+  struct tone txtone;
   u8 unknown25:2, compander:1, vox:1, unknown25b:4;
   u8 ptt_id_display:1, rx_squelch_mode:3, signaling:3, unknown26:1;
   u8 rx_signal:4, tx_signal:4;
@@ -1235,35 +1243,37 @@ def do_upload(radio):
 
 # --- Tones ------------------------------------------------------------------
 
-def _decode_tone(raw):
-    """Two tone bytes -> (mode, value, polarity) for split_tone_decode."""
-    lo, hi = int(raw[0]), int(raw[1])
-    try:
-        if hi & 0x80:
-            code = int('%x%02x' % (hi & 0x07, lo))
-            if code in chirp_common.DTCS_CODES:
-                return 'DTCS', code, 'R' if hi & 0x40 else 'N'
-        else:
-            tone = int('%02x%02x' % (hi, lo)) / 10.0
-            if tone in chirp_common.TONES:
-                return 'Tone', tone, None
-    except ValueError:
-        pass
-    if (lo, hi) != (0xFF, 0xFF):
-        LOG.warning('Unknown tone bytes %02x %02x', lo, hi)
+def _decode_tone(tone):
+    """A struct tone -> (mode, value, polarity) for split_tone_decode."""
+    if tone.get_raw() != b'\xFF\xFF':
+        try:
+            if tone.dcs:
+                code = int(tone.tens) * 100 + int(tone.low)
+                if code in chirp_common.DTCS_CODES:
+                    return 'DTCS', code, 'R' if tone.inverted else 'N'
+            else:
+                value = (int(tone.hundreds) * 100 + int(tone.tens) * 10 +
+                         int(tone.low) / 10.0)
+                if value in chirp_common.TONES:
+                    return 'Tone', value, None
+        except ValueError:          # not BCD
+            pass
+        LOG.warning('Unknown tone bytes %s', tone.get_raw().hex())
     return '', None, None
 
 
-def _encode_tone(raw, mode, value, pol):
+def _encode_tone(tone, mode, value, pol):
     if mode == 'Tone':
-        digits = '%04d' % round(value * 10)
-        raw[0], raw[1] = int(digits[2:], 16), int(digits[:2], 16)
+        tenths = round(value * 10)
+        tone.set_raw(b'\x00\x00')
+        tone.hundreds, tone.tens = tenths // 1000, tenths // 100 % 10
+        tone.low = tenths % 100
     elif mode == 'DTCS':
-        digits = '%03d' % value
-        raw[1] = (0xC0 if pol == 'R' else 0x80) | int(digits[0])
-        raw[0] = int(digits[1:], 16)
+        tone.set_raw(b'\x00\x00')
+        tone.dcs, tone.inverted = 1, int(pol == 'R')
+        tone.tens, tone.low = value // 100, value % 100
     else:
-        raw[0] = raw[1] = 0xFF
+        tone.set_raw(b'\xFF\xFF')
 
 
 def _shown(name):
