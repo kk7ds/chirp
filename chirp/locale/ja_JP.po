@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-28 15:31-0700\n"
+"POT-Creation-Date: 2026-09-28 09:52-0700\n"
 "PO-Revision-Date: 2026-04-05 01:36-0500\n"
 "Last-Translator: Tony Gies <tgies@tgies.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -45,24 +45,24 @@ msgstr[0] "%i 件削除してグループを上方向にシフト"
 msgid "%s %s, row %d"
 msgstr ""
 
-#: ../wxui/main.py:1532
+#: ../wxui/main.py:1533
 #, python-format
 msgid "%s has not been saved. Save before closing?"
 msgstr "%s は保存されていません。閉じる前に保存しますか？"
 
-#: ../wxui/bugreport.py:510
+#: ../wxui/bugreport.py:512
 msgid "(Describe what actually happened instead)"
 msgstr "(実際に何が起こったかを記述してください)"
 
-#: ../wxui/bugreport.py:508
+#: ../wxui/bugreport.py:510
 msgid "(Describe what you expected to happen)"
 msgstr "(何が起こると期待していたかを記述してください)"
 
-#: ../wxui/bugreport.py:506
+#: ../wxui/bugreport.py:508
 msgid "(Describe what you were doing)"
 msgstr "(何をしていたかを記述してください)"
 
-#: ../wxui/bugreport.py:512
+#: ../wxui/bugreport.py:514
 msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr "(以前は動作していましたか？新しい無線機ですか？純正ソフトでは動作しますか？)"
 
@@ -75,7 +75,7 @@ msgstr "(なし)"
 msgid "...and %i more"
 msgstr "...他 %i 件"
 
-#: ../drivers/ft4.py:743
+#: ../drivers/ft4.py:738
 msgid ""
 "1. Connect programming cable to MIC jack.\n"
 "2. Press OK."
@@ -835,7 +835,7 @@ msgstr ""
 "5. 通信のないチャンネルに合わせてあることを確認\n"
 "6. OKをクリックしてデバイスへイメージをアップロード\n"
 
-#: ../drivers/uvb5.py:293 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:232
+#: ../drivers/uvb5.py:293 ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:222
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -851,7 +851,7 @@ msgstr ""
 "5. 通信のないチャンネルに合わせてあることを確認\n"
 "6. OKをクリックしてデバイスからイメージをダウンロード\n"
 
-#: ../drivers/uvb5.py:301 ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:240
+#: ../drivers/uvb5.py:301 ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:230
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1037,7 +1037,7 @@ msgstr ""
 "\n"
 "ケーブルを接続した状態で電源オンにするとうまく動かない場合があります。"
 
-#: ../wxui/main.py:2143
+#: ../wxui/main.py:2164
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "新しいバージョンのCHIRPが利用可能です。できるだけ早くウェブサイトからダウンロードしてください！"
 
@@ -1045,15 +1045,15 @@ msgstr "新しいバージョンのCHIRPが利用可能です。できるだけ�
 msgid "AM mode does not allow duplex or tone"
 msgstr "AMモードではデュプレックスやトーンは使用できません"
 
-#: ../wxui/main.py:976
+#: ../wxui/main.py:977
 msgid "About"
 msgstr "このアプリについて"
 
-#: ../wxui/main.py:1908
+#: ../wxui/main.py:1924
 msgid "About CHIRP"
 msgstr "CHIRP について"
 
-#: ../wxui/main.py:1963
+#: ../wxui/main.py:1979
 msgid "Agree"
 msgstr "同意する"
 
@@ -1065,11 +1065,11 @@ msgstr "航空無線周波数は25kHz、8.33kHzステップ、または有効な
 msgid "All"
 msgstr "すべて"
 
-#: ../wxui/main.py:1361
+#: ../wxui/main.py:1362
 msgid "All Files"
 msgstr "すべてのファイル"
 
-#: ../wxui/main.py:1372
+#: ../wxui/main.py:1373
 msgid "All supported formats"
 msgstr "すべてのサポート形式"
 
@@ -1081,7 +1081,7 @@ msgstr "常に最近使用したリストで開始"
 msgid "Amateur"
 msgstr "アマチュア無線"
 
-#: ../wxui/bugreport.py:344 ../wxui/bugreport.py:478 ../wxui/common.py:781
+#: ../wxui/bugreport.py:345 ../wxui/bugreport.py:480 ../wxui/common.py:849
 msgid "An error has occurred"
 msgstr "エラーが発生しました"
 
@@ -1089,7 +1089,7 @@ msgstr "エラーが発生しました"
 msgid "Applying settings"
 msgstr "設定を適用中"
 
-#: ../wxui/main.py:1629
+#: ../wxui/main.py:1630
 msgid "Automatic from system"
 msgstr "システムから自動取得"
 
@@ -1097,7 +1097,7 @@ msgstr "システムから自動取得"
 msgid "Available modules"
 msgstr "利用可能なモジュール"
 
-#: ../wxui/main.py:2072
+#: ../wxui/main.py:2088
 msgid "Bandplan"
 msgstr "バンドプラン"
 
@@ -1118,20 +1118,20 @@ msgstr "Bin"
 msgid "Browser"
 msgstr "ブラウザ"
 
-#: ../wxui/bugreport.py:488
+#: ../wxui/bugreport.py:490
 #, python-format
 msgid "Bug number %s is closed"
 msgstr "バグ番号 %s はクローズされています"
 
-#: ../wxui/bugreport.py:477
+#: ../wxui/bugreport.py:479
 msgid "Bug number not found"
 msgstr "バグ番号が見つかりません"
 
-#: ../wxui/bugreport.py:454
+#: ../wxui/bugreport.py:456
 msgid "Bug number:"
 msgstr "バグ番号:"
 
-#: ../wxui/bugreport.py:387
+#: ../wxui/bugreport.py:388
 msgid "Bug subject:"
 msgstr "バグの件名:"
 
@@ -1139,7 +1139,7 @@ msgstr "バグの件名:"
 msgid "Building Radio Browser"
 msgstr "無線機ブラウザを構築中"
 
-#: ../wxui/main.py:1658
+#: ../wxui/main.py:1659
 msgid "CHIRP must be restarted for the new selection to take effect"
 msgstr "変更を適用するにはCHIRPを再起動する必要があります"
 
@@ -1152,16 +1152,20 @@ msgstr "キャッシュされた結果は、緯度、経度、距離を設定し
 msgid "Canada"
 msgstr "カナダ"
 
-#: ../wxui/common.py:652
+#: ../wxui/common.py:720
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "この設定を変更するには、イメージから設定を再読み込みする必要があります。今すぐ実行します。"
+
+#: ../drivers/retevis_rt97s.py:229
+msgid "Channel frequencies are from the repeater's point of view. The receive frequency is the 467 MHz input. Duplex is minus and the offset is 5 MHz, so the repeater transmits on the 462 MHz output. A station using this repeater listens on the repeater output and transmits on the input."
+msgstr ""
 
 #: ../wxui/memedit.py:1884
 #, python-format
 msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr "送受信の %s が等しいチャンネルは、トーンモード \"%s\" で表されます"
 
-#: ../wxui/main.py:1360
+#: ../wxui/main.py:1361
 msgid "Chirp Image Files"
 msgstr "CHIRPイメージファイル"
 
@@ -1183,7 +1187,7 @@ msgstr "%s トーンを選択"
 msgid "Choose Cross Mode"
 msgstr "クロスモードを選択"
 
-#: ../wxui/main.py:1197
+#: ../wxui/main.py:1198
 msgid "Choose Diff Target"
 msgstr "比較対象を選択"
 
@@ -1204,11 +1208,11 @@ msgstr "issue %i からロードするモジュールを選択:"
 msgid "City"
 msgstr "市町村"
 
-#: ../wxui/main.py:1949
+#: ../wxui/main.py:1965
 msgid "Click here for full license text"
 msgstr "ライセンス全文はこちら"
 
-#: ../wxui/main.py:1928
+#: ../wxui/main.py:1944
 msgid "Click here for online documentation"
 msgstr "オンラインドキュメントはこちら"
 
@@ -1229,21 +1233,21 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr "クローン完了、不要なバイトを確認中"
 
-#: ../wxui/common.py:125
+#: ../wxui/common.py:145
 msgid "Cloning"
 msgstr "クローン中"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:511 ../drivers/ft4.py:332
+#: ../drivers/ft450d.py:511 ../drivers/bj9900.py:133 ../drivers/ft4.py:327
 #: ../drivers/ft817.py:343
 msgid "Cloning from radio"
 msgstr "無線機からクローン中"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:540 ../drivers/ft4.py:333
+#: ../drivers/ft450d.py:540 ../drivers/bj9900.py:165 ../drivers/ft4.py:328
 #: ../drivers/ft817.py:381
 msgid "Cloning to radio"
 msgstr "無線機へクローン中"
 
-#: ../wxui/main.py:1074 ../wxui/main.py:1964
+#: ../wxui/main.py:1075 ../wxui/main.py:1980
 msgid "Close"
 msgstr "閉じる"
 
@@ -1251,7 +1255,7 @@ msgstr "閉じる"
 msgid "Close String"
 msgstr "文字列を閉じる"
 
-#: ../wxui/main.py:1075
+#: ../wxui/main.py:1076
 msgid "Close file"
 msgstr "ファイルを閉じる"
 
@@ -1281,7 +1285,7 @@ msgstr "完了"
 msgid "Complex or non-standard tone squelch mode (starts the tone mode selection wizard)"
 msgstr "複雑または非標準のトーンスケルチモード（トーンモード選択ウィザードを開始）"
 
-#: ../drivers/tmd710.py:184 ../drivers/tmd710.py:187
+#: ../drivers/tmd710.py:187 ../drivers/tmd710.py:190
 msgid ""
 "Connect your interface cable to the PC Port on the\n"
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
@@ -1343,7 +1347,7 @@ msgstr "DTMF デコード"
 msgid "DV Memory"
 msgstr "DVメモリ"
 
-#: ../wxui/main.py:1985
+#: ../wxui/main.py:2001
 msgid "Danger Ahead"
 msgstr "警告"
 
@@ -1359,15 +1363,15 @@ msgstr "削除"
 msgid "Delete memories"
 msgstr "メモリを削除"
 
-#: ../wxui/bugreport.py:568
+#: ../wxui/bugreport.py:570
 msgid "Detailed information"
 msgstr "詳細情報"
 
-#: ../wxui/main.py:981
+#: ../wxui/main.py:982
 msgid "Developer Mode"
 msgstr "開発者モード"
 
-#: ../wxui/main.py:1991
+#: ../wxui/main.py:2007
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "開発者状態は %s になりました。有効にするにはCHIRPを再起動してください"
@@ -1388,13 +1392,17 @@ msgstr "デジタルコード"
 msgid "Digital Modes"
 msgstr "デジタルモード"
 
-#: ../wxui/main.py:2003
+#: ../wxui/main.py:2019
 msgid "Disable reporting"
 msgstr "診断レポート送信を停止"
 
 #: ../wxui/memedit.py:596
 msgid "Disabled"
 msgstr "無効"
+
+#: ../drivers/retevis_rt97s.py:337
+msgid "Disabling Transit Function disables repeating. The repeater will not repeat until this setting is enabled."
+msgstr ""
 
 #: ../wxui/query_sources.py:104 ../wxui/query_sources.py:383
 #: ../wxui/query_sources.py:682 ../wxui/query_sources.py:840
@@ -1414,15 +1422,15 @@ msgstr "リスクを承諾しますか？"
 msgid "Double-click to change bank name"
 msgstr "ダブルクリックしてバンク名を変更"
 
-#: ../wxui/main.py:1076
+#: ../wxui/main.py:1077
 msgid "Download"
 msgstr "ダウンロード"
 
-#: ../wxui/main.py:1077
+#: ../wxui/main.py:1078
 msgid "Download from radio"
 msgstr "無線機からダウンロード"
 
-#: ../wxui/main.py:867
+#: ../wxui/main.py:868
 msgid "Download from radio..."
 msgstr "無線機からダウンロード..."
 
@@ -1438,7 +1446,7 @@ msgstr "ドライバ"
 msgid "Driver information"
 msgstr "ドライバ情報"
 
-#: ../wxui/main.py:573
+#: ../wxui/main.py:574
 msgid "Driver messages"
 msgstr "ドライバメッセージ"
 
@@ -1465,7 +1473,7 @@ msgstr "%i 件のメモリの詳細を編集"
 msgid "Edit details for memory %i"
 msgstr "メモリ %i の詳細を編集"
 
-#: ../wxui/main.py:925
+#: ../wxui/main.py:926
 msgid "Enable Automatic Edits"
 msgstr "値を自動設定"
 
@@ -1494,27 +1502,27 @@ msgstr "バンク %s の新しい名前を入力:"
 msgid "Enter custom port:"
 msgstr "ポートを入力:"
 
-#: ../wxui/bugreport.py:502
+#: ../wxui/bugreport.py:504
 msgid "Enter details about this update. Be descriptive about what you were doing, what you expected to happen, and what actually happened."
 msgstr "この更新の詳細を入力してください。何をしていて、何が起こると期待し、実際には何が起こったかを具体的に記述してください。"
 
-#: ../wxui/bugreport.py:370
+#: ../wxui/bugreport.py:371
 msgid "Enter information about the bug including a short but meaningful subject and information about the radio model (if applicable) in question. In the next step you will have a chance to add more details about the problem. Before proceeding, please search for duplicate issues!"
 msgstr "バグに関する情報を入力してください。短くても意味のある件名と、該当する無線機のモデル（ある場合）に関する情報を含めてください。次のステップで、問題の詳細を追加する機会があります。続行する前に、重複した問題がないか検索してください！"
 
-#: ../wxui/bugreport.py:521
+#: ../wxui/bugreport.py:523
 msgid "Enter information to add to the bug here"
 msgstr "バグに追加する情報をここに入力してください"
 
-#: ../wxui/bugreport.py:445
+#: ../wxui/bugreport.py:447
 msgid "Enter the bug number that should be updated"
 msgstr "更新するバグ番号を入力してください"
 
-#: ../wxui/bugreport.py:248
+#: ../wxui/bugreport.py:249
 msgid "Enter your username and password for chirpmyradio.com. If you do not have an account click below to create one before proceeding."
 msgstr "chirpmyradio.com のユーザ名とパスワードを入力してください。アカウントをお持ちでない場合は、下をクリックして作成してから進んでください。"
 
-#: ../wxui/common.py:340
+#: ../wxui/common.py:408
 #, python-format
 msgid "Erased memory %s"
 msgstr "メモリ %s を消去しました"
@@ -1523,7 +1531,7 @@ msgstr "メモリ %s を消去しました"
 msgid "Error applying filter"
 msgstr "フィルタ適用エラー"
 
-#: ../wxui/settingsedit.py:156
+#: ../wxui/settingsedit.py:165
 msgid "Error applying settings"
 msgstr "設定適用エラー"
 
@@ -1575,11 +1583,11 @@ msgstr "実験的ドライバ"
 msgid "Export can only write CSV files"
 msgstr "エクスポートはCSVファイルのみ書き込めます"
 
-#: ../wxui/main.py:1517
+#: ../wxui/main.py:1518
 msgid "Export to CSV"
 msgstr "CSVにエクスポート"
 
-#: ../wxui/main.py:739
+#: ../wxui/main.py:740
 msgid "Export to CSV..."
 msgstr "CSVにエクスポート..."
 
@@ -1616,12 +1624,12 @@ msgstr "一部のメモリのエクスポートに失敗しました"
 msgid "Failed to load radio browser"
 msgstr "無線機ブラウザのロードに失敗しました"
 
-#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
-#: ../sources/mapy73pl.py:61
+#: ../sources/mapy73pl.py:61 ../sources/przemienniki_eu.py:57
+#: ../sources/przemienniki_net.py:59
 msgid "Failed to parse result"
 msgstr "結果の解析に失敗しました"
 
-#: ../wxui/bugreport.py:729
+#: ../wxui/bugreport.py:731
 msgid "Failed to send bug report:"
 msgstr "バグレポートの送信に失敗しました:"
 
@@ -1629,21 +1637,21 @@ msgstr "バグレポートの送信に失敗しました:"
 msgid "Features"
 msgstr "機能"
 
-#: ../wxui/bugreport.py:212
+#: ../wxui/bugreport.py:213
 msgid "File a new bug"
 msgstr "新しいバグを報告"
 
-#: ../wxui/main.py:580
+#: ../wxui/main.py:581
 #, python-format
 msgid "File does not exist: %s"
 msgstr "ファイルが存在しません: %s"
 
-#: ../wxui/main.py:1364 ../wxui/main.py:1444 ../wxui/main.py:1454
-#: ../wxui/main.py:1513 ../wxui/main.py:1878 ../wxui/main.py:1879
+#: ../wxui/main.py:1365 ../wxui/main.py:1445 ../wxui/main.py:1455
+#: ../wxui/main.py:1514 ../wxui/main.py:1894 ../wxui/main.py:1895
 msgid "Files"
 msgstr "ファイル"
 
-#: ../wxui/bugreport.py:566
+#: ../wxui/bugreport.py:568
 msgid "Files:"
 msgstr "ファイル:"
 
@@ -1659,15 +1667,15 @@ msgstr "この文字列に一致する場所で結果をフィルタリング"
 msgid "Filter..."
 msgstr "フィルタ..."
 
-#: ../wxui/main.py:1587
+#: ../wxui/main.py:1588
 msgid "Find"
 msgstr "検索"
 
-#: ../wxui/main.py:807
+#: ../wxui/main.py:808
 msgid "Find Next"
 msgstr "次を検索"
 
-#: ../wxui/main.py:793
+#: ../wxui/main.py:794
 msgid "Find..."
 msgstr "検索..."
 
@@ -1679,7 +1687,7 @@ msgstr "浮動小数点数完了"
 msgid "Finish float value like: 146.52"
 msgstr "146.52 のような浮動小数点数値を入力"
 
-#: ../wxui/common.py:342
+#: ../wxui/common.py:410
 #, python-format
 msgid "Finished radio job %s"
 msgstr "%s の処理が完了しました"
@@ -1741,11 +1749,11 @@ msgstr ""
 "4 - 無線機 > 無線機からダウンロード\n"
 "5 - インターフェースケーブルを取り外してください！そうしないと右側のオーディオが出力されません！\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:666 ../drivers/gmrsuv1.py:391
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:339
-#: ../drivers/uv5x3.py:417 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_wp970i.py:327 ../drivers/baofeng_uv17Pro.py:514
+#: ../drivers/uv6r.py:339 ../drivers/mursv1.py:341 ../drivers/uv5x3.py:417
+#: ../drivers/btech.py:636 ../drivers/gmrsv2.py:363
+#: ../drivers/tdxone_tdq8a.py:444 ../drivers/bf_t1.py:484
+#: ../drivers/gmrsuv1.py:391
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1846,7 +1854,7 @@ msgstr ""
 "5 - インターフェースケーブルを取り外してください！そうしないと右側のオーディオが出力されません！\n"
 "6 - 無線機の電源を入れ直してクローンモードを終了\n"
 
-#: ../drivers/btech.py:672 ../drivers/bf_t1.py:490
+#: ../drivers/btech.py:642 ../drivers/bf_t1.py:490
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1916,11 +1924,11 @@ msgstr ""
 "3 - 無線機の電源をオン\n"
 "4 - 無線機データのダウンロードを実行\n"
 
-#: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:397
-#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
-#: ../drivers/uv6r.py:345 ../drivers/uv5x3.py:423 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/vgc.py:592 ../drivers/baofeng_wp970i.py:333
+#: ../drivers/lt725uv.py:492 ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/uv6r.py:345 ../drivers/mursv1.py:347 ../drivers/uv5x3.py:423
+#: ../drivers/gmrsv2.py:369 ../drivers/tdxone_tdq8a.py:450
+#: ../drivers/gmrsuv1.py:397
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1966,9 +1974,9 @@ msgstr "周波数 %s はサポート範囲 %s 外です"
 msgid "Frequency granularity in kHz"
 msgstr "周波数ステップ (kHz)"
 
-#: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
-#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
-#: ../drivers/uv5r.py:2244 ../drivers/baofeng_uv17Pro.py:1297
+#: ../drivers/retevis_ha1g.py:1439 ../drivers/ga510.py:1094
+#: ../drivers/uv5r.py:2249 ../drivers/tdh8.py:2540
+#: ../drivers/baofeng_uv17Pro.py:1297 ../drivers/mml_jc8810.py:1383
 msgid "Frequency in this range must not be AM mode"
 msgstr "この範囲の周波数ではAMモードは使用できません"
 
@@ -1976,10 +1984,10 @@ msgstr "この範囲の周波数ではAMモードは使用できません"
 msgid "Frequency in this range not supported by firmware"
 msgstr "この範囲の周波数はファームウェアでサポートされていません"
 
-#: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
-#: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:2240
-#: ../drivers/baofeng_uv17Pro.py:1294
+#: ../drivers/retevis_ha1g.py:1435 ../drivers/ga510.py:1087
+#: ../drivers/uv5r.py:2245 ../drivers/tdh8.py:2537
+#: ../drivers/baofeng_uv17Pro.py:1294 ../drivers/mml_jc8810.py:1380
+#: ../drivers/radtel_rt900.py:1623
 msgid "Frequency in this range requires AM mode"
 msgstr "この範囲の周波数ではAMモードが必要です"
 
@@ -1992,7 +2000,7 @@ msgstr "送信帯域外の周波数ではデュプレックスをオフにする
 msgid "GMRS"
 msgstr "GMRS"
 
-#: ../wxui/settingsedit.py:77
+#: ../wxui/settingsedit.py:86
 msgid "Getting settings"
 msgstr "設定を取得しています"
 
@@ -2008,12 +2016,12 @@ msgstr "指定した行に移動:"
 msgid "Goto..."
 msgstr "行移動..."
 
-#: ../wxui/common.py:516 ../wxui/accessibility.py:310
+#: ../wxui/common.py:584 ../wxui/accessibility.py:310
 #, python-format
 msgid "Group: %s"
 msgstr ""
 
-#: ../wxui/main.py:1042
+#: ../wxui/main.py:1043
 msgid "Help"
 msgstr "ヘルプ"
 
@@ -2037,7 +2045,7 @@ msgstr "有効な場合、CTCSS/DCS受信スケルチ設定を優先し、それ
 msgid "Human-readable comment (not stored in radio)"
 msgstr "コメント (無線機には保存されません)"
 
-#: ../wxui/bugreport.py:413
+#: ../wxui/bugreport.py:414
 msgid "I have"
 msgstr "私は"
 
@@ -2047,7 +2055,7 @@ msgstr "私は"
 msgid "If set, sort results by distance from these coordinates"
 msgstr "設定した場合、これらの座標からの距離で結果をソートします"
 
-#: ../wxui/main.py:1499
+#: ../wxui/main.py:1500
 msgid "Import"
 msgstr "インポート"
 
@@ -2056,15 +2064,15 @@ msgstr "インポート"
 msgid "Import %i memories"
 msgstr "%i 件のメモリをインポート"
 
-#: ../wxui/main.py:733
+#: ../wxui/main.py:734
 msgid "Import from file..."
 msgstr "ファイルからインポート..."
 
-#: ../wxui/main.py:1503
+#: ../wxui/main.py:1504
 msgid "Import messages"
 msgstr "インポートメッセージ"
 
-#: ../wxui/main.py:1497
+#: ../wxui/main.py:1498
 msgid "Import not recommended"
 msgstr "インポートは推奨されません"
 
@@ -2092,7 +2100,7 @@ msgstr "上に1行追加"
 msgid "Install desktop icon?"
 msgstr "デスクトップアイコンをインストールしますか？"
 
-#: ../wxui/main.py:965
+#: ../wxui/main.py:966
 msgid "Interact with driver"
 msgstr "ドライバと対話"
 
@@ -2127,7 +2135,7 @@ msgstr "無効な編集: %s"
 msgid "Invalid locator"
 msgstr "無効なロケータ"
 
-#: ../wxui/main.py:1875
+#: ../wxui/main.py:1891
 msgid "Invalid or unsupported module file"
 msgstr "無効またはサポートされていないモジュールファイル"
 
@@ -2145,11 +2153,11 @@ msgstr "Issue %i はモジュールをロードするのに有効な状態では
 msgid "Issue number:"
 msgstr "Issue番号:"
 
-#: ../wxui/main.py:352
+#: ../wxui/main.py:353
 msgid "LIVE"
 msgstr "LIVE"
 
-#: ../drivers/radtel_rt490.py:1028 ../wxui/main.py:853 ../wxui/main.py:1643
+#: ../wxui/main.py:854 ../wxui/main.py:1644 ../drivers/radtel_rt490.py:1028
 msgid "Language"
 msgstr "言語"
 
@@ -2189,11 +2197,11 @@ msgstr "座標からこの距離 (km) 以内の結果に制限"
 msgid "Limit use"
 msgstr "用途を制限"
 
-#: ../wxui/main.py:1730
+#: ../wxui/main.py:1746
 msgid "Live Radio"
 msgstr "ライブラジオ"
 
-#: ../wxui/main.py:745
+#: ../wxui/main.py:746
 msgid "Load Module..."
 msgstr "モジュールをロード..."
 
@@ -2201,15 +2209,15 @@ msgstr "モジュールをロード..."
 msgid "Load module from issue"
 msgstr "Issueからモジュールをロード"
 
-#: ../wxui/main.py:1018
+#: ../wxui/main.py:1019
 msgid "Load module from issue..."
 msgstr "Issueからモジュールをロード..."
 
-#: ../wxui/main.py:2039
+#: ../wxui/main.py:2055
 msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
 msgstr "モジュールのロードは開いているタブには影響しません。（指示がない限り）モジュールをロードする前にすべてのタブを閉じることをお勧めします。"
 
-#: ../wxui/main.py:1882
+#: ../wxui/main.py:1898
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr "モジュールのロードは非常に危険であり、コンピュータや無線機、あるいはその両方に損害を与える可能性があります。信頼できないソースから、特にメインのCHIRPウェブサイト（chirpmyradio.com）以外からは絶対にモジュールをロードしないでください。他のソースからモジュールをロードすることは、コンピュータとその中のすべてへの直接アクセスを許可するのと同じです！このリスクを承知で進めますか？"
 
@@ -2221,7 +2229,7 @@ msgstr "設定をロードしています"
 msgid "Locator"
 msgstr "ロケータ"
 
-#: ../wxui/bugreport.py:342
+#: ../wxui/bugreport.py:343
 msgid "Login failed: Check your username and password"
 msgstr "ログイン失敗: ユーザ名とパスワードを確認してください"
 
@@ -2291,19 +2299,19 @@ msgstr "モデル"
 msgid "Modes"
 msgstr "モード"
 
-#: ../wxui/main.py:1879
+#: ../wxui/main.py:1895
 msgid "Module"
 msgstr "モジュール"
 
-#: ../wxui/main.py:1851
+#: ../wxui/main.py:1867
 msgid "Module Loaded"
 msgstr "モジュールがロードされました"
 
-#: ../wxui/main.py:2050
+#: ../wxui/main.py:2066
 msgid "Module loaded successfully"
 msgstr "モジュールが正常にロードされました"
 
-#: ../wxui/common.py:797
+#: ../wxui/common.py:865
 msgid "More Info"
 msgstr "詳細情報"
 
@@ -2329,11 +2337,11 @@ msgstr "上に移動"
 msgid "Move operations are disabled while the view is sorted"
 msgstr "ソート表示中は移動操作が無効になります"
 
-#: ../wxui/main.py:691
+#: ../wxui/main.py:692
 msgid "New Window"
 msgstr "新規ウィンドウ"
 
-#: ../wxui/main.py:2145
+#: ../wxui/main.py:2166
 msgid "New version available"
 msgstr "新しいバージョンが利用可能です"
 
@@ -2359,8 +2367,8 @@ msgstr "Issue %i にモジュールが見つかりません"
 msgid "No more space available; some memories were not applied"
 msgstr "空き容量がありません。一部のメモリは適用されませんでした"
 
-#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
-#: ../sources/mapy73pl.py:57
+#: ../sources/mapy73pl.py:57 ../sources/przemienniki_eu.py:53
+#: ../sources/przemienniki_net.py:55
 msgid "No results"
 msgstr "結果なし"
 
@@ -2368,7 +2376,7 @@ msgstr "結果なし"
 msgid "No results!"
 msgstr "結果なし！"
 
-#: ../wxui/main.py:2060
+#: ../wxui/main.py:2076
 msgid "No traces stored"
 msgstr "トレースは保存されていません"
 
@@ -2406,7 +2414,7 @@ msgstr "特定のモードのみ"
 msgid "Only certain prefixes"
 msgstr "特定のプレフィックスのみ"
 
-#: ../wxui/main.py:333
+#: ../wxui/main.py:334
 msgid "Only memory tabs may be exported"
 msgstr "メモリタブのみエクスポートできます"
 
@@ -2414,35 +2422,35 @@ msgstr "メモリタブのみエクスポートできます"
 msgid "Only working repeaters"
 msgstr "稼働中のレピータのみ"
 
-#: ../wxui/main.py:1070 ../wxui/main.py:1499
+#: ../wxui/main.py:1071 ../wxui/main.py:1500
 msgid "Open"
 msgstr "開く"
 
-#: ../wxui/main.py:720
+#: ../wxui/main.py:721
 msgid "Open Recent"
 msgstr "最近使ったファイル"
 
-#: ../wxui/main.py:702
+#: ../wxui/main.py:703
 msgid "Open Stock Config"
 msgstr "テンプレートを開く"
 
-#: ../wxui/main.py:1071 ../wxui/main.py:1375
+#: ../wxui/main.py:1072 ../wxui/main.py:1376
 msgid "Open a file"
 msgstr "ファイルを開く"
 
-#: ../wxui/main.py:1897
+#: ../wxui/main.py:1913
 msgid "Open a module"
 msgstr "モジュールを開く"
 
-#: ../wxui/main.py:1002
+#: ../wxui/main.py:1003
 msgid "Open debug log"
 msgstr "デバッグログを開く"
 
-#: ../wxui/main.py:544
+#: ../wxui/main.py:545
 msgid "Open in new window"
 msgstr "新しいウィンドウで開く"
 
-#: ../wxui/main.py:1033
+#: ../wxui/main.py:1034
 msgid "Open last serial trace"
 msgstr "最後のシリアルトレースを開く"
 
@@ -2450,7 +2458,7 @@ msgstr "最後のシリアルトレースを開く"
 msgid "Open repeaters only"
 msgstr "公開レピータのみ"
 
-#: ../wxui/main.py:649
+#: ../wxui/main.py:650
 msgid "Open stock config directory"
 msgstr "テンプレートディレクトリを開く"
 
@@ -2504,12 +2512,12 @@ msgstr ""
 "P-VFOチャンネル100-109は設定とみなされます。\n"
 "130以上の利用可能な無線機設定のうち、このリリースでは一部のみがサポートされています。\n"
 
-#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
-#: ../sources/mapy73pl.py:52
+#: ../sources/mapy73pl.py:52 ../sources/przemienniki_eu.py:48
+#: ../sources/przemienniki_net.py:50
 msgid "Parsing"
 msgstr "解析中"
 
-#: ../wxui/bugreport.py:275
+#: ../wxui/bugreport.py:276
 msgid "Password"
 msgstr "パスワード"
 
@@ -2517,7 +2525,7 @@ msgstr "パスワード"
 msgid "Paste"
 msgstr "ペースト"
 
-#: ../wxui/common.py:952
+#: ../wxui/common.py:1020
 msgid "Paste external memories"
 msgstr "外部メモリを貼り付け"
 
@@ -2545,19 +2553,19 @@ msgstr "ペーストするとメモリ %s が上書きされます"
 msgid "Pasted memory will overwrite memory %s"
 msgstr "ペーストするとメモリ %s が上書きされます"
 
-#: ../wxui/main.py:2149
+#: ../wxui/main.py:2170
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "新しいバージョンをインストールする前に必ずCHIRPを終了してください。"
 
-#: ../wxui/bugreport.py:485
+#: ../wxui/bugreport.py:487
 msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
 msgstr "バグ番号を確認して再試行してください。実際にこのバグに対して報告したい場合は、ウェブサイト経由でコメントし、再オープンを依頼してください。"
 
-#: ../wxui/main.py:1979
+#: ../wxui/main.py:1995
 msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
 msgstr "開発者モードはCHIRPプロジェクトの開発者による使用、または開発者の指示の下での使用を意図しています。細心の注意を払って使用しない場合、コンピュータや無線機に損害を与える可能性のある動作や機能が有効になります。警告しましたよ！それでも進めますか？"
 
-#: ../wxui/common.py:205
+#: ../wxui/common.py:225
 msgid "Please wait"
 msgstr "お待ちください"
 
@@ -2585,7 +2593,7 @@ msgstr "プレフィックス"
 msgid "Press enter to set this in memory"
 msgstr "Enterキーを押してメモリに設定"
 
-#: ../wxui/main.py:756
+#: ../wxui/main.py:757
 msgid "Print Preview"
 msgstr "印刷プレビュー"
 
@@ -2613,12 +2621,12 @@ msgstr "プロパティ値"
 msgid "QTH Locator"
 msgstr "QTHロケータ"
 
-#: ../wxui/main.py:2088
+#: ../wxui/main.py:2104
 #, python-format
 msgid "Query %s"
 msgstr "%s をクエリ"
 
-#: ../wxui/main.py:881
+#: ../wxui/main.py:882
 msgid "Query Source"
 msgstr "クエリソース"
 
@@ -2634,8 +2642,8 @@ msgstr "クエリ構文OK"
 msgid "Query syntax help"
 msgstr "クエリ構文ヘルプ"
 
-#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
-#: ../sources/mapy73pl.py:36
+#: ../sources/mapy73pl.py:36 ../sources/przemienniki_eu.py:36
+#: ../sources/przemienniki_net.py:36
 msgid "Querying"
 msgstr "クエリ中"
 
@@ -2643,7 +2651,7 @@ msgstr "クエリ中"
 msgid "RX DTCS"
 msgstr "受信DTCS"
 
-#: ../wxui/main.py:1041
+#: ../wxui/main.py:1042
 msgid "Radio"
 msgstr "無線機"
 
@@ -2663,7 +2671,7 @@ msgstr ""
 msgid "Radio Info: Image Metadata"
 msgstr ""
 
-#: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:576
+#: ../drivers/ft450d.py:576 ../drivers/ft60.py:89 ../drivers/ft60.py:91
 #: ../drivers/ft817.py:410
 #, python-format
 msgid "Radio did not ack block %i"
@@ -2673,7 +2681,7 @@ msgstr "無線機がブロック %i を確認応答しませんでした"
 msgid "Radio information"
 msgstr "無線機情報"
 
-#: ../wxui/bugreport.py:397
+#: ../wxui/bugreport.py:398
 msgid "Radio model:"
 msgstr "無線機モデル:"
 
@@ -2719,20 +2727,20 @@ msgstr "55.2の使用を推奨"
 msgid "Redo"
 msgstr "やり直し"
 
-#: ../wxui/common.py:654
+#: ../wxui/common.py:722
 msgid "Refresh required"
 msgstr "更新が必要です"
 
-#: ../wxui/common.py:332
+#: ../wxui/common.py:400
 #, python-format
 msgid "Refreshed memory %s"
 msgstr "メモリ %s を更新しました"
 
-#: ../wxui/main.py:942
+#: ../wxui/main.py:943
 msgid "Reload Driver"
 msgstr "ドライバを再読み込み"
 
-#: ../wxui/main.py:951
+#: ../wxui/main.py:952
 msgid "Reload Driver and File"
 msgstr "ドライバとファイルを再読み込み"
 
@@ -2760,34 +2768,34 @@ msgstr ""
 "RepeaterBookは、アマチュア無線の最も包括的で\n"
 "世界的な無料のレピータディレクトリです。"
 
-#: ../wxui/main.py:1024
+#: ../wxui/main.py:1025
 msgid "Report or update a bug..."
 msgstr "バグを報告または更新..."
 
-#: ../wxui/bugreport.py:563
+#: ../wxui/bugreport.py:565
 #, python-format
 msgid "Reporting a new bug: %r"
 msgstr "新しいバグを報告中: %r"
 
-#: ../wxui/main.py:990
+#: ../wxui/main.py:991
 msgid "Reporting enabled"
 msgstr "診断レポート送信"
 
-#: ../wxui/main.py:1999
+#: ../wxui/main.py:2015
 msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
 msgstr "診断レポートは、CHIRPプロジェクトがどの無線機やOSに限られたリソースを使うべきかを判断するのに役立ちます。このまま有効にしておいていただけると有り難いです。本当に無効にしますか？"
 
-#: ../wxui/main.py:1660 ../wxui/main.py:1993
+#: ../wxui/main.py:1661 ../wxui/main.py:2009
 msgid "Restart Required"
 msgstr "再起動が必要です"
 
-#: ../wxui/main.py:714
+#: ../wxui/main.py:715
 #, python-format
 msgid "Restore %i tab"
 msgid_plural "Restore %i tabs"
 msgstr[0] "最近閉じた%i個のタブを開く"
 
-#: ../wxui/main.py:846
+#: ../wxui/main.py:847
 msgid "Restore tabs on start"
 msgstr "起動時にタブを復元"
 
@@ -2795,7 +2803,7 @@ msgstr "起動時にタブを復元"
 msgid "Results from other areas"
 msgstr "他のエリアの結果"
 
-#: ../wxui/common.py:336
+#: ../wxui/common.py:404
 msgid "Retrieved settings"
 msgstr "設定を取得しました"
 
@@ -2810,19 +2818,19 @@ msgstr ""
 "提供します。このソースは、最も詳細で最新の送信機データを取得するために、\n"
 "SatNOGS APIを直接クエリします。"
 
-#: ../wxui/main.py:1072
+#: ../wxui/main.py:1073
 msgid "Save"
 msgstr "保存"
 
-#: ../wxui/main.py:1534
+#: ../wxui/main.py:1535
 msgid "Save before closing?"
 msgstr "保存しますか？"
 
-#: ../wxui/main.py:1073 ../wxui/main.py:1458
+#: ../wxui/main.py:1074 ../wxui/main.py:1459
 msgid "Save file"
 msgstr "ファイルに保存"
 
-#: ../wxui/common.py:338
+#: ../wxui/common.py:406
 msgid "Saved settings"
 msgstr "設定を保存"
 
@@ -2842,7 +2850,7 @@ msgstr "スクランブル"
 msgid "Security Risk"
 msgstr "セキュリティリスク"
 
-#: ../wxui/main.py:932
+#: ../wxui/main.py:933
 msgid "Select Bandplan..."
 msgstr "バンドプランを選択..."
 
@@ -2851,7 +2859,7 @@ msgstr "バンドプランを選択..."
 msgid "Select Bands"
 msgstr "バンドを選択"
 
-#: ../wxui/main.py:1643
+#: ../wxui/main.py:1644
 msgid "Select Language"
 msgstr "言語を選択"
 
@@ -2863,11 +2871,11 @@ msgstr "モードを選択"
 msgid "Select Modes to Import"
 msgstr "インポートするモードを選択"
 
-#: ../wxui/main.py:2071
+#: ../wxui/main.py:2087
 msgid "Select a bandplan"
 msgstr "バンドプラン選択"
 
-#: ../wxui/main.py:1201
+#: ../wxui/main.py:1202
 msgid "Select a tab and memory to diff"
 msgstr "比較するタブとメモリを選択"
 
@@ -2887,7 +2895,7 @@ msgstr "設定"
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr "非対応ファームウェアバージョンのため設定は読み取り専用です"
 
-#: ../wxui/common.py:396
+#: ../wxui/common.py:464
 #, python-format
 msgid "Settings: %s"
 msgstr ""
@@ -2900,7 +2908,7 @@ msgstr "デュプレックスで制御されるシフト量 (または送信周�
 msgid "Show Raw Memory"
 msgstr "Rawメモリを表示"
 
-#: ../wxui/main.py:1008
+#: ../wxui/main.py:1009
 msgid "Show debug log location"
 msgstr "デバッグログの場所を表示"
 
@@ -2908,7 +2916,7 @@ msgstr "デバッグログの場所を表示"
 msgid "Show extra fields"
 msgstr "追加フィールドを表示"
 
-#: ../wxui/main.py:1013
+#: ../wxui/main.py:1014
 msgid "Show image backup location"
 msgstr "イメージのバックアップを表示"
 
@@ -2955,8 +2963,8 @@ msgstr "カラムを選択"
 msgid "Sort memories"
 msgstr "並び替え"
 
-#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
-#: ../sources/mapy73pl.py:64
+#: ../sources/mapy73pl.py:64 ../sources/przemienniki_eu.py:60
+#: ../sources/przemienniki_net.py:62
 msgid "Sorting"
 msgstr "並び替え中"
 
@@ -2968,11 +2976,11 @@ msgstr "州/県"
 msgid "State/Province"
 msgstr "州/県"
 
-#: ../wxui/main.py:2051
+#: ../wxui/main.py:2067
 msgid "Success"
 msgstr "成功"
 
-#: ../wxui/bugreport.py:732
+#: ../wxui/bugreport.py:734
 msgid "Successfully sent bug report:"
 msgstr "バグレポートを正常に送信しました:"
 
@@ -2984,7 +2992,7 @@ msgstr "送信周波数"
 msgid "TX-RX DTCS polarity (normal or reversed)"
 msgstr "送受信DTCS極性 (ノーマルまたはリバース)"
 
-#: ../drivers/ft4.py:737
+#: ../drivers/ft4.py:732
 msgid ""
 "Tested and mostly works, but may give you issues\n"
 "when using lesser common radio variants.\n"
@@ -3034,11 +3042,11 @@ msgstr ""
 msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
 msgstr "このモジュールの作者は認識されたCHIRP開発者ではありません。セキュリティリスクをもたらす可能性があるため、このモジュールをロードしないことをお勧めします。それでも進めますか？"
 
-#: ../wxui/bugreport.py:229
+#: ../wxui/bugreport.py:230
 msgid "The debug log file is not available when CHIRP is run interactively from the command-line. Thus, this tool will not upload what you expect. It is recommended that you quit now and run CHIRP non-interactively (or with stdin redirected to /dev/null)"
 msgstr "CHIRPがコマンドラインから対話的に実行されている場合、デバッグログファイルは利用できません。したがって、このツールは期待通りのものをアップロードしません。今すぐ終了し、非対話的に（またはstdinを/dev/nullにリダイレクトして）CHIRPを実行することをお勧めします。"
 
-#: ../wxui/bugreport.py:548
+#: ../wxui/bugreport.py:550
 msgid "The following information will be submitted:"
 msgstr "以下の情報が送信されます:"
 
@@ -3046,7 +3054,7 @@ msgstr "以下の情報が送信されます:"
 msgid "The memory editor requires a reload in order to change the workflow. That will happen now. Any other open tabs will be updated the next time they are loaded."
 msgstr "ワークフローを変更するには、メモリエディタの再読み込みが必要です。今すぐ実行します。他に開いているタブは、次にロードされるときに更新されます。"
 
-#: ../wxui/main.py:1490
+#: ../wxui/main.py:1491
 #, python-format
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr "推奨されるメモリのインポート方法は、ソースファイルを開き、そこから指定場所にメモリをコピー＆ペーストすることです。このままこのインポート機能を続行すると、CHIRPは現在開いているファイルにあるすべてのメモリを %(file)s 内のものに置き換えます。このファイルを開いて「メモリ」をコピー＆ペーストしますか？それともインポートを続けますか？"
@@ -3072,11 +3080,11 @@ msgstr "このイメージにはファームウェア情報が含まれていま
 msgid "This image is read-only due to being from a radio with unsupported firmware"
 msgstr "非対応ファームウェアの無線機のイメージであるため、読み取り専用です"
 
-#: ../wxui/main.py:1727
+#: ../wxui/main.py:1743
 msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"
 msgstr "これはライブモードの無線機です。変更を加えるとリアルタイムで無線機に送信されます。アップロードは不要です！"
 
-#: ../wxui/main.py:1733
+#: ../wxui/main.py:1749
 msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
 msgstr "これは無線機に依存しないファイルであり、無線機に直接アップロードすることはできません。無線機イメージを開く（または無線機からダウンロードする）し、このタブから項目をコピーして貼り付けてアップロードしてください"
 
@@ -3115,7 +3123,7 @@ msgstr ""
 "また、バグや機能強化のリクエストも送信してください！\n"
 "警告しましたよ。自己責任で進めてください！"
 
-#: ../wxui/bugreport.py:459
+#: ../wxui/bugreport.py:461
 msgid "This is the ticket number for an already-created issue on the chirpmyradio.com website"
 msgstr "これはchirpmyradio.comウェブサイト上の既存のチケット番号です"
 
@@ -3159,7 +3167,7 @@ msgstr ""
 "アクティブなアマチュア無線衛星の厳選されたリストを提供します。\n"
 "人気のある周波数の安定した、簡略化されたリストです。"
 
-#: ../wxui/bugreport.py:197
+#: ../wxui/bugreport.py:198
 msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
 msgstr "このツールはシステムに関する詳細をCHIRPトラッカの既存のIssueにアップロードします。動作するには chirpmyradio.com のユーザ名とパスワードが必要です。デバッグログ、設定ファイル、開いているイメージファイルなど、システムに関する情報がアップロードされます。システムから送信される前に、個人情報を削除する試みが行われます。"
 
@@ -3228,7 +3236,7 @@ msgstr "ポートを検出できませんでした。ドライバがインスト
 msgid "Unable to edit memory before radio is loaded"
 msgstr "無線機がロードされるまでメモリを編集できません"
 
-#: ../wxui/main.py:1416
+#: ../wxui/main.py:1417
 #, python-format
 msgid "Unable to find stock config %r"
 msgstr "テンプレート %r が見つかりません"
@@ -3237,12 +3245,12 @@ msgstr "テンプレート %r が見つかりません"
 msgid "Unable to import while the view is sorted"
 msgstr "ビューがソートされている間はインポートできません"
 
-#: ../wxui/common.py:238
+#: ../wxui/common.py:306
 msgid "Unable to open the clipboard"
 msgstr "クリップボードを開けません"
 
-#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
-#: ../sources/mapy73pl.py:50
+#: ../sources/mapy73pl.py:50 ../sources/przemienniki_eu.py:46
+#: ../sources/przemienniki_net.py:48
 msgid "Unable to query"
 msgstr "クエリできません"
 
@@ -3250,7 +3258,7 @@ msgstr "クエリできません"
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "最後のブロックを読み込めません。これは、選択されたモデルがUSモデルであるのに、無線機が非USモデル（またはワイドバンド化されたもの）である場合によく発生します。正しいモデルを選択して再試行してください。"
 
-#: ../wxui/common.py:849
+#: ../wxui/common.py:917
 #, python-format
 msgid "Unable to reveal %s on this system"
 msgstr "このシステムでは %s を表示できません"
@@ -3260,7 +3268,7 @@ msgstr "このシステムでは %s を表示できません"
 msgid "Unable to set %s on this memory"
 msgstr "このメモリに %s を設定できません"
 
-#: ../wxui/main.py:1737
+#: ../wxui/main.py:1753
 msgid "Unable to upload this file"
 msgstr "このファイルをアップロードできません"
 
@@ -3281,11 +3289,11 @@ msgstr "ケーブルを抜いてからOKをクリックしてください。"
 msgid "Unsupported model %r"
 msgstr "非対応モデル %r"
 
-#: ../wxui/bugreport.py:218
+#: ../wxui/bugreport.py:219
 msgid "Update an existing bug"
 msgstr "既存のバグを更新"
 
-#: ../wxui/bugreport.py:565
+#: ../wxui/bugreport.py:567
 #, python-format
 msgid "Updating bug %s"
 msgstr "バグ %s を更新中"
@@ -3298,15 +3306,15 @@ msgstr "アップロード手順"
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "非対応ファームウェアバージョンのためアップロードは無効になっています"
 
-#: ../wxui/main.py:1079
+#: ../wxui/main.py:1080
 msgid "Upload to radio"
 msgstr "無線機にアップロード"
 
-#: ../wxui/main.py:875
+#: ../wxui/main.py:876
 msgid "Upload to radio..."
 msgstr "無線機にアップロード..."
 
-#: ../wxui/common.py:334
+#: ../wxui/common.py:402
 #, python-format
 msgid "Uploaded memory %s"
 msgstr "メモリ %s をアップロードしました"
@@ -3315,15 +3323,15 @@ msgstr "メモリ %s をアップロードしました"
 msgid "Use TX Frequency Workflow"
 msgstr "送信周波数ワークフローを使用"
 
-#: ../wxui/main.py:831
+#: ../wxui/main.py:832
 msgid "Use fixed-width font"
 msgstr "固定幅フォントを使用"
 
-#: ../wxui/main.py:839
+#: ../wxui/main.py:840
 msgid "Use larger font"
 msgstr "大きいフォントを使用"
 
-#: ../wxui/bugreport.py:265
+#: ../wxui/bugreport.py:266
 msgid "Username"
 msgstr "ユーザ名"
 
@@ -3332,12 +3340,12 @@ msgstr "ユーザ名"
 msgid "Value does not fit in %i bits"
 msgstr "値が %i ビットに収まりません"
 
-#: ../wxui/common.py:691
+#: ../wxui/common.py:759
 #, python-format
 msgid "Value must be at least %.4f"
 msgstr "値は %.4f 以上にしてください"
 
-#: ../wxui/common.py:695
+#: ../wxui/common.py:763
 #, python-format
 msgid "Value must be at most %.4f"
 msgstr "値は %.4f 以下にしてください"
@@ -3363,16 +3371,16 @@ msgstr "値"
 msgid "Vendor"
 msgstr "メーカ"
 
-#: ../wxui/main.py:1040
+#: ../wxui/main.py:1041
 msgid "View"
 msgstr "表示"
 
-#: ../wxui/common.py:639
+#: ../wxui/common.py:707
 msgid "WARNING!"
 msgstr "警告！"
 
-#: ../wxui/bugreport.py:234 ../wxui/memedit.py:2055 ../wxui/main.py:1891
-#: ../wxui/main.py:2043
+#: ../wxui/bugreport.py:235 ../wxui/main.py:1907 ../wxui/main.py:2059
+#: ../wxui/memedit.py:2055
 msgid "Warning"
 msgstr "警告"
 
@@ -3381,7 +3389,7 @@ msgstr "警告"
 msgid "Warning: %s"
 msgstr "警告: %s"
 
-#: ../wxui/main.py:461
+#: ../wxui/main.py:462
 msgid "Welcome"
 msgstr "ようこそ"
 
@@ -3393,7 +3401,7 @@ msgstr "このオプションをチェックすると、近接検索には、範
 msgid "Would you like CHIRP to install a desktop icon for you?"
 msgstr "デスクトップにCHIRPのアイコンを設定しますか？"
 
-#: ../wxui/bugreport.py:325
+#: ../wxui/bugreport.py:326
 msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
 msgstr "過去1週間で複数のIssueを開いています。CHIRPは乱用を防ぐために開くことができるIssueの数を制限しています。どうしても別のIssueを開く必要がある場合は、ウェブサイトから行ってください。"
 
@@ -3421,15 +3429,15 @@ msgstr "バイト"
 msgid "bytes each"
 msgstr "バイトずつ"
 
-#: ../wxui/common.py:477
+#: ../wxui/common.py:545
 msgid "checkbox"
 msgstr ""
 
-#: ../wxui/common.py:453
+#: ../wxui/common.py:521
 msgid "checked"
 msgstr ""
 
-#: ../wxui/main.py:1976
+#: ../wxui/main.py:1992
 msgid "disabled"
 msgstr "無効"
 
@@ -3437,35 +3445,35 @@ msgstr "無効"
 msgid "empty"
 msgstr ""
 
-#: ../wxui/main.py:1976
+#: ../wxui/main.py:1992
 msgid "enabled"
 msgstr "有効"
 
-#: ../wxui/common.py:479
+#: ../wxui/common.py:547
 msgid "list"
 msgstr ""
 
-#: ../wxui/common.py:498
+#: ../wxui/common.py:566
 msgid "locked"
 msgstr ""
 
-#: ../wxui/common.py:482
+#: ../wxui/common.py:550
 msgid "number"
 msgstr ""
 
-#: ../wxui/bugreport.py:420
+#: ../wxui/bugreport.py:421
 msgid "searched for duplicate issues"
 msgstr "重複した問題を検索しました"
 
-#: ../wxui/common.py:484
+#: ../wxui/common.py:552
 msgid "text"
 msgstr ""
 
-#: ../wxui/common.py:453
+#: ../wxui/common.py:521
 msgid "unchecked"
 msgstr ""
 
-#: ../wxui/common.py:496
+#: ../wxui/common.py:564
 msgid "unspecified"
 msgstr ""
 
