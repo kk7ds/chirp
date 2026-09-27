@@ -164,15 +164,58 @@ struct {
   u8 menu_exit;
   u8 unknown33a:3, volume_prompt:1, date_format:1, unknown33b:2,
      time_display:1;
-  u8 unknown34[2];
+  u8 call_color;
+  u8 standby_color;
   u8 tx_backlight;
   u8 rx_backlight;
+  u8 a_name_color;
+  u8 b_name_color;
+  u8 a_zone_color;
+  u8 b_zone_color;
 } set_display;
+#seekto 0x%(b40)x;
+struct {
+  u8 unknown40:1, gps_format:1, speed_unit:2, gps_mode:2, distance_unit:1,
+     gps_switch:1;
+  u8 time_zone;
+  u8 measure_period;
+  u8 unknown43[2];
+  u8 unknown45:5, record_type:2, record_switch:1;
+} set_gps;
+#seekto 0x%(b60)x;
+struct {
+  u8 unknown60:6, group_match:1, private_match:1;
+  u8 call_hold;
+  u8 active_wait;
+  u8 active_retries;
+  u8 pre_carrier;
+  u8 monitor_decode:1, disable_decode:1, check_decode:1, enable_decode:1,
+     alert_decode:1, data_service:2, missed_call_alert:1;
+  u8 monitor_time;
+  u8 name_format:2, unknown67a:2, send_tx_name:1, name_priority:1,
+     unknown67b:2;
+} set_dmr;
 #seekto 0x%(b80)x;
 struct {
   u8 dual_watch:2, main_line:1, b_display:1, a_display:1, b_mode:1,
      a_mode:1, only_channel:1;
   u8 dual_watch_hang;
+  u8 unknown82[3];
+  u8 unknown85:4, forbid_lock:1, side_lock:1, knob_lock:1, lock_mode:1;
+  u8 lock_delay;
+  u8 key_tk_short;
+  u8 key_tk_long;
+  u8 key_sk2_short;
+  u8 key_sk2_long;
+  u8 key_sk1_short;
+  u8 key_sk1_long;
+  u8 key_p3_short;
+  u8 key_p3_long;
+  u8 key_p2_short;
+  u8 key_p2_long;
+  u8 key_p1_short;
+  u8 key_p1_long;
+  u8 long_press;
 } set_work;
 #seekto 0x%(ba0)x;
 struct {
@@ -186,6 +229,23 @@ struct {
   u8 mic_analog;
   u8 mic_digital;
 } set_opts;
+#seekto 0x%(b500)x;
+struct {
+  u8 unknown500:6, new_zone:1, zone_list:1;
+  u8 unknown501:2, measure_period:1, radio_disable:1, radio_enable:1,
+     remote_monitor:1, radio_check:1, call_alert:1;
+  u8 display_mode:1, match_group:1, match_private:1, lang_select:1,
+     start_display:1, tx_power:1, alert_tone:1, talkaround:1;
+  u8 unknown503a:1, record:1, aprs:1, gps:1, power_save:1,
+     sub_channel_mode:1, unknown503b:2;
+  u8 unknown504:1, csv_contacts:1, manual_dial:1, functionality:1,
+     send_message:1, del_contact:1, edit_contact:1, add_contact:1;
+  u8 unknown505:4, del_log:1, sent_call:1, answered_call:1, missed_call:1;
+  u8 radio_name:1, radio_id:1, time_slot:1, color_code:1, tx_contact:1,
+     ctc_dcs:1, tx_freq:1, rx_freq:1;
+  u8 unknown507:3, channel_name:1, add_channel:1, rx_group:1,
+     tdma_direct:1, channel_type:1;
+} set_menu;
 """
 
 
@@ -193,8 +253,9 @@ def _mem_format():
     """Channel pages as the CPS lays them out (see channel_offset)."""
     b = IMAGE_TAGS.index(0x04) * PAGE      # settings come first: lowest slot
     fmt = [CHAN_FORMAT,
-           SETTINGS_FORMAT % dict(b=b, b30=b + 0x30, b80=b + 0x80,
-                                  ba0=b + 0xA0),
+           SETTINGS_FORMAT % dict(b=b, b30=b + 0x30, b40=b + 0x40,
+                                  b60=b + 0x60, b80=b + 0x80, ba0=b + 0xA0,
+                                  b500=b + 0x500),
            '#seekto 0x%x;\nul16 ch_count;' % CH_BASE,
            '#seekto 0x%x;\nstruct chan page0[84];' % (CH_BASE + 0x10)]
     for p in range(1, 48):
@@ -222,6 +283,8 @@ MEM_FORMAT = _mem_format()
 # options). Each entry: (struct, field, label, kind, extra). kind 'list':
 # stored value = index (+ extra[1] offset); 'bool'; 'text' (length).
 _SECONDS = ['%d s' % i for i in range(1, 31)]
+_COLORS = ['White', 'Black', 'Orange', 'Red', 'Yellow', 'Green', 'Cyan',
+           'Blue']                                            # [DisplayColor]
 RADIO_SETTINGS = [
     ('Power on', [
         ('set_power', 'poweron_type', 'Power-on screen',
@@ -262,6 +325,18 @@ RADIO_SETTINGS = [
          'list', (['yyyy/m/d', 'd/m/yyyy'], 0)),
         ('set_display', 'volume_prompt', 'Volume change prompt', 'bool',
          None),
+        ('set_display', 'call_color', 'Call display colour',
+         'list', (_COLORS, 0)),
+        ('set_display', 'standby_color', 'Standby text colour',
+         'list', (_COLORS, 0)),
+        ('set_display', 'a_name_color', 'Channel name colour (A)',
+         'list', (_COLORS, 0)),
+        ('set_display', 'b_name_color', 'Channel name colour (B)',
+         'list', (_COLORS, 0)),
+        ('set_display', 'a_zone_color', 'Zone colour (A)',
+         'list', (_COLORS, 0)),
+        ('set_display', 'b_zone_color', 'Zone colour (B)',
+         'list', (_COLORS, 0)),
     ]),
     ('Work mode', [
         ('set_work', 'only_channel', 'Only channel mode', 'bool', None),
@@ -293,6 +368,105 @@ RADIO_SETTINGS = [
         ('set_opts', 'weather_alarm', 'Weather alarm', 'bool', None),
     ]),
 ]
+_KEY_FUNCS = [
+    'None', 'Power Select', 'Volt', 'Talkaround', 'Digital Encrypt', 'Call',
+    'VOX', 'V/M', 'Alarm', 'One Touch Call 1', 'One Touch Call 2',
+    'One Touch Call 3', 'One Touch Call 4', 'One Touch Call 5', 'SMS',
+    'Contacts', 'Zone Up', 'Zone Down', 'Scan', 'Record Switch',
+    'Previous Record', 'Next Record', 'FM Radio', 'FM Search',
+    'GPS Information', 'Monitor', 'Switch Main Channel', 'Lone Work',
+    'Keypad Lock', 'Nuisance Channel Delete', 'TBST Send', 'APRS Send',
+    'Channel Type', 'Display Mode', 'CTC Scan', 'CTC Setting', 'Silent Tone',
+    'Roaming', 'Sub-PTT', 'Analog Scramble Switch', 'One Key Scan Freq',
+    'Flashlight', 'Man Down Alarm']                           # [KeyFuncData]
+_UTC = ['UTC %+d:00' % h if h else 'UTC' for h in range(-12, 14)]
+_ONOFF = (['Off', 'On'], 0)
+# The key names follow the CPS dialog's control order; storage pairs short
+# and long press (0x87/0x88 ...), which key owns which pair is inferred.
+RADIO_SETTINGS.append(('Keys', [
+    ('set_work', 'lock_mode', 'Keypad lock',
+     'list', (['Manual', 'Auto'], 0)),
+    ('set_work', 'lock_delay', 'Auto keypad lock delay',
+     'list', (['%d s' % i for i in range(5, 61)], 0)),
+    ('set_work', 'knob_lock', 'Knob lock', 'list', _ONOFF),
+    ('set_work', 'side_lock', 'Side key lock', 'list', _ONOFF),
+    ('set_work', 'forbid_lock', 'Forbid lock key', 'list', _ONOFF),
+    ('set_work', 'long_press', 'Long press time',
+     'list', ([str(i) for i in range(1, 6)], 0)),
+] + [('set_work', 'key_%s_%s' % (k, p), '%s %s press' % (k.upper(), p),
+      'list', (_KEY_FUNCS, 0))
+     for k in ('sk1', 'sk2', 'tk', 'p1', 'p2', 'p3')
+     for p in ('short', 'long')]))
+RADIO_SETTINGS.append(('DMR', [
+    ('set_dmr', 'private_match', 'Private call match', 'bool', None),
+    ('set_dmr', 'group_match', 'Group call match', 'bool', None),
+    ('set_dmr', 'call_hold', 'Call hold time',
+     'list', (['%d s' % i for i in range(1, 61)], 0)),
+    ('set_dmr', 'active_wait', 'Active wait time',
+     'list', (['%d ms' % i for i in range(300, 4801, 30)], 1)),
+    ('set_dmr', 'active_retries', 'Active retries',
+     'list', ([str(i) for i in range(1, 9)], 1)),
+    ('set_dmr', 'pre_carrier', 'Pre-carrier time',
+     'list', (['%d ms' % i for i in range(120, 8641, 120)], 0)),
+    ('set_dmr', 'monitor_time', 'Remote monitor time',
+     'list', (['%d s' % i for i in range(10, 121, 10)], 0)),
+    ('set_dmr', 'data_service', 'SMS format',
+     'list', (['H-SMS', 'M-SMS', 'D-SMS'], 0)),
+    ('set_dmr', 'missed_call_alert', 'Missed call alert', 'bool', None),
+    ('set_dmr', 'monitor_decode', 'Remote monitor decode', 'bool', None),
+    ('set_dmr', 'disable_decode', 'Radio disable decode', 'bool', None),
+    ('set_dmr', 'check_decode', 'Radio check decode', 'bool', None),
+    ('set_dmr', 'enable_decode', 'Radio enable decode', 'bool', None),
+    ('set_dmr', 'alert_decode', 'Call alert decode', 'bool', None),
+    ('set_dmr', 'name_format', 'Name data format',
+     'list', (['ISO 8 bit', '16 bit Unicode'], 0)),
+    ('set_dmr', 'send_tx_name', 'Send TX name', 'bool', None),
+    ('set_dmr', 'name_priority', 'Name display priority',
+     'list', (['Contact', 'Name'], 0)),
+]))
+RADIO_SETTINGS.append(('GPS and recording', [
+    ('set_gps', 'gps_switch', 'GPS', 'bool', None),
+    ('set_gps', 'gps_mode', 'GPS mode',
+     'list', (['GPS', 'BDS', 'GPS+BDS'], 0)),
+    ('set_gps', 'time_zone', 'Time zone', 'list', (_UTC, 0)),
+    ('set_gps', 'measure_period', 'GPS measure period',
+     'list', (['%d s' % i for i in range(5, 256)], 0)),
+    ('set_gps', 'distance_unit', 'Distance unit',
+     'list', (['Metric', 'Imperial'], 0)),
+    ('set_gps', 'speed_unit', 'Speed unit',
+     'list', (['km/h', 'mph', 'knots'], 0)),
+    ('set_gps', 'gps_format', 'GPS display format',
+     'list', (['Degrees', 'Degrees/min/sec'], 0)),
+    ('set_gps', 'record_switch', 'Recording', 'bool', None),
+    ('set_gps', 'record_type', 'Recording type',
+     'list', (['Receive', 'Transmit', 'Receive+Transmit'], 0)),
+]))
+_MENU = [
+    ('zone_list', 'Zone list'), ('new_zone', 'New zone'),
+    ('call_alert', 'Call alert'), ('radio_check', 'Radio check'),
+    ('remote_monitor', 'Remote monitor'), ('radio_enable', 'Radio enable'),
+    ('radio_disable', 'Radio disable'), ('measure_period', 'Measure period'),
+    ('talkaround', 'Talkaround'), ('alert_tone', 'Alert tone'),
+    ('tx_power', 'TX power'), ('start_display', 'Start display'),
+    ('lang_select', 'Language'), ('match_private', 'Match private'),
+    ('match_group', 'Match group'), ('display_mode', 'Display mode'),
+    ('sub_channel_mode', 'Sub channel mode'), ('power_save', 'Power save'),
+    ('gps', 'GPS'), ('aprs', 'APRS'), ('record', 'Record'),
+    ('add_contact', 'Add contact'), ('edit_contact', 'Edit contact'),
+    ('del_contact', 'Delete contact'), ('send_message', 'Send message'),
+    ('functionality', 'Functionality'), ('manual_dial', 'Manual dial'),
+    ('csv_contacts', 'CSV contacts'), ('missed_call', 'Missed calls'),
+    ('answered_call', 'Answered calls'), ('sent_call', 'Sent calls'),
+    ('del_log', 'Delete call log'), ('rx_freq', 'RX frequency'),
+    ('tx_freq', 'TX frequency'), ('ctc_dcs', 'CTC/DCS'),
+    ('tx_contact', 'TX contact'), ('color_code', 'Color code'),
+    ('time_slot', 'Time slot'), ('radio_id', 'Radio ID'),
+    ('radio_name', 'Radio name'), ('channel_type', 'Channel type'),
+    ('tdma_direct', 'TDMA direct mode'), ('rx_group', 'RX group list'),
+    ('add_channel', 'Add channel'), ('channel_name', 'Channel name')]
+RADIO_SETTINGS.append(('Menu items', [
+    ('set_menu', f, 'Menu: %s' % label, 'bool', None) for f, label in _MENU]))
+
 # Bits of 0x80 that follow the radio's current display (A/B mode, display
 # mode, main line); upload keeps the radio's own values for these.
 WORK_STATE_MASK = 0x3E
