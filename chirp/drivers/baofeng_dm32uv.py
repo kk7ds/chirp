@@ -15,11 +15,12 @@
 
 """Baofeng DM-32UV (DMR) driver.
 
-Channels, zones (as banks) and the main DMR channel fields. Upload writes
-only the channel and zone pages that differ from the radio, one whole
-aligned 4 KB page per write, and reads every written page back. The
-layout was worked out from the vendor CPS (v1.60) and radio firmware and
-checked against a real radio (firmware DM32.01.01.047).
+Channels, zones (as banks), DMR lists (radio IDs, contacts, RX groups),
+scan lists and radio settings. Upload writes only the pages that differ
+from the radio (see UPLOAD_TAGS), one whole aligned 4 KB page per write,
+and reads every written page back. The layout was worked out from the
+vendor CPS (v1.60) and radio firmware and checked against a real radio
+(firmware DM32.01.01.047).
 
 The radio keeps its codeplug in 4 KB flash pages whose last byte is a tag
 naming the contents; pages move around as the radio rewrites them. The
@@ -33,6 +34,7 @@ least three times and the copies are merged byte by byte.
 """
 
 import collections
+import functools
 import logging
 import struct
 import time
@@ -59,6 +61,8 @@ VFO_OFFSETS = (0xF9F, 0xFCF)            # in the last channel page
 ZONE_TAG0 = 0x5C
 ZONE_BASE = IMAGE_TAGS.index(ZONE_TAG0) * PAGE
 ZONE_PER_PAGE, ZONE_COUNT, ZONE_MEMBERS = 28, 250, 64
+# Longest zone order text on the Settings tab: "1, 2, ..., 250".
+ZONE_ORDER_MAX = len(', '.join(str(z) for z in range(1, ZONE_COUNT + 1)))
 # Encryption key names (CPS 0x479630): tag, offset of entry 1, entry size,
 # name length, entries. Keys are chosen per channel, not edited.
 DMR_LISTS = {
@@ -98,13 +102,17 @@ SCAN_DEFAULT_OPTS = bytes.fromhex('030600010000000000' '0a007f')
 LINK_FAULT = 0x80
 READ_COPIES, READ_TRIES = 3, 10
 
-# Upload writes channel pages only, one whole aligned page per W frame: the
-# firmware erases the sector on an aligned W and also erases the next sector
-# if a W crosses into it. Tags 0x02 and 0x69 look like calibration.
-UPLOAD_TAGS = (list(range(0x12, 0x42)) + list(range(0x5C, 0x65)) +
-               [0x04, RXG_TAG, CONTACT_INDEX_TAG] + list(TXC_TAGS) +
+# The pages upload may write, in the order it writes them: lists before
+# what refers to them (contact records before their index, lists before
+# channels, zones last), so an interrupted upload leaves few dangling
+# references. One whole aligned page per W frame: the firmware erases the
+# sector on an aligned W and also erases the next sector if a W crosses
+# into it. Tags 0x02 and 0x69 look like calibration: never written.
+UPLOAD_TAGS = ([0x04, RADIOID_TAG] +
                list(range(CONTACT_REC_TAG0, CONTACT_REC_TAG0 + 5)) +
-               [RADIOID_TAG, SCAN_TAG])
+               [CONTACT_INDEX_TAG, RXG_TAG, SCAN_TAG] +
+               list(range(0x12, 0x42)) + list(TXC_TAGS) +
+               list(range(0x5C, 0x65)))
 NEVER_WRITE = (0x02, 0x69)
 WRITE_TRIES = 3
 
@@ -634,14 +642,25 @@ def _check_model(model):
                 model.decode('ascii', 'replace'), MODEL_ID.decode()))
 
 
-def _identify(link):
+PASSWORD_SET = 0xA5
+
+
+def _identify(link, writing=False):
     _check_model(_search(link))
+    # PASSSTA: 'P', write password flag (settings 0x439), read password
+    # flag (0x43A). The radio doesn't enforce them; the vendor CPS asks for
+    # the password. CHIRP can't ask, so the driver refuses instead.
     resp = link.xfer(b'PASSSTA', 3)
     if not _marker_ok(resp[0], ord('P')):
         raise errors.RadioError('Unexpected reply to PASSSTA')
-    if resp[2] == 0xA5:
-        raise errors.RadioError('The radio has a read password set; this '
-                                'driver does not support that yet')
+    if resp[2] == PASSWORD_SET:
+        raise errors.RadioError(
+            'The radio has a read password. CHIRP cannot enter passwords; '
+            'remove it with the vendor programming software first')
+    if writing and resp[1] == PASSWORD_SET:
+        raise errors.RadioError(
+            'The radio has a write password. CHIRP cannot enter passwords; '
+            'remove it with the vendor programming software first')
     if not _marker_ok(link.xfer(b'SYSINFO', 1)[0], 0x06):
         raise errors.RadioError('Radio refused SYSINFO')
     link.query_v(b'V\x00\x00\x40\x0D')
@@ -698,6 +717,10 @@ def do_download(radio):
     base = status.cur + 1
     image = bytearray(b'\xFF' * (len(IMAGE_TAGS) * PAGE))
     for i, tag in enumerate(IMAGE_TAGS):
+        if len(where.get(tag, [])) > 1:
+            LOG.warning('Radio has %d pages with tag %02x; using the first. '
+                        'Upload will refuse until the radio has tidied up.',
+                        len(where[tag]), tag)
         if where.get(tag):
             data = link.read_block(where[tag][0], PAGE)
             image[i * PAGE:(i + 1) * PAGE] = data
@@ -707,8 +730,11 @@ def do_download(radio):
     return memmap.MemoryMapBytes(bytes(image))
 
 
-def _write_page(link, addr, data, start, end):
-    """Write one whole page with W and read it back until it matches."""
+def _write_page(link, addr, data, start, end, reconnect=None):
+    """Write one whole page with W and read it back until it matches.
+
+    reconnect() starts a new session; it is needed when an ACK is lost,
+    because the radio ends the session after 2 s without traffic."""
     if (len(data) != PAGE or addr % PAGE or addr < start or
             addr + PAGE - 1 > end or data[-1] in NEVER_WRITE):
         raise errors.RadioError('Refusing unsafe write at %06x' % addr)
@@ -719,8 +745,12 @@ def _write_page(link, addr, data, start, end):
         ack = link.recv(1, timeout=5.0)
         if not ack:
             # The radio may still be waiting for data; after 2 s it gives
-            # up and ends the session, which the read-back below reports.
+            # up and ends the session. Start a new one to check the page.
+            LOG.warning('No reply to W %06x; reconnecting', addr)
             time.sleep(2.5)
+            if reconnect is None:
+                raise errors.RadioError('No reply to write at %06x' % addr)
+            reconnect()
         elif not _marker_ok(ack[0], 0x06):
             LOG.warning('Unexpected reply %s to W %06x', ack.hex(), addr)
         if link.read_block(addr, PAGE) == bytes(data):
@@ -730,22 +760,44 @@ def _write_page(link, addr, data, start, end):
         addr, WRITE_TRIES))
 
 
-def _keep_display_state(want, current):
-    """Keep the radio's current zone/position bytes in the zone header.
+def _zone_record(rec):
+    """(name bytes, [members]) of a raw 0x91-byte zone record."""
+    count = min(rec[16], ZONE_MEMBERS)
+    return (rec[:16].split(b'\x00')[0].split(b'\xFF')[0],
+            [int.from_bytes(rec[17 + 2 * i:19 + 2 * i], 'little')
+             for i in range(count)])
 
-    They change whenever someone browses on the radio, so the image's copy
-    is usually stale; they must also point at an existing zone member.
+
+def _follow_display(want, current, radio_zone, zones):
+    """Zone header bytes 1-7 for the upload.
+
+    Bytes 5/7 are the zone lines A/B show and bytes 1/3 the position in it.
+    They change whenever someone browses on the radio, so the radio's own
+    values are used, moved to where that zone and channel are in the new
+    list `zones` ([(name bytes, [members])]), in case zones were reordered
+    or deleted. radio_zone(z) gives zone z as the radio has it now.
     """
     want = bytearray(want)
     want[1:8] = current[1:8]
-    count = min(want[0], ZONE_COUNT)
     for pos, zone in ((1, 5), (3, 7)):
-        if not 1 <= want[zone] <= count:
-            want[zone], want[pos] = 1, 1
-        page, index = zone_offset(want[zone])
-        members = want[0x10 + index * 0x91 + 16] if page == 0 else None
-        if members is not None and not 1 <= want[pos] <= max(members, 1):
-            want[pos] = 1
+        z, old = current[zone], None
+        if 1 <= z <= ZONE_COUNT:
+            old = radio_zone(z)
+        new = None
+        if old:
+            new = next((i for i, zn in enumerate(zones, 1) if zn == old),
+                       next((i for i, zn in enumerate(zones, 1)
+                             if zn[0] == old[0]), None))
+        if new is None:             # deleted, or unknown to the radio
+            new = z if not old and 1 <= z <= len(zones) else 1
+        members = zones[new - 1][1] if zones else []
+        p = current[pos]
+        if old:                     # follow the channel, or start over
+            channel = old[1][p - 1] if 1 <= p <= len(old[1]) else None
+            p = members.index(channel) + 1 if channel in members else 1
+        if not 1 <= p <= max(len(members), 1):
+            p = 1
+        want[zone], want[pos] = new, p
     return bytes(want)
 
 
@@ -759,9 +811,23 @@ def do_upload(radio):
     """
     image = radio.get_mmap().get_packed()
     link = _Link(radio.pipe)
-    firmware, start, end = _identify(link)
+    firmware, start, end = _identify(link, writing=True)
     LOG.info('Upload to DM-32UV firmware %s', firmware)
     _enter_program(link)
+
+    def reconnect():
+        _identify(link, writing=True)
+        _enter_program(link)
+
+    def radio_zone(z):
+        page, index = zone_offset(z)
+        addrs = where.get(ZONE_TAG0 + page)
+        if not addrs:
+            return None
+        return _zone_record(link.read_block(
+            addrs[0] + (0x10 if page == 0 else 0) + index * 0x91, 0x91))
+    zones = [(_name_bytes(name, 16).rstrip(b'\x00'), members)
+             for name, members in radio._zone_list()]
 
     status = chirp_common.Status()
     status.msg = 'Scanning flash pages'
@@ -779,12 +845,16 @@ def do_upload(radio):
     for i, tag in enumerate(UPLOAD_TAGS):
         slot = IMAGE_TAGS.index(tag) * PAGE
         want = image[slot:slot + PAGE - 1] + bytes([tag])
-        if image[slot:slot + PAGE - 1] != b'\xFF' * (PAGE - 1):
+        # A slot is in use if it holds data, or if it came from the radio
+        # (tag byte set) and has since been emptied, e.g. all its channels
+        # deleted: then the radio's page must be emptied too.
+        if (image[slot:slot + PAGE - 1] != b'\xFF' * (PAGE - 1) or
+                image[slot + PAGE - 1] == tag and where.get(tag)):
             if where.get(tag):
                 addr = where[tag][0]
                 current = link.read_block(addr, PAGE)
                 if tag == ZONE_TAG0:
-                    want = _keep_display_state(want, current)
+                    want = _follow_display(want, current, radio_zone, zones)
                 elif tag == 0x04:
                     want = bytearray(want)
                     want[0x80] = (want[0x80] & ~WORK_STATE_MASK & 0xFF |
@@ -797,7 +867,7 @@ def do_upload(radio):
             else:
                 raise errors.RadioError('No free page left on the radio')
             if addr is not None:
-                _write_page(link, addr, want, start, end)
+                _write_page(link, addr, want, start, end, reconnect)
                 written += 1
         status.cur = base + i
         radio.status_fn(status)
@@ -835,6 +905,36 @@ def _encode_tone(raw, mode, value, pol):
         raw[0] = int(digits[1:], 16)
     else:
         raw[0] = raw[1] = 0xFF
+
+
+def _shown(name):
+    """A name as CHIRP can show it: characters outside its charset as '?'."""
+    return ''.join(c if c in chirp_common.CHARSET_ASCII else '?'
+                   for c in name)
+
+
+def _edited(value, old):
+    """The name to store for a setting that showed `old`: `old` itself,
+    byte for byte, unless the user changed it."""
+    value = str(value).strip()
+    return old if value == _shown(old).strip() else value
+
+
+def _name_bytes(name, length):
+    return name.encode('latin-1', 'replace')[:length].ljust(length, b'\x00')
+
+
+def _cached(method):
+    """Cache a lookup on the image until the driver next changes it (see
+    DM32UV._forget). Callers must not modify the result."""
+    @functools.wraps(method)
+    def wrapper(self, *args):
+        cache = self.__dict__.setdefault('_lookups', {})
+        key = (method.__name__,) + args
+        if key not in cache:
+            cache[key] = method(self, *args)
+        return cache[key]
+    return wrapper
 
 
 class DM32UVZone(chirp_common.NamedBank):
@@ -906,8 +1006,12 @@ class DM32UVZoneModel(chirp_common.MTOBankModel):
                 for n in self._radio._zone_members(bank.index + 1)]
 
     def get_memory_mappings(self, memory):
-        return [bank for bank in self.get_mappings()
-                if memory.number in self._radio._zone_members(bank.index + 1)]
+        zones = []
+        for z in self._radio._zone_index().get(memory.number, []):
+            zone = DM32UVZone(self, '%i' % z, 'Zone %i' % z)
+            zone.index = z - 1
+            zones.append(zone)
+        return zones
 
 
 @directory.register
@@ -922,9 +1026,10 @@ class DM32UV(chirp_common.CloneModeRadio):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = (
-            'This driver is experimental. Upload changes only the channel '
-            'memories; other settings, contacts and zones are left as they '
-            'are on the radio.')
+            'This driver is experimental. Upload writes channels, zones, '
+            'DMR lists, scan lists and radio settings. Passwords, encryption '
+            'keys and the factory calibration are left as they are on the '
+            'radio. A radio with a password set is refused.')
         rp.pre_download = (
             'Switch the radio on and connect the programming cable.\n\n'
             'The radio returns to normal by itself a few seconds after '
@@ -932,9 +1037,9 @@ class DM32UV(chirp_common.CloneModeRadio):
         rp.pre_upload = (
             'Before the first upload, download from the radio and save the '
             'image as a backup.\n\n'
-            'Upload writes only channel pages that differ from the radio '
-            'and checks each one by reading it back. It takes about a '
-            'minute plus a few seconds per changed page.')
+            'Upload writes only the pages that differ from the radio and '
+            'checks each one by reading it back. It takes about a minute '
+            'plus a few seconds per changed page.')
         return rp
 
     @classmethod
@@ -990,6 +1095,11 @@ class DM32UV(chirp_common.CloneModeRadio):
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self._forget()
+
+    def _forget(self):
+        """Drop cached lookups; called whenever the image changes."""
+        self._lookups = {}
 
     def _chan(self, number):
         page, index = channel_offset(number)
@@ -1014,7 +1124,18 @@ class DM32UV(chirp_common.CloneModeRadio):
         return [int(m) for m in zone.members[0:count]
                 if 1 <= int(m) <= CH_COUNT]
 
+    @_cached
+    def _zone_index(self):
+        """{channel: [zones it is in]}"""
+        index = collections.defaultdict(list)
+        for z in range(1, self._zone_count() + 1):
+            for m in self._zone_members(z):
+                if z not in index[m]:
+                    index[m].append(z)
+        return dict(index)
+
     def _set_zone_members(self, z, members):
+        self._forget()
         zone = self._zone(z)
         for i in range(ZONE_MEMBERS):
             zone.members[i] = members[i] if i < len(members) else 0
@@ -1024,6 +1145,7 @@ class DM32UV(chirp_common.CloneModeRadio):
         """Make zone z (which must be count + 1) an empty, named zone."""
         if z != self._zone_count() + 1 or z > ZONE_COUNT:
             raise errors.RadioError('Zones must be created in order')
+        self._forget()
         zone = self._zone(z)
         name = str(zone.name).rstrip('\x00\xFF ')
         if not name or not name.isprintable():
@@ -1033,18 +1155,19 @@ class DM32UV(chirp_common.CloneModeRadio):
 
     def _zone_list(self):
         """[(name, [members])] for zones 1..count."""
-        return [(str(self._zone(z).name).split('\x00')[0].split('\xFF')[0]
-                 .strip(), self._zone_members(z))
+        return [(str(self._zone(z).name).split('\x00')[0].split('\xFF')[0],
+                 self._zone_members(z))
                 for z in range(1, self._zone_count() + 1)]
 
     def _set_zone_list(self, zones, remap):
         """Rewrite zones 1..len(zones); remap = {old zone: new zone} for the
         radio's current-zone pointers (a zone not in it was deleted)."""
+        self._forget()
         old_count = self._zone_count()
         for z, (name, members) in enumerate(zones, 1):
             zone = self._zone(z)
             if str(zone.name).split('\x00')[0].split('\xFF')[0] != name:
-                zone.name = name[:16].ljust(16, '\x00')
+                zone.name.set_raw(_name_bytes(name, 16))
             self._set_zone_members(z, members)
         for z in range(len(zones) + 1, old_count + 1):
             self._zone(z).name.set_raw(b'\xFF' * 16)
@@ -1064,6 +1187,7 @@ class DM32UV(chirp_common.CloneModeRadio):
     def _drop_empty_last_zone(self):
         count = self._zone_count()
         if count > 1 and not self._zone_members(count):
+            self._forget()
             self._zone(count).name.set_raw(b'\xFF' * 16)
             self._memobj.zone_hdr.count = count - 1
 
@@ -1080,16 +1204,18 @@ class DM32UV(chirp_common.CloneModeRadio):
     def _put(self, tag, offset, data):
         base = IMAGE_TAGS.index(tag) * PAGE
         assert offset + len(data) <= PAGE - 1
+        self._forget()
         self._mmap.set(base + offset, bytes(data))
         self._mmap.set(base + PAGE - 1, bytes([tag]))   # the page now exists
 
     @staticmethod
     def _text(raw):
         text = raw.split(b'\xFF')[0].split(b'\x00')[0]
-        return text.decode('ascii', 'replace')
+        return text.decode('latin-1')
 
     # --- radio IDs -----------------------------------------------------------
 
+    @_cached
     def _radio_ids(self):
         """[(dmr_id, name)] for radio IDs 1..count."""
         _base, page = self._page(RADIOID_TAG)
@@ -1104,7 +1230,7 @@ class DM32UV(chirp_common.CloneModeRadio):
             if n <= len(entries):
                 dmr_id, name = entries[n - 1]
                 rec = (dmr_id.to_bytes(3, 'little') +
-                       name.encode()[:RADIOID_NAME].ljust(13, b'\x00'))
+                       _name_bytes(name, RADIOID_NAME) + b'\x00')
             else:
                 rec = b'\x00' * 16
             self._put(RADIOID_TAG, 16 * n, rec)
@@ -1115,15 +1241,19 @@ class DM32UV(chirp_common.CloneModeRadio):
         return (CONTACT_REC_TAG0 + (k - 1) // CONTACT_PER_PAGE,
                 ((k - 1) % CONTACT_PER_PAGE) * CONTACT_REC)
 
+    @_cached
     def _contacts(self):
         """{slot: (name, dmr_id, call_type index)} for used contact slots."""
         _base, index = self._page(CONTACT_INDEX_TAG)
+        pages = {}
         contacts = {}
         for k in range(1, CONTACT_MAX + 1):
             if index[0x10 + (k - 1) // 8] >> ((k - 1) % 8) & 1:
                 continue                                # free slot
             tag, off = self._contact_loc(k)
-            rec = self._page(tag)[1][off:off + CONTACT_REC]
+            if tag not in pages:
+                pages[tag] = self._page(tag)[1]
+            rec = pages[tag][off:off + CONTACT_REC]
             ctype = rec[0x16] - 3 if 3 <= rec[0x16] <= 5 else 0
             contacts[k] = (self._text(rec[2:2 + CONTACT_NAME]),
                            int.from_bytes(rec[0x13:0x16], 'little'), ctype)
@@ -1140,7 +1270,7 @@ class DM32UV(chirp_common.CloneModeRadio):
             tag, off = self._contact_loc(k)
             old = self._page(tag)[1][off:off + CONTACT_REC]
             keep = old if old != b'\xFF' * CONTACT_REC else b'\x00' * 24
-            name_b = name.encode()[:CONTACT_NAME].ljust(16, b'\x00')
+            name_b = _name_bytes(name, CONTACT_NAME)
             if self._text(keep[2:2 + CONTACT_NAME]) == name:
                 name_b = keep[2:2 + CONTACT_NAME]   # keep the radio's padding
             rec = (keep[0:2] + name_b + b'\x00' +
@@ -1190,6 +1320,7 @@ class DM32UV(chirp_common.CloneModeRadio):
 
     # --- RX group lists ------------------------------------------------------
 
+    @_cached
     def _rx_groups(self):
         """{n: (name, [member IDs])} for used groups."""
         _base, page = self._page(RXG_TAG)
@@ -1216,7 +1347,7 @@ class DM32UV(chirp_common.CloneModeRadio):
         for n in range(1, RXG_MAX + 1):
             base = RXG_REC * n - 0x5C
             name, members = groups.get(n, ('', []))
-            data = name.encode()[:RXG_NAME].ljust(RXG_NAME, b'\x00')
+            data = _name_bytes(name, RXG_NAME)
             for j in range(RXG_MEMBERS):
                 m = members[j] if j < len(members) else 0
                 data += m.to_bytes(3, 'little')
@@ -1224,6 +1355,7 @@ class DM32UV(chirp_common.CloneModeRadio):
 
     # --- scan lists ----------------------------------------------------------
 
+    @_cached
     def _scan_lists(self):
         """[(name, [channels], options bytes +0x0c..+0x17)] for 1..count."""
         _base, page = self._page(SCAN_TAG)
@@ -1255,7 +1387,7 @@ class DM32UV(chirp_common.CloneModeRadio):
             designed = int.from_bytes(opts[3:5], 'little')
             if members and designed not in members:
                 opts[3:5] = members[0].to_bytes(2, 'little')
-            rec = (name.encode()[:SCAN_NAME].ljust(SCAN_NAME, b'\x00') +
+            rec = (_name_bytes(name, SCAN_NAME) +
                    bytes([len(members)]) + bytes(opts) +
                    b''.join(m.to_bytes(2, 'little') for m in members) +
                    b'\x00' * (2 * (SCAN_MEMBERS - len(members))))
@@ -1263,9 +1395,15 @@ class DM32UV(chirp_common.CloneModeRadio):
 
     def _remove_from_scan_lists(self, number):
         lists = self._scan_lists()
-        if any(number in members for _n, members, _o in lists):
-            self._set_scan_lists([(name, [m for m in members if m != number],
-                                   opts) for name, members, opts in lists])
+        new = []
+        for name, members, opts in lists:
+            members = [m for m in members if m != number]
+            if not members and int.from_bytes(opts[3:5], 'little') == number:
+                # the designed channel; the factory lists use channel 1
+                opts = opts[:3] + SCAN_DEFAULT_OPTS[3:5] + opts[5:]
+            new.append((name, members, opts))
+        if new != lists:
+            self._set_scan_lists(new)
 
     # --- Settings tab: DMR lists ---------------------------------------------
 
@@ -1277,10 +1415,11 @@ class DM32UV(chirp_common.CloneModeRadio):
             dmr_id, name = entries[n - 1] if n <= len(entries) else (0, '')
             ids.append(RadioSetting(
                 'rid_%d_id' % n, 'Radio ID %d: DMR ID (0 = unused)' % n,
-                RadioSettingValueInteger(0, DMR_ID_MAX, dmr_id)))
+                RadioSettingValueInteger(0, DMR_ID_MAX,
+                                         min(dmr_id, DMR_ID_MAX))))
             ids.append(RadioSetting(
                 'rid_%d_name' % n, 'Radio ID %d: name' % n,
-                RadioSettingValueString(0, RADIOID_NAME, name,
+                RadioSettingValueString(0, RADIOID_NAME, _shown(name),
                                         autopad=False)))
         contacts = RadioSettingGroup('contacts', 'Contacts')
         used = self._contacts()
@@ -1289,7 +1428,7 @@ class DM32UV(chirp_common.CloneModeRadio):
             name, dmr_id, ctype = used.get(k, ('', 1, 1))
             contacts.append(RadioSetting(
                 'con_%d_name' % k, 'Contact %d: name (empty = unused)' % k,
-                RadioSettingValueString(0, CONTACT_NAME, name,
+                RadioSettingValueString(0, CONTACT_NAME, _shown(name),
                                         autopad=False)))
             contacts.append(RadioSetting(
                 'con_%d_id' % k, 'Contact %d: DMR ID' % k,
@@ -1298,17 +1437,18 @@ class DM32UV(chirp_common.CloneModeRadio):
                 'con_%d_type' % k, 'Contact %d: call type' % k,
                 RadioSettingValueList(CALL_TYPES, current_index=ctype)))
         groups = RadioSettingGroup('rx_groups', 'RX group lists')
-        by_id = {c[1]: c[0] for c in used.values()}
+        by_id = {c[1]: _shown(c[0]) for c in used.values()}
         # CHIRP keeps showing this tree after later edits, so remember the
         # names shown here: a member name stays valid after a rename.
-        self._shown_contact_ids = {c[0]: c[1] for c in used.values()}
+        self._shown_contact_ids = {_shown(c[0]): c[1] for c in used.values()}
         existing = self._rx_groups()
         spare = [n for n in range(1, RXG_MAX + 1) if n not in existing][:3]
         for n in sorted(existing) + spare:
             name, members = existing.get(n, ('', []))
             groups.append(RadioSetting(
                 'rxg_%d_name' % n, 'RX group %d: name (empty = unused)' % n,
-                RadioSettingValueString(0, RXG_NAME, name, autopad=False)))
+                RadioSettingValueString(0, RXG_NAME, _shown(name),
+                                        autopad=False)))
             groups.append(RadioSetting(
                 'rxg_%d_members' % n,
                 'RX group %d: contacts (names or IDs, comma separated)' % n,
@@ -1325,7 +1465,8 @@ class DM32UV(chirp_common.CloneModeRadio):
                 '', [], bytes(12))
             scan.append(RadioSetting(
                 'scan_%d_name' % n, 'Scan list %d: name (empty = unused)' % n,
-                RadioSettingValueString(0, SCAN_NAME, name, autopad=False)))
+                RadioSettingValueString(0, SCAN_NAME, _shown(name),
+                                        autopad=False)))
             scan.append(RadioSetting(
                 'scan_%d_members' % n,
                 'Scan list %d: channels (numbers, comma separated)' % n,
@@ -1344,12 +1485,13 @@ class DM32UV(chirp_common.CloneModeRadio):
         zones.append(RadioSetting(
             'zone_order', 'Zone order (zone numbers, comma separated; '
             'reopen the image before using the Banks tab again)',
-            RadioSettingValueString(0, 1000, ', '.join(
+            RadioSettingValueString(0, ZONE_ORDER_MAX, ', '.join(
                 str(z) for z in range(1, len(zlist) + 1)), autopad=False)))
         for z, (name, members) in enumerate(zlist, 1):
             zones.append(RadioSetting(
                 'zone_%d_name' % z, 'Zone %d: name' % z,
-                RadioSettingValueString(0, 16, name, autopad=False)))
+                RadioSettingValueString(0, 16, _shown(name),
+                                        autopad=False)))
             zones.append(RadioSetting(
                 'zone_%d_members' % z,
                 'Zone %d: channels in order (empty = delete zone)' % z,
@@ -1430,8 +1572,12 @@ class DM32UV(chirp_common.CloneModeRadio):
                     remap[n] = len(kept)
                 continue
             dmr_id = int(values['rid_%d_id' % n])
+            old_id, old_name = old[n - 1] if n <= len(old) else (0, '')
+            if dmr_id == min(old_id, DMR_ID_MAX):
+                dmr_id = old_id             # shown clamped, not changed
             if dmr_id:
-                kept.append((dmr_id, str(values['rid_%d_name' % n]).strip()))
+                kept.append((dmr_id, _edited(values['rid_%d_name' % n],
+                                             old_name)))
                 remap[n] = len(kept)
         if [e for e in kept] != old or any(k != v for k, v in remap.items()):
             self._set_radio_ids(kept)
@@ -1441,22 +1587,27 @@ class DM32UV(chirp_common.CloneModeRadio):
                     _mem.radio_id = remap.get(int(_mem.radio_id), 0)
 
         # Contacts: an empty name frees the slot.
-        contacts = self._contacts()
+        old_contacts = self._contacts()
+        contacts = dict(old_contacts)
         # RX group members are shown by name; accept the names shown when
         # the settings were read and those from before this edit too (a
         # renamed contact keeps its ID).
         by_name = dict(getattr(self, '_shown_contact_ids', {}))
-        by_name.update({c[0]: c[1] for c in contacts.values()})
+        by_name.update({_shown(c[0]): c[1] for c in contacts.values()})
         for k in range(1, CONTACT_MAX + 1):
             if 'con_%d_name' % k not in values:
                 continue
-            name = str(values['con_%d_name' % k]).strip()
+            old_name, old_id, _t = contacts.get(k, ('', 1, 0))
+            name = _edited(values['con_%d_name' % k], old_name)
             if name:
                 ctype = CALL_TYPES.index(str(values['con_%d_type' % k]))
-                contacts[k] = (name, int(values['con_%d_id' % k]), ctype)
+                dmr_id = int(values['con_%d_id' % k])
+                if dmr_id == max(old_id, 1):
+                    dmr_id = old_id         # shown clamped, not changed
+                contacts[k] = (name, dmr_id, ctype)
             else:
                 contacts.pop(k, None)
-        if contacts != self._contacts():
+        if contacts != old_contacts:
             self._set_contacts(contacts)
             for number in range(1, self._count() + 1):
                 if self._tx_contact(number) and \
@@ -1465,12 +1616,14 @@ class DM32UV(chirp_common.CloneModeRadio):
                                          self._chan(number).chtype in (1, 3))
 
         # RX groups: members by contact name or number.
-        by_name.update({c[0]: c[1] for c in contacts.values()})
-        groups = self._rx_groups()
+        by_name.update({_shown(c[0]): c[1] for c in contacts.values()})
+        old_groups = self._rx_groups()
+        groups = dict(old_groups)
         for n in range(1, RXG_MAX + 1):
             if 'rxg_%d_name' % n not in values:
                 continue
-            name = str(values['rxg_%d_name' % n]).strip()
+            name = _edited(values['rxg_%d_name' % n],
+                           groups.get(n, ('', []))[0])
             if not name:
                 groups.pop(n, None)
                 continue
@@ -1490,7 +1643,7 @@ class DM32UV(chirp_common.CloneModeRadio):
                 raise errors.InvalidValueError(
                     'RX group %s: at most %d contacts' % (name, RXG_MEMBERS))
             groups[n] = (name, members)
-        if groups != self._rx_groups():
+        if groups != old_groups:
             self._set_rx_groups(groups)
 
         # Zones: names, member order, deletion, zone order.
@@ -1498,7 +1651,8 @@ class DM32UV(chirp_common.CloneModeRadio):
             old = self._zone_list()
             edited = {}
             for z, (name, members) in enumerate(old, 1):
-                name = str(values.get('zone_%d_name' % z, name)).strip()
+                name = _edited(values.get('zone_%d_name' % z, _shown(name)),
+                               name)
                 text = values.get('zone_%d_members' % z)
                 if text is not None:
                     members = []
@@ -1547,7 +1701,8 @@ class DM32UV(chirp_common.CloneModeRadio):
                     new.append(old[n - 1])
                     remap[n] = len(new)
                 continue
-            name = str(values['scan_%d_name' % n]).strip()
+            name = _edited(values['scan_%d_name' % n],
+                           old[n - 1][0] if n <= len(old) else '')
             if not name:
                 continue
             members = []
@@ -1608,21 +1763,21 @@ class DM32UV(chirp_common.CloneModeRadio):
         mem.extra = self._get_extra(_mem, number)
         return mem
 
+    @_cached
     def _dmr_names(self, kind):
         """{index: name} of the entries in one of the DMR_LISTS."""
         tag, first, size, length, count = DMR_LISTS[kind]
-        base = IMAGE_TAGS.index(tag) * PAGE + first
-        data = self._mmap.get_packed()
+        _base, page = self._page(tag)
         names = {}
         for n in range(1, count + 1):
-            raw = data[base + (n - 1) * size:][:length]
-            name = raw.split(b'\xFF')[0].split(b'\x00')[0]
+            name = self._text(page[first + (n - 1) * size:][:length])
             if name:
-                names[n] = name.decode('ascii', 'replace')
+                names[n] = name
         return names
 
-    def _dmr_choice(self, kind, value):
-        """A RadioSettingValueList for a DMR list index (0 = none)."""
+    @_cached
+    def _choice_names(self, kind):
+        """({index: shown name}, name of 0) for _dmr_choice."""
         if kind == 'radio_id':
             names = {n: '%s (%d)' % (name, dmr_id) for n, (dmr_id, name)
                      in enumerate(self._radio_ids(), 1)}
@@ -1638,6 +1793,11 @@ class DM32UV(chirp_common.CloneModeRadio):
             none = 'None'
         else:
             names, none = self._dmr_names(kind), 'None'
+        return {n: _shown(name) for n, name in names.items()}, none
+
+    def _dmr_choice(self, kind, value):
+        """A RadioSettingValueList for a DMR list index (0 = none)."""
+        names, none = self._choice_names(kind)
         options = [none] + ['%d: %s' % kv for kv in sorted(names.items())]
         current = none if not value else '%d: %s' % (
             value, names.get(value, '(unnamed)'))
@@ -1764,8 +1924,14 @@ class DM32UV(chirp_common.CloneModeRadio):
         _encode_tone(_mem.rxtone, *rxtone)
 
         tx_contact = self._tx_contact(mem.number)
+        # Values shown clamped (e.g. squelch 12 as 9) stay as they are
+        # unless the user changed them.
+        shown = {s.get_name(): str(s.value)
+                 for s in self._get_extra(_mem, mem.number)}
         for setting in mem.extra:
             name = setting.get_name()
+            if shown.get(name) == str(setting.value):
+                continue
             if name == 'chtype':
                 # Keep the analog/digital choice consistent with the mode.
                 value = CHTYPES.index(str(setting.value))
