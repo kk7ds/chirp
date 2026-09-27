@@ -80,6 +80,19 @@ RXG_TAG, RXG_MAX, RXG_NAME, RXG_MEMBERS, RXG_REC = 0x0F, 32, 11, 32, 0x6D
 # 2 bytes per channel on tags 0x42/0x43, 12-bit contact number + digital flag
 TXC_TAGS = (0x42, 0x43)
 DMR_ID_MAX, ALL_CALL_ID = 16776415, 16777215
+# Scan lists (tag 0x11; CPS 0x483050-0x484160): byte 0 = number of lists;
+# list n at 0x39*n - 0x38: 11-char name, +0x0b member count, +0x0c CTC scan
+# mode (low nibble) / TX mode (high nibble), +0x0d..+0x17 other options
+# (kept as they are), +0x18 up to 16 u16 channel numbers. The members start
+# in the first slot (checked on the radio's own display).
+SCAN_TAG, SCAN_MAX, SCAN_REC, SCAN_NAME, SCAN_MEMBERS = 0x11, 32, 0x39, 11, 16
+# [ScanCtcDcsMode]
+SCAN_CTC_MODES = ['Not Detection CTC', 'Detection CTC Non Priority',
+                  'Detection CTC Priority', 'Detection CTC']
+SCAN_TX_MODES = ['Current Channel', 'Last Active Channel',    # [ScanTxMode]
+                 'Designed Channel']
+# options of the radio's factory scan lists; bytes 3-4 = designed channel
+SCAN_DEFAULT_OPTS = bytes.fromhex('030600010000000000' '0a007f')
 
 # Received bytes sometimes have this bit set when the radio sent it clear.
 LINK_FAULT = 0x80
@@ -91,7 +104,7 @@ READ_COPIES, READ_TRIES = 3, 10
 UPLOAD_TAGS = (list(range(0x12, 0x42)) + list(range(0x5C, 0x65)) +
                [RXG_TAG, CONTACT_INDEX_TAG] + list(TXC_TAGS) +
                list(range(CONTACT_REC_TAG0, CONTACT_REC_TAG0 + 5)) +
-               [RADIOID_TAG])
+               [RADIOID_TAG, SCAN_TAG])
 NEVER_WRITE = (0x02, 0x69)
 WRITE_TRIES = 3
 
@@ -844,6 +857,51 @@ class DM32UV(chirp_common.CloneModeRadio):
                 data += m.to_bytes(3, 'little')
             self._put(RXG_TAG, base, data)
 
+    # --- scan lists ----------------------------------------------------------
+
+    def _scan_lists(self):
+        """[(name, [channels], options bytes +0x0c..+0x17)] for 1..count."""
+        _base, page = self._page(SCAN_TAG)
+        count = page[0] if page[0] <= SCAN_MAX else 0
+        lists = []
+        for n in range(1, count + 1):
+            rec = page[SCAN_REC * n - 0x38:][:SCAN_REC]
+            k = min(rec[0x0B], SCAN_MEMBERS)
+            members = [int.from_bytes(rec[0x18 + 2 * i:0x1A + 2 * i],
+                                      'little') for i in range(k)]
+            lists.append((self._text(rec[:SCAN_NAME]),
+                          [m for m in members if 1 <= m <= CH_COUNT],
+                          rec[0x0C:0x18]))
+        return lists
+
+    def _set_scan_lists(self, lists):
+        default = lists[0][2] if lists else SCAN_DEFAULT_OPTS
+        old_count = len(self._scan_lists())
+        self._put(SCAN_TAG, 0, bytes([len(lists)]))
+        for n in range(1, SCAN_MAX + 1):
+            base = SCAN_REC * n - 0x38
+            if n > len(lists):
+                if n <= old_count:          # a list that was removed
+                    self._put(SCAN_TAG, base, b'\x00' * SCAN_REC)
+                continue
+            name, members, opts = lists[n - 1]
+            opts = bytearray(opts if len(opts) == 12 else default)
+            members = members[:SCAN_MEMBERS]
+            designed = int.from_bytes(opts[3:5], 'little')
+            if members and designed not in members:
+                opts[3:5] = members[0].to_bytes(2, 'little')
+            rec = (name.encode()[:SCAN_NAME].ljust(SCAN_NAME, b'\x00') +
+                   bytes([len(members)]) + bytes(opts) +
+                   b''.join(m.to_bytes(2, 'little') for m in members) +
+                   b'\x00' * (2 * (SCAN_MEMBERS - len(members))))
+            self._put(SCAN_TAG, base, rec[:SCAN_REC])
+
+    def _remove_from_scan_lists(self, number):
+        lists = self._scan_lists()
+        if any(number in members for _n, members, _o in lists):
+            self._set_scan_lists([(name, [m for m in members if m != number],
+                                   opts) for name, members, opts in lists])
+
     # --- Settings tab: DMR lists ---------------------------------------------
 
     def get_settings(self):
@@ -895,7 +953,28 @@ class DM32UV(chirp_common.CloneModeRadio):
         dmr.append(ids)
         dmr.append(contacts)
         dmr.append(groups)
-        return RadioSettings(dmr)
+        scan = RadioSettingGroup('scan', 'Scan lists')
+        lists = self._scan_lists()
+        for n in range(1, min(len(lists) + 1, SCAN_MAX) + 1):
+            name, members, opts = lists[n - 1] if n <= len(lists) else (
+                '', [], bytes(12))
+            scan.append(RadioSetting(
+                'scan_%d_name' % n, 'Scan list %d: name (empty = unused)' % n,
+                RadioSettingValueString(0, SCAN_NAME, name, autopad=False)))
+            scan.append(RadioSetting(
+                'scan_%d_members' % n,
+                'Scan list %d: channels (numbers, comma separated)' % n,
+                RadioSettingValueString(0, 100, ', '.join(map(str, members)),
+                                        autopad=False)))
+            scan.append(RadioSetting(
+                'scan_%d_ctc' % n, 'Scan list %d: CTC scan mode' % n,
+                RadioSettingValueList(SCAN_CTC_MODES, current_index=min(
+                    opts[0] & 0xF, len(SCAN_CTC_MODES) - 1))))
+            scan.append(RadioSetting(
+                'scan_%d_tx' % n, 'Scan list %d: scan TX mode' % n,
+                RadioSettingValueList(SCAN_TX_MODES, current_index=min(
+                    opts[0] >> 4, len(SCAN_TX_MODES) - 1))))
+        return RadioSettings(dmr, scan)
 
     def set_settings(self, settings):
         values = {}
@@ -981,6 +1060,46 @@ class DM32UV(chirp_common.CloneModeRadio):
         if groups != self._rx_groups():
             self._set_rx_groups(groups)
 
+        # Scan lists: an empty name removes the list; lists stay numbered
+        # 1..count, so channels pointing at a later list are renumbered.
+        old = self._scan_lists()
+        new, remap = [], {}
+        for n in range(1, SCAN_MAX + 1):
+            if 'scan_%d_name' % n not in values:
+                if n <= len(old):
+                    new.append(old[n - 1])
+                    remap[n] = len(new)
+                continue
+            name = str(values['scan_%d_name' % n]).strip()
+            if not name:
+                continue
+            members = []
+            for item in str(values['scan_%d_members' % n]).split(','):
+                item = item.strip()
+                if not item:
+                    continue
+                if not item.isdigit() or not 1 <= int(item) <= CH_COUNT:
+                    raise errors.InvalidValueError(
+                        'Scan list %s: %r is not a channel number' % (
+                            name, item))
+                members.append(int(item))
+            if len(members) > SCAN_MEMBERS:
+                raise errors.InvalidValueError(
+                    'Scan list %s: at most %d channels' % (name, SCAN_MEMBERS))
+            opts = bytearray(old[n - 1][2] if n <= len(old) else (
+                old[0][2] if old else SCAN_DEFAULT_OPTS))
+            tx_mode = SCAN_TX_MODES.index(str(values['scan_%d_tx' % n]))
+            ctc_mode = SCAN_CTC_MODES.index(str(values['scan_%d_ctc' % n]))
+            opts[0] = tx_mode << 4 | ctc_mode
+            new.append((name, members, bytes(opts)))
+            remap[n] = len(new)
+        if new != old:
+            self._set_scan_lists(new)
+            for number in range(1, self._count() + 1):
+                _mem = self._chan(number)
+                if int(_mem.scanlist):
+                    _mem.scanlist = remap.get(int(_mem.scanlist), 0)
+
     def get_raw_memory(self, number):
         return repr(self._chan(number))
 
@@ -1037,6 +1156,9 @@ class DM32UV(chirp_common.CloneModeRadio):
         elif kind == 'rxgroup':
             names = {n: g[0] for n, g in self._rx_groups().items()}
             none = 'None'
+        elif kind == 'scanlist':
+            names = {n: sl[0] for n, sl in enumerate(self._scan_lists(), 1)}
+            none = 'None'
         else:
             names, none = self._dmr_names(kind), 'None'
         options = [none] + ['%d: %s' % kv for kv in sorted(names.items())]
@@ -1076,6 +1198,9 @@ class DM32UV(chirp_common.CloneModeRadio):
             'privacy', 'Encryption key (DMR)',
             self._dmr_choice('privacy', int(_mem.privacy))))
         extra.append(RadioSetting(
+            'scanlist', 'Scan list',
+            self._dmr_choice('scanlist', int(_mem.scanlist))))
+        extra.append(RadioSetting(
             'squelch', 'Squelch level',
             RadioSettingValueInteger(0, 9, min(int(_mem.squelch), 9))))
         extra.append(RadioSetting(
@@ -1114,6 +1239,7 @@ class DM32UV(chirp_common.CloneModeRadio):
                     self._set_zone_members(
                         z, [m for m in members if m != mem.number])
             self._drop_empty_last_zone()
+            self._remove_from_scan_lists(mem.number)
             if mem.number == self._count():
                 count = mem.number - 1
                 while count and self.get_memory(count).empty:
@@ -1180,7 +1306,7 @@ class DM32UV(chirp_common.CloneModeRadio):
                 setattr(_mem, name,
                         LIST_EXTRAS[name][1].index(str(setting.value)))
             elif name in ('tx_contact', 'radio_id', 'rxgroup', 'privacy',
-                          'emerg_system'):
+                          'emerg_system', 'scanlist'):
                 choice = str(setting.value)
                 value = int(choice.split(':')[0]) if ':' in choice else 0
                 if name == 'tx_contact':
