@@ -63,6 +63,7 @@ ZONE_PER_PAGE, ZONE_COUNT, ZONE_MEMBERS = 28, 250, 64
 # name length, entries. Keys are chosen per channel, not edited.
 DMR_LISTS = {
     'privacy': (0x10, 0x301, 0x2C, 10, 32),
+    'emergency': (0x10, 0x000, 0x14, 10, 8),     # digital emergency systems
 }
 # DMR lists, from the CPS accessors (see PROTOCOL.md "DMR lists"):
 # radio IDs (tag 0x67): count at 0, entry n at 16*n = u24 LE ID + 12-char name
@@ -168,6 +169,36 @@ def channel_offset(n):
 
 
 CHTYPES = ['Analog', 'Digital', 'Fixed Analog', 'Fixed Digital']
+# Value lists of the channel options, from the CPS language file sections
+# (in brackets); the stored field is the index.
+LIST_EXTRAS = {
+    'rx_squelch_mode': ('RX squelch mode', [      # [RxSquelchMode]
+        'Carrier/CTC', 'Optional Signaling', 'CTC & Optional Signaling',
+        'CTC | Optional Signaling']),
+    'signaling': ('Signaling type', [             # [ChannelSignalingType]
+        'None', 'DTMF', 'Two Tone', 'Five Tone', 'BDC1200']),
+    'ptt_id': ('PTT ID', ['Off', 'BOT', 'EOT', 'Both']),   # [ChannelPttId]
+    # [ChannelAprsReport]
+    'aprs_report': ('APRS report (DMR)', ['Off', 'Digital']),
+}
+# [ChAnaTxAdmit] for analog channels, [ChDigTxAdmit] for digital ones
+TX_ADMIT = {False: ['Allow TX', 'Channel Idle', 'Match CTC', 'Non Match CTC'],
+            True: ['Always', 'Channel Idle', 'Color Code Idle']}
+BOOL_EXTRAS = [
+    ('vox', 'VOX'),
+    ('compander', 'Compander'),
+    ('ptt_id_display', 'PTT ID display'),
+    ('lone_work', 'Lone worker'),
+    ('auto_scan', 'Auto scan'),
+    ('aprs_rx', 'APRS receive'),
+    ('aprs_ptt_analog', 'Analog APRS PTT mode'),
+    ('aprs_ptt_digital', 'Digital APRS PTT mode'),
+    ('emerg_indicator', 'Emergency indicator (DMR)'),
+    ('emerg_ack', 'Emergency ACK (DMR)'),
+    ('private_confirm', 'Private call confirm (DMR)'),
+    ('short_data_confirm', 'Short data confirm (DMR)'),
+    ('tdma_direct', 'TDMA direct mode (DMR)'),
+]
 POWER_LEVELS = [chirp_common.PowerLevel('Low', watts=1),
                 chirp_common.PowerLevel('Middle', watts=2.5),
                 chirp_common.PowerLevel('High', watts=5)]
@@ -1053,6 +1084,22 @@ class DM32UV(chirp_common.CloneModeRadio):
         extra.append(RadioSetting(
             'forbid_talkaround', 'Forbid talkaround',
             RadioSettingValueBoolean(bool(_mem.forbid_talkaround))))
+        admit = TX_ADMIT[_mem.chtype in (1, 3)]
+        extra.append(RadioSetting(
+            'tx_admit', 'TX admit',
+            RadioSettingValueList(admit, current_index=min(
+                int(_mem.tx_admit), len(admit) - 1))))
+        for name, (label, options) in LIST_EXTRAS.items():
+            extra.append(RadioSetting(
+                name, label, RadioSettingValueList(options, current_index=min(
+                    int(getattr(_mem, name)), len(options) - 1))))
+        extra.append(RadioSetting(
+            'emerg_system', 'Emergency system (DMR)',
+            self._dmr_choice('emergency', int(_mem.emerg_system))))
+        for name, label in BOOL_EXTRAS:
+            extra.append(RadioSetting(
+                name, label,
+                RadioSettingValueBoolean(bool(getattr(_mem, name)))))
         return extra
 
     def set_memory(self, mem):
@@ -1118,7 +1165,17 @@ class DM32UV(chirp_common.CloneModeRadio):
                     _mem.chtype = value
             elif name == 'timeslot':
                 _mem.timeslot = int(str(setting.value)) - 1
-            elif name in ('tx_contact', 'radio_id', 'rxgroup', 'privacy'):
+            elif name == 'tx_admit':
+                value = str(setting.value)
+                options = TX_ADMIT[_mem.chtype in (1, 3)]
+                if value not in options:           # mode changed: other list
+                    options = TX_ADMIT[_mem.chtype not in (1, 3)]
+                _mem.tx_admit = options.index(value)
+            elif name in LIST_EXTRAS:
+                setattr(_mem, name,
+                        LIST_EXTRAS[name][1].index(str(setting.value)))
+            elif name in ('tx_contact', 'radio_id', 'rxgroup', 'privacy',
+                          'emerg_system'):
                 choice = str(setting.value)
                 value = int(choice.split(':')[0]) if ':' in choice else 0
                 if name == 'tx_contact':
