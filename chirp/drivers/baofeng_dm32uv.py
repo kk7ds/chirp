@@ -611,15 +611,31 @@ class _Link:
         raise errors.RadioError('Could not read flash at %06x reliably' % addr)
 
 
-def _identify(link):
+MODEL_ID = b'DP570UV'                  # PSEARCH reply of the DM-32UV
+TESTED_FIRMWARE = ('DM32.01.01.047',)
+
+
+def _search(link):
+    """Send PSEARCH; return the model ID the radio reports."""
     for _attempt in range(5):
         link.send(b'PSEARCH')
         resp = link.recv(8)
         if len(resp) == 8 and _marker_ok(resp[0], 0x06):
-            break
-    else:
-        raise errors.RadioError('Radio did not respond. Is it switched on '
-                                'and connected?')
+            # ASCII: clearing bit 7 undoes the link fault
+            return bytes(b & 0x7F for b in resp[1:])
+    raise errors.RadioError('Radio did not respond. Is it switched on '
+                            'and connected?')
+
+
+def _check_model(model):
+    if model != MODEL_ID:
+        raise errors.RadioError(
+            'This radio identifies as %r, not as a Baofeng DM-32UV (%r)' % (
+                model.decode('ascii', 'replace'), MODEL_ID.decode()))
+
+
+def _identify(link):
+    _check_model(_search(link))
     resp = link.xfer(b'PASSSTA', 3)
     if not _marker_ok(resp[0], ord('P')):
         raise errors.RadioError('Unexpected reply to PASSSTA')
@@ -636,7 +652,12 @@ def _identify(link):
     start, end = struct.unpack('<II', info[10][:8])
     if (start | end) >> 24 or start >= end:
         raise errors.RadioError('Unexpected codeplug range from radio')
-    return info[1].decode('ascii', 'replace'), start, end
+    firmware = info[1].decode('ascii', 'replace')
+    if firmware not in TESTED_FIRMWARE:
+        LOG.warning('DM-32UV firmware %s has not been tested with this '
+                    'driver (tested: %s)', firmware,
+                    ', '.join(TESTED_FIRMWARE))
+    return firmware, start, end
 
 
 def _enter_program(link):
@@ -915,6 +936,12 @@ class DM32UV(chirp_common.CloneModeRadio):
             'and checks each one by reading it back. It takes about a '
             'minute plus a few seconds per changed page.')
         return rp
+
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        """Check that the connected radio is a DM-32UV."""
+        _check_model(_search(_Link(pipe)))
+        return cls
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
