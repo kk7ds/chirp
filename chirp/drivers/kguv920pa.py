@@ -455,7 +455,7 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             # add the chars to the packet
             _packet += payload
         # calculate and add the checksum to the packet
-        _packet += bytes([checksum.checksum_8bit(_packet[1:])])
+        _packet += bytes([checksum.checksum_8bit(_packet[1:], 16)])
         LOG.debug("Sent:\n%s" % util.hexprint(_packet))
         self.pipe.write(_packet)
 
@@ -468,8 +468,8 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             raise errors.RadioError('Radio sent short header')
         _length = _header[3]
         _packet = self.pipe.read(_length)
-        _cs = checksum.checksum_8bit(_header[1:])
-        _cs += checksum.checksum_8bit(_packet)
+        _cs = checksum.checksum_8bit(_header[1:], 16)
+        _cs += checksum.checksum_8bit(_packet, 16)
         _cs %= 16
         try:
             _rcs = self.pipe.read(1)[0]
