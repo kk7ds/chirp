@@ -108,7 +108,7 @@ READ_COPIES, READ_TRIES = 3, 10
 # references. One whole aligned page per W frame: the firmware erases the
 # sector on an aligned W and also erases the next sector if a W crosses
 # into it. Tags 0x02 and 0x69 look like calibration: never written.
-UPLOAD_TAGS = ([0x04, RADIOID_TAG] +
+UPLOAD_TAGS = ([0x03, 0x04, 0x06, RADIOID_TAG] +
                list(range(CONTACT_REC_TAG0, CONTACT_REC_TAG0 + 5)) +
                [CONTACT_INDEX_TAG, RXG_TAG, SCAN_TAG] +
                list(range(0x12, 0x42)) + list(TXC_TAGS) +
@@ -130,12 +130,12 @@ struct chan {
      colorcode:4;
   u8 privacy;
   u8 unknown1f:1, encrypt:1, rxgroup:6;
-  u8 unknown20;
+  u8 aprs_channel;
   u8 rxtone[2];
   u8 txtone[2];
   u8 unknown25:2, compander:1, vox:1, unknown25b:4;
   u8 ptt_id_display:1, rx_squelch_mode:3, signaling:3, unknown26:1;
-  u8 unknown27;
+  u8 rx_signal:4, tx_signal:4;
   u8 unknown28;
   u8 step:4, ptt_id:2, unknown29:2;
   u8 unknown2a;
@@ -211,18 +211,18 @@ struct {
   u8 unknown82[3];
   u8 unknown85:4, forbid_lock:1, side_lock:1, knob_lock:1, lock_mode:1;
   u8 lock_delay;
-  u8 key_tk_short;
-  u8 key_tk_long;
-  u8 key_sk2_short;
-  u8 key_sk2_long;
   u8 key_sk1_short;
   u8 key_sk1_long;
-  u8 key_p3_short;
-  u8 key_p3_long;
-  u8 key_p2_short;
-  u8 key_p2_long;
+  u8 key_sk2_short;
+  u8 key_sk2_long;
+  u8 key_tk_short;
+  u8 key_tk_long;
   u8 key_p1_short;
   u8 key_p1_long;
+  u8 key_p2_short;
+  u8 key_p2_long;
+  u8 key_p3_short;
+  u8 key_p3_long;
   u8 long_press;
 } set_work;
 #seekto 0x%(ba0)x;
@@ -237,6 +237,22 @@ struct {
   u8 mic_analog;
   u8 mic_digital;
 } set_opts;
+#seekto 0x%(b301)x;
+struct {
+  u8 send_interval;
+  u8 unknown302:7, fixed_beacon:1;
+  u8 unknown303[3];
+  char latitude[9];
+  u8 lat_hemi;
+  char longitude[9];
+  u8 lon_hemi;
+  u8 unknown31a[4];
+  ul16 report_channel[8];
+  u8 unknown32e[2];
+  u8 active_delay;
+  u8 unknown331:7, call_type:1;
+  ul24 upload_number;
+} set_aprs;
 #seekto 0x%(b500)x;
 struct {
   u8 unknown500:6, new_zone:1, zone_list:1;
@@ -257,13 +273,152 @@ struct {
 """
 
 
+# DTMF (tag 0x06; CPS dialog 0x421bc0, accessors 0x47bb10-0x47c920). Codes
+# are one digit per byte (0-9, A-D = 10-13, * = 14, # = 15), ended by 0xFF.
+# 0xA20 on is BDC1200 (not handled; kept as it is).
+DTMF_TAG, DTMF_CODES, DTMF_CONTACTS = 0x06, 16, 64
+DTMF_CHARS = '0123456789ABCD*#'
+CODE_CHARS = {'dtmf': DTMF_CHARS, 'digits': '0123456789',
+              'hex': '0123456789ABCDEF'}
+DTMF_FORMAT = """
+#seekto 0x%%(b)x;
+struct {
+%s
+  u8 pre_carrier;
+  u8 first_digit;
+  u8 duration;
+  u8 interval;
+  u8 auto_reset;
+  u8 unknown105:7, side_tone:1;
+  u8 self_id[3];
+  u8 group_code;
+  u8 interval_sign;
+  u8 auto_answer;
+  u8 ptt_id_pause;
+  u8 unknown10d;
+  u8 min_duration;
+  u8 unknown10f;
+  u8 ptt_id_up[16];
+  u8 ptt_id_down[16];
+  u8 stun_code[16];
+  u8 kill_code[16];
+} dtmf;
+#seekto 0x%%(b1ff)x;
+u8 dtmf_contact_count;
+struct {
+  char name[16];
+  u8 number[5];
+  u8 unknown[11];
+} dtmf_contacts[%d];
+""" % ('\n'.join('  u8 code%d[16];' % i for i in range(1, DTMF_CODES + 1)),
+       DTMF_CONTACTS)
+# Two-tone (tag 0x03; CPS dialogs 0x45a760 system, 0x45ac30 decode,
+# 0x45ae20 encode; accessors 0x479df0-0x47a7a0). Times in 0.1 s,
+# frequencies in 0.1 Hz. Five-tone is on the same page from 0x730.
+SIGNAL_TAG, TT_ENCODE, TT_DECODE = 0x03, 32, 4
+TT_FORMAT = """
+#seekto 0x%%(b1)x;
+u8 tt_encode_count;
+#seekto 0x%%(b30)x;
+struct {
+  u8 pre_carrier;
+  u8 first_tone;
+  u8 second_tone;
+  u8 long_tone;
+  u8 interval;
+  u8 unknown35;
+  u8 polite_wait;
+  ul16 freq_a;
+  ul16 freq_b;
+  ul16 freq_c;
+  ul16 freq_d;
+  u8 unknown3f:6, side_tone:1, idle_ack:1;
+  u8 auto_reset;
+%s
+} twotone;
+#seekto 0x%%(b220)x;
+struct {
+  u8 name[32];
+  u8 unknown20:7, single_tone:1;
+  u8 unknown21;
+  ul16 tone1;
+  ul16 tone2;
+  u8 unknown26[2];
+} tt_encode[%d];
+""" % ('\n'.join('  u8 dec%d_format;\n  u8 dec%d_call;\n'
+                 '  u8 dec%d_unknown:7, dec%d_reply:1;\n  u8 dec%d_unknown2;'
+                 % ((i,) * 5) for i in range(1, TT_DECODE + 1)), TT_ENCODE)
+# Five-tone (tag 0x03 from 0x730; CPS dialogs 0x4254c0 system, 0x426240
+# message codes, 0x426590 special calls). Codes are hex digits, one per
+# byte, 0xFF-terminated.
+FT_MSG, FT_SPECIAL = 8, 32
+FT_FORMAT = """
+#seekto 0x%%(b730)x;
+struct {
+  u8 self_id[5];
+  u8 decode_std;
+  u8 unknown736:4, decode_resp:4;
+  u8 unknown737[3];
+  u8 pre_carrier;
+  u8 auto_reset;
+  u8 send_delay;
+  u8 ptt_id_pause;
+  u8 first_delay;
+  u8 unknown73f:7, side_tone:1;
+  u8 unknown740[16];
+%s
+  u8 bot_id[16];
+  u8 bot_std;
+  u8 bot_long;
+  u8 unknown7e2[14];
+  u8 eot_id[16];
+  u8 eot_std;
+  u8 eot_long;
+} fivetone;
+#seekto 0x%%(b820)x;
+struct {
+  u8 type;
+  u8 code[5];
+  u8 delimiter;
+  u8 standard;
+  u8 tone_long;
+  u8 unknown9[7];
+  u8 data[16];
+  u8 name[16];
+} ft_special[%d];
+""" % ('\n'.join('  u8 msg%d_func;\n  u8 msg%d_unknown:4, msg%d_resp:4;\n'
+                 '  u8 msg%d_code[12];\n  u8 msg%d_pad[2];' % ((i,) * 5)
+                 for i in range(1, FT_MSG + 1)), FT_SPECIAL)
+FT_STANDARDS = ['ZVEI1', 'ZVEI2', 'ZVEI3', 'CCIR1', 'CCIR2', 'CCIR3', 'EEA',
+                'EIA']                                # [FiveTone*Standard]
+FT_SPECIAL_TYPES = (['Off', 'ANI', 'Data Transmission'],  # [SpecialCallType]
+                    [0xFF, 0, 1])
+FT_DELIMITERS = ['No Pause in mid', 'A', 'B', 'C', 'D', 'E', 'F']
+FT_TONE_LONG = (['%d ms' % i for i in range(30, 101, 10)], 3)
+TT_HZ = (2885, 31068)            # frequency limits in 0.1 Hz (CPS 0x45a760)
+# [TwoToneDecodeFormat] and the stored codes (CPS 0x47a1f0)
+TT_DECODE_FORMATS = ['None', 'A-B', 'A-C', 'A-D', 'B-A', 'B-C', 'B-D', 'C-A',
+                     'C-B', 'C-D', 'D-A', 'D-B', 'D-C', 'Long A', 'Long B',
+                     'Long C', 'Long D']
+TT_DECODE_CODES = [0xFF, 0x01, 0x02, 0x03, 0x10, 0x12, 0x13, 0x20, 0x21,
+                   0x23, 0x30, 0x31, 0x32, 0x0F, 0x1F, 0x2F, 0x3F]
+# The page each settings struct lives on.
+STRUCT_TAGS = {'dtmf': DTMF_TAG, 'twotone': SIGNAL_TAG,
+               'fivetone': SIGNAL_TAG}
+
+
 def _mem_format():
     """Channel pages as the CPS lays them out (see channel_offset)."""
     b = IMAGE_TAGS.index(0x04) * PAGE      # settings come first: lowest slot
+    d = IMAGE_TAGS.index(DTMF_TAG) * PAGE
+    t = IMAGE_TAGS.index(SIGNAL_TAG) * PAGE
     fmt = [CHAN_FORMAT,
+           TT_FORMAT % dict(b1=t + 1, b30=t + 0x30, b220=t + 0x220),
+           FT_FORMAT % dict(b730=t + 0x730, b820=t + 0x820),
            SETTINGS_FORMAT % dict(b=b, b30=b + 0x30, b40=b + 0x40,
                                   b60=b + 0x60, b80=b + 0x80, ba0=b + 0xA0,
-                                  b500=b + 0x500),
+                                  b301=b + 0x301, b500=b + 0x500),
+           DTMF_FORMAT % dict(b=d, b1ff=d + 0x1FF),
            '#seekto 0x%x;\nul16 ch_count;' % CH_BASE,
            '#seekto 0x%x;\nstruct chan page0[84];' % (CH_BASE + 0x10)]
     for p in range(1, 48):
@@ -389,8 +544,8 @@ _KEY_FUNCS = [
     'Flashlight', 'Man Down Alarm']                           # [KeyFuncData]
 _UTC = ['UTC %+d:00' % h if h else 'UTC' for h in range(-12, 14)]
 _ONOFF = (['Off', 'On'], 0)
-# The key names follow the CPS dialog's control order; storage pairs short
-# and long press (0x87/0x88 ...), which key owns which pair is inferred.
+# Which key owns which byte comes from the CPS keys dialog (0x430760: the
+# accessor that fills each control, and 0x430600: the control's label).
 RADIO_SETTINGS.append(('Keys', [
     ('set_work', 'lock_mode', 'Keypad lock',
      'list', (['Manual', 'Auto'], 0)),
@@ -449,6 +604,197 @@ RADIO_SETTINGS.append(('GPS and recording', [
     ('set_gps', 'record_type', 'Recording type',
      'list', (['Receive', 'Transmit', 'Receive+Transmit'], 0)),
 ]))
+# APRS (CPS dialog 0x439c00, accessors 0x488580-0x488cb0). The radio
+# reports its position over DMR: to the "upload number" (a DMR ID) as a
+# private or group call, on one of 8 report channels chosen per channel.
+# Coordinates are 9 ASCII characters, e.g. "23.000000" / "118.00000"; the
+# hemisphere is separate.
+RADIO_SETTINGS.append(('APRS', [
+    ('set_aprs', 'send_interval', 'Scheduled send time',
+     'list', (['Off'] + ['%d s' % i for i in range(30, 7201, 30)], 0)),
+    ('set_aprs', 'fixed_beacon', 'Fixed beacon (use the position below)',
+     'bool', None),
+    ('set_aprs', 'latitude', 'Latitude (degrees)', 'coord', 90),
+    ('set_aprs', 'lat_hemi', 'Latitude N/S', 'list', (['N', 'S'], 0)),
+    ('set_aprs', 'longitude', 'Longitude (degrees)', 'coord', 180),
+    ('set_aprs', 'lon_hemi', 'Longitude E/W', 'list', (['E', 'W'], 0)),
+    ('set_aprs', 'upload_number', 'Upload number (DMR ID, 0 = none)',
+     'int', (0, DMR_ID_MAX)),
+    ('set_aprs', 'call_type', 'Call type',
+     'list', (['Private', 'Group'], 0)),                   # [AprsCallType]
+    ('set_aprs', 'active_delay', 'Repeater active delay',
+     'list', (['Off'] + ['%d ms' % i for i in range(100, 1001, 100)], 0)),
+] + [('set_aprs', 'report_channel', 'Report channel %d' % (i + 1),
+      'channel', i) for i in range(8)]))
+
+
+_MS = '%d ms'
+RADIO_SETTINGS.append(('DTMF', [
+    ('dtmf', 'self_id', 'Self ID code', 'digits', 3),
+    ('dtmf', 'ptt_id_up', 'PTT ID up code (BOT)', 'dtmf', 16),
+    ('dtmf', 'ptt_id_down', 'PTT ID down code (EOT)', 'dtmf', 16),
+    ('dtmf', 'stun_code', 'Stun code', 'dtmf', 16),
+    ('dtmf', 'kill_code', 'Kill code', 'dtmf', 16),
+    ('dtmf', 'group_code', 'Group code', 'list', (         # [DtmfGroupCode]
+        ['Off', 'A', 'B', 'C', 'D', '*', '#'], [0xFF] + list(range(10, 16)))),
+    ('dtmf', 'interval_sign', 'DTMF interval sign', 'list', (
+        ['A', 'B', 'C', 'D', '*', '#'], 10)),             # [DtmfIntervalSign]
+    ('dtmf', 'auto_answer', 'Auto answer', 'list', (       # [DtmfAutoAck]
+        ['Off', 'Alert Tone', 'Alert Tone And Ack'], 0)),
+    ('dtmf', 'side_tone', 'Side tone', 'bool', None),
+    ('dtmf', 'pre_carrier', 'Pre-carrier time', 'list', (
+        [_MS % i for i in range(300, 5001, 50)], 15)),
+    ('dtmf', 'first_digit', 'First digit time', 'list', (
+        [_MS % i for i in range(100, 1001, 50)], 0)),
+    ('dtmf', 'duration', 'Send DTMF duration', 'list', (
+        [_MS % i for i in range(80, 2001, 10)], 0)),
+    ('dtmf', 'interval', 'Send DTMF interval', 'list', (
+        [_MS % i for i in range(80, 2001, 10)], 0)),
+    ('dtmf', 'min_duration', 'Dial code minimum duration', 'list', (
+        [_MS % i for i in range(25, 2501, 25)], 0)),
+    ('dtmf', 'auto_reset', 'Auto reset time', 'list', (
+        ['%d s' % i for i in range(1, 256)], 1)),
+    ('dtmf', 'ptt_id_pause', 'PTT ID pause time', 'list', (
+        ['Off'] + ['%d s' % i for i in range(5, 76)],
+        [0] + list(range(5, 76)))),
+] + [('dtmf', 'code%d' % i, 'DTMF code %d' % i, 'dtmf', 16)
+     for i in range(1, DTMF_CODES + 1)]))
+
+
+def _tenths(first, last, unit='s'):
+    return ['%.1f %s' % (i / 10, unit) for i in range(first, last + 1)]
+
+
+RADIO_SETTINGS.append(('Two-tone', [
+    ('twotone', 'freq_a', 'Tone A frequency (Hz)', 'hz', TT_HZ),
+    ('twotone', 'freq_b', 'Tone B frequency (Hz)', 'hz', TT_HZ),
+    ('twotone', 'freq_c', 'Tone C frequency (Hz)', 'hz', TT_HZ),
+    ('twotone', 'freq_d', 'Tone D frequency (Hz)', 'hz', TT_HZ),
+    ('twotone', 'pre_carrier', 'Pre-carrier time', 'list',
+     (_tenths(0, 50), 0)),
+    ('twotone', 'first_tone', 'First tone duration', 'list',
+     (_tenths(5, 40), 5)),
+    ('twotone', 'second_tone', 'Second tone duration', 'list',
+     (_tenths(5, 40), 5)),
+    ('twotone', 'long_tone', 'Long tone duration', 'list',
+     (_tenths(5, 100), 5)),
+    ('twotone', 'interval', 'Interval time', 'list', (_tenths(0, 20), 0)),
+    ('twotone', 'polite_wait', 'Polite wait time', 'list',
+     (_tenths(0, 50), 0)),
+    ('twotone', 'auto_reset', 'Auto reset time', 'list', (
+        ['%d s' % i for i in range(1, 256)], 1)),
+    ('twotone', 'idle_ack', 'Idle ack', 'bool', None),
+    ('twotone', 'side_tone', 'Side tone', 'bool', None),
+] + [entry for i in range(1, TT_DECODE + 1) for entry in (
+    ('twotone', 'dec%d_format' % i, 'Decode %d: format' % i, 'list',
+     (TT_DECODE_FORMATS, TT_DECODE_CODES)),
+    ('twotone', 'dec%d_call' % i, 'Decode %d: call type' % i, 'list', (
+        ['None', 'Call Alert', 'Voice Call Alert', 'Select Call'], 0)),
+    ('twotone', 'dec%d_reply' % i, 'Decode %d: reply' % i, 'bool', None))]))
+
+
+_RESPONSES = ['None', 'Alert Tone', 'Alert Tone And ACK']
+RADIO_SETTINGS.append(('Five-tone', [
+    ('fivetone', 'self_id', 'Self ID code', 'hex', 5),
+    ('fivetone', 'decode_std', 'Decode standard', 'list', (FT_STANDARDS, 0)),
+    ('fivetone', 'decode_resp', 'Decode response', 'list', (_RESPONSES, 0)),
+    ('fivetone', 'pre_carrier', 'Pre-carrier time', 'list', (
+        [_MS % i for i in range(300, 5001, 50)], 15)),
+    ('fivetone', 'auto_reset', 'Auto reset time', 'list', (
+        ['%d s' % i for i in range(1, 256)], 1)),
+    ('fivetone', 'send_delay', 'Delay time after send code', 'list', (
+        [_MS % i for i in range(10, 2551, 10)], 1)),
+    ('fivetone', 'ptt_id_pause', 'PTT ID pause time', 'list', (
+        ['Off'] + ['%d s' % i for i in range(5, 76)],
+        [0] + list(range(5, 76)))),
+    ('fivetone', 'first_delay', 'First delay time', 'list', (
+        [str(i) for i in range(10, 2551, 10)], 1)),
+    ('fivetone', 'side_tone', 'Side tone', 'bool', None),
+    ('fivetone', 'bot_id', 'PTT ID start (BOT): encode ID', 'hex', 16),
+    ('fivetone', 'bot_std', 'PTT ID start (BOT): standard', 'list',
+     (FT_STANDARDS, 0)),
+    ('fivetone', 'bot_long', 'PTT ID start (BOT): tone long', 'list',
+     FT_TONE_LONG),
+    ('fivetone', 'eot_id', 'PTT ID end (EOT): encode ID', 'hex', 16),
+    ('fivetone', 'eot_std', 'PTT ID end (EOT): standard', 'list',
+     (FT_STANDARDS, 0)),
+    ('fivetone', 'eot_long', 'PTT ID end (EOT): tone long', 'list',
+     FT_TONE_LONG),
+] + [entry for i in range(1, FT_MSG + 1) for entry in (
+    ('fivetone', 'msg%d_code' % i, 'Message code %d: code' % i, 'hex', 12),
+    ('fivetone', 'msg%d_func' % i, 'Message code %d: function' % i, 'list', (
+        ['Squelch', 'All Call', 'Emergency Alarm', 'Stun', 'Kill', 'Wake Up',
+         'Group Call'], 0)),                           # [FiveToneMsgCodeFunc]
+    ('fivetone', 'msg%d_resp' % i, 'Message code %d: response' % i, 'list',
+     (_RESPONSES, 0)))]))
+
+
+def _pick(options, value):
+    return RadioSettingValueList(options, current_index=options.index(value))
+
+
+def _list_index(stored, offset):
+    """List position of a stored value; offset is added to the position,
+    or is the list of stored values."""
+    if isinstance(offset, list):
+        return offset.index(stored) if stored in offset else -1
+    return stored - offset
+
+
+def _list_stored(index, offset):
+    return offset[index] if isinstance(offset, list) else index + offset
+
+
+def _parse_hz(text, limits, label):
+    """'321.7' -> 3217 (0.1 Hz), within limits."""
+    try:
+        tenths = round(float(text) * 10)
+    except ValueError:
+        tenths = -1
+    if not limits[0] <= tenths <= limits[1]:
+        raise errors.InvalidValueError('%s must be %.1f to %.1f Hz' % (
+            label, limits[0] / 10, limits[1] / 10))
+    return tenths
+
+
+def _dtmf_text(raw, chars=DTMF_CHARS):
+    """Code bytes (digit values, 0xFF-terminated) -> text."""
+    text = ''
+    for b in raw:
+        if b >= len(chars):
+            break
+        text += chars[b]
+    return text
+
+
+def _dtmf_bytes(text, length, chars=DTMF_CHARS):
+    return bytes(chars.index(c) for c in text.upper()).ljust(length, b'\xFF')
+
+
+def _format_coord(value, limit):
+    """A coordinate as the CPS stores it (0x488750, 0x488950): 9 chars,
+    e.g. "05.500000", "23.000000", "118.00000"; at most `limit`."""
+    for decimals in (6, 5):
+        text = '%.*f' % (decimals, value)
+        if len(text) < 9:
+            text = '0' + text
+        if len(text) == 9:
+            break
+    if float(text) >= limit:
+        text = '%.*f' % (6 if limit < 100 else 5, limit)
+    return text
+
+
+def _parse_coord(raw):
+    """Stored coordinate bytes -> text as the CPS shows it, or ''."""
+    text = raw.split(b'\x00')[0].split(b'\xFF')[0].decode('latin-1')
+    try:
+        float(text)
+    except ValueError:
+        return ''
+    return text[1:] if text.startswith('0') and len(text) > 1 else text
+
+
 _MENU = [
     ('zone_list', 'Zone list'), ('new_zone', 'New zone'),
     ('call_alert', 'Call alert'), ('radio_check', 'Radio check'),
@@ -504,6 +850,14 @@ LIST_EXTRAS = {
     'ptt_id': ('PTT ID', ['Off', 'BOT', 'EOT', 'Both']),   # [ChannelPttId]
     # [ChannelAprsReport]
     'aprs_report': ('APRS report (DMR)', ['Off', 'Digital']),
+    # one of the 8 report channels of the APRS settings
+    'aprs_channel': ('APRS report channel', [str(i) for i in range(1, 9)]),
+    # which two-tone (1-8) or BDC1200 (1-4) entry, per signaling type
+    # (CPS 0x414470)
+    'rx_signal': ('RX signaling system', ['None'] + [
+        str(i) for i in range(1, 9)]),
+    'tx_signal': ('TX signaling system', ['None'] + [
+        str(i) for i in range(1, 9)]),
 }
 # [ChAnaTxAdmit] for analog channels, [ChDigTxAdmit] for digital ones
 TX_ADMIT = {False: ['Allow TX', 'Channel Idle', 'Match CTC', 'Non Match CTC'],
@@ -680,8 +1034,13 @@ def _identify(link, writing=False):
 
 
 def _enter_program(link):
-    if not _marker_ok(link.xfer(b'G\x00\x00\x00\x00\x01', 0x106)[0],
+    # G only reads, so a corrupted reply can simply be asked for again.
+    for _attempt in range(3):
+        if _marker_ok(link.xfer(b'G\x00\x00\x00\x00\x01', 0x106)[0],
                       ord('S')):
+            break
+        link.drain()
+    else:
         raise errors.RadioError('Unexpected reply to G')
     link.send(b'\xFF\xFF\xFF\xFF\x0C')
     if not _marker_ok(link.xfer(b'PROGRAM', 1)[0], 0x06):
@@ -1498,9 +1857,234 @@ class DM32UV(chirp_common.CloneModeRadio):
                 RadioSettingValueString(0, 400, ', '.join(map(str, members)),
                                         autopad=False)))
         groups_out = [dmr, scan, zones]
-        if self._page(0x04)[1][:PAGE - 1] != b'\xFF' * (PAGE - 1):
-            groups_out.insert(0, self._radio_settings())
+        if self._has_page(DTMF_TAG):
+            groups_out.append(self._dtmf_contacts_group())
+        if self._has_page(SIGNAL_TAG):
+            groups_out.append(self._tt_encode_group())
+            groups_out.append(self._ft_special_group())
+        radio = self._radio_settings()
+        if len(radio):
+            groups_out.insert(0, radio)
         return RadioSettings(*groups_out)
+
+    def _tt_encode(self):
+        """[(name, single tone, tone 1, tone 2)] of two-tone encode
+        entries 1..count (tones in 0.1 Hz)."""
+        count = int(self._memobj.tt_encode_count)
+        count = count if 1 <= count <= TT_ENCODE else 1    # as the CPS
+        out = []
+        for e in list(self._memobj.tt_encode)[:count]:
+            raw = e.name.get_raw()
+            name = raw.decode('utf-16-le', 'replace').split('\x00')[0]
+            if raw[:2] == b'\xFF\xFF':
+                name = ''
+            out.append((name, bool(e.single_tone), int(e.tone1),
+                        int(e.tone2)))
+        return out
+
+    def _tt_encode_group(self):
+        group = RadioSettingGroup('tt_encode', 'Two-tone encode')
+        entries = self._tt_encode()
+        for n in range(1, min(len(entries) + 4, TT_ENCODE) + 1):
+            name, single, t1, t2 = entries[n - 1] if n <= len(entries) \
+                else ('', False, 0, 0)
+            group.append(RadioSetting(
+                'tte_%d_name' % n, 'Encode %d: name (empty = unused)' % n,
+                RadioSettingValueString(0, 16, _shown(name), autopad=False)))
+            group.append(RadioSetting(
+                'tte_%d_single' % n, 'Encode %d: send' % n,
+                RadioSettingValueList(['Dual Tone', 'Single Tone'],
+                                      current_index=int(single))))
+            for k, tone in ((1, t1), (2, t2)):
+                group.append(RadioSetting(
+                    'tte_%d_tone%d' % (n, k), 'Encode %d: tone %d (Hz)' % (
+                        n, k),
+                    RadioSettingValueString(
+                        0, 7, '%.1f' % (tone / 10)
+                        if TT_HZ[0] <= tone <= TT_HZ[1] else '',
+                        autopad=False, charset='0123456789.')))
+        return group
+
+    def _set_tt_encode(self, values):
+        old = self._tt_encode()
+        new = list(old)
+        for n in range(1, TT_ENCODE + 1):
+            if 'tte_%d_name' % n not in values:
+                continue
+            o = old[n - 1] if n <= len(old) else ('', False, 0, 0)
+            name = _edited(values['tte_%d_name' % n], o[0])
+            tones = []
+            for k in (1, 2):
+                text = str(values['tte_%d_tone%d' % (n, k)]).strip()
+                shown = '%.1f' % (o[1 + k] / 10) \
+                    if TT_HZ[0] <= o[1 + k] <= TT_HZ[1] else ''
+                tones.append(o[1 + k] if text == shown else _parse_hz(
+                    text, TT_HZ, 'Two-tone encode %d, tone %d' % (n, k)))
+            single = str(values['tte_%d_single' % n]) == 'Single Tone'
+            while len(new) < n:
+                new.append(('', False, 0, 0))
+            new[n - 1] = (name, single, tones[0], tones[1])
+        while len(new) > 1 and not new[-1][0]:
+            new.pop()
+        if new == old:
+            return
+        self._forget()
+        for n, (name, single, t1, t2) in enumerate(new, 1):
+            e = self._memobj.tt_encode[n - 1]
+            if n > len(old) or old[n - 1][0] != name:
+                e.name.set_raw(
+                    name.encode('utf-16-le')[:32].ljust(32, b'\x00'))
+            if n > len(old) and e.get_raw()[0x20:] == b'\xFF' * 8:
+                e.set_raw(e.get_raw()[:0x20] + b'\xFE\xFF' + b'\xFF' * 6)
+            e.single_tone = int(single)
+            e.tone1, e.tone2 = t1, t2
+        for n in range(len(new) + 1, len(old) + 1):
+            self._memobj.tt_encode[n - 1].set_raw(b'\x00' * 0x20 +
+                                                  b'\xFF' * 8)
+        self._memobj.tt_encode_count = len(new)
+
+    def _ft_special(self):
+        """[{field: shown value}] of the 32 five-tone special calls."""
+        out = []
+        for e in self._memobj.ft_special:
+            types, stored = FT_SPECIAL_TYPES
+            t = int(e.type)
+            out.append({
+                'type': types[stored.index(t)] if t in stored else 'Off',
+                'code': _dtmf_text(e.code.get_raw(), CODE_CHARS['hex']),
+                'delimiter': FT_DELIMITERS[int(e.delimiter)]
+                if int(e.delimiter) < len(FT_DELIMITERS) else
+                FT_DELIMITERS[0],
+                'standard': FT_STANDARDS[int(e.standard)]
+                if int(e.standard) < len(FT_STANDARDS) else FT_STANDARDS[0],
+                'tone_long': FT_TONE_LONG[0][int(e.tone_long) - 3]
+                if 3 <= int(e.tone_long) < 3 + len(FT_TONE_LONG[0])
+                else FT_TONE_LONG[0][0],
+                'data': _dtmf_text(e.data.get_raw(), CODE_CHARS['hex']),
+                'name': self._text(e.name.get_raw()),
+            })
+        return out
+
+    def _ft_special_group(self):
+        group = RadioSettingGroup('ft_special', 'Five-tone special calls')
+        hexchars = CODE_CHARS['hex'] + CODE_CHARS['hex'].lower()
+        calls = self._ft_special()
+        used = [n for n, c in enumerate(calls, 1) if c['type'] != 'Off']
+        spare = [n for n in range(1, FT_SPECIAL + 1) if n not in used][:3]
+        for n in used + spare:
+            c = calls[n - 1]
+            label = 'Special call %d: ' % n
+            for key, text, value in (
+                    ('type', 'call type (Off = unused)', _pick(
+                        FT_SPECIAL_TYPES[0], c['type'])),
+                    ('name', 'name', RadioSettingValueString(
+                        0, 16, _shown(c['name']), autopad=False)),
+                    ('code', 'other side code', RadioSettingValueString(
+                        0, 5, c['code'], autopad=False, charset=hexchars)),
+                    ('delimiter', 'middle delimiter', _pick(
+                        FT_DELIMITERS, c['delimiter'])),
+                    ('standard', 'decode standard', _pick(
+                        FT_STANDARDS, c['standard'])),
+                    ('tone_long', 'tone long', _pick(
+                        FT_TONE_LONG[0], c['tone_long'])),
+                    ('data', 'data transmission', RadioSettingValueString(
+                        0, 16, c['data'], autopad=False, charset=hexchars))):
+                group.append(RadioSetting('fts_%d_%s' % (n, key),
+                                          label + text, value))
+        return group
+
+    def _set_ft_special(self, values):
+        calls = self._ft_special()
+        for n in range(1, FT_SPECIAL + 1):
+            if 'fts_%d_type' % n not in values:
+                continue
+            c, e = calls[n - 1], self._memobj.ft_special[n - 1]
+            new = {k: str(values['fts_%d_%s' % (n, k)]).strip()
+                   for k in c}
+            if new['name'] == _shown(c['name']).strip():
+                new['name'] = c['name']
+            for k in ('code', 'data'):
+                new[k] = new[k].upper()
+            if new == c:
+                continue
+            self._forget()
+            if new['type'] != c['type']:
+                types, stored = FT_SPECIAL_TYPES
+                e.type = stored[types.index(new['type'])]
+            if new['code'] != c['code']:
+                e.code.set_raw(_dtmf_bytes(new['code'], 5, CODE_CHARS['hex']))
+            if new['data'] != c['data']:
+                e.data.set_raw(_dtmf_bytes(new['data'], 16,
+                                           CODE_CHARS['hex']))
+            if new['name'] != c['name']:
+                e.name.set_raw((new['name'].encode('latin-1', 'replace')[:16]
+                                + b'\x00')[:16].ljust(16, b'\xFF'))
+            if new['delimiter'] != c['delimiter']:
+                e.delimiter = FT_DELIMITERS.index(new['delimiter'])
+            if new['standard'] != c['standard']:
+                e.standard = FT_STANDARDS.index(new['standard'])
+            if new['tone_long'] != c['tone_long']:
+                e.tone_long = FT_TONE_LONG[0].index(new['tone_long']) + 3
+
+    def _has_page(self, tag):
+        return self._page(tag)[1][:PAGE - 1] != b'\xFF' * (PAGE - 1)
+
+    def _dtmf_contacts(self):
+        """[(name, number)] of DTMF (analog) contacts 1..count."""
+        count = int(self._memobj.dtmf_contact_count)
+        count = count if count <= DTMF_CONTACTS else 0
+        return [(self._text(c.name.get_raw()),
+                 _dtmf_text(c.number.get_raw(), '0123456789'))
+                for c in list(self._memobj.dtmf_contacts)[:count]]
+
+    def _dtmf_contacts_group(self):
+        group = RadioSettingGroup('dtmf_contacts', 'DTMF contacts')
+        contacts = self._dtmf_contacts()
+        for n in range(1, min(len(contacts) + 4, DTMF_CONTACTS) + 1):
+            name, number = contacts[n - 1] if n <= len(contacts) else ('', '')
+            group.append(RadioSetting(
+                'dtc_%d_name' % n, 'DTMF contact %d: name' % n,
+                RadioSettingValueString(0, 16, _shown(name), autopad=False)))
+            group.append(RadioSetting(
+                'dtc_%d_number' % n, 'DTMF contact %d: number (up to 5 '
+                'digits)' % n,
+                RadioSettingValueString(0, 5, number, autopad=False,
+                                        charset='0123456789')))
+        return group
+
+    def _set_dtmf_contacts(self, values):
+        old = self._dtmf_contacts()
+        new = list(old)
+        for n in range(1, DTMF_CONTACTS + 1):
+            if 'dtc_%d_name' % n not in values:
+                continue
+            old_name = old[n - 1][0] if n <= len(old) else ''
+            name = _edited(values['dtc_%d_name' % n], old_name)
+            number = str(values['dtc_%d_number' % n]).strip()
+            while len(new) < n:
+                new.append(('', ''))
+            new[n - 1] = (name, number)
+        while new and not new[-1][0]:
+            new.pop()
+        for n, (name, number) in enumerate(new, 1):
+            if not name:
+                raise errors.InvalidValueError(
+                    'DTMF contact %d: a name is needed (only the last '
+                    'contacts can be removed)' % n)
+        if new == old:
+            return
+        self._forget()
+        for n, (name, number) in enumerate(new, 1):
+            c = self._memobj.dtmf_contacts[n - 1]
+            if n > len(old) or old[n - 1][0] != name:
+                c.name.set_raw(_name_bytes(name, 16))
+            if n > len(old) or old[n - 1][1] != number:
+                c.number.set_raw(_dtmf_bytes(number, 5, '0123456789'))
+            if n > len(old) and c.unknown.get_raw() == b'\xFF' * 11:
+                c.unknown.set_raw(b'\x00' * 11)
+        for n in range(len(new) + 1, len(old) + 1):
+            self._memobj.dtmf_contacts[n - 1].set_raw(b'\xFF' * 0x20)
+        self._memobj.dtmf_contact_count = len(new)
 
     def _radio_settings(self):
         top = RadioSettingGroup('radio', 'Radio settings')
@@ -1508,6 +2092,8 @@ class DM32UV(chirp_common.CloneModeRadio):
             group = RadioSettingGroup('radio_%s' % title.lower().replace(
                 ' ', '_'), title)
             for sname, field, label, kind, extra in entries:
+                if not self._has_page(STRUCT_TAGS.get(sname, 0x04)):
+                    continue
                 obj = getattr(self._memobj, sname)
                 name = 'set_%s_%s' % (sname, field)
                 if kind == 'bool':
@@ -1520,14 +2106,87 @@ class DM32UV(chirp_common.CloneModeRadio):
                                    if c in chirp_common.CHARSET_ASCII)
                     value = RadioSettingValueString(0, extra, text,
                                                     autopad=False)
+                elif kind == 'coord':
+                    value = RadioSettingValueString(
+                        0, 12, _parse_coord(getattr(obj, field).get_raw()),
+                        autopad=False)
+                elif kind == 'int':
+                    lo, hi = extra
+                    number = int(getattr(obj, field))
+                    value = RadioSettingValueInteger(
+                        lo, hi, number if lo <= number <= hi else lo)
+                elif kind == 'channel':
+                    name = 'set_%s_%s_%d' % (sname, field, extra + 1)
+                    value = self._channel_choice(
+                        int(getattr(obj, field)[extra]))
+                elif kind == 'hz':
+                    tenths = int(getattr(obj, field))
+                    value = RadioSettingValueString(
+                        0, 7, '%.1f' % (tenths / 10)
+                        if extra[0] <= tenths <= extra[1] else '',
+                        autopad=False, charset='0123456789.')
+                elif kind == 'dtmf':
+                    value = RadioSettingValueString(
+                        0, extra, _dtmf_text(getattr(obj, field).get_raw()),
+                        autopad=False, charset=DTMF_CHARS + 'abcd')
+                elif kind in ('digits', 'hex'):
+                    chars = CODE_CHARS[kind]
+                    value = RadioSettingValueString(
+                        0, extra, _dtmf_text(getattr(obj, field).get_raw(),
+                                             chars),
+                        autopad=False, charset=chars + chars.lower())
                 else:
                     options, offset = extra
-                    index = int(getattr(obj, field)) - offset
+                    index = _list_index(int(getattr(obj, field)), offset)
                     value = RadioSettingValueList(options, current_index=(
                         index if 0 <= index < len(options) else 0))
                 group.append(RadioSetting(name, label, value))
-            top.append(group)
+            if len(group):
+                top.append(group)
         return top
+
+    def _channel_choice(self, value):
+        """Report channel choice: the current channel, or a digital one."""
+        options = ['Current Channel'] + self._digital_channels()
+        current = 'Current Channel' if not value else '%d: %s' % (
+            value, self._channel_names().get(value, '(empty)'))
+        if current not in options:
+            options.append(current)
+        return RadioSettingValueList(options,
+                                     current_index=options.index(current))
+
+    @_cached
+    def _channel_names(self):
+        """{number: name} of the channels in use."""
+        names = {}
+        for n in range(1, self._count() + 1):
+            _mem = self._chan(n)
+            if _mem.rxfreq.get_raw() not in (b'\xFF' * 4, b'\x00' * 4):
+                names[n] = _shown(str(_mem.name).rstrip('\x00\xFF '))
+        return names
+
+    @_cached
+    def _digital_channels(self):
+        names = self._channel_names()
+        return ['%d: %s' % (n, names[n]) for n in names
+                if self._chan(n).chtype in (1, 3)]
+
+    @staticmethod
+    def _set_coord(field, label, limit, text):
+        """Store a coordinate typed on the Settings tab, if it changed."""
+        if text == _parse_coord(field.get_raw()):
+            return
+        if not text:
+            field.set_raw(b'\x00' * 9)
+            return
+        try:
+            value = float(text)
+        except ValueError:
+            value = -1
+        if not 0 <= value <= limit:
+            raise errors.InvalidValueError(
+                '%s must be a number from 0 to %d' % (label, limit))
+        field.set_raw(_format_coord(value, limit).encode())
 
     def set_settings(self, settings):
         values = {}
@@ -1543,24 +2202,65 @@ class DM32UV(chirp_common.CloneModeRadio):
         for title, entries in RADIO_SETTINGS:
             for sname, field, label, kind, extra in entries:
                 name = 'set_%s_%s' % (sname, field)
+                if kind == 'channel':
+                    name = 'set_%s_%s_%d' % (sname, field, extra + 1)
                 if name not in values:
                     continue
                 obj = getattr(self._memobj, sname)
-                if kind == 'bool':
+                if kind == 'coord':
+                    self._set_coord(getattr(obj, field), label, extra,
+                                    str(values[name]).strip())
+                elif kind == 'int':
+                    lo, hi = extra
+                    number = int(getattr(obj, field))
+                    new = int(values[name])
+                    if new != (number if lo <= number <= hi else lo):
+                        setattr(obj, field, new)
+                elif kind == 'channel':
+                    choice = str(values[name])
+                    new = int(choice.split(':')[0]) if ':' in choice else 0
+                    if new != int(getattr(obj, field)[extra]):
+                        getattr(obj, field)[extra] = new
+                elif kind == 'bool':
                     setattr(obj, field, int(bool(values[name])))
                 elif kind == 'text':
                     text = str(values[name]).rstrip()
                     old = str(getattr(obj, field)).split('\x00')[0]
                     if text != old.split('\xFF')[0]:
                         setattr(obj, field, text[:extra].ljust(extra, '\x00'))
+                elif kind == 'hz':
+                    tenths = int(getattr(obj, field))
+                    text = str(values[name]).strip()
+                    shown = '%.1f' % (tenths / 10) \
+                        if extra[0] <= tenths <= extra[1] else ''
+                    if text != shown:
+                        setattr(obj, field, _parse_hz(text, extra, label))
+                elif kind in CODE_CHARS:
+                    chars = CODE_CHARS[kind]
+                    raw = getattr(obj, field)
+                    text = str(values[name]).strip().upper()
+                    if text != _dtmf_text(raw.get_raw(), chars):
+                        if kind == 'digits':
+                            # the CPS pads with leading zeros (0x47be70)
+                            raw.set_raw(bytes(chars.index(c) for c in
+                                              text.rjust(extra, '0')))
+                        else:
+                            raw.set_raw(_dtmf_bytes(text, extra, chars))
                 else:
                     options, offset = extra
                     new = options.index(str(values[name]))
-                    shown = int(getattr(obj, field)) - offset
+                    shown = _list_index(int(getattr(obj, field)), offset)
                     if not 0 <= shown < len(options):
                         shown = 0           # displayed as the first option
                     if new != shown:        # don't rewrite what wasn't changed
-                        setattr(obj, field, new + offset)
+                        setattr(obj, field, _list_stored(new, offset))
+
+        self._forget()
+        if self._has_page(DTMF_TAG):
+            self._set_dtmf_contacts(values)
+        if self._has_page(SIGNAL_TAG):
+            self._set_tt_encode(values)
+            self._set_ft_special(values)
 
         # Radio IDs: keep the ones with an ID, in order; renumber channels.
         old = self._radio_ids()
