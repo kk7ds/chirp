@@ -287,7 +287,7 @@ RA89R_LIST_STEPS = ["2.5", "5.0", "6.25", "8.33",
                     "10.0", "12.5", "25.0", "50.0", "100.0"]
 SCAN_LIST = ["Allow", "Skip"]
 FREQ_REVERSE_LIST = ["OFF", "Freq Reverse", "Talk Around"]
-SINGNAL_LIST = ["OFF", "DTMF", "2TONE", "5TONE"]
+SIGNAL_LIST = ["OFF", "DTMF", "2TONE", "5TONE"]
 
 
 def _clean_buffer(radio):
