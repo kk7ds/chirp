@@ -471,7 +471,7 @@ class RA89R(th_uv88.THUV88Radio):
             else:
                 self._memobj.chan_skip.bitmap[memory.number - 1] = 0
 
-        self._set_memory(memory, _mem, _name, memory.number < ch_len)
+        self._set_memory(memory, _mem, _name, memory.number <= ch_len)
 
         if memory.mode == "AM":
             _mem.wide = 2
