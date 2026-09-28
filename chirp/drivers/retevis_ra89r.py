@@ -349,6 +349,8 @@ class RA89R(th_uv88.THUV88Radio):
     _vhf = (136000000, 174000010)
     _uhf = (400000000, 480000010)
     VALID_BANDS = [_airband, _vhf, _uhf]
+    LIST_STEPS = ["2.5", "5.0", "6.25", "8.33",
+                  "10.0", "12.5", "25.0", "50.0", "100.0"]
 
     def get_features(self):
         rf = super().get_features()
