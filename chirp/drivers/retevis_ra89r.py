@@ -437,11 +437,13 @@ class RA89R(th_uv88.THUV88Radio):
         freqreverse_value = _mem.freqreverse
         if _mem.talkaround == 1:
             freqreverse_value = 2
-        mem.extra.append(
-            RadioSetting(
+        rs = RadioSetting(
                 "freqreverse", "Frequency Reverse",
                 RadioSettingValueList(th_uv88.FREQ_REVERSE_LIST,
-                                      current_index=freqreverse_value)))
+                                      current_index=freqreverse_value))
+        rs.set_doc(
+            "In repeater mode, swaps the transmit and receive frequencies.")
+        mem.extra.append(rs)
 
         return mem
 
