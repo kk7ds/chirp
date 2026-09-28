@@ -1182,10 +1182,11 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                            "Power Level", "Alarm", "Noise Cancelaton",
                            "Temp Monitor", "FM Radio", "Talk Around",
                            "Frequency Reverse"]
-            options_long = (
-                options if self.MODEL != "RA89R"
-                else options[:8] + ["Temporarily Moni"] + options[8:])
 
+            if self.MODEL != "RA89R":
+                options_long = options
+            else:
+                options_long = options[:8] + ["Temporarily Moni"] + options[8:]
             def _side_key_apply(setting, obj, atrb):
                 index = options_long.index(str(setting.value))
                 setattr(obj, atrb, index)
