@@ -893,7 +893,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         group = RadioSettings(basic)
 
         # Menu 02 - TX Channel Select
-        if self._hasLCD and self.MODEL != "RA89":
+        if self._hasLCD and self.MODEL != "RA89R":
             options = ["Last Channel", "Main Channel"]
             rx = RadioSettingValueList(
                 options, current_index=_settings.txChSelect)
