@@ -1190,10 +1190,13 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                 index = options_long.index(str(setting.value))
                 setattr(obj, atrb, index)
 
-            sidekey1_index = (
-                _settings.sideKey1 if self.MODEL != "RA89R"
-                else (_settings.sideKey1-1 if _settings.sideKey1 > 8
-                      else _settings.sideKey1))
+            if self.MODEL == "RA89R":
+                if _settings.sideKey1 > 8:
+                    sidekey1_index = _settings.sideKey1 - 1
+                else:
+                    sidekey1_index = _settings.sideKey1
+            else:
+                sidekey1_index = _settings.sideKey1
             rx = RadioSettingValueList(
                 options, current_index=sidekey1_index)
             rset = RadioSetting("basicsettings.sideKey1", "Side Key 1", rx)
