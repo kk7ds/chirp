@@ -795,9 +795,9 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                                   current_index=_mem.signal))
         mem.extra.append(optsig)
 
-        rs = RadioSetting(
-            "pttid", "PTT ID",
-            RadioSettingValueList(PTTID_LIST, current_index=_mem.pttid))
+        rs = RadioSetting("pttid", "PTT ID",
+                          RadioSettingValueList(PTTID_LIST,
+                                                current_index=_mem.pttid))
         mem.extra.append(rs)
 
         return mem
@@ -1182,6 +1182,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
                 options_long = options
             else:
                 options_long = options[:8] + ["Temporarily Moni"] + options[8:]
+
             def _side_key_apply(setting, obj, atrb):
                 index = options_long.index(str(setting.value))
                 setattr(obj, atrb, index)
