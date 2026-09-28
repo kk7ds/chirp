@@ -282,9 +282,6 @@ B_LOCK_LIST = ["OFF", "Sub", "Carrier"]
 OPTSIG_LIST = ["OFF", "DTMF", "2TONE", "5TONE"]
 PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
-LIST_STEPS = [str(x) for x in STEPS]
-RA89R_LIST_STEPS = ["2.5", "5.0", "6.25", "8.33",
-                    "10.0", "12.5", "25.0", "50.0", "100.0"]
 SCAN_LIST = ["Allow", "Skip"]
 FREQ_REVERSE_LIST = ["OFF", "Freq Reverse", "Talk Around"]
 SIGNAL_LIST = ["OFF", "DTMF", "2TONE", "5TONE"]
@@ -553,7 +550,7 @@ class THUV88Radio(chirp_common.CloneModeRadio):
     DTMF_CHARS = list("0123456789ABCD*#")
     # 136-174, 400-480
     VALID_BANDS = [(136000000, 174000000), (400000000, 480000000)]
-
+    LIST_STEPS = [str(x) for x in STEPS]
     _hasSideKeys = False
     _hasManDown = False
     _hasLCD = True
@@ -771,10 +768,8 @@ class THUV88Radio(chirp_common.CloneModeRadio):
         b_lock = RadioSetting("b_lock", "B_Lock", rs)
         mem.extra.append(b_lock)
 
-        step_items = (RA89R_LIST_STEPS if self.MODEL == "RA89R"
-                      else LIST_STEPS)
         step = RadioSetting("step", "Step",
-                            RadioSettingValueList(step_items,
+                            RadioSettingValueList(self.LIST_STEPS,
                                                   current_index=_mem.step))
         mem.extra.append(step)
 
