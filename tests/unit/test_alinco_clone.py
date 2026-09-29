@@ -145,7 +145,9 @@ class AlincoCloneTest(unittest.TestCase):
         radio = rclass(pipe)
         radio.sync_in()
         if not radio.NEEDS_COMPAT_SERIAL:
-            self.assertIsInstance(radio._mmap, memmap.MemoryMapBytes)
+            # Note that MemoryMap (the str-based compat class) is a subclass
+            # of MemoryMapBytes, so this must compare the type exactly.
+            self.assertEqual(type(radio._mmap), memmap.MemoryMapBytes)
 
     def _test_alinco_upload(self, rclass, image):
         pipe = FakeAlincoSerial(image)
@@ -157,14 +159,41 @@ class AlincoCloneTest(unittest.TestCase):
         self.assertEqual(ref_image[0x200:rclass._memsize],
                          pipe.image.get_packed()[0x200:rclass._memsize])
 
+    def _test_alinco_roundtrip(self, rclass, image):
+        # Read from the radio and then write the same thing straight back,
+        # which is what actually happens in the field (#12611)
+        pipe = FakeAlincoSerial(image)
+        radio = rclass(None)
+        radio.pipe = pipe
+        with mock.patch('time.sleep'):
+            radio.sync_in()
+        pipe.zero()
+        with mock.patch('time.sleep'):
+            radio.sync_out()
+        ref_image = open(image, 'rb').read()
+        self.assertEqual(ref_image[0x200:rclass._memsize],
+                         pipe.image.get_packed()[0x200:rclass._memsize])
+
     def _test_alinco(self, rclass):
         ident = directory.radio_class_id(rclass)
         image = os.path.join(os.path.dirname(__file__),
                              '..', 'images',
                              '%s.img' % ident)
         with mock.patch('time.sleep'):
+            # The round-trip goes first, as it is the flow that actually
+            # broke in the field (#12611)
+            self._test_alinco_roundtrip(rclass, image)
             self._test_alinco_upload(rclass, image)
             self._test_alinco_download(rclass, image)
+
+    def _test_roundtrip(self, rclass):
+        """Run only the read-then-write-back test for @rclass"""
+        ident = directory.radio_class_id(rclass)
+        image = os.path.join(os.path.dirname(__file__),
+                             '..', 'images',
+                             '%s.img' % ident)
+        with mock.patch('time.sleep'):
+            self._test_alinco_roundtrip(rclass, image)
 
     def test_djg7(self):
         self._test_alinco(alinco.AlincoDJG7EG)
@@ -179,6 +208,17 @@ class AlincoCloneTest(unittest.TestCase):
         # The 175 has a slightly different download string, so test it
         # specifically
         self._test_alinco(alinco.DJ175Radio)
+
+    def test_dj175_roundtrip(self):
+        # Uploading after a download used to fail with
+        # "encoding with 'hex' codec failed (TypeError: a bytes-like
+        # object is required, not 'str')" (#12611). This is kept as its
+        # own test so that the actual failure is reported, rather than
+        # tripping over the mmap type check in _test_alinco_download().
+        self._test_roundtrip(alinco.DJ175Radio)
+
+    def test_dr235_roundtrip(self):
+        self._test_roundtrip(alinco.DR235Radio)
 
     def test_all_alinco_identify(self):
         # Make sure all the alinco models have bytes for their _model
