@@ -21,7 +21,7 @@ from chirp.settings import RadioSettingValueBoolean
 
 import time
 import logging
-import codecs
+import binascii
 
 LOG = logging.getLogger(__name__)
 
@@ -103,7 +103,7 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
         if b":" not in resp:
             raise errors.RadioError("Unexpected response from radio")
         addr, _data = resp.split(b":", 1)
-        data = codecs.decode(_data, 'hex')
+        data = binascii.unhexlify(_data)
 
         if len(data) != 16:
             LOG.debug("Response was:")
@@ -132,7 +132,7 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
         self._send(b"AL~E\r\n")
         self._read(20)
 
-        return memmap.MemoryMap(data)
+        return memmap.MemoryMapBytes(data)
 
     def _identify(self):
         for _i in range(0, 3):
@@ -149,7 +149,7 @@ class AlincoStyleRadio(chirp_common.CloneModeRadio):
             raise Exception("Addr 0x%04x not on 16-byte boundary" % addr)
 
         _data = self._mmap[addr:addr+16]
-        data = codecs.encode(_data, 'hex').upper()
+        data = binascii.b2a_hex(_data).upper()
 
         cmd = b"AL~F%04XW%s\r\n" % (addr, data)
         self._send(cmd)
@@ -543,7 +543,7 @@ class DJ175Radio(DRx35Radio):
         if len(_data) == 0:
             raise errors.RadioNoResponse()
 
-        data = codecs.decode(_data, 'hex')
+        data = binascii.unhexlify(_data)
 
         if len(data) != 16:
             LOG.debug("Response was:")
@@ -651,7 +651,7 @@ class AlincoDJG7(AlincoStyleRadio):
         if len(_data) == 0:
             raise errors.RadioNoResponse()
 
-        data = codecs.decode(_data, "hex")
+        data = binascii.unhexlify(_data)
 
         if len(data) != 64:
             LOG.debug("Response was:")
@@ -695,7 +695,7 @@ class AlincoDJG7(AlincoStyleRadio):
             raise Exception("Addr 0x%04x not on 64-byte boundary" % addr)
 
         _data = self._mmap[addr:addr+0x40]
-        data = codecs.encode(_data, "hex").upper()
+        data = binascii.b2a_hex(_data).upper()
 
         cmd = b"AL~F%05XW%s\r" % (addr, data)
         self._send(cmd)
