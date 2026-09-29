@@ -22,6 +22,16 @@ from chirp.wxui import accessibility
 from chirp.wxui import common
 
 
+def _enable_scrolling(pg):
+    # PropertyGrid.EnableScrolling() is inherited from wxScrolled, which
+    # wxPropertyGrid did not derive from until wxWidgets 3.1.5 (i.e.
+    # wxPython 4.1.0). The Linux AppImage ships 4.0.7, where the grid is
+    # a plain wxControl plus a wxScrollHelper and manages its own
+    # scrollbars, so there is no such method to call.
+    if hasattr(pg, 'EnableScrolling'):
+        pg.EnableScrolling(True, True)
+
+
 class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
     def __init__(self, radio, *a, **k):
         super(ChirpRadioInfo, self).__init__(*a, **k)
@@ -61,7 +71,7 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
     def _add_driver(self):
         pg = wx.propgrid.PropertyGrid(
             self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER)
-        pg.EnableScrolling(True, True)
+        _enable_scrolling(pg)
         accessibility.enable_propgrid_a11y(pg, _('Radio Info: Driver'))
         self._group_control.AddPage(pg, _('Driver'))
 
@@ -88,7 +98,7 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
 
         pg = wx.propgrid.PropertyGrid(
             self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER)
-        pg.EnableScrolling(True, True)
+        _enable_scrolling(pg)
         accessibility.enable_propgrid_a11y(pg, _('Radio Info: Icom'))
         self._group_control.AddPage(pg, 'Icom')
 
@@ -116,7 +126,7 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
 
         pg = wx.propgrid.PropertyGrid(
             self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER)
-        pg.EnableScrolling(True, True)
+        _enable_scrolling(pg)
         accessibility.enable_propgrid_a11y(pg, _('Radio Info: Image Metadata'))
         self._group_control.AddPage(pg, 'Image Metadata')
         # Don't show the icom fields which are displayed elsewhere, and
