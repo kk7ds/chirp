@@ -4,7 +4,8 @@
 **.orig
 **.rej
 dist
-build/bdist
+build
+tmp
 tools/cpep8.venv/
 tests/logs/
 logs/
@@ -26,6 +27,7 @@ model_support.html
 assets
 /*.img
 *.patch
+.opencode
 # for visual studio and visual studio code editors
 .vs/
 .vscode/
