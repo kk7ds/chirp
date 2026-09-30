@@ -771,7 +771,5 @@ class THD72Radio(chirp_common.CloneModeRadio):
 
     @classmethod
     def match_model(cls, filedata, filename):
-        if filename.endswith('.mc4'):
-            return True
-        else:
-            return super(THD72Radio, cls).match_model(filedata, filename)
+        return (filename.endswith('.mc4') or
+                (cls._memsize and len(filedata) == cls._memsize))

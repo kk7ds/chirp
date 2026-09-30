@@ -338,6 +338,10 @@ class H777Radio(chirp_common.CloneModeRadio):
     _has_scanmodes = True
     _has_scramble = True
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return cls._memsize and len(filedata) == cls._memsize
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_settings = True

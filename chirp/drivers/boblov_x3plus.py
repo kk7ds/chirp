@@ -108,6 +108,11 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
                         chirp_common.PowerLevel('High', watts=2.00)]
 
     _memsize = 0x03F0
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (len(filedata) == cls._memsize and
+                b'P310' in filedata[0x03D0:0x03D8])
     _ranges = [
         (0x0000, 0x03F0),
     ]
@@ -122,16 +127,6 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
             "Please save an unedited copy of your first successful\n"
             "download to a CHIRP Radio Images (*.img) file.\n")
         return rp
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        """Given contents of a stored file (@filedata), return True if
-          this radio driver handles the represented model"""
-
-        if len(filedata) != cls._memsize:
-            return False
-
-        return b'P310' in filedata[0x03D0:0x03D8]
 
     def get_features(self):
         """Return a RadioFeatures object for this radio"""

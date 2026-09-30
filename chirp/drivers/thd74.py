@@ -557,10 +557,7 @@ class THD74Radio(chirp_common.CloneModeRadio,
 
     @classmethod
     def match_model(cls, filedata, filename):
-        if filename.endswith('.d74'):
-            return True
-        else:
-            return chirp_common.CloneModeRadio.match_model(filedata, filename)
+        return filename.endswith('.d74')
 
 
 @directory.register

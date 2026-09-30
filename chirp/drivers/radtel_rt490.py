@@ -481,10 +481,6 @@ class RT490Radio(chirp_common.CloneModeRadio):
     _mem_params = (_upper-1)
     _frs = _murs = _pmr = _gmrs = True
 
-    @classmethod
-    def match_model(cls, filedata, filename):
-        return False
-
     def set_settings(self, settings):
         for element in settings:
             if not isinstance(element, RadioSetting):

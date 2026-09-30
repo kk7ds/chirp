@@ -240,10 +240,6 @@ class RT97SRadio(chirp_common.CloneModeRadio):
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
 
-    @classmethod
-    def match_model(cls, filedata, filename):
-        return False
-
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
         mem = chirp_common.Memory()

@@ -128,6 +128,11 @@ class IC2300Radio(icf.IcomCloneModeRadio):
     _can_hispeed = True
     _ranges = [(0x0000, 0x18a0, 32)]  # upload entire memory for now
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (super().match_model(filedata, filename) or
+                (cls._memsize and len(filedata) == cls._memsize))
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (0, 199)

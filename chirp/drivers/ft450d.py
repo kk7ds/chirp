@@ -108,6 +108,12 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
     CHARSET.remove("\\")
 
     MEM_SIZE = 15017
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if len(filedata) == cls.MEM_SIZE + 7:
+            return filedata[cls.MEM_SIZE:].startswith(cls.MODEL.encode())
+        return False
     # block 9 (135 Bytes long) is to be repeated 101 times
     _block_lengths = [4, 84, 135, 162, 135, 162, 151, 130, 135, 127, 189, 103]
 
@@ -1149,16 +1155,6 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                     setattr(_mem, element, options.index(default))
             else:
                 setattr(_mem, setting.get_name(), setting.value)
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        """Match the opened/downloaded image to the correct version"""
-        if len(filedata) == cls.MEM_SIZE + 7:    # +7 bytes of model name
-            rid = filedata[cls.MEM_SIZE:cls.MEM_SIZE + 7]
-            if rid.startswith(cls.MODEL.encode()):
-                return True
-        else:
-            return False
 
     def _invert_me(self, setting, obj, atrb):
         """Callback: from inverted logic 1-bit booleans"""

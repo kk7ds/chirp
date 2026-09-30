@@ -95,6 +95,11 @@ class ICx8xRadio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     _can_hispeed = False
     _double_ident = True
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (super().match_model(filedata, filename) or
+                (cls._memsize and len(filedata) == cls._memsize))
+
     _memories = []
 
     _ranges = [(0x0000, 0x1340, 32),

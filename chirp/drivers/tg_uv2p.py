@@ -223,6 +223,11 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
     _memsize = 0x2000
 
     @classmethod
+    def match_model(cls, filedata, filename):
+        return (filedata.startswith(b"TG-UV2+ Radio Program Data") and
+                len(filedata) == cls._memsize + 0x30)
+
+    @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = \
@@ -781,8 +786,3 @@ class QuanshengTGUV2P(chirp_common.CloneModeRadio,
                 except Exception:
                     LOG.debug(element.get_name())
                     raise
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        return (filedata.startswith(b"TG-UV2+ Radio Program Data") and
-                len(filedata) == (cls._memsize + 0x30))

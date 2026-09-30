@@ -109,6 +109,10 @@ class UV6R(bfc.BaofengCommonHT):
                (0x1FE0, 0x1FF0)]
     _send_block_size = 0x10
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return len(filedata) in (0x2008, 0x2010) and model_match(cls, filedata)
+
     MODES = ["FM", "NFM"]
     VALID_CHARS = chirp_common.CHARSET_ALPHANUMERIC + \
         "!@#$%^&*()+-=[]:\";'<>?,./"
@@ -842,20 +846,3 @@ class UV6R(bfc.BaofengCommonHT):
             service.append(rs)
 
         return top
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        match_size = False
-        match_model = False
-
-        # testing the file data size
-        if len(filedata) in (0x2008, 0x2010):
-            match_size = True
-
-        # testing the firmware model fingerprint
-        match_model = model_match(cls, filedata)
-
-        if match_size and match_model:
-            return True
-        else:
-            return False

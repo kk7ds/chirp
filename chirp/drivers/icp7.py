@@ -100,6 +100,11 @@ class ICP7Radio(icf.IcomCloneModeRadio):
     _bank_class = ICP7Bank
     _can_hispeed = True
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (super().match_model(filedata, filename) or
+                (cls._memsize and len(filedata) == cls._memsize))
+
     def _get_bank(self, loc):
         _bank = self._memobj.banks[loc]
         if _bank.bank != 0xff:

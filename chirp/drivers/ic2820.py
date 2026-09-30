@@ -141,6 +141,11 @@ class IC2820Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     _bank_class = IC2820Bank
     _can_hispeed = True
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (super().match_model(filedata, filename) or
+                (cls._memsize and len(filedata) == cls._memsize))
+
     MYCALL_LIMIT = (1, 7)
     URCALL_LIMIT = (1, 61)
     RPTCALL_LIMIT = (1, 61)

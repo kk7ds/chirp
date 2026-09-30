@@ -177,6 +177,11 @@ class ID31Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
     _ranges = [(0x00000, 0x15500, 32)]
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (super().match_model(filedata, filename) or
+                (cls._memsize and len(filedata) == cls._memsize))
+
     MODES = {0: "FM", 1: "NFM", 5: "DV"}
 
     def _get_bank(self, loc):

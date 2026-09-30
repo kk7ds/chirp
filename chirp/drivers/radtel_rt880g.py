@@ -2307,9 +2307,3 @@ class RT880G(chirp_common.CloneModeRadio):
                 except Exception as e:
                     LOG.debug(element.get_name(), e)
                     raise
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        # This radio has always been post-metadata, so never do
-        # old-school detection
-        return False

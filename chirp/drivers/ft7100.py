@@ -531,6 +531,10 @@ class FT7100Radio(YaesuCloneModeRadio):
     IDBLOCK = b"Vartex Standard AH003M M-Map V04"
     BAUD_RATE = 9600
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return filedata[0x1ec0:0x1ec0 + len(cls.IDBLOCK)] == cls.IDBLOCK
+
     # Return information about this radio's features, including
     # how many memories it has, what bands it supports, etc
     def get_features(self):
@@ -1118,10 +1122,6 @@ class FT7100Radio(YaesuCloneModeRadio):
         else:
             upper_uhf_limit = int(self._memobj.nb_mem_used_uhf)
         return upper_uhf_limit
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        return filedata[0x1ec0:0x1ec0+len(cls.IDBLOCK)] == cls.IDBLOCK
 
     @classmethod
     def get_prompts(cls):
