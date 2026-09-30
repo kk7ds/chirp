@@ -1093,6 +1093,10 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
     _rev = b"00"  # default rev for the radio I know about...
     _file_ident = b"kg-uv9d"
     BAUD_RATE = 19200
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return cls._file_ident in filedata[0x51:0x59].lower()
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("M", watts=2),
                     chirp_common.PowerLevel("H", watts=5)]
@@ -1147,15 +1151,6 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
 
         packet = _pkt_encode(cmd, payload)
         self.pipe.write(packet)
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        """Look for bits in the file image and see if it looks
-        like ours...
-        TODO: there is a bunch of rubbish between 0x50 and 0x160
-        that is still a known unknown
-        """
-        return cls._file_ident in filedata[0x51:0x59].lower()
 
     def _identify(self):
         """ Identify the radio

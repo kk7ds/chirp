@@ -254,6 +254,11 @@ class Th350Radio(BaofengUVB5):
     VENDOR = "TYT"
     MODEL = "TH-350"
     BAUD_RATE = 9600
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (filedata.startswith(b"TRI350 Radio Program data") and
+                len(filedata) == cls._memsize + 0x30)
     SPECIALS = {
         "VFO1": -3,
         "VFO2": -2,
@@ -390,11 +395,6 @@ class Th350Radio(BaofengUVB5):
         else:
             return (self._memobj.channels[number - 1],
                     self._memobj.names[number - 1].name)
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        return (filedata.startswith(b"TRI350 Radio Program data") and
-                len(filedata) == (cls._memsize + 0x30))
 
 # US version has channel names that are 8 characters long
 

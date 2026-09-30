@@ -55,6 +55,11 @@ class ICT7HRadio(icf.IcomCloneModeRadio):
 
     _ranges = [(0x0000, _memsize, 16)]
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (super().match_model(filedata, filename) or
+                (cls._memsize and len(filedata) == cls._memsize))
+
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.memory_bounds = (1, 60)

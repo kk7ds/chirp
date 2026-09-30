@@ -792,6 +792,10 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
     BAUD_RATE = 9600
     _file_ident = b"588UVP"
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return cls._file_ident in filedata[0x40:0x4D]
+
     _ranges = [
             (0x0000, 0x8000)
         ]
@@ -2030,7 +2034,3 @@ class AnyTone5888UVIIIRadio(chirp_common.CloneModeRadio,
                                           element.value.offset))
             else:
                 setattr(_settings, name, element.value)
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        return cls._file_ident in filedata[0x40:0x4D]

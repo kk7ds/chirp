@@ -80,6 +80,25 @@ class TestDirectory(base.BaseTest):
         self.assertEqual('A', radio.VARIANT)
 
 
+class TestImageDetection(base.BaseTest):
+    def test_clone_mode_radio_requires_metadata(self):
+        class NewRadio(chirp_common.CloneModeRadio):
+            _memsize = 16
+
+        self.assertFalse(NewRadio.match_model(b'0' * 16, 'test.img'))
+
+    def test_legacy_image_detect_matches_memory_size(self):
+        class OldRadio(chirp_common.CloneModeRadio):
+            _memsize = 16
+
+            @classmethod
+            def match_model(cls, filedata, filename):
+                return cls._memsize and len(filedata) == cls._memsize
+
+        self.assertTrue(OldRadio.match_model(b'0' * 16, 'test.img'))
+        self.assertFalse(OldRadio.match_model(b'0' * 15, 'test.img'))
+
+
 class TestDetectBruteForce(base.BaseTest):
     def test_detect_all(self):
         # Attempt a brute-force detection of all test images.

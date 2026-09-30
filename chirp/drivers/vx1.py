@@ -382,6 +382,11 @@ class VX1Radio(yaesu_clone.YaesuCloneModeRadio):
 
     _model = b""
     _memsize = 4818
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (len(filedata) == cls._memsize and
+                filedata[0xE6:0xEB] == b"YAESU")
     _block_lengths = [4818]
     _block_size = 32
 
@@ -412,11 +417,6 @@ class VX1Radio(yaesu_clone.YaesuCloneModeRadio):
             "5. <b>After radio says CLN IN</b>, press OK on chirp prompt "
             "to upload.\n")
         return rp
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        return (len(filedata) == cls._memsize and
-                filedata[0xE6:0xEB] == b"YAESU")
 
     def sync_out(self):
 

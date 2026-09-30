@@ -77,6 +77,11 @@ class IC2720Radio(icf.IcomCloneModeRadio):
 
     _ranges = [(0x0000, 0x1400, 32)]
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (super().match_model(filedata, filename) or
+                (cls._memsize and len(filedata) == cls._memsize))
+
     def _get_bank(self, loc):
         _bank = self._memobj.banks[loc / 2]
         if loc % 2:

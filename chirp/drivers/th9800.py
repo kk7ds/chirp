@@ -1252,12 +1252,6 @@ class RetevisMA1Radio(TYTTH9800Base, chirp_common.CloneModeRadio,
     PNLKEY_VALUES = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x12]
 
     @classmethod
-    def match_model(cls, filedata, filename):
-        # This radio has always been post-metadata, so never do
-        # old-school detection
-        return False
-
-    @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = (

@@ -165,6 +165,11 @@ class ID800v2Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
 
     _memories = []
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (super().match_model(filedata, filename) or
+                (cls._memsize and len(filedata) == cls._memsize))
+
     _ranges = [(0x0020, 0x2B18, 32),
                (0x2B18, 0x2B20,  8),
                (0x2B20, 0x2BE0, 32),

@@ -433,6 +433,10 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
     _model = "KG-UV920Rr"   # what the radio responds to CMD_ID with
     _file_ident = b"KGUV920PA"
     BAUD_RATE = 19200
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return cls._file_ident in filedata[0x400:0x408]
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=5),
                     chirp_common.PowerLevel("M", watts=20),
                     chirp_common.PowerLevel("H", watts=50)]
@@ -479,10 +483,6 @@ class KGUV920PARadio(chirp_common.CloneModeRadio,
             LOG.error("_cs =%x", _cs)
             LOG.error("_rcs=%x", _rcs)
         return (_rcs != _cs, _packet)
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        return cls._file_ident in filedata[0x400:0x408]
 
     def _identify(self):
         """

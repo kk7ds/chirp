@@ -1647,11 +1647,6 @@ class TS590Radio(chirp_common.CloneModeRadio):
                     LOG.debug(element.get_name())
                     raise
 
-    @classmethod
-    def match_model(cls, fdata, fyle):
-        """ Included to prevent 'File > New' error """
-        return False
-
 
 @directory.register
 class TS590SRadio(TS590Radio):

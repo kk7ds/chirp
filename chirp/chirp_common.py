@@ -1555,14 +1555,14 @@ class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties,
     @classmethod
     def match_model(cls, filedata, filename):
         """Given contents of a stored file (@filedata), return True if
-        this radio driver handles the represented model"""
+        this radio driver handles the represented model
 
-        # Unless the radio driver does something smarter, claim
-        # support if the data is the same size as our memory.
-        # Ideally, each radio would perform an intelligent analysis to
-        # make this determination to avoid model conflicts with
-        # memories of the same size.
-        return cls._memsize and len(filedata) == cls._memsize
+        NOTE: This should not be implemented by new drivers UNLESS you need
+        to recognize a non-CHIRP-native file format, such as files from the
+        OEM software or similar. Those must be registered via
+        directory.register_format() in order to be properly recognized.
+        """
+        return False
 
     def sync_in(self):
         """Initiate a radio-to-PC clone operation"""

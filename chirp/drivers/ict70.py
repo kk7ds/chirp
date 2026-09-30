@@ -93,6 +93,11 @@ class ICT70Radio(icf.IcomCloneModeRadio):
 
     _ranges = [(0x0000, 0x19E0, 32)]
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (super().match_model(filedata, filename) or
+                (cls._memsize and len(filedata) == cls._memsize))
+
     _num_banks = 26
     _bank_class = ICT70Bank
 

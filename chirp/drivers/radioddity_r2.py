@@ -667,12 +667,6 @@ class RadioddityR2(chirp_common.CloneModeRadio):
                     LOG.debug(element.get_name())
                     raise
 
-    @classmethod
-    def match_model(cls, filedata, filename):
-        # This radio has always been post-metadata, so never do
-        # old-school detection
-        return False
-
 
 @directory.register
 class RetevisRT24(RadioddityR2):

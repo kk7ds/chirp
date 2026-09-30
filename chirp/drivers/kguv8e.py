@@ -314,6 +314,12 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
     _model = b"KG-UV8D-A"
     _file_ident = b"kguv8e"  # lowercase
     BAUD_RATE = 19200
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        ident = (b'kg' + filedata[0x426:0x430].replace(b'(', b'').replace(
+            b')', b'').lower())
+        return cls._file_ident in ident
     POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
                     chirp_common.PowerLevel("H", watts=5)]
     _record_start = 0x7B
@@ -380,11 +386,6 @@ class KGUV8ERadio(chirp_common.CloneModeRadio,
     #  31:34    VHF rx upper limit
     #  35:38    VHF tx lower limit
     #  39:42    VHF tx upper limit
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        id = cls._file_ident
-        return cls._file_ident in b'kg' + filedata[0x426:0x430].replace(b'(', b'').replace(b')', b'').lower()
 
     def _identify(self):
         """Do the identification dance"""

@@ -287,6 +287,11 @@ class IC2730Radio(icf.IcomCloneModeRadio):
     _raw_frames = True
     _highbit_flip = True
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (super().match_model(filedata, filename) or
+                (cls._memsize and len(filedata) == cls._memsize))
+
     _icf_data: dict[str, typing.Any] = {
         'MapRev': 1,
         'EtcData': 0,  # This might be wrong

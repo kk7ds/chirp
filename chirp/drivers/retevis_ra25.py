@@ -1181,11 +1181,6 @@ class RA25UVRadio(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                     LOG.debug(element.get_name())
                     raise
 
-    @classmethod
-    def match_model(cls, filedata, filename):
-        # new drivers identified by metadata
-        return False
-
 
 @directory.register
 class AnyTone779UV(RA25UVRadio):

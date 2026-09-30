@@ -111,6 +111,11 @@ class IC2200Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     _endframe = "Icom Inc\x2eD8"
     _can_hispeed = True
 
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return (super().match_model(filedata, filename) or
+                (cls._memsize and len(filedata) == cls._memsize))
+
     _memories = []
 
     _ranges = [(0x0000, 0x1340, 32),
