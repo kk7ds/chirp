@@ -230,6 +230,9 @@ KSUN:
 Marui:
 - alt: TYT TH-UV88
   model: MR-UV1
+Microlab/mlab:
+- alt: Baofeng BF-888
+  model: ML9323S
 Midland:
 - alt: Puxing PX-777
   model: CT-210
@@ -239,6 +242,13 @@ My Emergency Radio:
 NKTech:
 - alt: Retevis RT6
   model: UV-7RX
+Philco:
+- alt: Baofeng BF-888
+  model: MD-216
+- alt: Baofeng BF-888
+  model: MD-108
+- alt: Baofeng UV-5R
+  model: MD33R
 QYT:
 - alt: KT-WP12
   model: KT-9900
