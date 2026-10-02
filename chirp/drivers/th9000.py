@@ -450,16 +450,17 @@ def _read(radio, length):
 def _ident(radio):
     radio.pipe.timeout = 1
     exito = False
+    response = b""
     for i in range(0, 5):
         _echo_write(radio, b"PROGRAM")
         response = radio.pipe.read(3)
-
-        if response == b"QX\06":
+        LOG.debug("PROGRAM reply: %s" % util.hexprint(response))
+        # Original radios: QX + ACK. Plus: ERR after PROGRAM.
+        if response == b"QX\x06" or response == b"ERR":
             exito = True
             break
 
-    # check if we had EXITO
-    if exito is False:
+    if not exito:
         if not response:
             raise errors.RadioNoResponse()
         msg = "The radio did not accept program mode after five tries.\n"
@@ -469,11 +470,11 @@ def _ident(radio):
     _echo_write(radio, b"\x02")
     response = radio.pipe.read(16)
     LOG.debug(util.hexprint(response))
-    if response[1:8] != b"TH-9000":
-        LOG.error("Looking  for:\n%s" % util.hexprint("TH-9000"))
+    if b"TH-9000" not in response:
+        LOG.error("Looking for TH-9000 in ident")
         LOG.error("Response was:\n%s" % util.hexprint(response))
         raise errors.RadioError("Unsupported model")
-
+    
 
 def _send(radio, cmd, addr, length, data=None):
     frame = struct.pack(">cHb", cmd, addr, length)
