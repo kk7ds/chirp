@@ -28,9 +28,12 @@ image this driver stores is logical: one 4 KB slot per tag in IMAGE_TAGS,
 in that order, each holding the page as read (tag byte included), or all
 0xFF if the radio has no page with that tag.
 
-The serial link on the tested cable flips bit 7 of about 1 received byte
-in 1000 and the protocol has no checksums, so every block is read at
-least three times and the copies are merged byte by byte.
+The protocol has no checksums. Replies that are short or carry the wrong
+header are asked for again; anything else is taken as received, so the
+link must be sound. Some CH340-based programming cables are not: they
+flip bit 7 of received bytes (1 in 700 to 1 in 50 on the tested cable),
+while an FTDI cable on the same radio read 2 MB without an error. The
+driver warns when it sees a CH340 cable.
 """
 
 import collections
@@ -98,9 +101,13 @@ SCAN_TX_MODES = ['Current Channel', 'Last Active Channel',    # [ScanTxMode]
 # options of the radio's factory scan lists; bytes 3-4 = designed channel
 SCAN_DEFAULT_OPTS = bytes.fromhex('030600010000000000' '0a007f')
 
-# Received bytes sometimes have this bit set when the radio sent it clear.
-LINK_FAULT = 0x80
-READ_COPIES, READ_TRIES = 3, 10
+READ_TRIES = 3              # for replies that are short or malformed
+# USB IDs of CH340 serial chips: cables with them have corrupted data from
+# this radio (see the module docstring).
+CH340_IDS = {(0x1A86, 0x7523), (0x1A86, 0x5523)}
+CABLE_ADVICE = ('Some CH340-based programming cables corrupt data from '
+                'this radio; a cable with an FTDI or CP2102 chip is '
+                'recommended.')
 
 # The pages upload may write, in the order it writes them: lists before
 # what refers to them (contact records before their index, lists before
@@ -114,7 +121,7 @@ UPLOAD_TAGS = ([0x03, 0x04, 0x06, RADIOID_TAG] +
                list(range(0x12, 0x42)) + list(TXC_TAGS) +
                list(range(0x5C, 0x65)))
 NEVER_WRITE = (0x02, 0x69)
-WRITE_TRIES = 3
+WRITE_TRIES = 2
 
 CHAN_FORMAT = """
 // CTCSS: tenths of a Hz as 4 BCD digits (88.5 Hz = hundreds 0, tens 8,
@@ -893,39 +900,32 @@ STEPS = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0, 50.0, 100.0]
 
 # --- Serial link ------------------------------------------------------------
 
-def _marker_ok(got, want):
-    """Check a one-byte reply marker, allowing for the known link fault."""
-    return got in (want, want | LINK_FAULT)
-
-
-def _merge_copies(copies):
-    """Merge copies of one block byte by byte, or None if more are needed.
-
-    Where copies differ only in bit 7, the value with bit 7 clear wins, as
-    the link fault only ever sets it. Anything else needs a strict majority
-    of at least 3 copies.
-    """
-    first = copies[0]
-    if all(c == first for c in copies[1:]):
-        return first
-    out = bytearray(first)
-    for i, vals in enumerate(zip(*copies)):
-        if min(vals) == max(vals):
-            continue
-        votes = collections.Counter(vals)
-        if len({v & ~LINK_FAULT for v in votes}) == 1:
-            out[i] = min(votes)
-            continue
-        value, n = votes.most_common(1)[0]
-        if n < 3 or n * 2 <= len(copies):
-            return None
-        out[i] = value
-    return bytes(out)
+def _is_ch340(pipe):
+    """True if `pipe` is a serial port on a CH340 USB adapter."""
+    port = getattr(pipe, 'port', None)
+    if not isinstance(port, str):
+        return False
+    try:
+        from serial.tools import list_ports
+        return any((p.vid, p.pid) in CH340_IDS
+                   for p in list_ports.comports() if p.device == port)
+    except Exception:           # no USB information on this system
+        return False
 
 
 class _Link:
     def __init__(self, pipe):
         self.pipe = pipe
+        self.ch340 = _is_ch340(pipe)
+        if self.ch340:
+            LOG.warning('CH340 programming cable on %s. %s',
+                        pipe.port, CABLE_ADVICE)
+
+    def error(self, message):
+        """A RadioError for a link failure, with cable advice if needed."""
+        if self.ch340:
+            message += '. ' + CABLE_ADVICE
+        return errors.RadioError(message)
 
     def send(self, data):
         time.sleep(0.01)
@@ -944,41 +944,29 @@ class _Link:
         self.send(data)
         resp = self.recv(n, timeout)
         if len(resp) != n:
-            raise errors.RadioError('No reply from radio to %r' % data[:7])
+            raise self.error('No reply from radio to %r' % data[:7])
         return resp
 
-    def query_v(self, cmd, agree=3, tries=10):
-        """Repeat a V query until `agree` identical replies have been seen."""
-        seen = collections.Counter()
-        for _attempt in range(tries):
+    def query_v(self, cmd):
+        """A V query: the reply is 'V', the index, a length, the data."""
+        for _attempt in range(READ_TRIES):
             self.send(cmd)
             hdr = self.recv(3)
-            n = hdr[2] if len(hdr) == 3 else 0
-            body = self.recv(n) if n else b''
-            if len(hdr) != 3 or len(body) != n or not _marker_ok(hdr[0], 0x56):
-                self.drain()
-                continue
-            seen[hdr + body] += 1
-            reply, count = seen.most_common(1)[0]
-            if count >= agree:
-                return reply[3:]
-        raise errors.RadioError('Unreliable reply to radio info query')
+            body = self.recv(hdr[2]) if len(hdr) == 3 else b''
+            if len(hdr) == 3 and hdr[0] == 0x56 and len(body) == hdr[2]:
+                return body
+            self.drain()
+        raise self.error('No valid reply to radio info query')
 
     def read_block(self, addr, length, timeout=5.0):
         cmd = b'R' + struct.pack('<I', addr)[:3] + struct.pack('<H', length)
-        good = []
         for _attempt in range(READ_TRIES):
             self.send(cmd)
             resp = self.recv(6 + length, timeout)
-            if len(resp) != 6 + length or resp[:6] != b'W' + cmd[1:6]:
-                self.drain()
-                continue
-            good.append(resp[6:])
-            if len(good) >= READ_COPIES:
-                merged = _merge_copies(good)
-                if merged is not None:
-                    return merged
-        raise errors.RadioError('Could not read flash at %06x reliably' % addr)
+            if len(resp) == 6 + length and resp[:6] == b'W' + cmd[1:6]:
+                return resp[6:]
+            self.drain()
+        raise self.error('Could not read flash at %06x' % addr)
 
 
 MODEL_ID = b'DP570UV'                  # PSEARCH reply of the DM-32UV
@@ -987,12 +975,16 @@ TESTED_FIRMWARE = ('DM32.01.01.047',)
 
 def _search(link):
     """Send PSEARCH; return the model ID the radio reports."""
+    garbled = False
     for _attempt in range(5):
         link.send(b'PSEARCH')
         resp = link.recv(8)
-        if len(resp) == 8 and _marker_ok(resp[0], 0x06):
-            # ASCII: clearing bit 7 undoes the link fault
-            return bytes(b & 0x7F for b in resp[1:])
+        if len(resp) == 8 and resp[0] == 0x06:
+            if resp[1:].isascii():
+                return resp[1:]
+            garbled = True          # the model ID is ASCII text
+    if garbled:
+        raise link.error('Garbled reply from the radio')
     raise errors.RadioError('Radio did not respond. Is it switched on '
                             'and connected?')
 
@@ -1013,8 +1005,8 @@ def _identify(link, writing=False):
     # flag (0x43A). The radio doesn't enforce them; the vendor CPS asks for
     # the password. CHIRP can't ask, so the driver refuses instead.
     resp = link.xfer(b'PASSSTA', 3)
-    if not _marker_ok(resp[0], ord('P')):
-        raise errors.RadioError('Unexpected reply to PASSSTA')
+    if resp[0] != ord('P'):
+        raise link.error('Unexpected reply to PASSSTA')
     if resp[2] == PASSWORD_SET:
         raise errors.RadioError(
             'The radio has a read password. CHIRP cannot enter passwords; '
@@ -1023,8 +1015,8 @@ def _identify(link, writing=False):
         raise errors.RadioError(
             'The radio has a write password. CHIRP cannot enter passwords; '
             'remove it with the vendor programming software first')
-    if not _marker_ok(link.xfer(b'SYSINFO', 1)[0], 0x06):
-        raise errors.RadioError('Radio refused SYSINFO')
+    if link.xfer(b'SYSINFO', 1) != b'\x06':
+        raise link.error('Radio refused SYSINFO')
     link.query_v(b'V\x00\x00\x40\x0D')
     info = {}
     for i in range(1, 17):
@@ -1042,20 +1034,14 @@ def _identify(link, writing=False):
 
 
 def _enter_program(link):
-    # G only reads, so a corrupted reply can simply be asked for again.
-    for _attempt in range(3):
-        if _marker_ok(link.xfer(b'G\x00\x00\x00\x00\x01', 0x106)[0],
-                      ord('S')):
-            break
-        link.drain()
-    else:
-        raise errors.RadioError('Unexpected reply to G')
+    if link.xfer(b'G\x00\x00\x00\x00\x01', 0x106)[0] != ord('S'):
+        raise link.error('Unexpected reply to G')
     link.send(b'\xFF\xFF\xFF\xFF\x0C')
-    if not _marker_ok(link.xfer(b'PROGRAM', 1)[0], 0x06):
-        raise errors.RadioError('Radio refused programming mode')
+    if link.xfer(b'PROGRAM', 1) != b'\x06':
+        raise link.error('Radio refused programming mode')
     link.xfer(b'\x02', 8)
-    if not _marker_ok(link.xfer(b'\x06', 1)[0], 0x06):
-        raise errors.RadioError('Radio did not acknowledge')
+    if link.xfer(b'\x06', 1) != b'\x06':
+        raise link.error('Radio did not acknowledge')
 
 
 def _scan(link, start, end, radio, status):
@@ -1063,7 +1049,13 @@ def _scan(link, start, end, radio, status):
     pages = list(range(start, end + 1 - PAGE + 1, PAGE))
     where = collections.defaultdict(list)
     for i, addr in enumerate(pages):
-        where[link.read_block(addr + PAGE - 1, 1, timeout=0.5)[0]].append(addr)
+        tag = link.read_block(addr + PAGE - 1, 1, timeout=0.5)[0]
+        if 0x80 <= tag < 0xFF:
+            # No page tag has bit 7 set (they go up to 0x7c); a bad cable
+            # sets it, which would make a page look missing.
+            raise link.error('Implausible page tag %02x at %06x' % (
+                tag, addr))
+        where[tag].append(addr)
         status.cur = i
         radio.status_fn(status)
     return where, where.pop(0xFF, [])
@@ -1098,10 +1090,12 @@ def do_download(radio):
 
 
 def _write_page(link, addr, data, start, end, reconnect=None):
-    """Write one whole page with W and read it back until it matches.
+    """Write one whole page with W and read it back to check it.
 
-    reconnect() starts a new session; it is needed when an ACK is lost,
-    because the radio ends the session after 2 s without traffic."""
+    A page that doesn't match is written once more; the firmware erases
+    the sector on every aligned W, so a rewrite starts clean. reconnect()
+    starts a new session; it is needed when an ACK is lost, because the
+    radio ends the session after 2 s without traffic."""
     if (len(data) != PAGE or addr % PAGE or addr < start or
             addr + PAGE - 1 > end or data[-1] in NEVER_WRITE):
         raise errors.RadioError('Refusing unsafe write at %06x' % addr)
@@ -1116,15 +1110,17 @@ def _write_page(link, addr, data, start, end, reconnect=None):
             LOG.warning('No reply to W %06x; reconnecting', addr)
             time.sleep(2.5)
             if reconnect is None:
-                raise errors.RadioError('No reply to write at %06x' % addr)
+                raise link.error('No reply to write at %06x' % addr)
             reconnect()
-        elif not _marker_ok(ack[0], 0x06):
+        elif ack != b'\x06':
             LOG.warning('Unexpected reply %s to W %06x', ack.hex(), addr)
         if link.read_block(addr, PAGE) == bytes(data):
             return
         LOG.warning('Page %06x did not verify, writing it again', addr)
-    raise errors.RadioError('Page at %06x did not verify after %d writes' % (
-        addr, WRITE_TRIES))
+    raise link.error(
+        'Page at %06x did not verify after %d writes; upload again, or '
+        'restore the backup CHIRP saved before the upload' % (
+            addr, WRITE_TRIES))
 
 
 def _zone_record(rec):
