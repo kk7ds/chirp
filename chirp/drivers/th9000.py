@@ -1101,7 +1101,6 @@ class Th9000440Radio(Th9000220Radio):
         return match_orig_model(cls, filedata, filename)
 
 
-
 @directory.detected_by(Th9000220Radio)
 class Th9000220PlusRadio(Th9000220Radio):
     """TYT TH-9000D Plus 220"""
