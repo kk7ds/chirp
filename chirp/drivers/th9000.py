@@ -447,37 +447,33 @@ def _read(radio, length):
     return data
 
 
-def _ident(radio):
-    """Plus CPS sends PROGRA: and expects QX+ACK. Original TH-9000D
-    CPS sends PROGRAM and expects the same QX+ACK. Try Plus first.
+def _enter_program(radio):
+    """Return the interrogate that got QX+ACK.
+
+    PROGRA: is the TH-9000D Plus command. PROGRAM is the original.
+    Plus must be tried first: a rejected PROGRAM still enters program mode.
     """
     radio.pipe.timeout = 1
-    exito = False
     response = b""
-    # PROGRA: is the TH-9000D Plus interrogate. PROGRAM is the original.
     for cmd in (b"PROGRA:", b"PROGRAM"):
         for i in range(0, 5):
             _echo_write(radio, cmd)
             response = radio.pipe.read(3)
             LOG.debug("%s reply: %s" % (cmd, util.hexprint(response)))
-
             if response == b"QX\x06":
-                exito = True
-                break
-        if exito:
-            break
+                return cmd
+    if not response:
+        raise errors.RadioNoResponse()
+    msg = "The radio did not accept program mode after five tries.\n"
+    msg += "Check you interface cable and power cycle your radio."
+    raise errors.RadioError(msg)
 
-    # check if we had EXITO
-    if exito is False:
-        if not response:
-            raise errors.RadioNoResponse()
-        msg = "The radio did not accept program mode after five tries.\n"
-        msg += "Check you interface cable and power cycle your radio."
-        raise errors.RadioError(msg)
 
+def _confirm_ident(radio):
     _echo_write(radio, b"\x02")
     response = radio.pipe.read(16)
     LOG.debug(util.hexprint(response))
+    # Original ident is TH-9000. Plus ident is ITH-9000.
     if b"TH-9000" not in response:
         LOG.error("Looking  for:\n%s" % util.hexprint("TH-9000"))
         LOG.error("Response was:\n%s" % util.hexprint(response))
@@ -531,9 +527,11 @@ def _finish(radio):
         raise errors.RadioError("Radio did not finish cleanly")
 
 
-def do_download(radio):
-
-    _ident(radio)
+def do_download(radio, ident=True):
+    # Detection already entered program mode before sync_in().
+    if ident:
+        _enter_program(radio)
+    _confirm_ident(radio)
 
     _memobj = None
     data = b""
@@ -555,7 +553,8 @@ def do_download(radio):
 
 def do_upload(radio):
 
-    _ident(radio)
+    _enter_program(radio)
+    _confirm_ident(radio)
 
     for start, end in radio._ranges:
         for addr in range(start, end, 0x10):
@@ -615,9 +614,21 @@ class Th9000Radio(chirp_common.CloneModeRadio,
         rf.valid_tuning_steps = TUNING_STEPS
         return rf
 
+    _plus_class = None
+
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        """Interrogate before sync_in(). Plus answers PROGRA:, not PROGRAM."""
+        radio = cls(pipe)
+        cmd = _enter_program(radio)
+        if cmd == b"PROGRA:" and cls._plus_class:
+            return cls._plus_class
+        return cls
+
     # Do a download of the radio from the serial port
     def sync_in(self):
-        self._mmap = do_download(self)
+        # detect_from_serial() already entered program mode on this pipe.
+        self._mmap = do_download(self, ident=False)
         self.process_mmap()
 
     # Do an upload of the radio to the serial port
@@ -1088,6 +1099,30 @@ class Th9000440Radio(Th9000220Radio):
     @classmethod
     def match_model(cls, filedata, filename):
         return match_orig_model(cls, filedata, filename)
+
+
+
+@directory.detected_by(Th9000220Radio)
+class Th9000220PlusRadio(Th9000220Radio):
+    """TYT TH-9000D Plus 220"""
+    MODEL = "TH9000_220_Plus"
+
+
+@directory.detected_by(Th9000144Radio)
+class Th9000144PlusRadio(Th9000144Radio):
+    """TYT TH-9000D Plus 144"""
+    MODEL = "TH9000_144_Plus"
+
+
+@directory.detected_by(Th9000440Radio)
+class Th9000440PlusRadio(Th9000440Radio):
+    """TYT TH-9000D Plus 440"""
+    MODEL = "TH9000_440_Plus"
+
+
+Th9000220Radio._plus_class = Th9000220PlusRadio
+Th9000144Radio._plus_class = Th9000144PlusRadio
+Th9000440Radio._plus_class = Th9000440PlusRadio
 
 
 @directory.register
