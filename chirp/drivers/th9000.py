@@ -474,7 +474,7 @@ def _ident(radio):
         LOG.error("Looking for TH-9000 in ident")
         LOG.error("Response was:\n%s" % util.hexprint(response))
         raise errors.RadioError("Unsupported model")
-    
+
 
 def _send(radio, cmd, addr, length, data=None):
     frame = struct.pack(">cHb", cmd, addr, length)
