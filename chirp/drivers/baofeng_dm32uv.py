@@ -28,12 +28,12 @@ image this driver stores is logical: one 4 KB slot per tag in IMAGE_TAGS,
 in that order, each holding the page as read (tag byte included), or all
 0xFF if the radio has no page with that tag.
 
-The protocol has no checksums. Replies that are short or carry the wrong
-header are asked for again; anything else is taken as received, so the
-link must be sound. Some CH340-based programming cables are not: they
-flip bit 7 of received bytes (1 in 700 to 1 in 50 on the tested cable),
-while an FTDI cable on the same radio read 2 MB without an error. The
-driver warns when it sees a CH340 cable.
+The protocol has no checksums, so the driver doesn't try to recover from
+a bad link: apart from the PSEARCH handshake, any bad or missing reply
+stops the transfer, and the link must be sound. Some CH340-based
+programming cables are not: they flip bit 7 of received bytes (1 in 700
+to 1 in 50 on the tested cable), while an FTDI cable on the same radio
+read 2 MB without an error. The driver warns when it sees a CH340 cable.
 """
 
 import collections
@@ -43,6 +43,7 @@ import struct
 import time
 
 from chirp import bitwise, chirp_common, directory, errors, memmap
+from chirp import kenwood_tone
 from chirp.settings import (RadioSetting, RadioSettingGroup, RadioSettings,
                             RadioSettingValueBoolean,
                             RadioSettingValueInteger, RadioSettingValueList,
@@ -101,7 +102,6 @@ SCAN_TX_MODES = ['Current Channel', 'Last Active Channel',    # [ScanTxMode]
 # options of the radio's factory scan lists; bytes 3-4 = designed channel
 SCAN_DEFAULT_OPTS = bytes.fromhex('030600010000000000' '0a007f')
 
-READ_TRIES = 3              # for replies that are short or malformed
 # USB IDs of CH340 serial chips: cables with them have corrupted data from
 # this radio (see the module docstring).
 CH340_IDS = {(0x1A86, 0x7523), (0x1A86, 0x5523)}
@@ -121,17 +121,43 @@ UPLOAD_TAGS = ([0x03, 0x04, 0x06, RADIOID_TAG] +
                list(range(0x12, 0x42)) + list(TXC_TAGS) +
                list(range(0x5C, 0x65)))
 NEVER_WRITE = (0x02, 0x69)
-WRITE_TRIES = 2
 
-CHAN_FORMAT = """
-// CTCSS: tenths of a Hz as 4 BCD digits (88.5 Hz = hundreds 0, tens 8,
-// low 85). DCS: dcs set, the first octal digit in tens, the other two in
-// low (D754I = dcs, inverted, tens 7, low 54). None: ff ff.
-struct tone {
-  lbcd low;
-  u8 dcs:1, inverted:1, hundreds:2, tens:4;
-};
+# DTMF (tag 0x06; CPS dialog 0x421bc0, accessors 0x47bb10-0x47c920). Codes
+# are one digit per byte (0-9, A-D = 10-13, * = 14, # = 15), ended by 0xFF.
+# 0xA20 on is BDC1200 (not handled; kept as it is).
+DTMF_TAG, DTMF_CODES, DTMF_CONTACTS = 0x06, 16, 64
+DTMF_CHARS = '0123456789ABCD*#'
+CODE_CHARS = {'dtmf': DTMF_CHARS, 'digits': '0123456789',
+              'hex': '0123456789ABCDEF'}
+# Two-tone (tag 0x03; CPS dialogs 0x45a760 system, 0x45ac30 decode,
+# 0x45ae20 encode; accessors 0x479df0-0x47a7a0). Times in 0.1 s,
+# frequencies in 0.1 Hz. Five-tone is on the same page from 0x730.
+SIGNAL_TAG, TT_ENCODE, TT_DECODE = 0x03, 32, 4
+# Five-tone (tag 0x03 from 0x730; CPS dialogs 0x4254c0 system, 0x426240
+# message codes, 0x426590 special calls). Codes are hex digits, one per
+# byte, 0xFF-terminated.
+FT_MSG, FT_SPECIAL = 8, 32
+FT_STANDARDS = ['ZVEI1', 'ZVEI2', 'ZVEI3', 'CCIR1', 'CCIR2', 'CCIR3', 'EEA',
+                'EIA']                                # [FiveTone*Standard]
+FT_SPECIAL_TYPES = (['Off', 'ANI', 'Data Transmission'],  # [SpecialCallType]
+                    [0xFF, 0, 1])
+FT_DELIMITERS = ['No Pause in mid', 'A', 'B', 'C', 'D', 'E', 'F']
+FT_TONE_LONG = (['%d ms' % i for i in range(30, 101, 10)], 3)
+TT_HZ = (2885, 31068)            # frequency limits in 0.1 Hz (CPS 0x45a760)
+# [TwoToneDecodeFormat] and the stored codes (CPS 0x47a1f0)
+TT_DECODE_FORMATS = ['None', 'A-B', 'A-C', 'A-D', 'B-A', 'B-C', 'B-D', 'C-A',
+                     'C-B', 'C-D', 'D-A', 'D-B', 'D-C', 'Long A', 'Long B',
+                     'Long C', 'Long D']
+TT_DECODE_CODES = [0xFF, 0x01, 0x02, 0x03, 0x10, 0x12, 0x13, 0x20, 0x21,
+                   0x23, 0x30, 0x31, 0x32, 0x0F, 0x1F, 0x2F, 0x3F]
+# The page each settings struct lives on.
+STRUCT_TAGS = {'dtmf': DTMF_TAG, 'twotone': SIGNAL_TAG,
+               'fivetone': SIGNAL_TAG}
 
+
+# The image layout: one 4 KB slot per tag in IMAGE_TAGS order (see the
+# module docstring), so every address below is fixed.
+MEM_FORMAT = """
 struct chan {
   char name[16];
   lbcd rxfreq[4];
@@ -146,8 +172,8 @@ struct chan {
   u8 privacy;
   u8 unknown1f:1, encrypt:1, rxgroup:6;
   u8 aprs_channel;
-  struct tone rxtone;
-  struct tone txtone;
+  ul16 rxtone;
+  ul16 txtone;
   u8 unknown25:2, compander:1, vox:1, unknown25b:4;
   u8 ptt_id_display:1, rx_squelch_mode:3, signaling:3, unknown26:1;
   u8 rx_signal:4, tx_signal:4;
@@ -163,11 +189,118 @@ struct zone {
   u8 count;
   ul16 members[64];
 };
-"""
 
+// Tag 0x03, slot 0x1000: two-tone, then five-tone from +0x730.
+#seekto 0x01001;
+u8 tt_encode_count;
+#seekto 0x01030;
+struct {
+  u8 pre_carrier;
+  u8 first_tone;
+  u8 second_tone;
+  u8 long_tone;
+  u8 interval;
+  u8 unknown35;
+  u8 polite_wait;
+  ul16 freq_a;
+  ul16 freq_b;
+  ul16 freq_c;
+  ul16 freq_d;
+  u8 unknown3f:6, side_tone:1, idle_ack:1;
+  u8 auto_reset;
+  u8 dec1_format;
+  u8 dec1_call;
+  u8 dec1_unknown:7, dec1_reply:1;
+  u8 dec1_unknown2;
+  u8 dec2_format;
+  u8 dec2_call;
+  u8 dec2_unknown:7, dec2_reply:1;
+  u8 dec2_unknown2;
+  u8 dec3_format;
+  u8 dec3_call;
+  u8 dec3_unknown:7, dec3_reply:1;
+  u8 dec3_unknown2;
+  u8 dec4_format;
+  u8 dec4_call;
+  u8 dec4_unknown:7, dec4_reply:1;
+  u8 dec4_unknown2;
+} twotone;
+#seekto 0x01220;
+struct {
+  u8 name[32];
+  u8 unknown20:7, single_tone:1;
+  u8 unknown21;
+  ul16 tone1;
+  ul16 tone2;
+  u8 unknown26[2];
+} tt_encode[32];
+#seekto 0x01730;
+struct {
+  u8 self_id[5];
+  u8 decode_std;
+  u8 unknown736:4, decode_resp:4;
+  u8 unknown737[3];
+  u8 pre_carrier;
+  u8 auto_reset;
+  u8 send_delay;
+  u8 ptt_id_pause;
+  u8 first_delay;
+  u8 unknown73f:7, side_tone:1;
+  u8 unknown740[16];
+  u8 msg1_func;
+  u8 msg1_unknown:4, msg1_resp:4;
+  u8 msg1_code[12];
+  u8 msg1_pad[2];
+  u8 msg2_func;
+  u8 msg2_unknown:4, msg2_resp:4;
+  u8 msg2_code[12];
+  u8 msg2_pad[2];
+  u8 msg3_func;
+  u8 msg3_unknown:4, msg3_resp:4;
+  u8 msg3_code[12];
+  u8 msg3_pad[2];
+  u8 msg4_func;
+  u8 msg4_unknown:4, msg4_resp:4;
+  u8 msg4_code[12];
+  u8 msg4_pad[2];
+  u8 msg5_func;
+  u8 msg5_unknown:4, msg5_resp:4;
+  u8 msg5_code[12];
+  u8 msg5_pad[2];
+  u8 msg6_func;
+  u8 msg6_unknown:4, msg6_resp:4;
+  u8 msg6_code[12];
+  u8 msg6_pad[2];
+  u8 msg7_func;
+  u8 msg7_unknown:4, msg7_resp:4;
+  u8 msg7_code[12];
+  u8 msg7_pad[2];
+  u8 msg8_func;
+  u8 msg8_unknown:4, msg8_resp:4;
+  u8 msg8_code[12];
+  u8 msg8_pad[2];
+  u8 bot_id[16];
+  u8 bot_std;
+  u8 bot_long;
+  u8 unknown7e2[14];
+  u8 eot_id[16];
+  u8 eot_std;
+  u8 eot_long;
+} fivetone;
+#seekto 0x01820;
+struct {
+  u8 type;
+  u8 code[5];
+  u8 delimiter;
+  u8 standard;
+  u8 tone_long;
+  u8 unknown9[7];
+  u8 data[16];
+  u8 name[16];
+} ft_special[32];
 
-SETTINGS_FORMAT = """
-#seekto 0x%(b)x;
+// Tag 0x04, slot 0x2000: radio settings.
+#seekto 0x02000;
 struct {
   u8 poweron_type;
   char line1[14];
@@ -180,7 +313,7 @@ struct {
      startup_sound:1;
   u8 voice_prompt:1, battery_low:1, tx_end_tone:2, unknown21:4;
 } set_power;
-#seekto 0x%(b30)x;
+#seekto 0x02030;
 struct {
   u8 backlight;
   u8 auto_backlight;
@@ -196,7 +329,7 @@ struct {
   u8 a_zone_color;
   u8 b_zone_color;
 } set_display;
-#seekto 0x%(b40)x;
+#seekto 0x02040;
 struct {
   u8 unknown40:1, gps_format:1, speed_unit:2, gps_mode:2, distance_unit:1,
      gps_switch:1;
@@ -205,7 +338,7 @@ struct {
   u8 unknown43[2];
   u8 unknown45:5, record_type:2, record_switch:1;
 } set_gps;
-#seekto 0x%(b60)x;
+#seekto 0x02060;
 struct {
   u8 unknown60:6, group_match:1, private_match:1;
   u8 call_hold;
@@ -218,7 +351,7 @@ struct {
   u8 name_format:2, unknown67a:2, send_tx_name:1, name_priority:1,
      unknown67b:2;
 } set_dmr;
-#seekto 0x%(b80)x;
+#seekto 0x02080;
 struct {
   u8 dual_watch:2, main_line:1, b_display:1, a_display:1, b_mode:1,
      a_mode:1, only_channel:1;
@@ -240,7 +373,7 @@ struct {
   u8 key_p3_long;
   u8 long_press;
 } set_work;
-#seekto 0x%(ba0)x;
+#seekto 0x020a0;
 struct {
   u8 tot;
   u8 tot_pre;
@@ -252,7 +385,7 @@ struct {
   u8 mic_analog;
   u8 mic_digital;
 } set_opts;
-#seekto 0x%(b301)x;
+#seekto 0x02301;
 struct {
   u8 send_interval;
   u8 unknown302:7, fixed_beacon:1;
@@ -268,7 +401,7 @@ struct {
   u8 unknown331:7, call_type:1;
   ul24 upload_number;
 } set_aprs;
-#seekto 0x%(b500)x;
+#seekto 0x02500;
 struct {
   u8 unknown500:6, new_zone:1, zone_list:1;
   u8 unknown501:2, measure_period:1, radio_disable:1, radio_enable:1,
@@ -285,20 +418,26 @@ struct {
   u8 unknown507:3, channel_name:1, add_channel:1, rx_group:1,
      tdma_direct:1, channel_type:1;
 } set_menu;
-"""
 
-
-# DTMF (tag 0x06; CPS dialog 0x421bc0, accessors 0x47bb10-0x47c920). Codes
-# are one digit per byte (0-9, A-D = 10-13, * = 14, # = 15), ended by 0xFF.
-# 0xA20 on is BDC1200 (not handled; kept as it is).
-DTMF_TAG, DTMF_CODES, DTMF_CONTACTS = 0x06, 16, 64
-DTMF_CHARS = '0123456789ABCD*#'
-CODE_CHARS = {'dtmf': DTMF_CHARS, 'digits': '0123456789',
-              'hex': '0123456789ABCDEF'}
-DTMF_FORMAT = """
-#seekto 0x%%(b)x;
+// Tag 0x06, slot 0x3000: DTMF (BDC1200 from +0xA20 is not mapped).
+#seekto 0x03000;
 struct {
-%s
+  u8 code1[16];
+  u8 code2[16];
+  u8 code3[16];
+  u8 code4[16];
+  u8 code5[16];
+  u8 code6[16];
+  u8 code7[16];
+  u8 code8[16];
+  u8 code9[16];
+  u8 code10[16];
+  u8 code11[16];
+  u8 code12[16];
+  u8 code13[16];
+  u8 code14[16];
+  u8 code15[16];
+  u8 code16[16];
   u8 pre_carrier;
   u8 first_digit;
   u8 duration;
@@ -318,143 +457,152 @@ struct {
   u8 stun_code[16];
   u8 kill_code[16];
 } dtmf;
-#seekto 0x%%(b1ff)x;
+#seekto 0x031ff;
 u8 dtmf_contact_count;
 struct {
   char name[16];
   u8 number[5];
   u8 unknown[11];
-} dtmf_contacts[%d];
-""" % ('\n'.join('  u8 code%d[16];' % i for i in range(1, DTMF_CODES + 1)),
-       DTMF_CONTACTS)
-# Two-tone (tag 0x03; CPS dialogs 0x45a760 system, 0x45ac30 decode,
-# 0x45ae20 encode; accessors 0x479df0-0x47a7a0). Times in 0.1 s,
-# frequencies in 0.1 Hz. Five-tone is on the same page from 0x730.
-SIGNAL_TAG, TT_ENCODE, TT_DECODE = 0x03, 32, 4
-TT_FORMAT = """
-#seekto 0x%%(b1)x;
-u8 tt_encode_count;
-#seekto 0x%%(b30)x;
-struct {
-  u8 pre_carrier;
-  u8 first_tone;
-  u8 second_tone;
-  u8 long_tone;
-  u8 interval;
-  u8 unknown35;
-  u8 polite_wait;
-  ul16 freq_a;
-  ul16 freq_b;
-  ul16 freq_c;
-  ul16 freq_d;
-  u8 unknown3f:6, side_tone:1, idle_ack:1;
-  u8 auto_reset;
-%s
-} twotone;
-#seekto 0x%%(b220)x;
-struct {
-  u8 name[32];
-  u8 unknown20:7, single_tone:1;
-  u8 unknown21;
-  ul16 tone1;
-  ul16 tone2;
-  u8 unknown26[2];
-} tt_encode[%d];
-""" % ('\n'.join('  u8 dec%d_format;\n  u8 dec%d_call;\n'
-                 '  u8 dec%d_unknown:7, dec%d_reply:1;\n  u8 dec%d_unknown2;'
-                 % ((i,) * 5) for i in range(1, TT_DECODE + 1)), TT_ENCODE)
-# Five-tone (tag 0x03 from 0x730; CPS dialogs 0x4254c0 system, 0x426240
-# message codes, 0x426590 special calls). Codes are hex digits, one per
-# byte, 0xFF-terminated.
-FT_MSG, FT_SPECIAL = 8, 32
-FT_FORMAT = """
-#seekto 0x%%(b730)x;
-struct {
-  u8 self_id[5];
-  u8 decode_std;
-  u8 unknown736:4, decode_resp:4;
-  u8 unknown737[3];
-  u8 pre_carrier;
-  u8 auto_reset;
-  u8 send_delay;
-  u8 ptt_id_pause;
-  u8 first_delay;
-  u8 unknown73f:7, side_tone:1;
-  u8 unknown740[16];
-%s
-  u8 bot_id[16];
-  u8 bot_std;
-  u8 bot_long;
-  u8 unknown7e2[14];
-  u8 eot_id[16];
-  u8 eot_std;
-  u8 eot_long;
-} fivetone;
-#seekto 0x%%(b820)x;
-struct {
-  u8 type;
-  u8 code[5];
-  u8 delimiter;
-  u8 standard;
-  u8 tone_long;
-  u8 unknown9[7];
-  u8 data[16];
-  u8 name[16];
-} ft_special[%d];
-""" % ('\n'.join('  u8 msg%d_func;\n  u8 msg%d_unknown:4, msg%d_resp:4;\n'
-                 '  u8 msg%d_code[12];\n  u8 msg%d_pad[2];' % ((i,) * 5)
-                 for i in range(1, FT_MSG + 1)), FT_SPECIAL)
-FT_STANDARDS = ['ZVEI1', 'ZVEI2', 'ZVEI3', 'CCIR1', 'CCIR2', 'CCIR3', 'EEA',
-                'EIA']                                # [FiveTone*Standard]
-FT_SPECIAL_TYPES = (['Off', 'ANI', 'Data Transmission'],  # [SpecialCallType]
-                    [0xFF, 0, 1])
-FT_DELIMITERS = ['No Pause in mid', 'A', 'B', 'C', 'D', 'E', 'F']
-FT_TONE_LONG = (['%d ms' % i for i in range(30, 101, 10)], 3)
-TT_HZ = (2885, 31068)            # frequency limits in 0.1 Hz (CPS 0x45a760)
-# [TwoToneDecodeFormat] and the stored codes (CPS 0x47a1f0)
-TT_DECODE_FORMATS = ['None', 'A-B', 'A-C', 'A-D', 'B-A', 'B-C', 'B-D', 'C-A',
-                     'C-B', 'C-D', 'D-A', 'D-B', 'D-C', 'Long A', 'Long B',
-                     'Long C', 'Long D']
-TT_DECODE_CODES = [0xFF, 0x01, 0x02, 0x03, 0x10, 0x12, 0x13, 0x20, 0x21,
-                   0x23, 0x30, 0x31, 0x32, 0x0F, 0x1F, 0x2F, 0x3F]
-# The page each settings struct lives on.
-STRUCT_TAGS = {'dtmf': DTMF_TAG, 'twotone': SIGNAL_TAG,
-               'fivetone': SIGNAL_TAG}
+} dtmf_contacts[64];
 
+// Tags 0x12-0x41, slots 0x09000-0x38fff: channels. Page 0 starts with
+// the channel count; 84 channels on page 0, 85 on the others.
+#seekto 0x09000;
+ul16 ch_count;
+#seekto 0x09010;
+struct chan page0[84];
+#seekto 0x0a000;
+struct chan page1[85];
+#seekto 0x0b000;
+struct chan page2[85];
+#seekto 0x0c000;
+struct chan page3[85];
+#seekto 0x0d000;
+struct chan page4[85];
+#seekto 0x0e000;
+struct chan page5[85];
+#seekto 0x0f000;
+struct chan page6[85];
+#seekto 0x10000;
+struct chan page7[85];
+#seekto 0x11000;
+struct chan page8[85];
+#seekto 0x12000;
+struct chan page9[85];
+#seekto 0x13000;
+struct chan page10[85];
+#seekto 0x14000;
+struct chan page11[85];
+#seekto 0x15000;
+struct chan page12[85];
+#seekto 0x16000;
+struct chan page13[85];
+#seekto 0x17000;
+struct chan page14[85];
+#seekto 0x18000;
+struct chan page15[85];
+#seekto 0x19000;
+struct chan page16[85];
+#seekto 0x1a000;
+struct chan page17[85];
+#seekto 0x1b000;
+struct chan page18[85];
+#seekto 0x1c000;
+struct chan page19[85];
+#seekto 0x1d000;
+struct chan page20[85];
+#seekto 0x1e000;
+struct chan page21[85];
+#seekto 0x1f000;
+struct chan page22[85];
+#seekto 0x20000;
+struct chan page23[85];
+#seekto 0x21000;
+struct chan page24[85];
+#seekto 0x22000;
+struct chan page25[85];
+#seekto 0x23000;
+struct chan page26[85];
+#seekto 0x24000;
+struct chan page27[85];
+#seekto 0x25000;
+struct chan page28[85];
+#seekto 0x26000;
+struct chan page29[85];
+#seekto 0x27000;
+struct chan page30[85];
+#seekto 0x28000;
+struct chan page31[85];
+#seekto 0x29000;
+struct chan page32[85];
+#seekto 0x2a000;
+struct chan page33[85];
+#seekto 0x2b000;
+struct chan page34[85];
+#seekto 0x2c000;
+struct chan page35[85];
+#seekto 0x2d000;
+struct chan page36[85];
+#seekto 0x2e000;
+struct chan page37[85];
+#seekto 0x2f000;
+struct chan page38[85];
+#seekto 0x30000;
+struct chan page39[85];
+#seekto 0x31000;
+struct chan page40[85];
+#seekto 0x32000;
+struct chan page41[85];
+#seekto 0x33000;
+struct chan page42[85];
+#seekto 0x34000;
+struct chan page43[85];
+#seekto 0x35000;
+struct chan page44[85];
+#seekto 0x36000;
+struct chan page45[85];
+#seekto 0x37000;
+struct chan page46[85];
+#seekto 0x38000;
+struct chan page47[6];
 
-def _mem_format():
-    """Channel pages as the CPS lays them out (see channel_offset)."""
-    b = IMAGE_TAGS.index(0x04) * PAGE      # settings come first: lowest slot
-    d = IMAGE_TAGS.index(DTMF_TAG) * PAGE
-    t = IMAGE_TAGS.index(SIGNAL_TAG) * PAGE
-    fmt = [CHAN_FORMAT,
-           TT_FORMAT % dict(b1=t + 1, b30=t + 0x30, b220=t + 0x220),
-           FT_FORMAT % dict(b730=t + 0x730, b820=t + 0x820),
-           SETTINGS_FORMAT % dict(b=b, b30=b + 0x30, b40=b + 0x40,
-                                  b60=b + 0x60, b80=b + 0x80, ba0=b + 0xA0,
-                                  b301=b + 0x301, b500=b + 0x500),
-           DTMF_FORMAT % dict(b=d, b1ff=d + 0x1FF),
-           '#seekto 0x%x;\nul16 ch_count;' % CH_BASE,
-           '#seekto 0x%x;\nstruct chan page0[84];' % (CH_BASE + 0x10)]
-    for p in range(1, 48):
-        n = CH_PER_PAGE if p < 47 else CH_COUNT - 47 * CH_PER_PAGE + 1
-        fmt.append('#seekto 0x%x;\nstruct chan page%d[%d];' % (
-            CH_BASE + p * PAGE, p, n))
-    # VFO A and B are back to back (VFO_OFFSETS).
-    fmt.append('#seekto 0x%x;\nstruct chan vfo0;\nstruct chan vfo1;' % (
-        CH_BASE + 47 * PAGE + VFO_OFFSETS[0]))
-    # Bytes 1/3 are the current position in the zone for display lines A/B,
-    # bytes 5/7 the current zone for A/B (bounded by 64 and 250 in the CPS).
-    fmt.append('#seekto 0x%x;\nstruct {\n  u8 count;\n  u8 a_pos;\n'
-               '  u8 unknown2;\n  u8 b_pos;\n  u8 unknown4;\n  u8 a_zone;\n'
-               '  u8 unknown6;\n  u8 b_zone;\n} zone_hdr;' % ZONE_BASE)
-    for p in range(9):
-        fmt.append('#seekto 0x%x;\nstruct zone zpage%d[%d];' % (
-            ZONE_BASE + p * PAGE + (0x10 if p == 0 else 0), p, ZONE_PER_PAGE))
-    return '\n'.join(fmt)
+// VFO A and B, back to back in the last channel page.
+#seekto 0x38f9f;
+struct chan vfo0;
+struct chan vfo1;
 
-
-MEM_FORMAT = _mem_format()
+// Tags 0x5C-0x64, slots 0x40000-0x48fff: zones. Header bytes 1/3: position
+// in the zone shown on lines A/B, bytes 5/7: the zone for A/B.
+#seekto 0x40000;
+struct {
+  u8 count;
+  u8 a_pos;
+  u8 unknown2;
+  u8 b_pos;
+  u8 unknown4;
+  u8 a_zone;
+  u8 unknown6;
+  u8 b_zone;
+} zone_hdr;
+#seekto 0x40010;
+struct zone zpage0[28];
+#seekto 0x41000;
+struct zone zpage1[28];
+#seekto 0x42000;
+struct zone zpage2[28];
+#seekto 0x43000;
+struct zone zpage3[28];
+#seekto 0x44000;
+struct zone zpage4[28];
+#seekto 0x45000;
+struct zone zpage5[28];
+#seekto 0x46000;
+struct zone zpage6[28];
+#seekto 0x47000;
+struct zone zpage7[28];
+#seekto 0x48000;
+struct zone zpage8[28];
+"""
 
 # Radio settings on tag 0x04, from the CPS option dialogs (0x446770 power
 # on, 0x4388d0 tones, 0x440260 display, 0x4656a0 work mode, 0x444f60
@@ -892,6 +1040,11 @@ BOOL_EXTRAS = [
     ('short_data_confirm', 'Short data confirm (DMR)'),
     ('tdma_direct', 'TDMA direct mode (DMR)'),
 ]
+# CTCSS: tenths of a Hz in BCD (88.5 Hz = 0x0885). DCS: 0x8000 plus the
+# code in BCD, 0x4000 if inverted (D754I = 0xC754). No tone: 0xFFFF.
+TONE_MODEL = kenwood_tone.KenwoodToneModel(
+    dcs_base=0x8000, pol_mask=0x4000, tone_init=0xFFFF, tone_flag=0x0000,
+    dcs_enc_base=16, tone_enc_base=16)
 POWER_LEVELS = [chirp_common.PowerLevel('Low', watts=1),
                 chirp_common.PowerLevel('Middle', watts=2.5),
                 chirp_common.PowerLevel('High', watts=5)]
@@ -936,10 +1089,6 @@ class _Link:
         self.pipe.timeout = timeout
         return self.pipe.read(n)
 
-    def drain(self):
-        time.sleep(0.1)
-        self.pipe.reset_input_buffer()
-
     def xfer(self, data, n, timeout=0.5):
         self.send(data)
         resp = self.recv(n, timeout)
@@ -949,24 +1098,20 @@ class _Link:
 
     def query_v(self, cmd):
         """A V query: the reply is 'V', the index, a length, the data."""
-        for _attempt in range(READ_TRIES):
-            self.send(cmd)
-            hdr = self.recv(3)
-            body = self.recv(hdr[2]) if len(hdr) == 3 else b''
-            if len(hdr) == 3 and hdr[0] == 0x56 and len(body) == hdr[2]:
-                return body
-            self.drain()
-        raise self.error('No valid reply to radio info query')
+        self.send(cmd)
+        hdr = self.recv(3)
+        body = self.recv(hdr[2]) if len(hdr) == 3 else b''
+        if len(hdr) != 3 or hdr[0] != 0x56 or len(body) != hdr[2]:
+            raise self.error('Bad reply to radio info query %s' % cmd.hex())
+        return body
 
     def read_block(self, addr, length, timeout=5.0):
         cmd = b'R' + struct.pack('<I', addr)[:3] + struct.pack('<H', length)
-        for _attempt in range(READ_TRIES):
-            self.send(cmd)
-            resp = self.recv(6 + length, timeout)
-            if len(resp) == 6 + length and resp[:6] == b'W' + cmd[1:6]:
-                return resp[6:]
-            self.drain()
-        raise self.error('Could not read flash at %06x' % addr)
+        self.send(cmd)
+        resp = self.recv(6 + length, timeout)
+        if len(resp) != 6 + length or resp[:6] != b'W' + cmd[1:6]:
+            raise self.error('Bad reply reading flash at %06x' % addr)
+        return resp[6:]
 
 
 MODEL_ID = b'DP570UV'                  # PSEARCH reply of the DM-32UV
@@ -974,7 +1119,10 @@ TESTED_FIRMWARE = ('DM32.01.01.047',)
 
 
 def _search(link):
-    """Send PSEARCH; return the model ID the radio reports."""
+    """Send PSEARCH; return the model ID the radio reports.
+
+    The radio sometimes ignores the first PSEARCH or two of a session, so
+    it is sent up to 5 times, as the vendor CPS does (0x44a210)."""
     garbled = False
     for _attempt in range(5):
         link.send(b'PSEARCH')
@@ -1089,38 +1237,24 @@ def do_download(radio):
     return memmap.MemoryMapBytes(bytes(image))
 
 
-def _write_page(link, addr, data, start, end, reconnect=None):
-    """Write one whole page with W and read it back to check it.
+def _write_page(link, addr, data, start, end):
+    """Write one whole page with W, then read it back to check it.
 
-    A page that doesn't match is written once more; the firmware erases
-    the sector on every aligned W, so a rewrite starts clean. reconnect()
-    starts a new session; it is needed when an ACK is lost, because the
-    radio ends the session after 2 s without traffic."""
+    The protocol has no checksums and the firmware doesn't verify writes,
+    so anything other than an ACK and an exact read-back stops the upload.
+    """
     if (len(data) != PAGE or addr % PAGE or addr < start or
             addr + PAGE - 1 > end or data[-1] in NEVER_WRITE):
         raise errors.RadioError('Refusing unsafe write at %06x' % addr)
-    frame = (b'W' + struct.pack('<I', addr)[:3] + struct.pack('<H', PAGE) +
-             bytes(data))
-    for _attempt in range(WRITE_TRIES):
-        link.send(frame)
-        ack = link.recv(1, timeout=5.0)
-        if not ack:
-            # The radio may still be waiting for data; after 2 s it gives
-            # up and ends the session. Start a new one to check the page.
-            LOG.warning('No reply to W %06x; reconnecting', addr)
-            time.sleep(2.5)
-            if reconnect is None:
-                raise link.error('No reply to write at %06x' % addr)
-            reconnect()
-        elif ack != b'\x06':
-            LOG.warning('Unexpected reply %s to W %06x', ack.hex(), addr)
-        if link.read_block(addr, PAGE) == bytes(data):
-            return
-        LOG.warning('Page %06x did not verify, writing it again', addr)
-    raise link.error(
-        'Page at %06x did not verify after %d writes; upload again, or '
-        'restore the backup CHIRP saved before the upload' % (
-            addr, WRITE_TRIES))
+    link.send(b'W' + struct.pack('<I', addr)[:3] + struct.pack('<H', PAGE) +
+              bytes(data))
+    ack = link.recv(1, timeout=5.0)
+    if ack != b'\x06' or link.read_block(addr, PAGE) != bytes(data):
+        raise link.error(
+            'Writing the page at %06x failed (%s). Upload again, or restore '
+            'the backup CHIRP saved before the upload' % (
+                addr, 'no acknowledgement' if ack != b'\x06' else
+                'it did not read back as written'))
 
 
 def _zone_record(rec):
@@ -1178,10 +1312,6 @@ def do_upload(radio):
     LOG.info('Upload to DM-32UV firmware %s', firmware)
     _enter_program(link)
 
-    def reconnect():
-        _identify(link, writing=True)
-        _enter_program(link)
-
     def radio_zone(z):
         page, index = zone_offset(z)
         addrs = where.get(ZONE_TAG0 + page)
@@ -1230,7 +1360,7 @@ def do_upload(radio):
             else:
                 raise errors.RadioError('No free page left on the radio')
             if addr is not None:
-                _write_page(link, addr, want, start, end, reconnect)
+                _write_page(link, addr, want, start, end)
                 written += 1
         status.cur = base + i
         radio.status_fn(status)
@@ -1238,39 +1368,6 @@ def do_upload(radio):
 
 
 # --- Tones ------------------------------------------------------------------
-
-def _decode_tone(tone):
-    """A struct tone -> (mode, value, polarity) for split_tone_decode."""
-    if tone.get_raw() != b'\xFF\xFF':
-        try:
-            if tone.dcs:
-                code = int(tone.tens) * 100 + int(tone.low)
-                if code in chirp_common.DTCS_CODES:
-                    return 'DTCS', code, 'R' if tone.inverted else 'N'
-            else:
-                value = (int(tone.hundreds) * 100 + int(tone.tens) * 10 +
-                         int(tone.low) / 10.0)
-                if value in chirp_common.TONES:
-                    return 'Tone', value, None
-        except ValueError:          # not BCD
-            pass
-        LOG.warning('Unknown tone bytes %s', tone.get_raw().hex())
-    return '', None, None
-
-
-def _encode_tone(tone, mode, value, pol):
-    if mode == 'Tone':
-        tenths = round(value * 10)
-        tone.set_raw(b'\x00\x00')
-        tone.hundreds, tone.tens = tenths // 1000, tenths // 100 % 10
-        tone.low = tenths % 100
-    elif mode == 'DTCS':
-        tone.set_raw(b'\x00\x00')
-        tone.dcs, tone.inverted = 1, int(pol == 'R')
-        tone.tens, tone.low = value // 100, value % 100
-    else:
-        tone.set_raw(b'\xFF\xFF')
-
 
 def _shown(name):
     """A name as CHIRP can show it: characters outside its charset as '?'."""
@@ -2463,8 +2560,7 @@ class DM32UV(chirp_common.CloneModeRadio):
         if _mem.step < len(STEPS):
             mem.tuning_step = STEPS[_mem.step]
         if not digital:
-            chirp_common.split_tone_decode(
-                mem, _decode_tone(_mem.txtone), _decode_tone(_mem.rxtone))
+            TONE_MODEL.get_tone(_mem, mem)
 
         mem.extra = self._get_extra(_mem, number)
         return mem
@@ -2625,9 +2721,7 @@ class DM32UV(chirp_common.CloneModeRadio):
         if mem.tuning_step in STEPS:
             _mem.step = STEPS.index(mem.tuning_step)
 
-        txtone, rxtone = chirp_common.split_tone_encode(mem)
-        _encode_tone(_mem.txtone, *txtone)
-        _encode_tone(_mem.rxtone, *rxtone)
+        TONE_MODEL.set_tone(mem, _mem)
 
         tx_contact = self._tx_contact(mem.number)
         # Values shown clamped (e.g. squelch 12 as 9) stay as they are
