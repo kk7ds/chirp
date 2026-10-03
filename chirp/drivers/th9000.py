@@ -448,19 +448,27 @@ def _read(radio, length):
 
 
 def _ident(radio):
+    """Plus CPS sends PROGRA: and expects QX+ACK. Original TH-9000D
+    CPS sends PROGRAM and expects the same QX+ACK. Try Plus first.
+    """
     radio.pipe.timeout = 1
     exito = False
     response = b""
-    for i in range(0, 5):
-        _echo_write(radio, b"PROGRAM")
-        response = radio.pipe.read(3)
-        LOG.debug("PROGRAM reply: %s" % util.hexprint(response))
-        # Original radios: QX + ACK. Plus: ERR after PROGRAM.
-        if response == b"QX\x06" or response == b"ERR":
-            exito = True
+    # PROGRA: is the TH-9000D Plus interrogate. PROGRAM is the original.
+    for cmd in (b"PROGRA:", b"PROGRAM"):
+        for i in range(0, 5):
+            _echo_write(radio, cmd)
+            response = radio.pipe.read(3)
+            LOG.debug("%s reply: %s" % (cmd, util.hexprint(response)))
+
+            if response == b"QX\x06":
+                exito = True
+                break
+        if exito:
             break
 
-    if not exito:
+    # check if we had EXITO
+    if exito is False:
         if not response:
             raise errors.RadioNoResponse()
         msg = "The radio did not accept program mode after five tries.\n"
@@ -471,7 +479,7 @@ def _ident(radio):
     response = radio.pipe.read(16)
     LOG.debug(util.hexprint(response))
     if b"TH-9000" not in response:
-        LOG.error("Looking for TH-9000 in ident")
+        LOG.error("Looking  for:\n%s" % util.hexprint("TH-9000"))
         LOG.error("Response was:\n%s" % util.hexprint(response))
         raise errors.RadioError("Unsupported model")
 
