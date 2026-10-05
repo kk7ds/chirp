@@ -1,14 +1,18 @@
 from builtins import bytes
 import os
+import random
 import shutil
+import struct
 import subprocess
 import tempfile
 import unittest
 
+from chirp import bitwise
 from chirp import directory
 from chirp import errors
 from chirp.drivers import ft60
 from chirp.drivers import ft4
+from chirp.drivers import ftm150
 from chirp.drivers import ftm300d
 from chirp.drivers import yaesu_clone
 from chirp import memmap
@@ -637,3 +641,309 @@ class TestFTM300Clone(unittest.TestCase):
         self.assertEqual(0xCA, packed[0x50E])
         values = _setting_map(src.get_settings())
         self.assertEqual("", values["aprs_ssid"])
+
+
+def _ftm150_synthetic_image():
+    rnd = random.Random(150)
+    data = bytearray(rnd.randbytes(ftm150.FTM150Radio._memsize))
+    data[0:5] = ftm150.FTM150Radio._model
+    return data
+
+
+class FakeFTM150Receiver:
+    """Collects uploaded frames and ACKs each one, like [59 Other -> This]."""
+    timeout = None
+
+    def __init__(self, ack=b"\x06"):
+        self.frames = []
+        self._ack = ack
+
+    def write(self, data):
+        self.frames.append(bytes(data))
+
+    def read(self, count):
+        return self._ack
+
+
+class FakeFTM150Sender:
+    """Plays a canned clone stream, like [58 This -> Other]."""
+    timeout = None
+
+    def __init__(self, frames):
+        self._buf = b"".join(frames)
+        self.acks = b""
+
+    def write(self, data):
+        self.acks += data
+
+    def read(self, count):
+        out, self._buf = self._buf[:count], self._buf[count:]
+        return out
+
+
+class TestFTM150Clone(unittest.TestCase):
+    def _radio(self, pipe, data=None):
+        radio = ftm150.FTM150Radio(pipe)
+        if data is not None:
+            radio._mmap = memmap.MemoryMapBytes(bytes(data))
+            radio.process_mmap()
+        return radio
+
+    def test_upload_stream(self):
+        data = _ftm150_synthetic_image()
+        pipe = FakeFTM150Receiver()
+        data[ftm150.FILE_CHECKSUM_AT] = 0x5A
+        radio = self._radio(pipe, data)
+        radio.sync_out()
+
+        addrs = [struct.unpack(">H", f[:2])[0] for f in pipe.frames]
+        self.assertEqual(ftm300d.clone_addresses(), addrs)
+        for frame in pipe.frames:
+            self.assertEqual(ftm300d.FRAME_LEN, len(frame))
+            self.assertEqual(sum(frame[:-1]) % 256, frame[-1])
+
+        # The file checksum goes out as 0x00, like the radio sends it, but
+        # only in pass 1: pass 2's block 0x0000 is name table data.
+        self.assertEqual(0, pipe.frames[0][2 + ftm150.FILE_CHECKSUM_AT])
+        # ... while the image keeps it.
+        self.assertEqual(
+            b"\x5A", radio.get_mmap()[ftm150.FILE_CHECKSUM_AT])
+        pass2 = addrs.index(0, 1)
+        self.assertEqual(
+            data[0x10000:0x10080], pipe.frames[pass2][2:2 + 128])
+
+    def test_upload_download_roundtrip(self):
+        data = _ftm150_synthetic_image()
+        up = FakeFTM150Receiver()
+        self._radio(up, data).sync_out()
+
+        down = FakeFTM150Sender(up.frames)
+        radio = self._radio(down)
+        radio.sync_in()
+        result = radio.get_mmap().get_packed()
+
+        self.assertEqual(b"\x06" * len(ftm300d.clone_addresses()),
+                         down.acks)
+        # Block 0x0400 is never transmitted; the checksum is recomputed.
+        expected = bytearray(data)
+        expected[0x0400:0x0480] = b"\x00" * 128
+        expected[ftm150.FILE_CHECKSUM_AT] = (
+            sum(expected[:ftm150.FILE_CHECKSUM_AT]) % 256)
+        self.assertEqual(bytes(expected), result)
+
+    def test_upload_refused(self):
+        pipe = FakeFTM150Receiver(ack=b"\x15")
+        with self.assertRaises(errors.RadioError):
+            self._radio(pipe, _ftm150_synthetic_image()).sync_out()
+        self.assertEqual(1, len(pipe.frames))
+
+    def test_upload_no_response(self):
+        pipe = FakeFTM150Receiver(ack=b"")
+        with self.assertRaises(errors.RadioNoResponse):
+            self._radio(pipe, _ftm150_synthetic_image()).sync_out()
+        self.assertEqual(30, len(pipe.frames))
+
+    def test_upload_wrong_image(self):
+        data = _ftm150_synthetic_image()
+        data[0:5] = b"AH071"
+        pipe = FakeFTM150Receiver()
+        with self.assertRaises(errors.RadioError):
+            self._radio(pipe, data).sync_out()
+        self.assertEqual([], pipe.frames)
+
+
+def _ftm150_freq(raw):
+    mmap = memmap.MemoryMapBytes(bytes(raw))
+    freq = bitwise.parse(
+        ftm150.YFREQ_FORMAT + "struct yfreq freq;", mmap).freq
+    return mmap, freq
+
+
+class TestFTM150Freq(unittest.TestCase):
+    def test_roundtrip_calling(self):
+        mmap, freq = _ftm150_freq(b"\x00" * 3)
+        ftm150.encode_freq(freq, 145500000)
+        self.assertEqual(bytes.fromhex("01 45 50"), mmap.get_packed())
+        self.assertEqual(145500000, ftm150.decode_freq(freq))
+
+    def test_6_25_from_dump(self):
+        # 5 kHz + 1.25 kHz, i.e. fine = 0b1010 = 10 x 625 Hz.
+        raw = bytes.fromhex("a4 46 00")
+        mmap, freq = _ftm150_freq(raw)
+        self.assertEqual(10, int(freq.fine))
+        self.assertEqual(446006250, ftm150.decode_freq(freq))
+        ftm150.encode_freq(freq, 446006250)
+        self.assertEqual(raw, mmap.get_packed())
+
+    def test_every_625_step(self):
+        mmap, freq = _ftm150_freq(b"\x00" * 3)
+        for fine in range(16):
+            hz = 433000000 + fine * 625
+            ftm150.encode_freq(freq, hz)
+            self.assertEqual(hz, ftm150.decode_freq(freq))
+            self.assertEqual(bytes([fine << 4 | 4, 0x33, 0x00]),
+                             mmap.get_packed())
+
+    def test_8_33_rounds_down_to_625_step(self):
+        # Airband 8.33 kHz channels do not fit; same as ftm300d does.
+        mmap, freq = _ftm150_freq(b"\x00" * 3)
+        ftm150.encode_freq(freq, 118008333)
+        self.assertEqual(118008125, ftm150.decode_freq(freq))
+
+
+class TestFTM150SqlOverride(unittest.TestCase):
+    def setUp(self):
+        img = os.path.join(os.path.dirname(__file__),
+                           '..', 'images', 'Yaesu_FTM-150E.img')
+        self.radio = ftm150.FTM150Radio(img)
+        self._mem = self.radio._memobj.memory[0]
+        self.assertTrue(int(self._mem.used))
+
+    def _override(self, mem):
+        return str(mem.extra["sql_override"].value)
+
+    def test_pr_freq_and_pager_survive_write(self):
+        for raw, name in ((5, "PR FREQ"), (6, "PAGER")):
+            self._mem.tone_mode = raw
+            mem = self.radio.get_memory(1)
+            self.assertEqual("", mem.tmode)
+            self.assertEqual(name, self._override(mem))
+            self.radio.set_memory(mem)
+            self.assertEqual(raw, int(self._mem.tone_mode))
+
+    def test_override_wins_over_tmode(self):
+        self._mem.tone_mode = 1
+        mem = self.radio.get_memory(1)
+        self.assertEqual("(None)", self._override(mem))
+        mem.extra["sql_override"].value = "PAGER"
+        self.radio.set_memory(mem)
+        self.assertEqual(6, int(self._mem.tone_mode))
+
+    def test_clearing_override_uses_tmode(self):
+        self._mem.tone_mode = 6
+        mem = self.radio.get_memory(1)
+        mem.tmode = "TSQL"
+        mem.extra["sql_override"].value = "(None)"
+        self.radio.set_memory(mem)
+        self.assertEqual(2, int(self._mem.tone_mode))
+
+    def test_records_from_adms(self):
+        # Channel 1 as ADMS-17 wrote it: (record, mode, CTCSS, User CTCSS)
+        for raw, override, rtone, pr_freq in (
+                ("81 04 01 44 00 54 01 44 00 00 00 03 00 00 00 00",
+                 "PR FREQ", 67.0, "300 Hz"),
+                ("81 04 01 44 00 64 01 44 00 0d 00 0b 00 00 00 00",
+                 "PAGER", 103.5, "1100 Hz"),
+                ("81 04 01 44 00 64 01 44 00 0d 00 1e 00 00 00 00",
+                 "PAGER", 103.5, "3000 Hz")):
+            record = bytes.fromhex(raw)
+            self._mem.set_raw(record)
+            mem = self.radio.get_memory(1)
+            self.assertEqual(override, self._override(mem))
+            self.assertEqual(rtone, mem.rtone)
+            self.assertEqual(pr_freq, str(mem.extra["pr_freq"].value))
+            self.radio.set_memory(mem)
+            self.assertEqual(record, self._mem.get_raw())
+
+    def test_pr_freq_write(self):
+        mem = self.radio.get_memory(1)
+        self.assertEqual("1500 Hz", str(mem.extra["pr_freq"].value))
+        mem.extra["pr_freq"].value = "3000 Hz"
+        self.radio.set_memory(mem)
+        self.assertEqual(30, int(self._mem.pr_freq))
+
+    def test_pager_codes(self):
+        values = _setting_map(self.radio.get_settings())
+        self.assertEqual(
+            ["05", "47", "05", "47"],
+            [values[n] for n in ("pager_rx0", "pager_rx1",
+                                 "pager_tx0", "pager_tx1")])
+        # RX 40/01 and TX 01/15, as ADMS-17 wrote them
+        new = {"pager_rx0": "40", "pager_rx1": "01",
+               "pager_tx0": "01", "pager_tx1": "15"}
+        settings = self.radio.get_settings()
+        for setting in _iter_settings(settings):
+            if setting.get_name() in new:
+                setting.value = new[setting.get_name()]
+        self.radio.set_settings(settings)
+        self.assertEqual(bytes.fromhex("27 00 00 0e"),
+                         self.radio.get_mmap().get_packed()[0x2D2:0x2D6])
+
+    def test_pr_freq_out_of_range_untouched(self):
+        self._mem.pr_freq = 0
+        mem = self.radio.get_memory(1)
+        self.assertNotIn("pr_freq", [s.get_name() for s in mem.extra])
+        self.radio.set_memory(mem)
+        self.assertEqual(0, int(self._mem.pr_freq))
+
+
+class TestFTM150PMG(unittest.TestCase):
+    # Slot records as the radio wrote them; FREQ is a VFO frequency
+    # (145.6125 MHz, -600 kHz) stored in the slot itself.
+    FREQ = bytes.fromhex("81 02 41 45 61 04 00 00 00 8c 00 8f 00 0c 00 00")
+
+    def setUp(self):
+        img = os.path.join(os.path.dirname(__file__),
+                           '..', 'images', 'Yaesu_FTM-150E.img')
+        self.radio = ftm150.FTM150Radio(img)
+        pmg = self.radio._memobj.pmg
+        pmg[0].set_raw(ftm150._pmg_ref(10, 3))
+        pmg[1].set_raw(ftm150._pmg_ref(1, 1))
+        pmg[2].set_raw(self.FREQ)
+        pmg[3].set_raw(ftm150._pmg_ref(999, 1))
+        pmg[4].set_raw(b"\x00" + b"\xff" * 15)
+        self.radio._memobj.pmg_selected = 3
+
+    def _raw(self):
+        return [rec.get_raw() for rec in self.radio._memobj.pmg]
+
+    def _set(self, new):
+        settings = self.radio.get_settings()
+        for setting in _iter_settings(settings):
+            if setting.get_name() in new:
+                setting.value = new[setting.get_name()]
+        self.radio.set_settings(settings)
+
+    def test_ref_format(self):
+        # Channel 300 as the radio stored it
+        self.assertEqual(bytes.fromhex("91 ff 01 2b") + b"\xff" * 12,
+                         ftm150._pmg_ref(300, 1))
+        self.assertEqual(300, ftm150._pmg_channel(ftm150._pmg_ref(300, 1)))
+        self.assertIsNone(ftm150._pmg_channel(self.FREQ))
+        self.assertIsNone(ftm150._pmg_channel(
+            bytes.fromhex("00 ff 01 2b") + b"\xff" * 12))
+
+    def test_read(self):
+        values = _setting_map(self.radio.get_settings())
+        self.assertTrue(values["pmg0"].startswith("10"))
+        self.assertTrue(values["pmg1"].startswith("1"))
+        self.assertEqual("Frequency 145.612500 MHz", values["pmg2"])
+        self.assertTrue(values["pmg3"].startswith("999"))
+        self.assertEqual("(Empty)", values["pmg4"])
+        self.assertEqual("Slot 4", values["pmg_selected"])
+
+    def test_unchanged_roundtrip(self):
+        before = self.radio.get_mmap().get_packed()
+        self._set({})
+        self.assertEqual(before, self.radio.get_mmap().get_packed())
+
+    def test_empty_slot_moves_later_slots_up(self):
+        old = self._raw()
+        self._set({"pmg1": "(Empty)"})
+        # Like the radio: later slots move up, the last one only loses
+        # its used bit.
+        self.assertEqual(old[0], self._raw()[0])
+        self.assertEqual([self.FREQ, old[3]], self._raw()[1:3])
+        self.assertEqual(b"\x00" + old[3][1:], self._raw()[3])
+        self.assertEqual(old[4], self._raw()[4])
+        # The selected channel 999 moved from slot 4 to slot 3.
+        self.assertEqual(2, int(self.radio._memobj.pmg_selected))
+
+    def test_selected_falls_back_to_slot_1(self):
+        self._set({"pmg3": "(Empty)"})
+        self.assertEqual(0, int(self.radio._memobj.pmg_selected))
+
+    def test_new_ref_uses_channel_band(self):
+        label = self.radio._channel_label(14)
+        self._set({"pmg4": label})
+        self.assertEqual(ftm150._pmg_ref(14, 3), self._raw()[4])
