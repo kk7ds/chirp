@@ -680,8 +680,10 @@ DTCS_MAP = [
     ]
 
 # The legal PAGER codes are the same as the CTCSS codes, but we
-# pass them to the UI as a list of strings
-EPCS_CODES = [format(flt) for flt in [0] + TONE_MAP[1:]]
+# pass them to the UI as a list of strings. The radio stores the
+# code minus one (0-49 for codes 1-50), so the list starts with the
+# first CTCSS tone.
+EPCS_CODES = [format(flt) for flt in TONE_MAP[1:]]
 
 
 # allow a child class to add a param to its class
@@ -886,7 +888,7 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
           ["OFF"] + ["%0.1f" % (x * 0.5) for x in range(1, 24 + 1)]),
          ("bclo", "Busy Channel Lock-Out", ["OFF", "ON"]),
          ("beep", "Enable the Beeper", ["KEY+SC", "KEY", "OFF"]),
-         ("bsy_led", "Busy LED", ["ON", "OFF"]),
+         ("bsy_led", "Busy LED", ["OFF", "ON"]),
          ("edg_beep", "Band Edge Beeper", ["OFF", "ON"]),
          ("vox", "VOX", ["OFF", "ON"]),
          ("rf_squelch", "RF Squelch Threshold",
@@ -1157,7 +1159,10 @@ class YaesuSC35GenericRadio(chirp_common.CloneModeRadio,
             mem.empty = not retrieve_bit(self._memobj.enable, ndx)
             mem.skip = SKIPS[retrieve_bit(self._memobj.scan, ndx)]
         else:
-            mem.empty = False
+            # A programmable key's channel slot is only written when the
+            # key is set to use one; otherwise it stays erased (all 0xFF).
+            mem.empty = (regtype == "prog" and
+                         _mem.get_raw() == b"\xFF" * len(_mem.get_raw()))
             mem.extd_number = sname
             mem.immutable = ["number", "extd_number", "name", "skip"]
 
