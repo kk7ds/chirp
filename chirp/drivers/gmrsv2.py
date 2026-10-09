@@ -521,13 +521,13 @@ class GMRSV2base(bfc.BaofengCommonHT):
             if mem.freq in bandplan_na.ALL_MURS_FREQS:
                 if mem.freq in bandplan_na.MURS_NFM:
                     # Narrow only MURS channels (limit mode)
-                    mem.duplex == ''
+                    mem.duplex = ''
                     mem.offset = 0
                     mem.mode = "NFM"
                     immutable = ["duplex", "offset", "mode"]
                 if mem.freq in bandplan_na.MURS_FM:
                     # Narrow or wide MURS channels
-                    mem.duplex == ''
+                    mem.duplex = ''
                     mem.offset = 0
                     immutable = ["duplex", "offset"]
             else:
