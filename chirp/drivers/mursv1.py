@@ -465,7 +465,7 @@ class MURSV1(baofeng_common.BaofengCommonHT):
             if mem.number >= 1 and mem.number <= 15:
                 MURS_FREQ = MURS_FREQS[mem.number - 1]
                 mem.freq = MURS_FREQ
-                mem.duplex == ''
+                mem.duplex = ''
                 mem.offset = 0
                 immutable = ["empty", "freq", "duplex", "offset"]
             if mem.freq in bandplan_na.MURS_NFM:
