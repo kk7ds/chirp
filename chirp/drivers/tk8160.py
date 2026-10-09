@@ -103,7 +103,7 @@ struct {
 
 // 28=volup 2A=None 15=2-tone 8=AUX 16=Call1 17=Call2 13=ChDn 12=ChUp
 // 0B=DisplayCh 09=HornAlert 03=KeyLock 14=Brightness 02=Monitor 25=MonMom
-// 0C=OST 19=PA 1A=SquelchLevel 05=Scan 06=ScanAdd 0A=Scrambler 18=Selcall
+// 0C=OST 19=PA 1A=SquelchLevel 05=Scan 06=ScanAdd 0A=Scrambler 1B=Selcall
 // 27=SendGPS 04=TA 28=VolUp 29=VolDn 00=ZoneUp 24=SqlOff 26=SqlOffMom
 // 1C=Status 1D=SelCall+Status 01=ZoneDn
 #seekto 0x1820;
@@ -145,10 +145,10 @@ _KEYS = [
     '2-Tone',
     'Call 1',
     'Call 2',
-    'Selcall',
+    '?',  # 18
     'Public Address',
     'Squelch Level',
-    '?',
+    'Selcall',  # 1B
     'Status',
     'Selcall+Status',
     '?',  # 1E
