@@ -216,6 +216,12 @@ KEY_NAMES = {
 POWER_LEVELS = [chirp_common.PowerLevel('Low', watts=25),
                 chirp_common.PowerLevel('High', watts=50)]
 
+# The ranges KPG writes, in the same frames. It does not write 0x0000-0x001F,
+# which the radio maintains itself, or 0x1740-0x17DF, which holds the radio's
+# model, serial number and what look like alignment values, so an image read
+# from one radio does not overwrite another radio's identity.
+UPLOAD_RANGES = [(0x0020, 0x1740), (0x17E0, 0x3120)]
+
 
 def ends_program(fn):
     @functools.wraps(fn)
@@ -290,15 +296,17 @@ def do_upload(radio):
         radio.status_fn(status)
         LOG.debug('Radio address 0x%04x' % addr)
 
-    for addr in range(0, 0x30E0, 0x40):
-        block = data[addr:addr + 0x40]
-        hdr = struct.pack('>cHB', b'W', addr, 0x40)
-        radio.pipe.write(hdr + block)
-        ack = radio.pipe.read(1)
-        if ack != b'\x06':
-            LOG.error('Expected ack, got %r' % ack)
-            raise errors.RadioError('Radio did not ACK block')
-        status(addr)
+    for start, end in UPLOAD_RANGES:
+        for addr in range(start, end, 0x40):
+            length = min(0x40, end - addr)
+            block = data[addr:addr + length]
+            hdr = struct.pack('>cHB', b'W', addr, length)
+            radio.pipe.write(hdr + block)
+            ack = radio.pipe.read(1)
+            if ack != b'\x06':
+                LOG.error('Expected ack, got %r' % ack)
+                raise errors.RadioError('Radio did not ACK block')
+            status(addr)
 
 
 class TKx160Radio(chirp_common.CloneModeRadio):
