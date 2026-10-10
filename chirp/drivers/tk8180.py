@@ -383,6 +383,9 @@ KEYPAD_OP = {
 POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=5),
                 chirp_common.PowerLevel("High", watts=50)]
 
+# A key with no repeat or hold function stores 0xFFFF as its time
+HOLD_TIMES = [('None', 0xFFFF)] + [(str(t), t) for t in range(100, 5001, 100)]
+
 
 class ZoneMemoryMixin(abc.ABC):
 
@@ -1636,15 +1639,13 @@ class KenwoodTKx180Radio(ZoneMemoryMixin, KenwoodOSTMixin,
             rs.set_doc('The function triggered when %s is held' % key)
             hold.append(rs)
 
-            try:
-                curhold = int(self._memobj.buttons[index].holdtime)
-                curhold = max(100, min(curhold, 5000))
-            except Exception:
-                LOG.warning('Invalid value for button %s:%i hold time',
-                            key, index)
-                curhold = 1000
+            curhold = int(self._memobj.buttons[index].holdtime)
+            choices = HOLD_TIMES
+            if curhold not in [v for _n, v in HOLD_TIMES]:
+                # Keep a time we don't offer, so it is not changed
+                choices = HOLD_TIMES + [(str(curhold), curhold)]
             rs = MemSetting('buttons[%i].holdtime' % index, key,
-                            RadioSettingValueInteger(100, 5000, 1000, 100))
+                            RadioSettingValueMap(choices, mem_val=curhold))
             rs.set_doc('Amount of hold time required to trigger '
                        '(milliseconds)')
             holdtime.append(rs)
