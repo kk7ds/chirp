@@ -216,6 +216,11 @@ KEY_NAMES = {
 POWER_LEVELS = [chirp_common.PowerLevel('Low', watts=25),
                 chirp_common.PowerLevel('High', watts=50)]
 
+BCL_OPTIONS = ['Off', 'Carrier', 'QT/DQT', 'Optional Signaling']
+PTTID_OPTIONS = ['Off', 'BOT', 'EOT', 'Both']
+OPTSIG_OPTIONS = ['Off', 'DTMF', '2-Tone 1', '2-Tone 2', '2-Tone 3',
+                  'FleetSync']
+
 # The ranges KPG writes, in the same frames. It does not write 0x0000-0x001F,
 # which the radio maintains itself, or 0x1740-0x17DF, which holds the radio's
 # model, serial number and what look like alignment values, so an image read
@@ -316,6 +321,7 @@ class TKx160Radio(chirp_common.CloneModeRadio):
     _channels = 128
     _power_levels = POWER_LEVELS
     _has_zones = True
+    _has_memory_extras = True
     _mem_format = mem_format
 
     def sync_in(self):
@@ -562,7 +568,49 @@ class TKx160Radio(chirp_common.CloneModeRadio):
         m.mode = 'FM' if _mem.wide else 'NFM'
         m.skip = '' if _mem.scanadd else 'S'
 
+        if self._has_memory_extras:
+            m.extra = self._get_memory_extras(_mem)
+
         return m
+
+    @staticmethod
+    def _get_memory_extras(_mem):
+        optsig = int(_mem.optsig)
+        if optsig >= len(OPTSIG_OPTIONS):
+            LOG.warning('Unknown optional signaling %i, showing Off', optsig)
+            optsig = 0
+
+        extra = settings.RadioSettingGroup('extra', 'Extra')
+        extra.append(settings.MemSetting(
+            'bcl', 'Busy Channel Lockout',
+            settings.RadioSettingValueList(BCL_OPTIONS,
+                                           current_index=int(_mem.bcl))))
+        extra.append(settings.MemSetting(
+            'beatshift', 'Beat Shift',
+            settings.RadioSettingValueBoolean(bool(_mem.beatshift))))
+        extra.append(settings.MemSetting(
+            'pttid', 'PTT ID',
+            settings.RadioSettingValueList(PTTID_OPTIONS,
+                                           current_index=int(_mem.pttid))))
+        extra.append(settings.MemSetting(
+            'pttidmute', 'PTT ID Mute',
+            settings.RadioSettingValueBoolean(bool(_mem.pttidmute))))
+        extra.append(settings.MemSetting(
+            'compander', 'Compander',
+            settings.RadioSettingValueBoolean(bool(_mem.compander))))
+        extra.append(settings.MemSetting(
+            'optsig', 'Optional Signaling',
+            settings.RadioSettingValueList(OPTSIG_OPTIONS,
+                                           current_index=optsig)))
+        extra.append(settings.MemSetting(
+            'scrambler', 'Scrambler',
+            settings.RadioSettingValueBoolean(bool(_mem.scrambler))))
+        extra.append(settings.MemSetting(
+            'scramblercode', 'Scrambler Code',
+            settings.RadioSettingValueList(
+                [str(c) for c in range(1, 17)],
+                current_index=int(_mem.scramblercode))))
+        return extra
 
     def set_memory(self, mem):
         _index_entry, slot = self.check_index(mem.number)
@@ -604,8 +652,9 @@ class TKx160Radio(chirp_common.CloneModeRadio):
         _mem.scanadd = mem.skip == ''
         _mem.name = mem.name[:8].ljust(8)
 
-        if is_new:
-            # Set the flags we don't support, for a new memory only, so that
+        extras = mem.extra if self._has_memory_extras else []
+        if is_new and not extras:
+            # Defaults for the flags in extra, for a new memory only, so that
             # editing a memory does not undo settings made in KPG
             _mem.bcl = 0
             _mem.beatshift = 0
@@ -627,6 +676,9 @@ class TKx160Radio(chirp_common.CloneModeRadio):
         _mem.unknown4 = 0x1F
         _mem.unknown5[0] = 0xFF
         _mem.unknown5[1] = 0xFF
+
+        for setting in extras:
+            setting.apply_to_memobj(_mem)
 
     @staticmethod
     def make_key_group(keysobj, keynames, keyvals):
@@ -759,6 +811,7 @@ class TK7162Radio(TKx160Radio):
     _channels = 16
     _power_levels = _POWER_LEVELS_7162
     _has_zones = False
+    _has_memory_extras = False
     _mem_format = mem_format_7162
 
     def get_settings(self) -> settings.RadioSettings:
