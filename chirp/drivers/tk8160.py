@@ -73,10 +73,10 @@ struct {
        unknown2_01:1,
        wide:1;
     u8 beatshift:1,
-       unknown2_1:1,
+       scrambler:1,
        highpower:1,
        scanadd:1,
-       unknown2_2:4;
+       scramblercode:4; // code - 1
     u8 unknown2_3:6,
        pttid:2; // 0:off 1:BOT 2:EOT 3:Both
     char name[8];
@@ -613,14 +613,14 @@ class TKx160Radio(chirp_common.CloneModeRadio):
             _mem.compander = 0
             _mem.pttidmute = 0
             _mem.optsig = 0
+            _mem.scrambler = 0
+            _mem.scramblercode = 0
 
         # Set the unknowns
         _mem.unknown1[0] = 0x02
         _mem.unknown1[1] = 0x02
         _mem.unknown2_0 = 0x0F
         _mem.unknown2_01 = 0x00
-        _mem.unknown2_1 = 0x00
-        _mem.unknown2_2 = 0x00
         _mem.unknown2_3 = 0x00
         _mem.unknown3_0 = 0x00
         _mem.unknown3_1 = 0x00
