@@ -398,6 +398,21 @@ class ZoneMemoryMixin(abc.ABC):
     def raw_memories(self):
         return self.raw_zone.memories
 
+    @staticmethod
+    def _get_skipflag(memobj, flagoffset, index):
+        """Return the skip flag of memory index in a zone, or None"""
+        bit = int(flagoffset) + index - 1
+        if 0 <= bit < len(memobj.skipflags):
+            return int(memobj.skipflags[bit])
+        return None
+
+    @staticmethod
+    def _set_skipflag(memobj, flagoffset, index, skip):
+        """Set the skip flag of memory index in a zone"""
+        bit = int(flagoffset) + index - 1
+        if skip is not None and 0 <= bit < len(memobj.skipflags):
+            memobj.skipflags[bit] = skip
+
     def shuffle_zone(self):
         """Sort the memories in the zone according to logical channel number"""
         raw_memories = self.raw_memories
@@ -408,10 +423,16 @@ class ZoneMemoryMixin(abc.ABC):
         if current == memories:
             LOG.debug('Shuffle not required')
             return
+        flagoffset = self.raw_zoneinfo.flagoffset
         raw_data = [raw_memories[i].get_raw()
                     for i, _n in memories]
+        # The skip flags are indexed by position, so move them too
+        skip_data = [self._get_skipflag(self._memobj, flagoffset, i)
+                     for i, _n in memories]
         for i, raw_mem in enumerate(raw_data):
             raw_memories[i].set_raw(raw_mem)
+        for i, skip in enumerate(skip_data):
+            self._set_skipflag(self._memobj, flagoffset, i, skip)
 
     @abc.abstractmethod
     def _compute_zone_layout(self, zone_sizes):
@@ -463,6 +484,11 @@ class ZoneMemoryMixin(abc.ABC):
 
                 for i in range(0, min(count, old_count)):
                     dest[i].set_raw(source[i].get_raw())
+                    # The zone may start at a new flag offset, so move each
+                    # memory's skip flag with it
+                    skip = self._get_skipflag(old_memobj,
+                                              source_zoneinfo.flagoffset, i)
+                    self._set_skipflag(self._memobj, scan_index, i, skip)
             else:
                 self._init_new_zoneinfo(dest_zoneinfo, zone_number,
                                         count, old_memobj)
