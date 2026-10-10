@@ -223,6 +223,34 @@ def get_model_data(radio, mdata=b"\x00\x00\x00\x00", stream=None):
     return frames[0].payload
 
 
+def _identify_radio(radio, mdata=b"\x00\x00\x00\x00", stream=None):
+    """Query the @radio for its model data, trying fallback baud rates
+
+    Some radios only answer the initial query at a different baud rate
+    than the one we normally use (such as the ID-880H [DATA] jack when its
+    speed is set to 4800). If the radio does not respond, retry at each of
+    the baud rates in radio._fallback_baud_rates. If one works, the pipe is
+    left at that rate for the rest of the clone.
+    """
+    try:
+        return get_model_data(radio, mdata=mdata, stream=stream)
+    except errors.RadioNoResponse:
+        original = getattr(radio.pipe, 'baudrate', None)
+        for baud in radio._fallback_baud_rates:
+            if baud == original:
+                continue
+            LOG.info('No response at %s baud, retrying at %i baud',
+                     original, baud)
+            radio.pipe.baudrate = baud
+            try:
+                return get_model_data(radio, mdata=mdata, stream=stream)
+            except errors.RadioNoResponse:
+                continue
+        if original is not None:
+            radio.pipe.baudrate = original
+        raise
+
+
 def get_clone_resp(pipe, length=None, max_count=None):
     """Read the response to a clone frame"""
     def exit_criteria(buf, length, cnt, max_count):
@@ -313,6 +341,21 @@ def process_data_frame(radio, frame, _mmap):
     return saddr, saddr + length
 
 
+def _hispeed_ready(radio, attempts=8):
+    """Poll the radio with ID queries until it answers at the current speed"""
+    stream = RadioStream(radio.pipe)
+    for _ in range(attempts):
+        try:
+            get_model_data(radio, mdata=_id_query_payload(radio),
+                           stream=stream)
+        except errors.RadioNoResponse:
+            continue
+        except errors.RadioError:
+            pass  # Something answered, which is all we need to know
+        return True
+    return False
+
+
 def start_hispeed_clone(radio, cmd):
     """Send the magic incantation to the radio to go fast"""
     frame = IcfFrame(ADDR_PC, ADDR_RADIO, CMD_CLONE_HISPEED)
@@ -324,8 +367,18 @@ def start_hispeed_clone(radio, cmd):
     resp = radio.pipe.read(128)
     LOG.debug("Response:\n%s" % util.hexprint(resp))
 
+    original_baud = radio.pipe.baudrate
     LOG.info("Switching to 38400 baud")
     radio.pipe.baudrate = 38400
+
+    # The radio does not acknowledge the switch, and needs a moment before it
+    # will listen at the new speed. Some connections (such as the ID-880H
+    # [DATA] jack set to 4800) don't switch at all. Wait until it answers, or
+    # carry on at the original speed if it never does.
+    if not _hispeed_ready(radio):
+        LOG.info("No response at 38400 baud, staying at %s baud",
+                 original_baud)
+        radio.pipe.baudrate = original_baud
 
     frame = IcfFrame(ADDR_PC, ADDR_RADIO, cmd)
     frame.payload = radio.get_model()[:3] + b'\x00'
@@ -350,7 +403,7 @@ def _id_query_payload(radio):
 
 
 def _clone_from_radio(radio):
-    md = get_model_data(radio, mdata=_id_query_payload(radio))
+    md = _identify_radio(radio, mdata=_id_query_payload(radio))
 
     try:
         radio_rev = decode_model(md)
@@ -478,7 +531,7 @@ def _clone_to_radio(radio):
     mdata = _id_query_payload(radio)
 
     stream = RadioStream(radio.pipe)
-    md = get_model_data(radio, mdata=mdata, stream=stream)
+    md = _identify_radio(radio, mdata=mdata, stream=stream)
     if radio._double_ident:
         md = get_model_data(radio, mdata=mdata, stream=stream)
 
@@ -848,6 +901,9 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
     _bank_index_bounds = (0, 99)
     _bank_class = IcomBank
     _can_hispeed = False
+    # Baud rates to retry the initial ID query at if the radio does not
+    # respond at BAUD_RATE
+    _fallback_baud_rates = ()
     _double_ident = False  # A couple radios require double ident before upload
 
     # If True, the initial CLONE_ID query payload carries the radio's
