@@ -571,7 +571,8 @@ class TKx160Radio(chirp_common.CloneModeRadio):
                 self._memobj.memories[slot].set_raw(b'\xFF' * 32)
                 self.delete_from_index(mem.number)
             return
-        elif slot is None:
+        is_new = slot is None
+        if is_new:
             slot = self.next_slot(mem.number)
 
         _mem = self._memobj.memories[slot]
@@ -603,13 +604,15 @@ class TKx160Radio(chirp_common.CloneModeRadio):
         _mem.scanadd = mem.skip == ''
         _mem.name = mem.name[:8].ljust(8)
 
-        # Set the flags we don't support
-        _mem.bcl = 0
-        _mem.beatshift = 0
-        _mem.pttid = 0
-        _mem.compander = 0
-        _mem.pttidmute = 0
-        _mem.optsig = 0
+        if is_new:
+            # Set the flags we don't support, for a new memory only, so that
+            # editing a memory does not undo settings made in KPG
+            _mem.bcl = 0
+            _mem.beatshift = 0
+            _mem.pttid = 0
+            _mem.compander = 0
+            _mem.pttidmute = 0
+            _mem.optsig = 0
 
         # Set the unknowns
         _mem.unknown1[0] = 0x02
