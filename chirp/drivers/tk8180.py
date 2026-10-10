@@ -734,8 +734,8 @@ def do_download(radio):
                 raise errors.RadioError('Radio did not send block')
             data += chunk
         else:
-            LOG.error('Radio sent %r (%02x), expected W(0x57)' % (cmd,
-                                                                  chr(cmd)))
+            LOG.error('Radio sent %r (%s), expected W(0x57)' % (
+                cmd, cmd.hex()))
             raise errors.RadioError('Radio sent unexpected response')
 
         status()
