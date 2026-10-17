@@ -182,6 +182,8 @@ class ID880Radio(icf.IcomCloneModeRadio, chirp_common.IcomDstarSupport):
     _num_banks = 26
     _bank_class = ID880Bank
     _can_hispeed = True
+    # The [DATA] jack answers at the speed set in SET > FUNC > SPEED
+    _fallback_baud_rates = (4800,)
 
     MYCALL_LIMIT = (1, 7)
     URCALL_LIMIT = (1, 60)
