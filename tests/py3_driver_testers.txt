@@ -418,4 +418,5 @@ Yaesu_VX-8R,+Yaesu_VX-8DR,15-Feb-2019
 Yaesu_VX-8DR,@kk7ds,15-Feb-2019
 Yaesu_VX-8GE,+Yaesu_VX-8DR,15-Feb-2019
 Yedro_YC-M04VUS,+Retevis_RT95,13-Nov-2022
+Zartek_ZA-758,@hendrikvh,17-Oct-2026
 Zastone_ZT-X6,+Retevis_RT22,9-Dec-2022
