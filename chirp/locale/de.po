@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 09:52-0700\n"
+"POT-Creation-Date: 2026-10-17 15:07+0200\n"
 "PO-Revision-Date: 2026-02-04 22:11+0100\n"
 "Last-Translator: Dieter Kuhnke (d.kuhnke@gmail.com)\n"
 "Language-Team: German\n"
@@ -71,7 +71,7 @@ msgstr "(Beschreibe, was getan wurde)"
 msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr "(Hat das schon einmal funktioniert? Neues Radio? Funktioniert es mit der Originalsoftware?)"
 
-#: ../wxui/radioinfo.py:52
+#: ../wxui/radioinfo.py:62
 msgid "(none)"
 msgstr "(nichts)"
 
@@ -80,7 +80,7 @@ msgstr "(nichts)"
 msgid "...and %i more"
 msgstr "...und %i mehr"
 
-#: ../drivers/ft4.py:738
+#: ../drivers/ft4.py:740
 msgid ""
 "1. Connect programming cable to MIC jack.\n"
 "2. Press OK."
@@ -174,7 +174,7 @@ msgid ""
 "6. Click OK."
 msgstr ""
 
-#: ../drivers/ft450d.py:430
+#: ../drivers/ft450d.py:436
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -195,7 +195,7 @@ msgid ""
 "4. <b>After clicking OK</b>, press the [A] key to send image.\n"
 msgstr ""
 
-#: ../drivers/ft450d.py:439
+#: ../drivers/ft450d.py:445
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -407,7 +407,7 @@ msgid ""
 "5. Click OK to send image to radio.\n"
 msgstr ""
 
-#: ../drivers/vx1.py:399
+#: ../drivers/vx1.py:404
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -416,7 +416,7 @@ msgid ""
 "5. <b>After clicking OK</b>, press the [DWN] button on radio to send image. The radio will say CLN OUT while downloading.\n"
 msgstr ""
 
-#: ../drivers/vx1.py:407
+#: ../drivers/vx1.py:412
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -568,7 +568,7 @@ msgid ""
 "6. Click OK to upload image to device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:293 ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:222
+#: ../drivers/tg_uv2p.py:237 ../drivers/uvb5.py:293 ../drivers/wouxun.py:222
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -578,7 +578,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:301 ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:230
+#: ../drivers/tg_uv2p.py:245 ../drivers/uvb5.py:301 ../drivers/wouxun.py:230
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -825,7 +825,7 @@ msgstr "Kanada"
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "Um diese Einstellung zu ändern, müssen die Einstellungen aus dem Image aktualisiert werden. Dies geschieht jetzt."
 
-#: ../drivers/retevis_rt97s.py:229
+#: ../drivers/retevis_rt97s.py:213
 msgid "Channel frequencies are from the repeater's point of view. The receive frequency is the 467 MHz input. Duplex is minus and the offset is 5 MHz, so the repeater transmits on the 462 MHz output. A station using this repeater listens on the repeater output and transmits on the input."
 msgstr ""
 
@@ -903,13 +903,13 @@ msgstr "Klonvorgang abgeschlossen, überprüfe auf fehlerhafte Bytes"
 msgid "Cloning"
 msgstr "Klonen"
 
-#: ../drivers/ft450d.py:511 ../drivers/bj9900.py:133 ../drivers/ft4.py:327
-#: ../drivers/ft817.py:343
+#: ../drivers/ft817.py:343 ../drivers/ft450d.py:517 ../drivers/bj9900.py:133
+#: ../drivers/ft4.py:327
 msgid "Cloning from radio"
 msgstr "Klonen vom Funkgerät"
 
-#: ../drivers/ft450d.py:540 ../drivers/bj9900.py:165 ../drivers/ft4.py:328
-#: ../drivers/ft817.py:381
+#: ../drivers/ft817.py:381 ../drivers/ft450d.py:546 ../drivers/bj9900.py:165
+#: ../drivers/ft4.py:328
 msgid "Cloning to radio"
 msgstr "Klonen zum Funkgerät"
 
@@ -1045,7 +1045,7 @@ msgstr "Entwickler-Modus"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "Der Entwicklerstatus ist nun %s. CHIRP muss neu gestartet werden"
 
-#: ../wxui/memedit.py:2343 ../wxui/developer.py:98
+#: ../wxui/developer.py:98 ../wxui/memedit.py:2343
 msgid "Diff Raw Memories"
 msgstr "Vergleiche Rohspeicher"
 
@@ -1069,7 +1069,7 @@ msgstr "Berichte ausschalten"
 msgid "Disabled"
 msgstr "Deaktiviert"
 
-#: ../drivers/retevis_rt97s.py:337
+#: ../drivers/retevis_rt97s.py:309
 msgid "Disabling Transit Function disables repeating. The repeater will not repeat until this setting is enabled."
 msgstr ""
 
@@ -1107,7 +1107,7 @@ msgstr "Download vom Funkgerät..."
 msgid "Download instructions"
 msgstr "Download-Anleitungen"
 
-#: ../wxui/radioinfo.py:66
+#: ../wxui/radioinfo.py:76
 msgid "Driver"
 msgstr "Treiber"
 
@@ -1289,8 +1289,8 @@ msgstr "Fehler beim Exportieren einiger Speicher"
 msgid "Failed to load radio browser"
 msgstr "Browser kann nicht geladen werden"
 
-#: ../sources/mapy73pl.py:61 ../sources/przemienniki_eu.py:57
-#: ../sources/przemienniki_net.py:59
+#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
+#: ../sources/mapy73pl.py:61
 msgid "Failed to parse result"
 msgstr "Ergebnis konnte nicht analysiert werden"
 
@@ -1298,7 +1298,7 @@ msgstr "Ergebnis konnte nicht analysiert werden"
 msgid "Failed to send bug report:"
 msgstr "Fehler beim Senden des Fehlerberichts:"
 
-#: ../wxui/radioinfo.py:47
+#: ../wxui/radioinfo.py:57
 msgid "Features"
 msgstr ""
 
@@ -1384,7 +1384,7 @@ msgid ""
 "4 - CHIRP Menu - Radio - Download from radio\n"
 msgstr ""
 
-#: ../drivers/ic2730.py:306
+#: ../drivers/ic2730.py:311
 msgid ""
 "Follow these instructions to download your config:\n"
 "1 - Turn off your radio\n"
@@ -1395,11 +1395,11 @@ msgid ""
 "    no right-side audio!\n"
 msgstr ""
 
-#: ../drivers/baofeng_wp970i.py:327 ../drivers/baofeng_uv17Pro.py:514
-#: ../drivers/uv6r.py:339 ../drivers/mursv1.py:341 ../drivers/uv5x3.py:417
-#: ../drivers/btech.py:636 ../drivers/gmrsv2.py:363
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/bf_t1.py:484
-#: ../drivers/gmrsuv1.py:391
+#: ../drivers/mursv1.py:341 ../drivers/btech.py:636 ../drivers/bf_t1.py:484
+#: ../drivers/uv5x3.py:421 ../drivers/tdxone_tdq8a.py:444
+#: ../drivers/uv6r.py:343 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/gmrsuv1.py:395
+#: ../drivers/gmrsv2.py:363
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1453,7 +1453,7 @@ msgid ""
 "4 - CHIRP Menu - Radio - Upload to radio\n"
 msgstr ""
 
-#: ../drivers/ic2730.py:314
+#: ../drivers/ic2730.py:319
 msgid ""
 "Follow these instructions to upload your config:\n"
 "1 - Turn off your radio\n"
@@ -1492,7 +1492,7 @@ msgid ""
 "4 - Click OK to start\n"
 msgstr ""
 
-#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
+#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1510,11 +1510,10 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/vgc.py:592 ../drivers/baofeng_wp970i.py:333
-#: ../drivers/lt725uv.py:492 ../drivers/baofeng_uv17Pro.py:520
-#: ../drivers/uv6r.py:345 ../drivers/mursv1.py:347 ../drivers/uv5x3.py:423
-#: ../drivers/gmrsv2.py:369 ../drivers/tdxone_tdq8a.py:450
-#: ../drivers/gmrsuv1.py:397
+#: ../drivers/mursv1.py:347 ../drivers/lt725uv.py:492 ../drivers/uv5x3.py:427
+#: ../drivers/vgc.py:592 ../drivers/tdxone_tdq8a.py:450 ../drivers/uv6r.py:349
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/gmrsuv1.py:401 ../drivers/gmrsv2.py:369
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1551,8 +1550,8 @@ msgid "Frequency granularity in kHz"
 msgstr "Frequenzgranularität in kHz"
 
 #: ../drivers/retevis_ha1g.py:1439 ../drivers/ga510.py:1094
+#: ../drivers/mml_jc8810.py:1383 ../drivers/baofeng_uv17Pro.py:1297
 #: ../drivers/uv5r.py:2249 ../drivers/tdh8.py:2540
-#: ../drivers/baofeng_uv17Pro.py:1297 ../drivers/mml_jc8810.py:1383
 msgid "Frequency in this range must not be AM mode"
 msgstr "Frequenz in diesem Bereich darf nicht im AM-Modus sein"
 
@@ -1561,9 +1560,9 @@ msgid "Frequency in this range not supported by firmware"
 msgstr "Frequenzen in diesem Bereich werden von der Firmware nicht unterstützt"
 
 #: ../drivers/retevis_ha1g.py:1435 ../drivers/ga510.py:1087
-#: ../drivers/uv5r.py:2245 ../drivers/tdh8.py:2537
-#: ../drivers/baofeng_uv17Pro.py:1294 ../drivers/mml_jc8810.py:1380
-#: ../drivers/radtel_rt900.py:1623
+#: ../drivers/mml_jc8810.py:1380 ../drivers/baofeng_uv17Pro.py:1294
+#: ../drivers/uv5r.py:2245 ../drivers/radtel_rt900.py:1623
+#: ../drivers/tdh8.py:2537
 msgid "Frequency in this range requires AM mode"
 msgstr "Frequenzen in diesem Bereich erfordern den AM-Modus"
 
@@ -1592,7 +1591,7 @@ msgstr "Gehe zu Speicher:"
 msgid "Goto..."
 msgstr "Gehe zu..."
 
-#: ../wxui/common.py:584 ../wxui/accessibility.py:310
+#: ../wxui/accessibility.py:310 ../wxui/common.py:584
 #, python-format
 msgid "Group: %s"
 msgstr ""
@@ -1693,8 +1692,8 @@ msgstr ""
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Falsche %(value)s (Dezimalgrad verwenden)"
 
-#: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
-#: ../wxui/memedit.py:2049
+#: ../wxui/memedit.py:2049 ../wxui/query_sources.py:70
+#: ../wxui/query_sources.py:124
 msgid "Invalid Entry"
 msgstr "Ungültige Eingabe"
 
@@ -1733,7 +1732,7 @@ msgstr "Issue-Nummer:"
 msgid "LIVE"
 msgstr ""
 
-#: ../wxui/main.py:854 ../wxui/main.py:1644 ../drivers/radtel_rt490.py:1028
+#: ../wxui/main.py:854 ../wxui/main.py:1644 ../drivers/radtel_rt490.py:1024
 msgid "Language"
 msgstr "Sprache"
 
@@ -1864,8 +1863,8 @@ msgstr "Speicher muss sich in einer Speicherbank befinden, um bearbeitet zu werd
 msgid "Memory {num} not in bank {bank}"
 msgstr "Speicher {num} ist nicht in Speicherbank {bank}"
 
-#: ../wxui/query_sources.py:626 ../wxui/query_sources.py:779
-#: ../wxui/memedit.py:675
+#: ../wxui/memedit.py:675 ../wxui/query_sources.py:626
+#: ../wxui/query_sources.py:779
 msgid "Mode"
 msgstr "Modus"
 
@@ -1945,8 +1944,8 @@ msgstr "Keine Module in Issue %i gefunden"
 msgid "No more space available; some memories were not applied"
 msgstr "Kein Platz mehr verfügbar; einige Speicher wurden nicht eingefügt"
 
-#: ../sources/mapy73pl.py:57 ../sources/przemienniki_eu.py:53
-#: ../sources/przemienniki_net.py:55
+#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
+#: ../sources/mapy73pl.py:57
 msgid "No results"
 msgstr "Keine Resultate"
 
@@ -1958,7 +1957,7 @@ msgstr "Keine Resultate!"
 msgid "No traces stored"
 msgstr "Keine Aufzeichnungen gespeichert"
 
-#: ../wxui/query_sources.py:45 ../wxui/memedit.py:1407
+#: ../wxui/memedit.py:1407 ../wxui/query_sources.py:45
 msgid "Number"
 msgstr "Nummer"
 
@@ -2088,8 +2087,8 @@ msgid ""
 "are supported in this release.\n"
 msgstr ""
 
-#: ../sources/mapy73pl.py:52 ../sources/przemienniki_eu.py:48
-#: ../sources/przemienniki_net.py:50
+#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
+#: ../sources/mapy73pl.py:52
 msgid "Parsing"
 msgstr "Analysieren"
 
@@ -2218,8 +2217,8 @@ msgstr "Abfrage OK"
 msgid "Query syntax help"
 msgstr "Hilfe zur Abfrage"
 
-#: ../sources/mapy73pl.py:36 ../sources/przemienniki_eu.py:36
-#: ../sources/przemienniki_net.py:36
+#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
+#: ../sources/mapy73pl.py:36
 msgid "Querying"
 msgstr "Abfrage"
 
@@ -2231,24 +2230,24 @@ msgstr ""
 msgid "Radio"
 msgstr "Funkgerät"
 
-#: ../wxui/radioinfo.py:65
+#: ../wxui/radioinfo.py:75
 msgid "Radio Info: Driver"
 msgstr ""
 
-#: ../wxui/radioinfo.py:46
+#: ../wxui/radioinfo.py:56
 msgid "Radio Info: Features"
 msgstr ""
 
-#: ../wxui/radioinfo.py:92
+#: ../wxui/radioinfo.py:102
 msgid "Radio Info: Icom"
 msgstr ""
 
-#: ../wxui/radioinfo.py:120
+#: ../wxui/radioinfo.py:130
 msgid "Radio Info: Image Metadata"
 msgstr ""
 
-#: ../drivers/ft450d.py:576 ../drivers/ft60.py:89 ../drivers/ft60.py:91
-#: ../drivers/ft817.py:410
+#: ../drivers/ft817.py:410 ../drivers/ft450d.py:582 ../drivers/ft60.py:89
+#: ../drivers/ft60.py:91
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "Funkgerät hat Block %i nicht bestätigt"
@@ -2411,7 +2410,7 @@ msgstr "Scansteuerung (Überspringen, Einschließen, Priorität usw.)"
 msgid "Scanlists"
 msgstr "Scanlisten"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:855
+#: ../drivers/uvk5.py:855 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr ""
 
@@ -2473,7 +2472,7 @@ msgstr ""
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "Verschiebewert (oder Sendefrequenz) gesteuert durch Duplex"
 
-#: ../wxui/memedit.py:2335 ../wxui/developer.py:101
+#: ../wxui/developer.py:101 ../wxui/memedit.py:2335
 msgid "Show Raw Memory"
 msgstr "Zeige Rohspeicher"
 
@@ -2535,8 +2534,8 @@ msgstr "Sortiere nach Spalte:"
 msgid "Sort memories"
 msgstr "Sortiere Speicher"
 
-#: ../sources/mapy73pl.py:64 ../sources/przemienniki_eu.py:60
-#: ../sources/przemienniki_net.py:62
+#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
+#: ../sources/mapy73pl.py:64
 msgid "Sorting"
 msgstr "Sortiere"
 
@@ -2564,7 +2563,7 @@ msgstr "Sende-Frequenz"
 msgid "TX-RX DTCS polarity (normal or reversed)"
 msgstr "TX-RX DTCS-Polarität (normal oder umgekehrt)"
 
-#: ../drivers/ft4.py:732
+#: ../drivers/ft4.py:734
 msgid ""
 "Tested and mostly works, but may give you issues\n"
 "when using lesser common radio variants.\n"
@@ -2575,7 +2574,7 @@ msgstr ""
 msgid "The DMR-MARC Worldwide Network"
 msgstr "Das DMR-MARC weltweite Netzwerk"
 
-#: ../drivers/ft450d.py:416
+#: ../drivers/ft450d.py:422
 msgid ""
 "The FT-450D radio driver loads the 'Special Channels' tab\n"
 "with the PMS scanning range memories (group 11), 60meter\n"
@@ -2592,7 +2591,7 @@ msgid ""
 "'DATA MODE' to select USER-U, USER-L and RTTY \n"
 msgstr ""
 
-#: ../drivers/boblov_x3plus.py:119
+#: ../drivers/boblov_x3plus.py:124
 msgid ""
 "The X3Plus driver is currently experimental.\n"
 "There are no known issues but you should proceed with caution.\n"
@@ -2629,8 +2628,8 @@ msgstr "Dieser Speicher"
 msgid "This driver has been tested with v3 of the ID-5100. If your radio is not fully updated please help by opening a bug report with a debug log so we can add support for the other revisions."
 msgstr "Dieser Treiber wurde mit Version 3 des ID-5100 getestet. Falls das Funkgerät nicht vollständig aktualisiert ist, bitte einen Fehlerbericht mit einem Debug-Protokoll zu erstellen, damit wir die Unterstützung für weitere Versionen hinzufügen können."
 
-#: ../drivers/radtel_rt490.py:1360 ../drivers/radtel_rt490.py:1362
-#: ../drivers/radtel_rt490.py:1364
+#: ../drivers/radtel_rt490.py:1356 ../drivers/radtel_rt490.py:1358
+#: ../drivers/radtel_rt490.py:1360
 msgid "This driver is in development and should be considered as experimental."
 msgstr "Dieser Treiber befindet sich in der Entwicklung und sollte als experimentell betrachtet werden"
 
@@ -2793,8 +2792,8 @@ msgstr "Import nicht möglich, da die Ansicht sortiert ist"
 msgid "Unable to open the clipboard"
 msgstr "Zwischenablage kann nicht geöffnet werden"
 
-#: ../sources/mapy73pl.py:50 ../sources/przemienniki_eu.py:46
-#: ../sources/przemienniki_net.py:48
+#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
+#: ../sources/mapy73pl.py:50
 msgid "Unable to query"
 msgstr "Abfrage nicht möglich"
 
