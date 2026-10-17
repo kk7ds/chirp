@@ -1335,7 +1335,7 @@ msgstr "Закрити"
 
 #: ../wxui/memquery.py:151
 msgid "Close String"
-msgstr ""
+msgstr "Закрити рядок"
 
 #: ../wxui/main.py:1076
 msgid "Close file"
@@ -1413,7 +1413,7 @@ msgstr "Вирізати"
 #: ../wxui/memedit.py:2486
 #, python-format
 msgid "Cut %i memories"
-msgstr "Вирізати %i пам'яті"
+msgstr "Вирізати пам'ять (%i)"
 
 #: ../wxui/memedit.py:620
 msgid "DTCS"
@@ -1551,12 +1551,12 @@ msgstr "Дуплекс"
 #: ../wxui/memedit.py:2373
 #, python-format
 msgid "Edit %i memories"
-msgstr "Редагувати %i пам'яті"
+msgstr "Редагувати пам'ять (%i)"
 
 #: ../wxui/memedit.py:2892
 #, python-format
 msgid "Edit details for %i memories"
-msgstr "Редагувати подробиці (%i пам'яті)"
+msgstr "Редагувати подробиці пам'яті (%i)"
 
 #: ../wxui/memedit.py:2890
 #, python-format
@@ -1565,7 +1565,7 @@ msgstr "Редагувати подробиці пам'яті %i"
 
 #: ../wxui/main.py:926
 msgid "Enable Automatic Edits"
-msgstr "Увімкнути автоматичні редагування"
+msgstr "Увімкнути автоматичне редагування"
 
 #: ../wxui/memedit.py:596
 msgid "Enabled"
@@ -1718,7 +1718,7 @@ msgstr "Не вдалося експортувати деякі записи п�
 
 #: ../wxui/developer.py:502
 msgid "Failed to load radio browser"
-msgstr ""
+msgstr "Не вдалося завантажити оглядач радіостанцій"
 
 #: ../sources/mapy73pl.py:61 ../sources/przemienniki_net.py:59
 #: ../sources/przemienniki_eu.py:57
@@ -1745,7 +1745,7 @@ msgstr "Файл не існує: %s"
 #: ../wxui/main.py:1365 ../wxui/main.py:1445 ../wxui/main.py:1455
 #: ../wxui/main.py:1514 ../wxui/main.py:1894 ../wxui/main.py:1895
 msgid "Files"
-msgstr "Файлт"
+msgstr "Файли"
 
 #: ../wxui/bugreport.py:568
 msgid "Files:"
@@ -2153,7 +2153,7 @@ msgstr "Коментар у зручному для читання формат�
 
 #: ../wxui/bugreport.py:414
 msgid "I have"
-msgstr ""
+msgstr "Я"
 
 #: ../wxui/query_sources.py:366 ../wxui/query_sources.py:372
 #: ../wxui/query_sources.py:666 ../wxui/query_sources.py:672
@@ -2168,11 +2168,11 @@ msgstr "Імпорт"
 #: ../wxui/memedit.py:2522
 #, python-format
 msgid "Import %i memories"
-msgstr "Імпортувати %i пам'яті"
+msgstr "Імпортувати пам'ять (%i)"
 
 #: ../wxui/main.py:734
 msgid "Import from file..."
-msgstr "Імпортувати з файлу"
+msgstr "Імпортувати з файлу..."
 
 #: ../wxui/main.py:1504
 msgid "Import messages"
@@ -2198,7 +2198,7 @@ msgstr ""
 
 #: ../wxui/bankedit.py:62
 msgid "Index"
-msgstr "Зміст"
+msgstr "Індекс"
 
 #: ../wxui/main.py:224
 msgid "Info"
@@ -2331,7 +2331,7 @@ msgstr ""
 
 #: ../wxui/main.py:1746
 msgid "Live Radio"
-msgstr ""
+msgstr "Радіостанція наживо"
 
 #: ../wxui/main.py:746
 msgid "Load Module..."
@@ -2415,20 +2415,20 @@ msgstr "Список пам'яті"
 #: ../wxui/memquery.py:203
 #, python-format
 msgid "Memory field name (one of %s)"
-msgstr ""
+msgstr "Назва поля пам'яті (одна з: %s)"
 
 #: ../wxui/memedit.py:150
 msgid "Memory label (stored in radio)"
-msgstr ""
+msgstr "Мітка пам'яті (зберігається в радіостанції)"
 
 #: ../wxui/bankedit.py:242
 msgid "Memory must be in a bank to be edited"
-msgstr ""
+msgstr "Щоб редагувати пам'ять, вона має входити до банку"
 
 #: ../drivers/vx5.py:133
 #, python-brace-format
 msgid "Memory {num} not in bank {bank}"
-msgstr ""
+msgstr "Пам'ять {num} не входить до банку {bank}"
 
 #: ../wxui/query_sources.py:626 ../wxui/query_sources.py:779
 #: ../wxui/memedit.py:675
@@ -2467,15 +2467,15 @@ msgstr "Знайдено кілька портів: %s"
 #: ../wxui/memedit.py:2743
 #, python-format
 msgid "Move %i memories"
-msgstr "Перемістити %i пам'яті"
+msgstr "Перемістити пам'ять (%i)"
 
 #: ../wxui/memedit.py:1350
 msgid "Move Down"
-msgstr "Перемістити Вниз"
+msgstr "Перемістити вниз"
 
 #: ../wxui/memedit.py:1340
 msgid "Move Up"
-msgstr "Перемістити Вгору"
+msgstr "Перемістити вгору"
 
 #: ../wxui/memedit.py:2713
 msgid "Move operations are disabled while the view is sorted"
@@ -2541,6 +2541,8 @@ msgid ""
 "Offset/\n"
 "TX Freq"
 msgstr ""
+"Зсув/\n"
+"Частота передавання"
 
 #: ../wxui/memquery.py:252
 #, python-format
@@ -2574,7 +2576,7 @@ msgstr "Відкрити"
 
 #: ../wxui/main.py:721
 msgid "Open Recent"
-msgstr "Ос_танні"
+msgstr "Відкрити нещодавні"
 
 #: ../wxui/main.py:703
 msgid "Open Stock Config"
@@ -2680,22 +2682,22 @@ msgstr "Вставити пам'ять"
 #: ../wxui/memedit.py:2550
 #, python-format
 msgid "Pasted memories will overwrite %s existing memories"
-msgstr ""
+msgstr "Вставлена пам'ять перезапише наявну пам'ять (%s)"
 
 #: ../wxui/memedit.py:2553
 #, python-format
 msgid "Pasted memories will overwrite memories %s"
-msgstr ""
+msgstr "Вставлена пам'ять перезапише пам'ять %s"
 
 #: ../wxui/memedit.py:2547
 #, python-format
 msgid "Pasted memories will overwrite memory %s"
-msgstr ""
+msgstr "Вставлена пам'ять перезапише пам'ять %s"
 
 #: ../wxui/memedit.py:2544
 #, python-format
 msgid "Pasted memory will overwrite memory %s"
-msgstr ""
+msgstr "Вставлена пам'ять перезапише пам'ять %s"
 
 #: ../drivers/ft450d.py:1023
 msgid "Places the IF notch filter below the center of the passband, at the center or above it. The exact notch frequency is fine tuned on the radio with the DSP/SEL knob."
@@ -2703,7 +2705,7 @@ msgstr ""
 
 #: ../wxui/main.py:2176
 msgid "Please be sure to quit CHIRP before installing the new version!"
-msgstr "Будь ласка, закрийте CHIRP еред встановленням нової версії!"
+msgstr "Будь ласка, закрийте CHIRP перед встановленням нової версії!"
 
 #: ../wxui/bugreport.py:487
 msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
@@ -2858,7 +2860,7 @@ msgstr "Частота приймання"
 
 #: ../wxui/clone.py:608
 msgid "Recent"
-msgstr "Ос_танні"
+msgstr "Нещодавні"
 
 #: ../wxui/clone.py:349
 msgid "Recent..."
@@ -2940,9 +2942,9 @@ msgstr "Потрібен перезапуск"
 #, python-format
 msgid "Restore %i tab"
 msgid_plural "Restore %i tabs"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Відновити %i вкладку"
+msgstr[1] "Відновити %i вкладки"
+msgstr[2] "Відновити %i вкладок"
 
 #: ../wxui/main.py:847
 msgid "Restore tabs on start"
@@ -2950,7 +2952,7 @@ msgstr "Відновлювати вкладки під час запуску"
 
 #: ../wxui/query_sources.py:415
 msgid "Results from other areas"
-msgstr ""
+msgstr "Результати з інших регіонів"
 
 #: ../wxui/common.py:404
 msgid "Retrieved settings"
@@ -2978,11 +2980,11 @@ msgstr "Зберегти файл"
 
 #: ../wxui/common.py:406
 msgid "Saved settings"
-msgstr ""
+msgstr "Збережені налаштування"
 
 #: ../wxui/memedit.py:163
 msgid "Scan control (skip, include, priority, etc)"
-msgstr ""
+msgstr "Керування скануванням (пропуск, включення, пріоритет тощо)"
 
 #: ../drivers/uvk5.py:859
 msgid "Scanlists"
@@ -3183,7 +3185,7 @@ msgstr "Налаштування"
 
 #: ../drivers/uvk5.py:2092
 msgid "Settings are read-only due to unsupported firmware version"
-msgstr ""
+msgstr "Налаштування доступні лише для читання через непідтримувану версію прошивки"
 
 #: ../wxui/common.py:464
 #, python-format
@@ -3192,7 +3194,7 @@ msgstr "Налаштування: %s"
 
 #: ../wxui/memedit.py:161
 msgid "Shift amount (or transmit frequency) controlled by duplex"
-msgstr ""
+msgstr "Величина зсуву (або частота передавання) визначається дуплексом"
 
 #: ../drivers/ft450d.py:1330
 msgid "Shifts the frequency of the radio's CPU clock slightly. Only use it to move an internally generated spurious signal, or birdie, off a frequency you want to listen on."
@@ -3228,7 +3230,7 @@ msgstr "Пропустити"
 
 #: ../wxui/memedit.py:2647
 msgid "Some memories are incompatible with this radio"
-msgstr "Деякі пам'яті несумісні з цією радіостанцією"
+msgstr "Деяка пам'ять несумісна з цією радіостанцією"
 
 #: ../wxui/memedit.py:2485
 msgid "Some memories are not deletable"
@@ -3237,7 +3239,7 @@ msgstr "Деяку пам'ять не можна видалити"
 #: ../wxui/memedit.py:2161
 #, python-format
 msgid "Sort %i memories"
-msgstr "Впорядкувати %i пам'яті"
+msgstr "Впорядкувати пам'ять (%i)"
 
 #: ../wxui/memedit.py:2291
 #, python-format
@@ -3493,7 +3495,7 @@ msgstr "Потужність передавання"
 
 #: ../wxui/memedit.py:160
 msgid "Transmit shift, split mode, or transmit inhibit"
-msgstr ""
+msgstr "Зсув передавання, режим спліт або заборона передавання"
 
 #: ../wxui/memedit.py:152
 msgid "Transmit tone"
@@ -3501,15 +3503,15 @@ msgstr "Тон передавання"
 
 #: ../wxui/memedit.py:155
 msgid "Transmit/receive DTCS code for DTCS mode, else transmit code"
-msgstr ""
+msgstr "Код DTCS передавання/приймання для режиму DTCS, інакше код передавання"
 
 #: ../wxui/memedit.py:154
 msgid "Transmit/receive modulation (FM, AM, SSB, etc)"
-msgstr ""
+msgstr "Модуляція передавання/приймання (FM, AM, SSB тощо)"
 
 #: ../wxui/memedit.py:153
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
-msgstr ""
+msgstr "Тон передавання/приймання для режиму TSQL, інакше тон приймання"
 
 #: ../drivers/ft450d.py:1364
 msgid "Transmits a short beep when PTT is released, before the radio returns to receive, to tell other stations that your transmission has ended."
@@ -3549,20 +3551,20 @@ msgstr ""
 
 #: ../wxui/memquery.py:188
 msgid "Type a simple search string or a formatted query and press enter"
-msgstr ""
+msgstr "Введіть простий рядок пошуку або форматований запит і натисніть Enter"
 
 #: ../wxui/clone.py:486 ../wxui/clone.py:493 ../wxui/clone.py:504
 #: ../wxui/clone.py:512 ../wxui/clone.py:516
 msgid "USB Port Finder"
-msgstr ""
+msgstr "Пошук USB-порту"
 
 #: ../wxui/clone.py:502
 msgid "Unable to determine port for your cable. Check your drivers and connections."
-msgstr ""
+msgstr "Не вдалося визначити порт для вашого кабелю. Перевірте драйвери та з'єднання."
 
 #: ../wxui/memedit.py:1969
 msgid "Unable to edit memory before radio is loaded"
-msgstr ""
+msgstr "Не вдається редагувати пам'ять, доки радіостанцію не завантажено"
 
 #: ../wxui/main.py:1417
 #, python-format
@@ -3610,7 +3612,7 @@ msgstr "Сполучені Штати"
 
 #: ../wxui/clone.py:485
 msgid "Unplug your cable (if needed) and then click OK"
-msgstr ""
+msgstr "Від'єднайте кабель (за потреби) і натисніть OK"
 
 #: ../drivers/thd74.py:337
 #, python-format
@@ -3619,12 +3621,12 @@ msgstr "Непідтримувана модель %r"
 
 #: ../wxui/bugreport.py:219
 msgid "Update an existing bug"
-msgstr ""
+msgstr "Оновити наявну задачу"
 
 #: ../wxui/bugreport.py:567
 #, python-format
 msgid "Updating bug %s"
-msgstr "Оновлення помилки %s"
+msgstr "Оновлення задачі %s"
 
 #: ../wxui/clone.py:898
 msgid "Upload instructions"
@@ -3632,7 +3634,7 @@ msgstr "Інструкції із запису"
 
 #: ../drivers/uvk5.py:2084
 msgid "Upload is disabled due to unsupported firmware version"
-msgstr ""
+msgstr "Запис вимкнено через непідтримувану версію прошивки"
 
 #: ../wxui/main.py:1080
 msgid "Upload to radio"
@@ -3649,7 +3651,7 @@ msgstr "Записано пам'ять %s"
 
 #: ../wxui/memedit.py:1367
 msgid "Use TX Frequency Workflow"
-msgstr ""
+msgstr "Використовувати робочий процес із частотою передавання"
 
 #: ../wxui/main.py:832
 msgid "Use fixed-width font"
@@ -3731,7 +3733,7 @@ msgstr ""
 
 #: ../wxui/__init__.py:59
 msgid "Would you like CHIRP to install a desktop icon for you?"
-msgstr ""
+msgstr "Бажаєте, щоб CHIRP встановив для вас іконку на робочому столі?"
 
 #: ../wxui/bugreport.py:326
 msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
@@ -3747,7 +3749,7 @@ msgstr "Ваш локатор QTH"
 
 #: ../wxui/clone.py:510
 msgid "Your cable appears to be on port:"
-msgstr ""
+msgstr "Ваш кабель, схоже, під'єднано до порту:"
 
 #: ../wxui/developer.py:194
 msgid "bits"
