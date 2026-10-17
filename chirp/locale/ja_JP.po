@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 09:52-0700\n"
+"POT-Creation-Date: 2026-10-17 15:07+0200\n"
 "PO-Revision-Date: 2026-04-05 01:36-0500\n"
 "Last-Translator: Tony Gies <tgies@tgies.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -66,7 +66,7 @@ msgstr "(何をしていたかを記述してください)"
 msgid "(Has this ever worked before? New radio? Does it work with OEM software?)"
 msgstr "(以前は動作していましたか？新しい無線機ですか？純正ソフトでは動作しますか？)"
 
-#: ../wxui/radioinfo.py:52
+#: ../wxui/radioinfo.py:62
 msgid "(none)"
 msgstr "(なし)"
 
@@ -75,7 +75,7 @@ msgstr "(なし)"
 msgid "...and %i more"
 msgstr "...他 %i 件"
 
-#: ../drivers/ft4.py:738
+#: ../drivers/ft4.py:740
 msgid ""
 "1. Connect programming cable to MIC jack.\n"
 "2. Press OK."
@@ -223,7 +223,7 @@ msgstr ""
 "5. 無線機の Low キーを押します (LCDに \"RX\" と表示されます)。\n"
 "6. OKをクリック"
 
-#: ../drivers/ft450d.py:430
+#: ../drivers/ft450d.py:436
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -255,7 +255,7 @@ msgstr ""
 "     (ディスプレイに \"CLONE MODE\" と表示されます)。\n"
 "4. <b>OKをクリックした後</b>、[A] キーを押してイメージを送信\n"
 
-#: ../drivers/ft450d.py:439
+#: ../drivers/ft450d.py:445
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to ACC jack.\n"
@@ -587,7 +587,7 @@ msgstr ""
 "4. [MR(SKP)SC] キーを押します (LCDに \"CLONE WAIT\" と表示されます)。\n"
 "5. OKをクリックしてイメージを無線機へ送信\n"
 
-#: ../drivers/vx1.py:399
+#: ../drivers/vx1.py:404
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -601,7 +601,7 @@ msgstr ""
 "4. CHIRPのプロンプトでOKを押します。\n"
 "5. <b>OKをクリックした後</b>、無線機の [DWN] ボタンを押してイメージを送信。ダウンロード中は無線機に CLN OUT と表示されます。\n"
 
-#: ../drivers/vx1.py:407
+#: ../drivers/vx1.py:412
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to MIC/SP jack.\n"
@@ -835,7 +835,7 @@ msgstr ""
 "5. 通信のないチャンネルに合わせてあることを確認\n"
 "6. OKをクリックしてデバイスへイメージをアップロード\n"
 
-#: ../drivers/uvb5.py:293 ../drivers/tg_uv2p.py:232 ../drivers/wouxun.py:222
+#: ../drivers/tg_uv2p.py:237 ../drivers/uvb5.py:293 ../drivers/wouxun.py:222
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -851,7 +851,7 @@ msgstr ""
 "5. 通信のないチャンネルに合わせてあることを確認\n"
 "6. OKをクリックしてデバイスからイメージをダウンロード\n"
 
-#: ../drivers/uvb5.py:301 ../drivers/tg_uv2p.py:240 ../drivers/wouxun.py:230
+#: ../drivers/tg_uv2p.py:245 ../drivers/uvb5.py:301 ../drivers/wouxun.py:230
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1156,7 +1156,7 @@ msgstr "カナダ"
 msgid "Changing this setting requires refreshing the settings from the image, which will happen now."
 msgstr "この設定を変更するには、イメージから設定を再読み込みする必要があります。今すぐ実行します。"
 
-#: ../drivers/retevis_rt97s.py:229
+#: ../drivers/retevis_rt97s.py:213
 msgid "Channel frequencies are from the repeater's point of view. The receive frequency is the 467 MHz input. Duplex is minus and the offset is 5 MHz, so the repeater transmits on the 462 MHz output. A station using this repeater listens on the repeater output and transmits on the input."
 msgstr ""
 
@@ -1237,13 +1237,13 @@ msgstr "クローン完了、不要なバイトを確認中"
 msgid "Cloning"
 msgstr "クローン中"
 
-#: ../drivers/ft450d.py:511 ../drivers/bj9900.py:133 ../drivers/ft4.py:327
-#: ../drivers/ft817.py:343
+#: ../drivers/ft817.py:343 ../drivers/ft450d.py:517 ../drivers/bj9900.py:133
+#: ../drivers/ft4.py:327
 msgid "Cloning from radio"
 msgstr "無線機からクローン中"
 
-#: ../drivers/ft450d.py:540 ../drivers/bj9900.py:165 ../drivers/ft4.py:328
-#: ../drivers/ft817.py:381
+#: ../drivers/ft817.py:381 ../drivers/ft450d.py:546 ../drivers/bj9900.py:165
+#: ../drivers/ft4.py:328
 msgid "Cloning to radio"
 msgstr "無線機へクローン中"
 
@@ -1376,7 +1376,7 @@ msgstr "開発者モード"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "開発者状態は %s になりました。有効にするにはCHIRPを再起動してください"
 
-#: ../wxui/memedit.py:2343 ../wxui/developer.py:98
+#: ../wxui/developer.py:98 ../wxui/memedit.py:2343
 msgid "Diff Raw Memories"
 msgstr "Rawメモリの差分"
 
@@ -1400,7 +1400,7 @@ msgstr "診断レポート送信を停止"
 msgid "Disabled"
 msgstr "無効"
 
-#: ../drivers/retevis_rt97s.py:337
+#: ../drivers/retevis_rt97s.py:309
 msgid "Disabling Transit Function disables repeating. The repeater will not repeat until this setting is enabled."
 msgstr ""
 
@@ -1438,7 +1438,7 @@ msgstr "無線機からダウンロード..."
 msgid "Download instructions"
 msgstr "ダウンロード手順"
 
-#: ../wxui/radioinfo.py:66
+#: ../wxui/radioinfo.py:76
 msgid "Driver"
 msgstr "ドライバ"
 
@@ -1624,8 +1624,8 @@ msgstr "一部のメモリのエクスポートに失敗しました"
 msgid "Failed to load radio browser"
 msgstr "無線機ブラウザのロードに失敗しました"
 
-#: ../sources/mapy73pl.py:61 ../sources/przemienniki_eu.py:57
-#: ../sources/przemienniki_net.py:59
+#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
+#: ../sources/mapy73pl.py:61
 msgid "Failed to parse result"
 msgstr "結果の解析に失敗しました"
 
@@ -1633,7 +1633,7 @@ msgstr "結果の解析に失敗しました"
 msgid "Failed to send bug report:"
 msgstr "バグレポートの送信に失敗しました:"
 
-#: ../wxui/radioinfo.py:47
+#: ../wxui/radioinfo.py:57
 msgid "Features"
 msgstr "機能"
 
@@ -1732,7 +1732,7 @@ msgstr ""
 "3 - 無線機の電源をオン、音量を50%に\n"
 "4 - CHIRPメニュー - 無線機 - 無線機からダウンロード\n"
 
-#: ../drivers/ic2730.py:306
+#: ../drivers/ic2730.py:311
 msgid ""
 "Follow these instructions to download your config:\n"
 "1 - Turn off your radio\n"
@@ -1749,11 +1749,11 @@ msgstr ""
 "4 - 無線機 > 無線機からダウンロード\n"
 "5 - インターフェースケーブルを取り外してください！そうしないと右側のオーディオが出力されません！\n"
 
-#: ../drivers/baofeng_wp970i.py:327 ../drivers/baofeng_uv17Pro.py:514
-#: ../drivers/uv6r.py:339 ../drivers/mursv1.py:341 ../drivers/uv5x3.py:417
-#: ../drivers/btech.py:636 ../drivers/gmrsv2.py:363
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/bf_t1.py:484
-#: ../drivers/gmrsuv1.py:391
+#: ../drivers/mursv1.py:341 ../drivers/btech.py:636 ../drivers/bf_t1.py:484
+#: ../drivers/uv5x3.py:421 ../drivers/tdxone_tdq8a.py:444
+#: ../drivers/uv6r.py:343 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/gmrsuv1.py:395
+#: ../drivers/gmrsv2.py:363
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1835,7 +1835,7 @@ msgstr ""
 "3 - 無線機の電源をオン、音量を50%に\n"
 "4 - CHIRPメニュー - 無線機 - 無線機へアップロード\n"
 
-#: ../drivers/ic2730.py:314
+#: ../drivers/ic2730.py:319
 msgid ""
 "Follow these instructions to upload your config:\n"
 "1 - Turn off your radio\n"
@@ -1896,7 +1896,7 @@ msgstr ""
 "3 - 無線機の電源をオン\n"
 "4 - OKをクリックして開始\n"
 
-#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
+#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1924,11 +1924,10 @@ msgstr ""
 "3 - 無線機の電源をオン\n"
 "4 - 無線機データのダウンロードを実行\n"
 
-#: ../drivers/vgc.py:592 ../drivers/baofeng_wp970i.py:333
-#: ../drivers/lt725uv.py:492 ../drivers/baofeng_uv17Pro.py:520
-#: ../drivers/uv6r.py:345 ../drivers/mursv1.py:347 ../drivers/uv5x3.py:423
-#: ../drivers/gmrsv2.py:369 ../drivers/tdxone_tdq8a.py:450
-#: ../drivers/gmrsuv1.py:397
+#: ../drivers/mursv1.py:347 ../drivers/lt725uv.py:492 ../drivers/uv5x3.py:427
+#: ../drivers/vgc.py:592 ../drivers/tdxone_tdq8a.py:450 ../drivers/uv6r.py:349
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/gmrsuv1.py:401 ../drivers/gmrsv2.py:369
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1975,8 +1974,8 @@ msgid "Frequency granularity in kHz"
 msgstr "周波数ステップ (kHz)"
 
 #: ../drivers/retevis_ha1g.py:1439 ../drivers/ga510.py:1094
+#: ../drivers/mml_jc8810.py:1383 ../drivers/baofeng_uv17Pro.py:1297
 #: ../drivers/uv5r.py:2249 ../drivers/tdh8.py:2540
-#: ../drivers/baofeng_uv17Pro.py:1297 ../drivers/mml_jc8810.py:1383
 msgid "Frequency in this range must not be AM mode"
 msgstr "この範囲の周波数ではAMモードは使用できません"
 
@@ -1985,9 +1984,9 @@ msgid "Frequency in this range not supported by firmware"
 msgstr "この範囲の周波数はファームウェアでサポートされていません"
 
 #: ../drivers/retevis_ha1g.py:1435 ../drivers/ga510.py:1087
-#: ../drivers/uv5r.py:2245 ../drivers/tdh8.py:2537
-#: ../drivers/baofeng_uv17Pro.py:1294 ../drivers/mml_jc8810.py:1380
-#: ../drivers/radtel_rt900.py:1623
+#: ../drivers/mml_jc8810.py:1380 ../drivers/baofeng_uv17Pro.py:1294
+#: ../drivers/uv5r.py:2245 ../drivers/radtel_rt900.py:1623
+#: ../drivers/tdh8.py:2537
 msgid "Frequency in this range requires AM mode"
 msgstr "この範囲の周波数ではAMモードが必要です"
 
@@ -2016,7 +2015,7 @@ msgstr "指定した行に移動:"
 msgid "Goto..."
 msgstr "行移動..."
 
-#: ../wxui/common.py:584 ../wxui/accessibility.py:310
+#: ../wxui/accessibility.py:310 ../wxui/common.py:584
 #, python-format
 msgid "Group: %s"
 msgstr ""
@@ -2117,8 +2116,8 @@ msgstr "内部ドライバエラー: 凍結されたメモリを変更しよう�
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "無効な %(value)s (10進数の度数を使用してください)"
 
-#: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
-#: ../wxui/memedit.py:2049
+#: ../wxui/memedit.py:2049 ../wxui/query_sources.py:70
+#: ../wxui/query_sources.py:124
 msgid "Invalid Entry"
 msgstr "無効な入力"
 
@@ -2157,7 +2156,7 @@ msgstr "Issue番号:"
 msgid "LIVE"
 msgstr "LIVE"
 
-#: ../wxui/main.py:854 ../wxui/main.py:1644 ../drivers/radtel_rt490.py:1028
+#: ../wxui/main.py:854 ../wxui/main.py:1644 ../drivers/radtel_rt490.py:1024
 msgid "Language"
 msgstr "言語"
 
@@ -2286,8 +2285,8 @@ msgstr "編集するにはメモリがバンクにある必要があります"
 msgid "Memory {num} not in bank {bank}"
 msgstr "メモリ {num} はバンク {bank} にありません"
 
-#: ../wxui/query_sources.py:626 ../wxui/query_sources.py:779
-#: ../wxui/memedit.py:675
+#: ../wxui/memedit.py:675 ../wxui/query_sources.py:626
+#: ../wxui/query_sources.py:779
 msgid "Mode"
 msgstr "モード"
 
@@ -2367,8 +2366,8 @@ msgstr "Issue %i にモジュールが見つかりません"
 msgid "No more space available; some memories were not applied"
 msgstr "空き容量がありません。一部のメモリは適用されませんでした"
 
-#: ../sources/mapy73pl.py:57 ../sources/przemienniki_eu.py:53
-#: ../sources/przemienniki_net.py:55
+#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
+#: ../sources/mapy73pl.py:57
 msgid "No results"
 msgstr "結果なし"
 
@@ -2380,7 +2379,7 @@ msgstr "結果なし！"
 msgid "No traces stored"
 msgstr "トレースは保存されていません"
 
-#: ../wxui/query_sources.py:45 ../wxui/memedit.py:1407
+#: ../wxui/memedit.py:1407 ../wxui/query_sources.py:45
 msgid "Number"
 msgstr "行"
 
@@ -2512,8 +2511,8 @@ msgstr ""
 "P-VFOチャンネル100-109は設定とみなされます。\n"
 "130以上の利用可能な無線機設定のうち、このリリースでは一部のみがサポートされています。\n"
 
-#: ../sources/mapy73pl.py:52 ../sources/przemienniki_eu.py:48
-#: ../sources/przemienniki_net.py:50
+#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
+#: ../sources/mapy73pl.py:52
 msgid "Parsing"
 msgstr "解析中"
 
@@ -2642,8 +2641,8 @@ msgstr "クエリ構文OK"
 msgid "Query syntax help"
 msgstr "クエリ構文ヘルプ"
 
-#: ../sources/mapy73pl.py:36 ../sources/przemienniki_eu.py:36
-#: ../sources/przemienniki_net.py:36
+#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
+#: ../sources/mapy73pl.py:36
 msgid "Querying"
 msgstr "クエリ中"
 
@@ -2655,24 +2654,24 @@ msgstr "受信DTCS"
 msgid "Radio"
 msgstr "無線機"
 
-#: ../wxui/radioinfo.py:65
+#: ../wxui/radioinfo.py:75
 msgid "Radio Info: Driver"
 msgstr ""
 
-#: ../wxui/radioinfo.py:46
+#: ../wxui/radioinfo.py:56
 msgid "Radio Info: Features"
 msgstr ""
 
-#: ../wxui/radioinfo.py:92
+#: ../wxui/radioinfo.py:102
 msgid "Radio Info: Icom"
 msgstr ""
 
-#: ../wxui/radioinfo.py:120
+#: ../wxui/radioinfo.py:130
 msgid "Radio Info: Image Metadata"
 msgstr ""
 
-#: ../drivers/ft450d.py:576 ../drivers/ft60.py:89 ../drivers/ft60.py:91
-#: ../drivers/ft817.py:410
+#: ../drivers/ft817.py:410 ../drivers/ft450d.py:582 ../drivers/ft60.py:89
+#: ../drivers/ft60.py:91
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "無線機がブロック %i を確認応答しませんでした"
@@ -2842,7 +2841,7 @@ msgstr "スキャン制御 (スキップ、含める、優先など)"
 msgid "Scanlists"
 msgstr "スキャンリスト"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:855
+#: ../drivers/uvk5.py:855 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr "スクランブル"
 
@@ -2904,7 +2903,7 @@ msgstr ""
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "デュプレックスで制御されるシフト量 (または送信周波数)"
 
-#: ../wxui/memedit.py:2335 ../wxui/developer.py:101
+#: ../wxui/developer.py:101 ../wxui/memedit.py:2335
 msgid "Show Raw Memory"
 msgstr "Rawメモリを表示"
 
@@ -2963,8 +2962,8 @@ msgstr "カラムを選択"
 msgid "Sort memories"
 msgstr "並び替え"
 
-#: ../sources/mapy73pl.py:64 ../sources/przemienniki_eu.py:60
-#: ../sources/przemienniki_net.py:62
+#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
+#: ../sources/mapy73pl.py:64
 msgid "Sorting"
 msgstr "並び替え中"
 
@@ -2992,7 +2991,7 @@ msgstr "送信周波数"
 msgid "TX-RX DTCS polarity (normal or reversed)"
 msgstr "送受信DTCS極性 (ノーマルまたはリバース)"
 
-#: ../drivers/ft4.py:732
+#: ../drivers/ft4.py:734
 msgid ""
 "Tested and mostly works, but may give you issues\n"
 "when using lesser common radio variants.\n"
@@ -3005,7 +3004,7 @@ msgstr ""
 msgid "The DMR-MARC Worldwide Network"
 msgstr "DMR-MARCワールドワイドネットワーク"
 
-#: ../drivers/ft450d.py:416
+#: ../drivers/ft450d.py:422
 msgid ""
 "The FT-450D radio driver loads the 'Special Channels' tab\n"
 "with the PMS scanning range memories (group 11), 60meter\n"
@@ -3026,7 +3025,7 @@ msgstr ""
 "これらの特殊チャンネルは、フィールド編集が制限されています。\n"
 "このドライバは、チャンネルメモリプロパティウィンドウの「その他」タブにもデータを入力します。このタブには、標準のCHIRP表示カラムに該当しないチャンネルメモリ設定の値が含まれています。FT450サポートにより、GUIはデータモードを表すためにモード 'DIG' を使用し、USER-U、USER-L、RTTYを選択するための新しいカラム 'DATA MODE' を使用します。\n"
 
-#: ../drivers/boblov_x3plus.py:119
+#: ../drivers/boblov_x3plus.py:124
 msgid ""
 "The X3Plus driver is currently experimental.\n"
 "There are no known issues but you should proceed with caution.\n"
@@ -3067,8 +3066,8 @@ msgstr "この行の内容を削除"
 msgid "This driver has been tested with v3 of the ID-5100. If your radio is not fully updated please help by opening a bug report with a debug log so we can add support for the other revisions."
 msgstr "このドライバはID-5100のv3でテストされています。無線機が完全に更新されていない場合は、デバッグログを添えてバグレポートを開き、他のリビジョンのサポートを追加できるように協力してください。"
 
-#: ../drivers/radtel_rt490.py:1360 ../drivers/radtel_rt490.py:1362
-#: ../drivers/radtel_rt490.py:1364
+#: ../drivers/radtel_rt490.py:1356 ../drivers/radtel_rt490.py:1358
+#: ../drivers/radtel_rt490.py:1360
 msgid "This driver is in development and should be considered as experimental."
 msgstr "このドライバは開発中であり、実験的なものと見なされるべきです。"
 
@@ -3249,8 +3248,8 @@ msgstr "ビューがソートされている間はインポートできません
 msgid "Unable to open the clipboard"
 msgstr "クリップボードを開けません"
 
-#: ../sources/mapy73pl.py:50 ../sources/przemienniki_eu.py:46
-#: ../sources/przemienniki_net.py:48
+#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
+#: ../sources/mapy73pl.py:50
 msgid "Unable to query"
 msgstr "クエリできません"
 
