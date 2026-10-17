@@ -199,7 +199,7 @@ class TestCaseBruteForce(base.DriverTest):
             m1 = self.radio.get_memory(i)
             if m1.empty:
                 continue
-            errs, warns = chirp_common.split_validation_msgs(
+            warns, errs = chirp_common.split_validation_msgs(
                 self.radio.validate_memory(m1))
             self.assertEqual([], errs,
                              ('Radio has validation errors for memory %i '
