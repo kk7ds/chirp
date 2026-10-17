@@ -1,3 +1,8 @@
+# NOTE: This file is no longer maintained. It was used to record progress
+# during the transition from python2 to python3. It is no longer necessary
+# (or desirable) to update this file and it is kept for legacy reasons
+# only.
+#
 # Format is:
 # Driver_ID,Tester,Test Date
 # Tester is preferred as a github id, but obfuscated email or name is
