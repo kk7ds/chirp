@@ -565,6 +565,7 @@ def _do_download(radio):
         _read_block(radio, 0x0000, 0x40, True)
     elif radio.MODEL == "BJ-UV55":
         radio_version = _get_radio_firmware_version(radio)
+        has_dropped_byte = False
     else:
         radio_version, has_dropped_byte = \
             _get_radio_firmware_version(radio)
@@ -806,6 +807,8 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
     _aux_block = True
     _tri_power = False
     _bw_shift = False
+    # Set by the Range Override Parameter, which not all models have
+    _all_range_flag = False
     _mem_params = (0x1828  # poweron_msg offset
                    )
     # offset of fw version in image file
