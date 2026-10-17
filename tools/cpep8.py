@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 #  cpep8.py - Check Python source files for PEP8 compliance.
 #
