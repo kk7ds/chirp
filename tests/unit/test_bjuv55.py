@@ -70,6 +70,15 @@ class TestBJUV55Clone(unittest.TestCase):
     def _image(self):
         return IDENT + self.memory[:0x1800] + self.memory[0x1EC0:]
 
+    def test_download(self):
+        radio = bjuv55.BaojieBJUV55Radio(FakeBJUV55Serial(self.memory))
+        radio.status_fn = lambda status: None
+        radio.sync_in()
+        image = radio.get_mmap().get_packed()
+        self.assertEqual(self._image(), image)
+        self.assertTrue(
+            bjuv55.BaojieBJUV55Radio.match_model(image, 'test.img'))
+
     def test_upload(self):
         radio = bjuv55.BaojieBJUV55Radio(memmap.MemoryMapBytes(self._image()))
         radio.status_fn = lambda status: None
