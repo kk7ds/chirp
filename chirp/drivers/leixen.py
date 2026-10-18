@@ -417,7 +417,7 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         rf.valid_duplexes = ["", "-", "+", "split", "off"]
         rf.valid_skips = ["", "S"]
         rf.valid_tuning_steps = _STEP_LIST
-        rf.valid_bands = [(136000000, 174000000),
+        rf.valid_bands = [(136000000, 174000001),
                           (400000000, 480000000)]
         rf.valid_tones = TONES
         rf.valid_dtcs_codes = DTCS_CODES
