@@ -1625,7 +1625,11 @@ class KG935GRadio(chirp_common.CloneModeRadio,
 
         mem.freq = int(_mem.rxfreq) * 10
 
-        if _mem.txfreq == 0xFFFFFFFF:
+        tx_disabled = (
+            _mem.txfreq == 0xFFFFFFFF or
+            (self.MODEL in ("KG-XS20G", "KG-XS20G Plus", "KG-XS20H") and
+             int(_mem.txfreq) == 0))
+        if tx_disabled:
             # TX freq not set
             mem.duplex = "off"
             mem.offset = 0
