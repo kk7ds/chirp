@@ -546,7 +546,7 @@ class FT7100Radio(YaesuCloneModeRadio):
         # This radio supports 120 + 10 + 120 + 10 = 260 memories
         # These are zero based for chirpc
         rf.valid_bands = [
-            (108000000, 180000000),  # Supports 2-meters tx
+            (108000000, 180000001),  # Supports 2-meters tx
             (320000000, 999990000),  # Supports 70-centimeters tx
             ]
         rf.can_odd_split = True
@@ -1158,7 +1158,7 @@ class FT7100RadioVHF(FT7100Radio):
         rf = FT7100Radio.get_features(self)
         rf.memory_bounds = (1, upper_vhf_limit)
         # Normally this band supports 120 + 10 memories. 1 based for chirpw
-        rf.valid_bands = [(108000000, 180000000)]  # Supports 2-meters tx
+        rf.valid_bands = [(108000000, 180000001)]  # Supports 2-meters tx
         rf.valid_modes = MODES_VHF
         rf.valid_special_chans = ['VFO', 'Home']
         rf.has_sub_devices = False
@@ -1202,7 +1202,9 @@ class FT7100RadioUHF(FT7100Radio):
         rf.memory_bounds = (1, upper_uhf_limit)
         # Normally this band supports 120 + 10 memories. 1 based for chirpw
         rf.valid_bands = [(320000000, 999990000)]  # Supports 70-centimeters tx
-        rf.valid_modes = MODES_UHF
+        # The radio can retain AM on UHF memories, although it ignores it.
+        # Keep it readable/valid so existing images remain round-trippable.
+        rf.valid_modes = MODES_UHF + ["AM"]
         rf.valid_special_chans = ['VFO', 'Home']
         rf.has_sub_devices = False
         return rf
