@@ -687,8 +687,10 @@ class BTechMobileCommon(chirp_common.CloneModeRadio,
         POWER_LEVELS = self._power_levels
         rf.valid_power_levels = POWER_LEVELS
 
-        # normal dual bands
-        rf.valid_bands = [self._vhf_range, self._uhf_range]
+        # normal dual bands. The configured ranges use whole MHz boundaries,
+        # while supported channel centers can reach 50 kHz above the limit.
+        rf.valid_bands = [self._vhf_range,
+                          (self._uhf_range[0], self._uhf_range[1] + 50001)]
 
         # 220 band
         if self.BANDS == 3 or self.BANDS == 4:
