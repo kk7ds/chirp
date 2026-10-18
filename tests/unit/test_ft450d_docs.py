@@ -1,6 +1,7 @@
 import os
 
 from chirp.drivers import ft450d
+from tests.unit import base  # noqa
 
 
 def test_ft450_models_all_settings_have_docs():

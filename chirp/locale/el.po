@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-17 15:07+0200\n"
+"POT-Creation-Date: 2026-10-18 23:36+0000\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -82,13 +82,13 @@ msgstr "(καμία)"
 msgid "...and %i more"
 msgstr ""
 
-#: ../drivers/ft4.py:740
+#: ../drivers/ft4.py:754
 msgid ""
 "1. Connect programming cable to MIC jack.\n"
 "2. Press OK."
 msgstr ""
 
-#: ../drivers/alinco.py:605 ../drivers/alinco.py:614
+#: ../drivers/alinco.py:609 ../drivers/alinco.py:618
 msgid ""
 "1. Ensure your firmware version is 4_10 or higher\n"
 "2. Turn radio off\n"
@@ -570,7 +570,7 @@ msgid ""
 "6. Click OK to upload image to device.\n"
 msgstr ""
 
-#: ../drivers/tg_uv2p.py:237 ../drivers/uvb5.py:293 ../drivers/wouxun.py:222
+#: ../drivers/wouxun.py:222 ../drivers/uvb5.py:293 ../drivers/tg_uv2p.py:237
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -580,7 +580,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/tg_uv2p.py:245 ../drivers/uvb5.py:301 ../drivers/wouxun.py:230
+#: ../drivers/wouxun.py:230 ../drivers/uvb5.py:301 ../drivers/tg_uv2p.py:245
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -706,7 +706,7 @@ msgid ""
 "It will may not work if you turn on the radio with the cable already attached"
 msgstr ""
 
-#: ../wxui/main.py:2164
+#: ../wxui/main.py:2170
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "Μία νέα έκδοση του CHIRP είναι διαθέσιμη. Παρακαλούμε επισκεφθείτε την ιστοσελίδα το συντομότερο δυνατό για να την κατεβάσετε!"
 
@@ -742,6 +742,10 @@ msgstr "Όλα τα αρχεία"
 msgid "All supported formats"
 msgstr "Όλοι οι τύποι αρχείων"
 
+#: ../drivers/ft450d.py:1647
+msgid "Allows tuning away from a recalled memory or Home channel with the MAIN DIAL, as with a VFO. The stored channel does not change unless you write the new settings to it."
+msgstr ""
+
 #: ../wxui/clone.py:626
 msgid "Always start with recent list"
 msgstr ""
@@ -750,13 +754,33 @@ msgstr ""
 msgid "Amateur"
 msgstr "Ραδιοερασιτέχνη"
 
-#: ../wxui/bugreport.py:345 ../wxui/bugreport.py:480 ../wxui/common.py:849
+#: ../wxui/common.py:849 ../wxui/bugreport.py:345 ../wxui/bugreport.py:480
 msgid "An error has occurred"
 msgstr "Παρουσιάστηκε ένα σφάλμα"
 
 #: ../wxui/clone.py:145
 msgid "Applying settings"
 msgstr "Εφαρμογή ρυθμίσεων"
+
+#: ../drivers/ft450d.py:1849
+msgid "Assigns one of the radio's functions to the DWN key of the microphone. DOWN, its normal function, steps the frequency or memory channel down."
+msgstr ""
+
+#: ../drivers/ft450d.py:1857
+msgid "Assigns one of the radio's functions to the FST key of the microphone. FAST, its normal function, speeds up tuning like the front panel FAST button."
+msgstr ""
+
+#: ../drivers/ft450d.py:1865
+msgid "Assigns one of the radio's functions to the UP key of the microphone. UP, its normal function, steps the frequency or memory channel up."
+msgstr ""
+
+#: ../drivers/ft450d.py:1677
+msgid "Assigns one of the radio's functions to the front panel C.S/VOICE button, for example MONI to listen to your own transmission, SWR to transmit a 10 W carrier and measure the antenna SWR, or PLAY1 to send CW beacon message 1. Choices named after a front panel button act like that button."
+msgstr ""
+
+#: ../drivers/ft450d.py:1664
+msgid "Assigns the second function the DSP/SEL knob takes on after it is pressed briefly: adjusting the CW sidetone volume, the CW keyer speed, the microphone gain or the RF power, or tuning in 100 kHz or 1 MHz steps."
+msgstr ""
 
 #: ../wxui/main.py:1630
 msgid "Automatic from system"
@@ -766,7 +790,7 @@ msgstr ""
 msgid "Available modules"
 msgstr ""
 
-#: ../wxui/main.py:2088
+#: ../wxui/main.py:2094
 msgid "Bandplan"
 msgstr "Χάρτης συχνοτήτων"
 
@@ -812,6 +836,18 @@ msgstr "Δημιουργία Περιηγητή Πομποδεκτών"
 
 #: ../wxui/main.py:1659
 msgid "CHIRP must be restarted for the new selection to take effect"
+msgstr ""
+
+#: ../drivers/ft450d.py:1512
+msgid "CW beacon message 1, up to 40 characters, sent in CW mode by the PLAY1 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
+msgstr ""
+
+#: ../drivers/ft450d.py:1521
+msgid "CW beacon message 2, up to 40 characters, sent in CW mode by the PLAY2 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
+msgstr ""
+
+#: ../drivers/ft450d.py:1530
+msgid "CW beacon message 3, up to 40 characters, sent in CW mode by the PLAY3 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
 msgstr ""
 
 #: ../wxui/query_sources.py:178
@@ -877,6 +913,18 @@ msgstr "Επιλογή duplex"
 msgid "Choose the module to load from issue %i:"
 msgstr ""
 
+#: ../drivers/ft450d.py:1595
+msgid "Chooses what the SQL/RF GAIN knob controls. RF-Gain sets the gain of the receiver's RF and IF stages, Squelch mutes the receiver while no signal is present. Scanning needs Squelch, because the scanner stops on signals strong enough to open the squelch."
+msgstr ""
+
+#: ../drivers/ft450d.py:987
+msgid "Chooses whether the contour filter boosts (Peak) or cuts (Null) the part of the passband it is set to."
+msgstr ""
+
+#: ../drivers/ft450d.py:1618
+msgid "Chooses which knob sets the clarifier offset after CLAR is pressed: the MAIN DIAL or the DSP/SEL knob. The clarifier shifts the receive frequency without changing the transmit frequency."
+msgstr ""
+
 #: ../wxui/query_sources.py:563
 msgid "City"
 msgstr "Πόλη"
@@ -907,13 +955,13 @@ msgstr ""
 msgid "Cloning"
 msgstr "Αντιγραφή"
 
-#: ../drivers/ft817.py:343 ../drivers/ft450d.py:517 ../drivers/bj9900.py:133
-#: ../drivers/ft4.py:327
+#: ../drivers/ft450d.py:517 ../drivers/bj9900.py:133 ../drivers/ft4.py:327
+#: ../drivers/ft817.py:343
 msgid "Cloning from radio"
 msgstr "Λήψη από πομποδέκτη"
 
-#: ../drivers/ft817.py:381 ../drivers/ft450d.py:546 ../drivers/bj9900.py:165
-#: ../drivers/ft4.py:328
+#: ../drivers/ft450d.py:546 ../drivers/bj9900.py:165 ../drivers/ft4.py:328
+#: ../drivers/ft817.py:381
 msgid "Cloning to radio"
 msgstr "Αποστολή σε πομποδέκτη"
 
@@ -1024,7 +1072,7 @@ msgstr ""
 msgid "DV Memory"
 msgstr "Μνήμη DV"
 
-#: ../wxui/main.py:2001
+#: ../wxui/main.py:2003
 msgid "Danger Ahead"
 msgstr ""
 
@@ -1049,12 +1097,12 @@ msgstr "Πληροφορίες πομποδέκτη"
 msgid "Developer Mode"
 msgstr "Λειτουργία προγραμματιστή"
 
-#: ../wxui/main.py:2007
+#: ../wxui/main.py:2012
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
 
-#: ../wxui/developer.py:98 ../wxui/memedit.py:2343
+#: ../wxui/memedit.py:2343 ../wxui/developer.py:98
 msgid "Diff Raw Memories"
 msgstr ""
 
@@ -1072,7 +1120,7 @@ msgstr "Ψηφιακός Κωδικός"
 msgid "Digital Modes"
 msgstr "Ψηφιακός Κωδικός"
 
-#: ../wxui/main.py:2019
+#: ../wxui/main.py:2025
 #, fuzzy
 msgid "Disable reporting"
 msgstr "Αναφορές απενεργοποιημένες"
@@ -1089,6 +1137,10 @@ msgstr ""
 #: ../wxui/query_sources.py:682 ../wxui/query_sources.py:840
 msgid "Distance"
 msgstr "Απόσταση"
+
+#: ../drivers/ft450d.py:1313
+msgid "Divides the 500 regular memory channels into ten groups of 50, numbered M-01-01 to M-10-50. Channels are then selected and scanned one group at a time."
+msgstr ""
 
 #: ../wxui/clone.py:207
 #, python-format
@@ -1163,6 +1215,14 @@ msgstr "Ενεργοποίηση αυτόματης επεξεργασίας"
 
 #: ../wxui/memedit.py:596
 msgid "Enabled"
+msgstr ""
+
+#: ../drivers/ft450d.py:1284
+msgid "Enables the RTS line of the CAT jack. Turn it off when the computer or cable does not provide RTS. A radio that follows the frequency of another radio set to F-TRANS also needs it off."
+msgstr ""
+
+#: ../drivers/ft450d.py:1354
+msgid "Enables transmit and receive on the Alaska emergency channel, 5167.5 kHz, which then appears as MEM-EMG in Memory mode. It may only be used by stations in or within 92.6 km of Alaska, and only for emergency communications involving the immediate protection of life or property."
 msgstr ""
 
 #: ../wxui/memedit.py:404
@@ -1308,8 +1368,8 @@ msgstr ""
 msgid "Failed to load radio browser"
 msgstr "Αδυναμία φόρτωσης περιηγητή πομποδεκτών"
 
-#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
-#: ../sources/mapy73pl.py:61
+#: ../sources/mapy73pl.py:61 ../sources/przemienniki_net.py:59
+#: ../sources/przemienniki_eu.py:57
 #, fuzzy
 msgid "Failed to parse result"
 msgstr "Αδυναμία φόρτωσης περιηγητή πομποδεκτών"
@@ -1419,11 +1479,11 @@ msgid ""
 "    no right-side audio!\n"
 msgstr ""
 
-#: ../drivers/mursv1.py:341 ../drivers/btech.py:636 ../drivers/bf_t1.py:484
-#: ../drivers/uv5x3.py:421 ../drivers/tdxone_tdq8a.py:444
-#: ../drivers/uv6r.py:343 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/gmrsuv1.py:395
-#: ../drivers/gmrsv2.py:363
+#: ../drivers/mursv1.py:341 ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/tdxone_tdq8a.py:444
+#: ../drivers/uv6r.py:343 ../drivers/gmrsv2.py:363 ../drivers/uv5x3.py:421
+#: ../drivers/baofeng_wp970i.py:327 ../drivers/gmrsuv1.py:395
+#: ../drivers/btech.py:636
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1489,7 +1549,7 @@ msgid ""
 "6 - Cycle power on the radio to exit clone mode\n"
 msgstr ""
 
-#: ../drivers/btech.py:642 ../drivers/bf_t1.py:490
+#: ../drivers/bf_t1.py:490 ../drivers/btech.py:642
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1534,10 +1594,11 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/mursv1.py:347 ../drivers/lt725uv.py:492 ../drivers/uv5x3.py:427
-#: ../drivers/vgc.py:592 ../drivers/tdxone_tdq8a.py:450 ../drivers/uv6r.py:349
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/baofeng_uv17Pro.py:520
-#: ../drivers/gmrsuv1.py:401 ../drivers/gmrsv2.py:369
+#: ../drivers/mursv1.py:347 ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/tdxone_tdq8a.py:450 ../drivers/uv6r.py:349
+#: ../drivers/gmrsv2.py:369 ../drivers/uv5x3.py:427
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/lt725uv.py:492
+#: ../drivers/vgc.py:592 ../drivers/gmrsuv1.py:401
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1573,9 +1634,9 @@ msgstr ""
 msgid "Frequency granularity in kHz"
 msgstr ""
 
-#: ../drivers/retevis_ha1g.py:1439 ../drivers/ga510.py:1094
-#: ../drivers/mml_jc8810.py:1383 ../drivers/baofeng_uv17Pro.py:1297
-#: ../drivers/uv5r.py:2249 ../drivers/tdh8.py:2540
+#: ../drivers/uv5r.py:2249 ../drivers/ga510.py:1094
+#: ../drivers/baofeng_uv17Pro.py:1297 ../drivers/mml_jc8810.py:1383
+#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
 msgid "Frequency in this range must not be AM mode"
 msgstr ""
 
@@ -1583,10 +1644,10 @@ msgstr ""
 msgid "Frequency in this range not supported by firmware"
 msgstr ""
 
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/ga510.py:1087
-#: ../drivers/mml_jc8810.py:1380 ../drivers/baofeng_uv17Pro.py:1294
-#: ../drivers/uv5r.py:2245 ../drivers/radtel_rt900.py:1623
-#: ../drivers/tdh8.py:2537
+#: ../drivers/uv5r.py:2245 ../drivers/ga510.py:1087
+#: ../drivers/baofeng_uv17Pro.py:1294 ../drivers/radtel_rt900.py:1623
+#: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
+#: ../drivers/retevis_ha1g.py:1435
 msgid "Frequency in this range requires AM mode"
 msgstr ""
 
@@ -1616,7 +1677,7 @@ msgstr "Μετάβαση σε Μνήμη:"
 msgid "Goto..."
 msgstr "Μετάβαση σε"
 
-#: ../wxui/accessibility.py:310 ../wxui/common.py:584
+#: ../wxui/common.py:584 ../wxui/accessibility.py:310
 #, python-format
 msgid "Group: %s"
 msgstr ""
@@ -1637,6 +1698,10 @@ msgstr "Hex"
 #, fuzzy
 msgid "Hide empty memories"
 msgstr "Αντικατάσταση μνημών;"
+
+#: ../drivers/ft450d.py:1655
+msgid "Holds the peak S-meter reading for one second, which makes the meter easier to read."
+msgstr ""
 
 #: ../drivers/retevis_rt98.py:998
 msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
@@ -1681,6 +1746,16 @@ msgstr ""
 msgid "Include Cached"
 msgstr ""
 
+#: ../drivers/ft450d.py:1873
+#, python-format
+msgid "Includes %s in the modes the MODE buttons step through. Turn off the modes you never use to reach the others with fewer presses."
+msgstr ""
+
+#: ../drivers/ft450d.py:1916
+#, python-format
+msgid "Includes the %s band in the bands the BAND buttons step through. Turn off the bands you never use to reach the others with fewer presses."
+msgstr ""
+
 #: ../wxui/bankedit.py:62
 msgid "Index"
 msgstr ""
@@ -1706,6 +1781,10 @@ msgstr ""
 msgid "Interact with driver"
 msgstr "Αλληλεπίδραση με οδηγό"
 
+#: ../drivers/ft450d.py:959
+msgid "Intercept point optimization. Bypasses the receiver's RF preamplifier so that the incoming signal goes straight to the first mixer. This gives up some sensitivity in exchange for better handling of strong signals and high noise levels."
+msgstr ""
+
 #: ../wxui/clone.py:813
 #, fuzzy
 msgid "Internal driver error"
@@ -1720,8 +1799,8 @@ msgstr ""
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr ""
 
-#: ../wxui/memedit.py:2049 ../wxui/query_sources.py:70
-#: ../wxui/query_sources.py:124
+#: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
+#: ../wxui/memedit.py:2049
 #, fuzzy
 msgid "Invalid Entry"
 msgstr "Μη έγκυρη τιμή: %s"
@@ -1763,7 +1842,7 @@ msgstr ""
 msgid "LIVE"
 msgstr "LIVE"
 
-#: ../wxui/main.py:854 ../wxui/main.py:1644 ../drivers/radtel_rt490.py:1024
+#: ../drivers/radtel_rt490.py:1024 ../wxui/main.py:854 ../wxui/main.py:1644
 msgid "Language"
 msgstr ""
 
@@ -1776,6 +1855,14 @@ msgstr "Γεωγραφικό πλάτος"
 #, python-format
 msgid "Length must be %i"
 msgstr "Το μήκος πρέπει να είναι %i"
+
+#: ../drivers/ft450d.py:1483
+msgid "Lets the KEY jack send CW while the radio is in SSB mode, so you can answer a station in CW without changing mode. When off, the KEY jack only works in CW mode."
+msgstr ""
+
+#: ../drivers/ft450d.py:1542
+msgid "Lets the MAIN DIAL knob change the frequency in AM and FM modes. When off, the MAIN DIAL does not tune in these modes."
+msgstr ""
 
 #: ../wxui/query_sources.py:395 ../wxui/query_sources.py:634
 #: ../wxui/query_sources.py:787
@@ -1806,6 +1893,10 @@ msgstr ""
 msgid "Limit use"
 msgstr "Περιορισμός Μπαντών"
 
+#: ../drivers/ft450d.py:1274
+msgid "Limits how long a single transmission may last. When the time runs out the radio stops transmitting until PTT is released, which prevents overheating and stops a stuck PTT from blocking the channel for everyone else."
+msgstr ""
+
 #: ../wxui/main.py:1746
 #, fuzzy
 msgid "Live Radio"
@@ -1826,7 +1917,7 @@ msgstr "Φόρτωση Module"
 msgid "Load module from issue..."
 msgstr "Φόρτωση Module"
 
-#: ../wxui/main.py:2055
+#: ../wxui/main.py:2061
 msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
 msgstr ""
 
@@ -1840,6 +1931,10 @@ msgstr "Φόρτωση ρυθμίσεων"
 
 #: ../wxui/query_sources.py:110
 msgid "Locator"
+msgstr ""
+
+#: ../drivers/ft450d.py:1730
+msgid "Locks the controls selected by Lock Mode against accidental changes, as the LOCK button does."
 msgstr ""
 
 #: ../wxui/bugreport.py:343
@@ -1858,6 +1953,14 @@ msgstr ""
 #: ../wxui/query_sources.py:675 ../wxui/query_sources.py:827
 msgid "Longitude"
 msgstr "Γεωγραφικό μήκος"
+
+#: ../drivers/ft450d.py:1448
+msgid "Makes the CW sidetone volume follow the AF GAIN knob, offset by the CW sidetone linked volume. When off, the sidetone plays at the CW sidetone fixed volume whatever the AF GAIN setting."
+msgstr ""
+
+#: ../drivers/ft450d.py:1557
+msgid "Makes the beep volume follow the AF GAIN knob, offset by the Linked beep volume. When off, the beep plays at the Fixed beep volume whatever the AF GAIN setting."
+msgstr ""
 
 #: ../wxui/memedit.py:2061
 #, python-format
@@ -1899,8 +2002,8 @@ msgstr "Η μνήμη πρέπει να βρίσκεται σε ομάδα γι�
 msgid "Memory {num} not in bank {bank}"
 msgstr "Η μνήμη {num} δεν βρίσκεται στην ομάδα μνημών {bank}"
 
-#: ../wxui/memedit.py:675 ../wxui/query_sources.py:626
-#: ../wxui/query_sources.py:779
+#: ../wxui/query_sources.py:626 ../wxui/query_sources.py:779
+#: ../wxui/memedit.py:675
 #, fuzzy
 msgid "Mode"
 msgstr "Λειτουργία"
@@ -1922,7 +2025,7 @@ msgstr "Module"
 msgid "Module Loaded"
 msgstr "Module"
 
-#: ../wxui/main.py:2066
+#: ../wxui/main.py:2072
 msgid "Module loaded successfully"
 msgstr ""
 
@@ -1953,11 +2056,15 @@ msgstr ""
 msgid "Move operations are disabled while the view is sorted"
 msgstr ""
 
+#: ../drivers/ft450d.py:1003
+msgid "Moves the part of the passband the contour filter acts on, from -2 at the low end through Center to +2 at the high end."
+msgstr ""
+
 #: ../wxui/main.py:692
 msgid "New Window"
 msgstr ""
 
-#: ../wxui/main.py:2166
+#: ../wxui/main.py:2172
 msgid "New version available"
 msgstr "Διαθέσιμη νέα έκδοση"
 
@@ -1983,8 +2090,8 @@ msgstr ""
 msgid "No more space available; some memories were not applied"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
-#: ../sources/mapy73pl.py:57
+#: ../sources/mapy73pl.py:57 ../sources/przemienniki_net.py:55
+#: ../sources/przemienniki_eu.py:53
 #, fuzzy
 msgid "No results"
 msgstr "Κανένα αποτέλεσμα!"
@@ -1993,11 +2100,11 @@ msgstr "Κανένα αποτέλεσμα!"
 msgid "No results!"
 msgstr "Κανένα αποτέλεσμα!"
 
-#: ../wxui/main.py:2076
+#: ../wxui/main.py:2082
 msgid "No traces stored"
 msgstr ""
 
-#: ../wxui/memedit.py:1407 ../wxui/query_sources.py:45
+#: ../wxui/query_sources.py:45 ../wxui/memedit.py:1407
 msgid "Number"
 msgstr "Αριθμός"
 
@@ -2131,8 +2238,8 @@ msgid ""
 "are supported in this release.\n"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
-#: ../sources/mapy73pl.py:52
+#: ../sources/mapy73pl.py:52 ../sources/przemienniki_net.py:50
+#: ../sources/przemienniki_eu.py:48
 msgid "Parsing"
 msgstr ""
 
@@ -2172,7 +2279,11 @@ msgstr ""
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
 
-#: ../wxui/main.py:2170
+#: ../drivers/ft450d.py:1023
+msgid "Places the IF notch filter below the center of the passband, at the center or above it. The exact notch frequency is fine tuned on the radio with the DSP/SEL knob."
+msgstr ""
+
+#: ../wxui/main.py:2176
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Παρακαλούμε βεβαιωθείτε ότι έχετε κλείσει το CHIRP πριν εγκαταστήσετε την νέα έκδοση!"
 
@@ -2180,7 +2291,7 @@ msgstr "Παρακαλούμε βεβαιωθείτε ότι έχετε κλεί
 msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
 msgstr ""
 
-#: ../wxui/main.py:1995
+#: ../wxui/main.py:1997
 msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
 
@@ -2242,7 +2353,7 @@ msgstr "Ιδιότητες"
 msgid "QTH Locator"
 msgstr ""
 
-#: ../wxui/main.py:2104
+#: ../wxui/main.py:2110
 #, python-format
 msgid "Query %s"
 msgstr "Ερώτημα %s"
@@ -2264,8 +2375,8 @@ msgstr "Ερώτημα %s"
 msgid "Query syntax help"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
-#: ../sources/mapy73pl.py:36
+#: ../sources/mapy73pl.py:36 ../sources/przemienniki_net.py:36
+#: ../sources/przemienniki_eu.py:36
 #, fuzzy
 msgid "Querying"
 msgstr "Ερώτημα %s"
@@ -2294,8 +2405,8 @@ msgstr ""
 msgid "Radio Info: Image Metadata"
 msgstr ""
 
-#: ../drivers/ft817.py:410 ../drivers/ft450d.py:582 ../drivers/ft60.py:89
-#: ../drivers/ft60.py:91
+#: ../drivers/ft450d.py:582 ../drivers/ft60.py:89 ../drivers/ft60.py:91
+#: ../drivers/ft817.py:410
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "Ο πομποδέκτης δεν επιβεβαίωσε το μπλοκ %i"
@@ -2348,6 +2459,10 @@ msgstr ""
 
 #: ../wxui/memedit.py:1035
 msgid "Redo"
+msgstr ""
+
+#: ../drivers/ft450d.py:968
+msgid "Reduces all incoming signals by 20 dB, for use when extremely strong nearby stations or high noise levels degrade reception. Between 30 kHz and 1.7 MHz the radio always attenuates, whatever this setting."
 msgstr ""
 
 #: ../wxui/common.py:722
@@ -2404,11 +2519,11 @@ msgstr "Αναφορές ενεργοποιημένες"
 msgid "Reporting enabled"
 msgstr "Αναφορές ενεργοποιημένες"
 
-#: ../wxui/main.py:2015
+#: ../wxui/main.py:2021
 msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
 msgstr ""
 
-#: ../wxui/main.py:1661 ../wxui/main.py:2009
+#: ../wxui/main.py:1661 ../wxui/main.py:2014
 msgid "Restart Required"
 msgstr "Απαιτείται επανεκκίνηση"
 
@@ -2495,7 +2610,7 @@ msgstr ""
 msgid "Select Modes to Import"
 msgstr ""
 
-#: ../wxui/main.py:2087
+#: ../wxui/main.py:2093
 msgid "Select a bandplan"
 msgstr "Επιλογή χάρτη συνοτήτων"
 
@@ -2507,9 +2622,153 @@ msgstr ""
 msgid "Select prefixes"
 msgstr ""
 
+#: ../drivers/ft450d.py:1707
+msgid "Selects how quickly the automatic gain control lets the receiver recover after a strong signal. Fast suits CW and data, Slow suits SSB and AM, and Auto picks Slow for SSB and AM and Fast for the other modes. With AGC off the S-meter no longer moves and strong signals are likely to distort."
+msgstr ""
+
+#: ../drivers/ft450d.py:1819
+msgid "Selects one of ten DSP equalizer curves for your transmitted voice. 0 is flat, 1 to 3 reduce the low, middle or high frequencies, and 4 to 6 boost the high, middle or low frequencies. 7 boosts the lows and reduces the highs, 8 reduces the lows and boosts the middle, and 9 reduces the lows and boosts the highs."
+msgstr ""
+
+#: ../drivers/ft450d.py:1475
+msgid "Selects the characters the CW training feature sends: digits only, letters only, or both mixed. Training plays random five character Morse groups through the sidetone at the CW speed, without transmitting."
+msgstr ""
+
+#: ../drivers/ft450d.py:949
+msgid "Selects the data mode a DIG channel uses. RTTY is FSK radioteletype keyed by a terminal unit or RTTY software, while USER-L and USER-U carry audio based data modes such as packet on the lower or upper sideband. N/A is for channels that are not in DIG mode."
+msgstr ""
+
+#: ../drivers/ft450d.py:1793
+msgid "Selects the mark tone for RTTY: 2125 Hz for high tone operation or 1275 Hz for low tone operation."
+msgstr ""
+
+#: ../drivers/ft450d.py:1606
+msgid "Selects what the LOCK button locks. Frequencies locks the controls that change the frequency, including the microphone UP, DWN and FAST keys. Panel locks all front panel keys and knobs, and All locks both the front panel and the microphone keys. POWER and LOCK always remain usable."
+msgstr ""
+
+#: ../drivers/ft450d.py:1373
+msgid "Selects what the TUNE button controls. ATAS is the optional ATAS-100/-120 active-tuning antenna, EXT ATU the optional FC-40 external tuner, and INT ATU the built-in tuner acting on the transmit signal only, while INTRATU puts the built-in tuner in the receive path as well. F-TRANS instead sends this radio's frequency to a second radio of the same model whenever TUNE is pressed, for single operator two radio (SO2R) operation."
+msgstr ""
+
+#: ../drivers/ft450d.py:1738
+msgid "Selects what the meter shows while transmitting: PO the average power output, ALC the relative ALC voltage, or SWR the standing wave ratio of the antenna. While receiving it always shows the signal strength."
+msgstr ""
+
+#: ../drivers/ft450d.py:1055
+msgid "Selects which of the eleven noise reduction algorithms is used. Each one is designed for a different kind of noise, so try them in turn to find the one that best suppresses the noise currently heard. Off also turns DSP Noise Reduction off."
+msgstr ""
+
 #: ../wxui/query_sources.py:357
 msgid "Service"
 msgstr "Υπηρεσία"
+
+#: ../drivers/ft450d.py:1631
+msgid "Sets how far the frequency moves for each step of the MAIN DIAL knob: 1, 10 or 20 Hz in SSB and CW, 100 or 200 Hz in AM and FM."
+msgstr ""
+
+#: ../drivers/ft450d.py:1640
+msgid "Sets how long a button has to be held to activate its press and hold function. A shorter press activates the button's normal function."
+msgstr ""
+
+#: ../drivers/ft450d.py:1398
+msgid "Sets how long the transmitter stays on after you stop sending in semi break-in CW, in steps of 10 ms, so 25 means 250 ms. A longer delay suits operators who pause often while sending. The radio can also be set to FULL, full break-in, which lets you hear between the characters you send."
+msgstr ""
+
+#: ../drivers/ft450d.py:1750
+msgid "Sets how long the transmitter stays on after you stop speaking in VOX operation, in steps of 100 ms, so 5 means 500 ms. A longer delay keeps short pauses in your speech from switching the radio back to receive."
+msgstr ""
+
+#: ../drivers/ft450d.py:995
+msgid "Sets how strongly the contour filter boosts or cuts. Low gives a gentle effect, High a stronger one."
+msgstr ""
+
+#: ../drivers/ft450d.py:1467
+msgid "Sets the CW sidetone volume, from 0 to 100, used when CW sidetone volume Linked is off."
+msgstr ""
+
+#: ../drivers/ft450d.py:1768
+msgid "Sets the VOX sensitivity used in DIG mode, so that the audio from the data equipment switches the transmitter on without a PTT line. 0 turns VOX off in DIG mode."
+msgstr ""
+
+#: ../drivers/ft450d.py:1759
+msgid "Sets the VOX sensitivity. Too sensitive a setting keys the transmitter on the noise around the radio, too insensitive a setting fails to pick up your voice. 1 is the least sensitive setting and 100 the most."
+msgstr ""
+
+#: ../drivers/ft450d.py:1304
+msgid "Sets the baud rate of the CAT jack, which must match the computer control software. Data turns the CAT jack into an RTTY interface instead: RTTY software keys the FSK shift through the serial data input and uses RTS as PTT."
+msgstr ""
+
+#: ../drivers/ft450d.py:1565
+msgid "Sets the beep volume relative to the receive audio level set by AF GAIN, when Beep volume Linked is on. 0 makes the beep as loud as the received audio, negative values make it quieter and positive values louder."
+msgstr ""
+
+#: ../drivers/ft450d.py:1574
+msgid "Sets the beep volume, from 0 to 100, used when Beep volume Linked is off."
+msgstr ""
+
+#: ../drivers/ft450d.py:1587
+msgid "Sets the brightness of the display illumination, from 1 to 8."
+msgstr ""
+
+#: ../drivers/ft450d.py:1580
+msgid "Sets the contrast of the display, from 1 to 24. Changing it here has not been seen to have a visible effect on the radio."
+msgstr ""
+
+#: ../drivers/ft450d.py:1439
+msgid "Sets the delay between closing the key and the carrier being transmitted in QSK operation with the built-in keyer. At 25 ms keep the CW speed at 50 wpm or below, and at 30 ms at 42 wpm or below, or the radio cannot transmit."
+msgstr ""
+
+#: ../drivers/ft450d.py:1430
+msgid "Sets the dot to dash ratio of the built-in electronic keyer. At 1:3.0, the standard weighting, a dash lasts three times as long as a dot."
+msgstr ""
+
+#: ../drivers/ft450d.py:1785
+msgid "Sets the frequency shift between the mark and space tones in FSK RTTY. Most amateur RTTY uses 170 Hz."
+msgstr ""
+
+#: ../drivers/ft450d.py:1831
+msgid "Sets the microphone gain for SSB, AM and FM. Use Low with a microphone that has a high output, Normal with the supplied hand microphone and High with a microphone that has a low output. The speech processor is off at Low and on at the other settings."
+msgstr ""
+
+#: ../drivers/ft450d.py:1346
+msgid "Sets the offset Quick Split applies. Holding SPLIT/STEP for a second sets the transmit VFO to the receive frequency plus this offset, in the same mode as the receive VFO, and turns split operation on."
+msgstr ""
+
+#: ../drivers/ft450d.py:1502
+msgid "Sets the pause in seconds between repeats of a CW beacon message. 0 turns the repeat off, so that each message is sent once per button press, as with a CW message keyer."
+msgstr ""
+
+#: ../drivers/ft450d.py:1410
+msgid "Sets the pitch of the CW sidetone, which is also the offset of the transmitted carrier and the center of the CW receive filter. Tuning a station in until its tone matches the sidetone puts you on its frequency."
+msgstr ""
+
+#: ../drivers/ft450d.py:1551
+msgid "Sets the pitch of the beep the radio sounds to confirm button presses."
+msgstr ""
+
+#: ../drivers/ft450d.py:1418
+msgid "Sets the sending speed of the built-in electronic keyer in words per minute. The radio can also show it in characters per minute, five times the wpm value. With a CW QSK delay of 25 ms keep it at 50 wpm or below, and with 30 ms at 42 wpm or below, or the radio cannot transmit."
+msgstr ""
+
+#: ../drivers/ft450d.py:1457
+msgid "Sets the sidetone volume relative to the receive audio level set by AF GAIN, when CW sidetone volume Linked is on. 0 makes the sidetone as loud as the received audio, negative values make it quieter and positive values louder."
+msgstr ""
+
+#: ../drivers/ft450d.py:1294
+msgid "Sets the time-out timer for computer control commands arriving on the CAT jack. Command input that continues for longer than this time is cut off. The radio shows the shortest setting as 10 ms."
+msgstr ""
+
+#: ../drivers/ft450d.py:1386
+msgid "Sets the transmit power in watts. Use the lowest power that provides reliable communication, and a half to a third of full power for data transmissions longer than a few minutes."
+msgstr ""
+
+#: ../drivers/ft450d.py:1033
+msgid "Sets the width of the DSP IF filter. A narrower filter rejects interference close to the signal, a wider one sounds more natural when the band is quiet. The widths depend on the mode: 1.8, 2.4 or 3.0 kHz for SSB, 300 Hz, 500 Hz or 2.4 kHz for CW, 300 Hz, 2.4 or 3.0 kHz for DIG, 3.0, 6.0 or 9.0 kHz for AM, and 2.5 or 5.0 kHz for FM. A width the mode does not offer is replaced with the closest one it does."
+msgstr ""
+
+#: ../drivers/ft450d.py:1320
+msgid "Sets when the scan resumes after it has paused on a signal. 1 to 10 resumes after that many seconds, 0 selects BUSY, which waits until the signal has gone. In SSB, CW and SSB based data modes the scanner instead steps slowly across a signal, giving you time to stop it."
+msgstr ""
 
 #: ../wxui/main.py:216
 msgid "Settings"
@@ -2528,7 +2787,15 @@ msgstr ""
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr ""
 
-#: ../wxui/developer.py:101 ../wxui/memedit.py:2335
+#: ../drivers/ft450d.py:1330
+msgid "Shifts the frequency of the radio's CPU clock slightly. Only use it to move an internally generated spurious signal, or birdie, off a frequency you want to listen on."
+msgstr ""
+
+#: ../drivers/ft450d.py:1776
+msgid "Shifts the frequency shown on the display in the USER-L and USER-U data modes by this many hertz. The radio accepts -3000 to +3000 Hz."
+msgstr ""
+
+#: ../wxui/memedit.py:2335 ../wxui/developer.py:101
 msgid "Show Raw Memory"
 msgstr ""
 
@@ -2544,6 +2811,10 @@ msgstr ""
 #, fuzzy
 msgid "Show image backup location"
 msgstr "Εμφάνιση τοποθεσίας αρχείου καταγραφής αποσφαλμάτωσης"
+
+#: ../drivers/ft450d.py:1254
+msgid "Shows all 62 items of the radio's Menu Mode. When off, the menu on the radio offers only the 16 most often used items."
+msgstr ""
 
 #: ../wxui/memedit.py:697
 msgid "Skip"
@@ -2592,11 +2863,15 @@ msgstr ""
 msgid "Sort memories"
 msgstr "Αντικατάσταση μνημών;"
 
-#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
-#: ../sources/mapy73pl.py:64
+#: ../sources/mapy73pl.py:64 ../sources/przemienniki_net.py:62
+#: ../sources/przemienniki_eu.py:60
 #, fuzzy
 msgid "Sorting"
 msgstr "Εκτύπωση"
+
+#: ../drivers/ft450d.py:1724
+msgid "Speeds up tuning: the MAIN DIAL knob tunes ten times faster and the DSP/SEL knob twice as fast."
+msgstr ""
 
 #: ../wxui/query_sources.py:566
 msgid "State"
@@ -2606,12 +2881,24 @@ msgstr "Πολιτεία"
 msgid "State/Province"
 msgstr "Πολιτεία / Επαρχία"
 
-#: ../wxui/main.py:2067
+#: ../wxui/main.py:2073
 msgid "Success"
 msgstr ""
 
 #: ../wxui/bugreport.py:734
 msgid "Successfully sent bug report:"
+msgstr ""
+
+#: ../drivers/ft450d.py:1493
+msgid "Swaps the dot and dash sides of a keyer paddle without rewiring it, for example for a left-handed operator. Normal sends dots from the plug tip and dashes from the ring, Reverse the other way round."
+msgstr ""
+
+#: ../drivers/ft450d.py:1809
+msgid "Swaps the mark and space tones of your transmitted RTTY signal."
+msgstr ""
+
+#: ../drivers/ft450d.py:1801
+msgid "Swaps the mark and space tones when receiving RTTY. Try Reverse if a station with a good signal cannot be decoded."
 msgstr ""
 
 #: ../wxui/memedit.py:348
@@ -2622,7 +2909,7 @@ msgstr ""
 msgid "TX-RX DTCS polarity (normal or reversed)"
 msgstr ""
 
-#: ../drivers/ft4.py:734
+#: ../drivers/ft4.py:748
 msgid ""
 "Tested and mostly works, but may give you issues\n"
 "when using lesser common radio variants.\n"
@@ -2825,9 +3112,41 @@ msgstr ""
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
 msgstr ""
 
+#: ../drivers/ft450d.py:1364
+msgid "Transmits a short beep when PTT is released, before the radio returns to receive, to tell other stations that your transmission has ended."
+msgstr ""
+
 #: ../wxui/memedit.py:462 ../wxui/memedit.py:1464
 msgid "Tuning Step"
 msgstr "Βήμα συντονισμού"
+
+#: ../drivers/ft450d.py:1338
+msgid "Turns on split frequency operation: the radio receives on VFO-A and transmits on VFO-B, or the other way round. The two VFOs may use different modes and even different bands."
+msgstr ""
+
+#: ../drivers/ft450d.py:976
+msgid "Turns on the DSP contour filter, which gently cuts or boosts one part of the receive passband. Cutting suppresses interference or excessive components of a signal, boosting brings out the components that make it easier to understand."
+msgstr ""
+
+#: ../drivers/ft450d.py:1045
+msgid "Turns on the DSP digital noise reduction, which reduces random background noise on the HF and 50 MHz bands. It is especially effective on SSB."
+msgstr ""
+
+#: ../drivers/ft450d.py:1687
+msgid "Turns on the IF noise blanker, which reduces short pulses of noise such as those from vehicle ignition systems."
+msgstr ""
+
+#: ../drivers/ft450d.py:1010
+msgid "Turns on the IF notch filter, a narrow and deep filter that removes a single interfering carrier or whistle from inside the receive passband."
+msgstr ""
+
+#: ../drivers/ft450d.py:1717
+msgid "Turns on the built-in electronic CW keyer, for a keyer paddle plugged into the KEY jack. Turn it off to use a straight key or an external keyer."
+msgstr ""
+
+#: ../drivers/ft450d.py:1261
+msgid "Turns the radio off automatically once no button, knob or microphone key has been used and nothing has been transmitted for the selected number of hours. APO flashes on the display and a tone sounds in the last minute before the radio switches off. 0 disables automatic power off."
+msgstr ""
 
 #: ../wxui/memquery.py:188
 msgid "Type a simple search string or a formatted query and press enter"
@@ -2860,8 +3179,8 @@ msgstr "Αδυναμία ανοίγματος του πρόχειρου"
 msgid "Unable to open the clipboard"
 msgstr "Αδυναμία ανοίγματος του πρόχειρου"
 
-#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
-#: ../sources/mapy73pl.py:50
+#: ../sources/mapy73pl.py:50 ../sources/przemienniki_net.py:48
+#: ../sources/przemienniki_eu.py:46
 msgid "Unable to query"
 msgstr ""
 
@@ -2992,7 +3311,7 @@ msgstr "Εμφάνιση"
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/bugreport.py:235 ../wxui/main.py:1907 ../wxui/main.py:2059
+#: ../wxui/main.py:1907 ../wxui/main.py:2065 ../wxui/bugreport.py:235
 #: ../wxui/memedit.py:2055
 msgid "Warning"
 msgstr "Προειδοποίηση"
@@ -3005,6 +3324,10 @@ msgstr "Προειδοποίηση: %s"
 #: ../wxui/main.py:462
 msgid "Welcome"
 msgstr "Καλωσήρθατε"
+
+#: ../drivers/ft450d.py:1840
+msgid "When on, holding the microphone UP or DWN key for about a second starts a scan that continues after the key is released. When off, the radio only scans while the key is held down."
+msgstr ""
 
 #: ../wxui/query_sources.py:418
 msgid "With this option checked, a proximity search will include cached results from other localities if they are in range, match other filter parameters, and have been downloaded before."
@@ -3050,7 +3373,7 @@ msgstr ""
 msgid "checked"
 msgstr ""
 
-#: ../wxui/main.py:1992
+#: ../wxui/main.py:1994
 msgid "disabled"
 msgstr ""
 
@@ -3058,7 +3381,7 @@ msgstr ""
 msgid "empty"
 msgstr ""
 
-#: ../wxui/main.py:1992
+#: ../wxui/main.py:1994
 msgid "enabled"
 msgstr ""
 
