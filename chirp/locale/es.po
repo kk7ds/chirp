@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-26 18:24-0700\n"
+"POT-Creation-Date: 2026-10-26 23:50-0400\n"
 "PO-Revision-Date: 2026-08-01 23:39-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
@@ -1046,7 +1046,7 @@ msgstr ""
 " de vuelta la batería (\"ADMS\" aparecerá en la pantalla).\n"
 "5. <b>Después de cliquear Aceptar</b>, presiona la tecla [BAND].\n"
 
-#: ../drivers/uvk5.py:679
+#: ../drivers/uvk5.py:702
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1062,7 +1062,7 @@ msgstr ""
 "\n"
 "Esto podría no funcionar si enciendes la radio con el cable ya conectado\n"
 
-#: ../drivers/uvk5.py:686
+#: ../drivers/uvk5.py:709
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1134,7 +1134,7 @@ msgstr "Todos los archivos"
 msgid "All supported formats"
 msgstr "Todos los formatos soportados"
 
-#: ../drivers/ft450d.py:1647
+#: ../drivers/ft450d.py:1646
 msgid "Allows tuning away from a recalled memory or Home channel with the MAIN DIAL, as with a VFO. The stored channel does not change unless you write the new settings to it."
 msgstr ""
 
@@ -1162,23 +1162,23 @@ msgstr ""
 msgid "Applying settings"
 msgstr "Aplicando ajustes"
 
-#: ../drivers/ft450d.py:1849
+#: ../drivers/ft450d.py:1847
 msgid "Assigns one of the radio's functions to the DWN key of the microphone. DOWN, its normal function, steps the frequency or memory channel down."
 msgstr ""
 
-#: ../drivers/ft450d.py:1857
+#: ../drivers/ft450d.py:1855
 msgid "Assigns one of the radio's functions to the FST key of the microphone. FAST, its normal function, speeds up tuning like the front panel FAST button."
 msgstr ""
 
-#: ../drivers/ft450d.py:1865
+#: ../drivers/ft450d.py:1863
 msgid "Assigns one of the radio's functions to the UP key of the microphone. UP, its normal function, steps the frequency or memory channel up."
 msgstr ""
 
-#: ../drivers/ft450d.py:1677
+#: ../drivers/ft450d.py:1676
 msgid "Assigns one of the radio's functions to the front panel C.S/VOICE button, for example MONI to listen to your own transmission, SWR to transmit a 10 W carrier and measure the antenna SWR, or PLAY1 to send CW beacon message 1. Choices named after a front panel button act like that button."
 msgstr ""
 
-#: ../drivers/ft450d.py:1664
+#: ../drivers/ft450d.py:1663
 msgid "Assigns the second function the DSP/SEL knob takes on after it is pressed briefly: adjusting the CW sidetone volume, the CW keyer speed, the microphone gain or the RF power, or tuning in 100 kHz or 1 MHz steps."
 msgstr ""
 
@@ -1244,15 +1244,15 @@ msgstr "Construyendo navegador de radio"
 msgid "CHIRP must be restarted for the new selection to take effect"
 msgstr "CHIRP debe ser reiniciado para que la nueva selección tome efecto"
 
-#: ../drivers/ft450d.py:1512
+#: ../drivers/ft450d.py:1511
 msgid "CW beacon message 1, up to 40 characters, sent in CW mode by the PLAY1 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
 msgstr ""
 
-#: ../drivers/ft450d.py:1521
+#: ../drivers/ft450d.py:1520
 msgid "CW beacon message 2, up to 40 characters, sent in CW mode by the PLAY2 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
 msgstr ""
 
-#: ../drivers/ft450d.py:1530
+#: ../drivers/ft450d.py:1529
 msgid "CW beacon message 3, up to 40 characters, sent in CW mode by the PLAY3 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
 msgstr ""
 
@@ -1331,7 +1331,7 @@ msgstr ""
 msgid "Chooses what a short press of side key %i does."
 msgstr ""
 
-#: ../drivers/ft450d.py:1595
+#: ../drivers/ft450d.py:1594
 msgid "Chooses what the SQL/RF GAIN knob controls. RF-Gain sets the gain of the receiver's RF and IF stages, Squelch mutes the receiver while no signal is present. Scanning needs Squelch, because the scanner stops on signals strong enough to open the squelch."
 msgstr ""
 
@@ -1347,7 +1347,7 @@ msgstr ""
 msgid "Chooses whether the contour filter boosts (Peak) or cuts (Null) the part of the passband it is set to."
 msgstr ""
 
-#: ../drivers/ft450d.py:1618
+#: ../drivers/ft450d.py:1617
 msgid "Chooses which knob sets the clarifier offset after CLAR is pressed: the MAIN DIAL or the DSP/SEL knob. The clarifier shifts the receive frequency without changing the transmit frequency."
 msgstr ""
 
@@ -1518,7 +1518,7 @@ msgstr ""
 "Polaridad\n"
 "DTCS"
 
-#: ../drivers/uvk5.py:903
+#: ../drivers/uvk5.py:926
 msgid "DTMF decode"
 msgstr "Decodificación DTMF"
 
@@ -1592,7 +1592,7 @@ msgstr ""
 msgid "Distance"
 msgstr "Distancia"
 
-#: ../drivers/ft450d.py:1313
+#: ../drivers/ft450d.py:1312
 msgid "Divides the 500 regular memory channels into ten groups of 50, numbered M-01-01 to M-10-50. Channels are then selected and scanned one group at a time."
 msgstr ""
 
@@ -1629,7 +1629,7 @@ msgstr "Descargar instrucciones"
 msgid "Driver"
 msgstr "Controlador"
 
-#: ../drivers/uvk5_cn.py:703 ../drivers/uvk5.py:1320
+#: ../drivers/uvk5_cn.py:703 ../drivers/uvk5.py:1343
 msgid "Driver information"
 msgstr "Información del controlador"
 
@@ -1680,7 +1680,7 @@ msgstr ""
 msgid "Enables the RTS line of the CAT jack. Turn it off when the computer or cable does not provide RTS. A radio that follows the frequency of another radio set to F-TRANS also needs it off."
 msgstr ""
 
-#: ../drivers/ft450d.py:1354
+#: ../drivers/ft450d.py:1353
 msgid "Enables transmit and receive on the Alaska emergency channel, 5167.5 kHz, which then appears as MEM-EMG in Memory mode. It may only be used by stations in or within 92.6 km of Alaska, and only for emergency communications involving the immediate protection of life or property."
 msgstr ""
 
@@ -1798,7 +1798,7 @@ msgstr "Exportar a CSV..."
 msgid "Extra"
 msgstr "Extra"
 
-#: ../drivers/uvk5.py:1318
+#: ../drivers/uvk5.py:1341
 msgid "FM Radio"
 msgstr "Radio FM"
 
@@ -2255,7 +2255,7 @@ msgstr "Ocultar memorias vacías"
 msgid "Hold the * key on the radio to lock or unlock the keypad."
 msgstr ""
 
-#: ../drivers/ft450d.py:1655
+#: ../drivers/ft450d.py:1654
 msgid "Holds the peak S-meter reading for one second, which makes the meter easier to read."
 msgstr ""
 
@@ -2326,12 +2326,12 @@ msgstr ""
 msgid "Include Cached"
 msgstr "Incluir en caché"
 
-#: ../drivers/ft450d.py:1873
+#: ../drivers/ft450d.py:1871
 #, python-format
 msgid "Includes %s in the modes the MODE buttons step through. Turn off the modes you never use to reach the others with fewer presses."
 msgstr ""
 
-#: ../drivers/ft450d.py:1916
+#: ../drivers/ft450d.py:1914
 #, python-format
 msgid "Includes the %s band in the bands the BAND buttons step through. Turn off the bands you never use to reach the others with fewer presses."
 msgstr ""
@@ -2431,11 +2431,11 @@ msgstr "Latitud"
 msgid "Length must be %i"
 msgstr "Largo debe ser %i"
 
-#: ../drivers/ft450d.py:1483
+#: ../drivers/ft450d.py:1482
 msgid "Lets the KEY jack send CW while the radio is in SSB mode, so you can answer a station in CW without changing mode. When off, the KEY jack only works in CW mode."
 msgstr ""
 
-#: ../drivers/ft450d.py:1542
+#: ../drivers/ft450d.py:1541
 msgid "Lets the MAIN DIAL knob change the frequency in AM and FM modes. When off, the MAIN DIAL does not tune in these modes."
 msgstr ""
 
@@ -2505,7 +2505,7 @@ msgstr "Cargando ajustes"
 msgid "Locator"
 msgstr "Localizador"
 
-#: ../drivers/ft450d.py:1730
+#: ../drivers/ft450d.py:1729
 msgid "Locks the controls selected by Lock Mode against accidental changes, as the LOCK button does."
 msgstr ""
 
@@ -2513,11 +2513,11 @@ msgstr ""
 msgid "Login failed: Check your username and password"
 msgstr "Inicio de sesión fallido: Comprueba tu nombre de usuario y contraseña"
 
-#: ../drivers/uvk5.py:1822
+#: ../drivers/uvk5.py:1845
 msgid "Logo string 1 (12 characters)"
 msgstr "Cadena del logotipo 1 (12 caracteres)"
 
-#: ../drivers/uvk5.py:1829
+#: ../drivers/uvk5.py:1852
 msgid "Logo string 2 (12 characters)"
 msgstr "Cadena del logotipo 2 (12 caracteres)"
 
@@ -2526,11 +2526,11 @@ msgstr "Cadena del logotipo 2 (12 caracteres)"
 msgid "Longitude"
 msgstr "Longitud"
 
-#: ../drivers/ft450d.py:1448
+#: ../drivers/ft450d.py:1447
 msgid "Makes the CW sidetone volume follow the AF GAIN knob, offset by the CW sidetone linked volume. When off, the sidetone plays at the CW sidetone fixed volume whatever the AF GAIN setting."
 msgstr ""
 
-#: ../drivers/ft450d.py:1557
+#: ../drivers/ft450d.py:1556
 msgid "Makes the beep volume follow the AF GAIN knob, offset by the Linked beep volume. When off, the beep plays at the Fixed beep volume whatever the AF GAIN setting."
 msgstr ""
 
@@ -2543,7 +2543,7 @@ msgstr "Edición manual de la memoria %i"
 msgid "Memories"
 msgstr "Memorias"
 
-#: ../drivers/uvk5.py:2141
+#: ../drivers/uvk5.py:2164
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Las memorias son de sólo lectura debido a una versión de firmware no soportada"
 
@@ -3193,11 +3193,11 @@ msgstr "Ajustes guardados"
 msgid "Scan control (skip, include, priority, etc)"
 msgstr "Control de escáner (omitir, incluir, prioridad, etc)"
 
-#: ../drivers/uvk5.py:917
+#: ../drivers/uvk5.py:940
 msgid "Scanlists"
 msgstr "Listas de escaneo"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:913
+#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:936
 msgid "Scrambler"
 msgstr "Codificador"
 
@@ -3254,15 +3254,15 @@ msgstr ""
 msgid "Selects VFO B's transmitter power. Use the lowest power that provides reliable communication."
 msgstr ""
 
-#: ../drivers/ft450d.py:1707
+#: ../drivers/ft450d.py:1706
 msgid "Selects how quickly the automatic gain control lets the receiver recover after a strong signal. Fast suits CW and data, Slow suits SSB and AM, and Auto picks Slow for SSB and AM and Fast for the other modes. With AGC off the S-meter no longer moves and strong signals are likely to distort."
 msgstr ""
 
-#: ../drivers/ft450d.py:1819
+#: ../drivers/ft450d.py:1817
 msgid "Selects one of ten DSP equalizer curves for your transmitted voice. 0 is flat, 1 to 3 reduce the low, middle or high frequencies, and 4 to 6 boost the high, middle or low frequencies. 7 boosts the lows and reduces the highs, 8 reduces the lows and boosts the middle, and 9 reduces the lows and boosts the highs."
 msgstr ""
 
-#: ../drivers/ft450d.py:1475
+#: ../drivers/ft450d.py:1474
 msgid "Selects the characters the CW training feature sends: digits only, letters only, or both mixed. Training plays random five character Morse groups through the sidetone at the CW speed, without transmitting."
 msgstr ""
 
@@ -3274,7 +3274,7 @@ msgstr ""
 msgid "Selects the language of the menus and the spoken voice prompts."
 msgstr ""
 
-#: ../drivers/ft450d.py:1793
+#: ../drivers/ft450d.py:1791
 msgid "Selects the mark tone for RTTY: 2125 Hz for high tone operation or 1275 Hz for low tone operation."
 msgstr ""
 
@@ -3294,15 +3294,15 @@ msgstr ""
 msgid "Selects the tone-burst frequency sent for repeater access."
 msgstr ""
 
-#: ../drivers/ft450d.py:1606
+#: ../drivers/ft450d.py:1605
 msgid "Selects what the LOCK button locks. Frequencies locks the controls that change the frequency, including the microphone UP, DWN and FAST keys. Panel locks all front panel keys and knobs, and All locks both the front panel and the microphone keys. POWER and LOCK always remain usable."
 msgstr ""
 
-#: ../drivers/ft450d.py:1373
+#: ../drivers/ft450d.py:1372
 msgid "Selects what the TUNE button controls. ATAS is the optional ATAS-100/-120 active-tuning antenna, EXT ATU the optional FC-40 external tuner, and INT ATU the built-in tuner acting on the transmit signal only, while INTRATU puts the built-in tuner in the receive path as well. F-TRANS instead sends this radio's frequency to a second radio of the same model whenever TUNE is pressed, for single operator two radio (SO2R) operation."
 msgstr ""
 
-#: ../drivers/ft450d.py:1738
+#: ../drivers/ft450d.py:1737
 msgid "Selects what the meter shows while transmitting: PO the average power output, ALC the relative ALC voltage, or SWR the standing wave ratio of the antenna. While receiving it always shows the signal strength."
 msgstr ""
 
@@ -3361,11 +3361,11 @@ msgstr ""
 msgid "Sets how far VFO B moves for each tuning step and while scanning in Frequency mode. Choose the spacing used by the frequencies you intend to tune."
 msgstr ""
 
-#: ../drivers/ft450d.py:1631
+#: ../drivers/ft450d.py:1630
 msgid "Sets how far the frequency moves for each step of the MAIN DIAL knob: 1, 10 or 20 Hz in SSB and CW, 100 or 200 Hz in AM and FM."
 msgstr ""
 
-#: ../drivers/ft450d.py:1640
+#: ../drivers/ft450d.py:1639
 msgid "Sets how long a button has to be held to activate its press and hold function. A shorter press activates the button's normal function."
 msgstr ""
 
@@ -3381,11 +3381,11 @@ msgstr ""
 msgid "Sets how long the menu stays open without a key press before the radio leaves it."
 msgstr ""
 
-#: ../drivers/ft450d.py:1398
+#: ../drivers/ft450d.py:1397
 msgid "Sets how long the transmitter stays on after you stop sending in semi break-in CW, in steps of 10 ms, so 25 means 250 ms. A longer delay suits operators who pause often while sending. The radio can also be set to FULL, full break-in, which lets you hear between the characters you send."
 msgstr ""
 
-#: ../drivers/ft450d.py:1750
+#: ../drivers/ft450d.py:1749
 msgid "Sets how long the transmitter stays on after you stop speaking in VOX operation, in steps of 100 ms, so 5 means 500 ms. A longer delay keeps short pauses in your speech from switching the radio back to receive."
 msgstr ""
 
@@ -3401,11 +3401,11 @@ msgstr ""
 msgid "Sets how strongly the contour filter boosts or cuts. Low gives a gentle effect, High a stronger one."
 msgstr ""
 
-#: ../drivers/ft450d.py:1467
+#: ../drivers/ft450d.py:1466
 msgid "Sets the CW sidetone volume, from 0 to 100, used when CW sidetone volume Linked is off."
 msgstr ""
 
-#: ../drivers/ft450d.py:1768
+#: ../drivers/ft450d.py:1767
 msgid "Sets the VOX sensitivity used in DIG mode, so that the audio from the data equipment switches the transmitter on without a PTT line. 0 turns VOX off in DIG mode."
 msgstr ""
 
@@ -3413,23 +3413,23 @@ msgstr ""
 msgid "Sets the VOX sensitivity. Too sensitive a setting keys the transmitter on the noise around the radio, too insensitive a setting fails to pick up your voice."
 msgstr ""
 
-#: ../drivers/ft450d.py:1759
+#: ../drivers/ft450d.py:1758
 msgid "Sets the VOX sensitivity. Too sensitive a setting keys the transmitter on the noise around the radio, too insensitive a setting fails to pick up your voice. 1 is the least sensitive setting and 100 the most."
 msgstr ""
 
-#: ../drivers/ft450d.py:1304
+#: ../drivers/ft450d.py:1303
 msgid "Sets the baud rate of the CAT jack, which must match the computer control software. Data turns the CAT jack into an RTTY interface instead: RTTY software keys the FSK shift through the serial data input and uses RTS as PTT."
 msgstr ""
 
-#: ../drivers/ft450d.py:1565
+#: ../drivers/ft450d.py:1564
 msgid "Sets the beep volume relative to the receive audio level set by AF GAIN, when Beep volume Linked is on. 0 makes the beep as loud as the received audio, negative values make it quieter and positive values louder."
 msgstr ""
 
-#: ../drivers/ft450d.py:1574
+#: ../drivers/ft450d.py:1573
 msgid "Sets the beep volume, from 0 to 100, used when Beep volume Linked is off."
 msgstr ""
 
-#: ../drivers/ft450d.py:1587
+#: ../drivers/ft450d.py:1586
 msgid "Sets the brightness of the display illumination, from 1 to 8."
 msgstr ""
 
@@ -3438,7 +3438,7 @@ msgstr ""
 msgid "Sets the call name for DTMF code %i, up to 10 characters long."
 msgstr ""
 
-#: ../drivers/ft450d.py:1580
+#: ../drivers/ft450d.py:1579
 msgid "Sets the contrast of the display, from 1 to 24. Changing it here has not been seen to have a visible effect on the radio."
 msgstr ""
 
@@ -3450,7 +3450,7 @@ msgstr ""
 msgid "Sets the delay before repeater squelch-tail elimination is applied. Match this timing to the repeater; use 0 ms when the feature is not required."
 msgstr ""
 
-#: ../drivers/ft450d.py:1439
+#: ../drivers/ft450d.py:1438
 msgid "Sets the delay between closing the key and the carrier being transmitted in QSK operation with the built-in keyer. At 25 ms keep the CW speed at 50 wpm or below, and at 30 ms at 42 wpm or below, or the radio cannot transmit."
 msgstr ""
 
@@ -3462,31 +3462,31 @@ msgstr ""
 msgid "Sets the difference in MHz between VFO B's receive and transmit frequencies. The Shift setting determines whether this offset is added or subtracted."
 msgstr ""
 
-#: ../drivers/ft450d.py:1430
+#: ../drivers/ft450d.py:1429
 msgid "Sets the dot to dash ratio of the built-in electronic keyer. At 1:3.0, the standard weighting, a dash lasts three times as long as a dot."
 msgstr ""
 
-#: ../drivers/ft450d.py:1785
+#: ../drivers/ft450d.py:1783
 msgid "Sets the frequency shift between the mark and space tones in FSK RTTY. Most amateur RTTY uses 170 Hz."
 msgstr ""
 
-#: ../drivers/ft450d.py:1831
+#: ../drivers/ft450d.py:1829
 msgid "Sets the microphone gain for SSB, AM and FM. Use Low with a microphone that has a high output, Normal with the supplied hand microphone and High with a microphone that has a low output. The speech processor is off at Low and on at the other settings."
 msgstr ""
 
-#: ../drivers/ft450d.py:1346
+#: ../drivers/ft450d.py:1345
 msgid "Sets the offset Quick Split applies. Holding SPLIT/STEP for a second sets the transmit VFO to the receive frequency plus this offset, in the same mode as the receive VFO, and turns split operation on."
 msgstr ""
 
-#: ../drivers/ft450d.py:1502
+#: ../drivers/ft450d.py:1501
 msgid "Sets the pause in seconds between repeats of a CW beacon message. 0 turns the repeat off, so that each message is sent once per button press, as with a CW message keyer."
 msgstr ""
 
-#: ../drivers/ft450d.py:1410
+#: ../drivers/ft450d.py:1409
 msgid "Sets the pitch of the CW sidetone, which is also the offset of the transmitted carrier and the center of the CW receive filter. Tuning a station in until its tone matches the sidetone puts you on its frequency."
 msgstr ""
 
-#: ../drivers/ft450d.py:1551
+#: ../drivers/ft450d.py:1550
 msgid "Sets the pitch of the beep the radio sounds to confirm button presses."
 msgstr ""
 
@@ -3498,11 +3498,11 @@ msgstr ""
 msgid "Sets the receive frequency shown on display line B in Frequency (VFO) mode."
 msgstr ""
 
-#: ../drivers/ft450d.py:1418
+#: ../drivers/ft450d.py:1417
 msgid "Sets the sending speed of the built-in electronic keyer in words per minute. The radio can also show it in characters per minute, five times the wpm value. With a CW QSK delay of 25 ms keep it at 50 wpm or below, and with 30 ms at 42 wpm or below, or the radio cannot transmit."
 msgstr ""
 
-#: ../drivers/ft450d.py:1457
+#: ../drivers/ft450d.py:1456
 msgid "Sets the sidetone volume relative to the receive audio level set by AF GAIN, when CW sidetone volume Linked is on. 0 makes the sidetone as loud as the received audio, negative values make it quieter and positive values louder."
 msgstr ""
 
@@ -3511,10 +3511,10 @@ msgid "Sets the silent gap between transmitted DTMF tones. Increase this if the 
 msgstr ""
 
 #: ../drivers/ft450d.py:1294
-msgid "Sets the time-out timer for computer control commands arriving on the CAT jack. Command input that continues for longer than this time is cut off. The radio shows the shortest setting as 10 ms."
+msgid "Sets the time-out timer for computer control commands arriving on the CAT jack. Command input that continues for longer than this time is cut off."
 msgstr ""
 
-#: ../drivers/ft450d.py:1386
+#: ../drivers/ft450d.py:1385
 msgid "Sets the transmit power in watts. Use the lowest power that provides reliable communication, and a half to a third of full power for data transmissions longer than a few minutes."
 msgstr ""
 
@@ -3522,7 +3522,7 @@ msgstr ""
 msgid "Sets the width of the DSP IF filter. A narrower filter rejects interference close to the signal, a wider one sounds more natural when the band is quiet. The widths depend on the mode: 1.8, 2.4 or 3.0 kHz for SSB, 300 Hz, 500 Hz or 2.4 kHz for CW, 300 Hz, 2.4 or 3.0 kHz for DIG, 3.0, 6.0 or 9.0 kHz for AM, and 2.5 or 5.0 kHz for FM. A width the mode does not offer is replaced with the closest one it does."
 msgstr ""
 
-#: ../drivers/ft450d.py:1320
+#: ../drivers/ft450d.py:1319
 msgid "Sets when the scan resumes after it has paused on a signal. 1 to 10 resumes after that many seconds, 0 selects BUSY, which waits until the signal has gone. In SSB, CW and SSB based data modes the scanner instead steps slowly across a signal, giving you time to stop it."
 msgstr ""
 
@@ -3530,7 +3530,7 @@ msgstr ""
 msgid "Settings"
 msgstr "Ajustes"
 
-#: ../drivers/uvk5.py:2145
+#: ../drivers/uvk5.py:2168
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr "Los ajustes son de sólo lectura debido a una versión de firmware no soportada"
 
@@ -3543,12 +3543,12 @@ msgstr "Ajustes: %s"
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "Cantidad de desplazamiento (o frecuencia de transmisión) controlada por dúplex"
 
-#: ../drivers/ft450d.py:1330
+#: ../drivers/ft450d.py:1329
 msgid "Shifts the frequency of the radio's CPU clock slightly. Only use it to move an internally generated spurious signal, or birdie, off a frequency you want to listen on."
 msgstr ""
 
-#: ../drivers/ft450d.py:1776
-msgid "Shifts the frequency shown on the display in the USER-L and USER-U data modes by this many hertz. The radio accepts -3000 to +3000 Hz."
+#: ../drivers/ft450d.py:1775
+msgid "Shifts the frequency shown on the display in the USER-L and USER-U data modes by this many hertz."
 msgstr ""
 
 #: ../wxui/memedit.py:2335 ../wxui/developer.py:101
@@ -3626,7 +3626,7 @@ msgstr "Ordenando"
 msgid "Sounds a short confirmation tone as you operate the radio. Turn it off when the radio has to be used discreetly."
 msgstr ""
 
-#: ../drivers/ft450d.py:1724
+#: ../drivers/ft450d.py:1723
 msgid "Speeds up tuning: the MAIN DIAL knob tunes ten times faster and the DSP/SEL knob twice as fast."
 msgstr ""
 
@@ -3646,15 +3646,15 @@ msgstr "Éxito"
 msgid "Successfully sent bug report:"
 msgstr "Reporte de error enviado exitosamente:"
 
-#: ../drivers/ft450d.py:1493
+#: ../drivers/ft450d.py:1492
 msgid "Swaps the dot and dash sides of a keyer paddle without rewiring it, for example for a left-handed operator. Normal sends dots from the plug tip and dashes from the ring, Reverse the other way round."
 msgstr ""
 
-#: ../drivers/ft450d.py:1809
+#: ../drivers/ft450d.py:1807
 msgid "Swaps the mark and space tones of your transmitted RTTY signal."
 msgstr ""
 
-#: ../drivers/ft450d.py:1801
+#: ../drivers/ft450d.py:1799
 msgid "Swaps the mark and space tones when receiving RTTY. Try Reverse if a station with a good signal cannot be decoded."
 msgstr ""
 
@@ -3781,11 +3781,11 @@ msgstr ""
 msgid "This driver is in development and should be considered as experimental."
 msgstr "Este controlador está en desarrollo y debe ser considerado como experimental."
 
-#: ../drivers/uvk5.py:744
+#: ../drivers/uvk5.py:767
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr "A esta imagen le falta la información de firmware. Esta puede haber sido generada con una versión antigua o modificada de CHIRP. Se recomienda que descargues una imagen nueva de tu radio y utilizarla en adelante para la mejor seguridad y compatibilidad."
 
-#: ../drivers/uvk5.py:2149
+#: ../drivers/uvk5.py:2172
 msgid "This image is read-only due to being from a radio with unsupported firmware"
 msgstr "Esta imagen es de solo lectura debido a que proviene de una radio con firmware no soportado"
 
@@ -3816,7 +3816,7 @@ msgid ""
 "- Settings (keys, DTMF, MDC, scan lists, boot logo, satellite data, calibration) are not supported."
 msgstr ""
 
-#: ../drivers/uvk5.py:671
+#: ../drivers/uvk5.py:694
 msgid ""
 "This is an experimental driver for the Quansheng UV-K5. It may harm your radio, or worse. Use at your own risk.\n"
 "\n"
@@ -3872,7 +3872,7 @@ msgstr ""
 "puede tardar unos segundos, si no funciona, inténtelo de nuevo unas cuantas veces.\n"
 "Si puede ingresar, por favor comprueba la radio y el cable.\n"
 
-#: ../drivers/uvk5_cn.py:739 ../drivers/uvk5.py:1907
+#: ../drivers/uvk5_cn.py:739 ../drivers/uvk5.py:1930
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
 msgstr "Esto sólo debe habilitarse si utilizas un firmware modificado que soporte una cobertura de frecuencias más amplia. Habilitar esto hará que CHIRP no aplique las restricciones del OEM y puede conducir a un comportamiento indefinido o no regulado. ¡Úsalo bajo tu propio riesgo!"
 
@@ -3938,7 +3938,7 @@ msgstr "Modulación de transmisión/recepción (FM, AM, SSB, etc)"
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
 msgstr "Tono de transmisión/recepción para el modo TSQL, sino, tono de recepción"
 
-#: ../drivers/ft450d.py:1364
+#: ../drivers/ft450d.py:1363
 msgid "Transmits a short beep when PTT is released, before the radio returns to receive, to tell other stations that your transmission has ended."
 msgstr ""
 
@@ -3954,7 +3954,7 @@ msgstr "Paso de sintonización"
 msgid "Turns on Bluetooth so that the radio can be programmed wirelessly from a phone app."
 msgstr ""
 
-#: ../drivers/ft450d.py:1338
+#: ../drivers/ft450d.py:1337
 msgid "Turns on split frequency operation: the radio receives on VFO-A and transmits on VFO-B, or the other way round. The two VFOs may use different modes and even different bands."
 msgstr ""
 
@@ -3966,7 +3966,7 @@ msgstr ""
 msgid "Turns on the DSP digital noise reduction, which reduces random background noise on the HF and 50 MHz bands. It is especially effective on SSB."
 msgstr ""
 
-#: ../drivers/ft450d.py:1687
+#: ../drivers/ft450d.py:1686
 msgid "Turns on the IF noise blanker, which reduces short pulses of noise such as those from vehicle ignition systems."
 msgstr ""
 
@@ -3974,7 +3974,7 @@ msgstr ""
 msgid "Turns on the IF notch filter, a narrow and deep filter that removes a single interfering carrier or whistle from inside the receive passband."
 msgstr ""
 
-#: ../drivers/ft450d.py:1717
+#: ../drivers/ft450d.py:1716
 msgid "Turns on the built-in electronic CW keyer, for a keyer paddle plugged into the KEY jack. Turn it off to use a straight key or an external keyer."
 msgstr ""
 
@@ -4069,7 +4069,7 @@ msgstr "Actualizando error %s"
 msgid "Upload instructions"
 msgstr "Cargar instrucciones"
 
-#: ../drivers/uvk5.py:2137
+#: ../drivers/uvk5.py:2160
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "La carga está deshabilitada debido a una versión de firmware no soportada"
 
@@ -4176,7 +4176,7 @@ msgstr "Bienvenido"
 msgid "When it is off, the keypad can still be locked by hand."
 msgstr ""
 
-#: ../drivers/ft450d.py:1840
+#: ../drivers/ft450d.py:1838
 msgid "When on, holding the microphone UP or DWN key for about a second starts a scan that continues after the key is released. When off, the radio only scans while the key is held down."
 msgstr ""
 
