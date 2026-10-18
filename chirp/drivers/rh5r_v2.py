@@ -136,7 +136,7 @@ class TYTTHUVF8_V2(chirp_common.CloneModeRadio):
         rf.has_rx_dtcs = True
         rf.has_settings = False
         rf.can_odd_split = False
-        rf.valid_duplexes = ['', '-', '+']
+        rf.valid_duplexes = ['', '-', '+', 'off']
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
         rf.valid_characters = chirp_common.CHARSET_UPPER_NUMERIC + "-"
         rf.valid_bands = [(136000000, 174000000),
@@ -236,16 +236,20 @@ class TYTTHUVF8_V2(chirp_common.CloneModeRadio):
             return mem
 
         mem.freq = int(_mem.rx_freq) * 10
-        offset = (int(_mem.tx_freq) - int(_mem.rx_freq)) * 10
-        if not offset:
+        if int(_mem.tx_freq) == 0:
             mem.offset = 0
-            mem.duplex = ''
-        elif offset < 0:
-            mem.offset = abs(offset)
-            mem.duplex = '-'
+            mem.duplex = 'off'
         else:
-            mem.offset = offset
-            mem.duplex = '+'
+            offset = (int(_mem.tx_freq) - int(_mem.rx_freq)) * 10
+            if not offset:
+                mem.offset = 0
+                mem.duplex = ''
+            elif offset < 0:
+                mem.offset = abs(offset)
+                mem.duplex = '-'
+            else:
+                mem.offset = offset
+                mem.duplex = '+'
 
         txmode, txval, txpol = self._decode_tone(_mem.tx_tone)
         rxmode, rxval, rxpol = self._decode_tone(_mem.rx_tone)
@@ -270,13 +274,18 @@ class TYTTHUVF8_V2(chirp_common.CloneModeRadio):
         _mem.set_raw(b'\x00' * 16)
 
         _mem.rx_freq = mem.freq / 10
-        if mem.duplex == '-':
+        if mem.duplex == 'off':
+            tx_freq = 0
+        elif mem.duplex == '-':
             mult = -1
+            tx_freq = mem.freq + (mem.offset * mult)
         elif not mem.duplex:
             mult = 0
+            tx_freq = mem.freq + (mem.offset * mult)
         else:
             mult = 1
-        _mem.tx_freq = (mem.freq + (mem.offset * mult)) / 10
+            tx_freq = mem.freq + (mem.offset * mult)
+        _mem.tx_freq = tx_freq / 10
 
         (txmode, txval, txpol), (rxmode, rxval, rxpol) = \
             chirp_common.split_tone_encode(mem)
