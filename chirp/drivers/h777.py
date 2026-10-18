@@ -397,7 +397,15 @@ class H777Radio(chirp_common.CloneModeRadio):
         elif is_dtcs:
             return 'DTCS', int(memval), 'R' if is_rev else 'N'
         else:
-            return 'Tone', int(memval) / 10.0, None
+            tone = int(memval) / 10.0
+            valid_tones = self.get_features().valid_tones
+            if tone not in valid_tones:
+                closest = min(valid_tones, key=lambda value: abs(value - tone))
+                LOG.error(
+                    "Radio reports unsupported tone %.1f Hz; using %.1f Hz",
+                    tone, closest)
+                tone = closest
+            return 'Tone', tone, None
 
     def _encode_tone(self, memval, mode, value, pol):
         memval[1].ignore_bits(DTCS_FLAG | DTCS_REV_FLAG)
