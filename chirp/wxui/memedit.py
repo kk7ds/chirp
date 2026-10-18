@@ -1072,7 +1072,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         # After we do another thing, the items in the redo queue are no longer
         # valid
         self._redo_queue = []
-        self._update_menu()
+        wx.CallAfter(self._update_menu)
 
     def _undo(self, event):
         """Undo the latest change."""
