@@ -315,10 +315,14 @@ class DRx35Radio(AlincoStyleRadio):
         if not self._get_used(number) and self.MODEL != "JT220M":
             mem.empty = True
             return mem
-        elif self.MODEL == 'JT220M':
-            mem.immutable = ['empty']
 
         mem.freq = int(_mem.freq) * 100
+        if self.MODEL == "JT220M" and mem.freq == 0:
+            mem.empty = True
+            return mem
+        elif self.MODEL == "JT220M":
+            mem.immutable = ['empty']
+
         mem.rtone = self._valid_tones[_mem.rtone]
         mem.ctone = self._valid_tones[_mem.ctone]
         mem.duplex = DUPLEX[_mem.duplex]
