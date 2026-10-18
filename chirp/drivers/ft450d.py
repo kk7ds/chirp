@@ -45,7 +45,7 @@ def filters_for_mode(mode):
     if mode in ("USB", "LSB"):
         return "sb_width", ["1.8 kHz", "2.4 kHz", "3.0 kHz"]
     elif mode in ("CW", "CWR"):
-        return "cw_width", ["300 Hz", "500 kHz", "2.4 kHz"]
+        return "cw_width", ["300 Hz", "500 Hz", "2.4 kHz"]
     elif mode == "DIG":
         return "sb_width", ["300 Hz", "2.4 kHz", "3.0 kHz"]
     elif mode == "AM":
@@ -1287,14 +1287,13 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
                      "F-TRANS also needs it off."))
         tab.append(rs)
 
-        options = ["0", "100ms", "1000ms", "3000ms"]
+        options = ["10ms", "100ms", "1000ms", "3000ms"]
         rs = RadioSetting("cat_tot", "CAT Timeout",
                           RadioSettingValueList(options,
                                                 current_index=_settings.cat_tot))
         rs.set_doc(_("Sets the time-out timer for computer control commands "
                      "arriving on the CAT jack. Command input that continues "
-                     "for longer than this time is cut off. The radio shows "
-                     "the shortest setting as 10 ms."))
+                     "for longer than this time is cut off."))
         tab.append(rs)
 
         options = ["4800", "9600", "19200", "38400", "Data"]
@@ -1754,7 +1753,7 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         voxdat.append(rs)
 
         rs = RadioSetting("vox_gain", "VOX Gain",
-                          RadioSettingValueInteger(0, 100,
+                          RadioSettingValueInteger(1, 100,
                                                    _settings.vox_gain))
         rs.set_doc(_("Sets the VOX sensitivity. Too sensitive a setting keys "
                      "the transmitter on the noise around the radio, too "
@@ -1771,11 +1770,10 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         voxdat.append(rs)
 
         rs = RadioSetting("d_disp", "User-L/U freq offset (Hz)",
-                          RadioSettingValueInteger(-3000, 30000,
+                          RadioSettingValueInteger(-3000, 3000,
                                                    _settings.d_disp, 10))
         rs.set_doc(_("Shifts the frequency shown on the display in the USER-L "
-                     "and USER-U data modes by this many hertz. The radio "
-                     "accepts -3000 to +3000 Hz."))
+                     "and USER-U data modes by this many hertz."))
         voxdat.append(rs)
 
         options = ["170 Hz", "200 Hz", "425 Hz", "850 Hz"]
