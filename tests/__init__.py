@@ -17,6 +17,7 @@ from tests import test_copy_all
 from tests import test_detect
 from tests import test_edges
 from tests import test_features
+from tests import test_setting_docs
 from tests import test_settings
 
 LOG = logging.getLogger('testadapter')
@@ -96,7 +97,8 @@ def _load_tests(loader, tests, pattern, suite=None):
                          test_clone.TestCaseClone,
                          test_settings.TestCaseSettings,
                          test_features.TestCaseFeatures,
-                         test_copy_all.TestCaseCopyAll)
+                         test_copy_all.TestCaseCopyAll,
+                         test_setting_docs.TestCaseSettingDocs)
 
     # Load our list of dynamic XFAIL tests
     with open('tests/driver_xfails.yaml') as xflist:

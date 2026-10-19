@@ -1,0 +1,6 @@
+# Radios whose settings, including the per-memory ones in the first
+# non-empty memory, must all carry a description (set_doc()).
+# TestCaseSettingDocs skips every radio not listed here. Entries are
+# radio class IDs, as in driver_xfails.yaml; keep them sorted.
+- Baofeng_UV-5G_Mini
+- Baofeng_UV-5R_Mini
