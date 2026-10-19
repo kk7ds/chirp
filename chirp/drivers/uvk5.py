@@ -47,9 +47,13 @@ DEBUG_SHOW_OBFUSCATED_COMMANDS = False
 # might be useful for someone debugging some obscure memory issue
 DEBUG_SHOW_MEMORY_ACTIONS = False
 
-MEM_FORMAT = """
-#seekto 0x0000;
-struct {
+# Shared structure definitions.  These are parsed together with the layout in
+# MEM_FORMAT below, but they can also be parsed on their own by a driver that
+# only needs a subset of the map; bitwise supports named struct definitions
+# used later as types.  Keep every struct that a sibling driver shares here so
+# that the layouts cannot drift apart.
+MEM_DEFS = """
+struct memory {
   ul32 freq;
   ul32 offset;
   u8 rxcode;
@@ -88,16 +92,27 @@ struct {
 
   u8 step;
   u8 scrambler;
-} channel[214];
+};
 
-#seekto 0xd60;
-struct {
+struct channel_attributes {
 u8 is_scanlist1:1,
 is_scanlist2:1,
 compander:2,
 is_free:1,
 band:3;
-} channel_attributes[200];
+};
+
+struct channelname {
+char name[16];
+};
+"""
+
+MEM_FORMAT = MEM_DEFS + """
+#seekto 0x0000;
+struct memory channel[214];
+
+#seekto 0xd60;
+struct channel_attributes channel_attributes[200];
 
 #seekto 0xe40;
 ul16 fmfreq[20];
@@ -194,9 +209,7 @@ u8 enscramble;
 } lock;
 
 #seekto 0xf50;
-struct {
-char name[16];
-} channelname[200];
+struct channelname channelname[200];
 
 #seekto 0x1c00;
 struct {
@@ -903,12 +916,16 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         if number > 199:
             mem.immutable = ["name", "scanlists"]
         else:
-            _mem2 = self._memobj.channelname[number]
-            for char in _mem2.name:
-                if str(char) == "\xFF" or str(char) == "\x00":
+            # The name field is bytes, not text: read it raw so that a
+            # driver with a different encoding can decode it itself, and so
+            # that no str is ever assigned to the char array.
+            raw = self._memobj.channelname[number].get_raw()
+            end = len(raw)
+            for index, byte in enumerate(raw):
+                if byte in (0x00, 0xFF):
+                    end = index
                     break
-                mem.name += str(char)
-            mem.name = mem.name.rstrip()
+            mem.name = raw[:end].decode('latin-1').rstrip()
 
         # Convert your low-level frequency to Hertz
         mem.freq = int(_mem.freq)*10
@@ -1893,7 +1910,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             return mem
 
         # clean the channel memory, restore some bits if it was used before
-        if _mem.get_raw(asbytes=False)[0] == "\xff":
+        if _mem.get_raw()[0] == 0xff:
             # this was an empty memory
             _mem.set_raw(b"\x00" * 16)
         else:
@@ -1944,9 +1961,14 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
 
         # channels >200 are the 14 VFO chanells and don't have names
         if number < 200:
-            _mem2 = self._memobj.channelname[number]
-            tag = mem.name.ljust(10) + "\x00"*6
-            _mem2.name = tag  # Store the alpha tag
+            # Byte-native, so that no str is assigned to the char array and
+            # a subclass with a different name encoding can rewrite it after
+            # calling super().  This is byte for byte what the previous
+            # str-based version produced: latin-1 bytes, space padded to 10,
+            # then six NULs.
+            tag = mem.name.encode('latin-1')
+            tag = tag[:10].ljust(10, b' ') + b'\x00' * 6
+            self._memobj.channelname[number].set_raw(tag)
 
         # tone data
         self._set_tone(mem, _mem)
@@ -1986,18 +2008,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                     _mem.scrambler & 0xf0) | SCRAMBLER_LIST.index(svalue)
 
             if number < 200 and sname == "scanlists":
-                if svalue == "1":
-                    _mem4.channel_attributes[number].is_scanlist1 = 1
-                    _mem4.channel_attributes[number].is_scanlist2 = 0
-                elif svalue == "2":
-                    _mem4.channel_attributes[number].is_scanlist1 = 0
-                    _mem4.channel_attributes[number].is_scanlist2 = 1
-                elif svalue == "1+2":
-                    _mem4.channel_attributes[number].is_scanlist1 = 1
-                    _mem4.channel_attributes[number].is_scanlist2 = 1
-                else:
-                    _mem4.channel_attributes[number].is_scanlist1 = 0
-                    _mem4.channel_attributes[number].is_scanlist2 = 0
+                _attr = _mem4.channel_attributes[number]
+                _attr.is_scanlist1 = '1' in svalue
+                _attr.is_scanlist2 = '2' in svalue
 
         return mem
 
