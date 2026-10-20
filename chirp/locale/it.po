@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 19:13+0100\n"
+"POT-Creation-Date: 2026-10-25 23:39+0000\n"
 "PO-Revision-Date: 2026-10-25 19:13+0100\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
@@ -862,7 +862,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per caricare l'immagine sul dispositivo.\n"
 
-#: ../drivers/tg_uv2p.py:237 ../drivers/wouxun.py:222 ../drivers/uvb5.py:293
+#: ../drivers/wouxun.py:222 ../drivers/uvb5.py:293 ../drivers/tg_uv2p.py:237
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -878,7 +878,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per scaricare l'immagine dal dispositivo.\n"
 
-#: ../drivers/tg_uv2p.py:245 ../drivers/wouxun.py:230 ../drivers/uvb5.py:301
+#: ../drivers/wouxun.py:230 ../drivers/uvb5.py:301 ../drivers/tg_uv2p.py:245
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1371,12 +1371,12 @@ msgstr "Clonazione completata, controllo dei byte spuri"
 msgid "Cloning"
 msgstr "Clonazione"
 
-#: ../drivers/ft4.py:327 ../drivers/ft450d.py:517 ../drivers/bj9900.py:133
+#: ../drivers/ft450d.py:517 ../drivers/bj9900.py:133 ../drivers/ft4.py:327
 #: ../drivers/ft817.py:343
 msgid "Cloning from radio"
 msgstr "Clonazione dalla radio"
 
-#: ../drivers/ft4.py:328 ../drivers/ft450d.py:546 ../drivers/bj9900.py:165
+#: ../drivers/ft450d.py:546 ../drivers/bj9900.py:165 ../drivers/ft4.py:328
 #: ../drivers/ft817.py:381
 msgid "Cloning to radio"
 msgstr "Clonazione verso la radio"
@@ -1804,8 +1804,8 @@ msgstr "Impossibile esportare alcune memorie"
 msgid "Failed to load radio browser"
 msgstr "Impossibile caricare il browser della radio"
 
-#: ../sources/przemienniki_net.py:59 ../sources/przemienniki_eu.py:57
-#: ../sources/mapy73pl.py:61
+#: ../sources/mapy73pl.py:61 ../sources/przemienniki_net.py:59
+#: ../sources/przemienniki_eu.py:57
 msgid "Failed to parse result"
 msgstr "Impossibile elaborare il risultato"
 
@@ -1932,11 +1932,11 @@ msgstr ""
 "5 - Scollega il cavo dati dell'interfaccia! In caso contrario, non ci sarà\n"
 "    l'audio del lato destro!\n"
 
-#: ../drivers/bf_t1.py:484 ../drivers/mursv1.py:341
-#: ../drivers/baofeng_wp970i.py:327 ../drivers/baofeng_uv17Pro.py:514
-#: ../drivers/gmrsuv1.py:395 ../drivers/btech.py:636 ../drivers/uv6r.py:343
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv5x3.py:421
-#: ../drivers/gmrsv2.py:363
+#: ../drivers/mursv1.py:341 ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/tdxone_tdq8a.py:444
+#: ../drivers/uv6r.py:343 ../drivers/gmrsv2.py:363 ../drivers/uv5x3.py:421
+#: ../drivers/baofeng_wp970i.py:327 ../drivers/gmrsuv1.py:395
+#: ../drivers/btech.py:636
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2110,11 +2110,11 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Effettua il download dei dati dalla radio\n"
 
-#: ../drivers/mursv1.py:347 ../drivers/baofeng_wp970i.py:333
-#: ../drivers/baofeng_uv17Pro.py:520 ../drivers/gmrsuv1.py:401
-#: ../drivers/lt725uv.py:492 ../drivers/vgc.py:592 ../drivers/uv6r.py:349
-#: ../drivers/tdxone_tdq8a.py:450 ../drivers/uv5x3.py:427
-#: ../drivers/gmrsv2.py:369
+#: ../drivers/mursv1.py:347 ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/tdxone_tdq8a.py:450 ../drivers/uv6r.py:349
+#: ../drivers/gmrsv2.py:369 ../drivers/uv5x3.py:427
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/lt725uv.py:492
+#: ../drivers/vgc.py:592 ../drivers/gmrsuv1.py:401
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2160,9 +2160,9 @@ msgstr "La frequenza %s è al di fuori degli intervalli supportati %s"
 msgid "Frequency granularity in kHz"
 msgstr "Granularità della frequenza in kHz"
 
-#: ../drivers/tdh8.py:2540 ../drivers/baofeng_uv17Pro.py:1478
-#: ../drivers/retevis_ha1g.py:1439 ../drivers/mml_jc8810.py:1383
-#: ../drivers/ga510.py:1094 ../drivers/uv5r.py:2249
+#: ../drivers/uv5r.py:2249 ../drivers/ga510.py:1094
+#: ../drivers/baofeng_uv17Pro.py:1478 ../drivers/mml_jc8810.py:1383
+#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
 msgid "Frequency in this range must not be AM mode"
 msgstr "La frequenza in questo intervallo non deve essere in modalità AM"
 
@@ -2170,10 +2170,10 @@ msgstr "La frequenza in questo intervallo non deve essere in modalità AM"
 msgid "Frequency in this range not supported by firmware"
 msgstr "La frequenza in questo intervallo non è supportata dal firmware"
 
-#: ../drivers/tdh8.py:2537 ../drivers/baofeng_uv17Pro.py:1475
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/radtel_rt900.py:1623
-#: ../drivers/mml_jc8810.py:1380 ../drivers/ga510.py:1087
-#: ../drivers/uv5r.py:2245
+#: ../drivers/uv5r.py:2245 ../drivers/ga510.py:1087
+#: ../drivers/baofeng_uv17Pro.py:1475 ../drivers/radtel_rt900.py:1623
+#: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
+#: ../drivers/retevis_ha1g.py:1435
 msgid "Frequency in this range requires AM mode"
 msgstr "La frequenza in questo intervallo richiede la modalità AM"
 
@@ -2337,8 +2337,8 @@ msgstr "Errore interno del driver: tentativo di modifica di memoria bloccata; se
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Il valore %(value)s non è valido (usare i gradi decimali)"
 
-#: ../wxui/memedit.py:2049 ../wxui/query_sources.py:70
-#: ../wxui/query_sources.py:124
+#: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
+#: ../wxui/memedit.py:2049
 msgid "Invalid Entry"
 msgstr "Valore non valido"
 
@@ -2377,7 +2377,7 @@ msgstr "Numero:"
 msgid "LIVE"
 msgstr "In diretta live"
 
-#: ../wxui/main.py:854 ../wxui/main.py:1644 ../drivers/radtel_rt490.py:1024
+#: ../drivers/radtel_rt490.py:1024 ../wxui/main.py:854 ../wxui/main.py:1644
 msgid "Language"
 msgstr "Lingua"
 
@@ -2425,7 +2425,7 @@ msgstr "Limita i risultati a questa distanza (km) dalle coordinate"
 msgid "Limit use"
 msgstr "Limita uso"
 
-#: ../drivers/baofeng_uv17Pro.py:682 ../drivers/ft450d.py:1274
+#: ../drivers/ft450d.py:1274 ../drivers/baofeng_uv17Pro.py:682
 msgid "Limits how long a single transmission may last. When the time runs out the radio stops transmitting until PTT is released, which prevents overheating and stops a stuck PTT from blocking the channel for everyone else."
 msgstr "Limita la durata massima di una singola trasmissione. Allo scadere del tempo, la radio interrompe la trasmissione finché non viene rilasciato il PTT. In questo modo si evita il surriscaldamento e si impedisce che un PTT bloccato occupi il canale impedendo agli altri di comunicare."
 
@@ -2535,8 +2535,8 @@ msgstr "La memoria deve trovarsi in un banco per essere modificata"
 msgid "Memory {num} not in bank {bank}"
 msgstr "La memoria {num} non è presente nel banco {bank}"
 
-#: ../wxui/memedit.py:675 ../wxui/query_sources.py:626
-#: ../wxui/query_sources.py:779
+#: ../wxui/query_sources.py:626 ../wxui/query_sources.py:779
+#: ../wxui/memedit.py:675
 msgid "Mode"
 msgstr "Modo"
 
@@ -2620,8 +2620,8 @@ msgstr "Nessun modulo trovato nel sito %i"
 msgid "No more space available; some memories were not applied"
 msgstr "Non c'è più spazio disponibile; alcune memorie non sono state inserite"
 
-#: ../sources/przemienniki_net.py:55 ../sources/przemienniki_eu.py:53
-#: ../sources/mapy73pl.py:57
+#: ../sources/mapy73pl.py:57 ../sources/przemienniki_net.py:55
+#: ../sources/przemienniki_eu.py:53
 msgid "No results"
 msgstr "Nessun risultato"
 
@@ -2633,7 +2633,7 @@ msgstr "Nessun risultato!"
 msgid "No traces stored"
 msgstr "Nessuna traccia memorizzata"
 
-#: ../wxui/memedit.py:1407 ../wxui/query_sources.py:45
+#: ../wxui/query_sources.py:45 ../wxui/memedit.py:1407
 msgid "Number"
 msgstr "Numero"
 
@@ -2778,8 +2778,8 @@ msgstr ""
 "In questa versione, è supportato solo un sottoinsieme\n"
 "delle oltre 130 impostazioni radio disponibili.\n"
 
-#: ../sources/przemienniki_net.py:50 ../sources/przemienniki_eu.py:48
-#: ../sources/mapy73pl.py:52
+#: ../sources/mapy73pl.py:52 ../sources/przemienniki_net.py:50
+#: ../sources/przemienniki_eu.py:48
 msgid "Parsing"
 msgstr "Elaborazione"
 
@@ -2937,8 +2937,8 @@ msgstr "La sintassi della query è OK"
 msgid "Query syntax help"
 msgstr "Aiuto per la sintassi delle query"
 
-#: ../sources/przemienniki_net.py:36 ../sources/przemienniki_eu.py:36
-#: ../sources/mapy73pl.py:36
+#: ../sources/mapy73pl.py:36 ../sources/przemienniki_net.py:36
+#: ../sources/przemienniki_eu.py:36
 msgid "Querying"
 msgstr "Interrogazione"
 
@@ -2966,7 +2966,7 @@ msgstr "Informazioni sulla radio: Icom"
 msgid "Radio Info: Image Metadata"
 msgstr "Informazioni sulla radio: metadati dell'immagine"
 
-#: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:582
+#: ../drivers/ft450d.py:582 ../drivers/ft60.py:89 ../drivers/ft60.py:91
 #: ../drivers/ft817.py:410
 #, python-format
 msgid "Radio did not ack block %i"
@@ -3143,7 +3143,7 @@ msgstr "Controllo della scansione (salto, inclusione, priorità, ecc.)"
 msgid "Scanlists"
 msgstr "Elenco delle scansioni"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:855
+#: ../drivers/uvk5.py:855 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr "Scrambler"
 
@@ -3563,8 +3563,8 @@ msgstr "Ordina per colonna:"
 msgid "Sort memories"
 msgstr "Ordina memorie"
 
-#: ../sources/przemienniki_net.py:62 ../sources/przemienniki_eu.py:60
-#: ../sources/mapy73pl.py:64
+#: ../sources/mapy73pl.py:64 ../sources/przemienniki_net.py:62
+#: ../sources/przemienniki_eu.py:60
 msgid "Sorting"
 msgstr "Ordinamento"
 
@@ -3697,6 +3697,10 @@ msgstr "Questa memoria"
 msgid "This driver has been tested with v3 of the ID-5100. If your radio is not fully updated please help by opening a bug report with a debug log so we can add support for the other revisions."
 msgstr "Questo driver è stato testato con la versione 3 dell'ID-5100. Se la tua radio non è completamente aggiornata, ti chiediamo di aiutarci, aprendo una segnalazione di bug con un log di debug, in modo da poter aggiungere il supporto per le altre revisioni."
 
+#: ../drivers/tyt_uvl15w.py:575
+msgid "This driver is built from TYT's published protocol and memory layout and has not yet been tested widely. Save a copy of a fresh download from your radio before uploading. The radio restarts at the end of every download and upload."
+msgstr ""
+
 #: ../drivers/radtel_rt490.py:1356 ../drivers/radtel_rt490.py:1358
 #: ../drivers/radtel_rt490.py:1360
 msgid "This driver is in development and should be considered as experimental."
@@ -3824,6 +3828,10 @@ msgstr "Modalità squelch a tono"
 msgid "Transmit Power"
 msgstr "Potenza di trasmissione"
 
+#: ../drivers/tyt_uvl15w.py:967
+msgid "Transmit frequency is outside the radio's transmit bands and may be refused by the radio"
+msgstr ""
+
 #: ../wxui/memedit.py:160
 msgid "Transmit shift, split mode, or transmit inhibit"
 msgstr "Shift della trasmissione, modalità split o inibizione della trasmissione"
@@ -3922,8 +3930,8 @@ msgstr "Impossibile importare mentre la visualizzazione è ordinata"
 msgid "Unable to open the clipboard"
 msgstr "Impossibile aprire gli appunti"
 
-#: ../sources/przemienniki_net.py:48 ../sources/przemienniki_eu.py:46
-#: ../sources/mapy73pl.py:50
+#: ../sources/mapy73pl.py:50 ../sources/przemienniki_net.py:48
+#: ../sources/przemienniki_eu.py:46
 msgid "Unable to query"
 msgstr "Impossibile eseguire la ricerca"
 
@@ -4060,8 +4068,8 @@ msgstr "Trasmissione attivata dalla voce. La radio inizia a trasmettere quando s
 msgid "WARNING!"
 msgstr "ATTENZIONE!"
 
-#: ../wxui/bugreport.py:235 ../wxui/memedit.py:2055 ../wxui/main.py:1907
-#: ../wxui/main.py:2065
+#: ../wxui/main.py:1907 ../wxui/main.py:2065 ../wxui/bugreport.py:235
+#: ../wxui/memedit.py:2055
 msgid "Warning"
 msgstr "Attenzione"
 

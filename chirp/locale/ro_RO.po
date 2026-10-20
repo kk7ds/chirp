@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 13:10-0500\n"
+"POT-Creation-Date: 2026-10-25 23:39+0000\n"
 "PO-Revision-Date: 2025-02-27 08:00+0200\n"
 "Last-Translator: ThatSINEWAVE\n"
 "Language-Team: Romanian\n"
@@ -836,7 +836,7 @@ msgstr ""
 "5. Asigură-te că stația este setată pe un canal fără activitate.\n"
 "6. Apasă OK pentru a încărca imaginea în dispozitiv.\n"
 
-#: ../drivers/uvb5.py:293 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:237
+#: ../drivers/wouxun.py:222 ../drivers/uvb5.py:293 ../drivers/tg_uv2p.py:237
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -852,7 +852,7 @@ msgstr ""
 "5. Asigură-te că stația este setată pe un canal fără activitate.\n"
 "6. Apasă OK pentru a descărca imaginea din dispozitiv.\n"
 
-#: ../drivers/uvb5.py:301 ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:245
+#: ../drivers/wouxun.py:230 ../drivers/uvb5.py:301 ../drivers/tg_uv2p.py:245
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1088,7 +1088,7 @@ msgstr "Începe întotdeauna cu lista recentă"
 msgid "Amateur"
 msgstr "Amator"
 
-#: ../wxui/bugreport.py:345 ../wxui/bugreport.py:480 ../wxui/common.py:849
+#: ../wxui/common.py:849 ../wxui/bugreport.py:345 ../wxui/bugreport.py:480
 msgid "An error has occurred"
 msgstr "A apărut o eroare"
 
@@ -1329,12 +1329,12 @@ msgstr "Clonare finalizată, verificare pentru octeți spurii"
 msgid "Cloning"
 msgstr "Clonare"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:517 ../drivers/ft4.py:327
+#: ../drivers/ft450d.py:517 ../drivers/bj9900.py:133 ../drivers/ft4.py:327
 #: ../drivers/ft817.py:343
 msgid "Cloning from radio"
 msgstr "Clonare din stație"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:546 ../drivers/ft4.py:328
+#: ../drivers/ft450d.py:546 ../drivers/bj9900.py:165 ../drivers/ft4.py:328
 #: ../drivers/ft817.py:381
 msgid "Cloning to radio"
 msgstr "Clonare către stație"
@@ -1761,8 +1761,8 @@ msgstr ""
 msgid "Failed to load radio browser"
 msgstr "Nu s-a reușit încărcarea browserului radio"
 
-#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
-#: ../sources/mapy73pl.py:61
+#: ../sources/mapy73pl.py:61 ../sources/przemienniki_net.py:59
+#: ../sources/przemienniki_eu.py:57
 msgid "Failed to parse result"
 msgstr "Nu s-a reușit analizarea rezultatului"
 
@@ -1889,11 +1889,11 @@ msgstr ""
 "5 - Deconectează cablul de interfață! Altfel nu va exista\n"
 "    audio pe partea dreaptă!\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:636 ../drivers/gmrsuv1.py:395
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:343
-#: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
+#: ../drivers/mursv1.py:341 ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/tdxone_tdq8a.py:444
+#: ../drivers/uv6r.py:343 ../drivers/gmrsv2.py:363 ../drivers/uv5x3.py:421
+#: ../drivers/baofeng_wp970i.py:327 ../drivers/gmrsuv1.py:395
+#: ../drivers/btech.py:636
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1997,7 +1997,7 @@ msgstr ""
 "    audio pe partea dreaptă!\n"
 "6 - Oprește și pornește din nou stația pentru a ieși din modul de clonare\n"
 
-#: ../drivers/btech.py:642 ../drivers/bf_t1.py:490
+#: ../drivers/bf_t1.py:490 ../drivers/btech.py:642
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2039,7 +2039,7 @@ msgstr ""
 "3 - Pornește stația\n"
 "4 - Apasă OK pentru a începe\n"
 
-#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
+#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2067,11 +2067,11 @@ msgstr ""
 "3 - Pornește stația\n"
 "4 - Fă descărcarea datelor stației tale\n"
 
-#: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:401
-#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
-#: ../drivers/uv6r.py:349 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/mursv1.py:347 ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/tdxone_tdq8a.py:450 ../drivers/uv6r.py:349
+#: ../drivers/gmrsv2.py:369 ../drivers/uv5x3.py:427
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/lt725uv.py:492
+#: ../drivers/vgc.py:592 ../drivers/gmrsuv1.py:401
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2117,9 +2117,9 @@ msgstr ""
 msgid "Frequency granularity in kHz"
 msgstr "Granularitatea frecvenței în kHz"
 
-#: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
+#: ../drivers/uv5r.py:2249 ../drivers/ga510.py:1094
+#: ../drivers/baofeng_uv17Pro.py:1478 ../drivers/mml_jc8810.py:1383
 #: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
-#: ../drivers/uv5r.py:2249 ../drivers/baofeng_uv17Pro.py:1478
 msgid "Frequency in this range must not be AM mode"
 msgstr "Frecvența din acest interval nu trebuie să fie în modul AM"
 
@@ -2127,10 +2127,10 @@ msgstr "Frecvența din acest interval nu trebuie să fie în modul AM"
 msgid "Frequency in this range not supported by firmware"
 msgstr ""
 
-#: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
+#: ../drivers/uv5r.py:2245 ../drivers/ga510.py:1087
+#: ../drivers/baofeng_uv17Pro.py:1475 ../drivers/radtel_rt900.py:1623
 #: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:2245
-#: ../drivers/baofeng_uv17Pro.py:1475
+#: ../drivers/retevis_ha1g.py:1435
 msgid "Frequency in this range requires AM mode"
 msgstr "Frecvența din acest interval necesită modul AM"
 
@@ -2577,8 +2577,8 @@ msgstr "Nu au fost găsite module în problema %i"
 msgid "No more space available; some memories were not applied"
 msgstr "Nu mai este spațiu disponibil; unele memorii nu au fost aplicate"
 
-#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
-#: ../sources/mapy73pl.py:57
+#: ../sources/mapy73pl.py:57 ../sources/przemienniki_net.py:55
+#: ../sources/przemienniki_eu.py:53
 msgid "No results"
 msgstr "Niciun rezultat"
 
@@ -2735,8 +2735,8 @@ msgstr ""
 "Doar un subset din cele peste 130 de setări radio disponibile\n"
 "sunt suportate în această versiune.\n"
 
-#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
-#: ../sources/mapy73pl.py:52
+#: ../sources/mapy73pl.py:52 ../sources/przemienniki_net.py:50
+#: ../sources/przemienniki_eu.py:48
 msgid "Parsing"
 msgstr "Analizare"
 
@@ -2894,8 +2894,8 @@ msgstr "Sintaxă interogare OK"
 msgid "Query syntax help"
 msgstr "Ajutor sintaxă interogare"
 
-#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
-#: ../sources/mapy73pl.py:36
+#: ../sources/mapy73pl.py:36 ../sources/przemienniki_net.py:36
+#: ../sources/przemienniki_eu.py:36
 msgid "Querying"
 msgstr "Interogare"
 
@@ -2923,7 +2923,7 @@ msgstr ""
 msgid "Radio Info: Image Metadata"
 msgstr ""
 
-#: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:582
+#: ../drivers/ft450d.py:582 ../drivers/ft60.py:89 ../drivers/ft60.py:91
 #: ../drivers/ft817.py:410
 #, python-format
 msgid "Radio did not ack block %i"
@@ -3096,7 +3096,7 @@ msgstr "Control scanare (skip, include, prioritate, etc.)"
 msgid "Scanlists"
 msgstr "Liste de scanare"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:855
+#: ../drivers/uvk5.py:855 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr "Scrambler"
 
@@ -3516,8 +3516,8 @@ msgstr "Sortare după coloană:"
 msgid "Sort memories"
 msgstr "Diferențierea memoriilor brute"
 
-#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
-#: ../sources/mapy73pl.py:64
+#: ../sources/mapy73pl.py:64 ../sources/przemienniki_net.py:62
+#: ../sources/przemienniki_eu.py:60
 msgid "Sorting"
 msgstr "Sortare"
 
@@ -3650,6 +3650,10 @@ msgstr "Această memorie"
 msgid "This driver has been tested with v3 of the ID-5100. If your radio is not fully updated please help by opening a bug report with a debug log so we can add support for the other revisions."
 msgstr "Acest driver a fost testat cu versiunea 3 a ID-5100. Dacă stația ta nu este complet actualizată, te rugăm să ajuți prin deschiderea unui raport de bug cu un jurnal de depanare, astfel încât să putem adăuga suport pentru celelalte revizii."
 
+#: ../drivers/tyt_uvl15w.py:575
+msgid "This driver is built from TYT's published protocol and memory layout and has not yet been tested widely. Save a copy of a fresh download from your radio before uploading. The radio restarts at the end of every download and upload."
+msgstr ""
+
 #: ../drivers/radtel_rt490.py:1356 ../drivers/radtel_rt490.py:1358
 #: ../drivers/radtel_rt490.py:1360
 msgid "This driver is in development and should be considered as experimental."
@@ -3774,6 +3778,10 @@ msgstr "Modul de squelch cu ton"
 msgid "Transmit Power"
 msgstr "Putere de transmisie"
 
+#: ../drivers/tyt_uvl15w.py:967
+msgid "Transmit frequency is outside the radio's transmit bands and may be refused by the radio"
+msgstr ""
+
 #: ../wxui/memedit.py:160
 msgid "Transmit shift, split mode, or transmit inhibit"
 msgstr "Shift de transmisie, modul split sau inhibare transmisie"
@@ -3872,8 +3880,8 @@ msgstr "Nu se poate importa cât timp vizualizarea este sortată"
 msgid "Unable to open the clipboard"
 msgstr "Nu se poate deschide clipboard-ul"
 
-#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
-#: ../sources/mapy73pl.py:50
+#: ../sources/mapy73pl.py:50 ../sources/przemienniki_net.py:48
+#: ../sources/przemienniki_eu.py:46
 msgid "Unable to query"
 msgstr "Nu se poate interoga"
 
@@ -4010,8 +4018,8 @@ msgstr ""
 msgid "WARNING!"
 msgstr "ATENȚIE!"
 
-#: ../wxui/bugreport.py:235 ../wxui/memedit.py:2055 ../wxui/main.py:1907
-#: ../wxui/main.py:2065
+#: ../wxui/main.py:1907 ../wxui/main.py:2065 ../wxui/bugreport.py:235
+#: ../wxui/memedit.py:2055
 msgid "Warning"
 msgstr "Atenție"
 
