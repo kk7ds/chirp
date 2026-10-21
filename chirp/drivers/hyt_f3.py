@@ -18,10 +18,9 @@ import struct
 
 from chirp import bitwise, chirp_common, directory, errors, memmap, util
 from chirp import kenwood_tone
-from chirp.settings import RadioSetting, RadioSettingGroup, RadioSettings
-from chirp.settings import RadioSettingValueBoolean as OnOff
-from chirp.settings import RadioSettingValueInteger as Digits
-from chirp.settings import RadioSettingValueList as Choices
+from chirp.settings import MemSetting, RadioSettingGroup, RadioSettings
+from chirp.settings import RadioSettingValueBoolean, RadioSettingValueInteger
+from chirp.settings import RadioSettingValueList
 
 LOG = logging.getLogger("hyt_f3")
 
@@ -38,20 +37,29 @@ struct {
 } memory[16];
 #seekto 0x012F;
 struct {
-  u8 voice;
-  u8 tot;
-  u8 totalert;
+  u8 unused_voice:6,
+     voice:2;
+  u8 unused_tot:2,
+     tot:6;
+  u8 unused_totalert:4,
+     totalert:4;
   u8 gap0[2];
-  u8 squelch;
-  u8 save;
-  u8 beep;
+  u8 unused_squelch:4,
+     squelch:4;
+  u8 unused_save:7,
+     save:1;
+  u8 unused_beep:7,
+     beep:1;
   u8 gap1[2];
-  u8 vox;
-  u8 voxgain;
-  u8 voxdelay;
+  u8 unused_vox:7,
+     vox:1;
+  u8 unused_voxgain:3,
+     voxgain:5;
+  u8 unused_voxdelay:5,
+     voxdelay:3;
 } settings;
 #seekto 0x017E;
-u8 skipflags[2];
+lbit skipflags[16];
 """
 
 _ACK = b"\x06"
@@ -76,69 +84,57 @@ _CROSSES = ("Tone->Tone", "Tone->DTCS", "DTCS->Tone", "->Tone",
             "->DTCS", "DTCS->", "DTCS->DTCS")
 
 
-def _fit(raw, limit):
-    raw = int(raw)
-    return raw if 0 <= raw < limit else 0
-
-
-def _io(radio, payload, count):
+def _write_read(radio, payload, count):
     radio.pipe.write(payload)
     return radio.pipe.read(count)
 
 
-def _enter(radio):
-    pipe = radio.pipe
-    pipe.timeout = 1
-    try:
-        pipe.parity = "N"
-        pipe.flush()
-    except Exception:
-        pass
+def _enter_program_mode(radio):
     reply = b""
     for _n in range(5):
-        reply = _io(radio, b"PROGRAM", 1)
+        reply = _write_read(radio, b"PROGRAM", 1)
         if reply == _ACK:
             break
     if not reply:
         raise errors.RadioNoResponse()
     if reply != _ACK:
         raise errors.RadioError("HYT F3 ignored PROGRAM")
-    ident = _io(radio, b"\x02", 8)
+    ident = _write_read(radio, b"\x02", 8)
     if len(ident) != 8 or not ident.startswith(_IDENT):
         LOG.debug("ident %s", util.hexprint(ident))
         raise errors.RadioError(
             "HYT F3 ident %r lacks P32073" % (ident,))
-    if _io(radio, _ACK, 1) != _ACK:
+    if _write_read(radio, _ACK, 1) != _ACK:
         raise errors.RadioError("HYT F3 rejected the ident handshake")
     return ident
 
 
-def _leave(radio):
+def _exit_program_mode(radio):
     try:
         radio.pipe.write(b"E")
     except Exception:
         LOG.debug("HYT F3 stayed in programming mode")
 
 
-def _grab(radio, addr):
+def _read_block(radio, addr):
     frame = struct.pack(">cHb", b"R", addr, _PIECE)
-    pkt = _io(radio, frame, 4 + _PIECE)
-    good = pkt[:4] == b"W" + frame[1:] and _io(radio, _ACK, 1) == _ACK
+    pkt = _write_read(radio, frame, 4 + _PIECE)
+    good = pkt[:4] == b"W" + frame[1:] and _write_read(radio, _ACK, 1) == _ACK
     if not good or len(pkt) != 4 + _PIECE:
         LOG.debug("stall %04x %s", addr, util.hexprint(pkt))
         raise errors.RadioError("HYT F3 read stalled at %04x" % addr)
     return pkt[4:]
 
 
-def _store(radio, addr):
+def _write_block(radio, addr):
     chunk = radio.get_mmap()[addr:addr + _PIECE]
     frame = struct.pack(">cHb", b"W", addr, _PIECE) + chunk
-    if _io(radio, frame, 1) != _ACK:
+    if _write_read(radio, frame, 1) != _ACK:
         raise errors.RadioError("HYT F3 write stalled at %04x" % addr)
 
 
 def _download(radio):
-    _enter(radio)
+    _enter_program_mode(radio)
     try:
         blob = b""
         st = chirp_common.Status()
@@ -146,54 +142,44 @@ def _download(radio):
         st.max = _PULL_END
         addr = 0
         while addr < _PULL_END:
-            blob += _grab(radio, addr)
+            blob += _read_block(radio, addr)
             addr += _PIECE
             st.cur = addr
             radio.status_fn(st)
         return memmap.MemoryMapBytes(blob)
     finally:
-        _leave(radio)
+        _exit_program_mode(radio)
 
 
 def _upload(radio):
-    _enter(radio)
+    _enter_program_mode(radio)
     try:
         st = chirp_common.Status()
         st.msg = "Writing HYT F3"
         st.max = _PUSH_END
         addr = 0
         while addr < _PUSH_END:
-            _store(radio, addr)
+            _write_block(radio, addr)
             addr += _PIECE
             st.cur = addr
             radio.status_fn(st)
     finally:
-        _leave(radio)
+        _exit_program_mode(radio)
 
 
-def _pick(key, title, options, raw):
-    idx = _fit(raw, len(options))
-    return RadioSetting(key, title, Choices(options, current_index=idx))
-
-
-def _switch(key, title, raw):
-    return RadioSetting(key, title, OnOff(bool(raw)))
-
-
-class TK3207Alias(chirp_common.Alias):
-    VENDOR = "Kenwood"
-    MODEL = "TK-3207"
+def _list_setting(path, title, options, raw):
+    return MemSetting(
+        path, title,
+        RadioSettingValueList(options, current_index=int(raw)))
 
 
 @directory.register
 class HYTF3Radio(chirp_common.CloneModeRadio,
                  chirp_common.ExperimentalRadio):
-    """HYT F3, P32073 clone of the Kenwood TK-3207"""
+    """HYT F3"""
     VENDOR = "HYT"
     MODEL = "F3"
     BAUD_RATE = 9600
-    ALIASES = [TK3207Alias]
-    NEEDS_COMPAT_SERIAL = False
 
     @classmethod
     def get_prompts(cls):
@@ -259,11 +245,7 @@ class HYTF3Radio(chirp_common.CloneModeRadio,
     def get_raw_memory(self, number):
         return repr(self._memobj.memory[number - 1])
 
-    def _scan(self, number):
-        shift = (number - 1) % 8
-        return 1 << shift, self._memobj.skipflags[(number - 1) // 8]
-
-    def _pattern(self):
+    def _channel_template(self):
         for idx in range(16):
             raw = self._memobj.memory[idx].get_raw()
             if raw[:4] not in (_EMPTY4, b"\x00" * 4):
@@ -272,7 +254,6 @@ class HYTF3Radio(chirp_common.CloneModeRadio,
 
     def get_memory(self, number):
         slot = self._memobj.memory[number - 1]
-        bit, flags = self._scan(number)
         mem = chirp_common.Memory()
         mem.number = number
         rx = int(slot.rxfreq)
@@ -294,21 +275,20 @@ class HYTF3Radio(chirp_common.CloneModeRadio,
         mem.mode = "FM" if slot.wide else "NFM"
         _TONES.get_tone(slot, mem)
         mem.power = _WATTS[int(slot.highpower)]
-        mem.skip = "" if (flags & bit) else "S"
+        mem.skip = "" if int(self._memobj.skipflags[number - 1]) else "S"
         mem.extra = RadioSettingGroup("Extra", "extra")
-        mem.extra.append(_pick("bcl", "Busy Channel Lockout",
-                               _BCL, slot.bcl))
+        mem.extra.append(_list_setting(
+            "bcl", "Busy Channel Lockout", _BCL, slot.bcl))
         return mem
 
     def set_memory(self, mem):
         slot = self._memobj.memory[mem.number - 1]
-        bit, flags = self._scan(mem.number)
         if mem.empty:
             slot.set_raw(b"\xff" * 16)
-            flags &= ~bit
+            self._memobj.skipflags[mem.number - 1] = 0
             return
         if slot.rxfreq.get_raw() in (_EMPTY4, b"\x00" * 4):
-            slot.set_raw(self._pattern())
+            slot.set_raw(self._channel_template())
         slot.rxfreq = mem.freq // 10
         if mem.duplex == "off":
             slot.txfreq.set_raw(_EMPTY4)
@@ -326,48 +306,36 @@ class HYTF3Radio(chirp_common.CloneModeRadio,
             slot.highpower = _WATTS.index(mem.power)
         except ValueError:
             slot.highpower = 1
-        if mem.skip == "S":
-            flags &= ~bit
-        else:
-            flags |= bit
+        self._memobj.skipflags[mem.number - 1] = int(mem.skip != "S")
         for item in mem.extra:
-            setattr(slot, item.get_name(), int(item.value))
+            item.apply_to_memobj(slot)
 
     def get_settings(self):
         cfg = self._memobj.settings
         basic = RadioSettingGroup("basic", "Basic Settings")
-        rows = [
-            RadioSetting("squelch", "Squelch Level",
-                         Digits(0, 9, _fit(cfg.squelch, 10))),
-            _pick("tot", "Time-out timer", _TOT, cfg.tot),
-            _pick("totalert", "TOT Pre-alert", _PREALERT, cfg.totalert),
-            _pick("voice", "Voice Prompts", _SPEECH, cfg.voice),
-            _switch("beep", "Beep", cfg.beep),
-            _switch("save", "Battery Save", cfg.save),
-            _switch("vox", "VOX", cfg.vox),
-            _pick("voxgain", "VOX Gain", _VOX_GAIN, cfg.voxgain),
-            _pick("voxdelay", "VOX Delay", _VOX_HANG, cfg.voxdelay),
-        ]
-        for row in rows:
-            basic.append(row)
+        basic.append(MemSetting(
+            "settings.squelch", "Squelch Level",
+            RadioSettingValueInteger(0, 9, int(cfg.squelch))))
+        basic.append(_list_setting(
+            "settings.tot", "Time-out timer", _TOT, cfg.tot))
+        basic.append(_list_setting(
+            "settings.totalert", "TOT Pre-alert", _PREALERT, cfg.totalert))
+        basic.append(_list_setting(
+            "settings.voice", "Voice Prompts", _SPEECH, cfg.voice))
+        basic.append(MemSetting(
+            "settings.beep", "Beep",
+            RadioSettingValueBoolean(bool(cfg.beep))))
+        basic.append(MemSetting(
+            "settings.save", "Battery Save",
+            RadioSettingValueBoolean(bool(cfg.save))))
+        basic.append(MemSetting(
+            "settings.vox", "VOX",
+            RadioSettingValueBoolean(bool(cfg.vox))))
+        basic.append(_list_setting(
+            "settings.voxgain", "VOX Gain", _VOX_GAIN, cfg.voxgain))
+        basic.append(_list_setting(
+            "settings.voxdelay", "VOX Delay", _VOX_HANG, cfg.voxdelay))
         return RadioSettings(basic)
 
     def set_settings(self, settings):
-        for element in settings:
-            if not isinstance(element, RadioSetting):
-                self.set_settings(element)
-                continue
-            target = self._memobj.settings
-            name = element.get_name()
-            if "." in name:
-                parts = name.split(".")
-                for part in parts[:-1]:
-                    target = getattr(target, part)
-                name = parts[-1]
-            setattr(target, name, int(element.value))
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        if len(filedata) != _PULL_END:
-            return False
-        return filedata[0x01B8:0x01C0].startswith(_IDENT)
+        settings.apply_to(self._memobj)
