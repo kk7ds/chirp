@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 23:36+0000\n"
+"POT-Creation-Date: 2026-10-21 09:37+0000\n"
 "PO-Revision-Date: 2026-04-05 01:36-0500\n"
 "Last-Translator: Tony Gies <tgies@tgies.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -3353,6 +3353,10 @@ msgstr "この行の内容を削除"
 msgid "This driver has been tested with v3 of the ID-5100. If your radio is not fully updated please help by opening a bug report with a debug log so we can add support for the other revisions."
 msgstr "このドライバはID-5100のv3でテストされています。無線機が完全に更新されていない場合は、デバッグログを添えてバグレポートを開き、他のリビジョンのサポートを追加できるように協力してください。"
 
+#: ../drivers/tyt_uvl15w.py:575
+msgid "This driver is built from TYT's published protocol and memory layout and has not yet been tested widely. Save a copy of a fresh download from your radio before uploading. The radio restarts at the end of every download and upload."
+msgstr ""
+
 #: ../drivers/radtel_rt490.py:1356 ../drivers/radtel_rt490.py:1358
 #: ../drivers/radtel_rt490.py:1360
 msgid "This driver is in development and should be considered as experimental."
@@ -3480,6 +3484,10 @@ msgstr "トーンスケルチモード"
 #: ../wxui/memedit.py:164
 msgid "Transmit Power"
 msgstr "送信出力"
+
+#: ../drivers/tyt_uvl15w.py:967
+msgid "Transmit frequency is outside the radio's transmit bands and may be refused by the radio"
+msgstr ""
 
 #: ../wxui/memedit.py:160
 msgid "Transmit shift, split mode, or transmit inhibit"
