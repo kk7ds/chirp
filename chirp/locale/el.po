@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:06-0400\n"
+"POT-Creation-Date: 2026-10-23 22:41-0400\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -80,6 +80,10 @@ msgstr "(καμία)"
 #: ../wxui/memedit.py:2643
 #, python-format
 msgid "...and %i more"
+msgstr ""
+
+#: ../drivers/uvk5.py:1709
+msgid "0 turns the time-out timer off."
 msgstr ""
 
 #: ../drivers/ft4.py:754
@@ -722,6 +726,10 @@ msgstr "Σχετικά"
 msgid "About CHIRP"
 msgstr "Σχετικά με το CHIRP"
 
+#: ../drivers/uvk5.py:1980
+msgid "After PTT is released, keeps transmitting a tail tone for the selected time, so that a repeater that supports it can suppress the burst of noise at the end of the transmission. Off sends no tail tone."
+msgstr ""
+
 #: ../wxui/main.py:1979
 msgid "Agree"
 msgstr ""
@@ -741,6 +749,27 @@ msgstr "Όλα τα αρχεία"
 #: ../wxui/main.py:1373
 msgid "All supported formats"
 msgstr "Όλοι οι τύποι αρχείων"
+
+#: ../drivers/uvk5.py:1469
+msgid "Allows another radio to disable this radio by sending it the kill code over DTMF. The revive code enables it again."
+msgstr ""
+
+#: ../drivers/uvk5.py:1851
+msgid "Allows frequency (VFO) mode. When it is off, F+3 cannot switch the radio out of channel mode."
+msgstr ""
+
+#: ../drivers/uvk5.py:2075
+msgid "Allows receiving between 350 and 400 MHz."
+msgstr ""
+
+#: ../drivers/uvk5.py:2083
+msgid "Allows the voice scrambler that each memory selects with its Scrambler setting. When it is off, no channel is scrambled."
+msgstr ""
+
+#: ../drivers/uvk5.py:2022
+#, python-format
+msgid "Allows transmitting between %d and %d MHz while F-LOCK is Off."
+msgstr ""
 
 #: ../drivers/ft450d.py:1647
 msgid "Allows tuning away from a recalled memory or Home channel with the MAIN DIAL, as with a VFO. The stored channel does not change unless you write the new settings to it."
@@ -798,6 +827,10 @@ msgstr ""
 msgid "Automatically locks the keypad to prevent accidental changes."
 msgstr ""
 
+#: ../drivers/uvk5.py:1899
+msgid "Automatically locks the keypad to prevent accidental changes. Hold the # key to unlock the keypad."
+msgstr ""
+
 #: ../wxui/developer.py:665
 msgid "Available modules"
 msgstr ""
@@ -850,8 +883,16 @@ msgstr ""
 msgid "Building Radio Browser"
 msgstr "Δημιουργία Περιηγητή Πομποδεκτών"
 
+#: ../drivers/uvk5.py:1818
+msgid "CHAN_A or CHAN_B turns dual watch on and selects which channel transmits by default. Off turns it off."
+msgstr ""
+
 #: ../wxui/main.py:1659
 msgid "CHIRP must be restarted for the new selection to take effect"
+msgstr ""
+
+#: ../drivers/uvk5.py:2097
+msgid "CHIRP records it when it downloads from the radio, and does not upload to a radio whose firmware this driver does not support."
 msgstr ""
 
 #: ../drivers/ft450d.py:1512
@@ -943,12 +984,34 @@ msgstr ""
 msgid "Chooses what a short press of side key %i does."
 msgstr ""
 
+#: ../drivers/uvk5.py:1289
+#, python-format
+msgid "Chooses what side key %d does when it is held down."
+msgstr ""
+
+#: ../drivers/uvk5.py:1287
+#, python-format
+msgid "Chooses what side key %d does when it is pressed briefly."
+msgstr ""
+
 #: ../drivers/ft450d.py:1595
 msgid "Chooses what the SQL/RF GAIN knob controls. RF-Gain sets the gain of the receiver's RF and IF stages, Squelch mutes the receiver while no signal is present. Scanning needs Squelch, because the scanner stops on signals strong enough to open the squelch."
 msgstr ""
 
+#: ../drivers/uvk5.py:1915
+msgid "Chooses what the display shows while the radio starts: Full Screen fills the whole display, Welcome Info shows the two logo strings, and Voltage shows the battery voltage."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:858
 msgid "Chooses what the emergency alarm does. Local sounds the alarm on this radio only, Send Tone transmits a repeating alarm tone, and Send Code transmits the digits 119 followed by the ANI code."
+msgstr ""
+
+#: ../drivers/uvk5.py:1950
+msgid "Chooses what the emergency alarm does. SITE sounds the alarm on this radio only, and TONE also transmits it to other radios. A side key set to Alarm on/off starts the alarm, and any key stops it."
+msgstr ""
+
+#: ../drivers/uvk5.py:1383
+msgid "Chooses what the radio does when it decodes a DTMF call to its ID. Ring sounds a ring tone on this radio, Reply answers the caller automatically, Both does both, and NULL does neither."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:900
@@ -957,6 +1020,10 @@ msgstr ""
 
 #: ../drivers/ft450d.py:987
 msgid "Chooses whether the contour filter boosts (Peak) or cuts (Null) the part of the passband it is set to."
+msgstr ""
+
+#: ../drivers/uvk5.py:1769
+msgid "Chooses whether the display shows the frequency, the channel number or the name of each memory channel."
 msgstr ""
 
 #: ../drivers/ft450d.py:1618
@@ -1053,6 +1120,10 @@ msgid ""
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
 msgstr ""
 
+#: ../drivers/uvk5.py:1876
+msgid "Controls what scanning does after finding a signal. TO resumes after a preset time, CO resumes after the signal disappears, and SE stops scanning on the detected frequency or channel."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:848
 msgid "Controls what scanning does after finding a signal. Time resumes after a preset time, Carrier resumes after the signal disappears, and Search stops scanning on the detected frequency or channel."
 msgstr ""
@@ -1067,6 +1138,10 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1024
 msgid "Controls whether the radio's front-panel RESET menu is available. This does not reset the radio by itself."
+msgstr ""
+
+#: ../drivers/uvk5.py:847
+msgid "Controls whether this channel sends the DTMF up code when PTT is pressed, the down code when PTT is released, or both. Off sends neither."
 msgstr ""
 
 #: ../wxui/query_sources.py:407
@@ -1110,7 +1185,7 @@ msgstr "Χώρα"
 msgid "Cut %i memories"
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:800
+#: ../drivers/baofeng_uv17Pro.py:800 ../drivers/uvk5.py:1799
 msgid "Cuts standby power consumption by switching the receiver off and on in a repeating cycle once no signal has been received for a few seconds. It considerably extends battery life, at the cost of occasionally clipping the first moment of an incoming transmission."
 msgstr ""
 
@@ -1126,7 +1201,7 @@ msgstr ""
 "Πολικότητα\n"
 "DTCS"
 
-#: ../drivers/uvk5.py:845
+#: ../drivers/uvk5.py:854
 msgid "DTMF decode"
 msgstr ""
 
@@ -1243,7 +1318,7 @@ msgstr "Οδηγίες λήψης"
 msgid "Driver"
 msgstr "Επαναφόρτωση Οδηγού"
 
-#: ../drivers/uvk5.py:1263
+#: ../drivers/uvk5.py:1281
 msgid "Driver information"
 msgstr ""
 
@@ -1257,6 +1332,10 @@ msgstr ""
 
 #: ../wxui/memedit.py:559
 msgid "Duplex"
+msgstr ""
+
+#: ../drivers/uvk5.py:1805
+msgid "Each ratio compares the time the receiver is on with the time it is off, so 1:4 saves the most power."
 msgstr ""
 
 #: ../wxui/memedit.py:2373
@@ -1411,7 +1490,7 @@ msgstr "Εξαγωγή σε αρχείο μορφής .CSV"
 msgid "Extra"
 msgstr "Περισσότερα"
 
-#: ../drivers/uvk5.py:1261
+#: ../drivers/uvk5.py:1279
 msgid "FM Radio"
 msgstr ""
 
@@ -1914,6 +1993,10 @@ msgstr ""
 msgid "Invalid value: %r"
 msgstr "Μη έγκυρη τιμή: %r"
 
+#: ../drivers/uvk5.py:869
+msgid "Inverts the audio so only radios with scramble enabled on the same channel can understand it."
+msgstr ""
+
 #: ../wxui/developer.py:631
 #, python-format
 msgid "Issue %i is not in a valid state to load modules. It is highly recommended that you not attempt to manually load modules from this issue as it is likely to cause problems."
@@ -1921,6 +2004,15 @@ msgstr ""
 
 #: ../wxui/developer.py:686
 msgid "Issue number:"
+msgstr ""
+
+#: ../drivers/uvk5.py:2044
+msgid "It also needs 350EN to be on."
+msgstr ""
+
+#: ../drivers/uvk5.py:1290
+#, python-format
+msgid "Its factory setting is %s."
 msgstr ""
 
 #: ../wxui/main.py:353
@@ -1980,6 +2072,7 @@ msgid "Limit use"
 msgstr "Περιορισμός Μπαντών"
 
 #: ../drivers/ft450d.py:1274 ../drivers/baofeng_uv17Pro.py:682
+#: ../drivers/uvk5.py:1704
 msgid "Limits how long a single transmission may last. When the time runs out the radio stops transmitting until PTT is released, which prevents overheating and stops a stuck PTT from blocking the channel for everyone else."
 msgstr ""
 
@@ -2027,11 +2120,11 @@ msgstr ""
 msgid "Login failed: Check your username and password"
 msgstr ""
 
-#: ../drivers/uvk5.py:1765
+#: ../drivers/uvk5.py:1992
 msgid "Logo string 1 (12 characters)"
 msgstr ""
 
-#: ../drivers/uvk5.py:1772
+#: ../drivers/uvk5.py:2000
 msgid "Logo string 2 (12 characters)"
 msgstr ""
 
@@ -2040,12 +2133,24 @@ msgstr ""
 msgid "Longitude"
 msgstr "Γεωγραφικό μήκος"
 
+#: ../drivers/uvk5.py:2106
+msgid "Makes CHIRP accept frequencies outside the bands of the original firmware, from 18 to 1300 MHz. Turn it on only for a radio with modified firmware that covers them. CHIRP does not store this setting in the radio."
+msgstr ""
+
 #: ../drivers/ft450d.py:1448
 msgid "Makes the CW sidetone volume follow the AF GAIN knob, offset by the CW sidetone linked volume. When off, the sidetone plays at the CW sidetone fixed volume whatever the AF GAIN setting."
 msgstr ""
 
 #: ../drivers/ft450d.py:1557
 msgid "Makes the beep volume follow the AF GAIN knob, offset by the Linked beep volume. When off, the beep plays at the Fixed beep volume whatever the AF GAIN setting."
+msgstr ""
+
+#: ../drivers/uvk5.py:1717
+msgid "Makes the radio scan the 10 NOAA weather channels automatically while it is in NOAA weather mode, which F+5 enters and leaves. The display shows NS while it is on."
+msgstr ""
+
+#: ../drivers/uvk5.py:1783
+msgid "Makes the radio transmit on one channel and receive on the other. CHAN_A transmits on channel A and receives on channel B, and CHAN_B does the opposite. Off transmits and receives on the same channel."
 msgstr ""
 
 #: ../wxui/memedit.py:2061
@@ -2057,7 +2162,7 @@ msgstr ""
 msgid "Memories"
 msgstr "Μνήμες"
 
-#: ../drivers/uvk5.py:2088
+#: ../drivers/uvk5.py:2350
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -2113,6 +2218,10 @@ msgstr "Module"
 
 #: ../wxui/main.py:2072
 msgid "Module loaded successfully"
+msgstr ""
+
+#: ../drivers/uvk5.py:1291
+msgid "Monitor makes the radio ignore CTCSS and DCS so that you hear all activity on the channel, Flashlight on/off switches the light that the manual calls Jacklight, Power select switches the transmit power, Alarm on/off starts the emergency alarm, and Transmit 1750 Hz transmits a continuous 1750 Hz tone."
 msgstr ""
 
 #: ../wxui/common.py:865
@@ -2214,6 +2323,10 @@ msgstr ""
 msgid ""
 "Offset/\n"
 "TX Freq"
+msgstr ""
+
+#: ../drivers/uvk5.py:1880
+msgid "On this radio, TO resumes after 5 seconds."
 msgstr ""
 
 #: ../wxui/memquery.py:252
@@ -2377,12 +2490,16 @@ msgstr ""
 msgid "Pasted memory will overwrite memory %s"
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:697
+#: ../drivers/baofeng_uv17Pro.py:697 ../drivers/uvk5.py:1815
 msgid "Periodically checks both the A and B displayed frequencies. When either receives a signal, the radio stays on it until that signal disappears."
 msgstr ""
 
 #: ../drivers/ft450d.py:1023
 msgid "Places the IF notch filter below the center of the passband, at the center or above it. The exact notch frequency is fine tuned on the radio with the DSP/SEL knob."
+msgstr ""
+
+#: ../drivers/uvk5.py:1347
+msgid "Plays the DTMF tones through the speaker while the radio sends them, so that you hear what is being sent."
 msgstr ""
 
 #: ../wxui/main.py:2176
@@ -2425,7 +2542,7 @@ msgstr ""
 msgid "Press enter to set this in memory"
 msgstr "Πατήστε enter για καταχώρηση στη μνήμη"
 
-#: ../drivers/baofeng_uv17Pro.py:1568
+#: ../drivers/baofeng_uv17Pro.py:1568 ../drivers/uvk5.py:831
 msgid "Prevents transmitting on a channel that is already in use. Pressing PTT on a busy channel sounds an alert tone instead of keying the transmitter."
 msgstr ""
 
@@ -2504,6 +2621,10 @@ msgstr ""
 msgid "Querying"
 msgstr "Ερώτημα %s"
 
+#: ../drivers/uvk5.py:1968
+msgid "ROGER sends a beep, MDC sends an MDC data burst, and Off sends nothing."
+msgstr ""
+
 #: ../wxui/memedit.py:622
 msgid "RX DTCS"
 msgstr "DTCS Λήψης"
@@ -2555,6 +2676,10 @@ msgid ""
 "RadioReference.com is the world's largest\n"
 "radio communications data provider\n"
 "<small>Premium account required</small>"
+msgstr ""
+
+#: ../drivers/uvk5.py:2095
+msgid "Read-only firmware identification stored in the radio."
 msgstr ""
 
 #: ../wxui/memedit.py:156
@@ -2662,6 +2787,10 @@ msgstr[1] "Επαναφορά %i καρτελών"
 msgid "Restore tabs on start"
 msgstr "Επαναφορά %i καρτελών"
 
+#: ../drivers/uvk5.py:2032
+msgid "Restricts transmitting to the bands of a regional version of the radio. Off allows 136 to 174 MHz and 400 to 470 MHz, plus the bands that 200TX, 350TX and 500TX unlock. FCC allows 144 to 148 MHz and 420 to 450 MHz."
+msgstr ""
+
 #: ../wxui/query_sources.py:415
 msgid "Results from other areas"
 msgstr ""
@@ -2698,11 +2827,11 @@ msgstr "Ρυθμίσεις αποθηκεύθηκαν"
 msgid "Scan control (skip, include, priority, etc)"
 msgstr ""
 
-#: ../drivers/uvk5.py:859
+#: ../drivers/uvk5.py:875
 msgid "Scanlists"
 msgstr ""
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:855
+#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:867
 msgid "Scrambler"
 msgstr ""
 
@@ -2777,12 +2906,20 @@ msgstr ""
 msgid "Selects the data mode a DIG channel uses. RTTY is FSK radioteletype keyed by a terminal unit or RTTY software, while USER-L and USER-U carry audio based data modes such as packet on the lower or upper sideband. N/A is for channels that are not in DIG mode."
 msgstr ""
 
+#: ../drivers/uvk5.py:1927
+msgid "Selects the language for spoken radio-operation prompts, or disables those prompts."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:722
 msgid "Selects the language of the menus and the spoken voice prompts."
 msgstr ""
 
 #: ../drivers/ft450d.py:1793
 msgid "Selects the mark tone for RTTY: 2125 Hz for high tone operation or 1275 Hz for low tone operation."
+msgstr ""
+
+#: ../drivers/uvk5.py:1677
+msgid "Selects the memory channel that F+9 jumps to, so that an important channel can be reached with one key press."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:2686
@@ -2836,6 +2973,14 @@ msgstr ""
 msgid "Selects which of the eleven noise reduction algorithms is used. Each one is designed for a different kind of noise, so try them in turn to find the one that best suppresses the noise currently heard. Off also turns DSP Noise Reduction off."
 msgstr ""
 
+#: ../drivers/uvk5.py:877
+msgid "Selects which of the two scan lists include this channel. Channel scanning steps through the channels of the scan list chosen with Default scanlist."
+msgstr ""
+
+#: ../drivers/uvk5.py:1612
+msgid "Selects which scan list channel scanning steps through. Add a channel to a list with its Scanlists setting."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:1233
 msgid "Selects wide or narrow FM for VFO A. Use Narrow where required by the channel plan to reduce interference to adjacent channels."
 msgstr ""
@@ -2844,7 +2989,7 @@ msgstr ""
 msgid "Selects wide or narrow FM for VFO B. Use Narrow where required by the channel plan to reduce interference to adjacent channels."
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:769
+#: ../drivers/baofeng_uv17Pro.py:769 ../drivers/uvk5.py:1966
 msgid "Sends a short tone at the end of each transmission so other stations can hear that you released PTT."
 msgstr ""
 
@@ -2876,12 +3021,20 @@ msgstr ""
 msgid "Sets how long a button has to be held to activate its press and hold function. A shorter press activates the button's normal function."
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:620
+#: ../drivers/baofeng_uv17Pro.py:620 ../drivers/uvk5.py:1444
 msgid "Sets how long each DTMF tone is transmitted. Increase this if the receiving system does not reliably decode the digits."
+msgstr ""
+
+#: ../drivers/uvk5.py:1432
+msgid "Sets how long the * and # DTMF tones are transmitted."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:654
 msgid "Sets how long the DTMF decoder remains active after a valid code before returning to its normal state."
+msgstr ""
+
+#: ../drivers/uvk5.py:1421
+msgid "Sets how long the first DTMF tone of each code is transmitted."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:882
@@ -2896,11 +3049,23 @@ msgstr ""
 msgid "Sets how long the transmitter stays on after you stop speaking in VOX operation, in steps of 100 ms, so 5 means 500 ms. A longer delay keeps short pauses in your speech from switching the radio back to receive."
 msgstr ""
 
+#: ../drivers/uvk5.py:1408
+msgid "Sets how many milliseconds the radio transmits before it sends the first DTMF tone, so that the receiving radio has time to unmute. The radio's menu offers 30 to 990 ms."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:741
 msgid "Sets how many seconds the display backlight remains on after a key press or radio activity."
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:666
+#: ../drivers/uvk5.py:1832
+msgid "Sets how many seconds the display backlight stays on before it turns off by itself. Off keeps the backlight turned off."
+msgstr ""
+
+#: ../drivers/uvk5.py:1395
+msgid "Sets how many seconds the radio lets you talk with the caller after it decodes a DTMF call to its ID. After that time, a new DTMF call is needed. The factory setting is 5 seconds."
+msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:666 ../drivers/uvk5.py:1688
 msgid "Sets how strong a received signal must be before the speaker unmutes. 0 leaves the squelch open so you hear noise all the time, higher values reject more weak signals and noise. Raise this value if the speaker keeps unmuting on interference, lower it if distant stations are being cut off."
 msgstr ""
 
@@ -2908,15 +3073,50 @@ msgstr ""
 msgid "Sets how strongly the contour filter boosts or cuts. Low gives a gentle effect, High a stronger one."
 msgstr ""
 
+#: ../drivers/uvk5.py:1989
+#, python-format
+msgid "Sets line %d of the welcome text that the radio shows at power-on when Power on display mode is Welcome Info."
+msgstr ""
+
+#: ../drivers/uvk5.py:1597
+#, python-format
+msgid "Sets priority channel 1 of scan list %d. With priority scanning on, the radio checks it before each regular channel it scans. 0 means no priority channel."
+msgstr ""
+
+#: ../drivers/uvk5.py:1601
+#, python-format
+msgid "Sets priority channel 2 of scan list %d. With priority scanning on, the radio checks it after priority channel 1, before each regular channel it scans. 0 means no priority channel."
+msgstr ""
+
+#: ../drivers/uvk5.py:1568
+msgid "Sets the 3-character DTMF ID of this contact, using 0-9, A-D, * and #. Leave it empty for an unused entry."
+msgstr ""
+
+#: ../drivers/uvk5.py:1542
+msgid "Sets the 5-character DTMF code that disables this radio when another radio sends it, if Permit remote kill is on."
+msgstr ""
+
+#: ../drivers/uvk5.py:1561
+msgid "Sets the 5-character DTMF code that enables this radio again after the kill code has disabled it."
+msgstr ""
+
 #: ../drivers/ft450d.py:1467
 msgid "Sets the CW sidetone volume, from 0 to 100, used when CW sidetone volume Linked is off."
+msgstr ""
+
+#: ../drivers/uvk5.py:1506
+msgid "Sets the DTMF code that the radio sends when PTT is pressed, on channels whose PTTID setting sends the up code."
+msgstr ""
+
+#: ../drivers/uvk5.py:1523
+msgid "Sets the DTMF code that the radio sends when PTT is released, on channels whose PTTID setting sends the down code."
 msgstr ""
 
 #: ../drivers/ft450d.py:1768
 msgid "Sets the VOX sensitivity used in DIG mode, so that the audio from the data equipment switches the transmitter on without a PTT line. 0 turns VOX off in DIG mode."
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:1041
+#: ../drivers/baofeng_uv17Pro.py:1041 ../drivers/uvk5.py:1739
 msgid "Sets the VOX sensitivity. Too sensitive a setting keys the transmitter on the noise around the radio, too insensitive a setting fails to pick up your voice."
 msgstr ""
 
@@ -2945,12 +3145,24 @@ msgstr ""
 msgid "Sets the call name for DTMF code %i, up to 10 characters long."
 msgstr ""
 
+#: ../drivers/uvk5.py:1358
+msgid "Sets the character that separates the called ID from this radio's own ID in a DTMF call. With *, radio 100 calls radio 123 by sending 123*100."
+msgstr ""
+
+#: ../drivers/uvk5.py:1369
+msgid "Sets the character that stands for any digit in a called DTMF ID, so that one call reaches a group of radios. With #, sending 12# calls the radios with IDs 120 to 129, 1## calls IDs 100 to 199, and ### calls all radios."
+msgstr ""
+
 #: ../drivers/ft450d.py:1580
 msgid "Sets the contrast of the display, from 1 to 24. Changing it here has not been seen to have a visible effect on the radio."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:873
 msgid "Sets the current keypad-lock state."
+msgstr ""
+
+#: ../drivers/uvk5.py:1888
+msgid "Sets the current keypad-lock state. Hold the # key on the radio to lock or unlock the keypad."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1017
@@ -2973,12 +3185,24 @@ msgstr ""
 msgid "Sets the dot to dash ratio of the built-in electronic keyer. At 1:3.0, the standard weighting, a dash lasts three times as long as a dot."
 msgstr ""
 
+#: ../drivers/uvk5.py:2006
+msgid "Sets the frequency of this broadcast FM radio preset, in MHz from 76 to 108. Leave it empty to clear the preset."
+msgstr ""
+
 #: ../drivers/ft450d.py:1785
 msgid "Sets the frequency shift between the mark and space tones in FSK RTTY. Most amateur RTTY uses 170 Hz."
 msgstr ""
 
 #: ../drivers/ft450d.py:1831
 msgid "Sets the microphone gain for SSB, AM and FM. Use Low with a microphone that has a high output, Normal with the supplied hand microphone and High with a microphone that has a low output. The speech processor is off at Low and on at the other settings."
+msgstr ""
+
+#: ../drivers/uvk5.py:1754
+msgid "Sets the microphone sensitivity, from 0 to 4. Raise it if other stations hear you too quietly, lower it if your audio sounds distorted."
+msgstr ""
+
+#: ../drivers/uvk5.py:1565
+msgid "Sets the name of this entry in the DTMF contact list. The radio's D-LIST menu shows the list, so that you can pick a contact and call it directly."
 msgstr ""
 
 #: ../drivers/ft450d.py:1346
@@ -3013,7 +3237,7 @@ msgstr ""
 msgid "Sets the sidetone volume relative to the receive audio level set by AF GAIN, when CW sidetone volume Linked is on. 0 makes the sidetone as loud as the received audio, negative values make it quieter and positive values louder."
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:632
+#: ../drivers/baofeng_uv17Pro.py:632 ../drivers/uvk5.py:1459
 msgid "Sets the silent gap between transmitted DTMF tones. Increase this if the receiving system cannot separate adjacent digits."
 msgstr ""
 
@@ -3029,6 +3253,10 @@ msgstr ""
 msgid "Sets the width of the DSP IF filter. A narrower filter rejects interference close to the signal, a wider one sounds more natural when the band is quiet. The widths depend on the mode: 1.8, 2.4 or 3.0 kHz for SSB, 300 Hz, 500 Hz or 2.4 kHz for CW, 300 Hz, 2.4 or 3.0 kHz for DIG, 3.0, 6.0 or 9.0 kHz for AM, and 2.5 or 5.0 kHz for FM. A width the mode does not offer is replaced with the closest one it does."
 msgstr ""
 
+#: ../drivers/uvk5.py:1488
+msgid "Sets this radio's own 3-character DTMF ID. The radio sends it with its DTMF calls, and other radios call this radio with it. The radio's menu calls it ANI-ID."
+msgstr ""
+
 #: ../drivers/ft450d.py:1320
 msgid "Sets when the scan resumes after it has paused on a signal. 1 to 10 resumes after that many seconds, 0 selects BUSY, which waits until the signal has gone. In SSB, CW and SSB based data modes the scanner instead steps slowly across a signal, giving you time to stop it."
 msgstr ""
@@ -3037,7 +3265,7 @@ msgstr ""
 msgid "Settings"
 msgstr "Ρυθμίσεις"
 
-#: ../drivers/uvk5.py:2092
+#: ../drivers/uvk5.py:2354
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr ""
 
@@ -3077,6 +3305,10 @@ msgstr "Εμφάνιση τοποθεσίας αρχείου καταγραφή�
 
 #: ../drivers/ft450d.py:1254
 msgid "Shows all 62 items of the radio's Menu Mode. When off, the menu on the radio offers only the 16 most often used items."
+msgstr ""
+
+#: ../drivers/uvk5.py:2052
+msgid "Shows whether the radio has been disabled with the DTMF kill code. A disabled radio ignores its keys and stays silent until it receives the revive code."
 msgstr ""
 
 #: ../wxui/memedit.py:697
@@ -3132,7 +3364,7 @@ msgstr "Αντικατάσταση μνημών;"
 msgid "Sorting"
 msgstr "Εκτύπωση"
 
-#: ../drivers/baofeng_uv17Pro.py:762
+#: ../drivers/baofeng_uv17Pro.py:762 ../drivers/uvk5.py:1861
 msgid "Sounds a short confirmation tone as you operate the radio. Turn it off when the radio has to be used discreetly."
 msgstr ""
 
@@ -3156,6 +3388,10 @@ msgstr ""
 msgid "Successfully sent bug report:"
 msgstr ""
 
+#: ../drivers/uvk5.py:1843
+msgid "Suppresses the short burst of noise heard at the end of a received transmission. It only works when the transmitting radio supports it."
+msgstr ""
+
 #: ../drivers/ft450d.py:1493
 msgid "Swaps the dot and dash sides of a keyer paddle without rewiring it, for example for a left-handed operator. Normal sends dots from the plug tip and dashes from the ring, Reverse the other way round."
 msgstr ""
@@ -3166,6 +3402,10 @@ msgstr ""
 
 #: ../drivers/ft450d.py:1801
 msgid "Swaps the mark and space tones when receiving RTTY. Try Reverse if a station with a good signal cannot be decoded."
+msgstr ""
+
+#: ../drivers/uvk5.py:839
+msgid "Swaps the receive and transmit frequencies of this channel, for example to listen on the input frequency of a repeater. F+8 switches it on the radio."
 msgstr ""
 
 #: ../wxui/memedit.py:348
@@ -3220,17 +3460,49 @@ msgstr ""
 msgid "The debug log file is not available when CHIRP is run interactively from the command-line. Thus, this tool will not upload what you expect. It is recommended that you quit now and run CHIRP non-interactively (or with stdin redirected to /dev/null)"
 msgstr ""
 
+#: ../drivers/uvk5.py:1447
+msgid "The first tone and the * and # tones have their own settings."
+msgstr ""
+
 #: ../wxui/bugreport.py:550
 msgid "The following information will be submitted:"
+msgstr ""
+
+#: ../drivers/uvk5.py:1901
+msgid "The keypad locks about 15 seconds after the last key press."
 msgstr ""
 
 #: ../wxui/memedit.py:1391
 msgid "The memory editor requires a reload in order to change the workflow. That will happen now. Any other open tabs will be updated the next time they are loaded."
 msgstr ""
 
+#: ../drivers/uvk5.py:1743
+msgid "The radio's VOX menu sets this level and VOX enabled together: OFF turns VOX off, and 1 to 10 turn it on at that level."
+msgstr ""
+
+#: ../drivers/uvk5.py:1929
+msgid "The radio's menu calls this setting VOICE."
+msgstr ""
+
 #: ../wxui/main.py:1491
 #, python-format
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
+msgstr ""
+
+#: ../drivers/uvk5.py:1890
+msgid "The side keys still work while the keypad is locked."
+msgstr ""
+
+#: ../drivers/uvk5.py:1938
+msgid "The user manual does not describe this setting, and the radio does not appear to use it. The voice prompt language is set with the Voice prompt setting."
+msgstr ""
+
+#: ../drivers/uvk5.py:1339
+msgid "The user manual does not describe this setting."
+msgstr ""
+
+#: ../drivers/uvk5.py:1472
+msgid "The user manual lists remote kill and revive among the radio's features but does not describe them."
 msgstr ""
 
 #: ../wxui/memedit.py:2252
@@ -3251,7 +3523,7 @@ msgstr ""
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr ""
 
-#: ../drivers/uvk5.py:2096
+#: ../drivers/uvk5.py:2358
 msgid "This image is read-only due to being from a radio with unsupported firmware"
 msgstr ""
 
@@ -3319,7 +3591,11 @@ msgid ""
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
 
-#: ../drivers/uvk5.py:1850
+#: ../drivers/uvk5.py:871
+msgid "This radio offers 10 scrambling types, and the other radio has to use the same one."
+msgstr ""
+
+#: ../drivers/uvk5.py:2112
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
 msgstr ""
 
@@ -3393,6 +3669,15 @@ msgstr "Βήμα συντονισμού"
 
 #: ../drivers/baofeng_uv17Pro.py:1083
 msgid "Turns on Bluetooth so that the radio can be programmed wirelessly from a phone app."
+msgstr ""
+
+#: ../drivers/uvk5.py:856
+msgid "Turns on DTMF decoding on this channel, so that the radio recognizes DTMF calls to its own ID and the kill and revive codes."
+msgstr ""
+
+#: ../drivers/uvk5.py:1592
+#, python-format
+msgid "Turns on priority scanning for scan list %d. It applies while that list is the Default scanlist. The radio then checks the priority channels more often than the other channels, and switches to priority channel 1 when it finds activity there."
 msgstr ""
 
 #: ../drivers/ft450d.py:1338
@@ -3512,7 +3797,7 @@ msgstr ""
 msgid "Upload instructions"
 msgstr "Οδηγίες αποστολής"
 
-#: ../drivers/uvk5.py:2084
+#: ../drivers/uvk5.py:2346
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr ""
 
@@ -3590,7 +3875,7 @@ msgstr "Προμηθευτής"
 msgid "View"
 msgstr "Εμφάνιση"
 
-#: ../drivers/baofeng_uv17Pro.py:1031
+#: ../drivers/baofeng_uv17Pro.py:1031 ../drivers/uvk5.py:1728
 msgid "Voice operated transmit. The radio starts transmitting when you speak towards the microphone, so hands-free conversation is possible without pressing PTT."
 msgstr ""
 
