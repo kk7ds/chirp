@@ -4,3 +4,8 @@
 # radio class IDs, as in driver_xfails.yaml; keep them sorted.
 - Baofeng_UV-5G_Mini
 - Baofeng_UV-5R_Mini
+- QYT_KT8900D
+- Quansheng_UV-K5
+- Retevis_RA79
+- Yaesu_FT-450
+- Yaesu_FT-450D
