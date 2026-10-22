@@ -1025,7 +1025,7 @@ STEPS_9K = [2.5, 5.0, 6.25, 8.33, 10.0, 12.5, 25.0, 50.0, 100.0]
 S_TONES = [str(x) for x in [1000, 1450, 1750, 2100]]
 STEP_LIST = [str(x)+"kHz" for x in STEPS]
 STEP_LIST_9K = [str(x)+"kHz" for x in STEPS_9K]
-ROGER_LIST = ["Off", "Begin", "End", "Both"]
+ROGER_LIST = ["Off", "BOT", "EOT", "Both"]
 TIMEOUT_LIST = [str(x) + "s" for x in range(15, 601, 15)]
 TOA_LIST = ["Off"] + ["%ds" % t for t in range(1, 11)]
 BANDWIDTH_LIST = ["Wide", "Narrow"]
@@ -1050,16 +1050,16 @@ BACKLIGHT_BRIGHT_MAX = 5
 SAVE_MODES = ["Off", "1", "2", "3", "4"]
 LOCK_MODES = ["key-lk", "key+pg", "key+ptt", "all"]
 APO_TIMES = ["Off"] + ["%dm" % t for t in range(15, 151, 15)]
-OFFSET_LIST = ["none", "+", "-"]
+OFFSET_LIST = ["Off", "+", "-"]
 PONMSG_LIST = ["Battery Volts", "Bitmap"]
 PONMSG_LIST2 = ["Battery Volts", "Bitmap-DISABLED"]
 SPMUTE_LIST = ["QT", "QT*T", "QT&T"]
 DTMFST_LIST = ["Off", "DT-ST", "ANI-ST", "DT-ANI"]
 DTMF_TIMES = ["%d" % x for x in range(80, 501, 20)]
-PTTID_LIST = ["Off", "Begin", "End", "Both"]
+PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 ID_DLY_LIST = ["%dms" % t for t in range(100, 3001, 100)]
 VOX_GRDS = ["Off"] + ["%dlevel" % l for l in range(1, 11)]
-VOX_DLYS = ["Off"] + ["%ds" % t for t in range(1, 5)]
+VOX_DLYS = ["Off"] + ["%ds" % t for t in range(1, 6)]
 RPT_KPTS = ["Off"] + ["%dms" % t for t in range(100, 5001, 100)]
 ABR_LVL_MAP = [("1", 1), ("2", 2), ("3", 3), ("4", 4), ("5", 5)]
 LIST_1_5 = ["%s" % x for x in range(1, 6)]
@@ -1074,9 +1074,11 @@ S_MUTE_LIST = ["off", "rx mute", "tx mute", "r/t mute"]
 POWER_LIST = ["Low", "Med", "High"]
 RPTMODE_LIST = ["Radio/Talkie", "One direction Repeater",
                 "Two direction repeater"]
+# The manual's DCS table also lists 645, which is not in DTCS_CODES
+DCS_CODES = sorted(list(chirp_common.DTCS_CODES) + [645])
 TONE_LIST = ["----"] + ["%s" % str(t) for t in chirp_common.TONES] + \
-            ["D%0.3dN" % dts for dts in chirp_common.DTCS_CODES] + \
-            ["D%0.3dI" % dts for dts in chirp_common.DTCS_CODES]
+            ["D%0.3dN" % dts for dts in DCS_CODES] + \
+            ["D%0.3dI" % dts for dts in DCS_CODES]
 SCREEN_MODE_LIST = ["Classic", "Covert", "Day_1", "Day_2"]
 ACTIVE_AREA_LIST = ["Receiver A - Top", "Receiver B - Bottom"]
 TDR_LIST = ["TDR ON", "TDR OFF"]
@@ -1629,7 +1631,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                      "discreetly."))
         cf.append(rs)
         rs = RadioSetting("s_tone",
-                          "Side Tone (Menu 36)",
+                          "Single Tone (Menu 36)",
                           RadioSettingValueList(S_TONES,
                                                 current_index=s.s_tone))
         rs.set_doc(_("Selects the tone-burst frequency sent for repeater "
@@ -2144,7 +2146,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             obj.freq = f/10
 
         def apply_offset(setting, obj):
-            f = freq2int(setting.value, 0, 5000000)
+            f = freq2int(setting.value, 0, 999995000)
             obj.offset = f/10
 
         def apply_enc(setting, obj):
@@ -2263,7 +2265,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                      "when the frequency or channel changes."))
         bf.append(rs)
         rs = RadioSetting(prefix + ".fm_dev",
-                          "FM Deviation (Menu 4)",
+                          "Bandwidth (Menu 4)",
                           RadioSettingValueList(
                               BANDWIDTH_LIST,
                               current_index=c.fm_dev))
@@ -2964,7 +2966,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
             obj.freq = f/10
 
         def apply_offset(setting, obj):
-            f = freq2int(setting.value, 0, 5000000)
+            f = freq2int(setting.value, 0, 999995000)
             obj.offset = f/10
 
         def apply_enc(setting, obj):
@@ -3083,7 +3085,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
                      "when the frequency or channel changes."))
         bf.append(rs)
         rs = RadioSetting(prefix + ".fm_dev",
-                          "FM Deviation (Menu 4)",
+                          "Bandwidth (Menu 4)",
                           RadioSettingValueList(
                               BANDWIDTH_LIST,
                               current_index=c.fm_dev))
