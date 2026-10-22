@@ -27,5 +27,5 @@ def test_kguv9_models_all_settings_have_docs():
                       if setting.get_name() == "s_tone")
 
         assert not missing, radio_cls.MODEL
-        # Labelled "Side Tone", but menu 36 is the repeater tone burst
+        # Menu 36 is Single Tone, the repeater tone burst
         assert "tone-burst" in s_tone.__doc__
