@@ -792,3 +792,36 @@ class RB48Radio(RB28Radio):
                (0x0000, 0x0160),
               ]
     _memsize = 0x0800
+
+
+@directory.register
+class RB648Radio(RB28Radio):
+    """RETEVIS RB648"""
+    VENDOR = "Retevis"
+    MODEL = "RB648"
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    VALID_BANDS = [(400000000, 520000000)]
+
+    _magic = b"PHOGRQp"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
+    _upper = 16
+    _mem_params = (_upper,  # number of channels
+                   )
+
+    _frs = False
+    _pmr = False  # Sold as PMR radio but supports full band TX/RX
+    _duplexes = ["", "+", "-", "split"]
+    _has_volume = False
+    _has_autokeylock = False
+    _has_pfkey = False
+    _has_wxchnumber = False
+    _has_vibrate = True
+    _has_keylock48 = True
+
+    _ranges = [
+               (0x0000, 0x0160),
+              ]
+    _memsize = 0x0800
