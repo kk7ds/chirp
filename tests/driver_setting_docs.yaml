@@ -4,3 +4,8 @@
 # radio class IDs, as in driver_xfails.yaml; keep them sorted.
 - Baofeng_UV-5G_Mini
 - Baofeng_UV-5R_Mini
+- Wouxun_KG-UV9D_Plus
+- Wouxun_KG-UV9GX
+- Wouxun_KG-UV9G_Pro
+- Wouxun_KG-UV9K
+- Wouxun_KG-UV9PX

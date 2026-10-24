@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-26 18:24-0700\n"
+"POT-Creation-Date: 2026-10-26 23:50-0400\n"
 "PO-Revision-Date: 2015-11-30 10:36+0200\n"
 "Last-Translator: Oleksandr Kravchuk <open.source@oleksandr-kravchuk.com>\n"
 "Language: uk_UA\n"
@@ -74,6 +74,10 @@ msgstr "(Чи працювало це раніше? Нова радіостан�
 #: ../wxui/radioinfo.py:62
 msgid "(none)"
 msgstr "(немає)"
+
+#: ../drivers/kguv9dplus.py:2283 ../drivers/kguv9dplus.py:3103
+msgid "+ transmits above the receive frequency, - transmits below it, and Off uses the same frequency for transmit and receive."
+msgstr ""
 
 #: ../wxui/memedit.py:2643
 #, python-format
@@ -1042,7 +1046,7 @@ msgstr ""
 " акумулятор назад (на дисплеї з'явиться \"ADMS\").\n"
 "5. <b>Після натискання ОК</b>, натисніть кнопку [BAND].\n"
 
-#: ../drivers/uvk5.py:679
+#: ../drivers/uvk5.py:702
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1058,7 +1062,7 @@ msgstr ""
 "\n"
 "Це може не спрацювати, якщо увімкнути радіостанцію з уже під'єднаним кабелем\n"
 
-#: ../drivers/uvk5.py:686
+#: ../drivers/uvk5.py:709
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1098,9 +1102,21 @@ msgstr ""
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "Доступна нова версія CHIRP. Будь ласка, якнайшвидше відвідайте сайт, щоб її завантажити!"
 
+#: ../drivers/kguv9dplus.py:2471
+msgid "A short press of PF2 turns the FM radio on or off."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2482
+msgid "A short press of PF3 opens the squelch to monitor the channel (MONI)."
+msgstr ""
+
 #: ../drivers/ga510.py:1090
 msgid "AM mode does not allow duplex or tone"
 msgstr "Режим AM не допускає дуплекс або тон"
+
+#: ../drivers/kguv9dplus.py:2262 ../drivers/kguv9dplus.py:3082
+msgid "AM works in area A only, and the radio returns to FM when the frequency or channel changes."
+msgstr ""
 
 #: ../wxui/main.py:977
 msgid "About"
@@ -1109,6 +1125,10 @@ msgstr "Про програму"
 #: ../wxui/main.py:1924
 msgid "About CHIRP"
 msgstr "Про CHIRP"
+
+#: ../drivers/kguv9dplus.py:1590
+msgid "After a timeout, PTT stays blocked for 10 seconds, and this applies to VOX transmissions too."
+msgstr ""
 
 #: ../wxui/main.py:1979
 msgid "Agree"
@@ -1130,12 +1150,20 @@ msgstr "Усі файли"
 msgid "All supported formats"
 msgstr "Усі підтримувані формати"
 
+#: ../drivers/kguv9dplus.py:1897
+msgid "Allows the menu to be opened while the radio is in channel mode. When it is off, the menu is not available in channel mode."
+msgstr ""
+
 #: ../drivers/ft450d.py:1647
 msgid "Allows tuning away from a recalled memory or Home channel with the MAIN DIAL, as with a VFO. The stored channel does not change unless you write the new settings to it."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:743
 msgid "Always On keeps it lit all the time."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1666
+msgid "Always On keeps the backlight on, and Off leaves it off."
 msgstr ""
 
 #: ../wxui/clone.py:626
@@ -1150,7 +1178,7 @@ msgstr "Аматорська"
 msgid "An error has occurred"
 msgstr "Сталася помилка"
 
-#: ../drivers/baofeng_uv17Pro.py:728
+#: ../drivers/baofeng_uv17Pro.py:728 ../drivers/kguv9dplus.py:1620
 msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
 msgstr ""
 
@@ -1184,6 +1212,14 @@ msgstr "Автоматично (з системи)"
 
 #: ../drivers/baofeng_uv17Pro.py:748
 msgid "Automatically locks the keypad to prevent accidental changes."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1695
+msgid "Automatically locks the keypad to prevent accidental changes. Hold the # key to unlock the keypad."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1739
+msgid "Automatically powers the radio off after the selected period without receiver activity. Off disables automatic power-off."
 msgstr ""
 
 #: ../wxui/developer.py:665
@@ -1274,6 +1310,10 @@ msgstr ""
 msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr "Канали з однаковими TX і RX %s представлені тоновим режимом \"%s\""
 
+#: ../drivers/kguv9dplus.py:1703
+msgid "Checks the priority channel every three seconds on the main frequency, and switches to it when it receives a signal there. When the radio is turned on, reception on the main frequency is interrupted for three seconds while it checks the priority channel."
+msgstr ""
+
 #: ../wxui/main.py:1361
 msgid "Chirp Image Files"
 msgstr "Файли образів CHIRP"
@@ -1313,6 +1353,10 @@ msgstr "Виберіть дуплекс"
 msgid "Choose the module to load from issue %i:"
 msgstr "Виберіть модуль для завантаження із задачі %i:"
 
+#: ../drivers/kguv9dplus.py:2376 ../drivers/kguv9dplus.py:2910
+msgid "Choose the spacing used by the frequencies you intend to tune."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:710
 msgid "Chooses the startup display, such as a logo or the battery voltage."
 msgstr ""
@@ -1345,6 +1389,10 @@ msgstr ""
 
 #: ../drivers/ft450d.py:1618
 msgid "Chooses which knob sets the clarifier offset after CLAR is pressed: the MAIN DIAL or the DSP/SEL knob. The clarifier shifts the receive frequency without changing the transmit frequency."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1720
+msgid "Chooses which transmitted DTMF tones are also heard through the radio speaker. OFF mutes all; DT-ST sounds manually keyed tones; ANI-ST sounds automatic ANI/PTT-ID tones; DT+ANI sounds both."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:830
@@ -1439,11 +1487,15 @@ msgstr ""
 "Під'єднайте інтерфейсний кабель до порту PC на\n"
 "задній панелі блока 'TX/RX', А НЕ до порту Com на головному блоці.\n"
 
+#: ../drivers/kguv9dplus.py:2384 ../drivers/kguv9dplus.py:2918
+msgid "Controls what scanning does after finding a signal. TO resumes after a preset time, CO resumes after the signal disappears, and SE stops scanning on the detected frequency or channel."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:848
 msgid "Controls what scanning does after finding a signal. Time resumes after a preset time, Carrier resumes after the signal disappears, and Search stops scanning on the detected frequency or channel."
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:642
+#: ../drivers/baofeng_uv17Pro.py:642 ../drivers/kguv9dplus.py:1605
 msgid "Controls when the ANI code is sent: BOT when PTT is pressed, EOT when PTT is released, Both at both times, or Off."
 msgstr ""
 
@@ -1451,7 +1503,7 @@ msgstr ""
 msgid "Controls when this channel sends the selected DTMF PTT-ID: BOT when PTT is pressed, EOT when PTT is released, Both at both times, or Off."
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:1024
+#: ../drivers/baofeng_uv17Pro.py:1024 ../drivers/kguv9dplus.py:1914
 msgid "Controls whether the radio's front-panel RESET menu is available. This does not reset the radio by itself."
 msgstr ""
 
@@ -1493,7 +1545,7 @@ msgstr "Вирізати"
 msgid "Cut %i memories"
 msgstr "Вирізати пам'ять (%i)"
 
-#: ../drivers/baofeng_uv17Pro.py:800
+#: ../drivers/baofeng_uv17Pro.py:800 ../drivers/kguv9dplus.py:1960
 msgid "Cuts standby power consumption by switching the receiver off and on in a repeating cycle once no signal has been received for a few seconds. It considerably extends battery life, at the cost of occasionally clipping the first moment of an incoming transmission."
 msgstr ""
 
@@ -1507,7 +1559,7 @@ msgid ""
 "Polarity"
 msgstr "DTCS Pol"
 
-#: ../drivers/uvk5.py:903
+#: ../drivers/uvk5.py:926
 msgid "DTMF decode"
 msgstr "Декодування DTMF"
 
@@ -1523,7 +1575,7 @@ msgstr "Увага, небезпека"
 msgid "Dec"
 msgstr "Десятк."
 
-#: ../drivers/baofeng_uv17Pro.py:891
+#: ../drivers/baofeng_uv17Pro.py:891 ../drivers/kguv9dplus.py:1613
 msgid "Delays transmission of the automatic ANI/PTT-ID code after PTT is pressed, allowing the receiving path time to open before the code is sent."
 msgstr ""
 
@@ -1618,7 +1670,7 @@ msgstr "Інструкції із завантаження"
 msgid "Driver"
 msgstr "Драйвер"
 
-#: ../drivers/uvk5_cn.py:703 ../drivers/uvk5.py:1320
+#: ../drivers/uvk5_cn.py:703 ../drivers/uvk5.py:1343
 msgid "Driver information"
 msgstr "Інформація про драйвер"
 
@@ -1787,7 +1839,7 @@ msgstr "Експорт у CSV..."
 msgid "Extra"
 msgstr "Додатково"
 
-#: ../drivers/uvk5.py:1318
+#: ../drivers/uvk5.py:1341
 msgid "FM Radio"
 msgstr "Радіо FM"
 
@@ -2170,6 +2222,10 @@ msgstr "Частота"
 msgid "Frequency %s is out of supported ranges %s"
 msgstr "Частота %s виходить за межі підтримуваних діапазонів %s"
 
+#: ../drivers/kguv9dplus.py:2204 ../drivers/kguv9dplus.py:3024
+msgid "Frequency Shift (menu 6) selects whether the offset is added or subtracted."
+msgstr ""
+
 #: ../wxui/memedit.py:162
 msgid "Frequency granularity in kHz"
 msgstr "Крок частоти в кГц"
@@ -2249,7 +2305,7 @@ msgstr ""
 msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
 msgstr "Враховувати налаштування прийомного шумозаглушення CTCSS/DCS, якщо ввімкнено, інакше — лише шумозаглушення за несучою"
 
-#: ../drivers/baofeng_uv17Pro.py:1057
+#: ../drivers/baofeng_uv17Pro.py:1057 ../drivers/kguv9dplus.py:1760
 msgid "How long the transmitter stays keyed after you stop speaking. A longer delay avoids dropping the transmission during natural pauses in speech."
 msgstr ""
 
@@ -2399,6 +2455,19 @@ msgstr "Задача %i не перебуває в стані, придатно�
 msgid "Issue number:"
 msgstr "Номер задачі:"
 
+#: ../drivers/kguv9dplus.py:1943
+msgid "It has 3 to 6 digits and cannot begin with 0."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1562
+msgid "It works in area A only, and takes priority over the AM switch (menu 54)."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2568 ../drivers/kguv9dplus.py:2587
+#: ../drivers/kguv9dplus.py:3120
+msgid "Keep this within the hardware range and frequencies where you are authorized to transmit."
+msgstr ""
+
 #: ../wxui/main.py:353
 msgid "LIVE"
 msgstr "НАЖИВО"
@@ -2423,6 +2492,10 @@ msgstr ""
 
 #: ../drivers/ft450d.py:1542
 msgid "Lets the MAIN DIAL knob change the frequency in AM and FM modes. When off, the MAIN DIAL does not tune in these modes."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1831
+msgid "Lets you transmit with PTT while the radio works as a cross-band repeater, which interrupts the repeated signal while PTT is held. When it is off, PTT does not transmit in repeater mode."
 msgstr ""
 
 #: ../wxui/query_sources.py:395 ../wxui/query_sources.py:634
@@ -2456,6 +2529,7 @@ msgid "Limits disabled for modified firmware"
 msgstr ""
 
 #: ../drivers/ft450d.py:1274 ../drivers/baofeng_uv17Pro.py:682
+#: ../drivers/kguv9dplus.py:1585
 msgid "Limits how long a single transmission may last. When the time runs out the radio stops transmitting until PTT is released, which prevents overheating and stops a stuck PTT from blocking the channel for everyone else."
 msgstr ""
 
@@ -2499,11 +2573,11 @@ msgstr ""
 msgid "Login failed: Check your username and password"
 msgstr "Не вдалося увійти: перевірте ім'я користувача та пароль"
 
-#: ../drivers/uvk5.py:1822
+#: ../drivers/uvk5.py:1845
 msgid "Logo string 1 (12 characters)"
 msgstr "Рядок логотипу 1 (12 символів)"
 
-#: ../drivers/uvk5.py:1829
+#: ../drivers/uvk5.py:1852
 msgid "Logo string 2 (12 characters)"
 msgstr "Рядок логотипу 2 (12 символів)"
 
@@ -2512,12 +2586,20 @@ msgstr "Рядок логотипу 2 (12 символів)"
 msgid "Longitude"
 msgstr "Довгота"
 
+#: ../drivers/kguv9dplus.py:1568
+msgid "Makes scanning check whether the CTCSS or DCS tone of a signal it finds is compatible with the programmed one. Off skips this check."
+msgstr ""
+
 #: ../drivers/ft450d.py:1448
 msgid "Makes the CW sidetone volume follow the AF GAIN knob, offset by the CW sidetone linked volume. When off, the sidetone plays at the CW sidetone fixed volume whatever the AF GAIN setting."
 msgstr ""
 
 #: ../drivers/ft450d.py:1557
 msgid "Makes the beep volume follow the AF GAIN knob, offset by the Linked beep volume. When off, the beep plays at the Fixed beep volume whatever the AF GAIN setting."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1769
+msgid "Makes the green receive indicator flash every five seconds in standby. Off stops the flashing."
 msgstr ""
 
 #: ../wxui/memedit.py:2061
@@ -2529,7 +2611,7 @@ msgstr "Ручне редагування пам'яті %i"
 msgid "Memories"
 msgstr "Пам'ять"
 
-#: ../drivers/uvk5.py:2141
+#: ../drivers/uvk5.py:2164
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Пам'ять доступна лише для читання через непідтримувану версію прошивки"
 
@@ -2620,6 +2702,10 @@ msgstr "Операції переміщення вимкнено, поки пе�
 msgid "Moves the part of the passband the contour filter acts on, from -2 at the low end through Center to +2 at the high end."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:1576
+msgid "Mutes the sub frequency while the radio works on the main frequency: rx mute while receiving, tx mute while transmitting, and r/t mute in both cases. Off never mutes the sub frequency."
+msgstr ""
+
 #: ../wxui/main.py:692
 msgid "New Window"
 msgstr "Нове вікно"
@@ -2667,6 +2753,10 @@ msgstr "Трасування не збережено"
 msgid "Number"
 msgstr "Число"
 
+#: ../drivers/kguv9dplus.py:2446
+msgid "OFF gives the key no function. Call ID sends a selective call to the group chosen in Call ID Group (menu 52), R-ALARM triggers the distant alarm, SOS transmits on the main frequency and sounds an alarm, and SF-TX transmits on the sub frequency. Scan starts scanning, Second starts the stopwatch, Lamp turns the lamp on or off, SDF-DIR changes the shift direction, and K-lamp turns the keypad light on or off. The options offered depend on the key and the model."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:672
 msgid "Off is level 0."
 msgstr ""
@@ -2677,6 +2767,18 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:687
 msgid "Off places no limit on the length of a transmission."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1763
+msgid "Off releases the transmitter as soon as you stop speaking."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1752
+msgid "Off turns VOX off. VOX works on the main frequency only, and not while receiving or listening to the FM radio."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1966
+msgid "Off turns power saving off, and modes 1 to 4 each use their own wake and sleep times."
 msgstr ""
 
 #: ../wxui/memedit.py:346
@@ -2894,6 +2996,10 @@ msgstr "Префікси"
 msgid "Press enter to set this in memory"
 msgstr "Натисніть Enter, щоб зберегти це значення"
 
+#: ../drivers/kguv9dplus.py:2347 ../drivers/kguv9dplus.py:2881
+msgid "Prevents transmitting on a channel that is already in use."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:1568
 msgid "Prevents transmitting on a channel that is already in use. Pressing PTT on a busy channel sounds an alert tone instead of keying the transmitter."
 msgstr ""
@@ -2919,7 +3025,7 @@ msgstr ""
 msgid "Programs the DTMF code sent at the end of a transmission (EOT)."
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:602
+#: ../drivers/baofeng_uv17Pro.py:602 ../drivers/kguv9dplus.py:1939
 msgid "Programs the radio's numeric Automatic Number Identification code. ANI is a DTMF PTT-ID that can identify this radio to a dispatcher or other compatible equipment."
 msgstr ""
 
@@ -3029,6 +3135,10 @@ msgstr "Код DTCS приймання"
 #: ../wxui/memedit.py:149
 msgid "Receive frequency"
 msgstr "Частота приймання"
+
+#: ../drivers/kguv9dplus.py:2260 ../drivers/kguv9dplus.py:3080
+msgid "Receives this band in AM instead of FM in frequency mode."
+msgstr ""
 
 #: ../wxui/clone.py:608
 msgid "Recent"
@@ -3168,11 +3278,11 @@ msgstr "Збережені налаштування"
 msgid "Scan control (skip, include, priority, etc)"
 msgstr "Керування скануванням (пропуск, включення, пріоритет тощо)"
 
-#: ../drivers/uvk5.py:917
+#: ../drivers/uvk5.py:940
 msgid "Scanlists"
 msgstr "Списки сканування"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:913
+#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:936
 msgid "Scrambler"
 msgstr "Скремблер"
 
@@ -3229,12 +3339,28 @@ msgstr ""
 msgid "Selects VFO B's transmitter power. Use the lowest power that provides reliable communication."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:2322 ../drivers/kguv9dplus.py:2856
+msgid "Selects frequency (VFO) or channel mode for this area, and in channel mode what the display shows: the channel number, the channel number and frequency, or the channel number and name. On the radio, hold the TDR key to step through these modes."
+msgstr ""
+
 #: ../drivers/ft450d.py:1707
 msgid "Selects how quickly the automatic gain control lets the receiver recover after a strong signal. Fast suits CW and data, Slow suits SSB and AM, and Auto picks Slow for SSB and AM and Fast for the other modes. With AGC off the S-meter no longer moves and strong signals are likely to distort."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:1820
+msgid "Selects normal operation or cross-band repeat. Radio/Talkie works as a normal radio. One direction Repeater receives on the main frequency and retransmits on the sub frequency. Two direction repeater receives on both and retransmits each signal on the other one. The two frequencies must be in different bands, for example UHF in area A and VHF in area B."
+msgstr ""
+
 #: ../drivers/ft450d.py:1819
 msgid "Selects one of ten DSP equalizer curves for your transmitted voice. 0 is flat, 1 to 3 reduce the low, middle or high frequencies, and 4 to 6 boost the high, middle or low frequencies. 7 boosts the lows and reduces the highs, 8 reduces the lows and boosts the middle, and 9 reduces the lows and boosts the highs."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2224 ../drivers/kguv9dplus.py:3044
+msgid "Selects the CTCSS tone or DCS code that a signal must carry before the speaker unmutes on this band in frequency mode. ---- turns tone squelch off, so that any signal is heard."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2213 ../drivers/kguv9dplus.py:3033
+msgid "Selects the CTCSS tone or DCS code that this band transmits in frequency mode, as needed to open a repeater or a radio that uses tone squelch. ---- sends no tone."
 msgstr ""
 
 #: ../drivers/ft450d.py:1475
@@ -3245,12 +3371,28 @@ msgstr ""
 msgid "Selects the data mode a DIG channel uses. RTTY is FSK radioteletype keyed by a terminal unit or RTTY software, while USER-L and USER-U carry audio based data modes such as packet on the lower or upper sideband. N/A is for channels that are not in DIG mode."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:1779
+msgid "Selects the display style: Classic, Covert, Day_1 or Day_2. The manual does not describe these styles."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1791
+msgid "Selects the language of the menu display and the voice guide."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:722
 msgid "Selects the language of the menus and the spoken voice prompts."
 msgstr ""
 
 #: ../drivers/ft450d.py:1793
 msgid "Selects the mark tone for RTTY: 2125 Hz for high tone operation or 1275 Hz for low tone operation."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1713
+msgid "Selects the memory channel checked periodically when Priority Scan is enabled."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2332 ../drivers/kguv9dplus.py:2866
+msgid "Selects the memory channel this area uses in channel mode."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:2686
@@ -3265,8 +3407,22 @@ msgstr ""
 msgid "Selects the squelch-tail elimination setting used for communication through a compatible repeater. Use 0 ms when the repeater does not support this feature."
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:822
+#: ../drivers/baofeng_uv17Pro.py:822 ../drivers/kguv9dplus.py:1635
 msgid "Selects the tone-burst frequency sent for repeater access."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2252 ../drivers/kguv9dplus.py:3072
+msgid "Selects the transmit power of this band in frequency mode."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2396 ../drivers/kguv9dplus.py:2930
+msgid "Selects what frequency scanning covers in frequency mode: Current band scans the band of the current frequency, freq range scans from Frequency Scan Start to Frequency Scan End, and ALL scans every band except the FM broadcast band."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2461 ../drivers/kguv9dplus.py:2469
+#: ../drivers/kguv9dplus.py:2480
+#, python-format
+msgid "Selects what side key %s does when it is held down."
 msgstr ""
 
 #: ../drivers/ft450d.py:1606
@@ -3277,12 +3433,32 @@ msgstr ""
 msgid "Selects what the TUNE button controls. ATAS is the optional ATAS-100/-120 active-tuning antenna, EXT ATU the optional FC-40 external tuner, and INT ATU the built-in tuner acting on the transmit signal only, while INTRATU puts the built-in tuner in the receive path as well. F-TRANS instead sends this radio's frequency to a second radio of the same model whenever TUNE is pressed, for single operator two radio (SO2R) operation."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:1803
+msgid "Selects what the display shows when the radio is turned on: Battery Volts shows the battery voltage, and Bitmap shows a picture, the brand logo."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1687
+msgid "Selects what the keypad lock locks: key-lk locks the keypad, key+pg the keypad and the channel knob, key+ptt the keypad and PTT, and all locks all of them. The side keys PF1, PF2 and PF3 are locked in every mode."
+msgstr ""
+
 #: ../drivers/ft450d.py:1738
 msgid "Selects what the meter shows while transmitting: PO the average power output, ALC the relative ALC voltage, or SWR the standing wave ratio of the antenna. While receiving it always shows the signal strength."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:1651
+msgid "Selects when the radio beeps to mark a transmission: BOT when PTT is pressed, EOT when PTT is released, Both at both times, or Off."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1730
+msgid "Selects where a CTCSS or DCS tone found by tone scanning is saved in frequency mode: Decoder saves it as the receive tone, Encoder as the transmit tone, and Both as both."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:1611
 msgid "Selects whether the radio uses DTMF codes, together with CTCSS or DCS, to decide when to unmute the speaker on this channel. Off unmutes it on the correct CTCSS or DCS alone."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2340 ../drivers/kguv9dplus.py:2874
+msgid "Selects which channels are scanned in channel mode: All scans every channel, and 1 to 10 scan only the channels of that scan group."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1257
@@ -3300,8 +3476,20 @@ msgstr ""
 msgid "Selects which of the %i programmed DTMF PTT-ID codes this channel transmits. Edit the code itself under DTMF Encode Settings."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:2365 ../drivers/kguv9dplus.py:2899
+msgid "Selects which of the 20 call groups the Call ID side key function calls. Each call group holds a caller ID code."
+msgstr ""
+
 #: ../drivers/ft450d.py:1055
 msgid "Selects which of the eleven noise reduction algorithms is used. Each one is designed for a different kind of noise, so try them in turn to find the one that best suppresses the noise currently heard. Off also turns DSP Noise Reduction off."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2234 ../drivers/kguv9dplus.py:3054
+msgid "Selects which received signals unmute the speaker on this band in frequency mode. QT accepts a signal with the right CTCSS or DCS tone, QT&T one whose tone and DTMF code both match, and QT*T one that matches either."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2025
+msgid "Selects which receiver has the main frequency, the one marked MAIN on the display. PTT transmits on the main frequency. On the radio, press BAND to change it."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1233
@@ -3312,6 +3500,14 @@ msgstr ""
 msgid "Selects wide or narrow FM for VFO B. Use Narrow where required by the channel plan to reduce interference to adjacent channels."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:2270 ../drivers/kguv9dplus.py:3090
+msgid "Selects wide or narrow FM for this band in frequency mode."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1854
+msgid "Sends a receipt tone to confirm reception when a repeated signal ends, while the radio works as a cross-band repeater."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:769
 msgid "Sends a short tone at the end of each transmission so other stations can hear that you released PTT."
 msgstr ""
@@ -3320,12 +3516,29 @@ msgstr ""
 msgid "Service"
 msgstr "Сервіс"
 
+#: ../drivers/kguv9dplus.py:2243 ../drivers/kguv9dplus.py:3063
+msgid "Sets Scan Add (menu 48) for this band in frequency mode. A channel stored from this band is added to the scan list when it is on, and left out of channel scanning when it is off."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:1150
 msgid "Sets VFO A's repeater shift direction. + transmits above the receive frequency, - transmits below it, and Off uses the same frequency for transmit and receive."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1163
 msgid "Sets VFO B's repeater shift direction. + transmits above the receive frequency, - transmits below it, and Off uses the same frequency for transmit and receive."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2123
+#, python-format
+msgid "Sets a name of up to 6 characters for call group %d."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1994
+msgid "Sets a text message of up to 16 characters that the radio shows on its display. The manual does not say where it appears."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2005
+msgid "Sets a text of up to 10 characters for the sub receiver area of the display. The manual does not describe this setting."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1281
@@ -3340,11 +3553,15 @@ msgstr ""
 msgid "Sets how far the frequency moves for each step of the MAIN DIAL knob: 1, 10 or 20 Hz in SSB and CW, 100 or 200 Hz in AM and FM."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:2373 ../drivers/kguv9dplus.py:2907
+msgid "Sets how far the frequency of this area moves for each tuning step and while scanning in frequency mode."
+msgstr ""
+
 #: ../drivers/ft450d.py:1640
 msgid "Sets how long a button has to be held to activate its press and hold function. A shorter press activates the button's normal function."
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:620
+#: ../drivers/baofeng_uv17Pro.py:620 ../drivers/kguv9dplus.py:1929
 msgid "Sets how long each DTMF tone is transmitted. Increase this if the receiving system does not reliably decode the digits."
 msgstr ""
 
@@ -3356,6 +3573,20 @@ msgstr ""
 msgid "Sets how long the menu stays open without a key press before the radio leaves it."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:1984
+#, python-format
+msgid "Sets how long the receiver stays off in each cycle of power save mode %d. The manual does not state the unit."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1975
+#, python-format
+msgid "Sets how long the receiver stays on in each cycle of power save mode %d. The manual does not state the unit."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1846
+msgid "Sets how long the repeater keeps transmitting after the received signal disappears, so that a reply that follows quickly is repeated without a gap. Off stops transmitting as soon as the signal disappears."
+msgstr ""
+
 #: ../drivers/ft450d.py:1398
 msgid "Sets how long the transmitter stays on after you stop sending in semi break-in CW, in steps of 10 ms, so 25 means 250 ms. A longer delay suits operators who pause often while sending. The radio can also be set to FULL, full break-in, which lets you hear between the characters you send."
 msgstr ""
@@ -3364,16 +3595,37 @@ msgstr ""
 msgid "Sets how long the transmitter stays on after you stop speaking in VOX operation, in steps of 100 ms, so 5 means 500 ms. A longer delay keeps short pauses in your speech from switching the radio back to receive."
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:741
+#: ../drivers/kguv9dplus.py:1597
+msgid "Sets how many seconds before the Time-out Timer expires that the radio flashes a pre-alert. Off disables the warning."
+msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:741 ../drivers/kguv9dplus.py:1664
 msgid "Sets how many seconds the display backlight remains on after a key press or radio activity."
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:666
+#: ../drivers/kguv9dplus.py:1643
+msgid "Sets how many seconds the radio rings when it receives a signal, before the audio is heard. Off turns the ring off."
+msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:666 ../drivers/kguv9dplus.py:2354
+#: ../drivers/kguv9dplus.py:2888
 msgid "Sets how strong a received signal must be before the speaker unmutes. 0 leaves the squelch open so you hear noise all the time, higher values reject more weak signals and noise. Raise this value if the speaker keeps unmuting on interference, lower it if distant stations are being cut off."
 msgstr ""
 
 #: ../drivers/ft450d.py:995
 msgid "Sets how strongly the contour filter boosts or cuts. Low gives a gentle effect, High a stronger one."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1950
+msgid "Sets the 6-digit control code for DTMF remote control. A radio that sends this code with a command and this radio's ANI code can stun, kill, monitor or inspect this radio."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1921
+msgid "Sets the 6-digit password for the RESET menu (menu 61)."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1906
+msgid "Sets the 6-digit password the radio asks for before it switches between frequency and channel mode. 000000 means no password is needed."
 msgstr ""
 
 #: ../drivers/ft450d.py:1467
@@ -3384,7 +3636,7 @@ msgstr ""
 msgid "Sets the VOX sensitivity used in DIG mode, so that the audio from the data equipment switches the transmitter on without a PTT line. 0 turns VOX off in DIG mode."
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:1041
+#: ../drivers/baofeng_uv17Pro.py:1041 ../drivers/kguv9dplus.py:1748
 msgid "Sets the VOX sensitivity. Too sensitive a setting keys the transmitter on the noise around the radio, too insensitive a setting fails to pick up your voice."
 msgstr ""
 
@@ -3404,6 +3656,10 @@ msgstr ""
 msgid "Sets the beep volume, from 0 to 100, used when Beep volume Linked is off."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:1674
+msgid "Sets the brightness of the display backlight, from level 1 to level 5."
+msgstr ""
+
 #: ../drivers/ft450d.py:1587
 msgid "Sets the brightness of the display illumination, from 1 to 8."
 msgstr ""
@@ -3413,12 +3669,21 @@ msgstr ""
 msgid "Sets the call name for DTMF code %i, up to 10 characters long."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:2132
+#, python-format
+msgid "Sets the caller ID code of call group %d, 3 to 6 digits. When Call ID Group (menu 52) selects this group, the Call ID side key function sends this code to call the radio that has it."
+msgstr ""
+
 #: ../drivers/ft450d.py:1580
 msgid "Sets the contrast of the display, from 1 to 24. Changing it here has not been seen to have a visible effect on the radio."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:873
 msgid "Sets the current keypad-lock state."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1680
+msgid "Sets the current keypad-lock state. Hold the # key on the radio to lock or unlock the keypad."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1017
@@ -3441,12 +3706,56 @@ msgstr ""
 msgid "Sets the dot to dash ratio of the built-in electronic keyer. At 1:3.0, the standard weighting, a dash lasts three times as long as a dot."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:2089
+#, python-format
+msgid "Sets the first channel of scan group %d. When Scan Group (menu 49) selects this group, channel scanning covers the channels from here to the group's last channel."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2048
+#, python-format
+msgid "Sets the frequency of broadcast FM memory %d, from 76 to 108 MHz."
+msgstr ""
+
 #: ../drivers/ft450d.py:1785
 msgid "Sets the frequency shift between the mark and space tones in FSK RTTY. Most amateur RTTY uses 170 Hz."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:2417 ../drivers/kguv9dplus.py:2951
+msgid "Sets the highest frequency scanned when Scan Range (menu 50) is set to freq range."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2550 ../drivers/kguv9dplus.py:3124
+msgid "Sets the highest frequency the radio receives in this band."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2585 ../drivers/kguv9dplus.py:3128
+msgid "Sets the highest frequency the radio transmits on in this band."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2098
+#, python-format
+msgid "Sets the last channel of scan group %d."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2407 ../drivers/kguv9dplus.py:2941
+msgid "Sets the lowest frequency scanned when Scan Range (menu 50) is set to freq range."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2534 ../drivers/kguv9dplus.py:3122
+msgid "Sets the lowest frequency the radio receives in this band."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2566 ../drivers/kguv9dplus.py:3126
+msgid "Sets the lowest frequency the radio transmits on in this band."
+msgstr ""
+
 #: ../drivers/ft450d.py:1831
 msgid "Sets the microphone gain for SSB, AM and FM. Use Low with a microphone that has a high output, Normal with the supplied hand microphone and High with a microphone that has a low output. The speech processor is off at Low and on at the other settings."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2082
+#, python-format
+msgid "Sets the name of scan group %d, up to 8 characters."
 msgstr ""
 
 #: ../drivers/ft450d.py:1346
@@ -3465,12 +3774,24 @@ msgstr ""
 msgid "Sets the pitch of the beep the radio sounds to confirm button presses."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:2194 ../drivers/kguv9dplus.py:3014
+msgid "Sets the receive frequency of this band in frequency mode."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:1130
 msgid "Sets the receive frequency shown on display line A in Frequency (VFO) mode."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1139
 msgid "Sets the receive frequency shown on display line B in Frequency (VFO) mode."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2201 ../drivers/kguv9dplus.py:3021
+msgid "Sets the repeater offset of this band in frequency mode, the difference between the receive and transmit frequencies."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2281 ../drivers/kguv9dplus.py:3101
+msgid "Sets the repeater shift direction of this band in frequency mode."
 msgstr ""
 
 #: ../drivers/ft450d.py:1418
@@ -3505,7 +3826,7 @@ msgstr ""
 msgid "Settings"
 msgstr "Налаштування"
 
-#: ../drivers/uvk5.py:2145
+#: ../drivers/uvk5.py:2168
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr "Налаштування доступні лише для читання через непідтримувану версію прошивки"
 
@@ -3600,7 +3921,7 @@ msgstr "Впорядкувати пам'ять"
 msgid "Sorting"
 msgstr "Впорядкування"
 
-#: ../drivers/baofeng_uv17Pro.py:762
+#: ../drivers/baofeng_uv17Pro.py:762 ../drivers/kguv9dplus.py:1627
 msgid "Sounds a short confirmation tone as you operate the radio. Turn it off when the radio has to be used discreetly."
 msgstr ""
 
@@ -3634,6 +3955,14 @@ msgstr ""
 
 #: ../drivers/ft450d.py:1801
 msgid "Swaps the mark and space tones when receiving RTTY. Try Reverse if a station with a good signal cannot be decoded."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1560
+msgid "Switches frequencies from 108 to 136 MHz, the airband, to AM reception automatically."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2388 ../drivers/kguv9dplus.py:2922
+msgid "TO resumes after 5 seconds without operation, and CO resumes 3 seconds after the signal is lost."
 msgstr ""
 
 #: ../wxui/memedit.py:348
@@ -3702,6 +4031,10 @@ msgstr ""
 msgid "The following information will be submitted:"
 msgstr "Буде надіслано таку інформацію:"
 
+#: ../drivers/kguv9dplus.py:1697
+msgid "The keypad locks after 15 seconds without a key press."
+msgstr ""
+
 #: ../wxui/memedit.py:1391
 msgid "The memory editor requires a reload in order to change the workflow. That will happen now. Any other open tabs will be updated the next time they are loaded."
 msgstr ""
@@ -3721,6 +4054,14 @@ msgstr ""
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr "Рекомендований спосіб імпорту пам'яті — відкрити вихідний файл і скопіювати потрібну пам'ять із нього до цільового образу. Якщо ви продовжите цю функцію імпорту, CHIRP замінить усю пам'ять у поточно відкритому файлі на пам'ять із %(file)s. Бажаєте відкрити цей файл, щоб скопіювати пам'ять вручну, чи продовжити імпорт?"
 
+#: ../drivers/kguv9dplus.py:3118
+msgid "The value is in whole MHz, and frequencies up to 0.9975 MHz above it are still allowed."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:3117
+msgid "The value is in whole MHz."
+msgstr ""
+
 #: ../wxui/memedit.py:2252
 msgid "This Memory"
 msgstr "Цю пам'ять"
@@ -3738,11 +4079,11 @@ msgstr ""
 msgid "This driver is in development and should be considered as experimental."
 msgstr ""
 
-#: ../drivers/uvk5.py:744
+#: ../drivers/uvk5.py:767
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr ""
 
-#: ../drivers/uvk5.py:2149
+#: ../drivers/uvk5.py:2172
 msgid "This image is read-only due to being from a radio with unsupported firmware"
 msgstr ""
 
@@ -3773,7 +4114,7 @@ msgid ""
 "- Settings (keys, DTMF, MDC, scan lists, boot logo, satellite data, calibration) are not supported."
 msgstr ""
 
-#: ../drivers/uvk5.py:671
+#: ../drivers/uvk5.py:694
 msgid ""
 "This is an experimental driver for the Quansheng UV-K5. It may harm your radio, or worse. Use at your own risk.\n"
 "\n"
@@ -3815,7 +4156,7 @@ msgid ""
 "If you can get into it, please check the radio and cable.\n"
 msgstr ""
 
-#: ../drivers/uvk5_cn.py:739 ../drivers/uvk5.py:1907
+#: ../drivers/uvk5_cn.py:739 ../drivers/uvk5.py:1930
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
 msgstr ""
 
@@ -3922,8 +4263,20 @@ msgstr ""
 msgid "Turns on the privacy function the manual calls Encryption for this channel. Other radios can only understand the conversation if they have it turned on as well and use the same DCS code."
 msgstr ""
 
+#: ../drivers/kguv9dplus.py:1658
+msgid "Turns the display backlight on or off in standby."
+msgstr ""
+
 #: ../drivers/ft450d.py:1261
 msgid "Turns the radio off automatically once no button, knob or microphone key has been used and nothing has been transmitted for the selected number of hours. APO flashes on the display and a tone sounds in the last minute before the radio switches off. 0 disables automatic power off."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:1839
+msgid "Turns the speaker on or off while the radio works as a cross-band repeater."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2015
+msgid "Turns the sub frequency on or off, as the TDR key does. With TDR OFF the radio shows only the main frequency."
 msgstr ""
 
 #: ../wxui/memquery.py:188
@@ -4009,7 +4362,7 @@ msgstr "Оновлення задачі %s"
 msgid "Upload instructions"
 msgstr "Інструкції із запису"
 
-#: ../drivers/uvk5.py:2137
+#: ../drivers/uvk5.py:2160
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "Запис вимкнено через непідтримувану версію прошивки"
 
@@ -4026,6 +4379,10 @@ msgstr "Записати в радіостанцію..."
 msgid "Uploaded memory %s"
 msgstr "Записано пам'ять %s"
 
+#: ../drivers/kguv9dplus.py:2272 ../drivers/kguv9dplus.py:3092
+msgid "Use Narrow where required by the channel plan to reduce interference to adjacent channels."
+msgstr ""
+
 #: ../wxui/memedit.py:1367
 msgid "Use TX Frequency Workflow"
 msgstr "Використовувати робочий процес із частотою передавання"
@@ -4041,6 +4398,10 @@ msgstr "Використовувати моноширинний шрифт"
 #: ../wxui/main.py:840
 msgid "Use larger font"
 msgstr "Використовувати більший шрифт"
+
+#: ../drivers/kguv9dplus.py:2254 ../drivers/kguv9dplus.py:3074
+msgid "Use the lowest power that provides reliable communication."
+msgstr ""
 
 #: ../wxui/bugreport.py:266
 msgid "Username"
@@ -4118,6 +4479,10 @@ msgstr ""
 
 #: ../drivers/ft450d.py:1840
 msgid "When on, holding the microphone UP or DWN key for about a second starts a scan that continues after the key is released. When off, the radio only scans while the key is held down."
+msgstr ""
+
+#: ../drivers/kguv9dplus.py:2274 ../drivers/kguv9dplus.py:3094
+msgid "Wide uses 25 kHz channels and Narrow uses 12.5 kHz channels."
 msgstr ""
 
 #: ../wxui/query_sources.py:418
