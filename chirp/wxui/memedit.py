@@ -235,9 +235,9 @@ class ChirpMemoryColumn(object):
     def _render_value(self, memory, value):
         if value is []:
             raise Exception(
-                _('Found empty list value for %(name)s: %(value)r' % {
+                _('Found empty list value for %(name)s: %(value)r') % {
                     'name': self._name,
-                    'value': value}))
+                    'value': value})
         return str(value)
 
     def value(self, memory):
@@ -309,7 +309,7 @@ class ChirpMemoryColumn(object):
 
     def get_by_prompt(self, parent, memory, message):
         common.error_proof.show_error(
-            'Internal error: unable to prompt for %s' % self._name)
+            _('Internal error: unable to prompt for %s') % self._name)
 
 
 class ChirpFrequencyColumn(ChirpMemoryColumn):
@@ -410,7 +410,7 @@ class ChirpFrequencyColumn(ChirpMemoryColumn):
             try:
                 return chirp_common.to_MHz(float(d.GetValue()))
             except ValueError:
-                common.error_proof.show_error('Invalid frequency')
+                common.error_proof.show_error(_('Invalid frequency'))
 
     def wants_split(self, memory, split):
         if split:
@@ -1446,7 +1446,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
 
         defs = [
             ChirpFrequencyColumn('freq', self._radio),
-            ChirpMemoryColumn('name', self._radio),
+            ChirpMemoryColumn('name', self._radio, label=_('Name')),
             ChirpChoiceColumn('tmode', self._radio,
                               valid_tmodes,
                               label=_('Tone Mode')),
@@ -2377,7 +2377,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     @common.error_proof()
-    @undoable('Insert row')
+    @undoable(_('Insert row'))
     def _mem_insert(self, row, event):
         # Traverse memories downward until we find a hole
         for i in range(row, self.mem2row(self._features.memory_bounds[1]) + 1):
@@ -2640,7 +2640,8 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
         if errormsgs:
             errorextra = ''
             if len(errormsgs) > 19:
-                errorextra = '\n' + _('...and %i more' % (len(errormsgs) - 19))
+                errorextra = '\n' + _('...and %i more') % (
+                    len(errormsgs) - 19)
                 errormsgs = errormsgs[:19]
             d = wx.MessageDialog(
                     self,
@@ -2667,7 +2668,7 @@ class ChirpMemEdit(common.ChirpEditor, common.ChirpSyncEditor):
                     mems = common.mems_from_clipboard(data.GetText(),
                                                       parent=self)
                     if not mems:
-                        raise ValueError('No channels extracted from paste')
+                        raise ValueError(_('No channels extracted from paste'))
                 else:
                     mems = [chirp_common.mem_from_text(line)
                             for line in data.GetText().split('\n')
@@ -2852,7 +2853,7 @@ class ChirpLiveMemEdit(ChirpMemEdit, common.ChirpAsyncEditor):
 class DVMemoryAsSettings(settings.RadioSettingGroup):
     def __init__(self, radio, dvmemory):
         self._dvmemory = dvmemory
-        super(DVMemoryAsSettings, self).__init__('dvmemory', 'DV Memory')
+        super(DVMemoryAsSettings, self).__init__('dvmemory', _('DV Memory'))
 
         features = radio.get_features()
 
@@ -3025,7 +3026,7 @@ class ChirpMemPropDialog(wx.Dialog):
             msgs = self._radio.validate_memory(mem)
             if msgs:
                 wx.MessageBox(_('Invalid edit: %s') % '; '.join(msgs),
-                              'Invalid Entry', parent=self)
+                              _('Invalid Entry'), parent=self)
                 raise errors.InvalidValueError()
 
     def _button(self, event):

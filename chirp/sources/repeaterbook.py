@@ -102,7 +102,7 @@ class RepeaterBook(base.NetworkResultRadio):
             pass
         except Exception as e:
             LOG.exception('Failed to create %s: %s' % (db_dir, e))
-            status.set_fail('Internal error - check log')
+            status.set_fail(_('Internal error - check log'))
             return
         data_file = os.path.join(db_dir, fn)
         try:
@@ -140,22 +140,22 @@ class RepeaterBook(base.NetworkResultRadio):
             if modified:
                 # If we have a cached file, it's better than nothing so use
                 # it since the server was not contactable
-                status.send_status('Using cached data', 50)
+                status.send_status(_('Using cached data'), 50)
                 return data_file
         if r.status_code == 304:
-            status.send_status('Using cached data', 50)
+            status.send_status(_('Using cached data'), 50)
             LOG.debug('Server reports no changes so marking our cache '
                       'as current')
             os.utime(data_file, None)
-            status.send_status('Complete', 50)
+            status.send_status(_('Complete'), 50)
             return data_file
         elif r.status_code != 200:
             if modified:
                 # If we have a cached file, it's better than nothing, so use
                 # it since the server refused.
-                status.send_status('Using cached data', 50)
+                status.send_status(_('Using cached data'), 50)
                 return data_file
-            status.send_fail('Got error code %i (%s) from server' % (
+            status.send_fail(_('Got error code %i (%s) from server') % (
                 r.status_code, r.reason))
             LOG.error('Repeaterbook query %r returned %i (%s)',
                       r.url, r.status_code, r.reason)
@@ -170,7 +170,7 @@ class RepeaterBook(base.NetworkResultRadio):
             chunk = decomp.decompress(chunk)
             data += chunk
             counter += len(chunk)
-            status.send_status('Downloading', counter / probable_end * 50)
+            status.send_status(_('Downloading'), counter / probable_end * 50)
 
         try:
             results = json.loads(data)
@@ -179,7 +179,7 @@ class RepeaterBook(base.NetworkResultRadio):
             LOG.error('Repeaterbook query %r returned %i',
                       r.url, r.status_code)
             LOG.error('Start of data:%s%s', os.linesep, data[:256])
-            status.send_fail('RepeaterBook returned invalid response')
+            status.send_fail(_('RepeaterBook returned invalid response'))
             return
 
         try:
@@ -189,7 +189,7 @@ class RepeaterBook(base.NetworkResultRadio):
                 f.write(json.dumps(results).encode('utf-8'))
         except Exception as e:
             LOG.exception('Failed to write data to %s: %s' % (tmp, e))
-            status.send_fail('Failed to write RepeaterBook data to disk')
+            status.send_fail(_('Failed to write RepeaterBook data to disk'))
             return
 
         if results['count']:
@@ -201,10 +201,10 @@ class RepeaterBook(base.NetworkResultRadio):
                 os.rename(tmp, data_file)
         else:
             os.remove(tmp)
-            status.send_fail('No results!')
+            status.send_fail(_('No results!'))
             return
 
-        status.send_status('Download complete', 50)
+        status.send_status(_('Download complete'), 50)
         return data_file
 
     def _merge_cached(self, service, country, data, exclude_file):
@@ -296,7 +296,7 @@ class RepeaterBook(base.NetworkResultRadio):
                                params.get('country'),
                                data, data_file)
 
-        status.send_status('Parsing', 50)
+        status.send_status(_('Parsing'), 50)
 
         def sorter(item):
             if lat == 0 and lon == 0:

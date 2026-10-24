@@ -229,7 +229,7 @@ class SearchHelp(wx.PopupTransientWindow):
         }
         expected_filtered = sorted([exp_map.get(e, e) for e in expected])
         if expected:
-            label.append('Expected: %s' % (','.join(expected_filtered)))
+            label.append(_('Expected: %s') % (','.join(expected_filtered)))
 
         for exp in sorted(expected):
             if exp == 'QUOTE':
