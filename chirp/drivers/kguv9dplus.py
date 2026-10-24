@@ -1025,7 +1025,7 @@ STEPS_9K = [2.5, 5.0, 6.25, 8.33, 10.0, 12.5, 25.0, 50.0, 100.0]
 S_TONES = [str(x) for x in [1000, 1450, 1750, 2100]]
 STEP_LIST = [str(x)+"kHz" for x in STEPS]
 STEP_LIST_9K = [str(x)+"kHz" for x in STEPS_9K]
-ROGER_LIST = ["Off", "Begin", "End", "Both"]
+ROGER_LIST = ["Off", "BOT", "EOT", "Both"]
 TIMEOUT_LIST = [str(x) + "s" for x in range(15, 601, 15)]
 TOA_LIST = ["Off"] + ["%ds" % t for t in range(1, 11)]
 BANDWIDTH_LIST = ["Wide", "Narrow"]
@@ -1050,16 +1050,16 @@ BACKLIGHT_BRIGHT_MAX = 5
 SAVE_MODES = ["Off", "1", "2", "3", "4"]
 LOCK_MODES = ["key-lk", "key+pg", "key+ptt", "all"]
 APO_TIMES = ["Off"] + ["%dm" % t for t in range(15, 151, 15)]
-OFFSET_LIST = ["none", "+", "-"]
+OFFSET_LIST = ["Off", "+", "-"]
 PONMSG_LIST = ["Battery Volts", "Bitmap"]
 PONMSG_LIST2 = ["Battery Volts", "Bitmap-DISABLED"]
 SPMUTE_LIST = ["QT", "QT*T", "QT&T"]
 DTMFST_LIST = ["Off", "DT-ST", "ANI-ST", "DT-ANI"]
 DTMF_TIMES = ["%d" % x for x in range(80, 501, 20)]
-PTTID_LIST = ["Off", "Begin", "End", "Both"]
+PTTID_LIST = ["Off", "BOT", "EOT", "Both"]
 ID_DLY_LIST = ["%dms" % t for t in range(100, 3001, 100)]
 VOX_GRDS = ["Off"] + ["%dlevel" % l for l in range(1, 11)]
-VOX_DLYS = ["Off"] + ["%ds" % t for t in range(1, 5)]
+VOX_DLYS = ["Off"] + ["%ds" % t for t in range(1, 6)]
 RPT_KPTS = ["Off"] + ["%dms" % t for t in range(100, 5001, 100)]
 ABR_LVL_MAP = [("1", 1), ("2", 2), ("3", 3), ("4", 4), ("5", 5)]
 LIST_1_5 = ["%s" % x for x in range(1, 6)]
@@ -1074,9 +1074,11 @@ S_MUTE_LIST = ["off", "rx mute", "tx mute", "r/t mute"]
 POWER_LIST = ["Low", "Med", "High"]
 RPTMODE_LIST = ["Radio/Talkie", "One direction Repeater",
                 "Two direction repeater"]
+# The manual's DCS table also lists 645, which is not in DTCS_CODES
+DCS_CODES = sorted(list(chirp_common.DTCS_CODES) + [645])
 TONE_LIST = ["----"] + ["%s" % str(t) for t in chirp_common.TONES] + \
-            ["D%0.3dN" % dts for dts in chirp_common.DTCS_CODES] + \
-            ["D%0.3dI" % dts for dts in chirp_common.DTCS_CODES]
+            ["D%0.3dN" % dts for dts in DCS_CODES] + \
+            ["D%0.3dI" % dts for dts in DCS_CODES]
 SCREEN_MODE_LIST = ["Classic", "Covert", "Day_1", "Day_2"]
 ACTIVE_AREA_LIST = ["Receiver A - Top", "Receiver B - Bottom"]
 TDR_LIST = ["TDR ON", "TDR OFF"]
@@ -1554,144 +1556,256 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
 
         cf = RadioSettingGroup("cfg_grp", "Configuration")
 
-        cf.append(RadioSetting("auto_am",
-                               "Auto detect AM (Menu 53)",
-                               RadioSettingValueBoolean(s.auto_am)))
-        cf.append(RadioSetting("qt_sw",
-                               "Scan tone detect (Menu 59)",
-                               RadioSettingValueBoolean(s.qt_sw)))
-        cf.append(
-            RadioSetting("s_mute",
-                         "SubFreq Mute (Menu 60)",
-                         RadioSettingValueList(S_MUTE_LIST,
-                                               current_index=s.s_mute)))
-        cf.append(
-            RadioSetting("tot",
-                         "Transmit timeout Timer (Menu 10)",
-                         RadioSettingValueList(TIMEOUT_LIST,
-                                               current_index=s.tot)))
-        cf.append(
-            RadioSetting("toa",
-                         "Transmit Timeout Alarm (Menu 11)",
-                         RadioSettingValueList(TOA_LIST,
-                                               current_index=s.toa)))
-        cf.append(
-            RadioSetting("ptt_id",
-                         "PTT Caller ID mode (Menu 23)",
-                         RadioSettingValueList(PTTID_LIST,
-                                               current_index=s.ptt_id)))
-        cf.append(
-            RadioSetting("id_dly",
-                         "Caller ID Delay time (Menu 25)",
-                         RadioSettingValueList(ID_DLY_LIST,
-                                               current_index=s.id_dly)))
-        cf.append(RadioSetting("voice_sw",
-                               "Voice Guide (Menu 12)",
-                               RadioSettingValueBoolean(s.voice_sw)))
-        cf.append(RadioSetting("beep",
-                               "Keypad Beep (Menu 13)",
-                               RadioSettingValueBoolean(s.beep)))
-        cf.append(
-            RadioSetting("s_tone",
-                         "Side Tone (Menu 36)",
-                         RadioSettingValueList(S_TONES,
-                                               current_index=s.s_tone)))
-        cf.append(
-            RadioSetting("ring_time",
-                         "Ring Time (Menu 26)",
-                         RadioSettingValueList(
-                             LIST_OFF_10,
-                             current_index=s.ring_time)))
-        cf.append(
-            RadioSetting("roger",
-                         "Roger Beep (Menu 9)",
-                         RadioSettingValueList(ROGER_LIST,
-                                               current_index=s.roger)))
-        cf.append(RadioSetting("blcdsw",
-                               "Backlight (Menu 41)",
-                               RadioSettingValueBoolean(s.blcdsw)))
-        cf.append(
-            RadioSetting("abr",
-                         "Auto Backlight Time (Menu 1)",
-                         RadioSettingValueList(BACKLIGHT_LIST,
-                                               current_index=s.abr)))
-        cf.append(
-            RadioSetting("abr_lvl",
-                         "Backlight Brightness (Menu 27)",
-                         RadioSettingValueInteger(BACKLIGHT_BRIGHT_MIN,
-                                                  BACKLIGHT_BRIGHT_MAX,
-                                                  s.abr_lvl)))
-        cf.append(RadioSetting("lock",
-                               "Keypad Lock",
-                               RadioSettingValueBoolean(s.lock)))
-        cf.append(
-            RadioSetting("lock_m",
-                         "Keypad Lock Mode (Menu 35)",
-                         RadioSettingValueList(LOCK_MODES,
-                                               current_index=s.lock_m)))
-        cf.append(RadioSetting("auto_lk",
-                               "Keypad Autolock (Menu 34)",
-                               RadioSettingValueBoolean(s.auto_lk)))
-        cf.append(RadioSetting("prich_sw",
-                               "Priority Channel Scan (Menu 33)",
-                               RadioSettingValueBoolean(s.prich_sw)))
-        cf.append(RadioSetting("pri_ch",
-                               "Priority Channel (Menu 32)",
-                               RadioSettingValueInteger(1, 999,
-                                                        s.pri_ch)))
-        cf.append(
-            RadioSetting("dtmf_st",
-                         "DTMF Sidetone (Menu 22)",
-                         RadioSettingValueList(DTMFST_LIST,
-                                               current_index=s.dtmf_st)))
-        cf.append(RadioSetting("sc_qt",
-                               "Scan QT Save Mode (Menu 38)",
-                               RadioSettingValueList(
-                                   SCQT_LIST,
-                                   current_index=s.sc_qt)))
-        cf.append(
-            RadioSetting("apo_tmr",
-                         "Automatic Power-off (Menu 39)",
-                         RadioSettingValueList(APO_TIMES,
-                                               current_index=s.apo_tmr)))
-        cf.append(  # VOX "guard" is really VOX trigger audio level
-            RadioSetting("vox_grd",
-                         "VOX level (Menu 7)",
-                         RadioSettingValueList(VOX_GRDS,
-                                               current_index=s.vox_grd)))
-        cf.append(
-            RadioSetting("vox_dly",
-                         "VOX Delay (Menu 37)",
-                         RadioSettingValueList(VOX_DLYS,
-                                               current_index=s.vox_dly)))
-        cf.append(RadioSetting("bledsw",
-                               "Receive LED (Menu 42)",
-                               RadioSettingValueBoolean(s.bledsw)))
+        rs = RadioSetting("auto_am",
+                          "Auto detect AM (Menu 53)",
+                          RadioSettingValueBoolean(s.auto_am))
+        rs.set_doc(_("Switches frequencies from 108 to 136 MHz, the "
+                     "airband, to AM reception automatically.") + " " +
+                   _("It works in area A only, and takes priority over the "
+                     "AM switch (menu 54)."))
+        cf.append(rs)
+        rs = RadioSetting("qt_sw",
+                          "Scan tone detect (Menu 59)",
+                          RadioSettingValueBoolean(s.qt_sw))
+        rs.set_doc(_("Makes scanning check whether the CTCSS or DCS tone of "
+                     "a signal it finds is compatible with the programmed "
+                     "one. Off skips this check."))
+        cf.append(rs)
+        rs = RadioSetting("s_mute",
+                          "SubFreq Mute (Menu 60)",
+                          RadioSettingValueList(S_MUTE_LIST,
+                                                current_index=s.s_mute))
+        rs.set_doc(_("Mutes the sub frequency while the radio works on the "
+                     "main frequency: rx mute while receiving, tx mute while "
+                     "transmitting, and r/t mute in both cases. Off never "
+                     "mutes the sub frequency."))
+        cf.append(rs)
+        rs = RadioSetting("tot",
+                          "Transmit timeout Timer (Menu 10)",
+                          RadioSettingValueList(TIMEOUT_LIST,
+                                                current_index=s.tot))
+        rs.set_doc(_("Limits how long a single transmission may last. When "
+                     "the time runs out the radio stops transmitting until "
+                     "PTT is released, which prevents overheating and stops a "
+                     "stuck PTT from blocking the channel for everyone "
+                     "else.") + " " +
+                   _("After a timeout, PTT stays blocked for 10 seconds, and "
+                     "this applies to VOX transmissions too."))
+        cf.append(rs)
+        rs = RadioSetting("toa",
+                          "Transmit Timeout Alarm (Menu 11)",
+                          RadioSettingValueList(TOA_LIST,
+                                                current_index=s.toa))
+        rs.set_doc(_("Sets how many seconds before the Time-out Timer "
+                     "expires that the radio flashes a pre-alert. Off "
+                     "disables the warning."))
+        cf.append(rs)
+        rs = RadioSetting("ptt_id",
+                          "PTT Caller ID mode (Menu 23)",
+                          RadioSettingValueList(PTTID_LIST,
+                                                current_index=s.ptt_id))
+        rs.set_doc(_("Controls when the ANI code is sent: BOT when PTT is "
+                     "pressed, EOT when PTT is released, Both at both times, "
+                     "or Off."))
+        cf.append(rs)
+        rs = RadioSetting("id_dly",
+                          "Caller ID Delay time (Menu 25)",
+                          RadioSettingValueList(ID_DLY_LIST,
+                                                current_index=s.id_dly))
+        rs.set_doc(_("Delays transmission of the automatic ANI/PTT-ID code "
+                     "after PTT is pressed, allowing the receiving path time "
+                     "to open before the code is sent."))
+        cf.append(rs)
+        rs = RadioSetting("voice_sw",
+                          "Voice Guide (Menu 12)",
+                          RadioSettingValueBoolean(s.voice_sw))
+        rs.set_doc(_("Announces the channel number and other operations out "
+                     "loud as you use the radio. It can be intrusive in quiet "
+                     "surroundings."))
+        cf.append(rs)
+        rs = RadioSetting("beep",
+                          "Keypad Beep (Menu 13)",
+                          RadioSettingValueBoolean(s.beep))
+        rs.set_doc(_("Sounds a short confirmation tone as you operate the "
+                     "radio. Turn it off when the radio has to be used "
+                     "discreetly."))
+        cf.append(rs)
+        rs = RadioSetting("s_tone",
+                          "Single Tone (Menu 36)",
+                          RadioSettingValueList(S_TONES,
+                                                current_index=s.s_tone))
+        rs.set_doc(_("Selects the tone-burst frequency sent for repeater "
+                     "access."))
+        cf.append(rs)
+        rs = RadioSetting("ring_time",
+                          "Ring Time (Menu 26)",
+                          RadioSettingValueList(
+                              LIST_OFF_10,
+                              current_index=s.ring_time))
+        rs.set_doc(_("Sets how many seconds the radio rings when it receives "
+                     "a signal, before the audio is heard. Off turns the ring "
+                     "off."))
+        cf.append(rs)
+        rs = RadioSetting("roger",
+                          "Roger Beep (Menu 9)",
+                          RadioSettingValueList(ROGER_LIST,
+                                                current_index=s.roger))
+        rs.set_doc(_("Selects when the radio beeps to mark a transmission: "
+                     "BOT when PTT is pressed, EOT when PTT is released, Both "
+                     "at both times, or Off."))
+        cf.append(rs)
+        rs = RadioSetting("blcdsw",
+                          "Backlight (Menu 41)",
+                          RadioSettingValueBoolean(s.blcdsw))
+        rs.set_doc(_("Turns the display backlight on or off in standby."))
+        cf.append(rs)
+        rs = RadioSetting("abr",
+                          "Auto Backlight Time (Menu 1)",
+                          RadioSettingValueList(BACKLIGHT_LIST,
+                                                current_index=s.abr))
+        rs.set_doc(_("Sets how many seconds the display backlight remains on "
+                     "after a key press or radio activity.") + " " +
+                   _("Always On keeps the backlight on, and Off leaves it "
+                     "off."))
+        cf.append(rs)
+        rs = RadioSetting("abr_lvl",
+                          "Backlight Brightness (Menu 27)",
+                          RadioSettingValueInteger(BACKLIGHT_BRIGHT_MIN,
+                                                   BACKLIGHT_BRIGHT_MAX,
+                                                   s.abr_lvl))
+        rs.set_doc(_("Sets the brightness of the display backlight, from "
+                     "level 1 to level 5."))
+        cf.append(rs)
+        rs = RadioSetting("lock",
+                          "Keypad Lock",
+                          RadioSettingValueBoolean(s.lock))
+        rs.set_doc(_("Sets the current keypad-lock state. Hold the # key on "
+                     "the radio to lock or unlock the keypad."))
+        cf.append(rs)
+        rs = RadioSetting("lock_m",
+                          "Keypad Lock Mode (Menu 35)",
+                          RadioSettingValueList(LOCK_MODES,
+                                                current_index=s.lock_m))
+        rs.set_doc(_("Selects what the keypad lock locks: key-lk locks the "
+                     "keypad, key+pg the keypad and the channel knob, key+ptt "
+                     "the keypad and PTT, and all locks all of them. The side "
+                     "keys PF1, PF2 and PF3 are locked in every mode."))
+        cf.append(rs)
+        rs = RadioSetting("auto_lk",
+                          "Keypad Autolock (Menu 34)",
+                          RadioSettingValueBoolean(s.auto_lk))
+        rs.set_doc(_("Automatically locks the keypad to prevent accidental "
+                     "changes. Hold the # key to unlock the keypad.") + " " +
+                   _("The keypad locks after 15 seconds without a key "
+                     "press."))
+        cf.append(rs)
+        rs = RadioSetting("prich_sw",
+                          "Priority Channel Scan (Menu 33)",
+                          RadioSettingValueBoolean(s.prich_sw))
+        rs.set_doc(_("Checks the priority channel every three seconds on the "
+                     "main frequency, and switches to it when it receives a "
+                     "signal there. When the radio is turned on, reception on "
+                     "the main frequency is interrupted for three seconds "
+                     "while it checks the priority channel."))
+        cf.append(rs)
+        rs = RadioSetting("pri_ch",
+                          "Priority Channel (Menu 32)",
+                          RadioSettingValueInteger(1, 999,
+                                                   s.pri_ch))
+        rs.set_doc(_("Selects the memory channel checked periodically when "
+                     "Priority Scan is enabled."))
+        cf.append(rs)
+        rs = RadioSetting("dtmf_st",
+                          "DTMF Sidetone (Menu 22)",
+                          RadioSettingValueList(DTMFST_LIST,
+                                                current_index=s.dtmf_st))
+        rs.set_doc(_("Chooses which transmitted DTMF tones are also heard "
+                     "through the radio speaker. OFF mutes all; DT-ST sounds "
+                     "manually keyed tones; ANI-ST sounds automatic "
+                     "ANI/PTT-ID tones; DT+ANI sounds both."))
+        cf.append(rs)
+        rs = RadioSetting("sc_qt",
+                          "Scan QT Save Mode (Menu 38)",
+                          RadioSettingValueList(
+                              SCQT_LIST,
+                              current_index=s.sc_qt))
+        rs.set_doc(_("Selects where a CTCSS or DCS tone found by tone "
+                     "scanning is saved in frequency mode: Decoder saves it "
+                     "as the receive tone, Encoder as the transmit tone, and "
+                     "Both as both."))
+        cf.append(rs)
+        rs = RadioSetting("apo_tmr",
+                          "Automatic Power-off (Menu 39)",
+                          RadioSettingValueList(APO_TIMES,
+                                                current_index=s.apo_tmr))
+        rs.set_doc(_("Automatically powers the radio off after the selected "
+                     "period without receiver activity. Off disables "
+                     "automatic power-off."))
+        cf.append(rs)
+        # VOX "guard" is really VOX trigger audio level
+        rs = RadioSetting("vox_grd",
+                          "VOX level (Menu 7)",
+                          RadioSettingValueList(VOX_GRDS,
+                                                current_index=s.vox_grd))
+        rs.set_doc(_("Sets the VOX sensitivity. Too sensitive a setting keys "
+                     "the transmitter on the noise around the radio, too "
+                     "insensitive a setting fails to pick up your "
+                     "voice.") + " " +
+                   _("Off turns VOX off. VOX works on the main frequency "
+                     "only, and not while receiving or listening to the FM "
+                     "radio."))
+        cf.append(rs)
+        rs = RadioSetting("vox_dly",
+                          "VOX Delay (Menu 37)",
+                          RadioSettingValueList(VOX_DLYS,
+                                                current_index=s.vox_dly))
+        rs.set_doc(_("How long the transmitter stays keyed after you stop "
+                     "speaking. A longer delay avoids dropping the "
+                     "transmission during natural pauses in speech.") + " " +
+                   _("Off releases the transmitter as soon as you stop "
+                     "speaking."))
+        cf.append(rs)
+        rs = RadioSetting("bledsw",
+                          "Receive LED (Menu 42)",
+                          RadioSettingValueBoolean(s.bledsw))
+        rs.set_doc(_("Makes the green receive indicator flash every five "
+                     "seconds in standby. Off stops the flashing."))
+        cf.append(rs)
 
         if (self.MODEL == "KG-UV9PX" or self.MODEL == "KG-UV9GX"):
-            cf.append(RadioSetting("screen.screen_mode",
-                                   "Screen Mode (Menu 62)",
-                                   RadioSettingValueList(
-                                         SCREEN_MODE_LIST,
-                                         current_index=sm.screen_mode)))
+            rs = RadioSetting("screen.screen_mode",
+                              "Screen Mode (Menu 62)",
+                              RadioSettingValueList(
+                                    SCREEN_MODE_LIST,
+                                    current_index=sm.screen_mode))
+            rs.set_doc(_("Selects the display style: Classic, Covert, Day_1 "
+                         "or Day_2. The manual does not describe these "
+                         "styles."))
+            cf.append(rs)
         if (self.MODEL == "KG-UV9PX" or self.MODEL == "KG-UV9GX"):
             langlst = LANGUAGE_LIST2
         else:
             langlst = LANGUAGE_LIST
-        cf.append(
-            RadioSetting("lang",
-                         "Menu Language (Menu 14)",
-                         RadioSettingValueList(langlst,
-                                               current_index=s.lang)))
+        rs = RadioSetting("lang",
+                          "Menu Language (Menu 14)",
+                          RadioSettingValueList(langlst,
+                                                current_index=s.lang))
+        rs.set_doc(_("Selects the language of the menu display and the voice "
+                     "guide."))
+        cf.append(rs)
 
         if (self.MODEL == "KG-UV9PX" or self.MODEL == "KG-UV9GX"):
             ponmsglst = PONMSG_LIST2
         else:
             ponmsglst = PONMSG_LIST
-        cf.append(RadioSetting("ponmsg",
-                               "Poweron message (Menu 40)",
-                               RadioSettingValueList(
-                                   ponmsglst, current_index=s.ponmsg)))
+        rs = RadioSetting("ponmsg",
+                          "Poweron message (Menu 40)",
+                          RadioSettingValueList(
+                              ponmsglst, current_index=s.ponmsg))
+        rs.set_doc(_("Selects what the display shows when the radio is turned "
+                     "on: Battery Volts shows the battery voltage, and Bitmap "
+                     "shows a picture, the brand logo."))
+        cf.append(rs)
         return cf
 
     def _repeater_tab(self):
@@ -1700,26 +1814,49 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         s = self._memobj.settings
         cf = RadioSettingGroup("repeater", "Repeater Functions")
 
-        cf.append(
-            RadioSetting("type_set",
-                         "Radio Mode (Menu 43)",
-                         RadioSettingValueList(
-                             RPTMODE_LIST,
-                             current_index=s.type_set)))
-        cf.append(RadioSetting("rpt_ptt",
-                               "Repeater PTT (Menu 45)",
-                               RadioSettingValueBoolean(s.rpt_ptt)))
-        cf.append(RadioSetting("rpt_spk",
-                               "Repeater Mode Speaker (Menu 44)",
-                               RadioSettingValueBoolean(s.rpt_spk)))
-        cf.append(
-            RadioSetting("rpt_kpt",
-                         "Repeater Hold Time (Menu 46)",
-                         RadioSettingValueList(RPT_KPTS,
-                                               current_index=s.rpt_kpt)))
-        cf.append(RadioSetting("rpt_rct",
-                               "Repeater Receipt Tone (Menu 47)",
-                               RadioSettingValueBoolean(s.rpt_rct)))
+        rs = RadioSetting("type_set",
+                          "Radio Mode (Menu 43)",
+                          RadioSettingValueList(
+                              RPTMODE_LIST,
+                              current_index=s.type_set))
+        rs.set_doc(_("Selects normal operation or cross-band repeat. "
+                     "Radio/Talkie works as a normal radio. One direction "
+                     "Repeater receives on the main frequency and retransmits "
+                     "on the sub frequency. Two direction repeater receives "
+                     "on both and retransmits each signal on the other one. "
+                     "The two frequencies must be in different bands, for "
+                     "example UHF in area A and VHF in area B."))
+        cf.append(rs)
+        rs = RadioSetting("rpt_ptt",
+                          "Repeater PTT (Menu 45)",
+                          RadioSettingValueBoolean(s.rpt_ptt))
+        rs.set_doc(_("Lets you transmit with PTT while the radio works as a "
+                     "cross-band repeater, which interrupts the repeated "
+                     "signal while PTT is held. When it is off, PTT does not "
+                     "transmit in repeater mode."))
+        cf.append(rs)
+        rs = RadioSetting("rpt_spk",
+                          "Repeater Mode Speaker (Menu 44)",
+                          RadioSettingValueBoolean(s.rpt_spk))
+        rs.set_doc(_("Turns the speaker on or off while the radio works as a "
+                     "cross-band repeater."))
+        cf.append(rs)
+        rs = RadioSetting("rpt_kpt",
+                          "Repeater Hold Time (Menu 46)",
+                          RadioSettingValueList(RPT_KPTS,
+                                                current_index=s.rpt_kpt))
+        rs.set_doc(_("Sets how long the repeater keeps transmitting after the "
+                     "received signal disappears, so that a reply that "
+                     "follows quickly is repeated without a gap. Off stops "
+                     "transmitting as soon as the signal disappears."))
+        cf.append(rs)
+        rs = RadioSetting("rpt_rct",
+                          "Repeater Receipt Tone (Menu 47)",
+                          RadioSettingValueBoolean(s.rpt_rct))
+        rs.set_doc(_("Sends a receipt tone to confirm reception when a "
+                     "repeated signal ends, while the radio works as a "
+                     "cross-band repeater."))
+        cf.append(rs)
         return cf
 
     def _admin_tab(self):
@@ -1756,87 +1893,142 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
 
         cf = RadioSettingGroup("admin", "Admin Functions")
 
-        cf.append(RadioSetting("menu_avail",
-                               "Menu available in channel mode",
-                               RadioSettingValueBoolean(s.menu_avail)))
+        rs = RadioSetting("menu_avail",
+                          "Menu available in channel mode",
+                          RadioSettingValueBoolean(s.menu_avail))
+        rs.set_doc(_("Allows the menu to be opened while the radio is in "
+                     "channel mode. When it is off, the menu is not available "
+                     "in channel mode."))
+        cf.append(rs)
         mode_sw = RadioSettingValueString(0, 6,
                                           pw2str(pw.mode_sw), False)
         rs = RadioSetting("passwords.mode_sw",
                           "Mode Switch Password", mode_sw)
         rs.set_apply_callback(apply_mode_sw, pw)
+        rs.set_doc(_("Sets the 6-digit password the radio asks for before "
+                     "it switches between frequency and channel mode. 000000 "
+                     "means no password is needed."))
         cf.append(rs)
 
-        cf.append(RadioSetting("reset_avail",
-                               "Radio Reset Available",
-                               RadioSettingValueBoolean(s.reset_avail)))
+        rs = RadioSetting("reset_avail",
+                          "Radio Reset Available",
+                          RadioSettingValueBoolean(s.reset_avail))
+        rs.set_doc(_("Controls whether the radio's front-panel RESET menu is "
+                     "available. This does not reset the radio by itself."))
+        cf.append(rs)
         reset = RadioSettingValueString(0, 6, pw2str(pw.reset), False)
         rs = RadioSetting("passwords.reset",
                           "Radio Reset Password", reset)
         rs.set_apply_callback(apply_reset, pw)
+        rs.set_doc(_("Sets the 6-digit password for the RESET menu (menu "
+                     "61)."))
         cf.append(rs)
 
-        cf.append(
-            RadioSetting("dtmf_tx",
-                         "DTMF Tx Duration",
-                         RadioSettingValueList(DTMF_TIMES,
-                                               current_index=s.dtmf_tx)))
+        rs = RadioSetting("dtmf_tx",
+                          "DTMF Tx Duration",
+                          RadioSettingValueList(DTMF_TIMES,
+                                                current_index=s.dtmf_tx))
+        rs.set_doc(_("Sets how long each DTMF tone is transmitted. Increase "
+                     "this if the receiving system does not reliably decode "
+                     "the digits."))
+        cf.append(rs)
         cid = self._memobj.my_callid
         my_callid = RadioSettingValueString(3, 6,
                                             self.callid2str(cid.code), False)
         rs = RadioSetting("my_callid.code",
                           "PTT Caller ID code (Menu 24)", my_callid)
         rs.set_apply_callback(apply_cid, cid)
+        rs.set_doc(_("Programs the radio's numeric Automatic Number "
+                     "Identification code. ANI is a DTMF PTT-ID that can "
+                     "identify this radio to a dispatcher or other compatible "
+                     "equipment.") + " " +
+                   _("It has 3 to 6 digits and cannot begin with 0."))
         cf.append(rs)
 
         stun = self._memobj.stun
         st = RadioSettingValueString(0, 6, digits2str(stun.scc), False)
         rs = RadioSetting("stun.scc", "Security code", st)
         rs.set_apply_callback(apply_scc, stun)
+        rs.set_doc(_("Sets the 6-digit control code for DTMF remote "
+                     "control. A radio that sends this code with a command "
+                     "and this radio's ANI code can stun, kill, monitor or "
+                     "inspect this radio."))
         cf.append(rs)
 
-        cf.append(
-            RadioSetting("settings.save_m",
-                         "Save Mode  (Menu 2)",
-                         RadioSettingValueList(SAVE_MODES,
-                                               current_index=s.save_m)))
+        rs = RadioSetting("settings.save_m",
+                          "Save Mode  (Menu 2)",
+                          RadioSettingValueList(SAVE_MODES,
+                                                current_index=s.save_m))
+        rs.set_doc(_("Cuts standby power consumption by switching the "
+                     "receiver off and on in a repeating cycle once no signal "
+                     "has been received for a few seconds. It considerably "
+                     "extends battery life, at the cost of occasionally "
+                     "clipping the first moment of an incoming "
+                     "transmission.") + " " +
+                   _("Off turns power saving off, and modes 1 to 4 each use "
+                     "their own wake and sleep times."))
+        cf.append(rs)
         for i in range(0, 4):
             sm = self._memobj.save[i]
             wake = RadioSettingValueInteger(0, 18000, sm.wake * 10, 1)
             wf = RadioSetting("save[%i].wake" % i,
                               "Save Mode %d Wake Time" % (i+1), wake)
             wf.set_apply_callback(apply_wake, sm)
+            wf.set_doc(_("Sets how long the receiver stays on in each cycle "
+                         "of power save mode %d. The manual does not state "
+                         "the unit.") % (i + 1))
             cf.append(wf)
 
             slp = RadioSettingValueInteger(0, 18000, sm.sleep * 10, 1)
             wf = RadioSetting("save[%i].sleep" % i,
                               "Save Mode %d Sleep Time" % (i+1), slp)
             wf.set_apply_callback(apply_sleep, sm)
+            wf.set_doc(_("Sets how long the receiver stays off in each cycle "
+                         "of power save mode %d. The manual does not state "
+                         "the unit.") % (i + 1))
             cf.append(wf)
 
         _msg = str(self._memobj.display.banner).split("\0")[0]
         val = RadioSettingValueString(0, 16, _msg)
         val.set_mutable(True)
-        cf.append(RadioSetting("display.banner",
-                               "Display Message", val))
+        rs = RadioSetting("display.banner",
+                          "Display Message", val)
+        rs.set_doc(_("Sets a text message of up to 16 characters that the "
+                     "radio shows on its display. The manual does not say "
+                     "where it appears."))
+        cf.append(rs)
 
         if (self.MODEL == "KG-UV9PX" or self.MODEL == "KG-UV9GX"):
             _str = str(self._memobj.oemmodel.model).split("\0")[0]
             val = RadioSettingValueString(0, 10, _str)
             val.set_mutable(True)
-            cf.append(RadioSetting("oemmodel.model",
-                                   "Custom Sub-Receiver Message", val))
+            rs = RadioSetting("oemmodel.model",
+                              "Custom Sub-Receiver Message", val)
+            rs.set_doc(_("Sets a text of up to 10 characters for the sub "
+                         "receiver area of the display. The manual does not "
+                         "describe this setting."))
+            cf.append(rs)
 
             val = RadioSettingValueList(
                                 TDR_LIST,
                                 current_index=s.tdr)
             val.set_mutable(True)
-            cf.append(RadioSetting("tdr", "TDR", val))
+            rs = RadioSetting("tdr", "TDR", val)
+            rs.set_doc(_("Turns the sub frequency on or off, as the TDR key "
+                         "does. With TDR OFF the radio shows only the main "
+                         "frequency."))
+            cf.append(rs)
 
             val = RadioSettingValueList(
                                 ACTIVE_AREA_LIST,
                                 current_index=s.act_area)
             val.set_mutable(True)
-            cf.append(RadioSetting("act_area", "Active Receiver(BAND)", val))
+            rs = RadioSetting("act_area", "Active Receiver(BAND)", val)
+            rs.set_doc(_("Selects which receiver has the main frequency, the "
+                         "one marked MAIN on the display. PTT transmits on "
+                         "the main frequency. On the radio, press BAND to "
+                         "change it."))
+            cf.append(rs)
 
         return cf
 
@@ -1855,6 +2047,8 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             rs = RadioSetting("fm_%d" % (ch + 1),
                               "FM Channel %d" % (ch + 1), freq)
             rs.set_apply_callback(apply_fm, chan)
+            rs.set_doc(_("Sets the frequency of broadcast FM memory %d, from "
+                         "76 to 108 MHz.") % (ch + 1))
             fm.append(rs)
         return fm
 
@@ -1887,16 +2081,24 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             rs = RadioSetting("scn_grps.names[%i].name" % i,
                               "Group %i Name" % (i + 1), rs_name)
             rs.set_apply_callback(apply_name, s_name)
+            rs.set_doc(_("Sets the name of scan group %d, up to 8 "
+                         "characters.") % (i + 1))
             scan.append(rs)
             rs_st = RadioSettingValueInteger(1, 999, s_grp.scan_st)
             rs = RadioSetting("scn_grps.addrs[%i].scan_st" % i,
                               "Starting Channel", rs_st)
             rs.set_apply_callback(apply_start, s_grp)
+            rs.set_doc(_("Sets the first channel of scan group %d. When Scan "
+                         "Group (menu 49) selects this group, channel "
+                         "scanning covers the channels from here to the "
+                         "group's last channel.") % (i + 1))
             scan.append(rs)
             rs_end = RadioSettingValueInteger(1, 999, s_grp.scan_end)
             rs = RadioSetting("scn_grps.addrs[%i].scan_end" % i,
                               "Last Channel", rs_end)
             rs.set_apply_callback(apply_end, s_grp)
+            rs.set_doc(_("Sets the last channel of scan group %d.") %
+                       (i + 1))
             scan.append(rs)
         return scan
 
@@ -1920,6 +2122,8 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             rs = RadioSetting("cid_names[%i].name" % i,
                               "Caller ID %i Name" % (i + 1), c_name)
             rs.set_apply_callback(apply_name, name)
+            rs.set_doc(_("Sets a name of up to 6 characters for call group "
+                         "%d.") % (i + 1))
             cid.append(rs)
             c_id = RadioSettingValueString(0, 6,
                                            self.callid2str(callid.cid),
@@ -1927,6 +2131,10 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             rs = RadioSetting("call_ids[%i].cid" % i,
                               "Caller ID Code", c_id)
             rs.set_apply_callback(apply_callid, callid)
+            rs.set_doc(_("Sets the caller ID code of call group %d, 3 to 6 "
+                         "digits. When Call ID Group (menu 52) selects this "
+                         "group, the Call ID side key function sends this "
+                         "code to call the radio that has it.") % (i + 1))
             cid.append(rs)
         return cid
 
@@ -1938,7 +2146,7 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             obj.freq = f/10
 
         def apply_offset(setting, obj):
-            f = freq2int(setting.value, 0, 5000000)
+            f = freq2int(setting.value, 0, 999995000)
             obj.offset = f/10
 
         def apply_enc(setting, obj):
@@ -1985,11 +2193,18 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
         freq = RadioSettingValueString(0, 15, int2freq(c.freq * 10))
         rs = RadioSetting(prefix + ".freq", "Rx Frequency", freq)
         rs.set_apply_callback(apply_freq, lo, hi, c)
+        rs.set_doc(_("Sets the receive frequency of this band in frequency "
+                     "mode."))
         bf.append(rs)
 
         off = RadioSettingValueString(0, 15, int2freq(c.offset * 10))
         rs = RadioSetting(prefix + ".offset", "Tx Offset (Menu 28)", off)
         rs.set_apply_callback(apply_offset, c)
+        rs.set_doc(_("Sets the repeater offset of this band in frequency "
+                     "mode, the difference between the receive and transmit "
+                     "frequencies.") + " " +
+                   _("Frequency Shift (menu 6) selects whether the offset is "
+                     "added or subtracted."))
         bf.append(rs)
 
         rs = RadioSetting(prefix + ".encqt",
@@ -1997,6 +2212,10 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueList(TONE_LIST,
                                                 short2tone(c.encqt)))
         rs.set_apply_callback(apply_enc, c)
+        rs.set_doc(_("Selects the CTCSS tone or DCS code that this band "
+                     "transmits in frequency mode, as needed to open a "
+                     "repeater or a radio that uses tone squelch. ---- sends "
+                     "no tone."))
         bf.append(rs)
 
         rs = RadioSetting(prefix + ".decqt",
@@ -2004,32 +2223,69 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                           RadioSettingValueList(TONE_LIST,
                                                 short2tone(c.decqt)))
         rs.set_apply_callback(apply_dec, c)
+        rs.set_doc(_("Selects the CTCSS tone or DCS code that a signal must "
+                     "carry before the speaker unmutes on this band in "
+                     "frequency mode. ---- turns tone squelch off, so that "
+                     "any signal is heard."))
         bf.append(rs)
 
-        bf.append(RadioSetting(prefix + ".qt",
-                               "Mute Mode (Menu 21)",
-                               RadioSettingValueList(SPMUTE_LIST,
-                                                     current_index=c.qt)))
-        bf.append(RadioSetting(prefix + ".scan",
-                               "Scan this (Menu 48)",
-                               RadioSettingValueBoolean(c.scan)))
-        bf.append(RadioSetting(prefix + ".pwr",
-                               "Power (Menu 5)",
-                               RadioSettingValueList(
-                                   POWER_LIST, current_index=c.pwr)))
-        bf.append(RadioSetting(prefix + ".mod",
-                               "AM Modulation (Menu 54)",
-                               RadioSettingValueBoolean(c.mod)))
-        bf.append(RadioSetting(prefix + ".fm_dev",
-                               "FM Deviation (Menu 4)",
-                               RadioSettingValueList(
-                                   BANDWIDTH_LIST,
-                                   current_index=c.fm_dev)))
-        bf.append(
-            RadioSetting(prefix + ".shift",
-                         "Frequency Shift (Menu 6)",
-                         RadioSettingValueList(OFFSET_LIST,
-                                               current_index=c.shift)))
+        rs = RadioSetting(prefix + ".qt",
+                          "Mute Mode (Menu 21)",
+                          RadioSettingValueList(SPMUTE_LIST,
+                                                current_index=c.qt))
+        rs.set_doc(_("Selects which received signals unmute the speaker on "
+                     "this band in frequency mode. QT accepts a signal with "
+                     "the right CTCSS or DCS tone, QT&T one whose tone and "
+                     "DTMF code both match, and QT*T one that matches "
+                     "either."))
+        bf.append(rs)
+        rs = RadioSetting(prefix + ".scan",
+                          "Scan this (Menu 48)",
+                          RadioSettingValueBoolean(c.scan))
+        rs.set_doc(_("Sets Scan Add (menu 48) for this band in frequency "
+                     "mode. A channel stored from this band is added to the "
+                     "scan list when it is on, and left out of channel "
+                     "scanning when it is off."))
+        bf.append(rs)
+        rs = RadioSetting(prefix + ".pwr",
+                          "Power (Menu 5)",
+                          RadioSettingValueList(
+                              POWER_LIST, current_index=c.pwr))
+        rs.set_doc(_("Selects the transmit power of this band in frequency "
+                     "mode.") + " " +
+                   _("Use the lowest power that provides reliable "
+                     "communication."))
+        bf.append(rs)
+        rs = RadioSetting(prefix + ".mod",
+                          "AM Modulation (Menu 54)",
+                          RadioSettingValueBoolean(c.mod))
+        rs.set_doc(_("Receives this band in AM instead of FM in frequency "
+                     "mode.") + " " +
+                   _("AM works in area A only, and the radio returns to FM "
+                     "when the frequency or channel changes."))
+        bf.append(rs)
+        rs = RadioSetting(prefix + ".fm_dev",
+                          "Bandwidth (Menu 4)",
+                          RadioSettingValueList(
+                              BANDWIDTH_LIST,
+                              current_index=c.fm_dev))
+        rs.set_doc(_("Selects wide or narrow FM for this band in frequency "
+                     "mode.") + " " +
+                   _("Use Narrow where required by the channel plan to "
+                     "reduce interference to adjacent channels.") + " " +
+                   _("Wide uses 25 kHz channels and Narrow uses 12.5 kHz "
+                     "channels."))
+        bf.append(rs)
+        rs = RadioSetting(prefix + ".shift",
+                          "Frequency Shift (Menu 6)",
+                          RadioSettingValueList(OFFSET_LIST,
+                                                current_index=c.shift))
+        rs.set_doc(_("Sets the repeater shift direction of this band in "
+                     "frequency mode.") + " " +
+                   _("+ transmits above the receive frequency, - transmits "
+                     "below it, and Off uses the same frequency for transmit "
+                     "and receive."))
+        bf.append(rs)
         return bf
 
     def _area_tab(self, area):
@@ -2060,57 +2316,98 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
 
         prefix = "%s_conf" % area
         af = RadioSettingGroup(prefix, desc)
-        af.append(
-            RadioSetting(prefix + ".w_mode",
-                         "Workmode",
-                         RadioSettingValueList(
-                             WORKMODE_LIST,
-                             current_index=c.w_mode)))
-        af.append(RadioSetting(prefix + ".w_chan",
-                               "Channel",
-                               RadioSettingValueInteger(1, 999,
-                                                        c.w_chan)))
-        af.append(
-            RadioSetting(prefix + ".scan_grp",
-                         "Scan Group (Menu 49)",
-                         RadioSettingValueList(
-                             SCANGRP_LIST,
-                             current_index=c.scan_grp)))
-        af.append(RadioSetting(prefix + ".bcl",
-                               "Busy Channel Lock-out (Menu 15)",
-                               RadioSettingValueBoolean(c.bcl)))
-        af.append(
-            RadioSetting(prefix + ".sql",
-                         "Squelch Level (Menu 8)",
-                         RadioSettingValueList(LIST_0_9,
-                                               current_index=c.sql)))
-        af.append(
-            RadioSetting(prefix + ".cset",
-                         "Call ID Group (Menu 52)",
-                         RadioSettingValueList(LIST_1_20,
-                                               current_index=c.cset)))
-        af.append(
-            RadioSetting(prefix + ".step",
-                         "Frequency Step (Menu 3)",
-                         RadioSettingValueList(
-                             self._step_list, current_index=c.step)))
-        af.append(
-            RadioSetting(prefix + ".scan_mode",
-                         "Scan Mode (Menu 20)",
-                         RadioSettingValueList(
-                             SCANMODE_LIST,
-                             current_index=c.scan_mode)))
-        af.append(
-            RadioSetting(prefix + ".scan_range",
-                         "Scan Range (Menu 50)",
-                         RadioSettingValueList(
-                             SCANRANGE_LIST,
-                             current_index=c.scan_range)))
+        rs = RadioSetting(prefix + ".w_mode",
+                          "Workmode",
+                          RadioSettingValueList(
+                              WORKMODE_LIST,
+                              current_index=c.w_mode))
+        rs.set_doc(_("Selects frequency (VFO) or channel mode for this area, "
+                     "and in channel mode what the display shows: the channel "
+                     "number, the channel number and frequency, or the "
+                     "channel number and name. On the radio, hold the TDR key "
+                     "to step through these modes."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".w_chan",
+                          "Channel",
+                          RadioSettingValueInteger(1, 999,
+                                                   c.w_chan))
+        rs.set_doc(_("Selects the memory channel this area uses in channel "
+                     "mode."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".scan_grp",
+                          "Scan Group (Menu 49)",
+                          RadioSettingValueList(
+                              SCANGRP_LIST,
+                              current_index=c.scan_grp))
+        rs.set_doc(_("Selects which channels are scanned in channel mode: "
+                     "All scans every channel, and 1 to 10 scan only the "
+                     "channels of that scan group."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".bcl",
+                          "Busy Channel Lock-out (Menu 15)",
+                          RadioSettingValueBoolean(c.bcl))
+        rs.set_doc(_("Prevents transmitting on a channel that is already in "
+                     "use."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".sql",
+                          "Squelch Level (Menu 8)",
+                          RadioSettingValueList(LIST_0_9,
+                                                current_index=c.sql))
+        rs.set_doc(_("Sets how strong a received signal must be before the "
+                     "speaker unmutes. 0 leaves the squelch open so you hear "
+                     "noise all the time, higher values reject more weak "
+                     "signals and noise. Raise this value if the speaker "
+                     "keeps unmuting on interference, lower it if distant "
+                     "stations are being cut off."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".cset",
+                          "Call ID Group (Menu 52)",
+                          RadioSettingValueList(LIST_1_20,
+                                                current_index=c.cset))
+        rs.set_doc(_("Selects which of the 20 call groups the Call ID side "
+                     "key function calls. Each call group holds a caller ID "
+                     "code."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".step",
+                          "Frequency Step (Menu 3)",
+                          RadioSettingValueList(
+                              self._step_list, current_index=c.step))
+        rs.set_doc(_("Sets how far the frequency of this area moves for each "
+                     "tuning step and while scanning in frequency "
+                     "mode.") + " " +
+                   _("Choose the spacing used by the frequencies you intend "
+                     "to tune."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".scan_mode",
+                          "Scan Mode (Menu 20)",
+                          RadioSettingValueList(
+                              SCANMODE_LIST,
+                              current_index=c.scan_mode))
+        rs.set_doc(_("Controls what scanning does after finding a signal. TO "
+                     "resumes after a preset time, CO resumes after the "
+                     "signal disappears, and SE stops scanning on the "
+                     "detected frequency or channel.") + " " +
+                   _("TO resumes after 5 seconds without operation, and CO "
+                     "resumes 3 seconds after the signal is lost."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".scan_range",
+                          "Scan Range (Menu 50)",
+                          RadioSettingValueList(
+                              SCANRANGE_LIST,
+                              current_index=c.scan_range))
+        rs.set_doc(_("Selects what frequency scanning covers in frequency "
+                     "mode: Current band scans the band of the current "
+                     "frequency, freq range scans from Frequency Scan Start "
+                     "to Frequency Scan End, and ALL scans every band except "
+                     "the FM broadcast band."))
+        af.append(rs)
         st = RadioSettingValueString(0, 15,
                                      short2freq(scan_rng.scan_st))
         rs = RadioSetting("settings.%s.scan_st" % area,
                           "Frequency Scan Start", st)
         rs.set_apply_callback(apply_scan_st, scan_lo, scan_hi, scan_rng)
+        rs.set_doc(_("Sets the lowest frequency scanned when Scan Range (menu "
+                     "50) is set to freq range."))
         af.append(rs)
 
         end = RadioSettingValueString(0, 15,
@@ -2119,6 +2416,8 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                           "Frequency Scan End", end)
         rs.set_apply_callback(apply_scan_end, scan_lo, scan_hi,
                               scan_rng)
+        rs.set_doc(_("Sets the highest frequency scanned when Scan Range "
+                     "(menu 50) is set to freq range."))
         af.append(rs)
         # Each area has its own set of bands
         for band in (band_list):
@@ -2145,22 +2444,46 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
 
         kf = RadioSettingGroup("key_grp", "Key Settings")
 
-        kf.append(RadioSetting("settings.pf1",
-                               "PF1 Key function (Menu 55)",
-                               RadioSettingValueList(
-                                   pfkey1,
-                                   current_index=s.pf1)))
-        kf.append(RadioSetting("settings.pf2",
-                               "PF2 Key function (Menu 56)",
-                               RadioSettingValueList(
-                                   pfkey2,
-                                   current_index=s.pf2)))
+        # Describes every option of every model; each key offers a subset
+        pf_options = _("OFF gives the key no function. Call ID sends a "
+                       "selective call to the group chosen in Call ID Group "
+                       "(menu 52), R-ALARM triggers the distant alarm, SOS "
+                       "transmits on the main frequency and sounds an alarm, "
+                       "and SF-TX transmits on the sub frequency. Scan starts "
+                       "scanning, Second starts the stopwatch, Lamp turns the "
+                       "lamp on or off, SDF-DIR changes the shift direction, "
+                       "and K-lamp turns the keypad light on or off. The "
+                       "options offered depend on the key and the model.")
 
-        kf.append(RadioSetting("settings.pf3",
-                               "PF3 Key function (Menu 57)",
-                               RadioSettingValueList(
-                                   pfkey3,
-                                   current_index=s.pf3)))
+        rs = RadioSetting("settings.pf1",
+                          "PF1 Key function (Menu 55)",
+                          RadioSettingValueList(
+                              pfkey1,
+                              current_index=s.pf1))
+        rs.set_doc(_("Selects what side key %s does when it is held "
+                     "down.") % "PF1" + " " + pf_options)
+        kf.append(rs)
+        rs = RadioSetting("settings.pf2",
+                          "PF2 Key function (Menu 56)",
+                          RadioSettingValueList(
+                              pfkey2,
+                              current_index=s.pf2))
+        rs.set_doc(_("Selects what side key %s does when it is held "
+                     "down.") % "PF2" + " " +
+                   _("A short press of PF2 turns the FM radio on or "
+                     "off.") + " " + pf_options)
+        kf.append(rs)
+
+        rs = RadioSetting("settings.pf3",
+                          "PF3 Key function (Menu 57)",
+                          RadioSettingValueList(
+                              pfkey3,
+                              current_index=s.pf3))
+        rs.set_doc(_("Selects what side key %s does when it is held "
+                     "down.") % "PF3" + " " +
+                   _("A short press of PF3 opens the squelch to monitor the "
+                     "channel (MONI).") + " " + pf_options)
+        kf.append(rs)
         return kf
 
     def _fl_tab(self):
@@ -2210,6 +2533,8 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                                         hard_limits[name][0],
                                         hard_limits[name][1],
                                         limits)
+            start_rs.set_doc(_("Sets the lowest frequency the radio receives "
+                               "in this band."))
             fl.append(start_rs)
 
             # Add 10 increments of 100 MHz before displaying to compensate for
@@ -2224,6 +2549,8 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                                        hard_limits[name][0],
                                        hard_limits[name][1],
                                        limits)
+            stop_rs.set_doc(_("Sets the highest frequency the radio receives "
+                              "in this band."))
             fl.append(stop_rs)
 
         for tx_band in tx.items():
@@ -2238,6 +2565,11 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
             start_rs.set_apply_callback(apply_freq_start,
                                         hard_limits[name][0],
                                         hard_limits[name][1], limits)
+            start_rs.set_doc(_("Sets the lowest frequency the radio "
+                               "transmits on in this band.") + " " +
+                             _("Keep this within the hardware range and "
+                               "frequencies where you are authorized to "
+                               "transmit."))
             fl.append(start_rs)
 
             # Add 10 increments of 100 MHz before displaying to compensate for
@@ -2252,6 +2584,11 @@ class KGUV9DPlusRadio(chirp_common.CloneModeRadio,
                                        hard_limits[name][0],
                                        hard_limits[name][1],
                                        limits)
+            stop_rs.set_doc(_("Sets the highest frequency the radio "
+                              "transmits on in this band.") + " " +
+                            _("Keep this within the hardware range and "
+                              "frequencies where you are authorized to "
+                              "transmit."))
             fl.append(stop_rs)
 
         return fl
@@ -2513,57 +2850,98 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
 
         prefix = "%s_conf" % area
         af = RadioSettingGroup(prefix, desc)
-        af.append(
-            RadioSetting(prefix + ".w_mode",
-                         "Workmode",
-                         RadioSettingValueList(
-                             WORKMODE_LIST,
-                             current_index=c.w_mode)))
-        af.append(RadioSetting(prefix + ".w_chan",
-                               "Channel",
-                               RadioSettingValueInteger(1, 999,
-                                                        c.w_chan)))
-        af.append(
-            RadioSetting(prefix + ".scan_grp",
-                         "Scan Group (Menu 49)",
-                         RadioSettingValueList(
-                             SCANGRP_LIST,
-                             current_index=c.scan_grp)))
-        af.append(RadioSetting(prefix + ".bcl",
-                               "Busy Channel Lock-out (Menu 15)",
-                               RadioSettingValueBoolean(c.bcl)))
-        af.append(
-            RadioSetting(prefix + ".sql",
-                         "Squelch Level (Menu 8)",
-                         RadioSettingValueList(LIST_0_9,
-                                               current_index=c.sql)))
-        af.append(
-            RadioSetting(prefix + ".cset",
-                         "Call ID Group (Menu 52)",
-                         RadioSettingValueList(LIST_1_20,
-                                               current_index=c.cset)))
-        af.append(
-            RadioSetting(prefix + ".step",
-                         "Frequency Step (Menu 3)",
-                         RadioSettingValueList(
-                             self._step_list, current_index=c.step)))
-        af.append(
-            RadioSetting(prefix + ".scan_mode",
-                         "Scan Mode (Menu 20)",
-                         RadioSettingValueList(
-                             SCANMODE_LIST,
-                             current_index=c.scan_mode)))
-        af.append(
-            RadioSetting(prefix + ".scan_range",
-                         "Scan Range (Menu 50)",
-                         RadioSettingValueList(
-                             SCANRANGE_LIST,
-                             current_index=c.scan_range)))
+        rs = RadioSetting(prefix + ".w_mode",
+                          "Workmode",
+                          RadioSettingValueList(
+                              WORKMODE_LIST,
+                              current_index=c.w_mode))
+        rs.set_doc(_("Selects frequency (VFO) or channel mode for this area, "
+                     "and in channel mode what the display shows: the channel "
+                     "number, the channel number and frequency, or the "
+                     "channel number and name. On the radio, hold the TDR key "
+                     "to step through these modes."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".w_chan",
+                          "Channel",
+                          RadioSettingValueInteger(1, 999,
+                                                   c.w_chan))
+        rs.set_doc(_("Selects the memory channel this area uses in channel "
+                     "mode."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".scan_grp",
+                          "Scan Group (Menu 49)",
+                          RadioSettingValueList(
+                              SCANGRP_LIST,
+                              current_index=c.scan_grp))
+        rs.set_doc(_("Selects which channels are scanned in channel mode: "
+                     "All scans every channel, and 1 to 10 scan only the "
+                     "channels of that scan group."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".bcl",
+                          "Busy Channel Lock-out (Menu 15)",
+                          RadioSettingValueBoolean(c.bcl))
+        rs.set_doc(_("Prevents transmitting on a channel that is already in "
+                     "use."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".sql",
+                          "Squelch Level (Menu 8)",
+                          RadioSettingValueList(LIST_0_9,
+                                                current_index=c.sql))
+        rs.set_doc(_("Sets how strong a received signal must be before the "
+                     "speaker unmutes. 0 leaves the squelch open so you hear "
+                     "noise all the time, higher values reject more weak "
+                     "signals and noise. Raise this value if the speaker "
+                     "keeps unmuting on interference, lower it if distant "
+                     "stations are being cut off."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".cset",
+                          "Call ID Group (Menu 52)",
+                          RadioSettingValueList(LIST_1_20,
+                                                current_index=c.cset))
+        rs.set_doc(_("Selects which of the 20 call groups the Call ID side "
+                     "key function calls. Each call group holds a caller ID "
+                     "code."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".step",
+                          "Frequency Step (Menu 3)",
+                          RadioSettingValueList(
+                              self._step_list, current_index=c.step))
+        rs.set_doc(_("Sets how far the frequency of this area moves for each "
+                     "tuning step and while scanning in frequency "
+                     "mode.") + " " +
+                   _("Choose the spacing used by the frequencies you intend "
+                     "to tune."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".scan_mode",
+                          "Scan Mode (Menu 20)",
+                          RadioSettingValueList(
+                              SCANMODE_LIST,
+                              current_index=c.scan_mode))
+        rs.set_doc(_("Controls what scanning does after finding a signal. TO "
+                     "resumes after a preset time, CO resumes after the "
+                     "signal disappears, and SE stops scanning on the "
+                     "detected frequency or channel.") + " " +
+                   _("TO resumes after 5 seconds without operation, and CO "
+                     "resumes 3 seconds after the signal is lost."))
+        af.append(rs)
+        rs = RadioSetting(prefix + ".scan_range",
+                          "Scan Range (Menu 50)",
+                          RadioSettingValueList(
+                              SCANRANGE_LIST,
+                              current_index=c.scan_range))
+        rs.set_doc(_("Selects what frequency scanning covers in frequency "
+                     "mode: Current band scans the band of the current "
+                     "frequency, freq range scans from Frequency Scan Start "
+                     "to Frequency Scan End, and ALL scans every band except "
+                     "the FM broadcast band."))
+        af.append(rs)
         st = RadioSettingValueString(0, 15,
                                      short2freq(scan_rng.scan_st))
         rs = RadioSetting("settings.%s.scan_st" % area,
                           "Frequency Scan Start", st)
         rs.set_apply_callback(apply_scan_st, scan_lo, scan_hi, scan_rng)
+        rs.set_doc(_("Sets the lowest frequency scanned when Scan Range (menu "
+                     "50) is set to freq range."))
         af.append(rs)
 
         end = RadioSettingValueString(0, 15,
@@ -2572,6 +2950,8 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
                           "Frequency Scan End", end)
         rs.set_apply_callback(apply_scan_end, scan_lo, scan_hi,
                               scan_rng)
+        rs.set_doc(_("Sets the highest frequency scanned when Scan Range "
+                     "(menu 50) is set to freq range."))
         af.append(rs)
         # Each area has its own set of bands
         for band in (band_list):
@@ -2586,7 +2966,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
             obj.freq = f/10
 
         def apply_offset(setting, obj):
-            f = freq2int(setting.value, 0, 5000000)
+            f = freq2int(setting.value, 0, 999995000)
             obj.offset = f/10
 
         def apply_enc(setting, obj):
@@ -2633,11 +3013,18 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
         freq = RadioSettingValueString(0, 15, int2freq(c.freq * 10))
         rs = RadioSetting(prefix + ".freq", "Rx Frequency", freq)
         rs.set_apply_callback(apply_freq, lo, hi, c)
+        rs.set_doc(_("Sets the receive frequency of this band in frequency "
+                     "mode."))
         bf.append(rs)
 
         off = RadioSettingValueString(0, 15, int2freq(c.offset * 10))
         rs = RadioSetting(prefix + ".offset", "Tx Offset (Menu 28)", off)
         rs.set_apply_callback(apply_offset, c)
+        rs.set_doc(_("Sets the repeater offset of this band in frequency "
+                     "mode, the difference between the receive and transmit "
+                     "frequencies.") + " " +
+                   _("Frequency Shift (menu 6) selects whether the offset is "
+                     "added or subtracted."))
         bf.append(rs)
 
         rs = RadioSetting(prefix + ".encqt",
@@ -2645,6 +3032,10 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
                           RadioSettingValueList(TONE_LIST,
                                                 short2tone(c.encqt)))
         rs.set_apply_callback(apply_enc, c)
+        rs.set_doc(_("Selects the CTCSS tone or DCS code that this band "
+                     "transmits in frequency mode, as needed to open a "
+                     "repeater or a radio that uses tone squelch. ---- sends "
+                     "no tone."))
         bf.append(rs)
 
         rs = RadioSetting(prefix + ".decqt",
@@ -2652,32 +3043,69 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
                           RadioSettingValueList(TONE_LIST,
                                                 short2tone(c.decqt)))
         rs.set_apply_callback(apply_dec, c)
+        rs.set_doc(_("Selects the CTCSS tone or DCS code that a signal must "
+                     "carry before the speaker unmutes on this band in "
+                     "frequency mode. ---- turns tone squelch off, so that "
+                     "any signal is heard."))
         bf.append(rs)
 
-        bf.append(RadioSetting(prefix + ".qt",
-                               "Mute Mode (Menu 21)",
-                               RadioSettingValueList(SPMUTE_LIST,
-                                                     current_index=c.qt)))
-        bf.append(RadioSetting(prefix + ".scan",
-                               "Scan this (Menu 48)",
-                               RadioSettingValueBoolean(c.scan)))
-        bf.append(RadioSetting(prefix + ".pwr",
-                               "Power (Menu 5)",
-                               RadioSettingValueList(
-                                   POWER_LIST, current_index=c.pwr)))
-        bf.append(RadioSetting(prefix + ".mod",
-                               "AM Modulation (Menu 54)",
-                               RadioSettingValueBoolean(c.mod)))
-        bf.append(RadioSetting(prefix + ".fm_dev",
-                               "FM Deviation (Menu 4)",
-                               RadioSettingValueList(
-                                   BANDWIDTH_LIST,
-                                   current_index=c.fm_dev)))
-        bf.append(
-            RadioSetting(prefix + ".shift",
-                         "Frequency Shift (Menu 6)",
-                         RadioSettingValueList(OFFSET_LIST,
-                                               current_index=c.shift)))
+        rs = RadioSetting(prefix + ".qt",
+                          "Mute Mode (Menu 21)",
+                          RadioSettingValueList(SPMUTE_LIST,
+                                                current_index=c.qt))
+        rs.set_doc(_("Selects which received signals unmute the speaker on "
+                     "this band in frequency mode. QT accepts a signal with "
+                     "the right CTCSS or DCS tone, QT&T one whose tone and "
+                     "DTMF code both match, and QT*T one that matches "
+                     "either."))
+        bf.append(rs)
+        rs = RadioSetting(prefix + ".scan",
+                          "Scan this (Menu 48)",
+                          RadioSettingValueBoolean(c.scan))
+        rs.set_doc(_("Sets Scan Add (menu 48) for this band in frequency "
+                     "mode. A channel stored from this band is added to the "
+                     "scan list when it is on, and left out of channel "
+                     "scanning when it is off."))
+        bf.append(rs)
+        rs = RadioSetting(prefix + ".pwr",
+                          "Power (Menu 5)",
+                          RadioSettingValueList(
+                              POWER_LIST, current_index=c.pwr))
+        rs.set_doc(_("Selects the transmit power of this band in frequency "
+                     "mode.") + " " +
+                   _("Use the lowest power that provides reliable "
+                     "communication."))
+        bf.append(rs)
+        rs = RadioSetting(prefix + ".mod",
+                          "AM Modulation (Menu 54)",
+                          RadioSettingValueBoolean(c.mod))
+        rs.set_doc(_("Receives this band in AM instead of FM in frequency "
+                     "mode.") + " " +
+                   _("AM works in area A only, and the radio returns to FM "
+                     "when the frequency or channel changes."))
+        bf.append(rs)
+        rs = RadioSetting(prefix + ".fm_dev",
+                          "Bandwidth (Menu 4)",
+                          RadioSettingValueList(
+                              BANDWIDTH_LIST,
+                              current_index=c.fm_dev))
+        rs.set_doc(_("Selects wide or narrow FM for this band in frequency "
+                     "mode.") + " " +
+                   _("Use Narrow where required by the channel plan to "
+                     "reduce interference to adjacent channels.") + " " +
+                   _("Wide uses 25 kHz channels and Narrow uses 12.5 kHz "
+                     "channels."))
+        bf.append(rs)
+        rs = RadioSetting(prefix + ".shift",
+                          "Frequency Shift (Menu 6)",
+                          RadioSettingValueList(OFFSET_LIST,
+                                                current_index=c.shift))
+        rs.set_doc(_("Sets the repeater shift direction of this band in "
+                     "frequency mode.") + " " +
+                   _("+ transmits above the receive frequency, - transmits "
+                     "below it, and Off uses the same frequency for transmit "
+                     "and receive."))
+        bf.append(rs)
         return bf
 
     def _fl_tab(self):
@@ -2688,12 +3116,27 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
 
         l = self._memobj.limits
 
+        lower_unit = _("The value is in whole MHz.")
+        upper_unit = _("The value is in whole MHz, and frequencies up to "
+                       "0.9975 MHz above it are still allowed.")
+        tx_legal = _("Keep this within the hardware range and frequencies "
+                     "where you are authorized to transmit.")
+        rx_lower = (_("Sets the lowest frequency the radio receives in this "
+                      "band.") + " " + lower_unit)
+        rx_upper = (_("Sets the highest frequency the radio receives in this "
+                      "band.") + " " + upper_unit)
+        tx_lower = (_("Sets the lowest frequency the radio transmits on in "
+                      "this band.") + " " + lower_unit + " " + tx_legal)
+        tx_upper = (_("Sets the highest frequency the radio transmits on in "
+                      "this band.") + " " + upper_unit + " " + tx_legal)
+
         if self.MODEL == "KG-UV9PX":
             val = RadioSettingValueInteger(136, 180,
                                            (l.lim_150M_Txlower_limit) / 10.0)
             rs = RadioSetting("limits.lim_150M_Txlower_limit",
                               "150M Tx Lower Limit (MHz)",
                               val)
+            rs.set_doc(tx_lower)
             limgrp.append(rs)
 
             val = RadioSettingValueInteger(136, 180,
@@ -2701,6 +3144,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
             rs = RadioSetting("limits.lim_150M_Txupper_limit",
                               "150M Tx Upper Limit (MHz + 0.9975)",
                               val)
+            rs.set_doc(tx_upper)
             limgrp.append(rs)
 
             val = RadioSettingValueInteger(400, 512,
@@ -2708,6 +3152,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
             rs = RadioSetting("limits.lim_450M_Txlower_limit",
                               "450M Tx Lower Limit (MHz)",
                               val)
+            rs.set_doc(tx_lower)
             limgrp.append(rs)
 
             val = RadioSettingValueInteger(400, 512,
@@ -2715,6 +3160,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
             rs = RadioSetting("limits.lim_450M_Txupper_limit",
                               "450M Tx Upper Limit (MHz + 0.9975)",
                               val)
+            rs.set_doc(tx_upper)
             limgrp.append(rs)
 
         val = RadioSettingValueInteger(108, 180,
@@ -2723,6 +3169,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
         rs = RadioSetting("limits.lim_150M_area_a_rxlower_limit",
                           "Rcvr A 150M Rx Lower Limit (MHz)",
                           val)
+        rs.set_doc(rx_lower)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(108, 180,
@@ -2731,6 +3178,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
         rs = RadioSetting("limits.lim_150M_area_a_rxupper_limit",
                           "Rcvr A 150M Rx Upper Limit (MHz + 0.9975)",
                           val)
+        rs.set_doc(rx_upper)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(136, 180,
@@ -2739,6 +3187,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
         rs = RadioSetting("limits.lim_150M_area_b_rxlower_limit",
                           "Rcvr B 150M Rx Lower Limit (MHz)",
                           val)
+        rs.set_doc(rx_lower)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(136, 180,
@@ -2747,6 +3196,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
         rs = RadioSetting("limits.lim_150M_area_b_rxupper_limit",
                           "Rcvr B 150M Rx Upper Limit (MHz + 0.9975)",
                           val)
+        rs.set_doc(rx_upper)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(400, 512,
@@ -2754,6 +3204,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
         rs = RadioSetting("limits.lim_450M_rxlower_limit",
                           "450M Rx Lower Limit (MHz)",
                           val)
+        rs.set_doc(rx_lower)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(400, 512,
@@ -2761,6 +3212,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
         rs = RadioSetting("limits.lim_450M_rxupper_limit",
                           "450M Rx Upper Limit (MHz + 0.9975)",
                           val)
+        rs.set_doc(rx_upper)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(350, 399,
@@ -2768,6 +3220,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
         rs = RadioSetting("limits.lim_300M_rxlower_limit",
                           "300M Rx Lower Limit (MHz)",
                           val)
+        rs.set_doc(rx_lower)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(350, 399,
@@ -2775,12 +3228,14 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
         rs = RadioSetting("limits.lim_300M_rxupper_limit",
                           "300M Rx Upper Limit (MHz + 0.9975)",
                           val)
+        rs.set_doc(rx_upper)
         limgrp.append(rs)
         val = RadioSettingValueInteger(700, 986,
                                        (l.lim_800M_rxlower_limit) / 10.0)
         rs = RadioSetting("limits.lim_800M_rxlower_limit",
                           "800M Rx Lower Limit (MHz)",
                           val)
+        rs.set_doc(rx_lower)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(700, 986,
@@ -2788,6 +3243,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
         rs = RadioSetting("limits.lim_800M_rxupper_limit",
                           "800M Rx Upper Limit (MHz + 0.9975)",
                           val)
+        rs.set_doc(rx_upper)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(219, 250,
@@ -2795,6 +3251,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
         rs = RadioSetting("limits.lim_210M_rxlower_limit",
                           "210M Rx Lower Limit (MHz)",
                           val)
+        rs.set_doc(rx_lower)
         limgrp.append(rs)
 
         val = RadioSettingValueInteger(219, 250,
@@ -2802,6 +3259,7 @@ class KGUV9PXRadio(KGUV9DPlusRadio):
         rs = RadioSetting("limits.lim_210M_rxupper_limit",
                           "210M Rx Upper Limit (MHz + 0.9975)",
                           val)
+        rs.set_doc(rx_upper)
         limgrp.append(rs)
 
         return limgrp

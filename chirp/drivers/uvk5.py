@@ -260,7 +260,7 @@ CHANNELDISP_LIST = ["Frequency", "Channel No", "Channel Name"]
 BATSAVE_LIST = ["OFF", "1:1", "1:2", "1:3", "1:4"]
 
 # Crossband receiving/transmitting
-CROSSBAND_LIST = ["Off", "Band A", "Band B"]
+CROSSBAND_LIST = ["Off", "CHAN_A", "CHAN_B"]
 DUALWATCH_LIST = CROSSBAND_LIST
 
 # ctcss/dcs codes
@@ -348,7 +348,7 @@ DTMF_CHARS_ID = "0123456789ABCDabcd"
 DTMF_CHARS_KILL = "0123456789ABCDabcd"
 DTMF_CHARS_UPDOWN = "0123456789ABCDabcd#* "
 DTMF_CODE_CHARS = "ABCD*# "
-DTMF_DECODE_RESPONSE_LIST = ["None", "Ring", "Reply", "Both"]
+DTMF_DECODE_RESPONSE_LIST = ["NULL", "Ring", "Reply", "Both"]
 
 KEYACTIONS_LIST = ["None", "Flashlight on/off", "Power select",
                    "Monitor", "Scan on/off", "VOX on/off",
@@ -828,22 +828,34 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         # BCLO
         is_bclo = not mem.empty and bool(_mem.bclo > 0)
         rs = RadioSetting("bclo", "BCLO", RadioSettingValueBoolean(is_bclo))
+        rs.set_doc(_("Prevents transmitting on a channel that is already in "
+                     "use. Pressing PTT on a busy channel sounds an alert "
+                     "tone instead of keying the transmitter."))
         mem.extra.append(rs)
 
         # Frequency reverse - reverse tx/rx frequency
         is_frev = not mem.empty and bool(_mem.freq_reverse > 0)
         rs = RadioSetting("frev", "FreqRev", RadioSettingValueBoolean(is_frev))
+        rs.set_doc(_("Swaps the receive and transmit frequencies of this "
+                     "channel, for example to listen on the input frequency "
+                     "of a repeater. F+8 switches it on the radio."))
         mem.extra.append(rs)
 
         # PTTID
         rs = RadioSetting("pttid", "PTTID", RadioSettingValueList(
             self._pttid_list, current_index=_mem.dtmf_pttid))
+        rs.set_doc(_("Controls whether this channel sends the DTMF up code "
+                     "when PTT is pressed, the down code when PTT is "
+                     "released, or both. Off sends neither."))
         mem.extra.append(rs)
 
         # DTMF DECODE
         is_dtmf = not mem.empty and bool(_mem.dtmf_decode > 0)
         rs = RadioSetting("dtmfdecode", _("DTMF decode"),
                           RadioSettingValueBoolean(is_dtmf))
+        rs.set_doc(_("Turns on DTMF decoding on this channel, so that the "
+                     "radio recognizes DTMF calls to its own ID and the kill "
+                     "and revive codes."))
         mem.extra.append(rs)
 
         # Scrambler
@@ -854,10 +866,17 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
 
         rs = RadioSetting("scrambler", _("Scrambler"), RadioSettingValueList(
             SCRAMBLER_LIST, current_index=enc))
+        rs.set_doc(_("Inverts the audio so only radios with scramble enabled "
+                     "on the same channel can understand it.") + " " +
+                   _("This radio offers 10 scrambling types, and the other "
+                     "radio has to use the same one."))
         mem.extra.append(rs)
 
         rs = RadioSetting("scanlists", _("Scanlists"), RadioSettingValueList(
             SCANLIST_LIST, tmpscn))
+        rs.set_doc(_("Selects which of the two scan lists include this "
+                     "channel. Channel scanning steps through the channels "
+                     "of the scan list chosen with Default scanlist."))
         mem.extra.append(rs)
 
     def _get_mem_mode(self, _mem):
@@ -1137,8 +1156,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                         DTMF_DECODE_RESPONSE_LIST.index(str(element.value))
 
             if element.get_name() == "dtmf_auto_reset_time":
-                _mem.dtmf_settings.auto_reset_time = \
-                        int(int(element.value)/10)
+                _mem.dtmf_settings.auto_reset_time = int(element.value)
 
             if element.get_name() == "dtmf_preload_time":
                 _mem.dtmf_settings.preload_time = \
@@ -1266,12 +1284,26 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 basic, keya, dtmf, dtmfc, scanl, unlock, fmradio, roinfo)
 
         # Programmable keys
+        short_doc = _("Chooses what side key %d does when it is pressed "
+                      "briefly.")
+        long_doc = _("Chooses what side key %d does when it is held down.")
+        factory_doc = _("Its factory setting is %s.")
+        actions_doc = _("Monitor makes the radio ignore CTCSS and DCS so that "
+                        "you hear all activity on the channel, Flashlight "
+                        "on/off switches the light that the manual calls "
+                        "Jacklight, Power select switches the transmit "
+                        "power, Alarm on/off starts the emergency alarm, and "
+                        "Transmit 1750 Hz transmits a continuous 1750 Hz "
+                        "tone.")
+
         tmpval = int(_mem.key1_shortpress_action)
         if tmpval >= len(KEYACTIONS_LIST):
             tmpval = 0
         rs = RadioSetting("key1_shortpress_action", "Side key 1 short press",
                           RadioSettingValueList(
                               KEYACTIONS_LIST, current_index=tmpval))
+        rs.set_doc(" ".join([short_doc % 1, factory_doc % "Monitor",
+                             actions_doc]))
         keya.append(rs)
 
         tmpval = int(_mem.key1_longpress_action)
@@ -1280,6 +1312,8 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("key1_longpress_action", "Side key 1 long press",
                           RadioSettingValueList(
                               KEYACTIONS_LIST, current_index=tmpval))
+        rs.set_doc(" ".join([long_doc % 1, factory_doc % "Transmit 1750 Hz",
+                             actions_doc]))
         keya.append(rs)
 
         tmpval = int(_mem.key2_shortpress_action)
@@ -1288,6 +1322,8 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("key2_shortpress_action", "Side key 2 short press",
                           RadioSettingValueList(
                               KEYACTIONS_LIST, current_index=tmpval))
+        rs.set_doc(" ".join([short_doc % 2,
+                             factory_doc % "Flashlight on/off", actions_doc]))
         keya.append(rs)
 
         tmpval = int(_mem.key2_longpress_action)
@@ -1296,7 +1332,11 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("key2_longpress_action", "Side key 2 long press",
                           RadioSettingValueList(
                               KEYACTIONS_LIST, current_index=tmpval))
+        rs.set_doc(" ".join([long_doc % 2, factory_doc % "Alarm on/off",
+                             actions_doc]))
         keya.append(rs)
+
+        not_in_manual = _("The user manual does not describe this setting.")
 
         # DTMF settings
         tmppr = bool(_mem.dtmf_settings.side_tone > 0)
@@ -1304,6 +1344,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "dtmf_side_tone",
                 "DTMF Sidetone",
                 RadioSettingValueBoolean(tmppr))
+        rs.set_doc(_("Plays the DTMF tones through the speaker while the "
+                     "radio sends them, so that you hear what is being "
+                     "sent."))
         dtmf.append(rs)
 
         tmpval = str(_mem.dtmf_settings.separate_code)
@@ -1312,6 +1355,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         val = RadioSettingValueString(1, 1, tmpval)
         val.set_charset(DTMF_CODE_CHARS)
         rs = RadioSetting("dtmf_separate_code", "Separate Code", val)
+        rs.set_doc(_("Sets the character that separates the called ID from "
+                     "this radio's own ID in a DTMF call. With *, radio 100 "
+                     "calls radio 123 by sending 123*100."))
         dtmf.append(rs)
 
         tmpval = str(_mem.dtmf_settings.group_call_code)
@@ -1320,6 +1366,11 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         val = RadioSettingValueString(1, 1, tmpval)
         val.set_charset(DTMF_CODE_CHARS)
         rs = RadioSetting("dtmf_group_call_code", "Group Call Code", val)
+        rs.set_doc(_("Sets the character that stands for any digit in a "
+                     "called DTMF ID, so that one call reaches a group of "
+                     "radios. With #, sending 12# calls the radios with IDs "
+                     "120 to 129, 1## calls IDs 100 to 199, and ### calls "
+                     "all radios."))
         dtmf.append(rs)
 
         tmpval = _mem.dtmf_settings.decode_response
@@ -1329,6 +1380,10 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                           RadioSettingValueList(
                               DTMF_DECODE_RESPONSE_LIST,
                               current_index=tmpval))
+        rs.set_doc(_("Chooses what the radio does when it decodes a DTMF "
+                     "call to its ID. Ring sounds a ring tone on this radio, "
+                     "Reply answers the caller automatically, Both does "
+                     "both, and NULL does neither."))
         dtmf.append(rs)
 
         tmpval = _mem.dtmf_settings.auto_reset_time
@@ -1337,6 +1392,10 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("dtmf_auto_reset_time",
                           "Auto reset time (s)",
                           RadioSettingValueInteger(5, 60, tmpval))
+        rs.set_doc(_("Sets how many seconds the radio lets you talk with "
+                     "the caller after it decodes a DTMF call to its ID. "
+                     "After that time, a new DTMF call is needed. The "
+                     "factory setting is 5 seconds."))
         dtmf.append(rs)
 
         tmpval = int(_mem.dtmf_settings.preload_time)
@@ -1346,6 +1405,10 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("dtmf_preload_time",
                           "Pre-load time (ms)",
                           RadioSettingValueInteger(30, 1000, tmpval, 10))
+        rs.set_doc(_("Sets how many milliseconds the radio transmits before "
+                     "it sends the first DTMF tone, so that the receiving "
+                     "radio has time to unmute. The radio's menu offers 30 "
+                     "to 990 ms."))
         dtmf.append(rs)
 
         tmpval = int(_mem.dtmf_settings.first_code_persist_time)
@@ -1355,6 +1418,8 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("dtmf_first_code_persist_time",
                           "First code persist time (ms)",
                           RadioSettingValueInteger(30, 1000, tmpval, 10))
+        rs.set_doc(_("Sets how long the first DTMF tone of each code is "
+                     "transmitted.") + " " + not_in_manual)
         dtmf.append(rs)
 
         tmpval = int(_mem.dtmf_settings.hash_persist_time)
@@ -1364,6 +1429,8 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("dtmf_hash_persist_time",
                           "#/* persist time (ms)",
                           RadioSettingValueInteger(30, 1000, tmpval, 10))
+        rs.set_doc(_("Sets how long the * and # DTMF tones are "
+                     "transmitted.") + " " + not_in_manual)
         dtmf.append(rs)
 
         tmpval = int(_mem.dtmf_settings.code_persist_time)
@@ -1373,6 +1440,13 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("dtmf_code_persist_time",
                           "Code persist time (ms)",
                           RadioSettingValueInteger(30, 1000, tmpval, 10))
+        rs.set_doc(" ".join([
+            _("Sets how long each DTMF tone is transmitted. Increase this "
+              "if the receiving system does not reliably decode the "
+              "digits."),
+            _("The first tone and the * and # tones have their own "
+              "settings."),
+            not_in_manual]))
         dtmf.append(rs)
 
         tmpval = int(_mem.dtmf_settings.code_interval_time)
@@ -1382,6 +1456,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("dtmf_code_interval_time",
                           "Code interval time (ms)",
                           RadioSettingValueInteger(30, 1000, tmpval, 10))
+        rs.set_doc(_("Sets the silent gap between transmitted DTMF tones. "
+                     "Increase this if the receiving system cannot separate "
+                     "adjacent digits.") + " " + not_in_manual)
         dtmf.append(rs)
 
         tmpval = bool(_mem.dtmf_settings.permit_remote_kill > 0)
@@ -1389,6 +1466,11 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "dtmf_permit_remote_kill",
                 "Permit remote kill",
                 RadioSettingValueBoolean(tmpval))
+        rs.set_doc(_("Allows another radio to disable this radio by "
+                     "sending it the kill code over DTMF. The revive code "
+                     "enables it again.") + " " +
+                   _("The user manual lists remote kill and revive among "
+                     "the radio's features but does not describe them."))
         dtmf.append(rs)
 
         tmpval = str(_mem.dtmf_settings_numbers.dtmf_local_code).upper().strip(
@@ -1403,6 +1485,10 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         val.set_charset(DTMF_CHARS_ID)
         rs = RadioSetting("dtmf_dtmf_local_code",
                           "Local code (3 chars 0-9 ABCD)", val)
+        rs.set_doc(_("Sets this radio's own 3-character DTMF ID. The radio "
+                     "sends it with its DTMF calls, and other radios call "
+                     "this radio with it. The radio's menu calls it "
+                     "ANI-ID."))
         dtmf.append(rs)
 
         tmpval = str(_mem.dtmf_settings_numbers.dtmf_up_code).upper().strip(
@@ -1417,6 +1503,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         val.set_charset(DTMF_CHARS_UPDOWN)
         rs = RadioSetting("dtmf_dtmf_up_code",
                           "Up code (1-16 chars 0-9 ABCD*#)", val)
+        rs.set_doc(_("Sets the DTMF code that the radio sends when PTT is "
+                     "pressed, on channels whose PTTID setting sends the up "
+                     "code."))
         dtmf.append(rs)
 
         tmpval = str(_mem.dtmf_settings_numbers.dtmf_down_code).upper().strip(
@@ -1431,6 +1520,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         val.set_charset(DTMF_CHARS_UPDOWN)
         rs = RadioSetting("dtmf_dtmf_down_code",
                           "Down code (1-16 chars 0-9 ABCD*#)", val)
+        rs.set_doc(_("Sets the DTMF code that the radio sends when PTT is "
+                     "released, on channels whose PTTID setting sends the "
+                     "down code."))
         dtmf.append(rs)
 
         tmpval = str(_mem.dtmf_settings_numbers.kill_code).upper().strip(
@@ -1447,6 +1539,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         val.set_charset(DTMF_CHARS_KILL)
         rs = RadioSetting("dtmf_kill_code",
                           "Kill code (5 chars 0-9 ABCD)", val)
+        rs.set_doc(_("Sets the 5-character DTMF code that disables this "
+                     "radio when another radio sends it, if Permit remote "
+                     "kill is on."))
         dtmf.append(rs)
 
         tmpval = str(_mem.dtmf_settings_numbers.revive_code).upper().strip(
@@ -1463,8 +1558,16 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         val.set_charset(DTMF_CHARS_KILL)
         rs = RadioSetting("dtmf_revive_code",
                           "Revive code (5 chars 0-9 ABCD)", val)
+        rs.set_doc(_("Sets the 5-character DTMF code that enables this "
+                     "radio again after the kill code has disabled it."))
         dtmf.append(rs)
 
+        name_doc = _("Sets the name of this entry in the DTMF contact list. "
+                     "The radio's D-LIST menu shows the list, so that you can "
+                     "pick a contact and call it directly.")
+        number_doc = _("Sets the 3-character DTMF ID of this contact, using "
+                       "0-9, A-D, * and #. Leave it empty for an unused "
+                       "entry.")
         for i in range(1, 17):
             varname = "DTMF_"+str(i)
             varnumname = "DTMFNUM_"+str(i)
@@ -1476,16 +1579,29 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
 
             val = RadioSettingValueString(0, 8, cntn)
             rs = RadioSetting(varname, vardescr, val)
+            rs.set_doc(name_doc)
             dtmfc.append(rs)
 
             val = RadioSettingValueString(0, 3, cntnum)
             val.set_charset(DTMF_CHARS)
             rs = RadioSetting(varnumname, varinumdescr, val)
             dtmfc.append(rs)
-            rs.set_doc("DTMF Contacts are 3 codes (valid: 0-9 * # ABCD), "
-                       "or an empty string")
+            rs.set_doc(number_doc)
 
         # scanlists
+        prio_scan_doc = _("Turns on priority scanning for scan list %d. It "
+                          "applies while that list is the Default scanlist. "
+                          "The radio then checks the priority channels more "
+                          "often than the other channels, and switches to "
+                          "priority channel 1 when it finds activity there.")
+        prio_ch1_doc = _("Sets priority channel 1 of scan list %d. With "
+                         "priority scanning on, the radio checks it before "
+                         "each regular channel it scans. 0 means no priority "
+                         "channel.")
+        prio_ch2_doc = _("Sets priority channel 2 of scan list %d. With "
+                         "priority scanning on, the radio checks it after "
+                         "priority channel 1, before each regular channel it "
+                         "scans. 0 means no priority channel.")
         if _mem.scanlist_default == 1:
             tmpsc = 2
         else:
@@ -1493,6 +1609,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("scanlist_default",
                           "Default scanlist",
                           RadioSettingValueInteger(1, 2, tmpsc))
+        rs.set_doc(_("Selects which scan list channel scanning steps "
+                     "through. Add a channel to a list with its Scanlists "
+                     "setting."))
         scanl.append(rs)
 
         tmppr = bool((_mem.scanlist1_priority_scan & 1) > 0)
@@ -1500,6 +1619,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "scanlist1_priority_scan",
                 "Scanlist 1 priority channel scan",
                 RadioSettingValueBoolean(tmppr))
+        rs.set_doc(prio_scan_doc % 1)
         scanl.append(rs)
 
         tmpch = _mem.scanlist1_priority_ch1 + 1
@@ -1508,6 +1628,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("scanlist1_priority_ch1",
                           "Scanlist 1 priority channel 1 (0 - off)",
                           RadioSettingValueInteger(0, 200, tmpch))
+        rs.set_doc(prio_ch1_doc % 1)
         scanl.append(rs)
 
         tmpch = _mem.scanlist1_priority_ch2 + 1
@@ -1516,6 +1637,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("scanlist1_priority_ch2",
                           "Scanlist 1 priority channel 2 (0 - off)",
                           RadioSettingValueInteger(0, 200, tmpch))
+        rs.set_doc(prio_ch2_doc % 1)
         scanl.append(rs)
 
         tmppr = bool((_mem.scanlist2_priority_scan & 1) > 0)
@@ -1523,6 +1645,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "scanlist2_priority_scan",
                 "Scanlist 2 priority channel scan",
                 RadioSettingValueBoolean(tmppr))
+        rs.set_doc(prio_scan_doc % 2)
         scanl.append(rs)
 
         tmpch = _mem.scanlist2_priority_ch1 + 1
@@ -1531,6 +1654,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("scanlist2_priority_ch1",
                           "Scanlist 2 priority channel 1 (0 - off)",
                           RadioSettingValueInteger(0, 200, tmpch))
+        rs.set_doc(prio_ch1_doc % 2)
         scanl.append(rs)
 
         tmpch = _mem.scanlist2_priority_ch2 + 1
@@ -1539,6 +1663,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting("scanlist2_priority_ch2",
                           "Scanlist 2 priority channel 2 (0 - off)",
                           RadioSettingValueInteger(0, 200, tmpch))
+        rs.set_doc(prio_ch2_doc % 2)
         scanl.append(rs)
 
         # basic settings
@@ -1549,6 +1674,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             tmpc = 1
         rs = RadioSetting("call_channel", "One key call channel",
                           RadioSettingValueInteger(1, 200, tmpc))
+        rs.set_doc(_("Selects the memory channel that F+9 jumps to, so that "
+                     "an important channel can be reached with one key "
+                     "press."))
         basic.append(rs)
 
         # squelch
@@ -1557,6 +1685,12 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             tmpsq = 1
         rs = RadioSetting("squelch", "Squelch",
                           RadioSettingValueInteger(0, 9, tmpsq))
+        rs.set_doc(_("Sets how strong a received signal must be before the "
+                     "speaker unmutes. 0 leaves the squelch open so you hear "
+                     "noise all the time, higher values reject more weak "
+                     "signals and noise. Raise this value if the speaker "
+                     "keeps unmuting on interference, lower it if distant "
+                     "stations are being cut off."))
         basic.append(rs)
 
         # TOT
@@ -1567,6 +1701,12 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "tot",
                 "Max talk time [min]",
                 RadioSettingValueInteger(0, 10, tmptot))
+        rs.set_doc(_("Limits how long a single transmission may last. When "
+                     "the time runs out the radio stops transmitting until "
+                     "PTT is released, which prevents overheating and stops a "
+                     "stuck PTT from blocking the channel for everyone "
+                     "else.") + " " +
+                   _("0 turns the time-out timer off."))
         basic.append(rs)
 
         # NOAA autoscan
@@ -1574,6 +1714,10 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "noaa_autoscan",
                 "NOAA Autoscan", RadioSettingValueBoolean(
                     bool(_mem.noaa_autoscan > 0)))
+        rs.set_doc(_("Makes the radio scan the 10 NOAA weather channels "
+                     "automatically while it is in NOAA weather mode, which "
+                     "F+5 enters and leaves. The display shows NS while it is "
+                     "on."))
         basic.append(rs)
 
         # VOX switch
@@ -1581,6 +1725,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "vox_switch",
                 "VOX enabled", RadioSettingValueBoolean(
                     bool(_mem.vox_switch > 0)))
+        rs.set_doc(_("Voice operated transmit. The radio starts transmitting "
+                     "when you speak towards the microphone, so hands-free "
+                     "conversation is possible without pressing PTT."))
         basic.append(rs)
 
         # VOX Level
@@ -1589,6 +1736,13 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             tmpvox = 10
         rs = RadioSetting("vox_level", "VOX Level",
                           RadioSettingValueInteger(1, 10, tmpvox))
+        rs.set_doc(_("Sets the VOX sensitivity. Too sensitive a setting keys "
+                     "the transmitter on the noise around the radio, too "
+                     "insensitive a setting fails to pick up your voice.") +
+                   " " +
+                   _("The radio's VOX menu sets this level and VOX enabled "
+                     "together: OFF turns VOX off, and 1 to 10 turn it on at "
+                     "that level."))
         basic.append(rs)
 
         # Mic gain
@@ -1597,6 +1751,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             tmpmicgain = 4
         rs = RadioSetting("mic_gain", "Mic Gain",
                           RadioSettingValueInteger(0, 4, tmpmicgain))
+        rs.set_doc(_("Sets the microphone sensitivity, from 0 to 4. Raise it "
+                     "if other stations hear you too quietly, lower it if "
+                     "your audio sounds distorted."))
         basic.append(rs)
 
         # Channel display mode
@@ -1609,6 +1766,8 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 RadioSettingValueList(
                     CHANNELDISP_LIST,
                     current_index=tmpchdispmode))
+        rs.set_doc(_("Chooses whether the display shows the frequency, the "
+                     "channel number or the name of each memory channel."))
         basic.append(rs)
 
         # Crossband receiving/transmitting
@@ -1621,6 +1780,10 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 RadioSettingValueList(
                     CROSSBAND_LIST,
                     current_index=tmpcross))
+        rs.set_doc(_("Makes the radio transmit on one channel and receive on "
+                     "the other. CHAN_A transmits on channel A and receives "
+                     "on channel B, and CHAN_B does the opposite. Off "
+                     "transmits and receives on the same channel."))
         basic.append(rs)
 
         # Battery save
@@ -1633,6 +1796,14 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 RadioSettingValueList(
                     BATSAVE_LIST,
                     current_index=tmpbatsave))
+        rs.set_doc(_("Cuts standby power consumption by switching the "
+                     "receiver off and on in a repeating cycle once no signal "
+                     "has been received for a few seconds. It considerably "
+                     "extends battery life, at the cost of occasionally "
+                     "clipping the first moment of an incoming "
+                     "transmission.") + " " +
+                   _("Each ratio compares the time the receiver is on with "
+                     "the time it is off, so 1:4 saves the most power."))
         basic.append(rs)
 
         # Dual watch
@@ -1641,6 +1812,12 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             tmpdual = 0
         rs = RadioSetting("dualwatch", "Dual Watch", RadioSettingValueList(
             DUALWATCH_LIST, current_index=tmpdual))
+        rs.set_doc(_("Periodically checks both the A and B displayed "
+                     "frequencies. When either receives a signal, the radio "
+                     "stays on it until that signal disappears.") + " " +
+                   _("CHAN_A or CHAN_B turns dual watch on and selects "
+                     "which channel transmits by default. Off turns it "
+                     "off."))
         basic.append(rs)
 
         # Backlight auto mode
@@ -1652,6 +1829,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                           RadioSettingValueList(
                               self._backlight,
                               current_index=tmpback))
+        rs.set_doc(_("Sets how many seconds the display backlight stays on "
+                     "before it turns off by itself. Off keeps the backlight "
+                     "turned off."))
         basic.append(rs)
 
         # Tail tone elimination
@@ -1660,11 +1840,17 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "Tail tone elimination",
                 RadioSettingValueBoolean(
                     bool(_mem.tail_note_elimination > 0)))
+        rs.set_doc(_("Suppresses the short burst of noise heard at the end "
+                     "of a received transmission. It only works when the "
+                     "transmitting radio supports it."))
         basic.append(rs)
 
         # VFO open
         rs = RadioSetting("vfo_open", "VFO open",
                           RadioSettingValueBoolean(bool(_mem.vfo_open > 0)))
+        rs.set_doc(_("Allows frequency (VFO) mode. When it is off, F+3 "
+                     "cannot switch the radio out of channel mode.") + " " +
+                   not_in_manual)
         basic.append(rs)
 
         # Beep control
@@ -1672,6 +1858,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "beep_control",
                 "Beep control",
                 RadioSettingValueBoolean(bool(_mem.beep_control > 0)))
+        rs.set_doc(_("Sounds a short confirmation tone as you operate the "
+                     "radio. Turn it off when the radio has to be used "
+                     "discreetly."))
         basic.append(rs)
 
         # Scan resume mode
@@ -1684,6 +1873,11 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 RadioSettingValueList(
                     SCANRESUME_LIST,
                     current_index=tmpscanres))
+        rs.set_doc(_("Controls what scanning does after finding a signal. TO "
+                     "resumes after a preset time, CO resumes after the "
+                     "signal disappears, and SE stops scanning on the "
+                     "detected frequency or channel.") + " " +
+                   _("On this radio, TO resumes after 5 seconds."))
         basic.append(rs)
 
         # Keypad locked
@@ -1691,6 +1885,10 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "key_lock",
                 "Keypad lock",
                 RadioSettingValueBoolean(bool(_mem.key_lock > 0)))
+        rs.set_doc(_("Sets the current keypad-lock state. Hold the # key on "
+                     "the radio to lock or unlock the keypad.") + " " +
+                   _("The side keys still work while the keypad is "
+                     "locked."))
         basic.append(rs)
 
         # Auto keypad lock
@@ -1698,6 +1896,10 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "auto_keypad_lock",
                 "Auto keypad lock",
                 RadioSettingValueBoolean(bool(_mem.auto_keypad_lock > 0)))
+        rs.set_doc(_("Automatically locks the keypad to prevent accidental "
+                     "changes. Hold the # key to unlock the keypad.") + " " +
+                   _("The keypad locks about 15 seconds after the last key "
+                     "press."))
         basic.append(rs)
 
         # Power on display mode
@@ -1710,14 +1912,21 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 RadioSettingValueList(
                     WELCOME_LIST,
                     current_index=tmpdispmode))
+        rs.set_doc(_("Chooses what the display shows while the radio "
+                     "starts: Full Screen fills the whole display, Welcome "
+                     "Info shows the two logo strings, and Voltage shows the "
+                     "battery voltage."))
         basic.append(rs)
 
         # Keypad Tone
         tmpkeypadtone = _mem.keypad_tone
         if tmpkeypadtone >= len(KEYPADTONE_LIST):
             tmpkeypadtone = 0
-        rs = RadioSetting("keypad_tone", "Keypad tone", RadioSettingValueList(
+        rs = RadioSetting("keypad_tone", "Voice prompt", RadioSettingValueList(
             KEYPADTONE_LIST, current_index=tmpkeypadtone))
+        rs.set_doc(_("Selects the language for spoken radio-operation "
+                     "prompts, or disables those prompts.") + " " +
+                   _("The radio's menu calls this setting VOICE."))
         basic.append(rs)
 
         # Language
@@ -1726,6 +1935,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             tmplanguage = 0
         rs = RadioSetting("language", "Language", RadioSettingValueList(
             self._langs, current_index=tmplanguage))
+        rs.set_doc(_("The user manual does not describe this setting, and "
+                     "the radio does not appear to use it. The voice prompt "
+                     "language is set with the Voice prompt setting."))
         if self._langs:
             basic.append(rs)
 
@@ -1735,6 +1947,10 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             tmpalarmmode = 0
         rs = RadioSetting("alarm_mode", "Alarm mode", RadioSettingValueList(
             ALARMMODE_LIST, current_index=tmpalarmmode))
+        rs.set_doc(_("Chooses what the emergency alarm does. SITE sounds the "
+                     "alarm on this radio only, and TONE also transmits it to "
+                     "other radios. A side key set to Alarm on/off starts "
+                     "the alarm, and any key stops it."))
         basic.append(rs)
 
         # Reminding of end of talk
@@ -1747,6 +1963,10 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 RadioSettingValueList(
                     REMENDOFTALK_LIST,
                     current_index=tmpalarmmode))
+        rs.set_doc(_("Sends a short tone at the end of each transmission so "
+                     "other stations can hear that you released PTT.") + " " +
+                   _("ROGER sends a beep, MDC sends an MDC data burst, and "
+                     "Off sends nothing."))
         basic.append(rs)
 
         # Repeater tail tone elimination
@@ -1757,13 +1977,21 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 "repeater_tail_elimination",
                 "Repeater tail tone elimination",
                 RadioSettingValueList(RTE_LIST, current_index=tmprte))
+        rs.set_doc(_("After PTT is released, keeps transmitting a tail tone "
+                     "for the selected time, so that a repeater that "
+                     "supports it can suppress the burst of noise at the end "
+                     "of the transmission. Off sends no tail tone."))
         basic.append(rs)
 
         # Logo string 1
         logo1 = str(_mem.logo_line1).strip("\x20\x00\xff") + "\x00"
         logo1 = _getstring(logo1.encode('ascii', errors='ignore'), 0, 12)
+        logo_doc = _("Sets line %d of the welcome text that the radio shows "
+                     "at power-on when Power on display mode is Welcome "
+                     "Info.")
         rs = RadioSetting("logo1", _("Logo string 1 (12 characters)"),
                           RadioSettingValueString(0, 12, logo1))
+        rs.set_doc(logo_doc % 1)
         basic.append(rs)
 
         # Logo string 2
@@ -1771,9 +1999,12 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         logo2 = _getstring(logo2.encode('ascii', errors='ignore'), 0, 12)
         rs = RadioSetting("logo2", _("Logo string 2 (12 characters)"),
                           RadioSettingValueString(0, 12, logo2))
+        rs.set_doc(logo_doc % 2)
         basic.append(rs)
 
         # FM radio
+        fm_doc = _("Sets the frequency of this broadcast FM radio preset, in "
+                   "MHz from 76 to 108. Leave it empty to clear the preset.")
         for i in range(1, 21):
             freqname = "FM_"+str(i)
             fmfreq = _mem.fmfreq[i-1]/10.0
@@ -1783,10 +2014,13 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             else:
                 rs = RadioSetting(freqname, freqname,
                                   RadioSettingValueString(0, 5, str(fmfreq)))
+            rs.set_doc(fm_doc)
 
             fmradio.append(rs)
 
         # unlock settings
+        tx_band_doc = _("Allows transmitting between %d and %d MHz while "
+                        "F-LOCK is Off.")
 
         # F-LOCK
         tmpflock = _mem.lock.flock
@@ -1795,42 +2029,60 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         rs = RadioSetting(
             "flock", "F-LOCK",
             RadioSettingValueList(FLOCK_LIST, current_index=tmpflock))
+        rs.set_doc(_("Restricts transmitting to the bands of a regional "
+                     "version of the radio. Off allows 136 to 174 MHz and "
+                     "400 to 470 MHz, plus the bands that 200TX, 350TX and "
+                     "500TX unlock. FCC allows 144 to 148 MHz and 420 to 450 "
+                     "MHz.") + " " + not_in_manual)
         unlock.append(rs)
 
         # 350TX
         rs = RadioSetting("tx350", "350TX - unlock 350-400 MHz TX",
                           RadioSettingValueBoolean(
                               bool(_mem.lock.tx350 > 0)))
+        rs.set_doc(" ".join([tx_band_doc % (350, 400),
+                             _("It also needs 350EN to be on."),
+                             not_in_manual]))
         unlock.append(rs)
 
         # Killed
         rs = RadioSetting("Killed", "KILLED Device was disabled (via DTMF)",
                           RadioSettingValueBoolean(
                               bool(_mem.lock.killed > 0)))
+        rs.set_doc(_("Shows whether the radio has been disabled with the "
+                     "DTMF kill code. A disabled radio ignores its keys and "
+                     "stays silent until it receives the revive code."))
         unlock.append(rs)
 
         # 200TX
         rs = RadioSetting("tx200", "200TX - unlock 174-350 MHz TX",
                           RadioSettingValueBoolean(
                               bool(_mem.lock.tx200 > 0)))
+        rs.set_doc(" ".join([tx_band_doc % (174, 350), not_in_manual]))
         unlock.append(rs)
 
         # 500TX
         rs = RadioSetting("tx500", "500TX - unlock 500-600 MHz TX",
                           RadioSettingValueBoolean(
                               bool(_mem.lock.tx500 > 0)))
+        rs.set_doc(" ".join([tx_band_doc % (470, 600), not_in_manual]))
         unlock.append(rs)
 
         # 350EN
         rs = RadioSetting("en350", "350EN - unlock 350-400 MHz RX",
                           RadioSettingValueBoolean(
                               bool(_mem.lock.en350 > 0)))
+        rs.set_doc(_("Allows receiving between 350 and 400 MHz.") + " " +
+                   not_in_manual)
         unlock.append(rs)
 
         # SCREEN
         rs = RadioSetting("scrambler", "SCREN - scrambler enable",
                           RadioSettingValueBoolean(
                               bool(_mem.lock.enscramble > 0)))
+        rs.set_doc(_("Allows the voice scrambler that each memory selects "
+                     "with its Scrambler setting. When it is off, no channel "
+                     "is scrambled.") + " " + not_in_manual)
         unlock.append(rs)
 
         # readonly info
@@ -1840,12 +2092,22 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         val = RadioSettingValueString(0, 128, firmware)
         val.set_mutable(False)
         rs = RadioSetting("fw_ver", "Firmware Version", val)
+        rs.set_doc(_("Read-only firmware identification stored in the "
+                     "radio.") + " " +
+                   _("CHIRP records it when it downloads from the radio, and "
+                     "does not upload to a radio whose firmware this driver "
+                     "does not support."))
         roinfo.append(rs)
 
         # No limits version for hacked firmware
         val = RadioSettingValueBoolean(self._expanded_limits)
         rs = RadioSetting("nolimits", "Limits disabled for modified firmware",
                           val)
+        rs.set_doc(_("Makes CHIRP accept frequencies outside the bands of "
+                     "the original firmware, from 18 to 1300 MHz. Turn it on "
+                     "only for a radio with modified firmware that covers "
+                     "them. CHIRP does not store this setting in the "
+                     "radio."))
         rs.set_warning(_(
             'This should only be enabled if you are using modified firmware '
             'that supports wider frequency coverage. Enabling this will cause '
