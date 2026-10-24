@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:06-0400\n"
+"POT-Creation-Date: 2026-10-24 13:10-0500\n"
 "PO-Revision-Date: 2026-08-01 23:39-0400\n"
 "Last-Translator: MELERIX\n"
 "Language-Team: \n"
@@ -1585,7 +1585,7 @@ msgstr "No preguntar de nuevo para %s"
 msgid "Do you accept the risk?"
 msgstr "¿Aceptas el riesgo?"
 
-#: ../wxui/bankedit.py:190
+#: ../wxui/bankedit.py:199
 msgid "Double-click to change bank name"
 msgstr "Doble clic para cambiar nombre de banco"
 
@@ -1672,7 +1672,7 @@ msgstr "Ingresar desplazamiento (MHz)"
 msgid "Enter TX Frequency (MHz)"
 msgstr "Ingresar frecuencia TX (MHz)"
 
-#: ../wxui/bankedit.py:203
+#: ../wxui/bankedit.py:212
 #, python-format
 msgid "Enter a new name for bank %s:"
 msgstr "Ingresa un nuevo nombre para el banco %s:"
@@ -2296,7 +2296,7 @@ msgstr ""
 msgid "Includes the %s band in the bands the BAND buttons step through. Turn off the bands you never use to reach the others with fewer presses."
 msgstr ""
 
-#: ../wxui/bankedit.py:62
+#: ../wxui/bankedit.py:64
 msgid "Index"
 msgstr "Índice"
 
@@ -2503,6 +2503,11 @@ msgstr "Memorias"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Las memorias son de sólo lectura debido a una versión de firmware no soportada"
 
+#: ../wxui/bankedit.py:263
+#, python-format
+msgid "Memory %i could not be loaded, so its bank membership cannot be changed"
+msgstr ""
+
 #: ../wxui/memedit.py:2090
 #, python-format
 msgid "Memory %i is not deletable"
@@ -2521,7 +2526,7 @@ msgstr "Nombre del campo de memoria (uno de %s)"
 msgid "Memory label (stored in radio)"
 msgstr "Etiqueta de memoria (almacenada en la radio)"
 
-#: ../wxui/bankedit.py:242
+#: ../wxui/bankedit.py:251
 msgid "Memory must be in a bank to be edited"
 msgstr "La memoria debe estar en un banco para ser editada"
 
@@ -3050,7 +3055,7 @@ msgstr "Remover"
 msgid "Remove selected model from list"
 msgstr "Remover el modelo seleccionado de la lista"
 
-#: ../wxui/bankedit.py:205
+#: ../wxui/bankedit.py:214
 msgid "Rename bank"
 msgstr "Renombrar banco"
 

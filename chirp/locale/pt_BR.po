@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:06-0400\n"
+"POT-Creation-Date: 2026-10-24 13:10-0500\n"
 "PO-Revision-Date: 2025-11-26 22:39-0300\n"
 "Last-Translator: Luiz Ricardo Prado <luizrcsprado@outlook.com>\n"
 "Language-Team: Language pt-BR\n"
@@ -1547,7 +1547,7 @@ msgstr "Não solicite novamente %s"
 msgid "Do you accept the risk?"
 msgstr "Você aceita o risco?"
 
-#: ../wxui/bankedit.py:190
+#: ../wxui/bankedit.py:199
 msgid "Double-click to change bank name"
 msgstr "Clique duas vezes para alterar o nome do banco"
 
@@ -1634,7 +1634,7 @@ msgstr "Digite a frequência (MHz)"
 msgid "Enter TX Frequency (MHz)"
 msgstr "Digite a frequência TX (MHz)"
 
-#: ../wxui/bankedit.py:203
+#: ../wxui/bankedit.py:212
 #, python-format
 msgid "Enter a new name for bank %s:"
 msgstr "Digite um novo nome para o banco %s:"
@@ -2258,7 +2258,7 @@ msgid "Includes the %s band in the bands the BAND buttons step through. Turn off
 msgstr ""
 
 # Índice
-#: ../wxui/bankedit.py:62
+#: ../wxui/bankedit.py:64
 msgid "Index"
 msgstr "Índice"
 
@@ -2465,6 +2465,11 @@ msgstr "Memórias"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "As memórias são somente leitura devido à versão de firmware não suportada"
 
+#: ../wxui/bankedit.py:263
+#, python-format
+msgid "Memory %i could not be loaded, so its bank membership cannot be changed"
+msgstr ""
+
 #: ../wxui/memedit.py:2090
 #, python-format
 msgid "Memory %i is not deletable"
@@ -2483,7 +2488,7 @@ msgstr "Nome do campo de memória (um de %s)"
 msgid "Memory label (stored in radio)"
 msgstr "Etiqueta de memória (armazenada no rádio)"
 
-#: ../wxui/bankedit.py:242
+#: ../wxui/bankedit.py:251
 msgid "Memory must be in a bank to be edited"
 msgstr "A memória precisa estar em um banco para ser editada"
 
@@ -3011,7 +3016,7 @@ msgstr "Remover"
 msgid "Remove selected model from list"
 msgstr "Remover o modelo selecionado da lista"
 
-#: ../wxui/bankedit.py:205
+#: ../wxui/bankedit.py:214
 msgid "Rename bank"
 msgstr "Renomear banco"
 

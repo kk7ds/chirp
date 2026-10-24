@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import platform
 
 import wx
@@ -24,6 +25,7 @@ from chirp.wxui import config
 from chirp.wxui import memedit
 
 CONF = config.get()
+LOG = logging.getLogger(__name__)
 
 
 if platform.system() == 'Linux':
@@ -140,7 +142,14 @@ class ChirpBankEdit(common.ChirpEditor):
         lower, upper = self._features.memory_bounds
 
         for i in range(lower, upper + 1):
-            mem = self._radio.get_memory(i)
+            try:
+                mem = self._radio.get_memory(i)
+            except Exception as e:
+                # Leave this memory out of the cache and blank in the grid
+                # so that one unloadable memory does not prevent the rest
+                # of the bank editor from working.
+                LOG.error('Failed to load memory %i: %s', i, e)
+                continue
             self._refresh_memory(mem)
 
         wx.CallAfter(self._grid.AutoSizeColumns, setAsMin=True)
@@ -248,7 +257,11 @@ class ChirpBankEdit(common.ChirpEditor):
         wx.PostEvent(self, common.EditorChanged(self.GetId()))
 
     def _change_memory_mapping(self, number, bank, present):
-        mem = self._memory_cache[number]
+        try:
+            mem = self._memory_cache[number]
+        except KeyError:
+            raise Exception(_('Memory %i could not be loaded, so its bank '
+                              'membership cannot be changed') % number)
         bank = self._bank_indexes[self._bank_index_order[bank]]
         if present:
             self._bankmodel.add_memory_to_mapping(mem, bank)

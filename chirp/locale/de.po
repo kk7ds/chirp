@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:06-0400\n"
+"POT-Creation-Date: 2026-10-24 13:10-0500\n"
 "PO-Revision-Date: 2026-02-04 22:11+0100\n"
 "Last-Translator: Dieter Kuhnke (d.kuhnke@gmail.com)\n"
 "Language-Team: German\n"
@@ -1205,7 +1205,7 @@ msgstr "Keine erneute Aufforderung für %s"
 msgid "Do you accept the risk?"
 msgstr "Risiko akzeptieren?"
 
-#: ../wxui/bankedit.py:190
+#: ../wxui/bankedit.py:199
 msgid "Double-click to change bank name"
 msgstr "Doppel-Klick um Speicherbank-Name zu ändern"
 
@@ -1292,7 +1292,7 @@ msgstr "Offset (MHz) eingeben"
 msgid "Enter TX Frequency (MHz)"
 msgstr "Sende-Frequenz (MHz) eingeben"
 
-#: ../wxui/bankedit.py:203
+#: ../wxui/bankedit.py:212
 #, python-format
 msgid "Enter a new name for bank %s:"
 msgstr "Neuer Name für Speicherbank %s:"
@@ -1816,7 +1816,7 @@ msgstr ""
 msgid "Includes the %s band in the bands the BAND buttons step through. Turn off the bands you never use to reach the others with fewer presses."
 msgstr ""
 
-#: ../wxui/bankedit.py:62
+#: ../wxui/bankedit.py:64
 msgid "Index"
 msgstr ""
 
@@ -2025,6 +2025,11 @@ msgstr "Speicher"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Speicher sind wegen einer nicht unterstützten Firmware-Version schreibgeschützt"
 
+#: ../wxui/bankedit.py:263
+#, python-format
+msgid "Memory %i could not be loaded, so its bank membership cannot be changed"
+msgstr ""
+
 #: ../wxui/memedit.py:2090
 #, python-format
 msgid "Memory %i is not deletable"
@@ -2043,7 +2048,7 @@ msgstr "Speicherfeldname (einer von %s)"
 msgid "Memory label (stored in radio)"
 msgstr "Speichername (im Funkgerät gespeichert)"
 
-#: ../wxui/bankedit.py:242
+#: ../wxui/bankedit.py:251
 msgid "Memory must be in a bank to be edited"
 msgstr "Speicher muss sich in einer Speicherbank befinden, um bearbeitet zu werden"
 
@@ -2566,7 +2571,7 @@ msgstr "Entfernen"
 msgid "Remove selected model from list"
 msgstr "Ausgewähltes Modell aus der Liste entfernen"
 
-#: ../wxui/bankedit.py:205
+#: ../wxui/bankedit.py:214
 msgid "Rename bank"
 msgstr "Speicherbank umbenennen"
 

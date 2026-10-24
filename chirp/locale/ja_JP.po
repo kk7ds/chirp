@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:06-0400\n"
+"POT-Creation-Date: 2026-10-24 13:10-0500\n"
 "PO-Revision-Date: 2026-04-05 01:36-0500\n"
 "Last-Translator: Tony Gies <tgies@tgies.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1536,7 +1536,7 @@ msgstr "次回から %s に接続する際にプロンプトを表示しない"
 msgid "Do you accept the risk?"
 msgstr "リスクを承諾しますか？"
 
-#: ../wxui/bankedit.py:190
+#: ../wxui/bankedit.py:199
 msgid "Double-click to change bank name"
 msgstr "ダブルクリックしてバンク名を変更"
 
@@ -1623,7 +1623,7 @@ msgstr "オフセットを入力 (MHz)"
 msgid "Enter TX Frequency (MHz)"
 msgstr "送信周波数を入力 (MHz)"
 
-#: ../wxui/bankedit.py:203
+#: ../wxui/bankedit.py:212
 #, python-format
 msgid "Enter a new name for bank %s:"
 msgstr "バンク %s の新しい名前を入力:"
@@ -2240,7 +2240,7 @@ msgstr ""
 msgid "Includes the %s band in the bands the BAND buttons step through. Turn off the bands you never use to reach the others with fewer presses."
 msgstr ""
 
-#: ../wxui/bankedit.py:62
+#: ../wxui/bankedit.py:64
 msgid "Index"
 msgstr "インデックス"
 
@@ -2447,6 +2447,11 @@ msgstr "メモリ"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "非対応ファームウェアバージョンのためメモリは読み取り専用です"
 
+#: ../wxui/bankedit.py:263
+#, python-format
+msgid "Memory %i could not be loaded, so its bank membership cannot be changed"
+msgstr ""
+
 #: ../wxui/memedit.py:2090
 #, python-format
 msgid "Memory %i is not deletable"
@@ -2465,7 +2470,7 @@ msgstr "メモリフィールド名 (%s のいずれか)"
 msgid "Memory label (stored in radio)"
 msgstr "メモリラベル (無線機に保存されます)"
 
-#: ../wxui/bankedit.py:242
+#: ../wxui/bankedit.py:251
 msgid "Memory must be in a bank to be edited"
 msgstr "編集するにはメモリがバンクにある必要があります"
 
@@ -2993,7 +2998,7 @@ msgstr "削除"
 msgid "Remove selected model from list"
 msgstr "選択したモデルをリストから削除"
 
-#: ../wxui/bankedit.py:205
+#: ../wxui/bankedit.py:214
 msgid "Rename bank"
 msgstr "バンク名を変更"
 
