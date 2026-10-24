@@ -148,7 +148,7 @@ class ZipValidator(wx.Validator):
         strvalue = textctrl.GetValue()
         if len(strvalue) == 5 and strvalue.isdigit():
             return True
-        wx.MessageBox(_('Invalid ZIP code'), 'Invalid Entry')
+        wx.MessageBox(_('Invalid ZIP code'), _('Invalid Entry'))
         return False
 
     def Clone(self):
@@ -201,7 +201,7 @@ class QueryThread(threading.Thread, base.QueryStatus):
             self.radio.do_fetch(self, self.query_dialog.get_params())
         except Exception as e:
             LOG.exception('Failed to execute query: %s' % e)
-            self.send_fail('Failed: %s' % str(e))
+            self.send_fail(_('Failed: %s') % str(e))
 
     def send_status(self, status, percent):
         self.query_dialog.status(status, percent)
@@ -1051,7 +1051,7 @@ class RRQueryDialog(QuerySourceDialog):
         # build the login elements
         self._rrusername = wx.TextCtrl(
             panel, value=CONF.get('username', 'radioreference') or '')
-        self._add_grid(grid, 'Username', self._rrusername)
+        self._add_grid(grid, _('Username'), self._rrusername)
         grid.Add(wx.StaticText(panel, label=''),
                  border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
 
@@ -1059,7 +1059,7 @@ class RRQueryDialog(QuerySourceDialog):
             panel, style=wx.TE_PASSWORD,
             value=CONF.get_password('password',
                                     'radioreference') or '')
-        self._add_grid(grid, 'Password', self._rrpassword)
+        self._add_grid(grid, _('Password'), self._rrpassword)
 
         vbox.Add(self.tabs, proportion=1, border=10,
                  flag=wx.EXPAND | wx.BOTTOM | wx.TOP)
@@ -1083,19 +1083,19 @@ class RRQueryDialog(QuerySourceDialog):
         grid.AddGrowableCol(1)
 
         # build a new login button
-        self._loginbutton = wx.Button(panel, label='Log In')
+        self._loginbutton = wx.Button(panel, label=_('Log In'))
         grid.Add(self._loginbutton)
         self._loginbutton.Bind(wx.EVT_BUTTON, self._populateca)
 
         # build a prov/county selector grid & add selectors
-        self._provchoice = wx.Choice(panel, choices=['Log in First'])
+        self._provchoice = wx.Choice(panel, choices=[_('Log in First')])
         self.Bind(wx.EVT_CHOICE, self.selected_province, self._provchoice)
-        self._add_grid(grid, 'Province', self._provchoice)
+        self._add_grid(grid, _('Province'), self._provchoice)
         grid.Add(wx.StaticText(panel, label=''),
                  border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
 
-        self._countychoice = wx.Choice(panel, choices=['Log in First'])
-        self._add_grid(grid, 'County', self._countychoice)
+        self._countychoice = wx.Choice(panel, choices=[_('Log in First')])
+        self._add_grid(grid, _('County'), self._countychoice)
         self.Bind(wx.EVT_CHOICE, self.selected_county, self._countychoice)
         grid.Add(wx.StaticText(panel, label=''),
                  border=20, flag=wx.ALIGN_CENTER | wx.RIGHT | wx.LEFT)
@@ -1115,7 +1115,7 @@ class RRQueryDialog(QuerySourceDialog):
             panel,
             value=CONF.get('zipcode', 'radioreference') or '',
             validator=ZipValidator())
-        self._add_grid(grid, 'ZIP Code', self._uszip)
+        self._add_grid(grid, _('ZIP Code'), self._uszip)
 
         return panel
 
@@ -1128,12 +1128,12 @@ class RRQueryDialog(QuerySourceDialog):
         def cb(result):
             wx.CallAfter(okay.Enable)
             if isinstance(result, Exception):
-                self.status('Failed: %s' % result, 0)
+                self.status(_('Failed: %s') % result, 0)
                 wx.CallAfter(button.Enable)
             else:
-                self.status('Logged in', 0)
+                self.status(_('Logged in'), 0)
                 wx.CallAfter(self.populateprov)
-        self.status('Attempting login...', 0)
+        self.status(_('Attempting login...'), 0)
         radioreference.RadioReferenceCAData(
             cb,
             self._rrusername.GetValue(),

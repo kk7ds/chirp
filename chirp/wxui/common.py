@@ -121,7 +121,7 @@ class LiveAdapter(generic_csv.CSVRadio):
             status = chirp_common.Status()
             status.max = self._features.memory_bounds[1]
             status.cur = i
-            status.msg = 'Cloning'
+            status.msg = _('Cloning')
             self.status_fn(status)
 
     def sync_out(self):
@@ -756,11 +756,11 @@ class ChirpSettingGrid(wx.Panel):
             def ValidateValue(self, val, info):
                 if value.get_min() and not val >= value.get_min():
                     info.SetFailureMessage(
-                        _('Value must be at least %.4f' % value.get_min()))
+                        _('Value must be at least %.4f') % value.get_min())
                     return False
                 if value.get_max() and not val <= value.get_max():
                     info.SetFailureMessage(
-                        _('Value must be at most %.4f' % value.get_max()))
+                        _('Value must be at most %.4f') % value.get_max())
                     return False
                 return True
 

@@ -1076,7 +1076,7 @@ class ChirpMain(wx.Frame):
                    _('Close file'))
         tb.AddTool(wx.NewId(), _('Download'), bm(wx.ART_GO_DOWN),
                    _('Download from radio'))
-        tb.AddTool(wx.NewId(), 'Upload', bm(wx.ART_GO_UP),
+        tb.AddTool(wx.NewId(), _('Upload'), bm(wx.ART_GO_UP),
                    _('Upload to radio'))
 
         self.Bind(wx.EVT_MENU, self._menu_open, tbopen)

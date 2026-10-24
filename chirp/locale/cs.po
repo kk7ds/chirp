@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:06-0400\n"
+"POT-Creation-Date: 2026-10-25 00:03+0200\n"
 "PO-Revision-Date: 2026-06-17 14:30+0200\n"
 "Last-Translator: Martin Macko <martin.macko@email.cz>\n"
 "Language-Team: Czech\n"
@@ -55,6 +55,11 @@ msgstr ""
 #, fuzzy, python-format
 msgid "%s has not been saved. Save before closing?"
 msgstr "%s nebyl uložen. Uložit před zavřením?"
+
+#: ../settings.py:267 ../settings.py:391
+#, python-format
+msgid "%s is not valid for this setting"
+msgstr ""
 
 #: ../wxui/bugreport.py:512
 msgid "(Describe what actually happened instead)"
@@ -908,7 +913,7 @@ msgstr ""
 "6. Klikněte na OK k nahrání dat do vysílačky.\n"
 "\n"
 
-#: ../drivers/uvb5.py:293 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:237
+#: ../drivers/tg_uv2p.py:237 ../drivers/uvb5.py:293 ../drivers/wouxun.py:222
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -925,7 +930,7 @@ msgstr ""
 "6. Klikněte na OK ke stažení dat z vysílačky.\n"
 "\n"
 
-#: ../drivers/uvb5.py:301 ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:245
+#: ../drivers/tg_uv2p.py:245 ../drivers/uvb5.py:301 ../drivers/wouxun.py:230
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1136,6 +1141,10 @@ msgstr ""
 "\n"
 "It will may not work if you turn on the radio with the cable already attached"
 
+#: ../settings.py:189
+msgid "A floating point value is required"
+msgstr ""
+
 #: ../wxui/main.py:2170
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "Je k dispozici nová verze CHIRP. Navštivte prosím webovou stránku co nejdříve a stáhněte si ji!"
@@ -1193,6 +1202,10 @@ msgstr "Radioamatérské"
 msgid "An error has occurred"
 msgstr "Došlo k chybě"
 
+#: ../settings.py:147
+msgid "An integer is required"
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:728
 msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
 msgstr ""
@@ -1219,6 +1232,10 @@ msgstr ""
 
 #: ../drivers/ft450d.py:1664
 msgid "Assigns the second function the DSP/SEL knob takes on after it is pressed briefly: adjusting the CW sidetone volume, the CW keyer speed, the microphone gain or the RF power, or tuning in 100 kHz or 1 MHz steps."
+msgstr ""
+
+#: ../wxui/query_sources.py:1136
+msgid "Attempting login..."
 msgstr ""
 
 #: ../wxui/main.py:1630
@@ -1425,18 +1442,18 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr "Klonování dokončeno, kontrola nežádoucích bajtů"
 
-#: ../wxui/common.py:145
+#: ../wxui/common.py:124 ../wxui/common.py:145
 msgid "Cloning"
 msgstr "Klonování"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:517 ../drivers/ft4.py:327
-#: ../drivers/ft817.py:343
+#: ../drivers/ft817.py:343 ../drivers/ft450d.py:517 ../drivers/bj9900.py:133
+#: ../drivers/ft4.py:327
 #, fuzzy
 msgid "Cloning from radio"
 msgstr "Čtení (klonování) z vysílačky"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:546 ../drivers/ft4.py:328
-#: ../drivers/ft817.py:381
+#: ../drivers/ft817.py:381 ../drivers/ft450d.py:546 ../drivers/bj9900.py:165
+#: ../drivers/ft4.py:328
 #, fuzzy
 msgid "Cloning to radio"
 msgstr "Zápis (klonování) do vysílačky"
@@ -1473,7 +1490,7 @@ msgstr "Komentář"
 msgid "Communicate with radio"
 msgstr "Komunikovat s vysílačkou"
 
-#: ../wxui/clone.py:153
+#: ../wxui/clone.py:153 ../sources/repeaterbook.py:150
 msgid "Complete"
 msgstr "Dokončeno"
 
@@ -1523,6 +1540,10 @@ msgstr "Kopírovat přenosnou verzi"
 msgid "Country"
 msgstr "Země"
 
+#: ../wxui/query_sources.py:1098
+msgid "County"
+msgstr ""
+
 #: ../wxui/memedit.py:689
 msgid "Cross Mode"
 msgstr "Křížový režim"
@@ -1565,7 +1586,7 @@ msgstr ""
 msgid "DTMF decode"
 msgstr "DTMF dekódování"
 
-#: ../wxui/memedit.py:2945
+#: ../wxui/memedit.py:2856 ../wxui/memedit.py:2946
 msgid "DV Memory"
 msgstr "DV paměť"
 
@@ -1590,6 +1611,20 @@ msgstr "Smazat"
 msgid "Delete memories"
 msgstr "Smazat paměti"
 
+#: ../import_logic.py:209
+#, python-format
+msgid "Destination does not support %s"
+msgstr ""
+
+#: ../import_logic.py:150 ../import_logic.py:154
+#, python-format
+msgid "Destination does not support tone frequency %s"
+msgstr ""
+
+#: ../import_logic.py:261
+msgid "Destination radio does not support D-STAR"
+msgstr ""
+
 #: ../wxui/bugreport.py:570
 msgid "Detailed information"
 msgstr "Podrobné informace"
@@ -1604,7 +1639,7 @@ msgstr "Vývojářský režim"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "Stav vývojáře je nyní %s. Pro projevení změn je nutné restartovat CHIRP"
 
-#: ../wxui/memedit.py:2343 ../wxui/developer.py:98
+#: ../wxui/developer.py:98 ../wxui/memedit.py:2343
 #, fuzzy
 msgid "Diff Raw Memories"
 msgstr "Porovnat surové paměti"
@@ -1613,7 +1648,7 @@ msgstr "Porovnat surové paměti"
 msgid "Diff against another editor"
 msgstr "Porovnat s jiným editorem"
 
-#: ../wxui/memedit.py:2862
+#: ../wxui/memedit.py:2863
 msgid "Digital Code"
 msgstr "Digitální kód"
 
@@ -1651,6 +1686,10 @@ msgstr "Znovu se nedotazovat na %s"
 msgid "Do you accept the risk?"
 msgstr "Přijímáte toto riziko?"
 
+#: ../sources/amsats.py:136 ../sources/amsats.py:280
+msgid "Done"
+msgstr ""
+
 #: ../wxui/bankedit.py:190
 msgid "Double-click to change bank name"
 msgstr "Dvojitým kliknutím změníte název banky"
@@ -1658,6 +1697,10 @@ msgstr "Dvojitým kliknutím změníte název banky"
 #: ../wxui/main.py:1077
 msgid "Download"
 msgstr "Stáhnout"
+
+#: ../sources/repeaterbook.py:207
+msgid "Download complete"
+msgstr ""
 
 #: ../wxui/main.py:1078
 #, fuzzy
@@ -1673,6 +1716,22 @@ msgstr "Stáhnout z vysílačky..."
 #, fuzzy
 msgid "Download instructions"
 msgstr "Instrukce pro stažení"
+
+#: ../sources/repeaterbook.py:173
+msgid "Downloading"
+msgstr ""
+
+#: ../sources/amsats.py:240
+msgid "Downloading SatNOGS satellites..."
+msgstr ""
+
+#: ../sources/amsats.py:243
+msgid "Downloading SatNOGS transmitters..."
+msgstr ""
+
+#: ../sources/amsats.py:106
+msgid "Downloading satellite data..."
+msgstr ""
 
 #: ../wxui/radioinfo.py:76
 msgid "Driver"
@@ -1699,12 +1758,12 @@ msgstr "Duplex"
 msgid "Edit %i memories"
 msgstr "Upravit %i pamětí"
 
-#: ../wxui/memedit.py:2892
+#: ../wxui/memedit.py:2893
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Upravit podrobnosti pro %i pamětí"
 
-#: ../wxui/memedit.py:2890
+#: ../wxui/memedit.py:2891
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Upravit podrobnosti pro paměť %i"
@@ -1823,11 +1882,16 @@ msgstr "Příklad: name~\"myrepea\""
 msgid "Exclude private and closed repeaters"
 msgstr "Vyloučit soukromé a uzavřené převaděče"
 
+#: ../wxui/memquery.py:232
+#, python-format
+msgid "Expected: %s"
+msgstr ""
+
 #: ../wxui/clone.py:750
 msgid "Experimental driver"
 msgstr "Experimentální ovladač"
 
-#: ../wxui/memedit.py:2805
+#: ../wxui/memedit.py:2806
 msgid "Export can only write CSV files"
 msgstr "Export může zapisovat pouze soubory CSV"
 
@@ -1841,7 +1905,7 @@ msgstr "Exportovat do CSV"
 msgid "Export to CSV..."
 msgstr "Exportovat do CSV..."
 
-#: ../wxui/memedit.py:2934
+#: ../wxui/memedit.py:2935
 msgid "Extra"
 msgstr "Extra"
 
@@ -1862,7 +1926,12 @@ msgid ""
 "required."
 msgstr "BEZPLATNÁ databáze převaděčů, která poskytuje nejaktuálnější informace o převaděčích v Evropě. Není vyžadován žádný účet."
 
-#: ../wxui/memedit.py:2843
+#: ../sources/amsats.py:114
+#, python-format
+msgid "Failed to download data: %s"
+msgstr ""
+
+#: ../wxui/memedit.py:2844
 msgid "Failed to export some memories"
 msgstr "Nepodařilo se exportovat některé paměti"
 
@@ -1879,9 +1948,33 @@ msgstr "Nepodařilo se zpracovat výsledek"
 msgid "Failed to send bug report:"
 msgstr "Nepodařilo se odeslat hlášení o chybě:"
 
+#: ../sources/repeaterbook.py:192
+msgid "Failed to write RepeaterBook data to disk"
+msgstr ""
+
+#: ../wxui/query_sources.py:204 ../wxui/query_sources.py:1131
+#, python-format
+msgid "Failed: %s"
+msgstr ""
+
 #: ../wxui/radioinfo.py:57
 msgid "Features"
 msgstr "Funkce"
+
+#: ../sources/amsats.py:217
+#, python-format
+msgid "Fetching %s (page %i)..."
+msgstr ""
+
+#: ../sources/radioreference.py:153
+#, python-format
+msgid "Fetching %s:%s"
+msgstr ""
+
+#: ../sources/radioreference.py:176
+#, python-format
+msgid "Fetching agency %s %s:%s"
+msgstr ""
 
 #: ../wxui/bugreport.py:213
 msgid "File a new bug"
@@ -2004,11 +2097,11 @@ msgstr ""
 "    no right-side audio!\n"
 "\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:636 ../drivers/gmrsuv1.py:395
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:343
-#: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
+#: ../drivers/mursv1.py:341 ../drivers/btech.py:636 ../drivers/bf_t1.py:484
+#: ../drivers/uv5x3.py:421 ../drivers/tdxone_tdq8a.py:444
+#: ../drivers/uv6r.py:343 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/gmrsuv1.py:395
+#: ../drivers/gmrsv2.py:363
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2164,7 +2257,7 @@ msgstr ""
 "4 - Klikněte na OK pro spuštění.\n"
 "\n"
 
-#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
+#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2194,11 +2287,10 @@ msgstr ""
 "4 - Do the download of your radio data\n"
 "\n"
 
-#: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:401
-#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
-#: ../drivers/uv6r.py:349 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/mursv1.py:347 ../drivers/lt725uv.py:492 ../drivers/uv5x3.py:427
+#: ../drivers/vgc.py:592 ../drivers/tdxone_tdq8a.py:450 ../drivers/uv6r.py:349
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/gmrsuv1.py:401 ../drivers/gmrsv2.py:369
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2246,9 +2338,9 @@ msgstr "Frekvence %s je mimo podporovaný rozsah %s"
 msgid "Frequency granularity in kHz"
 msgstr "Krok frekvence v kHz"
 
-#: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
-#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
-#: ../drivers/uv5r.py:2249 ../drivers/baofeng_uv17Pro.py:1478
+#: ../drivers/retevis_ha1g.py:1439 ../drivers/ga510.py:1094
+#: ../drivers/mml_jc8810.py:1383 ../drivers/baofeng_uv17Pro.py:1478
+#: ../drivers/uv5r.py:2249 ../drivers/tdh8.py:2540
 msgid "Frequency in this range must not be AM mode"
 msgstr "Frekvence v tomto rozsahu nesmí být v režimu AM"
 
@@ -2256,10 +2348,10 @@ msgstr "Frekvence v tomto rozsahu nesmí být v režimu AM"
 msgid "Frequency in this range not supported by firmware"
 msgstr "Frekvence v tomto rozsahu není podporována firmwarem"
 
-#: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
-#: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:2245
-#: ../drivers/baofeng_uv17Pro.py:1475
+#: ../drivers/retevis_ha1g.py:1435 ../drivers/ga510.py:1087
+#: ../drivers/mml_jc8810.py:1380 ../drivers/baofeng_uv17Pro.py:1475
+#: ../drivers/uv5r.py:2245 ../drivers/radtel_rt900.py:1623
+#: ../drivers/tdh8.py:2537
 msgid "Frequency in this range requires AM mode"
 msgstr "Frekvence v tomto rozsahu vyžaduje režim AM"
 
@@ -2276,6 +2368,11 @@ msgstr "GMRS"
 msgid "Getting settings"
 msgstr "Získávání nastavení"
 
+#: ../sources/repeaterbook.py:158
+#, python-format
+msgid "Got error code %i (%s) from server"
+msgstr ""
+
 #: ../wxui/memedit.py:1408
 #, fuzzy
 msgid "Goto Memory"
@@ -2289,7 +2386,7 @@ msgstr "Přejít na paměť:"
 msgid "Goto..."
 msgstr "Přejít na..."
 
-#: ../wxui/common.py:584 ../wxui/accessibility.py:310
+#: ../wxui/accessibility.py:310 ../wxui/common.py:584
 #, python-format
 msgid "Group: %s"
 msgstr ""
@@ -2340,6 +2437,10 @@ msgstr "Mám"
 #: ../wxui/query_sources.py:818 ../wxui/query_sources.py:824
 msgid "If set, sort results by distance from these coordinates"
 msgstr "Je-li nastaveno, seřadí výsledky podle vzdálenosti od těchto souřadnic"
+
+#: ../wxui/radioinfo.py:131
+msgid "Image Metadata"
+msgstr ""
 
 #: ../wxui/main.py:1500
 msgid "Import"
@@ -2402,6 +2503,10 @@ msgstr "Informace"
 msgid "Insert Row Above"
 msgstr "Vložit řádek nad"
 
+#: ../wxui/memedit.py:2380
+msgid "Insert row"
+msgstr ""
+
 #: ../wxui/__init__.py:60
 msgid "Install desktop icon?"
 msgstr "Instalovat ikonu na plochu?"
@@ -2422,13 +2527,22 @@ msgstr "Interní chyba ovladače"
 msgid "Internal driver error: Attempt to modify frozen memory; Please report this as a bug using \"Report or update a bug\" in the Help menu"
 msgstr "Interní chyba ovladače: Pokus o změnu zmrazené paměti; Nahlaste to prosím jako chybu pomocí „Nahlásit nebo aktualizovat chybu“ v nabídce Nápověda"
 
+#: ../sources/repeaterbook.py:105
+msgid "Internal error - check log"
+msgstr ""
+
+#: ../wxui/memedit.py:312
+#, python-format
+msgid "Internal error: unable to prompt for %s"
+msgstr ""
+
 #: ../wxui/query_sources.py:62
 #, python-format
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Neplatná hodnota %(value)s (použijte desetinné stupně)"
 
-#: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
-#: ../wxui/memedit.py:2049
+#: ../wxui/memedit.py:2049 ../wxui/memedit.py:3029 ../wxui/query_sources.py:70
+#: ../wxui/query_sources.py:124 ../wxui/query_sources.py:151
 msgid "Invalid Entry"
 msgstr "Neplatný vstup"
 
@@ -2436,10 +2550,14 @@ msgstr "Neplatný vstup"
 msgid "Invalid ZIP code"
 msgstr "Neplatné PSČ"
 
-#: ../wxui/memedit.py:2048 ../wxui/memedit.py:3027
+#: ../wxui/memedit.py:2048 ../wxui/memedit.py:3028
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Neplatná úprava: %s"
+
+#: ../wxui/memedit.py:413
+msgid "Invalid frequency"
+msgstr ""
 
 #: ../wxui/query_sources.py:124
 msgid "Invalid locator"
@@ -2467,7 +2585,7 @@ msgstr "Číslo hlášení:"
 msgid "LIVE"
 msgstr "NAŽIVO"
 
-#: ../drivers/radtel_rt490.py:1024 ../wxui/main.py:854 ../wxui/main.py:1644
+#: ../wxui/main.py:854 ../wxui/main.py:1644 ../drivers/radtel_rt490.py:1024
 msgid "Language"
 msgstr "Jazyk"
 
@@ -2556,6 +2674,18 @@ msgstr "Lokátor"
 msgid "Locks the controls selected by Lock Mode against accidental changes, as the LOCK button does."
 msgstr ""
 
+#: ../wxui/query_sources.py:1086
+msgid "Log In"
+msgstr ""
+
+#: ../wxui/query_sources.py:1091 ../wxui/query_sources.py:1097
+msgid "Log in First"
+msgstr ""
+
+#: ../wxui/query_sources.py:1134
+msgid "Logged in"
+msgstr ""
+
 #: ../wxui/bugreport.py:343
 msgid "Login failed: Check your username and password"
 msgstr "Přihlášení se nezdařilo: Zkontrolujte uživatelské jméno a heslo"
@@ -2622,8 +2752,8 @@ msgstr "Paměť must be v bance, aby ji bylo možné upravovat"
 msgid "Memory {num} not in bank {bank}"
 msgstr "Paměť {num} není v bance {bank}"
 
-#: ../wxui/query_sources.py:626 ../wxui/query_sources.py:779
-#: ../wxui/memedit.py:675
+#: ../wxui/memedit.py:675 ../wxui/query_sources.py:626
+#: ../wxui/query_sources.py:779
 msgid "Mode"
 msgstr "Režim"
 
@@ -2656,7 +2786,7 @@ msgstr "Více informací"
 msgid "More than one port found: %s"
 msgstr "Nalezeno více než jedno rozhraní: %s"
 
-#: ../wxui/memedit.py:2743
+#: ../wxui/memedit.py:2744
 #, python-format
 msgid "Move %i memories"
 msgstr "Přesunout %i pamětí"
@@ -2671,12 +2801,20 @@ msgstr "Posunout dolů"
 msgid "Move Up"
 msgstr "Posunout nahoru"
 
-#: ../wxui/memedit.py:2713
+#: ../wxui/memedit.py:2714
 msgid "Move operations are disabled while the view is sorted"
 msgstr "Operace přesunu jsou zakázány, pokud je pohled seřazen"
 
 #: ../drivers/ft450d.py:1003
 msgid "Moves the part of the passband the contour filter acts on, from -2 at the low end through Center to +2 at the high end."
+msgstr ""
+
+#: ../wxui/memedit.py:1449
+msgid "Name"
+msgstr ""
+
+#: ../sources/base.py:58
+msgid "Network source is immutable"
 msgstr ""
 
 #: ../wxui/main.py:692
@@ -2686,6 +2824,10 @@ msgstr "Nové okno"
 #: ../wxui/main.py:2172
 msgid "New version available"
 msgstr "K dispozici je nová verze"
+
+#: ../wxui/memedit.py:2671
+msgid "No channels extracted from paste"
+msgstr ""
 
 #: ../wxui/memedit.py:2390
 msgid "No empty rows below!"
@@ -2714,15 +2856,28 @@ msgstr "Není k dispozici žádné další místo; některé paměti nebyly pou�
 msgid "No results"
 msgstr "Žádné výsledky"
 
-#: ../sources/repeaterbook.py:371
+#: ../sources/repeaterbook.py:204 ../sources/repeaterbook.py:371
 msgid "No results!"
 msgstr "Žádné výsledky!"
+
+#: ../import_logic.py:46 ../import_logic.py:64
+#, python-format
+msgid "No room to add callsign %s"
+msgstr ""
 
 #: ../wxui/main.py:2082
 msgid "No traces stored"
 msgstr "Nejsou uloženy žádné stopy komunikace"
 
-#: ../wxui/query_sources.py:45 ../wxui/memedit.py:1407
+#: ../sources/amsats.py:277
+msgid "No valid SatNOGS frequencies found!"
+msgstr ""
+
+#: ../sources/amsats.py:133
+msgid "No valid satellite frequencies found!"
+msgstr ""
+
+#: ../wxui/memedit.py:1407 ../wxui/query_sources.py:45
 msgid "Number"
 msgstr "Číslo"
 
@@ -2869,12 +3024,17 @@ msgstr ""
 "V této verzi je podporována pouze část z více než 130 dostupných nastavení vysílačky.\n"
 "\n"
 
-#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
-#: ../sources/mapy73pl.py:52
+#: ../sources/przemienniki_eu.py:48 ../sources/repeaterbook.py:299
+#: ../sources/przemienniki_net.py:50 ../sources/mapy73pl.py:52
+#: ../sources/dmrmarc.py:52
 msgid "Parsing"
 msgstr "Zpracování"
 
-#: ../wxui/bugreport.py:276
+#: ../sources/amsats.py:117
+msgid "Parsing data..."
+msgstr ""
+
+#: ../wxui/bugreport.py:276 ../wxui/query_sources.py:1062
 msgid "Password"
 msgstr "Heslo"
 
@@ -2887,7 +3047,7 @@ msgstr "Vložit"
 msgid "Paste external memories"
 msgstr "Vložit externí paměti"
 
-#: ../wxui/memedit.py:2656
+#: ../wxui/memedit.py:2657
 msgid "Paste memories"
 msgstr "Vložit paměti"
 
@@ -2971,6 +3131,10 @@ msgstr "Náhled tisku"
 msgid "Printing"
 msgstr "Tisk"
 
+#: ../sources/amsats.py:247
+msgid "Processing data..."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:572
 #, python-format
 msgid "Programs DTMF code %i. A channel or VFO can select this code as its PTT-ID and send it when PTT is pressed, released, or both."
@@ -3004,6 +3168,10 @@ msgstr "Název vlastnosti"
 msgid "Property Value"
 msgstr "Hodnota vlastnosti"
 
+#: ../wxui/query_sources.py:1093
+msgid "Province"
+msgstr ""
+
 #: ../wxui/query_sources.py:833
 msgid "QTH Locator"
 msgstr "QTH lokátor"
@@ -3030,9 +3198,13 @@ msgid "Query syntax help"
 msgstr "Nápověda k syntaxi dotazů"
 
 #: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
-#: ../sources/mapy73pl.py:36
+#: ../sources/mapy73pl.py:36 ../sources/dmrmarc.py:40
 msgid "Querying"
 msgstr "Dotazování"
+
+#: ../sources/radioreference.py:119
+msgid "Querying..."
+msgstr ""
 
 #: ../wxui/memedit.py:622
 msgid "RX DTCS"
@@ -3059,8 +3231,8 @@ msgstr ""
 msgid "Radio Info: Image Metadata"
 msgstr ""
 
-#: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:582
-#: ../drivers/ft817.py:410
+#: ../drivers/ft817.py:410 ../drivers/ft450d.py:582 ../drivers/ft60.py:89
+#: ../drivers/ft60.py:91
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "Vysílačka nepotvrdila příjem bloku %i"
@@ -3159,6 +3331,10 @@ msgid ""
 "worldwide, FREE repeater directory."
 msgstr "RepeaterBook je nejucelenější celosvětový BEZPLATNÝ adresář převaděčů pro radioamatéry."
 
+#: ../sources/repeaterbook.py:182
+msgid "RepeaterBook returned invalid response"
+msgstr ""
+
 #: ../wxui/main.py:1025
 msgid "Report or update a bug..."
 msgstr "Nahlásit nebo aktualizovat chybu..."
@@ -3233,7 +3409,7 @@ msgstr "Řízení skenování (přeskočit, zahrnout, priorita, atd.)"
 msgid "Scanlists"
 msgstr "Seznamy skenování"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:855
+#: ../drivers/uvk5.py:855 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr "Scrambler"
 
@@ -3376,6 +3552,10 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1245
 msgid "Selects wide or narrow FM for VFO B. Use Narrow where required by the channel plan to reduce interference to adjacent channels."
+msgstr ""
+
+#: ../wxui/bugreport.py:592
+msgid "Sending report..."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:769
@@ -3592,7 +3772,7 @@ msgstr ""
 msgid "Shifts the frequency shown on the display in the USER-L and USER-U data modes by this many hertz. The radio accepts -3000 to +3000 Hz."
 msgstr ""
 
-#: ../wxui/memedit.py:2335 ../wxui/developer.py:101
+#: ../wxui/developer.py:101 ../wxui/memedit.py:2335
 #, fuzzy
 msgid "Show Raw Memory"
 msgstr "Zobrazit surovou paměť"
@@ -3617,7 +3797,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Přeskočit"
 
-#: ../wxui/memedit.py:2647
+#: ../wxui/memedit.py:2648
 msgid "Some memories are incompatible with this radio"
 msgstr "Některé paměti nejsou s touto vysílačkou kompatibilní"
 
@@ -3896,6 +4076,10 @@ msgstr "Tento zdroj poskytuje vybraný seznam aktivních radioamatérských dru�
 msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
 msgstr "Tento nastroj odešle podrobnosti o vašem systému k již existujícímu problému v systému sledování chyb CHIRP. Ke své činnosti vyžaduje vaše uživatelské jméno a heslo pro chirpmyradio.com. Budou odeslány informace o vašem systému včetně ladicího protokolu, konfiguračního souboru a jakýchkoli otevřených souborů obrazů paměti. Před odesláním se provede pokus o odstranění osobních údajů."
 
+#: ../settings.py:85
+msgid "This value is not mutable"
+msgstr ""
+
 #: ../wxui/developer.py:684
 msgid "This will load a module from a website issue"
 msgstr "Tímto načtete modul z hlášení na webu"
@@ -4023,6 +4207,10 @@ msgstr "Nelze otevřít schránku"
 msgid "Unable to query"
 msgstr "Nelze provést dotaz"
 
+#: ../sources/dmrmarc.py:50
+msgid "Unable to query DMR-MARC"
+msgstr ""
+
 #: ../drivers/ft817.py:322
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "Nelze přečíst poslední blok. To se často stává, když je zvolen model pro US, ale stanice je ne-US (nebo má rozšířené pásmo). Zvolte prosím správný model a zkuste to znovu."
@@ -4049,6 +4237,14 @@ msgstr "Zpět"
 msgid "United States"
 msgstr "Spojené státy"
 
+#: ../sources/radioreference.py:173
+msgid "Unknown Category"
+msgstr ""
+
+#: ../directory.py:229
+msgid "Unknown file format"
+msgstr ""
+
 #: ../wxui/clone.py:485
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Odpojte kabel (je-li to nutné) a poté klikněte na OK"
@@ -4066,6 +4262,10 @@ msgstr "Aktualizovat existující chybu"
 #, python-format
 msgid "Updating bug %s"
 msgstr "Aktualizace chyby %s"
+
+#: ../wxui/main.py:1079
+msgid "Upload"
+msgstr ""
 
 #: ../wxui/clone.py:898
 msgid "Upload instructions"
@@ -4106,14 +4306,44 @@ msgstr "Použít písmo s pevnou šířkou"
 msgid "Use larger font"
 msgstr "Použít větší písmo"
 
-#: ../wxui/bugreport.py:266
+#: ../wxui/bugreport.py:266 ../wxui/query_sources.py:1054
 msgid "Username"
 msgstr "Uživatelské jméno"
+
+#: ../sources/repeaterbook.py:143 ../sources/repeaterbook.py:146
+#: ../sources/repeaterbook.py:156
+msgid "Using cached data"
+msgstr ""
+
+#: ../settings.py:149
+#, python-format
+msgid "Value %i not in range %i-%i"
+msgstr ""
+
+#: ../settings.py:328
+#, python-format
+msgid "Value %r contains invalid character `%s'"
+msgstr ""
+
+#: ../settings.py:323
+#, python-format
+msgid "Value %r must be between %i and %i chars"
+msgstr ""
+
+#: ../settings.py:191
+#, python-format
+msgid "Value %s not in range %s-%s"
+msgstr ""
 
 #: ../wxui/developer.py:314
 #, python-format
 msgid "Value does not fit in %i bits"
 msgstr "Hodnota se nevejde do %i bitů"
+
+#: ../settings.py:264
+#, python-format
+msgid "Value for %s is out of range"
+msgstr ""
 
 #: ../wxui/common.py:759
 #, python-format
@@ -4138,7 +4368,7 @@ msgstr "Hodnota musí být nula nebo větší"
 msgid "Value to search memory field for"
 msgstr "Hodnota pro vyhledání v poli paměti"
 
-#: ../wxui/memedit.py:2925
+#: ../wxui/memedit.py:2926
 msgid "Values"
 msgstr "Hodnoty"
 
@@ -4159,8 +4389,8 @@ msgstr ""
 msgid "WARNING!"
 msgstr "VAROVÁNÍ!"
 
-#: ../wxui/bugreport.py:235 ../wxui/memedit.py:2055 ../wxui/main.py:1907
-#: ../wxui/main.py:2065
+#: ../wxui/bugreport.py:235 ../wxui/main.py:1907 ../wxui/main.py:2065
+#: ../wxui/memedit.py:2055
 msgid "Warning"
 msgstr "Varování"
 
@@ -4209,6 +4439,10 @@ msgstr "Váš QTH lokátor"
 msgid "Your cable appears to be on port:"
 msgstr "Váš kabel je zřejmě na portu:"
 
+#: ../wxui/query_sources.py:1118
+msgid "ZIP Code"
+msgstr ""
+
 #: ../wxui/developer.py:194
 msgid "bits"
 msgstr "bitů"
@@ -4249,8 +4483,17 @@ msgstr ""
 msgid "locked"
 msgstr ""
 
+#: ../settings.py:366
+#, python-format
+msgid "map_entries must be 2 el tuples instead of: %s"
+msgstr ""
+
 #: ../wxui/common.py:550
 msgid "number"
+msgstr ""
+
+#: ../import_logic.py:239
+msgid "offset is abnormally large."
 msgstr ""
 
 #: ../wxui/bugreport.py:421

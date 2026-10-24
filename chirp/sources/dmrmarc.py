@@ -37,7 +37,7 @@ class DMRMARCRadio(base.NetworkResultRadio):
         return 'DMR-MARC'
 
     def do_fetch(self, status, params):
-        status.send_status('Querying', 10)
+        status.send_status(_('Querying'), 10)
         try:
             r = requests.get('https://radioid.net/api/dmr/repeater/',
                              headers=base.HEADERS,
@@ -47,9 +47,9 @@ class DMRMARCRadio(base.NetworkResultRadio):
             r.raise_for_status()
         except requests.exceptions.RequestException as e:
             LOG.error('Failed to query DMR-MARC: %s' % e)
-            status.send_fail('Unable to query DMR-MARC')
+            status.send_fail(_('Unable to query DMR-MARC'))
             return
-        status.send_status('Parsing', 20)
+        status.send_status(_('Parsing'), 20)
         self._repeaters = r.json()['results']
         self._memories = [self.make_memory(i)
                           for i in range(0, len(self._repeaters))]

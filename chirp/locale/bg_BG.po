@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:06-0400\n"
+"POT-Creation-Date: 2026-10-25 00:03+0200\n"
 "PO-Revision-Date: 2025-04-17 10:00+0200\n"
 "Last-Translator: Стоян <stoyanster от гмаил>\n"
 "Language-Team: Bulgarian <dict@ludost.net>\n"
@@ -64,6 +64,11 @@ msgstr ""
 "Промените на „%s“ не са запазени.\n"
 "\n"
 "Да бъдат ли запазени преди затваряне?"
+
+#: ../settings.py:267 ../settings.py:391
+#, python-format
+msgid "%s is not valid for this setting"
+msgstr ""
 
 #: ../wxui/bugreport.py:512
 msgid "(Describe what actually happened instead)"
@@ -580,7 +585,7 @@ msgid ""
 "6. Click OK to upload image to device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:293 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:237
+#: ../drivers/tg_uv2p.py:237 ../drivers/uvb5.py:293 ../drivers/wouxun.py:222
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -590,7 +595,7 @@ msgid ""
 "6. Click OK to download image from device.\n"
 msgstr ""
 
-#: ../drivers/uvb5.py:301 ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:245
+#: ../drivers/tg_uv2p.py:245 ../drivers/uvb5.py:301 ../drivers/wouxun.py:230
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -716,6 +721,10 @@ msgid ""
 "It will may not work if you turn on the radio with the cable already attached"
 msgstr ""
 
+#: ../settings.py:189
+msgid "A floating point value is required"
+msgstr ""
+
 #: ../wxui/main.py:2170
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "Налично е ново издание на CHIRP. За да го изтеглите възможно най-бързо посетете страницата!"
@@ -772,6 +781,10 @@ msgstr "Любителски"
 msgid "An error has occurred"
 msgstr "Възникна грешка"
 
+#: ../settings.py:147
+msgid "An integer is required"
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:728
 msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
 msgstr ""
@@ -798,6 +811,10 @@ msgstr ""
 
 #: ../drivers/ft450d.py:1664
 msgid "Assigns the second function the DSP/SEL knob takes on after it is pressed briefly: adjusting the CW sidetone volume, the CW keyer speed, the microphone gain or the RF power, or tuning in 100 kHz or 1 MHz steps."
+msgstr ""
+
+#: ../wxui/query_sources.py:1136
+msgid "Attempting login..."
 msgstr ""
 
 #: ../wxui/main.py:1630
@@ -999,17 +1016,17 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr "Записването завърши, проверка за паразитни байтове"
 
-#: ../wxui/common.py:145
+#: ../wxui/common.py:124 ../wxui/common.py:145
 msgid "Cloning"
 msgstr "Записване"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:517 ../drivers/ft4.py:327
-#: ../drivers/ft817.py:343
+#: ../drivers/ft817.py:343 ../drivers/ft450d.py:517 ../drivers/bj9900.py:133
+#: ../drivers/ft4.py:327
 msgid "Cloning from radio"
 msgstr "Зареждане от станция…"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:546 ../drivers/ft4.py:328
-#: ../drivers/ft817.py:381
+#: ../drivers/ft817.py:381 ../drivers/ft450d.py:546 ../drivers/bj9900.py:165
+#: ../drivers/ft4.py:328
 msgid "Cloning to radio"
 msgstr "Записване в станция…"
 
@@ -1044,7 +1061,7 @@ msgstr "Коментар"
 msgid "Communicate with radio"
 msgstr "Осъществяване на връзка със станция"
 
-#: ../wxui/clone.py:153
+#: ../wxui/clone.py:153 ../sources/repeaterbook.py:150
 msgid "Complete"
 msgstr "Завършено"
 
@@ -1093,6 +1110,10 @@ msgstr "Преносимо копиране"
 msgid "Country"
 msgstr "Държава"
 
+#: ../wxui/query_sources.py:1098
+msgid "County"
+msgstr ""
+
 #: ../wxui/memedit.py:689
 msgid "Cross Mode"
 msgstr "Режим на прекръстосване"
@@ -1132,7 +1153,7 @@ msgstr "Полярност на DTCS"
 msgid "DTMF decode"
 msgstr "Декодиране на DTMF"
 
-#: ../wxui/memedit.py:2945
+#: ../wxui/memedit.py:2856 ../wxui/memedit.py:2946
 msgid "DV Memory"
 msgstr "Записи за цифрови разговори"
 
@@ -1156,6 +1177,20 @@ msgstr "Премахване"
 msgid "Delete memories"
 msgstr "Премахване на записи"
 
+#: ../import_logic.py:209
+#, python-format
+msgid "Destination does not support %s"
+msgstr ""
+
+#: ../import_logic.py:150 ../import_logic.py:154
+#, python-format
+msgid "Destination does not support tone frequency %s"
+msgstr ""
+
+#: ../import_logic.py:261
+msgid "Destination radio does not support D-STAR"
+msgstr ""
+
 #: ../wxui/bugreport.py:570
 msgid "Detailed information"
 msgstr "Подробна информация"
@@ -1169,7 +1204,7 @@ msgstr "Режим за разработчик"
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "Режимът на разработчик е %s. Приложението трябва да бъде рестартирано"
 
-#: ../wxui/memedit.py:2343 ../wxui/developer.py:98
+#: ../wxui/developer.py:98 ../wxui/memedit.py:2343
 msgid "Diff Raw Memories"
 msgstr "Разлики в необработеното съдържание на записите"
 
@@ -1177,7 +1212,7 @@ msgstr "Разлики в необработеното съдържание на
 msgid "Diff against another editor"
 msgstr "Сравняване с друг редактор"
 
-#: ../wxui/memedit.py:2862
+#: ../wxui/memedit.py:2863
 msgid "Digital Code"
 msgstr "Цифров код"
 
@@ -1215,6 +1250,10 @@ msgstr "Без повторно питане за %s"
 msgid "Do you accept the risk?"
 msgstr "Приемате ли риска?"
 
+#: ../sources/amsats.py:136 ../sources/amsats.py:280
+msgid "Done"
+msgstr ""
+
 #: ../wxui/bankedit.py:190
 msgid "Double-click to change bank name"
 msgstr "Името на банката може да бъде променено след двойно щракване"
@@ -1222,6 +1261,10 @@ msgstr "Името на банката може да бъде променено
 #: ../wxui/main.py:1077
 msgid "Download"
 msgstr "Изтегляне"
+
+#: ../sources/repeaterbook.py:207
+msgid "Download complete"
+msgstr ""
 
 #: ../wxui/main.py:1078
 msgid "Download from radio"
@@ -1234,6 +1277,22 @@ msgstr "Изтегляне от станция…"
 #: ../wxui/clone.py:791
 msgid "Download instructions"
 msgstr "Инструкции за изтегляне"
+
+#: ../sources/repeaterbook.py:173
+msgid "Downloading"
+msgstr ""
+
+#: ../sources/amsats.py:240
+msgid "Downloading SatNOGS satellites..."
+msgstr ""
+
+#: ../sources/amsats.py:243
+msgid "Downloading SatNOGS transmitters..."
+msgstr ""
+
+#: ../sources/amsats.py:106
+msgid "Downloading satellite data..."
+msgstr ""
 
 #: ../wxui/radioinfo.py:76
 msgid "Driver"
@@ -1260,12 +1319,12 @@ msgstr "Дуплекс"
 msgid "Edit %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2892
+#: ../wxui/memedit.py:2893
 #, python-format
 msgid "Edit details for %i memories"
 msgstr "Промяна стойностите на %i записа"
 
-#: ../wxui/memedit.py:2890
+#: ../wxui/memedit.py:2891
 #, python-format
 msgid "Edit details for memory %i"
 msgstr "Промяна на запис № %i"
@@ -1384,11 +1443,16 @@ msgstr "Пример: name~\"ретрансл\""
 msgid "Exclude private and closed repeaters"
 msgstr "Изключване на частните и затворени ретранслатори"
 
+#: ../wxui/memquery.py:232
+#, python-format
+msgid "Expected: %s"
+msgstr ""
+
 #: ../wxui/clone.py:750
 msgid "Experimental driver"
 msgstr "Изпитателен управляващ софтуер"
 
-#: ../wxui/memedit.py:2805
+#: ../wxui/memedit.py:2806
 msgid "Export can only write CSV files"
 msgstr "При изнасяне могат да бъдат запазвани само файлове на CSV"
 
@@ -1400,7 +1464,7 @@ msgstr "Изнасяне в CSV"
 msgid "Export to CSV..."
 msgstr "Изнасяне в CSV…"
 
-#: ../wxui/memedit.py:2934
+#: ../wxui/memedit.py:2935
 msgid "Extra"
 msgstr "Допълнителни"
 
@@ -1425,7 +1489,12 @@ msgstr ""
 "Безплатен списък с най-новата информация за\n"
 "европейските ретранслатори. Не е необходим профил."
 
-#: ../wxui/memedit.py:2843
+#: ../sources/amsats.py:114
+#, python-format
+msgid "Failed to download data: %s"
+msgstr ""
+
+#: ../wxui/memedit.py:2844
 msgid "Failed to export some memories"
 msgstr ""
 
@@ -1442,9 +1511,33 @@ msgstr "Грешка при разбора на резултата"
 msgid "Failed to send bug report:"
 msgstr "Грешка при изпращане на доклад за дефект:"
 
+#: ../sources/repeaterbook.py:192
+msgid "Failed to write RepeaterBook data to disk"
+msgstr ""
+
+#: ../wxui/query_sources.py:204 ../wxui/query_sources.py:1131
+#, python-format
+msgid "Failed: %s"
+msgstr ""
+
 #: ../wxui/radioinfo.py:57
 msgid "Features"
 msgstr "Настройки"
+
+#: ../sources/amsats.py:217
+#, python-format
+msgid "Fetching %s (page %i)..."
+msgstr ""
+
+#: ../sources/radioreference.py:153
+#, python-format
+msgid "Fetching %s:%s"
+msgstr ""
+
+#: ../sources/radioreference.py:176
+#, python-format
+msgid "Fetching agency %s %s:%s"
+msgstr ""
 
 #: ../wxui/bugreport.py:213
 msgid "File a new bug"
@@ -1539,11 +1632,11 @@ msgid ""
 "    no right-side audio!\n"
 msgstr ""
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:636 ../drivers/gmrsuv1.py:395
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:343
-#: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
+#: ../drivers/mursv1.py:341 ../drivers/btech.py:636 ../drivers/bf_t1.py:484
+#: ../drivers/uv5x3.py:421 ../drivers/tdxone_tdq8a.py:444
+#: ../drivers/uv6r.py:343 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/gmrsuv1.py:395
+#: ../drivers/gmrsv2.py:363
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1656,7 +1749,7 @@ msgstr ""
 "3 - Включете радиото\n"
 "4 - Изберете „Добре“\n"
 
-#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
+#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1674,11 +1767,10 @@ msgid ""
 "4 - Do the download of your radio data\n"
 msgstr ""
 
-#: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:401
-#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
-#: ../drivers/uv6r.py:349 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/mursv1.py:347 ../drivers/lt725uv.py:492 ../drivers/uv5x3.py:427
+#: ../drivers/vgc.py:592 ../drivers/tdxone_tdq8a.py:450 ../drivers/uv6r.py:349
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/gmrsuv1.py:401 ../drivers/gmrsv2.py:369
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -1714,9 +1806,9 @@ msgstr ""
 msgid "Frequency granularity in kHz"
 msgstr "Стъпка на честотата в кХз"
 
-#: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
-#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
-#: ../drivers/uv5r.py:2249 ../drivers/baofeng_uv17Pro.py:1478
+#: ../drivers/retevis_ha1g.py:1439 ../drivers/ga510.py:1094
+#: ../drivers/mml_jc8810.py:1383 ../drivers/baofeng_uv17Pro.py:1478
+#: ../drivers/uv5r.py:2249 ../drivers/tdh8.py:2540
 msgid "Frequency in this range must not be AM mode"
 msgstr "Честотата в този обхват не трябва да бъде в режим на АМ"
 
@@ -1724,10 +1816,10 @@ msgstr "Честотата в този обхват не трябва да бъ�
 msgid "Frequency in this range not supported by firmware"
 msgstr ""
 
-#: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
-#: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:2245
-#: ../drivers/baofeng_uv17Pro.py:1475
+#: ../drivers/retevis_ha1g.py:1435 ../drivers/ga510.py:1087
+#: ../drivers/mml_jc8810.py:1380 ../drivers/baofeng_uv17Pro.py:1475
+#: ../drivers/uv5r.py:2245 ../drivers/radtel_rt900.py:1623
+#: ../drivers/tdh8.py:2537
 msgid "Frequency in this range requires AM mode"
 msgstr "Честотата в този обхват изисква режим на АМ"
 
@@ -1744,6 +1836,11 @@ msgstr "GMRS"
 msgid "Getting settings"
 msgstr "Получаване на настройки"
 
+#: ../sources/repeaterbook.py:158
+#, python-format
+msgid "Got error code %i (%s) from server"
+msgstr ""
+
 #: ../wxui/memedit.py:1408
 msgid "Goto Memory"
 msgstr "Към запис"
@@ -1756,7 +1853,7 @@ msgstr "Към запис:"
 msgid "Goto..."
 msgstr "Към…"
 
-#: ../wxui/common.py:584 ../wxui/accessibility.py:310
+#: ../wxui/accessibility.py:310 ../wxui/common.py:584
 #, python-format
 msgid "Group: %s"
 msgstr ""
@@ -1806,6 +1903,10 @@ msgstr ""
 #: ../wxui/query_sources.py:818 ../wxui/query_sources.py:824
 msgid "If set, sort results by distance from these coordinates"
 msgstr "Ако е зададено, сортира резултатите по отдалеченост от тези координати"
+
+#: ../wxui/radioinfo.py:131
+msgid "Image Metadata"
+msgstr ""
 
 #: ../wxui/main.py:1500
 msgid "Import"
@@ -1866,6 +1967,10 @@ msgstr "Сведения"
 msgid "Insert Row Above"
 msgstr "Вмъкване на ред отгоре"
 
+#: ../wxui/memedit.py:2380
+msgid "Insert row"
+msgstr ""
+
 #: ../wxui/__init__.py:60
 msgid "Install desktop icon?"
 msgstr "Добавяне на пикограма към работния плот?"
@@ -1886,13 +1991,22 @@ msgstr "Вътрешна грешка на управляващия софтуе
 msgid "Internal driver error: Attempt to modify frozen memory; Please report this as a bug using \"Report or update a bug\" in the Help menu"
 msgstr ""
 
+#: ../sources/repeaterbook.py:105
+msgid "Internal error - check log"
+msgstr ""
+
+#: ../wxui/memedit.py:312
+#, python-format
+msgid "Internal error: unable to prompt for %s"
+msgstr ""
+
 #: ../wxui/query_sources.py:62
 #, python-format
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Неприемлива стойност „%(value)s“ (използвайте десетични градуси)"
 
-#: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
-#: ../wxui/memedit.py:2049
+#: ../wxui/memedit.py:2049 ../wxui/memedit.py:3029 ../wxui/query_sources.py:70
+#: ../wxui/query_sources.py:124 ../wxui/query_sources.py:151
 msgid "Invalid Entry"
 msgstr "Недействителен запис"
 
@@ -1900,10 +2014,14 @@ msgstr "Недействителен запис"
 msgid "Invalid ZIP code"
 msgstr "Неприемлив пощенски код"
 
-#: ../wxui/memedit.py:2048 ../wxui/memedit.py:3027
+#: ../wxui/memedit.py:2048 ../wxui/memedit.py:3028
 #, python-format
 msgid "Invalid edit: %s"
 msgstr "Неприемлива промяна: %s"
+
+#: ../wxui/memedit.py:413
+msgid "Invalid frequency"
+msgstr ""
 
 #: ../wxui/query_sources.py:124
 msgid "Invalid locator"
@@ -1931,7 +2049,7 @@ msgstr "Номер на дефект:"
 msgid "LIVE"
 msgstr "НА ЖИВО"
 
-#: ../drivers/radtel_rt490.py:1024 ../wxui/main.py:854 ../wxui/main.py:1644
+#: ../wxui/main.py:854 ../wxui/main.py:1644 ../drivers/radtel_rt490.py:1024
 msgid "Language"
 msgstr "Език"
 
@@ -2019,6 +2137,18 @@ msgstr ""
 msgid "Locks the controls selected by Lock Mode against accidental changes, as the LOCK button does."
 msgstr ""
 
+#: ../wxui/query_sources.py:1086
+msgid "Log In"
+msgstr ""
+
+#: ../wxui/query_sources.py:1091 ../wxui/query_sources.py:1097
+msgid "Log in First"
+msgstr ""
+
+#: ../wxui/query_sources.py:1134
+msgid "Logged in"
+msgstr ""
+
 #: ../wxui/bugreport.py:343
 msgid "Login failed: Check your username and password"
 msgstr "Грешка при вход: проверете потребителското име и паролата"
@@ -2084,8 +2214,8 @@ msgstr "За да бъде променян, записът трябва да п
 msgid "Memory {num} not in bank {bank}"
 msgstr "Записът {num} не е в банката {bank}"
 
-#: ../wxui/query_sources.py:626 ../wxui/query_sources.py:779
-#: ../wxui/memedit.py:675
+#: ../wxui/memedit.py:675 ../wxui/query_sources.py:626
+#: ../wxui/query_sources.py:779
 msgid "Mode"
 msgstr "Режим"
 
@@ -2118,7 +2248,7 @@ msgstr "Сведения"
 msgid "More than one port found: %s"
 msgstr "Намерен е повече от един порт: %s"
 
-#: ../wxui/memedit.py:2743
+#: ../wxui/memedit.py:2744
 #, python-format
 msgid "Move %i memories"
 msgstr ""
@@ -2131,12 +2261,20 @@ msgstr "Преместване надолу"
 msgid "Move Up"
 msgstr "Преместване нагоре"
 
-#: ../wxui/memedit.py:2713
+#: ../wxui/memedit.py:2714
 msgid "Move operations are disabled while the view is sorted"
 msgstr "Действията за преместване са забранени при сортиран изглед"
 
 #: ../drivers/ft450d.py:1003
 msgid "Moves the part of the passband the contour filter acts on, from -2 at the low end through Center to +2 at the high end."
+msgstr ""
+
+#: ../wxui/memedit.py:1449
+msgid "Name"
+msgstr "Име"
+
+#: ../sources/base.py:58
+msgid "Network source is immutable"
 msgstr ""
 
 #: ../wxui/main.py:692
@@ -2146,6 +2284,10 @@ msgstr "Нов прозорец"
 #: ../wxui/main.py:2172
 msgid "New version available"
 msgstr "Налично е ново издание"
+
+#: ../wxui/memedit.py:2671
+msgid "No channels extracted from paste"
+msgstr ""
 
 #: ../wxui/memedit.py:2390
 msgid "No empty rows below!"
@@ -2174,15 +2316,28 @@ msgstr "Няма достатъчно място; някои записи не �
 msgid "No results"
 msgstr "Няма резултати"
 
-#: ../sources/repeaterbook.py:371
+#: ../sources/repeaterbook.py:204 ../sources/repeaterbook.py:371
 msgid "No results!"
 msgstr "Няма резултати!"
+
+#: ../import_logic.py:46 ../import_logic.py:64
+#, python-format
+msgid "No room to add callsign %s"
+msgstr ""
 
 #: ../wxui/main.py:2082
 msgid "No traces stored"
 msgstr ""
 
-#: ../wxui/query_sources.py:45 ../wxui/memedit.py:1407
+#: ../sources/amsats.py:277
+msgid "No valid SatNOGS frequencies found!"
+msgstr ""
+
+#: ../sources/amsats.py:133
+msgid "No valid satellite frequencies found!"
+msgstr ""
+
+#: ../wxui/memedit.py:1407 ../wxui/query_sources.py:45
 msgid "Number"
 msgstr "Число"
 
@@ -2327,12 +2482,17 @@ msgstr ""
 "Само част от повече от 130-те достъпни настройки на\n"
 "станцията се поддържат от това издание.\n"
 
-#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
-#: ../sources/mapy73pl.py:52
+#: ../sources/przemienniki_eu.py:48 ../sources/repeaterbook.py:299
+#: ../sources/przemienniki_net.py:50 ../sources/mapy73pl.py:52
+#: ../sources/dmrmarc.py:52
 msgid "Parsing"
 msgstr "Разбор"
 
-#: ../wxui/bugreport.py:276
+#: ../sources/amsats.py:117
+msgid "Parsing data..."
+msgstr ""
+
+#: ../wxui/bugreport.py:276 ../wxui/query_sources.py:1062
 msgid "Password"
 msgstr "Парола"
 
@@ -2344,7 +2504,7 @@ msgstr "Поставяне"
 msgid "Paste external memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2656
+#: ../wxui/memedit.py:2657
 msgid "Paste memories"
 msgstr ""
 
@@ -2428,6 +2588,10 @@ msgstr "Преглед за отпечатване"
 msgid "Printing"
 msgstr "Отпечатване"
 
+#: ../sources/amsats.py:247
+msgid "Processing data..."
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:572
 #, python-format
 msgid "Programs DTMF code %i. A channel or VFO can select this code as its PTT-ID and send it when PTT is pressed, released, or both."
@@ -2461,6 +2625,10 @@ msgstr "Име на свойство"
 msgid "Property Value"
 msgstr "Стойност на свойство"
 
+#: ../wxui/query_sources.py:1093
+msgid "Province"
+msgstr ""
+
 #: ../wxui/query_sources.py:833
 msgid "QTH Locator"
 msgstr ""
@@ -2487,9 +2655,13 @@ msgid "Query syntax help"
 msgstr "Помощ за синтаксиса"
 
 #: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
-#: ../sources/mapy73pl.py:36
+#: ../sources/mapy73pl.py:36 ../sources/dmrmarc.py:40
 msgid "Querying"
 msgstr "Търсене"
+
+#: ../sources/radioreference.py:119
+msgid "Querying..."
+msgstr ""
 
 #: ../wxui/memedit.py:622
 msgid "RX DTCS"
@@ -2515,8 +2687,8 @@ msgstr ""
 msgid "Radio Info: Image Metadata"
 msgstr ""
 
-#: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:582
-#: ../drivers/ft817.py:410
+#: ../drivers/ft817.py:410 ../drivers/ft450d.py:582 ../drivers/ft60.py:89
+#: ../drivers/ft60.py:91
 #, python-format
 msgid "Radio did not ack block %i"
 msgstr "Станцията не е приела блок %i"
@@ -2614,6 +2786,10 @@ msgid ""
 "worldwide, FREE repeater directory."
 msgstr "RepeaterBook е най-изчерпателният, безплатен справочник за радиолюбителски ретранслатори в света."
 
+#: ../sources/repeaterbook.py:182
+msgid "RepeaterBook returned invalid response"
+msgstr ""
+
 #: ../wxui/main.py:1025
 msgid "Report or update a bug..."
 msgstr "Доклад или промняна на дефект…"
@@ -2686,7 +2862,7 @@ msgstr "Управление на сканиране (прескачане, вк
 msgid "Scanlists"
 msgstr "Списъци за сканиране"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:855
+#: ../drivers/uvk5.py:855 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr "Шифроване"
 
@@ -2824,6 +3000,10 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1245
 msgid "Selects wide or narrow FM for VFO B. Use Narrow where required by the channel plan to reduce interference to adjacent channels."
+msgstr ""
+
+#: ../wxui/bugreport.py:592
+msgid "Sending report..."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:769
@@ -3040,7 +3220,7 @@ msgstr ""
 msgid "Shifts the frequency shown on the display in the USER-L and USER-U data modes by this many hertz. The radio accepts -3000 to +3000 Hz."
 msgstr ""
 
-#: ../wxui/memedit.py:2335 ../wxui/developer.py:101
+#: ../wxui/developer.py:101 ../wxui/memedit.py:2335
 msgid "Show Raw Memory"
 msgstr "Показване на необработеното съдържание на записа"
 
@@ -3064,7 +3244,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Пропускане"
 
-#: ../wxui/memedit.py:2647
+#: ../wxui/memedit.py:2648
 msgid "Some memories are incompatible with this radio"
 msgstr "Някои от записите са несъвместими със станцията"
 
@@ -3312,6 +3492,10 @@ msgstr ""
 msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
 msgstr ""
 
+#: ../settings.py:85
+msgid "This value is not mutable"
+msgstr ""
+
 #: ../wxui/developer.py:684
 msgid "This will load a module from a website issue"
 msgstr "От тук се зарежда модул от докладван дефект"
@@ -3439,6 +3623,10 @@ msgstr "Грешка при отваряне на междинната паме�
 msgid "Unable to query"
 msgstr "Грешка при заявка"
 
+#: ../sources/dmrmarc.py:50
+msgid "Unable to query DMR-MARC"
+msgstr ""
+
 #: ../drivers/ft817.py:322
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr "Последният блок не е прочетен. Това се случва, когато избраният модел e предназначен за употреба в САЩ, но станцията не е (или e с разширен обхват). Изберете правилния модел и опитайте отново."
@@ -3465,6 +3653,14 @@ msgstr "Отменяне"
 msgid "United States"
 msgstr "САЩ"
 
+#: ../sources/radioreference.py:173
+msgid "Unknown Category"
+msgstr ""
+
+#: ../directory.py:229
+msgid "Unknown file format"
+msgstr ""
+
 #: ../wxui/clone.py:485
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Изключете кабела (ако е необходимо) и натиснете бутона„Добре“"
@@ -3482,6 +3678,10 @@ msgstr "Промяна на съществуващ дефект"
 #, python-format
 msgid "Updating bug %s"
 msgstr "Промяна на дефект %s"
+
+#: ../wxui/main.py:1079
+msgid "Upload"
+msgstr ""
 
 #: ../wxui/clone.py:898
 msgid "Upload instructions"
@@ -3520,14 +3720,44 @@ msgstr "Равноширок шрифт"
 msgid "Use larger font"
 msgstr "По-едър шрифт"
 
-#: ../wxui/bugreport.py:266
+#: ../wxui/bugreport.py:266 ../wxui/query_sources.py:1054
 msgid "Username"
 msgstr "Потребител"
+
+#: ../sources/repeaterbook.py:143 ../sources/repeaterbook.py:146
+#: ../sources/repeaterbook.py:156
+msgid "Using cached data"
+msgstr ""
+
+#: ../settings.py:149
+#, python-format
+msgid "Value %i not in range %i-%i"
+msgstr ""
+
+#: ../settings.py:328
+#, python-format
+msgid "Value %r contains invalid character `%s'"
+msgstr ""
+
+#: ../settings.py:323
+#, python-format
+msgid "Value %r must be between %i and %i chars"
+msgstr ""
+
+#: ../settings.py:191
+#, python-format
+msgid "Value %s not in range %s-%s"
+msgstr ""
 
 #: ../wxui/developer.py:314
 #, python-format
 msgid "Value does not fit in %i bits"
 msgstr "Стойността не се побира в %i бита"
+
+#: ../settings.py:264
+#, python-format
+msgid "Value for %s is out of range"
+msgstr ""
 
 #: ../wxui/common.py:759
 #, python-format
@@ -3552,7 +3782,7 @@ msgstr "Стойността трябва да бъде нула или пове
 msgid "Value to search memory field for"
 msgstr "Стойност, която търсите в запис в паметта"
 
-#: ../wxui/memedit.py:2925
+#: ../wxui/memedit.py:2926
 msgid "Values"
 msgstr "Стойности"
 
@@ -3572,8 +3802,8 @@ msgstr ""
 msgid "WARNING!"
 msgstr "ВНИМАНИЕ!"
 
-#: ../wxui/bugreport.py:235 ../wxui/memedit.py:2055 ../wxui/main.py:1907
-#: ../wxui/main.py:2065
+#: ../wxui/bugreport.py:235 ../wxui/main.py:1907 ../wxui/main.py:2065
+#: ../wxui/memedit.py:2055
 msgid "Warning"
 msgstr "Внимание"
 
@@ -3622,6 +3852,10 @@ msgstr ""
 msgid "Your cable appears to be on port:"
 msgstr "Изглежда кабелът е включен в порт:"
 
+#: ../wxui/query_sources.py:1118
+msgid "ZIP Code"
+msgstr ""
+
 #: ../wxui/developer.py:194
 msgid "bits"
 msgstr "бита"
@@ -3662,8 +3896,17 @@ msgstr ""
 msgid "locked"
 msgstr ""
 
+#: ../settings.py:366
+#, python-format
+msgid "map_entries must be 2 el tuples instead of: %s"
+msgstr ""
+
 #: ../wxui/common.py:550
 msgid "number"
+msgstr ""
+
+#: ../import_logic.py:239
+msgid "offset is abnormally large."
 msgstr ""
 
 #: ../wxui/bugreport.py:421
@@ -3760,9 +4003,6 @@ msgstr "{bank} е пълна"
 #, python-format
 #~ msgid "Frequency %s is out of supported range"
 #~ msgstr "Честотата %s е извън поддържания обхват"
-
-#~ msgid "Name"
-#~ msgstr "Име"
 
 #~ msgid "OK"
 #~ msgstr "Добре"
