@@ -1,4 +1,4 @@
-# Copyright 2023 Jim Unroe <rock.unroe@gmail.com>
+# Copyright 2026 Jim Unroe <rock.unroe@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ struct {
   u8 tone;             // Tone                   006E
   u8 chnumber;         // Channel                006F
   u8 channel_8[13];    //                        0070-007C
-  u8 unknown_7d;       //                        007D
+  u8 vibrate;          //                        007D
   u8 scan;             // Scan                   007E
   u8 backlight;        // Back Light             007F
   u8 channel_9[13];    //                        0080-008C
@@ -87,7 +87,7 @@ struct {
   u8 wxwarn;           // Weather Warn           008E
   u8 roger;            // End Tone               008F
   u8 channel_10[13];   //                        0090-009C
-  u8 unknown_9d;       //                        009D
+  u8 keylock48;        // Key Lock               009D
   u8 keylock;          // Key Lock               009E
   u8 unknown_9f;       //                        009F
   u8 channel_11[13];   //                        00A0-00AC
@@ -327,6 +327,14 @@ class RB28Radio(chirp_common.CloneModeRadio):
     _ack_1st_block = False
     _reserved = True
     _frs = True
+    _pmr = False
+    _duplexes = ["", "off"]
+    _has_volume = True
+    _has_autokeylock = True
+    _has_pfkey = True
+    _has_wxchnumber = True
+    _has_vibrate = False
+    _has_keylock48 = False
 
     _ranges = [
                (0x0000, 0x0160),
@@ -349,7 +357,7 @@ class RB28Radio(chirp_common.CloneModeRadio):
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
                                 "->Tone", "->DTCS", "DTCS->", "DTCS->DTCS"]
         rf.valid_power_levels = self.POWER_LEVELS
-        rf.valid_duplexes = ["", "off"]
+        rf.valid_duplexes = self._duplexes
         rf.valid_modes = ["FM", "NFM"]  # 25 kHz, 12.5 kHz.
         rf.valid_tones = self.TONES
         rf.valid_dtcs_codes = self.DTCS_CODES
@@ -418,7 +426,10 @@ class RB28Radio(chirp_common.CloneModeRadio):
             mem.empty = True
             return mem
 
-        if int(_mem.rxfreq) == int(_mem.txfreq):
+        if _mem.txfreq.get_raw() == b"\xFF\xFF\xFF\xFF":
+            mem.duplex = "off"
+            mem.offset = 0
+        elif int(_mem.rxfreq) == int(_mem.txfreq):
             mem.duplex = ""
             mem.offset = 0
         else:
@@ -617,9 +628,10 @@ class RB28Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("backlight", "Back Light", rs)
         basic.append(rset)
 
-        rs = RadioSettingValueInteger(0, 9, _settings.volume)
-        rset = RadioSetting("volume", "Volume", rs)
-        basic.append(rset)
+        if self._has_volume:
+            rs = RadioSettingValueInteger(0, 9, _settings.volume)
+            rset = RadioSetting("volume", "Volume", rs)
+            basic.append(rset)
 
         rs = RadioSettingValueInteger(0, 10, _settings.tone)
         rset = RadioSetting("tone", "Tone", rs)
@@ -629,14 +641,15 @@ class RB28Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("chnumber", "Channel Number", rs)
         basic.append(rset)
 
-        if self.MODEL == "RB28":
+        if self._has_wxchnumber:
             rs = RadioSettingValueInteger(1, 11, _settings.wxchnumber + 1)
             rset = RadioSetting("wxchnumber", "Weather Channel Number", rs)
             basic.append(rset)
 
-        rs = RadioSettingValueBoolean(_settings.autokeylock)
-        rset = RadioSetting("autokeylock", "Auto Key Lock", rs)
-        basic.append(rset)
+        if self._has_autokeylock:
+            rs = RadioSettingValueBoolean(_settings.autokeylock)
+            rset = RadioSetting("autokeylock", "Auto Key Lock", rs)
+            basic.append(rset)
 
         rs = RadioSettingValueBoolean(_settings.save)
         rset = RadioSetting("save", "Battery Save", rs)
@@ -645,6 +658,11 @@ class RB28Radio(chirp_common.CloneModeRadio):
         rs = RadioSettingValueBoolean(_settings.roger)
         rset = RadioSetting("roger", "End Tone", rs)
         basic.append(rset)
+
+        if self._has_vibrate:
+            rs = RadioSettingValueBoolean(_settings.vibrate)
+            rset = RadioSetting("vibrate", "Vibrate", rs)
+            basic.append(rset)
 
         rs = RadioSettingValueBoolean(_settings.beep)
         rset = RadioSetting("beep", "Beep", rs)
@@ -659,9 +677,14 @@ class RB28Radio(chirp_common.CloneModeRadio):
             rset = RadioSetting("wxwarn", "Weather Warn", rs)
             basic.append(rset)
 
-        rs = RadioSettingValueBoolean(_settings.keylock)
-        rset = RadioSetting("keylock", "Key Lock", rs)
-        basic.append(rset)
+        if self._has_keylock48:
+            rs = RadioSettingValueBoolean(_settings.keylock48)
+            rset = RadioSetting("keylock48", "Key Lock", rs)
+            basic.append(rset)
+        else:
+            rs = RadioSettingValueBoolean(_settings.keylock)
+            rset = RadioSetting("keylock", "Key Lock", rs)
+            basic.append(rset)
 
         rs = RadioSettingValueList(VOXL_LIST,
                                    current_index=_settings.voxl)
@@ -673,15 +696,16 @@ class RB28Radio(chirp_common.CloneModeRadio):
         rset = RadioSetting("voxd", "Vox Delay", rs)
         basic.append(rset)
 
-        rs = RadioSettingValueList(self.PFKEY_LIST,
-                                   current_index=_settings.pfkey_lt)
-        rset = RadioSetting("pfkey_lt", "Key Set < Long", rs)
-        basic.append(rset)
+        if self._has_pfkey:
+            rs = RadioSettingValueList(self.PFKEY_LIST,
+                                       current_index=_settings.pfkey_lt)
+            rset = RadioSetting("pfkey_lt", "Key Set < Long", rs)
+            basic.append(rset)
 
-        rs = RadioSettingValueList(self.PFKEY_LIST,
-                                   current_index=_settings.pfkey_gt)
-        rset = RadioSetting("pfkey_gt", "Key Set > Long", rs)
-        basic.append(rset)
+            rs = RadioSettingValueList(self.PFKEY_LIST,
+                                       current_index=_settings.pfkey_gt)
+            rset = RadioSetting("pfkey_gt", "Key Set > Long", rs)
+            basic.append(rset)
 
         return top
 
@@ -736,3 +760,68 @@ class RB628Radio(RB28Radio):
                    )
     _frs = False
     _pmr = True
+    _has_wxchnumber = False
+
+
+@directory.register
+class RB48Radio(RB28Radio):
+    """RETEVIS RB48"""
+    VENDOR = "Retevis"
+    MODEL = "RB48"
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    VALID_BANDS = [(400000000, 520000000)]
+
+    _magic = b"PHOGR[" + b"\x17"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
+    _upper = 22
+    _mem_params = (_upper,  # number of channels
+                   )
+    _frs = False  # Sold as FRS radio but supports full band TX/RX
+    _duplexes = ["", "+", "-", "split"]
+    _has_volume = False
+    _has_autokeylock = False
+    _has_pfkey = False
+    _has_wxchnumber = True
+    _has_vibrate = True
+    _has_keylock48 = True
+
+    _ranges = [
+               (0x0000, 0x0160),
+              ]
+    _memsize = 0x0800
+
+
+@directory.register
+class RB648Radio(RB28Radio):
+    """RETEVIS RB648"""
+    VENDOR = "Retevis"
+    MODEL = "RB648"
+
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.00),
+                    chirp_common.PowerLevel("Low", watts=0.50)]
+
+    VALID_BANDS = [(400000000, 520000000)]
+
+    _magic = b"PHOGRQp"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
+    _upper = 16
+    _mem_params = (_upper,  # number of channels
+                   )
+
+    _frs = False
+    _pmr = False  # Sold as PMR radio but supports full band TX/RX
+    _duplexes = ["", "+", "-", "split"]
+    _has_volume = False
+    _has_autokeylock = False
+    _has_pfkey = False
+    _has_wxchnumber = False
+    _has_vibrate = True
+    _has_keylock48 = True
+
+    _ranges = [
+               (0x0000, 0x0160),
+              ]
+    _memsize = 0x0800
